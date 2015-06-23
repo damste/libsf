@@ -928,6 +928,7 @@
 	// Commands
 	const s32       _ICODE_ACTIVATE                                 = 2000;
 //	const s32       _ICODE_ADD                                      = 2001;
+	const s32		_ICODE_ADDITIVE									= 2341;
 	const s32		_ICODE_ALL										= 2289;
 	const s32       _ICODE_ALTER                                    = 2002;
 	const s32       _ICODE_ALTERNATE                                = 2003;
@@ -1003,6 +1004,7 @@
 	const s32       _ICODE_DELIMITERS                               = 2067;
 	const s32       _ICODE_DEVELOPMENT                              = 2068;
 	const s32       _ICODE_DEVICE                                   = 2069;
+	const s32		_ICODE_DEVICE_FILENAME							= 2340;
 	const s32       _ICODE_DIMENSION                                = 2070;
 	const s32       _ICODE_DIR                                      = 2071;
 	const s32       _ICODE_DISPLAY                                  = 2072;
@@ -1297,6 +1299,7 @@
 	// vecseparator			= 2334			visualize				= 2335
 	// journal				= 2336			NCSETDATETIMEMILLISECONDS = 2337
 	// PRECISIONSBFP		= 2338			PRECISIONSBI			= 2339
+	// DEVICE_FILENAME		= 2340			ADDITIVE				= 2341
 
 
 //////////
@@ -1876,6 +1879,7 @@
 // Commands
 	const s8		cgc_activate[]									= "activate";
 //	const s8		cgc_add[]										= "add";
+	const s8		cgc_additive[]									= "additive";
 	const s8		cgc_all[]										= "all";
 	const s8		cgc_alter[]										= "alter";
 	const s8		cgc_alternate[]									= "alternate";
@@ -1952,6 +1956,7 @@
 	const s8		cgc_delimiters[]								= "delimiters";
 	const s8		cgc_development[]								= "development";
 	const s8		cgc_device[]									= "device";
+	const s8		cgc_devicefilename[]							= "devicefilename";
 	const s8		cgc_dimension[]									= "dimension";
 	const s8		cgc_dir[]										= "dir";
 //	const s8		cgc_directory[]									= "directory";

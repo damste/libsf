@@ -95,6 +95,8 @@
 // Called to open the file using custom share settings, or explicitly shared,
 // or explicitly exclusive.
 //
+//	tnType		-- 
+//
 //////
 	s32 iDisk_open(cs8* tcPathname, s32 tnType, s32 tnShare, bool tlCreateIfCannotOpen)
 	{

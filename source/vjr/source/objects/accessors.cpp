@@ -951,7 +951,7 @@ debug_break;
 		// Validate it's numeric
 		//////
 			llResult = false;
-			if (iVariable_isTypeNumeric(varNew))
+			if (iVariable_isValid(varNew) && iVariable_isTypeNumeric(varNew))
 			{
 				//////////
 				// Grab our value
@@ -986,6 +986,149 @@ debug_break;
 
 //////////
 //
+// Called to set the device output to some location
+//
+//////
+	bool iObjProp_setDevice(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	{
+		s32			lnLength;
+		bool		llResult, llManufactured, llIsValid;
+		SComp*		compScreen;
+		SComp*		compPrinter;
+		SComp*		compPrompt;
+		SComp*		compFile;
+		SComp*		compFilename;
+		SComp*		compAdditive;
+		SVariable*	varLookup;
+		SVariable*	varFilename;
+		s8			buffer[_MAX_PATH];
+
+
+		//////////
+		// Locate any additional components
+		//////
+			compScreen		= iComps_findNextBy_iCode(thisCode, compNew, _ICODE_SCREEN,		NULL);
+			compPrinter		= iComps_findNextBy_iCode(thisCode, compNew, _ICODE_PRINTER,	NULL);
+			compPrompt		= iComps_findNextBy_iCode(thisCode, compNew, _ICODE_PROMPT,		NULL);
+			compFile		= iComps_findNextBy_iCode(thisCode, compNew, _ICODE_FILE,		NULL);
+			compAdditive	= iComps_findNextBy_iCode(thisCode, compNew, _ICODE_ADDITIVE,	NULL);
+
+
+		//////////
+		// Are they specifying a number?
+		//////
+			llResult = false;
+			if (compNew)
+			{
+				// What are they choosing?
+				if (compNew == compScreen)
+				{
+					// SET DEVICE TO SCREEN
+					llResult = true;
+					iVariable_set_s32(thisCode, varSet, _SET_DEVICE_SCREEN);
+
+				} else if (compNew == compPrinter) {
+					// SET DEVICE TO PRINTER
+					llResult = true;
+					if (compPrompt)		iVariable_set_s32(thisCode, varSet, _SET_DEVICE_PRINTER_PROMPT);
+					else				iVariable_set_s32(thisCode, varSet, _SET_DEVICE_PRINTER_NO_PROMPT);
+
+				} else if (compNew == compFile) {
+					// SET DEVICE TO FILE
+					// Did they specify a filename?
+					if ((compFilename = compFile->ll.nextComp))
+					{
+						// Yes, try to open the file
+						memset(buffer, 0, sizeof(buffer));
+						switch (compFilename->iCode)
+						{
+							case _ICODE_SINGLE_QUOTED_TEXT:
+							case _ICODE_DOUBLE_QUOTED_TEXT:
+								// It's quoted text, meaning a filename
+								llIsValid = true;
+								memcpy(buffer, compFilename->line->sourceCode->data_cs8 + compFilename->start, compFilename->length);
+								break;
+
+							default:
+								// It's something other than quoted text
+								// See if it's a variable
+								llIsValid	= false;
+								varLookup	= iEngine_get_variableName_fromComponent(thisCode, compFilename, &llManufactured, false);
+								if (!varLookup)
+								{
+									// It's not a known variable, so it must be just something they want to use as a filename
+									llIsValid	= true;
+									lnLength	= iComps_getContiguousLength(thisCode, compFilename, NULL, 0, NULL);
+									memcpy(buffer, compFilename->line->sourceCode->data_cs8 + compFilename->start, lnLength);
+
+								} else {
+									// Based on the variable type, try to open it
+									if (varLookup->varType == _VAR_TYPE_CHARACTER)
+									{
+										llIsValid = true;
+										memcpy(buffer, varLookup->value.data_cs8, varLookup->value.length);
+									}
+								}
+
+								// Clean house
+								if (varLookup && llManufactured)
+									iVariable_delete(thisCode, varLookup, true);
+						}
+
+						// If we're still valid, try to open the filename
+						if (llIsValid)
+						{
+							// Open the file as additive, or a new blank file
+							if (compAdditive)		varSet->meta = (void*)iDisk_openExclusive(buffer, _O_BINARY | _O_WRONLY | _O_APPEND,	true);
+							else					varSet->meta = (void*)iDisk_openExclusive(buffer, _O_BINARY | _O_WRONLY | _O_CREAT,		true);
+
+							// Did the file open okay?
+							if (varSet->_meta != -1)
+							{
+								// Indicate success
+								llResult = true;
+								iVariable_set_s32(thisCode, varSet, _SET_DEVICE_FILE);
+
+								// Create a variable for population into _INDEX_SET_DEVICE2's character memory variable
+								varFilename = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, buffer, strlen(buffer), false);
+								if (varFilename)
+								{
+									// Copy it over
+									iObjProp_set(thisCode, _settings, _INDEX_SET_DEVICE2, varFilename, true);
+
+									// Clean house
+									iVariable_delete(thisCode, varFilename, true);
+
+								} else {
+									// Failure on indicating our filename
+									// Note:  At this point it is still set to the correct file, we just won't be able to report on it
+									llResult = false;
+								}
+							}
+						}
+					}
+				}
+			}
+
+
+		//////////
+		// Optionally clean house
+		//////
+			if (tlDeleteVarNewAfterSet)
+				iVariable_delete(thisCode, varNew, true);
+
+
+		//////////
+		// Indicate
+		//////
+			return(llResult);
+	}
+
+
+
+
+//////////
+//
 // Called to set the integer using the valid integer variable
 //
 //////
@@ -998,7 +1141,7 @@ debug_break;
 		// Validate it's numeric
 		//////
 			llResult = false;
-			if (iVariable_isTypeNumeric(varNew))
+			if (iVariable_isValid(varNew) && iVariable_isTypeNumeric(varNew))
 			{
 				// Set the value
 				iVariable_set(thisCode, varSet, varNew);
@@ -1041,7 +1184,7 @@ debug_break;
 		// Validate it's numeric
 		//////
 			llResult = false;
-			if (iVariable_isTypeNumeric(varNew))
+			if (iVariable_isValid(varNew) && iVariable_isTypeNumeric(varNew))
 			{
 				// Gab the value
 				lnValue = iiVariable_getAs_s32(thisCode, varNew, false, &error, &errorNum);
@@ -1089,7 +1232,7 @@ debug_break;
 		// Validate it's numeric
 		//////
 			llResult = false;
-			if (iVariable_isTypeNumeric(varNew))
+			if (iVariable_isValid(varNew) && iVariable_isTypeNumeric(varNew))
 			{
 				// Gab the value
 				lnValue = iiVariable_getAs_s32(thisCode, varNew, false, &error, &errorNum);
@@ -1141,7 +1284,7 @@ debug_break;
 		// Validate it's numeric
 		//////
 			llResult = false;
-			if (iVariable_isTypeNumeric(varNew))
+			if (iVariable_isValid(varNew) && iVariable_isTypeNumeric(varNew))
 			{
 				//////////
 				// Grab our value
@@ -1202,7 +1345,7 @@ debug_break;
 		// Validate it's numeric
 		//////
 			llResult = false;
-			if (iVariable_isFundamentalTypeLogical(varNew))
+			if (iVariable_isValid(varNew) && iVariable_isFundamentalTypeLogical(varNew))
 			{
 				// Set the value
 				iVariable_set(thisCode, varSet, varNew);
@@ -1322,7 +1465,7 @@ debug_break;
 		// Are they specifying a number?
 		//////
 			llResult = false;
-			if (varNew)
+			if (iVariable_isValid(varNew))
 			{
 				// It's a value, which means it must not
 				if (iVariable_isTypeNumeric(varNew))
@@ -1480,6 +1623,43 @@ debug_break;
 
 //////////
 //
+// Called to set the expression to the input character expression
+//
+//////
+	bool iObjProp_setCharacter(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	{
+		bool llResult;
+
+
+		//////////
+		// Validate the variable is character
+		//////
+			llResult = false;
+			if (iVariable_isTypeCharacter(varNew) && varNew->value.length >= 1)
+			{
+				llResult = true;
+				iVariable_copy(thisCode, varSet, varNew);
+			}
+
+
+		//////////
+		// Optionally clean house
+		//////
+			if (tlDeleteVarNewAfterSet)
+				iVariable_delete(thisCode, varNew, true);
+
+
+		//////////
+		// Indicate our status
+		//////
+			return(llResult);
+	}
+
+
+
+
+//////////
+//
 // Called to set the expression to the left-most character of the input character expression
 //
 //////
@@ -1520,68 +1700,15 @@ debug_break;
 
 //////////
 //
-// Called to obtain the on/off status of the indicated variable
-//
-//////
-	SVariable* iObjProp_getOnOff(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning)
-	{
-		bool		llOn;
-		bool		error;
-		u32			errorNum;
-		SVariable*	result;
-
-
-		//////////
-		// Make sure our environment is sane
-		//////
-			result = NULL;
-			if (iVariable_isValid(varSet) && iVariable_isTypeLogical(varSet))
-			{
-				// Get the ON/OFF setting as a logical
-				llOn = iiVariable_getAs_bool(thisCode, varSet, false, &error, &errorNum);
-				if (!error)
-				{
-					// Okay... are we ON or OFF?
-					if (llOn)
-					{
-						// ON
-						result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_on, sizeof(cgc_on) - 1, false);
-
-					} else {
-						// OFF
-						result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_on, sizeof(cgc_on) - 1, false);
-					}
-				}
-			}
-
-
-		//////////
-		// Optionally clean house
-		//////
-			if (tlDeleteVarSetBeforeReturning)
-				iVariable_delete(thisCode, varSet, true);
-
-
-		//////////
-		// Indicate our result
-		//////
-			return(result);
-	}
-
-
-
-
-//////////
-//
 // Called to obtain the date type of the indicated variable
 //
 //////
 	SVariable* iObjProp_getDate(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning)
 	{
 		s32			lnValue;
+		SVariable*	result;
 		bool		error;
 		u32			errorNum;
-		SVariable*	result;
 
 
 		//////////
@@ -1640,6 +1767,68 @@ debug_break;
 						case _SET_DATE_YMD:
 							result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_ymd, sizeof(cgc_ymd) - 1, false);
 							break;
+					}
+				}
+			}
+
+
+		//////////
+		// Optionally clean house
+		//////
+			if (tlDeleteVarSetBeforeReturning)
+				iVariable_delete(thisCode, varSet, true);
+
+
+		//////////
+		// Indicate our result
+		//////
+			return(result);
+	}
+
+
+
+
+//////////
+//
+// Called to obtain the current device setting
+//
+//////
+	SVariable* iObjProp_getDevice(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning)
+	{
+		s32			lnValue;
+		SVariable*	result;
+		bool		error;
+		u32			errorNum;
+
+
+		//////////
+		// Make sure our environment is sane
+		//////
+			result = NULL;
+			if (iVariable_isValid(varSet))
+			{
+				if (iVariable_isTypeNumeric(varSet))
+				{
+					// Get the setting as an s32
+					lnValue = iiVariable_getAs_s32(thisCode, varSet, false, &error, &errorNum);
+					if (!error)
+					{
+						// Positive = seconds, negative = attempts
+						switch (lnValue)
+						{
+							case _SET_DEVICE_PRINTER_NO_PROMPT:
+							case _SET_DEVICE_PRINTER_PROMPT:
+								result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_printer, sizeof(cgc_printer) - 1, false);
+								break;
+
+							case _SET_DEVICE_FILE:
+								result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_file, sizeof(cgc_file) - 1, false);
+								break;
+
+							default:
+								result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_screen, sizeof(cgc_screen) - 1, false);
+								break;
+						}
 					}
 				}
 			}
@@ -1751,9 +1940,9 @@ debug_break;
 	SVariable* iObjProp_getLogicalX(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning)
 	{
 		s32			lnValue;
+		SVariable*	result;
 		bool		error;
 		u32			errorNum;
-		SVariable*	result;
 
 
 		//////////
@@ -1802,6 +1991,59 @@ debug_break;
 
 //////////
 //
+// Called to obtain the on/off status of the indicated variable
+//
+//////
+	SVariable* iObjProp_getOnOff(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning)
+	{
+		bool		llOn;
+		SVariable*	result;
+		bool		error;
+		u32			errorNum;
+
+
+		//////////
+		// Make sure our environment is sane
+		//////
+			result = NULL;
+			if (iVariable_isValid(varSet) && iVariable_isTypeLogical(varSet))
+			{
+				// Get the ON/OFF setting as a logical
+				llOn = iiVariable_getAs_bool(thisCode, varSet, false, &error, &errorNum);
+				if (!error)
+				{
+					// Okay... are we ON or OFF?
+					if (llOn)
+					{
+						// ON
+						result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_on, sizeof(cgc_on) - 1, false);
+
+					} else {
+						// OFF
+						result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_on, sizeof(cgc_on) - 1, false);
+					}
+				}
+			}
+
+
+		//////////
+		// Optionally clean house
+		//////
+			if (tlDeleteVarSetBeforeReturning)
+				iVariable_delete(thisCode, varSet, true);
+
+
+		//////////
+		// Indicate our result
+		//////
+			return(result);
+	}
+
+
+
+
+//////////
+//
 // Called to obtain the reprocess setting of the indicated variable
 //
 //////
@@ -1809,10 +2051,10 @@ debug_break;
 	{
 		s32			lnValue;
 		bool		llAutomatic;
-		bool		error;
-		u32			errorNum;
 		SVariable*	result;
 		s8			buffer[32];
+		bool		error;
+		u32			errorNum;
 
 
 		//////////
@@ -1888,9 +2130,9 @@ debug_break;
 	SVariable* iObjProp_getTime(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning)
 	{
 		s32			lnValue;
+		SVariable*	result;
 		bool		error;
 		u32			errorNum;
-		SVariable*	result;
 
 
 		//////////
@@ -1943,9 +2185,9 @@ debug_break;
 	SVariable* iObjProp_getUdfParams(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning)
 	{
 		s32			lnValue;
+		SVariable*	result;
 		bool		error;
 		u32			errorNum;
-		SVariable*	result;
 
 
 		//////////

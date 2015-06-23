@@ -741,6 +741,7 @@
 		// Commands
 		{ cgc_activate,				8,			false,		_ICODE_ACTIVATE,						false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,		null0 },
 //		{ cgc_add,					3,			false,		_ICODE_ADD,								false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,		null0 },
+		{ cgc_additive,				8,			false,		_ICODE_ADDITIVE,						false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,		null0 },
 		{ cgc_all,					3,			false,		_ICODE_ALL,								false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,		null0 },
 		{ cgc_alter,				5,			false,		_ICODE_ALTER,							false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,		null0 },
 		{ cgc_alternate,			9,			false,		_ICODE_ALTERNATE,						false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,		null0 },
@@ -817,6 +818,7 @@
 		{ cgc_delimiters,			10,			false,		_ICODE_DELIMITERS,						false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,		null0 },
 		{ cgc_development,			11,			false,		_ICODE_DEVELOPMENT,						false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,		null0 },
 		{ cgc_device,				6,			false,		_ICODE_DEVICE,							false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,		null0 },
+		{ cgc_devicefilename,		14,			false,		_ICODE_DEVICE_FILENAME,					false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,		null0 },
 		{ cgc_dimension,			9,			false,		_ICODE_DIMENSION,						false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,		null0 },
 		{ cgc_dir,					3,			false,		_ICODE_DIR,								false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,		null0 },
 		{ cgc_directory,			9,			false,		_ICODE_DIRECTORY,						false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,		null0 },

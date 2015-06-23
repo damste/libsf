@@ -406,6 +406,12 @@ struct SVariable
 	SVariable*	indirect;												// If non-NULL, and not an object or thisCode, this variable is an indirect reference to an underlying variable.
 	bool		isVarAllocated;											// If true, this variable structure was allocated, and needs to be released upon delete.
 
+	// User-defined data (not automatically maintained by VJr's variable-handling algorithms)
+	union {
+		sptr	_meta;													// Accessible as an integer for testing values
+		void*	meta;													// Any meta data for this variable.  Not explicitly maintained by VJr, but is up to whatever uses it to maintain the data set/linked here
+	};
+
 	// If this variable is related to a component, indicate it here
 	SComp*		compRelated;											// Can vary regularly, but when available at compile time and in immediate scope, relates to a component
 

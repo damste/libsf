@@ -1,0 +1,115 @@
+May.17.2015
+-----------
+
+The general compilation model is comprised of five layers, and uses the LiveCode Debug Info
+file (output.lcdi) for storing the debugging info:
+
+(1) .rdc + creates .lcdi -- Front-end source code
+(2) .rdci + updates .lcdi -- Intermediate language
+(3) .rdca + updates .lcdi -- Assembly
+(4) .rdco + updates .lcdi -- Object file
+// Everything up to these four levels is language- or CPU-specific only.
+(5) varies + updates .lcdi -- Binary output
+// The physical output is OS-specific.
+
+The general translation form employed for LiveCode from layer to layer
+relates to the same standard model, a BXML file stored in output.lcdi:
+
+<livecode>
+
+<!-- every source file that is part of the project is included here, and given a fileid -->
+	<file name="pathname.ext" type="source" id=1234/>
+
+<!-- data is included for everything that is a data variable in a source code file -->
+	<data>
+		<structs>
+			<struct id=123 name="abc" type="struct|class">
+				<el id=123 name="abc" type="u32" o=0 l=4/>
+			</struct>
+		</structs>
+		<vars>
+			<baked>
+				<ro>
+				</ro>
+				<rw>
+					<var id=123 name="abc" size=1234>
+						<init id=123 o=123 l=16 raw:4=1234/>
+					</var>
+				</rw>
+			</baked>
+			<dynamic>
+			</dynamic>
+		</vars>
+	</data>
+
+<!-- sourcecode is included if full LiveCode Debug Info -->
+	<sourcecode fileid=1234>
+		<line id=123 line=1 sha1:20=... code:N=.../>
+	</sourcecode>
+
+<!-- modules are included for everything that is a block of code within the source code file -->
+	<modules>
+		<module id=123 fileid=123 name="abc" parentid=123 type="function|flowof" startline=5 endline=93>
+		
+			<returns>
+				<!-- order indicates left-to-right definition in source code -->
+				<!-- aliases and unions are expanded as duplicates of the same offset and length -->
+				<return id=123 name="abc" type="u32" o=0 l=4 default=3/>
+			</returns>
+			
+			<params>
+				<!-- order indicates left-to-right definition in source code -->
+				<!-- aliases and unions are expanded as duplicates of the same offset and length -->
+				<param id=123 name="abc" type="u32" o=0 l=4 init=0/>
+			</params>
+			
+			<locals>
+				<!-- order relates to left-to-right definition in source code -->
+				<!-- aliases and unions are expanded as duplicates of the same offset and length -->
+				<local id=123 name="abc" type="u32" o=0 l=4 init=0/>
+			</locals>
+			
+			<dlocals>
+				<!-- order relates to left-to-right definition in source code -->
+				<!-- aliases and unions are explicitly named -->
+				<dlocal id=123 name="abc" type="u32" o=0 l=4 init=0>
+					<alias id=123 name="abc"/>
+				</dlocal>
+			</dlocals>
+			
+			<ports>
+				<port id=123 name="abc" startline=14/>
+				<port id=123 name="abc" startline=14/>
+			</ports>
+			
+			<purposes>
+				<purpose id=123 name="abc" startline=31/>
+			</purposes>
+			
+			<markers>
+				<marker id=123 name="abc" lineid=125/>
+			</markers>
+			
+			<injection>
+				<!-- code injected automatically by the compiler to comply with source code demands -->
+				<pre>
+					<il/><asm/><oasm/><obj/>
+				</pre>
+				<post>
+					<il/><asm/><oasm/><obj/>
+				</post>
+			</injection>
+			
+			<body>
+				<line idline=125>
+					<il/><asm/><oasm/><obj/>
+					<!-- il   -- for intermediate language -->
+					<!-- asm  -- for assembly source code -->
+					<!-- oasm -- if present, optimized assembly source code -->
+					<!-- obj  -- object code -->
+				</line>
+			</body>
+
+		</module>
+	</modules>
+</livecode>

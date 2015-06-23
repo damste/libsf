@@ -462,6 +462,8 @@ struct SBasePropMap;
 	const s8		cgc_setCurrency[]										= "currency";
 	const s8		cgc_setDate[]											= "date";
 	const s8		cgc_setDecimals[]										= "decimals";
+	const s8		cgc_setDevice[]											= "device";
+	const s8		cgc_setDeviceFilename[]									= "devicefilename";
 	const s8		cgc_setExclusive[]										= "exclusive";
 	const s8		cgc_setFocusHighlightBorderPixels[]						= "focusHighlightBorderPixels";
 	const s8		cgc_setFocusHighlightPixels[]							= "focusHighlightPixels";
@@ -863,46 +865,48 @@ struct SBasePropMap;
 	const u32		_INDEX_SET_CURRENCY										= 357;
 	const u32		_INDEX_SET_DATE											= 358;
 	const u32		_INDEX_SET_DECIMALS										= 359;
-	const u32		_INDEX_SET_EXCLUSIVE									= 360;
-	const u32		_INDEX_SET_FOCUS_HIGHLIGHT_BORDER_PIXELS				= 361;
-	const u32		_INDEX_SET_FOCUS_HIGHLIGHT_PIXELS						= 362;
-	const u32		_INDEX_SET_HONOR_BARRIERS								= 363;
-	const u32		_INDEX_SET_HOURS										= 364;
-	const u32		_INDEX_SET_IMPLICIT_PARAMS								= 365;
-	const u32		_INDEX_SET_INDEX_META_DATA								= 366;
-	const u32		_INDEX_SET_INITIALIZE_DEFAULT_VALUE						= 367;
-	const u32		_INDEX_SET_LANGUAGE										= 368;
-	const u32		_INDEX_SET_LOAD_RECEIVES_PARAMS							= 369;
-	const u32		_INDEX_SET_LOCK_SCREEN									= 370;
-	const u32		_INDEX_SET_LOGICAL										= 371;
-	const u32		_INDEX_SET_MARK											= 372;
-	const u32		_INDEX_SET_NAMING_CONVENTIONS							= 373;
-	const u32									_INDEX_SET_NCSET_START	= 374;
-	const u32		_INDEX_SET_NCSET_ALPHA_IS_OPAQUE						= 374;
-	const u32		_INDEX_SET_NCSET_CEILING_FLOOR							= 375;
-	const u32		_INDEX_SET_NCSET_DATETIME_MILLISECONDS					= 376;
-	const u32		_INDEX_SET_NCSET_OPTIMIZE_TABLE_WRITES					= 377;
-	const u32		_INDEX_SET_NCSET_OPTIMIZE_VARIABLES						= 378;
-	const u32		_INDEX_SET_NCSET_SIGN_SIGN2								= 379;
-	const u32									_INDEX_SET_NCSET_END	= 379;
-	const u32		_INDEX_SET_POINT										= 380;
-	const u32		_INDEX_SET_PRECISIONBFP									= 381;		// numeric, defaults to 256
-	const u32		_INDEX_SET_PRECISIONBI									= 382;		// numeric, defaults to 256
-	const u32		_INDEX_SET_REPROCESS									= 383;		// logical, or numeric (negative = attempts, positive = seconds)
-	const u32		_INDEX_SET_REPROCESSATTEMPTS							= 384;		// numeric, 30 by default, but can be changed with SET REPROCESSATTEMPTS TO 30
-	const u32		_INDEX_SET_REPROCESSINTERVAL							= 385;		// numeric, 1000 by default indicating 1000 milliseconds, or 1 second
-	const u32		_INDEX_SET_REPROCESS_SYSTEM								= 386;		// logical, or numeric (negative = attempts, positive = seconds)
-	const u32		_INDEX_SET_SEPARATOR									= 387;
-	const u32		_INDEX_SET_SLOPPY_PRINTING								= 388;
-	const u32		_INDEX_SET_STICKY_PARAMETERS							= 389;
-	const u32		_INDEX_SET_TABLE_EQUAL_ASSIGNMENTS						= 390;
-	const u32		_INDEX_SET_TABLE_OBJECTS								= 391;
-	const u32		_INDEX_SET_TALK											= 392;
-	const u32		_INDEX_SET_TIME											= 393;
-	const u32		_INDEX_SET_UDFPARMS									= 394;
-	const u32		_INDEX_SET_UNLOAD_RECEIVES_PARAMS						= 395;
-	const u32		_INDEX_SET_VARIABLES_FIRST								= 396;
-	const u32		_INDEX_SET_VECSEPARATOR									= 397;
+	const u32		_INDEX_SET_DEVICE										= 360;
+	const u32		_INDEX_SET_DEVICE2										= 361;
+	const u32		_INDEX_SET_EXCLUSIVE									= 362;
+	const u32		_INDEX_SET_FOCUS_HIGHLIGHT_BORDER_PIXELS				= 363;
+	const u32		_INDEX_SET_FOCUS_HIGHLIGHT_PIXELS						= 364;
+	const u32		_INDEX_SET_HONOR_BARRIERS								= 365;
+	const u32		_INDEX_SET_HOURS										= 366;
+	const u32		_INDEX_SET_IMPLICIT_PARAMS								= 367;
+	const u32		_INDEX_SET_INDEX_META_DATA								= 368;
+	const u32		_INDEX_SET_INITIALIZE_DEFAULT_VALUE						= 369;
+	const u32		_INDEX_SET_LANGUAGE										= 370;
+	const u32		_INDEX_SET_LOAD_RECEIVES_PARAMS							= 371;
+	const u32		_INDEX_SET_LOCK_SCREEN									= 372;
+	const u32		_INDEX_SET_LOGICAL										= 373;
+	const u32		_INDEX_SET_MARK											= 374;
+	const u32		_INDEX_SET_NAMING_CONVENTIONS							= 375;
+	const u32									_INDEX_SET_NCSET_START	= 376;
+	const u32		_INDEX_SET_NCSET_ALPHA_IS_OPAQUE						= 376;
+	const u32		_INDEX_SET_NCSET_CEILING_FLOOR							= 377;
+	const u32		_INDEX_SET_NCSET_DATETIME_MILLISECONDS					= 378;
+	const u32		_INDEX_SET_NCSET_OPTIMIZE_TABLE_WRITES					= 379;
+	const u32		_INDEX_SET_NCSET_OPTIMIZE_VARIABLES						= 380;
+	const u32		_INDEX_SET_NCSET_SIGN_SIGN2								= 381;
+	const u32									_INDEX_SET_NCSET_END	= 381;
+	const u32		_INDEX_SET_POINT										= 382;
+	const u32		_INDEX_SET_PRECISIONBFP									= 383;		// numeric, defaults to 256
+	const u32		_INDEX_SET_PRECISIONBI									= 384;		// numeric, defaults to 256
+	const u32		_INDEX_SET_REPROCESS									= 385;		// logical, or numeric (negative = attempts, positive = seconds)
+	const u32		_INDEX_SET_REPROCESSATTEMPTS							= 386;		// numeric, 30 by default, but can be changed with SET REPROCESSATTEMPTS TO 30
+	const u32		_INDEX_SET_REPROCESSINTERVAL							= 387;		// numeric, 1000 by default indicating 1000 milliseconds, or 1 second
+	const u32		_INDEX_SET_REPROCESS_SYSTEM								= 388;		// logical, or numeric (negative = attempts, positive = seconds)
+	const u32		_INDEX_SET_SEPARATOR									= 389;
+	const u32		_INDEX_SET_SLOPPY_PRINTING								= 390;
+	const u32		_INDEX_SET_STICKY_PARAMETERS							= 391;
+	const u32		_INDEX_SET_TABLE_EQUAL_ASSIGNMENTS						= 392;
+	const u32		_INDEX_SET_TABLE_OBJECTS								= 393;
+	const u32		_INDEX_SET_TALK											= 394;
+	const u32		_INDEX_SET_TIME											= 395;
+	const u32		_INDEX_SET_UDFPARMS										= 396;
+	const u32		_INDEX_SET_UNLOAD_RECEIVES_PARAMS						= 397;
+	const u32		_INDEX_SET_VARIABLES_FIRST								= 398;
+	const u32		_INDEX_SET_VECSEPARATOR									= 399;
 
 
 
@@ -935,6 +939,7 @@ struct SBasePropMap;
 	bool					iObjProp_setOnOff						(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
 	bool					iObjProp_setDate						(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
 	bool					iObjProp_setDecimals					(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setDevice						(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
 	bool					iObjProp_setInteger						(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
 	bool					iObjProp_setIneger_12_24				(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
 	bool					iObjProp_setInteger_bits				(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
@@ -945,15 +950,17 @@ struct SBasePropMap;
 	bool					iObjProp_setReprocess					(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
 	bool					iObjProp_setTime						(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
 	bool					iObjProp_setUdfParams					(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setCharacter					(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
 	bool					iObjProp_setCharacter1					(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
 
 	// Used for SET("xyz")
-	SVariable* 				iObjProp_getOnOff						(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
 	SVariable* 				iObjProp_getDate						(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
+	SVariable*				iObjProp_getDevice						(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
 	SVariable* 				iObjProp_getInteger						(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
 	SVariable* 				iObjProp_getLanguage					(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
 	SVariable* 				iObjProp_getLogical						(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
 	SVariable* 				iObjProp_getLogicalX					(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
+	SVariable* 				iObjProp_getOnOff						(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
 	SVariable* 				iObjProp_getReprocess					(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
 	SVariable* 				iObjProp_getTime						(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
 	SVariable*				iObjProp_getUdfParams					(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
@@ -1418,6 +1425,8 @@ struct SBasePropMap;
 		{	_INDEX_SET_CURRENCY,							_ICODE_CURRENCY,					cgc_setCurrency,					sizeof(cgc_setCurrency) - 1,						_VAR_TYPE_CHARACTER,		0, 0, 0,		(uptr)&cgcDollarSign[0]			,NULL	},	// Currency symbol for display
 		{	_INDEX_SET_DATE,								_ICODE_DATE,						cgc_setDate,						sizeof(cgc_setDate) -1,								_VAR_TYPE_S32,				0, 0, 0,		_SET_DATE_AMERICAN				,NULL	},	// See the _SET_DATE_* constants
 		{	_INDEX_SET_DECIMALS,							_ICODE_DECIMALS,					cgc_setDecimals,					sizeof(cgc_setDecimals) - 1,						_VAR_TYPE_S32,				0, 0, 0,		2								,NULL	},	// Number of decimals
+		{	_INDEX_SET_DEVICE,								_ICODE_DEVICE,						cgc_setDevice,						sizeof(cgc_setDevice) - 1,							_VAR_TYPE_S32,				0, 0, 0,		_SET_DEVICE_SCREEN				,NULL	},	// See the _SET_DEVICE_* constants (uses also _INDEX_SET_DEVICE2 for filename)
+		{	_INDEX_SET_DEVICE2,								_ICODE_DEVICE_FILENAME,				cgc_setDeviceFilename,				sizeof(cgc_setDeviceFilename) - 1,					_VAR_TYPE_CHARACTER,		0, 0, 0,		(uptr)&cgcNullString			,NULL	},	// Extra data for _INDEX_SET_DEVICE if type=2 file, holds the fully qualified pathname
 		{	_INDEX_SET_EXCLUSIVE,							_ICODE_EXCLUSIVE,					cgc_setExclusive,					sizeof(cgc_setExclusive) - 1,						_VAR_TYPE_LOGICAL,			0, 0, 0,		_LOGICAL_TRUE					,NULL	},	// .t.=exclusive access, .f.=shared access
 		{	_INDEX_SET_FOCUS_HIGHLIGHT_BORDER_PIXELS,		_ICODE_FOCUSHIGHLIGHTBORDERPIXELS,	cgc_setFocusHighlightBorderPixels,	sizeof(cgc_setFocusHighlightBorderPixels) -1,		_VAR_TYPE_S32,				0, 0, 0,		0								,NULL	},	// Number of pixels between the object and the focus highlight border
 		{	_INDEX_SET_FOCUS_HIGHLIGHT_PIXELS,				_ICODE_FOCUSHIGHLIGHTPIXELS,		cgc_setFocusHighlightPixels,		sizeof(cgc_setFocusHighlightPixels) - 1,			_VAR_TYPE_S32,				0, 0, 0,		4								,NULL	},	// Number of pixels thick the focus highlight border is
@@ -3650,6 +3659,8 @@ struct SBasePropMap;
 		{	_INDEX_SET_CURRENCY,						0, (uptr)&iObjProp_setCharacter1,	0	},		// character
 		{	_INDEX_SET_DATE,							0, (uptr)&iObjProp_setDate,			(uptr)&iObjProp_getDate },		// s32
 		{	_INDEX_SET_DECIMALS,						0, (uptr)&iObjProp_setDecimals,		(uptr)&iObjProp_getInteger },	// s32
+		{	_INDEX_SET_DEVICE,							0, (uptr)&iObjProp_setDevice,		(uptr)&iObjProp_getDevice },	// s32 for device, if filename specified uses _SET_DEVICE2 to hold filename
+		{	_INDEX_SET_DEVICE2,							0, (uptr)&iObjProp_setCharacter,	0	},		// character
 		{	_INDEX_SET_EXCLUSIVE,						0, (uptr)&iObjProp_setOnOff,		(uptr)&iObjProp_getOnOff },		// bool
 		{	_INDEX_SET_FOCUS_HIGHLIGHT_BORDER_PIXELS,	0, (uptr)&iObjProp_setInteger,		(uptr)&iObjProp_getInteger },	// s32
 		{	_INDEX_SET_FOCUS_HIGHLIGHT_PIXELS,			0, (uptr)&iObjProp_setInteger,		(uptr)&iObjProp_getInteger },	// s32

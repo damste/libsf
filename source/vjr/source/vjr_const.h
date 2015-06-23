@@ -576,6 +576,15 @@ typedef SEM**		SEMpp;
 
 
 //////////
+// Constants for device settings
+//////
+	const u32			_SET_DEVICE_SCREEN					= 0;			// Output is to screen
+	const u32			_SET_DEVICE_PRINTER_NO_PROMPT		= 1;			// Output is to printer, do not prompt for printer
+	const u32			_SET_DEVICE_PRINTER_PROMPT			= 2;			// Output is to printer, prompt for printer
+	const u32			_SET_DEVICE_FILE					= 3;			// Output is to file, use _INDEX_SET_DEVICE2 for filename
+
+
+//////////
 // Event signals
 // See:  SEvents
 //////

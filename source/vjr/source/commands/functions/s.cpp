@@ -542,13 +542,15 @@
 	void function_set(SThisCode* thisCode, SFunctionParms* rpar)
 	{
 		SVariable*		varIdentifier	= rpar->params[0];
-//		SVariable*		varExtraInfo	= rpar->params[1];
+		SVariable*		varExtraInfo	= rpar->params[1];
 
-		s32				lnIndex;
+		s32				lnIndex, lnValue;
+		bool			llProcessed;
 		SBasePropMap*	baseProp;
 		SObjPropMap*	objProp;
 		SVariable*		var;
-		SVariable*		result;
+		bool			error;
+		u32				errorNum;
 
 
 		//////////
@@ -591,32 +593,98 @@
 
 
 					//////////
-					// If there's a getter, translate the actual variable into its displayable form
+					// If they specified a second parameter, it can extract different information
 					//////
-						if (objProp->_getterObject_get)
+						llProcessed = false;
+						if (iVariable_isValid(varExtraInfo))
 						{
-							rpar->returns[0] = objProp->getterObject_get(thisCode, var, iVariable_getRelatedComp(thisCode, varIdentifier), false);
-							return;
+							if (iVariable_isTypeNumeric(varExtraInfo))
+							{
+								// Grab the value
+								lnValue = iiVariable_getAs_s32(thisCode, varExtraInfo, false, &error, &errorNum);
+								if (error)
+								{
+									iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varExtraInfo), false);
+									return;
+								}
+
+								// Find out what they're searching for
+								switch (lnValue)
+								{
+									case 1:
+										if (objProp->index == _INDEX_SET_DEVICE)
+										{
+											// SET("device", 1) ... they want to know the filename if it's SET DEVICE TO FILE
+											if (iiVariable_getAs_s32(thisCode, var, false, &error, &errorNum) == _SET_DEVICE_FILE)
+											{
+												// We have processed into this option
+												llProcessed = true;
+
+												// Grab the _INDEX_SET_DEVICE2 entry for its filename
+												var = iObjProp_get_variable_byIndex(thisCode, _settings, _INDEX_SET_DEVICE2, &baseProp, &objProp);
+												if (!var || !baseProp || !objProp)
+												{
+													// Should never happen, if it does it means something's not setup properly in the properties, or there's a memory corruption
+													iError_signal(thisCode, _ERROR_INTERNAL_ERROR, iVariable_getRelatedComp(thisCode, varIdentifier), false, NULL, false);
+													return;
+												}
+												// Note:  var is the actual _settings variable, so a copy must be made if returning this value.
+												rpar->returns[0] = iVariable_copy(thisCode, var, false);
+											}
+										}
+										break;
+
+									case 2:
+										// Not currently used, but it is defined
+										break;
+
+									case 3:
+										// Not currently used, but it is defined
+										break;
+
+									case 4:
+										// Not currently used, but it is defined
+										break;
+								}
+
+							} else if (iVariable_isTypeCharacter(varExtraInfo)) {
+								// SET("abc", cExpression)
+								// Not currently used, but it is defined
+
+							} else {
+								iError_reportByNumber(thisCode, _ERROR_SYNTAX, iVariable_getRelatedComp(thisCode, varExtraInfo), false);
+								return;
+							}
 						}
 
 
 					//////////
-					// If we get here, return a copy of the value
+					// If there's a getter, translate the actual variable into its displayable form
 					//////
-						result = iVariable_copy(thisCode, var, false);
+						if (!llProcessed)
+						{
+							if (objProp->_getterObject_get)
+							{
+								// Get the displayable form
+								rpar->returns[0] = objProp->getterObject_get(thisCode, var, iVariable_getRelatedComp(thisCode, varIdentifier), false);
+
+							} else {
+								// If we get here, return a copy of the value
+								rpar->returns[0] = iVariable_copy(thisCode, var, false);
+							}
+						}
 
 
 					//////////
 					// Are we good?
 					//////
-						if (!result)
+						if (!rpar->returns[0])
 							iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_getRelatedComp(thisCode, varIdentifier), false);
 
 
 					//////////
 					// Indicate the result
 					//////
-						rpar->returns[0] = result;
 						return;
 
 				}
