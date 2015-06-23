@@ -226,7 +226,8 @@ RDC Specifications Document
 	iterate			-- Repeat a task a specified number of times
 	for				-- A for loop
 	unless			-- A conditional test on false
-	roll			-- Executes as many of the conditionals as possible (until one evaluates to false)
+	dive			-- Executes as many of the conditionals as possible (until one evaluates to false)
+	roll			-- Executes all conditionals
 	if				-- A conditional test on true
 	else			-- An else clause on an if or unless
 	elseif			-- An elseif clause on an
@@ -1398,23 +1399,24 @@ The address of literals will be made available.
 
 
 Dec.27.2014
-A new instruction called roll() executes as many as possible though the conditionals
+A new instruction called dive() executes as many as possible though the conditionals
 in a type of logic test, but there need not be a block for entry based on the results
-of the logic test.  Instead, roll() can simply execute and continue on.
+of the logic test.  Instead, dive() can simply execute and continue on.
 
-In order to enter the block, roll() must be explicitly followed by braces, and there
+In order to enter the block, dive() must be explicitly followed by braces, and there
 is no single-line form as with if().
 
-roll() was created to allow rolling processing through each logical item until one
-fails, and then it will, based on its form, either stop processing, assign NULLs,
-or assign a count, or all three.
+dive() was created to allow a type of successive processing, one which iteates through
+each logical item until one fails, and then it will, based on its form, either stop
+processing, assign NULLs, or assign a count, or all three.
 
-roll() is used when a variable number of components exist, and each one in succession
-is dependent upon the prior result, which causes it to roll through the calculation.
+dive() is used when a variable number of components exist, and each one in succession
+is dependent upon the prior result, which causes it to dive through the calculation
+until it can go no further.
 
-roll() exists with three components (like a for()):
+dive() exists with three components (like a for()):
 
-	roll(assignment; conditional; count);
+	dive(assignment; conditional; count);
 
 These forms take on specific meaning when present. The assignment is an auto-
 assignment given for all values which exist in the x=y form after the first failure
@@ -1423,11 +1425,25 @@ anything in a normal if() statement. And the count will be used to indicated how
 many were processed through the conditionals (including non-assignments) before
 the first failure was encountered.
 
-roll() provides a stand-alone syntax in which no semicolons are present. If any
+dive() provides a stand-alone syntax in which no semicolons are present. If any
 semicolons are used, all three must be present.
 
+A version of dive() exists which will go through all conditionals. This version
+is called roll(). It is used to roll through all conditionals regardless of
+previous failures, and should only be used when each result is not dependent upon
+the prior succeeding.
+
+Internally, dive() is used to navigate an object structure, for example, as in:
+
+    a = obj->obj2->obj3->member();
+	
+By using dive(), recovery from traversal errors is possible for use with
+immediate (|meia|) casks, as in:
+
+    a = obj->obj2->obj3->member() (|meia|onFailure||);
+
 -----
-Example operation using INVALID_PTR assignment, and storing a count:
+Example dive() operation using INVALID_PTR assignment, and storing a count:
 
 	lnCount	= 0;
     c1		= f(cRoot);
@@ -1460,15 +1476,52 @@ Example operation using INVALID_PTR assignment, and storing a count:
 	}
 
 -----
-Using roll():
+Using dive():
 
-	roll (INVALID_PTR; (c1 = f(cRoot)) && (c2 = f(c1)) && (c3 = f(c2)); lnCount)
+	dive (INVALID_PTR; c1 = f(cRoot), c2 = f(c1), c3 = f(c2); lnCount)
 	{
 		// Only entered if the logic all passed
 		some_operation();
 	}
 
 -----
+Using dive() as a stand-alone without some_operation() being required:
+
+	dive (INVALID_PTR; c1 = f(cRoot), c2 = f(c1), c3 = f(c2); lnCount);
+
+-----
+Example roll() operation using INVALID_PTR assignment, and storing a count:
+
+	lnCount	= 0;
+    c1 = f1();
+	if (c1)		++lnCount;
+	else		c1 = INVALID_PTR;
+	
+	c2 = f2();
+	if (c2)		++lnCount;
+	else		c2 = INVALID_PTR;
+	
+	c3 = f3();
+	if (c3)		++lnCount;
+	else		c3 = INVALID_PTR;
+
+	some_operation();
+
+-----
+Using roll():
+
+	roll (INVALID_PTR; c1 = f1(), c2 = f2(), c3 = f3(); lnCount)
+	{
+		// Always entered
+		some_operation();
+	}
+
+-----
 Using roll() as a stand-alone without some_operation() being required:
 
-	roll (INVALID_PTR; (c1 = f(cRoot)) && (c2 = f(c1)) && (c3 = f(c2)); lnCount);
+	roll (INVALID_PTR; c1 = f1(), c2 = f2(), c3 = f3(); lnCount);
+
+-----
+Jun.23.2015 -- I may add explicit MEIA support to this function at some point.
+               However, for the time being, each expression can use its own
+               (|meia|) cask, as well as (|meta|) and (|mefa|) casks.
