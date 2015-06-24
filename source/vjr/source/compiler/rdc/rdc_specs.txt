@@ -189,6 +189,7 @@ RDC Specifications Document
 	#warning		-- Displays an explicit warning at the indicated location at compile time
 	#error			-- Displays an explicit error at the indicated location at compile time
 	#meia			-- Triggers an explicit inquiry at the indicated location at runtime
+	#stop			-- Stops compilation with an optional stop code (#stop Nnn)
 	typedef			-- Typedefs one type to another name
 
 	struct			-- A structure definition
