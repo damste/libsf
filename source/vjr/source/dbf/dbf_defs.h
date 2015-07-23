@@ -259,11 +259,14 @@ struct SFieldRecord2;
 	void				iiUpperCase										(u8* cptr);
 	void				iiLowerCase										(u8* cptr);
 	u8					iiLowerCase_char								(u8 c);
-	u32					iiBswap32										(u32 tnBigEndian);		// Big-endian to little-endian
-	u64					iiBswap64										(u64 tnBigEndian);		// Big-endian to little-endian
+	u32					iiSwapEndian32									(u32 tnEndianIn);		// Swap endian
+	u64					iiSwapEndian64									(u64 tnEndianIn);		// Swap endian
 	void				iiShiftBlockRight								(u8* data, u32 tnBytes, s32 tnBits);
 	void				iiPtrSwap										(void** p1, void** p2);
 	u8*					iResetThenCopyString							(u8* tcDest, s32 tnDestLength, u8* tcSource, s32 tnSourceLength);
+	u8*					iResetThenCopyString							(u8* tcDest, s32 tnDestLength, u8 lcResetChar, u8* tcSource, s32 tnSourceLength);
+	cs8*				iiTwoChoice										(s8* tcDest, bool tlTestValue, cs8* tcIfTrue, cs8* tcIfFalse);
+
 
 	// Julian date support
 	u32					iiJulianDayNumber_fromYyyyMmDd_s8				(u8* year4,  u8* month2,  u8* day2);

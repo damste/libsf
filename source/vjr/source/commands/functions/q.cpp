@@ -109,7 +109,7 @@
 //	  QUARTER( ) returns the quarter of the year in which a date occurs, and the values can be 1, 2, 3, or 4.
 //
 //////
-	void function_quarter(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_quarter(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varParam = rpar->params[0];
 		SVariable* varMonth = rpar->params[1];

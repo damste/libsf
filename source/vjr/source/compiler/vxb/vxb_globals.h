@@ -1111,6 +1111,14 @@
 		{ cgc_y_dots,				3,			false,		_ICODE_YET_ANOTHER,						false,				_ICAT_GENERIC,		&colorSynHi_logical,		true,						null0,		null0 },
 		{ cgc_z_dots,				3,			false,		_ICODE_ZATS_ALL_FOLKS,					false,				_ICAT_GENERIC,		&colorSynHi_logical,		true,						null0,		null0 },
 
+		// DLL options (Kernel32.dll, Gdi32.dll, User32.dll, Mpr.dll, and Advapi32.dll)
+		{ cgc_win32api,				8,			false,		_ICODE_WIN32API,						false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,		null0 },
+		{ cgc_kernel32,				8,			false,		_ICODE_KERNEL32,						false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,		null0 },
+		{ cgc_gdi32,				5,			false,		_ICODE_GDI32,							false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,		null0 },
+		{ cgc_user32,				6,			false,		_ICODE_USER32,							false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,		null0 },
+		{ cgc_mpr,					3,			false,		_ICODE_MPR,								false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,		null0 },
+		{ cgc_advapi32,				8,			false,		_ICODE_ADVAPI32,						false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,		null0 },
+
 		// NCSET() specific
 		{ cgc_ncset_alphaisopaque,			13,		false,	_ICODE_NCSETALPHAISOPAQUE,				false,				_ICAT_GENERIC,		&colorSynHi_logical,		true,						null0,		null0 },
 		{ cgc_ncset_ceilingfloor,			12,		false,	_ICODE_NCSETCEILINGFLOOR,				false,				_ICAT_GENERIC,		&colorSynHi_logical,		true,						null0,		null0 },

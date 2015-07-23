@@ -106,7 +106,7 @@
 // Returns:
 //    f64		-- A floating point value containing the number of one billionths of a second which have gone by this second
 //////
-	void function_nanosecond(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_nanosecond(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		ifunction_xseconds_common(thisCode, rpar, _XSECONDS_FUNCTION_NANOSECOND);
 	}
@@ -136,7 +136,7 @@
 // Returns:
 //    s32			-- The number of times
 //////
-	void function_ncset(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_ncset(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable*	varIndex	= rpar->params[0];
 		SVariable*	varP1		= rpar->params[1];
@@ -318,7 +318,7 @@
 //    M.dSecondNoNull=date()
 //    ? NVL(FirstIsNull, M.dSecondNoNull)	&& Display value of M.dSecondNoNull
 //////
-	void function_nvl(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_nvl(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable*	varExpr1 = rpar->params[0];
 		SVariable*	varExpr2 = rpar->params[1];

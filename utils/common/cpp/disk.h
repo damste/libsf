@@ -151,8 +151,9 @@
 // Forward declarations
 //////
 	s32				iDisk_open								(cs8* tcPathname, s32 tnType, s32 tnShare, bool tlCreateIfCannotOpen);
-	s32				iDisk_openShared						(cs8* tcPathname, s32 tnType, s32 tnShare, bool tlCreateIfCannotOpen);
-	s32				iDisk_openExclusive						(cs8* tcPathname, s32 tnType, s32 tnShare, bool tlCreateIfCannotOpen);
+	s32				iDisk_openAs							(cs8* tcPathname, s32 tnType, bool tlCreateIfCannotOpen, bool tlExclusive);
+	s32				iDisk_openShared						(cs8* tcPathname, s32 tnType, bool tlCreateIfCannotOpen);
+	s32				iDisk_openExclusive						(cs8* tcPathname, s32 tnType, bool tlCreateIfCannotOpen);
 	s32				iDisk_close								(s32 tnFile);
 	s64				iDisk_getFileSize						(s32 tnFile);
 	s64				iDisk_getFilePosition					(s32 tnFile);

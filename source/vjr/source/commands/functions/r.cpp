@@ -116,7 +116,7 @@
 //	x = RANGER(x, 20, 80)          && Can be used as assignment
 //	? x							   && Displays 20
 //////
-	void function_ranger(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_ranger(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varExpr	= rpar->params[0];
 		SVariable* varMin	= rpar->params[1];
@@ -127,7 +127,7 @@
 		ifunction_ranger_common(thisCode, rpar, varExpr, varMin, varMax, NULL);
 	}
 
-	void function_ranger2(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_ranger2(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable*	varExpr	= rpar->params[0];
 		SVariable*	varMin	= rpar->params[1];
@@ -150,14 +150,14 @@
 				iVariable_set(thisCode, varExpr, result);
 	}
 
-	void ifunction_ranger_common(SThisCode* thisCode, SFunctionParms* rpar, SVariable* varExpr, SVariable* varMin, SVariable* varMax, bool* tlRanged)
+	void ifunction_ranger_common(SThisCode* thisCode, SFunctionParams* rpar, SVariable* varExpr, SVariable* varMin, SVariable* varMax, bool* tlRanged)
 	{
 		SVariable*		tempMin;
 		SVariable*		tempMax;
 		SVariable*		tempResult1;
 		SVariable*		tempResult2;
 		SVariable*		result;
-		SFunctionParms	lsrpar;
+		SFunctionParams	lsrpar;
 
 
 
@@ -321,7 +321,7 @@
 // Returns:
 //    Character		-- The string of the input replicated N times
 //////
-	void function_replicate(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_replicate(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable*	varString	= rpar->params[0];
 		SVariable*	varCount	= rpar->params[1];
@@ -415,7 +415,7 @@
 //    Numeric		-- Constructed RGB() integer
 //
 //////
-	void function_rgb(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_rgb(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varRed	= rpar->params[0];
 		SVariable* varGrn	= rpar->params[1];
@@ -426,7 +426,7 @@
 		ifunction_rgba_common(thisCode, rpar, varRed, varGrn, varBlu, NULL);
 	}
 
-	void ifunction_rgba_common(SThisCode* thisCode, SFunctionParms* rpar, SVariable* varRed, SVariable* varGrn, SVariable* varBlu, SVariable* varAlp)
+	void ifunction_rgba_common(SThisCode* thisCode, SFunctionParams* rpar, SVariable* varRed, SVariable* varGrn, SVariable* varBlu, SVariable* varAlp)
 	{
 		f32			lfRed, lfGrn, lfBlu, lfAlp;
 		s32			lnRed, lnGrn, lnBlu, lnAlp;
@@ -654,7 +654,7 @@
 //    Numeric		-- Constructed RGBA() integer
 //
 //////
-	void function_rgba(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_rgba(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varRed	= rpar->params[0];
 		SVariable* varGrn	= rpar->params[1];
@@ -689,7 +689,7 @@
 // Returns:
 //    Numeric	-- Input number converted to ASCII value number
 //////
-	void function_red(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_red(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varColor = rpar->params[0];
 
@@ -698,7 +698,7 @@
 		ifunction_color_common(thisCode, rpar, varColor, 0x000000ff, 0);
 	}
 
-	void ifunction_color_common(SThisCode* thisCode, SFunctionParms* rpar, SVariable* varColor, u32 tnMask, u32 tnShift)
+	void ifunction_color_common(SThisCode* thisCode, SFunctionParams* rpar, SVariable* varColor, u32 tnMask, u32 tnShift)
 	{
 		u32			lnColor;
 		bool		error;
@@ -778,7 +778,7 @@
 // Returns:
 //    Character		-- The string of the right N characters
 //////
-	void function_right(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_right(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable*	varString	= rpar->params[0];
 		SVariable*	varCount	= rpar->params[1];
@@ -881,7 +881,7 @@
 //    ? ROUND(53.213, 2)   && 53.21
 //    ? ROUND(532, -2)     && 500
 //////
-	void function_round(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_round(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable*	varNumber			= rpar->params[0];
 		SVariable*	varDecimalPlaces	= rpar->params[1];
@@ -1004,7 +1004,7 @@
 // Example:
 //    ? RTOD(PI())		&& Display 180.00
 //////
-    void function_rtod(SThisCode* thisCode, SFunctionParms* rpar)
+    void function_rtod(SThisCode* thisCode, SFunctionParams* rpar)
     {
 		SVariable* varNumber = rpar->params[0];
 
@@ -1036,7 +1036,7 @@
 // Returns:
 //    Character		-- The string with any trailing spaces removed
 //////
-	void function_rtrim(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_rtrim(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varString			= rpar->params[0];
 		SVariable* varCaseInsensitive	= rpar->params[1];

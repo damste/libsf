@@ -96,7 +96,7 @@
 		SVariable*		var;	// Ignore the GCC warning message here... I don't know why it's throwing a warning.  var is used correctly below.
 		SVariable*		varExisting;
 		SVariable*		varText;
-		SFunctionParms	lrpar;
+		SFunctionParams	lrpar;
 		SCommandData*	cmd;
 
 
@@ -154,7 +154,7 @@
 								// It is something like "? func(x)"
 								llManufactured = true;
 								memset(&lrpar, 0, sizeof(lrpar));
-								iEngine_get_functionResult(thisCode, compNext, 10, &lrpar);
+								iEngine_get_functionResult(thisCode, compNext, -1, &lrpar);
 								if (lrpar.error || !(var = lrpar.returns[0]))
 								{
 									// Unknown function, or parameters were not correct
@@ -667,7 +667,7 @@
 // Called to find the function, execute it, and return the result
 //
 //////
-	void iEngine_get_functionResult(SThisCode* thisCode, SComp* comp, s32 tnRcount, SFunctionParms* rpar)
+	void iEngine_get_functionResult(SThisCode* thisCode, SComp* comp, s32 tnRcount, SFunctionParams* rpar)
 	{
 		u32				lnI, lnParamsFound;
 		SFunctionData*	funcData;
@@ -711,7 +711,7 @@
 						//////
 							rpar->rmax		= funcData->max_rcount;
 							rpar->rmin		= funcData->req_rcount;
-							rpar->rcount	= tnRcount;
+							rpar->rcount	= ((tnRcount >= 0) ? min(tnRcount, _MAX_RETURN_COUNT) : rpar->rmax);
 							rpar->pcount	= lnParamsFound;
 
 
@@ -1077,7 +1077,7 @@
 // Called to obtain the parameters between the indicated parenthesis.
 //
 //////
-	bool iiEngine_getParametersBetween(SThisCode* thisCode, SFunctionData* funcData, SComp* compLeftParen, u32* paramsFound, u32 requiredCount, u32 maxCount, SFunctionParms* rpar)
+	bool iiEngine_getParametersBetween(SThisCode* thisCode, SFunctionData* funcData, SComp* compLeftParen, u32* paramsFound, u32 requiredCount, u32 maxCount, SFunctionParams* rpar)
 	{
 		u32			lnI, lnParamCount;
 		bool		llManufactured, llByRef, llUdfParamsByRef;

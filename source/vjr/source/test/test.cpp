@@ -87,7 +87,7 @@
 // Added to allow a simple place to execute various tests.
 //
 //////
-	void iTest1(SThisCode* thisCode, SFunctionParms* rpar)
+	void iTest1(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		s32				lnI;
 		union {

@@ -105,7 +105,7 @@
 // Returns:
 //		Character		-- The drive component of the pathname, or the current drive if it wasn't specified, ("c:" of "c:\path\to\sample.txt")
 //////
-	void function_justdrive(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_justdrive(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable*	varString = rpar->params[0];
 		u8*			ptr;
@@ -185,7 +185,7 @@
 // Returns:
 //		Character		-- The file extension component, or an empty string if one was not specified, ("txt" of "c:\path\to\sample.txt")
 //////
-	void function_justext(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_justext(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable*	varString = rpar->params[0];
 		s32			lnI, lnLength;
@@ -274,7 +274,7 @@
 // Returns:
 //		Character		-- The file name portion of the pathname ("sample.txt" of "c:\path\to\sample.txt")
 //////
-	void function_justfname(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_justfname(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable*	varString = rpar->params[0];
 		s32			lnI, lnLength;
@@ -366,7 +366,7 @@
 // Returns:
 //		Character		-- The file path of the pathname ("c:\path\to" of "c:\path\to\sample.txt")
 //////
-	void function_justpath(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_justpath(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable*	varString = rpar->params[0];
 		s32			lnLength;
@@ -458,7 +458,7 @@
 // Returns:
 //		Character		-- The file name portion of the pathname ("sample" of "c:\path\to\sample.txt")
 //////
-	void function_juststem(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_juststem(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable*	varString		= rpar->params[0];
 		SVariable*	varPostfixWidth	= rpar->params[1];

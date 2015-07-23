@@ -110,7 +110,7 @@
 //////
 	static cs8 cgGoMonthData[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
-	VOID function_gomonth(SThisCode* thisCode, SFunctionParms* rpar)
+	VOID function_gomonth(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varParam = rpar->params[0];
 		SVariable* varMonth = rpar->params[1];
@@ -298,7 +298,7 @@
 // Returns:
 //    The input pathname with the new stem.
 //////
-	void function_grayscale(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_grayscale(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varColor			= rpar->params[0];
 		SVariable* varPercentage	= rpar->params[1];
@@ -331,7 +331,7 @@
 // Returns:
 //    Numeric	-- Input number converted to ASCII value number
 //////
-	void function_grn(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_grn(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varColor = rpar->params[0];
 

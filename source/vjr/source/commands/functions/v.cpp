@@ -109,7 +109,7 @@
 //						Leading blanks are ignored.
 //						VAL( ) returns 0 if the first character of the character expression is not a number, a dollar sign ($), a plus sign (+), or minus sign (-).
 //////
-	void function_val(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_val(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable*	varExpr			= rpar->params[0];
 		SVariable*	varIgnoreChars	= rpar->params[1];
@@ -389,7 +389,7 @@
 // Returns:
 //    Character		-- A one-digit value indicating the type
 //////
-	void function_vartype(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_vartype(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* var		= rpar->params[0];
 		SVariable* varNull	= rpar->params[1];
@@ -476,7 +476,7 @@
 // Returns:
 //    Vector		-- The concatenated value, assumes the current SET VECSEPARATOR symbol
 //////
-	void function_vec(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_vec(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varV1 = rpar->params[0];
 
@@ -509,7 +509,7 @@
 // Returns:
 //     Numeric, the number of elements in the vector.
 //////
-	void function_veccount(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_veccount(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varVec = rpar->params[0];
 
@@ -545,7 +545,7 @@
 //    if varNewValue was specified, returns the new vector
 //    else                          returns the value of that element
 //////
-	void function_vecel(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_vecel(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varVec		= rpar->params[0];
 //		SVariable* varEl		= rpar->params[1];
@@ -582,7 +582,7 @@
 // Returns:
 //     The extracted element or elements as a vector.
 //////
-	void function_vecslice(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_vecslice(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 //		SVariable* varVec		= rpar->params[0];
 //		SVariable* varStartEl	= rpar->params[1];
@@ -618,7 +618,7 @@
 // Returns:
 //     A character string containing the vector values interspersed with symbol space, or the varSymbolOverride
 //////
-	void function_vecstr(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_vecstr(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 //		SVariable* varVec				= rpar->params[0];
 //		SVariable* varSymbolOverride	= rpar->params[1];
@@ -656,7 +656,7 @@
 //    if varNewValue was specified, returns the new vector
 //    else                          returns the value of that element
 //////
-	void function_vecstuff(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_vecstuff(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varVec			= rpar->params[0];
 //		SVariable* varStartEl		= rpar->params[1];
@@ -695,7 +695,7 @@
 //    if varNewSymbol was specified, returns the old symbol
 //    else                           returns the current symbol
 //////
-	void function_vecsymbol(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_vecsymbol(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varVec		= rpar->params[0];
 //		SVariable* varEl		= rpar->params[1];
@@ -730,7 +730,7 @@
 // Returns:
 //    Numeric or Character	-- Depending on index, various values are returned
 //////
-    void function_version(SThisCode* thisCode, SFunctionParms* rpar)
+    void function_version(SThisCode* thisCode, SFunctionParams* rpar)
     {
 		SVariable*	varIndex = rpar->params[0];
         s32			index;

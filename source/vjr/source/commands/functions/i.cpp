@@ -108,7 +108,7 @@
 // Returns:
 //    A copy of either varTrue or varFalse.
 //////
-	void function_iif(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_iif(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable*	varTest		= rpar->params[0];
 		SVariable*	varTrue		= rpar->params[1];
@@ -196,7 +196,7 @@
 // Returns:
 //    Logical		-- .t. if the item is found in the list, .f. otherwise
 //////
-	void function_inlist(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_inlist(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable*	varValue = rpar->params[0];
 		SVariable*	varList1 = rpar->params[1];
@@ -310,7 +310,7 @@
 // Returns:
 //    INT(n) of the value in p1
 //////
-    void function_int(SThisCode* thisCode, SFunctionParms* rpar)
+    void function_int(SThisCode* thisCode, SFunctionParams* rpar)
     {
 		SVariable*	varNumber = rpar->params[0];
 		f64			fValue;
@@ -400,7 +400,7 @@
 //    ? ISNULL(0.0)  	&& Display .F.
 //    ? ISNULL(.null.)  && Display .T.
 //////
-	void function_isnull(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_isnull(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable*	varExpr = rpar->params[0];
 
@@ -435,7 +435,7 @@
 
 	}
 
-	bool ifunction_isnull_common(SThisCode* thisCode, SFunctionParms* rpar, SVariable* varExpr)
+	bool ifunction_isnull_common(SThisCode* thisCode, SFunctionParams* rpar, SVariable* varExpr)
 	{
 		bool llIsNull;
 

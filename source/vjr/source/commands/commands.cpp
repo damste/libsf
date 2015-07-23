@@ -699,7 +699,7 @@
 //    The sum of p1 + p2
 //
 //////
-	void function_concatenate(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_concatenate(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable*	varString1	= rpar->params[0];
 		SVariable*	varString2	= rpar->params[1];
@@ -778,7 +778,7 @@
 //    The sum of p1 + p2
 //
 //////
-	void function_add(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_add(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable*	varNum1	= rpar->params[0];
 		SVariable*	varNum2	= rpar->params[1];
@@ -937,7 +937,7 @@
 //    The sum of p1 - p2
 //
 //////
-	void function_sub(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_sub(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable*	varNum1	= rpar->params[0];
 		SVariable*	varNum2	= rpar->params[1];
@@ -1096,7 +1096,7 @@
 //    The sum of p1 * p2
 //
 //////
-	void function_mul(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_mul(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable*	varNum1	= rpar->params[0];
 		SVariable*	varNum2	= rpar->params[1];
@@ -1255,7 +1255,7 @@
 //    The sum of p1 / p2
 //
 //////
-	void function_div(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_div(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable*	varNum1	= rpar->params[0];
 		SVariable*	varNum2	= rpar->params[1];
@@ -1422,7 +1422,7 @@
 // Returns:
 //		Nothing, but whatever it is that's being modified may be open for modifying.
 //////
-	void command_clear(SThisCode* thisCode, SComp* compCommand, SFunctionParms* rpar)
+	void command_clear(SThisCode* thisCode, SComp* compCommand, SFunctionParams* rpar)
 	{
 		SComp*			compClear = compCommand;
 		s32				lnClearLines, lnSaveLines;
@@ -1646,6 +1646,89 @@
 
 
 
+///////////
+//
+// Command:  DECLARE
+// Declares an array or DLL.
+//
+//////
+// Version 0.58
+// Last update:
+//     Jul.23.2015
+//////
+// Change log:
+//     Jul.23.2015
+//////
+// Parameters:
+//		compDeclare	-- The [DECLARE] component
+//////
+// Returns:
+//		Nothing. The thing being declared has been declared, or there is an error.
+//////
+	struct SDllLoad
+	{
+		SDatum		library;							// DLL name
+		HINSTANCE	dllHandle;							// Handle to the DLL
+	};
+
+	struct SDllParams
+	{
+		SLL*		ll;
+		SDatum		name;								// Parameter name
+		u32			type;								// Field type, see _VAR_TYPE_DLL_* constants
+		u32			udfSetting;							// Either _UDFPARAMS_REFERENCE or _UDFPARMS_VALUE (indicates if passed by pointer or value)
+	};
+
+	// DECLARE INTEGER myFunction IN myDll.dll ALIAS myFunc INTEGER nHandle, STRING
+	struct SDlls
+	{
+		SLL*		ll;
+
+		// DECLARE [returnType]
+		u32			returnType;							// The return type, see _VAR_TYPE_DLL_* constants
+
+		// [name] ... ALIAS [alias]
+		SDatum		name;								// Function name
+		SDatum		alias;								// Alias name
+
+		// IN [library]
+		SDllLoad*	dll;								// DLL load instance
+		void*		(*func)(void);						// ProcAddress() of the function within the DLL
+
+		// [inputType1 inputName1], [inputType2 inputName2], ... [inputTypeN inputNameN]
+		s32			paramCount;							// Number of parameters specified
+		SDllParams*	firstParam;							// Pointer to the first parameter
+
+
+		// Add-ons for DLL function tracking
+		SThisCode*	onAccess;							// Called whenever this DLL is accessed (used) in source code
+		SThisCode*	onAssign;							// Called whenever the return result from the DLL is received
+	};
+
+	void command_declare(SThisCode* thisCode, SComp* compCommand, SFunctionParams* rpar)
+	{
+		SComp*	compDeclare = compCommand;
+		SComp*	compVar;
+		SComp*	compLBracket;
+
+
+		//////////
+		// See if we're working with an array definition. The syntax will be: DECLARE laName[quantity] or DECLARE laName(quantity)
+		//////
+			if ((compVar = iComps_getNth(thisCode, compDeclare, 1)) && (compLBracket = iComps_getNth(thisCode, compVar, 1)) && (compLBracket->iCode == _ICODE_BRACKET_LEFT || compLBracket->iCode == _ICODE_PARENTHESIS_LEFT))
+			{
+				// It is of the array structure
+				iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, compVar, false);
+
+			} else {
+				// It might be a DECLARE DLL form
+// TODO:  Working here
+			}
+	}
+
+
+
+
 //////////
 //
 // Command:  MODIFY
@@ -1665,7 +1748,7 @@
 // Returns:
 //		Nothing, but whatever it is that's being modified may be open for modifying.
 //////
-	void command_modify(SThisCode* thisCode, SComp* compCommand, SFunctionParms* rpar)
+	void command_modify(SThisCode* thisCode, SComp* compCommand, SFunctionParams* rpar)
 	{
 		SComp*	compModify = compCommand;
 		SComp*	compType;
@@ -1788,7 +1871,7 @@
 // Returns:
 //		Nothing, but the environment may be changed.
 //////
-	void command_open(SThisCode* thisCode, SComp* compCommand, SFunctionParms* rpar)
+	void command_open(SThisCode* thisCode, SComp* compCommand, SFunctionParams* rpar)
 	{
 		SComp*	compOpen = compCommand;
 		s32		lnLength;
@@ -1921,7 +2004,7 @@
 // Returns:
 //    Nothing, but the environment may be changed.
 //////
-	void command_set(SThisCode* thisCode, SComp* compCommand, SFunctionParms* rpar)
+	void command_set(SThisCode* thisCode, SComp* compCommand, SFunctionParams* rpar)
 	{
 		SComp*			compSet = compCommand;
 		s32				lnIndex;
@@ -2045,7 +2128,7 @@
 // Returns:
 //    Nothing, but the environment may be changed.
 //////
-	void command_use(SThisCode* thisCode, SComp* compCommand, SFunctionParms* rpar)
+	void command_use(SThisCode* thisCode, SComp* compCommand, SFunctionParams* rpar)
 	{
 		SComp*		compUse = compCommand;
 		sptr		lnWorkArea, lnWorkAreaAlias;

@@ -346,6 +346,14 @@
 	// Conversions
 	const s32		_ICODE_DOT_VARIABLE								= 800;
 
+	// DLL relative
+	const s32		_ICODE_WIN32API									= 900;
+	const s32		_ICODE_KERNEL32									= 901;
+	const s32		_ICODE_GDI32									= 902;
+	const s32		_ICODE_USER32									= 903;
+	const s32		_ICODE_MPR										= 904;
+	const s32		_ICODE_ADVAPI32									= 905;
+
 	// Functions
 	const s32		_ICODE_ABS										= 1000;
 	const s32		_ICODE_ACLASS                                   = 1001;
@@ -2233,8 +2241,12 @@
 	const s8		cgc_t_dots[]									= ".t.";
 	const s8		cgc_false[]										= "false";
 	const s8		cgc_f_dots[]									= ".f.";
+	const s8		cgc_Y[]											= "Y";
+	const s8		cgc_y[]											= "y";
 	const s8		cgc_yes[]										= "yes";
 	const s8		cgc_yes_dots[]									= ".y.";
+	const s8		cgc_N[]											= "N";
+	const s8		cgc_n[]											= "n";
 	const s8		cgc_no[]										= "no";
 	const s8		cgc_no_dots[]									= ".n.";
 	const s8		cgc_up[]										= "up";
@@ -2246,6 +2258,16 @@
 	const s8		cgc_x_dots[]									= ".x.";
 	const s8		cgc_y_dots[]									= ".y.";
 	const s8		cgc_z_dots[]									= ".z.";
+	const s8		cgc_d[]											= "D";
+	const s8		cgc_a[]											= "A";
+
+	// DLL options (Kernel32.dll, Gdi32.dll, User32.dll, Mpr.dll, and Advapi32.dll)
+	const s8		cgc_win32api[]									= "win32api";
+	const s8		cgc_kernel32[]									= "kernel32";
+	const s8		cgc_gdi32[]										= "gdi32";
+	const s8		cgc_user32[]									= "user32";
+	const s8		cgc_mpr[]										= "mpr";
+	const s8		cgc_advapi32[]									= "advapi32";
 
 	// NCSET() specific
 	const s8		cgc_ncset_alphaisopaque[]						= "alphaIsOpaque";
@@ -2315,6 +2337,7 @@
 //////////
 // Fundamental variable types
 //////
+	const u32		_VAR_TYPE_NONE									= -1;	// Used for DECLARE DLL when nothing is defined, such as DECLARE Sleep() IN WIN32API INTEGER nMilliseconds, which has no return value
 	const u32						_VAR_TYPE_START					= 0;
 	const u32		_VAR_TYPE_NULL									= 0;	// Note:  This is an explicit .NULL. variable type.  However, other types can also be .NULL. and retain their type.  As such, var->varType cannot be the ONLY test used.  Also check var->value.data, and var->value.length. If those are NULL or 0, then it is also .NULL.
 
@@ -2373,6 +2396,19 @@
 	const u32		_VAR_TYPE_ARRAY									= 30;	// An array of SVariable* following three 4-byte integers indicating row dimensions.
 	const u32						_VAR_TYPE_EXTENDED_END			= 31;
 	const u32						_VAR_TYPE_END					= 31;
+
+
+//////////
+// For DECLARE DLL operations
+//////
+	const u32		_VAR_TYPE_DLL_UNDEFINED							= _VAR_TYPE_NONE;
+	const u32		_VAR_TYPE_DLL_SHORT								= _VAR_TYPE_S16;
+	const u32		_VAR_TYPE_DLL_INTEGER							= _VAR_TYPE_S32;
+	const u32		_VAR_TYPE_DLL_SINGLE							= _VAR_TYPE_F32;
+	const u32		_VAR_TYPE_DLL_DOUBLE							= _VAR_TYPE_F64;
+	const u32		_VAR_TYPE_DLL_LONG								= _VAR_TYPE_S64;
+	const u32		_VAR_TYPE_DLL_STRING							= _VAR_TYPE_CHARACTER;
+	const u32		_VAR_TYPE_DLL_OBJECT							= _VAR_TYPE_OBJECT;
 
 
 //////////

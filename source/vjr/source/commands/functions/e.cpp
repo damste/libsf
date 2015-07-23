@@ -114,7 +114,7 @@
 //    ? EMPTY("  ")	&& Display .T.
 //    ? EMPTY(0.0)	&& Display .T.
 //////
-	void function_empty(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_empty(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable*	varExpr = rpar->params[0];
 		bool		llEmpty;
@@ -148,7 +148,7 @@
 
 	}
 
-	bool function_isempty_common(SThisCode* thisCode, SFunctionParms* rpar, SVariable* varExpr)
+	bool function_isempty_common(SThisCode* thisCode, SFunctionParams* rpar, SVariable* varExpr)
 	{
 		s8			c, cPointChar;
 		u32			lnI;
@@ -309,7 +309,7 @@
 //    Logical		-- .t. if the search string is found in the string, .f. otherwise
 //
 //////
-	void function_endswith(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_endswith(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varString	= rpar->params[0];
 //		SVariable* varSearch	= rpar->params[1];
@@ -330,7 +330,7 @@
 // Case-insensitive version of ENDSWITH()
 //
 //////
-	void function_endswithc(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_endswithc(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varString	= rpar->params[0];
 //		SVariable* varSearch	= rpar->params[1];
@@ -370,7 +370,7 @@
 // Example:
 //    ? EVL("  ", "None")	&& Display "None"
 //////
-	void function_evl(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_evl(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable*	varExpr1 = rpar->params[0];
 		SVariable*	varExpr2 = rpar->params[1];
@@ -441,7 +441,7 @@
 // Example:
 //    ? EXP(2)		&& Display 7.39
 //////
-    void function_exp(SThisCode* thisCode, SFunctionParms* rpar)
+    void function_exp(SThisCode* thisCode, SFunctionParams* rpar)
     {
 		SVariable* varNumber = rpar->params[0];
 
@@ -451,7 +451,7 @@
 	}
 
 	// Common numeric functions used for EXP(), LOG(), LOG10(), PI(), SQRT(), CEILING(), FLOOR(), DTOR(), RTOD(), ...
-    void ifunction_numbers_common(SThisCode* thisCode, SFunctionParms* rpar, SVariable* varNumber1, SVariable* varNumber2, SVariable* varNumber3, u32 tnFunctionType, const u32 tnResultType, bool tlSameInputType, bool tlNoEmptyParam)
+    void ifunction_numbers_common(SThisCode* thisCode, SFunctionParams* rpar, SVariable* varNumber1, SVariable* varNumber2, SVariable* varNumber3, u32 tnFunctionType, const u32 tnResultType, bool tlSameInputType, bool tlNoEmptyParam)
     {
 		f64			lfResult, lfValue1, lfValue2, lfValue3;
 		u32			errorNum;

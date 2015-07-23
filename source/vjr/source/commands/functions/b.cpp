@@ -109,7 +109,7 @@
 // Returns:
 //    Logical		-- .t. if the item is inclusively between the values of two expressions of the same type, .f. otherwise
 //////
-	void function_between(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_between(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable*	varValue		= rpar->params[0];
 		SVariable*	varLowValue		= rpar->params[1];
@@ -232,7 +232,7 @@
 // Returns:
 //    Numeric		-- The input is populated into the big floating point
 //////
-	void function_bfp(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_bfp(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varP1	= rpar->params[0];
 		SVariable* varP2	= rpar->params[1];
@@ -396,7 +396,7 @@
 // Returns:
 //    Numeric		-- The input is populated into the big integer
 //////
-	void function_bi(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_bi(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varP1	= rpar->params[0];
 		SVariable* varP2	= rpar->params[1];
@@ -558,7 +558,7 @@
 // Returns:
 //    Numeric		-- Input bits converted to an unsigned integer of the appropriate size (up to 64-bits)
 //////
-	void function_bits(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_bits(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varBits		= rpar->params[0];
 		SVariable* varBitWidth	= rpar->params[1];
@@ -568,7 +568,7 @@
 		ifunction_bits_common(thisCode, rpar, varBits, varBitWidth);
 	}
 
-	void ifunction_bits_common(SThisCode* thisCode, SFunctionParms* rpar, SVariable* varBits, SVariable* varBitWidth)
+	void ifunction_bits_common(SThisCode* thisCode, SFunctionParams* rpar, SVariable* varBits, SVariable* varBitWidth)
 	{
 		s8			c;
 		u8			lnOrValue;
@@ -759,7 +759,7 @@
 // Returns:
 //    Numeric		-- Input bits converted to an 8-bit unsigned integer
 //////
-	void function_bits8(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_bits8(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varBits = rpar->params[0];
 
@@ -791,7 +791,7 @@
 // Returns:
 //    Numeric		-- Input bits converted to an 16-bit unsigned integer
 //////
-	void function_bits16(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_bits16(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varBits = rpar->params[0];
 
@@ -823,7 +823,7 @@
 // Returns:
 //    Numeric		-- Input bits converted to an 32-bit unsigned integer
 //////
-	void function_bits32(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_bits32(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varBits = rpar->params[0];
 
@@ -855,7 +855,7 @@
 // Returns:
 //    Numeric		-- Input bits converted to an 64-bit unsigned integer
 //////
-	void function_bits64(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_bits64(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varBits = rpar->params[0];
 
@@ -889,7 +889,7 @@
 // Returns:
 //    Numeric		-- The extracted bits as a numeric unsigned integer of the same size as the original.
 //////
-	void function_bitslice(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_bitslice(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 //		SVariable* varValue		= rpar->params[0];
 //		SVariable* varBitStart	= rpar->params[1];
@@ -924,7 +924,7 @@
 // Returns:
 //    Character		-- The extracted bits as a character string
 //////
-	void function_bitstr(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_bitstr(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 //		SVariable* varValue		= rpar->params[0];
 //		SVariable* varLength	= rpar->params[1];
@@ -957,7 +957,7 @@
 // Returns:
 //    Numeric	-- Input number converted to ASCII value number
 //////
-	void function_blu(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_blu(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varColor = rpar->params[0];
 
@@ -992,7 +992,7 @@
 //    Numeric		-- Constructed system-wide RGBA() integer
 //
 //////
-	void function_bgr(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_bgr(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varBlu = rpar->params[0];
 		SVariable* varGrn = rpar->params[1];
@@ -1030,7 +1030,7 @@
 //    Numeric		-- Constructed system-wide RGBA() integer
 //
 //////
-	void function_bgra(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_bgra(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varBlu = rpar->params[0];
 		SVariable* varGrn = rpar->params[1];

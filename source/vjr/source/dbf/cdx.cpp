@@ -147,6 +147,7 @@
 
 			} else {
 				// Build the name from the table name
+// TODO:  The name needs to use FORCEEXT() here instead of this hard-code
 				memcpy(wa->idxCdxDcxPathname, wa->tablePathname, wa->tablePathnameLength);
 				memcpy(wa->idxCdxDcxPathname + wa->tablePathnameLength - 4, ".cdx", 4);
 				wa->idxCdxDcxPathnameLength = wa->tablePathnameLength;
@@ -163,23 +164,24 @@
 			wa->isSdx = false;
 			if (tnExplicitIndexType == _INDEX_IDX || (tnExplicitIndexType == _INDEX_NONE && _memicmp(wa->idxCdxDcxPathname + wa->idxCdxDcxPathnameLength - sizeof(cgcIdxExtension) - 1, cgcIdxExtension, sizeof(cgcIdxExtension) - 1) == 0))
 			{
-				// It's a .idx
+				// .idx
 				wa->isCdx = false;
 
 			} else if (tnExplicitIndexType == _INDEX_CDX || (tnExplicitIndexType == _INDEX_NONE && _memicmp(wa->idxCdxDcxPathname + wa->idxCdxDcxPathnameLength - sizeof(cgcCdxExtension) - 1, cgcCdxExtension, sizeof(cgcCdxExtension) - 1) == 0)) {
-				// It's a .cdx
+				// .cdx
 				wa->isCdx = true;
 
 			} else if (tnExplicitIndexType == _INDEX_SDX || (tnExplicitIndexType == _INDEX_NONE && _memicmp(wa->idxCdxDcxPathname + wa->idxCdxDcxPathnameLength - sizeof(cgcSdxExtension) - 1, cgcSdxExtension, sizeof(cgcSdxExtension) - 1) == 0)) {
-				// It's a .sdx
+				// .sdx
 				wa->isSdx = true;
 
 			} else if (tnExplicitIndexType == _INDEX_DCX || (tnExplicitIndexType == _INDEX_NONE && _memicmp(wa->idxCdxDcxPathname + wa->idxCdxDcxPathnameLength - sizeof(cgcDcxExtension) - 1, cgcDcxExtension, sizeof(cgcDcxExtension) - 1) == 0)) {
-				// It's a .cdx, albeit in sheep's clothing
+				// .cdx, albeit in sheep's clothing
 				wa->isCdx = true;
 
 			} else {
 				// Unknown, report the error
+				memset(wa->idxCdxDcxPathname, 0, sizeof(wa->idxCdxDcxPathname));
 				return(_CDX_ERROR_UNKNOWN_INDEX_TYPE);
 			}
 
@@ -194,8 +196,8 @@
 		//////////
 		// Open it
 		//////
-			if (wa->isExclusive)		wa->fhIdxCdxDcx = iDisk_openExclusive(wa->idxCdxDcxPathname, _O_BINARY | _O_RDWR, false);
-			else						wa->fhIdxCdxDcx = iDisk_openShared(wa->idxCdxDcxPathname, _O_BINARY | _O_RDWR, false);
+			if (wa->isExclusive)		wa->fhIdxCdxDcx = iDisk_openAs(wa->idxCdxDcxPathname, _O_BINARY | _O_RDWR, false, true/*Exclusive*/);
+			else						wa->fhIdxCdxDcx = iDisk_openAs(wa->idxCdxDcxPathname, _O_BINARY | _O_RDWR, false, false/*Shared*/);
 
 
 		//////////
@@ -215,10 +217,8 @@
 		// Allocate one block
 		//////
 			if (!wa->isCdx)
-			{
-	//////////
-	// IDX
-	//////
+			{ // IDX
+
 				//////////
 				// Allocate
 				//////
@@ -270,9 +270,8 @@
 
 
 			} else {
-	//////////
-	// CDX
-	//////
+				// CDX
+
 				//////////
 				// Allocate
 				/////
@@ -506,20 +505,11 @@
 				// Store the key length
 				sprintf(tcKeyLength4, "%04u", tagRoot.keyLength);
 
-				// Store the flags
-				// 1 unique, 8 FOR clause, 32 compact index, 64 compound index
-				if (iiCdx_isCompact(thisCode, head))		sprintf(tcCompact1, "Y");
-				else										sprintf(tcCompact1, "N");
-
-				if (iiCdx_isCompound(thisCode, head))		sprintf(tcCompound1, "Y");
-				else										sprintf(tcCompound1, "N");
-
-				if (iiCdx_isUnique(thisCode, head))			sprintf(tcUnique1, "Y");
-				else										sprintf(tcUnique1, "N");
-
-// Will have to nail this down better at some point, to determine the entire structure of this child node
-				if (iiCdx_isDescending(thisCode, head))		sprintf(tcOrder1, "D");
-				else										sprintf(tcOrder1, "A");
+				// Store the flags if need be
+				iiTwoChoice(tcCompact1,		iiCdx_isCompact		(thisCode, head),		cgc_y,	cgc_n);
+				iiTwoChoice(tcCompound1,	iiCdx_isCompound	(thisCode, head),		cgc_y,	cgc_n);
+				iiTwoChoice(tcUnique1,		iiCdx_isUnique		(thisCode, head),		cgc_y,	cgc_n);
+				iiTwoChoice(tcOrder1,		iiCdx_isDescending	(thisCode, head),		cgc_d,	cgc_a);
 
 				// Indicate the length of the key as a success
 				return(tagRoot.keyLength);
@@ -1477,7 +1467,7 @@ clean_house:
 		// Initialize
 		//////
 			llResult	= true;		// Assume everything is correct from the get-go
-			cko		= NULL;		// No ops initially allocated
+			cko			= NULL;		// No ops initially allocated
 			iBuilder_createAndInitialize(&dbfKeys,			-1);
 			iBuilder_createAndInitialize(&dbfKeysUnique,	-1);
 			iBuilder_createAndInitialize(&cdxKeys,			-1);
@@ -1524,7 +1514,7 @@ clean_house:
 					iBuilder_appendData(metaData, (cu8*)"Tag: ", -1);
 					iBuilder_appendData(metaData, tagRoot.tagName, min((u32)strlen((s8*)tagRoot.tagName), 10));
 					iBuilder_backoffTrailingWhitespaces(metaData);
-					iBuilder_appendData(metaData, (cu8*)", FOR clause is too complex for this utility.", -1);
+					iBuilder_appendData(metaData, (cu8*)", FOR clause is too complex for current support", -1);
 					goto close_and_quit;
 				}
 			}
@@ -1553,6 +1543,7 @@ clean_house:
 		//////
 			for (lnRecno = 1, lnDbfKeyCount = 0; lnRecno <= wa->header.records; lnRecno++)
 			{
+
 				//////////
 				// Load this record
 				//////
@@ -1572,10 +1563,11 @@ clean_house:
 					iiCdx_generateKey_byOps(thisCode, wa, cko, lnKeyOpCount, dbfKeys->data_u8 + (lnDbfKeyCount * (tagRoot.keyLength + 4)), false);
 
 					// Append the record number
-					*(u32*)(dbfKeys->data_u8 + (lnDbfKeyCount * (tagRoot.keyLength + 4) + tagRoot.keyLength)) = iiBswap32(lnRecno);
+					*(u32*)(dbfKeys->data_u8 + (lnDbfKeyCount * (tagRoot.keyLength + 4) + tagRoot.keyLength)) = iiSwapEndian32(lnRecno);
 
 					// Increase our key count
 					++lnDbfKeyCount;
+
 			}
 			// Remove any keys that weren't included
 			iBuilder_setSize(dbfKeys, lnDbfKeyCount * (tagRoot.keyLength + 4));
@@ -1628,7 +1620,7 @@ clean_house:
 				iiCdx_generateKey_byOps_fixup(thisCode, wa, cko, lnKeyOpCount, dbfKeys->data_u8 + lnI, false);
 
 				// Fixup the recno()
-				*(u32*)(dbfKeys->buffer + lnI + tagRoot.keyLength) = iiBswap32(*(u32*)(dbfKeys->buffer + lnI + tagRoot.keyLength));
+				*(u32*)(dbfKeys->buffer + lnI + tagRoot.keyLength) = iiSwapEndian32(*(u32*)(dbfKeys->buffer + lnI + tagRoot.keyLength));
 			}
 
 
@@ -2578,11 +2570,11 @@ failed_parsing:
 		switch (lko->length)
 		{
 			case 4: // s32 4-byte conversion
-				*(u32*)keyPart = iiBswap32(*(u32*)keyPart);
+				*(u32*)keyPart = iiSwapEndian32(*(u32*)keyPart);
 				break;
 
 			case 8:	// s64 8-byte conversion
-				*(u64*)keyPart = iiBswap64(*(u64*)keyPart);
+				*(u64*)keyPart = iiSwapEndian64(*(u64*)keyPart);
 				break;
 		}
 
@@ -2649,11 +2641,11 @@ failed_parsing:
 		switch (lko->length)
 		{
 			case 4: // s32 4-byte conversion
-				*(u32*)keyPart = iiBswap32(*(u32*)keyPart);
+				*(u32*)keyPart = iiSwapEndian32(*(u32*)keyPart);
 				break;
 
 			case 8:	// s64 8-byte conversion
-				*(u64*)keyPart = iiBswap64(*(u64*)keyPart);
+				*(u64*)keyPart = iiSwapEndian64(*(u64*)keyPart);
 				break;
 		}
 
@@ -2761,11 +2753,11 @@ failed_parsing:
 							switch (keyOps[lnI].length)
 							{
 								case 4: // s32 4-byte conversion
-									*(u32*)keyPart = iiBswap32(*(u32*)keyPart);
+									*(u32*)keyPart = iiSwapEndian32(*(u32*)keyPart);
 									break;
 
 								case 8:	// s64 8-byte conversion
-									*(u64*)keyPart = iiBswap64(*(u64*)keyPart);
+									*(u64*)keyPart = iiSwapEndian64(*(u64*)keyPart);
 									break;
 							}
 						}
@@ -2794,11 +2786,11 @@ failed_parsing:
 							switch (keyOps[lnI].length)
 							{
 								case 4: // s32 4-byte conversion
-									*(u32*)keyPart = iiBswap32(*(u32*)keyPart);
+									*(u32*)keyPart = iiSwapEndian32(*(u32*)keyPart);
 									break;
 
 								case 8:	// s64 8-byte conversion
-									*(u64*)keyPart = iiBswap64(*(u64*)keyPart);
+									*(u64*)keyPart = iiSwapEndian64(*(u64*)keyPart);
 									break;
 							}
 						}
@@ -4131,7 +4123,7 @@ debug_break;
 			// Get a common variable for the key length
 			lnKeyLength			= head->keyLength + 4;
 			key->key			= (u8*)(node + 1) + (tnNumber * lnKeyLength);
-			key->record			= iiBswap32(*(u32*)(key->_key + head->keyLength));		// Stored in big-endian on disk, needs converted to little-endian for internal use
+			key->record			= iiSwapEndian32(*(u32*)(key->_key + head->keyLength));		// Stored in big-endian on disk, needs converted to little-endian for internal use
 			key->keyLength		= head->keyLength;
 
 
@@ -4150,8 +4142,8 @@ debug_break;
 					// Convert based on key length
 					if (tlFixupEndian)
 					{
-							 if (head->keyLength == 4)		*(u32*)&key->key[0] = iiBswap32(*(u32*)&key->key[0]);		// 4-byte conversion
-						else if (head->keyLength == 8)		*(u64*)&key->key[0] = iiBswap64(*(u64*)&key->key[0]);		// 8-byte conversion
+							 if (head->keyLength == 4)		*(u32*)&key->key[0] = iiSwapEndian32(*(u32*)&key->key[0]);		// 4-byte conversion
+						else if (head->keyLength == 8)		*(u64*)&key->key[0] = iiSwapEndian64(*(u64*)&key->key[0]);		// 8-byte conversion
 					}
 				}
 
@@ -4290,8 +4282,8 @@ debug_break;
 				lnKeyLength					= keyLength + sizeof(SCdxKeyTrail);
 				keyPtr						= (s8*)node + 12 + (tnKeyNumberThis * lnKeyLength);
 				keyTrailInterior			= (SCdxKeyTrailInterior*)(keyPtr + keyLength);
-				key->fileOffset				= iiBswap32(keyTrailInterior->fileOffset);
-				key->record2				= iiBswap32(keyTrailInterior->record2);
+				key->fileOffset				= iiSwapEndian32(keyTrailInterior->fileOffset);
+				key->record2				= iiSwapEndian32(keyTrailInterior->record2);
 				key->offset					= 12 + (tnKeyNumberThis * lnKeyLength);
 				key->keyLength				= keyLength;
 				key->key[keyLength]			= 0;
@@ -4308,8 +4300,8 @@ debug_break;
 					if (tlFixupEndian)
 					{
 						// Convert based on key length
-							 if (keyLength == 4)	*(u32*)&key->key[0] = iiBswap32(*(u32*)&key->key[0]);	// 4-byte conversion
-						else if (keyLength == 8)	*(u64*)&key->key[0] = iiBswap64(*(u64*)&key->key[0]);	// 8-byte conversion
+							 if (keyLength == 4)	*(u32*)&key->key[0] = iiSwapEndian32(*(u32*)&key->key[0]);	// 4-byte conversion
+						else if (keyLength == 8)	*(u64*)&key->key[0] = iiSwapEndian64(*(u64*)&key->key[0]);	// 8-byte conversion
 					}
 
 					if (tlFixupSignBit)
@@ -4387,7 +4379,7 @@ debug_break;
 // Swap bytes from big-endian to make a little-endian value
 //
 //////
-	u32 iiBswap32(u32 tnBigEndian)
+	u32 iiSwapEndian32(u32 tnBigEndian)
 	{
 		tnBigEndian = (		((tnBigEndian & 0xff000000) >> 24)  |
 							((tnBigEndian & 0x00ff0000) >> 8) 	|
@@ -4396,7 +4388,7 @@ debug_break;
 		return(tnBigEndian);
 	}
 
-	u64 iiBswap64(u64 tnBigEndian)
+	u64 iiSwapEndian64(u64 tnBigEndian)
 	{
 		tnBigEndian = (		((tnBigEndian & 0xff00000000000000) >> 56) |
 							((tnBigEndian & 0x00ff000000000000) >> 40) |
@@ -4490,14 +4482,46 @@ debug_break;
 //////
 	u8* iResetThenCopyString(u8* tcDest, s32 tnDestLength, u8* tcSource, s32 tnSourceLength)
 	{
-		if (tcDest)
-			memset((s8*)tcDest, 0, tnDestLength);	// Initialize it to empty, then copy over whatever will fit
+		// Resets with a null character
+		return(iResetThenCopyString(tcDest, tnDestLength, 0, tcSource, tnSourceLength));
+	}
 
+	u8* iResetThenCopyString(u8* tcDest, s32 tnDestLength, u8 lcResetChar, u8* tcSource, s32 tnSourceLength)
+	{
+		// Initialize it to empty...
+		if (tcDest)
+			memset((s8*)tcDest, lcResetChar, tnDestLength);
+
+		// ...then copy over whatever will fit in the space
 		if (tcSource)
 			memcpy((s8*)tcDest, (s8*)tcSource, min(tnSourceLength, tnDestLength));
 
-		// Indicate a pointer to their target, so it will propagate through an expression
+		// Indicate a pointer to their chosen target, so it will propagate through an expression if need be
 		return(tcDest);
+	}
+
+
+
+
+//////////
+//
+// Based on the two choices, copies the indicated string
+//
+//////
+	cs8* iiTwoChoice(s8* tcDest, bool tlTestValue, cs8* tcIfTrue, cs8* tcIfFalse)
+	{
+		cs8* lcResult;
+
+
+		// Grab our value
+		lcResult = ((tlTestValue) ? tcIfTrue : tcIfFalse);
+
+		// Populate
+		if (tcDest)
+			memcpy(tcDest, lcResult, strlen(lcResult));
+
+		// Indicate our choice
+		return(lcResult);
 	}
 
 

@@ -146,6 +146,12 @@
 			return(-1);
 	}
 
+	s32 iDisk_openAs(cs8* tcPathname, s32 tnType, bool tlCreateIfCannotOpen, bool tlExclusive)
+	{
+		if (tlExclusive)	return(iDisk_openExclusive	(tcPathname, tnType, tlCreateIfCannotOpen));
+		else				return(iDisk_openShared		(tcPathname, tnType, tlCreateIfCannotOpen));
+	}
+
 	s32 iDisk_openShared(cs8* tcPathname, s32 tnType, bool tlCreateIfCannotOpen)
 	{
 		// Attempt to open if valid

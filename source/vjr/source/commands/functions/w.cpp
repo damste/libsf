@@ -112,7 +112,7 @@
 //	  dt = datetime()	&& May.01.2015
 //    ? WEEK(dt)		&& Displays 18
 //////
-	void function_week(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_week(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable*	varParam			= rpar->params[0];
 		SVariable*	varFirstWeek		= rpar->params[1];
@@ -241,7 +241,7 @@
 
 	}
 
-	s32	ifunction_week_common(SThisCode* thisCode, SFunctionParms* rpar, u32 tnYear, u32 tnMonth, u32 tnDay, s32 tnMinDaysInWeek, s32 tnFirstDayOfWeek)
+	s32	ifunction_week_common(SThisCode* thisCode, SFunctionParams* rpar, u32 tnYear, u32 tnMonth, u32 tnDay, s32 tnMinDaysInWeek, s32 tnFirstDayOfWeek)
 	{
 		s32	lnWeek, ln1WDay, lnDayOfYear, lnDaysInYear, lnDaysNextYear;
 		s32 lnTempDays;

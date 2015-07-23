@@ -651,7 +651,7 @@
 	{
 		s8				lnVal_s8;
 		s32				lnVal_s32;
-		SFunctionParms	lsrpar;
+		SFunctionParams	lsrpar;
 
 
 		//////////

@@ -107,7 +107,7 @@
 // Returns:
 //    Character		-- The string of the left N characters
 //////
-	void function_left(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_left(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable*	varString	= rpar->params[0];
 		SVariable*	varCount	= rpar->params[1];
@@ -197,7 +197,7 @@
 // Returns:
 //    Numeric		-- The length of the string
 //////
-	void function_len(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_len(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varString = rpar->params[0];
         SVariable* result;
@@ -262,7 +262,7 @@
 // Example:
 //    ? LOG(2)		&& Display 0.69
 //////
-    void function_log(SThisCode* thisCode, SFunctionParms* rpar)
+    void function_log(SThisCode* thisCode, SFunctionParams* rpar)
     {
 		SVariable* varNumber = rpar->params[0];
 
@@ -297,7 +297,7 @@
 // Example:
 //    ? LOG10(2)		&& Display 0.30
 //////
-    void function_log10(SThisCode* thisCode, SFunctionParms* rpar)
+    void function_log10(SThisCode* thisCode, SFunctionParams* rpar)
     {
 		SVariable* varNumber = rpar->params[0];
 
@@ -329,7 +329,7 @@
 // Returns:
 //    Character		-- The string with all lowercase characters converted to lowercase
 //////
-	void function_lower(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_lower(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable*	varString = rpar->params[0];
 		s32			lnI;
@@ -404,7 +404,7 @@
 // Returns:
 //    Character		-- The string with any leading spaces removed
 //////
-	void function_ltrim(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_ltrim(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varString			= rpar->params[0];
 		SVariable* varCaseInsensitive	= rpar->params[1];

@@ -106,7 +106,7 @@
 // Returns:
 //    SEC( ) returns a numeric value.
 //////
-	void function_sec(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_sec(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable*	varParam = rpar->params[0];
 
@@ -138,12 +138,12 @@
 // Returns:
 //    Numeric. SECONDS( ) returns a numeric value in decimal format with a resolution of 1 millisecond.
 //////
-	void function_seconds(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_seconds(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		ifunction_xseconds_common(thisCode, rpar, _XSECONDS_FUNCTION_SECONDS);
 	}
 
-	void ifunction_xseconds_common(SThisCode* thisCode, SFunctionParms* rpar, s32 tnFunction)
+	void ifunction_xseconds_common(SThisCode* thisCode, SFunctionParams* rpar, s32 tnFunction)
 	{
 		f64			lfResult;
 		s32			lnNanosecond;
@@ -243,7 +243,7 @@
 //    k = SECONDS()
 //    ? SECONDSTOTIME(k)
 //////
-	void function_secondstotime(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_secondstotime(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		// Return secondstotime
 		ifunction_timesAndDatesConversion_common(thisCode, rpar, _CONVERSION_FUNCTION_SECONDS, _CONVERSION_FUNCTION_TIME);
@@ -276,7 +276,7 @@
 //    k = SECONDS()
 //    ? SECONDSTOTIMEX(k)
 //////
-	void function_secondstotimex(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_secondstotimex(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		// Return secondstotimex
 		ifunction_timesAndDatesConversion_common(thisCode, rpar, _CONVERSION_FUNCTION_SECONDS, _CONVERSION_FUNCTION_TIMEX);
@@ -311,7 +311,7 @@
 //    d = DATE()
 //    ? SECONDSTOT(k, d)
 //////
-	void function_secondstot(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_secondstot(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		// Return secondstot
 		ifunction_timesAndDatesConversion_common(thisCode, rpar, _CONVERSION_FUNCTION_SECONDS, _CONVERSION_FUNCTION_DATETIME);
@@ -346,7 +346,7 @@
 //    d = DATE()
 //    ? SECONDSTOX(k, d)
 //////
-	void function_secondstox(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_secondstox(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		// Return secondstox
 		ifunction_timesAndDatesConversion_common(thisCode, rpar, _CONVERSION_FUNCTION_SECONDS, _CONVERSION_FUNCTION_DATETIMEX);
@@ -375,7 +375,7 @@
 // Returns:
 //    Numeric. SECONDSX( ) returns a numeric value in decimal format with a resolution of 1 microsecond.
 //////
-	void function_secondsx(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_secondsx(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		ifunction_xseconds_common(thisCode, rpar, _XSECONDS_FUNCTION_SECONDSX);
 	}
@@ -407,7 +407,7 @@
 //    k = SECONDSX()
 //    ? SECONDSXTOTIME(k)
 //////
-	void function_secondsxtotime(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_secondsxtotime(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		// Return secondsxtotime
 		ifunction_timesAndDatesConversion_common(thisCode, rpar, _CONVERSION_FUNCTION_SECONDSX, _CONVERSION_FUNCTION_TIME);
@@ -440,7 +440,7 @@
 //    k = SECONDSX()
 //    ? SECONDSXTOTIMEX(k)
 //////
-	void function_secondsxtotimex(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_secondsxtotimex(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		// Return secondsxtotimex
 		ifunction_timesAndDatesConversion_common(thisCode, rpar, _CONVERSION_FUNCTION_SECONDSX, _CONVERSION_FUNCTION_TIMEX);
@@ -475,7 +475,7 @@
 //    d = DATE()
 //    ? SECONDSXTOT(k, d)
 //////
-	void function_secondsxtot(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_secondsxtot(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		// Return secondsxtot
 		ifunction_timesAndDatesConversion_common(thisCode, rpar, _CONVERSION_FUNCTION_SECONDSX, _CONVERSION_FUNCTION_DATETIME);
@@ -510,7 +510,7 @@
 //    d = DATE()
 //    ? SECONDSXTOX(k, d)
 //////
-	void function_secondsxtox(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_secondsxtox(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		// Returns secondsxtox
 		ifunction_timesAndDatesConversion_common(thisCode, rpar, _CONVERSION_FUNCTION_SECONDSX, _CONVERSION_FUNCTION_DATETIMEX);
@@ -539,7 +539,7 @@
 // Returns:
 //    Character		-- The string with any trailing spaces removed
 //////
-	void function_set(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_set(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable*		varIdentifier	= rpar->params[0];
 		SVariable*		varExtraInfo	= rpar->params[1];
@@ -636,20 +636,24 @@
 
 									case 2:
 										// Not currently used, but it is defined
+										iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_getRelatedComp(thisCode, varExtraInfo), false);
 										break;
 
 									case 3:
 										// Not currently used, but it is defined
+										iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_getRelatedComp(thisCode, varExtraInfo), false);
 										break;
 
 									case 4:
 										// Not currently used, but it is defined
+										iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_getRelatedComp(thisCode, varExtraInfo), false);
 										break;
 								}
 
 							} else if (iVariable_isTypeCharacter(varExtraInfo)) {
 								// SET("abc", cExpression)
 								// Not currently used, but it is defined
+								iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_getRelatedComp(thisCode, varExtraInfo), false);
 
 							} else {
 								iError_reportByNumber(thisCode, _ERROR_SYNTAX, iVariable_getRelatedComp(thisCode, varExtraInfo), false);
@@ -737,7 +741,7 @@
 //    ? sign(2.65656)		&& Displays 1
 //    ? sign(-2.65656)		&& Displays -1
 //////
-    void function_sign(SThisCode* thisCode, SFunctionParms* rpar)
+    void function_sign(SThisCode* thisCode, SFunctionParams* rpar)
     {
 		SVariable* varNumber = rpar->params[0];
 
@@ -746,7 +750,7 @@
 		ifunction_sign_common(thisCode, rpar, varNumber, false);
 	}
 
-	void function_sign2(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_sign2(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varNumber = rpar->params[0];
 
@@ -755,7 +759,7 @@
 		ifunction_sign_common(thisCode, rpar, varNumber, true);
 	}
 
-	void ifunction_sign_common(SThisCode* thisCode, SFunctionParms* rpar, SVariable* varNumber, bool tlIncrementZero)
+	void ifunction_sign_common(SThisCode* thisCode, SFunctionParams* rpar, SVariable* varNumber, bool tlIncrementZero)
 	{
 		f64			lfValue;
 		bool		error;
@@ -858,7 +862,7 @@
 // Example:
 //    ? SIN(0)		&& Display 0.00
 //////
-    void function_sin(SThisCode* thisCode, SFunctionParms* rpar)
+    void function_sin(SThisCode* thisCode, SFunctionParams* rpar)
     {
 		SVariable* varNumber = rpar->params[0];
 
@@ -892,7 +896,7 @@
 // Returns:
 //    Character		-- The string which was extracted.
 //////
-	void function_slice(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_slice(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 //		SVariable* varString	= rpar->params[0];
 //		SVariable* varStart		= rpar->params[1];
@@ -927,7 +931,7 @@
 // Returns:
 //    Character		-- The string with any leading and trailing spaces removed
 //////
-	void function_space(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_space(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable*	varCount = rpar->params[0];
 		s32			lnLength;
@@ -1011,7 +1015,7 @@
 //    ? SQRT(2.0)	&& Display 1.41
 //    ? SQRT(-2)	&& Error: argument cannot be negative
 //////
-    void function_sqrt(SThisCode* thisCode, SFunctionParms* rpar)
+    void function_sqrt(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varNumber = rpar->params[0];
 
@@ -1046,7 +1050,7 @@
 //    Logical		-- .t. if the search string is found in the string, .f. otherwise
 //
 //////
-	void function_startswith(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_startswith(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varString	= rpar->params[0];
 //		SVariable* varSearch	= rpar->params[1];
@@ -1067,7 +1071,7 @@
 // Case-insensitive version of STARTSWITH().
 //
 //////
-	void function_startswithc(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_startswithc(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varString	= rpar->params[0];
 //		SVariable* varSearch	= rpar->params[1];
@@ -1106,7 +1110,7 @@
 //    Character		-- The original string with all components replaced
 //
 //////
-	void function_strtran(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_strtran(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varString			= rpar->params[0];
 		SVariable* varSearch			= rpar->params[1];
@@ -1118,7 +1122,7 @@
 		ifunction_strtran_common(thisCode, rpar, varString, varSearch, varReplace, varRecursiveCount, true);
 	}
 
-	void function_strtranc(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_strtranc(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varString			= rpar->params[0];
 		SVariable* varSearch			= rpar->params[1];
@@ -1130,7 +1134,7 @@
 		ifunction_strtran_common(thisCode, rpar, varString, varSearch, varReplace, varRecursiveCount, false);
 	}
 
-	void ifunction_strtran_common(SThisCode* thisCode, SFunctionParms* rpar, SVariable* varString, SVariable* varSearch, SVariable* varReplace, SVariable* varRecursiveCount, bool tlCaseSensitive)
+	void ifunction_strtran_common(SThisCode* thisCode, SFunctionParams* rpar, SVariable* varString, SVariable* varSearch, SVariable* varReplace, SVariable* varRecursiveCount, bool tlCaseSensitive)
 	{
 		s32			lnI, lnIteration, lnSrc, lnDst, lnLength, lnRecursiveCount, lnFoundCount;
 		bool		error;
@@ -1358,7 +1362,7 @@
 //    Character		-- String has been modified as per the STUFF() function.
 //
 //////
-	void function_stuff(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_stuff(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable*	varOriginalString	= rpar->params[0];
 		SVariable*	varStartPos			= rpar->params[1];
@@ -1527,7 +1531,7 @@
 //		10				-- Character, returns a Character-type date from a Julian day number
 //		2015			-- Character, unique procedure name
 //////
-	void function_sys(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_sys(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable*	varIndex	= rpar->params[0];
 		SVariable*	varP1		= rpar->params[1];
@@ -1850,7 +1854,7 @@ clean_exit:
 	{
 		s32				ln2015;
 		SVariable*		varSys2015;
-		SFunctionParms	lsrpar;
+		SFunctionParams	lsrpar;
 
 
 // TODO:  Untested function, breakpoint and examine
@@ -1909,7 +1913,7 @@ debug_break;
 // Returns:
 //    Numeric		-- Depending on index, various value ranges are returned
 //////
-    void function_sysmetric(SThisCode* thisCode, SFunctionParms* rpar)
+    void function_sysmetric(SThisCode* thisCode, SFunctionParams* rpar)
     {
 		SVariable*	varIndex = rpar->params[0];
         s32			index;

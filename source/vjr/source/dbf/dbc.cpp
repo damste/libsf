@@ -302,13 +302,13 @@
 					{	// Convert the value to int (if it's 4-bytes or less) and store it
 
 						if (se->dataLength == 1)
-							lnValue	= (u32) *((u8*)se->data);			// It's 8-bits (1 byte)
+							lnValue	= (u32) *((u8*)se->data);				// It's 8-bits (1 byte)
 						else if (se->dataLength == 2)
-							lnValue	= (u32)*((u16*)se->data);			// It's 16-bits (2 bytes)
+							lnValue	= (u32)*((u16*)se->data);				// It's 16-bits (2 bytes)
 						else if (se->dataLength == 3)
-							lnValue	= (*((u32*)se->data) & 0xffffff);	// It's 24-bits (3 bytes)
+							lnValue	= (*((u32*)se->data) & 0xffffff);		// It's 24-bits (3 bytes)
 						else
-							lnValue	= iiBswap32(*((u32*)se->data));	// It's 32-bits (4 bytes, stored as big-endian)
+							lnValue	= iiSwapEndian32(*((u32*)se->data));	// It's 32-bits (4 bytes, stored as big-endian)
 
 						sprintf(buffer, "%u\000", lnValue);
 						lnLength = (u32)strlen(buffer);

@@ -1862,7 +1862,7 @@
 		u32				lnI_max, lnAppendValue;
 		bool			llAppendedSix;
 		SVariable*		varAlias;
-		SFunctionParms	rpar;
+		SFunctionParams	rpar;
 
 
 		//////////
@@ -3018,11 +3018,11 @@ debug_break;
 							switch (lfrp->length)
 							{
 								case 4:	// s32 4-byte conversion
-									*(u32*)dest = iiBswap32(*(u32*)dest);
+									*(u32*)dest = iiSwapEndian32(*(u32*)dest);
 									break;
 
 								case 8:	// s64 8-byte conversion
-									*(u64*)dest = iiBswap64(*(u64*)dest);
+									*(u64*)dest = iiSwapEndian64(*(u64*)dest);
 									break;
 							}
 
@@ -4243,7 +4243,7 @@ debug_break;
 
 					case _FOR_CLAUSE_OPS_TEMPORARY_SWAP_ENDIAN:
 						// Swap an endian in a temporary
-						*(u32*)lftl->data = iiBswap32(*(u32*)lftl->data);
+						*(u32*)lftl->data = iiSwapEndian32(*(u32*)lftl->data);
 						break;
 
 					case _FOR_CLAUSE_OPS_TEMPORARY_SIGN_FLIP_F32:

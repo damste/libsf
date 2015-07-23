@@ -90,7 +90,7 @@
 	SVariable*				iEngine_get_variableName_fromComponent	(SThisCode* thisCode, SComp* comp, bool* tlManufactured, bool tlByRef);
 	SVariable*				iEngine_get_variableName_fromText		(SThisCode* thisCode, cs8* tcText, u32 tnTextLength, SComp* comp, bool* tlManufactured, bool tlByRef);
 	SVariable*				iEngine_get_contiguousComponents		(SThisCode* thisCode, SComp* comp, bool* tlManufactured, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount);
-	void					iEngine_get_functionResult				(SThisCode* thisCode, SComp* comp, s32 tnRcount, SFunctionParms* rpar);
+	void					iEngine_get_functionResult				(SThisCode* thisCode, SComp* comp, s32 tnRcount, SFunctionParams* rpar);
 	void					iEngine_executeSetter					(SThisCode* thisCode, cs8* name, SVariable* varOld, SVariable* varNew);
 	void					iEngine_executeSetter					(SThisCode* thisCode, s8*  name, SVariable* varOld, SVariable* varNew);
 	void					iEngine_error							(SThisCode* thisCode, u32 tnErrorNumber, SVariable* varRelated);
@@ -110,7 +110,7 @@
 	void					iEngine_update_meta8					(SThisCode* thisCode, SVariable* varSrc);
 	void					iEngine_update_meta9					(SThisCode* thisCode, SVariable* varSrc);
 
-	bool					iiEngine_getParametersBetween			(SThisCode* thisCode, SFunctionData* funcData, SComp* compLeftParen, u32* paramsFound, u32 requiredCount, u32 maxCount, SFunctionParms* rpar);
+	bool					iiEngine_getParametersBetween			(SThisCode* thisCode, SFunctionData* funcData, SComp* compLeftParen, u32* paramsFound, u32 requiredCount, u32 maxCount, SFunctionParams* rpar);
 
 	void					iBreakpoint_delete						(SThisCode* thisCode, SBreakpoint** breakpoint);
 	SBreakpoint* 			iBreakpoint_add							(SThisCode* thisCode, SBreakpoint** breakpoint, u32 tnType);

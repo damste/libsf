@@ -182,7 +182,7 @@ struct SHover
 	//////////
 
 
-struct SFunctionParms
+struct SFunctionParams
 {
 	bool			error;								// Was there an error in processing?
 	u32				errorNum;							// The error number

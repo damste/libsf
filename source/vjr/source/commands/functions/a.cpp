@@ -110,7 +110,7 @@
 // Example:
 //    ? ABS(-10)		&& Display 10
 //////
-    void function_abs(SThisCode* thisCode, SFunctionParms* rpar)
+    void function_abs(SThisCode* thisCode, SFunctionParams* rpar)
     {
 		SVariable* varNumber = rpar->params[0];
 
@@ -145,7 +145,7 @@
 // Example:
 //    ? ACOS(0)		&& Display 1.57
 //////
-    void function_acos(SThisCode* thisCode, SFunctionParms* rpar)
+    void function_acos(SThisCode* thisCode, SFunctionParams* rpar)
     {
 		SVariable* varNumber = rpar->params[0];
 
@@ -176,7 +176,7 @@
 // Returns:
 //     Character		-- The string with a trailing backspace added if need be
 //////
-	void function_addbs(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_addbs(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable*	varString = rpar->params[0];
         SVariable*	result;
@@ -256,7 +256,7 @@
 // Returns:
 //    Character		-- The string with any leading and trailing spaces removed
 //////
-	void function_alltrim(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_alltrim(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varString			= rpar->params[0];
 		SVariable* varCaseInsensitive	= rpar->params[1];
@@ -281,7 +281,7 @@
 //	    (2)  *TRIM(cString[, nCaseSensitive|lCaseSensitive[, cTrimChar1[, cTrimChar2]]])
 //
 //////
-	void ifunction_trim_common(SThisCode* thisCode, SFunctionParms* rpar, SVariable* varString, SVariable* varCaseInsensitive, SVariable* varTrimChars1, SVariable* varTrimChars2, bool tlTrimTheStart, bool tlTrimTheEnd)
+	void ifunction_trim_common(SThisCode* thisCode, SFunctionParams* rpar, SVariable* varString, SVariable* varCaseInsensitive, SVariable* varTrimChars1, SVariable* varTrimChars2, bool tlTrimTheStart, bool tlTrimTheEnd)
 	{
 		s32			lnI, lnClipStartPos, lnClipEndPos;
 		s8			lc;
@@ -661,7 +661,7 @@
 // Returns:
 //    Numeric	-- Input number converted to ASCII value number
 //////
-	void function_alp(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_alp(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varColor = rpar->params[0];
 
@@ -693,7 +693,7 @@
 // Returns:
 //    Numeric	-- Input number converted to ASCII value number
 //////
-    void function_asc(SThisCode* thisCode, SFunctionParms* rpar)
+    void function_asc(SThisCode* thisCode, SFunctionParams* rpar)
     {
 		SVariable*	varString = rpar->params[0];
         u8 			value;
@@ -773,7 +773,7 @@
 // Example:
 //    ? ASIN(1)		&& Display 1.57
 //////
-    void function_asin(SThisCode* thisCode, SFunctionParms* rpar)
+    void function_asin(SThisCode* thisCode, SFunctionParams* rpar)
     {
 		SVariable* varNumber = rpar->params[0];
 
@@ -808,7 +808,7 @@
 // Example:
 //    ? ATAN(1.57)		&& Display 1.00
 //////
-    void function_atan(SThisCode* thisCode, SFunctionParms* rpar)
+    void function_atan(SThisCode* thisCode, SFunctionParams* rpar)
     {
 		SVariable* varNumber = rpar->params[0];
 
@@ -847,7 +847,7 @@
 // Returns:
 //    u32			-- Location of the find, or 0 if not found
 //////
-	void function_at(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_at(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varNeedle		= rpar->params[0];
 		SVariable* varHaystack		= rpar->params[1];
@@ -858,7 +858,7 @@
 		ifunction_at_occurs_common(thisCode, rpar, varNeedle, varHaystack, varOccurrence, true, false, NULL);
 	}
 
-	void function_atc(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_atc(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varNeedle		= rpar->params[0];
 		SVariable* varHaystack		= rpar->params[1];
@@ -869,7 +869,7 @@
 		ifunction_at_occurs_common(thisCode, rpar, varNeedle, varHaystack, varOccurrence, false, false, NULL);
 	}
 
-	void function_rat(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_rat(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varNeedle		= rpar->params[0];
 		SVariable* varHaystack		= rpar->params[1];
@@ -880,7 +880,7 @@
 		ifunction_at_occurs_common(thisCode, rpar, varNeedle, varHaystack, varOccurrence, true, true, NULL);
 	}
 
-	void function_ratc(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_ratc(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varNeedle		= rpar->params[0];
 		SVariable* varHaystack		= rpar->params[1];
@@ -891,7 +891,7 @@
 		ifunction_at_occurs_common(thisCode, rpar, varNeedle, varHaystack, varOccurrence, false, true, NULL);
 	}
 
-	void ifunction_at_occurs_common(SThisCode* thisCode, SFunctionParms* rpar, SVariable* varNeedle, SVariable* varHaystack, SVariable* varOccurrence, bool tlCaseSensitive, bool tlScanBackward, u32* tnFoundCount)
+	void ifunction_at_occurs_common(SThisCode* thisCode, SFunctionParams* rpar, SVariable* varNeedle, SVariable* varHaystack, SVariable* varOccurrence, bool tlCaseSensitive, bool tlScanBackward, u32* tnFoundCount)
 	{
 		u32			errorNum;
 		s32			lnI, lnStart, lnInc, lnStopper, lnFoundCount, lnOccurrence;
@@ -1075,7 +1075,7 @@
 // Example:
 //    ? ATN2(5,3)		&& Display 1.03
 //////
-	void function_atn2(SThisCode* thisCode, SFunctionParms* rpar)
+	void function_atn2(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		SVariable* varY = rpar->params[0];
 		SVariable* varX = rpar->params[1];
