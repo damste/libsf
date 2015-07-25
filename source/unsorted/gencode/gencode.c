@@ -466,28 +466,28 @@ void generate_pattern(unsigned int tnThisParam, int tnMaxParams, FILE* tfh_c, FI
 	//		    {
 	//		        case 0:	// No parameters
 	//		            switch (pd->rp->type) {
-	//		                default:                       pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_00();
-	//		                case _VAR_TYPE_V: pd->rp->_v = pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_0v();
-	//		                case _VAR_TYPE_F: pd->rp->_f = pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_0f();
-	//		                case _VAR_TYPE_D: pd->rp->_d = pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_0d();
+	//		                default:                      pd->_dll.dispatch_voidptr_voidptr_voidptr_voidptr_00();
+	//		                case _VAR_TYPE_V: pd->rp._v = pd->_dll.dispatch_voidptr_voidptr_voidptr_voidptr_0v();
+	//		                case _VAR_TYPE_F: pd->rp._f = pd->_dll.dispatch_voidptr_voidptr_voidptr_voidptr_0f();
+	//		                case _VAR_TYPE_D: pd->rp._d = pd->_dll.dispatch_voidptr_voidptr_voidptr_voidptr_0d();
 	//		            }
 	//		            break;
 	//
 	//		        case 1:	// One parameter
 	//		            switch (pd->rp->type) {
-	//		                default:                       pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_10(pd->ip[0]._v);
-	//		                case _VAR_TYPE_V: pd->rp->_v = pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_1v(pd->ip[0]._v);
-	//		                case _VAR_TYPE_F: pd->rp->_f = pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_1f(pd->ip[0]._v);
-	//		                case _VAR_TYPE_D: pd->rp->_d = pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_1d(pd->ip[0]._v);
+	//		                default:                      pd->_dll.dispatch_voidptr_voidptr_voidptr_voidptr_10(pd->ip[0]._v);
+	//		                case _VAR_TYPE_V: pd->rp._v = pd->_dll.dispatch_voidptr_voidptr_voidptr_voidptr_1v(pd->ip[0]._v);
+	//		                case _VAR_TYPE_F: pd->rp._f = pd->_dll.dispatch_voidptr_voidptr_voidptr_voidptr_1f(pd->ip[0]._v);
+	//		                case _VAR_TYPE_D: pd->rp._d = pd->_dll.dispatch_voidptr_voidptr_voidptr_voidptr_1d(pd->ip[0]._v);
 	//		            }
 	//		            break;
 	//
 	//		        case 2: // Two parameters
 	//		            switch (pd->rp->type) {
-	//		                default:                       pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_20(pd->ip[0]._v, pd->ip[1]._v);
-	//		                case _VAR_TYPE_V: pd->rp->_v = pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_2v(pd->ip[0]._v, pd->ip[1]._v);
-	//		                case _VAR_TYPE_F: pd->rp->_f = pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_2f(pd->ip[0]._v, pd->ip[1]._v);
-	//		                case _VAR_TYPE_D: pd->rp->_d = pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_2d(pd->ip[0]._v, pd->ip[1]._v);
+	//		                default:                      pd->_dll.dispatch_voidptr_voidptr_voidptr_voidptr_20(pd->ip[0]._v, pd->ip[1]._v);
+	//		                case _VAR_TYPE_V: pd->rp._v = pd->_dll.dispatch_voidptr_voidptr_voidptr_voidptr_2v(pd->ip[0]._v, pd->ip[1]._v);
+	//		                case _VAR_TYPE_F: pd->rp._f = pd->_dll.dispatch_voidptr_voidptr_voidptr_voidptr_2f(pd->ip[0]._v, pd->ip[1]._v);
+	//		                case _VAR_TYPE_D: pd->rp._d = pd->_dll.dispatch_voidptr_voidptr_voidptr_voidptr_2d(pd->ip[0]._v, pd->ip[1]._v);
 	//		            }
 	//		            break;
 	//
@@ -692,6 +692,7 @@ void writeout_file_c(int tnMaxParams, char* tcFunctionName, FILE* tfh)
 				sprintf(buffer, "%d", lnI);
 				writeout((void*)buffer, strlen(buffer), tfh);
 				writeout((void*)cgc_c_case_2, sizeof(cgc_c_case_2) - 1, tfh);
+				writeout((void*)buffer, strlen(buffer), tfh);
 				if (lnI == 1)		writeout((void*)cgc_c_case_3_singular,	sizeof(cgc_c_case_3_singular) - 1,	tfh);
 				else				writeout((void*)cgc_c_case_3_plural,	sizeof(cgc_c_case_3_plural) - 1,	tfh);
 
