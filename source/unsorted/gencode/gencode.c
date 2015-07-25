@@ -118,6 +118,11 @@ void		initializeIter				(int tnParamCount, int tnVarParams);
 int			isIterValid					(void);
 void		incrementIter				(void);
 int			incrementIterPart			(int* iptr, int tnParam);
+void		writeout_file_c				(int tnMaxParams, char* tcFunctionName, FILE* tfh);
+void		writeout_file_1				(int tnMaxParams, char* tcFunctionName, FILE* tfh);
+void		writeout_file_1_part		(int tnThisParam, char* tcFunctionName, char* tcPostfix, char* tcReturnType, int tnReturnTypeLength, FILE* tfh);
+void		writeout_param_types		(int tnMaxLineParams, FILE* tfh);
+int			writeout_param_this_type	(int tnThisParam, int tnMaxParams, int* iptr, int tlIncludePostfixComma, FILE* tfh);
 FILE*		createfile					(char* tcFileName);
 void		writeout					(void* data, size_t tnSize, FILE* fh);
 
@@ -160,14 +165,23 @@ const char	cgc_h1_header_p1[]			= "// Generated source file for calling dlls usi
 										  "\n"
 										  "struct SDllDispatch {\n"
 										  "    union {\n"
-										  "        void*    dispatch_function_address;  // Populate using (void*)GetProcAddress(...) or equivalent\n";
+										  "        void*   dispatch_function_address;  // Populate using (void*)GetProcAddress(...) or equivalent\n"
+										  "\n";
 const char	cgc_h1_footer_p1[]			= "    };\n"
 										  "};\n";
+const char	cgc_h1_prefix_common[]		= "        ";
 const char	cgc_h1_prefix_void[]		= "void   ";
 const char	cgc_h1_prefix_void_pointer[]= "void*  ";
 const char	cgc_h1_prefix_float[]		= "float  ";
 const char	cgc_h1_prefix_double[]		= "double ";
 const char	cgc_h1_prefix[]				= " dispatch_";
+const char	cgc_h1_postfix_1[]			= ")   (";
+const char	cgc_h1_param_void[]			= "void";
+const char	cgc_h1_param_void_pointer[]	= "void*";
+const char	cgc_h1_param_float[]		= "float";
+const char	cgc_h1_param_double[]		= "double";
+const char	cgc_h1_param_comma[]		= ", ";
+const char	cgc_h1_postfix_2[]			= ");\n";
 const char	cgc_h1_postfix_vspacer[]	= "\n";
 
 
@@ -189,7 +203,7 @@ const char	cgc_h3_header_p1[]			= "// Generated source file for calling dlls usi
 										  "\n"
 										  "// Variable holding dispatch destinations\n"
 										  "struct SDllDispatch0 {\n"
-										  "    void (*dispatch) (struct SParamData* pd);\n"
+										  "    void (*dispatch0) (struct SParamData* pd);\n"
 										  "};\n"
 										  "\n"
 										  "struct SDllDispatch0 dll_dispatch[] = {\n";
@@ -243,7 +257,7 @@ void generate(int tnMaxParamType, int tnVarParams, int tnMaxParams, char* tcOutp
 		memset(file_h2,	0, sizeof(file_h2));
 		memset(file_h3,	0, sizeof(file_h3));
 
-		memcpy(file_c,	tcOutputFile, min(strlen(tcOutputFile), sizeof(file_c) - sizeof(cgc_c_ext) - 1));
+		memcpy(file_c,	tcOutputFile, min(strlen(tcOutputFile), sizeof(file_c)  - sizeof(cgc_c_ext)  - 1));
 		memcpy(file_h1,	tcOutputFile, min(strlen(tcOutputFile), sizeof(file_h1) - sizeof(cgc_h1_ext) - 1));
 		memcpy(file_h2,	tcOutputFile, min(strlen(tcOutputFile), sizeof(file_h2) - sizeof(cgc_h2_ext) - 1));
 		memcpy(file_h3,	tcOutputFile, min(strlen(tcOutputFile), sizeof(file_h3) - sizeof(cgc_h3_ext) - 1));
@@ -321,7 +335,6 @@ void generate(int tnMaxParamType, int tnVarParams, int tnMaxParams, char* tcOutp
 	// Write footers
 	//////
 		writeout((void*)cgc_h1_footer_p1,	sizeof(cgc_h1_footer_p1) - 1,	lfh_h1);
-//		writeout((void*)cgc_h2_footer_p1,	sizeof(cgc_h2_footer_p1) - 1,	lfh_h1);
 		writeout((void*)cgc_h3_footer,		sizeof(cgc_h3_footer) - 1,		lfh_h3);
 
 
@@ -331,17 +344,13 @@ void generate(int tnMaxParamType, int tnVarParams, int tnMaxParams, char* tcOutp
 		fclose(lfh_c);
 		fclose(lfh_h1);
 		fclose(lfh_h2);
+		fclose(lfh_h3);
 
 }
 
 void generate_pattern(unsigned int tnThisParam, int tnMaxParams, FILE* tfh_c, FILE* tfh_h1, FILE* tfh_h2, FILE* tfh_h3)
 {
-	int		lnI;
-	char	functionName[(6 * _MAX_TYPE_LENGTH) + 1];
-	char	n0[8];	// _00
-	char	nv[8];	// _0v
-	char	nf[8];	// _0f
-	char	nd[8];	// _0d
+	char functionName[(6 * _MAX_TYPE_LENGTH) + 1];
 
 
 	//////////
@@ -404,20 +413,20 @@ void generate_pattern(unsigned int tnThisParam, int tnMaxParams, FILE* tfh_c, FI
 	//		    union {
 	//		        void*	dispatch_function_address;
 	//
-	//		        void    _dispatch_voidptr_voidptr_voidptr_voidptr_00    (void);
-	//		        void*   _dispatch_voidptr_voidptr_voidptr_voidptr_0v    (void);
-	//		        float   _dispatch_voidptr_voidptr_voidptr_voidptr_0f    (void);
-	//		        double  _dispatch_voidptr_voidptr_voidptr_voidptr_0d    (void);
+	//		        void    (*_dispatch_voidptr_voidptr_voidptr_voidptr_00)   (void);
+	//		        void*   (*_dispatch_voidptr_voidptr_voidptr_voidptr_0v)   (void);
+	//		        float   (*_dispatch_voidptr_voidptr_voidptr_voidptr_0f)   (void);
+	//		        double  (*_dispatch_voidptr_voidptr_voidptr_voidptr_0d)   (void);
 	//
-	//		        void    _dispatch_voidptr_voidptr_voidptr_voidptr_10    (void*);
-	//		        void*   _dispatch_voidptr_voidptr_voidptr_voidptr_1v    (void*);
-	//		        float   _dispatch_voidptr_voidptr_voidptr_voidptr_1f    (void*);
-	//		        double  _dispatch_voidptr_voidptr_voidptr_voidptr_1d    (void*);
+	//		        void    (*_dispatch_voidptr_voidptr_voidptr_voidptr_10)   (void*);
+	//		        void*   (*_dispatch_voidptr_voidptr_voidptr_voidptr_1v)   (void*);
+	//		        float   (*_dispatch_voidptr_voidptr_voidptr_voidptr_1f)   (void*);
+	//		        double  (*_dispatch_voidptr_voidptr_voidptr_voidptr_1d)   (void*);
 	//
-	//		        void    _dispatch_voidptr_voidptr_voidptr_voidptr_20    (void*, void*);
-	//		        void*   _dispatch_voidptr_voidptr_voidptr_voidptr_2v    (void*, void*);
-	//		        float   _dispatch_voidptr_voidptr_voidptr_voidptr_2f    (void*, void*);
-	//		        double  _dispatch_voidptr_voidptr_voidptr_voidptr_2d    (void*, void*);
+	//		        void    (*_dispatch_voidptr_voidptr_voidptr_voidptr_20)   (void*, void*);
+	//		        void*   (*_dispatch_voidptr_voidptr_voidptr_voidptr_2v)   (void*, void*);
+	//		        float   (*_dispatch_voidptr_voidptr_voidptr_voidptr_2f)   (void*, void*);
+	//		        double  (*_dispatch_voidptr_voidptr_voidptr_voidptr_2d)   (void*, void*);
 	//		    };
 	//		};
 	//
@@ -426,11 +435,11 @@ void generate_pattern(unsigned int tnThisParam, int tnMaxParams, FILE* tfh_c, FI
 	//		void dispatch_voidptr_voidptr_voidptr_voidptr(struct SParamData* pd);
 	//
 	// In the _3.h file:
-	//		struct SDllSDispatch {
-	//		    void (*dispatch) (struct SParamData* pd);
+	//		struct SDllDispatch0 {
+	//		    void (*dispatch0) (struct SParamData* pd);
 	//		};
 	//
-	//		struct SDllDispatch dll_dispatch[] = {
+	//		struct SDllDispatch0 dll_dispatch[] = {
 	//		    &dispatch_voidptr_voidptr_voidptr_voidptr;
 	//		};
 	//
@@ -438,12 +447,10 @@ void generate_pattern(unsigned int tnThisParam, int tnMaxParams, FILE* tfh_c, FI
 
 
 	//////////
-	// file_1.h output
+	// file.c and file_1.h output
 	//////
-		for (lnI = 0; lnI < tnMaxParams; lnI++)
-		{
-
-		}
+		writeout_file_c(tnMaxParams, functionName, tfh_c);
+		writeout_file_1(tnMaxParams, functionName, tfh_h1);
 
 
 	//////////
@@ -464,6 +471,7 @@ void generate_pattern(unsigned int tnThisParam, int tnMaxParams, FILE* tfh_c, FI
 		writeout((void*)cgc_h3_postfix,	sizeof(cgc_h3_postfix) - 1,	tfh_h3);
 		if (tnThisParam % 3 == 0)
 			writeout((void*)cgc_h3_postfix_vspacer,	sizeof(cgc_h3_postfix_vspacer) - 1,	tfh_h3);
+
 }
 
 int generate_pattern_type(char* buffer, int tnType, int tnParam)
@@ -563,6 +571,146 @@ int incrementIterPart(int* iptr, int tnParam)
 	// Indicate our status
 	//////
 		return(gsIter.isValid);
+
+}
+
+void writeout_file_c(int tnMaxParams, char* tcFunctionName, FILE* tfh)
+{
+}
+
+void writeout_file_1(int tnMaxParams, char* tcFunctionName, FILE* tfh)
+{
+	int		lnI;
+	char	n0[8];	// for _00 functionName postfix
+	char	nv[8];	// for _0v functionName postfix
+	char	nf[8];	// for _0f functionName postfix
+	char	nd[8];	// for _0d functionName postfix
+
+
+	//////////
+	// Iterate once through for each parameter count
+	//////
+		for (lnI = 0; lnI <= tnMaxParams; lnI++)
+		{
+			// Build postfix for this iteration
+			sprintf(n0, "%d0", lnI);
+			sprintf(nv, "%dv", lnI);
+			sprintf(nf, "%df", lnI);
+			sprintf(nd, "%dd", lnI);
+
+			// Write out this block
+			writeout_file_1_part(lnI,	tcFunctionName,		n0,		(char*)cgc_h1_prefix_void,			sizeof(cgc_h1_prefix_void) - 1,				tfh);
+			writeout_file_1_part(lnI,	tcFunctionName,		nv,		(char*)cgc_h1_prefix_void_pointer,	sizeof(cgc_h1_prefix_void_pointer) - 1,		tfh);
+			writeout_file_1_part(lnI,	tcFunctionName,		nf,		(char*)cgc_h1_prefix_float,			sizeof(cgc_h1_prefix_float) - 1,			tfh);
+			writeout_file_1_part(lnI,	tcFunctionName,		nd,		(char*)cgc_h1_prefix_double,		sizeof(cgc_h1_prefix_double) - 1,			tfh);
+
+			// Double-space between
+			writeout((void*)cgc_h1_postfix_vspacer, sizeof(cgc_h1_postfix_vspacer) - 1, tfh);
+		}
+
+}
+
+
+void writeout_file_1_part(int tnThisParam, char* tcFunctionName, char* tcPostfix, char* tcReturnType, int tnReturnTypeLength, FILE* tfh)
+{
+	int lnI;
+
+
+	//////////
+	// Append fixed parts
+	//////
+		writeout((void*)cgc_h1_prefix_common,	sizeof(cgc_h1_prefix_common) - 1,	tfh);	// leading spaces
+		writeout((void*)tcReturnType,			tnReturnTypeLength,					tfh);	// "void"
+		writeout((void*)cgc_h1_prefix,			sizeof(cgc_h1_prefix) - 1,			tfh);	// "_dispatch_"
+		writeout((void*)tcFunctionName,			strlen(tcFunctionName),				tfh);	// "voidptr_voidptr_voidptr_voidptr"
+		writeout((void*)tcPostfix,				strlen(tcPostfix),					tfh);	// "_00"
+		writeout((void*)cgc_h1_postfix_1,		sizeof(cgc_h1_postfix_1) - 1,		tfh);	// ")   ("
+
+
+	//////////
+	// Append variable parameter count
+	//////
+		if (tnThisParam == 0)
+		{
+			// No parameters, so fill with "void"
+			writeout((void*)cgc_h1_param_void, sizeof(cgc_h1_param_void) - 1, tfh);
+
+		} else {
+			// Multiple parameters, write out each
+			writeout_param_types(tnThisParam, tfh);
+		}
+
+
+	//////////
+	// Close it up
+	//////
+		writeout((void*)cgc_h1_postfix_2,		sizeof(cgc_h1_postfix_2) - 1,		tfh);	// ");\n"
+
+}
+
+void writeout_param_types(int tnMaxLineParams, FILE* tfh)
+{
+	int lnI;
+
+
+	//////////
+	// Process as many parameters as there are up to the first six
+	//////
+		if (writeout_param_this_type(1, tnMaxLineParams, &gsIter.varParam1, ((tnMaxLineParams > min(1, gsIter.nVarParams)) ? _TRUE : _FALSE), tfh) &&
+			writeout_param_this_type(2, tnMaxLineParams, &gsIter.varParam2, ((tnMaxLineParams > min(2, gsIter.nVarParams)) ? _TRUE : _FALSE), tfh) &&
+			writeout_param_this_type(3, tnMaxLineParams, &gsIter.varParam3, ((tnMaxLineParams > min(3, gsIter.nVarParams)) ? _TRUE : _FALSE), tfh) &&
+			writeout_param_this_type(4, tnMaxLineParams, &gsIter.varParam4, ((tnMaxLineParams > min(4, gsIter.nVarParams)) ? _TRUE : _FALSE), tfh) &&
+			writeout_param_this_type(5, tnMaxLineParams, &gsIter.varParam5, ((tnMaxLineParams > min(5, gsIter.nVarParams)) ? _TRUE : _FALSE), tfh) &&
+			writeout_param_this_type(6, tnMaxLineParams, &gsIter.varParam6, ((tnMaxLineParams > min(6, gsIter.nVarParams)) ? _TRUE : _FALSE), tfh))
+		{
+			// There are at least seven parametes, the rest are all written out as void* values
+			for (lnI = 7; lnI <= tnMaxLineParams; lnI++)
+				writeout_param_this_type(lnI, tnMaxLineParams, NULL, ((tnMaxLineParams > lnI) ? _TRUE : _FALSE), tfh);
+		}
+}
+
+int writeout_param_this_type(int tnThisParam, int tnMaxParams, int* iptr, int tlIncludePostfixComma, FILE* tfh)
+{
+
+	//////////
+	// Dispatch either an explicit type, or fallback on the void* type
+	//////
+		if (tnThisParam <= gsIter.nVarParams)
+		{
+			// Written out based on the type
+			switch (*iptr)
+			{
+				case _PARAM_TYPE_VOIDPTR:
+					writeout((void*)cgc_h1_param_void_pointer, sizeof(cgc_h1_param_void_pointer) - 1, tfh);
+					break;
+
+				case _PARAM_TYPE_FLOAT:
+					writeout((void*)cgc_h1_param_float, sizeof(cgc_h1_param_float) - 1, tfh);
+					break;
+
+				case _PARAM_TYPE_DOUBLE:
+					writeout((void*)cgc_h1_param_double, sizeof(cgc_h1_param_double) - 1, tfh);
+					break;
+			}
+
+		} else {
+			// Always written out as void* beyond here
+			writeout((void*)cgc_h1_param_void_pointer, sizeof(cgc_h1_param_void_pointer) - 1, tfh);
+		}
+
+
+	//////////
+	// Append a comma if need be
+	//////
+		if (tlIncludePostfixComma == _TRUE)
+			writeout((void*)cgc_h1_param_comma, sizeof(cgc_h1_param_comma) - 1, tfh);
+
+
+	//////////
+	// Indicate if there are more parameters
+	//////
+		return((tnThisParam < tnMaxParams) ? _TRUE : _FALSE);
+
 }
 
 FILE* createfile(char* tcFileName)
