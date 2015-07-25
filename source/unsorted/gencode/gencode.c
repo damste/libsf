@@ -111,21 +111,24 @@ struct SIterator
 	int		varParam6;					// Parameter 6 type (see _PARAM_TYPE_* constants)
 };
 
-void		generate					(int tnMaxParamType, int tnVarParams, int tnMaxParams, char* tcOutputFile);
-void		generate_pattern			(unsigned int tnThisParam, int tnMaxParams, FILE* fh_c, FILE* fh_h1, FILE* fh_h2, FILE* fh_h3);
-int			generate_pattern_type		(char* buffer, int tnType, int tnParam);
-void		initializeIter				(int tnParamCount, int tnVarParams);
-int			isIterValid					(void);
-void		incrementIter				(void);
-int			incrementIterPart			(int* iptr, int tnParam);
-void		writeout_file_c				(int tnMaxParams, char* tcFunctionName, FILE* tfh);
-void		writeout_file_c_part		(int tnThisParam, char* tcFunctionName, char* tcPostfix, char* tcReturnType, int tnReturnTypeLength, FILE* tfh);
-void		writeout_file_1				(int tnMaxParams, char* tcFunctionName, FILE* tfh);
-void		writeout_file_1_part		(int tnThisParam, char* tcFunctionName, char* tcPostfix, char* tcReturnType, int tnReturnTypeLength, FILE* tfh);
-void		writeout_param_types		(int tnMaxLineParams, FILE* tfh);
-int			writeout_param_this_type	(int tnThisParam, int tnMaxParams, int* iptr, int tlIncludePostfixComma, FILE* tfh);
-FILE*		createfile					(char* tcFileName);
-void		writeout					(void* data, size_t tnSize, FILE* fh);
+// Forward declarations for gencode algorithms.
+void		generate							(int tnMaxParamType, int tnVarParams, int tnMaxParams, char* tcOutputFile);
+void		generate_pattern					(unsigned int tnThisParam, int tnMaxParams, FILE* fh_c, FILE* fh_h1, FILE* fh_h2, FILE* fh_h3);
+int			generate_pattern_type				(char* buffer, int tnType, int tnParam);
+void		initializeIter						(int tnParamCount, int tnVarParams);
+int			isIterValid							(void);
+void		incrementIter						(void);
+int			incrementIterPart					(int* iptr, int tnParam);
+void		writeout_file_c						(int tnMaxParams, char* tcFunctionName, FILE* tfh);
+void		writeout_file_c_part				(int tnThisParam, char* tcFunctionName, char* tcPostfix, FILE* tfh);
+void		writeout_file_1						(int tnMaxParams, char* tcFunctionName, FILE* tfh);
+void		writeout_file_1_part				(int tnThisParam, char* tcFunctionName, char* tcPostfix, char* tcReturnType, int tnReturnTypeLength, FILE* tfh);
+void		writeout_param_values				(int tnMaxLineParams, FILE* tfh);
+int			writeout_param_values_this_type		(int tnThisParam, int tnMaxParams, int* iptr, int tlIncludePostfixComma, FILE* tfh);
+void		writeout_param_types				(int tnMaxLineParams, FILE* tfh);
+int			writeout_param_this_type			(int tnThisParam, int tnMaxParams, int* iptr, int tlIncludePostfixComma, FILE* tfh);
+FILE*		createfile							(char* tcFileName);
+void		writeout							(void* data, size_t tnSize, FILE* fh);
 
 
 
@@ -227,11 +230,12 @@ const char	cgc_c_footer[]				= "\n"
 										  "    }\n"
 										  "}\n"
 										  "\n";
-const char	cgc_c_prefix_common[]		= "                ";
-const char	cgc_c_prefix_void[]			= "void   ";
-const char	cgc_c_prefix_void_pointer[]	= "void*  ";
-const char	cgc_c_prefix_float[]		= "float  ";
-const char	cgc_c_prefix_double[]		= "double ";
+const char	cgc_c_param_prefix_1[]		= "pd->ip[";
+const char	cgc_c_param_prefix_2[]		= "].";
+const char	cgc_c_param_void_pointer[]	= "_v";
+const char	cgc_c_param_float[]			= "_f";
+const char	cgc_c_param_double[]		= "_d";
+const char	cgc_c_param_comma[]			= ", ";
 
 
 
@@ -542,7 +546,7 @@ void generate_pattern(unsigned int tnThisParam, int tnMaxParams, FILE* tfh_c, FI
 		writeout((void*)cgc_h2_prefix,	sizeof(cgc_h2_prefix) - 1,	tfh_h2);
 		writeout((void*)functionName,	strlen(functionName),		tfh_h2);
 		writeout((void*)cgc_h2_postfix,	sizeof(cgc_h2_postfix) - 1,	tfh_h2);
-		if (tnThisParam % 3 == 0)
+		if (tnThisParam % (unsigned int)(gsIter.nVarParams - 1) == 0)
 			writeout((void*)cgc_h2_postfix_vspacer,	sizeof(cgc_h2_postfix_vspacer) - 1,	tfh_h2);
 
 
@@ -552,7 +556,7 @@ void generate_pattern(unsigned int tnThisParam, int tnMaxParams, FILE* tfh_c, FI
 		writeout((void*)cgc_h3_prefix,	sizeof(cgc_h3_prefix) - 1,	tfh_h3);
 		writeout((void*)functionName,	strlen(functionName),		tfh_h3);
 		writeout((void*)cgc_h3_postfix,	sizeof(cgc_h3_postfix) - 1,	tfh_h3);
-		if (tnThisParam % 3 == 0)
+		if (tnThisParam % (unsigned int)(gsIter.nVarParams - 1) == 0)
 			writeout((void*)cgc_h3_postfix_vspacer,	sizeof(cgc_h3_postfix_vspacer) - 1,	tfh_h3);
 
 }
@@ -707,22 +711,22 @@ void writeout_file_c(int tnMaxParams, char* tcFunctionName, FILE* tfh)
 				writeout((void*)tcFunctionName,			strlen(tcFunctionName),				tfh);
 				writeout((void*)n0,						strlen(n0),							tfh);
 				writeout((void*)cgc_c_switch_1_prefix,	sizeof(cgc_c_switch_1_prefix) - 1,	tfh);
-				writeout_file_c_part(lnI,	tcFunctionName,		n0,		(char*)cgc_h1_prefix_void,			sizeof(cgc_h1_prefix_void) - 1,				tfh);
+				writeout_param_values(lnI, tfh);
 				writeout((void*)cgc_c_switch_1_postfix,	sizeof(cgc_c_switch_1_postfix) - 1,	tfh);
 				writeout((void*)tcFunctionName,			strlen(tcFunctionName),				tfh);
 				writeout((void*)nv,						strlen(nv),							tfh);
 				writeout((void*)cgc_c_switch_2_prefix,	sizeof(cgc_c_switch_2_prefix) - 1,	tfh);
-				writeout_file_c_part(lnI,	tcFunctionName,		nv,		(char*)cgc_h1_prefix_void_pointer,	sizeof(cgc_h1_prefix_void_pointer) - 1,		tfh);
+				writeout_param_values(lnI, tfh);
 				writeout((void*)cgc_c_switch_2_postfix,	sizeof(cgc_c_switch_2_postfix) - 1,	tfh);
 				writeout((void*)tcFunctionName,			strlen(tcFunctionName),				tfh);
 				writeout((void*)nf,						strlen(nf),							tfh);
 				writeout((void*)cgc_c_switch_3_prefix,	sizeof(cgc_c_switch_3_prefix) - 1,	tfh);
-				writeout_file_c_part(lnI,	tcFunctionName,		nf,		(char*)cgc_h1_prefix_float,			sizeof(cgc_h1_prefix_float) - 1,			tfh);
+				writeout_param_values(lnI, tfh);
 				writeout((void*)cgc_c_switch_3_postfix,	sizeof(cgc_c_switch_3_postfix) - 1,	tfh);
 				writeout((void*)tcFunctionName,			strlen(tcFunctionName),				tfh);
 				writeout((void*)nf,						strlen(nf),							tfh);
 				writeout((void*)cgc_c_switch_4_prefix,	sizeof(cgc_c_switch_4_prefix) - 1,	tfh);
-				writeout_file_c_part(lnI,	tcFunctionName,		nd,		(char*)cgc_h1_prefix_double,		sizeof(cgc_h1_prefix_double) - 1,			tfh);
+				writeout_param_values(lnI, tfh);
 				writeout((void*)cgc_c_switch_4_postfix,	sizeof(cgc_c_switch_4_postfix) - 1,	tfh);
 
 		}
@@ -733,10 +737,6 @@ void writeout_file_c(int tnMaxParams, char* tcFunctionName, FILE* tfh)
 	//////
 		writeout((void*)cgc_c_footer, sizeof(cgc_c_footer) - 1, tfh);
 
-}
-
-void writeout_file_c_part(int tnThisParam, char* tcFunctionName, char* tcPostfix, char* tcReturnType, int tnReturnTypeLength, FILE* tfh)
-{
 }
 
 void writeout_file_1(int tnMaxParams, char* tcFunctionName, FILE* tfh)
@@ -804,6 +804,82 @@ void writeout_file_1_part(int tnThisParam, char* tcFunctionName, char* tcPostfix
 	// Close it up
 	//////
 		writeout((void*)cgc_h1_postfix_2,		sizeof(cgc_h1_postfix_2) - 1,		tfh);	// ");\n"
+
+}
+
+void writeout_param_values(int tnMaxLineParams, FILE* tfh)
+{
+	int lnI;
+
+
+	//////////
+	// Process as many parameters as there are up to the first six
+	//////
+		if (tnMaxLineParams > 0)
+		{
+			if (writeout_param_values_this_type(1, tnMaxLineParams, &gsIter.varParam1, ((tnMaxLineParams > min(1, gsIter.nVarParams)) ? _TRUE : _FALSE), tfh) &&
+				writeout_param_values_this_type(2, tnMaxLineParams, &gsIter.varParam2, ((tnMaxLineParams > min(2, gsIter.nVarParams)) ? _TRUE : _FALSE), tfh) &&
+				writeout_param_values_this_type(3, tnMaxLineParams, &gsIter.varParam3, ((tnMaxLineParams > min(3, gsIter.nVarParams)) ? _TRUE : _FALSE), tfh) &&
+				writeout_param_values_this_type(4, tnMaxLineParams, &gsIter.varParam4, ((tnMaxLineParams > min(4, gsIter.nVarParams)) ? _TRUE : _FALSE), tfh) &&
+				writeout_param_values_this_type(5, tnMaxLineParams, &gsIter.varParam5, ((tnMaxLineParams > min(5, gsIter.nVarParams)) ? _TRUE : _FALSE), tfh) &&
+				writeout_param_values_this_type(6, tnMaxLineParams, &gsIter.varParam6, ((tnMaxLineParams > min(6, gsIter.nVarParams)) ? _TRUE : _FALSE), tfh))
+			{
+				// There are at least seven parametes, the rest are all written out as void* values
+				for (lnI = 7; lnI <= tnMaxLineParams; lnI++)
+					writeout_param_values_this_type(lnI, tnMaxLineParams, NULL, ((tnMaxLineParams > lnI) ? _TRUE : _FALSE), tfh);
+			}
+		}
+
+}
+
+int writeout_param_values_this_type(int tnThisParam, int tnMaxParams, int* iptr, int tlIncludePostfixComma, FILE* tfh)
+{
+	char buffer[12];
+
+
+	//////////
+	// Prefix the parameter with the constant portion
+	//////
+		writeout((void*)cgc_c_param_prefix_1,		sizeof(cgc_c_param_prefix_1) - 1,		tfh);
+		sprintf(buffer, "%d", tnThisParam);
+		writeout((void*)buffer,						strlen(buffer),							tfh);
+		writeout((void*)cgc_c_param_prefix_2,		sizeof(cgc_c_param_prefix_2) - 1,		tfh);
+
+
+	//////////
+	// Dispatch either an explicit type, or fallback on the void* type
+	//////
+		if (tnThisParam <= gsIter.nVarParams)
+		{
+			// Written out based on the type
+			switch (*iptr)
+			{
+				case _PARAM_TYPE_VOIDPTR:
+					writeout((void*)cgc_c_param_void_pointer, sizeof(cgc_c_param_void_pointer) - 1, tfh);
+					break;
+
+				case _PARAM_TYPE_FLOAT:
+					writeout((void*)cgc_c_param_float, sizeof(cgc_c_param_float) - 1, tfh);
+					break;
+
+				case _PARAM_TYPE_DOUBLE:
+					writeout((void*)cgc_c_param_double, sizeof(cgc_c_param_double) - 1, tfh);
+					break;
+			}
+		}
+
+
+	//////////
+	// Append a comma if need be
+	//////
+		if (tlIncludePostfixComma == _TRUE)
+			writeout((void*)cgc_c_param_comma, sizeof(cgc_c_param_comma) - 1, tfh);
+
+
+	//////////
+	// Indicate if there are more parameters
+	//////
+		return((tnThisParam < tnMaxParams) ? _TRUE : _FALSE);
 
 }
 
