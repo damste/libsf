@@ -119,12 +119,14 @@ int			isIterValid					(void);
 void		incrementIter				(void);
 int			incrementIterPart			(int* iptr, int tnParam);
 void		writeout_file_c				(int tnMaxParams, char* tcFunctionName, FILE* tfh);
+void		writeout_file_c_part		(int tnThisParam, char* tcFunctionName, char* tcPostfix, char* tcReturnType, int tnReturnTypeLength, FILE* tfh);
 void		writeout_file_1				(int tnMaxParams, char* tcFunctionName, FILE* tfh);
 void		writeout_file_1_part		(int tnThisParam, char* tcFunctionName, char* tcPostfix, char* tcReturnType, int tnReturnTypeLength, FILE* tfh);
 void		writeout_param_types		(int tnMaxLineParams, FILE* tfh);
 int			writeout_param_this_type	(int tnThisParam, int tnMaxParams, int* iptr, int tlIncludePostfixComma, FILE* tfh);
 FILE*		createfile					(char* tcFileName);
 void		writeout					(void* data, size_t tnSize, FILE* fh);
+
 
 
 // .c header
@@ -154,7 +156,82 @@ const char	cgc_c_header_p4[]			= ")\n"
 const char	cgc_c_header_p5[]			= "];     // Input parameters\n"
 										  "    struct SParam         rp;         // Return parameter\n"
 										  "}\n"
+										  "\n"
+										  "#define _MAX_VAR_PARAMS ";
+const char	cgc_c_header_p6[]			= "\n"
+										  "\n"
+										  "// This is the primary/top-level function to use for dispatching into a dll function\n"
+										  "void dispatch_dll_function(SParamData* pd)\n"
+										  "{\n"
+										  "    int lnIndex;\n"
+										  "\n"
+										  "\n"
+										  "    //////////\n"
+										  "    // Compute index\n"
+										  "    //////\n"
+										  "        lnIndex =    /*pow(_MAX_VAR_PARAMS,0)*/  (pd->ip[0] * 1)\n"
+										  "#if _MAX_VAR_PARAMS >= 2\n"
+										  "                 +   /*pow(_MAX_VAR_PARAMS,1)*/  (pd->ip[1] * (_MAX_VAR_PARAMS))\n"
+										  "#endif\n"
+										  "#if _MAX_VAR_PARAMS >= 3\n"
+										  "                 +   /*pow(_MAX_VAR_PARAMS,2)*/  (pd->ip[2] * (_MAX_VAR_PARAMS * _MAX_VAR_PARAMS))\n"
+										  "#endif\n"
+										  "#if _MAX_VAR_PARAMS >= 4\n"
+										  "                 +   /*pow(_MAX_VAR_PARAMS,3)*/  (pd->ip[3] * (_MAX_VAR_PARAMS * _MAX_VAR_PARAMS * _MAX_VAR_PARAMS))\n"
+										  "#endif\n"
+										  "#if _MAX_VAR_PARAMS >= 5\n"
+										  "                 +   /*pow(_MAX_VAR_PARAMS,4)*/  (pd->ip[4] * (_MAX_VAR_PARAMS * _MAX_VAR_PARAMS * _MAX_VAR_PARAMS * _MAX_VAR_PARAMS))\n"
+										  "#endif\n"
+										  "#if _MAX_VAR_PARAMS >= 6\n"
+										  "                 +   /*pow(_MAX_VAR_PARAMS,5)*/  (pd->ip[5] * (_MAX_VAR_PARAMS * _MAX_VAR_PARAMS * _MAX_VAR_PARAMS * _MAX_VAR_PARAMS * _MAX_VAR_PARAMS))\n"
+										  "#endif\n"
+										  ";\n"
+										  "\n"
+										  "    //////////\n"
+										  "    // Dispatch to the general handler by variable parameter type, which will\n"
+										  "    // then dispatch to the appropriate sub-handler based on parameter count\n"
+										  "    //////\n"
+										  "        dll_dispatch[lnIndex]->dispatch0(pd);    // Calls directly into the functions below\n"
+										  "\n"
+										  "}\n"
+										  "\n"
+										  "// The following functions are master functions called by the variable parameter\n"
+										  "// portion they represent.  Within those functions are handlers for the parameter\n"
+										  "// count, so that the appropriate function is dispatched.\n"
 										  "\n";
+const char	cgc_c_function_prefix1[]		= "void dispatch_";
+const char	cgc_c_function_prefix2[]	= "(struct SParamData* pd)\n"
+										  "{\n"
+										  "    switch (pd->ipCount)\n"
+										  "    {\n";
+const char	cgc_c_case_1[]				= "        case ";
+const char	cgc_c_case_2[]				= ":  // ";
+const char	cgc_c_case_3_singular[]		= " parameter\n";
+const char	cgc_c_case_3_plural[]		= " parameters\n";
+const char	cgc_c_switch_prefix[]		= "            switch (pd->rp->type) {\n"
+										  "                default:                       pd->_dll->_dispatch_";
+const char	cgc_c_switch_1_prefix[]		= "(";
+const char	cgc_c_switch_1_postfix[]	= ");\n"
+										  "                case _VAR_TYPE_V: pd->rp->_v = pd->_dll->_dispatch_";
+const char	cgc_c_switch_2_prefix[]		= "(";
+const char	cgc_c_switch_2_postfix[]	= ");\n"
+										  "                case _VAR_TYPE_F: pd->rp->_f = pd->_dll->_dispatch_";
+const char	cgc_c_switch_3_prefix[]		= "(";
+const char	cgc_c_switch_3_postfix[]	= ");\n"
+										  "                case _VAR_TYPE_D: pd->rp->_d = pd->_dll->_dispatch_";
+const char	cgc_c_switch_4_prefix[]		= "(";
+const char	cgc_c_switch_4_postfix[]	= ");\n"
+										  "            }\n"
+										  "            break;\n";
+const char	cgc_c_footer[]				= "\n"
+										  "    }\n"
+										  "}\n"
+										  "\n";
+const char	cgc_c_prefix_common[]		= "                ";
+const char	cgc_c_prefix_void[]			= "void   ";
+const char	cgc_c_prefix_void_pointer[]	= "void*  ";
+const char	cgc_c_prefix_float[]		= "float  ";
+const char	cgc_c_prefix_double[]		= "double ";
 
 
 
@@ -185,6 +262,7 @@ const char	cgc_h1_postfix_2[]			= ");\n";
 const char	cgc_h1_postfix_vspacer[]	= "\n";
 
 
+
 // _2.h header
 const char	cgc_h2_header_p0_1[]		= "// ";
 const char	cgc_h2_header_p0_2[]		= "\n";
@@ -194,6 +272,7 @@ const char	cgc_h2_header_p1[]			= "// Generated source file for calling dlls usi
 const char	cgc_h2_prefix[]				= "void dispatch_";
 const char	cgc_h2_postfix[]			= "(struct SParamData* pd);\n";
 const char	cgc_h2_postfix_vspacer[]	= "\n";
+
 
 
 // _3.h header
@@ -299,11 +378,14 @@ void generate(int tnMaxParamType, int tnVarParams, int tnMaxParams, char* tcOutp
 		writeout((void*)cgc_c_header_p2_2, sizeof(cgc_c_header_p2_2) - 1, lfh_c);
 
 		writeout((void*)cgc_c_header_p3, sizeof(cgc_c_header_p3) - 1, lfh_c);
-		sprintf(buffer, "%u", tnMaxParams);
+		sprintf(buffer, "%d", tnMaxParams);
 		writeout((void*)buffer, strlen(buffer), lfh_c);
 		writeout((void*)cgc_c_header_p4, sizeof(cgc_c_header_p4) - 1, lfh_c);
 		writeout((void*)buffer, strlen(buffer), lfh_c);
 		writeout((void*)cgc_c_header_p5, sizeof(cgc_c_header_p5) - 1, lfh_c);
+		sprintf(buffer, "%d", tnVarParams);
+		writeout((void*)buffer, strlen(buffer), lfh_c);
+		writeout((void*)cgc_c_header_p6, sizeof(cgc_c_header_p6) - 1, lfh_c);
 
 		// file_1.h
 		writeout((void*)cgc_h1_header_p0_1, sizeof(cgc_h1_header_p0_1) - 1, lfh_h1);
@@ -334,6 +416,7 @@ void generate(int tnMaxParamType, int tnVarParams, int tnMaxParams, char* tcOutp
 	//////////
 	// Write footers
 	//////
+		writeout((void*)cgc_c_footer,		sizeof(cgc_c_footer) - 1,		lfh_h1);
 		writeout((void*)cgc_h1_footer_p1,	sizeof(cgc_h1_footer_p1) - 1,	lfh_h1);
 		writeout((void*)cgc_h3_footer,		sizeof(cgc_h3_footer) - 1,		lfh_h3);
 
@@ -576,6 +659,84 @@ int incrementIterPart(int* iptr, int tnParam)
 
 void writeout_file_c(int tnMaxParams, char* tcFunctionName, FILE* tfh)
 {
+	int		lnI;
+	char	buffer[8];
+	char	n0[8];	// for _00 functionName postfix
+	char	nv[8];	// for _0v functionName postfix
+	char	nf[8];	// for _0f functionName postfix
+	char	nd[8];	// for _0d functionName postfix
+
+
+	//////////
+	// Write function header
+	//////
+		writeout((void*)cgc_c_function_prefix1,		sizeof(cgc_c_function_prefix1) - 1,		tfh);
+		writeout((void*)tcFunctionName,				strlen(tcFunctionName),					tfh);
+		writeout((void*)cgc_c_function_prefix2,		sizeof(cgc_c_function_prefix2) - 1,		tfh);
+
+
+	//////////
+	// Build case statements, one for each parameter count
+	//////
+		for (lnI = 0; lnI <= tnMaxParams; lnI++)
+		{
+			//////////
+			// Write the case instance header
+			//////
+				writeout((void*)cgc_c_case_1, sizeof(cgc_c_case_1) - 1, tfh);
+				sprintf(buffer, "%d", lnI);
+				writeout((void*)buffer, strlen(buffer), tfh);
+				writeout((void*)cgc_c_case_2, sizeof(cgc_c_case_2) - 1, tfh);
+				if (lnI == 1)		writeout((void*)cgc_c_case_3_singular,	sizeof(cgc_c_case_3_singular) - 1,	tfh);
+				else				writeout((void*)cgc_c_case_3_plural,	sizeof(cgc_c_case_3_plural) - 1,	tfh);
+
+
+			//////////
+			// Build postfix for this iteration
+			//////
+				sprintf(n0, "%d0", lnI);
+				sprintf(nv, "%dv", lnI);
+				sprintf(nf, "%df", lnI);
+				sprintf(nd, "%dd", lnI);
+
+
+			//////////
+			// Write out the switch block
+			//////
+				writeout((void*)cgc_c_switch_prefix,	sizeof(cgc_c_switch_prefix) - 1,	tfh);
+				writeout((void*)tcFunctionName,			strlen(tcFunctionName),				tfh);
+				writeout((void*)n0,						strlen(n0),							tfh);
+				writeout((void*)cgc_c_switch_1_prefix,	sizeof(cgc_c_switch_1_prefix) - 1,	tfh);
+				writeout_file_c_part(lnI,	tcFunctionName,		n0,		(char*)cgc_h1_prefix_void,			sizeof(cgc_h1_prefix_void) - 1,				tfh);
+				writeout((void*)cgc_c_switch_1_postfix,	sizeof(cgc_c_switch_1_postfix) - 1,	tfh);
+				writeout((void*)tcFunctionName,			strlen(tcFunctionName),				tfh);
+				writeout((void*)nv,						strlen(nv),							tfh);
+				writeout((void*)cgc_c_switch_2_prefix,	sizeof(cgc_c_switch_2_prefix) - 1,	tfh);
+				writeout_file_c_part(lnI,	tcFunctionName,		nv,		(char*)cgc_h1_prefix_void_pointer,	sizeof(cgc_h1_prefix_void_pointer) - 1,		tfh);
+				writeout((void*)cgc_c_switch_2_postfix,	sizeof(cgc_c_switch_2_postfix) - 1,	tfh);
+				writeout((void*)tcFunctionName,			strlen(tcFunctionName),				tfh);
+				writeout((void*)nf,						strlen(nf),							tfh);
+				writeout((void*)cgc_c_switch_3_prefix,	sizeof(cgc_c_switch_3_prefix) - 1,	tfh);
+				writeout_file_c_part(lnI,	tcFunctionName,		nf,		(char*)cgc_h1_prefix_float,			sizeof(cgc_h1_prefix_float) - 1,			tfh);
+				writeout((void*)cgc_c_switch_3_postfix,	sizeof(cgc_c_switch_3_postfix) - 1,	tfh);
+				writeout((void*)tcFunctionName,			strlen(tcFunctionName),				tfh);
+				writeout((void*)nf,						strlen(nf),							tfh);
+				writeout((void*)cgc_c_switch_4_prefix,	sizeof(cgc_c_switch_4_prefix) - 1,	tfh);
+				writeout_file_c_part(lnI,	tcFunctionName,		nd,		(char*)cgc_h1_prefix_double,		sizeof(cgc_h1_prefix_double) - 1,			tfh);
+				writeout((void*)cgc_c_switch_4_postfix,	sizeof(cgc_c_switch_4_postfix) - 1,	tfh);
+
+		}
+
+
+	//////////
+	// Write function footer
+	//////
+		writeout((void*)cgc_c_footer, sizeof(cgc_c_footer) - 1, tfh);
+
+}
+
+void writeout_file_c_part(int tnThisParam, char* tcFunctionName, char* tcPostfix, char* tcReturnType, int tnReturnTypeLength, FILE* tfh)
+{
 }
 
 void writeout_file_1(int tnMaxParams, char* tcFunctionName, FILE* tfh)
@@ -613,8 +774,6 @@ void writeout_file_1(int tnMaxParams, char* tcFunctionName, FILE* tfh)
 
 void writeout_file_1_part(int tnThisParam, char* tcFunctionName, char* tcPostfix, char* tcReturnType, int tnReturnTypeLength, FILE* tfh)
 {
-	int lnI;
-
 
 	//////////
 	// Append fixed parts
