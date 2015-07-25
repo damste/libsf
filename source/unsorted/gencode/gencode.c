@@ -120,7 +120,6 @@ int			isIterValid							(void);
 void		incrementIter						(void);
 int			incrementIterPart					(int* iptr, int tnParam);
 void		writeout_file_c						(int tnMaxParams, char* tcFunctionName, FILE* tfh);
-void		writeout_file_c_part				(int tnThisParam, char* tcFunctionName, char* tcPostfix, FILE* tfh);
 void		writeout_file_1						(int tnMaxParams, char* tcFunctionName, FILE* tfh);
 void		writeout_file_1_part				(int tnThisParam, char* tcFunctionName, char* tcPostfix, char* tcReturnType, int tnReturnTypeLength, FILE* tfh);
 void		writeout_param_values				(int tnMaxLineParams, FILE* tfh);
@@ -158,13 +157,16 @@ const char	cgc_c_header_p4[]			= ")\n"
 										  "    struct SParam         ip[";
 const char	cgc_c_header_p5[]			= "];     // Input parameters\n"
 										  "    struct SParam         rp;         // Return parameter\n"
-										  "}\n"
+										  "};\n"
 										  "\n"
+										  "#define _VAR_TYPE_V 0\n"
+										  "#define _VAR_TYPE_F 1\n"
+										  "#define _VAR_TYPE_D 2\n"
 										  "#define _MAX_VAR_PARAMS ";
 const char	cgc_c_header_p6[]			= "\n"
 										  "\n"
 										  "// This is the primary/top-level function to use for dispatching into a dll function\n"
-										  "void dispatch_dll_function(SParamData* pd)\n"
+										  "void dispatch_dll_function(struct SParamData* pd)\n"
 										  "{\n"
 										  "    int lnIndex;\n"
 										  "\n"
@@ -172,21 +174,21 @@ const char	cgc_c_header_p6[]			= "\n"
 										  "    //////////\n"
 										  "    // Compute index\n"
 										  "    //////\n"
-										  "        lnIndex =    /*pow(_MAX_VAR_PARAMS,0)*/  (pd->ip[0] * 1)\n"
+										  "        lnIndex =    /*pow(_MAX_VAR_PARAMS,0)*/  (pd->ip[0].type * 1)\n"
 										  "#if _MAX_VAR_PARAMS >= 2\n"
-										  "                 +   /*pow(_MAX_VAR_PARAMS,1)*/  (pd->ip[1] * (_MAX_VAR_PARAMS))\n"
+										  "                 +   /*pow(_MAX_VAR_PARAMS,1)*/  (pd->ip[1].type * (_MAX_VAR_PARAMS))\n"
 										  "#endif\n"
 										  "#if _MAX_VAR_PARAMS >= 3\n"
-										  "                 +   /*pow(_MAX_VAR_PARAMS,2)*/  (pd->ip[2] * (_MAX_VAR_PARAMS * _MAX_VAR_PARAMS))\n"
+										  "                 +   /*pow(_MAX_VAR_PARAMS,2)*/  (pd->ip[2].type * (_MAX_VAR_PARAMS * _MAX_VAR_PARAMS))\n"
 										  "#endif\n"
 										  "#if _MAX_VAR_PARAMS >= 4\n"
-										  "                 +   /*pow(_MAX_VAR_PARAMS,3)*/  (pd->ip[3] * (_MAX_VAR_PARAMS * _MAX_VAR_PARAMS * _MAX_VAR_PARAMS))\n"
+										  "                 +   /*pow(_MAX_VAR_PARAMS,3)*/  (pd->ip[3].type * (_MAX_VAR_PARAMS * _MAX_VAR_PARAMS * _MAX_VAR_PARAMS))\n"
 										  "#endif\n"
 										  "#if _MAX_VAR_PARAMS >= 5\n"
-										  "                 +   /*pow(_MAX_VAR_PARAMS,4)*/  (pd->ip[4] * (_MAX_VAR_PARAMS * _MAX_VAR_PARAMS * _MAX_VAR_PARAMS * _MAX_VAR_PARAMS))\n"
+										  "                 +   /*pow(_MAX_VAR_PARAMS,4)*/  (pd->ip[4].type * (_MAX_VAR_PARAMS * _MAX_VAR_PARAMS * _MAX_VAR_PARAMS * _MAX_VAR_PARAMS))\n"
 										  "#endif\n"
 										  "#if _MAX_VAR_PARAMS >= 6\n"
-										  "                 +   /*pow(_MAX_VAR_PARAMS,5)*/  (pd->ip[5] * (_MAX_VAR_PARAMS * _MAX_VAR_PARAMS * _MAX_VAR_PARAMS * _MAX_VAR_PARAMS * _MAX_VAR_PARAMS))\n"
+										  "                 +   /*pow(_MAX_VAR_PARAMS,5)*/  (pd->ip[5].type * (_MAX_VAR_PARAMS * _MAX_VAR_PARAMS * _MAX_VAR_PARAMS * _MAX_VAR_PARAMS * _MAX_VAR_PARAMS))\n"
 										  "#endif\n"
 										  ";\n"
 										  "\n"
@@ -194,7 +196,7 @@ const char	cgc_c_header_p6[]			= "\n"
 										  "    // Dispatch to the general handler by variable parameter type, which will\n"
 										  "    // then dispatch to the appropriate sub-handler based on parameter count\n"
 										  "    //////\n"
-										  "        dll_dispatch[lnIndex]->dispatch0(pd);    // Calls directly into the functions below\n"
+										  "        dll_dispatch[lnIndex].dispatch0(pd);    // Calls directly into the functions below\n"
 										  "\n"
 										  "}\n"
 										  "\n"
@@ -211,17 +213,17 @@ const char	cgc_c_case_1[]				= "        case ";
 const char	cgc_c_case_2[]				= ":  // ";
 const char	cgc_c_case_3_singular[]		= " parameter\n";
 const char	cgc_c_case_3_plural[]		= " parameters\n";
-const char	cgc_c_switch_prefix[]		= "            switch (pd->rp->type) {\n"
-										  "                default:                       pd->_dll->_dispatch_";
+const char	cgc_c_switch_prefix[]		= "            switch (pd->rp.type) {\n"
+										  "                default:                      pd->_dll.dispatch_";
 const char	cgc_c_switch_1_prefix[]		= "(";
 const char	cgc_c_switch_1_postfix[]	= ");\n"
-										  "                case _VAR_TYPE_V: pd->rp->_v = pd->_dll->_dispatch_";
+										  "                case _VAR_TYPE_V: pd->rp._v = pd->_dll.dispatch_";
 const char	cgc_c_switch_2_prefix[]		= "(";
 const char	cgc_c_switch_2_postfix[]	= ");\n"
-										  "                case _VAR_TYPE_F: pd->rp->_f = pd->_dll->_dispatch_";
+										  "                case _VAR_TYPE_F: pd->rp._f = pd->_dll.dispatch_";
 const char	cgc_c_switch_3_prefix[]		= "(";
 const char	cgc_c_switch_3_postfix[]	= ");\n"
-										  "                case _VAR_TYPE_D: pd->rp->_d = pd->_dll->_dispatch_";
+										  "                case _VAR_TYPE_D: pd->rp._d = pd->_dll.dispatch_";
 const char	cgc_c_switch_4_prefix[]		= "(";
 const char	cgc_c_switch_4_postfix[]	= ");\n"
 										  "            }\n"
@@ -255,7 +257,7 @@ const char	cgc_h1_prefix_void[]		= "void   ";
 const char	cgc_h1_prefix_void_pointer[]= "void*  ";
 const char	cgc_h1_prefix_float[]		= "float  ";
 const char	cgc_h1_prefix_double[]		= "double ";
-const char	cgc_h1_prefix[]				= " dispatch_";
+const char	cgc_h1_prefix[]				= " (*dispatch_";
 const char	cgc_h1_postfix_1[]			= ")   (";
 const char	cgc_h1_param_void[]			= "void";
 const char	cgc_h1_param_void_pointer[]	= "void*";
@@ -420,7 +422,6 @@ void generate(int tnMaxParamType, int tnVarParams, int tnMaxParams, char* tcOutp
 	//////////
 	// Write footers
 	//////
-		writeout((void*)cgc_c_footer,		sizeof(cgc_c_footer) - 1,		lfh_h1);
 		writeout((void*)cgc_h1_footer_p1,	sizeof(cgc_h1_footer_p1) - 1,	lfh_h1);
 		writeout((void*)cgc_h3_footer,		sizeof(cgc_h3_footer) - 1,		lfh_h3);
 
@@ -817,12 +818,12 @@ void writeout_param_values(int tnMaxLineParams, FILE* tfh)
 	//////
 		if (tnMaxLineParams > 0)
 		{
-			if (writeout_param_values_this_type(1, tnMaxLineParams, &gsIter.varParam1, ((tnMaxLineParams > min(1, gsIter.nVarParams)) ? _TRUE : _FALSE), tfh) &&
-				writeout_param_values_this_type(2, tnMaxLineParams, &gsIter.varParam2, ((tnMaxLineParams > min(2, gsIter.nVarParams)) ? _TRUE : _FALSE), tfh) &&
-				writeout_param_values_this_type(3, tnMaxLineParams, &gsIter.varParam3, ((tnMaxLineParams > min(3, gsIter.nVarParams)) ? _TRUE : _FALSE), tfh) &&
-				writeout_param_values_this_type(4, tnMaxLineParams, &gsIter.varParam4, ((tnMaxLineParams > min(4, gsIter.nVarParams)) ? _TRUE : _FALSE), tfh) &&
-				writeout_param_values_this_type(5, tnMaxLineParams, &gsIter.varParam5, ((tnMaxLineParams > min(5, gsIter.nVarParams)) ? _TRUE : _FALSE), tfh) &&
-				writeout_param_values_this_type(6, tnMaxLineParams, &gsIter.varParam6, ((tnMaxLineParams > min(6, gsIter.nVarParams)) ? _TRUE : _FALSE), tfh))
+			if (writeout_param_values_this_type(1, tnMaxLineParams, &gsIter.varParam1, ((tnMaxLineParams > 1) ? _TRUE : _FALSE), tfh) &&
+				writeout_param_values_this_type(2, tnMaxLineParams, &gsIter.varParam2, ((tnMaxLineParams > 2) ? _TRUE : _FALSE), tfh) &&
+				writeout_param_values_this_type(3, tnMaxLineParams, &gsIter.varParam3, ((tnMaxLineParams > 3) ? _TRUE : _FALSE), tfh) &&
+				writeout_param_values_this_type(4, tnMaxLineParams, &gsIter.varParam4, ((tnMaxLineParams > 4) ? _TRUE : _FALSE), tfh) &&
+				writeout_param_values_this_type(5, tnMaxLineParams, &gsIter.varParam5, ((tnMaxLineParams > 5) ? _TRUE : _FALSE), tfh) &&
+				writeout_param_values_this_type(6, tnMaxLineParams, &gsIter.varParam6, ((tnMaxLineParams > 6) ? _TRUE : _FALSE), tfh))
 			{
 				// There are at least seven parametes, the rest are all written out as void* values
 				for (lnI = 7; lnI <= tnMaxLineParams; lnI++)
@@ -866,6 +867,10 @@ int writeout_param_values_this_type(int tnThisParam, int tnMaxParams, int* iptr,
 					writeout((void*)cgc_c_param_double, sizeof(cgc_c_param_double) - 1, tfh);
 					break;
 			}
+
+		} else {
+			// Always void*
+			writeout((void*)cgc_c_param_void_pointer, sizeof(cgc_c_param_void_pointer) - 1, tfh);
 		}
 
 
@@ -891,12 +896,12 @@ void writeout_param_types(int tnMaxLineParams, FILE* tfh)
 	//////////
 	// Process as many parameters as there are up to the first six
 	//////
-		if (writeout_param_this_type(1, tnMaxLineParams, &gsIter.varParam1, ((tnMaxLineParams > min(1, gsIter.nVarParams)) ? _TRUE : _FALSE), tfh) &&
-			writeout_param_this_type(2, tnMaxLineParams, &gsIter.varParam2, ((tnMaxLineParams > min(2, gsIter.nVarParams)) ? _TRUE : _FALSE), tfh) &&
-			writeout_param_this_type(3, tnMaxLineParams, &gsIter.varParam3, ((tnMaxLineParams > min(3, gsIter.nVarParams)) ? _TRUE : _FALSE), tfh) &&
-			writeout_param_this_type(4, tnMaxLineParams, &gsIter.varParam4, ((tnMaxLineParams > min(4, gsIter.nVarParams)) ? _TRUE : _FALSE), tfh) &&
-			writeout_param_this_type(5, tnMaxLineParams, &gsIter.varParam5, ((tnMaxLineParams > min(5, gsIter.nVarParams)) ? _TRUE : _FALSE), tfh) &&
-			writeout_param_this_type(6, tnMaxLineParams, &gsIter.varParam6, ((tnMaxLineParams > min(6, gsIter.nVarParams)) ? _TRUE : _FALSE), tfh))
+		if (writeout_param_this_type(1, tnMaxLineParams, &gsIter.varParam1, ((tnMaxLineParams > 1) ? _TRUE : _FALSE), tfh) &&
+			writeout_param_this_type(2, tnMaxLineParams, &gsIter.varParam2, ((tnMaxLineParams > 2) ? _TRUE : _FALSE), tfh) &&
+			writeout_param_this_type(3, tnMaxLineParams, &gsIter.varParam3, ((tnMaxLineParams > 3) ? _TRUE : _FALSE), tfh) &&
+			writeout_param_this_type(4, tnMaxLineParams, &gsIter.varParam4, ((tnMaxLineParams > 4) ? _TRUE : _FALSE), tfh) &&
+			writeout_param_this_type(5, tnMaxLineParams, &gsIter.varParam5, ((tnMaxLineParams > 5) ? _TRUE : _FALSE), tfh) &&
+			writeout_param_this_type(6, tnMaxLineParams, &gsIter.varParam6, ((tnMaxLineParams > 6) ? _TRUE : _FALSE), tfh))
 		{
 			// There are at least seven parametes, the rest are all written out as void* values
 			for (lnI = 7; lnI <= tnMaxLineParams; lnI++)
