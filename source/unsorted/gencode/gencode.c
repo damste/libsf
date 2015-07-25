@@ -112,61 +112,103 @@ struct SIterator
 };
 
 void		generate					(int tnMaxParamType, int tnVarParams, int tnMaxParams, char* tcOutputFile);
-void		generate_pattern			(int tnMaxParams, FILE* fh_c, FILE* fh_h1, FILE* fh_h2);
+void		generate_pattern			(unsigned int tnThisParam, int tnMaxParams, FILE* fh_c, FILE* fh_h1, FILE* fh_h2, FILE* fh_h3);
 int			generate_pattern_type		(char* buffer, int tnType, int tnParam);
 void		initializeIter				(int tnParamCount, int tnVarParams);
 int			isIterValid					(void);
 void		incrementIter				(void);
 int			incrementIterPart			(int* iptr, int tnParam);
+FILE*		createfile					(char* tcFileName);
 void		writeout					(void* data, size_t tnSize, FILE* fh);
 
 
 // .c header
+const char	cgc_c_header_p0_1[]			= "// ";
+const char	cgc_c_header_p0_2[]			= "\n";
 const char	cgc_c_header_p1[]			= "// Generated source file for calling dlls using a variable parameter pattern\n"
 										  "\n";
-const char	cgc_c_header_p2[]			= "#include \"";
-const char	cgc_c_header_p3[]			= "\"\n";
-const char	cgc_c_header_p4[]			= "\n"
+const char	cgc_c_header_p2_1[]			= "#include \"";
+const char	cgc_c_header_p2_2[]			= "\"\n";
+const char	cgc_c_header_p3[]			= "\n"
 										  "struct SParam\n"
 										  "{\n"
 										  "    int type;\n"
-										  "    union data {\n"
+										  "    union {\n"
 										  "        void*  _v;\n"
 										  "        float  _f;\n"
 										  "        double _d;\n"
-										  "    };"
+										  "    };\n"
 										  "};\n"
 										  "\n"
 										  "struct SParamData\n"
 										  "{\n"
-										  "    struct SDllDispatch _dll; // The address of the function in the dll"
-										  "    struct SParam rp; // Return parameter\n"
-										  "\n"
-										  "    int ipCount;\n"
-										  "    struct SParam ip[";
-const char	cgc_c_header_p5[]			= "]; // Input parameter(s)\n"
+										  "    struct SDllDispatch   _dll;       // The address of the function in the dll\n"
+										  "    int                   ipCount;    // Input parameter count (0 thru ";
+const char	cgc_c_header_p4[]			= ")\n"
+										  "    struct SParam         ip[";
+const char	cgc_c_header_p5[]			= "];     // Input parameters\n"
+										  "    struct SParam         rp;         // Return parameter\n"
 										  "}\n"
 										  "\n";
 
 
 
 // _1.h header
-const char	cgc_h1_header[]				= "// Generated source file for calling dlls using a variable parameter pattern\n"
-										  "\n";
+const char	cgc_h1_header_p0_1[]		= "// ";
+const char	cgc_h1_header_p0_2[]		= "\n";
+const char	cgc_h1_header_p1[]			= "// Generated source file for calling dlls using a variable parameter pattern\n"
+										  "\n"
+										  "struct SDllDispatch {\n"
+										  "    union {\n"
+										  "        void*    dispatch_function_address;  // Populate using (void*)GetProcAddress(...) or equivalent\n";
+const char	cgc_h1_footer_p1[]			= "    };\n"
+										  "};\n";
+const char	cgc_h1_prefix_void[]		= "void   ";
+const char	cgc_h1_prefix_void_pointer[]= "void*  ";
+const char	cgc_h1_prefix_float[]		= "float  ";
+const char	cgc_h1_prefix_double[]		= "double ";
+const char	cgc_h1_prefix[]				= " dispatch_";
+const char	cgc_h1_postfix_vspacer[]	= "\n";
+
 
 // _2.h header
-const char	cgc_h2_header[]				= "// Generated source file for calling dlls using a variable parameter pattern\n"
-										  "\n";
+const char	cgc_h2_header_p0_1[]		= "// ";
+const char	cgc_h2_header_p0_2[]		= "\n";
+const char	cgc_h2_header_p1[]			= "// Generated source file for calling dlls using a variable parameter pattern\n"
+										  "\n"
+										  "// Parameter dispatch prototype forward declarations\n";
+const char	cgc_h2_prefix[]				= "void dispatch_";
+const char	cgc_h2_postfix[]			= "(struct SParamData* pd);\n";
+const char	cgc_h2_postfix_vspacer[]	= "\n";
+
+
+// _3.h header
+const char	cgc_h3_header_p0_1[]		= "// ";
+const char	cgc_h3_header_p0_2[]		= "\n";
+const char	cgc_h3_header_p1[]			= "// Generated source file for calling dlls using a variable parameter pattern\n"
+										  "\n"
+										  "// Variable holding dispatch destinations\n"
+										  "struct SDllDispatch0 {\n"
+										  "    void (*dispatch) (struct SParamData* pd);\n"
+										  "};\n"
+										  "\n"
+										  "struct SDllDispatch0 dll_dispatch[] = {\n";
+const char	cgc_h3_footer[]				= "};\n";
+
+const char	cgc_h3_prefix[]				= "    &dispatch_";
+const char	cgc_h3_postfix[]			= ",\n";
+const char	cgc_h3_postfix_vspacer[]	= "\n";
 
 // File extensions
 const char cgc_c_ext[]					= ".c";
 const char cgc_h1_ext[]					= "_1.h";
 const char cgc_h2_ext[]					= "_2.h";
+const char cgc_h3_ext[]					= "_3.h";
 
 // Variable parameter type names for functions
-const char	cgc_fname_void_pointer[]	= "voidptr";
-const char	cgc_fname_float[]			= "float";
-const char	cgc_fname_double[]			= "double";
+const char	cgc_fname_void_pointer[]	= "voidptr_";
+const char	cgc_fname_float[]			= "float___";
+const char	cgc_fname_double[]			= "double__";
 #define _MAX_TYPE_LENGTH				sizeof(cgc_fname_void_pointer) - 1
 
 struct SIterator gsIter;
@@ -181,13 +223,16 @@ int main(int argc, char* argv[])
 
 void generate(int tnMaxParamType, int tnVarParams, int tnMaxParams, char* tcOutputFile)
 {
-	FILE*	fh_c;
-	FILE*	fh_h1;
-	FILE*	fh_h2;
-	char	file_c[_MAX_PATH];
-	char	file_h1[_MAX_PATH];
-	char	file_h2[_MAX_PATH];
-	char	buffer[12];
+	unsigned int	lnI;
+	FILE*			lfh_c;
+	FILE*			lfh_h1;
+	FILE*			lfh_h2;
+	FILE*			lfh_h3;
+	char			file_c[_MAX_PATH];
+	char			file_h1[_MAX_PATH];
+	char			file_h2[_MAX_PATH];
+	char			file_h3[_MAX_PATH];
+	char			buffer[12];
 
 
 	//////////
@@ -196,79 +241,119 @@ void generate(int tnMaxParamType, int tnVarParams, int tnMaxParams, char* tcOutp
 		memset(file_c,	0, sizeof(file_c));
 		memset(file_h1,	0, sizeof(file_h1));
 		memset(file_h2,	0, sizeof(file_h2));
+		memset(file_h3,	0, sizeof(file_h3));
 
 		memcpy(file_c,	tcOutputFile, min(strlen(tcOutputFile), sizeof(file_c) - sizeof(cgc_c_ext) - 1));
 		memcpy(file_h1,	tcOutputFile, min(strlen(tcOutputFile), sizeof(file_h1) - sizeof(cgc_h1_ext) - 1));
 		memcpy(file_h2,	tcOutputFile, min(strlen(tcOutputFile), sizeof(file_h2) - sizeof(cgc_h2_ext) - 1));
+		memcpy(file_h3,	tcOutputFile, min(strlen(tcOutputFile), sizeof(file_h3) - sizeof(cgc_h3_ext) - 1));
 
 		sprintf(file_c	+ strlen(file_c),	cgc_c_ext);
 		sprintf(file_h1	+ strlen(file_h1),	cgc_h1_ext);
 		sprintf(file_h2	+ strlen(file_h2),	cgc_h2_ext);
+		sprintf(file_h3	+ strlen(file_h3),	cgc_h3_ext);
 
 
 	//////////
 	// Open the output files
 	//////
-		fh_c = fopen(file_c, "wb+");
-		if (!fh_c)
-		{
-			printf("Unable to create %s\n", file_c);
-			exit(-1);
-		}
-
-		fh_h1 = fopen(file_h1, "wb+");
-		if (!fh_h1)
-		{
-			printf("Unable to create %s\n", file_h1);
-			exit(-1);
-		}
-
-		fh_h2 = fopen(file_h2, "wb+");
-		if (!fh_h2)
-		{
-			printf("Unable to create %s\n", file_h2);
-			exit(-1);
-		}
+		lfh_c	= createfile(file_c);		// file.c
+		lfh_h1	= createfile(file_h1);		// file_1.h
+		lfh_h2	= createfile(file_h2);		// file_2.h
+		lfh_h3	= createfile(file_h3);		// file_3.h
 
 
 	//////////
 	// Write the headers
 	//////
-		writeout((void*)cgc_c_header_p1, sizeof(cgc_c_header_p1) - 1, fh_c);
+		// file.c
+		writeout((void*)cgc_c_header_p0_1, sizeof(cgc_c_header_p0_1) - 1, lfh_c);
+		writeout((void*)file_c, strlen(file_c), lfh_c);
+		writeout((void*)cgc_c_header_p0_2, sizeof(cgc_c_header_p0_2) - 1, lfh_c);
+		writeout((void*)cgc_c_header_p1, sizeof(cgc_c_header_p1) - 1, lfh_c);
+
+		writeout((void*)cgc_c_header_p2_1, sizeof(cgc_c_header_p2_1) - 1, lfh_c);
+		writeout((void*)file_h1, strlen(file_h1), lfh_c);
+		writeout((void*)cgc_c_header_p2_2, sizeof(cgc_c_header_p2_2) - 1, lfh_c);
+
+		writeout((void*)cgc_c_header_p2_1, sizeof(cgc_c_header_p2_1) - 1, lfh_c);
+		writeout((void*)file_h2, strlen(file_h2), lfh_c);
+		writeout((void*)cgc_c_header_p2_2, sizeof(cgc_c_header_p2_2) - 1, lfh_c);
+
+		writeout((void*)cgc_c_header_p2_1, sizeof(cgc_c_header_p2_1) - 1, lfh_c);
+		writeout((void*)file_h3, strlen(file_h3), lfh_c);
+		writeout((void*)cgc_c_header_p2_2, sizeof(cgc_c_header_p2_2) - 1, lfh_c);
+
+		writeout((void*)cgc_c_header_p3, sizeof(cgc_c_header_p3) - 1, lfh_c);
 		sprintf(buffer, "%u", tnMaxParams);
-		writeout((void*)buffer, strlen(buffer), fh_c);
-		writeout((void*)cgc_c_header_p2, sizeof(cgc_c_header_p2) - 1, fh_c);
+		writeout((void*)buffer, strlen(buffer), lfh_c);
+		writeout((void*)cgc_c_header_p4, sizeof(cgc_c_header_p4) - 1, lfh_c);
+		writeout((void*)buffer, strlen(buffer), lfh_c);
+		writeout((void*)cgc_c_header_p5, sizeof(cgc_c_header_p5) - 1, lfh_c);
+
+		// file_1.h
+		writeout((void*)cgc_h1_header_p0_1, sizeof(cgc_h1_header_p0_1) - 1, lfh_h1);
+		writeout((void*)file_h1, strlen(file_h1), lfh_h1);
+		writeout((void*)cgc_h1_header_p0_2, sizeof(cgc_h1_header_p0_2) - 1, lfh_h1);
+		writeout((void*)cgc_h1_header_p1, sizeof(cgc_h1_header_p1) - 1, lfh_h1);
+
+		// file_2.h
+		writeout((void*)cgc_h2_header_p0_1, sizeof(cgc_h2_header_p0_1) - 1, lfh_h2);
+		writeout((void*)file_h2, strlen(file_h2), lfh_h2);
+		writeout((void*)cgc_h2_header_p0_2, sizeof(cgc_h2_header_p0_2) - 1, lfh_h2);
+		writeout((void*)cgc_h2_header_p1, sizeof(cgc_h2_header_p1) - 1, lfh_h2);
+
+		// file_3.h
+		writeout((void*)cgc_h3_header_p0_1, sizeof(cgc_h3_header_p0_1) - 1, lfh_h3);
+		writeout((void*)file_h3, strlen(file_h3), lfh_h3);
+		writeout((void*)cgc_h3_header_p0_2, sizeof(cgc_h3_header_p0_2) - 1, lfh_h3);
+		writeout((void*)cgc_h3_header_p1, sizeof(cgc_h3_header_p1) - 1, lfh_h3);
 
 
 	//////////
 	// Iterate through every possible variable parameter combination
 	//////
-		for (initializeIter(tnMaxParamType, tnVarParams);	isIterValid();	incrementIter())
-			generate_pattern(tnMaxParams, fh_c, fh_h1, fh_h2);
+		for (lnI = 1, initializeIter(tnMaxParamType, tnVarParams);	isIterValid();	lnI++, incrementIter())
+			generate_pattern(lnI, tnMaxParams, lfh_c, lfh_h1, lfh_h2, lfh_h3);
+
+
+	//////////
+	// Write footers
+	//////
+		writeout((void*)cgc_h1_footer_p1,	sizeof(cgc_h1_footer_p1) - 1,	lfh_h1);
+//		writeout((void*)cgc_h2_footer_p1,	sizeof(cgc_h2_footer_p1) - 1,	lfh_h1);
+		writeout((void*)cgc_h3_footer,		sizeof(cgc_h3_footer) - 1,		lfh_h3);
 
 
 	//////////
 	// All done!
 	//////
-		fclose(fh_c);
+		fclose(lfh_c);
+		fclose(lfh_h1);
+		fclose(lfh_h2);
 
 }
 
-void generate_pattern(int tnMaxParams, FILE* fh_c, FILE* fh_h1, FILE* fh_h2)
+void generate_pattern(unsigned int tnThisParam, int tnMaxParams, FILE* tfh_c, FILE* tfh_h1, FILE* tfh_h2, FILE* tfh_h3)
 {
-	char buffer[(6 * _MAX_TYPE_LENGTH) + 1];
+	int		lnI;
+	char	functionName[(6 * _MAX_TYPE_LENGTH) + 1];
+	char	n0[8];	// _00
+	char	nv[8];	// _0v
+	char	nf[8];	// _0f
+	char	nd[8];	// _0d
 
 
 	//////////
 	// Build the function name pattern
 	//////
-		memset(buffer, 0, sizeof(buffer));
-		if (generate_pattern_type(buffer,					gsIter.varParam1, 1) &&
-			generate_pattern_type(buffer + strlen(buffer),	gsIter.varParam2, 2) &&
-			generate_pattern_type(buffer + strlen(buffer),	gsIter.varParam3, 3) &&
-			generate_pattern_type(buffer + strlen(buffer),	gsIter.varParam4, 4) &&
-			generate_pattern_type(buffer + strlen(buffer),	gsIter.varParam5, 5) &&
-			generate_pattern_type(buffer + strlen(buffer),	gsIter.varParam6, 6))
+		memset(functionName, 0, sizeof(functionName));
+		if (generate_pattern_type(functionName,							gsIter.varParam1, 1) &&
+			generate_pattern_type(functionName + strlen(functionName),	gsIter.varParam2, 2) &&
+			generate_pattern_type(functionName + strlen(functionName),	gsIter.varParam3, 3) &&
+			generate_pattern_type(functionName + strlen(functionName),	gsIter.varParam4, 4) &&
+			generate_pattern_type(functionName + strlen(functionName),	gsIter.varParam5, 5) &&
+			generate_pattern_type(functionName + strlen(functionName),	gsIter.varParam6, 6))
 		{
 			// This if block is used as a place holder to allow as many calculations as are required above
 		}
@@ -280,73 +365,110 @@ void generate_pattern(int tnMaxParams, FILE* fh_c, FILE* fh_h1, FILE* fh_h2)
 	// In the .c file:
 	//		void dispatch_voidptr_voidptr_voidptr_voidptr(struct SParamData* pd)
 	//		{
-	//			switch (pd->ipCount)
-	//			{
-	//				case 0:	// No parameters
-	//					switch (pd->rp->type) {
-	//						default:                       pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_00();
-	//						case _VAR_TYPE_V: pd->rp->_v = pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_0v();
-	//						case _VAR_TYPE_F: pd->rp->_f = pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_0f();
-	//						case _VAR_TYPE_D: pd->rp->_d = pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_0d();
-	//					}
-	//					break;
+	//		    switch (pd->ipCount)
+	//		    {
+	//		        case 0:	// No parameters
+	//		            switch (pd->rp->type) {
+	//		                default:                       pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_00();
+	//		                case _VAR_TYPE_V: pd->rp->_v = pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_0v();
+	//		                case _VAR_TYPE_F: pd->rp->_f = pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_0f();
+	//		                case _VAR_TYPE_D: pd->rp->_d = pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_0d();
+	//		            }
+	//		            break;
 	//
-	//				case 1:	// One parameter
-	//					switch (pd->rp->type) {
-	//						default:                       pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_10(pd->ip[0]._v);
-	//						case _VAR_TYPE_V: pd->rp->_v = pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_1v(pd->ip[0]._v);
-	//						case _VAR_TYPE_F: pd->rp->_f = pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_1f(pd->ip[0]._v);
-	//						case _VAR_TYPE_D: pd->rp->_d = pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_1d(pd->ip[0]._v);
-	//					}
-	//					break;
+	//		        case 1:	// One parameter
+	//		            switch (pd->rp->type) {
+	//		                default:                       pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_10(pd->ip[0]._v);
+	//		                case _VAR_TYPE_V: pd->rp->_v = pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_1v(pd->ip[0]._v);
+	//		                case _VAR_TYPE_F: pd->rp->_f = pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_1f(pd->ip[0]._v);
+	//		                case _VAR_TYPE_D: pd->rp->_d = pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_1d(pd->ip[0]._v);
+	//		            }
+	//		            break;
 	//
-	//				case 2: // Two parameters
-	//					switch (pd->rp->type) {
-	//						default:                       pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_20(pd->ip[0]._v, pd->ip[1]._v);
-	//						case _VAR_TYPE_V: pd->rp->_v = pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_2v(pd->ip[0]._v, pd->ip[1]._v);
-	//						case _VAR_TYPE_F: pd->rp->_f = pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_2f(pd->ip[0]._v, pd->ip[1]._v);
-	//						case _VAR_TYPE_D: pd->rp->_d = pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_2d(pd->ip[0]._v, pd->ip[1]._v);
-	//					}
-	//					break;
+	//		        case 2: // Two parameters
+	//		            switch (pd->rp->type) {
+	//		                default:                       pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_20(pd->ip[0]._v, pd->ip[1]._v);
+	//		                case _VAR_TYPE_V: pd->rp->_v = pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_2v(pd->ip[0]._v, pd->ip[1]._v);
+	//		                case _VAR_TYPE_F: pd->rp->_f = pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_2f(pd->ip[0]._v, pd->ip[1]._v);
+	//		                case _VAR_TYPE_D: pd->rp->_d = pd->_dll->_dispatch_voidptr_voidptr_voidptr_voidptr_2d(pd->ip[0]._v, pd->ip[1]._v);
+	//		            }
+	//		            break;
 	//
-	//				... and so on
+	//		        ... and so on
 	//
-	//			}
+	//		    }
 	//		}
 	//
 	// In the _1.h file:
 	//		struct SDllDispatch {
-	//			union {
-	//				void*	dispatch_function;
+	//		    union {
+	//		        void*	dispatch_function_address;
 	//
-	//				void    _dispatch_voidptr_voidptr_voidptr_voidptr_00    (void);
-	//				void*   _dispatch_voidptr_voidptr_voidptr_voidptr_0v    (void);
-	//				float   _dispatch_voidptr_voidptr_voidptr_voidptr_0f    (void);
-	//				double  _dispatch_voidptr_voidptr_voidptr_voidptr_0d    (void);
+	//		        void    _dispatch_voidptr_voidptr_voidptr_voidptr_00    (void);
+	//		        void*   _dispatch_voidptr_voidptr_voidptr_voidptr_0v    (void);
+	//		        float   _dispatch_voidptr_voidptr_voidptr_voidptr_0f    (void);
+	//		        double  _dispatch_voidptr_voidptr_voidptr_voidptr_0d    (void);
 	//
-	//				void    _dispatch_voidptr_voidptr_voidptr_voidptr_10    (void*);
-	//				void*   _dispatch_voidptr_voidptr_voidptr_voidptr_1v    (void*);
-	//				float   _dispatch_voidptr_voidptr_voidptr_voidptr_1f    (void*);
-	//				double  _dispatch_voidptr_voidptr_voidptr_voidptr_1d    (void*);
+	//		        void    _dispatch_voidptr_voidptr_voidptr_voidptr_10    (void*);
+	//		        void*   _dispatch_voidptr_voidptr_voidptr_voidptr_1v    (void*);
+	//		        float   _dispatch_voidptr_voidptr_voidptr_voidptr_1f    (void*);
+	//		        double  _dispatch_voidptr_voidptr_voidptr_voidptr_1d    (void*);
 	//
-	//				void    _dispatch_voidptr_voidptr_voidptr_voidptr_20    (void*, void*);
-	//				void*   _dispatch_voidptr_voidptr_voidptr_voidptr_2v    (void*, void*);
-	//				float   _dispatch_voidptr_voidptr_voidptr_voidptr_2f    (void*, void*);
-	//				double  _dispatch_voidptr_voidptr_voidptr_voidptr_2d    (void*, void*);
-	//			};
+	//		        void    _dispatch_voidptr_voidptr_voidptr_voidptr_20    (void*, void*);
+	//		        void*   _dispatch_voidptr_voidptr_voidptr_voidptr_2v    (void*, void*);
+	//		        float   _dispatch_voidptr_voidptr_voidptr_voidptr_2f    (void*, void*);
+	//		        double  _dispatch_voidptr_voidptr_voidptr_voidptr_2d    (void*, void*);
+	//		    };
 	//		};
 	//
 	// In the _2.h file:
+	//		// Parameter dispatch prototype forward declarations
 	//		void dispatch_voidptr_voidptr_voidptr_voidptr(struct SParamData* pd);
+	//
+	// In the _3.h file:
+	//		struct SDllSDispatch {
+	//		    void (*dispatch) (struct SParamData* pd);
+	//		};
+	//
+	//		struct SDllDispatch dll_dispatch[] = {
+	//		    &dispatch_voidptr_voidptr_voidptr_voidptr;
+	//		};
 	//
 	//////
 
-// Working here...
+
+	//////////
+	// file_1.h output
+	//////
+		for (lnI = 0; lnI < tnMaxParams; lnI++)
+		{
+
+		}
+
+
+	//////////
+	// file_2.h output
+	//////
+		writeout((void*)cgc_h2_prefix,	sizeof(cgc_h2_prefix) - 1,	tfh_h2);
+		writeout((void*)functionName,	strlen(functionName),		tfh_h2);
+		writeout((void*)cgc_h2_postfix,	sizeof(cgc_h2_postfix) - 1,	tfh_h2);
+		if (tnThisParam % 3 == 0)
+			writeout((void*)cgc_h2_postfix_vspacer,	sizeof(cgc_h2_postfix_vspacer) - 1,	tfh_h2);
+
+
+	//////////
+	// file_3.h output
+	//////
+		writeout((void*)cgc_h3_prefix,	sizeof(cgc_h3_prefix) - 1,	tfh_h3);
+		writeout((void*)functionName,	strlen(functionName),		tfh_h3);
+		writeout((void*)cgc_h3_postfix,	sizeof(cgc_h3_postfix) - 1,	tfh_h3);
+		if (tnThisParam % 3 == 0)
+			writeout((void*)cgc_h3_postfix_vspacer,	sizeof(cgc_h3_postfix_vspacer) - 1,	tfh_h3);
 }
 
 int generate_pattern_type(char* buffer, int tnType, int tnParam)
 {
-	if (tnParam <= gsIter.nMaxParamType)
+	if (tnParam <= gsIter.nVarParams)
 	{
 		switch (tnType)
 		{
@@ -369,7 +491,7 @@ int generate_pattern_type(char* buffer, int tnType, int tnParam)
 		}
 
 		// Continuing processing if there's more to process
-		return((tnParam < gsIter.nMaxParamType) ? _TRUE : _FALSE);
+		return((tnParam < gsIter.nVarParams) ? _TRUE : _FALSE);
 
 	} else {
 		// We're done processing
@@ -380,9 +502,9 @@ int generate_pattern_type(char* buffer, int tnType, int tnParam)
 void initializeIter(int tnParamCount, int tnVarParams)
 {
 	gsIter.nMaxParamType	= tnParamCount;
-	gsIter.nVarParams	= tnVarParams;
+	gsIter.nVarParams		= tnVarParams;
 
-	gsIter.isValid	= _TRUE;
+	gsIter.isValid			= _TRUE;
 	gsIter.varParam1		= _PARAM_TYPE_MIN;
 	gsIter.varParam2		= _PARAM_TYPE_MIN;
 	gsIter.varParam3		= _PARAM_TYPE_MIN;
@@ -398,12 +520,12 @@ int isIterValid(void)
 
 void incrementIter(void)
 {
-	if (!incrementIterPart(&gsIter.varParam1, 1) &&
-		!incrementIterPart(&gsIter.varParam2, 2) &&
-		!incrementIterPart(&gsIter.varParam3, 3) &&
-		!incrementIterPart(&gsIter.varParam4, 4) &&
-		!incrementIterPart(&gsIter.varParam5, 5) &&
-		!incrementIterPart(&gsIter.varParam6, 6))
+	if (incrementIterPart(&gsIter.varParam1, 1) &&
+		incrementIterPart(&gsIter.varParam2, 2) &&
+		incrementIterPart(&gsIter.varParam3, 3) &&
+		incrementIterPart(&gsIter.varParam4, 4) &&
+		incrementIterPart(&gsIter.varParam5, 5) &&
+		incrementIterPart(&gsIter.varParam6, 6))
 	{
 		// This if block is used as a placeholder to allow as many as are valid to pass through incrementing
 	}
@@ -412,9 +534,9 @@ void incrementIter(void)
 int incrementIterPart(int* iptr, int tnParam)
 {
 	//////////
-	// Are we beyond our count of valid params?
+	// Are we beyond our count of variable params?
 	//////
-		if (tnParam > gsIter.nMaxParamType)
+		if (tnParam > gsIter.nVarParams)
 			return(_FALSE);	// Yes
 
 
@@ -425,13 +547,14 @@ int incrementIterPart(int* iptr, int tnParam)
 		{
 			// Yes
 			++*iptr;
+			return(_FALSE);
 
 		} else {
 			// No, so wrap it around
 			*iptr = _PARAM_TYPE_MIN;
 
-			// Success is now based on whether or not this was the last param or not
-			if (tnParam == gsIter.nMaxParamType)
+			// Success is now based on whether or not this was the last variable param or not
+			if (tnParam == gsIter.nVarParams)
 				gsIter.isValid = _FALSE;
 		}
 
@@ -442,23 +565,42 @@ int incrementIterPart(int* iptr, int tnParam)
 		return(gsIter.isValid);
 }
 
+FILE* createfile(char* tcFileName)
+{
+	FILE* lfh;
+
+
+	//////////
+	// Try to create the output file
+	/////
+		lfh = fopen(tcFileName, "wb+");
+		if (!lfh)
+		{
+			printf("ERROR: Unable to create %s\n", tcFileName);
+			exit(-1);
+		}
+
+	// We're good
+	return(lfh);
+}
+
 void writeout(void* data, size_t tnSize, FILE* fh)
 {
-	size_t num;
+	size_t lnNum;
 
 
 	//////////
 	// Write out the data
 	//////
-		num = fwrite(data, 1, tnSize, fh);
+		lnNum = fwrite(data, 1, tnSize, fh);
 
 
 	//////////
 	// If there's an error, we're done
 	//////
-		if (num != tnSize)
+		if (lnNum != tnSize)
 		{
-			printf("Error writing %d bytes to output.\n", (int)tnSize);
+			printf("ERROR: Unable to write %d bytes to output, wrote %d.\n", (int)tnSize, (int)lnNum);
 			exit(-2);
 		}
 }
