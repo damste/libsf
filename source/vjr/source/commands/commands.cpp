@@ -1665,46 +1665,6 @@
 // Returns:
 //		Nothing. The thing being declared has been declared, or there is an error.
 //////
-	struct SDllLoad
-	{
-		SDatum		library;							// DLL name
-		HINSTANCE	dllHandle;							// Handle to the DLL
-	};
-
-	struct SDllParams
-	{
-		SLL*		ll;
-		SDatum		name;								// Parameter name
-		u32			type;								// Field type, see _VAR_TYPE_DLL_* constants
-		u32			udfSetting;							// Either _UDFPARAMS_REFERENCE or _UDFPARMS_VALUE (indicates if passed by pointer or value)
-	};
-
-	// DECLARE INTEGER myFunction IN myDll.dll ALIAS myFunc INTEGER nHandle, STRING
-	struct SDlls
-	{
-		SLL*		ll;
-
-		// DECLARE [returnType]
-		u32			returnType;							// The return type, see _VAR_TYPE_DLL_* constants
-
-		// [name] ... ALIAS [alias]
-		SDatum		name;								// Function name
-		SDatum		alias;								// Alias name
-
-		// IN [library]
-		SDllLoad*	dll;								// DLL load instance
-		void*		(*func)(void);						// ProcAddress() of the function within the DLL
-
-		// [inputType1 inputName1], [inputType2 inputName2], ... [inputTypeN inputNameN]
-		s32			paramCount;							// Number of parameters specified
-		SDllParams*	firstParam;							// Pointer to the first parameter
-
-
-		// Add-ons for DLL function tracking
-		SThisCode*	onAccess;							// Called whenever this DLL is accessed (used) in source code
-		SThisCode*	onAssign;							// Called whenever the return result from the DLL is received
-	};
-
 	void command_declare(SThisCode* thisCode, SComp* compCommand, SFunctionParams* rpar)
 	{
 		SComp*	compDeclare = compCommand;

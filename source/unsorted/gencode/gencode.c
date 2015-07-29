@@ -139,31 +139,55 @@ const char	cgc_c_header_p1[]			= "// Generated source file for calling dlls usin
 const char	cgc_c_header_p2_1[]			= "#include \"";
 const char	cgc_c_header_p2_2[]			= "\"\n";
 const char	cgc_c_header_p3[]			= "\n"
-										  "struct SParam\n"
-										  "{\n"
-										  "    int type;\n"
-										  "    union {\n"
-										  "        void*  _v;\n"
-										  "        float  _f;\n"
-										  "        double _d;\n"
-										  "    };\n"
-										  "};\n"
-										  "\n"
-										  "struct SParamData\n"
-										  "{\n"
-										  "    struct SDllDispatch   _dll;       // The address of the function in the dll\n"
-										  "    int                   ipCount;    // Input parameter count (0 thru ";
-const char	cgc_c_header_p4[]			= ")\n"
-										  "    struct SParam         ip[";
-const char	cgc_c_header_p5[]			= "];     // Input parameters\n"
-										  "    struct SParam         rp;         // Return parameter\n"
-										  "};\n"
-										  "\n"
 										  "#define _VAR_TYPE_V 0\n"
 										  "#define _VAR_TYPE_F 1\n"
 										  "#define _VAR_TYPE_D 2\n"
+										  "\n"
+										  "#define _VAR_TYPE_CHAR  0\n"
+										  "#define _VAR_TYPE_SHORT 0\n"
+										  "#define _VAR_TYPE_INT   0\n"
+										  "#define _VAR_TYPE_LONG  0\n"
+										  "\n"
+										  "#define _VAR_TYPE_UNSIGNED_CHAR  0\n"
+										  "#define _VAR_TYPE_UNSIGNED_SHORT 0\n"
+										  "#define _VAR_TYPE_UNSIGNED_INT   0\n"
+										  "#define _VAR_TYPE_UNSIGNED_LONG  0\n"
+										  "\n"
+										  "#define _VAR_TYPE_FLOAT  1\n"
+										  "#define _VAR_TYPE_DOUBLE 2\n"
+										  "\n"
 										  "#define _MAX_VAR_PARAMS ";
-const char	cgc_c_header_p6[]			= "\n"
+const char	cgc_c_header_p4[]			= "\n"
+										  "\n"
+										  "#if defined(_WIN32) || defined(_WIN64)\n"
+										  "    // #include <windows.h>\n"
+										  "    int load_dll_function(struct SParamData* sd, char* dllPathname, char* functionName)\n"
+										  "    {\n"
+										  "        HMODULE hmod;	// If not found, un-comment #include <windows.h> above\n"
+										  "\n"
+										  "\n"
+										  "        //////////\n"
+										  "        // Open the dll\n"
+										  "        //////\n"
+										  "            hmod = LoadLibraryA(dllPathname);	// If not found, un-comment #include <windows.h> above\n"
+										  "            if (!hmod)\n"
+										  "                return(-1);	// Failure accessing dll\n"
+										  "\n"
+										  "\n"
+										  "        //////////\n"
+										  "        // Grab the function address\n"
+										  "        //////\n"
+										  "            // If not found, un-comment #include <windows.h> above\n"
+										  "            sd->_dll.dispatch_function_address = (void*)GetProcAddress(hmod, functionName);\n"
+										  "\n"
+										  "\n"
+										  "        //////////\n"
+										  "        // Indicate success or failure\n"
+										  "        //////\n"
+										  "            return((sd->_dll.dispatch_function_address != 0) ? 1 : -2/*could not find function address*/);\n"
+										  "\n"
+										  "    }\n"
+										  "#endif\n"
 										  "\n"
 										  "// This is the primary/top-level function to use for dispatching into a dll function\n"
 										  "void dispatch_dll_function(struct SParamData* pd)\n"
@@ -241,6 +265,77 @@ const char	cgc_c_param_comma[]			= ", ";
 
 
 
+// .h header
+const char	cgc_h_header_p0_1[]			= "// ";
+const char	cgc_h_header_p0_2[]			= "\n";
+const char	cgc_h_header_p1[]			= "// Generated source file for calling dlls using a variable parameter pattern\n"
+										  "\n"
+										  "struct SParam\n"
+										  "{\n"
+										  "    int type;\n"
+										  "    union {\n"
+										  "        // Used internally\n"
+										  "        void*  _v;\n"
+										  "        float  _f;\n"
+										  "        double _d;\n"
+										  "\n"
+										  "        // For more documentary population into explicit types\n"
+										  "        char            _char;\n"
+										  "        short           _short;\n"
+										  "        int             _int;\n"
+										  "        long            _long;\n"
+										  "\n"
+										  "        unsigned char   _uchar;\n"
+										  "        unsigned short  _ushort;\n"
+										  "        unsigned int    _uint;\n"
+										  "        unsigned long   _ulong;\n"
+										  "\n"
+										  "        float           _float;\n"
+										  "        double          _double;\n"
+										  "    };\n"
+										  "};\n"
+										  "\n"
+										  "struct SParamData\n"
+										  "{\n"
+										  "    struct SDllDispatch   _dll;       // The address of the function in the dll\n"
+										  "    int                   ipCount;    // Input parameter count (0 thru ";
+const char	cgc_h_header_p2[]			= ")\n"
+										  "    struct SParam         ip[";
+const char	cgc_h_header_p3[]			= "];     // Input parameters\n"
+										  "    struct SParam         rp;         // Return parameter\n"
+										  "};\n"
+										  "\n"
+										  "\n"
+										  "\n"
+										  "\n"
+										  "////////////////////////////\n"
+										  "// Sample use and reference:\n"
+										  "/////////\n"
+										  "//\n"
+										  "//     SParamData sd;\n"
+										  "//\n"
+										  "//     // Load dll function\n"
+										  "//     if (load_dll_function(&sd, \"c:\\path\\to\\my.dll\", \"myFunction\") != 1/*true*/)\n"
+										  "//     {\n"
+										  "//         // Unable to load the dll or function in the dll\n"
+										  "//         // Report error\n"
+										  "//\n"
+										  "//     } else {\n"
+										  "//         // Populate sd's parameters appropriately\n"
+										  "//         // This step is manual, and custom to your application on how it's done\n"
+										  "//\n"
+										  "//\n"
+										  "//         //////////\n"
+										  "//         // Actually call the DLL:\n"
+										  "//         //////\n"
+										  "//             dispatch_dll_function(&sd);\n"
+										  "//\n"
+										  "//             // Note:  Return value (if any) is in sd->rp._* values"
+										  "//\n"
+										  "//     }\n";
+
+
+
 // _1.h header
 const char	cgc_h1_header_p0_1[]		= "// ";
 const char	cgc_h1_header_p0_2[]		= "\n";
@@ -300,6 +395,7 @@ const char	cgc_h3_postfix_vspacer[]	= "\n";
 
 // File extensions
 const char cgc_c_ext[]					= ".c";
+const char cgc_h_ext[]					= ".h";
 const char cgc_h1_ext[]					= "_1.h";
 const char cgc_h2_ext[]					= "_2.h";
 const char cgc_h3_ext[]					= "_3.h";
@@ -324,10 +420,12 @@ void generate(int tnMaxParamType, int tnVarParams, int tnMaxParams, char* tcOutp
 {
 	unsigned int	lnI;
 	FILE*			lfh_c;
+	FILE*			lfh_h;
 	FILE*			lfh_h1;
 	FILE*			lfh_h2;
 	FILE*			lfh_h3;
 	char			file_c[_MAX_PATH];
+	char			file_h[_MAX_PATH];
 	char			file_h1[_MAX_PATH];
 	char			file_h2[_MAX_PATH];
 	char			file_h3[_MAX_PATH];
@@ -338,16 +436,19 @@ void generate(int tnMaxParamType, int tnVarParams, int tnMaxParams, char* tcOutp
 	// Create required output files
 	//////
 		memset(file_c,	0, sizeof(file_c));
+		memset(file_h,	0, sizeof(file_h));
 		memset(file_h1,	0, sizeof(file_h1));
 		memset(file_h2,	0, sizeof(file_h2));
 		memset(file_h3,	0, sizeof(file_h3));
 
 		memcpy(file_c,	tcOutputFile, min(strlen(tcOutputFile), sizeof(file_c)  - sizeof(cgc_c_ext)  - 1));
+		memcpy(file_h,	tcOutputFile, min(strlen(tcOutputFile), sizeof(file_h)  - sizeof(cgc_h_ext)  - 1));
 		memcpy(file_h1,	tcOutputFile, min(strlen(tcOutputFile), sizeof(file_h1) - sizeof(cgc_h1_ext) - 1));
 		memcpy(file_h2,	tcOutputFile, min(strlen(tcOutputFile), sizeof(file_h2) - sizeof(cgc_h2_ext) - 1));
 		memcpy(file_h3,	tcOutputFile, min(strlen(tcOutputFile), sizeof(file_h3) - sizeof(cgc_h3_ext) - 1));
 
 		sprintf(file_c	+ strlen(file_c),	cgc_c_ext);
+		sprintf(file_h	+ strlen(file_h),	cgc_h_ext);
 		sprintf(file_h1	+ strlen(file_h1),	cgc_h1_ext);
 		sprintf(file_h2	+ strlen(file_h2),	cgc_h2_ext);
 		sprintf(file_h3	+ strlen(file_h3),	cgc_h3_ext);
@@ -357,6 +458,7 @@ void generate(int tnMaxParamType, int tnVarParams, int tnMaxParams, char* tcOutp
 	// Open the output files
 	//////
 		lfh_c	= createfile(file_c);		// file.c
+		lfh_h	= createfile(file_h);		// file.h
 		lfh_h1	= createfile(file_h1);		// file_1.h
 		lfh_h2	= createfile(file_h2);		// file_2.h
 		lfh_h3	= createfile(file_h3);		// file_3.h
@@ -383,15 +485,25 @@ void generate(int tnMaxParamType, int tnVarParams, int tnMaxParams, char* tcOutp
 		writeout((void*)file_h3, strlen(file_h3), lfh_c);
 		writeout((void*)cgc_c_header_p2_2, sizeof(cgc_c_header_p2_2) - 1, lfh_c);
 
+		writeout((void*)cgc_c_header_p2_1, sizeof(cgc_c_header_p2_1) - 1, lfh_c);
+		writeout((void*)file_h, strlen(file_h), lfh_c);
+		writeout((void*)cgc_c_header_p2_2, sizeof(cgc_c_header_p2_2) - 1, lfh_c);
+
 		writeout((void*)cgc_c_header_p3, sizeof(cgc_c_header_p3) - 1, lfh_c);
-		sprintf(buffer, "%d", tnMaxParams);
-		writeout((void*)buffer, strlen(buffer), lfh_c);
-		writeout((void*)cgc_c_header_p4, sizeof(cgc_c_header_p4) - 1, lfh_c);
-		writeout((void*)buffer, strlen(buffer), lfh_c);
-		writeout((void*)cgc_c_header_p5, sizeof(cgc_c_header_p5) - 1, lfh_c);
 		sprintf(buffer, "%d", tnVarParams);
 		writeout((void*)buffer, strlen(buffer), lfh_c);
-		writeout((void*)cgc_c_header_p6, sizeof(cgc_c_header_p6) - 1, lfh_c);
+		writeout((void*)cgc_c_header_p4, sizeof(cgc_c_header_p4) - 1, lfh_c);
+
+		// file.h
+		writeout((void*)cgc_h_header_p0_1, sizeof(cgc_h_header_p0_1) - 1, lfh_h);
+		writeout((void*)file_h, strlen(file_c), lfh_h);
+		writeout((void*)cgc_h_header_p0_2, sizeof(cgc_h_header_p0_2) - 1, lfh_h);
+		writeout((void*)cgc_h_header_p1, sizeof(cgc_h_header_p1) - 1, lfh_h);
+		sprintf(buffer, "%d", tnMaxParams);
+		writeout((void*)buffer, strlen(buffer), lfh_h);
+		writeout((void*)cgc_h_header_p2, sizeof(cgc_h_header_p2) - 1, lfh_h);
+		writeout((void*)buffer, strlen(buffer), lfh_h);
+		writeout((void*)cgc_h_header_p3, sizeof(cgc_h_header_p3) - 1, lfh_h);
 
 		// file_1.h
 		writeout((void*)cgc_h1_header_p0_1, sizeof(cgc_h1_header_p0_1) - 1, lfh_h1);

@@ -182,6 +182,51 @@ struct SHover
 	//////////
 
 
+struct SDllLib
+{
+	SLL*		ll;
+
+	SDatum		library;					// DLL name
+	HMODULE		dllHandle;					// Handle to the DLL
+};
+
+struct SDllParam
+{
+	u32			type;						// Field type, see _VAR_TYPE_DLL_* constants
+	SDatum		name;						// Parameter name
+
+	// Instance values
+	SVariable*	associatedVariable;			// The variable associated with this
+	u32			udfSetting;					// Either _UDFPARMS_REFERENCE or _UDFPARMS_VALUE (indicates if passed by pointer or value, from the @ in the definition)
+};
+
+// DECLARE INTEGER myFunction IN myDll.dll ALIAS myFunc INTEGER nHandle, STRING cDesc
+struct SDll
+{
+	SLL*		ll;
+
+	// DECLARE [returnType]
+	u32			returnType;					// The return type, see _VAR_TYPE_DLL_* constants
+	SDllParam	returnParam;
+
+	// [name] ... ALIAS [alias]
+	SDatum		name;						// Function name
+	SDatum		alias;						// Alias name
+
+	// IN [library]
+	SDllLib*	dll;						// DLL load instance
+	void*		dllfunc;					// GetProcAddress() of the function within the DLL
+	s32			callCount;					// Number of times this DLL was referenced
+
+	// [inputType1 inputName1], [inputType2 inputName2], ... [inputTypeN inputNameN]
+	s32			paramCount;					// Number of parameters specified
+	SDllParam	firstParam[16];				// Parameter definitions
+
+	// Add-ons for DLL function tracking
+	SThisCode*	onAccess;					// Called whenever this DLL is accessed (used) in source code
+	SThisCode*	onAssign;					// Called whenever the return result from the DLL is received
+};
+
 struct SFunctionParams
 {
 	bool			error;								// Was there an error in processing?
