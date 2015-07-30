@@ -323,6 +323,8 @@
 	const s32		_ICODE_ADHOC									= 242;
 	const s32		_ICODE_ENDADHOC									= 243;
 	const s32		_ICODE_SETTINGS									= 244;
+	const s32		_ICODE_SINGLE									= 245;		// Same as _ICODE_FLOAT
+	const s32		_ICODE_STRING									= 246;		// Same as _ICODE_CHARACTER
 
 	// Relatives
 	const s32		_ICODE_THISCODE									= 600;
@@ -2324,6 +2326,8 @@
 	const s8		cgc_u8[]										= "u8";
 	const s8		cgc_adhoc[]										= "adhoc";
 	const s8		cgc_endadhoc[]									= "endadhoc";
+	const s8		cgc_single[]									= "single";
+	const s8		cgc_string[]									= "string";
 	const s8		cgc_numeric[]									= "numeric";
 	const s8		cgc_unicode[]									= "unicode";
 	const s8		cgc_guid8[]										= "guid8";

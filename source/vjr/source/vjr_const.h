@@ -507,6 +507,7 @@ typedef SEM**		SEMpp;
 //////
 	const u32			_MAX_PARAMETER_COUNT				= 26;						// 26 passed parameters
 	const u32			_MAX_RETURN_COUNT					= 10;						// 10 return parameters
+	const u32			_MAX_DLL_PARAMS						= 26;						// 26 passed parameters into the called DLL
 
 
 //////////

@@ -220,7 +220,7 @@ struct SDll
 
 	// [inputType1 inputName1], [inputType2 inputName2], ... [inputTypeN inputNameN]
 	s32			paramCount;					// Number of parameters specified
-	SDllParam	firstParam[16];				// Parameter definitions
+	SDllParam	firstParam[_MAX_DLL_PARAMS];// Parameter definitions
 
 	// Add-ons for DLL function tracking
 	SThisCode*	onAccess;					// Called whenever this DLL is accessed (used) in source code

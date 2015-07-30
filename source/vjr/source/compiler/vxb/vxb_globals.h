@@ -1178,6 +1178,8 @@
 		{ cgc_u8,					2,			false,		_ICODE_U8,								false,				_ICAT_GENERIC,		null0,						false,						null0,		null0 },
 		{ cgc_adhoc,				5,			false,		_ICODE_ADHOC,							true,				_ICAT_FLOW,			&colorSynHi_command,		true,						null0,		null0 },
 		{ cgc_endadhoc,				8,			false,		_ICODE_ENDADHOC,						true,				_ICAT_FLOW,			&colorSynHi_command,		true,						null0,		null0 },
+		{ cgc_single,				6,			false,		_ICODE_SINGLE,							false,				_ICAT_GENERIC,		null0,						false,						null0,		null0 },
+		{ cgc_string,				6,			false,		_ICODE_STRING,							false,				_ICAT_GENERIC,		null0,						false,						null0,		null0 },
 
 		{ 0,						0,			0,			0,										0,					0 }
 	};

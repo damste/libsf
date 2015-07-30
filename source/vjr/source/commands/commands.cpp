@@ -1665,11 +1665,51 @@
 // Returns:
 //		Nothing. The thing being declared has been declared, or there is an error.
 //////
+	s32 gsCompList_dllTypes[] = {
+		_ICODE_VOID,		// No return type
+		_ICODE_SHORT,		// 16-bit integer
+		_ICODE_S16,			// 16-bit integer
+		_ICODE_U16,			// 16-bit unsigned integer
+		_ICODE_INTEGER,		// 32-bit integer
+		_ICODE_S32,			// 32-bit integer
+		_ICODE_U32,			// 32-bit unsigned integer
+		_ICODE_SINGLE,		// 32-bit floating point
+		_ICODE_FLOAT,		// 32-bit floating point
+		_ICODE_F32,			// 32-bit floating point
+		_ICODE_DOUBLE,		// 64-bit floating point
+		_ICODE_F64,			// 64-bit floating point
+		_ICODE_LONG,		// 32-bit integer
+		_ICODE_S64,			// 64-bit integer
+		_ICODE_U64,			// 64-bit unsigned integer
+		_ICODE_STRING,		// Character string
+		_ICODE_OBJECT		// IDispatch object
+	};
+	const s32 gnCompList_dllTypes_length = sizeof(gsCompList_dllTypes) / sizeof(gsCompList_dllTypes[0]);
+
+	const s32 _DLL_TYPE_VOID		= -1;
+	const s32 _DLL_TYPE_S16			= _ICODE_S16;
+	const s32 _DLL_TYPE_U16			= _ICODE_U16;
+	const s32 _DLL_TYPE_S32			= _ICODE_S32;
+	const s32 _DLL_TYPE_U32			= _ICODE_U32;
+	const s32 _DLL_TYPE_F32			= _ICODE_F32;
+	const s32 _DLL_TYPE_F64			= _ICODE_F64;
+	const s32 _DLL_TYPE_S64			= _ICODE_S64;
+	const s32 _DLL_TYPE_U64			= _ICODE_U64;
+	const s32 _DLL_TYPE_STRING		= _ICODE_CHARACTER;
+	const s32 _DLL_TYPE_OBJECT		= _ICODE_OBJECT;
+
 	void command_declare(SThisCode* thisCode, SComp* compCommand, SFunctionParams* rpar)
 	{
-		SComp*	compDeclare = compCommand;
-		SComp*	compVar;
-		SComp*	compLBracket;
+		SComp*		compDeclare = compCommand;
+		SComp*		compVar;
+		SComp*		compLBracket;
+		SComp*		compIn;
+		SComp*		compAlias;
+		SComp*		compWin32Api;
+		SComp*		compNext;
+		SComp*		compFunctionName;
+		SDllParam	rp;
+		SDllParam	ip[_MAX_DLL_PARAMS];
 
 
 		//////////
@@ -1682,8 +1722,136 @@
 
 			} else {
 				// It might be a DECLARE DLL form
-// TODO:  Working here
+				// DECLARE [return_type] functionName IN WIN32API|dllpathname.dll [ALIAS cName] [type [@]name][,type [@]name][,...][,type [@]name]
+				compAlias		= iComps_findNextBy_iCode(thisCode, compDeclare, _ICODE_ALIAS,		NULL);
+				compIn			= iComps_findNextBy_iCode(thisCode, compDeclare, _ICODE_IN,			NULL);
+				compWin32Api	= iComps_findNextBy_iCode(thisCode, compDeclare, _ICODE_WIN32API,	NULL);
+				
+				// Initialize the parameters
+				memset(&rp, 0, sizeof(rp));		// Return parameter
+				memset(&ip, 0, sizeof(ip));		// Input parameters
+
+				// There should be something after declare
+				if ((compNext = iComps_getNth(thisCode, compDeclare, 1)))
+				{
+					// Is it a return type?
+					if (iiComps_validate(thisCode, compNext, &gsCompList_dllTypes[0], gnCompList_dllTypes_length))
+					{
+						// It is a valid return type
+						compNext = iiCommand_declare_storeParameterType(thisCode, &rp, compNext);
+
+					} else {
+						// The function name is next
+						compFunctionName = compNext;
+					}
+
+				} else {
+					// Syntax error
+					iError_reportByNumber(thisCode, _ERROR_SYNTAX, compDeclare, false);
+				}
 			}
+	}
+
+	SComp* iiCommand_declare_storeParameterType(SThisCode* thisCode, SDllParam* dp, SComp* compType)
+	{
+		// Based on the type, set the parameter
+		switch (compType->iCode)
+		{
+			case _ICODE_VOID:			// No return type
+				dp->type = _DLL_TYPE_VOID;
+				break;
+
+			case _ICODE_SHORT:			// 16-bit integer
+			case _ICODE_S16:			// 16-bit integer
+				dp->type = _DLL_TYPE_S16;
+				break;
+
+			case _ICODE_U16:			// 16-bit unsigned integer
+				dp->type = _DLL_TYPE_U16;
+				break;
+
+			case _ICODE_INTEGER:		// 32-bit integer
+			case _ICODE_S32:			// 32-bit integer
+			case _ICODE_LONG:			// 32-bit integer
+				dp->type = _DLL_TYPE_S32;
+				break;
+
+			case _ICODE_U32:			// 32-bit unsigned integer
+				dp->type = _DLL_TYPE_U32;
+				break;
+
+			case _ICODE_SINGLE:			// 32-bit floating point
+			case _ICODE_FLOAT:			// 32-bit floating point
+			case _ICODE_F32:			// 32-bit floating point
+				dp->type = _DLL_TYPE_F32;
+				break;
+
+			case _ICODE_DOUBLE:			// 64-bit floating point
+			case _ICODE_F64:			// 64-bit floating point
+				dp->type = _DLL_TYPE_F64;
+				break;
+
+			case _ICODE_S64:			// 64-bit integer
+				dp->type = _DLL_TYPE_S64;
+				break;
+
+			case _ICODE_U64:			// 64-bit unsigned integer
+				dp->type = _DLL_TYPE_U64;
+				break;
+
+			case _ICODE_STRING:			// Character string
+				dp->type = _DLL_TYPE_STRING;
+				break;
+
+			case _ICODE_OBJECT:			// IDispatch object
+				dp->type = _DLL_TYPE_OBJECT;
+				break;
+		}
+
+		// Return the component after this one
+		return(iComps_getNth(thisCode, compType, 1));
+	}
+
+	SComp* iiCommand_declare_storeParameterName(SThisCode* thisCode, SDllParam* dp, SComp* compNameOrAtSign, s32 tnParamNum)
+	{
+		char buffer[16];
+
+
+		//////////
+		// by-ref or by-value?
+		//////
+			if (compNameOrAtSign->iCode == _ICODE_AT_SIGN)
+			{
+				// By-ref as it is prefixed with an @ sign
+				dp->udfSetting		= _UDFPARMS_REFERENCE;
+				compNameOrAtSign	= iComps_getNth(thisCode, compNameOrAtSign, 1);
+
+			} else {
+				// By-value
+				dp->udfSetting		= _UDFPARMS_VALUE;
+			}
+
+
+		//////////
+		// Copy the name if present (for debugging reference)
+		//////
+			if (compNameOrAtSign->iCode == _ICODE_ALPHA || compNameOrAtSign->iCode == _ICODE_ALPHANUMERIC)
+			{
+				// Use the name as given
+				iDatum_duplicate(&dp->name, compNameOrAtSign->line->sourceCode->data_cs8 + compNameOrAtSign->start, compNameOrAtSign->length);
+				compNameOrAtSign = iComps_getNth(thisCode, compNameOrAtSign, 1);
+
+			} else {
+				// Assign it a generic name
+				sprintf(buffer, "var%d", tnParamNum);
+				iDatum_duplicate(&dp->name, buffer, strlen(buffer));
+			}
+
+
+		//////////
+		// Indicate the next component (which is now the one we're sitting on)
+		//////
+			return(compNameOrAtSign);
 	}
 
 
