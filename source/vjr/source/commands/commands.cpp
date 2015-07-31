@@ -1666,27 +1666,42 @@
 //		Nothing. The thing being declared has been declared, or there is an error.
 //////
 	s32 gsCompList_dllTypes[] = {
-		_ICODE_VOID,		// No return type
-		_ICODE_SHORT,		// 16-bit integer
-		_ICODE_S16,			// 16-bit integer
-		_ICODE_U16,			// 16-bit unsigned integer
-		_ICODE_INTEGER,		// 32-bit integer
-		_ICODE_S32,			// 32-bit integer
-		_ICODE_U32,			// 32-bit unsigned integer
-		_ICODE_SINGLE,		// 32-bit floating point
-		_ICODE_FLOAT,		// 32-bit floating point
-		_ICODE_F32,			// 32-bit floating point
-		_ICODE_DOUBLE,		// 64-bit floating point
-		_ICODE_F64,			// 64-bit floating point
-		_ICODE_LONG,		// 32-bit integer
-		_ICODE_S64,			// 64-bit integer
-		_ICODE_U64,			// 64-bit unsigned integer
-		_ICODE_STRING,		// Character string
-		_ICODE_OBJECT		// IDispatch object
+		_ICODE_VOID,			// No return type
+		_ICODE_SHORT,			// 16-bit integer
+		_ICODE_S16,				// 16-bit integer
+		_ICODE_U16,				// 16-bit unsigned integer
+		_ICODE_INTEGER,			// 32-bit integer
+		_ICODE_S32,				// 32-bit integer
+		_ICODE_U32,				// 32-bit unsigned integer
+		_ICODE_SINGLE,			// 32-bit floating point
+		_ICODE_FLOAT,			// 32-bit floating point
+		_ICODE_F32,				// 32-bit floating point
+		_ICODE_DOUBLE,			// 64-bit floating point
+		_ICODE_F64,				// 64-bit floating point
+		_ICODE_LONG,			// 32-bit integer
+		_ICODE_S64,				// 64-bit integer
+		_ICODE_U64,				// 64-bit unsigned integer
+		_ICODE_STRING,			// Character string
+		_ICODE_OBJECT			// IDispatch object
 	};
 	const s32 gnCompList_dllTypes_length = sizeof(gsCompList_dllTypes) / sizeof(gsCompList_dllTypes[0]);
 
-	const s32 _DLL_TYPE_VOID		= -1;
+	s32 gsFilenameTypes[] = {
+		_ICODE_ALPHA,			// Name
+		_ICODE_ALPHANUMERIC,	// Name
+		_ICODE_COLON,			// c:
+		_ICODE_SLASH,			// //server/
+		_ICODE_BACKSLASH		// \\server\ and c:\pathname\file.dll
+	};
+	const s32 gnFilenameTypes_length = sizeof(gsFilenameTypes) / sizeof(gsFilenameTypes[0]);
+
+	s32 gsAlphanumericTypes[] = {
+		_ICODE_ALPHA,			// text
+		_ICODE_ALPHANUMERIC		// text123
+	};
+	const s32 gnAlphanumericTypes_length = sizeof(gsAlphanumericTypes) / sizeof(gsAlphanumericTypes[0]);
+
+	const s32 _DLL_TYPE_VOID		= _ICODE_VOID;
 	const s32 _DLL_TYPE_S16			= _ICODE_S16;
 	const s32 _DLL_TYPE_U16			= _ICODE_U16;
 	const s32 _DLL_TYPE_S32			= _ICODE_S32;
@@ -1698,9 +1713,13 @@
 	const s32 _DLL_TYPE_STRING		= _ICODE_CHARACTER;
 	const s32 _DLL_TYPE_OBJECT		= _ICODE_OBJECT;
 
+	const s8 cgc_ret1[] = "ret1";		// Variable name used for debuggers
+
 	void command_declare(SThisCode* thisCode, SComp* compCommand, SFunctionParams* rpar)
 	{
 		SComp*		compDeclare = compCommand;
+
+		s32			lnParamCount;
 		SComp*		compVar;
 		SComp*		compLBracket;
 		SComp*		compIn;
@@ -1708,6 +1727,9 @@
 		SComp*		compWin32Api;
 		SComp*		compNext;
 		SComp*		compFunctionName;
+		SComp*		compDllName;
+		SComp*		compAliasName;
+		SComp*		compParam;
 		SDllParam	rp;
 		SDllParam	ip[_MAX_DLL_PARAMS];
 
@@ -1719,37 +1741,114 @@
 			{
 				// It is of the array structure
 				iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, compVar, false);
+				return;
+
+			}
+
+
+		//////////
+		// It might be a DECLARE DLL form
+		//////
+			// DECLARE [return_type] functionName IN WIN32API|dllpathname.dll [ALIAS cName] [type [@]name][,type [@]name][,...][,type [@]name]
+			compAlias		= iComps_findNextBy_iCode(thisCode, compDeclare, _ICODE_ALIAS,		NULL);
+			compIn			= iComps_findNextBy_iCode(thisCode, compDeclare, _ICODE_IN,			NULL);
+			compWin32Api	= iComps_findNextBy_iCode(thisCode, compDeclare, _ICODE_WIN32API,	NULL);
+			
+
+		//////////
+		// Initialize the parameters
+		//////
+			memset(&rp, 0, sizeof(rp));		// Return parameter
+			memset(&ip, 0, sizeof(ip));		// Input parameters
+
+			compFunctionName	= NULL;
+			compDllName			= NULL;
+			compAliasName		= NULL;
+
+
+		//////////
+		// There should be something after declare
+		//////
+			if (!(compNext = iComps_getNth(thisCode, compDeclare, 1)) || !compIn)
+			{
+				// Syntax error
+				iError_reportByNumber(thisCode, _ERROR_SYNTAX, compDeclare, false);
+				return;
+			}
+
+
+		//////////
+		// Is it a return type?
+		//////
+			iDatum_duplicate(&rp->name, cgc_ret1, sizeof(cgc_ret1) - 1);
+			if (iiComps_validate(thisCode, compNext, &gsCompList_dllTypes[0], gnCompList_dllTypes_length))
+			{
+				// It is a valid return type
+				compFunctionName = iiCommand_declare_storeParameterType(thisCode, &rp, compNext);
 
 			} else {
-				// It might be a DECLARE DLL form
-				// DECLARE [return_type] functionName IN WIN32API|dllpathname.dll [ALIAS cName] [type [@]name][,type [@]name][,...][,type [@]name]
-				compAlias		= iComps_findNextBy_iCode(thisCode, compDeclare, _ICODE_ALIAS,		NULL);
-				compIn			= iComps_findNextBy_iCode(thisCode, compDeclare, _ICODE_IN,			NULL);
-				compWin32Api	= iComps_findNextBy_iCode(thisCode, compDeclare, _ICODE_WIN32API,	NULL);
-				
-				// Initialize the parameters
-				memset(&rp, 0, sizeof(rp));		// Return parameter
-				memset(&ip, 0, sizeof(ip));		// Input parameters
-
-				// There should be something after declare
-				if ((compNext = iComps_getNth(thisCode, compDeclare, 1)))
-				{
-					// Is it a return type?
-					if (iiComps_validate(thisCode, compNext, &gsCompList_dllTypes[0], gnCompList_dllTypes_length))
-					{
-						// It is a valid return type
-						compNext = iiCommand_declare_storeParameterType(thisCode, &rp, compNext);
-
-					} else {
-						// The function name is next
-						compFunctionName = compNext;
-					}
-
-				} else {
-					// Syntax error
-					iError_reportByNumber(thisCode, _ERROR_SYNTAX, compDeclare, false);
-				}
+				// The function name is next
+				rp.type = _DLL_TYPE_VOID;
+				compFunctionName = compNext;
 			}
+
+
+		//////////
+		// Is the name valid?
+		//////
+			if (compFunctionName->iCode != _ICODE_ALPHA && compFunctionName->iCode != _ICODE_ALPHANUMERIC)
+			{
+				// Syntax error
+				iError_reportByNumber(thisCode, _ERROR_SYNTAX, compDeclare, false);
+				return;
+			}
+
+
+		//////////
+		// IN win32api | pathname.dll
+		//////
+			compDllName = iComps_getNth(thisCode, compIn, 1);
+			iComps_combineAdjacent(compDllName, _ICODE_ALPHA, _ICAT_GENERIC, bgra(), &gsFilenameTypes, gnFilenameTypes_length);
+
+
+		//////////
+		// ALIAS cName
+		//////
+			if (compAlias)
+			{
+				// Get the name after
+				if (!(compAliasName = iComps_getNth(thisCode, compAlias, 1)) || !iiComps_validate(thisCode, compAliasName, &gsAlphanumericTypes, gnAlphanumericTypes_length))
+				{
+					// Syntax error
+					iError_reportByNumber(thisCode, _ERROR_SYNTAX, compAlias, false);
+					return;
+				}
+
+				// First parameter begins after compAliasName
+				compParam = iComps_getNth(thisCode, compAliasName, 1);
+
+			} else {
+				// First parameter begins after compDllName
+				compParam = iComps_getNth(thisCode, compDllName, 1);
+			}
+
+
+		//////////
+		// Parameters
+		//////
+			if (compParam)
+			{
+				// Load in the parameters
+				for (lnParamCount = 0; lnParamCount < _MAX_DLL_PARAMS; lnParamCount++)
+				{
+// Working here...
+				}
+
+			} else {
+				// No parameters
+				lnParamCount = 0;
+			}
+
 	}
 
 	SComp* iiCommand_declare_storeParameterType(SThisCode* thisCode, SDllParam* dp, SComp* compType)
