@@ -474,6 +474,17 @@ struct SObjPropMap;
 	bool					iToolbar_applyTo_obj					(SThisCode* thisCode, SObject* objParent, SObject* objToolbarContainer, cu8* tcXml, u32 tnXmlLength, cs8* tcTagRoot, cs8* tcTagSub);
 
 
+//////////
+// DLL-related functions
+//////
+	// Dll functions
+	void					iDllFunc_dispatch						(SThisCode* thisCode, SFunctionParams* rpar, SDllFunc* dfunc);
+	bool					iDllFunc_add							(SThisCode* thisCode, SFunctionParams* rpar, SDllFuncParam* rp, SDllFuncParam ip[], s32 tnIpCount, SComp* compFunctionName, SComp* compAliasName, SComp* compDllName, SThisCode* onAccess, SThisCode* onAssign);
+	SDllFunc*				iDllFunc_find_byName					(SThisCode* thisCode, s8* funcName, s32 lnFuncNameLength);
+
+	// Dll library (the physical c:\path\to\theFile.dll
+	SDllLib*				iDllLib_open							(SThisCode* thisCode, SComp* compDllName);
+
 
 //////////
 // vjr_sup.cpp

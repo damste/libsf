@@ -245,6 +245,7 @@
 		#include "\libsf\source\vjr\source\dbf\cdx.cpp"
 		#include "\libsf\source\vjr\source\forms3d\grace.cpp"
 		#include "\libsf\source\vjr\source\fonts.cpp"
+		#include "\libsf\source\vjr\source\dllfuncs\dllfuncs.cpp"
 
 
 #elif defined(__GNUC__)
@@ -409,6 +410,7 @@
 		#include "/libsf/source/vjr/source/dbf/cdx.cpp"
 		#include "/libsf/source/vjr/source/forms3d/grace.cpp"
 		#include "/libsf/source/vjr/source/fonts.cpp"
+		#include "/libsf/source/vjr/source/dllfuncs/dllfuncs.cpp"
 
 		#if defined(__linux__)
 			#include "/libsf/utils/common/cpp/linux/windows.cpp"

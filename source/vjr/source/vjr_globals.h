@@ -171,7 +171,7 @@
 
 	// Loaded DLLs
 	SDllLib*			gsRootDllLib						= NULL;									// Pointer to first loaded DLL
-	SDll*				gsRootDll							= NULL;									// Pointer to first function from a DLL that's been defined
+	SDllFunc*				gsRootDllFunc							= NULL;									// Pointer to first function from a DLL that's been defined
 
 	// Global variables
 	SVariable*			varGlobals							= NULL;									// All global variables are stored

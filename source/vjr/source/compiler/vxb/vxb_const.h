@@ -249,6 +249,7 @@
 	const u8		cgcUnableToLockForRead[]						= "unable to lock for read";
 	const u8		cgcUnableToInitialize[]							= "unable to initialize";
 	const u8		cgcUnknownFunction[]							= "unknown function";
+	const u8		cgcDllNotFound[]								= "dll not found";
 #else
 	#error Language not specified
 #endif

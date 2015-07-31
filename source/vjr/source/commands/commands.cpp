@@ -214,6 +214,7 @@
 			case _ERROR_UNABLE_TO_LOCK_FOR_READ:			{	iError_report(thisCode, cgcUnableToLockForRead,				tlInvasive);		break;	}
 			case _ERROR_UNABLE_TO_INITIALIZE:				{	iError_report(thisCode, cgcUnableToInitialize,				tlInvasive);		break;	}
 			case _ERROR_UNKNOWN_FUNCTION:					{	iError_report(thisCode, cgcUnknownFunction,					tlInvasive);		break;	}
+			case _ERROR_DLL_NOT_FOUND:						{	iError_report(thisCode, cgcDllNotFound,						tlInvasive);		break;	}
 
 		}
 
@@ -1686,20 +1687,20 @@
 	};
 	const s32 gnCompList_dllTypes_length = sizeof(gsCompList_dllTypes) / sizeof(gsCompList_dllTypes[0]);
 
-	s32 gsFilenameTypes[] = {
+	s32 gsCompList_filenameTypes[] = {
 		_ICODE_ALPHA,			// Name
 		_ICODE_ALPHANUMERIC,	// Name
 		_ICODE_COLON,			// c:
 		_ICODE_SLASH,			// //server/
 		_ICODE_BACKSLASH		// \\server\ and c:\pathname\file.dll
 	};
-	const s32 gnFilenameTypes_length = sizeof(gsFilenameTypes) / sizeof(gsFilenameTypes[0]);
+	const s32 gnCompList_filenameTypes_length = sizeof(gsCompList_filenameTypes) / sizeof(gsCompList_filenameTypes[0]);
 
-	s32 gsAlphanumericTypes[] = {
+	s32 gsCompList_alphanumericTypes[] = {
 		_ICODE_ALPHA,			// text
 		_ICODE_ALPHANUMERIC		// text123
 	};
-	const s32 gnAlphanumericTypes_length = sizeof(gsAlphanumericTypes) / sizeof(gsAlphanumericTypes[0]);
+	const s32 gnCompList_alphanumericTypes_length = sizeof(gsCompList_alphanumericTypes) / sizeof(gsCompList_alphanumericTypes[0]);
 
 	const s32 _DLL_TYPE_VOID		= _ICODE_VOID;
 	const s32 _DLL_TYPE_S16			= _ICODE_S16;
@@ -1719,7 +1720,7 @@
 	{
 		SComp*		compDeclare = compCommand;
 
-		s32			lnParamCount;
+		s32			lnI;
 		SComp*		compVar;
 		SComp*		compLBracket;
 		SComp*		compIn;
@@ -1730,8 +1731,9 @@
 		SComp*		compDllName;
 		SComp*		compAliasName;
 		SComp*		compParam;
-		SDllParam	rp;
-		SDllParam	ip[_MAX_DLL_PARAMS];
+		SDllFuncParam	rp;
+		SDllFuncParam	ip[_MAX_DLL_PARAMS];
+		char		buffer[16];
 
 
 		//////////
@@ -1780,7 +1782,7 @@
 		//////////
 		// Is it a return type?
 		//////
-			iDatum_duplicate(&rp->name, cgc_ret1, sizeof(cgc_ret1) - 1);
+			iDatum_duplicate(&rp.name, cgc_ret1, sizeof(cgc_ret1) - 1);
 			if (iiComps_validate(thisCode, compNext, &gsCompList_dllTypes[0], gnCompList_dllTypes_length))
 			{
 				// It is a valid return type
@@ -1808,7 +1810,7 @@
 		// IN win32api | pathname.dll
 		//////
 			compDllName = iComps_getNth(thisCode, compIn, 1);
-			iComps_combineAdjacent(compDllName, _ICODE_ALPHA, _ICAT_GENERIC, bgra(), &gsFilenameTypes, gnFilenameTypes_length);
+			iComps_combineAdjacent(thisCode, compDllName, _ICODE_ALPHA, _ICAT_GENERIC, &colorSynHi_operator, gsCompList_filenameTypes, gnCompList_filenameTypes_length);
 
 
 		//////////
@@ -1817,7 +1819,7 @@
 			if (compAlias)
 			{
 				// Get the name after
-				if (!(compAliasName = iComps_getNth(thisCode, compAlias, 1)) || !iiComps_validate(thisCode, compAliasName, &gsAlphanumericTypes, gnAlphanumericTypes_length))
+				if (!(compAliasName = iComps_getNth(thisCode, compAlias, 1)) || !iiComps_validate(thisCode, compAliasName, gsCompList_alphanumericTypes, gnCompList_alphanumericTypes_length))
 				{
 					// Syntax error
 					iError_reportByNumber(thisCode, _ERROR_SYNTAX, compAlias, false);
@@ -1839,19 +1841,82 @@
 			if (compParam)
 			{
 				// Load in the parameters
-				for (lnParamCount = 0; lnParamCount < _MAX_DLL_PARAMS; lnParamCount++)
+				for (lnI = 0; compParam && lnI < _MAX_DLL_PARAMS; lnI++)
 				{
-// Working here...
+					// The format for each must be:  type [@] [name] [comma]
+					if (iiComps_validate(thisCode, compParam, gsCompList_dllTypes, gnCompList_dllTypes_length))
+					{
+						// Grab type
+						compParam = iiCommand_declare_storeParameterType(thisCode, &ip[lnI], compParam);
+						if (compParam)
+						{
+							// Is there an at sign?
+							if (compParam->iCode == _ICODE_AT_SIGN)
+							{
+								// by-ref
+								ip[lnI].udfSetting	= _UDFPARMS_REFERENCE;
+								compParam			= iComps_getNth(thisCode, compParam, 1);
+
+							} else {
+								// by-val
+								ip[lnI].udfSetting	= _UDFPARMS_VALUE;
+							}
+
+							// Is there a name?
+							if (iiComps_validate(thisCode, compParam, gsCompList_alphanumericTypes, gnCompList_alphanumericTypes_length))
+							{
+								// Grab the name (for debugging)
+								compParam = iiCommand_declare_storeParameterName(thisCode, &ip[lnI], compParam, lnI + 1);
+
+							} else {
+								// Use a default name
+								sprintf(buffer, "var%d", lnI + 1);
+								iDatum_duplicate(&ip[lnI].name, buffer, strlen(buffer));
+							}
+
+							// Is there a comma?
+							if (compParam)
+							{
+								if (compParam->iCode == _ICODE_COMMA)
+								{
+									// We're good, continue on past the comma
+									compParam = iComps_getNth(thisCode, compParam, 1);
+
+								} else {
+									// Syntax error
+									iError_reportByNumber(thisCode, _ERROR_SYNTAX, compParam, false);
+									return;
+								}
+							}
+						}
+						
+
+					} else {
+						// Syntax error
+						iError_reportByNumber(thisCode, _ERROR_SYNTAX, compParam, false);
+						return;
+					}
 				}
+				// When we get here, all of the parameters have been parsed
+				// If there are more waiting, then it's a too many parameters error
+				if (compParam)
+				{
+					// Too many parameters
+					iError_reportByNumber(thisCode, _ERROR_TOO_MANY_PARAMETERS, compParam, false);
+					return;
+				}
+
+				// We're good, create the dll reference
+				iDllFunc_add(thisCode, rpar, &rp, ip, lnI, compFunctionName, compAliasName, compDllName, NULL, NULL);
 
 			} else {
 				// No parameters
-				lnParamCount = 0;
+				lnI = 0;
 			}
 
 	}
 
-	SComp* iiCommand_declare_storeParameterType(SThisCode* thisCode, SDllParam* dp, SComp* compType)
+	SComp* iiCommand_declare_storeParameterType(SThisCode* thisCode, SDllFuncParam* dp, SComp* compType)
 	{
 		// Based on the type, set the parameter
 		switch (compType->iCode)
@@ -1911,7 +1976,7 @@
 		return(iComps_getNth(thisCode, compType, 1));
 	}
 
-	SComp* iiCommand_declare_storeParameterName(SThisCode* thisCode, SDllParam* dp, SComp* compNameOrAtSign, s32 tnParamNum)
+	SComp* iiCommand_declare_storeParameterName(SThisCode* thisCode, SDllFuncParam* dp, SComp* compNameOrAtSign, s32 tnParamNum)
 	{
 		char buffer[16];
 

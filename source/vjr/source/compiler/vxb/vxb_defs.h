@@ -152,7 +152,7 @@ struct SThisCode;
 	SComp*					iComps_skipTo_iCode							(SThisCode* thisCode, SComp* comp, s32 tniCode);
 	SComp*					iComps_getNth								(SThisCode* thisCode, SComp* comp, s32 tnCount);
 	u32						iComps_combineN								(SThisCode* thisCode, SComp* comp, u32 tnCount, s32 tnNew_iCode, u32 tnNew_iCat, SBgra* newColor);
-	u32						iComps_combineAdjacent						(SComp* compLeftmost, s32 tniCode, u32 tniCat, SBgra* tnColor, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount);
+	u32						iComps_combineAdjacent						(SThisCode* thisCode, SComp* compLeftmost, s32 tniCode, u32 tniCat, SBgra* tnColor, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount);
 	u32						iComps_combineAdjacentAlphanumeric			(SThisCode* thisCode, SLine* line);
 	u32						iComps_combineAdjacentNumeric				(SThisCode* thisCode, SLine* line);
 	u32						iComps_combineAdjacentDotForms				(SThisCode* thisCode, SLine* line);
