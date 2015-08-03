@@ -114,9 +114,9 @@
 //////
 	void function_week(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varParam			= rpar->params[0];
-		SVariable*	varFirstWeek		= rpar->params[1];
-		SVariable*	varFirstDayOfWeek	= rpar->params[2];
+		SVariable*	varParam			= rpar->ip[0];
+		SVariable*	varFirstWeek		= rpar->ip[1];
+		SVariable*	varFirstDayOfWeek	= rpar->ip[2];
 
 		u32			lnYear, lnMonth, lnDay;
 		s32			lnWeek, lnMinDaysInWeek, lnFirstDayOfWeek;
@@ -129,7 +129,7 @@
 		//////////
 		// If provided, parameter 1 must be date or datetime
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (varParam)
 			{
 				if (!iVariable_isValid(varParam) || !(iVariable_isTypeDate(varParam) || iVariable_isTypeDatetime(varParam) || iVariable_isTypeDatetimeX(varParam)))
@@ -237,7 +237,7 @@
 		//////////
 		// Indicate our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 

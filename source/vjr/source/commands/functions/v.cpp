@@ -111,8 +111,8 @@
 //////
 	void function_val(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varExpr			= rpar->params[0];
-		SVariable*	varIgnoreChars	= rpar->params[1];
+		SVariable*	varExpr			= rpar->ip[0];
+		SVariable*	varIgnoreChars	= rpar->ip[1];
 		s8			c, cCurrency, cPoint, cSeparator;
 		s32			lnI, lnJ, lnBuffOffset;
 		s64			lnValue;
@@ -130,7 +130,7 @@
 		//////////
 		// Parameter 1 must be valid
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varExpr))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varExpr), false);
@@ -148,7 +148,7 @@
 					iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_getRelatedComp(thisCode, varExpr), false);
 
 				// Success or failure, return our result
-				rpar->returns[0] = result;
+				rpar->rp[0] = result;
 				return;
 			}
 
@@ -361,7 +361,7 @@
 		//////////
         // Return our converted result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -391,8 +391,8 @@
 //////
 	void function_vartype(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* var		= rpar->params[0];
-		SVariable* varNull	= rpar->params[1];
+		SVariable* var		= rpar->ip[0];
+		SVariable* varNull	= rpar->ip[1];
 
 		bool	llNullIsType;
 		bool	error;
@@ -402,7 +402,7 @@
 		//////////
 		// varLookup must exist
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValidType(var))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, var), false);
@@ -478,12 +478,12 @@
 //////
 	void function_vec(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varV1 = rpar->params[0];
+		SVariable* varV1 = rpar->ip[0];
 
 
 		// Not yet completed
 		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_getRelatedComp(thisCode, varV1), false);
-		rpar->returns[0] = NULL;
+		rpar->rp[0] = NULL;
 	}
 
 
@@ -511,12 +511,12 @@
 //////
 	void function_veccount(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varVec = rpar->params[0];
+		SVariable* varVec = rpar->ip[0];
 
 
 		// Not yet completed
 		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_getRelatedComp(thisCode, varVec), false);
-		rpar->returns[0] = NULL;
+		rpar->rp[0] = NULL;
 	}
 
 
@@ -547,14 +547,14 @@
 //////
 	void function_vecel(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varVec		= rpar->params[0];
+		SVariable* varVec		= rpar->ip[0];
 //		SVariable* varEl		= rpar->params[1];
 //		SVariable* varNewValue	= rpar->params[2];
 
 
 		// Not yet completed
 		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_getRelatedComp(thisCode, varVec), false);
-		rpar->returns[0] = NULL;
+		rpar->rp[0] = NULL;
 	}
 
 
@@ -591,7 +591,7 @@
 
 		// Not yet completed
 		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
-		rpar->returns[0] = NULL;
+		rpar->rp[0] = NULL;
 	}
 
 
@@ -626,7 +626,7 @@
 
 		// Not yet completed
 		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
-		rpar->returns[0] = NULL;
+		rpar->rp[0] = NULL;
 	}
 
 
@@ -658,7 +658,7 @@
 //////
 	void function_vecstuff(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varVec			= rpar->params[0];
+		SVariable* varVec			= rpar->ip[0];
 //		SVariable* varStartEl		= rpar->params[1];
 //		SVariable* varRemoveCount	= rpar->params[2];
 //		SVariable* varVecStuff		= rpar->params[3];
@@ -666,7 +666,7 @@
 
 		// Not yet completed
 		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_getRelatedComp(thisCode, varVec), false);
-		rpar->returns[0] = NULL;
+		rpar->rp[0] = NULL;
 	}
 
 
@@ -697,14 +697,14 @@
 //////
 	void function_vecsymbol(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varVec		= rpar->params[0];
+		SVariable* varVec		= rpar->ip[0];
 //		SVariable* varEl		= rpar->params[1];
 //		SVariable* varNewSymbol	= rpar->params[2];
 
 
 		// Not yet completed
 		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_getRelatedComp(thisCode, varVec), false);
-		rpar->returns[0] = NULL;
+		rpar->rp[0] = NULL;
 	}
 
 
@@ -732,7 +732,7 @@
 //////
     void function_version(SThisCode* thisCode, SFunctionParams* rpar)
     {
-		SVariable*	varIndex = rpar->params[0];
+		SVariable*	varIndex = rpar->ip[0];
         s32			index;
 		u32			errorNum;
         bool		error;
@@ -743,7 +743,7 @@
 		//////////
 		// Parameter 1 must be numeric
 		//////
-			rpar->returns[0]	= NULL;
+			rpar->rp[0]	= NULL;
 			lptr				= NULL;
 			if (!iVariable_isValid(varIndex))
 			{
@@ -818,6 +818,6 @@
 		//////////
         // Return our converted result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
     }

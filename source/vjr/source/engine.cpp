@@ -155,11 +155,11 @@
 								llManufactured = true;
 								memset(&lrpar, 0, sizeof(lrpar));
 								iEngine_get_functionResult(thisCode, compNext, -1, &lrpar);
-								if (lrpar.error || !(var = lrpar.returns[0]))
+								if (lrpar.ei.error || !(var = lrpar.rp[0]))
 								{
 									// Unknown function, or parameters were not correct
-									if (lrpar.error)
-										iError_reportByNumber(thisCode, lrpar.errorNum, compNext, false);
+									if (lrpar.ei.error)
+										iError_reportByNumber(thisCode, lrpar.ei.errorNum, compNext, false);
 
 									// Update the screen
 									_screen_editbox->isDirtyRender |= iSEM_navigateToEndLine(thisCode, screenData, _screen);
@@ -205,11 +205,11 @@
 								// It is something like "? func(x)"
 								memset(&lrpar, 0, sizeof(lrpar));
 								iEngine_get_functionResult(thisCode, compThird, 10, &lrpar);
-								if (lrpar.error || !(var = lrpar.returns[0]))
+								if (lrpar.ei.error || !(var = lrpar.rp[0]))
 								{
 									// Unknown function, or parameters were not correct
-									if (lrpar.error)
-										iError_reportByNumber(thisCode, lrpar.errorNum, compThird, false);
+									if (lrpar.ei.error)
+										iError_reportByNumber(thisCode, lrpar.ei.errorNum, compThird, false);
 
 									// Update the screen
 									_screen_editbox->isDirtyRender |= iSEM_navigateToEndLine(thisCode, screenData, _screen);
@@ -700,8 +700,8 @@
 						//////
 							if (!iiEngine_getParametersBetween(thisCode, funcData, compLeftParen, &lnParamsFound, funcData->req_pcount, funcData->max_pcount, rpar))
 							{
-								rpar->error		= true;
-								rpar->errorNum	= _ERROR_INVALID_PARAMETERS;
+								rpar->ei.error		= true;
+								rpar->ei.errorNum	= _ERROR_INVALID_PARAMETERS;
 								return;
 							}
 
@@ -709,10 +709,10 @@
 						//////////
 						// Update rcount and pcount
 						//////
-							rpar->rmax		= funcData->max_rcount;
-							rpar->rmin		= funcData->req_rcount;
-							rpar->rcount	= ((tnRcount >= 0) ? min(tnRcount, _MAX_RETURN_COUNT) : rpar->rmax);
-							rpar->pcount	= lnParamsFound;
+							rpar->rpMax		= funcData->max_rcount;
+							rpar->rpMin		= funcData->req_rcount;
+							rpar->rpCount	= ((tnRcount >= 0) ? min(tnRcount, _MAX_RETURN_COUNT) : rpar->rpMax);
+							rpar->ipCount	= lnParamsFound;
 
 
 						//////////
@@ -728,8 +728,8 @@
 							{
 
 								// Delete if populated
-								if (rpar->params[lnI])
-									iVariable_delete(thisCode, rpar->params[lnI], true);
+								if (rpar->ip[lnI])
+									iVariable_delete(thisCode, rpar->ip[lnI], true);
 
 							}
 
@@ -746,13 +746,13 @@
 				}
 
 				// If we get here, not found
-				rpar->error		= true;
-				rpar->errorNum	= _ERROR_UNKNOWN_FUNCTION;
+				rpar->ei.error		= true;
+				rpar->ei.errorNum	= _ERROR_UNKNOWN_FUNCTION;
 
 		} else {
 			// Syntax error
-			rpar->error		= true;
-			rpar->errorNum	= _ERROR_SYNTAX;
+			rpar->ei.error		= true;
+			rpar->ei.errorNum	= _ERROR_SYNTAX;
 		}
 	}
 
@@ -1090,7 +1090,7 @@
 		//////
 			llUdfParamsByRef = propGet_settings_UdfParamsReference(_settings);
 			for (lnI = 0; lnI < _MAX_PARAMETER_COUNT; lnI++)
-				rpar->params[lnI] = NULL;
+				rpar->ip[lnI] = NULL;
 
 
 		//////////
@@ -1129,7 +1129,7 @@
 					if (!funcData || !funcData->paramMap)		llByRef = llUdfParamsByRef;
 					else										llByRef = llUdfParamsByRef | (funcData->paramMap[lnI] == '1');
 
-					rpar->params[lnI] = iEngine_get_variableName_fromComponent(thisCode, comp, &llManufactured, llByRef);
+					rpar->ip[lnI] = iEngine_get_variableName_fromComponent(thisCode, comp, &llManufactured, llByRef);
 
 
 				// Move to next component

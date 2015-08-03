@@ -113,7 +113,7 @@
 	void function_cxlatd(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
-		rpar->returns[0] = NULL;
+		rpar->rp[0] = NULL;
 	}
 
 
@@ -146,7 +146,7 @@
 	void function_cxlatt(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
-		rpar->returns[0] = NULL;
+		rpar->rp[0] = NULL;
 	}
 
 
@@ -179,7 +179,7 @@
 	void function_cxlatx(SThisCode* thisCode, SFunctionParams* rpar)
 	{
 		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
-		rpar->returns[0] = NULL;
+		rpar->rp[0] = NULL;
 	}
 
 
@@ -253,14 +253,14 @@
 		// What format are we?
 		//////
 // TODO:  Need to set the return parameter count so we know what's happening
-			rpar->returns[0] = NULL;
-			if (rpar->rcount == 1)
+			rpar->rp[0] = NULL;
+			if (rpar->rpCount == 1)
 			{
 				// ldDate = DBUNDLE(p1[, p2][, p3])
 				llCreateResult	= true;
-				varP1			= rpar->params[0];		// p1
-				varP2			= rpar->params[1];		// p2
-				varP3			= rpar->params[2];		// p3
+				varP1			= rpar->ip[0];		// p1
+				varP2			= rpar->ip[1];		// p2
+				varP3			= rpar->ip[2];		// p3
 				lnP1Error		= _ERROR_P1_IS_INCORRECT;
 				lnP2Error		= _ERROR_P2_IS_INCORRECT;
 				lnP3Error		= _ERROR_P3_IS_INCORRECT;
@@ -268,10 +268,10 @@
 			} else {
 				// DBUNDLE(r, p1, p2, p3)
 				llCreateResult	= false;
-				varR1			= rpar->params[0];		// p1
-				varP1			= rpar->params[1];		// p2
-				varP2			= rpar->params[2];		// p3
-				varP3			= rpar->params[3];		// p4
+				varR1			= rpar->ip[0];		// p1
+				varP1			= rpar->ip[1];		// p2
+				varP2			= rpar->ip[2];		// p3
+				varP3			= rpar->ip[3];		// p4
 				lnP1Error		= _ERROR_P2_IS_INCORRECT;
 				lnP2Error		= _ERROR_P3_IS_INCORRECT;
 				lnP3Error		= _ERROR_P4_IS_INCORRECT;
@@ -295,7 +295,7 @@
 				validateVariable(varP1, lnP1Error);
 
 				// If they only provided one parameter, we process it differently
-				if (rpar->pcount == 2)
+				if (rpar->ipCount == 2)
 				{
 					// It must be a julian, datetime, or datetimex
 					if (iVariable_isTypeDatetimeX(varP1))
@@ -1199,7 +1199,7 @@
 //////
 	void function_pdjobstart(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varDocName = rpar->params[0];
+		SVariable*	varDocName = rpar->ip[0];
 
 		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
@@ -1237,14 +1237,14 @@
 //////
 	void function_pdaddpage(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varJobHandle	= rpar->params[0];
-		SVariable*	varPageColor	= rpar->params[1];
-		SVariable*	varWidth		= rpar->params[2];
-		SVariable*	varHeight		= rpar->params[3];
-		SVariable*	varLeft			= rpar->params[4];
-		SVariable*	varTop			= rpar->params[5];
-		SVariable*	varRight		= rpar->params[6];
-		SVariable*	varBottom		= rpar->params[7];
+		SVariable*	varJobHandle	= rpar->ip[0];
+		SVariable*	varPageColor	= rpar->ip[1];
+		SVariable*	varWidth		= rpar->ip[2];
+		SVariable*	varHeight		= rpar->ip[3];
+		SVariable*	varLeft			= rpar->ip[4];
+		SVariable*	varTop			= rpar->ip[5];
+		SVariable*	varRight		= rpar->ip[6];
+		SVariable*	varBottom		= rpar->ip[7];
 
 		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
@@ -1278,10 +1278,10 @@
 //////
 	void function_pdaddpanel(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varJobHandle	= rpar->params[0];
-		SVariable*	varPanelColor	= rpar->params[1];
-		SVariable*	varWidth		= rpar->params[2];
-		SVariable*	varHeight		= rpar->params[3];
+		SVariable*	varJobHandle	= rpar->ip[0];
+		SVariable*	varPanelColor	= rpar->ip[1];
+		SVariable*	varWidth		= rpar->ip[2];
+		SVariable*	varHeight		= rpar->ip[3];
 
 		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
@@ -1320,16 +1320,16 @@
 //////
 	void function_pdtext(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varJobHandle			= rpar->params[0];
-		SVariable*	varPageOrPanelHandle	= rpar->params[1];
-		SVariable*	varUpperLeftY			= rpar->params[2];
-		SVariable*	varUpperLeftX			= rpar->params[3];
-		SVariable*	varBackColor			= rpar->params[4];
-		SVariable*	varForeColor			= rpar->params[5];
-		SVariable*	varText					= rpar->params[6];
-		SVariable*	varFontName				= rpar->params[7];
-		SVariable*	varFontSize				= rpar->params[8];
-		SVariable*	varFontFlags			= rpar->params[9];
+		SVariable*	varJobHandle			= rpar->ip[0];
+		SVariable*	varPageOrPanelHandle	= rpar->ip[1];
+		SVariable*	varUpperLeftY			= rpar->ip[2];
+		SVariable*	varUpperLeftX			= rpar->ip[3];
+		SVariable*	varBackColor			= rpar->ip[4];
+		SVariable*	varForeColor			= rpar->ip[5];
+		SVariable*	varText					= rpar->ip[6];
+		SVariable*	varFontName				= rpar->ip[7];
+		SVariable*	varFontSize				= rpar->ip[8];
+		SVariable*	varFontFlags			= rpar->ip[9];
 
 		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
@@ -1368,16 +1368,16 @@
 //////
 	void function_pdtexteval(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varJobHandle			= rpar->params[0];
-		SVariable*	varPageOrPanelHandle	= rpar->params[1];
-		SVariable*	varUpperLeftY			= rpar->params[2];
-		SVariable*	varUpperLeftX			= rpar->params[3];
-		SVariable*	varBackColor			= rpar->params[4];
-		SVariable*	varForeColor			= rpar->params[5];
-		SVariable*	varTextEval				= rpar->params[6];
-		SVariable*	varFontName				= rpar->params[7];
-		SVariable*	varFontSize				= rpar->params[8];
-		SVariable*	varFontFlags			= rpar->params[9];
+		SVariable*	varJobHandle			= rpar->ip[0];
+		SVariable*	varPageOrPanelHandle	= rpar->ip[1];
+		SVariable*	varUpperLeftY			= rpar->ip[2];
+		SVariable*	varUpperLeftX			= rpar->ip[3];
+		SVariable*	varBackColor			= rpar->ip[4];
+		SVariable*	varForeColor			= rpar->ip[5];
+		SVariable*	varTextEval				= rpar->ip[6];
+		SVariable*	varFontName				= rpar->ip[7];
+		SVariable*	varFontSize				= rpar->ip[8];
+		SVariable*	varFontFlags			= rpar->ip[9];
 
 		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
@@ -1413,13 +1413,13 @@
 //////
 	void function_pdimage(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varJobHandle			= rpar->params[0];
-		SVariable*	varPageOrPanelHandle	= rpar->params[1];
-		SVariable*	varUpperLeftY			= rpar->params[2];
-		SVariable*	varUpperLeftX			= rpar->params[3];
-		SVariable*	varWidth				= rpar->params[4];
-		SVariable*	varHeight				= rpar->params[5];
-		SVariable*	varPathname				= rpar->params[6];
+		SVariable*	varJobHandle			= rpar->ip[0];
+		SVariable*	varPageOrPanelHandle	= rpar->ip[1];
+		SVariable*	varUpperLeftY			= rpar->ip[2];
+		SVariable*	varUpperLeftX			= rpar->ip[3];
+		SVariable*	varWidth				= rpar->ip[4];
+		SVariable*	varHeight				= rpar->ip[5];
+		SVariable*	varPathname				= rpar->ip[6];
 
 		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
@@ -1455,13 +1455,13 @@
 //////
 	void function_pdpanel(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varJobHandle			= rpar->params[0];
-		SVariable*	varPageOrPanelHandleDst	= rpar->params[1];
-		SVariable*	varPanelHandleSrc		= rpar->params[2];
-		SVariable*	varUpperLeftY			= rpar->params[3];
-		SVariable*	varUpperLeftX			= rpar->params[4];
-		SVariable*	varWidth				= rpar->params[5];
-		SVariable*	varHeight				= rpar->params[6];
+		SVariable*	varJobHandle			= rpar->ip[0];
+		SVariable*	varPageOrPanelHandleDst	= rpar->ip[1];
+		SVariable*	varPanelHandleSrc		= rpar->ip[2];
+		SVariable*	varUpperLeftY			= rpar->ip[3];
+		SVariable*	varUpperLeftX			= rpar->ip[4];
+		SVariable*	varWidth				= rpar->ip[5];
+		SVariable*	varHeight				= rpar->ip[6];
 
 		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
@@ -1497,13 +1497,13 @@
 //////
 	void function_pdhline(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varJobHandle			= rpar->params[0];
-		SVariable*	varPageOrPanelHandle	= rpar->params[1];
-		SVariable*	varColor				= rpar->params[2];
-		SVariable*	varY					= rpar->params[3];
-		SVariable*	varLeftX				= rpar->params[4];
-		SVariable*	varRightX				= rpar->params[5];
-		SVariable*	varThickness			= rpar->params[6];
+		SVariable*	varJobHandle			= rpar->ip[0];
+		SVariable*	varPageOrPanelHandle	= rpar->ip[1];
+		SVariable*	varColor				= rpar->ip[2];
+		SVariable*	varY					= rpar->ip[3];
+		SVariable*	varLeftX				= rpar->ip[4];
+		SVariable*	varRightX				= rpar->ip[5];
+		SVariable*	varThickness			= rpar->ip[6];
 
 		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
@@ -1539,13 +1539,13 @@
 //////
 	void function_pdVline(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varJobHandle			= rpar->params[0];
-		SVariable*	varPageOrPanelHandle	= rpar->params[1];
-		SVariable*	varColor				= rpar->params[2];
-		SVariable*	varx					= rpar->params[3];
-		SVariable*	varTopY					= rpar->params[4];
-		SVariable*	varBottomY				= rpar->params[5];
-		SVariable*	varThickness			= rpar->params[6];
+		SVariable*	varJobHandle			= rpar->ip[0];
+		SVariable*	varPageOrPanelHandle	= rpar->ip[1];
+		SVariable*	varColor				= rpar->ip[2];
+		SVariable*	varx					= rpar->ip[3];
+		SVariable*	varTopY					= rpar->ip[4];
+		SVariable*	varBottomY				= rpar->ip[5];
+		SVariable*	varThickness			= rpar->ip[6];
 
 		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
@@ -1582,14 +1582,14 @@
 //////
 	void function_pdrect(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varJobHandle			= rpar->params[0];
-		SVariable*	varPageOrPanelHandle	= rpar->params[1];
-		SVariable*	varColor				= rpar->params[2];
-		SVariable*	varUpperLeftY			= rpar->params[3];
-		SVariable*	varUpperLeftX			= rpar->params[4];
-		SVariable*	varLowerRightY			= rpar->params[5];
-		SVariable*	varLowerRightX			= rpar->params[6];
-		SVariable*	varThickness			= rpar->params[7];
+		SVariable*	varJobHandle			= rpar->ip[0];
+		SVariable*	varPageOrPanelHandle	= rpar->ip[1];
+		SVariable*	varColor				= rpar->ip[2];
+		SVariable*	varUpperLeftY			= rpar->ip[3];
+		SVariable*	varUpperLeftX			= rpar->ip[4];
+		SVariable*	varLowerRightY			= rpar->ip[5];
+		SVariable*	varLowerRightX			= rpar->ip[6];
+		SVariable*	varThickness			= rpar->ip[7];
 
 		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
@@ -1620,8 +1620,8 @@
 //////
 	void function_pdpagedelete(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varJobHandle	= rpar->params[0];
-		SVariable*	varPageHandle	= rpar->params[1];
+		SVariable*	varJobHandle	= rpar->ip[0];
+		SVariable*	varPageHandle	= rpar->ip[1];
 
 		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
@@ -1654,10 +1654,10 @@
 //////
 	void function_pdpagereorder(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varJobHandle		= rpar->params[0];
-		SVariable*	varPageHandleRef	= rpar->params[1];
-		SVariable*	varPageHandleMove	= rpar->params[2];
-		SVariable*	varMoveAfter		= rpar->params[3];
+		SVariable*	varJobHandle		= rpar->ip[0];
+		SVariable*	varPageHandleRef	= rpar->ip[1];
+		SVariable*	varPageHandleMove	= rpar->ip[2];
+		SVariable*	varMoveAfter		= rpar->ip[3];
 
 		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
@@ -1690,8 +1690,8 @@
 //////
 	void function_pdwidth(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varJobHandle	= rpar->params[0];
-		SVariable*	varPageHandle	= rpar->params[1];
+		SVariable*	varJobHandle	= rpar->ip[0];
+		SVariable*	varPageHandle	= rpar->ip[1];
 
 		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
@@ -1724,8 +1724,8 @@
 //////
 	void function_pdheight(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varJobHandle	= rpar->params[0];
-		SVariable*	varPageHandle	= rpar->params[1];
+		SVariable*	varJobHandle	= rpar->ip[0];
+		SVariable*	varPageHandle	= rpar->ip[1];
 
 		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
@@ -1765,8 +1765,8 @@
 //////
 	void function_pdpmetrics(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varJobHandle			= rpar->params[0];
-		SVariable*	varPageOrPanelHandle	= rpar->params[1];
+		SVariable*	varJobHandle			= rpar->ip[0];
+		SVariable*	varPageOrPanelHandle	= rpar->ip[1];
 
 		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
@@ -1804,12 +1804,12 @@
 //////
 	void function_pdtextmetrics(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varJobHandle			= rpar->params[0];
-		SVariable*	varPageOrPanelHandle	= rpar->params[1];
-		SVariable*	varText					= rpar->params[2];
-		SVariable*	varFontName				= rpar->params[3];
-		SVariable*	varFontSize				= rpar->params[4];
-		SVariable*	varFontFlags			= rpar->params[5];
+		SVariable*	varJobHandle			= rpar->ip[0];
+		SVariable*	varPageOrPanelHandle	= rpar->ip[1];
+		SVariable*	varText					= rpar->ip[2];
+		SVariable*	varFontName				= rpar->ip[3];
+		SVariable*	varFontSize				= rpar->ip[4];
+		SVariable*	varFontFlags			= rpar->ip[5];
 
 		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
@@ -1841,7 +1841,7 @@
 //////
 	void function_pdjobdelete(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varJobHandle	= rpar->params[0];
+		SVariable*	varJobHandle	= rpar->ip[0];
 
 		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;

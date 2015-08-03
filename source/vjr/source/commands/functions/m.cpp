@@ -114,8 +114,8 @@
 //////
 	void function_malp(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varColor		= rpar->params[0];
-		SVariable*	varAsInteger	= rpar->params[1];
+		SVariable*	varColor		= rpar->ip[0];
+		SVariable*	varAsInteger	= rpar->ip[1];
 		u32			lnColor;
 		f32			lfMalp;
 		bool		llAsInteger;
@@ -127,7 +127,7 @@
 		//////////
 		// Color must be numeric
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varColor) || !iVariable_isTypeNumeric(varColor))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varColor), false);
@@ -208,7 +208,7 @@
 		//////////
 		// Signify our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -240,8 +240,8 @@
 //////
 	void function_max(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varLeft		= rpar->params[0];
-		SVariable*	varRight	= rpar->params[1];
+		SVariable*	varLeft		= rpar->ip[0];
+		SVariable*	varRight	= rpar->ip[1];
 		bool		llLeft;
 		s32			lnLeft32, lnRight32;
 		s64			lnLeft64, lnRight64;
@@ -256,7 +256,7 @@
 		//////////
 		// Parameter 1 must be numeric
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varLeft))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varLeft), false);
@@ -457,7 +457,7 @@
 		//////////
 		// Indicate our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -487,7 +487,7 @@
 //////
 	void function_mdy(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varParam = rpar->params[0];
+		SVariable* varParam = rpar->ip[0];
 
 
 		// Return mdy
@@ -550,8 +550,8 @@
 //////
 	void function_min(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varLeft		= rpar->params[0];
-		SVariable*	varRight	= rpar->params[1];
+		SVariable*	varLeft		= rpar->ip[0];
+		SVariable*	varRight	= rpar->ip[1];
 		bool		llLeft;
 		s32			lnLeft32, lnRight32;
 		s64			lnLeft64, lnRight64;
@@ -566,7 +566,7 @@
 		//////////
 		// Parameter 1 must be numeric
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varLeft))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varLeft), false);
@@ -761,7 +761,7 @@
 				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_getRelatedComp(thisCode, varLeft), false);
 
 			// Indicate our result
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -790,7 +790,7 @@
 //////
 	void function_minute(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varParam = rpar->params[0];
+		SVariable*	varParam = rpar->ip[0];
 
 
 		// Return minute
@@ -832,8 +832,8 @@
 //////
 	void function_mod(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varDividend	= rpar->params[0];
-		SVariable*	varDivisor	= rpar->params[1];
+		SVariable*	varDividend	= rpar->ip[0];
+		SVariable*	varDivisor	= rpar->ip[1];
 
 
 		// Return mod
@@ -870,7 +870,7 @@
 //////
 	void function_month(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varParam = rpar->params[0];
+		SVariable* varParam = rpar->ip[0];
 
 
 		// Return month

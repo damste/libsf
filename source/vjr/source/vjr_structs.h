@@ -229,16 +229,18 @@ struct SDllFunc
 
 struct SFunctionParams
 {
-	bool			error;								// Was there an error in processing?
-	u32				errorNum;							// The error number
+	// If there's an error, these are set
+	SErrorInfo		ei;									// If any error info needs logged, it will be here
 
-	SVariable*		returns[_MAX_RETURN_COUNT];			// Return parameters
-	s32				rcount;								// Actual number of return parameters specified
-	s32				rmax;								// Maximum number allowed
-	s32				rmin;								// Minimum number required
+	// Return parameters
+	SVariable*		rp[_MAX_RETURN_COUNT];				// Return parameters
+	s32				rpCount;							// Actual number of return parameters specified
+	s32				rpMax;								// Maximum number allowed
+	s32				rpMin;								// Minimum number required
 
-	SVariable*		params[_MAX_PARAMETER_COUNT];		// Input parameters
-	s32				pcount;								// Number of input parameters actually passed
+	// Input parameters
+	SVariable*		ip[_MAX_PARAMETER_COUNT];			// Input parameters
+	s32				ipCount;							// Number of input parameters actually passed
 };
 
 

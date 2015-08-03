@@ -112,8 +112,8 @@
 
 	VOID function_gomonth(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varParam = rpar->params[0];
-		SVariable* varMonth = rpar->params[1];
+		SVariable* varParam = rpar->ip[0];
+		SVariable* varMonth = rpar->ip[1];
 
 		s32			lnNumOfMonths, lnYear, lnMonth;
 		u32			lnDay, lnLastDay, lnHour, lnMinute, lnSecond;
@@ -128,7 +128,7 @@
 		//////////
 		// Parameter 1 must be date or datetime
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varParam) || !(iVariable_isTypeDate(varParam) || iVariable_isTypeDatetimeX(varParam) || iVariable_isTypeDatetime(varParam)))
 			{
 				iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_getRelatedComp(thisCode, varParam), false);
@@ -271,7 +271,7 @@
 		//////////
 		// Return the result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -300,8 +300,8 @@
 //////
 	void function_grayscale(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varColor			= rpar->params[0];
-		SVariable* varPercentage	= rpar->params[1];
+		SVariable* varColor			= rpar->ip[0];
+		SVariable* varPercentage	= rpar->ip[1];
 
 
 		// Return grayscale
@@ -333,7 +333,7 @@
 //////
 	void function_grn(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varColor = rpar->params[0];
+		SVariable* varColor = rpar->ip[0];
 
 
 		// Return grn

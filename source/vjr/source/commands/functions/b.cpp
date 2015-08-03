@@ -111,9 +111,9 @@
 //////
 	void function_between(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varValue		= rpar->params[0];
-		SVariable*	varLowValue		= rpar->params[1];
-		SVariable*	varHighValue	= rpar->params[2];
+		SVariable*	varValue		= rpar->ip[0];
+		SVariable*	varLowValue		= rpar->ip[1];
+		SVariable*	varHighValue	= rpar->ip[2];
 		s32			lnI, lnType, lnComp;
 		bool		llInRange;
 		SVariable*	result;
@@ -124,7 +124,7 @@
 		//////////
 		// Parameters 1, 2 and 3 must be present
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varValue))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varValue), false);
@@ -145,15 +145,15 @@
 		//////////
 		// Each type must be fundamentally the same type
 		//////
-			for (lnI = 1, lnType = iVariable_fundamentalType(thisCode, varValue); lnI <= 3 && rpar->params[lnI]; lnI++)
+			for (lnI = 1, lnType = iVariable_fundamentalType(thisCode, varValue); lnI <= 3 && rpar->ip[lnI]; lnI++)
 			{
 				//////////
 				// Make sure this variable type matches the test value
 				//////
-					if (iVariable_fundamentalType(thisCode, rpar->params[lnI]) != lnType)
+					if (iVariable_fundamentalType(thisCode, rpar->ip[lnI]) != lnType)
 					{
 						// The types do not match
-						iError_reportByNumber(thisCode, _ERROR_DATA_TYPE_MISMATCH, iVariable_getRelatedComp(thisCode, rpar->params[lnI]), false);
+						iError_reportByNumber(thisCode, _ERROR_DATA_TYPE_MISMATCH, iVariable_getRelatedComp(thisCode, rpar->ip[lnI]), false);
 						return;
 					}
 
@@ -204,7 +204,7 @@
 		//////////
 		// Indicate our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 	}
 
 
@@ -234,8 +234,8 @@
 //////
 	void function_bfp(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varP1	= rpar->params[0];
-		SVariable* varP2	= rpar->params[1];
+		SVariable* varP1	= rpar->ip[0];
+		SVariable* varP2	= rpar->ip[1];
 
 		s32			lnBits;
 		s64			lnVal64;
@@ -249,8 +249,8 @@
 		//////////
 		// Determine our size and initialization value
 		//////
-			rpar->returns[0] = NULL;
-			switch (rpar->pcount)
+			rpar->rp[0] = NULL;
+			switch (rpar->ipCount)
 			{
 				case 0:
 					lnBits = propGet_settings_PrecisionBFP(_settings);
@@ -307,7 +307,7 @@
 		// Construct the appropriate variable
 		//////
 			result = iVariable_create(thisCode, _VAR_TYPE_BFP, NULL, true, lnBits);
-			if (result && rpar->pcount >= 1)
+			if (result && rpar->ipCount >= 1)
 			{
 				// Initialize
 				if (iVariable_isTypeCharacter(varP1))
@@ -367,7 +367,7 @@
 		//////////
 		// Indicate our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -398,8 +398,8 @@
 //////
 	void function_bi(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varP1	= rpar->params[0];
-		SVariable* varP2	= rpar->params[1];
+		SVariable* varP1	= rpar->ip[0];
+		SVariable* varP2	= rpar->ip[1];
 
 		s32			lnBits;
 		s64			lnVal64;
@@ -413,8 +413,8 @@
 		//////////
 		// Determine our size and initialization value
 		//////
-			rpar->returns[0] = NULL;
-			switch (rpar->pcount)
+			rpar->rp[0] = NULL;
+			switch (rpar->ipCount)
 			{
 				case 0:
 					lnBits = propGet_settings_PrecisionBI(_settings);
@@ -471,7 +471,7 @@
 		// Construct the appropriate variable
 		//////
 			result = iVariable_create(thisCode, _VAR_TYPE_BI, NULL, true, lnBits);
-			if (result && rpar->pcount >= 1)
+			if (result && rpar->ipCount >= 1)
 			{
 				// Initialize
 				if (iVariable_isTypeCharacter(varP1))
@@ -531,7 +531,7 @@
 		//////////
 		// Indicate our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -560,8 +560,8 @@
 //////
 	void function_bits(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varBits		= rpar->params[0];
-		SVariable* varBitWidth	= rpar->params[1];
+		SVariable* varBits		= rpar->ip[0];
+		SVariable* varBitWidth	= rpar->ip[1];
 
 
 		// Return bits
@@ -581,7 +581,7 @@
 		//////////
 		// varBits must be character
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varBits) || !iVariable_isTypeCharacter(varBits) || varBits->value.length > 64)
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varBits), false);
@@ -733,7 +733,7 @@
 		//////////
 		// Return our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 	}
 
 
@@ -761,7 +761,7 @@
 //////
 	void function_bits8(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varBits = rpar->params[0];
+		SVariable* varBits = rpar->ip[0];
 
 
 		// Return bits8()
@@ -793,7 +793,7 @@
 //////
 	void function_bits16(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varBits = rpar->params[0];
+		SVariable* varBits = rpar->ip[0];
 
 
 		// Return bits16()
@@ -825,7 +825,7 @@
 //////
 	void function_bits32(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varBits = rpar->params[0];
+		SVariable* varBits = rpar->ip[0];
 
 
 		// Return bits32()
@@ -857,7 +857,7 @@
 //////
 	void function_bits64(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varBits = rpar->params[0];
+		SVariable* varBits = rpar->ip[0];
 
 
 		// Return bits64()
@@ -959,7 +959,7 @@
 //////
 	void function_blu(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varColor = rpar->params[0];
+		SVariable* varColor = rpar->ip[0];
 
 
 		// Return blu
@@ -994,9 +994,9 @@
 //////
 	void function_bgr(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varBlu = rpar->params[0];
-		SVariable* varGrn = rpar->params[1];
-		SVariable* varRed = rpar->params[2];
+		SVariable* varBlu = rpar->ip[0];
+		SVariable* varGrn = rpar->ip[1];
+		SVariable* varRed = rpar->ip[2];
 
 
 		// Return bgr
@@ -1032,10 +1032,10 @@
 //////
 	void function_bgra(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varBlu = rpar->params[0];
-		SVariable* varGrn = rpar->params[1];
-		SVariable* varRed = rpar->params[2];
-		SVariable* varAlp = rpar->params[3];
+		SVariable* varBlu = rpar->ip[0];
+		SVariable* varGrn = rpar->ip[1];
+		SVariable* varRed = rpar->ip[2];
+		SVariable* varAlp = rpar->ip[3];
 
 
 		// Return bgra

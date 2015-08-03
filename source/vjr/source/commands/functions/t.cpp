@@ -111,7 +111,7 @@
 //////
     void function_tan(SThisCode* thisCode, SFunctionParams* rpar)
     {
-		SVariable* varNumber = rpar->params[0];
+		SVariable* varNumber = rpar->ip[0];
 
 
 		// Return sin
@@ -125,7 +125,7 @@
 //////
 	void function__test(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varIndex = rpar->params[0];
+		SVariable*	varIndex = rpar->ip[0];
 		s32			lnIndex;
 		bool		llValid;
 
@@ -133,7 +133,7 @@
 		//////////
 		// Parameter 1 must be valid
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varIndex) || !iVariable_isTypeNumeric(varIndex))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varIndex), false);
@@ -161,7 +161,7 @@
 		//////////
 		// Create our return variable
 		/////
-			rpar->returns[0] = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_LOGICAL, (cs8*)((llValid) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, true);
+			rpar->rp[0] = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_LOGICAL, (cs8*)((llValid) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, true);
 	}
 
 
@@ -192,10 +192,10 @@
 //////
 	void function_textmerge(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varFormatStr		= rpar->params[0];
-		SVariable* varRecursive		= rpar->params[1];
-		SVariable* varLeftDelim		= rpar->params[2];
-		SVariable* varRightDelim	= rpar->params[3];
+		SVariable* varFormatStr		= rpar->ip[0];
+		SVariable* varRecursive		= rpar->ip[1];
+		SVariable* varLeftDelim		= rpar->ip[2];
+		SVariable* varRightDelim	= rpar->ip[3];
 
 		s32			lnResultLength;
 		bool		llRecursive;
@@ -210,7 +210,7 @@
 		//////////
 		// Parameters 1 must be present and character
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varFormatStr) || !iVariable_isTypeCharacter(varFormatStr))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varFormatStr), false);
@@ -290,7 +290,7 @@
 		// Call the common function
 		//////
 			lcResult		= NULL;
-			lnResultLength	= ifunction_dtransform_textmerge_common(thisCode, rpar, &lcResult, varFormatStr->value.data_cs8, varFormatStr->value.length, &leftDelim, &rightDelim, &rpar->params[1], false, true);
+			lnResultLength	= ifunction_dtransform_textmerge_common(thisCode, rpar, &lcResult, varFormatStr->value.data_cs8, varFormatStr->value.length, &leftDelim, &rightDelim, &rpar->ip[1], false, true);
 
 
 		//////////
@@ -310,7 +310,7 @@
 		//////////
 		// Indicate our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -349,8 +349,8 @@
 
 	void ifunction_timex_common(SThisCode* thisCode, SFunctionParams* rpar, bool tlIsTimeX)
 	{
-		SVariable*	varP1	= rpar->params[0];
-		SVariable*	varP2	= rpar->params[1];
+		SVariable*	varP1	= rpar->ip[0];
+		SVariable*	varP2	= rpar->ip[1];
 
 		s32			lnMillisecond, lnMicrosecond, lnNanosecond;
 		u32			lnYear, lnMonth, lnDay, lnHour, lnMinute, lnSecond;
@@ -368,7 +368,7 @@
 
 
 		// Initialize
-		rpar->returns[0] = NULL;
+		rpar->rp[0] = NULL;
 
 		// How many parameters did they give us?
 		llExtendedTime		= false;
@@ -377,7 +377,7 @@
 		llExtractDatetimeX	= false;
 		lnMillisecond		= 0;
 		lnNanosecond		= 0;
-		switch (rpar->pcount)
+		switch (rpar->ipCount)
 		{
 			case 0:
 				// Grab the current time
@@ -569,7 +569,7 @@
 		//////////
 		// Return our converted result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -610,8 +610,8 @@
 	// Note: Two parameters are only valid if the output is a datetime or datetimex, the second parameter is used to obtain the missing information
 	void ifunction_timesAndDatesConversion_common(SThisCode* thisCode, SFunctionParams* rpar, s32 tnIn, s32 tnOut)
 	{
-		SVariable* varP1 = rpar->params[0];
-		SVariable* varP2 = rpar->params[1];
+		SVariable* varP1 = rpar->ip[0];
+		SVariable* varP2 = rpar->ip[1];
 
 		SAllDatetime	adt;
 		f32				lfVal32;
@@ -625,7 +625,7 @@
 		//////////
 		// Validate the parameter is valid
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varP1))
 			{
 				iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_getRelatedComp(thisCode, varP1), false);
@@ -962,7 +962,7 @@ debug_break;
 		//////////
 		// Signify our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -1262,15 +1262,15 @@ debug_break;
 //////
 	void function_transform(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varVariable	= rpar->params[0];
-		SVariable* varFormat	= rpar->params[1];
+		SVariable* varVariable	= rpar->ip[0];
+		SVariable* varFormat	= rpar->ip[1];
 		SVariable* result;
 
 
 		//////////
 		// Parameter 1 must be valid
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varVariable))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varVariable), false);
@@ -1329,7 +1329,7 @@ debug_break;
 		//////////
 		// Indicate our status
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 	}
 
 
@@ -1360,8 +1360,8 @@ debug_break;
 //////
 	void function_ttoc(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varParam = rpar->params[0];
-		SVariable* varFlag	= rpar->params[1];
+		SVariable* varParam = rpar->ip[0];
+		SVariable* varFlag	= rpar->ip[1];
 
 		s32			lnMillisecond;
 		u32			lnYear, lnMonth, lnDay, lnFlag;
@@ -1378,7 +1378,7 @@ debug_break;
 		//////////
 		// Parameter 1 must be datetime
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varParam) || !iVariable_isTypeDatetime(varParam) || iVariable_isTypeDatetime(varParam))
 			{
 				iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_getRelatedComp(thisCode, varParam), false);
@@ -1510,7 +1510,7 @@ debug_break;
 		//////////
 		// Return our converted result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -1734,8 +1734,8 @@ debug_break;
 //////
 	void function_type(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varLookup	= rpar->params[0];
-		SVariable* varExtraInfo	= rpar->params[1];
+		SVariable* varLookup	= rpar->ip[0];
+		SVariable* varExtraInfo	= rpar->ip[1];
 
 		s32				lnExtraInfo;
 		bool			llExtraInfo, llManufactured;
@@ -1748,7 +1748,7 @@ debug_break;
 		//////////
 		// varLookup must be character
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varLookup) || !iVariable_isTypeCharacter(varLookup))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varLookup), false);
@@ -1844,7 +1844,7 @@ debug_break;
 		//////////
 		// var holds the actual type we're testing
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (tlExtraInfo)
 			{
 				// Returning extra information
@@ -1985,7 +1985,7 @@ debug_break;
 		//////////
 		// Indicate our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -2014,9 +2014,9 @@ debug_break;
 //////
 	void function_typedetail(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* var = rpar->params[0];
+		SVariable* var = rpar->ip[0];
 
 
 		// Return typedetail
-		rpar->returns[0] = iVariable_get_typeDetail(thisCode, var);
+		rpar->rp[0] = iVariable_get_typeDetail(thisCode, var);
 	}

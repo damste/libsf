@@ -126,16 +126,16 @@ struct SFunctionParams;
 	void				iError_track								(void);
 
 	// Called to check if potential errors exist
-	f32					iErrorCandidate_signalOutOfRange_f32		(SThisCode* thisCode, f32 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo);
-	f64					iErrorCandidate_signalOutOfRange_f64		(SThisCode* thisCode, f64 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo);
-	u8					iErrorCandidate_signalOutOfRange_u8			(SThisCode* thisCode, u8  value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo);
-	s16					iErrorCandidate_signalOutOfRange_s16		(SThisCode* thisCode, s16 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo);
-	u16					iErrorCandidate_signalOutOfRange_u16		(SThisCode* thisCode, u16 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo);
-	s32					iErrorCandidate_signalOutOfRange_s32		(SThisCode* thisCode, s32 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo);
-	u32					iErrorCandidate_signalOutOfRange_u32		(SThisCode* thisCode, u32 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo);
-	s64					iErrorCandidate_signalOutOfRange_s64		(SThisCode* thisCode, s64 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo);
-	u64					iErrorCandidate_signalOutOfRange_u64		(SThisCode* thisCode, u64 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo);
-	f64					iErrorCandidate_signalOutOfRange_numeric	(SThisCode* thisCode, SDatum* value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo);
+	f32					iErrorCandidate_signalOutOfRange_f32		(SThisCode* thisCode, SErrorInfo* ei, f32 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo);
+	f64					iErrorCandidate_signalOutOfRange_f64		(SThisCode* thisCode, SErrorInfo* ei, f64 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo);
+	u8					iErrorCandidate_signalOutOfRange_u8			(SThisCode* thisCode, SErrorInfo* ei, u8  value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo);
+	s16					iErrorCandidate_signalOutOfRange_s16		(SThisCode* thisCode, SErrorInfo* ei, s16 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo);
+	u16					iErrorCandidate_signalOutOfRange_u16		(SThisCode* thisCode, SErrorInfo* ei, u16 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo);
+	s32					iErrorCandidate_signalOutOfRange_s32		(SThisCode* thisCode, SErrorInfo* ei, s32 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo);
+	u32					iErrorCandidate_signalOutOfRange_u32		(SThisCode* thisCode, SErrorInfo* ei, u32 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo);
+	s64					iErrorCandidate_signalOutOfRange_s64		(SThisCode* thisCode, SErrorInfo* ei, s64 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo);
+	u64					iErrorCandidate_signalOutOfRange_u64		(SThisCode* thisCode, SErrorInfo* ei, u64 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo);
+	f64					iErrorCandidate_signalOutOfRange_numeric	(SThisCode* thisCode, SErrorInfo* ei, SDatum* value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo);
 
 
 

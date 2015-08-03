@@ -96,6 +96,13 @@ struct SObjPropMap;
 
 
 
+struct SErrorInfo
+{
+	bool	error;				// Was there an error in processing?
+	u32		errorNum;			// The error number
+	SComp*	errorComp;			// The comp this error relates to (if any)
+};
+
 struct SBgr
 {
 	union {

@@ -138,8 +138,8 @@
 //////
 	void function_ncset(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varIndex	= rpar->params[0];
-		SVariable*	varP1		= rpar->params[1];
+		SVariable*	varIndex	= rpar->ip[0];
+		SVariable*	varP1		= rpar->ip[1];
 
 		s32					lnIndex, lnIndexProp;
 		bool				llEnabled, llNewValue, llFound;
@@ -153,7 +153,7 @@
 		//////////
 		// nIndex must be numeric
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varIndex))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varIndex), false);
@@ -284,7 +284,7 @@
 		//////////
 		// Signify our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -320,8 +320,8 @@
 //////
 	void function_nvl(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varExpr1 = rpar->params[0];
-		SVariable*	varExpr2 = rpar->params[1];
+		SVariable*	varExpr1 = rpar->ip[0];
+		SVariable*	varExpr2 = rpar->ip[1];
 
 		bool		llIsNull;
 		SVariable*	result;
@@ -330,7 +330,7 @@
 		//////////
 		// Verify p1 is correct
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValidType(varExpr1))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varExpr1), false);
@@ -360,6 +360,6 @@
 		//////////
 		// Signify our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}

@@ -116,7 +116,7 @@
 //////
 	void function_empty(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varExpr = rpar->params[0];
+		SVariable*	varExpr = rpar->ip[0];
 		bool		llEmpty;
 		SVariable*	result;
 
@@ -124,7 +124,7 @@
 		//////////
 		// Verify the expression is correct
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varExpr))
 			{
 				iError_reportByNumber(thisCode, _ERROR_PARAMETER_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varExpr), false);
@@ -144,7 +144,7 @@
 		//////////
 		// Signify our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -311,7 +311,7 @@
 //////
 	void function_endswith(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varString	= rpar->params[0];
+		SVariable* varString	= rpar->ip[0];
 //		SVariable* varSearch	= rpar->params[1];
 //		SVariable* varStart		= rpar->params[2];
 //		SVariable* varEnd		= rpar->params[3];
@@ -332,7 +332,7 @@
 //////
 	void function_endswithc(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varString	= rpar->params[0];
+		SVariable* varString	= rpar->ip[0];
 //		SVariable* varSearch	= rpar->params[1];
 //		SVariable* varStart		= rpar->params[2];
 //		SVariable* varEnd		= rpar->params[3];
@@ -372,8 +372,8 @@
 //////
 	void function_evl(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varExpr1 = rpar->params[0];
-		SVariable*	varExpr2 = rpar->params[1];
+		SVariable*	varExpr1 = rpar->ip[0];
+		SVariable*	varExpr2 = rpar->ip[1];
 		bool		llEmpty;
 		SVariable*	result;
 
@@ -381,7 +381,7 @@
 		//////////
 		// Verify p1 is correct
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varExpr1))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varExpr1), false);
@@ -411,7 +411,7 @@
 		//////////
 		// Signify our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -443,7 +443,7 @@
 //////
     void function_exp(SThisCode* thisCode, SFunctionParams* rpar)
     {
-		SVariable* varNumber = rpar->params[0];
+		SVariable* varNumber = rpar->ip[0];
 
 
 		// Return exp
@@ -462,7 +462,7 @@
 		//////////
 		// If varNumber1 is provided, must also be numeric
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (varNumber1)
 			{
 				//////////
@@ -800,5 +800,5 @@
 		//////////
         // return(result)
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 	}

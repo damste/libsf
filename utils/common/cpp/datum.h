@@ -119,8 +119,10 @@ struct SBgr;
 			f64*		data_f64;				// To access the data as f64
 			cs8*		data_cs8;				// To access the data as cs8
 			cu8*		data_cu8;				// To access the data as cu8
+			void*		data_vp;				// To access the data as a void pointer
+			IDispatch*	data_idispatch;			// To access the data as an IDispatch pointer
 
-			// Common structures
+			// Common structures (used for displaying content during debugging)
 			SDateTime*	data_dt;				// To access the data as a datetime
 			SDateTimeX*	data_dtx;				// To access the data as a datetimex
 			SDate*		data_date;				// To access the data as a date in the text-form YYYYMMDD

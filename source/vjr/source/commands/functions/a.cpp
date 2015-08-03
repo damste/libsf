@@ -112,7 +112,7 @@
 //////
     void function_abs(SThisCode* thisCode, SFunctionParams* rpar)
     {
-		SVariable* varNumber = rpar->params[0];
+		SVariable* varNumber = rpar->ip[0];
 
 
 		// Return abs
@@ -147,7 +147,7 @@
 //////
     void function_acos(SThisCode* thisCode, SFunctionParams* rpar)
     {
-		SVariable* varNumber = rpar->params[0];
+		SVariable* varNumber = rpar->ip[0];
 
 
 		// Return acos
@@ -178,14 +178,14 @@
 //////
 	void function_addbs(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varString = rpar->params[0];
+		SVariable*	varString = rpar->ip[0];
         SVariable*	result;
 
 
 		//////////
 		// Parameter 1 must be character
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString) || !iVariable_isTypeCharacter(varString))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varString), false);
@@ -227,7 +227,7 @@
 		//////////
         // Return our converted result
 		//////
-	        rpar->returns[0] = result;
+	        rpar->rp[0] = result;
 	}
 
 
@@ -258,10 +258,10 @@
 //////
 	void function_alltrim(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varString			= rpar->params[0];
-		SVariable* varCaseInsensitive	= rpar->params[1];
-		SVariable* varTrimChars1		= rpar->params[2];
-		SVariable* varTrimChars2		= rpar->params[3];
+		SVariable* varString			= rpar->ip[0];
+		SVariable* varCaseInsensitive	= rpar->ip[1];
+		SVariable* varTrimChars1		= rpar->ip[2];
+		SVariable* varTrimChars2		= rpar->ip[3];
 
 
 		// Return alltrim
@@ -297,7 +297,7 @@
 		//////////
 		// Parameter 1 must be character
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString) || !iVariable_isTypeCharacter(varString))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varString), false);
@@ -519,7 +519,7 @@
 						if (lnClipStartPos >= varString->value.length)
 						{
 							// The entire character string is empty, so we just return the blank string
-							rpar->returns[0] = result;
+							rpar->rp[0] = result;
 							return;
 						}
 					}
@@ -635,7 +635,7 @@
 		//////////
         // Return our converted result
 		//////
-	        rpar->returns[0] = result;
+	        rpar->rp[0] = result;
 	}
 
 
@@ -663,7 +663,7 @@
 //////
 	void function_alp(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varColor = rpar->params[0];
+		SVariable* varColor = rpar->ip[0];
 
 
 		// Return alp
@@ -695,7 +695,7 @@
 //////
     void function_asc(SThisCode* thisCode, SFunctionParams* rpar)
     {
-		SVariable*	varString = rpar->params[0];
+		SVariable*	varString = rpar->ip[0];
         u8 			value;
         SVariable*	result;
 
@@ -703,7 +703,7 @@
 		//////////
 		// Parameter 1 must be character
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString) || !iVariable_isTypeCharacter(varString))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varString), false);
@@ -744,7 +744,7 @@
 		//////////
         // Return our converted result
 		//////
-	        rpar->returns[0] = result;
+	        rpar->rp[0] = result;
     }
 
 
@@ -775,7 +775,7 @@
 //////
     void function_asin(SThisCode* thisCode, SFunctionParams* rpar)
     {
-		SVariable* varNumber = rpar->params[0];
+		SVariable* varNumber = rpar->ip[0];
 
 
 		// Return asin
@@ -810,7 +810,7 @@
 //////
     void function_atan(SThisCode* thisCode, SFunctionParams* rpar)
     {
-		SVariable* varNumber = rpar->params[0];
+		SVariable* varNumber = rpar->ip[0];
 
 
 		// Return atan
@@ -849,9 +849,9 @@
 //////
 	void function_at(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varNeedle		= rpar->params[0];
-		SVariable* varHaystack		= rpar->params[1];
-		SVariable* varOccurrence	= rpar->params[2];
+		SVariable* varNeedle		= rpar->ip[0];
+		SVariable* varHaystack		= rpar->ip[1];
+		SVariable* varOccurrence	= rpar->ip[2];
 
 
 		// Return at
@@ -860,9 +860,9 @@
 
 	void function_atc(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varNeedle		= rpar->params[0];
-		SVariable* varHaystack		= rpar->params[1];
-		SVariable* varOccurrence	= rpar->params[2];
+		SVariable* varNeedle		= rpar->ip[0];
+		SVariable* varHaystack		= rpar->ip[1];
+		SVariable* varOccurrence	= rpar->ip[2];
 
 
 		// Return atc
@@ -871,9 +871,9 @@
 
 	void function_rat(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varNeedle		= rpar->params[0];
-		SVariable* varHaystack		= rpar->params[1];
-		SVariable* varOccurrence	= rpar->params[2];
+		SVariable* varNeedle		= rpar->ip[0];
+		SVariable* varHaystack		= rpar->ip[1];
+		SVariable* varOccurrence	= rpar->ip[2];
 
 
 		// Return rat
@@ -882,9 +882,9 @@
 
 	void function_ratc(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varNeedle		= rpar->params[0];
-		SVariable* varHaystack		= rpar->params[1];
-		SVariable* varOccurrence	= rpar->params[2];
+		SVariable* varNeedle		= rpar->ip[0];
+		SVariable* varHaystack		= rpar->ip[1];
+		SVariable* varOccurrence	= rpar->ip[2];
 
 
 		// Return ratc
@@ -902,7 +902,7 @@
 		//////////
 		// Parameter 1 must be character
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varNeedle) || !iVariable_isTypeCharacter(varNeedle))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varNeedle), false);
@@ -969,7 +969,7 @@
 		//////
 			if (varNeedle->value.length == 0 || varHaystack->value.length == 0 || varNeedle->value.length > varHaystack->value.length)
 			{
-				rpar->returns[0] = result;
+				rpar->rp[0] = result;
 				return;
 			}
 
@@ -1044,7 +1044,7 @@
 		//////////
 		// Indicate our status
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -1077,8 +1077,8 @@
 //////
 	void function_atn2(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varY = rpar->params[0];
-		SVariable* varX = rpar->params[1];
+		SVariable* varY = rpar->ip[0];
+		SVariable* varX = rpar->ip[1];
 
 
 		// Return atn2

@@ -110,9 +110,9 @@
 //////
 	void function_iif(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varTest		= rpar->params[0];
-		SVariable*	varTrue		= rpar->params[1];
-		SVariable*	varFalse	= rpar->params[2];
+		SVariable*	varTest		= rpar->ip[0];
+		SVariable*	varTrue		= rpar->ip[1];
+		SVariable*	varFalse	= rpar->ip[2];
 		bool		llTest;
 		SVariable*	result;
 		u32			errorNum;
@@ -122,7 +122,7 @@
 		//////////
 		// Parameter 1 must be logical
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varTest) || !iVariable_isFundamentalTypeLogical(varTest))
 			{
 				iError_reportByNumber(thisCode, _ERROR_MUST_BE_LOGICAL, iVariable_getRelatedComp(thisCode, varTest), false);
@@ -165,7 +165,7 @@
 		//////////
         // Return our converted result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -198,8 +198,8 @@
 //////
 	void function_inlist(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varValue = rpar->params[0];
-		SVariable*	varList1 = rpar->params[1];
+		SVariable*	varValue = rpar->ip[0];
+		SVariable*	varList1 = rpar->ip[1];
 		bool		llResult;
 		s32			lnI, lnType;
 		SVariable*	result;
@@ -210,7 +210,7 @@
 		//////////
 		// Parameters 1 and 2 must be present, and of equal types
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varValue))
 			{
 				iError_reportByNumber(thisCode, _ERROR_MISSING_PARAMETER, iVariable_getRelatedComp(thisCode, varValue), false);
@@ -226,16 +226,16 @@
 		//////////
 		// Each type must be fundamentally the same type
 		//////
-			for (lnI = 1, lnType = iVariable_fundamentalType(thisCode, varValue); lnI < (s32)_MAX_PARAMETER_COUNT && rpar->params[lnI]; lnI++)
+			for (lnI = 1, lnType = iVariable_fundamentalType(thisCode, varValue); lnI < (s32)_MAX_PARAMETER_COUNT && rpar->ip[lnI]; lnI++)
 			{
 
 				//////////
 				// Make sure this variable type matches the test value
 				//////
-					if (iVariable_fundamentalType(thisCode, rpar->params[lnI]) != lnType)
+					if (iVariable_fundamentalType(thisCode, rpar->ip[lnI]) != lnType)
 					{
 						// The types do not match
-						iError_reportByNumber(thisCode, _ERROR_DATA_TYPE_MISMATCH, iVariable_getRelatedComp(thisCode, rpar->params[lnI]), false);
+						iError_reportByNumber(thisCode, _ERROR_DATA_TYPE_MISMATCH, iVariable_getRelatedComp(thisCode, rpar->ip[lnI]), false);
 						return;
 					}
 
@@ -245,13 +245,13 @@
 		//////////
 		// Iterate through to see if the parameters are equal
 		//////
-			for (lnI = 1, llResult = false; lnI < (s32)_MAX_PARAMETER_COUNT && rpar->params[lnI]; lnI++)
+			for (lnI = 1, llResult = false; lnI < (s32)_MAX_PARAMETER_COUNT && rpar->ip[lnI]; lnI++)
 			{
 
 				//////////
 				// Compare the value with each list item
 				//////
-					if (iVariable_compare(thisCode, varValue, rpar->params[lnI], false, &error, &errorNum) == 0 && !error)
+					if (iVariable_compare(thisCode, varValue, rpar->ip[lnI], false, &error, &errorNum) == 0 && !error)
 					{
 						// We found a match
 						llResult = true;
@@ -264,7 +264,7 @@
 				//////
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, rpar->params[lnI]), false);
+						iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, rpar->ip[lnI]), false);
 						return;
 					}
 
@@ -282,7 +282,7 @@
 		//////////
 		// Indicate our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -312,7 +312,7 @@
 //////
     void function_int(SThisCode* thisCode, SFunctionParams* rpar)
     {
-		SVariable*	varNumber = rpar->params[0];
+		SVariable*	varNumber = rpar->ip[0];
 		f64			fValue;
 		u32			errorNum;
         bool		error;
@@ -322,7 +322,7 @@
 		//////////
 		// Parameter 1 must be numeric
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varNumber) || !iVariable_isTypeNumeric(varNumber))
 			{
 				iError_reportByNumber(thisCode, _ERROR_PARAMETER_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varNumber), false);
@@ -366,7 +366,7 @@
 		//////////
         // Return our converted result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
     }
 
@@ -402,7 +402,7 @@
 //////
 	void function_isnull(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varExpr = rpar->params[0];
+		SVariable*	varExpr = rpar->ip[0];
 
 		bool		llIsNull;
 		SVariable*	result;
@@ -411,7 +411,7 @@
 		//////////
 		// Verify the variable is of a valid format
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValidType(varExpr))
 			{
 				iError_reportByNumber(thisCode, _ERROR_PARAMETER_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varExpr), false);
@@ -431,7 +431,7 @@
 		//////////
 		// Signify our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -443,7 +443,7 @@
 		//////////
 		// Determine what we're evaluating
 		//////
-			rpar->returns[0]	= NULL;
+			rpar->rp[0]	= NULL;
 			llIsNull			= true;
 			switch (varExpr->varType)
 			{

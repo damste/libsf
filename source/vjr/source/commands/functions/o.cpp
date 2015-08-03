@@ -110,15 +110,15 @@
 //////
 	void function_occurs(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varNeedle	= rpar->params[0];
-		SVariable*	varHaystack	= rpar->params[1];
+		SVariable*	varNeedle	= rpar->ip[0];
+		SVariable*	varHaystack	= rpar->ip[1];
 		u32			lnFoundCount;
 		SVariable*	result;
 
 
 		// Compute the found count
 		ifunction_at_occurs_common(thisCode, rpar, varNeedle, varHaystack, NULL, true, false, &lnFoundCount);
-		result = rpar->returns[0];
+		result = rpar->rp[0];
 		if (result)
 		{
 			// Update the return variable
@@ -128,15 +128,15 @@
 
 	void function_occursc(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varNeedle	= rpar->params[0];
-		SVariable*	varHaystack	= rpar->params[1];
+		SVariable*	varNeedle	= rpar->ip[0];
+		SVariable*	varHaystack	= rpar->ip[1];
 		u32			lnFoundCount;
 		SVariable*	result;
 
 
 		// Compute the found count
 		ifunction_at_occurs_common(thisCode, rpar, varNeedle, varHaystack, NULL, false, false, &lnFoundCount);
-		result = rpar->returns[0];
+		result = rpar->rp[0];
 		if (result)
 		{
 			// Update the return variable
@@ -179,7 +179,7 @@
 		// Invoke BETWEEN()
 		//////
 			function_between(thisCode, rpar);
-			result = rpar->returns[0];
+			result = rpar->rp[0];
 
 
 		//////////

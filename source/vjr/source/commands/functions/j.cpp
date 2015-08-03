@@ -107,7 +107,7 @@
 //////
 	void function_justdrive(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varString = rpar->params[0];
+		SVariable*	varString = rpar->ip[0];
 		u8*			ptr;
         SVariable*	result;
 
@@ -115,7 +115,7 @@
 		//////////
 		// Parameter 1 must be character
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString) || !iVariable_isTypeCharacter(varString))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varString), false);
@@ -158,7 +158,7 @@
 		//////////
         // Return our converted result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -187,7 +187,7 @@
 //////
 	void function_justext(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varString = rpar->params[0];
+		SVariable*	varString = rpar->ip[0];
 		s32			lnI, lnLength;
 		u8*			ptr;
         SVariable*	result;
@@ -196,7 +196,7 @@
 		//////////
 		// Parameter 1 must be character
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString) || !iVariable_isTypeCharacter(varString))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varString), false);
@@ -248,7 +248,7 @@
 		//////////
         // Return our converted result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -276,7 +276,7 @@
 //////
 	void function_justfname(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varString = rpar->params[0];
+		SVariable*	varString = rpar->ip[0];
 		s32			lnI, lnLength;
 		u8*			ptr;
         SVariable*	result;
@@ -339,7 +339,7 @@
 		//////////
         // Return our converted result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -368,7 +368,7 @@
 //////
 	void function_justpath(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varString = rpar->params[0];
+		SVariable*	varString = rpar->ip[0];
 		s32			lnLength;
 		u8*			ptr;
         SVariable*	result;
@@ -377,7 +377,7 @@
 		//////////
 		// Parameter 1 must be character
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString) || !iVariable_isTypeCharacter(varString))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varString), false);
@@ -431,7 +431,7 @@
 		//////////
         // Return our converted result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -460,8 +460,8 @@
 //////
 	void function_juststem(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varString		= rpar->params[0];
-		SVariable*	varPostfixWidth	= rpar->params[1];
+		SVariable*	varString		= rpar->ip[0];
+		SVariable*	varPostfixWidth	= rpar->ip[1];
 		s32			lnI, lnLength, lnPostfixWidth;
 		u8*			ptr;
 		bool		error;
@@ -472,7 +472,7 @@
 		//////////
 		// Parameter 1 must be character
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString) || !iVariable_isTypeCharacter(varString))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varString), false);
@@ -557,6 +557,6 @@
 		//////////
         // Return our converted result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}

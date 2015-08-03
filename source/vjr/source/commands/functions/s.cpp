@@ -108,7 +108,7 @@
 //////
 	void function_sec(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varParam = rpar->params[0];
+		SVariable*	varParam = rpar->ip[0];
 
 
 		// Return second
@@ -212,7 +212,7 @@
 		//////////
         // return(result)
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -541,8 +541,8 @@
 //////
 	void function_set(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*		varIdentifier	= rpar->params[0];
-		SVariable*		varExtraInfo	= rpar->params[1];
+		SVariable*		varIdentifier	= rpar->ip[0];
+		SVariable*		varExtraInfo	= rpar->ip[1];
 
 		s32				lnIndex, lnValue;
 		bool			llProcessed;
@@ -556,7 +556,7 @@
 		//////////
 		// Parameter 1 must be character
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varIdentifier) || !iVariable_isTypeCharacter(varIdentifier))
 			{
 				iError_reportByNumber(thisCode, _ERROR_PARAMETER_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varIdentifier), false);
@@ -629,7 +629,7 @@
 													return;
 												}
 												// Note:  var is the actual _settings variable, so a copy must be made if returning this value.
-												rpar->returns[0] = iVariable_copy(thisCode, var, false);
+												rpar->rp[0] = iVariable_copy(thisCode, var, false);
 											}
 										}
 										break;
@@ -670,11 +670,11 @@
 							if (objProp->_getterObject_get)
 							{
 								// Get the displayable form
-								rpar->returns[0] = objProp->getterObject_get(thisCode, var, iVariable_getRelatedComp(thisCode, varIdentifier), false);
+								rpar->rp[0] = objProp->getterObject_get(thisCode, var, iVariable_getRelatedComp(thisCode, varIdentifier), false);
 
 							} else {
 								// If we get here, return a copy of the value
-								rpar->returns[0] = iVariable_copy(thisCode, var, false);
+								rpar->rp[0] = iVariable_copy(thisCode, var, false);
 							}
 						}
 
@@ -682,7 +682,7 @@
 					//////////
 					// Are we good?
 					//////
-						if (!rpar->returns[0])
+						if (!rpar->rp[0])
 							iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_getRelatedComp(thisCode, varIdentifier), false);
 
 
@@ -743,7 +743,7 @@
 //////
     void function_sign(SThisCode* thisCode, SFunctionParams* rpar)
     {
-		SVariable* varNumber = rpar->params[0];
+		SVariable* varNumber = rpar->ip[0];
 
 
 		// Return sign -- returns -1, 0, or 1
@@ -752,7 +752,7 @@
 
 	void function_sign2(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varNumber = rpar->params[0];
+		SVariable* varNumber = rpar->ip[0];
 
 
 		// Return sign2 -- returns -1 if non-zero negative, 1 otherwise
@@ -770,7 +770,7 @@
 		//////////
 		// Parameter 1 must be numeric
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varNumber) || !iVariable_isTypeNumeric(varNumber))
 			{
 				iError_reportByNumber(thisCode, _ERROR_PARAMETER_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varNumber), false);
@@ -832,7 +832,7 @@
 		//////////
         // Return sign
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
     }
 
@@ -864,7 +864,7 @@
 //////
     void function_sin(SThisCode* thisCode, SFunctionParams* rpar)
     {
-		SVariable* varNumber = rpar->params[0];
+		SVariable* varNumber = rpar->ip[0];
 
 
 		// Return sin
@@ -905,7 +905,7 @@
 
 		// Not yet completed
 		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
-		rpar->returns[0] = NULL;
+		rpar->rp[0] = NULL;
 	}
 
 
@@ -933,7 +933,7 @@
 //////
 	void function_space(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varCount = rpar->params[0];
+		SVariable*	varCount = rpar->ip[0];
 		s32			lnLength;
 		u32			errorNum;
 		bool		error;
@@ -943,7 +943,7 @@
 		//////////
 		// Parameter 1 must be numeric
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varCount) || !iVariable_isTypeNumeric(varCount))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varCount), false);
@@ -983,7 +983,7 @@
 		//////////
         // Return our converted result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -1017,7 +1017,7 @@
 //////
     void function_sqrt(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varNumber = rpar->params[0];
+		SVariable* varNumber = rpar->ip[0];
 
 
 		// Return sqrt
@@ -1052,14 +1052,14 @@
 //////
 	void function_startswith(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varString	= rpar->params[0];
+		SVariable* varString	= rpar->ip[0];
 //		SVariable* varSearch	= rpar->params[1];
 //		SVariable* varStart		= rpar->params[2];
 
 
 		// Not yet completed
 		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_getRelatedComp(thisCode, varString), false);
-		rpar->returns[0] = NULL;
+		rpar->rp[0] = NULL;
 	}
 
 
@@ -1073,14 +1073,14 @@
 //////
 	void function_startswithc(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varString	= rpar->params[0];
+		SVariable* varString	= rpar->ip[0];
 //		SVariable* varSearch	= rpar->params[1];
 //		SVariable* varStart		= rpar->params[2];
 
 
 		// Not yet completed
 		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_getRelatedComp(thisCode, varString), false);
-		rpar->returns[0] = NULL;
+		rpar->rp[0] = NULL;
 	}
 
 
@@ -1112,10 +1112,10 @@
 //////
 	void function_strtran(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varString			= rpar->params[0];
-		SVariable* varSearch			= rpar->params[1];
-		SVariable* varReplace			= rpar->params[2];
-		SVariable* varRecursiveCount	= rpar->params[3];
+		SVariable* varString			= rpar->ip[0];
+		SVariable* varSearch			= rpar->ip[1];
+		SVariable* varReplace			= rpar->ip[2];
+		SVariable* varRecursiveCount	= rpar->ip[3];
 
 
 		// Return strtran
@@ -1124,10 +1124,10 @@
 
 	void function_strtranc(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varString			= rpar->params[0];
-		SVariable* varSearch			= rpar->params[1];
-		SVariable* varReplace			= rpar->params[2];
-		SVariable* varRecursiveCount	= rpar->params[3];
+		SVariable* varString			= rpar->ip[0];
+		SVariable* varSearch			= rpar->ip[1];
+		SVariable* varReplace			= rpar->ip[2];
+		SVariable* varRecursiveCount	= rpar->ip[3];
 
 
 		// Return strtranc
@@ -1146,7 +1146,7 @@
 		//////////
 		// Parameter 1 must be character
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString) || !iVariable_isTypeCharacter(varString))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varString), false);
@@ -1217,7 +1217,7 @@
 			if (varSearch->value.length == 0 || varSearch->value.length > varString->value.length)
 			{
 				// Allocate a full copy of the original string
-				rpar->returns[0] = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, varString->value.data_u8, varString->value.length, false);
+				rpar->rp[0] = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, varString->value.data_u8, varString->value.length, false);
 				return;
 			}
 
@@ -1268,7 +1268,7 @@
 						result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, varString->value.data_u8, varString->value.length, false);
 
 					// Return our result
-					rpar->returns[0] = result;
+					rpar->rp[0] = result;
 					return;
 				}
 
@@ -1331,7 +1331,7 @@
 		//////////
 		// Return our final string
 		/////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -1364,10 +1364,10 @@
 //////
 	void function_stuff(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varOriginalString	= rpar->params[0];
-		SVariable*	varStartPos			= rpar->params[1];
-		SVariable*	varNumToRemove		= rpar->params[2];
-		SVariable*	varStuffString		= rpar->params[3];
+		SVariable*	varOriginalString	= rpar->ip[0];
+		SVariable*	varStartPos			= rpar->ip[1];
+		SVariable*	varNumToRemove		= rpar->ip[2];
+		SVariable*	varStuffString		= rpar->ip[3];
 		s32			lnStartPosition, lnRemoveCount, lnBufferLength;
 		bool		error;
 		u32			errorNum;
@@ -1378,7 +1378,7 @@
 		//////////
 		// Parameter 1 must be character
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varOriginalString) || !iVariable_isTypeCharacter(varOriginalString))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varOriginalString), false);
@@ -1496,7 +1496,7 @@
 		//////////
         // Return our converted result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -1533,9 +1533,9 @@
 //////
 	void function_sys(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varIndex	= rpar->params[0];
-		SVariable*	varP1		= rpar->params[1];
-		SVariable*	varP2		= rpar->params[2];
+		SVariable*	varIndex	= rpar->ip[0];
+		SVariable*	varP1		= rpar->ip[1];
+		SVariable*	varP2		= rpar->ip[2];
 		s32			lnIndex;
 		f32			lfJulian;
 		u32			lnYear, lnMonth, lnDay;
@@ -1555,7 +1555,7 @@
 		//////////
 		// Parameter 1 must be numeric
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varIndex) || !iVariable_isTypeNumeric(varIndex))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varIndex), false);
@@ -1606,7 +1606,7 @@
 					// Grab seconds()
 					//////
 						function_seconds(thisCode, rpar);
-						result = rpar->returns[0];
+						result = rpar->rp[0];
 						if (result)
 						{
 							// Validation (should not be needed, but just to be safe)
@@ -1845,7 +1845,7 @@ clean_exit:
 		//////////
 		// Indicate our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -1864,24 +1864,24 @@ debug_break;
 		//////
 			memset(&lsrpar, 0, sizeof(lsrpar));
 			ln2015 = 2015;
-			lsrpar.params[0/*2015*/]		= iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_S32,	(cu8*)&ln2015,			sizeof(ln2015),			false);
-			lsrpar.params[1/*prefix*/]	= iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_S32,	(cu8*)&tnPrefixWidth,	sizeof(tnPrefixWidth),	false);
-			lsrpar.params[2/*postfix*/]	= iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_S32,	(cu8*)&tnPostfixWidth,	sizeof(tnPostfixWidth), false);
+			lsrpar.ip[0/*2015*/]		= iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_S32,	(cu8*)&ln2015,			sizeof(ln2015),			false);
+			lsrpar.ip[1/*prefix*/]	= iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_S32,	(cu8*)&tnPrefixWidth,	sizeof(tnPrefixWidth),	false);
+			lsrpar.ip[2/*postfix*/]	= iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_S32,	(cu8*)&tnPostfixWidth,	sizeof(tnPostfixWidth), false);
 
 
 		//////////
 		// Call the function
 		//////
 			function_sys(thisCode, &lsrpar);
-			varSys2015 = lsrpar.returns[0];
+			varSys2015 = lsrpar.rp[0];
 
 
 		//////////
 		// Clean house
 		//////
-			iVariable_delete(thisCode, lsrpar.params[0], true);
-			iVariable_delete(thisCode, lsrpar.params[1], true);
-			iVariable_delete(thisCode, lsrpar.params[2], true);
+			iVariable_delete(thisCode, lsrpar.ip[0], true);
+			iVariable_delete(thisCode, lsrpar.ip[1], true);
+			iVariable_delete(thisCode, lsrpar.ip[2], true);
 
 
 		//////////
@@ -1915,7 +1915,7 @@ debug_break;
 //////
     void function_sysmetric(SThisCode* thisCode, SFunctionParams* rpar)
     {
-		SVariable*	varIndex = rpar->params[0];
+		SVariable*	varIndex = rpar->ip[0];
         s32			index;
 		RECT		lrc;
 		u32			errorNum;
@@ -1926,7 +1926,7 @@ debug_break;
 		//////////
 		// Parameter 1 must be numeric
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varIndex) || !iVariable_isTypeNumeric(varIndex))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varIndex), false);
@@ -2143,6 +2143,6 @@ debug_break;
 		//////////
         // Return our converted result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
     }

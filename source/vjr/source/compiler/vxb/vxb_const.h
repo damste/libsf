@@ -326,6 +326,7 @@
 	const s32		_ICODE_SETTINGS									= 244;
 	const s32		_ICODE_SINGLE									= 245;		// Same as _ICODE_FLOAT
 	const s32		_ICODE_STRING									= 246;		// Same as _ICODE_CHARACTER
+	const s32		_ICODE_VOIDPTR									= 247;
 
 	// Relatives
 	const s32		_ICODE_THISCODE									= 600;
@@ -2394,13 +2395,14 @@
 
 	// Extended variable types
 	const u32						_VAR_TYPE_EXTENDED_START		= 25;
-	const u32		_VAR_TYPE_OBJECT								= 26;	// Object reference
-	const u32		_VAR_TYPE_BITMAP								= 27;	// Image reference
-	const u32		_VAR_TYPE_BITMAP_MOVIE							= 28;	// Image sequence reference
-	const u32		_VAR_TYPE_THISCODE								= 29;	// Code reference
-	const u32		_VAR_TYPE_ARRAY									= 30;	// An array of SVariable* following three 4-byte integers indicating row dimensions.
-	const u32						_VAR_TYPE_EXTENDED_END			= 31;
-	const u32						_VAR_TYPE_END					= 31;
+	const u32		_VAR_TYPE_OBJECT								= 25;	// Object reference
+	const u32		_VAR_TYPE_BITMAP								= 26;	// Image reference
+	const u32		_VAR_TYPE_BITMAP_MOVIE							= 27;	// Image sequence reference
+	const u32		_VAR_TYPE_THISCODE								= 28;	// Code reference
+	const u32		_VAR_TYPE_ARRAY									= 29;	// An array of SVariable* following three 4-byte integers indicating row dimensions.
+	const u32		_VAR_TYPE_IDISPATCH								= 30;	// IDispatch object reference
+	const u32						_VAR_TYPE_EXTENDED_END			= 30;
+	const u32						_VAR_TYPE_END					= 30;
 
 
 //////////

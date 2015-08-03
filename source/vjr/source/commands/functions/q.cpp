@@ -111,8 +111,8 @@
 //////
 	void function_quarter(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varParam = rpar->params[0];
-		SVariable* varMonth = rpar->params[1];
+		SVariable* varParam = rpar->ip[0];
+		SVariable* varMonth = rpar->ip[1];
 
 		u32			lnYear, lnMonth, lnDay, lnStartingMonth, lnQuarter;
 		u32			errorNum;
@@ -124,7 +124,7 @@
 		//////////
 		// If provided, parameter 1 must be date or datetime
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (varParam)
 			{
 				if (!iVariable_isValid(varParam) || !(iVariable_isTypeDate(varParam) || iVariable_isTypeDatetime(varParam) || iVariable_isTypeDatetime(varParam)))
@@ -204,6 +204,6 @@
 		//////////
 		// Return the result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}

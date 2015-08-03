@@ -113,7 +113,7 @@
 //////
 	void function_cdow(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varParam = rpar->params[0];
+		SVariable* varParam = rpar->ip[0];
 
 		u32			lnYear, lnMonth, lnDay;
 		s8			lnDow;
@@ -124,7 +124,7 @@
 		//////////
 		// If provided, parameter 1 must be date or datetime
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (varParam)
 			{
 // TODO:  Must also support DATETIMEX at some point
@@ -167,7 +167,7 @@
 		//////////
 		// Indicate our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -233,7 +233,7 @@
 //////
     void function_ceiling(SThisCode* thisCode, SFunctionParams* rpar)
     {
-		SVariable* varNumber = rpar->params[0];
+		SVariable* varNumber = rpar->ip[0];
 
 
         // Return ceiling
@@ -264,7 +264,7 @@
 //////
     void function_chr(SThisCode* thisCode, SFunctionParams* rpar)
     {
-		SVariable*	varNumber = rpar->params[0];
+		SVariable*	varNumber = rpar->ip[0];
         s32			value;
 		u32			errorNum;
         bool		error;
@@ -275,7 +275,7 @@
 		//////////
 		// Parameter 1 must be numeric
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varNumber) || !iVariable_isTypeNumeric(varNumber))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varNumber), false);
@@ -323,7 +323,7 @@
 		//////////
         // Return our converted result
 		//////
-	        rpar->returns[0] = result;
+	        rpar->rp[0] = result;
     }
 
 
@@ -354,9 +354,9 @@
 //////
 	void function_chrtran(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varString	= rpar->params[0];
-		SVariable* varSearch	= rpar->params[1];
-		SVariable* varReplace	= rpar->params[2];
+		SVariable* varString	= rpar->ip[0];
+		SVariable* varSearch	= rpar->ip[1];
+		SVariable* varReplace	= rpar->ip[2];
 
 
 		// Return chrtran
@@ -365,9 +365,9 @@
 
 	void function_chrtranc(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varString	= rpar->params[0];
-		SVariable* varSearch	= rpar->params[1];
-		SVariable* varReplace	= rpar->params[2];
+		SVariable* varString	= rpar->ip[0];
+		SVariable* varSearch	= rpar->ip[1];
+		SVariable* varReplace	= rpar->ip[2];
 
 
 		// Return chrtranc
@@ -385,7 +385,7 @@
 		//////////
 		// Parameter 1 must be character
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString) || !iVariable_isTypeCharacter(varString))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varString), false);
@@ -426,7 +426,7 @@
 			// If the original string is empty, or the characters to search for are empty, then we don't need to do anything
 			if (varString->value.length == 0 || varSearch->value.length == 0)
 			{
-				rpar->returns[0] = result;
+				rpar->rp[0] = result;
 				return;
 			}
 
@@ -505,7 +505,7 @@
 		//////////
 		// Return our final string
 		/////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 	}
 
 
@@ -538,7 +538,7 @@
 //////
 	void function_cmonth(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varParam = rpar->params[0];
+		SVariable* varParam = rpar->ip[0];
 
 		u32			lnYear, lnMonth, lnDay;
 		s8			lnMonthIdx;
@@ -549,7 +549,7 @@
 		//////////
 		// If provided, parameter 1 must be date or datetime
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (varParam)
 			{
 	// TODO:  Must also support DATETIMEX at some point
@@ -595,7 +595,7 @@
 		//////////
 		// Indicate our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -627,9 +627,9 @@
 //////
 	void function_colorize(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varColor			= rpar->params[0];
-		SVariable* varColorTarget	= rpar->params[1];
-		SVariable* varPercentage	= rpar->params[2];
+		SVariable* varColor			= rpar->ip[0];
+		SVariable* varColorTarget	= rpar->ip[1];
+		SVariable* varPercentage	= rpar->ip[2];
 
 
 		// Return colorize
@@ -650,7 +650,7 @@
 		//////////
 		// Color must be numeric
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varColor) || !iVariable_isTypeNumeric(varColor))
 			{
 				iError_reportByNumber(thisCode, _ERROR_PARAMETER_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varColor), false);
@@ -791,7 +791,7 @@
 		//////////
 		// Signify our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -823,7 +823,7 @@
 //////
     void function_cos(SThisCode* thisCode, SFunctionParams* rpar)
     {
-		SVariable* varNumber = rpar->params[0];
+		SVariable* varNumber = rpar->ip[0];
 
 
 		// Return cos
@@ -857,7 +857,7 @@
 //////
 	void function_createobject(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varClass = rpar->params[0];
+		SVariable*	varClass = rpar->ip[0];
 		s32			lnObjType;
 		SObject*	obj;
         SVariable*	result;
@@ -866,7 +866,7 @@
 		//////////
 		// Parameter 1 must be character
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varClass) || !iVariable_isTypeCharacter(varClass))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varClass), false);
@@ -918,7 +918,7 @@
 		//////////
         // Return our converted result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -957,7 +957,7 @@
 //////
 	void function_ctod(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varString = rpar->params[0];
+		SVariable* varString = rpar->ip[0];
 
 		//Return date
 		ifunction_ctox_common(thisCode, rpar, varString, true);
@@ -987,7 +987,7 @@ debug_break;
 		//////////
 		// varCtoxString must be character
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varCtoxString) || !iVariable_isTypeCharacter(varCtoxString))
 			{
 				iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_getRelatedComp(thisCode, varCtoxString),false);
@@ -1115,8 +1115,8 @@ debug_break;
 							iEngine_update_meta2(thisCode, lnI);
 
 							// Return a blank datetime or date
-							if (tlIncludeTime)		rpar->returns[0] = iVariable_create(thisCode, _VAR_TYPE_DATETIME,	NULL, true);
-							else					rpar->returns[0] = iVariable_create(thisCode, _VAR_TYPE_DATE,		NULL, true);
+							if (tlIncludeTime)		rpar->rp[0] = iVariable_create(thisCode, _VAR_TYPE_DATETIME,	NULL, true);
+							else					rpar->rp[0] = iVariable_create(thisCode, _VAR_TYPE_DATE,		NULL, true);
 
 							return;
 						}
@@ -1213,7 +1213,7 @@ debug_break;
 		//////////
 		// Signify our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -1251,7 +1251,7 @@ debug_break;
 //////
 	void function_ctot(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varString = rpar->params[0];
+		SVariable* varString = rpar->ip[0];
 
 
 		// Return datetime
@@ -1297,5 +1297,5 @@ debug_break;
 			iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, NULL, false);
 
 		// Indicate our result
-		rpar->returns[0] = result;
+		rpar->rp[0] = result;
 	}

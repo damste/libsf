@@ -113,7 +113,7 @@
 //////
 	void function_year(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varParam = rpar->params[0];
+		SVariable* varParam = rpar->ip[0];
 
 
 		// Return year

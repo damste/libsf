@@ -109,8 +109,8 @@
 //////
 	void function_left(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varString	= rpar->params[0];
-		SVariable*	varCount	= rpar->params[1];
+		SVariable*	varString	= rpar->ip[0];
+		SVariable*	varCount	= rpar->ip[1];
 		s32			lnLength;
 		u32			errorNum;
 		bool		error;
@@ -120,7 +120,7 @@
 		//////////
 		// Parameter 1 must be character
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString) || iVariable_getType(varString) != _VAR_TYPE_CHARACTER)
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varString), false);
@@ -170,7 +170,7 @@
 		//////////
         // Return our converted result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -199,14 +199,14 @@
 //////
 	void function_len(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varString = rpar->params[0];
+		SVariable* varString = rpar->ip[0];
         SVariable* result;
 
 
 		//////////
 		// Parameter 1 must be character
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString) || iVariable_getType(varString) != _VAR_TYPE_CHARACTER)
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varString), false);
@@ -234,7 +234,7 @@
 		//////////
         // Return our converted result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -264,7 +264,7 @@
 //////
     void function_log(SThisCode* thisCode, SFunctionParams* rpar)
     {
-		SVariable* varNumber = rpar->params[0];
+		SVariable* varNumber = rpar->ip[0];
 
 
         // Return log
@@ -299,7 +299,7 @@
 //////
     void function_log10(SThisCode* thisCode, SFunctionParams* rpar)
     {
-		SVariable* varNumber = rpar->params[0];
+		SVariable* varNumber = rpar->ip[0];
 
 
         // Return log10
@@ -331,7 +331,7 @@
 //////
 	void function_lower(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varString = rpar->params[0];
+		SVariable*	varString = rpar->ip[0];
 		s32			lnI;
         SVariable*	result;
 
@@ -339,7 +339,7 @@
 		//////////
 		// Parameter 1 must be character
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString) || iVariable_getType(varString) != _VAR_TYPE_CHARACTER)
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varString), false);
@@ -377,7 +377,7 @@
 		//////////
         // Return our converted result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -406,10 +406,10 @@
 //////
 	void function_ltrim(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varString			= rpar->params[0];
-		SVariable* varCaseInsensitive	= rpar->params[1];
-		SVariable* varTrimChars1		= rpar->params[2];
-		SVariable* varTrimChars2		= rpar->params[3];
+		SVariable* varString			= rpar->ip[0];
+		SVariable* varCaseInsensitive	= rpar->ip[1];
+		SVariable* varTrimChars1		= rpar->ip[2];
+		SVariable* varTrimChars2		= rpar->ip[3];
 
 
 		// Return ltrim

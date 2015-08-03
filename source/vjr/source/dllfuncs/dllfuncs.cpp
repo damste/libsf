@@ -91,8 +91,373 @@
 // Called to call into the dll function
 //
 //////
-	void iDllFunc_dispatch(SThisCode* thisCode, SFunctionParams* rpar, SDllFunc* dfunc)
+	struct SValues
 	{
+		union {
+			s16			_s16;
+			s32			_s32;
+			s64			_s64;
+
+			f32			_f32;
+			f64			_f64;
+
+			s16			_u16;
+			s32			_u32;
+			s64			_u64;
+
+			s8*			_s8p;
+			void*		_vp;
+			IDispatch*	_idispatch;
+
+			SDatum		_datum;
+		};
+	};
+
+	const u32	_types_byRef_postProcess	= 128;
+
+	void iiDllFunc_dispatch(SThisCode* thisCode, SFunctionParams* rpar, SDllFunc* dfunc)
+	{
+		s32			lnI, lnTypeStep, lnPointersStep, lnValuesStep;
+		u32			types	[_MAX_DLL_PARAMS];		// Refer to _types_* constants
+		void*		pointers[_MAX_DLL_PARAMS];		// Pointers to data the start of every data item
+		SValues		values	[_MAX_DLL_PARAMS];		// Values stored if they need to be converted
+
+
+		//////////
+		// Initialize
+		//////
+			memset(&types,		0, sizeof(types));
+			memset(&pointers,	0, sizeof(pointers));
+			memset(&values,		0, sizeof(values));
+
+			lnTypeStep			= sizeof(types[0]);
+			lnPointersStep		= sizeof(pointers[0]);
+			lnValuesStep		= sizeof(values);
+
+
+		//////////
+		// Build the parameter list to pass to the dll
+		//////
+			for (lnI = 0; lnI < rpar->ipCount; lnI++)
+			{
+				//////////
+				// Translate the target type
+				//////
+					types[lnI] = dfunc->ip[lnI].type;
+					switch (dfunc->ip[lnI].type)
+					{
+						case _DLL_TYPE_S16:
+							// Signed 16-bit
+							if (dfunc->ip[lnI].udfSetting == _UDFPARMS_REFERENCE)
+							{
+								// They want it updated by reference
+								if (rpar->ip[lnI]->varType == _VAR_TYPE_S16)
+								{
+									// We can directly pass a pointer to it
+									types[lnI]			= _DLL_TYPE_VP;
+									pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_s16;
+
+								} else {
+									// We must translate it, then store it back afterward
+									values[lnI]._s16	= iiVariable_getAs_s16(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+									pointers[lnI]		= (void*)&values[lnI]._s16;
+									types[lnI]			= _types_byRef_postProcess;
+								}
+
+							} else {
+								// By value
+								values[lnI]._s16	= iiVariable_getAs_s16(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+								pointers[lnI]		= (void*)&values[lnI]._s16;
+							}
+							break;
+
+						case _DLL_TYPE_U16:
+							// Unsigned 16-bit
+							if (dfunc->ip[lnI].udfSetting == _UDFPARMS_REFERENCE)
+							{
+								// They want it updated by reference
+								if (rpar->ip[lnI]->varType == _VAR_TYPE_U16)
+								{
+									// We can directly pass a pointer to it
+									types[lnI]			= _DLL_TYPE_VP;
+									pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_u16;
+
+								} else {
+									// We must translate it, then store it back afterward
+									values[lnI]._u16	= iiVariable_getAs_u16(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+									pointers[lnI]		= (void*)&values[lnI]._u16;
+									types[lnI]			= _types_byRef_postProcess;
+								}
+
+							} else {
+								// By value
+								values[lnI]._u16	= iiVariable_getAs_u16(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+								pointers[lnI]		= (void*)&values[lnI]._u16;
+							}
+							break;
+
+						case _DLL_TYPE_S32:
+							// Signed 32-bit
+							if (dfunc->ip[lnI].udfSetting == _UDFPARMS_REFERENCE)
+							{
+								// They want it updated by reference
+								if (rpar->ip[lnI]->varType == _VAR_TYPE_S32)
+								{
+									// We can directly pass a pointer to it
+									types[lnI]			= _DLL_TYPE_VP;
+									pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_s32;
+
+								} else {
+									// We must translate it, then store it back afterward
+									values[lnI]._s32	= iiVariable_getAs_s32(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+									pointers[lnI]		= (void*)&values[lnI]._s32;
+									types[lnI]			= _types_byRef_postProcess;
+								}
+
+							} else {
+								// By value
+								values[lnI]._s32	= iiVariable_getAs_s32(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+								pointers[lnI]		= (void*)&values[lnI]._s32;
+							}
+							break;
+
+						case _DLL_TYPE_U32:
+							// Unsigned 32-bit
+							if (dfunc->ip[lnI].udfSetting == _UDFPARMS_REFERENCE)
+							{
+								// They want it updated by reference
+								if (rpar->ip[lnI]->varType == _VAR_TYPE_U32)
+								{
+									// We can directly pass a pointer to it
+									types[lnI]			= _DLL_TYPE_VP;
+									pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_u32;
+
+								} else {
+									// We must translate it, then store it back afterward
+									values[lnI]._u32	= iiVariable_getAs_u32(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+									pointers[lnI]		= (void*)&values[lnI]._u32;
+									types[lnI]			= _types_byRef_postProcess;
+								}
+
+							} else {
+								// By value
+								values[lnI]._u32	= iiVariable_getAs_u32(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+								pointers[lnI]		= (void*)&values[lnI]._u32;
+							}
+							break;
+
+						case _DLL_TYPE_F32:
+							// Floating point 32-bit
+							if (dfunc->ip[lnI].udfSetting == _UDFPARMS_REFERENCE)
+							{
+								// They want it updated by reference
+								if (rpar->ip[lnI]->varType == _VAR_TYPE_F32)
+								{
+									// We can directly pass a pointer to it
+									types[lnI]			= _DLL_TYPE_VP;
+									pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_f32;
+
+								} else {
+									// We must translate it, then store it back afterward
+									values[lnI]._f32	= iiVariable_getAs_f32(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+									pointers[lnI]		= (void*)&values[lnI]._f32;
+									types[lnI]			= _types_byRef_postProcess;
+								}
+
+							} else {
+								// By value
+								values[lnI]._f32	= iiVariable_getAs_f32(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+								pointers[lnI]		= (void*)&values[lnI]._f32;
+							}
+							break;
+
+						case _DLL_TYPE_F64:
+							// Floating point 64-bit
+							if (dfunc->ip[lnI].udfSetting == _UDFPARMS_REFERENCE)
+							{
+								// They want it updated by reference
+								if (rpar->ip[lnI]->varType == _VAR_TYPE_F64)
+								{
+									// We can directly pass a pointer to it
+									types[lnI]			= _DLL_TYPE_VP;
+									pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_f64;
+
+								} else {
+									// We must translate it, then store it back afterward
+									values[lnI]._f64	= iiVariable_getAs_f64(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+									pointers[lnI]		= (void*)&values[lnI]._f64;
+									types[lnI]			= _types_byRef_postProcess;
+								}
+
+							} else {
+								// By value
+								values[lnI]._f64	= iiVariable_getAs_f64(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+								pointers[lnI]		= (void*)&values[lnI]._f64;
+							}
+							break;
+
+						case _DLL_TYPE_S64:
+							// Signed 64-bit
+							if (dfunc->ip[lnI].udfSetting == _UDFPARMS_REFERENCE)
+							{
+								// They want it updated by reference
+								if (rpar->ip[lnI]->varType == _VAR_TYPE_S64)
+								{
+									// We can directly pass a pointer to it
+									types[lnI]			= _DLL_TYPE_VP;
+									pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_s64;
+
+								} else {
+									// We must translate it, then store it back afterward
+									values[lnI]._s64	= iiVariable_getAs_s64(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+									pointers[lnI]		= (void*)&values[lnI]._s64;
+									types[lnI]			= _types_byRef_postProcess;
+								}
+
+							} else {
+								// By value
+								values[lnI]._s64	= iiVariable_getAs_s64(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+								pointers[lnI]		= (void*)&values[lnI]._s64;
+							}
+							break;
+
+						case _DLL_TYPE_U64:
+							// Unsigned 64-bit
+							if (dfunc->ip[lnI].udfSetting == _UDFPARMS_REFERENCE)
+							{
+								// They want it updated by reference
+								if (rpar->ip[lnI]->varType == _VAR_TYPE_U64)
+								{
+									// We can directly pass a pointer to it
+									types[lnI]			= _DLL_TYPE_VP;
+									pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_u64;
+
+								} else {
+									// We must translate it, then store it back afterward
+									values[lnI]._u64	= iiVariable_getAs_u64(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+									pointers[lnI]		= (void*)&values[lnI]._u64;
+									types[lnI]			= _types_byRef_postProcess;
+								}
+
+							} else {
+								// By value
+								values[lnI]._u64	= iiVariable_getAs_u64(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+								pointers[lnI]		= (void*)&values[lnI]._u64;
+							}
+							break;
+
+						case _DLL_TYPE_STRING:			// s8*
+							if (dfunc->ip[lnI].udfSetting == _UDFPARMS_REFERENCE)
+							{
+								// Passed by reference (directly updateable)
+								types[lnI]			= _DLL_TYPE_VP;
+								pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_s8;
+
+							} else {
+								// By value
+								// Make a copy of the data, and then pass it
+								iDatum_duplicate(&values[lnI]._datum, &rpar->ip[lnI]->value);
+								pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_s8;
+							}
+							break;
+
+						case _DLL_TYPE_IDISPATCH:		// void*
+							if (rpar->ip[lnI]->varType != _VAR_TYPE_IDISPATCH)
+							{
+								// Error, the type is invalid
+								rpar->ei.error		= true;
+								rpar->ei.errorNum	= _ERROR_PARAMETER_IS_INCORRECT;
+								rpar->ei.errorComp	= rpar->ip[lnI]->compRelated;
+								return;
+							}
+
+							// Store the IDispatch pointer
+							values[lnI]._idispatch	= rpar->ip[lnI]->value.data_idispatch;
+							pointers[lnI]			= (void*)&values[lnI]._idispatch;
+							break;
+
+						default:
+							// Should never happen
+							rpar->ei.error			= true;
+							rpar->ei.errorNum		= _ERROR_INTERNAL_ERROR;
+							rpar->ei.errorComp		= rpar->ip[lnI]->compRelated;
+							return;
+					}
+
+
+				//////////
+				// If there was an error, we're done
+				//////
+					if (rpar->ei.error)
+						return;		// Error
+			}
+
+
+		//////////
+		// Dispatch into the dll
+		//////
+			_asm
+			{
+				// Inline assembly to push parameters onto the stack
+			}
+
+
+		//////////
+		// Fixup any post-process variables
+		//////
+			for (lnI = 0; lnI < rpar->ipCount; lnI++)
+			{
+				// Does this one need post processing?
+				if ((types[lnI] & _types_byRef_postProcess) != 0)
+				{
+
+					//////////
+					// The value which was used went through values[lnI].*, and
+					// now it needs to be copied / converted back to its source
+					//////
+						switch (dfunc->ip[lnI].type)
+						{
+							case _DLL_TYPE_S16:
+								iVariable_set_s32_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], (s32)values[lnI]._s16);
+								break;
+							case _DLL_TYPE_U16:
+								iVariable_set_u32_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], (u32)values[lnI]._u16);
+								break;
+							case _DLL_TYPE_S32:
+								iVariable_set_s32_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], values[lnI]._s32);
+								break;
+							case _DLL_TYPE_U32:
+								iVariable_set_u32_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], values[lnI]._u32);
+								break;
+							case _DLL_TYPE_F32:
+								iVariable_set_f32_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], values[lnI]._f32);
+								break;
+							case _DLL_TYPE_F64:
+								iVariable_set_f64_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], values[lnI]._f64);
+								break;
+							case _DLL_TYPE_S64:
+								iVariable_set_s64_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], values[lnI]._s64);
+								break;
+							case _DLL_TYPE_U64:
+								iVariable_set_u64_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], values[lnI]._u64);
+								break;
+
+							case _DLL_TYPE_STRING:
+								// Delete the existing string, and replace with the new version
+								iDatum_delete(&rpar->ip[lnI]->value, false);
+								rpar->ip[lnI]->value.data_vp	= values[lnI]._datum.data_vp;
+								rpar->ip[lnI]->value.length		= values[lnI]._datum.length;
+								break;
+
+							case _DLL_TYPE_IDISPATCH:
+								_asm int 3;
+								break;
+						}
+
+				}
+			}
+			// When we get here, we're finished
+
 	}
 
 
@@ -113,8 +478,8 @@
 
 
 		// Make sure the environment is sane
-		rpar->error		= false;
-		rpar->errorNum	= _ERROR_OKAY;
+		rpar->ei.error		= false;
+		rpar->ei.errorNum	= _ERROR_OKAY;
 		if (rpar && compFunctionName && compDllName)
 		{
 
@@ -124,8 +489,8 @@
 				if (!(dlib = iDllLib_open(thisCode, compDllName)))
 				{
 					// Unknown
-					rpar->error		= true;
-					rpar->errorNum	= _ERROR_DLL_NOT_FOUND;
+					rpar->ei.error		= true;
+					rpar->ei.errorNum	= _ERROR_DLL_NOT_FOUND;
 					return(false);
 				}
 
@@ -148,8 +513,8 @@
 						if (!dfunc)
 						{
 							// Out of memory
-							rpar->error		= true;
-							rpar->errorNum	= _ERROR_OUT_OF_MEMORY;
+							rpar->ei.error		= true;
+							rpar->ei.errorNum	= _ERROR_OUT_OF_MEMORY;
 							return(false);
 						}
 
@@ -181,8 +546,8 @@
 
 		} else {
 			// Should never happen
-			rpar->error		= true;
-			rpar->errorNum	= _ERROR_INTERNAL_ERROR;
+			rpar->ei.error		= true;
+			rpar->ei.errorNum	= _ERROR_INTERNAL_ERROR;
 		}
 
 		// If we get here, failure

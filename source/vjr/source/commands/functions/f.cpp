@@ -111,7 +111,7 @@
 //////
     void function_floor(SThisCode* thisCode, SFunctionParams* rpar)
     {
-		SVariable* varNumber = rpar->params[0];
+		SVariable* varNumber = rpar->ip[0];
 
 
         // Return floor
@@ -152,8 +152,8 @@
 //////
 	void function_forceext(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varPathname		= rpar->params[0];
-		SVariable* varNewExtension	= rpar->params[1];
+		SVariable* varPathname		= rpar->ip[0];
+		SVariable* varNewExtension	= rpar->ip[1];
 
 		s32			lnFNameOffset, lnExtOffset, lnLength;
 		s8			newFilename[_MAX_PATH + 1];
@@ -163,7 +163,7 @@
 		//////////
 		// Parameter 1 must be character
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varPathname) || !iVariable_isTypeCharacter(varPathname))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varPathname), false);
@@ -265,7 +265,7 @@
 		//////////
 		// Return our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -285,7 +285,7 @@
 		//////////
 		// Make sure our environment is sane
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (varPathname->value.length >= 1)
 			{
 
@@ -373,8 +373,8 @@
 //////
 	void function_forcefname(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varPathname		= rpar->params[0];
-		SVariable* varNewFilename	= rpar->params[1];
+		SVariable* varPathname		= rpar->ip[0];
+		SVariable* varNewFilename	= rpar->ip[1];
 
 		s32			lnFNameOffset, lnExtOffset, lnLength;
 		s8			newFilename[_MAX_PATH + 1];
@@ -384,7 +384,7 @@
 		//////////
 		// Parameter 1 must be character
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varPathname) || !iVariable_isTypeCharacter(varPathname))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varPathname), false);
@@ -468,7 +468,7 @@
 		//////////
 		// Return our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -499,8 +499,8 @@
 //////
 	void function_forcepath(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varPathname		= rpar->params[0];
-		SVariable* varNewPathname	= rpar->params[1];
+		SVariable* varPathname		= rpar->ip[0];
+		SVariable* varNewPathname	= rpar->ip[1];
 
 		s32			lnFNameOffset, lnExtOffset, lnFNameLength, lnLength;
 		s8			newFilename[_MAX_PATH + 1];
@@ -511,7 +511,7 @@
 		//////////
 		// Parameter 1 must be character
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varPathname) || !iVariable_isTypeCharacter(varPathname))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varPathname), false);
@@ -620,7 +620,7 @@
 		//////////
 		// Return our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -651,8 +651,8 @@
 //////
 	void function_forcestem(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varPathname	= rpar->params[0];
-		SVariable* varNewStem	= rpar->params[1];
+		SVariable* varPathname	= rpar->ip[0];
+		SVariable* varNewStem	= rpar->ip[1];
 
 		s32			lnFNameOffset, lnExtOffset, lnLengthExt, lnLength;
 		s8			newFilename[_MAX_PATH + 1];
@@ -662,7 +662,7 @@
 		//////////
 		// Parameter 1 must be character
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varPathname) || !iVariable_isTypeCharacter(varPathname))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varPathname), false);
@@ -755,7 +755,7 @@
 		//////////
 		// Return our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -788,9 +788,9 @@
 //////
 	void function_fv(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varPayment		= rpar->params[0];
-		SVariable* varInterestRate	= rpar->params[1];
-		SVariable* varPeriods		= rpar->params[2];
+		SVariable* varPayment		= rpar->ip[0];
+		SVariable* varInterestRate	= rpar->ip[1];
+		SVariable* varPeriods		= rpar->ip[2];
 
 
 		// Return fv

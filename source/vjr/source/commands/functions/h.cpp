@@ -108,7 +108,7 @@
 //////
 	void function_hour(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varParam	= rpar->params[0];
+		SVariable*	varParam	= rpar->ip[0];
 
 
 		// Return hour
@@ -127,7 +127,7 @@
 		//////////
 		// If Parameter 1 is provided, it must be datetime or datetimex
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (varParam)
 			{
 				if (!iVariable_isValid(varParam))
@@ -191,6 +191,6 @@
 		//////////
 		// Return the result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}

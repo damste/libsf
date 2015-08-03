@@ -478,7 +478,7 @@ struct SObjPropMap;
 // DLL-related functions
 //////
 	// Dll functions
-	void					iDllFunc_dispatch						(SThisCode* thisCode, SFunctionParams* rpar, SDllFunc* dfunc);
+	void					iiDllFunc_dispatch						(SThisCode* thisCode, SFunctionParams* rpar, SDllFunc* dfunc);
 	bool					iDllFunc_add							(SThisCode* thisCode, SFunctionParams* rpar, SDllFuncParam* rp, SDllFuncParam ip[], s32 tnIpCount, SComp* compFunctionName, SComp* compAliasName, SComp* compDllName, SThisCode* onAccess, SThisCode* onAssign);
 	SDllFunc*				iDllFunc_find_byName					(SThisCode* thisCode, s8* funcName, s32 lnFuncNameLength);
 

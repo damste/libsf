@@ -110,9 +110,9 @@
 //////
 	void function_date(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varYear			= rpar->params[0];
-		SVariable*	varMonth		= rpar->params[1];
-		SVariable*	varDay			= rpar->params[2];
+		SVariable*	varYear			= rpar->ip[0];
+		SVariable*	varMonth		= rpar->ip[1];
+		SVariable*	varDay			= rpar->ip[2];
 
 		SVariable*	result;
 		u32			errorNum;
@@ -122,7 +122,7 @@
 
 
 		// Have they provided us with data?
-		rpar->returns[0] = NULL;
+		rpar->rp[0] = NULL;
 		if (!varYear)
 		{
 			// Nope, we are creating the current system time
@@ -212,7 +212,7 @@
 		//////////
 		// Return our converted result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -291,14 +291,14 @@
 
 	void ifunction_datetimex_common(SThisCode* thisCode, SFunctionParams* rpar, bool tlIsDatetimeX)
 	{
-		SVariable*	varYear			= rpar->params[0];
-		SVariable*	varMonth		= rpar->params[1];
-		SVariable*	varDay			= rpar->params[2];
-		SVariable*	varHour			= rpar->params[3];
-		SVariable*	varMinute		= rpar->params[4];
-		SVariable*	varSecond		= rpar->params[5];
-		SVariable*	varMillisecond	= rpar->params[6];
-		SVariable*	varNanosecond	= rpar->params[7];		// Only if tlIsDatetimeX
+		SVariable*	varYear			= rpar->ip[0];
+		SVariable*	varMonth		= rpar->ip[1];
+		SVariable*	varDay			= rpar->ip[2];
+		SVariable*	varHour			= rpar->ip[3];
+		SVariable*	varMinute		= rpar->ip[4];
+		SVariable*	varSecond		= rpar->ip[5];
+		SVariable*	varMillisecond	= rpar->ip[6];
+		SVariable*	varNanosecond	= rpar->ip[7];		// Only if tlIsDatetimeX
 
 		s32				lnMicrosecond;
 		SVariable*		result;
@@ -309,7 +309,7 @@
 
 
 		// Have they provided us with data?
-		rpar->returns[0] = NULL;
+		rpar->rp[0] = NULL;
 		if (!varYear)
 		{
 			// Nope, we are creating the current system time
@@ -536,7 +536,7 @@
 		//////////
         // Return our converted result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -570,7 +570,7 @@
 //////
 	void function_day(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varParam = rpar->params[0];
+		SVariable* varParam = rpar->ip[0];
 
 
 		// Return day
@@ -588,7 +588,7 @@
 		//////////
 		// If Parameter 1 is provided, it must be date or datetime
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (varParam)
 			{
 				if (!iVariable_isValid(varParam) || !(iVariable_isTypeDate(varParam) || iVariable_isTypeDatetime(varParam) || iVariable_isTypeDatetimeX(varParam)))
@@ -644,7 +644,7 @@
 		//////////
 		// Return the result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -673,7 +673,7 @@
 //////
 	void function_dmy(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varParam = rpar->params[0];
+		SVariable* varParam = rpar->ip[0];
 
 
 		// Return dmy
@@ -692,7 +692,7 @@
 		//////////
 		// If provided, parameter 1 must be date or datetime
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (varParam)
 			{
 				if (!iVariable_isValid(varParam) || !(iVariable_isTypeDate(varParam) || iVariable_isTypeDatetime(varParam) || iVariable_isTypeDatetimeX(varParam)))
@@ -763,7 +763,7 @@
 		//////////
 		// Indicate our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -800,8 +800,8 @@
 //////
 	void function_dow(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varDateOrDatetime	= rpar->params[0];
-		SVariable* varFirstDow			= rpar->params[1];
+		SVariable* varDateOrDatetime	= rpar->ip[0];
+		SVariable* varFirstDow			= rpar->ip[1];
 
 		u32			lnYear, lnMonth, lnDay;
 		s32			lnDow, lnFirstDow;
@@ -814,7 +814,7 @@
 		//////////
 		// If provided, parameter 1 must be date or datetime
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (varDateOrDatetime)
 			{
 				if (!iVariable_isValid(varDateOrDatetime) || !(iVariable_isTypeDate(varDateOrDatetime) || iVariable_isTypeDatetime(varDateOrDatetime) || iVariable_isTypeDatetime(varDateOrDatetime)))
@@ -919,7 +919,7 @@
 		//////////
 		// Indicate our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -951,8 +951,8 @@
 //////
 	void function_dtoc(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varParam	= rpar->params[0];
-		SVariable* varFlag	= rpar->params[1];
+		SVariable* varParam	= rpar->ip[0];
+		SVariable* varFlag	= rpar->ip[1];
 
 		s32			lnFlag;
 		u32			lnYear, lnMonth, lnDay;
@@ -967,7 +967,7 @@
 		//////////
 		// Parameter 2 must be numeric
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (varFlag)
 			{
 				if (!iVariable_isValid(varFlag) || !iVariable_isTypeNumeric(varFlag))
@@ -1013,7 +1013,7 @@
 				// If date we finished
 				if (iVariable_isTypeDate(varParam))
 				{
-					rpar->returns[0] = iVariable_convertForDisplay(thisCode, varParam);
+					rpar->rp[0] = iVariable_convertForDisplay(thisCode, varParam);
 					return;
 				}
 
@@ -1066,7 +1066,7 @@
 		//////////
 		// Signify our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -1098,7 +1098,7 @@
 //////
     void function_dtor(SThisCode* thisCode, SFunctionParams* rpar)
     {
-		SVariable* varNumber = rpar->params[0];
+		SVariable* varNumber = rpar->ip[0];
 
 
 		// Return dtor
@@ -1132,7 +1132,7 @@
 //////
 	void function_dtos(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varParam = rpar->params[0];
+		SVariable* varParam = rpar->ip[0];
 
 
 		// Return dtos
@@ -1266,7 +1266,7 @@
 //////
 	void function_dtransform(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varFormatStr = rpar->params[0];
+		SVariable* varFormatStr = rpar->ip[0];
 
 		s32			lnI, lnResultLength;
 		s8*			lcResult;
@@ -1277,7 +1277,7 @@
 		//////////
 		// Parameters 1 must be present and character
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varFormatStr) || !iVariable_isTypeCharacter(varFormatStr))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varFormatStr), false);
@@ -1288,13 +1288,13 @@
 		//////////
 		// All parameter 2 and later must be date/datetime type, and are translated locally into datetime types
 		//////
-			for (lnI = 1; lnI < rpar->pcount; lnI++)
+			for (lnI = 1; lnI < rpar->ipCount; lnI++)
 			{
 
 				//////////
 				// Make sure this variable type matches the test value
 				//////
-					param = rpar->params[lnI];
+					param = rpar->ip[lnI];
 					if (!iVariable_isValid(param) || !(iVariable_isTypeDate(param) || iVariable_isTypeDatetime(param)))
 					{
 						// The types do not match
@@ -1309,7 +1309,7 @@
 		// Call the common function
 		//////
 			lcResult		= NULL;
-			lnResultLength	= ifunction_dtransform_textmerge_common(thisCode, rpar, &lcResult, varFormatStr->value.data_cs8, varFormatStr->value.length, NULL, NULL, &rpar->params[1], true, true);
+			lnResultLength	= ifunction_dtransform_textmerge_common(thisCode, rpar, &lcResult, varFormatStr->value.data_cs8, varFormatStr->value.length, NULL, NULL, &rpar->ip[1], true, true);
 
 
 		//////////
@@ -1329,7 +1329,7 @@
 		//////////
 		// Indicate our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 

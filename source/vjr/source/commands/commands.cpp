@@ -248,45 +248,113 @@
 // Called to signal an error if the f32 value is outside the valid range for the target type
 //
 //////
-	f32 iErrorCandidate_signalOutOfRange_f32(SThisCode* thisCode, f32 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
+	f32 iErrorCandidate_signalOutOfRange_f32(SThisCode* thisCode, SErrorInfo* ei, f32 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
 	{
+		bool lError, lSignal;
+
+
+		// Based on type, signal range
+		lError	= false;
+		lSignal	= false;
 		switch (tnVarType)
 		{
 			case _VAR_TYPE_S8:
-				if (value <= (f32)_s8_min || value >= (f32)_s8_max)			iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value <= (f32)_s8_min || value >= (f32)_s8_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_U8:
-				if (value >= (f32)_u8_max)									iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value >= (f32)_u8_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_S16:
-				if (value <= (f32)_s16_min || value >= (f32)_s16_max)		iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value <= (f32)_s16_min || value >= (f32)_s16_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_U16:
-				if (value >= (f32)_u16_max)									iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value >= (f32)_u16_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_S32:
-				if (value <= (f32)_s32_min || value >= (f32)_s32_max)		iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value <= (f32)_s32_min || value >= (f32)_s32_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_U32:
-				if (value >= (f32)_u32_max)									iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value >= (f32)_u32_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_S64:
-				if (value <= (f32)_s64_min || value >= (f32)_s64_max)		iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value <= (f32)_s64_min || value >= (f32)_s64_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_U64:
-				if (value >= (f32)_u64_max)									iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value >= (f32)_u64_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 		}
 
+
+		//////////
+		// Was there an error?
+		//////
+			if (lError)
+			{
+				// Signal
+				ei->error		= true;
+				ei->errorNum	= _ERROR_OUT_OF_RANGE;
+				ei->errorComp	= compRelated;
+			}
+
+
+		//////////
+		// Should the error be signaled
+		//////
+			if (lSignal)
+				iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+
+
+		//////////
 		// Return the input value
-		return(value);
+		//////
+			return(value);
 	}
 
 
@@ -297,45 +365,114 @@
 // Called to signal an error if the f64 value is outside the valid range for the target type
 //
 //////
-	f64 iErrorCandidate_signalOutOfRange_f64(SThisCode* thisCode, f64 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
+	f64 iErrorCandidate_signalOutOfRange_f64(SThisCode* thisCode, SErrorInfo* ei, f64 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
 	{
+		bool lError, lSignal;
+
+
+		// Based on type, signal range
+		lError	= false;
+		lSignal	= false;
 		switch (tnVarType)
 		{
 			case _VAR_TYPE_S8:
-				if (value <= (f64)_s8_min || value >= (f64)_s8_max)			iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value <= (f64)_s8_min || value >= (f64)_s8_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_U8:
-				if (value >= (f64)_u8_max)									iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value >= (f64)_u8_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_S16:
-				if (value <= (f64)_s16_min || value >= (f64)_s16_max)		iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value <= (f64)_s16_min || value >= (f64)_s16_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_U16:
-				if (value >= (f64)_u16_max)									iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value >= (f64)_u16_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_S32:
-				if (value <= (f64)_s32_min || value >= (f64)_s32_max)		iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value <= (f64)_s32_min || value >= (f64)_s32_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_U32:
-				if (value >= (f64)_u32_max)									iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value >= (f64)_u32_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_S64:
-				if (value <= (f64)_s64_min || value >= (f64)_s64_max)		iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value <= (f64)_s64_min || value >= (f64)_s64_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_U64:
-				if (value >= (f64)_u64_max)									iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value >= (f64)_u64_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 		}
 
+
+		//////////
+		// Was there an error?
+		//////
+			if (lError)
+			{
+				// Signal
+				ei->error		= true;
+				ei->errorNum	= _ERROR_OUT_OF_RANGE;
+				ei->errorComp	= compRelated;
+			}
+
+
+		//////////
+		// Should the error be signaled
+		//////
+			if (lSignal)
+				iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+
+
+		//////////
 		// Return the input value
-		return(value);
+		//////
+			return(value);
+
 	}
 
 
@@ -346,17 +483,51 @@
 // Called to signal an error if the u16 value is outside the valid range for the target type
 //
 //////
-	u8 iErrorCandidate_signalOutOfRange_u8(SThisCode* thisCode, u8 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
+	u8 iErrorCandidate_signalOutOfRange_u8(SThisCode* thisCode, SErrorInfo* ei, u8 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
 	{
+		bool lError, lSignal;
+
+
+		// Based on type, signal range
+		lError	= false;
+		lSignal	= false;
 		switch (tnVarType)
 		{
 			case _VAR_TYPE_S8:
-				if (value >= (u8)_s8_max)			iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value >= (u8)_s8_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 		}
 
+
+		//////////
+		// Was there an error?
+		//////
+			if (lError)
+			{
+				// Signal
+				ei->error		= true;
+				ei->errorNum	= _ERROR_OUT_OF_RANGE;
+				ei->errorComp	= compRelated;
+			}
+
+
+		//////////
+		// Should the error be signaled
+		//////
+			if (lSignal)
+				iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+
+
+		//////////
 		// Return the input value
-		return(value);
+		//////
+			return(value);
+
 	}
 
 
@@ -367,21 +538,60 @@
 // Called to signal an error if the s16 value is outside the valid range for the target type
 //
 //////
-	s16 iErrorCandidate_signalOutOfRange_s16(SThisCode* thisCode, s16 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
+	s16 iErrorCandidate_signalOutOfRange_s16(SThisCode* thisCode, SErrorInfo* ei, s16 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
 	{
+		bool lError, lSignal;
+
+
+		// Based on type, signal range
+		lError	= false;
+		lSignal	= false;
 		switch (tnVarType)
 		{
 			case _VAR_TYPE_S8:
-				if (value <= (s16)_s8_min || value >= (s16)_s8_max)			iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value <= (s16)_s8_min || value >= (s16)_s8_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_U8:
-				if (value >= (s16)_u8_max)									iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value >= (s16)_u8_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 		}
 
+
+		//////////
+		// Was there an error?
+		//////
+			if (lError)
+			{
+				// Signal
+				ei->error		= true;
+				ei->errorNum	= _ERROR_OUT_OF_RANGE;
+				ei->errorComp	= compRelated;
+			}
+
+
+		//////////
+		// Should the error be signaled
+		//////
+			if (lSignal)
+				iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+
+
+		//////////
 		// Return the input value
-		return(value);
+		//////
+			return(value);
+
 	}
 
 
@@ -392,25 +602,69 @@
 // Called to signal an error if the u16 value is outside the valid range for the target type
 //
 //////
-	u16 iErrorCandidate_signalOutOfRange_u16(SThisCode* thisCode, u16 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
+	u16 iErrorCandidate_signalOutOfRange_u16(SThisCode* thisCode, SErrorInfo* ei, u16 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
 	{
+		bool lError, lSignal;
+
+
+		// Based on type, signal range
+		lError	= false;
+		lSignal	= false;
 		switch (tnVarType)
 		{
 			case _VAR_TYPE_S8:
-				if (value >= (u16)_s8_max)			iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value >= (u16)_s8_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_U8:
-				if (value >= (u16)_u8_max)			iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value >= (u16)_u8_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_S16:
-				if (value >= (u16)_s16_max)			iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value >= (u16)_s16_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 		}
 
+
+		//////////
+		// Was there an error?
+		//////
+			if (lError)
+			{
+				// Signal
+				ei->error		= true;
+				ei->errorNum	= _ERROR_OUT_OF_RANGE;
+				ei->errorComp	= compRelated;
+			}
+
+
+		//////////
+		// Should the error be signaled
+		//////
+			if (lSignal)
+				iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+
+
+		//////////
 		// Return the input value
-		return(value);
+		//////
+			return(value);
+
 	}
 
 
@@ -421,29 +675,78 @@
 // Called to signal an error if the s32 value is outside the valid range for the target type
 //
 //////
-	s32 iErrorCandidate_signalOutOfRange_s32(SThisCode* thisCode, s32 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
+	s32 iErrorCandidate_signalOutOfRange_s32(SThisCode* thisCode, SErrorInfo* ei, s32 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
 	{
+		bool lError, lSignal;
+
+
+		// Based on type, signal range
+		lError	= false;
+		lSignal	= false;
 		switch (tnVarType)
 		{
 			case _VAR_TYPE_S8:
-				if (value <= (s32)_s8_min || value >= (s32)_s8_max)			iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value <= (s32)_s8_min || value >= (s32)_s8_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_U8:
-				if (value >= (s32)_u8_max)									iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value >= (s32)_u8_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_S16:
-				if (value <= (s32)_s16_min || value >= (s32)_s16_max)		iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value <= (s32)_s16_min || value >= (s32)_s16_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_U16:
-				if (value >= (s32)_u16_max)									iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value >= (s32)_u16_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 		}
 
+
+		//////////
+		// Was there an error?
+		//////
+			if (lError)
+			{
+				// Signal
+				ei->error		= true;
+				ei->errorNum	= _ERROR_OUT_OF_RANGE;
+				ei->errorComp	= compRelated;
+			}
+
+
+		//////////
+		// Should the error be signaled
+		//////
+			if (lSignal)
+				iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+
+
+		//////////
 		// Return the input value
-		return(value);
+		//////
+			return(value);
+
 	}
 
 
@@ -454,29 +757,78 @@
 // Called to signal an error if the s32 value is outside the valid range for the target type
 //
 //////
-	u32 iErrorCandidate_signalOutOfRange_u32(SThisCode* thisCode, u32 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
+	u32 iErrorCandidate_signalOutOfRange_u32(SThisCode* thisCode, SErrorInfo* ei, u32 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
 	{
+		bool lError, lSignal;
+
+
+		// Based on type, signal range
+		lError	= false;
+		lSignal	= false;
 		switch (tnVarType)
 		{
 			case _VAR_TYPE_S8:
-				if (value >= (u32)_s8_max)			iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value >= (u32)_s8_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_U8:
-				if (value >= (u32)_u8_max)			iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value >= (u32)_u8_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_S16:
-				if (value >= (u32)_s16_max)			iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value >= (u32)_s16_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_U16:
-				if (value >= (u32)_u16_max)			iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value >= (u32)_u16_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 		}
 
+
+		//////////
+		// Was there an error?
+		//////
+			if (lError)
+			{
+				// Signal
+				ei->error		= true;
+				ei->errorNum	= _ERROR_OUT_OF_RANGE;
+				ei->errorComp	= compRelated;
+			}
+
+
+		//////////
+		// Should the error be signaled
+		//////
+			if (lSignal)
+				iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+
+
+		//////////
 		// Return the input value
-		return(value);
+		//////
+			return(value);
+
 	}
 
 
@@ -487,37 +839,96 @@
 // Called to signal an error if the s64 value is outside the valid range for the target type
 //
 //////
-	s64 iErrorCandidate_signalOutOfRange_s64(SThisCode* thisCode, s64 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
+	s64 iErrorCandidate_signalOutOfRange_s64(SThisCode* thisCode, SErrorInfo* ei, s64 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
 	{
+		bool lError, lSignal;
+
+
+		// Based on type, signal range
+		lError	= false;
+		lSignal	= false;
 		switch (tnVarType)
 		{
 			case _VAR_TYPE_S8:
-				if (value <= (s64)_s8_min || value >= (s64)_s8_max)			iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value <= (s64)_s8_min || value >= (s64)_s8_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_U8:
-				if (value >= (s64)_u8_max)									iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value >= (s64)_u8_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_S16:
-				if (value <= (s64)_s16_min || value >= (s64)_s16_max)		iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value <= (s64)_s16_min || value >= (s64)_s16_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_U16:
-				if (value >= (s64)_u16_max)									iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value >= (s64)_u16_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_S32:
-				if (value <= (s64)_s32_min || value >= (s64)_s32_max)		iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value <= (s64)_s32_min || value >= (s64)_s32_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_U32:
-				if (value >= (s64)_u32_max)									iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value >= (s64)_u32_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 		}
 
+
+		//////////
+		// Was there an error?
+		//////
+			if (lError)
+			{
+				// Signal
+				ei->error		= true;
+				ei->errorNum	= _ERROR_OUT_OF_RANGE;
+				ei->errorComp	= compRelated;
+			}
+
+
+		//////////
+		// Should the error be signaled
+		//////
+			if (lSignal)
+				iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+
+
+		//////////
 		// Return the input value
-		return(value);
+		//////
+			return(value);
+
 	}
 
 
@@ -528,41 +939,105 @@
 // Called to signal an error if the s64 value is outside the valid range for the target type
 //
 //////
-	u64 iErrorCandidate_signalOutOfRange_u64(SThisCode* thisCode, u64 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
+	u64 iErrorCandidate_signalOutOfRange_u64(SThisCode* thisCode, SErrorInfo* ei, u64 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
 	{
+		bool lError, lSignal;
+
+
+		// Based on type, signal range
+		lError	= false;
+		lSignal	= false;
 		switch (tnVarType)
 		{
 			case _VAR_TYPE_S8:
-				if (value >= (u64)_s8_max)			iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value >= (u64)_s8_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_U8:
-				if (value >= (u64)_u8_max)			iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value >= (u64)_u8_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_S16:
-				if (value >= (u64)_s16_max)			iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value >= (u64)_s16_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_U16:
-				if (value >= (u64)_u16_max)			iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value >= (u64)_u16_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_S32:
-				if (value >= (u64)_s32_max)			iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value >= (u64)_s32_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_U32:
-				if (value >= (u64)_u32_max)			iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value >= (u64)_u32_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 
 			case _VAR_TYPE_S64:
-				if (value >= (u64)_s64_max)			iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				if (value >= (u64)_s64_max)
+				{
+					lError = true;
+					if (!ei)
+						lSignal = true;
+				}
 				break;
 		}
 
+
+		//////////
+		// Was there an error?
+		//////
+			if (lError)
+			{
+				// Signal
+				ei->error		= true;
+				ei->errorNum	= _ERROR_OUT_OF_RANGE;
+				ei->errorComp	= compRelated;
+			}
+
+
+		//////////
+		// Should the error be signaled
+		//////
+			if (lSignal)
+				iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+
+
+		//////////
 		// Return the input value
-		return(value);
+		//////
+			return(value);
+
 	}
 
 
@@ -573,13 +1048,16 @@
 // Called to signal an error if the numeric value is outside the valid range for the target type
 //
 //////
-	f64 iErrorCandidate_signalOutOfRange_numeric(SThisCode* thisCode, SDatum* value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
+	f64 iErrorCandidate_signalOutOfRange_numeric(SThisCode* thisCode, SErrorInfo* ei, SDatum* value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
 	{
 		f64	lfValue;
 		s8	buffer[64];
+		bool lError, lSignal;
 
 
 		// Based on the test type, make sure it's in range
+		lError	= false;
+		lSignal	= false;
 		if (value && value->length >= 1 && (u32)value->length <= sizeof(buffer) - 1)
 		{
 			// Copy text to null-terminate
@@ -593,39 +1071,84 @@
 			switch (tnVarType)
 			{
 				case _VAR_TYPE_S8:
-					if (lfValue <= (f64)_s8_min || lfValue >= (f64)_s8_max)			iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+					if (lfValue <= (f64)_s8_min || lfValue >= (f64)_s8_max)
+					{
+						lError = true;
+						if (!ei)
+							lSignal = true;
+					}
 					break;
 
 				case _VAR_TYPE_U8:
-					if (lfValue >= (f64)_u8_max)									iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+					if (lfValue >= (f64)_u8_max)
+					{
+						lError = true;
+						if (!ei)
+							lSignal = true;
+					}
 					break;
 
 				case _VAR_TYPE_S16:
-					if (lfValue <= (f64)_s16_min || lfValue >= (f64)_s16_max)		iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+					if (lfValue <= (f64)_s16_min || lfValue >= (f64)_s16_max)
+					{
+						lError = true;
+						if (!ei)
+							lSignal = true;
+					}
 					break;
 
 				case _VAR_TYPE_U16:
-					if (lfValue >= (f64)_u16_max)									iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+					if (lfValue >= (f64)_u16_max)
+					{
+						lError = true;
+						if (!ei)
+							lSignal = true;
+					}
 					break;
 
 				case _VAR_TYPE_S32:
-					if (lfValue <= (f64) _s32_min || lfValue >= (f64)_s32_max)		iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+					if (lfValue <= (f64) _s32_min || lfValue >= (f64)_s32_max)
+					{
+						lError = true;
+						if (!ei)
+							lSignal = true;
+					}
 					break;
 
 				case _VAR_TYPE_U32:
-					if (lfValue >= (f64)_u32_max)									iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+					if (lfValue >= (f64)_u32_max)
+					{
+						lError = true;
+						if (!ei)
+							lSignal = true;
+					}
 					break;
 
 				case _VAR_TYPE_S64:
-					if (lfValue <= (f64)_s64_min || lfValue >= (f64)_s64_max)		iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+					if (lfValue <= (f64)_s64_min || lfValue >= (f64)_s64_max)
+					{
+						lError = true;
+						if (!ei)
+							lSignal = true;
+					}
 					break;
 
 				case _VAR_TYPE_U64:
-					if (lfValue >= (f64)_u64_max)									iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+					if (lfValue >= (f64)_u64_max)
+					{
+						lError = true;
+						if (!ei)
+							lSignal = true;
+					}
 					break;
 
 				case _VAR_TYPE_F32:
-					if (lfValue <= (f64)_s32_min || lfValue >= (f64)_s32_max)		iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+					if (lfValue <= (f64)_s32_min || lfValue >= (f64)_s32_max)
+					{
+						lError = true;
+						if (!ei)
+							lSignal = true;
+					}
 					break;
 			}
 
@@ -634,8 +1157,31 @@
 			lfValue = (f64)_f64_min;
 		}
 
-		// Return the input value
-		return(lfValue);
+
+		//////////
+		// Was there an error?
+		//////
+			if (lError)
+			{
+				// Signal
+				ei->error		= true;
+				ei->errorNum	= _ERROR_OUT_OF_RANGE;
+				ei->errorComp	= compRelated;
+			}
+
+
+		//////////
+		// Should the error be signaled
+		//////
+			if (lSignal)
+				iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+
+
+		//////////
+		// Return the value
+		//////
+			return(lfValue);
+
 	}
 
 
@@ -702,15 +1248,15 @@
 //////
 	void function_concatenate(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varString1	= rpar->params[0];
-		SVariable*	varString2	= rpar->params[1];
+		SVariable*	varString1	= rpar->ip[0];
+		SVariable*	varString2	= rpar->ip[1];
 		SVariable*	result;
 
 
 		//////////
 		// Parameter 1 must be character
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString1) || !iVariable_isTypeCharacter(varString1))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varString1), false);
@@ -749,7 +1295,7 @@
 		//////////
 		// Indicate our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -781,8 +1327,8 @@
 //////
 	void function_add(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varNum1	= rpar->params[0];
-		SVariable*	varNum2	= rpar->params[1];
+		SVariable*	varNum1	= rpar->ip[0];
+		SVariable*	varNum2	= rpar->ip[1];
 		s64			lnValue1, lnValue2;
 		f64			lfValue1, lfValue2;
 		bool		error;
@@ -793,7 +1339,7 @@
 		//////////
 		// Parameter 1 must be numeric
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varNum1) || !iVariable_isTypeNumeric(varNum1))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varNum1), false);
@@ -908,7 +1454,7 @@
 		//////////
 		// Indicate our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -940,8 +1486,8 @@
 //////
 	void function_sub(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varNum1	= rpar->params[0];
-		SVariable*	varNum2	= rpar->params[1];
+		SVariable*	varNum1	= rpar->ip[0];
+		SVariable*	varNum2	= rpar->ip[1];
 		s64			lnValue1, lnValue2;
 		f64			lfValue1, lfValue2;
 		bool		error;
@@ -952,7 +1498,7 @@
 		//////////
 		// Parameter 1 must be numeric
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varNum1) || !iVariable_isTypeNumeric(varNum1))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varNum1), false);
@@ -1067,7 +1613,7 @@
 		//////////
 		// Indicate our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -1099,8 +1645,8 @@
 //////
 	void function_mul(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varNum1	= rpar->params[0];
-		SVariable*	varNum2	= rpar->params[1];
+		SVariable*	varNum1	= rpar->ip[0];
+		SVariable*	varNum2	= rpar->ip[1];
 		s64			lnValue1, lnValue2;
 		f64			lfValue1, lfValue2;
 		bool		error;
@@ -1111,7 +1657,7 @@
 		//////////
 		// Parameter 1 must be numeric
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varNum1) || !iVariable_isTypeNumeric(varNum1))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varNum1), false);
@@ -1226,7 +1772,7 @@
 		//////////
 		// Indicate our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -1258,8 +1804,8 @@
 //////
 	void function_div(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varNum1	= rpar->params[0];
-		SVariable*	varNum2	= rpar->params[1];
+		SVariable*	varNum1	= rpar->ip[0];
+		SVariable*	varNum2	= rpar->ip[1];
 		s64			lnValue1, lnValue2;
 		f64			lfValue1, lfValue2;
 		bool		error;
@@ -1270,7 +1816,7 @@
 		//////////
 		// Parameter 1 must be numeric
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varNum1) || !iVariable_isTypeNumeric(varNum1))
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varNum1), false);
@@ -1397,7 +1943,7 @@
 		//////////
 		// Indicate our result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -1702,6 +2248,7 @@
 	};
 	const s32 gnCompList_alphanumericTypes_length = sizeof(gsCompList_alphanumericTypes) / sizeof(gsCompList_alphanumericTypes[0]);
 
+	const s32 _DLL_TYPE_VP			= _ICODE_VOIDPTR;
 	const s32 _DLL_TYPE_VOID		= _ICODE_VOID;
 	const s32 _DLL_TYPE_S16			= _ICODE_S16;
 	const s32 _DLL_TYPE_U16			= _ICODE_U16;
@@ -1712,7 +2259,7 @@
 	const s32 _DLL_TYPE_S64			= _ICODE_S64;
 	const s32 _DLL_TYPE_U64			= _ICODE_U64;
 	const s32 _DLL_TYPE_STRING		= _ICODE_CHARACTER;
-	const s32 _DLL_TYPE_OBJECT		= _ICODE_OBJECT;
+	const s32 _DLL_TYPE_IDISPATCH	= _ICODE_OBJECT;
 
 	const s8 cgc_ret1[] = "ret1";		// Variable name used for debuggers
 
@@ -1968,7 +2515,7 @@
 				break;
 
 			case _ICODE_OBJECT:			// IDispatch object
-				dp->type = _DLL_TYPE_OBJECT;
+				dp->type = _DLL_TYPE_IDISPATCH;
 				break;
 		}
 

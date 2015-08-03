@@ -113,9 +113,9 @@
 //////
 	void function_padc(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varExpr			= rpar->params[0];
-		SVariable* varResultSize	= rpar->params[1];
-		SVariable* varPadCharacter	= rpar->params[2];
+		SVariable* varExpr			= rpar->ip[0];
+		SVariable* varResultSize	= rpar->ip[1];
+		SVariable* varPadCharacter	= rpar->ip[2];
 
 
 		// Return padc
@@ -124,9 +124,9 @@
 
 	void function_padl(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varExpr			= rpar->params[0];
-		SVariable* varResultSize	= rpar->params[1];
-		SVariable* varPadCharacter	= rpar->params[2];
+		SVariable* varExpr			= rpar->ip[0];
+		SVariable* varResultSize	= rpar->ip[1];
+		SVariable* varPadCharacter	= rpar->ip[2];
 
 
 		// Return padl
@@ -135,9 +135,9 @@
 
 	void function_padr(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varExpr			= rpar->params[0];
-		SVariable* varResultSize	= rpar->params[1];
-		SVariable* varPadCharacter	= rpar->params[2];
+		SVariable* varExpr			= rpar->ip[0];
+		SVariable* varResultSize	= rpar->ip[1];
+		SVariable* varPadCharacter	= rpar->ip[2];
 
 
 		// Return padr
@@ -156,7 +156,7 @@
 		//////////
         // Make sure our parameters are correct
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!tlPadLeft && !tlPadRight)
 			{
 				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, NULL, false);
@@ -223,7 +223,7 @@
 			// If it wasn't created, or it's already as long or longer than its target, return it
 			if (!tempVar || tempVar->value.length >= lnResultSize)
 			{
-				rpar->returns[0] = tempVar;
+				rpar->rp[0] = tempVar;
 				return;
 			}
 
@@ -310,7 +310,7 @@
 		//////////
 		// Indicate our status
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -344,9 +344,9 @@
 //////
 	void function_payment(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varPayment		= rpar->params[0];
-		SVariable* varInterestRate	= rpar->params[1];
-		SVariable* varPeriods		= rpar->params[2];
+		SVariable* varPayment		= rpar->ip[0];
+		SVariable* varInterestRate	= rpar->ip[1];
+		SVariable* varPeriods		= rpar->ip[2];
 
 
 		// Return payment
@@ -415,9 +415,9 @@
 //////
 	void function_pow(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varP1 = rpar->params[0];
-		SVariable*	varP2 = rpar->params[1];
-		SVariable*	varP3 = rpar->params[2];
+		SVariable*	varP1 = rpar->ip[0];
+		SVariable*	varP2 = rpar->ip[1];
+		SVariable*	varP3 = rpar->ip[2];
 
 		f64			lfVal1, lfVal2, lfVal3, lfResult;
 		s64			lnPower, lnResult, lnExp, lnMod;
@@ -430,13 +430,13 @@
 		//////////
 		// Determine parameter input formats
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			llIsP1Valid = (iVariable_isValid(varP1) && iVariable_isTypeNumeric(varP1));
 			llIsP2Valid = (iVariable_isValid(varP2) && iVariable_isTypeNumeric(varP2));
 			if (llIsP1Valid && llIsP2Valid)
 			{
 				// If three parameters, we perform a power/mod
-				if (rpar->pcount == 3)
+				if (rpar->ipCount == 3)
 				{
 					// POW(p1, p2, p3)
 					llIsP1Integer	= iVariable_isTypeInteger(varP1);
@@ -469,7 +469,7 @@
 		// Can we use Euler's algorithm?
 		// To do so, all three parameters must be integer.
 		//////
-			if (rpar->pcount == 3 && llIsP1Integer && llIsP2Integer && llIsP3Integer)
+			if (rpar->ipCount == 3 && llIsP1Integer && llIsP2Integer && llIsP3Integer)
 			{
 				//////////
 				// Grab varP1
@@ -534,7 +534,7 @@
 
 					// Grab P3 if need be
 					error3 = false;
-					if (rpar->pcount == 3)		lfVal3 = iiVariable_getAs_f64(thisCode, varP3, false, &error3, &errorNum);
+					if (rpar->ipCount == 3)		lfVal3 = iiVariable_getAs_f64(thisCode, varP3, false, &error3, &errorNum);
 					else						lfVal3 = 1.0;
 
 					// Make sure we don't have an error in conversion, and that lfValue3 is > 0.0
@@ -554,7 +554,7 @@
 				//////////
 				// Mod if need be
 				//////
-					if (rpar->pcount == 3)
+					if (rpar->ipCount == 3)
 						lfResult = fmod(lfResult, lfVal3);
 
 
@@ -576,7 +576,7 @@
 		//////////
         // Signify the result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -606,7 +606,7 @@
 //////
 	void function_proper(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varString = rpar->params[0];
+		SVariable*	varString = rpar->ip[0];
 		s32			lnI;
 		bool		llUpperNext;
         SVariable*	result;
@@ -615,7 +615,7 @@
 		//////////
 		// Parameter 1 must be character
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString) || iVariable_getType(varString) != _VAR_TYPE_CHARACTER)
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varString), false);
@@ -673,7 +673,7 @@
 		//////////
         // Return our converted result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
 
@@ -708,9 +708,9 @@
 //////
 	void function_pv(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable* varPayment		= rpar->params[0];
-		SVariable* varInterestRate	= rpar->params[1];
-		SVariable* varPeriods		= rpar->params[2];
+		SVariable* varPayment		= rpar->ip[0];
+		SVariable* varInterestRate	= rpar->ip[1];
+		SVariable* varPeriods		= rpar->ip[2];
 
 
 		// Return pv

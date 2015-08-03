@@ -108,7 +108,7 @@
 //////
 	void function_upper(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varString = rpar->params[0];
+		SVariable*	varString = rpar->ip[0];
 		s32			lnI;
         SVariable*	result;
 
@@ -116,7 +116,7 @@
 		//////////
 		// Parameter 1 must be character
 		//////
-			rpar->returns[0] = NULL;
+			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString) || iVariable_getType(varString) != _VAR_TYPE_CHARACTER)
 			{
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varString), false);
@@ -154,6 +154,6 @@
 		//////////
         // Return our converted result
 		//////
-			rpar->returns[0] = result;
+			rpar->rp[0] = result;
 
 	}
