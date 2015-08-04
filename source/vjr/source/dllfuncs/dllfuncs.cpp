@@ -118,7 +118,7 @@
 	void iiDllFunc_dispatch(SThisCode* thisCode, SFunctionParams* rpar, SDllFunc* dfunc)
 	{
 		s32			lnI, lnTypeStep, lnPointersStep, lnValuesStep;
-		u32			lnParamCount, lnReturnType, lnSizeofTypes, lnSizeofPointers, lnSizeofValues;
+		u32			lnParamCount, lnReturnType, lnSizeofTypes, lnSizeofPointers, lnSizeofValues, lnSaveParamBytes;
 		void*		funcAddress;
 		void*		types_base;
 		void*		pointers_base;
@@ -402,6 +402,7 @@
 		//////////
 		// Dispatch into the dll
 		//////
+			lnSaveParamBytes	= 0;
 			lnSizeofTypes		= sizeof(types[0]);
 			lnSizeofPointers	= sizeof(pointers[0]);
 			lnSizeofValues		= sizeof(values[0]);
@@ -419,7 +420,7 @@
 				// Inline assembly to push parameters onto the stack:
 				//
 				//		eax -- general purpose
-				//		ebx	-- function address
+				//		ebx	-- parameter size in bytes, and function address
 				//		ecx	-- count
 				//		edx	-- address of types
 				//		esi	-- address of pointers
@@ -476,11 +477,13 @@ push_next_param:
 push_s16:
 					movsx	eax,word ptr [edi]
 					push	eax
+					add		lnSaveParamBytes,4
 					jmp		prepare_for_next_param
 
 push_u16:
 					movzx	eax,word ptr [edi]
 					push	eax
+					add		lnSaveParamBytes,4
 					jmp		prepare_for_next_param
 
 push_s32:
@@ -489,6 +492,7 @@ push_f32:
 push_vp:
 					mov		eax,dword ptr [edi]
 					push	eax
+					add		lnSaveParamBytes,4
 					jmp		prepare_for_next_param
 
 push_f64:
@@ -498,11 +502,12 @@ push_u64:
 					push	eax
 					mov		eax,dword ptr [edi+4]
 					push	eax
+					add		lnSaveParamBytes,8
 					jmp		prepare_for_next_param
 
 finished_with_stack_ops:
-					// Dispatch into the DLL function
-					call	funcAddress
+					call	funcAddress					// Dispatch into the DLL function
+					add		esp,lnSaveParamBytes		// Remove pushed parameters from the stack
 
 					// Store return value if any
 					mov		edi,return_values_base
