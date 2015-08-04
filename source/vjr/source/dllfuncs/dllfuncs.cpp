@@ -118,6 +118,12 @@
 	void iiDllFunc_dispatch(SThisCode* thisCode, SFunctionParams* rpar, SDllFunc* dfunc)
 	{
 		s32			lnI, lnTypeStep, lnPointersStep, lnValuesStep;
+		u32			lnParamCount, lnReturnType, lnSizeofTypes, lnSizeofPointers, lnSizeofValues;
+		void*		funcAddress;
+		void*		types_base;
+		void*		pointers_base;
+		void*		values_base;
+		void*		return_values_base;
 		u32			types	[_MAX_DLL_PARAMS];		// Refer to _types_* constants
 		void*		pointers[_MAX_DLL_PARAMS];		// Pointers to data the start of every data item
 		SValues		values	[_MAX_DLL_PARAMS];		// Values stored if they need to be converted
@@ -396,9 +402,208 @@
 		//////////
 		// Dispatch into the dll
 		//////
+			lnSizeofTypes		= sizeof(types[0]);
+			lnSizeofPointers	= sizeof(pointers[0]);
+			lnSizeofValues		= sizeof(values[0]);
+			funcAddress			= dfunc->funcAddress;
+			lnParamCount		= dfunc->ipCount;
+			types_base			= (void*)&types[dfunc->ipCount - 1];
+			pointers_base		= (void*)&pointers[dfunc->ipCount - 1];
+			values_base			= (void*)&values[dfunc->ipCount - 1];
+			return_values_base	= (void*)&values[0];
+			lnReturnType		= dfunc->rp.type;
 			_asm
 			{
-				// Inline assembly to push parameters onto the stack
+				//////////
+				//
+				// Inline assembly to push parameters onto the stack:
+				//
+				//		eax -- general purpose
+				//		ebx	-- function address
+				//		ecx	-- count
+				//		edx	-- address of types
+				//		esi	-- address of pointers
+				//		edi	-- address of values, and address of return value
+				//////
+					//
+					// The code below simulates a for loop:
+					//
+					//		for (initializePart; testPart; incrementPart)
+					//
+					//////////
+
+					// initializePart
+					mov		ecx,lnParamCount			// lnParamCount	= dfunc->ipCount
+					mov		edx,types_base				// typePtr		= &types[lnParamCount - 1]
+					mov		esi,pointers_base			// pointersPtr	= &pointers[lnParamCount - 1]
+					mov		edi,values_base				// valuesPtr	= &values[lnParamCount - 1]
+					jmp		push_next_param
+
+prepare_for_next_param:
+					// incrementPart
+					dec		ecx							// lnParamCount--
+					sub		edx,lnSizeofTypes			// --typePtr
+					sub		esi,lnSizeofPointers		// --pointersPtr
+					sub		edi,lnSizeofValues			// --valuesPtr
+
+push_next_param:
+					// testPart
+					cmp		ecx,0						// lnParamCount > 0
+					jz		finished_with_stack_ops
+
+					// switch (types[lnI])
+					mov		eax,dword ptr [edx]
+					cmp		eax,_DLL_TYPE_S16			// case _DLL_TYPE_S16, goto push_s16
+					jz		push_s16
+					cmp		eax, _DLL_TYPE_U16			// case _DLL_TYPE_U16, goto push_u16
+					jz		push_u16
+					cmp		eax, _DLL_TYPE_S32			// case _DLL_TYPE_S32, goto push_s32
+					jz		push_s32
+					cmp		eax, _DLL_TYPE_U32			// case _DLL_TYPE_S64, goto push_s64
+					jz		push_u32
+					cmp		eax, _DLL_TYPE_F32			// case _DLL_TYPE_F32, goto push_f32
+					jz		push_f32
+					cmp		eax, _DLL_TYPE_F64			// case _DLL_TYPE_F64, goto push_f64
+					jz		push_f64
+					cmp		eax, _DLL_TYPE_S64			// case _DLL_TYPE_S64, goto push_s64
+					jz		push_s64
+					cmp		eax, _DLL_TYPE_U64			// case _DLL_TYPE_U64, goto push_u64
+					jz		push_u64
+
+					// If we get here, it has to be _DLL_TYPE_VP
+					jmp		push_vp						// default, goto push_s16
+
+push_s16:
+					movsx	eax,word ptr [edi]
+					push	eax
+					jmp		prepare_for_next_param
+
+push_u16:
+					movzx	eax,word ptr [edi]
+					push	eax
+					jmp		prepare_for_next_param
+
+push_s32:
+push_u32:
+push_f32:
+push_vp:
+					mov		eax,dword ptr [edi]
+					push	eax
+					jmp		prepare_for_next_param
+
+push_f64:
+push_s64:
+push_u64:
+					mov		eax,dword ptr [edi]
+					push	eax
+					mov		eax,dword ptr [edi+4]
+					push	eax
+					jmp		prepare_for_next_param
+
+finished_with_stack_ops:
+					// Dispatch into the DLL function
+					call	funcAddress
+
+					// Store return value if any
+					mov		edi,return_values_base
+
+					// switch (types[lnI])
+					mov		eax,lnReturnType
+					cmp		eax,_DLL_TYPE_VOID
+					jmp		store_nothing
+					cmp		eax,_DLL_TYPE_S16			// case _DLL_TYPE_S16, goto store_s16
+					jz		store_s16
+					cmp		eax, _DLL_TYPE_U16			// case _DLL_TYPE_U16, goto store_u16
+					jz		store_u16
+					cmp		eax, _DLL_TYPE_S32			// case _DLL_TYPE_S32, goto store_s32
+					jz		store_s32
+					cmp		eax, _DLL_TYPE_U32			// case _DLL_TYPE_S64, goto store_s64
+					jz		store_u32
+					cmp		eax, _DLL_TYPE_F32			// case _DLL_TYPE_F32, goto store_f32
+					jz		store_f32
+					cmp		eax, _DLL_TYPE_F64			// case _DLL_TYPE_F64, goto store_f64
+					jz		store_f64
+					cmp		eax, _DLL_TYPE_S64			// case _DLL_TYPE_S64, goto store_s64
+					jz		store_s64
+					cmp		eax, _DLL_TYPE_U64			// case _DLL_TYPE_U64, goto store_u64
+					jz		store_u64
+
+					// If we get here, it has to be _DLL_TYPE_VP
+					jmp		store_vp					// default, goto push_s16
+
+store_s16:
+					movsx	eax,ax
+					mov		dword ptr [edi],eax
+					jmp		dll_dispatch_asm_code_finished
+
+store_u16:
+					movzx	eax,ax
+					mov		dword ptr [edi],eax
+					jmp		dll_dispatch_asm_code_finished
+
+store_s32:
+store_u32:
+store_f32:
+store_vp:
+					mov		dword ptr [edi],eax
+					jmp		dll_dispatch_asm_code_finished
+
+store_f64:
+store_s64:
+store_u64:
+					mov		dword ptr [edi],eax
+					mov		dword ptr [edi+4],edx
+					jmp		dll_dispatch_asm_code_finished
+
+store_nothing:
+					// Nothing needs stored (just a placeholder for a jmp target)
+
+dll_dispatch_asm_code_finished:
+					// When we get here, the asm part is completed
+			}
+
+
+		//////////
+		// Populate the return value into the variable
+		//////
+			switch (dfunc->rp.type)
+			{
+				case _DLL_TYPE_S16:
+				case _DLL_TYPE_S32:
+					iVariable_setVarType(thisCode, rpar->rp[0], _VAR_TYPE_S32);
+					*rpar->rp[0]->value.data_s32 = values[0]._s32;
+					break;
+
+				case _DLL_TYPE_U16:
+				case _DLL_TYPE_U32:
+					iVariable_setVarType(thisCode, rpar->rp[0], _VAR_TYPE_U32);
+					*rpar->rp[0]->value.data_u32 = values[0]._u32;
+					break;
+
+				case _DLL_TYPE_F32:
+					iVariable_setVarType(thisCode, rpar->rp[0], _VAR_TYPE_F32);
+					*rpar->rp[0]->value.data_f32 = values[0]._f32;
+					break;
+
+				case _DLL_TYPE_F64:
+					iVariable_setVarType(thisCode, rpar->rp[0], _VAR_TYPE_F64);
+					*rpar->rp[0]->value.data_f64 = values[0]._f64;
+					break;
+
+				case _DLL_TYPE_S64:
+					iVariable_setVarType(thisCode, rpar->rp[0], _VAR_TYPE_S64);
+					*rpar->rp[0]->value.data_s64 = values[0]._s64;
+					break;
+
+				case _DLL_TYPE_U64:
+					iVariable_setVarType(thisCode, rpar->rp[0], _VAR_TYPE_U64);
+					*rpar->rp[0]->value.data_u64 = values[0]._u64;
+					break;
+
+				case _DLL_TYPE_STRING:
+					iVariable_setVarType(thisCode, rpar->rp[0], _VAR_TYPE_CHARACTER);
+					iDatum_duplicate(&rpar->rp[0]->value, values[0]._s8p, strlen(values[0]._s8p));
+					break;
 			}
 
 
@@ -447,10 +652,6 @@
 								iDatum_delete(&rpar->ip[lnI]->value, false);
 								rpar->ip[lnI]->value.data_vp	= values[lnI]._datum.data_vp;
 								rpar->ip[lnI]->value.length		= values[lnI]._datum.length;
-								break;
-
-							case _DLL_TYPE_IDISPATCH:
-								_asm int 3;
 								break;
 						}
 
