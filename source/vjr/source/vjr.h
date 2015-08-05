@@ -125,6 +125,7 @@
 	#include <sql.h>
 	#include <sqlext.h>
 	#include <errno.h>
+	#include <shlObj.h>
 	#include "resource.h"
 
 	#define _USE_MATH_DEFINES

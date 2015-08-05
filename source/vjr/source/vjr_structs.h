@@ -182,13 +182,15 @@ struct SHover
 	//////////
 
 
+#define _MAX_DLL_HMODULES 5					// kernel32.dll, gdi32.dll, user32.dll, mpr.dll, and advapi32.dll
+
 struct SDllLib
 {
 	SLL*		ll;
 
-	SDatum			dllName;				// DLL name
-	HMODULE			dllHandle;				// Handle to the DLL
-	s32				refCount;				// Reference count
+	SDatum			dllName;						// DLL name
+	HMODULE			dllHandle[_MAX_DLL_HMODULES];	// Handle to the DLL
+	s32				refCount;						// Reference count
 };
 
 struct SDllFuncParam

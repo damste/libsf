@@ -2286,6 +2286,7 @@
 		//////////
 		// See if we're working with an array definition. The syntax will be: DECLARE laName[quantity] or DECLARE laName(quantity)
 		//////
+_asm int 3;
 			if ((compVar = iComps_getNth(thisCode, compDeclare, 1)) && (compLBracket = iComps_getNth(thisCode, compVar, 1)) && (compLBracket->iCode == _ICODE_BRACKET_LEFT || compLBracket->iCode == _ICODE_PARENTHESIS_LEFT))
 			{
 				// It is of the array structure

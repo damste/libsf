@@ -676,7 +676,7 @@ dll_dispatch_asm_code_finished:
 //////
 	bool iDllFunc_add(SThisCode* thisCode, SFunctionParams* rpar, SDllFuncParam* rp, SDllFuncParam ip[], s32 tnIpCount, SComp* compFunctionName, SComp* compAliasName, SComp* compDllName, SThisCode* onAccess, SThisCode* onAssign)
 	{
-		s32			lnFuncNameLength;
+		s32			lnI, lnFuncNameLength;
 		void*		funcAddress;
 		SDllFunc*	dfunc;
 		SDllLib*	dlib;
@@ -707,7 +707,12 @@ dll_dispatch_asm_code_finished:
 				memset(&funcName, 0, sizeof(funcName));
 				lnFuncNameLength = min(compFunctionName->length, sizeof(funcName) - 1);
 				memcpy(funcName, compFunctionName->line->sourceCode->data_cs8 + compFunctionName->start, lnFuncNameLength);
-				funcAddress = (void*)GetProcAddress(dlib->dllHandle, funcName);
+
+				// Iterate through the list of dll candidates to see if we an find the function
+				for (lnI = 0, funcAddress = 0; !funcAddress && lnI < _MAX_DLL_HMODULES; lnI++)
+					funcAddress = (void*)GetProcAddress(dlib->dllHandle[lnI], funcName);
+
+				// Did we find it?
 				if (funcAddress)
 				{
 					// Try to find the existing function
@@ -803,11 +808,24 @@ dll_dispatch_asm_code_finished:
 // Called to open the Dll library
 //
 //////
+	const s8	cgc_kernel32_dll[]		= "kernel32.dll";
+	const s8	cgc_gdi32_dll[]			= "gdi32.dll";
+	const s8	cgc_user32_dll[]		= "user32.dll";
+	const s8	cgc_mpr_dll[]			= "mpr.dll";
+	const s8	cgc_advapi32_dll[]		= "advapi32.dll";
+
+	HMODULE		ghModule_kernel32		= NULL;
+	HMODULE		ghModule_gdi32			= NULL;
+	HMODULE		ghModule_user32			= NULL;
+	HMODULE		ghModule_mpr			= NULL;
+	HMODULE		ghModule_advapi32		= NULL;
+
 	SDllLib* iDllLib_open(SThisCode* thisCode, SComp* compDllName)
 	{
 		HMODULE		dllHandle;
 		SDllLib*	dlib;
-		char		dllName[_MAX_PATH];
+		s8			win32Dir[_MAX_PATH];
+		s8			dllName[_MAX_PATH];
 
 
 		//////////
@@ -820,9 +838,53 @@ dll_dispatch_asm_code_finished:
 		//////////
 		// Open the library
 		//////
-			dllHandle = LoadLibraryA(dllName);
-			if (!dllHandle)
-				return(NULL);	// Failure
+			if (compDllName->iCode == _ICODE_WIN32API)
+			{
+				// Are they not yet loaded?
+				if (!ghModule_kernel32 || !ghModule_gdi32 || !ghModule_user32 || !ghModule_mpr || !ghModule_advapi32)
+				{
+					// Grab the win32 path
+					if(SUCCEEDED(SHGetFolderPath(NULL, CSIDL_SYSTEM | CSIDL_FLAG_CREATE, NULL, 0, win32Dir)))
+					{
+						// Load each module
+						if (!ghModule_kernel32)
+						{
+							sprintf(dllName, "%s\\%s", win32Dir, cgc_kernel32_dll);
+							ghModule_kernel32 = LoadLibrary(dllName);
+						}
+
+						if (!ghModule_gdi32)
+						{
+							sprintf(dllName, "%s\\%s", win32Dir, cgc_gdi32_dll);
+							ghModule_gdi32 = LoadLibrary(dllName);
+						}
+
+						if (!ghModule_user32)
+						{
+							sprintf(dllName, "%s\\%s", win32Dir, cgc_user32_dll);
+							ghModule_user32 = LoadLibrary(dllName);
+						}
+
+						if (!ghModule_mpr)
+						{
+							sprintf(dllName, "%s\\%s", win32Dir, cgc_mpr_dll);
+							ghModule_mpr = LoadLibrary(dllName);
+						}
+
+						if (!ghModule_advapi32)
+						{
+							sprintf(dllName, "%s\\%s", win32Dir, cgc_advapi32_dll);
+							ghModule_advapi32 = LoadLibrary(dllName);
+						}
+					}
+				}
+
+			} else {
+				// A specific library
+				dllHandle = LoadLibraryA(dllName);
+				if (!dllHandle)
+					return(NULL);	// Failure
+			}
 
 
 		//////////
@@ -831,11 +893,24 @@ dll_dispatch_asm_code_finished:
 			for (dlib = gsRootDllLib; dlib; dlib = (SDllLib*)dlib->ll->next)
 			{
 				// If the name is the same, we'll use it
-				if (dlib->dllHandle == dllHandle)
+				if (compDllName->iCode == _ICODE_WIN32API)
 				{
-					// This is the existing entry we can reuse
-					++dlib->refCount;
-					break;
+					// Look for a match for all of the handles
+					if (dlib->dllHandle[0] == ghModule_kernel32 && dlib->dllHandle[1] == ghModule_gdi32 && dlib->dllHandle[2] == ghModule_user32 && dlib->dllHandle[3] == ghModule_mpr && dlib->dllHandle[4] == ghModule_advapi32)
+					{
+						// This is our win32api grouping
+						++dlib->refCount;
+						break;
+					}
+
+				} else {
+					// This is the matching dll
+					if (dlib->dllHandle[0] == dllHandle)
+					{
+						// This is the existing entry we can reuse
+						++dlib->refCount;
+						break;
+					}
 				}
 			}
 			// If we get here, it wasn't found
@@ -858,8 +933,22 @@ dll_dispatch_asm_code_finished:
 				//////////
 				// Copy info
 				//////
-					dlib->dllHandle = dllHandle;
-					dlib->refCount	= 1;
+					if (compDllName->iCode == _ICODE_WIN32API)
+					{
+						// Store the win32api search handles
+						dlib->dllHandle[0] = ghModule_kernel32;
+						dlib->dllHandle[1] = ghModule_gdi32;
+						dlib->dllHandle[2] = ghModule_user32;
+						dlib->dllHandle[3] = ghModule_mpr;
+						dlib->dllHandle[4] = ghModule_advapi32;
+
+					} else {
+						// Store the handle
+						dlib->dllHandle[0] = dllHandle;
+					}
+
+					// Initialize the rest
+					dlib->refCount = 1;
 					iDatum_duplicate(&dlib->dllName, compDllName->line->sourceCode->data_cs8 + compDllName->start, compDllName->length);
 
 			}
