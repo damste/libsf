@@ -17,6 +17,7 @@ Jesus' name.  Amen.
 Primitive types:
 
 	Group		-- An aggregate of things
+	Real		-- A physical connection to a real thing
 	Gatein		-- An input gate for asynchronous design
 	Gateout		-- An output gate for asynchronous design
 	Trigger		-- A signal with logic
