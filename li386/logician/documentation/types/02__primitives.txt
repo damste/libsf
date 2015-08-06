@@ -6,6 +6,7 @@ LibSF Logician Primitive Types
 Overview:
 
 	Group		-- An aggregate of things
+	Real		-- A physical connection to a real thing
 	Gatein		-- An input gate for asynchronous design
 	Gateout		-- An output gate for asynchronous design
 	Trigger		-- A signal with logic
@@ -26,17 +27,74 @@ Overview:
 
 
 
+**********
+* Note:  Many items below contain a vent.  This vent is disabled by default,
+*        but if something is connected to the vent, it allows the indicated
+*        operation at that level
+**********
+
+
+
+
+**********
+* Note:  The orientation of each of these items can be rotated, resized, etc.
+*        They are physically attached to other objects with connection bands
+*        visually.  These bands relate the components together, though typically
+*        each component will appear "normally docked" on its parent, or in very
+*        close proximity visually.
+**********
+
+
+
+
 Group -- An aggregate of things
 -------------------------------
 
-	 +------------------+
-	 |                  |
-	=|in|           |out|=
-	=|in|   Group   |out|=
-	=|in|           |out|=
-	 |                  |
-	=|vent|             |
-	 +------------------+
+	 +-----------------------+
+	 |                       |
+	 |---+               +---|
+	@|i0 |               |o0 |@
+	@|i1 |     Group     |o1 |@
+	 |...|               |...| 
+	@|iN |               |oN |@
+	 |---+               +---|
+	 |                       |
+	 |                       |
+	 |                       |
+	=|vent|                  |
+	 +-----------------------+
+	
+	i0		-- (I) Input 1 for something contained within the group
+	i1		-- (I) Input 2 for something contained within the group
+	iN		-- (I) Input N for something contained within the group
+	o0		-- (O) Output 1 for something contained within the group
+	o1		-- (O) Output 2 for something contained within the group
+	oN		-- (O) Output N for something contained within the group
+
+
+
+
+Real -- A physical connection to a real thing
+---------------------------------------------
+
+	 +---+			 +---+			 +---+
+	@|i0 |@			@|o0 |@			@|io0|@
+	@|i1 |@			@|o1 |@			@|io1|@
+	 |...|			 |...| 			 |...| 
+	@|iN |@			@|oN |@			@|ioN|@
+	 +---+			 +---+ 			 +---+ 
+	
+	i0		-- (I) Input 1 for some physical thing
+	i1		-- (I) Input 2 for some physical thing
+	iN		-- (I) Input N for some physical thing
+	
+	o0		-- (O) Output 1 for some physical thing
+	o1		-- (O) Output 2 for some physical thing
+	oN		-- (O) Output N for some physical thing
+	
+	io0		-- (I/O) Input/Output 1 for some physical thing
+	io1		-- (I/O) Input/Output 2 for some physical thing
+	ioN		-- (I/O) Input/Output N for some physical thing
 
 
 
@@ -55,7 +113,7 @@ Gatein -- An input gate for asynchronous design
 	 +--------------------+
 	
 	LR		-- (O) Pull is ready
-	DR		-- (I) Data is ready
+	RDY		-- (I) Remote is ready to push
 	L		-- (O) Pull
 	DL		-- (I) Data from pull
 
@@ -75,7 +133,7 @@ Gateout -- An output gate for asynchronous design
 	 +---------------------+
 	    @   @    @   |__@__|
 	
-	DR		-- (I) Ready for data
+	RDY		-- (I) Remote is ready to pull
 	SR		-- (O) Push is ready
 	S		-- (O) Push
 	DS		-- (O) Data to push
@@ -86,15 +144,15 @@ Gateout -- An output gate for asynchronous design
 Trigger -- A signal with logic
 ------------------------------
 	     
-	    @
-	 +---------------------+
-	 | TRG                 |
-	 |---------------------|
-	 |                     |
-	 |        Code         |
-	 |                     |
-	=|vent|                |
-	 +---------------------+
+	        @
+	 +--------------+
+	 |     TRG      |
+	 |--------------|
+	 |              |
+	 |     Code     |
+	 |              |
+	=|vent|         |
+	 +--------------+
 	 
 	 TRG -- Trigger input Signal
 
@@ -106,7 +164,7 @@ Talkback -- Bi-directional communication
 	                        _____     _____
 	    @    @    @    @   |  @  |   |  @  |
 	 +--------------------------------------+
-	 |  LR   L    SR   S      DL        DS  |
+	 | LRDY  L   SRDY  S      DL        DS  |
 	 |--------------------------------------|
 	 |                                      |
 	 |                 Code                 |
@@ -114,9 +172,9 @@ Talkback -- Bi-directional communication
 	=|vent|                                 |
 	 +--------------------------------------+
 	 
-	LR		-- (I) Pull is ready
+	LRDY	-- (I) Remote has data ready
 	L		-- (O) Pull
-	SR		-- (I) Push is ready
+	SRDY	-- (I) Remote is ready for data
 	S		-- (O) Push
 	DL		-- (I) Data from pull
 	DS		-- (O) Data to push
@@ -133,6 +191,8 @@ and pull data.
 		   @				   @
 		 +----+				 +----+
 		 | SG |				 | LG |
+		 |    |				 |    |
+		 |    |				 |    |
 		 |----|				 |----|
 		=|vent|				=|vent|
 		 +----+				 +----+
@@ -148,7 +208,9 @@ Data -- A bitline grouping for I/O
 	     _____
 	    |  @  |
 	 +-----------+
+	 |           |
 	 |    Data   |
+	 |           |
 	 |-----------|
 	=|vent       |
 	 +-----------+
@@ -168,6 +230,11 @@ Regs -- Data storage aggregates for I/O
 	 | Name1      |@
 	 | ...        |
 	 | NameN      |@
+	 |            |
+	 |            |
+	 |            |
+	 |            |
+	 |            |
 	 |------------|
 	=|vent        |
 	 +------------+
@@ -197,22 +264,25 @@ Clock -- A synchronous clock
 
 	 +--------------+
 	 |    Clock     |
-	 |              |
+	 |--------------|
+	 | Frequency    |
+	 |--------------|
 	=|vent          |
-	 |--------------|-----------+
-	 |  _____       |   Regs    |
-	 | |     |      |-----------|
-	 | |     |_____ | Frequency |@
-	 |--------------|-----------+
+	 |--------------|
+	 |  _____       |
+	 | |     |      |
+	 | |     |_____ |
+	 |--------------|
 	 | UP HI DN LO  |
 	 +--------------+
 	   @  @  @  @
+	
+	* Note:  Clocks also contain a frequency, which is design-only data.
 	 
 	UP		-- Leading edge of clock cycle
 	HI		-- When clock is high
 	DN		-- Falling edge of clock cycle
 	LO		-- When clock is low
-	FREQ	-- A register containing the up/leading-edge frequency
 
 
 
@@ -236,7 +306,7 @@ History -- A history of values
 	  |    |             |    |
 	  |    |             | HSG|@
 	  |    |             |    |
-	  |    |             | HAK|@
+	  |    |             | ACK|@
 	  |    |             |    |
 	+-|    |             |----+
 	| |    |             |
@@ -253,7 +323,7 @@ History -- A history of values
 	d1		-- (O) Delta 1 (prior value)
 	dN		-- (O) Delta N (prior prior values)
 	HSG		-- (O) History Signal
-	HAK		-- (I) History acknowledgement
+	ACK		-- (I) Acknowledgement receipt of History signal, and any data
 
 
 
@@ -277,7 +347,7 @@ Delta -- A history of changed values
 	  |    |             |    |
 	  |    |             | DSG|@
 	  |    |             |    |
-	  |    |             | DAK|@
+	  |    |             | ACK|@
 	  |    |             |    |
 	+-|    |             |----+
 	| |    |             |
@@ -294,7 +364,7 @@ Delta -- A history of changed values
 	d1		-- (O) Delta 1 (prior value)
 	dN		-- (O) Delta N (prior prior values)
 	DSG		-- (O) Delta Signal (push is ready)
-	DAK		-- (I) Delta acknowledgement
+	ACK		-- (I) Acknowledgement receipt of Delta signal, and any data
 
 
 
@@ -302,34 +372,34 @@ Delta -- A history of changed values
 Vent -- A debug port (with asynchronous pause)
 ----------------------------------------------
 
-	          +--------+
-	   +------|  Vent  |
-	   |      |--------|
-	  @|HLT   |        |------+
-	   |      |        | Regs |
-	  @|STEP  |        |------|
-	   |      |        |  i0  |@
-	  @|DUMP  |        |  i1  |@
-	   |      |        |  ... | 
-	  @|DEND  |        |  iN  |@
-	   |      |        |------+
-	   |      |        |
-	 +-|      |        |
-	 |        |        |
-	 |Talkback|        |
-	 |        |        |
-	 +-|      |        |
-	   +------+--------+
+	         +--------+
+	   +-----|  Vent  |
+	   |     |--------|
+	  @|HLT  |        |------+
+	   |     |        | Regs |
+	  @|STEP |        |------|
+	   |     |        |  i0  |@
+	  @|DUMP |        |  i1  |@
+	   |     |        |  ... | 
+	  @|DEND |        |  iN  |@
+	   |     |        |------+
+	   |     |        |
+	+--|     |        |
+	|        |        |
+	|Talkback|        |
+	|        |        |
+	+--|     |        |
+	   +-----+--------+
 	
 	HLT			-- (I) Should data flow halt at this vent?
 	STEP		-- (I) Single step when halted
 	DUMP		-- (I) Dumps the input registers to the talkback
 			           in succession until DEND is signaled.
 	DEND		-- (O) Indicates the dump has been completed.
-	Talkback	-- (I/O) A Talkback to the vented port
 	i0			-- (I) A port to store values for venting
 	i1			-- (I) Another port to store values for venting
 	iN			-- (I) The Nth port to store values for venting
+	Talkback	-- (I/O) A Talkback to/from the vented port
 
 
 
@@ -342,7 +412,9 @@ Clone -- Clones a Signal or Data
 	|        IN       |
 	|-----------------|
 	|                 |
+	|                 |
 	|      Clone      |
+	|                 |
 	|                 |
 	|-----------------|
 	| O1  O2  ...  ON |
@@ -365,7 +437,9 @@ Sticky -- A sticky bit with set, reset
 	|   IN   RST   |
 	|--------------|
 	|              |
+	|              |
 	|    Sticky    |
+	|              |
 	|              |
 	|--------------|
 	|     OUT      |
@@ -394,6 +468,10 @@ Debug -- Pipes a Signal or Data to a debug panel
 	 |                  | dbgN |@
 	=|vent|             |------+
 	 +------------------+
+	
+	dbg0		-- (I) 1st debug data coming from some remote source
+	dbg1		-- (I) 2nd debug data...
+	dbgN		-- (I) Nth debug data...
 
 
 
