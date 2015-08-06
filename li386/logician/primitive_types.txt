@@ -19,6 +19,7 @@ Overview:
 	Delta		-- A history of changed values
 	Vent		-- A debug port (with asynchronous pause)
 	Clone		-- Clones a Signal or Data
+	Sticky		-- A sticky bit with set, reset
 	Debug		-- Pipes a Signal or Data to a debug panel
 	Away		-- Creates a connection to a remote thing
 
@@ -74,7 +75,7 @@ Gateout -- An output gate for asynchronous design
 	 +---------------------+
 	    @   @    @   |__@__|
 	
-	DR		-- (I) Data is ready
+	DR		-- (I) Ready for data
 	SR		-- (O) Push is ready
 	S		-- (O) Push
 	DS		-- (O) Data to push
@@ -146,11 +147,11 @@ Data -- A bitline grouping for I/O
 ----------------------------------
 	     _____
 	    |  @  |
-	 +------------+
-	 |    Data    |
-	 |------------|
-	=|vent        |
-	 +------------+
+	 +-----------+
+	 |    Data   |
+	 |-----------|
+	=|vent       |
+	 +-----------+
 	 
 	Data	-- (I/O) A grouping of data bits
 
@@ -165,7 +166,7 @@ Regs -- Data storage aggregates for I/O
 	 |------------|
 	 | Name0      |@
 	 | Name1      |@
-	 | ...        |@
+	 | ...        |
 	 | NameN      |@
 	 |------------|
 	=|vent        |
@@ -186,7 +187,7 @@ Code -- A logic block
 	=|vent|             |
 	 +------------------+
 	 
-	Code	-- RDC source code logic
+	Code	-- RDC source code which compiles into logic
 
 
 
@@ -196,11 +197,12 @@ Clock -- A synchronous clock
 
 	 +--------------+
 	 |    Clock     |
-	 |--------------|
-	=|vent          |-----------+
+	 |              |
+	=|vent          |
+	 |--------------|-----------+
 	 |  _____       |   Regs    |
 	 | |     |      |-----------|
-	 | |     |_____ | Frequency |
+	 | |     |_____ | Frequency |@
 	 |--------------|-----------+
 	 | UP HI DN LO  |
 	 +--------------+
@@ -210,6 +212,7 @@ Clock -- A synchronous clock
 	HI		-- When clock is high
 	DN		-- Falling edge of clock cycle
 	LO		-- When clock is low
+	FREQ	-- A register containing the up/leading-edge frequency
 
 
 
@@ -217,11 +220,81 @@ Clock -- A synchronous clock
 History -- A history of values
 ------------------------------
 
+	       +-------------+
+	+-+----|    Delta    |
+	| |    |             |------+
+	@ |DIN |             | Regs |
+	| |    |             |------|
+	+-|    |             |  h0  |@
+	  |    |             |  h1  |@
+	  |    |             |  ... |
+	  |    |             |  hN  |@
+	  |    |             |------+
+	  |    |             |
+	 @|REC |             |
+	  |    |             |----+
+	  |    |             |    |
+	  |    |             | HSG|@
+	  |    |             |    |
+	  |    |             | HAK|@
+	  |    |             |    |
+	+-|    |             |----+
+	| |    |             |
+	@ |DOUT|             |
+	| |    |             |
+	+-+----|             |
+		  =|vent         |
+	       +-------------+
+	
+	DIN		-- (I) Data in
+	SAMP	-- (I) Sample Signal to record if different
+	DOUT	-- (O) Data out
+	d0		-- (O) Delta 0 (current value)
+	d1		-- (O) Delta 1 (prior value)
+	dN		-- (O) Delta N (prior prior values)
+	HSG		-- (O) History Signal
+	HAK		-- (I) History acknowledgement
+
 
 
 
 Delta -- A history of changed values
 ------------------------------------
+
+	       +-------------+
+	+-+----|    Delta    |
+	| |    |             |------+
+	@ |DIN |             | Regs |
+	| |    |             |------|
+	+-|    |             |  d0  |@
+	  |    |             |  d1  |@
+	  |    |             |  ... |
+	  |    |             |  dN  |@
+	  |    |             |------+
+	  |    |             |
+	 @|SAMP|             |
+	  |    |             |----+
+	  |    |             |    |
+	  |    |             | DSG|@
+	  |    |             |    |
+	  |    |             | DAK|@
+	  |    |             |    |
+	+-|    |             |----+
+	| |    |             |
+	@ |DOUT|             |
+	| |    |             |
+	+-+----|             |
+		  =|vent         |
+	       +-------------+
+	
+	DIN		-- (I) Data in
+	SAMP	-- (I) Sample Signal to record if different
+	DOUT	-- (O) Data out
+	d0		-- (O) Delta 0 (current value)
+	d1		-- (O) Delta 1 (prior value)
+	dN		-- (O) Delta N (prior prior values)
+	DSG		-- (O) Delta Signal (push is ready)
+	DAK		-- (I) Delta acknowledgement
 
 
 
@@ -229,11 +302,79 @@ Delta -- A history of changed values
 Vent -- A debug port (with asynchronous pause)
 ----------------------------------------------
 
+	          +--------+
+	   +------|  Vent  |
+	   |      |--------|
+	  @|HLT   |        |------+
+	   |      |        | Regs |
+	  @|STEP  |        |------|
+	   |      |        |  i0  |@
+	  @|DUMP  |        |  i1  |@
+	   |      |        |  ... | 
+	  @|DEND  |        |  iN  |@
+	   |      |        |------+
+	   |      |        |
+	 +-|      |        |
+	 |        |        |
+	 |Talkback|        |
+	 |        |        |
+	 +-|      |        |
+	   +------+--------+
+	
+	HLT			-- (I) Should data flow halt at this vent?
+	STEP		-- (I) Single step when halted
+	DUMP		-- (I) Dumps the input registers to the talkback
+			           in succession until DEND is signaled.
+	DEND		-- (O) Indicates the dump has been completed.
+	Talkback	-- (I/O) A Talkback to the vented port
+	i0			-- (I) A port to store values for venting
+	i1			-- (I) Another port to store values for venting
+	iN			-- (I) The Nth port to store values for venting
+
 
 
 
 Clone -- Clones a Signal or Data
 --------------------------------
+
+	         @
+	+-----------------+
+	|        IN       |
+	|-----------------|
+	|                 |
+	|      Clone      |
+	|                 |
+	|-----------------|
+	| O1  O2  ...  ON |
+	+-----------------+
+	   @   @        @
+	
+	IN		-- Input Signal
+	O1		-- First output signal
+	O2		-- Second output signal
+	ON		-- Nth output signal
+
+
+
+
+Sticky -- A sticky bit with set, reset
+--------------------------------------
+
+	    @     @
+	+--------------+
+	|   IN   RST   |
+	|--------------|
+	|              |
+	|    Sticky    |
+	|              |
+	|--------------|
+	|     OUT      |
+	+--------------+
+	       @
+	
+	IN		-- Input Signal
+	RST		-- Reset Sticky (set to 0 if IN is 0)
+	OUT		-- Sticky output
 
 
 
@@ -241,8 +382,26 @@ Clone -- Clones a Signal or Data
 Debug -- Pipes a Signal or Data to a debug panel
 ------------------------------------------------
 
+	 +------------------+
+	 |      Debug       |
+	 |------------------|
+	 |                  |------+
+	 |                  | Regs |
+	 |                  |------|
+	 |       Code       | dbg0 |@
+	 |                  | dbg1 |@
+	 |                  | ...  |
+	 |                  | dbgN |@
+	=|vent|             |------+
+	 +------------------+
+
 
 
 
 Away -- Creates a connection to a remote thing
 ----------------------------------------------
+
+	This is a link to another object, which appears in close
+	proximity to the input, allowing for spatial orientation,
+	without having long connecting lines to the distant object
+	during design and debugging.

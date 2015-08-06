@@ -30,6 +30,7 @@ Primitive types:
 	Delta		-- A history of changed values
 	Vent		-- A debug port (with asynchronous pause)
 	Clone		-- Clones a Signal or Data
+	Sticky		-- A sticky bit with set, reset
 	Debug		-- Pipes a Signal or Data to a debug panel
 	Away		-- Creates a connection to a remote thing
 
