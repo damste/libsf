@@ -1,0 +1,104 @@
+Aug.06.2015
+
+LibSF Logician Fundamental Types
+--------------------------------
+
+Overview
+--------
+
+	Invert		-- A logical NOT for Signal or Data
+	Any1		-- A logical OR for Signal or Data
+	All1		-- A logical AND for Signal or Data
+	Diff1		-- A logical XOR for Signal or Data
+	Any0		-- A logical NAND for Signal or Data
+	All0		-- A logical NOR for Signal or Data
+	Diff0		-- A logical XNOR for Signal or Dat
+
+
+
+
+Invert -- A logical NOT for Signal or Data
+------------------------------------------
+
+	Input	|	Output
+	-----	|	------
+	  0		|	  1
+	  1		|	  0
+
+
+
+
+Any1 -- A logical OR for Signal or Data
+---------------------------------------
+
+	Input-1		Input-2		|	Output
+	-------		-------		|	------
+		0			0		|	  0
+		0			1		|	  1
+		1			0		|	  1
+		1			1		|	  1
+
+	
+
+
+All1 -- A logical AND for Signal or Data
+----------------------------------------
+
+	Input-1		Input-2		|	Output
+	-------		-------		|	------
+		0			0		|	  0
+		0			1		|	  0
+		1			0		|	  0
+		1			1		|	  1
+
+
+
+
+Diff1 -- A logical XOR for Signal or Data
+-----------------------------------------
+
+	Input-1		Input-2		|	Output
+	-------		-------		|	------
+		0			0		|	  0
+		0			1		|	  1
+		1			0		|	  1
+		1			1		|	  0
+
+
+
+
+Any0 -- A logical NAND for Signal or Data
+-----------------------------------------
+
+	Input-1		Input-2		|	Output
+	-------		-------		|	------
+		0			0		|	  1
+		0			1		|	  1
+		1			0		|	  1
+		1			1		|	  0
+
+
+
+
+All0 -- A logical NOR for Signal or Data
+----------------------------------------
+
+	Input-1		Input-2		|	Output
+	-------		-------		|	------
+		0			0		|	  1
+		0			1		|	  0
+		1			0		|	  0
+		1			1		|	  0
+
+
+
+
+Diff0 -- A logical XNOR for Signal or Data
+-----------------------------------------
+
+	Input-1		Input-2		|	Output
+	-------		-------		|	------
+		0			0		|	  1
+		0			1		|	  0
+		1			0		|	  0
+		1			1		|	  1

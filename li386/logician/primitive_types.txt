@@ -1,0 +1,248 @@
+Aug.06.2015
+
+LibSF Logician Primitive Types
+------------------------------
+
+Overview:
+
+	Group		-- An aggregate of things
+	Gatein		-- An input gate for asynchronous design
+	Gateout		-- An output gate for asynchronous design
+	Trigger		-- A signal with logic
+	Talkback	-- Bi-directional communication
+	Signal		-- A bitline for I/O
+	Data		-- A bitline grouping for I/O
+	Regs		-- Data storage aggregates for I/O
+	Code		-- A logic block
+	Clock		-- A synchronous clock
+	History		-- A history of values
+	Delta		-- A history of changed values
+	Vent		-- A debug port (with asynchronous pause)
+	Clone		-- Clones a Signal or Data
+	Debug		-- Pipes a Signal or Data to a debug panel
+	Away		-- Creates a connection to a remote thing
+
+
+
+
+Group -- An aggregate of things
+-------------------------------
+
+	 +------------------+
+	 |                  |
+	=|in|           |out|=
+	=|in|   Group   |out|=
+	=|in|           |out|=
+	 |                  |
+	=|vent|             |
+	 +------------------+
+
+
+
+
+Gatein -- An input gate for asynchronous design
+-----------------------------------------------
+	                 _____
+	   @    @   @   |  @  |
+	 +--------------------+
+	 | LR  RDY  L      DL |
+	 |--------------------|
+	 |                    |
+	 |        Code        |
+	 |                    |
+	=|vent|               |
+	 +--------------------+
+	
+	LR		-- (O) Pull is ready
+	DR		-- (I) Data is ready
+	L		-- (O) Pull
+	DL		-- (I) Data from pull
+
+
+
+
+Gateout -- An output gate for asynchronous design
+-------------------------------------------------
+
+	 +---------------------+
+	 |                     |
+	 |        Code         |
+	 |                     |
+	=|vent|                |
+	 |---------------------|
+	 | RDY  SR   S     DS  |
+	 +---------------------+
+	    @   @    @   |__@__|
+	
+	DR		-- (I) Data is ready
+	SR		-- (O) Push is ready
+	S		-- (O) Push
+	DS		-- (O) Data to push
+
+
+
+
+Trigger -- A signal with logic
+------------------------------
+	     
+	    @
+	 +---------------------+
+	 | TRG                 |
+	 |---------------------|
+	 |                     |
+	 |        Code         |
+	 |                     |
+	=|vent|                |
+	 +---------------------+
+	 
+	 TRG -- Trigger input Signal
+
+
+
+
+Talkback -- Bi-directional communication
+----------------------------------------
+	                        _____     _____
+	    @    @    @    @   |  @  |   |  @  |
+	 +--------------------------------------+
+	 |  LR   L    SR   S      DL        DS  |
+	 |--------------------------------------|
+	 |                                      |
+	 |                 Code                 |
+	 |                                      |
+	=|vent|                                 |
+	 +--------------------------------------+
+	 
+	LR		-- (I) Pull is ready
+	L		-- (O) Pull
+	SR		-- (I) Push is ready
+	S		-- (O) Push
+	DL		-- (I) Data from pull
+	DS		-- (O) Data to push
+
+
+
+
+Signal -- A bitline for I/O
+---------------------------
+
+This object attaches to other objects and provides a way to push
+and pull data.
+	     
+		   @				   @
+		 +----+				 +----+
+		 | SG |				 | LG |
+		 |----|				 |----|
+		=|vent|				=|vent|
+		 +----+				 +----+
+	 
+	 SG -- Push (output) Signal
+	 LG -- Pull (input) Signal
+
+
+
+
+Data -- A bitline grouping for I/O
+----------------------------------
+	     _____
+	    |  @  |
+	 +------------+
+	 |    Data    |
+	 |------------|
+	=|vent        |
+	 +------------+
+	 
+	Data	-- (I/O) A grouping of data bits
+
+
+
+
+Regs -- Data storage aggregates for I/O
+---------------------------------------
+
+	 +------------+
+	 |    Regs    |
+	 |------------|
+	 | Name0      |@
+	 | Name1      |@
+	 | ...        |@
+	 | NameN      |@
+	 |------------|
+	=|vent        |
+	 +------------+
+	 
+	Name0..N	-- (I/O) A named grouping of bits used for processing
+
+
+
+
+Code -- A logic block
+---------------------
+
+	 +------------------+
+	 |                  |
+	 |       Code       |
+	 |                  |
+	=|vent|             |
+	 +------------------+
+	 
+	Code	-- RDC source code logic
+
+
+
+
+Clock -- A synchronous clock
+----------------------------
+
+	 +--------------+
+	 |    Clock     |
+	 |--------------|
+	=|vent          |-----------+
+	 |  _____       |   Regs    |
+	 | |     |      |-----------|
+	 | |     |_____ | Frequency |
+	 |--------------|-----------+
+	 | UP HI DN LO  |
+	 +--------------+
+	   @  @  @  @
+	 
+	UP		-- Leading edge of clock cycle
+	HI		-- When clock is high
+	DN		-- Falling edge of clock cycle
+	LO		-- When clock is low
+
+
+
+
+History -- A history of values
+------------------------------
+
+
+
+
+Delta -- A history of changed values
+------------------------------------
+
+
+
+
+Vent -- A debug port (with asynchronous pause)
+----------------------------------------------
+
+
+
+
+Clone -- Clones a Signal or Data
+--------------------------------
+
+
+
+
+Debug -- Pipes a Signal or Data to a debug panel
+------------------------------------------------
+
+
+
+
+Away -- Creates a connection to a remote thing
+----------------------------------------------

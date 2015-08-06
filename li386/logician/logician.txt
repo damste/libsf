@@ -1,0 +1,47 @@
+Aug.06.2015
+
+LibSF Logician
+--------------
+
+This file documents initial ideas for primitive components to be used
+as part of the Logician programming language, simply called "logician."
+
+These primitives will be pluggable via a node editor, with a standard
+language similar to C/C++ (called RDC) for source code, and for handling
+all logic and object processing.
+
+May the Lord guide me and keep me on this project.  I ask for this in
+Jesus' name.  Amen.
+
+-----
+Primitive types:
+
+	Group		-- An aggregate of things
+	Gatein		-- An input gate for asynchronous design
+	Gateout		-- An output gate for asynchronous design
+	Trigger		-- A signal with logic
+	Talkback	-- Bi-directional communication
+	Signal		-- A bitline for I/O
+	Data		-- A bitline grouping for I/O
+	Regs		-- Data storage aggregates for I/O
+	Code		-- A logic block
+	Clock		-- A synchronous clock
+	History		-- A history of values
+	Delta		-- A history of changed values
+	Vent		-- A debug port (with asynchronous pause)
+	Clone		-- Clones a Signal or Data
+	Debug		-- Pipes a Signal or Data to a debug panel
+	Away		-- Creates a connection to a remote thing
+
+Fundamental types:
+
+	Invert		-- A logical NOT for Signal or Data
+	Any1		-- A logical OR for Signal or Data
+	All1		-- A logical AND for Signal or Data
+	Diff1		-- A logical XOR for Signal or Data
+	Any0		-- A logical NAND for Signal or Data
+	All0		-- A logical NOR for Signal or Data
+	Diff0		-- A logical XNOR for Signal or Data
+
+Best regards,
+Rick C. Hodgin
