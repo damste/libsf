@@ -7,10 +7,10 @@ Overview:
 
 	Group		-- An aggregate of things
 	Real		-- A physical connection to a real thing
-	Gatein		-- An input gate for asynchronous design
-	Gateout		-- An output gate for asynchronous design
+	Talkin		-- A protocoled exchange input for asynchronous design
+	Talkout		-- A protocoled exchange output for asynchronous design
+	Talkback	-- Bi-directional asynchronous communication
 	Trigger		-- A signal with logic
-	Talkback	-- Bi-directional communication
 	Signal		-- A bitline for I/O
 	Data		-- A bitline grouping for I/O
 	Regs		-- Data storage aggregates for I/O
@@ -99,8 +99,8 @@ Real -- A physical connection to a real thing
 
 
 
-Gatein -- An input gate for asynchronous design
------------------------------------------------
+Talkin -- A protocoled exchange input for asynchronous design
+-------------------------------------------------------------
 	                 _____
 	   @    @   @   |  @  |
 	 +--------------------+
@@ -120,8 +120,8 @@ Gatein -- An input gate for asynchronous design
 
 
 
-Gateout -- An output gate for asynchronous design
--------------------------------------------------
+Talkout -- A protocoled exchange output for asynchronous design
+---------------------------------------------------------------
 
 	 +---------------------+
 	 |                     |
@@ -141,26 +141,8 @@ Gateout -- An output gate for asynchronous design
 
 
 
-Trigger -- A signal with logic
-------------------------------
-	     
-	        @
-	 +--------------+
-	 |     TRG      |
-	 |--------------|
-	 |              |
-	 |     Code     |
-	 |              |
-	=|vent|         |
-	 +--------------+
-	 
-	 TRG -- Trigger input Signal
-
-
-
-
-Talkback -- Bi-directional communication
-----------------------------------------
+Talkback -- Bi-directional asynchronous communication
+-----------------------------------------------------
 	                        _____     _____
 	    @    @    @    @   |  @  |   |  @  |
 	 +--------------------------------------+
@@ -178,6 +160,24 @@ Talkback -- Bi-directional communication
 	S		-- (O) Push
 	DL		-- (I) Data from pull
 	DS		-- (O) Data to push
+
+
+
+
+Trigger -- A signal with logic
+------------------------------
+	     
+	        @
+	 +--------------+
+	 |     TRG      |
+	 |--------------|
+	 |              |
+	 |     Code     |
+	 |              |
+	=|vent|         |
+	 +--------------+
+	 
+	 TRG -- Trigger input Signal
 
 
 
