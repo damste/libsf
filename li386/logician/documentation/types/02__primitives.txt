@@ -67,6 +67,7 @@ Group -- An aggregate of things
 	i0		-- (I) Input 1 for something contained within the group
 	i1		-- (I) Input 2 for something contained within the group
 	iN		-- (I) Input N for something contained within the group
+
 	o0		-- (O) Output 1 for something contained within the group
 	o1		-- (O) Output 2 for something contained within the group
 	oN		-- (O) Output N for something contained within the group
@@ -291,7 +292,7 @@ History -- A history of values
 ------------------------------
 
 	       +-------------+
-	+-+----|    Delta    |
+	+-+----|   History   |
 	| |    |             |------+
 	@ |DIN |             | Regs |
 	| |    |             |------|
@@ -317,11 +318,11 @@ History -- A history of values
 	       +-------------+
 	
 	DIN		-- (I) Data in
-	SAMP	-- (I) Sample Signal to record if different
+	REC		-- (I) Record input
 	DOUT	-- (O) Data out
-	d0		-- (O) Delta 0 (current value)
-	d1		-- (O) Delta 1 (prior value)
-	dN		-- (O) Delta N (prior prior values)
+	h0		-- (O) History 0 (current value)
+	h1		-- (O) History 1 (prior value)
+	hN		-- (O) History N (prior prior values)
 	HSG		-- (O) History Signal
 	ACK		-- (I) Acknowledgement receipt of History signal, and any data
 
