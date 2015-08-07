@@ -317,14 +317,12 @@ History -- A history of values
 		  =|vent         |
 	       +-------------+
 	
-	DIN		-- (I) Data in
-	REC		-- (I) Record input
-	DOUT	-- (O) Data out
-	h0		-- (O) History 0 (current value)
-	h1		-- (O) History 1 (prior value)
-	hN		-- (O) History N (prior prior values)
-	HSG		-- (O) History Signal
-	ACK		-- (I) Acknowledgement receipt of History signal, and any data
+	DIN			-- (I) Data in
+	REC			-- (I) Record input
+	DOUT		-- (O) Data out
+	h0...hN		-- (O) History 0 (current value) thru History N values
+	HSG			-- (O) History Signal
+	ACK			-- (I) Acknowledgement receipt of History signal, and any data
 
 
 
@@ -358,14 +356,12 @@ Delta -- A history of changed values
 		  =|vent         |
 	       +-------------+
 	
-	DIN		-- (I) Data in
-	SAMP	-- (I) Sample Signal to record if different
-	DOUT	-- (O) Data out
-	d0		-- (O) Delta 0 (current value)
-	d1		-- (O) Delta 1 (prior value)
-	dN		-- (O) Delta N (prior prior values)
-	DSG		-- (O) Delta Signal (push is ready)
-	ACK		-- (I) Acknowledgement receipt of Delta signal, and any data
+	DIN			-- (I) Data in
+	SAMP		-- (I) Sample Signal to record if different
+	DOUT		-- (O) Data out
+	d0...dN		-- (O) Delta 0 (current value) thru Delta N values
+	DSG			-- (O) Delta Signal (push is ready)
+	ACK			-- (I) Acknowledgement receipt of Delta signal, and any data
 
 
 
@@ -397,9 +393,7 @@ Vent -- A debug port (with asynchronous pause)
 	DUMP		-- (I) Dumps the input registers to the talkback
 			           in succession until DEND is signaled.
 	DEND		-- (O) Indicates the dump has been completed.
-	i0			-- (I) A port to store values for venting
-	i1			-- (I) Another port to store values for venting
-	iN			-- (I) The Nth port to store values for venting
+	i0...N		-- (I) Ports to store values for venting
 	Talkback	-- (I/O) A Talkback to/from the vented port
 
 
