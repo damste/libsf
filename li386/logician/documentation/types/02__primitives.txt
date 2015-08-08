@@ -14,7 +14,7 @@ Overview:
 	Signal		-- A bitline for I/O
 	Data		-- A bitline grouping for I/O
 	Regs		-- Data storage aggregates for I/O
-	Code		-- A logic block
+	Logic		-- A logic block
 	Clock		-- A synchronous clock
 	History		-- A history of values
 	Delta		-- A history of changed values
@@ -51,26 +51,20 @@ Group -- An aggregate of things
 -------------------------------
 
 	 +-----------------------+
-	 |                       |
-	 |---+               +---|
+	 |         Group         |
+	 +-----------------------+
 	@|i0 |               |o0 |@
-	@|i1 |     Group     |o1 |@
+	@|i1 |               |o1 |@
 	 |...|               |...| 
 	@|iN |               |oN |@
 	 |---+               +---|
 	 |                       |
 	 |                       |
-	 |                       |
 	=|vent|                  |
 	 +-----------------------+
 	
-	i0		-- (I) Input 1 for something contained within the group
-	i1		-- (I) Input 2 for something contained within the group
-	iN		-- (I) Input N for something contained within the group
-
-	o0		-- (O) Output 1 for something contained within the group
-	o1		-- (O) Output 2 for something contained within the group
-	oN		-- (O) Output N for something contained within the group
+	i0..iN		-- (I) Inputs for something contained within the group
+	o0..oN		-- (O) Outputs for something contained within the group
 
 
 
@@ -78,24 +72,18 @@ Group -- An aggregate of things
 Real -- A physical connection to a real thing
 ---------------------------------------------
 
-	 +---+			 +---+			 +---+
-	@|i0 |@			@|o0 |@			@|io0|@
-	@|i1 |@			@|o1 |@			@|io1|@
-	 |...|			 |...| 			 |...| 
-	@|iN |@			@|oN |@			@|ioN|@
-	 +---+			 +---+ 			 +---+ 
+	 +------+			 +------+			 +------+
+	 | Real |			 | Real |			 | Real |
+	 +------+			 +------+			 +------+
+	@| i0   |@			@| o0   |@			@| io0  |@
+	@| i1   |@			@| o1   |@			@| io1  |@
+	 | ...  |			 | ...  | 			 | ...  | 
+	@| iN   |@			@| oN   |@			@| ioN  |@
+	 +------+			 +------+ 			 +------+ 
 	
-	i0		-- (I) Input 1 for some physical thing
-	i1		-- (I) Input 2 for some physical thing
-	iN		-- (I) Input N for some physical thing
-	
-	o0		-- (O) Output 1 for some physical thing
-	o1		-- (O) Output 2 for some physical thing
-	oN		-- (O) Output N for some physical thing
-	
-	io0		-- (I/O) Input/Output 1 for some physical thing
-	io1		-- (I/O) Input/Output 2 for some physical thing
-	ioN		-- (I/O) Input/Output N for some physical thing
+	i0..iN		-- (I) Inputs from some physical thing
+	o0..oN		-- (O) Outputs to for some physical thing
+	io0..ioN	-- (I/O) Input/Outputs from/to some physical thing
 
 
 
@@ -106,6 +94,8 @@ Talkin -- A protocoled exchange input for asynchronous design
 	   @    @   @   |  @  |
 	 +--------------------+
 	 | LR  RDY  L      DL |
+	 |--------------------|
+	 |       Talkin       |
 	 |--------------------|
 	 |                    |
 	 |        Code        |
@@ -125,6 +115,8 @@ Talkout -- A protocoled exchange output for asynchronous design
 ---------------------------------------------------------------
 
 	 +---------------------+
+	 |       Talkout       |
+	 |---------------------|
 	 |                     |
 	 |        Code         |
 	 |                     |
@@ -149,6 +141,8 @@ Talkback -- Bi-directional asynchronous communication
 	 +--------------------------------------+
 	 | LRDY  L   SRDY  S      DL        DS  |
 	 |--------------------------------------|
+	 |               Talkback               |
+	 |--------------------------------------|
 	 |                                      |
 	 |                 Code                 |
 	 |                                      |
@@ -168,12 +162,15 @@ Talkback -- Bi-directional asynchronous communication
 Trigger -- A signal with logic
 ------------------------------
 	     
-	        @
 	 +--------------+
-	 |     TRG      |
+	 |   Trigger    |
 	 |--------------|
+	@|TRG |         |
+	 |----+         |
+	 |              |
 	 |              |
 	 |     Code     |
+	 |              |
 	 |              |
 	=|vent|         |
 	 +--------------+
@@ -206,15 +203,15 @@ and pull data.
 
 Data -- A bitline grouping for I/O
 ----------------------------------
-	     _____
-	    |  @  |
-	 +-----------+
-	 |           |
-	 |    Data   |
-	 |           |
-	 |-----------|
-	=|vent       |
-	 +-----------+
+	   _____
+	  |  @  |
+	 +--------+
+	 |   DS   |
+	 |        |
+	 |        |
+	 |--------|
+	=|vent    |
+	 +--------+
 	 
 	Data	-- (I/O) A grouping of data bits
 
@@ -224,31 +221,30 @@ Data -- A bitline grouping for I/O
 Regs -- Data storage aggregates for I/O
 ---------------------------------------
 
-	 +------------+
-	 |    Regs    |
-	 |------------|
-	 | Name0      |@
-	 | Name1      |@
-	 | ...        |
-	 | NameN      |@
-	 |            |
-	 |            |
-	 |            |
-	 |            |
-	 |            |
-	 |------------|
-	=|vent        |
-	 +------------+
+	 +-------+
+	 | Regs  |
+	 |-------|
+	 | name0 |@
+	 | name1 |@
+	 | ...   |
+	 | nameN |@
+	 |       |
+	 |       |
+	 |-------|
+	=|vent   |
+	 +-------+
 	 
-	Name0..N	-- (I/O) A named grouping of bits used for processing
+	name0..N	-- (I/O) Named groupings of bits used for processing
 
 
 
 
-Code -- A logic block
----------------------
+Logic -- A logic block
+----------------------
 
 	 +------------------+
+	 |       Logic      |
+	 |------------------|
 	 |                  |
 	 |       Code       |
 	 |                  |
@@ -330,31 +326,24 @@ History -- A history of values
 Delta -- A history of changed values
 ------------------------------------
 
-	       +-------------+
-	+-+----|    Delta    |
-	| |    |             |------+
-	@ |DIN |             | Regs |
-	| |    |             |------|
-	+-|    |             |  d0  |@
-	  |    |             |  d1  |@
-	  |    |             |  ... |
-	  |    |             |  dN  |@
-	  |    |             |------+
-	  |    |             |
-	 @|SAMP|             |
-	  |    |             |----+
-	  |    |             |    |
-	  |    |             | DSG|@
-	  |    |             |    |
-	  |    |             | ACK|@
-	  |    |             |    |
-	+-|    |             |----+
-	| |    |             |
-	@ |DOUT|             |
-	| |    |             |
-	+-+----|             |
-		  =|vent         |
-	       +-------------+
+	  +---------------------------------+
+	  |              Delta              |
+	  +----+---------------------+------+
+	+-|    |                     |   d0 |@
+	| |    |                     |   d1 |@
+	@ |DIN |                     |   ...|
+	| |    |                     |   dN |@
+	+-|    |                     +------+ 
+	  |    |                            |
+	 @|SAMP|         Code               |
+	  |    |                            |
+	+-|    |                            |
+	| |    |                     +------+
+	@ |DOUT|                     |   DSG|@
+	| |    |                     |   ACK|@
+	+-+----|                     +------|
+	 =|vent                             |
+	  +---------------------------------+
 	
 	DIN			-- (I) Data in
 	SAMP		-- (I) Sample Signal to record if different
@@ -369,26 +358,21 @@ Delta -- A history of changed values
 Vent -- A debug port (with asynchronous pause)
 ----------------------------------------------
 
-	         +--------+
-	   +-----|  Vent  |
-	   |     |--------|
-	  @|HLT  |        |------+
-	   |     |        | Regs |
-	  @|STEP |        |------|
-	   |     |        |  i0  |@
-	  @|DUMP |        |  i1  |@
-	   |     |        |  ... | 
-	  @|DEND |        |  iN  |@
-	   |     |        |------+
-	   |     |        |
-	+--|     |        |
-	|        |        |
-	|Talkback|        |
-	|        |        |
-	+--|     |        |
-	   +-----+--------+
+	 +------------------------------+
+	 |             Vent             |
+	 +------------------------------+
+	@|HALT |                 | Regs |
+	@|STEP |                 |------|
+	@|DUMP |       Code      |  i0  |@
+	 |     |                 |  i1  |@
+	@|DEND |                 |  ... | 
+	 +--------+              |  iN  |@
+	 |        |              +------+ 
+	 |Talkback|                     |
+	 |        |                     |
+	 +--------+---------------------+
 	
-	HLT			-- (I) Should data flow halt at this vent?
+	HALT		-- (I) Should data flow halt at this vent?
 	STEP		-- (I) Single step when halted
 	DUMP		-- (I) Dumps the input registers to the talkback
 			           in succession until DEND is signaled.
@@ -402,24 +386,19 @@ Vent -- A debug port (with asynchronous pause)
 Clone -- Clones a Signal or Data
 --------------------------------
 
-	         @
-	+-----------------+
-	|        IN       |
-	|-----------------|
-	|                 |
-	|                 |
-	|      Clone      |
-	|                 |
-	|                 |
-	|-----------------|
-	| O1  O2  ...  ON |
-	+-----------------+
-	   @   @        @
+	 +----------------------------+
+	 |            Clone           |
+	 +----------------------------+
+	@|IN |                 |  Out1|@
+	 |---+                 |  Out2|@
+	 |          Code       | ...  |@
+	 |                     |  OutN|@
+	 |                     +------|
+	=|vent                        |
+	 +----------------------------+
 	
-	IN		-- Input Signal
-	O1		-- First output signal
-	O2		-- Second output signal
-	ON		-- Nth output signal
+	IN			-- Input Signal
+	Out0...N	-- Output Signal clones
 
 
 
@@ -427,19 +406,15 @@ Clone -- Clones a Signal or Data
 Sticky -- A sticky bit with set, reset
 --------------------------------------
 
-	    @     @
-	+--------------+
-	|   IN   RST   |
-	|--------------|
-	|              |
-	|              |
-	|    Sticky    |
-	|              |
-	|              |
-	|--------------|
-	|     OUT      |
-	+--------------+
-	       @
+	 +----------------------------+
+	 |           Sticky           |
+	 +----------------------------+
+	@|IN  |                  | OUT|@
+	@|RST |                  +----|
+	 |----+                       |
+	 |                            |
+	=|vent                        |
+	 +----------------------------+
 	
 	IN		-- Input Signal
 	RST		-- Reset Sticky (set to 0 if IN is 0)
@@ -464,9 +439,7 @@ Debug -- Pipes a Signal or Data to a debug panel
 	=|vent|             |------+
 	 +------------------+
 	
-	dbg0		-- (I) 1st debug data coming from some remote source
-	dbg1		-- (I) 2nd debug data...
-	dbgN		-- (I) Nth debug data...
+	dbg0..dgnN	-- (I) Debug data coming from some remote source
 
 
 

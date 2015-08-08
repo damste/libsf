@@ -25,7 +25,7 @@ Primitive types:
 	Signal		-- A bitline for I/O
 	Data		-- A bitline grouping for I/O
 	Regs		-- Data storage aggregates for I/O
-	Code		-- A logic block
+	Logic		-- A logic block
 	Clock		-- A synchronous clock
 	History		-- A history of values
 	Delta		-- A history of changed values
