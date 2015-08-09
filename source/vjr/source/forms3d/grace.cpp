@@ -85,19 +85,32 @@
 //////////
 // Added to create and debug a basic 3D rendering screen
 //////
-	DWORD WINAPI iGrace(LPVOID param)
+	DWORD WINAPI iGrace(LPVOID p)
 	{
-		RECT		lrc;
-		s64			lnLastUpdateCount;
-		s32			argc;
-		s8*			argv[1];
-		s64			lnLastMilliseconds, lnNowMilliseconds;
-		SYSTEMTIME	timeNow;
+		s64				lnLastUpdateCount;
+		s32				argc;
+		s8*				argv[1];
+		s64				lnLastMilliseconds, lnNowMilliseconds;
+		bool			llDidAnything;
+		RECT			lrc;
+		SYSTEMTIME		timeNow;
+		SGraceParams*	params;
 
+
+		// Grab the params
+		params = (SGraceParams*)p;
+
+		// Initialize our semaphores
+		InitializeCriticalSection(&gcs_3d_render);
 
 		// Create fake startups for glut
 		argc = 1;
-		argv[0] = (s8*)&"vjr.exe";
+#ifndef cgc_appName
+		// Fallback on some identifier
+		argv[0] = (s8*)&"Disp3D";
+#else
+		argv[0] = (s8*)&cgc_appName;
+#endif
 
 		GetWindowRect(GetDesktopWindow(), &lrc);
 		gnWidth		= (lrc.right - lrc.left) * 3 / 4;
@@ -107,20 +120,20 @@
 		glutInit(&argc, argv);
 		glewInit();
 		glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_MULTISAMPLE);
-		glutCreateWindow("Grace");
+		glutCreateWindow(argv[0]);
 
 		// Initialize
 		iGrace_reshape(gnWidth, gnHeight);
 
 		// Setup
-		glutMouseFunc			(iGrace_mouse);
-		glutMotionFunc			(iGrace_motion);
-		glutPassiveMotionFunc	(iGrace_passiveMotion);
-		glutKeyboardFunc		(iGrace_Key);
-		glutSpecialFunc			(iGrace_special);
-		glutReshapeFunc			(iGrace_reshape);
-		glutDisplayFunc			(iGrace_display);
-		glutIdleFunc			(iGrace_idle);
+		glutMouseFunc			(params->func_mouse);
+		glutMotionFunc			(params->func_motion);
+		glutPassiveMotionFunc	(params->func_passiveMotion);
+		glutKeyboardFunc		(params->func_Key);
+		glutSpecialFunc			(params->func_special);
+		glutReshapeFunc			(params->func_reshape);
+		glutDisplayFunc			(params->func_display);
+		glutIdleFunc			(params->func_idle);
 
 		// Pause briefly to catch our breath
 		Sleep(100);
@@ -133,27 +146,51 @@
 			GetSystemTime(&timeNow);
 			lnLastMilliseconds	= iTime_computeMilliseconds(&timeNow);
 			lnLastUpdateCount	= 0;
+			llDidAnything		= false;
 			while (!glShuttingDown)
 			{
+
+				//////////
 				// If it's time, execute a loop
-				if (gnGraceEventCount != lnLastUpdateCount)
-				{
-					lnLastUpdateCount = gnGraceEventCount;
-					glutMainLoopEvent();
-
-				} else {
-					// Fire at our fps
-					GetSystemTime(&timeNow);
-					lnNowMilliseconds	= iTime_computeMilliseconds(&timeNow);
-					if (lnNowMilliseconds - lnLastMilliseconds > gnFpsMilliseconds)
+				//////
+					llDidAnything = false;
+					if (gnGraceEventCount != lnLastUpdateCount)
 					{
-						lnLastMilliseconds = lnNowMilliseconds;
-						++gnGraceEventCount;
-					}
-				}
+						// If we're not in the middle of processing, redraw
+						if (TryEnterCriticalSection(&gcs_3d_render))
+						{
+							lnLastUpdateCount	= gnGraceEventCount;
+							llDidAnything		= true;
+							glutMainLoopEvent();
 
-				// Sleep for 1 ms
-				Sleep(1);
+							// Release the semaphore
+							LeaveCriticalSection(&gcs_3d_render);
+						}
+
+					} else {
+						// Fire at our fps
+						GetSystemTime(&timeNow);
+						lnNowMilliseconds = iTime_computeMilliseconds(&timeNow);
+						if (lnNowMilliseconds - lnLastMilliseconds > gnFpsMilliseconds)
+						{
+							lnLastMilliseconds = lnNowMilliseconds;
+							++gnGraceEventCount;
+						}
+					}
+
+
+				//////////
+				// Be polite
+				//////
+					if (llDidAnything)
+					{
+						// Just release timeslice
+						Sleep(0);
+
+					} else {
+						// Sleep for at least 1 ms
+						Sleep(1);
+					}
 			}
 
 		// Control will never return here
@@ -401,7 +438,7 @@
 
 
 
-	void iGrace_Key(unsigned char key, s32 x, s32 y)
+	void iGrace_key(unsigned char key, s32 x, s32 y)
 	{
 		bool llRedisplay;
 
@@ -412,7 +449,7 @@
 			case 27:	// Escape
 			case 'q':
 			case 'Q':
-///				exit(0);
+				exit(0);
 				break;
 
 			case 'z':

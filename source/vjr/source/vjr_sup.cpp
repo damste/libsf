@@ -4722,7 +4722,8 @@ JDebiC_debug(thisCode, win, obj);
 	{
 // TODO:  There's a BXML file with this information (cask_icons.bxml).
 //        BXML support should be added to VJr and then that information used to do this, rather than by hard-coding.
-#ifndef _OPPIE_COMPILE
+#ifndef _NONVJR_COMPILE
+		// Casks are only used in VJr
 		bmpCaskIconsTiled			= iBmp_rawLoad(cgc_caskIconsBmp);
 #endif
 		bmpCaskRoundLeft			= iBmp_createAndExtractRect(bmpCaskIconsTiled, 12, 2, 31, 38);

@@ -161,10 +161,11 @@
 //////
 	void iVjr_init(HACCEL* hAccelTable)
 	{
-		SThisCode*	thisCode = NULL;
-		RECT		lrc;
-		u8			logBuffer[256];
-		SBitmap*	bmp;
+		SThisCode*		thisCode = NULL;
+		RECT			lrc;
+		u8				logBuffer[256];
+		SBitmap*		bmp;
+//		SGraceParams	params;
 
 
 		// Get startup time
@@ -425,5 +426,14 @@
 		CreateThread(0, 0, &iSplash_delete, (LPVOID)500, 0, 0);
 
 // 		// Create a thread to display the content in 3D
-// 		CreateThread(0, 0, &iGrace, 0, 0, 0);
+//		memset(&params, 0, sizeof(params));
+//		params._func_mouse			= (uptr)&iGrace_mouse;
+//		params._func_motion			= (uptr)&iGrace_motion;
+//		params._func_passiveMotion	= (uptr)&iGrace_passiveMotion;
+//		params._func_key			= (uptr)&iGrace_key;
+//		params._func_special		= (uptr)&iGrace_special;
+//		params._func_reshape		= (uptr)&iGrace_reshape;
+//		params._func_display		= (uptr)&iGrace_display;
+//		params._func_idle			= (uptr)&iGrace_idle;
+//		CreateThread(0, 0, &iGrace, (LPVOID)&params, 0, 0);
 	}

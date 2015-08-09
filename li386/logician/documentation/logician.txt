@@ -14,6 +14,11 @@ May the Lord guide me and keep me on this project.  I ask for this in
 Jesus' name.  Amen.
 
 -----
+Display types:
+
+	Via			-- A portal to other layers (helps organize large projects visually)
+
+-----
 Primitive types:
 
 	Group		-- An aggregate of things
@@ -35,6 +40,7 @@ Primitive types:
 	Debug		-- Pipes a Signal or Data to a debug panel
 	Away		-- Creates a connection to a remote thing
 
+-----
 Fundamental types:
 
 	Invert		-- A logical NOT for Signal or Data

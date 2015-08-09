@@ -97,39 +97,71 @@
 	#error Unknown target for compilation (must be Windows or Linux)
 #endif
 
-struct SObjNode;
-struct SGraceVec;
-struct SGraceRect;
-struct SGraceVecLine;
-struct SGraceXy;
-struct SGraceLine;
 
-#ifndef _PI2
-	#define _PI2 1.570796327
-#endif
+//////////
+// Forward structure definitions
+//////
+	struct SObjNode;
+	struct SGraceVec;
+	struct SGraceRect;
+	struct SGraceVecLine;
+	struct SGraceXy;
+	struct SGraceLine;
 
-#ifndef _GRACE_OGL
-	#define _GRACE_OGL
-#endif
+
+//////////
+// Missing from freeglut.h for some reason
+//////
+	#define GL_BGR			0x80E0
+	#define GL_BGRA			0x80E1
+	#define GLUT_WHEEL_UP	3
+	#define GLUT_WHEEL_DOWN	4
+
+
+//////////
+// Constants to access data in vectors
+//////
+	#define XVEC	0
+	#define YVEC	1
+	#define ZVEC	2
+
+	#define V1		0
+	#define V2		1
+	#define V3		2
+	#define V4		3
+
+
+//////////
+// These constants may or may not already be defined
+//////
+	#ifndef _PI2
+		#define _PI2 1.570796327
+	#endif
+
+	#ifndef _GRACE_OGL
+		#define _GRACE_OGL
+	#endif
 
 
 //////////
 // Forward declarations
 //////
-	DWORD WINAPI	iGrace									(LPVOID param);
+	DWORD WINAPI	iGrace									(LPVOID p);
 	void			iGrace_initGl_engine					(void);
-	void			iGrace_reshape							(GLsizei w, GLsizei h);
-	void			iGrace_motion							(s32 x, s32 y);
 	void			iGrace_projectMousePositionToScreen		(int x, int y, f64* tfX, f64* tfY, f64* tfZ);;
-	void			iGrace_passiveMotion					(s32 x, s32 y);
-	void			iGrace_mouse							(s32 button, s32 state, s32 x, s32 y);
-	void			iGrace_Key								(unsigned char key, s32 x, s32 y);
-	void			iGrace_special							(s32 key, s32 x, s32 y);
-	void			iGrace_idle								(void);
 	void			iGrace_assignCoordinates				(SObject* obj, RECT* rc, f32 tfZ);
 
-	// Render functions
+	// Default functions
+	void			iGrace_mouse							(s32 button, s32 state, s32 x, s32 y);
+	void			iGrace_motion							(s32 x, s32 y);
+	void			iGrace_passiveMotion					(s32 x, s32 y);
+	void			iGrace_Key								(unsigned char key, s32 x, s32 y);
+	void			iGrace_special							(s32 key, s32 x, s32 y);
+	void			iGrace_reshape							(GLsizei w, GLsizei h);
 	void			iGrace_display							(void);
+	void			iGrace_idle								(void);
+
+	// Render functions
 	void			iGrace_renderBegin						(f32 tfZ);
 	void			iGrace_renderEnd						(void);
 
@@ -156,34 +188,6 @@ struct SGraceLine;
 	void			iiGrace_copyAndComputeVecLine			(SGraceVecLine* line, SGraceVec* p1, SGraceVec* p2);
 	void			iiGrace_copyAndComputeLine				(SGraceLine* line, SGraceXy* p1, SGraceXy* p2);
 	SGraceVec*		iiGrace_computeVecBezier3				(s32 tnSegmentCount, SGraceVec* tsV1, SGraceVec* tsV2, SGraceVec* tsV3);
-
-
-
-
-//////////
-// Missing from freeglut.h for some reason
-//////
-	#define GL_BGR			0x80E0
-	#define GL_BGRA			0x80E1
-	#define GLUT_WHEEL_UP	3
-	#define GLUT_WHEEL_DOWN	4
-
-
-
-
-//////////
-// Constants to access data in vectors
-//////
-	#define XVEC	0
-	#define YVEC	1
-	#define ZVEC	2
-
-	#define V1		0
-	#define V2		1
-	#define V3		2
-	#define V4		3
-
-
 
 
 //////////
@@ -298,6 +302,42 @@ struct SGraceLine;
 		f32			thetaYz;					// Theta (from p1 to p2 on Y,Z line, note: add _PI to reverse the angle from p2 to p1)
 	};
 
+	struct SGraceParams
+	{
+		union {
+			uptr	_func_mouse;
+			void	(*func_mouse)			(s32 button, s32 state, s32 x, s32 y);
+		};
+		union {
+			uptr	_func_motion;
+			void	(*func_motion)			(s32 x, s32 y);
+		};
+		union {
+			uptr	_func_passiveMotion;
+			void	(*func_passiveMotion)	(s32 x, s32 y);
+		};
+		union {
+			uptr	_func_key;
+			void	(*func_Key)				(unsigned char key, s32 x, s32 y);
+		};
+		union {
+			uptr	_func_special;
+			void	(*func_special)			(s32 key, s32 x, s32 y);
+		};
+		union {
+			uptr	_func_reshape;
+			void	(*func_reshape)			(GLsizei w, GLsizei h);
+		};
+		union {
+			uptr	_func_display;
+			void	(*func_display)			(void);
+		};
+		union {
+			uptr	_func_idle;
+			void	(*func_idle)			(void);
+		};
+	};
+
 
 
 
@@ -320,6 +360,9 @@ struct SGraceLine;
 	// Used for event tracking on when to redraw a glut loop
 	s64			gnGraceEventCount				= -1;
 	s64			gnFpsMilliseconds				= 1000 / 33;		// 33 fps
+
+	// Used for accessing the 3D render objects
+	CRITICAL_SECTION gcs_3d_render;
 
 	// Camera position and origin
 	f32			gfX								= 0.0f;

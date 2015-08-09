@@ -1,0 +1,24 @@
+Aug.08.2015
+
+LibSF Logician Display Types
+----------------------------
+
+Overview:
+
+	Via			-- A portal to other layers (helps organize large projects visually)
+
+
+
+
+Via -- A portal to other layers (helps organize large projects visually)
+------------------------------------------------------------------------
+
+	       +---------------+
+	+------|               |
+	|  Up  |               |
+	+------|      Via      |------+
+	       |               | Down |
+	       |               |------+
+	       +---------------+
+
+	Vias have names, and wings, and go up or down one layer/level at a time.
