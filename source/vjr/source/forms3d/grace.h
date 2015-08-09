@@ -304,6 +304,10 @@
 
 	struct SGraceParams
 	{
+		// The window to display for the 3D render
+		SWindow*	win;
+
+		// Function prototypes
 		union {
 			uptr	_func_mouse;
 			void	(*func_mouse)			(s32 button, s32 state, s32 x, s32 y);
@@ -344,7 +348,11 @@
 //////////
 // Variables used by Grace
 //////
-	bool		glGraceInitialized				= false;
+	// Used for accessing the 3D render objects
+	bool				glGraceInitialized		= false;
+	CRITICAL_SECTION	gcs_3dObjectAccess;
+	SGraceParams*		gsGraceParams			= NULL;
+
 	s32			gnMouseX						= 400;
 	s32			gnMouseY						= 400;
 	bool		glMouse_leftButtonDown			= false;
@@ -361,9 +369,6 @@
 	s64			gnGraceEventCount				= -1;
 	s64			gnFpsMilliseconds				= 1000 / 33;		// 33 fps
 
-	// Used for accessing the 3D render objects
-	CRITICAL_SECTION gcs_3d_render;
-
 	// Camera position and origin
 	f32			gfX								= 0.0f;
 	f32			gfY								= 0.0f;
@@ -372,6 +377,6 @@
 	f32			gfZBase_over_2					= 7.50;
 
 	// Used during load, indicating
-	s32			gnWidth							= 800;
-	s32			gnHeight						= 800;
+	s32			gnWindowWidth					= 800;
+	s32			gnWindowHeight					= 800;
 	f32			gfPerspective					= 1.0f;

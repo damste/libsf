@@ -87,57 +87,61 @@
 //////
 	DWORD WINAPI iGrace(LPVOID p)
 	{
-		s64				lnLastUpdateCount;
-		s32				argc;
+		s32				argc, lnDesktopWidth, lnDesktopHeight;
 		s8*				argv[1];
-		s64				lnLastMilliseconds, lnNowMilliseconds;
+		s64				lnLastUpdateCount, lnLastMilliseconds, lnNowMilliseconds;
 		bool			llDidAnything;
 		RECT			lrc;
 		SYSTEMTIME		timeNow;
-		SGraceParams*	params;
 
 
+		//////////
 		// Grab the params
-		params = (SGraceParams*)p;
+		//////
+			gsGraceParams = (SGraceParams*)p;
 
-		// Initialize our semaphores
-		InitializeCriticalSection(&gcs_3d_render);
 
-		// Create fake startups for glut
-		argc = 1;
-#ifndef cgc_appName
-		// Fallback on some identifier
-		argv[0] = (s8*)&"Disp3D";
-#else
-		argv[0] = (s8*)&cgc_appName;
-#endif
-
-		GetWindowRect(GetDesktopWindow(), &lrc);
-		gnWidth		= (lrc.right - lrc.left) * 3 / 4;
-		gnHeight	= (lrc.bottom - lrc.top) * 3 / 4;
-		glutInitWindowSize(gnWidth, gnHeight);
-		glutInitWindowPosition(0, 0);
-		glutInit(&argc, argv);
-		glewInit();
-		glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_MULTISAMPLE);
-		glutCreateWindow(argv[0]);
-
+		//////////
 		// Initialize
-		iGrace_reshape(gnWidth, gnHeight);
+		//////
+			InitializeCriticalSection(&gcs_3dObjectAccess);
 
-		// Setup
-		glutMouseFunc			(params->func_mouse);
-		glutMotionFunc			(params->func_motion);
-		glutPassiveMotionFunc	(params->func_passiveMotion);
-		glutKeyboardFunc		(params->func_Key);
-		glutSpecialFunc			(params->func_special);
-		glutReshapeFunc			(params->func_reshape);
-		glutDisplayFunc			(params->func_display);
-		glutIdleFunc			(params->func_idle);
+			// Create fake startups for glut
+			argc	= 1;
+			argv[0]	= (s8*)&cgc_appName;
 
-		// Pause briefly to catch our breath
-		Sleep(100);
-		glGraceInitialized = true;
+			// Determine our window size (for now we use 3/4 of the desktop area)
+			GetWindowRect(GetDesktopWindow(), &lrc);
+			lnDesktopWidth	= (lrc.right - lrc.left);
+			lnDesktopHeight	= (lrc.bottom - lrc.top);
+			gnWindowWidth	= lnDesktopWidth * 3 / 4;
+			gnWindowHeight	= lnDesktopHeight * 3 / 4;
+			glutInitWindowSize(gnWindowWidth, gnWindowHeight);
+			glutInitWindowPosition((lnDesktopWidth - gnWindowWidth) / 2, (lnDesktopHeight - gnWindowHeight) / 2);
+			glutInit(&argc, argv);
+			glewInit();
+			glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_MULTISAMPLE);
+			glutCreateWindow(argv[0]);
+
+			// Initialize
+			iGrace_reshape(gnWindowWidth, gnWindowHeight);
+
+			// Setup
+			glutMouseFunc			(gsGraceParams->func_mouse);
+			glutMotionFunc			(gsGraceParams->func_motion);
+			glutPassiveMotionFunc	(gsGraceParams->func_passiveMotion);
+			glutKeyboardFunc		(gsGraceParams->func_Key);
+			glutSpecialFunc			(gsGraceParams->func_special);
+			glutReshapeFunc			(gsGraceParams->func_reshape);
+			glutDisplayFunc			(gsGraceParams->func_display);
+			glutIdleFunc			(gsGraceParams->func_idle);
+
+			// Pause briefly to catch our breath
+			Sleep(100);
+			glGraceInitialized = true;
+
+			// Re-render the main window
+			iWindow_render(NULL, gsGraceParams->win, true);
 
 
 		//////////
@@ -157,14 +161,14 @@
 					if (gnGraceEventCount != lnLastUpdateCount)
 					{
 						// If we're not in the middle of processing, redraw
-						if (TryEnterCriticalSection(&gcs_3d_render))
+						if (TryEnterCriticalSection(&gcs_3dObjectAccess))
 						{
 							lnLastUpdateCount	= gnGraceEventCount;
 							llDidAnything		= true;
 							glutMainLoopEvent();
 
 							// Release the semaphore
-							LeaveCriticalSection(&gcs_3d_render);
+							LeaveCriticalSection(&gcs_3dObjectAccess);
 						}
 
 					} else {
@@ -204,6 +208,7 @@
 	{
 		glMatrixMode	(GL_SMOOTH);
 
+
 //////////
 // We do not presently compute normals, so lighting is disabledd
 // 		if (glLighting)
@@ -241,8 +246,8 @@
 
 	void iGrace_reshape(GLsizei w, GLsizei h)
 	{
-		gnWidth			= w;
-		gnHeight		= h;
+		gnWindowWidth		= w;
+		gnWindowHeight		= h;
 		//gfPerspective	= (GLfloat)w / (GLfloat)h;
 		// Decided to use a fixed perspective for this app.  May change this later.
 		gfPerspective = 1.0f;
@@ -342,7 +347,7 @@
 			glGetIntegerv(GL_VIEWPORT,			viewport);
 
 			winX = (f32)x;
-			winY = (f32)gnHeight - (f32)y; //(float)viewport[3] - (float)mouse.y;
+			winY = (f32)gnWindowHeight - (f32)y; //(float)viewport[3] - (float)mouse.y;
 			winZ = 0.0f;
 
 			glReadPixels((int)winX, int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
@@ -623,36 +628,50 @@
 
 
 		// Render if we have something to render
-		if (glGraceInitialized && gWinJDebi && gWinJDebi->obj)
+		if (glGraceInitialized)
 		{
-
-			//////////
-			// We will be building centered around the origin
-			//////
-				SetRect(&lrc, -(gWinJDebi->rc.right - gWinJDebi->rc.left) / 2, -(gWinJDebi->rc.bottom - gWinJDebi->rc.top) / 2, 0, 0);
-				SetRect(&lrc, lrc.left, lrc.top, lrc.left + (gWinJDebi->rc.right - gWinJDebi->rc.left), lrc.top + (gWinJDebi->rc.bottom - gWinJDebi->rc.top));
+			// Start
+			lfZ = 0.0f;
+			iGrace_renderBegin(lfZ);
 
 
 			//////////
-			// Render
+			// If we have a valid window, render it
 			//////
-				// Start
-				lfZ = 0.0f;
-				iGrace_renderBegin(lfZ);
+				if (gsGraceParams && gsGraceParams->win && gsGraceParams->win->obj)
 				{
-					// Apply animations
-					GetSystemTime(&timeNow);
-					iGrace_animate_childrenAndSiblings(gWinJDebi->obj, &lrc, true, true, lfZ, iTime_computeMilliseconds(&timeNow));
+					// We will be building centered around the origin
+					SetRect(&lrc,	-(gsGraceParams->win->rc.right - gsGraceParams->win->rc.left) / 2,
+									-(gsGraceParams->win->rc.bottom - gsGraceParams->win->rc.top) / 2,
+									0,
+									0);
 
-					// Render the nodes
-					iGrace_renderNode_childrenAndSiblings(gWinJDebi->obj, true, true, lfZ);
+					SetRect(&lrc,	lrc.left,
+									lrc.top,
+									lrc.left + (gsGraceParams->win->rc.right - gsGraceParams->win->rc.left),
+									lrc.top + (gsGraceParams->win->rc.bottom - gsGraceParams->win->rc.top));
 
-					// Render Objects
-					iGrace_renderObj_childrenAndSiblings(gWinJDebi->obj, true, true, lfZ);
+
+					//////////
+					// Render
+					//////
+						{
+							// Apply animations
+							GetSystemTime(&timeNow);
+							iGrace_animate_childrenAndSiblings(gsGraceParams->win->obj, &lrc, true, true, lfZ, iTime_computeMilliseconds(&timeNow));
+
+							// Render the nodes
+							iGrace_renderNode_childrenAndSiblings(gsGraceParams->win->obj, true, true, lfZ);
+
+							// Render Objects
+							iGrace_renderObj_childrenAndSiblings(gsGraceParams->win->obj, true, true, lfZ);
+						}
+
 				}
-				// End
-				iGrace_renderEnd();
 
+
+			// End
+			iGrace_renderEnd();
 		}
 	}
 

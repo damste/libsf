@@ -93,6 +93,7 @@
 //////
 	#define _NONVJR_COMPILE		// Turns off some features in VJr that fail on compilation from here
 	#define _BMP_LOCALITY 1		// Force definitions to be local
+	const char cgc_appName[] = "Logician";
 	#include "\libsf\source\vjr\source\vjr.h"
 	#undef main
 
@@ -100,7 +101,7 @@
 //////////
 // Global variables
 //////
-	cs8			cgc_appName[]				= "Logician";
+	SObject*		goLogicianForm				= NULL;
 
 
 //////////
@@ -135,6 +136,122 @@
 
 
 		//////////
+		// Initialize VJr
+		//////
+			// Fixup values that can't be properly encoded at compile-time
+			iObjProp_init_fixup();
+
+			// Initialize basic data engine
+			iDbf_startup(true);
+
+			// Create a 1x1 no image bitmap placeholder
+			bmpNoImage = iBmp_allocate();
+			iBmp_createBySize(bmpNoImage, 1, 1, 24);
+
+			// Initialize primitive variables
+			iVariable_createDefaultValues(NULL);
+			iVariable_createPropsMaster(NULL);
+			iInit_createConstants();
+
+			// These arrows are used as a standard throughout the system for the size of an icon.
+			// They must be loaded first.
+			bmpArrowUl		= iBmp_rawLoad(cgc_arrowUlBmp);
+			bmpArrowUr		= iBmp_rawLoad(cgc_arrowUrBmp);
+			bmpArrowLl		= iBmp_rawLoad(cgc_arrowLlBmp);
+			bmpArrowLr		= iBmp_rawLoad(cgc_arrowLrBmp);
+
+			// Initialize our builders
+			iBuilder_createAndInitialize(&gWindows,	-1);
+			iBuilder_createAndInitialize(&gFonts,	-1);
+
+			// Default font
+			gsFontDefault				= iFont_create(cgcFontName_default,			10,	FW_NORMAL,	0, 0);
+			gsFontDefault9				= iFont_create(cgcFontName_default,			9,	FW_NORMAL,	0, 0);
+			gsFontDefaultBold			= iFont_create(cgcFontName_default,			10,	FW_BOLD,	0, 0);
+			gsFontDefaultItalic8		= iFont_create(cgcFontName_default,			8,	FW_NORMAL,	1, 0);
+			gsFontDefaultFixedPoint		= iFont_create(cgcFontName_defaultFixed,	10,	FW_NORMAL,	0, 0);
+			gsWindowTitleBarFont		= iFont_create(cgcFontName_windowTitleBar,	12,	FW_NORMAL,	0, 0);
+			gsWindowTitleBarFontSubform	= iFont_create(cgcFontName_windowTitleBar,	10,	FW_NORMAL,	0, 0);
+			gsFontDefaultTooltip		= iFont_create(cgcFontName_defaultTooltip,	9,	FW_BOLD,	0, 0);
+			gsFontCask					= iFont_create(cgcFontName_cask,			20, FW_BOLD,	0, 0);
+
+			// Initialize the sound system
+			isound_initialize();
+			memset(&gseRootSounds, 0, sizeof(gseRootSounds));	// Initialize our root sounds array
+
+
+		//////////
+		// Allocate a sourceLight area
+		//////
+			bmpSourceLight = iBmp_allocate();
+			iBmp_createBySize(bmpSourceLight, 800, 1024, 24);
+			iSourceLight_reset();
+
+
+		//////////
+		// Load our icons and images
+		//////
+			bmpVjrIcon						= iBmp_rawLoad(cgc_appIconBmp);
+			bmpJDebiIcon					= iBmp_rawLoad(cgc_jdebiAppIconBmp);
+			bmpSourceCodeIcon				= iBmp_rawLoad(cgc_sourcecodeIconBmp);
+			bmpLocalsIcon					= iBmp_rawLoad(cgc_localsIconBmp);
+			bmpWatchIcon					= iBmp_rawLoad(cgc_watchIconBmp);
+			bmpCommandIcon					= iBmp_rawLoad(cgc_commandIconBmp);
+			bmpDebugIcon					= iBmp_rawLoad(cgc_debugIconBmp);
+			bmpOutputIcon					= iBmp_rawLoad(cgc_outputIconBmp);
+			bmpSourceLightIcon				= iBmp_rawLoad(cgc_sourcelightIconBmp);
+
+			// Carousels
+			bmpCarouselCarouselIcon			= iBmp_rawLoad(cgc_carouselCarouselBmp);
+			bmpCarouselTabsIcon				= iBmp_rawLoad(cgc_carouselTabsBmp);
+			bmpCarouselPad					= iBmp_rawLoad(cgc_carouselPadBmp);
+			bmpCarouselIcon					= iBmp_rawLoad(cgc_carouselIconBmp);
+			bmpCarouselRiderTabClose		= iBmp_rawLoad(cgc_carouselRiderTabCloseBmp);
+
+			bmpClose						= iBmp_rawLoad(cgc_closeBmp);
+			bmpMaximize						= iBmp_rawLoad(cgc_maximizeBmp);
+			bmpMinimize						= iBmp_rawLoad(cgc_minimizeBmp);
+			bmpMove							= iBmp_rawLoad(cgc_moveBmp);
+
+			bmpCheckboxOn					= iBmp_rawLoad(cgc_checkboxOnBmp);
+			bmpCheckboxOff					= iBmp_rawLoad(cgc_checkboxOffBmp);
+
+			bmpButton						= iBmp_rawLoad(cgc_buttonBmp);
+			bmpTextbox						= iBmp_rawLoad(cgc_textboxBmp);
+
+			bmpStoplightRed					= iBmp_rawLoad(cgc_stoplightRedBmp);
+			bmpStoplightAmber				= iBmp_rawLoad(cgc_stoplightAmberBmp);
+			bmpStoplightGreen				= iBmp_rawLoad(cgc_stoplightGreenBmp);
+			bmpStoplightBlue				= iBmp_rawLoad(cgc_stoplightBlueBmp);
+
+			bmpBreakpointAlways				= iBmp_rawLoad(cgc_breakpointAlways);
+			bmpBreakpointAlwaysCountdown	= iBmp_rawLoad(cgc_breakpointAlwaysCountdown);
+			bmpConditionalTrue				= iBmp_rawLoad(cgc_breakpointConditionalTrue);
+			bmpConditionalFalse				= iBmp_rawLoad(cgc_breakpointConditionalFalse);
+			bmpConditionalTrueCountdown		= iBmp_rawLoad(cgc_breakpointConditionalTrueCountdown);
+			bmpConditionalFalseCountdown	= iBmp_rawLoad(cgc_breakpointConditionalFalseCountdown);
+
+			bmpDapple1						= iBmp_rawLoad(cgc_dappleBmp);
+			bmpDapple1Tmp					= iBmp_rawLoad(cgc_dappleBmp);
+			bmpDapple2						= iBmp_rawLoad(cgc_dapple2Bmp);
+			bmpDapple2Tmp					= iBmp_rawLoad(cgc_dapple2Bmp);
+
+
+			iBuilder_createAndInitialize(&gFocusHighlights, -1);
+			iInit_createDefaultDatetimes();
+			iInit_createMessageWindow();
+			iInit_createGlobalSystemVariables();
+			iInit_createDefaultObjects();
+
+
+		//////////
+		// Create the default form
+		//////
+			goLogicianForm = iObj_create(NULL, _OBJ_TYPE_FORM, NULL);
+			iObj_render(NULL, goLogicianForm, true);
+
+
+		//////////
 		// Create a thread to display the content in 3D
 		//////
 			memset(&params, 0, sizeof(params));
@@ -146,6 +263,8 @@
 			params._func_reshape		= (uptr)&iGrace_reshape;
 			params._func_display		= (uptr)&iGrace_display;
 			params._func_idle			= (uptr)&iGrace_idle;
+			params.win					= iWindow_allocate();
+			iObj_createWindowForForm(NULL, goLogicianForm, params.win, NULL);
 			CreateThread(0, 0, &iGrace, (LPVOID)&params, 0, 0);
 
 
