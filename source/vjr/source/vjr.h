@@ -220,6 +220,7 @@
 	// for ease of compilation across platforms and compilers.
 	//////
 		#include "vjr_sup.cpp"
+		#include "vjr_init.cpp"
 		#include "\libsf\source\vjr\source\objects\accessors.cpp"
 		#include "\libsf\source\vjr\source\objects\base.cpp"
 		#include "\libsf\source\vjr\source\objects\callbacks.cpp"
@@ -385,6 +386,7 @@
 	// for ease of compilation across platforms and compilers.
 	//////
 		#include "vjr_sup.cpp"
+		#include "vjr_init.cpp"
 		#include "/libsf/source/vjr/source/objects/accessors.cpp"
 		#include "/libsf/source/vjr/source/objects/base.cpp"
 		#include "/libsf/source/vjr/source/objects/callbacks.cpp"

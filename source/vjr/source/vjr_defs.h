@@ -104,9 +104,6 @@ struct SObjPropMap;
 // vjr.cpp
 //////
 //	int APIENTRY			WinMain									(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, s32 nCmdShow);
-	void					iVjr_init								(HACCEL* hAccelTable);
-	void					iVjr_init_loadCaskIcons					(void);
-	void					iVjr_init_loadBitmapArray				(void);
 	void					iVjr_createOverlayListing				(SBitmap* bmp, RECT* trc);
 	void					iVjr_renderOverlayListing				(SBitmap* bmp, RECT* trc);
 	void					iiVjr_renderAccomplishment				(SBitmap* bmp, RECT* trc, s32 tnRAG, cs8* tcAccomplishment, s8* tcVersion, bool tlBold, bool tlItalic, bool tlUnderline, s32 tnAdjustAccomplishmentFontSize, s32 tnAdjustVersionFontSize);
@@ -487,17 +484,25 @@ struct SObjPropMap;
 
 
 //////////
+// vjr_init.cpp
+//////
+	void					iVjr_init								(HACCEL* hAccelTable);
+	void					iVjr_init_loadCaskIcons					(void);
+	void					iVjr_init_loadBitmapArray				(void);
+	void					iVjr_init_createMessageWindow			(void);
+	bool					iVjr_isValid_window						(uptr tnWindow);
+	void					iVjr_init_createConstants				(void);
+	void					iVjr_init_createGlobalSystemVariables	(void);
+	void					iiVjr_init_createGlobalSystemVariable	(SVariable** var, s32 tnType, cu8* tcName, cs8* tcInitValue = NULL, u32 tnInitValueLength = 0);
+	void					iVjr_init_createDefaultObjects			(void);
+	void					iVjr_init_jdebi_create					(void);
+	void					iVjr_init_jdebi_addToolbars				(void);
+	void					iVjr_init_createDefaultDatetimes		(void);
+
+
+//////////
 // vjr_sup.cpp
 //////
-	void					iInit_createMessageWindow				(void);
-	bool					isValidWindow							(uptr tnWindow);
-	void					iInit_createConstants					(void);
-	void					iInit_createGlobalSystemVariables		(void);
-	void					iiInit_createGlobalSystemVariable		(SVariable** var, s32 tnType, cu8* tcName, cs8* tcInitValue = NULL, u32 tnInitValueLength = 0);
-	void					iInit_createDefaultObjects				(void);
-	void					iInit_jdebi_create						(void);
-	void					iInit_jdebi_addToolbars					(void);
-	void					iInit_createDefaultDatetimes			(void);
 	SBitmap*				iiVjr_buildSplashScreen					(SBitmap* bmpSplash);
 	void					iVjr_appendSystemLog					(SThisCode* thisCode, u8* tcLogText);
 	void					iVjr_flushSystemLog						(SThisCode* thisCode);
