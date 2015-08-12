@@ -127,6 +127,13 @@ RDC Specifications Document
 	s64,u64			-- Signed and unsigned 64-bit quantities
 	f32,f64,f80		-- 32-bit, 64-bit, and 80-bit floating point (if hardware doesn't support, wraps to bfp)
 	
+	cs8,cu8			-- Constant signed and unsigned 8-bit quantities
+	cs16,cu16		-- Constant signed and unsigned 16-bit quantities
+	cs32,cu32		-- Constant signed and unsigned 32-bit quantities
+	cs64,cu64		-- Constant signed and unsigned 64-bit quantities
+	cf32,cf64,cf80	-- Constant 32-bit, 64-bit, and 80-bit floating point (if hardware doesn't support, wraps to bfp)
+	Note:  If any of these c* types are pefixed explicitly with rw, they will exist in rw memory, otherwise they will go to ro memory
+	
 	as8,au8			-- Auto-converting signed and unsigned 32-bit quantity, loaded and stored as an 8-bit quantity with signed/unsigned saturation
 	as16,au16		-- Auto-converting signed and unsigned 32-bit quantity, loaded and stored as a 16-bit quantity with signed/unsigned saturation
 	as24,au24		-- Auto-converting signed and unsigned 32-bit quantity, loaded and stored as a 24-bit quantity with signed/unsigned saturation
@@ -147,12 +154,15 @@ RDC Specifications Document
 	thread			-- A thread variable
 	process			-- A process variable
 
+	be				-- Specifies the data is to be stored in memory as big endan
+	le				-- Specifies the data is to be stored in memory as little endian
+	
 	const,ro		-- Augments a type to indicate it is read-only
 	rw				-- Augments a type to explicitly indicate it is read-write
 	volatile		-- Augments a type to indicate it is to be coded as conveyed
 	successive		-- Variables put into the successive block are always expressed exactly that way in memory (no reordering)
-	literal			-- Specifies the data form is to be used literally, and remain unchanged changed even during optimization
-	hide			-- Augments a type to indicate it should not be visible in SourceLight (typically used for unused / reserved members)
+	literal			-- Specifies the data form is to be used literally as is, and remain unchanged changed even during optimization
+	hide			-- Augments a type to indicate by default it should not be visible in SourceLight (typically used for unused / reserved members)
 	unsigned		-- Augments char, short, int, long to make it unsigned
 	static			-- Augments a definition to make it a singleton
 	extern			-- Augments a type to indicate its body is populated elsewhere
