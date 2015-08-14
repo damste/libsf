@@ -25,6 +25,7 @@
 //     Nov.02.2014
 //////
 // Change log:
+//     Aug.14.2015 - Close to finalization
 //     Jan.09.2015 - Added function purposes
 //     Nov.02.2014 - Initial creation
 //////
@@ -93,7 +94,7 @@
 
 
 Nov.03.2014 -- Early draft.  Incomplete.  Inconsistent.
-Mar.09.2015 -- Approaching finalization.  Still in draft form.
+Aug.14.2015 -- Approaching finalization.  Still in draft form.
 
 
 
@@ -126,18 +127,9 @@ RDC Specifications Document
 	s32,u32			-- Signed and unsigned 32-bit quantities
 	s64,u64			-- Signed and unsigned 64-bit quantities
 	f32,f64,f80		-- 32-bit, 64-bit, and 80-bit floating point (if hardware doesn't support, wraps to bfp)
-	
-	cs8,cu8			-- Constant signed and unsigned 8-bit quantities
-	cs16,cu16		-- Constant signed and unsigned 16-bit quantities
-	cs32,cu32		-- Constant signed and unsigned 32-bit quantities
-	cs64,cu64		-- Constant signed and unsigned 64-bit quantities
-	cf32,cf64,cf80	-- Constant 32-bit, 64-bit, and 80-bit floating point (if hardware doesn't support, wraps to bfp)
-	Note:  If any of these c* types are pefixed explicitly with rw, they will exist in rw memory, otherwise they will go to ro memory
-	
 	as8,au8			-- Auto-converting signed and unsigned 32-bit quantity, loaded and stored as an 8-bit quantity with signed/unsigned saturation
 	as16,au16		-- Auto-converting signed and unsigned 32-bit quantity, loaded and stored as a 16-bit quantity with signed/unsigned saturation
 	as24,au24		-- Auto-converting signed and unsigned 32-bit quantity, loaded and stored as a 24-bit quantity with signed/unsigned saturation
-	
 	xs8,xu8			-- Extended auto-converting signed and unsigned 64-bit quantity, loaded and stored as an 8-bit quantity with signed/unsigned saturation
 	xs16,xu16		-- Extended auto-converting signed and unsigned 64-bit quantity, loaded and stored as a 16-bit quantity with signed/unsigned saturation
 	xs24,xu24		-- Extended auto-converting signed and unsigned 64-bit quantity, loaded and stored as a 24-bit quantity with signed/unsigned saturation
@@ -145,6 +137,8 @@ RDC Specifications Document
 	xs40,xu40		-- Extended auto-converting signed and unsigned 64-bit quantity, loaded and stored as a 40-bit quantity with signed/unsigned saturation
 	xs48,xu48		-- Extended auto-converting signed and unsigned 64-bit quantity, loaded and stored as a 48-bit quantity with signed/unsigned saturation
 	xs56,xu56		-- Extended auto-converting signed and unsigned 64-bit quantity, loaded and stored as a 56-bit quantity with signed/unsigned saturation
+	Note:  Each of the above can be prefixed with a "c" indicating they are constant.
+	Note:  If any of these c* types are pefixed explicitly with rw, they will exist in rw memory, otherwise they will go to ro memory
 	
 	bi				-- Arbitrary precision big integer, defaults to 128 bits
 	bfp				-- Arbitrary precision floating point, defaults to 256 bits
@@ -154,28 +148,26 @@ RDC Specifications Document
 	thread			-- A thread variable
 	process			-- A process variable
 
-	be				-- Specifies the data is to be stored in memory as big endan
-	le				-- Specifies the data is to be stored in memory as little endian
-	
+	be				-- Augments a type to indicate the data is stored in memory as big endan
+	le				-- Augments a type to indicate the data is stored in memory as little endian
 	const,ro		-- Augments a type to indicate it is read-only
 	rw				-- Augments a type to explicitly indicate it is read-write
 	volatile		-- Augments a type to indicate it is to be coded as conveyed
-	successive		-- Variables put into the successive block are always expressed exactly that way in memory (no reordering)
-	literal			-- Specifies the data form is to be used literally as is, and remain unchanged changed even during optimization
 	hide			-- Augments a type to indicate by default it should not be visible in SourceLight (typically used for unused / reserved members)
 	unsigned		-- Augments char, short, int, long to make it unsigned
 	static			-- Augments a definition to make it a singleton
 	extern			-- Augments a type to indicate its body is populated elsewhere
+	successive		-- Variables put into the successive block are always expressed exactly that way in memory (no reordering)
+	literal			-- Specifies the data form is to be used literally as is, and remain unchanged changed even during optimization
 	sizeof			-- Returns the size of a type
 	countof			-- Returns the count of a type
 	offsetof		-- Returns the offset of a type
+	addressof		-- Returns the address of a type
 
 	NULL			-- A constant pointer to 0x0
 	null			-- A constant value of 0 or 0.0 (depending on context)
-	true			-- Sets a bool to 0xff
-	yes				-- Sets a bool to 0xff
-	false			-- Sets a bool to 0x00
-	no				-- Sets a bool to 0x00
+	true,yes		-- Sets a bool to 0xff
+	false,no		-- Sets a bool to 0x00
 
 	and				-- A verbose form of &&
 	or				-- A verbose form of ||
@@ -196,40 +188,38 @@ RDC Specifications Document
 	#push			-- Pushes a token value onto the stack
 	#pop			-- Pops a token value from the stack
 	#text			-- Displays some text at compile time
+	#optimize		-- Set the optimization level (unless "force" is used, the command line overrides this setting)
 	#warning		-- Displays an explicit warning at the indicated location at compile time
 	#error			-- Displays an explicit error at the indicated location at compile time
 	#meia			-- Triggers an explicit inquiry at the indicated location at runtime
 	#stop			-- Stops compilation with an optional stop code (#stop Nnn)
-	typedef			-- Typedefs one type to another name
+	typedef,alias	-- Aliases one type to another name
 
 	struct			-- A structure definition
 	class			-- A class definition
 	operator		-- For operator override definitions
-	extends			-- A class extends another class (can extend multiple simultaneously)
-	inherits		-- A pseudonym of extends
-	parent			-- A reference to the immediate parent in an inheritance chain
-	super			-- A pseudonym for parent
+	extends,inherits -- A class extends another class (can extend multiple simultaneously)
+	parent,super	-- A reference to the immediate parent in an inheritance chain
 	child			-- A reference to the immediate child in an inheritance chain
+	accessor		-- Document and indicate member function is an accessor, thereby removing the () syntax access requirement (use class->func->xyz rather than class->func()->xyz).
 	union			-- A merging of two or more types
 	enum			-- An enumeration of items
 	new				-- Creates an instance of a class
-	newscope		-- Creates an instance of a class, automatically deleting it when it leaves current scope
 	delete			-- Deletes an instance of a class
-	deleteall		-- Deletes all instances of all classes defined in current scope
+	snew			-- Scoped. Creates an instance of a class, automatically delets it when leaving current scope
+	sdelete			-- Scoped. Deletes all instances of all classes that are currently defined in current scope
 
 	adhoc			-- Declares an adhoc
 	function		-- Declares a function
 	port			-- Declares an initial launch port within a function
 	purpose			-- Declares a purpose within a function
-	params			-- Declares input parameters
-	returns			-- Declares output return values
+	return			-- Declares any output return value(s)
+	params			-- Declares any input parameter(s)
 	inline			-- Provides an explicit optimization hint
 	optimize		-- Provides an optimization hint level (0=none, 9=max)
-	nodebug			-- Declares that a function should not be entered on single-step debugging
-	nodbg			-- A pseudonym for nodebug
-	breakpoint		-- Code will trap to the debugger if connected and engaged, ignored otherwise
-	debug			-- A pseudonym for breakpoint
-	accessor		-- Document and indicate the member function is an accessor, thereby removing the () syntax access requirement (use class->func->xyz rather than class->func()->xyz).
+	force			-- Specifies if the optimization level should be forced
+	nodebug,nodbg	-- Declares that a function should not be entered on single-step debugging
+	breakpoint,debug -- Code will trap to the debugger if connected and engaged, ignored otherwise
 
 	do				-- Loop which always enters once, requires trailing while test
 	while			-- Conditionally tests loop logic and continues in the loop if true
@@ -237,8 +227,6 @@ RDC Specifications Document
 	iterate			-- Repeat a task a specified number of times
 	for				-- A for loop
 	unless			-- A conditional test on false
-	dive			-- Executes as many of the conditionals as possible (until one evaluates to false)
-	roll			-- Executes all conditionals
 	if				-- A conditional test on true
 	else			-- An else clause on an if or unless
 	elseif			-- An elseif clause on an
@@ -250,8 +238,10 @@ RDC Specifications Document
 	felseif			-- An elseif with full test of all conditionals
 	switch			-- A switch statement
 	case			-- A member test of a switch statement
+	dive			-- Executes as many of the conditionals as possible (until one evaluates to false)
+	roll			-- Executes all conditionals
+	
 	meta,mefa		-- Called on logic test result (meta called on true, mefa called on false)
-	quit			-- Quits the application explicitly (calls OS's endProcess() function)
 
 	in				-- Creates a new thread
 	andin			-- Creates an additional new thread (used at the same time as in { })
@@ -262,26 +252,23 @@ RDC Specifications Document
 
 	engage			-- Launches another process
 	unengage		-- Explicitly ends a running process launched with engage
+	quit			-- Quits the application explicitly (calls OS's endProcess() function)
 
 	marker			-- Create a marker, allowing for explicit for multi-level returns to this location by marker name, and for references to be made relative to its code location
-	enter			-- Code to execute upon natural entry into the chain
-	leave			-- Code to execute upon natural exit from the chain
-	flow			-- Code to execute when flow control returns to the home marker explicitly.
+	onEnter			-- Code to execute upon natural entry into the chain
+	onLeave			-- Code to execute upon natural exit from the chain
+	onHome			-- Code to execute when flow control returns to the home marker explicitly.
 
 	default			-- In a port or switch statement, specifies the unspecified operation
 	otherwise		-- A pseudonym for default
-	break			-- Breaks the current loop
-	breakto			-- Breaks to the indicated goto level
-	continue		-- Continues to the current level
-	continueto		-- Continues to the indicated goto level
-	exit			-- A pseudonym for break
-	exitto			-- A pseudonym for breakto
-	loop			-- A pseudonym for continue
-	loopto			-- A pseudonym for continueto
-	goto			-- Goes to the indicated label or named block
-	return			-- Returns from a called function and optionally explicitly returns
-					   one or more of the following:  a value, values, a meia, mema, or
-					   home.
+	break,exit		-- Breaks the current loop
+	breakto,exitto	-- Breaks to the indicated goto level
+	continue,loop	-- Continues to the current level
+	continueto,loopto -- Continues to the indicated goto level
+	go,goto			-- Goes to the indicated label or named block
+	done,return		-- Signals completion of the function, and explicitly sends back one
+					   or more of the following:  a value, values, a meia (inquiry), mema (message).
+	returnto		-- Returns back to the indicated marker
 
 	flow			-- A structured flow control block
 	flowout			-- Exit a structured flow control block 
@@ -292,11 +279,11 @@ RDC Specifications Document
 	mema			-- Called on a message (an extra and optional return message from a called thing)
 
 	flowof			-- Defines a function to be a flow of another function
-	as_super		-- Executes commands from the parent's point of view (as in "as_super return;")
-	as_marker		-- Executes commands from the marker's point of view (as in "as_marker x = 5;" updates the 'x' in scope as at the marker)
+	at_super		-- Executes commands from the parent's point of view (as in "at_super::x = 5;" updates the 'x' in scope of the caller)
+	at_marker		-- Executes commands from the named marker's point of view (as in "at_top::x = 5;" updates the 'x' in scope as at the marker named "top")
 
 
-1.1 - New Operators
+1.1 - Reverse Operators
 -----------------------
 
 	Reverse operators are addd for source code convenience, as well as ad hoc
@@ -337,12 +324,12 @@ RDC Specifications Document
 
 	dllmain() is the top level user-function for creating a DLL.
 	dllmain() is defined as bool dllmain(u32 instance, u32 callType);
+	For backward compatibility other definitions of dllmain() may also exist.
 
 	guimain() is the top level user-function for creating a gui-based application.
-	guimain() is defined in various forms depending on the operating system in use, and is
-	analgous to WinMain() on Windows.
-
-	For backward compatibility other definitions of dllmain() may also exist.
+	RDC defines its own GUI engine which aliases to the operating system, allowing
+	for write-once/run-everywhere GUIs across platforms.  However, you can also use
+	traditional OS-specific function calls.
 
 	At startup, an application compiled with RDC will go through these stages:
 		(1) Engaging steps of self-initialization, global/static memory to default values.
@@ -368,7 +355,7 @@ RDC Specifications Document
 	allowance:
 	
 		function nameOfFunction
-		| returns int x, int y, int z;
+		| return int x, int y, int z;
 		| params int a, int b, int c;
 		{
 			// Code goes here
@@ -384,19 +371,19 @@ RDC Specifications Document
 	Adhocs are special functions which can be declared near to some location which needs
 	to have its logic extracted.  They reference the local variable environment of where
 	they are defined, and also prvide for their own discreet additions.  As with flow {...}
-	blocks, issuing as_super return; will exit out of the parent function, and not out of
+	blocks, issuing at_super return; will exit out of the parent function, and not out of
 	itself.  The general C/C++ syntax form is allowable here as well.  RDC adds an
 	additional syntax form allowance:
 	
 		function nameOfFunction
-		| returns int x;
+		| return int x;
 		| params int a, int b, int c;
 		{
 			// Some code can go here
 		
 			// Normal flow does not enter an adhoc
 			adhoc myAdhoc
-			| returns int x;	// x here hides nameofFunction's x return parameter
+			| return int x;	// x here hides nameofFunction's x return parameter
 			| params int a;		// a here hides nameOfFunction's a parameter
 			{
 				int b, c;		// b here hides nameOfFunction's b parameter
@@ -519,7 +506,7 @@ RDC Specifications Document
 	Consider the descent sequence main() to level1() to level2() to level3():
 	
 		function main
-		| returns int exitCode;
+		| return int exitCode;
 		| params int argc, char* argv[];
 		{
 			level1();
@@ -547,7 +534,7 @@ RDC Specifications Document
 	Consider:
 	
 		function main
-		| returns int exitCode;
+		| return int exitCode;
 		| params int argc, char* argv[];
 		{
 			level1() [|marker|top||];
@@ -583,7 +570,7 @@ RDC Specifications Document
 	However, consider something like this:
 	
 		function main
-		| returns int exitCode;
+		| return int exitCode;
 		| params int argc, char* argv[];
 		{
 			[|marker|reset||] level1();
@@ -765,7 +752,7 @@ RDC Specifications Document
 	This includes function parameter declarations.  The keyword union is not required.
 
 		function printEncoding
-		| returns u32 r1;
+		| return u32 r1;
 		| params union {u32 iValue, f32 fValue}, bool* equal;
 		{
 			printf("The value %f in hex %x\n", fValue, iValue);
@@ -776,7 +763,7 @@ RDC Specifications Document
 		// The above would be the same as without the union keyword:
 
 		function printEncoding
-		| returns u32 r1;
+		| return u32 r1;
 		| params {u32 iValue, f32 fValue}, bool* equal;
 		{
 			printf("The value %f in hex %x\n", fValue, iValue);
@@ -795,7 +782,7 @@ RDC Specifications Document
 		r1, r2 = myFunction(int a, int b);
 
 		function myFunction
-		| returns int r1, int r2;
+		| return int r1, int r2;
 		| params int a, int b;
 		{
 			// Code for the function goes here
@@ -833,7 +820,7 @@ RDC Specifications Document
 
 
 		} subflow sampleCallAndReturnValue
-			| returns int r;
+			| return int r;
 			| params int a, int b;
 			{
 				// Code for the subflow goes here
@@ -842,7 +829,7 @@ RDC Specifications Document
 				return;
 
 				// To explicitly return completely out of the flow block:
-				as_super return;
+				at_super::return;
 
 				// To explicitly flow out of the flow block:
 				flowout;
@@ -874,7 +861,7 @@ RDC Specifications Document
 	symbols and defined parameters and variables.
 
 		function xyz
-		| returns int r1, int r2;
+		| return int r1, int r2;
 		| params int x, int y;
 		{
 			int a, b;
@@ -940,7 +927,7 @@ RDC Specifications Document
 	Syntax equivalent to:
 	
 		function xzy
-		| returns int r1, int r2;
+		| return int r1, int r2;
 		| params int a, int b;
 		{
 			// Code goes here
@@ -1092,7 +1079,7 @@ RDC Specifications Document
 	with pointers appending the suffix p and pointer-to-pointers appending the suffix pp:
 
 		function name
-		| returns int r1, float r2
+		| return int r1, float r2
 		| params char p1, int* p2, double** p3
 		{
 			// Code goes here
@@ -1103,7 +1090,7 @@ RDC Specifications Document
 	is in effect, the typdef name is included as is.
 
 		function name
-		| returns CAbc* abc
+		| return CAbc* abc
 		| params SMyStruct* ms, SBgra bgra
 		{
 			// Code goes here
@@ -1139,7 +1126,7 @@ RDC Specifications Document
 	automatically be directed to the default: code.
 	
 		function name
-		| returns CAbc* abc
+		| return CAbc* abc
 		| params int type, datum* data
 		{
 			port (type)
@@ -1166,7 +1153,7 @@ RDC Specifications Document
 	enter the switch logic if it is not known at compile time.
 	
 		function name
-		| returns CAbc* abc
+		| return CAbc* abc
 		| params int type, datum* data
 		{
 			port switch (type)
@@ -1188,7 +1175,7 @@ RDC Specifications Document
 	To test more than one parameter for port entry, use commas:
 	
 		function name
-		| returns CAbc* abc
+		| return CAbc* abc
 		| params int type, int subtype, datum* data
 		{
 			port switch (type, subtype)
@@ -1285,7 +1272,7 @@ RDC Specifications Document
 	function content is accessed using "name();" or "name().main();".
 	
 		function name
-		| returns CAbc* abc
+		| return CAbc* abc
 		| params SMyStruct* ms, SBgra bgra
 		{
 			// Explicitly named purpose accessed in source code as "name().help();"
@@ -1299,12 +1286,12 @@ RDC Specifications Document
 	Each purpose can override function parameter blocks using its own parameter block.
 	
 		function name
-		| returns CAbc* abc
+		| return CAbc* abc
 		| params SMyStruct* ms, SBgra bgra
 		{
 			// Explicitly named purpose with its own parameter block
 			purpose help
-			| returns s8* helpText
+			| return s8* helpText
 			| params void
 			{
 				// Code for this purpose goes here
@@ -1337,7 +1324,7 @@ RDC Specifications Document
 			// Explicitly named int-to-char purpose
 			//////
 				purpose toChar
-				| returns s8* output
+				| return s8* output
 				| params int input
 				{
 					// Code to convert the integer input to a string here
@@ -1348,7 +1335,7 @@ RDC Specifications Document
 			// Explicitly named char-to-int purpose
 			//////
 				purpose toInt
-				| returns int output
+				| return int output
 				| params s8* input
 				{
 					// Code to convert the string to integer goes here
