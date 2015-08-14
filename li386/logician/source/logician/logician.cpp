@@ -95,6 +95,7 @@
 	#define _BMP_LOCALITY 1		// Force definitions to be local
 	const char cgc_appName[] = "Logician";
 	#include "\libsf\source\vjr\source\vjr.h"
+	#include "logician.h"
 	#undef main
 
 

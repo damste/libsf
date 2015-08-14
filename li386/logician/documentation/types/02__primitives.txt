@@ -203,17 +203,18 @@ and pull data.
 
 Data -- A bitline grouping for I/O
 ----------------------------------
-	   _____
-	  |  @  |
-	 +--------+
-	 |   DS   |
-	 |        |
-	 |        |
-	 |--------|
-	=|vent    |
-	 +--------+
+	   _____			   _____	
+	  |  @  |			  |  @  |	
+	 +--------+			 +--------+
+	 |   DS   |			 |   DL   |
+	 |        |			 |        |
+	 |        |			 |        |
+	 |--------|			 |--------|
+	=|vent    |			=|vent    |
+	 +--------+			 +--------+
 	 
-	Data	-- (I/O) A grouping of data bits
+	DS		-- (O) Push (output) data bits
+	DL		-- (I) Pull (input) data bits
 
 
 

@@ -367,6 +367,26 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\log_const.h"
+				>
+			</File>
+			<File
+				RelativePath=".\log_defs.h"
+				>
+			</File>
+			<File
+				RelativePath=".\log_globals.h"
+				>
+			</File>
+			<File
+				RelativePath=".\log_structs.h"
+				>
+			</File>
+			<File
+				RelativePath=".\logician.h"
+				>
+			</File>
+			<File
 				RelativePath=".\resource.h"
 				>
 			</File>
