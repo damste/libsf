@@ -87,6 +87,7 @@ struct SLNode;
 struct SLNodes;
 
 struct SLVia;
+struct SGripper;
 struct SLGroup;
 struct SLReal;
 struct SLTalkin;
@@ -132,6 +133,7 @@ struct SLObj
 	s32			type;							// Refers to _LOGOBJ_* constants
 	union {
 		SLVia*		via;						// Logician object is a via
+		SLGripper*	gripper;					// Logician object is a gripper
 		SLGroup*	group;						// Logician object is a group
 		SLReal*		real;						// Logician object is a real
 		SLTalkin*	talkin;						// Logician object is a talkin
@@ -164,6 +166,7 @@ struct SLNode
 {
 	SLNodes*	parent;							// Parent nodes grouping
 	SLNode*		connectsTo;						// The node this node is connected to
+	u32			uid;							// Unique id
 
 	s32			direction;						// Refer to _NODEDIR_* constants
 	s32			bitlines;						// How many bit lines are associated with this node?
@@ -202,13 +205,32 @@ struct SLVia
 	SLNode*		first_down;
 };
 
+struct SLGripLink
+{
+	u32			uid;							// Uid of the node in this slot
+	SLNode*		node;							// Pointer to the node in this slot
+};
+
+struct SLGripper
+{
+	s32			count;							// Number of things associated with this gripper
+	SLGripLink	griplinks[];					// Array holding the order of things associated with this gripper
+	
+	f32			height;							// Height of item
+	f32			before;							// Spacing before
+	f32			after;							// Spacing after
+};
+
 struct SLGroup
 {
+	SGripper*	gripper;						// Associated gripper (if any)
 	SLObj*		first_obj;						// First object in the group
 };
 
 struct SLReal
 {
+	SGripper*	gripper;						// Associated gripper (if any)
+	
 	SLNode*		i;								// (I)   -- Inputs
 	SLNode*		o;								// (O)   -- Outputs
 	SLNode*		io;								// (I/O) -- Input/outputs
@@ -216,6 +238,8 @@ struct SLReal
 
 struct SLTalkin
 {
+	SGripper*	gripper;						// Associated gripper (if any)
+	
 	SLNode*		lr;								// (O) -- Pull is ready (we are ready to receive)
 	SLNode*		rdy;							// (I) -- Remote is ready to push (ready to send us data)
 	SLNode*		l;								// (O) -- Pull (we are receiving)
@@ -225,6 +249,8 @@ struct SLTalkin
 
 struct SLTalkout
 {
+	SGripper*	gripper;						// Associated gripper (if any)
+	
 	SLNode*		rdy;							// (I) -- Push is ready (we are ready to send)
 	SLNode*		sr;								// (O) -- Remote is ready to pull (ready to receive data from us)
 	SLNode*		s;								// (O) -- Push (we are pushing)
@@ -234,6 +260,8 @@ struct SLTalkout
 
 struct SLTalkback
 {
+	SGripper*	gripper;						// Associated gripper (if any)
+	
 	SLNode*		lrdy;							// (I) -- Remote is ready to push (ready to send us data)
 	SLNode*		l;								// (O) -- Pull (we are receiving)
 	SLNode*		srdy;							// (I) -- Remote is ready to pull (ready to receive data from us)
@@ -245,6 +273,8 @@ struct SLTalkback
 
 struct SLTrigger
 {
+	SGripper*	gripper;						// Associated gripper (if any)
+	
 	SLNode*		trg;							// (I) -- Trigger
 
 	SLNode*		vent;							// A debug vent (if any)
@@ -252,6 +282,8 @@ struct SLTrigger
 
 struct SLSignal
 {
+	SGripper*	gripper;						// Associated gripper (if any)
+	
 	s32			type;							// Refer to _SIGNAL_* constants
 	SLNode*		sig;							// (I,O) -- The signal
 
@@ -260,6 +292,8 @@ struct SLSignal
 
 struct SLData
 {
+	SGripper*	gripper;						// Associated gripper (if any)
+	
 	s32			type;							// Refer to _DATA_* constants
 	SLNode*		d;								// (I,O) -- The data bits
 
@@ -268,6 +302,8 @@ struct SLData
 
 struct SLRegs
 {
+	SGripper*	gripper;						// Associated gripper (if any)
+	
 	s32			count;							// Number of registers to maintain
 	SLReg*		first_reg;						// First register
 
@@ -276,11 +312,15 @@ struct SLRegs
 
 struct SLLogic
 {
+	SGripper*	gripper;						// Associated gripper (if any)
+	
 	SLNode*		vent;							// A debug vent (if any)
 };
 
 struct SLClock
 {
+	SGripper*	gripper;						// Associated gripper (if any)
+	
 	SLNode*		up;								// (O) UP signal on the clock
 	SLNode*		hi;								// (O) HI signal on the clock
 	SLNode*		dn;								// (O) DN signal on the clock
@@ -289,6 +329,8 @@ struct SLClock
 
 struct SLHistory
 {
+	SGripper*	gripper;						// Associated gripper (if any)
+	
 	SLNode*		din;							// (I) Data to record
 	SLNode*		rec;							// (I) Record signal
 	SLNode*		dout;							// (O) Pass-thru
@@ -304,6 +346,8 @@ struct SLHistory
 
 struct SLDelta
 {
+	SGripper*	gripper;						// Associated gripper (if any)
+	
 	SLNode*		din;							// (I) Data to sample
 	SLNode*		samp;							// (I) Sample signal
 	SLNode*		dout;							// (O) Pass-thru
@@ -319,6 +363,8 @@ struct SLDelta
 
 struct SLVent
 {
+	SGripper*	gripper;						// Associated gripper (if any)
+	
 	SLNode*		halt;							// (I) Signal to halt processing
 	SLNode*		step;							// (I) Signal to single-step
 	SLNode*		dump;							// (I) Signal to dump all data
@@ -332,12 +378,16 @@ struct SLVent
 
 struct SLClone
 {
+	SGripper*	gripper;						// Associated gripper (if any)
+	
 	SLNode*		i;								// (I) Input signal
 	SLNode*		o;								// (O) Output clones
 };
 
 struct SLSticky
 {
+	SGripper*	gripper;						// Associated gripper (if any)
+	
 	SLNode*		i;								// (I) Input signal
 	SLNode*		rst;							// (I) Reset signal
 	SLNode*		o;								// (O) Output signal
@@ -345,6 +395,8 @@ struct SLSticky
 
 struct SLDebug
 {
+	SGripper*	gripper;						// Associated gripper (if any)
+	
 	s32			count;							// Number of registers
 	SLReg*		first_d;						// First debug register
 
@@ -353,18 +405,24 @@ struct SLDebug
 
 struct SLAway
 {
+	SGripper*	gripper;						// Associated gripper (if any)
+	
 	bool		isCopy;							// If it's a copy, it has its own properties, otherwise it simply is a reference to the other item
 	SLObj*		away;							// The Logician object this thing relates back to
 };
 
 struct SLInvert
 {
+	SGripper*	gripper;						// Associated gripper (if any)
+	
 	SLNode*		i;
 	SLNode*		o;
 };
 
 struct SLAny1
 {
+	SGripper*	gripper;						// Associated gripper (if any)
+	
 	SLNode*		i1;
 	SLNode*		i2;
 	SLNode*		o;
@@ -372,6 +430,8 @@ struct SLAny1
 
 struct SLAll1
 {
+	SGripper*	gripper;						// Associated gripper (if any)
+	
 	SLNode*		i1;
 	SLNode*		i2;
 	SLNode*		o;
@@ -379,6 +439,8 @@ struct SLAll1
 
 struct SLDiff1
 {
+	SGripper*	gripper;						// Associated gripper (if any)
+	
 	SLNode*		i1;
 	SLNode*		i2;
 	SLNode*		o;
@@ -386,6 +448,8 @@ struct SLDiff1
 
 struct SLAny0
 {
+	SGripper*	gripper;						// Associated gripper (if any)
+	
 	SLNode*		i1;
 	SLNode*		i2;
 	SLNode*		o;
@@ -393,6 +457,8 @@ struct SLAny0
 
 struct SLAll0
 {
+	SGripper*	gripper;						// Associated gripper (if any)
+	
 	SLNode*		i1;
 	SLNode*		i2;
 	SLNode*		o;
@@ -400,6 +466,8 @@ struct SLAll0
 
 struct SLDiff0
 {
+	SGripper*	gripper;						// Associated gripper (if any)
+	
 	SLNode*		i1;
 	SLNode*		i2;
 	SLNode*		o;
