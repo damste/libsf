@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/li386/oppie/oppie-1/oppie1.sv
+// /libsf/li386/oppie/oppie-1/oppie1.v
 //
 //////
 // Version 0.01
