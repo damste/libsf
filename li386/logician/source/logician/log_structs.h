@@ -82,393 +82,424 @@
 
 
 
-struct SLObj;
-struct SLNode;
-struct SLNodes;
+//////////
+// Logician structs
+//////
 
-struct SLVia;
-struct SGripper;
-struct SLGroup;
-struct SLReal;
-struct SLTalkin;
-struct SLTalkout;
-struct SLTalkback;
-struct SLTrigger;
-struct SLSignal;
-struct SLData;
-struct SLRegs;
-struct SLLogic;
-struct SLClock;
-struct SLHistory;
-struct SLDelta;
-struct SLVent;
-struct SLClone;
-struct SLSticky;
-struct SLDebug;
-struct SLAway;
-struct SLInvert;
-struct SLAny1;
-struct SLAll1;
-struct SLDiff1;
-struct SLAny0;
-struct SLAll0;
-struct SLDiff0;
+	struct SLObj;
+	struct SLNode;
+	struct SLNodes;
 
-struct SLObj
-{
-	SLObj*		next;							// Next object in the link list (if any)
-	SLGroup*	parent;							// The group this object belongs to
-	SLNodes*	nodes;							// Nodes related to this object
-	s32			level;							// For vias, allows things to logically (or physically) to go up/down, in addition to groupings
+	struct SLVia;
+	struct SGripper;
+	struct SLGroup;
+	struct SLReal;
+	struct SLTalkin;
+	struct SLTalkout;
+	struct SLTalkback;
+	struct SLTrigger;
+	struct SLSignal;
+	struct SLData;
+	struct SLRegs;
+	struct SLLogic;
+	struct SLClock;
+	struct SLHistory;
+	struct SLDelta;
+	struct SLVent;
+	struct SLClone;
+	struct SLSticky;
+	struct SLDebug;
+	struct SLAway;
+	struct SLInvert;
+	struct SLAny1;
+	struct SLAll1;
+	struct SLDiff1;
+	struct SLAny0;
+	struct SLAll0;
+	struct SLDiff0;
 
-	SDatum		name;							// Logician object name
-	SBgra		color;							// Color to use for this node
-	f32			scale;							// 1.0 = normal scale, can be larger or smaller for emphasis or de-emphasis
-	f32			rotation;						// pi/4 = normal rotation, relative to standard x,y coordinate system (with 0 being east)
-	SEM*		code;							// Any code associated with this object
+	struct SLObj
+	{
+		SLObj*		next;							// Next object in the link list (if any)
+		SLGroup*	parent;							// The group this object belongs to
+		SLNodes*	nodes;							// Nodes related to this object
+		s32			level;							// For vias, allows things to logically (or physically) to go up/down, in addition to groupings
 
-	SDllFunc	reset;							// DLL function to call for reset
-	SDllFunc	cycle;							// DLL function to call for cycle
+		SDatum		name;							// Logician object name
+		SBgra		color;							// Color to use for this node
+		f32			scale;							// 1.0 = normal scale, can be larger or smaller for emphasis or de-emphasis
+		f32			rotation;						// pi/4 = normal rotation, relative to standard x,y coordinate system (with 0 being east)
+		SEM*		code;							// Any code associated with this object
 
-	s32			type;							// Refers to _LOGOBJ_* constants
-	union {
-		SLVia*		via;						// Logician object is a via
-		SLGripper*	gripper;					// Logician object is a gripper
-		SLGroup*	group;						// Logician object is a group
-		SLReal*		real;						// Logician object is a real
-		SLTalkin*	talkin;						// Logician object is a talkin
-		SLTalkout*	talkout;					// Logician object is a talkout
-		SLTalkback*	talkback;					// Logician object is a talkback
-		SLTrigger*	trigger;					// Logician object is a trigger
-		SLSignal*	signal;						// Logician object is a signal
-		SLData*		data;						// Logician object is a data
-		SLRegs*		regs;						// Logician object is a regs
-		SLLogic*	logic;						// Logician object is a logic
-		SLClock*	clock;						// Logician object is a clock
-		SLHistory*	history;					// Logician object is a history
-		SLDelta*	delta;						// Logician object is a delta
-		SLVent*		vent;						// Logician object is a vent
-		SLClone*	clone;						// Logician object is a clone
-		SLSticky*	sticky;						// Logician object is a sticky
-		SLDebug*	debug;						// Logician object is a debug
-		SLAway*		away;						// Logician object is a away
-		SLInvert*	invert;						// Logician object is a invert
-		SLAny1*		any1;						// Logician object is a any1
-		SLAll1*		all1;						// Logician object is a all1
-		SLDiff1*	diff1;						// Logician object is a diff1
-		SLAny0*		any0;						// Logician object is a any0
-		SLAll0*		all0;						// Logician object is a all0
-		SLDiff0*	diff0;						// Logician object is a diff0
+		SDllFunc	reset;							// DLL function to call for reset
+		SDllFunc	cycle;							// DLL function to call for cycle
+
+		s32			type;							// Refers to _LOGOBJ_* constants
+		union {
+			SLVia*		via;						// Logician object is a via
+			SLGripper*	gripper;					// Logician object is a gripper
+			SLGroup*	group;						// Logician object is a group
+			SLReal*		real;						// Logician object is a real
+			SLTalkin*	talkin;						// Logician object is a talkin
+			SLTalkout*	talkout;					// Logician object is a talkout
+			SLTalkback*	talkback;					// Logician object is a talkback
+			SLTrigger*	trigger;					// Logician object is a trigger
+			SLSignal*	signal;						// Logician object is a signal
+			SLData*		data;						// Logician object is a data
+			SLRegs*		regs;						// Logician object is a regs
+			SLLogic*	logic;						// Logician object is a logic
+			SLClock*	clock;						// Logician object is a clock
+			SLHistory*	history;					// Logician object is a history
+			SLDelta*	delta;						// Logician object is a delta
+			SLVent*		vent;						// Logician object is a vent
+			SLClone*	clone;						// Logician object is a clone
+			SLSticky*	sticky;						// Logician object is a sticky
+			SLDebug*	debug;						// Logician object is a debug
+			SLAway*		away;						// Logician object is a away
+			SLInvert*	invert;						// Logician object is a invert
+			SLAny1*		any1;						// Logician object is a any1
+			SLAll1*		all1;						// Logician object is a all1
+			SLDiff1*	diff1;						// Logician object is a diff1
+			SLAny0*		any0;						// Logician object is a any0
+			SLAll0*		all0;						// Logician object is a all0
+			SLDiff0*	diff0;						// Logician object is a diff0
+		};
 	};
-};
 
-struct SLNode
-{
-	SLNodes*	parent;							// Parent nodes grouping
-	SLNode*		connectsTo;						// The node this node is connected to
-	u32			uid;							// Unique id
+	struct SLNode
+	{
+		SLNodes*	parent;							// Parent nodes grouping
+		SLNode*		connectsTo;						// The node this node is connected to
+		u32			uid;							// Unique id
 
-	s32			direction;						// Refer to _NODEDIR_* constants
-	s32			bitlines;						// How many bit lines are associated with this node?
-	s8*			bytes;							// Allow up to N bitlines to be defined
+		s32			direction;						// Refer to _NODEDIR_* constants
+		s32			bitlines;						// How many bit lines are associated with this node?
+		s8*			bytes;							// Allow up to N bitlines to be defined
 
-	SBgra		noodle;							// Color of the noodle on this end
-	f32			scale;							// 1.0 = normal scale, can be larger or smaller for emphasis or de-emphasis
-	SBgra		color;							// Color to render
-	f32			width;							// 1.0 = normal width, typically it grows with the number of bitlines
-};
+		SBgra		noodle;							// Color of the noodle on this end
+		f32			scale;							// 1.0 = normal scale, can be larger or smaller for emphasis or de-emphasis
+		SBgra		color;							// Color to render
+		f32			width;							// 1.0 = normal width, typically it grows with the number of bitlines
+	};
 
-struct SLNodes
-{
-	SLObj*		parent;							// The object this bundle relates to
+	struct SLNodes
+	{
+		SLObj*		parent;							// The object this bundle relates to
 
-	SLNode*		first_north;					// First node which emanates from the north of the Logician object
-	SLNode*		first_east;						// First node which emanates from the east of the Logician object
-	SLNode*		first_south;					// First node which emanates from the south of the Logician object
-	SLNode*		first_west;						// First node which emanates from the west of the Logician object
-};
+		SLNode*		first_north;					// First node which emanates from the north of the Logician object
+		SLNode*		first_east;						// First node which emanates from the east of the Logician object
+		SLNode*		first_south;					// First node which emanates from the south of the Logician object
+		SLNode*		first_west;						// First node which emanates from the west of the Logician object
+	};
 
-struct SLReg
-{
-	SLReg*		next;							// Next register in the chain
-	SDatum		name;							// Name of this register
+	struct SLReg
+	{
+		SLReg*		next;							// Next register in the chain
+		SDatum		name;							// Name of this register
 
-	s32			width;							// Width of the register
-	s8*			bytes;							// Allow up to N bits to be defined
-};
+		s32			width;							// Width of the register
+		s32			endian;							// N:0 little endian, 0:N big endian, refer to _ENDIAN_* constants
+		s8*			bytes;							// Allow up to N bits to be defined
+	};
 
-struct SLVia
-{
-	// These nodes are mated pairs in the linklist
-	// The first_up and first_down are the same
-	SLNode*		first_up;
-	SLNode*		first_down;
-};
+	struct SLVia
+	{
+		// These nodes are mated pairs in the linklist
+		// The first_up and first_down are the same
+		SLNode*		first_up;
+		SLNode*		first_down;
+	};
 
-struct SLGripLink
-{
-	u32			uid;							// Uid of the node in this slot
-	SLNode*		node;							// Pointer to the node in this slot
-};
+	struct SLGripLink
+	{
+		SLNode*		node;							// Pointer to the node in this slot
 
-struct SLGripper
-{
-	s32			count;							// Number of things associated with this gripper
-	SLGripLink	griplinks[];					// Array holding the order of things associated with this gripper
-	
-	f32			height;							// Height of item
-	f32			before;							// Spacing before
-	f32			after;							// Spacing after
-};
+		f32			height;							// Height of item
+		f32			before;							// Spacing before
+		f32			after;							// Spacing after
+	};
 
-struct SLGroup
-{
-	SGripper*	gripper;						// Associated gripper (if any)
-	SLObj*		first_obj;						// First object in the group
-};
+	struct SLGripper
+	{
+		s32			binding;						// Orientation for binding, see _BINDING_* structs
+		s32			count;							// Number of things associated with this gripper
+		SLGripLink	griplinks[];					// Array holding the order of things associated with this gripper
+	};
 
-struct SLReal
-{
-	SGripper*	gripper;						// Associated gripper (if any)
-	
-	SLNode*		i;								// (I)   -- Inputs
-	SLNode*		o;								// (O)   -- Outputs
-	SLNode*		io;								// (I/O) -- Input/outputs
-};
+	struct SLGroup
+	{
+		SGripper*	gripper;						// Associated gripper (if any)
+		SLObj*		first_obj;						// First object in the group
+	};
 
-struct SLTalkin
-{
-	SGripper*	gripper;						// Associated gripper (if any)
-	
-	SLNode*		lr;								// (O) -- Pull is ready (we are ready to receive)
-	SLNode*		rdy;							// (I) -- Remote is ready to push (ready to send us data)
-	SLNode*		l;								// (O) -- Pull (we are receiving)
+	struct SLReal
+	{
+		SGripper*	gripper;						// Associated gripper (if any)
+		
+		SLNode*		i;								// (I)   -- Inputs
+		SLNode*		o;								// (O)   -- Outputs
+		SLNode*		io;								// (I/O) -- Input/outputs
+	};
 
-	SLNode*		dl;								// (I) -- Data from pull
-};
+	struct SLTalkin
+	{
+		SGripper*	gripper;						// Associated gripper (if any)
+		
+		SLNode*		lr;								// (O) -- Pull is ready (we are ready to receive)
+		SLNode*		rdy;							// (I) -- Remote is ready to push (ready to send us data)
+		SLNode*		l;								// (O) -- Pull (we are receiving)
 
-struct SLTalkout
-{
-	SGripper*	gripper;						// Associated gripper (if any)
-	
-	SLNode*		rdy;							// (I) -- Push is ready (we are ready to send)
-	SLNode*		sr;								// (O) -- Remote is ready to pull (ready to receive data from us)
-	SLNode*		s;								// (O) -- Push (we are pushing)
+		SLNode*		dl;								// (I) -- Data from pull
+	};
 
-	SLNode*		ds;								// (O) -- Data to push
-};
+	struct SLTalkout
+	{
+		SGripper*	gripper;						// Associated gripper (if any)
+		
+		SLNode*		rdy;							// (I) -- Push is ready (we are ready to send)
+		SLNode*		sr;								// (O) -- Remote is ready to pull (ready to receive data from us)
+		SLNode*		s;								// (O) -- Push (we are pushing)
 
-struct SLTalkback
-{
-	SGripper*	gripper;						// Associated gripper (if any)
-	
-	SLNode*		lrdy;							// (I) -- Remote is ready to push (ready to send us data)
-	SLNode*		l;								// (O) -- Pull (we are receiving)
-	SLNode*		srdy;							// (I) -- Remote is ready to pull (ready to receive data from us)
-	SLNode*		s;								// (O) -- Push (we are pushing)
+		SLNode*		ds;								// (O) -- Data to push
+	};
 
-	SLNode*		dl;								// (I) -- Data from pull
-	SLNode*		ds;								// (O) -- Data to push
-};
+	struct SLTalkback
+	{
+		SGripper*	gripper;						// Associated gripper (if any)
+		
+		SLNode*		lrdy;							// (I) -- Remote is ready to push (ready to send us data)
+		SLNode*		l;								// (O) -- Pull (we are receiving)
+		SLNode*		srdy;							// (I) -- Remote is ready to pull (ready to receive data from us)
+		SLNode*		s;								// (O) -- Push (we are pushing)
 
-struct SLTrigger
-{
-	SGripper*	gripper;						// Associated gripper (if any)
-	
-	SLNode*		trg;							// (I) -- Trigger
+		SLNode*		dl;								// (I) -- Data from pull
+		SLNode*		ds;								// (O) -- Data to push
+	};
 
-	SLNode*		vent;							// A debug vent (if any)
-};
+	struct SLTrigger
+	{
+		SGripper*	gripper;						// Associated gripper (if any)
+		
+		SLNode*		trg;							// (I) -- Trigger
 
-struct SLSignal
-{
-	SGripper*	gripper;						// Associated gripper (if any)
-	
-	s32			type;							// Refer to _SIGNAL_* constants
-	SLNode*		sig;							// (I,O) -- The signal
+		SLNode*		vent;							// A debug vent (if any)
+	};
 
-	SLNode*		vent;							// A debug vent (if any)
-};
+	struct SLSignal
+	{
+		SGripper*	gripper;						// Associated gripper (if any)
+		
+		s32			type;							// Refer to _SIGNAL_* constants
+		SLNode*		sig;							// (I,O) -- The signal
 
-struct SLData
-{
-	SGripper*	gripper;						// Associated gripper (if any)
-	
-	s32			type;							// Refer to _DATA_* constants
-	SLNode*		d;								// (I,O) -- The data bits
+		SLNode*		vent;							// A debug vent (if any)
+	};
 
-	SLNode*		vent;							// A debug vent (if any)
-};
+	struct SLData
+	{
+		SGripper*	gripper;						// Associated gripper (if any)
+		
+		s32			type;							// Refer to _DATA_* constants
+		SLNode*		d;								// (I,O) -- The data bits
 
-struct SLRegs
-{
-	SGripper*	gripper;						// Associated gripper (if any)
-	
-	s32			count;							// Number of registers to maintain
-	SLReg*		first_reg;						// First register
+		SLNode*		vent;							// A debug vent (if any)
+	};
 
-	SLNode*		vent;							// A debug vent (if any)
-};
+	struct SLRegs
+	{
+		SGripper*	gripper;						// Associated gripper (if any)
+		
+		s32			count;							// Number of registers to maintain
+		SLReg*		first_reg;						// First register
 
-struct SLLogic
-{
-	SGripper*	gripper;						// Associated gripper (if any)
-	
-	SLNode*		vent;							// A debug vent (if any)
-};
+		SLNode*		vent;							// A debug vent (if any)
+	};
 
-struct SLClock
-{
-	SGripper*	gripper;						// Associated gripper (if any)
-	
-	SLNode*		up;								// (O) UP signal on the clock
-	SLNode*		hi;								// (O) HI signal on the clock
-	SLNode*		dn;								// (O) DN signal on the clock
-	SLNode*		lo;								// (O) LO signal on the clock
-};
+	struct SLLogic
+	{
+		SGripper*	gripper;						// Associated gripper (if any)
+		
+		SLNode*		vent;							// A debug vent (if any)
+	};
 
-struct SLHistory
-{
-	SGripper*	gripper;						// Associated gripper (if any)
-	
-	SLNode*		din;							// (I) Data to record
-	SLNode*		rec;							// (I) Record signal
-	SLNode*		dout;							// (O) Pass-thru
+	struct SLClock
+	{
+		SGripper*	gripper;						// Associated gripper (if any)
+		
+		SLNode*		up;								// (O) UP signal on the clock
+		SLNode*		hi;								// (O) HI signal on the clock
+		SLNode*		dn;								// (O) DN signal on the clock
+		SLNode*		lo;								// (O) LO signal on the clock
+	};
 
-	SLNode*		hsg;							// (O) History has been recorded
-	SLNode*		ack;							// (I) HSG has been acknowledged
+	struct SLHistory
+	{
+		SGripper*	gripper;						// Associated gripper (if any)
+		
+		SLNode*		din;							// (I) Data to record
+		SLNode*		rec;							// (I) Record signal
+		SLNode*		dout;							// (O) Pass-thru
 
-	s32			count;							// Number of registers
-	SLReg*		first_h;						// First history register
+		SLNode*		hsg;							// (O) History has been recorded
+		SLNode*		ack;							// (I) HSG has been acknowledged
 
-	SLNode*		vent;							// A debug vent (if any)
-};
+		s32			count;							// Number of registers
+		SLReg*		first_h;						// First history register
 
-struct SLDelta
-{
-	SGripper*	gripper;						// Associated gripper (if any)
-	
-	SLNode*		din;							// (I) Data to sample
-	SLNode*		samp;							// (I) Sample signal
-	SLNode*		dout;							// (O) Pass-thru
+		SLNode*		vent;							// A debug vent (if any)
+	};
 
-	SLNode*		dsg;							// (O) Delta has been recorded
-	SLNode*		ack;							// (I) HSG has been acknowledged
+	struct SLDelta
+	{
+		SGripper*	gripper;						// Associated gripper (if any)
+		
+		SLNode*		din;							// (I) Data to sample
+		SLNode*		samp;							// (I) Sample signal
+		SLNode*		dout;							// (O) Pass-thru
 
-	s32			count;							// Number of registers
-	SLReg*		first_d;						// First delta register
+		SLNode*		dsg;							// (O) Delta has been recorded
+		SLNode*		ack;							// (I) HSG has been acknowledged
 
-	SLNode*		vent;							// A debug vent (if any)
-};
+		s32			count;							// Number of registers
+		SLReg*		first_d;						// First delta register
 
-struct SLVent
-{
-	SGripper*	gripper;						// Associated gripper (if any)
-	
-	SLNode*		halt;							// (I) Signal to halt processing
-	SLNode*		step;							// (I) Signal to single-step
-	SLNode*		dump;							// (I) Signal to dump all data
-	SLNode*		dend;							// (O) When all vented registers have been dumped
+		SLNode*		vent;							// A debug vent (if any)
+	};
 
-	s32			count;							// Number of registers
-	SLReg*		first_h;						// First history register
+	struct SLVent
+	{
+		SGripper*	gripper;						// Associated gripper (if any)
+		
+		SLNode*		halt;							// (I) Signal to halt processing
+		SLNode*		step;							// (I) Signal to single-step
+		SLNode*		dump;							// (I) Signal to dump all data
+		SLNode*		dend;							// (O) When all vented registers have been dumped
 
-	SLNode*		talkback;						// A talkback (if any)
-};
+		s32			count;							// Number of registers
+		SLReg*		first_h;						// First history register
 
-struct SLClone
-{
-	SGripper*	gripper;						// Associated gripper (if any)
-	
-	SLNode*		i;								// (I) Input signal
-	SLNode*		o;								// (O) Output clones
-};
+		SLNode*		talkback;						// A talkback (if any)
+	};
 
-struct SLSticky
-{
-	SGripper*	gripper;						// Associated gripper (if any)
-	
-	SLNode*		i;								// (I) Input signal
-	SLNode*		rst;							// (I) Reset signal
-	SLNode*		o;								// (O) Output signal
-};
+	struct SLClone
+	{
+		SGripper*	gripper;						// Associated gripper (if any)
+		
+		SLNode*		i;								// (I) Input signal
+		SLNode*		o;								// (O) Output clones
+	};
 
-struct SLDebug
-{
-	SGripper*	gripper;						// Associated gripper (if any)
-	
-	s32			count;							// Number of registers
-	SLReg*		first_d;						// First debug register
+	struct SLSticky
+	{
+		SGripper*	gripper;						// Associated gripper (if any)
+		
+		SLNode*		i;								// (I) Input signal
+		SLNode*		rst;							// (I) Reset signal
+		SLNode*		o;								// (O) Output signal
+	};
 
-	SLNode*		vent;
-};
+	struct SLDebug
+	{
+		SGripper*	gripper;						// Associated gripper (if any)
+		
+		s32			count;							// Number of registers
+		SLReg*		first_d;						// First debug register
 
-struct SLAway
-{
-	SGripper*	gripper;						// Associated gripper (if any)
-	
-	bool		isCopy;							// If it's a copy, it has its own properties, otherwise it simply is a reference to the other item
-	SLObj*		away;							// The Logician object this thing relates back to
-};
+		SLNode*		vent;
+	};
 
-struct SLInvert
-{
-	SGripper*	gripper;						// Associated gripper (if any)
-	
-	SLNode*		i;
-	SLNode*		o;
-};
+	struct SLAway
+	{
+		SGripper*	gripper;						// Associated gripper (if any)
+		
+		bool		isCopy;							// If it's a copy, it has its own properties, otherwise it simply is a reference to the other item
+		SLObj*		away;							// The Logician object this thing relates back to
+	};
 
-struct SLAny1
-{
-	SGripper*	gripper;						// Associated gripper (if any)
-	
-	SLNode*		i1;
-	SLNode*		i2;
-	SLNode*		o;
-};
+	struct SLInvert
+	{
+		SGripper*	gripper;						// Associated gripper (if any)
+		
+		SLNode*		i;
+		SLNode*		o;
+	};
 
-struct SLAll1
-{
-	SGripper*	gripper;						// Associated gripper (if any)
-	
-	SLNode*		i1;
-	SLNode*		i2;
-	SLNode*		o;
-};
+	struct SLAny1
+	{
+		SGripper*	gripper;						// Associated gripper (if any)
+		
+		SLNode*		i1;
+		SLNode*		i2;
+		SLNode*		o;
+	};
 
-struct SLDiff1
-{
-	SGripper*	gripper;						// Associated gripper (if any)
-	
-	SLNode*		i1;
-	SLNode*		i2;
-	SLNode*		o;
-};
+	struct SLAll1
+	{
+		SGripper*	gripper;						// Associated gripper (if any)
+		
+		SLNode*		i1;
+		SLNode*		i2;
+		SLNode*		o;
+	};
 
-struct SLAny0
-{
-	SGripper*	gripper;						// Associated gripper (if any)
-	
-	SLNode*		i1;
-	SLNode*		i2;
-	SLNode*		o;
-};
+	struct SLDiff1
+	{
+		SGripper*	gripper;						// Associated gripper (if any)
+		
+		SLNode*		i1;
+		SLNode*		i2;
+		SLNode*		o;
+	};
 
-struct SLAll0
-{
-	SGripper*	gripper;						// Associated gripper (if any)
-	
-	SLNode*		i1;
-	SLNode*		i2;
-	SLNode*		o;
-};
+	struct SLAny0
+	{
+		SGripper*	gripper;						// Associated gripper (if any)
+		
+		SLNode*		i1;
+		SLNode*		i2;
+		SLNode*		o;
+	};
 
-struct SLDiff0
-{
-	SGripper*	gripper;						// Associated gripper (if any)
-	
-	SLNode*		i1;
-	SLNode*		i2;
-	SLNode*		o;
-};
+	struct SLAll0
+	{
+		SGripper*	gripper;						// Associated gripper (if any)
+		
+		SLNode*		i1;
+		SLNode*		i2;
+		SLNode*		o;
+	};
+
+	struct SLDiff0
+	{
+		SGripper*	gripper;						// Associated gripper (if any)
+		
+		SLNode*		i1;
+		SLNode*		i2;
+		SLNode*		o;
+	};
+
+
+
+
+//////////
+// Engine structures
+//////
+
+	struct SLogEnv
+	{
+
+		//////////
+		// Callbacks
+		//////
+			void	(*setReg)		(SLogEnv* env);
+			void	(*signal)		(SLogEnv* env);
+			void	(*trigger)		(SLogEnv* env);
+
+	};
+
+
+// // General template
+// void function(SLogEnv* env)
+// {
+// 
+// }

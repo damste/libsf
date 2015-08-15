@@ -1,9 +1,9 @@
 //////////
 //
-// /libsf/li386/logician/source/logician/log_const.h
+// /libsf/li386/logician/source/logician/engine.cpp
 //
 //////
-//    _     _ _     _____ _____
+//    _     _ _     _____ _____ 
 //   | |   (_) |__ / ____|  ___|
 //   | |   | | '_ \\___ \|  __|
 //   | |___| | |_) |___) | |
@@ -11,15 +11,15 @@
 //
 //   Liberty Software Foundation
 // and the Village Freedom Project
-//   __     _______     ____
-//   \ \   / /  ___| __|  _ \
+//   __     _______     ____  
+//   \ \   / /  ___| __|  _ \ 
 //    \ \ / /| |_ | '__| |_) |
-//     \ V / |  _|| |  |  __/
+//     \ V / |  _|| |  |  __/ 
 //      \_/  |_|  |_|  |_|
 //
 //////
 // Version 0.01
-// Copyright (c) 2014 by Rick C. Hodgin
+// Copyright (c) 2015 by Rick C. Hodgin
 //////
 // Last update:
 //     Aug.14.2015
@@ -28,8 +28,9 @@
 //     Aug.14.2015 - Initial creation
 //////
 //
-// This document is released as Liberty Software under a Repeat License, as governed
-// by the Public Benefit License v1.0 or later (PBL).
+// This document and all documents contained within are released as Liberty Software
+// under a Repeat License, as governed by the Public Benefit License v1.0 or later
+// (PBL).
 //
 // The PBL is a public domain license with a caveat:  self accountability unto God.
 // You are free to use, copy, modify and share this software for any purpose, however,
@@ -77,53 +78,15 @@
 // Thank you.  And may The Lord bless you richly as you lift up your life, your
 // talents, your gifts, your praise, unto Him.  In Jesus' name I pray.  Amen.
 //
+//////
 //
+// Logician is a logic layout tool designed to use a 3D interface for positioning
+// and coding logic circuits.  It intends to be a type of "graphical verilog,"
+// with similar definition abilities to verilog, able to export its content as
+// verilog source code.
+//
+//////
 
 
 
 
-const s32	_LOGOBJ_VIA			= 1;
-const s32	_LOGOBJ_GRIPPER		= 2;
-const s32	_LOGOBJ_GROUP		= 3;
-const s32	_LOGOBJ_REAL		= 4;
-const s32	_LOGOBJ_TALKIN		= 5;
-const s32	_LOGOBJ_TALKOUT		= 6;
-const s32	_LOGOBJ_TALKBACK	= 7;
-const s32	_LOGOBJ_TRIGGER		= 8;
-const s32	_LOGOBJ_SIGNAL		= 9;
-const s32	_LOGOBJ_DATA		= 10;
-const s32	_LOGOBJ_REGS		= 11;
-const s32	_LOGOBJ_LOGIC		= 12;
-const s32	_LOGOBJ_CLOCK		= 13;
-const s32	_LOGOBJ_HISTORY		= 14;
-const s32	_LOGOBJ_DELTA		= 15;
-const s32	_LOGOBJ_VENT		= 16;
-const s32	_LOGOBJ_CLONE		= 17;
-const s32	_LOGOBJ_STICKY		= 18;
-const s32	_LOGOBJ_DEBUG		= 19;
-const s32	_LOGOBJ_AWAY		= 20;
-const s32	_LOGOBJ_INVERT		= 21;
-const s32	_LOGOBJ_ANY1		= 22;
-const s32	_LOGOBJ_ALL1		= 23;
-const s32	_LOGOBJ_DIFF1		= 24;
-const s32	_LOGOBJ_ANY0		= 25;
-const s32	_LOGOBJ_ALL0		= 26;
-const s32	_LOGOBJ_DIFF0		= 27;
-
-const s32	_NODEDIR_PULL		= 1;					// Incoming node
-const s32	_NODEDIR_PUSH		= 2;					// Outgoing node
-
-const s32	_SIGNAL_PULL		= 1;					// Incoming signal
-const s32	_SIGNAL_PUSH		= 2;					// Outgoing signal
-
-const s32	_DATA_PULL			= 1;					// Incoming data
-const s32	_DATA_PUSH			= 2;					// Outgoing data
-
-const s32	_ENDIAN_LITTLE		= 1;					// Little endian
-const s32	_ENDIAN_BIG			= 2;					// Big endian
-
-// Bindings are relative to parent object orientation
-const s32	_BINDING_NORTH		= 1;					// North/up
-const s32	_BINDING_EAST		= 2;					// East/right
-const s32	_BINDING_SOUTH		= 3;					// South/down
-const s32	_BINDING_WEST		= 4;					// West/left
