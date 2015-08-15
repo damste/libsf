@@ -94,7 +94,9 @@
 #if !defined(_NONVJR_COMPILE)
 		u8				logBuffer[256];
 		SBitmap*		bmp;
+#if defined(_GRACE_COMPILE)
 		SGraceParams	params;
+#endif
 #endif
 
 
@@ -371,17 +373,19 @@
 		// Remove the splash screen 1/2 second later
 		CreateThread(0, 0, &iSplash_delete, (LPVOID)500, 0, 0);
 
-// 		// Create a thread to display the content in 3D
-// 		memset(&params, 0, sizeof(params));
-// 		params._func_mouse			= (uptr)&iGrace_mouse;
-// 		params._func_motion			= (uptr)&iGrace_motion;
-// 		params._func_passiveMotion	= (uptr)&iGrace_passiveMotion;
-// 		params._func_key			= (uptr)&iGrace_key;
-// 		params._func_special		= (uptr)&iGrace_special;
-// 		params._func_reshape		= (uptr)&iGrace_reshape;
-// 		params._func_display		= (uptr)&iGrace_display;
-// 		params._func_idle			= (uptr)&iGrace_idle;
-// 		CreateThread(0, 0, &iGrace, (LPVOID)&params, 0, 0);
+#if defined(_GRACE_COMPILE)
+		// Create a thread to display the content in 3D
+		memset(&params, 0, sizeof(params));
+		params._func_mouse			= (uptr)&iGrace_mouse;
+		params._func_motion			= (uptr)&iGrace_motion;
+		params._func_passiveMotion	= (uptr)&iGrace_passiveMotion;
+		params._func_key			= (uptr)&iGrace_key;
+		params._func_special		= (uptr)&iGrace_special;
+		params._func_reshape		= (uptr)&iGrace_reshape;
+		params._func_display		= (uptr)&iGrace_display;
+		params._func_idle			= (uptr)&iGrace_idle;
+		CreateThread(0, 0, &iGrace, (LPVOID)&params, 0, 0);
+#endif
 #endif
 	}
 

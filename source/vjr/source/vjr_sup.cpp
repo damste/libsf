@@ -1906,8 +1906,10 @@
 //////////
 // Disabled ... cannot find a good (or should I say "real-time") scaling algorithm for forms bitmaps
 //////
-// 					// Update the openGL window
-// 					iGrace_display();
+#if defined(_GRACE_COMPILE)
+					// Update the openGL window
+					iGrace_display();
+#endif
 
 					// Determine the focus highlights
 					iObj_setFocusHighlights(thisCode, win, win->obj, 0, 0, true, true);

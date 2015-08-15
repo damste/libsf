@@ -164,6 +164,12 @@
 
 
 //////////
+// Should Grace 3D support be instantiated at startup?
+//////
+// 	#define _GRACE_COMPILE
+
+
+//////////
 // The language to compile for:
 //		EN - English
 //		IT - Italian

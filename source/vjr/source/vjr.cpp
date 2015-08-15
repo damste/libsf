@@ -122,7 +122,7 @@
 	// Initialize
 	//////
 		ghInstance = hInstance;
-		iVjr_init(&hAccelTable, false);
+		iVjr_init(&hAccelTable);
 		iVjr_appendSystemLog(thisCode, (u8*)"Initialization complete");
 
 
