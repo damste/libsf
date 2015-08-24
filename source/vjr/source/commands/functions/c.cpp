@@ -552,7 +552,7 @@
 			rpar->rp[0] = NULL;
 			if (varParam)
 			{
-	// TODO:  Must also support DATETIMEX at some point
+// TODO:  Must also support DATETIMEX at some point
 				if (!iVariable_isValid(varParam) || !(iVariable_isTypeDate(varParam) || iVariable_isTypeDatetime(varParam)))
 				{
 					iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_getRelatedComp(thisCode, varParam), false);
@@ -966,9 +966,9 @@
 	void ifunction_ctox_common(SThisCode* thisCode, SFunctionParams* rpar, SVariable* varCtoxString, bool tlIncludeTime)
 	{
 		s8			c1, c2, cx, cMark;
-		s32			lnI, lnSkip, lnStop, lnDate, lnAmPm;
+		s32			lnI, lnSkip, lnStop, lnDate;
 		u32			lnYYYY, lnMM, lnDD, lnHh, lnMm, lnSs, lnMss;
-		bool		llValidate, llYear, llTimeValid;
+		bool		llValidate, llTimeValid;
 		s8*			lcYYYY		= NULL;
 		s8*			lcMM		= NULL;
 		s8*			lcDD		= NULL;
@@ -1067,9 +1067,9 @@ debug_break;
 		//////////
 		// Iterate through every character
 		//////
-			for (lnI = 0, lnAmPm = -1; lnI < varDate->value.length && (!lcYYYY || !lcMM || !lcDD); )
+			for (lnI = 0; lnI < varDate->value.length && (!lcYYYY || !lcMM || !lcDD); )
 			{
-				llYear		= false;
+//				llYear		= false;
 				llValidate	= true;
 				lnSkip		= 2;
 				c1			= varDate->value.data[lnI + 0];
@@ -1092,7 +1092,7 @@ debug_break;
 						if (c2 == '3')
 						{
 							// YY/YYYY
-							llYear	= true;
+//							llYear	= true;
 							lcYYYY	= varCtoxString->value.data + lnI;
 
 							if (propGet_settings_Century(_settings))

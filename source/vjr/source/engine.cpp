@@ -257,7 +257,7 @@
 								{
 									// Yes, execute it (self-contained execution and error reporting on every command)
 									cmd->command(thisCode, comp);
-									break;
+									return(true);
 								}
 							}
 
@@ -808,11 +808,11 @@
 //
 // Note:  The return value indicates if the calling signaler should continue propagating this event through to other parent objects (at the same coordinates).
 //////
-	bool iEngine_raise_event(SThisCode* thisCode, s32 tnEventId, SWindow* win, SObject* obj, void* p)
+	bool iEngine_raise_event(SThisCode* thisCode, u32 tnEventId, SWindow* win, SObject* obj, void* p)
 	{
 		if (obj)
 		{
-			if (tnEventId < 0 || tnEventId > (s32)_EVENT_MAX_COUNT || obj->ev.methods[tnEventId]._event == 0)
+			if (tnEventId < 0 || tnEventId > _EVENT_MAX_COUNT || obj->ev.methods[tnEventId]._event == 0)
 			{
 				// Should never happen
 // TODO:  For the extra info, we could add a call stack trace here
@@ -953,7 +953,7 @@
 // Called to set an event's destination ip address
 //
 //////
-	bool iEngine_set_event(SThisCode* thisCode, s32 tnEventId, SWindow* win, SObject* obj, uptr tnEventAddress)
+	bool iEngine_set_event(SThisCode* thisCode, u32 tnEventId, SWindow* win, SObject* obj, uptr tnEventAddress)
 	{
 		// Make sure our environment is sane
 		if (obj)

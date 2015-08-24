@@ -6,33 +6,33 @@
     </Plugin>
     <Plugin Name="CMakePlugin">
       <![CDATA[[{
-		"name":	"Debug",
-		"enabled":	false,
-		"buildDirectory":	"build",
-		"sourceDirectory":	"$(ProjectPath)",
-		"generator":	"",
-		"buildType":	"",
-		"arguments":	[],
-		"parentProject":	""
-	}, {
-		"name":	"Debug64",
-		"enabled":	false,
-		"buildDirectory":	"build",
-		"sourceDirectory":	"$(ProjectPath)",
-		"generator":	"",
-		"buildType":	"",
-		"arguments":	[],
-		"parentProject":	""
-	}, {
-		"name":	"Release",
-		"enabled":	false,
-		"buildDirectory":	"build",
-		"sourceDirectory":	"$(ProjectPath)",
-		"generator":	"",
-		"buildType":	"",
-		"arguments":	[],
-		"parentProject":	""
-	}]]]>
+  "name": "Debug",
+  "enabled": false,
+  "buildDirectory": "build",
+  "sourceDirectory": "$(ProjectPath)",
+  "generator": "",
+  "buildType": "",
+  "arguments": [],
+  "parentProject": ""
+ }, {
+  "name": "Debug64",
+  "enabled": false,
+  "buildDirectory": "build",
+  "sourceDirectory": "$(ProjectPath)",
+  "generator": "",
+  "buildType": "",
+  "arguments": [],
+  "parentProject": ""
+ }, {
+  "name": "Release",
+  "enabled": false,
+  "buildDirectory": "build",
+  "sourceDirectory": "$(ProjectPath)",
+  "generator": "",
+  "buildType": "",
+  "arguments": [],
+  "parentProject": ""
+ }]]]>
     </Plugin>
   </Plugins>
   <Description/>
@@ -151,7 +151,7 @@
       <ResourceCompiler Options=""/>
     </GlobalSettings>
     <Configuration Name="Debug" CompilerType="MinGW ( CodeLite-4.8.1 )" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
-      <Compiler Options="-g;-O0;-Wall;-Wno-comment;-Wno-multichar;-Wno-narrowing;-Wno-write-strings;-Wno-format-contains-nul;-Wno-reorder;-Wno-strict-aliasing;-Wno-char-subscripts" C_Options="-g;-O0;-Wall;-Wno-comment;-Wno-multichar;-Wno-narrowing;-Wno-write-strings;-Wno-format-contains-nul;-Wno-reorder;-Wno-strict-aliasing;-Wno-char-subscripts" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags="">
+      <Compiler Options="-g;-O0;-Wall;-Wno-comment;-Wno-multichar;-Wno-narrowing;-Wno-write-strings;-Wno-format-contains-nul;-Wno-reorder;-Wno-strict-aliasing;-Wno-char-subscripts;-Wno-unused-variable" C_Options="-g;-O0;-Wall;-Wno-comment;-Wno-multichar;-Wno-narrowing;-Wno-write-strings;-Wno-format-contains-nul;-Wno-strict-aliasing;-Wno-char-subscripts" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
         <IncludePath Value="C:/libsf/source/vjr/projects/vs2010/"/>
       </Compiler>
@@ -182,7 +182,7 @@
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>
-      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="no">
         <DebuggerSearchPaths/>
         <PostConnectCommands/>
         <StartupCommands/>
@@ -203,7 +203,7 @@
         <CustomPostBuild/>
         <CustomPreBuild/>
       </AdditionalRules>
-      <Completion EnableCpp11="no">
+      <Completion EnableCpp11="no" EnableCpp14="no">
         <ClangCmpFlagsC/>
         <ClangCmpFlags/>
         <ClangPP/>
@@ -211,7 +211,7 @@
       </Completion>
     </Configuration>
     <Configuration Name="Release" CompilerType="MinGW ( CodeLite-4.8.1 )" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
-      <Compiler Options="-O2;-Wall;-Wno-comment;-Wno-multichar;-Wno-narrowing;-Wno-write-strings;-Wno-format-contains-nul;-Wno-reorder;-Wno-strict-aliasing;-Wno-char-subscripts" C_Options="-O2;-Wall;-Wno-comment;-Wno-multichar;-Wno-narrowing;-Wno-write-strings;-Wno-format-contains-nul;-Wno-reorder;-Wno-strict-aliasing;-Wno-char-subscripts" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags="">
+      <Compiler Options="-O2;-Wall;-Wno-comment;-Wno-multichar;-Wno-narrowing;-Wno-write-strings;-Wno-format-contains-nul;-Wno-reorder;-Wno-strict-aliasing;-Wno-char-subscripts;-Wno-unused-variable" C_Options="-O2;-Wall;-Wno-comment;-Wno-multichar;-Wno-narrowing;-Wno-write-strings;-Wno-format-contains-nul;-Wno-strict-aliasing;-Wno-char-subscripts" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
         <IncludePath Value="C:/libsf/source/vjr/projects/vs2010/"/>
         <Preprocessor Value="NDEBUG"/>
@@ -243,7 +243,7 @@
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>
-      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="no">
         <DebuggerSearchPaths/>
         <PostConnectCommands/>
         <StartupCommands/>
@@ -264,7 +264,7 @@
         <CustomPostBuild/>
         <CustomPreBuild/>
       </AdditionalRules>
-      <Completion EnableCpp11="no">
+      <Completion EnableCpp11="no" EnableCpp14="no">
         <ClangCmpFlagsC/>
         <ClangCmpFlags/>
         <ClangPP/>

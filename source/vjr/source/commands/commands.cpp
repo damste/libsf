@@ -2265,27 +2265,29 @@
 
 	void command_declare(SThisCode* thisCode, SComp* compCommand, SFunctionParams* rpar)
 	{
-		SComp*		compDeclare = compCommand;
+		SComp*			compDeclare = compCommand;
 
-		s32			lnI;
-		SComp*		compVar;
-		SComp*		compLBracket;
-		SComp*		compIn;
-		SComp*		compAlias;
-		SComp*		compWin32Api;
-		SComp*		compNext;
-		SComp*		compFunctionName;
-		SComp*		compDllName;
-		SComp*		compAliasName;
-		SComp*		compParam;
-		SDllFuncParam	rp;
-		SDllFuncParam	ip[_MAX_DLL_PARAMS];
-		char		buffer[16];
+		u32				lnI;
+		SComp*			compVar;
+		SComp*			compLBracket;
+		SComp*			compIn;
+		SComp*			compAlias;
+		SComp*			compWin32Api;
+		SComp*			compNext;
+		SComp*			compFunctionName;
+		SComp*			compDllName;
+		SComp*			compAliasName;
+		SComp*			compParam;
+		SDllFuncParam	returnParam;
+		SDllFuncParam	inputParams[_MAX_DLL_PARAMS];
+		char			buffer[16];
 
 
 		//////////
 		// See if we're working with an array definition. The syntax will be: DECLARE laName[quantity] or DECLARE laName(quantity)
 		//////
+// Getting an error after exiting from this algorithm... most likely due to stack corruption or an invalid pointer memory overwrite.
+// Breakpoint and examine
 _asm int 3;
 			if ((compVar = iComps_getNth(thisCode, compDeclare, 1)) && (compLBracket = iComps_getNth(thisCode, compVar, 1)) && (compLBracket->iCode == _ICODE_BRACKET_LEFT || compLBracket->iCode == _ICODE_PARENTHESIS_LEFT))
 			{
@@ -2308,8 +2310,8 @@ _asm int 3;
 		//////////
 		// Initialize the parameters
 		//////
-			memset(&rp, 0, sizeof(rp));		// Return parameter
-			memset(&ip, 0, sizeof(ip));		// Input parameters
+			memset(&returnParam, 0, sizeof(returnParam));		// Return parameter
+			memset(&inputParams, 0, sizeof(inputParams));		// Input parameters
 
 			compFunctionName	= NULL;
 			compDllName			= NULL;
@@ -2330,15 +2332,15 @@ _asm int 3;
 		//////////
 		// Is it a return type?
 		//////
-			iDatum_duplicate(&rp.name, cgc_ret1, sizeof(cgc_ret1) - 1);
+			iDatum_duplicate(&returnParam.name, cgc_ret1, sizeof(cgc_ret1) - 1);
 			if (iiComps_validate(thisCode, compNext, &gsCompList_dllTypes[0], gnCompList_dllTypes_length))
 			{
 				// It is a valid return type
-				compFunctionName = iiCommand_declare_storeParameterType(thisCode, &rp, compNext);
+				compFunctionName = iiCommand_declare_storeParameterType(thisCode, &returnParam, compNext);
 
 			} else {
 				// The function name is next
-				rp.type = _DLL_TYPE_VOID;
+				returnParam.type = _DLL_TYPE_VOID;
 				compFunctionName = compNext;
 			}
 
@@ -2395,31 +2397,31 @@ _asm int 3;
 					if (iiComps_validate(thisCode, compParam, gsCompList_dllTypes, gnCompList_dllTypes_length))
 					{
 						// Grab type
-						compParam = iiCommand_declare_storeParameterType(thisCode, &ip[lnI], compParam);
+						compParam = iiCommand_declare_storeParameterType(thisCode, &inputParams[lnI], compParam);
 						if (compParam)
 						{
 							// Is there an at sign?
 							if (compParam->iCode == _ICODE_AT_SIGN)
 							{
 								// by-ref
-								ip[lnI].udfSetting	= _UDFPARMS_REFERENCE;
+								inputParams[lnI].udfSetting	= _UDFPARMS_REFERENCE;
 								compParam			= iComps_getNth(thisCode, compParam, 1);
 
 							} else {
 								// by-val
-								ip[lnI].udfSetting	= _UDFPARMS_VALUE;
+								inputParams[lnI].udfSetting	= _UDFPARMS_VALUE;
 							}
 
 							// Is there a name?
 							if (iiComps_validate(thisCode, compParam, gsCompList_alphanumericTypes, gnCompList_alphanumericTypes_length))
 							{
 								// Grab the name (for debugging)
-								compParam = iiCommand_declare_storeParameterName(thisCode, &ip[lnI], compParam, lnI + 1);
+								compParam = iiCommand_declare_storeParameterName(thisCode, &inputParams[lnI], compParam, lnI + 1);
 
 							} else {
 								// Use a default name
 								sprintf(buffer, "var%d", lnI + 1);
-								iDatum_duplicate(&ip[lnI].name, buffer, strlen(buffer));
+								iDatum_duplicate(&inputParams[lnI].name, buffer, strlen(buffer));
 							}
 
 							// Is there a comma?
@@ -2455,7 +2457,7 @@ _asm int 3;
 				}
 
 				// We're good, create the dll reference
-				iDllFunc_add(thisCode, rpar, &rp, ip, lnI, compFunctionName, compAliasName, compDllName, NULL, NULL);
+				iDllFunc_add(thisCode, rpar, &returnParam, inputParams, lnI, compFunctionName, compAliasName, compDllName, NULL, NULL);
 
 			} else {
 				// No parameters

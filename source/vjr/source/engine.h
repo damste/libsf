@@ -96,8 +96,8 @@
 	void					iEngine_error							(SThisCode* thisCode, u32 tnErrorNumber, SVariable* varRelated);
 
 	bool					iEngine_signal_onValidate				(SThisCode* thisCode, SVariable* varTableName, SVariable* varAlias, SVariable* varCdxName, SVariable* varTag, SVariable* varcMessage, SVariable* varIsError, SVariable* varRebuildIndexRequired);
-	bool					iEngine_raise_event						(SThisCode* thisCode, s32 tnEventId, SWindow* win, SObject* obj, void* p = NULL);
-	bool					iEngine_set_event						(SThisCode* thisCode, s32 tnEventId, SWindow* win, SObject* obj, uptr tnEventAddress);
+	bool					iEngine_raise_event						(SThisCode* thisCode, u32 tnEventId, SWindow* win, SObject* obj, void* p = NULL);
+	bool					iEngine_set_event						(SThisCode* thisCode, u32 tnEventId, SWindow* win, SObject* obj, uptr tnEventAddress);
 
 	s64						iEngine_update_tally					(SThisCode* thisCode, s64 tnValue);
 	s64						iEngine_update_meta1					(SThisCode* thisCode, s64 tnValue);

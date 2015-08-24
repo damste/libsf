@@ -197,11 +197,12 @@
 		SVariable* varLeftDelim		= rpar->ip[2];
 		SVariable* varRightDelim	= rpar->ip[3];
 
-		s32			lnResultLength;
+		s32			lnResultLength, lnResultLengthLast;
 		bool		llRecursive;
 		SDatum		leftDelim;
 		SDatum		rightDelim;
 		s8*			lcResult;
+		SVariable*	varFormatRecursion;
 		SVariable*	result;
 		bool		error;
 		u32			errorNum;
@@ -241,6 +242,14 @@
 			} else {
 				// Not recursive
 				llRecursive = false;
+			}
+
+			// Copy the format string
+			varFormatRecursion = iVariable_copy(thisCode, varFormatStr, false);
+			if (!varFormatRecursion)
+			{
+				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, NULL, false);
+				return;
 			}
 
 
@@ -289,8 +298,35 @@
 		//////////
 		// Call the common function
 		//////
-			lcResult		= NULL;
-			lnResultLength	= ifunction_dtransform_textmerge_common(thisCode, rpar, &lcResult, varFormatStr->value.data_cs8, varFormatStr->value.length, &leftDelim, &rightDelim, &rpar->ip[1], false, true);
+// Untested recursion code, breakpoint and examine
+debug_break;
+			result				= NULL;
+			lcResult			= NULL;
+			lnResultLength		= varFormatStr->value.length;
+			lnResultLengthLast	= -1;
+			do
+			{
+				// Update change count
+				if (llRecursive)
+				{
+					// For recursion, we update the result and send it back through each pass
+					if (lnResultLengthLast != -1)
+						iDatum_duplicate(&varFormatRecursion->value, lcResult, lnResultLength);
+
+					// Copy the length
+					lnResultLengthLast = lnResultLength;
+				}
+
+				// Perform this iteration
+				lnResultLength	= ifunction_dtransform_textmerge_common(thisCode, rpar, &lcResult, varFormatRecursion->value.data_cs8, varFormatRecursion->value.length, &leftDelim, &rightDelim, &rpar->ip[1], false, true);
+
+			} while (llRecursive && lnResultLengthLast != lnResultLength);
+
+
+		//////////
+		// Clean house
+		//////
+			iVariable_delete(thisCode, varFormatRecursion, true);
 
 
 		//////////
@@ -357,8 +393,8 @@
 		f32			lfSeconds;
 		f64			lfSecondsx;
 		bool		llExtendedTime, llExtractDatetime, llExtractDatetimeX, llExtractSeconds;
-		SVariable*	varDatetime;
-		SVariable*	varDatetimeX;
+//		SVariable*	varDatetime;
+//		SVariable*	varDatetimeX;
 		SVariable*	varSeconds;
 		SVariable*	result;
 		SYSTEMTIME	lst;
@@ -405,12 +441,12 @@
 
 				} else if (iVariable_isTypeDatetime(varP1)) {
 					// It's datetime, meaning they want the seconds from this value
-					varDatetime			= varP1;
+//					varDatetime			= varP1;
 					llExtractDatetime	= true;
 
 				} else if (iVariable_isTypeDatetimeX(varP1)) {
 					// It's datetimex, meaning they want the seconds or secondsx from this value
-					varDatetimeX		= varP1;
+// 					varDatetimeX		= varP1;
 					llExtractDatetimeX	= true;
 
 				} else if (!tlIsTimeX && iVariable_isFundamentalTypeLogical(varP1)) {
@@ -445,12 +481,12 @@
 
 					} else if (iVariable_isTypeDatetime(varP1)) {
 						// It's datetime, meaning they want the seconds from this value
-						varDatetime			= varP1;
+//						varDatetime			= varP1;
 						llExtractDatetime	= true;
 
 					} else if (iVariable_isTypeDatetimeX(varP1)) {
 						// It's datetime, meaning they want the seconds from this value
-						varDatetimeX		= varP1;
+// 						varDatetimeX		= varP1;
 						llExtractDatetimeX	= true;
 
 					} else {
