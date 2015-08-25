@@ -1383,7 +1383,9 @@ typedef SEM**		SEMpp;
 	const u8			cgcSystemLog[]						= "System Log";
 	const u8			cgc_noMateFound[]					= "Mate not found";
 	const u8			cgcVersionShort[]					= "Version 0.57";
+#if !defined(_NONVJR_COMPILE)
 	const u8			cgc_appName[]						= "Visual FreePro, Jr.";				// Used for Grace 3D's OpenGL window
+#endif
 #ifdef __GNUC__
 	#ifndef __amd64
 		const u8		cgcScreenTitle[]					= "Visual FreePro, Jr. Version 0.57 -- May.04.2015 -- GCC 32-bit";

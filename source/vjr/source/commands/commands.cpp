@@ -2462,10 +2462,6 @@
 		//////////
 		// Create the DLL reference
 		//////
-// Getting an error after returning from iDllFunc_add()...
-// Most likely due to stack corruption or an invalid pointer memory overwrite.
-// Breakpoint and examine
-_asm nop;
 			iDllFunc_add(thisCode, rpar, &returnParam, inputParams, lnI, compFunctionName, compAliasName, compDllName, NULL, NULL);
 
 	}

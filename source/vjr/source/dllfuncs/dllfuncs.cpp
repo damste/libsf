@@ -704,9 +704,9 @@ dll_dispatch_asm_code_finished:
 			//////////
 			// Try to access the function
 			//////
-				memset(&funcName, 0, sizeof(funcName));
 				lnFuncNameLength = min(compFunctionName->length, sizeof(funcName) - 1);
 				memcpy(funcName, compFunctionName->line->sourceCode->data_cs8 + compFunctionName->start, lnFuncNameLength);
+				funcName[lnFuncNameLength] = 0;
 
 				// Iterate through the list of dll candidates to see if we an find the function
 				for (lnI = 0, funcAddress = 0; !funcAddress && lnI < _MAX_DLL_HMODULES; lnI++)
@@ -822,6 +822,7 @@ dll_dispatch_asm_code_finished:
 
 	SDllLib* iDllLib_open(SThisCode* thisCode, SComp* compDllName)
 	{
+		s32			lnLength;
 		HMODULE		dllHandle;
 		SDllLib*	dlib;
 		s8			win32Dir[_MAX_PATH];
@@ -831,8 +832,9 @@ dll_dispatch_asm_code_finished:
 		//////////
 		// Initialize
 		//////
-			memset(dllName, 0, sizeof(dllName));
-			memcpy(dllName, compDllName->line->sourceCode->data_cs8 + compDllName->start, min(compDllName->length, sizeof(dllName) - 1));
+			lnLength = min(compDllName->length, sizeof(dllName) - 1);
+			memcpy(dllName, compDllName->line->sourceCode->data_cs8 + compDllName->start, lnLength);
+			dllName[lnLength] = 0;
 
 
 		//////////

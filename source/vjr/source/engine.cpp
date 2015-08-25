@@ -256,8 +256,9 @@
 								if (cmd->iCode == comp->iCode)
 								{
 									// Yes, execute it (self-contained execution and error reporting on every command)
-									cmd->command(thisCode, comp);
-									return(true);
+									cmd->command(thisCode, comp, &lrpar);
+// TODO:  We should examine lrpar here
+									return(!lrpar.ei.error);
 								}
 							}
 

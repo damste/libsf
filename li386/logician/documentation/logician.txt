@@ -17,7 +17,7 @@ Jesus' name.  Amen.
 Display types:
 
 	Via			-- A portal to other layers (helps organize large projects visually)
-	Gripper		-- An arrangement of things which grip tightly to primitive type
+	Gripper		-- An arrangement of things which grip tightly to a primitive type
 
 -----
 Primitive types:

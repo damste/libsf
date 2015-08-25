@@ -722,7 +722,7 @@ struct SFunctionParams;
 		//////
 			union {
 				uptr		_command;
-				void		(*command)		(SThisCode* thisCode, SComp* comp);
+				void		(*command)		(SThisCode* thisCode, SComp* comp, SFunctionParams* rpar);
 			};
 
 
