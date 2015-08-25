@@ -2286,9 +2286,6 @@
 		//////////
 		// See if we're working with an array definition. The syntax will be: DECLARE laName[quantity] or DECLARE laName(quantity)
 		//////
-// Getting an error after exiting from this algorithm... most likely due to stack corruption or an invalid pointer memory overwrite.
-// Breakpoint and examine
-_asm int 3;
 			if ((compVar = iComps_getNth(thisCode, compDeclare, 1)) && (compLBracket = iComps_getNth(thisCode, compVar, 1)) && (compLBracket->iCode == _ICODE_BRACKET_LEFT || compLBracket->iCode == _ICODE_PARENTHESIS_LEFT))
 			{
 				// It is of the array structure
@@ -2405,7 +2402,7 @@ _asm int 3;
 							{
 								// by-ref
 								inputParams[lnI].udfSetting	= _UDFPARMS_REFERENCE;
-								compParam			= iComps_getNth(thisCode, compParam, 1);
+								compParam					= iComps_getNth(thisCode, compParam, 1);
 
 							} else {
 								// by-val
@@ -2456,20 +2453,27 @@ _asm int 3;
 					return;
 				}
 
-				// We're good, create the dll reference
-				iDllFunc_add(thisCode, rpar, &returnParam, inputParams, lnI, compFunctionName, compAliasName, compDllName, NULL, NULL);
-
 			} else {
 				// No parameters
 				lnI = 0;
 			}
 
+
+		//////////
+		// Create the DLL reference
+		//////
+// Getting an error after returning from iDllFunc_add()...
+// Most likely due to stack corruption or an invalid pointer memory overwrite.
+// Breakpoint and examine
+_asm nop;
+			iDllFunc_add(thisCode, rpar, &returnParam, inputParams, lnI, compFunctionName, compAliasName, compDllName, NULL, NULL);
+
 	}
 
-	SComp* iiCommand_declare_storeParameterType(SThisCode* thisCode, SDllFuncParam* dp, SComp* compType)
+	SComp* iiCommand_declare_storeParameterType(SThisCode* thisCode, SDllFuncParam* dp, SComp* comp)
 	{
 		// Based on the type, set the parameter
-		switch (compType->iCode)
+		switch (comp->iCode)
 		{
 			case _ICODE_VOID:			// No return type
 				dp->type = _DLL_TYPE_VOID;
@@ -2523,10 +2527,10 @@ _asm int 3;
 		}
 
 		// Return the component after this one
-		return(iComps_getNth(thisCode, compType, 1));
+		return(iComps_getNth(thisCode, comp, 1));
 	}
 
-	SComp* iiCommand_declare_storeParameterName(SThisCode* thisCode, SDllFuncParam* dp, SComp* compNameOrAtSign, s32 tnParamNum)
+	SComp* iiCommand_declare_storeParameterName(SThisCode* thisCode, SDllFuncParam* dp, SComp* comp/*name or at sign*/, s32 tnParamNum)
 	{
 		char buffer[16];
 
@@ -2534,11 +2538,11 @@ _asm int 3;
 		//////////
 		// by-ref or by-value?
 		//////
-			if (compNameOrAtSign->iCode == _ICODE_AT_SIGN)
+			if (comp->iCode == _ICODE_AT_SIGN)
 			{
 				// By-ref as it is prefixed with an @ sign
 				dp->udfSetting		= _UDFPARMS_REFERENCE;
-				compNameOrAtSign	= iComps_getNth(thisCode, compNameOrAtSign, 1);
+				comp	= iComps_getNth(thisCode, comp, 1);
 
 			} else {
 				// By-value
@@ -2549,11 +2553,11 @@ _asm int 3;
 		//////////
 		// Copy the name if present (for debugging reference)
 		//////
-			if (compNameOrAtSign->iCode == _ICODE_ALPHA || compNameOrAtSign->iCode == _ICODE_ALPHANUMERIC)
+			if (comp->iCode == _ICODE_ALPHA || comp->iCode == _ICODE_ALPHANUMERIC)
 			{
 				// Use the name as given
-				iDatum_duplicate(&dp->name, compNameOrAtSign->line->sourceCode->data_cs8 + compNameOrAtSign->start, compNameOrAtSign->length);
-				compNameOrAtSign = iComps_getNth(thisCode, compNameOrAtSign, 1);
+				iDatum_duplicate(&dp->name, comp->line->sourceCode->data_cs8 + comp->start, comp->length);
+				comp = iComps_getNth(thisCode, comp, 1);
 
 			} else {
 				// Assign it a generic name
@@ -2565,7 +2569,7 @@ _asm int 3;
 		//////////
 		// Indicate the next component (which is now the one we're sitting on)
 		//////
-			return(compNameOrAtSign);
+			return(comp);
 	}
 
 

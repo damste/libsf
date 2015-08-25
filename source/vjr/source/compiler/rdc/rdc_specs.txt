@@ -196,6 +196,7 @@ RDC Specifications Document
 	typedef,alias	-- Aliases one type to another name
 
 	struct			-- A structure definition
+	order			-- An augment to change the display order in the debugger
 	class			-- A class definition
 	operator		-- For operator override definitions
 	extends,inherits -- A class extends another class (can extend multiple simultaneously)
