@@ -499,8 +499,8 @@ typedef SEM**		SEMpp;
 //////////
 // User-defined-function parameter passing protocol
 //////
+	const u32			_UDFPARMS_VALUE						= 0;						// By value
 	const u32			_UDFPARMS_REFERENCE					= 1;						// By reference
-	const u32			_UDFPARMS_VALUE						= 2;						// By value
 
 
 //////////

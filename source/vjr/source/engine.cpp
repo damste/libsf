@@ -98,6 +98,7 @@
 		SVariable*		varText;
 		SFunctionParams	lrpar;
 		SCommandData*	cmd;
+		SDllFunc*		dfunc;
 
 
 		// Make sure our environment is sane
@@ -248,6 +249,19 @@
 							// It's something like thisForm.
 							debug_nop;
 
+						} else if (comp->iCode == _ICODE_ALPHA || comp->iCode == _ICODE_ALPHANUMERIC) {
+							// It may be a DLL
+							if (dfunc = iDllFunc_find_byName(thisCode, comp->line->sourceCode->data_s8 + comp->start, comp->length))
+							{
+								// It is a DLL function
+								memset(&lrpar, 0, sizeof(lrpar));
+								iDllFunc_call(thisCode, &lrpar, dfunc, comp);
+								return(!lrpar.ei.error);
+							}
+
+							// If we get here, not found
+							return(false);
+
 						} else {
 							// See if it's a known command
 							for (cmd = &gsKnownCommands[0]; cmd->iCode != 0; cmd++)
@@ -256,6 +270,7 @@
 								if (cmd->iCode == comp->iCode)
 								{
 									// Yes, execute it (self-contained execution and error reporting on every command)
+									memset(&lrpar, 0, sizeof(lrpar));
 									cmd->command(thisCode, comp, &lrpar);
 // TODO:  We should examine lrpar here
 									return(!lrpar.ei.error);
@@ -699,7 +714,7 @@
 						//////////
 						// We need to find the minimum number of parameters between)
 						//////
-							if (!iiEngine_getParametersBetween(thisCode, funcData, compLeftParen, &lnParamsFound, funcData->req_pcount, funcData->max_pcount, rpar))
+							if (!iiEngine_getParametersBetween(thisCode, ((funcData->map_byValOrByRef) ? funcData->map_byValOrByRef : NULL), compLeftParen, &lnParamsFound, funcData->req_pcount, funcData->max_pcount, rpar))
 							{
 								rpar->ei.error		= true;
 								rpar->ei.errorNum	= _ERROR_INVALID_PARAMETERS;
@@ -1078,7 +1093,7 @@
 // Called to obtain the parameters between the indicated parenthesis.
 //
 //////
-	bool iiEngine_getParametersBetween(SThisCode* thisCode, SFunctionData* funcData, SComp* compLeftParen, u32* paramsFound, u32 requiredCount, u32 maxCount, SFunctionParams* rpar)
+	bool iiEngine_getParametersBetween(SThisCode* thisCode, s8* map_byRefOrByVal, SComp* compLeftParen, u32* paramsFound, u32 requiredCount, u32 maxCount, SFunctionParams* rpar, bool tlForceByRef)
 	{
 		u32			lnI, lnParamCount;
 		bool		llManufactured, llByRef, llUdfParamsByRef;
@@ -1127,10 +1142,12 @@
 				//////////
 				// Derive whatever this is as a variable
 				//////
-					if (!funcData || !funcData->paramMap)		llByRef = llUdfParamsByRef;
-					else										llByRef = llUdfParamsByRef | (funcData->paramMap[lnI] == '1');
+					// byRef or byVal determined by UDF setting, or by an explicit map override
+					if (!map_byRefOrByVal)		llByRef = llUdfParamsByRef;
+					else						llByRef = llUdfParamsByRef | (map_byRefOrByVal[lnI] == (_UDFPARMS_REFERENCE + '0'));
 
-					rpar->ip[lnI] = iEngine_get_variableName_fromComponent(thisCode, comp, &llManufactured, llByRef);
+					// Grab the variable reference
+					rpar->ip[lnI] = iEngine_get_variableName_fromComponent(thisCode, comp, &llManufactured, tlForceByRef | llByRef);
 
 
 				// Move to next component

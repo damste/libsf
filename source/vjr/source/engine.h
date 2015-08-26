@@ -110,7 +110,7 @@
 	void					iEngine_update_meta8					(SThisCode* thisCode, SVariable* varSrc);
 	void					iEngine_update_meta9					(SThisCode* thisCode, SVariable* varSrc);
 
-	bool					iiEngine_getParametersBetween			(SThisCode* thisCode, SFunctionData* funcData, SComp* compLeftParen, u32* paramsFound, u32 requiredCount, u32 maxCount, SFunctionParams* rpar);
+	bool					iiEngine_getParametersBetween			(SThisCode* thisCode, s8* map_byRefOrByVal, SComp* compLeftParen, u32* paramsFound, u32 requiredCount, u32 maxCount, SFunctionParams* rpar, bool tlForceByRef = false);
 
 	void					iBreakpoint_delete						(SThisCode* thisCode, SBreakpoint** breakpoint);
 	SBreakpoint* 			iBreakpoint_add							(SThisCode* thisCode, SBreakpoint** breakpoint, u32 tnType);

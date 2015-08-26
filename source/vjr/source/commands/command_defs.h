@@ -493,7 +493,9 @@ struct SFunctionParams;
 		//////
 			s32		req_pcount;			// How many parameters are required
 			s32		max_pcount;			// How many parameters are there maximum?
-			s8*		paramMap;			// Pointer to structure indicating the indirect map, '1' by reference, '0' is copy by value
+			s8*		map_byValOrByRef;	// Pointer to structure indicating the indirect map
+					// byVal='0'		// Refer to the _UDFPARMS_VALUE constant
+					// byRef='1'		// Refer to the _UDFPARMS_REFERENCE constant
 
 
 		//////////

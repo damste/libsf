@@ -115,6 +115,69 @@
 
 	const u32	_types_byRef_postProcess	= 128;
 
+	void iDllFunc_call(SThisCode* thisCode, SFunctionParams* rpar, SDllFunc* dfunc, SComp* comp)
+	{
+		s32		lnI;
+		u32		lnParamsFound;
+		bool	llResult;
+
+
+		// Loop entered only for structured exit on early error
+		while (1)
+		{
+
+			//////////
+			// We need to find the minimum number of parameters between)
+			//////
+				llResult = iiEngine_getParametersBetween(thisCode, NULL, iComps_getNth(thisCode, comp, 1), &lnParamsFound, dfunc->ipCount, dfunc->ipCount, rpar, true);
+				if (!llResult || lnParamsFound != dfunc->ipCount)
+				{
+					rpar->ei.error		= true;
+					rpar->ei.errorNum	= _ERROR_INVALID_PARAMETERS;
+					break;
+				}
+
+
+			//////////
+			// Update rpCount and ipCount
+			//////
+				rpar->rpCount	= ((dfunc->rp.type == _DLL_TYPE_VOID) ? 0 : 1);
+				rpar->rpMax		= rpar->rpCount;
+				rpar->rpMin		= rpar->rpCount;
+				rpar->ipCount	= lnParamsFound;
+
+
+			//////////
+			// Dispatch into the DLL
+			//////
+				iiDllFunc_dispatch(thisCode, rpar, dfunc);
+
+				// At this point, rpar->ei.error is set if error
+				break;
+
+		}
+
+
+		//////////
+		// Free every parameter we created
+		//////
+			for (lnI = 0; lnI < _MAX_PARAMETER_COUNT; lnI++)
+			{
+
+				// Delete if populated
+				if (rpar->ip[lnI])
+					iVariable_delete(thisCode, rpar->ip[lnI], true);
+
+			}
+
+
+		//////////
+		// Return values are in rpar->returns[]
+		//////
+			return;
+
+	}
+
 	void iiDllFunc_dispatch(SThisCode* thisCode, SFunctionParams* rpar, SDllFunc* dfunc)
 	{
 		s32			lnI, lnTypeStep, lnPointersStep, lnValuesStep;
@@ -786,11 +849,11 @@ dll_dispatch_asm_code_finished:
 			for (dfunc = gsRootDllFunc; dfunc; dfunc = (SDllFunc*)dfunc->ll->next)
 			{
 				// Raw name
-				if (dfunc->name.length == lnFuncNameLength && iDatum_compare(&dfunc->name, funcName, lnFuncNameLength))
+				if (dfunc->name.length == lnFuncNameLength && iDatum_compare(&dfunc->name, funcName, lnFuncNameLength) == 0)
 					return(dfunc);	// Found it by name
 
 				// Alias name
-				if (dfunc->alias.length == lnFuncNameLength && iDatum_compare(&dfunc->alias, funcName, lnFuncNameLength))
+				if (dfunc->alias.length == lnFuncNameLength && iDatum_compare(&dfunc->alias, funcName, lnFuncNameLength) == 0)
 					return(dfunc);	// Found it by alias
 			}
 			// If we get here, not found

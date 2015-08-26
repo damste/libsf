@@ -8322,10 +8322,10 @@ debug_break;
 // Called to delete the indicated variable
 //
 //////
-	void iVariable_delete(SThisCode* thisCode, SVariable* var, bool tlDeleteSelf)
+	void iVariable_delete(SThisCode* thisCode, SVariable* var, bool tlDeleteSelf, bool tlOverrideDelete/*override delete should be used when a variable must fall out of scope, and therefore override its isProtected setting*/)
 	{
 		// Make sure our environment is sane
-		if (var && !var->isSysVar && !var->isProtected)
+		if (var && !var->isSysVar && (tlOverrideDelete || !var->isProtected))
 		{
 			//////////
 			// Delete the name (if populated)
