@@ -5426,6 +5426,8 @@ debug_break;
 		varDefault_logical		= iVariable_create(thisCode, _VAR_TYPE_LOGICAL,		NULL, true);
 		varDefault_bitmap		= iVariable_create(thisCode, _VAR_TYPE_BITMAP,		NULL, true);
 		varDefault_thiscode		= iVariable_create(thisCode, _VAR_TYPE_THISCODE,	NULL, true);
+
+
 	}
 
 
@@ -8323,7 +8325,7 @@ debug_break;
 	void iVariable_delete(SThisCode* thisCode, SVariable* var, bool tlDeleteSelf)
 	{
 		// Make sure our environment is sane
-		if (var)
+		if (var && !var->isSysVar && !var->isProtected)
 		{
 			//////////
 			// Delete the name (if populated)

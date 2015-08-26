@@ -1269,6 +1269,47 @@ typedef SEM**		SEMpp;
 
 
 //////////
+// Internal variable names
+//////       
+     const u8			cgcName_alignment[]					= "_alignment";
+     const u8			cgcName_assist[]					= "_assist";
+     const u8			cgcName_box[]						= "_box";
+     const u8			cgcName_curobj[]					= "_curobj";
+     const u8			cgcName_foxdoc[]					= "_foxdoc";
+     const u8			cgcName_foxgraph[]					= "_foxgraph";
+     const u8			cgcName_gengraph[]					= "_gengraph";
+     const u8			cgcName_genpd[]						= "_genpd";
+     const u8			cgcName_genscrn[]					= "_genscrn";
+     const u8			cgcName_genxtab[]					= "_genxtab";
+     const u8			cgcName_indent[]					= "_indent";
+     const u8			cgcName_lmargin[]					= "_lmargin";
+     const u8			cgcName_menudesigner[]				= "_menudesigner";
+     const u8			cgcName_padvance[]					= "_padvance";
+     const u8			cgcName_pbpage[]					= "_pbpage";
+     const u8			cgcName_pcolno[]					= "_pcolno";
+     const u8			cgcName_pcopies[]					= "_pcopies";
+     const u8			cgcName_pdriver[]					= "_pdriver";
+     const u8			cgcName_pdsetup[]					= "_pdsetup";
+     const u8			cgcName_pecode[]					= "_pecode";
+     const u8			cgcName_peject[]					= "_peject";
+     const u8			cgcName_pepage[]					= "_pepage";
+     const u8			cgcName_plength[]					= "_plength";
+     const u8			cgcName_plineno[]					= "_plineno";
+     const u8			cgcName_ploffset[]					= "_ploffset";
+     const u8			cgcName_ppitch[]					= "_ppitch";
+     const u8			cgcName_pquality[]					= "_pquality";
+     const u8			cgcName_pscode[]					= "_pscode";
+     const u8			cgcName_pspacing[]					= "_pspacing";
+     const u8			cgcName_pwait[]						= "_pwait";
+     const u8			cgcName_rmargin[]					= "_rmargin";
+     const u8			cgcName_runactivedoc[]				= "_runactivedoc";
+     const u8			cgcName_tabs[]						= "_tabs";
+     const u8			cgcName_tooltiptimeout[]			= "_tooltiptimeout";
+     const u8			cgcName_transport[]					= "_transport";
+     const u8			cgcName_wrap[]						= "_wrap";
+
+
+//////////
 // Some BXML property settings
 //////
 	// Bxml tag names
@@ -1425,10 +1466,32 @@ typedef SEM**		SEMpp;
 	const u8			cgcFontName_subwindowTitleBar[]		= "Ubuntu Condensed";
 	const u8			cgcFontName_defaultTooltip[]		= "Ubuntu Condensed";
 	const u8			cgcFontName_cask[]					= "Ubuntu Mono";
-	const u8			cgcSystemLogFilename[]				= "system.log";
-	const u8			cgcScreenDataFilename[]				= "screen.vjr";
-	const u8			cgcCommandHistoryFilename[]			= "command.vjr";
-	const u8			cgcStartupPrgFilename[]				= "startup.prg";
-	const u8			cgcScreenLayoutFilename[]			= "layout.bxml";
-	const u8			cgcSoundStartupWav[]				= "startup_44100_f32.wav";
 
+	const u8			cgcCommandHistoryFilename[]			= "command.vjr";
+	const u8			cgcDefault[]						= "default";
+	const u8			cgcFormfeed[]						= "formfeed";
+	const u8			cgcFoxgraphFilename[]				= "foxgraph.exe";
+	const u8			cgcFoxrefFilename[]					= "foxref.app";
+	const u8			cgcFoxtaskFilename[]				= "foxtask.dbf";
+	const u8			cgcFoxgalleryFilename[]				= "gallery.app";
+	const u8			cgcGengraphFilename[]				= "gengraph.APP";
+	const u8			cgcGenhtmlFilename[]				= "genhtml.prg";
+	const u8			cgcGenmenuFilename[]				= "genmenu.prg";
+	const u8			cgcGenscrnFilename[]				= "genscrn.prg";
+	const u8			cgcNone[]							= "none";
+	const u8			cgcReportBuilderFilename[]			= "reportbuilder.app";
+	const u8			cgcReportOutputFilename[]			= "reportoutput.app";
+	const u8			cgcReportPreviewFilename[]			= "reportpreview.app";
+	const u8			cgcRunActiveDocFilename[]			= "runactd.prg";
+	const u8			cgcSamples[]						= "samples\\";
+	const u8			cgcScctextFilename[]				= "scctext.prg";
+	const u8			cgcScreenDataFilename[]				= "screen.vjr";
+	const u8			cgcSpellchkFilename[]				= "spellchk.app";
+	const u8			cgcScreenLayoutFilename[]			= "layout.bxml";
+	const u8			cgcStartupPrgFilename[]				= "startup.prg";
+	const u8			cgcSoundStartupWav[]				= "startup_44100_f32.wav";
+	const u8			cgcSystemLogFilename[]				= "system.log";
+	const u8			cgcTasklistFilename[]				= "tasklist.prg";
+	const u8			cgcTaskpaneFilename[]				= "taskpane.prg";
+	const u8			cgcToolboxFilename[]				= "toolbox.app";
+	const u8			cgcWizardFilename[]					= "wizard.app";

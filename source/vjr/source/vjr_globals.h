@@ -171,15 +171,18 @@
 
 	// Loaded DLLs
 	SDllLib*			gsRootDllLib						= NULL;									// Pointer to first loaded DLL
-	SDllFunc*				gsRootDllFunc							= NULL;									// Pointer to first function from a DLL that's been defined
+	SDllFunc*			gsRootDllFunc						= NULL;									// Pointer to first function from a DLL that's been defined
 
 	// Global variables
 	SVariable*			varGlobals							= NULL;									// All global variables are stored
 
 	// Specific variables in the global variable pool
+	SVariable*			varAlignment						= NULL;
 	SVariable*			varAsciiCols					 	= NULL;
 	SVariable*			varAsciiRows						= NULL;
+	SVariable*			varAssist							= NULL;
 	SVariable*			varBeautify							= NULL;
+	SVariable*			varBox								= NULL;
 	SVariable*			varBrowser							= NULL;
 	SVariable*			varBuilder							= NULL;
 	SVariable*			varCalcMem							= NULL;
@@ -188,19 +191,29 @@
 	SVariable*			varCodesense						= NULL;
 	SVariable*			varConverter						= NULL;
 	SVariable*			varCoverage							= NULL;
+	SVariable*			varCurobj							= NULL;
 	SVariable*			varDblclick							= NULL;
 	SVariable*			varDiaryDate						= NULL;
 	SVariable*			varDos								= NULL;
 	SVariable*			varFoxcode							= NULL;
+	SVariable*			varFoxdoc							= NULL;
+	SVariable*			varFoxgraph							= NULL;
 	SVariable*			varFoxref							= NULL;
 	SVariable*			varFoxtask							= NULL;
 	SVariable*			varGallery							= NULL;
+	SVariable*			varGetexpr							= NULL;
+	SVariable*			varGengraph							= NULL;
 	SVariable*			varGenhtml							= NULL;
 	SVariable*			varGenmenu							= NULL;
-	SVariable*			varGetexpr							= NULL;
+	SVariable*			varGenpd							= NULL;
+	SVariable*			varGenscrn							= NULL;
+	SVariable*			varGenxtab							= NULL;
 	SVariable*			varIncseek							= NULL;
+	SVariable*			varIndent							= NULL;
 	SVariable*			varInclude							= NULL;
+	SVariable*			varLmargin							= NULL;
 	SVariable*			varMac								= NULL;
+	SVariable*			varMenudesigner						= NULL;
 	SVariable*			varMeta1							= NULL;
 	SVariable*			varMeta2							= NULL;
 	SVariable*			varMeta3							= NULL;
@@ -212,12 +225,31 @@
 	SVariable*			varMeta9							= NULL;
 	SVariable*			varMline							= NULL;
 	SVariable*			varObjectBrowser					= NULL;
+	SVariable*			varPadvance							= NULL;
 	SVariable*			varPageno							= NULL;
 	SVariable*			varPagetotal						= NULL;
+	SVariable*			varPbpage							= NULL;
+	SVariable*			varPcolno							= NULL;
+	SVariable*			varPcopies							= NULL;
+	SVariable*			varPdriver							= NULL;
+	SVariable*			varPdsetup							= NULL;
+	SVariable*			varPecode							= NULL;
+	SVariable*			varPeject							= NULL;
+	SVariable*			varPepage							= NULL;
+	SVariable*			varPlength							= NULL;
+	SVariable*			varPlineno							= NULL;
+	SVariable*			varPloffset							= NULL;
+	SVariable*			varPpitch							= NULL;
+	SVariable*			varPquality							= NULL;
 	SVariable*			varPretext							= NULL;
+	SVariable*			varPscode							= NULL;
+	SVariable*			varPspacing							= NULL;
+	SVariable*			varPwait							= NULL;
 	SVariable*			varReportBuilder					= NULL;
 	SVariable*			varReportOutput						= NULL;
 	SVariable*			varReportpreview					= NULL;
+	SVariable*			varRmargin							= NULL;
+	SVariable*			varRunactivedoc						= NULL;
 	SVariable*			varSamples							= NULL;
 	SVariable*			varScctext							= NULL;
 	SVariable*			varScreen							= NULL;
@@ -225,18 +257,21 @@
 	SVariable*			varSpellchk							= NULL;
 	SVariable*			varStartup							= NULL;
 	SVariable*			varStartupTime						= NULL;
+	SVariable*			varTabs								= NULL;
 	SVariable*			varTasklist							= NULL;
 	SVariable*			varTaskpane							= NULL;
 	SVariable*			varTally							= NULL;
 	SVariable*			varText								= NULL;
 	SVariable*			varThrottle							= NULL;
 	SVariable*			varToolbox							= NULL;
+	SVariable*			varTooltiptimeout					= NULL;
 	SVariable*			varTriggerlevel						= NULL;
+	SVariable*			varTransport						= NULL;
 	SVariable*			varUnix								= NULL;
 	SVariable*			varVfp								= NULL;
 	SVariable*			varWindows							= NULL;
 	SVariable*			varWizard							= NULL;
-
+	SVariable*			varWrap								= NULL;
 
 	// Constant variables (used for reference)
 	SVariable*			cvarSpace1							= NULL;									// Holds a single space, and is a constant

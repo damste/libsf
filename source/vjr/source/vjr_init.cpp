@@ -663,6 +663,7 @@
 	{
 		s8				lnVal_s8;
 		s32				lnVal_s32;
+		f32				lfVal_f32;
 		SFunctionParams	lsrpar;
 
 
@@ -679,8 +680,12 @@
 		//////////
 		// The rest...
 		//////
+			iiVjr_init_createGlobalSystemVariable(&varAlignment,		_VAR_TYPE_CHARACTER,	cgcName_alignment,		(cs8*)&cgc_left[0], sizeof(cgc_left) - 1);
 			iiVjr_init_createGlobalSystemVariable(&varAsciiCols,		_VAR_TYPE_S32,			cgcName_asciicols);
 			iiVjr_init_createGlobalSystemVariable(&varAsciiRows,		_VAR_TYPE_S32,			cgcName_asciirows);
+			iiVjr_init_createGlobalSystemVariable(&varAssist,			_VAR_TYPE_CHARACTER,	cgcName_assist);
+			lnVal_s8 = _LOGICAL_TRUE;
+			iiVjr_init_createGlobalSystemVariable(&varBox,				_VAR_TYPE_LOGICAL,		cgcName_box,			(cs8*)&lnVal_s8,	1);
 			iiVjr_init_createGlobalSystemVariable(&varBeautify,			_VAR_TYPE_CHARACTER,	cgcName_beautify);
 			iiVjr_init_createGlobalSystemVariable(&varBrowser,			_VAR_TYPE_CHARACTER,	cgcName_browser);
 			iiVjr_init_createGlobalSystemVariable(&varBuilder,			_VAR_TYPE_CHARACTER,	cgcName_builder);
@@ -690,20 +695,37 @@
 			iiVjr_init_createGlobalSystemVariable(&varCodesense,		_VAR_TYPE_CHARACTER,	cgcName_codesense);
 			iiVjr_init_createGlobalSystemVariable(&varConverter,		_VAR_TYPE_CHARACTER,	cgcName_converter);
 			iiVjr_init_createGlobalSystemVariable(&varCoverage,			_VAR_TYPE_CHARACTER,	cgcName_coverage);
+			lnVal_s32 = -1;
+			iiVjr_init_createGlobalSystemVariable(&varCurobj,			_VAR_TYPE_S32,			cgcName_curobj,			(cs8*)&lnVal_s32,	4);
 			lnVal_s32 = GetDoubleClickTime();
 			iiVjr_init_createGlobalSystemVariable(&varDblclick,			_VAR_TYPE_S32,			cgcName_dblclick,		(cs8*)&lnVal_s32,	4);
 			iiVjr_init_createGlobalSystemVariable(&varDiaryDate,		_VAR_TYPE_DATE,			cgcName_diarydate);
 			iiVjr_init_createGlobalSystemVariable(&varDos,				_VAR_TYPE_LOGICAL,		cgcName_dos);
 			iiVjr_init_createGlobalSystemVariable(&varFoxcode,			_VAR_TYPE_CHARACTER,	cgcName_foxcode);
+			iiVjr_init_createGlobalSystemVariable(&varFoxdoc,			_VAR_TYPE_CHARACTER,	cgcName_foxdoc);
+			iiVjr_init_createGlobalSystemVariable(&varFoxgraph,			_VAR_TYPE_CHARACTER,	cgcName_foxgraph,		(cs8*)&cgcFoxgraphFilename,		sizeof(cgcFoxgraphFilename) - 1);
+			iiVjr_init_createGlobalSystemVariable(&varFoxref,			_VAR_TYPE_CHARACTER,	cgcName_foxref,			(cs8*)&cgcFoxrefFilename,		sizeof(cgcFoxrefFilename) - 1);
+			iiVjr_init_createGlobalSystemVariable(&varFoxtask,			_VAR_TYPE_CHARACTER,	cgcName_foxtask,		(cs8*)&cgcFoxrefFilename,		sizeof(cgcFoxrefFilename) - 1);
+			iiVjr_init_createGlobalSystemVariable(&varGallery,			_VAR_TYPE_CHARACTER,	cgcName_gallery,		(cs8*)&cgcFoxgalleryFilename,	sizeof(cgcFoxgalleryFilename) - 1);
+			iiVjr_init_createGlobalSystemVariable(&varGengraph,			_VAR_TYPE_CHARACTER,	cgcName_gengraph,		(cs8*)&cgcGengraphFilename,		sizeof(cgcGengraphFilename) - 1);
+			iiVjr_init_createGlobalSystemVariable(&varGenhtml,			_VAR_TYPE_CHARACTER,	cgcName_genhtml,		(cs8*)&cgcGenhtmlFilename,		sizeof(cgcGenhtmlFilename) - 1);
+			iiVjr_init_createGlobalSystemVariable(&varGenmenu,			_VAR_TYPE_CHARACTER,	cgcName_genmenu,		(cs8*)&cgcGenmenuFilename,		sizeof(cgcGenmenuFilename) - 1);
+			iiVjr_init_createGlobalSystemVariable(&varGenpd,			_VAR_TYPE_CHARACTER,	cgcName_genpd);
 			iiVjr_init_createGlobalSystemVariable(&varFoxref,			_VAR_TYPE_CHARACTER,	cgcName_foxref);
 			iiVjr_init_createGlobalSystemVariable(&varFoxtask,			_VAR_TYPE_CHARACTER,	cgcName_foxtask);
 			iiVjr_init_createGlobalSystemVariable(&varGallery,			_VAR_TYPE_CHARACTER,	cgcName_gallery);
 			iiVjr_init_createGlobalSystemVariable(&varGenhtml,			_VAR_TYPE_CHARACTER,	cgcName_genhtml);
 			iiVjr_init_createGlobalSystemVariable(&varGenmenu,			_VAR_TYPE_CHARACTER,	cgcName_genmenu);
 			iiVjr_init_createGlobalSystemVariable(&varGetexpr,			_VAR_TYPE_CHARACTER,	cgcName_getexpr);
-			iiVjr_init_createGlobalSystemVariable(&varIncseek,			_VAR_TYPE_S32,			cgcName_incseek);
+			iiVjr_init_createGlobalSystemVariable(&varGenscrn,			_VAR_TYPE_CHARACTER,	cgcName_genscrn,		(cs8*)&cgcGenscrnFilename,		sizeof(cgcGenscrnFilename) - 1);
+			iiVjr_init_createGlobalSystemVariable(&varGenxtab,			_VAR_TYPE_CHARACTER,	cgcName_genxtab);
+			iiVjr_init_createGlobalSystemVariable(&varGetexpr,			_VAR_TYPE_CHARACTER,	cgcName_getexpr);
+			lfVal_f32 = 0.5;
+			iiVjr_init_createGlobalSystemVariable(&varIncseek,			_VAR_TYPE_S32,			cgcName_incseek,		(cs8*)&lfVal_f32,	4);
 			iiVjr_init_createGlobalSystemVariable(&varInclude,			_VAR_TYPE_CHARACTER,	cgcName_include);
-			iiVjr_init_createGlobalSystemVariable(&varMac,				_VAR_TYPE_LOGICAL,		cgcName_mac);
+			iiVjr_init_createGlobalSystemVariable(&varIndent,			_VAR_TYPE_S32,			cgcName_indent);		// Defaults to 0
+			iiVjr_init_createGlobalSystemVariable(&varLmargin,			_VAR_TYPE_S32,			cgcName_lmargin);		// Defaults to 0
+			iiVjr_init_createGlobalSystemVariable(&varMac,				_VAR_TYPE_LOGICAL,		cgcName_mac);			// Defaults to .f.
 			iiVjr_init_createGlobalSystemVariable(&varMeta1,			_VAR_TYPE_S64,			cgcName_meta1);
 			iiVjr_init_createGlobalSystemVariable(&varMeta2,			_VAR_TYPE_S64,			cgcName_meta2);
 			iiVjr_init_createGlobalSystemVariable(&varMeta3,			_VAR_TYPE_S64,			cgcName_meta3);
@@ -713,34 +735,66 @@
 			iiVjr_init_createGlobalSystemVariable(&varMeta7,			_VAR_TYPE_LOGICAL,		cgcName_meta7);
 			iiVjr_init_createGlobalSystemVariable(&varMeta8,			_VAR_TYPE_LOGICAL,		cgcName_meta8);
 			iiVjr_init_createGlobalSystemVariable(&varMeta9,			_VAR_TYPE_LOGICAL,		cgcName_meta9);
+			iiVjr_init_createGlobalSystemVariable(&varMenudesigner,		_VAR_TYPE_CHARACTER,	cgcName_menudesigner);
 			iiVjr_init_createGlobalSystemVariable(&varMline,			_VAR_TYPE_S32,			cgcName_mline);
 			iiVjr_init_createGlobalSystemVariable(&varObjectBrowser,	_VAR_TYPE_CHARACTER,	cgcName_objectbrowser);
+			iiVjr_init_createGlobalSystemVariable(&varPadvance,			_VAR_TYPE_CHARACTER,	cgcName_padvance,		(cs8*)&cgcFormfeed[0], sizeof(cgcFormfeed) - 1);
 			iiVjr_init_createGlobalSystemVariable(&varPageno,			_VAR_TYPE_S32,			cgcName_pageno);
 			iiVjr_init_createGlobalSystemVariable(&varPagetotal,		_VAR_TYPE_S32,			cgcName_pagetotal);
 			iiVjr_init_createGlobalSystemVariable(&varPretext,			_VAR_TYPE_CHARACTER,	cgcName_pretext);
-			iiVjr_init_createGlobalSystemVariable(&varReportBuilder,	_VAR_TYPE_CHARACTER,	cgcName_reportbuilder);
-			iiVjr_init_createGlobalSystemVariable(&varReportOutput,		_VAR_TYPE_CHARACTER,	cgcName_reportoutput);
-			iiVjr_init_createGlobalSystemVariable(&varReportpreview,	_VAR_TYPE_CHARACTER,	cgcName_reportpreview);
-			iiVjr_init_createGlobalSystemVariable(&varSamples,			_VAR_TYPE_CHARACTER,	cgcName_samples);
-			iiVjr_init_createGlobalSystemVariable(&varScctext,			_VAR_TYPE_CHARACTER,	cgcName_scctext);
+			lnVal_s32 = 1;
+			iiVjr_init_createGlobalSystemVariable(&varPbpage,			_VAR_TYPE_S32,			cgcName_pbpage,			(cs8*)&lnVal_s32,	4);
+			iiVjr_init_createGlobalSystemVariable(&varPcolno,			_VAR_TYPE_S32,			cgcName_pcolno);
+			iiVjr_init_createGlobalSystemVariable(&varPcopies,			_VAR_TYPE_S32,			cgcName_pcopies,		(cs8*)&lnVal_s32,	4);
+			iiVjr_init_createGlobalSystemVariable(&varPdriver,			_VAR_TYPE_CHARACTER,	cgcName_pdriver);
+			iiVjr_init_createGlobalSystemVariable(&varPdsetup,			_VAR_TYPE_CHARACTER,	cgcName_pdsetup);
+			iiVjr_init_createGlobalSystemVariable(&varPecode,			_VAR_TYPE_CHARACTER,	cgcName_pecode);
+			iiVjr_init_createGlobalSystemVariable(&varPeject,			_VAR_TYPE_CHARACTER,	cgcName_peject,			(cs8*)&cgcNone[0], sizeof(cgcNone) - 1);
+			lnVal_s32 = 32767;
+			iiVjr_init_createGlobalSystemVariable(&varPepage,			_VAR_TYPE_S32,			cgcName_pepage,			(cs8*)&lnVal_s32,	4);
+			lnVal_s32 = 66;
+			iiVjr_init_createGlobalSystemVariable(&varPlength,			_VAR_TYPE_S32,			cgcName_plength,		(cs8*)&lnVal_s32,	4);
+			iiVjr_init_createGlobalSystemVariable(&varPlineno,			_VAR_TYPE_S32,			cgcName_plineno);
+			iiVjr_init_createGlobalSystemVariable(&varPloffset,			_VAR_TYPE_S32,			cgcName_ploffset);
+			iiVjr_init_createGlobalSystemVariable(&varPpitch,			_VAR_TYPE_CHARACTER,	cgcName_ppitch,			(cs8*)&cgcDefault[0], sizeof(cgcDefault) - 1);
+			iiVjr_init_createGlobalSystemVariable(&varPquality,			_VAR_TYPE_LOGICAL,		cgcName_pquality);
+			iiVjr_init_createGlobalSystemVariable(&varPretext,			_VAR_TYPE_CHARACTER,	cgcName_pretext);
+			iiVjr_init_createGlobalSystemVariable(&varPscode,			_VAR_TYPE_CHARACTER,	cgcName_pscode);
+			iiVjr_init_createGlobalSystemVariable(&varPspacing,			_VAR_TYPE_S32,			cgcName_pspacing,		(cs8*)&lnVal_s32,	4);
+			iiVjr_init_createGlobalSystemVariable(&varPwait,			_VAR_TYPE_LOGICAL,		cgcName_pwait);
+			iiVjr_init_createGlobalSystemVariable(&varReportBuilder,	_VAR_TYPE_CHARACTER,	cgcName_reportbuilder,	(cs8*)&cgcReportBuilderFilename[0],	sizeof(cgcReportBuilderFilename) - 1);
+			iiVjr_init_createGlobalSystemVariable(&varReportOutput,		_VAR_TYPE_CHARACTER,	cgcName_reportoutput,	(cs8*)&cgcReportOutputFilename[0],	sizeof(cgcReportOutputFilename) - 1);
+			iiVjr_init_createGlobalSystemVariable(&varReportpreview,	_VAR_TYPE_CHARACTER,	cgcName_reportpreview,	(cs8*)&cgcReportPreviewFilename[0],	sizeof(cgcReportPreviewFilename) - 1);
+			lnVal_s32 = 80;
+			iiVjr_init_createGlobalSystemVariable(&varRmargin,			_VAR_TYPE_S32,			cgcName_rmargin,		(cs8*)&lnVal_s32,	4);
+			iiVjr_init_createGlobalSystemVariable(&varRunactivedoc,		_VAR_TYPE_CHARACTER,	cgcName_runactivedoc,	(cs8*)&cgcRunActiveDocFilename[0],	sizeof(cgcRunActiveDocFilename) - 1);
+
+			iiVjr_init_createGlobalSystemVariable(&varSamples,			_VAR_TYPE_CHARACTER,	cgcName_samples,		(cs8*)&cgcSamples[0],				sizeof(cgcSamples) - 1);
+			iiVjr_init_createGlobalSystemVariable(&varScctext,			_VAR_TYPE_CHARACTER,	cgcName_scctext,		(cs8*)&cgcScctextFilename[0],		sizeof(cgcScctextFilename) - 1);
 			// varScreen is initialized as _screen system-wide
 			iiVjr_init_createGlobalSystemVariable(&varShell,			_VAR_TYPE_CHARACTER,	cgcName_shell);
-			iiVjr_init_createGlobalSystemVariable(&varSpellchk,			_VAR_TYPE_CHARACTER,	cgcName_spellchk);
-			iiVjr_init_createGlobalSystemVariable(&varStartup,			_VAR_TYPE_CHARACTER,	cgcName_startup,		(cs8*)&cgcStartupPrgFilename[0], sizeof(cgcStartupPrgFilename) - 1);
+			iiVjr_init_createGlobalSystemVariable(&varSpellchk,			_VAR_TYPE_CHARACTER,	cgcName_spellchk,		(cs8*)&cgcSpellchkFilename[0],		sizeof(cgcSpellchkFilename) - 1);
+			iiVjr_init_createGlobalSystemVariable(&varStartup,			_VAR_TYPE_CHARACTER,	cgcName_startup,		(cs8*)&cgcStartupPrgFilename[0],	sizeof(cgcStartupPrgFilename) - 1);
 			// varStartupTime is set above
-			iiVjr_init_createGlobalSystemVariable(&varTasklist,			_VAR_TYPE_CHARACTER,	cgcName_tasklist);
-			iiVjr_init_createGlobalSystemVariable(&varTaskpane,			_VAR_TYPE_CHARACTER,	cgcName_taskpane);
+			iiVjr_init_createGlobalSystemVariable(&varTabs,				_VAR_TYPE_CHARACTER,	cgcName_tabs);
+			iiVjr_init_createGlobalSystemVariable(&varTasklist,			_VAR_TYPE_CHARACTER,	cgcName_tasklist,		(cs8*)&cgcTasklistFilename[0],		sizeof(cgcTasklistFilename) - 1);
+			iiVjr_init_createGlobalSystemVariable(&varTaskpane,			_VAR_TYPE_CHARACTER,	cgcName_taskpane,		(cs8*)&cgcTaskpaneFilename[0],		sizeof(cgcTaskpaneFilename) - 1);
 			iiVjr_init_createGlobalSystemVariable(&varTally,			_VAR_TYPE_S64,			cgcName_tally);
-			iiVjr_init_createGlobalSystemVariable(&varText,				_VAR_TYPE_CHARACTER,	cgcName_text);
+			lnVal_s32 = -1;
+			iiVjr_init_createGlobalSystemVariable(&varText,				_VAR_TYPE_CHARACTER,	cgcName_text,			(cs8*)&lnVal_s32,	4);
 			lnVal_s32 = 1;
 			iiVjr_init_createGlobalSystemVariable(&varThrottle,			_VAR_TYPE_S32,			cgcName_throttle,		(cs8*)&lnVal_s32,	4);
-			iiVjr_init_createGlobalSystemVariable(&varToolbox,			_VAR_TYPE_CHARACTER,	cgcName_toolbox);
+			iiVjr_init_createGlobalSystemVariable(&varToolbox,			_VAR_TYPE_CHARACTER,	cgcName_toolbox,		(cs8*)&cgcToolboxFilename[0],		sizeof(cgcToolboxFilename) - 1);
+			lnVal_s32 = -1;
+			iiVjr_init_createGlobalSystemVariable(&varTooltiptimeout,	_VAR_TYPE_S32,			cgcName_tooltiptimeout, (cs8*)&lnVal_s32,	4);
+			iiVjr_init_createGlobalSystemVariable(&varTransport,		_VAR_TYPE_CHARACTER,	cgcName_transport);
 			iiVjr_init_createGlobalSystemVariable(&varTriggerlevel,		_VAR_TYPE_S32,			cgcName_triggerlevel);
 			iiVjr_init_createGlobalSystemVariable(&varUnix,				_VAR_TYPE_LOGICAL,		cgcName_unix);
 			// varVfp is initialized as _vjr system-wide
 			lnVal_s8 = _LOGICAL_TRUE;
 			iiVjr_init_createGlobalSystemVariable(&varWindows,			_VAR_TYPE_LOGICAL,		cgcName_windows,		(cs8*)&lnVal_s8,	1);
-			iiVjr_init_createGlobalSystemVariable(&varWizard,			_VAR_TYPE_CHARACTER,	cgcName_wizard);
+			iiVjr_init_createGlobalSystemVariable(&varWizard,			_VAR_TYPE_CHARACTER,	cgcName_wizard,			(cs8*)&cgcWizardFilename[0],		sizeof(cgcWizardFilename) - 1);
+			iiVjr_init_createGlobalSystemVariable(&varWrap,				_VAR_TYPE_LOGICAL,		cgcName_wrap,			".F." );
 
 	}
 
@@ -752,6 +806,9 @@
 
 		// Name it
 		iDatum_duplicate(&(*var)->name, tcName, -1);
+
+		// Mark it as a system variable
+		(*var)->isSysVar = true;
 
 		// Append it to global variables
 		iLl_appendExistingNodeAtEnd((SLL**)&varGlobals, (SLL*)*var);
