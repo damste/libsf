@@ -169,6 +169,7 @@ struct SThisCode;
 	s32						iComps_getAs_s32							(SThisCode* thisCode, SComp* comp);
 	s32						iComps_getContiguousLength					(SThisCode* thisCode, SComp* comp, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount, s32* tnCount);
 	bool					iiComps_validate							(SThisCode* thisCode, SComp* comp, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount);
+	bool					iiComps_isAlphanumeric						(SThisCode* thisCode, SComp* comp);
 	s8*						iComps_visualize							(SThisCode* thisCode, SComp* comp, s32 tnCount, s8* outputBuffer, s32 tnBufferLength, bool tlUseDefaultCompSearcher, SAsciiCompSearcher* tsComps1, SAsciiCompSearcher* tsComps2);
 
 //////////

@@ -2835,6 +2835,41 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 
 //////////
 //
+// Called to validate the contents of the component are comprised of only alphanumeric characters.
+// This differs from the test of iCode == _ICODE_ALPH or iCode == _ICODE_ALPHANUMERIC, and is
+// done on things which may have already been translated to others forms, but their fundamental
+// data content may be alphanumeric, such as using the variable "text" for example, which is a
+// known keyword, but can also be used as a variable name.
+//
+//////
+	bool iiComps_isAlphanumeric(SThisCode* thisCode, SComp* comp)
+	{
+		s32		lnI;
+		char	c;
+
+
+		// First character must be alpha
+		if (isAlpha(comp->line->sourceCode->data_s8[comp->start]))
+		{
+			for (lnI = 1; lnI < comp->length; lnI++)
+			{
+				// Test this character
+				c = comp->line->sourceCode->data_s8[comp->start + lnI];
+				if (!isAlpha(c) && !isNumeric(c))
+					return(false);
+			}
+			// If we get here, we're good
+			return(true);
+		}
+		// If we get here, not alphanumeric
+		return(false);
+	}
+
+
+
+
+//////////
+//
 // Visualizes the components in text form
 //
 //////

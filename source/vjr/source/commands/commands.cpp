@@ -2291,21 +2291,17 @@
 			}
 
 
-// 		//////////
-// 		// Is the name valid?
-// 		//////
-// 			if (compFunctionName->iCode != _ICODE_ALPHA && compFunctionName->iCode != _ICODE_ALPHANUMERIC)
-// 			{
-// 				// If there's an alias we can try the known keyword name, because it will be referenced by the alias
-// 				if (!compAlias || (compAlias->iCode != _ICODE_ALPHA && compAlias->iCode != _ICODE_ALPHANUMERIC))
-// 				{
-// 					// Syntax error
-// 					iError_reportByNumber(thisCode, _ERROR_SYNTAX, compFunctionName, false);
-// 					return;
-// 				}
-// 			}
-// 
-// 
+		//////////
+		// Is the name valid?
+		//////
+			if (!iiComps_isAlphanumeric(thisCode, compFunctionName))
+			{
+				// Syntax error
+				iError_reportByNumber(thisCode, _ERROR_SYNTAX, compFunctionName, false);
+				return;
+			}
+
+
 		//////////
 		// IN win32api | pathname.dll
 		//////
@@ -2363,7 +2359,7 @@
 							}
 
 							// Is there a name?
-							if (compParam->iCode != _ICODE_COMMA)
+							if (compParam->iCode != _ICODE_COMMA && iiComps_isAlphanumeric(thisCode, compParam))
 							{
 								// Grab the name (for debugging)
 								compParam = iiCommand_declare_storeParameterName(thisCode, &inputParams[lnI], compParam, lnI + 1);
