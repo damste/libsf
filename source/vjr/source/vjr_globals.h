@@ -698,3 +698,41 @@
 // 		bool			glMouseMiddleButton					= false;
 // 		bool			glMouseRightButton					= false;
 
+//////////
+// DLL processing support
+//////
+	s32 gsCompList_dllTypes[] = {
+		_ICODE_VOID,			// No return type
+		_ICODE_SHORT,			// 16-bit integer
+		_ICODE_S16,				// 16-bit integer
+		_ICODE_U16,				// 16-bit unsigned integer
+		_ICODE_INTEGER,			// 32-bit integer
+		_ICODE_S32,				// 32-bit integer
+		_ICODE_U32,				// 32-bit unsigned integer
+		_ICODE_SINGLE,			// 32-bit floating point
+		_ICODE_FLOAT,			// 32-bit floating point
+		_ICODE_F32,				// 32-bit floating point
+		_ICODE_DOUBLE,			// 64-bit floating point
+		_ICODE_F64,				// 64-bit floating point
+		_ICODE_LONG,			// 32-bit integer
+		_ICODE_S64,				// 64-bit integer
+		_ICODE_U64,				// 64-bit unsigned integer
+		_ICODE_STRING,			// Character string
+		_ICODE_OBJECT			// IDispatch object
+	};
+	const s32 gnCompList_dllTypes_length = sizeof(gsCompList_dllTypes) / sizeof(gsCompList_dllTypes[0]);
+
+	s32 gsCompList_filenameTypes[] = {
+		_ICODE_ALPHA,			// Name
+		_ICODE_ALPHANUMERIC,	// Name
+		_ICODE_COLON,			// c:
+		_ICODE_SLASH,			// //server/
+		_ICODE_BACKSLASH		// \\server\ and c:\pathname\file.dll
+	};
+	const s32 gnCompList_filenameTypes_length = sizeof(gsCompList_filenameTypes) / sizeof(gsCompList_filenameTypes[0]);
+
+	s32 gsCompList_alphanumericTypes[] = {
+		_ICODE_ALPHA,			// text
+		_ICODE_ALPHANUMERIC		// text123
+	};
+	const s32 gnCompList_alphanumericTypes_length = sizeof(gsCompList_alphanumericTypes) / sizeof(gsCompList_alphanumericTypes[0]);

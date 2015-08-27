@@ -1157,6 +1157,25 @@ typedef SEM**		SEMpp;
 
 
 //////////
+// DECLARE DLL constants
+//////
+	const s32			_DLL_TYPE_VP						= 1;	// _ICODE_VOIDPTR;
+	const s32			_DLL_TYPE_VOID						= 2;	// _ICODE_VOID;
+	const s32			_DLL_TYPE_S16						= 3;	// _ICODE_S16;
+	const s32			_DLL_TYPE_U16						= 4;	// _ICODE_U16;
+	const s32			_DLL_TYPE_S32						= 5;	// _ICODE_S32;
+	const s32			_DLL_TYPE_U32						= 6;	// _ICODE_U32;
+	const s32			_DLL_TYPE_F32						= 7;	// _ICODE_F32;
+	const s32			_DLL_TYPE_F64						= 8;	// _ICODE_F64;
+	const s32			_DLL_TYPE_S64						= 9;	// _ICODE_S64;
+	const s32			_DLL_TYPE_U64						= 10;	// _ICODE_U64;
+	const s32			_DLL_TYPE_STRING					= 11;	// _ICODE_CHARACTER;
+	const s32			_DLL_TYPE_IDISPATCH					= 12;	// _ICODE_OBJECT;
+	const u32			_DLL_TYPE__byRef_postProcess		= 128;
+	const s8			cgc_ret1[]							= "ret1";	// Variable name used for display in debuggers
+
+
+//////////
 // Internal variable names
 //////
 	const u8			cgcName_asciicols[]					= "_asciicols";

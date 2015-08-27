@@ -91,31 +91,7 @@
 // Called to call into the dll function
 //
 //////
-	struct SValues
-	{
-		union {
-			s16			_s16;
-			s32			_s32;
-			s64			_s64;
-
-			f32			_f32;
-			f64			_f64;
-
-			s16			_u16;
-			s32			_u32;
-			s64			_u64;
-
-			s8*			_s8p;
-			void*		_vp;
-			IDispatch*	_idispatch;
-
-			SDatum		_datum;
-		};
-	};
-
-	const u32	_types_byRef_postProcess	= 128;
-
-	void iDllFunc_call(SThisCode* thisCode, SFunctionParams* rpar, SDllFunc* dfunc, SComp* comp)
+	void iDllFunc_dispatch(SThisCode* thisCode, SFunctionParams* rpar, SDllFunc* dfunc, SComp* compDllName)
 	{
 		s32		lnI;
 		u32		lnParamsFound;
@@ -129,7 +105,7 @@
 			//////////
 			// We need to find the minimum number of parameters between)
 			//////
-				llResult = iiEngine_getParametersBetween(thisCode, NULL, iComps_getNth(thisCode, comp, 1), &lnParamsFound, dfunc->ipCount, dfunc->ipCount, rpar, true);
+				llResult = iiEngine_getParametersBetween(thisCode, NULL, iComps_getNth(thisCode, compDllName, 1), &lnParamsFound, dfunc->ipCount, dfunc->ipCount, rpar, true);
 				if (!llResult || lnParamsFound != dfunc->ipCount)
 				{
 					rpar->ei.error		= true;
@@ -150,7 +126,7 @@
 			//////////
 			// Dispatch into the DLL
 			//////
-				iiDllFunc_dispatch(thisCode, rpar, dfunc);
+				iiDllFunc_dispatch_lowLevel(thisCode, rpar, dfunc);
 
 				// At this point, rpar->ei.error is set if error
 				break;
@@ -178,7 +154,7 @@
 
 	}
 
-	void iiDllFunc_dispatch(SThisCode* thisCode, SFunctionParams* rpar, SDllFunc* dfunc)
+	void iiDllFunc_dispatch_lowLevel(SThisCode* thisCode, SFunctionParams* rpar, SDllFunc* dfunc)
 	{
 		s32			lnI, lnTypeStep, lnPointersStep, lnValuesStep;
 		u32			lnParamCount, lnReturnType, lnSizeofTypes, lnSizeofPointers, lnSizeofValues, lnSaveParamBytes;
@@ -189,7 +165,7 @@
 		void*		return_values_base;
 		u32			types	[_MAX_DLL_PARAMS];		// Refer to _types_* constants
 		void*		pointers[_MAX_DLL_PARAMS];		// Pointers to data the start of every data item
-		SValues		values	[_MAX_DLL_PARAMS];		// Values stored if they need to be converted
+		SDllVals		values	[_MAX_DLL_PARAMS];		// Values stored if they need to be converted
 
 
 		//////////
@@ -230,7 +206,7 @@
 									// We must translate it, then store it back afterward
 									values[lnI]._s16	= iiVariable_getAs_s16(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
 									pointers[lnI]		= (void*)&values[lnI]._s16;
-									types[lnI]			= _types_byRef_postProcess;
+									types[lnI]			= _DLL_TYPE__byRef_postProcess;
 								}
 
 							} else {
@@ -255,7 +231,7 @@
 									// We must translate it, then store it back afterward
 									values[lnI]._u16	= iiVariable_getAs_u16(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
 									pointers[lnI]		= (void*)&values[lnI]._u16;
-									types[lnI]			= _types_byRef_postProcess;
+									types[lnI]			= _DLL_TYPE__byRef_postProcess;
 								}
 
 							} else {
@@ -280,7 +256,7 @@
 									// We must translate it, then store it back afterward
 									values[lnI]._s32	= iiVariable_getAs_s32(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
 									pointers[lnI]		= (void*)&values[lnI]._s32;
-									types[lnI]			= _types_byRef_postProcess;
+									types[lnI]			= _DLL_TYPE__byRef_postProcess;
 								}
 
 							} else {
@@ -305,7 +281,7 @@
 									// We must translate it, then store it back afterward
 									values[lnI]._u32	= iiVariable_getAs_u32(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
 									pointers[lnI]		= (void*)&values[lnI]._u32;
-									types[lnI]			= _types_byRef_postProcess;
+									types[lnI]			= _DLL_TYPE__byRef_postProcess;
 								}
 
 							} else {
@@ -330,7 +306,7 @@
 									// We must translate it, then store it back afterward
 									values[lnI]._f32	= iiVariable_getAs_f32(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
 									pointers[lnI]		= (void*)&values[lnI]._f32;
-									types[lnI]			= _types_byRef_postProcess;
+									types[lnI]			= _DLL_TYPE__byRef_postProcess;
 								}
 
 							} else {
@@ -355,7 +331,7 @@
 									// We must translate it, then store it back afterward
 									values[lnI]._f64	= iiVariable_getAs_f64(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
 									pointers[lnI]		= (void*)&values[lnI]._f64;
-									types[lnI]			= _types_byRef_postProcess;
+									types[lnI]			= _DLL_TYPE__byRef_postProcess;
 								}
 
 							} else {
@@ -380,7 +356,7 @@
 									// We must translate it, then store it back afterward
 									values[lnI]._s64	= iiVariable_getAs_s64(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
 									pointers[lnI]		= (void*)&values[lnI]._s64;
-									types[lnI]			= _types_byRef_postProcess;
+									types[lnI]			= _DLL_TYPE__byRef_postProcess;
 								}
 
 							} else {
@@ -405,7 +381,7 @@
 									// We must translate it, then store it back afterward
 									values[lnI]._u64	= iiVariable_getAs_u64(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
 									pointers[lnI]		= (void*)&values[lnI]._u64;
-									types[lnI]			= _types_byRef_postProcess;
+									types[lnI]			= _DLL_TYPE__byRef_postProcess;
 								}
 
 							} else {
@@ -569,8 +545,8 @@ push_u64:
 					jmp		prepare_for_next_param
 
 finished_with_stack_ops:
-					call	funcAddress					// Dispatch into the DLL function
-					add		esp,lnSaveParamBytes		// Remove pushed parameters from the stack
+					call	funcAddress					// Dispatch into the DLL function9
+//					add		esp,lnSaveParamBytes		// Remove pushed parameters from the stack
 
 					// Store return value if any
 					mov		edi,return_values_base
@@ -681,7 +657,7 @@ dll_dispatch_asm_code_finished:
 			for (lnI = 0; lnI < rpar->ipCount; lnI++)
 			{
 				// Does this one need post processing?
-				if ((types[lnI] & _types_byRef_postProcess) != 0)
+				if ((types[lnI] & _DLL_TYPE__byRef_postProcess) != 0)
 				{
 
 					//////////

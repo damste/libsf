@@ -2212,57 +2212,6 @@
 // Returns:
 //		Nothing. The thing being declared has been declared, or there is an error.
 //////
-	s32 gsCompList_dllTypes[] = {
-		_ICODE_VOID,			// No return type
-		_ICODE_SHORT,			// 16-bit integer
-		_ICODE_S16,				// 16-bit integer
-		_ICODE_U16,				// 16-bit unsigned integer
-		_ICODE_INTEGER,			// 32-bit integer
-		_ICODE_S32,				// 32-bit integer
-		_ICODE_U32,				// 32-bit unsigned integer
-		_ICODE_SINGLE,			// 32-bit floating point
-		_ICODE_FLOAT,			// 32-bit floating point
-		_ICODE_F32,				// 32-bit floating point
-		_ICODE_DOUBLE,			// 64-bit floating point
-		_ICODE_F64,				// 64-bit floating point
-		_ICODE_LONG,			// 32-bit integer
-		_ICODE_S64,				// 64-bit integer
-		_ICODE_U64,				// 64-bit unsigned integer
-		_ICODE_STRING,			// Character string
-		_ICODE_OBJECT			// IDispatch object
-	};
-	const s32 gnCompList_dllTypes_length = sizeof(gsCompList_dllTypes) / sizeof(gsCompList_dllTypes[0]);
-
-	s32 gsCompList_filenameTypes[] = {
-		_ICODE_ALPHA,			// Name
-		_ICODE_ALPHANUMERIC,	// Name
-		_ICODE_COLON,			// c:
-		_ICODE_SLASH,			// //server/
-		_ICODE_BACKSLASH		// \\server\ and c:\pathname\file.dll
-	};
-	const s32 gnCompList_filenameTypes_length = sizeof(gsCompList_filenameTypes) / sizeof(gsCompList_filenameTypes[0]);
-
-	s32 gsCompList_alphanumericTypes[] = {
-		_ICODE_ALPHA,			// text
-		_ICODE_ALPHANUMERIC		// text123
-	};
-	const s32 gnCompList_alphanumericTypes_length = sizeof(gsCompList_alphanumericTypes) / sizeof(gsCompList_alphanumericTypes[0]);
-
-	const s32 _DLL_TYPE_VP			= _ICODE_VOIDPTR;
-	const s32 _DLL_TYPE_VOID		= _ICODE_VOID;
-	const s32 _DLL_TYPE_S16			= _ICODE_S16;
-	const s32 _DLL_TYPE_U16			= _ICODE_U16;
-	const s32 _DLL_TYPE_S32			= _ICODE_S32;
-	const s32 _DLL_TYPE_U32			= _ICODE_U32;
-	const s32 _DLL_TYPE_F32			= _ICODE_F32;
-	const s32 _DLL_TYPE_F64			= _ICODE_F64;
-	const s32 _DLL_TYPE_S64			= _ICODE_S64;
-	const s32 _DLL_TYPE_U64			= _ICODE_U64;
-	const s32 _DLL_TYPE_STRING		= _ICODE_CHARACTER;
-	const s32 _DLL_TYPE_IDISPATCH	= _ICODE_OBJECT;
-
-	const s8 cgc_ret1[] = "ret1";		// Variable name used for debuggers
-
 	void command_declare(SThisCode* thisCode, SComp* compCommand, SFunctionParams* rpar)
 	{
 		SComp*			compDeclare = compCommand;

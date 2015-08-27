@@ -229,6 +229,29 @@ struct SDllFunc
 	SThisCode*		onAssign;				// Called whenever the return result from the DLL is received
 };
 
+// Used for pushing values onto the stack for the physical DLL dispatch from VJr into the DLL code
+struct SDllVals
+{
+	union {
+		s16			_s16;			// Signed integer
+		s32			_s32;
+		s64			_s64;
+
+		f32			_f32;			// Floating point
+		f64			_f64;
+
+		s16			_u16;			// Unsigned integer
+		s32			_u32;
+		s64			_u64;
+
+		s8*			_s8p;			// Pointer to character data
+		void*		_vp;			// General pointer to data (byRef values)
+		IDispatch*	_idispatch;		// An IDispatch Windows object
+
+		SDatum		_datum;			// Used for creating a copy of character data when it's passed by value (so any changes made are made to the copy)
+	};
+};
+
 struct SFunctionParams
 {
 	// If there's an error, these are set

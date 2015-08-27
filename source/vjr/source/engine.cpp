@@ -255,7 +255,7 @@
 							{
 								// It is a DLL function
 								memset(&lrpar, 0, sizeof(lrpar));
-								iDllFunc_call(thisCode, &lrpar, dfunc, comp);
+								iDllFunc_dispatch(thisCode, &lrpar, dfunc, comp);
 								return(!lrpar.ei.error);
 							}
 
@@ -457,9 +457,15 @@
 
 
 					//////////
+					// Set the related comp
+					//////
+						if (var)
+							var->compRelated = comp;
+
+
+					//////////
 					// Return our result
 					//////
-						var->compRelated = comp;
 						return(var);
 
 
@@ -1152,7 +1158,7 @@
 
 				// Move to next component
 				++lnParamCount;
-				comp = compComma->ll.nextComp;
+				comp = iComps_getNth(thisCode, compComma, 1);
 			}
 
 
