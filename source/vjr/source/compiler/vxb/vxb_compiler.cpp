@@ -4814,7 +4814,7 @@ debug_break;
 // no identity.
 //
 //////
-	SVariable* iVariable_create(SThisCode* thisCode, s32 tnVarType, SVariable* varIndirect, bool tlAllocateDefaultValue, s32 tnBits)
+	SVariable* iVariable_create(SThisCode* thisCode, s32 tnVarType, SVariable* varIndirect, bool tlAllocateDefaultValue, s32 tnBitsFor_bfp_bi)
 	{
 		SVariable*	varDefault;
 		SVariable*	varNew;
@@ -4910,12 +4910,12 @@ debug_break;
 
 						case _VAR_TYPE_BI:
 						case _VAR_TYPE_BFP:
-							tnBits					= max(tnBits, 128);
+							tnBitsFor_bfp_bi					= max(tnBitsFor_bfp_bi, 128);
 							varNew->value.data_big	= m_apm_init();
-							varNew->value.length	= tnBits;
+							varNew->value.length	= tnBitsFor_bfp_bi;
 
 							// Store the bits for this creation in
-							iEngine_update_meta1(thisCode, (s64)tnBits);
+							iEngine_update_meta1(thisCode, (s64)tnBitsFor_bfp_bi);
 							break;
 
 						default:

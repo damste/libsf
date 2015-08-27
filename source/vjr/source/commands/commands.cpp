@@ -2291,17 +2291,21 @@
 			}
 
 
-		//////////
-		// Is the name valid?
-		//////
-			if (compFunctionName->iCode != _ICODE_ALPHA && compFunctionName->iCode != _ICODE_ALPHANUMERIC)
-			{
-				// Syntax error
-				iError_reportByNumber(thisCode, _ERROR_SYNTAX, compDeclare, false);
-				return;
-			}
-
-
+// 		//////////
+// 		// Is the name valid?
+// 		//////
+// 			if (compFunctionName->iCode != _ICODE_ALPHA && compFunctionName->iCode != _ICODE_ALPHANUMERIC)
+// 			{
+// 				// If there's an alias we can try the known keyword name, because it will be referenced by the alias
+// 				if (!compAlias || (compAlias->iCode != _ICODE_ALPHA && compAlias->iCode != _ICODE_ALPHANUMERIC))
+// 				{
+// 					// Syntax error
+// 					iError_reportByNumber(thisCode, _ERROR_SYNTAX, compFunctionName, false);
+// 					return;
+// 				}
+// 			}
+// 
+// 
 		//////////
 		// IN win32api | pathname.dll
 		//////
@@ -2359,7 +2363,7 @@
 							}
 
 							// Is there a name?
-							if (iiComps_validate(thisCode, compParam, gsCompList_alphanumericTypes, gnCompList_alphanumericTypes_length))
+							if (compParam->iCode != _ICODE_COMMA)
 							{
 								// Grab the name (for debugging)
 								compParam = iiCommand_declare_storeParameterName(thisCode, &inputParams[lnI], compParam, lnI + 1);
@@ -2477,8 +2481,6 @@
 
 	SComp* iiCommand_declare_storeParameterName(SThisCode* thisCode, SDllFuncParam* dp, SComp* comp/*name or at sign*/, s32 tnParamNum)
 	{
-		char buffer[16];
-
 
 		//////////
 		// by-ref or by-value?
@@ -2498,17 +2500,9 @@
 		//////////
 		// Copy the name if present (for debugging reference)
 		//////
-			if (comp->iCode == _ICODE_ALPHA || comp->iCode == _ICODE_ALPHANUMERIC)
-			{
-				// Use the name as given
-				iDatum_duplicate(&dp->name, comp->line->sourceCode->data_cs8 + comp->start, comp->length);
-				comp = iComps_getNth(thisCode, comp, 1);
-
-			} else {
-				// Assign it a generic name
-				sprintf(buffer, "var%d", tnParamNum);
-				iDatum_duplicate(&dp->name, buffer, strlen(buffer));
-			}
+			// Use the name as given
+			iDatum_duplicate(&dp->name, comp->line->sourceCode->data_cs8 + comp->start, comp->length);
+			comp = iComps_getNth(thisCode, comp, 1);
 
 
 		//////////

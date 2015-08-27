@@ -610,6 +610,11 @@ dll_dispatch_asm_code_finished:
 		//////////
 		// Populate the return value into the variable
 		//////
+			// Make sure the variable is there
+			if (dfunc->rp.type != _DLL_TYPE_VOID && !rpar->rp[0])
+				rpar->rp[0] = iVariable_create(thisCode, _VAR_TYPE_S32, NULL, true, 0);
+
+			// Based on the type, populate it
 			switch (dfunc->rp.type)
 			{
 				case _DLL_TYPE_S16:
@@ -715,7 +720,7 @@ dll_dispatch_asm_code_finished:
 //////
 	bool iDllFunc_add(SThisCode* thisCode, SFunctionParams* rpar, SDllFuncParam* rp, SDllFuncParam ip[], s32 tnIpCount, SComp* compFunctionName, SComp* compAliasName, SComp* compDllName, SThisCode* onAccess, SThisCode* onAssign)
 	{
-		s32			lnI, lnFuncNameLength;
+		s32			lnI, lnAttempt, lnFuncNameLength;
 		void*		funcAddress;
 		SDllFunc*	dfunc;
 		SDllLib*	dlib;
@@ -747,9 +752,21 @@ dll_dispatch_asm_code_finished:
 				memcpy(funcName, compFunctionName->line->sourceCode->data_cs8 + compFunctionName->start, lnFuncNameLength);
 				funcName[lnFuncNameLength] = 0;
 
-				// Iterate through the list of dll candidates to see if we an find the function
-				for (lnI = 0, funcAddress = 0; !funcAddress && lnI < _MAX_DLL_HMODULES; lnI++)
-					funcAddress = (void*)GetProcAddress(dlib->dllHandle[lnI], funcName);
+				// Iterate through twice trying to find it.  Why?
+				for (lnAttempt = 0, funcAddress = 0; !funcAddress && lnAttempt < 2; lnAttempt++)
+				{
+					// On the second attempt...
+					if (lnAttempt == 1)
+					{
+						// ...append an "A" after the name (it may be like "MessageBox" needing to be "MessageBoxA")
+						funcName[lnFuncNameLength + 0] = 'A';
+						funcName[lnFuncNameLength + 1] = 0;
+					}
+
+					// Iterate through the list of dll candidates to see if we an find the function
+					for (lnI = 0; !funcAddress && lnI < _MAX_DLL_HMODULES && dlib->dllHandle[lnI]; lnI++)
+						funcAddress = (void*)GetProcAddress(dlib->dllHandle[lnI], funcName);
+				}
 
 				// Did we find it?
 				if (funcAddress)
