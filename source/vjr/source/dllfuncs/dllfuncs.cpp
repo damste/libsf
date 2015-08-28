@@ -97,7 +97,7 @@
 		u32		lnParamsFound;
 		bool	llResult;
 
-#if defined(__64_BIT_COMPILER__) || defined(__GNUC__)
+#if defined(__GNUC__)
 		rpar->ei.error		= true;
 		rpar->ei.errorNum	= _ERROR_FEATURE_NOT_AVAILABLE;
 		rpar->ei.errorComp	= compDllName;
@@ -447,171 +447,10 @@
 		//////////
 		// Dispatch into the dll
 		//////
-			lnSaveParamBytes	= 0;
-			lnSizeofTypes		= sizeof(types[0]);
-			lnSizeofPointers	= sizeof(pointers[0]);
-			lnSizeofValues		= sizeof(values[0]);
-			funcAddress			= dfunc->funcAddress;
-			lnParamCount		= dfunc->ipCount;
-			types_base			= (void*)&types[dfunc->ipCount - 1];
-			pointers_base		= (void*)&pointers[dfunc->ipCount - 1];
-			values_base			= (void*)&values[dfunc->ipCount - 1];
-			return_values_base	= (void*)&values[0];
-			lnReturnType		= dfunc->rp.type;
 #if defined(__32_BIT_COMPILER__)
-			_asm
-			{
-				//////////
-				//
-				// Inline assembly to push parameters onto the stack:
-				//
-				//		eax -- general purpose
-				//		ebx	-- parameter size in bytes, and function address
-				//		ecx	-- count
-				//		edx	-- address of types
-				//		esi	-- address of pointers
-				//		edi	-- address of values, and address of return value
-				//////
-					//
-					// The code below simulates a for loop:
-					//
-					//		for (initializePart; testPart; incrementPart)
-					//
-					//////////
-
-					// initializePart
-					mov		ecx,lnParamCount			// lnParamCount	= dfunc->ipCount
-					mov		edx,types_base				// typePtr		= &types[lnParamCount - 1]
-					mov		esi,pointers_base			// pointersPtr	= &pointers[lnParamCount - 1]
-					mov		edi,values_base				// valuesPtr	= &values[lnParamCount - 1]
-					jmp		push_next_param
-
-prepare_for_next_param:
-					// incrementPart
-					dec		ecx							// lnParamCount--
-					sub		edx,lnSizeofTypes			// --typePtr
-					sub		esi,lnSizeofPointers		// --pointersPtr
-					sub		edi,lnSizeofValues			// --valuesPtr
-
-push_next_param:
-					// testPart
-					cmp		ecx,0						// lnParamCount > 0
-					jz		finished_with_stack_ops
-
-					// switch (types[lnI])
-					mov		eax,dword ptr [edx]
-					cmp		eax,_DLL_TYPE_S16			// case _DLL_TYPE_S16, goto push_s16
-					jz		push_s16
-					cmp		eax, _DLL_TYPE_U16			// case _DLL_TYPE_U16, goto push_u16
-					jz		push_u16
-					cmp		eax, _DLL_TYPE_S32			// case _DLL_TYPE_S32, goto push_s32
-					jz		push_s32
-					cmp		eax, _DLL_TYPE_U32			// case _DLL_TYPE_S64, goto push_s64
-					jz		push_u32
-					cmp		eax, _DLL_TYPE_F32			// case _DLL_TYPE_F32, goto push_f32
-					jz		push_f32
-					cmp		eax, _DLL_TYPE_F64			// case _DLL_TYPE_F64, goto push_f64
-					jz		push_f64
-					cmp		eax, _DLL_TYPE_S64			// case _DLL_TYPE_S64, goto push_s64
-					jz		push_s64
-					cmp		eax, _DLL_TYPE_U64			// case _DLL_TYPE_U64, goto push_u64
-					jz		push_u64
-
-					// If we get here, it has to be _DLL_TYPE_VP
-					jmp		push_vp						// default, goto push_s16
-
-push_s16:
-					movsx	eax,word ptr [edi]
-					push	eax
-					add		lnSaveParamBytes,4
-					jmp		prepare_for_next_param
-
-push_u16:
-					movzx	eax,word ptr [edi]
-					push	eax
-					add		lnSaveParamBytes,4
-					jmp		prepare_for_next_param
-
-push_s32:
-push_u32:
-push_f32:
-push_vp:
-					mov		eax,dword ptr [edi]
-					push	eax
-					add		lnSaveParamBytes,4
-					jmp		prepare_for_next_param
-
-push_f64:
-push_s64:
-push_u64:
-					mov		eax,dword ptr [edi]
-					push	eax
-					mov		eax,dword ptr [edi+4]
-					push	eax
-					add		lnSaveParamBytes,8
-					jmp		prepare_for_next_param
-
-finished_with_stack_ops:
-					call	funcAddress					// Dispatch into the DLL function9
-//					add		esp,lnSaveParamBytes		// Remove pushed parameters from the stack
-
-					// Store return value if any
-					mov		edi,return_values_base
-
-					// switch (types[lnI])
-					mov		ecx,lnReturnType
-					cmp		ecx,_DLL_TYPE_VOID
-					jz		store_nothing
-					cmp		ecx,_DLL_TYPE_S16			// case _DLL_TYPE_S16, goto store_s16
-					jz		store_s16
-					cmp		ecx, _DLL_TYPE_U16			// case _DLL_TYPE_U16, goto store_u16
-					jz		store_u16
-					cmp		ecx, _DLL_TYPE_S32			// case _DLL_TYPE_S32, goto store_s32
-					jz		store_s32
-					cmp		ecx, _DLL_TYPE_U32			// case _DLL_TYPE_S64, goto store_s64
-					jz		store_u32
-					cmp		ecx, _DLL_TYPE_F32			// case _DLL_TYPE_F32, goto store_f32
-					jz		store_f32
-					cmp		ecx, _DLL_TYPE_F64			// case _DLL_TYPE_F64, goto store_f64
-					jz		store_f64
-					cmp		ecx, _DLL_TYPE_S64			// case _DLL_TYPE_S64, goto store_s64
-					jz		store_s64
-					cmp		ecx, _DLL_TYPE_U64			// case _DLL_TYPE_U64, goto store_u64
-					jz		store_u64
-
-					// If we get here, it has to be _DLL_TYPE_VP
-					jmp		store_vp					// default, goto push_s16
-
-store_s16:
-					movsx	eax,ax
-					mov		dword ptr [edi],eax
-					jmp		dll_dispatch_asm_code_finished
-
-store_u16:
-					movzx	eax,ax
-					mov		dword ptr [edi],eax
-					jmp		dll_dispatch_asm_code_finished
-
-store_s32:
-store_u32:
-store_f32:
-store_vp:
-					mov		dword ptr [edi],eax
-					jmp		dll_dispatch_asm_code_finished
-
-store_f64:
-store_s64:
-store_u64:
-					mov		dword ptr [edi],eax
-					mov		dword ptr [edi+4],edx
-					jmp		dll_dispatch_asm_code_finished
-
-store_nothing:
-					// Nothing needs stored (just a placeholder for a jmp target)
-
-dll_dispatch_asm_code_finished:
-					// When we get here, the asm part is completed
-			}
+	#include "dll_dispatch_32.asm"
+#elif defined(__64_BIT_COMPILER__)
+	#include "dll_dispatch_64.asm"
 #endif
 
 

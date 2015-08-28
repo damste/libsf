@@ -67,6 +67,9 @@
     <Filter Include="commands\functions">
       <UniqueIdentifier>{18cca64d-61b0-46f1-9850-3d1745737c93}</UniqueIdentifier>
     </Filter>
+    <Filter Include="dllfuncs">
+      <UniqueIdentifier>{9bb536c0-4f14-4328-9969-70f9519db298}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="small.ico">
@@ -77,6 +80,12 @@
     </None>
     <None Include="..\..\source\compiler\rdc\rdc_specs.txt">
       <Filter>compiler\rdc</Filter>
+    </None>
+    <None Include="..\..\source\dllfuncs\dll_dispatch_32.asm">
+      <Filter>dllfuncs</Filter>
+    </None>
+    <None Include="..\..\source\dllfuncs\dll_dispatch_64.asm">
+      <Filter>dllfuncs</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -258,6 +267,9 @@
     </ClCompile>
     <ClCompile Include="..\..\source\commands\functions\rick_in_progress.cpp">
       <Filter>commands\functions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\dllfuncs\dllfuncs.cpp">
+      <Filter>dllfuncs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
