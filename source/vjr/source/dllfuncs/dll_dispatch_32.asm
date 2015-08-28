@@ -90,18 +90,6 @@
 // Note:  This code is inline to the iiDllFunc_dispatch_lowLevel() function.
 // Note:  See dllfuncs.cpp, and search for the #include "dll_dispatch_32.asm" source code line.
 //////////
-			lnSaveParamBytes	= 0;
-			lnSizeofTypes		= sizeof(types[0]);
-			lnSizeofPointers	= sizeof(pointers[0]);
-			lnSizeofValues		= sizeof(values[0]);
-			funcAddress			= dfunc->funcAddress;
-			lnParamCount		= dfunc->ipCount;
-			types_base			= (void*)&types[dfunc->ipCount - 1];
-			pointers_base		= (void*)&pointers[dfunc->ipCount - 1];
-			values_base			= (void*)&values[dfunc->ipCount - 1];
-			return_values_base	= (void*)&values[0];
-			lnReturnType		= dfunc->rp.type;
-
 			_asm
 			{
 				//////////
@@ -123,18 +111,18 @@
 					//////////
 
 					// initializePart
-					mov		ecx,lnParamCount			// lnParamCount	= dfunc->ipCount
-					mov		edx,types_base				// typePtr		= &types[lnParamCount - 1]
-					mov		esi,pointers_base			// pointersPtr	= &pointers[lnParamCount - 1]
-					mov		edi,values_base				// valuesPtr	= &values[lnParamCount - 1]
+					mov		ecx,gnDll_paramCount			// lnParamCount	= dfunc->ipCount
+					mov		edx,gnDll_typesBase				// typePtr		= &gnDll_typesBase		[lnParamCount - 1]
+					mov		esi,gnDll_pointersBase			// pointersPtr	= &gnDll_pointersBase	[lnParamCount - 1]
+					mov		edi,gnDll_valuesBase			// valuesPtr	= &gnDll_valuesBase		[lnParamCount - 1]
 					jmp		push_next_param
 
 prepare_for_next_param:
 					// incrementPart
-					dec		ecx							// lnParamCount--
-					sub		edx,lnSizeofTypes			// --typePtr
-					sub		esi,lnSizeofPointers		// --pointersPtr
-					sub		edi,lnSizeofValues			// --valuesPtr
+					dec		ecx								// lnParamCount--
+					sub		edx,gnDll_sizeofTypes			// --typePtr
+					sub		esi,gnDll_sizeofPointers		// --pointersPtr
+					sub		edi,gnDll_sizeofValues			// --valuesPtr
 
 push_next_param:
 					// testPart
@@ -166,13 +154,13 @@ push_next_param:
 push_s16:
 					movsx	eax,word ptr [edi]
 					push	eax
-					add		lnSaveParamBytes,4
+					add		gnDll_saveParamBytes,4
 					jmp		prepare_for_next_param
 
 push_u16:
 					movzx	eax,word ptr [edi]
 					push	eax
-					add		lnSaveParamBytes,4
+					add		gnDll_saveParamBytes,4
 					jmp		prepare_for_next_param
 
 push_s32:
@@ -181,7 +169,7 @@ push_f32:
 push_vp:
 					mov		eax,dword ptr [edi]
 					push	eax
-					add		lnSaveParamBytes,4
+					add		gnDll_saveParamBytes,4
 					jmp		prepare_for_next_param
 
 push_f64:
@@ -191,18 +179,18 @@ push_u64:
 					push	eax
 					mov		eax,dword ptr [edi+4]
 					push	eax
-					add		lnSaveParamBytes,8
+					add		gnDll_saveParamBytes,8
 					jmp		prepare_for_next_param
 
 finished_with_stack_ops:
-					call	funcAddress					// Dispatch into the DLL function9
-//					add		esp,lnSaveParamBytes		// Remove pushed parameters from the stack
+					call	gnDll_funcAddress				// Dispatch into the DLL function9
+//					add		esp,gnDll_saveParamBytes		// Remove pushed parameters from the stack
 
 					// Store return value if any
-					mov		edi,return_values_base
+					mov		edi,gnDll_returnValuesBase
 
 					// switch (types[lnI])
-					mov		ecx,lnReturnType
+					mov		ecx,gnDll_returnType
 					cmp		ecx,_DLL_TYPE_VOID
 					jz		store_nothing
 					cmp		ecx,_DLL_TYPE_S16			// case _DLL_TYPE_S16, goto store_s16
@@ -237,16 +225,22 @@ store_u16:
 
 store_s32:
 store_u32:
-store_f32:
 store_vp:
 					mov		dword ptr [edi],eax
 					jmp		dll_dispatch_asm_code_finished
 
-store_f64:
 store_s64:
 store_u64:
 					mov		dword ptr [edi],eax
 					mov		dword ptr [edi+4],edx
+					jmp		dll_dispatch_asm_code_finished
+
+store_f32:
+					mov		real4 ptr [edi],xmm0
+					jmp		dll_dispatch_asm_code_finished
+
+store_f64:
+					mov		real8 ptr [edi],xmm0
 					jmp		dll_dispatch_asm_code_finished
 
 store_nothing:

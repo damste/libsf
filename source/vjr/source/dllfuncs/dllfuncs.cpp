@@ -160,30 +160,39 @@
 
 	}
 
+
+//////////
+// These were moved to global variables to support 64-bit Win64 DLL dispatches
+//////
+	s32			gnDll_typeStep, gnDll_pointersStep, gnDll_valuesStep;
+	u32			gnDll_paramCount, gnDll_returnType, gnDll_sizeofTypes, gnDll_sizeofPointers, gnDll_sizeofValues, gnDll_saveParamBytes;
+	void*		gnDll_funcAddress;
+	void*		gnDll_typesBase;
+	void*		gnDll_pointersBase;
+	void*		gnDll_valuesBase;
+	void*		gnDll_returnValuesBase;
+	u32			gnDll_types		[_MAX_DLL_PARAMS];		// Refer to _types_* constants
+	void*		gnDll_pointers	[_MAX_DLL_PARAMS];		// Pointers to data the start of every data item
+	SDllVals	gnDll_values	[_MAX_DLL_PARAMS];		// Values stored if they need to be converted
+
+	// See dll_dispatch_64.asm, an assembly language function that's called below
+	extern void idll_dispatch_64_asm(void);
+
 	void iiDllFunc_dispatch_lowLevel(SThisCode* thisCode, SFunctionParams* rpar, SDllFunc* dfunc)
 	{
-		s32			lnI, lnTypeStep, lnPointersStep, lnValuesStep;
-		u32			lnParamCount, lnReturnType, lnSizeofTypes, lnSizeofPointers, lnSizeofValues, lnSaveParamBytes;
-		void*		funcAddress;
-		void*		types_base;
-		void*		pointers_base;
-		void*		values_base;
-		void*		return_values_base;
-		u32			types	[_MAX_DLL_PARAMS];		// Refer to _types_* constants
-		void*		pointers[_MAX_DLL_PARAMS];		// Pointers to data the start of every data item
-		SDllVals		values	[_MAX_DLL_PARAMS];		// Values stored if they need to be converted
+		s32 lnI;
 
 
 		//////////
 		// Initialize
 		//////
-			memset(&types,		0, sizeof(types));
-			memset(&pointers,	0, sizeof(pointers));
-			memset(&values,		0, sizeof(values));
+			memset(&gnDll_types,	0, sizeof(gnDll_types));
+			memset(&gnDll_pointers,	0, sizeof(gnDll_pointers));
+			memset(&gnDll_values,	0, sizeof(gnDll_values));
 
-			lnTypeStep			= sizeof(types[0]);
-			lnPointersStep		= sizeof(pointers[0]);
-			lnValuesStep		= sizeof(values);
+			gnDll_typeStep		= sizeof(gnDll_types[0]);
+			gnDll_pointersStep	= sizeof(gnDll_pointers[0]);
+			gnDll_valuesStep	= sizeof(gnDll_values);
 
 
 		//////////
@@ -194,7 +203,7 @@
 				//////////
 				// Translate the target type
 				//////
-					types[lnI] = dfunc->ip[lnI].type;
+					gnDll_types[lnI] = dfunc->ip[lnI].type;
 					switch (dfunc->ip[lnI].type)
 					{
 						case _DLL_TYPE_S16:
@@ -205,20 +214,20 @@
 								if (rpar->ip[lnI]->varType == _VAR_TYPE_S16)
 								{
 									// We can directly pass a pointer to it
-									types[lnI]			= _DLL_TYPE_VP;
-									pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_s16;
+									gnDll_types[lnI]		= _DLL_TYPE_VP;
+									gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_s16;
 
 								} else {
 									// We must translate it, then store it back afterward
-									values[lnI]._s16	= iiVariable_getAs_s16(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
-									pointers[lnI]		= (void*)&values[lnI]._s16;
-									types[lnI]			= _DLL_TYPE__byRef_postProcess;
+									gnDll_values[lnI]._s16	= iiVariable_getAs_s16(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+									gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._s16;
+									gnDll_types[lnI]		= _DLL_TYPE__byRef_postProcess;
 								}
 
 							} else {
 								// By value
-								values[lnI]._s16	= iiVariable_getAs_s16(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
-								pointers[lnI]		= (void*)&values[lnI]._s16;
+								gnDll_values[lnI]._s16	= iiVariable_getAs_s16(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+								gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._s16;
 							}
 							break;
 
@@ -230,20 +239,20 @@
 								if (rpar->ip[lnI]->varType == _VAR_TYPE_U16)
 								{
 									// We can directly pass a pointer to it
-									types[lnI]			= _DLL_TYPE_VP;
-									pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_u16;
+									gnDll_types[lnI]		= _DLL_TYPE_VP;
+									gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_u16;
 
 								} else {
 									// We must translate it, then store it back afterward
-									values[lnI]._u16	= iiVariable_getAs_u16(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
-									pointers[lnI]		= (void*)&values[lnI]._u16;
-									types[lnI]			= _DLL_TYPE__byRef_postProcess;
+									gnDll_values[lnI]._u16	= iiVariable_getAs_u16(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+									gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._u16;
+									gnDll_types[lnI]		= _DLL_TYPE__byRef_postProcess;
 								}
 
 							} else {
 								// By value
-								values[lnI]._u16	= iiVariable_getAs_u16(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
-								pointers[lnI]		= (void*)&values[lnI]._u16;
+								gnDll_values[lnI]._u16	= iiVariable_getAs_u16(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+								gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._u16;
 							}
 							break;
 
@@ -255,20 +264,20 @@
 								if (rpar->ip[lnI]->varType == _VAR_TYPE_S32)
 								{
 									// We can directly pass a pointer to it
-									types[lnI]			= _DLL_TYPE_VP;
-									pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_s32;
+									gnDll_types[lnI]		= _DLL_TYPE_VP;
+									gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_s32;
 
 								} else {
 									// We must translate it, then store it back afterward
-									values[lnI]._s32	= iiVariable_getAs_s32(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
-									pointers[lnI]		= (void*)&values[lnI]._s32;
-									types[lnI]			= _DLL_TYPE__byRef_postProcess;
+									gnDll_values[lnI]._s32	= iiVariable_getAs_s32(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+									gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._s32;
+									gnDll_types[lnI]		= _DLL_TYPE__byRef_postProcess;
 								}
 
 							} else {
 								// By value
-								values[lnI]._s32	= iiVariable_getAs_s32(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
-								pointers[lnI]		= (void*)&values[lnI]._s32;
+								gnDll_values[lnI]._s32	= iiVariable_getAs_s32(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+								gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._s32;
 							}
 							break;
 
@@ -280,20 +289,20 @@
 								if (rpar->ip[lnI]->varType == _VAR_TYPE_U32)
 								{
 									// We can directly pass a pointer to it
-									types[lnI]			= _DLL_TYPE_VP;
-									pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_u32;
+									gnDll_types[lnI]		= _DLL_TYPE_VP;
+									gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_u32;
 
 								} else {
 									// We must translate it, then store it back afterward
-									values[lnI]._u32	= iiVariable_getAs_u32(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
-									pointers[lnI]		= (void*)&values[lnI]._u32;
-									types[lnI]			= _DLL_TYPE__byRef_postProcess;
+									gnDll_values[lnI]._u32	= iiVariable_getAs_u32(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+									gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._u32;
+									gnDll_types[lnI]		= _DLL_TYPE__byRef_postProcess;
 								}
 
 							} else {
 								// By value
-								values[lnI]._u32	= iiVariable_getAs_u32(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
-								pointers[lnI]		= (void*)&values[lnI]._u32;
+								gnDll_values[lnI]._u32	= iiVariable_getAs_u32(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+								gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._u32;
 							}
 							break;
 
@@ -305,20 +314,20 @@
 								if (rpar->ip[lnI]->varType == _VAR_TYPE_F32)
 								{
 									// We can directly pass a pointer to it
-									types[lnI]			= _DLL_TYPE_VP;
-									pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_f32;
+									gnDll_types[lnI]		= _DLL_TYPE_VP;
+									gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_f32;
 
 								} else {
 									// We must translate it, then store it back afterward
-									values[lnI]._f32	= iiVariable_getAs_f32(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
-									pointers[lnI]		= (void*)&values[lnI]._f32;
-									types[lnI]			= _DLL_TYPE__byRef_postProcess;
+									gnDll_values[lnI]._f32	= iiVariable_getAs_f32(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+									gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._f32;
+									gnDll_types[lnI]		= _DLL_TYPE__byRef_postProcess;
 								}
 
 							} else {
 								// By value
-								values[lnI]._f32	= iiVariable_getAs_f32(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
-								pointers[lnI]		= (void*)&values[lnI]._f32;
+								gnDll_values[lnI]._f32	= iiVariable_getAs_f32(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+								gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._f32;
 							}
 							break;
 
@@ -330,20 +339,20 @@
 								if (rpar->ip[lnI]->varType == _VAR_TYPE_F64)
 								{
 									// We can directly pass a pointer to it
-									types[lnI]			= _DLL_TYPE_VP;
-									pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_f64;
+									gnDll_types[lnI]		= _DLL_TYPE_VP;
+									gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_f64;
 
 								} else {
 									// We must translate it, then store it back afterward
-									values[lnI]._f64	= iiVariable_getAs_f64(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
-									pointers[lnI]		= (void*)&values[lnI]._f64;
-									types[lnI]			= _DLL_TYPE__byRef_postProcess;
+									gnDll_values[lnI]._f64	= iiVariable_getAs_f64(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+									gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._f64;
+									gnDll_types[lnI]		= _DLL_TYPE__byRef_postProcess;
 								}
 
 							} else {
 								// By value
-								values[lnI]._f64	= iiVariable_getAs_f64(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
-								pointers[lnI]		= (void*)&values[lnI]._f64;
+								gnDll_values[lnI]._f64	= iiVariable_getAs_f64(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+								gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._f64;
 							}
 							break;
 
@@ -355,20 +364,20 @@
 								if (rpar->ip[lnI]->varType == _VAR_TYPE_S64)
 								{
 									// We can directly pass a pointer to it
-									types[lnI]			= _DLL_TYPE_VP;
-									pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_s64;
+									gnDll_types[lnI]		= _DLL_TYPE_VP;
+									gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_s64;
 
 								} else {
 									// We must translate it, then store it back afterward
-									values[lnI]._s64	= iiVariable_getAs_s64(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
-									pointers[lnI]		= (void*)&values[lnI]._s64;
-									types[lnI]			= _DLL_TYPE__byRef_postProcess;
+									gnDll_values[lnI]._s64	= iiVariable_getAs_s64(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+									gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._s64;
+									gnDll_types[lnI]		= _DLL_TYPE__byRef_postProcess;
 								}
 
 							} else {
 								// By value
-								values[lnI]._s64	= iiVariable_getAs_s64(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
-								pointers[lnI]		= (void*)&values[lnI]._s64;
+								gnDll_values[lnI]._s64	= iiVariable_getAs_s64(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+								gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._s64;
 							}
 							break;
 
@@ -380,20 +389,20 @@
 								if (rpar->ip[lnI]->varType == _VAR_TYPE_U64)
 								{
 									// We can directly pass a pointer to it
-									types[lnI]			= _DLL_TYPE_VP;
-									pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_u64;
+									gnDll_types[lnI]		= _DLL_TYPE_VP;
+									gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_u64;
 
 								} else {
 									// We must translate it, then store it back afterward
-									values[lnI]._u64	= iiVariable_getAs_u64(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
-									pointers[lnI]		= (void*)&values[lnI]._u64;
-									types[lnI]			= _DLL_TYPE__byRef_postProcess;
+									gnDll_values[lnI]._u64	= iiVariable_getAs_u64(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+									gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._u64;
+									gnDll_types[lnI]		= _DLL_TYPE__byRef_postProcess;
 								}
 
 							} else {
 								// By value
-								values[lnI]._u64	= iiVariable_getAs_u64(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
-								pointers[lnI]		= (void*)&values[lnI]._u64;
+								gnDll_values[lnI]._u64	= iiVariable_getAs_u64(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+								gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._u64;
 							}
 							break;
 
@@ -401,14 +410,14 @@
 							if (dfunc->ip[lnI].udfSetting == _UDFPARMS_REFERENCE)
 							{
 								// Passed by reference (directly updateable)
-								types[lnI]			= _DLL_TYPE_VP;
-								pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_s8;
+								gnDll_types[lnI]		= _DLL_TYPE_VP;
+								gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_s8;
 
 							} else {
 								// By value
 								// Make a copy of the data, and then pass it
-								iDatum_duplicate(&values[lnI]._datum, &rpar->ip[lnI]->value);
-								pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_s8;
+								iDatum_duplicate(&gnDll_values[lnI]._datum, &rpar->ip[lnI]->value);
+								gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_s8;
 							}
 							break;
 
@@ -423,8 +432,8 @@
 							}
 
 							// Store the IDispatch pointer
-							values[lnI]._idispatch	= rpar->ip[lnI]->value.data_idispatch;
-							pointers[lnI]			= (void*)&values[lnI]._idispatch;
+							gnDll_values[lnI]._idispatch	= rpar->ip[lnI]->value.data_idispatch;
+							gnDll_pointers[lnI]				= (void*)&gnDll_values[lnI]._idispatch;
 							break;
 
 						default:
@@ -447,10 +456,28 @@
 		//////////
 		// Dispatch into the dll
 		//////
+			gnDll_saveParamBytes		= 0;
+			gnDll_sizeofTypes			= sizeof(gnDll_types[0]);
+			gnDll_sizeofPointers		= sizeof(gnDll_pointers[0]);
+			gnDll_sizeofValues			= sizeof(gnDll_values[0]);
+			gnDll_funcAddress			= dfunc->funcAddress;
+			gnDll_paramCount			= dfunc->ipCount;
+			gnDll_typesBase				= (void*)&gnDll_types	[dfunc->ipCount - 1];
+			gnDll_pointersBase			= (void*)&gnDll_pointers[dfunc->ipCount - 1];
+			gnDll_valuesBase			= (void*)&gnDll_values	[dfunc->ipCount - 1];
+			gnDll_returnValuesBase		= (void*)&gnDll_values[0];
+			gnDll_returnType			= dfunc->rp.type;
+
 #if defined(__32_BIT_COMPILER__)
-	#include "dll_dispatch_32.asm"
-#elif defined(__64_BIT_COMPILER__)
-	#include "dll_dispatch_64.asm"
+			#include "dll_dispatch_32.asm"
+//#elif defined(__64_BIT_COMPILER__)
+			//////////
+			//	Note:	dll_dispatch_64.asm is assembled/compiled externally because Visual Studio 2010 and earlier do not support 64-bit inline assembly.
+			//			#include "dll_dispatch_64.asm"
+			//////
+
+			// This code is inside dll_dispatch_64.asm
+			idll_dispatch_64_asm();
 #endif
 
 
@@ -467,38 +494,38 @@
 				case _DLL_TYPE_S16:
 				case _DLL_TYPE_S32:
 					iVariable_setVarType(thisCode, rpar->rp[0], _VAR_TYPE_S32);
-					*rpar->rp[0]->value.data_s32 = values[0]._s32;
+					*rpar->rp[0]->value.data_s32 = gnDll_values[0]._s32;
 					break;
 
 				case _DLL_TYPE_U16:
 				case _DLL_TYPE_U32:
 					iVariable_setVarType(thisCode, rpar->rp[0], _VAR_TYPE_U32);
-					*rpar->rp[0]->value.data_u32 = values[0]._u32;
+					*rpar->rp[0]->value.data_u32 = gnDll_values[0]._u32;
 					break;
 
 				case _DLL_TYPE_F32:
 					iVariable_setVarType(thisCode, rpar->rp[0], _VAR_TYPE_F32);
-					*rpar->rp[0]->value.data_f32 = values[0]._f32;
+					*rpar->rp[0]->value.data_f32 = gnDll_values[0]._f32;
 					break;
 
 				case _DLL_TYPE_F64:
 					iVariable_setVarType(thisCode, rpar->rp[0], _VAR_TYPE_F64);
-					*rpar->rp[0]->value.data_f64 = values[0]._f64;
+					*rpar->rp[0]->value.data_f64 = gnDll_values[0]._f64;
 					break;
 
 				case _DLL_TYPE_S64:
 					iVariable_setVarType(thisCode, rpar->rp[0], _VAR_TYPE_S64);
-					*rpar->rp[0]->value.data_s64 = values[0]._s64;
+					*rpar->rp[0]->value.data_s64 = gnDll_values[0]._s64;
 					break;
 
 				case _DLL_TYPE_U64:
 					iVariable_setVarType(thisCode, rpar->rp[0], _VAR_TYPE_U64);
-					*rpar->rp[0]->value.data_u64 = values[0]._u64;
+					*rpar->rp[0]->value.data_u64 = gnDll_values[0]._u64;
 					break;
 
 				case _DLL_TYPE_STRING:
 					iVariable_setVarType(thisCode, rpar->rp[0], _VAR_TYPE_CHARACTER);
-					iDatum_duplicate(&rpar->rp[0]->value, values[0]._s8p, (s32)strlen(values[0]._s8p));
+					iDatum_duplicate(&rpar->rp[0]->value, gnDll_values[0]._s8p, (s32)strlen(gnDll_values[0]._s8p));
 					break;
 			}
 
@@ -509,7 +536,7 @@
 			for (lnI = 0; lnI < rpar->ipCount; lnI++)
 			{
 				// Does this one need post processing?
-				if ((types[lnI] & _DLL_TYPE__byRef_postProcess) != 0)
+				if ((gnDll_types[lnI] & _DLL_TYPE__byRef_postProcess) != 0)
 				{
 
 					//////////
@@ -519,35 +546,35 @@
 						switch (dfunc->ip[lnI].type)
 						{
 							case _DLL_TYPE_S16:
-								iVariable_set_s32_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], (s32)values[lnI]._s16);
+								iVariable_set_s32_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], (s32)gnDll_values[lnI]._s16);
 								break;
 							case _DLL_TYPE_U16:
-								iVariable_set_u32_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], (u32)values[lnI]._u16);
+								iVariable_set_u32_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], (u32)gnDll_values[lnI]._u16);
 								break;
 							case _DLL_TYPE_S32:
-								iVariable_set_s32_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], values[lnI]._s32);
+								iVariable_set_s32_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], gnDll_values[lnI]._s32);
 								break;
 							case _DLL_TYPE_U32:
-								iVariable_set_u32_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], values[lnI]._u32);
+								iVariable_set_u32_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], gnDll_values[lnI]._u32);
 								break;
 							case _DLL_TYPE_F32:
-								iVariable_set_f32_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], values[lnI]._f32);
+								iVariable_set_f32_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], gnDll_values[lnI]._f32);
 								break;
 							case _DLL_TYPE_F64:
-								iVariable_set_f64_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], values[lnI]._f64);
+								iVariable_set_f64_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], gnDll_values[lnI]._f64);
 								break;
 							case _DLL_TYPE_S64:
-								iVariable_set_s64_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], values[lnI]._s64);
+								iVariable_set_s64_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], gnDll_values[lnI]._s64);
 								break;
 							case _DLL_TYPE_U64:
-								iVariable_set_u64_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], values[lnI]._u64);
+								iVariable_set_u64_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], gnDll_values[lnI]._u64);
 								break;
 
 							case _DLL_TYPE_STRING:
 								// Delete the existing string, and replace with the new version
 								iDatum_delete(&rpar->ip[lnI]->value, false);
-								rpar->ip[lnI]->value.data_vp	= values[lnI]._datum.data_vp;
-								rpar->ip[lnI]->value.length		= values[lnI]._datum.length;
+								rpar->ip[lnI]->value.data_vp	= gnDll_values[lnI]._datum.data_vp;
+								rpar->ip[lnI]->value.length		= gnDll_values[lnI]._datum.length;
 								break;
 						}
 
