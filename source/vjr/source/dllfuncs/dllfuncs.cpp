@@ -97,6 +97,12 @@
 		u32		lnParamsFound;
 		bool	llResult;
 
+#if defined(__64_BIT_COMPILER__) || defined(__GNUC__)
+		rpar->ei.error		= true;
+		rpar->ei.errorNum	= _ERROR_FEATURE_NOT_AVAILABLE;
+		rpar->ei.errorComp	= compDllName;
+		return;
+#endif
 
 		// Loop entered only for structured exit on early error
 		while (1)
@@ -452,6 +458,7 @@
 			values_base			= (void*)&values[dfunc->ipCount - 1];
 			return_values_base	= (void*)&values[0];
 			lnReturnType		= dfunc->rp.type;
+#if defined(__32_BIT_COMPILER__)
 			_asm
 			{
 				//////////
@@ -552,24 +559,24 @@ finished_with_stack_ops:
 					mov		edi,return_values_base
 
 					// switch (types[lnI])
-					mov		eax,lnReturnType
-					cmp		eax,_DLL_TYPE_VOID
-					jmp		store_nothing
-					cmp		eax,_DLL_TYPE_S16			// case _DLL_TYPE_S16, goto store_s16
+					mov		ecx,lnReturnType
+					cmp		ecx,_DLL_TYPE_VOID
+					jz		store_nothing
+					cmp		ecx,_DLL_TYPE_S16			// case _DLL_TYPE_S16, goto store_s16
 					jz		store_s16
-					cmp		eax, _DLL_TYPE_U16			// case _DLL_TYPE_U16, goto store_u16
+					cmp		ecx, _DLL_TYPE_U16			// case _DLL_TYPE_U16, goto store_u16
 					jz		store_u16
-					cmp		eax, _DLL_TYPE_S32			// case _DLL_TYPE_S32, goto store_s32
+					cmp		ecx, _DLL_TYPE_S32			// case _DLL_TYPE_S32, goto store_s32
 					jz		store_s32
-					cmp		eax, _DLL_TYPE_U32			// case _DLL_TYPE_S64, goto store_s64
+					cmp		ecx, _DLL_TYPE_U32			// case _DLL_TYPE_S64, goto store_s64
 					jz		store_u32
-					cmp		eax, _DLL_TYPE_F32			// case _DLL_TYPE_F32, goto store_f32
+					cmp		ecx, _DLL_TYPE_F32			// case _DLL_TYPE_F32, goto store_f32
 					jz		store_f32
-					cmp		eax, _DLL_TYPE_F64			// case _DLL_TYPE_F64, goto store_f64
+					cmp		ecx, _DLL_TYPE_F64			// case _DLL_TYPE_F64, goto store_f64
 					jz		store_f64
-					cmp		eax, _DLL_TYPE_S64			// case _DLL_TYPE_S64, goto store_s64
+					cmp		ecx, _DLL_TYPE_S64			// case _DLL_TYPE_S64, goto store_s64
 					jz		store_s64
-					cmp		eax, _DLL_TYPE_U64			// case _DLL_TYPE_U64, goto store_u64
+					cmp		ecx, _DLL_TYPE_U64			// case _DLL_TYPE_U64, goto store_u64
 					jz		store_u64
 
 					// If we get here, it has to be _DLL_TYPE_VP
@@ -605,6 +612,7 @@ store_nothing:
 dll_dispatch_asm_code_finished:
 					// When we get here, the asm part is completed
 			}
+#endif
 
 
 		//////////
@@ -651,7 +659,7 @@ dll_dispatch_asm_code_finished:
 
 				case _DLL_TYPE_STRING:
 					iVariable_setVarType(thisCode, rpar->rp[0], _VAR_TYPE_CHARACTER);
-					iDatum_duplicate(&rpar->rp[0]->value, values[0]._s8p, strlen(values[0]._s8p));
+					iDatum_duplicate(&rpar->rp[0]->value, values[0]._s8p, (s32)strlen(values[0]._s8p));
 					break;
 			}
 

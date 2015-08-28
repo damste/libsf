@@ -150,8 +150,29 @@
 
 						} else {
 							// It's a number, display it
-							if (iCat(compNext->iCat) == _ICAT_FUNCTION)
+							if (dfunc = iDllFunc_find_byName(thisCode, compNext->line->sourceCode->data_s8 + compNext->start, compNext->length))
 							{
+								// It is a DLL function
+								if (dfunc->rp.type == _DLL_TYPE_VOID)
+								{
+									// No return value
+									iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, compNext, false);
+
+									// Update the screen
+									_screen_editbox->isDirtyRender |= iSEM_navigateToEndLine(thisCode, screenData, _screen);
+									iWindow_render(NULL, gWinJDebi, false);
+									return(false);
+								}
+								memset(&lrpar, 0, sizeof(lrpar));
+								iDllFunc_dispatch(thisCode, &lrpar, dfunc, compNext);
+								if (lrpar.ei.error)
+									iError_reportByNumber(thisCode, lrpar.ei.errorNum, lrpar.ei.errorComp, false);
+
+								// Grab the return value (if any)
+								llManufactured	= ((lrpar.rp[0]) ? lrpar.rp[0]->isVarAllocated : false);
+								var				= lrpar.rp[0];
+
+							} else if (iCat(compNext->iCat) == _ICAT_FUNCTION) {
 								// It is something like "? func(x)"
 								llManufactured = true;
 								memset(&lrpar, 0, sizeof(lrpar));
@@ -256,6 +277,17 @@
 								// It is a DLL function
 								memset(&lrpar, 0, sizeof(lrpar));
 								iDllFunc_dispatch(thisCode, &lrpar, dfunc, comp);
+								if (lrpar.ei.error)
+								{
+									// There was an error
+									iError_reportByNumber(thisCode, lrpar.ei.errorNum, lrpar.ei.errorComp, false);
+
+									// Update the screen
+									_screen_editbox->isDirtyRender |= iSEM_navigateToEndLine(thisCode, screenData, _screen);
+									iWindow_render(NULL, gWinJDebi, false);
+								}
+
+								// Indicate success or failure
 								return(!lrpar.ei.error);
 							}
 

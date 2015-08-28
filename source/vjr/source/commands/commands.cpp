@@ -2367,7 +2367,7 @@
 							} else {
 								// Use a default name
 								sprintf(buffer, "var%d", lnI + 1);
-								iDatum_duplicate(&inputParams[lnI].name, buffer, strlen(buffer));
+								iDatum_duplicate(&inputParams[lnI].name, buffer, (s32)strlen(buffer));
 							}
 
 							// Is there a comma?

@@ -1090,7 +1090,7 @@ debug_break;
 								iVariable_set_s32(thisCode, varSet, _SET_DEVICE_FILE);
 
 								// Create a variable for population into _INDEX_SET_DEVICE2's character memory variable
-								varFilename = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, buffer, strlen(buffer), false);
+								varFilename = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, buffer, (s32)strlen(buffer), false);
 								if (varFilename)
 								{
 									// Copy it over
