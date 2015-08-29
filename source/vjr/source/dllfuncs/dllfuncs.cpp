@@ -477,7 +477,7 @@
 	//			#include "dll_dispatch_64.asm"
 	//////////
 			// This code is inside dll_dispatch_64.asm
-			idll_dispatch_64_asm();
+//			idll_dispatch_64_asm();
 #endif
 
 
