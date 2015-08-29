@@ -129,7 +129,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				FavorSizeOrSpeed="0"
-				AdditionalIncludeDirectories="c:\libsf\source\vjr\source\include"
+				AdditionalIncludeDirectories="\libsf\source\vjr\include;\libsf\source\vjr\projects\vs2008"
 				PreprocessorDefinitions="WIN64;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				ExceptionHandling="1"
@@ -155,7 +155,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\..\source\lib64\glew32.lib ..\..\source\lib64\glew32s.lib ..\..\source\lib64\freeglut.lib ..\..\source\sound\SDL-1.2.15\lib\x64\SDL.lib ..\..\source\3rd_party\mapm\mapm.lib"
+				AdditionalDependencies="..\..\source\lib64\glew32.lib ..\..\source\lib64\glew32s.lib ..\..\source\lib64\freeglut.lib ..\..\source\sound\SDL-1.2.15\lib\amd64\SDL.lib ..\..\source\3rd_party\mapm\mapm.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -323,7 +323,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\..\source\lib64\glew32.lib ..\..\source\lib64\glew32s.lib ..\..\source\lib64\freeglut.lib ..\..\source\sound\SDL-1.2.15\lib\x64\SDL.lib ..\..\source\3rd_party\mapm\mapm.lib"
+				AdditionalDependencies="..\..\source\lib64\glew32.lib ..\..\source\lib64\glew32s.lib ..\..\source\lib64\freeglut.lib ..\..\source\sound\SDL-1.2.15\lib\amd64\SDL.lib ..\..\source\3rd_party\mapm\mapm.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -2801,6 +2801,78 @@
 			<Filter
 				Name="dllfuncs"
 				>
+				<File
+					RelativePath="..\..\source\dllfuncs\dll_dispatch_32.asm"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|x64"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|x64"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\source\dllfuncs\dll_dispatch_64.asm"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|x64"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|x64"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+				</File>
 				<File
 					RelativePath="..\..\source\dllfuncs\dllfuncs.cpp"
 					>

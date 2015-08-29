@@ -470,12 +470,12 @@
 
 #if defined(__32_BIT_COMPILER__)
 			#include "dll_dispatch_32.asm"
-//#elif defined(__64_BIT_COMPILER__)
-			//////////
-			//	Note:	dll_dispatch_64.asm is assembled/compiled externally because Visual Studio 2010 and earlier do not support 64-bit inline assembly.
-			//			#include "dll_dispatch_64.asm"
-			//////
 
+#elif defined(__64_BIT_COMPILER__)
+	//////////
+	//	Note:	dll_dispatch_64.asm is assembled/compiled externally because Visual Studio 2010 and earlier do not support 64-bit inline assembly.
+	//			#include "dll_dispatch_64.asm"
+	//////////
 			// This code is inside dll_dispatch_64.asm
 			idll_dispatch_64_asm();
 #endif

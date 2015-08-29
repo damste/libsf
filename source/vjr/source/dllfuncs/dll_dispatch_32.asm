@@ -236,11 +236,11 @@ store_u64:
 					jmp		dll_dispatch_asm_code_finished
 
 store_f32:
-					mov		real4 ptr [edi],xmm0
+					fstp	dword ptr [edi]
 					jmp		dll_dispatch_asm_code_finished
 
 store_f64:
-					mov		real8 ptr [edi],xmm0
+					fstp	qword ptr [edi]
 					jmp		dll_dispatch_asm_code_finished
 
 store_nothing:
