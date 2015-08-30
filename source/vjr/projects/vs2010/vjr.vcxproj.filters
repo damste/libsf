@@ -84,9 +84,6 @@
     <None Include="..\..\source\dllfuncs\dll_dispatch_32.asm">
       <Filter>dllfuncs</Filter>
     </None>
-    <None Include="..\..\source\dllfuncs\dll_dispatch_64.asm">
-      <Filter>dllfuncs</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="vjr.rc">
@@ -417,5 +414,10 @@
     <ClInclude Include="..\..\source\debugger\jdebic\jdebic.h">
       <Filter>debugger\jdebic</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <MASM Include="..\..\source\dllfuncs\dll_dispatch_64.asm">
+      <Filter>dllfuncs</Filter>
+    </MASM>
   </ItemGroup>
 </Project>

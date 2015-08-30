@@ -87,6 +87,29 @@
 
 
 //////////
+// These were moved to global variables to support 64-bit Win64 DLL dispatches
+//////
+extern "C"
+{
+	s32			gnDll_typeStep, gnDll_pointersStep, gnDll_valuesStep;
+	u32			gnDll_paramCount, gnDll_returnType, gnDll_sizeofTypes, gnDll_sizeofPointers, gnDll_sizeofValues, gnDll_saveParamBytes;
+	void*		gnDll_funcAddress;
+	void*		gnDll_typesBase;
+	void*		gnDll_pointersBase;
+	void*		gnDll_valuesBase;
+	void*		gnDll_returnValuesBase;
+	u32			gnDll_types		[_MAX_DLL_PARAMS];		// Refer to _types_* constants
+	void*		gnDll_pointers	[_MAX_DLL_PARAMS];		// Pointers to data the start of every data item
+	SDllVals	gnDll_values	[_MAX_DLL_PARAMS];		// Values stored if they need to be converted
+
+	// See dll_dispatch_64.asm, an assembly language function that's called below
+	extern void idll_dispatch_64_asm(void);
+};
+
+
+
+
+//////////
 //
 // Called to call into the dll function
 //
@@ -159,24 +182,6 @@
 			return;
 
 	}
-
-
-//////////
-// These were moved to global variables to support 64-bit Win64 DLL dispatches
-//////
-	s32			gnDll_typeStep, gnDll_pointersStep, gnDll_valuesStep;
-	u32			gnDll_paramCount, gnDll_returnType, gnDll_sizeofTypes, gnDll_sizeofPointers, gnDll_sizeofValues, gnDll_saveParamBytes;
-	void*		gnDll_funcAddress;
-	void*		gnDll_typesBase;
-	void*		gnDll_pointersBase;
-	void*		gnDll_valuesBase;
-	void*		gnDll_returnValuesBase;
-	u32			gnDll_types		[_MAX_DLL_PARAMS];		// Refer to _types_* constants
-	void*		gnDll_pointers	[_MAX_DLL_PARAMS];		// Pointers to data the start of every data item
-	SDllVals	gnDll_values	[_MAX_DLL_PARAMS];		// Values stored if they need to be converted
-
-	// See dll_dispatch_64.asm, an assembly language function that's called below
-	extern void idll_dispatch_64_asm(void);
 
 	void iiDllFunc_dispatch_lowLevel(SThisCode* thisCode, SFunctionParams* rpar, SDllFunc* dfunc)
 	{
