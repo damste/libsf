@@ -127,22 +127,34 @@ _DLL_TYPE_IDISPATCH		EQU 12
 ;;
 ;;;;;;;;;;
 ;;
-;;		Register				Win64							Linux64
-;;		--------				------------------------		------------------------
+;;		Register				Win64							Extra notes
+;;		--------				---------------------------		------------------------
 ;;		Return value:
-;;			rax					int/pointer return value		int/pointer return value
+;;			rax					int/pointer return value
+;;			xmm0				floating point return value
 ;;		
 ;;		Input value:
-;;			rsi					not used						1st int / pointer
-;;			rdi					not used						2nd int / pointer
-;;			rcx					1st int / pointer 				3rd int / pointer
-;;			rdx					2nd int / pointer 				4th int / pointer
-;;			r8					3rd int / pointer 				5th int / pointer
-;;			r9					4th int / pointer 				6th int / pointer
+;;			rcx					1st int / pointer 				If variadic and prototypeless functions, xmm0 is replicated here
+;;			rdx					2nd int / pointer 				If variadic and prototypeless functions, xmm1 is replicated here
+;;			r8					3rd int / pointer 				If variadic and prototypeless functions, xmm2 is replicated here
+;;			r9					4th int / pointer 				If variadic and prototypeless functions, xmm3 is replicated here
 ;;		
 ;;		 Floating point input:
 ;;			 xmm0-xmm3			First four fp					First four fp and small structures
+;;																Note:  For prototypeless functions, all fp values are pushed as f64, even if they're used internally as f32
 ;;
+;;;;;;;;;;
+;;
+;; The format specified above for rcx,rdx,r8,r9, and xmm0,xmm1,xmm2,xmm3 is used for the first four
+;; input values from left to right.  However, the remaining items are pushed from right to left onto
+;; the stack.  And for variadic functions, or functions without prototypes, any values put into xmm0
+;; thru xmm3 are also replicated into their corresponding cardinal location in rcx,rdx,r8,r9.
+;;
+;; In addition, the stack must be 16-byte aligned, and there must be (4 x 8) = 32 byte buffer created
+;; by the caller(!!) for the callee to use, even if the callee doesn't require it(!!).
+;;
+;; Floored.
+;; 
 ;;;;;;;;;;
 
 
@@ -154,6 +166,10 @@ idll_dispatch_64_asm	PROC	C
 ;; Note:  This code is inline to the iiDllFunc_dispatch_lowLevel() function.
 ;; Note:  See dllfuncs.cpp, and search for the #include "dll_dispatch_32.asm" source code line.
 ;;;;;;;;;;
+
+;; Note:  All of the code below is incorrect.  It was written before I (Rick C. Hodgin) had a proper understanding of the Win64 calling protocols.
+;; Note:  It will be re-written shortly (Lord willing, and life permitting).
+
 		;;;;;;;;;;
 		;;
 		;; Inline assembly to push parameters onto the stack:

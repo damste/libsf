@@ -220,6 +220,13 @@ struct SDllFunc
 	void*			funcAddress;			// GetProcAddress() of the function within the DLL
 	s32				callCount;				// Number of times this DLL was referenced
 
+	// NOPROTOTYPE and VARIADIC options
+#if defined(_M_X64)
+	// Only used on VJr 64-bit
+	bool			noPrototype;			// Was NOPROTOTYPE specified?
+	bool			variadic;				// Was VARIADIC specified?
+#endif
+
 	// [inputType1 inputName1], [inputType2 inputName2], ... [inputTypeN inputNameN]
 	s32				ipCount;				// Number of parameters specified
 	SDllFuncParam	ip[_MAX_DLL_PARAMS];	// Input parameter definitions

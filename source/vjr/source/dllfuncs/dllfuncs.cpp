@@ -477,11 +477,8 @@ extern "C"
 			#include "dll_dispatch_32.asm"
 
 #elif defined(__64_BIT_COMPILER__)
-	//////////
-	//	Note:	dll_dispatch_64.asm is assembled/compiled externally because Visual Studio 2010 and earlier do not support 64-bit inline assembly.
-	//			#include "dll_dispatch_64.asm"
-	//////////
-			// This code is inside dll_dispatch_64.asm
+			// #include "dll_dispatch_64.asm"		// Note:  dll_dispatch_64.asm is assembled/compiled externally because Visual Studio 2010 and earlier do not support 64-bit inline assembly.
+			// This code is inside dll_dispatch_64.asm, which is only assembled in x64 builds:
 			idll_dispatch_64_asm();
 #endif
 
@@ -597,7 +594,7 @@ extern "C"
 // Add the DLL reference to their list of known functions
 //
 //////
-	bool iDllFunc_add(SThisCode* thisCode, SFunctionParams* rpar, SDllFuncParam* rp, SDllFuncParam ip[], s32 tnIpCount, SComp* compFunctionName, SComp* compAliasName, SComp* compDllName, SThisCode* onAccess, SThisCode* onAssign)
+	bool iDllFunc_add(SThisCode* thisCode, SFunctionParams* rpar, SDllFuncParam* rp, SDllFuncParam ip[], s32 tnIpCount, SComp* compFunctionName, SComp* compAliasName, SComp* compDllName, SThisCode* onAccess, SThisCode* onAssign, bool tlNoPrototype, bool tlVariadic)
 	{
 		s32			lnI, lnAttempt, lnFuncNameLength;
 		void*		funcAddress;
@@ -672,6 +669,10 @@ extern "C"
 					memcpy(&dfunc->rp, rp, sizeof(dfunc->rp));
 					memcpy(&dfunc->ip, ip, sizeof(dfunc->ip));
 					dfunc->ipCount		= tnIpCount;
+#if defined(_M_X64)
+					dfunc->noPrototype	= tlNoPrototype;
+					dfunc->variadic		= tlVariadic;
+#endif
 					dfunc->funcAddress	= funcAddress;
 					dfunc->dlib			= dlib;
 

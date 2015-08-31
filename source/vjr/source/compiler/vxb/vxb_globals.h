@@ -1118,6 +1118,9 @@
 		{ cgc_user32,				6,			false,		_ICODE_USER32,							false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,		null0 },
 		{ cgc_mpr,					3,			false,		_ICODE_MPR,								false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,		null0 },
 		{ cgc_advapi32,				8,			false,		_ICODE_ADVAPI32,						false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,		null0 },
+		{ cgc_noprototype,			11,			false,		_ICODE_NOPROTOTYPE,						false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,		null0 },
+		{ cgc_variadic,				8,			false,		_ICODE_VARIADIC,						false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,		null0 },
+	
 
 		// NCSET() specific
 		{ cgc_ncset_alphaisopaque,			13,		false,	_ICODE_NCSETALPHAISOPAQUE,				false,				_ICAT_GENERIC,		&colorSynHi_logical,		true,						null0,		null0 },

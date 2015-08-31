@@ -2227,6 +2227,8 @@
 		SComp*			compDllName;
 		SComp*			compAliasName;
 		SComp*			compParam;
+		SComp*			compNoPrototype;
+		SComp*			compVariadic;
 		SDllFuncParam	returnParam;
 		SDllFuncParam	inputParams[_MAX_DLL_PARAMS];
 		char			buffer[16];
@@ -2248,9 +2250,11 @@
 		// It might be a DECLARE DLL form
 		//////
 			// DECLARE [return_type] functionName IN WIN32API|dllpathname.dll [ALIAS cName] [type [@]name][,type [@]name][,...][,type [@]name]
-			compAlias		= iComps_findNextBy_iCode(thisCode, compDeclare, _ICODE_ALIAS,		NULL);
-			compIn			= iComps_findNextBy_iCode(thisCode, compDeclare, _ICODE_IN,			NULL);
-			compWin32Api	= iComps_findNextBy_iCode(thisCode, compDeclare, _ICODE_WIN32API,	NULL);
+			compAlias		= iComps_findNextBy_iCode(thisCode, compDeclare, _ICODE_ALIAS,			NULL);
+			compIn			= iComps_findNextBy_iCode(thisCode, compDeclare, _ICODE_IN,				NULL);
+			compWin32Api	= iComps_findNextBy_iCode(thisCode, compDeclare, _ICODE_WIN32API,		NULL);
+			compNoPrototype	= iComps_findNextBy_iCode(thisCode, compDeclare, _ICODE_NOPROTOTYPE,	NULL);
+			compVariadic	= iComps_findNextBy_iCode(thisCode, compDeclare, _ICODE_VARIADIC,		NULL);
 			
 
 		//////////
@@ -2329,6 +2333,15 @@
 				// First parameter begins after compDllName
 				compParam = iComps_getNth(thisCode, compDllName, 1);
 			}
+
+
+		//////////
+		// Skip flags for NOPROTOTYPE and VARIADIC
+		//////
+#if defined(_M_X64)
+			while (compParam->iCode == _ICODE_NOPROTOTYPE || compParam->iCode == _ICODE_VARIADIC)
+				compParam = iComps_getNth(thisCode, compParam, 1);
+#endif
 
 
 		//////////
@@ -2411,7 +2424,13 @@
 		//////////
 		// Create the DLL reference
 		//////
-			iDllFunc_add(thisCode, rpar, &returnParam, inputParams, lnI, compFunctionName, compAliasName, compDllName, NULL, NULL);
+#if defined(_M_X64)
+			// 64 -bit, noprototype and variadic are based on components flags
+			iDllFunc_add(thisCode, rpar, &returnParam, inputParams, lnI, compFunctionName, compAliasName, compDllName, NULL, NULL, (compNoPrototype != NULL), (compVariadic != NULL));
+#else
+			// 32-bit and therefore not noprototype or variadic
+			iDllFunc_add(thisCode, rpar, &returnParam, inputParams, lnI, compFunctionName, compAliasName, compDllName, NULL, NULL, false, false);
+#endif
 
 	}
 

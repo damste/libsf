@@ -477,7 +477,7 @@ struct SObjPropMap;
 	// Dll functions
 	void					iDllFunc_dispatch						(SThisCode* thisCode, SFunctionParams* rpar, SDllFunc* dfunc, SComp* compDllName);
 	void					iiDllFunc_dispatch_lowLevel				(SThisCode* thisCode, SFunctionParams* rpar, SDllFunc* dfunc);
-	bool					iDllFunc_add							(SThisCode* thisCode, SFunctionParams* rpar, SDllFuncParam* rp, SDllFuncParam ip[], s32 tnIpCount, SComp* compFunctionName, SComp* compAliasName, SComp* compDllName, SThisCode* onAccess, SThisCode* onAssign);
+	bool					iDllFunc_add							(SThisCode* thisCode, SFunctionParams* rpar, SDllFuncParam* rp, SDllFuncParam ip[], s32 tnIpCount, SComp* compFunctionName, SComp* compAliasName, SComp* compDllName, SThisCode* onAccess, SThisCode* onAssign, bool tlNoPrototype, bool tlVariadic);
 	SDllFunc*				iDllFunc_find_byName					(SThisCode* thisCode, s8* funcName, s32 lnFuncNameLength);
 
 	// Dll library (the physical c:\path\to\theFile.dll

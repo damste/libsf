@@ -357,6 +357,8 @@
 	const s32		_ICODE_USER32									= 903;
 	const s32		_ICODE_MPR										= 904;
 	const s32		_ICODE_ADVAPI32									= 905;
+	const s32		_ICODE_NOPROTOTYPE								= 906;
+	const s32		_ICODE_VARIADIC									= 907;
 
 	// Functions
 	const s32		_ICODE_ABS										= 1000;
@@ -2272,6 +2274,8 @@
 	const s8		cgc_user32[]									= "user32";
 	const s8		cgc_mpr[]										= "mpr";
 	const s8		cgc_advapi32[]									= "advapi32";
+	const s8		cgc_noprototype[]								= "noprototype";
+	const s8		cgc_variadic[]									= "variadic";
 
 	// NCSET() specific
 	const s8		cgc_ncset_alphaisopaque[]						= "alphaIsOpaque";
