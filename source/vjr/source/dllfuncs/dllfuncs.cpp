@@ -94,9 +94,14 @@ extern "C"
 	s32			gnDll_typeStep, gnDll_pointersStep, gnDll_valuesStep;
 	u32			gnDll_paramCount, gnDll_returnType, gnDll_sizeofTypes, gnDll_sizeofPointers, gnDll_sizeofValues, gnDll_saveParamBytes;
 	void*		gnDll_funcAddress;
-	void*		gnDll_typesBase;
-	void*		gnDll_pointersBase;
-	void*		gnDll_valuesBase;
+	void*		gnDll_typesBaseRtoL;
+	void*		gnDll_pointersBaseRtoL;
+	void*		gnDll_valuesBaseRtoL;
+#if defined(__64_BIT_COMPILER__)
+	void*		gnDll_typesBaseLtoR;
+	void*		gnDll_pointersBaseLtoR;
+	void*		gnDll_valuesBaseLtoR;
+#endif
 	void*		gnDll_returnValuesBase;
 	u32			gnDll_types		[_MAX_DLL_PARAMS];		// Refer to _types_* constants
 	void*		gnDll_pointers	[_MAX_DLL_PARAMS];		// Pointers to data the start of every data item
@@ -313,26 +318,53 @@ extern "C"
 
 						case _DLL_TYPE_F32:
 							// Floating point 32-bit
-							if (dfunc->ip[lnI].udfSetting == _UDFPARMS_REFERENCE)
+							if (dfunc->noPrototype)
 							{
-								// They want it updated by reference
-								if (rpar->ip[lnI]->varType == _VAR_TYPE_F32)
+								// All 32-bit floating point values are physically passed as 64-bit doubles for no-prototype functions
+								if (dfunc->ip[lnI].udfSetting == _UDFPARMS_REFERENCE)
 								{
-									// We can directly pass a pointer to it
-									gnDll_types[lnI]		= _DLL_TYPE_VP;
-									gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_f32;
+									// They want it updated by reference
+									if (rpar->ip[lnI]->varType == _VAR_TYPE_F64)
+									{
+										// We can directly pass a pointer to it
+										gnDll_types[lnI]		= _DLL_TYPE_VP;
+										gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_f64;
+
+									} else {
+										// We must translate it, then store it back afterward
+										gnDll_values[lnI]._f64	= iiVariable_getAs_f64(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+										gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._f64;
+										gnDll_types[lnI]		= _DLL_TYPE__byRef_postProcess;
+									}
 
 								} else {
-									// We must translate it, then store it back afterward
-									gnDll_values[lnI]._f32	= iiVariable_getAs_f32(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
-									gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._f32;
-									gnDll_types[lnI]		= _DLL_TYPE__byRef_postProcess;
+									// By value
+									gnDll_values[lnI]._f64	= iiVariable_getAs_f64(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+									gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._f64;
 								}
 
 							} else {
-								// By value
-								gnDll_values[lnI]._f32	= iiVariable_getAs_f32(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
-								gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._f32;
+								if (dfunc->ip[lnI].udfSetting == _UDFPARMS_REFERENCE)
+								{
+									// They want it updated by reference
+									if (rpar->ip[lnI]->varType == _VAR_TYPE_F32)
+									{
+										// We can directly pass a pointer to it
+										gnDll_types[lnI]		= _DLL_TYPE_VP;
+										gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_f32;
+
+									} else {
+										// We must translate it, then store it back afterward
+										gnDll_values[lnI]._f32	= iiVariable_getAs_f32(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+										gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._f32;
+										gnDll_types[lnI]		= _DLL_TYPE__byRef_postProcess;
+									}
+
+								} else {
+									// By value
+									gnDll_values[lnI]._f32	= iiVariable_getAs_f32(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+									gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._f32;
+								}
 							}
 							break;
 
@@ -467,9 +499,9 @@ extern "C"
 			gnDll_sizeofValues			= sizeof(gnDll_values[0]);
 			gnDll_funcAddress			= dfunc->funcAddress;
 			gnDll_paramCount			= dfunc->ipCount;
-			gnDll_typesBase				= (void*)&gnDll_types	[dfunc->ipCount - 1];
-			gnDll_pointersBase			= (void*)&gnDll_pointers[dfunc->ipCount - 1];
-			gnDll_valuesBase			= (void*)&gnDll_values	[dfunc->ipCount - 1];
+			gnDll_typesBaseRtoL			= (void*)&gnDll_types[dfunc->ipCount - 1];
+			gnDll_pointersBaseRtoL		= (void*)&gnDll_pointers[dfunc->ipCount - 1];
+			gnDll_valuesBaseRtoL		= (void*)&gnDll_values[dfunc->ipCount - 1];
 			gnDll_returnValuesBase		= (void*)&gnDll_values[0];
 			gnDll_returnType			= dfunc->rp.type;
 
@@ -479,6 +511,9 @@ extern "C"
 #elif defined(__64_BIT_COMPILER__)
 			// #include "dll_dispatch_64.asm"		// Note:  dll_dispatch_64.asm is assembled/compiled externally because Visual Studio 2010 and earlier do not support 64-bit inline assembly.
 			// This code is inside dll_dispatch_64.asm, which is only assembled in x64 builds:
+			gnDll_typesBaseLtoR			= (void*)&gnDll_types[0];
+			gnDll_pointersBaseLtoR		= (void*)&gnDll_pointers[0];
+			gnDll_valuesBaseLtoR		= (void*)&gnDll_values[0];
 			idll_dispatch_64_asm();
 #endif
 
@@ -560,7 +595,15 @@ extern "C"
 								iVariable_set_u32_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], gnDll_values[lnI]._u32);
 								break;
 							case _DLL_TYPE_F32:
-								iVariable_set_f32_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], gnDll_values[lnI]._f32);
+								if (dfunc->noPrototype)
+								{
+									// Non-prototyped functions actually physically pass 64-bit values for 32-bit definitions
+									iVariable_set_f64_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], gnDll_values[lnI]._f64);
+
+								} else {
+									// Normal 32-bit conveyance
+									iVariable_set_f32_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], gnDll_values[lnI]._f32);
+								}
 								break;
 							case _DLL_TYPE_F64:
 								iVariable_set_f64_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], gnDll_values[lnI]._f64);
@@ -671,7 +714,7 @@ extern "C"
 					dfunc->ipCount		= tnIpCount;
 #if defined(_M_X64)
 					dfunc->noPrototype	= tlNoPrototype;
-					dfunc->variadic		= tlVariadic;
+					dfunc->isVariadic		= tlVariadic;
 #endif
 					dfunc->funcAddress	= funcAddress;
 					dfunc->dlib			= dlib;

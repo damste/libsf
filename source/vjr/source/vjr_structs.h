@@ -224,7 +224,7 @@ struct SDllFunc
 #if defined(_M_X64)
 	// Only used on VJr 64-bit
 	bool			noPrototype;			// Was NOPROTOTYPE specified?
-	bool			variadic;				// Was VARIADIC specified?
+	bool			isVariadic;				// Was VARIADIC specified?
 #endif
 
 	// [inputType1 inputName1], [inputType2 inputName2], ... [inputTypeN inputNameN]

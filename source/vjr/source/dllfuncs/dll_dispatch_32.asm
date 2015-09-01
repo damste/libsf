@@ -112,9 +112,9 @@
 
 					// initializePart
 					mov		ecx,gnDll_paramCount			// lnParamCount	= dfunc->ipCount
-					mov		edx,gnDll_typesBase				// typePtr		= &gnDll_typesBase		[lnParamCount - 1]
-					mov		esi,gnDll_pointersBase			// pointersPtr	= &gnDll_pointersBase	[lnParamCount - 1]
-					mov		edi,gnDll_valuesBase			// valuesPtr	= &gnDll_valuesBase		[lnParamCount - 1]
+					mov		edx,gnDll_typesBaseRotL			// typePtr		= &gnDll_typesBase		[lnParamCount - 1]
+					mov		esi,gnDll_pointersBaseRtoL		// pointersPtr	= &gnDll_pointersBase	[lnParamCount - 1]
+					mov		edi,gnDll_valuesBaseRToL		// valuesPtr	= &gnDll_valuesBase		[lnParamCount - 1]
 					jmp		push_next_param
 
 prepare_for_next_param:

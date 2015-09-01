@@ -95,10 +95,13 @@ EXTRN gnDll_sizeofPointers:DWORD		;; u32
 EXTRN gnDll_sizeofValues:DWORD			;; u32
 EXTRN gnDll_saveParamBytes:DWORD		;; u32
 EXTRN gnDll_funcAddress:QWORD			;; void*
-EXTRN gnDll_typesBase:QWORD				;; void*
-EXTRN gnDll_pointersBase:QWORD			;; void*
-EXTRN gnDll_valuesBase:QWORD			;; void*
+EXTRN gnDll_typesBaseRtoL:QWORD			;; void*
+EXTRN gnDll_pointersBaseRtoL:QWORD		;; void*
+EXTRN gnDll_valuesBaseRtoL:QWORD		;; void*
 EXTRN gnDll_returnValuesBase:QWORD		;; void*
+EXTRN gnDll_typesBaseLtoR:QWORD			;; void*
+EXTRN gnDll_pointersBaseLtoR:QWORD		;; void*
+EXTRN gnDll_valuesBaseLtoR:QWORD		;; void*
 EXTRN gnDll_types:DWORD					;; u32
 EXTRN gnDll_pointers:QWORD				;; void*
 EXTRN gnDll_values:QWORD				;; SDllVals
@@ -166,16 +169,12 @@ idll_dispatch_64_asm	PROC	C
 ;; Note:  This code is inline to the iiDllFunc_dispatch_lowLevel() function.
 ;; Note:  See dllfuncs.cpp, and search for the #include "dll_dispatch_32.asm" source code line.
 ;;;;;;;;;;
-
-;; Note:  All of the code below is incorrect.  It was written before I (Rick C. Hodgin) had a proper understanding of the Win64 calling protocols.
-;; Note:  It will be re-written shortly (Lord willing, and life permitting).
-
 		;;;;;;;;;;
 		;;
 		;; Inline assembly to push parameters onto the stack:
 		;;
-		;;		r6/rsi	-- Integer number
-		;;		r7/rdi	-- Floating point number
+		;;		r6/esi	-- 1=Variadic, 0=Not variadic
+		;;		r7/rdi	-- Cardinal parameter number
 		;;		r10		-- general purpose
 		;;		r11		-- parameter size in bytes, and function address
 		;;		r12		-- count
@@ -184,212 +183,384 @@ idll_dispatch_64_asm	PROC	C
 		;;		r15		-- address of values, and address of return value
 		;;;;;;
 			;;
-			;; The code below simulates a for loop:
+			;; The code below simulates this two-step for loop sequence:
 			;;
-			;;		for (initializePart; testPart; incrementPart)
+			;;		//////////
+			;;		// Phase 1
+			;;		//////
+			;;			// Handle first four parameters, integer, floating point, or small structs
+			;;			// Processed left to right
+			;;			for (initializePhase1; testPhase1; incrementPhase1)
+			;;			{
+			;;				// Load only integer, floating point, or small structs
+			;;				// Mark each of those completed as _DLL_TYPE_VOID (so they are skipped in phase 2)
+			;;			}
+			;;
+			;;
+			;;		//////////
+			;;		// Phase 2
+			;;		//////
+			;;			// Load any remaining parameters, one by one
+			;;			// Processed right to left
+			;;			for (initializePhase2; testPhase2; incrementPhase2)
+			;;			{
+			;;				// Skip those previously loaded
+			;;				if (type != _DLL_TYPE_VOID)
+			;;					// Process only non-void
+			;;			}
 			;;
 			;;;;;;;;;;
 
-			;; initializePart
-			xor		rsi,rsi						;; Integer number
-			xor		rdi,rdi						;; Floating pointer number
-			movsxd	r12,gnDll_paramCount		;; lnParamCount		= dfunc->ipCount
-			mov		r13,gnDll_typesBase			;; typePtr			= &gnDll_types		[lnParamCount - 1]
-			mov		r14,gnDll_pointersBase		;; pointersPtr		= &gnDll_pointers	[lnParamCount - 1]
-			mov		r15,gnDll_valuesBase		;; valuesPtr		= &gnDll_values		[lnParamCount - 1]
-			jmp		push_next_param
 
-prepare_for_next_param:
-			;; incrementPart
-			dec		r12							;; lnParamCount--
+;;;;;;;;;;
+;; Phase 1
+;;;;;;
+	initializePhase1:
+			xor		rdi,rdi							;; Cardinal parameter number (index into rcx,rdx,r8,r9, or xmm0,xmm1,xmm2,xmm3 as parameters are being inserted)
+			movsxd	r12,gnDll_paramCount			;; lnParamCount		= dfunc->ipCount
+			mov		r13,gnDll_typesBaseLtoR			;; typePtr			= &gnDll_types[0]
+			mov		r14,gnDll_pointersBaseLtoR		;; pointersPtr		= &gnDll_pointers[0]
+			mov		r15,gnDll_valuesBaseLtoR		;; valuesPtr		= &gnDll_values[0]
+
+			;; Begin
+			jmp		testPhase1
+
+	incrementPhase1:
+			dec		r12								;; lnParamCount--
 			movsxd	r11,gnDll_sizeofTypes
-			sub		r13,r11						;; --typePtr
+			add		r13,r11							;; ++typePtr
 			movsxd	r11,gnDll_sizeofPointers
-			sub		r14,r11						;; --pointersPtr
+			add		r14,r11							;; ++pointersPtr
 			movsxd	r11,gnDll_sizeofValues
-			sub		r15,r11						;; --valuesPtr
+			add		r15,r11							;; ++valuesPtr
 
-push_next_param:
-			;; testPart
-			cmp		r12,0						;; lnParamCount > 0
-			jz		finished_with_stack_ops
+	testPhase1:
+			cmp		r12,0							;; lnParamCount > 0
+			jz		initializePhase2
+			cmp		rsi,4							;; Cardinal parameter number (all four slots are filled)
+			jae		initializePhase2
 
 			;; switch (types[lnI])
 			movsxd	r10,dword ptr [r13]
+			;; r10 is the switch() value
+
+			;; r11 is reused for each test value
 			mov		r11,_DLL_TYPE_S16
-			cmp		r10,r11						;; case _DLL_TYPE_S16, goto push_s16
-			jz		push_s16
+			cmp		r10,r11							;; case _DLL_TYPE_S16
+			jz		store_s16_phase1
+
 			mov		r11,_DLL_TYPE_U16
-			cmp		r10,r11						;; case _DLL_TYPE_U16, goto push_u16
-			jz		push_u16
+			cmp		r10,r11							;; case _DLL_TYPE_U16
+			jz		store_u16_phase1
+
 			mov		r11,_DLL_TYPE_S32
-			cmp		r10,r11						;; case _DLL_TYPE_S32, goto push_s32
-			jz		push_s32
+			cmp		r10,r11							;; case _DLL_TYPE_S32
+			jz		store_s32_phase1
+
 			mov		r11,_DLL_TYPE_U32
-			cmp		r10,r11						;; case _DLL_TYPE_S64, goto push_s64
-			jz		push_u32
+			cmp		r10,r11							;; case _DLL_TYPE_S64
+			jz		store_u32_phase1
+
 			mov		r11,_DLL_TYPE_F32
-			cmp		r10,r11						;; case _DLL_TYPE_F32, goto push_f32
-			jz		push_f32
+			cmp		r10,r11							;; case _DLL_TYPE_F32
+			jz		store_f32_phase1
+
 			mov		r11,_DLL_TYPE_F64
-			cmp		r10,r11						;; case _DLL_TYPE_F64, goto push_f64
-			jz		push_f64
+			cmp		r10,r11							;; case _DLL_TYPE_F64
+			jz		store_f64_phase1
+
 			mov		r11,_DLL_TYPE_S64
-			cmp		r10,r11						;; case _DLL_TYPE_S64, goto push_s64
-			jz		push_s64
+			cmp		r10,r11							;; case _DLL_TYPE_S64
+			jz		store_s64_phase1
+
 			mov		r11,_DLL_TYPE_U64
-			cmp		r10,r11						;; case _DLL_TYPE_U64, goto push_u64
-			jz		push_u64
+			cmp		r10,r11							;; case _DLL_TYPE_U64
+			jz		store_u64_phase1
 
-			;; If we get here, it has to be _DLL_TYPE_VP
-			jmp		push_vp						;; default, goto push_s16
+			;; If we get here, we skip it for now, it will be pushed in the next phase
+			jmp		incrementPhase1
 
-push_s16:
+	store_s16_phase1:
 			xor		r10,r10
-			movsxd	r10,dword ptr [r15]			;; Sign-extend 16-bit to 64-bit
-			jmp		push_integer_common
+			movsxd	r10,dword ptr [r15]				;; Sign-extend 16-bit to 64-bit
+			jmp		store_integer_common_phase1
 
-push_u16:
+	store_u16_phase1:
 			xor		r10,r10
-			movsxd	r10,dword ptr [r15]			;; Zero-extend 16-bit to 64-bit
-			jmp		push_integer_common
+			movsxd	r10,dword ptr [r15]				;; Zero-extend 16-bit to 64-bit
+			jmp		store_integer_common_phase1
 
-push_s32:
-			movsxd	r10,dword ptr [r15]			;; Sign-extend 32-bit to 64-bit
-			jmp		push_integer_common
+	store_s32_phase1:
+			movsxd	r10,dword ptr [r15]				;; Sign-extend 32-bit to 64-bit
+			jmp		store_integer_common_phase1
 
-push_u32:
-			movsxd	r10,dword ptr [r15]			;; Zero-extend 32-bit to 64-bit
-			jmp		push_integer_common
+	store_u32_phase1:
+			movsxd	r10,dword ptr [r15]				;; Zero-extend 32-bit to 64-bit
+			jmp		store_integer_common_phase1
 
-push_vp:	;; Generic pointer
-push_s64:	;; Signed 64-bit
-push_u64:	;; Unsigned 64-bit
+	store_s64_phase1:
+	store_u64_phase1:
 			mov		r10,qword ptr [r15]
-push_integer_common:
-			cmp		rsi,0						;; First integer
-			jz		push_into_rcx
 
-			cmp		rsi,1						;; Second integer
-			jz		push_into_rdx
+	store_integer_common_phase1:
+			or		dword ptr [r13],080000000h		;; Indicate this parameter is complete
+			cmp		rdi,0							;; First integer
+			jz		store_into_rcx
 
-			cmp		rsi,2						;; Third integer
-			jz		push_into_r8
+			cmp		rdi,1							;; Second integer
+			jz		store_into_rdx
 
-			cmp		rsi,3						;; Fourth integer
-			jz		push_into_r9
-			;; If we get here, we're beyond the fourth integer, so the rest go on the stack
+			cmp		rdi,2							;; Third integer
+			jz		store_into_r8
+			jmp		store_into_r9					;; Fourth integer
 
-push_integer_onto_stack:
-			push	r10							;; Push onto the stack
-			inc		rsi							;; Increment the counter
-			add		gnDll_saveParamBytes,8		;; Increase the bytes on the stack
-			jmp		prepare_for_next_param		;; Continue on
+	store_into_rcx:
+			mov		rcx,r10							;; Store into first integer, rcx
+			inc		rdi								;; Increase the counter
+			jmp		incrementPhase1					;; Continue on
+	store_into_rdx:
+			mov		rdx,r10							;; Store into second integer, rdx
+			inc		rdi								;; Increase the counter
+			jmp		incrementPhase1					;; Continue on
+	store_into_r8:
+			mov		r8,r10							;; Store into third integer, r8
+			inc		rdi								;; Increase the counter
+			jmp		incrementPhase1					;; Continue on
+	store_into_r9:
+			mov		r9,r10							;; Store into fourth integer, r9
+			inc		rdi								;; Increase the counter
+			jmp		incrementPhase1					;; Continue on
 
-push_into_rcx:
-			mov		rcx,r10						;; Store into first integer, rcx
-			inc		rsi							;; Increase the counter
-			jmp		prepare_for_next_param		;; Continue on
-push_into_rdx:
-			mov		rdx,r10						;; Store into second integer, rdx
-			inc		rsi							;; Increase the counter
-			jmp		prepare_for_next_param		;; Continue on
-push_into_r8:
-			mov		r8,r10						;; Store into third integer, r8
-			inc		rsi							;; Increase the counter
-			jmp		prepare_for_next_param		;; Continue on
-push_into_r9:
-			mov		r9,r10						;; Store into fourth integer, r9
-			inc		rsi							;; Increase the counter
-			jmp		prepare_for_next_param		;; Continue on
+	store_f32_phase1:
+			or		dword ptr [r13],080000000h		;; Indicate this parameter is complete
+			cmp		rdi,0							;; First floating point
+			jz		store_f32_into_xmm0
 
-push_f32:
-			cmp		rdi,0						;; First floating point
-			jz		push_f32_into_xmm0
+			cmp		rdi,1							;; Second floating point
+			jz		store_f32_into_xmm1
 
-			cmp		rdi,1						;; Second floating point
-			jz		push_f32_into_xmm1
+			cmp		rdi,2							;; Third floating point
+			jz		store_f32_into_xmm2
+			jmp		store_f32_into_xmm3				;; Fourth floating point
 
-			cmp		rdi,2						;; Third floating point
-			jz		push_f32_into_xmm2
+	store_f32_into_xmm0:
+			movss	xmm0,real4 ptr [r15]			;; Load 32-bit floating point into xmm0
+			inc		rdi								;; Increase the counter
+			cmp		rsi,0							;; Is it variadic?
+			jz		incrementPhase1					;; Nope
+			;; Copy to rcx
+			movd	rcx,xmm0
+			jmp		incrementPhase1					;; Continue on
 
-			cmp		rdi,3						;; Fourth floating point
-			jz		push_f32_into_xmm3
-			;; If we get here, we're beyond the fourth floating point, so the rest go on the stack
+	store_f32_into_xmm1:
+			movss	xmm1,real4 ptr [r15]			;; Load 32-bit floating point into xmm1
+			inc		rdi								;; Increase the counter
+			cmp		rsi,0							;; Is it variadic?
+			jz		incrementPhase1					;; Nope
+			;; Copy to rdx
+			movd	rdx,xmm1
+			jmp		incrementPhase1					;; Continue on
 
-push_f32_onto_stack:
-			xor		rax,rax
-			mov		eax,dword ptr [r15]			;; Load 32-bit floating
-			push	rax							;; Push onto the stack
-			inc		rdi							;; Increase the counter
-			add		gnDll_saveParamBytes,8		;; Increase the bytes on the stack
-			jmp		prepare_for_next_param		;; Continue on
+	store_f32_into_xmm2:
+			movss	xmm2,real4 ptr [r15]			;; Load 32-bit floating point into xmm2
+			inc		rdi								;; Increase the counter
+			cmp		rsi,0							;; Is it variadic?
+			jz		incrementPhase1					;; Nope
+			;; Copy to r8
+			movd	r8,xmm2
+			jmp		incrementPhase1					;; Continue on
 
-push_f32_into_xmm0:
-			movss	xmm0,real4 ptr [r15]		;; Load 32-bit floating point into xmm0
-			inc		rdi							;; Increase the counter
-			jmp		prepare_for_next_param		;; Continue on
+	store_f32_into_xmm3:
+			movss	xmm3,real4 ptr [r15]			;; Load 32-bit floating point into xmm3
+			inc		rdi								;; Increase the counter
+			cmp		rsi,0							;; Is it variadic?
+			jz		incrementPhase1					;; Nope
+			;; Copy to r9
+			movd	r9,xmm3
+			jmp		incrementPhase1					;; Continue on
 
-push_f32_into_xmm1:
-			movss	xmm1,real4 ptr [r15]		;; Load 32-bit floating point into xmm1
-			inc		rdi							;; Increase the counter
-			jmp		prepare_for_next_param		;; Continue on
+	store_f64_phase1:
+			or		dword ptr [r13],080000000h		;; Indicate this parameter is complete
+			cmp		rdi,0							;; First floating point
+			jz		store_f64_into_xmm0
 
-push_f32_into_xmm2:
-			movss	xmm2,real4 ptr [r15]		;; Load 32-bit floating point into xmm2
-			inc		rdi							;; Increase the counter
-			jmp		prepare_for_next_param		;; Continue on
+			cmp		rdi,1							;; Second floating point
+			jz		store_f64_into_xmm1
 
-push_f32_into_xmm3:
-			movss	xmm3,real4 ptr [r15]		;; Load 32-bit floating point into xmm3
-			inc		rdi							;; Increase the counter
-			jmp		prepare_for_next_param		;; Continue on
+			cmp		rdi,2							;; Third floating point
+			jz		store_f64_into_xmm2
+			jmp		store_f64_into_xmm3				;; Fourth floating point
 
-push_f64:
-			cmp		rdi,0						;; First floating point
-			jz		push_f64_into_xmm0
+	store_f64_into_xmm0:
+			movsd	xmm0,real8 ptr [r15]			;; Load 64-bit floating point into xmm0
+			inc		rdi								;; Increase the counter
+			cmp		rsi,0							;; Is it variadic?
+			jz		incrementPhase1					;; Nope
+			;; Copy to rcx
+			movd	rcx,xmm0
+			jmp		incrementPhase1					;; Continue on
 
-			cmp		rdi,1						;; Second floating point
-			jz		push_f64_into_xmm1
+	store_f64_into_xmm1:
+			movsd	xmm1,real8 ptr [r15]			;; Load 64-bit floating point into xmm1
+			inc		rdi								;; Increase the counter
+			cmp		rsi,0							;; Is it variadic?
+			jz		incrementPhase1					;; Nope
+			;; Copy to rdx
+			movd	rdx,xmm1
+			jmp		incrementPhase1					;; Continue on
 
-			cmp		rdi,2						;; Third floating point
-			jz		push_f64_into_xmm2
+	store_f64_into_xmm2:
+			movsd	xmm2,real8 ptr [r15]			;; Load 64-bit floating point into xmm2
+			inc		rdi								;; Increase the counter
+			cmp		rsi,0							;; Is it variadic?
+			jz		incrementPhase1					;; Nope
+			;; Copy to r8
+			movd	r8,xmm2
+			jmp		incrementPhase1					;; Continue on
 
-			cmp		rdi,3						;; Fourth floating point
-			jz		push_f64_into_xmm3
-			;; If we get here, we're beyond the fourth floating point, so the rest go on the stack
+	store_f64_into_xmm3:
+			movsd	xmm3,real8 ptr [r15]			;; Load 64-bit floating point into xmm3
+			inc		rdi								;; Increase the counter
+			cmp		rsi,0							;; Is it variadic?
+			jz		incrementPhase1					;; Nope
+			;; Copy to r9
+			movd	r9,xmm3
+			jmp		incrementPhase1					;; Continue on
 
-push_f64_onto_stack:
-			mov		r10,qword ptr [r15]			;; Load 64-bit floating point
-			push	r10							;; Push onto the stack
-			inc		rdi							;; Increase the counter
-			add		gnDll_saveParamBytes,8		;; Increase the bytes on the stack
-			jmp		prepare_for_next_param		;; Continue on
 
-push_f64_into_xmm0:
-			movsd	xmm0,real8 ptr [r15]		;; Load 64-bit floating point into xmm0
-			inc		rdi							;; Increase the counter
-			jmp		prepare_for_next_param		;; Continue on
 
-push_f64_into_xmm1:
-			movsd	xmm1,real8 ptr [r15]		;; Load 64-bit floating point into xmm1
-			inc		rdi							;; Increase the counter
-			jmp		prepare_for_next_param		;; Continue on
 
-push_f64_into_xmm2:
-			movsd	xmm2,real8 ptr [r15]		;; Load 64-bit floating point into xmm2
-			inc		rdi							;; Increase the counter
-			jmp		prepare_for_next_param		;; Continue on
+;;;;;;;;;;
+;; Phase 2
+;;;;;;
 
-push_f64_into_xmm3:
-			movsd	xmm3,real8 ptr [r15]		;; Load 64-bit floating point into xmm3
-			inc		rdi							;; Increase the counter
-			jmp		prepare_for_next_param		;; Continue on
+;; Phase 2 is not complete
+;; It is a mirror of phase 1 above that has not yet been refactored to push items onto the stack
+	int 3
 
-finished_with_stack_ops:
+	initializePhase2:
+			xor		rdi,rdi							;; Cardinal parameter number (index into rcx,rdx,r8,r9, or xmm0,xmm1,xmm2,xmm3 as parameters are being inserted)
+			movsxd	r12,gnDll_paramCount			;; lnParamCount		= dfunc->ipCount
+			mov		r13,gnDll_typesBaseRtoL			;; typePtr			= &gnDll_types		[dfunc->ipCount - 1]
+			mov		r14,gnDll_pointersBaseRtoL		;; pointersPtr		= &gnDll_pointers	[dfunc->ipCount - 1]
+			mov		r15,gnDll_valuesBaseRtoL		;; valuesPtr		= &gnDll_values		[dfunc->ipCount - 1]
+
+			;; Begin
+			jmp		testPhase2
+
+	incrementPhase2:
+			dec		r12								;; lnParamCount--
+			movsxd	r11,gnDll_sizeofTypes
+			sub		r13,r11							;; --typePtr
+			movsxd	r11,gnDll_sizeofPointers
+			sub		r14,r11							;; --pointersPtr
+			movsxd	r11,gnDll_sizeofValues
+			sub		r15,r11							;; --valuesPtr
+
+	testPhase2:
+			cmp		r12,0							;; lnParamCount > 0
+			jz		initializePhase2
+
+			;; switch (types[lnI])
+			movsxd	r10,dword ptr [r13]
+			;; r10 is the switch() value
+			;; r11 is reused for each test value
+			
+			;; If we've already added this parameter, skip it
+			test	r10,080000000h					;; Is the flag raised?
+			jnz		continue_testing_phase2
+
+			;; Remove the flag (for post-processing) and continue on
+			and		dword ptr [r13],07fffffffh
+			jmp		incrementPhase2
+			
+	continue_testing_phase2:
+			mov		r11,_DLL_TYPE_S16
+			cmp		r10,r11							;; case _DLL_TYPE_S16
+			jz		store_s16_phase2
+
+			mov		r11,_DLL_TYPE_U16
+			cmp		r10,r11							;; case _DLL_TYPE_U16
+			jz		store_u16_phase2
+
+			mov		r11,_DLL_TYPE_S32
+			cmp		r10,r11							;; case _DLL_TYPE_S32
+			jz		store_s32_phase2
+
+			mov		r11,_DLL_TYPE_U32
+			cmp		r10,r11							;; case _DLL_TYPE_S64
+			jz		store_u32_phase2
+
+			mov		r11,_DLL_TYPE_F32
+			cmp		r10,r11							;; case _DLL_TYPE_F32
+			jz		store_f32_phase2
+
+			mov		r11,_DLL_TYPE_F64
+			cmp		r10,r11							;; case _DLL_TYPE_F64
+			jz		store_f64_phase2
+
+			mov		r11,_DLL_TYPE_S64
+			cmp		r10,r11							;; case _DLL_TYPE_S64
+			jz		store_s64_phase2
+
+			mov		r11,_DLL_TYPE_U64
+			cmp		r10,r11							;; case _DLL_TYPE_U64
+			jz		store_u64_phase2
+
+			;; If we get here, we skip it for now, it will be pushed in the next phase
+			jmp		incrementPhase2
+
+	store_s16_phase2:
+			xor		r10,r10
+			movsxd	r10,dword ptr [r15]				;; Sign-extend 16-bit to 64-bit
+			jmp		store_integer_common_phase2
+
+	store_u16_phase2:
+			xor		r10,r10
+			movsxd	r10,dword ptr [r15]				;; Zero-extend 16-bit to 64-bit
+			jmp		store_integer_common_phase2
+
+	store_s32_phase2:
+			movsxd	r10,dword ptr [r15]				;; Sign-extend 32-bit to 64-bit
+			jmp		store_integer_common_phase2
+
+	store_u32_phase2:
+			movsxd	r10,dword ptr [r15]				;; Zero-extend 32-bit to 64-bit
+			jmp		store_integer_common_phase2
+
+	store_s64_phase2:
+	store_u64_phase2:
+			mov		r10,qword ptr [r15]
+
+	store_integer_common_phase2:
+;; Need to push onto the stack
+			jmp		incrementPhase2					;; Continue on
+
+	store_f32_phase2:
+;; Need to push onto the stack
+			jmp		incrementPhase2					;; Continue on
+
+	store_f64_phase2:
+;; Need to push onto the stack
+			jmp		incrementPhase2					;; Continue on
+		
+	finishedPhase2:
+
+
+
+
+;;;;;;;;;;
+;; Physically dispatch
+;;;;;;
 			call	gnDll_funcAddress			;; Dispatch into the DLL function9
 ;;			add		esp,gnDll_saveParamBytes	;; Remove pushed parameters from the stack
 
+
+
+
+;;;;;;;;;;
+;; Return parameter
+;;;;;;
 			;; Store return value if any
 			mov		r15,gnDll_returnValuesBase
 
@@ -424,39 +595,43 @@ finished_with_stack_ops:
 			jz		store_u64
 
 			;; If we get here, it has to be _DLL_TYPE_VP
-			jmp		store_vp					;; default, goto push_s16
+			jmp		store_vp					;; default, goto store_s16
 
-store_s16:
-store_u16:
+	store_s16:
+	store_u16:
 			mov		word ptr [r15],ax
 			jmp		dll_dispatch_asm_code_finished
 
-store_s32:
-store_u32:
+	store_s32:
+	store_u32:
 			mov		dword ptr [r15],eax
 			jmp		dll_dispatch_asm_code_finished
 
-store_vp:
+	store_vp:
 			mov		qword ptr [r15],rax
 			jmp		dll_dispatch_asm_code_finished
 
-store_f32:
+	store_f32:
 			movss 	real4 ptr [r15],xmm0
 			jmp		dll_dispatch_asm_code_finished
 
-store_f64:
+	store_f64:
 			movsd 	real8 ptr [r15],xmm0
 			jmp		dll_dispatch_asm_code_finished
 
-store_s64:
-store_u64:
+	store_s64:
+	store_u64:
 			mov		qword ptr [r15],rax
 			jmp		dll_dispatch_asm_code_finished
 
-store_nothing:
+	store_nothing:
 			;; Nothing needs stored (just a placeholder for a jmp target)
 
-dll_dispatch_asm_code_finished:
+
+;;;;;;;;;;
+;; Finished
+;;;;;;
+	dll_dispatch_asm_code_finished:
 			;; When we get here, the asm part is completed
 
 			ret
