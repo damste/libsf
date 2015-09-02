@@ -301,7 +301,7 @@
 									// Yes, execute it (self-contained execution and error reporting on every command)
 									memset(&lrpar, 0, sizeof(lrpar));
 									cmd->command(thisCode, comp, &lrpar);
-// TODO:  We should examine lrpar here
+// TODO:  We should examine lrpar here for the error condition, and report it if need be
 									return(!lrpar.ei.error);
 								}
 							}

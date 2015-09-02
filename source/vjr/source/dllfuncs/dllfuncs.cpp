@@ -176,7 +176,7 @@ extern "C"
 			{
 
 				// Delete if populated
-				if (rpar->ip[lnI])
+				if (rpar->ip[lnI] && rpar->ip[lnI]->isVarAllocated)
 					iVariable_delete(thisCode, rpar->ip[lnI], true);
 
 			}

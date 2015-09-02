@@ -25,7 +25,7 @@
 //     Nov.02.2014
 //////
 // Change log:
-//     Aug.14.2015 - Close to finalization
+//     Sep.02.2015 - Close to finalization
 //     Jan.09.2015 - Added function purposes
 //     Nov.02.2014 - Initial creation
 //////
@@ -94,7 +94,7 @@
 
 
 Nov.03.2014 -- Early draft.  Incomplete.  Inconsistent.
-Aug.14.2015 -- Approaching finalization.  Still in draft form.
+Sep.02.2015 -- Approaching finalization (James 4:15).  Still in draft form.
 
 
 
@@ -105,183 +105,171 @@ RDC Specifications Document
 1.0 - Reserved Keywords
 -----------------------
 
-	(|cask|)		-- Reference cask
-	[|cask|]		-- Definition cask
-	<|cask|>		-- Logic cask
-	~|cask|~		-- Utility cask
+	(|cask|)			-- Reference cask
+	[|cask|]			-- Definition cask
+	<|cask|>			-- Logic cask
+	~|cask|~			-- Utility cask
 
-	void			-- An unspecified type
-	bool			-- 8-bit boolean quantity which explicitly tests 0 for false, all others true
-	char			-- 8-bit signed quantity
-	short			-- 16-bit signed quantity
-	int				-- 32-bit signed quantity
-	long			-- 64-bit signed quantity
-	real4,float		-- 32-bit floating point
-	real8,double	-- 64-bit floating point
-	real10			-- 80-bit floating point
-	var				-- A weakly typed variable defined by usage
-	alias			-- Alias a token to a longer form for ease of typing (alias rc = hwndx->window->properties->geometry.rc;)
+	void				-- An empty type
+	b1,b8,b16,b32,b64	-- 1-bit, 8-bit, 16-bit, 32-bit, 64-bit boolean quantities
+	s8,u8				-- Signed and unsigned 8-bit quantities
+	s16,u16				-- Signed and unsigned 16-bit quantities
+	s32,u32				-- Signed and unsigned 32-bit quantities
+	s64,u64				-- Signed and unsigned 64-bit quantities
+	f32,f64,f80			-- 32-bit, 64-bit, and 80-bit floating point (if hardware doesn't support 80-bit floats, implicitly wraps to bfp)
 
-	s8,u8			-- Signed and unsigned 8-bit quantities
-	s16,u16			-- Signed and unsigned 16-bit quantities
-	s32,u32			-- Signed and unsigned 32-bit quantities
-	s64,u64			-- Signed and unsigned 64-bit quantities
-	f32,f64,f80		-- 32-bit, 64-bit, and 80-bit floating point (if hardware doesn't support, wraps to bfp)
-	as8,au8			-- Auto-converting signed and unsigned 32-bit quantity, loaded and stored as an 8-bit quantity with signed/unsigned saturation
-	as16,au16		-- Auto-converting signed and unsigned 32-bit quantity, loaded and stored as a 16-bit quantity with signed/unsigned saturation
-	as24,au24		-- Auto-converting signed and unsigned 32-bit quantity, loaded and stored as a 24-bit quantity with signed/unsigned saturation
-	xs8,xu8			-- Extended auto-converting signed and unsigned 64-bit quantity, loaded and stored as an 8-bit quantity with signed/unsigned saturation
-	xs16,xu16		-- Extended auto-converting signed and unsigned 64-bit quantity, loaded and stored as a 16-bit quantity with signed/unsigned saturation
-	xs24,xu24		-- Extended auto-converting signed and unsigned 64-bit quantity, loaded and stored as a 24-bit quantity with signed/unsigned saturation
-	xs32,xu32		-- Extended auto-converting signed and unsigned 64-bit quantity, loaded and stored as a 32-bit quantity with signed/unsigned saturation
-	xs40,xu40		-- Extended auto-converting signed and unsigned 64-bit quantity, loaded and stored as a 40-bit quantity with signed/unsigned saturation
-	xs48,xu48		-- Extended auto-converting signed and unsigned 64-bit quantity, loaded and stored as a 48-bit quantity with signed/unsigned saturation
-	xs56,xu56		-- Extended auto-converting signed and unsigned 64-bit quantity, loaded and stored as a 56-bit quantity with signed/unsigned saturation
-	Note:  Each of the above can be prefixed with a "c" indicating they are constant.
-	Note:  If any of these c* types are pefixed explicitly with rw, they will exist in rw memory, otherwise they will go to ro memory
+	as8,au8				-- Auto-converting signed and unsigned 32-bit quantity, loaded and stored as an 8-bit quantity with signed/unsigned saturation
+	as16,au16			-- Auto-converting signed and unsigned 32-bit quantity, loaded and stored as a 16-bit quantity with signed/unsigned saturation
+	as24,au24			-- Auto-converting signed and unsigned 32-bit quantity, loaded and stored as a 24-bit quantity with signed/unsigned saturation
+
+	xs8,xu8				-- Extended auto-converting signed and unsigned 64-bit quantity, loaded and stored as an 8-bit quantity with signed/unsigned saturation
+	xs16,xu16			-- Extended auto-converting signed and unsigned 64-bit quantity, loaded and stored as a 16-bit quantity with signed/unsigned saturation
+	xs32,xu32			-- Extended auto-converting signed and unsigned 64-bit quantity, loaded and stored as a 32-bit quantity with signed/unsigned saturation
+	xs56,xu56			-- Extended auto-converting signed and unsigned 64-bit quantity, loaded and stored as a 56-bit quantity with signed/unsigned saturation
+	// Note:  Each of the above can be made into a pointer using a trailing * on the form, or on the variable.
+	// Note:  Each of the above can be prefixed with a "c" indicating they are constant.
+	// Note:  If any of these c* types are pefixed explicitly with rw, they will exist in rw memory, otherwise they will go to ro memory.
+	// Note:  On LibSF 386-x40 (James 4:15), these will be auto-converting to 40-bits, not 64-bits, and xs56,xu56 will not be supported
+
+	be,le				-- Augments a type to indicate the data should be stored in memory as big endan, or little endian
+	ro,rw				-- Augments a type to indicate it is read-only, or read-write
+	live				-- Augments a type to indicate it is volatile, and should be re-sampled from memory at every use
+	static				-- Augments a definition to make it a singleton
+	extern				-- Augments a type to indicate its body is populated elsewhere
+
+	sizeof				-- Returns the size of a type
+	countof				-- Returns the count of a type in its immediately more fundamental form
+	offsetof			-- Returns the offset of a type
+	addressof			-- Returns the address of a type
+
+	// Used in { ... } blocks
+	successive			-- Variables put into the successive block are always expressed exactly that way in memory (no reordering)
+	literal				-- Specifies the data form is to be used literally as is, and remain unchanged changed even during optimization
+
+	NULL				-- A constant pointer to 0x0
+	true,yes,on			-- Sets a bool to its bit-size saturation of 1
+	false,no,off		-- Sets a bool to its bit-size saturation of 0
+
+	and					-- A verbose form of &&
+	or					-- A verbose form of ||
+	not					-- A verbose form of !
+	xor					-- A verbose form of ^
+	shiftl				-- A verbose form of <<
+	shiftr				-- A verbose form of >>
+
+	#align				-- An alignment directive for all variables hereafter
+	#optimize			-- Set the optimization level 0=none, 9=max (unless "#optimize N force" is used, any command line setting will override this setting)
+	#define				-- Pragma to define a token hereafter
+	#undefine			-- Pragma to un-define a token
+	#typedef			-- Pragma to alias one type to another name hereafter
+	#hide				-- Pragma to default it should not be visible in SourceLight
+	#order				-- Pragma to change the display order in the debugger (#order N)
+
+	#if					-- Pragma logic test for conditionally compiled code
+	#else				-- Pragma logic test for conditionally compiled code
+	#elseif				-- Pragma logic test for conditionally compiled code
+	#endif				-- Pragma termination of a conditional test block
+	#push				-- Pushes a pragma token value by name onto the stack
+	#pop				-- Pops a pragma token value by name from the stack
+	#text				-- Displays some text at compile time
+	#warning			-- Displays an explicit warning at the indicated location at compile time
+	#error				-- Displays an explicit error at the indicated location at compile time
+	#stop				-- Stops compilation with an optional stop code (#stop Nnn)
+	#meia				-- Triggers an explicit inquiry at the indicated location at runtime
+
+	with				-- Aliases lengthy texts to shorter forms for use within its { ... } block
+
+	struct				-- A structure definition
+	class				-- A class definition
+	operator			-- For operator override definitions
+	extends				-- A class extends another class (can extend multiple simultaneously)
+	super				-- A reference to the immediate parent in an inheritance chain
+	accessor			-- Documents and indicates a member function is an accessor, thereby removing the () syntax access requirement (use "class->func->xyz" rather than "class->func()->xyz")
+	union				-- A merging of two or more types
+	enum				-- An enumeration of items
+	new					-- Creates an instance of a class
+	delete				-- Deletes an instance of a class
+	snew				-- Scoped. Creates a dynamically allocated instance of a class, and automatically deletes it when leaving current scope.
+	sdelete				-- Scoped. Explicitly deletes all instances of all classes that are currently defined in current scope (sdelete class;)
+
+	adhoc				-- Declares an adhoc
+	function			-- Declares a function
+	port				-- Declares an initial launch port within a function
+	purpose				-- Declares a purpose within a function
+	return				-- Declares any output return value(s)
+	params				-- Declares any input parameter(s)
+	inline				-- Provides an explicit optimization hint
+	flowof				-- Defines the function to be a flow of another function
+	nostepinto			-- Declares that a function should not be entered on single-step debugging
+	breakpoint			-- Code will trap to the debugger if connected and engaged, ignored otherwise
+
+	do					-- Loop which always enters once, requires trailing while test
+	while				-- Conditionally tests loop logic and continues in the loop if true
+	until				-- Conditionally tests loop logic and continues in the loop if false
+	iterate				-- Repeats a task the specified number of times
+	for					-- A for loop
+	unless				-- A conditional test on false
+	if					-- A conditional test on true
+	else				-- An else clause on an if or unless
+	elseif				-- An elseif clause on an
+	lif					-- A line conditional test on true which executes multiple items on source-code line without braces, separated by semicolons
+	lelse				-- A line conditional test on false which executes multiple items on source-code line without braces, separated by semicolons
+	lelseif				-- A line elseif clause on an if or unless, which executes multiple items on source-code line without braces, separated by semicolons
+	fif					-- Performs a full test of all conditionals, implicitly assigns them to _fif_0, _fif_1, ..., _fifN, for examination after testing
+	felse				-- An else statement in the fif..felseif..felse form, identical to else, but with the leading "f" for visual consistency
+	felseif				-- An elseif that performs a full test of all conditionals, also implicitly assigning the results as in fif
+	switch				-- A switch statement
+	case				-- A member test of a switch statement
+	dive				-- Executes as many of the conditionals as possible (until one evaluates to false)
+	roll				-- Executes all conditionals
 	
-	bi				-- Arbitrary precision big integer, defaults to 128 bits
-	bfp				-- Arbitrary precision floating point, defaults to 256 bits
-	datum			-- An explicitly allocated piece of data with a pointer and length
-	date			-- A date with year, month, day
-	datetime		-- A datetime with year, month, day, hour, minute, second, millisecond
-	thread			-- A thread variable
-	process			-- A process variable
+	<|meta|>,<|mefa|>	-- Called on logic test result (meta called on true, mefa called on false)
 
-	be				-- Augments a type to indicate the data is stored in memory as big endan
-	le				-- Augments a type to indicate the data is stored in memory as little endian
-	const,ro		-- Augments a type to indicate it is read-only
-	rw				-- Augments a type to explicitly indicate it is read-write
-	volatile		-- Augments a type to indicate it is to be coded as conveyed
-	hide			-- Augments a type to indicate by default it should not be visible in SourceLight (typically used for unused / reserved members)
-	unsigned		-- Augments char, short, int, long to make it unsigned
-	static			-- Augments a definition to make it a singleton
-	extern			-- Augments a type to indicate its body is populated elsewhere
-	successive		-- Variables put into the successive block are always expressed exactly that way in memory (no reordering)
-	literal			-- Specifies the data form is to be used literally as is, and remain unchanged changed even during optimization
-	sizeof			-- Returns the size of a type
-	countof			-- Returns the count of a type
-	offsetof		-- Returns the offset of a type
-	addressof		-- Returns the address of a type
+	in					-- Creates a new thread
+	andin				-- Creates an additional new thread (used at the same time as in { })
+	out					-- Leave a thread
+	join				-- Joins the current thread to one (or more) thread(s) before continuing
+	timeout				-- Callback for each join-attempted thread that did not out before timeout (typically an adhoc or utility cask)
+	success				-- Callback if threads joined successfully before the timeout (typically an adhoc or utility cask)
 
-	NULL			-- A constant pointer to 0x0
-	null			-- A constant value of 0 or 0.0 (depending on context)
-	true,yes		-- Sets a bool to 0xff
-	false,no		-- Sets a bool to 0x00
+	engage				-- Launches another process
+	unengage			-- Explicitly ends a running process launched with engage
+	quit				-- Quits the application explicitly (calls OS's endProcess() function)
 
-	and				-- A verbose form of &&
-	or				-- A verbose form of ||
-	not				-- A verbose form of !
-	xor				-- A verbose form of ^
-	shiftl			-- A verbose form of <<
-	shiftr			-- A verbose form of >>
+	marker				-- Create a marker, allowing for explicit for multi-level returns to this location by marker name, and for references to be made relative to its code location
+	onEnter				-- Code to execute upon natural entry into the chain
+	onLeave				-- Code to execute upon natural exit from the chain
+	onHome				-- Code to execute when flow control returns to the home marker explicitly.
 
-	#define			-- Pragma definition of a token or macro
-	#undefine		-- Pragma un-definition of a token
-	#if				-- Pragma logic test for conditionally compiled code
-	#ifdef			-- Pragma logic test for the existence of a token
-	#ifndef			-- Pragma logic test for the non-existence of a token
-	#else			-- Pragma logic test for conditionally compiled code
-	#elseif			-- Pragma logic test for conditionally compiled code
-	#endif			-- Pragma termination of a conditional test block
-	#align			-- An alignment directive
-	#push			-- Pushes a token value onto the stack
-	#pop			-- Pops a token value from the stack
-	#text			-- Displays some text at compile time
-	#optimize		-- Set the optimization level (unless "force" is used, the command line overrides this setting)
-	#warning		-- Displays an explicit warning at the indicated location at compile time
-	#error			-- Displays an explicit error at the indicated location at compile time
-	#meia			-- Triggers an explicit inquiry at the indicated location at runtime
-	#stop			-- Stops compilation with an optional stop code (#stop Nnn)
-	typedef,alias	-- Aliases one type to another name
+	default				-- In a port or switch statement, specifies the unspecified operation
+	otherwise			-- A pseudonym for default
+	break				-- Breaks the current loop
+	breakto				-- Breaks to the indicated goto level
+	loop				-- Continues to the current level
+	loopto				-- Continues to the indicated goto level if nested
+	goto				-- Goes to the indicated label or named block
+	return				-- Signals completion of the function, and explicitly sends back one or more of the following:
+								(1) a value, (2) values, (3) a meia (inquiry), and/or (4) mema (message).
+	returnto			-- Returns back to the indicated marker, allowing the same returns as in return
 
-	struct			-- A structure definition
-	order			-- An augment to change the display order in the debugger
-	class			-- A class definition
-	operator		-- For operator override definitions
-	extends,inherits -- A class extends another class (can extend multiple simultaneously)
-	parent,super	-- A reference to the immediate parent in an inheritance chain
-	child			-- A reference to the immediate child in an inheritance chain
-	accessor		-- Document and indicate member function is an accessor, thereby removing the () syntax access requirement (use class->func->xyz rather than class->func()->xyz).
-	union			-- A merging of two or more types
-	enum			-- An enumeration of items
-	new				-- Creates an instance of a class
-	delete			-- Deletes an instance of a class
-	snew			-- Scoped. Creates an instance of a class, automatically delets it when leaving current scope
-	sdelete			-- Scoped. Deletes all instances of all classes that are currently defined in current scope
+	flow				-- A structured flow control block
+	flowout				-- Exit a structured flow control block 
+	flowoutto			-- Exit a structured flow control block to an indicated goto level
+	flowto				-- Flow to a member of a structured flow control block
+	subflow				-- Defines a subflow member of a strutured flow control block
 
-	adhoc			-- Declares an adhoc
-	function		-- Declares a function
-	port			-- Declares an initial launch port within a function
-	purpose			-- Declares a purpose within a function
-	return			-- Declares any output return value(s)
-	params			-- Declares any input parameter(s)
-	inline			-- Provides an explicit optimization hint
-	optimize		-- Provides an optimization hint level (0=none, 9=max)
-	force			-- Specifies if the optimization level should be forced
-	nodebug,nodbg	-- Declares that a function should not be entered on single-step debugging
-	breakpoint,debug -- Code will trap to the debugger if connected and engaged, ignored otherwise
+	meia				-- Called on an inquiry
+	mema				-- Called on a message (an extra and optional return message from a called thing)
 
-	do				-- Loop which always enters once, requires trailing while test
-	while			-- Conditionally tests loop logic and continues in the loop if true
-	until			-- Conditionally tests loop logic and continues in the loop if false
-	iterate			-- Repeat a task a specified number of times
-	for				-- A for loop
-	unless			-- A conditional test on false
-	if				-- A conditional test on true
-	else			-- An else clause on an if or unless
-	elseif			-- An elseif clause on an
-	lif				-- A line conditional test on true which executes multiple items on source-code line without braces, separated by semicolons
-	lelse			-- A line conditional test on false which executes multiple items on source-code line without braces, separated by semicolons
-	lelseif			-- A line elseif clause on an if or unless, which executes multiple items on source-code line without braces, separated by semicolons
-	fif				-- A full test of all conditionals
-	felse			-- An else statement in the fif..felseif..felse form, identical to else
-	felseif			-- An elseif with full test of all conditionals
-	switch			-- A switch statement
-	case			-- A member test of a switch statement
-	dive			-- Executes as many of the conditionals as possible (until one evaluates to false)
-	roll			-- Executes all conditionals
-	
-	meta,mefa		-- Called on logic test result (meta called on true, mefa called on false)
-
-	in				-- Creates a new thread
-	andin			-- Creates an additional new thread (used at the same time as in { })
-	out				-- Leave a thread
-	join			-- Joins the current thread to one (or more) thread(s) before continuing
-	timeout			-- Callback for each join-attempted thread that did not out before timeout (typically an adhoc or utility cask)
-	success			-- Callback if threads joined successfully before the timeout (typically an adhoc or utility cask)
-
-	engage			-- Launches another process
-	unengage		-- Explicitly ends a running process launched with engage
-	quit			-- Quits the application explicitly (calls OS's endProcess() function)
-
-	marker			-- Create a marker, allowing for explicit for multi-level returns to this location by marker name, and for references to be made relative to its code location
-	onEnter			-- Code to execute upon natural entry into the chain
-	onLeave			-- Code to execute upon natural exit from the chain
-	onHome			-- Code to execute when flow control returns to the home marker explicitly.
-
-	default			-- In a port or switch statement, specifies the unspecified operation
-	otherwise		-- A pseudonym for default
-	break,exit		-- Breaks the current loop
-	breakto,exitto	-- Breaks to the indicated goto level
-	continue,loop	-- Continues to the current level
-	continueto,loopto -- Continues to the indicated goto level
-	go,goto			-- Goes to the indicated label or named block
-	done,return		-- Signals completion of the function, and explicitly sends back one
-					   or more of the following:  a value, values, a meia (inquiry), mema (message).
-	returnto		-- Returns back to the indicated marker
-
-	flow			-- A structured flow control block
-	flowout			-- Exit a structured flow control block 
-	flowoutto		-- Exit a structured flow control block to an indicated goto level
-	flowto			-- Flow to a member of a structured flow control block
-	subflow			-- Defines a subflow member of a strutured flow control block
-	meia			-- Called on an inquiry
-	mema			-- Called on a message (an extra and optional return message from a called thing)
-
-	flowof			-- Defines a function to be a flow of another function
-	at_super		-- Executes commands from the parent's point of view (as in "at_super::x = 5;" updates the 'x' in scope of the caller)
-	at_marker		-- Executes commands from the named marker's point of view (as in "at_top::x = 5;" updates the 'x' in scope as at the marker named "top")
+	// Implemented as add-on classes
+	bi					-- Arbitrary precision big integer, defaults to 128 bits
+	bfp					-- Arbitrary precision floating point, defaults to 256 bits
+	var					-- A weakly typed variable defined by usage
+	datum				-- An explicitly allocated piece of data with a pointer and length
+	date				-- A date with year, month, day
+	datetime			-- A datetime with year, month, day, hour, minute, second, millisecond
+	thread				-- A thread variable
+	process				-- A process variable
 
 
 1.1 - Reverse Operators
@@ -305,6 +293,7 @@ RDC Specifications Document
 		
 		Note:  Some of these have extra significance in floating point numbers.
 
+
 1.2 - Simplified Pointers
 -------------------------
 
@@ -312,6 +301,7 @@ RDC Specifications Document
 	addition, repeated . or - (hyphen) character can be used for visual clarity, such as
 	this..that being the same as this.that, being the same as this---->that, being the
 	same as this->that, etc.
+
 
 2.0 - Program Engagement
 ------------------------
@@ -397,6 +387,7 @@ RDC Specifications Document
 			// An implicit return here will not result in an error
 			x = myAdhoc(a + b + c);
 		}
+
 
 2.2 - Flow Control
 ------------------
@@ -497,6 +488,7 @@ RDC Specifications Document
 					break;
 			}
 
+
 2.3 - Markers
 -------------
 
@@ -591,6 +583,7 @@ RDC Specifications Document
 	events as entry, exit, and flowto the marker.  And if the ~|utility cask|~ signals
 	an adhoc or function, the events are available as ports (see "14.0 - Function Ports").
 
+
 3.0 - Assignment Operations
 ---------------------------
 
@@ -600,6 +593,7 @@ RDC Specifications Document
 	All signed and unsigned values becoming a float or double will convert as closely as possible.
 	All float or double values becoming a signed or unsigned value will round.
 	All assignments will be done with = or :=.
+
 
 3.1 - builder Type
 ------------------
@@ -617,6 +611,7 @@ RDC Specifications Document
 			uptr		allocatedLength;
 		};
 
+
 3.2 - datum Type
 ----------------
 
@@ -628,7 +623,8 @@ RDC Specifications Document
 			uptr*		buffer;
 			uptr		length;
 		};
-	
+
+
 3.3 - Weak var Type
 -------------------
 
@@ -661,6 +657,7 @@ RDC Specifications Document
 	Pointer to pointers to values:
 		_s8pp, _u8pp, _s16pp, _u16pp, _s32pp, _u32pp, _s64pp, _u64pp, _f32pp, _f64pp, _bipp, _bfppp
 
+
 4.0 - Comparison Operations
 ---------------------------
 
@@ -689,6 +686,7 @@ RDC Specifications Document
 		(10) !<, tests for not less than
 		(11) $, found in (comparing one datum to another)
 		(12) !$, not found in (comparing one datum to another)
+
 
 5.0 - Thread Operations
 -----------------------
@@ -739,12 +737,13 @@ RDC Specifications Document
 		//////////
 		// Join with those threads before continuing
 		//////
-			lnMilliseconds = join(t1, t2, t3)::success(allGood)::timeout(10, myTimeout, NULL);
+			lnMilliseconds = join(t1, t2, t3) :: success(allGood) :: timeout(10, myTimeout, NULL);
 
 
 	Each thread will execute the code within, which can call other functions, etc.
 	Thread unengage will automatically signal when its closing brace is reached.
 	To explicitly exit a thread at any point, use the [out] keyword.
+
 
 6.0 - Unions and Anonymous Unions
 ---------------------------------
@@ -754,23 +753,13 @@ RDC Specifications Document
 
 		function printEncoding
 		| return u32 r1;
-		| params union {u32 iValue, f32 fValue}, bool* equal;
-		{
-			printf("The value %f in hex %x\n", fValue, iValue);
-			*equal = ((int)fValue == iValue);
-			return(iValue);
-		}
-
-		// The above would be the same as without the union keyword:
-
-		function printEncoding
-		| return u32 r1;
 		| params {u32 iValue, f32 fValue}, bool* equal;
 		{
 			printf("The value %f in hex %x\n", fValue, iValue);
 			*equal = ((int)fValue == iValue);
 			r1 = iValue;
 		}
+
 
 7.0 - Multiple Return Parameters
 --------------------------------
@@ -788,6 +777,7 @@ RDC Specifications Document
 		{
 			// Code for the function goes here
 		}
+
 
 8.0 - Flow Blocks
 -----------------
@@ -849,6 +839,7 @@ RDC Specifications Document
 			// Code for mema goes here
 		}
 
+
 9.0 - Flowof Functions
 ----------------------
 
@@ -897,6 +888,7 @@ RDC Specifications Document
 			a = b;		// Set a to b from above
 			b = t;		// Set b to t
 		}
+
 
 10.0 - Casks
 ------------
@@ -1049,6 +1041,7 @@ RDC Specifications Document
 	These abilities allow for many different ways to accomplish the same task.  Some
 	may be more or less desirable based on syntax preferences, and documentation needs.
 
+
 11.0 - The Class
 ----------------
 
@@ -1068,6 +1061,7 @@ RDC Specifications Document
 		super->member();		// Accesses immediate parent member function
 
 	The order in the above example will be name, class1, class2, class3, ... classN.
+
 
 12.0 - Function Overloading and Name Attributifying
 ---------------------------------------------------
@@ -1101,6 +1095,7 @@ RDC Specifications Document
 	external applications can link directly to the function knowing exactly the input
 	types, and there is never any ambiguity as to the expected input parameters.
 
+
 13.0 - LiveCode ABI
 -------------------
 
@@ -1115,6 +1110,7 @@ RDC Specifications Document
 	RDC requirements and those services natively available on the OS.  However, a
 	single generated output file can be run on any machine that is for the targeted
 	architecture, and has a wrapper to support it.
+
 
 14.0 - Function Ports
 ---------------------
@@ -1208,6 +1204,7 @@ RDC Specifications Document
 	which receive constants as passed parameters, and must examine those parameters
 	to determine what to do within.
 
+
 14.1 - Pre-defined ports
 ------------------------
 
@@ -1257,6 +1254,7 @@ RDC Specifications Document
 					//        code can be explicitly called using the "name().out" syntax.
 				}
 		}
+
 
 15.0 - Function Purposes
 ------------------------
@@ -1354,30 +1352,23 @@ RDC Specifications Document
 	Were these to be added to a class or struct as member functions, then it
 	would have the following syntax:
 	
-		CSample sample = new CSample();
+		CSample* sample = new CSample();
 
-		lcNumber = sample.convert().toChar(20);
-		lnValue  = sample.convert().toInt("123");
+		lcNumber = sample->convert().toChar(20);
+		lnValue  = sample->convert().toInt("123");
 		
 		
 --------------
 New:
 
 Nov.24.2014
-Prefix/postfix combination operators for modulo, and, or, xor.
-The same for ++ and --:
+Prefix/postfix combination operators for modulo, and (the same for ++ and --):
 
-		++%i.4;    //        i = ((i + 1) % 4); use i
-		i++%.4;    // t = i; i = ((i + 1) % 4); use t
+		++%4i;			//        i = ((i + 1) % 4); use i
+		i++%4;			// t = i; i = ((i + 1) % 4); use t
 
-		++&i.4;    //        i = ((i + 1) & 4); use i
-		i++&.4;    // t = i; i = ((i + 1) & 4); use t
-
-		++|i.4;    //        i = ((i + 1) | 4); use i
-		i++|.4;    // t = i; i = ((i + 1) | 4); use t
-
-		++^i.4;    //        i = ((i + 1) ^ 4); use i
-		i++^.4;    // t = i; i = ((i + 1) ^ 4); use t
+		++&7i;			//        i = ((i + 1) & 7); use i
+		i++&7;			// t = i; i = ((i + 1) & 7); use t
 
 
 Dec.27.2014
