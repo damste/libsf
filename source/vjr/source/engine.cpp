@@ -270,7 +270,7 @@
 							// It's something like thisForm.
 							debug_nop;
 
-						} else if (comp->iCode == _ICODE_ALPHA || comp->iCode == _ICODE_ALPHANUMERIC) {
+						} else {
 							// It may be a DLL
 							if (dfunc = iDllFunc_find_byName(thisCode, comp->line->sourceCode->data_s8 + comp->start, comp->length))
 							{
@@ -290,11 +290,8 @@
 								// Indicate success or failure
 								return(!lrpar.ei.error);
 							}
+							// If we get here, not a DLL function
 
-							// If we get here, not found
-							return(false);
-
-						} else {
 							// See if it's a known command
 							for (cmd = &gsKnownCommands[0]; cmd->iCode != 0; cmd++)
 							{

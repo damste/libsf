@@ -162,9 +162,10 @@ extern "C"
 			//////
 				iiDllFunc_dispatch_lowLevel(thisCode, rpar, dfunc);
 
-				// At this point, rpar->ei.error is set if error
-				break;
 
+			// Structured exit
+			// At this point, rpar->ei.error is set if error
+			break;
 		}
 
 
@@ -714,7 +715,7 @@ extern "C"
 					dfunc->ipCount		= tnIpCount;
 #if defined(_M_X64)
 					dfunc->noPrototype	= tlNoPrototype;
-					dfunc->isVariadic		= tlVariadic;
+					dfunc->isVariadic	= tlVariadic;
 #endif
 					dfunc->funcAddress	= funcAddress;
 					dfunc->dlib			= dlib;

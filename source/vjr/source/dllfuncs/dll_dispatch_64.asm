@@ -216,11 +216,14 @@ idll_dispatch_64_asm	PROC	C
 ;; Phase 1
 ;;;;;;
 	initializePhase1:
+			xor		rsi,rsi
 			xor		rdi,rdi							;; Cardinal parameter number (index into rcx,rdx,r8,r9, or xmm0,xmm1,xmm2,xmm3 as parameters are being inserted)
+			mov		gnDll_saveParamBytes,0			;; Param bytes pushed on stack initially set to 0
 			movsxd	r12,gnDll_paramCount			;; lnParamCount		= dfunc->ipCount
 			mov		r13,gnDll_typesBaseLtoR			;; typePtr			= &gnDll_types[0]
 			mov		r14,gnDll_pointersBaseLtoR		;; pointersPtr		= &gnDll_pointers[0]
 			mov		r15,gnDll_valuesBaseLtoR		;; valuesPtr		= &gnDll_values[0]
+			sub		rsp,32							;; Add a 32-byte (4x 8-byte) shadow area on the stack
 
 			;; Begin
 			jmp		testPhase1
@@ -276,9 +279,7 @@ idll_dispatch_64_asm	PROC	C
 			mov		r11,_DLL_TYPE_U64
 			cmp		r10,r11							;; case _DLL_TYPE_U64
 			jz		store_u64_phase1
-
-			;; If we get here, we skip it for now, it will be pushed in the next phase
-			jmp		incrementPhase1
+			jmp		store_pointer_phase1
 
 	store_s16_phase1:
 			xor		r10,r10
@@ -300,6 +301,7 @@ idll_dispatch_64_asm	PROC	C
 
 	store_s64_phase1:
 	store_u64_phase1:
+	store_pointer_phase1:
 			mov		r10,qword ptr [r15]
 
 	store_integer_common_phase1:
@@ -433,11 +435,6 @@ idll_dispatch_64_asm	PROC	C
 ;;;;;;;;;;
 ;; Phase 2
 ;;;;;;
-
-;; Phase 2 is not complete
-;; It is a mirror of phase 1 above that has not yet been refactored to push items onto the stack
-	int 3
-
 	initializePhase2:
 			xor		rdi,rdi							;; Cardinal parameter number (index into rcx,rdx,r8,r9, or xmm0,xmm1,xmm2,xmm3 as parameters are being inserted)
 			movsxd	r12,gnDll_paramCount			;; lnParamCount		= dfunc->ipCount
@@ -459,7 +456,7 @@ idll_dispatch_64_asm	PROC	C
 
 	testPhase2:
 			cmp		r12,0							;; lnParamCount > 0
-			jz		initializePhase2
+			jz		physicallyDispatch				;; If branch, all done
 
 			;; switch (types[lnI])
 			movsxd	r10,dword ptr [r13]
@@ -467,8 +464,8 @@ idll_dispatch_64_asm	PROC	C
 			;; r11 is reused for each test value
 			
 			;; If we've already added this parameter, skip it
-			test	r10,080000000h					;; Is the flag raised?
-			jnz		continue_testing_phase2
+			cmp		r10,080000000h					;; Is the flag raised?
+			jb		continue_testing_phase2
 
 			;; Remove the flag (for post-processing) and continue on
 			and		dword ptr [r13],07fffffffh
@@ -506,9 +503,7 @@ idll_dispatch_64_asm	PROC	C
 			mov		r11,_DLL_TYPE_U64
 			cmp		r10,r11							;; case _DLL_TYPE_U64
 			jz		store_u64_phase2
-
-			;; If we get here, we skip it for now, it will be pushed in the next phase
-			jmp		incrementPhase2
+			jmp		store_pointer_phase2
 
 	store_s16_phase2:
 			xor		r10,r10
@@ -530,30 +525,31 @@ idll_dispatch_64_asm	PROC	C
 
 	store_s64_phase2:
 	store_u64_phase2:
-			mov		r10,qword ptr [r15]
+	store_pointer_phase2:
+			mov		r10,qword ptr [r15]				;; Grab the 64-bit value
 
 	store_integer_common_phase2:
-;; Need to push onto the stack
+	store_f64_phase2:
+			push	r10								;; Push this param onto the stack
+			add		gnDll_saveParamBytes,8			;; Add in the 8 bytes pushed
 			jmp		incrementPhase2					;; Continue on
 
 	store_f32_phase2:
-;; Need to push onto the stack
-			jmp		incrementPhase2					;; Continue on
-
-	store_f64_phase2:
-;; Need to push onto the stack
+			xor		rax,rax
+			mov		eax,dword ptr [r15]				;; Grab the 32-bit value
+			push	rax								;; Store it as a 64-bit value
+			add		gnDll_saveParamBytes,8			;; Add in the 4 bytes pushed
 			jmp		incrementPhase2					;; Continue on
 		
-	finishedPhase2:
-
 
 
 
 ;;;;;;;;;;
 ;; Physically dispatch
 ;;;;;;
+	physicallyDispatch:
 			call	gnDll_funcAddress			;; Dispatch into the DLL function9
-;;			add		esp,gnDll_saveParamBytes	;; Remove pushed parameters from the stack
+			add		rsp,32						;; Remove shadow area from the stack
 
 
 
