@@ -222,6 +222,43 @@
 	const s8	cgc_sl_cString[]							= "cString";
 
 //////////*****[ GENERATED FILE ]*****
+// Constants
+//////
+	// Note:  These need to be in sync with vxb_const.h
+	uptr		cg_sl_params_none[2]						= { _VAR_TYPE_NONE,				0 };
+	uptr		cg_sl_params_null[2]						= { _VAR_TYPE_NULL,				0 };
+	uptr		cg_sl_params_s8[2]							= { _VAR_TYPE_S8,				0 };
+	uptr		cg_sl_params_s16[2]							= { _VAR_TYPE_S16,				0 };
+	uptr		cg_sl_params_s32[2]							= { _VAR_TYPE_S32,				0 };
+	uptr		cg_sl_params_s64[2]							= { _VAR_TYPE_S64,				0 };
+	uptr		cg_sl_params_u8[2]							= { _VAR_TYPE_U8,				0 };
+	uptr		cg_sl_params_u16[2]							= { _VAR_TYPE_U16,				0 };
+	uptr		cg_sl_params_u32[2]							= { _VAR_TYPE_U32,				0 };
+	uptr		cg_sl_params_u64[2]							= { _VAR_TYPE_U64,				0 };
+	uptr		cg_sl_params_numeric[2]						= { _VAR_TYPE_NUMERIC,			0 };
+	uptr		cg_sl_params_f32[2]							= { _VAR_TYPE_F32,				0 };
+	uptr		cg_sl_params_f64[2]							= { _VAR_TYPE_F64,				0 };
+	uptr		cg_sl_params_currency[2]					= { _VAR_TYPE_CURRENCY,			0 };
+	uptr		cg_sl_params_bfp[2]							= { _VAR_TYPE_BFP,				0 };
+	uptr		cg_sl_params_bi[2]							= { _VAR_TYPE_BI,				0 };
+	uptr		cg_sl_params_character[2]					= { _VAR_TYPE_CHARACTER,		0 };
+	uptr		cg_sl_params_unicode[2]						= { _VAR_TYPE_UNICODE,			0 };
+	uptr		cg_sl_params_date[2]						= { _VAR_TYPE_DATE,				0 };
+	uptr		cg_sl_params_datetime[2]					= { _VAR_TYPE_DATETIME,			0 };
+	uptr		cg_sl_params_datetimex[2]					= { _VAR_TYPE_DATETIMEX,		0 };
+	uptr		cg_sl_params_logical[2]						= { _VAR_TYPE_LOGICAL,			0 };
+	uptr		cg_sl_params_guid8[2]						= { _VAR_TYPE_GUID8,			0 };
+	uptr		cg_sl_params_guid16[2]						= { _VAR_TYPE_GUID16,			0 };
+	uptr		cg_sl_params_field[2]						= { _VAR_TYPE_FIELD,			0 };
+	uptr		cg_sl_params_vector[2]						= { _VAR_TYPE_VECTOR,			0 };
+	uptr		cg_sl_params_object[2]						= { _VAR_TYPE_OBJECT,			0 };
+	uptr		cg_sl_params_bitmap[2]						= { _VAR_TYPE_BITMAP,			0 };
+	uptr		cg_sl_params_bitmap_movie[2]				= { _VAR_TYPE_BITMAP_MOVIE,		0 };
+	uptr		cg_sl_params_thiscode[2]					= { _VAR_TYPE_THISCODE,			0 };
+	uptr		cg_sl_params_array[2]						= { _VAR_TYPE_ARRAY,			0 };
+	uptr		cg_sl_params_idispatch[2]					= { _VAR_TYPE_IDISPATCH,		0 };
+
+//////////*****[ GENERATED FILE ]*****
 // ALLTRIM()
 //////
 	SSourceLightData gsSourceLight_addbs[] =
@@ -244,7 +281,7 @@
 		{	_SOURCELIGHT_FUNCTION_NAME,				0,	0,	0,	0,	0	},
 		{	_SOURCELIGHT_FUNCTION_DESCRIPTION,		(uptr)"Two parameter variation. Converts the input string to a form where the cTrimChars are removed off the left and right sides.",	0, 0, 0, 0 },
 		{	_SOURCELIGHT_P1_REQUIRED,				(uptr)&cgc_sl_cString,		(uptr)&cgc_sl_character,	(uptr)&"Input string",																_VAR_TYPE_CHARACTER,	0	},
-		{	_SOURCELIGHT_P2_OPTIONAL,				(uptr)&"cTrimChars",		(uptr)&cgc_sl_character,	(uptr)&"String containing characters to trim",									_VAR_TYPE_CHARACTER,	0	},
+		{	_SOURCELIGHT_P2_OPTIONAL,				(uptr)&"cTrimChars",		(uptr)&cgc_sl_character,	(uptr)&"String containing characters to trim",										_VAR_TYPE_CHARACTER,	0	},
 		{	_SOURCELIGHT_R1_REQUIRED,				(uptr)&"cResult",			(uptr)&cgc_sl_character,	(uptr)&"Input string trimmed",														_VAR_TYPE_CHARACTER,	0	},
 		{	0,										0,	0,	0,	0,	0	},
 	};
