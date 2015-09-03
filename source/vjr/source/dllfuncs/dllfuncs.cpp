@@ -734,6 +734,9 @@ extern "C"
 					// When we get here, success
 					return(true);
 				}
+				// If we get here, the function was not found within the DLL
+				rpar->ei.error		= true;
+				rpar->ei.errorNum	= _ERROR_FUNCTION_NOT_FOUND;
 
 		} else {
 			// Should never happen

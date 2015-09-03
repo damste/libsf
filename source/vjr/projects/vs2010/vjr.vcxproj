@@ -118,6 +118,9 @@
     <PostBuildEvent>
       <Message>Copy 64-bit DLLs for use</Message>
     </PostBuildEvent>
+    <MASM>
+      <WarningLevel>2</WarningLevel>
+    </MASM>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -172,6 +175,9 @@ copy $(OutputPath)$(ProjectName).exe \libsf_offline\source\vjr\bin\64-bit\vjr_ms
     <PostBuildEvent>
       <Message>Copy 64-bit DLLs and version for build accumulator</Message>
     </PostBuildEvent>
+    <MASM>
+      <WarningLevel>2</WarningLevel>
+    </MASM>
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="..\..\source\compiler\rdc\rdc_specs.txt" />

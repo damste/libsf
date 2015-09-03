@@ -472,6 +472,7 @@ typedef SEM**		SEMpp;
 	const u32			_ERROR_UNABLE_TO_INITIALIZE				= 102;
 	const u32			_ERROR_UNKNOWN_FUNCTION					= 103;
 	const u32			_ERROR_DLL_NOT_FOUND					= 104;
+	const u32			_ERROR_FUNCTION_NOT_FOUND				= 105;
 
 
 //////////

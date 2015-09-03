@@ -250,6 +250,7 @@
 	const u8		cgcUnableToInitialize[]							= "unable to initialize";
 	const u8		cgcUnknownFunction[]							= "unknown function";
 	const u8		cgcDllNotFound[]								= "dll not found";
+	const u8		cgcFunctionNotFound[]							= "function not found";
 #else
 	#error Language not specified
 #endif
