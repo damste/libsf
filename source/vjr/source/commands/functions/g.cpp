@@ -85,6 +85,130 @@
 
 
 
+//////////
+//
+// Function: GETWORDCOUNT()
+// Counts the words in a string.
+//
+//////
+// Version 0.57
+// Last update:
+//     May.03.2015
+//////
+// Change log:
+//     May.03.2015 - Initial creation by Stefano D'Amico
+//////
+// Parameters:
+//     p1			-- Specifies the string whose words will be counted
+//     p2			-- Optional. Specifies one or more optional characters used to separate words in cString
+//
+//////
+// Returns:
+//    Numeric.
+//
+//////
+	void function_getwordcount(SThisCode* thisCode, SFunctionParams* rpar)
+	{
+		SVariable*	varStr = rpar->ip[0];
+		SVariable*	varDelimiters = rpar->ip[1];
+
+		SDatum		delimiters;
+		s32			lnI, lnJ, lnAllocationLength, lnCount;
+		s8			c;
+		bool		llFound;
+		SVariable*	result;
+
+
+		//////////
+		// Parameters 1 must be present and character
+		//////
+			rpar->rp[0] = NULL;
+			if (!iVariable_isValid(varStr) || !iVariable_isTypeCharacter(varStr))
+			{
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varStr), false);
+				return;
+			}
+
+		//////////
+		// If present, parameter 2 must be character
+		//////
+			if (varDelimiters)
+			{
+				// Logical
+				if (!iVariable_isValid(varDelimiters) || !iVariable_isTypeCharacter(varDelimiters))
+				{
+					iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varDelimiters), false);
+					return;
+				}
+
+				// Store the delimiters
+				delimiters.data_cs8	= varDelimiters->value.data_cs8;
+				delimiters.length	= varDelimiters->value.length;
+
+			} else {
+				// Use the default delimiters
+				delimiters.data_cs8	= &cgc_getwordDelim[0];
+				delimiters.length	= sizeof(cgc_getwordDelim) - 1;
+			}
+
+
+		/////////
+		// Parser string
+		//////
+			lnCount = 0;
+			lnAllocationLength = 0;
+			//////////
+			// Iterate through our string
+			//////
+				for (lnI = 0; varStr->value.data_cs8[lnI] && lnI < varStr->value.length; lnI++)
+				{
+
+					//////////
+					// Grab char
+					//////
+						c = varStr->value.data_cs8[lnI];
+
+					//////////
+					// Iterate through our delimiters
+					//////
+						for (lnJ = 0, llFound = false; delimiters.data_cs8[lnJ] && lnJ < delimiters.length; lnJ++)
+						{
+							if (c == delimiters.data_cs8[lnJ])
+							{
+								llFound = true;
+								break;
+							}
+						}
+
+					if(llFound)
+					{
+						if (lnAllocationLength!=0)
+							lnCount++;
+						lnAllocationLength = 0;
+					}
+					else
+						lnAllocationLength++;
+				}
+
+		if (lnAllocationLength!=0)
+			lnCount++;
+
+		//////////
+		// Create the value
+		//////
+			result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_U32, (cs8*)&lnCount, sizeof(lnCount), false);
+			if (!result)
+				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_getRelatedComp(thisCode, varStr), false);
+
+
+		//////////
+		// Return the result
+		//////
+			rpar->rp[0] = result;
+	}
+
+
+
 
 //////////
 //

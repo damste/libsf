@@ -1352,6 +1352,8 @@
 	const s8		cgc_textmerge_leftDelim[]						= "<<";
 	const s8		cgc_textmerge_rightDelim[]						= ">>";
 
+	const s8		cgc_getwordDelim[]								= " \t\r\n";
+
 	const s8		cgc_asterisk[]									= "*";
 	const s8		cgc_ampersandComment[]							= "&&";
 	const s8		cgc_dollarSign[]								= "$";

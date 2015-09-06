@@ -242,6 +242,7 @@ struct SFunctionParams;
 	void				function_forcepath	/* Stefano D'Amico */	(SThisCode* thisCode, SFunctionParams* rpar);
 	void				function_forcestem	/* Stefano D'Amico */	(SThisCode* thisCode, SFunctionParams* rpar);
 	void				function_fv			/* Stefano D'Amico */	(SThisCode* thisCode, SFunctionParams* rpar);
+	void				function_getwordcount/* Stefano D'Amico */	(SThisCode* thisCode, SFunctionParams* rpar);
 	void				function_gomonth	/* Stefano D'Amico */	(SThisCode* thisCode, SFunctionParams* rpar);
 	void				function_grayscale							(SThisCode* thisCode, SFunctionParams* rpar);
 	void				function_grn								(SThisCode* thisCode, SFunctionParams* rpar);
@@ -570,6 +571,7 @@ struct SFunctionParams;
 		{	_ICODE_FORCEPATH,		1,			1,				false,		(uptr)&function_forcepath,		2,				2,				NULL,			&gsSourceLight_forcepath[0]		},
 		{	_ICODE_FORCESTEM,		1,			1,				false,		(uptr)&function_forcestem,		2,				2,				NULL,			&gsSourceLight_forcestem[0]		},
 		{	_ICODE_FV,				1,			1,				false,		(uptr)&function_fv,				3,				3,				NULL,			&gsSourceLight_fv[0]			},	// FV() by Stefano D'Amico, VJr 0.56, Mar.18.2015
+		{	_ICODE_GETWORDCOUNT,	1,			1,				false,		(uptr)&function_getwordcount,	1,				2,				NULL,			&gsSourceLight_getwordcount[0]	},	// GETWORDCOUNT() by Stefano D'Amico, VJr 0.57, Sep.06.2015
 		{	_ICODE_GOMONTH,			1,			1,				false,		(uptr)&function_gomonth,		2,				2,				NULL,			&gsSourceLight_gomonth[0]		},	// GOMONTH() by Stefano D'Amico, VJr 0.57, Apr.06.2015
 		{	_ICODE_GRAYSCALE,		1,			1,				false,		(uptr)&function_grayscale,		1,				2,				NULL,			&gsSourceLight_grayscale[0]		},
 		{	_ICODE_GRN,				1,			1,				false,		(uptr)&function_grn,			1,				1,				NULL,			&gsSourceLight_grn[0]			},
