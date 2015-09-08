@@ -91,7 +91,7 @@
 
 #else
 	// Used for pointer sizes that mate up with pointers, but are actually integers
-	#ifndef _M_X64
+	#if !defined(__64_BIT_COMPILER__)
 		#define uptr unsigned int
 		#define sptr int
 	#else
@@ -135,7 +135,7 @@
 #define cf64 const f64
 
 #ifndef _UPTR_ERROR
-	#if defined(__amd64) || defined(_M_X64)
+	#if defined(__64_BIT_COMPILER__)
 		#define _UPTR_ERROR 0xffffffffffffffff
 	#else
 		#define _UPTR_ERROR 0xffffffff

@@ -237,7 +237,7 @@ struct SCdxKeyOp;
 			u16			free				: 12;	// 2,12		Unused
 			u32			keyDecodedAllocated	: 9;	// 14,9		Allocated key count
 			u32			keyDecodedInUse		: 9;	// 23,9		Decoded key (in use) count
-		} s;										// ------
+		};											// ------
 													// 0,4		32 bits total in the bit structure
 		SCdxNodeKey**	keyDecodedBuffer;			// 4,4		Pointers to all of the keys in this node (first key = keys[0], second = keys[1], and so on)
 		s32				nodeNum;					// 8,4		Physical node within the index file on disk (may be uncommitted, existing only in memory)

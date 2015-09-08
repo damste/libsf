@@ -99,7 +99,7 @@
 
 
 
-#if defined(__linux__) or defined(__solaris__)
+#if defined(__linux__) || defined(__solaris__)
 	int main(int argc, char* argv[])
 #else
 	int CALLBACK WinMain(	HINSTANCE	hInstance,

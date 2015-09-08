@@ -1464,7 +1464,7 @@ typedef SEM**		SEMpp;
 		const u8		cgcVersion4Text[]					= "00.57.6401.9999";
 	#endif
 #else
-	#ifndef _M_X64
+	#if !defined(__64_BIT_COMPILER__)
 		const u8		cgcScreenTitle[]					= "Visual FreePro, Jr. Version 0.57 -- May.04.2015 -- MSVC 32-bit";
 		const u8		cgcJDebiTitle[]						= "JDebi Debugger Version 0.57 -- May.04.2015 -- MSVC 32-bit";
 		const u8		cgcVersionText[]					= "Visual FreePro, Jr. 32-bit 00.57.0001.9999 for Windows";

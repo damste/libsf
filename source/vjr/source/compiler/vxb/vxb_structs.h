@@ -369,7 +369,7 @@ struct SCompileNote;
 				uptr	count1_2;
 			};
 			void*		ex1Ptr;
-		} u1;
+		};
 
 		union {
 			// Extra2
@@ -381,7 +381,7 @@ struct SCompileNote;
 				uptr	count2_2;
 			};
 			void*		ex2Ptr;
-		} u2;
+		};
 	};
 
 	// For warnings, errors, and notes

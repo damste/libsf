@@ -2370,9 +2370,9 @@
 
 
 		//////////
-		// Skip flags for NOPROTOTYPE and VARIADIC
+		// Skip NOPROTOTYPE and VARIADIC flags
 		//////
-#if defined(_M_X64)
+#if defined(__64_BIT_COMPILER__)
 			while (compParam->iCode == _ICODE_NOPROTOTYPE || compParam->iCode == _ICODE_VARIADIC)
 				compParam = iComps_getNth(thisCode, compParam, 1);
 #endif
@@ -2458,8 +2458,8 @@
 		//////////
 		// Create the DLL reference
 		//////
-#if defined(_M_X64)
-			// 64 -bit, noprototype and variadic are based on components flags
+#if defined(__64_BIT_COMPILER__)
+			// 64-bit, noprototype and variadic are based on components flags
 			iDllFunc_add(thisCode, rpar, &returnParam, inputParams, lnI, compFunctionName, compAliasName, compDllName, NULL, NULL, (compNoPrototype != NULL), (compVariadic != NULL));
 #else
 			// 32-bit and therefore not noprototype or variadic
