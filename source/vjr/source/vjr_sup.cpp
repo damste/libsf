@@ -2057,8 +2057,8 @@
 		//////////
 		// Store the settings
 		//////
-			focus->readWriteBrush	= CreateSolidBrush(RGB(focusHighlightReadWriteColor.s.red,	focusHighlightReadWriteColor.s.grn,	focusHighlightReadWriteColor.s.blu));
-			focus->readOnlyBrush	= CreateSolidBrush(RGB(focusHighlightReadOnlyColor.s.red,	focusHighlightReadOnlyColor.s.grn,	focusHighlightReadOnlyColor.s.blu));
+			focus->readWriteBrush	= CreateSolidBrush(RGB(focusHighlightReadWriteColor.red,	focusHighlightReadWriteColor.grn,	focusHighlightReadWriteColor.blu));
+			focus->readOnlyBrush	= CreateSolidBrush(RGB(focusHighlightReadOnlyColor.red,	focusHighlightReadOnlyColor.grn,	focusHighlightReadOnlyColor.blu));
 			GetWindowRect(focus->hwnd, &focus->rc);
 
 
@@ -2670,9 +2670,9 @@
 		// Adjust the color
 		//////
 			tfPercent	= (100.0f + tfPercent) / 100.0f;
-			red			= (f32)color.s.red * tfPercent;
-			grn			= (f32)color.s.grn * tfPercent;
-			blu			= (f32)color.s.blu * tfPercent;
+			red			= (f32)color.red * tfPercent;
+			grn			= (f32)color.grn * tfPercent;
+			blu			= (f32)color.blu * tfPercent;
 
 
 		//////////
@@ -2686,9 +2686,9 @@
 		//////////
 		// Set the color back
 		//////
-			color.s.red	= (u8)red;
-			color.s.grn	= (u8)grn;
-			color.s.blu	= (u8)blu;
+			color.red	= (u8)red;
+			color.grn	= (u8)grn;
+			color.blu	= (u8)blu;
 	}
 
 

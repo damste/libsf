@@ -128,7 +128,9 @@ struct SBgra
 {
 	union {
 		u32		color;
+#if !defined(__solaris__)
 		struct {
+#endif
 			union {
 				u8	blu;
 				u8	blu_u8;
@@ -149,8 +151,10 @@ struct SBgra
 				u8	alp_u8;
 				s8	alp_s8;
 			};
-		} s;
-	};
+#if !defined(__solaris__)
+        };
+#endif
+    };
 };
 
 struct SBgraf
