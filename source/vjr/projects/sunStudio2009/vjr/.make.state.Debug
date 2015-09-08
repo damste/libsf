@@ -1,0 +1,17 @@
+.MAKE_VERSION:	VERSION-1.0
+.clean-conf:
+	rm -f -r build/Debug
+	rm -f dist/Debug/SunStudio_12.1-Solaris-x86/vjr
+	CCadmin -clean
+.BUILT_LAST_MAKE_RUN:
+.depcheck-impl:
+	echo "# This code depends on make tool being used" >.dep.inc
+	if [ -n "" ]; then \
+	    echo "DEPFILES=\$(wildcard \$(addsuffix .d, \${OBJECTFILES}))" >>.dep.inc; \
+	    echo "ifneq (\${DEPFILES},)" >>.dep.inc; \
+	    echo "include \${DEPFILES}" >>.dep.inc; \
+	    echo "endif" >>.dep.inc; \
+	else \
+	    echo ".KEEP_STATE:" >>.dep.inc; \
+	    echo ".KEEP_STATE_FILE:.make.state.\${CONF}" >>.dep.inc; \
+	fi

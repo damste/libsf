@@ -99,7 +99,7 @@
 
 
 
-#if defined(__linux__)
+#if defined(__linux__) or defined(__solaris__)
 	int main(int argc, char* argv[])
 #else
 	int CALLBACK WinMain(	HINSTANCE	hInstance,
@@ -111,7 +111,7 @@
 	SThisCode*	thisCode = NULL;
 	MSG			msg;
 	HACCEL		hAccelTable;
-#if defined(__linux__)
+#if defined(__linux__) || defined(__solaris__)
 	HINSTANCE	hInstance = 0;
 #endif
 

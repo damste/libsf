@@ -549,7 +549,7 @@ struct SFunctionParams;
 		{	_ICODE_DATETIME,		1,			1,				false,		(uptr)&function_datetime,		0,				7,				NULL,			&gsSourceLight_datetime[0]		},
 		{	_ICODE_DATETIMEX,		1,			1,				false,		(uptr)&function_datetimex,		0,				8,				NULL,			&gsSourceLight_datetimex[0]		},
 		{	_ICODE_DAY,				1,			1,				false,		(uptr)&function_day,			0,				1,				NULL,			&gsSourceLight_day[0]			},	// DAY() by Stefano D'Amico, VJr 0.57, Apr.04.2015
-		{	_ICODE_DBUNDLE,			0,			1,				false,		(uptr)&function_dbundle,		1,				4,				"1000",			&gsSourceLight_dbundle[0]		},
+		{	_ICODE_DBUNDLE,			0,			1,				false,		(uptr)&function_dbundle,		1,				4,				(char*)"1000",	&gsSourceLight_dbundle[0]		},
 		{	_ICODE_DMY,				1,			1,				false,		(uptr)&function_dmy,			0,				1,				NULL,			&gsSourceLight_dmy[0]			},	// DMY() by Stefano D'Amico, VJr 0.57, Apr.07.2015
 		{	_ICODE_DOW,				1,			1,				false,		(uptr)&function_dow,			0,				2,				NULL,			&gsSourceLight_dow[0]			},	// DOW() by Hernan Cano, VJr 0.75, Apr.20.2015
 		{	_ICODE_DTOC,			1,			1,				false,		(uptr)&function_dtoc,			0,				2,				NULL,			&gsSourceLight_dtoc[0]			},	// DTOC() by Stefano D'Amico, VJr 0.57, Apr.07.2015
@@ -558,7 +558,7 @@ struct SFunctionParams;
 		{	_ICODE_DTOT,			1,			1,				false,		(uptr)&function_dtot,			1,				2,				NULL,			&gsSourceLight_dtot[0]			},	// DTOT() by Stefano D'Amico, VJr 0.57, Apr.07.2015
 		{	_ICODE_DTOX,			1,			1,				false,		(uptr)&function_dtox,			1,				2,				NULL,			&gsSourceLight_dtox[0]			},
 		{	_ICODE_DTRANSFORM,		1,			1,				false,		(uptr)&function_dtransform,		1,				10,				NULL,			&gsSourceLight_dtransform[0]	},	// DTRANSFORM() by Stefano D'Amico, VJr 0.57, Apr.16.2015
-		{	_ICODE_DUNBUNDLE,		0,			3,				false,		(uptr)&function_dunbundle,		1,				4,				"0111",			&gsSourceLight_dunbundle[0]		},
+		{	_ICODE_DUNBUNDLE,		0,			3,				false,		(uptr)&function_dunbundle,		1,				4,				(char*)"0111",	&gsSourceLight_dunbundle[0]		},
 		{	_ICODE_EMPTY,			1,			1,				false,		(uptr)&function_empty,			1,				1,				NULL,			&gsSourceLight_empty[0]			},	// EMPTY() by Stefano D'Amico, VJr 0.56, Mar.19.2015
 		{	_ICODE_ENDSWITH,		1,			1,				false,		(uptr)&function_endswith,		2,				4,				NULL,			&gsSourceLight_endswith[0]		},
 		{	_ICODE_ENDSWITHC,		1,			1,				false,		(uptr)&function_endswith,		2,				4,				NULL,			&gsSourceLight_endswithc[0]		},

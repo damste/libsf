@@ -149,7 +149,7 @@ struct SBgra
 				u8	alp_u8;
 				s8	alp_s8;
 			};
-		};
+		} s;
 	};
 };
 
@@ -340,7 +340,7 @@ struct SXYS32
 
 #if defined(_MSC_VER)
 	#include "\libsf\utils\common\cpp\datum.h"
-#elif defined(__GNUC__)
+#elif defined(__GNUC__) || defined(__solaris__)
 	#include "/libsf/utils/common/cpp/datum.h"
 #else
 	#error Unknown target for compilation (must be Windows or Linux)

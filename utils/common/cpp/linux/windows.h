@@ -146,6 +146,14 @@
 #define LRESULT				sptr*
 #define COLORREF			DWORD
 #define LPSTR				s8*
+#define IDispatch           void
+#define LARGE_INTEGER       s64
+
+// TODO:  These values have not yet been populated with correct values, they're just placeholders for compilation
+#define _S_IREAD            0
+#define _S_IWRITE           1
+#define _LK_NBLCK           2
+#define _LK_UNLCK           3
 
 #define RGB(r,g,b)			((COLORREF)(((BYTE)(r)|((WORD)((BYTE)(g))<<8))|(((DWORD)(BYTE)(b))<<16)))
 #define MAKEINTRESOURCE(i)	((uptr)(i))
@@ -1169,6 +1177,16 @@ typedef struct tagCREATESTRUCT
 #define _lseek				lseek
 #define _lseeki64			lseek64
 #define _telli64			telli64
+
+// TODO:  These values have not yet been populated with correct values, they're just placeholders for compilation
+int                         _creat                  (char* tcPathname, int access);
+int                         _creat                  (const char* tcPathname, int access);
+s64                         _filelengthi64          (int fileno);
+int                         _locking                (int fileno, int mode, int length);
+int                         sopen                   (char* tcFilename, int access, int sharing, int shareAccess);
+int                         GetDoubleClickTime      (void);
+int                         QueryPerformanceCounter (LARGE_INTEGER* ticks);
+int                         QueryPerformanceFrequency(LARGE_INTEGER* freq);
 
 WINUSERAPI	HWND WINAPI CreateWindowEx(	__in		DWORD dwExStyle,
 										__in_opt	cs8* lpClassName,

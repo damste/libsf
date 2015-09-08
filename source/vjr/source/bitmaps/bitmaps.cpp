@@ -632,10 +632,10 @@
 				for (lnX = 0; lnX < bmp24->bi.biWidth; lnX++, lbgr++, lbgra++)
 				{
 					// Copy the pixel
-					lbgra->alp	= 255;
-					lbgra->red	= lbgr->red;
-					lbgra->grn	= lbgr->grn;
-					lbgra->blu	= lbgr->blu;
+					lbgra->s.alp	= 255;
+					lbgra->s.red	= lbgr->red;
+					lbgra->s.grn	= lbgr->grn;
+					lbgra->s.blu	= lbgr->blu;
 				}
 			}
 		}
@@ -866,10 +866,10 @@
 				for (lnX = tnUlX; lnX < tnLrX && lnX < bmp->bi.biWidth; lnX++, lbgra++)
 				{
 					// Copy the pixel
-					lbgra->alp	= 255;
-					lbgra->red	= 255 - lbgra->red;
-					lbgra->grn	= 255 - lbgra->grn;
-					lbgra->blu	= 255 - lbgra->blu;
+					lbgra->s.alp	= 255;
+					lbgra->s.red	= 255 - lbgra->s.red;
+					lbgra->s.grn	= 255 - lbgra->s.grn;
+					lbgra->s.blu	= 255 - lbgra->s.blu;
 				}
 			}
 		}
@@ -983,10 +983,10 @@
 								if (lnXDst >= 0 && lnXDst < bmpDst->bi.biWidth)
 								{
 									// Copy the pixel
-									lbgraDst->alp	= 255;
-									lbgraDst->red	= lbgrSrc->red;
-									lbgraDst->grn	= lbgrSrc->grn;
-									lbgraDst->blu	= lbgrSrc->blu;
+									lbgraDst->s.alp	= 255;
+									lbgraDst->s.red	= lbgrSrc->red;
+									lbgraDst->s.grn	= lbgrSrc->grn;
+									lbgraDst->s.blu	= lbgrSrc->blu;
 									++lnPixelsRendered;
 								}
 
@@ -1005,23 +1005,23 @@
 							for (lnX = 0, lnXDst = trc->left; lnX < bmpSrc->bi.biWidth && lnXDst < trc->right; lnXDst++, lnX++)
 							{
 								// Are we on the image?
-								if (lnXDst >= 0 && lnXDst < bmpDst->bi.biWidth && lbgraSrc->alp != 0)
+								if (lnXDst >= 0 && lnXDst < bmpDst->bi.biWidth && lbgraSrc->s.alp != 0)
 								{
 									// Copy the pixel
-									if (lbgraSrc->alp == 255)
+									if (lbgraSrc->s.alp == 255)
 									{
 										// Opaque
-										lbgrDst->red	= lbgraSrc->red;
-										lbgrDst->grn	= lbgraSrc->grn;
-										lbgrDst->blu	= lbgraSrc->blu;
+										lbgrDst->red	= lbgraSrc->s.red;
+										lbgrDst->grn	= lbgraSrc->s.grn;
+										lbgrDst->blu	= lbgraSrc->s.blu;
 
 									} else {
 										// Some degree of transparency
-										lfAlp			= ((f64)lbgraSrc->alp / 255.0);
+										lfAlp			= ((f64)lbgraSrc->s.alp / 255.0);
 										lfMalp			= 1.0 - lfAlp;
-										lbgrDst->red	= (u8)min(max(((f64)lbgrDst->red * lfMalp) + (lbgraSrc->red * lfAlp), 0.0), 255.0);
-										lbgrDst->grn	= (u8)min(max(((f64)lbgrDst->grn * lfMalp) + (lbgraSrc->grn * lfAlp), 0.0), 255.0);
-										lbgrDst->blu	= (u8)min(max(((f64)lbgrDst->blu * lfMalp) + (lbgraSrc->blu * lfAlp), 0.0), 255.0);
+										lbgrDst->red	= (u8)min(max(((f64)lbgrDst->red * lfMalp) + (lbgraSrc->s.red * lfAlp), 0.0), 255.0);
+										lbgrDst->grn	= (u8)min(max(((f64)lbgrDst->grn * lfMalp) + (lbgraSrc->s.grn * lfAlp), 0.0), 255.0);
+										lbgrDst->blu	= (u8)min(max(((f64)lbgrDst->blu * lfMalp) + (lbgraSrc->s.blu * lfAlp), 0.0), 255.0);
 									}
 									++lnPixelsRendered;
 								}
@@ -1037,25 +1037,25 @@
 							for (lnX = 0, lnXDst = trc->left; lnX < bmpSrc->bi.biWidth && lnXDst < trc->right; lnXDst++, lnX++)
 							{
 								// Are we on the image?
-								if (lnXDst >= 0 && lnXDst < bmpDst->bi.biWidth && lbgraSrc->alp != 0)
+								if (lnXDst >= 0 && lnXDst < bmpDst->bi.biWidth && lbgraSrc->s.alp != 0)
 								{
 									// Copy the pixel
-									if (lbgraSrc->alp == 255)
+									if (lbgraSrc->s.alp == 255)
 									{
 										// Opaque
-										lbgraDst->alp	= 255;
-										lbgraDst->red	= lbgraSrc->red;
-										lbgraDst->grn	= lbgraSrc->grn;
-										lbgraDst->blu	= lbgraSrc->blu;
+										lbgraDst->s.alp	= 255;
+										lbgraDst->s.red	= lbgraSrc->s.red;
+										lbgraDst->s.grn	= lbgraSrc->s.grn;
+										lbgraDst->s.blu	= lbgraSrc->s.blu;
 
 									} else {
 										// Some degree of transparency
-										lfAlp			= ((f64)lbgraSrc->alp / 255.0);
+										lfAlp			= ((f64)lbgraSrc->s.alp / 255.0);
 										lfMalp			= 1.0 - lfAlp;
-	 									lbgraDst->alp	= 255;
-										lbgraDst->red	= (u8)min(max(((f64)lbgraDst->red * lfMalp) + (lbgraSrc->red * lfAlp), 0.0), 255.0);
-										lbgraDst->grn	= (u8)min(max(((f64)lbgraDst->grn * lfMalp) + (lbgraSrc->grn * lfAlp), 0.0), 255.0);
-										lbgraDst->blu	= (u8)min(max(((f64)lbgraDst->blu * lfMalp) + (lbgraSrc->blu * lfAlp), 0.0), 255.0);
+	 									lbgraDst->s.alp	= 255;
+										lbgraDst->s.red	= (u8)min(max(((f64)lbgraDst->s.red * lfMalp) + (lbgraSrc->s.red * lfAlp), 0.0), 255.0);
+										lbgraDst->s.grn	= (u8)min(max(((f64)lbgraDst->s.grn * lfMalp) + (lbgraSrc->s.grn * lfAlp), 0.0), 255.0);
+										lbgraDst->s.blu	= (u8)min(max(((f64)lbgraDst->s.blu * lfMalp) + (lbgraSrc->s.blu * lfAlp), 0.0), 255.0);
 									}
 									++lnPixelsRendered;
 								}
@@ -1206,10 +1206,10 @@
 									if (lnXDst >= 0 && lnXDst < bmpDst->bi.biWidth && lnYDst >= 0 && lnYDst < bmpDst->bi.biHeight)
 									{
 										// Copy the pixel
-										lbgraDst->alp	= 255;
-										lbgraDst->red	= lbgrSrc->red;
-										lbgraDst->grn	= lbgrSrc->grn;
-										lbgraDst->blu	= lbgrSrc->blu;
+										lbgraDst->s.alp	= 255;
+										lbgraDst->s.red	= lbgrSrc->red;
+										lbgraDst->s.grn	= lbgrSrc->grn;
+										lbgraDst->s.blu	= lbgrSrc->blu;
 										++lnPixelsRendered;
 									}
 
@@ -1230,23 +1230,23 @@
 									lbgrDst = (SBgr*)((s8*)bmpDst->bd + ((bmpDst->bi.biHeight - lnYDst - 1) * bmpDst->rowWidth) + (lnXDst * (bmpDst->bi.biBitCount / 8)));
 
 									// Are we on the image?
-									if (lnXDst >= 0 && lnXDst < bmpDst->bi.biWidth && lnYDst >= 0 && lnYDst < bmpDst->bi.biHeight && lbgraSrc->alp != 0)
+									if (lnXDst >= 0 && lnXDst < bmpDst->bi.biWidth && lnYDst >= 0 && lnYDst < bmpDst->bi.biHeight && lbgraSrc->s.alp != 0)
 									{
 										// Copy the pixel
-										if (lbgraSrc->alp == 255)
+										if (lbgraSrc->s.alp == 255)
 										{
 											// Opaque
-											lbgrDst->red	= lbgraSrc->red;
-											lbgrDst->grn	= lbgraSrc->grn;
-											lbgrDst->blu	= lbgraSrc->blu;
+											lbgrDst->red	= lbgraSrc->s.red;
+											lbgrDst->grn	= lbgraSrc->s.grn;
+											lbgrDst->blu	= lbgraSrc->s.blu;
 
 										} else {
 											// Some degree of transparency
-											lfAlp			= ((f64)lbgraSrc->alp / 255.0);
+											lfAlp			= ((f64)lbgraSrc->s.alp / 255.0);
 											lfMalp			= 1.0 - lfAlp;
-											lbgrDst->red	= (u8)min(max(((f64)lbgrDst->red * lfMalp) + (lbgraSrc->red * lfAlp), 0.0), 255.0);
-											lbgrDst->grn	= (u8)min(max(((f64)lbgrDst->grn * lfMalp) + (lbgraSrc->grn * lfAlp), 0.0), 255.0);
-											lbgrDst->blu	= (u8)min(max(((f64)lbgrDst->blu * lfMalp) + (lbgraSrc->blu * lfAlp), 0.0), 255.0);
+											lbgrDst->red	= (u8)min(max(((f64)lbgrDst->red * lfMalp) + (lbgraSrc->s.red * lfAlp), 0.0), 255.0);
+											lbgrDst->grn	= (u8)min(max(((f64)lbgrDst->grn * lfMalp) + (lbgraSrc->s.grn * lfAlp), 0.0), 255.0);
+											lbgrDst->blu	= (u8)min(max(((f64)lbgrDst->blu * lfMalp) + (lbgraSrc->s.blu * lfAlp), 0.0), 255.0);
 										}
 										++lnPixelsRendered;
 									}
@@ -1264,25 +1264,25 @@
 									lbgraDst = (SBgra*)((s8*)bmpDst->bd + ((bmpDst->bi.biHeight - lnYDst - 1) * bmpDst->rowWidth) + (lnXDst * (bmpDst->bi.biBitCount / 8)));
 
 									// Are we on the image?
-									if (lnXDst >= 0 && lnXDst < bmpDst->bi.biWidth && lnYDst >= 0 && lnYDst < bmpDst->bi.biHeight && lbgraSrc->alp != 0)
+									if (lnXDst >= 0 && lnXDst < bmpDst->bi.biWidth && lnYDst >= 0 && lnYDst < bmpDst->bi.biHeight && lbgraSrc->s.alp != 0)
 									{
 										// Copy the pixel
-										if (lbgraSrc->alp == 255)
+										if (lbgraSrc->s.alp == 255)
 										{
 											// Opaque
-											lbgraDst->alp	= 255;
-											lbgraDst->red	= lbgraSrc->red;
-											lbgraDst->grn	= lbgraSrc->grn;
-											lbgraDst->blu	= lbgraSrc->blu;
+											lbgraDst->s.alp	= 255;
+											lbgraDst->s.red	= lbgraSrc->s.red;
+											lbgraDst->s.grn	= lbgraSrc->s.grn;
+											lbgraDst->s.blu	= lbgraSrc->s.blu;
 
 										} else {
 											// Some degree of transparency
-											lfAlp			= ((f64)lbgraSrc->alp / 255.0);
+											lfAlp			= ((f64)lbgraSrc->s.alp / 255.0);
 											lfMalp			= 1.0 - lfAlp;
-	 										lbgraDst->alp	= 255;
-											lbgraDst->red	= (u8)min(max(((f64)lbgraDst->red * lfMalp) + (lbgraSrc->red * lfAlp), 0.0), 255.0);
-											lbgraDst->grn	= (u8)min(max(((f64)lbgraDst->grn * lfMalp) + (lbgraSrc->grn * lfAlp), 0.0), 255.0);
-											lbgraDst->blu	= (u8)min(max(((f64)lbgraDst->blu * lfMalp) + (lbgraSrc->blu * lfAlp), 0.0), 255.0);
+	 										lbgraDst->s.alp	= 255;
+											lbgraDst->s.red	= (u8)min(max(((f64)lbgraDst->s.red * lfMalp) + (lbgraSrc->s.red * lfAlp), 0.0), 255.0);
+											lbgraDst->s.grn	= (u8)min(max(((f64)lbgraDst->s.grn * lfMalp) + (lbgraSrc->s.grn * lfAlp), 0.0), 255.0);
+											lbgraDst->s.blu	= (u8)min(max(((f64)lbgraDst->s.blu * lfMalp) + (lbgraSrc->s.blu * lfAlp), 0.0), 255.0);
 										}
 										++lnPixelsRendered;
 									}
@@ -1378,10 +1378,10 @@
 								if (lnXDst >= 0 && lnXDst < bmpDst->bi.biWidth)
 								{
 									// Copy the pixel
-									lbgraDst->alp	= 255;
-									lbgraDst->red	= (u8)min(max(((f64)lbgraDst->red * lfMalp) + (lbgrSrc->red * lfAlp), 0.0), 255.0);
-									lbgraDst->grn	= (u8)min(max(((f64)lbgraDst->grn * lfMalp) + (lbgrSrc->grn * lfAlp), 0.0), 255.0);
-									lbgraDst->blu	= (u8)min(max(((f64)lbgraDst->blu * lfMalp) + (lbgrSrc->blu * lfAlp), 0.0), 255.0);
+									lbgraDst->s.alp	= 255;
+									lbgraDst->s.red	= (u8)min(max(((f64)lbgraDst->s.red * lfMalp) + (lbgrSrc->red * lfAlp), 0.0), 255.0);
+									lbgraDst->s.grn	= (u8)min(max(((f64)lbgraDst->s.grn * lfMalp) + (lbgrSrc->grn * lfAlp), 0.0), 255.0);
+									lbgraDst->s.blu	= (u8)min(max(((f64)lbgraDst->s.blu * lfMalp) + (lbgrSrc->blu * lfAlp), 0.0), 255.0);
 									++lnPixelsRendered;
 								}
 
@@ -1400,12 +1400,12 @@
 							for (lnX = 0, lnXDst = trc->left; lnX < bmpSrc->bi.biWidth && lnXDst < trc->right; lnXDst++, lnX++)
 							{
 								// Are we on the image?
-								if (lnXDst >= 0 && lnXDst < bmpDst->bi.biWidth && lbgraSrc->alp != 0)
+								if (lnXDst >= 0 && lnXDst < bmpDst->bi.biWidth && lbgraSrc->s.alp != 0)
 								{
 									// Copy the pixel
-									lbgrDst->red	= (u8)min(max(((f64)lbgrDst->red * lfMalp) + (lbgraSrc->red * lfAlp), 0.0), 255.0);
-									lbgrDst->grn	= (u8)min(max(((f64)lbgrDst->grn * lfMalp) + (lbgraSrc->grn * lfAlp), 0.0), 255.0);
-									lbgrDst->blu	= (u8)min(max(((f64)lbgrDst->blu * lfMalp) + (lbgraSrc->blu * lfAlp), 0.0), 255.0);
+									lbgrDst->red	= (u8)min(max(((f64)lbgrDst->red * lfMalp) + (lbgraSrc->s.red * lfAlp), 0.0), 255.0);
+									lbgrDst->grn	= (u8)min(max(((f64)lbgrDst->grn * lfMalp) + (lbgraSrc->s.grn * lfAlp), 0.0), 255.0);
+									lbgrDst->blu	= (u8)min(max(((f64)lbgrDst->blu * lfMalp) + (lbgraSrc->s.blu * lfAlp), 0.0), 255.0);
 									++lnPixelsRendered;
 								}
 
@@ -1420,13 +1420,13 @@
 							for (lnX = 0, lnXDst = trc->left; lnX < bmpSrc->bi.biWidth && lnXDst < trc->right; lnXDst++, lnX++)
 							{
 								// Are we on the image?
-								if (lnXDst >= 0 && lnXDst < bmpDst->bi.biWidth && lbgraSrc->alp != 0)
+								if (lnXDst >= 0 && lnXDst < bmpDst->bi.biWidth && lbgraSrc->s.alp != 0)
 								{
 									// Copy the pixel
- 									lbgraDst->alp	= 255;
-									lbgraDst->red	= (u8)min(max(((f64)lbgraDst->red * lfMalp) + (lbgraSrc->red * lfAlp), 0.0), 255.0);
-									lbgraDst->grn	= (u8)min(max(((f64)lbgraDst->grn * lfMalp) + (lbgraSrc->grn * lfAlp), 0.0), 255.0);
-									lbgraDst->blu	= (u8)min(max(((f64)lbgraDst->blu * lfMalp) + (lbgraSrc->blu * lfAlp), 0.0), 255.0);
+ 									lbgraDst->s.alp	= 255;
+									lbgraDst->s.red	= (u8)min(max(((f64)lbgraDst->s.red * lfMalp) + (lbgraSrc->s.red * lfAlp), 0.0), 255.0);
+									lbgraDst->s.grn	= (u8)min(max(((f64)lbgraDst->s.grn * lfMalp) + (lbgraSrc->s.grn * lfAlp), 0.0), 255.0);
+									lbgraDst->s.blu	= (u8)min(max(((f64)lbgraDst->s.blu * lfMalp) + (lbgraSrc->s.blu * lfAlp), 0.0), 255.0);
 									++lnPixelsRendered;
 								}
 
@@ -1512,12 +1512,12 @@
 							if (lnX >= 0)
 							{
 								// Compute the grayscale
-								gray = (u8)min(max(((f32)lbgra->red * 0.35f + (f32)lbgra->grn * 0.54f + (f32)lbgra->blu * 0.11f), 0.0f), 255.0f);
+								gray = (u8)min(max(((f32)lbgra->s.red * 0.35f + (f32)lbgra->s.grn * 0.54f + (f32)lbgra->s.blu * 0.11f), 0.0f), 255.0f);
 
 								// Copy the pixel
-								lbgra->red	= gray;
-								lbgra->grn	= gray;
-								lbgra->blu	= gray;
+								lbgra->s.red	= gray;
+								lbgra->s.grn	= gray;
+								lbgra->s.blu	= gray;
 								++lnPixelsRendered;
 							}
 
@@ -1563,9 +1563,9 @@
 		//////////
 		// Build the actual color
 		//////
-			lfRed = (f32)colorTemplate.red;
-			lfGrn = (f32)colorTemplate.grn;
-			lfBlu = (f32)colorTemplate.blu;
+			lfRed = (f32)colorTemplate.s.red;
+			lfGrn = (f32)colorTemplate.s.grn;
+			lfBlu = (f32)colorTemplate.s.blu;
 			if (!clampColor)
 			{
 				// Compute with the colors being adjusted up toward 255 if any are below
@@ -1650,21 +1650,21 @@
 							// Are we on the image?
 							if (lnX >= 0)
 							{
-								if (lbgra->red == 222 && lbgra->grn == 22 && lbgra->blu == 222)
+								if (lbgra->s.red == 222 && lbgra->s.grn == 22 && lbgra->s.blu == 222)
 								{
 									// Every transparent color gets the colorized color
-									lbgra->red = (u8)lfRed;
-									lbgra->grn = (u8)lfGrn;
-									lbgra->blu = (u8)lfBlu;
+									lbgra->s.red = (u8)lfRed;
+									lbgra->s.grn = (u8)lfGrn;
+									lbgra->s.blu = (u8)lfBlu;
 
 								} else {
 									// Compute the grayscale
-									lfGray = min(max(((f32)lbgra->red * 0.35f + (f32)lbgra->grn * 0.54f + (f32)lbgra->blu * 0.11f), 0.0f), 255.0f) / 255.0f;
+									lfGray = min(max(((f32)lbgra->s.red * 0.35f + (f32)lbgra->s.grn * 0.54f + (f32)lbgra->s.blu * 0.11f), 0.0f), 255.0f) / 255.0f;
 
 									// Apply the color proportionally
-									lbgra->red = (u8)iiBmp_squeezeColorChannel(lfGray * lfRed, minColor);
-									lbgra->grn = (u8)iiBmp_squeezeColorChannel(lfGray * lfGrn, minColor);
-									lbgra->blu = (u8)iiBmp_squeezeColorChannel(lfGray * lfBlu, minColor);
+									lbgra->s.red = (u8)iiBmp_squeezeColorChannel(lfGray * lfRed, minColor);
+									lbgra->s.grn = (u8)iiBmp_squeezeColorChannel(lfGray * lfGrn, minColor);
+									lbgra->s.blu = (u8)iiBmp_squeezeColorChannel(lfGray * lfBlu, minColor);
 								}
 								++lnPixelsRendered;
 							}
@@ -1711,9 +1711,9 @@
 		//////////
 		// Build the actual color
 		//////
-			lfRed = (f32)colorTemplate.red;
-			lfGrn = (f32)colorTemplate.grn;
-			lfBlu = (f32)colorTemplate.blu;
+			lfRed = (f32)colorTemplate.s.red;
+			lfGrn = (f32)colorTemplate.s.grn;
+			lfBlu = (f32)colorTemplate.s.blu;
 			if (!clampColor)
 			{
 				// Compute with the colors being adjusted up toward 255 if any are below
@@ -1792,15 +1792,15 @@
 							// Are we on the image?
 							if (lnX >= 0)
 							{
-								if (!(lbgra->red == 222 && lbgra->grn == 22 && lbgra->blu == 222))
+								if (!(lbgra->s.red == 222 && lbgra->s.grn == 22 && lbgra->s.blu == 222))
 								{
 									// Compute the grayscale
-									lfGray = min(max(((f32)lbgra->red * 0.35f + (f32)lbgra->grn * 0.54f + (f32)lbgra->blu * 0.11f), 0.0f), 255.0f) / 255.0f;
+									lfGray = min(max(((f32)lbgra->s.red * 0.35f + (f32)lbgra->s.grn * 0.54f + (f32)lbgra->s.blu * 0.11f), 0.0f), 255.0f) / 255.0f;
 
 									// Apply the color proportionally
-									lbgra->red = (u8)iiBmp_squeezeColorChannel(lfGray * lfRed, minColor);
-									lbgra->grn = (u8)iiBmp_squeezeColorChannel(lfGray * lfGrn, minColor);
-									lbgra->blu = (u8)iiBmp_squeezeColorChannel(lfGray * lfBlu, minColor);
+									lbgra->s.red = (u8)iiBmp_squeezeColorChannel(lfGray * lfRed, minColor);
+									lbgra->s.grn = (u8)iiBmp_squeezeColorChannel(lfGray * lfGrn, minColor);
+									lbgra->s.blu = (u8)iiBmp_squeezeColorChannel(lfGray * lfBlu, minColor);
 								}
 								++lnPixelsRendered;
 							}
@@ -1851,12 +1851,12 @@
 					for (lnX = 0; lnX < bmp->bi.biWidth; lnX++, lbgr++)
 					{
 						// Is this our color?
-						if (lbgr->red == colorOld.red && lbgr->grn == colorOld.grn && lbgr->blu == colorOld.blu)
+						if (lbgr->red == colorOld.s.red && lbgr->grn == colorOld.s.grn && lbgr->blu == colorOld.s.blu)
 						{
 							// Swap the color
-							lbgr->red = colorNew.red;
-							lbgr->grn = colorNew.grn;
-							lbgr->blu = colorNew.blu;
+							lbgr->red = colorNew.s.red;
+							lbgr->grn = colorNew.s.grn;
+							lbgr->blu = colorNew.s.blu;
 							++lnPixelsRendered;
 						}
 					}
@@ -1873,12 +1873,12 @@
 					for (lnX = 0; lnX < bmp->bi.biWidth; lnX++, lbgra++)
 					{
 						// Is this our color?
-						if (lbgra->red == colorOld.red && lbgra->grn == colorOld.grn && lbgra->blu == colorOld.blu)
+						if (lbgra->s.red == colorOld.s.red && lbgra->s.grn == colorOld.s.grn && lbgra->s.blu == colorOld.s.blu)
 						{
 							// Swap the color
-							lbgra->red = colorNew.red;
-							lbgra->grn = colorNew.grn;
-							lbgra->blu = colorNew.blu;
+							lbgra->s.red = colorNew.s.red;
+							lbgra->s.grn = colorNew.s.grn;
+							lbgra->s.blu = colorNew.s.blu;
 							++lnPixelsRendered;
 						}
 					}
@@ -1915,9 +1915,9 @@
 			lfMalp	= 1.0f - lfAlp;
 
 			// Grab the color
-			lfRed = (f32)colorAlpha.red * lfAlp;
-			lfGrn = (f32)colorAlpha.grn * lfAlp;
-			lfBlu = (f32)colorAlpha.blu * lfAlp;
+			lfRed = (f32)colorAlpha.s.red * lfAlp;
+			lfGrn = (f32)colorAlpha.s.grn * lfAlp;
+			lfBlu = (f32)colorAlpha.s.blu * lfAlp;
 
 			//////////
 			// Draw it
@@ -1963,12 +1963,12 @@
 								// Are we on the image?
 								if (lnX >= 0)
 								{
-									if (!(lbgra->red == 222 && lbgra->grn == 22 && lbgra->blu == 222))
+									if (!(lbgra->s.red == 222 && lbgra->s.grn == 22 && lbgra->s.blu == 222))
 									{
 										// Apply the color proportionally
-										lbgra->red = (u8)(((f32)lbgra->red * lfMalp) + lfRed);
-										lbgra->grn = (u8)(((f32)lbgra->grn * lfMalp) + lfGrn);
-										lbgra->blu = (u8)(((f32)lbgra->blu * lfMalp) + lfBlu);
+										lbgra->s.red = (u8)(((f32)lbgra->s.red * lfMalp) + lfRed);
+										lbgra->s.grn = (u8)(((f32)lbgra->s.grn * lfMalp) + lfGrn);
+										lbgra->s.blu = (u8)(((f32)lbgra->s.blu * lfMalp) + lfBlu);
 										++lnPixelsRendered;
 									}
 								}
@@ -2063,10 +2063,10 @@
 									// Copy the pixel if it's not a mask pixel
 									if (!(lbgrSrc->red == 222 && lbgrSrc->grn == 22 && lbgrSrc->blu == 222))
 									{
-										lbgraDst->alp	= 255;
-										lbgraDst->red	= lbgrSrc->red;
-										lbgraDst->grn	= lbgrSrc->grn;
-										lbgraDst->blu	= lbgrSrc->blu;
+										lbgraDst->s.alp	= 255;
+										lbgraDst->s.red	= lbgrSrc->red;
+										lbgraDst->s.grn	= lbgrSrc->grn;
+										lbgraDst->s.blu	= lbgrSrc->blu;
 										++lnPixelsRendered;
 									}
 								}
@@ -2086,25 +2086,25 @@
 							for (lnX = 0, lnXDst = trc->left; lnX < bmpSrc->bi.biWidth && lnXDst < trc->right; lnXDst++, lnX++)
 							{
 								// Are we on the image?
-								if (lnXDst >= 0 && lnXDst < bmpDst->bi.biWidth && lbgraSrc->alp != 0)
+								if (lnXDst >= 0 && lnXDst < bmpDst->bi.biWidth && lbgraSrc->s.alp != 0)
 								{
 									// Copy the pixel if it's not a mask pixel
-									if (!(lbgraSrc->red == 222 && lbgraSrc->grn == 22 && lbgraSrc->blu == 222))
+									if (!(lbgraSrc->s.red == 222 && lbgraSrc->s.grn == 22 && lbgraSrc->s.blu == 222))
 									{
-										if (lbgraSrc->alp == 255)
+										if (lbgraSrc->s.alp == 255)
 										{
 											// Opaque
-											lbgrDst->red	= lbgraSrc->red;
-											lbgrDst->grn	= lbgraSrc->grn;
-											lbgrDst->blu	= lbgraSrc->blu;
+											lbgrDst->red	= lbgraSrc->s.red;
+											lbgrDst->grn	= lbgraSrc->s.grn;
+											lbgrDst->blu	= lbgraSrc->s.blu;
 
 										} else {
 											// Some degree of transparency
-											lfAlp			= ((f64)lbgraSrc->alp / 255.0);
+											lfAlp			= ((f64)lbgraSrc->s.alp / 255.0);
 											lfMalp			= 1.0 - lfAlp;
-											lbgrDst->red	= (u8)min(max(((f64)lbgrDst->red * lfMalp) + (lbgraSrc->red * lfAlp), 0.0), 255.0);
-											lbgrDst->grn	= (u8)min(max(((f64)lbgrDst->grn * lfMalp) + (lbgraSrc->grn * lfAlp), 0.0), 255.0);
-											lbgrDst->blu	= (u8)min(max(((f64)lbgrDst->blu * lfMalp) + (lbgraSrc->blu * lfAlp), 0.0), 255.0);
+											lbgrDst->red	= (u8)min(max(((f64)lbgrDst->red * lfMalp) + (lbgraSrc->s.red * lfAlp), 0.0), 255.0);
+											lbgrDst->grn	= (u8)min(max(((f64)lbgrDst->grn * lfMalp) + (lbgraSrc->s.grn * lfAlp), 0.0), 255.0);
+											lbgrDst->blu	= (u8)min(max(((f64)lbgrDst->blu * lfMalp) + (lbgraSrc->s.blu * lfAlp), 0.0), 255.0);
 										}
 										++lnPixelsRendered;
 									}
@@ -2121,27 +2121,27 @@
 							for (lnX = 0, lnXDst = trc->left; lnX < bmpSrc->bi.biWidth && lnXDst < trc->right; lnXDst++, lnX++)
 							{
 								// Are we on the image?
-								if (lnXDst >= 0 && lnXDst < bmpDst->bi.biWidth && lbgraSrc->alp != 0)
+								if (lnXDst >= 0 && lnXDst < bmpDst->bi.biWidth && lbgraSrc->s.alp != 0)
 								{
 									// Copy the pixel if it's not a mask pixel
-									if (!(lbgraSrc->red == 222 && lbgraSrc->grn == 22 && lbgraSrc->blu == 222))
+									if (!(lbgraSrc->s.red == 222 && lbgraSrc->s.grn == 22 && lbgraSrc->s.blu == 222))
 									{
-										if (lbgraSrc->alp == 255)
+										if (lbgraSrc->s.alp == 255)
 										{
 											// Opaque
-											lbgraDst->alp	= 255;
-											lbgraDst->red	= lbgraSrc->red;
-											lbgraDst->grn	= lbgraSrc->grn;
-											lbgraDst->blu	= lbgraSrc->blu;
+											lbgraDst->s.alp	= 255;
+											lbgraDst->s.red	= lbgraSrc->s.red;
+											lbgraDst->s.grn	= lbgraSrc->s.grn;
+											lbgraDst->s.blu	= lbgraSrc->s.blu;
 
 										} else {
 											// Some degree of transparency
-											lfAlp			= ((f64)lbgraSrc->alp / 255.0);
+											lfAlp			= ((f64)lbgraSrc->s.alp / 255.0);
 											lfMalp			= 1.0 - lfAlp;
-											lbgraDst->alp	= 255;
-											lbgraDst->red	= (u8)min(max(((f64)lbgraDst->red * lfMalp) + (lbgraSrc->red * lfAlp), 0.0), 255.0);
-											lbgraDst->grn	= (u8)min(max(((f64)lbgraDst->grn * lfMalp) + (lbgraSrc->grn * lfAlp), 0.0), 255.0);
-											lbgraDst->blu	= (u8)min(max(((f64)lbgraDst->blu * lfMalp) + (lbgraSrc->blu * lfAlp), 0.0), 255.0);
+											lbgraDst->s.alp	= 255;
+											lbgraDst->s.red	= (u8)min(max(((f64)lbgraDst->s.red * lfMalp) + (lbgraSrc->s.red * lfAlp), 0.0), 255.0);
+											lbgraDst->s.grn	= (u8)min(max(((f64)lbgraDst->s.grn * lfMalp) + (lbgraSrc->s.grn * lfAlp), 0.0), 255.0);
+											lbgraDst->s.blu	= (u8)min(max(((f64)lbgraDst->s.blu * lfMalp) + (lbgraSrc->s.blu * lfAlp), 0.0), 255.0);
 										}
 										++lnPixelsRendered;
 									}
@@ -2186,9 +2186,9 @@
 		//////////
 		// Draw it
 		//////
-			lfRed = (f64)color.red;
-			lfGrn = (f64)color.grn;
-			lfBlu = (f64)color.blu;
+			lfRed = (f64)color.s.red;
+			lfGrn = (f64)color.s.grn;
+			lfBlu = (f64)color.s.blu;
 			for (lnY = 0, lnYDst = trc->top; lnY < bmpSrc->bi.biHeight && lnYDst < trc->bottom; lnYDst++, lnY++)
 			{
 				// Are we on the image?
@@ -2243,10 +2243,10 @@
 									{
 										lfAlp			= (f64)(255 - lbgrSrc->red) / 255.0;
 										lfMalp			= 1.0 - lfAlp;
-										lbgraDst->alp	= 255;
-										lbgraDst->red	= (u8)(((f64)lbgraDst->red * lfMalp) + (lfRed * lfAlp));
-										lbgraDst->grn	= (u8)(((f64)lbgraDst->grn * lfMalp) + (lfGrn * lfAlp));
-										lbgraDst->blu	= (u8)(((f64)lbgraDst->blu * lfMalp) + (lfBlu * lfAlp));
+										lbgraDst->s.alp	= 255;
+										lbgraDst->s.red	= (u8)(((f64)lbgraDst->s.red * lfMalp) + (lfRed * lfAlp));
+										lbgraDst->s.grn	= (u8)(((f64)lbgraDst->s.grn * lfMalp) + (lfGrn * lfAlp));
+										lbgraDst->s.blu	= (u8)(((f64)lbgraDst->s.blu * lfMalp) + (lfBlu * lfAlp));
 										++lnPixelsRendered;
 									}
 								}
@@ -2266,12 +2266,12 @@
 							for (lnX = 0, lnXDst = trc->left; lnX < bmpSrc->bi.biWidth && lnXDst < trc->right; lnXDst++, lnX++)
 							{
 								// Are we on the image?
-								if (lnXDst >= 0 && lnXDst < bmpDst->bi.biWidth && lbgraSrc->alp != 0)
+								if (lnXDst >= 0 && lnXDst < bmpDst->bi.biWidth && lbgraSrc->s.alp != 0)
 								{
 									// Copy the pixel if it's not a mask pixel
-									if (!(lbgraSrc->red == 255 && lbgraSrc->grn == 255 && lbgraSrc->blu == 255))
+									if (!(lbgraSrc->s.red == 255 && lbgraSrc->s.grn == 255 && lbgraSrc->s.blu == 255))
 									{
-										lfAlp			= (f64)(255 - lbgraSrc->red) / 255.0;
+										lfAlp			= (f64)(255 - lbgraSrc->s.red) / 255.0;
 										lfMalp			= 1.0 - lfAlp;
 										lbgrDst->red	= (u8)(((f64)lbgrDst->red * lfMalp) + (lfRed * lfAlp));
 										lbgrDst->grn	= (u8)(((f64)lbgrDst->grn * lfMalp) + (lfGrn * lfAlp));
@@ -2291,17 +2291,17 @@
 							for (lnX = 0, lnXDst = trc->left; lnX < bmpSrc->bi.biWidth && lnXDst < trc->right; lnXDst++, lnX++)
 							{
 								// Are we on the image?
-								if (lnXDst >= 0 && lnXDst < bmpDst->bi.biWidth && lbgraSrc->alp != 0)
+								if (lnXDst >= 0 && lnXDst < bmpDst->bi.biWidth && lbgraSrc->s.alp != 0)
 								{
 									// Copy the pixel if it's not a mask pixel
-									if (!(lbgraSrc->red == 255 && lbgraSrc->grn == 255 && lbgraSrc->blu == 255))
+									if (!(lbgraSrc->s.red == 255 && lbgraSrc->s.grn == 255 && lbgraSrc->s.blu == 255))
 									{
-										lfAlp			= (f64)(255 - lbgraSrc->red) / 255.0;
+										lfAlp			= (f64)(255 - lbgraSrc->s.red) / 255.0;
 										lfMalp			= 1.0 - lfAlp;
-										lbgraDst->alp	= 255;
-										lbgraDst->red	= (u8)(((f64)lbgraDst->red * lfMalp) + (lfRed * lfAlp));
-										lbgraDst->grn	= (u8)(((f64)lbgraDst->grn * lfMalp) + (lfGrn * lfAlp));
-										lbgraDst->blu	= (u8)(((f64)lbgraDst->blu * lfMalp) + (lfBlu * lfAlp));
+										lbgraDst->s.alp	= 255;
+										lbgraDst->s.red	= (u8)(((f64)lbgraDst->s.red * lfMalp) + (lfRed * lfAlp));
+										lbgraDst->s.grn	= (u8)(((f64)lbgraDst->s.grn * lfMalp) + (lfGrn * lfAlp));
+										lbgraDst->s.blu	= (u8)(((f64)lbgraDst->s.blu * lfMalp) + (lfBlu * lfAlp));
 										++lnPixelsRendered;
 									}
 								}
@@ -2411,7 +2411,7 @@
 					for (lnX = trc->left; lnX < bmp->bi.biWidth && lnX <= trc->right; lnX++, lbgra++)
 					{
 						// If this is one, remove this part
-						if (lbgra->red == 222 && lbgra->grn == 22 && lbgra->blu == 222)
+						if (lbgra->s.red == 222 && lbgra->s.grn == 22 && lbgra->s.blu == 222)
 						{
 							SetRect(&lrc, lnX, lnY, lnX + 1, lnY + 1);
 							lrgnRemoveArea = CreateRectRgnIndirect(&lrc);
@@ -2462,9 +2462,9 @@
 					lbgr = (SBgr*)(bmp->bd + ((bmp->bi.biHeight - lnY - 1) * bmp->rowWidth) + (lnX * 3));
 
 					// Draw the pixel
-					lbgr->red = color.red;
-					lbgr->grn = color.grn;
-					lbgr->blu = color.blu;
+					lbgr->red = color.s.red;
+					lbgr->grn = color.s.grn;
+					lbgr->blu = color.s.blu;
 
 					// Adjust for the next pixel
 					lnY += lnY_inc;
@@ -2490,9 +2490,9 @@
 
 
 					// Draw the pixel
-					lbgra->red = color.red;
-					lbgra->grn = color.grn;
-					lbgra->blu = color.blu;
+					lbgra->s.red = color.s.red;
+					lbgra->s.grn = color.s.grn;
+					lbgra->s.blu = color.s.blu;
 
 					// Adjust for the next pixel
 					lnY += lnY_inc;
@@ -2638,10 +2638,10 @@
 				lbgr = (SBgr*)(bmp->bd + ((bmp->bi.biHeight - tnY - 1) * bmp->rowWidth) + tnX * 3);
 
 				// Construct the color
-				color.alp = 255;
-				color.red = lbgr->red;
-				color.grn = lbgr->grn;
-				color.blu = lbgr->blu;
+				color.s.alp = 255;
+				color.s.red = lbgr->red;
+				color.s.grn = lbgr->grn;
+				color.s.blu = lbgr->blu;
 
 				// Return the color
 				return(color);
@@ -2680,9 +2680,9 @@
 		lfMalp	= 1.0f - tfAlp;
 
 		// Combine
-		color.red	= (u8)min(max(((f32)color1.red * tfAlp) + ((f32)color2.red * lfMalp), 0.0f), 255.0f);
-		color.grn	= (u8)min(max(((f32)color1.grn * tfAlp) + ((f32)color2.grn * lfMalp), 0.0f), 255.0f);
-		color.blu	= (u8)min(max(((f32)color1.blu * tfAlp) + ((f32)color2.blu * lfMalp), 0.0f), 255.0f);
+		color.s.red	= (u8)min(max(((f32)color1.s.red * tfAlp) + ((f32)color2.s.red * lfMalp), 0.0f), 255.0f);
+		color.s.grn	= (u8)min(max(((f32)color1.s.grn * tfAlp) + ((f32)color2.s.grn * lfMalp), 0.0f), 255.0f);
+		color.s.blu	= (u8)min(max(((f32)color1.s.blu * tfAlp) + ((f32)color2.s.blu * lfMalp), 0.0f), 255.0f);
 
 		// Return our value
 		return(color);
@@ -2820,17 +2820,17 @@
 					for (lnX = 0; lnX < bmp->bi.biWidth; lnX++, lbgra++)
 					{
 						// If this is one, remove this part
-						if (lbgra->red == red && lbgra->grn == grn && lbgra->blu == blu)
+						if (lbgra->s.red == red && lbgra->s.grn == grn && lbgra->s.blu == blu)
 						{
 							// Grab our right pixel, and the one below it
 							lbgraRight	= lbgra + 1;
 							lbgraBelow	= (SBgra*)((s8*)lbgra - bmp->rowWidth);
 
 							// Do the pixels match?
-							if (lbgraRight->red == red && lbgraRight->grn == grn && lbgraRight->blu == blu)
+							if (lbgraRight->s.red == red && lbgraRight->s.grn == grn && lbgraRight->s.blu == blu)
 							{
 								// Right matches
-								if (lbgraBelow->red == red && lbgraBelow->grn == grn && lbgraBelow->blu == blu)
+								if (lbgraBelow->s.red == red && lbgraBelow->s.grn == grn && lbgraBelow->s.blu == blu)
 								{
 									// And below matches, this is our marker
 									// They match, this is our marker
@@ -2841,27 +2841,27 @@
 										{
 											// Grab the pixel to the left of both the lbgra and lbgraBelow
 											// Upper-left
-											lbgra->red		= (lbgra-1)->red;
-											lbgra->grn		= (lbgra-1)->grn;
-											lbgra->blu		= (lbgra-1)->blu;
+											lbgra->s.red		= (lbgra-1)->s.red;
+											lbgra->s.grn		= (lbgra-1)->s.grn;
+											lbgra->s.blu		= (lbgra-1)->s.blu;
 
 											// Below
-											lbgraBelow->red = (lbgraBelow - 1)->red;
-											lbgraBelow->grn = (lbgraBelow - 1)->grn;
-											lbgraBelow->blu = (lbgraBelow - 1)->blu;
+											lbgraBelow->s.red	= (lbgraBelow-1)->s.red;
+											lbgraBelow->s.grn	= (lbgraBelow-1)->s.grn;
+											lbgraBelow->s.blu	= (lbgraBelow-1)->s.blu;
 
 											if (lnX < bmp->bi.biHeight - 1)
 											{
 												// Grab the pixel to the right of lbgraRight and copy it
-												lbgraRight->red	= (lbgraRight + 1)->red;
-												lbgraRight->grn	= (lbgraRight + 1)->grn;
-												lbgraRight->blu	= (lbgraRight + 1)->blu;
+												lbgraRight->s.red	= (lbgraRight+1)->s.red;
+												lbgraRight->s.grn	= (lbgraRight+1)->s.grn;
+												lbgraRight->s.blu	= (lbgraRight+1)->s.blu;
 
 											} else {
 												// Duplicate lbgra into lbgraRight
-												lbgraRight->red	= lbgra->red;
-												lbgraRight->grn	= lbgra->grn;
-												lbgraRight->blu	= lbgra->blu;
+												lbgraRight->s.red	= lbgra->s.red;
+												lbgraRight->s.grn	= lbgra->s.grn;
+												lbgraRight->s.blu	= lbgra->s.blu;
 											}
 
 										} else {
@@ -2869,19 +2869,19 @@
 											if (lnX < bmp->bi.biHeight - 1)
 											{
 												// Pixel to the right
-												lbgraRight->red	= (lbgraRight + 1)->red;
-												lbgraRight->grn	= (lbgraRight + 1)->grn;
-												lbgraRight->blu	= (lbgraRight + 1)->blu;
+												lbgraRight->s.red	= (lbgraRight+1)->s.red;
+												lbgraRight->s.grn	= (lbgraRight+1)->s.grn;
+												lbgraRight->s.blu	= (lbgraRight+1)->s.blu;
 
 												// Upper left pixel
-												lbgra->red		= lbgraRight->red;
-												lbgra->grn		= lbgraRight->grn;
-												lbgra->blu		= lbgraRight->blu;
+												lbgra->s.red		= lbgraRight->s.red;
+												lbgra->s.grn		= lbgraRight->s.grn;
+												lbgra->s.blu		= lbgraRight->s.blu;
 
 												// Pixel on the row below
-												lbgraBelow->red	= lbgraRight->red;
-												lbgraBelow->grn	= lbgraRight->grn;
-												lbgraBelow->blu	= lbgraRight->blu;
+												lbgraBelow->s.red	= lbgraRight->s.red;
+												lbgraBelow->s.grn	= lbgraRight->s.grn;
+												lbgraBelow->s.blu	= lbgraRight->s.blu;
 
 											} else {
 												// We can't update it.  The image is too narrow
@@ -3197,7 +3197,7 @@
 		//////
 			SelectObject(bmpNbsp->hdc, font->hfont);
 			SetBkMode(bmpNbsp->hdc, TRANSPARENT);
-			SetTextColor(bmpNbsp->hdc, RGB(textColor.red, textColor.grn, textColor.blu));
+			SetTextColor(bmpNbsp->hdc, RGB(textColor.s.red, textColor.s.grn, textColor.s.blu));
 			SetRect(&lrc, 0, 0, 0, tnHeight);
 			for (lnI = 0, lnCount = 0; lnI < comp->length; lnI++)
 			{
@@ -3283,9 +3283,9 @@
 			tfLeftOpaque	= max(min(tfLeftOpaque,  1.0f), 0.0f);
 			tfRightOpaque	= max(min(tfRightOpaque, 1.0f), 0.0f);
 			lfStep			= (tfLeftOpaque - tfRightOpaque) / (f32)(rc->right - rc->left);
-			lfRed			= (f32)color.red;
-			lfGrn			= (f32)color.grn;
-			lfBlu			= (f32)color.blu;
+			lfRed			= (f32)color.s.red;
+			lfGrn			= (f32)color.s.grn;
+			lfBlu			= (f32)color.s.blu;
 
 			// Process
 			if (bmp->bi.biBitCount == 24)
@@ -3320,12 +3320,12 @@
 					for (lnX = rc->left, lfOpaque = tfLeftOpaque, lfMopaque = 1.0f - tfLeftOpaque; lnX <= rc->right && lnX < bmp->bi.biWidth; lnX++, lfOpaque += lfStep, lfMopaque -= lfStep, lbgra++)
 					{
 						// Get the grayscale value
-						lfGray = (((f32)lbgra->red * 0.35f) + ((f32)lbgra->grn * 0.54f) + ((f32)lbgra->blu * 0.11f)) / 255.0f;
+						lfGray = (((f32)lbgra->s.red * 0.35f) + ((f32)lbgra->s.grn * 0.54f) + ((f32)lbgra->s.blu * 0.11f)) / 255.0f;
 
 						// Apply our opaqueness
-						lbgra->red = (u8)min((s32)(((f32)lbgra->red * lfMopaque) + (lfRed * lfGray * lfOpaque)), 255);
-						lbgra->grn = (u8)min((s32)(((f32)lbgra->grn * lfMopaque) + (lfGrn * lfGray * lfOpaque)), 255);
-						lbgra->blu = (u8)min((s32)(((f32)lbgra->blu * lfMopaque) + (lfBlu * lfGray * lfOpaque)), 255);
+						lbgra->s.red = (u8)min((s32)(((f32)lbgra->s.red * lfMopaque) + (lfRed * lfGray * lfOpaque)), 255);
+						lbgra->s.grn = (u8)min((s32)(((f32)lbgra->s.grn * lfMopaque) + (lfGrn * lfGray * lfOpaque)), 255);
+						lbgra->s.blu = (u8)min((s32)(((f32)lbgra->s.blu * lfMopaque) + (lfBlu * lfGray * lfOpaque)), 255);
 					}
 				}
 			}
@@ -3388,14 +3388,14 @@ return;
 						// Iterate through every pixel creating the mathematical adjustment for each
 						for (lnX = 0; lnX < bmpDapple->bi.biWidth; lnX++, lbgras++)
 						{
-							lfGray			= (((f32)lbgras->red * 0.35f) + ((f32)lbgras->grn * 0.54f) + ((f32)lbgras->blu * 0.11f));
-							lbgras->blu_s8	= (s8)min(max((tfInfluence * lfGray / tfBias), -128), 128);
+							lfGray				= (((f32)lbgras->s.red * 0.35f) + ((f32)lbgras->s.grn * 0.54f) + ((f32)lbgras->s.blu * 0.11f));
+							lbgras->s.blu_s8	= (s8)min(max((tfInfluence * lfGray / tfBias), -128), 128);
 						}
 					}
 
 				} else {
 					// Unknown format
-					iError_signal(NULL, _ERROR_INTERNAL_ERROR, NULL, false, "dapple bitcount", false);
+					iError_signal(NULL, _ERROR_INTERNAL_ERROR, NULL, false, (s8*)"dapple bitcount", false);
 					return;
 				}
 
@@ -3447,9 +3447,9 @@ return;
 									// Iterate across the dapple source
 									for (lnX2 = 0; lnX2 < bmpDapple->bi.biWidth && lnX + lnX2 < bmp->bi.biWidth; lnX2++, lbgras++, lbgrd++)
 									{
-										lbgrd->red	= (u8)min(((s32)lbgrd->red + lbgrat->blu), 255);
-										lbgrd->grn	= (u8)min(((s32)lbgrd->grn + lbgrat->blu), 255);
-										lbgrd->blu	= (u8)min(((s32)lbgrd->blu + lbgrat->blu), 255);
+										lbgrd->red	= (u8)min(((s32)lbgrd->red + lbgrat->s.blu), 255);
+										lbgrd->grn	= (u8)min(((s32)lbgrd->grn + lbgrat->s.blu), 255);
+										lbgrd->blu	= (u8)min(((s32)lbgrd->blu + lbgrat->s.blu), 255);
 									}
 								}
 							}
@@ -3474,9 +3474,9 @@ return;
 									// Iterate across the dapple source
 									for (lnX2 = 0; lnX2 < bmpDapple->bi.biWidth && lnX + lnX2 < bmp->bi.biWidth; lnX2++, lbgrs++, lbgrad++)
 									{
-										lbgrad->red	= (u8)min(((s32)lbgrad->red + lbgrt->blu), 255);
-										lbgrad->grn	= (u8)min(((s32)lbgrad->grn + lbgrt->blu), 255);
-										lbgrad->blu	= (u8)min(((s32)lbgrad->blu + lbgrt->blu), 255);
+										lbgrad->s.red	= (u8)min(((s32)lbgrad->s.red + lbgrt->blu), 255);
+										lbgrad->s.grn	= (u8)min(((s32)lbgrad->s.grn + lbgrt->blu), 255);
+										lbgrad->s.blu	= (u8)min(((s32)lbgrad->s.blu + lbgrt->blu), 255);
 									}
 								}
 							}
@@ -3498,9 +3498,9 @@ return;
 									// Iterate across the dapple source
 									for (lnX2 = 0; lnX2 < bmpDapple->bi.biWidth && lnX + lnX2 < bmp->bi.biWidth; lnX2++, lbgras++, lbgrad++)
 									{
-										lbgrad->red	= (u8)min(((s32)lbgrad->red + lbgrat->blu), 255);
-										lbgrad->grn	= (u8)min(((s32)lbgrad->grn + lbgrat->blu), 255);
-										lbgrad->blu	= (u8)min(((s32)lbgrad->blu + lbgrat->blu), 255);
+										lbgrad->s.red	= (u8)min(((s32)lbgrad->s.red + lbgrat->s.blu), 255);
+										lbgrad->s.grn	= (u8)min(((s32)lbgrad->s.grn + lbgrat->s.blu), 255);
+										lbgrad->s.blu	= (u8)min(((s32)lbgrad->s.blu + lbgrat->s.blu), 255);
 									}
 								}
 							}
@@ -3536,18 +3536,18 @@ return;
 					lbgr = (SBgr*)(bmp->bd + ((bmp->bi.biHeight - tnY - 1) * bmp->rowWidth) + (tnX * 3));
 
 					// Draw it
-					lbgr->red	= color.red;
-					lbgr->grn	= color.grn;
-					lbgr->blu	= color.blu;
+					lbgr->red	= color.s.red;
+					lbgr->grn	= color.s.grn;
+					lbgr->blu	= color.s.blu;
 
 				} else if (bmp->bi.biBitCount == 32) {
 					// Get our offset
 					lbgra = (SBgra*)(bmp->bd + ((bmp->bi.biHeight - tnY - 1) * bmp->rowWidth) + (tnX * 4));
 
 					// Draw it
-					lbgra->red	= color.red;
-					lbgra->grn	= color.grn;
-					lbgra->blu	= color.blu;
+					lbgra->s.red	= color.s.red;
+					lbgra->s.grn	= color.s.grn;
+					lbgra->s.blu	= color.s.blu;
 				}
 			}
 		}
@@ -3566,7 +3566,7 @@ return;
 			if (!tlUseGradient && !tluseClip)
 			{
 				// Use OS facilities for speedup on solid colors
-				HBRUSH hbr = CreateSolidBrush(RGB(colorNW.red, colorNW.grn, colorNW.blu));
+				HBRUSH hbr = CreateSolidBrush(RGB(colorNW.s.red, colorNW.s.grn, colorNW.s.blu));
 				FillRect(bmp->hdc, rc, hbr);
 				DeleteObject((HGDIOBJ)hbr);
 				return;
@@ -3583,17 +3583,17 @@ return;
 					//////////
 					// Compute FROM colors
 					//////
-						lfRed		= (f32)colorNW.red + (((f32)colorSW.red - (f32)colorNW.red) * lfPercent);
-						lfGrn		= (f32)colorNW.grn + (((f32)colorSW.grn - (f32)colorNW.grn) * lfPercent);
-						lfBlu		= (f32)colorNW.blu + (((f32)colorSW.blu - (f32)colorNW.blu) * lfPercent);
+						lfRed		= (f32)colorNW.s.red + (((f32)colorSW.s.red - (f32)colorNW.s.red) * lfPercent);
+						lfGrn		= (f32)colorNW.s.grn + (((f32)colorSW.s.grn - (f32)colorNW.s.grn) * lfPercent);
+						lfBlu		= (f32)colorNW.s.blu + (((f32)colorSW.s.blu - (f32)colorNW.s.blu) * lfPercent);
 
 
 					//////////
 					// Compute TO colors
 					//////
-						lfRedTo		= (f32)colorNE.red + (((f32)colorSE.red - (f32)colorNE.red) * lfPercent);
-						lfGrnTo		= (f32)colorNE.grn + (((f32)colorSE.grn - (f32)colorNE.grn) * lfPercent);
-						lfBluTo		= (f32)colorNE.blu + (((f32)colorSE.blu - (f32)colorNE.blu) * lfPercent);
+						lfRedTo		= (f32)colorNE.s.red + (((f32)colorSE.s.red - (f32)colorNE.s.red) * lfPercent);
+						lfGrnTo		= (f32)colorNE.s.grn + (((f32)colorSE.s.grn - (f32)colorNE.s.grn) * lfPercent);
+						lfBluTo		= (f32)colorNE.s.blu + (((f32)colorSE.s.blu - (f32)colorNE.s.blu) * lfPercent);
 
 
 					//////////
@@ -3666,39 +3666,39 @@ return;
 										{
 											case _FILL_RECT_OP_AND:
 												// Maintains the point only if the existing point is already the "ON" color
-												if (lbgr->blu == colorOn.blu && lbgr->grn == colorOn.grn && lbgr->red == colorOn.red)
+												if (lbgr->blu == colorOn.s.blu && lbgr->grn == colorOn.s.grn && lbgr->red == colorOn.s.red)
 												{
 													// It's already the color it needs to be
 
 												} else {
 													// We need to set it to the off color
-													lbgr->red = colorOff.red;
-													lbgr->grn = colorOff.grn;
-													lbgr->blu = colorOff.blu;
+													lbgr->red = colorOff.s.red;
+													lbgr->grn = colorOff.s.grn;
+													lbgr->blu = colorOff.s.blu;
 												}
 												break;
 
 											case _FILL_RECT_OP_OR:
 												// Always draw
-												lbgr->red = colorOn.red;
-												lbgr->grn = colorOn.grn;
-												lbgr->blu = colorOn.blu;
+												lbgr->red = colorOn.s.red;
+												lbgr->grn = colorOn.s.grn;
+												lbgr->blu = colorOn.s.blu;
 												break;
 
 											case _FILL_RECT_OP_XOR:
 												// If either one of them is different, turn it on, otherwise, turn it off
-												if (lbgr->blu != colorOn.blu || lbgr->grn != colorOn.grn || lbgr->red != colorOn.red)
+												if (lbgr->blu != colorOn.s.blu || lbgr->grn != colorOn.s.grn || lbgr->red != colorOn.s.red)
 												{
 													// At least one is not the same as the on color, so turn it on
-													lbgr->red = colorOn.red;
-													lbgr->grn = colorOn.grn;
-													lbgr->blu = colorOn.blu;
+													lbgr->red = colorOn.s.red;
+													lbgr->grn = colorOn.s.grn;
+													lbgr->blu = colorOn.s.blu;
 
 												} else {
 													// It needs to be off
-													lbgr->red = colorOff.red;
-													lbgr->grn = colorOff.grn;
-													lbgr->blu = colorOff.blu;
+													lbgr->red = colorOff.s.red;
+													lbgr->grn = colorOff.s.grn;
+													lbgr->blu = colorOff.s.blu;
 												}
 												break;
 										}
@@ -3719,7 +3719,7 @@ return;
 										{
 											case _FILL_RECT_OP_AND:
 												// Maintains the point only if the existing point is already the "ON" color
-												if (lbgr->blu == colorOn.blu && lbgr->grn == colorOn.grn && lbgr->red == colorOn.red)
+												if (lbgr->blu == colorOn.s.blu && lbgr->grn == colorOn.s.grn && lbgr->red == colorOn.s.red)
 												{
 													// It's already the color it needs to be
 
@@ -3736,7 +3736,7 @@ return;
 
 											case _FILL_RECT_OP_XOR:
 												// If either one of them is different, turn it on, otherwise, turn it off
-												if (lbgr->blu != colorOn.blu || lbgr->grn != colorOn.grn || lbgr->red != colorOn.red)
+												if (lbgr->blu != colorOn.s.blu || lbgr->grn != colorOn.s.grn || lbgr->red != colorOn.s.red)
 												{
 													// At least one is not the same as the on color, so turn it on
 													lbgra->color = colorOn.color;
@@ -3775,9 +3775,9 @@ return;
 				// Top (NW to NE)
 				//////
 					// Compute FROM and TO colors
-					lfRed = (f32)colorNW.red;			lfRedTo = (f32)colorNE.red;
-					lfGrn = (f32)colorNW.grn;			lfGrnTo = (f32)colorNE.grn;
-					lfBlu = (f32)colorNW.blu;			lfBluTo = (f32)colorNE.blu;
+					lfRed = (f32)colorNW.s.red;			lfRedTo = (f32)colorNE.s.red;
+					lfGrn = (f32)colorNW.s.grn;			lfGrnTo = (f32)colorNE.s.grn;
+					lfBlu = (f32)colorNW.s.blu;			lfBluTo = (f32)colorNE.s.blu;
 
 					// Compute increment
 					lfRedInc	= (lfRedTo - lfRed) / lfWidth;
@@ -3792,9 +3792,9 @@ return;
 				// Bottom (SW to SE)
 				//////
 					// Compute FROM and TO colors
-					lfRed = (f32)colorSW.red;			lfRedTo = (f32)colorSE.red;
-					lfGrn = (f32)colorSW.grn;			lfGrnTo = (f32)colorSE.grn;
-					lfBlu = (f32)colorSW.blu;			lfBluTo = (f32)colorSE.blu;
+					lfRed = (f32)colorSW.s.red;			lfRedTo = (f32)colorSE.s.red;
+					lfGrn = (f32)colorSW.s.grn;			lfGrnTo = (f32)colorSE.s.grn;
+					lfBlu = (f32)colorSW.s.blu;			lfBluTo = (f32)colorSE.s.blu;
 
 					// Compute increment
 					lfRedInc	= (lfRedTo - lfRed) / lfWidth;
@@ -3809,9 +3809,9 @@ return;
 				// Left (NW to SW)
 				//////
 					// Compute FROM and TO colors
-					lfRed = (f32)colorNW.red;			lfRedTo = (f32)colorSW.red;
-					lfGrn = (f32)colorNW.grn;			lfGrnTo = (f32)colorSW.grn;
-					lfBlu = (f32)colorNW.blu;			lfBluTo = (f32)colorSW.blu;
+					lfRed = (f32)colorNW.s.red;			lfRedTo = (f32)colorSW.s.red;
+					lfGrn = (f32)colorNW.s.grn;			lfGrnTo = (f32)colorSW.s.grn;
+					lfBlu = (f32)colorNW.s.blu;			lfBluTo = (f32)colorSW.s.blu;
 
 					// Compute increment
 					lfRedInc	= (lfRedTo - lfRed) / lfWidth;
@@ -3826,9 +3826,9 @@ return;
 				// Right (NE to SE)
 				//////
 					// Compute FROM and TO colors
-					lfRed = (f32)colorNE.red;			lfRedTo = (f32)colorSE.red;
-					lfGrn = (f32)colorNE.grn;			lfGrnTo = (f32)colorSE.grn;
-					lfBlu = (f32)colorNE.blu;			lfBluTo = (f32)colorSE.blu;
+					lfRed = (f32)colorNE.s.red;			lfRedTo = (f32)colorSE.s.red;
+					lfGrn = (f32)colorNE.s.grn;			lfGrnTo = (f32)colorSE.s.grn;
+					lfBlu = (f32)colorNE.s.blu;			lfBluTo = (f32)colorSE.s.blu;
 
 					// Compute increment
 					lfRedInc	= (lfRedTo - lfRed) / lfWidth;
@@ -3840,7 +3840,7 @@ return;
 
 			} else {
 				// Use OS services for faster rendering
-				hbr = CreateSolidBrush(RGB(colorNW.red, colorNW.grn, colorNW.blu));
+				hbr = CreateSolidBrush(RGB(colorNW.s.red, colorNW.s.grn, colorNW.s.blu));
 				FrameRect(bmp->hdc, rc, hbr);
 				DeleteObject((HGDIOBJ)hbr);
 
@@ -3875,17 +3875,17 @@ return;
 					//////////
 					// Compute FROM colors
 					//////
-						lfRed		= (f32)colorNW.red + (((f32)colorSW.red - (f32)colorNW.red) * lfPercent);
-						lfGrn		= (f32)colorNW.grn + (((f32)colorSW.grn - (f32)colorNW.grn) * lfPercent);
-						lfBlu		= (f32)colorNW.blu + (((f32)colorSW.blu - (f32)colorNW.blu) * lfPercent);
+						lfRed		= (f32)colorNW.s.red + (((f32)colorSW.s.red - (f32)colorNW.s.red) * lfPercent);
+						lfGrn		= (f32)colorNW.s.grn + (((f32)colorSW.s.grn - (f32)colorNW.s.grn) * lfPercent);
+						lfBlu		= (f32)colorNW.s.blu + (((f32)colorSW.s.blu - (f32)colorNW.s.blu) * lfPercent);
 
 
 					//////////
 					// Compute TO colors
 					//////
-						lfRedTo		= (f32)colorNE.red + (((f32)colorSE.red - (f32)colorNE.red) * lfPercent);
-						lfGrnTo		= (f32)colorNE.grn + (((f32)colorSE.grn - (f32)colorNE.grn) * lfPercent);
-						lfBluTo		= (f32)colorNE.blu + (((f32)colorSE.blu - (f32)colorNE.blu) * lfPercent);
+						lfRedTo		= (f32)colorNE.s.red + (((f32)colorSE.s.red - (f32)colorNE.s.red) * lfPercent);
+						lfGrnTo		= (f32)colorNE.s.grn + (((f32)colorSE.s.grn - (f32)colorNE.s.grn) * lfPercent);
+						lfBluTo		= (f32)colorNE.s.blu + (((f32)colorSE.s.blu - (f32)colorNE.s.blu) * lfPercent);
 
 
 					//////////
@@ -4138,9 +4138,9 @@ return;
 						if (lnX >= 0 && lnX < bmp->bi.biWidth)
 						{
 							// Draw the pixel
-							lbgr->red	= color.red;
-							lbgr->grn	= color.grn;
-							lbgr->blu	= color.blu;
+							lbgr->red	= color.s.red;
+							lbgr->grn	= color.s.grn;
+							lbgr->blu	= color.s.blu;
 						}
 						// Move to next column
 						++lbgr;
@@ -4154,10 +4154,10 @@ return;
 						if (lnX >= 0 && lnX < bmp->bi.biWidth)
 						{
 							// Draw the pixel
-							lbgra->alp	= 255;
-							lbgra->red	= color.red;
-							lbgra->grn	= color.grn;
-							lbgra->blu	= color.blu;
+							lbgra->s.alp	= 255;
+							lbgra->s.red	= color.s.red;
+							lbgra->s.grn	= color.s.grn;
+							lbgra->s.blu	= color.s.blu;
 						}
 						// Move to next column
 						++lbgra;
@@ -4191,9 +4191,9 @@ return;
 						if (lnY >= 0 && lnY < bmp->bi.biHeight)
 						{
 							// Draw the pixel
-							lbgr->red	= color.red;
-							lbgr->grn	= color.grn;
-							lbgr->blu	= color.blu;
+							lbgr->red	= color.s.red;
+							lbgr->grn	= color.s.grn;
+							lbgr->blu	= color.s.blu;
 						}
 						// Move to next row
 						lbgr = (SBgr*)((s8*)lbgr - bmp->rowWidth);
@@ -4207,10 +4207,10 @@ return;
 						if (lnY >= 0 && lnY < bmp->bi.biHeight)
 						{
 							// Draw the pixel
-							lbgra->alp	= 255;
-							lbgra->red	= color.red;
-							lbgra->grn	= color.grn;
-							lbgra->blu	= color.blu;
+							lbgra->s.alp	= 255;
+							lbgra->s.red	= color.s.red;
+							lbgra->s.grn	= color.s.grn;
+							lbgra->s.blu	= color.s.blu;
 						}
 						// Move to next row
 						lbgra = (SBgra*)((s8*)lbgra - bmp->rowWidth);
@@ -4266,10 +4266,10 @@ return;
 					if ((!tluseClip || !(tnY >= rcClip->top && tnY <= rcClip->bottom && lnX >= rcClip->left && lnX <= rcClip->right)) && lnX >= 0 && lnX < bmp->bi.biWidth)
 					{
 						// Draw the pixel
-						lbgra->alp	= 255;
-						lbgra->red	= (u8)tfRed;
-						lbgra->grn	= (u8)tfGrn;
-						lbgra->blu	= (u8)tfBlu;
+						lbgra->s.alp	= 255;
+						lbgra->s.red	= (u8)tfRed;
+						lbgra->s.grn	= (u8)tfGrn;
+						lbgra->s.blu	= (u8)tfBlu;
 					}
 					// Move to next column
 					++lbgra;
@@ -4316,10 +4316,10 @@ return;
 					if (!tluseClip || (!(lnY >= rcClip->top && lnY <= rcClip->bottom && tnX >= rcClip->left && tnX <= rcClip->right) && lnY >= 0 && lnY < bmp->bi.biHeight))
 					{
 						// Draw the pixel
-						lbgra->alp	= 255;
-						lbgra->red	= (u8)tfRed;
-						lbgra->grn	= (u8)tfGrn;
-						lbgra->blu	= (u8)tfBlu;
+						lbgra->s.alp	= 255;
+						lbgra->s.red	= (u8)tfRed;
+						lbgra->s.grn	= (u8)tfGrn;
+						lbgra->s.blu	= (u8)tfBlu;
 					}
 					// Move to next row
 					lbgra = (SBgra*)((s8*)lbgra - bmp->rowWidth);
@@ -4364,9 +4364,9 @@ return;
 						if (lnX >= 0 && lnX < bmp->bi.biWidth)
 						{
 							// Colorize the pixel
-							lbgr->red	= (u8)max(min((alpha * (f32)color.red) + (lfMalp * (f32)lbgr->red), 255.0f), 0.0f);
-							lbgr->grn	= (u8)max(min((alpha * (f32)color.grn) + (lfMalp * (f32)lbgr->grn), 255.0f), 0.0f);
-							lbgr->blu	= (u8)max(min((alpha * (f32)color.blu) + (lfMalp * (f32)lbgr->blu), 255.0f), 0.0f);
+							lbgr->red	= (u8)max(min((alpha * (f32)color.s.red) + (lfMalp * (f32)lbgr->red), 255.0f), 0.0f);
+							lbgr->grn	= (u8)max(min((alpha * (f32)color.s.grn) + (lfMalp * (f32)lbgr->grn), 255.0f), 0.0f);
+							lbgr->blu	= (u8)max(min((alpha * (f32)color.s.blu) + (lfMalp * (f32)lbgr->blu), 255.0f), 0.0f);
 						}
 						// Move to next column
 						++lbgr;
@@ -4380,9 +4380,9 @@ return;
 						if (lnX >= 0 && lnX < bmp->bi.biWidth)
 						{
 							// Colorize the pixel
-							lbgra->red	= (u8)max(min((alpha * (f32)color.red) + (lfMalp * (f32)lbgra->red), 255.0f), 0.0f);
-							lbgra->grn	= (u8)max(min((alpha * (f32)color.grn) + (lfMalp * (f32)lbgra->grn), 255.0f), 0.0f);
-							lbgra->blu	= (u8)max(min((alpha * (f32)color.blu) + (lfMalp * (f32)lbgra->blu), 255.0f), 0.0f);
+							lbgra->s.red	= (u8)max(min((alpha * (f32)color.s.red) + (lfMalp * (f32)lbgra->s.red), 255.0f), 0.0f);
+							lbgra->s.grn	= (u8)max(min((alpha * (f32)color.s.grn) + (lfMalp * (f32)lbgra->s.grn), 255.0f), 0.0f);
+							lbgra->s.blu	= (u8)max(min((alpha * (f32)color.s.blu) + (lfMalp * (f32)lbgra->s.blu), 255.0f), 0.0f);
 						}
 						// Move to next column
 						++lbgra;
@@ -4428,9 +4428,9 @@ return;
 						if (lnY >= 0 && lnY < bmp->bi.biHeight)
 						{
 							// Colorize the pixel
-							lbgr->red	= (u8)max(min((alpha * (f32)color.red) + (lfMalp * (f32)lbgr->red), 255.0f), 0.0f);
-							lbgr->grn	= (u8)max(min((alpha * (f32)color.grn) + (lfMalp * (f32)lbgr->grn), 255.0f), 0.0f);
-							lbgr->blu	= (u8)max(min((alpha * (f32)color.blu) + (lfMalp * (f32)lbgr->blu), 255.0f), 0.0f);
+							lbgr->red	= (u8)max(min((alpha * (f32)color.s.red) + (lfMalp * (f32)lbgr->red), 255.0f), 0.0f);
+							lbgr->grn	= (u8)max(min((alpha * (f32)color.s.grn) + (lfMalp * (f32)lbgr->grn), 255.0f), 0.0f);
+							lbgr->blu	= (u8)max(min((alpha * (f32)color.s.blu) + (lfMalp * (f32)lbgr->blu), 255.0f), 0.0f);
 						}
 						// Move to next row
 						lbgr = (SBgr*)((s8*)lbgr - bmp->rowWidth);
@@ -4444,9 +4444,9 @@ return;
 						if (lnY >= 0 && lnY < bmp->bi.biHeight)
 						{
 							// Colorize the pixel
-							lbgra->red	= (u8)max(min((alpha * (f32)color.red) + (lfMalp * (f32)lbgra->red), 255.0f), 0.0f);
-							lbgra->grn	= (u8)max(min((alpha * (f32)color.grn) + (lfMalp * (f32)lbgra->grn), 255.0f), 0.0f);
-							lbgra->blu	= (u8)max(min((alpha * (f32)color.blu) + (lfMalp * (f32)lbgra->blu), 255.0f), 0.0f);
+							lbgra->s.red	= (u8)max(min((alpha * (f32)color.s.red) + (lfMalp * (f32)lbgra->s.red), 255.0f), 0.0f);
+							lbgra->s.grn	= (u8)max(min((alpha * (f32)color.s.grn) + (lfMalp * (f32)lbgra->s.grn), 255.0f), 0.0f);
+							lbgra->s.blu	= (u8)max(min((alpha * (f32)color.s.blu) + (lfMalp * (f32)lbgra->s.blu), 255.0f), 0.0f);
 						}
 						// Move to next row
 						lbgra = (SBgra*)((s8*)lbgra - bmp->rowWidth);
@@ -4505,11 +4505,11 @@ return;
 					if ((!tluseClip || !(tnY >= rcClip->top && tnY <= rcClip->bottom && lnX >= rcClip->left && lnX <= rcClip->right)) && lnX >= 0 && lnX < bmp->bi.biWidth)
 					{
 						// Colorize the pixel
-						lfGray		= alpha * ((0.35f * (f32)lbgra->red) + (0.54f * (f32)lbgra->grn) + (0.11f * (f32)lbgra->blu)) / 255.0f;
+						lfGray		= alpha * ((0.35f * (f32)lbgra->s.red) + (0.54f * (f32)lbgra->s.grn) + (0.11f * (f32)lbgra->s.blu)) / 255.0f;
 						lfMalp		= 1.0f - lfGray;
-						lbgra->red	= (u8)max(min((lfGray * tfRed) + (lfMalp * (f32)lbgra->red), 255.0f), 0.0f);
-						lbgra->grn	= (u8)max(min((lfGray * tfGrn) + (lfMalp * (f32)lbgra->grn), 255.0f), 0.0f);
-						lbgra->blu	= (u8)max(min((lfGray * tfBlu) + (lfMalp * (f32)lbgra->blu), 255.0f), 0.0f);
+						lbgra->s.red	= (u8)max(min((lfGray * tfRed) + (lfMalp * (f32)lbgra->s.red), 255.0f), 0.0f);
+						lbgra->s.grn	= (u8)max(min((lfGray * tfGrn) + (lfMalp * (f32)lbgra->s.grn), 255.0f), 0.0f);
+						lbgra->s.blu	= (u8)max(min((lfGray * tfBlu) + (lfMalp * (f32)lbgra->s.blu), 255.0f), 0.0f);
 					}
 					// Move to next column
 					++lbgra;
@@ -4569,10 +4569,10 @@ return;
 					if (!(lnY >= rcClip->top && lnY <= rcClip->bottom && tnX >= rcClip->left && tnX <= rcClip->right) && lnY >= 0 && lnY < bmp->bi.biHeight)
 					{
 						// Colorize the pixel
-						lfGray		= alpha * ((0.35f * (f32)lbgra->red) + (0.54f * (f32)lbgra->grn) + (0.11f * (f32)lbgra->blu)) / 255.0f;
-						lbgra->red	= (u8)max(min((lfGray * tfRed) + (lfMalp * (f32)lbgra->red), 255.0f), 0.0f);
-						lbgra->grn	= (u8)max(min((lfGray * tfGrn) + (lfMalp * (f32)lbgra->grn), 255.0f), 0.0f);
-						lbgra->blu	= (u8)max(min((lfGray * tfBlu) + (lfMalp * (f32)lbgra->blu), 255.0f), 0.0f);
+						lfGray		= alpha * ((0.35f * (f32)lbgra->s.red) + (0.54f * (f32)lbgra->s.grn) + (0.11f * (f32)lbgra->s.blu)) / 255.0f;
+						lbgra->s.red	= (u8)max(min((lfGray * tfRed) + (lfMalp * (f32)lbgra->s.red), 255.0f), 0.0f);
+						lbgra->s.grn	= (u8)max(min((lfGray * tfGrn) + (lfMalp * (f32)lbgra->s.grn), 255.0f), 0.0f);
+						lbgra->s.blu	= (u8)max(min((lfGray * tfBlu) + (lfMalp * (f32)lbgra->s.blu), 255.0f), 0.0f);
 					}
 					// Move to next row
 					lbgra = (SBgra*)((s8*)lbgra - bmp->rowWidth);
@@ -4625,9 +4625,9 @@ return;
 				lbgr = (SBgr*)(bmp->bd + ((bmp->bi.biHeight - tnY - 1) * bmp->rowWidth) + (tnX * 3));
 
 				// Draw it
-				lbgr->red = color.red;
-				lbgr->grn = color.grn;
-				lbgr->blu = color.blu;
+				lbgr->red = color.s.red;
+				lbgr->grn = color.s.grn;
+				lbgr->blu = color.s.blu;
 
 				// Indicate our pixel count
 				++lnPixelsRendered;
@@ -4637,9 +4637,9 @@ return;
 				lbgra = (SBgra*)(bmp->bd + ((bmp->bi.biHeight - tnY - 1) * bmp->rowWidth) + (tnX * 4));
 
 				// Draw it
-				lbgra->red = color.red;
-				lbgra->grn = color.grn;
-				lbgra->blu = color.blu;
+				lbgra->s.red = color.s.red;
+				lbgra->s.grn = color.s.grn;
+				lbgra->s.blu = color.s.blu;
 
 				// Indicate our pixel count
 				++lnPixelsRendered;
@@ -4766,9 +4766,9 @@ return;
 					++bp.optr;
 
 				} else {
-					bp.optra->red = (u8)bp.red;
-					bp.optra->grn = (u8)bp.grn;
-					bp.optra->blu = (u8)bp.blu;
+					bp.optra->s.red = (u8)bp.red;
+					bp.optra->s.grn = (u8)bp.grn;
+					bp.optra->s.blu = (u8)bp.blu;
 					// Move to the next pixel
 					++bp.optra;
 				}
@@ -4991,10 +4991,10 @@ return;
 
 		} else {
 			// 32-bit bitmap
-			(bp->pixels[bp->count]).red		= (f32)(((SBgra*)((u8*)bp->iptra + (bp->left * 4)))->red);
-			(bp->pixels[bp->count]).grn		= (f32)(((SBgra*)((u8*)bp->iptra + (bp->left * 4)))->grn);
-			(bp->pixels[bp->count]).blu		= (f32)(((SBgra*)((u8*)bp->iptra + (bp->left * 4)))->blu);
-			(bp->pixels[bp->count]).alp		= (f32)(((SBgra*)((u8*)bp->iptra + (bp->left * 4)))->alp);
+			(bp->pixels[bp->count]).red		= (f32)(((SBgra*)((u8*)bp->iptra + (bp->left * 4)))->s.red);
+			(bp->pixels[bp->count]).grn		= (f32)(((SBgra*)((u8*)bp->iptra + (bp->left * 4)))->s.grn);
+			(bp->pixels[bp->count]).blu		= (f32)(((SBgra*)((u8*)bp->iptra + (bp->left * 4)))->s.blu);
+			(bp->pixels[bp->count]).alp		= (f32)(((SBgra*)((u8*)bp->iptra + (bp->left * 4)))->s.alp);
 			(bp->pixels[bp->count]).area	= bp->area;
 		}
 
@@ -5030,10 +5030,10 @@ return;
 
 			} else {
 				// 32-bit bitmap
-				(bp->pixels[bp->count]).red		= (f32)(((SBgra*)((u8*)bp->iptra + (lnPixel * 4)))->red);
-				(bp->pixels[bp->count]).grn		= (f32)(((SBgra*)((u8*)bp->iptra + (lnPixel * 4)))->grn);
-				(bp->pixels[bp->count]).blu		= (f32)(((SBgra*)((u8*)bp->iptra + (lnPixel * 4)))->blu);
-				(bp->pixels[bp->count]).alp		= (f32)(((SBgra*)((u8*)bp->iptra + (lnPixel * 4)))->alp);
+				(bp->pixels[bp->count]).red		= (f32)(((SBgra*)((u8*)bp->iptra + (lnPixel * 4)))->s.red);
+				(bp->pixels[bp->count]).grn		= (f32)(((SBgra*)((u8*)bp->iptra + (lnPixel * 4)))->s.grn);
+				(bp->pixels[bp->count]).blu		= (f32)(((SBgra*)((u8*)bp->iptra + (lnPixel * 4)))->s.blu);
+				(bp->pixels[bp->count]).alp		= (f32)(((SBgra*)((u8*)bp->iptra + (lnPixel * 4)))->s.alp);
 				(bp->pixels[bp->count]).area	= bp->height;
 			}
 
@@ -5070,10 +5070,10 @@ return;
 
 		} else {
 			// 32-bit bitmap
-			(bp->pixels[bp->count]).red		= (f32)(((SBgra*)((u8*)bp->iptra + (bp->right * 4)))->red);
-			(bp->pixels[bp->count]).grn		= (f32)(((SBgra*)((u8*)bp->iptra + (bp->right * 4)))->grn);
-			(bp->pixels[bp->count]).blu		= (f32)(((SBgra*)((u8*)bp->iptra + (bp->right * 4)))->blu);
-			(bp->pixels[bp->count]).alp		= (f32)(((SBgra*)((u8*)bp->iptra + (bp->right * 4)))->alp);
+			(bp->pixels[bp->count]).red		= (f32)(((SBgra*)((u8*)bp->iptra + (bp->right * 4)))->s.red);
+			(bp->pixels[bp->count]).grn		= (f32)(((SBgra*)((u8*)bp->iptra + (bp->right * 4)))->s.grn);
+			(bp->pixels[bp->count]).blu		= (f32)(((SBgra*)((u8*)bp->iptra + (bp->right * 4)))->s.blu);
+			(bp->pixels[bp->count]).alp		= (f32)(((SBgra*)((u8*)bp->iptra + (bp->right * 4)))->s.alp);
 			(bp->pixels[bp->count]).area	= bp->area;
 		}
 
@@ -5118,10 +5118,10 @@ return;
 
 			} else {
 				// 32-bit bitmap
-				(bp->pixels[bp->count]).red		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - (lnPixelY * bp->src->rowWidth) + (bp->left * 4)))->red);
-				(bp->pixels[bp->count]).grn		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - (lnPixelY * bp->src->rowWidth) + (bp->left * 4)))->grn);
-				(bp->pixels[bp->count]).blu		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - (lnPixelY * bp->src->rowWidth) + (bp->left * 4)))->blu);
-				(bp->pixels[bp->count]).alp		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - (lnPixelY * bp->src->rowWidth) + (bp->left * 4)))->alp);
+				(bp->pixels[bp->count]).red		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - (lnPixelY * bp->src->rowWidth) + (bp->left * 4)))->s.red);
+				(bp->pixels[bp->count]).grn		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - (lnPixelY * bp->src->rowWidth) + (bp->left * 4)))->s.grn);
+				(bp->pixels[bp->count]).blu		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - (lnPixelY * bp->src->rowWidth) + (bp->left * 4)))->s.blu);
+				(bp->pixels[bp->count]).alp		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - (lnPixelY * bp->src->rowWidth) + (bp->left * 4)))->s.alp);
 				(bp->pixels[bp->count]).area	= bp->widthLeft;
 			}
 
@@ -5162,10 +5162,10 @@ return;
 
 				} else {
 					// 32-bit bitmap
-					(bp->pixels[bp->count]).red		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - (lnPixelY * bp->src->rowWidth) + (lnPixelX * 4)))->red);
-					(bp->pixels[bp->count]).grn		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - (lnPixelY * bp->src->rowWidth) + (lnPixelX * 4)))->grn);
-					(bp->pixels[bp->count]).blu		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - (lnPixelY * bp->src->rowWidth) + (lnPixelX * 4)))->blu);
-					(bp->pixels[bp->count]).alp		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - (lnPixelY * bp->src->rowWidth) + (lnPixelX * 4)))->alp);
+					(bp->pixels[bp->count]).red		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - (lnPixelY * bp->src->rowWidth) + (lnPixelX * 4)))->s.red);
+					(bp->pixels[bp->count]).grn		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - (lnPixelY * bp->src->rowWidth) + (lnPixelX * 4)))->s.grn);
+					(bp->pixels[bp->count]).blu		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - (lnPixelY * bp->src->rowWidth) + (lnPixelX * 4)))->s.blu);
+					(bp->pixels[bp->count]).alp		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - (lnPixelY * bp->src->rowWidth) + (lnPixelX * 4)))->s.alp);
 					(bp->pixels[bp->count]).area	= 1.0;
 				}
 
@@ -5203,10 +5203,10 @@ return;
 
 			} else {
 				// 32-bit bitmap
-				(bp->pixels[bp->count]).red		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - (lnPixelY * bp->src->rowWidth) + (bp->right * 4)))->red);
-				(bp->pixels[bp->count]).grn		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - (lnPixelY * bp->src->rowWidth) + (bp->right * 4)))->grn);
-				(bp->pixels[bp->count]).blu		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - (lnPixelY * bp->src->rowWidth) + (bp->right * 4)))->blu);
-				(bp->pixels[bp->count]).alp		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - (lnPixelY * bp->src->rowWidth) + (bp->right * 4)))->alp);
+				(bp->pixels[bp->count]).red		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - (lnPixelY * bp->src->rowWidth) + (bp->right * 4)))->s.red);
+				(bp->pixels[bp->count]).grn		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - (lnPixelY * bp->src->rowWidth) + (bp->right * 4)))->s.grn);
+				(bp->pixels[bp->count]).blu		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - (lnPixelY * bp->src->rowWidth) + (bp->right * 4)))->s.blu);
+				(bp->pixels[bp->count]).alp		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - (lnPixelY * bp->src->rowWidth) + (bp->right * 4)))->s.alp);
 				(bp->pixels[bp->count]).area	= bp->widthRight;
 			}
 
@@ -5241,10 +5241,10 @@ return;
 
 		} else {
 			// 32-bit bitmap
-			(bp->pixels[bp->count]).red		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - ((bp->middleFinishV + 1) * bp->src->rowWidth) + (bp->left * 4)))->red);
-			(bp->pixels[bp->count]).grn		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - ((bp->middleFinishV + 1) * bp->src->rowWidth) + (bp->left * 4)))->grn);
-			(bp->pixels[bp->count]).blu		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - ((bp->middleFinishV + 1) * bp->src->rowWidth) + (bp->left * 4)))->blu);
-			(bp->pixels[bp->count]).alp		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - ((bp->middleFinishV + 1) * bp->src->rowWidth) + (bp->left * 4)))->alp);
+			(bp->pixels[bp->count]).red		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - ((bp->middleFinishV + 1) * bp->src->rowWidth) + (bp->left * 4)))->s.red);
+			(bp->pixels[bp->count]).grn		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - ((bp->middleFinishV + 1) * bp->src->rowWidth) + (bp->left * 4)))->s.grn);
+			(bp->pixels[bp->count]).blu		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - ((bp->middleFinishV + 1) * bp->src->rowWidth) + (bp->left * 4)))->s.blu);
+			(bp->pixels[bp->count]).alp		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - ((bp->middleFinishV + 1) * bp->src->rowWidth) + (bp->left * 4)))->s.alp);
 			(bp->pixels[bp->count]).area	= bp->area;
 		}
 
@@ -5281,10 +5281,10 @@ return;
 
 			} else {
 				// 32-bit bitmap
-				(bp->pixels[bp->count]).red		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - ((bp->middleFinishV + 1) * bp->src->rowWidth) + (lnPixelX * 4)))->red);
-				(bp->pixels[bp->count]).grn		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - ((bp->middleFinishV + 1) * bp->src->rowWidth) + (lnPixelX * 4)))->grn);
-				(bp->pixels[bp->count]).blu		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - ((bp->middleFinishV + 1) * bp->src->rowWidth) + (lnPixelX * 4)))->blu);
-				(bp->pixels[bp->count]).alp		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - ((bp->middleFinishV + 1) * bp->src->rowWidth) + (lnPixelX * 4)))->alp);
+				(bp->pixels[bp->count]).red		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - ((bp->middleFinishV + 1) * bp->src->rowWidth) + (lnPixelX * 4)))->s.red);
+				(bp->pixels[bp->count]).grn		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - ((bp->middleFinishV + 1) * bp->src->rowWidth) + (lnPixelX * 4)))->s.grn);
+				(bp->pixels[bp->count]).blu		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - ((bp->middleFinishV + 1) * bp->src->rowWidth) + (lnPixelX * 4)))->s.blu);
+				(bp->pixels[bp->count]).alp		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - ((bp->middleFinishV + 1) * bp->src->rowWidth) + (lnPixelX * 4)))->s.alp);
 				(bp->pixels[bp->count]).area	= bp->height;
 			}
 
@@ -5318,10 +5318,10 @@ return;
 
 		} else {
 			// 32-bit bitmap
-			(bp->pixels[bp->count]).red		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - ((bp->middleFinishV + 1) * bp->src->rowWidth) + (bp->right * 4)))->red);
-			(bp->pixels[bp->count]).grn		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - ((bp->middleFinishV + 1) * bp->src->rowWidth) + (bp->right * 4)))->grn);
-			(bp->pixels[bp->count]).blu		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - ((bp->middleFinishV + 1) * bp->src->rowWidth) + (bp->right * 4)))->blu);
-			(bp->pixels[bp->count]).alp		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - ((bp->middleFinishV + 1) * bp->src->rowWidth) + (bp->right * 4)))->alp);
+			(bp->pixels[bp->count]).red		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - ((bp->middleFinishV + 1) * bp->src->rowWidth) + (bp->right * 4)))->s.red);
+			(bp->pixels[bp->count]).grn		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - ((bp->middleFinishV + 1) * bp->src->rowWidth) + (bp->right * 4)))->s.grn);
+			(bp->pixels[bp->count]).blu		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - ((bp->middleFinishV + 1) * bp->src->rowWidth) + (bp->right * 4)))->s.blu);
+			(bp->pixels[bp->count]).alp		= (f32)(((SBgra*)((u8*)bp->iptrAnchora - ((bp->middleFinishV + 1) * bp->src->rowWidth) + (bp->right * 4)))->s.alp);
 			(bp->pixels[bp->count]).area	= bp->area;
 		}
 

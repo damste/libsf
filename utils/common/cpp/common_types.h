@@ -69,6 +69,26 @@
 	#define s16 int16_t
 	#define s8 char
 
+#elif defined(__solaris__)
+	// solaris compiler
+	// Used for pointer sizes that mate up with pointers, but are actually integers
+	#ifdef __i386
+		#define uptr uint32_t
+		#define sptr int32_t
+	#else
+		#define uptr uint64_t
+		#define sptr int64_t
+	#endif
+	#define u64 uint64_t
+	#define u32 uint32_t
+	#define u16 uint16_t
+	#define u8 unsigned char
+
+	#define s64 int64_t
+	#define s32 int32_t
+	#define s16 int16_t
+	#define s8 char
+
 #else
 	// Used for pointer sizes that mate up with pointers, but are actually integers
 	#ifndef _M_X64

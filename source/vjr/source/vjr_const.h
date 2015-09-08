@@ -91,6 +91,8 @@ struct SEM;
 	#include "\libsf\utils\common\cpp\common_types.h"
 #elif defined(__GNUC__)
 	#include "/libsf/utils/common/cpp/common_types.h"
+#elif defined(__solaris__)
+	#include "/libsf/utils/common/cpp/common_types.h"
 #else
 	#error Unknown target for compilation (must be Windows or Linux)
 #endif

@@ -420,6 +420,156 @@
 			#include "/libsf/utils/common/cpp/linux/hwndx.cpp"
 		#endif
 
+#elif defined(__solaris__)
+	// Compiling on solaris
+	#define WM_USER				0x0400
+
+	#include <stdio.h>
+	#include <stdlib.h>
+	#include <unistd.h>
+	#include <fcntl.h>
+	#include <sys/types.h>
+	#include <sys/stat.h>
+	#include <sys/time.h>
+	#include <sys/timeb.h>
+	#include <inttypes.h>
+	#include <memory.h>
+	#include <string.h>
+	#include <pthread.h>
+	#include <time.h>
+	#include <errno.h>
+	#include <semaphore.h>
+
+	// Seriously, X11??  "Illegal access??"  Really??
+	#define XLIB_ILLEGAL_ACCESS		1
+    #include <X11/Xlib.h>
+    #include <X11/Xutil.h>
+    #include <X11/cursorfont.h>
+
+	#define _USE_MATH_DEFINES
+	#include <math.h>
+
+	#include "/libsf/source/vjr/source/3rd_party/mapm/m_apm.h"
+
+    #include <SDL/SDL.h>
+    #include <SDL/SDL_audio.h>
+
+	#include "vjr_const.h"
+
+    #include "/libsf/utils/common/cpp/linux/windows.h"
+    #include "/libsf/utils/common/cpp/linux/hwndx.h"
+
+	#include "/libsf/utils/common/cpp/datum.h"
+	#include "/libsf/utils/common/cpp/datum.cpp"
+
+	#include "/libsf/utils/common/cpp/builder.h"
+	#include "/libsf/utils/common/cpp/builder.cpp"
+
+	#include "/libsf/utils/common/cpp/ll.cpp"
+
+	#include "/libsf/utils/common/cpp/time.h"
+	#include "/libsf/utils/common/cpp/time.cpp"
+
+	#include "/libsf/utils/common/cpp/disk.h"
+	#include "/libsf/utils/common/cpp/disk.cpp"
+
+	#include "/libsf/utils/common/cpp/xml/xml.h"
+	#include "/libsf/utils/common/cpp/xml/xml.cpp"
+
+	#include "vjr_structs0.h"
+
+	#include "/libsf/source/vjr/source/compiler/common/compiler_common.h"
+
+	#include "/libsf/source/vjr/source/compiler/vxb/vxb_const.h"
+	#include "/libsf/source/vjr/source/compiler/vxb/vxb_structs.h"
+	#include "/libsf/source/vjr/source/compiler/vxb/vxb_defs.h"
+	#include "/libsf/source/vjr/source/compiler/vxb/vxb_dictionary.h"
+	#include "/libsf/source/vjr/source/compiler/vxb/vxb_globals.h"
+
+	#include "/libsf/source/vjr/source/compiler/rdc/rdc_const.h"
+	#include "/libsf/source/vjr/source/compiler/rdc/rdc_structs.h"
+	#include "/libsf/source/vjr/source/compiler/rdc/rdc_defs.h"
+	#include "/libsf/source/vjr/source/compiler/rdc/rdc_globals.h"
+
+	#include "/libsf/source/vjr/source/compiler/licoa/licoa_const.h"
+	#include "/libsf/source/vjr/source/compiler/licoa/licoa_structs.h"
+	#include "/libsf/source/vjr/source/compiler/licoa/licoa_defs.h"
+	#include "/libsf/source/vjr/source/compiler/licoa/licoa_globals.h"
+
+	#include "/libsf/source/vjr/source/compiler/sourcelight/sourcelight_globals.h"
+
+	#include "/libsf/source/vjr/source/dbf/dbf.h"
+
+	#include "/libsf/source/vjr/source/sem/sem.h"
+	#include "/libsf/source/vjr/source/sem/sem_line.h"
+	#include "/libsf/source/vjr/source/sem/sem_extra_info.h"
+
+	#include "/libsf/source/vjr/source/forms3d/grace.h"
+
+	#include "vjr_structs.h"
+	#include "vjr_defs.h"
+	#include "vjr_globals.h"
+
+	#include "/libsf/source/vjr/source/debugger/jdebic/jdebic.h"
+	#include "fonts.h"
+	#include "/libsf/source/vjr/source/bitmaps/bitmaps.h"
+
+	#include "/libsf/source/vjr/source/commands/command_defs.h"
+	#include "/libsf/source/vjr/source/sound/sound.h"
+	#include "engine.h"
+	#include "/libsf/source/vjr/source/objects/accessors.h"
+
+	#include "/libsf/source/vjr/source/bmps/graphics/bitmaps.h"
+	#include "/libsf/source/vjr/source/settings/settings.h"
+
+	#include "/libsf/utils/sha1/sha1.h"
+	#include "/libsf/utils/sha1/sha1.cpp"
+
+
+	//////////
+	// Added for test purposes
+	//////
+		void iTest1(SThisCode* thisCode, SFunctionParams* rpar);
+		#include "/libsf/source/vjr/source/test/test.cpp"
+
+
+	//////////
+	// Source files are all included in this one source file
+	// for ease of compilation across platforms and compilers.
+	//////
+		#include "vjr_sup.cpp"
+		#include "vjr_init.cpp"
+		#include "/libsf/source/vjr/source/objects/accessors.cpp"
+		#include "/libsf/source/vjr/source/objects/base.cpp"
+		#include "/libsf/source/vjr/source/objects/callbacks.cpp"
+		#include "/libsf/source/vjr/source/objects/copy.cpp"
+		#include "/libsf/source/vjr/source/objects/create.cpp"
+		#include "/libsf/source/vjr/source/objects/delete.cpp"
+		#include "/libsf/source/vjr/source/objects/events.cpp"
+		#include "/libsf/source/vjr/source/objects/render.cpp"
+		#include "/libsf/source/vjr/source/objects/reset.cpp"
+		#include "/libsf/source/vjr/source/bitmaps/bitmaps.cpp"
+		#include "/libsf/source/vjr/source/compiler/vxb/vxb_compiler.cpp"
+		#include "/libsf/source/vjr/source/compiler/vxb/vxb_dictionary.cpp"
+		#include "/libsf/source/vjr/source/compiler/rdc/rdc_compiler.cpp"
+		#include "/libsf/source/vjr/source/compiler/licoa/licoa_compiler.cpp"
+		#include "/libsf/source/vjr/source/debugger/jdebic/jdebic.cpp"
+		#include "/libsf/source/vjr/source/commands/commands.cpp"
+		#include "engine.cpp"
+		#include "/libsf/source/vjr/source/sem/sem.cpp"
+		#include "/libsf/source/vjr/source/sem/sem_line.cpp"
+		#include "/libsf/source/vjr/source/sem/sem_extra_info.cpp"
+		#include "/libsf/source/vjr/source/sound/sound.cpp"
+		#include "/libsf/source/vjr/source/dbf/dbc.cpp"
+		#include "/libsf/source/vjr/source/dbf/dbf.cpp"
+		#include "/libsf/source/vjr/source/dbf/cdx.cpp"
+		#include "/libsf/source/vjr/source/forms3d/grace.cpp"
+		#include "/libsf/source/vjr/source/fonts.cpp"
+		#include "/libsf/source/vjr/source/dllfuncs/dllfuncs.cpp"
+
+        #include "/libsf/utils/common/cpp/linux/windows.cpp"
+        #include "/libsf/utils/common/cpp/linux/hwndx.cpp"
+
 #else
 	#error Unknown target for compilation (must be Windows or Linux)
 #endif

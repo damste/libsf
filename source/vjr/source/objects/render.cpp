@@ -630,7 +630,7 @@
 												//////////
 												// Render the text toward the right
 												//////
-													SetTextColor(obj->p.bmpTabs->hdc, RGB(carouselTabForeColor.red, carouselTabForeColor.grn, carouselTabForeColor.blu));
+													SetTextColor(obj->p.bmpTabs->hdc, RGB(carouselTabForeColor.s.red, carouselTabForeColor.s.grn, carouselTabForeColor.s.blu));
 													SetBkMode(obj->p.bmpTabs->hdc, TRANSPARENT);
 													lrc4.right -= 4;		// Margin between right border and text
 													DrawText(obj->p.bmpTabs->hdc, varTabText->value.data_s8, varTabText->value.length, &lrc4, DT_RIGHT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS);
@@ -834,8 +834,8 @@
 				if (lnBackStyle == _BACK_STYLE_OPAQUE)
 				{
 					// Use the back color
-					SetBkColor(obj->bmp->hdc,	RGB(backColor.red, backColor.grn, backColor.blu));
-					SetTextColor(obj->bmp->hdc,	RGB(foreColor.red, foreColor.grn, foreColor.blu));
+					SetBkColor(obj->bmp->hdc,	RGB(backColor.s.red, backColor.s.grn, backColor.s.blu));
+					SetTextColor(obj->bmp->hdc,	RGB(foreColor.s.red, foreColor.s.grn, foreColor.s.blu));
 
 				} else {
 					// Use a black and white creation
@@ -1007,7 +1007,7 @@
 				if (propBackStyle(obj) == _BACK_STYLE_OPAQUE)
 				{
 					// Opaque
-					SetBkColor(obj->bmp->hdc, RGB(backColor.red, backColor.grn, backColor.blu));
+					SetBkColor(obj->bmp->hdc, RGB(backColor.s.red, backColor.s.grn, backColor.s.blu));
 					SetBkMode(obj->bmp->hdc, OPAQUE);
 
 				} else {
@@ -1016,7 +1016,7 @@
 				}
 
 				// Set the text parameters
-				SetTextColor(obj->bmp->hdc, RGB(foreColor.red, foreColor.grn, foreColor.blu));
+				SetTextColor(obj->bmp->hdc, RGB(foreColor.s.red, foreColor.s.grn, foreColor.s.blu));
 				SelectObject(obj->bmp->hdc, obj->p.font->hfont);
 
 				// Determine our orientation
@@ -1115,7 +1115,7 @@
 				if (propBackStyle(obj) == _BACK_STYLE_OPAQUE)
 				{
 					// Opaque
-					SetBkColor(obj->bmp->hdc, RGB(backColor.red, backColor.grn, backColor.blu));
+					SetBkColor(obj->bmp->hdc, RGB(backColor.s.red, backColor.s.grn, backColor.s.blu));
 					SetBkMode(obj->bmp->hdc, OPAQUE);
 
 				} else {
@@ -1124,7 +1124,7 @@
 				}
 
 				// Set the text parameters
-				SetTextColor(obj->bmp->hdc, RGB(foreColor.red, foreColor.grn, foreColor.blu));
+				SetTextColor(obj->bmp->hdc, RGB(foreColor.s.red, foreColor.s.grn, foreColor.s.blu));
 				SelectObject(obj->bmp->hdc, obj->p.font->hfont);
 
 				// Determine our orientation
@@ -1491,7 +1491,7 @@
 									obj->bmp->bi.biWidth * 6 / 7,
 									(obj->bmp->bi.biHeight / 2) + (obj->bmp->bi.biHeight / 7));
 					
-					SetTextColor(obj->bmp->hdc, RGB(foreColor.red, foreColor.grn, foreColor.blu));
+					SetTextColor(obj->bmp->hdc, RGB(foreColor.s.red, foreColor.s.grn, foreColor.s.blu));
 					SetBkMode(obj->bmp->hdc, TRANSPARENT);
 					SelectObject(obj->bmp->hdc, ((obj->p.font) ? obj->p.font : gsFontDefault)->hfont);
 					DrawText(obj->bmp->hdc, buffer + lnSkip, (int)strlen(buffer + lnSkip), &lrc2, DT_CENTER | DT_SINGLELINE | DT_VCENTER);
@@ -1500,7 +1500,7 @@
 				// Colorize
 				     if (obj->ev.isMouseDown)		iBmp_colorize(obj->bmp, &lrc, colorMouseDown,	false, 0.0f);
 				else if (obj->ev.isMouseOver)		iBmp_colorize(obj->bmp, &lrc, colorMouseOver,	false, 0.0f);
-				else									iBmp_colorize(obj->bmp, &lrc, propBackColor(obj),	false, 0.0f);
+				else								iBmp_colorize(obj->bmp, &lrc, propBackColor(obj),	false, 0.0f);
 
 
 				//////////

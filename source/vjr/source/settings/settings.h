@@ -73,7 +73,7 @@
 	#include "h\jdebi.h"
 	#include "h\jdebi_layout.h"
 
-#elif defined(__GNUC__)
+#elif defined(__GNUC__) || defined(__solaris__)
 	#include "h/jdebi.h"
 	#include "h/jdebi_layout.h"
 

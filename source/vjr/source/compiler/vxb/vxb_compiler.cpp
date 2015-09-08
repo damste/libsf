@@ -10697,7 +10697,7 @@ debug_break;
 			case _VAR_TYPE_U64:				return(var->value.data_u64[0]);
 
 			case _VAR_TYPE_NUMERIC:
-#ifdef __GNUC__
+#if defined(__GNUC__) || defined(__solaris__)
 				return(strtoull(var->value.data, NULL, 10));
 #else
 				return(_strtoui64((s8*)var->value.data, NULL, 10));
@@ -10782,7 +10782,7 @@ debug_break;
 					//////////
 					// We can convert this from its text form into numeric
 					//////
-#ifdef __GNUC__
+#if defined(__GNUC__) || defined(__solaris__)
 						return(strtoull(var->value.data, NULL, 10));
 #else
 						return(_strtoui64((s8*)var->value.data, NULL, 10));
@@ -10801,7 +10801,7 @@ debug_break;
 					//////
 						buffer[8] = 0;
 						memcpy(buffer, var->value.data, 8);
-#ifdef __GNUC__
+#if defined(__GNUC__) || defined(__solaris__)
 						return(strtoull(buffer, NULL, 10));
 #else
 						return(_strtoui64((s8*)buffer, NULL, 10));
@@ -11479,7 +11479,7 @@ debug_break;
 						}
 
 						// Grab the value
-#ifdef __GNUC__
+#if defined(__GNUC__) || defined(__solaris__)
 						lnDatetime = strtoull(buffer, NULL, 10);
 #else
 						lnDatetime = _strtoui64(buffer, NULL, 10);

@@ -1940,7 +1940,7 @@ debug_break;
 					font = iSEM_getRectAndFont(thisCode, sem, obj, NULL);
 					SelectObject(bmp->hdc, ((font) ? font->hfont : gsFontDefaultTooltip->hfont));
 					SetBkMode(bmp->hdc, TRANSPARENT);
-					SetTextColor(bmp->hdc, RGB(tooltipForecolor.red, tooltipForecolor.grn, tooltipForecolor.blu));
+					SetTextColor(bmp->hdc, RGB(tooltipForecolor.s.red, tooltipForecolor.s.grn, tooltipForecolor.s.blu));
 					InflateRect(&lrc, -4, 0);
 					DrawText(bmp->hdc, tcText, tnTextLength, &lrc, DT_SINGLELINE | DT_END_ELLIPSIS | DT_LEFT | DT_NOPREFIX);
 
@@ -2141,21 +2141,21 @@ debug_break;
 					if (sem->line_cursor == line && sem->showCursorLine && tlRenderCursorline)
 					{
 						// Display in the cursor color line
-						SetBkColor(bmp->hdc, RGB(currentStatementBackColor.red, currentStatementBackColor.grn, currentStatementBackColor.blu));
-						SetTextColor(bmp->hdc, RGB(currentStatementForeColor.red, currentStatementForeColor.grn, currentStatementForeColor.blu));
+						SetBkColor(bmp->hdc, RGB(currentStatementBackColor.s.red, currentStatementBackColor.s.grn, currentStatementBackColor.s.blu));
+						SetTextColor(bmp->hdc, RGB(currentStatementForeColor.s.red, currentStatementForeColor.s.grn, currentStatementForeColor.s.blu));
 						fillColor.color	= currentStatementBackColor.color;
 
 					} else if (line->ll.next || ((!sem->showCursorLine || !tlRenderCursorline) && !sem->showEndLine)) {
 						// Display in normal background color
-						SetBkColor(bmp->hdc, RGB(defaultBackColor.red, defaultBackColor.grn, defaultBackColor.blu));
-						SetTextColor(bmp->hdc, RGB(defaultForeColor.red, defaultForeColor.grn, defaultForeColor.blu));
+						SetBkColor(bmp->hdc, RGB(defaultBackColor.s.red, defaultBackColor.s.grn, defaultBackColor.s.blu));
+						SetTextColor(bmp->hdc, RGB(defaultForeColor.s.red, defaultForeColor.s.grn, defaultForeColor.s.blu));
 						hfontOld		= SelectObject(bmp->hdc, font->hfont);
 						fillColor.color	= defaultBackColor.color;
 
 					} else {
 						// This is the last line, display in the last line color
-						SetBkColor(bmp->hdc, RGB(backColorLast.red, backColorLast.grn, backColorLast.blu));
-						SetTextColor(bmp->hdc, RGB(foreColorLast.red, foreColorLast.grn, foreColorLast.blu));
+						SetBkColor(bmp->hdc, RGB(backColorLast.s.red, backColorLast.s.grn, backColorLast.s.blu));
+						SetTextColor(bmp->hdc, RGB(foreColorLast.s.red, foreColorLast.s.grn, foreColorLast.s.blu));
 						hfontOld		= SelectObject(bmp->hdc, font->hfont);
 						fillColor.color	= backColorLast.color;
 					}
@@ -2252,8 +2252,8 @@ debug_break;
 										{
 											// Use the selection color
 											SetBkMode(bmp->hdc, OPAQUE);
-											SetBkColor(bmp->hdc, RGB(comp->overrideSelectionBackColor->red, comp->overrideSelectionBackColor->grn, comp->overrideSelectionBackColor->blu));
-											compBackColor.color	 = comp->overrideSelectionBackColor->color;
+											SetBkColor(bmp->hdc, RGB(comp->overrideSelectionBackColor->s.red, comp->overrideSelectionBackColor->s.grn, comp->overrideSelectionBackColor->s.blu));
+											compBackColor.color		= comp->overrideSelectionBackColor->color;
 											compFillColor.color		= comp->overrideSelectionBackColor->color;
 											llOverrideCaskColors	= false;
 
@@ -2265,7 +2265,7 @@ debug_break;
 										} else if (comp->overrideMatchingForeColor) {
 											// Use the matching color
 											SetBkMode(bmp->hdc, OPAQUE);
-											SetBkColor(bmp->hdc, RGB(comp->overrideMatchingBackColor->red, comp->overrideMatchingBackColor->grn, comp->overrideMatchingBackColor->blu));
+											SetBkColor(bmp->hdc, RGB(comp->overrideMatchingBackColor->s.red, comp->overrideMatchingBackColor->s.grn, comp->overrideMatchingBackColor->s.blu));
 											compBackColor.color		= comp->overrideMatchingBackColor->color;
 											compFillColor.color		= comp->overrideMatchingBackColor->color;
 											compForeColor.color		= comp->overrideMatchingForeColor->color;
@@ -2274,7 +2274,7 @@ debug_break;
 										} else if (comp->color) {
 											// Use the component override color
 											SetBkMode(bmp->hdc, TRANSPARENT);
-											SetBkColor(bmp->hdc, RGB(fillColor.red, fillColor.grn, fillColor.blu));
+											SetBkColor(bmp->hdc, RGB(fillColor.s.red, fillColor.s.grn, fillColor.s.blu));
 											compBackColor.color	= fillColor.color;
 											compFillColor.color	= fillColor.color;
 											compForeColor.color	= comp->color->color;
@@ -2282,7 +2282,7 @@ debug_break;
 										} else {
 											// Use the standard display color
 											SetBkMode(bmp->hdc, TRANSPARENT);
-											SetBkColor(bmp->hdc, RGB(fillColor.red, fillColor.grn, fillColor.blu));
+											SetBkColor(bmp->hdc, RGB(fillColor.s.red, fillColor.s.grn, fillColor.s.blu));
 											compBackColor.color	= fillColor.color;
 											compFillColor.color	= fillColor.color;
 											compForeColor.color	= defaultForeColor.color;
@@ -2311,7 +2311,7 @@ debug_break;
 										if (compHighlight && comp != compHighlight && comp->length == compHighlight->length && _memicmp(comp->line->sourceCode->data + comp->start, compHighlight->line->sourceCode->data + compHighlight->start, comp->length) == 0)
 										{
 											SetBkMode(bmp->hdc, OPAQUE);
-											SetBkColor(bmp->hdc, RGB(highlightSymbolBackColor.red, highlightSymbolBackColor.grn, highlightSymbolBackColor.blu));
+											SetBkColor(bmp->hdc, RGB(highlightSymbolBackColor.s.red, highlightSymbolBackColor.s.grn, highlightSymbolBackColor.s.blu));
 											compBackColor.color		= highlightSymbolBackColor.color;
 											llOverrideCaskColors	= false;
 										}
@@ -2340,7 +2340,7 @@ debug_break;
 												// Overlay the text
 												SetBkMode(bmpCask->hdc, TRANSPARENT);
 												SelectObject(bmpCask->hdc, font->hfont);
-												SetTextColor(bmpCask->hdc, RGB(compForeColor.red, compForeColor.grn, compForeColor.blu));
+												SetTextColor(bmpCask->hdc, RGB(compForeColor.s.red, compForeColor.s.grn, compForeColor.s.blu));
 												SetRect(&lrcText, 0, -1, bmpCask->bi.biWidth, bmpCask->bi.biHeight);
 												DrawText(bmpCask->hdc, textptr + lnSkip, comp->length - (2 * lnSkip), &lrcText, DT_VCENTER | DT_CENTER | DT_SINGLELINE | DT_NOPREFIX | DT_END_ELLIPSIS);
 												SetBkMode(bmpCask->hdc, OPAQUE);
@@ -2431,15 +2431,15 @@ renderAsText:
 												// Draw the text
 renderAsOnlyText:
 												// Set the color
-												SetTextColor(bmp->hdc, RGB(compForeColor.red, compForeColor.grn, compForeColor.blu));
+												SetTextColor(bmp->hdc, RGB(compForeColor.s.red, compForeColor.s.grn, compForeColor.s.blu));
 
 												// An explicit background color?
 												if (comp->overrideMatchingBackColor)
-													SetBkColor(bmp->hdc, RGB(comp->overrideMatchingBackColor->red, comp->overrideMatchingBackColor->grn, comp->overrideMatchingBackColor->blu));
+													SetBkColor(bmp->hdc, RGB(comp->overrideMatchingBackColor->s.red, comp->overrideMatchingBackColor->s.grn, comp->overrideMatchingBackColor->s.blu));
 
 												// Is this a component that should be highlighted?
 												if (compHighlight && comp != compHighlight && comp->length == compHighlight->length && _memicmp(comp->line->sourceCode->data + comp->start, compHighlight->line->sourceCode->data + compHighlight->start, comp->length) == 0)
-													SetBkColor(bmp->hdc, RGB(highlightSymbolBackColor.red, highlightSymbolBackColor.grn, highlightSymbolBackColor.blu));
+													SetBkColor(bmp->hdc, RGB(highlightSymbolBackColor.s.red, highlightSymbolBackColor.s.grn, highlightSymbolBackColor.s.blu));
 
 												// Draw this component
 												SetBkMode(bmp->hdc, OPAQUE);
@@ -2541,7 +2541,7 @@ renderAsOnlyText:
 						// Back off one character, and render the line number right-justified
 						lrc3.right -= (sem->rcLineNumberLastRender.right - sem->rcLineNumberLastRender.left) / 7;
 						SetBkMode(bmp->hdc, TRANSPARENT);
-						SetTextColor(bmp->hdc, RGB(lineNumberForeColor.red, lineNumberForeColor.grn, lineNumberForeColor.blu));
+						SetTextColor(bmp->hdc, RGB(lineNumberForeColor.s.red, lineNumberForeColor.s.grn, lineNumberForeColor.s.blu));
 						DrawText(bmp->hdc, buffer, (int)strlen(buffer), &lrc3, DT_SINGLELINE | DT_RIGHT | DT_NOPREFIX);
 
 
@@ -2719,7 +2719,7 @@ renderAsOnlyText:
 							//////////
 							// Draw the line
 							//////
-								SetTextColor(bmp->hdc, RGB(tooltipForecolor.red, tooltipForecolor.grn, tooltipForecolor.blu));
+								SetTextColor(bmp->hdc, RGB(tooltipForecolor.s.red, tooltipForecolor.s.grn, tooltipForecolor.s.blu));
 								DrawText(bmp->hdc, textptr, lnBufferLength, &lrc3, DT_VCENTER | DT_LEFT | DT_SINGLELINE | DT_NOPREFIX);
 
 
@@ -2758,7 +2758,7 @@ renderAsOnlyText:
 						// Overlay the text
 						if (line->sourceCode->data && line->sourceCode_populatedLength != 0 && line->sourceCode_populatedLength >= sem->columnLeft)
 						{
-							SetTextColor(bmp->hdc, RGB(tooltipForecolor.red, tooltipForecolor.grn, tooltipForecolor.blu));
+							SetTextColor(bmp->hdc, RGB(tooltipForecolor.s.red, tooltipForecolor.s.grn, tooltipForecolor.s.blu));
 							DrawText(bmp->hdc, line->sourceCode->data + sem->columnLeft, line->sourceCode_populatedLength - sem->columnLeft, &lrc3, DT_VCENTER | DT_LEFT | DT_SINGLELINE | DT_NOPREFIX);
 
 							// Add in the line numbers

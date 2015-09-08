@@ -115,6 +115,20 @@
 		#else
 			#define __64_BIT_COMPILER__
 		#endif
+
+	#elif defined(__unix)
+                // Solaris compiler
+		#define debug_break			asm("int $3")
+		#define debug_nop			asm("nop")
+                #ifndef __solaris
+                    #define __solaris__
+                #endif
+        #ifdef __i386
+            #define __32_BIT_COMPILER__
+        #else
+			#define __64_BIT_COMPILER__
+        #endif
+
 	#else
 		// visual studio
 		#ifndef _M_X64
