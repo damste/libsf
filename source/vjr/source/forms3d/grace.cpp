@@ -121,13 +121,13 @@
 	void iiGrace_vec_copy(SGraceRect* recDst, s32 recDstV, SGraceRect* recSrc, s32 recSrcV) { }
 	void iiGrace_vec_render(SGraceRect* rec, s32 rV)                                        { }
 	void iiGrace_computeSteps(SGraceRect* dst, s32 dstV, SGraceRect* rBeg, s32 rBegV, SGraceRect* rEnd, s32 rEndV, SGraceRect* step, s32 stepV, f32 tfDivisions) { }
-	f32 iiGrace_computeStep(f32 tfBegin, f32 tfEnd, f32 tfCount, f32* tfStep)               { }
+	f32 iiGrace_computeStep(f32 tfBegin, f32 tfEnd, f32 tfCount, f32* tfStep)               { return(1.0f); }
 
 
 	// Helper functions
 	void iiGrace_copyAndComputeVecLine(SGraceVecLine* line, SGraceVec* p1, SGraceVec* p2)   { }
 	void iiGrace_copyAndComputeLine(SGraceLine* line, SGraceXy* p1, SGraceXy* p2)           { }
-	SGraceVec* iiGrace_computeVecBezier3(s32 tnSegmentCount, SGraceVec* tsV1, SGraceVec* tsV2, SGraceVec* tsV3) { }
+	SGraceVec* iiGrace_computeVecBezier3(s32 tnSegmentCount, SGraceVec* tsV1, SGraceVec* tsV2, SGraceVec* tsV3) { return(NULL); }
 
 #else
 //////////

@@ -10,58 +10,69 @@
 # Environment
 MKDIR=mkdir
 CP=cp
+GREP=grep
+NM=nm
 CCADMIN=CCadmin
 RANLIB=ranlib
 CC=cc
 CCC=CC
 CXX=CC
 FC=f95
+AS=as
 
 # Macros
-PLATFORM=SunStudio_12.1-Solaris-x86
+CND_PLATFORM=SunStudio_12.1-Solaris-x86
+CND_DLIB_EXT=so
+CND_CONF=Release
+CND_DISTDIR=dist
+CND_BUILDDIR=build
 
 # Include project Makefile
 include Makefile
 
 # Object Directory
-OBJECTDIR=build/Release/${PLATFORM}
+OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/_ext/libsf/source/vjr/projects/sunStudio2009/vjr/../../../source/vjr.o
+	${OBJECTDIR}/_ext/1366059434/vjr.o
+
 
 # C Compiler Flags
 CFLAGS=
 
 # CC Compiler Flags
-CCFLAGS=
-CXXFLAGS=
+CCFLAGS=-features=extensions,tmplrefstatic,iddollar
+CXXFLAGS=-features=extensions,tmplrefstatic,iddollar
 
 # Fortran Compiler Flags
 FFLAGS=
+
+# Assembler Flags
+ASFLAGS=
 
 # Link Libraries and Options
 LDLIBSOPTIONS=
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	${MAKE}  -f nbproject/Makefile-Release.mk dist/Release/${PLATFORM}/vjr
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/vjr
 
-dist/Release/${PLATFORM}/vjr: ${OBJECTFILES}
-	${MKDIR} -p dist/Release/${PLATFORM}
-	${LINK.cc} -o dist/Release/${PLATFORM}/vjr ${OBJECTFILES} ${LDLIBSOPTIONS} 
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/vjr: ${OBJECTFILES}
+	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/vjr ${OBJECTFILES} ${LDLIBSOPTIONS}
 
-${OBJECTDIR}/_ext/libsf/source/vjr/projects/sunStudio2009/vjr/../../../source/vjr.o: ../../../source/vjr.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/libsf/source/vjr/projects/sunStudio2009/vjr/../../../source
-	$(COMPILE.cc) -fast -o ${OBJECTDIR}/_ext/libsf/source/vjr/projects/sunStudio2009/vjr/../../../source/vjr.o ../../../source/vjr.cpp
+${OBJECTDIR}/_ext/1366059434/vjr.o: ../../../source/vjr.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/1366059434
+	$(COMPILE.cc) -fast -g0 -o ${OBJECTDIR}/_ext/1366059434/vjr.o ../../../source/vjr.cpp
 
 # Subprojects
 .build-subprojects:
 
 # Clean Targets
-.clean-conf:
-	${RM} -r build/Release
-	${RM} dist/Release/${PLATFORM}/vjr
+.clean-conf: ${CLEAN_SUBPROJECTS}
+	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
+	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/vjr
 	${CCADMIN} -clean
 
 # Subprojects

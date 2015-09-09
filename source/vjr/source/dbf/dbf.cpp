@@ -2437,20 +2437,20 @@ debug_break;
 			// Store the type's related name
 			switch (lfrp->type)
 			{
-				case 'C':	name = "Character";		break;
-				case 'Y':	name = "Currency";		break;
-				case 'D':	name = "Date";			break;
-				case 'T':	name = "DateTime";		break;
-				case 'B':	name = "Double";		break;
-				case 'F':	name = "Float";			break;
-				case 'G':	name = "General";		break;
-				case 'I':	name = "Integer";		break;
-				case 'L':	name = "Logical";		break;
-				case 'M':	name = "Memo";			break;
-				case 'N':	name = "Numeric";		break;
-				case 'P':	name = "Picture";		break;
-				case 'Q':	name = "Varbinary";		break;
-				case 'V':	name = "Varchar";		break;
+				case 'C':	name = (s8*)"Character";	break;
+				case 'Y':	name = (s8*)"Currency";		break;
+				case 'D':	name = (s8*)"Date";			break;
+				case 'T':	name = (s8*)"DateTime";		break;
+				case 'B':	name = (s8*)"Double";		break;
+				case 'F':	name = (s8*)"Float";		break;
+				case 'G':	name = (s8*)"General";		break;
+				case 'I':	name = (s8*)"Integer";		break;
+				case 'L':	name = (s8*)"Logical";		break;
+				case 'M':	name = (s8*)"Memo";			break;
+				case 'N':	name = (s8*)"Numeric";		break;
+				case 'P':	name = (s8*)"Picture";		break;
+				case 'Q':	name = (s8*)"Varbinary";	break;
+				case 'V':	name = (s8*)"Varchar";		break;
 				default:
 					sprintf(buffer, "Unknown '%c'\000", lfrp->type);
 					name = (s8*)buffer;

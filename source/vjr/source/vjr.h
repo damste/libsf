@@ -140,6 +140,7 @@
 	#include <stdlib.h>
 
 	#include "vjr_const.h"
+	#include "vjr_structs00.h"
 
 	#include "\libsf\utils\common\cpp\datum.h"
 	#include "\libsf\utils\common\cpp\datum.cpp"
@@ -301,6 +302,7 @@
 	#endif
 
 	#include "vjr_const.h"
+	#include "vjr_structs00.h"
 
 	#if defined(__linux__)
 		#include "/libsf/utils/common/cpp/linux/windows.h"
@@ -455,6 +457,7 @@
     #include <SDL/SDL_audio.h>
 
 	#include "vjr_const.h"
+	#include "vjr_structs00.h"
 
     #include "/libsf/utils/common/cpp/linux/windows.h"
     #include "/libsf/utils/common/cpp/linux/hwndx.h"

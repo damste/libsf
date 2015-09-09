@@ -4000,7 +4000,7 @@ debug_break;
 										lfco				= iiDbf_forClause_ops_appendItem(lsFor);
 										lfco->op			= _FOR_CLAUSE_OPS_EQUAL_TEMPORARY | lnForModifier;
 										lfco->offsetL		= iDbf_getField_dataOffset(thisCode, wa, lfptr2->fieldNumber);
-										lfco->tempIndexR	= iiDbf_forClause_temp_appendConstant(lsFor, "T", 1);
+										lfco->tempIndexR	= iiDbf_forClause_temp_appendConstant(lsFor, (s8*)"T", 1);
 										lfco->lengthL		= 1;	// 1 byte for logical
 
 

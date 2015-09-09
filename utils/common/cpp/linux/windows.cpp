@@ -114,7 +114,7 @@
 		if (lpClassName && nWidth > 0 && nHeight > 0 && (cls = iHwndX_findClass_byName(lpClassName)))
 		{
 			// Allocate a new window
-			win = (SHwndX*)iBuilder_appendData(gsWindows, NULL, sizeof(SHwndX));
+			win = (SHwndX*)iBuilder_appendData(gsWindows, (cs8*)NULL, sizeof(SHwndX));
 			if (win)
 			{
 				//////////

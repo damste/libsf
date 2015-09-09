@@ -91,8 +91,8 @@
 // Note:  This code is inline to the iiDllFunc_dispatch_lowLevel() function.
 // Note:  See dllfuncs.cpp, and search for the #include "dll_dispatch_32.asm" source code line.
 //////////
-_asm
-{
+#if !defined(__solaris__)
+asm {
 	//////////
 	//
 	// Inline assembly to push parameters onto the stack:
@@ -261,3 +261,4 @@ _asm
 			// When we get here, the asm part is completed
 
 }
+#endif

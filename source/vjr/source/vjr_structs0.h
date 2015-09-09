@@ -124,38 +124,7 @@ struct SBgr
 	};
 };
 
-struct SBgra
-{
-	union {
-		u32		color;
-#if !defined(__solaris__)
-		struct {
-#endif
-			union {
-				u8	blu;
-				u8	blu_u8;
-				s8	blu_s8;
-			};
-			union {
-				u8	grn;
-				u8	grn_u8;
-				s8	grn_s8;
-			};
-			union {
-				u8	red;
-				u8	red_u8;
-				s8	red_s8;
-			};
-			union {
-				u8	alp;
-				u8	alp_u8;
-				s8	alp_s8;
-			};
-#if !defined(__solaris__)
-        };
-#endif
-    };
-};
+// Note:  SBgra moved to vjr_stucts00.h due to lin2win dependency
 
 struct SBgraf
 {

@@ -147,7 +147,14 @@
 #define COLORREF			DWORD
 #define LPSTR				s8*
 #define IDispatch           void
-#define LARGE_INTEGER       s64
+union LARGE_INTEGER
+{
+	s64 QuadPart;
+	struct {
+		u32	LowPart;
+		u32	HighPart;
+	};
+};
 
 // TODO:  These values have not yet been populated with correct values, they're just placeholders for compilation
 #define _S_IREAD            0
