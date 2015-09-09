@@ -92,7 +92,7 @@
 // Note:  See dllfuncs.cpp, and search for the #include "dll_dispatch_32.asm" source code line.
 //////////
 #if !defined(__solaris__)
-asm {
+_asm {
 	//////////
 	//
 	// Inline assembly to push parameters onto the stack:

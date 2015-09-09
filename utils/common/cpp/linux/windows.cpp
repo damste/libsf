@@ -232,6 +232,13 @@
 // Called to display a message box
 //
 //////
+#if defined(__solaris__)
+	WINUSERAPI int WINAPI MessageBox(__in_opt HWND hWnd, __in_opt cs8* lpText, __in_opt cs8* lpCaption, __in UINT uType)
+	{
+#warning MessageBox() has not yet been defined in Solaris for lin2win
+		return(0);
+	}
+#else
 	const SDL_MessageBoxButtonData mb_buttons_ok[] =
 	{
 		{ SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 0, "ok" }
@@ -409,6 +416,7 @@
 		//////
 			return(buttonChoiceTranslation[lnChoice]);
 	}
+#endif
 
 
 
@@ -541,7 +549,7 @@
 			if (!GetClassInfoExA(lpwcx->hInstance, lpwcx->lpszClassName, &wcx))
 			{
 				// Does not exist, add it
-				cls = (SClassX*)iBuilder_appendData(gsClasses, NULL, sizeof(SClassX));
+				cls = (SClassX*)iBuilder_appendData(gsClasses, (s8*)NULL, sizeof(SClassX));
 				if (cls)
 				{
 					// Initialize
@@ -1803,7 +1811,7 @@ WINGDIAPI HRGN WINAPI CreateRectRgn(__in int x1, __in int y1, __in int x2, __in 
 
 			// Set the coordinates
 			iBuilder_createAndInitialize(&regionx->regionArray, 1024);
-			rectx = (SRegionRectX*)iBuilder_appendData(regionx->regionArray, NULL, sizeof(SRegionRectX));
+			rectx = (SRegionRectX*)iBuilder_appendData(regionx->regionArray, (s8*)NULL, sizeof(SRegionRectX));
 			if (rectx)
 			{
 				// Set the rectangle
@@ -2025,27 +2033,27 @@ WINUSERAPI HICON WINAPI LoadIcon(__in_opt HINSTANCE hInstance, __in uptr lpIconN
 		{
 			case IDI_APPLICATION:
 			case IDI_WINLOGO:			// Standard app icon
-				bmp = bmpArray[_BMP__app_win];
+				bmp = iBmp_arrayBmp_getRef(bxmlArrayBmp, bmpArray, (s8*)"app_win", -1);
 				break;
 
 			case IDI_ERROR:				// Hand/halt! icon
-				bmp = bmpArray[_BMP__halt_win];
+				bmp = iBmp_arrayBmp_getRef(bxmlArrayBmp, bmpArray, (s8*)"halt_win", -1);
 				break;
 
 			case IDI_QUESTION:			// Question mark
-				bmp = bmpArray[_BMP__question_mark_win];
+				bmp = iBmp_arrayBmp_getRef(bxmlArrayBmp, bmpArray, (s8*)"question_mark_win", -1);
 				break;
 
 			case IDI_EXCLAMATION:		// Exclamation point
-				bmp = bmpArray[_BMP__exclamation_point_win];
+				bmp = iBmp_arrayBmp_getRef(bxmlArrayBmp, bmpArray, (s8*)"exclamation_point_win", -1);
 				break;
 
 			case IDI_ASTERISK:			// Stop sign
-				bmp = bmpArray[_BMP__stop_sign_win];
+				bmp = iBmp_arrayBmp_getRef(bxmlArrayBmp, bmpArray, (s8*)"stop_sign_win", -1);
 				break;
 
 			case IDI_SHIELD:			// Shield
-				bmp = bmpArray[_BMP__shield_win];
+				bmp = iBmp_arrayBmp_getRef(bxmlArrayBmp, bmpArray, (s8*)"shield_win", -1);
 				break;
 
 			default:
@@ -2053,7 +2061,7 @@ WINUSERAPI HICON WINAPI LoadIcon(__in_opt HINSTANCE hInstance, __in uptr lpIconN
 // TODO:  need to figure out what protocol we want to implement this
 
 				// For now, go ahead and use the standard app icon
-				bmp = bmpArray[_BMP__app_win];
+				bmp = iBmp_arrayBmp_getRef(bxmlArrayBmp, bmpArray, (s8*)"app_win", -1);
 				break;
 		}
 
@@ -2195,7 +2203,7 @@ WINGDIAPI HRGN WINAPI CreateRectRgnIndirect( __in CONST RECT *lprect)
 			if (regionx->regionArray)
 			{
 				// Add in this rectangle
-				regionxRect = (SRegionRectX*)iBuilder_appendData(regionx->regionArray, NULL, sizeof(SRegionRectX));
+				regionxRect = (SRegionRectX*)iBuilder_appendData(regionx->regionArray, (s8*)NULL, sizeof(SRegionRectX));
 				if (regionxRect)
 				{
 					// The op is AND against however big the full region is
@@ -2611,7 +2619,7 @@ WINGDIAPI HDC WINAPI CreateCompatibleDC( __in_opt HDC hdc)
 	if (lhdcRef && lhdcRef->isValid)
 	{
 		// Create a new entry, and copy everything
-		lhdcNew = (SHdcX*)iBuilder_appendData(gsHdcs, NULL, sizeof(SHdcX));
+		lhdcNew = (SHdcX*)iBuilder_appendData(gsHdcs, (s8*)NULL, sizeof(SHdcX));
 		if (lhdcNew)
 		{
 			// Populate with the content from the other one
@@ -2706,13 +2714,15 @@ WINUSERAPI int WINAPI GetSystemMetrics(__in int nIndex)
 		case SM_CXCURSOR:
 		case SM_CXICON:
 		case SM_CXHSCROLL:
-			return _BMP__ARRAY_WIDTH;
+			if (bmpArray[0])		return bmpArray[0]->bi.biWidth;
+			else					return 24;
 
 		case SM_CYVTHUMB:
 		case SM_CYICON:
 		case SM_CYCURSOR:
 		case SM_CYVSCROLL:
-			return _BMP__ARRAY_HEIGHT;
+			if (bmpArray[0])		return bmpArray[0]->bi.biHeight;
+			else					return 24;
 
 		case SM_CXMINTRACK:
 		case SM_CXMIN:
@@ -2722,7 +2732,7 @@ WINUSERAPI int WINAPI GetSystemMetrics(__in int nIndex)
 		case SM_CYMINTRACK:
 		case SM_CYMIN:
 		case SM_CYMINIMIZED:
-			return bmpClose->bi.biHeight;
+			return bmpClose->bi.biHeight * 10;
 
 		case SM_CXICONSPACING:
 		case SM_CXDOUBLECLK:

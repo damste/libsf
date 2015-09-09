@@ -29,14 +29,19 @@
 
 #include <stdarg.h>
 
+
+#if !defined(__solaris__)		// Sep.09.2015 RCH -- Added because Solaris Studio and the Solaris compiler already define this value
 typedef signed char int8_t;
+#endif
 typedef unsigned char uint8_t;
 typedef signed short int16_t;
 typedef unsigned short uint16_t;
 typedef signed int int32_t;
 typedef unsigned int uint32_t;
 typedef unsigned int size_t;
+#if !defined(__solaris__)		// Sep.09.2015 RCH -- Added because Solaris Studio and the Solaris compiler already define this value
 typedef unsigned long uintptr_t;
+#endif
 
 /* Enable the dummy audio driver (src/audio/dummy/\*.c) */
 #define SDL_AUDIO_DRIVER_DUMMY	1

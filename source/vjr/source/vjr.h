@@ -453,6 +453,10 @@
 
 	#include "/libsf/source/vjr/source/3rd_party/mapm/m_apm.h"
 
+	// Include libsdl package
+	#include "SDL/SDL.h"
+	#include "SDL/SDL_audio.h"
+
     #include <SDL/SDL.h>
     #include <SDL/SDL_audio.h>
 
