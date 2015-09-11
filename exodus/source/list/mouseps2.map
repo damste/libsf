@@ -1,0 +1,37 @@
+
+ Start  Stop   Length Name                   Class
+ 00000H 00000H 00000H _TEXT                  CODE
+ 00000H 00570H 00571H _TEXT32                CODE
+ 00572H 00572H 00000H _DATA                  DATA
+ 00580H 00580H 00000H STACK                  STACK
+
+ Origin   Group
+ 0000:0   DGROUP
+
+  Address         Publics by Name
+
+ 0000:017D       iMOUSE_activate_DEBI_intercept
+ 0000:018F       iMOUSE_bochs_DEBI_intercept
+ 0000:01C4       iMOUSE_deactivate_DEBI_intercept
+ 0000:009C       initialize_driver
+ 0000:0087       main
+ 0000:00FA       MOUSE_handler
+ 0000:0008       requestor
+ 0000:0580       _edata
+ 0000:0580       _end
+ 0000:0580       __edata
+ 0000:0580       __end
+
+  Address         Publics by Value
+
+ 0000:0008       requestor
+ 0000:0087       main
+ 0000:009C       initialize_driver
+ 0000:00FA       MOUSE_handler
+ 0000:017D       iMOUSE_activate_DEBI_intercept
+ 0000:018F       iMOUSE_bochs_DEBI_intercept
+ 0000:01C4       iMOUSE_deactivate_DEBI_intercept
+ 0000:0580       _end
+ 0000:0580       _edata
+ 0000:0580       __end
+ 0000:0580       __edata

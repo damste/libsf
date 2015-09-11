@@ -1,0 +1,47 @@
+
+ Start  Stop   Length Name                   Class
+ 00000H 00000H 00000H _TEXT                  CODE
+ 00000H 0047BH 0047CH _TEXT32                CODE
+ 0047CH 0047CH 00000H _DATA                  DATA
+ 00480H 00480H 00000H STACK                  STACK
+
+ Origin   Group
+ 0000:0   DGROUP
+
+  Address         Publics by Name
+
+ 0000:00A1       DISK_close_file
+ 0000:00A2       DISK_delete_file
+ 0000:009F       DISK_insert_file
+ 0000:009C       DISK_open_file
+ 0000:009D       DISK_read_file
+ 0000:00A3       DISK_requestor
+ 0000:009E       DISK_seek_file
+ 0000:00A0       DISK_write_file
+ 0000:00A5       initialize_driver
+ 0000:00A4       invDISK_find_drive_by_letter
+ 0000:0087       main
+ 0000:0008       requestor
+ 0000:0480       _edata
+ 0000:0480       _end
+ 0000:0480       __edata
+ 0000:0480       __end
+
+  Address         Publics by Value
+
+ 0000:0008       requestor
+ 0000:0087       main
+ 0000:009C       DISK_open_file
+ 0000:009D       DISK_read_file
+ 0000:009E       DISK_seek_file
+ 0000:009F       DISK_insert_file
+ 0000:00A0       DISK_write_file
+ 0000:00A1       DISK_close_file
+ 0000:00A2       DISK_delete_file
+ 0000:00A3       DISK_requestor
+ 0000:00A4       invDISK_find_drive_by_letter
+ 0000:00A5       initialize_driver
+ 0000:0480       _end
+ 0000:0480       _edata
+ 0000:0480       __end
+ 0000:0480       __edata

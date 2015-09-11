@@ -1,0 +1,22 @@
+
+ Start  Stop   Length Name                   Class
+ 00000H 00000H 00000H _TEXT                  CODE
+ 00000H 001FFH 00200H _MAIN                  CODE
+ 00200H 00200H 00000H _DATA                  DATA
+
+ Origin   Group
+ 0000:0   DGROUP
+
+  Address         Publics by Name
+
+ 0000:0200       _edata
+ 0000:0200       _end
+ 0000:0200       __edata
+ 0000:0200       __end
+
+  Address         Publics by Value
+
+ 0000:0200       __edata
+ 0000:0200       __end
+ 0000:0200       _end
+ 0000:0200       _edata

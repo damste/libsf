@@ -1,0 +1,39 @@
+;
+; Exodus was designed to be stupid.  It only knows how to do a very minimal number of things internally.  This allows drivers to
+; be installed to carry out the more complex tasks.  Currently, Exodus requires these files to be installed at bootup:
+;
+;   BOOT.BIN        - Boot sector
+;   BOOTUP.COM      - Boot loader
+;   EXODUS.INI      - Text file describing how Exodus is setup
+;   VGA.DRV         - A VGA driver
+;   KEYBOARD.DRV    - A keyboard driver
+;
+;   EXODUS.COM      - The main program Exodus runs once all the drivers have been loaded and initialized
+;
+;
+; The Exodus design facilitates an open slate system.  Exodus only knows how to load and install Exodus drivers.  The drivers
+; themselves become part of Exodus.  Once the drivers are loaded Exodus is replete with capabilities.  When a program is executed
+; it contains a list of required primatives to allow it to work properly.  If they are not available the program cannot be
+; executed.  If they are available then the program is executed normally.
+;
+; This design makes Exodus highly configurable and programmable, obviously.
+;
+; All primatives are defined in the range of _MIN_PRIMATIVE to _MAX_PRIMATIVE in the GDT.
+;
+;   eax = "no s"    "no support for primative"
+;   ebx = "uppo"
+;   ecx = "rt f"
+;   edx = "or p"
+;   esi = "rima"
+;   edi = "tive"
+;
+; For all native primates that are supported the corresponding GDT entry
+; that points to this error routine is replaced by a pointer to the section
+; of the driver providing the support.  There is currently enough room for
+; 2795 different functions to be defined.  Note also that all of these
+; functions are RING-0 functions.  For any applications running in RING-3
+; a copy of the GDT entry is put in their LDT prior to initialization.
+;
+;
+;
+;

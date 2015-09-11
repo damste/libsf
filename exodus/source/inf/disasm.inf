@@ -1,0 +1,207 @@
+лллл                                                         Disassembly Guidelines
+ллллн
+оллллм
+ пплллллммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммм
+   н
+   н    Disassembly of 80x86 instructions
+   н
+ ммлллллппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппп
+оллллп
+ллллн
+лллл
+лллл    The disassembly of instructions is a complex task.  The rules I use are as follows:
+лллл
+лллл        1)  Check all one-byte instruction sequences (no operands)
+лллл        2)  Check all two-byte instruction sequences (no operands)
+лллл        3)  Check all fixed first-byte instructions (variable second byte and/or operands)
+лллл        4)  Check remaining bit sequences on variable first-byte instructions with variable bits masked off
+лллл
+лллл
+лллл    ONE-BYTE INSTRUCTIONS
+лллл    ---------------------
+лллл*       aaa - 00110111b                       - ASCII adjust after addition
+лллл*       aas - 00111111b                       - ASCII adjust after subtraction
+лллл*       cbw - 10011000b                       - convert byte to word
+лллл*       cdq - 10011001b                       - convert double to quad
+лллл*       clc - 11111000b                       - clear carry flag
+лллл*       cld - 11111100b                       - clear direction flag
+лллл*       cli - 11111010b                       - clear interrupts
+лллл*       cmc - 11110101b                       - complement carry flag
+лллл*       daa - 00100111b                       - decimal adjust after addition
+лллл*       das - 00101111b                       - decimal adjust after subtraction
+лллл*       hlt - 11110100b                       - halt until interrupt
+лллл*      into - 11001110b                       - interrupt on overflow
+лллл*      iret - 11001111b                       - interrupt return
+лллл*      lahf - 10011111b                       - load flags into ah
+лллл*     leave - 11001001b                       - leave
+лллл*      lock - 11110000b                       - lock the bus
+лллл*       nop - 10010000b                       - no operation
+лллл*      popa - 01100001b                       - pop all
+лллл*      popf - 10011101b                       - pop flags
+лллл*     pusha - 01100000b                       - push all
+лллл*     pushf - 10011100b                       - push flags
+лллл*       ret - 11000011b                       - return near
+лллл*      retf - 11001011b                       - return far
+лллл*      sahf - 10011110b                       - store ah into flags
+лллл*       stc - 11111001b                       - set carry flag
+лллл*       std - 11111101b                       - set direction flag
+лллл*       sti - 11111011b                       - set interrupts
+лллл*      wait - 10011011b                       - wait
+лллл*      xlat - 11010111b                       - translate
+лллл
+лллл
+лллл    TWO-BYTE INSTRUCTIONS
+лллл    ---------------------
+лллл*       aad - 11010101b 00001010b             - ASCII adjust before division
+лллл*       aam - 11010100b 00001010b             - ASCII adjust after multiply
+лллл*      clts - 00001111b 00000110b             - clear task-switched flag
+лллл*      invd - 00001111b 00001000b             - invalidate data cache
+лллл*    wbinvd - 00001111b 00001001b             - write-back and invalidate data cache
+лллл
+лллл
+лллл    FIXED FIRST-BYTE, VARIABLE
+лллл    --------------------------
+лллл*           mov - 00001111b 001000d0 11,reg,r/m                 - mov r32,creg; mov creg,r32
+лллл*           mov - 00001111b 001000d1 11,reg,r/m                 - mov r32,dreg; mov dreg,r32
+лллл*           mov - 00001111b 001001d0 11,reg,r/m                 - mov r32,treg; mov treg,r32
+лллл*            bt - 00001111b 10,BBB,011 mod,reg,r/m disp(0,1,2,4)- bt, btc, btr, bts
+лллл*          push - 00001111b 10,sreg,000                         - push fs or gs
+лллл*           pop - 00001111b 10,sreg,001                         - pop fs/gs
+лллл*          jccc - 00001111b 1000cond disp(2)                    - jump conditionally with 2-byte displacement
+лллл*        setccc - 00001111b 1001cond mod,000,r/m                - setccc reg/mem/[reg]
+лллл*       cmpxchg - 00001111b 1011000B mod,reg,r/m disp(0,1,2)    - compare and exchange
+лллл*         movzx - 00001111b 1011011w mod,reg,r/m disp(0,1,2,4)  - movzx reg,reg; reg,mem
+лллл*         movsx - 00001111b 1011111w mod,reg,r/m disp(0,1,2,4)  - movsx reg,reg; reg,mem
+лллл*          xadd - 00001111b 1100000B mod,reg,r/m disp(0,1,2)    - xadd mem,reg; reg,reg
+лллл*         bswap - 00001111b 11001r32                            - bswap eax
+лллл*         bound - 01100010b mod,reg,r/m disp(2)                 - check array bounds
+лллл*          arpl - 01100011b mod,reg,r/m disp(0,1,2)             - adjust requested privledge level
+лллл*           lea - 10001101b mod,reg,r/m disp(2)                 - lea bx,near ptr
+лллл*           pop - 10001111b mod,000,r/m disp(2)                 - pop mem16
+лллл*          call - 10011010b disp(4)                             - call far ptr disp4
+лллл*           les - 11000100b mod,reg,r/m disp(2)                 - les di, far ptr
+лллл*           lds - 11000101b mod,reg,r/m disp(2)                 - lds si, far ptr
+лллл*         enter - 11001000b data(2), data(1)                    - enter 32,0
+лллл*          retf - 11001010b data(2)                             - retf immed16
+лллл*           int - 11001101b data(1)                             - int 13h
+лллл*        loopne - 11100000b disp(1)                             - loopne or loopnz label
+лллл*         loope - 11100001b disp(1)                             - loope or loopz label
+лллл*          loop - 11100010b disp(1)                             - loop label
+лллл*          jcxz - 11100011b disp(1)                             - jump if CX is zero
+лллл*          call - 11101000b disp(2)                             - call near ptr disp2
+лллл*           jmp - 11101001b disp(2)                             - jump -32678 to +32767 bytes
+лллл*           jmp - 11101010b disp(4)                             - jump -2 to +2 gigabytes
+лллл*           jmp - 11101011b disp(1)                             - jump -128 to +127 bytes
+лллл*          call - 11111111b mod,010,r/m                         - call near ptr ax, call mem16, call near ptr [bx]
+лллл*          call - 11111111b mod,011,r/m                         - call far ptr [di]
+лллл*           jmp - 11111111b mod,100,r/m disp(0,2)               - jump ax, jmp word ptr [bx]
+лллл*           jmp - 11111111b mod,101,r/m disp(4,6)               - jmp far ptr [si]
+лллл*          push - 11111111b mod,110,r/m disp(2)                 - push mem16
+лллл*           ret - 11000010 data(2)                              - return and pop immed bytes off the stack
+лллл
+лллл
+лллл    FIXED TWO-BYTES, VARIABLE
+лллл    -------------------------
+лллл*      sldt - 00001111b 00000000b mod,000,r/m disp(0,1,2)               - store local descriptor table register
+лллл*       str - 00001111b 00000000b mod,001,reg disp(0,1,2)               - store task register
+лллл*      lldt - 00001111b 00000000b mod,010,r/m disp(0,1,2)               - lldt mem16
+лллл*       ltr - 00001111b 00000000b mod,011,r/m disp(0,1,2)               - load task register
+лллл*      verr - 00001111b 00000000b mod,100,r/m disp(0,1,2)               - verify read
+лллл*      verw - 00001111b 00000000b mod,101,r/m disp(0,1,2)               - verify write
+лллл*      sgdt - 00001111b 00000001b mod,000,r/m disp(2)                   - store global descriptor table register
+лллл*      sidt - 00001111b 00000001b mod,001,r/m disp(2)                   - store interrupt descriptor table register
+лллл*      lgdt - 00001111b 00000001b mod,010,r/m disp(2)                   - lgdt mem48
+лллл*      lidt - 00001111b 00000001b mod,011,r/m disp(2)                   - lidt mem48
+лллл*      smsw - 00001111b 00000001b mod,100,r/m disp(0,1,2)               - store machine status word
+лллл*      lmsw - 00001111b 00000001b mod,110,r/m disp(0,1,2)               - load machine status word
+лллл*    invlpg - 00001111b 00000001b mod,111,r/m disp(2)                   - invalidate TLB entry
+лллл*       lar - 00001111b 00000010b mod,reg,r/m disp(0,1,2,4)             - load access rights
+лллл*       lsl - 00001111b 00000011b mod,reg,r/m disp(0,1,2)               - load segment limit
+лллл*      shld - 00001111b 10100100b mod,reg,r/m disp(0,1,2) data(1)       - double precision shift left by immed
+лллл*      shld - 00001111b 10100101b mod,reg,r/m disp(0,1,2)               - double precision shift left by cl
+лллл*      shrd - 00001111b 10101100b mod,reg,r/m disp(0,1,2) data(1)       - double precision shift right by immed
+лллл*      shrd - 00001111b 10101101b mod,reg,r/m disp(0,1,2)               - double precision shift right by cl
+лллл*      imul - 00001111b 10101111b mod,reg,r/m disp(0,1,2)               - signed multiply, imul dx,ax
+лллл*       lss - 00001111b 10110010b mod,reg,r/m disp(2 or 4)              - lss bp,far ptr
+лллл*       lfs - 00001111b 10110100b mod,reg,r/m disp(2 or 4)              - lfs di,far ptr
+лллл*       lgs - 00001111b 10110101b mod,reg,r/m disp(2 or 4)              - lgs di,far ptr
+лллл*        bt - 00001111b 10111010b mod,BBB,r/m disp(0,1,2,4) data(1)     - bit test, bit test and set/complement/reset
+лллл*       bsf - 00001111b 10111100b mod,reg,r/m disp(0,1,2,4)             - bit scan forward
+лллл*       bsr - 00001111b 10111101b mod,reg,r/m disp(0,1,2,4)             - bit scan reverse
+лллл
+лллл
+лллл    VARIABLE FIRST BYTE, MULTI-BYTE INSTRUCTIONS
+лллл    --------------------------------------------
+лллл*      push - 00,sreg,110                                               - push a segment register onto the stack
+лллл*       pop - 00,sreg,111                                              - pop a segment register off the stack
+лллл*       add - 000000dw mod,reg,r/m disp(0,1,2)                          - add reg,reg; reg,mem; mem,reg
+лллл*       add - 0000010w data(1,2)                                        - add accum,immed
+лллл*        or - 000010dw mod,reg,r/m disp(0,1,2)                          - or reg,reg; mem,reg; reg,mem
+лллл*        or - 0000110w data(1,2)                                        - or accum,immed
+лллл*       adc - 000100dw mod,reg,r/m disp(0,1,2)                          - adc reg,reg; reg,mem; mem,reg
+лллл*       adc - 0001010w data(1,2)                                        - adc accum,immed
+лллл*       sbb - 000110dw mod,reg,r/m disp(0,1,2)                          - subtract with borrow reg,reg; reg,mem; mem,reg
+лллл*       sbb - 0001110w data(1,2)                                        - subtract with borrow accum,immed
+лллл*       and - 001000dw mod,reg,r/m disp(0,1,2)                          - and reg,reg; reg,mem; mem,reg
+лллл*       and - 0010010w data(1,2)                                        - and accum,immed
+лллл*       sub - 001010dw mod,reg,r/m disp(0,1,2)                          - subtract reg,reg; reg,mem; mem,reg
+лллл*       sub - 0010110w data(1,2)                                        - subtract accum,immed
+лллл*       xor - 001100dw mod,reg,r/m disp(0,1,2)                          - xor reg,reg; reg,mem; mem,reg
+лллл*       xor - 0011010w data(1,2)                                        - xor accum,immed
+лллл*       cmp - 001110dw mod,reg,r/m disp(0,1,2)                          - compare reg,r/m
+лллл*       cmp - 0011110w data(1,2)                                        - compare accum,immed
+лллл*       inc - 01000reg                                                  - increment r16
+лллл*       dec - 01001reg                                                  - decrement reg
+лллл*      push - 01010reg                                                  - push a register onto the stack
+лллл*       pop - 01011reg                                                  - pop a value off the stack
+лллл*      push - 011010s0 data(1,2)                                        - push an immediate onto the stack
+лллл*      imul - 011010s1 mod,reg,r/m disp(0,1,2) data(1,2)                - signed multiply reg,reg,immed
+лллл*       ins - 0110110w                                                  - input from port to string
+лллл*      outs - 0110111w                                                  - output a string from ds:[si] to port in dx
+лллл*      jccc - 0111cond disp(1)                                          - jump conditionally with 1-byte displacement
+лллл*       cmp - 100000dw mod,111,r/m disp(0,1,2) data(1,2)                - compare r/m,immed
+лллл*       add - 100000sw mod,000,r/m disp(p,1,2) data(1,2)                - add reg,immed; mem,immed
+лллл*        or - 100000sw mod,001,r/m disp(0,1,2) data(1,2)                - or reg,immed; mem,immed
+лллл*       adc - 100000sw mod,010,r/m disp(0,1,2) data(1,2)                - adc reg,immed; mem,immed
+лллл*       sbb - 100000sw mod,011,r/m disp(0,1,2) data(1,2)                - subtract with borrow reg,immed; mem,immed
+лллл*       and - 100000sw mod,100,r/m disp(0,1,2) data(1,2)                - and reg,immed; mem,immed
+лллл*       sub - 100000sw mod,101,r/m disp(0,1,2) data(1,2)                - subtract reg,immed; mem,immed
+лллл*       xor - 100000sw mod,110,r/m disp(0,1,2) data(1,2)                - xor reg,immed; mem,immed
+лллл*      test - 1000010w mod,reg,r/m disp(0,1,2)                          - test reg,reg; reg,mem; mem,reg
+лллл*      xchg - 1000011w mod,reg,r/m disp(0,1,2)                          - xchg reg,reg; reg,mem; mem,reg
+лллл*       mov - 100010dw mod,reg,r/m disp(0,1,2)                          - mov reg,reg; mem,reg; reg,mem
+лллл*       mov - 100011d0 mod,sreg,r/m disp(0,1,2)                         - mov sreg,r16; sreg,m16; r16,sreg; m16,sreg
+лллл*      xchg - 10010reg                                                  - xchg accum,r16; r16,accum
+лллл*       mov - 101000aw disp(2)                                          - mov mem,accum; accum,mem
+лллл*      movs - 1010010w                                                  - move data from ds:[si] to es:[di]
+лллл*      cmps - 1010011w                                                  - compare a string from ds:[si] to es:[di]
+лллл*      test - 1010100w data(1,2)                                        - test accum,immed
+лллл*      stos - 1010101w                                                  - store a byte from the accum into es:[di]
+лллл*      lods - 1010110w                                                  - loads the accumulator with a byte from ds:[si]
+лллл*      scas - 1010111w                                                  - scan string at es:[di] to find value in accum
+лллл*       mov - 1011wreg data(1,2)                                        - mov reg,immed
+лллл*     shift - 1100000w mod,TTT,r/m disp(0,1,2) data(1)                  - shifts various methods right/left by immed
+лллл*    rotate - 1100000w mod,TTT,r/m disp(0,1,2) data(1)                  - rotate various methods right/left by immed
+лллл*       mov - 1100011w mod,000,r/m disp(0,1,2) data(1,2)                - mov mem,immed
+лллл*     shift - 1101000w mod,TTT,r/m disp(0,1,2)                          - shifts various methods right/left by 1
+лллл*    rotate - 1101000w mod,TTT,r/m disp(0,1,2)                          - rotate various methods right/left by 1
+лллл*     shift - 1101001w mod,TTT,r/m disp(0,1,2)                          - shifts various methods right/left by cl
+лллл*    rotate - 1101001w mod,TTT,r/m disp(0,1,2)                          - rotate various methods right/left by cl
+лллл*        in - 1110010w data(1)                                          - input from immed port, in ax,60h
+лллл*       out - 1110011w data(1)                                          - out immed,al
+лллл*        in - 1110110w                                                  - input from dx, in ax,dx
+лллл*       out - 1110111w                                                  - out dx,ax
+лллл*      test - 1111011w mod,000,r/m disp(0,1,2) data(1,2)                - test reg,immed; mem,immed
+лллл*       not - 1111011w mod,010,r/m disp(0,1,2)                          - not r/m (one's complement)
+лллл*       neg - 1111011w mod,011,r/m disp(0,1,2)                          - negate r/m (two's complement)
+лллл*       mul - 1111011w mod,100,r/m disp(0,1,2)                          - multiply r/m
+лллл*      imul - 1111011w mod,101,r/m disp(0,1,2)                          - signed multiply r/m
+лллл*       div - 1111011w mod,110,r/m disp(0,1,2)                          - unsigned divide r/m
+лллл*      idiv - 1111011w mod,111,r/m disp(0,1,2)                          - signed divide r/m
+лллл*       inc - 1111111w mod,000,r/m disp(0,1,2)                          - increment reg/mem
+лллл*       dec - 1111111w mod,001,r/m disp(0,1,2)                          - decrement reg, mem
+лллл
+лллл
+лллл     end 
+лллл    RCH - 06/18/00, 08:20 pm
+лллл

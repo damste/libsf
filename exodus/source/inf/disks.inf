@@ -1,0 +1,139 @@
+лллл                                                Exodus Disk Functions and Structures
+ллллн
+оллллм
+ пплллллммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммм
+   н
+   н    Bootup Structures
+   н
+ ммлллллппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппп
+оллллп
+ллллн
+лллл
+лллл    During bootup, Exodus is given information from BIOS about the number and types of installed disks.  Exodus builds an
+лллл    internal structure from that information which consists of all of the devices known to Exodus.  These are default devices
+лллл    that Exodus understands without a need for a device driver.  The structure looks like this:
+лллл
+лллл
+лллл    Global Selector:    _sDISK_DRIVES   (Disk drive structure table)
+лллл                        * Note:  Some functions refer to a disk number, that indicates the record below.  The first is disk
+лллл                                 0, the next record is disk 1, etc.  Basically, [disk_number * 32] would get you the offset
+лллл                                 to the record below with the information for that disk.
+лллл
+лллл      Offset  Length    Desc
+лллл      ------  ------    ----------------------------------------------
+лллл        0       1       type of controller:     0 - none
+лллл                                                1 - floppy
+лллл                                                2 - ide
+лллл                                                3 - scsi
+лллл                                                4 - pcmcia
+лллл                                                5 - network
+лллл                                                6..254 - --Nuserved
+лллл                                                255 - Stopper (beyond last record)
+лллл        1       1       type of device:     0 - RAM disk
+лллл                                            1 - disk drive
+лллл                                            2 - cdrom drive
+лллл                                            3 - dvd drive
+лллл                                            4 - cdr drive
+лллл                                            5 - cdrw drive
+лллл                                            6-128 --Nuserved
+лллл        2       8       capacity (in bytes)
+лллл        10      4       num_heads
+лллл        14      4       num_tracks
+лллл        18      4       num_sectors
+лллл        22      1       Device specs:   к7Т6Т5Т4Т3Т2Т1Т0П
+лллл                                        Г0Г0Г0Г0ГxГxГxГxГ
+лллл                                        РТСФСФСТСТСТСТСТй
+лллл                                         РФФТФФй Г Г Г Р Internal device?
+лллл                                            Г    Г Г РФФ Is media Removable?
+лллл                                            Г    Г РФФФФ Is device hot swappable?
+лллл                                            Г    РФФФФФФ Can device be powered down?
+лллл                                            РФФФФФФФФФФФ --Nuserved
+лллл        23      1       FLOPPY: type of device, see table below
+лллл                        OTHERS: Nuserved
+лллл        24      4       bytes_per_sector
+лллл        28      4       --Nuserved
+лллл        Total:  32 bytes per record
+лллл
+лллл        кФФФФФФФФФФФФФФФФФФФФФФФФФФФФП
+лллл        Г  FLOPPY:  type of device   Г
+лллл        УФФФФФФФФФФФФФФФФФФФФФФФФФФФФД
+лллл        Г  0 - 360k 5-1/4" drive     Г  * Note, related equates for these values are in EQUATES.ASP
+лллл        Г  1 - 1.2MB 5-1/4" drive    Г
+лллл        Г  2 - 720k 3-1/2" drive     Г
+лллл        Г  3 - 1.44MB 3-1/2" drive   Г
+лллл        Г  4 - 2.88MB 3-1/2" drive   Г
+лллл        РФФФФФФФФФФФФФФФФФФФФФФФФФФФФй
+лллл
+лллл
+лллл
+лллл
+лллл
+лллл
+лллл    Each device physically attached to the computer can have multiple logical drives, partitions.  Exodus then scans each
+лллл    partition to determine the file system and size.  The Exodus partition structure looks like this:
+лллл
+лллл    Global Selector:    _sDISK_PARTITIONS   (Partition structure table)
+лллл
+лллл      Offset  Length    Desc
+лллл      ------  ------    ----------------------------------------------
+лллл        0       1       Disk number (member number in _sDISK_DRIVES)
+лллл                        * Note:  This position is also used for the STOPPER code, if Disk Number = 255 then we're beyond end
+лллл        1       1       File system type:   0       - unknown, drive has not been accessed yet
+лллл                                            255     - unknown, attempt to read has been tried and failed
+лллл                                            128-254 --Nuserved
+лллл                                            кФФФФФФФФФФФФФФФП кФФФФФФФФФФФФФФФФП кФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФП
+лллл                                            Г   DOS Types   Г Г  EXODUS Types  Г Г       Fixed Media Types       Г
+лллл                                            УФФФФФФФФФФФФФФФД УФФФФФФФФФФФФФФФФД УФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФД
+лллл                                            Г1 - DOS FAT12  Г Г11    - DT/NP/RPГ Г90-99   --dvd types, Nuserved  Г
+лллл                                            Г2 - DOS FAT16  Г Г12-89 --NuservedГ Г100-119 --cdrom types, NuservedГ
+лллл                                            Г3 - DOS FAT32  Г РФФФФФФФФФФФФФФФФй Г120-127 --audio types, NuservedГ
+лллл                                            Г4-10 --NuservedГ                    РФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФй
+лллл                                            РФФФФФФФФФФФФФФФй
+лллл        2       4       starting head
+лллл        6       4       starting track
+лллл        10      4       starting sector
+лллл        14      4       ending head
+лллл        18      4       ending track
+лллл        22      4       ending sector
+лллл        26      2       starting GDT selector for disk block this     * See note below
+лллл        28      2       Access:     к5Т4Т3Т2Т1Т0Т9Т8Т7Т6Т5Т4Т3Т2Т1Т0П
+лллл                                    ГxГ0Г0Г0Г0Г0Г0ГxГxГ0Г0Г0Г0ГxГxГxГ
+лллл                                    РТСТСФСФСФСФСТСТСТСТСФСФСТСТСТСТй
+лллл                                     Г РФФФФТФФФФй Г Г РФФТФФй Г Г Р Readable?
+лллл                                     Г      Г      Г Г    Г    Г РФФ Writeable?
+лллл                                     Г      Г      Г Г    Г    РФФФФ Seekable?
+лллл                                     Г      Г      Г Г    РФФФФФФФФФ --Nuserved
+лллл                                     Г      Г      Г РФФФФФФФФФФФФФФ Accessed yet?
+лллл                                     Г      Г      РФФФФФФФФФФФФФФФФ GDT selector setup yet?
+лллл                                     Г      РФФФФФФФФФФФФФФФФФФФФФФФ --Nuserved
+лллл                                     РФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФ Read/write pending?
+лллл        30      1       drive letter
+лллл        31      1       --Nuserved
+лллл        32      8       partition capacity (in bytes)
+лллл        40      8       --Nuserved
+лллл        Total:  48 bytes per record
+лллл
+лллл        * Note:  This selector entry is the first of a block of 6 GDT entries.  They are:
+лллл                 кФФФФФФФФФФФФФФФФФФФФФФФФФФФФП кФФФФФФФФФФФФФФФФФФФФФФФФФФФФП
+лллл                 Г         For Exodus         Г Г          For DOS           Г
+лллл                 УФФФФФФФФФФФФФФФФФФФФФФФФФФФФД УФФФФФФФФФФФФФФФФФФФФФФФФФФФФД
+лллл                 Г[26]+0 = _sDISK_DT          Г Г[26]+0 = _sDISK_DOS_DT      Г
+лллл                 Г[26]+1 = _sDISK_NP          Г Г[26]+1 = _sDISK_DOS_NP      Г
+лллл                 Г[26]+2 = _sDISK_RP          Г Г[26]+2 = _sDISK_DOS_RP      Г
+лллл                 Г[26]+3 = _sDISK_BUFFER_READ Г Г[26]+3 = _sDISK_BUFFER_READ Г
+лллл                 Г[26]+4 = _sDISK_BUFFER_WRITEГ Г[26]+4 = _sDISK_BUFFER_WRITEГ
+лллл                 Г[26]+5 = (reserved)         Г Г[26]+5 = (reserved)         Г
+лллл                 РФФФФФФФФФФФФФФФФФФФФФФФФФФФФй РФФФФФФФФФФФФФФФФФФФФФФФФФФФФй
+лллл
+лллл
+лллл
+лллл
+лллл
+лллл
+лллл
+лллл
+лллл
+лллл
+лллл
+лллл
+лллл

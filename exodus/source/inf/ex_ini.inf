@@ -1,0 +1,126 @@
+лллл                                                        EXODUS.INI Parsing
+ллллн
+оллллм
+ пплллллммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммм
+   н
+   н The structure created by Exodus when the EXODUS.INI file is parsed
+   н
+ ммлллллппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппп
+оллллп
+ллллн
+лллл
+лллл    Exodus parses the EXODUS.INI file at bootup.  It interprets the text file and creates a structure that is usable by
+лллл    all native primatives.  The structure is created under the following logic.
+лллл
+лллл    The EXODUS.INI file is created *by Exodus* on each system shut down.  It consists of the current system state/status
+лллл    and all devices known to Exodus.  It also can contain information used by native primatives that Exodus is not
+лллл    natively aware of (such as new technology added after Exodus was written).  In those instances the native primatives
+лллл    are responsible for storing and claiming ownership of those lines in the EXODUS.INI file relevant to them (using
+лллл    Exodus system calls at system startup and shutdown).
+лллл
+лллл    The EXODUS.INI file requires that a strict format be adhered to.  It uses bracket items and paren casks to store
+лллл    info.  The following example illustrates the required format:
+лллл
+лллл    EXODUS.INI                                Description of line
+лллл    ----------------------------------------  -------------------------------------------------------------------------
+лллл   кФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФП
+лллл   Г; Blah blah blah                        Г A comment line (comment lines are prefixed with a ; semicolon and are ignored)
+лллл   Г                                        Г blank lines are ignored
+лллл   Г[pci]                                   Г A bracket group (Exodus assumes all paren casks below relate to it)
+лллл   Г    (item1_1|item1_2|item1_3)           Г A paren cask relating to [pci]
+лллл   Г    (item2_1|item2_2|item2_3)           Г Another one
+лллл   Г                                        Г
+лллл   Г[vid]                                   Г A new bracket group (Exodus assumes all paren casks below relate to this one)
+лллл   Г    (id|horizontal|vertical)            Г A paren cask relating to [vid]
+лллл   Г                                        Г
+лллл   РФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФй
+лллл
+лллл        1)  All lines starting with a [ are considered the start of a bracket group.  These are major items.
+лллл        2)  All bracket group names must be 4 characters or less (such as pci or vid)
+лллл        3)  All lines starting with a ( are considered paren casks relating to the bracket group immediately above.
+лллл        4)  All paren casks must follow a rigid structure for their bracket group
+лллл        5)  All lines starting with a ; are considered comments and are ignored
+лллл        6)  All blank lines are ignored
+лллл        7)  All other lines are reported as errors
+лллл
+лллл    This strict format demonstrates that all data items are encapsulated by []'s or ()'s.  Individual items within a cask are
+лллл    separated by the | character.  If the | character physically has to be encoded as data within a cask then it should be
+лллл    prefixed with the Џ character.  For example:
+лллл
+лллл    If the data items "foo", "dog", and "|yeah|" are to be stored in a cask they must be stored like this:
+лллл        (foo|dog|Џ|yeahЏ|)
+лллл
+лллл    The Џ| sequence is recognized as the data character "|".
+лллл
+лллл    -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+лллл
+лллл    _sEXODUS_INI - This selector points to the start of the parsed EXODUS.INI structure.  The following structures appear
+лллл                   in this memory area.  The fixed area appears at the top and points to the first bracket group structure.
+лллл                   Immediately after the bracket group structure are all paren casks for that bracket group.  The bracket
+лллл                   group's structure element "Start of next bracket group" should be used to locate the next item.
+лллл
+лллл                   This physical arrangement mimics the layout of the EXODUS.INI, but it should not be assumed that the
+лллл                   layout will always be consistent.  Future versions of Exodus may alter the way this structure appears.
+лллл                   Please use the pointers within the structure to identify the offsets.  Thank you. :)
+лллл
+лллл    -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+лллл
+лллл    At the start of the structure are these fixed fields:
+лллл      Offset  Length    Description
+лллл      ------  ------    -----------------------------------
+лллл         0      4       Offset of first bracket group (0ffffffffh if none)
+лллл         4      4       Total bytes in this structure
+лллл         8      4       Total # of bracket groups
+лллл        12      4       Total # of paren casks
+лллл        <bytes until "Offset of first bracket group"> are nuserved
+лллл        Total:  <Implementation specific, no less than 16>
+лллл
+лллл
+лллл    The following structure is repeated for every bracket group:
+лллл         Relative
+лллл      Offset  Length    Description
+лллл      ------  ------    -----------------------------------
+лллл         0      4       Start of next bracket group (offset, 0ffffffffh if last one in EXODUS.INI)
+лллл         4      4       Start of this bracket group's paren casks (offset to structure below, 0ffffffffh if there are none)
+лллл         8      4       Number of paren casks for this bracket group
+лллл        12      4       Bracket group name (such as 'pci ' or 'vid ' from above
+лллл        16      4       Owner handle for whole bracket group (0ffffffffh indicates no owner)
+лллл        20      2       Owner's Requestor() selector
+лллл        22      4       Owner's Requestor() function to identify requests about this bracket group
+лллл                        * Note:  Refer to API provided by owner on their software for a full list of requestor() functions
+лллл        26      4       Owner definable (scratch area, can be used by owner to store a dword)
+лллл        Total: Implementation specific, no less than 30>
+лллл
+лллл
+лллл    The following structure is repeated for every paren cask:
+лллл         Relative
+лллл      Offset  Length    Description
+лллл      ------  ------    -----------------------------------
+лллл         0      4       Start of next paren cask (offset, 0ffffffffh if last one in this bracket group)
+лллл         4      4       Start of next paren cask on same line (offset, 0ffffffffh if last one on line)
+лллл         8      4       Start of this paren cask's data items (offset to structure below, 0ffffffffh if there are none)
+лллл        12      4       Number of individual data items within this paren cask (would be 3 in the above examples)
+лллл        16      4       Start of source line in EXODUS.INI
+лллл        20      4       Source line length (for this one cask)
+лллл        24      4       Owner handle for this paren cask (0ffffffffh indicates no owner)
+лллл        28      2       Owner's Requestor() selector
+лллл        30      4       Owner's Requestor() function to identify requests about this paren cask
+лллл                        * Note:  Refer to API provided by owner on their software for a full list of requestor() functions
+лллл        34      4       Owner definable (scratch area, can be used by owner to store a dword)
+лллл        Total: Implementation specific, no less than 38>
+лллл
+лллл
+лллл    The following structure is repeated for every data item within the paren cask:
+лллл         Relative
+лллл      Offset  Length    Description
+лллл      ------  ------    -----------------------------------
+лллл         0      4       Start of next data item (offset, 0ffffffffh if last one in this paren cask)
+лллл         4      4       Start of the data item text in the EXODUS.INI source line
+лллл         8      4       Length
+лллл         Total: 12
+лллл
+лллл    -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+лллл
+лллл     end 
+лллл    RCH - 04/08/01 11:32 pm
+лллл

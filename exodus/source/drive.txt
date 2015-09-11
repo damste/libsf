@@ -1,0 +1,72 @@
+(bootup.bin)                                              (Bootable entry
+         main() = 
+    requestor() = 
+    startÄÄhead = 0           endÄÂÄÄhead = 
+        ÃÄtrack = 1               ÃÄtrack = 
+        Àsector = 1               Àsector = 1
+    file length = 7189        disk length = 7680        extra bytes = 49
+         CRC-16 = 32379           CRC-TT =  3980
+                                                                               
+(exodus.ini)                                              (Bootable entry
+         main() = 
+    requestor() = 
+    startÄÄhead = 0           endÄÂÄÄhead = 
+        ÃÄtrack = 1               ÃÄtrack = 
+        Àsector = 16              Àsector = 1
+    file length = 853         disk length = 1024        extra bytes = 17
+         CRC-16 = 25658           CRC-TT =  513
+                                                                               
+vga.drv                                                   (Bootable entry
+         main() = 
+    requestor() = 1
+    startÄÄhead = 0           endÄÂÄÄhead = 
+        ÃÄtrack = 1               ÃÄtrack = 
+        Àsector = 18              Àsector = 1
+    file length = 33612       disk length = 33792       extra bytes = 18
+         CRC-16 = 42126           CRC-TT =  3296
+                                                                               
+bios.drv                                                  (Bootable entry
+         main() = 
+    requestor() = 1
+    startÄÄhead = 0           endÄÂÄÄhead = 
+        ÃÄtrack = 3               ÃÄtrack = 
+        Àsector = 12              Àsector = 1
+    file length = 2106        disk length = 2560        extra bytes = 45
+         CRC-16 = 57411           CRC-TT =  5179
+                                                                               
+kbd.drv                                                   (Bootable entry
+         main() = 
+    requestor() = 1
+    startÄÄhead = 0           endÄÂÄÄhead = 
+        ÃÄtrack = 3               ÃÄtrack = 
+        Àsector = 17              Àsector = 
+    file length = 2264        disk length = 2560        extra bytes = 29
+         CRC-16 = 35684           CRC-TT =  2497
+                                                                               
+mouseps2.drv                                              (Bootable entry
+         main() = 
+    requestor() = 1
+    startÄÄhead = 1           endÄÂÄÄhead = 
+        ÃÄtrack = 3               ÃÄtrack = 
+        Àsector = 4               Àsector = 
+    file length = 2481        disk length = 2560        extra bytes = 7
+         CRC-16 = 45423           CRC-TT =  5527
+                                                                               
+debi.drv                                                  (Bootable entry
+         main() = 
+    requestor() = 1
+    startÄÄhead = 1           endÄÂÄÄhead = 
+        ÃÄtrack = 3               ÃÄtrack = 
+        Àsector = 9               Àsector = 
+    file length = 18418       disk length = 18432       extra bytes = 1
+         CRC-16 = 10879           CRC-TT =  3865
+                                                                               
+x86.drv                                                   (Bootable entry
+         main() = 
+    requestor() = 1
+    startÄÄhead = 1           endÄÂÄÄhead = 
+        ÃÄtrack = 4               ÃÄtrack = 
+        Àsector = 9               Àsector = 1
+    file length = 40543       disk length = 40960       extra bytes = 41
+         CRC-16 = 52057           CRC-TT =  59009                              
+(end of list

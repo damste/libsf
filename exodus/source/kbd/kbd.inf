@@ -1,0 +1,41 @@
+лллл                                                    Exodus Keyboard Driver
+ллллн
+оллллм
+ пплллллммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммм
+   н
+   н    Overview of status bytes
+   н
+ ммлллллппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппп
+оллллп
+ллллн
+лллл
+лллл    The Exodus keyboard driver returns important information to the active task.  That information contains the keystroke
+лллл    that was pressed and the state of the flags when it was pressed.
+лллл
+лллл    Refer to KBD\KBD.ASP for a summary of the keystroke codes and their associated 16-bit values.
+лллл    Refer to COMMON\KEYLIST.ASP for a usable listing of the keys and their 16-bit values
+лллл
+лллл    The FLAG STATUS dword consists of this format.  An attempt was made to keep it compatible with DOS.
+лллл
+лллл                        кФФФФФФФФФФФФФФФФФФФФФФФФФФФФТФФФФФФФФФФФФФФФ --Nuserved
+лллл     кФФФФФФФФФФФФФФФФФФСФФФФФФФФФФФФФФФФФФП         Г
+лллл    кСТФТФТФТФТФТФТФТФТФТФТФТФТФТФТФТФТФТФТСТФТФТФТФТСТФТФТФТФТФТФТФП
+лллл    Г0Г0Г0Г0Г0Г0Г0Г0Г0Г0Г0Г0Г0Г0Г0Г0Г0Г0Г0Г0ГxГxГxГxГ0ГxГxГxГxГxГxГxГ Is this key down or on?  1-Yes, 0-No
+лллл    РФСФСФСФСФСФСФСФСФСФСФСФСФСФСФСФСФСФСФСФСТСТСТСТСФСТСТСТСТСТСТСТй
+лллл                                             Г Г Г Г   Г Г Г Г Г Г РФ right shift
+лллл                                             Г Г Г Г   Г Г Г Г Г РФФФ left shift
+лллл                                             Г Г Г Г   Г Г Г Г РФФФФФ either ctrl key
+лллл                                             Г Г Г Г   Г Г Г РФФФФФФФ either alt key
+лллл                                             Г Г Г Г   Г Г РФФФФФФФФФ scroll lock
+лллл                                             Г Г Г Г   Г РФФФФФФФФФФФ num lock
+лллл                                             Г Г Г Г   РФФФФФФФФФФФФФ caps lock
+лллл                                             Г Г Г Г
+лллл                                             Г Г Г РФФФФФФФФФФФФФФФФФ left ctrl
+лллл                                             Г Г РФФФФФФФФФФФФФФФФФФФ left alt
+лллл                                             Г РФФФФФФФФФФФФФФФФФФФФФ right ctrl
+лллл                                             РФФФФФФФФФФФФФФФФФФФФФФФ right alt
+лллл
+лллл
+лллл     end 
+лллл    RCH - 02/25/01 03:28 pm
+лллл

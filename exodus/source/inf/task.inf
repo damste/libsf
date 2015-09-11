@@ -1,0 +1,63 @@
+€€€€                                                    Exodus TASK Structure
+€€€€›
+ﬁ€€€€‹
+ ﬂﬂ€€€€€‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹
+   ›
+   ›    Every Exodus TASK has an entry that uses this structure
+   ›
+ ‹‹€€€€€ﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂ
+ﬁ€€€€ﬂ
+€€€€›
+€€€€
+€€€€    Exodus uses the _sTASK_SYSTEM selector for task memory.  The first 16-bytes contain the following fixed structure:
+€€€€      Offset  Length    Description
+€€€€      -----   ------    -------------------------------------------
+€€€€        0       4       Address for next task
+€€€€        4       2       Next handle to use
+€€€€        6       2       Current task TSS
+€€€€        8       4       Current task offset
+€€€€        14      50      --Nuserved
+€€€€      Total: 64 bytes
+€€€€
+€€€€
+€€€€    For each task the following memory structure is created.  It contains information specific to that task.
+€€€€      Offset  Length    Description
+€€€€      -----   ------    -------------------------------------------
+€€€€        0       2       Handle
+€€€€        2       2       GDT slot for this task's TSS
+€€€€              ; Note, Exodus creates tasks with the order specified below.  This ensures that there is always a task
+€€€€              ;       available to carry out the requests of the task in read events mode
+€€€€        4       2       GDT slot for this task's LDT
+€€€€        6       2       Selector for this task's Objects
+€€€€        8       4       Offset to base object with focus
+€€€€        12      4       Offset to object within that base object with focus
+€€€€        16      1       1/182 ticks to operate before task switch
+€€€€        17      1       Current execution mode:   (see below)
+€€€€        18      1       Task uses FPU?  0-No, 1-Yes
+€€€€        19      1       --Reserved (will be used to indicate SSE/SSE2 use)
+€€€€        20      4       TSS linear offset in memory (used during task switches if system uses FPU)
+€€€€        24      1       1/182 ticks left before task switch (used when it's the active task)
+€€€€
+€€€€        25      39      --Nuserved
+€€€€      Total: 64 bytes
+€€€€
+€€€€
+€€€€    ⁄ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒø
+€€€€    ¥ Execution Modes ≥
+€€€€    ¿√√√√√√√√√√√√√√√√√Ÿ
+€€€€        Bits have this significance when set:
+€€€€
+€€€€        ⁄ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒø
+€€€€        ¥? ? ? ˙ ˙ ˙ ? ?≥
+€€€€        ¿√√√√√√√√√√√√√√√Ÿ
+€€€€         ¥ ¥ ¥ ¿√√√Ÿ ¥ ¿ Linear
+€€€€         ¥ ¥ ¥   ¥   ¿√√ Slave
+€€€€         ¥ ¥ ¥   ¿√√√√√√ --Nuserved
+€€€€         ¥ ¥ ¿√√√√√√√√√√ Read events
+€€€€         ¥ ¿√√√√√√√√√√√√ Idle
+€€€€         ¿√√√√√√√√√√√√√√ Suspended
+€€€€
+€€€€
+€€€€     end 
+€€€€    RCH - 04/30/01 02:26 pm
+€€€€

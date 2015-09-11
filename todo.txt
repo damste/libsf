@@ -1,3 +1,12 @@
+Exodus:
+Sep.11.2015 - Working on Bochs, and on native hardware (James 4:15):
+              (1) Write LibSF's assembler (lasm).
+			  (2) Write LibSF's C compiler (lcc).
+			  (3) Port much of the Exodus core to the simple C compiler, removing it from assembly.
+			  (4) Write other apps as needed.
+			  (5) Write LibSF's RDC front-end (lrdc).
+			  (6) Complete Visual FreePro, Jr.
+
 Visual FreePro, Jr.:
 Sep.01.2014 - A combination for engine execution (James 4:15)
               (1)  Debugger

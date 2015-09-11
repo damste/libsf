@@ -1,0 +1,101 @@
+лллл                                                    Exodus OBJECT System
+ллллн
+оллллм
+ пплллллммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммм
+   н
+   н    Exodus Base Objects
+   н
+ ммлллллппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппп
+оллллп
+ллллн
+лллл    кФФФФФФФФФФФФФФФФФФФФФП
+лллл    Г Exodus Base Objects Г
+лллл    РФФФФФФФФФФФФФФФФФФФФФй
+лллл        _GROUPING       - A non-visual container for related objects
+лллл        _DESKTOP        - A fully graphical window with no controls containing related objects
+лллл        _WINDOW         - A fully graphical window with controls containing related objects
+лллл        _CONSOLE        - A graphical representation of a text-based window containing related objects
+лллл        _TEXT_MODE      - A fully text screen containing related objects
+лллл
+лллл        _MONO_DESKTOP   - (Monochrome monitor) A fully graphical window with no controls containing related objects
+лллл        _MONO_WINDOW    - (Monochrome monitor) A fully graphical window with controls containing related objects
+лллл        _MONO_CONSOLE   - (Monochrome monitor) A graphical representation of a text-based window containing related objects
+лллл        _MONO_TEXT_MODE - (Monochrome monitor) A fully text screen containing related objects
+лллл
+лллл
+лллл    кФФФФФФФФФФФФФФФФФФФФФФФФФФФФП
+лллл    Г Common to all Base Objects Г
+лллл    РФФФФФФФФФФФФФФФФФФФФФФФФФФФФй
+лллл      Offset  Length    Description
+лллл      ------  ------    --------------------------------
+лллл        0       4       Next Base Object
+лллл        4       1       Object type
+лллл        5       3       --Nuserved
+лллл        8       4       First Object
+лллл      Total: 12
+лллл
+лллл
+лллл    кФФФФФФФФФФФП
+лллл    Г _GROUPING Г
+лллл    РФФФФФФФФФФФй
+лллл
+лллл
+лллл    кФФФФФФФФФФП
+лллл    Г _DESKTOP Г
+лллл    РФФФФФФФФФФй
+лллл      Offset  Length    Description
+лллл      ------  ------    --------------------------------
+лллл      Property:
+лллл        12      4       Top
+лллл        16      4       Left
+лллл        20      4       Width
+лллл        24      4       Height
+лллл        28      1       Enabled?  0-No, 1-Yes
+лллл        29      1       Visible?  0-No, 1-Yes
+лллл        30      3       Background color
+лллл        33      1       Icon horizontal spacing
+лллл        34      1       Icon vertical spacing
+лллл        35      1       Menu position?  12-Top, 3-Right, 6-Bottom, 9-Left
+лллл        36      2       Menu height
+лллл        38      2       Wallpaper LDT (selector of bitmap)
+лллл        40      4       Misc 1 (holds 32-bit quantity)
+лллл        44      4       Misc 2 (holds 32-bit quantity)
+лллл        48      4       Misc 3 (holds 32-bit quantity)
+лллл        52      4       Misc 4 (holds 32-bit quantity)
+лллл        56      1       Flag 1 (holds 8-bit quantity)
+лллл        57      1       Flag 2 (holds 8-bit quantity)
+лллл        58      1       Flag 3 (holds 8-bit quantity)
+лллл        59      1       Menu autohide?  0-No, 1-yes
+лллл        60      1       Border?         0-None, 1-Solid line, 2-Double solid line
+лллл        61      23      --Nuserved
+лллл       Event:
+лллл        84      4       Activate
+лллл        88      4       Click both single
+лллл        92      4       Click both double
+лллл        96      4       Click left single
+лллл        100     4       Click left double
+лллл        104     4       Click left down
+лллл        108     4       Click left up
+лллл        112     4       Click right single
+лллл        116     4       Click right double
+лллл        120     4       Click right down
+лллл        124     4       Click right up
+лллл        128     4       Click dropped into left
+лллл        132     4       Click dropped into right
+лллл        136     4       Click drag left start
+лллл        140     4       Click drag left stop
+лллл        144     4       Click drag right start
+лллл        148     4       Click drag right stop
+лллл        152     4       focus got
+лллл        156     4       focus lost
+лллл        160     4       focus set
+лллл        164     4       hover
+лллл        168     4       keystroke
+лллл        172     4       when created
+лллл        176     4       when destroyed
+лллл        180     4       requestor
+лллл        184     4       refresh
+лллл        188     68      --Nuserved
+лллл      Total: 84-bytes
+лллл
+лллл

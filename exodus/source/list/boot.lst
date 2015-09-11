@@ -1,0 +1,740 @@
+Microsoft (R) Macro Assembler Version 6.11a		    03/07/09 22:34:57
+boot\boot.asm						     Page 1 - 1
+
+
+				; boot.asm
+				;
+				; Exodus - 512 byte boot record for floppy disk
+				;          * Note:  It is known that this disk is bootable, the only error we'll have to report is missing "Exodus Boot Program"
+				;          * Note:  Many of the labels have been added for illustrative purposes.  They may not be referenced.
+				;          * Note:  The final thing this boot algorithm does before transferring control to BOOTUP.COM is point ds:[si] to
+				;                   a parameter block.  Refer to parameter_block: below for more information.
+
+				    .MODEL tiny
+
+				    .386P
+				;_XDEBUG     EQU 1
+
+				INCLUDE \exodus\source\common\equates.asp
+			      C ; equates.asp
+			      C ;
+			      C ; Exodus constants.  These are used at various places.
+			      C ; This file provides a common area to modify constant values, rather than sifting through programs, etc.
+			      C ;
+			      C 
+			      C 
+			      C 
+			      C INCLUDE x86_eq.asp
+			      C ; x86_eq.asp
+			      C ;
+			      C ; Constants specific to the Intel architecture
+			      C ;
+			      C 
+			      C 
+			      C 
+ = 0000			      C _TSS_BACK_LINK              EQU 0
+ = 0004			      C _TSS_ESP0                   EQU 4
+ = 0008			      C _TSS_SS0                    EQU 8
+ = 000C			      C _TSS_ESP1                   EQU 12
+ = 0010			      C _TSS_SS1                    EQU 16
+ = 0014			      C _TSS_ESP2                   EQU 20
+ = 0018			      C _TSS_SS2                    EQU 24
+ = 001C			      C _TSS_CR3                    EQU 28
+ = 0020			      C _TSS_EIP                    EQU 32
+ = 0024			      C _TSS_EFLAGS                 EQU 36
+ = 0028			      C _TSS_EAX                    EQU 40
+ = 002C			      C _TSS_ECX                    EQU 44
+ = 0030			      C _TSS_EDX                    EQU 48
+ = 0034			      C _TSS_EBX                    EQU 52
+ = 0038			      C _TSS_ESP                    EQU 56
+ = 003C			      C _TSS_EBP                    EQU 60
+ = 0040			      C _TSS_ESI                    EQU 64
+ = 0044			      C _TSS_EDI                    EQU 68
+ = 0048			      C _TSS_ES                     EQU 72
+ = 004C			      C _TSS_CS                     EQU 76
+ = 0050			      C _TSS_SS                     EQU 80
+ = 0054			      C _TSS_DS                     EQU 84
+ = 0058			      C _TSS_FS                     EQU 88
+ = 005C			      C _TSS_GS                     EQU 92
+ = 0060			      C _TSS_LDT                    EQU 96
+ = 0064			      C _TSS_TRAP_BIT               EQU 100
+ = 0001			      C _TSS_TRAP_BIT_MASK          EQU 1b
+ = 0066			      C _TSS_IO_MAP                 EQU 102
+			      C ; The following area is used by Exodus.  It appears immediate after the TSS in memory
+ = 0068			      C _TSS_FPU_SAVE_AREA          EQU 104
+			      C 
+			      C 
+			      C ; EFLAGS register constants to access individual flags
+ = 0000			      C _EFLAGS_CF                  EQU 0
+ = 0002			      C _EFLAGS_PF                  EQU 2
+ = 0004			      C _EFLAGS_ACF                 EQU 4
+ = 0006			      C _EFLAGS_ZF                  EQU 6
+ = 0007			      C _EFLAGS_SF                  EQU 7
+ = 0008			      C _EFLAGS_TF                  EQU 8
+ = 0009			      C _EFLAGS_IF                  EQU 9
+ = 000A			      C _EFLAGS_DF                  EQU 10
+ = 000B			      C _EFLAGS_OF                  EQU 11
+ = 000C			      C _EFLAGS_IOPL                EQU 12
+ = 000E			      C _EFLAGS_NT                  EQU 14
+ = 0010			      C _EFLAGS_RF                  EQU 16
+ = 0011			      C _EFLAGS_VM                  EQU 17
+			      C ; Masks to access specific bits
+ = 0001			      C _EFLAGS_CF_MASK             EQU  1b SHL _EFLAGS_CF
+ = 0004			      C _EFLAGS_PF_MASK             EQU  1b SHL _EFLAGS_PF
+ = 0010			      C _EFLAGS_ACF_MASK            EQU  1b SHL _EFLAGS_ACF
+ = 0040			      C _EFLAGS_ZF_MASK             EQU  1b SHL _EFLAGS_ZF
+ = 0080			      C _EFLAGS_SF_MASK             EQU  1b SHL _EFLAGS_SF
+ = 0100			      C _EFLAGS_TF_MASK             EQU  1b SHL _EFLAGS_TF
+ = 0200			      C _EFLAGS_IF_MASK             EQU  1b SHL _EFLAGS_IF
+ = 0400			      C _EFLAGS_DF_MASK             EQU  1b SHL _EFLAGS_DF
+ = 0800			      C _EFLAGS_OF_MASK             EQU  1b SHL _EFLAGS_OF
+ = 3000			      C _EFLAGS_IOPL_MASK           EQU 11b SHL _EFLAGS_IOPL
+ = 4000			      C _EFLAGS_NT_MASK             EQU  1b SHL _EFLAGS_NT
+ = 00010000		      C _EFLAGS_RF_MASK             EQU  1b SHL _EFLAGS_RF
+ = 00020000		      C _EFLAGS_VM_MASK             EQU  1b SHL _EFLAGS_VM
+			      C 
+ = 1000			      C _CW_INFINITY                EQU 1000000000000b
+ = 0C00			      C _CW_ROUNDING                EQU  110000000000b
+ = 0000			      C _CW_ROUNDING_00             EQU  000000000000b
+ = 0400			      C _CW_ROUNDING_01             EQU  010000000000b
+ = 0800			      C _CW_ROUNDING_10             EQU  100000000000b
+ = 0C00			      C _CW_ROUNDING_11             EQU  110000000000b
+ = 0300			      C _CW_PRECISION               EQU    1100000000b
+ = 0000			      C _CW_PRECISION_00            EQU    0000000000b
+ = 0100			      C _CW_PRECISION_01            EQU    0100000000b
+ = 0200			      C _CW_PRECISION_10            EQU    1000000000b
+ = 0300			      C _CW_PRECISION_11            EQU    1100000000b
+ = 0020			      C _CW_PM                      EQU        100000b
+ = 0010			      C _CW_UM                      EQU         10000b
+ = 0008			      C _CW_OM                      EQU          1000b
+ = 0004			      C _CW_ZM                      EQU           100b
+ = 0002			      C _CW_DM                      EQU            10b
+ = 0001			      C _CW_IM                      EQU             1b
+			      C 
+ = 8000			      C _SW_BUSY                    EQU 1000000000000000b
+ = 4000			      C _SW_C3                      EQU  100000000000000b
+ = 3800			      C _SW_TOS                     EQU   11100000000000b
+ = 0400			      C _SW_C2                      EQU      10000000000b
+ = 0200			      C _SW_C1                      EQU       1000000000b
+ = 0100			      C _SW_C0                      EQU        100000000b
+ = 0080			      C _SW_ERROR_SUMMARY           EQU         10000000b
+ = 0040			      C _SW_STACK_FAULT             EQU          1000000b
+ = 0020			      C _SW_PE                      EQU           100000b
+ = 0010			      C _SW_UE                      EQU            10000b
+ = 0008			      C _SW_OE                      EQU             1000b
+ = 0004			      C _SW_ZE                      EQU              100b
+ = 0002			      C _SW_DE                      EQU               10b
+ = 0001			      C _SW_IE                      EQU                1b
+			      C 
+			      C 
+			      C 
+			      C ; ÚÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+			      C ; ³ GDT ENTRIES ³
+			      C ; ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+ = 0008			      C     _sIDT                       EQU 1 * 8       ; IDT
+ = 0010			      C     _sGDT                       EQU 2 * 8       ; GDT
+ = 0018			      C     _sSTACK                     EQU 3 * 8       ; STACK
+ = 0020			      C     _sCODE                      EQU 4 * 8       ; kernel CODE for kernel code
+ = 0048			      C     _sDATA                      EQU 9 * 8       ; kernel DATA selector for kernel data
+ = 0028			      C     _sGRAPHICS                  EQU 5 * 8       ; Graphics video (0a0000h)
+ = 0030			      C     _sMONO                      EQU 6 * 8       ; Mono video (0b0000h)
+ = 0038			      C     _sVGA                       EQU 7 * 8       ; VGA video (0b8000h)
+ = 0040			      C     _sALL_MEM                   EQU 8 * 8       ; All memory (for debugging)
+			      C     ; 9 is above, _sDATA
+ = 0050			      C     _sEXODUS_MEM                EQU 10 * 8      ; Exodus assigned memory
+ = 0058			      C     _sEXODUS_PORTS              EQU 11 * 8      ; Exodus assigned ports
+ = 0060			      C     _sEXODUS_INTS               EQU 12 * 8      ; Exodus assigned ints
+			      C     ;_sNOT_USED                                 ; available
+ = 0070			      C     _sEXODUS_TSS                EQU 14 * 8      ; Exodus TSS
+ = 0078			      C     _sEXODUS_TASK_GATE          EQU 15 * 8      ; Exodus kernel task gate (points to _sEXODUS_TSS)
+ = 0080			      C     _sEXODUS_SLAVE_TSS          EQU 16 * 8      ; Exodus Slave TSS
+ = 0088			      C     _sEXODUS_SLAVE_TASK_GATE    EQU 17 * 8      ; Exodus kernel slave task gate (points to _sEXODUS_SLAVE_TSS)
+			      C     ;_sNOT USED
+ = 0098			      C     _sPRIMATIVES                EQU 19 * 8      ; Primative structure for natives
+ = 00A0			      C     _sPRIMATIVE_LOAD_INFO       EQU 20 * 8      ; Primative load information (for reporting on each driver)
+ = 00A8			      C     _sSYSTEM                    EQU 21 * 8      ; Exodus system memory
+ = 00B0			      C     _sEXODUS_REQUESTOR          EQU 22 * 8      ; Call gate to Exodus's requestor() function
+ = 00B8			      C     _sSYSTEM_RING1              EQU 23 * 8      ; Exodus system memory for ring-1 apps
+ = 00C0			      C     _sSYSTEM_RING2              EQU 24 * 8      ; Exodus system memory for ring-2 apps
+ = 00C8			      C     _sSYSTEM_RING3              EQU 25 * 8      ; Exodus system memory for ring-3 apps
+ = 00D0			      C     _sDEBI_screen               EQU 26 * 8      ; low-level DEBI debugger's save screen buffer
+ = 00D8			      C     _sDEBI_memory               EQU 27 * 8      ; low-level DEBI debugger's memory
+ = 00E0			      C     _sFLOPPY_TRACK              EQU 28 * 8      ; Floppy disk data I/O for one full track
+ = 00E8			      C     _sVGA_BACKUP                EQU 29 * 8      ; VGA video (060000h, used when in a graphics mode so writes
+			      C                                                 ;  to the text screen are still valid)
+ = 00F0			      C     _sDEBI_screen2              EQU 30 * 8      ; low-level DEBI debugger's save screen buffer2 (for popups and menus)
+ = 00F8			      C     _sDEBI_temp                 EQU 31 * 8      ; low-level DEBI debugger's temporary selector (used for various things)
+ = 0100			      C     _sEXODUS_OBJECTS            EQU 32 * 8      ; Exodus objects
+ = 0108			      C     _sTASK_SWITCH_TSS           EQU 33 * 8      ; Task Manager's switch_task() function
+ = 0110			      C     _sTASK_SWITCH_TASK_GATE     EQU 34 * 8      ; Task Manager's task gate (points to _sTASK_SWITCH_TSS)
+ = 0118			      C     _sTASK_STACK                EQU 35 * 8      ; Task Manger task's stack
+ = 0120			      C     _sSTACK0                    EQU 36 * 8      ; Exodus Stack 0
+ = 0128			      C     _sSTACK1                    EQU 37 * 8      ; Exodus Stack 1
+ = 0130			      C     _sSTACK2                    EQU 38 * 8      ; Exodus Stack 2
+ = 0138			      C     _sDEBI_dt                   EQU 39 * 8      ; low-level DEBI debugger's DT storage
+ = 0140			      C     _sDEBI_np                   EQU 40 * 8      ; low-level DEBI debugger's NP storage
+ = 0148			      C     _sDEBI_rp                   EQU 41 * 8      ; low-level DEBI debugger's RP storage
+			      C 
+			      C   ; Variable base/limit GDT slots setup in INIT32.ASP
+ = 0190			      C     _sEXODUS_INI                EQU 50 * 8      ; Holds the parsed EXODUS.INI sructure
+ = 0198			      C     _sEXODUS_INI_ERRORS         EQU 51 * 8      ; Holds any errors found while parsing EXODUS.INI
+ = 01A0			      C     _sTASK_SYSTEM               EQU 52 * 8      ; Holds all tasks
+			      C 
+ = 5DA0			      C     _cgTEMP_PRIMATIVE_MAIN      EQU 2996 * 8
+ = 5DA8			      C     _cgTEMP_PRIMATIVE_REQUESTOR EQU 2997 * 8
+ = 5DB0			      C     _csTEMP_PRIMATIVE           EQU 2998 * 8
+ = 5DB8			      C     _dsTEMP_PRIMATIVE           EQU 2999 * 8
+			      C 
+			      C 
+			      C 
+			      C ; ÚÄÄÄÄÄÄÄÄÄÄÄ¿
+			      C ; ³ CONSTANTS ³
+			      C ; ÀÄÄÄÄÄÄÄÄÄÄÄÙ
+ = 00C8			      C     _MIN_PRIMATIVE              EQU 200                             ; Start of the primatives
+ = 0BB3			      C     _MAX_PRIMATIVE              EQU 2995                            ; End of the primatives
+ = 0FFF			      C     _lastGDT                    EQU 4095                            ; Last valid GDT in the GDT
+ = 0032			      C     _firstASSIGNMENT            EQU 50                              ; The first Exodus assigned GDT entry for various items
+ = 00C7			      C     _lastASSIGNMENT             EQU 199                             ; The last Exodus assigned GDT entry for various items
+ = 0BB8			      C     _firstUSER_ASSIGNMENT       EQU 3000
+ = 0FFF			      C     _lastUSER_ASSIGNMENT        EQU 4095
+ = 00C7			      C     _sGDT_init                  EQU 199                             ; Only initialize the first 199 GDT entries
+			      C 
+			      C 
+			      C   ; Required memory structures for Exodus
+			      C   ; Refer to Bootup(internal) document for definitive memory locations
+ = 0008A000		      C     _sIDT_base                  EQU 8a000h
+ = 0800			      C     _sIDT_limit                 EQU 800h
+ = 0800			      C     _sGDT_base                  EQU 0800h
+ = 8000			      C     _sGDT_limit                 EQU 8000h
+ = 00098000		      C     _sSTACK_base                EQU 98000h
+ = 8000			      C     _sSTACK_limit               EQU 8000h
+ = 00010000		      C     _sCODE_base                 EQU 10000h
+ = 00040000		      C     _sCODE_limit                EQU 40000h
+ = 00010000		      C     _sDATA_base                 EQU 10000h
+ = 00030000		      C     _sDATA_limit                EQU 30000h
+ = 000A0000		      C     _sGRAPHICS_base             EQU 0a0000h
+ = 00010000		      C     _sGRAPHICS_limit            EQU 10000h
+ = 000B0000		      C     _sMONO_base                 EQU 0b0000h
+ = 8000			      C     _sMONO_limit                EQU 8000h
+ = 000B8000		      C     _sVGA_base                  EQU 0b8000h     ; Also, see _sVGA_BACKUP_ below
+ = 8000			      C     _sVGA_limit                 EQU 8000h
+ = 0000			      C     _sALL_MEM_base              EQU 0
+ = FFFFFFFF		      C     _sALL_MEM_limit             EQU 0ffffffffh
+ = 00070C00		      C     _sEXODUS_MEM_base           EQU 70c00h
+ = 4000			      C     _sEXODUS_MEM_limit          EQU 4000h
+ = 0006CC00		      C     _sEXODUS_PORTS_base         EQU 6cc00h
+ = 4000			      C     _sEXODUS_PORTS_limit        EQU 4000h
+ = 00097E00		      C     _sEXODUS_INTS_base          EQU 97e00h
+ = 0200			      C     _sEXODUS_INTS_limit         EQU 200h
+ = 00068100		      C     _sEXODUS_TSS_base           EQU 68100h
+ = 0100			      C     _sEXODUS_TSS_limit          EQU 100h        ; 256 bytes
+			      C    ;_sEXODUS_TASK_GATE          EQU task gate pointing to _sEXODUS_TSS
+ = 00068200		      C     _sEXODUS_SLAVE_TSS_base     EQU 68200h
+ = 0100			      C     _sEXODUS_SLAVE_TSS_limit    EQU 100h        ; 256 bytes
+ = 0008D380		      C     _sPRIMATIVES_base           EQU 8d380h
+ = 4000			      C     _sPRIMATIVES_limit          EQU 4000h       ; 16k
+ = 0008C380		      C     _sPRIMATIVE_LOAD_INFO_base  EQU 8c380h
+ = 1000			      C     _sPRIMATIVE_LOAD_INFO_limit EQU 1000h       ; 4k
+ = 00089400		      C     _sSYSTEM_base               EQU 89400h
+ = 0C00			      C     _sSYSTEM_limit              EQU 0c00h       ; 3k
+ = 0800			      C     _sSYSTEM_USER_limit         EQU 0800h       ; 2k
+ = 00281400		      C     _sDEBI_screen_base          EQU 281400h                         ; ; ; ; ; Added 2 MB, 02/26/2009 - RCH
+ = 8000			      C     _sDEBI_screen_limit         EQU 8000h       ; 32k
+ = 00279400		      C     _sDEBI_memory_base          EQU 279400h                         ; ; ; ; ; Added 2 MB, 02/26/2009 - RCH
+ = 8000			      C     _sDEBI_memory_limit         EQU 8000h       ; 32k
+ = 00074C00		      C     _sFLOPPY_TRACK_base         EQU 74c00h
+ = 4800			      C     _sFLOPPY_TRACK_limit        EQU 4800h       ; 512 bytes per sector * 18 sectors * 2 sides = 18k
+ = 00060000		      C     _sVGA_BACKUP_base           EQU 60000h      ; Note, the backup area is used when in graphics modes that use a0000h
+ = 8000			      C     _sVGA_BACKUP_limit          EQU 8000h       ; so all video writes to the text window are still saved
+ = 00258000		      C     _sDEBI_screen2_base         EQU 258000h
+ = 00028000		      C     _sDEBI_screen2_limit        EQU 28000h       ; 32k
+ = 00068000		      C     _sTASK_SWITCH_TSS_base      EQU 68000h
+ = 0100			      C     _sTASK_SWITCH_TSS_limit     EQU 100h        ; 256 bytes
+ = 00220000		      C     _sTASK_STACK_base           EQU 220000h                         ; ; ; ; ; Added 1 MB, 03/01/2009 - RCH
+ = 8000			      C     _sTASK_STACK_limit          EQU 8000h       ; 32k
+ = 00095380		      C     _sSTACK0_base               EQU 95380h
+ = 2000			      C     _sSTACK0_limit              EQU 2000h       ; 8k
+ = 00093380		      C     _sSTACK1_base               EQU 93380h
+ = 2000			      C     _sSTACK1_limit              EQU 2000h       ; 8k
+ = 00091380		      C     _sSTACK2_base               EQU 91380h
+ = 2000			      C     _sSTACK2_limit              EQU 2000h       ; 8k
+ = 00240000		      C     _sDEBI_dt_base              EQU 240000h                         ; ; ; ; ; Added 1 MB, 03/01/2009 - RCH
+ = 8000			      C     _sDEBI_dt_limit             EQU 8000h       ; 32k
+ = 00248000		      C     _sDEBI_np_base              EQU 248000h                         ; ; ; ; ; Added 1 MB, 03/01/2009 - RCH
+ = 8000			      C     _sDEBI_np_limit             EQU 8000h       ; 32k
+ = 00250000		      C     _sDEBI_rp_base              EQU 250000h                         ; ; ; ; ; Added 1 MB, 03/01/2009 - RCH
+ = 8000			      C     _sDEBI_rp_limit             EQU 8000h       ; 32k
+			      C 
+ = 00050000		      C     _sEXODUS_OBJECTS_base       EQU 50000h
+ = 8000			      C     _sEXODUS_OBJECTS_limit      EQU 8000h       ; 32k
+ = 00200000		      C     _sEXODUS_INI_base           EQU 200000h     ; 1MB               ; ; ; ; ; Added 1 MB, 03/01/2009 - RCH
+ = 00010000		      C     _sEXODUS_INI_limit          EQU 10000h      ; 64k
+ = 00210000		      C     _sEXODUS_INI_ERRORS_base    EQU 210000h     ; 1MB + 64k         ; ; ; ; ; Added 1 MB, 03/01/2009 - RCH
+ = 4000			      C     _sEXODUS_INI_ERRORS_limit   EQU 4000h       ; 16k
+ = 00210000		      C     _sTASK_SYSTEM_base          EQU 210000h     ; 1MB + 64k         ; ; ; ; ; Added 1 MB, 03/01/2009 - RCH
+ = 00010000		      C     _sTASK_SYSTEM_limit         EQU 010000h     ; 64k
+			      C 
+			      C 
+			      C ; ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+			      C ; ³ BOOT DT STRUCTURE ³
+			      C ; ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+ = 0000			      C     _BOOT_DT_object_type        EQU 0
+ = 0001			      C     _BOOT_DT_days               EQU 1
+ = 0005			      C     _BOOT_DT_seconds            EQU 5
+ = 0008			      C     _BOOT_DT_rp_offset          EQU 8
+ = 000A			      C     _BOOT_DT_entry_type         EQU 10
+ = 000B			      C     _BOOT_DT_np_offset          EQU 11
+			      C 
+			      C 
+			      C 
+			      C 
+			      C 
+			      C ; ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+			      C ; ³ BOOT PARAMETER BLOCK STRUCTURE ³
+			      C ; ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+ = 0000			      C     _BOOT_PB_size               EQU 0
+ = 0004			      C     _BOOT_PB_main               EQU 4
+ = 0008			      C     _BOOT_PB_requestor          EQU 8
+ = 000C			      C     _BOOT_PB_start_head         EQU 12
+ = 000D			      C     _BOOT_PB_start_track        EQU 13
+ = 000E			      C     _BOOT_PB_start_sector       EQU 14
+ = 0010			      C     _BOOT_PB_end_head           EQU 16
+ = 0011			      C     _BOOT_PB_end_track          EQU 17
+ = 0012			      C     _BOOT_PB_end_sector         EQU 18
+ = 0014			      C     _BOOT_PB_entry_type         EQU 20
+ = 0016			      C     _BOOT_PB_linear_offset      EQU 22
+ = 001A			      C     _BOOT_PB_dt_offset          EQU 26
+ = 001C			      C     _BOOT_PB_crc16              EQU 28
+ = 0020			      C     _BOOT_PB_structure_size     EQU 32
+			      C 
+			      C 
+			      C 
+			      C 
+			      C ; ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+			      C ; ³ EXODUS.INI STRUCTURES ³
+			      C ; ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+ = 0000			      C     _EXODUS_INI_FIRST_BRACKET       EQU 0
+ = 0004			      C     _EXODUS_INI_TOTAL_BYTES         EQU 4
+ = 0008			      C     _EXODUS_INI_TOTAL_BRACKET_GROUPS EQU 8
+ = 000C			      C     _EXODUS_INI_TOTAL_PAREN_CASKS   EQU 12
+ = 0010			      C     _EXODUS_INI_HEADER_LENGTH       EQU 16
+			      C 
+ = 0000			      C     _EXODUS_BRACKET_NEXT            EQU 0
+ = 0004			      C     _EXODUS_BRACKET_PAREN_CASKS     EQU 4
+ = 0008			      C     _EXODUS_BRACKET_TOTAL_PARENS    EQU 8
+ = 000C			      C     _EXODUS_BRACKET_NAME            EQU 12
+ = 0010			      C     _EXODUS_BRACKET_HANDLE          EQU 16
+ = 0014			      C     _EXODUS_BRACKET_REQUESTOR       EQU 20
+ = 0016			      C     _EXODUS_BRACKET_REQUESTOR_FUNC  EQU 22
+ = 001A			      C     _EXODUS_BRACKET_SCRATCH_AREA    EQU 26
+ = 001E			      C     _EXODUS_BRACKET_LENGTH          EQU 30
+			      C 
+ = 0000			      C     _EXODUS_PAREN_NEXT              EQU 0
+ = 0004			      C     _EXODUS_PAREN_NEXT_SAME_LINE    EQU 4
+ = 0008			      C     _EXODUS_PAREN_DATA_ITEMS        EQU 8
+ = 000C			      C     _EXODUS_PAREN_TOTAL_DATA_ITEMS  EQU 12
+ = 0010			      C     _EXODUS_PAREN_SOURCE_LINE       EQU 16
+ = 0014			      C     _EXODUS_PAREN_SOURCE_LINE_LENGTH EQU 20
+ = 0018			      C     _EXODUS_PAREN_HANDLE            EQU 24
+ = 001A			      C     _EXODUS_PAREN_REQUESTOR         EQU 26
+ = 001E			      C     _EXODUS_PAREN_REQUESTOR_FUNC    EQU 30
+ = 0022			      C     _EXODUS_PAREN_SCRATCH_AREA      EQU 34
+ = 0026			      C     _EXODUS_PAREN_LENGTH            EQU 38
+			      C 
+ = 0000			      C     _EXODUS_DATA_NEXT               EQU 0
+ = 0004			      C     _EXODUS_DATA_DATA_ITEM_SOURCE   EQU 4
+ = 0008			      C     _EXODUS_DATA_DATA_ITEM_LENGTH   EQU 8
+ = 000C			      C     _EXODUS_DATA_LENGTH             EQU 12
+			      C 
+			      C 
+			      C 
+			      C 
+			      C ; ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+			      C ; ³ EXODUS xxx STRUCTURES ³
+			      C ; ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+ = 0000			      C     _EXODUS_MEM_type                EQU 0
+ = 0004			      C     _EXODUS_MEM_base                EQU 4
+ = 0008			      C     _EXODUS_MEM_limit               EQU 8
+ = 000C			      C     _EXODUS_MEM_gdt                 EQU 12
+ = 000E			      C     _EXODUS_MEM_ldt                 EQU 14
+ = 0010			      C     _EXODUS_MEM_size                EQU 16
+			      C 
+ = 0010			      C     _EXODUS_PORTS_size              EQU 16
+			      C 
+ = 0002			      C     _EXODUS_INTS_size               EQU 2
+			      C 
+			      C 
+			      C 
+			      C 
+			      C ; ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+			      C ; ³ EXODUS SYSTEM MEMORY ³
+			      C ; ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+			      C ; Note, when updates are made here they need to be reflected in INF\SYSTEM.INF
+			      C ; Note, when updates are made here and INF\SYSTEM.INF, the "Exodus Quick Reference" manual needs to be updated
+ = 0000			      C     _SYSTEM_SECONDS_SINCE_BOOTUP    EQU 0                           ; dword
+ = 0004			      C     _SYSTEM_SECONDS_SINCE_MIDNIGHT  EQU 4                           ; dword
+ = 0008			      C     _SYSTEM_HOURS                   EQU 8                           ; byte
+ = 0009			      C     _SYSTEM_MINUTES                 EQU 9                           ; byte
+ = 000A			      C     _SYSTEM_SECONDS                 EQU 10                          ; byte
+ = 000B			      C     _SYSTEM_182S_OF_A_SECOND        EQU 11                          ; byte
+ = 000C			      C     _SYSTEM_DAY                     EQU 12                          ; byte
+ = 000D			      C     _SYSTEM_MONTH                   EQU 13                          ; byte
+ = 000E			      C     _SYSTEM_YEAR                    EQU 14                          ; word
+ = 0010			      C     _SYSTEM_DAY_OF_YEAR             EQU 16                          ; word
+ = 0012			      C     _SYSTEM_BUILD                   EQU 18                          ; 10-byte string in the format: "mm.dd.yyyy"
+ = 001C			      C     _SYSTEM_TOTAL_MEMORY            EQU 28                          ; dword, total ram in bytes
+ = 0020			      C     _SYSTEM_VGA_HORIZONTAL          EQU 32                          ; word (pixels-graphics, or columns-text)
+ = 0022			      C     _SYSTEM_VGA_VERTICAL            EQU 34                          ; word (pixels-graphics, or rows-text)
+ = 0024			      C     _SYSTEM_VGA_VIDEO_MODE          EQU 36                          ; byte (0-graphics, 1-text)
+ = 0025			      C     _SYSTEM_MONO_VIDEO_MODE         EQU 37                          ; byte (0-graphics, 1-text, 0ffh-Unknown)
+			      C 
+			      C   ; Non-user accessible system memory areas (Exodus internal, hence the use of the _i_)
+ = 0800			      C     _SYSTEM_i_FATAL                 EQU 2048                        ; dword
+ = 0804			      C     _SYSTEM_i_TASKS_CREATED         EQU 2052                        ; dword
+ = 0808			      C     _SYSTEM_i_TASKS_BY_USER         EQU 2056                        ; dword
+ = 080C			      C     _SYSTEM_i_TASKS_BY_ERROR        EQU 2060                        ; dword
+ = 0810			      C     _SYSTEM_i_IRQ6_INDICATOR        EQU 2064                        ; byte, IRQ6 indicator (changes each time an IRQ6 is signaled)
+ = 0811			      C     _SYSTEM_i_IRQ6_INDICATOR_LAST   EQU 2065                        ; byte, IRQ6 indicator previous, used to see when an IRQ6 is signaled
+ = 0812			      C     _SYSTEM_i_BASE                  EQU 2066                        ; dword
+ = 0816			      C     _SYSTEM_i_LIMIT                 EQU 2070                        ; dword
+ = 081A			      C     _SYSTEM_i_DWORD_TO_COPY         EQU 2074                        ; word
+ = 081C			      C     _SYSTEM_i_LAST_GDT_REFERENCED   EQU 2076                        ; qword
+ = 0824			      C     _SYSTEM_i_CODE_GDT_OFFSET       EQU 2084                        ; dword (used temporarily during native primative install)
+ = 0828			      C     _SYSTEM_i_DATA_GDT_OFFSET       EQU 2088                        ; dword (used temporarily during native primative install)
+ = 082C			      C     _SYSTEM_i_MAIN_GDT_OFFSET       EQU 2092                        ; dword (used temporarily during native primative install)
+ = 0830			      C     _SYSTEM_i_REQUESTOR_GDT_OFFSET  EQU 2096                        ; dword (used temporarily during native primative install)
+ = 0834			      C     _SYSTEM_i_GDT_TO_ASSIGN         EQU 2100                        ; word (used various places to assign GDT entries)
+ = 0836			      C     _SYSTEM_i_USER_GDT_TO_ASSIGN    EQU 2102                        ; word (used various places to assign USER Program GDTs)
+			      C   ; Next offset is 2104
+			      C 
+			      C 
+			      C   ; These scratch items exist from end of memory down
+ = 0BF8			      C     _SYSTEM_i_SCRATCH_DWORD2        EQU 3064                        ; dword (used various places as a scratch buffer)
+ = 0BFC			      C     _SYSTEM_i_SCRATCH_DWORD1        EQU 3068                        ; dword (used various places as a scratch buffer)
+			      C 
+			      C 
+			      C 
+			      C 
+			      C ; ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+			      C ; ³ BOCHS SUPPORT ³
+			      C ; ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+			      C ; These equates are used to communicate via INT 0FFh
+			      C ; Values here are in ecx, with edx being used for data information.
+			      C ; Values in eax must be
+ = 12345678		      C     _BOCHS1                         EQU 12345678h
+ = 87654321		      C     _BOCHS2                         EQU 87654321h
+ = 0000			      C     _BOCHS_GET_MONO_MOUSE_XY        EQU 0
+ = 0001			      C     _BOCHS_GET_MONO_CURSOR          EQU 1
+			      C 
+
+ 0000				_MAIN       SEGMENT WORD PUBLIC 'CODE'
+				    ORG 0
+				  ; Transfer control to linear 7c0h:<offset> (it makes it a SEG0 reference)
+ 0000				  absolute_begin:
+				  ; These next two lines are the same as JMP FAR 07C0H:000Fh
+ 0000  EA			    db  0eah
+ 0001  07C0000F			    dd  007c0000fh                                                  ; cs = 07c0h, ip = 000fh
+
+				  ; Identify this version
+ 0005  01 00			    db  1,0                                                         ; version 1.0
+ 0007  44 54 2F 4E 50 2F	    db  "DT/NP/RP"                                                  ; TAG/identifier
+       52 50
+
+				; Note, start_of_code is at offset 15=0fh
+ 000F				  start_of_code:
+				  ; Execution resumes here (it's a far jump to ensure we're at CS:0 for our starting point)
+ 000F  FA			    cli
+ 0010  68 4000			    push    word ptr 4000h
+ 0013  17			    pop     ss
+ 0014  BC FFFE			    mov     sp,0fffeh                                               ; Stack points to 4fffeh
+ 0017  FB			    sti                                                             ;  (this is because Exodus loads from 10000h to 50000h (256k))
+
+ 0018				  Setup_Local_Variables:
+ 0018  C8 0020 00		    enter   32,0
+				  ; [bp-4]  - --Nuserved
+				  ; [bp-8]  - --Nuserved
+				  ; [bp-10] - --Nuserved
+				  ; [bp-11] - byte, start track
+				  ; [bp-12] - byte, start head
+				  ; [bp-13] - byte, start sector
+				  ; [bp-14] - byte, end track
+				  ; [bp-15] - byte, end head
+				  ; [bp-16] - byte, end sector
+				  ; [bp-17] - byte, DT identifier
+				  ; [bp-18] - --Nuserved
+				  ; [bp-22] - --Nuserved
+				  ; [bp-24] - --Nuserved
+				  ; [bp-28] - dword, offset into memory where we're loading data from disk
+				  ; [bp-32] - dword, bytes loaded so far
+				  ;  others - --Nuserved
+
+				;; Display bootup identification
+ 001C				  display_bootup_id:
+ 001C  0E			    push    cs
+ 001D  0E			    push    cs
+ 001E  1F			    pop     ds
+ 001F  07			    pop     es
+ 0020  B8 1301			    mov     ax,01301h                                               ; Write string
+ 0023  BB 001F			    mov     bx,31                                                   ; Color 31, bright white on blue
+ 0026  B9 0013			    mov     cx,offset Boot_Message_End - offset Boot_Message
+ 0029  33 D2			    xor     dx,dx                                                   ; 0,0
+ 002B  BD 01D5 R		    mov     bp,offset Boot_Message
+ 002E  CD 10			    int     10h
+
+
+				;; Load the Data Table, Name Pool and Resource Pool
+				;; BIOS disk read of sectors 2, 3 and 4, plus the debugger
+ 0030				  Read_Sectors:
+ 0030  B8 0203			    mov     ax,0200h + 03                                           ; Read 3 DT, NP & RP sectors
+ 0033  68 0800			    push    word ptr 0800h                                          ; Store at 0800:0000h, or 8000h
+ 0036  07			    pop     es
+ 0037  33 DB			    xor     bx,bx
+ 0039  B9 0002			    mov     cx,0002h                                                ; track 0/sector 2
+ 003C  33 D2			    xor     dx,dx                                                   ; head 0/drive 0
+ 003E  CD 13			    int     13h                                                     ; Read the bad boy
+ 0040  73 02			    jnc     Read_Sectors1
+ 0042  EB EC			    jmp     Read_Sectors
+ 0044				  Read_Sectors1:
+				;; Note - Here is where the LOAD_XDEBUG() function would go if a debugger is required (see SAVE.ASP)
+				;; Identify which entries are load-bootable
+ 0044  68 0800			    push    word ptr 0800h                                          ; Set ES to point to the DT
+ 0047  07			    pop     es
+ 0048  BE 0402			    mov     si,(512 * 2) + 2                                        ; Pointer to RP (stored at 0800:0000 + (512*2) (from the BIOS disk read above))
+ 004B  66| BA 00000200 R	    mov     edx,offset end_of_data_label                            ; Get our starting offset from the memory variable
+ 0051  33 C9			    xor     cx,cx
+ 0053  BF 0002			    mov     di,2
+				;-[ loop ]------
+ 0056				  Top_Loop:
+ 0056  26: 80 3D 80		        cmp     byte ptr es:[di],128                                ; Is this a bootable entry?
+ 005A  75 71			        jnz     Next_Item                                           ; No if branch
+
+				      ; This is a bootable entry
+ 005C  26: 8A 65 0A		        mov     ah,byte ptr es:[di+10]                              ; Get the boot attribute byte
+ 0060  88 66 EF			        mov     byte ptr [bp-17],ah                                 ; Store for future use
+ 0063  80 FC 05			        cmp     ah,0101b                                            ; See if it's a special boot loader (this replaces this program as boot loader)
+ 0066  75 07			        jnz     @F                                                  ; No if branch
+ 0068				      Boot_Loader_Found:
+				      ; Is is a boot loader, we load this and transfer control
+ 0068  BA 0200 R		        mov     dx,offset end_of_data_label                         ; Restore the original value
+ 006B  33 C9			        xor     cx,cx                                               ; Sortof fake out any previous loads that might've taken place
+ 006D  EB 05			        jmp     Do_This_One                                         ; Continue on and load this one
+ 006F				      @@:
+ 006F  F6 C4 01			        test    ah,1b                                               ; Should we load it immediately?
+ 0072  74 59			        jz      Next_Item                                           ; No if branch
+				      ; Yes, load it immediately
+ 0074				      Boot_Program_Found:
+ 0074				      Do_This_One:
+ 0074  8B DE			        mov     bx,si
+ 0076  26: 03 5D 08		        add     bx,word ptr es:[di+8]                               ; Store the data structure in the following format:
+				                                                                    ; See the complete breakdown of this structure at end of file
+ 007A  66| 26: 8B 07		        mov     eax,dword ptr es:[bx]                               ; 0-3, File size (in bytes)
+ 007E  67& 66| 89 02		        mov     dword ptr [edx+_BOOT_PB_size],eax
+
+ 0082  66| 26: 8B 47 04		        mov     eax,dword ptr es:[bx+4]                             ; 4-7, Offset into executable for main() (where to jmp far)
+ 0087  67& 66| 89 42 04		        mov     dword ptr [edx+_BOOT_PB_main],eax
+
+ 008C  66| 26: 8B 47 08		        mov     eax,dword ptr es:[bx+8]                             ; 8-11, Offset into executable for requestor()
+ 0091  67& 66| 89 42 08		        mov     dword ptr [edx+_BOOT_PB_requestor],eax
+
+ 0096  66| 26: 8B 47 0C		        mov     eax,dword ptr es:[bx+12]                            ; 12-15, Start Head/Track/Sector/not used
+ 009B  67& 66| 89 42 0C		        mov     dword ptr [edx+_BOOT_PB_start_head],eax
+
+ 00A0  66| 26: 8B 47 10		        mov     eax,dword ptr es:[bx+16]                            ; 16-20, End Head/Track/Sector/not used
+ 00A5  67& 66| 89 42 10		        mov     dword ptr [edx+_BOOT_PB_end_head],eax                              ;        * Note:  This information is *NOT USED* during bootup
+
+ 00AA  26: 8A 45 0A		        mov     al,byte ptr es:[di+10]                              ; 20, Entry type
+ 00AE  67& 89 42 14		        mov     word ptr [edx+_BOOT_PB_entry_type],ax
+
+ 00B2  67& 89 7A 1A		        mov     word ptr [edx+_BOOT_PB_dt_offset],di                ; 26, DT offset for this entry
+ 00B6  67& 83 6A 1A 02		        sub     word ptr [edx+_BOOT_PB_dt_offset],2
+
+ 00BB  26: 8B 45 0D		        mov     ax,word ptr es:[di+13]                              ; 28, CRC16
+ 00BF  67& 89 42 1C		        mov     word ptr [edx+_BOOT_PB_crc16],ax
+
+ 00C3  83 C2 20			        add     dx,_BOOT_PB_structure_size                          ; Move to the next one
+ 00C6  41			        inc     cx                                                  ; Increase our count
+ 00C7  80 7E EF 05		        cmp     byte ptr [bp-17],0101b                              ; If this is a special boot loader then we don't need to load any more programs, just this one
+ 00CB  74 14			        jz      Load_It                                             ; It is a special boot loader if branch
+ 00CD				  Next_Item:
+ 00CD  83 C7 10			    add     di,16                                                   ; Move to the next item in the DT
+ 00D0  81 FF 0200		    cmp     di,512                                                  ; Are we beyond the size of the DT?
+ 00D4  7C 80			    jl      Top_Loop                                                ; No if branch
+				;---------------
+
+
+				  ; We're through scanning the first DT
+ 00D6  67& C6 42 14 FF		    mov     byte ptr [edx+_BOOT_PB_entry_type],0ffh                 ; Terminate our listing
+ 00DB  0B C9			    or      cx,cx
+ 00DD  0F 84 00DB		    jz      Reboot_With_Message_And_Key                             ; If branch here there then no were bootable record(s) found
+
+				;; Load the data from the disk
+ 00E1				  Load_It:                                                          ; Load at 10000h, or 64k
+ 00E1  2E: 89 16 01F1 R		    mov     total_bp_bytes,dx
+ 00E6  2E: 81 2E 01F1 R		    sub     total_bp_bytes,(offset parameter_block)
+       01FF R
+ 00ED  66| BE 00000200 R	    mov     esi,offset end_of_data_label                            ; Get the pointer to load information
+ 00F3  66| C7 46 E4		    mov     dword ptr [bp-28],10000h
+       00010000
+ 00FB				  Read_Next_File:
+ 00FB  66| 8B 46 E4		    mov     eax,dword ptr [bp-28]
+ 00FF  66| 89 44 16		    mov     dword ptr [si+_BOOT_PB_linear_offset],eax
+ 0103  66| C7 46 E0		    mov     dword ptr [bp-32],0                                     ; Reset our "bytes loaded so far" count
+       00000000
+ 010B				  Read_Next_Sector:
+ 010B  66| 33 C9		    xor     ecx,ecx
+ 010E  66| 33 DB		    xor     ebx,ebx
+
+ 0111  8A 74 0C			    mov     dh,byte ptr [si+_BOOT_PB_start_head]                    ; Head
+ 0114  8A 6C 0D			    mov     ch,byte ptr [si+_BOOT_PB_start_track]                   ; Track
+ 0117  8A 4C 0E			    mov     cl,byte ptr [si+_BOOT_PB_start_sector]                  ; Sector
+ 011A  32 D2			    xor     dl,dl                                                   ; drive
+
+ 011C  68 0900			    push    word ptr 0900h                                          ; Load this sector of data to 9000h
+ 011F  07			    pop     es
+ 0120  33 DB			    xor     bx,bx
+
+ 0122  B8 0201			    mov     ax,0201h                                                ; BIOS Read disk sectors/read 1
+ 0125  CD 13			    int     13h                                                     ; Read it
+ 0127  73 08			    jnc     @F
+ 0129  80 FC 06			    cmp     ah,6
+ 012C  74 DD			    jz      Read_Next_Sector
+				;    jmp     Read_Next_Sector
+ 012E  E9 008B			    jmp     Reboot_With_Message_And_Key
+ 0131				  @@:
+				  ; Right now the file was loaded to 09000h, we need to copy it to the correct location
+				  ; So, we do that here
+ 0131  56			    push    si
+ 0132  1E			    push    ds
+
+ 0133  06			    push    es
+ 0134  1F			    pop     ds
+ 0135  33 F6			    xor     si,si
+				  ; Get es:[di] - far ptr to where it's supposed to go
+ 0137  66| 8B 46 E4		    mov     eax,dword ptr [bp-28]                                   ; Memory location to load into es:[bx]
+ 013B  8B F8			    mov     di,ax
+ 013D  83 E7 0F			    and     di,0fh
+ 0140  66| C1 E8 04		    shr     eax,4
+ 0144  8E C0			    mov     es,ax
+ 0146  B9 0200			    mov     cx,512
+				  ; Right now, es:[di] - far ptr to where it's supposed to go
+ 0149  FC			    cld
+ 014A  F3/ A4			    rep     movsb
+
+ 014C  1F			    pop     ds
+ 014D  5E			    pop     si
+
+ 014E  66| BB 00000200		    mov     ebx,512                                                 ; Bytes_per_sector
+ 0154  66| 01 5E E4		    add     dword ptr [bp-28],ebx                                   ; Increase the offset by the bytes per sector
+ 0158  66| 01 5E E0		    add     dword ptr [bp-32],ebx                                   ; Increase the number of bytes loaded so far
+ 015C  66| 8B 56 E0		    mov     edx,dword ptr [bp-32]
+ 0160  66| 3B 14		    cmp     edx,dword ptr [si]                                      ; Total number of bytes to load
+ 0163  73 2D			    jae     Check_More_Boot_Programs
+
+ 0165  FE 44 0E			    inc     byte ptr [si+_BOOT_PB_start_sector]
+ 0168  2E: A0 01F0 R		    mov     al,cs:sectors
+ 016C  38 44 0E			    cmp     byte ptr [si+_BOOT_PB_start_sector],al
+ 016F  7E 9A			    jle     Read_Next_Sector
+ 0171  C6 44 0E 01		    mov     byte ptr [si+_BOOT_PB_start_sector],1                   ; We're passed the last sector
+
+				  ; Display a dot each time we read an entire track for one head
+ 0175  60			    pusha
+ 0176  B8 0E2E			    mov     ax,00e2eh                                               ; Write character (2eh = ".")
+ 0179  BB 001F			    mov     bx,31                                                   ; bh=page, bl=color
+ 017C  CD 10			    int     10h
+ 017E  61			    popa
+ 017F  FE 44 0C			    inc     byte ptr [si+_BOOT_PB_start_head]
+ 0182  80 7C 0C 01		    cmp     byte ptr [si+_BOOT_PB_start_head],1
+ 0186  7E 83			    jle     Read_Next_Sector
+ 0188  C6 44 0C 00		    mov     byte ptr [si+_BOOT_PB_start_head],0                     ; We're past the maximum head
+
+ 018C  FE 44 0D			    inc     byte ptr [si+_BOOT_PB_start_track]                      ; Move to the next track
+ 018F  E9 FF79			    jmp     Read_Next_Sector
+
+ 0192				  Check_More_Boot_Programs:
+ 0192  83 C6 20			    add     si,_BOOT_PB_structure_size
+ 0195  66| 83 46 E4 10		    add     dword ptr [bp-28],16                                    ; Paragraph align the next item (if any)
+ 019A  66| 83 66 E4 F0		    and     dword ptr [bp-28],0fffffff0h
+ 019F  80 7C 14 FF		    cmp     byte ptr [si+_BOOT_PB_entry_type],0ffh
+ 01A3  0F 85 FF54		    jne     Read_Next_File
+
+ 01A7				  Finished:
+ 01A7  0E			    push    cs
+ 01A8  1F			    pop     ds
+ 01A9  BE 01FF R		    mov     si,offset parameter_block
+ 01AC  2E: 8B 0E 01F1 R		    mov     cx,total_bp_bytes
+ 01B1  66| 8B 56 E4		    mov     edx,dword ptr [bp-28]
+				  ; Transfer control to linear 10000h
+ 01B5  68 1000			    push    word ptr 1000h                                          ; cs
+ 01B8  68 0000			    push    word ptr 0                                              ; ip
+ 01BB  CB			    retf
+
+
+ 01BC				  Reboot_With_Message_And_Key:
+ 01BC  0E			    push    cs
+ 01BD  07			    pop     es
+ 01BE  B8 1301			    mov     ax,01301h
+ 01C1  BB 001F			    mov     bx,31
+ 01C4  B9 0008			    mov     cx,offset Disk_Message_End - offset Disk_Message
+ 01C7  BA 1600			    mov     dx,1600h                                                ; 22,0
+ 01CA  BD 01E8 R    mov     bp,offset Disk_Message
+ 01CD  CD 10			    int     10h
+ 01CF				  Wait_For_Key:
+ 01CF  32 E4			    xor     ah,ah
+ 01D1  CD 16			    int     16h
+ 01D3				  Reboot:
+ 01D3  CD 19			    int     19h
+
+ 01D5				  Boot_Message:
+ 01D5  20 45 78 6F 64 75	    db  " Exodus 10.10.2010 "
+       73 20 31 30 2E 31
+       30 2E 32 30 31 30
+       20
+ 01E8				  Boot_Message_End:
+
+ 01E8				  Disk_Message:
+ 01E8  FE 20 45 72 72 6F	    db  "þ Error "
+       72 20
+ 01F0				  Disk_Message_End:
+
+ 01F0 12			    sectors         db  18
+ 01F1 0000			    total_bp_bytes  dw  0
+
+ 01F3 00008000			    dt_linear       dd 8000h
+ 01F7 00008200			    np_linear       dd 8200h
+ 01FB 00008300			    rp_linear       dd 8300h
+ 01FF				  parameter_block:
+ 01FF 41			    boot_drive      db  "A"                                         ; Drive letter the operating system was booting from
+
+ 0200				  End_Of_Data_Label:
+
+				;
+				; boot_parameter_block
+				;
+				; Bootable program structure
+				; --------------------------
+				; Repeat once entry for every "Exodus Boot Program" found in the first DT:
+				;     Offset  Length    Decription
+				;     ------  ------    -------------
+				;       0       4       file size
+				;       4       4       Offset for main()
+				;       8       4       Offset for requestor()
+				;       12      1       (starting) Head
+				;       13      1       (starting) Track
+				;       14      1       (starting) Sector
+				;       15      1       --Nuserved
+				;       16      1       (ending) Head
+				;       17      1       (ending) Track
+				;       18      1       (ending) Sector
+				;       19      1       --Nuserved
+				;       20      1       Entry type
+				;       21      1       --Nuserved
+				;       22      4       Linear offset in memory where this file starts
+				;       26      2       DT offset
+				;       28      2       CRC16 (copied from DT)
+				;       30      2       --Nuserved
+				;     Total = 32 bytes
+				;
+
+ 0200				_MAIN   ENDS
+
+				END

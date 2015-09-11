@@ -1,0 +1,773 @@
+                   ÚÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+                ÚÄÄ´ macros.asp  ³  Macros used throughout Exodus source code
+                ³  ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+                ³  ÚÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+                ÃÄÄ´ equates.asp ³  All constants used throughout Exodus source code
+                ³  ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+                ³  ÚÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+                ÃÄÄ´ errors.asp  ³  Error codes used throughout Exodus source code
+                ³  ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+                ³
+                ³
+ÉÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÏÍ»
+º                 º
+º   BOOTUP.ASM    º
+º                 º
+ÈÍÍÍÍÍÑÍÍÍÍÑÍÍÍÍÍÍ¼
+      ³    ³
+      ³    ÃÄÄCode is executed here, jumps to hereÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+      ³    ³                                                                                                                 ³
+      ³    ³  ÚÄÄÄÄÄÄÄÄÄÄÄÄ¿                                                                        Ä¿                       ³
+      ³    ÃÄÄ´ init16.asp ³   16-bit code used to initialize Exodus functions during bootup         Ã¿                      ³
+      ³    ³  ÀÄÄÄÄÄÄÄÄÄÄÂÄÙ                                                                         ³³                      ³
+      ³    ³             Ã enable_gate_20()                                                          ³³                      ³
+      ³    ³             À setup_pmode_variables()                                                   ³³                      ³
+      ³    ³                Ã create_null_data_descriptor()                                          ³³                      ³
+      ³    ³                Ã create_data_descriptor()                                               ³³                      ³
+      ³    ³                Ã create_ldt_descriptor()                                                ³³                      ³
+      ³    ³                Ã create_data_descriptor_read_only_dpl()                                 ³³                      ³
+      ³    ³                Ã create_data_descriptor_expand_down()                                   ³³                      ³
+      ³    ³                Ã create_exodus_code_descriptor()                                        ³³ 16-bit code          ³
+      ³    ³                Ã create_interrupt_descriptor_16_bit()                                   ³³                      ³
+      ³    ³                Ã create_interrupt_descriptor_32_bit()                                   ³³                      ³
+      ³    ³                Ã create_exodus_tss_descriptor()                                         ³³                      ³
+      ³    ³                Ã create_task_gate_descriptor()                                          ³³                      ³
+      ³    ³                À create_interrupt_descriptors()                                         ³³                      ³
+      ³    ³  ÚÄÄÄÄÄÄÄÄÄÄÄÄ¿                                                                         ³³                      ³
+      ³    ÀÄÄ´ data16.asp ³   Data used by the 16-bit code                                          ³³                      ³
+      ³       ÀÄÄÄÄÄÄÄÄÄÄÂÄÙ                                                                         ³³                      ³
+      ³                  Ã string, bootup_id1                                                        ³³                      ³
+      ³                  Ã string, bootup_id2                                                        ³³                      ³
+      ³                  Ã string, enabling_gate_a20                                                 ³³                      ³
+      ³                  Ã string, setup_pmode_vars                                                  ³³                      ³
+      ³                  Ã string, entering_pmode                                                    ³³                      ³
+      ³                  Ã selector, IDT_ptr                                                         ÃÙ                      ³
+      ³                  À selector, GDT_ptr                                                        ÄÙ                       ³
+      ³                                                                                                                      ³
+      ³ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+      ÃÁÄ32-bit pmode code is executed here
+      ³
+      ³                   ¿
+      Ã debug_set_pause() ³
+      Ã debug_vga()       ³ Debug variables used internally for various things
+      Ã debug_mono()      ³
+      ³                   Ù
+      ³
+      ³       ÚÄÄÄÄÄÄÄÄÄÄÄÄ¿
+      ÃÄÄÄÄÄÄÄ´ init32.asp ³
+      ³       ÀÄÄÄÄÄÄÄÄÄÄÂÄÙ
+      ³                  Ã create_call_gate_descriptor32()
+      ³                  Ã create_task_gate_descriptor32()
+      ³                  Ã create_interrupt_task_gate_descriptor32()
+      ³                  Ã create_code_descriptor32()
+      ³                  Ã create_data_descriptor32()
+      ³                  Ã create_tss_descriptor32()
+      ³                  Ã create_tss32()
+      ³                  Ã setup_fixed_data_descriptors()
+      ³                  Ã setup_fixed_call_gate_descriptors()
+      ³                  Ã update_interrupt_descriptor16()
+      ³                  Ã update_interrupt_descriptor32()
+      ³                  Ã initialize_isr_counts()
+      ³                  Ã find_above_1MB_memory()
+      ³                  Ã initialize_pic()
+      ³                  ³
+      ³                  ³
+      ³                  ³
+      ³                  ³ ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+      ³                  ÃÄ´ initialize_timer() ³
+      ³                  ³ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÙ   ÚÄÄÄÄÄÄÄÄÄÄÄ¿
+      ³                  ³                    ÀÄÄÄÄÄ´ timer.asp ³
+      ³                  ³                          ÀÄÄÄÄÄÄÄÄÄÂÄÙ
+      ³                  ³                                    Ã timer_handler()
+      ³                  ³                                    Ã timer_system_event()
+      ³                  ³                                    Ã timer_system_event_next_date()
+      ³                  ³                                    Ã iTIMER_set_interrupt_interval()
+      ³                  ³                                    Ã xTIMER_wait_next_tick()
+      ³                  ³                                    Ã xTIMER_wait_full_tick()
+      ³                  ³                                    Ã xTIMER_wait_x_ticks()
+      ³                  ³                                    Ã xTIMER_evaluate_interval()
+      ³                  ³                                    ³
+      ³                  ³                                    ³     ÚÄÄÄÄÄÄÄÄÄÄ¿
+      ³                  ³                                    ÀÄÄÄÄÄ´ task.asp ³
+      ³                  ³                                          ÀÄÄÄÄÄÄÄÄÂÄÙ
+      ³                  ³                                                   Ã xTASK_release_timeslice()
+      ³                  ³                                                   Ã xTASK_irq6_prep_wait()
+      ³                  ³                                                   À xTASK_irq6_wait_for_signal()
+      ³                  ³
+      ³                  ³
+      ³                  ³ ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+      ³                  ÃÄ´ initialize_keyboard() ³
+      ³                  ³ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÙ   ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+      ³                  ³                       ÀÄÄÄÄÄ´ keyboard.asp ³
+      ³                  ³                             ÀÄÄÄÄÄÄÄÄÄÄÄÄÂÄÙ
+      ³                  ³                                          ³                   Ú UP              ¿
+      ³                  ³                                          ³                   ³ DOWN            ³
+      ³                  ³                                          ³                   ³ KEY_PRESSED     ³
+      ³                  ³                                          ³                   ³ _extendedData   ³
+      ³                  ³                                          ³                   ³ _rCtrlKey       ³
+      ³                  ³                                          ³                   ³ _rShiftKey      ³
+      ³                  ³                                          ³                   ³ _rAltKey        ³
+      ³                  ³                                          ³                   ³ _lCtrlKey       ³
+      ³                  ³                                          ÃÄÄdata variablesÄÄÄ´ _lShiftKey      ³
+      ³                  ³                                          ³                   ³ _lAltKey        ³
+      ³                  ³                                          ³                   ³ _capsLock       ³
+      ³                  ³                                          ³                   ³ _numLock        ³
+      ³                  ³                                          ³                   ³ _scrLock        ³
+      ³                  ³                                          ³                   ³ _lWindowsKey    ³
+      ³                  ³                                          ³                   ³ _rWindowsKey    ³
+      ³                  ³                                          ³                   À _WindowsMenuKey Ù
+      ³                  ³                                          ³
+      ³                  ³                                          Ã keyboard_handler()
+      ³                  ³                                          À iKBD_ll_wait_key()
+      ³                  ³
+      ³                  ³
+      ³                  ³ ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+      ³                  ÃÄ´ initialize_mouse_ps2() ³
+      ³                  ³ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÙ   ÚÄÄÄÄÄÄÄÄÄÄÄ¿
+      ³                  ³                        ÀÄÄÄÄÄ´ mouse.asp ³
+      ³                  ³                              ÀÄÄÄÄÄÄÄÄÄÂÄÙ
+      ³                  ³                                        ³                   Ú mouse_type      ¿
+      ³                  ³                                        ³                   ³ _rightClick     ³
+      ³                  ³                                        ³                   ³ _leftClick      ³
+      ³                  ³                                        ÃÄÄdata variablesÄÄÄ´ _middleClick    ³
+      ³                  ³                                        ³                   ³ _mouseX         ³
+      ³                  ³                                        ³                   ³ _mouseY         ³
+      ³                  ³                                        ³                   ³ mouse_redirect  ³
+      ³                  ³                                        ³                   À mouse_count     Ù
+      ³                  ³                                        ³
+      ³                  ³                                        À mouse_handler()
+      ³                  ³
+      ³                  ³
+      ³                  ³ ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+      ³                  ÃÄ´ initialize_serial() ³
+      ³                  ³ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÙ   ÚÄÄÄÄÄÄÄÄÄÄÄÄ¿
+      ³                  ³                     ÀÄÄÄÄÄ´ serial.asp ³
+      ³                  ³                           ÀÄÄÄÄÄÄÄÄÄÄÂÄÙ
+      ³                  ³                                      ³                   Ú serial1_base        ¿
+      ³                  ³                                      ³                   ³ serial1_irq         ³
+      ³                  ³                                      ³                   ³ serial1_status      ³
+      ³                  ³                                      ³                 ÚÄ´ serial1_dte_baud    ³
+      ³                  ³                                      ³                 ³ ³ serial1_dce_baud    ³
+      ³                  ³                                      ³                 ³ ³ serial1_buffer_seg  ³
+      ³                  ³                                      ³                 ³ À serial1_buffer_size Ù
+      ³                  ³                                      ³                 ³ Ú serial2_base        ¿
+      ³                  ³                                      ³                 ³ ³ serial2_irq         ³
+      ³                  ³                                      ³                 ³ ³ serial2_status      ³
+      ³                  ³                                      ³                 ÃÄ´ serial2_dte_baud    ³
+      ³                  ³                                      ³                 ³ ³ serial2_dce_baud    ³
+      ³                  ³                                      ³                 ³ ³ serial2_buffer_seg  ³
+      ³                  ³                                      ÀÄdata variablesÄÄ´ À serial2_buffer_size Ù
+      ³                  ³                                                        ³ Ú serial3_base        ¿
+      ³                  ³                                                        ³ ³ serial3_irq         ³
+      ³                  ³                                                        ³ ³ serial3_status      ³
+      ³                  ³                                                        ÃÄ´ serial3_dte_baud    ³
+      ³                  ³                                                        ³ ³ serial3_dce_baud    ³
+      ³                  ³                                                        ³ ³ serial3_buffer_seg  ³
+      ³                  ³                                                        ³ À serial3_buffer_size Ù
+      ³                  ³                                                        ³ Ú serial4_base        ¿
+      ³                  ³                                                        ³ ³ serial4_irq         ³
+      ³                  ³                                                        ³ ³ serial4_status      ³
+      ³                  ³                                                        ÀÄ´ serial4_dte_baud    ³
+      ³                  ³                                                          ³ serial4_dce_baud    ³
+      ³                  ³                                                          ³ serial4_buffer_seg  ³
+      ³                  ³                                                          À serial4_buffer_size Ù
+      ³                  ³
+      ³                  ³
+      ³                  ³ ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+      ³                  ÃÄ´ initialize_parallel() ³
+      ³                  ³ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÙ   ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+      ³                  ³                       ÀÄÄÄÄÄ´ parallel.asp ³
+      ³                  ³                             ÀÄÄÄÄÄÄÄÄÄÄÄÄÂÄÙ
+      ³                  ³                                          ³                   Ú parallel1_base        ¿
+      ³                  ³                                          ³                   ³ parallel1_irq         ³
+      ³                  ³                                          ³                 ÚÄ´ parallel1_status      ³
+      ³                  ³                                          ³                 ³ ³ parallel1_buffer_seg  ³
+      ³                  ³                                          ³                 ³ À parallel1_buffer_size Ù
+      ³                  ³                                          ³                 ³ Ú parallel2_base        ¿
+      ³                  ³                                          ³                 ³ ³ parallel2_irq         ³
+      ³                  ³                                          ÀÄdata variablesÄÄÅÄ´ parallel2_status      ³
+      ³                  ³                                                            ³ ³ parallel2_buffer_seg  ³
+      ³                  ³                                                            ³ À parallel2_buffer_size Ù
+      ³                  ³                                                            ³ Ú parallel3_base        ¿
+      ³                  ³                                                            ³ ³ parallel3_irq         ³
+      ³                  ³                                                            ÀÄ´ parallel3_status      ³
+      ³                  ³                                                              ³ parallel3_buffer_seg  ³
+      ³                  ³                                                              À parallel3_buffer_size Ù
+      ³                  ³
+      ³                  ³
+      ³                  Ã initialize_disk_drives()
+      ³                  Ã determine_floppy_parameters()
+      ³                  ³
+      ³                  ³ ÚÄÄÄÄÄÄÄÄÄÄ¿
+      ³                  ÃÄ´ disk.asp ³
+      ³                  ³ ÀÄÄÄÄÄÄÄÄÂÄÙ
+      ³                  ³          Ã iDISK_add_drive()
+      ³                  ³          Ã iDISK_add_partition()
+      ³                  ³          Ã iDISK_update_media()
+      ³                  ³          Ã iDISK_requestor()
+      ³                  ³          À invDISK_find_drive_by_letter()
+      ³                  ³
+      ³                  ³
+      ³                  ³ ÚÄÄÄÄÄÄÄÄÄ¿
+      ³                  ÀÄ´ fdc.asp ³
+      ³                    ÀÄÄÄÄÄÄÄÄÂÙ
+      ³                             Ã iFDC_initialize_drive()
+      ³                             Ã iFDC_determine_media()
+      ³                             Ã iFDC_clear_fdc_output()
+      ³                             Ã iFDC_clear_fdc_input()
+      ³                             Ã iFDC_sense_interrupt()
+      ³                             Ã iFDC_send_byte()
+      ³                             Ã iFDC_read_byte()
+      ³                             Ã iFDC_motor_on()
+      ³                             Ã iFDC_motor_off()
+      ³                             Ã iFDC_read_sector()
+      ³                             Ã iFDC_read_track()
+      ³                             Ã iFDC_write_sector()
+      ³                             Ã iFDC_write_track()
+      ³                             Ã iFDC_format_track()
+      ³                             Ã iFDC_seek_track()
+      ³                             À iFDC_seek_relative()
+      ³
+      ³
+      ³       ÚÄÄÄÄÄÄÄÄÄÄÄÄ¿
+      ÃÄÄÄÄÄÄÄ´ isr.asp    ³
+      ³       ÀÄÄÄÄÄÄÄÄÄÄÂÄÙ
+      ³                  Ã interrupt_0_handler()
+      ³                  Ã interrupt_1_handler()
+      ³                  Ã interrupt_2_handler()
+      ³                  Ã interrupt_3_handler()
+      ³                  Ã interrupt_4_handler()
+      ³                  Ã interrupt_5_handler()
+      ³                  Ã interrupt_6_handler()
+      ³                  Ã interrupt_7_handler()
+      ³                  Ã interrupt_8_handler()
+      ³                  Ã interrupt_9_handler()
+      ³                  Ã interrupt_10_handler()
+      ³                  Ã interrupt_11_handler()
+      ³                  Ã interrupt_12_handler()
+      ³                  Ã interrupt_13_handler()
+      ³                  Ã interrupt_14_handler()
+      ³                  Ã interrupt_15_handler()
+      ³                  Ã interrupt_16_handler()
+      ³                  Ã interrupt_17_handler()
+      ³                  Ã interrupt_18_handler()
+      ³                  Ã interrupt_19_handler()
+      ³                  Ã interrupt_20_handler()
+      ³                  Ã interrupt_21_handler()
+      ³                  Ã interrupt_22_handler()
+      ³                  Ã interrupt_23_handler()
+      ³                  Ã interrupt_24_handler()
+      ³                  Ã interrupt_25_handler()
+      ³                  Ã interrupt_26_handler()
+      ³                  Ã interrupt_27_handler()
+      ³                  Ã interrupt_28_handler()
+      ³                  Ã interrupt_29_handler()
+      ³                  Ã interrupt_30_handler()
+      ³                  Ã interrupt_31_handler()
+      ³                  Ã interrupt_32_handler()
+      ³                  Ã interrupt_33_handler()
+      ³                  Ã interrupt_34_handler()
+      ³                  Ã interrupt_35_handler()
+      ³                  Ã interrupt_36_handler()
+      ³                  Ã interrupt_37_handler()
+      ³                  Ã interrupt_38_handler()
+      ³                  Ã interrupt_39_handler()
+      ³                  Ã interrupt_40_handler()
+      ³                  Ã interrupt_41_handler()
+      ³                  Ã interrupt_42_handler()
+      ³                  Ã interrupt_43_handler()
+      ³                  Ã interrupt_44_handler()
+      ³                  Ã interrupt_45_handler()
+      ³                  Ã interrupt_46_handler()
+      ³                  Ã interrupt_47_handler()
+      ³                  Ã interrupt_48_handler()
+      ³                  Ã interrupt_49_handler()
+      ³                  Ã interrupt_50_handler()
+      ³                  Ã interrupt_51_handler()
+      ³                  Ã interrupt_52_handler()
+      ³                  Ã interrupt_53_handler()
+      ³                  Ã interrupt_54_handler()
+      ³                  Ã interrupt_55_handler()
+      ³                  Ã interrupt_56_handler()
+      ³                  Ã interrupt_57_handler()
+      ³                  Ã interrupt_58_handler()
+      ³                  Ã interrupt_59_handler()
+      ³                  Ã interrupt_60_handler()
+      ³                  Ã interrupt_61_handler()
+      ³                  Ã interrupt_62_handler()
+      ³                  Ã interrupt_63_handler()
+      ³                  Ã interrupt_64_handler()
+      ³                  Ã interrupt_65_handler()
+      ³                  Ã interrupt_66_handler()
+      ³                  Ã interrupt_67_handler()
+      ³                  Ã interrupt_68_handler()
+      ³                  Ã interrupt_69_handler()
+      ³                  Ã interrupt_70_handler()
+      ³                  Ã interrupt_71_handler()
+      ³                  Ã interrupt_72_handler()
+      ³                  Ã interrupt_73_handler()
+      ³                  Ã interrupt_74_handler()
+      ³                  Ã interrupt_75_handler()
+      ³                  Ã interrupt_76_handler()
+      ³                  Ã interrupt_77_handler()
+      ³                  Ã interrupt_78_handler()
+      ³                  Ã interrupt_79_handler()
+      ³                  Ã interrupt_80_handler()
+      ³                  Ã interrupt_81_handler()
+      ³                  Ã interrupt_82_handler()
+      ³                  Ã interrupt_83_handler()
+      ³                  Ã interrupt_84_handler()
+      ³                  Ã interrupt_85_handler()
+      ³                  Ã interrupt_86_handler()
+      ³                  Ã interrupt_87_handler()
+      ³                  Ã interrupt_88_handler()
+      ³                  Ã interrupt_89_handler()
+      ³                  Ã interrupt_90_handler()
+      ³                  Ã interrupt_91_handler()
+      ³                  Ã interrupt_92_handler()
+      ³                  Ã interrupt_93_handler()
+      ³                  Ã interrupt_94_handler()
+      ³                  Ã interrupt_95_handler()
+      ³                  Ã interrupt_96_handler()
+      ³                  Ã interrupt_97_handler()
+      ³                  Ã interrupt_98_handler()
+      ³                  Ã interrupt_99_handler()
+      ³                  Ã interrupt_100_handler()
+      ³                  Ã interrupt_101_handler()
+      ³                  Ã interrupt_102_handler()
+      ³                  Ã interrupt_103_handler()
+      ³                  Ã interrupt_104_handler()
+      ³                  Ã interrupt_105_handler()
+      ³                  Ã interrupt_106_handler()
+      ³                  Ã interrupt_107_handler()
+      ³                  Ã interrupt_108_handler()
+      ³                  Ã interrupt_109_handler()
+      ³                  Ã interrupt_110_handler()
+      ³                  Ã interrupt_111_handler()
+      ³                  Ã interrupt_112_handler()
+      ³                  Ã interrupt_113_handler()
+      ³                  Ã interrupt_114_handler()
+      ³                  Ã interrupt_115_handler()
+      ³                  Ã interrupt_116_handler()
+      ³                  Ã interrupt_117_handler()
+      ³                  Ã interrupt_118_handler()
+      ³                  Ã interrupt_119_handler()
+      ³                  Ã interrupt_120_handler()
+      ³                  Ã interrupt_121_handler()
+      ³                  Ã interrupt_122_handler()
+      ³                  Ã interrupt_123_handler()
+      ³                  Ã interrupt_124_handler()
+      ³                  Ã interrupt_125_handler()
+      ³                  Ã interrupt_126_handler()
+      ³                  Ã interrupt_127_handler()
+      ³                  Ã interrupt_128_handler()
+      ³                  Ã interrupt_129_handler()
+      ³                  Ã interrupt_130_handler()
+      ³                  Ã interrupt_131_handler()
+      ³                  Ã interrupt_132_handler()
+      ³                  Ã interrupt_133_handler()
+      ³                  Ã interrupt_134_handler()
+      ³                  Ã interrupt_135_handler()
+      ³                  Ã interrupt_136_handler()
+      ³                  Ã interrupt_137_handler()
+      ³                  Ã interrupt_138_handler()
+      ³                  Ã interrupt_139_handler()
+      ³                  Ã interrupt_140_handler()
+      ³                  Ã interrupt_141_handler()
+      ³                  Ã interrupt_142_handler()
+      ³                  Ã interrupt_143_handler()
+      ³                  Ã interrupt_144_handler()
+      ³                  Ã interrupt_145_handler()
+      ³                  Ã interrupt_146_handler()
+      ³                  Ã interrupt_147_handler()
+      ³                  Ã interrupt_148_handler()
+      ³                  Ã interrupt_149_handler()
+      ³                  Ã interrupt_150_handler()
+      ³                  Ã interrupt_151_handler()
+      ³                  Ã interrupt_152_handler()
+      ³                  Ã interrupt_153_handler()
+      ³                  Ã interrupt_154_handler()
+      ³                  Ã interrupt_155_handler()
+      ³                  Ã interrupt_156_handler()
+      ³                  Ã interrupt_157_handler()
+      ³                  Ã interrupt_158_handler()
+      ³                  Ã interrupt_159_handler()
+      ³                  Ã interrupt_160_handler()
+      ³                  Ã interrupt_161_handler()
+      ³                  Ã interrupt_162_handler()
+      ³                  Ã interrupt_163_handler()
+      ³                  Ã interrupt_164_handler()
+      ³                  Ã interrupt_165_handler()
+      ³                  Ã interrupt_166_handler()
+      ³                  Ã interrupt_167_handler()
+      ³                  Ã interrupt_168_handler()
+      ³                  Ã interrupt_169_handler()
+      ³                  Ã interrupt_170_handler()
+      ³                  Ã interrupt_171_handler()
+      ³                  Ã interrupt_172_handler()
+      ³                  Ã interrupt_173_handler()
+      ³                  Ã interrupt_174_handler()
+      ³                  Ã interrupt_175_handler()
+      ³                  Ã interrupt_176_handler()
+      ³                  Ã interrupt_177_handler()
+      ³                  Ã interrupt_178_handler()
+      ³                  Ã interrupt_179_handler()
+      ³                  Ã interrupt_180_handler()
+      ³                  Ã interrupt_181_handler()
+      ³                  Ã interrupt_182_handler()
+      ³                  Ã interrupt_183_handler()
+      ³                  Ã interrupt_184_handler()
+      ³                  Ã interrupt_185_handler()
+      ³                  Ã interrupt_186_handler()
+      ³                  Ã interrupt_187_handler()
+      ³                  Ã interrupt_188_handler()
+      ³                  Ã interrupt_189_handler()
+      ³                  Ã interrupt_190_handler()
+      ³                  Ã interrupt_191_handler()
+      ³                  Ã interrupt_192_handler()
+      ³                  Ã interrupt_193_handler()
+      ³                  Ã interrupt_194_handler()
+      ³                  Ã interrupt_195_handler()
+      ³                  Ã interrupt_196_handler()
+      ³                  Ã interrupt_197_handler()
+      ³                  Ã interrupt_198_handler()
+      ³                  Ã interrupt_199_handler()
+      ³                  Ã interrupt_200_handler()
+      ³                  Ã interrupt_201_handler()
+      ³                  Ã interrupt_202_handler()
+      ³                  Ã interrupt_203_handler()
+      ³                  Ã interrupt_204_handler()
+      ³                  Ã interrupt_205_handler()
+      ³                  Ã interrupt_206_handler()
+      ³                  Ã interrupt_207_handler()
+      ³                  Ã interrupt_208_handler()
+      ³                  Ã interrupt_209_handler()
+      ³                  Ã interrupt_210_handler()
+      ³                  Ã interrupt_211_handler()
+      ³                  Ã interrupt_212_handler()
+      ³                  Ã interrupt_213_handler()
+      ³                  Ã interrupt_214_handler()
+      ³                  Ã interrupt_215_handler()
+      ³                  Ã interrupt_216_handler()
+      ³                  Ã interrupt_217_handler()
+      ³                  Ã interrupt_218_handler()
+      ³                  Ã interrupt_219_handler()
+      ³                  Ã interrupt_220_handler()
+      ³                  Ã interrupt_221_handler()
+      ³                  Ã interrupt_222_handler()
+      ³                  Ã interrupt_223_handler()
+      ³                  Ã interrupt_224_handler()
+      ³                  Ã interrupt_225_handler()
+      ³                  Ã interrupt_226_handler()
+      ³                  Ã interrupt_227_handler()
+      ³                  Ã interrupt_228_handler()
+      ³                  Ã interrupt_229_handler()
+      ³                  Ã interrupt_230_handler()
+      ³                  Ã interrupt_231_handler()
+      ³                  Ã interrupt_232_handler()
+      ³                  Ã interrupt_233_handler()
+      ³                  Ã interrupt_234_handler()
+      ³                  Ã interrupt_235_handler()
+      ³                  Ã interrupt_236_handler()
+      ³                  Ã interrupt_237_handler()
+      ³                  Ã interrupt_238_handler()
+      ³                  Ã interrupt_239_handler()
+      ³                  Ã interrupt_240_handler()
+      ³                  Ã interrupt_241_handler()
+      ³                  Ã interrupt_242_handler()
+      ³                  Ã interrupt_243_handler()
+      ³                  Ã interrupt_244_handler()
+      ³                  Ã interrupt_245_handler()
+      ³                  Ã interrupt_246_handler()
+      ³                  Ã interrupt_247_handler()
+      ³                  Ã interrupt_248_handler()
+      ³                  Ã interrupt_249_handler()
+      ³                  Ã interrupt_250_handler()
+      ³                  Ã interrupt_251_handler()
+      ³                  Ã interrupt_252_handler()
+      ³                  Ã interrupt_253_handler()
+      ³                  Ã interrupt_254_handler()
+      ³                  Ã interrupt_255_handler()
+      ³                  Ã irq6_handler()
+      ³                  Ã divide_by_zero_handler()
+      ³                  Ã debug_exception_handler()
+      ³                  Ã breakpoint_exception_handler()
+      ³                  Ã overflow_exception_handler()
+      ³                  Ã bound_range_exceeded_handler()
+      ³                  Ã invalid_opcode_handler()
+      ³                  Ã device_not_available_handler()
+      ³                  Ã double_fault_handler()
+      ³                  Ã coprocessor_segment_overrun_handler()
+      ³                  Ã invalid_tss_handler()
+      ³                  Ã segment_not_present_handler()
+      ³                  Ã stack_fault_handler()
+      ³                  Ã gp_fault_handler()
+      ³                  Ã page_fault_handler()
+      ³                  Ã floating_point_error_handler()
+      ³                  Ã machine_check_handler()
+      ³                  Ã exception_handler_fake_error_code()
+      ³                  Ã exception_handler_remove_error_code()
+      ³                  Ã count_interrupt_handler_eoi()
+      ³                  À count_interrupt_handler()
+      ³
+      ³
+      ³       ÚÄÄÄÄÄÄÄÄÄÄÄÄ¿
+      ÃÄÄÄÄÄÄÄ´ pic.asp    ³
+      ³       ÀÄÄÄÄÄÄÄÄÄÄÂÄÙ
+      ³                  Ã iPIC_redirect_irq()
+      ³                  Ã iPIC_mask_irq()
+      ³                  Ã iPIC_unmask_irq()
+      ³                  Ã iPIC_mask_all_irqs()
+      ³                  À iPIC_unmask_all_irqs()
+      ³
+      ³
+      ³       ÚÄÄÄÄÄÄÄÄÄÄÄÄ¿
+      ÃÄÄÄÄÄÄÄ´ dma.asp    ³
+      ³       ÀÄÄÄÄÄÄÄÄÄÄÂÄÙ
+      ³                  À iDMA_setup()
+      ³
+      ³
+      ³       ÚÄÄÄÄÄÄÄÄÄÄÄÄ¿
+      ÃÄÄÄÄÄÄÄ´ video.asp  ³
+      ³       ÀÄÄÄÄÄÄÄÄÄÄÂÄÙ
+      ³                  Ã _position_cursor()
+      ³                  Ã hex_adjust_al()
+      ³                  Ã hex_adjust_al_dl()
+      ³                  Ã iString_generate_radix_string()
+      ³                  Ã iVT_display_decimal_in_edx_mono()
+      ³                  Ã iVT_display_decimal_in_edx_nr_mono()
+      ³                  Ã iVT_display_decimal_in_edx_nr_vga()
+      ³                  Ã iVT_display_decimal_in_edx_vga()
+      ³                  Ã iVT_display_hex_string_both()
+      ³                  Ã iVT_display_hex_string_ecx_mono()
+      ³                  Ã iVT_display_hex_string_ecx_nr_both()
+      ³                  Ã iVT_display_hex_string_ecx_nr_mono()
+      ³                  Ã iVT_display_hex_string_ecx_nr_vga()
+      ³                  Ã iVT_display_hex_string_ecx_ro_mono()
+      ³                  Ã iVT_display_hex_string_ecx_ro_vga()
+      ³                  Ã iVT_display_hex_string_ecx_vga()
+      ³                  Ã iVT_display_radix_in_edx_mono()
+      ³                  Ã iVT_display_radix_in_edx_nr_mono()
+      ³                  Ã iVT_display_radix_in_edx_nr_vga()
+      ³                  Ã iVT_display_radix_in_edx_vga()
+      ³                  Ã iVT_display_radix_in_edx_vga()
+      ³                  Ã iVT_display_string_both()
+      ³                  Ã iVT_display_string_mono()
+      ³                  Ã iVT_display_string_nr_both()
+      ³                  Ã iVT_display_string_nr_mono()
+      ³                  Ã iVT_display_string_nr_vga()
+      ³                  Ã iVT_display_string_vga()
+      ³                  Ã iVT_move_to_next_line_mono()
+      ³                  Ã iVT_move_to_next_line_vga()
+      ³                  Ã iVT_position_cursor_both()
+      ³                  Ã iVT_position_cursor_mono()
+      ³                  Ã iVT_position_cursor_raw_data()
+      ³                  Ã iVT_position_cursor_vga()
+      ³                  Ã iVT_set_registers_for_mono()
+      ³                  Ã iVT_set_registers_for_vga()
+      ³                  Ã iVT_display_decimal_in_edx_both()
+      ³                  Ã iVT_display_decimal_in_edx_nr_both()
+      ³                  Ã iVT_display_hexidecimal_in_vga()
+      ³                  Ã iVT_display_hexidecimal_in_nr_vga()
+      ³                  Ã iVT_display_hexidecimal_in_mono()
+      ³                  Ã iVT_display_hexidecimal_in_nr_mono()
+      ³                  Ã iVT_display_hexidecimal_in_edx_both()
+      ³                  Ã iVT_display_hexidecimal_in_edx_nr_both()
+      ³                  Ã iVT_set_attribute_vga()
+      ³                  Ã iVT_set_attribute_mono()
+      ³                  Ã iVT_set_attribute_both()
+      ³                  Ã iVT_clear_screen_vga()
+      ³                  Ã iVT_clear_screen_mono()
+      ³                  Ã iVT_clear_screen_both()
+      ³                  ³
+      ³                  ³                   Ú tss32_offset0   ¿
+      ³                  ³                   ³ tss32_offset4   ³
+      ³                  ³                   ³ tss32_offset8   ³
+      ³                  ³                   ³ tss32_offset12  ³
+      ³                  ³                   ³ tss32_offset16  ³
+      ³                  ³                   ³ tss32_offset20  ³
+      ³                  ³                   ³ tss32_offset24  ³
+      ³                  ³                   ³ tss32_offset28  ³
+      ³                  ³                   ³ tss32_offset32  ³
+      ³                  ³                   ³ tss32_offset36  ³
+      ³                  ³                   ³ tss32_offset40  ³
+      ³                  ÃÄÄdata variablesÄÄÄ´ tss32_offset44  ³
+      ³                  ³                   ³ tss32_offset48  ³
+      ³                  ³                   ³ tss32_offset52  ³
+      ³                  ³                   ³ tss32_offset56  ³
+      ³                  ³                   ³ tss32_offset60  ³
+      ³                  ³                   ³ tss32_offset64  ³
+      ³                  ³                   ³ tss32_offset68  ³
+      ³                  ³                   ³ tss32_offset72  ³
+      ³                  ³                   ³ tss32_offset76  ³
+      ³                  ³                   ³ tss32_offset80  ³
+      ³                  ³                   ³ tss32_offset84  ³
+      ³                  ³                   ³ tss32_offset88  ³
+      ³                  ³                   ³ tss32_offset92  ³
+      ³                  ³                   ³ tss32_offset96  ³
+      ³                  ³                   À tss32_offset100 Ù
+      ³                  ³
+      ³                  À iVT_display_tss32_mono()
+      ³
+      ³
+      ³       ÚÄÄÄÄÄÄÄÄÄÄÄÄ¿
+      ÃÄÄÄÄÄÄÄ´ debi.asp   ³
+      ³       ÀÄÄÄÄÄÄÄÄÄÄÂÄÙ
+      ³                  Ã debi_debug()
+      ³                  Ã debi_gdt_idt()
+      ³                  Ã debi_disasm()
+      ³                  Ã debi_stack()
+      ³                  Ã debi_stack_mem()
+      ³                  Ã debi_registers()
+      ³                  Ã debi_fpu_box()
+      ³                  Ã debi_draw_window()
+      ³                  Ã debi_reg16()
+      ³                  Ã debi_reg32()
+      ³                  Ã debi_reg32_expanded()
+      ³                  Ã debi_binary32_expanded()
+      ³                  Ã debi_hex_string()
+      ³                  Ã debi_raw_string()
+      ³                  Ã debi_hex_string_exp()
+      ³                  Ã debi_flag_up_down()
+      ³                  ³
+      ³                  ³                   Ú mouse_offset         ¿
+      ³                  ÃÄÄdata variablesÄÄÄ´ mouse_bytes          ³
+      ³                  ³                   À mouse_intercept_busy Ù
+      ³                  ³
+      ³                  Ã debi_mouse_intercept()
+      ³                  Ã debi_update_mouse_pointer()
+      ³                  Ã debi_object_stuff()
+      ³                  Ã debi_object_show()
+      ³                  Ã debi_clear_info_box()
+      ³                  Ã debi_object_unhighlight_last_area()
+      ³                  Ã debi_object_highlight_new_area()
+      ³                  Ã debi_calculate_x_y()
+      ³                  ³
+      ³                  ³                   Ú keyboard_byte        ¿
+      ³                  ÃÄÄdata variablesÄÄÄ´ intercept_key_alt    ³
+      ³                  ³                   ³ intercept_key_ctrl   ³
+      ³                  ³                   À intercept_key_shift  Ù
+      ³                  ³
+      ³                  Ã debi_keyboard_intercept()
+      ³                  Ã debi_exception()
+      ³                  Ã debug1()
+      ³                  Ã debug2()
+      ³                  Ã debug3()
+      ³                  Ã debug4()
+      ³                  Ã debug1_clear()
+      ³                  Ã debug2_clear()
+      ³                  Ã debug3_clear()
+      ³                  Ã debug4_clear()
+      ³                  À display_debug_text
+      ³
+      ³
+      ³       ÚÄÄÄÄÄÄÄÄÄÄÄÄ¿
+      ÀÄÄÄÄÄÄÄ´ data32.asp ³
+              ÀÄÄÄÄÄÄÄÄÄÄÂÄÙ
+                         ³                   Ú reg1                           ¿
+                         ³                   ³ reg2                           ³
+                         ³                   ³ offset_vga                     ³
+                         ³                   ³ offset_mono                    ³
+                         ³                   ³ attribute_vga                  ³
+                         ³                   ³ attribute_mono                 ³
+                         ³                   ³ storage_ptr                    ³
+                         ³                   ³ finding_high_memory            ³
+                         ³                   ³ total_memory                   ³
+                         ³                   ³ initializing_pic               ³
+                         ³                   ³ initializing_timer             ³
+                         ³                   ³ initializing_kbd               ³
+                         ³                   ³ initializing_mouse             ³
+                         ³                   ³ initializing_serial            ³
+                         ³                   ³ initializing_parallel          ³
+                         ³                   ³ initializing_floppy            ³
+                         ³                   ³ initializing_ide               ³
+                         ³                   ³ initializing_scsi              ³
+                         ³                   ³ initializing_sound_card        ³
+                         ³                   ³ initializing_network           ³
+                         ³                   ³ loading_drivers                ³
+                         ³                   ³ memory_mb                      ³
+                         ³                   ³ kbd_101_key                    ³
+                         ³                   ³ mouse_serial                   ³
+                         ³                   ³ mouse_ps2                      ³
+                         ³                   ³ drive_letter                   ³
+                         ³                   ³ floppy_288                     ³
+                         ³                   ³ floppy_144                     ³
+                         ³                   ³ floppy_12                      ³
+                         ³                   ³ floppy_720                     ³
+                         ³                   ³ floppy_360                     ³
+                         ³                   ³ disk_number                    ³
+                         ³                   ³ unknown                        ³
+                         ³                   ³ colon                          ³
+                         ³                   ³ comma                          ³
+                         ³                   ³ open_parenthesis               ³
+                         ³                   ³ close_parenthesis              ³
+                         ³                   ³ hyphen                         ³
+                         ³                   ³ option_blank                   ³
+                         ³                   ³ option_last                    ³
+                         ³                   ³ option_last_ok                 ³
+                         ³                   ³ option_last_error              ³
+                         ³                   ³ sub_option_last_ok             ³
+                         ³                   ³ sub_option_last_error          ³
+                         ³                   ³ option_port_blank              ³
+                         ³                   ³ option_port_last               ³
+                         ³                   ³ initialized_ok                 ³
+                         ³                   ³ initialized_error              ³
+                         ³                   ³ not_available                  ³
+                         ³                   ³ divide_by_zero_text            ³
+                         ³                   ³ single_step_text               ³
+                         ³                   ³ breakpoint_text                ³
+                         ³                   ³ overflow_text                  ³
+                         ³                   ³ bound_exception_text           ³
+                         ³                   ³ invalid_opcode                 ³
+                         ³                   ³ device_na_text                 ³
+                         ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´ double_fault                   ³
+                                             ³ coprocessor_text               ³
+                                             ³ invalid_tss                    ³
+                                             ³ not_present_text               ³
+                                             ³ stack_fault_text               ³
+                                             ³ gp_fault_text                  ³
+                                             ³ page_fault_text                ³
+                                             ³ floating_point_text            ³
+                                             ³ alignment_check_text           ³
+                                             ³ machine_check_text             ³
+                                             ³ debug1_text                    ³
+                                             ³ debug2_text                    ³
+                                             ³ debug3_text                    ³
+                                             ³ debug4_text                    ³
+                                             ³ clear_debug_text               ³
+                                             ³ debug_text                     ³
+                                             ³ debug_pause_time               ³
+                                             ³ cmos_conversion_table          ³
+                                             ³ timer_max_hz                   ³
+                                             ³ timer_max_value                ³
+                                             ³ installed_memory               ³
+                                             ³ _xTIMER_wait_full_tick         ³
+                                             ³ _xTIMER_wait_next_tick         ³
+                                             ³ _xTIMER_wait_x_ticks           ³
+                                             ³ _xTIMER_evaluate_interval      ³
+                                             ³ _iTIMER_set_interrupt_interval ³
+                                             ³ _iFDC_initialize_drive         ³
+                                             ³ _iFDC_determine_media          ³
+                                             ³ _iFDC_send_byte                ³
+                                             ³ _iFDC_read_byte                ³
+                                             ³ _iFDC_motor_on                 ³
+                                             ³ _iFDC_motor_off                ³
+                                             ³ _iFDC_clear_fdc_output         ³
+                                             ³ _xTASK_release_timeslice       ³
+                                             ³ _iKBD_ll_wait_key              ³
+                                             ³ _iFDC_clear_fdc_input          ³
+                                             ³ _iTASK_irq6_prep_wait          ³
+                                             ³ _iTASK_irq6_wait_for_signal    ³
+                                             ³ _iFDC_read_sector              ³
+                                             ³ _iFDC_read_track               ³
+                                             ³ _iFDC_write_sector             ³
+                                             ³ _iFDC_write_track              ³
+                                             ³ _iFDC_format_track             ³
+                                             ³ _iFDC_seek_track               ³
+                                             ³ _iFDC_seek_relative            ³
+                                             ³ _iFDC_sense_interrupt          ³
+                                             ³ _iDISK_requestor               ³
+                                             ³ _iDISK_update_media            ³
+                                             À _iDMA_setup                    Ù
+
+

@@ -1,0 +1,226 @@
+лллл                                                    Exodus File System Structure
+ллллн
+оллллм
+ пплллллммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммм
+   н
+   н    Floppy and Hard drive
+   н
+ ммлллллппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппп
+оллллп
+ллллн
+лллл
+лллл    The entire concept of the Exodus File System (EFS) was to allow the maximum amount of user-storable dataspace given a
+лллл    particular disk system.  With this in mind I have specifically decided to do away with the File Allocation Table, and with
+лллл    it the huge percentages of wasted disk space.  The downside of this is that the operating system code to access data on a
+лллл    disk system is more complex, but it does allow the user to get the most out of their machine.
+лллл
+лллл    Specifically there are four main concepts to the EFS:   1)  Boot sector
+лллл                                                            2)  Data Table
+лллл                                                            3)  Name Pool
+лллл                                                            4)  Resource Pool
+лллл
+ллллЩЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЛ
+ллллКFloppy Disk SystemsК
+ллллШЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭМ
+лллл
+лллл   кФФФФФФФФФФФП
+лллл   ГBoot SectorГ
+лллл   РФФФФФФФФФФФй
+лллл    This is the traditional boot sector we are all familiar with, track-0, head-0, sector 1.  It consists of a tiny executable
+лллл    program.  The structure of an Exodus boot sector is:
+лллл
+лллл       Offset  Length   Description
+лллл       ------  ------   ---------------
+лллл        0       512     Boot program + boot data
+лллл
+лллл   кФФФФФФФФФФП
+лллл   ГData TableГ
+лллл   РФФФФФФФФФФй
+лллл    This concept allows objects to be stored on the disk.  The objects can be anything that Exodus supports.  The most
+лллл    common object will be a file.  But data items can be stored as well.  The first two-bytes of each DT sector contain
+лллл    either 0ffffh or the next DT sector (a value of 0ffffh indicates this is the last one).
+лллл
+лллл    The DT consists of 16-byte entries, each of them contains information about a particular object.  Each object has a
+лллл    custom structure associated with it, although many object have similar (if not identical) structures.  The deliniation
+лллл    is for logical purposes only.
+лллл
+лллл    The DT entry might point to references in the Name Pool or the Resource Pool which contain specific information about
+лллл    the item, its location on the disk, etc.
+лллл
+лллл      Offset  Length    Description
+лллл      ------  ------    ----------------------
+лллл        0       1       Object type (* See below)
+лллл        1       4       Days elapsed since Jan 0, 0000 (a value of 1 here would indicate Jan 1, 0000) last modified
+лллл        5       3       Seconds into day last modified
+лллл        8       8       Varies per object
+лллл      ------
+лллл      Total length: 16 bytes
+лллл       кФФФФФФФФФФФП        кФФФФФФФФФП
+лллл       ГObject typeГ        ГStructureГ
+лллл       РФФФФФФФФФФФй        РФФФФФФФФФй
+лллл        Num  Description      Offset  Length    Description
+лллл        ---  ------------     ------  ------    -----------
+лллл    * Note for all of these items, if high bit is on (80h) then the item is deleted.  If high bit is clear then it's a normal entry.
+лллл      Num 1 is the same as Num 81h, just deleted
+лллл         0   Bad sector         8       2       Length of bad sector information in RP
+лллл                                10      2       Offset into RP where data starts
+лллл                                12      4       --Not used, reserved for future use
+лллл
+лллл         1   Volume label       8       1       Length of name in NP
+лллл                                9       2       Offset into NP where name starts
+лллл                                11      5       --Not used, reserved for future use
+лллл
+лллл         2   Directory          8       1       Length of name in NP
+лллл                                9       2       Offset into NP where name starts
+лллл                                11      2       Sector for directory DT
+лллл                                13      1       Attributes кФТФТФТФТФТФТФТФП
+лллл                                                           Г0Г0Г0Г0Г0Г0Г0ГxГ
+лллл                                                           РТСФСФСФСФСФСТСТй
+лллл                                                            РФФФФФТФФФФФй РФ Read only
+лллл                                                                  РФФФФФФФФФ --Not used, reserved for future use
+лллл                                14      2       --Not used, reserved for future use
+лллл
+лллл         3   File               8       1       Length of name in NP
+лллл                                9       2       Offset into NP where name starts
+лллл                                11      2       Offset into RP for first entry
+лллл                                13      1       Attributes кФТФТФТФТФТФТФТФП
+лллл                                                           Г0Г0Г0Г0Г0Г0Г0ГxГ
+лллл                                                           РТСФСФСФСФСФСТСТй
+лллл                                                            РФФФФФТФФФФФй РФ Read only
+лллл                                                                  РФФФФФФФФФ --Not used, reserved for future use
+лллл                                14      2       --Not used, reserved for future use
+лллл
+лллл         4   Executable         8       1       Length of name in NP
+лллл                                9       2       Offset into NP where name starts
+лллл                                11      2       Offset into RP for first entry
+лллл                                13      1       Attributes кФТФТФТФТФТФТФТФП
+лллл                                                           Г0Г0ГxГ0Г0Г0ГxГxГ
+лллл                                                           РТСТСТСТСФСТСТСТй
+лллл                                                            РТй Г РФТФй Г РФ Uses FPU/MMX?  0-No, 1-Yes
+лллл                                                             Г  Г   Г   РФФФ Uses SSE?  0-No, 1-Yes
+лллл                                                             Г  Г   РФФФФФФФ --Not used, reserved for future use
+лллл                                                             Г  РФФФФФФФФФФФ Requires exclusive use of any resources?  0-No, 1-Yes (Inquire of them in Requestor())
+лллл                                                             РФФФФФФФФФФФФФФ --Not used, reserved for future use
+лллл                                14      2       --Not used, reserved for future use
+лллл
+лллл         5..127 Reserved for future use
+лллл         128    Bootable entry  8       2       Offset into RP for first entry
+лллл                                10      1       Entry type кФТФТФТФТФТФТФТФП
+лллл                                                           Г0Г0Г0Г0ГxГxГxГxГ
+лллл                                                           РТСФСФСТСТСФСТСТй
+лллл                                                            РФФТФФй РФТФй РФ Load during BIOS read?  0-No, 1-Yes
+лллл                                                               Г      РФФФФФ Load type: 000 - exodus.ini
+лллл                                                               Г                        001 - driver
+лллл                                                               Г                        010 - A special Exodus boot loader
+лллл                                                               Г                              (replaces default bootup.bin)
+лллл                                                               Г                        011 - bootup.bin
+лллл                                                               Г                        100 - exodus.com
+лллл                                                               Г                      others - Nuserved
+лллл                                                               РФФФФФФФФФФФФ --Not used, reserved for future use
+лллл                                11      2       (Only for Load type=01) Offset into NP for name
+лллл                                13      2       CRC16
+лллл                                15      1       --Nuserved
+лллл
+лллл         255    Empty DT entry                  Place holder for an item that has been permanently deleted
+лллл
+лллл
+лллл   кФФФФФФФФФП
+лллл   ГName PoolГ
+лллл   РФФФФФФФФФй
+лллл    The Name Pool (NP) consists of a flexible structure.  The first two-bytes of each NP sector contain either 0ffffh or the
+лллл    next NP sector (a value of 0ffffh indicates this is the last one), but the rest of the NP area is free-form and consists
+лллл    of a pool of data defined by references from the DT entries.  * Refer to the DT structure
+лллл
+лллл
+лллл   кФФФФФФФФФФФФФП
+лллл   ГResource PoolГ
+лллл   РФФФФФФФФФФФФФй
+лллл    The Resource Pool (RP) consists of a fixed structures that vary in size for each data type.  The first two-bytes of each
+лллл    RP sector contain either 0ffffh or the next NP sector.  This data consists of entries pointed to by the DT.
+лллл       кФФФФФФФФФФП
+лллл       ГFile entryГ
+лллл       РФФФФФФФФФФй
+лллл         Offset    Length       Description
+лллл         ------   ----------    -----------------------
+лллл          0       4             Offset into data space
+лллл          4       4             Length of item there
+лллл          8       4             Next RP entry offset (if more than one is required, fragmented file)
+лллл         -----
+лллл         Total Length:  12 bytes
+лллл
+лллл       кФФФФФФФФФФФФФФФФП
+лллл       ГExecutable entryГ
+лллл       РФФФФФФФФФФФФФФФФй
+лллл         Offset    Length       Description
+лллл         ------   ----------    -----------------------
+лллл          0       4             Offset into data space
+лллл          4       4             Length of item there
+лллл          8       4             Next RP entry offset (if more than one is required, fragmented file)
+лллл          12      4             Offset into executable for main()
+лллл          16      4             Offset into executable for requestor()
+лллл         -----
+лллл         Total Length:  20 bytes
+лллл
+лллл       кФФФФФФФФФФФФФФП
+лллл       ГBootable entryГ
+лллл       РФФФФФФФФФФФФФФй
+лллл         Offset    Length       Description
+лллл         ------   ----------    -----------------------
+лллл          0       4             Length of file (this file must be contiguous)
+лллл          4       4             Offset into executable for main()
+лллл          8       4             Offset into executable for requestor()
+лллл          12      1             Head (starting)
+лллл          13      1             Track (starting)
+лллл          14      1             Sector (starting)
+лллл          15      1             --Not used, reserved for future use
+лллл          16      1             Head (ending)
+лллл          17      1             Track (ending)
+лллл          18      1             Sector (ending)
+лллл          19      1             --Not used, reserved for future use
+лллл         -----
+лллл         Total Length:  20 bytes
+лллл
+лллл
+лллл
+лллл           кФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФТФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФТФФФФФФФФФФФФФФФФФФФФП
+лллл           Р                       360 + 720k floppies                        С              1.2 MB floppies            С  1.44 MB floppies  й
+лллл           кФФФФФФТФФФФФФТФФФФФФТФФФФФФФФФФТФФФФФФТФФФФФФТФФФФФФТФФФФФФТФФФФФФТФФФФФФТФФФФФФТФФФФФФТФФФФФФТФФФФФФТФФФФФФТФФФФФФТФФФФФФТФФФФФФП
+лллл    Track 0Г Boot Г Data Г Name Г Resource Г      Г      Г      Г      Г      Г      Г      Г      Г      Г      Г      Г      Г      Г      Г
+лллл     Head 0Г Code Г TableГ Pool Г   Pool   Г      Г      Г      Г      Г      Г      Г      Г      Г      Г      Г      Г      Г      Г      Г
+лллл           УФФФФФФХФФФФФФХФФФФФФХФФФФФФФФФФХФФФФФФХФФФФФФХФФФФФФХФФФФФФХФФФФФФХФФФФФФХФФФФФФХФФФФФФХФФФФФФХФФФФФФХФФФФФФХФФФФФФХФФФФФФХФФФФФФД
+лллл     Sector   1      2      3        4        5      6      7      8      9      10     11     12     13     14     15     16     17     18
+лллл
+лллл
+лллл        Boot code       - Boot sector on floppy disk
+лллл        Data table      - Contains object entries
+лллл        Name Pool       - Contains names information for items
+лллл        Resource Pool   - Contains load information for items
+лллл
+лллл        Data Space      - The remainder of the disk.  It logically starts on track 1, sector 1, head 0 and proceeds in the following manner:
+лллл                            track = 1
+лллл                            while (track < max_tracks) {
+лллл                                head = 0
+лллл                                while (head < max_heads) {
+лллл                                    sector = 1
+лллл                                    while (sector < max_sectors) {
+лллл                                        read_sector();
+лллл                                        ++sector;
+лллл                                    }
+лллл                                    ++head;
+лллл                                }
+лллл                                ++track;
+лллл                            }
+лллл                            ; We're at the end of the disk (this represents the end of continguous data space)
+лллл                            ; Read any open sectors on track 0 and fill them, * Note:  Data space on track 0 is filled backwards from the maximum
+лллл                            ;  head and the maximum sector back towards the inner-sector, then the head is decremented and it is repeated.  The
+лллл                            ;  data is stored in each sector beginning at offset 0 and continuing on through the maximum number of bytes per sector,
+лллл                            ;  then continues to the numerically previous sector where it is stored in the same manner.
+лллл
+лллл                        - When the DT/NP/RP entries go beyond the physical capacities of track 0 they proceed from the end of the disk, maximum
+лллл                          track, maximum head, maximum side, and continue backwards one sector at a time until they reach the data space.
+лллл
+лллл                        - When the data being stored reaches the DT/NP/RP entries then the disk is full.
+лллл
+лллл    * end *
+лллл    RCH - 06/03/00, 11:36 pm
+лллл

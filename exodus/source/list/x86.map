@@ -1,0 +1,107 @@
+
+ Start  Stop   Length Name                   Class
+ 00000H 00000H 00000H _TEXT                  CODE
+ 00000H 0A811H 0A812H _TEXT32                CODE
+ 0A812H 0A812H 00000H _DATA                  DATA
+ 0A820H 0A820H 00000H STACK                  STACK
+
+ Origin   Group
+ 0000:0   DGROUP
+
+  Address         Publics by Name
+
+ 0000:84F5       convert_al_to_hex
+ 0000:8514       convert_and_store_ax_to_hex
+ 0000:852E       convert_and_store_eax_to_hex
+ 0000:8574       determine_operand_size
+ 0000:85DB       determine_standard_operand_size
+ 0000:855E       end_offsets
+ 0000:861C       extract_mod_reg_rm
+ 0000:889B       extract_mod_rm
+ 0000:008D       initialize_driver
+ 0000:0087       main
+ 0000:0008       requestor
+ 0000:8548       start_offsets
+ 0000:8F5E       store_16_bit_displacement_registers
+ 0000:9746       store_16_bit_signed_value
+ 0000:9580       store_16_bit_value
+ 0000:9619       store_32_bit_signed_value
+ 0000:952D       store_32_bit_value
+ 0000:97FD       store_8_bit_signed_value
+ 0000:95BA       store_8_bit_value
+ 0000:98DF       store_close_bracket
+ 0000:98C5       store_colon
+ 0000:988F       store_comma
+ 0000:98AE       store_comma_cl
+ 0000:989C       store_comma_one
+ 0000:93CB       store_direct
+ 0000:8E61       store_displacement_registers
+ 0000:9142       store_displacement_registers_sib
+ 0000:9035       store_disp_displacement_registers
+ 0000:928D       store_disp_displacement_registers_sib
+ 0000:8942       store_gp_register
+ 0000:9427       store_indirect_no_displacement
+ 0000:9454       store_indirect_with_8bit_displacement
+ 0000:9486       store_indirect_with_xbit_displacement
+ 0000:98D2       store_open_bracket
+ 0000:94B8       store_segment_override
+ 0000:96BC       store_signed_dword_in_eax
+ 0000:983D       store_signed_value
+ 0000:97B6       store_signed_word_in_ax
+ 0000:9872       store_string
+ 0000:95E4       store_value
+ 0000:9ADA       X86_fpu_opcode
+ 0000:98EC       x86_simplify_disassembly
+ 0000:A820       _edata
+ 0000:A820       _end
+ 0000:A820       __edata
+ 0000:A820       __end
+
+  Address         Publics by Value
+
+ 0000:0008       requestor
+ 0000:0087       main
+ 0000:008D       initialize_driver
+ 0000:84F5       convert_al_to_hex
+ 0000:8514       convert_and_store_ax_to_hex
+ 0000:852E       convert_and_store_eax_to_hex
+ 0000:8548       start_offsets
+ 0000:855E       end_offsets
+ 0000:8574       determine_operand_size
+ 0000:85DB       determine_standard_operand_size
+ 0000:861C       extract_mod_reg_rm
+ 0000:889B       extract_mod_rm
+ 0000:8942       store_gp_register
+ 0000:8E61       store_displacement_registers
+ 0000:8F5E       store_16_bit_displacement_registers
+ 0000:9035       store_disp_displacement_registers
+ 0000:9142       store_displacement_registers_sib
+ 0000:928D       store_disp_displacement_registers_sib
+ 0000:93CB       store_direct
+ 0000:9427       store_indirect_no_displacement
+ 0000:9454       store_indirect_with_8bit_displacement
+ 0000:9486       store_indirect_with_xbit_displacement
+ 0000:94B8       store_segment_override
+ 0000:952D       store_32_bit_value
+ 0000:9580       store_16_bit_value
+ 0000:95BA       store_8_bit_value
+ 0000:95E4       store_value
+ 0000:9619       store_32_bit_signed_value
+ 0000:96BC       store_signed_dword_in_eax
+ 0000:9746       store_16_bit_signed_value
+ 0000:97B6       store_signed_word_in_ax
+ 0000:97FD       store_8_bit_signed_value
+ 0000:983D       store_signed_value
+ 0000:9872       store_string
+ 0000:988F       store_comma
+ 0000:989C       store_comma_one
+ 0000:98AE       store_comma_cl
+ 0000:98C5       store_colon
+ 0000:98D2       store_open_bracket
+ 0000:98DF       store_close_bracket
+ 0000:98EC       x86_simplify_disassembly
+ 0000:9ADA       X86_fpu_opcode
+ 0000:A820       __end
+ 0000:A820       _edata
+ 0000:A820       _end
+ 0000:A820       __edata

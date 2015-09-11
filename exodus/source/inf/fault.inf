@@ -1,0 +1,142 @@
+лллл                                            Low-Level Debi(tm) Debugger Information
+ллллн
+оллллм
+ пплллллммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммм
+   н
+   н    Fault routines (LL-Debi rouines)
+   н
+ ммлллллппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппп
+оллллп
+ллллн
+лллл    The structure is:     BYTE - Item type
+лллл                          BYTE - Starting X
+лллл                          BYTE - Ending X
+лллл                          BYTE - Starting Y
+лллл                          BYTE - Ending Y
+лллл                          BYTE - Number of items that follow matching this one
+лллл                      10 BYTES - Varies per item, see below
+лллл
+лллл
+лллл    The fault system allowed definable areas on the screen.  Each of those areas contains a range of characters that, when
+лллл    the mouse passes over, displays additional information in the Information window.  The structure of the items are:
+лллл
+лллл    The "Type" byte contains two portions, upper and lower nibble:
+лллл    ЩЭЭЭЭЭЭЭЭЭЭЭЭЭЭЛ
+лллл    К Upper nibble К
+лллл    ШЭЭЭЭЭЭЭЭЭЭЭЭЭЭМ
+лллл        0       - General data
+лллл        1       - Window type 1, GDT/IDT
+лллл        2       - Window type 2, FPU registers
+лллл        3       - Window type 3, Disassembly
+лллл        4       - Window type 4, Stack
+лллл        5       - Window type 5, GP Registers
+лллл        6       - Window type 6, Stack & Memory
+лллл        7-13    - Nuserved
+лллл        14      - Ignore this one
+лллл        15      - Multiple ranges
+лллл
+лллл    The following objects are reserved for individual upper-nibble objects:
+лллл
+лллл    ЩЭЭЭЭЭЭЭЭЭЭЭЭЭЛ
+лллл    К 0 - General К
+лллл    ШЭЭЭЭЭЭЭЭЭЭЭЭЭМ
+лллл        Lower nibble
+лллл        -------------
+лллл            0       - BYTE (reg8)
+лллл            1       - WORD (reg16)
+лллл            2       - DWORD (reg32)
+лллл            3       - String (hex_string)
+лллл            4       - String expanded (hex_string_expanded)
+лллл            5       - String raw (raw_string)
+лллл            6       - flag? value
+лллл            7       - binary32 expanded (binary32_expanded)
+лллл            8       - float32
+лллл            9       - float64
+лллл            10      - float80
+лллл            11-15   - Nuserved
+лллл
+лллл         Offset  Length  Description
+лллл         ------  ------  -----------
+лллл        кФФФФФФФФФФП
+лллл        Г 0 - reg8 Г
+лллл        РФФФФФФФФФФй
+лллл            6     1      Value to display
+лллл
+лллл        кФФФФФФФФФФФП
+лллл        Г 1 - reg16 Г
+лллл        РФФФФФФФФФФФй
+лллл            6     2      Value to display
+лллл
+лллл        кФФФФФФФФФФФП
+лллл        Г 2 - reg32 Г
+лллл        РФФФФФФФФФФФй
+лллл            6     4      Value to display
+лллл
+лллл        кФФФФФФФФФФФП
+лллл        Г 3 - S Hex Г
+лллл        РФФФФФФФФФФФй
+лллл            6     2      Segment
+лллл            8     4      Offset
+лллл            12    2      Length
+лллл
+лллл        кФФФФФФФФФФФП
+лллл        Г 4 - S Exp Г
+лллл        РФФФФФФФФФФФй
+лллл            6     2      Segment
+лллл            8     4      Offset
+лллл            12    2      Length
+лллл
+лллл        кФФФФФФФФФФФП
+лллл        Г 5 - S Raw Г
+лллл        РФФФФФФФФФФФй
+лллл            6     2      Segment
+лллл            8     4      Offset
+лллл            12    2      Length
+лллл
+лллл        кФФФФФФФФФФФП
+лллл        Г 6 - Flag? Г
+лллл        РФФФФФФФФФФФй
+лллл            6     1      Flag value, 0-Down, 1-Up
+лллл
+лллл        кФФФФФФФФФФФП
+лллл        Г 7 - Bin32 Г
+лллл        РФФФФФФФФФФФй
+лллл            6     4      Value to display
+лллл
+лллл        кФФФФФФФФФП
+лллл        Г 8 - F32 Г
+лллл        РФФФФФФФФФй
+лллл            6     4      Value to display
+лллл
+лллл        кФФФФФФФФФП
+лллл        Г 9 - F64 Г
+лллл        РФФФФФФФФФй
+лллл            6     8      Value to display
+лллл
+лллл        кФФФФФФФФФФП
+лллл        Г 10 - F80 Г
+лллл        РФФФФФФФФФФй
+лллл            6    10      Value to display
+лллл
+лллл
+лллл    ЩЭЭЭЭЭЭЭЭЭЭЭЭЭЛ
+лллл    К 1 - GDT/IDT К
+лллл    ШЭЭЭЭЭЭЭЭЭЭЭЭЭМ
+лллл        Lower nibble
+лллл        ------------
+лллл            0       - as GDT/IDT entry
+лллл            1-15    - Nuserved
+лллл
+лллл    ЩЭЭЭЭЭЭЭЭЭЭЭЭЭЭЛ
+лллл    К 15 - GDT/IDT К
+лллл    ШЭЭЭЭЭЭЭЭЭЭЭЭЭЭМ
+лллл        Lower nibble
+лллл        ------------
+лллл            0       - Nuserved
+лллл            1-15    - Number of entries that follow indicating the various ranges
+лллл                      * Note:  Following entries are of Upper nibble 14
+лллл
+лллл
+лллл    RCH - 09/26/00, 03:12 pm
+лллл     end 
+лллл

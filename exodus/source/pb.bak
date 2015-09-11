@@ -1,0 +1,29 @@
+; This file contains the commands for the PUT_BOOT program
+;
+;   B - Boot sector
+;   L - Exodus boot loader
+;   S - Special boot loader
+;   D - Driver required for load
+;   I - Exodus.ini file
+;   D - Exodus.drv
+;
+
+B|exec\boot.bin
+L|exec\bootup.bin
+I|exodus.ini
+D|exec\vga.drv
+D|exec\bios.drv
+D|exec\kbd.drv
+D|exec\mouseps2.drv
+D|exec\debi.drv
+D|exec\x86.drv
+;D|exec\cv.drv
+D|exec\disk.drv
+;D|exec\fdc.drv
+;D|exec\ide.drv
+;D|exec\scsi.drv
+;D|exec\storage.drv
+;D|exec\dtnprp.drv
+;D|exec\serial.drv
+;D|exec\parallel.drv
+D|exec\exodus.drv

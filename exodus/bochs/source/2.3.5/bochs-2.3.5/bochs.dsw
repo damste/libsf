@@ -1,0 +1,194 @@
+Microsoft Developer Studio Workspace File, Format Version 6.00
+# WARNING: DO NOT EDIT OR DELETE THIS WORKSPACE FILE!
+
+###############################################################################
+
+Project: "bochs"=".\bochs.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name iodev
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name cpu
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name memory
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name gui
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name stubs
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name fpu
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name bximage
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name niclist
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name disasm
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name bxcommit
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name bx_debug
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "bx_debug"=".\bx_debug\bx_debug.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "bxcommit"=".\bxcommit.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "bximage"=".\bximage.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "cpu"=".\cpu\cpu.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "disasm"=".\disasm\disasm.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "fpu"=".\fpu\fpu.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "gui"=".\gui\gui.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "iodev"=".\iodev\iodev.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "memory"=".\memory\memory.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "niclist"=".\misc\niclist.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "stubs"=".\instrument\stubs\stubs.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Global:
+
+Package=<5>
+{{{
+}}}
+
+Package=<3>
+{{{
+}}}
+
+###############################################################################
+

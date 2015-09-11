@@ -4,6 +4,33 @@ came, being used to serve His Kingdom here upon this Earth.  In much prayer and
 supplication, knowing that He is able to do exceedingly abundantly beyond any
 of our needs.  Jesus Christ, our Savior, to Him be all the glory.
 
+--------------
+
+  _____                  _             
+ | ____|__  __ ___    __| | _   _  ___ 
+ |  _|  \ \/ // _ \  / _` || | | |/ __|
+ | |___  >  <| (_) || (_| || |_| |\__ \
+ |_____|/_/\_\\___/  \__,_| \__,_||___/
+
+ Liberty Software's 32-bit Exodus Operating System
+ Developed mostly between 1996 and 2004, with exceedingly
+ heavy development between 1996 and 2002.
+ 
+ Development resumes Sep.11.2015.
+ 
+ Summary:
+ A brand new kernel designed from the ground up around
+ the i386 architecture. A future ARM port is planned
+ under the product name Armodus.  And later 64-bit ports
+ are planned to Exodus-64 and Armodus-64.
+ 
+ This product will use no existing free or open source
+ software, and will be entirely comprised of software
+ written by the Liberty Software Foundation, in service
+ to Jesus Christ.
+ 
+ by Rick C. Hodgin
+
 
 --------------
   _  _  ____    ___     __
@@ -13,7 +40,7 @@ of our needs.  Jesus Christ, our Savior, to Him be all the glory.
  | || | ___) || (_) || (_) |
  |_||_||____/  \___/  \___/
  
-Liberty Software "LibSF" 386-x40 CPU Project
+Liberty Software Foundation's "LibSF 386-x40" CPU Project
 Mar.09.2015 -- Partially designed, not yet coded
 
 Summary:
@@ -25,7 +52,12 @@ paging.
 Milestones:
 Oppie-1 through Oppie-7 have been mapped out.
 Oppie-1 has been coded, including emulator, assembler, debugger, and verilog.
-LibSF-386-x40 fundamental design has been created.  See the li386-documentation pages.
+LibSF-386-x40 fundamental design has been created.
+See the li386-documentation pages.
+
+A tool has been envisioned for writing the hardware:  LibSF Logician.
+It is a graphical tool for manipulating fundamental electronic components,
+and aggregating them into logic units.
 
 
 --------------

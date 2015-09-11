@@ -1,0 +1,41 @@
+
+ Start  Stop   Length Name                   Class
+ 00000H 00000H 00000H _TEXT                  CODE
+ 00000H 00B55H 00B56H _TEXT32                CODE
+ 00B56H 00B56H 00000H _DATA                  DATA
+ 00B60H 00B60H 00000H STACK                  STACK
+
+ Origin   Group
+ 0000:0   DGROUP
+
+  Address         Publics by Name
+
+ 0000:0364       iKBD_activate_DEBI_intercept
+ 0000:0376       iKBD_deactivate_DEBI_intercept
+ 0000:009C       initialize_driver
+ 0000:00F8       invDisable_keyboard
+ 0000:0109       invEnable_keyboard
+ 0000:014B       invKBD_interpret_keystroke
+ 0000:011A       KBD_handler
+ 0000:0087       main
+ 0000:0008       requestor
+ 0000:0B60       _edata
+ 0000:0B60       _end
+ 0000:0B60       __edata
+ 0000:0B60       __end
+
+  Address         Publics by Value
+
+ 0000:0008       requestor
+ 0000:0087       main
+ 0000:009C       initialize_driver
+ 0000:00F8       invDisable_keyboard
+ 0000:0109       invEnable_keyboard
+ 0000:011A       KBD_handler
+ 0000:014B       invKBD_interpret_keystroke
+ 0000:0364       iKBD_activate_DEBI_intercept
+ 0000:0376       iKBD_deactivate_DEBI_intercept
+ 0000:0B60       _edata
+ 0000:0B60       _end
+ 0000:0B60       __end
+ 0000:0B60       __edata

@@ -1,0 +1,104 @@
+лллл                                            Exodus Stack Frame Interface with q/Language
+ллллн
+оллллм
+ пплллллммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммм
+   н
+   н    Overview of the stack frame structure
+   н
+ ммлллллппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппп
+оллллп
+ллллн
+лллл    ; REMEMBER
+лллл
+лллл    The Exodus stack frame consists of the requirements of q/Language as well as a highly functional design model.
+лллл    The stack frame passes parameters, allows memory space for return parameters and is designed in a manner to allow
+лллл    immediate temporary space on the stack to be directly addressable without modifying the parameter stack offsets.
+лллл
+лллл    The visualization of this capability appears like this:
+лллл
+лллл        z = some_function(pi,10)
+лллл
+лллл        УФФФФФФФФФФФФФФФФФД
+лллл        Г                 Г
+лллл        Г      param1     ГФФФФebp+18          Input parameter 1, the "pi" in the above example
+лллл        Г                 Г
+лллл        УФФФФФФФФФФФФФФФФФД
+лллл        Г                 Г
+лллл        Г      param2     ГФФФФebp+14          Input parameter 2, the "10" in the above example
+лллл        Г                 Г
+лллл        УФФФФФФФФФФФФФФФФФД
+лллл        Г                 Г
+лллл        Г       ret1      ГФФФФebp+10          Return parameter 1, the "z" in the above example
+лллл        Г                 Г
+лллл        УФФФФФФФФФФФФФФФФФД
+лллл        Г                 Г
+лллл        Г       eip       ГФФФФebp+6           eip of the instruction after the "call some_function" assembly line
+лллл        Г                 Г
+лллл        УФФФФФФФФТФФФФФФФФД
+лллл        Г        ГxxxxxxxxГ
+лллл        Г   cs   Гxx not xГФФФФebp+4           cs of the instruction after the "call some_function" assembly line
+лллл        Г        Гx used xГ
+лллл        УФФФФФФФФСФФФФФФФФД
+лллл        Г                 Г
+лллл        Г       ebp       ГФФФФboth ebp and esp point here ([ebp+0] would be the value of ebp itself)
+лллл        Г                 Г
+лллл        УФФФФФФФФФФФФФФФФФД
+лллл        Г                 Г
+лллл        Г     <free>      Г
+лллл        Г                 Г
+лллл        УФФФФФФФФФФФФФФФФФД
+лллл
+лллл    Internally it is called like this:
+лллл        mov     eax,pi
+лллл        push    eax                                             ; Parameter 1
+лллл        pushd   10                                              ; Parameter 2
+лллл        sub     esp,4                                           ; Return 1
+лллл        call    some_function
+лллл        popd    z                                               ; Store the return parameter
+лллл        add     esp,8                                           ; Reset the stack to lose the parameters above
+лллл
+лллл        .
+лллл        .
+лллл        .
+лллл
+лллл        some_function   PROC
+лллл            push    ebp
+лллл            mov     ebp,esp
+лллл
+лллл            ... Code goes here to process the data
+лллл
+лллл            pop     ebp
+лллл            ret
+лллл        some_function   ENDP
+лллл
+лллл
+ллллФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФ
+лллл
+лллл    As you can see in the above example, additional temporary variable space is as easy as this:
+лллл
+лллл        sub     esp,12
+лллл        ... We've just added 12 bytes of temporary variable space on the stack
+лллл        add     esp,12
+лллл        ... We've just gotten rid of our temporary variable space
+лллл
+лллл    By using this method rather than the Intel instructions "enter 12,0" and "leave" we do two things.
+лллл    FIRST, we do not alter the locations of our parameters that are already on the stack.
+лллл    SECOND, we do not eat up 4 bytes of unnecessary stack space each time we need new temporary variables
+лллл
+лллл    The ENTER 12,0 instruction is equivelant to:
+лллл        push    ebp
+лллл        mov     ebp,esp
+лллл        sub     esp,12
+лллл
+лллл    As you can see, in order to reference our parameters above we would now have to add 4 to every reference.
+лллл    By adding this code to the beginning of each procedure we do not use temporary space, except where necessary:
+лллл        push    ebp
+лллл        mov     ebp,esp
+лллл
+лллл    Now, we do not have any temporary space setup yet.  But, everything is fixed.  And, in the future (should we need some)
+лллл    then we can issue "sub esp,xx" where xx is the number of bytes we want.
+лллл
+лллл
+лллл     end 
+лллл    RCH - 08/09/00, 08:09 pm
+лллл
