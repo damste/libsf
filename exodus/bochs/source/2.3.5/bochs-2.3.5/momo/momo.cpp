@@ -120,7 +120,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
    
     // Initialize the buffer
     memset(&mda_32kb_buffer[0], 0, sizeof(mda_32kb_buffer));
-    FILE* lfh = fopen("\\exodus\\bochs\\source\\2.3.5\\bochs-2.3.5\\momo\\mono.dmp", "rb+");
+    FILE* lfh = fopen("\\libsf\\exodus\\bochs\\source\\2.3.5\\bochs-2.3.5\\momo\\mono.dmp", "rb+");
     int numread = (int)fread(&mda_32kb_buffer[0], 1, 32768, lfh);
     fclose(lfh);
 

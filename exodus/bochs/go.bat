@@ -1,3 +1,4 @@
-cd \emulator\
-bochs -f \exodus\bochs\exodus.cnf
-cd \exodus\bochs\
+@echo off
+cd emulator
+bochs -f \libsf\exodus\bochs\exodus.cnf
+cd ..
