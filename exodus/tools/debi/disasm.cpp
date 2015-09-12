@@ -1,15 +1,16 @@
 //////////
 //
-// DebiX86Disassembler/Debi/disasm.cpp
+// /libsf/exodus/tools/debi/disasm.cpp
 //
 //////
 // Version 0.80
-// Copyright (c) 2014 by Rick C. Hodgin
+// Copyright (c) 2014-2015 by Rick C. Hodgin
 //////
 // Last update:
-//     Feb.13.2014
+//     Sep.12.2015
 //////
 // Change log:
+//     Sep.12.2015 - Refactoring for Exodus OS tool support
 //     Feb.13.2014 - Initial creation
 //////
 //
@@ -34,17 +35,6 @@
 //
 
 
-
-
-#include <stdlib.h>
-#include <stdio.h>
-
-#include "const.h"
-#include "structs.h"
-#include "defs.h"
-
-#include "disasm.h"
-extern DISASM_FUNC second_byte_functions[];
 
 
 //////////
@@ -89,220 +79,140 @@ extern DISASM_FUNC second_byte_functions[];
 
 	void extract_8bit_reg_operand(u8 reg, u8** op, u8* prefix_op)
 	{	
-		if (reg == 0)
-			*op = _al_reg;
-		else if (reg == 1)
-			*op = _cl_reg;
-		else if (reg == 2)
-			*op = _dl_reg;
-		else if (reg == 3)
-			*op = _bl_reg;
-		else if (reg == 4)
-			*op = _ah_reg;
-		else if (reg == 5)
-			*op = _ch_reg;
-		else if (reg == 6)
-			*op = _dh_reg;
-		else if (reg == 7)
-			*op = _bh_reg;
+		if (reg == 0)			*op = _al_reg;
+		else if (reg == 1)		*op = _cl_reg;
+		else if (reg == 2)		*op = _dl_reg;
+		else if (reg == 3)		*op = _bl_reg;
+		else if (reg == 4)		*op = _ah_reg;
+		else if (reg == 5)		*op = _ch_reg;
+		else if (reg == 6)		*op = _dh_reg;
+		else if (reg == 7)		*op = _bh_reg;
 		
 		add_prefix_op(op, prefix_op);
 	}
 
 	void extract_16bit_reg_operand(u8 reg, u8** op, u8* prefix_op)
 	{	
-		if (reg == 0)
-			*op = _ax_reg;
-		else if (reg == 1)
-			*op = _cx_reg;
-		else if (reg == 2)
-			*op = _dx_reg;
-		else if (reg == 3)
-			*op = _bx_reg;
-		else if (reg == 4)
-			*op = _sp_reg;
-		else if (reg == 5)
-			*op = _bp_reg;
-		else if (reg == 6)
-			*op = _si_reg;
-		else if (reg == 7)
-			*op = _di_reg;
+		if (reg == 0)			*op = _ax_reg;
+		else if (reg == 1)		*op = _cx_reg;
+		else if (reg == 2)		*op = _dx_reg;
+		else if (reg == 3)		*op = _bx_reg;
+		else if (reg == 4)		*op = _sp_reg;
+		else if (reg == 5)		*op = _bp_reg;
+		else if (reg == 6)		*op = _si_reg;
+		else if (reg == 7)		*op = _di_reg;
 		
 		add_prefix_op(op, prefix_op);
 	}
 
 	void extract_32bit_reg_operand(u8 reg, u8** op, u8* prefix_op)
 	{	
-		if (reg == 0)
-			*op = _eax_reg;
-		else if (reg == 1)
-			*op = _ecx_reg;
-		else if (reg == 2)
-			*op = _edx_reg;
-		else if (reg == 3)
-			*op = _ebx_reg;
-		else if (reg == 4)
-			*op = _esp_reg;
-		else if (reg == 5)
-			*op = _ebp_reg;
-		else if (reg == 6)
-			*op = _esi_reg;
-		else if (reg == 7)
-			*op = _edi_reg;
+		if (reg == 0)			*op = _eax_reg;
+		else if (reg == 1)		*op = _ecx_reg;
+		else if (reg == 2)		*op = _edx_reg;
+		else if (reg == 3)		*op = _ebx_reg;
+		else if (reg == 4)		*op = _esp_reg;
+		else if (reg == 5)		*op = _ebp_reg;
+		else if (reg == 6)		*op = _esi_reg;
+		else if (reg == 7)		*op = _edi_reg;
 		
 		add_prefix_op(op, prefix_op);
 	}
 
 	void extract_64bit_reg_operand(u8 reg, u8** op, u8* prefix_op)
 	{	
-		if (reg == 0)
-			*op = _rax_reg;
-		else if (reg == 1)
-			*op = _rcx_reg;
-		else if (reg == 2)
-			*op = _rdx_reg;
-		else if (reg == 3)
-			*op = _rbx_reg;
-		else if (reg == 4)
-			*op = _rsp_reg;
-		else if (reg == 5)
-			*op = _rbp_reg;
-		else if (reg == 6)
-			*op = _rsi_reg;
-		else if (reg == 7)
-			*op = _rdi_reg;
+		if (reg == 0)			*op = _rax_reg;
+		else if (reg == 1)		*op = _rcx_reg;
+		else if (reg == 2)		*op = _rdx_reg;
+		else if (reg == 3)		*op = _rbx_reg;
+		else if (reg == 4)		*op = _rsp_reg;
+		else if (reg == 5)		*op = _rbp_reg;
+		else if (reg == 6)		*op = _rsi_reg;
+		else if (reg == 7)		*op = _rdi_reg;
 		
 		add_prefix_op(op, prefix_op);
 	}
 
 	void extract_test_reg_operand(u8 reg, u8** op, u8* prefix_op)
 	{	
-		if (reg == 0)
-			*op = _tr0_reg;
-		else if (reg == 1)
-			*op = _tr1_reg;
-		else if (reg == 2)
-			*op = _tr2_reg;
-		else if (reg == 3)
-			*op = _tr3_reg;
-		else if (reg == 4)
-			*op = _tr4_reg;
-		else if (reg == 5)
-			*op = _tr5_reg;
-		else if (reg == 6)
-			*op = _tr6_reg;
-		else if (reg == 7)
-			*op = _tr7_reg;
+		if (reg == 0)			*op = _tr0_reg;
+		else if (reg == 1)		*op = _tr1_reg;
+		else if (reg == 2)		*op = _tr2_reg;
+		else if (reg == 3)		*op = _tr3_reg;
+		else if (reg == 4)		*op = _tr4_reg;
+		else if (reg == 5)		*op = _tr5_reg;
+		else if (reg == 6)		*op = _tr6_reg;
+		else if (reg == 7)		*op = _tr7_reg;
 		
 		add_prefix_op(op, prefix_op);
 	}
 
 	void extract_debug_reg_operand(u8 reg, u8** op, u8* prefix_op)
 	{	
-		if (reg == 0)
-			*op = _dr0_reg;
-		else if (reg == 1)
-			*op = _dr1_reg;
-		else if (reg == 2)
-			*op = _dr2_reg;
-		else if (reg == 3)
-			*op = _dr3_reg;
-		else if (reg == 4)
-			*op = _dr4_reg;
-		else if (reg == 5)
-			*op = _dr5_reg;
-		else if (reg == 6)
-			*op = _dr6_reg;
-		else if (reg == 7)
-			*op = _dr7_reg;
+		if (reg == 0)			*op = _dr0_reg;
+		else if (reg == 1)		*op = _dr1_reg;
+		else if (reg == 2)		*op = _dr2_reg;
+		else if (reg == 3)		*op = _dr3_reg;
+		else if (reg == 4)		*op = _dr4_reg;
+		else if (reg == 5)		*op = _dr5_reg;
+		else if (reg == 6)		*op = _dr6_reg;
+		else if (reg == 7)		*op = _dr7_reg;
 		
 		add_prefix_op(op, prefix_op);
 	}
 
 	void extract_control_reg_operand(u8 reg, u8** op, u8* prefix_op)
 	{	
-		if (reg == 0)
-			*op = _cr0_reg;
-		else if (reg == 1)
-			*op = _cr1_reg;
-		else if (reg == 2)
-			*op = _cr2_reg;
-		else if (reg == 3)
-			*op = _cr3_reg;
-		else if (reg == 4)
-			*op = _cr4_reg;
-		else if (reg == 5)
-			*op = _cr5_reg;
-		else if (reg == 6)
-			*op = _cr6_reg;
-		else if (reg == 7)
-			*op = _cr7_reg;
+		if (reg == 0)			*op = _cr0_reg;
+		else if (reg == 1)		*op = _cr1_reg;
+		else if (reg == 2)		*op = _cr2_reg;
+		else if (reg == 3)		*op = _cr3_reg;
+		else if (reg == 4)		*op = _cr4_reg;
+		else if (reg == 5)		*op = _cr5_reg;
+		else if (reg == 6)		*op = _cr6_reg;
+		else if (reg == 7)		*op = _cr7_reg;
 		
 		add_prefix_op(op, prefix_op);
 	}
 
 	void extract_mmx_reg_operand(u8 reg, u8** op, u8* prefix_op)
 	{	
-		if (reg == 0)
-			*op = _mm0_reg;
-		else if (reg == 1)
-			*op = _mm1_reg;
-		else if (reg == 2)
-			*op = _mm2_reg;
-		else if (reg == 3)
-			*op = _mm3_reg;
-		else if (reg == 4)
-			*op = _mm4_reg;
-		else if (reg == 5)
-			*op = _mm5_reg;
-		else if (reg == 6)
-			*op = _mm6_reg;
-		else if (reg == 7)
-			*op = _mm7_reg;
+		if (reg == 0)			*op = _mm0_reg;
+		else if (reg == 1)		*op = _mm1_reg;
+		else if (reg == 2)		*op = _mm2_reg;
+		else if (reg == 3)		*op = _mm3_reg;
+		else if (reg == 4)		*op = _mm4_reg;
+		else if (reg == 5)		*op = _mm5_reg;
+		else if (reg == 6)		*op = _mm6_reg;
+		else if (reg == 7)		*op = _mm7_reg;
 		
 		add_prefix_op(op, prefix_op);
 	}
 
 	void extract_xmmx_reg_operand(u8 reg, u8** op, u8* prefix_op)
 	{	
-		if (reg == 0)
-			*op = _xmm0_reg;
-		else if (reg == 1)
-			*op = _xmm1_reg;
-		else if (reg == 2)
-			*op = _xmm2_reg;
-		else if (reg == 3)
-			*op = _xmm3_reg;
-		else if (reg == 4)
-			*op = _xmm4_reg;
-		else if (reg == 5)
-			*op = _xmm5_reg;
-		else if (reg == 6)
-			*op = _xmm6_reg;
-		else if (reg == 7)
-			*op = _xmm7_reg;
+		if (reg == 0)			*op = _xmm0_reg;
+		else if (reg == 1)		*op = _xmm1_reg;
+		else if (reg == 2)		*op = _xmm2_reg;
+		else if (reg == 3)		*op = _xmm3_reg;
+		else if (reg == 4)		*op = _xmm4_reg;
+		else if (reg == 5)		*op = _xmm5_reg;
+		else if (reg == 6)		*op = _xmm6_reg;
+		else if (reg == 7)		*op = _xmm7_reg;
 		
 		add_prefix_op(op, prefix_op);
 	}
 
 	void extract_stx_reg_operand(u8 reg, u8** op, u8* prefix_op)
 	{	
-		if (reg == 0)
-			*op = _st0_reg;
-		else if (reg == 1)
-			*op = _st1_reg;
-		else if (reg == 2)
-			*op = _st2_reg;
-		else if (reg == 3)
-			*op = _st3_reg;
-		else if (reg == 4)
-			*op = _st4_reg;
-		else if (reg == 5)
-			*op = _st5_reg;
-		else if (reg == 6)
-			*op = _st6_reg;
-		else if (reg == 7)
-			*op = _st7_reg;
+		if (reg == 0)			*op = _st0_reg;
+		else if (reg == 1)		*op = _st1_reg;
+		else if (reg == 2)		*op = _st2_reg;
+		else if (reg == 3)		*op = _st3_reg;
+		else if (reg == 4)		*op = _st4_reg;
+		else if (reg == 5)		*op = _st5_reg;
+		else if (reg == 6)		*op = _st6_reg;
+		else if (reg == 7)		*op = _st7_reg;
 		
 		add_prefix_op(op, prefix_op);
 	}
@@ -818,50 +728,28 @@ extern DISASM_FUNC second_byte_functions[];
 	{
 		switch (dd->operand_size)
 		{
-			case _8bit:
-				return(_byte_ptr);
-			case _16bit:
-				return(_word_ptr);
-			case _32bit:
-				return(_dword_ptr);
-			case _64bit:
-				return(_qword_ptr);
-			case _80bit:
-				return(_tbyte_ptr);
-			case _128bit:
-				return(_dqword_ptr);
-			case _6byte:
-				return(_6byte_ptr);
-			case _10byte:
-				return(_10byte_ptr);
-			case _illegal:
-				return(_illegal_ptr);
-			case _0bit:
-				return(_null_string);
-			case _f32:
-				return(_f32_ptr);
-			case _f64:
-				return(_f64_ptr);
-			case _f80:
-				return(_f80_ptr);
-			case _s32:
-				return(_s32_ptr);
-			case _s64:
-				return(_s64_ptr);
-			case _mmx:
-				return(_mmx_ptr);
-			case _xmmx:
-				return(_xmmx_ptr);
-			case _fpu:
-				return(_fpu_ptr);
-			case _m94byte:
-				return(_94byte_ptr);
-			case _m108byte:
-				return(_108byte_ptr);
-			case _m14byte:
-				return(_14byte_ptr);
-			case _m28byte:
-				return(_28byte_ptr);
+			case _8bit:				return(_byte_ptr);
+			case _16bit:			return(_word_ptr);
+			case _32bit:			return(_dword_ptr);
+			case _64bit:			return(_qword_ptr);
+			case _80bit:			return(_tbyte_ptr);
+			case _128bit:			return(_dqword_ptr);
+			case _6byte:			return(_6byte_ptr);
+			case _10byte:			return(_10byte_ptr);
+			case _illegal:			return(_illegal_ptr);
+			case _0bit:				return(_null_string);
+			case _f32:				return(_f32_ptr);
+			case _f64:				return(_f64_ptr);
+			case _f80:				return(_f80_ptr);
+			case _s32:				return(_s32_ptr);
+			case _s64:				return(_s64_ptr);
+			case _mmx:				return(_mmx_ptr);
+			case _xmmx:				return(_xmmx_ptr);
+			case _fpu:				return(_fpu_ptr);
+			case _m94byte:			return(_94byte_ptr);
+			case _m108byte:			return(_108byte_ptr);
+			case _m14byte:			return(_14byte_ptr);
+			case _m28byte:			return(_28byte_ptr);
 			default:
 				return(_unk_ptr);		// Should never be used
 		}
@@ -1100,52 +988,32 @@ extern DISASM_FUNC second_byte_functions[];
 		switch (rt)
 		{
 			case _8bit:
-				if (op == _ax_reg || op == _eax_reg)
-					op = _al_reg;
-				else if (op == _bx_reg || op == _ebx_reg)
-					op = _bl_reg;
-				else if (op == _cx_reg || op == _ecx_reg)
-					op = _cl_reg;
-				else if (op == _dx_reg || op == _edx_reg)
-					op = _dl_reg;
+				if (op == _ax_reg || op == _eax_reg)					op = _al_reg;
+				else if (op == _bx_reg || op == _ebx_reg)				op = _bl_reg;
+				else if (op == _cx_reg || op == _ecx_reg)				op = _cl_reg;
+				else if (op == _dx_reg || op == _edx_reg)				op = _dl_reg;
 				break;
 
 			case _16bit:
-				if (op == _al_reg || op == _eax_reg)
-					op = _ax_reg;
-				else if (op == _bl_reg || op == _ebx_reg)
-					op = _bx_reg;
-				else if (op == _cl_reg || op == _ecx_reg)
-					op = _cx_reg;
-				else if (op == _dl_reg || op == _edx_reg)
-					op = _dx_reg;
-				else if (op == _esi_reg)
-					op = _si_reg;
-				else if (op == _edi_reg)
-					op = _di_reg;
-				else if (op == _ebp_reg)
-					op = _bp_reg;
-				else if (op == _esp_reg)
-					op = _sp_reg;
+				if (op == _al_reg || op == _eax_reg)					op = _ax_reg;
+				else if (op == _bl_reg || op == _ebx_reg)				op = _bx_reg;
+				else if (op == _cl_reg || op == _ecx_reg)				op = _cx_reg;
+				else if (op == _dl_reg || op == _edx_reg)				op = _dx_reg;
+				else if (op == _esi_reg)								op = _si_reg;
+				else if (op == _edi_reg)								op = _di_reg;
+				else if (op == _ebp_reg)								op = _bp_reg;
+				else if (op == _esp_reg)								op = _sp_reg;
 				break;
 
 			case _32bit:
-				if (op == _al_reg || op == _ax_reg)
-					op = _eax_reg;
-				else if (op == _bl_reg || op == _bx_reg)
-					op = _ebx_reg;
-				else if (op == _cl_reg || op == _cx_reg)
-					op = _ecx_reg;
-				else if (op == _dl_reg || op == _dx_reg)
-					op = _edx_reg;
-				else if (op == _esi_reg)
-					op = _esi_reg;
-				else if (op == _edi_reg)
-					op = _edi_reg;
-				else if (op == _ebp_reg)
-					op = _ebp_reg;
-				else if (op == _esp_reg)
-					op = _esp_reg;
+				if (op == _al_reg || op == _ax_reg)						op = _eax_reg;
+				else if (op == _bl_reg || op == _bx_reg)				op = _ebx_reg;
+				else if (op == _cl_reg || op == _cx_reg)				op = _ecx_reg;
+				else if (op == _dl_reg || op == _dx_reg)				op = _edx_reg;
+				else if (op == _esi_reg)								op = _esi_reg;
+				else if (op == _edi_reg)								op = _edi_reg;
+				else if (op == _ebp_reg)								op = _ebp_reg;
+				else if (op == _esp_reg)								op = _esp_reg;
 				break;
 		}
 	}
@@ -1169,7 +1037,7 @@ extern DISASM_FUNC second_byte_functions[];
 					// The syntax:  if (rt == (_16bit | _32bit)) does not work.
 					// The syntax:  if (rt & (_16bit | _32bit) == rt) does not work
 					// etc.
-					lTest = (rt == _16bit | _32bit) ? 1 : 0;
+					lTest = ((rt == (_16bit | _32bit)) ? 1 : 0);
 					if (lTest)
 						extract_modrm_32bit_address_mode(data, dd, &operand1_buffer[0], &dd->operand1, &dd->operand2, _cpu_mode == _16bit_mode ? _16bit : _32bit, do_reg, prefix_op1);
 					else
@@ -1178,7 +1046,7 @@ extern DISASM_FUNC second_byte_functions[];
 				else
 				{
 					// Operand override
-					lTest = (rt == _16bit | _32bit) ? 1 : 0;
+					lTest = ((rt == (_16bit | _32bit)) ? 1 : 0);
 					if (lTest)
 						extract_modrm_32bit_address_mode(data, dd, &operand1_buffer[0], &dd->operand1, &dd->operand2, _cpu_mode == _16bit_mode ? _32bit : _16bit, do_reg, prefix_op1);
 					else
@@ -1196,7 +1064,7 @@ extern DISASM_FUNC second_byte_functions[];
 				if ((dd->overrides & (u32)Operand) == 0 && rt != (u32)_32bit)
 				{
 					// No operand override
-					lTest = (rt == _16bit | _32bit) ? 1 : 0;
+					lTest = ((rt == (_16bit | _32bit)) ? 1 : 0);
 					if (lTest)
 						extract_modrm_16bit_address_mode(data, dd, &operand1_buffer[0], &dd->operand1, &dd->operand2, _cpu_mode == _16bit_mode ? _16bit : _32bit, do_reg, prefix_op1);
 					else
@@ -1205,7 +1073,7 @@ extern DISASM_FUNC second_byte_functions[];
 				else
 				{
 					// Operand override
-					lTest = (rt == _16bit | _32bit) ? 1 : 0;
+					lTest = ((rt == (_16bit | _32bit)) ? 1 : 0);
 					if (lTest)
 						extract_modrm_16bit_address_mode(data, dd, &operand1_buffer[0], &dd->operand1, &dd->operand2, _cpu_mode == _16bit_mode ? _32bit : _16bit, do_reg, prefix_op1);
 					else
@@ -1231,7 +1099,7 @@ extern DISASM_FUNC second_byte_functions[];
 				if ((dd->overrides & (u32)Operand) == 0 && rt != (u32)_16bit)
 				{
 					// No operand override
-					lTest = (rt == _16bit | _32bit) ? 1 : 0;
+					lTest = ((rt == (_16bit | _32bit)) ? 1 : 0);
 					if (lTest)
 						extract_modrm_32bit_address_mode(data, dd, &operand2_buffer[0], &dd->operand2, &dd->operand1, _cpu_mode == _16bit_mode ? _16bit : _32bit, do_reg, prefix_op1);
 					else
@@ -1240,7 +1108,7 @@ extern DISASM_FUNC second_byte_functions[];
 				else
 				{
 					// Operand override
-					lTest = (rt == _16bit | _32bit) ? 1 : 0;
+					lTest = ((rt == (_16bit | _32bit)) ? 1 : 0);
 					if (lTest)
 						extract_modrm_32bit_address_mode(data, dd, &operand2_buffer[0], &dd->operand2, &dd->operand1, _cpu_mode == _16bit_mode ? _32bit : _16bit, do_reg, prefix_op1);
 					else
@@ -1258,7 +1126,7 @@ extern DISASM_FUNC second_byte_functions[];
 				if ((dd->overrides & (u32)Operand) == 0 && rt != (u32)_32bit)
 				{
 					// No operand override
-					lTest = (rt == _16bit | _32bit) ? 1 : 0;
+					lTest = ((rt == (_16bit | _32bit)) ? 1 : 0);
 					if (lTest)
 						extract_modrm_16bit_address_mode(data, dd, &operand2_buffer[0], &dd->operand2, &dd->operand1, _cpu_mode == _16bit_mode ? _16bit : _32bit, do_reg, prefix_op1);
 					else
@@ -1267,7 +1135,7 @@ extern DISASM_FUNC second_byte_functions[];
 				else
 				{
 					// Operand override
-					lTest = (rt == _16bit | _32bit) ? 1 : 0;
+					lTest = ((rt == (_16bit | _32bit)) ? 1 : 0);
 					if (lTest)
 						extract_modrm_16bit_address_mode(data, dd, &operand2_buffer[0], &dd->operand2, &dd->operand1, _cpu_mode == _16bit_mode ? _32bit : _16bit, do_reg, prefix_op1);
 					else
@@ -1371,7 +1239,7 @@ extern DISASM_FUNC second_byte_functions[];
 	void do_common_opcode_fpu_hard_stx(u8* data, SDisasmData* dd, u8* mnemonic, u32 reg, u32 opcode_length)
 	{
 		dd->mnemonic		= mnemonic;
-		extract_stx_reg_operand(reg, &dd->operand1);
+		extract_stx_reg_operand((u8)reg, &dd->operand1);
 		extract_stx_reg_operand(*(data + 1) & 0x07, &dd->operand2);
 		dd->opcode_bytes	+= opcode_length;
 	}
@@ -1380,7 +1248,7 @@ extern DISASM_FUNC second_byte_functions[];
 	{
 		dd->mnemonic		= mnemonic;
 		extract_stx_reg_operand(*(data + 1) & 0x07, &dd->operand1);
-		extract_stx_reg_operand(reg, &dd->operand2);
+		extract_stx_reg_operand((u8)reg, &dd->operand2);
 		dd->opcode_bytes	+= opcode_length;
 	}
 	
@@ -1895,7 +1763,7 @@ extern DISASM_FUNC second_byte_functions[];
 	
 	void do_common_unknown(u8* data, SDisasmData* dd, u8* mnemonic, u32 opcode_length, u8* comment, u8* line_comment)
 	{
-		int i;
+		u32 i;
 		u8 opcode_sequence[256];
 		u8 buff[256];
 		u8 line_buff[256];
@@ -1905,8 +1773,8 @@ extern DISASM_FUNC second_byte_functions[];
 			sprintf((s8*)&opcode_sequence[i*3],"%02x ", (int)(dd->data_root + dd->opcode_bytes + i));
 
 		// Create the comments
-		sprintf((s8*)&line_buff[0], "; (%s)", (s8*)&opcode_sequence[0]);
-		sprintf((s8*)&buff[0], "; UNK - Unknown instruction (%s)", (s8*)&opcode_sequence[0]);
+		sprintf((s8*)&line_buff[256], "; (%s)", (s8*)&opcode_sequence[0]);
+		sprintf((s8*)&buff[256], "; UNK - Unknown instruction (%s)", (s8*)&opcode_sequence[0]);
 		// Store the instruction
 		do_common_mnemonic(dd, mnemonic, opcode_length,
 							dd->comment  ? comment      : buff,
@@ -2411,14 +2279,10 @@ extern DISASM_FUNC second_byte_functions[];
 	{
 		u8 r = (*data & 0x38) >> 3;
 		
-		if (r == 4)
-			do_common_rm16_32_immed8(data, dd, _bt_instruction);		// It's BT r/m16/32,imm8
-		else if (r == 5)
-			do_common_rm16_32_immed8(data, dd, _bts_instruction);		// It's BTS r/m16/32,imm8
-		else if (r == 6)
-			do_common_rm16_32_immed8(data, dd, _btr_instruction);		// It's BTR r/m16/32,imm8
-		else if (r == 7)
-			do_common_rm16_32_immed8(data, dd, _btc_instruction);		// It's BTC r/m16/32,imm8
+		if (r == 4)				do_common_rm16_32_immed8(data, dd, _bt_instruction);		// It's BT r/m16/32,imm8
+		else if (r == 5)		do_common_rm16_32_immed8(data, dd, _bts_instruction);		// It's BTS r/m16/32,imm8
+		else if (r == 6)		do_common_rm16_32_immed8(data, dd, _btr_instruction);		// It's BTR r/m16/32,imm8
+		else if (r == 7)		do_common_rm16_32_immed8(data, dd, _btc_instruction);		// It's BTC r/m16/32,imm8
 		else
 		{
 			// Unused
@@ -2456,44 +2320,28 @@ extern DISASM_FUNC second_byte_functions[];
 	{
 		u8 r = (*(data + 1) & 0x38) >> 3;
 		
-		if (r == 0)
-			do_common_rm8_immed8(data, dd, _add_instruction);	// It's ADD r/m8,imm8
-		else if (r == 1)
-			do_common_rm8_immed8(data, dd, _or_instruction);	// It's OR r/m8,imm8
-		else if (r == 2)
-			do_common_rm8_immed8(data, dd, _adc_instruction);	// It's ADC r/m8,imm8
-		else if (r == 3)
-			do_common_rm8_immed8(data, dd, _sbb_instruction);	// It's SBB r/m8,imm8
-		else if (r == 4)
-			do_common_rm8_immed8(data, dd, _and_instruction);	// It's AND r/m8,imm8
-		else if (r == 5)
-			do_common_rm8_immed8(data, dd, _sub_instruction);	// It's SUB r/m8,imm8
-		else if (r == 6)
-			do_common_rm8_immed8(data, dd, _xor_instruction);	// It's XOR r/m8,imm8
-		else if (r == 7)
-			do_common_rm8_immed8(data, dd, _cmp_instruction);	// It's CMP r/m8,imm8
+		if (r == 0)				do_common_rm8_immed8(data, dd, _add_instruction);	// It's ADD r/m8,imm8
+		else if (r == 1)		do_common_rm8_immed8(data, dd, _or_instruction);	// It's OR r/m8,imm8
+		else if (r == 2)		do_common_rm8_immed8(data, dd, _adc_instruction);	// It's ADC r/m8,imm8
+		else if (r == 3)		do_common_rm8_immed8(data, dd, _sbb_instruction);	// It's SBB r/m8,imm8
+		else if (r == 4)		do_common_rm8_immed8(data, dd, _and_instruction);	// It's AND r/m8,imm8
+		else if (r == 5)		do_common_rm8_immed8(data, dd, _sub_instruction);	// It's SUB r/m8,imm8
+		else if (r == 6)		do_common_rm8_immed8(data, dd, _xor_instruction);	// It's XOR r/m8,imm8
+		else if (r == 7)		do_common_rm8_immed8(data, dd, _cmp_instruction);	// It's CMP r/m8,imm8
 	}
 
 	void opcode_check_reg_81(u8* data, SDisasmData* dd)
 	{
 		u8 r = (*(data + 1) & 0x38) >> 3;
 		
-		if (r == 0)
-			do_common_rm16_32_immed16_32(data, dd, _add_instruction);	// It's ADD r/m16/32,imm16/32
-		else if (r == 1)
-			do_common_rm16_32_immed16_32(data, dd, _or_instruction);	// It's OR r/m16/32,immed16/32
-		else if (r == 2)
-			do_common_rm16_32_immed16_32(data, dd, _adc_instruction);	// It's ADC r/m16/32,imm16/32
-		else if (r == 3)
-			do_common_rm16_32_immed16_32(data, dd, _sbb_instruction);	// It's SBB r/m16/32,imm16/32
-		else if (r == 4)
-			do_common_rm16_32_immed16_32(data, dd, _and_instruction);	// It's AND r/m16/32,imm16/32
-		else if (r == 5)
-			do_common_rm16_32_immed16_32(data, dd, _sub_instruction);	// It's SUB r/m16/32,imm16/32
-		else if (r == 6)
-			do_common_rm16_32_immed16_32(data, dd, _xor_instruction);	// It's XOR r/m16/32,imm16/32
-		else if (r == 7)
-			do_common_rm16_32_immed16_32(data, dd, _cmp_instruction);	// It's CMP r/m16/32,imm16/32
+		if (r == 0)				do_common_rm16_32_immed16_32(data, dd, _add_instruction);	// It's ADD r/m16/32,imm16/32
+		else if (r == 1)		do_common_rm16_32_immed16_32(data, dd, _or_instruction);	// It's OR r/m16/32,immed16/32
+		else if (r == 2)		do_common_rm16_32_immed16_32(data, dd, _adc_instruction);	// It's ADC r/m16/32,imm16/32
+		else if (r == 3)		do_common_rm16_32_immed16_32(data, dd, _sbb_instruction);	// It's SBB r/m16/32,imm16/32
+		else if (r == 4)		do_common_rm16_32_immed16_32(data, dd, _and_instruction);	// It's AND r/m16/32,imm16/32
+		else if (r == 5)		do_common_rm16_32_immed16_32(data, dd, _sub_instruction);	// It's SUB r/m16/32,imm16/32
+		else if (r == 6)		do_common_rm16_32_immed16_32(data, dd, _xor_instruction);	// It's XOR r/m16/32,imm16/32
+		else if (r == 7)		do_common_rm16_32_immed16_32(data, dd, _cmp_instruction);	// It's CMP r/m16/32,imm16/32
 	}
 
 	void opcode_check_reg_82(u8* data, SDisasmData* dd)
@@ -2506,22 +2354,14 @@ extern DISASM_FUNC second_byte_functions[];
 	{
 		u8 r = (*(data + 1) & 0x38) >> 3;
 		
-		if (r == 0)
-			do_common_rm16_32_immed8(data, dd, _add_instruction);	// It's ADD r/m16/32,imm8
-		else if (r == 1)
-			do_common_rm16_32_immed8(data, dd, _or_instruction);	// It's OR r/m16/32,immed8
-		else if (r == 2)
-			do_common_rm16_32_immed8(data, dd, _adc_instruction);	// It's ADC r/m16/32,imm8
-		else if (r == 3)
-			do_common_rm16_32_immed8(data, dd, _sbb_instruction);	// It's SBB r/m16/32,imm8
-		else if (r == 4)
-			do_common_rm16_32_immed8(data, dd, _and_instruction);	// It's AND r/m16/32,imm8
-		else if (r == 5)
-			do_common_rm16_32_immed8(data, dd, _sub_instruction);	// It's SUB r/m16/32,imm8
-		else if (r == 6)
-			do_common_rm16_32_immed8(data, dd, _xor_instruction);	// It's XOR r/m16/32,imm8
-		else if (r == 7)
-			do_common_rm16_32_immed8(data, dd, _cmp_instruction);	// It's CMP r/m16/32,imm8
+		if (r == 0)				do_common_rm16_32_immed8(data, dd, _add_instruction);	// It's ADD r/m16/32,imm8
+		else if (r == 1)		do_common_rm16_32_immed8(data, dd, _or_instruction);	// It's OR r/m16/32,immed8
+		else if (r == 2)		do_common_rm16_32_immed8(data, dd, _adc_instruction);	// It's ADC r/m16/32,imm8
+		else if (r == 3)		do_common_rm16_32_immed8(data, dd, _sbb_instruction);	// It's SBB r/m16/32,imm8
+		else if (r == 4)		do_common_rm16_32_immed8(data, dd, _and_instruction);	// It's AND r/m16/32,imm8
+		else if (r == 5)		do_common_rm16_32_immed8(data, dd, _sub_instruction);	// It's SUB r/m16/32,imm8
+		else if (r == 6)		do_common_rm16_32_immed8(data, dd, _xor_instruction);	// It's XOR r/m16/32,imm8
+		else if (r == 7)		do_common_rm16_32_immed8(data, dd, _cmp_instruction);	// It's CMP r/m16/32,imm8
 	}
 
 	void opcode_check_reg_8f(u8* data, SDisasmData* dd)
@@ -2534,8 +2374,8 @@ extern DISASM_FUNC second_byte_functions[];
 		else
 		{
 			// Unused
-			sprintf((s8*)&buff[0], "UNK - Unknown instruction (8f /%u) in the class of POP m16/32", (int)r);
-			do_common_mnemonic(dd, _unk_instruction, 2, &buff[0]);
+			sprintf((s8*)&buff[256], "UNK - Unknown instruction (8f /%u) in the class of POP m16/32", (int)r);
+			do_common_mnemonic(dd, _unk_instruction, 2, &buff[256]);
 		}
 	}
 
@@ -2544,25 +2384,18 @@ extern DISASM_FUNC second_byte_functions[];
 		u8 buff[256];
 		u8 r = (*(data + 1) & 0x38) >> 3;
 		
-		if (r == 0)
-			do_common_rm8_immed8(data, dd, _rol_instruction);	// It's ROL rm8,imm8
-		else if (r == 1)
-			do_common_rm8_immed8(data, dd, _ror_instruction);	// It's ROR rm8,imm8
-		else if (r == 2)
-			do_common_rm8_immed8(data, dd, _rcl_instruction);	// It's RCL rm8,imm8
-		else if (r == 3)
-			do_common_rm8_immed8(data, dd, _rcr_instruction);	// It's RCR rm8,imm8
-		else if (r == 4)
-			do_common_rm8_immed8(data, dd, _shl_instruction);	// It's SHL rm8,imm8
-		else if (r == 5)
-			do_common_rm8_immed8(data, dd, _shr_instruction);	// It's SHR rm8,imm8
-		else if (r == 7)
-			do_common_rm8_immed8(data, dd, _sar_instruction);	// It's SAR rm8,imm8
+		if (r == 0)				do_common_rm8_immed8(data, dd, _rol_instruction);	// It's ROL rm8,imm8
+		else if (r == 1)		do_common_rm8_immed8(data, dd, _ror_instruction);	// It's ROR rm8,imm8
+		else if (r == 2)		do_common_rm8_immed8(data, dd, _rcl_instruction);	// It's RCL rm8,imm8
+		else if (r == 3)		do_common_rm8_immed8(data, dd, _rcr_instruction);	// It's RCR rm8,imm8
+		else if (r == 4)		do_common_rm8_immed8(data, dd, _shl_instruction);	// It's SHL rm8,imm8
+		else if (r == 5)		do_common_rm8_immed8(data, dd, _shr_instruction);	// It's SHR rm8,imm8
+		else if (r == 7)		do_common_rm8_immed8(data, dd, _sar_instruction);	// It's SAR rm8,imm8
 		else
 		{
 			// Unused
-			sprintf((s8*)&buff[0], "UNK - Unknown instruction (c0 /%u) in the class of ROL, ROR, RCL, RCR, SHL, SHR, SAR rm8,immed8", (int)r);
-			do_common_mnemonic(dd, _unk_instruction, 2, &buff[0]);
+			sprintf((s8*)&buff[256], "UNK - Unknown instruction (c0 /%u) in the class of ROL, ROR, RCL, RCR, SHL, SHR, SAR rm8,immed8", (int)r);
+			do_common_mnemonic(dd, _unk_instruction, 2, &buff[256]);
 		}
 	}
 
@@ -2571,31 +2404,24 @@ extern DISASM_FUNC second_byte_functions[];
 		u8 buff[256];
 		u8 r = (*(data + 1) & 0x38) >> 3;
 		
-		if (r == 0)
-			do_common_rm16_32_immed8(data, dd, _rol_instruction);	// It's ROL rm16/32,imm8
-		else if (r == 1)
-			do_common_rm16_32_immed8(data, dd, _ror_instruction);	// It's ROR rm16/32,imm8
-		else if (r == 2)
-			do_common_rm16_32_immed8(data, dd, _rcl_instruction);	// It's RCL rm16/32,imm8
-		else if (r == 3)
-			do_common_rm16_32_immed8(data, dd, _rcr_instruction);	// It's RCR rm16/32,imm8
-		else if (r == 4)
-			do_common_rm16_32_immed8(data, dd, _shl_instruction);	// It's SHL rm16/32,imm8
-		else if (r == 5)
-			do_common_rm16_32_immed8(data, dd, _shr_instruction);	// It's SHR rm16/32,imm8
+		if (r == 0)				do_common_rm16_32_immed8(data, dd, _rol_instruction);	// It's ROL rm16/32,imm8
+		else if (r == 1)		do_common_rm16_32_immed8(data, dd, _ror_instruction);	// It's ROR rm16/32,imm8
+		else if (r == 2)		do_common_rm16_32_immed8(data, dd, _rcl_instruction);	// It's RCL rm16/32,imm8
+		else if (r == 3)		do_common_rm16_32_immed8(data, dd, _rcr_instruction);	// It's RCR rm16/32,imm8
+		else if (r == 4)		do_common_rm16_32_immed8(data, dd, _shl_instruction);	// It's SHL rm16/32,imm8
+		else if (r == 5)		do_common_rm16_32_immed8(data, dd, _shr_instruction);	// It's SHR rm16/32,imm8
 		else if (r == 6)
 		{
-			// Unused
-			sprintf((s8*)&buff[0], "UNK - Unknown instruction (c1 /%u) in the class of ROL, ROR, RCL, RCR, SHL, SHR, SAR m16/32", (int)r);
-			do_common_mnemonic(dd, _unk_instruction, 2, &buff[0]);
+			// Unused opcode
+			sprintf((s8*)&buff[256], "UNK - Unknown instruction (c1 /%u) in the class of ROL, ROR, RCL, RCR, SHL, SHR, SAR m16/32", (int)r);
+			do_common_mnemonic(dd, _unk_instruction, 2, &buff[256]);
 		}
-		else if (r == 7)
-			do_common_rm16_32_immed8(data, dd, _sar_instruction);	// It's SAR rm16/32,imm8
+		else if (r == 7)		do_common_rm16_32_immed8(data, dd, _sar_instruction);	// It's SAR rm16/32,imm8
 	}
 
 	void opcode_check_reg_c6(u8* data, SDisasmData* dd)
 	{
-		u8 buff[0];
+		u8 buff[256];
 		u8 r = (*(data + 1) & 0x38) >> 3;
 		
 		if (r == 0)
@@ -2603,8 +2429,8 @@ extern DISASM_FUNC second_byte_functions[];
 		else
 		{
 			// Unused
-			sprintf((s8*)&buff[0], "UNK - Unknown instruction (c6 /%u) in the class of MOV rm8,imm8", (int)r);
-			do_common_mnemonic(dd, _unk_instruction, 2, &buff[0]);
+			sprintf((s8*)&buff[256], "UNK - Unknown instruction (c6 /%u) in the class of MOV rm8,imm8", (int)r);
+			do_common_mnemonic(dd, _unk_instruction, 2, &buff[256]);
 		}
 	}
 
@@ -2618,63 +2444,49 @@ extern DISASM_FUNC second_byte_functions[];
 		else if (r == 1)
 		{
 			// Unused
-			sprintf((s8*)&buff[0], "UNK - Unknown instruction (c7 /%u) in the class of MOV rm16/32,immed16/32", (int)r);
-			do_common_mnemonic(dd, _unk_instruction, 2, &buff[0]);
+			sprintf((s8*)&buff[256], "UNK - Unknown instruction (c7 /%u) in the class of MOV rm16/32,immed16/32", (int)r);
+			do_common_mnemonic(dd, _unk_instruction, 2, &buff[256]);
 		}
 	}
 
 	void opcode_check_reg_d0(u8* data, SDisasmData* dd)
 	{
-		u8 buff[0];
+		u8 buff[256];
 		u8 r = (*(data + 1) & 0x38) >> 3;
 		
-		if (r == 0)
-			do_common_rm8_1(data, dd, _rol_instruction);	// It's ROL rm8,1
-		else if (r == 1)
-			do_common_rm8_1(data, dd, _ror_instruction);	// It's ROR rm8,1
-		else if (r == 2)
-			do_common_rm8_1(data, dd, _rcl_instruction);	// It's RCL rm8,1
-		else if (r == 3)
-			do_common_rm8_1(data, dd, _rcl_instruction);	// It's RCR rm8,1
-		else if (r == 4)
-			do_common_rm8_1(data, dd, _shl_instruction);	// It's SHL rm8,1
-		else if (r == 5)
-			do_common_rm8_1(data, dd, _shr_instruction);	// It's SHR rm8,1
+		if (r == 0)				do_common_rm8_1(data, dd, _rol_instruction);	// It's ROL rm8,1
+		else if (r == 1)		do_common_rm8_1(data, dd, _ror_instruction);	// It's ROR rm8,1
+		else if (r == 2)		do_common_rm8_1(data, dd, _rcl_instruction);	// It's RCL rm8,1
+		else if (r == 3)		do_common_rm8_1(data, dd, _rcl_instruction);	// It's RCR rm8,1
+		else if (r == 4)		do_common_rm8_1(data, dd, _shl_instruction);	// It's SHL rm8,1
+		else if (r == 5)		do_common_rm8_1(data, dd, _shr_instruction);	// It's SHR rm8,1
 		else if (r == 6)
 		{
 			// Unused
-			sprintf((s8*)&buff[0], "UNK - Unknown instruction (d0 /%u) in the class of ROL, ROR, RCL, RCR, SHL, SHR, SAR rm8,1", (int)r);
-			do_common_mnemonic(dd, _unk_instruction, 2, &buff[0]);
+			sprintf((s8*)&buff[256], "UNK - Unknown instruction (d0 /%u) in the class of ROL, ROR, RCL, RCR, SHL, SHR, SAR rm8,1", (int)r);
+			do_common_mnemonic(dd, _unk_instruction, 2, &buff[256]);
 		}
-		else if (r == 7)
-			do_common_rm8_1(data, dd, _sar_instruction);	// It's SAR rm8,1
+		else if (r == 7)		do_common_rm8_1(data, dd, _sar_instruction);	// It's SAR rm8,1
 	}
 
 	void opcode_check_reg_d1(u8* data, SDisasmData* dd)
 	{
-		u8 buff[0];
+		u8 buff[256];
 		u8 r = (*(data + 1) & 0x38) >> 3;
 		
-		if (r == 0)
-			do_common_rm16_32_1(data, dd, _rol_instruction);	// It's ROL rm16/32,1
-		else if (r == 1)
-			do_common_rm16_32_1(data, dd, _ror_instruction);	// It's ROR rm16/32,1
-		else if (r == 2)
-			do_common_rm16_32_1(data, dd, _rcl_instruction);	// It's RCL rm16/32,1
-		else if (r == 3)
-			do_common_rm16_32_1(data, dd, _rcr_instruction);	// It's RCR rm16/32,1
-		else if (r == 4)
-			do_common_rm16_32_1(data, dd, _shl_instruction);	// It's SHL rm16/32,1
-		else if (r == 5)
-			do_common_rm16_32_1(data, dd, _shr_instruction);	// It's SHR rm16/32,1
+		if (r == 0)				do_common_rm16_32_1(data, dd, _rol_instruction);	// It's ROL rm16/32,1
+		else if (r == 1)		do_common_rm16_32_1(data, dd, _ror_instruction);	// It's ROR rm16/32,1
+		else if (r == 2)		do_common_rm16_32_1(data, dd, _rcl_instruction);	// It's RCL rm16/32,1
+		else if (r == 3)		do_common_rm16_32_1(data, dd, _rcr_instruction);	// It's RCR rm16/32,1
+		else if (r == 4)		do_common_rm16_32_1(data, dd, _shl_instruction);	// It's SHL rm16/32,1
+		else if (r == 5)		do_common_rm16_32_1(data, dd, _shr_instruction);	// It's SHR rm16/32,1
 		else if (r == 6)
 		{
 			// Unused
-			sprintf((s8*)&buff[0], "UNK - Unknown instruction (d1 /%u) in the class of ROL, ROR, RCL, RCR, SHL, SHR, SAR rm16/32,1", (int)r);
-			do_common_mnemonic(dd, _unk_instruction, 2, &buff[0]);
+			sprintf((s8*)&buff[256], "UNK - Unknown instruction (d1 /%u) in the class of ROL, ROR, RCL, RCR, SHL, SHR, SAR rm16/32,1", (int)r);
+			do_common_mnemonic(dd, _unk_instruction, 2, &buff[256]);
 		}
-		else if (r == 7)
-			do_common_rm16_32_1(data, dd, _sar_instruction);	// It's SAR rm16/32,1
+		else if (r == 7)		do_common_rm16_32_1(data, dd, _sar_instruction);	// It's SAR rm16/32,1
 	}
 
 	void opcode_check_reg_d2(u8* data, SDisasmData* dd)
@@ -2682,26 +2494,19 @@ extern DISASM_FUNC second_byte_functions[];
 		u8 buff[256];
 		u8 r = (*(data + 1) & 0x38) >> 3;
 		
-		if (r == 0)
-			do_common_rm8_cl(data, dd, _rol_instruction);		// It's ROL rm8,cl
-		else if (r == 1)
-			do_common_rm8_cl(data, dd, _rol_instruction);		// It's ROR rm8,cl
-		else if (r == 2)
-			do_common_rm8_cl(data, dd, _rcl_instruction);		// It's RCL rm8,cl
-		else if (r == 3)
-			do_common_rm8_cl(data, dd, _rcr_instruction);		// It's RCR rm8,cl
-		else if (r == 4)
-			do_common_rm8_cl(data, dd, _shl_instruction);		// It's SHL rm8,cl
-		else if (r == 5)
-			do_common_rm8_cl(data, dd, _shr_instruction);		// It's SHR rm8,cl
+		if (r == 0)				do_common_rm8_cl(data, dd, _rol_instruction);		// It's ROL rm8,cl
+		else if (r == 1)		do_common_rm8_cl(data, dd, _rol_instruction);		// It's ROR rm8,cl
+		else if (r == 2)		do_common_rm8_cl(data, dd, _rcl_instruction);		// It's RCL rm8,cl
+		else if (r == 3)		do_common_rm8_cl(data, dd, _rcr_instruction);		// It's RCR rm8,cl
+		else if (r == 4)		do_common_rm8_cl(data, dd, _shl_instruction);		// It's SHL rm8,cl
+		else if (r == 5)		do_common_rm8_cl(data, dd, _shr_instruction);		// It's SHR rm8,cl
 		else if (r == 6)
 		{
 			// Unused
-			sprintf((s8*)&buff[0], "UNK - Unknown instruction (d2 /%u) in the class of ROL, ROR, RCL, RCR, SHL, SHR, SAR rm8,cl", (int)r);
-			do_common_mnemonic(dd, _unk_instruction, 2, &buff[0]);
+			sprintf((s8*)&buff[256], "UNK - Unknown instruction (d2 /%u) in the class of ROL, ROR, RCL, RCR, SHL, SHR, SAR rm8,cl", (int)r);
+			do_common_mnemonic(dd, _unk_instruction, 2, &buff[256]);
 		}
-		else if (r == 7)
-			do_common_rm8_cl(data, dd, _sar_instruction);		// It's SAR rm8,cl
+		else if (r == 7)		do_common_rm8_cl(data, dd, _sar_instruction);		// It's SAR rm8,cl
 	}
 
 	void opcode_check_reg_d3(u8* data, SDisasmData* dd)
@@ -2709,26 +2514,19 @@ extern DISASM_FUNC second_byte_functions[];
 		u8 buff[256];
 		u8 r = (*(data + 1) & 0x38) >> 3;
 		
-		if (r == 0)
-			do_common_rm16_32_cl(data, dd, _rol_instruction);	// It's ROL rm16/32,cl
-		else if (r == 1)
-			do_common_rm16_32_cl(data, dd, _ror_instruction);	// It's ROR rm16/32,cl
-		else if (r == 2)
-			do_common_rm16_32_cl(data, dd, _rcl_instruction);	// It's RCL rm16/32,cl
-		else if (r == 3)
-			do_common_rm16_32_cl(data, dd, _rcr_instruction);	// It's RCR rm16/32,cl
-		else if (r == 4)
-			do_common_rm16_32_cl(data, dd, _shl_instruction);	// It's SHL rm16/32,cl
-		else if (r == 5)
-			do_common_rm16_32_cl(data, dd, _shr_instruction);	// It's SHR rm16/32,cl
+		if (r == 0)				do_common_rm16_32_cl(data, dd, _rol_instruction);	// It's ROL rm16/32,cl
+		else if (r == 1)		do_common_rm16_32_cl(data, dd, _ror_instruction);	// It's ROR rm16/32,cl
+		else if (r == 2)		do_common_rm16_32_cl(data, dd, _rcl_instruction);	// It's RCL rm16/32,cl
+		else if (r == 3)		do_common_rm16_32_cl(data, dd, _rcr_instruction);	// It's RCR rm16/32,cl
+		else if (r == 4)		do_common_rm16_32_cl(data, dd, _shl_instruction);	// It's SHL rm16/32,cl
+		else if (r == 5)		do_common_rm16_32_cl(data, dd, _shr_instruction);	// It's SHR rm16/32,cl
 		else if (r == 6)
 		{
 			// Unused
-			sprintf((s8*)&buff[0], "UNK - Unknown instruction (d2 /%u) in the class of ROL, ROR, RCL, RCR, SHL, SHR, SAR rm16/32,cl", (int)r);
-			do_common_mnemonic(dd, _unk_instruction, 2, &buff[0]);
+			sprintf((s8*)&buff[256], "UNK - Unknown instruction (d2 /%u) in the class of ROL, ROR, RCL, RCR, SHL, SHR, SAR rm16/32,cl", (int)r);
+			do_common_mnemonic(dd, _unk_instruction, 2, &buff[256]);
 		}
-		else if (r == 7)
-			do_common_rm16_32_cl(data, dd, _sar_instruction);	// It's SAR rm16/32,cl
+		else if (r == 7)		do_common_rm16_32_cl(data, dd, _sar_instruction);	// It's SAR rm16/32,cl
 	}
 
 	void opcode_check_reg_f6(u8* data, SDisasmData* dd)
@@ -2736,53 +2534,39 @@ extern DISASM_FUNC second_byte_functions[];
 		u8 buff[256];
 		u8 r = (*(data + 1) & 0x38) >> 3;
 		
-		if (r == 0)
-			do_common_rm8_immed8(data, dd, _test_instruction);				// It's TEST rm8,imm8
+		if (r == 0)				do_common_rm8_immed8(data, dd, _test_instruction);				// It's TEST rm8,imm8
 		else if (r == 1)
 		{
 			// Unused
-			sprintf((s8*)&buff[0], "UNK - Unknown instruction (f6 /%u) in the class of TEST, NOT, NEG, MUL, IMUL, DIV, IDIV rm8", (int)r);
-			do_common_mnemonic(dd, _unk_instruction, 2, &buff[0]);
+			sprintf((s8*)&buff[256], "UNK - Unknown instruction (f6 /%u) in the class of TEST, NOT, NEG, MUL, IMUL, DIV, IDIV rm8", (int)r);
+			do_common_mnemonic(dd, _unk_instruction, 2, &buff[256]);
 		}
-		else if (r == 2)
-			do_common_opcode_rm8_one_operand(data, dd, _not_instruction);	// It's NOT rm8
-		else if (r == 3)
-			do_common_opcode_rm8_one_operand(data, dd, _neg_instruction);	// It's NEG rm8
-		else if (r == 4)
-			do_common_opcode_rm8_one_operand(data, dd, _mul_instruction);	// It's MUL rm8
-		else if (r == 5)
-			do_common_opcode_rm8_one_operand(data, dd, _imul_instruction);	// It's IMUL rm8
-		else if (r == 6)
-			do_common_opcode_rm8_one_operand(data, dd, _div_instruction);	// It's DIV rm8
-		else if (r == 7)
-			do_common_opcode_rm8_one_operand(data, dd, _idiv_instruction);	// It's IDIV rm8
+		else if (r == 2)		do_common_opcode_rm8_one_operand(data, dd, _not_instruction);	// It's NOT rm8
+		else if (r == 3)		do_common_opcode_rm8_one_operand(data, dd, _neg_instruction);	// It's NEG rm8
+		else if (r == 4)		do_common_opcode_rm8_one_operand(data, dd, _mul_instruction);	// It's MUL rm8
+		else if (r == 5)		do_common_opcode_rm8_one_operand(data, dd, _imul_instruction);	// It's IMUL rm8
+		else if (r == 6)		do_common_opcode_rm8_one_operand(data, dd, _div_instruction);	// It's DIV rm8
+		else if (r == 7)		do_common_opcode_rm8_one_operand(data, dd, _idiv_instruction);	// It's IDIV rm8
 	}
 
 	void opcode_check_reg_f7(u8* data, SDisasmData* dd)
 	{
-		u8 buff[0];
+		u8 buff[256];
 		u8 r = (*(data + 1) & 0x38) >> 3;
 		
-		if (r == 0)
-			do_common_rm16_32_immed16_32(data, dd, _test_instruction);				// It's TEST rm16/32,imm16/32
+		if (r == 0)				do_common_rm16_32_immed16_32(data, dd, _test_instruction);				// It's TEST rm16/32,imm16/32
 		else if (r == 1)
 		{
 			// Unused
-			sprintf((s8*)&buff[0], "UNK - Unknown instruction (f7 /%u) in the class of TEST, NOT, NEG, MUL, IMUL, DIV, IDIV rm16/32,immed16/32", (int)r);
-			do_common_mnemonic(dd, _unk_instruction, 2, &buff[0]);
+			sprintf((s8*)&buff[256], "UNK - Unknown instruction (f7 /%u) in the class of TEST, NOT, NEG, MUL, IMUL, DIV, IDIV rm16/32,immed16/32", (int)r);
+			do_common_mnemonic(dd, _unk_instruction, 2, &buff[256]);
 		}
-		else if (r == 2)
-			do_common_opcode_rm16_rm32_one_operand(data, dd, _neg_instruction);		// It's NEG rm16/32
-		else if (r == 3)
-			do_common_opcode_rm16_rm32_one_operand(data, dd, _neg_instruction);		// It's NOT rm16/32
-		else if (r == 4)
-			do_common_opcode_rm16_rm32_one_operand(data, dd, _neg_instruction);		// It's MUL rm16/32
-		else if (r == 5)
-			do_common_opcode_rm16_rm32_one_operand(data, dd, _imul_instruction);	// It's IMUL rm16/32
-		else if (r == 6)
-			do_common_opcode_rm16_rm32_one_operand(data, dd, _div_instruction);		// It's DIV rm16/32
-		else if (r == 7)
-			do_common_opcode_rm16_rm32_one_operand(data, dd, _idiv_instruction);	// It's IDIV rm16/32
+		else if (r == 2)		do_common_opcode_rm16_rm32_one_operand(data, dd, _neg_instruction);		// It's NEG rm16/32
+		else if (r == 3)		do_common_opcode_rm16_rm32_one_operand(data, dd, _neg_instruction);		// It's NOT rm16/32
+		else if (r == 4)		do_common_opcode_rm16_rm32_one_operand(data, dd, _neg_instruction);		// It's MUL rm16/32
+		else if (r == 5)		do_common_opcode_rm16_rm32_one_operand(data, dd, _imul_instruction);	// It's IMUL rm16/32
+		else if (r == 6)		do_common_opcode_rm16_rm32_one_operand(data, dd, _div_instruction);		// It's DIV rm16/32
+		else if (r == 7)		do_common_opcode_rm16_rm32_one_operand(data, dd, _idiv_instruction);	// It's IDIV rm16/32
 	}
 
 	void opcode_check_reg_fe(u8* data, SDisasmData* dd)
@@ -2790,15 +2574,13 @@ extern DISASM_FUNC second_byte_functions[];
 		u8 buff[256];
 		u8 r = (*(data + 1) & 0x38) >> 3;
 		
-		if (r == 0)
-			do_common_opcode_rm8_one_operand(data, dd, _inc_instruction);	// It's INC rm8
-		else if (r == 1)
-			do_common_opcode_rm8_one_operand(data, dd, _dec_instruction);	// It's DEC rm8
+		if (r == 0)				do_common_opcode_rm8_one_operand(data, dd, _inc_instruction);	// It's INC rm8
+		else if (r == 1)		do_common_opcode_rm8_one_operand(data, dd, _dec_instruction);	// It's DEC rm8
 		else
 		{
 			// Unused
-			sprintf((s8*)&buff[0], "UNK - Unknown instruction (fe /%u) in the class of INC, DEC rm8", (int)r);
-			do_common_mnemonic(dd, _unk_instruction, 2, &buff[0]);
+			sprintf((s8*)&buff[256], "UNK - Unknown instruction (fe /%u) in the class of INC, DEC rm8", (int)r);
+			do_common_mnemonic(dd, _unk_instruction, 2, &buff[256]);
 		}
 	}
 	
@@ -2847,25 +2629,18 @@ extern DISASM_FUNC second_byte_functions[];
 		u8 buff[256];
 		u8 r = (*(data + 1) & 0x38) >> 3;
 		
-		if (r == 0)
-			do_common_opcode_rm16_rm32_one_operand(data, dd, _inc_instruction);			// It's INC rm16/32
-		else if (r == 1)
-			do_common_opcode_rm16_rm32_one_operand(data, dd, _dec_instruction);			// It's DEC rm16/32
-		else if (r == 2)
-			opcode_jmp_call_rm1632_absolute_indirect(data, dd, _call_instruction);		// It's CALL rm16/32 absolute
-		else if (r == 3)
-			opcode_jmp_call_m16_m1632_absolute_indirect(data, dd, _call_instruction);	// It's CALL m16_m16/32 absolute
-		else if (r == 4)
-			opcode_jmp_call_rm1632_absolute_indirect(data, dd, _jmp_instruction);		// It's JMP m16_m16/32 absolute
-		else if (r == 5)
-			opcode_jmp_call_m16_m1632_absolute_indirect(data, dd, _jmp_instruction);	// It's JMP FAR m16_m16/32 absolute
-		else if (r == 6)
-			do_common_opcode_rm16_rm32_one_operand(data, dd, _push_instruction);		// It's PUSH rm16/32
+		if (r == 0)				do_common_opcode_rm16_rm32_one_operand(data, dd, _inc_instruction);			// It's INC rm16/32
+		else if (r == 1)		do_common_opcode_rm16_rm32_one_operand(data, dd, _dec_instruction);			// It's DEC rm16/32
+		else if (r == 2)		opcode_jmp_call_rm1632_absolute_indirect(data, dd, _call_instruction);		// It's CALL rm16/32 absolute
+		else if (r == 3)		opcode_jmp_call_m16_m1632_absolute_indirect(data, dd, _call_instruction);	// It's CALL m16_m16/32 absolute
+		else if (r == 4)		opcode_jmp_call_rm1632_absolute_indirect(data, dd, _jmp_instruction);		// It's JMP m16_m16/32 absolute
+		else if (r == 5)		opcode_jmp_call_m16_m1632_absolute_indirect(data, dd, _jmp_instruction);	// It's JMP FAR m16_m16/32 absolute
+		else if (r == 6)		do_common_opcode_rm16_rm32_one_operand(data, dd, _push_instruction);		// It's PUSH rm16/32
 		else if (r == 7)
 		{
 			// Unused
-			sprintf((s8*)&buff[0], "UNK - Unknown instruction (ff /%u) in the class of INC, DEC rm16/32, CALL/JMP rm16/32, CALL/JMP m16_m16/32", (int)r);
-			do_common_mnemonic(dd, _unk_instruction, 2, &buff[0]);
+			sprintf((s8*)&buff[256], "UNK - Unknown instruction (ff /%u) in the class of INC, DEC rm16/32, CALL/JMP rm16/32, CALL/JMP m16_m16/32", (int)r);
+			do_common_mnemonic(dd, _unk_instruction, 2, &buff[256]);
 		}
 	}
 
@@ -3131,122 +2906,73 @@ extern DISASM_FUNC second_byte_functions[];
 
 	void opcode_fpu_d8(u8* data, SDisasmData* dd)
 	{
-		asm("int3");
+		_asm int 3;
 		u8 rm = *(data + 1);
 		
 		
-		if (rm >= 0xc0 && rm <= 0xc7)
-			do_common_opcode_fpu_hard_stx(data, dd, _fadd_instruction, 0);		// It's FADD st(0),st(i)
-		else if (rm >= 0xc8 && rm <= 0xcf)
-			do_common_opcode_fpu_hard_stx(data, dd, _fmul_instruction, 0);		// It's FMUL st(0),st(i)
-		else if (rm >= 0xd0 && rm <= 0xd7)
-			do_common_opcode_fpu_hard_stx(data, dd, _fcom_instruction, 0);		// It's FCOM st(0),st(i)
-		else if (rm >= 0xd8 && rm <= 0xdf)
-			do_common_opcode_fpu_hard_stx(data, dd, _fcomp_instruction, 0);		// It's FCOMP st(0),st(i)
-		else if (rm >= 0xe0 && rm <= 0xe7)
-			do_common_opcode_fpu_hard_stx(data, dd, _fsub_instruction, 0);		// It's FSUB st(0),st(i)
-		else if (rm >= 0xe8 && rm <= 0xef)
-			do_common_opcode_fpu_hard_stx(data, dd, _fsubr_instruction, 0);		// It's FSUBR st(0),st(i)
-		else if (rm >= 0xf0 && rm <= 0xf7)
-			do_common_opcode_fpu_hard_stx(data, dd, _fdiv_instruction, 0);		// It's FDIV st(0),st(i)
-		else if (rm >= 0xf8 && rm <= 0xff)
-			do_common_opcode_fpu_hard_stx(data, dd, _fdivr_instruction, 0);		// It's FDIVR st(0),st(i)
+		if (rm >= 0xc0 && rm <= 0xc7)				do_common_opcode_fpu_hard_stx(data, dd, _fadd_instruction, 0);		// It's FADD st(0),st(i)
+		else if (rm >= 0xc8 && rm <= 0xcf)			do_common_opcode_fpu_hard_stx(data, dd, _fmul_instruction, 0);		// It's FMUL st(0),st(i)
+		else if (rm >= 0xd0 && rm <= 0xd7)			do_common_opcode_fpu_hard_stx(data, dd, _fcom_instruction, 0);		// It's FCOM st(0),st(i)
+		else if (rm >= 0xd8 && rm <= 0xdf)			do_common_opcode_fpu_hard_stx(data, dd, _fcomp_instruction, 0);		// It's FCOMP st(0),st(i)
+		else if (rm >= 0xe0 && rm <= 0xe7)			do_common_opcode_fpu_hard_stx(data, dd, _fsub_instruction, 0);		// It's FSUB st(0),st(i)
+		else if (rm >= 0xe8 && rm <= 0xef)			do_common_opcode_fpu_hard_stx(data, dd, _fsubr_instruction, 0);		// It's FSUBR st(0),st(i)
+		else if (rm >= 0xf0 && rm <= 0xf7)			do_common_opcode_fpu_hard_stx(data, dd, _fdiv_instruction, 0);		// It's FDIV st(0),st(i)
+		else if (rm >= 0xf8 && rm <= 0xff)			do_common_opcode_fpu_hard_stx(data, dd, _fdivr_instruction, 0);		// It's FDIVR st(0),st(i)
 
 
 		// It wasn't one of the st0/sti instructions, so we check the reg bits
 		rm = (rm >> 3) & 0x07;
-		if (rm == 0)
-			do_common_opcode_fpu_rm_one_operand(data, dd, _fadd_instruction, _f32);		// It's FADD real4
-		else if (rm == 1)
-			do_common_opcode_fpu_rm_one_operand(data, dd, _fmul_instruction, _f32);		// It's FMUL real4
-		else if (rm == 2)
-			do_common_opcode_fpu_rm_one_operand(data, dd, _fcom_instruction, _f32);		// It's FCOM real4
-		else if (rm == 3)
-			do_common_opcode_fpu_rm_one_operand(data, dd, _fcomp_instruction, _f32);	// It's FCOMP real4
-		else if (rm == 4)
-			do_common_opcode_fpu_rm_one_operand(data, dd, _fsub_instruction, _f32);		// It's FSUB real4
-		else if (rm == 5)
-			do_common_opcode_fpu_rm_one_operand(data, dd, _fsubr_instruction, _f32);	// It's FSUBR real4
-		else if (rm == 6)
-			do_common_opcode_fpu_rm_one_operand(data, dd, _fdiv_instruction, _f32);		// It's FDIV real4
-		else if (rm == 7)
-			do_common_opcode_fpu_rm_one_operand(data, dd, _fdivr_instruction, _f32);	// It's FDIVR real4
+		if (rm == 0)			do_common_opcode_fpu_rm_one_operand(data, dd, _fadd_instruction, _f32);		// It's FADD real4
+		else if (rm == 1)		do_common_opcode_fpu_rm_one_operand(data, dd, _fmul_instruction, _f32);		// It's FMUL real4
+		else if (rm == 2)		do_common_opcode_fpu_rm_one_operand(data, dd, _fcom_instruction, _f32);		// It's FCOM real4
+		else if (rm == 3)		do_common_opcode_fpu_rm_one_operand(data, dd, _fcomp_instruction, _f32);	// It's FCOMP real4
+		else if (rm == 4)		do_common_opcode_fpu_rm_one_operand(data, dd, _fsub_instruction, _f32);		// It's FSUB real4
+		else if (rm == 5)		do_common_opcode_fpu_rm_one_operand(data, dd, _fsubr_instruction, _f32);	// It's FSUBR real4
+		else if (rm == 6)		do_common_opcode_fpu_rm_one_operand(data, dd, _fdiv_instruction, _f32);		// It's FDIV real4
+		else if (rm == 7)		do_common_opcode_fpu_rm_one_operand(data, dd, _fdivr_instruction, _f32);	// It's FDIVR real4
 	}
 
 	void opcode_fpu_d9(u8* data, SDisasmData* dd)
 	{
-		asm("int3");
+		_asm int 3;
 		u8 rm = *(data + 1);
 		
-		if (rm >= 0xc0 && rm <= 0xc7)
-			do_common_opcode_fpu_stx(data, dd, _fld_instruction);		// It's FLD st(i)
-		else if (rm >= 0xc8 && rm <= 0xcf)
-			do_common_opcode_fpu_stx(data, dd, _fxch_instruction);		// It's FXCH st(i)
-		else if (rm == 0xd0)
-			do_common_mnemonic(dd, _fnop_instruction);		// fnop
-		else if (rm == 0xe0)
-			do_common_mnemonic(dd, _fchs_instruction);		// fchs
-		else if (rm == 0xe1)
-			do_common_mnemonic(dd, _fabs_instruction);		// fabs
-		else if (rm == 0xe4)
-			do_common_mnemonic(dd, _ftst_instruction);		// ftst
-		else if (rm == 0xe5)
-			do_common_mnemonic(dd, _fxam_instruction);		// fxam
-		else if (rm == 0xe8)
-			do_common_mnemonic(dd, _fld1_instruction);		// fld1
-		else if (rm == 0xe9)
-			do_common_mnemonic(dd, _fld2t_instruction);		// fldl2t
-		else if (rm == 0xea)
-			do_common_mnemonic(dd, _fld2e_instruction);		// fldl2e
-		else if (rm == 0xeb)
-			do_common_mnemonic(dd, _fldpi_instruction);		// fldpi
-		else if (rm == 0xec)
-			do_common_mnemonic(dd, _fldlg2_instruction);	// fldlg2
-		else if (rm == 0xed)
-			do_common_mnemonic(dd, _fldln2_instruction);	// fldln2
-		else if (rm == 0xee)
-			do_common_mnemonic(dd, _fldz_instruction);		// fldz
-		else if (rm == 0xf0)
-			do_common_mnemonic(dd, _f2xm1_instruction);		// f2xm1
-		else if (rm == 0xf1)
-			do_common_mnemonic(dd, _fyl2x_instruction);		// fyl2x
-		else if (rm == 0xf2)
-			do_common_mnemonic(dd, _fptan_instruction);		// fptan
-		else if (rm == 0xf3)
-			do_common_mnemonic(dd, _fpatan_instruction);	// fpatan
-		else if (rm == 0xf4)
-			do_common_mnemonic(dd, _fxtract_instruction);	// fxtract
-		else if (rm == 0xf5)
-			do_common_mnemonic(dd, _fprem1_instruction);	// fprem1
-		else if (rm == 0xf6)
-			do_common_mnemonic(dd, _fdecstp_instruction);	// fdecstp
-		else if (rm == 0xf7)
-			do_common_mnemonic(dd, _fincstp_instruction);	// fincstp
-		else if (rm == 0xf8)
-			do_common_mnemonic(dd, _fprem_instruction);		// fprem
-		else if (rm == 0xf9)
-			do_common_mnemonic(dd, _fyl2xp1_instruction);	// fyl2xp1
-		else if (rm == 0xfa)
-			do_common_mnemonic(dd, _fsqrt_instruction);		// fsqrt
-		else if (rm == 0xfb)
-			do_common_mnemonic(dd, _fsincos_instruction);	// fsincos
-		else if (rm == 0xfc)
-			do_common_mnemonic(dd, _frndint_instruction);	// frndint
-		else if (rm == 0xfd)
-			do_common_mnemonic(dd, _fscale_instruction);	// fscale
-		else if (rm == 0xfe)
-			do_common_mnemonic(dd, _fsin_instruction);		// fsin
-		else if (rm == 0xff)
-			do_common_mnemonic(dd, _fcos_instruction);		// fcos
+		if (rm >= 0xc0 && rm <= 0xc7)			do_common_opcode_fpu_stx(data, dd, _fld_instruction);		// It's FLD st(i)
+		else if (rm >= 0xc8 && rm <= 0xcf)		do_common_opcode_fpu_stx(data, dd, _fxch_instruction);		// It's FXCH st(i)
+		else if (rm == 0xd0)					do_common_mnemonic(dd, _fnop_instruction);		// fnop
+		else if (rm == 0xe0)					do_common_mnemonic(dd, _fchs_instruction);		// fchs
+		else if (rm == 0xe1)					do_common_mnemonic(dd, _fabs_instruction);		// fabs
+		else if (rm == 0xe4)					do_common_mnemonic(dd, _ftst_instruction);		// ftst
+		else if (rm == 0xe5)					do_common_mnemonic(dd, _fxam_instruction);		// fxam
+		else if (rm == 0xe8)					do_common_mnemonic(dd, _fld1_instruction);		// fld1
+		else if (rm == 0xe9)					do_common_mnemonic(dd, _fld2t_instruction);		// fldl2t
+		else if (rm == 0xea)					do_common_mnemonic(dd, _fld2e_instruction);		// fldl2e
+		else if (rm == 0xeb)					do_common_mnemonic(dd, _fldpi_instruction);		// fldpi
+		else if (rm == 0xec)					do_common_mnemonic(dd, _fldlg2_instruction);	// fldlg2
+		else if (rm == 0xed)					do_common_mnemonic(dd, _fldln2_instruction);	// fldln2
+		else if (rm == 0xee)					do_common_mnemonic(dd, _fldz_instruction);		// fldz
+		else if (rm == 0xf0)					do_common_mnemonic(dd, _f2xm1_instruction);		// f2xm1
+		else if (rm == 0xf1)					do_common_mnemonic(dd, _fyl2x_instruction);		// fyl2x
+		else if (rm == 0xf2)					do_common_mnemonic(dd, _fptan_instruction);		// fptan
+		else if (rm == 0xf3)					do_common_mnemonic(dd, _fpatan_instruction);	// fpatan
+		else if (rm == 0xf4)					do_common_mnemonic(dd, _fxtract_instruction);	// fxtract
+		else if (rm == 0xf5)					do_common_mnemonic(dd, _fprem1_instruction);	// fprem1
+		else if (rm == 0xf6)					do_common_mnemonic(dd, _fdecstp_instruction);	// fdecstp
+		else if (rm == 0xf7)					do_common_mnemonic(dd, _fincstp_instruction);	// fincstp
+		else if (rm == 0xf8)					do_common_mnemonic(dd, _fprem_instruction);		// fprem
+		else if (rm == 0xf9)					do_common_mnemonic(dd, _fyl2xp1_instruction);	// fyl2xp1
+		else if (rm == 0xfa)					do_common_mnemonic(dd, _fsqrt_instruction);		// fsqrt
+		else if (rm == 0xfb)					do_common_mnemonic(dd, _fsincos_instruction);	// fsincos
+		else if (rm == 0xfc)					do_common_mnemonic(dd, _frndint_instruction);	// frndint
+		else if (rm == 0xfd)					do_common_mnemonic(dd, _fscale_instruction);	// fscale
+		else if (rm == 0xfe)					do_common_mnemonic(dd, _fsin_instruction);		// fsin
+		else if (rm == 0xff)					do_common_mnemonic(dd, _fcos_instruction);		// fcos
 		else
 		{
 			rm = (rm >> 3) & 0x07;
-			if (rm == 0)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fadd_instruction, _f32);		// It's FLD real4
-			else if (rm == 2)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fst_instruction, _f32);		// It's FST real4
-			else if (rm == 3)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fstp_instruction, _f32);		// It's FSTP real4
+			if (rm == 0)						do_common_opcode_fpu_rm_one_operand(data, dd, _fadd_instruction, _f32);		// It's FLD real4
+			else if (rm == 2)					do_common_opcode_fpu_rm_one_operand(data, dd, _fst_instruction, _f32);		// It's FST real4
+			else if (rm == 3)					do_common_opcode_fpu_rm_one_operand(data, dd, _fstp_instruction, _f32);		// It's FSTP real4
 			else if (rm == 4)
 			{
 				// fldenv
@@ -3262,8 +2988,7 @@ extern DISASM_FUNC second_byte_functions[];
 					do_common_opcode_fpu_rm_one_operand(data, dd, _fldenv_instruction, _m14byte);
 				}
 			}
-			else if (rm == 5)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fldcw_instruction, _16bit);		// It's fldcw m16
+			else if (rm == 5)				do_common_opcode_fpu_rm_one_operand(data, dd, _fldcw_instruction, _16bit);		// It's fldcw m16
 			else if (rm == 6)
 			{
 				// fnstenv
@@ -3279,155 +3004,103 @@ extern DISASM_FUNC second_byte_functions[];
 					do_common_opcode_fpu_rm_one_operand(data, dd, _fnstenv_instruction, _m14byte);
 				}
 			}
-			else if (rm == 7)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fnstcw_instruction, _16bit);		// It's fnstcw m16
-			else
-				do_common_unknown(data, dd, (u8*)"FUNK", 2, (u8*)"FUNK - Floating point unknown instruction");
+			else if (rm == 7)				do_common_opcode_fpu_rm_one_operand(data, dd, _fnstcw_instruction, _16bit);		// It's fnstcw m16
+			else							do_common_unknown(data, dd, (u8*)"FUNK", 2, (u8*)"FUNK - Floating point unknown instruction");
 		}
 	}
 
 	void opcode_fpu_da(u8* data, SDisasmData* dd)
 	{
-		asm("int3");
+		_asm int 3;
 		u8 rm = *(data + 1);
 
-		if (rm >= 0xc0 && rm <= 0xc7)
-			do_common_opcode_fpu_hard_stx(data, dd, _fdivr_instruction, 0);		// It's FCMOVB st0,sti
-		else if (rm >= 0xc8 && rm <= 0xcf)
-			do_common_opcode_fpu_hard_stx(data, dd, _fdivr_instruction, 0);		// It's FCMOVZ st0,sti
-		else if (rm >= 0xd0 && rm <= 0xd7)
-			do_common_opcode_fpu_hard_stx(data, dd, _fdivr_instruction, 0);		// It's FCMOVNG st0,sti
-		else if (rm >= 0xd8 && rm <= 0xdf)
-			do_common_opcode_fpu_hard_stx(data, dd, _fdivr_instruction, 0);		// It's FCMOVPO st0,sti
-		else if (rm == 0xe9)
-			do_common_mnemonic(dd, _fucompp_instruction);							// It's FUCOMPP
+		if (rm >= 0xc0 && rm <= 0xc7)				do_common_opcode_fpu_hard_stx(data, dd, _fdivr_instruction, 0);		// It's FCMOVB st0,sti
+		else if (rm >= 0xc8 && rm <= 0xcf)			do_common_opcode_fpu_hard_stx(data, dd, _fdivr_instruction, 0);		// It's FCMOVZ st0,sti
+		else if (rm >= 0xd0 && rm <= 0xd7)			do_common_opcode_fpu_hard_stx(data, dd, _fdivr_instruction, 0);		// It's FCMOVNG st0,sti
+		else if (rm >= 0xd8 && rm <= 0xdf)			do_common_opcode_fpu_hard_stx(data, dd, _fdivr_instruction, 0);		// It's FCMOVPO st0,sti
+		else if (rm == 0xe9)						do_common_mnemonic(dd, _fucompp_instruction);						// It's FUCOMPP
 		else
 		{
 			rm = (rm >> 3) & 0x07;
-			if (rm == 0)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fiadd_instruction, _s32);	// It's FIADD m32_int
-			else if (rm == 1)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fimul_instruction, _s32);	// It's FIMUL m32_int
-			else if (rm == 2)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _ficom_instruction, _s32);	// It's FICOM m32_int
-			else if (rm == 3)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _ficomp_instruction, _s32);	// It's FICOMP m32_int
-			else if (rm == 4)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fisub_instruction, _s32);	// It's FISUB m32_int
-			else if (rm == 5)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fisubr_instruction, _s32);	// It's FISUBR m32_int
-			else if (rm == 6)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fidiv_instruction, _s32);	// It's FIDIV m32_int
-			else if (rm == 7)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fidivr_instruction, _s32);	// It's FIDIVR m32_int
+			if (rm == 0)					do_common_opcode_fpu_rm_one_operand(data, dd, _fiadd_instruction, _s32);	// It's FIADD m32_int
+			else if (rm == 1)				do_common_opcode_fpu_rm_one_operand(data, dd, _fimul_instruction, _s32);	// It's FIMUL m32_int
+			else if (rm == 2)				do_common_opcode_fpu_rm_one_operand(data, dd, _ficom_instruction, _s32);	// It's FICOM m32_int
+			else if (rm == 3)				do_common_opcode_fpu_rm_one_operand(data, dd, _ficomp_instruction, _s32);	// It's FICOMP m32_int
+			else if (rm == 4)				do_common_opcode_fpu_rm_one_operand(data, dd, _fisub_instruction, _s32);	// It's FISUB m32_int
+			else if (rm == 5)				do_common_opcode_fpu_rm_one_operand(data, dd, _fisubr_instruction, _s32);	// It's FISUBR m32_int
+			else if (rm == 6)				do_common_opcode_fpu_rm_one_operand(data, dd, _fidiv_instruction, _s32);	// It's FIDIV m32_int
+			else if (rm == 7)				do_common_opcode_fpu_rm_one_operand(data, dd, _fidivr_instruction, _s32);	// It's FIDIVR m32_int
 		}
 	}
 
 	void opcode_fpu_db(u8* data, SDisasmData* dd)
 	{
-		asm("int3");
+		_asm int 3;
 		u8 rm = *(data + 1);
 
 
-		if (rm >= 0xc0 && rm <= 0xc7)
-			do_common_opcode_fpu_hard_stx(data, dd, _fdivr_instruction, 0);		// It's FCMOVNB st0,sti
-		else if (rm >= 0xc8 && rm <= 0xcf)
-			do_common_opcode_fpu_hard_stx(data, dd, _fdivr_instruction, 0);		// It's FCMOVNZ st0,sti
-		else if (rm >= 0xd0 && rm <= 0xd7)
-			do_common_opcode_fpu_hard_stx(data, dd, _fdivr_instruction, 0);		// It's FCMOVG st0,sti
-		else if (rm >= 0xd8 && rm <= 0xdf)
-			do_common_opcode_fpu_hard_stx(data, dd, _fdivr_instruction, 0);		// It's FCMOVPE st0,sti
-		else if (rm == 0xe2)
-			do_common_mnemonic(dd, _fnclex_instruction);							// It's fnclex
-		else if (rm == 0xe3)
-			do_common_mnemonic(dd, _fninit_instruction);							// It's fninit
-		else if (rm >= 0xe8 && rm <= 0xef)
-			do_common_opcode_fpu_hard_stx(data, dd, _fdivr_instruction, 0);		// It's FUCOMI st(0),st(i)
-		else if (rm >= 0xf0 && rm <= 0xf7)
-			do_common_opcode_fpu_hard_stx(data, dd, _fdivr_instruction, 0);		// It's FCOMI st(0),st(i)
+		if (rm >= 0xc0 && rm <= 0xc7)				do_common_opcode_fpu_hard_stx(data, dd, _fdivr_instruction, 0);		// It's FCMOVNB st0,sti
+		else if (rm >= 0xc8 && rm <= 0xcf)			do_common_opcode_fpu_hard_stx(data, dd, _fdivr_instruction, 0);		// It's FCMOVNZ st0,sti
+		else if (rm >= 0xd0 && rm <= 0xd7)			do_common_opcode_fpu_hard_stx(data, dd, _fdivr_instruction, 0);		// It's FCMOVG st0,sti
+		else if (rm >= 0xd8 && rm <= 0xdf)			do_common_opcode_fpu_hard_stx(data, dd, _fdivr_instruction, 0);		// It's FCMOVPE st0,sti
+		else if (rm == 0xe2)						do_common_mnemonic(dd, _fnclex_instruction);							// It's fnclex
+		else if (rm == 0xe3)						do_common_mnemonic(dd, _fninit_instruction);							// It's fninit
+		else if (rm >= 0xe8 && rm <= 0xef)			do_common_opcode_fpu_hard_stx(data, dd, _fdivr_instruction, 0);		// It's FUCOMI st(0),st(i)
+		else if (rm >= 0xf0 && rm <= 0xf7)			do_common_opcode_fpu_hard_stx(data, dd, _fdivr_instruction, 0);		// It's FCOMI st(0),st(i)
 		else
 		{
 			rm = (rm >> 3) & 0x07;
-			if (rm == 0)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fild_instruction, _s32);		// It's FILD m32_int
-			else if (rm == 2)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fist_instruction, _s32);		// It's FIST m32_int
-			else if (rm == 3)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fistp_instruction, _s32);	// It's FISTP m32_int
-			else if (rm == 5)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fld_instruction, _f80);		// It's FLD real10
-			else if (rm == 7)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fstp_instruction, _f80);		// It's FSTP real10
-			else
-				do_common_unknown(data, dd, (u8*)"FUNK", 2, (u8*)"FUNK - Floating point unknown instruction");
+			if (rm == 0)					do_common_opcode_fpu_rm_one_operand(data, dd, _fild_instruction, _s32);		// It's FILD m32_int
+			else if (rm == 2)				do_common_opcode_fpu_rm_one_operand(data, dd, _fist_instruction, _s32);		// It's FIST m32_int
+			else if (rm == 3)				do_common_opcode_fpu_rm_one_operand(data, dd, _fistp_instruction, _s32);	// It's FISTP m32_int
+			else if (rm == 5)				do_common_opcode_fpu_rm_one_operand(data, dd, _fld_instruction, _f80);		// It's FLD real10
+			else if (rm == 7)				do_common_opcode_fpu_rm_one_operand(data, dd, _fstp_instruction, _f80);		// It's FSTP real10
+			else							do_common_unknown(data, dd, (u8*)"FUNK", 2, (u8*)"FUNK - Floating point unknown instruction");
 		}
 	}
 
 	void opcode_fpu_dc(u8* data, SDisasmData* dd)
 	{
-		asm("int3");
+		_asm int 3;
 		u8 rm = *(data + 1);
 		
-		if (rm >= 0xc0 && rm <= 0xc7)
-			do_common_opcode_fpu_stx_hard(data, dd, _fdivr_instruction, 0);		// It's FADD st(i),st(0)
-		else if (rm >= 0xc8 && rm <= 0xcf)
-			do_common_opcode_fpu_stx_hard(data, dd, _fdivr_instruction, 0);		// It's FMUL st(i),st(0)
-		else if (rm >= 0xe0 && rm <= 0xe7)
-			do_common_opcode_fpu_stx_hard(data, dd, _fdivr_instruction, 0);		// It's FSUBR st(i),st(0)
-		else if (rm >= 0xe8 && rm <= 0xef)
-			do_common_opcode_fpu_stx_hard(data, dd, _fdivr_instruction, 0);		// It's FSUB st(i),st(0)
-		else if (rm >= 0xf0 && rm <= 0xf7)
-			do_common_opcode_fpu_stx_hard(data, dd, _fdivr_instruction, 0);		// It's FDIVR st(i),st(0)
-		else if (rm >= 0xf8 && rm <= 0xff)
-			do_common_opcode_fpu_stx_hard(data, dd, _fdivr_instruction, 0);		// It's FDIV st(i),st(0)
+		if (rm >= 0xc0 && rm <= 0xc7)				do_common_opcode_fpu_stx_hard(data, dd, _fdivr_instruction, 0);		// It's FADD st(i),st(0)
+		else if (rm >= 0xc8 && rm <= 0xcf)			do_common_opcode_fpu_stx_hard(data, dd, _fdivr_instruction, 0);		// It's FMUL st(i),st(0)
+		else if (rm >= 0xe0 && rm <= 0xe7)			do_common_opcode_fpu_stx_hard(data, dd, _fdivr_instruction, 0);		// It's FSUBR st(i),st(0)
+		else if (rm >= 0xe8 && rm <= 0xef)			do_common_opcode_fpu_stx_hard(data, dd, _fdivr_instruction, 0);		// It's FSUB st(i),st(0)
+		else if (rm >= 0xf0 && rm <= 0xf7)			do_common_opcode_fpu_stx_hard(data, dd, _fdivr_instruction, 0);		// It's FDIVR st(i),st(0)
+		else if (rm >= 0xf8 && rm <= 0xff)			do_common_opcode_fpu_stx_hard(data, dd, _fdivr_instruction, 0);		// It's FDIV st(i),st(0)
 		else
 		{
 			rm = (rm >> 3) & 0x07;
-			if (rm == 0)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fadd_instruction, _f64);		// It's FADD real8
-			else if (rm == 1)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fmul_instruction, _f64);		// It's FMUL real8
-			else if (rm == 2)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fcom_instruction, _f64);		// It's FCOM real8
-			else if (rm == 3)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fcomp_instruction, _f64);	// It's FCOMP real8
-			else if (rm == 4)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fsub_instruction, _f64);		// It's FSUB real8
-			else if (rm == 5)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fsubr_instruction, _f64);	// It's FSUBR real8
-			else if (rm == 6)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fdiv_instruction, _f64);		// It's FDIV real8
-			else if (rm == 7)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fdivr_instruction, _f64);	// It's FDIVR real8
+			if (rm == 0)					do_common_opcode_fpu_rm_one_operand(data, dd, _fadd_instruction, _f64);		// It's FADD real8
+			else if (rm == 1)				do_common_opcode_fpu_rm_one_operand(data, dd, _fmul_instruction, _f64);		// It's FMUL real8
+			else if (rm == 2)				do_common_opcode_fpu_rm_one_operand(data, dd, _fcom_instruction, _f64);		// It's FCOM real8
+			else if (rm == 3)				do_common_opcode_fpu_rm_one_operand(data, dd, _fcomp_instruction, _f64);	// It's FCOMP real8
+			else if (rm == 4)				do_common_opcode_fpu_rm_one_operand(data, dd, _fsub_instruction, _f64);		// It's FSUB real8
+			else if (rm == 5)				do_common_opcode_fpu_rm_one_operand(data, dd, _fsubr_instruction, _f64);	// It's FSUBR real8
+			else if (rm == 6)				do_common_opcode_fpu_rm_one_operand(data, dd, _fdiv_instruction, _f64);		// It's FDIV real8
+			else if (rm == 7)				do_common_opcode_fpu_rm_one_operand(data, dd, _fdivr_instruction, _f64);	// It's FDIVR real8
 		}
 	}
 
 	void opcode_fpu_dd(u8* data, SDisasmData* dd)
 	{
-		asm("int3");
+		_asm int 3;
 		u8 rm = *(data + 1);
 		
-		if (rm >= 0xc0 && rm <= 0xc7)
-			do_common_opcode_fpu_stx(data, dd, _fld_instruction);		// It's FFREE st(i)
-		else if (rm >= 0xd0 && rm <= 0xd7)
-			do_common_opcode_fpu_stx(data, dd, _fld_instruction);		// It's FST st(i)
-		else if (rm >= 0xd8 && rm <= 0xdf)
-			do_common_opcode_fpu_stx(data, dd, _fld_instruction);		// It's FSTP st(i)
-		else if (rm >= 0xe0 && rm <= 0xe7)
-			do_common_opcode_fpu_stx(data, dd, _fld_instruction);		// It's FUCOM st(i)
-		else if (rm >= 0xe8 && rm <= 0xef)
-			do_common_opcode_fpu_stx(data, dd, _fld_instruction);		// It's FUCOMP st(i)
-		else if (rm == 0xe9)
-			do_common_mnemonic(dd, _fucomp_instruction);				// It's FUCOMP
+		if (rm >= 0xc0 && rm <= 0xc7)				do_common_opcode_fpu_stx(data, dd, _fld_instruction);		// It's FFREE st(i)
+		else if (rm >= 0xd0 && rm <= 0xd7)			do_common_opcode_fpu_stx(data, dd, _fld_instruction);		// It's FST st(i)
+		else if (rm >= 0xd8 && rm <= 0xdf)			do_common_opcode_fpu_stx(data, dd, _fld_instruction);		// It's FSTP st(i)
+		else if (rm >= 0xe0 && rm <= 0xe7)			do_common_opcode_fpu_stx(data, dd, _fld_instruction);		// It's FUCOM st(i)
+		else if (rm >= 0xe8 && rm <= 0xef)			do_common_opcode_fpu_stx(data, dd, _fld_instruction);		// It's FUCOMP st(i)
+		else if (rm == 0xe9)						do_common_mnemonic(dd, _fucomp_instruction);				// It's FUCOMP
 		else
 		{
 			rm = (rm >> 3) & 0x07;
-			if (rm == 0)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fld_instruction, _f64);		// It's FLD real8
-			else if (rm == 2)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fst_instruction, _f64);		// It's FST real8
-			else if (rm == 3)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fstp_instruction, _f64);		// It's FSTP real8
+			if (rm == 0)					do_common_opcode_fpu_rm_one_operand(data, dd, _fld_instruction, _f64);		// It's FLD real8
+			else if (rm == 2)				do_common_opcode_fpu_rm_one_operand(data, dd, _fst_instruction, _f64);		// It's FST real8
+			else if (rm == 3)				do_common_opcode_fpu_rm_one_operand(data, dd, _fstp_instruction, _f64);		// It's FSTP real8
 			else if (rm == 4)
 			{
 				// frstor
@@ -3458,52 +3131,35 @@ extern DISASM_FUNC second_byte_functions[];
 					do_common_opcode_fpu_rm_one_operand(data, dd, _fnsave_instruction, _m94byte);
 				}
 			}
-			else if (rm == 7)
-				do_common_mnemonic(dd, _fnstsw_instruction);		// It's FNSTSW
-			else
-				do_common_unknown(data, dd, (u8*)"FUNK", 2, (u8*)"FUNK - Floating point unknown instruction");
+			else if (rm == 7)			do_common_mnemonic(dd, _fnstsw_instruction);		// It's FNSTSW
+			else						do_common_unknown(data, dd, (u8*)"FUNK", 2, (u8*)"FUNK - Floating point unknown instruction");
 		}
 	}
 
 	void opcode_fpu_de(u8* data, SDisasmData* dd)
 	{
-		asm("int3");
+		_asm int 3;
 		u8 rm = *(data + 1);
 
 
-		if (rm >= 0xc0 && rm <= 0xc7)
-			do_common_opcode_fpu_stx_hard(data, dd, _fdivr_instruction, 0);		// It's FADDP st(i),st(0)
-		else if (rm >= 0xc8 && rm <= 0xcf)
-			do_common_opcode_fpu_stx_hard(data, dd, _fdivr_instruction, 0);		// It's FMULP st(i),st(0)
-		else if (rm == 0xd9)
-			do_common_opcode_fpu_stx_hard(data, dd, _fdivr_instruction, 0);		// It's FCOMPP
-		else if (rm >= 0xe0 && rm <= 0xe7)
-			do_common_opcode_fpu_stx_hard(data, dd, _fdivr_instruction, 0);		// It's FSUBRP st(i),st(0)
-		else if (rm >= 0xe8 && rm <= 0xef)
-			do_common_opcode_fpu_stx_hard(data, dd, _fdivr_instruction, 0);		// It's FSUBP st(i),st(0)
-		else if (rm >= 0xf0 && rm <= 0xf7)
-			do_common_opcode_fpu_stx_hard(data, dd, _fdivr_instruction, 0);		// It's FDIVRP st(i),st(0)
-		else if (rm >= 0xf8 && rm <= 0xff)
-			do_common_opcode_fpu_stx_hard(data, dd, _fdivr_instruction, 0);		// It's FDIVP st(i),st(0)
+		if (rm >= 0xc0 && rm <= 0xc7)				do_common_opcode_fpu_stx_hard(data, dd, _fdivr_instruction, 0);		// It's FADDP st(i),st(0)
+		else if (rm >= 0xc8 && rm <= 0xcf)			do_common_opcode_fpu_stx_hard(data, dd, _fdivr_instruction, 0);		// It's FMULP st(i),st(0)
+		else if (rm == 0xd9)						do_common_opcode_fpu_stx_hard(data, dd, _fdivr_instruction, 0);		// It's FCOMPP
+		else if (rm >= 0xe0 && rm <= 0xe7)			do_common_opcode_fpu_stx_hard(data, dd, _fdivr_instruction, 0);		// It's FSUBRP st(i),st(0)
+		else if (rm >= 0xe8 && rm <= 0xef)			do_common_opcode_fpu_stx_hard(data, dd, _fdivr_instruction, 0);		// It's FSUBP st(i),st(0)
+		else if (rm >= 0xf0 && rm <= 0xf7)			do_common_opcode_fpu_stx_hard(data, dd, _fdivr_instruction, 0);		// It's FDIVRP st(i),st(0)
+		else if (rm >= 0xf8 && rm <= 0xff)			do_common_opcode_fpu_stx_hard(data, dd, _fdivr_instruction, 0);		// It's FDIVP st(i),st(0)
 		else
 		{
 			rm = (rm >> 3) & 0x07;
-			if (rm == 0)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fiadd_instruction, _s64);	// It's FIADD m64_int
-			else if (rm == 1)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fimul_instruction, _s64);	// It's FIMUL m16_int
-			else if (rm == 2)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _ficom_instruction, _s16);	// It's FICOM m16_int
-			else if (rm == 3)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _ficomp_instruction, _s16);	// It's FICOMP m16_int
-			else if (rm == 4)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fisub_instruction, _s16);	// It's FISUB m16_int
-			else if (rm == 5)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fisubr_instruction, _s16);	// It's FISUBR m16_int
-			else if (rm == 6)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fidiv_instruction, _s16);	// It's FIDIV m16_int
-			else if (rm == 7)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fidivr_instruction, _s16);	// It's FIDIVR m16_int
+			if (rm == 0)							do_common_opcode_fpu_rm_one_operand(data, dd, _fiadd_instruction, _s64);	// It's FIADD m64_int
+			else if (rm == 1)						do_common_opcode_fpu_rm_one_operand(data, dd, _fimul_instruction, _s64);	// It's FIMUL m16_int
+			else if (rm == 2)						do_common_opcode_fpu_rm_one_operand(data, dd, _ficom_instruction, _s16);	// It's FICOM m16_int
+			else if (rm == 3)						do_common_opcode_fpu_rm_one_operand(data, dd, _ficomp_instruction, _s16);	// It's FICOMP m16_int
+			else if (rm == 4)						do_common_opcode_fpu_rm_one_operand(data, dd, _fisub_instruction, _s16);	// It's FISUB m16_int
+			else if (rm == 5)						do_common_opcode_fpu_rm_one_operand(data, dd, _fisubr_instruction, _s16);	// It's FISUBR m16_int
+			else if (rm == 6)						do_common_opcode_fpu_rm_one_operand(data, dd, _fidiv_instruction, _s16);	// It's FIDIV m16_int
+			else if (rm == 7)						do_common_opcode_fpu_rm_one_operand(data, dd, _fidivr_instruction, _s16);	// It's FIDIVR m16_int
 		}
 	}
 
@@ -3513,7 +3169,7 @@ extern DISASM_FUNC second_byte_functions[];
 // http://www.pagetable.com/?p=16
 	void opcode_fpu_df(u8* data, SDisasmData* dd)
 	{
-		asm("int3");
+		_asm int 3;
 		u8 v;
 		u8 rm = *(data + 1);
 
@@ -3522,33 +3178,23 @@ extern DISASM_FUNC second_byte_functions[];
 			do_common_opcode_fpu_stx(data, dd, _fld_instruction);		// FFREEP st(i)
 		else if (rm == 0xe0)
 		{ // It's FNSTSW ax
-			asm("int3");
+			_asm int 3;
 			v = _accum_reg;
 			do_common_opcode_fpu_rm_one_operand((u8*)&v, dd, _fnstsw_instruction, _16bit);
 		}
-		else if (rm >= 0xe8 && rm <= 0xef)
-			do_common_opcode_fpu_hard_stx(data, dd, _fdivr_instruction, 0);		// It's FUCOMIP st(0),st(i)
-		else if (rm >= 0xf0 && rm <= 0xf7)
-			do_common_opcode_fpu_hard_stx(data, dd, _fdivr_instruction, 0);		// It's FCOMIP st(0),st(i)
+		else if (rm >= 0xe8 && rm <= 0xef)			do_common_opcode_fpu_hard_stx(data, dd, _fdivr_instruction, 0);		// It's FUCOMIP st(0),st(i)
+		else if (rm >= 0xf0 && rm <= 0xf7)			do_common_opcode_fpu_hard_stx(data, dd, _fdivr_instruction, 0);		// It's FCOMIP st(0),st(i)
 		else
 		{
 			rm = (rm >> 3) & 0x07;
-			if (rm == 0)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fild_instruction, _s16);		// It's FILD m16_int
-			else if (rm == 2)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fist_instruction, _s16);		// It's FIST m16_int
-			else if (rm == 3)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fistp_instruction, _s16);	// It's FISTP m16_int
-			else if (rm == 4)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fbld_instruction, _m80);		// It's fbld m80_bcd
-			else if (rm == 5)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fild_instruction, _s64);		// It's FILD m64_int
-			else if (rm == 6)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fbstp_instruction, _m80);	// It's fbstp m80_bcd
-			else if (rm == 7)
-				do_common_opcode_fpu_rm_one_operand(data, dd, _fistp_instruction, _s64);	// It's FISTP m64_int
-			else
-				do_common_unknown(data, dd, (u8*)"FUNK", 2, (u8*)"FUNK - Floating point unknown instruction");
+			if (rm == 0)					do_common_opcode_fpu_rm_one_operand(data, dd, _fild_instruction, _s16);		// It's FILD m16_int
+			else if (rm == 2)				do_common_opcode_fpu_rm_one_operand(data, dd, _fist_instruction, _s16);		// It's FIST m16_int
+			else if (rm == 3)				do_common_opcode_fpu_rm_one_operand(data, dd, _fistp_instruction, _s16);	// It's FISTP m16_int
+			else if (rm == 4)				do_common_opcode_fpu_rm_one_operand(data, dd, _fbld_instruction, _m80);		// It's fbld m80_bcd
+			else if (rm == 5)				do_common_opcode_fpu_rm_one_operand(data, dd, _fild_instruction, _s64);		// It's FILD m64_int
+			else if (rm == 6)				do_common_opcode_fpu_rm_one_operand(data, dd, _fbstp_instruction, _m80);	// It's fbstp m80_bcd
+			else if (rm == 7)				do_common_opcode_fpu_rm_one_operand(data, dd, _fistp_instruction, _s64);	// It's FISTP m64_int
+			else							do_common_unknown(data, dd, (u8*)"FUNK", 2, (u8*)"FUNK - Floating point unknown instruction");
 		}
 	}
 
@@ -4030,12 +3676,12 @@ extern DISASM_FUNC second_byte_functions[];
 
 	void opcode_mov_mem_accum_16_32(u8* data, SDisasmData* dd)
 	{
-		asm("int3");
+		_asm int 3;
 	}
 
 	void opcode_mov_mem_accum_8(u8* data, SDisasmData* dd)
 	{
-		asm("int3");
+		_asm int 3;
 	}
 
 	void opcode_mov_reg16_32_sreg(u8* data, SDisasmData* dd)
@@ -4045,32 +3691,32 @@ extern DISASM_FUNC second_byte_functions[];
 
 	void opcode_mov_reg_immed16_32(u8* data, SDisasmData* dd)
 	{
-		asm("int3");
+		_asm int 3;
 	}
 
 	void opcode_mov_reg_immed8(u8* data, SDisasmData* dd)
 	{
-		asm("int3");
+		_asm int 3;
 	}
 
 	void opcode_mov_reg_rm_16_32(u8* data, SDisasmData* dd)
 	{
-		asm("int3");
+		_asm int 3;
 	}
 
 	void opcode_mov_reg_rm_8(u8* data, SDisasmData* dd)
 	{
-		asm("int3");
+		_asm int 3;
 	}
 
 	void opcode_mov_rm_reg_16_32(u8* data, SDisasmData* dd)
 	{
-		asm("int3");
+		_asm int 3;
 	}
 
 	void opcode_mov_rm_reg_8(u8* data, SDisasmData* dd)
 	{
-		asm("int3");
+		_asm int 3;
 	}
 
 	void opcode_mov_sreg_reg16_32(u8* data, SDisasmData* dd)
@@ -4090,12 +3736,12 @@ extern DISASM_FUNC second_byte_functions[];
 
 	void opcode_movq_mm_mmx_mmx(u8* data, SDisasmData* dd)
 	{
-		asm("int3");
+		_asm int 3;
 	}
 
 	void opcode_movq_mmx_mm_mmx(u8* data, SDisasmData* dd)
 	{
-		asm("int3");
+		_asm int 3;
 	}
 
 	void opcode_movsb(u8* data, SDisasmData* dd)
@@ -4999,12 +4645,12 @@ extern DISASM_FUNC second_byte_functions[];
 
 	void opcode_test_rm_reg16_32(u8* data, SDisasmData* dd)
 	{
-		asm("int3");
+		_asm int 3;
 	}
 
 	void opcode_test_rm_reg_8(u8* data, SDisasmData* dd)
 	{
-		asm("int3");
+		_asm int 3;
 	}
 
 	void opcode_two_byte_instruction(u8* data, SDisasmData* dd)
@@ -5016,7 +4662,7 @@ extern DISASM_FUNC second_byte_functions[];
 
 	void opcode_two_byte_unused(u8* data, SDisasmData* dd)
 	{
-		asm("int3");
+		_asm int 3;
 	}
 
 	void opcode_ud2_0f0b(u8* data, SDisasmData* dd)
@@ -5033,7 +4679,7 @@ extern DISASM_FUNC second_byte_functions[];
 
 	void opcode_unused(u8* data, SDisasmData* dd)
 	{
-		asm("int3");
+		_asm int 3;
 	}
 
 	void opcode_wait(u8* data, SDisasmData* dd)

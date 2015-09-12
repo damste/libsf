@@ -1,15 +1,16 @@
 //////////
 //
-// DebiX86Disassembler/Debi/structs.h
+// /libsf/exodus/tools/debi/debi_structs.h
 //
 //////
 // Version 0.80
-// Copyright (c) 2014 by Rick C. Hodgin
+// Copyright (c) 2014-2015 by Rick C. Hodgin
 //////
 // Last update:
-//     Feb.13.2014
+//     Sep.12.2015
 //////
 // Change log:
+//     Sep.12.2015 - Refactoring for Exodus OS tool support
 //     Feb.13.2014 - Initial creation
 //////
 //

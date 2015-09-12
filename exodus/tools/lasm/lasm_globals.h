@@ -82,3 +82,13 @@
 
 
 
+//////////
+// Assembly opcodes
+//////
+	SAsciiCompSearcher	cgcKeywordsLasm[] =
+	{
+		// keyword					length		repeats?	extra (type)							first on line?		category			syntax highlight color		syntax highlight bold		onFind()	compilerDictionaryLookup()
+		{ cgc_asterisk,				1,			true,		_ICODE_ASTERISK,						true,				_ICAT_GENERIC,		&colorSynHi_comment1,		false,						null0,		null0	},
+
+		{ 0,						0,			0,			0,										0,					0,					0,							0,							0,			0		}
+	};
