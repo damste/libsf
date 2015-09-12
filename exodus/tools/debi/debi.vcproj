@@ -171,11 +171,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\debi.cpp"
+				RelativePath=".\debi.c"
 				>
 			</File>
 			<File
-				RelativePath=".\disasm.cpp"
+				RelativePath=".\disasm.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"

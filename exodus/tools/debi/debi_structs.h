@@ -41,90 +41,123 @@
 
 
 // When changing REGTYPE, update disasm.cpp::do_common_return_operand_size_text()
-enum REGTYPE {  _8bit		= 1,			/* ah/al */
-				_16bit		= 2,			/* ax */
-				_32bit		= 4,			/* eax */
-				_64bit		= 8,			/* rax */
-				_mmx		= 16,			/* mm0 */
-				_xmmx		= 32,			/* xmm0 */
-				_fpu		= 64,			/* st0 */
-				_80bit		= 128,			/* size of stx regs */
-				_128bit		= 256,			/* size of xmmx regs */
-				_6byte		= 512,			/* size of gdt register in legacy/compat mode */
-				_10byte		= 1024,			/* size of gdt register in IA-32e mode */
-				_illegal	= 2048,			/* Added for illegal opcode encodings */
-				_0bit		= 4096,			/* Added to indicate no prefix should be used */
-				_f32		= 8192,			/* f32 ptr */
-				_f64		= 16384,		/* f64 ptr */
-				_f80		= 32768,		/* f80 ptr */
-				_s32		= 65536,		/* s32 ptr */
-				_s64		= 131072,		/* s64 ptr */
-				_s16		= 256142,		/* s16 ptr */
-				_m80		= 524288,		/* m80 ptr */
-				_m94byte	= 1048576,		/* 94-byte ptr */
-				_m108byte	= 2097152,		/* 108-byte ptr */
-				_m14byte	= 4194304,		/* 14-byte ptr */
-				_m28byte	= 8388608,		/* 28-byte ptr */
-				_varies		= 16777216 };	/* Varies by side, refer to dd->op1_regtype and dd->op2_regtype */
+enum _ERegType
+{
+	_8bit		= 1,			/* ah/al */
+	_16bit		= 2,			/* ax */
+	_32bit		= 4,			/* eax */
+	_64bit		= 8,			/* rax */
+	_mmx		= 16,			/* mm0 */
+	_xmmx		= 32,			/* xmm0 */
+	_fpu		= 64,			/* st0 */
+	_80bit		= 128,			/* size of stx regs */
+	_128bit		= 256,			/* size of xmmx regs */
+	_6byte		= 512,			/* size of gdt register in legacy/compat mode */
+	_10byte		= 1024,			/* size of gdt register in IA-32e mode */
+	_illegal	= 2048,			/* Added for illegal opcode encodings */
+	_0bit		= 4096,			/* Added to indicate no prefix should be used */
+	_f32		= 8192,			/* f32 ptr */
+	_f64		= 16384,		/* f64 ptr */
+	_f80		= 32768,		/* f80 ptr */
+	_s32		= 65536,		/* s32 ptr */
+	_s64		= 131072,		/* s64 ptr */
+	_s16		= 256142,		/* s16 ptr */
+	_m80		= 524288,		/* m80 ptr */
+	_m94byte	= 1048576,		/* 94-byte ptr */
+	_m108byte	= 2097152,		/* 108-byte ptr */
+	_m14byte	= 4194304,		/* 14-byte ptr */
+	_m28byte	= 8388608,		/* 28-byte ptr */
+	_varies		= 16777216		/* Varies by side, refer to dd->op1_regtype and dd->op2_regtype */
+};
+#define ERegType enum _ERegType
 
-enum PREFIX	  { CSREG	= 1,			/* cs: */
-				DSREG	= 2,			/* ds: */
-				ESREG	= 4,			/* es: */
-				FSREG	= 8,			/* fs: */
-				GSREG	= 16,			/* gs: */
-				SSREG	= 32,			/* ss: */
-				LOCK	= 64,			/* lock */
-				REPE	= 128,			/* REP/REPE */
-				REPNE	= 256 };		/* REPNE */
+enum EPrefix
+{
+	CSREG	= 1,			/* cs: */
+	DSREG	= 2,			/* ds: */
+	ESREG	= 4,			/* es: */
+	FSREG	= 8,			/* fs: */
+	GSREG	= 16,			/* gs: */
+	SSREG	= 32,			/* ss: */
+	LOCK	= 64,			/* lock */
+	REPE	= 128,			/* REP/REPE */
+	REPNE	= 256			/* REPNE */
+};
 
-enum OVERRIDE { Operand	= 1,
-				Address	= 2 };
+enum EOverride
+{
+	Operand	= 1,
+	Address	= 2
+};
 				
-enum MODE { _16bit_mode	= 1,
-			_32bit_mode	= 2,
-			_64bit_mode	= 3 };
+enum _EMode
+{
+	_16bit_mode	= 1,
+	_32bit_mode	= 2,
+	_64bit_mode	= 3
+};
+#define EMode enum _EMode
 
-enum OPERAND {	Byte	= 1,		/* byte ptr */
-				Word	= 2,		/* word ptr */
-				Dword	= 4,		/* dword ptr */
-				Qword	= 8,		/* qword ptr */
-				Tbyte	= 16,		/* tbyte ptr */
-				DQword	= 32 };		/* dqword ptr */
+enum _EOperand
+{
+	Byte	= 1,		/* byte ptr */
+	Word	= 2,		/* word ptr */
+	Dword	= 4,		/* dword ptr */
+	Qword	= 8,		/* qword ptr */
+	Tbyte	= 16,		/* tbyte ptr */
+	DQword	= 32		/* dqword ptr */
+};
+#define EOperand enum _EOperand
 
-enum DESTINATION {	Memory		= 1,	/* A memory location */
-					Register	= 2 };	/* some register */
+enum _EDestination
+{
+	Memory		= 1,	/* A memory location */
+	Register	= 2		/* some register */
+};
+#define EDestination enum _EDestination
 
-enum REGSET1 {	_accum_low_reg	= 0,
-				_count_low_reg	= 1,
-				_data_low_reg	= 2,
-				_base_low_reg	= 3,
-				_accum_high_reg	= 4,
-				_count_high_reg	= 5,
-				_data_high_reg	= 6,
-				_base_high_reg	= 7 };
+enum _ERegSet1
+{
+	_accum_low_reg	= 0,
+	_count_low_reg	= 1,
+	_data_low_reg	= 2,
+	_base_low_reg	= 3,
+	_accum_high_reg	= 4,
+	_count_high_reg	= 5,
+	_data_high_reg	= 6,
+	_base_high_reg	= 7
+};
+#define ERegSet1 enum _ERegSet1
 
-enum REGSET2 {	_accum_reg	= 0,
-				_count_reg	= 1,
-				_data_reg	= 2,
-				_base_reg	= 3,
-				_stack_reg	= 4,
-				_bptr_reg	= 5,
-				_source_reg	= 6,
-				_dest_reg	= 7 };
+enum _ERegSet2
+{
+	_accum_reg		= 0,
+	_count_reg		= 1,
+	_data_reg		= 2,
+	_base_reg		= 3,
+	_stack_reg		= 4,
+	_bptr_reg		= 5,
+	_source_reg		= 6,
+	_dest_reg		= 7
+};
+#define ERegSet2 enum _ERegSet2
 
-enum REGSET3 {	_gp_reg		= 0,
-				_control_reg= 1,
-				_debug_reg	= 2,
-				_test_reg	= 3,
-				_segment_reg= 4,
-				_fpu_reg	= 5,
-				_mmx_reg	= 6,
-				_xmmx_reg	= 7 };
-
+enum _EregSet3
+{
+	_gp_reg			= 0,
+	_control_reg	= 1,
+	_debug_reg		= 2,
+	_test_reg		= 3,
+	_segment_reg	= 4,
+	_fpu_reg		= 5,
+	_mmx_reg		= 6,
+	_xmmx_reg		= 7
+};
+#define EregSet3 enum _EregSet3
 
 
 // Structure for the disassembly data
-struct SDisasmData
+struct _SDisasmData
 {
 	u32			prefixes;					// Refer to Enum PREFIX for list
 	u32			overrides;					// Refer to Enum OVERRIDE for list
@@ -156,3 +189,4 @@ struct SDisasmData
 	u8*			data_root;					// Pointer to the start of the opcode from the get-go, before moving over for prefixes, etc.
 	u32			opcode_bytes;				// Length of the instruction, like 1 for NOP, 2 for INT 0x80
 };
+#define SDisasmData struct _SDisasmData
