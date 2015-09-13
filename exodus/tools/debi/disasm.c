@@ -3064,8 +3064,8 @@ _asm int 3;
 		u8 rm = *(data + 1);
 _asm int 3;
 		
-		if (rm >= 0xc0 && rm <= 0xc7)			do_common_opcode_fpu_stx(data, dd, cgc_fld_instruction);			// fld st(i)
-		else if (rm >= 0xc8 && rm <= 0xcf)		do_common_opcode_fpu_stx(data, dd, cgc_fxch_instruction);			// fxch st(i)
+		if (rm >= 0xc0 && rm <= 0xc7)			do_common_opcode_fpu_stx(data, dd, cgc_fld_instruction, 2);			// fld st(i)
+		else if (rm >= 0xc8 && rm <= 0xcf)		do_common_opcode_fpu_stx(data, dd, cgc_fxch_instruction, 2);		// fxch st(i)
 		else if (rm == 0xd0)					do_common_mnemonic(dd, cgc_fnop_instruction, 1, NULL, NULL);		// fnop
 		else if (rm == 0xe0)					do_common_mnemonic(dd, cgc_fchs_instruction, 1, NULL, NULL);		// fchs
 		else if (rm == 0xe1)					do_common_mnemonic(dd, cgc_fabs_instruction, 1, NULL, NULL);		// fabs
@@ -3097,9 +3097,9 @@ _asm int 3;
 		else
 		{
 			rm = (rm >> 3) & 0x07;
-			if (rm == 0)						do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fadd_instruction, _f32);		// FLD real4
-			else if (rm == 2)					do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fst_instruction, _f32);		// FST real4
-			else if (rm == 3)					do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fstp_instruction, _f32);		// FSTP real4
+			if (rm == 0)						do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fadd_instruction, _f32, 2);		// FLD real4
+			else if (rm == 2)					do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fst_instruction, _f32, 2);		// FST real4
+			else if (rm == 3)					do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fstp_instruction, _f32, 2);		// FSTP real4
 			else if (rm == 4)
 			{
 				// fldenv
@@ -3107,15 +3107,15 @@ _asm int 3;
 					(_cpu_mode == _16bit_mode && (dd->overrides & (u32)Operand) != 0))
 				{
 					// 32-bit addressing mode
-					do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fldenv_instruction, _m28byte);
+					do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fldenv_instruction, _m28byte, 2);
 				}
 				else
 				{
 					// 16-bit addressing mode
-					do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fldenv_instruction, _m14byte);
+					do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fldenv_instruction, _m14byte, 2);
 				}
 			}
-			else if (rm == 5)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fldcw_instruction, _16bit);		// fldcw m16
+			else if (rm == 5)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fldcw_instruction, _16bit, 2);		// fldcw m16
 			else if (rm == 6)
 			{
 				// fnstenv
@@ -3123,16 +3123,16 @@ _asm int 3;
 					(_cpu_mode == _16bit_mode && (dd->overrides & (u32)Operand) != 0))
 				{
 					// 32-bit addressing mode
-					do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fnstenv_instruction, _m28byte);
+					do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fnstenv_instruction, _m28byte, 2);
 				}
 				else
 				{
 					// 16-bit addressing mode
-					do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fnstenv_instruction, _m14byte);
+					do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fnstenv_instruction, _m14byte, 2);
 				}
 			}
-			else if (rm == 7)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fnstcw_instruction, _16bit);		// fnstcw m16
-			else							do_common_unknown(data, dd, (u8*)"FUNK", 2, (u8*)"FUNK - Floating point unknown instruction");
+			else if (rm == 7)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fnstcw_instruction, _16bit, 2);		// fnstcw m16
+			else							do_common_unknown(data, dd, (u8*)"FUNK", 2, (u8*)"FUNK - Floating point unknown instruction", NULL);
 		}
 	}
 
@@ -3141,22 +3141,22 @@ _asm int 3;
 		u8 rm = *(data + 1);
 _asm int 3;
 
-		if (rm >= 0xc0 && rm <= 0xc7)				do_common_opcode_fpu_hard_stx(data, dd, cgc_fdivr_instruction, 0);		// FCMOVB st0,sti
-		else if (rm >= 0xc8 && rm <= 0xcf)			do_common_opcode_fpu_hard_stx(data, dd, cgc_fdivr_instruction, 0);		// FCMOVZ st0,sti
-		else if (rm >= 0xd0 && rm <= 0xd7)			do_common_opcode_fpu_hard_stx(data, dd, cgc_fdivr_instruction, 0);		// FCMOVNG st0,sti
-		else if (rm >= 0xd8 && rm <= 0xdf)			do_common_opcode_fpu_hard_stx(data, dd, cgc_fdivr_instruction, 0);		// FCMOVPO st0,sti
-		else if (rm == 0xe9)						do_common_mnemonic(dd, cgc_fucompp_instruction, 1, NULL, NULL);			// FUCOMPP
+		if (rm >= 0xc0 && rm <= 0xc7)				do_common_opcode_fpu_hard_stx(data, dd, cgc_fdivr_instruction, 0, 2);		// FCMOVB st0,sti
+		else if (rm >= 0xc8 && rm <= 0xcf)			do_common_opcode_fpu_hard_stx(data, dd, cgc_fdivr_instruction, 0, 2);		// FCMOVZ st0,sti
+		else if (rm >= 0xd0 && rm <= 0xd7)			do_common_opcode_fpu_hard_stx(data, dd, cgc_fdivr_instruction, 0, 2);		// FCMOVNG st0,sti
+		else if (rm >= 0xd8 && rm <= 0xdf)			do_common_opcode_fpu_hard_stx(data, dd, cgc_fdivr_instruction, 0, 2);		// FCMOVPO st0,sti
+		else if (rm == 0xe9)						do_common_mnemonic(dd, cgc_fucompp_instruction, 1, NULL, NULL);				// FUCOMPP
 		else
 		{
 			rm = (rm >> 3) & 0x07;
-			if (rm == 0)					do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fiadd_instruction, _s32);		// FIADD m32_int
-			else if (rm == 1)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fimul_instruction, _s32);		// FIMUL m32_int
-			else if (rm == 2)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_ficom_instruction, _s32);		// FICOM m32_int
-			else if (rm == 3)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_ficomp_instruction, _s32);	// FICOMP m32_int
-			else if (rm == 4)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fisub_instruction, _s32);		// FISUB m32_int
-			else if (rm == 5)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fisubr_instruction, _s32);	// FISUBR m32_int
-			else if (rm == 6)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fidiv_instruction, _s32);		// FIDIV m32_int
-			else if (rm == 7)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fidivr_instruction, _s32);	// FIDIVR m32_int
+			if (rm == 0)					do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fiadd_instruction, _s32, 2);		// FIADD m32_int
+			else if (rm == 1)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fimul_instruction, _s32, 2);		// FIMUL m32_int
+			else if (rm == 2)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_ficom_instruction, _s32, 2);		// FICOM m32_int
+			else if (rm == 3)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_ficomp_instruction, _s32, 2);		// FICOMP m32_int
+			else if (rm == 4)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fisub_instruction, _s32, 2);		// FISUB m32_int
+			else if (rm == 5)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fisubr_instruction, _s32, 2);		// FISUBR m32_int
+			else if (rm == 6)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fidiv_instruction, _s32, 2);		// FIDIV m32_int
+			else if (rm == 7)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fidivr_instruction, _s32, 2);		// FIDIVR m32_int
 		}
 	}
 
@@ -3166,23 +3166,23 @@ _asm int 3;
 _asm int 3;
 
 
-		if (rm >= 0xc0 && rm <= 0xc7)				do_common_opcode_fpu_hard_stx(data, dd, cgc_fdivr_instruction, 0);		// FCMOVNB st0,sti
-		else if (rm >= 0xc8 && rm <= 0xcf)			do_common_opcode_fpu_hard_stx(data, dd, cgc_fdivr_instruction, 0);		// FCMOVNZ st0,sti
-		else if (rm >= 0xd0 && rm <= 0xd7)			do_common_opcode_fpu_hard_stx(data, dd, cgc_fdivr_instruction, 0);		// FCMOVG st0,sti
-		else if (rm >= 0xd8 && rm <= 0xdf)			do_common_opcode_fpu_hard_stx(data, dd, cgc_fdivr_instruction, 0);		// FCMOVPE st0,sti
-		else if (rm == 0xe2)						do_common_mnemonic(dd, cgc_fnclex_instruction, 1, NULL, NULL);			// fnclex
-		else if (rm == 0xe3)						do_common_mnemonic(dd, cgc_fninit_instruction, 1, NULL, NULL);			// fninit
-		else if (rm >= 0xe8 && rm <= 0xef)			do_common_opcode_fpu_hard_stx(data, dd, cgc_fdivr_instruction, 0);		// FUCOMI st(0),st(i)
-		else if (rm >= 0xf0 && rm <= 0xf7)			do_common_opcode_fpu_hard_stx(data, dd, cgc_fdivr_instruction, 0);		// FCOMI st(0),st(i)
+		if (rm >= 0xc0 && rm <= 0xc7)				do_common_opcode_fpu_hard_stx(data, dd, cgc_fdivr_instruction, 0, 2);		// FCMOVNB st0,sti
+		else if (rm >= 0xc8 && rm <= 0xcf)			do_common_opcode_fpu_hard_stx(data, dd, cgc_fdivr_instruction, 0, 2);		// FCMOVNZ st0,sti
+		else if (rm >= 0xd0 && rm <= 0xd7)			do_common_opcode_fpu_hard_stx(data, dd, cgc_fdivr_instruction, 0, 2);		// FCMOVG st0,sti
+		else if (rm >= 0xd8 && rm <= 0xdf)			do_common_opcode_fpu_hard_stx(data, dd, cgc_fdivr_instruction, 0, 2);		// FCMOVPE st0,sti
+		else if (rm == 0xe2)						do_common_mnemonic(dd, cgc_fnclex_instruction, 1, NULL, NULL);				// fnclex
+		else if (rm == 0xe3)						do_common_mnemonic(dd, cgc_fninit_instruction, 1, NULL, NULL);				// fninit
+		else if (rm >= 0xe8 && rm <= 0xef)			do_common_opcode_fpu_hard_stx(data, dd, cgc_fdivr_instruction, 0, 2);		// FUCOMI st(0),st(i)
+		else if (rm >= 0xf0 && rm <= 0xf7)			do_common_opcode_fpu_hard_stx(data, dd, cgc_fdivr_instruction, 0, 2);		// FCOMI st(0),st(i)
 		else
 		{
 			rm = (rm >> 3) & 0x07;
-			if (rm == 0)					do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fild_instruction, _s32);		// FILD m32_int
-			else if (rm == 2)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fist_instruction, _s32);		// FIST m32_int
-			else if (rm == 3)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fistp_instruction, _s32);		// FISTP m32_int
-			else if (rm == 5)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fld_instruction, _f80);		// FLD real10
-			else if (rm == 7)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fstp_instruction, _f80);		// FSTP real10
-			else							do_common_unknown(data, dd, (u8*)"FUNK", 2, (u8*)"FUNK - Floating point unknown instruction");
+			if (rm == 0)					do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fild_instruction, _s32, 2);		// FILD m32_int
+			else if (rm == 2)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fist_instruction, _s32, 2);		// FIST m32_int
+			else if (rm == 3)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fistp_instruction, _s32, 2);		// FISTP m32_int
+			else if (rm == 5)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fld_instruction, _f80, 2);		// FLD real10
+			else if (rm == 7)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fstp_instruction, _f80, 2);		// FSTP real10
+			else							do_common_unknown(data, dd, (u8*)"FUNK", 2, (u8*)"FUNK - Floating point unknown instruction", NULL);
 		}
 	}
 
@@ -3191,23 +3191,23 @@ _asm int 3;
 		u8 rm = *(data + 1);
 _asm int 3;
 		
-		if (rm >= 0xc0 && rm <= 0xc7)				do_common_opcode_fpu_stx_hard(data, dd, cgc_fdivr_instruction, 0);		// FADD st(i),st(0)
-		else if (rm >= 0xc8 && rm <= 0xcf)			do_common_opcode_fpu_stx_hard(data, dd, cgc_fdivr_instruction, 0);		// FMUL st(i),st(0)
-		else if (rm >= 0xe0 && rm <= 0xe7)			do_common_opcode_fpu_stx_hard(data, dd, cgc_fdivr_instruction, 0);		// FSUBR st(i),st(0)
-		else if (rm >= 0xe8 && rm <= 0xef)			do_common_opcode_fpu_stx_hard(data, dd, cgc_fdivr_instruction, 0);		// FSUB st(i),st(0)
-		else if (rm >= 0xf0 && rm <= 0xf7)			do_common_opcode_fpu_stx_hard(data, dd, cgc_fdivr_instruction, 0);		// FDIVR st(i),st(0)
-		else if (rm >= 0xf8 && rm <= 0xff)			do_common_opcode_fpu_stx_hard(data, dd, cgc_fdivr_instruction, 0);		// FDIV st(i),st(0)
+		if (rm >= 0xc0 && rm <= 0xc7)				do_common_opcode_fpu_stx_hard(data, dd, cgc_fdivr_instruction, 0, 2);		// FADD st(i),st(0)
+		else if (rm >= 0xc8 && rm <= 0xcf)			do_common_opcode_fpu_stx_hard(data, dd, cgc_fdivr_instruction, 0, 2);		// FMUL st(i),st(0)
+		else if (rm >= 0xe0 && rm <= 0xe7)			do_common_opcode_fpu_stx_hard(data, dd, cgc_fdivr_instruction, 0, 2);		// FSUBR st(i),st(0)
+		else if (rm >= 0xe8 && rm <= 0xef)			do_common_opcode_fpu_stx_hard(data, dd, cgc_fdivr_instruction, 0, 2);		// FSUB st(i),st(0)
+		else if (rm >= 0xf0 && rm <= 0xf7)			do_common_opcode_fpu_stx_hard(data, dd, cgc_fdivr_instruction, 0, 2);		// FDIVR st(i),st(0)
+		else if (rm >= 0xf8 && rm <= 0xff)			do_common_opcode_fpu_stx_hard(data, dd, cgc_fdivr_instruction, 0, 2);		// FDIV st(i),st(0)
 		else
 		{
 			rm = (rm >> 3) & 0x07;
-			if (rm == 0)					do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fadd_instruction, _f64);		// FADD real8
-			else if (rm == 1)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fmul_instruction, _f64);		// FMUL real8
-			else if (rm == 2)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fcom_instruction, _f64);		// FCOM real8
-			else if (rm == 3)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fcomp_instruction, _f64);		// FCOMP real8
-			else if (rm == 4)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fsub_instruction, _f64);		// FSUB real8
-			else if (rm == 5)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fsubr_instruction, _f64);		// FSUBR real8
-			else if (rm == 6)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fdiv_instruction, _f64);		// FDIV real8
-			else if (rm == 7)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fdivr_instruction, _f64);		// FDIVR real8
+			if (rm == 0)					do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fadd_instruction, _f64, 2);		// FADD real8
+			else if (rm == 1)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fmul_instruction, _f64, 2);		// FMUL real8
+			else if (rm == 2)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fcom_instruction, _f64, 2);		// FCOM real8
+			else if (rm == 3)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fcomp_instruction, _f64, 2);		// FCOMP real8
+			else if (rm == 4)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fsub_instruction, _f64, 2);		// FSUB real8
+			else if (rm == 5)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fsubr_instruction, _f64, 2);		// FSUBR real8
+			else if (rm == 6)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fdiv_instruction, _f64, 2);		// FDIV real8
+			else if (rm == 7)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fdivr_instruction, _f64, 2);		// FDIVR real8
 		}
 	}
 
@@ -3216,18 +3216,18 @@ _asm int 3;
 		u8 rm = *(data + 1);
 _asm int 3;
 		
-		if (rm >= 0xc0 && rm <= 0xc7)				do_common_opcode_fpu_stx(data, dd, cgc_fld_instruction);		// FFREE st(i)
-		else if (rm >= 0xd0 && rm <= 0xd7)			do_common_opcode_fpu_stx(data, dd, cgc_fld_instruction);		// FST st(i)
-		else if (rm >= 0xd8 && rm <= 0xdf)			do_common_opcode_fpu_stx(data, dd, cgc_fld_instruction);		// FSTP st(i)
-		else if (rm >= 0xe0 && rm <= 0xe7)			do_common_opcode_fpu_stx(data, dd, cgc_fld_instruction);		// FUCOM st(i)
-		else if (rm >= 0xe8 && rm <= 0xef)			do_common_opcode_fpu_stx(data, dd, cgc_fld_instruction);		// FUCOMP st(i)
-		else if (rm == 0xe9)						do_common_mnemonic(dd, cgc_fucomp_instruction, 1, NULL, NULL);	// FUCOMP
+		if (rm >= 0xc0 && rm <= 0xc7)				do_common_opcode_fpu_stx(data, dd, cgc_fld_instruction, 2);			// FFREE st(i)
+		else if (rm >= 0xd0 && rm <= 0xd7)			do_common_opcode_fpu_stx(data, dd, cgc_fld_instruction, 2);			// FST st(i)
+		else if (rm >= 0xd8 && rm <= 0xdf)			do_common_opcode_fpu_stx(data, dd, cgc_fld_instruction, 2);			// FSTP st(i)
+		else if (rm >= 0xe0 && rm <= 0xe7)			do_common_opcode_fpu_stx(data, dd, cgc_fld_instruction, 2);			// FUCOM st(i)
+		else if (rm >= 0xe8 && rm <= 0xef)			do_common_opcode_fpu_stx(data, dd, cgc_fld_instruction, 2);			// FUCOMP st(i)
+		else if (rm == 0xe9)						do_common_mnemonic(dd, cgc_fucomp_instruction, 1, NULL, NULL);		// FUCOMP
 		else
 		{
 			rm = (rm >> 3) & 0x07;
-			if (rm == 0)					do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fld_instruction, _f64);		// FLD real8
-			else if (rm == 2)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fst_instruction, _f64);		// FST real8
-			else if (rm == 3)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fstp_instruction, _f64);		// FSTP real8
+			if (rm == 0)					do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fld_instruction, _f64, 2);	// FLD real8
+			else if (rm == 2)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fst_instruction, _f64, 2);	// FST real8
+			else if (rm == 3)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fstp_instruction, _f64, 2);	// FSTP real8
 			else if (rm == 4)
 			{
 				// frstor
@@ -3235,12 +3235,12 @@ _asm int 3;
 					(_cpu_mode == _16bit_mode && (dd->overrides & (u32)Operand) != 0))
 				{
 					// 32-bit addressing mode
-					do_common_opcode_fpu_rm_one_operand(data, dd, cgc_frstor_instruction, _m108byte);
+					do_common_opcode_fpu_rm_one_operand(data, dd, cgc_frstor_instruction, _m108byte, 2);
 				}
 				else
 				{
 					// 16-bit addressing mode
-					do_common_opcode_fpu_rm_one_operand(data, dd, cgc_frstor_instruction, _m94byte);
+					do_common_opcode_fpu_rm_one_operand(data, dd, cgc_frstor_instruction, _m94byte, 2);
 				}
 			}
 			else if (rm == 6)
@@ -3250,16 +3250,16 @@ _asm int 3;
 					(_cpu_mode == _16bit_mode && (dd->overrides & (u32)Operand) != 0))
 				{
 					// 32-bit addressing mode
-					do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fnsave_instruction, _m108byte);
+					do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fnsave_instruction, _m108byte, 2);
 				}
 				else
 				{
 					// 16-bit addressing mode
-					do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fnsave_instruction, _m94byte);
+					do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fnsave_instruction, _m94byte, 2);
 				}
 			}
 			else if (rm == 7)			do_common_mnemonic(dd, cgc_fnstsw_instruction, 1, NULL, NULL);		// FNSTSW
-			else						do_common_unknown(data, dd, (u8*)"UNKF", 2, (u8*)"UNKF - Unknown floating point instruction");
+			else						do_common_unknown(data, dd, (u8*)"UNKF", 2, (u8*)"UNKF - Unknown floating point instruction", NULL);
 		}
 	}
 
@@ -3269,24 +3269,24 @@ _asm int 3;
 _asm int 3;
 
 
-		if (rm >= 0xc0 && rm <= 0xc7)				do_common_opcode_fpu_stx_hard(data, dd, cgc_fdivr_instruction, 0);				// FADDP st(i),st(0)
-		else if (rm >= 0xc8 && rm <= 0xcf)			do_common_opcode_fpu_stx_hard(data, dd, cgc_fdivr_instruction, 0);				// FMULP st(i),st(0)
-		else if (rm == 0xd9)						do_common_opcode_fpu_stx_hard(data, dd, cgc_fdivr_instruction, 0);				// FCOMPP
-		else if (rm >= 0xe0 && rm <= 0xe7)			do_common_opcode_fpu_stx_hard(data, dd, cgc_fdivr_instruction, 0);				// FSUBRP st(i),st(0)
-		else if (rm >= 0xe8 && rm <= 0xef)			do_common_opcode_fpu_stx_hard(data, dd, cgc_fdivr_instruction, 0);				// FSUBP st(i),st(0)
-		else if (rm >= 0xf0 && rm <= 0xf7)			do_common_opcode_fpu_stx_hard(data, dd, cgc_fdivr_instruction, 0);				// FDIVRP st(i),st(0)
-		else if (rm >= 0xf8 && rm <= 0xff)			do_common_opcode_fpu_stx_hard(data, dd, cgc_fdivr_instruction, 0);				// FDIVP st(i),st(0)
+		if (rm >= 0xc0 && rm <= 0xc7)				do_common_opcode_fpu_stx_hard(data, dd, cgc_fdivr_instruction, 0, 2);		// FADDP st(i),st(0)
+		else if (rm >= 0xc8 && rm <= 0xcf)			do_common_opcode_fpu_stx_hard(data, dd, cgc_fdivr_instruction, 0, 2);		// FMULP st(i),st(0)
+		else if (rm == 0xd9)						do_common_opcode_fpu_stx_hard(data, dd, cgc_fdivr_instruction, 0, 2);		// FCOMPP
+		else if (rm >= 0xe0 && rm <= 0xe7)			do_common_opcode_fpu_stx_hard(data, dd, cgc_fdivr_instruction, 0, 2);		// FSUBRP st(i),st(0)
+		else if (rm >= 0xe8 && rm <= 0xef)			do_common_opcode_fpu_stx_hard(data, dd, cgc_fdivr_instruction, 0, 2);		// FSUBP st(i),st(0)
+		else if (rm >= 0xf0 && rm <= 0xf7)			do_common_opcode_fpu_stx_hard(data, dd, cgc_fdivr_instruction, 0, 2);		// FDIVRP st(i),st(0)
+		else if (rm >= 0xf8 && rm <= 0xff)			do_common_opcode_fpu_stx_hard(data, dd, cgc_fdivr_instruction, 0, 2);		// FDIVP st(i),st(0)
 		else
 		{
 			rm = (rm >> 3) & 0x07;
-			if (rm == 0)							do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fiadd_instruction, _s64);		// FIADD m64_int
-			else if (rm == 1)						do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fimul_instruction, _s64);		// FIMUL m16_int
-			else if (rm == 2)						do_common_opcode_fpu_rm_one_operand(data, dd, cgc_ficom_instruction, _s16);		// FICOM m16_int
-			else if (rm == 3)						do_common_opcode_fpu_rm_one_operand(data, dd, cgc_ficomp_instruction, _s16);	// FICOMP m16_int
-			else if (rm == 4)						do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fisub_instruction, _s16);		// FISUB m16_int
-			else if (rm == 5)						do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fisubr_instruction, _s16);	// FISUBR m16_int
-			else if (rm == 6)						do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fidiv_instruction, _s16);		// FIDIV m16_int
-			else if (rm == 7)						do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fidivr_instruction, _s16);	// FIDIVR m16_int
+			if (rm == 0)							do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fiadd_instruction, _s64, 2);		// FIADD m64_int
+			else if (rm == 1)						do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fimul_instruction, _s64, 2);		// FIMUL m16_int
+			else if (rm == 2)						do_common_opcode_fpu_rm_one_operand(data, dd, cgc_ficom_instruction, _s16, 2);		// FICOM m16_int
+			else if (rm == 3)						do_common_opcode_fpu_rm_one_operand(data, dd, cgc_ficomp_instruction, _s16, 2);		// FICOMP m16_int
+			else if (rm == 4)						do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fisub_instruction, _s16, 2);		// FISUB m16_int
+			else if (rm == 5)						do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fisubr_instruction, _s16, 2);		// FISUBR m16_int
+			else if (rm == 6)						do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fidiv_instruction, _s16, 2);		// FIDIV m16_int
+			else if (rm == 7)						do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fidivr_instruction, _s16, 2);		// FIDIVR m16_int
 		}
 	}
 
@@ -3302,26 +3302,26 @@ _asm int 3;
 
 
 		if (rm >= 0xc0 && rm <= 0xc7)
-			do_common_opcode_fpu_stx(data, dd, cgc_fld_instruction);		// FFREEP st(i)
+			do_common_opcode_fpu_stx(data, dd, cgc_fld_instruction, 2);															// FFREEP st(i)
 		else if (rm == 0xe0)
 		{ // FNSTSW ax
 			_asm int 3;
 			v = _accum_reg;
-			do_common_opcode_fpu_rm_one_operand((u8*)&v, dd, cgc_fnstsw_instruction, _16bit);
+			do_common_opcode_fpu_rm_one_operand((u8*)&v, dd, cgc_fnstsw_instruction, _16bit, 2);
 		}
-		else if (rm >= 0xe8 && rm <= 0xef)			do_common_opcode_fpu_hard_stx(data, dd, cgc_fdivr_instruction, 0);		// FUCOMIP st(0),st(i)
-		else if (rm >= 0xf0 && rm <= 0xf7)			do_common_opcode_fpu_hard_stx(data, dd, cgc_fdivr_instruction, 0);		// FCOMIP st(0),st(i)
+		else if (rm >= 0xe8 && rm <= 0xef)			do_common_opcode_fpu_hard_stx(data, dd, cgc_fdivr_instruction, 0, 2);		// FUCOMIP st(0),st(i)
+		else if (rm >= 0xf0 && rm <= 0xf7)			do_common_opcode_fpu_hard_stx(data, dd, cgc_fdivr_instruction, 0, 2);		// FCOMIP st(0),st(i)
 		else
 		{
 			rm = (rm >> 3) & 0x07;
-			if (rm == 0)					do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fild_instruction, _s16);		// FILD m16_int
-			else if (rm == 2)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fist_instruction, _s16);		// FIST m16_int
-			else if (rm == 3)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fistp_instruction, _s16);		// FISTP m16_int
-			else if (rm == 4)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fbld_instruction, _m80);		// fbld m80_bcd
-			else if (rm == 5)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fild_instruction, _s64);		// FILD m64_int
-			else if (rm == 6)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fbstp_instruction, _m80);		// fbstp m80_bcd
-			else if (rm == 7)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fistp_instruction, _s64);		// FISTP m64_int
-			else							do_common_unknown(data, dd, (u8*)"FUNK", 2, (u8*)"FUNK - Floating point unknown instruction");
+			if (rm == 0)					do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fild_instruction, _s16, 2);		// FILD m16_int
+			else if (rm == 2)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fist_instruction, _s16, 2);		// FIST m16_int
+			else if (rm == 3)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fistp_instruction, _s16, 2);		// FISTP m16_int
+			else if (rm == 4)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fbld_instruction, _m80, 2);		// fbld m80_bcd
+			else if (rm == 5)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fild_instruction, _s64, 2);		// FILD m64_int
+			else if (rm == 6)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fbstp_instruction, _m80, 2);		// fbstp m80_bcd
+			else if (rm == 7)				do_common_opcode_fpu_rm_one_operand(data, dd, cgc_fistp_instruction, _s64, 2);		// FISTP m64_int
+			else							do_common_unknown(data, dd, (u8*)"FUNK", 2, (u8*)"FUNK - Floating point unknown instruction", NULL);
 		}
 	}
 
@@ -3344,17 +3344,17 @@ _asm int 3;
 
 	void opcode_imul_rm8(u8* data, SDisasmData* dd)
 	{ // f6
-		do_common_opcode_rm8_one_operand(data, dd, cgc_imul_instruction);
+		do_common_opcode_rm8_one_operand(data, dd, cgc_imul_instruction, 1, 1);
 	}
 
 	void opcode_imul_rm1632(u8* data, SDisasmData* dd)
 	{ // f7
-		do_common_opcode_rm16_rm32_one_operand(data, dd, cgc_imul_instruction);
+		do_common_opcode_rm16_rm32_one_operand(data, dd, cgc_imul_instruction, 0, 1);
 	}
 
 	void opcode_imulaf(u8* data, SDisasmData* dd)
 	{
-		do_common_mnemonic(dd, cgc_imul_instruction, 0);
+		do_common_mnemonic(dd, cgc_imul_instruction, 0, NULL, NULL);
 		do_common_regrm_reversed(data, dd, _16bit | _32bit, false, _null_string);
 	}
 
@@ -3362,14 +3362,14 @@ _asm int 3;
 	{ // 69
 		do_common_opcode_rm1632_r1632_cl(dd, cgc_imul_instruction, 0);
 		do_common_regrm(data, dd, _16bit | _32bit, false, _null_string);
-		do_immediate(dd->data_root + dd->opcode_bytes, dd, _16bit | _32bit);
+		do_immediate(dd->data_root + dd->opcode_bytes, dd, _16bit | _32bit, NULL);
 	}
 
 	void opcode_imul_3_parms_immed8(u8* data, SDisasmData* dd)
 	{ // 68
 		do_common_opcode_rm1632_r1632_cl(dd, cgc_imul_instruction, 0);
 		do_common_regrm(data, dd, _16bit | _32bit, false, _null_string);
-		do_immediate(dd->data_root + dd->opcode_bytes, dd, _8bit);
+		do_immediate(dd->data_root + dd->opcode_bytes, dd, _8bit, NULL);
 	}
 
 	void opcode_in(u8* data, SDisasmData* dd)
@@ -3381,16 +3381,16 @@ _asm int 3;
 
 	void opcode_in16_32_immed8(u8* data, SDisasmData* dd)
 	{ // e5
-		do_common_mnemonic(dd, cgc_in_instruction);
+		do_common_mnemonic(dd, cgc_in_instruction, 1, NULL, NULL);
 		extract_gp_reg_operand(dd, _accum_reg, &dd->operand2, _16bit | _32bit);
-		do_immediate(dd->data_root + dd->opcode_bytes, dd, _8bit);
+		do_immediate(dd->data_root + dd->opcode_bytes, dd, _8bit, NULL);
 	}
 
 	void opcode_in8_immed8(u8* data, SDisasmData* dd)
 	{ // e4
 		do_common_mnemonic(dd, cgc_in_instruction, 1, NULL, NULL);
 		dd->operand1	= cgc_al_reg;
-		do_immediate(dd->data_root + dd->opcode_bytes, dd, _8bit);
+		do_immediate(dd->data_root + dd->opcode_bytes, dd, _8bit, NULL);
 	}
 
 	void opcode_in_byte(u8* data, SDisasmData* dd)
@@ -3499,7 +3499,7 @@ _asm int 3;
 
 	void opcode_jmp16_32(u8* data, SDisasmData* dd)
 	{
-		do_common_opcode_rm16_rm32_one_operand(data, dd, cgc_jmp_instruction);
+		do_common_opcode_rm16_rm32_one_operand(data, dd, cgc_jmp_instruction, 0, 1);
 	}
 
 	void opcode_jmp8(u8* data, SDisasmData* dd)
@@ -3525,13 +3525,13 @@ _asm int 3;
 	void opcode_xxx_rel8(u8* data, SDisasmData* dd, u8* instruction)
 	{
 		do_common_mnemonic(dd, instruction, 1, NULL, NULL);
-		do_immediate(data + 1, dd, _8bit);
+		do_immediate(data + 1, dd, _8bit, NULL);
 	}
 	
 	void opcode_xxx_rel16(u8* data, SDisasmData* dd, u8* instruction)
 	{
 		do_common_mnemonic(dd, instruction, 2, NULL, NULL);
-		do_immediate(data + 2, dd, _16bit);
+		do_immediate(data + 2, dd, _16bit, NULL);
 	}
 
 	void opcode_jna(u8* data, SDisasmData* dd)
@@ -3773,32 +3773,32 @@ _asm int 3;
 
 	void opcode_mov_gp_control(u8* data, SDisasmData* dd)
 	{
-		do_common_opcode_mov(data, dd, _gp_reg, _control_reg);
+		do_common_opcode_mov(data, dd, _gp_reg, _control_reg, 2);
 	}
 
 	void opcode_mov_gp_debug(u8* data, SDisasmData* dd)
 	{
-		do_common_opcode_mov(data, dd, _gp_reg, _debug_reg);
+		do_common_opcode_mov(data, dd, _gp_reg, _debug_reg, 2);
 	}
 
 	void opcode_mov_gp_test(u8* data, SDisasmData* dd)
 	{
-		do_common_opcode_mov(data, dd, _gp_reg, _test_reg);
+		do_common_opcode_mov(data, dd, _gp_reg, _test_reg, 2);
 	}
 
 	void opcode_mov_control_gp(u8* data, SDisasmData* dd)
 	{
-		do_common_opcode_mov(data, dd, _control_reg, _gp_reg);
+		do_common_opcode_mov(data, dd, _control_reg, _gp_reg, 2);
 	}
 
 	void opcode_mov_debug_gp(u8* data, SDisasmData* dd)
 	{
-		do_common_opcode_mov(data, dd, _debug_reg, _gp_reg);
+		do_common_opcode_mov(data, dd, _debug_reg, _gp_reg, 2);
 	}
 
 	void opcode_mov_test_gp(u8* data, SDisasmData* dd)
 	{
-		do_common_opcode_mov(data, dd, _test_reg, _gp_reg);
+		do_common_opcode_mov(data, dd, _test_reg, _gp_reg, 2);
 	}
 
 	void opcode_mov_mem_accum_16_32(u8* data, SDisasmData* dd)
@@ -3813,7 +3813,7 @@ _asm int 3;
 
 	void opcode_mov_reg16_32_sreg(u8* data, SDisasmData* dd)
 	{
-		do_common_opcode_mov(data, dd, _gp_reg, _segment_reg);
+		do_common_opcode_mov(data, dd, _gp_reg, _segment_reg, 2);
 	}
 
 	void opcode_mov_reg_immed16_32(u8* data, SDisasmData* dd)
@@ -3848,17 +3848,17 @@ _asm int 3;
 
 	void opcode_mov_sreg_reg16_32(u8* data, SDisasmData* dd)
 	{
-		do_common_opcode_mov(data, dd, _segment_reg, _gp_reg);
+		do_common_opcode_mov(data, dd, _segment_reg, _gp_reg, 2);
 	}
 
 	void opcode_movd_gp_mmx(u8* data, SDisasmData* dd)
 	{
-		do_common_opcode_mov(data, dd, _gp_reg, _mmx_reg);
+		do_common_opcode_mov(data, dd, _gp_reg, _mmx_reg, 2);
 	}
 
 	void opcode_movd_mmx_gp(u8* data, SDisasmData* dd)
 	{
-		do_common_opcode_mov(data, dd, _mmx_reg, _gp_reg);
+		do_common_opcode_mov(data, dd, _mmx_reg, _gp_reg, 2);
 	}
 
 	void opcode_movq_mm_mmx_mmx(u8* data, SDisasmData* dd)
@@ -3990,7 +3990,7 @@ _asm int 3;
 	void opcode_oute7(u8* data, SDisasmData* dd)
 	{ // e7
 		do_common_mnemonic(dd, cgc_in_instruction, 1, NULL, NULL);
-		do_immediate(dd->data_root + dd->opcode_bytes, dd, _16bit | _32bit);
+		do_immediate(dd->data_root + dd->opcode_bytes, dd, _16bit | _32bit, NULL);
 		dd->operand1	= dd->immediate;
 		dd->immediate	= NULL;
 		extract_gp_reg_operand(dd, _accum_reg, &dd->operand2, _16bit | _32bit);
@@ -3999,7 +3999,7 @@ _asm int 3;
 	void opcode_oute6(u8* data, SDisasmData* dd)
 	{ // e6
 		do_common_mnemonic(dd, cgc_in_instruction, 1, NULL, NULL);
-		do_immediate(dd->data_root + dd->opcode_bytes, dd, _8bit);
+		do_immediate(dd->data_root + dd->opcode_bytes, dd, _8bit, NULL);
 		dd->operand1	= dd->immediate;
 		dd->immediate	= NULL;
 		extract_gp_reg_operand(dd, _accum_reg, &dd->operand2, _8bit);
@@ -4363,7 +4363,7 @@ _asm int 3;
 			// 32-bit addressing mode
 			v2 = *(u32*)(data + 1);
 			sprintf((s8*)&line_comment_buffer[0], "; dword 0x%04x (%u)", (int)v2, (int)v2);
-			do_immediate(data + 1, dd, _32bit);
+			do_immediate(data + 1, dd, _32bit, NULL);
 		}
 		else
 		{
@@ -4371,7 +4371,7 @@ _asm int 3;
 			v1 = *(u16*)(data + 1);
 			v2 = sign_extend_16bits_to_32bits(v1);
 			sprintf((s8*)&line_comment_buffer[0], "; word 0x%04x (%u) pushed as dword 0x%08x (%u)", (int)v1, (int)v1, (int)v2, (int)v2);
-			do_immediate(data + 1, dd, _16bit);
+			do_immediate(data + 1, dd, _16bit, NULL);
 		}
 		dd->line_comment = &line_comment_buffer[0];
 	}
@@ -4388,7 +4388,7 @@ _asm int 3;
 		sprintf((s8*)&line_comment_buffer[0], "; byte 0x%02x (%u) pushed as dword %08x (%u)", (int)v1, (int)v1, (int)v2, (int)v2);
 		dd->line_comment = &line_comment_buffer[0];
 		
-		do_immediate(data + 1, dd, _8bit);
+		do_immediate(data + 1, dd, _8bit, NULL);
 	}
 
 	void opcode_push_ss(u8* data, SDisasmData* dd)
@@ -4453,7 +4453,7 @@ _asm int 3;
 	void opcode_retf_immed(u8* data, SDisasmData* dd)
 	{ // ca iw
 		do_common_mnemonic(dd, cgc_retf_instruction, 1, NULL, NULL);
-		do_immediate(data + 1, dd, _16bit);
+		do_immediate(data + 1, dd, _16bit, NULL);
 	}
 
 	void opcode_retn(u8* data, SDisasmData* dd)
@@ -4464,7 +4464,7 @@ _asm int 3;
 	void opcode_retn_immed(u8* data, SDisasmData* dd)
 	{ // c2 iw
 		do_common_mnemonic(dd, cgc_retn_instruction, 1, NULL, NULL);
-		do_immediate(data + 1, dd, _16bit);
+		do_immediate(data + 1, dd, _16bit, NULL);
 	}
 
 	void opcode_rsm(u8* data, SDisasmData* dd)
@@ -4645,7 +4645,7 @@ _asm int 3;
 	{ // 0f a4
 		do_common_opcode_rm1632_r1632_cl(dd, cgc_shld_instruction, 0);
 		do_common_regrm(data, dd, _16bit | _32bit, false, _null_string);
-		do_immediate(dd->data_root + dd->opcode_bytes, dd, _8bit);
+		do_immediate(dd->data_root + dd->opcode_bytes, dd, _8bit, NULL);
 	}
 
 	void opcode_shrd_cl(u8* data, SDisasmData* dd)
@@ -4659,7 +4659,7 @@ _asm int 3;
 	{ // 0f ac
 		do_common_opcode_rm1632_r1632_cl(dd, cgc_shrd_instruction, 0);
 		do_common_regrm(data, dd, _16bit | _32bit, false, _null_string);
-		do_immediate(dd->data_root + dd->opcode_bytes, dd, _8bit);
+		do_immediate(dd->data_root + dd->opcode_bytes, dd, _8bit, NULL);
 	}
 
 	void opcode_ss_override(u8* data, SDisasmData* dd)
