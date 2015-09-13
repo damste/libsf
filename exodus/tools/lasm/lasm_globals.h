@@ -82,33 +82,41 @@
 
 
 
-u8		cgc_ptr_tbyte[]			= "tbyte";
-u8		cgc_ptr_dqword[]		= "dqword";
-u8		cgc_ptr_qword[]			= "qword";
-u8		cgc_ptr_dword[]			= "dword";
-u8		cgc_ptr_word[]			= "word";
-u8		cgc_ptr_byte[]			= "byte";
-u8		cgc_ptr_m16_16[]		= "m16_16";
-u8		cgc_ptr_m16_32[]		= "m16_32";
-u8		cgc_ptr_f32[]			= "f32";
-u8		cgc_ptr_f64[]			= "f64";
-u8		cgc_ptr_f80[]			= "f80";
-u8		cgc_ptr_s16[]			= "s16";
-u8		cgc_ptr_s32[]			= "s32";
-u8		cgc_ptr_s64[]			= "s64";
-u8		cgc_ptr_m80[]			= "m80";
-u8		cgc_ptr_mmx[]			= "mmx";
-u8		cgc_ptr_xmmx[]			= "xmmx";
-u8		cgc_ptr_fpu[]			= "fpu";
-u8		cgc_ptr_6byte[]			= "m6byte";
-u8		cgc_ptr_10byte[]		= "m10byte";
-u8		cgc_ptr_14byte[]		= "m14byte";
-u8		cgc_ptr_28byte[]		= "m28byte";
-u8		cgc_ptr_94byte[]		= "m94byte";
-u8		cgc_ptr_108byte[]		= "m108byte";
+//////////
+// Pointer types
+//////
+	u8		cgc_ptr_tbyte[]			= "tbyte";
+	u8		cgc_ptr_dqword[]		= "dqword";
+	u8		cgc_ptr_qword[]			= "qword";
+	u8		cgc_ptr_dword[]			= "dword";
+	u8		cgc_ptr_word[]			= "word";
+	u8		cgc_ptr_byte[]			= "byte";
+	u8		cgc_ptr_m16_16[]		= "m16_16";
+	u8		cgc_ptr_m16_32[]		= "m16_32";
+	u8		cgc_ptr_f32[]			= "f32";
+	u8		cgc_ptr_f64[]			= "f64";
+	u8		cgc_ptr_f80[]			= "f80";
+	u8		cgc_ptr_s16[]			= "s16";
+	u8		cgc_ptr_s32[]			= "s32";
+	u8		cgc_ptr_s64[]			= "s64";
+	u8		cgc_ptr_m80[]			= "m80";
+	u8		cgc_ptr_mmx[]			= "mmx";
+	u8		cgc_ptr_xmmx[]			= "xmmx";
+	u8		cgc_ptr_fpu[]			= "fpu";
+	u8		cgc_ptr_6byte[]			= "m6byte";
+	u8		cgc_ptr_10byte[]		= "m10byte";
+	u8		cgc_ptr_14byte[]		= "m14byte";
+	u8		cgc_ptr_28byte[]		= "m28byte";
+	u8		cgc_ptr_94byte[]		= "m94byte";
+	u8		cgc_ptr_108byte[]		= "m108byte";
 
-// Black
-SBgra	colorDefault			= { rgba(0, 0, 0, 255) };
+
+
+
+//////////
+// Colors
+//////
+	SBgra	colorDefault			= { rgba(0, 0, 0, 255) };		// Black
 
 
 
@@ -442,9 +450,6 @@ SBgra	colorDefault			= { rgba(0, 0, 0, 255) };
 		{ (cs8*)cgc_ptr_28byte,					sizeof(cgc_ptr_28byte) - 1,				false,		_ICODE_PTR_28BYTE,					true,		_ICAT_POINTER_SIZE,		&colorDefault,		false,			null0,		null0	},
 		{ (cs8*)cgc_ptr_94byte,					sizeof(cgc_ptr_94byte) - 1,				false,		_ICODE_PTR_94BYTE,					true,		_ICAT_POINTER_SIZE,		&colorDefault,		false,			null0,		null0	},
 		{ (cs8*)cgc_ptr_108byte,				sizeof(cgc_ptr_108byte) - 1,			false,		_ICODE_PTR_108BYTE,					true,		_ICAT_POINTER_SIZE,		&colorDefault,		false,			null0,		null0	},
-
-		{ (cs8*)cgc_plus_string,				sizeof(cgc_plus_string) - 1,			false,		_ICODE_PLUS_SIGN,					true,		_ICAT_PLUS_MINUS,		&colorDefault,		false,			null0,		null0	},
-		{ (cs8*)cgc_minus_string,				sizeof(cgc_minus_string) - 1,			false,		_ICODE_MINUS_SIGN,					true,		_ICAT_PLUS_MINUS,		&colorDefault,		false,			null0,		null0	},
 
 		{ (cs8*)cgc_cs_reg,						sizeof(cgc_cs_reg) - 1,					false,		_ICODE_CS,							true,		_ICAT_SEGMENT_REGISTER,	&colorDefault,		false,			null0,		null0	},
 		{ (cs8*)cgc_ds_reg,						sizeof(cgc_ds_reg) - 1,					false,		_ICODE_DS,							true,		_ICAT_SEGMENT_REGISTER,	&colorDefault,		false,			null0,		null0	},

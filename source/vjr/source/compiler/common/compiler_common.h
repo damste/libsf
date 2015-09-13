@@ -154,7 +154,8 @@
 	cs32			_ICODE_OPERATOR									= 4;
 	cs32			_ICODE_WHITESPACE								= 5;
 	cs32			_ICODE_PLUS										= 6;
-	cs32			_ICODE_HYPHEN									= 7;
+	cs32			_ICODE_MINUS								= 7;
+	cs32			_ICODE_HYPHEN								= 7;
 	cs32			_ICODE_ASTERISK								= 8;
 	cs32			_ICODE_MULTIPLY								= 8;
 	cs32			_ICODE_BACKSLASH								= 9;

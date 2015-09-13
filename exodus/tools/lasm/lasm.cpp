@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/exodus/tools/lasm/lasm.cpp
+// /libsf/exodus/tools/lasm/lasm.c
 //
 //////
 //    _     _ _     _____ _____ 
@@ -98,24 +98,6 @@
 	#undef main
 
 
-//////////
-// Global variables
-//////
-	// None yet defined
-
-
-//////////
-// Forward declarations
-//////
-	// None yet defined
-
-
-//////////
-// other.cpp
-//////
-	//#include "other.cpp"
-
-
 
 
 //////////
@@ -123,14 +105,34 @@
 // Main program entry point
 //
 //////
-	int main(int argc, char* argv[])
+	s32 main(s32 argc, s8* argv[])
 	{
+		s32 lnI;
+
 
 		//////////
 		// Initialize
 		//////
 			// Initialize main engine
 			iVjr_init(NULL);
+
+
+		//////////
+		// Process command line parameters
+		//////
+			for (lnI = 1; lnI < argc; lnI++)
+			{
+				// Is it an option or a file?
+				if (argv[lnI][0] == '-')
+				{
+					// It's an option
+					printf("Found option %s\n", argv[lnI]);
+
+				} else {
+					// It can only be a file to assemble
+					printf("Found file %s\n", argv[lnI]);
+				}
+			}
 
 
 		//////////
