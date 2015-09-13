@@ -581,6 +581,11 @@
 		{	0,										0,	0,	0,	0,	0	}
 	};
 
+	SSourceLightData gsSourceLight_getwordnum[] =
+	{
+		{	0,										0,	0,	0,	0,	0	}
+	};
+
 	SSourceLightData gsSourceLight_gomonth[] =
 	{
 		{	0,										0,	0,	0,	0,	0	}
