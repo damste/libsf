@@ -1,0 +1,355 @@
+лллл                                                Exodus Requestor() Functions
+ллллн
+оллллм
+ пплллллммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммм
+   н
+   н    An overview of Exodus's various requestor() functions
+   н
+ ммлллллппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппп
+оллллп
+ллллн
+лллл       кФФФФФФФФФФФФФФФФФФФФП
+лллл       Г EXODUS requestor() Г
+лллл       Г                    Г
+лллл     ммлллллппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппп
+лллл    оллллп
+лллл    ллллн
+лллл    лллл    This portion of the document outlines the functionality Exodus itself provides to native primatives.  These
+лллл    лллл    functions can be called by a native primative driver anytime after control has been passed to its main()
+лллл    лллл    routine.  This means that during install and initialization (when Exodus is querying the driver's requestor()
+лллл    лллл    function for required information) this feature is not available to the driver.  Calling the Exodus
+лллл    лллл    requestor() call gate prior to receiving control in the driver's main() algorithm will result in #GP.
+лллл    лллл
+лллл    лллл
+лллл    лллл    These functions are available during bootup (such as "mov eax,'bmem'"):
+лллл    лллл        bmem - Allocate a block of memory during bootup
+лллл    лллл        bprt - Allocate a port during bootup
+лллл    лллл        bint - Allocate an interupt during bootup
+лллл    лллл
+лллл    лллл
+лллл    лллл    Exodus expects to receive certain parameters along with the requestor request.  Details are outlined below
+лллл    лллл    under each function. Exodus requestor() exists at a fixed call gate in selector 0xb0.  This function can be
+лллл    лллл    called using the following bit of code:
+лллл    лллл
+лллл    лллл      db  9ah     ; Function to "call selector:offset"
+лллл    лллл      dd  0       ; Offset (not actually used on call gates, but still required by mighty Intel)
+лллл    лллл      dw  0b0h    ; Selector
+лллл    лллл
+лллл    лллл    This bit of code simulates a FAR CALL to a call gate 0b0h.  A user program might setup the following
+лллл    лллл    information.  In this example the native primative requires access to port 03b4h:
+лллл    лллл
+лллл    лллл      mov     eax,'bprt'  ; Tell Exodus what function we're requesting, 'bprt' indicates it's a PORT request
+лллл    лллл      mov     ebx,1       ; Tell Exodus that we only need one port
+лллл    лллл      mov     edx,03b4h   ; Tell Exodus the starting port
+лллл    лллл      db      9ah
+лллл    лллл      dd      0
+лллл    лллл      dw      0b0h
+лллл    лллл    ; When control returns here, Exodus's requestor() function will have processed the request
+лллл    лллл      jc      failed      ; If the carry? flag is set the port is already in use by another application
+лллл    лллл
+лллл    лллл    ФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФ
+лллл    лллл
+лллл    лллл    'bmem' = Request a memory block
+лллл    лллл          Exodus expects the native primative to send this:
+лллл    лллл              ebx - number of bytes requested
+лллл    лллл          Exodus returns this:
+лллл    лллл           carry? - SET if error, CLEAR if request was granted
+лллл    лллл               dx - selector to that block if granted
+лллл    лллл                    * Note:  The only reason it would fail is if the request exceeds available memory
+лллл    лллл
+лллл    лллл    ФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФ
+лллл    лллл
+лллл    лллл    'bprt' = Request exclusive access to a port
+лллл    лллл          Exodus expects the native primative to send this:
+лллл    лллл              ebx - number of ports requested (starting at this one, a value of one indicates this port only)
+лллл    лллл              edx - beginning port number
+лллл    лллл          Exodus returns this:
+лллл    лллл           carry? - SET if error, CLEAR if request was granted
+лллл    лллл                    * Note:  Failure would only stem from (one of) the requested port(s) being already assigned
+лллл    лллл
+лллл    лллл    ФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФ
+лллл    лллл
+лллл    лллл    'bint' = Request exclusive access to an interrupt
+лллл    лллл          Exodus expects the native primative to send this:
+лллл    лллл               bl - requested interrupt number
+лллл    лллл              edx - offset to interrupt service routine
+лллл    лллл          Exodus returns this:
+лллл    лллл           carry? - SET if error, CLEAR if request was granted
+лллл    лллл                    * Note:  Failure would only stem from the requested interrupt being already assigned
+лллл    лллл
+лллл    лллл    ФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФ
+лллл    лллл
+лллл    лллл    'find' = Find a function name based on a code segment and instruction pointer
+лллл    лллл          Exodus expects the native primative to send this:
+лллл    лллл              edi - What to find:
+лллл    лллл               УФ 'func'
+лллл    лллл               Г    У ds:[esi] - where to store the function name
+лллл    лллл               Г    У      ecx - maximum number of bytes that can be copied to ds:[esi]
+лллл    лллл               Г    У      edx - code segment
+лллл    лллл               Г    Р      ebx - instruction pointer
+лллл    лллл               РФ others are --Nuserved
+лллл    лллл          Exodus returns this:
+лллл    лллл           carry? - SET if error, CLEAR if everything worked out ok
+лллл    лллл
+лллл    лллл    ФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФ
+лллл    лллл
+лллл    лллл    'altr' = Request that something be altered (identified in ebx)
+лллл    лллл          Exodus expects the native primative to send this:
+лллл    лллл              ebx - What to alter:
+лллл    лллл               УФ 'gdt '
+лллл    лллл               Г    У edx - GDT entry
+лллл    лллл               Г    У esi - New base
+лллл    лллл               Г    Р edi - New limit
+лллл    лллл               РФ others are --Nuserved
+лллл    лллл          Exodus returns this:
+лллл    лллл           carry? - SET if error, CLEAR if everything worked out ok
+лллл    лллл
+лллл    лллл    ФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФ
+лллл    лллл
+лллл    лллл    'get ' = Get some piece of data
+лллл    лллл          Exodus expects the native primative to send this:
+лллл    лллл              ebx - What to get:
+лллл    лллл               УФ 'gdtd' - Get base/limit of a data selector
+лллл    лллл               Г    Р edx - selector
+лллл    лллл               Г      Returns:Т ebx - base
+лллл    лллл               Г              Р edx - limit
+лллл    лллл               УФ 'gdtc' - Get base/limit of a data selector
+лллл    лллл               Г    Р edx - selector
+лллл    лллл               Г      Returns:Т ebx - base
+лллл    лллл               Г              Р edx - limit
+лллл    лллл               УФ 'base'
+лллл    лллл               Г    Р edx - selector
+лллл    лллл               Г      Returns:  ebx - selector
+лллл    лллл               УФ 'limi'
+лллл    лллл               Г    Р      edx - selector
+лллл    лллл               Г      Returns:  ecx - limit
+лллл    лллл               РФ others are --Nuserved
+лллл    лллл          Exodus returns this:
+лллл    лллл           carry? - SET if error, CLEAR if everything worked out ok
+лллл    лллл
+лллл    лллл    ппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппп
+лллл    лллл
+лллл    лллл    The following flow chart illustrates what Exodus does to determine if the MEM, PORT and INT items above
+лллл    лллл    are available:
+лллл    лллл
+лллл    лллл    кФФФФФФП
+лллл    лллл    Г BMEM Г
+лллл    лллл    РФФФФФФй
+лллл    лллл
+лллл    лллл
+лллл    лллл      кФФФФФФФФФФФФФФПyes
+лллл    лллл      Г Free Memory? УФФФФФФФФФФФФФФФФФФФФФФФФП
+лллл    лллл      РФФФФФФТФФФФФФФй                    ЩЭЭЭЯЭЭЭЛ
+лллл    лллл             Гno                          К start К
+лллл    лллл             Г                            ШЭЭЭбЭЭЭМ
+лллл    лллл             Г                                УФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФП
+лллл    лллл             Г                    кФФФФФФФФФФФСФФФФФФФФФФФФФФПno  кФФФФФФФФФФФФФФФФФФФФП   кФФФФФФФФФФФФФПno  Г
+лллл    лллл             Г                    Г Is this the right block? УФФФФД Move to next block УФФФД At the end? УФФФФй
+лллл    лллл             Г                    РФФФФФФФФФФФТФФФФФФФФФФФФФФй    РФФФФФФФФФФФФФФФФФФФФй   РФФФФФТФФФФФФФй
+лллл    лллл             Г                                Гyes                                               Гyes
+лллл    лллл             Г                        кФФФФФФФСФФФФФФФФФП                                 ЩЭЭЭЭЭЭЯЭЭЭЭЭЭЭЭЭЛ
+лллл    лллл             Г                        Г Mark it as free Г                                 К Report failure К
+лллл    лллл             Г                        РФФФФФФФТФФФФФФФФФй                                 ШЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭМ
+лллл    лллл             Г                                Г
+лллл    лллл             Г                             ЩЭЭЯЭЭЭЛ
+лллл    лллл             Г                             К done К
+лллл    лллл             Г                             ШЭЭЭЭЭЭМ
+лллл    лллл             Г
+лллл    лллл      кФФФФФФСФФФФФФФФФФФПyes
+лллл    лллл      Г Allocate memory? УФФФФФФФФФФФФФФФФФФФФП
+лллл    лллл      РФФФФФФТФФФФФФФФФФФй                ЩЭЭЭЯЭЭЭЛ
+лллл    лллл             Гno                          К start К
+лллл    лллл             Г                            ШЭЭЭбЭЭЭМ
+лллл    лллл             Г                                УФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФП
+лллл    лллл             Г                   кФФФФФФФФФФФФСФФФФФФФФФФФФФФПno  кФФФФФФФФФФФФФФФФФФФФП   кФФФФФФФФФФФФФПno  Г
+лллл    лллл             Г                   Г Is this block big enough? УФФФФД Move to next block УФФФД At the end? УФФФФй
+лллл    лллл             Г                   РФФФФФФФФФФФФТФФФФФФФФФФФФФФй    РФФФФФФФФФФФФФФФФФФФФй   РФФФФФТФФФФФФФй
+лллл    лллл             Г                                Гyes                                               Гyes
+лллл    лллл             Г                      кФФФФФФФФФСФФФФФФФФФФФФПno                            ЩЭЭЭЭЭЭЯЭЭЭЭЭЭЭЭЭЛ
+лллл    лллл             Г                      Г Is it the same size? УФФФФФФФФФФФФФФФФФП            К Report failure К
+лллл    лллл             Г                      РФФФФФФФФФТФФФФФФФФФФФФй                 Г            ШЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭМ
+лллл    лллл             Г                                Гyes              кФФФФФФФФФФФФСФФФФФФФФФФФФП
+лллл    лллл             Г                      кФФФФФФФФФСФФФФФФФФФФФФП    Г Note the current record Г
+лллл    лллл             Г                      Г Update the structure Г    РФФФФФФФФФФФФТФФФФФФФФФФФФй
+лллл    лллл             Г                      РФФФФФФФФФТФФФФФФФФФФФФй                 Г
+лллл    лллл             Г                                Г                  кФФФФФФФФФФФСФФФФФФФФФФП
+лллл    лллл             Г                             ЩЭЭЯЭЭЭЛ              Г Update the structure Г
+лллл    лллл             Г                             К done К              РФФФФФФФФФФФТФФФФФФФФФФй
+лллл    лллл             Г                             ШЭЭЭЭЭЭМ                          Г
+лллл    лллл             Г                                                      кФФФФФФФФСФФФФФФФФФП
+лллл    лллл             Г                                                      Г Add a new record Г
+лллл    лллл             Г                                                      РФФФФФФФФТФФФФФФФФФй
+лллл    лллл             Г                                                               Г
+лллл    лллл             Г                                               кФФФФФФФФФФФФФФФСФФФФФФФФФФФФФФФФФП
+лллл    лллл             Г                                               Г    Update based on original     Г
+лллл    лллл             Г                                               Г (less the requested parameters) Г
+лллл    лллл             Г                                               РФФФФФФФФФФФФФФФТФФФФФФФФФФФФФФФФФй
+лллл    лллл             Г                                                               Г
+лллл    лллл             Г                                                            ЩЭЭЯЭЭЭЛ
+лллл    лллл             Г                                                            К done К
+лллл    лллл             Г                                                            ШЭЭЭЭЭЭМ
+лллл    лллл             Г
+лллл    лллл      кФФФФФФСФФФФФФФФФФФП
+лллл    лллл      Г Decrease memory? УФФФФФФФФФФФФФФФФФФФФП
+лллл    лллл      РФФФФФФТФФФФФФФФФФФй                ЩЭЭЭЯЭЭЭЛ
+лллл    лллл             Гno                          К start К
+лллл    лллл             Г                            ШЭЭЭбЭЭЭМ
+лллл    лллл             Г                                УФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФП
+лллл    лллл             Г                    кФФФФФФФФФФФСФФФФФФФФФФФФФФПno  кФФФФФФФФФФФФФФФФФФФФП   кФФФФФФФФФФФФФПno  Г
+лллл    лллл             Г                    Г Is this the right block? УФФФФД Move to next block УФФФД At the end? УФФФФй
+лллл    лллл             Г                    РФФФФФФФФФФФТФФФФФФФФФФФФФФй    РФФФФФФФФФФФФФФФФФФФФй   РФФФФФТФФФФФФФй
+лллл    лллл             Г                                Гyes                                               Гyes
+лллл    лллл             Г                       кФФФФФФФФСФФФФФФФФФП                                ЩЭЭЭЭЭЭЯЭЭЭЭЭЭЭЭЭЛ
+лллл    лллл             Г                       Г Change the limit Г                                К Report failure К
+лллл    лллл             Г                       РФФФФФФФФТФФФФФФФФФй                                ШЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭМ
+лллл    лллл             Г                                Г
+лллл    лллл             Г                       кФФФФФФФФСФФФФФФФФФП
+лллл    лллл             Г                       Г Add a new record Г
+лллл    лллл             Г                       РФФФФФФФФТФФФФФФФФФй
+лллл    лллл             Г                                Г
+лллл    лллл             Г                  кФФФФФФФФФФФФФСФФФФФФФФФФФФФФП
+лллл    лллл             Г                  Г Update based on difference Г
+лллл    лллл             Г                  РФФФФФФФФФФФФФТФФФФФФФФФФФФФФй
+лллл    лллл             Г                                Г
+лллл    лллл             Г                             ЩЭЭЯЭЭЭЛ
+лллл    лллл             Г                             К done К
+лллл    лллл             Г                             ШЭЭЭЭЭЭМ
+лллл    лллл             Г
+лллл    лллл      ЩЭЭЭЭЭЭЯЭЭЭЭЭЭЭЛ
+лллл    лллл      К Report error К
+лллл    лллл      ШЭЭЭЭЭЭЭЭЭЭЭЭЭЭМ
+лллл    лллл
+лллл    лллл    [end]
+лллл    ллллн
+лллл    оллллм
+лллл     пплллллммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммм
+лллл
+лллл
+лллл
+лллл
+лллл       кФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФП
+лллл       Г NATIVE PRIMATIVE requestor() Г
+лллл       Г                              Г
+лллл     ммлллллппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппп
+лллл    оллллп
+лллл    ллллн
+лллл    лллл    This portion of the document outlines the native primative required requestor() functionality.  Exodus
+лллл    лллл    expects each native primative to respond appropriately when queried with the information below.
+лллл    лллл
+лллл    лллл    Requestor functions are passed in the eax register:
+лллл    лллл
+лллл    лллл    ФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФ
+лллл    лллл
+лллл    лллл    'info' = Program Information
+лллл    лллл          Exodus sends this information:
+лллл    лллл              ds - Temporary data segment (any changes made to memory using this DS will be saved, but the
+лллл    лллл                                           value of DS will change before this program is permanently assigned
+лллл    лллл                                           to a memory location and main() is called)
+лллл    лллл          Return this information:
+лллл    лллл             eax - 'prog' = user program
+лллл    лллл                 - 'nati' = native primative (driver)
+лллл    лллл                 - 'prim' = primative
+лллл    лллл                          Р esi - ptr to this driver's native primative's structure (see below)
+лллл    лллл             ecx - Actual # of bytes to keep in this driver after requestor() initialization is finished
+лллл    лллл           ; edi, ebx, ebp and edx are all null-terminated
+лллл    лллл             edi - Offset to self-assigned driver name (what it calls itself)
+лллл    лллл             ebx - Offset to version (self-assigned format, recommended mm.dd.yyyy.revision)
+лллл    лллл             ebp - Offset to author text (self-assigned, can be NULL-character only, team name, etc.
+лллл    лллл             edx - Offset to copyright information
+лллл    лллл
+лллл    лллл    ФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФ
+лллл    лллл
+лллл    лллл    'prim' = Required native primatives
+лллл    лллл          Exodus sends this information:
+лллл    лллл              ds - permanent data segment (for use from this point forward by this primative)
+лллл    лллл              bx - main() call gate
+лллл    лллл              dx - requestor() call gate
+лллл    лллл          Return this information:
+лллл    лллл             esi - offset to list of required primative names, or 0ffffffffh if none
+лллл    лллл             edi - offset to corresponding call gate area assignments fort hose names
+лллл    лллл
+лллл    лллл    ФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФ
+лллл    лллл
+лллл    лллл    'ini ' = Request ownership of items in the ini file
+лллл    лллл          Exodus sends this information:
+лллл    лллл            es:[edi] - far ptr to the parsed Exodus.INI structure
+лллл    лллл          Return this information:
+лллл    лллл            Update any portions of the structure to take ownership of
+лллл    лллл
+лллл    лллл    ФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФ
+лллл    лллл
+лллл    лллл    'note' = Notes that Exodus returns
+лллл    лллл          Exodus sends this information:
+лллл    лллл             ebx - Note is related to:
+лллл    лллл                   У 'info' - Related to the "Program Information" above
+лллл    лллл                   Г          Р Nothing currently defined
+лллл    лллл                   Г
+лллл    лллл                   Р 'prim' - Related to the "Required native primatives" above
+лллл    лллл                              У edx - 0 - Not all native primatives were found
+лллл    лллл                              Г           У ecx - number of primatives not found
+лллл    лллл                              Г           Р ebp - total count specified by driver
+лллл    лллл                              Г                   * Note:  Ones that weren't found will have 0ffffh
+лллл    лллл                              Г                            for the call gate
+лллл    лллл                              Р edx - others, --Nuserved
+лллл    лллл
+лллл    лллл          Return this information:
+лллл    лллл           ; Note, this relates to the continued installation of the driver (can it continue?)
+лллл    лллл             carry? - CLEAR=Ok to continue, SET=Cannot continue
+лллл    лллл
+лллл    лллл
+лллл    лллл    [end]
+лллл    лллл
+лллл    лллл
+лллл    лллл
+лллл    лллл
+лллл    лллл    ЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭЭ
+лллл    лллл
+лллл    лллл
+лллл    лллл
+лллл    лллл    кФФФФФФП
+лллл    лллл    Г info Г
+лллл    лллл    РФФФФФФй
+лллл    лллл     For the 'info' function, the structure pointer returned in esi is explained here:
+лллл    лллл        esi = ptr to this driver's native primative structure
+лллл    лллл              The structure should adhere to the following
+лллл    лллл
+лллл    лллл            OFFSET  LENGTH    DESCRIPTION
+лллл    лллл            ------  ------    -----------------------
+лллл    лллл              0       1       Length of native primative function name
+лллл    лллл              1       x       function name
+лллл    лллл              1+x     4       Offset into driver for this primative
+лллл    лллл              5+x     2       Number of stack dwords to copy on execution
+лллл    лллл
+лллл    лллл    ФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФФ
+лллл    лллл
+лллл    лллл    кФФФФФФП
+лллл    лллл    Г prim Г
+лллл    лллл    РФФФФФФй
+лллл    лллл     For the 'prim' function, the structure pointer returned in esi and edi is explained here:
+лллл    лллл        esi = ptr to list of names required for this primative to run correctly
+лллл    лллл              The structure should adhere to the following
+лллл    лллл
+лллл    лллл            OFFSET  LENGTH    DESCRIPTION
+лллл    лллл            ------  ------    -----------------------
+лллл    лллл              0       1       Length of native primative function that's required
+лллл    лллл              1       x       function name
+лллл    лллл
+лллл    лллл        edi = ptr to list of call gates associated with those function names
+лллл    лллл              The structure should adhere to the following
+лллл    лллл
+лллл    лллл            OFFSET  LENGTH    DESCRIPTION
+лллл    лллл            ------  ------    -----------------------
+лллл    лллл              0       4       Offset (of no consequence, not assigned or used, just as a place holder)
+лллл    лллл              4       2       Call gate
+лллл    лллл
+лллл    лллл    [end]
+лллл    ллллн
+лллл    оллллм
+лллл     пплллллммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммм
+лллл
+лллл
+лллл
+лллл    RCH - 01/05/01 07:54 pm
+лллл    [end]
+лллл
+лллл

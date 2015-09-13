@@ -1,0 +1,999 @@
+Microsoft (R) Macro Assembler Version 6.11a		    03/07/09 22:34:58
+PS/2 Mouse Driver					     Page 1 - 1
+
+
+				; mouseps2.asm
+				;
+				; ÚÄÄÄÄÄÄÄÄÄÄÄÄ¿
+				; ³ PS/2 Mouse ³
+				; ÀÄÄÄÄÄÄÄÄÄÄÄÄÙ
+				;
+				; Exodus native primative mouse functions for PS/2 mice
+				;
+
+
+				TITLE PS/2 Mouse Driver
+
+				    .MODEL tiny
+
+				    .STACK 0h
+
+				INCLUDE \exodus\source\common\equates.asp
+			      C ; equates.asp
+			      C ;
+			      C ; Exodus constants.  These are used at various places.
+			      C ; This file provides a common area to modify constant values, rather than sifting through programs, etc.
+			      C ;
+			      C 
+			      C 
+			      C 
+			      C INCLUDE x86_eq.asp
+			      C ; x86_eq.asp
+			      C ;
+			      C ; Constants specific to the Intel architecture
+			      C ;
+			      C 
+			      C 
+			      C 
+ = 0000			      C _TSS_BACK_LINK              EQU 0
+ = 0004			      C _TSS_ESP0                   EQU 4
+ = 0008			      C _TSS_SS0                    EQU 8
+ = 000C			      C _TSS_ESP1                   EQU 12
+ = 0010			      C _TSS_SS1                    EQU 16
+ = 0014			      C _TSS_ESP2                   EQU 20
+ = 0018			      C _TSS_SS2                    EQU 24
+ = 001C			      C _TSS_CR3                    EQU 28
+ = 0020			      C _TSS_EIP                    EQU 32
+ = 0024			      C _TSS_EFLAGS                 EQU 36
+ = 0028			      C _TSS_EAX                    EQU 40
+ = 002C			      C _TSS_ECX                    EQU 44
+ = 0030			      C _TSS_EDX                    EQU 48
+ = 0034			      C _TSS_EBX                    EQU 52
+ = 0038			      C _TSS_ESP                    EQU 56
+ = 003C			      C _TSS_EBP                    EQU 60
+ = 0040			      C _TSS_ESI                    EQU 64
+ = 0044			      C _TSS_EDI                    EQU 68
+ = 0048			      C _TSS_ES                     EQU 72
+ = 004C			      C _TSS_CS                     EQU 76
+ = 0050			      C _TSS_SS                     EQU 80
+ = 0054			      C _TSS_DS                     EQU 84
+ = 0058			      C _TSS_FS                     EQU 88
+ = 005C			      C _TSS_GS                     EQU 92
+ = 0060			      C _TSS_LDT                    EQU 96
+ = 0064			      C _TSS_TRAP_BIT               EQU 100
+ = 0001			      C _TSS_TRAP_BIT_MASK          EQU 1b
+ = 0066			      C _TSS_IO_MAP                 EQU 102
+			      C ; The following area is used by Exodus.  It appears immediate after the TSS in memory
+ = 0068			      C _TSS_FPU_SAVE_AREA          EQU 104
+			      C 
+			      C 
+			      C ; EFLAGS register constants to access individual flags
+ = 0000			      C _EFLAGS_CF                  EQU 0
+ = 0002			      C _EFLAGS_PF                  EQU 2
+ = 0004			      C _EFLAGS_ACF                 EQU 4
+ = 0006			      C _EFLAGS_ZF                  EQU 6
+ = 0007			      C _EFLAGS_SF                  EQU 7
+ = 0008			      C _EFLAGS_TF                  EQU 8
+ = 0009			      C _EFLAGS_IF                  EQU 9
+ = 000A			      C _EFLAGS_DF                  EQU 10
+ = 000B			      C _EFLAGS_OF                  EQU 11
+ = 000C			      C _EFLAGS_IOPL                EQU 12
+ = 000E			      C _EFLAGS_NT                  EQU 14
+ = 0010			      C _EFLAGS_RF                  EQU 16
+ = 0011			      C _EFLAGS_VM                  EQU 17
+			      C ; Masks to access specific bits
+ = 0001			      C _EFLAGS_CF_MASK             EQU  1b SHL _EFLAGS_CF
+ = 0004			      C _EFLAGS_PF_MASK             EQU  1b SHL _EFLAGS_PF
+ = 0010			      C _EFLAGS_ACF_MASK            EQU  1b SHL _EFLAGS_ACF
+ = 0040			      C _EFLAGS_ZF_MASK             EQU  1b SHL _EFLAGS_ZF
+ = 0080			      C _EFLAGS_SF_MASK             EQU  1b SHL _EFLAGS_SF
+ = 0100			      C _EFLAGS_TF_MASK             EQU  1b SHL _EFLAGS_TF
+ = 0200			      C _EFLAGS_IF_MASK             EQU  1b SHL _EFLAGS_IF
+ = 0400			      C _EFLAGS_DF_MASK             EQU  1b SHL _EFLAGS_DF
+ = 0800			      C _EFLAGS_OF_MASK             EQU  1b SHL _EFLAGS_OF
+ = 3000			      C _EFLAGS_IOPL_MASK           EQU 11b SHL _EFLAGS_IOPL
+ = 4000			      C _EFLAGS_NT_MASK             EQU  1b SHL _EFLAGS_NT
+ = 00010000		      C _EFLAGS_RF_MASK             EQU  1b SHL _EFLAGS_RF
+ = 00020000		      C _EFLAGS_VM_MASK             EQU  1b SHL _EFLAGS_VM
+			      C 
+ = 1000			      C _CW_INFINITY                EQU 1000000000000b
+ = 0C00			      C _CW_ROUNDING                EQU  110000000000b
+ = 0000			      C _CW_ROUNDING_00             EQU  000000000000b
+ = 0400			      C _CW_ROUNDING_01             EQU  010000000000b
+ = 0800			      C _CW_ROUNDING_10             EQU  100000000000b
+ = 0C00			      C _CW_ROUNDING_11             EQU  110000000000b
+ = 0300			      C _CW_PRECISION               EQU    1100000000b
+ = 0000			      C _CW_PRECISION_00            EQU    0000000000b
+ = 0100			      C _CW_PRECISION_01            EQU    0100000000b
+ = 0200			      C _CW_PRECISION_10            EQU    1000000000b
+ = 0300			      C _CW_PRECISION_11            EQU    1100000000b
+ = 0020			      C _CW_PM                      EQU        100000b
+ = 0010			      C _CW_UM                      EQU         10000b
+ = 0008			      C _CW_OM                      EQU          1000b
+ = 0004			      C _CW_ZM                      EQU           100b
+ = 0002			      C _CW_DM                      EQU            10b
+ = 0001			      C _CW_IM                      EQU             1b
+			      C 
+ = 8000			      C _SW_BUSY                    EQU 1000000000000000b
+ = 4000			      C _SW_C3                      EQU  100000000000000b
+ = 3800			      C _SW_TOS                     EQU   11100000000000b
+ = 0400			      C _SW_C2                      EQU      10000000000b
+ = 0200			      C _SW_C1                      EQU       1000000000b
+ = 0100			      C _SW_C0                      EQU        100000000b
+ = 0080			      C _SW_ERROR_SUMMARY           EQU         10000000b
+ = 0040			      C _SW_STACK_FAULT             EQU          1000000b
+ = 0020			      C _SW_PE                      EQU           100000b
+ = 0010			      C _SW_UE                      EQU            10000b
+ = 0008			      C _SW_OE                      EQU             1000b
+ = 0004			      C _SW_ZE                      EQU              100b
+ = 0002			      C _SW_DE                      EQU               10b
+ = 0001			      C _SW_IE                      EQU                1b
+			      C 
+			      C 
+			      C 
+			      C ; ÚÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+			      C ; ³ GDT ENTRIES ³
+			      C ; ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+ = 0008			      C     _sIDT                       EQU 1 * 8       ; IDT
+ = 0010			      C     _sGDT                       EQU 2 * 8       ; GDT
+ = 0018			      C     _sSTACK                     EQU 3 * 8       ; STACK
+ = 0020			      C     _sCODE                      EQU 4 * 8       ; kernel CODE for kernel code
+ = 0048			      C     _sDATA                      EQU 9 * 8       ; kernel DATA selector for kernel data
+ = 0028			      C     _sGRAPHICS                  EQU 5 * 8       ; Graphics video (0a0000h)
+ = 0030			      C     _sMONO                      EQU 6 * 8       ; Mono video (0b0000h)
+ = 0038			      C     _sVGA                       EQU 7 * 8       ; VGA video (0b8000h)
+ = 0040			      C     _sALL_MEM                   EQU 8 * 8       ; All memory (for debugging)
+			      C     ; 9 is above, _sDATA
+ = 0050			      C     _sEXODUS_MEM                EQU 10 * 8      ; Exodus assigned memory
+ = 0058			      C     _sEXODUS_PORTS              EQU 11 * 8      ; Exodus assigned ports
+ = 0060			      C     _sEXODUS_INTS               EQU 12 * 8      ; Exodus assigned ints
+			      C     ;_sNOT_USED                                 ; available
+ = 0070			      C     _sEXODUS_TSS                EQU 14 * 8      ; Exodus TSS
+ = 0078			      C     _sEXODUS_TASK_GATE          EQU 15 * 8      ; Exodus kernel task gate (points to _sEXODUS_TSS)
+ = 0080			      C     _sEXODUS_SLAVE_TSS          EQU 16 * 8      ; Exodus Slave TSS
+ = 0088			      C     _sEXODUS_SLAVE_TASK_GATE    EQU 17 * 8      ; Exodus kernel slave task gate (points to _sEXODUS_SLAVE_TSS)
+			      C     ;_sNOT USED
+ = 0098			      C     _sPRIMATIVES                EQU 19 * 8      ; Primative structure for natives
+ = 00A0			      C     _sPRIMATIVE_LOAD_INFO       EQU 20 * 8      ; Primative load information (for reporting on each driver)
+ = 00A8			      C     _sSYSTEM                    EQU 21 * 8      ; Exodus system memory
+ = 00B0			      C     _sEXODUS_REQUESTOR          EQU 22 * 8      ; Call gate to Exodus's requestor() function
+ = 00B8			      C     _sSYSTEM_RING1              EQU 23 * 8      ; Exodus system memory for ring-1 apps
+ = 00C0			      C     _sSYSTEM_RING2              EQU 24 * 8      ; Exodus system memory for ring-2 apps
+ = 00C8			      C     _sSYSTEM_RING3              EQU 25 * 8      ; Exodus system memory for ring-3 apps
+ = 00D0			      C     _sDEBI_screen               EQU 26 * 8      ; low-level DEBI debugger's save screen buffer
+ = 00D8			      C     _sDEBI_memory               EQU 27 * 8      ; low-level DEBI debugger's memory
+ = 00E0			      C     _sFLOPPY_TRACK              EQU 28 * 8      ; Floppy disk data I/O for one full track
+ = 00E8			      C     _sVGA_BACKUP                EQU 29 * 8      ; VGA video (060000h, used when in a graphics mode so writes
+			      C                                                 ;  to the text screen are still valid)
+ = 00F0			      C     _sDEBI_screen2              EQU 30 * 8      ; low-level DEBI debugger's save screen buffer2 (for popups and menus)
+ = 00F8			      C     _sDEBI_temp                 EQU 31 * 8      ; low-level DEBI debugger's temporary selector (used for various things)
+ = 0100			      C     _sEXODUS_OBJECTS            EQU 32 * 8      ; Exodus objects
+ = 0108			      C     _sTASK_SWITCH_TSS           EQU 33 * 8      ; Task Manager's switch_task() function
+ = 0110			      C     _sTASK_SWITCH_TASK_GATE     EQU 34 * 8      ; Task Manager's task gate (points to _sTASK_SWITCH_TSS)
+ = 0118			      C     _sTASK_STACK                EQU 35 * 8      ; Task Manger task's stack
+ = 0120			      C     _sSTACK0                    EQU 36 * 8      ; Exodus Stack 0
+ = 0128			      C     _sSTACK1                    EQU 37 * 8      ; Exodus Stack 1
+ = 0130			      C     _sSTACK2                    EQU 38 * 8      ; Exodus Stack 2
+ = 0138			      C     _sDEBI_dt                   EQU 39 * 8      ; low-level DEBI debugger's DT storage
+ = 0140			      C     _sDEBI_np                   EQU 40 * 8      ; low-level DEBI debugger's NP storage
+ = 0148			      C     _sDEBI_rp                   EQU 41 * 8      ; low-level DEBI debugger's RP storage
+			      C 
+			      C   ; Variable base/limit GDT slots setup in INIT32.ASP
+ = 0190			      C     _sEXODUS_INI                EQU 50 * 8      ; Holds the parsed EXODUS.INI sructure
+ = 0198			      C     _sEXODUS_INI_ERRORS         EQU 51 * 8      ; Holds any errors found while parsing EXODUS.INI
+ = 01A0			      C     _sTASK_SYSTEM               EQU 52 * 8      ; Holds all tasks
+			      C 
+ = 5DA0			      C     _cgTEMP_PRIMATIVE_MAIN      EQU 2996 * 8
+ = 5DA8			      C     _cgTEMP_PRIMATIVE_REQUESTOR EQU 2997 * 8
+ = 5DB0			      C     _csTEMP_PRIMATIVE           EQU 2998 * 8
+ = 5DB8			      C     _dsTEMP_PRIMATIVE           EQU 2999 * 8
+			      C 
+			      C 
+			      C 
+			      C ; ÚÄÄÄÄÄÄÄÄÄÄÄ¿
+			      C ; ³ CONSTANTS ³
+			      C ; ÀÄÄÄÄÄÄÄÄÄÄÄÙ
+ = 00C8			      C     _MIN_PRIMATIVE              EQU 200                             ; Start of the primatives
+ = 0BB3			      C     _MAX_PRIMATIVE              EQU 2995                            ; End of the primatives
+ = 0FFF			      C     _lastGDT                    EQU 4095                            ; Last valid GDT in the GDT
+ = 0032			      C     _firstASSIGNMENT            EQU 50                              ; The first Exodus assigned GDT entry for various items
+ = 00C7			      C     _lastASSIGNMENT             EQU 199                             ; The last Exodus assigned GDT entry for various items
+ = 0BB8			      C     _firstUSER_ASSIGNMENT       EQU 3000
+ = 0FFF			      C     _lastUSER_ASSIGNMENT        EQU 4095
+ = 00C7			      C     _sGDT_init                  EQU 199                             ; Only initialize the first 199 GDT entries
+			      C 
+			      C 
+			      C   ; Required memory structures for Exodus
+			      C   ; Refer to Bootup(internal) document for definitive memory locations
+ = 0008A000		      C     _sIDT_base                  EQU 8a000h
+ = 0800			      C     _sIDT_limit                 EQU 800h
+ = 0800			      C     _sGDT_base                  EQU 0800h
+ = 8000			      C     _sGDT_limit                 EQU 8000h
+ = 00098000		      C     _sSTACK_base                EQU 98000h
+ = 8000			      C     _sSTACK_limit               EQU 8000h
+ = 00010000		      C     _sCODE_base                 EQU 10000h
+ = 00040000		      C     _sCODE_limit                EQU 40000h
+ = 00010000		      C     _sDATA_base                 EQU 10000h
+ = 00030000		      C     _sDATA_limit                EQU 30000h
+ = 000A0000		      C     _sGRAPHICS_base             EQU 0a0000h
+ = 00010000		      C     _sGRAPHICS_limit            EQU 10000h
+ = 000B0000		      C     _sMONO_base                 EQU 0b0000h
+ = 8000			      C     _sMONO_limit                EQU 8000h
+ = 000B8000		      C     _sVGA_base                  EQU 0b8000h     ; Also, see _sVGA_BACKUP_ below
+ = 8000			      C     _sVGA_limit                 EQU 8000h
+ = 0000			      C     _sALL_MEM_base              EQU 0
+ = FFFFFFFF		      C     _sALL_MEM_limit             EQU 0ffffffffh
+ = 00070C00		      C     _sEXODUS_MEM_base           EQU 70c00h
+ = 4000			      C     _sEXODUS_MEM_limit          EQU 4000h
+ = 0006CC00		      C     _sEXODUS_PORTS_base         EQU 6cc00h
+ = 4000			      C     _sEXODUS_PORTS_limit        EQU 4000h
+ = 00097E00		      C     _sEXODUS_INTS_base          EQU 97e00h
+ = 0200			      C     _sEXODUS_INTS_limit         EQU 200h
+ = 00068100		      C     _sEXODUS_TSS_base           EQU 68100h
+ = 0100			      C     _sEXODUS_TSS_limit          EQU 100h        ; 256 bytes
+			      C    ;_sEXODUS_TASK_GATE          EQU task gate pointing to _sEXODUS_TSS
+ = 00068200		      C     _sEXODUS_SLAVE_TSS_base     EQU 68200h
+ = 0100			      C     _sEXODUS_SLAVE_TSS_limit    EQU 100h        ; 256 bytes
+ = 0008D380		      C     _sPRIMATIVES_base           EQU 8d380h
+ = 4000			      C     _sPRIMATIVES_limit          EQU 4000h       ; 16k
+ = 0008C380		      C     _sPRIMATIVE_LOAD_INFO_base  EQU 8c380h
+ = 1000			      C     _sPRIMATIVE_LOAD_INFO_limit EQU 1000h       ; 4k
+ = 00089400		      C     _sSYSTEM_base               EQU 89400h
+ = 0C00			      C     _sSYSTEM_limit              EQU 0c00h       ; 3k
+ = 0800			      C     _sSYSTEM_USER_limit         EQU 0800h       ; 2k
+ = 00281400		      C     _sDEBI_screen_base          EQU 281400h                         ; ; ; ; ; Added 2 MB, 02/26/2009 - RCH
+ = 8000			      C     _sDEBI_screen_limit         EQU 8000h       ; 32k
+ = 00279400		      C     _sDEBI_memory_base          EQU 279400h                         ; ; ; ; ; Added 2 MB, 02/26/2009 - RCH
+ = 8000			      C     _sDEBI_memory_limit         EQU 8000h       ; 32k
+ = 00074C00		      C     _sFLOPPY_TRACK_base         EQU 74c00h
+ = 4800			      C     _sFLOPPY_TRACK_limit        EQU 4800h       ; 512 bytes per sector * 18 sectors * 2 sides = 18k
+ = 00060000		      C     _sVGA_BACKUP_base           EQU 60000h      ; Note, the backup area is used when in graphics modes that use a0000h
+ = 8000			      C     _sVGA_BACKUP_limit          EQU 8000h       ; so all video writes to the text window are still saved
+ = 00258000		      C     _sDEBI_screen2_base         EQU 258000h
+ = 00028000		      C     _sDEBI_screen2_limit        EQU 28000h       ; 32k
+ = 00068000		      C     _sTASK_SWITCH_TSS_base      EQU 68000h
+ = 0100			      C     _sTASK_SWITCH_TSS_limit     EQU 100h        ; 256 bytes
+ = 00220000		      C     _sTASK_STACK_base           EQU 220000h                         ; ; ; ; ; Added 1 MB, 03/01/2009 - RCH
+ = 8000			      C     _sTASK_STACK_limit          EQU 8000h       ; 32k
+ = 00095380		      C     _sSTACK0_base               EQU 95380h
+ = 2000			      C     _sSTACK0_limit              EQU 2000h       ; 8k
+ = 00093380		      C     _sSTACK1_base               EQU 93380h
+ = 2000			      C     _sSTACK1_limit              EQU 2000h       ; 8k
+ = 00091380		      C     _sSTACK2_base               EQU 91380h
+ = 2000			      C     _sSTACK2_limit              EQU 2000h       ; 8k
+ = 00240000		      C     _sDEBI_dt_base              EQU 240000h                         ; ; ; ; ; Added 1 MB, 03/01/2009 - RCH
+ = 8000			      C     _sDEBI_dt_limit             EQU 8000h       ; 32k
+ = 00248000		      C     _sDEBI_np_base              EQU 248000h                         ; ; ; ; ; Added 1 MB, 03/01/2009 - RCH
+ = 8000			      C     _sDEBI_np_limit             EQU 8000h       ; 32k
+ = 00250000		      C     _sDEBI_rp_base              EQU 250000h                         ; ; ; ; ; Added 1 MB, 03/01/2009 - RCH
+ = 8000			      C     _sDEBI_rp_limit             EQU 8000h       ; 32k
+			      C 
+ = 00050000		      C     _sEXODUS_OBJECTS_base       EQU 50000h
+ = 8000			      C     _sEXODUS_OBJECTS_limit      EQU 8000h       ; 32k
+ = 00200000		      C     _sEXODUS_INI_base           EQU 200000h     ; 1MB               ; ; ; ; ; Added 1 MB, 03/01/2009 - RCH
+ = 00010000		      C     _sEXODUS_INI_limit          EQU 10000h      ; 64k
+ = 00210000		      C     _sEXODUS_INI_ERRORS_base    EQU 210000h     ; 1MB + 64k         ; ; ; ; ; Added 1 MB, 03/01/2009 - RCH
+ = 4000			      C     _sEXODUS_INI_ERRORS_limit   EQU 4000h       ; 16k
+ = 00210000		      C     _sTASK_SYSTEM_base          EQU 210000h     ; 1MB + 64k         ; ; ; ; ; Added 1 MB, 03/01/2009 - RCH
+ = 00010000		      C     _sTASK_SYSTEM_limit         EQU 010000h     ; 64k
+			      C 
+			      C 
+			      C ; ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+			      C ; ³ BOOT DT STRUCTURE ³
+			      C ; ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+ = 0000			      C     _BOOT_DT_object_type        EQU 0
+ = 0001			      C     _BOOT_DT_days               EQU 1
+ = 0005			      C     _BOOT_DT_seconds            EQU 5
+ = 0008			      C     _BOOT_DT_rp_offset          EQU 8
+ = 000A			      C     _BOOT_DT_entry_type         EQU 10
+ = 000B			      C     _BOOT_DT_np_offset          EQU 11
+			      C 
+			      C 
+			      C 
+			      C 
+			      C 
+			      C ; ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+			      C ; ³ BOOT PARAMETER BLOCK STRUCTURE ³
+			      C ; ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+ = 0000			      C     _BOOT_PB_size               EQU 0
+ = 0004			      C     _BOOT_PB_main               EQU 4
+ = 0008			      C     _BOOT_PB_requestor          EQU 8
+ = 000C			      C     _BOOT_PB_start_head         EQU 12
+ = 000D			      C     _BOOT_PB_start_track        EQU 13
+ = 000E			      C     _BOOT_PB_start_sector       EQU 14
+ = 0010			      C     _BOOT_PB_end_head           EQU 16
+ = 0011			      C     _BOOT_PB_end_track          EQU 17
+ = 0012			      C     _BOOT_PB_end_sector         EQU 18
+ = 0014			      C     _BOOT_PB_entry_type         EQU 20
+ = 0016			      C     _BOOT_PB_linear_offset      EQU 22
+ = 001A			      C     _BOOT_PB_dt_offset          EQU 26
+ = 001C			      C     _BOOT_PB_crc16              EQU 28
+ = 0020			      C     _BOOT_PB_structure_size     EQU 32
+			      C 
+			      C 
+			      C 
+			      C 
+			      C ; ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+			      C ; ³ EXODUS.INI STRUCTURES ³
+			      C ; ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+ = 0000			      C     _EXODUS_INI_FIRST_BRACKET       EQU 0
+ = 0004			      C     _EXODUS_INI_TOTAL_BYTES         EQU 4
+ = 0008			      C     _EXODUS_INI_TOTAL_BRACKET_GROUPS EQU 8
+ = 000C			      C     _EXODUS_INI_TOTAL_PAREN_CASKS   EQU 12
+ = 0010			      C     _EXODUS_INI_HEADER_LENGTH       EQU 16
+			      C 
+ = 0000			      C     _EXODUS_BRACKET_NEXT            EQU 0
+ = 0004			      C     _EXODUS_BRACKET_PAREN_CASKS     EQU 4
+ = 0008			      C     _EXODUS_BRACKET_TOTAL_PARENS    EQU 8
+ = 000C			      C     _EXODUS_BRACKET_NAME            EQU 12
+ = 0010			      C     _EXODUS_BRACKET_HANDLE          EQU 16
+ = 0014			      C     _EXODUS_BRACKET_REQUESTOR       EQU 20
+ = 0016			      C     _EXODUS_BRACKET_REQUESTOR_FUNC  EQU 22
+ = 001A			      C     _EXODUS_BRACKET_SCRATCH_AREA    EQU 26
+ = 001E			      C     _EXODUS_BRACKET_LENGTH          EQU 30
+			      C 
+ = 0000			      C     _EXODUS_PAREN_NEXT              EQU 0
+ = 0004			      C     _EXODUS_PAREN_NEXT_SAME_LINE    EQU 4
+ = 0008			      C     _EXODUS_PAREN_DATA_ITEMS        EQU 8
+ = 000C			      C     _EXODUS_PAREN_TOTAL_DATA_ITEMS  EQU 12
+ = 0010			      C     _EXODUS_PAREN_SOURCE_LINE       EQU 16
+ = 0014			      C     _EXODUS_PAREN_SOURCE_LINE_LENGTH EQU 20
+ = 0018			      C     _EXODUS_PAREN_HANDLE            EQU 24
+ = 001A			      C     _EXODUS_PAREN_REQUESTOR         EQU 26
+ = 001E			      C     _EXODUS_PAREN_REQUESTOR_FUNC    EQU 30
+ = 0022			      C     _EXODUS_PAREN_SCRATCH_AREA      EQU 34
+ = 0026			      C     _EXODUS_PAREN_LENGTH            EQU 38
+			      C 
+ = 0000			      C     _EXODUS_DATA_NEXT               EQU 0
+ = 0004			      C     _EXODUS_DATA_DATA_ITEM_SOURCE   EQU 4
+ = 0008			      C     _EXODUS_DATA_DATA_ITEM_LENGTH   EQU 8
+ = 000C			      C     _EXODUS_DATA_LENGTH             EQU 12
+			      C 
+			      C 
+			      C 
+			      C 
+			      C ; ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+			      C ; ³ EXODUS xxx STRUCTURES ³
+			      C ; ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+ = 0000			      C     _EXODUS_MEM_type                EQU 0
+ = 0004			      C     _EXODUS_MEM_base                EQU 4
+ = 0008			      C     _EXODUS_MEM_limit               EQU 8
+ = 000C			      C     _EXODUS_MEM_gdt                 EQU 12
+ = 000E			      C     _EXODUS_MEM_ldt                 EQU 14
+ = 0010			      C     _EXODUS_MEM_size                EQU 16
+			      C 
+ = 0010			      C     _EXODUS_PORTS_size              EQU 16
+			      C 
+ = 0002			      C     _EXODUS_INTS_size               EQU 2
+			      C 
+			      C 
+			      C 
+			      C 
+			      C ; ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+			      C ; ³ EXODUS SYSTEM MEMORY ³
+			      C ; ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+			      C ; Note, when updates are made here they need to be reflected in INF\SYSTEM.INF
+			      C ; Note, when updates are made here and INF\SYSTEM.INF, the "Exodus Quick Reference" manual needs to be updated
+ = 0000			      C     _SYSTEM_SECONDS_SINCE_BOOTUP    EQU 0                           ; dword
+ = 0004			      C     _SYSTEM_SECONDS_SINCE_MIDNIGHT  EQU 4                           ; dword
+ = 0008			      C     _SYSTEM_HOURS                   EQU 8                           ; byte
+ = 0009			      C     _SYSTEM_MINUTES                 EQU 9                           ; byte
+ = 000A			      C     _SYSTEM_SECONDS                 EQU 10                          ; byte
+ = 000B			      C     _SYSTEM_182S_OF_A_SECOND        EQU 11                          ; byte
+ = 000C			      C     _SYSTEM_DAY                     EQU 12                          ; byte
+ = 000D			      C     _SYSTEM_MONTH                   EQU 13                          ; byte
+ = 000E			      C     _SYSTEM_YEAR                    EQU 14                          ; word
+ = 0010			      C     _SYSTEM_DAY_OF_YEAR             EQU 16                          ; word
+ = 0012			      C     _SYSTEM_BUILD                   EQU 18                          ; 10-byte string in the format: "mm.dd.yyyy"
+ = 001C			      C     _SYSTEM_TOTAL_MEMORY            EQU 28                          ; dword, total ram in bytes
+ = 0020			      C     _SYSTEM_VGA_HORIZONTAL          EQU 32                          ; word (pixels-graphics, or columns-text)
+ = 0022			      C     _SYSTEM_VGA_VERTICAL            EQU 34                          ; word (pixels-graphics, or rows-text)
+ = 0024			      C     _SYSTEM_VGA_VIDEO_MODE          EQU 36                          ; byte (0-graphics, 1-text)
+ = 0025			      C     _SYSTEM_MONO_VIDEO_MODE         EQU 37                          ; byte (0-graphics, 1-text, 0ffh-Unknown)
+			      C 
+			      C   ; Non-user accessible system memory areas (Exodus internal, hence the use of the _i_)
+ = 0800			      C     _SYSTEM_i_FATAL                 EQU 2048                        ; dword
+ = 0804			      C     _SYSTEM_i_TASKS_CREATED         EQU 2052                        ; dword
+ = 0808			      C     _SYSTEM_i_TASKS_BY_USER         EQU 2056                        ; dword
+ = 080C			      C     _SYSTEM_i_TASKS_BY_ERROR        EQU 2060                        ; dword
+ = 0810			      C     _SYSTEM_i_IRQ6_INDICATOR        EQU 2064                        ; byte, IRQ6 indicator (changes each time an IRQ6 is signaled)
+ = 0811			      C     _SYSTEM_i_IRQ6_INDICATOR_LAST   EQU 2065                        ; byte, IRQ6 indicator previous, used to see when an IRQ6 is signaled
+ = 0812			      C     _SYSTEM_i_BASE                  EQU 2066                        ; dword
+ = 0816			      C     _SYSTEM_i_LIMIT                 EQU 2070                        ; dword
+ = 081A			      C     _SYSTEM_i_DWORD_TO_COPY         EQU 2074                        ; word
+ = 081C			      C     _SYSTEM_i_LAST_GDT_REFERENCED   EQU 2076                        ; qword
+ = 0824			      C     _SYSTEM_i_CODE_GDT_OFFSET       EQU 2084                        ; dword (used temporarily during native primative install)
+ = 0828			      C     _SYSTEM_i_DATA_GDT_OFFSET       EQU 2088                        ; dword (used temporarily during native primative install)
+ = 082C			      C     _SYSTEM_i_MAIN_GDT_OFFSET       EQU 2092                        ; dword (used temporarily during native primative install)
+ = 0830			      C     _SYSTEM_i_REQUESTOR_GDT_OFFSET  EQU 2096                        ; dword (used temporarily during native primative install)
+ = 0834			      C     _SYSTEM_i_GDT_TO_ASSIGN         EQU 2100                        ; word (used various places to assign GDT entries)
+ = 0836			      C     _SYSTEM_i_USER_GDT_TO_ASSIGN    EQU 2102                        ; word (used various places to assign USER Program GDTs)
+			      C   ; Next offset is 2104
+			      C 
+			      C 
+			      C   ; These scratch items exist from end of memory down
+ = 0BF8			      C     _SYSTEM_i_SCRATCH_DWORD2        EQU 3064                        ; dword (used various places as a scratch buffer)
+ = 0BFC			      C     _SYSTEM_i_SCRATCH_DWORD1        EQU 3068                        ; dword (used various places as a scratch buffer)
+			      C 
+			      C 
+			      C 
+			      C 
+			      C ; ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+			      C ; ³ BOCHS SUPPORT ³
+			      C ; ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+			      C ; These equates are used to communicate via INT 0FFh
+			      C ; Values here are in ecx, with edx being used for data information.
+			      C ; Values in eax must be
+ = 12345678		      C     _BOCHS1                         EQU 12345678h
+ = 87654321		      C     _BOCHS2                         EQU 87654321h
+ = 0000			      C     _BOCHS_GET_MONO_MOUSE_XY        EQU 0
+ = 0001			      C     _BOCHS_GET_MONO_CURSOR          EQU 1
+			      C 
+
+				    .386P
+ 00000000			_TEXT32 SEGMENT BYTE 'CODE' USE32
+				    ASSUME NOTHING
+
+				; These are required to be the first 2 dwords in the file
+ 00000000  00000087 R		dd  offset main
+ 00000004  00000008 R		dd  offset requestor
+
+
+
+
+ 00000008			    requestor   PROC
+				    ; This routine is called by Exodus.  When this function is called multi-tasking is not installed.  This is a linear function.
+				    ;
+				    ; Upon entry:   eax - requested function
+				    ;                ds - temporary ORG 0h data segment for use with these requestor() functions
+				    ;
+				    ; Upon exit:    results vary based on value of eax
+				    ;
+				        .IF (eax == 'info')
+ 00000008  3D 696E666F	   *	    cmp    eax, 'info'
+ 0000000D  75 26	   *	    jne    @C0001
+				          ; Program information
+ 0000000F  B8 6E617469		            mov     eax,'nati'                              ; Identifying this program as a native primative
+ 00000014  B9 00000501 R	            mov     ecx,offset end_of_required_data         ; The maximum number of bytes to retain after loading
+
+ 00000019  BE 00000501 R	            mov     esi,offset driver_primatives            ; Offset to the native primatives structure
+ 0000001E  BF 000001D6 R	            mov     edi,offset driver_name
+ 00000023  BB 000001E8 R	            mov     ebx,offset version
+ 00000028  BA 000001F8 R	            mov     edx,offset copyright
+ 0000002D  BD 00000218 R	            mov     ebp,offset author
+ 00000032  F8			            clc
+				        .ELSEIF (eax == 'prim')
+ 00000033  EB 51	   *	    jmp    @C0003
+ 00000035		   *@C0001:
+ 00000035  3D 7072696D	   *	    cmp    eax, 'prim'
+ 0000003A  75 14	   *	    jne    @C0004
+				          ; Native primatives this program will use
+ 0000003C  66| 8C 1D		            mov     ds:data_segment,ds
+	   00000228 R
+ 00000043  BE 00000388 R	            mov     esi,offset required_primatives          ; This primative requires these external influence
+ 00000048  BF 00000362 R	            mov     edi,offset primative_call_gates
+ 0000004D  F8			            clc
+				        .ELSEIF (eax == 'id  ')
+ 0000004E  EB 36	   *	    jmp    @C0006
+ 00000050		   *@C0004:
+ 00000050  3D 69642020	   *	    cmp    eax, 'id  '
+ 00000055  75 0F	   *	    jne    @C0007
+				          ; Display this program's ID on the VGA monitor
+ 00000057  BE 000001D6 R	            mov     esi,offset driver_name
+ 0000005C  2E: FF 1D		            call    fword ptr cs:_VID_display_string_nr_vga
+	   00000364 R
+ 00000063  F8			            clc
+				        .ELSEIF (eax == 'note')
+ 00000064  EB 20	   *	    jmp    @C0009
+ 00000066		   *@C0007:
+ 00000066  3D 6E6F7465	   *	    cmp    eax, 'note'
+ 0000006B  75 18	   *	    jne    @C000A
+				          ; Exodus has a note for us
+ 0000006D  B8 73746F70		            mov     eax,'stop'
+ 00000072  BB 6C6F6164		            mov     ebx,'load'
+ 00000077  BE 000001D6 R	            mov     esi,offset driver_name
+ 0000007C  2E: FF 1D		            call    fword ptr cs:_EXODUS_requestor
+	   00000360 R
+				        .ELSE
+ 00000083  EB 01	   *	    jmp    @C000C
+ 00000085		   *@C000A:
+ 00000085  F9			            stc
+				        .ENDIF
+ 00000086		   *@C000C:
+ 00000086		   *@C0009:
+ 00000086		   *@C0006:
+ 00000086		   *@C0003:
+ 00000086  CB			        retf
+ 00000087			    requestor   ENDP
+
+
+
+
+ 00000087			    main    PROC
+				    ; This routine is called once by Exodus once initialization is complete (all calls to requestor() are finished)
+				    ; It is used by Exodus to allow this driver to properly initialize itself.
+				    ; When this function is called multi-tasking is not installed.  This is a linear function.
+				    ;
+				    ; Upon entry:   Nothing
+				    ;
+				    ; Upon exit:    A "continued status of execution" is expected by Exodus.  This indicates whether or not everything
+				    ;               initialized ok or is available.  If everything is OK the carry? flag is CLEAR.  If there is an error
+				    ;               and this driver cannot continue then the carry? should be SET.
+				    ;               carry? - CLEAR=Ok to continue
+				    ;                          SET=Error initializing
+				    ;
+ 00000087  66| 2E: 8E 1D	        mov     ds,cs:data_segment
+	   00000228 R
+ 0000008F  C6 05 00000227 R	        mov     ds:bootup,0
+	   00
+ 00000096  E8 00000001		        call    initialize_driver
+				      ; Right now, carry? is SET or CLEAR indicating status of driver
+ 0000009B  CB			        retf
+ 0000009C			    main    ENDP
+
+
+
+
+ 0000009C			    initialize_driver   PROC
+				    ; This routine initializes the keyboard to ensure it's setup correctly
+				      ;; Display the logo on the bootup screen
+ 0000009C  BE 00000239 R	        mov     esi,offset mouse_logo
+ 000000A1  FF 1D 00000362 R	        call    fword ptr ds:_VID_draw_logo
+
+				      ;; Point IRQ12 to the MOUSE ISR
+ 000000A7  B8 62696E74		        mov     eax,'bint'
+ 000000AC  B3 7C		        mov     bl,7ch                                              ; IRQ 12
+ 000000AE  B9 00000001		        mov     ecx,1
+ 000000B3  BA 000000FA R	        mov     edx,offset MOUSE_handler                            ; Offset to the mouse ISR
+ 000000B8  FF 1D 00000360 R	        call    fword ptr ds:_EXODUS_requestor
+
+				      ;; Disable IRQ12
+ 000000BE  B4 0C		        mov     ah,12
+ 000000C0  FF 1D 0000036A R	        call    fword ptr ds:_BIOS_iPIC_mask_irq
+
+				      ;; Tell the 8042 controller to issue IRQ12 each time the mouse input buffer has data
+ 000000C6  B4 60		        mov     ah,060h
+ 000000C8  FF 1D 0000036C R	        call    fword ptr ds:_iBIOS_write_8042_64h
+ 000000CE  B4 47		        mov     ah,01000111b
+ 000000D0  FF 1D 0000036E R	        call    fword ptr ds:_iBIOS_write_8042_60h
+
+				      ;; Enable the PS/2 mouse
+ 000000D6  B4 D4		        mov     ah,0d4h
+ 000000D8  FF 1D 0000036C R	        call    fword ptr ds:_iBIOS_write_8042_64h
+ 000000DE  B4 F4		        mov     ah,0f4h                                             ; Enable the mouse
+ 000000E0  FF 1D 0000036E R	        call    fword ptr ds:_iBIOS_write_8042_60h
+
+				      ;; Enable IRQ12
+ 000000E6  B4 0C		        mov     ah,12
+ 000000E8  FF 1D 00000368 R	        call    fword ptr ds:_BIOS_iPIC_unmask_irq
+ 000000EE  C7 05 0000022B R	        mov     ds:packet_count,-1                                  ; The mouse will send a one byte response
+	   FFFFFFFF
+ 000000F8  F8			        clc
+ 000000F9  C3			        ret
+ 000000FA			    initialize_driver   ENDP
+
+
+
+
+ 000000FA			    MOUSE_handler       PROC
+				    ; The mouse has signaled that it has data for us
+				    ;
+				    ; Upon entry:   Data is waiting at port 60h
+				    ;
+				    ; Upon exit:    The byte is stored and/or send to the calling routine for processing
+				    ;
+ 000000FA  60			        pushad
+ 000000FB  1E			        push    ds
+ 000000FC  66| 2E: 8E 1D	        mov     ds,cs:data_segment
+	   00000228 R
+
+				      ;; Signal end-of-interrupt (for IRQ8-IRQ15 we must send two commands)
+ 00000104			      MOUSE_handler_quit:
+ 00000104  B0 20		        mov     al,20h
+ 00000106  E6 A0		        out     0a0h,al
+ 00000108  E6 20		        out     20h,al
+ 0000010A  FB			        sti
+
+				      ;; See if there is data read
+ 0000010B			      read_mouse_again:
+ 0000010B  E4 64		        in      al,64h
+ 0000010D  24 21		        and     al,21h                                              ; 21h = 20h-mouse has byte + 1h-ready to send
+				        .IF (al == 21h)
+ 0000010F  3C 21	   *	    cmp    al, 021h
+ 00000111  75 67	   *	    jne    @C000D
+				          ;; Read the byte
+ 00000113  E4 60		            in      al,060h
+				            .IF (cs:packet_count > 7fffffffh)
+ 00000115  2E: 81 3D
+	   0000022B R
+	   7FFFFFFF	   *	    cmp    cs : packet_count, 07FFFFFFFh
+ 00000120  76 08	   *	    jbe    @C000F
+				              ; It's negative, we're loading bytes that are of no consequence
+ 00000122  FF 05 0000022B R	                inc     ds:packet_count
+ 00000128  EB E1		                jmp     read_mouse_again
+				            .ENDIF
+
+				          ;; Store the byte
+ 0000012A		   *@C000F:
+ 0000012A  BE 00000236 R	            mov     esi,offset mouse_buffer
+ 0000012F  2E: 8B 1D		            mov     ebx,cs:packet_count
+	   0000022B R
+ 00000136  88 04 33		            mov     byte ptr ds:[esi+ebx],al
+ 00000139  FF 05 0000022B R	            inc     ds:packet_count
+				            .IF (ebx >= 2)
+ 0000013F  83 FB 02	   *	    cmp    ebx, 002h
+ 00000142  72 36	   *	    jb     @C0011
+				              ; We have our full packet
+ 00000144  C7 05 0000022B R	                mov     ds:packet_count,0
+	   00000000
+ 0000014E  BE 00000236 R	                mov     esi,offset mouse_buffer
+
+				              ;; Get the buttons and sign
+ 00000153  0F B6 1E		                movzx   ebx,byte ptr ds:[esi+0]
+ 00000156  83 E3 07		                and     ebx,0111b                                   ; ebx = button status
+
+				              ;; Get the delta-x
+ 00000159  0F BE 46 01		                movsx   eax,byte ptr ds:[esi+1]
+
+				              ;; Get the delta-y
+ 0000015D  0F BE 56 02		                movsx   edx,byte ptr ds:[esi+2]
+ 00000161  F7 DA		                neg     edx                                         ; The logical mouse system goes from 0 to max_y in a negative
+				                                                                    ; direction (0 is top, max_y is bottom of screen).  For this
+				                                                                    ; reason the sign of this delta-y value is reversed.
+
+				              ; Right now,  eax = X delta
+				              ;             edx = Y delta
+				              ;             ebx = button status
+				                .IF (ds:debi_intercept == 1)
+ 00000163  80 3D 0000022A R
+	   01		   *	    cmp    ds : debi_intercept, 001h
+ 0000016A  75 08	   *	    jne    @C0013
+ 0000016C  FF 1D 00000366 R	                    call    fword ptr ds:_iDEBI_mouse_interface
+				                .ELSE
+ 00000172  EB 06	   *	    jmp    @C0015
+ 00000174		   *@C0013:
+ 00000174  FF 1D 00000380 R	                    call    fword ptr ds:_iTASK_mouse_interface
+				                .ENDIF
+				            .ENDIF
+ 0000017A		   *@C0015:
+				        .ENDIF
+ 0000017A		   *@C0011:
+ 0000017A		   *@C000D:
+
+ 0000017A  1F			        pop     ds
+ 0000017B  61			        popad
+ 0000017C  CF			        iretd
+ 0000017D			    MOUSE_handler       ENDP
+
+
+
+
+ 0000017D			    iMOUSE_activate_DEBI_intercept      PROC
+				    ; This routine is called only from DEBI.  It indicates that any MOUSE information should be
+				    ; sent to the DEBI algorithm
+				    ;
+				    ; Upon entry:   Nothing
+				    ;
+				    ; Upon exit:    Input is diverted
+				    ;
+ 0000017D  1E			        push    ds
+ 0000017E  66| 2E: 8E 1D	        mov     ds,cs:data_segment
+	   00000228 R
+ 00000186  C6 05 0000022A R	        mov     ds:debi_intercept,1
+	   01
+ 0000018D  1F			        pop     ds
+ 0000018E  CB			        retf
+ 0000018F			    iMOUSE_activate_DEBI_intercept      ENDP
+
+
+
+
+				;; Bochs hack
+ 0000018F			    iMOUSE_bochs_DEBI_intercept     PROC
+ 0000018F  1E			        push    ds
+ 00000190  9C			        pushfd
+ 00000191  60			        pushad
+ 00000192  66| 2E: 8E 1D	        mov     ds,cs:data_segment
+	   00000228 R
+ 0000019A  B8 12345678		        mov     eax,_BOCHS1
+ 0000019F  BB 87654321		        mov     ebx,_BOCHS2
+ 000001A4  B9 00000000		        mov     ecx,_BOCHS_GET_MONO_MOUSE_XY
+ 000001A9  CD FF		        int     0ffh
+				        .IF (!carry?)
+ 000001AB  72 13	   *	    jb     @C0016
+				            ; Returns new X coordinate in eax
+				            ; Returns new Y coordinate in ebx
+				            ; Returns new button state in ecx
+				            ; Store new mouse coordinates
+ 000001AD  66| A3		            mov     ds:_mouseX,ax
+	   00000232 R
+ 000001B3  66| 89 1D		            mov     ds:_mouseX,bx
+	   00000232 R
+
+				            ; Call DEBI's bochs mouse handler
+ 000001BA  FF 1D 00000382 R	            call    fword ptr ds:_iDEBI_bochs_mouse_interface
+				        .ENDIF
+ 000001C0		   *@C0016:
+
+ 000001C0  61			        popad
+ 000001C1  9D			        popfd
+ 000001C2  1F			        pop     ds
+ 000001C3  CB			        retf
+ 000001C4			    iMOUSE_bochs_DEBI_intercept     ENDP
+				;; Bochs hack
+
+
+
+
+ 000001C4			    iMOUSE_deactivate_DEBI_intercept    PROC
+				    ; This routine is called only from DEBI.  It indicates that any MOUSE information should now be
+				    ; handled in the normal manner (it should not be sent to the DEBI algorithm)
+				    ;
+				    ; Upon entry:   Nothing
+				    ;
+				    ; Upon exit:    Input is diverted
+				    ;
+ 000001C4  1E			        push    ds
+ 000001C5  66| 2E: 8E 1D	        mov     ds,cs:data_segment
+	   00000228 R
+ 000001CD  C6 05 0000022A R	        mov     ds:debi_intercept,0
+	   00
+ 000001D4  1F			        pop     ds
+ 000001D5  CB			        retf
+ 000001D6			    iMOUSE_deactivate_DEBI_intercept    ENDP
+
+
+
+
+
+
+
+
+
+				; DATA
+ 000001D6 50 53 2F 32 20	    driver_name                             db  "PS/2 Mouse Driver",0
+	   4D 6F 75 73 65
+	   20 44 72 69 76
+	   65 72 00
+ 000001E8 31 30 2E 31 30	    version                                 db  "10.10.2010 BETA",0
+	   2E 32 30 31 30
+	   20 42 45 54 41
+	   00
+ 000001F8 28 63 29 20 43	    copyright                               db  "(c) Copyright Beatleworks, Inc.",0
+	   6F 70 79 72 69
+	   67 68 74 20 42
+	   65 61 74 6C 65
+	   77 6F 72 6B 73
+	   2C 20 49 6E 63
+	   2E 00
+ 00000218 52 69 63 6B 20	    author                                  db  "Rick C. Hodgin",0
+	   43 2E 20 48 6F
+	   64 67 69 6E 00
+ 00000227 01			    bootup                                  db  1                   ; Changed to 0 after bootup is complete
+
+ 00000228 0000			    data_segment                            dw  0
+ 0000022A 00			    debi_intercept                          db  0
+ 0000022B 00000000		    packet_count                            dd  0
+
+ 0000022F 00			    _rightClick                             db  0                                       ; Right ctrl-key status
+ 00000230 00			    _leftClick                              db  0
+ 00000231 00			    _middleClick                            db  0
+ 00000232 0000			    _mouseX                                 dw  0
+ 00000234 0000			    _mouseY                                 dw  0
+
+ 00000236  00000003 [		    mouse_buffer                            db  3 dup(0)
+	    00
+	   ]
+
+ 00000239 00			    mouse_logo                              db  0           ; * Refer to VGA\INF\VGA.INF for information on this byte's format
+ 0000023A  00 00 00 00 00	                                            db  00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,07h,07h,07h,00h,00h,00h,00h,00h
+	   00 00 00 00 00
+	   07 07 07 00 00
+	   00 00 00
+ 0000024C  00 00 00 00 00	                                            db  00h,00h,00h,00h,00h,00h,00h,00h,07h,07h,00h,00h,00h,00h,00h,00h,00h,00h
+	   00 00 00 07 07
+	   00 00 00 00 00
+	   00 00 00
+ 0000025E  00 00 00 00 00	                                            db  00h,00h,00h,00h,00h,00h,00h,07h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+	   00 00 07 00 00
+	   00 00 00 00 00
+	   00 00 00
+ 00000270  00 00 00 00 00	                                            db  00h,00h,00h,00h,00h,00h,00h,07h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+	   00 00 07 00 00
+	   00 00 00 00 00
+	   00 00 00
+ 00000282  00 00 00 00 00	                                            db  00h,00h,00h,00h,00h,0fh,0fh,0fh,00h,0fh,0fh,0fh,00h,00h,00h,00h,00h,00h
+	   0F 0F 0F 00 0F
+	   0F 0F 00 00 00
+	   00 00 00
+ 00000294  00 00 00 00 0F	                                            db  00h,00h,00h,00h,0fh,10h,10h,10h,00h,10h,10h,10h,0fh,00h,00h,00h,00h,00h
+	   10 10 10 00 10
+	   10 10 0F 00 00
+	   00 00 00
+ 000002A6  00 00 00 00 0F	                                            db  00h,00h,00h,00h,0fh,10h,10h,10h,00h,10h,10h,10h,0fh,00h,00h,00h,00h,00h
+	   10 10 10 00 10
+	   10 10 0F 00 00
+	   00 00 00
+ 000002B8  00 00 00 00 0F	                                            db  00h,00h,00h,00h,0fh,10h,10h,10h,00h,10h,10h,10h,0fh,00h,00h,00h,00h,00h
+	   10 10 10 00 10
+	   10 10 0F 00 00
+	   00 00 00
+ 000002CA  00 00 00 00 0F	                                            db  00h,00h,00h,00h,0fh,00h,00h,00h,00h,00h,00h,00h,0fh,00h,00h,00h,00h,00h
+	   00 00 00 00 00
+	   00 00 0F 00 00
+	   00 00 00
+ 000002DC  00 00 00 00 0F	                                            db  00h,00h,00h,00h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,00h,00h,00h,00h,00h
+	   0F 0F 0F 0F 0F
+	   0F 0F 0F 00 00
+	   00 00 00
+ 000002EE  00 00 00 00 0F	                                            db  00h,00h,00h,00h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,00h,00h,00h,00h,00h
+	   0F 0F 0F 0F 0F
+	   0F 0F 0F 00 00
+	   00 00 00
+ 00000300  00 00 00 00 0F	                                            db  00h,00h,00h,00h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,00h,00h,00h,00h,00h
+	   0F 0F 0F 0F 0F
+	   0F 0F 0F 00 00
+	   00 00 00
+ 00000312  00 00 00 00 0F	                                            db  00h,00h,00h,00h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,00h,00h,00h,00h,00h
+	   0F 0F 0F 0F 0F
+	   0F 0F 0F 00 00
+	   00 00 00
+ 00000324  00 00 00 00 11	                                            db  00h,00h,00h,00h,11h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,11h,00h,00h,00h,00h,00h
+	   0F 0F 0F 0F 0F
+	   0F 0F 11 00 00
+	   00 00 00
+ 00000336  00 00 00 00 08	                                            db  00h,00h,00h,00h,08h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,08h,00h,00h,00h,00h,00h
+	   0F 0F 0F 0F 0F
+	   0F 0F 08 00 00
+	   00 00 00
+ 00000348  00 00 00 00 00	                                            db  00h,00h,00h,00h,00h,07h,0fh,0fh,0fh,0fh,0fh,07h,00h,00h,00h,00h,00h,00h
+	   07 0F 0F 0F 0F
+	   0F 07 00 00 00
+	   00 00 00
+ 0000035A  35 35 35		                                            db  35h,35h,35h
+ 0000035D  30 30 30		                                            db  30h,30h,30h
+
+
+ 00000360 0000			    _EXODUS_requestor                       dw  0
+ 00000362			  primative_call_gates:
+ 00000362 0000			    _VID_draw_logo                          dw  0
+ 00000364 00B0			    _VID_display_string_nr_vga              dw  _sEXODUS_REQUESTOR
+ 00000366 F000			    _iDEBI_mouse_interface                  dw  0f000h
+ 00000368 F000			    _BIOS_iPIC_unmask_irq                   dw  0f000h
+ 0000036A F000			    _BIOS_iPIC_mask_irq                     dw  0f000h
+ 0000036C F000			    _iBIOS_write_8042_64h                   dw  0f000h
+ 0000036E F000			    _iBIOS_write_8042_60h                   dw  0f000h
+ 00000370 F000			    _iBIOS_read_8042_64h                    dw  0f000h
+ 00000372 F000			    _iBIOS_read_8042_60h                    dw  0f000h
+ 00000374 F000			    _iBIOS_read_8042_64h_fast               dw  0f000h
+ 00000376 F000			    _iBIOS_read_8042_60h_fast               dw  0f000h
+ 00000378 F000			    _iBIOS_write_8042_64h_fast              dw  0f000h
+ 0000037A F000			    _iBIOS_write_8042_60h_fast              dw  0f000h
+ 0000037C F000			    _TIMER_wait_full_tick                   dw  0f000h
+ 0000037E F000			    _TIMER_wait_x_ticks                     dw  0f000h
+ 00000380 F000			    _iTASK_mouse_interface                  dw  0f000h
+ 00000382 F000			    _iDEBI_bochs_mouse_interface            dw  0f000h
+ 00000384  F000			                                            dw  0f000h
+ 00000386  F000			                                            dw  0f000h
+
+ 00000388 0D 56 49 44 5F	    required_primatives                     db  13, "VID_draw_logo"
+	   64 72 61 77 5F
+	   6C 6F 67 6F
+ 00000396  19 56 49 44 5F	                                            db  25, "VID_display_string_nr_vga"
+	   64 69 73 70 6C
+	   61 79 5F 73 74
+	   72 69 6E 67 5F
+	   6E 72 5F 76 67
+	   61
+ 000003B0  15 69 44 45 42	                                            db  21, "iDEBI_mouse_interface"
+	   49 5F 6D 6F 75
+	   73 65 5F 69 6E
+	   74 65 72 66 61
+	   63 65
+ 000003C6  14 42 49 4F 53	                                            db  20, "BIOS_iPIC_unmask_irq"
+	   5F 69 50 49 43
+	   5F 75 6E 6D 61
+	   73 6B 5F 69 72
+	   71
+ 000003DB  12 42 49 4F 53	                                            db  18, "BIOS_iPIC_mask_irq"
+	   5F 69 50 49 43
+	   5F 6D 61 73 6B
+	   5F 69 72 71
+ 000003EE  14 69 42 49 4F	                                            db  20, "iBIOS_write_8042_64h"
+	   53 5F 77 72 69
+	   74 65 5F 38 30
+	   34 32 5F 36 34
+	   68
+ 00000403  14 69 42 49 4F	                                            db  20, "iBIOS_write_8042_60h"
+	   53 5F 77 72 69
+	   74 65 5F 38 30
+	   34 32 5F 36 30
+	   68
+ 00000418  13 69 42 49 4F	                                            db  19, "iBIOS_read_8042_64h"
+	   53 5F 72 65 61
+	   64 5F 38 30 34
+	   32 5F 36 34 68
+ 0000042C  13 69 42 49 4F	                                            db  19, "iBIOS_read_8042_60h"
+	   53 5F 72 65 61
+	   64 5F 38 30 34
+	   32 5F 36 30 68
+ 00000440  18 69 42 49 4F	                                            db  24, "iBIOS_read_8042_64h_fast"
+	   53 5F 72 65 61
+	   64 5F 38 30 34
+	   32 5F 36 34 68
+	   5F 66 61 73 74
+ 00000459  18 69 42 49 4F	                                            db  24, "iBIOS_read_8042_60h_fast"
+	   53 5F 72 65 61
+	   64 5F 38 30 34
+	   32 5F 36 30 68
+	   5F 66 61 73 74
+ 00000472  19 69 42 49 4F	                                            db  25, "iBIOS_write_8042_64h_fast"
+	   53 5F 77 72 69
+	   74 65 5F 38 30
+	   34 32 5F 36 34
+	   68 5F 66 61 73
+	   74
+ 0000048C  19 69 42 49 4F	                                            db  25, "iBIOS_write_8042_60h_fast"
+	   53 5F 77 72 69
+	   74 65 5F 38 30
+	   34 32 5F 36 30
+	   68 5F 66 61 73
+	   74
+ 000004A6  14 54 49 4D 45	                                            db  20, "TIMER_wait_full_tick"
+	   52 5F 77 61 69
+	   74 5F 66 75 6C
+	   6C 5F 74 69 63
+	   6B
+ 000004BB  12 54 49 4D 45	                                            db  18, "TIMER_wait_x_ticks"
+	   52 5F 77 61 69
+	   74 5F 78 5F 74
+	   69 63 6B 73
+ 000004CE  15 69 54 41 53	                                            db  21, "iTASK_mouse_interface"
+	   4B 5F 6D 6F 75
+	   73 65 5F 69 6E
+	   74 65 72 66 61
+	   63 65
+ 000004E4  1B 69 44 45 42	                                            db  27, "iDEBI_bochs_mouse_interface"
+	   49 5F 62 6F 63
+	   68 73 5F 6D 6F
+	   75 73 65 5F 69
+	   6E 74 65 72 66
+	   61 63 65
+ 00000500  FF			                                            db  0ffh
+
+ 00000501			 end_of_required_data:
+
+ 00000501 1E 69 4D 4F 55	    driver_primatives                       db  30, "iMOUSE_activate_DEBI_intercept"
+	   53 45 5F 61 63
+	   74 69 76 61 74
+	   65 5F 44 45 42
+	   49 5F 69 6E 74
+	   65 72 63 65 70
+	   74
+ 00000520  0000017D R		                                            dd  offset iMOUSE_activate_DEBI_intercept
+ 00000524  0000			                                            dw  0
+
+ 00000526  20 69 4D 4F 55	                                            db  32, "iMOUSE_deactivate_DEBI_intercept"
+	   53 45 5F 64 65
+	   61 63 74 69 76
+	   61 74 65 5F 44
+	   45 42 49 5F 69
+	   6E 74 65 72 63
+	   65 70 74
+ 00000547  000001C4 R		                                            dd  offset iMOUSE_deactivate_DEBI_intercept
+ 0000054B  0000			                                            dw  0
+
+ 0000054D  1B 69 4D 4F 55	                                            db  27, "iMOUSE_bochs_DEBI_intercept"
+	   53 45 5F 62 6F
+	   63 68 73 5F 44
+	   45 42 49 5F 69
+	   6E 74 65 72 63
+	   65 70 74
+ 00000569  0000018F R		                                            dd  offset iMOUSE_bochs_DEBI_intercept
+ 0000056D  0000			                                            dw  0
+
+ 0000056F  FFFF			                                            dw  0ffffh              ; Teriminator
+
+ 0571				_TEXT32 ENDS
+
+				END

@@ -15,15 +15,11 @@ Follow along on Twitter:
 https://twitter.com/VisualFreePro
 
 Follow along on Google Groups:
-
 English:  https://groups.google.com/forum/?fromgroups#!forum/visual-freepro-in-english
-
 Spanish:  https://groups.google.com/forum/?fromgroups#!forum/vfrp
 
 Main websites:
-
 LibSF:  http://www.libsf.org
-
+Exodus:  http://www.libsf.org/exodus/
 Visual FreePro:  http://www.visual-freepro.org
-
 Visual FreePro, Jr.:  http://www.visual-freepro.org/vjr

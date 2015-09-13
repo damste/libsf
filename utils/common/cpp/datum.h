@@ -101,6 +101,9 @@ struct SDateTimeX;
 struct SDate;
 struct SBgra;
 struct SBgr;
+#ifndef IDispatch
+    struct IDispatch;
+#endif
 
 	struct SDatum
 	{

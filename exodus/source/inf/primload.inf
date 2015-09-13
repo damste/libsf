@@ -1,0 +1,76 @@
+;
+; During the primative load process the following memory areas are used:
+;
+;   _sPRIMATIVES
+;   _sPRIMATIVE_LOAD_INFO
+;
+;
+;
+;
+; -----
+; The _sPRIMATIVES memory area is 16k.  It contains the following structure.  This structure is repeated once for every
+; primative function that has been loaded.
+;
+; * Note:  This memory structure follows two DWORDs at offset 0
+;          DWORD 1 indicates the next offset to write to in this structure
+;          DWORD 2 indicates the next call gate to use when adding a primative
+;
+;     OFFSET  LENGTH    DESCRIPTION
+;     ------  ------    -----------------------
+;       0       2       Call gate
+;       2       1       Active? 1-Yes, 0-No
+;       3       1       Length of primative function name at offset 4
+;       4       ?       case-insensative function name associated with this call gate
+;
+;   * Note:  If Active=0 then this primative function is no longer valid (meaning it's been superceeded by a subsequently
+;            loaded driver).  This allows a chain, of sorts, to be created.  So if there is a problem a user/programmer can
+;            debug a system by looking at what drivers are responsible and possibly determining the problem.
+;
+;   Example:
+;       0008 22 VID_display_string_vga
+;       0010 23 VID_display_string_mono
+;
+;
+;
+;
+;
+;
+;
+;
+;
+; -----
+; The _sPRIMATIVE_LOAD_INFO memory area is 4k.  It contains the following structure.  This stucture is repeated once for
+; every driver that has been loaded.
+;
+; * Note:  This memory structure follows a DWORD at offset 0
+;          That dword indicates the next offset to write to in this structure
+;
+;     OFFSET      LENGTH    DESCRIPTION
+;     ------      ------    -----------------------
+;     * 0           2       Offset into _sPRIMATIVES for the first function defined
+;     * 2           2       Length of definition block that was installed
+;     * 4           1       Length of the driver file name
+;     * 5           w       Driver file name
+;     * w+5         1       Length of the driver's self-assigned name (what it calls itself)
+;     * w+6         x       Driver's self-assigned name
+;     * w+x+6       1       Length of the driver's version text (what version it calls itself)
+;     * w+x+7       y       Driver's version text
+;     * w+x+y+7     1       Length of the driver's author text (who wrote the program)
+;     * w+x+y+8     z       Driver's author text
+;     * w+x+y+z+8   4       GDT offset for code segment
+;     * w+x+y+z+12  4       GDT offset for data segment
+;     * w+x+y+z+16  4       GDT offset for main() call gate
+;     * w+x+y+z+20  4       GDT offset for requestor() call gate
+;     * Note, all of these offsets are cast in stone.  They are hard coded into the program.
+;
+;   Example:
+;       0000 0140 7 VGA.DRV 26 "Exodus standard VGA driver" 15 "12.23.2000.beta" 14 "Rick C. Hodgin" 00000000 00000000 00000000 00000000
+;       0140 0070 12 KEYBOARD.DRV 31 "Exodus standard keyboard driver" 15 "12.23.2000.beta" 14 "Rick C. Hodgin" 00000000 00000000 00000000 00000000
+;       * Note:  The quotes are included here for demonstration purposes only.  In actuality the structure would be all
+;                scrunched together and would look more like this (the ת's represent NULL's)
+;
+;                תת@VGA.DRVExodus standard VGA driver12.23.2000.betaRi
+;                ck C. Hodginתתתתתתתתתתתתתתתת@תpKEYBOARD.DRVExodus stand
+;                ard keyboard driver12.23.2000.betaRick C. Hodginתתתתתתתת
+;                תתתתתתתת
+;

@@ -87,7 +87,7 @@
 	#define _BMP_LOCALITY 1
 	#include "\libsf\source\vjr\source\bmps\graphics\bitmaps.h"
 
-#elif defined(__GNUC__)
+#elif defined(__GNUC__) || defined(__solaris__)
 	#include "/libsf/utils/common/cpp/common_types.h"
 
 	// Force the bitmaps to be for definition

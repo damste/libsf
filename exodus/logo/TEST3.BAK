@@ -1,0 +1,345 @@
+; test3.asm
+
+TITLE test3
+
+    .DOSSEG
+
+    .MODEL tiny
+
+    .486P
+
+    .STACK 0h
+
+    .DATA
+INCLUDE \assembly\c_macros.asp
+INCLUDE \assembly\keylist.asp
+
+RAMDAC_INDEX_READ       EQU 3c7h
+RAMDAC_INDEX_WRITE      EQU 3c8h
+RAMDAC_DATA             EQU 3c9h
+
+    .CODE
+    .STARTUP
+    mov     ax,cs
+    mov     ds,ax
+    mov     es,ax
+
+  ; Enter graphics mode
+    mov     ax,13h
+    int     10h
+
+  ; Open file
+    mov     dx,offset filename
+    @ReadOnly
+    @OpenFile
+    mov     file_handle,ax
+
+  ; Read the file
+    mov     bx,file_handle
+    mov     dx,offset file_load_area
+    mov     cx,50000
+    @ReadFile
+    mov     file_count,ax
+
+  ; Now, convert its text format into a raw format
+int 3
+    mov     si,offset file_load_area
+    mov     di,si
+    mov     cx,ax
+    add     cx,si
+    .WHILE (si < cx)
+        mov     ax,word ptr [si]
+        .IF (ax == 'bd')
+            add     si,2
+        .ELSEIF (al == ' ' || al == ',' || al == 0dh || al == 0ah)
+            inc     si
+        .ELSE
+            mov     eax,dword ptr [si]
+            shr     eax,8
+            mov     dl,ah
+            and     eax,0ffh
+            .IF (al >= 'a')
+                sub     al,'a'-10
+            .ELSE
+                sub     al,'0'
+            .ENDIF
+            .IF (dl >= 'a')
+                sub     dl,'a'-10
+            .ELSE
+                sub     dl,'0'
+            .ENDIF
+            shl     dl,4
+            or      al,dl
+            mov     byte ptr [di],al
+            inc     di
+
+            add     si,4
+        .ENDIF
+    .ENDW
+    sub     di,offset file_load_area
+    mov     file_count,di
+
+  ; Initialize the palette to all white
+    pushad
+    xor     al,al
+    .WHILE (al < 255)
+        push    ax
+        mov     dx,RAMDAC_INDEX_WRITE
+        out     dx,al
+        mov     dx,RAMDAC_DATA
+        mov     al,0ffh
+        out     dx,al
+        jmp     $+2
+        out     dx,al
+        jmp     $+2
+        out     dx,al
+        jmp     $+2
+        pop     ax
+        inc     al
+    .ENDW
+    popad
+
+    mov     ax,0a000h
+    mov     es,ax
+    mov     si,offset file_load_area
+    mov     di,si
+  ; The palette is first
+    xor     al,al
+    inc     si
+    mov     cx,1
+    .WHILE (al < byte ptr [di])
+        push    ax
+        mov     dx,RAMDAC_INDEX_WRITE
+        out     dx,al
+        mov     dx,RAMDAC_DATA
+        mov     al,byte ptr [si]
+        out     dx,al
+        jmp     $+2
+        mov     al,byte ptr [si+1]
+        out     dx,al
+        jmp     $+2
+        mov     al,byte ptr [si+2]
+        out     dx,al
+        jmp     $+2
+        add     si,3
+        add     cx,3
+        pop     ax
+        inc     al
+    .ENDW
+
+    xor     di,di
+    .WHILE (cx < file_count)
+        push    cx
+        xor     cx,cx
+        mov     cl,byte ptr [si]
+        mov     al,byte ptr [si+1]
+        .REPEAT
+            mov     byte ptr es:[di],al
+            inc     di
+        .UNTILCXZ
+        pop     cx
+        add     cx,2
+        add     si,2
+    .ENDW
+
+    mov     ax,cs
+    mov     ds,ax
+    mov     es,ax
+
+  ; Extract the file from its encoded format to the screen
+
+
+  ; Wait for a key
+  @@:
+;    mov     dx,0500h
+;    mov     ah,02h
+;    int     10h
+;
+;    xor     edx,edx
+;    mov     dl,adjust_palette
+;    mov     ebx,16
+;    call    display_radix_in_edx
+;
+;    mov     dx,offset semicolon_space
+;    mov     ah,09h
+;    int     21h
+;
+;    mov     al,current_modify
+;    .IF (al == 0)
+;        mov     dx,offset red_text
+;    .ELSEIF (al == 1)
+;        mov     dx,offset green_text
+;    .ELSE
+;        mov     dx,offset blue_text
+;    .ENDIF
+;    mov     ah,09h
+;    int     21h
+;
+;    mov     dx,offset several_spaces
+;    mov     ah,09h
+;    int     21h
+;
+    xor     ah,ah
+    int     16h
+    .IF (ax == up || ax == grey_up)
+      ; They want to go to the next palette
+        inc     adjust_palette
+        call    read_palette
+    .ELSEIF (ax == down || ax == grey_down)
+      ; They want to go to the previous palette
+        dec     adjust_palette
+        call    read_palette
+    .ELSEIF (ax == left || ax == grey_left)
+      ; They want to move to the next part of the color
+        .IF (current_modify > 0)
+            dec     current_modify
+        .ENDIF
+    .ELSEIF (ax == right || ax == grey_right)
+      ; They want to move to the previous part of the color
+        .IF (current_modify < 2)
+            inc     current_modify
+        .ENDIF
+    .ELSEIF (al == '+' || ax == pgup || ax == grey_pgup)
+      ; They want to increase this part of the palette
+        mov     al,current_modify
+        .IF (al == 0)
+          ; Red
+            inc     red
+        .ELSEIF (al == 1)
+          ; Green
+            inc     green
+        .ELSE
+          ; Blue
+            inc     blue
+        .ENDIF
+        call    write_palette
+    .ELSEIF (al == '-' || ax == pgdn || ax == grey_pgdn)
+      ; They want to decrease this part of the palette
+        mov     al,current_modify
+        .IF (al == 0)
+          ; Red
+            dec     red
+        .ELSEIF (al == 1)
+          ; Green
+            dec     green
+        .ELSE
+          ; Blue
+            dec     blue
+        .ENDIF
+        call    write_palette
+    .ELSEIF (ax == escape)
+      ; They're done
+        jmp     @F
+    .ENDIF
+    jmp     @B
+
+
+  ; Re-enter text mode
+  @@:
+    mov     ax,03h
+    int     10h
+
+    .EXIT
+
+
+read_palette    PROC
+    mov     dx,RAMDAC_INDEX_READ
+    mov     al,adjust_palette
+    out     dx,al
+    mov     dx,RAMDAC_DATA
+    in      al,dx
+    mov     red,al
+    in      al,dx
+    mov     green,al
+    in      al,dx
+    mov     blue,al
+    ret
+read_palette    ENDP
+
+
+write_palette    PROC
+    mov     dx,RAMDAC_INDEX_WRITE
+    mov     al,adjust_palette
+    out     dx,al
+    mov     dx,RAMDAC_DATA
+    mov     al,red
+    out     dx,al
+    mov     al,green
+    out     dx,al
+    mov     al,blue
+    out     dx,al
+    ret
+write_palette    ENDP
+
+
+display_radix_in_edx    PROC
+    pushad
+    push    ds
+    sub     esp,16                                                  ; Assume a maximum length of 12 chars (4 extra for boundary)
+    mov     ebp,esp
+
+    call    generate_radix_string
+    mov     dx,si
+    mov     ah,09h
+    int     21h
+
+    add     esp,16
+    pop     ds
+    popad
+    ret
+display_radix_in_edx    ENDP
+
+
+generate_radix_string   PROC
+    mov     byte ptr [ebp+12],'$'                               ; Terminate the string we're building
+    mov     esi,ebp
+    add     esi,11
+    mov     eax,edx
+    and     ebx,0ffffh
+  @@:
+    xor     edx,edx
+    div     ebx
+    .IF (dl > 9)
+        add     dl,'a'-10                                       ; Make it a letter if it's above 9 (10+ cannot be represented in 1 digit)
+    .ELSE
+        add     dl,'0'                                          ; Make it a number
+    .ENDIF
+    mov     byte ptr ss:[esi],dl
+    dec     esi                                                 ; Decrement (move to next position to store data)
+    cmp     esi,ebp
+    jz      @F
+    cmp     eax,0
+    jnz     @B
+  @@:
+    push    ss
+    pop     ds
+    inc     esi                                                 ; Add back for the one we decremented above
+  ; Right now, ds:[esi] - pointer to the value to display
+    ret
+generate_radix_string   ENDP
+
+
+
+filename        db  "file.hex",0
+file_handle     dw  0
+file_count      dw  0
+
+semicolon_space db  "; $"
+several_spaces  db  5 dup(32),"$"
+
+red_text        db  "red$"
+green_text      db  "green$"
+blue_text       db  "blue$"
+
+crlf_text       db  13,10
+db_text         db  "db "
+
+adjust_palette  db  0
+current_modify  db  0
+red             db  0
+green           db  0
+blue            db  0
+
+file_load_area  db  50000 dup(0)
+
+END

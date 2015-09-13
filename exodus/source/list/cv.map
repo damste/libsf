@@ -1,0 +1,31 @@
+
+ Start  Stop   Length Name                   Class
+ 00000H 00000H 00000H _TEXT                  CODE
+ 00000H 0029EH 0029FH _TEXT32                CODE
+ 002A0H 002A0H 00000H _DATA                  DATA
+ 002A0H 002A0H 00000H STACK                  STACK
+
+ Origin   Group
+ 0000:0   DGROUP
+
+  Address         Publics by Name
+
+ 0000:009B       cv_parse
+ 0000:008D       initialize_driver
+ 0000:0087       main
+ 0000:0008       requestor
+ 0000:02A0       _edata
+ 0000:02A0       _end
+ 0000:02A0       __edata
+ 0000:02A0       __end
+
+  Address         Publics by Value
+
+ 0000:0008       requestor
+ 0000:0087       main
+ 0000:008D       initialize_driver
+ 0000:009B       cv_parse
+ 0000:02A0       _end
+ 0000:02A0       _edata
+ 0000:02A0       __end
+ 0000:02A0       __edata

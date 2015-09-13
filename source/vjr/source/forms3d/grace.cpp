@@ -82,6 +82,54 @@
 
 
 
+#if defined(__solaris__)
+	DWORD WINAPI iGrace (LPVOID p)
+    {
+        return(0);
+    }
+
+	void iGrace_initGl_engine(void)                                                         { }
+	void iGrace_projectMousePositionToScreen(int x, int y, f64* tfX, f64* tfY, f64* tfZ)    { }
+	void iGrace_assignCoordinates(SObject* obj, RECT* rc, f32 tfZ)                          { }
+    void iGrace_mouse(s32 button, s32 state, s32 x, s32 y)                                  { }
+	void iGrace_motion(s32 x, s32 y)                                                        { }
+	void iGrace_passiveMotion(s32 x, s32 y)                                                 { }
+	void iGrace_Key(unsigned char key, s32 x, s32 y)                                        { }
+	void iGrace_special(s32 key, s32 x, s32 y)                                              { }
+    void iGrace_reshape(s32 w, s32 h)                                                       { }
+	void iGrace_display(void)                                                               { }
+	void iGrace_idle(void)                                                                  { }
+    void iGrace_renderBegin(f32 tfZ)                                                        { }
+	void iGrace_renderEnd(void)                                                             { }
+	void iGrace_animate_childrenAndSiblings(SObject* obj, RECT* rc, bool tlRenderChildren, bool tlRenderSiblings, f32 tfZ, s64 tnMs) { }
+	void iiGrace_animate(SObject* obj, s64 tnMs)                                            { }
+	void iGrace_renderNode_childrenAndSiblings(SObject* obj, bool tlRenderChildren, bool tlRenderSiblings, f32 tfZ) { }
+
+	SGraceRect* iiGrace_computeNodeLine(SGraceVec* tsV1, SGraceVec* tsV2, f32 tfNodeWidth, bool tlIsP1East, bool tlIsP2West, s32* tnReturnVecCount)
+    {
+        return(NULL);
+    }
+
+	void iiGrace_positionNodeVectors(SObjNode* objNode, SGraceVec* vFrom, SGraceVec* vTo)   { }
+	void iiGrace_computeNodeLine_fivePoints(SGraceVec* tsV1, SGraceVec* tsV2, SGraceVec* v1, SGraceVec* v2, SGraceVec* v3, SGraceVec* v4, SGraceVec* v5, bool tlIsP1East, bool tlIsP2West) { }
+	void iiGrace_renderNode(SObjNode* objNode, f32 tfNodeWidth)                             { }
+
+	void iGrace_renderObj_childrenAndSiblings(SObject* obj, bool tlRenderChildren, bool tlRenderSiblings, f32 tfZ) { }
+	void iiGrace_renderObj(SObject* obj)                                                    { }
+	void iiGrace_renderSubdividedRect(SGraceRect* rec, s32 tnXDivisions, s32 tnYDivisions, bool tlIssue_quadBeginAndEnd) { }
+	void iiGrace_vec_add(SGraceRect* rec, s32 recV, SGraceRect* step, s32 stepV)            { }
+	void iiGrace_vec_copy(SGraceRect* recDst, s32 recDstV, SGraceRect* recSrc, s32 recSrcV) { }
+	void iiGrace_vec_render(SGraceRect* rec, s32 rV)                                        { }
+	void iiGrace_computeSteps(SGraceRect* dst, s32 dstV, SGraceRect* rBeg, s32 rBegV, SGraceRect* rEnd, s32 rEndV, SGraceRect* step, s32 stepV, f32 tfDivisions) { }
+	f32 iiGrace_computeStep(f32 tfBegin, f32 tfEnd, f32 tfCount, f32* tfStep)               { return(1.0f); }
+
+
+	// Helper functions
+	void iiGrace_copyAndComputeVecLine(SGraceVecLine* line, SGraceVec* p1, SGraceVec* p2)   { }
+	void iiGrace_copyAndComputeLine(SGraceLine* line, SGraceXy* p1, SGraceXy* p2)           { }
+	SGraceVec* iiGrace_computeVecBezier3(s32 tnSegmentCount, SGraceVec* tsV1, SGraceVec* tsV2, SGraceVec* tsV3) { return(NULL); }
+
+#else
 //////////
 // Added to create and debug a basic 3D rendering screen
 //////
@@ -1872,3 +1920,4 @@
 		//////
 			return(vecs);
 	}
+#endif

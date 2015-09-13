@@ -286,7 +286,7 @@
 					// Convert to f64, and s64
 					//////
 						lfValue = atof(buffer);
-#ifdef __GNUC__
+#if defined(__GNUC__) || defined(__solaris__)
 						lnValue = strtoll(buffer, NULL, 10);
 #else
 						lnValue = _strtoi64(buffer, NULL, 10);

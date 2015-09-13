@@ -1,0 +1,955 @@
+Microsoft (R) Macro Assembler Version 6.11a		    03/07/09 22:34:59
+CodeView_Reader						     Page 1 - 1
+
+
+				; cv.asm
+				;
+				; ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+				; ³ CodeView Reader ³
+				; ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+				;
+				; Exodus native primative
+				;
+
+
+				TITLE CodeView_Reader
+
+				    .MODEL tiny
+
+				    .STACK 0h
+
+				INCLUDE \exodus\source\common\keylist.asp
+			      C ; keylist.asp
+			      C 
+ = 3B00			      C f1                      EQU 03b00h
+ = 3C00			      C f2                      EQU 03c00h
+ = 3D00			      C f3                      EQU 03d00h
+ = 3E00			      C f4                      EQU 03e00h
+ = 3F00			      C f5                      EQU 03f00h
+ = 4000			      C f6                      EQU 04000h
+ = 4100			      C f7                      EQU 04100h
+ = 4200			      C f8                      EQU 04200h
+ = 4300			      C f9                      EQU 04300h
+ = 4400			      C f10                     EQU 04400h
+ = 8500			      C f11                     EQU 08500h
+ = 8600			      C f12                     EQU 08600h
+ = 6800			      C alt_f1                  EQU 06800h
+ = 6900			      C alt_f2                  EQU 06900h
+ = 6A00			      C alt_f3                  EQU 06a00h
+ = 6B00			      C alt_f4                  EQU 06b00h
+ = 6C00			      C alt_f5                  EQU 06c00h
+ = 6D00			      C alt_f6                  EQU 06d00h
+ = 6E00			      C alt_f7                  EQU 06e00h
+ = 6F00			      C alt_f8                  EQU 06f00h
+ = 7000			      C alt_f9                  EQU 07000h
+ = 7100			      C alt_f10                 EQU 07100h
+ = 8B00			      C alt_f11                 EQU 08b00h
+ = 8C00			      C alt_f12                 EQU 08c00h
+ = 5E00			      C ctrl_f1                 EQU 05e00h
+ = 5F00			      C ctrl_f2                 EQU 05f00h
+ = 6000			      C ctrl_f3                 EQU 06000h
+ = 6100			      C ctrl_f4                 EQU 06100h
+ = 6200			      C ctrl_f5                 EQU 06200h
+ = 6300			      C ctrl_f6                 EQU 06300h
+ = 6400			      C ctrl_f7                 EQU 06400h
+ = 6500			      C ctrl_f8                 EQU 06500h
+ = 6600			      C ctrl_f9                 EQU 06600h
+ = 6700			      C ctrl_f10                EQU 06700h
+ = 8900			      C ctrl_f11                EQU 08900h
+ = 8A00			      C ctrl_f12                EQU 08a00h
+ = 5400			      C shift_f1                EQU 05400h
+ = 5500			      C shift_f2                EQU 05500h
+ = 5600			      C shift_f3                EQU 05600h
+ = 5700			      C shift_f4                EQU 05700h
+ = 5800			      C shift_f5                EQU 05800h
+ = 5900			      C shift_f6                EQU 05900h
+ = 5A00			      C shift_f7                EQU 05a00h
+ = 5B00			      C shift_f8                EQU 05b00h
+ = 5C00			      C shift_f9                EQU 05c00h
+ = 5D00			      C shift_f10               EQU 05d00h
+ = 8700			      C shift_f11               EQU 08700h
+ = 8800			      C shift_f12               EQU 08800h
+ = 48E0			      C grey_up                 EQU 048e0h
+ = 50E0			      C grey_down               EQU 050e0h
+ = 4BE0			      C grey_left               EQU 04be0h
+ = 4DE0			      C grey_right              EQU 04de0h
+ = 49E0			      C grey_pgup               EQU 049e0h
+ = 51E0			      C grey_pgdn               EQU 051e0h
+ = 52E0			      C grey_insert             EQU 052e0h
+ = 53E0			      C grey_delete             EQU 053e0h
+ = 47E0			      C grey_home               EQU 047e0h
+ = 4FE0			      C grey_end                EQU 04fe0h
+ = E00D			      C grey_enter              EQU 0e00dh
+ = 9800			      C alt_grey_up             EQU 09800h
+ = A000			      C alt_grey_down           EQU 0a000h
+ = 9B00			      C alt_grey_left           EQU 09b00h
+ = 9D00			      C alt_grey_right          EQU 09d00h
+ = 9900			      C alt_grey_pgup           EQU 09900h
+ = A100			      C alt_grey_pgdn           EQU 0a100h
+ = A200			      C alt_grey_insert         EQU 0a200h
+ = A300			      C alt_grey_delete         EQU 0a300h
+ = 9700			      C alt_grey_home           EQU 09700h
+ = 9F00			      C alt_grey_end            EQU 09f00h
+ = A600			      C alt_grey_enter          EQU 0a600h
+ = 8DE0			      C ctrl_grey_up            EQU 08de0h
+ = 91E0			      C ctrl_grey_down          EQU 091e0h
+ = 73E0			      C ctrl_grey_left          EQU 073e0h
+ = 74E0			      C ctrl_grey_right         EQU 074e0h
+ = 84E0			      C ctrl_grey_pgup          EQU 084e0h
+ = 76E0			      C ctrl_grey_pgdn          EQU 076e0h
+ = 92E0			      C ctrl_grey_insert        EQU 092e0h
+ = 93E0			      C ctrl_grey_delete        EQU 093e0h
+ = 77E0			      C ctrl_grey_home          EQU 077e0h
+ = 75E0			      C ctrl_grey_end           EQU 075e0h
+ = E00A			      C ctrl_grey_enter         EQU 0e00ah
+ = 48E0			      C shift_grey_up           EQU 048e0h
+ = 50E0			      C shift_grey_down         EQU 050e0h
+ = 4BE0			      C shift_grey_left         EQU 04be0h
+ = 4DE0			      C shift_grey_right        EQU 04de0h
+ = 49E0			      C shift_grey_pgup         EQU 049e0h
+ = 51E0			      C shift_grey_pgdn         EQU 051e0h
+ = 52E0			      C shift_grey_insert       EQU 052e0h
+ = 53E0			      C shift_grey_delete       EQU 053e0h
+ = 47E0			      C shift_grey_home         EQU 047e0h
+ = 4FE0			      C shift_grey_end          EQU 04fe0h
+ = E00D			      C shift_grey_enter        EQU 0e00dh
+ = 4800			      C up                      EQU 04800h
+ = 5000			      C down                    EQU 05000h
+ = 4B00			      C left                    EQU 04b00h
+ = 4D00			      C right                   EQU 04d00h
+ = 4900			      C pgup                    EQU 04900h
+ = 5100			      C pgdn                    EQU 05100h
+ = 5200			      C insert                  EQU 05200h
+ = 5300			      C delete                  EQU 05300h
+ = 4700			      C home                    EQU 04700h
+ = 4F00			      C end_key                 EQU 04f00h
+ = 4C00			      C center                  EQU 04c00h
+ = 0E08			      C backspace               EQU 00e08h
+ = 0F09			      C tab                     EQU 00f09h
+ = 011B			      C escape                  EQU 0011bh
+ = 1C0D			      C enter_key               EQU 01c0dh
+ = A500			      C alt_tab                 EQU 0a500h
+ = 0100			      C alt_escape              EQU 00100h
+ = 8D00			      C ctrl_up                 EQU 08d00h
+ = 9100			      C ctrl_down               EQU 09100h
+ = 7300			      C ctrl_left               EQU 07300h
+ = 7400			      C ctrl_right              EQU 07400h
+ = 8400			      C ctrl_pgup               EQU 08400h
+ = 7600			      C ctrl_pgdn               EQU 07600h
+ = 9200			      C ctrl_insert             EQU 09200h
+ = 9300			      C ctrl_delete             EQU 09300h
+ = 7700			      C ctrl_home               EQU 07700h
+ = 7500			      C ctrl_end                EQU 07500h
+ = 8F00			      C ctrl_center             EQU 08f00h
+ = 9400			      C ctrl_tab                EQU 09400h
+ = 011B			      C ctrl_escape             EQU 0011bh
+ = 1C0A			      C ctrl_enter              EQU 01c0ah
+ = 0F00			      C shift_tab               EQU 00f00h
+ = 011B			      C shift_escape            EQU 0011bh
+ = 1E00			      C alt_a                   EQU 01e00h
+ = 3000			      C alt_b                   EQU 03000h
+ = 2E00			      C alt_c                   EQU 02e00h
+ = 2000			      C alt_d                   EQU 02000h
+ = 1200			      C alt_e                   EQU 01200h
+ = 2100			      C alt_f                   EQU 02100h
+ = 2200			      C alt_g                   EQU 02200h
+ = 2300			      C alt_h                   EQU 02300h
+ = 1700			      C alt_i                   EQU 01700h
+ = 2400			      C alt_j                   EQU 02400h
+ = 2500			      C alt_k                   EQU 02500h
+ = 2600			      C alt_l                   EQU 02600h
+ = 3200			      C alt_m                   EQU 03200h
+ = 3100			      C alt_n                   EQU 03100h
+ = 1800			      C alt_o                   EQU 01800h
+ = 1900			      C alt_p                   EQU 01900h
+ = 1000			      C alt_q                   EQU 01000h
+ = 1300			      C alt_r                   EQU 01300h
+ = 1F00			      C alt_s                   EQU 01f00h
+ = 1400			      C alt_t                   EQU 01400h
+ = 1600			      C alt_u                   EQU 01600h
+ = 2F00			      C alt_v                   EQU 02f00h
+ = 1100			      C alt_w                   EQU 01100h
+ = 2D00			      C alt_x                   EQU 02d00h
+ = 1500			      C alt_y                   EQU 01500h
+ = 2C00			      C alt_z                   EQU 02c00h
+ = 7800			      C alt_1                   EQU 07800h
+ = 7900			      C alt_2                   EQU 07900h
+ = 7A00			      C alt_3                   EQU 07a00h
+ = 7B00			      C alt_4                   EQU 07b00h
+ = 7C00			      C alt_5                   EQU 07c00h
+ = 7D00			      C alt_6                   EQU 07d00h
+ = 7E00			      C alt_7                   EQU 07e00h
+ = 7F00			      C alt_8                   EQU 07f00h
+ = 8000			      C alt_9                   EQU 08000h
+ = 8100			      C alt_0                   EQU 08100h
+ = 8200			      C alt_hyphen              EQU 08200h
+ = 8300			      C alt_equal               EQU 08300h
+ = 2B00			      C alt_backslash           EQU 02b00h
+ = 3300			      C alt_comma               EQU 03300h
+ = 3400			      C alt_period              EQU 03400h
+ = 3500			      C alt_slash               EQU 03500h
+ = 2900			      C alt_tilda               EQU 02900h
+ = 1E00			      C ctrl_a                  EQU 01e00h
+ = 3002			      C ctrl_b                  EQU 03002h
+ = 2E03			      C ctrl_c                  EQU 02e03h
+ = 2004			      C ctrl_d                  EQU 02004h
+ = 1205			      C ctrl_e                  EQU 01205h
+ = 2106			      C ctrl_f                  EQU 02106h
+ = 2207			      C ctrl_g                  EQU 02207h
+ = 2308			      C ctrl_h                  EQU 02308h
+ = 1709			      C ctrl_i                  EQU 01709h
+ = 240A			      C ctrl_j                  EQU 0240ah
+ = 250B			      C ctrl_k                  EQU 0250bh
+ = 260C			      C ctrl_l                  EQU 0260ch
+ = 320D			      C ctrl_m                  EQU 0320dh
+ = 310E			      C ctrl_n                  EQU 0310eh
+ = 180F			      C ctrl_o                  EQU 0180fh
+ = 1910			      C ctrl_p                  EQU 01910h
+ = 1011			      C ctrl_q                  EQU 01011h
+ = 1312			      C ctrl_r                  EQU 01312h
+ = 1F13			      C ctrl_s                  EQU 01f13h
+ = 1414			      C ctrl_t                  EQU 01414h
+ = 1615			      C ctrl_u                  EQU 01615h
+ = 2F16			      C ctrl_v                  EQU 02f16h
+ = 1117			      C ctrl_w                  EQU 01117h
+ = 2D18			      C ctrl_x                  EQU 02d18h
+ = 1519			      C ctrl_y                  EQU 01519h
+ = 2C1A			      C ctrl_z                  EQU 02c1ah
+ = 0300			      C ctrl_2                  EQU 00300h
+ = 071E			      C ctrl_6                  EQU 0071eh
+ = 0C1F			      C ctrl_hyphen             EQU 00c1fh
+ = 2B1C			      C ctrl_backslash          EQU 02b1ch
+ = FFFF			      C ctrl_1                  EQU 0ffffh
+ = FFFF			      C ctrl_comma              EQU 0ffffh
+ = FFFF			      C ctrl_period             EQU 0ffffh
+ = FFFF			      C ctrl_slash              EQU 0ffffh
+ = FFFF			      C ctrl_tilda              EQU 0ffffh
+ = FFFF			      C ctrl_equal              EQU 0ffffh
+ = FFFF			      C ctrl_7                  EQU 0ffffh
+ = FFFF			      C ctrl_8                  EQU 0ffffh
+ = FFFF			      C ctrl_9                  EQU 0ffffh
+ = FFFF			      C ctrl_0                  EQU 0ffffh
+ = FFFF			      C ctrl_3                  EQU 0ffffh
+ = FFFF			      C ctrl_4                  EQU 0ffffh
+ = FFFF			      C ctrl_5                  EQU 0ffffh
+			      C 
+				INCLUDE \exodus\source\common\equates.asp
+			      C ; equates.asp
+			      C ;
+			      C ; Exodus constants.  These are used at various places.
+			      C ; This file provides a common area to modify constant values, rather than sifting through programs, etc.
+			      C ;
+			      C 
+			      C 
+			      C 
+			      C INCLUDE x86_eq.asp
+			      C ; x86_eq.asp
+			      C ;
+			      C ; Constants specific to the Intel architecture
+			      C ;
+			      C 
+			      C 
+			      C 
+ = 0000			      C _TSS_BACK_LINK              EQU 0
+ = 0004			      C _TSS_ESP0                   EQU 4
+ = 0008			      C _TSS_SS0                    EQU 8
+ = 000C			      C _TSS_ESP1                   EQU 12
+ = 0010			      C _TSS_SS1                    EQU 16
+ = 0014			      C _TSS_ESP2                   EQU 20
+ = 0018			      C _TSS_SS2                    EQU 24
+ = 001C			      C _TSS_CR3                    EQU 28
+ = 0020			      C _TSS_EIP                    EQU 32
+ = 0024			      C _TSS_EFLAGS                 EQU 36
+ = 0028			      C _TSS_EAX                    EQU 40
+ = 002C			      C _TSS_ECX                    EQU 44
+ = 0030			      C _TSS_EDX                    EQU 48
+ = 0034			      C _TSS_EBX                    EQU 52
+ = 0038			      C _TSS_ESP                    EQU 56
+ = 003C			      C _TSS_EBP                    EQU 60
+ = 0040			      C _TSS_ESI                    EQU 64
+ = 0044			      C _TSS_EDI                    EQU 68
+ = 0048			      C _TSS_ES                     EQU 72
+ = 004C			      C _TSS_CS                     EQU 76
+ = 0050			      C _TSS_SS                     EQU 80
+ = 0054			      C _TSS_DS                     EQU 84
+ = 0058			      C _TSS_FS                     EQU 88
+ = 005C			      C _TSS_GS                     EQU 92
+ = 0060			      C _TSS_LDT                    EQU 96
+ = 0064			      C _TSS_TRAP_BIT               EQU 100
+ = 0001			      C _TSS_TRAP_BIT_MASK          EQU 1b
+ = 0066			      C _TSS_IO_MAP                 EQU 102
+			      C ; The following area is used by Exodus.  It appears immediate after the TSS in memory
+ = 0068			      C _TSS_FPU_SAVE_AREA          EQU 104
+			      C 
+			      C 
+			      C ; EFLAGS register constants to access individual flags
+ = 0000			      C _EFLAGS_CF                  EQU 0
+ = 0002			      C _EFLAGS_PF                  EQU 2
+ = 0004			      C _EFLAGS_ACF                 EQU 4
+ = 0006			      C _EFLAGS_ZF                  EQU 6
+ = 0007			      C _EFLAGS_SF                  EQU 7
+ = 0008			      C _EFLAGS_TF                  EQU 8
+ = 0009			      C _EFLAGS_IF                  EQU 9
+ = 000A			      C _EFLAGS_DF                  EQU 10
+ = 000B			      C _EFLAGS_OF                  EQU 11
+ = 000C			      C _EFLAGS_IOPL                EQU 12
+ = 000E			      C _EFLAGS_NT                  EQU 14
+ = 0010			      C _EFLAGS_RF                  EQU 16
+ = 0011			      C _EFLAGS_VM                  EQU 17
+			      C ; Masks to access specific bits
+ = 0001			      C _EFLAGS_CF_MASK             EQU  1b SHL _EFLAGS_CF
+ = 0004			      C _EFLAGS_PF_MASK             EQU  1b SHL _EFLAGS_PF
+ = 0010			      C _EFLAGS_ACF_MASK            EQU  1b SHL _EFLAGS_ACF
+ = 0040			      C _EFLAGS_ZF_MASK             EQU  1b SHL _EFLAGS_ZF
+ = 0080			      C _EFLAGS_SF_MASK             EQU  1b SHL _EFLAGS_SF
+ = 0100			      C _EFLAGS_TF_MASK             EQU  1b SHL _EFLAGS_TF
+ = 0200			      C _EFLAGS_IF_MASK             EQU  1b SHL _EFLAGS_IF
+ = 0400			      C _EFLAGS_DF_MASK             EQU  1b SHL _EFLAGS_DF
+ = 0800			      C _EFLAGS_OF_MASK             EQU  1b SHL _EFLAGS_OF
+ = 3000			      C _EFLAGS_IOPL_MASK           EQU 11b SHL _EFLAGS_IOPL
+ = 4000			      C _EFLAGS_NT_MASK             EQU  1b SHL _EFLAGS_NT
+ = 00010000		      C _EFLAGS_RF_MASK             EQU  1b SHL _EFLAGS_RF
+ = 00020000		      C _EFLAGS_VM_MASK             EQU  1b SHL _EFLAGS_VM
+			      C 
+ = 1000			      C _CW_INFINITY                EQU 1000000000000b
+ = 0C00			      C _CW_ROUNDING                EQU  110000000000b
+ = 0000			      C _CW_ROUNDING_00             EQU  000000000000b
+ = 0400			      C _CW_ROUNDING_01             EQU  010000000000b
+ = 0800			      C _CW_ROUNDING_10             EQU  100000000000b
+ = 0C00			      C _CW_ROUNDING_11             EQU  110000000000b
+ = 0300			      C _CW_PRECISION               EQU    1100000000b
+ = 0000			      C _CW_PRECISION_00            EQU    0000000000b
+ = 0100			      C _CW_PRECISION_01            EQU    0100000000b
+ = 0200			      C _CW_PRECISION_10            EQU    1000000000b
+ = 0300			      C _CW_PRECISION_11            EQU    1100000000b
+ = 0020			      C _CW_PM                      EQU        100000b
+ = 0010			      C _CW_UM                      EQU         10000b
+ = 0008			      C _CW_OM                      EQU          1000b
+ = 0004			      C _CW_ZM                      EQU           100b
+ = 0002			      C _CW_DM                      EQU            10b
+ = 0001			      C _CW_IM                      EQU             1b
+			      C 
+ = 8000			      C _SW_BUSY                    EQU 1000000000000000b
+ = 4000			      C _SW_C3                      EQU  100000000000000b
+ = 3800			      C _SW_TOS                     EQU   11100000000000b
+ = 0400			      C _SW_C2                      EQU      10000000000b
+ = 0200			      C _SW_C1                      EQU       1000000000b
+ = 0100			      C _SW_C0                      EQU        100000000b
+ = 0080			      C _SW_ERROR_SUMMARY           EQU         10000000b
+ = 0040			      C _SW_STACK_FAULT             EQU          1000000b
+ = 0020			      C _SW_PE                      EQU           100000b
+ = 0010			      C _SW_UE                      EQU            10000b
+ = 0008			      C _SW_OE                      EQU             1000b
+ = 0004			      C _SW_ZE                      EQU              100b
+ = 0002			      C _SW_DE                      EQU               10b
+ = 0001			      C _SW_IE                      EQU                1b
+			      C 
+			      C 
+			      C 
+			      C ; ÚÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+			      C ; ³ GDT ENTRIES ³
+			      C ; ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+ = 0008			      C     _sIDT                       EQU 1 * 8       ; IDT
+ = 0010			      C     _sGDT                       EQU 2 * 8       ; GDT
+ = 0018			      C     _sSTACK                     EQU 3 * 8       ; STACK
+ = 0020			      C     _sCODE                      EQU 4 * 8       ; kernel CODE for kernel code
+ = 0048			      C     _sDATA                      EQU 9 * 8       ; kernel DATA selector for kernel data
+ = 0028			      C     _sGRAPHICS                  EQU 5 * 8       ; Graphics video (0a0000h)
+ = 0030			      C     _sMONO                      EQU 6 * 8       ; Mono video (0b0000h)
+ = 0038			      C     _sVGA                       EQU 7 * 8       ; VGA video (0b8000h)
+ = 0040			      C     _sALL_MEM                   EQU 8 * 8       ; All memory (for debugging)
+			      C     ; 9 is above, _sDATA
+ = 0050			      C     _sEXODUS_MEM                EQU 10 * 8      ; Exodus assigned memory
+ = 0058			      C     _sEXODUS_PORTS              EQU 11 * 8      ; Exodus assigned ports
+ = 0060			      C     _sEXODUS_INTS               EQU 12 * 8      ; Exodus assigned ints
+			      C     ;_sNOT_USED                                 ; available
+ = 0070			      C     _sEXODUS_TSS                EQU 14 * 8      ; Exodus TSS
+ = 0078			      C     _sEXODUS_TASK_GATE          EQU 15 * 8      ; Exodus kernel task gate (points to _sEXODUS_TSS)
+ = 0080			      C     _sEXODUS_SLAVE_TSS          EQU 16 * 8      ; Exodus Slave TSS
+ = 0088			      C     _sEXODUS_SLAVE_TASK_GATE    EQU 17 * 8      ; Exodus kernel slave task gate (points to _sEXODUS_SLAVE_TSS)
+			      C     ;_sNOT USED
+ = 0098			      C     _sPRIMATIVES                EQU 19 * 8      ; Primative structure for natives
+ = 00A0			      C     _sPRIMATIVE_LOAD_INFO       EQU 20 * 8      ; Primative load information (for reporting on each driver)
+ = 00A8			      C     _sSYSTEM                    EQU 21 * 8      ; Exodus system memory
+ = 00B0			      C     _sEXODUS_REQUESTOR          EQU 22 * 8      ; Call gate to Exodus's requestor() function
+ = 00B8			      C     _sSYSTEM_RING1              EQU 23 * 8      ; Exodus system memory for ring-1 apps
+ = 00C0			      C     _sSYSTEM_RING2              EQU 24 * 8      ; Exodus system memory for ring-2 apps
+ = 00C8			      C     _sSYSTEM_RING3              EQU 25 * 8      ; Exodus system memory for ring-3 apps
+ = 00D0			      C     _sDEBI_screen               EQU 26 * 8      ; low-level DEBI debugger's save screen buffer
+ = 00D8			      C     _sDEBI_memory               EQU 27 * 8      ; low-level DEBI debugger's memory
+ = 00E0			      C     _sFLOPPY_TRACK              EQU 28 * 8      ; Floppy disk data I/O for one full track
+ = 00E8			      C     _sVGA_BACKUP                EQU 29 * 8      ; VGA video (060000h, used when in a graphics mode so writes
+			      C                                                 ;  to the text screen are still valid)
+ = 00F0			      C     _sDEBI_screen2              EQU 30 * 8      ; low-level DEBI debugger's save screen buffer2 (for popups and menus)
+ = 00F8			      C     _sDEBI_temp                 EQU 31 * 8      ; low-level DEBI debugger's temporary selector (used for various things)
+ = 0100			      C     _sEXODUS_OBJECTS            EQU 32 * 8      ; Exodus objects
+ = 0108			      C     _sTASK_SWITCH_TSS           EQU 33 * 8      ; Task Manager's switch_task() function
+ = 0110			      C     _sTASK_SWITCH_TASK_GATE     EQU 34 * 8      ; Task Manager's task gate (points to _sTASK_SWITCH_TSS)
+ = 0118			      C     _sTASK_STACK                EQU 35 * 8      ; Task Manger task's stack
+ = 0120			      C     _sSTACK0                    EQU 36 * 8      ; Exodus Stack 0
+ = 0128			      C     _sSTACK1                    EQU 37 * 8      ; Exodus Stack 1
+ = 0130			      C     _sSTACK2                    EQU 38 * 8      ; Exodus Stack 2
+ = 0138			      C     _sDEBI_dt                   EQU 39 * 8      ; low-level DEBI debugger's DT storage
+ = 0140			      C     _sDEBI_np                   EQU 40 * 8      ; low-level DEBI debugger's NP storage
+ = 0148			      C     _sDEBI_rp                   EQU 41 * 8      ; low-level DEBI debugger's RP storage
+			      C 
+			      C   ; Variable base/limit GDT slots setup in INIT32.ASP
+ = 0190			      C     _sEXODUS_INI                EQU 50 * 8      ; Holds the parsed EXODUS.INI sructure
+ = 0198			      C     _sEXODUS_INI_ERRORS         EQU 51 * 8      ; Holds any errors found while parsing EXODUS.INI
+ = 01A0			      C     _sTASK_SYSTEM               EQU 52 * 8      ; Holds all tasks
+			      C 
+ = 5DA0			      C     _cgTEMP_PRIMATIVE_MAIN      EQU 2996 * 8
+ = 5DA8			      C     _cgTEMP_PRIMATIVE_REQUESTOR EQU 2997 * 8
+ = 5DB0			      C     _csTEMP_PRIMATIVE           EQU 2998 * 8
+ = 5DB8			      C     _dsTEMP_PRIMATIVE           EQU 2999 * 8
+			      C 
+			      C 
+			      C 
+			      C ; ÚÄÄÄÄÄÄÄÄÄÄÄ¿
+			      C ; ³ CONSTANTS ³
+			      C ; ÀÄÄÄÄÄÄÄÄÄÄÄÙ
+ = 00C8			      C     _MIN_PRIMATIVE              EQU 200                             ; Start of the primatives
+ = 0BB3			      C     _MAX_PRIMATIVE              EQU 2995                            ; End of the primatives
+ = 0FFF			      C     _lastGDT                    EQU 4095                            ; Last valid GDT in the GDT
+ = 0032			      C     _firstASSIGNMENT            EQU 50                              ; The first Exodus assigned GDT entry for various items
+ = 00C7			      C     _lastASSIGNMENT             EQU 199                             ; The last Exodus assigned GDT entry for various items
+ = 0BB8			      C     _firstUSER_ASSIGNMENT       EQU 3000
+ = 0FFF			      C     _lastUSER_ASSIGNMENT        EQU 4095
+ = 00C7			      C     _sGDT_init                  EQU 199                             ; Only initialize the first 199 GDT entries
+			      C 
+			      C 
+			      C   ; Required memory structures for Exodus
+			      C   ; Refer to Bootup(internal) document for definitive memory locations
+ = 0008A000		      C     _sIDT_base                  EQU 8a000h
+ = 0800			      C     _sIDT_limit                 EQU 800h
+ = 0800			      C     _sGDT_base                  EQU 0800h
+ = 8000			      C     _sGDT_limit                 EQU 8000h
+ = 00098000		      C     _sSTACK_base                EQU 98000h
+ = 8000			      C     _sSTACK_limit               EQU 8000h
+ = 00010000		      C     _sCODE_base                 EQU 10000h
+ = 00040000		      C     _sCODE_limit                EQU 40000h
+ = 00010000		      C     _sDATA_base                 EQU 10000h
+ = 00030000		      C     _sDATA_limit                EQU 30000h
+ = 000A0000		      C     _sGRAPHICS_base             EQU 0a0000h
+ = 00010000		      C     _sGRAPHICS_limit            EQU 10000h
+ = 000B0000		      C     _sMONO_base                 EQU 0b0000h
+ = 8000			      C     _sMONO_limit                EQU 8000h
+ = 000B8000		      C     _sVGA_base                  EQU 0b8000h     ; Also, see _sVGA_BACKUP_ below
+ = 8000			      C     _sVGA_limit                 EQU 8000h
+ = 0000			      C     _sALL_MEM_base              EQU 0
+ = FFFFFFFF		      C     _sALL_MEM_limit             EQU 0ffffffffh
+ = 00070C00		      C     _sEXODUS_MEM_base           EQU 70c00h
+ = 4000			      C     _sEXODUS_MEM_limit          EQU 4000h
+ = 0006CC00		      C     _sEXODUS_PORTS_base         EQU 6cc00h
+ = 4000			      C     _sEXODUS_PORTS_limit        EQU 4000h
+ = 00097E00		      C     _sEXODUS_INTS_base          EQU 97e00h
+ = 0200			      C     _sEXODUS_INTS_limit         EQU 200h
+ = 00068100		      C     _sEXODUS_TSS_base           EQU 68100h
+ = 0100			      C     _sEXODUS_TSS_limit          EQU 100h        ; 256 bytes
+			      C    ;_sEXODUS_TASK_GATE          EQU task gate pointing to _sEXODUS_TSS
+ = 00068200		      C     _sEXODUS_SLAVE_TSS_base     EQU 68200h
+ = 0100			      C     _sEXODUS_SLAVE_TSS_limit    EQU 100h        ; 256 bytes
+ = 0008D380		      C     _sPRIMATIVES_base           EQU 8d380h
+ = 4000			      C     _sPRIMATIVES_limit          EQU 4000h       ; 16k
+ = 0008C380		      C     _sPRIMATIVE_LOAD_INFO_base  EQU 8c380h
+ = 1000			      C     _sPRIMATIVE_LOAD_INFO_limit EQU 1000h       ; 4k
+ = 00089400		      C     _sSYSTEM_base               EQU 89400h
+ = 0C00			      C     _sSYSTEM_limit              EQU 0c00h       ; 3k
+ = 0800			      C     _sSYSTEM_USER_limit         EQU 0800h       ; 2k
+ = 00281400		      C     _sDEBI_screen_base          EQU 281400h                         ; ; ; ; ; Added 2 MB, 02/26/2009 - RCH
+ = 8000			      C     _sDEBI_screen_limit         EQU 8000h       ; 32k
+ = 00279400		      C     _sDEBI_memory_base          EQU 279400h                         ; ; ; ; ; Added 2 MB, 02/26/2009 - RCH
+ = 8000			      C     _sDEBI_memory_limit         EQU 8000h       ; 32k
+ = 00074C00		      C     _sFLOPPY_TRACK_base         EQU 74c00h
+ = 4800			      C     _sFLOPPY_TRACK_limit        EQU 4800h       ; 512 bytes per sector * 18 sectors * 2 sides = 18k
+ = 00060000		      C     _sVGA_BACKUP_base           EQU 60000h      ; Note, the backup area is used when in graphics modes that use a0000h
+ = 8000			      C     _sVGA_BACKUP_limit          EQU 8000h       ; so all video writes to the text window are still saved
+ = 00258000		      C     _sDEBI_screen2_base         EQU 258000h
+ = 00028000		      C     _sDEBI_screen2_limit        EQU 28000h       ; 32k
+ = 00068000		      C     _sTASK_SWITCH_TSS_base      EQU 68000h
+ = 0100			      C     _sTASK_SWITCH_TSS_limit     EQU 100h        ; 256 bytes
+ = 00220000		      C     _sTASK_STACK_base           EQU 220000h                         ; ; ; ; ; Added 1 MB, 03/01/2009 - RCH
+ = 8000			      C     _sTASK_STACK_limit          EQU 8000h       ; 32k
+ = 00095380		      C     _sSTACK0_base               EQU 95380h
+ = 2000			      C     _sSTACK0_limit              EQU 2000h       ; 8k
+ = 00093380		      C     _sSTACK1_base               EQU 93380h
+ = 2000			      C     _sSTACK1_limit              EQU 2000h       ; 8k
+ = 00091380		      C     _sSTACK2_base               EQU 91380h
+ = 2000			      C     _sSTACK2_limit              EQU 2000h       ; 8k
+ = 00240000		      C     _sDEBI_dt_base              EQU 240000h                         ; ; ; ; ; Added 1 MB, 03/01/2009 - RCH
+ = 8000			      C     _sDEBI_dt_limit             EQU 8000h       ; 32k
+ = 00248000		      C     _sDEBI_np_base              EQU 248000h                         ; ; ; ; ; Added 1 MB, 03/01/2009 - RCH
+ = 8000			      C     _sDEBI_np_limit             EQU 8000h       ; 32k
+ = 00250000		      C     _sDEBI_rp_base              EQU 250000h                         ; ; ; ; ; Added 1 MB, 03/01/2009 - RCH
+ = 8000			      C     _sDEBI_rp_limit             EQU 8000h       ; 32k
+			      C 
+ = 00050000		      C     _sEXODUS_OBJECTS_base       EQU 50000h
+ = 8000			      C     _sEXODUS_OBJECTS_limit      EQU 8000h       ; 32k
+ = 00200000		      C     _sEXODUS_INI_base           EQU 200000h     ; 1MB               ; ; ; ; ; Added 1 MB, 03/01/2009 - RCH
+ = 00010000		      C     _sEXODUS_INI_limit          EQU 10000h      ; 64k
+ = 00210000		      C     _sEXODUS_INI_ERRORS_base    EQU 210000h     ; 1MB + 64k         ; ; ; ; ; Added 1 MB, 03/01/2009 - RCH
+ = 4000			      C     _sEXODUS_INI_ERRORS_limit   EQU 4000h       ; 16k
+ = 00210000		      C     _sTASK_SYSTEM_base          EQU 210000h     ; 1MB + 64k         ; ; ; ; ; Added 1 MB, 03/01/2009 - RCH
+ = 00010000		      C     _sTASK_SYSTEM_limit         EQU 010000h     ; 64k
+			      C 
+			      C 
+			      C ; ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+			      C ; ³ BOOT DT STRUCTURE ³
+			      C ; ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+ = 0000			      C     _BOOT_DT_object_type        EQU 0
+ = 0001			      C     _BOOT_DT_days               EQU 1
+ = 0005			      C     _BOOT_DT_seconds            EQU 5
+ = 0008			      C     _BOOT_DT_rp_offset          EQU 8
+ = 000A			      C     _BOOT_DT_entry_type         EQU 10
+ = 000B			      C     _BOOT_DT_np_offset          EQU 11
+			      C 
+			      C 
+			      C 
+			      C 
+			      C 
+			      C ; ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+			      C ; ³ BOOT PARAMETER BLOCK STRUCTURE ³
+			      C ; ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+ = 0000			      C     _BOOT_PB_size               EQU 0
+ = 0004			      C     _BOOT_PB_main               EQU 4
+ = 0008			      C     _BOOT_PB_requestor          EQU 8
+ = 000C			      C     _BOOT_PB_start_head         EQU 12
+ = 000D			      C     _BOOT_PB_start_track        EQU 13
+ = 000E			      C     _BOOT_PB_start_sector       EQU 14
+ = 0010			      C     _BOOT_PB_end_head           EQU 16
+ = 0011			      C     _BOOT_PB_end_track          EQU 17
+ = 0012			      C     _BOOT_PB_end_sector         EQU 18
+ = 0014			      C     _BOOT_PB_entry_type         EQU 20
+ = 0016			      C     _BOOT_PB_linear_offset      EQU 22
+ = 001A			      C     _BOOT_PB_dt_offset          EQU 26
+ = 001C			      C     _BOOT_PB_crc16              EQU 28
+ = 0020			      C     _BOOT_PB_structure_size     EQU 32
+			      C 
+			      C 
+			      C 
+			      C 
+			      C ; ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+			      C ; ³ EXODUS.INI STRUCTURES ³
+			      C ; ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+ = 0000			      C     _EXODUS_INI_FIRST_BRACKET       EQU 0
+ = 0004			      C     _EXODUS_INI_TOTAL_BYTES         EQU 4
+ = 0008			      C     _EXODUS_INI_TOTAL_BRACKET_GROUPS EQU 8
+ = 000C			      C     _EXODUS_INI_TOTAL_PAREN_CASKS   EQU 12
+ = 0010			      C     _EXODUS_INI_HEADER_LENGTH       EQU 16
+			      C 
+ = 0000			      C     _EXODUS_BRACKET_NEXT            EQU 0
+ = 0004			      C     _EXODUS_BRACKET_PAREN_CASKS     EQU 4
+ = 0008			      C     _EXODUS_BRACKET_TOTAL_PARENS    EQU 8
+ = 000C			      C     _EXODUS_BRACKET_NAME            EQU 12
+ = 0010			      C     _EXODUS_BRACKET_HANDLE          EQU 16
+ = 0014			      C     _EXODUS_BRACKET_REQUESTOR       EQU 20
+ = 0016			      C     _EXODUS_BRACKET_REQUESTOR_FUNC  EQU 22
+ = 001A			      C     _EXODUS_BRACKET_SCRATCH_AREA    EQU 26
+ = 001E			      C     _EXODUS_BRACKET_LENGTH          EQU 30
+			      C 
+ = 0000			      C     _EXODUS_PAREN_NEXT              EQU 0
+ = 0004			      C     _EXODUS_PAREN_NEXT_SAME_LINE    EQU 4
+ = 0008			      C     _EXODUS_PAREN_DATA_ITEMS        EQU 8
+ = 000C			      C     _EXODUS_PAREN_TOTAL_DATA_ITEMS  EQU 12
+ = 0010			      C     _EXODUS_PAREN_SOURCE_LINE       EQU 16
+ = 0014			      C     _EXODUS_PAREN_SOURCE_LINE_LENGTH EQU 20
+ = 0018			      C     _EXODUS_PAREN_HANDLE            EQU 24
+ = 001A			      C     _EXODUS_PAREN_REQUESTOR         EQU 26
+ = 001E			      C     _EXODUS_PAREN_REQUESTOR_FUNC    EQU 30
+ = 0022			      C     _EXODUS_PAREN_SCRATCH_AREA      EQU 34
+ = 0026			      C     _EXODUS_PAREN_LENGTH            EQU 38
+			      C 
+ = 0000			      C     _EXODUS_DATA_NEXT               EQU 0
+ = 0004			      C     _EXODUS_DATA_DATA_ITEM_SOURCE   EQU 4
+ = 0008			      C     _EXODUS_DATA_DATA_ITEM_LENGTH   EQU 8
+ = 000C			      C     _EXODUS_DATA_LENGTH             EQU 12
+			      C 
+			      C 
+			      C 
+			      C 
+			      C ; ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+			      C ; ³ EXODUS xxx STRUCTURES ³
+			      C ; ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+ = 0000			      C     _EXODUS_MEM_type                EQU 0
+ = 0004			      C     _EXODUS_MEM_base                EQU 4
+ = 0008			      C     _EXODUS_MEM_limit               EQU 8
+ = 000C			      C     _EXODUS_MEM_gdt                 EQU 12
+ = 000E			      C     _EXODUS_MEM_ldt                 EQU 14
+ = 0010			      C     _EXODUS_MEM_size                EQU 16
+			      C 
+ = 0010			      C     _EXODUS_PORTS_size              EQU 16
+			      C 
+ = 0002			      C     _EXODUS_INTS_size               EQU 2
+			      C 
+			      C 
+			      C 
+			      C 
+			      C ; ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+			      C ; ³ EXODUS SYSTEM MEMORY ³
+			      C ; ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+			      C ; Note, when updates are made here they need to be reflected in INF\SYSTEM.INF
+			      C ; Note, when updates are made here and INF\SYSTEM.INF, the "Exodus Quick Reference" manual needs to be updated
+ = 0000			      C     _SYSTEM_SECONDS_SINCE_BOOTUP    EQU 0                           ; dword
+ = 0004			      C     _SYSTEM_SECONDS_SINCE_MIDNIGHT  EQU 4                           ; dword
+ = 0008			      C     _SYSTEM_HOURS                   EQU 8                           ; byte
+ = 0009			      C     _SYSTEM_MINUTES                 EQU 9                           ; byte
+ = 000A			      C     _SYSTEM_SECONDS                 EQU 10                          ; byte
+ = 000B			      C     _SYSTEM_182S_OF_A_SECOND        EQU 11                          ; byte
+ = 000C			      C     _SYSTEM_DAY                     EQU 12                          ; byte
+ = 000D			      C     _SYSTEM_MONTH                   EQU 13                          ; byte
+ = 000E			      C     _SYSTEM_YEAR                    EQU 14                          ; word
+ = 0010			      C     _SYSTEM_DAY_OF_YEAR             EQU 16                          ; word
+ = 0012			      C     _SYSTEM_BUILD                   EQU 18                          ; 10-byte string in the format: "mm.dd.yyyy"
+ = 001C			      C     _SYSTEM_TOTAL_MEMORY            EQU 28                          ; dword, total ram in bytes
+ = 0020			      C     _SYSTEM_VGA_HORIZONTAL          EQU 32                          ; word (pixels-graphics, or columns-text)
+ = 0022			      C     _SYSTEM_VGA_VERTICAL            EQU 34                          ; word (pixels-graphics, or rows-text)
+ = 0024			      C     _SYSTEM_VGA_VIDEO_MODE          EQU 36                          ; byte (0-graphics, 1-text)
+ = 0025			      C     _SYSTEM_MONO_VIDEO_MODE         EQU 37                          ; byte (0-graphics, 1-text, 0ffh-Unknown)
+			      C 
+			      C   ; Non-user accessible system memory areas (Exodus internal, hence the use of the _i_)
+ = 0800			      C     _SYSTEM_i_FATAL                 EQU 2048                        ; dword
+ = 0804			      C     _SYSTEM_i_TASKS_CREATED         EQU 2052                        ; dword
+ = 0808			      C     _SYSTEM_i_TASKS_BY_USER         EQU 2056                        ; dword
+ = 080C			      C     _SYSTEM_i_TASKS_BY_ERROR        EQU 2060                        ; dword
+ = 0810			      C     _SYSTEM_i_IRQ6_INDICATOR        EQU 2064                        ; byte, IRQ6 indicator (changes each time an IRQ6 is signaled)
+ = 0811			      C     _SYSTEM_i_IRQ6_INDICATOR_LAST   EQU 2065                        ; byte, IRQ6 indicator previous, used to see when an IRQ6 is signaled
+ = 0812			      C     _SYSTEM_i_BASE                  EQU 2066                        ; dword
+ = 0816			      C     _SYSTEM_i_LIMIT                 EQU 2070                        ; dword
+ = 081A			      C     _SYSTEM_i_DWORD_TO_COPY         EQU 2074                        ; word
+ = 081C			      C     _SYSTEM_i_LAST_GDT_REFERENCED   EQU 2076                        ; qword
+ = 0824			      C     _SYSTEM_i_CODE_GDT_OFFSET       EQU 2084                        ; dword (used temporarily during native primative install)
+ = 0828			      C     _SYSTEM_i_DATA_GDT_OFFSET       EQU 2088                        ; dword (used temporarily during native primative install)
+ = 082C			      C     _SYSTEM_i_MAIN_GDT_OFFSET       EQU 2092                        ; dword (used temporarily during native primative install)
+ = 0830			      C     _SYSTEM_i_REQUESTOR_GDT_OFFSET  EQU 2096                        ; dword (used temporarily during native primative install)
+ = 0834			      C     _SYSTEM_i_GDT_TO_ASSIGN         EQU 2100                        ; word (used various places to assign GDT entries)
+ = 0836			      C     _SYSTEM_i_USER_GDT_TO_ASSIGN    EQU 2102                        ; word (used various places to assign USER Program GDTs)
+			      C   ; Next offset is 2104
+			      C 
+			      C 
+			      C   ; These scratch items exist from end of memory down
+ = 0BF8			      C     _SYSTEM_i_SCRATCH_DWORD2        EQU 3064                        ; dword (used various places as a scratch buffer)
+ = 0BFC			      C     _SYSTEM_i_SCRATCH_DWORD1        EQU 3068                        ; dword (used various places as a scratch buffer)
+			      C 
+			      C 
+			      C 
+			      C 
+			      C ; ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+			      C ; ³ BOCHS SUPPORT ³
+			      C ; ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+			      C ; These equates are used to communicate via INT 0FFh
+			      C ; Values here are in ecx, with edx being used for data information.
+			      C ; Values in eax must be
+ = 12345678		      C     _BOCHS1                         EQU 12345678h
+ = 87654321		      C     _BOCHS2                         EQU 87654321h
+ = 0000			      C     _BOCHS_GET_MONO_MOUSE_XY        EQU 0
+ = 0001			      C     _BOCHS_GET_MONO_CURSOR          EQU 1
+			      C 
+				INCLUDE \exodus\source\common\macros.asp
+			      C ; macros.asp
+			      C ;
+			      C ; Exodus macros, used various places
+			      C ;
+			      C 
+			      C 
+			      C 
+			      C callfp     MACRO   _seg:REQ, _offset:REQ
+			      C ; This macro:   callfp  _code_seg, _offset
+			      C ;
+			      C     db  9ah
+			      C     dd  _offset
+			      C     dw  _seg
+			      C ENDM
+			      C 
+			      C 
+			      C 
+			      C 
+			      C callg      MACRO   _seg:REQ
+			      C ; This macro:   callg   _call_gate
+			      C     db  9ah
+			      C     dd  0
+			      C     dw  _seg
+			      C ENDM
+			      C 
+			      C 
+			      C 
+			      C 
+			      C jmpg       MACRO   _seg:REQ
+			      C ; This macro:   jmpg    _call_gate
+			      C     db  0eah
+			      C     dd  0
+			      C     dw  _seg
+			      C ENDM
+			      C 
+			      C 
+			      C 
+			      C 
+			      C callf      MACRO   _func:REQ
+			      C ; This macro:   callf   function_name
+			      C     push    cs
+			      C     call    _func
+			      C ENDM
+			      C 
+			      C 
+			      C 
+			      C 
+			      C @IO_pause   MACRO
+			      C     jmp     $+2
+			      C ENDM
+			      C 
+
+
+				    .386P
+ 00000000			_TEXT32 SEGMENT BYTE 'CODE' USE32
+				    ORG 0h
+				    ASSUME NOTHING
+				; These are required to be the first 2 dwords in the file
+ 00000000  00000087 R		dd  offset main
+ 00000004  00000008 R		dd  offset requestor
+
+
+
+
+ 00000008			    requestor   PROC
+				    ; This routine is called by Exodus.  When this function is called multi-tasking is not installed.  This is a linear function.
+				    ;
+				    ; Upon entry:   eax - requested function
+				    ;                ds - temporary ORG 0h data segment for use with these requestor() functions
+				    ;
+				    ; Upon exit:    results vary based on value of eax
+				    ;
+				        .IF (eax == 'info')
+ 00000008  3D 696E666F	   *	    cmp    eax, 'info'
+ 0000000D  75 26	   *	    jne    @C0001
+				          ; Program information
+ 0000000F  B8 6E617469		            mov     eax,'nati'                              ; Identifying this program as a native primative
+ 00000014  B9 0000028E R	            mov     ecx,offset end_of_required_data         ; The maximum number of bytes to retain after loading
+
+ 00000019  BE 0000028E R	            mov     esi,offset driver_primatives            ; Offset to the native primatives structure
+ 0000001E  BF 0000009C R	            mov     edi,offset driver_name
+ 00000023  BB 000000B6 R	            mov     ebx,offset version
+ 00000028  BA 000000C6 R	            mov     edx,offset copyright
+ 0000002D  BD 000000E6 R	            mov     ebp,offset author
+ 00000032  F8			            clc
+				        .ELSEIF (eax == 'prim')
+ 00000033  EB 51	   *	    jmp    @C0003
+ 00000035		   *@C0001:
+ 00000035  3D 7072696D	   *	    cmp    eax, 'prim'
+ 0000003A  75 14	   *	    jne    @C0004
+				          ; Native primatives this program will use
+ 0000003C  66| 8C 1D		            mov     ds:data_segment,ds
+	   0000011B R
+ 00000043  BE 00000129 R	            mov     esi,offset required_primatives
+ 00000048  BF 0000011F R	            mov     edi,offset primative_call_gates
+ 0000004D  F8			            clc
+				        .ELSEIF (eax == 'id  ')
+ 0000004E  EB 36	   *	    jmp    @C0006
+ 00000050		   *@C0004:
+ 00000050  3D 69642020	   *	    cmp    eax, 'id  '
+ 00000055  75 0F	   *	    jne    @C0007
+				          ; Display this program's ID on the VGA monitor
+ 00000057  BE 0000009C R	             mov     esi,offset driver_name
+ 0000005C  2E: FF 1D		            call    fword ptr cs:_VID_display_string_nr_vga
+	   00000121 R
+ 00000063  F8			            clc
+				        .ELSEIF (eax == 'note')
+ 00000064  EB 20	   *	    jmp    @C0009
+ 00000066		   *@C0007:
+ 00000066  3D 6E6F7465	   *	    cmp    eax, 'note'
+ 0000006B  75 18	   *	    jne    @C000A
+ 0000006D  B8 73746F70		            mov     eax,'stop'
+ 00000072  BB 6C6F6164		            mov     ebx,'load'
+ 00000077  BE 0000009C R	            mov     esi,offset driver_name
+ 0000007C  2E: FF 1D		            call    fword ptr cs:_EXODUS_requestor
+	   0000011D R
+				        .ELSE
+ 00000083  EB 01	   *	    jmp    @C000C
+ 00000085		   *@C000A:
+ 00000085  F9			            stc
+				        .ENDIF
+ 00000086		   *@C000C:
+ 00000086		   *@C0009:
+ 00000086		   *@C0006:
+ 00000086		   *@C0003:
+ 00000086  CB			        retf
+ 00000087			    requestor   ENDP
+
+
+
+
+ 00000087			    main    PROC
+				    ; This routine is called once by Exodus once initialization is complete (all calls to requestor() are finished)
+				    ; It is used by Exodus to allow this driver to properly initialize itself.
+				    ; When this function is called multi-tasking is not installed.  This is a linear function.
+				    ;
+				    ; Upon entry:   Nothing
+				    ;
+				    ; Upon exit:    A "continued status of execution" is expected by Exodus.  This indicates whether or not everything
+				    ;               initialized ok or is available.  If everything is OK the carry? flag is CLEAR.  If there is an error
+				    ;               and this driver cannot continue then the carry? should be SET.
+				    ;               carry? - CLEAR=Ok to continue
+				    ;                          SET=Error initializing
+				    ;
+ 00000087  E8 00000001		        call    initialize_driver
+				      ; Right now, carry? is SET or CLEAR indicating status of driver
+ 0000008C  CB			        retf
+ 0000008D			    main    ENDP
+
+
+
+ 0000008D			    initialize_driver   PROC
+				    ; This routine is used to initialize the driver
+				    ; But, there is no initialization in this system
+ 0000008D  BE 0000016A R	        mov     esi,offset cv_boot_logo
+ 00000092  2E: FF 1D		        call    fword ptr cs:_VID_draw_logo
+	   0000011F R
+ 00000099  F8			        clc
+ 0000009A  C3			        ret
+ 0000009B			    initialize_driver   ENDP
+
+
+
+ 0000009B			    cv_parse      PROC
+				    ; Main algorithm for parsing a CV debug output block of memory
+ 0000009B  CB			        retf
+ 0000009C			    cv_parse      ENDP
+
+
+
+
+				; DATA
+				; This header is part of a continuous NULL-terminated structure
+ 0000009C 4C 6F 77 2D 4C	    driver_name                             db  "Low-Level CodeView Reader",0
+	   65 76 65 6C 20
+	   43 6F 64 65 56
+	   69 65 77 20 52
+	   65 61 64 65 72
+	   00
+ 000000B6 31 30 2E 31 30	    version                                 db  "10.10.2010 BETA",0
+	   2E 32 30 31 30
+	   20 42 45 54 41
+	   00
+ 000000C6 28 63 29 20 43	    copyright                               db  "(c) Copyright Beatleworks, Inc.",0
+	   6F 70 79 72 69
+	   67 68 74 20 42
+	   65 61 74 6C 65
+	   77 6F 72 6B 73
+	   2C 20 49 6E 63
+	   2E 00
+ 000000E6 52 69 63 6B 20	    author                                  db  "Rick C. Hodgin",0
+	   43 2E 20 48 6F
+	   64 67 69 6E 00
+ 000000F5 43 6F 64 65 56	    cv_reader_text                          db  "CodeView Reader",0
+	   69 65 77 20 52
+	   65 61 64 65 72
+	   00
+ 00000105 28 63 29 20 42	    beatleworks_text                        db  "(c) Beatleworks, Inc.",0
+	   65 61 74 6C 65
+	   77 6F 72 6B 73
+	   2C 20 49 6E 63
+	   2E 00
+
+ 0000011B 0000			    data_segment                            dw  0
+
+ 0000011D 0000			    _EXODUS_requestor                       dw  0
+ 0000011F			  primative_call_gates:
+ 0000011F 0000			    _VID_draw_logo                          dw  0
+ 00000121 00B0			    _VID_display_string_nr_vga              dw  _sEXODUS_REQUESTOR
+ 00000123 F000			    _VID_display_string_mono                dw  0f000h
+ 00000125  F000			                                            dw  0f000h
+ 00000127  F000			                                            dw  0f000h
+
+ 00000129 0D 56 49 44 5F	    required_primatives                     db  13, "VID_draw_logo"
+	   64 72 61 77 5F
+	   6C 6F 67 6F
+ 00000137  19 56 49 44 5F	                                            db  25, "VID_display_string_nr_vga"
+	   64 69 73 70 6C
+	   61 79 5F 73 74
+	   72 69 6E 67 5F
+	   6E 72 5F 76 67
+	   61
+ 00000151  17 56 49 44 5F	                                            db  23, "VID_display_string_mono"
+	   64 69 73 70 6C
+	   61 79 5F 73 74
+	   72 69 6E 67 5F
+	   6D 6F 6E 6F
+ 00000169  FF			                                            db  0ffh
+
+				    ; This logo consists of a one-wide image
+ 0000016A 88			    cv_boot_logo                            db  88h         ; * Refer to VGA\INF\VGA.INF for information on this byte's format
+ 0000016B  10 10 10 10 10	                                            db  10h,10h,10h,10h,10h,10h,09h,09h,09h,09h,09h,09h,09h,10h,10h,10h,10h,10h
+	   10 09 09 09 09
+	   09 09 09 10 10
+	   10 10 10
+ 0000017D  10 10 10 10 09	                                            db  10h,10h,10h,10h,09h,0eh,01h,0eh,01h,01h,01h,01h,01h,09h,09h,10h,10h,10h
+	   0E 01 0E 01 01
+	   01 01 01 09 09
+	   10 10 10
+ 0000018F  10 10 0F 0F 01	                                            db  10h,10h,0fh,0fh,01h,04h,0ch,0ch,04h,01h,0fh,0fh,0fh,01h,01h,09h,10h,10h
+	   04 0C 0C 04 01
+	   0F 0F 0F 01 01
+	   09 10 10
+ 000001A1  10 0F 09 01 0F	                                            db  10h,0fh,09h,01h,0fh,04h,0ch,0ch,04h,0fh,09h,09h,01h,0fh,01h,01h,09h,10h
+	   04 0C 0C 04 0F
+	   09 09 01 0F 01
+	   01 09 10
+ 000001B3  10 09 01 01 01	                                            db  10h,09h,01h,01h,01h,0ch,0ch,0ch,0ch,10h,10h,10h,09h,01h,01h,01h,09h,10h
+	   0C 0C 0C 0C 10
+	   10 10 09 01 01
+	   01 09 10
+ 000001C5  10 09 01 0F 0F	                                            db  10h,09h,01h,0fh,0fh,0ch,0ch,0ch,0ch,0fh,0fh,10h,10h,09h,09h,09h,10h,10h
+	   0C 0C 0C 0C 0F
+	   0F 10 10 09 09
+	   09 10 10
+ 000001D7  10 09 0F 01 01	                                            db  10h,09h,0fh,01h,01h,04h,0ch,0ch,04h,10h,10h,0fh,0fh,10h,10h,10h,10h,10h
+	   04 0C 0C 04 10
+	   10 0F 0F 10 10
+	   10 10 10
+ 000001E9  10 0F 01 01 01	                                            db  10h,0fh,01h,01h,01h,0fh,0ch,0ch,0fh,10h,10h,10h,10h,0fh,10h,10h,10h,10h
+	   0F 0C 0C 0F 10
+	   10 10 10 0F 10
+	   10 10 10
+ 000001FB  10 09 01 01 0F	                                            db  10h,09h,01h,01h,0fh,01h,09h,10h,10h,0fh,10h,10h,10h,10h,10h,10h,10h,10h
+	   01 09 10 10 0F
+	   10 10 10 10 10
+	   10 10 10
+ 0000020D  10 09 01 01 0F	                                            db  10h,09h,01h,01h,0fh,01h,09h,10h,10h,10h,0fh,10h,10h,10h,10h,10h,10h,10h
+	   01 09 10 10 10
+	   0F 10 10 10 10
+	   10 10 10
+ 0000021F  10 09 01 0F 01	                                            db  10h,09h,01h,0fh,01h,01h,09h,10h,10h,10h,0fh,10h,10h,09h,09h,09h,10h,10h
+	   01 09 10 10 10
+	   0F 10 10 09 09
+	   09 10 10
+ 00000231  10 09 01 0F 01	                                            db  10h,09h,01h,0fh,01h,01h,01h,09h,10h,10h,10h,0fh,09h,01h,01h,01h,09h,10h
+	   01 01 09 10 10
+	   10 0F 09 01 01
+	   01 09 10
+ 00000243  10 10 09 01 01	                                            db  10h,10h,09h,01h,01h,01h,01h,01h,09h,09h,09h,09h,01h,01h,01h,01h,09h,10h
+	   01 01 01 09 09
+	   09 09 01 01 01
+	   01 09 10
+ 00000255  10 10 10 09 01	                                            db  10h,10h,10h,09h,01h,01h,01h,01h,01h,01h,01h,01h,01h,01h,01h,09h,10h,10h
+	   01 01 01 01 01
+	   01 01 01 01 01
+	   09 10 10
+ 00000267  10 10 10 10 09	                                            db  10h,10h,10h,10h,09h,09h,01h,01h,01h,01h,01h,01h,01h,09h,09h,10h,10h,10h
+	   09 01 01 01 01
+	   01 01 01 09 09
+	   10 10 10
+ 00000279  10 10 10 10 10	                                            db  10h,10h,10h,10h,10h,10h,09h,09h,09h,09h,09h,09h,09h,10h,10h,10h,10h,10h
+	   10 09 09 09 09
+	   09 09 09 10 10
+	   10 10 10
+ 0000028B  00 00 15		                                            db  0,0,15h     ; A dark shade of blue for the background
+
+ 0000028E			 end_of_required_data:
+ 0000028E 08 63 76 5F 70	    driver_primatives                       db  8, "cv_parse"
+	   61 72 73 65
+ 00000297  0000009B R		                                            dd  offset cv_parse
+ 0000029B  0000			                                            dw  0
+
+ 0000029D  FFFF			                                            dw  0ffffh              ; Teriminator
+
+ 029F				_TEXT32 ENDS
+
+				END

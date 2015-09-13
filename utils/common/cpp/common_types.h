@@ -69,9 +69,29 @@
 	#define s16 int16_t
 	#define s8 char
 
+#elif defined(__solaris__)
+	// solaris compiler
+	// Used for pointer sizes that mate up with pointers, but are actually integers
+	#ifdef __i386
+		#define uptr uint32_t
+		#define sptr int32_t
+	#else
+		#define uptr uint64_t
+		#define sptr int64_t
+	#endif
+	#define u64 uint64_t
+	#define u32 uint32_t
+	#define u16 uint16_t
+	#define u8 unsigned char
+
+	#define s64 int64_t
+	#define s32 int32_t
+	#define s16 int16_t
+	#define s8 char
+
 #else
 	// Used for pointer sizes that mate up with pointers, but are actually integers
-	#ifndef _M_X64
+	#if !defined(__64_BIT_COMPILER__)
 		#define uptr unsigned int
 		#define sptr int
 	#else
@@ -115,7 +135,7 @@
 #define cf64 const f64
 
 #ifndef _UPTR_ERROR
-	#if defined(__amd64) || defined(_M_X64)
+	#if defined(__64_BIT_COMPILER__)
 		#define _UPTR_ERROR 0xffffffffffffffff
 	#else
 		#define _UPTR_ERROR 0xffffffff

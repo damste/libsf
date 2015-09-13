@@ -114,7 +114,7 @@
 			//////////
 			// Append the message
 			//////
-				msg = (SMessageX*)iBuilder_appendData(win->msgQueue, NULL, sizeof(SMessageX));
+				msg = (SMessageX*)iBuilder_appendData(win->msgQueue, (s8*)NULL, sizeof(SMessageX));
 				if (msg)
 				{
 					msg->msg.hwnd		= win->hwnd;
@@ -541,7 +541,7 @@ debug_break;
 		//////////
 		// Allocate a new one
 		//////
-			hdc = (SHdcX*)iBuilder_appendData(gsHdcs, 0, sizeof(SHdcX));
+			hdc = (SHdcX*)iBuilder_appendData(gsHdcs, (s8*)NULL, sizeof(SHdcX));
 			if (hdc)
 			{
 				// Initialize
@@ -974,7 +974,7 @@ debug_break;
 		// Allocate a new slot if need be
 		//////
 			if (lnI >= gsHfonts->populatedLength)
-				font = (SFontX*)iBuilder_appendData(gsHfonts, NULL, sizeof(SFontX));
+				font = (SFontX*)iBuilder_appendData(gsHfonts, (s8*)NULL, sizeof(SFontX));
 
 
 
@@ -1043,7 +1043,7 @@ debug_break;
 		//////////
 		// Create a new region
 		//////
-			return((SRegionX*)iBuilder_appendData(gsRegions, NULL, sizeof(SRegionX)));
+			return((SRegionX*)iBuilder_appendData(gsRegions, (s8*)NULL, sizeof(SRegionX)));
 	}
 
 

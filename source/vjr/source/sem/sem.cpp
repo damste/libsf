@@ -2253,7 +2253,7 @@ debug_break;
 											// Use the selection color
 											SetBkMode(bmp->hdc, OPAQUE);
 											SetBkColor(bmp->hdc, RGB(comp->overrideSelectionBackColor->red, comp->overrideSelectionBackColor->grn, comp->overrideSelectionBackColor->blu));
-											compBackColor.color	 = comp->overrideSelectionBackColor->color;
+											compBackColor.color		= comp->overrideSelectionBackColor->color;
 											compFillColor.color		= comp->overrideSelectionBackColor->color;
 											llOverrideCaskColors	= false;
 

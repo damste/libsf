@@ -1,0 +1,26 @@
+€€€€                                                      CMOS Real-Time Clock
+€€€€›
+ﬁ€€€€‹
+ ﬂﬂ€€€€€‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹
+   ›
+   ›    Considerations about reading from CMOS and the Real Time Clock
+   ›
+ ‹‹€€€€€ﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂ
+ﬁ€€€€ﬂ
+€€€€›
+€€€€
+€€€€    The CMOS Real-Time Clock (RTC) is an external battery operated device which has an interface through port 70h, and 71h.
+€€€€    Additional ports are available on newer platforms, but all AT configurations support those ports.
+€€€€
+€€€€    The RTC consists of some internal logic that requires a certain amount of time to process.  The only way to ensure that
+€€€€    correct data is read from CMOS is to wait for the processing cycle to end, thereby affording a 244ms window where we can
+€€€€    read all of the data we want.
+€€€€
+€€€€    To do this, we examine port 71h and wait for the high bit (80h) to go low, then we poll it again and wait for it to go
+€€€€    high.  When it goes high we know that it has just ended a processing cycle and it's ok to read data for the next 244ms.
+€€€€
+€€€€    CMOS isn't the best way to read data, but it does work when the power is not off. :)
+€€€€
+€€€€     end 
+€€€€    RCH - 07/16/00, 10:56 am
+€€€€

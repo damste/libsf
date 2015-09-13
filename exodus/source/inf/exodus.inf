@@ -1,0 +1,73 @@
+€€€€                                                    Exodus Operating System
+€€€€›
+ﬁ€€€€‹
+ ﬂﬂ€€€€€‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹
+   ›
+   ›
+   ›
+ ‹‹€€€€€ﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂ
+ﬁ€€€€ﬂ
+€€€€›
+€€€€
+€€€€    Exodus memory structures
+€€€€    ------------------------
+€€€€
+€€€€        _sEXODUS_MEM
+€€€€
+€€€€        The structure below is preceded by a DWORD indicating where the next item will go
+€€€€
+€€€€
+€€€€          Offset  Length    Description
+€€€€          ------  ------    ------------------------
+€€€€          All:
+€€€€            0       1       Type of memory block:   0-Free, 1-Used by Exodus, 2-Used by application
+€€€€            1       3       --Nuserved
+€€€€            4       4       base
+€€€€            8       4       limit
+€€€€
+€€€€          Type 0:
+€€€€            12      4       --Nuserved
+€€€€
+€€€€          Type 0:
+€€€€            12      2       GDT of Exodus resource which is using it
+€€€€            14      2       --Nuserved
+€€€€
+€€€€          Type 2:
+€€€€            12      2       GDT of source application
+€€€€            14      2       GDT/LDT for memory block
+€€€€        --------------------
+€€€€        Total: 16 bytes
+€€€€
+€€€€
+€€€€    _sEXODUS_PORTS
+€€€€
+€€€€          Offset  Length    Description
+€€€€          ------  ------    ------------------------
+€€€€            0       4       Number of ports
+€€€€            4       4       Starting port
+€€€€            8       2       GDT of source application
+€€€€            10      6       --Nuserved
+€€€€        --------------------
+€€€€        Total: 16 bytes
+€€€€
+€€€€
+€€€€    _sEXODUS_INTS
+€€€€
+€€€€          Offset  Length    Description
+€€€€          ------  ------    ------------------------
+€€€€            0       1       Count
+€€€€            1       1       Starting interrupt
+€€€€        --------------------
+€€€€        Total:  2 bytes
+€€€€
+€€€€
+€€€€
+€€€€
+€€€€
+€€€€
+€€€€
+€€€€
+€€€€
+€€€€
+€€€€
+€€€€

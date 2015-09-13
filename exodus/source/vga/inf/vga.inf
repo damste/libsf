@@ -1,0 +1,84 @@
+лллл                                                    Exodus Default VGA Driver
+ллллн
+оллллм
+ пплллллммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммм
+   н
+   н    The VGA subsystem
+   н
+ ммлллллппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппп
+оллллп
+ллллн
+лллл
+лллл  кФФФФФФФФФФФФФФФП
+лллл  Г VID_draw_logo Г
+лллл  РФФФФФФФФФФФФФФФй
+лллл
+лллл    The VID_draw_logo() algorithm expects the following format:
+лллл
+лллл      OFFSET  LENGTH    DESCRIPTION
+лллл      ------  ------    -------------------------
+лллл        0       1       Control byte (see below)
+лллл        1       n       Bitmap, should be xx pixels wide and 16 pixels tall (so xx pixels repeated 16 times)
+лллл
+лллл        Control Byte:
+лллл
+лллл        кФТФТФТФТФТФТФТФП
+лллл        ГbГc c c cГ# # #Г
+лллл        РТСТСФСФСТСТСФСТй
+лллл         Г РФФТФФй РФТФй
+лллл         Г    Г      РФФФ Number of extra 18x16 pixel images wide (0-7)     * Note, there always must be 1, so if this value is
+лллл         Г    РФФФФФФФФФФ color to use for border (0-15)                    *       1 then the total width will be 2.
+лллл         РФФФФФФФФФФФФФФФ Use border?  0-No, 1-Yes
+лллл
+лллл
+лллл
+лллл
+лллл
+лллл
+лллл
+лллл
+лллл
+лллл
+
+
+
+
+   н
+   н    The MONO subsystem
+   н
+ ммлллллппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппп
+оллллп
+ллллн
+лллл
+лллл    The Exodus MONO subsystem consists of two main parts.  MONO text mode (default) and MONO graphics mode.  The MONO text
+лллл    mode is the default start-up mode and is available to any bootup driver.  The MONO graphics mode is a Hercules compatible
+лллл    mode (720x348) and must be initialized by claiming ownership.  This is done by DEBI debugger during bootup.  This ownership
+лллл    is required for low-level DEBI debugging because DEBI has to be sure it has an output device to send to.
+лллл
+лллл    The MONO text system consists of a series of algorithms that are processed whenever they receive control.  This includes
+лллл    the potential of interrupting one algorithm in progress to service another one that is called from an interrupt.
+лллл
+лллл    The MONO graphics system consists of a series of algorithms that are processed in the order they were called.  This keeps
+лллл    algorithms in progress from being interrupted.  This is required for correct mouse, cursor and graphical text processing.
+лллл    This was discovered after beginning the DEBI debugger.  When cursor support was added it was noticed that when a cursor
+лллл    service interrupt (based on the timer) was in progress and a mouse packet came in (thereby interrupting the cursor
+лллл    algorithm) it would sometimes cause the screen to become corrupted due to the mouse requests being processed out of
+лллл    order.
+лллл
+лллл    RCH - 02/18/01 11:18 am
+лллл     end 
+лллл
+лллл
+лллл
+лллл
+лллл
+лллл
+лллл
+лллл
+лллл
+лллл
+лллл
+лллл
+лллл
+лллл
+лллл

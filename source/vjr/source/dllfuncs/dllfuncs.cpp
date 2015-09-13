@@ -101,14 +101,13 @@ extern "C"
 	void*		gnDll_typesBaseLtoR;
 	void*		gnDll_pointersBaseLtoR;
 	void*		gnDll_valuesBaseLtoR;
+	// See dll_dispatch_64.asm, an assembly language function that's called below
+	extern void idll_dispatch_64_asm(void);
 #endif
 	void*		gnDll_returnValuesBase;
 	u32			gnDll_types		[_MAX_DLL_PARAMS];		// Refer to _types_* constants
 	void*		gnDll_pointers	[_MAX_DLL_PARAMS];		// Pointers to data the start of every data item
 	SDllVals	gnDll_values	[_MAX_DLL_PARAMS];		// Values stored if they need to be converted
-
-	// See dll_dispatch_64.asm, an assembly language function that's called below
-	extern void idll_dispatch_64_asm(void);
 };
 
 
@@ -319,6 +318,7 @@ extern "C"
 
 						case _DLL_TYPE_F32:
 							// Floating point 32-bit
+#if defined(__64_BIT_COMPILER__)
 							if (dfunc->noPrototype)
 							{
 								// All 32-bit floating point values are physically passed as 64-bit doubles for no-prototype functions
@@ -345,6 +345,7 @@ extern "C"
 								}
 
 							} else {
+#endif
 								if (dfunc->ip[lnI].udfSetting == _UDFPARMS_REFERENCE)
 								{
 									// They want it updated by reference
@@ -366,7 +367,9 @@ extern "C"
 									gnDll_values[lnI]._f32	= iiVariable_getAs_f32(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
 									gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._f32;
 								}
+#if defined(__64_BIT_COMPILER__)
 							}
+#endif
 							break;
 
 						case _DLL_TYPE_F64:
@@ -508,8 +511,7 @@ extern "C"
 
 #if defined(__32_BIT_COMPILER__)
 			#include "dll_dispatch_32.asm"
-
-#elif defined(__64_BIT_COMPILER__)
+#else
 			// #include "dll_dispatch_64.asm"		// Note:  dll_dispatch_64.asm is assembled/compiled externally because Visual Studio 2010 and earlier do not support 64-bit inline assembly.
 			// This code is inside dll_dispatch_64.asm, which is only assembled in x64 builds:
 			gnDll_typesBaseLtoR			= (void*)&gnDll_types[0];
@@ -596,15 +598,19 @@ extern "C"
 								iVariable_set_u32_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], gnDll_values[lnI]._u32);
 								break;
 							case _DLL_TYPE_F32:
+#if defined(__64_BIT_COMPILER__)
 								if (dfunc->noPrototype)
 								{
 									// Non-prototyped functions actually physically pass 64-bit values for 32-bit definitions
 									iVariable_set_f64_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], gnDll_values[lnI]._f64);
 
 								} else {
+#endif
 									// Normal 32-bit conveyance
 									iVariable_set_f32_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], gnDll_values[lnI]._f32);
+#if defined(__64_BIT_COMPILER__)
 								}
+#endif
 								break;
 							case _DLL_TYPE_F64:
 								iVariable_set_f64_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], gnDll_values[lnI]._f64);
@@ -713,7 +719,7 @@ extern "C"
 					memcpy(&dfunc->rp, rp, sizeof(dfunc->rp));
 					memcpy(&dfunc->ip, ip, sizeof(dfunc->ip));
 					dfunc->ipCount		= tnIpCount;
-#if defined(_M_X64)
+#if defined(__64_BIT_COMPILER__)
 					dfunc->noPrototype	= tlNoPrototype;
 					dfunc->isVariadic	= tlVariadic;
 #endif

@@ -1191,35 +1191,68 @@
 //////////
 // The following are broken out to make source files shorter
 //////
-	#include "functions\a.cpp"
-	#include "functions\b.cpp"
-	#include "functions\c.cpp"
-	#include "functions\d.cpp"
-	#include "functions\e.cpp"
-	#include "functions\f.cpp"
-	#include "functions\g.cpp"
-	#include "functions\h.cpp"
-	#include "functions\i.cpp"
-	#include "functions\j.cpp"
-	#include "functions\k.cpp"
-	#include "functions\l.cpp"
-	#include "functions\m.cpp"
-	#include "functions\n.cpp"
-	#include "functions\o.cpp"
-	#include "functions\p.cpp"
-	#include "functions\q.cpp"
-	#include "functions\r.cpp"
-	#include "functions\s.cpp"
-	#include "functions\t.cpp"
-	#include "functions\u.cpp"
-	#include "functions\v.cpp"
-	#include "functions\w.cpp"
-	#include "functions\x.cpp"
-	#include "functions\y.cpp"
-	#include "functions\z.cpp"
+#if defined(__linux__) || defined(__solaris__)
+	#include "/libsf/source/vjr/source/commands/functions/a.cpp"
+	#include "/libsf/source/vjr/source/commands/functions/b.cpp"
+	#include "/libsf/source/vjr/source/commands/functions/c.cpp"
+	#include "/libsf/source/vjr/source/commands/functions/d.cpp"
+	#include "/libsf/source/vjr/source/commands/functions/e.cpp"
+	#include "/libsf/source/vjr/source/commands/functions/f.cpp"
+	#include "/libsf/source/vjr/source/commands/functions/g.cpp"
+	#include "/libsf/source/vjr/source/commands/functions/h.cpp"
+	#include "/libsf/source/vjr/source/commands/functions/i.cpp"
+	#include "/libsf/source/vjr/source/commands/functions/j.cpp"
+	#include "/libsf/source/vjr/source/commands/functions/k.cpp"
+	#include "/libsf/source/vjr/source/commands/functions/l.cpp"
+	#include "/libsf/source/vjr/source/commands/functions/m.cpp"
+	#include "/libsf/source/vjr/source/commands/functions/n.cpp"
+	#include "/libsf/source/vjr/source/commands/functions/o.cpp"
+	#include "/libsf/source/vjr/source/commands/functions/p.cpp"
+	#include "/libsf/source/vjr/source/commands/functions/q.cpp"
+	#include "/libsf/source/vjr/source/commands/functions/r.cpp"
+	#include "/libsf/source/vjr/source/commands/functions/s.cpp"
+	#include "/libsf/source/vjr/source/commands/functions/t.cpp"
+	#include "/libsf/source/vjr/source/commands/functions/u.cpp"
+	#include "/libsf/source/vjr/source/commands/functions/v.cpp"
+	#include "/libsf/source/vjr/source/commands/functions/w.cpp"
+	#include "/libsf/source/vjr/source/commands/functions/x.cpp"
+	#include "/libsf/source/vjr/source/commands/functions/y.cpp"
+	#include "/libsf/source/vjr/source/commands/functions/z.cpp"
 
 	// Apr.26.2015 -- Temporarily isolated into one area:
-	#include "functions\rick_in_progress.cpp"
+	#include "/libsf/source/vjr/source/commands/functions/rick_in_progress.cpp"
+
+#else
+	#include "\libsf\source\vjr\source\commands\functions\a.cpp"
+	#include "\libsf\source\vjr\source\commands\functions\b.cpp"
+	#include "\libsf\source\vjr\source\commands\functions\c.cpp"
+	#include "\libsf\source\vjr\source\commands\functions\d.cpp"
+	#include "\libsf\source\vjr\source\commands\functions\e.cpp"
+	#include "\libsf\source\vjr\source\commands\functions\f.cpp"
+	#include "\libsf\source\vjr\source\commands\functions\g.cpp"
+	#include "\libsf\source\vjr\source\commands\functions\h.cpp"
+	#include "\libsf\source\vjr\source\commands\functions\i.cpp"
+	#include "\libsf\source\vjr\source\commands\functions\j.cpp"
+	#include "\libsf\source\vjr\source\commands\functions\k.cpp"
+	#include "\libsf\source\vjr\source\commands\functions\l.cpp"
+	#include "\libsf\source\vjr\source\commands\functions\m.cpp"
+	#include "\libsf\source\vjr\source\commands\functions\n.cpp"
+	#include "\libsf\source\vjr\source\commands\functions\o.cpp"
+	#include "\libsf\source\vjr\source\commands\functions\p.cpp"
+	#include "\libsf\source\vjr\source\commands\functions\q.cpp"
+	#include "\libsf\source\vjr\source\commands\functions\r.cpp"
+	#include "\libsf\source\vjr\source\commands\functions\s.cpp"
+	#include "\libsf\source\vjr\source\commands\functions\t.cpp"
+	#include "\libsf\source\vjr\source\commands\functions\u.cpp"
+	#include "\libsf\source\vjr\source\commands\functions\v.cpp"
+	#include "\libsf\source\vjr\source\commands\functions\w.cpp"
+	#include "\libsf\source\vjr\source\commands\functions\x.cpp"
+	#include "\libsf\source\vjr\source\commands\functions\y.cpp"
+	#include "\libsf\source\vjr\source\commands\functions\z.cpp"
+
+	// Apr.26.2015 -- Temporarily isolated into one area:
+	#include "\libsf\source\vjr\source\commands\functions\rick_in_progress.cpp"
+#endif
 
 
 
@@ -2337,9 +2370,9 @@
 
 
 		//////////
-		// Skip flags for NOPROTOTYPE and VARIADIC
+		// Skip NOPROTOTYPE and VARIADIC flags
 		//////
-#if defined(_M_X64)
+#if defined(__64_BIT_COMPILER__)
 			while (compParam->iCode == _ICODE_NOPROTOTYPE || compParam->iCode == _ICODE_VARIADIC)
 				compParam = iComps_getNth(thisCode, compParam, 1);
 #endif
@@ -2425,8 +2458,8 @@
 		//////////
 		// Create the DLL reference
 		//////
-#if defined(_M_X64)
-			// 64 -bit, noprototype and variadic are based on components flags
+#if defined(__64_BIT_COMPILER__)
+			// 64-bit, noprototype and variadic are based on components flags
 			iDllFunc_add(thisCode, rpar, &returnParam, inputParams, lnI, compFunctionName, compAliasName, compDllName, NULL, NULL, (compNoPrototype != NULL), (compVariadic != NULL));
 #else
 			// 32-bit and therefore not noprototype or variadic

@@ -1500,7 +1500,7 @@
 				// Colorize
 				     if (obj->ev.isMouseDown)		iBmp_colorize(obj->bmp, &lrc, colorMouseDown,	false, 0.0f);
 				else if (obj->ev.isMouseOver)		iBmp_colorize(obj->bmp, &lrc, colorMouseOver,	false, 0.0f);
-				else									iBmp_colorize(obj->bmp, &lrc, propBackColor(obj),	false, 0.0f);
+				else								iBmp_colorize(obj->bmp, &lrc, propBackColor(obj),	false, 0.0f);
 
 
 				//////////

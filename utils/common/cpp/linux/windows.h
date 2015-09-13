@@ -143,9 +143,28 @@
 #define UINT				uptr
 #define UINT_PTR			uptr*
 #define LPVOID				void*
-#define LRESULT				sptr*
+#define LRESULT				sptr
+#define HRESULT				sptr
 #define COLORREF			DWORD
 #define LPSTR				s8*
+#define LPCSTR				cs8*
+#define LPCVOID				const void*
+#define LPOVERLAPPED		void*
+#define IDispatch           void
+union LARGE_INTEGER
+{
+	s64 QuadPart;
+	struct {
+		u32	LowPart;
+		u32	HighPart;
+	};
+};
+
+// TODO:  These values have not yet been populated with correct values, they're just placeholders for compilation
+#define _S_IREAD            0
+#define _S_IWRITE           1
+#define _LK_NBLCK           2
+#define _LK_UNLCK           3
 
 #define RGB(r,g,b)			((COLORREF)(((BYTE)(r)|((WORD)((BYTE)(g))<<8))|(((DWORD)(BYTE)(b))<<16)))
 #define MAKEINTRESOURCE(i)	((uptr)(i))
@@ -154,10 +173,12 @@
 #define WINAPI				__stdcall
 #define CALLBACK			__stdcall
 
-typedef LRESULT				(CALLBACK*	WNDPROC)				(HWND, UINT, WPARAM, LPARAM);
-typedef VOID				(CALLBACK*	TIMERPROC)				(HWND, UINT, UINT_PTR, DWORD);
-typedef DWORD				(__stdcall*	LPTHREAD_START_ROUTINE)	(LPVOID lpThreadParameter);
+#define SUCCEEDED(x)		(x >= 0)
 
+typedef LRESULT				(CALLBACK* WNDPROC)						(HWND, UINT, WPARAM, LPARAM);
+typedef VOID				(CALLBACK* TIMERPROC)					(HWND, UINT, UINT_PTR, DWORD);
+typedef DWORD				(WINAPI* LPTHREAD_START_ROUTINE)		(LPVOID);
+typedef	sptr				(WINAPI* FARPROC)						(VOID);
 
 #define WINUSERAPI	/*__declspec(dllimport)*/
 #define WINBASEAPI	/*__declspec(dllimport)*/
@@ -166,6 +187,7 @@ typedef DWORD				(__stdcall*	LPTHREAD_START_ROUTINE)	(LPVOID lpThreadParameter);
 #define __in
 #define __out_opt
 #define __out
+#define __inout_opt
 #define __inout
 #define __deref
 #define __drv_aliasesMem
@@ -958,6 +980,15 @@ typedef DWORD				(__stdcall*	LPTHREAD_START_ROUTINE)	(LPVOID lpThreadParameter);
 
 #define DT_RASDISPLAY	1
 
+// TODO:  The following are un-verified against Windows' #include file values... they will need to be set to the correct values
+#define GENERIC_READ			1
+#define GENERIC_WRITE			2
+#define FILE_SHARE_READ			3
+#define FILE_SHARE_WRITE		4
+#define OPEN_ALWAYS				5
+#define FILE_ATTRIBUTE_NORMAL	6
+#define CSIDL_SYSTEM			7
+#define	CSIDL_FLAG_CREATE		8
 
 #define INVALID_HANDLE_VALUE ((HANDLE)(LONG_PTR)-1)
 
@@ -1170,6 +1201,16 @@ typedef struct tagCREATESTRUCT
 #define _lseeki64			lseek64
 #define _telli64			telli64
 
+// TODO:  These values have not yet been populated with correct values, they're just placeholders for compilation
+int                         _creat                  (char* tcPathname, int access);
+int                         _creat                  (const char* tcPathname, int access);
+s64                         _filelengthi64          (int fileno);
+int                         _locking                (int fileno, int mode, int length);
+int                         sopen                   (char* tcFilename, int access, int sharing, int shareAccess);
+int                         GetDoubleClickTime      (void);
+int                         QueryPerformanceCounter (LARGE_INTEGER* ticks);
+int                         QueryPerformanceFrequency(LARGE_INTEGER* freq);
+
 WINUSERAPI	HWND WINAPI CreateWindowEx(	__in		DWORD dwExStyle,
 										__in_opt	cs8* lpClassName,
 										__in_opt	cs8* lpWindowName,
@@ -1277,6 +1318,18 @@ WINBASEAPI	DWORD	WINAPI		GetTempPath				(__in DWORD nBufferLength, s8 lpBuffer[_
 WINBASEAPI	UINT	WINAPI		GetTempFileName			(__in cs8* lpPathName, __in cs8* lpPrefixString, __in UINT uUnique, s8 lpTempFileName[_MAX_PATH]);
 WINGDIAPI	int		WINAPI		GetDeviceCaps			(__in_opt HDC hdc, __in int index);
 WINBASEAPI	int		WINAPI		MulDiv					(__in int nNumber, __in int nNumerator, __in int nDenominator);
-WINGDIAPI	HFONT	WINAPI		CreateFont				( __in int cHeight, __in int cWidth, __in int cEscapement, __in int cOrientation, __in int cWeight, __in DWORD bItalic, __in DWORD bUnderline, __in DWORD bStrikeOut, __in DWORD iCharSet, __in DWORD iOutPrecision, __in DWORD iClipPrecision, __in DWORD iQuality, __in DWORD iPitchAndFamily, __in_opt cs8* pszFaceName);
+WINGDIAPI	HFONT	WINAPI		CreateFont				(__in int cHeight, __in int cWidth, __in int cEscapement, __in int cOrientation, __in int cWeight, __in DWORD bItalic, __in DWORD bUnderline, __in DWORD bStrikeOut, __in DWORD iCharSet, __in DWORD iOutPrecision, __in DWORD iClipPrecision, __in DWORD iQuality, __in DWORD iPitchAndFamily, __in_opt cs8* pszFaceName);
 WINGDIAPI	BOOL	WINAPI		GetTextMetricsA			(__in HDC hdc, __out LPTEXTMETRIC lptm);
 WINGDIAPI	HGDIOBJ	WINAPI		GetStockObject			(__in DWORD obj);
+
+WINBASEAPI	HANDLE	WINAPI		CreateFile				(__in LPCSTR lpFileName, __in DWORD dwDesiredAccess, __in DWORD dwShareMode, __in_opt LPSECURITY_ATTRIBUTES lpSecurityAttributes, __in DWORD dwCreationDisposition, __in DWORD dwFlagsAndAttributes, __in_opt HANDLE hTemplateFile);
+WINBASEAPI	BOOL	WINAPI		ConnectNamedPipe		(__in HANDLE hNamedPipe, __inout_opt LPOVERLAPPED lpOverlapped);
+WINBASEAPI	BOOL	WINAPI		IsWindow				(__in HWND hWnd);
+WINBASEAPI	HWND	WINAPI		FindWindow				(__in_opt LPCSTR lpClassName, __in_opt LPCSTR lpWindowName);
+WINBASEAPI	LRESULT	WINAPI		SendMessage				(__in HWND hWnd, __in UINT Msg, __in WPARAM wParam, __in LPARAM lParam);
+WINBASEAPI	BOOL	WINAPI		WriteFile				(__in HANDLE hFile, __in LPCVOID lpBuffer, __in DWORD nNumberOfBytesToWrite, __out_opt LPDWORD lpNumberOfBytesWritten, __inout_opt LPOVERLAPPED lpOverlapped);
+WINBASEAPI	FARPROC	WINAPI		GetProcAddress			(__in HMODULE hModule, __in LPCSTR  lpProcName);
+WINBASEAPI	HMODULE	WINAPI		LoadLibrary				(__in LPCSTR lpFileName);
+#define LoadLibraryA LoadLibrary
+WINBASEAPI	HRESULT	WINAPI		SHGetFolderPath			(__in HWND hwndOwner, __in int nFolder, __in HANDLE hToken, __in DWORD dwFlags, __out LPSTR pszPath);
+WINBASEAPI	BOOL	WINAPI		FreeLibrary				(__in HMODULE dllHandle);

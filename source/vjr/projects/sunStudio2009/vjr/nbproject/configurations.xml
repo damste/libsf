@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="95">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="HeaderFiles"
+                   displayName="Header Files"
+                   projectFiles="true">
+      <itemPath>../../../source/vjr.h</itemPath>
+      <itemPath>../../../source/vjr_compile_time_settings.h</itemPath>
+      <itemPath>../../../source/vjr_const.h</itemPath>
+      <itemPath>../../../source/vjr_defs.h</itemPath>
+      <itemPath>../../../source/vjr_globals.h</itemPath>
+      <itemPath>../../../source/vjr_structs.h</itemPath>
+      <itemPath>../../../source/vjr_structs0.h</itemPath>
+      <itemPath>../../../source/vjr_structs00.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ResourceFiles"
+                   displayName="Resource Files"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="Source Files"
+                   projectFiles="true">
+      <logicalFolder name="f2" displayName="common" projectFiles="true">
+        <itemPath>/libsf/utils/common/cpp/builder.cpp</itemPath>
+        <itemPath>/libsf/utils/common/cpp/builder.h</itemPath>
+        <itemPath>/libsf/utils/common/cpp/common_types.h</itemPath>
+        <itemPath>/libsf/utils/common/cpp/datum.cpp</itemPath>
+        <itemPath>/libsf/utils/common/cpp/datum.h</itemPath>
+        <itemPath>/libsf/utils/common/cpp/disk.cpp</itemPath>
+        <itemPath>/libsf/utils/common/cpp/disk.h</itemPath>
+        <itemPath>/libsf/utils/common/cpp/ll.cpp</itemPath>
+        <itemPath>/libsf/utils/common/cpp/ll.h</itemPath>
+        <itemPath>/libsf/utils/common/cpp/scale.cpp</itemPath>
+        <itemPath>/libsf/utils/common/cpp/scale.h</itemPath>
+        <itemPath>/libsf/utils/common/cpp/time.cpp</itemPath>
+        <itemPath>/libsf/utils/common/cpp/time.h</itemPath>
+        <itemPath>/libsf/utils/common/cpp/xml/xml.cpp</itemPath>
+        <itemPath>/libsf/utils/common/cpp/xml/xml.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f1" displayName="lin2win" projectFiles="true">
+        <itemPath>/libsf/utils/common/cpp/linux/hwndx.cpp</itemPath>
+        <itemPath>/libsf/utils/common/cpp/linux/hwndx.h</itemPath>
+        <itemPath>/libsf/utils/common/cpp/linux/windows.cpp</itemPath>
+        <itemPath>/libsf/utils/common/cpp/linux/windows.h</itemPath>
+      </logicalFolder>
+      <itemPath>../../../source/vjr.cpp</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Debug" type="1">
+      <toolsSet>
+        <compilerSet>SunStudio_12.1|SunStudio_12.1</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <languageExtension>2</languageExtension>
+        </cTool>
+        <ccTool>
+          <languageExtension>2</languageExtension>
+        </ccTool>
+      </compileType>
+      <item path="../../../source/vjr.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="../../../source/vjr.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../../source/vjr_compile_time_settings.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../../source/vjr_const.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../../source/vjr_defs.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../../source/vjr_globals.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../../source/vjr_structs.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../../source/vjr_structs0.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../../source/vjr_structs00.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="/libsf/utils/common/cpp/builder.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="/libsf/utils/common/cpp/common_types.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/libsf/utils/common/cpp/datum.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="/libsf/utils/common/cpp/disk.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="/libsf/utils/common/cpp/linux/hwndx.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/libsf/utils/common/cpp/linux/windows.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/libsf/utils/common/cpp/ll.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="/libsf/utils/common/cpp/scale.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="/libsf/utils/common/cpp/time.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="/libsf/utils/common/cpp/xml/xml.h" ex="false" tool="3" flavor2="0">
+      </item>
+    </conf>
+    <conf name="Release" type="1">
+      <toolsSet>
+        <compilerSet>SunStudio_12.1|SunStudio_12.1</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+          <languageExtension>2</languageExtension>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+          <languageExtension>2</languageExtension>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+      </compileType>
+      <item path="../../../source/vjr.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="../../../source/vjr.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../../source/vjr_compile_time_settings.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../../source/vjr_const.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../../source/vjr_defs.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../../source/vjr_globals.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../../source/vjr_structs.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../../source/vjr_structs0.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../../source/vjr_structs00.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="/libsf/utils/common/cpp/builder.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="/libsf/utils/common/cpp/common_types.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/libsf/utils/common/cpp/datum.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="/libsf/utils/common/cpp/disk.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="/libsf/utils/common/cpp/linux/hwndx.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/libsf/utils/common/cpp/linux/windows.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/libsf/utils/common/cpp/ll.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="/libsf/utils/common/cpp/scale.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="/libsf/utils/common/cpp/time.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="/libsf/utils/common/cpp/xml/xml.h" ex="false" tool="3" flavor2="0">
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>

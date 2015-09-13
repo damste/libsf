@@ -1,0 +1,106 @@
+лллл                                                DEBI Debugger Disassembly Format
+ллллн
+оллллм
+ пплллллммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммм
+   н
+   н    x86 Disassembly
+   н
+ ммлллллппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппп
+оллллп
+ллллн
+лллл
+лллл    x86 disassembly takes place using a fixed format for all disassembly instructions.  The format of this casq is designed
+лллл
+лллл     0    1      2     3      4   5    6     7       8          9           10        11         12     13   14       15  16
+лллл    (mode|prefix|instr|ModRRM|SIB|disp|immed|op size|instr text|params text|data text|immed text|timing|pipe|pairable|cpu|more)
+лллл
+лллл    кФФФФФФФФФФП
+лллл    Г 0 - mode Г
+лллл    РФФФФФФФФФФй
+лллл    Specifies the mode the instruction appeared in (affects how it is decoded).  Will be one of these:  32,16,REAL,V86
+лллл
+лллл    кФФФФФФФФФФФФП
+лллл    Г 1 - prefix Г
+лллл    РФФФФФФФФФФФФй
+лллл    Actual prefix bytes to an instruction, such as CS:,DS:,ES:,FS:,GS:,SS:,ADR,OP.  Note, this does not include LOCK and REPx.
+лллл    Those are interpreted as separate instructions.
+лллл
+лллл    кФФФФФФФФФФФП
+лллл    Г 2 - instr Г
+лллл    РФФФФФФФФФФФй
+лллл    Converted hexidecimal bytes for any bytes in the instruction (excluding the Mod/R/RM and SIB bytes)
+лллл
+лллл    кФФФФФФФФФФФФФФП
+лллл    Г 3 - Mod/R/RM Г
+лллл    РФФФФФФФФФФФФФФй
+лллл    The Mod/R/RM byte (if any)
+лллл
+лллл    кФФФФФФФФФП
+лллл    Г 4 - SIB Г
+лллл    РФФФФФФФФФй
+лллл    The SIB byte (if any)
+лллл
+лллл    кФФФФФФФФФФП
+лллл    Г 5 - disp Г
+лллл    РФФФФФФФФФФй
+лллл    The displacement bytes (if any)
+лллл
+лллл    кФФФФФФФФФФФП
+лллл    Г 6 - immed Г
+лллл    РФФФФФФФФФФФй
+лллл    The immediate data bytes (if any)
+лллл
+лллл    кФФФФФФФФФФФФФП
+лллл    Г 7 - op size Г
+лллл    РФФФФФФФФФФФФФй
+лллл    The operand size in bits (whever size data this operation is working on)
+лллл
+лллл    кФФФФФФФФФФФФФФФФП
+лллл    Г 8 - instr text Г
+лллл    РФФФФФФФФФФФФФФФФй
+лллл    The text form of the instruction (the "mov" portion of "mov eax,ebx")
+лллл
+лллл    кФФФФФФФФФФФФФФФФФП
+лллл    Г 9 - params text Г
+лллл    РФФФФФФФФФФФФФФФФФй
+лллл    The text form of the parameters for this instruction (the "eax,ebx" portion of "mov eax,ebx")
+лллл
+лллл    кФФФФФФФФФФФФФФФФП
+лллл    Г 10 - data text Г
+лллл    РФФФФФФФФФФФФФФФФй
+лллл    The portion of the params text which will access data
+лллл
+лллл    кФФФФФФФФФФФФФФФФФП
+лллл    Г 11 - immed text Г
+лллл    РФФФФФФФФФФФФФФФФФй
+лллл    The portion of the params text which is the immediate data
+лллл
+лллл    кФФФФФФФФФФФФФП
+лллл    Г 12 - timing Г
+лллл    РФФФФФФФФФФФФФй
+лллл    The timing of this instruction for the specified cpu
+лллл
+лллл    кФФФФФФФФФФФП
+лллл    Г 13 - pipe Г
+лллл    РФФФФФФФФФФФй
+лллл    The pipe this instruction requires
+лллл
+лллл    кФФФФФФФФФФФФФФФП
+лллл    Г 14 - pairable Г
+лллл    РФФФФФФФФФФФФФФФй
+лллл    Whether or not this instruction is pairable
+лллл
+лллл    кФФФФФФФФФФП
+лллл    Г 15 - cpu Г
+лллл    РФФФФФФФФФФй
+лллл    The first cpu this instruction appeared in
+лллл
+лллл    кФФФФФФФФФФФП
+лллл    Г 16 - more Г
+лллл    РФФФФФФФФФФФй
+лллл    Added for forward compatability.  Are there any more casq's with information following this one?  YES or NO
+лллл
+лллл
+лллл    RCH - 03/10/01 06:41 pm
+лллл     end 
+лллл

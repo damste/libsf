@@ -1,0 +1,73 @@
+лллл                                                    DEBI Debugger DBG File Format
+ллллн
+оллллм
+ пплллллммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммм
+   н
+   н    Source DBG Format
+   н
+ ммлллллппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппп
+оллллп
+ллллн
+лллл
+лллл    The Source DBG Format is the format which describes to DEBI the layout of the executable.  The DBG filename is stored in
+лллл    the driver/executable's name.  Refer to the 'info' function in INF\REQUESTR.INF function for more information.
+лллл
+лллл    The DBG layout is very straight-forward.  It contains the following items:
+лллл
+лллл        1)  a listing of all source files
+лллл        2)  a structure with one record for every source line (for single-step source-level debugging)
+лллл        3)  a structure with one record for every variable reference
+лллл
+лллл    кФФФФФФФФФФФФФФФФП
+лллл    Г The DBG header Г
+лллл    РФФФФФФФФФФФФФФФФй
+лллл      OFFSET  LENGTH    DESCRIPTION
+лллл      ------  ------    --------------------------
+лллл        0        2      Version major
+лллл        2        2      Version minor
+лллл        4        4      Revision
+лллл        8        4      Offset to listing of all source files
+лллл        12       4      Offset to listing of single-step data
+лллл        16       4      Offset to variable references
+лллл        20      108     --Nuserved
+лллл        Total:  128
+лллл
+лллл
+лллл    кФФФФФФФФФФФФФФФФФФФФФФФФФФФФФП
+лллл    Г The listing of Source Files Г
+лллл    РФФФФФФФФФФФФФФФФФФФФФФФФФФФФФй
+лллл      * Note:  The following structure is repeated for every source file.  A source file number of ASCII-255 indicates the end.
+лллл      OFFSET  LENGTH    DESCRIPTION
+лллл      ------  ------    --------------------------
+лллл        0       1       Source file number
+лллл        1       1       Number of characters in source file name
+лллл        2       n       source file name
+лллл        Total: 2+n
+лллл
+лллл    кФФФФФФФФФФФФФФФФФФП
+лллл    Г Single-step info Г
+лллл    РФФФФФФФФФФФФФФФФФФй
+лллл      * Note:  The following structure is repeated for every source line.  An offset of 0ffffffffh indicates the end.
+лллл      OFFSET  LENGTH    DESCRIPTION
+лллл      ------  ------    --------------------------
+лллл        0       4       Offset into executable code
+лллл        4       1       source file number
+лллл        5       1       --Nuserved
+лллл        6       2       line number in source file
+лллл        Total: 8
+лллл
+лллл    кФФФФФФФФФФФФФФФП
+лллл    Г Variable info Г
+лллл    РФФФФФФФФФФФФФФФй
+лллл      * Note:  The following structure is repeated for every variable.  An offset of 0ffffffffh indicates the end.
+лллл      OFFSET  LENGTH    DESCRIPTION
+лллл      ------  ------    --------------------------
+лллл        0       4       Offset into executable code
+лллл        4       1       source file number
+лллл        5       1       --Nuserved
+лллл        6       2       line number in source file
+лллл        Total: 8
+лллл
+лллл    RCH - 03/04/01 11:12 am
+лллл     end 
+лллл

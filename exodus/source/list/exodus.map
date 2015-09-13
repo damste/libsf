@@ -1,0 +1,33 @@
+
+ Start  Stop   Length Name                   Class
+ 00000H 00000H 00000H _TEXT                  CODE
+ 00000H 003F8H 003F9H _TEXT32                CODE
+ 003FAH 003FAH 00000H _DATA                  DATA
+ 00400H 00400H 00000H STACK                  STACK
+
+ Origin   Group
+ 0000:0   DGROUP
+
+  Address         Publics by Name
+
+ 0000:0098       EXODUS_dot_com
+ 0000:0128       invEXODUS_create_desktop
+ 0000:01E0       invEXODUS_write_screen
+ 0000:0008       main
+ 0000:0019       requestor
+ 0000:0400       _edata
+ 0000:0400       _end
+ 0000:0400       __edata
+ 0000:0400       __end
+
+  Address         Publics by Value
+
+ 0000:0008       main
+ 0000:0019       requestor
+ 0000:0098       EXODUS_dot_com
+ 0000:0128       invEXODUS_create_desktop
+ 0000:01E0       invEXODUS_write_screen
+ 0000:0400       __end
+ 0000:0400       _end
+ 0000:0400       __edata
+ 0000:0400       _edata

@@ -1,0 +1,172 @@
+лллл                                                        Exodus Build History
+ллллн
+оллллм
+ пплллллммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммм
+   н
+   н    Completed builds and their significance
+   н
+ ммлллллппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппппп
+оллллп
+ллллн
+лллл  кФФФФФФФФФФФФП
+лллл  Г BOOTUP.COM Г Exodus Boot Program
+лллл  РФФФФФФФФФФФФй
+лллл    Build 0000.00.00 ФФФТ Initial build, minimal software support, pmode
+лллл                        У Basic VGA/MONO video functions (display text, next line, position cursor, display value, etc)
+лллл                        У IDT setup, GDT setup (4,096 slots) with slots 1-9 being setup as described below
+лллл                        Р Defined memory regions:     Slot  Linear Addresses    Description
+лллл                                                      ----  -----------------   -----------------------
+лллл                                                        1   00000000-000007ff   Data, 2k (IDT)
+лллл                                                        2   00000800-000087ff   Data, 32k (GDT)
+лллл                                                        3   00008800-0000ffff   Data, 32k (Stack)
+лллл                                                        4   00010000-0009ffff   Code, 576k (Kernel code)
+лллл                                                        5   000a0000-000affff   Data, 64k (Graphics video segment)
+лллл                                                        6   000b0000-000b7fff   Data, 32k (Mono video segment)
+лллл                                                        7   000b8000-000bffff   Data, 32k (VGA video segment)
+лллл                                                        8   00000000-ffffffff   Data, 4GB (all of memory)
+лллл                                                        9   00010000-0009ffff   Data, 576k (Kernel data)
+лллл                          Completed:  RCH - 07/11/00, 07:38 am
+лллл
+лллл
+лллл    Build 0001.00.00 ФФФТ Modified memory regions:    Slot  Linear Addresses    Description
+лллл                        Г                             ----  -----------------   -----------------------
+лллл                        Г                               1   00000000-000007ff   Data, 2k    (IDT) * See note below
+лллл                        Г                               2   00000800-000087ff   Data, 32k   (GDT)
+лллл                        Г                               3   00008800-0000ffff   Data, 32k   (Stack)
+лллл                        Г                               4   00010000-0006ffff   Code, 393k  (Kernel code)
+лллл                        Г                               5   000a0000-000affff   Data, 64k   (Graphics video segment)
+лллл                        Г                               6   000b0000-000b7fff   Data, 32k   (Mono video segment)
+лллл                        Г                               7   000b8000-000bffff   Data, 32k   (VGA video segment)
+лллл                        Г                               8   00000000-ffffffff   Data, 4GB   (all of memory)
+лллл                        Г                               9   00010000-0006ffff   Data, 393k  (Kernel data)
+лллл                        Г                              10   00070000-0007ffff   Code, 64k   (xDebug)
+лллл                        Г                           11-99   Reserved
+лллл                        Г                             100   00080000-00080fff   Data, 4k    (keyboard buffer)
+лллл                        Г                             101   00081000-00081fff   Data, 4k    (mouse buffer)
+лллл                        Г                             102   00082000-000820ff   Data, 256b  (high memory struct)
+лллл                        Г                             103   00082100-000824ff   Data, 1k    (ISR counts)
+лллл                        Г                             104   00082500-0008a4ff   Data, 32k   (Task timer service array)
+лллл                        Г                                   0008a500-0008b7ff   Reserved
+лллл                        Г                             105   0008b800-0008b8ff   Data, 256b  (Task timer scratch memory)
+лллл                        Г                             106   0008b900-0008c4ff   Data, 3k    (System memory, R/W, DPL=00)
+лллл                        Г                             107   0008b900-0008c0ff   Data, 2k    (System memory, R/O, DPL=01)
+лллл                        Г                             108   0008b900-0008c0ff   Data, 2k    (System memory, R/O, DPL=10)
+лллл                        Г                             109   0008b900-0008c0ff   Data, 2k    (System memory, R/O, DPL=11)
+лллл                        Г                         110-199   Reserved
+лллл                        Г               Other slots tentatively defined as:
+лллл                        Г                         200-210   Task management (call gates and data)
+лллл                        Г                         211-499   Not yet assigned
+лллл                        Г                         500-999   Kernel API Functions (call gates and data)
+лллл                        Г                       1000-4095   LDT's for user tasks
+лллл                        Г                                   * Note:  Slot 1 is currently not at that memory location.  It is
+лллл                        Г                                            built at the end of the kernel code/data in Slot 9's
+лллл                        Г                                            selector.  This allows initialization to take place with
+лллл                        Г                                            full access to BIOS data tables.
+лллл                        У Incorporated a keyboard ISR that stores keyboard make/break codes
+лллл                        У Incorporated some PIC functions
+лллл                        У Incorporated some timer functions
+лллл                        У Incorporated a CMOS read-time function to support the realtiem clock
+лллл                        У Incorporated a multi-plexing timer algorithm to allow different timer intervals
+лллл                        У Incorporated a timer ISR that updates the system clock and provides a signal for multi-tasking
+лллл                        У Incorporated an interrupt count algorithm that stores the number of times each interrupt is called
+лллл                        Р Completed:  RCH - 07/15/00, 08:05 am
+лллл
+лллл
+лллл    Build 0001.08.06.2000ФТ Modified the format of the Build version, originally YEAR.xx.yy, now XXXX.mm.dd.year
+лллл                          У Modified the bootup identification screen, it now shows two lines at the top in reverse video
+лллл                          Р Completed:  RCH - 08/06/00, 06:59 am
+лллл
+лллл    Build 0001.08.09.2000ФТ Removed one memory region (now unused):  Slot  Linear Addresses   Description
+лллл                          Г                                          ----  -----------------  --------------------------------
+лллл                          Г                                          102   00082000-000820ff  Data, 256b  (high memory struct)
+лллл                          У Incorporated all PIC functions
+лллл                          У Incorporated all timer functions, and made some timer related functions publically available
+лллл                          У Added PS/2 mouse support
+лллл                          У Added serial port recongition (loads tables from BIOS)
+лллл                          У Added parallel port recognition (loads tables from BIOS)
+лллл                          У Finalized the manner in which q/Language will build stack frames in Exodus
+лллл                          Г * Refer to SOURCE\INF\STACKS.INF for more information
+лллл                          У Finalized a naming convention for Exodus internal routines
+лллл                          Г     - Such as "x<DEVICE>_internal_<FUNCTION_NAME>", as in "xPIC_internal_mask_irq"
+лллл                          У Finalized a naming convention for Exodus public routines:
+лллл                          Г     - Such as "x<DEVICE>_<FUNCTION_NAME>", as in "xTIMER_evaluate_interval"
+лллл                          Р Completed:  RCH - 08/09/00, 08:01 pm
+лллл
+лллл    Build 0001.08.13.2000ФТ Modified these memory regions:  Slot  Linear Addresses   Description
+лллл                          Г                                 ----  -----------------  --------------------------------
+лллл                          Г                                  4    00010000-0003ffff  Code, 192k (Exodus kernel)
+лллл                          Г                                  9    00010000-0003ffff  Data, 192k (Exodus kernel)
+лллл                          Г
+лллл                          У Added these memory regions:      99   0008d900-0009ffff  Data, 73.5k (memory sub-structure)
+лллл                          Г                                к 110  0008c500-0008c8ff  Data, 1k (disk drive structure)
+лллл                          Г                                Р 111  0008c900-0008d8ff  Data, 4k (disk partition structure)
+лллл                          Г                                к 112  <system dependent> Data, (floppy 0 DT memory)
+лллл                          Г                                Г 113  <system dependent> Data, (floppy 0 NP memory)
+лллл                          Г                                Г 114  <system dependent> Data, (floppy 0 RP memory)
+лллл                          Г                                Г 115  <system dependent> Data, (floppy 0 read buffer)
+лллл                          Г                                Г 116  <system dependent> Data, (floppy 0 write buffer)
+лллл                          Г                                Р 117  <system dependent> Data, (floppy 0 reserved)
+лллл                          Г                                к 118  <system dependent> Data, (floppy 1 DT memory)
+лллл                          Г                                Г 119  <system dependent> Data, (floppy 1 NP memory)
+лллл                          Г                                Г 120  <system dependent> Data, (floppy 1 RP memory)
+лллл                          Г                                Г 121  <system dependent> Data, (floppy 1 read buffer)
+лллл                          Г                                Г 122  <system dependent> Data, (floppy 1 write buffer)
+лллл                          Г                                Р 123  <system dependent> Data, (floppy 1 reserved)
+лллл                          У Added initialize_disk_drives()
+лллл                          У Added xDISK_internal_add_drive()
+лллл                          У Added xDISK_internal_add_partition()
+лллл                          У Added xMEMORY_internal_allocate_gdt()
+лллл                          У Added xMEMORY_internal_free_gdt()
+лллл                          У I have internally designed the file system to fully support hard disks and cdroms, dvds, cdrs,
+лллл                          Г     and cdrws, even though the operating system does not currently support them
+лллл                          Р Completed:  RCH - 08/13/00, 01:25 pm
+лллл
+лллл    Build 0001.08.20.2000ФТ Added these to the GDT:  Slot  Linear Addresses   Description
+лллл                          Г                          ----  -----------------  --------------------------------
+лллл                          Г                           11   00082000-0008207f   Exodus TSS, 128 bytes
+лллл                          Г                           12   <32-bit task gate>  Exodus task gate
+лллл                          Г                           13   00040000-00047fff   Stack segment 0
+лллл                          Г                           14   00048000-0004ffff   Stack segment 1
+лллл                          Г                           15   00050000-00057fff   Stack segment 2
+лллл                          Г                         к 500  <32-bit call gate>  xTIMER_wait_next_tick()
+лллл                          Г                         Г 501  <code segment>      xTIMER_wait_next_tick()
+лллл                          Г                         Г 502  <32-bit call gate>  xTIMER_wait_full_tick()
+лллл                          Г                         Г 503  <code segment>      xTIMER_wait_full_tick()
+лллл                          Г                         Г 504  <32-bit call gate>  xTIMER_wait_x_ticks()
+лллл                          Г                         Г 505  <code segment>      xTIMER_wait_x_ticks()
+лллл                          Г                         Г 506  <32-bit call gate>  xTIMER_evaluate_interval()
+лллл                          Г                         Р 507  <code segment>      xTIMER_evaluate_interval()
+лллл                          У Updated the setup_pmode_variables() routine so it sets up the Exodus task GDT slots
+лллл                          У Updated the initialization routine so it uses the Exodus task
+лллл                          У Added code to the timer_handler() routine that identifies if any watchdog events are taking place
+лллл                          У Added two global memory variables:  task_switch_allowed - 0-No, other-Yes
+лллл                          Г                                     booting_up          - 255-Yes, others-No
+лллл                          У Added xTASK_watchdog_add()
+лллл                          У Added xTASK_watchdog_release()
+лллл                          У Added xTASK_timeslice_release()
+лллл                          У Added xTASK_priority_set()
+лллл                          У Added xTASK_priority_query()
+лллл                          Р Completed:  RCH - 08/20/00, 04:44 pm
+лллл
+лллл
+лллл    Build ----.09.15.2000ФТ Modified these GDT entries:    Slot  Linear Addresses   Description
+лллл                          Г                                ----  -----------------  --------------------------------
+лллл                          Г                                 16   00082080-000820ff   Task Manager TSS
+лллл                          Г                                 ---
+лллл                          Г                                 500  <32-bit call gate>  xTIMER_wait_next_tick()
+лллл                          Г                                 501  <32-bit call gate>  xTIMER_wait_full_tick()
+лллл                          Г                                 502  <32-bit call gate>  xTIMER_wait_x_ticks()
+лллл                          Г                                 503  <32-bit call gate>  xTIMER_evaluate_interval()
+лллл                          Г                                 504  <32-bit call gate>  iTIMER_set_interrupt_interval()
+лллл                          Г
+лллл                          У Modified the CALL GATE calling protocols, stack arrangement, etc
+лллл                          У Modified the xTIMER_evaluate_interval() function to use the stack differently
+лллл                          Р Completed:  RCH - 08/20/00, 04:44 pm
+лллл
+лллл    Build 12.24.2000ФФФФФФТ Revised everything around the primative philosophy
+лллл                          У Modified numeric convention to include month.day.year
+лллл                          Р This will be the Exodus numbering convention for all products
+лллл
+лллл
+лллл     end 
+лллл

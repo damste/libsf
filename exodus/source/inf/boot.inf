@@ -1,0 +1,67 @@
+€€€€                                                            Exodus Boot Record
+€€€€›
+ﬁ€€€€‹
+ ﬂﬂ€€€€€‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹
+   ›
+   ›    Program specification
+   ›
+ ‹‹€€€€€ﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂ
+ﬁ€€€€ﬂ
+€€€€›
+€€€€
+€€€€    * Refer to \exodus\inf\file_system.inf for an overview of the Exodus File System
+€€€€
+€€€€    Bootup Sequence
+€€€€    ---------------
+€€€€        1)  Load boot.com   (performed automatically by BIOS)
+€€€€        2)  Boot.com loads:     a)  DT
+€€€€                                b)  NP
+€€€€                                c)  RP
+€€€€                                d)  (developmental versions will also load xDebug)
+€€€€        3)  Boot.com scans DT for bootable entries, specifically #4
+€€€€        4)  If "Exodus Boot Loader" is found it is loaded immediately and control is transferred there
+€€€€        5)  If "Exodus Boot Program" is found it is loaded and control is transferred there
+€€€€        6)  If no bootable entries are found, display a "not bootable" message
+€€€€        7)  Wait for a key
+€€€€        8)  Rebot
+€€€€
+
+
+
+   ›
+   ›    Exodus Boot Loader
+   ›
+ ‹‹€€€€€ﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂ
+ﬁ€€€€ﬂ
+€€€€›
+€€€€
+€€€€    Exodus Boot Loader is a more comprehensive bootup loading program.  It is designed to accomodate future expansion and
+€€€€    a more complex method of booting up that might be required on certain systems.  It is also required when there are bad
+€€€€    sectors on the disk which make the straight-forward loading of the Exodus Boot Program impossible.
+€€€€
+€€€€     end 
+€€€€    RCH - 06/25/00, 05:00 pm
+€€€€
+
+
+
+   ›
+   ›    Exodus Boot Program
+   ›
+ ‹‹€€€€€ﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂ
+ﬁ€€€€ﬂ
+€€€€›
+€€€€    Exodus Boot Program is the core operating system.  Refer to \exodus\inf\ebp.inf for more information.
+€€€€
+€€€€    Basic assumptions are:
+€€€€
+€€€€        * Running on 80486DX or higher
+€€€€        * There is at least 2MB of RAM
+€€€€        * There is a VGA monitor at 0xB8000
+€€€€        * The input devices are the keyboard and mouse.
+€€€€
+€€€€    * For more information on the bootup sequence refer to SOURCE\INF\BOOTUP.INF
+€€€€
+€€€€     end 
+€€€€    RCH - 06/25/00, 05:02 pm
+€€€€

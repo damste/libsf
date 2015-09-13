@@ -221,7 +221,7 @@ struct SDllFunc
 	s32				callCount;				// Number of times this DLL was referenced
 
 	// NOPROTOTYPE and VARIADIC options
-#if defined(_M_X64)
+#if defined(__64_BIT_COMPILER__)
 	// Only used on VJr 64-bit
 	bool			noPrototype;			// Was NOPROTOTYPE specified?
 	bool			isVariadic;				// Was VARIADIC specified?

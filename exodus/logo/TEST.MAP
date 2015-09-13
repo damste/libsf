@@ -1,0 +1,26 @@
+
+ Start  Stop   Length Name                   Class
+ 00000H 00001H 00002H _TEXT                  CODE
+ 00002H 00002H 00000H _DATA                  DATA
+ 00010H 0040FH 00400H STACK                  STACK
+
+ Origin   Group
+ 0000:0   DGROUP
+
+  Address         Publics by Name
+
+ 0000:0000       main
+ 0000:0001       requestor
+ 0000:0010       _edata
+ 0000:0010       _end
+ 0000:0010       __edata
+ 0000:0010       __end
+
+  Address         Publics by Value
+
+ 0000:0000       main
+ 0000:0001       requestor
+ 0000:0010       __edata
+ 0000:0010       __end
+ 0000:0010       _end
+ 0000:0010       _edata

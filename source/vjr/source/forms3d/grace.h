@@ -93,6 +93,8 @@
 		#include "include/GL/glew.h"
 		#include "include/GL/freeglut.h"
 	#endif
+#elif defined(__solaris__)
+    #warning OpenGL is not supported on Solaris
 #else
 	#error Unknown target for compilation (must be Windows or Linux)
 #endif
@@ -157,7 +159,11 @@
 	void			iGrace_passiveMotion					(s32 x, s32 y);
 	void			iGrace_Key								(unsigned char key, s32 x, s32 y);
 	void			iGrace_special							(s32 key, s32 x, s32 y);
+#if defined(__solaris__)
+	void			iGrace_reshape							(s32 w, s32 h);
+#else
 	void			iGrace_reshape							(GLsizei w, GLsizei h);
+#endif
 	void			iGrace_display							(void);
 	void			iGrace_idle								(void);
 
@@ -330,8 +336,12 @@
 		};
 		union {
 			uptr	_func_reshape;
+#ifdef __solaris__
+			void	(*func_reshape)			(s32 w, s32 h);
+#else
 			void	(*func_reshape)			(GLsizei w, GLsizei h);
-		};
+#endif
+        };
 		union {
 			uptr	_func_display;
 			void	(*func_display)			(void);
@@ -363,7 +373,11 @@
 	f32			gfLightViewY					= 0.0;
 	f32			gfLightViewZ					= 0.0;
 	bool		glLighting						= false;
+#ifdef __solaris__
+	float		gfv4LightFixture[]				= {  0.0, 0.0, 50.0, 1.0 };
+#else
 	GLfloat		gfv4LightFixture[]				= {  0.0, 0.0, 50.0, 1.0 };
+#endif
 
 	// Used for event tracking on when to redraw a glut loop
 	s64			gnGraceEventCount				= -1;

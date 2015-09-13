@@ -368,6 +368,7 @@
 		// Iterate from the current size upward for a maximum of 200 font point sizes, but also not more than 3x its current point size
 		lnTextLength	= (s32)strlen(tcText);
 		lnFontBold		= ((tnFontBold) ? FW_BOLD : FW_NORMAL);
+		SetRect(&lrc, 0, 0, 0, 0);
 		for (lnI = 0; lnI == 0 || (lnI < 200 && (s32)(tnFontSize + lnI) < (s32)(tnFontSize * 3) && lrc.bottom < (s32)((f32)tnHeightDesired * 1.25f) && lrc.right < (s32)((f32)tnWidthDesired * 1.25f)); lnI++)
 		{
 			// Grab this font

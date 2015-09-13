@@ -1,0 +1,71 @@
+€€€€                                                Exodus System Memory Area Information
+€€€€›
+ﬁ€€€€‹
+ ﬂﬂ€€€€€‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹
+   ›
+   ›    Information about how Exodus stores information in the publically available GDT entries, 106, 107, 108 and 109
+   ›
+ ‹‹€€€€€ﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂ
+ﬁ€€€€ﬂ
+€€€€›
+€€€€
+€€€€    The memory region is 2048 bytes to all applications, or 3072 bytes to Exodus.
+€€€€    It consists of the following structure:
+€€€€
+€€€€       Offset  Length   Description
+€€€€       ------  ------   --------------------------
+€€€€        +0      4       DWORD, number of seconds Exodus has been up
+€€€€        +4      4       DWORD, number of seconds elapsed since midnight
+€€€€        +8      1       BYTE, hour                              ; 0-23
+€€€€        +9      1       BYTE, minute                            ; 0-59
+€€€€        +10     1       BYTE, second                            ; 0-59
+€€€€        +11     1       BYTE, 1/182's of a second               ; 0-182
+€€€€        +12     1       BYTE, day                               ; 1-28,29,30,31
+€€€€        +13     1       BYTE, month                             ; 1-12
+€€€€        +14     2       WORD, year                              ; 2000
+€€€€        +16     2       WORD, day of year                       ; 1-365,366
+€€€€        +18     10      BYTES, "0000.00.00"                     ; Build number
+€€€€        +28     1       BYTE, floppy disk drive types           ; *Note 1
+€€€€        +29     1       BYTE, hard disk type                    ; *Note 2
+€€€€        +30     1       BYTE, hard disk 0 extended type         ; *Note 3
+€€€€        +31     1       BYTE, hard disk 1 extended type         ; *Note 4
+€€€€        +32     2       WORD, VGA Horizontal pixels
+€€€€        +34     2       WORD, VGA Vertical pixels
+€€€€        +36     1       BYTE, VGA video mode (0-graphics, 1-text)
+€€€€        +37     1       BYTE, MONO video mode (0-graphis, 1-text)
+€€€€        +38     ++++   --Nuserved
+€€€€
+€€€€    ; Internal memory regions available only to Exodus or RING-0 applications
+€€€€        +2048   4       DWORD, fatal errors
+€€€€        +2052   4       DWORD, tasks created
+€€€€        +2056   4       DWORD, tasks terminated by user
+€€€€        +2060   4       DWORD, tasks terminated due to errors
+€€€€        +2064   1       BYTE, IRQ6 indicator (floppy drive completion)
+€€€€        +2065   1       BYTE, IRQ6 last indicator
+€€€€        +2066   4       DWORD, Base (used during initializations)
+€€€€        +2070   4       DWORD, Limit (used during initializations)
+€€€€        +2074   2       WORD, DWORDs to copy (used during initializations)
+€€€€        +2076   8       QWORD, Last GDT referenced
+€€€€        +2084   4       DWORD, Code GDT offset (used during native primative install)
+€€€€        +2088   4       DWORD, Data GDT offset (used during native primative install)
+€€€€        +2092   4       DWORD, Main GDT offset (used during native primative install)
+€€€€        +2096   4       DWORD, Requestor GDT offset (used during native primative install)
+€€€€        +2100   2       WORD, GDT to assign (used various places to assign GDT)
+€€€€        +2102   2       WORD, User GDT to assign (used various places to assign user GDT's)
+€€€€        +2104   ++++    --Nuserved
+€€€€
+€€€€    ; Scratch items used temporarily at various places
+€€€€        +3064   4       DWORD, Scratch DWORD 2
+€€€€        +3068   4       DWORD, Scratch DWORD 1
+€€€€
+€€€€
+€€€€    *Note 1:  This field contains one byte.  The upper nibble is A:, lower is B:.  This is
+€€€€              the information returned from BIOS during bootup.
+€€€€    *Note 2:  This field is similar to Note 1.  Upper nibble is drive C:, lower is D:.  This
+€€€€              information is also returned from BIOS during bootup.
+€€€€    *Notes 3, 4:  These fields contains additional BIOS information.
+€€€€
+€€€€
+€€€€   end 
+€€€€  RCH - September 3, 2001
+€€€€

@@ -1,0 +1,41 @@
+€€€€                                                      Exodus Bootup Sequence
+€€€€›
+ﬁ€€€€‹
+ ﬂﬂ€€€€€‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹
+   ›
+   ›    Bootup Operations Order of Precedence
+   ›
+ ‹‹€€€€€ﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂ
+ﬁ€€€€ﬂ
+€€€€›
+€€€€    Exodus Basic Bootup Sequence                    Exodus Initialization Sequences
+€€€€    ------------------------------------            --------------------------------------
+€€€€     1) ds,es = cs                                  1)  initialize_pic()
+€€€€     2) fs = color video segment                         √ redirect master PIC IRQ's to 70h-77h
+€€€€     3) gs = mono video segment                          ¿ redirect slave PIC IRQ's to 78h-7fh
+€€€€     4) clear color & mono
+€€€€     5) display bootup id (2 lines)                 2)  initialize_timer()
+€€€€     6) position cursor @ 04,00                          √ initialize internal memory variables to 182 ticks per second
+€€€€     7) enable gate a20                                  √ initialize task timer data structure
+€€€€     8) prepare pmode environment                        √ read CMOS date and time and setup Exodus system memory area values
+€€€€     9) enter pmode                                      √ initialize timer frequency to 182 ticks per second
+€€€€    10) load IDT                                         ¿ point IRQ0 (timer) interrupt vector to timer ISR
+€€€€    11) load GDT
+€€€€    12) ds,es = _sDATA                              3)  initialize_kbd()
+€€€€    13) fs = _sVGA                                       √ initialize keyboard data structure
+€€€€    14) gs = _sMONO                                      √ point IRQ0 (kbd) interrupt to keyboard ISR
+€€€€    15) ss = _sSTACK                                     √ read keyboard status
+€€€€    16) sp = 077fch                                      √ set repeat rate and delay
+€€€€    17) initialize ISR count array                       ¿ turn all LED's off
+€€€€    18) find memory between 640k and 1MB
+€€€€    19) find total memory                           4)  initialize_mouse()
+€€€€    20) initialize routines                              √ initialize mouse data structure
+€€€€         end                                           √ point IRQ12 (mouse) interrupt to mouse ISR
+€€€€                                                         √ enable PS/2 mouse
+€€€€                                                         √ set reporting rate
+€€€€                                                         √ set resolution
+€€€€                                                         ¿ read PS/2 mouse status
+€€€€
+€€€€     end 
+€€€€    RCH - 08/06/00, 02:36 pm
+€€€€

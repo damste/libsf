@@ -1,0 +1,120 @@
+ÛÛÛÛ                                                Exodus Input Information (Keyboard/Mouse)
+ÛÛÛÛİ
+ŞÛÛÛÛÜ
+ ßßÛÛÛÛÛÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+   İ
+   İ    Information about how Exodus Keyboard/Mouse Information is stored
+   İ
+ ÜÜÛÛÛÛÛßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+ŞÛÛÛÛß
+ÛÛÛÛİ
+ÛÛÛÛ  ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+ÛÛÛÛ  ³ Input Buffer (for both keyboard and Mouse) ³
+ÛÛÛÛ  ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+ÛÛÛÛ    The input buffer is a 16,384 byte buffer containing this structure:
+ÛÛÛÛ
+ÛÛÛÛ      Offset      Length        Description
+ÛÛÛÛ      ------      ------        ----------------------------------------------------------------------------------
+ÛÛÛÛ        0           4           Where the next entry will be stored (it's to the entry past the end of the buffer)
+ÛÛÛÛ        4           4           Start of buffer (where the next key will be read from)
+ÛÛÛÛ        8           4           Last addressible byte in buffer (usually 16384, but might be changed if buffer is
+ÛÛÛÛ                                                                 made larger or smaller through user configuration)
+ÛÛÛÛ       12           ?           Buffer area, the length specifed as "?" is usually 16384 bytes long, but is the dword at [8]
+ÛÛÛÛ
+ÛÛÛÛ
+ÛÛÛÛ  ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+ÛÛÛÛ  ³ Keyboard Structure ³
+ÛÛÛÛ  ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+ÛÛÛÛ    Keyboard data stored as 4 bytes, WORD, WORD:
+ÛÛÛÛ
+ÛÛÛÛ            FIRST 16-bit WORD                                                 SECOND 16-bit WORD
+ÛÛÛÛ    É5Ë4Â3Â2Â1Â0Â9Â8Â7Â6Â5Â4Â3Â2Â1Â0¿                                 ÚÄÂÄÂÄÂÄÂÄÂÄÂÄÂÄÂÄÂÄÂÄÂÄÂÄÂÄÂÄÂÄ¿
+ÛÛÛÛ    º0º ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³                                 ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³
+ÛÛÛÛ    ÈËÊÂÁÂÁÂÁÂÁÂÁÂÁÂÁÂÁÂÁÂÁÂÁÂÁÂÁÂÁÂÙ                                 ÀÂÁÂÁÂÁÂÁÂÁÂÁÂÁÂÁÂÁÂÁÂÁÂÁÂÁÂÁÂÁÂÙ
+ÛÛÛÛ     º ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ À ¿       Ú ctrl :0                 ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ À  ¿
+ÛÛÛÛ     º ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ÀÄÄ Ã Right ´ shift:1                 ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ÀÄÄ  ³
+ÛÛÛÛ     º ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ÀÄÄÄÄ Ù       À alt  :2                 ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ÀÄÄÄÄ  ³
+ÛÛÛÛ     º ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ÀÄÄÄÄÄÄ ¿      Ú ctrl  :3                 ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ÀÄÄÄÄÄÄ  ³
+ÛÛÛÛ     º ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ÀÄÄÄÄÄÄÄÄ Ã Left ´ shift :4                 ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ÀÄÄÄÄÄÄÄÄ  ³
+ÛÛÛÛ     º ³ ³ ³ ³ ³ ³ ³ ³ ³ ÀÄÄÄÄÄÄÄÄÄÄ Ù      À alt   :5                 ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ÀÄÄÄÄÄÄÄÄÄÄ  ³
+ÛÛÛÛ     º ³ ³ ³ ³ ³ ³ ³ ³ ÀÄÄÄÄÄÄÄÄÄÄÄÄ Caps lock:6                       ³ ³ ³ ³ ³ ³ ³ ³ ³ ÀÄÄÄÄÄÄÄÄÄÄÄÄ  ³
+ÛÛÛÛ     º ³ ³ ³ ³ ³ ³ ³ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Num lock:7                        ³ ³ ³ ³ ³ ³ ³ ³ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  Ã All bits represent
+ÛÛÛÛ     º ³ ³ ³ ³ ³ ³ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Scroll lock:8                     ³ ³ ³ ³ ³ ³ ³ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  ³ the unique scancode
+ÛÛÛÛ     º ³ ³ ³ ³ ³ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Left "windows" key:9              ³ ³ ³ ³ ³ ³ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  ³ combination
+ÛÛÛÛ     º ³ ³ ³ ³ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Right "windows" key:10            ³ ³ ³ ³ ³ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  ³
+ÛÛÛÛ     º ³ ³ ³ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ "Windows menu" key:11             ³ ³ ³ ³ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  ³
+ÛÛÛÛ     º ³ ³ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Either ctrl key:12                ³ ³ ³ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  ³
+ÛÛÛÛ     º ³ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Either shift key:13               ³ ³ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  ³
+ÛÛÛÛ     º ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Either alt key:14                 ³ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  ³
+ÛÛÛÛ     º                                                                 ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ  Ù
+ÛÛÛÛ     ÈÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ 0-Keyboard entry indicator:15
+ÛÛÛÛ
+ÛÛÛÛ
+ÛÛÛÛ  ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+ÛÛÛÛ  ³ Mouse Structure ³
+ÛÛÛÛ  ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+ÛÛÛÛ    Mouse data stored as 8 bytes, WORD, WORD, WORD, WORD:
+ÛÛÛÛ
+ÛÛÛÛ             FIRST 16-bit WORD
+ÛÛÛÛ    É5Ë4Â3Â2Â1Â0Â9Â8Â7Â6Â5Â4Â3Â2Â1Â0¿
+ÛÛÛÛ    º1º ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³
+ÛÛÛÛ    ÈËÊÂÁÂÁÂÁÂÁÂÁÂÁÂÁÂÁÂÁÂÁÂÁÂÁÂÁÂÁÂÙ
+ÛÛÛÛ     º ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ À ¿       Ú ctrl :0
+ÛÛÛÛ     º ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ÀÄÄ Ã Right ´ shift:1
+ÛÛÛÛ     º ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ÀÄÄÄÄ Ù       À alt  :2
+ÛÛÛÛ     º ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ÀÄÄÄÄÄÄ ¿      Ú ctrl  :3
+ÛÛÛÛ     º ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ÀÄÄÄÄÄÄÄÄ Ã Left ´ shift :4
+ÛÛÛÛ     º ³ ³ ³ ³ ³ ³ ³ ³ ³ ÀÄÄÄÄÄÄÄÄÄÄ Ù      À alt   :5
+ÛÛÛÛ     º ³ ³ ³ ³ ³ ³ ³ ³ ÀÄÄÄÄÄÄÄÄÄÄÄÄ Caps lock:6
+ÛÛÛÛ     º ³ ³ ³ ³ ³ ³ ³ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Num lock:7
+ÛÛÛÛ     º ³ ³ ³ ³ ³ ³ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Scroll lock:8
+ÛÛÛÛ     º ³ ³ ³ ³ ³ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Left "windows" key:9
+ÛÛÛÛ     º ³ ³ ³ ³ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Right "windows" key:10
+ÛÛÛÛ     º ³ ³ ³ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ "Windows menu" key:11
+ÛÛÛÛ     º ³ ³ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Either ctrl key:12
+ÛÛÛÛ     º ³ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Either shift key:13
+ÛÛÛÛ     º ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Either alt key:14
+ÛÛÛÛ     º
+ÛÛÛÛ     ÈÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ 1-Mouse entry indicator:15
+ÛÛÛÛ
+ÛÛÛÛ
+ÛÛÛÛ          SECOND 16-bit WORD
+ÛÛÛÛ    É5Ë4Â3Â2É1»0Â9Â8É7»6Â5Â4É3»2Â1Â0¿
+ÛÛÛÛ    º?º ³ ³ º?º ³ ³ º?º ³ ³ º º ³ ³ ³   * Note:  ? bits indicate what has changed that warranted this entry
+ÛÛÛÛ    ÈËÊÂÁÄÁÂÊËÊÂÁÄÁÂÊËÊÂÁÄÁÂÊËÊÂÁÄÁÂÙ
+ÛÛÛÛ     º ÀÄÂÄÙ º ÀÄÂÄÙ º ÀÄÂÄÙ º ÀÄÂÄÙ       Ú Right :0¿
+ÛÛÛÛ     º   ³   º   ³   º   ³   º   ÀÄÄ Click ´ Left  :1ÃÄ 0-Up, 1-Down
+ÛÛÛÛ     º   ³   º   ³   º   ³   º             À Middle:2Ù
+ÛÛÛÛ     º   ³   º   ³   º   ³   ÈÍÍÍÍÍÍ Type of click:3?   0-Single, 1-Double
+ÛÛÛÛ     º   ³   º   ³   º   ³
+ÛÛÛÛ     º   ³   º   ³   º   ³                Ú Right :4¿
+ÛÛÛÛ     º   ³   º   ³   º   ÀÄÄÄÄÄÄÄÄÄÄ Drag ´ Left  :5ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ 0-Not dragging, 1-Dragging
+ÛÛÛÛ     º   ³   º   ³   º                    À Middle:6Ù                     ³
+ÛÛÛÛ     º   ³   º   ³   º                                                    ÀÄ* Note:  If "not dragging" and "drag change"
+ÛÛÛÛ     º   ³   º   ³   ÈÍÍÍÍÍÍÍÍÍÍÍÍÍÍ Did any click change:7?                         is set, then they've just released
+ÛÛÛÛ     º   ³   º   ³                                 Ú Right :08¿                      whatever it was they were dragging,
+ÛÛÛÛ     º   ³   º   ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Click change? ´ Left  :09³                      If "dragging" is set and "drag change"
+ÛÛÛÛ     º   ³   º                                     À Middle:10Ù                      is set then they've just picked it up.
+ÛÛÛÛ     º   ³   º
+ÛÛÛÛ     º   ³   ÈÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ Did any drag change:11?              ÚÄ* Note:  This status will only appear if one of
+ÛÛÛÛ     º   ³                                        Ú Right :12¿            ³          the other active mouse functions are in
+ÛÛÛÛ     º   ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Drag change? ´ Left  :13³            ³          operation, such as a click being down
+ÛÛÛÛ     º                                            À Middle:14Ù            ³          right now, or a drag being held-down
+ÛÛÛÛ     º                                                                    ³          right now.  If the mouse is not active
+ÛÛÛÛ     ÈÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ Did any keyboard flags change:15?ÄÄÄÄÙ          in one of those ways then changes in the
+ÛÛÛÛ                                                                                     keyboard flags will only appear the next
+ÛÛÛÛ                                                                                     time a keystroke or mouse-event happens
+ÛÛÛÛ            THIRD 16-bit WORD
+ÛÛÛÛ    Ú5Â4Â3Â2Â1Â0Â9Â8Â7Â6Â5Â4Â3Â2Â1Â0¿
+ÛÛÛÛ    ³0³0³0³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³
+ÛÛÛÛ    ÀÂÁÄÁÂÁÂÁÄÁÄÁÄÁÄÁÄÁÄÁÄÁÄÁÄÁÄÁÄÁÂÙ
+ÛÛÛÛ     ÀÄÂÄÙ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄ X-Coordinate when mouse event took place (0 through 16,384)
+ÛÛÛÛ       ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ --Not used, reserved for future use
+ÛÛÛÛ
+ÛÛÛÛ            FOURTH 16-bit WORD
+ÛÛÛÛ    Ú5Â4Â3Â2Â1Â0Â9Â8Â7Â6Â5Â4Â3Â2Â1Â0¿
+ÛÛÛÛ    ³0³0³0³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³ ³
+ÛÛÛÛ    ÀÂÁÄÁÂÁÂÁÄÁÄÁÄÁÄÁÄÁÄÁÄÁÄÁÄÁÄÁÄÁÂÙ
+ÛÛÛÛ     ÀÄÂÄÙ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄ Y-Coordinate when mouse event took place (0 through 16,384)
+ÛÛÛÛ       ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ --Not used, reserved for future use
+ÛÛÛÛ

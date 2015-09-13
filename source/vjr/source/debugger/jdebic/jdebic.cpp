@@ -445,11 +445,11 @@ return;
 				sprintf(buffer, "id = %08x, \0", (u32)(uptr)thisCode);
 				iBuilder_appendData(data, buffer, -1);
 
-				iBuilder_append_label_uptr(data, "prev",		(uptr)thisCode->ll.prev);
-				iBuilder_append_label_uptr(data, "next",		(uptr)thisCode->ll.next);
-				iBuilder_append_label_uptr(data, "window",		(uptr)thisCode->win);
-				iBuilder_append_label_uptr(data, "definition",	(uptr)thisCode->definition);
-				iBuilder_append_label_uptr(data, "live",		(uptr)thisCode->live);
+				iBuilder_append_label_uptr(data, (s8*)"prev",		(uptr)thisCode->ll.prev);
+				iBuilder_append_label_uptr(data, (s8*)"next",		(uptr)thisCode->ll.next);
+				iBuilder_append_label_uptr(data, (s8*)"window",		(uptr)thisCode->win);
+				iBuilder_append_label_uptr(data, (s8*)"definition",	(uptr)thisCode->definition);
+				iBuilder_append_label_uptr(data, (s8*)"live",		(uptr)thisCode->live);
 
 				iBuilder_appendData(data, " }", -1);
 
@@ -499,13 +499,13 @@ return;
 				iBuilder_appendData(data, "sourceCode = { ", -1);
 				sprintf(buffer, "id = %08x, \0", (u32)(uptr)sourceCode);
 				iBuilder_appendData(data, buffer, -1);
-				if (sourceCode->firstFunction)		iBuilder_append_label_uptr(data, "firstFunction",	(uptr)sourceCode->firstFunction);
-				if (sourceCode->params)				iBuilder_append_label_uptr(data, "params",			(uptr)sourceCode->params);
-				if (sourceCode->returns)			iBuilder_append_label_uptr(data, "returns",			(uptr)sourceCode->returns);
-				if (sourceCode->privates)			iBuilder_append_label_uptr(data, "privates",		(uptr)sourceCode->privates);
-				if (sourceCode->locals)				iBuilder_append_label_uptr(data, "locals",			(uptr)sourceCode->locals);
-				if (sourceCode->scoped)				iBuilder_append_label_uptr(data, "scoped",			(uptr)sourceCode->scoped);
-				if (sourceCode->sem)				iBuilder_append_label_uptr(data, "sem",				(uptr)sourceCode->sem);
+				if (sourceCode->firstFunction)		iBuilder_append_label_uptr(data, (s8*)"firstFunction",	(uptr)sourceCode->firstFunction);
+				if (sourceCode->params)				iBuilder_append_label_uptr(data, (s8*)"params",			(uptr)sourceCode->params);
+				if (sourceCode->returns)			iBuilder_append_label_uptr(data, (s8*)"returns",		(uptr)sourceCode->returns);
+				if (sourceCode->privates)			iBuilder_append_label_uptr(data, (s8*)"privates",		(uptr)sourceCode->privates);
+				if (sourceCode->locals)				iBuilder_append_label_uptr(data, (s8*)"locals",			(uptr)sourceCode->locals);
+				if (sourceCode->scoped)				iBuilder_append_label_uptr(data, (s8*)"scoped",			(uptr)sourceCode->scoped);
+				if (sourceCode->sem)				iBuilder_append_label_uptr(data, (s8*)"sem",			(uptr)sourceCode->sem);
 				iBuilder_appendData(data, " }", -1);
 
 
@@ -554,19 +554,19 @@ return;
 				sprintf(buffer, "id = %08x, \0", (u32)(uptr)func);
 				iBuilder_appendData(data, buffer, -1);
 
-				if (func->next)					iBuilder_append_label_uptr(data,	"firstFunction",	(uptr)func->next);
-				if (func->name.data)			iBuilder_append_label_datum(data,	"name",				&func->name);
+				if (func->next)					iBuilder_append_label_uptr(data,	(s8*)"firstFunction",	(uptr)func->next);
+				if (func->name.data)			iBuilder_append_label_datum(data,	(s8*)"name",			&func->name);
 
-				if (func->params)				iBuilder_append_label_uptr(data,	"params",			(uptr)func->params);
-				if (func->locals)				iBuilder_append_label_uptr(data,	"locals",			(uptr)func->locals);
-				if (func->returns)				iBuilder_append_label_uptr(data,	"returns",			(uptr)func->returns);
-				if (func->scoped)				iBuilder_append_label_uptr(data,	"scoped",			(uptr)func->scoped);
+				if (func->params)				iBuilder_append_label_uptr(data,	(s8*)"params",			(uptr)func->params);
+				if (func->locals)				iBuilder_append_label_uptr(data,	(s8*)"locals",			(uptr)func->locals);
+				if (func->returns)				iBuilder_append_label_uptr(data,	(s8*)"returns",			(uptr)func->returns);
+				if (func->scoped)				iBuilder_append_label_uptr(data,	(s8*)"scoped",			(uptr)func->scoped);
 
-				if (func->firstAdhoc)			iBuilder_append_label_uptr(data,	"firstAdhoc",		(uptr)func->firstAdhoc);
-				if (func->firstFlowof)			iBuilder_append_label_uptr(data,	"firstAdhoc",		(uptr)func->firstFlowof);
+				if (func->firstAdhoc)			iBuilder_append_label_uptr(data,	(s8*)"firstAdhoc",		(uptr)func->firstAdhoc);
+				if (func->firstFlowof)			iBuilder_append_label_uptr(data,	(s8*)"firstAdhoc",		(uptr)func->firstFlowof);
 
-				if (func->firstLine)			iBuilder_append_label_uptr(data,	"firstLine",		(uptr)func->firstLine);
-				if (func->lastLine)				iBuilder_append_label_uptr(data,	"lastLine",			(uptr)func->lastLine);
+				if (func->firstLine)			iBuilder_append_label_uptr(data,	(s8*)"firstLine",		(uptr)func->firstLine);
+				if (func->lastLine)				iBuilder_append_label_uptr(data,	(s8*)"lastLine",		(uptr)func->lastLine);
 				iBuilder_appendData(data, " }", -1);
 
 
@@ -616,13 +616,13 @@ return;
 				sprintf(buffer, "id = %08x, \0", (u32)(uptr)var);
 				iBuilder_appendData(data, buffer, -1);
 
-				if (var->name.data)				iBuilder_append_label_datum(data,	"name",			&var->name);
-				if (var->ll.prev)				iBuilder_append_label_uptr(data,	"prev",			(uptr)var->ll.prev);
-				if (var->ll.next)				iBuilder_append_label_uptr(data,	"next",			(uptr)var->ll.next);
-				if (var->firstAccess)			iBuilder_append_label_uptr(data,	"firstAccess",	(uptr)var->firstAccess);
-				if (var->firstAssign)			iBuilder_append_label_uptr(data,	"firstAssign",	(uptr)var->firstAssign);
+				if (var->name.data)				iBuilder_append_label_datum(data,	(s8*)"name",			&var->name);
+				if (var->ll.prev)				iBuilder_append_label_uptr(data,	(s8*)"prev",			(uptr)var->ll.prev);
+				if (var->ll.next)				iBuilder_append_label_uptr(data,	(s8*)"next",			(uptr)var->ll.next);
+				if (var->firstAccess)			iBuilder_append_label_uptr(data,	(s8*)"firstAccess",		(uptr)var->firstAccess);
+				if (var->firstAssign)			iBuilder_append_label_uptr(data,	(s8*)"firstAssign",		(uptr)var->firstAssign);
 
-				iBuilder_append_label_logical(data,	"varAllocated", var->isVarAllocated);
+				iBuilder_append_label_logical(data,	(s8*)"varAllocated", var->isVarAllocated);
 
 
 			//////////
@@ -631,7 +631,7 @@ return;
 				if (var->indirect)
 				{
 					// This variable points to another variable
-					iBuilder_append_label_uptr(data,	"indirect",		(uptr)var->indirect);
+					iBuilder_append_label_uptr(data,	(s8*)"indirect",		(uptr)var->indirect);
 					iBuilder_appendData(data, " }", -1);
 
 					if (var->firstAccess)		iJDebiC_sem(data, items, var->firstAccess);
@@ -641,7 +641,7 @@ return;
 
 				} else {
 					// The variable is not a reference, but points to itself
-					iBuilder_append_label_logical(data,	"valueAllocated", var->isValueAllocated);
+					iBuilder_append_label_logical(data,	(s8*)"valueAllocated", var->isValueAllocated);
 					iBuilder_appendData(data, " }", -1);
 
 					if (var->firstAccess)		iJDebiC_sem(data, items, var->firstAccess);
@@ -743,40 +743,40 @@ return;
 				iBuilder_appendData(data, buffer, -1);
 
 // Must sync up with the SWindow structure
-				iBuilder_append_label_logical(data, "isValid", win->isValid);
-				iBuilder_append_label_uptr(data, "hwnd", (uptr)win->hwnd);
-				iBuilder_append_label_uptr(data, "bmp", (uptr)win->bmp);
+				iBuilder_append_label_logical(data, (s8*)"isValid", win->isValid);
+				iBuilder_append_label_uptr(data, (s8*)"hwnd", (uptr)win->hwnd);
+				iBuilder_append_label_uptr(data, (s8*)"bmp", (uptr)win->bmp);
 
 				iiJDebiC_decode_Rect(buffer, &win->rc);
-				iBuilder_append_label_text(data, "rc", buffer);
+				iBuilder_append_label_text(data, (s8*)"rc", buffer);
 
-				iBuilder_append_label_uptr(data, "obj", (uptr)win->obj);
+				iBuilder_append_label_uptr(data, (s8*)"obj", (uptr)win->obj);
 
 				iiJDebiC_decode_SMouseData(buffer, &win->mousePrior);
-				iBuilder_append_label_text(data, "mousePrior", buffer);
+				iBuilder_append_label_text(data, (s8*)"mousePrior", buffer);
 
 				iiJDebiC_decode_SMouseData(buffer, &win->mouseCurrent);
-				iBuilder_append_label_text(data, "mousePrior", buffer);
+				iBuilder_append_label_text(data, (s8*)"mousePrior", buffer);
 
-				iBuilder_append_label_logical(data, "isMoving", win->isMoving);
-				iBuilder_append_label_logical(data, "isResizing", win->isResizing);
+				iBuilder_append_label_logical(data, (s8*)"isMoving", win->isMoving);
+				iBuilder_append_label_logical(data, (s8*)"isResizing", win->isResizing);
 
 				iiJDebiC_decode_SMouseData(buffer, &win->mouseMoveResizeStart);
-				iBuilder_append_label_text(data, "mouseMoveResizeStart", buffer);
+				iBuilder_append_label_text(data, (s8*)"mouseMoveResizeStart", buffer);
 
 				iiJDebiC_decode_Rect(buffer, &win->rcMoveResizeStart);
-				iBuilder_append_label_text(data, "rcMoveResizeStart", buffer);
+				iBuilder_append_label_text(data, (s8*)"rcMoveResizeStart", buffer);
 
-				iBuilder_append_label_sptr(data, "movingLastDeltaX", (uptr)win->movingLastDeltaX);
-				iBuilder_append_label_sptr(data, "movingLastDeltaY", (uptr)win->movingLastDeltaY);
+				iBuilder_append_label_sptr(data, (s8*)"movingLastDeltaX", (uptr)win->movingLastDeltaX);
+				iBuilder_append_label_sptr(data, (s8*)"movingLastDeltaY", (uptr)win->movingLastDeltaY);
 
 				iiJDebiC_decode_POINT(buffer, win->mousePositionClick);
-				iBuilder_append_label_text(data, "mousePositionClick", buffer);
+				iBuilder_append_label_text(data, (s8*)"mousePositionClick", buffer);
 
 				iiJDebiC_decode_POINT(buffer, win->mousePositionClickScreen);
-				iBuilder_append_label_text(data, "mousePositionClickScreen", buffer);
+				iBuilder_append_label_text(data, (s8*)"mousePositionClickScreen", buffer);
 
-				iBuilder_appendData(data, " }", -1);
+				iBuilder_appendData(data, (s8*)" }", -1);
 		}
 	}
 

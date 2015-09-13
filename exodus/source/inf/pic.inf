@@ -1,0 +1,37 @@
+some information I found on usenet comp.lang.asm.x86:
+
+----------------------8<----------------------
+PORT_8259M      EQU             020H
+PORT_8259S      EQU             0A0H
+PORT_INT_MASK_M EQU             021H
+PORT_INT_MASK_S EQU             0A1H
+
+; This macro reprograms PIC (master and slave) to other interrupt vectors
+@SET_INT_CTRLR  MACRO   INT_MASTER, INT_SLAVE
+        MOV     AL, 11H                 ; START 8259 INITIALIZATION
+        OUT     PORT_8259M, AL
+        OUT     PORT_8259S, AL
+        MOV     AL, INT_MASTER          ; BASE INTERRUPT VECTOR
+        OUT     PORT_8259M+1, AL
+        MOV     AL, INT_SLAVE
+        OUT     PORT_8259S+1, AL
+        MOV     AL, 1 SHL 2             ; BITMASK FOR CASCADE ON IRQ 2
+        OUT     PORT_8259M+1, AL
+        MOV     AL, 2                   ; CASCADE ON IRQ 2
+        OUT     PORT_8259S+1, AL
+        MOV     AL, 1                   ; FINISH 8259 INITIALIZATION
+        OUT     PORT_8259M+1, AL
+        OUT     PORT_8259S+1, AL
+
+        MOV     AL, 0FFH                ; MASK ALL INTERRUPTS
+        OUT     PORT_INT_MASK_M, AL
+        OUT     PORT_INT_MASK_S, AL
+ENDM
+----------------------8<----------------------
+
+Usually I call it this way:
+@SET_INT_CTRLR  20h, 28h
+this sets up int20h...27h for IRQ0...IRQ7 and
+int28h...2Fh for IRQ8...IRQ15
+
+

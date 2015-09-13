@@ -2058,7 +2058,7 @@
 		// Store the settings
 		//////
 			focus->readWriteBrush	= CreateSolidBrush(RGB(focusHighlightReadWriteColor.red,	focusHighlightReadWriteColor.grn,	focusHighlightReadWriteColor.blu));
-			focus->readOnlyBrush	= CreateSolidBrush(RGB(focusHighlightReadOnlyColor.red,		focusHighlightReadOnlyColor.grn,	focusHighlightReadOnlyColor.blu));
+			focus->readOnlyBrush	= CreateSolidBrush(RGB(focusHighlightReadOnlyColor.red,	focusHighlightReadOnlyColor.grn,	focusHighlightReadOnlyColor.blu));
 			GetWindowRect(focus->hwnd, &focus->rc);
 
 
@@ -4652,45 +4652,45 @@ JDebiC_debug(thisCode, win, obj);
 	#error Language not specified
 #endif
 
-		iiVjr_renderAccomplishment(bmp, &lrc, _BLUE, cgcFormsWorking_070,							"0.70", false, false, false, -2, 0);
-		iiVjr_renderAccomplishment(bmp, &lrc, _BLUE, cgcCompilerCompleted_065,						"0.65", false, false, false, -2, 0);
-		iiVjr_renderAccomplishment(bmp, &lrc, _BLUE, cgcRunningPrograms_060,						"0.60", false, false, false, -2, 0);
-		iiVjr_renderAccomplishment(bmp, &lrc, _BLUE, cgcHernanCano_057,								"0.57", false, false, false, 0, 0);
+		iiVjr_renderAccomplishment(bmp, &lrc, _BLUE, cgcFormsWorking_070,							(s8*)"0.70", false, false, false, -2, 0);
+		iiVjr_renderAccomplishment(bmp, &lrc, _BLUE, cgcCompilerCompleted_065,						(s8*)"0.65", false, false, false, -2, 0);
+		iiVjr_renderAccomplishment(bmp, &lrc, _BLUE, cgcRunningPrograms_060,						(s8*)"0.60", false, false, false, -2, 0);
+		iiVjr_renderAccomplishment(bmp, &lrc, _BLUE, cgcHernanCano_057,								(s8*)"0.57", false, false, false, 0, 0);
 
-		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcVersion_057,								"0.57", false, false, false, 0, 0);
+		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcVersion_057,								(s8*)"0.57", false, false, false, 0, 0);
 
-		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcVersion_056,								"0.56", false, false, false, -2, 0);
-		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgc64bitAnd32bit_055,							"0.55", false, false, false, -2, 0);
-		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcShiftSpaceInNames_054,						"0.54", false, false, false, -2, 0);
-		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcInternalPropertyRefactoring_054,			"0.54", false, false, false, -2, 0);
-		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcChrtranStrtran_052,						"0.52", false, false, false, -2, 0);
-		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcBugFixesMemoryLeaksRemoved_051,			"0.51", false, false, false, -2, 0);
-		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcEditorHighlightsWord_050,					"0.50", false, false, false, -2, 0);
+		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcVersion_056,								(s8*)"0.56", false, false, false, -2, 0);
+		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgc64bitAnd32bit_055,							(s8*)"0.55", false, false, false, -2, 0);
+		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcShiftSpaceInNames_054,						(s8*)"0.54", false, false, false, -2, 0);
+		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcInternalPropertyRefactoring_054,			(s8*)"0.54", false, false, false, -2, 0);
+		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcChrtranStrtran_052,						(s8*)"0.52", false, false, false, -2, 0);
+		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcBugFixesMemoryLeaksRemoved_051,			(s8*)"0.51", false, false, false, -2, 0);
+		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcEditorHighlightsWord_050,					(s8*)"0.50", false, false, false, -2, 0);
 
-//		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "UI redesign geared toward debugger",			"0.50", false, false, false, -2, 0);
-//		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "Editor development",							"0.49", false, false, false, -2, 0);
-//		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "Editor line numbers, breakpoints",			"0.48", false, false, false, -2, 0);
+//		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "UI redesign geared toward debugger",			(s8*)"0.50", false, false, false, -2, 0);
+//		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "Editor development",							(s8*)"0.49", false, false, false, -2, 0);
+//		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "Editor line numbers, breakpoints",			(s8*)"0.48", false, false, false, -2, 0);
 
-		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcEditorResize_047,							"0.47", false, false, false, -2, 0);
+		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcEditorResize_047,							(s8*)"0.47", false, false, false, -2, 0);
 
-//		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "Casks",										"0.46", false, true, false, -2, 0);
-//		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "Syntax highlighting",						"0.45", false, true, false, -2, 0);
-// 		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "Tabs expanded, mouse wheel",					"0.44", false, true, false, -2, 0);
+//		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "Casks",										(s8*)"0.46", false, true, false, -2, 0);
+//		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "Syntax highlighting",						(s8*)"0.45", false, true, false, -2, 0);
+// 		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "Tabs expanded, mouse wheel",					(s8*)"0.44", false, true, false, -2, 0);
 
 // Planned:
-		iiVjr_renderAccomplishment(bmp, &lrc, _AMBER, cgcTransformPartiallySupported_043,			"0.43", false, true, false, -1, 0);
-//		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "PADC(), PADL(), PADR()",						"0.43", false, true, false, -2, 0);
-// 		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "OCCURS(), OCCURSC()",						"0.43", false, true, false, -2, 0);
-// 		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "AT(), ATC(), RAT(), RATC()",					"0.43", false, true, false, -2, 0);
-// 		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "Bugfix on function parsing",					"0.42", false, true, false, -2, 0);
-// 		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "System log",									"0.41", false, true, false, -2, 0);
-//		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "Focus highlight border bugfix",				"0.41", false, true, false, -2, 0);
-//		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "Memory leak bug fixes",						"0.41", false, true, false, -2, 0);
-// 		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "Sound support",								"0.40", false, true, false, -2, 0);
-//		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "Focus highlight border",						"0.39", false, true, false, -2, 0);
- 		iiVjr_renderAccomplishment(bmp, &lrc, _AMBER, cgcTooltipsFramed_039,						"0.39", false, true, false, -1, 0);
-// 		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "_screen editable",							"0.39", false, true, false, -2, 0);
-//		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "MinGW GCC 4.8.1 and CodeLite",				"0.38", false, true, false, -2, 0);
+		iiVjr_renderAccomplishment(bmp, &lrc, _AMBER, cgcTransformPartiallySupported_043,			(s8*)"0.43", false, true, false, -1, 0);
+//		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "PADC(), PADL(), PADR()",						(s8*)"0.43", false, true, false, -2, 0);
+// 		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "OCCURS(), OCCURSC()",						(s8*)"0.43", false, true, false, -2, 0);
+// 		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "AT(), ATC(), RAT(), RATC()",					(s8*)"0.43", false, true, false, -2, 0);
+// 		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "Bugfix on function parsing",					(s8*)"0.42", false, true, false, -2, 0);
+// 		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "System log",									(s8*)"0.41", false, true, false, -2, 0);
+//		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "Focus highlight border bugfix",				(s8*)"0.41", false, true, false, -2, 0);
+//		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "Memory leak bug fixes",						(s8*)"0.41", false, true, false, -2, 0);
+// 		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "Sound support",								(s8*)"0.40", false, true, false, -2, 0);
+//		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "Focus highlight border",						(s8*)"0.39", false, true, false, -2, 0);
+ 		iiVjr_renderAccomplishment(bmp, &lrc, _AMBER, cgcTooltipsFramed_039,						(s8*)"0.39", false, true, false, -1, 0);
+// 		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "_screen editable",							(s8*)"0.39", false, true, false, -2, 0);
+//		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "MinGW GCC 4.8.1 and CodeLite",				(s8*)"0.38", false, true, false, -2, 0);
 	}
 
 

@@ -2846,16 +2846,16 @@
 											lbgra->blu		= (lbgra-1)->blu;
 
 											// Below
-											lbgraBelow->red = (lbgraBelow - 1)->red;
-											lbgraBelow->grn = (lbgraBelow - 1)->grn;
-											lbgraBelow->blu = (lbgraBelow - 1)->blu;
+											lbgraBelow->red	= (lbgraBelow-1)->red;
+											lbgraBelow->grn	= (lbgraBelow-1)->grn;
+											lbgraBelow->blu	= (lbgraBelow-1)->blu;
 
 											if (lnX < bmp->bi.biHeight - 1)
 											{
 												// Grab the pixel to the right of lbgraRight and copy it
-												lbgraRight->red	= (lbgraRight + 1)->red;
-												lbgraRight->grn	= (lbgraRight + 1)->grn;
-												lbgraRight->blu	= (lbgraRight + 1)->blu;
+												lbgraRight->red	= (lbgraRight+1)->red;
+												lbgraRight->grn	= (lbgraRight+1)->grn;
+												lbgraRight->blu	= (lbgraRight+1)->blu;
 
 											} else {
 												// Duplicate lbgra into lbgraRight
@@ -2869,9 +2869,9 @@
 											if (lnX < bmp->bi.biHeight - 1)
 											{
 												// Pixel to the right
-												lbgraRight->red	= (lbgraRight + 1)->red;
-												lbgraRight->grn	= (lbgraRight + 1)->grn;
-												lbgraRight->blu	= (lbgraRight + 1)->blu;
+												lbgraRight->red	= (lbgraRight+1)->red;
+												lbgraRight->grn	= (lbgraRight+1)->grn;
+												lbgraRight->blu	= (lbgraRight+1)->blu;
 
 												// Upper left pixel
 												lbgra->red		= lbgraRight->red;
@@ -3388,14 +3388,14 @@ return;
 						// Iterate through every pixel creating the mathematical adjustment for each
 						for (lnX = 0; lnX < bmpDapple->bi.biWidth; lnX++, lbgras++)
 						{
-							lfGray			= (((f32)lbgras->red * 0.35f) + ((f32)lbgras->grn * 0.54f) + ((f32)lbgras->blu * 0.11f));
+							lfGray				= (((f32)lbgras->red * 0.35f) + ((f32)lbgras->grn * 0.54f) + ((f32)lbgras->blu * 0.11f));
 							lbgras->blu_s8	= (s8)min(max((tfInfluence * lfGray / tfBias), -128), 128);
 						}
 					}
 
 				} else {
 					// Unknown format
-					iError_signal(NULL, _ERROR_INTERNAL_ERROR, NULL, false, "dapple bitcount", false);
+					iError_signal(NULL, _ERROR_INTERNAL_ERROR, NULL, false, (s8*)"dapple bitcount", false);
 					return;
 				}
 

@@ -1,0 +1,34 @@
+[shared-]
+	pmark="C:\EXODUS\SOURCE\OBJ\extras.c" 1977 1
+	version=3
+[debug-]
+	target="c:\exodus\source\obj\obj.com"
+	synonym=;C:\EXODUS\SOURCE\OBJ
+	watch=keystroke_numread'CPP
+	watch=temp_string'CPP
+	srcwin=vs1+ /a+b+c+l+s+t+
+	memwin=vm1b 0x1E0D:0xB6AC 
+[cv]
+	wndstate=0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1
+	wndstate=1 32 5 0 1 0 1 0 0 0 0 0 0 0 -1
+	wndstate=2 32 5 32 1 0 1 0 0 0 0 0 0 0 -1
+	wndstate=3 64 13 0 6 1 1 0 0 0 1976 1973 0 0 -1
+	wndstate=4 67 7 3 8 0 0 0 0 0 0 0 0 0 -1
+	wndstate=5 64 5 0 19 0 1 0 0 0 3897 3897 0 0 -1
+	wndstate=6 67 4 3 15 0 0 0 0 0 0 0 0 0 -1
+	wndstate=7 16 23 64 1 0 1 0 0 0 0 0 0 0 -1
+	wndstate=8 67 4 0 16 0 0 0 0 0 0 0 0 0 -1
+	wndstate=9 80 5 0 19 0 0 0 0 0 0 0 0 0 -1
+	command=use auto
+	command=n10
+	screensize=25
+	command=oh+
+	command=ov+
+	command=oa+
+	command=oc-
+	command=of+
+	command=o3+
+	command=ol-
+	command=ollf   
+	tracespeed=250
+	callargs=1

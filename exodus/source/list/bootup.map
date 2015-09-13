@@ -1,0 +1,126 @@
+
+ Start  Stop   Length Name                   Class
+ 00000H 00AB2H 00AB3H _TEXT                  CODE
+ 00AB3H 03D11H 0325FH _TEXT32                CODE
+ 03D12H 03D12H 00000H _DATA                  DATA
+
+ Origin   Group
+ 0000:0   DGROUP
+
+  Address         Publics by Name
+
+ 0000:01E6       adjust_al
+ 0000:084F       create_call_gate_descriptor
+ 0000:069F       create_code_descriptor
+ 0000:05AA       create_data_descriptor
+ 0000:05F9       create_data_descriptor_pl
+ 0000:0726       create_exodus_tss_descriptor
+ 0000:0702       create_interrupt_descriptors
+ 0000:06D4       create_interrupt_descriptor_32_bit
+ 0000:0650       create_ldt_descriptor
+ 0000:0598       create_null_data_descriptor
+ 0000:0872       create_task_gate_descriptor
+ 0000:30B4       default_interrupt_handler32
+ 0000:2EA3       default_primative_response
+ 0000:019C       display_crc_comparitive
+ 0000:022C       enable_gate_a20
+ 0000:01B7       extract_word_to_ds_di
+ 0000:31A2       hex_adjust_al_dl
+ 0000:31BF       init_failed
+ 0000:2F95       invAdd_primative
+ 0000:0D2A       invAlter_descriptor32_base_limit
+ 0000:2ECE       invCopy_this_part
+ 0000:0B01       invCreate_call_gate_descriptor32
+ 0000:0B9E       invCreate_code_descriptor32
+ 0000:0C11       invCreate_data_descriptor32
+ 0000:0B72       invCreate_interrupt_task_gate_descriptor32
+ 0000:0B46       invCreate_task_gate_descriptor32
+ 0000:0E13       invCreate_tss32
+ 0000:0DC4       invCreate_tss_descriptor32
+ 0000:370B       invDetermine_Exodus_ini_ownership
+ 0000:0CBF       invExtract_call_gate_descriptor32
+ 0000:0C7E       invExtract_code_descriptor32
+ 0000:0CE9       invExtract_data_descriptor32
+ 0000:0D99       invExtract_linear_offset_into_edx_from_ds
+ 0000:3241       invFind_Exodus_ini
+ 0000:2EEE       invMove_temp_gdts_to_permanent
+ 0000:330C       invParse_Exodus_ini
+ 0000:368D       invParse_Exodus_ini_store_error
+ 0000:0F0D       invSetup_memory_blocks
+ 0000:2970       invSetup_native_primatives
+ 0000:0F81       invSet_80x25_text_mode
+ 0000:0E93       invUpdate_interrupt_descriptor16
+ 0000:0ED0       invUpdate_interrupt_descriptor32
+ 0000:2FE7       invUpdate_required_primatives
+ 0000:30D2       iString_generate_radix_string
+ 0000:370C       requestor
+ 0000:024F       setup_pmode_variables
+ 0000:01F5       update_crc16_value
+ 0000:0108       verify_crc16
+ 0000:315A       VID_display_hex_string_ecx_mono
+ 0000:30BB       VID_display_radix_in_edx_mono
+ 0000:3130       VID_display_string_ecx_mono
+ 0000:3105       VID_display_string_mono
+ 0000:3D12       _edata
+ 0000:3D12       _end
+ 0000:3D12       __edata
+ 0000:3D12       __end
+
+  Address         Publics by Value
+
+ 0000:0108       verify_crc16
+ 0000:019C       display_crc_comparitive
+ 0000:01B7       extract_word_to_ds_di
+ 0000:01E6       adjust_al
+ 0000:01F5       update_crc16_value
+ 0000:022C       enable_gate_a20
+ 0000:024F       setup_pmode_variables
+ 0000:0598       create_null_data_descriptor
+ 0000:05AA       create_data_descriptor
+ 0000:05F9       create_data_descriptor_pl
+ 0000:0650       create_ldt_descriptor
+ 0000:069F       create_code_descriptor
+ 0000:06D4       create_interrupt_descriptor_32_bit
+ 0000:0702       create_interrupt_descriptors
+ 0000:0726       create_exodus_tss_descriptor
+ 0000:084F       create_call_gate_descriptor
+ 0000:0872       create_task_gate_descriptor
+ 0000:0B01       invCreate_call_gate_descriptor32
+ 0000:0B46       invCreate_task_gate_descriptor32
+ 0000:0B72       invCreate_interrupt_task_gate_descriptor32
+ 0000:0B9E       invCreate_code_descriptor32
+ 0000:0C11       invCreate_data_descriptor32
+ 0000:0C7E       invExtract_code_descriptor32
+ 0000:0CBF       invExtract_call_gate_descriptor32
+ 0000:0CE9       invExtract_data_descriptor32
+ 0000:0D2A       invAlter_descriptor32_base_limit
+ 0000:0D99       invExtract_linear_offset_into_edx_from_ds
+ 0000:0DC4       invCreate_tss_descriptor32
+ 0000:0E13       invCreate_tss32
+ 0000:0E93       invUpdate_interrupt_descriptor16
+ 0000:0ED0       invUpdate_interrupt_descriptor32
+ 0000:0F0D       invSetup_memory_blocks
+ 0000:0F81       invSet_80x25_text_mode
+ 0000:2970       invSetup_native_primatives
+ 0000:2EA3       default_primative_response
+ 0000:2ECE       invCopy_this_part
+ 0000:2EEE       invMove_temp_gdts_to_permanent
+ 0000:2F95       invAdd_primative
+ 0000:2FE7       invUpdate_required_primatives
+ 0000:30B4       default_interrupt_handler32
+ 0000:30BB       VID_display_radix_in_edx_mono
+ 0000:30D2       iString_generate_radix_string
+ 0000:3105       VID_display_string_mono
+ 0000:3130       VID_display_string_ecx_mono
+ 0000:315A       VID_display_hex_string_ecx_mono
+ 0000:31A2       hex_adjust_al_dl
+ 0000:31BF       init_failed
+ 0000:3241       invFind_Exodus_ini
+ 0000:330C       invParse_Exodus_ini
+ 0000:368D       invParse_Exodus_ini_store_error
+ 0000:370B       invDetermine_Exodus_ini_ownership
+ 0000:370C       requestor
+ 0000:3D12       _edata
+ 0000:3D12       _end
+ 0000:3D12       __end
+ 0000:3D12       __edata
