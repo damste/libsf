@@ -1003,7 +1003,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 					{
 						// There is enough room for this component to be examined
 						// See if it matches
-						if (iComps_xlatToComps_withTest(thisCode, lacs->keyword_u8, lcData + lnI, lacs->length) == 0)
+						if (iComps_xlatToComps_withTest(thisCode, lacs->keyword_cu8, lcData + lnI, lacs->length) == 0)
 						{
 							// It matches
 							// mark its current condition
@@ -1013,7 +1013,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 							if (lacs->repeats)
 							{
 								while (	lnStart + lnLength + lnLacsLength <= lnMaxLength
-										&& iComps_xlatToComps_withTest(thisCode, lacs->keyword_u8, lcData + lnStart + lnLength, lacs->length) == 0)
+										&& iComps_xlatToComps_withTest(thisCode, lacs->keyword_cu8, lcData + lnStart + lnLength, lacs->length) == 0)
 								{
 									// We found another repeated entry
 									lnLength += lnLacsLength;
@@ -1135,7 +1135,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 						if (!tacs->firstOnLine || !comp->ll.prev || iComps_areAllPrecedingCompsWhitespaces(thisCode, comp))
 						{
 							// Physically conduct the exact comparison
-							if (iComps_translateToOthers_testIfMatch(thisCode, tacs->keyword_u8, comp->line->sourceCode->data_cu8 + comp->start, tacs->length) == 0)
+							if (iComps_translateToOthers_testIfMatch(thisCode, tacs->keyword_cu8, comp->line->sourceCode->data_cu8 + comp->start, tacs->length) == 0)
 							{
 								// This is a match
 								llResult			= true;
@@ -4094,7 +4094,7 @@ debug_break;
 					{
 						// Physically conduct the exact comparison
 						if (iComps_xlatToComps_withTest(thisCode,
-													lacs->keyword_u8,
+													lacs->keyword_cu8,
 													comp->line->sourceCode->data_u8 + comp->start,
 													lacs->length) == 0)
 						{

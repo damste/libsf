@@ -171,11 +171,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\debi.c"
+				RelativePath="..\debi.c"
 				>
 			</File>
 			<File
-				RelativePath=".\disasm.c"
+				RelativePath="..\disasm.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -201,23 +201,23 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\debi_const.h"
+				RelativePath="..\debi_const.h"
 				>
 			</File>
 			<File
-				RelativePath=".\debi_defs.h"
+				RelativePath="..\debi_defs.h"
 				>
 			</File>
 			<File
-				RelativePath=".\debi_globals.h"
+				RelativePath="..\debi_globals.h"
 				>
 			</File>
 			<File
-				RelativePath=".\debi_structs.h"
+				RelativePath="..\debi_structs.h"
 				>
 			</File>
 			<File
-				RelativePath=".\disasm_opcodes.h"
+				RelativePath="..\disasm_opcodes.h"
 				>
 			</File>
 		</Filter>

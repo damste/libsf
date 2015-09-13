@@ -1,17 +1,16 @@
 //////////
 //
-// /libsf/exodus/tools/debi/debi_const.h
+// /libsf/exodus/tools/debi/debi_typedefs.h
 //
 //////
 // Version 0.80
 // Copyright (c) 2014-2015 by Rick C. Hodgin
 //////
 // Last update:
-//     Sep.12.2015
+//     Sep.13.2015
 //////
 // Change log:
-//     Sep.12.2015 - Refactoring for Exodus OS tool support
-//     Feb.13.2014 - Initial creation
+//     Sep.13.2015 - Initial creation
 //////
 //
 // This software is released as Liberty Software under a Repeat License, as governed
@@ -37,17 +36,5 @@
 
 
 
-// const.h
-typedef unsigned char	u8;
-typedef unsigned short	u16;
-typedef unsigned long	u32;
-typedef char			s8;
-typedef short			s16;
-typedef long			s32;
-typedef float			f32;
-typedef double			f64;
-typedef char			bool;
-#define true 1
-#define false 0
-
-u8 _null_string[] = "";
+// This function is called to reach the ones below, it is constantly updated
+typedef void(*DISASM_FUNC)(u8* data, struct _SDisasmData* dd);

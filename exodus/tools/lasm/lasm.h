@@ -85,4 +85,6 @@
 #include "lasm_const.h"
 #include "lasm_structs.h"
 #include "lasm_defs.h"
+#include "/libsf/exodus/tools/debi/debi_typedefs.h"
+#include "/libsf/exodus/tools/debi/debi_globals.h"
 #include "lasm_globals.h"

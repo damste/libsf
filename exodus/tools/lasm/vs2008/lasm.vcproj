@@ -175,7 +175,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\lasm.cpp"
+				RelativePath="..\lasm.cpp"
 				>
 			</File>
 		</Filter>
@@ -185,23 +185,23 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\lasm.h"
+				RelativePath="..\lasm.h"
 				>
 			</File>
 			<File
-				RelativePath=".\lasm_const.h"
+				RelativePath="..\lasm_const.h"
 				>
 			</File>
 			<File
-				RelativePath=".\lasm_defs.h"
+				RelativePath="..\lasm_defs.h"
 				>
 			</File>
 			<File
-				RelativePath=".\lasm_globals.h"
+				RelativePath="..\lasm_globals.h"
 				>
 			</File>
 			<File
-				RelativePath=".\lasm_structs.h"
+				RelativePath="..\lasm_structs.h"
 				>
 			</File>
 		</Filter>
@@ -215,163 +215,163 @@
 			Name="mapm"
 			>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\m_apm.h"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\m_apm.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\m_apm_lc.h"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\m_apm_lc.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapm5sin.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm5sin.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapm_add.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_add.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapm_cpi.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_cpi.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapm_div.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_div.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapm_exp.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_exp.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapm_fam.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_fam.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapm_fft.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_fft.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapm_flr.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_flr.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapm_fpf.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_fpf.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapm_gcd.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_gcd.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapm_lg2.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_lg2.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapm_lg3.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_lg3.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapm_lg4.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_lg4.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapm_log.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_log.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapm_mul.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_mul.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapm_pow.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_pow.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapm_rcp.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_rcp.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapm_rnd.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_rnd.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapm_set.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_set.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapm_sin.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_sin.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapmasin.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmasin.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapmasn0.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmasn0.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapmcbrt.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmcbrt.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapmcnst.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmcnst.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapmfact.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmfact.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapmfmul.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmfmul.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapmgues.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmgues.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapmhasn.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmhasn.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapmhsin.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmhsin.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapmipwr.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmipwr.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapmistr.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmistr.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapmpwr2.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmpwr2.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapmrsin.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmrsin.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapmsqrt.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmsqrt.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapmstck.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmstck.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapmutil.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmutil.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapmutl1.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmutl1.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\source\vjr\source\3rd_party\mapm\mapmutl2.c"
+				RelativePath="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmutl2.c"
 				>
 			</File>
 		</Filter>

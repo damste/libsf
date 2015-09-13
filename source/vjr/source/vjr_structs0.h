@@ -450,8 +450,8 @@ struct SBaseClassMap
 struct SAsciiCompSearcher
 {
 	union {
-		cs8*	keyword_s8;
-		cu8*	keyword_u8;												// Text keyword being searched
+		cs8*	keyword_cs8;
+		cu8*	keyword_cu8;											// Text keyword being searched
 	};
 	s32			length;													// Length of the keyword (negative for case sensitive, positive case insensitive, 0 for termination entry)
 	bool		repeats;												// Can this item repeat?  Or is this a one-shot keyword?

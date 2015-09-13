@@ -41,7 +41,11 @@
 #include <stdlib.h>
 #include <memory.h>
 
+// Indicate Debi itself is being compiled, as this disassembler is tightly coupled to lasm, which uses some of debi's data structs
+#define _DEBI_COMPILE 1
+
 #include "debi_const.h"
+#include "debi_typedefs.h"
 #include "debi_structs.h"
 #include "debi_defs.h"
 #include "debi_globals.h"
