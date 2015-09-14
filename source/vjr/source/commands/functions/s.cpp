@@ -1511,9 +1511,10 @@
 ///////
 // Version 0.57
 // Last update:
-//     Apr.08.2015
+//     Sep.13.2015
 //////
 // Change log:
+//	   Sep.13.2015 - SYS(11) added by Stefano D'Amico
 //	   Apr.08.2015 - SYS(10) added by Stefano D'Amico
 //	   Apr.08.2015 - SYS(2) added by Stefano D'Amico
 //	   Apr.08.2015 - SYS(1) added by Stefano D'Amico
@@ -1523,12 +1524,14 @@
 //		1				-- none
 //		2				-- none
 //		10				-- Numeric, julian day number
+//		11				-- Date or character string 
 //		2015			-- none
 //////
 // Returns:
 //		1				-- Character, returns the current system date as a Julian day number character string
 //		2				-- Numeric, returns the number of seconds elapsed since midnight
 //		10				-- Character, returns a Character-type date from a Julian day number
+//		11				-- Character, returns a Character-type Julian day number from a date
 //		2015			-- Character, unique procedure name
 //////
 	void function_sys(SThisCode* thisCode, SFunctionParams* rpar)
@@ -1543,6 +1546,7 @@
 		s8			curdir[_MAX_PATH];
 		u32			lnExtraPrefixWidth, lnExtraPostfixWidth;
 		s64			ln2015;
+		SFunctionParams		lsrpar;
 		u32			errorNum;
         bool		error;
 		SYSTEMTIME	lst;
@@ -1714,6 +1718,60 @@
 						iVariable_delete(thisCode, varTemp, true);
 						goto clean_exit;
 
+				// SYS(11) -- Julian Day Number
+				case 11:
+					//////////
+					// Parameter 1 must be date or char
+					//////
+						if (!iVariable_isValid(varP1) || !(iVariable_isTypeCharacter(varP1) || iVariable_isTypeDate(varP1) || iVariable_isTypeDatetime(varP1) || iVariable_isTypeDatetimeX(varP1)))
+						{
+							iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varP1), false);
+							return;
+						}
+
+				
+					//////////
+					// Grab year, month, day
+					//////
+						if (iVariable_isTypeCharacter(varP1))
+						{
+							//////////
+							// Setup the function call variables
+							//////
+								memset(&lsrpar, 0, sizeof(lsrpar));
+							
+								ifunction_ctox_common(thisCode, &lsrpar, varP1, true);
+								if (!lsrpar.rp[0])
+								{
+									iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varP1), false);
+									return;
+								}
+
+								varTemp = lsrpar.rp[0];
+
+						} else {
+							varTemp = varP1;
+						}
+
+						if (iVariable_isTypeDatetime(varTemp))			iiDateMath_get_YyyyMmDd_from_julian					(varTemp->value.data_dt->julian,			&lnYear, &lnMonth, &lnDay);
+						else if (iVariable_isTypeDatetimeX(varTemp))	iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds	(varTemp->value.data_dtx->jseconds, NULL,	&lnYear, &lnMonth, &lnDay, NULL, NULL, NULL, NULL, NULL);
+						else /* Date */									iiDateMath_get_YyyyMmDd_from_YYYYMMDD				(varTemp->value.data_u8,					&lnYear, &lnMonth, &lnDay);
+
+						
+
+					//////////
+					// Convert to julian
+					//////
+						iiDateMath_get_julian_from_YyyyMmDd(&lfJulian, lnYear, lnMonth, lnDay);
+						sprintf(buffer, "%d\0", (s32)lfJulian);
+
+
+					//////////
+					// Create our result and exit to report any errors
+					//////
+						result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, (cs8*)buffer, (u32)strlen(buffer), false);
+						iVariable_delete(thisCode, varTemp, true);
+						goto clean_exit;
 
 				// SYS(2003) -- Equivalent of SUBSTR(CURDIR(), 3, LEN(CURDIR()) - 3) (supresses the drive and backslash final)
 				case 2003:

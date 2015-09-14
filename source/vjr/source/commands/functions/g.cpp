@@ -88,6 +88,278 @@
 
 //////////
 //
+// Function: GETWORDCOUNT()
+// Counts the words in a string.
+//
+//////
+// Version 0.57
+// Last update:
+//     Sep.13.2015
+//////
+// Change log:
+//     Sep.13.2015 - Refactoring by Stefano D'Amico
+//     Sep.06.2015 - Initial creation by Stefano D'Amico
+//////
+// Parameters:
+//     p1			-- Specifies the string whose words will be counted
+//     p2			-- Optional. Specifies one or more optional characters used to separate words in cString
+//
+//////
+// Returns:
+//    Numeric.
+//
+//////
+	void function_getwordcount(SThisCode* thisCode, SFunctionParams* rpar)
+	{
+		SVariable*	varStr = rpar->ip[0];
+		SVariable*	varDelimiters = rpar->ip[1];
+
+		SDatum		delimiters;
+
+
+		//////////
+		// Parameters 1 must be present and character
+		//////
+			rpar->rp[0] = NULL;
+			if (!iVariable_isValid(varStr) || !iVariable_isTypeCharacter(varStr))
+			{
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varStr), false);
+				return;
+			}
+
+		//////////
+		// If present, parameter 2 must be character
+		//////
+			if (varDelimiters)
+			{
+				// Logical
+				if (!iVariable_isValid(varDelimiters) || !iVariable_isTypeCharacter(varDelimiters))
+				{
+					iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varDelimiters), false);
+					return;
+				}
+
+				// Store the delimiters
+				delimiters.data_cs8	= varDelimiters->value.data_cs8;
+				delimiters.length	= varDelimiters->value.length;
+
+			} else {
+				// Use the default delimiters
+				delimiters.data_cs8	= &cgc_getwordDelim[0];
+				delimiters.length	= sizeof(cgc_getwordDelim) - 1;
+			}
+
+		//////////
+		// Return the result
+		//////
+			rpar->rp[0] = ifunction_getword_common(thisCode, varStr, delimiters, 0, true);
+	}
+
+	//Common getword function used for GETWORDNUM(), GETWORDCOUNT()
+	SVariable* ifunction_getword_common(SThisCode* thisCode,SVariable* varStr, SDatum delimiters, s32 tnIndex, bool tlCount)
+	{
+		s32			lnI, lnJ, lnAllocationLength, lnCount, lnPass, lnOffset;
+		s8			c;
+		bool		llFoundDelimiter, lbIsPriorLastDelimiter;
+		s8*			lcResult;
+
+		SVariable*	result;
+
+
+		/////////
+		// Parser string
+		//////
+			for (lnPass = 1; lnPass < (tlCount? 2 : 3); lnPass++)
+			{
+				//////////
+				// Initialize this pass
+				//////
+					if (lnPass == 1)
+					{
+						// Compute allocation length
+						lnAllocationLength = 0;
+
+					} else {
+						// Physically store the data
+						lcResult = (s8*)malloc(lnAllocationLength + 1);
+						if (!lcResult)
+						{
+							iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, NULL, false);
+							return(NULL);
+						}
+
+						// Prepare for storage
+						lcResult[lnAllocationLength]	= 0;
+						lnOffset						= 0;
+					}	
+
+
+					//////////
+					// Iterate through our string
+					//////
+						for (lnI = 0, lbIsPriorLastDelimiter = true, lnCount = 0; varStr->value.data_cs8[lnI] && lnI < varStr->value.length; lnI++)
+						{
+
+							//////////
+							// Grab char
+							//////
+								c = varStr->value.data_cs8[lnI];
+
+							//////////
+							// Iterate through our delimiters
+							//////
+								for (lnJ = 0, llFoundDelimiter = false; delimiters.data_cs8[lnJ] && lnJ < delimiters.length; lnJ++)
+								{
+									if (c == delimiters.data_cs8[lnJ])
+									{
+										llFoundDelimiter = true;
+										break;
+									}
+								}
+							
+							//////////
+							// if "c" is not a delimiter but the earlier it was, I found a new word
+							//////
+								if (!llFoundDelimiter && lbIsPriorLastDelimiter)
+									lnCount++;
+							
+								lbIsPriorLastDelimiter = llFoundDelimiter;
+
+							// Is my word? (only for GetWordNum)
+							if (!tlCount && lnCount == tnIndex && !llFoundDelimiter)
+							{
+								if (lnPass == 1)
+								{
+									// Increase our length
+									++lnAllocationLength;
+
+								} else {
+									lcResult[lnOffset] = c;
+									++lnOffset;
+								}
+							}
+						}
+			}
+		
+
+		//////////
+		// Create our result
+		//////
+			if (tlCount)
+				result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_U32, (cs8*)&lnCount, sizeof(lnCount), false);
+			else
+				if (lnAllocationLength != 0 && lcResult)	result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, (cs8*)lcResult, lnAllocationLength, true);
+				else										result = NULL;
+
+
+		//////////
+		// Are we good?
+		//////
+			if (!result)
+				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_getRelatedComp(thisCode, varStr), false);
+
+
+		//////////
+		// Return the result
+		//////
+			return result;
+	}
+
+
+//////////
+//
+// Function: GETWORDNUM()
+// Returns a specified word from a string.
+//
+//////
+// Version 0.57
+// Last update:
+//     Sep.13.2015
+//////
+// Change log:
+//     Sep.13.2015 - Initial creation by Stefano D'Amico
+//////
+// Parameters:
+//     p1			-- Specifies the string to be evaluated
+//	   p2			-- Specifies the index position of the word to be returned
+//     p3			-- Optional. Specifies one or more optional characters used to separate words in cString
+//
+//////
+// Returns:
+//    Character.
+//
+//////
+	void function_getwordnum(SThisCode* thisCode, SFunctionParams* rpar)
+	{
+		SVariable*	varStr = rpar->ip[0];
+		SVariable*	varIndex = rpar->ip[1];
+		SVariable*	varDelimiters = rpar->ip[2];
+		s32			lnIndex;
+
+		SDatum		delimiters;
+		u32			errorNum;
+		bool		error;
+
+
+		//////////
+		// Parameters 1 must be present and character
+		//////
+			rpar->rp[0] = NULL;
+			if (!iVariable_isValid(varStr) || !iVariable_isTypeCharacter(varStr))
+			{
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varStr), false);
+				return;
+			}
+
+		//////////
+		// Parameters 2 must be present and numeric
+		//////
+			if (!iVariable_isValid(varIndex) || !iVariable_isTypeNumeric(varIndex))
+			{
+				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varIndex), false);
+				return;
+			}
+
+		//////////
+		// If present, parameter 3 must be character
+		//////
+			if (varDelimiters)
+			{
+				// Logical
+				if (!iVariable_isValid(varDelimiters) || !iVariable_isTypeCharacter(varDelimiters))
+				{
+					iError_reportByNumber(thisCode, _ERROR_P3_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varDelimiters), false);
+					return;
+				}
+
+				// Store the delimiters
+				delimiters.data_cs8	= varDelimiters->value.data_cs8;
+				delimiters.length	= varDelimiters->value.length;
+
+			} else {
+				// Use the default delimiters
+				delimiters.data_cs8	= &cgc_getwordDelim[0];
+				delimiters.length	= sizeof(cgc_getwordDelim) - 1;
+			}
+
+		//////////
+		// Grab index
+		//////		
+			lnIndex = iiVariable_getAs_s32(thisCode, varIndex, false, &error, &errorNum);
+
+
+		//////////
+		// Indicate our result
+		//////
+			rpar->rp[0] = ifunction_getword_common(thisCode, varStr, delimiters, lnIndex, false);
+
+	}
+
+
+
+
+//////////
+//
 // Function: GOMONTH()
 // Returns the date that is a specified number of months before or after a given Date or DateTime expression.
 //
