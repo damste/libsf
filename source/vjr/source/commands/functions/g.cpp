@@ -92,7 +92,7 @@
 // Counts the words in a string.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Sep.13.2015
 //////
@@ -111,8 +111,8 @@
 //////
 	void function_getwordcount(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varStr = rpar->ip[0];
-		SVariable*	varDelimiters = rpar->ip[1];
+		SVariable*	varStr			= rpar->ip[0];
+		SVariable*	varDelimiters	= rpar->ip[1];
 
 		SDatum		delimiters;
 
@@ -126,6 +126,7 @@
 				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varStr), false);
 				return;
 			}
+
 
 		//////////
 		// If present, parameter 2 must be character
@@ -145,32 +146,34 @@
 
 			} else {
 				// Use the default delimiters
-				delimiters.data_cs8	= &cgc_getwordDelim[0];
+				delimiters.data_cs8	= (cs8*)&cgc_getwordDelim[0];
 				delimiters.length	= sizeof(cgc_getwordDelim) - 1;
 			}
+
 
 		//////////
 		// Return the result
 		//////
 			rpar->rp[0] = ifunction_getword_common(thisCode, varStr, delimiters, 0, true);
+
 	}
 
-	//Common getword function used for GETWORDNUM(), GETWORDCOUNT()
-	SVariable* ifunction_getword_common(SThisCode* thisCode,SVariable* varStr, SDatum delimiters, s32 tnIndex, bool tlCount)
+	// Common getword function used for GETWORDNUM(), GETWORDCOUNT()
+	SVariable* ifunction_getword_common(SThisCode* thisCode,SVariable* varStr, SDatum delimiters, s32 tnIndex, bool tlIsCount)
 	{
-		s32			lnI, lnJ, lnAllocationLength, lnCount, lnPass, lnOffset;
+		s32			lnI, lnJ, lnAllocationLength, lnCount, lnPass, lnPassMax, lnOffset;
 		s8			c;
-		bool		llFoundDelimiter, lbIsPriorLastDelimiter;
+		bool		llFoundDelimiter, llIsPriorLastDelimiter;
 		s8*			lcResult;
-
 		SVariable*	result;
 
 
 		/////////
 		// Parser string
 		//////
-			for (lnPass = 1; lnPass < (tlCount? 2 : 3); lnPass++)
+			for (lnPass = 1, lnPassMax = ((tlIsCount) ? 2 : 3); lnPass < lnPassMax; lnPass++)
 			{
+
 				//////////
 				// Initialize this pass
 				//////
@@ -194,39 +197,45 @@
 					}	
 
 
-					//////////
-					// Iterate through our string
-					//////
-						for (lnI = 0, lbIsPriorLastDelimiter = true, lnCount = 0; varStr->value.data_cs8[lnI] && lnI < varStr->value.length; lnI++)
-						{
+				//////////
+				// Iterate through our string
+				//////
+					for (lnI = 0, llIsPriorLastDelimiter = true, lnCount = 0; varStr->value.data_cs8[lnI] && lnI < varStr->value.length; lnI++)
+					{
 
-							//////////
-							// Grab char
-							//////
-								c = varStr->value.data_cs8[lnI];
+						//////////
+						// Grab char
+						//////
+							c = varStr->value.data_cs8[lnI];
 
-							//////////
-							// Iterate through our delimiters
-							//////
-								for (lnJ = 0, llFoundDelimiter = false; delimiters.data_cs8[lnJ] && lnJ < delimiters.length; lnJ++)
+
+						//////////
+						// Iterate through our delimiters
+						//////
+							for (lnJ = 0, llFoundDelimiter = false; delimiters.data_cs8[lnJ] && lnJ < delimiters.length; lnJ++)
+							{
+								if (c == delimiters.data_cs8[lnJ])
 								{
-									if (c == delimiters.data_cs8[lnJ])
-									{
-										llFoundDelimiter = true;
-										break;
-									}
+									llFoundDelimiter = true;
+									break;
 								}
-							
-							//////////
-							// if "c" is not a delimiter but the earlier it was, I found a new word
-							//////
-								if (!llFoundDelimiter && lbIsPriorLastDelimiter)
-									lnCount++;
-							
-								lbIsPriorLastDelimiter = llFoundDelimiter;
+							}
+						
 
-							// Is my word? (only for GetWordNum)
-							if (!tlCount && lnCount == tnIndex && !llFoundDelimiter)
+						//////////
+						// if "c" is not a delimiter but the earlier it was, I found a new word
+						//////
+							if (!llFoundDelimiter && llIsPriorLastDelimiter)
+								++lnCount;
+						
+							// Store our found condition for moving forward
+							llIsPriorLastDelimiter = llFoundDelimiter;
+
+
+						//////////
+						// Is my word? (only for GetWordNum)
+						//////
+							if (!tlIsCount && lnCount == tnIndex && !llFoundDelimiter)
 							{
 								if (lnPass == 1)
 								{
@@ -234,22 +243,28 @@
 									++lnAllocationLength;
 
 								} else {
-									lcResult[lnOffset] = c;
-									++lnOffset;
+									// Store
+									lcResult[lnOffset++] = c;
 								}
 							}
-						}
+
+					}
 			}
 		
 
 		//////////
 		// Create our result
 		//////
-			if (tlCount)
-				result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_U32, (cs8*)&lnCount, sizeof(lnCount), false);
-			else
+			if (tlIsCount)
+			{
+				// Just a count
+				result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_S32, (cs8*)&lnCount, sizeof(lnCount), false);
+
+			} else {
+				// Store the result
 				if (lnAllocationLength != 0 && lcResult)	result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, (cs8*)lcResult, lnAllocationLength, true);
-				else										result = NULL;
+				else										result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_spaceText, 0, false);
+			}
 
 
 		//////////
@@ -262,8 +277,10 @@
 		//////////
 		// Return the result
 		//////
-			return result;
+			return(result);
 	}
+
+
 
 
 //////////
@@ -272,7 +289,7 @@
 // Returns a specified word from a string.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Sep.13.2015
 //////
@@ -291,11 +308,11 @@
 //////
 	void function_getwordnum(SThisCode* thisCode, SFunctionParams* rpar)
 	{
-		SVariable*	varStr = rpar->ip[0];
-		SVariable*	varIndex = rpar->ip[1];
-		SVariable*	varDelimiters = rpar->ip[2];
-		s32			lnIndex;
+		SVariable*	varStr			= rpar->ip[0];
+		SVariable*	varIndex		= rpar->ip[1];
+		SVariable*	varDelimiters	= rpar->ip[2];
 
+		s32			lnIndex;
 		SDatum		delimiters;
 		u32			errorNum;
 		bool		error;
@@ -311,6 +328,7 @@
 				return;
 			}
 
+
 		//////////
 		// Parameters 2 must be present and numeric
 		//////
@@ -319,6 +337,7 @@
 				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varIndex), false);
 				return;
 			}
+
 
 		//////////
 		// If present, parameter 3 must be character
@@ -338,9 +357,10 @@
 
 			} else {
 				// Use the default delimiters
-				delimiters.data_cs8	= &cgc_getwordDelim[0];
+				delimiters.data_cs8	= (cs8*)&cgc_getwordDelim[0];
 				delimiters.length	= sizeof(cgc_getwordDelim) - 1;
 			}
+
 
 		//////////
 		// Grab index

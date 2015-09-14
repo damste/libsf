@@ -108,15 +108,17 @@
 			}
 
 			// Allocate the space
-			if (dataLength > 0)
-				datum->data = (s8*)malloc(dataLength);
+			datum->data = (s8*)malloc(max(dataLength, 1) + 1);
 
 			// Set the length
 			datum->length = dataLength;
 
 			// Initialize
-			if (datum->data)
+			if (datum->data && dataLength)
 				memset(datum->data, 0, dataLength);
+
+			// NULL-terminate
+			datum->data_s8[max(dataLength, 1)] = 0;
 		}
 	}
 
@@ -138,7 +140,7 @@
 			memset(datumNew, 0, sizeof(SDatum));
 
 			// Copy over the content
-			if (data && dataLength)
+			if (data)
 			{
 				// We may need to set the length
 				if (dataLength < 0)
@@ -169,25 +171,16 @@
 			iiDatum_delete(datum);
 
 			// Store the new data
-			if (dataLength > 0)
-			{
-				// Allocate one extra byte for a trailing NULL
-				datum->data = (s8*)malloc(dataLength + 1);
+			// Allocate one extra byte for a trailing NULL
+			datum->data = (s8*)malloc(max(dataLength, 1) + 1);
 
-				// Copy over if we were successful
-				if (datum->data)
-				{
-					memcpy(datum->data, data, dataLength);
-					datum->data[dataLength] = 0;
-				}
-
-			} else {
-				// There is no data here
-				datum->data = NULL;
-			}
+			// Copy over if we were successful
+			if (datum->data && dataLength > 0)
+				memcpy(datum->data, data, dataLength);
 
 			// Store the new length
 			datum->length = dataLength;
+			datum->data[max(dataLength, 1)] = 0;
 		}
 	}
 

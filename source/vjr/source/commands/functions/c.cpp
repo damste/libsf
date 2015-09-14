@@ -983,6 +983,7 @@
 
 
 // Untested code, breakpoint and examine
+// TODO:  Per Stefano, if the date is invalid, it's not working
 debug_break;
 		//////////
 		// varCtoxString must be character
@@ -1213,6 +1214,7 @@ debug_break;
 		//////////
 		// Signify our result
 		//////
+// TODO:  Since this is an internal function, it should return the result, rather than setting rpar->rp[0];
 			rpar->rp[0] = result;
 
 	}

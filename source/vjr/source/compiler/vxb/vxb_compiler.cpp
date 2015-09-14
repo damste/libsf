@@ -5008,7 +5008,7 @@ debug_break;
 					tnDataLength = (s32)strlen(tcData);
 
 				// Allocate the SDatum
-				if (tcData && tnDataLength > 0)
+				if (tcData)
 				{
 					// Should we create a reference to the existing data?  Or copy it?
 					if (tlCreateReference)
@@ -5019,10 +5019,11 @@ debug_break;
 
 					} else {
 						// Copy
-						iDatum_duplicate(&var->value, tcData, tnDataLength);
+						iDatum_duplicate(&var->value, tcData, max(tnDataLength, 1));
 
-						// Indicate the content within this variable has been allocated
-						var->isValueAllocated = true;
+						// Indicate the content within this variable's true size, and that it's has been allocated
+						var->value.length		= tnDataLength;
+						var->isValueAllocated	= true;
 					}
 				}
 
@@ -5299,7 +5300,7 @@ debug_break;
 		//////////
 		// Iterate through until we find it
 		//////
-			for (var = varRoot, lnDepth = 0; var; var = (SVariable*)var->ll.next, lnDepth++)
+			for (var = varRoot, lnDepth = 0; var; var = var->ll.nextVar, lnDepth++)
 			{
 				// Is the name the same length?  And if so, does it match?
 				if (var->name.length == (s32)tnVarNameLength && _memicmp(tcVarName, var->name.data, tnVarNameLength) == 0)
@@ -7954,7 +7955,7 @@ debug_break;
 			memset(buffer, 0, sizeof(buffer));
 
 			// Is it null?
-			if (!var->value.data || var->value.length == 0)
+			if (!var->value.data || (!iVariable_isTypeCharacter(var) && var->value.length == 0))
 			{
 				varDisp->isValueAllocated = true;
 				iDatum_duplicate(&varDisp->value, cgcNullText, sizeof(cgcNullText) - 1);

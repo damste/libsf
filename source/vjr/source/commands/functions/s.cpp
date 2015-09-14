@@ -1509,7 +1509,7 @@
 // SYS function support (Dec.27.2014 incomplete)
 //
 ///////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Sep.13.2015
 //////
@@ -1718,8 +1718,10 @@
 						iVariable_delete(thisCode, varTemp, true);
 						goto clean_exit;
 
+
 				// SYS(11) -- Julian Day Number
 				case 11:
+// TODO:  We should allow other date-related types for varP1
 					//////////
 					// Parameter 1 must be date or char
 					//////
@@ -1740,6 +1742,10 @@
 							//////
 								memset(&lsrpar, 0, sizeof(lsrpar));
 							
+
+							//////////
+							// Use common function to extract the date
+							//////
 								ifunction_ctox_common(thisCode, &lsrpar, varP1, true);
 								if (!lsrpar.rp[0])
 								{
@@ -1747,31 +1753,41 @@
 									return;
 								}
 
-								varTemp = lsrpar.rp[0];
+
+							//////////
+							// Grab converted date
+							//////
+								varTemp			= lsrpar.rp[0];
+								lsrpar.rp[0]	= NULL;
 
 						} else {
+							// Use date
 							varTemp = varP1;
 						}
 
-						if (iVariable_isTypeDatetime(varTemp))			iiDateMath_get_YyyyMmDd_from_julian					(varTemp->value.data_dt->julian,			&lnYear, &lnMonth, &lnDay);
-						else if (iVariable_isTypeDatetimeX(varTemp))	iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds	(varTemp->value.data_dtx->jseconds, NULL,	&lnYear, &lnMonth, &lnDay, NULL, NULL, NULL, NULL, NULL);
-						else /* Date */									iiDateMath_get_YyyyMmDd_from_YYYYMMDD				(varTemp->value.data_u8,					&lnYear, &lnMonth, &lnDay);
-
-						
 
 					//////////
 					// Convert to julian
 					//////
+						// Break out
+						if (iVariable_isTypeDatetime(varTemp))			iiDateMath_get_YyyyMmDd_from_julian					(varTemp->value.data_dt->julian,			&lnYear, &lnMonth, &lnDay);
+						else if (iVariable_isTypeDatetimeX(varTemp))	iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds	(varTemp->value.data_dtx->jseconds, NULL,	&lnYear, &lnMonth, &lnDay, NULL, NULL, NULL, NULL, NULL);
+						else /* Date */									iiDateMath_get_YyyyMmDd_from_YYYYMMDD				(varTemp->value.data_u8,					&lnYear, &lnMonth, &lnDay);
+
+						// Get julian
 						iiDateMath_get_julian_from_YyyyMmDd(&lfJulian, lnYear, lnMonth, lnDay);
 						sprintf(buffer, "%d\0", (s32)lfJulian);
+
+						// Delete temp (no longer needed)
+						iVariable_delete(thisCode, varTemp, true);
 
 
 					//////////
 					// Create our result and exit to report any errors
 					//////
 						result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, (cs8*)buffer, (u32)strlen(buffer), false);
-						iVariable_delete(thisCode, varTemp, true);
 						goto clean_exit;
+
 
 				// SYS(2003) -- Equivalent of SUBSTR(CURDIR(), 3, LEN(CURDIR()) - 3) (supresses the drive and backslash final)
 				case 2003:
