@@ -94,6 +94,7 @@
 //////////
 // Only include vjr.h in this one source file
 //////
+	#define _VJR_COMPILE 1		// Indicates certain things specific to the actual vjr.exe application being compiled
 	#include "vjr.h"
 
 

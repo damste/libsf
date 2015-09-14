@@ -130,6 +130,10 @@
     <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmutil.c" />
     <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmutl1.c" />
     <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmutl2.c" />
+    <ClCompile Include="..\pass0.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\lasm.h" />

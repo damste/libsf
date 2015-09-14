@@ -88,3 +88,9 @@
 #include "/libsf/exodus/tools/debi/debi_typedefs.h"
 #include "/libsf/exodus/tools/debi/debi_globals.h"
 #include "lasm_globals.h"
+
+#include "pass0.cpp"
+//#include "passN.cpp"
+//#include "passX.cpp"
+//#include "passY.cpp"
+//#include "passZ.cpp"

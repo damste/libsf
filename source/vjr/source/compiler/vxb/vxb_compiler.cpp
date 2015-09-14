@@ -848,7 +848,6 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // TODO:  Working here
 		return(NULL);
 	}
-;
 
 
 

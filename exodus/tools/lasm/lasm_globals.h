@@ -83,32 +83,51 @@
 
 
 //////////
+// Processing data
+//////
+	SLasmFile*	gsFirstFile							= NULL;					// First file that's being assembled
+
+
+//////////
+// Command line options
+//////
+	const s8	cgc_wno[]							= "-Wno-";
+	const s8	cgc_wmissing_type_ptr[]				= "missing-type-ptr";
+	const s8	cgc_wall[]							= "all";
+	const s8	cgc_wfatal_errors[]					= "fatal-errors";
+	const s8	cgc_werror[]						= "error";
+	const s8	cgc_fsyntax_only[]					= "-fsyntax-only";
+
+
+//////////
 // Pointer types
 //////
-	u8		cgc_ptr_tbyte[]			= "tbyte";
-	u8		cgc_ptr_dqword[]		= "dqword";
-	u8		cgc_ptr_qword[]			= "qword";
-	u8		cgc_ptr_dword[]			= "dword";
-	u8		cgc_ptr_word[]			= "word";
-	u8		cgc_ptr_byte[]			= "byte";
-	u8		cgc_ptr_m16_16[]		= "m16_16";
-	u8		cgc_ptr_m16_32[]		= "m16_32";
-	u8		cgc_ptr_f32[]			= "f32";
-	u8		cgc_ptr_f64[]			= "f64";
-	u8		cgc_ptr_f80[]			= "f80";
-	u8		cgc_ptr_s16[]			= "s16";
-	u8		cgc_ptr_s32[]			= "s32";
-	u8		cgc_ptr_s64[]			= "s64";
-	u8		cgc_ptr_m80[]			= "m80";
-	u8		cgc_ptr_mmx[]			= "mmx";
-	u8		cgc_ptr_xmmx[]			= "xmmx";
-	u8		cgc_ptr_fpu[]			= "fpu";
-	u8		cgc_ptr_6byte[]			= "m6byte";
-	u8		cgc_ptr_10byte[]		= "m10byte";
-	u8		cgc_ptr_14byte[]		= "m14byte";
-	u8		cgc_ptr_28byte[]		= "m28byte";
-	u8		cgc_ptr_94byte[]		= "m94byte";
-	u8		cgc_ptr_108byte[]		= "m108byte";
+	u8			cgc_ptr_tbyte[]						= "tbyte";
+	u8			cgc_ptr_dqword[]					= "dqword";
+	u8			cgc_ptr_qword[]						= "qword";
+	u8			cgc_ptr_dword[]						= "dword";
+	u8			cgc_ptr_word[]						= "word";
+	u8			cgc_ptr_byte[]						= "byte";
+	u8			cgc_ptr_m16_16[]					= "m16_16";
+	u8			cgc_ptr_m16_32[]					= "m16_32";
+	u8			cgc_ptr_f32[]						= "f32";
+	u8			cgc_ptr_f64[]						= "f64";
+	u8			cgc_ptr_f80[]						= "f80";
+	u8			cgc_ptr_s16[]						= "s16";
+	u8			cgc_ptr_s32[]						= "s32";
+	u8			cgc_ptr_s64[]						= "s64";
+	u8			cgc_ptr_m80[]						= "m80";
+	u8			cgc_ptr_mmx[]						= "mmx";
+	u8			cgc_ptr_xmmx[]						= "xmmx";
+	u8			cgc_ptr_fpu[]						= "fpu";
+	u8			cgc_ptr_6byte[]						= "m6byte";
+	u8			cgc_ptr_10byte[]					= "m10byte";
+	u8			cgc_ptr_14byte[]					= "m14byte";
+	u8			cgc_ptr_28byte[]					= "m28byte";
+	u8			cgc_ptr_94byte[]					= "m94byte";
+	u8			cgc_ptr_108byte[]					= "m108byte";
+
+	u8			cgc_include[]						= "include";
 
 
 
@@ -116,7 +135,7 @@
 //////////
 // Colors
 //////
-	SBgra	colorDefault			= { rgba(0, 0, 0, 255) };		// Black
+	SBgra		colorDefault						= { rgba(0, 0, 0, 255) };		// Black
 
 
 
@@ -425,7 +444,7 @@
 		{ (cs8*)cgc_fnstenv_instruction,		sizeof(cgc_fnstenv_instruction) - 1,	false,		_ICODE_FNSTENV_INSTRUCTION,			true,		_ICAT_INSTRUCTION,		&colorDefault,		false,			null0,		null0	},
 		{ (cs8*)cgc_frstor_instruction,			sizeof(cgc_frstor_instruction) - 1,		false,		_ICODE_FRSTOR_INSTRUCTION,			true,		_ICAT_INSTRUCTION,		&colorDefault,		false,			null0,		null0	},
 		{ (cs8*)cgc_fnsave_instruction,			sizeof(cgc_fnsave_instruction) - 1,		false,		_ICODE_FNSAVE_INSTRUCTION,			true,		_ICAT_INSTRUCTION,		&colorDefault,		false,			null0,		null0	},
-
+																																																									  
 		{ (cs8*)cgc_ptr_tbyte,					sizeof(cgc_ptr_tbyte) - 1,				false,		_ICODE_PTR_TBYTE,					true,		_ICAT_POINTER_SIZE,		&colorDefault,		false,			null0,		null0	},
 		{ (cs8*)cgc_ptr_dqword,					sizeof(cgc_ptr_dqword) - 1,				false,		_ICODE_PTR_DQWORD,					true,		_ICAT_POINTER_SIZE,		&colorDefault,		false,			null0,		null0	},
 		{ (cs8*)cgc_ptr_qword,					sizeof(cgc_ptr_qword) - 1,				false,		_ICODE_PTR_QWORD,					true,		_ICAT_POINTER_SIZE,		&colorDefault,		false,			null0,		null0	},
@@ -450,14 +469,14 @@
 		{ (cs8*)cgc_ptr_28byte,					sizeof(cgc_ptr_28byte) - 1,				false,		_ICODE_PTR_28BYTE,					true,		_ICAT_POINTER_SIZE,		&colorDefault,		false,			null0,		null0	},
 		{ (cs8*)cgc_ptr_94byte,					sizeof(cgc_ptr_94byte) - 1,				false,		_ICODE_PTR_94BYTE,					true,		_ICAT_POINTER_SIZE,		&colorDefault,		false,			null0,		null0	},
 		{ (cs8*)cgc_ptr_108byte,				sizeof(cgc_ptr_108byte) - 1,			false,		_ICODE_PTR_108BYTE,					true,		_ICAT_POINTER_SIZE,		&colorDefault,		false,			null0,		null0	},
-
+																																																									  
 		{ (cs8*)cgc_cs_reg,						sizeof(cgc_cs_reg) - 1,					false,		_ICODE_CS,							true,		_ICAT_SEGMENT_REGISTER,	&colorDefault,		false,			null0,		null0	},
 		{ (cs8*)cgc_ds_reg,						sizeof(cgc_ds_reg) - 1,					false,		_ICODE_DS,							true,		_ICAT_SEGMENT_REGISTER,	&colorDefault,		false,			null0,		null0	},
 		{ (cs8*)cgc_es_reg,						sizeof(cgc_es_reg) - 1,					false,		_ICODE_ES,							true,		_ICAT_SEGMENT_REGISTER,	&colorDefault,		false,			null0,		null0	},
 		{ (cs8*)cgc_fs_reg,						sizeof(cgc_fs_reg) - 1,					false,		_ICODE_FS,							true,		_ICAT_SEGMENT_REGISTER,	&colorDefault,		false,			null0,		null0	},
 		{ (cs8*)cgc_gs_reg,						sizeof(cgc_gs_reg) - 1,					false,		_ICODE_GS,							true,		_ICAT_SEGMENT_REGISTER,	&colorDefault,		false,			null0,		null0	},
 		{ (cs8*)cgc_ss_reg,						sizeof(cgc_ss_reg) - 1,					false,		_ICODE_SS,							true,		_ICAT_SEGMENT_REGISTER,	&colorDefault,		false,			null0,		null0	},
-																																	
+																																																									  
 		{ (cs8*)cgc_al_reg,						sizeof(cgc_al_reg) - 1,					false,		_ICODE_AL,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
 		{ (cs8*)cgc_bl_reg,						sizeof(cgc_bl_reg) - 1,					false,		_ICODE_BL,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
 		{ (cs8*)cgc_cl_reg,						sizeof(cgc_cl_reg) - 1,					false,		_ICODE_CL,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
@@ -466,7 +485,7 @@
 		{ (cs8*)cgc_bh_reg,						sizeof(cgc_bh_reg) - 1,					false,		_ICODE_BH,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
 		{ (cs8*)cgc_ch_reg,						sizeof(cgc_ch_reg) - 1,					false,		_ICODE_CH,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
 		{ (cs8*)cgc_dh_reg,						sizeof(cgc_dh_reg) - 1,					false,		_ICODE_DH,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
-																																	
+																																																									  
 		{ (cs8*)cgc_ax_reg,						sizeof(cgc_ax_reg) - 1,					false,		_ICODE_AX,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
 		{ (cs8*)cgc_bx_reg,						sizeof(cgc_bx_reg) - 1,					false,		_ICODE_BX,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
 		{ (cs8*)cgc_cx_reg,						sizeof(cgc_cx_reg) - 1,					false,		_ICODE_CX,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
@@ -476,70 +495,72 @@
 		{ (cs8*)cgc_bp_reg,						sizeof(cgc_bp_reg) - 1,					false,		_ICODE_BP,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
 		{ (cs8*)cgc_sp_reg,						sizeof(cgc_sp_reg) - 1,					false,		_ICODE_SP,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
 		{ (cs8*)cgc_ip_reg,						sizeof(cgc_ip_reg) - 1,					false,		_ICODE_IP,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
-																																	
-		{ (cs8*)cgc_eax_reg,					sizeof(cgc_eax_reg) - 1,				false,		_ICODE_EAX,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_ebx_reg,					sizeof(cgc_ebx_reg) - 1,				false,		_ICODE_EBX,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_ecx_reg,					sizeof(cgc_ecx_reg) - 1,				false,		_ICODE_ECX,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_edx_reg,					sizeof(cgc_edx_reg) - 1,				false,		_ICODE_EDX,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_esi_reg,					sizeof(cgc_esi_reg) - 1,				false,		_ICODE_ESI,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_edi_reg,					sizeof(cgc_edi_reg) - 1,				false,		_ICODE_EDI,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_ebp_reg,					sizeof(cgc_ebp_reg) - 1,				false,		_ICODE_EBP,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_esp_reg,					sizeof(cgc_esp_reg) - 1,				false,		_ICODE_ESP,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_eip_reg,					sizeof(cgc_eip_reg) - 1,				false,		_ICODE_EIP,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},	
-																																	
-		{ (cs8*)cgc_cr0_reg,					sizeof(cgc_cr0_reg) - 1,				false,		_ICODE_CR0,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_cr1_reg,					sizeof(cgc_cr1_reg) - 1,				false,		_ICODE_CR1,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_cr2_reg,					sizeof(cgc_cr2_reg) - 1,				false,		_ICODE_CR2,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_cr3_reg,					sizeof(cgc_cr3_reg) - 1,				false,		_ICODE_CR3,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_cr4_reg,					sizeof(cgc_cr4_reg) - 1,				false,		_ICODE_CR4,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_cr5_reg,					sizeof(cgc_cr5_reg) - 1,				false,		_ICODE_CR5,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_cr6_reg,					sizeof(cgc_cr6_reg) - 1,				false,		_ICODE_CR6,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_cr7_reg,					sizeof(cgc_cr7_reg) - 1,				false,		_ICODE_CR7,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},	
-																																	
-		{ (cs8*)cgc_dr0_reg,					sizeof(cgc_dr0_reg) - 1,				false,		_ICODE_DR0,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_dr1_reg,					sizeof(cgc_dr1_reg) - 1,				false,		_ICODE_DR1,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_dr2_reg,					sizeof(cgc_dr2_reg) - 1,				false,		_ICODE_DR2,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_dr3_reg,					sizeof(cgc_dr3_reg) - 1,				false,		_ICODE_DR3,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_dr4_reg,					sizeof(cgc_dr4_reg) - 1,				false,		_ICODE_DR4,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_dr5_reg,					sizeof(cgc_dr5_reg) - 1,				false,		_ICODE_DR5,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_dr6_reg,					sizeof(cgc_dr6_reg) - 1,				false,		_ICODE_DR6,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_dr7_reg,					sizeof(cgc_dr7_reg) - 1,				false,		_ICODE_DR7,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},	
-																																	
-		{ (cs8*)cgc_tr0_reg,					sizeof(cgc_tr0_reg) - 1,				false,		_ICODE_TR0,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_tr1_reg,					sizeof(cgc_tr1_reg) - 1,				false,		_ICODE_TR1,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_tr2_reg,					sizeof(cgc_tr2_reg) - 1,				false,		_ICODE_TR2,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_tr3_reg,					sizeof(cgc_tr3_reg) - 1,				false,		_ICODE_TR3,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_tr4_reg,					sizeof(cgc_tr4_reg) - 1,				false,		_ICODE_TR4,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_tr5_reg,					sizeof(cgc_tr5_reg) - 1,				false,		_ICODE_TR5,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_tr6_reg,					sizeof(cgc_tr6_reg) - 1,				false,		_ICODE_TR6,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_tr7_reg,					sizeof(cgc_tr7_reg) - 1,				false,		_ICODE_TR7,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},	
-																																	
-		{ (cs8*)cgc_st0_reg,					sizeof(cgc_st0_reg) - 1,				false,		_ICODE_ST0,							true,		_ICAT_FPU_REGISTER,		&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_st1_reg,					sizeof(cgc_st1_reg) - 1,				false,		_ICODE_ST1,							true,		_ICAT_FPU_REGISTER,		&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_st2_reg,					sizeof(cgc_st2_reg) - 1,				false,		_ICODE_ST2,							true,		_ICAT_FPU_REGISTER,		&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_st3_reg,					sizeof(cgc_st3_reg) - 1,				false,		_ICODE_ST3,							true,		_ICAT_FPU_REGISTER,		&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_st4_reg,					sizeof(cgc_st4_reg) - 1,				false,		_ICODE_ST4,							true,		_ICAT_FPU_REGISTER,		&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_st5_reg,					sizeof(cgc_st5_reg) - 1,				false,		_ICODE_ST5,							true,		_ICAT_FPU_REGISTER,		&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_st6_reg,					sizeof(cgc_st6_reg) - 1,				false,		_ICODE_ST6,							true,		_ICAT_FPU_REGISTER,		&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_st7_reg,					sizeof(cgc_st7_reg) - 1,				false,		_ICODE_ST7,							true,		_ICAT_FPU_REGISTER,		&colorDefault,		false,			null0,		null0	},	
-																																	
-		{ (cs8*)cgc_mm0_reg,					sizeof(cgc_mm0_reg) - 1,				false,		_ICODE_MM0,							true,		_ICAT_MM_REGISTER,		&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_mm1_reg,					sizeof(cgc_mm1_reg) - 1,				false,		_ICODE_MM1,							true,		_ICAT_MM_REGISTER,		&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_mm2_reg,					sizeof(cgc_mm2_reg) - 1,				false,		_ICODE_MM2,							true,		_ICAT_MM_REGISTER,		&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_mm3_reg,					sizeof(cgc_mm3_reg) - 1,				false,		_ICODE_MM3,							true,		_ICAT_MM_REGISTER,		&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_mm4_reg,					sizeof(cgc_mm4_reg) - 1,				false,		_ICODE_MM4,							true,		_ICAT_MM_REGISTER,		&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_mm5_reg,					sizeof(cgc_mm5_reg) - 1,				false,		_ICODE_MM5,							true,		_ICAT_MM_REGISTER,		&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_mm6_reg,					sizeof(cgc_mm6_reg) - 1,				false,		_ICODE_MM6,							true,		_ICAT_MM_REGISTER,		&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_mm7_reg,					sizeof(cgc_mm7_reg) - 1,				false,		_ICODE_MM7,							true,		_ICAT_MM_REGISTER,		&colorDefault,		false,			null0,		null0	},	
-																																	
-		{ (cs8*)cgc_xmm0_reg,					sizeof(cgc_xmm0_reg) - 1,				false,		_ICODE_XMM0,						true,		_ICAT_XMM_REGISTER,		&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_xmm1_reg,					sizeof(cgc_xmm1_reg) - 1,				false,		_ICODE_XMM1,						true,		_ICAT_XMM_REGISTER,		&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_xmm2_reg,					sizeof(cgc_xmm2_reg) - 1,				false,		_ICODE_XMM2,						true,		_ICAT_XMM_REGISTER,		&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_xmm3_reg,					sizeof(cgc_xmm3_reg) - 1,				false,		_ICODE_XMM3,						true,		_ICAT_XMM_REGISTER,		&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_xmm4_reg,					sizeof(cgc_xmm4_reg) - 1,				false,		_ICODE_XMM4,						true,		_ICAT_XMM_REGISTER,		&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_xmm5_reg,					sizeof(cgc_xmm5_reg) - 1,				false,		_ICODE_XMM5,						true,		_ICAT_XMM_REGISTER,		&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_xmm6_reg,					sizeof(cgc_xmm6_reg) - 1,				false,		_ICODE_XMM6,						true,		_ICAT_XMM_REGISTER,		&colorDefault,		false,			null0,		null0	},	
-		{ (cs8*)cgc_xmm7_reg,					sizeof(cgc_xmm7_reg) - 1,				false,		_ICODE_XMM7,						true,		_ICAT_XMM_REGISTER,		&colorDefault,		false,			null0,		null0	},	
-
+																																																									  
+		{ (cs8*)cgc_eax_reg,					sizeof(cgc_eax_reg) - 1,				false,		_ICODE_EAX,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_ebx_reg,					sizeof(cgc_ebx_reg) - 1,				false,		_ICODE_EBX,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_ecx_reg,					sizeof(cgc_ecx_reg) - 1,				false,		_ICODE_ECX,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_edx_reg,					sizeof(cgc_edx_reg) - 1,				false,		_ICODE_EDX,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_esi_reg,					sizeof(cgc_esi_reg) - 1,				false,		_ICODE_ESI,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_edi_reg,					sizeof(cgc_edi_reg) - 1,				false,		_ICODE_EDI,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_ebp_reg,					sizeof(cgc_ebp_reg) - 1,				false,		_ICODE_EBP,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_esp_reg,					sizeof(cgc_esp_reg) - 1,				false,		_ICODE_ESP,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_eip_reg,					sizeof(cgc_eip_reg) - 1,				false,		_ICODE_EIP,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
+																																																									  
+		{ (cs8*)cgc_cr0_reg,					sizeof(cgc_cr0_reg) - 1,				false,		_ICODE_CR0,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_cr1_reg,					sizeof(cgc_cr1_reg) - 1,				false,		_ICODE_CR1,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_cr2_reg,					sizeof(cgc_cr2_reg) - 1,				false,		_ICODE_CR2,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_cr3_reg,					sizeof(cgc_cr3_reg) - 1,				false,		_ICODE_CR3,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_cr4_reg,					sizeof(cgc_cr4_reg) - 1,				false,		_ICODE_CR4,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_cr5_reg,					sizeof(cgc_cr5_reg) - 1,				false,		_ICODE_CR5,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_cr6_reg,					sizeof(cgc_cr6_reg) - 1,				false,		_ICODE_CR6,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_cr7_reg,					sizeof(cgc_cr7_reg) - 1,				false,		_ICODE_CR7,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
+																																																									  
+		{ (cs8*)cgc_dr0_reg,					sizeof(cgc_dr0_reg) - 1,				false,		_ICODE_DR0,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_dr1_reg,					sizeof(cgc_dr1_reg) - 1,				false,		_ICODE_DR1,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_dr2_reg,					sizeof(cgc_dr2_reg) - 1,				false,		_ICODE_DR2,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_dr3_reg,					sizeof(cgc_dr3_reg) - 1,				false,		_ICODE_DR3,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_dr4_reg,					sizeof(cgc_dr4_reg) - 1,				false,		_ICODE_DR4,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_dr5_reg,					sizeof(cgc_dr5_reg) - 1,				false,		_ICODE_DR5,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_dr6_reg,					sizeof(cgc_dr6_reg) - 1,				false,		_ICODE_DR6,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_dr7_reg,					sizeof(cgc_dr7_reg) - 1,				false,		_ICODE_DR7,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
+																																																									  
+		{ (cs8*)cgc_tr0_reg,					sizeof(cgc_tr0_reg) - 1,				false,		_ICODE_TR0,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_tr1_reg,					sizeof(cgc_tr1_reg) - 1,				false,		_ICODE_TR1,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_tr2_reg,					sizeof(cgc_tr2_reg) - 1,				false,		_ICODE_TR2,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_tr3_reg,					sizeof(cgc_tr3_reg) - 1,				false,		_ICODE_TR3,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_tr4_reg,					sizeof(cgc_tr4_reg) - 1,				false,		_ICODE_TR4,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_tr5_reg,					sizeof(cgc_tr5_reg) - 1,				false,		_ICODE_TR5,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_tr6_reg,					sizeof(cgc_tr6_reg) - 1,				false,		_ICODE_TR6,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_tr7_reg,					sizeof(cgc_tr7_reg) - 1,				false,		_ICODE_TR7,							true,		_ICAT_REGISTER,			&colorDefault,		false,			null0,		null0	},
+																																																									  
+		{ (cs8*)cgc_st0_reg,					sizeof(cgc_st0_reg) - 1,				false,		_ICODE_ST0,							true,		_ICAT_FPU_REGISTER,		&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_st1_reg,					sizeof(cgc_st1_reg) - 1,				false,		_ICODE_ST1,							true,		_ICAT_FPU_REGISTER,		&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_st2_reg,					sizeof(cgc_st2_reg) - 1,				false,		_ICODE_ST2,							true,		_ICAT_FPU_REGISTER,		&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_st3_reg,					sizeof(cgc_st3_reg) - 1,				false,		_ICODE_ST3,							true,		_ICAT_FPU_REGISTER,		&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_st4_reg,					sizeof(cgc_st4_reg) - 1,				false,		_ICODE_ST4,							true,		_ICAT_FPU_REGISTER,		&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_st5_reg,					sizeof(cgc_st5_reg) - 1,				false,		_ICODE_ST5,							true,		_ICAT_FPU_REGISTER,		&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_st6_reg,					sizeof(cgc_st6_reg) - 1,				false,		_ICODE_ST6,							true,		_ICAT_FPU_REGISTER,		&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_st7_reg,					sizeof(cgc_st7_reg) - 1,				false,		_ICODE_ST7,							true,		_ICAT_FPU_REGISTER,		&colorDefault,		false,			null0,		null0	},
+																																																									  
+		{ (cs8*)cgc_mm0_reg,					sizeof(cgc_mm0_reg) - 1,				false,		_ICODE_MM0,							true,		_ICAT_MM_REGISTER,		&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_mm1_reg,					sizeof(cgc_mm1_reg) - 1,				false,		_ICODE_MM1,							true,		_ICAT_MM_REGISTER,		&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_mm2_reg,					sizeof(cgc_mm2_reg) - 1,				false,		_ICODE_MM2,							true,		_ICAT_MM_REGISTER,		&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_mm3_reg,					sizeof(cgc_mm3_reg) - 1,				false,		_ICODE_MM3,							true,		_ICAT_MM_REGISTER,		&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_mm4_reg,					sizeof(cgc_mm4_reg) - 1,				false,		_ICODE_MM4,							true,		_ICAT_MM_REGISTER,		&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_mm5_reg,					sizeof(cgc_mm5_reg) - 1,				false,		_ICODE_MM5,							true,		_ICAT_MM_REGISTER,		&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_mm6_reg,					sizeof(cgc_mm6_reg) - 1,				false,		_ICODE_MM6,							true,		_ICAT_MM_REGISTER,		&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_mm7_reg,					sizeof(cgc_mm7_reg) - 1,				false,		_ICODE_MM7,							true,		_ICAT_MM_REGISTER,		&colorDefault,		false,			null0,		null0	},
+																																																									  
+		{ (cs8*)cgc_xmm0_reg,					sizeof(cgc_xmm0_reg) - 1,				false,		_ICODE_XMM0,						true,		_ICAT_XMM_REGISTER,		&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_xmm1_reg,					sizeof(cgc_xmm1_reg) - 1,				false,		_ICODE_XMM1,						true,		_ICAT_XMM_REGISTER,		&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_xmm2_reg,					sizeof(cgc_xmm2_reg) - 1,				false,		_ICODE_XMM2,						true,		_ICAT_XMM_REGISTER,		&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_xmm3_reg,					sizeof(cgc_xmm3_reg) - 1,				false,		_ICODE_XMM3,						true,		_ICAT_XMM_REGISTER,		&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_xmm4_reg,					sizeof(cgc_xmm4_reg) - 1,				false,		_ICODE_XMM4,						true,		_ICAT_XMM_REGISTER,		&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_xmm5_reg,					sizeof(cgc_xmm5_reg) - 1,				false,		_ICODE_XMM5,						true,		_ICAT_XMM_REGISTER,		&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_xmm6_reg,					sizeof(cgc_xmm6_reg) - 1,				false,		_ICODE_XMM6,						true,		_ICAT_XMM_REGISTER,		&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_xmm7_reg,					sizeof(cgc_xmm7_reg) - 1,				false,		_ICODE_XMM7,						true,		_ICAT_XMM_REGISTER,		&colorDefault,		false,			null0,		null0	},
+																																																									  
+		{ (cs8*)cgc_include,					sizeof(cgc_include) - 1,				false,		_ICODE_INCLUDE,						true,		_ICAT_PRAGMA,			&colorDefault,		false,			null0,		null0	},
+		
 		{ 0,						0,			0,			0,										0,					0,					0,							0,							0,			0		}
 	};

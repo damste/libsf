@@ -82,3 +82,41 @@
 
 
 
+struct SlasmFile;
+
+
+//////////
+// lasm.cpp
+//////
+	bool		ilasm_appendFile				(s8* tcPathname);
+
+
+//////////
+// pass0.cpp
+//////
+	void		ilasm_pass0						(SLasmFile* file);
+	SComp*		ilasm_pass0_parse				(SLine* line);
+
+
+//////////
+// passN.cpp
+//////
+	void		ilasm_passN						(SLasmFile* file);
+
+
+//////////
+// passX.cpp
+//////
+	void		ilasm_passX						(SLasmFile* file);
+
+
+//////////
+// passY.cpp
+//////
+	void		ilasm_passY						(SLasmFile* file);
+
+
+//////////
+// passZ.cpp
+//////
+	void		ilasm_passZ						(SLasmFile* file);

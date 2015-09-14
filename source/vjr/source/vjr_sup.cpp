@@ -2658,6 +2658,78 @@
 
 //////////
 //
+// Called to parse a raw file into lines
+//
+//////
+	// Returns line count
+	s32 iFile_parseIntoLines(SLine** firstLine, s8* data, u32 dataLength)
+	{
+		u32			lnI, lnJ, lnLast, lnLineNumber;
+		SLine*		line;
+		SLine**		lastLine;
+
+
+		// Copy through lines into the SLine struct
+		for (lnI = 0, lnLast = 0, lastLine = firstLine, lnLineNumber = 1; lnI < dataLength; )
+		{
+
+			//////////
+			// Are we on a CR/LF combination?
+			//////
+				for (lnJ = 0; (data[lnI] == 13 || data[lnI] == 10) && lnJ < 2 && (u32)lnI < dataLength; lnJ++)
+					++lnI;	// Increase also past this CR/LF character
+
+
+			//////////
+			// If we found a CR/LF combination
+			//////
+				if (lnJ != 0 || lnI >= dataLength)
+				{
+
+					//////////
+					// Increase our line count
+					//////
+						++lnLineNumber;
+
+
+					//////////
+					// We've entered into a CR/LF block, append a new line
+					//////
+						line = (SLine*)iLl_appendNewNodeAtEnd((SLL**)lastLine, sizeof(SLine));
+						if (!line)
+							return(-1);		// Unexpected failure
+
+
+					//////////
+					// Indicate content
+					//////
+						line->sourceCode	= iDatum_allocate((u8*)data + lnLast, (s32)(lnI - lnJ - lnLast));
+						line->lineNumber	= lnLineNumber;
+
+
+					//////////
+					// Indicate where we are now
+					//////
+						lnLast		= lnI;
+						lastLine	= &line;
+
+				} else {
+					// Still going
+					++lnI;
+				}
+				// Continue on processing the next line if we have room
+
+		}
+
+		// Indicate how many lines
+		return(lnLineNumber);
+	}
+
+
+
+
+//////////
+//
 // Adjusts the brightness of the indicated color by the indicated percentage.
 //
 //////

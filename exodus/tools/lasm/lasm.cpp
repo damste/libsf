@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/exodus/tools/lasm/lasm.c
+// /libsf/exodus/tools/lasm/lasm.cpp
 //
 //////
 //    _     _ _     _____ _____ 
@@ -90,12 +90,34 @@
 //////////
 // Uses Visual FreePro, Jr's existing facilities to simplify our processing
 //////
-	#define _NONVJR_COMPILE		// Turns off some features in VJr that fail on compilation from here
-	#define _BMP_LOCALITY 1		// Force definitions to be local
-	const char cgc_appName[] = "lasm";
+	#define _NONVJR_COMPILE 1				// Turns off some features in VJr that fail on compilation from here
+	#define _LASM_COMPILE 1					// Turns on some features in VJr for lasm
+	#define _BMP_LOCALITY 1					// Force definitions to be local
+	const char cgc_appName[] = "lasm";		// Give our app a name
+
+	// Line-level assemble status
+	struct SLasmLineStatus
+	{
+		int			errors		: 8;					// Up to 256 errors are allowed
+		int			warnings	: 8;					// Up to 256 warnings are allowed
+
+		// Note:  Blank lines, and comments will be marked completed immediately, as will #include lines after they're included, etc.
+		bool		isCompleted	: 1;					// Is the assemble process completed on this line?
+
+		// As each pass is conducted
+		bool		pass0		: 1;					// Pass-0 -- load all #include files
+		bool		passN		: 1;					// Pass-N -- identifying all symbols, and all start and ending blocks
+		bool		passX		: 1;					// Pass-X -- code generation
+		bool		passY		: 1;					// Pass-Y -- linking
+		bool		passZ		: 1;					// Pass-Z -- write out the file
+	};
+
+
+//////////
+// Include VJr stuff, then lasm stuff
+//////
 	#include "\libsf\source\vjr\source\vjr.h"
 	#include "lasm.h"
-	#undef main
 
 
 
@@ -105,9 +127,15 @@
 // Main program entry point
 //
 //////
+	#undef main
+
 	s32 main(s32 argc, s8* argv[])
 	{
-		s32 lnI;
+		s32				lnI, lnLength, lnPass;
+		bool			llSetValue;
+		s8*				lcOption;
+		SLasmFile*		file;
+		SLasmCmdLine	cmdLine;
 
 
 		//////////
@@ -118,20 +146,148 @@
 
 
 		//////////
+		// Initialize our engine
+		//////
+			memset(&cmdLine,	0, sizeof(cmdLine));		// Initialize all options off
+			memset(&cmdLine.w,	1, sizeof(cmdLine.w));		// Initialize all warnings on
+
+
+		//////////
+		// Identify self
+		//////
+			printf("LibSF Assembler for Exodus v0.01\n");
+
+
+		//////////
 		// Process command line parameters
 		//////
 			for (lnI = 1; lnI < argc; lnI++)
 			{
+
 				// Is it an option or a file?
 				if (argv[lnI][0] == '-')
 				{
 					// It's an option
-					printf("Found option %s\n", argv[lnI]);
+					lnLength = strlen(argv[lnI]);
+
+
+					//////////
+					// See if it's a -Wno- option
+					//////
+						lcOption = argv[lnI];
+						if (lnLength > sizeof(cgc_wno) - 1 && _memicmp(argv[lnI], cgc_wno, sizeof(cgc_wno) - 1) == 0)
+						{
+							// It's -Wno-, so the set value will be false
+							llSetValue = false;
+							argv[lnI] += sizeof(cgc_wno) - 1;
+
+						} else {
+							// The value to set will be true
+							llSetValue = true;
+
+							// Skip past -W if need be
+							if (lnLength > sizeof(cgc_wno) - 1 && _memicmp(argv[lnI], cgc_wno, 2) == 0)
+								argv[lnI] += 2;
+						}
+
+
+					//////////
+					// Find out which option
+					//////
+						if (lnLength == sizeof(cgc_wmissing_type_ptr) - 1 && _memicmp(argv[lnI], cgc_wmissing_type_ptr, sizeof(cgc_wmissing_type_ptr) - 1) == 0)
+						{
+							// -Wmissing-type-ptr
+							// -Wno-missing-type-ptr
+							cmdLine.w.missing_type_ptr = llSetValue;
+
+						} else if (lnLength == sizeof(cgc_wall) - 1 && _memicmp(argv[lnI], cgc_wall, sizeof(cgc_wall) - 1) == 0) {
+							// -Wall				-- Show all warnings
+							// -Wno-all
+							cmdLine.Wall = llSetValue;
+
+						} else if (lnLength == sizeof(cgc_wfatal_errors) - 1 && _memicmp(argv[lnI], cgc_wfatal_errors, sizeof(cgc_wfatal_errors) - 1) == 0) {
+							// -Wfatal-errors		-- Should compilation stop immediately on first error?
+							// -Wno-fatal-errors
+							cmdLine.Wfatal_errors = llSetValue;
+
+						} else if (lnLength == sizeof(cgc_werror) - 1 && _memicmp(argv[lnI], cgc_werror, sizeof(cgc_werror) - 1) == 0) {
+							// -Werror				-- Should warnings be treated as errors?
+							// -Wno-error
+							cmdLine.WError = llSetValue;
+
+						} else if (lnLength == sizeof(cgc_fsyntax_only) - 1 && _memicmp(argv[lnI], cgc_fsyntax_only, sizeof(cgc_fsyntax_only) - 1) == 0) {
+							// -fsyntax-only		-- Syntax check only
+							cmdLine.fsyntax_only = llSetValue;
+
+						} else {
+							// Unrecognized option
+							printf("--Error: unrecognized command line option: %s", lcOption);
+							return(-1);
+						}
 
 				} else {
 					// It can only be a file to assemble
-					printf("Found file %s\n", argv[lnI]);
+
+					// Try to load it
+					if (!ilasm_appendFile(argv[lnI]))
+					{
+						printf("--Error: unable to open file: %s\n", argv[lnI]);
+						return(-2);
+					}
 				}
+			}
+
+
+		//////////
+		// Iterate through each file on this pass
+		//////
+			for (file = gsFirstFile; file; file = (SLasmFile*)file->ll.next)
+			{
+
+				// Begin passes through each file
+				for (lnPass = 0; lnPass < 26 && !file->status.isCompleted; lnPass++)
+				{
+
+					//////////
+					// Identify the file on the first pass
+					//////
+						if (lnPass == 0)
+							printf("Assembling %s\n", file->fileName.data_s8);
+
+
+					//////////
+					// Dispatch the pass
+					//////
+						switch (lnPass)
+						{
+							case 0:
+								// Pass-0
+								ilasm_pass0(file);
+								break;
+
+							case 24:
+								// Pass-X
+								ilasm_passX(file);
+								break;
+
+							case 25:
+								// Pass-Y
+								ilasm_passY(file);
+								break;
+
+							case 26:
+								// Pass-Z
+								ilasm_passZ(file);
+								break;
+
+							default:
+								// Pass-N
+								ilasm_passN(file);
+								break;
+						}
+
+				}
+
 			}
 
 
@@ -140,4 +296,108 @@
 		//////
 			return(0);
 
+	}
+
+
+
+
+//////////
+//
+// Called to append the indicated file to the chain, and read in its file contents
+//
+//////
+	bool ilasm_appendFile(s8* tcPathname)
+	{
+		SLasmFile	f;
+		SLasmFile*	fNew;
+
+
+		//////////
+		// Initialize
+		//////
+			memset(&f, 0, sizeof(f));
+
+
+		//////////
+		// Try to read the file
+		//////
+			if (iFile_readContents(tcPathname, &f.fh, &f.raw, &f.rawLength))
+			{
+
+				// Parse into lines
+				if (iFile_parseIntoLines(&f.firstLine, f.raw, f.rawLength) > 0)
+				{
+
+					// Append our entry onto the chain
+					fNew = (SLasmFile*)iLl_appendNewNodeAtEnd((SLL**)&gsFirstFile, sizeof(f));
+					if (fNew)
+					{
+						// Copy over
+						fNew->firstLine		= f.firstLine;
+						fNew->fh			= f.fh;
+						fNew->raw			= f.raw;
+						fNew->rawLength		= f.rawLength;
+						fNew->fileName		= f.fileName;
+						iDatum_duplicate(&f.fileName, tcPathname, -1);
+
+						// Indicate success
+						return(true);
+					}
+				}
+			}
+
+
+		//////////
+		// If we get here, failure
+		//////
+			return(false);
+
+	}
+
+
+
+
+//////////
+//
+// Pass-N -- General expansion and parsing
+//
+//////
+	void ilasm_passN(SLasmFile* file)
+	{
+	}
+
+
+
+
+//////////
+//
+// Pass-X -- Binary code generation
+//
+//////
+	void ilasm_passX(SLasmFile* file)
+	{
+	}
+
+
+
+
+//////////
+//
+// Pass-Y -- Linking
+//
+//////
+	void ilasm_passY(SLasmFile* file)
+	{
+	}
+
+
+
+
+//////////
+//
+// Pass-Z -- Writing output
+//
+//////
+	void ilasm_passZ(SLasmFile* file)
+	{
 	}

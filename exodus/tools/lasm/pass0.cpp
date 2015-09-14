@@ -1,9 +1,9 @@
 //////////
 //
-// /libsf/exodus/tools/lasm/lasm_structs.h
+// /libsf/exodus/tools/lasm/pass0.cpp
 //
 //////
-//    _     _ _     _____ _____
+//    _     _ _     _____ _____ 
 //   | |   (_) |__ / ____|  ___|
 //   | |   | | '_ \\___ \|  __|
 //   | |___| | |_) |___) | |
@@ -11,10 +11,10 @@
 //
 //   Liberty Software Foundation
 // and the Village Freedom Project
-//   __     _______     ____
-//   \ \   / /  ___| __|  _ \
+//   __     _______     ____  
+//   \ \   / /  ___| __|  _ \ 
 //    \ \ / /| |_ | '__| |_) |
-//     \ V / |  _|| |  |  __/
+//     \ V / |  _|| |  |  __/ 
 //      \_/  |_|  |_|  |_|
 //
 //////
@@ -22,14 +22,15 @@
 // Copyright (c) 2015 by Rick C. Hodgin
 //////
 // Last update:
-//     Sep.12.2015
+//     Sep.13.2015
 //////
 // Change log:
-//     Sep.12.2015 - Initial creation
+//     Sep.13.2015 - Initial creation
 //////
 //
-// This document is released as Liberty Software under a Repeat License, as governed
-// by the Public Benefit License v1.0 or later (PBL).
+// This document and all documents contained within are released as Liberty Software
+// under a Repeat License, as governed by the Public Benefit License v1.0 or later
+// (PBL).
 //
 // The PBL is a public domain license with a caveat:  self accountability unto God.
 // You are free to use, copy, modify and share this software for any purpose, however,
@@ -77,56 +78,119 @@
 // Thank you.  And may The Lord bless you richly as you lift up your life, your
 // talents, your gifts, your praise, unto Him.  In Jesus' name I pray.  Amen.
 //
+//////
 //
+// Liberty Software Foundation's lasm (LibSF Assembler).
+//
+//////
 
 
 
 
 //////////
-// lasm structs
+//
+// Pass-0 -- Parse each line and load #include files
+//
 //////
-
-	// Assembler warnings, all enabled by default
-	struct SWarnings
+	void ilasm_pass0(SLasmFile* file)
 	{
-		bool		missing_type_ptr;					// -Wmissing-type-ptr	-- Uses "mov [ebp-4],eax" rather than "mov dword ptr [ebp-4],eax", missing type ptr "dword ptr"
-	};
+		SLine*	line;
+		SComp*	comp;
+		SComp*	compNext;
 
-	// Options specified on the command line
-	struct SLasmCmdLine
+
+		// Iterate through the entire file
+		for (line = file->firstLine; line; line = line->ll.nextLine)
+		{
+			// Parse it
+			comp = ilasm_pass0_parse(line);
+			if (comp)
+			{
+				// See if we're done
+				if (comp->iCode == _ICODE_COMMENT)
+				{
+					// Comment, we're done
+					line->status.isCompleted = true;
+
+				} else if (comp->iCode == _ICODE_POUND_SIGN && ((compNext = iComps_getNth(NULL, comp, 1)) && compNext->iCode == _ICODE_INCLUDE)) {
+					// #include 
+
+// TODO: Load the include file
+// TODO:  Working here
+
+					// We're done
+					line->status.isCompleted = true;
+
+				} else {
+					// Pass-0 is completed
+					line->status.pass0 = true;
+				}
+
+			} else {
+				// No data on this line
+				line->status.isCompleted = true;
+			}
+		}
+	}
+
+
+
+
+//////////
+//
+// Parses out the raw source code bytes into SComp items with an iCode
+//
+//////
+	SComp* ilasm_pass0_parse(SLine* line)
 	{
-		SWarnings	w;									// Which warnings are enabled?
 
-		bool		Wall;								// -Wall				-- Show all warnings
-		bool		Wfatal_errors;						// -Wfatal-errors		-- Should compilation stop immediately on first error?
-		bool		WError;								// -WError				-- Should warnings be treated as errors?
-		bool		fsyntax_only;						// -fsyntax-only		-- Syntax check only
-	};
+		//////////
+		// If we have existing compiler data, get rid of it
+		//////
+			if (line->compilerInfo)		iCompiler_delete(NULL, &line->compilerInfo, false);
+			else						line->compilerInfo = iCompiler_allocate(NULL, line);		// Allocate a new one
 
-	// File-level assemble status
-	struct SLasmFileStatus
-	{
-		s32			errors		: 8;					// Up to 256 errors are allowed
-		s32			warnings	: 8;					// Up to 256 warnings are allowed
 
-		// Note:  Based on every line within the file being line->status->isCompleted = true;
-		bool		isCompleted	: 1;					// Is the assemble process completed on this line?
-	};
+		//////////
+		// Parse out the line
+		//////
+			iComps_translateSourceLineTo(NULL, &cgcFundamentalSymbols[0], line);
+			if (!line->compilerInfo->firstComp)
+				return(NULL);		// Nothing to compile on this line
 
-	// Linked list of files to be assembled
-	struct SLasmFile
-	{
-		SLL					ll;							// Link list through multiple files
+			// Remove whitespaces [use][whitespace][foo] becomes [use][foo]
+			iComps_removeLeadingWhitespaces(NULL, line);
 
-		// File and status
-		SDatum				fileName;					// Source file
-		SLasmFileStatus		status;						// Processing through the assemble process
 
-		// Raw disk file contents
-		FILE*				fh;							// File handle
-		s8*					raw;						// Raw data
-		u32					rawLength;					// Raw data length
+		//////////
+		// If it's a line comment, we don't need to process it
+		//////
+			if (line->compilerInfo->firstComp && (line->compilerInfo->firstComp->iCode == _ICODE_COMMENT || line->compilerInfo->firstComp->iCode == _ICODE_LINE_COMMENT))
+			{
+				// Combine every item after this to a single comment
+				iComps_combineN(NULL, line->compilerInfo->firstComp, 99999, _ICODE_COMMENT, line->compilerInfo->firstComp->iCat, line->compilerInfo->firstComp->color);
 
-		// Parsed into line structures
-		SLine*				firstLine;					// Source file content for this file (including any include files)
-	};
+				// Return the first component
+				return(line->compilerInfo->firstComp);
+			}
+
+
+		//////////
+		// Perform natural source code fixups
+		//////
+			iComps_removeStartEndComments(NULL, line);		// Remove /* comments */
+			iComps_fixupNaturalGroupings(NULL, line);		// Fixup natural groupings [_][aaa][999] becomes [_aaa999], [999][.][99] becomes [999.99], etc.
+			iComps_removeWhitespaces(NULL, line);			// Remove all whitespaces after everything else was parsed [use][whitespace][foo] becomes [use][foo]
+
+
+		//////////
+		// Translate sequences to known keywords
+		//////
+			iComps_translateToOthers(NULL, (SAsciiCompSearcher*)&cgcKeywordsLasm[0], line);
+
+
+		//////////
+		// Return the first component
+		//////
+			return(line->compilerInfo->firstComp);
+	}
