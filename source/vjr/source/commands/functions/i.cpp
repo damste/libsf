@@ -375,6 +375,429 @@
 
 //////////
 //
+// Function: ISALPHA()
+// Determines whether the leftmost character in a character expression is alphabetic.
+//
+//////
+// Version 0.58
+// Last update:
+//     Sep.15.2015
+//////
+// Change log:
+//     Sep.15.2015 - Initial creation by Stefano D'Amico
+//////
+// Parameters:
+//     p1	-- Specifies the character expression that ISALPHA( ) evaluates.
+//     p2	-- Optional, if true evaluates all string
+//
+//////
+// Returns:
+//    ISALPHA( ) returns true (.T.) if the leftmost character in the specified character expression is an alphabetic character;
+//    otherwise ISALPHA( ) returns false (.F.).
+//////
+// Example:
+//    ? ISALPHA("A2")		&& Display .T.
+//    ? ISALPHA("A2")		&& Display .T.
+//    ? ISALPHA("A2", .T.) 	&& Display .F.
+//    ? ISALPHA("AA", .T.)	&& Display .T.
+//////
+	void function_isalpha(SThisCode* thisCode, SFunctionParams* rpar)
+	{
+		SVariable*	varStr			= rpar->ip[0];
+		SVariable*	varWhole		= rpar->ip[1];
+
+		bool		llWhole, llIsAlpha;
+		bool		error;
+		u32			errorNum;
+		SVariable*	result;
+
+
+		//////////
+		// Parameters 1 must be present and character
+		//////
+			rpar->rp[0] = NULL;
+			if (!iVariable_isValid(varStr) || !iVariable_isTypeCharacter(varStr))
+			{
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varStr), false);
+				return;
+			}
+
+		//////////
+		// If present, parameter 2 must be bool
+		//////
+			if (varWhole)
+			{
+				if (!iVariable_isFundamentalTypeLogical(varWhole))
+				{
+					iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varWhole), false);
+					return;
+				}
+
+				// Grab the value
+				llWhole = iiVariable_getAs_bool(thisCode, varWhole, false, &error, &errorNum);
+				if (error)
+				{
+					iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varWhole), false);
+					return;
+				}
+
+			} else {
+				// Set it to false
+				llWhole = false;
+			}
+
+
+		//////////
+		// Create and populate the return variable
+		//////
+			llIsAlpha	= ifunction_isalpha_common(thisCode, varStr, llWhole, 0);
+
+			result		= iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_LOGICAL, (cs8*)((llIsAlpha) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, true);
+			if (!result)
+				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_getRelatedComp(thisCode, varStr), false);
+
+
+		//////////
+		// Signify our result
+		//////
+			rpar->rp[0] = result;
+
+	}
+
+	bool ifunction_isalpha_common(SThisCode* thisCode, SVariable* varStr, bool tlWhole, u32 tnFunctionType)
+	{
+		s32			lnI, lnMaxLength;
+		s8			c;
+		bool		llResult;
+
+		
+
+		//////////
+		// Iterate through our string
+		//////
+			for (lnI = 0, lnMaxLength = ((tlWhole) ? varStr->value.length : 1), llResult = true; varStr->value.data_cs8[lnI] && lnI < lnMaxLength; lnI++)
+			{
+
+				//////////
+				// Grab char
+				//////
+					c = varStr->value.data_cs8[lnI];
+
+				//////////
+				// Test char
+				//////
+					switch (tnFunctionType)
+					{
+//ISALPHA
+						case 0:
+							llResult = llResult && (( c >= 'A' && c <= 'Z' ) || ( c >= 'a' && c <= 'z' ));
+							break;
+//ISDIGIT
+						case 1:
+							llResult = llResult && ( c >= '0' && c <= '9' );
+							break;
+//ISLOWER
+						case 2:
+							llResult = llResult && ( c >= 'a' && c <= 'z' );
+							break;
+//ISUPPER
+						case 3:
+							llResult = llResult && ( c >= 'A' && c <= 'Z' );
+							break;
+
+					}
+			}
+
+		//////////
+        // return result
+		//////
+			return llResult;
+	}
+
+
+
+
+//////////
+//
+// Function: ISDIGIT()
+// Determines whether the leftmost character of the specified character expression is a digit (0 through 9).
+//
+//////
+// Version 0.58
+// Last update:
+//     Sep.15.2015
+//////
+// Change log:
+//     Sep.15.2015 - Initial creation by Stefano D'Amico
+//////
+// Parameters:
+//     p1	-- Specifies the character expression that ISDIGIT( ) evaluates.
+//     p2	-- Optional, if true evaluates all string
+//
+//////
+// Returns:
+//    ISDIGIT( ) returns true (.T.) if the leftmost character of the specified character expression is a digit (0 through 9);
+//    otherwise, ISDIGIT( ) returns false (.F.).
+//////
+// Example:
+//    ? ISDIGIT("22")		&& Display .T.
+//    ? ISDIGIT("2a")		&& Display .T.
+//    ? ISDIGIT("2a", .T.)  && Display .F.
+//    ? ISDIGIT("22", .T.)	&& Display .T.
+//////
+	void function_isdigit(SThisCode* thisCode, SFunctionParams* rpar)
+	{
+		SVariable*	varStr			= rpar->ip[0];
+		SVariable*	varWhole		= rpar->ip[1];
+
+		bool		llWhole, llIsDigit;
+		bool		error;
+		u32			errorNum;
+		SVariable*	result;
+
+
+		//////////
+		// Parameters 1 must be present and character
+		//////
+			rpar->rp[0] = NULL;
+			if (!iVariable_isValid(varStr) || !iVariable_isTypeCharacter(varStr))
+			{
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varStr), false);
+				return;
+			}
+
+		//////////
+		// If present, parameter 2 must be bool
+		//////
+			if (varWhole)
+			{
+				if (!iVariable_isFundamentalTypeLogical(varWhole))
+				{
+					iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varWhole), false);
+					return;
+				}
+
+				// Grab the value
+				llWhole = iiVariable_getAs_bool(thisCode, varWhole, false, &error, &errorNum);
+				if (error)
+				{
+					iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varWhole), false);
+					return;
+				}
+
+			} else {
+				// Set it to false
+				llWhole = false;
+			}
+
+
+		//////////
+		// Create and populate the return variable
+		//////
+			llIsDigit	= ifunction_isalpha_common(thisCode, varStr, llWhole, 1);
+
+			result		= iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_LOGICAL, (cs8*)((llIsDigit) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, true);
+			if (!result)
+				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_getRelatedComp(thisCode, varStr), false);
+
+
+		//////////
+		// Signify our result
+		//////
+			rpar->rp[0] = result;
+	}
+
+
+
+
+//////////
+//
+// Function: ISLOWER()
+// Determines whether the leftmost character of the specified character expression is a lowercase alphabetic character.
+//
+//////
+// Version 0.58
+// Last update:
+//     Sep.15.2015
+//////
+// Change log:
+//     Sep.15.2015 - Initial creation by Stefano D'Amico
+//////
+// Parameters:
+//     p1	-- Specifies the character expression that ISLOWER( ) evaluates.
+//     p2	-- Optional, if true evaluates all string
+//
+//////
+// Returns:
+//    ISLOWER( ) returns true (.T.) if the leftmost character in the specified character expression is a lowercase alphabetic character;
+//    otherwise, ISLOWER( ) returns false (.F.).
+//////
+// Example:
+//    ? ISLOWER("aA")		&& Display .T.
+//    ? ISLOWER("aA")		&& Display .T.
+//    ? ISLOWER("aA", .T.) 	&& Display .F.
+//    ? ISLOWER("aa", .T.)	&& Display .T.
+//////
+	void function_islower(SThisCode* thisCode, SFunctionParams* rpar)
+	{
+		SVariable*	varStr			= rpar->ip[0];
+		SVariable*	varWhole		= rpar->ip[1];
+
+		bool		llWhole, llIsLower;
+		bool		error;
+		u32			errorNum;
+		SVariable*	result;
+
+
+		//////////
+		// Parameters 1 must be present and character
+		//////
+			rpar->rp[0] = NULL;
+			if (!iVariable_isValid(varStr) || !iVariable_isTypeCharacter(varStr))
+			{
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varStr), false);
+				return;
+			}
+
+		//////////
+		// If present, parameter 2 must be bool
+		//////
+			if (varWhole)
+			{
+				if (!iVariable_isFundamentalTypeLogical(varWhole))
+				{
+					iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varWhole), false);
+					return;
+				}
+
+				// Grab the value
+				llWhole = iiVariable_getAs_bool(thisCode, varWhole, false, &error, &errorNum);
+				if (error)
+				{
+					iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varWhole), false);
+					return;
+				}
+
+			} else {
+				// Set it to false
+				llWhole = false;
+			}
+
+
+		//////////
+		// Create and populate the return variable
+		//////
+			llIsLower	= ifunction_isalpha_common(thisCode, varStr, llWhole, 2);
+
+			result		= iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_LOGICAL, (cs8*)((llIsLower) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, true);
+			if (!result)
+				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_getRelatedComp(thisCode, varStr), false);
+
+
+		//////////
+		// Signify our result
+		//////
+			rpar->rp[0] = result;
+	}
+
+
+
+
+//////////
+//
+// Function: ISUPPER()
+// Determines whether the first character in a character expression is an uppercase alphabetic character.
+//
+//////
+// Version 0.58
+// Last update:
+//     Sep.15.2015
+//////
+// Change log:
+//     Sep.15.2015 - Initial creation by Stefano D'Amico
+//////
+// Parameters:
+//     p1	-- Specifies the character expression that ISUPPER( ) evaluates.
+//     p2	-- Optional, if true evaluates all string
+//
+//////
+// Returns:
+//    ISUPPER( ) returns true (.T.) if the first character in a character expression is an uppercase alphabetic character;
+//    otherwise, ISUPPER( ) returns false (.F.).
+//////
+// Example:
+//    ? ISUPPER("Aa")		&& Display .T.
+//    ? ISUPPER("Aa")		&& Display .T.
+//    ? ISUPPER("Aa", .T.) 	&& Display .F.
+//    ? ISUPPER("AA", .T.)	&& Display .T.
+//////
+	void function_isupper(SThisCode* thisCode, SFunctionParams* rpar)
+	{
+		SVariable*	varStr			= rpar->ip[0];
+		SVariable*	varWhole		= rpar->ip[1];
+
+		bool		llWhole, llIsUpper;
+		bool		error;
+		u32			errorNum;
+		SVariable*	result;
+
+
+		//////////
+		// Parameters 1 must be present and character
+		//////
+			rpar->rp[0] = NULL;
+			if (!iVariable_isValid(varStr) || !iVariable_isTypeCharacter(varStr))
+			{
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varStr), false);
+				return;
+			}
+
+		//////////
+		// If present, parameter 2 must be bool
+		//////
+			if (varWhole)
+			{
+				if (!iVariable_isFundamentalTypeLogical(varWhole))
+				{
+					iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varWhole), false);
+					return;
+				}
+
+				// Grab the value
+				llWhole = iiVariable_getAs_bool(thisCode, varWhole, false, &error, &errorNum);
+				if (error)
+				{
+					iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varWhole), false);
+					return;
+				}
+
+			} else {
+				// Set it to false
+				llWhole = false;
+			}
+
+
+		//////////
+		// Create and populate the return variable
+		//////
+			llIsUpper	= ifunction_isalpha_common(thisCode, varStr, llWhole, 3);
+
+			result		= iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_LOGICAL, (cs8*)((llIsUpper) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, true);
+			if (!result)
+				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_getRelatedComp(thisCode, varStr), false);
+
+
+		//////////
+		// Signify our result
+		//////
+			rpar->rp[0] = result;
+	}
+
+
+
+
+//////////
+//
 // Function: ISNULL()
 // Determines whether an expression evaluates to null.
 //
