@@ -411,6 +411,7 @@ struct SCompileNote;
 		// Components compiled in prior compiler passes
 		SComp*			firstComp;										// Pointer to the first component identified on this line
 		SComp*			firstWhitespace;								// Whitespaces are removed for ease of compilation, but they persist here for rendering and reference
+		SComp*			firstComment;									// Comments are migrated over
 
 
 	//////////

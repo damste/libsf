@@ -25,7 +25,8 @@
 //     Nov.02.2014
 //////
 // Change log:
-//     Sep.02.2015 - Close to finalization
+//     Sep.15.2015 - Close to finalization
+//     Sep.15.2015 - Added support for || whitespaces and ||| comments
 //     Jan.09.2015 - Added function purposes
 //     Nov.02.2014 - Initial creation
 //////
@@ -94,7 +95,7 @@
 
 
 Nov.03.2014 -- Early draft.  Incomplete.  Inconsistent.
-Sep.02.2015 -- Approaching finalization (James 4:15).  Still in draft form.
+Sep.15.2015 -- Approaching finalization (James 4:15).  Still in draft form.
 
 
 
@@ -109,6 +110,9 @@ RDC Specifications Document
 	[|cask|]			-- Definition cask
 	<|cask|>			-- Logic cask
 	~|cask|~			-- Utility cask
+	
+	|||					-- If three or more pipe signs leading on a source code line, line comment
+	||					-- If two pipe signs leading on a source code line, whitespace
 
 	void				-- An empty type
 	b1,b8,b16,b32,b64	-- 1-bit, 8-bit, 16-bit, 32-bit, 64-bit boolean quantities

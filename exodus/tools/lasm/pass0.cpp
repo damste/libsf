@@ -178,9 +178,23 @@
 		//////////
 		// Perform natural source code fixups
 		//////
-			iComps_removeStartEndComments(NULL, line);		// Remove /* comments */
-			iComps_fixupNaturalGroupings(NULL, line);		// Fixup natural groupings [_][aaa][999] becomes [_aaa999], [999][.][99] becomes [999.99], etc.
-			iComps_removeWhitespaces(NULL, line);			// Remove all whitespaces after everything else was parsed [use][whitespace][foo] becomes [use][foo]
+			iComps_removeStartEndComments(NULL, line);				// Remove /* comments */
+			iComps_fixupNaturalGroupings(NULL, line);				// Fixup natural groupings [_][aaa][999] becomes [_aaa999], [999][.][99] becomes [999.99], etc.
+			iComps_removeWhitespaces(NULL, line);					// Remove all whitespaces after everything else was parsed [use][whitespace][foo] becomes [use][foo]
+
+
+		//////////
+		// Remove || and ||| portions
+		//////
+			iComps_combineAdjacentLeadingPipesigns(NULL, line);		// Combines each leading || or (||| or longer) into its type.
+			if (line->compilerInfo->firstComp->iCode == _ICODE_WHITESPACE)
+				iComps_removeWhitespaces(NULL, line);				// Remove all whitespaces after everything else was parsed [use][whitespace][foo] becomes [use][foo]
+
+
+		//////////
+		// Line comments
+		//////
+			iComps_truncateAtComments(NULL, line);					// Remove leading ; and // and ||| comments
 
 
 		//////////

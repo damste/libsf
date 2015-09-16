@@ -507,4 +507,6 @@ const s32		_ICODE_XMM5							= 2000105;
 const s32		_ICODE_XMM6							= 2000106;
 const s32		_ICODE_XMM7							= 2000107;
 
-const s32		_ICODE_INCLUDE						= 3000001;
+const s32		_ICODE_LASM_INCLUDE					= 3000001;
+const s32		_ICODE_LASM_DEFINE					= 3000002;
+const s32		_ICODE_LASM_FUNCTION				= 3000003;

@@ -2176,6 +2176,66 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 
 //////////
 //
+// Called to combine adjacent | characters into either
+// a || whitespace if two, or a ||| comment if greater
+//
+//////
+	u32 iComps_combineAdjacentLeadingPipesigns(SThisCode* thisCode, SLine* line)
+	{
+		s32		lniCat, lniCode;
+		u32		lnCombined;
+		SComp*	comp;
+		SComp*	compPipesign2;
+		SComp*	compPipesign3;
+
+
+		// Make sure our environment is sane
+		lnCombined = 0;
+		if (line && line->compilerInfo && line->compilerInfo->firstComp->iCode == _ICODE_PIPE_SIGN)
+		{
+			// Is it followed by a pipe sign?
+			if ((compPipesign2 = comp->ll.nextComp) && iiComps_get_charactersBetween(thisCode, comp, compPipesign2) == 0 && compPipesign2->iCode == _ICODE_PIPE_SIGN)
+			{
+
+				//////////
+				// It has at least one following, so an extra test is required:
+				//
+				//		Whitespace	-- double-pipe-sign
+				//		Comment		-- triple-pipe-sign or more
+				//////
+					if ((compPipesign3 = compPipesign2->ll.nextComp) && iiComps_get_charactersBetween(thisCode, compPipesign2, compPipesign3) == 0 && compPipesign3->iCode == _ICODE_PIPE_SIGN)
+					{
+						// Translate to comment
+						// Find out how many there are
+						lniCode	= _ICODE_COMMENT;
+						for (lnCombined = 2; compPipesign3->iCode == _ICODE_PIPE_SIGN; ++lnCombined)
+							compPipesign3 = compPipesign3->ll.nextComp
+
+					} else {
+						// Translate to whitespace
+						lniCode		= _ICODE_PIPE_SIGN;
+						lnCombined	= 2;
+					}
+
+
+				//////////
+				// Combine
+				//////
+					lniCat	= comp->iCat;
+					iComps_combineN(thisCode, comp, lnCombined, lniCode, lniCat, comp->color);
+
+			}
+		}
+
+		// Indicate how many we combined
+		return(lnCombined);
+	}
+
+
+
+
+//////////
+//
 // Called to combine everything between two components
 //
 // Source:		u8 name[] = "foo"
@@ -2575,6 +2635,12 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 						// When we get here, we're sitting on the _ICODE_COMMENT_END
 						if ((compNext = comp->ll.nextComp) && compNext->iCode == _ICODE_COMMENT_END)
 							iComps_combineN(thisCode, comp, 2, comp->iCode, comp->iCat, comp->color);
+
+						// Migrate the (now single) comment
+						comp = (SComp*)iLl_migrateNodeToOther((SLL**)&line->compilerInfo->firstComp, (SLL**)&line->compilerInfo->firstComment, (SLL*)comp, true);
+
+						// Done
+						return;
 					}
 
 
@@ -2585,6 +2651,53 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 						comp = comp->ll.nextComp;
 			}
 		}
+	}
+
+
+
+
+//////////
+//
+// Truncates the components at the first comment, leaving only things up to that point in place
+//
+//////
+	s32 iComps_truncateAtComments(SThisCode* thisCode, SLine* line)
+	{
+		u32		lnMigrated;
+		SComp*	comp;
+
+
+		// Make sure our environment is sane
+		lnMigrated = 0;
+		if (line && line->compilerInfo)
+		{
+			// Iterate through all looking for _ICODE_COMMENT
+			for (comp = line->compilerInfo->firstComp; comp; comp = comp->ll.nextComp)
+			{
+				// Is this a comment?
+				if (comp->iCode == _ICODE_COMMENT)
+				{
+					// Migrate to the components after into the leading comment
+					while (comp->ll.nextComp)
+					{
+						// Combine these
+						iComps_combineN(thisCode, comp, 2, comp->iCode, comp->iCat, comp->color);
+
+						// Increase our count
+						++lnMigrated;
+					}
+
+					// Migrate the (now single) comment
+					comp = (SComp*)iLl_migrateNodeToOther((SLL**)&line->compilerInfo->firstComp, (SLL**)&line->compilerInfo->firstComment, (SLL*)comp, true);
+
+					// All done
+					break;
+				}
+			}
+		}
+
+		// Indicate how many we migrated
+		return(lnMigrated);
 	}
 
 
