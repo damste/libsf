@@ -112,7 +112,7 @@
 					// Comment, we're done
 					line->status.isCompleted = true;
 
-				} else if (comp->iCode == _ICODE_POUND_SIGN && ((compNext = iComps_getNth(NULL, comp, 1)) && compNext->iCode == _ICODE_INCLUDE)) {
+				} else if (comp->iCode == _ICODE_POUND_SIGN && ((compNext = iComps_getNth(NULL, comp, 1)) && compNext->iCode == _ICODE_LASM_INCLUDE)) {
 					// #include 
 
 // TODO: Load the include file
@@ -151,60 +151,76 @@
 			else						line->compilerInfo = iCompiler_allocate(NULL, line);		// Allocate a new one
 
 
-		//////////
-		// Parse out the line
-		//////
-			iComps_translateSourceLineTo(NULL, &cgcFundamentalSymbols[0], line);
-			if (!line->compilerInfo->firstComp)
-				return(NULL);		// Nothing to compile on this line
+		// Loop added only for structured exit
+		while (1)
+		{
 
-			// Remove whitespaces [use][whitespace][foo] becomes [use][foo]
-			iComps_removeLeadingWhitespaces(NULL, line);
-
-
-		//////////
-		// If it's a line comment, we don't need to process it
-		//////
-			if (line->compilerInfo->firstComp && (line->compilerInfo->firstComp->iCode == _ICODE_COMMENT || line->compilerInfo->firstComp->iCode == _ICODE_LINE_COMMENT))
-			{
-				// Combine every item after this to a single comment
-				iComps_combineN(NULL, line->compilerInfo->firstComp, 99999, _ICODE_COMMENT, line->compilerInfo->firstComp->iCat, line->compilerInfo->firstComp->color);
-
-				// Return the first component
-				return(line->compilerInfo->firstComp);
-			}
+			//////////
+			// Parse out the line fundamentally
+			//////
+				iComps_translateSourceLineTo(NULL, &cgcFundamentalSymbols[0], line);
+				if (!line->compilerInfo->firstComp)
+					break;		// Nothing to compile on this line
 
 
-		//////////
-		// Perform natural source code fixups
-		//////
-			iComps_removeStartEndComments(NULL, line);				// Remove /* comments */
-			iComps_fixupNaturalGroupings(NULL, line);				// Fixup natural groupings [_][aaa][999] becomes [_aaa999], [999][.][99] becomes [999.99], etc.
-			iComps_removeWhitespaces(NULL, line);					// Remove all whitespaces after everything else was parsed [use][whitespace][foo] becomes [use][foo]
+			//////////
+			// If it's a line comment, we don't need to process it
+			//////
+				iComps_removeLeadingWhitespaces(NULL, line);
+				iComps_removeStartEndComments(NULL, line);				// Removes /* comments */
+				if (!line->compilerInfo->firstComp)
+					break;
+
+				// If it's a line comment, we're done
+				if (line->compilerInfo->firstComp->iCode == _ICODE_COMMENT || line->compilerInfo->firstComp->iCode == _ICODE_LINE_COMMENT)
+				{
+					// Combine every item after this to a single comment
+					iComps_combineN(NULL, line->compilerInfo->firstComp, 99999, _ICODE_COMMENT, line->compilerInfo->firstComp->iCat, line->compilerInfo->firstComp->color);
+					break;
+				}
 
 
-		//////////
-		// Remove || and ||| portions
-		//////
-			iComps_combineAdjacentLeadingPipesigns(NULL, line);		// Combines each leading || or (||| or longer) into its type.
-			if (line->compilerInfo->firstComp->iCode == _ICODE_WHITESPACE)
-				iComps_removeWhitespaces(NULL, line);				// Remove all whitespaces after everything else was parsed [use][whitespace][foo] becomes [use][foo]
+			//////////
+			// Perform natural source code fixups
+			//////
+				iComps_fixupNaturalGroupings(NULL, line);				// Fixup natural groupings [_][aaa][999] becomes [_aaa999], [999][.][99] becomes [999.99], etc.
+				iComps_removeWhitespaces(NULL, line);					// Remove all whitespaces after everything else was parsed [use][whitespace][foo] becomes [use][foo]
+				if (!line->compilerInfo->firstComp)
+					break;
 
 
-		//////////
-		// Line comments
-		//////
-			iComps_truncateAtComments(NULL, line);					// Remove leading ; and // and ||| comments
+			//////////
+			// Remove or replace || and ||| portions
+			//////
+				iComps_combineAdjacentLeadingPipesigns(NULL, line);		// Combines each leading || to whitespace, and ||| (or longer) to a line comment
+
+				// We may have re-introduced a || whitespace, which would've been removed above
+				if (line->compilerInfo->firstComp->iCode == _ICODE_WHITESPACE)
+				{
+					iComps_removeWhitespaces(NULL, line);
+					if (!line->compilerInfo->firstComp)
+						break;
+				}
+
+				// We may have re-introduced line comments (by converting ||| (or longer) to a line comment)
+				if (iiComps_isComment(line->compilerInfo->firstComp->iCode))
+				{
+					iComps_truncateAtComments(NULL, line);
+					if (!line->compilerInfo->firstComp)
+						break;
+				}
 
 
-		//////////
-		// Translate sequences to known keywords
-		//////
-			iComps_translateToOthers(NULL, (SAsciiCompSearcher*)&cgcKeywordsLasm[0], line);
+			//////////
+			// Translate remaining sequences to known lasm keywords
+			//////
+				iComps_translateToOthers(NULL, (SAsciiCompSearcher*)&cgcKeywordsLasm[0], line);
 
 
-		//////////
+			// Exit for structured programming
+			break;
+		}
+
 		// Return the first component
-		//////
-			return(line->compilerInfo->firstComp);
+		return(line->compilerInfo->firstComp);
 	}

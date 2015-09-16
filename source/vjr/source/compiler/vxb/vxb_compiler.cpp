@@ -2191,7 +2191,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 
 		// Make sure our environment is sane
 		lnCombined = 0;
-		if (line && line->compilerInfo && line->compilerInfo->firstComp->iCode == _ICODE_PIPE_SIGN)
+		if (line && line->compilerInfo && (comp = line->compilerInfo->firstComp) && comp->iCode == _ICODE_PIPE_SIGN)
 		{
 			// Is it followed by a pipe sign?
 			if ((compPipesign2 = comp->ll.nextComp) && iiComps_get_charactersBetween(thisCode, comp, compPipesign2) == 0 && compPipesign2->iCode == _ICODE_PIPE_SIGN)
@@ -2208,8 +2208,8 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 						// Translate to comment
 						// Find out how many there are
 						lniCode	= _ICODE_COMMENT;
-						for (lnCombined = 2; compPipesign3->iCode == _ICODE_PIPE_SIGN; ++lnCombined)
-							compPipesign3 = compPipesign3->ll.nextComp
+						for (lnCombined = 2; compPipesign3->iCode == _ICODE_PIPE_SIGN; lnCombined++)
+							compPipesign3 = compPipesign3->ll.nextComp;
 
 					} else {
 						// Translate to whitespace
@@ -13087,9 +13087,10 @@ debug_break;
 			iCompileNote_removeAll(thisCode, &compilerInfo->firstWarning);
 			iCompileNote_removeAll(thisCode, &compilerInfo->firstError);
 
-			// Delete from regular components, and whitespaces
+			// Delete from regular components, whitespaces, and comments
 			iComps_deleteAll_byFirstComp(thisCode, &compilerInfo->firstComp);
 			iComps_deleteAll_byFirstComp(thisCode, &compilerInfo->firstWhitespace);
+			iComps_deleteAll_byFirstComp(thisCode, &compilerInfo->firstComment);
 
 			// Delete self if need be
 			if (tlDeleteSelf)

@@ -172,7 +172,9 @@ struct SThisCode;
 	s32						iComps_getContiguousLength					(SThisCode* thisCode, SComp* comp, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount, s32* tnCount);
 	bool					iiComps_validate							(SThisCode* thisCode, SComp* comp, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount);
 	bool					iiComps_isAlphanumeric						(SThisCode* thisCode, SComp* comp);
+	#define					iiComps_isComment(tniCode)					(tniCode == _ICODE_COMMENT || tniCode == _ICODE_LINE_COMMENT)
 	s8*						iComps_visualize							(SThisCode* thisCode, SComp* comp, s32 tnCount, s8* outputBuffer, s32 tnBufferLength, bool tlUseDefaultCompSearcher, SAsciiCompSearcher* tsComps1, SAsciiCompSearcher* tsComps2);
+
 
 //////////
 // Jun.25.2014 -- This block of code was originally created before I began working on
@@ -188,6 +190,7 @@ struct SThisCode;
 //////
 // END
 //////////
+
 
 	u32						iBreakoutAsciiTextDataIntoLines_ScanLine	(SThisCode* thisCode, s8* tcData, u32 tnMaxLength, u32* tnLength, u32* tnWhitespaces);
 	bool					iFindFirstOccurrenceOfAsciiCharacter		(SThisCode* thisCode, s8* tcHaystack, u32 tnHaystackLength, s8 tcNeedle, u32* tnPosition);
