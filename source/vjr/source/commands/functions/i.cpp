@@ -475,7 +475,7 @@
 		//////////
 		// Iterate through our string
 		//////
-			for (lnI = 0, lnMaxLength = ((tlWhole) ? varStr->value.length : 1), llResult = true; varStr->value.data_cs8[lnI] && lnI < lnMaxLength; lnI++)
+			for (lnI = 0, lnMaxLength = ((tlWhole) ? varStr->value.length : 1), llResult = true; llResult && varStr->value.data_cs8[lnI] && lnI < lnMaxLength; lnI++)
 			{
 
 				//////////
@@ -490,19 +490,19 @@
 					{
 //ISALPHA
 						case 0:
-							llResult = llResult && (( c >= 'A' && c <= 'Z' ) || ( c >= 'a' && c <= 'z' ));
+							llResult = (( c >= 'A' && c <= 'Z' ) || ( c >= 'a' && c <= 'z' ));
 							break;
 //ISDIGIT
 						case 1:
-							llResult = llResult && ( c >= '0' && c <= '9' );
+							llResult = ( c >= '0' && c <= '9' );
 							break;
 //ISLOWER
 						case 2:
-							llResult = llResult && ( c >= 'a' && c <= 'z' );
+							llResult = ( c >= 'a' && c <= 'z' );
 							break;
 //ISUPPER
 						case 3:
-							llResult = llResult && ( c >= 'A' && c <= 'Z' );
+							llResult = ( c >= 'A' && c <= 'Z' );
 							break;
 
 					}
