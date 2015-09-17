@@ -229,7 +229,7 @@
 					// It can only be a file to assemble
 
 					// Try to load it
-					if (!ilasm_appendFile(argv[lnI]))
+					if (!ilasm_appendFile(argv[lnI], NULL))
 					{
 						printf("--Error: unable to open file: %s\n", argv[lnI]);
 						return(-2);
@@ -306,7 +306,7 @@
 // Called to append the indicated file to the chain, and read in its file contents
 //
 //////
-	bool ilasm_appendFile(s8* tcPathname)
+	bool ilasm_appendFile(s8* tcPathname, SLasmFile** file)
 	{
 		SLasmFile	f;
 		SLasmFile*	fNew;
@@ -339,6 +339,10 @@
 						fNew->rawLength		= f.rawLength;
 						fNew->fileName		= f.fileName;
 						iDatum_duplicate(&f.fileName, tcPathname, -1);
+
+						// Update the pointer if need be
+						if (file)
+							*file = fNew;
 
 						// Indicate success
 						return(true);

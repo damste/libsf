@@ -88,7 +88,7 @@ struct SlasmFile;
 //////////
 // lasm.cpp
 //////
-	bool		ilasm_appendFile				(s8* tcPathname);
+	bool		ilasm_appendFile				(s8* tcPathname, SLasmFile** file);
 
 
 //////////

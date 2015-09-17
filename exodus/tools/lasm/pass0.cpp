@@ -94,9 +94,12 @@
 //////
 	void ilasm_pass0(SLasmFile* file)
 	{
-		SLine*	line;
-		SComp*	comp;
-		SComp*	compNext;
+		SLine*		line;
+		SComp*		comp;
+		SComp*		compNext;
+		SComp*		compFile;
+		SLasmFile*	file;
+		s8			fileName[_MAX_PATH];
 
 
 		// Iterate through the entire file
@@ -112,18 +115,44 @@
 					// Comment, we're done
 					line->status.isCompleted = true;
 
-				} else if (comp->iCode == _ICODE_POUND_SIGN && ((compNext = iComps_getNth(NULL, comp, 1)) && compNext->iCode == _ICODE_LASM_INCLUDE)) {
-					// #include 
+				} else if (compNext = iComps_getNth(NULL, comp, 1)) {
+					// # prefix
+					if (comp->iCode == _ICODE_POUND_SIGN)
+					{
+						// #include 
+						if (compNext->iCode == _ICODE_LASM_INCLUDE)
+						{
+							// The next component needs to be the filename
+							if ((compFile = iComps_getNth(NULL, compNext, 1)) && (compFile->iCode == _ICODE_DOUBLE_QUOTED_TEXT || compFile->iCode == _ICODE_SINGLE_QUOTED_TEXT))
+							{
+								// Copy the filename to a local buffer
+								memcpy(fileName, line->sourceCode->data_s8 + compFile->start, compFile->length);
+								fileName[compFile->length] = 0;
 
-// TODO: Load the include file
-// TODO:  Working here
+								// Try to open it
+								if (!ilasm_appendFile(fileName, &file))
+								{
+									// Error opening the file
+									++line->status.errors;
+									printf("--Error(%d,%d): error opening [#include \"%s\"\n", line->lineNumber, compNext->start, fileName);
+									return;
+								}
+								// We have the file loaded
 
-					// We're done
-					line->status.isCompleted = true;
+								// Insert its lines after this #include line
+								iFile_migrateLines(&file->firstLine, line, false);
 
-				} else {
-					// Pass-0 is completed
-					line->status.pass0 = true;
+								// We're done
+								line->status.isCompleted = true;
+
+							} else {
+								// Syntax error
+								++line->status.errors;
+								printf("--Error(%d,%d): expected [#include \"path\to\file.ext\"] syntax in %s\n", line->lineNumber, compNext->start, file->fileName.data_s8);
+								return;
+							}
+						}
+					}
 				}
 
 			} else {
