@@ -89,7 +89,15 @@
 
 //////////
 //
-// Pass-0 -- Parse each line and load #include files
+// Pass-0 -- Parse each line and conduct these operations:
+//
+//		blank lines
+//		comment lines
+//		#include files
+//		#define statements
+//		labels
+//		function starts and stops
+//		flow control starts and stops
 //
 //////
 	void ilasm_pass0(SLasmFile* file)
@@ -107,8 +115,12 @@
 		{
 			// Parse it
 			comp = ilasm_pass0_parse(line);
-			if (comp)
+			if (!comp)
 			{
+				// Blank line
+				line->status.isCompleted = true;
+
+			} else {
 				// See if we're done
 				if (comp->iCode == _ICODE_COMMENT)
 				{
@@ -119,7 +131,7 @@
 					// # prefix
 					if (comp->iCode == _ICODE_POUND_SIGN)
 					{
-						// #include 
+						// #include
 						if (compNext->iCode == _ICODE_LASM_INCLUDE)
 						{
 							// The next component needs to be the filename
@@ -143,6 +155,7 @@
 								iFile_migrateLines(&file->firstLine, line, false);
 
 								// We're done
+								file->status.isCompleted = true;
 								line->status.isCompleted = true;
 
 							} else {
@@ -151,8 +164,21 @@
 								printf("--Error(%d,%d): expected [#include \"path\to\file.ext\"] syntax in %s\n", line->lineNumber, compNext->start, file->fileName.data_s8);
 								return;
 							}
+
+						} else if (compNext->iCode == _ICODE_LASM_DEFINE) {
+							// #define
+// TODO:  Working here
 						}
-					}
+
+					} else if (compNext->iCode == _ICODE_LASM_FUNCTION) {
+						// function
+// TODO:  Working here
+
+					} else if (compNext->iCode == _ICODE_LASM_FLOWOF) {
+						// flowof
+// TODO:  Working here
+
+					} 
 				}
 
 			} else {

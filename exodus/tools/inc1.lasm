@@ -1,0 +1,7 @@
+||||||||||
+||| inc1.lasm
+||||||
+||| Sample include file
+||||||
+
+#define name total

@@ -1,0 +1,14 @@
+||||||||||
+||| inc2.lasm
+||||||
+||| Sample include file
+||||||
+
+
+flowof sample.name
+{
+	// total += (i << 2)
+	mov     ebx,_li
+	shl     ebx,2
+	add     _ltotal,ebx
+}

@@ -1,9 +1,9 @@
 //////////
 //
-// /libsf/exodus/tools/lasm/lasm_defs.h
+// /libsf/exodus/tools/lasm/pass1.cpp
 //
 //////
-//    _     _ _     _____ _____
+//    _     _ _     _____ _____ 
 //   | |   (_) |__ / ____|  ___|
 //   | |   | | '_ \\___ \|  __|
 //   | |___| | |_) |___) | |
@@ -11,10 +11,10 @@
 //
 //   Liberty Software Foundation
 // and the Village Freedom Project
-//   __     _______     ____
-//   \ \   / /  ___| __|  _ \
+//   __     _______     ____  
+//   \ \   / /  ___| __|  _ \ 
 //    \ \ / /| |_ | '__| |_) |
-//     \ V / |  _|| |  |  __/
+//     \ V / |  _|| |  |  __/ 
 //      \_/  |_|  |_|  |_|
 //
 //////
@@ -22,14 +22,15 @@
 // Copyright (c) 2015 by Rick C. Hodgin
 //////
 // Last update:
-//     Sep.12.2015
+//     Sep.17.2015
 //////
 // Change log:
-//     Sep.12.2015 - Initial creation
+//     Sep.17.2015 - Initial creation
 //////
 //
-// This document is released as Liberty Software under a Repeat License, as governed
-// by the Public Benefit License v1.0 or later (PBL).
+// This document and all documents contained within are released as Liberty Software
+// under a Repeat License, as governed by the Public Benefit License v1.0 or later
+// (PBL).
 //
 // The PBL is a public domain license with a caveat:  self accountability unto God.
 // You are free to use, copy, modify and share this software for any purpose, however,
@@ -77,52 +78,33 @@
 // Thank you.  And may The Lord bless you richly as you lift up your life, your
 // talents, your gifts, your praise, unto Him.  In Jesus' name I pray.  Amen.
 //
+//////
 //
+// Liberty Software Foundation's lasm (LibSF Assembler).
+//
+//////
 
 
-
-
-struct SlasmFile;
 
 
 //////////
-// lasm.cpp
+//
+// Pass-1 -- Macro expansion
+//
 //////
-	bool		ilasm_appendFile				(s8* tcPathname, SLasmFile** file);
+	bool ilasm_pass1(SLasmFile* file)
+	{
+		SLine*		line;
+		SComp*		comp;
+		SComp*		compNext;
+		SComp*		compFile;
+		SLasmFile*	file;
+		s8			fileName[_MAX_PATH];
 
 
-//////////
-// pass0.cpp -- #pragmas
-//////
-	void		ilasm_pass0						(SLasmFile* file);
-	SComp*		ilasm_pass0_parse				(SLine* line);
-
-
-//////////
-// pass1.cpp -- macro expansion
-//////
-	void		ilasm_pass1						(SLasmFile* file);
-
-
-//////////
-// passN.cpp -- token parsing
-//////
-	void		ilasm_passN						(SLasmFile* file);
-
-
-//////////
-// passX.cpp -- opcode generation
-//////
-	void		ilasm_passX						(SLasmFile* file);
-
-
-//////////
-// passY.cpp -- linking
-//////
-	void		ilasm_passY						(SLasmFile* file);
-
-
-//////////
-// passZ.cpp -- output file
-//////
-	void		ilasm_passZ						(SLasmFile* file);
+		// Iterate through the entire file
+		for (line = file->firstLine; line; line = line->ll.nextLine)
+		{
+			line = line; // :-)
+		}
+	}

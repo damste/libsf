@@ -15,6 +15,7 @@
 || #include "inc2.lasm"
 ||||||
 
+// Note:  Below where it says "name" it's a macro replaced with "total"
 
 function sample
 {
@@ -30,11 +31,13 @@ function sample
 || enter 8,0
 ||||||
 
+	||||||||||
     ||| total = x + y + z
     || mov     ebx,_px
     || add     ebx,_py
     || add     ebx,_pz
     || mov     _ltotal,ebx
+	||||||
 
     ||||||||||
     ||| for (i = 0; i < 20; i++)
@@ -54,10 +57,8 @@ function sample
     ||          jnb     for_finished
     ||||||
 
-        ||| total += (i << 2)
-        || mov     ebx,_li
-        || shl     ebx,2
-        || add     _ltotal,ebx
+        // total += (i << 2)
+        flowof name		// See inc2.asm
 
     ||||||
     ||| }

@@ -130,6 +130,7 @@
 	u8			cgc_lasm_include[]					= "include";
 	u8			cgc_lasm_define[]					= "define";
 	u8			cgc_lasm_function[]					= "function";
+	u8			cgc_lasm_flowof[]					= "flowof";
 
 
 
@@ -564,7 +565,8 @@
 																																																									  
 		{ (cs8*)cgc_lasm_include,				sizeof(cgc_lasm_include) - 1,			false,		_ICODE_LASM_INCLUDE,				true,		_ICAT_PRAGMA,			&colorDefault,		false,			null0,		null0	},
 		{ (cs8*)cgc_lasm_define,				sizeof(cgc_lasm_define) - 1,			false,		_ICODE_LASM_DEFINE,					true,		_ICAT_PRAGMA,			&colorDefault,		false,			null0,		null0	},
-		{ (cs8*)cgc_lasm_function,				sizeof(cgc_lasm_function) - 1,			false,		_ICODE_LASM_FUNCTION,				true,		_ICAT_PRAGMA,			&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_lasm_function,				sizeof(cgc_lasm_function) - 1,			false,		_ICODE_LASM_FUNCTION,				true,		_ICAT_FLOW,				&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_lasm_flowof,				sizeof(cgc_lasm_flowof) - 1,			false,		_ICODE_LASM_FLOWOF,					true,		_ICAT_FLOW,				&colorDefault,		false,			null0,		null0	},
 		
 		{ 0,									0,										0,			0,									0,			0,						0,					0,				0,			0		}
 	};

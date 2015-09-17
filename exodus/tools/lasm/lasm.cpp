@@ -265,8 +265,13 @@
 								ilasm_pass0(file);
 								break;
 
+							case 1:
+								// Pass-1
+								ilasm_pass1(file);
+								break;
+
 							case 24:
-								// Pass-X
+								// Pass-X 
 								ilasm_passX(file);
 								break;
 
