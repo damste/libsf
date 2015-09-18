@@ -253,6 +253,11 @@ struct SFunctionParams;
 	void				function_iif								(SThisCode* thisCode, SFunctionParams* rpar);
 	void				function_inlist								(SThisCode* thisCode, SFunctionParams* rpar);
 	void				function_int								(SThisCode* thisCode, SFunctionParams* rpar);
+	bool				ifunction_isalpha_common					(SThisCode* thisCode, SVariable* varStr, bool tlWhole, u32 tnFunctionType);
+	void				function_isalpha	/* Stefano D'Amico */	(SThisCode* thisCode, SFunctionParams* rpar);
+	void				function_isdigit	/* Stefano D'Amico */	(SThisCode* thisCode, SFunctionParams* rpar);
+	void				function_islower	/* Stefano D'Amico */	(SThisCode* thisCode, SFunctionParams* rpar);
+	void				function_isupper	/* Stefano D'Amico */	(SThisCode* thisCode, SFunctionParams* rpar);
 	void				function_isnull		/* Hernan Cano */		(SThisCode* thisCode, SFunctionParams* rpar);
 	bool				ifunction_isnull_common						(SThisCode* thisCode, SFunctionParams* rpar, SVariable* varExpr);
 	void				function_justdrive							(SThisCode* thisCode, SFunctionParams* rpar);
@@ -582,6 +587,10 @@ struct SFunctionParams;
 		{	_ICODE_IIF,				1,			1,				false,		(uptr)&function_iif,			2,				3,				NULL,			&gsSourceLight_iif[0]			},
 		{	_ICODE_INLIST,			1,			1,				false,		(uptr)&function_inlist,			2,				26,				NULL,			&gsSourceLight_inlist[0]		},
 		{	_ICODE_INT,				1,			1,				false,		(uptr)&function_int,			1,				1,				NULL,			&gsSourceLight_int[0]			},
+		{	_ICODE_ISALPHA,			1,			1,				false,		(uptr)&function_isalpha,		1,				2,				NULL,			&gsSourceLight_isalpha[0]		},	// ISALPHA() by Stefano D'Amico, VJr 0.58, Sep.15.2015
+		{	_ICODE_ISDIGIT,			1,			1,				false,		(uptr)&function_isdigit,		1,				2,				NULL,			&gsSourceLight_isdigit[0]		},	// ISDIGIT() by Stefano D'Amico, VJr 0.58, Sep.15.2015
+		{	_ICODE_ISLOWER,			1,			1,				false,		(uptr)&function_islower,		1,				2,				NULL,			&gsSourceLight_islower[0]		},	// ISLOWER() by Stefano D'Amico, VJr 0.58, Sep.15.2015
+		{	_ICODE_ISUPPER,			1,			1,				false,		(uptr)&function_isupper,		1,				2,				NULL,			&gsSourceLight_isupper[0]		},	// ISUPPER() by Stefano D'Amico, VJr 0.58, Sep.15.2015
 		{	_ICODE_ISNULL,			1,			1,				false,		(uptr)&function_isnull,			1,				1,				NULL,			&gsSourceLight_isnull[0]		},	// ISNULL() by Hernan Cano, VJr 0.57, Apr.22.2015
 		{	_ICODE_JUSTDRIVE,		1,			1,				false,		(uptr)&function_justdrive,		1,				1,				NULL,			&gsSourceLight_justdrive[0]		},
 		{	_ICODE_JUSTEXT,			1,			1,				false,		(uptr)&function_justext,		1,				1,				NULL,			&gsSourceLight_justext[0]		},
