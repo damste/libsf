@@ -130,3 +130,16 @@
 		// Parsed into line structures
 		SLine*				firstLine;					// Source file content for this file (including any include files)
 	};
+
+	// #define statements
+	struct SLasmDefine
+	{
+		SLL					ll;										// Link list through multiple defines
+
+		// Optional multiple parameters
+		s32					params;									// Parameter count
+		SDatum				paramNames[_MAX_LASM_DEFINE_PARAMS];	// Parameters
+
+		// The expansion content
+		SLine*				firstLine;								// Can be multiple lines
+	};

@@ -106,7 +106,7 @@
 		SComp*		comp;
 		SComp*		compNext;
 		SComp*		compFile;
-		SLasmFile*	file;
+		SLasmFile*	fileInclude;
 		s8			fileName[_MAX_PATH];
 
 
@@ -142,7 +142,7 @@
 								fileName[compFile->length] = 0;
 
 								// Try to open it
-								if (!ilasm_appendFile(fileName, &file))
+								if (!ilasm_appendFile(fileName, &fileInclude))
 								{
 									// Error opening the file
 									++line->status.errors;
@@ -155,8 +155,8 @@
 								iFile_migrateLines(&file->firstLine, line, false);
 
 								// We're done
-								file->status.isCompleted = true;
-								line->status.isCompleted = true;
+								fileInclude->status.isCompleted	= true;
+								line->status.isCompleted		= true;
 
 							} else {
 								// Syntax error
@@ -167,7 +167,11 @@
 
 						} else if (compNext->iCode == _ICODE_LASM_DEFINE) {
 							// #define
-// TODO:  Working here
+							if (!ilasm_pass0_define(line))
+								return;		// Error is displayed by ilasm_pass0_define()
+
+							// This line is completed
+							line->status.isCompleted 
 						}
 
 					} else if (compNext->iCode == _ICODE_LASM_FUNCTION) {
@@ -278,4 +282,38 @@
 
 		// Return the first component
 		return(line->compilerInfo->firstComp);
+	}
+
+
+
+
+//////////
+//
+// Parses out #define syntax, creating a new SLasmDefine structure if valid.
+//
+//////
+//
+// Syntax must be:
+//
+//		#define
+//		unique name
+//	
+//		optional (
+//			:repeat
+//				name
+//					optional ,
+//						loop
+//					else
+//						exit
+//			:end
+//			)
+//		
+//		optional {
+//			all content to matching }
+//		else
+//			all content to end of line
+//
+//////
+	bool ilasm_pass0_define(SLine* line)
+	{
 	}

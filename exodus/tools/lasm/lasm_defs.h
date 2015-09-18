@@ -96,6 +96,7 @@ struct SlasmFile;
 //////
 	void		ilasm_pass0						(SLasmFile* file);
 	SComp*		ilasm_pass0_parse				(SLine* line);
+	bool		ilasm_pass0_define				(SLine* line);
 
 
 //////////

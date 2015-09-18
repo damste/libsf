@@ -81,6 +81,7 @@
 
 
 
+const s32		_MAX_LASM_DEFINE_PARAMS				= 26;					// Up to 26 #define macro(a,b,c,...,z)
 
 const s32		_ICAT_INSTRUCTION					= 1;
 const s32		_ICAT_DATA_TYPE						= 2;
