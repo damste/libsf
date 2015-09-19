@@ -324,7 +324,6 @@
 		SVariable*	varExpr2 = rpar->ip[1];
 
 		bool		llIsNull;
-		SVariable*	result;
 
 
 		//////////
@@ -351,15 +350,9 @@
 		//////////
 		// Create our result
 		//////
-			llIsNull	= ifunction_isnull_common(thisCode, rpar, varExpr1);
-			result		= iVariable_copy(thisCode, ((llIsNull) ? varExpr2 : varExpr1), false);
-			if (!result)
+			llIsNull	= ifunction_isnull_common(thisCode, varExpr1);
+			rpar->rp[0]	= iVariable_copy(thisCode, ((llIsNull) ? varExpr2 : varExpr1), false);
+			if (!rpar->rp[0])
 				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_getRelatedComp(thisCode, ((llIsNull) ? varExpr2 : varExpr1)), false);
-
-
-		//////////
-		// Signify our result
-		//////
-			rpar->rp[0] = result;
 
 	}
