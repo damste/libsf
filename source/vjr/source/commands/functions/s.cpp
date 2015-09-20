@@ -913,6 +913,145 @@
 
 //////////
 //
+// Function: SOUNDEX()
+// Returns a phonetic representation of the specified character expression.
+//
+//////
+// Version 0.58
+// Last update:
+//     Sep.20.2015
+//////
+// Change log:
+//     Sep.20.2015 - Initial creation, proposed by Stefano D'Amico.
+//////
+// Parameters:
+//     varString	-- Specifies the character expression SOUNDEX( ) evaluates.
+//
+//////
+// Returns:
+//    Character		-- SOUNDEX() returns a four-character string.
+//////
+	void function_soundex(SThisCode* thisCode, SFunctionParams* rpar)
+	{
+		SVariable* varString	= rpar->ip[0];
+
+
+		//////////
+		// Parameter 1 must be character
+		//////
+			rpar->rp[0] = NULL;
+			if (!iVariable_isValid(varString) || !iVariable_isTypeCharacter(varString))
+			{
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varString), false);
+				return;
+			}
+
+		
+		//////////
+		// Return the result
+		//////
+			rpar->rp[0] = ifunction_soundex_common(thisCode, varString);
+	}
+
+	#define UPPER(c)   ((c >= 'a' && c <= 'z') ? c - 0x20 : c)
+	SVariable* ifunction_soundex_common(SThisCode* thisCode, SVariable* varStr)
+	{
+		s8		lcResult[5], c, lcCode, lcLast;
+		s32		lnI, lnJ;
+
+		SVariable*	result;
+
+		//////////
+		// Replace consonants with digits as follows (after the first letter):
+		//	"BFPV"		-> 1
+		//	"CGJKQSXZ"	-> 2
+		//	"DT"		-> 3
+		//	"L"			-> 4
+		//	"MN"		-> 5
+		//	"R"			-> 6
+		//////
+			static s8	cgc_soundexCode[27] = "01230120022455012623010202";	//ABCDEFGHIJKLMNOPQRSTUVWXYZ
+		
+		
+		//////////
+		// First letter is first char
+		//////
+			if (varStr->value.length > 0)
+				lcResult[0] = UPPER(varStr->value.data_cs8[0]);
+			else
+				lcResult[0] = '0';
+
+
+		//////////
+		// Iterate through our string
+		//////
+			for (lnI = 1, lcLast = '?', lcResult[4] = 0, lnJ = 1; varStr->value.data_cs8[lnI] && lnI < varStr->value.length && lnJ < 4; lnI++)
+			{
+				//////////
+				// Grab char
+				//////
+					c = UPPER(varStr->value.data_cs8[lnI]);
+
+
+				//////////
+				// Get soundex code for char
+				//////
+					if (c >= 'A' && c <= 'Z')
+					{
+						lcCode = cgc_soundexCode[c - 'A'];
+						if (lcCode == '0')		// If 0, ignore ('A', E', 'I', 'O', 'U', 'H', 'W', 'Y')
+						{
+							//////////
+							// Vowels are considered separators
+							// Soundex("Asicroft") = A226
+							// The two letters from group 2 are not adjacent and so do not get turned into a single 2
+							//////
+								lcLast = lcCode;		
+								continue;
+						}
+						if (lcCode != lcLast)	// If not same code, add to soundex
+						{
+							lcLast = lcCode;
+							lcResult[lnJ++] = lcCode;
+						}
+					} else {
+						// Ignore character
+						lcLast = lcCode = 0;
+					}
+
+			}
+
+		//////////
+		// Soundex code padded to 4 zeros
+		//////			
+			for (; lnJ < 4; lnJ++)
+				lcResult[lnJ] = '0';
+
+
+		//////////
+		// Create our result
+		//////
+			result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, lcResult, 5, false);
+
+
+		//////////
+		// Are we good?
+		//////
+			if (!result)
+				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_getRelatedComp(thisCode, varStr), false);
+
+
+		//////////
+		// Return the result
+		//////
+			return(result);
+	}
+
+
+
+
+//////////
+//
 // Function: SPACE()
 // Creates a character variable initialized with spaces.
 //

@@ -469,7 +469,7 @@
 		// Iterate through our string for each test
 		//////
 			lnMaxLength = min(((tlWhole) ? varStr->value.length : 1), varStr->value.length);
-			llResult	= true;
+			llResult	= (lnMaxLength>0);
 
 			// What is the common operation we're testing?
 			switch (tnIsCommonOp)
