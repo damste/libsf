@@ -653,6 +653,114 @@
 
 //////////
 //
+// Function: DIFFERENCE()
+// Returns an integer, 0 through 4, which represents the relative phonetic difference between two character expressions.
+//
+//////
+// Version 0.58
+// Last update:
+//     Sep.20.2015
+//////
+// Change log:
+//     Sep.20.2015 - Initial creation, proposed by Stefano D'Amico.
+//////
+// Parameters:
+//     varString1	-- First character expression.
+//     varString2	-- Second character expression.
+//
+//////
+// Returns:
+//    Numeric		-- The more alike the two expressions are spelled, the higher the number DIFFERENCE() returns.
+//////
+	void function_difference(SThisCode* thisCode, SFunctionParams* rpar)
+	{
+		SVariable* varString1	= rpar->ip[0];
+		SVariable* varString2	= rpar->ip[1];
+
+		s32			lnI, lnMatch;
+		SVariable*	SoundexVarStr1;
+		SVariable*	SoundexVarStr2;
+
+		SVariable*	result;
+
+		//////////
+		// Parameter 1 must be character
+		//////
+			rpar->rp[0] = NULL;
+			if (!iVariable_isValid(varString1) || !iVariable_isTypeCharacter(varString1))
+			{
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varString1), false);
+				return;
+			}
+
+		//////////
+		// Parameter 2 must be character
+		//////
+			if (!iVariable_isValid(varString2) || !iVariable_isTypeCharacter(varString2))
+			{
+				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varString2), false);
+				return;
+			}
+
+		//////////
+		// Compute Soundex
+		//////
+			SoundexVarStr1 = ifunction_soundex_common(thisCode, varString1);
+			if (!SoundexVarStr1)
+			{
+				return;
+			}
+
+			SoundexVarStr2 = ifunction_soundex_common(thisCode, varString2);
+			if (!SoundexVarStr2)
+			{
+				//////////
+				// Clean house
+				//////
+					iVariable_delete(thisCode, SoundexVarStr1, true);
+					return;
+			}
+
+
+		//////////
+		// Match string
+		//////
+			for (lnI = 0, lnMatch = 0; SoundexVarStr1->value.data_cs8[lnI] && lnI < SoundexVarStr1->value.length; lnI++)
+			{
+				if (SoundexVarStr1->value.data_cs8[lnI] == SoundexVarStr2->value.data_cs8[lnI])
+				{
+					lnMatch++;
+				}
+			}
+
+
+		//////////
+		// Clean house
+		//////
+			iVariable_delete(thisCode, SoundexVarStr1, true);
+			iVariable_delete(thisCode, SoundexVarStr2, true);		
+
+
+		//////////
+		// Create and populate our output variable
+		//////
+			result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_U32, (cs8*)&lnMatch, 4, false);
+			if (!result)
+				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_getRelatedComp(thisCode, varString1), false);
+
+
+		//////////
+		// Indicate our result
+		//////
+			rpar->rp[0] = result;
+	}
+
+
+
+
+
+//////////
+//
 // Function: DMY()
 // Returns a character expression in day-month-year format (for example, 31 May 1998).
 //

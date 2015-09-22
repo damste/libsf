@@ -217,6 +217,7 @@ struct SFunctionParams;
 	void				ifunction_datetimex_common					(SThisCode* thisCode, SFunctionParams* rpar, bool tlIsDatetimeX);
 	void				function_day		/* Stefano D'Amico */	(SThisCode* thisCode, SFunctionParams* rpar);
 	void				ifunction_day_month_year_common				(SThisCode* thisCode, SFunctionParams* rpar, SVariable* varParam, u32 tnFunctionType);
+	void				function_difference	/* Stefano D'Amico */	(SThisCode* thisCode, SFunctionParams* rpar);
 	void				function_dmy		/* Stefano D'Amico */	(SThisCode* thisCode, SFunctionParams* rpar);
 	void				ifunction_dtoc_common						(SThisCode* thisCode, SFunctionParams* rpar, SVariable* varParam, u32 tnFunctionType);
 	void				function_dow		/* Hernan Cano */		(SThisCode* thisCode, SFunctionParams* rpar);
@@ -328,6 +329,8 @@ struct SFunctionParams;
 	void				ifunction_sign_common						(SThisCode* thisCode, SFunctionParams* rpar, SVariable* varNumber, bool tlIncrementZero);
 	void				function_sin		/* Stefano D'Amico */	(SThisCode* thisCode, SFunctionParams* rpar);
 	void				function_slice								(SThisCode* thisCode, SFunctionParams* rpar);
+	void				function_soundex	/* Stefano D'Amico */	(SThisCode* thisCode, SFunctionParams* rpar);
+	SVariable*			ifunction_soundex_common					(SThisCode* thisCode, SVariable* varString);
 	void				function_space								(SThisCode* thisCode, SFunctionParams* rpar);
 	void				function_sqrt		/* Stefano D'Amico */	(SThisCode* thisCode, SFunctionParams* rpar);
 	void				function_startswith							(SThisCode* thisCode, SFunctionParams* rpar);
@@ -558,6 +561,7 @@ struct SFunctionParams;
 		{	_ICODE_DATETIMEX,		1,			1,				false,		(uptr)&function_datetimex,		0,				8,				NULL,			&gsSourceLight_datetimex[0]		},
 		{	_ICODE_DAY,				1,			1,				false,		(uptr)&function_day,			0,				1,				NULL,			&gsSourceLight_day[0]			},	// DAY() by Stefano D'Amico, VJr 0.57, Apr.04.2015
 		{	_ICODE_DBUNDLE,			0,			1,				false,		(uptr)&function_dbundle,		1,				4,				(char*)"1000",	&gsSourceLight_dbundle[0]		},
+		{	_ICODE_DIFFERENCE,		1,			1,				false,		(uptr)&function_difference,		2,				2,				NULL,			&gsSourceLight_difference[0]	},	// DIFFERENCE() by Stefano D'Amico, VJr 0.58, Sep.20.2015
 		{	_ICODE_DMY,				1,			1,				false,		(uptr)&function_dmy,			0,				1,				NULL,			&gsSourceLight_dmy[0]			},	// DMY() by Stefano D'Amico, VJr 0.57, Apr.07.2015
 		{	_ICODE_DOW,				1,			1,				false,		(uptr)&function_dow,			0,				2,				NULL,			&gsSourceLight_dow[0]			},	// DOW() by Hernan Cano, VJr 0.75, Apr.20.2015
 		{	_ICODE_DTOC,			1,			1,				false,		(uptr)&function_dtoc,			0,				2,				NULL,			&gsSourceLight_dtoc[0]			},	// DTOC() by Stefano D'Amico, VJr 0.57, Apr.07.2015
@@ -654,6 +658,7 @@ struct SFunctionParams;
 		{	_ICODE_SIGN,			1,			1,				false,		(uptr)&function_sign,			1,				1,				NULL,			&gsSourceLight_sign[0]			},	// SIGN() by Stefano D'Amico, VJr 0.56, Mar.14.2015
 		{	_ICODE_SIN,				1,			1,				false,		(uptr)&function_sin,			1,				1,				NULL,			&gsSourceLight_sin[0]			},	// SIN() by Stefano D'Amico, VJr 0.56, Mar.17.2015
 		{	_ICODE_SLICE,			1,			1,				false,		(uptr)&function_slice,			2,				3,				NULL,			&gsSourceLight_slice[0]			},
+		{	_ICODE_SOUNDEX,			1,			1,				false,		(uptr)&function_soundex,		1,				1,				NULL,			&gsSourceLight_soundex[0]		},	// SOUNDEX() by Stefano D'Amico, VJr 0.58, Sep.20.2015
 		{	_ICODE_SPACE,			1,			1,				false,		(uptr)&function_space,			1,				1,				NULL,			&gsSourceLight_space[0]			},
 		{	_ICODE_SQRT,			1,			1,				false,		(uptr)&function_sqrt,			1,				1,				NULL,			&gsSourceLight_sqrt[0]			},	// SQRT() by Stefano D'Amico, VJr 0.56, Mar.15.2015
 		{	_ICODE_STARTSWITH,		1,			1,				false,		(uptr)&function_startswith,		2,				4,				NULL,			&gsSourceLight_startswith[0]	},

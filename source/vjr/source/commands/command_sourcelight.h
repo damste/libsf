@@ -476,6 +476,11 @@
 		{	0,										0,	0,	0,	0,	0	}
 	};
 
+	SSourceLightData gsSourceLight_difference[] =
+	{
+		{	0,										0,	0,	0,	0,	0	}
+	};
+
 	SSourceLightData gsSourceLight_dmy[] =
 	{
 		{	0,										0,	0,	0,	0,	0	}
@@ -948,6 +953,11 @@
 	};
 
 	SSourceLightData gsSourceLight_slice[] =
+	{
+		{	0,										0,	0,	0,	0,	0	}
+	};
+
+	SSourceLightData gsSourceLight_soundex[] =
 	{
 		{	0,										0,	0,	0,	0,	0	}
 	};
