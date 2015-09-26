@@ -298,20 +298,26 @@
 //		#define
 //		unique name
 //	
-//		optional (
-//			:repeat
+//		optional "("
+//			:repeat until matching ")"
 //				name
 //					optional ,
 //						loop
 //					else
 //						exit
 //			:end
-//			)
 //		
 //		optional {
-//			all content to matching }
+//			all content to matching }, with every intermediate \} escaped
 //		else
-//			all content to end of line
+//			:repeat
+//				all content to end of line
+//				optional "\"
+//					next line
+//					loop
+//				else
+//					exit
+//			:end
 //
 //////
 	bool ilasm_pass0_define(SLine* line)
