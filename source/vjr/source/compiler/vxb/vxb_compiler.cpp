@@ -2781,6 +2781,69 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 
 //////////
 //
+// Takes sequences like \{ and \} and replaces them solely with { and }
+//
+//////
+	s32 iComps_unescapeBraces(SThisCode* thisCode, SLine* line)
+	{
+		s32		lnCount;
+		SComp*	comp;
+		SComp*	compNext;
+
+
+		// Make sure our environment is sane
+		lnCount = 0;
+		if (line && line->compilerInfo)
+		{
+			// Iterate through the line components
+			for (comp = line->compilerInfo->firstComp; comp; comp = comp->ll.nextComp)
+			{
+				// Is it an escape?
+				if (comp->iCode == _ICODE_BACKSLASH)
+				{
+					// Is there a component after?
+					if (compNext = iComps_getNth(thisCode, comp, 1))
+					{
+						// Is it { or }
+						if ((compNext->iCode == _ICODE_BRACE_LEFT || compNext->iCode == _ICODE_BRACE_RIGHT))
+						{
+							// Are they directly adjacent?
+							if (iiComps_areCompsAdjacent(thisCode, comp, compNext))
+							{
+								// Remove the escape
+								++lnCount;
+								iComps_delete(thisCode, comp, true);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// Indicate our count
+		return(lnCount);
+	}
+
+
+
+
+//////////
+//
+// Returns true of false if two components are directly adjacent (no whitespace between)
+//
+//////
+	bool iiComps_areCompsAdjacent(SThisCode* thisCode, SComp* compLeft, SComp* compRight)
+	{
+// TODO:  Note:  There is potentially a flaw here, in that there could be a comment that's been removed, and therefore there is nothing really between
+		// If [start+length] equals [start] of the next, they're adjacent
+		return(compLeft->start + compLeft->length == compRight->start);
+	}
+
+
+
+
+//////////
+//
 // Returns the number of characters between two components.
 //
 //////
@@ -13024,6 +13087,81 @@ debug_break;
 		{
 			iCompileNote_appendMessage(thisCode, &line->compilerInfo->firstError, tnStartColumn, tnStartColumn + tnLength, tnWarningNum, tcMessage);
 		}
+	}
+
+
+
+
+//////////
+//
+// Called to scan forward across multiple lines for a component.
+//
+// Note:	Incoming comp need not be a component of incoming line, but once
+//			comp->ll.nextComp is NULL, line->ll.nextLine will be used
+//////
+	// Note:  cb->lFound also indicates if something was found
+	bool iLine_scanComps_forward_withCallback(SThisCode* thisCode, SLine* line, SComp* comp, SCallback* cb, bool tlSkipFirst)
+	{
+		// Make sure our environment is sane
+		if (line && comp && cb && cb->_func)
+		{
+
+			//////////
+			// Skip to next component if need be
+			//////
+				if (tlSkipFirst)
+					goto goto_next_component;
+
+
+			//////////
+			// Iterate until found
+			//////
+				cb->line	= line;
+				cb->comp	= comp;
+				cb->lFound	= false;
+				while (cb->line && cb->comp)
+				{
+
+					//////////
+					// Callback returns true if we should continue searching
+					//////
+						if ((cb->lFound = !cb->func(cb)))
+							break;
+
+
+					//////////
+					// Skip to next component, which could move us on to the next line
+					//////
+goto_next_component:
+						if (!cb->comp->ll.nextComp)
+						{
+							// Move to next line
+							if (!cb->line->ll.nextLine || !cb->line->ll.nextLine->compilerInfo)
+								break;	// We've reached the end
+
+							// Next line
+							cb->line = cb->line->ll.nextLine;
+							cb->comp = cb->line->compilerInfo->firstComp;
+
+						} else {
+							// Move to the next component
+							cb->comp = cb->comp->ll.nextComp;
+						}
+
+				}
+
+		} else {
+			// Something's invalid in our parameters
+			if (cb)
+			{
+				cb->line	= (SLine*)-1;
+				cb->comp	= (SComp*)-1;
+				cb->lFound	= false;
+			}
+		}
+
+		// Indicate our return value
+		return(cb->lFound);
 	}
 
 

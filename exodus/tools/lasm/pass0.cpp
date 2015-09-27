@@ -152,7 +152,7 @@
 								// We have the file loaded
 
 								// Insert its lines after this #include line
-								iFile_migrateLines(&file->firstLine, line, false);
+								iFile_migrateLines(&file->firstLine, line);
 
 								// We're done
 								fileInclude->status.isCompleted	= true;
@@ -167,11 +167,11 @@
 
 						} else if (compNext->iCode == _ICODE_LASM_DEFINE) {
 							// #define
-							if (!ilasm_pass0_define(line))
-								return;		// Error is displayed by ilasm_pass0_define()
+							if (!ilasm_pass0_define(file, &line, compNext, iComps_getNth(NULL, compNext, 1)))
+								return;		// Error is displayed by the called function
 
-							// This line is completed
-							line->status.isCompleted 
+							// This line is completed, but the file itself is not
+							line->status.isCompleted = true;
 						}
 
 					} else if (compNext->iCode == _ICODE_LASM_FUNCTION) {
@@ -184,10 +184,6 @@
 
 					} 
 				}
-
-			} else {
-				// No data on this line
-				line->status.isCompleted = true;
 			}
 		}
 	}
@@ -295,7 +291,8 @@
 //
 // Syntax must be:
 //
-//		#define
+//		"#define"
+//
 //		unique name
 //	
 //		optional "("
@@ -320,6 +317,104 @@
 //			:end
 //
 //////
-	bool ilasm_pass0_define(SLine* line)
+	// Note:  It is known that when this function is called, the first component is _ICODE_LASM_DEFINE
+	bool ilasm_pass0_define(SLasmFile* file, SLine** lineProcessing, SComp* compDefine, SComp* compName)
 	{
+		SLine*		line;
+		SComp*		compNext;
+		SCallback	cb;
+
+
+		// Make sure our environment is sane
+		if (lineProcessing && (line = *lineProcessing))
+		{
+			// Is there a valid component?
+			if (compName)
+			{
+
+				//////////
+				// Load optional parameters
+				//////
+					compNext = iComps_getNth(NULL, compName, 1);
+					if (compNext->iCode == _ICODE_PARENTHESIS_LEFT)
+					{
+						// It begins with an open parenthesis
+					}
+
+
+				//////////
+				// Is it brace content
+				//////
+					if (compNext->iCode == _ICODE_BRACE_LEFT)
+					{
+						// It begins with a {, so find the closing }
+						memset(&cb, 0, sizeof(cb));
+						cb._func = (sptr)&iilasm_pass0_define_callback;
+						if (!iLine_scanComps_forward_withCallback(NULL, line, compNext, &cb, true))
+						{
+// TODO:  working here
+							// Unable to find matching brace
+						}
+
+						// Copy everything to the matching }
+
+						// Remove any escaped braces from the content we copied
+						//iComps_unescapeBraces(NULL, line);
+					}
+
+			} else {
+				// It's a #define but nothing comes after
+				++line->status.errors;
+				printf("--Error(%d,%d): token was expected in %s\n", line->lineNumber, compDefine->start + compDefine->length, file->fileName.data_s8);
+			}
+
+		} else {
+			printf("--Error: an unexpeced internal error occurred processing a #define in %s\n", file->fileName.data_s8);
+		}
+
+		// If we get here, error
+		return(false);
+	}
+
+	bool iilasm_pass0_define_callback(SCallback* cb)
+	{
+		SComp* compNext;
+
+
+		//////////
+		// Is it a \{ or \} ?
+		//////
+			if (cb->comp->iCode == _ICODE_BACKSLASH)
+			{
+				// Grab the next component
+				compNext = cb->comp->ll.nextComp;
+
+				// Is it { or } ?
+				if (compNext && (compNext->iCode == _ICODE_BRACE_LEFT || compNext->iCode == _ICODE_BRACE_RIGHT))
+				{
+					// It's a sequence of \{ or \}, but are they directly adjacent?
+					if (iiComps_areCompsAdjacent(NULL, cb->comp, compNext))
+					{
+						// Yes, so skip this one because it's escaped
+						cb->comp = compNext;
+
+						// Go ahead and keep looking after these two components are skipped
+						return(true);
+					}
+				}
+			}
+		
+
+		//////////
+		// Is it our target }?
+		//////
+			if (cb->comp->iCode == _ICODE_BRACE_RIGHT)
+				return(false);	// Yes, so indicate there should be no more searching
+
+
+		//////////
+		// If we get here, not found, so continue on searching
+		//////
+			return(true);
+
 	}

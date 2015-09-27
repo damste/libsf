@@ -569,6 +569,50 @@ struct SCompParams
 	};
 };
 
+// Generic callback support
+struct SCallback
+{
+
+	//////////
+	// Callback function
+	//////
+		union {
+			uptr	_func;
+			bool	(*func)		(SCallback* cb);
+		};
+
+
+	//////////
+	// Various data items available
+	//////
+		union {
+			void*	data1;
+			SLine*	line;
+		};
+
+		union {
+			void*	data2;
+			SComp*	comp;
+		};
+
+		union {
+			void*	data3;
+			sptr	level;
+		};
+
+		void*		data4;
+
+
+	//////////
+	// Flags
+	//////
+		union {
+			bool		lFlag;
+			bool		lFound;
+		};
+
+};
+
 // Used for pushing values onto the stack for the physical DLL dispatch from VJr into the DLL code
 struct SDllVals
 {

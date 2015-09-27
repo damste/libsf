@@ -167,6 +167,8 @@ struct SThisCode;
 	s32						iComps_truncateAtComments					(SThisCode* thisCode, SLine* line);
 	void					iComps_combineCasks							(SThisCode* thisCode, SLine* line);
 	void					iComps_fixupNaturalGroupings				(SThisCode* thisCode, SLine* line);
+	s32						iComps_unescapeBraces						(SThisCode* thisCode, SLine* line);
+	bool					iiComps_areCompsAdjacent					(SThisCode* thisCode, SComp* compLeft, SComp* compRight);
 	s32						iiComps_get_charactersBetween				(SThisCode* thisCode, SComp* compLeft, SComp* compRight);
 	s32						iComps_getAs_s32							(SThisCode* thisCode, SComp* comp);
 	s32						iComps_getContiguousLength					(SThisCode* thisCode, SComp* comp, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount, s32* tnCount);
@@ -350,6 +352,7 @@ struct SThisCode;
 	// Line functions
 	void					iLine_appendError							(SThisCode* thisCode, SLine* line, u32 tnErrorNum,   cu8* tcMessage, u32 tnStartColumn, u32 tnLength);
 	void					iLine_appendWarning							(SThisCode* thisCode, SLine* line, u32 tnWarningNum, cu8* tcMessage, u32 tnStartColumn, u32 tnLength);
+	bool					iLine_scanComps_forward_withCallback		(SThisCode* thisCode, SLine* line, SComp* comp, SCallback* cb, bool tlSkipFirst);
 
 	// Compiler functions
 	SCompiler*				iCompiler_allocate							(SThisCode* thisCode, SLine* parent);

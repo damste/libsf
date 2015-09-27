@@ -92,19 +92,18 @@
 // Pass-1 -- Macro expansion
 //
 //////
-	bool ilasm_pass1(SLasmFile* file)
+	void ilasm_pass1(SLasmFile* file)
 	{
-		SLine*		line;
-		SComp*		comp;
-		SComp*		compNext;
-		SComp*		compFile;
-		SLasmFile*	file;
-		s8			fileName[_MAX_PATH];
-
-
-		// Iterate through the entire file
-		for (line = file->firstLine; line; line = line->ll.nextLine)
-		{
-			line = line; // :-)
-		}
+// 		SLine*		line;
+// 		SComp*		comp;
+// 		SComp*		compNext;
+// 		SComp*		compFile;
+// 		s8			fileName[_MAX_PATH];
+// 
+// 
+// 		// Iterate through the entire file
+// 		for (line = file->firstLine; line; line = line->ll.nextLine)
+// 		{
+// 			line = line; // :-)
+// 		}
 	}
