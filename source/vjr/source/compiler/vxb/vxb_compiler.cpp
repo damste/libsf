@@ -2836,6 +2836,21 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 
 //////////
 //
+// Called to copy the components to the indicated ending component, or the end of the line, whichever comes first
+// Note:  If compEnd is NULL, it continues to the end of the line
+//
+//////
+	// If tlMakeReferences, content is not physically copied to lineNew->sourceCode, but only references to the compStart->line->sourceCode content are made
+	s32 iComps_copyTo(SThisCode* thisCode, SLine* lineNew, SComp* compStart, SComp* compEnd, bool tlMakeReferences)
+	{
+// TODO:  working here
+	}
+
+
+
+
+//////////
+//
 // Returns true of false if two components are directly adjacent (no whitespace between)
 //
 //////
@@ -13321,9 +13336,9 @@ _asm int 3;
 // Note:  It will left-justify the starting component if specified, otherwise it will prefix with spaces
 //
 //////
-	SLine* iLine_copyComps_toNewLines(SThisCode* thisCode, SLine* lineStart, SComp* compStart, SLine* lineEnd, SComp* compEnd, bool tlLeftJustifyStart)
+	SLine* iLine_copyComps_toNewLines(SThisCode* thisCode, SLine* lineStart, SComp* compStart, SLine* lineEnd, SComp* compEnd, bool tlLeftJustifyStart, bool tlSkipBlanks)
 	{
-		SLine*	line;
+		SLine*	lineNew;
 		SLine*	lineCopy;
 
 
@@ -13334,14 +13349,15 @@ _asm int 3;
 			// First line
 			//////
 				// New line
-				line = iLine_createNew(thisCode);
+				if (!(lineNew = iLine_createNew(thisCode)))
+					return(NULL);
 
 				// Copy components
-// TODO:  working here
+				iComps_copyTo(thisCode, lineNew, compStart, NULL, false);
 
 				// If we're only doing one line, we're done
 				if (lineStart == lineEnd)
-					return(line);
+					return(lineNew);
 
 
 			//////////
@@ -13350,7 +13366,7 @@ _asm int 3;
 				for (lineCopy = lineStart->ll.nextLine; lineCopy && lineCopy != lineEnd; lineCopy = lineCopy->ll.nextLine)
 				{
 					// New line
-					line = iLine_appendNew(thisCode, line);
+					lineNew = iLine_appendNew(thisCode, lineNew);
 
 					// Copy these components
 // TODO:  working here
@@ -13362,7 +13378,7 @@ _asm int 3;
 			//////
 				// Create the new last line
 				if (lineCopy != lineEnd)
-					line = iLine_appendNew(thisCode, line);
+					lineNew = iLine_appendNew(thisCode, lineNew);
 
 				// Copy these components
 // TODO:  working here
@@ -13370,11 +13386,11 @@ _asm int 3;
 
 		} else {
 			// Invalid content, just create a blank line
-			line = iLine_createNew(thisCode);
+			lineNew = iLine_createNew(thisCode);
 		}
 
 		// Indicate our status
-		return(line);
+		return(lineNew);
 	}
 
 

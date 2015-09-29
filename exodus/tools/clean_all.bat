@@ -9,7 +9,7 @@ del /s *.idb
 del /s *.plg
 del /s *.ncb
 del /s *.sdf
-del /s *.suo
+REM del /s *.suo
 del /s vjr.aps
 
 echo Removing compiler folders

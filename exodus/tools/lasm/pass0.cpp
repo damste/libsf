@@ -366,7 +366,7 @@
 					if (compNext->iCode == _ICODE_PARENTHESIS_LEFT)
 					{
 						// It begins with an open parenthesis
-						if (!iilasm_pass0_define_getParameters(file, define, &line, &compNext))
+						if (!iilasm_pass0_define__getParameters(file, define, &line, &compNext))
 						{
 							++line->status.errors;
 							printf("--Error(%d,%d): unable to parse parameters in %s\n", line->lineNumber, compNext->start, file->fileName.data_s8);
@@ -392,7 +392,7 @@
 					{
 						// It begins with a {, so find the closing }
 						memset(&cb, 0, sizeof(cb));
-						cb._func = (sptr)&iilasm_pass0_define_callback;
+						cb._func = (sptr)&iilasm_pass0_define__callback_bypassEscapedBraces;
 						if (!iLine_scanComps_forward_withCallback(NULL, line, compNext, &cb, true))
 						{
 							// Unable to find matching brace
@@ -408,8 +408,8 @@
 						// Move back one from the }
 						iiLine_skipTo_prevComp(NULL, &cb.line, &cb.comp);
 
-						// Copy everything to the matching }
-						define->firstLine = iLine_copyComps_toNewLines(NULL, line, compNext, cb.line, cb.comp, true);
+						// Copy everything from after the { to immediately before the matching
+						define->firstLine = iLine_copyComps_toNewLines(NULL, line, compNext, cb.line, cb.comp, true, true);
 
 						// Remove any escaped braces from the content we copied
 						iLines_unescape_iCodes(NULL, define->firstLine, _ICODE_BRACE_LEFT, _ICODE_BRACE_RIGHT);
@@ -438,7 +438,7 @@ politely_fail:
 		return(false);
 	}
 
-	bool iilasm_pass0_define_callback(SCallback* cb)
+	bool iilasm_pass0_define__callback_bypassEscapedBraces(SCallback* cb)
 	{
 		SComp* compNext;
 
@@ -454,7 +454,7 @@ politely_fail:
 				// Is it { or } ?
 				if (compNext && (compNext->iCode == _ICODE_BRACE_LEFT || compNext->iCode == _ICODE_BRACE_RIGHT))
 				{
-					// It's a sequence of \{ or \}, but are they directly adjacent?
+					// Yes, but are they directly adjacent?
 					if (iiComps_areCompsAdjacent(NULL, cb->comp, compNext))
 					{
 						// Yes, so skip this one because it's escaped
@@ -490,7 +490,7 @@ politely_fail:
 // Note:  Upon entry the *compProcessing should be pointing to _ICODE_PARENTHESIS_LEFT
 //
 //////
-	bool iilasm_pass0_define_getParameters(SLasmFile* file, SLasmDefine* define, SLine** lineProcessing, SComp** compProcessing)
+	bool iilasm_pass0_define__getParameters(SLasmFile* file, SLasmDefine* define, SLine** lineProcessing, SComp** compProcessing)
 	{
 		s32		lnI;
 		bool	llSkipTest;

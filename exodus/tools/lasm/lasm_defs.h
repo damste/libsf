@@ -96,9 +96,10 @@ struct SlasmFile;
 //////
 	void		ilasm_pass0								(SLasmFile* file);
 	SComp*		ilasm_pass0_parse						(SLine* line);
+
 	bool		ilasm_pass0_define						(SLasmFile* file, SLine** lineProcessing, SComp* compDefine, SComp* compName);
-	bool		iilasm_pass0_define_callback			(SCallback* cb);
-	bool		iilasm_pass0_define_getParameters		(SLasmFile* file, SLasmDefine* define, SLine** lineProcessing, SComp** compProcessing);
+	bool		iilasm_pass0_define__callback_bypassEscapedBraces(SCallback* cb);
+	bool		iilasm_pass0_define__getParameters		(SLasmFile* file, SLasmDefine* define, SLine** lineProcessing, SComp** compProcessing);
 
 
 //////////
