@@ -943,14 +943,21 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Called to delete the indicated comp
 //
 //////
-	void iComps_delete(SThisCode* thisCode, SComp* comp, bool tlDeleteSelf)
+	SComp* iComps_delete(SThisCode* thisCode, SComp* comp, bool tlDeleteSelf)
 	{
+		SComp* compNext;
+
+
 		// If there is a bitmap cache, delete it
 		if (comp->bc)
 			iBmp_deleteCache(&comp->bc);
 
 		// Delete this node
+		compNext = comp->ll.nextComp;
 		iLl_deleteNode((SLL*)comp, tlDeleteSelf);
+
+		// Indicate our new value
+		return(compNext);
 	}
 
 
@@ -2784,7 +2791,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Takes sequences like \{ and \} and replaces them solely with { and }
 //
 //////
-	s32 iComps_unescapeBraces(SThisCode* thisCode, SLine* line)
+	s32 iComps_unescape_iCodes(SThisCode* thisCode, SComp* compStart, s32 tniCode1, s32 tniCode2, s32 tniCodeEscape)
 	{
 		s32		lnCount;
 		SComp*	comp;
@@ -2793,26 +2800,26 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 
 		// Make sure our environment is sane
 		lnCount = 0;
-		if (line && line->compilerInfo)
+		if (compStart)
 		{
 			// Iterate through the line components
-			for (comp = line->compilerInfo->firstComp; comp; comp = comp->ll.nextComp)
+			for (comp = compStart; comp; comp = comp->ll.nextComp)
 			{
 				// Is it an escape?
-				if (comp->iCode == _ICODE_BACKSLASH)
+				if (comp->iCode == tniCodeEscape)
 				{
 					// Is there a component after?
 					if (compNext = iComps_getNth(thisCode, comp, 1))
 					{
-						// Is it { or }
-						if ((compNext->iCode == _ICODE_BRACE_LEFT || compNext->iCode == _ICODE_BRACE_RIGHT))
+						// Is it iCode 1 or iCode 2
+						if ((compNext->iCode == tniCode1 || compNext->iCode == tniCode2))
 						{
 							// Are they directly adjacent?
 							if (iiComps_areCompsAdjacent(thisCode, comp, compNext))
 							{
 								// Remove the escape
 								++lnCount;
-								iComps_delete(thisCode, comp, true);
+								comp = iComps_delete(thisCode, comp, true);
 							}
 						}
 					}
@@ -13062,6 +13069,67 @@ debug_break;
 
 //////////
 //
+// Called to create a new line
+//
+//////
+	SLine* iLine_createNew(SThisCode* thisCode)
+	{
+		SLine* line;
+
+
+		// Allocate and initialize
+		line = (SLine*)malloc(sizeof(SLine));
+		if (line)
+			memset(line, 0, sizeof(SLine));
+
+		// Indicate our status
+		return(line);
+	}
+
+
+
+
+//////////
+//
+// Called to append a new line to a chain (without regards to honoring the chain)
+//
+//////
+	SLine* iLine_appendNew(SThisCode* thisCode, SLine* line)
+	{
+		// Append the line to the chain
+		line->ll.nextLine = iLine_createNew(thisCode);
+
+		// Indicate the new line
+		return(line->ll.nextLine);
+	}
+
+
+
+
+//////////
+//
+// Called to insert a new line to a chain
+//
+//////
+	SLine* iLine_insertNew(SThisCode* thisCode, SLine* lineRef, bool tlAfter)
+	{
+		SLine*	lineNew;
+
+
+		// Append the line to the chain
+		lineNew = iLine_createNew(thisCode);
+		if (lineNew)
+			iLl_insertNode((SLL*)lineNew, (SLL*)lineRef, tlAfter);
+
+		// Indicate the new line
+		return(lineNew);
+	}
+
+
+
+
+//////////
+//
 // Called to append an error the indicated source code line
 //
 //////
@@ -13154,14 +13222,345 @@ goto_next_component:
 			// Something's invalid in our parameters
 			if (cb)
 			{
-				cb->line	= (SLine*)-1;
-				cb->comp	= (SComp*)-1;
+				cb->line	= NULL;
+				cb->comp	= NULL;
 				cb->lFound	= false;
 			}
 		}
 
 		// Indicate our return value
 		return(cb->lFound);
+	}
+
+
+
+
+//////////
+//
+// Called to convert all \{ and \} (for example) to just { and }
+//
+//////
+	s32 iLines_unescape_iCodes(SThisCode* thisCode, SLine* lineStart, s32 tniCode1, s32 tniCode2, s32 tniCodeEscape)
+	{
+		s32		lnUnescapeCount;
+		SLine*	line;
+
+
+		// Iterate through each line removing all escaped components
+		for (line = lineStart, lnUnescapeCount = 0; line; line = line->ll.nextLine)
+		{
+			// Remove escapes from this line
+			if (line->compilerInfo && line->compilerInfo->firstComp)
+				lnUnescapeCount += iComps_unescape_iCodes(thisCode, line->compilerInfo->firstComp, tniCode1, tniCode2);
+		}
+
+		// Indicate how many were unescaped
+		return(lnUnescapeCount);
+	}
+
+
+
+
+//////////
+//
+// Moves all lines from one file to another, before or after the target line
+//
+//////
+	s32 iLine_migrateLines(SThisCode* thisCode, SLine** linesFrom, SLine* lineTarget)
+	{
+		s32		lnLineCount;
+		SLine*	temp;
+		SLine*	line;
+
+
+		// Make sure our environment is sane
+		lnLineCount	= 0;
+		if (linesFrom && *linesFrom && lineTarget)
+		{
+// TODO:  Untested.  Breakpoint and examine.
+_asm int 3;
+			//////////
+			// Point lineTarget to the start of the line block
+			//////
+				temp						= lineTarget->ll.nextLine;
+				lineTarget->ll.nextLine		= *linesFrom;
+				(*linesFrom)->ll.prevLine	= lineTarget;
+
+
+			//////////
+			// Point the last line of the *linesFrom chain to the temp
+			//////
+				line		= *linesFrom;
+				lnLineCount	= 1;
+
+				// Iterate through until we reach the last line
+				while (line->ll.nextLine)
+				{
+					// Increase our line count
+					++lnLineCount;
+
+					// Move to the next line
+					line = line->ll.nextLine;
+				}
+
+				line->ll.nextLine	= temp;		// Last line points to the original line after where we inserted
+				temp->ll.prevLine	= line;		// The original line after where we inserted points back to the new line
+
+		}
+
+		// Indicate our count
+		return(lnLineCount);
+	}
+
+
+
+
+//////////
+//
+// Called to copy everything from the starting component on the starting line, to the ending component on the ending line.
+// Note:  It will left-justify the starting component if specified, otherwise it will prefix with spaces
+//
+//////
+	SLine* iLine_copyComps_toNewLines(SThisCode* thisCode, SLine* lineStart, SComp* compStart, SLine* lineEnd, SComp* compEnd, bool tlLeftJustifyStart)
+	{
+		SLine*	line;
+		SLine*	lineCopy;
+
+
+		// Make sure our environment is sane
+		if (lineStart && compStart && lineEnd && compEnd && !(lineStart == lineEnd && compStart == compEnd))
+		{
+			//////////
+			// First line
+			//////
+				// New line
+				line = iLine_createNew(thisCode);
+
+				// Copy components
+// TODO:  working here
+
+				// If we're only doing one line, we're done
+				if (lineStart == lineEnd)
+					return(line);
+
+
+			//////////
+			// Middle lines
+			//////
+				for (lineCopy = lineStart->ll.nextLine; lineCopy && lineCopy != lineEnd; lineCopy = lineCopy->ll.nextLine)
+				{
+					// New line
+					line = iLine_appendNew(thisCode, line);
+
+					// Copy these components
+// TODO:  working here
+				}
+
+
+			//////////
+			// Last line
+			//////
+				// Create the new last line
+				if (lineCopy != lineEnd)
+					line = iLine_appendNew(thisCode, line);
+
+				// Copy these components
+// TODO:  working here
+				
+
+		} else {
+			// Invalid content, just create a blank line
+			line = iLine_createNew(thisCode);
+		}
+
+		// Indicate our status
+		return(line);
+	}
+
+
+
+
+//////////
+//
+// Called to skip to the next component
+//
+//////
+	s32 iiLine_skipTo_nextComp(SThisCode* thisCode, SLine** lineProcessing, SComp** compProcessing)
+	{
+		s32		lnCount;
+		SComp*	comp;
+		SLine*	line;
+
+
+		//////////
+		// Grab our real parameters
+		//////
+			comp = *compProcessing;
+			line = *lineProcessing;
+
+
+		//////////
+		// Is there another component
+		//////
+			if (comp->ll.nextComp)
+			{
+				// Another component on the line
+				*compProcessing = comp->ll.nextComp;
+				return(1);
+			}
+
+
+		//////////
+		// Need to move to next line
+		//////
+			if (!line->ll.nextLine)
+				return(-1);	// Nowhere to move
+
+
+		//////////
+		// Iterate down and right until we find another component
+		//////
+			lnCount = 0;
+			while (line && line->ll.nextLine)
+			{
+
+				//////////
+				// Increase our movement count
+				//////
+					++lnCount;
+
+
+				//////////
+				// Move to the next line
+				//////
+					line			= line->ll.nextLine;
+					*lineProcessing	= line;
+
+
+				//////////
+				// Is there a component here?
+				//////
+					if (line->compilerInfo && line->compilerInfo->firstComp)
+					{
+						// Set the component
+						*compProcessing = line->compilerInfo->firstComp;
+
+						// Indicate how far we traversed
+						return(lnCount);
+					}
+
+
+				//////////
+				// No component yet
+				//////
+					*compProcessing	= NULL;
+
+			}
+
+
+		//////////
+		// If we get here, end of file, line is pointing to the last line
+		//////
+			return(-1);
+
+	}
+
+
+
+
+//////////
+//
+// Called to skip to the previous component
+//
+//////
+	s32 iiLine_skipTo_prevComp(SThisCode* thiscode, SLine** lineProcessing, SComp** compProcessing)
+	{
+		s32		lnCount;
+		SComp*	comp;
+		SLine*	line;
+
+
+		//////////
+		// Grab our real parameters
+		//////
+			comp = *compProcessing;
+			line = *lineProcessing;
+
+
+		//////////
+		// Is there another component
+		//////
+			if (comp->ll.prevComp)
+			{
+				// Is there a previous component on the line
+				*compProcessing = comp->ll.prevComp;
+				return(1);
+			}
+
+
+		//////////
+		// Need to move to previous line
+		//////
+			if (!line->ll.prevLine)
+				return(-1);	// Nowhere to move
+
+
+		//////////
+		// Iterate down and right until we find another component
+		//////
+			lnCount = 0;
+			while (line && line->ll.prevLine)
+			{
+
+				//////////
+				// Increase our movement count
+				//////
+					++lnCount;
+
+
+				//////////
+				// Move to the previous line
+				//////
+					line			= line->ll.prevLine;
+					*lineProcessing	= line;
+
+
+				//////////
+				// Is there a component here?
+				//////
+					if (line->compilerInfo && line->compilerInfo->firstComp)
+					{
+
+						//////////
+						// Move to the last component on the line
+						//////
+							comp = line->compilerInfo->firstComp;
+							while (comp->ll.nextComp)
+								comp = comp->ll.nextComp;
+
+
+						//////////
+						// Set the component and indicate how far we traversed
+						//////
+							*compProcessing = comp;
+							return(lnCount);
+
+					}
+
+
+				//////////
+				// No component yet
+				//////
+					*compProcessing	= NULL;
+
+			}
+
+
+		//////////
+		// If we get here, beginning of file, line is pointing to the first line
+		//////
+			return(-1);
+
 	}
 
 

@@ -2730,60 +2730,6 @@
 
 //////////
 //
-// Moves all lines from one file to another, before or after the target line
-//
-//////
-	s32 iFile_migrateLines(SLine** linesFrom, SLine* lineTarget)
-	{
-		s32		lnLineCount;
-		SLine*	temp;
-		SLine*	line;
-
-
-		// Make sure our environment is sane
-		lnLineCount	= 0;
-		if (linesFrom && *linesFrom && lineTarget)
-		{
-// TODO:  Untested.  Breakpoint and examine.
-_asm int 3;
-			//////////
-			// Point lineTarget to the start of the line block
-			//////
-				temp						= lineTarget->ll.nextLine;
-				lineTarget->ll.nextLine		= *linesFrom;
-				(*linesFrom)->ll.prevLine	= lineTarget;
-
-
-			//////////
-			// Point the last line of the *linesFrom chain to the temp
-			//////
-				line		= *linesFrom;
-				lnLineCount	= 1;
-
-				// Iterate through until we reach the last line
-				while (line->ll.nextLine)
-				{
-					// Increase our line count
-					++lnLineCount;
-
-					// Move to the next line
-					line = line->ll.nextLine;
-				}
-
-				line->ll.nextLine	= temp;		// Last line points to the original line after where we inserted
-				temp->ll.prevLine	= line;		// The original line after where we inserted points back to the new line
-
-		}
-
-		// Indicate our count
-		return(lnLineCount);
-	}
-
-
-
-
-//////////
-//
 // Adjusts the brightness of the indicated color by the indicated percentage.
 //
 //////

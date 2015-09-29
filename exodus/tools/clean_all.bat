@@ -1,7 +1,6 @@
 @echo off
 
 REM remove common files
-del /s *.vjr
 del /s *.exe
 del /s *.obj
 del /s *.ilk
@@ -10,6 +9,7 @@ del /s *.idb
 del /s *.plg
 del /s *.ncb
 del /s *.sdf
+del /s *.suo
 del /s vjr.aps
 
 echo Removing compiler folders

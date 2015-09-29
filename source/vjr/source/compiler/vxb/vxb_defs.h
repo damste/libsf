@@ -137,7 +137,7 @@ struct SThisCode;
 	void					iComps_deleteAll							(SThisCode* thisCode, SComp* comp);
 	void					iComps_deleteAll_byLine						(SThisCode* thisCode, SLine* line);
 	void					iComps_deleteAll_byFirstComp				(SThisCode* thisCode, SComp** firstComp);
-	void					iComps_delete								(SThisCode* thisCode, SComp* comp, bool tlDeleteSelf);
+	SComp*					iComps_delete								(SThisCode* thisCode, SComp* comp, bool tlDeleteSelf);
  	SComp*					iComps_translateSourceLineTo				(SThisCode* thisCode, SAsciiCompSearcher* tsComps, SLine* line);
  	bool					iComps_translateToOthers					(SThisCode* thisCode, SAsciiCompSearcher* tsComps, SLine* line);
 	bool					iComps_areAllPrecedingCompsWhitespaces		(SThisCode* thisCode, SComp* comp);
@@ -167,7 +167,7 @@ struct SThisCode;
 	s32						iComps_truncateAtComments					(SThisCode* thisCode, SLine* line);
 	void					iComps_combineCasks							(SThisCode* thisCode, SLine* line);
 	void					iComps_fixupNaturalGroupings				(SThisCode* thisCode, SLine* line);
-	s32						iComps_unescapeBraces						(SThisCode* thisCode, SLine* line);
+	s32						iComps_unescape_iCodes						(SThisCode* thisCode, SComp* compStart, s32 tniCode1, s32 tniCode2, s32 tniCodeEscape = _ICODE_BACKSLASH);
 	bool					iiComps_areCompsAdjacent					(SThisCode* thisCode, SComp* compLeft, SComp* compRight);
 	s32						iiComps_get_charactersBetween				(SThisCode* thisCode, SComp* compLeft, SComp* compRight);
 	s32						iComps_getAs_s32							(SThisCode* thisCode, SComp* comp);
@@ -350,9 +350,17 @@ struct SThisCode;
 
 
 	// Line functions
+	SLine*					iLine_createNew								(SThisCode* thisCode);
+	SLine*					iLine_appendNew								(SThisCode* thisCode, SLine* line);
+	SLine*					iLine_insertNew								(SThisCode* thisCode, SLine* lineRef, bool tlAfter);
 	void					iLine_appendError							(SThisCode* thisCode, SLine* line, u32 tnErrorNum,   cu8* tcMessage, u32 tnStartColumn, u32 tnLength);
 	void					iLine_appendWarning							(SThisCode* thisCode, SLine* line, u32 tnWarningNum, cu8* tcMessage, u32 tnStartColumn, u32 tnLength);
 	bool					iLine_scanComps_forward_withCallback		(SThisCode* thisCode, SLine* line, SComp* comp, SCallback* cb, bool tlSkipFirst);
+	s32						iLines_unescape_iCodes						(SThisCode* thisCode, SLine* lineStart, s32 tniCode1, s32 tniCode2, s32 tniCodeEscape = _ICODE_BACKSLASH);
+	s32						iLine_migrateLines							(SThisCode* thisCode, SLine** linesFrom, SLine* lineTarget);
+	SLine*					iLine_copyComps_toNewLines					(SThisCode* thisCode, SLine* lineStart, SComp* compStart, SLine* lineEnd, SComp* compEnd, bool tlLeftJustifyStart);
+	s32						iiLine_skipTo_nextComp						(SThisCode* thisCode, SLine** lineProcessing, SComp** compProcessing);
+	s32						iiLine_skipTo_prevComp						(SThisCode* thiscode, SLine** lineProcessing, SComp** compProcessing);
 
 	// Compiler functions
 	SCompiler*				iCompiler_allocate							(SThisCode* thisCode, SLine* parent);

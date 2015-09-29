@@ -206,6 +206,18 @@
 			iDatum_duplicate(datumDst, datumSrc->data_u8, datumSrc->length);
 	}
 
+	void iDatum_duplicate_fromComp(SDatum* datum, SComp* comp)
+	{
+		// Make sure our environment is sane
+		if (datum && comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data_cs8 && comp->length != 0)
+			iDatum_duplicate(datum, comp->line->sourceCode->data_cs8 + comp->start, comp->length);
+	}
+
+	void iiDatum_duplicate_fromComp(SDatum* datum, SComp* comp)
+	{
+		iDatum_duplicate(datum, comp->line->sourceCode->data_cs8 + comp->start, comp->length);
+	}
+
 	bool iDatum_resize(SDatum* datum, s32 newDataLength)
 	{
 		s8* ptr;

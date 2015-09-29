@@ -101,6 +101,9 @@ struct SDateTimeX;
 struct SDate;
 struct SBgra;
 struct SBgr;
+struct SLine;
+struct SComp;
+
 #ifndef IDispatch
     struct IDispatch;
 #endif
@@ -146,6 +149,8 @@ struct SBgr;
 	void					iDatum_duplicate						(SDatum* datum, cu8* data, s32 dataLength);
 	void					iDatum_duplicate						(SDatum* datum, cs8* data, s32 dataLength);
 	void					iDatum_duplicate						(SDatum* datumDst, SDatum* datumSrc);
+	void					iDatum_duplicate_fromComp				(SDatum* datum, SComp* comp);
+	void					iiDatum_duplicate_fromComp				(SDatum* datum, SComp* comp);
 
 	bool					iDatum_resize							(SDatum* datum, s32 newDataLength);
 	s32						iDatum_compare							(SDatum* datumLeft, SDatum* datumRight);

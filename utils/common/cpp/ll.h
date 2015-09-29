@@ -132,6 +132,7 @@ struct SThisCode;
 	SLL*					iLl_appendNewNode							(SLL** root, SLL* nodeHint, SLL* nodeNext, SLL* nodePrev, u32 tnUniqueId, u32 tnSize);
 	SLL*					iLl_createOrphanNode						(                           SLL* nodePrev, SLL* nodeNext, u32 tnUniqueId, u32 tnSize);
 	SLL*					iLl_appendNewNodeAtEnd						(SLL** root, u32 tnSize);
+	SLL*					iLl_appendNewNodeAtBeginning				(SLL** root, u32 tnSize);
 	bool					iLl_appendExistingNodeAtEnd					(SLL** root, SLL* node);
 	bool					iLl_appendExistingNodeAtBeginning			(SLL** root, SLL* node);
 	SLL*					iLl_deleteNode								(SLL* node, bool tlDeleteSelf);

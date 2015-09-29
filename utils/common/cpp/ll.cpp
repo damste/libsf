@@ -256,6 +256,49 @@
 
 
 
+//////////
+//
+// Called to append a new node at the beginning
+//
+//////
+	SLL* iLl_appendNewNodeAtBeginning(SLL** root, u32 tnSize)
+	{
+		SLL* node;
+		SLL* nodeNew;
+
+
+		// Make sure our environment is sane
+		nodeNew = NULL;
+		if (root)
+		{
+			// Allocate new
+			nodeNew = (SLL*)malloc(tnSize);
+			if (nodeNew)
+			{
+				// Initialize
+				memset(nodeNew, 0, tnSize);
+
+				// Set it up
+				node	= *root;
+				*root	= nodeNew;
+
+				// If there was a previous node, insert it
+				if (node)
+				{
+					// Append here
+					node->prev		= nodeNew;		// Previous first node points to new first node
+					nodeNew->next	= node;			// New first node points forward to previous first node
+				}
+			}
+		}
+
+		// Indicate our status
+		return(nodeNew);
+	}
+
+
+
+
 /////////
 //
 // Called to append a node which already exists to the end

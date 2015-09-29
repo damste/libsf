@@ -85,18 +85,19 @@
 //////////
 // Processing data
 //////
-	SLasmFile*	gsFirstFile							= NULL;					// First file that's being assembled
+	SLasmFile*		gsFirstFile							= NULL;					// First file that's being assembled
+	SLasmDefine*	gsLasmDefines						= NULL;					// List of #defines found, in the order found
 
 
 //////////
 // Command line options
 //////
-	const s8	cgc_wno[]							= "-Wno-";
-	const s8	cgc_wmissing_type_ptr[]				= "missing-type-ptr";
-	const s8	cgc_wall[]							= "all";
-	const s8	cgc_wfatal_errors[]					= "fatal-errors";
-	const s8	cgc_werror[]						= "error";
-	const s8	cgc_fsyntax_only[]					= "-fsyntax-only";
+	cs8			cgc_wno[]							= "-Wno-";
+	cs8			cgc_wmissing_type_ptr[]				= "missing-type-ptr";
+	cs8			cgc_wall[]							= "all";
+	cs8			cgc_wfatal_errors[]					= "fatal-errors";
+	cs8			cgc_werror[]						= "error";
+	cs8			cgc_fsyntax_only[]					= "-fsyntax-only";
 
 
 //////////

@@ -88,43 +88,44 @@ struct SlasmFile;
 //////////
 // lasm.cpp
 //////
-	bool		ilasm_appendFile				(s8* tcPathname, SLasmFile** file);
+	bool		ilasm_appendFile						(s8* tcPathname, SLasmFile** file);
 
 
 //////////
 // pass0.cpp -- #pragmas
 //////
-	void		ilasm_pass0						(SLasmFile* file);
-	SComp*		ilasm_pass0_parse				(SLine* line);
-	bool		ilasm_pass0_define				(SLasmFile* file, SLine** lineProcessing, SComp* compDefine, SComp* compName);
-	bool		iilasm_pass0_define_callback	(SCallback* cb);
+	void		ilasm_pass0								(SLasmFile* file);
+	SComp*		ilasm_pass0_parse						(SLine* line);
+	bool		ilasm_pass0_define						(SLasmFile* file, SLine** lineProcessing, SComp* compDefine, SComp* compName);
+	bool		iilasm_pass0_define_callback			(SCallback* cb);
+	bool		iilasm_pass0_define_getParameters		(SLasmFile* file, SLasmDefine* define, SLine** lineProcessing, SComp** compProcessing);
 
 
 //////////
 // pass1.cpp -- macro expansion
 //////
-	void		ilasm_pass1						(SLasmFile* file);
+	void		ilasm_pass1								(SLasmFile* file);
 
 
 //////////
 // passN.cpp -- token parsing
 //////
-	void		ilasm_passN						(SLasmFile* file);
+	void		ilasm_passN								(SLasmFile* file);
 
 
 //////////
 // passX.cpp -- opcode generation
 //////
-	void		ilasm_passX						(SLasmFile* file);
+	void		ilasm_passX								(SLasmFile* file);
 
 
 //////////
 // passY.cpp -- linking
 //////
-	void		ilasm_passY						(SLasmFile* file);
+	void		ilasm_passY								(SLasmFile* file);
 
 
 //////////
 // passZ.cpp -- output file
 //////
-	void		ilasm_passZ						(SLasmFile* file);
+	void		ilasm_passZ								(SLasmFile* file);

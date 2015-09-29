@@ -136,10 +136,11 @@
 	{
 		SLL					ll;										// Link list through multiple defines
 
-		// Optional multiple parameters
-		s32					params;									// Parameter count
-		SDatum				paramNames[_MAX_LASM_DEFINE_PARAMS];	// Parameters
+		// Required parameters
+		SDatum				name;									// The "xyz" in #define xyz
+		SLine*				firstLine;								// Potentially multiple lines
 
-		// The expansion content
-		SLine*				firstLine;								// Can be multiple lines
+		// Optional parameters (the a, b,..., z in #define xyz(a,b,...,z))
+		s32					paramCount;								// Actual parameter count
+		SDatum				params[_MAX_LASM_DEFINE_PARAMS];		// Parameter names and lengths
 	};

@@ -152,7 +152,7 @@
 								// We have the file loaded
 
 								// Insert its lines after this #include line
-								iFile_migrateLines(&file->firstLine, line);
+								iLine_migrateLines(NULL, &file->firstLine, line);
 
 								// We're done
 								fileInclude->status.isCompleted	= true;
@@ -292,8 +292,7 @@
 // Syntax must be:
 //
 //		"#define"
-//
-//		unique name
+//		name
 //	
 //		optional "("
 //			:repeat until matching ")"
@@ -320,9 +319,10 @@
 	// Note:  It is known that when this function is called, the first component is _ICODE_LASM_DEFINE
 	bool ilasm_pass0_define(SLasmFile* file, SLine** lineProcessing, SComp* compDefine, SComp* compName)
 	{
-		SLine*		line;
-		SComp*		compNext;
-		SCallback	cb;
+		SLine*			line;
+		SComp*			compNext;
+		SLasmDefine*	define;
+		SCallback		cb;
 
 
 		// Make sure our environment is sane
@@ -333,12 +333,55 @@
 			{
 
 				//////////
-				// Load optional parameters
+				// Validate it's alphanumeric
+				//////
+					if (!iiComps_isAlphanumeric(NULL, compName))
+					{
+						++line->status.errors;
+						printf("--Error(%d,%d): alphanumeric was expected in %s\n", line->lineNumber, compName->start, file->fileName.data_s8);
+						goto politely_fail;
+					}
+
+
+				//////////
+				// Grab it
+				//////
+					define = (SLasmDefine*)iLl_appendNewNodeAtEnd((SLL**)&gsLasmDefines, sizeof(SLasmDefine));
+					if (!define)
+					{
+						// Internal error
+						++line->status.errors;
+						printf("--Error(%d): an unexpected internal error occurred processing a #define in %s\n", line->lineNumber, file->fileName.data_s8);
+						goto politely_fail;
+					}
+
+					// Copy the name
+					iiDatum_duplicate_fromComp(&define->name, compName);
+
+
+				//////////
+				// Load any optional parameters
 				//////
 					compNext = iComps_getNth(NULL, compName, 1);
 					if (compNext->iCode == _ICODE_PARENTHESIS_LEFT)
 					{
 						// It begins with an open parenthesis
+						if (!iilasm_pass0_define_getParameters(file, define, &line, &compNext))
+						{
+							++line->status.errors;
+							printf("--Error(%d,%d): unable to parse parameters in %s\n", line->lineNumber, compNext->start, file->fileName.data_s8);
+							goto politely_fail;
+						}
+						// When we get here, line and compNext are pointing to the closing )
+
+						// Skip past the closing )
+						if (!iiLine_skipTo_nextComp(NULL, &line, &compNext))
+						{
+							++line->status.errors;
+							printf("--Error: unexpected end of file in %s\n", file->fileName.data_s8);
+							goto politely_fail;
+						}
+						// When we get here, we're on the first component after
 					}
 
 
@@ -352,27 +395,46 @@
 						cb._func = (sptr)&iilasm_pass0_define_callback;
 						if (!iLine_scanComps_forward_withCallback(NULL, line, compNext, &cb, true))
 						{
-// TODO:  working here
 							// Unable to find matching brace
+							++line->status.errors;
+							printf("--Error(%d,%d): unable to locate matching } %s\n", line->lineNumber, compNext->start + compNext->length, file->fileName.data_s8);
+							goto politely_fail;
 						}
+						// Found the matching }
+
+						// Move past the {
+						iiLine_skipTo_nextComp(NULL, &line, &compNext);
+
+						// Move back one from the }
+						iiLine_skipTo_prevComp(NULL, &cb.line, &cb.comp);
 
 						// Copy everything to the matching }
+						define->firstLine = iLine_copyComps_toNewLines(NULL, line, compNext, cb.line, cb.comp, true);
 
 						// Remove any escaped braces from the content we copied
-						//iComps_unescapeBraces(NULL, line);
+						iLines_unescape_iCodes(NULL, define->firstLine, _ICODE_BRACE_LEFT, _ICODE_BRACE_RIGHT);
+
+					} else {
+						// Copy everything through continued lines
 					}
+					// If we get here, success
 
 			} else {
 				// It's a #define but nothing comes after
 				++line->status.errors;
 				printf("--Error(%d,%d): token was expected in %s\n", line->lineNumber, compDefine->start + compDefine->length, file->fileName.data_s8);
+				goto politely_fail;
 			}
 
 		} else {
-			printf("--Error: an unexpeced internal error occurred processing a #define in %s\n", file->fileName.data_s8);
+			printf("--Error: an unexpected internal error occurred processing a #define in %s\n", file->fileName.data_s8);
+			goto politely_fail;
 		}
 
+
+politely_fail:
 		// If we get here, error
+		*lineProcessing = line;
 		return(false);
 	}
 
@@ -417,4 +479,129 @@
 		//////
 			return(true);
 
+	}
+
+
+
+
+//////////
+//
+// Called to extract parameters from a (a,b,...,z) sequence
+// Note:  Upon entry the *compProcessing should be pointing to _ICODE_PARENTHESIS_LEFT
+//
+//////
+	bool iilasm_pass0_define_getParameters(SLasmFile* file, SLasmDefine* define, SLine** lineProcessing, SComp** compProcessing)
+	{
+		s32		lnI;
+		bool	llSkipTest;
+		SComp*	comp;
+		SLine*	line;
+
+
+		//////////
+		// Grab our real parameters
+		//////
+			comp = *compProcessing;
+			line = *lineProcessing;
+
+
+		//////////
+		// Should be on opening parenthesis
+		//////
+			if (comp->iCode != _ICODE_PARENTHESIS_LEFT)
+			{
+				++line->status.errors;
+				printf("--Error(%d,%d): unexpected internal error processing #define parameters %s\n", line->lineNumber, comp->start, file->fileName.data_s8);
+				return(false);
+			}
+
+
+		//////////
+		// Iterate loading each one
+		//////
+			for (lnI = 0, llSkipTest = false; lnI < _MAX_LASM_DEFINE_PARAMS && comp->iCode != _ICODE_PARENTHESIS_RIGHT; lnI++)
+			{
+
+				//////////
+				// Validate it's a token
+				//////
+					if (!llSkipTest && !iiComps_isAlphanumeric(NULL, comp))
+					{
+						++line->status.errors;
+						printf("--Error(%d,%d): expected token in %s\n", line->lineNumber, comp->start, file->fileName.data_s8);
+						goto politely_fail;
+					}
+					llSkipTest = false;
+
+
+				//////////
+				// Increase count, grab the name
+				//////
+					++define->paramCount;
+					iiDatum_duplicate_fromComp(&define->params[lnI], comp);
+
+
+				//////////
+				// Skip to next parameter
+				//////
+					if (iiLine_skipTo_nextComp(NULL, &line, &comp) < 0)
+					{
+						// Unexpected end of file
+						printf("--Error: unexpected end of file in %s\n", file->fileName.data_s8);
+						goto politely_fail;
+					}
+
+
+				//////////
+				// Skip past comma
+				//////
+					if (comp->iCode == _ICODE_COMMA)
+					{
+
+						//////////
+						// Skip past it
+						//////
+							if (iiLine_skipTo_nextComp(NULL, &line, &comp) < 0)
+							{
+								// Unexpected end of file
+								printf("--Error: unexpected end of file in %s\n", file->fileName.data_s8);
+								goto politely_fail;
+							}
+
+
+						//////////
+						// Next component must be right parenthesis or alphanumeric
+						//////
+							if (comp->iCode != _ICODE_PARENTHESIS_RIGHT && !iiComps_isAlphanumeric(NULL, comp))
+							{
+								++line->status.errors;
+								printf("--Error(%d,%d): expected token or right parenthesis in %s\n", line->lineNumber, comp->start, file->fileName.data_s8);
+								goto politely_fail;
+							}
+
+							// We don't need to double-check alphanumeric above
+							llSkipTest = true;
+
+					}
+					// When we get here, we're on either ) or the next token name
+
+			}
+			// When we get here, comp is sitting on )
+
+
+		//////////
+		// Success!
+		//////
+			*lineProcessing = line;
+			*compProcessing = comp;
+			return(true);
+
+
+politely_fail:
+		//////////
+		// Set current parameters, and then return false
+		//////
+			*lineProcessing = line;
+			*compProcessing = comp;
+			return(false);
 	}
