@@ -115,6 +115,13 @@ typedef SEM**		SEMpp;
 
 
 //////////
+// Macros
+//////
+	// abc = newAlloc(SAbc, gsAbcRoot);
+	#define newAlloc(str, var)							(str*)iLl_appendNewNodeAtEnd((SLL**)&var, sizeof(str))
+
+
+//////////
 // Macro helpers
 //////
 	// Note:  A variable can still have its original type and be NULL, so you must also test var->value members:

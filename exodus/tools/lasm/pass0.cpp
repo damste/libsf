@@ -346,7 +346,7 @@
 				//////////
 				// Grab it
 				//////
-					define = (SLasmDefine*)iLl_appendNewNodeAtEnd((SLL**)&gsLasmDefines, sizeof(SLasmDefine));
+					define = newAlloc(SLasmDefine, gsLasmDefines);
 					if (!define)
 					{
 						// Internal error

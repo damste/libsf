@@ -965,6 +965,44 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 
 //////////
 //
+// Called to copy the inner contents of a component
+//
+//////
+	void iComps_copyInner(SThisCode* thisCode, SComp* compTo, SComp* compFrom, bool tlAllocated, bool tlCopyLl, s32 tnBackoff)
+	{
+		if (tlCopyLl)
+			memcpy(&compTo->ll, &compFrom->ll, sizeof(compFrom->ll));
+
+		// Copy the component's attributes
+		compTo->llAllocated						= tlAllocated;
+
+		compTo->line							= compFrom->line;
+		compTo->start							= compFrom->start - tnBackoff;
+		compTo->length							= compFrom->length;
+
+		compTo->isError							= compFrom->isError;
+		compTo->isWarning						= compFrom->isWarning;
+
+		compTo->iCode							= compFrom->iCode;
+		compTo->iCat							= compFrom->iCat;
+
+		compTo->color							= compFrom->color;
+		compTo->nbspCount						= compFrom->nbspCount;
+		compTo->useBoldFont						= compFrom->useBoldFont;
+
+		compTo->overrideSelectionBackColor		= compFrom->overrideSelectionBackColor;
+		compTo->overrideSelectionForeColor		= compFrom->overrideSelectionForeColor;
+		compTo->overrideMatchingBackColor		= compFrom->overrideMatchingBackColor;
+		compTo->overrideMatchingForeColor		= compFrom->overrideMatchingForeColor;
+
+		// Note:  bc (bmpCache) is not copied because each cache is a distinct instance, and it will be rendered the next time it's needed
+	}
+
+
+
+
+//////////
+//
 // Called to search the SAsciiCompSearcher format list of text item keywords.
 //
 // Note:  If the length column of the SAsciiCompSearcher entry is negative, it is a case-sensitive search.
@@ -2841,9 +2879,103 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 //
 //////
 	// If tlMakeReferences, content is not physically copied to lineNew->sourceCode, but only references to the compStart->line->sourceCode content are made
-	s32 iComps_copyTo(SThisCode* thisCode, SLine* lineNew, SComp* compStart, SComp* compEnd, bool tlMakeReferences)
+	s32 iComps_copyTo(SThisCode* thisCode, SLine* line, SComp* compStart, SComp* compEnd, bool tlMakeReferences)
 	{
-// TODO:  working here
+		s32		lnPass, lnCount, lnStart, lnEnd, lnLength;
+		SComp*	comp;
+		SComp*	compNew;
+
+
+		// Make sure our environment is sane
+		lnCount = 0;
+		if (compStart->line && compStart->line->sourceCode)
+		{
+			// Pass 1 -- Count line length
+			// Pass 2 -- Copy
+			for (lnPass = 1; lnPass <= 2; lnPass++)
+			{
+				// Which pass?
+				if (lnPass == 1)
+				{
+
+					//////////
+					// Compute extents
+					//////
+						for (comp = compStart, lnStart = comp->line->sourceCode->length, lnEnd = 0; comp; comp = comp->ll.nextComp, ++lnCount)
+						{
+							// Update
+							lnStart	= min(lnStart, comp->start);
+							lnEnd	= max(lnEnd, comp->start + comp->length);
+
+							// Are we done?
+							if (compEnd && comp == compEnd)
+								break;	// Yup
+						}
+
+
+					//////////
+					// Allocate
+					//////
+						if (!tlMakeReferences)
+						{
+							// Length and allocation
+							lnLength = lnEnd - lnStart;
+							iDatum_allocateSpace(line->sourceCode, lnLength + 1);
+							memset(line->sourceCode->data_s8, 32, lnLength);
+						}
+
+
+				} else {
+
+					//////////
+					// Copy
+					// Note: There may be large gaps of whitespaces if comments were removed
+					//////
+						for (comp = compStart; comp; comp = comp->ll.nextComp)
+						{
+
+							//////////
+							// Copy if need be
+							//////
+								if (!tlMakeReferences)
+									memcpy(line->sourceCode->data_s8 + comp->start - lnStart, comp->line->sourceCode->data_cs8 + comp->start, comp->length);
+
+
+							//////////
+							// Append the component
+							//////
+								compNew = newAlloc(SComp, line->compilerInfo->firstComp);
+
+							
+							//////////
+							// Copy
+							//////
+								if (compNew)
+								{
+									// Copy members
+									iComps_copyInner(NULL, compNew, comp, true/*isAllocated*/, false/*copyLl*/, ((tlMakeReferences) ? 0 : lnStart)/*backoff*/);
+
+									// Update the new line if need be
+									if (!tlMakeReferences)
+										compNew->line = line;
+								}
+
+
+							//////////
+							// Are we done?
+							//////
+								if (!compNew || (compEnd && comp == compEnd))
+									break;	// Yup
+
+						}
+
+				}
+			}
+			// All done!
+		}
+
+		// Indicate our count
+		return(lnCount);
 	}
 
 

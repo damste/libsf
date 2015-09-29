@@ -111,6 +111,8 @@
 		bool		passY		: 1;					// Pass-Y -- linking
 		bool		passZ		: 1;					// Pass-Z -- write out the file
 	};
+	
+
 
 
 //////////
