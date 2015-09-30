@@ -26,6 +26,7 @@
 //////
 // Change log:
 //     Sep.15.2015 - Close to finalization
+//     Sep.29.2015 - Added support for leading N| to reorder execution order (for clearer documentation)
 //     Sep.15.2015 - Added support for || whitespaces and ||| comments
 //     Jan.09.2015 - Added function purposes
 //     Nov.02.2014 - Initial creation
@@ -113,6 +114,7 @@ RDC Specifications Document
 	
 	|||					-- If three or more pipe signs leading on a source code line, line comment
 	||					-- If two pipe signs leading on a source code line, whitespace
+	N|					-- Reorders groups of source code lines to execute in the order specified
 
 	void				-- An empty type
 	b1,b8,b16,b32,b64	-- 1-bit, 8-bit, 16-bit, 32-bit, 64-bit boolean quantities
@@ -1519,3 +1521,82 @@ Using roll() as a stand-alone without some_operation() being required:
 Jun.23.2015 -- I may add explicit MEIA support to this function at some point.
                However, for the time being, each expression can use its own
                (|meia|) cask, as well as (|meta|) and (|mefa|) casks.
+
+
+16.0 - N|, ||, and |||
+----------------------
+
+	RDC is about making things easy for developers.  New features are added
+	which allow for things which make it easier to maintain source code for
+	developers using features of the GUI to accommodate visually those things
+	which must be accounted for mechanically in source code.
+	
+	The desire exists to group blocks of code together in a way which is
+	visually identifiable (in the GUI, or in raw text / source code form).
+	As such, the ability to prefix blocks with || and ||| have been added.
+	
+	Example:
+	
+		||| This is a comment
+		|| x = 4;
+		|| y = func(x);
+		|| printf("Result: %d\n", y);
+
+	In this example, a comment is added which exists at the top of a block of
+	|| code.  This allows the comment to be used in the debugger for a group
+	header, allowing for group single-step debugging.  This allows conceptual
+	debugging, rather than mechanical debugging.
+	
+	For visual purposes, additional grouping can be added:
+	
+		||||||||||
+		||| This is a comment
+		|| x = 4;
+		|| y = func(x);
+		|| printf("Result: %d\n", y);
+		|||||
+
+	In this way, the entire block is fully encapsulated, allowing the GUI to
+	then wield it as a block which can be arranged horizontaly, etc.  For
+	this purpose additional code may be inserted after the leading |||||||||
+	block, which will indicate relative position as per the GUIs needs.
+	
+	Example (shown here in definition casks):
+
+		||||||||||  [|grid|6||]  [|v|1||]  [|h|2||]
+		||| This is a comment
+		|| x = 4;
+		|| y = func(x);
+		|| printf("Result: %d\n", y);
+		|||||
+
+	In addition, source code lines can be reordered in small groups per the
+	needs of easier reading or documentation.
+	
+	For example, original source code:
+	
+		abcVar	= func(1, 3, var1);
+		fred.subfred.func(&abcVar, ...);
+		xyzVar	= func(1, 3, abcVar);
+	
+	Reordered example:
+	
+		1|	abcVar = func(1, 3, var1);
+		3|	xyzVar = func(1, 3, abcVar);
+		2|	fred.subfred.func(&abcVar, ...);
+
+	Here it is more visually clear that the abcVar and xyzVar lines are
+	basically identical, with only the last parameter being different.  That
+	is not visually obvious in the original source code because there are no
+	cues for the eye to group to, as with the second example.
+	
+	And whereas the source code can't be reordered in execution order because
+	line 3 has a dependency on line 2, which has a dependency on line 1, they
+	can be visually re-ordered making it more clear to the 	eye which portions
+	are related, or similar, so as to group them commensurately within the
+	mind.
+	
+	When single-stepping through this code, it would execute in the proper
+	order, stepping to line 1|, then 2|, then 3|, and facilities would exist
+	in the GUI and debugger to show them in execution order, or visual order
+	as per this kind of reordering.
