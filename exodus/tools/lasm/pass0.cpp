@@ -390,34 +390,51 @@
 				//////
 					if (compNext->iCode == _ICODE_BRACE_LEFT)
 					{
-						// It begins with a {, so find the closing }
-						memset(&cb, 0, sizeof(cb));
-						cb._func = (sptr)&iilasm_pass0_define__callback_bypassEscapedBraces;
-						if (!iLine_scanComps_forward_withCallback(NULL, line, compNext, &cb, true))
-						{
-							// Unable to find matching brace
-							++line->status.errors;
-							printf("--Error(%d,%d): unable to locate matching } %s\n", line->lineNumber, compNext->start + compNext->length, file->fileName.data_s8);
-							goto politely_fail;
-						}
-						// Found the matching }
 
-						// Move past the {
-						iiLine_skipTo_nextComp(NULL, &line, &compNext);
+						//////////
+						// Begins with {
+						//////
+							// Find closing }
+							memset(&cb, 0, sizeof(cb));
+							cb._func = (sptr)&iilasm_pass0_define__callback_bypassEscapedBraces;
+							if (!iLine_scanComps_forward_withCallback(NULL, line, compNext, &cb, true))
+							{
+								// Not found
+								++line->status.errors;
+								printf("--Error(%d,%d): unable to locate matching } %s\n", line->lineNumber, compNext->start + compNext->length, file->fileName.data_s8);
+								goto politely_fail;
+							}
+							// Found closing }
 
-						// Move back one from the }
-						iiLine_skipTo_prevComp(NULL, &cb.line, &cb.comp);
 
-						// Copy everything from after the { to immediately before the matching
-						define->firstLine = iLine_copyComps_toNewLines(NULL, line, compNext, cb.line, cb.comp, true, true);
+						///////////
+						// Move to post-{ and pre-}
+						//////
+							iiLine_skipTo_nextComp(NULL,	&line,		&compNext);
+							iiLine_skipTo_prevComp(NULL,	&cb.line,	&cb.comp);
 
-						// Remove any escaped braces from the content we copied
-						iLines_unescape_iCodes(NULL, define->firstLine, _ICODE_BRACE_LEFT, _ICODE_BRACE_RIGHT);
+
+						//////////
+						// Copy
+						//////
+							define->firstLine = iLine_copyComps_toNewLines(NULL, line, compNext, cb.line, cb.comp, true, true);
+
+
+						//////////
+						// Unescape \{, \}, and \\
+						//////
+							iLines_unescape_iCodes(NULL, define->firstLine, _ICODE_BRACE_LEFT,	_ICODE_BRACE_RIGHT, _ICODE_BACKSLASH);
+
 
 					} else {
-						// Copy everything through continued lines
+						// Copy everything, including any continued lines (lines ending with \)
+// TODO:  working here
 					}
 					// If we get here, success
+
+					// Position our line and component to the last location, ready for our next skip
+					line		= cb.line;
+					compNext	= cb.comp;
 
 			} else {
 				// It's a #define but nothing comes after

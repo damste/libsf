@@ -2826,10 +2826,10 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 
 //////////
 //
-// Takes sequences like \{ and \} and replaces them solely with { and }
+// Takes sequences like \{, \}, and \\ and replaces them solely with {, }, and \
 //
 //////
-	s32 iComps_unescape_iCodes(SThisCode* thisCode, SComp* compStart, s32 tniCode1, s32 tniCode2, s32 tniCodeEscape)
+	s32 iComps_unescape_iCodes(SThisCode* thisCode, SComp* compStart, s32 tniCode1, s32 tniCode2, s32 tniCode3, s32 tniCodeEscape)
 	{
 		s32		lnCount;
 		SComp*	comp;
@@ -2849,8 +2849,8 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 					// Is there a component after?
 					if (compNext = iComps_getNth(thisCode, comp, 1))
 					{
-						// Is it iCode 1 or iCode 2
-						if ((compNext->iCode == tniCode1 || compNext->iCode == tniCode2))
+						// Is it iCode1, iCode2, or iCode3
+						if ((compNext->iCode == tniCode1 || compNext->iCode == tniCode2 || compNext->iCode == tniCode3))
 						{
 							// Are they directly adjacent?
 							if (iiComps_areCompsAdjacent(thisCode, comp, compNext))
@@ -2903,6 +2903,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 					//////
 						for (comp = compStart, lnStart = comp->line->sourceCode->length, lnEnd = 0; comp; comp = comp->ll.nextComp, ++lnCount)
 						{
+
 							// Update
 							lnStart	= min(lnStart, comp->start);
 							lnEnd	= max(lnEnd, comp->start + comp->length);
@@ -2910,6 +2911,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 							// Are we done?
 							if (compEnd && comp == compEnd)
 								break;	// Yup
+
 						}
 
 
@@ -2988,7 +2990,6 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 //////
 	bool iiComps_areCompsAdjacent(SThisCode* thisCode, SComp* compLeft, SComp* compRight)
 	{
-// TODO:  Note:  There is potentially a flaw here, in that there could be a comment that's been removed, and therefore there is nothing really between
 		// If [start+length] equals [start] of the next, they're adjacent
 		return(compLeft->start + compLeft->length == compRight->start);
 	}
@@ -13219,7 +13220,7 @@ debug_break;
 // Called to create a new line
 //
 //////
-	SLine* iLine_createNew(SThisCode* thisCode)
+	SLine* iLine_createNew(SThisCode* thisCode, bool tlAllocCompilerInfo)
 	{
 		SLine* line;
 
@@ -13227,7 +13228,16 @@ debug_break;
 		// Allocate and initialize
 		line = (SLine*)malloc(sizeof(SLine));
 		if (line)
+		{
+
+			// Reset
 			memset(line, 0, sizeof(SLine));
+
+			// Add SCompiler if need be
+			if (tlAllocCompilerInfo)
+				line->compilerInfo = iCompiler_allocate(thisCode, line);
+
+		}
 
 		// Indicate our status
 		return(line);
@@ -13241,10 +13251,10 @@ debug_break;
 // Called to append a new line to a chain (without regards to honoring the chain)
 //
 //////
-	SLine* iLine_appendNew(SThisCode* thisCode, SLine* line)
+	SLine* iLine_appendNew(SThisCode* thisCode, SLine* line, bool tlAllocCompilerInfo)
 	{
 		// Append the line to the chain
-		line->ll.nextLine = iLine_createNew(thisCode);
+		line->ll.nextLine = iLine_createNew(thisCode, tlAllocCompilerInfo);
 
 		// Indicate the new line
 		return(line->ll.nextLine);
@@ -13258,13 +13268,13 @@ debug_break;
 // Called to insert a new line to a chain
 //
 //////
-	SLine* iLine_insertNew(SThisCode* thisCode, SLine* lineRef, bool tlAfter)
+	SLine* iLine_insertNew(SThisCode* thisCode, SLine* lineRef, bool tlAllocCompilerInfo, bool tlAfter)
 	{
 		SLine*	lineNew;
 
 
 		// Append the line to the chain
-		lineNew = iLine_createNew(thisCode);
+		lineNew = iLine_createNew(thisCode, tlAllocCompilerInfo);
 		if (lineNew)
 			iLl_insertNode((SLL*)lineNew, (SLL*)lineRef, tlAfter);
 
@@ -13387,7 +13397,7 @@ goto_next_component:
 // Called to convert all \{ and \} (for example) to just { and }
 //
 //////
-	s32 iLines_unescape_iCodes(SThisCode* thisCode, SLine* lineStart, s32 tniCode1, s32 tniCode2, s32 tniCodeEscape)
+	s32 iLines_unescape_iCodes(SThisCode* thisCode, SLine* lineStart, s32 tniCode1, s32 tniCode2, s32 tniCode3, s32 tniCodeEscape)
 	{
 		s32		lnUnescapeCount;
 		SLine*	line;
@@ -13398,7 +13408,7 @@ goto_next_component:
 		{
 			// Remove escapes from this line
 			if (line->compilerInfo && line->compilerInfo->firstComp)
-				lnUnescapeCount += iComps_unescape_iCodes(thisCode, line->compilerInfo->firstComp, tniCode1, tniCode2);
+				lnUnescapeCount += iComps_unescape_iCodes(thisCode, line->compilerInfo->firstComp, tniCode1, tniCode2, tniCode3);
 		}
 
 		// Indicate how many were unescaped
@@ -13477,15 +13487,16 @@ _asm int 3;
 		// Make sure our environment is sane
 		if (lineStart && compStart && lineEnd && compEnd && !(lineStart == lineEnd && compStart == compEnd))
 		{
+
 			//////////
 			// First line
 			//////
 				// New line
-				if (!(lineNew = iLine_createNew(thisCode)))
+				if (!(lineNew = iLine_createNew(thisCode, true)))
 					return(NULL);
 
 				// Copy components
-				iComps_copyTo(thisCode, lineNew, compStart, NULL, false);
+				iComps_copyTo(thisCode, lineNew, compStart, compEnd, false);
 
 				// If we're only doing one line, we're done
 				if (lineStart == lineEnd)
@@ -13497,11 +13508,13 @@ _asm int 3;
 			//////
 				for (lineCopy = lineStart->ll.nextLine; lineCopy && lineCopy != lineEnd; lineCopy = lineCopy->ll.nextLine)
 				{
-					// New line
-					lineNew = iLine_appendNew(thisCode, lineNew);
 
-					// Copy these components
-// TODO:  working here
+					// New line
+					lineNew = iLine_appendNew(thisCode, lineNew, true);
+
+					// Copy all line components up to the end
+					iComps_copyTo(thisCode, lineNew, lineCopy->compilerInfo->firstComp, compEnd, false);
+
 				}
 
 
@@ -13510,19 +13523,28 @@ _asm int 3;
 			//////
 				// Create the new last line
 				if (lineCopy != lineEnd)
-					lineNew = iLine_appendNew(thisCode, lineNew);
+				{
+					// New line
+					lineNew = iLine_appendNew(thisCode, lineNew, true);
 
-				// Copy these components
-// TODO:  working here
+					// Copy all line components up to the end
+					iComps_copyTo(thisCode, lineNew, lineCopy->compilerInfo->firstComp, compEnd, false);
+				}
 				
 
 		} else {
 			// Invalid content, just create a blank line
-			lineNew = iLine_createNew(thisCode);
+			lineNew = iLine_createNew(thisCode, true);
+			// Note: We don't reposition the component here because nothing moved
 		}
 
+
+		//////////
 		// Indicate our status
-		return(lineNew);
+		//////
+			// Note:  Right now the next component should be the next one from lineEnd and compEnd
+			return(lineNew);
+
 	}
 
 

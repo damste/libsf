@@ -168,7 +168,7 @@ struct SThisCode;
 	s32						iComps_truncateAtComments					(SThisCode* thisCode, SLine* line);
 	void					iComps_combineCasks							(SThisCode* thisCode, SLine* line);
 	void					iComps_fixupNaturalGroupings				(SThisCode* thisCode, SLine* line);
-	s32						iComps_unescape_iCodes						(SThisCode* thisCode, SComp* compStart, s32 tniCode1, s32 tniCode2, s32 tniCodeEscape = _ICODE_BACKSLASH);
+	s32						iComps_unescape_iCodes						(SThisCode* thisCode, SComp* compStart, s32 tniCode1, s32 tniCode2, s32 tniCode3, s32 tniCodeEscape = _ICODE_BACKSLASH);
 	s32						iComps_copyTo								(SThisCode* thisCode, SLine* line, SComp* compStart, SComp* compEnd, bool tlMakeReferences);
 	bool					iiComps_areCompsAdjacent					(SThisCode* thisCode, SComp* compLeft, SComp* compRight);
 	s32						iiComps_get_charactersBetween				(SThisCode* thisCode, SComp* compLeft, SComp* compRight);
@@ -352,13 +352,13 @@ struct SThisCode;
 
 
 	// Line functions
-	SLine*					iLine_createNew								(SThisCode* thisCode);
-	SLine*					iLine_appendNew								(SThisCode* thisCode, SLine* line);
-	SLine*					iLine_insertNew								(SThisCode* thisCode, SLine* lineRef, bool tlAfter);
+	SLine*					iLine_createNew								(SThisCode* thisCode, bool tlAllocCompilerInfo);
+	SLine*					iLine_appendNew								(SThisCode* thisCode, SLine* line, bool tlAllocCompilerInfo);
+	SLine*					iLine_insertNew								(SThisCode* thisCode, SLine* lineRef, bool tlAllocCompilerInfo, bool tlAfter);
 	void					iLine_appendError							(SThisCode* thisCode, SLine* line, u32 tnErrorNum,   cu8* tcMessage, u32 tnStartColumn, u32 tnLength);
 	void					iLine_appendWarning							(SThisCode* thisCode, SLine* line, u32 tnWarningNum, cu8* tcMessage, u32 tnStartColumn, u32 tnLength);
 	bool					iLine_scanComps_forward_withCallback		(SThisCode* thisCode, SLine* line, SComp* comp, SCallback* cb, bool tlSkipFirst);
-	s32						iLines_unescape_iCodes						(SThisCode* thisCode, SLine* lineStart, s32 tniCode1, s32 tniCode2, s32 tniCodeEscape = _ICODE_BACKSLASH);
+	s32						iLines_unescape_iCodes						(SThisCode* thisCode, SLine* lineStart, s32 tniCode1, s32 tniCode2, s32 tniCode3, s32 tniCodeEscape = _ICODE_BACKSLASH);
 	s32						iLine_migrateLines							(SThisCode* thisCode, SLine** linesFrom, SLine* lineTarget);
 	SLine*					iLine_copyComps_toNewLines					(SThisCode* thisCode, SLine* lineStart, SComp* compStart, SLine* lineEnd, SComp* compEnd, bool tlLeftJustifyStart, bool tlSkipBlanks);
 	s32						iiLine_skipTo_nextComp						(SThisCode* thisCode, SLine** lineProcessing, SComp** compProcessing);
