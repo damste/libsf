@@ -170,6 +170,7 @@ struct SThisCode;
 	void					iComps_fixupNaturalGroupings				(SThisCode* thisCode, SLine* line);
 	s32						iComps_unescape_iCodes						(SThisCode* thisCode, SComp* compStart, s32 tniCode1, s32 tniCode2, s32 tniCode3, s32 tniCodeEscape = _ICODE_BACKSLASH);
 	s32						iComps_copyTo								(SThisCode* thisCode, SLine* line, SComp* compStart, SComp* compEnd, bool tlMakeReferences);
+	s32						iComps_copyTo_withCallback					(SThisCode* thisCode, SLine* line, SComp* compStart, SCallback* cb, bool tlMakeReferences);
 	bool					iiComps_areCompsAdjacent					(SThisCode* thisCode, SComp* compLeft, SComp* compRight);
 	s32						iiComps_get_charactersBetween				(SThisCode* thisCode, SComp* compLeft, SComp* compRight);
 	s32						iComps_getAs_s32							(SThisCode* thisCode, SComp* comp);
@@ -360,7 +361,11 @@ struct SThisCode;
 	bool					iLine_scanComps_forward_withCallback		(SThisCode* thisCode, SLine* line, SComp* comp, SCallback* cb, bool tlSkipFirst);
 	s32						iLines_unescape_iCodes						(SThisCode* thisCode, SLine* lineStart, s32 tniCode1, s32 tniCode2, s32 tniCode3, s32 tniCodeEscape = _ICODE_BACKSLASH);
 	s32						iLine_migrateLines							(SThisCode* thisCode, SLine** linesFrom, SLine* lineTarget);
-	SLine*					iLine_copyComps_toNewLines					(SThisCode* thisCode, SLine* lineStart, SComp* compStart, SLine* lineEnd, SComp* compEnd, bool tlLeftJustifyStart, bool tlSkipBlanks);
+	SLine*					iLine_copyComps_toNewLines					(SThisCode* thisCode, SLine* lineStart, SComp* compStart, SLine* lineEnd, SComp* compEnd, bool tlLeftJustifyStart, bool tlSkipBlankLines);
+	//
+	SLine*					iLine_copyComps_toNewLines_untilTerminating					(SThisCode* thisCode, SLine* lineStart, SComp* compStart, s32 tniCodeContinuation, bool tlLeftJustifyStart, bool tlSkipBlankLines);
+	bool					iiLine_copyComps_toNewLines_untilTerminating__callback		(SCallback* cb);
+	//
 	s32						iiLine_skipTo_nextComp						(SThisCode* thisCode, SLine** lineProcessing, SComp** compProcessing);
 	s32						iiLine_skipTo_prevComp						(SThisCode* thiscode, SLine** lineProcessing, SComp** compProcessing);
 

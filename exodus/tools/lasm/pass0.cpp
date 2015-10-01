@@ -428,7 +428,8 @@
 
 					} else {
 						// Copy everything, including any continued lines (lines ending with \)
-// TODO:  working here
+						define->firstLine = iLine_copyComps_toNewLines_untilTerminating(NULL, line, compNext, _ICODE_BACKSLASH, true, true);
+
 					}
 					// If we get here, success
 

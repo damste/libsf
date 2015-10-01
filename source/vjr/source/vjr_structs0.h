@@ -588,28 +588,23 @@ struct SCallback
 		union {
 			void*	data1;
 			SLine*	line;
+			SLine*	line1;
+			SComp*	comp;
+			SComp*	comp1;
 		};
 
 		union {
 			void*	data2;
-			SComp*	comp;
+			SLine*	line2;
+			SComp*	comp2;
 		};
-
-		union {
-			void*	data3;
-			sptr	level;
-		};
-
-		void*		data4;
 
 
 	//////////
-	// Flags
+	// Extra information
 	//////
-		union {
-			bool		lFlag;
-			bool		lFound;
-		};
+		bool		flag;
+		void*		x;
 
 };
 
