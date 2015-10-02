@@ -968,7 +968,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Called to copy the inner contents of a component
 //
 //////
-	void iComps_copyInner(SThisCode* thisCode, SComp* compTo, SComp* compFrom, bool tlAllocated, bool tlCopyLl, s32 tnBackoff)
+	void iComps_copyMembers(SThisCode* thisCode, SComp* compTo, SComp* compFrom, bool tlAllocated, bool tlCopyLl, s32 tnBackoff)
 	{
 		if (tlCopyLl)
 			memcpy(&compTo->ll, &compFrom->ll, sizeof(compFrom->ll));
@@ -2933,7 +2933,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 					// Copy
 					// Note: There may be large gaps of whitespaces if comments were removed
 					//////
-						for (comp = compStart; comp; comp = comp->ll.nextComp)
+						for (comp = compStart; comp; comp = comp->ll.nextComp, lnCount++)
 						{
 
 							//////////
@@ -2955,7 +2955,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 								if (compNew)
 								{
 									// Copy members
-									iComps_copyInner(NULL, compNew, comp, true/*isAllocated*/, false/*copyLl*/, ((tlMakeReferences) ? 0 : lnStart)/*backoff*/);
+									iComps_copyMembers(NULL, compNew, comp, true/*isAllocated*/, false/*copyLl*/, ((tlMakeReferences) ? 0 : lnStart)/*backoff*/);
 
 									// Update the new line if need be
 									if (!tlMakeReferences)
@@ -2993,6 +2993,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 		s32		lnCount, lnPass, lnStart, lnEnd, lnLength;
 		bool	llContinue;
 		SComp*	comp;
+		SComp*	compNew;
 
 
 		// Make sure our environment is sane
@@ -3010,14 +3011,16 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 					//////////
 					// Compute extents
 					//////
-						for (llContinue = true, comp = compStart, lnStart = compStart->line->sourceCode->length, lnEnd = 0; llContinue && comp; comp= comp->ll.nextComp)
+						lnStart		= compStart->line->sourceCode->length;
+						lnEnd		= 0;
+						cb->line	= line;
+						for (comp = compStart, llContinue = true; llContinue && comp; comp= comp->ll.nextComp)
 						{
 
 							//////////
 							// See if the next component should be included as well
 							//////
-								cb->line1	= line;
-								cb->comp1	= comp;
+								cb->comp	= comp;
 								llContinue	= cb->func(cb);
 
 
@@ -3030,7 +3033,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 						}
 
 						// Prepare for copy if need be
-						if (llContinue && !tlMakeReferences)
+						if (!tlMakeReferences)
 						{
 							// Length and allocation
 							lnLength = lnEnd - lnStart;
@@ -3045,46 +3048,50 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 					// Copy
 					// Note: There may be large gaps of whitespaces if comments were removed
 					//////
-// TODO:  working here
-// 						for (llContinue = true, comp = compStart, lnStart = compStart->line->sourceCode->length, lnEnd = 0; llContinue && comp; comp= comp->ll.nextComp)
-// 						{
-// 
-// 							//////////
-// 							// Copy if need be
-// 							//////
-// 								if (!tlMakeReferences)
-// 									memcpy(line->sourceCode->data_s8 + comp->start - lnStart, comp->line->sourceCode->data_cs8 + comp->start, comp->length);
-// 
-// 
-// 							//////////
-// 							// Append the component
-// 							//////
-// 								compNew = newAlloc(SComp, line->compilerInfo->firstComp);
-// 
-// 							
-// 							//////////
-// 							// Copy
-// 							//////
-// 								if (compNew)
-// 								{
-// 									// Copy members
-// 									iComps_copyInner(NULL, compNew, comp, true/*isAllocated*/, false/*copyLl*/, ((tlMakeReferences) ? 0 : lnStart)/*backoff*/);
-// 
-// 									// Update the new line if need be
-// 									if (!tlMakeReferences)
-// 										compNew->line = line;
-// 								}
-// 
-// 
-// 							//////////
-// 							// Are we done?
-// 							//////
-// 								if (!compNew || (compEnd && comp == compEnd))
-// 									break;	// Yup
+						for (llContinue = true, comp = compStart; llContinue && comp; comp= comp->ll.nextComp, lnCount++)
+						{
+
+							//////////
+							// See if the next component should be included as well
+							//////
+								cb->comp	= comp;
+								llContinue	= cb->func(cb);
+
+
+							//////////
+							// Copy if need be
+							//////
+								if (!tlMakeReferences)
+									memcpy(line->sourceCode->data_s8 + comp->start - lnStart, comp->line->sourceCode->data_cs8 + comp->start, comp->length);
+
+
+							//////////
+							// Append the component
+							//////
+								compNew = newAlloc(SComp, line->compilerInfo->firstComp);
+
+							
+							//////////
+							// Copy
+							//////
+								if (compNew)
+								{
+									// Copy members
+									iComps_copyMembers(NULL, compNew, comp, true/*isAllocated*/, false/*copyLl*/, ((tlMakeReferences) ? 0 : lnStart)/*backoff*/);
+
+									// Update the new line if need be
+									if (!tlMakeReferences)
+										compNew->line = line;
+
+								} else {
+									// We're done
+									break;
+								}
 
 						}
 
 				}
+			}
 		}
 
 		// Indicate our count
@@ -13673,11 +13680,10 @@ _asm int 3;
 		bool	lContinuationFound;
 	};
 
-	SLine* iLine_copyComps_toNewLines_untilTerminating(SThisCode* thisCode, SLine* lineStart, SComp* compStart, s32 tniCodeContinuation, bool tlLeftJustifyStart, bool tlSkipBlankLines)
+	SLine* iLine_copyComps_toNewLines_untilTerminating(SThisCode* thisCode, SLine* lineStart, SComp* compStart, s32 tniCodeContinuation, bool tlLeftJustifyStart, bool tlSkipBlankLines, SCallback* cb)
 	{
 		SLine*		lineNew;
 		SLine*		lineCopy;
-		SCallback	cb;
 		S_iLine_copyComps_toNewLines_untilTerminating x;
 
 
@@ -13693,29 +13699,30 @@ _asm int 3;
 					return(NULL);
 
 				// Copy components smartly
-				memset(&cb, 0, sizeof(cb));
+				memset(cb, 0, sizeof(cb));
 				memset(&x, 0, sizeof(x));
-				cb._func				= (sptr)&iiLine_copyComps_toNewLines_untilTerminating__callback;
-				cb.x					= (void*)&x;
-				iComps_copyTo_withCallback(thisCode, lineNew, compStart, &cb, false);
+				cb->_func	= (sptr)&iiLine_copyComps_toNewLines_untilTerminating__callback;
+				cb->x		= (void*)&x;
+				iComps_copyTo_withCallback(thisCode, lineNew, compStart, cb, false);
 
 				// If the last component was not a continuation character, we're done
-				if (!cb.flag)
+				if (!x.lContinuationFound)
 					return(lineNew);
+
 
 			//////////
 			// Following lines
 			//////
-				for (lineCopy = lineStart->ll.nextLine; lineCopy; lineCopy = lineCopy->ll.nextLine)
+				for (lineCopy = lineStart->ll.nextLine; x.lContinuationFound && lineCopy; lineCopy = lineCopy->ll.nextLine)
 				{
 					// Skip blank lines if need be
-					if (!tlSkipBlankLines || !lineCopy->compilerInfo->firstComp)
+					if (!tlSkipBlankLines || lineCopy->compilerInfo->firstComp->iCode != _ICODE_BACKSLASH)
 					{
 						// New line
 						lineNew = iLine_appendNew(thisCode, lineNew, true);
 
 						// Copy all line components up to the end
-						iComps_copyTo(thisCode, lineNew, lineCopy->compilerInfo->firstComp, NULL, false);
+						iComps_copyTo_withCallback(thisCode, lineNew, lineCopy->compilerInfo->firstComp, cb, false);
 					}
 				}
 				
@@ -13735,19 +13742,44 @@ _asm int 3;
 
 	}
 
+	// Return indicates if copying should continue
 	bool iiLine_copyComps_toNewLines_untilTerminating__callback(SCallback* cb)
 	{
-// 		S_iLine_copyComps_toNewLines_untilTerminating* x;
-// 
-// 
-// 		// Get our x
-// 		x = (S_iLine_copyComps_toNewLines_untilTerminating*)cb->x;
-// 		x->lContinuationFound = ...;
-//
-// TODO:  This is part of the #define ... \ line continuation logic.
-// TODO:  need to examine the next component, and stop if it's \ and there are no more after that.
-//
-		return(true);
+		S_iLine_copyComps_toNewLines_untilTerminating* x;
+		SComp* compNext;
+
+
+		//////////
+		// Get our x and next component
+		//////
+			x			= (S_iLine_copyComps_toNewLines_untilTerminating*)cb->x;
+			compNext	= cb->comp->ll.nextComp;
+
+
+		//////////
+		// Get the components
+		//////
+			if (!compNext)
+			{
+				// No continuation was found
+				x->lContinuationFound = false;
+
+				// And we're stopping after this component
+				return(false);
+			}
+
+
+		//////////
+		// If it's a backslash, and the component after doesn't exist, then it's a continuation character
+		//////
+			x->lContinuationFound = (compNext->iCode == _ICODE_BACKSLASH && !compNext->ll.nextComp);
+
+
+		//////////
+		// We continue so long as there are more components to copy (until we reach the continuation character \)
+		//////
+			return(!x->lContinuationFound);
+
 	}
 
 

@@ -138,7 +138,7 @@ struct SThisCode;
 	void					iComps_deleteAll_byLine						(SThisCode* thisCode, SLine* line);
 	void					iComps_deleteAll_byFirstComp				(SThisCode* thisCode, SComp** firstComp);
 	SComp*					iComps_delete								(SThisCode* thisCode, SComp* comp, bool tlDeleteSelf);
-	void					iComps_copyInner							(SThisCode* thisCode, SComp* compTo, SComp* compFrom, bool tlAllocated, bool tlCopyLl, s32 tnBackoff);
+	void					iComps_copyMembers							(SThisCode* thisCode, SComp* compTo, SComp* compFrom, bool tlAllocated, bool tlCopyLl, s32 tnBackoff);
  	SComp*					iComps_translateSourceLineTo				(SThisCode* thisCode, SAsciiCompSearcher* tsComps, SLine* line);
  	bool					iComps_translateToOthers					(SThisCode* thisCode, SAsciiCompSearcher* tsComps, SLine* line);
 	bool					iComps_areAllPrecedingCompsWhitespaces		(SThisCode* thisCode, SComp* comp);
@@ -363,7 +363,7 @@ struct SThisCode;
 	s32						iLine_migrateLines							(SThisCode* thisCode, SLine** linesFrom, SLine* lineTarget);
 	SLine*					iLine_copyComps_toNewLines					(SThisCode* thisCode, SLine* lineStart, SComp* compStart, SLine* lineEnd, SComp* compEnd, bool tlLeftJustifyStart, bool tlSkipBlankLines);
 	//
-	SLine*					iLine_copyComps_toNewLines_untilTerminating					(SThisCode* thisCode, SLine* lineStart, SComp* compStart, s32 tniCodeContinuation, bool tlLeftJustifyStart, bool tlSkipBlankLines);
+	SLine*					iLine_copyComps_toNewLines_untilTerminating					(SThisCode* thisCode, SLine* lineStart, SComp* compStart, s32 tniCodeContinuation, bool tlLeftJustifyStart, bool tlSkipBlankLines, SCallback* cb);
 	bool					iiLine_copyComps_toNewLines_untilTerminating__callback		(SCallback* cb);
 	//
 	s32						iiLine_skipTo_nextComp						(SThisCode* thisCode, SLine** lineProcessing, SComp** compProcessing);

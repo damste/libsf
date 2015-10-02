@@ -131,7 +131,9 @@
 					// # prefix
 					if (comp->iCode == _ICODE_POUND_SIGN)
 					{
-						// #include
+//////////
+// #include
+//////
 						if (compNext->iCode == _ICODE_LASM_INCLUDE)
 						{
 							// The next component needs to be the filename
@@ -165,8 +167,11 @@
 								return;
 							}
 
+
+//////////
+// #define
+//////
 						} else if (compNext->iCode == _ICODE_LASM_DEFINE) {
-							// #define
 							if (!ilasm_pass0_define(file, &line, compNext, iComps_getNth(NULL, compNext, 1)))
 								return;		// Error is displayed by the called function
 
@@ -174,14 +179,19 @@
 							line->status.isCompleted = true;
 						}
 
+
+//////////
+// function
+//////
 					} else if (compNext->iCode == _ICODE_LASM_FUNCTION) {
-						// function
-// TODO:  Working here
+						// TODO:  Working here
 
+
+//////////
+// flowof
+//////
 					} else if (compNext->iCode == _ICODE_LASM_FLOWOF) {
-						// flowof
-// TODO:  Working here
-
+						// TODO:  Working here
 					} 
 				}
 			}
@@ -415,27 +425,29 @@
 
 
 						//////////
-						// Copy
+						// Copy inner content
 						//////
 							define->firstLine = iLine_copyComps_toNewLines(NULL, line, compNext, cb.line, cb.comp, true, true);
 
 
-						//////////
-						// Unescape \{, \}, and \\
-						//////
-							iLines_unescape_iCodes(NULL, define->firstLine, _ICODE_BRACE_LEFT,	_ICODE_BRACE_RIGHT, _ICODE_BACKSLASH);
-
-
 					} else {
-						// Copy everything, including any continued lines (lines ending with \)
-						define->firstLine = iLine_copyComps_toNewLines_untilTerminating(NULL, line, compNext, _ICODE_BACKSLASH, true, true);
-
+						// Copy everything, including multiple lines ending in '\'
+						define->firstLine = iLine_copyComps_toNewLines_untilTerminating(NULL, line, compNext, _ICODE_BACKSLASH, true, true, &cb);
 					}
 					// If we get here, success
 
-					// Position our line and component to the last location, ready for our next skip
-					line		= cb.line;
-					compNext	= cb.comp;
+
+				//////////
+				// Unescape \{, \}, and \\ within the block
+				//////
+					iLines_unescape_iCodes(NULL, define->firstLine, _ICODE_BRACE_LEFT,	_ICODE_BRACE_RIGHT, _ICODE_BACKSLASH);
+
+
+				//////////
+				// Position our line to the last location, which completes the #define
+				//////
+					*lineProcessing = cb.line;
+
 
 			} else {
 				// It's a #define but nothing comes after
