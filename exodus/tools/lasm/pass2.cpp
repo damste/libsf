@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/exodus/tools/lasm/pass1.cpp
+// /libsf/exodus/tools/lasm/pass2.cpp
 //
 //////
 //    _     _ _     _____ _____ 
@@ -22,10 +22,10 @@
 // Copyright (c) 2015 by Rick C. Hodgin
 //////
 // Last update:
-//     Sep.17.2015
+//     Oct.01.2015
 //////
 // Change log:
-//     Sep.17.2015 - Initial creation
+//     Oct.01.2015 - Initial creation
 //////
 //
 // This document and all documents contained within are released as Liberty Software
@@ -89,20 +89,21 @@
 
 //////////
 //
-// Pass-1 -- Macro expansion
+// Pass-2 -- function, adhoc, flowof, class, struct, enum markers
 //
 //////
-	void ilasm_pass1(SLasmFile* file)
+	void ilasm_pass2(SLasmFile* file)
 	{
 		SLine*			line;
 		SComp*			comp;
-		SComp*			compNext;
 		SComp*			compFile;
 		SLasmFile*		fileInclude;
 		SLasmBlock*		func;
 		SLasmBlock*		flowof;
 		SLasmBlock*		adhoc;
-		s8				fileName[_MAX_PATH];
+		SLasmClass*		lclass;
+		SLasmStruct*	lstruct;
+		SLasmEnum*		lenum;
 
 
 		// Iterate through the entire file
@@ -113,7 +114,148 @@
 			{
 				// Grab the comp
 				comp = line->compilerInfo->firstComp;
-// TODO:  working here, iterate through each component and replace those which are part of #define macros
+//////////
+// function
+//////
+				if (comp->iCode == _ICODE_LASM_FUNCTION)
+				{
+					// Process the function parameters, and mark off its extents
+					if (!(func = ilasm_pass2_function(file, &line, comp)))
+					{
+					}
+
+					// Process any inner classes
+					// Process any inner structs
+					// Process any inner enuums
+					// Process any inner adhocs
+
+
+//////////
+// flowof
+//////
+				} else if (comp->iCode == _ICODE_LASM_FLOWOF) {
+					// Process the flowof parameters, and mark off its extents
+					if (!(flowof = ilasm_pass2_flowof(file, &line, comp)))
+					{
+					}
+
+					// Process any inner classes
+					// Process any inner structs
+					// Process any inner enuums
+					// Process any inner adhocs
+
+
+//////////
+// class
+//////
+				} else if (comp->iCode == _ICODE_LASM_CLASS) {
+					// Process the class
+					if (!(lclass = ilasm_pass2_class(file, &line, comp)))
+					{
+					}
+
+
+//////////
+// struct
+//////
+				} else if (comp->iCode == _ICODE_LASM_STRUCT) {
+					// Process the struct
+					if (!(lstruct = ilasm_pass2_struct(file, &line, comp)))
+					{
+					}
+
+
+//////////
+// enum
+//////
+				} else if (comp->iCode == _ICODE_LASM_ENUM) {
+					// Process the enum
+					if (!(lenum = ilasm_pass2_enum(file, &line, comp)))
+					{
+					}
+
+				} else {
+					// Function prototypes can also take on the old C-style form of:
+					//     void name(...) { ... }
+				}
 			}
 		}
+	}
+
+
+
+
+//////////
+//
+// Process the function header
+//
+//////
+	SLasmBlock*	ilasm_pass2_function(SLasmFile* file, SLine** lineProcessing, SComp* comp)
+	{
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Process the adhoc header
+//
+//////
+	SLasmBlock*	ilasm_pass2_adhoc(SLasmFile* file, SLine** lineProcessing, SComp* comp)
+	{
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Process the flowof header
+//
+//////
+	SLasmBlock*	ilasm_pass2_flowof(SLasmFile* file, SLine** lineProcessing, SComp* comp)
+	{
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Process the class
+//
+//////
+	SLasmClass* ilasm_pass2_class(SLasmFile* file, SLine** lineProcessing, SComp* comp)
+	{
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Process the struct
+//
+//////
+	SLasmStruct* ilasm_pass2_struct(SLasmFile* file, SLine** lineProcessing, SComp* comp)
+	{
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Process the enum
+//
+//////
+	SLasmEnum* ilasm_pass2_enum(SLasmFile* file, SLine** lineProcessing, SComp* comp)
+	{
+		return(NULL);
 	}

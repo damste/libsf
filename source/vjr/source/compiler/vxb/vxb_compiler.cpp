@@ -13688,7 +13688,7 @@ _asm int 3;
 
 
 		// Make sure our environment is sane
-		if (lineStart && compStart)
+		if (lineStart && compStart && cb)
 		{
 
 			//////////

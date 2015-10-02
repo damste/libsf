@@ -91,6 +91,7 @@
 
 #include "pass0.cpp"
 #include "pass1.cpp"
+#include "pass2.cpp"
 //#include "passN.cpp"
 //#include "passX.cpp"
 //#include "passY.cpp"

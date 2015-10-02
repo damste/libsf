@@ -87,6 +87,12 @@
 //////
 	SLasmFile*		gsFirstFile							= NULL;					// First file that's being assembled
 	SLasmDefine*	gsLasmDefines						= NULL;					// List of #defines found, in the order found
+	SLasmBlock*		firstAdhoc							= NULL;					// All adhoc definitions are scoped within functions or flowofs, but are part of a single list
+	SLasmBlock*		firstFunction						= NULL;					// All function definitions
+	SLasmBlock*		firstFlowof							= NULL;					// All flowof definitions
+	SLasmClass*		firstClass							= NULL;					// All class definitions
+	SLasmStruct*	firstStruct							= NULL;					// All struct definitions
+	SLasmEnum*		firstEnum							= NULL;					// All enum definitions
 
 
 //////////
@@ -132,6 +138,9 @@
 	u8			cgc_lasm_define[]					= "define";
 	u8			cgc_lasm_function[]					= "function";
 	u8			cgc_lasm_flowof[]					= "flowof";
+	u8			cgc_lasm_class[]					= "class";
+	u8			cgc_lasm_struct[]					= "struct";
+	u8			cgc_lasm_enum[]						= "enum";
 
 
 
@@ -568,6 +577,9 @@
 		{ (cs8*)cgc_lasm_define,				sizeof(cgc_lasm_define) - 1,			false,		_ICODE_LASM_DEFINE,					true,		_ICAT_PRAGMA,			&colorDefault,		false,			null0,		null0	},
 		{ (cs8*)cgc_lasm_function,				sizeof(cgc_lasm_function) - 1,			false,		_ICODE_LASM_FUNCTION,				true,		_ICAT_FLOW,				&colorDefault,		false,			null0,		null0	},
 		{ (cs8*)cgc_lasm_flowof,				sizeof(cgc_lasm_flowof) - 1,			false,		_ICODE_LASM_FLOWOF,					true,		_ICAT_FLOW,				&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_lasm_class,					sizeof(cgc_lasm_class) - 1,				false,		_ICODE_LASM_CLASS,					true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_lasm_struct,				sizeof(cgc_lasm_struct) - 1,			false,		_ICODE_LASM_STRUCT,					true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,		null0	},
+		{ (cs8*)cgc_lasm_enum,					sizeof(cgc_lasm_enum) - 1,				false,		_ICODE_LASM_ENUM,					true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,		null0	},
 		
 		{ 0,									0,										0,			0,									0,			0,						0,					0,				0,			0		}
 	};

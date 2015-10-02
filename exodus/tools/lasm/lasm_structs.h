@@ -134,13 +134,56 @@
 	// #define statements
 	struct SLasmDefine
 	{
-		SLL					ll;										// Link list through multiple defines
+		SLL					ll;							// Link list through multiple defines
 
 		// Required parameters
-		SDatum				name;									// The "xyz" in #define xyz
-		SLine*				firstLine;								// Potentially multiple lines
+		SDatum				name;						// The "xyz" in #define xyz
+		SLine*				firstLine;					// Potentially multiple lines
 
 		// Optional parameters (the a, b,..., z in #define xyz(a,b,...,z))
 		s32					paramCount;								// Actual parameter count
 		SDatum				params[_MAX_LASM_DEFINE_PARAMS];		// Parameter names and lengths
+	};
+
+	// For adhocs, functions, flowofs
+	struct SLasmBlock
+	{
+		SLL					ll;							// Link list through multiple functions
+
+		// Block info
+		s32					type;						// See _LASM_BLOCK_TYPE_* constants
+		SLine*				start;						// First line of the function
+		SLine*				end;						// Last line of the function
+
+		// Return params
+		s32					rpCount;						// Actual return parameter count
+		SLine				rp[_MAX_LASM_RETURN_PARAMS];	// Return parameter names and lengths
+
+		// Input params
+		s32					ipCount;						// Actual input parameter count
+		SLine				ip[_MAX_LASM_INPUT_PARAMS];		// Input parameter names and lengths
+
+
+		//////////
+		// adhoc specific
+		//////
+			SLasmBlock*		parent;						// (if adhoc) The function or flowof this adhoc is contained within
+	};
+
+	// class
+	struct SLasmClass
+	{
+		SLL					ll;							// Link list through multiple classes
+	};
+
+	// struct
+	struct SLasmStruct
+	{
+		SLL					ll;							// Link list through multiple structs
+	};
+
+	// enum
+	struct SLasmEnum
+	{
+		SLL					ll;							// Link list through multiple enums
 	};

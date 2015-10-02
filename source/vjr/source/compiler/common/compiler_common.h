@@ -110,6 +110,7 @@
 	const u32		_ICAT_UNARY										= 1 << 9;
 	const u32		_ICAT_BITWISE									= 1 << 10;
 	const u32		_ICAT_ASSIGN									= 1 << 11;
+	const u32		_ICAT_DEFINITION								= 1 << 12;
 	const u32		_ICAT_STOPPER									= 1 << 31;
 
 

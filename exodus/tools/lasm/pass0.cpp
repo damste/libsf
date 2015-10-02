@@ -172,26 +172,12 @@
 // #define
 //////
 						} else if (compNext->iCode == _ICODE_LASM_DEFINE) {
-							if (!ilasm_pass0_define(file, &line, compNext, iComps_getNth(NULL, compNext, 1)))
+							if (!ilasm_pass0_define(file, &line, compNext, compNext->ll.nextComp))
 								return;		// Error is displayed by the called function
 
 							// This line is completed, but the file itself is not
 							line->status.isCompleted = true;
 						}
-
-
-//////////
-// function
-//////
-					} else if (compNext->iCode == _ICODE_LASM_FUNCTION) {
-						// TODO:  Working here
-
-
-//////////
-// flowof
-//////
-					} else if (compNext->iCode == _ICODE_LASM_FLOWOF) {
-						// TODO:  Working here
 					} 
 				}
 			}
@@ -425,7 +411,7 @@
 
 
 						//////////
-						// Copy inner content
+						// Copy inner content (between the { and }, and excluding those two characters)
 						//////
 							define->firstLine = iLine_copyComps_toNewLines(NULL, line, compNext, cb.line, cb.comp, true, true);
 

@@ -360,6 +360,7 @@ struct SThisCode;
 	void					iLine_appendWarning							(SThisCode* thisCode, SLine* line, u32 tnWarningNum, cu8* tcMessage, u32 tnStartColumn, u32 tnLength);
 	bool					iLine_scanComps_forward_withCallback		(SThisCode* thisCode, SLine* line, SComp* comp, SCallback* cb, bool tlSkipFirst);
 	s32						iLines_unescape_iCodes						(SThisCode* thisCode, SLine* lineStart, s32 tniCode1, s32 tniCode2, s32 tniCode3, s32 tniCodeEscape = _ICODE_BACKSLASH);
+
 	s32						iLine_migrateLines							(SThisCode* thisCode, SLine** linesFrom, SLine* lineTarget);
 	SLine*					iLine_copyComps_toNewLines					(SThisCode* thisCode, SLine* lineStart, SComp* compStart, SLine* lineEnd, SComp* compEnd, bool tlLeftJustifyStart, bool tlSkipBlankLines);
 	//

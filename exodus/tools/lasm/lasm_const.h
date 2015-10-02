@@ -82,6 +82,12 @@
 
 
 const s32		_MAX_LASM_DEFINE_PARAMS				= 26;					// Up to 26 #define macro(a,b,c,...,z)
+const s32		_MAX_LASM_RETURN_PARAMS				= 10;					// Up to 10 return parameters are allowed
+const s32		_MAX_LASM_INPUT_PARAMS				= 26;					// Up to 26 input parameters are allowed
+
+const s32		_LASM_BLOCK_TYPE_ADHOC				= 1;
+const s32		_LASM_BLOCK_TYPE_FUNCTION			= 2;
+const s32		_LASM_BLOCK_TYPE_FLOWOF				= 3;
 
 const s32		_ICAT_INSTRUCTION					= 1;
 const s32		_ICAT_DATA_TYPE						= 2;
@@ -512,3 +518,6 @@ const s32		_ICODE_LASM_INCLUDE					= 3000001;
 const s32		_ICODE_LASM_DEFINE					= 3000002;
 const s32		_ICODE_LASM_FUNCTION				= 3000003;
 const s32		_ICODE_LASM_FLOWOF					= 3000004;
+const s32		_ICODE_LASM_CLASS					= 3000005;
+const s32		_ICODE_LASM_STRUCT					= 3000006;
+const s32		_ICODE_LASM_ENUM					= 3000007;
