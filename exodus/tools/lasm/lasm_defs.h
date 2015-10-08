@@ -113,11 +113,13 @@ struct SlasmFile;
 //////
 	void			ilasm_pass2							(SLasmFile* file);
 	SLasmBlock*		ilasm_pass2_function				(SLasmFile* file, SLine** lineProcessing, SComp* comp);
+	SLasmBlock*		ilasm_pass2_function_c_style		(SLasmFile* file, SLine** lineProcessing, SComp* comp);
 	SLasmBlock*		ilasm_pass2_adhoc					(SLasmFile* file, SLine** lineProcessing, SComp* comp);
 	SLasmBlock*		ilasm_pass2_flowof					(SLasmFile* file, SLine** lineProcessing, SComp* comp);
 	SLasmClass*		ilasm_pass2_class					(SLasmFile* file, SLine** lineProcessing, SComp* comp);
 	SLasmStruct*	ilasm_pass2_struct					(SLasmFile* file, SLine** lineProcessing, SComp* comp);
 	SLasmEnum*		ilasm_pass2_enum					(SLasmFile* file, SLine** lineProcessing, SComp* comp);
+	bool			ilasm_pass2_label					(SLasmFile* file, SLine** lineProcessing, SComp* comp);
 
 
 //////////

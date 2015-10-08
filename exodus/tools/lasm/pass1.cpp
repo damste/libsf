@@ -99,9 +99,6 @@
 		SComp*			compNext;
 		SComp*			compFile;
 		SLasmFile*		fileInclude;
-		SLasmBlock*		func;
-		SLasmBlock*		flowof;
-		SLasmBlock*		adhoc;
 		s8				fileName[_MAX_PATH];
 
 

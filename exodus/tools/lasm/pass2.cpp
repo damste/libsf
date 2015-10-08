@@ -89,7 +89,15 @@
 
 //////////
 //
-// Pass-2 -- function, adhoc, flowof, class, struct, enum markers
+// Pass-2 -- Markers
+//
+//		functions
+//		adhocs
+//		flowofs
+//		classes
+//		structs
+//		enums
+//		labels
 //
 //////
 	void ilasm_pass2(SLasmFile* file)
@@ -112,11 +120,10 @@
 			// All lines should have compiler info, but just to be sure...
 			if (!line->status.isCompleted && line->compilerInfo)
 			{
-				// Grab the comp
-				comp = line->compilerInfo->firstComp;
 //////////
 // function
 //////
+				comp = line->compilerInfo->firstComp;
 				if (comp->iCode == _ICODE_LASM_FUNCTION)
 				{
 					// Process the function parameters, and mark off its extents
@@ -126,7 +133,22 @@
 
 					// Process any inner classes
 					// Process any inner structs
-					// Process any inner enuums
+					// Process any inner enums
+					// Process any inner adhocs
+
+
+//////////
+// adhoc
+//////
+				} else if (comp->iCode == _ICODE_LASM_ADHOC) {
+					// Process the function parameters, and mark off its extents
+					if (!(func = ilasm_pass2_function(file, &line, comp)))
+					{
+					}
+
+					// Process any inner classes
+					// Process any inner structs
+					// Process any inner enums
 					// Process any inner adhocs
 
 
@@ -141,7 +163,7 @@
 
 					// Process any inner classes
 					// Process any inner structs
-					// Process any inner enuums
+					// Process any inner enums
 					// Process any inner adhocs
 
 
@@ -174,9 +196,29 @@
 					{
 					}
 
+
+//////////
+// Label
+//////
+				} else if (ilasm_pass2_label(file, &line, comp)) {
+					// Found a label
+
+
+//////////
+// Function prototypes can also take on the old C-style form:  void name(...) { ... }
+// However, because RDC allows for non-forward declarations, this may take more than one pass to identify
+//////
+				} else if (!(func = ilasm_pass2_function_c_style(file, &line, comp))) {
+					// Found a function
+
+					// Process any inner classes
+					// Process any inner structs
+					// Process any inner enums
+					// Process any inner adhocs
+
+
 				} else {
-					// Function prototypes can also take on the old C-style form of:
-					//     void name(...) { ... }
+					// Did not find anything on this line
 				}
 			}
 		}
@@ -191,6 +233,21 @@
 //
 //////
 	SLasmBlock*	ilasm_pass2_function(SLasmFile* file, SLine** lineProcessing, SComp* comp)
+	{
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Process the C-style function header, the form like:
+//
+//		void function(void) { ... }
+//
+//////
+	SLasmBlock* ilasm_pass2_function_c_style(SLasmFile* file, SLine** lineProcessing, SComp* comp)
 	{
 		return(NULL);
 	}
@@ -258,4 +315,17 @@
 	SLasmEnum* ilasm_pass2_enum(SLasmFile* file, SLine** lineProcessing, SComp* comp)
 	{
 		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Process the label
+//
+//////
+	bool ilasm_pass2_label(SLasmFile* file, SLine** lineProcessing, SComp* comp)
+	{
+		return(false);
 	}

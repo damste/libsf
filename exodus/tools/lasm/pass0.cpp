@@ -95,9 +95,6 @@
 //		comment lines
 //		#include files
 //		#define statements
-//		labels
-//		function starts and stops
-//		flow control starts and stops
 //
 //////
 	void ilasm_pass0(SLasmFile* file)
