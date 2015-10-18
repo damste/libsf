@@ -268,6 +268,7 @@ struct SFunctionParams;
 	void				function_juststem							(SThisCode* thisCode, SFunctionParams* rpar);
 	void				function_left								(SThisCode* thisCode, SFunctionParams* rpar);
 	void				function_len								(SThisCode* thisCode, SFunctionParams* rpar);
+	void				function_like		/* Stefano D'Amico */	(SThisCode* thisCode, SFunctionParams* rpar);
 	void				function_log		/* Stefano D'Amico */	(SThisCode* thisCode, SFunctionParams* rpar);
 	void				function_log10		/* Stefano D'Amico */	(SThisCode* thisCode, SFunctionParams* rpar);
 	void				function_lower								(SThisCode* thisCode, SFunctionParams* rpar);
@@ -603,6 +604,7 @@ struct SFunctionParams;
 		{	_ICODE_JUSTSTEM,		1,			1,				false,		(uptr)&function_juststem,		1,				2,				NULL,			&gsSourceLight_juststem[0]		},
 		{	_ICODE_LEFT,			1,			1,				false,		(uptr)&function_left,			2,				2,				NULL,			&gsSourceLight_left[0]			},
 		{	_ICODE_LEN,				1,			1,				false,		(uptr)&function_len,			1,				1,				NULL,			&gsSourceLight_len[0]			},
+		{	_ICODE_LIKE,			1,			1,				false,		(uptr)&function_like,			2,				2,				NULL,			&gsSourceLight_like[0]			},	// LIKE() by Stefano D'Amico, VJr 0.58, Oct.18.2015
 		{	_ICODE_LOG,				1,			1,				false,		(uptr)&function_log,			1,				1,				NULL,			&gsSourceLight_log[0]			},	// LOG() by Stefano D'Amico, VJr 0.56, Mar.15.2015
 		{	_ICODE_LOG10,			1,			1,				false,		(uptr)&function_log10,			1,				1,				NULL,			&gsSourceLight_log10[0]			},	// LOG10() by Stefano D'Amico, VJr 0.56, Mar.15.2015
 		{	_ICODE_LOWER,			1,			1,				false,		(uptr)&function_lower,			1,				1,				NULL,			&gsSourceLight_lower[0]			},
