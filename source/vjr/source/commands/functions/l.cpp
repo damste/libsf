@@ -239,6 +239,116 @@
 	}
 
 
+
+//////////
+//
+// Function: LIKE()
+// Determines if a character expression matches another character expression.
+//
+//////
+// Version 0.58
+// Last update:
+//     Oct.18.2015
+//////
+// Change log:
+//     Oct.18.2015 - Initial creation by Stefano D'Amico
+//////
+// Parameters:
+//     pPattern		-- Character, specifies the character expression that LIKE() compares with pString. pPattern can contain wild cards such as * and ?. 
+//     pString		-- Character, Specifies the character expression LIKE() compares with pPattern
+//
+//////
+// Returns:
+//    Bool		-- pString must match pPattern character for character in order for LIKE() to return true (.T.).
+//////
+	void function_like(SThisCode* thisCode, SFunctionParams* rpar)
+	{
+		SVariable*	varPattern	= rpar->ip[0];
+		SVariable*	varString	= rpar->ip[1];
+
+		s32			lnI, lnJ, lnStar, lnMark;
+		s8			p, s;
+
+		bool		llResult, llLastStar;
+
+		//////////
+		// Parameter 1 must be character
+		//////
+			rpar->rp[0] = NULL;
+			if (!iVariable_isValid(varPattern) || iVariable_getType(varPattern) != _VAR_TYPE_CHARACTER)
+			{
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varPattern), false);
+				return;
+			}
+
+
+		//////////
+		// Parameter 2 must be character
+		//////
+			if (!iVariable_isValid(varString) || iVariable_getType(varString) != _VAR_TYPE_CHARACTER)
+			{
+				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varString), false);
+				return;
+			}
+
+
+		//////////
+		// Iterate through our string
+		//////
+			for (lnI = 0, lnJ = 0, lnStar = -1, lnMark = -1, llResult = false, llLastStar = true; lnI < varString->value.length;)
+			{
+				// Grab the character
+				p = varPattern->value.data_cs8[lnJ];
+				s = varString->value.data_cs8[lnI];
+
+				if (lnJ < varPattern->value.length && (p == '?' || p == s))
+				{
+					//If s == p or p == ? which means this is a match, then goes to next element
+					++lnJ;
+					++lnI;
+				} else if (lnJ < varPattern->value.length && p == '*') {
+					//save this *'s position and the matched lnI position
+					lnStar = lnJ++;
+					lnMark = lnI;
+				} else if (lnStar != -1) {
+					//if there is an *, set current lnJ to the next element of *, and set current lnI to the next saved lnI position until there is a match
+					lnJ = lnStar + 1;
+					lnI = ++lnMark;
+				} else {
+					//if there is no *, return false
+					llResult = false;
+					llLastStar = false;
+					break;
+				}
+			}
+
+			
+		//////////
+		// Test for last * if pattern length > string lenght
+		//////
+			if(llLastStar)
+			{
+				for (; lnJ < varPattern->value.length && varPattern->value.data_cs8[lnJ] == '*';)
+				{
+					lnJ++;
+				}
+
+				llResult = (lnJ == varPattern->value.length);
+			}
+
+
+
+		//////////
+		// Create and populate the return variable
+		//////
+			rpar->rp[0]	= iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_LOGICAL, (cs8*)((llResult) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, true);
+			if (!rpar->rp[0])
+				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_getRelatedComp(thisCode, varPattern), false);
+	}
+
+
+
+
 //////////
 //
 // Function: LOG()

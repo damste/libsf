@@ -686,6 +686,11 @@
 		{	0,										0,	0,	0,	0,	0	}
 	};
 
+	SSourceLightData gsSourceLight_like[] =
+	{
+		{	0,										0,	0,	0,	0,	0	}
+	};
+
 	SSourceLightData gsSourceLight_log[] =
 	{
 		{	0,										0,	0,	0,	0,	0	}
