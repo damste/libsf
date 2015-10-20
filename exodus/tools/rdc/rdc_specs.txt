@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/source/vjr/source/compiler/rdc/rdc_specs.txt
+// /libsf/exodus/tools/rdc/rdc_specs.txt
 //
 //////
 //    _     _ _     _____ _____ 

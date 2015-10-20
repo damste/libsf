@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/source/vjr/source/compiler/rdc/rdc_defs.h
+// /libsf/exodus/tools/rdc/rdc_defs.h
 //
 //////
 //    _     _ _     _____ _____ 

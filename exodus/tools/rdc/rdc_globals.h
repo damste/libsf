@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/source/vjr/source/compiler/rdc/rdc_globals.h
+// /libsf/exodus/tools/rdc/rdc_globals.h
 //
 //////
 //    _     _ _     _____ _____ 
