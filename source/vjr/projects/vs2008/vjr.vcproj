@@ -2585,7 +2585,11 @@
 					Name="rdc_compiler"
 					>
 					<File
-						RelativePath="..\..\source\compiler\rdc\rdc_compiler.cpp"
+						RelativePath="..\..\..\..\exodus\tools\rdc\livecode_specs__preliminary.txt"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\exodus\tools\rdc\rdc_compiler.cpp"
 						>
 						<FileConfiguration
 							Name="Debug|Win32"
@@ -2621,23 +2625,23 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\source\compiler\rdc\rdc_const.h"
+						RelativePath="..\..\..\..\exodus\tools\rdc\rdc_const.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\source\compiler\rdc\rdc_defs.h"
+						RelativePath="..\..\..\..\exodus\tools\rdc\rdc_defs.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\source\compiler\rdc\rdc_globals.h"
+						RelativePath="..\..\..\..\exodus\tools\rdc\rdc_globals.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\source\compiler\rdc\rdc_specs.txt"
+						RelativePath="..\..\..\..\exodus\tools\rdc\rdc_specs.txt"
 						>
 					</File>
 					<File
-						RelativePath="..\..\source\compiler\rdc\rdc_structs.h"
+						RelativePath="..\..\..\..\exodus\tools\rdc\rdc_structs.h"
 						>
 					</File>
 				</Filter>

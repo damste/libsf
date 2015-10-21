@@ -113,6 +113,8 @@
 			//////////
 			// Do we have anything to do?
 			//////
+s8 vizbuf[32768];
+iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, sizeof(vizbuf), true, &cgcFundamentalSymbols[0], &cgcKeywordsVxb[0]);
 				if (!comp || comp->iCode == _ICODE_COMMENT || comp->iCode == _ICODE_LINE_COMMENT)
 					return(false);
 
@@ -369,14 +371,14 @@
 			iComps_removeStartEndComments(thisCode, line);		// Remove /* comments */
 			iComps_combineCasks(thisCode, line);				// Replace [(|][alpha][|)] with [(|alpha|)]
 			iComps_fixupNaturalGroupings(thisCode, line);		// Fixup natural groupings [_][aaa][999] becomes [_aaa999], [999][.][99] becomes [999.99], etc.
-			iComps_combineAdjacentDotForms(thisCode, line);		// Fixup [thisForm][.][width] into [thisForm.width]
+			iComps_combineAdjacentDotForms(thisCode, line);		// Fixup [.][t][.] into [.t.] and [thisForm][.][width] into [thisForm.width]
 			iComps_removeWhitespaces(thisCode, line);			// Remove all whitespaces after everything else was parsed [use][whitespace][foo] becomes [use][foo]
 
 
 		//////////
 		// Translate sequences to known keywords
 		//////
-			iComps_translateToOthers(thisCode, (SAsciiCompSearcher*)&cgcKeywordsVxb[0], line);
+			iComps_translateToOthers(thisCode, &cgcKeywordsVxb[0], line);
 
 
 		//////////

@@ -78,11 +78,14 @@
     <None Include="vjr.ico">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\..\source\compiler\rdc\rdc_specs.txt">
-      <Filter>compiler\rdc</Filter>
-    </None>
     <None Include="..\..\source\dllfuncs\dll_dispatch_32.asm">
       <Filter>dllfuncs</Filter>
+    </None>
+    <None Include="..\..\..\..\exodus\tools\rdc\livecode_specs__preliminary.txt">
+      <Filter>compiler\rdc</Filter>
+    </None>
+    <None Include="..\..\..\..\exodus\tools\rdc\rdc_specs.txt">
+      <Filter>compiler\rdc</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -141,9 +144,6 @@
     </ClCompile>
     <ClCompile Include="..\..\source\objects\reset.cpp">
       <Filter>objects</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\compiler\rdc\rdc_compiler.cpp">
-      <Filter>compiler\rdc</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\sem\sem.cpp">
       <Filter>sem</Filter>
@@ -268,6 +268,9 @@
     <ClCompile Include="..\..\source\dllfuncs\dllfuncs.cpp">
       <Filter>dllfuncs</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\exodus\tools\rdc\rdc_compiler.cpp">
+      <Filter>compiler\rdc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\utils\common\cpp\common_types.h">
@@ -354,18 +357,6 @@
     <ClInclude Include="..\..\source\compiler\vxb\vxb_const.h">
       <Filter>compiler\vxb</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\compiler\rdc\rdc_const.h">
-      <Filter>compiler\rdc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\source\compiler\rdc\rdc_defs.h">
-      <Filter>compiler\rdc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\source\compiler\rdc\rdc_globals.h">
-      <Filter>compiler\rdc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\source\compiler\rdc\rdc_structs.h">
-      <Filter>compiler\rdc</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\source\sem\sem.h">
       <Filter>sem</Filter>
     </ClInclude>
@@ -413,6 +404,18 @@
     </ClInclude>
     <ClInclude Include="..\..\source\debugger\jdebic\jdebic.h">
       <Filter>debugger\jdebic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\exodus\tools\rdc\rdc_const.h">
+      <Filter>compiler\rdc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\exodus\tools\rdc\rdc_defs.h">
+      <Filter>compiler\rdc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\exodus\tools\rdc\rdc_globals.h">
+      <Filter>compiler\rdc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\exodus\tools\rdc\rdc_structs.h">
+      <Filter>compiler\rdc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

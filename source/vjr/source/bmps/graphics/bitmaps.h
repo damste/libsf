@@ -222,5 +222,5 @@
 	#include "/libsf/source/vjr/source/bmps/graphics/h/array_bmp_bxml.h"
 
 #else
-	#error Unknown target for compilation (must be Windows or Linux)
+	#error Unknown target for compilation (must be Windows, Linux, or Solaris (OpenIndiana))
 #endif

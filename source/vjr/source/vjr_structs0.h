@@ -316,7 +316,7 @@ struct SXYS32
 #elif defined(__GNUC__) || defined(__solaris__)
 	#include "/libsf/utils/common/cpp/datum.h"
 #else
-	#error Unknown target for compilation (must be Windows or Linux)
+	#error Unknown target for compilation (must be Windows, Linux, or Solaris (OpenIndiana))
 #endif
 
 struct STranslate
@@ -535,6 +535,9 @@ struct SComp
 	s32				start;											// Start into the indicates line's source code
 	s32				length;											// Length of the component
 	s32				nbspCount;										// Number of non-breaking-spaces in this component
+
+	// Combined components into this one
+	SComp*			firstCombined;									// Combined components, like [a].[b] combined into [a.b] dot variable, keeps [.] and [b] in this
 
 	// Should the syntax highlighting for this component be bold?
 	bool			useBoldFont;									// Syntax highlight font should be bold?

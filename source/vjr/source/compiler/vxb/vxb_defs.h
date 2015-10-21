@@ -137,6 +137,7 @@ struct SThisCode;
 	void					iComps_deleteAll							(SThisCode* thisCode, SComp* comp);
 	void					iComps_deleteAll_byLine						(SThisCode* thisCode, SLine* line);
 	void					iComps_deleteAll_byFirstComp				(SThisCode* thisCode, SComp** firstComp);
+	SComp*					iComps_duplicate							(SThisCode* thisCode, SComp* comp);
 	SComp*					iComps_delete								(SThisCode* thisCode, SComp* comp, bool tlDeleteSelf);
 	void					iComps_copyMembers							(SThisCode* thisCode, SComp* compTo, SComp* compFrom, bool tlAllocated, bool tlCopyLl, s32 tnBackoff);
  	SComp*					iComps_translateSourceLineTo				(SThisCode* thisCode, SAsciiCompSearcher* tsComps, SLine* line);
@@ -152,7 +153,7 @@ struct SThisCode;
 	SComp*					iComps_skipPast_iCode						(SThisCode* thisCode, SComp* comp, s32 tniCode);
 	SComp*					iComps_skipTo_iCode							(SThisCode* thisCode, SComp* comp, s32 tniCode);
 	SComp*					iComps_getNth								(SThisCode* thisCode, SComp* comp, s32 tnCount);
-	u32						iComps_combineN								(SThisCode* thisCode, SComp* comp, u32 tnCount, s32 tnNew_iCode, u32 tnNew_iCat, SBgra* newColor);
+	u32						iComps_combineN								(SThisCode* thisCode, SComp* comp, u32 tnCount, s32 tnNew_iCode, u32 tnNew_iCat, SBgra* newColor, SComp** compMigrateRefs = NULL);
 	u32						iComps_combineAdjacent						(SThisCode* thisCode, SComp* compLeftmost, s32 tniCode, u32 tniCat, SBgra* tnColor, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount);
 	u32						iComps_combineAdjacentAlphanumeric			(SThisCode* thisCode, SLine* line);
 	u32						iComps_combineAdjacentNumeric				(SThisCode* thisCode, SLine* line);
@@ -175,10 +176,12 @@ struct SThisCode;
 	s32						iiComps_get_charactersBetween				(SThisCode* thisCode, SComp* compLeft, SComp* compRight);
 	s32						iComps_getAs_s32							(SThisCode* thisCode, SComp* comp);
 	s32						iComps_getContiguousLength					(SThisCode* thisCode, SComp* comp, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount, s32* tnCount);
+	u32						iComps_count								(SThisCode* thisCode, SComp* comp);
 	bool					iiComps_validate							(SThisCode* thisCode, SComp* comp, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount);
 	bool					iiComps_isAlphanumeric						(SThisCode* thisCode, SComp* comp);
 	#define					iiComps_isComment(tniCode)					(tniCode == _ICODE_COMMENT || tniCode == _ICODE_LINE_COMMENT)
 	s8*						iComps_visualize							(SThisCode* thisCode, SComp* comp, s32 tnCount, s8* outputBuffer, s32 tnBufferLength, bool tlUseDefaultCompSearcher, SAsciiCompSearcher* tsComps1, SAsciiCompSearcher* tsComps2);
+	s8*						iiComps_visualize_lookup_iCode				(s32 tniCode);
 
 
 //////////

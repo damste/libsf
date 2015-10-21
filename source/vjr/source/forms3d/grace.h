@@ -96,7 +96,7 @@
 #elif defined(__solaris__)
     #warning OpenGL is not supported on Solaris
 #else
-	#error Unknown target for compilation (must be Windows or Linux)
+	#error Unknown target for compilation (must be Windows, Linux, or Solaris (OpenIndiana))
 #endif
 
 

@@ -95,5 +95,5 @@
 	#include "/libsf/source/vjr/source/bmps/graphics/bitmaps.h"
 
 #else
-	#error Unknown target for compilation (must be Windows or Linux)
+	#error Unknown target for compilation (must be Windows, Linux, or Solaris (OpenIndiana))
 #endif

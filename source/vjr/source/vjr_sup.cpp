@@ -2354,7 +2354,7 @@
 	#elif __linux__
 			SetWindowLong(tooltip->hwnd, GWL_USERDATA, (uptr)lpParameter);
 	#else
-			#error Unknown target for compilation (must be Windows or Linux)
+			#error Unknown target for compilation (must be Windows, Linux, or Solaris (OpenIndiana))
 	#endif
 #else
 			SetWindowLong(tooltip->hwnd, GWL_USERDATA, (long)lpParameter);

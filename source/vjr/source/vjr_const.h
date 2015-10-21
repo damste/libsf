@@ -94,7 +94,7 @@ struct SEM;
 #elif defined(__solaris__)
 	#include "/libsf/utils/common/cpp/common_types.h"
 #else
-	#error Unknown target for compilation (must be Windows or Linux)
+	#error Unknown target for compilation (must be Windows, Linux, or Solaris (OpenIndiana))
 #endif
 
 // Used for passing complex parameters as references, such as SObjectpp&, or SEMpp&

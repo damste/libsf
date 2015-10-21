@@ -940,6 +940,44 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 
 //////////
 //
+// Called to duplicate a component
+//
+//////
+// TODO:  We could add a tlDeepCopy here, which would also copy the firstCombined records, the bitmap cache, etc.
+	SComp* iComps_duplicate(SThisCode* thisCode, SComp* comp)
+	{
+		SComp* compNew;
+
+
+		// Make sure our environment is sane
+		compNew = NULL;
+		if (comp)
+		{
+			// Create a copy
+			compNew = (SComp*)malloc(sizeof(SComp));
+			if (compNew)
+			{
+				// Copy everything as is
+				memcpy(compNew, comp, sizeof(*comp));
+
+				// Clear off some variable parts
+				compNew->ll.next		= NULL;
+				compNew->ll.prev		= NULL;
+				compNew->ll.uniqueId	= iGetNextUid(thisCode);
+				compNew->firstCombined	= NULL;
+				compNew->bc				= NULL;
+			}
+		}
+
+		// Indicate our copy
+		return(compNew);
+	}
+
+
+
+
+//////////
+//
 // Called to delete the indicated comp
 //
 //////
@@ -1826,20 +1864,23 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 //////////
 //
 // Called to combine two components into one.  If tnNewICode is > 0 then the
-// iCode is updated as well.
+// iCode is updated as well.  If compMigrateRefs is populated, then the node
+// that's combined isn't deleted, but rather is migrated to that chain.
+// Otherwise, the node that was merged in is deleted.
 //
 //////
-	u32 iComps_combineN(SThisCode* thisCode, SComp* comp, u32 tnCount, s32 tnNew_iCode, u32 tnNew_iCat, SBgra* newColor)
+	u32 iComps_combineN(SThisCode* thisCode, SComp* comp, u32 tnCount, s32 tnNew_iCode, u32 tnNew_iCat, SBgra* newColor, SComp** compMigrateRefs)
 	{
 		u32		lnCount;
 		SComp*	compNext;
 
 
 		// Make sure our environment is sane
+		lnCount = 0;
 		if (comp)
 		{
 			//////////
-			// Combine the next N items
+			// Combine the next N-1 items
 			//////
 				for (lnCount = 1; lnCount < tnCount; lnCount++)
 				{
@@ -1849,12 +1890,25 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 					// Combine it into this one
 					if (compNext)
 					{
+						// If we have a migrate buffer, and it's the first one, we need to duplicate it so it shows up in the migrate buffer properly
+						if (lnCount == 1 && compMigrateRefs)
+							iLl_appendExistingNodeAtEnd((SLL**)compMigrateRefs, (SLL*)iComps_duplicate(thisCode, comp));
+
 						// Add in the length of the next component, plus any spaces between them
 						comp->length	+= (compNext->length + iiComps_get_charactersBetween(thisCode, comp, compNext));
 						comp->nbspCount	+= compNext->nbspCount;
 
-						// Delete the next component
-						iLl_deleteNode((SLL*)compNext, true);
+						// Migrate or delete the next component
+						if (compMigrateRefs)
+						{
+							// Combine it if it's part of a chain
+							if (comp->line && comp->line->compilerInfo && comp->line->compilerInfo->firstComp)
+								iLl_migrateNodeToOther((SLL**)&comp->line->compilerInfo->firstComp, (SLL**)compMigrateRefs, (SLL*)compNext, true);
+
+						} else {
+							// Delete it
+							iLl_deleteNode((SLL*)compNext, true);
+						}
 
 					} else {
 						// We're done, perhaps prematurely, but there are no more components
@@ -1872,17 +1926,13 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 					comp->iCat	= tnNew_iCat;
 					comp->color	= newColor;
 				}
-
-
-			//////////
-			// Indicate how many we merged
-			//////
-				return(lnCount - 1);
-
-		} else {
-			// Indicate failure
-			return(0);
 		}
+
+
+		//////////
+		// Indicate how many we merged
+		//////
+			return(lnCount - 1);
 	}
 
 
@@ -2090,11 +2140,10 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 		u32		lnCombined;
 		u8		c;
 		bool	llProcessed;
-		SComp*	compThis;
-		SComp*	compFirst;
-		SComp*	compSecond;
-		SComp*	compThird;
-		SComp*	compFourth;
+		SComp*	compThisPlus0;
+		SComp*	compThisPlus1;
+		SComp*	compThisPlus2;
+		SComp*	compThisPlus3;
 
 
 		// Make sure our environment is sane
@@ -2102,112 +2151,108 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 		if (line && line->compilerInfo)
 		{
 			// Begin at the beginning and check across all components
-			compThis = line->compilerInfo->firstComp;
-			while (compThis)
+			compThisPlus0 = line->compilerInfo->firstComp;
+			while (compThisPlus0)
 			{
 				// Grab the thing after
-				compFirst = compThis->ll.nextComp;
-				if (!compFirst)
+				compThisPlus1 = compThisPlus0->ll.nextComp;
+				if (!compThisPlus1)
 					break;
 
 				// Grab any components hereafter
-				compSecond	= NULL;
-				compThird	= NULL;
-				compFourth	= NULL;
-				if ((compSecond = compFirst->ll.nextComp) && (compThird = compSecond->ll.nextComp) && (compFourth = compThird->ll.nextComp))
+				compThisPlus2	= NULL;
+				compThisPlus3	= NULL;
+				if ((compThisPlus2 = compThisPlus1->ll.nextComp) && (compThisPlus3 = compThisPlus2->ll.nextComp))
 				{
 					// Placeholder for the early-out if statement above
 				}
 
 				// Dots begin the things we're searching for
 				llProcessed = false;
-				if (compFirst->iCode == _ICODE_DOT)
+				if (compThisPlus0->iCode == _ICODE_DOT)
 				{
 					// Grab the next two components, they must all be adjacent, and the third one must also be a dot
-					if (	compSecond	&&	compThird
-						&&	compThird->iCode == _ICODE_DOT
-						&&	iiComps_get_charactersBetween(thisCode, compFirst, compSecond) == 0
-						&&	iiComps_get_charactersBetween(thisCode, compSecond, compThird) == 0)
+					if (	compThisPlus1 && compThisPlus2
+						&&	compThisPlus1->iCode == _ICODE_ALPHA
+						&&	compThisPlus2->iCode == _ICODE_DOT
+						&&	iiComps_get_charactersBetween(thisCode, compThisPlus0,	compThisPlus1)	== 0
+						&&	iiComps_get_charactersBetween(thisCode, compThisPlus1,	compThisPlus2)	== 0)
 					{
 						// What is the component in the middle?
-						if (compSecond->iCode == _ICODE_ALPHA)
+						switch (compThisPlus1->length)
 						{
-							switch (compSecond->length)
-							{
-								case 1:
-									// Could be .t., .f., .o., .p., .x., .y., .z.
-									c = compSecond->line->sourceCode->data[compSecond->start];
+							case 1:
+								// Could be .t., .f., .o., .p., .x., .y., .z.
+								c = compThisPlus1->line->sourceCode->data[compThisPlus1->start];
 
-									// Which one is it?
-										 if (c == 't' || c == 'T')				{ iComps_combineN(thisCode, compFirst, 3, _ICODE_TRUE,				compFirst->iCat, compFirst->color);		lnCombined += 3; }
-									else if (c == 'f' || c == 'F')				{ iComps_combineN(thisCode, compFirst, 3, _ICODE_FALSE,				compFirst->iCat, compFirst->color);		lnCombined += 3; }
-									else if (c == 'o' || c == 'O')				{ iComps_combineN(thisCode, compFirst, 3, _ICODE_OTHER,				compFirst->iCat, compFirst->color);		lnCombined += 3; }
-									else if (c == 'p' || c == 'P')				{ iComps_combineN(thisCode, compFirst, 3, _ICODE_PARTIAL,			compFirst->iCat, compFirst->color);		lnCombined += 3; }
-									else if (c == 'x' || c == 'X')				{ iComps_combineN(thisCode, compFirst, 3, _ICODE_EXTRA,				compFirst->iCat, compFirst->color);		lnCombined += 3; }
-									else if (c == 'y' || c == 'Y')				{ iComps_combineN(thisCode, compFirst, 3, _ICODE_YET_ANOTHER,		compFirst->iCat, compFirst->color);		lnCombined += 3; }
-									else if (c == 'z' || c == 'Z')				{ iComps_combineN(thisCode, compFirst, 3, _ICODE_ZATS_ALL_FOLKS,	compFirst->iCat, compFirst->color);		lnCombined += 3; }
-									llProcessed = true;
-									break;
+								// Which one is it?
+									 if (c == 't' || c == 'T')		{ iComps_combineN(thisCode, compThisPlus0, 3, _ICODE_TRUE,				compThisPlus1->iCat, compThisPlus1->color);		lnCombined += 3;	llProcessed = true; }
+								else if (c == 'f' || c == 'F')		{ iComps_combineN(thisCode, compThisPlus0, 3, _ICODE_FALSE,				compThisPlus1->iCat, compThisPlus1->color);		lnCombined += 3;	llProcessed = true; }
+								else if (c == 'o' || c == 'O')		{ iComps_combineN(thisCode, compThisPlus0, 3, _ICODE_OTHER,				compThisPlus1->iCat, compThisPlus1->color);		lnCombined += 3;	llProcessed = true; }
+								else if (c == 'p' || c == 'P')		{ iComps_combineN(thisCode, compThisPlus0, 3, _ICODE_PARTIAL,			compThisPlus1->iCat, compThisPlus1->color);		lnCombined += 3;	llProcessed = true; }
+								else if (c == 'x' || c == 'X')		{ iComps_combineN(thisCode, compThisPlus0, 3, _ICODE_EXTRA,				compThisPlus1->iCat, compThisPlus1->color);		lnCombined += 3;	llProcessed = true; }
+								else if (c == 'y' || c == 'Y')		{ iComps_combineN(thisCode, compThisPlus0, 3, _ICODE_YET_ANOTHER,		compThisPlus1->iCat, compThisPlus1->color);		lnCombined += 3;	llProcessed = true; }
+								else if (c == 'z' || c == 'Z')		{ iComps_combineN(thisCode, compThisPlus0, 3, _ICODE_ZATS_ALL_FOLKS,	compThisPlus1->iCat, compThisPlus1->color);		lnCombined += 3;	llProcessed = true; }
+								break;
 
-								case 2:
-									// Could be .or.
-									if (_memicmp(compSecond->line->sourceCode->data + compSecond->start, "or", 2) == 0)
-									{
-										iComps_combineN(thisCode, compFirst, 3, _ICODE_OR, compFirst->iCat, compFirst->color);
-										lnCombined += 3;
-									}
-									llProcessed = true;
-									break;
+							case 2:
+								// Could be .or.
+								if (_memicmp(compThisPlus1->line->sourceCode->data + compThisPlus2->start, "or", 2) == 0)
+								{
+									iComps_combineN(thisCode, compThisPlus0, 3, _ICODE_OR, compThisPlus1->iCat, compThisPlus1->color);
+									lnCombined	+= 3;
+									llProcessed	= true;
+								}
+								break;
 
-								case 3:
-									// Could be .and., .not.
-									if (_memicmp(compSecond->line->sourceCode->data + compSecond->start, "and", 3) == 0)
-									{
-										// AND
-										iComps_combineN(thisCode, compFirst, 3, _ICODE_AND, compFirst->iCat, compFirst->color);
-										lnCombined += 3;
+							case 3:
+								// Could be .and., .not.
+								if (_memicmp(compThisPlus1->line->sourceCode->data + compThisPlus2->start, "and", 3) == 0)
+								{
+									// AND
+									iComps_combineN(thisCode, compThisPlus0, 3, _ICODE_AND, compThisPlus1->iCat, compThisPlus1->color);
+									lnCombined	+= 3;
+									llProcessed	= true;
 
-									} else if (_memicmp(compSecond->line->sourceCode->data + compSecond->start, "not", 3) == 0) {
-										// NOT
-										iComps_combineN(thisCode, compFirst, 3, _ICODE_NOT, compFirst->iCat, compFirst->color);
-										lnCombined += 3;
-									}
-									llProcessed = true;
-									break;
+								} else if (_memicmp(compThisPlus1->line->sourceCode->data + compThisPlus2->start, "not", 3) == 0) {
+									// NOT
+									iComps_combineN(thisCode, compThisPlus0, 3, _ICODE_NOT, compThisPlus1->iCat, compThisPlus1->color);
+									lnCombined	+= 3;
+									llProcessed	= true;
+								}
+								break;
 
-								case 4:
-									// Could be .null.
-									if (_memicmp(compSecond->line->sourceCode->data + compSecond->start, "null", 4) == 0)
-									{
-										// NULL
-										iComps_combineN(thisCode, compFirst, 3, _ICODE_NULL, compFirst->iCat, compFirst->color);
-										lnCombined += 3;
-									}
-									llProcessed = true;
-									break;
-							}
+							case 4:
+								// Could be .null.
+								if (_memicmp(compThisPlus1->line->sourceCode->data + compThisPlus2->start, "null", 4) == 0)
+								{
+									// NULL
+									iComps_combineN(thisCode, compThisPlus0, 3, _ICODE_NULL, compThisPlus1->iCat, compThisPlus1->color);
+									lnCombined	+= 3;
+									llProcessed	= true;
+								}
+								break;
 						}
-
 					}
+				}
 
-					if (llProcessed)
-					{
-						// It was processed above
-						// Move to the next component
-						compThis = compThis->ll.nextComp;
+				if (llProcessed)
+				{
+					// It was processed above, move to the next component
+					compThisPlus0 = compThisPlus0->ll.nextComp;
 
-					} else if (compThird && iiComps_get_charactersBetween(thisCode, compFirst, compThird) == 0 && (compThird->iCode == _ICODE_ALPHA || compThird->iCode == _ICODE_ALPHANUMERIC)) {
-						// It's a dot variable of some kind
-						iComps_combineN(thisCode, compThis, 3, _ICODE_DOT_VARIABLE, _ICAT_DOT_VARIABLE, &colorSynHi_dotVariable);
-
-					} else {
-						// Nothing, skip to the next component
-						compThis = compThis->ll.nextComp;
-					}
+				} else if (		(compThisPlus0->iCode == _ICODE_DOT_VARIABLE || compThisPlus0->iCode == _ICODE_ALPHA || compThisPlus0->iCode == _ICODE_ALPHANUMERIC)
+							&& 	compThisPlus1 && compThisPlus2
+							&&	compThisPlus1->iCode == _ICODE_DOT
+							&&	(compThisPlus2->iCode == _ICODE_ALPHA || compThisPlus2->iCode == _ICODE_ALPHANUMERIC))
+				{
+					// It's something like [x][.] where [x] is alpha, alphanumeric, or a previously concatenated [x.y] dot variable form
+					iComps_combineN(thisCode, compThisPlus0, 3, _ICODE_DOT_VARIABLE, compThisPlus0->iCat, compThisPlus0->color, &compThisPlus0->firstCombined);
+					lnCombined += 3;
 
 				} else {
 					// It's not a dot command, so skip to the next one
-					compThis = compThis->ll.nextComp;
+					compThisPlus0 = compThisPlus0->ll.nextComp;
 				}
 			}
 		}
@@ -3258,6 +3303,19 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 
 //////////
 //
+// Counts the number of components from here to the end of the chain
+//
+//////
+	u32 iComps_count(SThisCode* thisCode, SComp* comp)
+	{
+		return(iLl_countNodesToEnd((SLL*)comp));
+	}
+
+
+
+
+//////////
+//
 // Called to validate the indicated component against a valid array list
 //
 //////
@@ -3318,7 +3376,8 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 
 //////////
 //
-// Visualizes the components in text form
+// Visualizes the components in text form.
+// Format:  [raw_text iCode,start,length]
 //
 //////
 	s8* iComps_visualize(SThisCode* thisCode, SComp* comp, s32 tnCount, s8* outputBuffer, s32 tnBufferLength, bool tlUseDefaultCompSearcher, SAsciiCompSearcher* tsComps1, SAsciiCompSearcher* tsComps2)
@@ -3326,7 +3385,8 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 		s32						lnI, lnJ, lnLength, lnOffset;
 		bool					llFound;
 		SAsciiCompSearcher*		lacs;
-		s8						accumBuffer[256];
+		s8*						lciCodeName;
+		s8						accumBuffer[2048];
 
 
 		//////////
@@ -3374,14 +3434,29 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 									{
 										// This is a match, visualize it as:  [text]
 										memset(accumBuffer, 0, sizeof(accumBuffer));
-										sprintf(accumBuffer, "[%d:", comp->iCode);
-										memcpy(accumBuffer+ strlen(accumBuffer), comp->line->sourceCode->data_s8 + comp->start, min(comp->length, (s32)sizeof(accumBuffer) - 20));
-										sprintf(accumBuffer + strlen(accumBuffer), ":%u]", comp->length);
+										sprintf(accumBuffer, "[");
+										memcpy(accumBuffer + strlen(accumBuffer), comp->line->sourceCode->data_s8 + comp->start, min(comp->length, (s32)sizeof(accumBuffer) - 20));
+
+										if (lciCodeName = iiComps_visualize_lookup_iCode(comp->iCode))		sprintf(accumBuffer + strlen(accumBuffer), " %s,", lciCodeName);
+										else																sprintf(accumBuffer + strlen(accumBuffer), " %d,", comp->iCode);
+
+										sprintf(accumBuffer + strlen(accumBuffer), "%u,%u]", comp->start, comp->length);
 
 										// Copy to our output
-										lnLength		= min(tnBufferLength - lnOffset, (s32)strlen(accumBuffer));
+										lnLength = min(tnBufferLength - lnOffset, (s32)strlen(accumBuffer));
 										memcpy(outputBuffer + lnOffset, accumBuffer, lnLength);
-										lnOffset				+= lnLength;
+										lnOffset += lnLength;
+
+										// Are there combined references at this point?
+										if (comp->firstCombined)
+										{
+											// Include any previously combined references for what they are
+											sprintf(outputBuffer + lnOffset, "<!--");
+											iComps_visualize(thisCode, comp->firstCombined, iComps_count(thisCode, comp->firstCombined), outputBuffer + lnOffset + 4, tnBufferLength - lnOffset - 4, tlUseDefaultCompSearcher, tsComps1, tsComps2);
+											lnOffset = strlen(outputBuffer);
+											sprintf(outputBuffer + lnOffset, "-->");
+											lnOffset += 3;
+										}
 
 										// All done
 										llFound = true;
@@ -3399,14 +3474,29 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 							{
 								// Visualize the raw text as an unknown form
 								memset(accumBuffer, 0, sizeof(accumBuffer));
-								sprintf(accumBuffer, "[%d:", comp->iCode);
+								sprintf(accumBuffer, "[");
 								memcpy(accumBuffer+ strlen(accumBuffer), comp->line->sourceCode->data_s8 + comp->start, min(comp->length, (s32)sizeof(accumBuffer) - 20));
-								sprintf(accumBuffer + strlen(accumBuffer), ":%u]", comp->length);
+
+								if (lciCodeName = iiComps_visualize_lookup_iCode(comp->iCode))		sprintf(accumBuffer + strlen(accumBuffer), " %s,", lciCodeName);
+								else																sprintf(accumBuffer + strlen(accumBuffer), " %d,", comp->iCode);
+
+								sprintf(accumBuffer + strlen(accumBuffer), "%u,%u]", comp->start, comp->length);
 
 								// Copy to our output
-								lnLength		= min(tnBufferLength - lnOffset, (s32)strlen(accumBuffer));
+								lnLength = min(tnBufferLength - lnOffset, (s32)strlen(accumBuffer));
 								memcpy(outputBuffer + lnOffset, accumBuffer, lnLength);
-								lnOffset				+= lnLength;
+								lnOffset += lnLength;
+
+								// Are there combined references at this point?
+								if (comp->firstCombined)
+								{
+									// Include any previously combined references for what they are
+									sprintf(outputBuffer + lnOffset, "<!--");
+									iComps_visualize(thisCode, comp->firstCombined, iComps_count(thisCode, comp->firstCombined), outputBuffer + lnOffset + 4, tnBufferLength - lnOffset - 4, tlUseDefaultCompSearcher, tsComps1, tsComps2);
+									lnOffset = strlen(outputBuffer);
+									sprintf(outputBuffer + lnOffset, "-->");
+									lnOffset += 3;
+								}
 							}
 
 				}
@@ -3417,6 +3507,19 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 		// Return the pointer
 		//////
 			return(outputBuffer);
+	}
+
+	s8* iiComps_visualize_lookup_iCode(s32 tniCode)
+	{
+		switch (tniCode)
+		{
+			case _ICODE_ALPHA:						return("alp");
+			case _ICODE_ALPHANUMERIC:				return("anu");
+			case _ICODE_NUMERIC:					return("num");
+			case _ICODE_DOUBLE_QUOTED_TEXT:
+			case _ICODE_SINGLE_QUOTED_TEXT:			return("quote");
+			default:								return(NULL);
+		}
 	}
 
 
@@ -14029,7 +14132,11 @@ _asm int 3;
 			iCompileNote_removeAll(thisCode, &compilerInfo->firstWarning);
 			iCompileNote_removeAll(thisCode, &compilerInfo->firstError);
 
-			// Delete from regular components, whitespaces, and comments
+			// Delete combined component references
+			if (compilerInfo->firstComp && compilerInfo->firstComp->firstCombined)
+				iComps_deleteAll_byFirstComp(thisCode, &compilerInfo->firstComp->firstCombined);
+
+			// Delete regular components, whitespaces, and comments
 			iComps_deleteAll_byFirstComp(thisCode, &compilerInfo->firstComp);
 			iComps_deleteAll_byFirstComp(thisCode, &compilerInfo->firstWhitespace);
 			iComps_deleteAll_byFirstComp(thisCode, &compilerInfo->firstComment);

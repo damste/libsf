@@ -165,10 +165,10 @@
 	#include "\libsf\source\vjr\source\compiler\vxb\vxb_dictionary.h"
 	#include "\libsf\source\vjr\source\compiler\vxb\vxb_globals.h"
 
-	#include "\libsf\source\vjr\source\compiler\rdc\rdc_const.h"
-	#include "\libsf\source\vjr\source\compiler\rdc\rdc_structs.h"
-	#include "\libsf\source\vjr\source\compiler\rdc\rdc_defs.h"
-	#include "\libsf\source\vjr\source\compiler\rdc\rdc_globals.h"
+	#include "\libsf\exodus\tools\rdc\rdc_const.h"
+	#include "\libsf\exodus\tools\rdc\rdc_structs.h"
+	#include "\libsf\exodus\tools\rdc\rdc_defs.h"
+	#include "\libsf\exodus\tools\rdc\rdc_globals.h"
 
 	#include "\libsf\source\vjr\source\compiler\licoa\licoa_const.h"
 	#include "\libsf\source\vjr\source\compiler\licoa\licoa_structs.h"
@@ -230,7 +230,7 @@
 		#include "\libsf\source\vjr\source\bitmaps\bitmaps.cpp"
 		#include "\libsf\source\vjr\source\compiler\vxb\vxb_compiler.cpp"
 		#include "\libsf\source\vjr\source\compiler\vxb\vxb_dictionary.cpp"
-		#include "\libsf\source\vjr\source\compiler\rdc\rdc_compiler.cpp"
+		#include "\libsf\exodus\tools\rdc\rdc_compiler.cpp"
 		#include "\libsf\source\vjr\source\compiler\licoa\licoa_compiler.cpp"
 		#include "\libsf\source\vjr\source\debugger\jdebic\jdebic.cpp"
 		#include "\libsf\source\vjr\source\commands\commands.cpp"
@@ -328,10 +328,10 @@
 	#include "/libsf/source/vjr/source/compiler/vxb/vxb_dictionary.h"
 	#include "/libsf/source/vjr/source/compiler/vxb/vxb_globals.h"
 
-	#include "/libsf/source/vjr/source/compiler/rdc/rdc_const.h"
-	#include "/libsf/source/vjr/source/compiler/rdc/rdc_structs.h"
-	#include "/libsf/source/vjr/source/compiler/rdc/rdc_defs.h"
-	#include "/libsf/source/vjr/source/compiler/rdc/rdc_globals.h"
+	#include "/libsf/exodus/tools/rdc/rdc_const.h"
+	#include "/libsf/exodus/tools/rdc/rdc_structs.h"
+	#include "/libsf/exodus/tools/rdc/rdc_defs.h"
+	#include "/libsf/exodus/tools/rdc/rdc_globals.h"
 
 	#include "/libsf/source/vjr/source/compiler/licoa/licoa_const.h"
 	#include "/libsf/source/vjr/source/compiler/licoa/licoa_structs.h"
@@ -393,7 +393,7 @@
 		#include "/libsf/source/vjr/source/bitmaps/bitmaps.cpp"
 		#include "/libsf/source/vjr/source/compiler/vxb/vxb_compiler.cpp"
 		#include "/libsf/source/vjr/source/compiler/vxb/vxb_dictionary.cpp"
-		#include "/libsf/source/vjr/source/compiler/rdc/rdc_compiler.cpp"
+		#include "/libsf/exodus/tools/rdc/rdc_compiler.cpp"
 		#include "/libsf/source/vjr/source/compiler/licoa/licoa_compiler.cpp"
 		#include "/libsf/source/vjr/source/debugger/jdebic/jdebic.cpp"
 		#include "/libsf/source/vjr/source/commands/commands.cpp"
@@ -481,10 +481,10 @@
 	#include "/libsf/source/vjr/source/compiler/vxb/vxb_dictionary.h"
 	#include "/libsf/source/vjr/source/compiler/vxb/vxb_globals.h"
 
-	#include "/libsf/source/vjr/source/compiler/rdc/rdc_const.h"
-	#include "/libsf/source/vjr/source/compiler/rdc/rdc_structs.h"
-	#include "/libsf/source/vjr/source/compiler/rdc/rdc_defs.h"
-	#include "/libsf/source/vjr/source/compiler/rdc/rdc_globals.h"
+	#include "/libsf/exodus/tools/rdc/rdc_const.h"
+	#include "/libsf/exodus/tools/rdc/rdc_structs.h"
+	#include "/libsf/exodus/tools/rdc/rdc_defs.h"
+	#include "/libsf/exodus/tools/rdc/rdc_globals.h"
 
 	#include "/libsf/source/vjr/source/compiler/licoa/licoa_const.h"
 	#include "/libsf/source/vjr/source/compiler/licoa/licoa_structs.h"
@@ -546,7 +546,7 @@
 		#include "/libsf/source/vjr/source/bitmaps/bitmaps.cpp"
 		#include "/libsf/source/vjr/source/compiler/vxb/vxb_compiler.cpp"
 		#include "/libsf/source/vjr/source/compiler/vxb/vxb_dictionary.cpp"
-		#include "/libsf/source/vjr/source/compiler/rdc/rdc_compiler.cpp"
+		#include "/libsf/exodus/tools/rdc/rdc_compiler.cpp"
 		#include "/libsf/source/vjr/source/compiler/licoa/licoa_compiler.cpp"
 		#include "/libsf/source/vjr/source/debugger/jdebic/jdebic.cpp"
 		#include "/libsf/source/vjr/source/commands/commands.cpp"
@@ -566,5 +566,5 @@
         #include "/libsf/utils/common/cpp/linux/hwndx.cpp"
 
 #else
-	#error Unknown target for compilation (must be Windows or Linux)
+	#error Unknown target for compilation (must be Windows, Linux, or Solaris (OpenIndiana))
 #endif
