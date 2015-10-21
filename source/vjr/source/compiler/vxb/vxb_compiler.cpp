@@ -5707,6 +5707,40 @@ debug_break;
 
 //////////
 //
+// Called to search for dot variables (like lo.visible) and drill down to their 
+//
+//////
+	bool iVariable_searchForDotName_andSet_byVar(SThisCode* thisCode, SComp* comp, SVariable* varNewValue)
+	{
+		bool		llResult, llVarsFirst;
+		SThisCode*	thisCodeSearch;
+		SVariable*	var;
+
+
+		///////////
+		// How are we searching for the rest?
+		//		(1) Params, (2) Returns,                   (3) Locals, (4) parent chain Private, (5) Globals,     (6) Fields
+		// or	(1) Params, (2) Returns,    (3) Fields,    (4) Locals, (5) parent chain Private, (6) Globals
+		//////
+			llResult	= false;
+			llVarsFirst = propGet_settings_VariablesFirst(_settings);
+			if (llVarsFirst)
+			{
+// TODO:  working here
+			}
+
+
+		//////////
+		// Indicate our result
+		//////
+			return(llResult);
+	}
+
+
+
+
+//////////
+//
 // Called to search the chain and find the indicated variable name.
 //
 // Note:  VJr does not require variables have names.  Also, their names can be duplicated.
@@ -5716,6 +5750,7 @@ debug_break;
 //////
 	SVariable* iVariable_searchForName(SThisCode* thisCode, cs8* tcVarName, u32 tnVarNameLength, SComp* comp, bool tlCreateAsReference)
 	{
+		bool		llVarsFirst;
 		SThisCode*	thisCodeSearch;
 		SVariable*	var;
 
@@ -5730,7 +5765,7 @@ debug_break;
 		//////////
 		// Params
 		//////
-			if (thisCode)
+			if (thisCode && thisCode->live && thisCode->live->params)
 			{
 				var = iiVariable_searchForName_variables(thisCode, thisCode->live->params, tcVarName, tnVarNameLength, comp, tlCreateAsReference);
 				if (var)
@@ -5741,7 +5776,7 @@ debug_break;
 		//////////
 		// Return variables
 		//////
-			if (thisCode)
+			if (thisCode && thisCode->live && thisCode->live->returns)
 			{
 				var = iiVariable_searchForName_variables(thisCode, thisCode->live->returns, tcVarName, tnVarNameLength, comp, tlCreateAsReference);
 				if (var)
@@ -5754,7 +5789,8 @@ debug_break;
 		//		(1) Params, (2) Returns,                   (3) Locals, (4) parent chain Private, (5) Globals,     (6) Fields
 		// or	(1) Params, (2) Returns,    (3) Fields,    (4) Locals, (5) parent chain Private, (6) Globals
 		//////
-			if (propGet_settings_VariablesFirst(_settings))
+			llVarsFirst = propGet_settings_VariablesFirst(_settings);
+			if (llVarsFirst)
 			{
 				//////////
 				// (3) Locals

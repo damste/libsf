@@ -249,6 +249,7 @@ struct SThisCode;
 	SVariable*				iVariable_createAndPopulate_byText			(SThisCode* thisCode, s32 tnVarType, cu8* tcData, s32 tnDataLength, bool tlCreateReference);
 	SVariable*				iVariable_createAndPopulate_byText			(SThisCode* thisCode, s32 tnVarType, cs8* tcData, s32 tnDataLength, bool tlCreateReference);
 	SVariable*				iVariable_createByRadix						(SThisCode* thisCode, u64 tnValue, u64 tnBase, u32 tnPrefixChars, u32 tnPostfixChars);
+	bool					iVariable_searchForDotName_andSet_byVar		(SThisCode* thisCode, SComp* comp, SVariable* varNewValue);
 	SVariable*				iVariable_searchForName						(SThisCode* thisCode, cs8* tcVarName, u32 tnVarNameLength, SComp* comp, bool tlCreateAsReference);
 	SVariable*				iiVariable_searchForName_variables			(SThisCode* thisCode, SVariable* varRoot, cs8* tcVarName, u32 tnVarNameLength, SComp* comp, bool tlCreateAsReference);
 	SVariable*				iiVariable_searchForName_fields				(SThisCode* thisCode, cs8* tcVarName, u32 tnVarNameLength, SComp* comp, bool tlCreateAsReference);

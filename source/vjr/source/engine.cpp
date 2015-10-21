@@ -89,7 +89,7 @@
 //////
 	bool iEngine_executeStandaloneCommand(SThisCode* thisCode, SLine* line)
 	{
-		bool			llManufactured;
+		bool			llManufactured, llFound;
 		SComp*			comp;
 		SComp*			compNext;
 		SComp*			compThird;
@@ -220,7 +220,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 						break;
 
 					default:
-						if ((comp->iCode == _ICODE_ALPHA || comp->iCode == _ICODE_ALPHANUMERIC) && compNext && compNext->iCode == _ICODE_EQUAL_SIGN)
+						if ((comp->iCode == _ICODE_ALPHA || comp->iCode == _ICODE_ALPHANUMERIC || comp->iCode == _ICODE_DOT_VARIABLE) && compNext && compNext->iCode == _ICODE_EQUAL_SIGN)
 						{
 							// It is an assignment
 							compThird = compNext->ll.nextComp;
@@ -255,22 +255,34 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 
 							// If we get here, we have the variable they're storing
 							// Based on the name from comp, see if it's a variable we already possess
-							varExisting = iVariable_searchForName(thisCode, comp->line->sourceCode->data + comp->start, comp->length, comp, true);
-							if (varExisting)
+							if (comp->iCode == _ICODE_DOT_VARIABLE)
 							{
-								// We are updating the value
-								iVariable_copy(NULL, varExisting, var);
+								// Set the dot value
+								llFound = iVariable_searchForDotName_andSet_byVar(thisCode, comp, var);
 								iVariable_delete(NULL, var, true);
+								if (!llFound)
+								{
+									// Unknown parameter
+									iError_reportByNumber(thisCode, _ERROR_NOT_A_VARIABLE, comp, false);
+									_screen_editbox->isDirtyRender |= iSEM_navigateToEndLine(thisCode, screenData, _screen);
+									iWindow_render(NULL, gWinJDebi, false);
+									return(false);
+								}
 
 							} else {
-								// We are creating a new variable
-								iDatum_duplicate(&var->name, comp->line->sourceCode->data_u8 + comp->start, comp->length);
-								iLl_appendExistingNodeAtBeginning((SLL**)&varGlobals, (SLL*)var);
-							}
+								varExisting = iVariable_searchForName(thisCode, comp->line->sourceCode->data + comp->start, comp->length, comp, true);
+								if (varExisting)
+								{
+									// We are updating the value
+									iVariable_copy(NULL, varExisting, var);
+									iVariable_delete(NULL, var, true);
 
-						} else if (comp->iCode == _ICODE_DOT_VARIABLE) {
-							// It's something like thisForm.
-							debug_nop;
+								} else {
+									// We are creating a new variable
+									iDatum_duplicate(&var->name, comp->line->sourceCode->data_u8 + comp->start, comp->length);
+									iLl_appendExistingNodeAtBeginning((SLL**)&varGlobals, (SLL*)var);
+								}
+							}
 
 						} else {
 							// It may be a DLL
