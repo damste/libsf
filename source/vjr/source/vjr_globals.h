@@ -169,6 +169,9 @@
 	SEM*				screenData							= NULL;									// The data displayed on the screen
 	SEM*				systemLog							= NULL;									// The data displayed on the screen
 
+	// Loaded functions
+	SFunction*			gsRootFunc							= NULL;									// Pointer to first function encountered
+
 	// Loaded DLLs
 	SDllLib*			gsRootDllLib						= NULL;									// Pointer to first loaded DLL
 	SDllFunc*			gsRootDllFunc						= NULL;									// Pointer to first function from a DLL that's been defined

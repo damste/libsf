@@ -2349,10 +2349,27 @@ debug_break;
 //////////
 //
 // Get the associated variable based optionally upon (1) the object type and property index,
-// or (2) an add-on user property
+// or (2) an add-on user property.
+//
+//		tlSearchBaseProps	-- Search obj->props[] array for standard properties for the class
+//		tlSearchClassProps	-- Search obj->firstProperty link list for custom added properties with ADDPROPERTY()
 //
 //////
-	SVariable* iObjProp_get_variable_byName(SThisCode* thisCode, SObject* obj, u8* tcName, u32 tnNameLength, bool tlSearchBaseProps, bool tlSearchClassProps, s32* tnIndex)
+	SVariable* iObjProp_get_variable_byComp(SThisCode* thisCode, SObject* obj, SComp* comp, bool tlSearchBaseProps, bool tlSearchClassProps, u32* tnIndex)
+	{
+		// Make sure our environment is sane
+		if (comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data_s8 && comp->start + comp->length <= comp->line->sourceCode->length)
+		{
+			// We're good
+			return(iObjProp_get_variable_byName(thisCode, obj, comp->line->sourceCode->data_u8 + comp->start, comp->length, tlSearchBaseProps, tlSearchClassProps, tnIndex));
+
+		} else {
+			// Something's invalid
+			return(NULL);
+		}
+	}
+
+	SVariable* iObjProp_get_variable_byName(SThisCode* thisCode, SObject* obj, u8* tcName, u32 tnNameLength, bool tlSearchBaseProps, bool tlSearchClassProps, u32* tnIndex)
 	{
 		s32					lnI, lnIndex;
 		SBaseClassMap*		baseClassMap;
@@ -2366,7 +2383,7 @@ debug_break;
 			if (tlSearchBaseProps)
 			{
 				// Locate the base class
-// TODO:  We could add a speedup here by storing the lbcl location in the object itself at the time of creation
+// TODO:  We could add a speedup here by storing the baseClassMap location in the object itself at the time of creation
 				baseClassMap = iiObj_getBaseclass_byType(thisCode, obj->objType);
 				if (baseClassMap)
 				{

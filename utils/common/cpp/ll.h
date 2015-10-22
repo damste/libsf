@@ -67,6 +67,8 @@ struct SVariable;
 struct SLine;
 struct SExtraInfo;
 struct SThisCode;
+struct SFunction;
+struct SDllFunc;
 
 
 
@@ -86,6 +88,8 @@ struct SThisCode;
 			SVariable*	nextVar;
 			SThisCode*	nextThisCode;
 			SExtraInfo*	nextExtraInfo;
+			SFunction*	nextFunc;
+			SDllFunc*	nextDllFunc;
 		};
 		union {
 			SLL*		prev;					// Previous entry in linked list
@@ -95,6 +99,8 @@ struct SThisCode;
 			SVariable*	prevVar;
 			SThisCode*	prevThisCode;
 			SExtraInfo*	prevExtraInfo;
+			SFunction*	prevFunc;
+			SDllFunc*	prevDllFunc;
 		};
 		u32				uniqueId;				// Unique id associated with this object
 	};

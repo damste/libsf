@@ -554,7 +554,7 @@ return;
 				sprintf(buffer, "id = %08x, \0", (u32)(uptr)func);
 				iBuilder_appendData(data, buffer, -1);
 
-				if (func->next)					iBuilder_append_label_uptr(data,	(s8*)"firstFunction",	(uptr)func->next);
+				if (func->ll.nextFunc)			iBuilder_append_label_uptr(data,	(s8*)"firstFunction",	(uptr)func->ll.nextFunc);
 				if (func->name.data)			iBuilder_append_label_datum(data,	(s8*)"name",			&func->name);
 
 				if (func->params)				iBuilder_append_label_uptr(data,	(s8*)"params",			(uptr)func->params);
@@ -573,7 +573,7 @@ return;
 			//////////
 			// Append related items
 			//////
-				if (func->next)					iJDebiC_function(data, items, func->next);
+				if (func->ll.nextFunc)			iJDebiC_function(data, items, func->ll.nextFunc);
 
 				if (func->params)				iJDebiC_variable(data, items, func->params);
 				if (func->locals)				iJDebiC_variable(data, items, func->locals);

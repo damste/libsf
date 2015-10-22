@@ -2261,7 +2261,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 							&&	compThisPlus1->iCode == _ICODE_DOT
 							&&	(compThisPlus2->iCode == _ICODE_ALPHA || compThisPlus2->iCode == _ICODE_ALPHANUMERIC))
 				{
-					// It's something like [x][.] where [x] is alpha, alphanumeric, or a previously concatenated [x.y] dot variable form
+					// It's something like [x][.] where [x] is some valid form to be aggregated into a single dot variable
 					iComps_combineN(thisCode, compThisPlus0, 3, _ICODE_DOT_VARIABLE, compThisPlus0->iCat, compThisPlus0->color, &compThisPlus0->firstCombined);
 					lnCombined += 3;
 
@@ -5773,12 +5773,14 @@ debug_break;
 	bool iVariable_searchForDotName_andSet_byVar(SThisCode* thisCode, SComp* compDotName, SVariable* varNewValue)
 	{
 		s32			lnType;
-		bool		llResult, llVarsFirst;
+		bool		llResult;
 		void*		p;
 		SComp*		comp;
 		SWorkArea*	workarea;
 		SVariable*	var;
 		SEM*		sem;
+		SObject*	obj;
+		SFunction*	adhoc;
 		SFunction*	func;
 		SDllFunc*	dllfunc;
 
@@ -5797,20 +5799,25 @@ debug_break;
 						workarea = (SWorkArea*)p;
 						break;
 
-					case _SOURCE_TYPE_OBJECT:
+					case _SOURCE_TYPE_FIELD:
 						var = (SVariable*)p;
 						break;
 
-					case _SOURCE_TYPE_VARIABLE:
-						var = (SVariable*)p;
+					case _SOURCE_TYPE_OBJECT:
+						obj = (SObject*)p;
 						break;
 
 					case _SOURCE_TYPE_PROPERTY:
+					case _SOURCE_TYPE_VARIABLE:
 						var = (SVariable*)p;
 						break;
 
 					case _SOURCE_TYPE_CODE:
 						sem = (SEM*)p;
+						break;
+
+					case _SOURCE_TYPE_ADHOC:
+						adhoc = (SFunction*)p;
 						break;
 
 					case _SOURCE_TYPE_FUNCTION:
@@ -5823,7 +5830,7 @@ debug_break;
 						break;
 
 					default:
-						// Should never happen
+						// Should never happen because iEngine_get_namedSource_andType() should return a type we explicitly test for
 						iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, comp, false);
 						return(false);
 				}
@@ -6646,7 +6653,16 @@ if (!gsProps_master[lnI].varInit)
 
 			} else {
 				// Copy the content the long way
-				iVariable_copy(thisCode, varDst, varSrc);
+				if (!varDst->isVarTypeFixed)
+				{
+					// Copy
+					iVariable_copy(thisCode, varDst, varSrc);
+
+				} else {
+					// Can only populate into its existing type
+					iEngine_error(thisCode, _ERROR_VARIABLE_IS_FIXED, varDst);
+					return(false);
+				}
 			}
 
 			// Success
@@ -6670,7 +6686,8 @@ if (!gsProps_master[lnI].varInit)
 //////
 	void iVariable_setVarType(SThisCode* thisCode, SVariable* var, u32 tnVarTypeNew)
 	{
-		if (var)
+		// Make sure our environment is sane
+		if (var && !var->isVarTypeFixed)
 		{
 			// If it's indirect, continue downward
 			if (var->indirect)
@@ -8361,35 +8378,28 @@ do_as_numeric:
 		var = iiVariable_terminateIndirect(thisCode, var);
 
 		// Make sure the environment is sane
-		if (var && bmp)
+		if (var && bmp && (var->varType == _VAR_TYPE_BITMAP || !var->isVarTypeFixed))
 		{
-			// De-reference the variable
-			var = iiVariable_terminateIndirect(thisCode, var);
-
-			// Are we still valid?
-			if (var)
+			// Is the variable type already bitmap/
+			if (var->varType != _VAR_TYPE_BITMAP)
 			{
-				// Is the variable type already bitmap/
-				if (var->varType != _VAR_TYPE_BITMAP)
-				{
-					// We need to refactor this variable into a bitmap
-					// Delete the old contents
-					iVariable_delete(thisCode, var, false);
+				// We need to refactor this variable into a bitmap
+				// Delete the old contents
+				iVariable_delete(thisCode, var, false);
 
-					// At this point, var->varType = _VAR_TYPE_NULL
-					var->varType = _VAR_TYPE_BITMAP;
+				// At this point, var->varType = _VAR_TYPE_NULL
+				var->varType = _VAR_TYPE_BITMAP;
 
-				} else {
-					// Delete the old bitmap (if any)
-					iBmp_delete(&var->bmp, true, true);
-				}
-
-				// Copy the bitmap to the destination
-				var->bmp = iBmp_copy(bmp);
-
-				// Indicate success
-				return(true);
+			} else {
+				// Delete the old bitmap (if any)
+				iBmp_delete(&var->bmp, true, true);
 			}
+
+			// Copy the bitmap to the destination
+			var->bmp = iBmp_copy(bmp);
+
+			// Indicate success
+			return(true);
 		}
 
 		// If we get here, failure
@@ -8410,32 +8420,25 @@ do_as_numeric:
 		var = iiVariable_terminateIndirect(thisCode, var);
 
 		// Make sure our environment is sane
-		if (var && tcData && tnDataLength != 0)
+		if (var && tcData && tnDataLength != 0 && (var->varType == _VAR_TYPE_CHARACTER || !var->isVarTypeFixed))
 		{
-			// De-reference the variable
-			var = iiVariable_terminateIndirect(thisCode, var);
-
-			// Are we still valid?
-			if (var)
+			// Is the variable type already character
+			if (var->varType != _VAR_TYPE_CHARACTER)
 			{
-				// Is the variable type already character
-				if (var->varType != _VAR_TYPE_CHARACTER)
-				{
-					// We need to refactor this variable into a character
-					// Delete the old contents
-					iVariable_delete(thisCode, var, false);
+				// We need to refactor this variable into a character
+				// Delete the old contents
+				iVariable_delete(thisCode, var, false);
 
-					// At this point, var->varType = _VAR_TYPE_NULL
-					var->varType = _VAR_TYPE_CHARACTER;
+				// At this point, var->varType = _VAR_TYPE_NULL
+				var->varType = _VAR_TYPE_CHARACTER;
 
-				} else {
-					// Delete the old datum
-					iDatum_delete(&var->value, false);
-				}
-
-				// Set the new value
-				iDatum_duplicate(&var->value, tcData, tnDataLength);
+			} else {
+				// Delete the old datum
+				iDatum_delete(&var->value, false);
 			}
+
+			// Set the new value
+			iDatum_duplicate(&var->value, tcData, tnDataLength);
 		}
 
 		// If we get here, failure
@@ -8448,33 +8451,26 @@ do_as_numeric:
 		var = iiVariable_terminateIndirect(thisCode, var);
 
 		// Make sure our environment is sane
-		if (var && datum)
+		if (var && datum && (var->varType == _VAR_TYPE_CHARACTER || !var->isVarTypeFixed))
 		{
 debug_break;
-			// De-reference the variable
-			var = iiVariable_terminateIndirect(thisCode, var);
-
-			// Are we still valid?
-			if (var)
+			// Is the variable type already character
+			if (var->varType != _VAR_TYPE_CHARACTER)
 			{
-				// Is the variable type already character
-				if (var->varType != _VAR_TYPE_CHARACTER)
-				{
-					// We need to refactor this variable into a character
-					// Delete the old contents
-					iVariable_delete(thisCode, var, false);
+				// We need to refactor this variable into a character
+				// Delete the old contents
+				iVariable_delete(thisCode, var, false);
 
-					// At this point, var->varType = _VAR_TYPE_NULL
-					var->varType = _VAR_TYPE_CHARACTER;
+				// At this point, var->varType = _VAR_TYPE_NULL
+				var->varType = _VAR_TYPE_CHARACTER;
 
-				} else {
-					// Delete the old datum
-					iDatum_delete(&var->value, false);
-				}
-
-				// Set the new value
-				iDatum_duplicate(&var->value, datum);
+			} else {
+				// Delete the old datum
+				iDatum_delete(&var->value, false);
 			}
+
+			// Set the new value
+			iDatum_duplicate(&var->value, datum);
 		}
 
 		// If we get here, failure

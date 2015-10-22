@@ -141,7 +141,8 @@ struct SCompileNote;
 
 	struct SFunction
 	{
-		SFunction*		next;											// Next function in the chain
+		SLL				ll;
+		bool			isPrivate;										// Used only on adhocs when they are declared private (used locally only within the one function they are declared, and are not visible to called child functions)
 		SDatum			name;											// Function name (Note that code appearing at the top of a program without being enclosed in a function will have the source code line "FUNCTION top_of_program" automatically inserted at compile time
 
 		// Knowns identified during compilation

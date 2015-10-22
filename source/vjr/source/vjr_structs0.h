@@ -407,6 +407,7 @@ struct SVariable
 
 	// Variable content based on type
 	u32			varType;												// Variable type (see _VAR_TYPE_* constants)
+	bool		isVarTypeFixed;											// If true, the variable type is  fixed and cannot be altered, only populated into (used for dbf fields)
 	bool		isValueAllocated;										// If true, the data pointed to by this->value.data, or this->obj, or this->bmp, or this->thisCode was allocated
 	union {
 		SObject*		obj;											// The object this item relates to.  If isValueAllocated is set, this variable owns the object.

@@ -772,7 +772,7 @@ extern "C"
 		if (funcName && lnFuncNameLength >= 1)
 		{
 			// Iterate through all declared dll functions
-			for (dfunc = gsRootDllFunc; dfunc; dfunc = (SDllFunc*)dfunc->ll->next)
+			for (dfunc = gsRootDllFunc; dfunc; dfunc = dfunc->ll.nextDllFunc)
 			{
 				// Raw name
 				if (dfunc->name.length == lnFuncNameLength && iDatum_compare(&dfunc->name, funcName, lnFuncNameLength) == 0)

@@ -159,12 +159,14 @@
 // Source types
 //////
 	const s32		_SOURCE_TYPE_ALIAS								= 1;
-	const s32		_SOURCE_TYPE_OBJECT								= 2;
-	const s32		_SOURCE_TYPE_VARIABLE							= 3;
-	const s32		_SOURCE_TYPE_PROPERTY							= 4;
-	const s32		_SOURCE_TYPE_CODE								= 5;
-	const s32		_SOURCE_TYPE_FUNCTION							= 6;
-	const s32		_SOURCE_TYPE_DLLFUNC							= 7;
+	const s32		_SOURCE_TYPE_FIELD								= 2;		// It's actually a variable, but it came from a field
+	const s32		_SOURCE_TYPE_OBJECT								= 3;
+	const s32		_SOURCE_TYPE_VARIABLE							= 4;		// Note:  variables can actually be other things, you must look at var->varType to know for sure
+	const s32		_SOURCE_TYPE_PROPERTY							= 5;
+	const s32		_SOURCE_TYPE_CODE								= 6;
+	const s32		_SOURCE_TYPE_ADHOC								= 7;
+	const s32		_SOURCE_TYPE_FUNCTION							= 8;
+	const s32		_SOURCE_TYPE_DLLFUNC							= 9;
 
 
 //////////
@@ -263,6 +265,7 @@
 	const u8		cgcUnknownFunction[]							= "unknown function";
 	const u8		cgcDllNotFound[]								= "dll not found";
 	const u8		cgcFunctionNotFound[]							= "function not found";
+	const u8		cgcVariableIsFixed[]							= "variable is a fixed type";
 #else
 	#error Language not specified
 #endif

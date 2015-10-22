@@ -1785,60 +1785,111 @@
 		return(-1);
 	}
 
-	sptr iDbf_get_workArea_byAlias(SThisCode* thisCode, SVariable* varAlias, cu8* tcSpecialKeyName)
+	sptr iDbf_get_workArea_byAlias_byVar(SThisCode* thisCode, SWorkArea** wa, SVariable* var, cu8* tcSpecialKeyName)
+	{
+		sptr index;
+
+		// Grab the index and base
+		index = iDbf_get_workArea_byAlias_byVar(thisCode, var, tcSpecialKeyName, wa);
+		return(index);
+	}
+
+	sptr iDbf_get_workArea_byAlias_byComp(SThisCode* thisCode, SWorkArea** wa, SComp* comp, cu8* tcSpecialKeyName)
+	{
+		sptr index;
+
+		// Grab the index and base
+		index = iDbf_get_workArea_byAlias_byComp(thisCode, comp, tcSpecialKeyName, wa);
+		return(index);
+	}
+
+	sptr iDbf_get_workArea_byAlias_byName(SThisCode* thisCode, SWorkArea** wa, s8* tcName, u32 tnNameLength, cu8* tcSpecialKeyName)
+	{
+		sptr index;
+
+		// Grab the index and base
+		index = iDbf_get_workArea_byAlias_byName(thisCode, tcName, tnNameLength, tcSpecialKeyName, wa);
+		return(index);
+	}
+
+	sptr iDbf_get_workArea_byAlias_byVar(SThisCode* thisCode, SVariable* var, cu8* tcSpecialKeyName, SWorkArea** waBase)
+	{
+		// Make sure the variable is valid
+		if (var && var->varType == _VAR_TYPE_CHARACTER && var->value.data_s8 && var->value.length >= 1)
+			return(iDbf_get_workArea_byAlias_byName(thisCode, var->value.data_s8, var->value.length, tcSpecialKeyName, waBase));
+
+		// Indicate failure
+		return(-1);
+	}
+
+	sptr iDbf_get_workArea_byAlias_byComp(SThisCode* thisCode, SComp* comp, cu8* tcSpecialKeyName, SWorkArea** waBase)
+	{
+		// Make sure the component is valid
+		if (comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data_s8 && comp->length >= 1 && comp->start + comp->length <= comp->line->sourceCode->length)
+			return(iDbf_get_workArea_byAlias_byName(thisCode, comp->line->sourceCode->data_s8 + comp->start, comp->length, tcSpecialKeyName, waBase));
+
+		// Indicate failure
+		return(-1);
+	}
+
+	sptr iDbf_get_workArea_byAlias_byName(SThisCode* thisCode, s8* tcName, u32 tnNameLength, cu8* tcSpecialKeyName, SWorkArea** waBase)
 	{
 		s32			lnI, lnI_max;
-//		SWorkArea*	wa;
+		SWorkArea*	wa;
 
 
 		// Make sure our environment is sane
-		if (varAlias && varAlias->varType == _VAR_TYPE_CHARACTER && varAlias->value.data_s8 && varAlias->value.length >= 1)
+		if (tcName && tnNameLength >= 1)
 		{
 			// See what they're searching for
 			if (!tcSpecialKeyName || tcSpecialKeyName == cgcDbfKeyName)
 			{
 				// It's a standard DBF
 				lnI_max	= _MAX_DBF_SLOTS;
-//				wa		= &gsWorkArea[0];
+				wa		= &gsWorkArea[0];
 
 			} else if (tcSpecialKeyName == cgcDbcKeyName) {
 				// It's a DBC
 				lnI_max	= _MAX_DBC_SLOTS;
-//				wa		= &gsDbcArea[0];
+				wa		= &gsDbcArea[0];
 
 			} else if (tcSpecialKeyName == cgcScxKeyName) {
 				// It's an SCX
 				lnI_max	= _MAX_SCX_SLOTS;
-//				wa		= &gsScxArea[0];
+				wa		= &gsScxArea[0];
 
 			} else if (tcSpecialKeyName == cgcVcxKeyName) {
 				// It's a VCX
 				lnI_max	= _MAX_VCX_SLOTS;
-//				wa		= &gsVcxArea[0];
+				wa		= &gsVcxArea[0];
 
 			} else if (tcSpecialKeyName == cgcFrxKeyName) {
 				// It's an FRX
 				lnI_max	= _MAX_FRX_SLOTS;
-//				wa		= &gsFrxArea[0];
+				wa		= &gsFrxArea[0];
 
 			} else if (tcSpecialKeyName == cgcMnxKeyName) {
 				// It's an MNX
 				lnI_max	= _MAX_MNX_SLOTS;
-//				wa		= &gsMnxArea[0];
+				wa		= &gsMnxArea[0];
 
 			} else {
 				// If we get here, it's an unknown type
 				return(-1);
 			}
 
+			// Store the base if requested
+			if (waBase)
+				*waBase = wa;
+
 			// Iterate through every work area searching tables
-			for (lnI = 0; lnI < lnI_max; lnI++)
+			for (lnI = 0; lnI < lnI_max; lnI++, wa++)
 			{
 				// If it's a table, and the alias name is the same length, continue checking the name
-				if (gsWorkArea[lnI].isUsed && gsWorkArea[lnI].aliasLength == varAlias->value.length)
+				if (wa->isUsed && wa->aliasLength == tnNameLength)
 				{
 					// Check the name
-					if (_memicmp(gsWorkArea[lnI].alias, varAlias->value.data_s8, gsWorkArea[lnI].aliasLength) == 0)
+					if (_memicmp(wa->alias, tcName, tnNameLength) == 0)
 						return(lnI);	// It is a match
 				}
 			}
@@ -1932,7 +1983,7 @@
 				// Make sure the alias name doesn't exist
 				llAppendedSix	= false;
 				lnAppendValue	= 1;
-				while (iDbf_get_workArea_byAlias(thisCode, varAlias, tcSpecialKeyName) >= 0 && lnAppendValue < lnI_max)
+				while (iDbf_get_workArea_byAlias_byVar(thisCode, varAlias, tcSpecialKeyName, NULL) >= 0 && lnAppendValue < lnI_max)
 				{
 					// Append a six-digit number onto the alias name
 					if (!llAppendedSix)
@@ -3642,6 +3693,9 @@ debug_break;
 								iError_reportByNumber(thisCode, _ERROR_DBF_GENERAL_ERROR, NULL, false);
 								var = NULL;
 						}
+
+						// Mark the variable as being a field, and therefore unalterable
+						var->isVarTypeFixed = true;
 
 						// Indicate our status
 						return(var);

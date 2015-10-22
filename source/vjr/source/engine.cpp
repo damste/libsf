@@ -826,18 +826,27 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 
 //////////
 //
-// Called to search for the named component and return its type and a reference to it if possible
+// Called to search for the named component and return its type and a reference to it if possible.
+//
+// Note:  The value returned may be indicated to be a variable, but that var->varType may indicate
+//        another type.  It should be examined to determine the true underlying value, which may
+//        alter the *tnType value accordingly.
 //
 //////
 	bool iEngine_get_namedSource_andType(SThisCode* thisCode, SComp* comp, void** p, s32* tnType)
 	{
-		s32			lnI, lnCount;
-		bool		llResult, llVarsFirst;
-		cs8*		lcVarName;
-		u32			lnVarNameLength;
-		SThisCode*	thisCodeSearch;
-		SObject*	obj;
-		SVariable*	var;
+		s32				lnI, lnCount;
+		bool			llResult, llVarsFirst;
+		cs8*			lcVarName;
+		u32				lnVarNameLength;
+		SThisCode*		thisCodeSearch;
+		SObject*		_this;
+		SObject*		obj;
+		SWorkArea*		wa;
+		SFunction*		func;
+		SFunction*		adhoc;
+		SDllFunc*		dllfunc;
+		SVariable*		var;
 
 
 		// Make sure our environment is sane
@@ -855,179 +864,305 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 			///////////
 			// How are we searching for the rest?
 			//
-			//		Variables first:	(1) standard names, (2) native names, (3) Aliases,				(4) Params, (5) Returns, (6) Locals, (7) parent chain Private, (8) Globals, (9) Fields,	(10) functions, (11) dll functions
-			//		Fields first:		(1) standard names, (2) native names, (3) Aliases,	(4) Fields,	(5) Params, (6) Returns, (7) Locals, (8) parent chain Private, (9) Globals,				(10) functions, (11) dll functions
+			//		Variables first:	(1) standard names, (2) native names, (3) Aliases,				(4) Params, (5) Returns, (6) Locals, (7) parent chain Private, (8) Globals, (9) Fields,	(10) adhocs, (11) functions, (12) dll functions
+			//		Fields first:		(1) standard names, (2) native names, (3) Aliases,	(4) Fields,	(5) Params, (6) Returns, (7) Locals, (8) parent chain Private, (9) Globals,				(10) adhocs, (11) functions, (12) dll functions
 			//
 			// Note:  standard names are thisForm, this, parent, cparent, cparentN
 			// Note:  native names are enabled by an NCSET() setting, and refer to those things which would be listed in AMEMBERS(laMembers, this)
 			//
 			//////
-				// Is it a standard name?
-				obj = thisCode->live->_this;
+
+			//////////
+			// (1) standard name
+			//////
+				_this = thisCode->live->_this;
 				if (between(comp->iCode, _ICODE_NATIVE_OBJECTS_MIN, _ICODE_NATIVE_OBJECTS_MAX))
 				{
 					// Yes, which one?
-					if (comp->iCode == _ICODE_THISFORM)
+					switch (comp->iCode)
 					{
-						// thisForm
-						*p = (void*)iObj_find_thisForm(thisCode, obj);
+						case _ICODE_THISFORM:
+							 // thisForm
+							 *p = iObj_find_thisForm(thisCode, _this);
 
-					} else if (comp->iCode == _ICODE_THIS) {
-						// this
-						*p = (void*)obj;
+						case _ICODE_THIS:
+							 // this
+							 *p = _this;
 
-					} else if (comp->iCode == _ICODE_PARENT) {
-						// parent
-						if (obj)		*p = (void*)obj->parent;
-						else			*p = NULL;
+						case _ICODE_PARENT:
+							// parent
+							 *p = ((_this) ? _this->parent : NULL);
+							 break;
 
-					} else {
-
-						//////////
-						// It's a cparent or cparentN reference
-						//////
+						default:
+							// It's a cparent or cparentN reference
 							if (comp->iCode == _ICODE_CPARENT)		lnCount = 2;									// cparent is an alias for cparent1, which is the parent container's parent container (this.parent.parent)
 							else									lnCount = comp->iCode - _ICODE_CPARENT0 + 1;	// cparentN begins at this.parent for cparent0, this.parent.parent for cparent1, and this.parent.parent.parent for cparent2, etc.
 
-
-						//////////
-						// Locate the indicated cparent
-						//////
-							for (lnI = 0; lnI < lnCount && obj; lnI++)
+							// Locate the indicated cparent
+							for (lnI = 0, obj = _this; obj && lnI < lnCount; lnI++)
 								obj = obj->parent;
 
-
-						//////////
-						// We now have our parent
-						//////
-							*p = (void*)obj;
-
+							// We now have our parent
+							*p = obj;
+							break;
 					}
 
 					// Determine if we were successful
-					*tnType		= _SOURCE_TYPE_OBJECT;
-					llResult	= (*p != NULL);
+					*tnType = _SOURCE_TYPE_OBJECT;
+					return(*p != NULL);
 
-				} else {
+				}
 
-					//////////
-					// Check native names (if enabled)
-					//////
-						if (propGet_settings_ncset_directNativeMembers(_settings) && obj)
+
+			//////////
+			// (2) native names (if enabled)
+			//////
+				if (propGet_settings_ncset_directNativeMembers(_settings) && _this)
+				{
+					// Try to locate the native member for the current this object
+					var = iObjProp_get_variable_byComp(thisCode, _this, comp);
+					if (var)
+					{
+						// We found the native property
+						*p = iVariable_copy(thisCode, var, true);
+						return(true);
+					}
+				}
+
+
+			//////////
+			// (3) aliases
+			//////
+				iDbf_get_workArea_byAlias_byComp(thisCode, &wa, comp);
+				if (wa)
+				{
+					// It was found as an alias
+					*tnType	= _SOURCE_TYPE_ALIAS;
+					*p		= wa;
+					return(true);
+				}
+
+
+			//////////
+			// If we get here, it's not a standard name, a native name, or an alias
+			//////
+				llVarsFirst = propGet_settings_VariablesFirst(_settings);
+				if (llVarsFirst)
+				{
+					if (thisCode && thisCode->live)
+					{
+						// (4) Params
+						if (thisCode->live->params)
 						{
-							for (lnI = 0; lnI < obj->propsCount; lnI++)
+							var = iiVariable_searchForName_variables(thisCode, thisCode->live->params, lcVarName, lnVarNameLength, comp, true);
+							if (var)
 							{
-
-								*p = obj->props[lnI];
+								*tnType	= _SOURCE_TYPE_VARIABLE;
+								*p		= var;
+								return(true);
 							}
 						}
 
-					//////////
-					// If we get here, it's not a standard name, a native name, or an alias
-					//////
-						llVarsFirst = propGet_settings_VariablesFirst(_settings);
-						if (llVarsFirst)
+						// (5) Return variables
+						if (thisCode->live->returns)
 						{
-// 							if (thisCode && thisCode->live)
-// 							{
-// 								// (1) Params
-// 								if (thisCode->live->params)
-// 								{
-// 									var = iiVariable_searchForName_variables(thisCode, thisCode->live->params, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
-// 									if (var)
-// 										return(var);
-// 								}
-// 
-// 								// (2) Return variables
-// 								if (thisCode->live->returns)
-// 								{
-// 									var = iiVariable_searchForName_variables(thisCode, thisCode->live->returns, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
-// 									if (var)
-// 										return(var);
-// 								}
-// 
-// 								// (3) Locals
-// 								if (thisCode->live->locals)
-// 								{
-// 									var = iiVariable_searchForName_variables(thisCode, thisCode->live->locals, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
-// 									if (var)
-// 										return(var);
-// 								}
-// 				
-// 								// (4) Search recursively up the all stack for private variables
-// 								if (thisCode->live->privates)
-// 								{
-// 									for (thisCodeSearch = thisCode; thisCodeSearch; thisCodeSearch = thisCodeSearch->ll.prevThisCode)
-// 									{
-// 										// Search at this level
-// 										var = iiVariable_searchForName_variables(thisCode, thisCodeSearch->live->privates, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
-// 										if (var)
-// 											return(var);
-// 									}
-// 								}
-// 							}
-// 
-// 							// (5) Globals
-// 							var = iiVariable_searchForName_variables(thisCode, varGlobals, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
-// 							if (var)
-// 								return(var);
-// 
-// 							// (6) Fields
-// 							var = iiVariable_searchForName_fields(thisCode, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
-// 							if (var)
-// 								return(var);
-// 
-// 						} else {
-// 							// (1) Fields
-// 							var = iiVariable_searchForName_fields(thisCode, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
-// 							if (var)
-// 								return(var);
-// 
-// 							if (thisCode && thisCode->live)
-// 							{
-// 								// (2) Params
-// 								if (thisCode->live->params)
-// 								{
-// 									var = iiVariable_searchForName_variables(thisCode, thisCode->live->params, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
-// 									if (var)
-// 										return(var);
-// 								}
-// 
-// 								// (3) Return variables
-// 								if (thisCode->live->returns)
-// 								{
-// 									var = iiVariable_searchForName_variables(thisCode, thisCode->live->returns, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
-// 									if (var)
-// 										return(var);
-// 								}
-// 
-// 								// (4) Locals
-// 								if (thisCode->live->locals)
-// 								{
-// 									var = iiVariable_searchForName_variables(thisCode, thisCode->live->locals, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
-// 									if (var)
-// 										return(var);
-// 								}
-// 
-// 								// (5) Search recursively up the all stack for private variables
-// 								if (thisCode->live->privates)
-// 								{
-// 									for (thisCodeSearch = thisCode; thisCodeSearch; thisCodeSearch = thisCodeSearch->ll.prevThisCode)
-// 									{
-// 										// Search at this level
-// 										var = iiVariable_searchForName_variables(thisCode, thisCodeSearch->live->privates, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
-// 										if (var)
-// 											return(var);
-// 									}
-// 								}
-// 							}
-// 
-// 							// (6) Globals
-// 							var = iiVariable_searchForName_variables(thisCode, varGlobals, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
-// 							if (var)
-// 								return(var);
+							var = iiVariable_searchForName_variables(thisCode, thisCode->live->returns, lcVarName, lnVarNameLength, comp, true);
+							if (var)
+							{
+								*tnType	= _SOURCE_TYPE_VARIABLE;
+								*p		= var;
+								return(true);
+							}
 						}
 
+						// (6) Locals
+						if (thisCode->live->locals)
+						{
+							var = iiVariable_searchForName_variables(thisCode, thisCode->live->locals, lcVarName, lnVarNameLength, comp, true);
+							if (var)
+							{
+								*tnType	= _SOURCE_TYPE_VARIABLE;
+								*p		= var;
+								return(true);
+							}
+						}
+		
+						// (7) Search recursively up the all stack for private variables
+						if (thisCode->live->privates)
+						{
+							for (thisCodeSearch = thisCode; thisCodeSearch; thisCodeSearch = thisCodeSearch->ll.prevThisCode)
+							{
+								// Search at this level
+								var = iiVariable_searchForName_variables(thisCode, thisCodeSearch->live->privates, lcVarName, lnVarNameLength, comp, true);
+								if (var)
+								{
+									*tnType	= _SOURCE_TYPE_VARIABLE;
+									*p		= var;
+									return(true);
+								}
+							}
+						}
+					}
+
+					// (8) Globals
+					var = iiVariable_searchForName_variables(thisCode, varGlobals, lcVarName, lnVarNameLength, comp, true);
+					if (var)
+					{
+						*tnType	= _SOURCE_TYPE_VARIABLE;
+						*p		= var;
+						return(true);
+					}
+
+					// (9) Fields
+					var = iiVariable_searchForName_fields(thisCode, lcVarName, lnVarNameLength, comp, true);
+					if (var)
+					{
+						*tnType	= _SOURCE_TYPE_FIELD;
+						*p		= var;
+						return(true);
+					}
+
+
+				} else {
+					// (4) Fields
+					var = iiVariable_searchForName_fields(thisCode, lcVarName, lnVarNameLength, comp, true);
+					if (var)
+					{
+						*tnType	= _SOURCE_TYPE_FIELD;
+						*p		= var;
+						return(true);
+					}
+
+					if (thisCode && thisCode->live)
+					{
+						// (5) Params
+						if (thisCode->live->params)
+						{
+							var = iiVariable_searchForName_variables(thisCode, thisCode->live->params, lcVarName, lnVarNameLength, comp, true);
+							if (var)
+							{
+								*tnType	= _SOURCE_TYPE_VARIABLE;
+								*p		= var;
+								return(true);
+							}
+						}
+
+						// (6) Return variables
+						if (thisCode->live->returns)
+						{
+							var = iiVariable_searchForName_variables(thisCode, thisCode->live->returns, lcVarName, lnVarNameLength, comp, true);
+							if (var)
+							{
+								*tnType	= _SOURCE_TYPE_VARIABLE;
+								*p		= var;
+								return(true);
+							}
+						}
+
+						// (7) Locals
+						if (thisCode->live->locals)
+						{
+							var = iiVariable_searchForName_variables(thisCode, thisCode->live->locals, lcVarName, lnVarNameLength, comp, true);
+							if (var)
+							{
+								*tnType	= _SOURCE_TYPE_VARIABLE;
+								*p		= var;
+								return(true);
+							}
+						}
+
+						// (8) Search recursively up the all stack for private variables
+						if (thisCode->live->privates)
+						{
+							for (thisCodeSearch = thisCode; thisCodeSearch; thisCodeSearch = thisCodeSearch->ll.prevThisCode)
+							{
+								// Search at this level
+								var = iiVariable_searchForName_variables(thisCode, thisCodeSearch->live->privates, lcVarName, lnVarNameLength, comp, true);
+								if (var)
+								{
+									*tnType	= _SOURCE_TYPE_VARIABLE;
+									*p		= var;
+									return(true);
+								}
+							}
+						}
+					}
+
+					// (9) Globals
+					var = iiVariable_searchForName_variables(thisCode, varGlobals, lcVarName, lnVarNameLength, comp, true);
+					if (var)
+					{
+						*tnType	= _SOURCE_TYPE_VARIABLE;
+						*p		= var;
+						return(true);
+					}
+				}
+
+		}
+
+
+		//////////
+		// (10) adhocs
+		//////
+			// Begin at current stack level, and iterate upwards
+			for (thisCodeSearch = thisCode; thisCodeSearch; thisCodeSearch = thisCodeSearch->ll.prevThisCode)
+			{
+				// Iterate through all adhocs at this level
+				for (adhoc = thisCodeSearch->func->firstAdhoc; adhoc; adhoc = adhoc->ll.nextFunc)
+				{
+					// Is it the same length?
+					if (!adhoc->isPrivate && adhoc->name.length == lnVarNameLength)
+					{
+						// Is it the same name?
+						if (_memicmp(adhoc->name.data_cs8, lcVarName, lnVarNameLength) == 0)
+						{
+							// We found it
+							*tnType	= _SOURCE_TYPE_ADHOC;
+							*p		= adhoc;
+							return(true);
+						}
+					}
+				}
+			}
+
+
+		//////////
+		// (11) functions
+		//////
+			for (func = gsRootFunc; func; func = func->ll.nextFunc)
+			{
+				// Is it the same length?
+				if (func->name.length == lnVarNameLength)
+				{
+					// Is it the same name?
+					if (_memicmp(func->name.data_cs8, lcVarName, lnVarNameLength) == 0)
+					{
+						// We found it
+						*tnType	= _SOURCE_TYPE_FUNCTION;
+						*p		= func;
+						return(true);
+					}
+				}
+			}
+
+
+		//////////
+		// (12) dll functions
+		//////
+			for (dllfunc = gsRootDllFunc; dllfunc; dllfunc = dllfunc->ll.nextDllFunc)
+			{
+				// Is it the same length?
+				if (dllfunc->name.length == lnVarNameLength)
+				{
+					// Is it the same name?
+					if (_memicmp(dllfunc->name.data_cs8, lcVarName, lnVarNameLength) == 0)
+					{
+						// We found it
+						*tnType	= _SOURCE_TYPE_DLLFUNC;
+						*p		= dllfunc;
+						return(true);
+					}
 				}
 			}
 

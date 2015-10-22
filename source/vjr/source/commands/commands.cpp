@@ -216,6 +216,7 @@
 			case _ERROR_UNKNOWN_FUNCTION:					{	iError_report(thisCode, cgcUnknownFunction,					tlInvasive);		break;	}
 			case _ERROR_DLL_NOT_FOUND:						{	iError_report(thisCode, cgcDllNotFound,						tlInvasive);		break;	}
 			case _ERROR_FUNCTION_NOT_FOUND:					{	iError_report(thisCode, cgcFunctionNotFound,				tlInvasive);		break;	}
+			case _ERROR_VARIABLE_IS_FIXED:					{	iError_report(thisCode, cgcVariableIsFixed,					tlInvasive);		break;	}
 
 		}
 
@@ -3180,11 +3181,11 @@
 						if (iDbf_isWorkAreaLetter(thisCode, varInWorkArea))
 						{
 							// Work area letter
-							lnWorkArea = (s32)iUpperCase(varInWorkArea->value.data_s8[0]) - (s32)'A' + 1;
+							lnWorkArea = iUpperCase(varInWorkArea->value.data_s8[0]) - (s32)'A' + 1;
 
 						} else {
 							// Alias name
-							lnWorkArea = (s32)iDbf_get_workArea_byAlias(thisCode, varInWorkArea, null);
+							lnWorkArea = iDbf_get_workArea_byAlias_byVar(thisCode, varInWorkArea, NULL, NULL);
 						}
 
 						// Did we get a valid work area?
@@ -3289,7 +3290,7 @@
 			{
 				// They've specified an alias
 				varAliasName	= iEngine_get_variableName_fromComponent(thisCode, compAlias->ll.nextComp, &llManufacturedTableName, false);
-				lnWorkAreaAlias	= iDbf_get_workArea_byAlias(thisCode, varAliasName, null);
+				lnWorkAreaAlias	= iDbf_get_workArea_byAlias_byVar(thisCode, varAliasName, NULL, NULL);
 				if (lnWorkAreaAlias > 0)
 				{
 					// They've specified an alias name

@@ -157,6 +157,7 @@ struct SHover
 			struct SSourceCode
 			{
 				SFunction*		firstFunction;			// First function in the program
+				SFunction*		firstAdhoc;				// First adhoc in this block
 
 				SVariable*		params;					// The first parameter in the function
 				SVariable*		returns;				// The first return variable declared
@@ -175,6 +176,8 @@ struct SHover
 				SLL				ll;
 
 				SWindow*		win;					// Current window
+				SFunction*		func;					// Current function engaged
+
 				SSourceCode*	definition;				// As defined at compile time
 				SSourceCode*	live;					// As exists live in this instance at this level
 			};
@@ -209,7 +212,7 @@ struct SDllFuncParam
 // DECLARE INTEGER myFunction IN myDll.dll ALIAS myFunc INTEGER nHandle, STRING cDesc
 struct SDllFunc
 {
-	SLL*			ll;
+	SLL				ll;
 
 	// DECLARE [returnType]
 	SDllFuncParam	rp;						// Return parameter
