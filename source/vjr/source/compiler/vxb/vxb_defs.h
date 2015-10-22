@@ -116,6 +116,7 @@ struct SThisCode;
 // compiler.cpp
 //////////
 	u32						compile_vxb									(SThisCode* thisCode, SEM* codeBlock, SCompileVxbContext* vxbParam, SCompileStats* stats);
+	bool					iValidate_xDot								(SAsciiCompSearcher* tacs, u8* tcStart, s32 tnLength);
 	void					iiCompile_vxb_precompile_forLiveCode		(SThisCode* thisCode, SCompileVxbContext* vxb);
 	void					iiCompile_vxb_compile_forLiveCode			(SThisCode* thisCode, SCompileVxbContext* vxb);
 	void					iiCompile_vxb_postcompile_forLiveCode		(SThisCode* thisCode, SCompileVxbContext* vxb);
@@ -158,6 +159,7 @@ struct SThisCode;
 	u32						iComps_combineAdjacentAlphanumeric			(SThisCode* thisCode, SLine* line);
 	u32						iComps_combineAdjacentNumeric				(SThisCode* thisCode, SLine* line);
 	u32						iComps_combineAdjacentDotForms				(SThisCode* thisCode, SLine* line);
+	bool					iiComps_isKnownDotForm						(SComp* comp);
 	u32						iComps_combineAdjacentLeadingPipesigns		(SThisCode* thisCode, SLine* line);
 	u32						iComps_combineAllBetween					(SThisCode* thisCode, SLine* line, s32 tniCodeNeedle,		s32 tniCodeCombined,											SBgra* syntaxHighlightColor);
 	u32						iComps_combineAllBetween2					(SThisCode* thisCode, SLine* line, s32 tniCodeNeedleLeft,	s32 tniCodeNeedleRight,		s32 tniCodeCombined,	u32 tniCat, SBgra* syntaxHighlightColor, bool tlUseBoldFont);

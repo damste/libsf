@@ -463,6 +463,12 @@ struct SAsciiCompSearcher
 	SBgra*		syntaxHighlightColor;									// Color to display this component in
 	bool		useBoldFont;											// Should this be bolded?
 
+	// An optional extra callback to consider further if a candidate match is a valid match before committing
+	union {
+		uptr	_onCandidateMatch;
+		bool	(*onCandidateMatch)(SAsciiCompSearcher* tacs, u8* tcStart, s32 tnLength);
+	};
+
 	// An optional extra callback to parse on finds
 	union {
 		uptr	_onFind;

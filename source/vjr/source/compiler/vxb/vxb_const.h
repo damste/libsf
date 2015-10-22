@@ -342,10 +342,36 @@
 	const s32		_ICODE_VOIDPTR									= 247;
 
 	// Relatives
-	const s32		_ICODE_THISCODE									= 600;
-	const s32		_ICODE_THISCLASS								= 601;
-	const s32		_ICODE_THISFORM									= 602;
-	const s32		_ICODE_PARENT									= 603;
+	const s32		_ICODE_NATIVE_OBJECTS_MIN					= 600;
+	const s32		_ICODE_THIS										= 600;
+	const s32		_ICODE_THISCODE									= 601;
+	const s32		_ICODE_THISCLASS								= 602;
+	const s32		_ICODE_THISFORM									= 603;
+	const s32		_ICODE_PARENT									= 604;
+	const s32		_ICODE_CPARENT									= 605;
+	const s32		_ICODE_CPARENT0									= 606;
+	const s32		_ICODE_CPARENT1									= 607;
+	const s32		_ICODE_CPARENT2									= 608;
+	const s32		_ICODE_CPARENT3									= 609;
+	const s32		_ICODE_CPARENT4									= 610;
+	const s32		_ICODE_CPARENT5									= 611;
+	const s32		_ICODE_CPARENT6									= 612;
+	const s32		_ICODE_CPARENT7									= 613;
+	const s32		_ICODE_CPARENT8									= 614;
+	const s32		_ICODE_CPARENT9									= 615;
+	const s32		_ICODE_A_DOT									= 616;		// Work area 1
+	const s32		_ICODE_B_DOT									= 617;		// Work area 2
+	const s32		_ICODE_C_DOT									= 618;		// Work area 3
+	const s32		_ICODE_D_DOT									= 619;		// Work area 4
+	const s32		_ICODE_E_DOT									= 620;		// Work area 5
+	const s32		_ICODE_F_DOT									= 621;		// Work area 6
+	const s32		_ICODE_G_DOT									= 622;		// Work area 7
+	const s32		_ICODE_H_DOT									= 623;		// Work area 8
+	const s32		_ICODE_I_DOT									= 624;		// Work area 9
+	const s32		_ICODE_J_DOT									= 625;		// Work area 10
+	const s32		_ICODE_M_DOT									= 626;		// Explicit memory variable reference
+	const s32		_ICODE_T_DOT									= 627;		// Explicit table field reference
+	const s32		_ICODE_NATIVE_OBJECTS_MAX					= 627;
 
 	// Stand-alones
 	const s32	    _ICODE_TRUE										= 700;
@@ -1378,6 +1404,19 @@
 	const s8		cgc_notEqual1[]									= "#";
 	const s8		cgc_notEqual2[]									= "!=";
 
+	const s8		cgc_a_dot[]										= "a";
+	const s8		cgc_b_dot[]										= "b";
+	const s8		cgc_c_dot[]										= "c";
+	const s8		cgc_d_dot[]										= "d";
+	const s8		cgc_e_dot[]										= "e";
+	const s8		cgc_f_dot[]										= "f";
+	const s8		cgc_g_dot[]										= "g";
+	const s8		cgc_h_dot[]										= "h";
+	const s8		cgc_i_dot[]										= "i";
+	const s8		cgc_j_dot[]										= "j";
+	const s8		cgc_m_dot[]										= "m";
+	const s8		cgc_t_dot[]										= "t";
+
 	const s8		cgc_abs[]										= "abs";
 	const s8		cgc_aclass[]									= "aclass";
 	const s8		cgc_acopy[]										= "acopy";
@@ -2255,10 +2294,22 @@
 //	const s8		cgc_or[]										= "or";
 
 	// Relatives
+	const s8		cgc_this[]										= "this";
 	const s8		cgc_thiscode[]									= "thiscode";
 	const s8		cgc_thisclass[]									= "thisclass";
 	const s8		cgc_thisform[]									= "thisform";
 	const s8		cgc_parent[]									= "parent";
+	const s8		cgc_cparent[]									= "cparent";
+	const s8		cgc_cparent0[]									= "cparent0";
+	const s8		cgc_cparent1[]									= "cparent1";
+	const s8		cgc_cparent2[]									= "cparent2";
+	const s8		cgc_cparent3[]									= "cparent3";
+	const s8		cgc_cparent4[]									= "cparent4";
+	const s8		cgc_cparent5[]									= "cparent5";
+	const s8		cgc_cparent6[]									= "cparent6";
+	const s8		cgc_cparent7[]									= "cparent7";
+	const s8		cgc_cparent8[]									= "cparent8";
+	const s8		cgc_cparent9[]									= "cparent9";
 
 	// Stand-alones
 	const s8		cgc_null[]										= "null";

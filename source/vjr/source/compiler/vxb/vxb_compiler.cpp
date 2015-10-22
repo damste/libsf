@@ -170,6 +170,19 @@
 
 //////////
 //
+// Called during the cgcKeywordsVxb[] parsing phase on a. thru j., and m. and t. forms to make sure they're really dot forms
+//
+//////
+	bool iValidate_xDot(SAsciiCompSearcher* tacs, u8* tcStart, s32 tnLength)
+	{
+		return(tcStart[1] == '.');
+	}
+
+
+
+
+//////////
+//
 // Called before compilation to remove any references to any lines that have
 // changed, so all of those lines will be recompiled as well.  The references
 // are things like FUNCTION definitions, PARAMS, LOBJECT, LPARAMETERS, LOCALS,
@@ -1085,7 +1098,8 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 					{
 						// There is enough room for this component to be examined
 						// See if it matches
-						if (iComps_xlatToComps_withTest(thisCode, lacs->keyword_cu8, lcData + lnI, lacs->length) == 0)
+						if (		iComps_xlatToComps_withTest(thisCode, lacs->keyword_cu8, lcData + lnI, lacs->length) == 0
+								&&	(!lacs->_onCandidateMatch || lacs->onCandidateMatch(lacs, lcData + lnI, lacs->length))		)
 						{
 							// It matches
 							// mark its current condition
@@ -2241,7 +2255,8 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 					// It was processed above, move to the next component
 					compThisPlus0 = compThisPlus0->ll.nextComp;
 
-				} else if (		(compThisPlus0->iCode == _ICODE_DOT_VARIABLE || compThisPlus0->iCode == _ICODE_ALPHA || compThisPlus0->iCode == _ICODE_ALPHANUMERIC || compThisPlus0->iCode == _ICODE_NUMERIC)
+				} else if (		iiComps_isKnownDotForm(compThisPlus0)
+							&&	(compThisPlus0 != line->compilerInfo->firstComp || compThisPlus0->iCode != _ICODE_NUMERIC)/*do not allow numeric dot members in first position*/
 							&& 	compThisPlus1 && compThisPlus2
 							&&	compThisPlus1->iCode == _ICODE_DOT
 							&&	(compThisPlus2->iCode == _ICODE_ALPHA || compThisPlus2->iCode == _ICODE_ALPHANUMERIC))
@@ -2259,6 +2274,51 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 
 		// Indicate how many we combined
 		return(lnCombined);
+	}
+
+
+
+
+//////////
+//
+// Called to see if the indicated component is a known dot form name,
+// suitable for aggregation into a single _ICODE_DOT_FORM component.
+//
+//////
+	bool iiComps_isKnownDotForm(SComp* comp)
+	{
+		bool llResult;
+
+
+		// Only certain types are suitable
+		switch (comp->iCode)
+		{
+			case _ICODE_DOT_VARIABLE:			// Previous aggregations are suitable
+			case _ICODE_ALPHA:					// Alpha text is suitable
+			case _ICODE_ALPHANUMERIC:			// Alphanumeric is suitable
+			case _ICODE_NUMERIC:				// Oct.21.2015 it was decided that numeric forms would be suitable (if they're not the first one)
+			case _ICODE_A_DOT:					// a. is 1st work area
+			case _ICODE_B_DOT:					// b. is 2nd work area
+			case _ICODE_C_DOT:					// c. is 3rd work area
+			case _ICODE_D_DOT:					// d. is 4th work area
+			case _ICODE_E_DOT:					// e. is 5th work area
+			case _ICODE_F_DOT:					// f. is 6th work area
+			case _ICODE_G_DOT:					// g. is 7th work area
+			case _ICODE_H_DOT:					// h. is 8th work area
+			case _ICODE_I_DOT:					// i. is 9th work area
+			case _ICODE_J_DOT:					// j. is 10th work area
+			case _ICODE_M_DOT:					// m. is explicit memory variable
+			case _ICODE_T_DOT:					// t. is explicit table reference
+				llResult = true;
+				break;
+
+			default:
+				llResult = false;
+				break;
+		}
+
+		// Indicate our status
+		return(llResult);
 	}
 
 

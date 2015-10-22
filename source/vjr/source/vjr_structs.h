@@ -165,6 +165,9 @@ struct SHover
 				SVariable*		scoped;					// The first scoped/temporary variable used by the function
 
 				SEM*			sem;					// The source code for this program
+
+				// Contextual references
+				SObject*		_this;					// Current object
 			};
 
 			struct SThisCode

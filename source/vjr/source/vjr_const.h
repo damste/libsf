@@ -119,6 +119,7 @@ typedef SEM**		SEMpp;
 //////
 	// abc = newAlloc(SAbc, gsAbcRoot);
 	#define newAlloc(str, var)							(str*)iLl_appendNewNodeAtEnd((SLL**)&var, sizeof(str))
+	#define between(value, lo, hi)						(value >= lo && value <= hi)
 
 
 //////////
@@ -277,6 +278,7 @@ typedef SEM**		SEMpp;
 	#define propGet_settings_ncset_optimizeTableWrites(obj)			propGet_settings_ncset(obj, _INDEX_SET_NCSET_OPTIMIZE_TABLE_WRITES)
 	#define propGet_settings_ncset_optimizeVariables(obj)			propGet_settings_ncset(obj, _INDEX_SET_NCSET_OPTIMIZE_VARIABLES)
 	#define propGet_settings_ncset_signSign2(obj)					propGet_settings_ncset(obj, _INDEX_SET_NCSET_SIGN_SIGN2)
+	#define propGet_settings_ncset_directNativeMembers(obj)			propGet_settings_ncset(obj, _INDEX_SET_NCSET_DIRECT_NATIVE_MEMBERS)
 	#define propGet_settings_Point(obj)								iObjProp_get_character			(thisCode, obj, _INDEX_SET_POINT)
 	#define propGet_settings_PrecisionBFP(obj)						iObjProp_get_s32_direct			(thisCode, obj, _INDEX_SET_PRECISIONBFP)
 	#define propGet_settings_PrecisionBI(obj)						iObjProp_get_s32_direct			(thisCode, obj, _INDEX_SET_PRECISIONBI)
