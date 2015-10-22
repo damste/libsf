@@ -483,6 +483,9 @@ struct SBasePropMap;
 	const s8		cgc_setNcsetOptimizeTableWrites[]						= "ncsetOptimizeTableWrites";
 	const s8		cgc_setNcsetOptimizeVariables[]							= "ncsetOptimizeVariables";
 	const s8		cgc_setNcsetSignSign2[]									= "ncsetSignSign2";
+	const s8		cgc_setNcsetPlaceholder1[]								= "ncsetPlaceholder1";
+	const s8		cgc_setNcsetPlaceholder2[]								= "ncsetPlaceholder2";
+	const s8		cgc_setNcsetDirectNativeMembers[]						= "ncsetDirectNativeMembers";
 	const s8		cgc_setPoint[]											= "point";
 	const s8		cgc_setPrecisionBfp[]									= "precisionbfp";
 	const s8		cgc_setPrecisionBi[]									= "precisionbi";
@@ -888,25 +891,28 @@ struct SBasePropMap;
 	const u32		_INDEX_SET_NCSET_OPTIMIZE_TABLE_WRITES					= 379;
 	const u32		_INDEX_SET_NCSET_OPTIMIZE_VARIABLES						= 380;
 	const u32		_INDEX_SET_NCSET_SIGN_SIGN2								= 381;
-	const u32									_INDEX_SET_NCSET_END	= 381;
-	const u32		_INDEX_SET_POINT										= 382;
-	const u32		_INDEX_SET_PRECISIONBFP									= 383;		// numeric, defaults to 256
-	const u32		_INDEX_SET_PRECISIONBI									= 384;		// numeric, defaults to 256
-	const u32		_INDEX_SET_REPROCESS									= 385;		// logical, or numeric (negative = attempts, positive = seconds)
-	const u32		_INDEX_SET_REPROCESSATTEMPTS							= 386;		// numeric, 30 by default, but can be changed with SET REPROCESSATTEMPTS TO 30
-	const u32		_INDEX_SET_REPROCESSINTERVAL							= 387;		// numeric, 1000 by default indicating 1000 milliseconds, or 1 second
-	const u32		_INDEX_SET_REPROCESS_SYSTEM								= 388;		// logical, or numeric (negative = attempts, positive = seconds)
-	const u32		_INDEX_SET_SEPARATOR									= 389;
-	const u32		_INDEX_SET_SLOPPY_PRINTING								= 390;
-	const u32		_INDEX_SET_STICKY_PARAMETERS							= 391;
-	const u32		_INDEX_SET_TABLE_EQUAL_ASSIGNMENTS						= 392;
-	const u32		_INDEX_SET_TABLE_OBJECTS								= 393;
-	const u32		_INDEX_SET_TALK											= 394;
-	const u32		_INDEX_SET_TIME											= 395;
-	const u32		_INDEX_SET_UDFPARMS										= 396;
-	const u32		_INDEX_SET_UNLOAD_RECEIVES_PARAMS						= 397;
-	const u32		_INDEX_SET_VARIABLES_FIRST								= 398;
-	const u32		_INDEX_SET_VECSEPARATOR									= 399;
+	const u32		_INDEX_SET_NCSET_PLACEHOLDER1							= 382;
+	const u32		_INDEX_SET_NCSET_PLACEHOLDER2							= 383;
+	const u32		_INDEX_SET_NCSET_DIRECT_NATIVE_MEMBERS					= 384;
+	const u32									_INDEX_SET_NCSET_END	= 384;
+	const u32		_INDEX_SET_POINT										= 385;
+	const u32		_INDEX_SET_PRECISIONBFP									= 386;		// numeric, defaults to 256
+	const u32		_INDEX_SET_PRECISIONBI									= 387;		// numeric, defaults to 256
+	const u32		_INDEX_SET_REPROCESS									= 388;		// logical, or numeric (negative = attempts, positive = seconds)
+	const u32		_INDEX_SET_REPROCESSATTEMPTS							= 389;		// numeric, 30 by default, but can be changed with SET REPROCESSATTEMPTS TO 30
+	const u32		_INDEX_SET_REPROCESSINTERVAL							= 390;		// numeric, 1000 by default indicating 1000 milliseconds, or 1 second
+	const u32		_INDEX_SET_REPROCESS_SYSTEM								= 391;		// logical, or numeric (negative = attempts, positive = seconds)
+	const u32		_INDEX_SET_SEPARATOR									= 392;
+	const u32		_INDEX_SET_SLOPPY_PRINTING								= 393;
+	const u32		_INDEX_SET_STICKY_PARAMETERS							= 394;
+	const u32		_INDEX_SET_TABLE_EQUAL_ASSIGNMENTS						= 395;
+	const u32		_INDEX_SET_TABLE_OBJECTS								= 396;
+	const u32		_INDEX_SET_TALK											= 397;
+	const u32		_INDEX_SET_TIME											= 398;
+	const u32		_INDEX_SET_UDFPARMS										= 399;
+	const u32		_INDEX_SET_UNLOAD_RECEIVES_PARAMS						= 400;
+	const u32		_INDEX_SET_VARIABLES_FIRST								= 401;
+	const u32		_INDEX_SET_VECSEPARATOR									= 402;
 
 
 
@@ -1447,6 +1453,9 @@ struct SBasePropMap;
 		{	_INDEX_SET_NCSET_OPTIMIZE_TABLE_WRITES,			_ICODE_NCSETOPTIMIZETABLEWRITES,	cgc_setNcsetOptimizeTableWrites,	sizeof(cgc_setNcsetOptimizeTableWrites) - 1,		_VAR_TYPE_LOGICAL,			0, 0, 0,		_LOGICAL_FALSE					,NULL	},	// .t.=field update content is examined before writing out, and if it hasn't changed it is not written, .f.=any content updated, even identical content as before, is always written
 		{	_INDEX_SET_NCSET_OPTIMIZE_VARIABLES,			_ICODE_NCSETOPTIMIZEVARIABLES,		cgc_setNcsetOptimizeVariables,		sizeof(cgc_setNcsetOptimizeVariables) - 1,			_VAR_TYPE_LOGICAL,			0, 0, 0,		_LOGICAL_FALSE					,NULL	},	// .t.=oft-used variables are moved to the top of the linked list, .f.=variables always persist in their "as defined" order
 		{	_INDEX_SET_NCSET_SIGN_SIGN2,					_ICODE_NCSETSIGNSIGN2,				cgc_setNcsetSignSign2,				sizeof(cgc_setNcsetSignSign2) - 1,					_VAR_TYPE_LOGICAL,			0, 0, 0,		_LOGICAL_FALSE					,NULL	},	// .t.=sign() and sign2() return floating point values if floating point input, .f.=always returns integer
+		{	_INDEX_SET_NCSET_PLACEHOLDER1,					_ICODE_NCSETPLACEHOLDER1,			cgc_setNcsetPlaceholder1,			sizeof(cgc_setNcsetPlaceholder1) - 1,				_VAR_TYPE_LOGICAL,			0, 0, 0,		_LOGICAL_FALSE					,NULL	},	// temporary placeholder
+		{	_INDEX_SET_NCSET_PLACEHOLDER2,					_ICODE_NCSETPLACEHOLDER2,			cgc_setNcsetPlaceholder2,			sizeof(cgc_setNcsetPlaceholder2) - 1,				_VAR_TYPE_LOGICAL,			0, 0, 0,		_LOGICAL_FALSE					,NULL	},	// temporary placeholder
+		{	_INDEX_SET_NCSET_DIRECT_NATIVE_MEMBERS,			_ICODE_NCSETDIRECTNATIVEMEMBERS,	cgc_setNcsetDirectNativeMembers,	sizeof(cgc_setNcsetDirectNativeMembers) - 1,		_VAR_TYPE_LOGICAL,			0, 0, 0,		_LOGICAL_FALSE					,NULL	},	// .t.=native members can be directly referenced, .f. they require a parent like this, thisForm, or object name
 		{	_INDEX_SET_POINT,								_ICODE_POINT,						cgc_setPoint,						sizeof(cgc_setPoint) - 1,							_VAR_TYPE_CHARACTER,		0, 0, 0,		(uptr)&cgcPointChar[0]			,NULL	},	// One byte separator for the decimal point in numbers
 		{	_INDEX_SET_PRECISIONBFP,						_ICODE_PRECISIONSBFP,				cgc_setPrecisionBfp,				sizeof(cgc_setPrecisionBfp) - 1,					_VAR_TYPE_S32,				0, 0, 0,		256								,NULL	},	// Number of bits to use for significant digit output (256 yields about 60 significant digits)
 		{	_INDEX_SET_PRECISIONBI,							_ICODE_PRECISIONSBI,				cgc_setPrecisionBi,					sizeof(cgc_setPrecisionBi) - 1,						_VAR_TYPE_S32,				0, 0, 0,		256								,NULL	},	// Number of bits to use for significant digit output (256 yields about 80 significant digits)
@@ -3681,6 +3690,9 @@ struct SBasePropMap;
 		{	_INDEX_SET_NCSET_OPTIMIZE_TABLE_WRITES,		0, (uptr)&iObjProp_setLogical,		(uptr)&iObjProp_getLogical },	// bool
 		{	_INDEX_SET_NCSET_OPTIMIZE_VARIABLES,		0, (uptr)&iObjProp_setLogical,		(uptr)&iObjProp_getLogical },	// bool
 		{	_INDEX_SET_NCSET_SIGN_SIGN2,				0, (uptr)&iObjProp_setLogical,		(uptr)&iObjProp_getLogical },	// bool
+		{	_INDEX_SET_NCSET_PLACEHOLDER1,				0, (uptr)&iObjProp_setLogical,		(uptr)&iObjProp_getLogical },	// bool
+		{	_INDEX_SET_NCSET_PLACEHOLDER2,				0, (uptr)&iObjProp_setLogical,		(uptr)&iObjProp_getLogical },	// bool
+		{	_INDEX_SET_NCSET_DIRECT_NATIVE_MEMBERS,		0, (uptr)&iObjProp_setLogical,		(uptr)&iObjProp_getLogical },	// bool
 		{	_INDEX_SET_POINT,							0, (uptr)&iObjProp_setCharacter1,	0	},		// character
 		{	_INDEX_SET_PRECISIONBFP,					0, (uptr)&iObjProp_setInteger_bits,	(uptr)&iObjProp_getInteger },	// s32
 		{	_INDEX_SET_PRECISIONBI,						0, (uptr)&iObjProp_setInteger_bits,	(uptr)&iObjProp_getInteger },	// s32

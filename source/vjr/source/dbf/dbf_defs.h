@@ -198,6 +198,7 @@ struct SFieldRecord2;
 	uptr				iDbf_getField_autoinc_next						(SThisCode* thisCode, SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength);
 	uptr				iDbf_getField_autoinc_step						(SThisCode* thisCode, SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength);
 	s8*					iDbf_getField_data								(SThisCode* thisCode, SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength);
+	SVariable*			iDbf_getField_data_asVar						(SThisCode* thisCode, SWorkArea* wa, SFieldRecord2* fptr2, bool tlCreateAsReference);
 	s8*					iiDbf_getField_data2							(SThisCode* thisCode, SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength, bool tlRetrieveAsIndexKey);
 	uptr				iDbf_getField_dataOffset						(SThisCode* thisCode, SWorkArea* wa, u32 fieldNumber);
 	uptr				iDbf_getIndexFixupOp							(SThisCode* thisCode, SWorkArea* wa, u32 fieldNumber);

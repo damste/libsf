@@ -110,7 +110,8 @@
 			{
 				// Grab the comp
 				comp = line->compilerInfo->firstComp;
-// TODO:  working here, iterate through each component and replace those which are part of #define macros
+// TODO: Working here, iterate through each component and replace those which are part of #define macros
+//		 Oct.16.2015 -- for now, macros simply won't be supported. :-)
 			}
 		}
 	}

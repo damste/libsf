@@ -1119,6 +1119,7 @@ typedef SEM**		SEMpp;
 	const u32			_NCSET_OPTIMIZE_VARIABLES			= 4;
 	const u32			_NCSET_RGBA_ALPHA_IS_OPAQUE			= 5;
 	const u32			_NCSET_DATETIME_MILLISECONDS		= 6;
+	const u32			_NCSET_DIRECT_NATIVE_MEMBERS		= 9;
 
 
 //////////

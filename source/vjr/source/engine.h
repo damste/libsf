@@ -91,6 +91,7 @@
 	SVariable*				iEngine_get_variableName_fromText		(SThisCode* thisCode, cs8* tcText, u32 tnTextLength, SComp* comp, bool* tlManufactured, bool tlByRef);
 	SVariable*				iEngine_get_contiguousComponents		(SThisCode* thisCode, SComp* comp, bool* tlManufactured, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount);
 	void					iEngine_get_functionResult				(SThisCode* thisCode, SComp* comp, s32 tnRcount, SFunctionParams* rpar);
+	bool					iEngine_get_namedSource_andType			(SThisCode* thisCode, SComp* comp, void** p, s32* tnType);
 	void					iEngine_executeSetter					(SThisCode* thisCode, cs8* name, SVariable* varOld, SVariable* varNew);
 	void					iEngine_executeSetter					(SThisCode* thisCode, s8*  name, SVariable* varOld, SVariable* varNew);
 	void					iEngine_error							(SThisCode* thisCode, u32 tnErrorNumber, SVariable* varRelated);

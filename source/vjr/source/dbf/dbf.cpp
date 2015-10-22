@@ -2975,6 +2975,13 @@ debug_break;
 		return(value);
 	}
 
+	// Retrieve the field contents as a variable
+	SVariable* iDbf_getField_data_asVar(SThisCode* thisCode, SWorkArea* wa, SFieldRecord2* fptr2, bool tlCreateAsReference)
+	{
+// Code is incomplete.  Needs to be written to copy the field contents into a variable
+		debug_break;
+	}
+
 	s8* iiDbf_getField_data2(SThisCode* thisCode, SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength, bool tlRetrieveAsIndexKey)
 	{
 		s32				lnI, lnLength;

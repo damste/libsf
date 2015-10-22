@@ -826,6 +826,163 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 
 //////////
 //
+// Called to search for the named component and return its type and a reference to it if possible
+//
+//////
+	bool iEngine_get_namedSource_andType(SThisCode* thisCode, SComp* comp, void** p, s32* tnType)
+	{
+		bool		llResult, llVarsFirst;
+		cs8*		lcVarName;
+		u32			lnVarNameLength;
+		SThisCode*	thisCodeSearch;
+		SVariable*	var;
+
+
+		// Make sure our environment is sane
+		llResult = false;
+		if (comp && p && tnType && comp->line && comp->line->sourceCode && comp->line->sourceCode->data_cs8)
+		{
+
+			//////////
+			// Get the variable name we're searching for
+			//////
+				lcVarName		= comp->line->sourceCode->data_cs8 + comp->start;
+				lnVarNameLength	= (u32)comp->length;
+
+
+			///////////
+			// How are we searching for the rest?
+			//
+			//		Variables first:	(1) standard names, (2) native names, (3) Aliases,				(4) Params, (5) Returns, (6) Locals, (7) parent chain Private, (8) Globals, (9) Fields,	(10) functions, (11) dll functions
+			//		Fields first:		(1) standard names, (2) native names, (3) Aliases,	(4) Fields,	(5) Params, (6) Returns, (7) Locals, (8) parent chain Private, (9) Globals,				(10) functions, (11) dll functions
+			//
+			// Note:  standard names are thisForm, this, parent, cparent, cparentN
+			// Note:  native names are enabled by an NCSET() setting, and refer to those things which would be listed in AMEMBERS(laMembers, this)
+			//
+			//////
+// TODO:  working here
+
+
+			//////////
+			// If we get here, it's not a standard name, a native name, or an alias
+			//////
+				llVarsFirst = propGet_settings_VariablesFirst(_settings);
+				if (llVarsFirst)
+				{
+// 					if (thisCode && thisCode->live)
+// 					{
+// 						// (1) Params
+// 						if (thisCode->live->params)
+// 						{
+// 							var = iiVariable_searchForName_variables(thisCode, thisCode->live->params, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
+// 							if (var)
+// 								return(var);
+// 						}
+// 
+// 						// (2) Return variables
+// 						if (thisCode->live->returns)
+// 						{
+// 							var = iiVariable_searchForName_variables(thisCode, thisCode->live->returns, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
+// 							if (var)
+// 								return(var);
+// 						}
+// 
+// 						// (3) Locals
+// 						if (thisCode->live->locals)
+// 						{
+// 							var = iiVariable_searchForName_variables(thisCode, thisCode->live->locals, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
+// 							if (var)
+// 								return(var);
+// 						}
+// 		
+// 						// (4) Search recursively up the all stack for private variables
+// 						if (thisCode->live->privates)
+// 						{
+// 							for (thisCodeSearch = thisCode; thisCodeSearch; thisCodeSearch = thisCodeSearch->ll.prevThisCode)
+// 							{
+// 								// Search at this level
+// 								var = iiVariable_searchForName_variables(thisCode, thisCodeSearch->live->privates, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
+// 								if (var)
+// 									return(var);
+// 							}
+// 						}
+// 					}
+// 
+// 					// (5) Globals
+// 					var = iiVariable_searchForName_variables(thisCode, varGlobals, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
+// 					if (var)
+// 						return(var);
+// 
+// 					// (6) Fields
+// 					var = iiVariable_searchForName_fields(thisCode, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
+// 					if (var)
+// 						return(var);
+// 
+// 				} else {
+// 					// (1) Fields
+// 					var = iiVariable_searchForName_fields(thisCode, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
+// 					if (var)
+// 						return(var);
+// 
+// 					if (thisCode && thisCode->live)
+// 					{
+// 						// (2) Params
+// 						if (thisCode->live->params)
+// 						{
+// 							var = iiVariable_searchForName_variables(thisCode, thisCode->live->params, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
+// 							if (var)
+// 								return(var);
+// 						}
+// 
+// 						// (3) Return variables
+// 						if (thisCode->live->returns)
+// 						{
+// 							var = iiVariable_searchForName_variables(thisCode, thisCode->live->returns, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
+// 							if (var)
+// 								return(var);
+// 						}
+// 
+// 						// (4) Locals
+// 						if (thisCode->live->locals)
+// 						{
+// 							var = iiVariable_searchForName_variables(thisCode, thisCode->live->locals, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
+// 							if (var)
+// 								return(var);
+// 						}
+// 
+// 						// (5) Search recursively up the all stack for private variables
+// 						if (thisCode->live->privates)
+// 						{
+// 							for (thisCodeSearch = thisCode; thisCodeSearch; thisCodeSearch = thisCodeSearch->ll.prevThisCode)
+// 							{
+// 								// Search at this level
+// 								var = iiVariable_searchForName_variables(thisCode, thisCodeSearch->live->privates, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
+// 								if (var)
+// 									return(var);
+// 							}
+// 						}
+// 					}
+// 
+// 					// (6) Globals
+// 					var = iiVariable_searchForName_variables(thisCode, varGlobals, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
+// 					if (var)
+// 						return(var);
+				}
+			}
+
+
+		//////////
+		// Indicate if it was found
+		//////
+			return(llResult);
+
+	}
+
+
+
+
+//////////
+//
 // Called to find the indicated setter, and execute it if found
 //
 //////

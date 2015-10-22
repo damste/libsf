@@ -156,6 +156,18 @@
 
 
 //////////
+// Source types
+//////
+	const s32		_SOURCE_TYPE_ALIAS								= 1;
+	const s32		_SOURCE_TYPE_OBJECT								= 2;
+	const s32		_SOURCE_TYPE_VARIABLE							= 3;
+	const s32		_SOURCE_TYPE_PROPERTY							= 4;
+	const s32		_SOURCE_TYPE_CODE								= 5;
+	const s32		_SOURCE_TYPE_FUNCTION							= 6;
+	const s32		_SOURCE_TYPE_DLLFUNC							= 7;
+
+
+//////////
 // Warnings
 //////
 	const u32		_WARNING_SPURIOUS_COMPONENTS_IGNORED			= 1;
@@ -1153,7 +1165,10 @@
 	const s32		_ICODE_NCSETOPTIMIZETABLEWRITES					= 2326;
 	const s32		_ICODE_NCSETOPTIMIZEVARIABLES					= 2328;
 	const s32		_ICODE_NCSETSIGNSIGN2							= 2308;
-	const s32       _ICODE_NEAR                                     = 2167;
+	const s32		_ICODE_NCSETPLACEHOLDER1						= 2342;
+	const s32		_ICODE_NCSETPLACEHOLDER2						= 2343;
+	const s32		_ICODE_NCSETDIRECTNATIVEMEMBERS					= 2344;
+	const s32       _ICODE_NEAR									    = 2167;
 // 	const s32       _ICODE_NEXT                                     = 2168;
 	const s32       _ICODE_NOCPTRANS                                = 2169;
 	const s32       _ICODE_NOTE                                     = 2170;
@@ -1315,6 +1330,8 @@
 	// journal				= 2336			NCSETDATETIMEMILLISECONDS = 2337
 	// PRECISIONSBFP		= 2338			PRECISIONSBI			= 2339
 	// DEVICE_FILENAME		= 2340			ADDITIVE				= 2341
+	// NCSETPLACEHOLDER1	= 2342			NCSETPLACEHOLDER2		= 2343
+	// NCSETDIRECTNATIVEMEMBERS = 2344
 
 
 //////////

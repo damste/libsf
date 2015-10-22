@@ -145,29 +145,57 @@
 		SDatum				params[_MAX_LASM_DEFINE_PARAMS];		// Parameter names and lengths
 	};
 
-	// For adhocs, functions, flowofs
+
+//////////
+//
+// For adhocs, functions, flowofs:
+//
+//		function abc									// definition
+//		|												// header start
+//		|												// header end
+//		{												// body start
+//		}												// body end
+//
+// For old-style C-function formats:
+//
+//		retType functionName(p1, p2..., pN)				// definition
+//		{												// body start
+//		}												// body end
+//
+//////
 	struct SLasmBlock
 	{
 		SLL					ll;							// Link list through multiple functions
-
-		// Block info
 		s32					type;						// See _LASM_BLOCK_TYPE_* constants
-		SLine*				start;						// First line of the function
-		SLine*				end;						// Last line of the function
-
-		// Return params
-		s32					rpCount;						// Actual return parameter count
-		SLine				rp[_MAX_LASM_RETURN_PARAMS];	// Return parameter names and lengths
-
-		// Input params
-		s32					ipCount;						// Actual input parameter count
-		SLine				ip[_MAX_LASM_INPUT_PARAMS];		// Input parameter names and lengths
 
 
 		//////////
-		// adhoc specific
+		// Components
 		//////
+			SLine*			definition;					// The definition line (adhoc, function, flowof)
+			SLine*			headerStart;				// Start of the header block
+			SLine*			headerEnd;					// End of the header block
+			SLine*			bodyStart;					// First line of the function
+			SLine*			bodyEnd;					// Last line of the function
+
+
+		//////////
+		// Sub-components
+		//////
+			SLasmBlock*		firstFlowof;				// The first flowof for this block
+			SLasmBlock*		firstAdhoc;					// The first adhoc for this block
 			SLasmBlock*		parent;						// (if adhoc) The function or flowof this adhoc is contained within
+
+
+		//////////
+		// Params
+		//////
+			SLine			rp[_MAX_LASM_RETURN_PARAMS];	// Return
+			SLine			ip[_MAX_LASM_INPUT_PARAMS];		// Input
+
+			// Counts
+			s32				rpCount;					// Return parameters
+			s32				ipCount;					// Input parameters
 	};
 
 	// class

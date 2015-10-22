@@ -84,6 +84,7 @@ struct SThisCode;
 			SLine*		nextLine;
 			SObject*	nextObj;
 			SVariable*	nextVar;
+			SThisCode*	nextThisCode;
 			SExtraInfo*	nextExtraInfo;
 		};
 		union {
@@ -92,6 +93,7 @@ struct SThisCode;
 			SLine*		prevLine;
 			SObject*	prevObj;
 			SVariable*	prevVar;
+			SThisCode*	prevThisCode;
 			SExtraInfo*	prevExtraInfo;
 		};
 		u32				uniqueId;				// Unique id associated with this object
