@@ -263,6 +263,10 @@ struct SFunctionParams
 
 struct SEvent
 {
+	// User/class code applied to this event atop the default handler
+	SFunction*	userEventCode;
+
+	// Default handlers
 	union {
 		uptr	_event;
 
@@ -473,12 +477,12 @@ struct SField
 
 				// Related position in the member hierarchy
 				SVariable*	firstProperty;									// User-defined property (design time and runtime)
-				SEM*		firstMethod;									// User-defined methods (design time and runtime)
+				SFunction*	firstMethod;									// User-defined methods (design time and runtime)
 
 				// Related access and assign methods
 				bool		anyPropertyHasAccessOrAssignMethods;
-				SEM*		firstAccess;									// User-defined property access methods (design time and runtime)
-				SEM*		firstAssign;									// User-defined property assignment methods (design time and runtime)
+				SFunction*	firstAccess;									// User-defined property access methods (design time and runtime)
+				SFunction*	firstAssign;									// User-defined property assignment methods (design time and runtime)
 
 				// Events
 				SEvents		ev;												// Events for this object

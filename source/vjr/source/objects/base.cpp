@@ -3208,47 +3208,151 @@ debug_break;
 			switch (obj->objType)
 			{
 				case _OBJ_TYPE_EMPTY:		// Empty, used as a placeholder object that is not drawn
-					iiSubobj_resetToDefaultEmpty(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_empty[0], gnProps_emptySize);
+					iiSubobj_resetToDefaultEmpty(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_empty[0], gnProps_emptySize, &gsEvents_empty[0], gnEvents_emptySize);
 					break;
 
 				case _OBJ_TYPE_FORM:			// Form class, the main outer window the OS sees
-					iiSubobj_resetToDefaultForm(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_form[0], gnProps_formSize);
+					iiSubobj_resetToDefaultForm(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_form[0], gnProps_formSize, &gsEvents_form[0], gnEvents_formSize);
 					break;
 
 				case _OBJ_TYPE_SUBFORM:		// A new class which has its own drawing content and can be moved about using UI features
-					iiSubobj_resetToDefaultSubform(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_subform[0], gnProps_subformSize);
+					iiSubobj_resetToDefaultSubform(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_subform[0], gnProps_subformSize, &gsEvents_subform[0], gnEvents_subformSize);
 					break;
 
 				case _OBJ_TYPE_LABEL:		// A label
-					iiSubobj_resetToDefaultLabel(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_label[0], gnProps_labelSize);
+					iiSubobj_resetToDefaultLabel(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_label[0], gnProps_labelSize, &gsEvents_label[0], gnEvents_labelSize);
 					break;
 
 				case _OBJ_TYPE_TEXTBOX:		// An input textbox
-					iiSubobj_resetToDefaultTextbox(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_textbox[0], gnProps_textboxSize);
+					iiSubobj_resetToDefaultTextbox(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_textbox[0], gnProps_textboxSize, &gsEvents_textbox[0], gnEvents_textboxSize);
 					break;
 
 				case _OBJ_TYPE_BUTTON:		// A push button
-					iiSubobj_resetToDefaultButton(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_button[0], gnProps_buttonSize);
+					iiSubobj_resetToDefaultButton(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_button[0], gnProps_buttonSize, &gsEvents_button[0], gnEvents_buttonSize);
 					break;
 
 				case _OBJ_TYPE_EDITBOX:		// An input multi-line editbox
-					iiSubobj_resetToDefaultEditbox(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_editbox[0], gnProps_editboxSize);
+					iiSubobj_resetToDefaultEditbox(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_editbox[0], gnProps_editboxSize, &gsEvents_editbox[0], gnEvents_editboxSize);
 					break;
 
 				case _OBJ_TYPE_IMAGE:		// A graphical image
-					iiSubobj_resetToDefaultImage(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_image[0], gnProps_imageSize);
+					iiSubobj_resetToDefaultImage(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_image[0], gnProps_imageSize, &gsEvents_image[0], gnEvents_imageSize);
 					break;
 
 				case _OBJ_TYPE_CHECKBOX:		// A checkbox
-					iiSubobj_resetToDefaultCheckbox(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_checkbox[0], gnProps_checkboxSize);
+					iiSubobj_resetToDefaultCheckbox(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_checkbox[0], gnProps_checkboxSize, &gsEvents_checkbox[0], gnEvents_checkboxSize);
 					break;
 
 				case _OBJ_TYPE_OPTION:		// A combination selection
-					iiSubobj_resetToDefaultOption(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_option[0], gnProps_optionSize);
+					iiSubobj_resetToDefaultOption(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_option[0], gnProps_optionSize, &gsEvents_option[0], gnEvents_optionSize);
 					break;
 
 				case _OBJ_TYPE_RADIO:		// A radio dial, which can also present as a slider or spinner
-					iiSubobj_resetToDefaultRadio(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_radio[0], gnProps_radioSize);
+					iiSubobj_resetToDefaultRadio(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_radio[0], gnProps_radioSize, &gsEvents_radio[0], gnEvents_radioSize);
+					break;
+
+				case _OBJ_TYPE_CMDGROUP:	// A command button group
+					iiSubobj_resetToDefaultCmdGroup(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_cmdgroup[0], gnProps_cmdgroupSize, &gsEvents_cmdgroup[0], gnEvents_cmdgroupSize);
+					break;
+
+				case _OBJ_TYPE_OPTGROUP:	// An option group
+					iiSubobj_resetToDefaultOptGroup(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_optgroup[0], gnProps_optgroupSize, &gsEvents_optgroup[0], gnEvents_optgroupSize);
+					break;
+
+				case _OBJ_TYPE_LISTBOX:		// A listbox
+					iiSubobj_resetToDefaultListbox(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_listbox[0], gnProps_listboxSize, &gsEvents_listbox[0], gnEvents_listboxSize);
+					break;
+
+				case _OBJ_TYPE_COMBOBOX:	// A combobox
+					iiSubobj_resetToDefaultCombobox(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_combobox[0], gnProps_comboboxSize, &gsEvents_combobox[0], gnEvents_comboboxSize);
+					break;
+
+				case _OBJ_TYPE_FORMSET:		// A formset
+					iiSubobj_resetToDefaultFormset(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_formset[0], gnProps_formsetSize, &gsEvents_formset[0], gnEvents_formsetSize);
+					break;
+
+				case _OBJ_TYPE_TOOLBAR:		// A toolbar
+					iiSubobj_resetToDefaultToolbar(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_toolbar[0], gnProps_toolbarSize, &gsEvents_toolbar[0], gnEvents_toolbarSize);
+					break;
+
+				case _OBJ_TYPE_SEPARATOR:	// A separator
+					iiSubobj_resetToDefaultSeparator(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_separator[0], gnProps_separatorSize, &gsEvents_separator[0], gnEvents_separatorSize);
+					break;
+
+				case _OBJ_TYPE_LINE:		// A line
+					iiSubobj_resetToDefaultLine(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_line[0], gnProps_lineSize, &gsEvents_line[0], gnEvents_lineSize);
+					break;
+
+				case _OBJ_TYPE_SHAPE:		// A shape
+					iiSubobj_resetToDefaultShape(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_shape[0], gnProps_shapeSize, &gsEvents_shape[0], gnEvents_shapeSize);
+					break;
+
+				case _OBJ_TYPE_CONTAINER:	// A container
+					iiSubobj_resetToDefaultContainer(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_container[0], gnProps_containerSize, &gsEvents_container[0], gnEvents_containerSize);
+					break;
+
+				case _OBJ_TYPE_CONTROL:		// A blocking container
+					iiSubobj_resetToDefaultControl(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_control[0], gnProps_controlSize, &gsEvents_control[0], gnEvents_controlSize);
+					break;
+
+				case _OBJ_TYPE_GRID:		// A grid
+					iiSubobj_resetToDefaultGrid(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_grid[0], gnProps_gridSize, &gsEvents_grid[0], gnEvents_gridSize);
+					break;
+
+				case _OBJ_TYPE_COLUMN:		// A grid's column object
+					iiSubobj_resetToDefaultColumn(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_column[0], gnProps_columnSize, &gsEvents_column[0], gnEvents_columnSize);
+					break;
+
+				case _OBJ_TYPE_HEADER:		// A grid's header object
+					iiSubobj_resetToDefaultHeader(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_header[0], gnProps_headerSize, &gsEvents_header[0], gnEvents_headerSize);
+					break;
+
+				case _OBJ_TYPE_OLEBOUND:	// A bound OLE object
+					iiSubobj_resetToDefaultOleBound(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_olebound[0], gnProps_oleboundSize, &gsEvents_olebound[0], gnEvents_oleboundSize);
+					break;
+
+				case _OBJ_TYPE_OLECONTAIN:	// An OLE container control object
+					iiSubobj_resetToDefaultOleContain(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_olecontain[0], gnProps_olecontainSize, &gsEvents_olecontain[0], gnEvents_olecontainSize);
+					break;
+
+				case _OBJ_TYPE_SPINNER:		// A spinner
+					iiSubobj_resetToDefaultOleContain(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_olecontain[0], gnProps_olecontainSize, &gsEvents_olecontain[0], gnEvents_olecontainSize);
+					break;
+
+				case _OBJ_TYPE_TIMER:		// A timer
+					iiSubobj_resetToDefaultTimer(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_timer[0], gnProps_timerSize, &gsEvents_timer[0], gnEvents_timerSize);
+					break;
+
+				case _OBJ_TYPE_HYPERLINK:	// A hyperlink
+					iiSubobj_resetToDefaultHyperlink(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_hyperlink[0], gnProps_hyperlinkSize, &gsEvents_hyperlink[0], gnEvents_hyperlinkSize);
+					break;
+
+				case _OBJ_TYPE_COLLECTION:	// A collection
+					iiSubobj_resetToDefaultCollection(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_collection[0], gnProps_collectionSize, &gsEvents_collection[0], gnEvents_collectionSize);
+					break;
+
+				case _OBJ_TYPE_PAGE:		// A page within a pageframe
+					iiSubobj_resetToDefaultPage(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_page[0], gnProps_pageSize, &gsEvents_page[0], gnEvents_pageSize);
+					break;
+
+				case _OBJ_TYPE_PAGEFRAME:	// A pageframe
+					iiSubobj_resetToDefaultPageframe(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_pageframe[0], gnProps_pageframeSize, &gsEvents_pageframe[0], gnEvents_pageframeSize);
+					break;
+
+				case _OBJ_TYPE_SESSION:		// A session
+					iiSubobj_resetToDefaultSession(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_session[0], gnProps_sessionSize, &gsEvents_session[0], gnEvents_sessionSize);
+					break;
+
+				case _OBJ_TYPE_CUSTOM:		// A custom class
+					iiSubobj_resetToDefaultCustom(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_custom[0], gnProps_customSize, &gsEvents_custom[0], gnEvents_customSize);
+					break;
+
+				case _OBJ_TYPE_EXCEPTION:	// An exception
+					iiSubobj_resetToDefaultException(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_exception[0], gnProps_exceptionSize, &gsEvents_exception[0], gnEvents_exceptionSize);
+					break;
+
+				case _OBJ_TYPE_SETTINGS:	// Settings (SET TALK ON, etc.)
+					iiSubobj_resetToDefaultSettings(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_settings[0], gnProps_settingsSize, &gsEvents_settings[0], gnEvents_settingsSize);
 					break;
 
 				default:
@@ -3266,7 +3370,7 @@ debug_break;
 // Resets common object properties to their defaults.
 //
 //////
-	void iiObj_resetToDefaultCommon(SThisCode* thisCode, SObject* obj, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propMap, s32 tnPropCount)
+	void iiObj_resetToDefaultCommon(SThisCode* thisCode, SObject* obj, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propMap, s32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		s32 lnI, lnIndex, lnAllocationSize;
 
@@ -3370,13 +3474,13 @@ if (!obj->props[lnI])
 		// Any methods defined
 		//////
 			if (tlResetMethods)
-				iSEM_deleteChain(thisCode, &obj->firstMethod, true);
+				iFunction_politelyDeleteChain(thisCode, &obj->firstMethod);
 
 
 		//////////
 		// Events
 		//////
-			iEvents_resetToDefault(thisCode, obj);
+			iEvents_resetToDefault(thisCode, obj, eventList, tnEventCount);
 
 
 		//////////

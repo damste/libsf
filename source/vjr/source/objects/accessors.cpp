@@ -2422,6 +2422,51 @@ debug_break;
 
 //////////
 //
+// Called to search events and methods to see if the name indicated is found
+//
+//////
+	SVariable* iObjProp_get_eventOrMethod_byComp(SThisCode* thisCode, SObject* obj, SComp* comp, bool tlSearchBaseEMs, bool tlSearchClassEMs, u32* tnIndex)
+	{
+		s32			lnI;
+		SEvent*		e;
+
+
+		// Make sure our environment is sane
+		if (obj && comp)
+		{
+			// Iterate through all base class events and methods
+			for (lnI = 0, e = &obj->ev.methods[0]; lnI < _EVENT_MAX_COUNT; lnI++, e++)
+			{
+				// Is this event valid for this class?
+				if (e->_event)
+				{
+					// Locate the event name
+
+// TODO:  working here
+					// User code?
+					if (tlSearchClassEMs && e->userEventCode)
+					{
+						// Yes
+					}
+
+					// Default handlers?
+					if (tlSearchBaseEMs)
+					{
+						// Yes
+					}
+				}
+			}
+		}
+
+		// If we get here, failure
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
 // Called to get the bitmap from the indicated object
 //
 //////

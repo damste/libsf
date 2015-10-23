@@ -163,10 +163,9 @@
 	const s32		_SOURCE_TYPE_OBJECT								= 3;
 	const s32		_SOURCE_TYPE_VARIABLE							= 4;		// Note:  variables can actually be other things, you must look at var->varType to know for sure
 	const s32		_SOURCE_TYPE_PROPERTY							= 5;
-	const s32		_SOURCE_TYPE_CODE								= 6;
-	const s32		_SOURCE_TYPE_ADHOC								= 7;
-	const s32		_SOURCE_TYPE_FUNCTION							= 8;
-	const s32		_SOURCE_TYPE_DLLFUNC							= 9;
+	const s32		_SOURCE_TYPE_ADHOC								= 6;
+	const s32		_SOURCE_TYPE_FUNCTION							= 7;
+	const s32		_SOURCE_TYPE_DLLFUNC							= 8;
 
 
 //////////
@@ -266,6 +265,7 @@
 	const u8		cgcDllNotFound[]								= "dll not found";
 	const u8		cgcFunctionNotFound[]							= "function not found";
 	const u8		cgcVariableIsFixed[]							= "variable is a fixed type";
+	const u8		cgcFeatureNotYetCoded[]							= "feature is not yet coded";
 #else
 	#error Language not specified
 #endif
@@ -2421,12 +2421,13 @@
 //////////
 // Fundamental variable types
 //////
-	// Note:  These need to be in sync with command_sourcelight.h
+	// Note:  These need to be in sync with gsVarTypeXlat[] below, and command_sourcelight.h
 	const u32		_VAR_TYPE_NONE									= -1;	// Used for DECLARE DLL when nothing is defined, such as DECLARE Sleep() IN WIN32API INTEGER nMilliseconds, which has no return value
 	const u32						_VAR_TYPE_START					= 0;
 	const u32		_VAR_TYPE_NULL									= 0;	// Note:  This is an explicit .NULL. variable type.  However, other types can also be .NULL. and retain their type.  As such, var->varType cannot be the ONLY test used.  Also check var->value.data, and var->value.length. If those are NULL or 0, then it is also .NULL.
 
 	// Signed
+	const u32						_VAR_TYPE_FUNDAMENTAL_START		= 1;
 	const u32						_VAR_TYPE_NUMERIC_START			= 1;
 	const u32						_VAR_TYPE_NUMERIC_INTEGER_START	= 1;
 	const u32						_VAR_TYPE_SIGNED_INTEGER_START	= 1;
@@ -2460,7 +2461,7 @@
 	const u32						_VAR_TYPE_NUMERIC_END			= 14;
 	const u32						_VAR_TYPE_BIG_NUMBER_END		= 14;
 
-	// Fundamental types
+	// Additional fundamental types (along with the above)
 	const u32		_VAR_TYPE_CHARACTER								= 15;
 	const u32		_VAR_TYPE_UNICODE								= 16;
 	const u32		_VAR_TYPE_DATE									= 17;
@@ -2469,11 +2470,12 @@
 	const u32		_VAR_TYPE_LOGICAL								= 20;	// Note:  This includes the logicalx types, but the value stored determines the logicalx setting.
 	const u32		_VAR_TYPE_GUID8									= 21;
 	const u32		_VAR_TYPE_GUID16								= 22;
-	const u32		_VAR_TYPE_FIELD									= 23;
-	const u32		_VAR_TYPE_VECTOR								= 24;	// A vector format of multiple items with symbols between, like an ip4 address comprised of integers, 1.2.3.4, or a version 1.2.3. Support for ip6 hex:hex:hex:hex values will also be supported as vectors.
+	const u32						_VAR_TYPE_FUNDAMENTAL_END		= 22;
 
 	// Extended variable types
-	const u32						_VAR_TYPE_EXTENDED_START		= 25;
+	const u32						_VAR_TYPE_EXTENDED_START		= 23;
+	const u32		_VAR_TYPE_FIELD									= 23;
+	const u32		_VAR_TYPE_VECTOR								= 24;	// A vector format of multiple items with symbols between, like an ip4 address comprised of integers, 1.2.3.4, or a version 1.2.3. Support for ip6 hex:hex:hex:hex values will also be supported as vectors.
 	const u32		_VAR_TYPE_OBJECT								= 25;	// Object reference
 	const u32		_VAR_TYPE_BITMAP								= 26;	// Image reference
 	const u32		_VAR_TYPE_BITMAP_MOVIE							= 27;	// Image sequence reference

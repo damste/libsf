@@ -133,7 +133,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varExpr))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varExpr), false);
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varExpr), false);
 				return;
 			}
 
@@ -145,7 +145,7 @@
 				// Copy The existing variable
 				result = iVariable_copy(thisCode, varExpr, false);
 				if (!result)
-					iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_getRelatedComp(thisCode, varExpr), false);
+					iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varExpr), false);
 
 				// Success or failure, return our result
 				rpar->rp[0] = result;
@@ -160,7 +160,7 @@
 			switch (varExpr->varType)
 			{
 				case _VAR_TYPE_NULL:
-					iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varExpr), false);
+					iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varExpr), false);
 					return;
 					break;
 
@@ -172,7 +172,7 @@
 						// Populate the s32
 						*result->value.data_s32 = iiVariable_getAs_s32(thisCode, varExpr, true, &error, &errorNum);
 						if (error)
-							iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varExpr), false);
+							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varExpr), false);
 					}
 					break;
 
@@ -186,7 +186,7 @@
 						// Populate the s64
 						*result->value.data_s64 = iiVariable_getAs_s64(thisCode, varExpr, true, &error, &errorNum);
 						if (error)
-							iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varExpr), false);
+							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varExpr), false);
 					}
 					break;
 
@@ -199,7 +199,7 @@
 						{
 							if (!iVariable_isValid(varIgnoreChars) || !iVariable_isTypeCharacter(varIgnoreChars))
 							{
-								iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varIgnoreChars), false);
+								iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varIgnoreChars), false);
 								return;
 							}
 						}
@@ -346,7 +346,7 @@
 
 				default:
 					// Unrecognized type
-					iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_getRelatedComp(thisCode, varExpr), false);
+					iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(thisCode, varExpr), false);
 					return;
 			}
 
@@ -355,7 +355,7 @@
 		// Are we good?
 		//////
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_getRelatedComp(thisCode, varExpr), false);
+				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varExpr), false);
 
 
 		//////////
@@ -405,7 +405,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValidType(var))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, var), false);
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, var), false);
 				return;
 			}
 
@@ -421,7 +421,7 @@
 				//////
 					if (!iVariable_isValid(varNull) || !iVariable_isTypeLogical(varNull))
 					{
-						iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varNull), false);
+						iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNull), false);
 						return;
 					}
 
@@ -432,7 +432,7 @@
 					llNullIsType = iiVariable_getAs_bool(thisCode, varNull, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varNull), false);
+						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNull), false);
 						return;
 					}
 
@@ -482,7 +482,7 @@
 
 
 		// Not yet completed
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_getRelatedComp(thisCode, varV1), false);
+		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(thisCode, varV1), false);
 		rpar->rp[0] = NULL;
 	}
 
@@ -515,7 +515,7 @@
 
 
 		// Not yet completed
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_getRelatedComp(thisCode, varVec), false);
+		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(thisCode, varVec), false);
 		rpar->rp[0] = NULL;
 	}
 
@@ -553,7 +553,7 @@
 
 
 		// Not yet completed
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_getRelatedComp(thisCode, varVec), false);
+		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(thisCode, varVec), false);
 		rpar->rp[0] = NULL;
 	}
 
@@ -665,7 +665,7 @@
 
 
 		// Not yet completed
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_getRelatedComp(thisCode, varVec), false);
+		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(thisCode, varVec), false);
 		rpar->rp[0] = NULL;
 	}
 
@@ -703,7 +703,7 @@
 
 
 		// Not yet completed
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_getRelatedComp(thisCode, varVec), false);
+		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(thisCode, varVec), false);
 		rpar->rp[0] = NULL;
 	}
 
@@ -752,7 +752,7 @@
 
 			} else if (!iVariable_isTypeNumeric(varIndex)) {
 				// The parameter is not numeric
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varIndex), false);
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varIndex), false);
 				return;
 
 			} else {
@@ -760,7 +760,7 @@
 				index = iiVariable_getAs_s32(thisCode, varIndex, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varIndex), false);
+					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varIndex), false);
 					return;
 
 				} else if (index < 1 || index > 5) {

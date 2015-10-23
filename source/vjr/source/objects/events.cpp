@@ -87,8 +87,11 @@
 // Called to reset an object's events to its default
 //
 //////
-	void iEvents_resetToDefault(SThisCode* thisCode, SObject* obj)
+	void iEvents_resetToDefault(SThisCode* thisCode, SObject* obj, SObjEventMap* oemap, s32 tnOemapCount)
 	{
+		s32 lnI;
+
+
 		// Make sure our environment is sane
 		if (obj)
 		{
@@ -178,51 +181,12 @@
 			//////////
 			// Reset general events
 			//////
-				obj->ev.methods[_EVENT_RESIZE]._event					= (uptr)&iDefaultCallback_resize;
-				obj->ev.methods[_EVENT_ONLOAD]._event					= (uptr)&iDefaultCallback_onLoad;
-				obj->ev.methods[_EVENT_ONINIT]._event					= (uptr)&iDefaultCallback_onInit;
-				obj->ev.methods[_EVENT_ONCREATED]._event				= (uptr)&iDefaultCallback_onCreated;
-				obj->ev.methods[_EVENT_ONRESIZE]._event					= (uptr)&iDefaultCallback_onResize;
-				obj->ev.methods[_EVENT_ONMOVED]._event					= (uptr)&iDefaultCallback_onMoved;
-				obj->ev.methods[_EVENT_ONRENDER]._event					= (uptr)&iDefaultCallback_onRender;
-				obj->ev.methods[_EVENT_ONPUBLISH]._event				= (uptr)&iDefaultCallback_onPublish;
-				obj->ev.methods[_EVENT_ONQUERYUNLOAD]._event			= (uptr)&iDefaultCallback_onQueryUnload;
-				obj->ev.methods[_EVENT_ONDESTROY]._event				= (uptr)&iDefaultCallback_onDestroy;
-				obj->ev.methods[_EVENT_ONUNLOAD]._event					= (uptr)&iDefaultCallback_onUnload;
-				obj->ev.methods[_EVENT_ONGOTFOCUS]._event				= (uptr)&iDefaultCallback_onGotFocus;
-				obj->ev.methods[_EVENT_ONLOSTFOCUS]._event				= (uptr)&iDefaultCallback_onLostFocus;
-				obj->ev.methods[_EVENT_ONADDOBJECT]._event				= (uptr)&iDefaultCallback_onAddObject;
-				obj->ev.methods[_EVENT_ONADDPROPERTY]._event			= (uptr)&iDefaultCallback_onAddProperty;
-				obj->ev.methods[_EVENT_ONERROR]._event					= (uptr)&iDefaultCallback_onError;
-				obj->ev.methods[_EVENT_ONSCROLLED]._event				= (uptr)&iDefaultCallback_onScrolled;
-				obj->ev.methods[_EVENT_ACTIVATE]._event					= (uptr)&iDefaultCallback_onActivate;
-				obj->ev.methods[_EVENT_DEACTIVATE]._event				= (uptr)&iDefaultCallback_onDeactivate;
-				obj->ev.methods[_EVENT_ONSELECT]._event					= (uptr)&iDefaultCallback_onSelect;
-				obj->ev.methods[_EVENT_ONDESELECT]._event				= (uptr)&iDefaultCallback_onDeselect;
-				obj->ev.methods[_EVENT_ONINTERACTIVECHANGE]._event		= (uptr)&iDefaultCallback_onInteractiveChange;
-				obj->ev.methods[_EVENT_ONPROGRAMMATICCHANGE]._event		= (uptr)&iDefaultCallback_onProgrammaticChange;
-				obj->ev.methods[_EVENT_ONSETACTIVECONTROL]._event		= (uptr)&iDefaultCallback_onSetActiveControl;
-				obj->ev.methods[_EVENT_ONSPIN]._event					= (uptr)&iDefaultCallback_onSpin;
-				obj->ev.methods[_EVENT_ONMOUSECLICKEX]._event			= (uptr)&iDefaultCallback_onMouseClickEx;
-				obj->ev.methods[_EVENT_ONMOUSEDBLCLICKEX]._event		= (uptr)&iDefaultCallback_onMouseDblClickEx;
-				obj->ev.methods[_EVENT_ONMOUSEWHEEL]._event				= (uptr)&iDefaultCallback_onMouseWheel;
-				obj->ev.methods[_EVENT_ONMOUSEMOVE]._event				= (uptr)&iDefaultCallback_onMouseMove;
-				obj->ev.methods[_EVENT_ONMOUSEDOWN]._event				= (uptr)&iDefaultCallback_onMouseDown;
-				obj->ev.methods[_EVENT_ONMOUSEUP]._event				= (uptr)&iDefaultCallback_onMouseUp;
-				obj->ev.methods[_EVENT_ONMOUSEENTER]._event				= (uptr)&iDefaultCallback_onMouseEnter;
-				obj->ev.methods[_EVENT_ONMOUSELEAVE]._event				= (uptr)&iDefaultCallback_onMouseLeave;
-				obj->ev.methods[_EVENT_ONMOUSEHOVER]._event				= (uptr)&iDefaultCallback_onMouseHover;
-				obj->ev.methods[_EVENT_ONKEYDOWN]._event				= (uptr)&iDefaultCallback_onKeyDown;
-				obj->ev.methods[_EVENT_ONKEYUP]._event					= (uptr)&iDefaultCallback_onKeyUp;
+				// Reset all to 0
+				memset(&obj->ev.methods[0], 0, sizeof(obj->ev.methods));
 
-				obj->ev.methods[_EVENT_CAROUSEL_ONTABCLOSE]._event		= (uptr)&iDefaultCallback_onTabClose;
-				obj->ev.methods[_EVENT_CAROUSEL_ONTABCLICK]._event		= (uptr)&iDefaultCallback_onTabClick;
-				obj->ev.methods[_EVENT_CAROUSEL_ONTABMOUSEWHEEL]._event	= (uptr)&iDefaultCallback_onTabMouseWheel;
-				obj->ev.methods[_EVENT_CAROUSEL_ONTABMOUSEMOVE]._event	= (uptr)&iDefaultCallback_onTabMouseMove;
-				obj->ev.methods[_EVENT_CAROUSEL_ONTABMOUSEDOWN]._event	= (uptr)&iDefaultCallback_onTabMouseDown;
-				obj->ev.methods[_EVENT_CAROUSEL_ONTABMOUSEUP]._event	= (uptr)&iDefaultCallback_onTabMouseUp;
-				obj->ev.methods[_EVENT_CAROUSEL_ONTABMOUSEENTER]._event	= (uptr)&iDefaultCallback_onTabMouseEnter;
-				obj->ev.methods[_EVENT_CAROUSEL_ONTABMOUSELEAVE]._event	= (uptr)&iDefaultCallback_onTabMouseLeave;
+				// Set default handlers for valid events
+				for (lnI = 0; lnI < tnOemapCount; lnI++)
+					obj->ev.methods[oemap[lnI].index]._event	= oemap[lnI]._defaultHandler;
 
 		}
 	}

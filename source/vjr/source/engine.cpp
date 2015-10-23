@@ -89,7 +89,7 @@
 //////
 	bool iEngine_executeStandaloneCommand(SThisCode* thisCode, SLine* line)
 	{
-		bool			llManufactured, llFound;
+		bool			llManufactured;
 		SComp*			comp;
 		SComp*			compNext;
 		SComp*			compThird;
@@ -99,6 +99,8 @@
 		SFunctionParams	lrpar;
 		SCommandData*	cmd;
 		SDllFunc*		dfunc;
+		bool			error;
+		u32				errorNum;
 
 
 		// Make sure our environment is sane
@@ -258,12 +260,14 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 							if (comp->iCode == _ICODE_DOT_VARIABLE)
 							{
 								// Set the dot value
-								llFound = iVariable_searchForDotName_andSet_byVar(thisCode, comp, var);
+// TODO:  working here
+_asm nop;
+								iVariable_searchRoot_forDotName_andSet_byVar(thisCode, comp, var, &error, &errorNum);
 								iVariable_delete(NULL, var, true);
-								if (!llFound)
+								if (error)
 								{
 									// Unknown parameter
-									iError_reportByNumber(thisCode, _ERROR_NOT_A_VARIABLE, comp, false);
+									iError_reportByNumber(thisCode, errorNum, comp, false);
 									_screen_editbox->isDirtyRender |= iSEM_navigateToEndLine(thisCode, screenData, _screen);
 									iWindow_render(NULL, gWinJDebi, false);
 									return(false);
@@ -369,7 +373,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 			if (line->compilerInfo->firstComp && (line->compilerInfo->firstComp->iCode == _ICODE_COMMENT || line->compilerInfo->firstComp->iCode == _ICODE_LINE_COMMENT))
 			{
 				// Combine every item after this to a single comment
-// TODO:  This algorithm will need to be changed so casks in comments show up graphically, rather than as raw text
+// TODO:  This algorithm could changed so that casks in comments show up graphically, rather than as raw comment text
 				iComps_combineN(thisCode, line->compilerInfo->firstComp, 99999, line->compilerInfo->firstComp->iCode, line->compilerInfo->firstComp->iCat, line->compilerInfo->firstComp->color);
 
 				// Return the first component
@@ -453,7 +457,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 					if (!llDot)
 					{
 						// Integer
-						lnValue = iiVariable_getCompAs_s64(comp);
+						lnValue = iiComps_getAs_s64(comp);
 
 
 						//////////
@@ -476,7 +480,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 
 					} else {
 						// Floating point
-						lfValue = iiVariable_getCompAs_f64(comp);
+						lfValue = iiComps_getAs_f64(comp);
 
 
 						//////////
@@ -833,7 +837,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 //        alter the *tnType value accordingly.
 //
 //////
-	bool iEngine_get_namedSource_andType(SThisCode* thisCode, SComp* comp, void** p, s32* tnType)
+	bool iEngine_get_namedSourceAndType_byComp(SThisCode* thisCode, SComp* comp, void** p, s32* tnType)
 	{
 		s32				lnI, lnCount;
 		bool			llResult, llVarsFirst;
@@ -1179,6 +1183,50 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 
 //////////
 //
+// Called to search for the named component within the object and return a reference to it if possible.
+//
+//////
+	bool iEngine_get_namedSourceAndType_ofObj_byComp(SThisCode* thisCode, SObject* obj, SComp* comp, void** p, s32* tnType)
+	{
+		SVariable* var;
+
+
+		//////////
+		// Try to locate the native property for the current this object
+		//////
+			var = iObjProp_get_variable_byComp(thisCode, obj, comp);
+			if (var)
+			{
+				// We found the native property
+				*p = iVariable_copy(thisCode, var, true);
+				return(true);
+			}
+
+
+		//////////
+		// See if it's an event or method
+		//////
+// TODO:  working here
+			var = iObjProp_get_eventOrMethod_byComp(thisCode, obj, comp);
+			if (var)
+			{
+				// We found the native property
+				*p = iVariable_copy(thisCode, var, true);
+				return(true);
+			}
+
+
+		//////////
+		// If we get here, failure
+		//////
+			return(false);
+	}
+
+
+
+
+//////////
+//
 // Called to find the indicated setter, and execute it if found
 //
 //////
@@ -1230,13 +1278,18 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 	{
 		if (obj)
 		{
-			if (tnEventId < 0 || tnEventId > _EVENT_MAX_COUNT || obj->ev.methods[tnEventId]._event == 0)
+			if (tnEventId < 0 || tnEventId > _EVENT_MAX_COUNT)
 			{
 				// Should never happen
 // TODO:  For the extra info, we could add a call stack trace here
 				iError_signal(thisCode, _ERROR_INTERNAL_ERROR, NULL, true, NULL, false);
 				return(false);
 			}
+
+// TODO:  Dispatch obj->ev.methods->userEventCode methods here
+			// If there's no default event handler, just ignore it
+			if (obj->ev.methods[tnEventId]._event == 0)
+				return(true);
 
 			// Which event?
 			switch (tnEventId)

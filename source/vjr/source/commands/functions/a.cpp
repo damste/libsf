@@ -188,7 +188,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString) || !iVariable_isTypeCharacter(varString))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varString), false);
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varString), false);
 				return;
 			}
 
@@ -300,7 +300,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString) || !iVariable_isTypeCharacter(varString))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varString), false);
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varString), false);
 				return;
 			}
 
@@ -324,7 +324,7 @@
 				// See what the parameter is
 				if (!iVariable_isValid(varCaseInsensitive))
 				{
-					iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varCaseInsensitive), false);
+					iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varCaseInsensitive), false);
 					return;
 
 				} else if (iVariable_isTypeNumeric(varCaseInsensitive)) {
@@ -348,7 +348,7 @@
 					llSyntaxForm1	= true;
 
 				} else {
-					iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varCaseInsensitive), false);
+					iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varCaseInsensitive), false);
 					return;
 				}
 			}
@@ -362,7 +362,7 @@
 				// If they're using syntax form1, then the presence of this parameter is a syntax error
 				if (llSyntaxForm1)
 				{
-					iError_reportByNumber(thisCode, _ERROR_TOO_MANY_PARAMETERS, iVariable_getRelatedComp(thisCode, varTrimChars1), false);
+					iError_reportByNumber(thisCode, _ERROR_TOO_MANY_PARAMETERS, iVariable_get_relatedComp(thisCode, varTrimChars1), false);
 					return;
 
 				} else if (iVariable_isTypeCharacter(varTrimChars1)) {
@@ -371,7 +371,7 @@
 					trim1Length	= varTrimChars1->value.length;
 
 				} else {
-					iError_reportByNumber(thisCode, _ERROR_P3_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varTrimChars1), false);
+					iError_reportByNumber(thisCode, _ERROR_P3_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varTrimChars1), false);
 					return;
 				}
 			}
@@ -395,7 +395,7 @@
 					}
 
 				} else {
-					iError_reportByNumber(thisCode, _ERROR_P4_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varTrimChars2), false);
+					iError_reportByNumber(thisCode, _ERROR_P4_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varTrimChars2), false);
 					return;
 				}
 			}
@@ -706,7 +706,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString) || !iVariable_isTypeCharacter(varString))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varString), false);
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varString), false);
 				return;
 			}
 
@@ -715,7 +715,7 @@
         // It must be at least one character long
 		//////
 			if (varString->value.length == 0)
-				iError_reportByNumber(thisCode, _ERROR_EMPTY_STRING, iVariable_getRelatedComp(thisCode, varString), false);
+				iError_reportByNumber(thisCode, _ERROR_EMPTY_STRING, iVariable_get_relatedComp(thisCode, varString), false);
 
 
 		//////////
@@ -905,7 +905,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varNeedle) || !iVariable_isTypeCharacter(varNeedle))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varNeedle), false);
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNeedle), false);
 				return;
 			}
 
@@ -915,7 +915,7 @@
 		//////
 			if (!iVariable_isValid(varHaystack) || !iVariable_isTypeCharacter(varHaystack))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varHaystack), false);
+				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varHaystack), false);
 				return;
 			}
 
@@ -928,7 +928,7 @@
 				// ...it must be numeric
 				if (!iVariable_isTypeNumeric(varOccurrence))
 				{
-					iError_reportByNumber(thisCode, _ERROR_P3_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varOccurrence), false);
+					iError_reportByNumber(thisCode, _ERROR_P3_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varOccurrence), false);
 					return;
 				}
 
@@ -936,7 +936,7 @@
 				lnOccurrence = iiVariable_getAs_s32(thisCode, varOccurrence, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varOccurrence), false);
+					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varOccurrence), false);
 					return;
 				}
 

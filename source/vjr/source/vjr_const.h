@@ -152,32 +152,32 @@ typedef SEM**		SEMpp;
 
 	#define validateVariable(var, error)				if (!iVariable_isValid(var)) \
 														{ \
-															iError_reportByNumber(thisCode, error, iVariable_getRelatedComp(thisCode, var), false); \
+															iError_reportByNumber(thisCode, error, iVariable_get_relatedComp(thisCode, var), false); \
 															return; \
 														}
 
 	#define validateNumeric(var, error)					if (!iVariable_isTypeNumeric(var)) \
 														{ \
-															iError_reportByNumber(thisCode, error, iVariable_getRelatedComp(thisCode, var), false); \
+															iError_reportByNumber(thisCode, error, iVariable_get_relatedComp(thisCode, var), false); \
 															return; \
 														}
 
 	#define validateCharacter(var, error)				if (!iVariable_isTypeCharacter(var)) \
 														{ \
-															iError_reportByNumber(thisCode, error, iVariable_getRelatedComp(thisCode, var), false); \
+															iError_reportByNumber(thisCode, error, iVariable_get_relatedComp(thisCode, var), false); \
 															return; \
 														}
 
 	#define validateFloatingPoint(var, error)			if (!iVariable_isTypeFloatingPoint(var)) \
 														{ \
-															iError_reportByNumber(thisCode, error, iVariable_getRelatedComp(thisCode, var), false); \
+															iError_reportByNumber(thisCode, error, iVariable_get_relatedComp(thisCode, var), false); \
 															return; \
 														}
 
 	#define getAs_s32(local, var)						local = iiVariable_getAs_s32(thisCode, var, false, &error, &errorNum); \
 														if (error) \
 														{ \
-															iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, var), false); \
+															iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, var), false); \
 															return; \
 														}
 
@@ -485,6 +485,8 @@ typedef SEM**		SEMpp;
 	const u32			_ERROR_DLL_NOT_FOUND					= 104;
 	const u32			_ERROR_FUNCTION_NOT_FOUND				= 105;
 	const u32			_ERROR_VARIABLE_IS_FIXED				= 106;
+	const u32			_ERROR_FEATURE_NOT_YET_CODED			= 107;
+
 
 
 //////////

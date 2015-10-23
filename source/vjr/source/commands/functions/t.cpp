@@ -136,7 +136,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varIndex) || !iVariable_isTypeNumeric(varIndex))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varIndex), false);
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varIndex), false);
 				return;
 			}
 
@@ -153,7 +153,7 @@
 					break;
 
 				default:
-					iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_getRelatedComp(thisCode, varIndex), false);
+					iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(thisCode, varIndex), false);
 					break;
 			}
 
@@ -214,7 +214,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varFormatStr) || !iVariable_isTypeCharacter(varFormatStr))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varFormatStr), false);
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varFormatStr), false);
 				return;
 			}
 
@@ -227,7 +227,7 @@
 				// Logical
 				if (!iVariable_isValid(varRecursive) || !iVariable_isFundamentalTypeLogical(varRecursive))
 				{
-					iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varRecursive), false);
+					iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varRecursive), false);
 					return;
 				}
 
@@ -235,7 +235,7 @@
 				llRecursive = iiVariable_getAs_bool(thisCode, varRecursive, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varRecursive), false);
+					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varRecursive), false);
 					return;
 				}
 
@@ -261,7 +261,7 @@
 				// Character
 				if (!iVariable_isValid(varLeftDelim) || !iVariable_isTypeCharacter(varLeftDelim))
 				{
-					iError_reportByNumber(thisCode, _ERROR_P3_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varLeftDelim), false);
+					iError_reportByNumber(thisCode, _ERROR_P3_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varLeftDelim), false);
 					return;
 				}
 
@@ -280,7 +280,7 @@
 				// Character
 				if (!iVariable_isValid(varRightDelim) || !iVariable_isTypeCharacter(varRightDelim))
 				{
-					iError_reportByNumber(thisCode, _ERROR_P3_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varRightDelim), false);
+					iError_reportByNumber(thisCode, _ERROR_P3_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varRightDelim), false);
 					return;
 				}
 
@@ -340,7 +340,7 @@ debug_break;
 		// Are we good?
 		//////
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_getRelatedComp(thisCode, varFormatStr), false);
+				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varFormatStr), false);
 
 
 		//////////
@@ -429,7 +429,7 @@ debug_break;
 				// It's either logical, or a datetime/floating point
 				if (!iVariable_isValid(varP1))
 				{
-					iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varP1), false);
+					iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varP1), false);
 					return;
 				}
 
@@ -454,7 +454,7 @@ debug_break;
 					llExtendedTime = iiVariable_getAs_bool(thisCode, varP1, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varP1), false);
+						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varP1), false);
 						return;
 					}
 
@@ -463,7 +463,7 @@ debug_break;
 
 				} else {
 					// Invalid
-					iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_getRelatedComp(thisCode, varP1), false);
+					iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varP1), false);
 					return;
 				}
 				break;
@@ -491,7 +491,7 @@ debug_break;
 
 					} else {
 						// Invalid
-						iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varP1), false);
+						iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varP1), false);
 						return;
 					}
 
@@ -501,7 +501,7 @@ debug_break;
 				//////
 					if (!iVariable_isFundamentalTypeLogical(varP2))
 					{
-						iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varP2), false);
+						iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varP2), false);
 						return;
 					}
 
@@ -509,7 +509,7 @@ debug_break;
 					llExtendedTime = iiVariable_getAs_bool(thisCode, varP2, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varP2), false);
+						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varP2), false);
 						return;
 					}
 					break;
@@ -528,7 +528,7 @@ debug_break;
 					lfSecondsx = iiVariable_getAs_f64(thisCode, varSeconds, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varSeconds), false);
+						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varSeconds), false);
 						return;
 					}
 
@@ -540,7 +540,7 @@ debug_break;
 					lfSeconds = iiVariable_getAs_f32(thisCode, varSeconds, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varSeconds), false);
+						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varSeconds), false);
 						return;
 					}
 
@@ -664,7 +664,7 @@ debug_break;
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varP1))
 			{
-				iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_getRelatedComp(thisCode, varP1), false);
+				iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varP1), false);
 				return;
 			}
 
@@ -690,7 +690,7 @@ debug_break;
 								adt.fVal64 = iiVariable_getAs_f64(thisCode, varP2, false, &error, &errorNum);
 								if (error)
 								{
-									iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varP1), false);
+									iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varP1), false);
 									return;
 								}
 								iiDateMath_get_HhMmSsMss_from_seconds((f32)adt.fVal64, &adt.nHour, &adt.nMinute, &adt.nSecond, &adt.nMillisecond);
@@ -705,7 +705,7 @@ debug_break;
 
 							} else {
 								// Invalid
-								iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_getRelatedComp(thisCode, varP1), false);
+								iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varP1), false);
 								return;
 							}
 							break;
@@ -731,14 +731,14 @@ debug_break;
 
 							} else {
 								// Invalid
-								iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_getRelatedComp(thisCode, varP1), false);
+								iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varP1), false);
 								return;
 							}
 							break;
 
 						default:
 							// These cannot receive the date parameter
-							iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_getRelatedComp(thisCode, varP1), false);
+							iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varP1), false);
 							return;
 					}
 
@@ -749,7 +749,7 @@ debug_break;
 
 				} else {
 					// Invalid for this type
-					iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_getRelatedComp(thisCode, varP1), false);
+					iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varP1), false);
 					return;
 				}
 			}
@@ -765,7 +765,7 @@ debug_break;
 					// Hh:Mm:Ss[.Mss]
 					if (!iVariable_isTypeCharacter(varP1) || varP1->value.length < 8 || varP1->value.data[2] != ':' || varP1->value.data[5] != ':')
 					{
-						iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_getRelatedComp(thisCode, varP1), false);
+						iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varP1), false);
 						return;
 					}
 
@@ -783,7 +783,7 @@ debug_break;
 					// Hh:Mm:Ss[.Nanosssss]
 					if (!iVariable_isTypeCharacter(varP1) || varP1->value.length < 12 || varP1->value.data[2] != ':' || varP1->value.data[5] != ':')
 					{
-						iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_getRelatedComp(thisCode, varP1), false);
+						iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varP1), false);
 						return;
 					}
 					adt.nHour	= atoi(varP1->value.data_s8);
@@ -813,13 +813,13 @@ debug_break;
 				case _CONVERSION_FUNCTION_SECONDS:
 					if (!iVariable_isTypeNumeric(varP1))
 					{
-						iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_getRelatedComp(thisCode, varP1), false);
+						iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varP1), false);
 						return;
 					}
 					adt.fVal64 = iiVariable_getAs_f64(thisCode, varP1, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varP1), false);
+						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varP1), false);
 						return;
 					}
 					break;
@@ -827,13 +827,13 @@ debug_break;
 				case _CONVERSION_FUNCTION_SECONDSX:
 					if (!iVariable_isTypeNumeric(varP1))
 					{
-						iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_getRelatedComp(thisCode, varP1), false);
+						iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varP1), false);
 						return;
 					}
 					adt.fVal64 = iiVariable_getAs_f64(thisCode, varP1, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varP1), false);
+						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varP1), false);
 						return;
 					}
 					break;
@@ -841,7 +841,7 @@ debug_break;
 				case _CONVERSION_FUNCTION_DATE:
 					if (!iVariable_isTypeDate(varP1))
 					{
-						iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_getRelatedComp(thisCode, varP1), false);
+						iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varP1), false);
 						return;
 					}
 					iiDateMath_get_YyyyMmDd_from_YYYYMMDD(varP1->value.data_u8, &adt.nYear, &adt.nMonth, &adt.nDay);
@@ -850,7 +850,7 @@ debug_break;
 				case _CONVERSION_FUNCTION_DATETIME:
 					if (!iVariable_isTypeDatetime(varP1))
 					{
-						iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_getRelatedComp(thisCode, varP1), false);
+						iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varP1), false);
 						return;
 					}
 					iiDateMath_get_YyyyMmDd_from_julian(varP1->value.data_dt->julian, &adt.nYear, &adt.nMonth, &adt.nDay);
@@ -861,7 +861,7 @@ debug_break;
 				case _CONVERSION_FUNCTION_DATETIMEX:
 					if (!iVariable_isTypeDatetimeX(varP1))
 					{
-						iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_getRelatedComp(thisCode, varP1), false);
+						iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varP1), false);
 						return;
 					}
 					iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds(varP1->value.data_dtx->jseconds, NULL, &adt.nYear, &adt.nMonth, &adt.nDay, &adt.nHour, &adt.nMinute, &adt.nSecond, &adt.nMillisecond, &adt.nMicrosecond);
@@ -873,7 +873,7 @@ debug_break;
 					// Should never happen
 					// Check the call stack to determine the function which sent the incorrect parameter
 					debug_nop;
-					iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_getRelatedComp(thisCode, varP1), false);
+					iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varP1), false);
 					return;
 			}
 
@@ -1309,7 +1309,7 @@ debug_break;
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varVariable))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varVariable), false);
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varVariable), false);
 				return;
 			}
 
@@ -1322,7 +1322,7 @@ debug_break;
 				// ...it must be character
 				if (!iVariable_isTypeCharacter(varFormat))
 				{
-					iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varFormat), false);
+					iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varFormat), false);
 					return;
 				}
 			}
@@ -1417,7 +1417,7 @@ debug_break;
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varParam) || !iVariable_isTypeDatetime(varParam) || iVariable_isTypeDatetime(varParam))
 			{
-				iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_getRelatedComp(thisCode, varParam), false);
+				iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varParam), false);
 				return;
 			}
 
@@ -1432,7 +1432,7 @@ debug_break;
 				//////
 					if (!iVariable_isValid(varFlag) || !iVariable_isTypeNumeric(varFlag))
 					{
-						iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_getRelatedComp(thisCode, varFlag), false);
+						iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varFlag), false);
 						return;
 					}
 
@@ -1444,7 +1444,7 @@ debug_break;
 					if (error)
 					{
 						// An error extracting the value (should never happen)
-						iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varFlag), false);
+						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varFlag), false);
 						return;
 					}
 
@@ -1517,7 +1517,7 @@ debug_break;
 
 						default:
 							// If we get here, invalid parameter specified
-							iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_getRelatedComp(thisCode, varFlag), false);
+							iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varFlag), false);
 							return;
 					}
 
@@ -1787,7 +1787,7 @@ debug_break;
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varLookup) || !iVariable_isTypeCharacter(varLookup))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varLookup), false);
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varLookup), false);
 				return;
 			}
 
@@ -1803,7 +1803,7 @@ debug_break;
 				//////
 					if (!iVariable_isValid(varExtraInfo) || !iVariable_isTypeNumeric(varExtraInfo))
 					{
-						iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varExtraInfo), false);
+						iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varExtraInfo), false);
 						return;
 					}
 
@@ -1814,7 +1814,7 @@ debug_break;
 					lnExtraInfo = iiVariable_getAs_s32(thisCode, varExtraInfo, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varExtraInfo), false);
+						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varExtraInfo), false);
 						return;
 					}
 
@@ -1824,7 +1824,7 @@ debug_break;
 				//////
 					if (lnExtraInfo != 1)
 					{
-						iError_reportByNumber(thisCode, _ERROR_PARAMETER_MUST_BE_1, iVariable_getRelatedComp(thisCode, varExtraInfo), false);
+						iError_reportByNumber(thisCode, _ERROR_PARAMETER_MUST_BE_1, iVariable_get_relatedComp(thisCode, varExtraInfo), false);
 						return;
 					}
 
@@ -1844,14 +1844,14 @@ debug_break;
 		//////////
 		// The varLookup points to something that needs to be looked up indirectly
 		//////
-			compVarLookup			= iVariable_getRelatedComp(thisCode, varLookup);
+			compVarLookup			= iVariable_get_relatedComp(thisCode, varLookup);
 			compVarLookup->iCode	= _ICODE_ALPHANUMERIC;
 			compVarLookup->start	+= 1;		// Skip leading quote for start
 			compVarLookup->length	-= 2;		// Back off for both quotes for length
 			var = iEngine_get_variableName_fromComponent(thisCode, compVarLookup, &llManufactured, false);
 			if (!var)
 			{
-				iError_reportByNumber(thisCode, _ERROR_VARIABLE_NOT_FOUND, iVariable_getRelatedComp(thisCode, varLookup), false);
+				iError_reportByNumber(thisCode, _ERROR_VARIABLE_NOT_FOUND, iVariable_get_relatedComp(thisCode, varLookup), false);
 				return;
 			}
 

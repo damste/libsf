@@ -325,7 +325,7 @@
 
 					} else {
 						// Invalid
-						iError_reportByNumber(thisCode, lnP1Error, iVariable_getRelatedComp(thisCode, varP1), false);
+						iError_reportByNumber(thisCode, lnP1Error, iVariable_get_relatedComp(thisCode, varP1), false);
 						return;
 					}
 
@@ -339,7 +339,7 @@
 					// It needs to be 1600 <= year <= 9999
 					if (lnYear < 1600 || lnYear > 9999)
 					{
-						iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_getRelatedComp(thisCode, varP1), false);
+						iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(thisCode, varP1), false);
 						return;
 					}
 					// When we get here, the year is good
@@ -363,7 +363,7 @@
 				// It needs to be 1 <= month <= 12, and we'll test later the validity of the indicated date
 				if (lnMonth < 1 || lnMonth > 12)
 				{
-					iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_getRelatedComp(thisCode, varP2), false);
+					iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(thisCode, varP2), false);
 					return;
 				}
 				// When we get here, the year is good
@@ -386,7 +386,7 @@
 				// It needs to be 1 <= day <= 31, and we'll test later the validity of the indicated date
 				if (lnMonth < 1 || lnMonth > 31)
 				{
-					iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_getRelatedComp(thisCode, varP3), false);
+					iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(thisCode, varP3), false);
 					return;
 				}
 				// When we get here, the year is good
@@ -399,7 +399,7 @@
 		//////
 			if (!iDateMath_isValidDate(lst.wYear, lst.wMonth, lst.wDay))
 			{
-				iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_getRelatedComp(thisCode, varP1), false);
+				iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varP1), false);
 				return;
 			}
 
@@ -430,7 +430,7 @@
 			varResult = iiVariable_terminateIndirect(thisCode, varR1);
 			if (!varResult->value.data || varResult->value.length == 0)
 			{
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_getRelatedComp(thisCode, varR1), false);
+				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varR1), false);
 				return;
 			}
 

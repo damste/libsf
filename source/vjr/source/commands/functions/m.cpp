@@ -130,7 +130,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varColor) || !iVariable_isTypeNumeric(varColor))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varColor), false);
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varColor), false);
 				return;
 			}
 
@@ -142,7 +142,7 @@
 			{
 				if (!iVariable_isFundamentalTypeLogical(varAsInteger))
 				{
-					iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varColor), false);
+					iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varColor), false);
 					return;
 				}
 
@@ -150,7 +150,7 @@
 				llAsInteger = iiVariable_getAs_bool(thisCode, varAsInteger, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varColor), false);
+					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varColor), false);
 					return;
 				}
 
@@ -166,7 +166,7 @@
 			lnColor = iiVariable_getAs_u32(thisCode, varColor, false, &error, &errorNum);
 			if (error)
 			{
-				iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varColor), false);
+				iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varColor), false);
 				return;
 			}
 
@@ -259,7 +259,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varLeft))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varLeft), false);
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varLeft), false);
 				return;
 			}
 
@@ -269,7 +269,7 @@
 		//////
 			if (!iVariable_isValid(varRight))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varRight), false);
+				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varRight), false);
 				return;
 			}
 
@@ -277,10 +277,10 @@
 		//////////
 		// They must be the same type
 		//////
-			if (iVariable_fundamentalType(thisCode, varLeft) != iVariable_fundamentalType(thisCode, varRight))
+			if (iVariable_get_fundamentalType(thisCode, varLeft) != iVariable_get_fundamentalType(thisCode, varRight))
 			{
 				// Operand mismatch
-				iError_reportByNumber(thisCode, _ERROR_DATA_TYPE_MISMATCH, iVariable_getRelatedComp(thisCode, varRight), false);
+				iError_reportByNumber(thisCode, _ERROR_DATA_TYPE_MISMATCH, iVariable_get_relatedComp(thisCode, varRight), false);
 				return;
 			}
 
@@ -352,14 +352,14 @@
 						lfLeft64	= iiVariable_getAs_f64(thisCode, varLeft, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varLeft), false);
+							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varLeft), false);
 							return;
 						}
 
 						lfRight64	= iiVariable_getAs_f64(thisCode, varRight, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varRight), false);
+							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varRight), false);
 							return;
 						}
 
@@ -381,14 +381,14 @@
 							lnLeft64	= iiVariable_getAs_s64(thisCode, varLeft, false, &error, &errorNum);
 							if (error)
 							{
-								iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varLeft), false);
+								iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varLeft), false);
 								return;
 							}
 
 							lnRight64	= iiVariable_getAs_s64(thisCode, varRight, false, &error, &errorNum);
 							if (error)
 							{
-								iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varRight), false);
+								iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varRight), false);
 								return;
 							}
 
@@ -407,14 +407,14 @@
 							lnLeft32	= iiVariable_getAs_s32(thisCode, varLeft, false, &error, &errorNum);
 							if (error)
 							{
-								iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varLeft), false);
+								iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varLeft), false);
 								return;
 							}
 
 							lnRight32	= iiVariable_getAs_s32(thisCode, varRight, false, &error, &errorNum);
 							if (error)
 							{
-								iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varRight), false);
+								iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varRight), false);
 								return;
 							}
 
@@ -431,7 +431,7 @@
 
 					} else {
 						// We cannot compare these types
-						iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_getRelatedComp(thisCode, varLeft), false);
+						iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(thisCode, varLeft), false);
 						return;
 					}
 			}
@@ -451,7 +451,7 @@
 		// Are we good?
 		//////
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_getRelatedComp(thisCode, varLeft), false);
+				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varLeft), false);
 
 
 		//////////
@@ -569,7 +569,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varLeft))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varLeft), false);
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varLeft), false);
 				return;
 			}
 
@@ -579,7 +579,7 @@
 		//////
 			if (!iVariable_isValid(varRight))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varRight), false);
+				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varRight), false);
 				return;
 			}
 
@@ -587,10 +587,10 @@
 		//////////
 		// They must be the same type
 		//////
-			if (iVariable_fundamentalType(thisCode, varLeft) != iVariable_fundamentalType(thisCode, varRight))
+			if (iVariable_get_fundamentalType(thisCode, varLeft) != iVariable_get_fundamentalType(thisCode, varRight))
 			{
 				// Operand mismatch
-				iError_reportByNumber(thisCode, _ERROR_DATA_TYPE_MISMATCH, iVariable_getRelatedComp(thisCode, varRight), false);
+				iError_reportByNumber(thisCode, _ERROR_DATA_TYPE_MISMATCH, iVariable_get_relatedComp(thisCode, varRight), false);
 				return;
 			}
 
@@ -662,14 +662,14 @@
 						lfLeft64	= iiVariable_getAs_f64(thisCode, varLeft, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varLeft), false);
+							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varLeft), false);
 							return;
 						}
 
 						lfRight64	= iiVariable_getAs_f64(thisCode, varRight, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varRight), false);
+							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varRight), false);
 							return;
 						}
 
@@ -691,14 +691,14 @@
 							lnLeft64	= iiVariable_getAs_s64(thisCode, varLeft, false, &error, &errorNum);
 							if (error)
 							{
-								iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varLeft), false);
+								iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varLeft), false);
 								return;
 							}
 
 							lnRight64	= iiVariable_getAs_s64(thisCode, varRight, false, &error, &errorNum);
 							if (error)
 							{
-								iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varRight), false);
+								iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varRight), false);
 								return;
 							}
 
@@ -717,14 +717,14 @@
 							lnLeft32	= iiVariable_getAs_s32(thisCode, varLeft, false, &error, &errorNum);
 							if (error)
 							{
-								iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varLeft), false);
+								iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varLeft), false);
 								return;
 							}
 
 							lnRight32	= iiVariable_getAs_s32(thisCode, varRight, false, &error, &errorNum);
 							if (error)
 							{
-								iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varRight), false);
+								iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varRight), false);
 								return;
 							}
 
@@ -741,7 +741,7 @@
 
 					} else {
 						// We cannot compare these types
-						iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_getRelatedComp(thisCode, varLeft), false);
+						iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(thisCode, varLeft), false);
 						return;
 					}
 			}
@@ -758,7 +758,7 @@
 
 			// Are we good?
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_getRelatedComp(thisCode, varLeft), false);
+				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varLeft), false);
 
 			// Indicate our result
 			rpar->rp[0] = result;

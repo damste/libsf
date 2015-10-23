@@ -124,6 +124,7 @@ struct SFunctionParams;
 	void				iError_report								(SThisCode* thisCode, u8* errorText, bool tlInvasive);
 	void				iError_reportByNumber						(SThisCode* thisCode, u32 tnErrorNum, SComp* comp, bool tlInvasive);
 	void				iError_track								(void);
+	void				iError_silent								(void);
 
 	// Called to check if potential errors exist
 	f32					iErrorCandidate_signalOutOfRange_f32		(SThisCode* thisCode, SErrorInfo* ei, f32 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo);

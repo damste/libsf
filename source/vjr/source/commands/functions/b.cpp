@@ -127,17 +127,17 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varValue))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varValue), false);
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varValue), false);
 				return;
 			}
 			if (!iVariable_isValid(varLowValue))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varLowValue), false);
+				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varLowValue), false);
 				return;
 			}
 			if (!iVariable_isValid(varHighValue))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P3_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varHighValue), false);
+				iError_reportByNumber(thisCode, _ERROR_P3_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varHighValue), false);
 				return;
 			}
 
@@ -145,15 +145,15 @@
 		//////////
 		// Each type must be fundamentally the same type
 		//////
-			for (lnI = 1, lnType = iVariable_fundamentalType(thisCode, varValue); lnI <= 3 && rpar->ip[lnI]; lnI++)
+			for (lnI = 1, lnType = iVariable_get_fundamentalType(thisCode, varValue); lnI <= 3 && rpar->ip[lnI]; lnI++)
 			{
 				//////////
 				// Make sure this variable type matches the test value
 				//////
-					if (iVariable_fundamentalType(thisCode, rpar->ip[lnI]) != lnType)
+					if (iVariable_get_fundamentalType(thisCode, rpar->ip[lnI]) != lnType)
 					{
 						// The types do not match
-						iError_reportByNumber(thisCode, _ERROR_DATA_TYPE_MISMATCH, iVariable_getRelatedComp(thisCode, rpar->ip[lnI]), false);
+						iError_reportByNumber(thisCode, _ERROR_DATA_TYPE_MISMATCH, iVariable_get_relatedComp(thisCode, rpar->ip[lnI]), false);
 						return;
 					}
 
@@ -166,7 +166,7 @@
 			lnComp = iVariable_compare(thisCode, varValue, varLowValue, false, &error, &errorNum);
 			if (error)
 			{
-				iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varLowValue), false);
+				iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varLowValue), false);
 				return;
 			}
 
@@ -184,7 +184,7 @@
 				lnComp = iVariable_compare(thisCode, varValue, varHighValue, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varHighValue), false);
+					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varHighValue), false);
 					return;
 				}
 
@@ -198,7 +198,7 @@
 		//////
 			result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_LOGICAL, ((llInRange) ? (s8*)&_LOGICAL_TRUE : (s8*)&_LOGICAL_FALSE), 1, false);
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_getRelatedComp(thisCode, varValue), false);
+				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varValue), false);
 
 
 		//////////
@@ -262,7 +262,7 @@
 					//////
 						if (!iVariable_isValid(varP1) || (!iVariable_isTypeNumeric(varP1) && !iVariable_isTypeCharacter(varP1)))
 						{
-							iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varP1), false);
+							iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varP1), false);
 							return;
 						}
 
@@ -279,12 +279,12 @@
 					//////
 						if (!iVariable_isValid(varP1) || (!iVariable_isTypeNumeric(varP1) && !iVariable_isTypeCharacter(varP1)))
 						{
-							iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varP1), false);
+							iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varP1), false);
 							return;
 						}
 						if (!iVariable_isValid(varP2) || !iVariable_isTypeNumeric(varP2))
 						{
-							iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varP2), false);
+							iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varP2), false);
 							return;
 						}
 
@@ -295,7 +295,7 @@
 						lnBits = iiVariable_getAs_s32(thisCode, varP2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varP2), false);
+							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varP2), false);
 							return;
 						}
 						break;
@@ -325,7 +325,7 @@
 					if (error)
 					{
 						// Should never happen
-						iError_reportByNumber(thisCode, _ERROR_UNABLE_TO_INITIALIZE, iVariable_getRelatedComp(thisCode, varP2), false);
+						iError_reportByNumber(thisCode, _ERROR_UNABLE_TO_INITIALIZE, iVariable_get_relatedComp(thisCode, varP2), false);
 
 					} else {
 						// We're good
@@ -347,7 +347,7 @@
 					if (error)
 					{
 						// Should never happen
-						iError_reportByNumber(thisCode, _ERROR_UNABLE_TO_INITIALIZE, iVariable_getRelatedComp(thisCode, varP2), false);
+						iError_reportByNumber(thisCode, _ERROR_UNABLE_TO_INITIALIZE, iVariable_get_relatedComp(thisCode, varP2), false);
 
 					} else {
 						// We're good
@@ -361,7 +361,7 @@
 		// Are we good?
 		//////
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_getRelatedComp(thisCode, varP1), false);
+				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varP1), false);
 
 
 		//////////
@@ -426,7 +426,7 @@
 					//////
 						if (!iVariable_isValid(varP1) || (!iVariable_isTypeNumeric(varP1) && !iVariable_isTypeCharacter(varP1)))
 						{
-							iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varP1), false);
+							iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varP1), false);
 							return;
 						}
 
@@ -443,12 +443,12 @@
 					//////
 						if (!iVariable_isValid(varP1) || (!iVariable_isTypeNumeric(varP1) && !iVariable_isTypeCharacter(varP1)))
 						{
-							iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varP1), false);
+							iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varP1), false);
 							return;
 						}
 						if (!iVariable_isValid(varP2) || !iVariable_isTypeNumeric(varP2))
 						{
-							iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varP2), false);
+							iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varP2), false);
 							return;
 						}
 
@@ -459,7 +459,7 @@
 						lnBits = iiVariable_getAs_s32(thisCode, varP2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varP2), false);
+							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varP2), false);
 							return;
 						}
 						break;
@@ -489,7 +489,7 @@
 					if (error)
 					{
 						// Should never happen
-						iError_reportByNumber(thisCode, _ERROR_UNABLE_TO_INITIALIZE, iVariable_getRelatedComp(thisCode, varP2), false);
+						iError_reportByNumber(thisCode, _ERROR_UNABLE_TO_INITIALIZE, iVariable_get_relatedComp(thisCode, varP2), false);
 
 					} else {
 						// We're good
@@ -511,7 +511,7 @@
 					if (error)
 					{
 						// Should never happen
-						iError_reportByNumber(thisCode, _ERROR_UNABLE_TO_INITIALIZE, iVariable_getRelatedComp(thisCode, varP2), false);
+						iError_reportByNumber(thisCode, _ERROR_UNABLE_TO_INITIALIZE, iVariable_get_relatedComp(thisCode, varP2), false);
 
 					} else {
 						// We're good
@@ -525,7 +525,7 @@
 		// Are we good?
 		//////
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_getRelatedComp(thisCode, varP1), false);
+				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varP1), false);
 
 
 		//////////
@@ -584,7 +584,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varBits) || !iVariable_isTypeCharacter(varBits) || varBits->value.length > 64)
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varBits), false);
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varBits), false);
 				return;
 			}
 
@@ -596,7 +596,7 @@
 			{
 				if (!iVariable_isValid(varBitWidth) || !iVariable_isTypeNumeric(varBitWidth))
 				{
-					iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varBitWidth), false);
+					iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varBitWidth), false);
 					return;
 				}
 
@@ -604,14 +604,14 @@
 				lnWidth = iiVariable_getAs_s32(thisCode, varBitWidth, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varBitWidth), false);
+					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varBitWidth), false);
 					return;
 				}
 
 				// Must be 8, 16, 32, or 64
 				if (lnWidth != 8 && lnWidth != 16 && lnWidth != 32 && lnWidth != 64)
 				{
-					iError_reportByNumber(thisCode, _ERROR_PARAMETER_MUST_BE_8_16_32_64, iVariable_getRelatedComp(thisCode, varBitWidth), false);
+					iError_reportByNumber(thisCode, _ERROR_PARAMETER_MUST_BE_8_16_32_64, iVariable_get_relatedComp(thisCode, varBitWidth), false);
 					return;
 				}
 
@@ -632,7 +632,7 @@
 				// Is it anything other than binary digits
 				if (c != '0' && c != '1')
 				{
-					iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varBits), false);
+					iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varBits), false);
 					return;
 				}
 			}
@@ -650,7 +650,7 @@
 		//////
 			if (lnBit > lnWidth)
 			{
-				iError_reportByNumber(thisCode, _ERROR_TOO_BIG_FOR_TARGET, iVariable_getRelatedComp(thisCode, varBits), false);
+				iError_reportByNumber(thisCode, _ERROR_TOO_BIG_FOR_TARGET, iVariable_get_relatedComp(thisCode, varBits), false);
 				return;
 			}
 
@@ -673,7 +673,7 @@
 					result = iVariable_create(thisCode, _VAR_TYPE_U64, NULL, true);
 					break;
 				default:
-					iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_getRelatedComp(thisCode, varBits), false);
+					iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varBits), false);
 					return;
 			}
 
@@ -682,7 +682,7 @@
 		// Are we good?
 		//////
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_getRelatedComp(thisCode, varBits), false);
+				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varBits), false);
 
 
 		//////////

@@ -92,7 +92,7 @@
 // Called to reset the object to its hard defaults.
 //
 //////
-	void iiSubobj_resetToDefaultEmpty(SThisCode* thisCode, SObject* empty, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultEmpty(SThisCode* thisCode, SObject* empty, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (empty)
@@ -100,13 +100,13 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, empty, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, empty, true, true, propList, tnPropCount, eventList, tnEventCount);
 		}
 
 		// No object-specific initialization because empty objects do nothing except exist as placeholders
 	}
 
-	void iiSubobj_resetToDefaultForm(SThisCode* thisCode, SObject* form, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultForm(SThisCode* thisCode, SObject* form, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		SObject*	objChild;
 		SBitmap*	bmp;
@@ -119,7 +119,7 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, form, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, form, true, true, propList, tnPropCount, eventList, tnEventCount);
 
 
 			//////////
@@ -319,7 +319,7 @@
 		}
 	}
 
-	void iiSubobj_resetToDefaultSubform(SThisCode* thisCode, SObject* subform, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultSubform(SThisCode* thisCode, SObject* subform, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		SObject*	objChild;
 		SBitmap*	bmp;
@@ -332,7 +332,7 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, subform, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, subform, true, true, propList, tnPropCount, eventList, tnEventCount);
 
 
 			//////////
@@ -400,7 +400,7 @@
 		}
 	}
 
-	void iiSubobj_resetToDefaultCarousel(SThisCode* thisCode, SObject* carousel, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultCarousel(SThisCode* thisCode, SObject* carousel, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		bool		llVisible;
 		RECT		lrc;
@@ -414,7 +414,7 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, carousel, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, carousel, true, true, propList, tnPropCount, eventList, tnEventCount);
 
 
 			//////////
@@ -506,7 +506,7 @@
 		}
 	}
 
-	void iiSubobj_resetToDefaultRider(SThisCode* thisCode, SObject* rider, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultRider(SThisCode* thisCode, SObject* rider, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (rider)
@@ -514,7 +514,7 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, rider, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, rider, true, true, propList, tnPropCount, eventList, tnEventCount);
 
 
 			//////////
@@ -529,7 +529,7 @@
 		}
 	}
 
-	void iiSubobj_resetToDefaultLabel(SThisCode* thisCode, SObject* label, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultLabel(SThisCode* thisCode, SObject* label, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (label)
@@ -537,7 +537,7 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, label, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, label, true, true, propList, tnPropCount, eventList, tnEventCount);
 
 
 			//////////
@@ -575,7 +575,7 @@
 		}
 	}
 
-	void iiSubobj_resetToDefaultTextbox(SThisCode* thisCode, SObject* textbox, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultTextbox(SThisCode* thisCode, SObject* textbox, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (textbox)
@@ -583,7 +583,7 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, textbox, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, textbox, true, true, propList, tnPropCount, eventList, tnEventCount);
 
 
 			//////////
@@ -620,7 +620,7 @@
 		}
 	}
 
-	void iiSubobj_resetToDefaultButton(SThisCode* thisCode, SObject* button, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultButton(SThisCode* thisCode, SObject* button, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (button)
@@ -628,7 +628,7 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, button, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, button, true, true, propList, tnPropCount, eventList, tnEventCount);
 
 
 			//////////
@@ -660,7 +660,7 @@
 		}
 	}
 
-	void iiSubobj_resetToDefaultEditbox(SThisCode* thisCode, SObject* editbox, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultEditbox(SThisCode* thisCode, SObject* editbox, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (editbox)
@@ -668,7 +668,7 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, editbox, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, editbox, true, true, propList, tnPropCount, eventList, tnEventCount);
 
 
 			//////////
@@ -706,7 +706,7 @@
 		}
 	}
 
-	void iiSubobj_resetToDefaultImage(SThisCode* thisCode, SObject* image, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultImage(SThisCode* thisCode, SObject* image, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (image)
@@ -714,7 +714,7 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, image, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, image, true, true, propList, tnPropCount, eventList, tnEventCount);
 
 
 			//////////
@@ -737,7 +737,7 @@
 		}
 	}
 
-	void iiSubobj_resetToDefaultCheckbox(SThisCode* thisCode, SObject* checkbox, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultCheckbox(SThisCode* thisCode, SObject* checkbox, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		SObject*	objChild;
 		SBitmap*	bmp;
@@ -750,7 +750,7 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, checkbox, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, checkbox, true, true, propList, tnPropCount, eventList, tnEventCount);
 
 
 			//////////
@@ -849,7 +849,7 @@
 		}
 	}
 
-	void iiSubobj_resetToDefaultOption(SThisCode* thisCode, SObject* option, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultOption(SThisCode* thisCode, SObject* option, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (option)
@@ -857,7 +857,7 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, option, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, option, true, true, propList, tnPropCount, eventList, tnEventCount);
 
 
 			//////////
@@ -887,7 +887,7 @@
 		}
 	}
 
-	void iiSubobj_resetToDefaultRadio(SThisCode* thisCode, SObject* radio, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultRadio(SThisCode* thisCode, SObject* radio, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (radio)
@@ -895,7 +895,7 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, radio, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, radio, true, true, propList, tnPropCount, eventList, tnEventCount);
 
 
 			//////////
@@ -937,7 +937,7 @@
 
 
 
-	void iiSubobj_resetToDefaultCmdGroup(SThisCode* thisCode, SObject* cmdGroup, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultCmdGroup(SThisCode* thisCode, SObject* cmdGroup, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (cmdGroup)
@@ -945,11 +945,11 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, cmdGroup, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, cmdGroup, true, true, propList, tnPropCount, eventList, tnEventCount);
 		}
 	}
 
-	void iiSubobj_resetToDefaultOptGroup(SThisCode* thisCode, SObject* optGroup, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultOptGroup(SThisCode* thisCode, SObject* optGroup, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (optGroup)
@@ -957,11 +957,11 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, optGroup, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, optGroup, true, true, propList, tnPropCount, eventList, tnEventCount);
 		}
 	}
 
-	void iiSubobj_resetToDefaultListbox(SThisCode* thisCode, SObject* listbox, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultListbox(SThisCode* thisCode, SObject* listbox, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (listbox)
@@ -969,11 +969,11 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, listbox, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, listbox, true, true, propList, tnPropCount, eventList, tnEventCount);
 		}
 	}
 
-	void iiSubobj_resetToDefaultCombobox(SThisCode* thisCode, SObject* combobox, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultCombobox(SThisCode* thisCode, SObject* combobox, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (combobox)
@@ -981,11 +981,11 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, combobox, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, combobox, true, true, propList, tnPropCount, eventList, tnEventCount);
 		}
 	}
 
-	void iiSubobj_resetToDefaultFormset(SThisCode* thisCode, SObject* formset, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultFormset(SThisCode* thisCode, SObject* formset, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (formset)
@@ -993,11 +993,11 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, formset, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, formset, true, true, propList, tnPropCount, eventList, tnEventCount);
 		}
 	}
 
-	void iiSubobj_resetToDefaultToolbar(SThisCode* thisCode, SObject* toolbar, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultToolbar(SThisCode* thisCode, SObject* toolbar, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (toolbar)
@@ -1005,14 +1005,14 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, toolbar, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, toolbar, true, true, propList, tnPropCount, eventList, tnEventCount);
 
 				propSetBackColor(toolbar, toolbarBackColor);
 				propSetBackStyle(toolbar, _BACK_STYLE_TRANSPARENT);
 		}
 	}
 
-	void iiSubobj_resetToDefaultSeparator(SThisCode* thisCode, SObject* separator, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultSeparator(SThisCode* thisCode, SObject* separator, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (separator)
@@ -1020,11 +1020,11 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, separator, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, separator, true, true, propList, tnPropCount, eventList, tnEventCount);
 		}
 	}
 
-	void iiSubobj_resetToDefaultLine(SThisCode* thisCode, SObject* line, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultLine(SThisCode* thisCode, SObject* line, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (line)
@@ -1032,11 +1032,11 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, line, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, line, true, true, propList, tnPropCount, eventList, tnEventCount);
 		}
 	}
 
-	void iiSubobj_resetToDefaultShape(SThisCode* thisCode, SObject* shape, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultShape(SThisCode* thisCode, SObject* shape, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (shape)
@@ -1044,11 +1044,11 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, shape, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, shape, true, true, propList, tnPropCount, eventList, tnEventCount);
 		}
 	}
 
-	void iiSubobj_resetToDefaultContainer(SThisCode* thisCode, SObject* container, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultContainer(SThisCode* thisCode, SObject* container, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (container)
@@ -1056,11 +1056,11 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, container, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, container, true, true, propList, tnPropCount, eventList, tnEventCount);
 		}
 	}
 
-	void iiSubobj_resetToDefaultControl(SThisCode* thisCode, SObject* control, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultControl(SThisCode* thisCode, SObject* control, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (control)
@@ -1068,11 +1068,11 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, control, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, control, true, true, propList, tnPropCount, eventList, tnEventCount);
 		}
 	}
 
-	void iiSubobj_resetToDefaultGrid(SThisCode* thisCode, SObject* grid, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultGrid(SThisCode* thisCode, SObject* grid, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (grid)
@@ -1080,11 +1080,11 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, grid, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, grid, true, true, propList, tnPropCount, eventList, tnEventCount);
 		}
 	}
 
-	void iiSubobj_resetToDefaultColumn(SThisCode* thisCode, SObject* column, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultColumn(SThisCode* thisCode, SObject* column, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (column)
@@ -1092,11 +1092,11 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, column, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, column, true, true, propList, tnPropCount, eventList, tnEventCount);
 		}
 	}
 
-	void iiSubobj_resetToDefaultHeader(SThisCode* thisCode, SObject* header, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultHeader(SThisCode* thisCode, SObject* header, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (header)
@@ -1104,11 +1104,11 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, header, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, header, true, true, propList, tnPropCount, eventList, tnEventCount);
 		}
 	}
 
-	void iiSubobj_resetToDefaultOleBound(SThisCode* thisCode, SObject* oleBound, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultOleBound(SThisCode* thisCode, SObject* oleBound, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (oleBound)
@@ -1116,11 +1116,11 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, oleBound, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, oleBound, true, true, propList, tnPropCount, eventList, tnEventCount);
 		}
 	}
 
-	void iiSubobj_resetToDefaultOleContain(SThisCode* thisCode, SObject* oleContain, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultOleContain(SThisCode* thisCode, SObject* oleContain, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (oleContain)
@@ -1128,11 +1128,11 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, oleContain, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, oleContain, true, true, propList, tnPropCount, eventList, tnEventCount);
 		}
 	}
 
-	void iiSubobj_resetToDefaultSpinner(SThisCode* thisCode, SObject* spinner, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultSpinner(SThisCode* thisCode, SObject* spinner, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (spinner)
@@ -1140,11 +1140,11 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, spinner, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, spinner, true, true, propList, tnPropCount, eventList, tnEventCount);
 		}
 	}
 
-	void iiSubobj_resetToDefaultTimer(SThisCode* thisCode, SObject* timer, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultTimer(SThisCode* thisCode, SObject* timer, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (timer)
@@ -1152,11 +1152,11 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, timer, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, timer, true, true, propList, tnPropCount, eventList, tnEventCount);
 		}
 	}
 
-	void iiSubobj_resetToDefaultHyperlink(SThisCode* thisCode, SObject* hyperlink, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultHyperlink(SThisCode* thisCode, SObject* hyperlink, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (hyperlink)
@@ -1164,11 +1164,11 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, hyperlink, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, hyperlink, true, true, propList, tnPropCount, eventList, tnEventCount);
 		}
 	}
 
-	void iiSubobj_resetToDefaultCollection(SThisCode* thisCode, SObject* collection, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultCollection(SThisCode* thisCode, SObject* collection, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (collection)
@@ -1176,11 +1176,11 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, collection, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, collection, true, true, propList, tnPropCount, eventList, tnEventCount);
 		}
 	}
 
-	void iiSubobj_resetToDefaultPage(SThisCode* thisCode, SObject* page, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultPage(SThisCode* thisCode, SObject* page, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (page)
@@ -1188,11 +1188,11 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, page, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, page, true, true, propList, tnPropCount, eventList, tnEventCount);
 		}
 	}
 
-	void iiSubobj_resetToDefaultPageframe(SThisCode* thisCode, SObject* pageframe, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultPageframe(SThisCode* thisCode, SObject* pageframe, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (pageframe)
@@ -1200,11 +1200,11 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, pageframe, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, pageframe, true, true, propList, tnPropCount, eventList, tnEventCount);
 		}
 	}
 
-	void iiSubobj_resetToDefaultSession(SThisCode* thisCode, SObject* session, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultSession(SThisCode* thisCode, SObject* session, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (session)
@@ -1212,11 +1212,11 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, session, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, session, true, true, propList, tnPropCount, eventList, tnEventCount);
 		}
 	}
 
-	void iiSubobj_resetToDefaultCustom(SThisCode* thisCode, SObject* custom, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultCustom(SThisCode* thisCode, SObject* custom, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (custom)
@@ -1224,11 +1224,11 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, custom, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, custom, true, true, propList, tnPropCount, eventList, tnEventCount);
 		}
 	}
 
-	void iiSubobj_resetToDefaultException(SThisCode* thisCode, SObject* exception, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultException(SThisCode* thisCode, SObject* exception, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (exception)
@@ -1236,11 +1236,11 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, exception, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, exception, true, true, propList, tnPropCount, eventList, tnEventCount);
 		}
 	}
 
-	void iiSubobj_resetToDefaultSettings(SThisCode* thisCode, SObject* settings, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount)
+	void iiSubobj_resetToDefaultSettings(SThisCode* thisCode, SObject* settings, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		logfunc(__FUNCTION__);
 		if (settings)
@@ -1248,6 +1248,6 @@
 			//////////
 			// Reset the common settings
 			//////
-				iiObj_resetToDefaultCommon(thisCode, settings, true, true, propList, tnPropCount);
+				iiObj_resetToDefaultCommon(thisCode, settings, true, true, propList, tnPropCount, eventList, tnEventCount);
 		}
 	}

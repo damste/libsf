@@ -976,6 +976,7 @@ struct SBasePropMap;
 	SVariable*				iObjProp_get_variable_byIndex			(SThisCode* thisCode, SObject* obj, s32 tnIndex, SBasePropMap** baseProp = NULL, SObjPropMap** objProp = NULL);
 	SVariable*				iObjProp_get_variable_byComp			(SThisCode* thisCode, SObject* obj, SComp* comp,                  bool tlSearchBaseProps = true, bool tlSearchClassProps = true, u32* tnIndex = NULL);
 	SVariable*				iObjProp_get_variable_byName			(SThisCode* thisCode, SObject* obj, u8* tcName, u32 tnNameLength, bool tlSearchBaseProps = true, bool tlSearchClassProps = true, u32* tnIndex = NULL);
+	SVariable*				iObjProp_get_eventOrMethod_byComp		(SThisCode* thisCode, SObject* obj, SComp* comp,                  bool tlSearchBaseEMs = true, bool tlSearchClassEMs = true, u32* tnIndex = NULL);
 	SBitmap*				iObjProp_get_bitmap						(SThisCode* thisCode, SObject* obj, s32 tnIndex);
 	SVariable*				iObjProp_get_character					(SThisCode* thisCode, SObject* obj, s32 tnIndex);
 	f64						iObjProp_get_f64_direct					(SThisCode* thisCode, SObject* obj, s32 tnIndex);
@@ -1481,7 +1482,7 @@ struct SBasePropMap;
 
 	struct SObjPropMap
 	{
-		s32			index;
+		s32				index;
 
 		union {
 			uptr		_initterObject;
@@ -1500,6 +1501,16 @@ struct SBasePropMap;
 			SVariable*	(*getterObject)		(SThisCode* thisCode, SObject* obj, u32 tnIndex);
 			uptr		_getterObject_get;
 			SVariable*	(*getterObject_get)	(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarNewAfterSet);
+		};
+	};
+
+	struct SObjEventMap
+	{
+		s32			index;
+
+		union {
+			uptr	_defaultHandler;
+			bool	(*defaultHandler)	(SThisCode* thisCode, SObject* obj, u32 tnIndex);
 		};
 	};
 
@@ -1522,6 +1533,55 @@ struct SBasePropMap;
 		{	0,								0, 0, 0 }
 	};
 	const s32 gnProps_emptySize = sizeof(gsProps_empty) / sizeof(SObjPropMap) - 1;
+
+	SObjEventMap gsEvents_empty[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_emptySize = sizeof(gsEvents_empty) / sizeof(SObjEventMap) - 1;
 
 	// _OBJ_TYPE_FORM
 	SObjPropMap gsProps_form[] =
@@ -1656,6 +1716,55 @@ struct SBasePropMap;
 	};
 	const s32 gnProps_formSize = sizeof(gsProps_form) / sizeof(SObjPropMap) - 1;
 
+	SObjEventMap gsEvents_form[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_formSize = sizeof(gsEvents_form) / sizeof(SObjEventMap) - 1;
+
 	// _OBJ_TYPE_SUBFORM
 	SObjPropMap gsProps_subform[] =
 	{
@@ -1724,6 +1833,55 @@ struct SBasePropMap;
 	};
 	const s32 gnProps_subformSize = sizeof(gsProps_subform) / sizeof(SObjPropMap) - 1;
 
+	SObjEventMap gsEvents_subform[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_subformSize = sizeof(gsEvents_subform) / sizeof(SObjEventMap) - 1;
+
 	// _OBJ_TYPE_CAROUSEL
 	SObjPropMap gsProps_carousel[] =
 	{
@@ -1769,6 +1927,55 @@ struct SBasePropMap;
 	};
 	const s32 gnProps_carouselSize = sizeof(gsProps_carousel) / sizeof(SObjPropMap) - 1;
 
+	SObjEventMap gsEvents_carousel[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_carouselSize = sizeof(gsEvents_carousel) / sizeof(SObjEventMap) - 1;
+
 	// _OBJ_TYPE_RIDER
 	SObjPropMap gsProps_rider[] =
 	{
@@ -1794,6 +2001,55 @@ struct SBasePropMap;
 		{	0,								0, 0, 0 }
 	};
 	const s32 gnProps_riderSize = sizeof(gsProps_rider) / sizeof(SObjPropMap) - 1;
+
+	SObjEventMap gsEvents_rider[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_riderSize = sizeof(gsEvents_rider) / sizeof(SObjEventMap) - 1;
 
 	// _OBJ_TYPE_LABEL
 	SObjPropMap gsProps_label[] =
@@ -1860,6 +2116,55 @@ struct SBasePropMap;
 		{	0,								0, 0, 0 }
 	};
 	const s32 gnProps_labelSize = sizeof(gsProps_label) / sizeof(SObjPropMap) - 1;
+
+	SObjEventMap gsEvents_label[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_labelSize = sizeof(gsEvents_label) / sizeof(SObjEventMap) - 1;
 
 	// _OBJ_TYPE_TEXTBOX
 	SObjPropMap gsProps_textbox[] =
@@ -1957,6 +2262,55 @@ struct SBasePropMap;
 	};
 	const s32 gnProps_textboxSize = sizeof(gsProps_textbox) / sizeof(SObjPropMap) - 1;
 
+	SObjEventMap gsEvents_textbox[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_textboxSize = sizeof(gsEvents_textbox) / sizeof(SObjEventMap) - 1;
+
 	// _OBJ_TYPE_BUTTON
 	SObjPropMap gsProps_button[] =
 	{
@@ -2034,6 +2388,55 @@ struct SBasePropMap;
 		{	0,								0, 0, 0 }
 	};
 	const s32 gnProps_buttonSize = sizeof(gsProps_button) / sizeof(SObjPropMap) - 1;
+
+	SObjEventMap gsEvents_button[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_buttonSize = sizeof(gsEvents_button) / sizeof(SObjEventMap) - 1;
 
 	// _OBJ_TYPE_EDITBOX
 	SObjPropMap gsProps_editbox[] =
@@ -2132,6 +2535,55 @@ struct SBasePropMap;
 	};
 	const s32 gnProps_editboxSize = sizeof(gsProps_editbox) / sizeof(SObjPropMap) - 1;
 
+	SObjEventMap gsEvents_editbox[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_editboxSize = sizeof(gsEvents_editbox) / sizeof(SObjEventMap) - 1;
+
 	// _OBJ_TYPE_IMAGE
 	SObjPropMap gsProps_image[] =
 	{
@@ -2181,6 +2633,55 @@ struct SBasePropMap;
 		{	0,								0, 0, 0 }
 	};
 	const s32 gnProps_imageSize = sizeof(gsProps_image) / sizeof(SObjPropMap) - 1;
+
+	SObjEventMap gsEvents_image[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_imageSize = sizeof(gsEvents_image) / sizeof(SObjEventMap) - 1;
 
 	// _OBJ_TYPE_CHECKBOX
 	SObjPropMap gsProps_checkbox[] =
@@ -2261,6 +2762,55 @@ struct SBasePropMap;
 	};
 	const s32 gnProps_checkboxSize = sizeof(gsProps_checkbox) / sizeof(SObjPropMap) - 1;
 
+	SObjEventMap gsEvents_checkbox[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_checkboxSize = sizeof(gsEvents_checkbox) / sizeof(SObjEventMap) - 1;
+
 	// _OBJ_TYPE_OPTION
 	SObjPropMap gsProps_option[] =
 	{
@@ -2335,6 +2885,55 @@ struct SBasePropMap;
 	};
 	const s32 gnProps_optionSize = sizeof(gsProps_option) / sizeof(SObjPropMap) - 1;
 
+	SObjEventMap gsEvents_option[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_optionSize = sizeof(gsEvents_option) / sizeof(SObjEventMap) - 1;
+
 	// _OBJ_TYPE_RADIO
 	SObjPropMap gsProps_radio[] =
 	{
@@ -2361,6 +2960,55 @@ struct SBasePropMap;
 		{	0,								0, 0, 0 }
 	};
 	const s32 gnProps_radioSize = sizeof(gsProps_radio) / sizeof(SObjPropMap) - 1;
+
+	SObjEventMap gsEvents_radio[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_radioSize = sizeof(gsEvents_radio) / sizeof(SObjEventMap) - 1;
 
 	// _OBJ_TYPE_CMDGROUP
 	SObjPropMap gsProps_cmdgroup[] =
@@ -2408,6 +3056,55 @@ struct SBasePropMap;
 	};
 	const s32 gnProps_cmdgroupSize = sizeof(gsProps_cmdgroup) / sizeof(SObjPropMap) - 1;
 
+	SObjEventMap gsEvents_cmdgroup[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_cmdgroupSize = sizeof(gsEvents_cmdgroup) / sizeof(SObjEventMap) - 1;
+
 	// _OBJ_TYPE_OPTGROUP
 	SObjPropMap gsProps_optgroup[] =
 	{
@@ -2454,6 +3151,55 @@ struct SBasePropMap;
 		{	0,								0, 0, 0 }
 	};
 	const s32 gnProps_optgroupSize = sizeof(gsProps_optgroup) / sizeof(SObjPropMap) - 1;
+
+	SObjEventMap gsEvents_optgroup[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_optgroupSize = sizeof(gsEvents_optgroup) / sizeof(SObjEventMap) - 1;
 
 	// _OBJ_TYPE_LISTBOX
 	SObjPropMap gsProps_listbox[] =
@@ -2557,6 +3303,55 @@ struct SBasePropMap;
 		{	0,								0, 0, 0 }
 	};
 	const s32 gnProps_listboxSize = sizeof(gsProps_listbox) / sizeof(SObjPropMap) - 1;
+
+	SObjEventMap gsEvents_listbox[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_listboxSize = sizeof(gsEvents_listbox) / sizeof(SObjEventMap) - 1;
 
 	// _OBJ_TYPE_COMBOBOX
 	SObjPropMap gsProps_combobox[] =
@@ -2678,6 +3473,55 @@ struct SBasePropMap;
 	};
 	const s32 gnProps_comboboxSize = sizeof(gsProps_combobox) / sizeof(SObjPropMap) - 1;
 
+	SObjEventMap gsEvents_combobox[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_comboboxSize = sizeof(gsEvents_combobox) / sizeof(SObjEventMap) - 1;
+
 	// _OBJ_TYPE_FORMSET
 	SObjPropMap gsProps_formset[] =
 	{
@@ -2715,6 +3559,55 @@ struct SBasePropMap;
 		{	0,								0, 0, 0 },
 	};
 	const s32 gnProps_formsetSize = sizeof(gsProps_formset) / sizeof(SObjPropMap) - 1;
+
+	SObjEventMap gsEvents_formset[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_formsetSize = sizeof(gsEvents_formset) / sizeof(SObjEventMap) - 1;
 
 	// _OBJ_TYPE_TOOLBAR
 	SObjPropMap gsProps_toolbar[] =
@@ -2772,6 +3665,55 @@ struct SBasePropMap;
 	};
 	const s32 gnProps_toolbarSize = sizeof(gsProps_toolbar) / sizeof(SObjPropMap) - 1;
 
+	SObjEventMap gsEvents_toolbar[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_toolbarSize = sizeof(gsEvents_toolbar) / sizeof(SObjEventMap) - 1;
+
 	// _OBJ_TYPE_SEPARATOR
 	SObjPropMap gsProps_separator[] =
 	{
@@ -2792,6 +3734,55 @@ struct SBasePropMap;
 		{	0,								0, 0, 0 },
 	};
 	const s32 gnProps_separatorSize = sizeof(gsProps_separator) / sizeof(SObjPropMap) - 1;
+
+	SObjEventMap gsEvents_separator[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_separatorSize = sizeof(gsEvents_separator) / sizeof(SObjEventMap) - 1;
 
 	// _OBJ_TYPE_LINE
 	SObjPropMap gsProps_line[] =
@@ -2837,6 +3828,55 @@ struct SBasePropMap;
 		{	0,								0, 0, 0 },
 	};
 	const s32 gnProps_lineSize = sizeof(gsProps_line) / sizeof(SObjPropMap) - 1;
+
+	SObjEventMap gsEvents_line[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_lineSize = sizeof(gsEvents_line) / sizeof(SObjEventMap) - 1;
 
 	// _OBJ_TYPE_SHAPE
 	SObjPropMap gsProps_shape[] =
@@ -2887,6 +3927,55 @@ struct SBasePropMap;
 		{	0,								0, 0, 0 }
 	};
 	const s32 gnProps_shapeSize = sizeof(gsProps_shape) / sizeof(SObjPropMap) - 1;
+
+	SObjEventMap gsEvents_shape[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_shapeSize = sizeof(gsEvents_shape) / sizeof(SObjEventMap) - 1;
 
 	// _OBJ_TYPE_CONTAINER
 	SObjPropMap gsProps_container[] =
@@ -2942,6 +4031,55 @@ struct SBasePropMap;
 	};
 	const s32 gnProps_containerSize = sizeof(gsProps_container) / sizeof(SObjPropMap) - 1;
 
+	SObjEventMap gsEvents_container[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_containerSize = sizeof(gsEvents_container) / sizeof(SObjEventMap) - 1;
+
 	// _OBJ_TYPE_CONTROL
 	SObjPropMap gsProps_control[] =
 	{
@@ -2995,6 +4133,55 @@ struct SBasePropMap;
 		{	0,								0, 0, 0 }
 	};
 	const s32 gnProps_controlSize = sizeof(gsProps_control) / sizeof(SObjPropMap) - 1;
+
+	SObjEventMap gsEvents_control[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_controlSize = sizeof(gsEvents_control) / sizeof(SObjEventMap) - 1;
 
 	// _OBJ_TYPE_GRID
 	SObjPropMap gsProps_grid[] =
@@ -3098,6 +4285,55 @@ struct SBasePropMap;
 	};
 	const s32 gnProps_gridSize = sizeof(gsProps_grid) / sizeof(SObjPropMap) - 1;
 
+	SObjEventMap gsEvents_grid[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_gridSize = sizeof(gsEvents_grid) / sizeof(SObjEventMap) - 1;
+
 	// _OBJ_TYPE_COLUMN
 	SObjPropMap gsProps_column[] =
 	{
@@ -3165,6 +4401,55 @@ struct SBasePropMap;
 	};
 	const s32 gnProps_columnSize = sizeof(gsProps_column) / sizeof(SObjPropMap) - 1;
 
+	SObjEventMap gsEvents_column[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_columnSize = sizeof(gsEvents_column) / sizeof(SObjEventMap) - 1;
+
 	// _OBJ_TYPE_HEADER
 	SObjPropMap gsProps_header[] =
 	{
@@ -3209,6 +4494,55 @@ struct SBasePropMap;
 		{	0,								0, 0, 0 }
 	};
 	const s32 gnProps_headerSize = sizeof(gsProps_header) / sizeof(SObjPropMap) - 1;
+
+	SObjEventMap gsEvents_header[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_headerSize = sizeof(gsEvents_header) / sizeof(SObjEventMap) - 1;
 
 	// _OBJ_TYPE_OLEBOUND
 	SObjPropMap gsProps_olebound[] =
@@ -3255,6 +4589,55 @@ struct SBasePropMap;
 		{	0,								0, 0, 0 }
 	};
 	const s32 gnProps_oleboundSize = sizeof(gsProps_olebound) / sizeof(SObjPropMap) - 1;
+
+	SObjEventMap gsEvents_olebound[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_oleboundSize = sizeof(gsEvents_olebound) / sizeof(SObjEventMap) - 1;
 
 	// _OBJ_TYPE_OLECONTAIN
 	SObjPropMap gsProps_olecontain[] =
@@ -3303,6 +4686,55 @@ struct SBasePropMap;
 		{	0,								0, 0, 0 }
 	};
 	const s32 gnProps_olecontainSize = sizeof(gsProps_olecontain) / sizeof(SObjPropMap) - 1;
+
+	SObjEventMap gsEvents_olecontain[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_olecontainSize = sizeof(gsEvents_olecontain) / sizeof(SObjEventMap) - 1;
 
 	// _OBJ_TYPE_SPINNER
 	SObjPropMap gsProps_spinner[] =
@@ -3388,6 +4820,55 @@ struct SBasePropMap;
 	};
 	const s32 gnProps_spinnerSize = sizeof(gsProps_spinner) / sizeof(SObjPropMap) - 1;
 
+	SObjEventMap gsEvents_spinner[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_spinnerSize = sizeof(gsEvents_spinner) / sizeof(SObjEventMap) - 1;
+
 	// _OBJ_TYPE_TIMER
 	SObjPropMap gsProps_timer[] =
 	{
@@ -3413,6 +4894,55 @@ struct SBasePropMap;
 	};
 	const s32 gnProps_timerSize = sizeof(gsProps_timer) / sizeof(SObjPropMap) - 1;
 
+	SObjEventMap gsEvents_timer[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_timerSize = sizeof(gsEvents_timer) / sizeof(SObjEventMap) - 1;
+
 	// _OBJ_TYPE_HYPERLINK
 	SObjPropMap gsProps_hyperlink[] =
 	{
@@ -3432,6 +4962,55 @@ struct SBasePropMap;
 		{	0,								0, 0, 0 }
 	};
 	const s32 gnProps_hyperlinkSize = sizeof(gsProps_hyperlink) / sizeof(SObjPropMap) - 1;
+
+	SObjEventMap gsEvents_hyperlink[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_hyperlinkSize = sizeof(gsEvents_hyperlink) / sizeof(SObjEventMap) - 1;
 
 	// _OBJ_TYPE_COLLECTION
 	SObjPropMap gsProps_collection[] =
@@ -3453,6 +5032,55 @@ struct SBasePropMap;
 		{	0,								0, 0, 0 }
 	};
 	const s32 gnProps_collectionSize = sizeof(gsProps_collection) / sizeof(SObjPropMap) - 1;
+
+	SObjEventMap gsEvents_collection[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_collectionSize = sizeof(gsEvents_collection) / sizeof(SObjEventMap) - 1;
 
 	// _OBJ_TYPE_PAGE
 	SObjPropMap gsProps_page[] =
@@ -3509,6 +5137,55 @@ struct SBasePropMap;
 		{	0,								0, 0, 0 }
 	};
 	const s32 gnProps_pageSize = sizeof(gsProps_page) / sizeof(SObjPropMap) - 1;
+
+	SObjEventMap gsEvents_page[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_pageSize = sizeof(gsEvents_page) / sizeof(SObjEventMap) - 1;
 
 	// _OBJ_TYPE_PAGEFRAME
 	SObjPropMap gsProps_pageframe[] =
@@ -3567,6 +5244,55 @@ struct SBasePropMap;
 	};
 	const s32 gnProps_pageframeSize = sizeof(gsProps_pageframe) / sizeof(SObjPropMap) - 1;
 
+	SObjEventMap gsEvents_pageframe[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_pageframeSize = sizeof(gsEvents_pageframe) / sizeof(SObjEventMap) - 1;
+
 	// _OBJ_TYPE_SESSION
 	SObjPropMap gsProps_session[] =
 	{
@@ -3588,6 +5314,55 @@ struct SBasePropMap;
 		{	0,								0, 0, 0 }
 	};
 	const s32 gnProps_sessionSize = sizeof(gsProps_session) / sizeof(SObjPropMap) - 1;
+
+	SObjEventMap gsEvents_session[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_sessionSize = sizeof(gsEvents_session) / sizeof(SObjEventMap) - 1;
 
 	// _OBJ_TYPE_CUSTOM
 	SObjPropMap gsProps_custom[] =
@@ -3622,6 +5397,55 @@ struct SBasePropMap;
 	};
 	const s32 gnProps_customSize = sizeof(gsProps_custom) / sizeof(SObjPropMap) - 1;
 
+	SObjEventMap gsEvents_custom[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_customSize = sizeof(gsEvents_custom) / sizeof(SObjEventMap) - 1;
+
 	// _OBJ_TYPE_EXCEPTION
 	SObjPropMap gsProps_exception[] =
 	{
@@ -3648,6 +5472,55 @@ struct SBasePropMap;
 		{	0,								0, 0, 0 }
 	};
 	const s32 gnProps_exceptionSize = sizeof(gsProps_exception) / sizeof(SObjPropMap) - 1;
+
+	SObjEventMap gsEvents_exception[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_exceptionSize = sizeof(gsEvents_exception) / sizeof(SObjEventMap) - 1;
 
 	// _OBJ_TYPE_SETTINGS
 	// Note:  Any changes made here need to make sure their _ICODE_* value is also updated in gsProps_master[]
@@ -3715,6 +5588,55 @@ struct SBasePropMap;
 		{	0,											0, 0, 0 }
 	};
 	const s32 gnProps_settingsSize = sizeof(gsProps_settings) / sizeof(SObjPropMap) - 1;
+
+	SObjEventMap gsEvents_settings[] =
+	{
+		{	_EVENT_RESIZE,						(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,						(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,						(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,					(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,					(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,					(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,					(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,				(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,					(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,					(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,					(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,				(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,					(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,					(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,					(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,					(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,					(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,		(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,			(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,						(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,				(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,			(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,				(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,					(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,				(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,				(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,				(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,					(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,	(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,		(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,	(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,	(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_settingsSize = sizeof(gsEvents_settings) / sizeof(SObjEventMap) - 1;
 
 
 

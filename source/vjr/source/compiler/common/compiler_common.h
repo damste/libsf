@@ -337,8 +337,8 @@
 
 		// Native characters and symbols
 		// Note:  If it begins with an underscore, it then uses pairs of characters for a range until it reaches trailing nullsnull
-		{ "_azAZ\377\377__\000\000",1,			true,		_ICODE_ALPHA,							false,				_ICAT_GENERIC,					NULL,						false,						(uptr)&ii_onFind_countNbsp, null0,	null0	},
-		{ "_09\000\000",			1,			true,		_ICODE_NUMERIC,							false,				_ICAT_GENERIC,					&colorSynHi_numeric,		false,						(uptr)&ii_onFind_countNbsp, null0,	null0	},
+		{ "_azAZ\377\377__\000\000",1,			true,		_ICODE_ALPHA,							false,				_ICAT_GENERIC,					NULL,						false,						null0,					(uptr)&ii_onFind_countNbsp, null0	},
+		{ "_09\000\000",			1,			true,		_ICODE_NUMERIC,							false,				_ICAT_GENERIC,					&colorSynHi_numeric,		false,						null0,					(uptr)&ii_onFind_countNbsp, null0	},
 		{ " ",						1,			true,		_ICODE_WHITESPACE,						false,				_ICAT_GENERIC,					&colorSynHi_comment1,		false,						null0,					null0,		null0	},
 		{ "\t",						1,			true,		_ICODE_WHITESPACE,						false,				_ICAT_GENERIC,					&colorSynHi_comment1,		false,						null0,					null0,		null0	},
 		{ "___",					1,			false,		_ICODE_UNDERSCORE,						false,				_ICAT_GENERIC,					NULL,						false,						null0,					null0,		null0	},

@@ -1856,6 +1856,35 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 
 //////////
 //
+// Called to retrieve the next component after the dot.  The dot should be 
+// either this component, or the one after it.  The next component will be
+// the one after that.
+//
+//////
+	SComp* iComps_getNext_afterDot(SThisCode* thisCode, SComp* comp)
+	{
+		if (comp)
+		{
+			if (comp->iCode == _ICODE_DOT_VARIABLE)
+			{
+				// Return the next one, whether it's right, wrong, or indifferent
+				return(comp->ll.nextComp);
+
+			} else if (comp->ll.nextComp && comp->ll.nextComp->iCode == _ICODE_DOT_VARIABLE) {
+				// Return the 2nd one, whether it's right, wrong, or indifferent
+				return(comp->ll.nextComp->ll.nextComp);
+			}
+		}
+
+		// If we get here, failure
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
 // Returns the Nth component beyond the current one
 //
 //////
@@ -3236,25 +3265,98 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 
 //////////
 //
-// Called to convert the value in this component to an s32 integer
+// Called to convert the value in this component to an s32 or s64 integer, or f64 floating point
 //
 //////
 	s32 iComps_getAs_s32(SThisCode* thisCode, SComp* comp)
 	{
-		s8 buffer[16];
+		s8 buffer[32];
 
 
 		if (comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data_s8 && comp->line->sourceCode_populatedLength > 0)
 		{
 			// Copy to a buffer
-			memset(buffer, 0, sizeof(buffer));
 			memcpy(buffer, comp->line->sourceCode->data_s8 + comp->start, min(comp->length, (s32)sizeof(buffer) - 1));
+			buffer[comp->length] = 0;
 			return(atoi(buffer));
-
-		} else {
-			// Component is not valid
-			return(-1);
 		}
+		
+		// Component is not valid
+		return(0);
+	}
+
+	s64 iComps_getAs_s64(SThisCode* thisCode, SComp* comp)
+	{
+		s8 buffer[32];
+
+
+		if (comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data_s8 && comp->line->sourceCode_populatedLength > 0)
+		{
+			// Copy to a buffer
+			memcpy(buffer, comp->line->sourceCode->data_s8 + comp->start, min(comp->length, (s32)sizeof(buffer) - 1));
+			buffer[comp->length] = 0;
+			return(_atoi64(buffer));
+		}
+
+		// Component is not valid
+		return(0);
+	}
+
+	f64 iComps_getAs_f64(SThisCode* thisCode, SComp* comp)
+	{
+		s8 buffer[32];
+
+
+		if (comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data_s8 && comp->line->sourceCode_populatedLength > 0)
+		{
+			// Copy to a buffer
+			memcpy(buffer, comp->line->sourceCode->data_s8 + comp->start, min(comp->length, (s32)sizeof(buffer) - 1));
+			buffer[comp->length] = 0;
+			return(atof(buffer));
+		}
+
+		// Component is not valid
+		return(0);
+	}
+
+
+
+
+//////////
+//
+// Called to get the value stored in the component as an s64.
+//
+// Note:  We simply process the component's content here.  No type checking.
+// Note:  We expect that the component has been identified appropriately as a numeric type, and that
+//        there is some character after which will cease its conversion, and thereby make it convert
+//        without forcing a NULL in there at the end before converting.
+//
+//////
+	s32 iiComps_getAs_s32(SComp* comp)
+	{
+		s8 buffer[32];
+
+		memcpy(buffer, comp->line->sourceCode->data_s8 + comp->start, min(comp->length, (s32)sizeof(buffer) - 1));
+		buffer[comp->length] = 0;
+		return(atoi(buffer));
+	}
+
+	s64 iiComps_getAs_s64(SComp* comp)
+	{
+		s8 buffer[32];
+
+		memcpy(buffer, comp->line->sourceCode->data_s8 + comp->start, min(comp->length, (s32)sizeof(buffer) - 1));
+		buffer[comp->length] = 0;
+		return(_atoi64(buffer));
+	}
+
+	f64 iiComps_getAs_f64(SComp* comp)
+	{
+		s8 buffer[32];
+
+		memcpy(buffer, comp->line->sourceCode->data_s8 + comp->start, min(comp->length, (s32)sizeof(buffer) - 1));
+		buffer[comp->length] = 0;
+		return(atof(buffer));
 	}
 
 
@@ -5770,15 +5872,15 @@ debug_break;
 // Called to search for dot variables (like lo.visible) and drill down to their [lo][.][visible] components
 //
 //////
-	bool iVariable_searchForDotName_andSet_byVar(SThisCode* thisCode, SComp* compDotName, SVariable* varNewValue)
+	bool iVariable_searchRoot_forDotName_andSet_byVar(SThisCode* thisCode, SComp* compDotName, SVariable* varNewValue, bool* tlError, u32* tnErrorNum)
 	{
-		s32			lnType;
+		s32			lnN, lnType;
 		bool		llResult;
 		void*		p;
 		SComp*		comp;
+		SComp*		compNext;
 		SWorkArea*	workarea;
 		SVariable*	var;
-		SEM*		sem;
 		SObject*	obj;
 		SFunction*	adhoc;
 		SFunction*	func;
@@ -5789,52 +5891,262 @@ debug_break;
 		llResult = false;
 		if (compDotName && varNewValue && compDotName->iCode == _ICODE_DOT_VARIABLE && (comp = compDotName->firstCombined))
 		{
-			// Try to find the root variable
-			if (iEngine_get_namedSource_andType(thisCode, comp, &p, &lnType))
-			{
-				// Note:  Every instance of p is a reference only
-				switch (lnType)
+			//////////
+			// Grab the next dot variable
+			//////
+				compNext = iComps_getNext_afterDot(thisCode, comp);
+				if (compNext)
 				{
-					case _SOURCE_TYPE_ALIAS:
-						workarea = (SWorkArea*)p;
-						break;
+					//////////
+					// Grab the value if it's numeric
+					//////
+						if (compNext->iCode == _ICODE_NUMERIC)
+							lnN = iiComps_getAs_s32(compNext);
 
-					case _SOURCE_TYPE_FIELD:
-						var = (SVariable*)p;
-						break;
+					//////////
+					// Try to find the root source for the first dot name
+					//////
+						if (iEngine_get_namedSourceAndType_byComp(thisCode, comp, &p, &lnType))
+						{
+							// Note:  Every instance of p is a reference only
+							switch (lnType)
+							{
+								case _SOURCE_TYPE_ALIAS:
+									// It's alias.field
+									workarea = (SWorkArea*)p;
+									if (compNext->iCode == _ICODE_NUMERIC)
+									{
+										// alias.N
+										*tlError	= true;
+										*tnErrorNum	= _ERROR_FEATURE_NOT_YET_CODED;
+										return(false);
 
-					case _SOURCE_TYPE_OBJECT:
-						obj = (SObject*)p;
-						break;
+									} else {
+										// alias.builtin()
+										*tlError	= true;
+										*tnErrorNum	= _ERROR_FEATURE_NOT_YET_CODED;
+										return(false);
+									}
+									break;
 
-					case _SOURCE_TYPE_PROPERTY:
-					case _SOURCE_TYPE_VARIABLE:
-						var = (SVariable*)p;
-						break;
+								case _SOURCE_TYPE_FIELD:
+									// It's field.N (only if it's character) or field.builtin()
+									var = (SVariable*)p;
+									if (compNext->iCode == _ICODE_NUMERIC)
+									{
+										// field.N
+										if (var->field->fr2->type == 'C')
+										{
+											// We can access the direct offset
+											if (lnN <= var->field->fr2->length)
+											{
+												// We can store it
 
-					case _SOURCE_TYPE_CODE:
-						sem = (SEM*)p;
-						break;
+											} else {
+												// It's beyond the end of the string
+												iError_silent();		// Silently pass thru
+												return(true);
+											}
 
-					case _SOURCE_TYPE_ADHOC:
-						adhoc = (SFunction*)p;
-						break;
+										} else {
+											// Not allowed
+											*tlError	= true;
+											*tnErrorNum	= _ERROR_FEATURE_NOT_AVAILABLE;
+											return(false);
+										}
 
-					case _SOURCE_TYPE_FUNCTION:
-						func = (SFunction*)p;
-						break;
+									} else {
+										// field.builtin()
+									}
+									break;
 
-					case _SOURCE_TYPE_DLLFUNC:
-						// Retrieving the parameters
-						dllfunc = (SDllFunc*)p;
-						break;
+								case _SOURCE_TYPE_OBJECT:
+									// It's a fundamental object, something like thisForm, parent, cparent, cparentN, etc., followed by ".something"
+									obj = (SObject*)p;
+									if (compNext->iCode == _ICODE_NUMERIC)
+									{
+										// obj.N
+										*tlError	= true;
+										*tnErrorNum	= _ERROR_FEATURE_NOT_YET_CODED;
+										return(false);
 
-					default:
-						// Should never happen because iEngine_get_namedSource_andType() should return a type we explicitly test for
-						iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, comp, false);
-						return(false);
+									} else {
+										// obj.something
+										// Need to process through to the something
+									}
+									break;
+
+								case _SOURCE_TYPE_PROPERTY:
+								// Note:  The only way it could be a property at this level is if they have NCSET(9) enabled and they're accessing a property that has a .N, or is an object with something after it
+								case _SOURCE_TYPE_VARIABLE:
+									var = (SVariable*)p;
+									switch (var->varType)
+									{
+										case _VAR_TYPE_OBJECT:
+											// It's lo.something
+											return(iVariable_searchObj_forDotName_andSet_byVar(thisCode, var->obj, compNext, varNewValue, tlError, tnErrorNum));
+
+										case _VAR_TYPE_VECTOR:
+											// It's vec.N or vec.builtin()
+											if (compNext->iCode == _ICODE_NUMERIC)
+											{
+												// vec.N
+												*tlError	= true;
+												*tnErrorNum	= _ERROR_FEATURE_NOT_YET_CODED;
+												return(false);
+
+											} else {
+												// It has to be a builtin() function
+												*tlError	= true;
+												*tnErrorNum	= _ERROR_FEATURE_NOT_YET_CODED;
+												return(false);
+											}
+											break;
+
+										case _VAR_TYPE_BITMAP:
+											// bitmap.N or bitmap.builtin()
+											*tlError	= true;
+											*tnErrorNum	= _ERROR_FEATURE_NOT_YET_CODED;
+											return(false);
+
+										case _VAR_TYPE_BITMAP_MOVIE:
+											// bitmap_movie.N or bitmap_movie.builtin()
+											*tlError	= true;
+											*tnErrorNum	= _ERROR_FEATURE_NOT_YET_CODED;
+											return(false);
+
+										case _VAR_TYPE_THISCODE:
+											// thisCode.N or thisCode.builtin()
+											*tlError	= true;
+											*tnErrorNum	= _ERROR_FEATURE_NOT_YET_CODED;
+											return(false);
+
+										case _VAR_TYPE_ARRAY:
+											// array.N or array.builtin()
+											*tlError	= true;
+											*tnErrorNum	= _ERROR_FEATURE_NOT_YET_CODED;
+											return(false);
+
+										case _VAR_TYPE_IDISPATCH:
+											// It's an OLE dispatch
+											*tlError	= true;
+											*tnErrorNum	= _ERROR_FEATURE_NOT_YET_CODED;
+											return(false);
+
+										default:
+											// Is it a normal variable type (data types)?
+											if (iVariable_isFundamentalType(thisCode, var))
+											{
+												// var.N or var.builtin()
+												if (compNext->iCode == _ICODE_NUMERIC)
+												{
+													// var.N
+													// Only valid on character variables
+													if (var->varType == _VAR_TYPE_CHARACTER)
+													{
+														// We can access the direct offset
+														if (lnN <= var->value.length)
+														{
+															// We can store it
+
+														} else {
+															// It's beyond the end of the string
+															iError_silent();		// Silently pass thru
+															return(true);
+														}
+
+													} else {
+														// Not allowed
+														*tlError	= true;
+														*tnErrorNum	= _ERROR_FEATURE_NOT_AVAILABLE;
+														return(false);
+													}
+
+												} else {
+													// var.builtin();
+													*tlError	= true;
+													*tnErrorNum	= _ERROR_FEATURE_NOT_YET_CODED;
+													return(false);
+												}
+
+											} else {
+												// They've requested something other than what is possible
+												*tlError	= true;
+												*tnErrorNum	= _ERROR_FEATURE_NOT_AVAILABLE;
+												return(false);
+											}
+											break;
+									}
+									break;
+
+								case _SOURCE_TYPE_ADHOC:
+									// It's adhoc.N or adhoc.builtin()
+									adhoc = (SFunction*)p;
+									if (compNext->iCode == _ICODE_NUMERIC)
+									{
+										// adhoc.N
+										*tlError	= true;
+										*tnErrorNum	= _ERROR_FEATURE_NOT_YET_CODED;
+										return(false);
+
+									} else {
+										// adhoc.builtin()
+										*tlError	= true;
+										*tnErrorNum	= _ERROR_FEATURE_NOT_YET_CODED;
+										return(false);
+									}
+									break;
+
+								case _SOURCE_TYPE_FUNCTION:
+									// It's code.N or code.builtin()
+									func = (SFunction*)p;
+									if (compNext->iCode == _ICODE_NUMERIC)
+									{
+										// func.N
+										*tlError	= true;
+										*tnErrorNum	= _ERROR_FEATURE_NOT_YET_CODED;
+										return(false);
+
+									} else {
+										// func.builtin()
+										*tlError	= true;
+										*tnErrorNum	= _ERROR_FEATURE_NOT_YET_CODED;
+										return(false);
+									}
+									break;
+
+								case _SOURCE_TYPE_DLLFUNC:
+									// It's dllfunc.N or dllfunc.builtin()
+									dllfunc = (SDllFunc*)p;
+									if (compNext->iCode == _ICODE_NUMERIC)
+									{
+										// dllfunc.N
+										*tlError	= true;
+										*tnErrorNum	= _ERROR_FEATURE_NOT_YET_CODED;
+										return(false);
+
+									} else {
+										// dllfunc.builtin()
+										*tlError	= true;
+										*tnErrorNum	= _ERROR_FEATURE_NOT_YET_CODED;
+										return(false);
+									}
+									break;
+
+								default:
+									// Should never happen because iEngine_get_namedSource_andType() should return a type we explicitly test for
+									iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, comp, false);
+									return(false);
+							}
+						}
+
+				} else {
+					// Syntax error
+					*tlError	= true;
+					*tnErrorNum	= _ERROR_SYNTAX;
+					llResult	= false;
 				}
-			}
+
 		}
 
 
@@ -5842,6 +6154,47 @@ debug_break;
 		// Indicate our result
 		//////
 			return(llResult);
+	}
+
+
+
+
+//////////
+//
+// Called to continue drilling down in/on an object in a dot sequence
+//
+//////
+	bool iVariable_searchObj_forDotName_andSet_byVar(SThisCode* thisCode, SObject* obj, SComp* comp, SVariable* varNewValue, bool* tlError, u32* tnErrorNum)
+	{
+		s32		lnN, lnType;
+		void*	p;
+		SComp*	compNext;
+
+
+		// Make sure our environment is sane
+		if (obj && comp && varNewValue && tlError && tnErrorNum)
+		{
+
+			//////////
+			// Grab the next dot component (if any)
+			//////
+				compNext = iComps_getNext_afterDot(thisCode, comp);
+				if (compNext->iCode == _ICODE_NUMERIC)
+					lnN = iiComps_getAs_s32(compNext);
+
+
+			//////////
+			// See if we can find the indicated attribute
+			//////
+				if (iEngine_get_namedSourceAndType_ofObj_byComp(thisCode, obj, comp, &p, &lnType))
+				{
+				}
+
+		
+		}
+
+		// If we get here, failure
+		return(false);
 	}
 
 
@@ -6085,7 +6438,7 @@ debug_break;
 // Returns the fundamental type
 //
 //////
-	SComp* iVariable_getRelatedComp(SThisCode* thisCode, SVariable* var)
+	SComp* iVariable_get_relatedComp(SThisCode* thisCode, SVariable* var)
 	{
 		// If it's valid, convey
 		if (var)
@@ -6103,7 +6456,7 @@ debug_break;
 // Returns the fundamental weakly typed xbase variable form that would match the actual varType.
 //
 //////
-	s32 iVariable_fundamentalType(SThisCode* thisCode, SVariable* var)
+	s32 iVariable_get_fundamentalType(SThisCode* thisCode, SVariable* var)
 	{
 		if (var)
 		{
@@ -6117,6 +6470,14 @@ debug_break;
 				case _VAR_TYPE_OBJECT:
 				case _VAR_TYPE_THISCODE:
 				case _VAR_TYPE_CHARACTER:
+				case _VAR_TYPE_DATE:
+				case _VAR_TYPE_DATETIME:
+				case _VAR_TYPE_DATETIMEX:
+				case _VAR_TYPE_LOGICAL:
+				case _VAR_TYPE_BITMAP:
+				case _VAR_TYPE_GUID8:
+				case _VAR_TYPE_GUID16:
+				case _VAR_TYPE_FIELD:
 					// These are already fundamental types
 					return(var->varType);
 
@@ -6136,24 +6497,27 @@ debug_break;
 				case _VAR_TYPE_U8:
 					return(_VAR_TYPE_NUMERIC);
 
-				case _VAR_TYPE_DATE:
-				case _VAR_TYPE_DATETIME:
-				case _VAR_TYPE_DATETIMEX:
-				case _VAR_TYPE_LOGICAL:
-				case _VAR_TYPE_BITMAP:
-					// These are already fundamental types
-					return(var->varType);
-
 // TODO:  Not yet implemented:
 // 				case _VAR_TYPE_ARRAY
-// 				case _VAR_TYPE_GUID8
-// 				case _VAR_TYPE_GUID16
-// 				case _VAR_TYPE_FIELD
 			}
 		}
 
 		// If we get here, unknown type
 		return(_VAR_TYPE_NULL);
+	}
+
+
+
+
+//////////
+//
+// Returns true or false if it's a fundamental data type
+//
+//////
+	bool iVariable_isFundamentalType(SThisCode* thisCode, SVariable* var)
+	{
+		// Fundamental types are basic data types ... they refer to one thing, and they directly store it
+		return(between(var->varType, _VAR_TYPE_FUNDAMENTAL_START, _VAR_TYPE_FUNDAMENTAL_END));
 	}
 
 
@@ -6418,7 +6782,7 @@ if (!gsProps_master[lnI].varInit)
 			//////////
 			// Are they both of the same fundamental type?
 			//////
-				if (iVariable_fundamentalType(thisCode, var1) == iVariable_fundamentalType(thisCode, var2))
+				if (iVariable_get_fundamentalType(thisCode, var1) == iVariable_get_fundamentalType(thisCode, var2))
 					return(true);
 
 
@@ -11992,29 +12356,6 @@ debug_break;
 
 //////////
 //
-// Called to get the value stored in the component as an s64.
-//
-// Note:  We simply process the component's content here.  No type checking.
-// Note:  We expect that the component has been identified appropriately as a numeric type, and that
-//        there is some character after which will cease its conversion, and thereby make it convert
-//        without forcing a NULL in there at the end before converting.
-//
-//////
-	s64 iiVariable_getCompAs_s64(SComp* comp)
-	{
-		return(_atoi64(comp->line->sourceCode->data + comp->start));
-	}
-
-	f64 iiVariable_getCompAs_f64(SComp* comp)
-	{
-		return(atof(comp->line->sourceCode->data + comp->start));
-	}
-
-
-
-
-//////////
-//
 // Compares two variables and returns -1, 0, or +1 indicating the relationship of the
 // left variable being less than, equal to, or greater than the right.
 //
@@ -12058,7 +12399,7 @@ debug_break;
 					return(iiVariable_compareMatchingTypes(thisCode, varLeft, varRight, tlError, tnErrorNum));
 
 
-				} else if (iVariable_fundamentalType(thisCode, varLeft) == iVariable_fundamentalType(thisCode, varRight)) {
+				} else if (iVariable_get_fundamentalType(thisCode, varLeft) == iVariable_get_fundamentalType(thisCode, varRight)) {
 					// They are the same general type
 					llLeftFp		= (varLeft->varType  >= _VAR_TYPE_NUMERIC_FLOATING_POINT_START	&&	varLeft->varType  <= _VAR_TYPE_NUMERIC_FLOATING_POINT_END);
 					llRightFp		= (varRight->varType >= _VAR_TYPE_NUMERIC_FLOATING_POINT_START	&&	varRight->varType <= _VAR_TYPE_NUMERIC_FLOATING_POINT_END);

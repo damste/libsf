@@ -134,7 +134,7 @@
 			{
 				if (!iVariable_isValid(varParam) || !(iVariable_isTypeDate(varParam) || iVariable_isTypeDatetime(varParam) || iVariable_isTypeDatetimeX(varParam)))
 				{
-					iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_getRelatedComp(thisCode, varParam), false);
+					iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varParam), false);
 					return;
 				}
 
@@ -163,7 +163,7 @@
 			{
 				if (!iVariable_isValid(varFirstWeek) || !iVariable_isTypeNumeric(varFirstWeek))
 				{
-					iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varFirstWeek), false);
+					iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varFirstWeek), false);
 					return;
 				}
 
@@ -172,13 +172,13 @@
 				if (error)
 				{
 					// An error extracting the value (should never happen)
-					iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varFirstWeek), false);
+					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varFirstWeek), false);
 					return;
 				}
 
 				if (lnMinDaysInWeek < 1 || 7 < lnMinDaysInWeek)
 				{
-					iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_getRelatedComp(thisCode, varFirstWeek), false);
+					iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(thisCode, varFirstWeek), false);
 					return;				
 				}
 
@@ -195,7 +195,7 @@
 			{
 				if (!iVariable_isValid(varFirstDayOfWeek) || !iVariable_isTypeNumeric(varFirstDayOfWeek))
 				{
-					iError_reportByNumber(thisCode, _ERROR_P3_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varFirstDayOfWeek), false);
+					iError_reportByNumber(thisCode, _ERROR_P3_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varFirstDayOfWeek), false);
 					return;
 				}
 
@@ -204,13 +204,13 @@
 				if (error)
 				{
 					// An error extracting the value (should never happen)
-					iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varFirstDayOfWeek), false);
+					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varFirstDayOfWeek), false);
 					return;
 				}
 
 				if (lnFirstDayOfWeek < 0 || 6 < lnFirstDayOfWeek)
 				{
-					iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_getRelatedComp(thisCode, varFirstWeek), false);
+					iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(thisCode, varFirstWeek), false);
 					return;				
 				}
 
@@ -231,7 +231,7 @@
 		//////
 			result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_S32, (cs8*)&lnWeek, 4, false);
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_getRelatedComp(thisCode, varParam), false);
+				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varParam), false);
 
 
 		//////////

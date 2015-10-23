@@ -217,6 +217,7 @@
 			case _ERROR_DLL_NOT_FOUND:						{	iError_report(thisCode, cgcDllNotFound,						tlInvasive);		break;	}
 			case _ERROR_FUNCTION_NOT_FOUND:					{	iError_report(thisCode, cgcFunctionNotFound,				tlInvasive);		break;	}
 			case _ERROR_VARIABLE_IS_FIXED:					{	iError_report(thisCode, cgcVariableIsFixed,					tlInvasive);		break;	}
+			case _ERROR_FEATURE_NOT_YET_CODED:				{	iError_report(thisCode, cgcFeatureNotYetCoded,				tlInvasive);		break;	}
 
 		}
 
@@ -238,6 +239,20 @@
 //
 //////
 	void iError_track(void)
+	{
+		debug_nop;
+	}
+
+
+
+
+//////////
+//
+// A place where silent errors pass thru without affecting anything.
+// Ultimately they could be used to signal warnings, or meta data calls.
+//
+//////
+	void iError_silent(void)
 	{
 		debug_nop;
 	}
@@ -1294,7 +1309,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString1) || !iVariable_isTypeCharacter(varString1))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varString1), false);
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varString1), false);
 				return;
 			}
 
@@ -1304,7 +1319,7 @@
 		//////
 			if (!iVariable_isValid(varString2) || !iVariable_isTypeCharacter(varString2))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varString2), false);
+				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varString2), false);
 				return;
 			}
 
@@ -1377,7 +1392,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varNum1) || !iVariable_isTypeNumeric(varNum1))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varNum1), false);
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNum1), false);
 				return;
 			}
 
@@ -1387,7 +1402,7 @@
 		//////
 			if (!iVariable_isValid(varNum2) || !iVariable_isTypeNumeric(varNum2))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varNum2), false);
+				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNum2), false);
 				return;
 			}
 
@@ -1401,7 +1416,7 @@
 				lfValue1 = iiVariable_getAs_f64(thisCode, varNum1, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varNum1), false);
+					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum1), false);
 					return;
 				}
 
@@ -1416,7 +1431,7 @@
 						lfValue2 = iiVariable_getAs_f64(thisCode, varNum2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varNum2), false);
+							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum2), false);
 							return;
 						}
 
@@ -1428,7 +1443,7 @@
 						lnValue2 = iiVariable_getAs_s64(thisCode, varNum2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varNum2), false);
+							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum2), false);
 							return;
 						}
 
@@ -1442,7 +1457,7 @@
 				lnValue1 = iiVariable_getAs_s64(thisCode, varNum1, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varNum1), false);
+					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum1), false);
 					return;
 				}
 
@@ -1453,7 +1468,7 @@
 					lfValue2 = iiVariable_getAs_f64(thisCode, varNum2, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varNum2), false);
+						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum2), false);
 						return;
 					}
 
@@ -1467,7 +1482,7 @@
 					lnValue2 = iiVariable_getAs_s64(thisCode, varNum2, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varNum2), false);
+						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum2), false);
 						return;
 					}
 
@@ -1536,7 +1551,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varNum1) || !iVariable_isTypeNumeric(varNum1))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varNum1), false);
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNum1), false);
 				return;
 			}
 
@@ -1546,7 +1561,7 @@
 		//////
 			if (!iVariable_isValid(varNum2) || !iVariable_isTypeNumeric(varNum2))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varNum2), false);
+				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNum2), false);
 				return;
 			}
 
@@ -1560,7 +1575,7 @@
 				lfValue1 = iiVariable_getAs_f64(thisCode, varNum1, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varNum1), false);
+					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum1), false);
 					return;
 				}
 
@@ -1575,7 +1590,7 @@
 						lfValue2 = iiVariable_getAs_f64(thisCode, varNum2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varNum2), false);
+							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum2), false);
 							return;
 						}
 
@@ -1587,7 +1602,7 @@
 						lnValue2 = iiVariable_getAs_s64(thisCode, varNum2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varNum2), false);
+							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum2), false);
 							return;
 						}
 
@@ -1601,7 +1616,7 @@
 				lnValue1 = iiVariable_getAs_s64(thisCode, varNum1, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varNum1), false);
+					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum1), false);
 					return;
 				}
 
@@ -1612,7 +1627,7 @@
 					lfValue2 = iiVariable_getAs_f64(thisCode, varNum2, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varNum2), false);
+						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum2), false);
 						return;
 					}
 
@@ -1626,7 +1641,7 @@
 					lnValue2 = iiVariable_getAs_s64(thisCode, varNum2, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varNum2), false);
+						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum2), false);
 						return;
 					}
 
@@ -1695,7 +1710,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varNum1) || !iVariable_isTypeNumeric(varNum1))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varNum1), false);
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNum1), false);
 				return;
 			}
 
@@ -1705,7 +1720,7 @@
 		//////
 			if (!iVariable_isValid(varNum2) || !iVariable_isTypeNumeric(varNum2))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varNum2), false);
+				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNum2), false);
 				return;
 			}
 
@@ -1719,7 +1734,7 @@
 				lfValue1 = iiVariable_getAs_f64(thisCode, varNum1, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varNum1), false);
+					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum1), false);
 					return;
 				}
 
@@ -1734,7 +1749,7 @@
 						lfValue2 = iiVariable_getAs_f64(thisCode, varNum2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varNum2), false);
+							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum2), false);
 							return;
 						}
 
@@ -1746,7 +1761,7 @@
 						lnValue2 = iiVariable_getAs_s64(thisCode, varNum2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varNum2), false);
+							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum2), false);
 							return;
 						}
 
@@ -1760,7 +1775,7 @@
 				lnValue1 = iiVariable_getAs_s64(thisCode, varNum1, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varNum1), false);
+					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum1), false);
 					return;
 				}
 
@@ -1771,7 +1786,7 @@
 					lfValue2 = iiVariable_getAs_f64(thisCode, varNum2, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varNum2), false);
+						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum2), false);
 						return;
 					}
 
@@ -1785,7 +1800,7 @@
 					lnValue2 = iiVariable_getAs_s64(thisCode, varNum2, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varNum2), false);
+						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum2), false);
 						return;
 					}
 
@@ -1854,7 +1869,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varNum1) || !iVariable_isTypeNumeric(varNum1))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varNum1), false);
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNum1), false);
 				return;
 			}
 
@@ -1864,7 +1879,7 @@
 		//////
 			if (!iVariable_isValid(varNum2) || !iVariable_isTypeNumeric(varNum2))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varNum2), false);
+				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNum2), false);
 				return;
 			}
 
@@ -1875,7 +1890,7 @@
 			lfValue1 = iiVariable_getAs_f64(thisCode, varNum2, false, &error, &errorNum);
 			if (lfValue1 == 0.0 || error)
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varNum2), false);
+				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNum2), false);
 				return;
 			}
 
@@ -1889,7 +1904,7 @@
 				lfValue1 = iiVariable_getAs_f64(thisCode, varNum1, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varNum1), false);
+					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum1), false);
 					return;
 				}
 
@@ -1904,7 +1919,7 @@
 						lfValue2 = iiVariable_getAs_f64(thisCode, varNum2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varNum2), false);
+							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum2), false);
 							return;
 						}
 
@@ -1916,7 +1931,7 @@
 						lnValue2 = iiVariable_getAs_s64(thisCode, varNum2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varNum2), false);
+							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum2), false);
 							return;
 						}
 
@@ -1930,7 +1945,7 @@
 				lnValue1 = iiVariable_getAs_s64(thisCode, varNum1, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varNum1), false);
+					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum1), false);
 					return;
 				}
 
@@ -1945,7 +1960,7 @@
 						lfValue2 = iiVariable_getAs_f64(thisCode, varNum2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varNum2), false);
+							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum2), false);
 							return;
 						}
 
@@ -1957,7 +1972,7 @@
 						lnValue2 = iiVariable_getAs_s64(thisCode, varNum2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(thisCode, errorNum, iVariable_getRelatedComp(thisCode, varNum2), false);
+							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum2), false);
 							return;
 						}
 
@@ -3191,7 +3206,7 @@
 						// Did we get a valid work area?
 						if (lnWorkArea < 0)
 						{
-							iError_reportByNumber(thisCode, _ERROR_ALIAS_NOT_FOUND, iVariable_getRelatedComp(thisCode, varInWorkArea), false);
+							iError_reportByNumber(thisCode, _ERROR_ALIAS_NOT_FOUND, iVariable_get_relatedComp(thisCode, varInWorkArea), false);
 							goto clean_exit;
 						}
 						// If we get here, we have our work area number

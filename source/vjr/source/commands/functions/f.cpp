@@ -166,7 +166,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varPathname) || !iVariable_isTypeCharacter(varPathname))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varPathname), false);
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varPathname), false);
 				return;
 			}
 
@@ -176,7 +176,7 @@
 		//////
 			if (!iVariable_isValid(varNewExtension) || !iVariable_isTypeCharacter(varNewExtension))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varNewExtension), false);
+				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNewExtension), false);
 				return;
 			}
 
@@ -207,7 +207,7 @@
 							if (lnLength >= (s32)sizeof(newFilename))
 							{
 								// Too big
-								iError_reportByNumber(thisCode, _ERROR_TOO_BIG_FOR_TARGET, iVariable_getRelatedComp(thisCode, varNewExtension), false);
+								iError_reportByNumber(thisCode, _ERROR_TOO_BIG_FOR_TARGET, iVariable_get_relatedComp(thisCode, varNewExtension), false);
 								return;
 							}
 
@@ -220,7 +220,7 @@
 							if (lnLength >= (s32)sizeof(newFilename))
 							{
 								// Too big
-								iError_reportByNumber(thisCode, _ERROR_TOO_BIG_FOR_TARGET, iVariable_getRelatedComp(thisCode, varNewExtension), false);
+								iError_reportByNumber(thisCode, _ERROR_TOO_BIG_FOR_TARGET, iVariable_get_relatedComp(thisCode, varNewExtension), false);
 								return;
 							}
 
@@ -387,7 +387,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varPathname) || !iVariable_isTypeCharacter(varPathname))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varPathname), false);
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varPathname), false);
 				return;
 			}
 
@@ -397,7 +397,7 @@
 		//////
 			if (!iVariable_isValid(varNewFilename) || !iVariable_isTypeCharacter(varNewFilename))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varNewFilename), false);
+				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNewFilename), false);
 				return;
 			}
 
@@ -425,7 +425,7 @@
 						if (lnLength >= (s32)sizeof(newFilename))
 						{
 							// Too big
-							iError_reportByNumber(thisCode, _ERROR_TOO_BIG_FOR_TARGET, iVariable_getRelatedComp(thisCode, varNewFilename), false);
+							iError_reportByNumber(thisCode, _ERROR_TOO_BIG_FOR_TARGET, iVariable_get_relatedComp(thisCode, varNewFilename), false);
 							return;
 						}
 
@@ -514,7 +514,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varPathname) || !iVariable_isTypeCharacter(varPathname))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varPathname), false);
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varPathname), false);
 				return;
 			}
 
@@ -524,7 +524,7 @@
 		//////
 		if (!iVariable_isValid(varNewPathname) || !iVariable_isTypeCharacter(varNewPathname))
 		{
-			iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varNewPathname), false);
+			iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNewPathname), false);
 			return;
 		}
 
@@ -559,7 +559,7 @@
 							if (lnLength >= (s32)sizeof(newFilename))
 							{
 								// Too big
-								iError_reportByNumber(thisCode, _ERROR_TOO_BIG_FOR_TARGET, iVariable_getRelatedComp(thisCode, varNewPathname), false);
+								iError_reportByNumber(thisCode, _ERROR_TOO_BIG_FOR_TARGET, iVariable_get_relatedComp(thisCode, varNewPathname), false);
 								return;
 							}
 
@@ -574,7 +574,7 @@
 							if (lnLength >= (s32)sizeof(newFilename))
 							{
 								// Too big
-								iError_reportByNumber(thisCode, _ERROR_TOO_BIG_FOR_TARGET, iVariable_getRelatedComp(thisCode, varNewPathname), false);
+								iError_reportByNumber(thisCode, _ERROR_TOO_BIG_FOR_TARGET, iVariable_get_relatedComp(thisCode, varNewPathname), false);
 								return;
 							}
 
@@ -665,7 +665,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varPathname) || !iVariable_isTypeCharacter(varPathname))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varPathname), false);
+				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varPathname), false);
 				return;
 			}
 
@@ -675,7 +675,7 @@
 		//////
 			if (!iVariable_isValid(varNewStem) || !iVariable_isTypeCharacter(varNewStem))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_getRelatedComp(thisCode, varNewStem), false);
+				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNewStem), false);
 				return;
 			}
 
@@ -709,7 +709,7 @@
 						if (lnLength >= (s32)sizeof(newFilename))
 						{
 							// Too big
-							iError_reportByNumber(thisCode, _ERROR_TOO_BIG_FOR_TARGET, iVariable_getRelatedComp(thisCode, varNewStem), false);
+							iError_reportByNumber(thisCode, _ERROR_TOO_BIG_FOR_TARGET, iVariable_get_relatedComp(thisCode, varNewStem), false);
 							return;
 						}
 

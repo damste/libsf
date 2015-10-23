@@ -116,7 +116,7 @@
 				// Initialize properties to VJr defaults
 				emptyNew->objType		= _OBJ_TYPE_EMPTY;
 				emptyNew->parent		= parent;
-				iiSubobj_resetToDefaultEmpty(thisCode, emptyNew, true, true, &gsProps_empty[0], gnProps_emptySize);
+				iiSubobj_resetToDefaultEmpty(thisCode, emptyNew, true, true, &gsProps_empty[0], gnProps_emptySize, &gsEvents_empty[0], gnEvents_emptySize);
 
 				// Initially populate
 				propSetEnabled(emptyNew, _LOGICAL_TRUE);
@@ -127,7 +127,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, emptyNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_empty, -1);
 
 				// Events
-				iEvents_resetToDefault(thisCode, emptyNew);
+				iEvents_resetToDefault(thisCode, emptyNew, &gsEvents_empty[0], gnEvents_emptySize);
 
 				// Initialize based on template
 				if (template_empty)
@@ -218,7 +218,7 @@
 				//////////
 				// Default initialization
 				//////
-					iiSubobj_resetToDefaultForm(thisCode, formNew, true, true, &gsProps_form[0], gnProps_formSize);
+					iiSubobj_resetToDefaultForm(thisCode, formNew, true, true, &gsProps_form[0], gnProps_formSize, &gsEvents_form[0], gnEvents_formSize);
 
 
 				// Initially populate
@@ -228,7 +228,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, formNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_form, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, formNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_form, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, formNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_form, -1);
-				iEvents_resetToDefault(thisCode, formNew);
+				iEvents_resetToDefault(thisCode, formNew, &gsEvents_form[0], gnEvents_formSize);
 				iObj_setSize(thisCode, formNew, 0, 0, 375, 250);
 
 				// Initialize based on template
@@ -296,7 +296,7 @@
 				//////////
 				// Default initialization
 				//////
-					iiSubobj_resetToDefaultSubform(thisCode, subformNew, true, true, &gsProps_subform[0], gnProps_subformSize);
+					iiSubobj_resetToDefaultSubform(thisCode, subformNew, true, true, &gsProps_subform[0], gnProps_subformSize, &gsEvents_subform[0], gnEvents_subformSize);
 
 				// Initially populate
 				propSetEnabled(subformNew, _LOGICAL_TRUE);
@@ -305,7 +305,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, subformNew, _INDEX_NAME);				iDatum_duplicate(&var->value, cgcName_subform, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, subformNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_subform, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, subformNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_subform, -1);
-				iEvents_resetToDefault(thisCode, subformNew);
+				iEvents_resetToDefault(thisCode, subformNew, &gsEvents_subform[0], gnEvents_subformSize);
 				iObj_setSize(thisCode, subformNew, 0, 0, 200, 100);
 
 				// Initialize based on template
@@ -379,7 +379,7 @@
 				//////////
 				// Default initialization
 				//////
-					iiSubobj_resetToDefaultCarousel(thisCode, carouselNew, true, true, &gsProps_carousel[0], gnProps_carouselSize);
+					iiSubobj_resetToDefaultCarousel(thisCode, carouselNew, true, true, &gsProps_carousel[0], gnProps_carouselSize, &gsEvents_carousel[0], gnEvents_carouselSize);
 
 
 				// Initially populate
@@ -389,7 +389,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, carouselNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_carousel, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, carouselNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_carousel, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, carouselNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_carousel, -1);
-				iEvents_resetToDefault(thisCode, carouselNew);
+				iEvents_resetToDefault(thisCode, carouselNew, &gsEvents_carousel[0], gnEvents_carouselSize);
 				iObj_setSize(thisCode, carouselNew, 0, 0, 320, 480);
 
 				// Initialize based on template
@@ -436,7 +436,7 @@
 				// Initialize properties to VJr defaults
 				riderNew->objType		= _OBJ_TYPE_RIDER;
 				riderNew->parent		= parent;
-				iiSubobj_resetToDefaultRider(thisCode, riderNew, true, true, &gsProps_rider[0], gnProps_riderSize);
+				iiSubobj_resetToDefaultRider(thisCode, riderNew, true, true, &gsProps_rider[0], gnProps_riderSize, &gsEvents_rider[0], gnEvents_riderSize);
 
 				// Initially populate
 				propSetEnabled(riderNew, _LOGICAL_TRUE);
@@ -445,7 +445,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, riderNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_rider, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, riderNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_rider, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, riderNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_rider, -1);
-				iEvents_resetToDefault(thisCode, riderNew);
+				iEvents_resetToDefault(thisCode, riderNew, &gsEvents_rider[0], gnEvents_riderSize);
 				iObj_setSize(thisCode, riderNew, 0, 0, 320, 480);
 
 				// Initialize based on template
@@ -492,7 +492,7 @@
 				// Initialize properties to VJr defaults
 				labelNew->objType		= _OBJ_TYPE_LABEL;
 				labelNew->parent		= parent;
-				iiSubobj_resetToDefaultLabel(thisCode, labelNew, true, true, &gsProps_label[0], gnProps_labelSize);
+				iiSubobj_resetToDefaultLabel(thisCode, labelNew, true, true, &gsProps_label[0], gnProps_labelSize, &gsEvents_label[0], gnEvents_labelSize);
 
 				// Initially populate
 				propSetEnabled(labelNew, _LOGICAL_TRUE);
@@ -501,7 +501,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, labelNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_label, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, labelNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_label, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, labelNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_label, -1);
-				iEvents_resetToDefault(thisCode, labelNew);
+				iEvents_resetToDefault(thisCode, labelNew, &gsEvents_label[0], gnEvents_labelSize);
 				iObj_setSize(thisCode, labelNew, 0, 0, 40, 17);
 
 				// Initialize based on template
@@ -548,7 +548,7 @@
 				// Initialize properties to VJr defaults
 				textboxNew->objType		= _OBJ_TYPE_TEXTBOX;
 				textboxNew->parent		= parent;
-				iiSubobj_resetToDefaultTextbox(thisCode, textboxNew, true, true, &gsProps_textbox[0], gnProps_textboxSize);
+				iiSubobj_resetToDefaultTextbox(thisCode, textboxNew, true, true, &gsProps_textbox[0], gnProps_textboxSize, &gsEvents_textbox[0], gnEvents_textboxSize);
 
 				// Initially populate
 				propSetEnabled(textboxNew, _LOGICAL_TRUE);
@@ -557,7 +557,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, textboxNew, _INDEX_NAME);				iDatum_duplicate(&var->value, cgcName_textbox, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, textboxNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_textbox, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, textboxNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_textbox, -1);
-				iEvents_resetToDefault(thisCode, textboxNew);
+				iEvents_resetToDefault(thisCode, textboxNew, &gsEvents_textbox[0], gnEvents_textboxSize);
 				iObj_setSize(thisCode, textboxNew, 0, 0, 100, 23);
 
 				// Initialize based on template
@@ -604,7 +604,7 @@
 				// Initialize properties to VJr defaults
 				buttonNew->objType		= _OBJ_TYPE_BUTTON;
 				buttonNew->parent		= parent;
-				iiSubobj_resetToDefaultButton(thisCode, buttonNew, true, true, &gsProps_button[0], gnProps_buttonSize);
+				iiSubobj_resetToDefaultButton(thisCode, buttonNew, true, true, &gsProps_button[0], gnProps_buttonSize, &gsEvents_button[0], gnEvents_buttonSize);
 
 				// Initially populate
 				propSetEnabled(buttonNew, _LOGICAL_TRUE);
@@ -613,7 +613,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, buttonNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_button, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, buttonNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_button, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, buttonNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_button, -1);
-				iEvents_resetToDefault(thisCode, buttonNew);
+				iEvents_resetToDefault(thisCode, buttonNew, &gsEvents_button[0], gnEvents_buttonSize);
 				iObj_setSize(thisCode, buttonNew, 0, 0, 84, 27);
 
 				// Initialize based on template
@@ -660,7 +660,7 @@
 				// Initialize properties to VJr defaults
 				editboxNew->objType		= _OBJ_TYPE_EDITBOX;
 				editboxNew->parent		= parent;
-				iiSubobj_resetToDefaultEditbox(thisCode, editboxNew, true, true, &gsProps_editbox[0], gnProps_editboxSize);
+				iiSubobj_resetToDefaultEditbox(thisCode, editboxNew, true, true, &gsProps_editbox[0], gnProps_editboxSize, &gsEvents_editbox[0], gnEvents_editboxSize);
 
 				// Initially populate
 				propSetEnabled(editboxNew, _LOGICAL_TRUE);
@@ -669,7 +669,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, editboxNew, _INDEX_NAME);				iDatum_duplicate(&var->value, cgcName_editbox, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, editboxNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_editbox, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, editboxNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_editbox, -1);
-				iEvents_resetToDefault(thisCode, editboxNew);
+				iEvents_resetToDefault(thisCode, editboxNew, &gsEvents_editbox[0], gnEvents_editboxSize);
 				iObj_setSize(thisCode, editboxNew, 0, 0, 100, 53);
 
 				// Initialize based on template
@@ -716,7 +716,7 @@
 				// Initialize properties to VJr defaults
 				imageNew->objType		= _OBJ_TYPE_IMAGE;
 				imageNew->parent		= parent;
-				iiSubobj_resetToDefaultImage(thisCode, imageNew, true, true, &gsProps_image[0], gnProps_imageSize);
+				iiSubobj_resetToDefaultImage(thisCode, imageNew, true, true, &gsProps_image[0], gnProps_imageSize, &gsEvents_image[0], gnEvents_imageSize);
 
 				// Initially populate
 				propSetEnabled(imageNew, _LOGICAL_TRUE);
@@ -725,7 +725,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, imageNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_image, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, imageNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_image, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, imageNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_image, -1);
-				iEvents_resetToDefault(thisCode, imageNew);
+				iEvents_resetToDefault(thisCode, imageNew, &gsEvents_image[0], gnEvents_imageSize);
 				iObj_setSize(thisCode, imageNew, 0, 0, 100, 36);
 
 				// Initialize based on template
@@ -793,7 +793,7 @@
 				//////////
 				// Default initialization
 				//////
-					iiSubobj_resetToDefaultCheckbox(thisCode, checkboxNew, true, true, &gsProps_checkbox[0], gnProps_checkboxSize);
+					iiSubobj_resetToDefaultCheckbox(thisCode, checkboxNew, true, true, &gsProps_checkbox[0], gnProps_checkboxSize, &gsEvents_checkbox[0], gnEvents_checkboxSize);
 
 
 				// Initially populate
@@ -803,7 +803,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, checkboxNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_checkbox, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, checkboxNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_checkbox, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, checkboxNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_checkbox, -1);
-				iEvents_resetToDefault(thisCode, checkboxNew);
+				iEvents_resetToDefault(thisCode, checkboxNew, &gsEvents_checkbox[0], gnEvents_checkboxSize);
 				iObj_setSize(thisCode, checkboxNew, 0, 0, 60, 17);
 
 				// Initialize based on template
@@ -850,7 +850,7 @@
 				// Initialize properties to VJr defaults
 				optionNew->objType		= _OBJ_TYPE_OPTION;
 				optionNew->parent		= parent;
-				iiSubobj_resetToDefaultOption(thisCode, optionNew, true, true, &gsProps_option[0], gnProps_optionSize);
+				iiSubobj_resetToDefaultOption(thisCode, optionNew, true, true, &gsProps_option[0], gnProps_optionSize, &gsEvents_option[0], gnEvents_optionSize);
 
 				// Initially populate
 				propSetEnabled(optionNew, _LOGICAL_TRUE);
@@ -859,7 +859,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, optionNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_option, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, optionNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_option, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, optionNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_option, -1);
-				iEvents_resetToDefault(thisCode, optionNew);
+				iEvents_resetToDefault(thisCode, optionNew, &gsEvents_option[0], gnEvents_optionSize);
 				iObj_setSize(thisCode, optionNew, 0, 0, 60, 40);
 
 				// Initialize based on template
@@ -906,7 +906,7 @@
 				// Initialize properties to VJr defaults
 				radioNew->objType		= _OBJ_TYPE_RADIO;
 				radioNew->parent		= parent;
-				iiSubobj_resetToDefaultRadio(thisCode, radioNew, true, true, &gsProps_radio[0], gnProps_radioSize);
+				iiSubobj_resetToDefaultRadio(thisCode, radioNew, true, true, &gsProps_radio[0], gnProps_radioSize, &gsEvents_radio[0], gnEvents_radioSize);
 
 				// Initially populate
 				propSetEnabled(radioNew, _LOGICAL_TRUE);
@@ -915,7 +915,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, radioNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_radio, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, radioNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_radio, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, radioNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_radio, -1);
-				iEvents_resetToDefault(thisCode, radioNew);
+				iEvents_resetToDefault(thisCode, radioNew, &gsEvents_radio[0], gnEvents_radioSize);
 				iObj_setSize(thisCode, radioNew, 0, 0, 100, 100);
 
 				// Initialize based on template
@@ -962,7 +962,7 @@
 				// Initialize properties to VJr defaults
 				cmdGroupNew->objType	= _OBJ_TYPE_CMDGROUP;
 				cmdGroupNew->parent		= parent;
-				iiSubobj_resetToDefaultCmdGroup(thisCode, cmdGroupNew, true, true, &gsProps_cmdgroup[0], gnProps_cmdgroupSize);
+				iiSubobj_resetToDefaultCmdGroup(thisCode, cmdGroupNew, true, true, &gsProps_cmdgroup[0], gnProps_cmdgroupSize, &gsEvents_cmdgroup[0], gnEvents_cmdgroupSize);
 
 				// Initially populate
 				propSetEnabled(cmdGroupNew, _LOGICAL_TRUE);
@@ -971,7 +971,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, cmdGroupNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_cmdgroup, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, cmdGroupNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_cmdgroup, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, cmdGroupNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_cmdgroup, -1);
-				iEvents_resetToDefault(thisCode, cmdGroupNew);
+				iEvents_resetToDefault(thisCode, cmdGroupNew, &gsEvents_cmdgroup[0], gnEvents_cmdgroupSize);
 				iObj_setSize(thisCode, cmdGroupNew, 0, 0, 100, 100);
 
 				// Initialize based on template
@@ -1018,7 +1018,7 @@
 				// Initialize properties to VJr defaults
 				optGroupNew->objType	= _OBJ_TYPE_OPTGROUP;
 				optGroupNew->parent		= parent;
-				iiSubobj_resetToDefaultOptGroup(thisCode, optGroupNew, true, true, &gsProps_optgroup[0], gnProps_optgroupSize);
+				iiSubobj_resetToDefaultOptGroup(thisCode, optGroupNew, true, true, &gsProps_optgroup[0], gnProps_optgroupSize, &gsEvents_optgroup[0], gnEvents_optgroupSize);
 
 				// Initially populate
 				propSetEnabled(optGroupNew, _LOGICAL_TRUE);
@@ -1027,7 +1027,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, optGroupNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_optgroup, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, optGroupNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_optgroup, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, optGroupNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_optgroup, -1);
-				iEvents_resetToDefault(thisCode, optGroupNew);
+				iEvents_resetToDefault(thisCode, optGroupNew, &gsEvents_optgroup[0], gnEvents_optgroupSize);
 				iObj_setSize(thisCode, optGroupNew, 0, 0, 100, 100);
 
 				// Initialize based on template
@@ -1074,7 +1074,7 @@
 				// Initialize properties to VJr defaults
 				listboxNew->objType	= _OBJ_TYPE_LISTBOX;
 				listboxNew->parent		= parent;
-				iiSubobj_resetToDefaultListbox(thisCode, listboxNew, true, true, &gsProps_listbox[0], gnProps_listboxSize);
+				iiSubobj_resetToDefaultListbox(thisCode, listboxNew, true, true, &gsProps_listbox[0], gnProps_listboxSize, &gsEvents_listbox[0], gnEvents_listboxSize);
 
 				// Initially populate
 				propSetEnabled(listboxNew, _LOGICAL_TRUE);
@@ -1083,7 +1083,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, listboxNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_listbox, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, listboxNew, _INDEX_CLASS);		iDatum_duplicate(&var->value, cgcName_listbox, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, listboxNew, _INDEX_BASECLASS);	iDatum_duplicate(&var->value, cgcName_listbox, -1);
-				iEvents_resetToDefault(thisCode, listboxNew);
+				iEvents_resetToDefault(thisCode, listboxNew, &gsEvents_listbox[0], gnEvents_listboxSize);
 				iObj_setSize(thisCode, listboxNew, 0, 0, 100, 100);
 
 				// Initialize based on template
@@ -1130,7 +1130,7 @@
 				// Initialize properties to VJr defaults
 				comboboxNew->objType	= _OBJ_TYPE_COMBOBOX;
 				comboboxNew->parent		= parent;
-				iiSubobj_resetToDefaultCombobox(thisCode, comboboxNew, true, true, &gsProps_combobox[0], gnProps_comboboxSize);
+				iiSubobj_resetToDefaultCombobox(thisCode, comboboxNew, true, true, &gsProps_combobox[0], gnProps_comboboxSize, &gsEvents_combobox[0], gnEvents_comboboxSize);
 
 				// Initially populate
 				propSetEnabled(comboboxNew, _LOGICAL_TRUE);
@@ -1139,7 +1139,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, comboboxNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_combobox, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, comboboxNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_combobox, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, comboboxNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_combobox, -1);
-				iEvents_resetToDefault(thisCode, comboboxNew);
+				iEvents_resetToDefault(thisCode, comboboxNew, &gsEvents_combobox[0], gnEvents_comboboxSize);
 				iObj_setSize(thisCode, comboboxNew, 0, 0, 100, 100);
 
 				// Initialize based on template
@@ -1186,7 +1186,7 @@
 				// Initialize properties to VJr defaults
 				formsetNew->objType	= _OBJ_TYPE_FORMSET;
 				formsetNew->parent		= parent;
-				iiSubobj_resetToDefaultFormset(thisCode, formsetNew, true, true, &gsProps_formset[0], gnProps_formsetSize);
+				iiSubobj_resetToDefaultFormset(thisCode, formsetNew, true, true, &gsProps_formset[0], gnProps_formsetSize, &gsEvents_formset[0], gnEvents_formsetSize);
 
 				// Initially populate
 				propSetEnabled(formsetNew, _LOGICAL_TRUE);
@@ -1195,7 +1195,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, formsetNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_formset, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, formsetNew, _INDEX_CLASS);		iDatum_duplicate(&var->value, cgcName_formset, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, formsetNew, _INDEX_BASECLASS);	iDatum_duplicate(&var->value, cgcName_formset, -1);
-				iEvents_resetToDefault(thisCode, formsetNew);
+				iEvents_resetToDefault(thisCode, formsetNew, &gsEvents_formset[0], gnEvents_formsetSize);
 				iObj_setSize(thisCode, formsetNew, 0, 0, 100, 100);
 
 				// Initialize based on template
@@ -1242,7 +1242,7 @@
 				// Initialize properties to VJr defaults
 				toolbarNew->objType		= _OBJ_TYPE_TOOLBAR;
 				toolbarNew->parent		= parent;
-				iiSubobj_resetToDefaultToolbar(thisCode, toolbarNew, true, true, &gsProps_toolbar[0], gnProps_toolbarSize);
+				iiSubobj_resetToDefaultToolbar(thisCode, toolbarNew, true, true, &gsProps_toolbar[0], gnProps_toolbarSize, &gsEvents_toolbar[0], gnEvents_toolbarSize);
 
 				// Initially populate
 				propSetEnabled(toolbarNew, _LOGICAL_TRUE);
@@ -1251,7 +1251,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, toolbarNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_toolbar, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, toolbarNew, _INDEX_CLASS);		iDatum_duplicate(&var->value, cgcName_toolbar, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, toolbarNew, _INDEX_BASECLASS);	iDatum_duplicate(&var->value, cgcName_toolbar, -1);
-				iEvents_resetToDefault(thisCode, toolbarNew);
+				iEvents_resetToDefault(thisCode, toolbarNew, &gsEvents_toolbar[0], gnEvents_toolbarSize);
 				iObj_setSize(thisCode, toolbarNew, 0, 0, 100, 100);
 
 				// Initialize based on template
@@ -1298,7 +1298,7 @@
 				// Initialize properties to VJr defaults
 				separatorNew->objType	= _OBJ_TYPE_SEPARATOR;
 				separatorNew->parent	= parent;
-				iiSubobj_resetToDefaultSeparator(thisCode, separatorNew, true, true, &gsProps_separator[0], gnProps_separatorSize);
+				iiSubobj_resetToDefaultSeparator(thisCode, separatorNew, true, true, &gsProps_separator[0], gnProps_separatorSize, &gsEvents_separator[0], gnEvents_separatorSize);
 
 				// Initially populate
 				propSetEnabled(separatorNew, _LOGICAL_TRUE);
@@ -1307,7 +1307,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, separatorNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_separator, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, separatorNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_separator, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, separatorNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_separator, -1);
-				iEvents_resetToDefault(thisCode, separatorNew);
+				iEvents_resetToDefault(thisCode, separatorNew, &gsEvents_separator[0], gnEvents_separatorSize);
 				iObj_setSize(thisCode, separatorNew, 0, 0, 100, 100);
 
 				// Initialize based on template
@@ -1354,7 +1354,7 @@
 				// Initialize properties to VJr defaults
 				lineNew->objType	= _OBJ_TYPE_LINE;
 				lineNew->parent		= parent;
-				iiSubobj_resetToDefaultLine(thisCode, lineNew, true, true, &gsProps_line[0], gnProps_lineSize);
+				iiSubobj_resetToDefaultLine(thisCode, lineNew, true, true, &gsProps_line[0], gnProps_lineSize, &gsEvents_line[0], gnEvents_lineSize);
 
 				// Initially populate
 				propSetEnabled(lineNew, _LOGICAL_TRUE);
@@ -1363,7 +1363,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, lineNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_line, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, lineNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_line, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, lineNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_line, -1);
-				iEvents_resetToDefault(thisCode, lineNew);
+				iEvents_resetToDefault(thisCode, lineNew, &gsEvents_line[0], gnEvents_lineSize);
 				iObj_setSize(thisCode, lineNew, 0, 0, 100, 100);
 
 				// Initialize based on template
@@ -1410,7 +1410,7 @@
 				// Initialize properties to VJr defaults
 				shapeNew->objType	= _OBJ_TYPE_SHAPE;
 				shapeNew->parent	= parent;
-				iiSubobj_resetToDefaultShape(thisCode, shapeNew, true, true, &gsProps_shape[0], gnProps_shapeSize);
+				iiSubobj_resetToDefaultShape(thisCode, shapeNew, true, true, &gsProps_shape[0], gnProps_shapeSize, &gsEvents_shape[0], gnEvents_shapeSize);
 
 				// Initially populate
 				propSetEnabled(shapeNew, _LOGICAL_TRUE);
@@ -1419,7 +1419,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, shapeNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_shape, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, shapeNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_shape, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, shapeNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_shape, -1);
-				iEvents_resetToDefault(thisCode, shapeNew);
+				iEvents_resetToDefault(thisCode, shapeNew, &gsEvents_shape[0], gnEvents_shapeSize);
 				iObj_setSize(thisCode, shapeNew, 0, 0, 100, 100);
 
 				// Initialize based on template
@@ -1466,7 +1466,7 @@
 				// Initialize properties to VJr defaults
 				containerNew->objType	= _OBJ_TYPE_CONTAINER;
 				containerNew->parent	= parent;
-				iiSubobj_resetToDefaultContainer(thisCode, containerNew, true, true, &gsProps_container[0], gnProps_containerSize);
+				iiSubobj_resetToDefaultContainer(thisCode, containerNew, true, true, &gsProps_container[0], gnProps_containerSize, &gsEvents_container[0], gnEvents_containerSize);
 
 				// Initially populate
 				propSetEnabled(containerNew, _LOGICAL_TRUE);
@@ -1475,7 +1475,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, containerNew, _INDEX_NAME);		iDatum_duplicate(&var->value, cgcName_container, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, containerNew, _INDEX_CLASS);		iDatum_duplicate(&var->value, cgcName_container, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, containerNew, _INDEX_BASECLASS);	iDatum_duplicate(&var->value, cgcName_container, -1);
-				iEvents_resetToDefault(thisCode, containerNew);
+				iEvents_resetToDefault(thisCode, containerNew, &gsEvents_container[0], gnEvents_containerSize);
 				iObj_setSize(thisCode, containerNew, 0, 0, 100, 100);
 
 				// Initialize based on template
@@ -1522,7 +1522,7 @@
 				// Initialize properties to VJr defaults
 				controlNew->objType		= _OBJ_TYPE_CONTROL;
 				controlNew->parent		= parent;
-				iiSubobj_resetToDefaultControl(thisCode, controlNew, true, true, &gsProps_control[0], gnProps_controlSize);
+				iiSubobj_resetToDefaultControl(thisCode, controlNew, true, true, &gsProps_control[0], gnProps_controlSize, &gsEvents_control[0], gnEvents_controlSize);
 
 				// Initially populate
 				propSetEnabled(controlNew, _LOGICAL_TRUE);
@@ -1531,7 +1531,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, controlNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_control, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, controlNew, _INDEX_CLASS);		iDatum_duplicate(&var->value, cgcName_control, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, controlNew, _INDEX_BASECLASS);	iDatum_duplicate(&var->value, cgcName_control, -1);
-				iEvents_resetToDefault(thisCode, controlNew);
+				iEvents_resetToDefault(thisCode, controlNew, &gsEvents_control[0], gnEvents_controlSize);
 				iObj_setSize(thisCode, controlNew, 0, 0, 100, 100);
 
 				// Initialize based on template
@@ -1578,7 +1578,7 @@
 				// Initialize properties to VJr defaults
 				gridNew->objType	= _OBJ_TYPE_GRID;
 				gridNew->parent		= parent;
-				iiSubobj_resetToDefaultGrid(thisCode, gridNew, true, true, &gsProps_grid[0], gnProps_gridSize);
+				iiSubobj_resetToDefaultGrid(thisCode, gridNew, true, true, &gsProps_grid[0], gnProps_gridSize, &gsEvents_grid[0], gnEvents_gridSize);
 
 				// Initially populate
 				propSetEnabled(gridNew, _LOGICAL_TRUE);
@@ -1587,7 +1587,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, gridNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_grid, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, gridNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_grid, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, gridNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_grid, -1);
-				iEvents_resetToDefault(thisCode, gridNew);
+				iEvents_resetToDefault(thisCode, gridNew, &gsEvents_grid[0], gnEvents_gridSize);
 				iObj_setSize(thisCode, gridNew, 0, 0, 100, 100);
 
 				// Initialize based on template
@@ -1634,7 +1634,7 @@
 				// Initialize properties to VJr defaults
 				columnNew->objType	= _OBJ_TYPE_COLUMN;
 				columnNew->parent	= parent;
-				iiSubobj_resetToDefaultColumn(thisCode, columnNew, true, true, &gsProps_column[0], gnProps_columnSize);
+				iiSubobj_resetToDefaultColumn(thisCode, columnNew, true, true, &gsProps_column[0], gnProps_columnSize, &gsEvents_column[0], gnEvents_columnSize);
 
 				// Initially populate
 				propSetEnabled(columnNew, _LOGICAL_TRUE);
@@ -1643,7 +1643,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, columnNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_column, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, columnNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_column, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, columnNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_column, -1);
-				iEvents_resetToDefault(thisCode, columnNew);
+				iEvents_resetToDefault(thisCode, columnNew, &gsEvents_column[0], gnEvents_columnSize);
 				iObj_setSize(thisCode, columnNew, 0, 0, 100, 100);
 
 				// Initialize based on template
@@ -1690,7 +1690,7 @@
 				// Initialize properties to VJr defaults
 				headerNew->objType	= _OBJ_TYPE_HEADER;
 				headerNew->parent	= parent;
-				iiSubobj_resetToDefaultHeader(thisCode, headerNew, true, true, &gsProps_header[0], gnProps_headerSize);
+				iiSubobj_resetToDefaultHeader(thisCode, headerNew, true, true, &gsProps_header[0], gnProps_headerSize, &gsEvents_header[0], gnEvents_headerSize);
 
 				// Initially populate
 				propSetEnabled(headerNew, _LOGICAL_TRUE);
@@ -1699,7 +1699,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, headerNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_header, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, headerNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_header, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, headerNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_header, -1);
-				iEvents_resetToDefault(thisCode, headerNew);
+				iEvents_resetToDefault(thisCode, headerNew, &gsEvents_header[0], gnEvents_headerSize);
 				iObj_setSize(thisCode, headerNew, 0, 0, 100, 100);
 
 				// Initialize based on template
@@ -1746,7 +1746,7 @@
 				// Initialize properties to VJr defaults
 				oleBoundNew->objType	= _OBJ_TYPE_OLEBOUND;
 				oleBoundNew->parent		= parent;
-				iiSubobj_resetToDefaultOleBound(thisCode, oleBoundNew, true, true, &gsProps_olebound[0], gnProps_oleboundSize);
+				iiSubobj_resetToDefaultOleBound(thisCode, oleBoundNew, true, true, &gsProps_olebound[0], gnProps_oleboundSize, &gsEvents_olebound[0], gnEvents_oleboundSize);
 
 				// Initially populate
 				propSetEnabled(oleBoundNew, _LOGICAL_TRUE);
@@ -1755,7 +1755,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, oleBoundNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_olebound, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, oleBoundNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_olebound, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, oleBoundNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_olebound, -1);
-				iEvents_resetToDefault(thisCode, oleBoundNew);
+				iEvents_resetToDefault(thisCode, oleBoundNew, &gsEvents_olebound[0], gnEvents_oleboundSize);
 				iObj_setSize(thisCode, oleBoundNew, 0, 0, 100, 100);
 
 				// Initialize based on template
@@ -1802,7 +1802,7 @@
 				// Initialize properties to VJr defaults
 				oleContainNew->objType	= _OBJ_TYPE_CONTAINER;
 				oleContainNew->parent	= parent;
-				iiSubobj_resetToDefaultContainer(thisCode, oleContainNew, true, true, &gsProps_olecontain[0], gnProps_olecontainSize);
+				iiSubobj_resetToDefaultContainer(thisCode, oleContainNew, true, true, &gsProps_olecontain[0], gnProps_olecontainSize, &gsEvents_olecontain[0], gnEvents_olecontainSize);
 
 				// Initially populate
 				propSetEnabled(oleContainNew, _LOGICAL_TRUE);
@@ -1811,7 +1811,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, oleContainNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_olecontain, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, oleContainNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_olecontain, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, oleContainNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_olecontain, -1);
-				iEvents_resetToDefault(thisCode, oleContainNew);
+				iEvents_resetToDefault(thisCode, oleContainNew, &gsEvents_olecontain[0], gnEvents_olecontainSize);
 				iObj_setSize(thisCode, oleContainNew, 0, 0, 100, 100);
 
 				// Initialize based on template
@@ -1858,7 +1858,7 @@
 				// Initialize properties to VJr defaults
 				spinnerNew->objType		= _OBJ_TYPE_SPINNER;
 				spinnerNew->parent		= parent;
-				iiSubobj_resetToDefaultSpinner(thisCode, spinnerNew, true, true, &gsProps_spinner[0], gnProps_spinnerSize);
+				iiSubobj_resetToDefaultSpinner(thisCode, spinnerNew, true, true, &gsProps_spinner[0], gnProps_spinnerSize, &gsEvents_spinner[0], gnEvents_spinnerSize);
 
 				// Initially populate
 				propSetEnabled(spinnerNew, _LOGICAL_TRUE);
@@ -1867,7 +1867,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, spinnerNew, _INDEX_NAME);				iDatum_duplicate(&var->value, cgcName_spinner, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, spinnerNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_spinner, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, spinnerNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_spinner, -1);
-				iEvents_resetToDefault(thisCode, spinnerNew);
+				iEvents_resetToDefault(thisCode, spinnerNew, &gsEvents_spinner[0], gnEvents_spinnerSize);
 				iObj_setSize(thisCode, spinnerNew, 0, 0, 100, 100);
 
 				// Initialize based on template
@@ -1914,7 +1914,7 @@
 				// Initialize properties to VJr defaults
 				timerNew->objType	= _OBJ_TYPE_TIMER;
 				timerNew->parent	= parent;
-				iiSubobj_resetToDefaultTimer(thisCode, timerNew, true, true, &gsProps_timer[0], gnProps_timerSize);
+				iiSubobj_resetToDefaultTimer(thisCode, timerNew, true, true, &gsProps_timer[0], gnProps_timerSize, &gsEvents_timer[0], gnEvents_timerSize);
 
 				// Initially populate
 				propSetEnabled(timerNew, _LOGICAL_TRUE);
@@ -1923,7 +1923,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, timerNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_timer, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, timerNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_timer, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, timerNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_timer, -1);
-				iEvents_resetToDefault(thisCode, timerNew);
+				iEvents_resetToDefault(thisCode, timerNew, &gsEvents_timer[0], gnEvents_timerSize);
 				iObj_setSize(thisCode, timerNew, 0, 0, 100, 100);
 
 				// Initialize based on template
@@ -1970,7 +1970,7 @@
 				// Initialize properties to VJr defaults
 				hyperlinkNew->objType	= _OBJ_TYPE_HYPERLINK;
 				hyperlinkNew->parent	= parent;
-				iiSubobj_resetToDefaultHyperlink(thisCode, hyperlinkNew, true, true, &gsProps_hyperlink[0], gnProps_hyperlinkSize);
+				iiSubobj_resetToDefaultHyperlink(thisCode, hyperlinkNew, true, true, &gsProps_hyperlink[0], gnProps_hyperlinkSize, &gsEvents_hyperlink[0], gnEvents_hyperlinkSize);
 
 				// Initially populate
 				propSetEnabled(hyperlinkNew, _LOGICAL_TRUE);
@@ -1979,7 +1979,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, hyperlinkNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_hyperlink, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, hyperlinkNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_hyperlink, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, hyperlinkNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_hyperlink, -1);
-				iEvents_resetToDefault(thisCode, hyperlinkNew);
+				iEvents_resetToDefault(thisCode, hyperlinkNew, &gsEvents_hyperlink[0], gnEvents_hyperlinkSize);
 				iObj_setSize(thisCode, hyperlinkNew, 0, 0, 100, 100);
 
 				// Initialize based on template
@@ -2026,7 +2026,7 @@
 				// Initialize properties to VJr defaults
 				collectionNew->objType	= _OBJ_TYPE_COLLECTION;
 				collectionNew->parent	= parent;
-				iiSubobj_resetToDefaultCollection(thisCode, collectionNew, true, true, &gsProps_collection[0], gnProps_collectionSize);
+				iiSubobj_resetToDefaultCollection(thisCode, collectionNew, true, true, &gsProps_collection[0], gnProps_collectionSize, &gsEvents_collection[0], gnEvents_collectionSize);
 
 				// Initially populate
 				propSetEnabled(collectionNew, _LOGICAL_TRUE);
@@ -2035,7 +2035,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, collectionNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_collection, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, collectionNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_collection, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, collectionNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_collection, -1);
-				iEvents_resetToDefault(thisCode, collectionNew);
+				iEvents_resetToDefault(thisCode, collectionNew, &gsEvents_collection[0], gnEvents_collectionSize);
 				iObj_setSize(thisCode, collectionNew, 0, 0, 100, 100);
 
 				// Initialize based on template
@@ -2082,7 +2082,7 @@
 				// Initialize properties to VJr defaults
 				pageNew->objType	= _OBJ_TYPE_PAGE;
 				pageNew->parent		= parent;
-				iiSubobj_resetToDefaultPage(thisCode, pageNew, true, true, &gsProps_page[0], gnProps_pageSize);
+				iiSubobj_resetToDefaultPage(thisCode, pageNew, true, true, &gsProps_page[0], gnProps_pageSize, &gsEvents_page[0], gnEvents_pageSize);
 
 				// Initially populate
 				propSetEnabled(pageNew, _LOGICAL_TRUE);
@@ -2091,7 +2091,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, pageNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_page, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, pageNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_page, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, pageNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_page, -1);
-				iEvents_resetToDefault(thisCode, pageNew);
+				iEvents_resetToDefault(thisCode, pageNew, &gsEvents_page[0], gnEvents_pageSize);
 				iObj_setSize(thisCode, pageNew, 0, 0, 100, 100);
 
 				// Initialize based on template
@@ -2138,7 +2138,7 @@
 				// Initialize properties to VJr defaults
 				pageframeNew->objType	= _OBJ_TYPE_PAGEFRAME;
 				pageframeNew->parent	= parent;
-				iiSubobj_resetToDefaultPageframe(thisCode, pageframeNew, true, true, &gsProps_pageframe[0], gnProps_pageframeSize);
+				iiSubobj_resetToDefaultPageframe(thisCode, pageframeNew, true, true, &gsProps_pageframe[0], gnProps_pageframeSize, &gsEvents_pageframe[0], gnEvents_pageframeSize);
 
 				// Initially populate
 				propSetEnabled(pageframeNew, _LOGICAL_TRUE);
@@ -2147,7 +2147,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, pageframeNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_pageframe, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, pageframeNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_pageframe, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, pageframeNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_pageframe, -1);
-				iEvents_resetToDefault(thisCode, pageframeNew);
+				iEvents_resetToDefault(thisCode, pageframeNew, &gsEvents_pageframe[0], gnEvents_pageframeSize);
 				iObj_setSize(thisCode, pageframeNew, 0, 0, 100, 100);
 
 				// Initialize based on template
@@ -2194,7 +2194,7 @@
 				// Initialize properties to VJr defaults
 				sessionNew->objType		= _OBJ_TYPE_SESSION;
 				sessionNew->parent		= parent;
-				iiSubobj_resetToDefaultSession(thisCode, sessionNew, true, true, &gsProps_session[0], gnProps_sessionSize);
+				iiSubobj_resetToDefaultSession(thisCode, sessionNew, true, true, &gsProps_session[0], gnProps_sessionSize, &gsEvents_session[0], gnEvents_sessionSize);
 
 				// Initially populate
 				propSetEnabled(sessionNew, _LOGICAL_TRUE);
@@ -2203,7 +2203,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, sessionNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_session, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, sessionNew, _INDEX_CLASS);		iDatum_duplicate(&var->value, cgcName_session, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, sessionNew, _INDEX_BASECLASS);	iDatum_duplicate(&var->value, cgcName_session, -1);
-				iEvents_resetToDefault(thisCode, sessionNew);
+				iEvents_resetToDefault(thisCode, sessionNew, &gsEvents_session[0], gnEvents_sessionSize);
 				iObj_setSize(thisCode, sessionNew, 0, 0, 100, 100);
 
 				// Initialize based on template
@@ -2250,7 +2250,7 @@
 				// Initialize properties to VJr defaults
 				customNew->objType		= _OBJ_TYPE_CUSTOM;
 				customNew->parent		= parent;
-				iiSubobj_resetToDefaultCustom(thisCode, customNew, true, true, &gsProps_custom[0], gnProps_customSize);
+				iiSubobj_resetToDefaultCustom(thisCode, customNew, true, true, &gsProps_custom[0], gnProps_customSize, &gsEvents_custom[0], gnEvents_customSize);
 
 				// Initially populate
 				propSetEnabled(customNew, _LOGICAL_TRUE);
@@ -2259,7 +2259,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, customNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_custom, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, customNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_custom, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, customNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_custom, -1);
-				iEvents_resetToDefault(thisCode, customNew);
+				iEvents_resetToDefault(thisCode, customNew, &gsEvents_custom[0], gnEvents_customSize);
 				iObj_setSize(thisCode, customNew, 0, 0, 100, 100);
 
 				// Initialize based on template
@@ -2306,7 +2306,7 @@
 				// Initialize properties to VJr defaults
 				exceptionNew->objType		= _OBJ_TYPE_EXCEPTION;
 				exceptionNew->parent		= parent;
-				iiSubobj_resetToDefaultException(thisCode, exceptionNew, true, true, &gsProps_exception[0], gnProps_exceptionSize);
+				iiSubobj_resetToDefaultException(thisCode, exceptionNew, true, true, &gsProps_exception[0], gnProps_exceptionSize, &gsEvents_exception[0], gnEvents_exceptionSize);
 
 				// Initially populate
 				propSetEnabled(exceptionNew, _LOGICAL_TRUE);
@@ -2315,7 +2315,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, exceptionNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_exception, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, exceptionNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_exception, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, exceptionNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_exception, -1);
-				iEvents_resetToDefault(thisCode, exceptionNew);
+				iEvents_resetToDefault(thisCode, exceptionNew, &gsEvents_exception[0], gnEvents_exceptionSize);
 				iObj_setSize(thisCode, exceptionNew, 0, 0, 100, 100);
 
 				// Initialize based on template
@@ -2362,7 +2362,7 @@
 				// Initialize properties to VJr defaults
 				settingsNew->objType	= _OBJ_TYPE_SETTINGS;
 				settingsNew->parent		= parent;
-				iiSubobj_resetToDefaultSettings(thisCode, settingsNew, true, true, &gsProps_settings[0], gnProps_settingsSize);
+				iiSubobj_resetToDefaultSettings(thisCode, settingsNew, true, true, &gsProps_settings[0], gnProps_settingsSize, &gsEvents_settings[0], gnEvents_settingsSize);
 
 				// Initially populate
 				settingsNew->isRendered		= false;
@@ -2370,7 +2370,7 @@
 				var = iObjProp_get_variable_byIndex(thisCode, settingsNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_settings, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, settingsNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_settings, -1);
 				var = iObjProp_get_variable_byIndex(thisCode, settingsNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_settings, -1);
-				iEvents_resetToDefault(thisCode, settingsNew);
+				iEvents_resetToDefault(thisCode, settingsNew, &gsEvents_settings[0], gnEvents_settingsSize);
 
 				// Initialize based on template
 				if (template_Settings)
