@@ -6166,9 +6166,11 @@ debug_break;
 //////
 	bool iVariable_searchObj_forDotName_andSet_byVar(SThisCode* thisCode, SObject* obj, SComp* comp, SVariable* varNewValue, bool* tlError, u32* tnErrorNum)
 	{
-		s32		lnN, lnType;
-		void*	p;
-		SComp*	compNext;
+		s32			lnN, lnType, lnIndex;
+		bool		llResult;
+		void*		p;
+		SComp*		compNext;
+		SVariable*	var;
 
 
 		// Make sure our environment is sane
@@ -6186,8 +6188,88 @@ debug_break;
 			//////////
 			// See if we can find the indicated attribute
 			//////
-				if (iEngine_get_namedSourceAndType_ofObj_byComp(thisCode, obj, comp, &p, &lnType))
+				if (iiEngine_get_namedSourceAndType_ofObj_byComp(thisCode, obj, comp, &p, &lnType, &lnIndex))
 				{
+					switch (lnType)
+					{
+						case _SOURCE_TYPE_PROPERTY:
+							// It's the var
+							var = (SVariable*)p;
+							if (compNext)
+							{
+								// There is something after this one
+								switch (compNext->iCode)
+								{
+									case _ICODE_NUMERIC:
+										// lo.N
+										switch (var->varType)
+										{
+											case _VAR_TYPE_OBJECT:
+												break;
+
+											case _VAR_TYPE_CHARACTER:
+												break;
+										}
+										break;
+
+									case _ICODE_ALPHA:
+									case _ICODE_ALPHANUMERIC:
+										// lo.nextpart
+										// What are they descending into?
+										switch (var->varType)
+										{
+											case _VAR_TYPE_OBJECT:
+												// Descending into an object further
+												llResult = iVariable_searchObj_forDotName_andSet_byVar(thisCode, var->obj, compNext, varNewValue, tlError, tnErrorNum);
+												break;
+
+											default:
+												// Unhandled
+												*tlError	= true;
+												*tnErrorNum	= _ERROR_FEATURE_NOT_AVAILABLE;
+												llResult	= false;
+												break;
+										}
+										break;
+
+									default:
+										// Unhandled request
+										*tlError	= true;
+										*tnErrorNum	= _ERROR_FEATURE_NOT_AVAILABLE;
+										llResult	= false;
+										break;
+								}
+
+								// Delete our property variable
+								iVariable_delete(thisCode, var, true);
+
+								// Indicate our status
+								return(llResult);
+
+							} else {
+								// This is the termination point in the dot variable, so we're performing the set here
+								return(iObjProp_set(thisCode, obj, lnIndex, (SVariable*)p));
+							}
+							break;
+
+						case _SOURCE_TYPE_FUNCTION:
+						case _SOURCE_TYPE_DEFAULT_HANDLER:
+							// What are they setting?
+							if (varNewValue->varType == _VAR_TYPE_CHARACTER)
+							{
+								// They're setting the source code for this user method
+// TODO:  We could use a feature here to allow for an ADDITIVE method, so that the existing one remains, and this one is appended to the chain
+								return(iObjProp_set_function(thisCode, obj, lnIndex, &obj->ev.methods[lnIndex].userEventCode, &varNewValue->value));
+
+							} else {
+								// Unhandled request
+								*tlError	= true;
+								*tnErrorNum	= _ERROR_FEATURE_NOT_AVAILABLE;
+								llResult	= false;
+							}
+
+							break;
+					}
 				}
 
 		
@@ -9434,7 +9516,8 @@ debug_break;
 // Called to delete the indicated variable
 //
 //////
-	void iVariable_delete(SThisCode* thisCode, SVariable* var, bool tlDeleteSelf, bool tlOverrideDelete/*override delete should be used when a variable must fall out of scope, and therefore override its isProtected setting*/)
+	// Override delete should be used when a variable must fall out of scope, and therefore its isProtected setting is ignored
+	void iVariable_delete(SThisCode* thisCode, SVariable* var, bool tlDeleteSelf, bool tlOverrideDelete)
 	{
 		// Make sure our environment is sane
 		if (var && !var->isSysVar && (tlOverrideDelete || !var->isProtected))

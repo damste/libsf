@@ -162,7 +162,11 @@
 
 			// If populated, this SEM is only a placeholder for this instance, and the this->reference points to the real SEM we should use
 			SEM*		indirect;										// If not NULL, this SEM points to another SEM which is the real code block
-			// NOTE:  Everything below is used ONLY IF INDIRECT IS NULL
+
+
+//////////
+// NOTE:  Everything below is used ONLY IF INDIRECT IS NULL (except for cases of context usage)
+//////////
 
 
 		//////////
@@ -266,6 +270,7 @@
 	bool					iSEM_loadFromDisk					(SThisCode* thisCode, SObject* objParent, SEM* sem, cs8* tcPathname, bool isSourceCode, bool tlLogIt);
 	bool					iSEM_loadFromDisk					(SThisCode* thisCode, SObject* objParent, SEM* sem, cu8* tcPathname, bool isSourceCode, bool tlLogIt);
 	bool					iSEM_duplicate						(SThisCode* thisCode, SEM** root, SEM* chain, bool tlIncludeUndoHistory);
+	SEM*					iSEM_duplicate_asReference			(SThisCode* thisCode, SEM* sem);
 	void					iSEM_delete							(SThisCode* thisCode, SEM** root, bool tlDeleteSelf);
 	void					iSEM_deleteChain					(SThisCode* thisCode, SEM** root, bool tlDeleteSelf);
 	void					iSEM_deleteChainWithCallback		(SThisCode* thisCode, SEM** root, bool tlDeleteSelf, SEM_callback* ecb);

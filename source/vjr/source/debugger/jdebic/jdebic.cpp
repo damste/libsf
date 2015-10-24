@@ -565,8 +565,11 @@ return;
 				if (func->firstAdhoc)			iBuilder_append_label_uptr(data,	(s8*)"firstAdhoc",		(uptr)func->firstAdhoc);
 				if (func->firstFlowof)			iBuilder_append_label_uptr(data,	(s8*)"firstAdhoc",		(uptr)func->firstFlowof);
 
-				if (func->firstLine)			iBuilder_append_label_uptr(data,	(s8*)"firstLine",		(uptr)func->firstLine);
-				if (func->lastLine)				iBuilder_append_label_uptr(data,	(s8*)"lastLine",		(uptr)func->lastLine);
+//////////
+// Oct.24.2015 -- removed in favor of creating a SEM* reference for each block, which is func->sourceCode
+// 				if (func->firstLine)			iBuilder_append_label_uptr(data,	(s8*)"firstLine",		(uptr)func->firstLine);
+// 				if (func->lastLine)				iBuilder_append_label_uptr(data,	(s8*)"lastLine",		(uptr)func->lastLine);
+//////
 				iBuilder_appendData(data, " }", -1);
 
 

@@ -1186,7 +1186,7 @@ _asm nop;
 // Called to search for the named component within the object and return a reference to it if possible.
 //
 //////
-	bool iEngine_get_namedSourceAndType_ofObj_byComp(SThisCode* thisCode, SObject* obj, SComp* comp, void** p, s32* tnType)
+	bool iiEngine_get_namedSourceAndType_ofObj_byComp(SThisCode* thisCode, SObject* obj, SComp* comp, void** p, s32* tnType, s32* tnIndex)
 	{
 		s32			lnSourceType;
 		u32			lnIndex;
@@ -1196,12 +1196,13 @@ _asm nop;
 		//////////
 		// Try to locate the native property for the current this object
 		//////
-			var = iObjProp_get_variable_byComp(thisCode, obj, comp);
+			var = iObjProp_get_variable_byComp(thisCode, obj, comp, true, true, &lnIndex);
 			if (var)
 			{
 				// We found the native property
-				*tnType	= _SOURCE_TYPE_PROPERTY;
-				*p		= iVariable_copy(thisCode, var, true);
+				*tnType		= _SOURCE_TYPE_PROPERTY;
+				*p			= iVariable_copy(thisCode, var, true);
+				*tnIndex	= lnIndex;
 				return(true);
 			}
 
@@ -1221,7 +1222,8 @@ _asm nop;
 				else	/* this else should never happen */					*p = NULL;
 
 				// Store the type
-				*tnType	= lnSourceType;
+				*tnType		= lnSourceType;
+				*tnIndex	= lnIndex;
 				return(true);
 			}
 

@@ -575,6 +575,36 @@ debug_break;
 
 //////////
 //
+// Called to duplicate the SEM as a reference (points to the original one)
+//
+//////
+	SEM* iSEM_duplicate_asReference(SThisCode* thisCode, SEM* sem)
+	{
+		SEM* semNew;
+
+
+		logfunc(__FUNCTION__);
+		// Make sure our environment is sane
+		semNew = NULL;
+		if (sem)
+		{
+			// Create our copy
+			semNew = iSEM_allocate(thisCode, sem->isSourceCode);
+
+			// Indicate this is a reference to the original one
+			if (semNew)
+				semNew->indirect = sem;
+		}
+
+		// Signal our result
+		return(semNew);
+	}
+
+
+
+
+//////////
+//
 // Called to free the EM content, and optionally itself
 //
 //////
