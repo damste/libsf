@@ -158,6 +158,7 @@
 //////////
 // Source types
 //////
+	const s32		_SOURCE_TYPE_NOT_FOUND							= 0;
 	const s32		_SOURCE_TYPE_ALIAS								= 1;
 	const s32		_SOURCE_TYPE_FIELD								= 2;		// It's actually a variable, but it came from a field
 	const s32		_SOURCE_TYPE_OBJECT								= 3;
@@ -166,6 +167,7 @@
 	const s32		_SOURCE_TYPE_ADHOC								= 6;
 	const s32		_SOURCE_TYPE_FUNCTION							= 7;
 	const s32		_SOURCE_TYPE_DLLFUNC							= 8;
+	const s32		_SOURCE_TYPE_DEFAULT_HANDLER					= 9;
 
 
 //////////
@@ -1015,6 +1017,14 @@
 	const s32       _ICODE_CALCULATE                                = 2024;
 	const s32       _ICODE_CALL                                     = 2025;
 	const s32       _ICODE_CANCEL                                   = 2026;
+	const s32		_ICODE_CAROUSEL_ONTABCLOSE						= 2345;
+	const s32		_ICODE_CAROUSEL_ONTABCLICK						= 2346;
+	const s32		_ICODE_CAROUSEL_ONTABMOUSEWHEEL					= 2347;
+	const s32		_ICODE_CAROUSEL_ONTABMOUSEMOVE					= 2348;
+	const s32		_ICODE_CAROUSEL_ONTABMOUSEDOWN					= 2349;
+	const s32		_ICODE_CAROUSEL_ONTABMOUSEUP					= 2350;
+	const s32		_ICODE_CAROUSEL_ONTABMOUSEENTER					= 2351;
+	const s32		_ICODE_CAROUSEL_ONTABMOUSELEAVE					= 2352;
 	const s32       _ICODE_CARRY                                    = 2027;
 	const s32       _ICODE_CASE                                     = 2028;
 	const s32		_ICODE_CASESENSITIVECOMPARES					= 2294;
@@ -1210,6 +1220,39 @@
 	const s32       _ICODE_OFF                                      = 2177;
 	const s32       _ICODE_OF                                       = 2178;
 	const s32       _ICODE_OLEOBJECT                                = 2179;
+	const s32		_ICODE_ONLOAD									= 2353;
+	const s32		_ICODE_ONINIT									= 2354;
+	const s32		_ICODE_ONCREATED								= 2355;
+	const s32		_ICODE_ONRESIZE									= 2356;
+	const s32		_ICODE_ONMOVED									= 2357;
+	const s32		_ICODE_ONRENDER									= 2358;
+	const s32		_ICODE_ONPUBLISH								= 2359;
+	const s32		_ICODE_ONQUERYUNLOAD							= 2360;
+	const s32		_ICODE_ONDESTROY								= 2361;
+	const s32		_ICODE_ONUNLOAD									= 2362;
+	const s32		_ICODE_ONGOTFOCUS								= 2363;
+	const s32		_ICODE_ONLOSTFOCUS								= 2364;
+	const s32		_ICODE_ONADDOBJECT								= 2365;
+	const s32		_ICODE_ONADDPROPERTY							= 2366;
+	const s32		_ICODE_ONERROR									= 2367;
+	const s32		_ICODE_ONSCROLLED								= 2368;
+	const s32		_ICODE_ONSELECT									= 2369;
+	const s32		_ICODE_ONDESELECT								= 2370;
+	const s32		_ICODE_ONINTERACTIVECHANGE						= 2371;
+	const s32		_ICODE_ONPROGRAMMATICCHANGE						= 2372;
+	const s32		_ICODE_ONSETACTIVECONTROL						= 2373;
+	const s32		_ICODE_ONSPIN									= 2374;
+	const s32		_ICODE_ONMOUSECLICKEX							= 2375;
+	const s32		_ICODE_ONMOUSEDBLCLICKEX						= 2376;
+	const s32		_ICODE_ONMOUSEWHEEL								= 2377;
+	const s32		_ICODE_ONMOUSEMOVE								= 2378;
+	const s32		_ICODE_ONMOUSEDOWN								= 2379;
+	const s32		_ICODE_ONMOUSEUP								= 2380;
+	const s32		_ICODE_ONMOUSEENTER								= 2381;
+	const s32		_ICODE_ONMOUSELEAVE								= 2382;
+	const s32		_ICODE_ONMOUSEHOVER								= 2383;
+	const s32		_ICODE_ONKEYDOWN								= 2384;
+	const s32		_ICODE_ONKEYUP									= 2385;
 	const s32       _ICODE_OPEN                                     = 2180;
 	const s32       _ICODE_OPTIMIZE                                 = 2181;
 //	const s32       _ICODE_OR                                       = 2182;
@@ -1250,6 +1293,7 @@
 	const s32		_ICODE_REPROCESSATTEMPTS						= 2286;
 	const s32		_ICODE_REPROCESSINTERVAL						= 2309;
 	const s32		_ICODE_REPROCESSSYSTEM							= 2310;
+	const s32		_ICODE_RESIZE									= 2386;
 	const s32       _ICODE_RESOURCE                                 = 2214;
 	const s32		_ICODE_RESOURCES								= 2290;
 	const s32       _ICODE_RESTORE                                  = 2215;
@@ -1360,7 +1404,28 @@
 	// PRECISIONSBFP		= 2338			PRECISIONSBI			= 2339
 	// DEVICE_FILENAME		= 2340			ADDITIVE				= 2341
 	// NCSETPLACEHOLDER1	= 2342			NCSETPLACEHOLDER2		= 2343
-	// NCSETDIRECTNATIVEMEMBERS = 2344
+	// NCSETDIRECTNATIVEMEMBERS	= 2344		CAROUSEL_ONTABCLOSE		= 2345
+	// CAROUSEL_ONTABCLICK		= 2346		CAROUSEL_ONTABMOUSEWHEEL = 2347
+	// CAROUSEL_ONTABMOUSEMOVE	= 2348		CAROUSEL_ONTABMOUSEDOWN	= 2349
+	// CAROUSEL_ONTABMOUSEUP	= 2350		CAROUSEL_ONTABMOUSEENTER = 2351
+	// CAROUSEL_ONTABMOUSELEAVE	= 2352		ONLOAD					= 2353
+	// ONINIT				= 2354			ONCREATED				= 2355
+	// ONRESIZE				= 2356			ONMOVED					= 2357
+	// ONRENDER				= 2358			ONPUBLISH				= 2359
+	// ONQUERYUNLOAD		= 2360			ONDESTROY				= 2361
+	// ONUNLOAD				= 2362			ONGOTFOCUS				= 2363
+	// ONLOSTFOCUS			= 2364			ONADDOBJECT				= 2365
+	// ONADDPROPERTY		= 2366			ONERROR					= 2367
+	// ONSCROLLED			= 2368			ONSELECT				= 2369
+	// ONDESELECT			= 2370			ONINTERACTIVECHANGE		= 2371
+	// ONPROGRAMMATICCHANGE	= 2372			ONSETACTIVECONTROL		= 2373
+	// ONSPIN				= 2374			ONMOUSECLICKEX			= 2375
+	// ONMOUSEDBLCLICKEX	= 2376			ONMOUSEWHEEL			= 2377
+	// ONMOUSEMOVE			= 2378			ONMOUSEDOWN				= 2379
+	// ONMOUSEUP			= 2380			ONMOUSEENTER			= 2381
+	// ONMOUSELEAVE			= 2382			ONMOUSEHOVER			= 2383
+	// ONKEYDOWN			= 2384			ONKEYUP					= 2385
+	// RESIZE				= 2386
 
 
 //////////
@@ -1986,6 +2051,14 @@
 	const s8		cgc_calculate[]									= "calculate";
 	const s8		cgc_call[]										= "call";
 	const s8		cgc_cancel[]									= "cancel";
+	const s8		cgc_carousel_ontabclose[]						= "carouselontabclose";
+	const s8		cgc_carousel_ontabclick[]						= "carouselontabclick";
+	const s8		cgc_carousel_ontabmousewheel[]					= "carouselontabmousewheel";
+	const s8		cgc_carousel_ontabmousemove[]					= "carouselontabmousemove";
+	const s8		cgc_carousel_ontabmousedown[]					= "carouselontabmousedown";
+	const s8		cgc_carousel_ontabmouseup[]						= "carouselontabmouseup";
+	const s8		cgc_carousel_ontabmouseenter[]					= "carouselontabmouseenter";
+	const s8		cgc_carousel_ontabmouseleave[]					= "carouselontabmouseleave";
 	const s8		cgc_carry[]										= "carry";
 	const s8		cgc_case[]										= "case";
 	const s8		cgc_catch[]										= "catch";
@@ -2165,6 +2238,39 @@
 	const s8		cgc_of[]										= "of";
 	const s8		cgc_oleobject[]									= "oleobject";
 //	const s8		cgc_on[]										= "on";
+	const s8		cgc_onload[]									= "onload";
+	const s8		cgc_oninit[]									= "oninit";
+	const s8		cgc_oncreated[]									= "oncreated";
+	const s8		cgc_onresize[]									= "onresize";
+	const s8		cgc_onmoved[]									= "onmoved";
+	const s8		cgc_onrender[]									= "onrender";
+	const s8		cgc_onpublish[]									= "onpublish";
+	const s8		cgc_onqueryunload[]								= "onqueryunload";
+	const s8		cgc_ondestroy[]									= "ondestroy";
+	const s8		cgc_onunload[]									= "onunload";
+	const s8		cgc_ongotfocus[]								= "ongotfocus";
+	const s8		cgc_onlostfocus[]								= "onlostfocus";
+	const s8		cgc_onaddobject[]								= "onaddobject";
+	const s8		cgc_onaddproperty[]								= "onaddproperty";
+	const s8		cgc_onerror[]									= "onerror";
+	const s8		cgc_onscrolled[]								= "onscrolled";
+	const s8		cgc_onselect[]									= "onselect";
+	const s8		cgc_ondeselect[]								= "ondeselect";
+	const s8		cgc_oninteractivechange[]						= "oninteractivechange";
+	const s8		cgc_onprogrammaticchange[]						= "onprogrammaticchange";
+	const s8		cgc_onsetactivecontrol[]						= "onsetactivecontrol";
+	const s8		cgc_onspin[]									= "onspin";
+	const s8		cgc_onmouseclickex[]							= "onmouseclickex";
+	const s8		cgc_onmousedblclickex[]							= "onmousedblclickex";
+	const s8		cgc_onmousewheel[]								= "onmousewheel";
+	const s8		cgc_onmousemove[]								= "onmousemove";
+	const s8		cgc_onmousedown[]								= "onmousedown";
+	const s8		cgc_onmouseup[]									= "onemouseup";
+	const s8		cgc_onmouseenter[]								= "onmouseenter";
+	const s8		cgc_onmouseleave[]								= "onmouseleave";
+	const s8		cgc_onmousehover[]								= "onmousehover";
+	const s8		cgc_onkeydown[]									= "onkeydown";
+	const s8		cgc_onkeyup[]									= "onkeyup";
 	const s8		cgc_open[]										= "open";
 	const s8		cgc_optimize[]									= "optimize";
 //	const s8		cgc_order[]										= "order";
@@ -2209,6 +2315,7 @@
 	const s8		cgc_report[]									= "report";
 	const s8		cgc_reprocessattempts[]							= "reprocessattempts";
 	const s8		cgc_reprocess[]									= "reprocess";
+	const s8		cgc_resize[]									= "resize";
 	const s8		cgc_resource[]									= "resource";
 	const s8		cgc_resources[]									= "resources";
 	const s8		cgc_restore[]									= "restore";

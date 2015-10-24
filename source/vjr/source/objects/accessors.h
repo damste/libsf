@@ -974,9 +974,9 @@ struct SBasePropMap;
 	SVariable*				iObjProp_get							(SThisCode* thisCode, SObject* obj, s32 tnIndex);
 	s32						iObjProp_getVarAndType					(SThisCode* thisCode, SObject* obj, s32 tnIndex, SVariable** varDst);
 	SVariable*				iObjProp_get_variable_byIndex			(SThisCode* thisCode, SObject* obj, s32 tnIndex, SBasePropMap** baseProp = NULL, SObjPropMap** objProp = NULL);
-	SVariable*				iObjProp_get_variable_byComp			(SThisCode* thisCode, SObject* obj, SComp* comp,                  bool tlSearchBaseProps = true, bool tlSearchClassProps = true, u32* tnIndex = NULL);
-	SVariable*				iObjProp_get_variable_byName			(SThisCode* thisCode, SObject* obj, u8* tcName, u32 tnNameLength, bool tlSearchBaseProps = true, bool tlSearchClassProps = true, u32* tnIndex = NULL);
-	SVariable*				iObjProp_get_eventOrMethod_byComp		(SThisCode* thisCode, SObject* obj, SComp* comp,                  bool tlSearchBaseEMs = true, bool tlSearchClassEMs = true, u32* tnIndex = NULL);
+	SVariable*				iObjProp_get_variable_byComp			(SThisCode* thisCode, SObject* obj, SComp* comp,                  bool tlSearchDefaultProps = true,  bool tlSearchUserProps = true, u32* tnIndex = NULL);
+	SVariable*				iObjProp_get_variable_byName			(SThisCode* thisCode, SObject* obj, u8* tcName, u32 tnNameLength, bool tlSearchDefaultProps = true,  bool tlSearchUserProps = true, u32* tnIndex = NULL);
+	s32						iObjProp_get_eventOrMethod_byComp		(SThisCode* thisCode, SObject* obj, SComp* comp,                  bool tlSearchDefaultEMs   = false, bool tlSearchUserEMs   = true, u32* tnIndex = NULL);
 	SBitmap*				iObjProp_get_bitmap						(SThisCode* thisCode, SObject* obj, s32 tnIndex);
 	SVariable*				iObjProp_get_character					(SThisCode* thisCode, SObject* obj, s32 tnIndex);
 	f64						iObjProp_get_f64_direct					(SThisCode* thisCode, SObject* obj, s32 tnIndex);
@@ -1065,6 +1065,30 @@ struct SBasePropMap;
 
 		// A constructed SVariable containing the initialization value
 		SVariable*	varInit;
+	};
+
+	struct SObjPropMap
+	{
+		s32				index;
+
+		union {
+			uptr		_initterObject;
+			bool		(*initterObject)	(SThisCode* thisCode, SObject* obj, u32 tnIndex);
+		};
+
+		union {
+			uptr		_setterObject;
+			bool		(*setterObject)		(SThisCode* thisCode, SObject* obj, u32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp);
+			uptr		_setterObject_set;
+			bool		(*setterObject_set)	(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+		};
+
+		union {
+			uptr		_getterObject;
+			SVariable*	(*getterObject)		(SThisCode* thisCode, SObject* obj, u32 tnIndex);
+			uptr		_getterObject_get;
+			SVariable*	(*getterObject_get)	(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarNewAfterSet);
+		};
 	};
 
 	// Initialization parameters
@@ -1480,27 +1504,27 @@ struct SBasePropMap;
 	};
 	const s32 gsProps_masterSize = sizeof(gsProps_master) / sizeof(SBasePropMap) - 1;
 
-	struct SObjPropMap
+
+	// For different types of properties
+	struct SBaseEventsMap
 	{
-		s32				index;
+		// Constant index
+		s32			index;
+		s32			associated_iCode;
 
+		// Property name
 		union {
-			uptr		_initterObject;
-			bool		(*initterObject)	(SThisCode* thisCode, SObject* obj, u32 tnIndex);
+			cs8*	eventName_s8;
+			cu8*	eventName_u8;
 		};
 
-		union {
-			uptr		_setterObject;
-			bool		(*setterObject)		(SThisCode* thisCode, SObject* obj, u32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp);
-			uptr		_setterObject_set;
-			bool		(*setterObject_set)	(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
-		};
+		// Length of the property name
+		u32			eventNameLength;
 
+		// Default handler
 		union {
-			uptr		_getterObject;
-			SVariable*	(*getterObject)		(SThisCode* thisCode, SObject* obj, u32 tnIndex);
-			uptr		_getterObject_get;
-			SVariable*	(*getterObject_get)	(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarNewAfterSet);
+			uptr	_defaultHandler;
+			bool	(*defaultHandler)	(SThisCode* thisCode, SObject* obj, u32 tnIndex);
 		};
 	};
 
@@ -1513,6 +1537,55 @@ struct SBasePropMap;
 			bool	(*defaultHandler)	(SThisCode* thisCode, SObject* obj, u32 tnIndex);
 		};
 	};
+
+	SBaseEventsMap gsEvents_master[] =
+	{	//	Index within master events				 icode									property text						length of property text							default handler
+		{	_EVENT_RESIZE,							_ICODE_RESIZE,							cgc_resize,							sizeof(cgc_resize) - 1,							(uptr)&iDefaultCallback_resize					}, 
+		{	_EVENT_ONLOAD,							_ICODE_ONLOAD,							cgc_onload,							sizeof(cgc_onload) - 1,							(uptr)&iDefaultCallback_onLoad					},
+		{	_EVENT_ONINIT,							_ICODE_ONINIT,							cgc_oninit,							sizeof(cgc_oninit) - 1,							(uptr)&iDefaultCallback_onInit					},
+		{	_EVENT_ONCREATED,						_ICODE_ONCREATED,						cgc_oncreated,						sizeof(cgc_oncreated) - 1,						(uptr)&iDefaultCallback_onCreated				},
+		{	_EVENT_ONRESIZE,						_ICODE_ONRESIZE,						cgc_onresize,						sizeof(cgc_onresize) - 1,						(uptr)&iDefaultCallback_onResize				},
+		{	_EVENT_ONMOVED,							_ICODE_ONMOVED,							cgc_onmoved,						sizeof(cgc_onmoved) - 1,						(uptr)&iDefaultCallback_onMoved					},
+		{	_EVENT_ONRENDER,						_ICODE_ONRENDER,						cgc_onrender,						sizeof(cgc_onrender) - 1,						(uptr)&iDefaultCallback_onRender				},
+		{	_EVENT_ONPUBLISH,						_ICODE_ONPUBLISH,						cgc_onpublish,						sizeof(cgc_onpublish) - 1,						(uptr)&iDefaultCallback_onPublish				},
+		{	_EVENT_ONQUERYUNLOAD,					_ICODE_ONQUERYUNLOAD,					cgc_onqueryunload,					sizeof(cgc_onqueryunload) - 1,					(uptr)&iDefaultCallback_onQueryUnload			},
+		{	_EVENT_ONDESTROY,						_ICODE_ONDESTROY,						cgc_ondestroy,						sizeof(cgc_ondestroy) - 1,						(uptr)&iDefaultCallback_onDestroy				},
+		{	_EVENT_ONUNLOAD,						_ICODE_ONUNLOAD,						cgc_onunload,						sizeof(cgc_onunload) - 1,						(uptr)&iDefaultCallback_onUnload				},
+		{	_EVENT_ONGOTFOCUS,						_ICODE_ONGOTFOCUS,						cgc_ongotfocus,						sizeof(cgc_ongotfocus) - 1,						(uptr)&iDefaultCallback_onGotFocus				},
+		{	_EVENT_ONLOSTFOCUS,						_ICODE_ONLOSTFOCUS,						cgc_onlostfocus,					sizeof(cgc_onlostfocus) - 1,					(uptr)&iDefaultCallback_onLostFocus				},
+		{	_EVENT_ONADDOBJECT,						_ICODE_ONADDOBJECT,						cgc_onaddobject,					sizeof(cgc_onaddobject) - 1,					(uptr)&iDefaultCallback_onAddObject				},
+		{	_EVENT_ONADDPROPERTY,					_ICODE_ONADDPROPERTY,					cgc_onaddproperty,					sizeof(cgc_onaddproperty) - 1,					(uptr)&iDefaultCallback_onAddProperty			},
+		{	_EVENT_ONERROR,							_ICODE_ONERROR,							cgc_onerror,						sizeof(cgc_onerror) - 1,						(uptr)&iDefaultCallback_onError					},
+		{	_EVENT_ONSCROLLED,						_ICODE_ONSCROLLED,						cgc_onscrolled,						sizeof(cgc_onscrolled) - 1,						(uptr)&iDefaultCallback_onScrolled				},
+		{	_EVENT_ACTIVATE,						_ICODE_ACTIVATE,						cgc_activate,						sizeof(cgc_activate) - 1,						(uptr)&iDefaultCallback_onActivate				},
+		{	_EVENT_DEACTIVATE,						_ICODE_DEACTIVATE,						cgc_deactivate,						sizeof(cgc_deactivate) - 1,						(uptr)&iDefaultCallback_onDeactivate			},
+		{	_EVENT_ONSELECT,						_ICODE_ONSELECT,						cgc_onselect,						sizeof(cgc_onselect) - 1,						(uptr)&iDefaultCallback_onSelect				},
+		{	_EVENT_ONDESELECT,						_ICODE_ONDESELECT,						cgc_ondeselect,						sizeof(cgc_ondeselect) - 1,						(uptr)&iDefaultCallback_onDeselect				},
+		{	_EVENT_ONINTERACTIVECHANGE,				_ICODE_ONINTERACTIVECHANGE,				cgc_oninteractivechange,			sizeof(cgc_oninteractivechange) - 1,			(uptr)&iDefaultCallback_onInteractiveChange		},
+		{	_EVENT_ONPROGRAMMATICCHANGE,			_ICODE_ONPROGRAMMATICCHANGE,			cgc_onprogrammaticchange,			sizeof(cgc_onprogrammaticchange) - 1,			(uptr)&iDefaultCallback_onProgrammaticChange	},
+		{	_EVENT_ONSETACTIVECONTROL,				_ICODE_ONSETACTIVECONTROL,				cgc_onsetactivecontrol,				sizeof(cgc_onsetactivecontrol) - 1,				(uptr)&iDefaultCallback_onSetActiveControl		},
+		{	_EVENT_ONSPIN,							_ICODE_ONSPIN,							cgc_onspin,							sizeof(cgc_onspin) - 1,							(uptr)&iDefaultCallback_onSpin					},
+		{	_EVENT_ONMOUSECLICKEX,					_ICODE_ONMOUSECLICKEX,					cgc_onmouseclickex,					sizeof(cgc_onmouseclickex) - 1,					(uptr)&iDefaultCallback_onMouseClickEx			},
+		{	_EVENT_ONMOUSEDBLCLICKEX,				_ICODE_ONMOUSEDBLCLICKEX,				cgc_onmousedblclickex,				sizeof(cgc_onmousedblclickex) - 1,				(uptr)&iDefaultCallback_onMouseDblClickEx		},
+		{	_EVENT_ONMOUSEWHEEL,					_ICODE_ONMOUSEWHEEL,					cgc_onmousewheel,					sizeof(cgc_onmousewheel) - 1,					(uptr)&iDefaultCallback_onMouseWheel			},
+		{	_EVENT_ONMOUSEMOVE,						_ICODE_ONMOUSEMOVE,						cgc_onmousemove,					sizeof(cgc_onmousemove) - 1,					(uptr)&iDefaultCallback_onMouseMove				},
+		{	_EVENT_ONMOUSEDOWN,						_ICODE_ONMOUSEDOWN,						cgc_onmousedown,					sizeof(cgc_onmousedown) - 1,					(uptr)&iDefaultCallback_onMouseDown				},
+		{	_EVENT_ONMOUSEUP,						_ICODE_ONMOUSEUP,						cgc_onmouseup,						sizeof(cgc_onmouseup) - 1,						(uptr)&iDefaultCallback_onMouseUp				},
+		{	_EVENT_ONMOUSEENTER,					_ICODE_ONMOUSEENTER,					cgc_onmouseenter,					sizeof(cgc_onmouseenter) - 1,					(uptr)&iDefaultCallback_onMouseEnter			},
+		{	_EVENT_ONMOUSELEAVE,					_ICODE_ONMOUSELEAVE,					cgc_onmouseleave,					sizeof(cgc_onmouseleave) - 1,					(uptr)&iDefaultCallback_onMouseLeave			},
+		{	_EVENT_ONMOUSEHOVER,					_ICODE_ONMOUSEHOVER,					cgc_onmousehover,					sizeof(cgc_onmousehover) - 1,					(uptr)&iDefaultCallback_onMouseHover			},
+		{	_EVENT_ONKEYDOWN,						_ICODE_ONKEYDOWN,						cgc_onkeydown,						sizeof(cgc_onkeydown) - 1,						(uptr)&iDefaultCallback_onKeyDown				},
+		{	_EVENT_ONKEYUP,							_ICODE_ONKEYUP,							cgc_onkeyup,						sizeof(cgc_onkeyup) - 1,						(uptr)&iDefaultCallback_onKeyUp					},
+		{	_EVENT_CAROUSEL_ONTABCLOSE,				_ICODE_CAROUSEL_ONTABCLOSE,				cgc_carousel_ontabclose,			sizeof(cgc_carousel_ontabclose) - 1,			(uptr)&iDefaultCallback_onTabClose				},
+		{	_EVENT_CAROUSEL_ONTABCLICK,				_ICODE_CAROUSEL_ONTABCLICK,				cgc_carousel_ontabclick,			sizeof(cgc_carousel_ontabclick) - 1,			(uptr)&iDefaultCallback_onTabClick				},
+		{	_EVENT_CAROUSEL_ONTABMOUSEWHEEL,		_ICODE_CAROUSEL_ONTABMOUSEWHEEL,		cgc_carousel_ontabmousewheel,		sizeof(cgc_carousel_ontabmousewheel) - 1,		(uptr)&iDefaultCallback_onTabMouseWheel			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEMOVE,			_ICODE_CAROUSEL_ONTABMOUSEMOVE,			cgc_carousel_ontabmousemove,		sizeof(cgc_carousel_ontabmousemove) - 1,		(uptr)&iDefaultCallback_onTabMouseMove			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEDOWN,			_ICODE_CAROUSEL_ONTABMOUSEDOWN,			cgc_carousel_ontabmousedown,		sizeof(cgc_carousel_ontabmousedown) - 1,		(uptr)&iDefaultCallback_onTabMouseDown			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEUP,			_ICODE_CAROUSEL_ONTABMOUSEUP,			cgc_carousel_ontabmouseup,			sizeof(cgc_carousel_ontabmouseup) - 1,			(uptr)&iDefaultCallback_onTabMouseUp			},
+		{	_EVENT_CAROUSEL_ONTABMOUSEENTER,		_ICODE_CAROUSEL_ONTABMOUSEENTER,		cgc_carousel_ontabmouseenter,		sizeof(cgc_carousel_ontabmouseenter) - 1,		(uptr)&iDefaultCallback_onTabMouseEnter			},
+		{	_EVENT_CAROUSEL_ONTABMOUSELEAVE,		_ICODE_CAROUSEL_ONTABMOUSELEAVE,		cgc_carousel_ontabmouseleave,		sizeof(cgc_carousel_ontabmouseleave) - 1,		(uptr)&iDefaultCallback_onTabMouseLeave			}
+	};
+	const s32 gnEvents_masterSize = sizeof(gsEvents_master) / sizeof(SBaseEventsMap) - 1;
 
 	// _OBJ_TYPE_EMPTY
 	SObjPropMap gsProps_empty[] =

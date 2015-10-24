@@ -2355,13 +2355,13 @@ debug_break;
 //		tlSearchClassProps	-- Search obj->firstProperty link list for custom added properties with ADDPROPERTY()
 //
 //////
-	SVariable* iObjProp_get_variable_byComp(SThisCode* thisCode, SObject* obj, SComp* comp, bool tlSearchBaseProps, bool tlSearchClassProps, u32* tnIndex)
+	SVariable* iObjProp_get_variable_byComp(SThisCode* thisCode, SObject* obj, SComp* comp, bool tlSearchDefaultProps, bool tlSearchUserProps, u32* tnIndex)
 	{
 		// Make sure our environment is sane
 		if (comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data_s8 && comp->start + comp->length <= comp->line->sourceCode->length)
 		{
 			// We're good
-			return(iObjProp_get_variable_byName(thisCode, obj, comp->line->sourceCode->data_u8 + comp->start, comp->length, tlSearchBaseProps, tlSearchClassProps, tnIndex));
+			return(iObjProp_get_variable_byName(thisCode, obj, comp->line->sourceCode->data_u8 + comp->start, comp->length, tlSearchDefaultProps, tlSearchUserProps, tnIndex));
 
 		} else {
 			// Something's invalid
@@ -2369,7 +2369,7 @@ debug_break;
 		}
 	}
 
-	SVariable* iObjProp_get_variable_byName(SThisCode* thisCode, SObject* obj, u8* tcName, u32 tnNameLength, bool tlSearchBaseProps, bool tlSearchClassProps, u32* tnIndex)
+	SVariable* iObjProp_get_variable_byName(SThisCode* thisCode, SObject* obj, u8* tcName, u32 tnNameLength, bool tlSearchDefaultProps, bool tlSearchUserProps, u32* tnIndex)
 	{
 		s32					lnI, lnIndex;
 		SBaseClassMap*		baseClassMap;
@@ -2380,7 +2380,7 @@ debug_break;
 		if (obj)
 		{
 			// Search base class properties
-			if (tlSearchBaseProps)
+			if (tlSearchDefaultProps)
 			{
 				// Locate the base class
 // TODO:  We could add a speedup here by storing the baseClassMap location in the object itself at the time of creation
@@ -2407,7 +2407,7 @@ debug_break;
 			}
 
 			// Locate the user property
-			if (tlSearchClassProps)
+			if (tlSearchUserProps)
 			{
 // TODO:  Write code to search for dynamically allocated properties (allocated at runtime)
 			}
@@ -2425,41 +2425,74 @@ debug_break;
 // Called to search events and methods to see if the name indicated is found
 //
 //////
-	SVariable* iObjProp_get_eventOrMethod_byComp(SThisCode* thisCode, SObject* obj, SComp* comp, bool tlSearchBaseEMs, bool tlSearchClassEMs, u32* tnIndex)
+	s32 iObjProp_get_eventOrMethod_byComp(SThisCode* thisCode, SObject* obj, SComp* comp, bool tlSearchDefaultEMs, bool tlSearchUserEMs, u32* tnIndex)
 	{
 		s32			lnI;
+		s8*			lcData;
 		SEvent*		e;
+		SFunction*	func;
 
 
 		// Make sure our environment is sane
 		if (obj && comp)
 		{
+			// Grab a start
+			lcData = comp->line->sourceCode->data_s8 + comp->start;
+			
 			// Iterate through all base class events and methods
 			for (lnI = 0, e = &obj->ev.methods[0]; lnI < _EVENT_MAX_COUNT; lnI++, e++)
 			{
 				// Is this event valid for this class?
 				if (e->_event)
 				{
-					// Locate the event name
 
-// TODO:  working here
+					//////////
 					// User code?
-					if (tlSearchClassEMs && e->userEventCode)
-					{
-						// Yes
-					}
+					//////
+						// Locate the event name
+						if (tlSearchUserEMs && e->userEventCode)
+						{
+							// Iterate through user functions (there will typically only be one, but theoretically there could be more than one because func->ll exists)
+							for (func = e->userEventCode; func; func = func->ll.nextFunc)
+							{
+								// Is it a match?
+								if (func->name.length == comp->length && _memicmp(func->name.data_s8, lcData, comp->length) == 0)
+								{
+									// Yes
+									if (tnIndex)
+										*tnIndex = lnI;
 
+									// Indicate the reference
+									return(_SOURCE_TYPE_FUNCTION);
+								}
+							}
+							// If we get here, not found
+						}
+
+
+					//////////
 					// Default handlers?
-					if (tlSearchBaseEMs)
-					{
-						// Yes
-					}
+					//////
+						if (tlSearchDefaultEMs)
+						{
+							// Is it a match?
+							if (gsEvents_master[lnI].eventNameLength == comp->length && _memicmp(gsEvents_master[lnI].eventName_s8, lcData, comp->length) == 0)
+							{
+								// Yes
+								if (tnIndex)
+									*tnIndex = lnI;
+
+								// Indicate the reference
+								return(_SOURCE_TYPE_DEFAULT_HANDLER);
+							}
+						}
+
 				}
 			}
 		}
 
 		// If we get here, failure
-		return(NULL);
+		return(_SOURCE_TYPE_NOT_FOUND);
 	}
 
 

@@ -1188,7 +1188,9 @@ _asm nop;
 //////
 	bool iEngine_get_namedSourceAndType_ofObj_byComp(SThisCode* thisCode, SObject* obj, SComp* comp, void** p, s32* tnType)
 	{
-		SVariable* var;
+		s32			lnSourceType;
+		u32			lnIndex;
+		SVariable*	var;
 
 
 		//////////
@@ -1198,7 +1200,8 @@ _asm nop;
 			if (var)
 			{
 				// We found the native property
-				*p = iVariable_copy(thisCode, var, true);
+				*tnType	= _SOURCE_TYPE_PROPERTY;
+				*p		= iVariable_copy(thisCode, var, true);
 				return(true);
 			}
 
@@ -1206,12 +1209,19 @@ _asm nop;
 		//////////
 		// See if it's an event or method
 		//////
-// TODO:  working here
-			var = iObjProp_get_eventOrMethod_byComp(thisCode, obj, comp);
-			if (var)
+			lnSourceType = iObjProp_get_eventOrMethod_byComp(thisCode, obj, comp, false, true, &lnIndex);
+			if (lnSourceType != _SOURCE_TYPE_NOT_FOUND)
 			{
-				// We found the native property
-				*p = iVariable_copy(thisCode, var, true);
+				// We found the name on the object, either as user code or as a default handler
+				// Note:  If there is a default handler, the user code is returned
+
+				// Which is it?
+					 if (lnSourceType == _SOURCE_TYPE_FUNCTION)				*p = &obj->ev.methods[lnIndex].userEventCode;
+				else if (lnSourceType == _SOURCE_TYPE_DEFAULT_HANDLER)		*p = &gsEvents_master[lnIndex];
+				else	/* this else should never happen */					*p = NULL;
+
+				// Store the type
+				*tnType	= lnSourceType;
 				return(true);
 			}
 
