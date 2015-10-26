@@ -218,6 +218,19 @@
 		iDatum_duplicate(datum, comp->line->sourceCode->data_cs8 + comp->start, comp->length);
 	}
 
+	SDatum* iDatum_populate_fromComp(SDatum* datum, SComp* comp)
+	{
+		// Make sure the datum and component are valid
+		if (datum && comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data_s8 && comp->line->sourceCode->length >= comp->start + comp->length)
+		{
+			datum->data_s8	= comp->line->sourceCode->data_s8 + comp->start;
+			datum->length	= comp->length;
+		}
+
+		// Pass-thru
+		return(datum);
+	}
+
 	bool iDatum_resize(SDatum* datum, s32 newDataLength)
 	{
 		s8* ptr;

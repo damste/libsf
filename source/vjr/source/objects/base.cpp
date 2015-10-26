@@ -3551,7 +3551,8 @@ if (!obj->props[lnI])
 
 //////////
 //
-// Called to translate the class object type to its text-base name
+// Called to translate the class object type to its text-base name.
+// Note:  tnObjType is obj->objType
 //
 //////
 	SBaseClassMap* iiObj_getBaseclass_byType(SThisCode* thisCode, s32 tnObjType)

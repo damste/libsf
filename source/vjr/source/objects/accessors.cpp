@@ -2378,13 +2378,13 @@ debug_break;
 //		tlSearchClassProps	-- Search obj->firstProperty link list for custom added properties with ADDPROPERTY()
 //
 //////
-	SVariable* iObjProp_get_var_byComp(SThisCode* thisCode, SObject* obj, SComp* comp, bool tlSearchDefaultProps, bool tlSearchUserProps, u32* tnIndex)
+	SVariable* iObjProp_get_var_byComp(SThisCode* thisCode, SObject* obj, SComp* comp, bool tlSearchDefaultProps, bool tlSearchUserProps, u32* tnIndex, s32* tnType)
 	{
 		// Make sure our environment is sane
 		if (comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data_s8 && comp->start + comp->length <= comp->line->sourceCode->length)
 		{
 			// We're good
-			return(iObjProp_get_var_byName(thisCode, obj, comp->line->sourceCode->data_u8 + comp->start, comp->length, tlSearchDefaultProps, tlSearchUserProps, tnIndex));
+			return(iObjProp_get_var_byName(thisCode, obj, comp->line->sourceCode->data_u8 + comp->start, comp->length, tlSearchDefaultProps, tlSearchUserProps, tnIndex, tnType));
 
 		} else {
 			// Something's invalid
@@ -2392,48 +2392,85 @@ debug_break;
 		}
 	}
 
-	SVariable* iObjProp_get_var_byName(SThisCode* thisCode, SObject* obj, u8* tcName, u32 tnNameLength, bool tlSearchDefaultProps, bool tlSearchUserProps, u32* tnIndex)
+	// Note:  If _SOURCE_TYPE_PROPERTY, the index it returns is the index into baseClassMap->objProps and obj->props.  Use gsPropsmaster[obj->props.index - 1] to access the base class property settings for it.
+	// Note:  I _SOURCE_TYPE_PROPERTY_CUSTOM, no index is returned
+	// Note:  The return value is the exactly variable in the property array or custom property chain.
+	SVariable* iObjProp_get_var_byName(SThisCode* thisCode, SObject* obj, u8* tcName, u32 tnNameLength, bool tlSearchDefaultProps, bool tlSearchUserProps, u32* tnIndex, s32* tnType)
 	{
 		s32					lnI, lnIndex;
 		SBaseClassMap*		baseClassMap;
 		SObjPropMap*		thisObjProp;
+		SVariable*			var;
 
 
 		// Make sure the environment is sane
 		if (obj)
 		{
-			// Search base class properties
-			if (tlSearchDefaultProps)
-			{
-				// Locate the base class
-// TODO:  We could add a speedup here by storing the baseClassMap location in the object itself at the time of creation
-				baseClassMap = iiObj_getBaseclass_byType(thisCode, obj->objType);
-				if (baseClassMap)
-				{
-					// Locate the property within the object's properties
-					thisObjProp = baseClassMap->objProps;
-					for (lnI = 0; lnI < baseClassMap->objPropsCount && lnI < thisObjProp[lnI].index; lnI++)
-					{
-						// Grab this property's index
-						lnIndex = thisObjProp[lnI].index;
 
-						// Search the name associated with that property
-						if (iTestExactlyEqual(tcName, tnNameLength, gsProps_master[lnIndex - 1].propName_u8, gsProps_master[lnIndex - 1].propNameLength))
-							return(obj->props[lnI]);	// Return the variable associated with this position
+			//////////
+			// Native class properties
+			//////
+				if (tlSearchDefaultProps)
+				{
+					// Locate the base class
+					baseClassMap = iiObj_getBaseclass_byType(thisCode, obj->objType);
+					if (baseClassMap)
+					{
+
+						//////////
+						// Search native class properties
+						//////
+							thisObjProp = baseClassMap->objProps;
+							for (lnI = 0; lnI < baseClassMap->objPropsCount && lnI < thisObjProp[lnI].index; lnI++)
+							{
+								// Grab this property's index
+								lnIndex = thisObjProp[lnI].index;
+
+								// Search the name associated with that property
+								if (iTestExactlyEqual(	tcName,										tnNameLength,
+														gsProps_master[lnIndex - 1].propName_u8,	gsProps_master[lnIndex - 1].propNameLength	))
+								{
+									// Indicate it's a native property
+									if (tnIndex)	*tnIndex	= lnI;
+									if (tnType)		*tnType		= _SOURCE_TYPE_PROPERTY;
+
+									// Return the variable associated with this position
+									return(obj->props[lnI]);
+								}
+							}
+							// If we get here, not found
+
+					}
+
+					// If we get here, there's an internal system error
+					iError_signal(thisCode, _ERROR_INTERNAL_ERROR, NULL, true, NULL, true);
+					return(NULL);
+				}
+
+
+			//////////
+			// Custom class properties
+			//////
+				if (tlSearchUserProps)
+				{
+					// Iterate through each custom property searching for the name
+					for (var = obj->firstProperty; var; var = var->ll.nextVar)
+					{
+						// Does this one match?
+						if (iTestExactlyEqual(	tcName,				tnNameLength,
+												var->name.data_u8,	(u32)var->name.length	))
+						{
+							// Indicate it's a custom property
+							if (tnType)
+								*tnType = _SOURCE_TYPE_PROPERTY_CUSTOM;
+
+							// Return the variable associated with this position
+							return(var);
+						}
 					}
 					// If we get here, not found
 				}
 
-				// If we get here, there's an internal system error
-				iError_signal(thisCode, _ERROR_INTERNAL_ERROR, NULL, true, NULL, true);
-				return(NULL);
-			}
-
-			// Locate the user property
-			if (tlSearchUserProps)
-			{
-// TODO:  Write code to search for dynamically allocated properties (allocated at runtime)
-			}
 		}
 
 		// Invalid
@@ -3245,11 +3282,10 @@ debug_break;
 // member, or newSourceCode->length <= 0).
 //
 //////
-	bool iObjEvent_set_function(SThisCode* thisCode, SObject* obj, s32 tnIndex, SFunction** funcRoot, SDatum* newSourceCode)
+	bool iObjEvent_set_function(SThisCode* thisCode, SObject* obj, s32 tnIndex, SFunction** funcRoot, SDatum* newSourceCode, SDatum* name)
 	{
 		bool		llResult;
 		SFunction*	func;
-		SDatum*		name;
 
 
 		// Make sure our environment is sane
@@ -3260,7 +3296,7 @@ debug_break;
 			//////////
 			// If we don't already have a user function, allocate one
 			//////
-				func = iFunction_allocate(thisCode, iObjEvent_get_name_asDatum(thisCode, tnIndex, &name));
+				func = iFunction_allocate(thisCode, name);
 				if (!func)
 					return(false);
 
@@ -3322,19 +3358,18 @@ debug_break;
 // Called to get the name of the event
 //
 //////
-	SDatum* iObjEvent_get_name_asDatum(SThisCode* thisCode, s32 tnIndex, SDatum** nameToUpdate)
+	SDatum* iObjEvent_get_name_asDatum(SThisCode* thisCode, s32 tnIndex, SDatum* nameToUpdate)
 	{
 		// Make sure the environment is sane
-		nameToUpdate = 0;
 		if (nameToUpdate && tnIndex <= gnEvents_masterSize)
 		{
 			// Store the raw property entries (if requested)
-			(*nameToUpdate)->data_cs8	= gsEvents_master[tnIndex - 1].eventName_s8;
-			(*nameToUpdate)->length		= gsEvents_master[tnIndex - 1].eventNameLength;
+			nameToUpdate->data_cs8		= gsEvents_master[tnIndex - 1].eventName_s8;
+			nameToUpdate->length		= gsEvents_master[tnIndex - 1].eventNameLength;
 		}
 
 		// Indicate our name
-		return(*nameToUpdate);
+		return(nameToUpdate);
 	}
 
 
@@ -3345,70 +3380,130 @@ debug_break;
 // Called to search events and methods to see if the name indicated is found
 //
 //////
-	s32 iObjEvent_get_eventOrMethod_byComp(SThisCode* thisCode, SObject* obj, SComp* comp, bool tlSearchDefaultEMs, bool tlSearchUserEMs, u32* tnIndex)
+	s32 iObjEvent_get_eventOrMethod_byComp(SThisCode* thisCode, SObject* obj, SComp* comp, bool tlSearchDefaultEMs, bool tlSearchUserEMs, u32* tnIndex, SFunction** tsFuncRoot, SFunction** tsFunc)
 	{
-		s32			lnI;
+		s32			lnI, lnDataLength, lnType;
 		s8*			lcData;
 		SEvent*		e;
 		SFunction*	func;
+		SFunction**	funcRoot;
 
 
 		// Make sure our environment is sane
 		if (obj && comp)
 		{
-			// Grab a start
-			lcData = comp->line->sourceCode->data_s8 + comp->start;
-			
-			// Iterate through all base class events and methods
-			for (lnI = 0, e = &obj->ev.methods[0]; lnI < _EVENT_MAX_COUNT; lnI++, e++)
-			{
-				// Is this event valid for this class?
-				if (e->_event)
-				{
+			// Grab the name start
+			lcData			= comp->line->sourceCode->data_s8 + comp->start;
+			lnDataLength	= comp->length;
 
-					//////////
-					// User code?
-					//////
-						// Locate the event name
-						if (tlSearchUserEMs && e->userEventCode)
-						{
-							// Iterate through user functions (there will typically only be one, but theoretically there could be more than one because func->ll exists)
-							for (func = e->userEventCode; func; func = func->ll.nextFunc)
+
+			//////////
+			// Iterate through all base class events and methods
+			//////
+				for (lnI = 0, e = &obj->ev.methods[0]; lnI < _EVENT_MAX_COUNT; lnI++, e++)
+				{
+					// Is this event valid for this class?
+					if (e->_event)
+					{
+
+						//////////
+						// User handlers
+						//////
+							// Locate the event name
+							if (e->userEventCode)
+							{
+								// Iterate through user functions (there will typically only be one, but theoretically there could be more than one because func->ll exists)
+								for (func = e->userEventCode; func; func = func->ll.nextFunc)
+								{
+									// Is it a match?
+									if (func->name.length == lnDataLength && _memicmp(func->name.data_s8, lcData, lnDataLength) == 0)
+									{
+										// Yes
+										if (tnIndex)		*tnIndex	= lnI;
+										if (tsFuncRoot)		*tsFuncRoot	= NULL;
+										if (tsFunc)			*tsFunc		= NULL;
+
+										// Indicate the reference
+										return(_SOURCE_TYPE_EVENT_OR_METHOD);
+									}
+								}
+								// If we get here, not found
+							}
+
+
+						//////////
+						// Default handlers?
+						//////
+							if (tlSearchDefaultEMs)
 							{
 								// Is it a match?
-								if (func->name.length == comp->length && _memicmp(func->name.data_s8, lcData, comp->length) == 0)
+								if (gsEvents_master[lnI].eventNameLength == lnDataLength && _memicmp(gsEvents_master[lnI].eventName_s8, lcData, lnDataLength) == 0)
 								{
 									// Yes
-									if (tnIndex)
-										*tnIndex = lnI;
+									if (tnIndex)		*tnIndex	= lnI;
+									if (tsFuncRoot)		*tsFuncRoot	= NULL;
+									if (tsFunc)			*tsFunc		= NULL;
 
 									// Indicate the reference
-									return(_SOURCE_TYPE_EVENT_OR_METHOD);
+									return(_SOURCE_TYPE_EVENT_OR_METHOD_INTERNAL_HANDLER);
 								}
 							}
-							// If we get here, not found
-						}
 
-
-					//////////
-					// Default handlers?
-					//////
-						if (tlSearchDefaultEMs)
-						{
-							// Is it a match?
-							if (gsEvents_master[lnI].eventNameLength == comp->length && _memicmp(gsEvents_master[lnI].eventName_s8, lcData, comp->length) == 0)
-							{
-								// Yes
-								if (tnIndex)
-									*tnIndex = lnI;
-
-								// Indicate the reference
-								return(_SOURCE_TYPE_EVENT_OR_METHOD_DEFAULT_HANDLER);
-							}
-						}
-
+					}
 				}
-			}
+
+
+			//////////
+			// User code?
+			//////
+				if (tlSearchUserEMs)
+				{
+					// Iterate through the user add-on code bases
+					for (lnI = 1; lnI <= 3; lnI++)
+					{
+						//////////
+						// Pass N searches different values
+						//////
+							switch (lnI)
+							{
+								case 1:
+									funcRoot	= &obj->firstMethod;
+									lnType		= _SOURCE_TYPE_EVENT_OR_METHOD;
+									break;
+
+								case 2:
+									funcRoot	= &obj->firstAssign;
+									lnType		= _SOURCE_TYPE_METHOD_ASSIGN;
+									break;
+
+								case 3:
+									funcRoot	= &obj->firstAccess;
+									lnType		= _SOURCE_TYPE_METHOD_ACCESS;
+									break;
+							}
+
+
+						//////////
+						// Iterate through each function searching for the name
+						//////
+							// Iterate through each function
+							for (func = *funcRoot; func; func = func->ll.nextFunc)
+							{
+								// Is this it?
+								if (func->name.length == lnDataLength && _memicmp(func->name.data_s8, lcData, lnDataLength) == 0)
+								{
+									// Store the function pointer
+									if (*tsFuncRoot)		*tsFuncRoot = *funcRoot;
+									if (*tsFunc)			*tsFunc		= func;
+
+									// Indicate the reference
+									return(lnType);
+								}
+							}
+
+					}
+				}
+
 		}
 
 		// If we get here, failure

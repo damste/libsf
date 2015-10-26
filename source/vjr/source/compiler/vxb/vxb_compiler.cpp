@@ -6036,6 +6036,7 @@ debug_break;
 									}
 									break;
 
+								case _SOURCE_TYPE_PROPERTY_CUSTOM:
 								case _SOURCE_TYPE_PROPERTY:
 								// Note:  The only way it could be a property at this level is if they have NCSET(9) enabled and they're accessing a property that has a .N, or is an object with something after it
 								case _SOURCE_TYPE_VARIABLE:
@@ -6224,23 +6225,28 @@ debug_break;
 // Called to continue drilling down in/on an object in a dot sequence
 //
 //////
-	bool iVariable_searchObj_forDotName_andSet_byVar(SThisCode* thisCode, SObject* obj, SComp* comp, SVariable* varNewValue, bool* tlError, u32* tnErrorNum)
+	bool iVariable_searchObj_forDotName_andSet_byVar(SThisCode* thisCode, SObject* obj, SComp* compDotName, SVariable* varNewValue, bool* tlError, u32* tnErrorNum)
 	{
-		s32			lnN, lnType, lnIndex;
+		s32			lnN, lnType;
+		u32			lnIndex;
 		bool		llResult;
+		void*		pRoot;
 		void*		p;
 		SComp*		compNext;
+		SDatum		name;
 		SVariable*	var;
+		SFunction*	func;
 
 
 		// Make sure our environment is sane
-		if (obj && comp && varNewValue && tlError && tnErrorNum)
+		llResult = false;
+		if (obj && compDotName && varNewValue && tlError && tnErrorNum)
 		{
 
 			//////////
 			// Grab the next dot component (if any)
 			//////
-				compNext = iComps_getNext_afterDot(thisCode, comp);
+				compNext = iComps_getNext_afterDot(thisCode, compDotName);
 				if (compNext->iCode == _ICODE_NUMERIC)
 					lnN = iiComps_getAs_s32(compNext);
 
@@ -6248,13 +6254,22 @@ debug_break;
 			//////////
 			// See if we can find the indicated attribute
 			//////
-				if (iiEngine_get_namedSourceAndType_ofObj_byComp(thisCode, obj, comp, &p, &lnType, &lnIndex))
+				if (iiEngine_get_namedSourceAndType_ofObj_byComp(thisCode, obj, compDotName, &pRoot, &p, &lnType, &lnIndex))
 				{
+					// Copy compDotName's name members into name's members
+					iDatum_populate_fromComp(&name, compDotName);
+
+					// Find out what type it was
 					switch (lnType)
 					{
+//////////
+// Properties
+//////
+						case _SOURCE_TYPE_PROPERTY_CUSTOM:
 						case _SOURCE_TYPE_PROPERTY:
 							// It's the var
 							var = (SVariable*)p;
+							// Note:  var is a reference to the variable
 							if (compNext)
 							{
 								// There is something after this one
@@ -6265,9 +6280,17 @@ debug_break;
 										switch (var->varType)
 										{
 											case _VAR_TYPE_OBJECT:
+												// Need to iterate through this object's AMEMBERS() list for only properties
+												*tlError	= true;
+												*tnErrorNum	= _ERROR_FEATURE_NOT_AVAILABLE;
+												llResult	= false;
 												break;
 
 											case _VAR_TYPE_CHARACTER:
+												// They want to retrieve the substring portion
+												*tlError	= true;
+												*tnErrorNum	= _ERROR_FEATURE_NOT_AVAILABLE;
+												llResult	= false;
 												break;
 										}
 										break;
@@ -6312,14 +6335,17 @@ debug_break;
 							}
 							break;
 
-						case _SOURCE_TYPE_FUNCTION:
-						case _SOURCE_TYPE_EVENT_OR_METHOD_DEFAULT_HANDLER:
-							// What are they setting?
+//////////
+// Events or methods
+//////
+						// Custom add-on class methods
+						case _SOURCE_TYPE_METHOD_CUSTOM:
 							if (varNewValue->varType == _VAR_TYPE_CHARACTER)
 							{
 								// They're setting the source code for this user method
-// TODO:  We could use a feature here to allow for an ADDITIVE method, so that the existing one remains, and this one is appended to the chain
-								return(iObjEvent_set_function(thisCode, obj, lnIndex, &obj->ev.methods[lnIndex].userEventCode, &varNewValue->value));
+								func = (SFunction*)p;
+								if (func->ll.prevFunc)		llResult = iObjEvent_set_function(thisCode, obj, lnIndex, &func->ll.prevFunc->ll.nextFunc,	&varNewValue->value,	&name);
+								else						llResult = iObjEvent_set_function(thisCode, obj, lnIndex, &obj->firstMethod,				&varNewValue->value,	&name);
 
 							} else {
 								// Unhandled request
@@ -6327,16 +6353,77 @@ debug_break;
 								*tnErrorNum	= _ERROR_FEATURE_NOT_AVAILABLE;
 								llResult	= false;
 							}
+							break;
 
+						// Method for assign code
+						case _SOURCE_TYPE_METHOD_ASSIGN:
+							if (varNewValue->varType == _VAR_TYPE_CHARACTER)
+							{
+								// They're setting the source code for this user method
+								llResult = iObjEvent_set_function(thisCode, obj, lnIndex, &obj->firstAssign, &varNewValue->value, &name);
+//////////
+// TODO:  Need to verify the first non-comment line begins with LPARAMETERS.
+//        If not, need to insert the code, where propName is searched for either in base properties, or custom properties:
+//
+//				**********
+//				* Auto-inserted code:
+//				* BEGIN
+//				*****
+//					LPARAMETERS txNewValue
+//					this.propName = txNewValue
+//				*****
+//				* END
+//				**********
+//////
+
+							} else {
+								// Unhandled request
+								*tlError	= true;
+								*tnErrorNum	= _ERROR_FEATURE_NOT_AVAILABLE;
+								llResult	= false;
+							}
+							break;
+
+						// Method for access code
+						case _SOURCE_TYPE_METHOD_ACCESS:
+							if (varNewValue->varType == _VAR_TYPE_CHARACTER)
+							{
+								// They're setting the source code for this user method
+								llResult = iObjEvent_set_function(thisCode, obj, lnIndex, &obj->firstAccess, &varNewValue->value, &name);
+
+							} else {
+								// Unhandled request
+								*tlError	= true;
+								*tnErrorNum	= _ERROR_FEATURE_NOT_AVAILABLE;
+								llResult	= false;
+							}
+							break;
+
+						// Event or method ocde
+						case _SOURCE_TYPE_EVENT_OR_METHOD:						// There is existing user code.  We're going to replace it.
+						case _SOURCE_TYPE_EVENT_OR_METHOD_INTERNAL_HANDLER:		// There is no existing user code.  We're going to assign some.
+							// It' an event handler
+							if (varNewValue->varType == _VAR_TYPE_CHARACTER)
+							{
+								// They're setting the source code for this user method
+								// Name is derived from its system name
+								iObjEvent_get_name_asDatum(thisCode, lnIndex, &name);
+								llResult	= iObjEvent_set_function(thisCode, obj, lnIndex, &obj->ev.methods[lnIndex].userEventCode, &varNewValue->value, &name);
+
+							} else {
+								// Unhandled request
+								*tlError	= true;
+								*tnErrorNum	= _ERROR_FEATURE_NOT_AVAILABLE;
+								llResult	= false;
+							}
 							break;
 					}
 				}
 
-		
 		}
 
-		// If we get here, failure
-		return(false);
+		// Indicate our status
+		return(llResult);
 	}
 
 

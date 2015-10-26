@@ -1186,9 +1186,22 @@ _asm nop;
 // Called to search for the named component within the object and return a reference to it if possible.
 //
 //////
-	bool iiEngine_get_namedSourceAndType_ofObj_byComp(SThisCode* thisCode, SObject* obj, SComp* comp, void** p, s32* tnType, s32* tnIndex)
+//
+// Return values:
+//
+//		_SOURCE_TYPE_EVENT_OR_METHOD_INTERNAL_HANDLER		-- pRoot and p point to &gsEvents_master[tnIndex] (see notes 1 and 2)
+//		_SOURCE_TYPE_EVENT_OR_METHOD						-- pRoot and p point to &obj->ev.methods[tnIndex].userEventCode
+//		_SOURCE_TYPE_METHOD_CUSTOM							-- pRoot points to &obj->firstMethod, and p points to the instance of the obj->firstMethod chain for this comp's name
+//		_SOURCE_TYPE_METHOD_ASSIGN							-- pRoot points to &obj->firstAssign, and p points to the instance of the obj->firstAssign chain for this comp's name
+//		_SOURCE_TYPE_METHOD_ACCESS							-- pRoot points to &obj->firstAccess, and p points to the instance of the obj->firstAccess chain for this comp's name
+//
+// Note 1:  The tnIndex also relates to &obj->ev.methods[tnIndex] for any custom instance implementation, which is possible.
+// Note 2:  The actual desired reference may actually be &obj->ev.methods[tnIndex].userEventCode, but since nothing was yet defined there, it returns the default handler.
+//
+//////
+	bool iiEngine_get_namedSourceAndType_ofObj_byComp(SThisCode* thisCode, SObject* obj, SComp* comp, void** pRoot, void** p, s32* tnType, u32* tnIndex)
 	{
-		s32			lnSourceType;
+		s32			lnType;
 		u32			lnIndex;
 		SVariable*	var;
 
@@ -1196,11 +1209,11 @@ _asm nop;
 		//////////
 		// Try to locate the native property for the current this object
 		//////
-			var = iObjProp_get_var_byComp(thisCode, obj, comp, true, true, &lnIndex);
+			var = iObjProp_get_var_byComp(thisCode, obj, comp, true, true, &lnIndex, &lnType);
 			if (var)
 			{
 				// We found the native property
-				*tnType		= _SOURCE_TYPE_PROPERTY;
+				*tnType		= lnType;
 				*p			= iVariable_copy(thisCode, var, true);
 				*tnIndex	= lnIndex;
 				return(true);
@@ -1210,28 +1223,42 @@ _asm nop;
 		//////////
 		// See if it's an event or method
 		//////
-			lnSourceType = iObjEvent_get_eventOrMethod_byComp(thisCode, obj, comp, false, true, &lnIndex);
-			if (lnSourceType != _SOURCE_TYPE_NOT_FOUND)
+			*tnType = iObjEvent_get_eventOrMethod_byComp(thisCode, obj, comp, false, true, tnIndex, (SFunction**)pRoot, (SFunction**)p);
+
+			// Which is it?
+			switch (*tnType)
 			{
-				// We found the name on the object, either as user code or as a default handler
-				// Note:  If there is a default handler, the user code is returned
+				// Default/internal event or method code
+				case _SOURCE_TYPE_EVENT_OR_METHOD_INTERNAL_HANDLER:
+					*pRoot	= &gsEvents_master[lnIndex];
+					*p		= &gsEvents_master[lnIndex];
+					break;
 
-				// Which is it?
-				     if (lnSourceType == _SOURCE_TYPE_EVENT_OR_METHOD)						*p = &obj->ev.methods[lnIndex].userEventCode;
-				else if (lnSourceType == _SOURCE_TYPE_EVENT_OR_METHOD_DEFAULT_HANDLER)		*p = &gsEvents_master[lnIndex];
-				else	/* this else should never happen */									*p = NULL;
+				// Custom user code for default/internal event or method
+				case _SOURCE_TYPE_EVENT_OR_METHOD:
+					*pRoot	= &obj->ev.methods[lnIndex].userEventCode;
+					*p		= &obj->ev.methods[lnIndex].userEventCode;
+					break;
 
-				// Store the type
-				*tnType		= lnSourceType;
-				*tnIndex	= lnIndex;
-				return(true);
+				// Custom class code
+				case _SOURCE_TYPE_METHOD_CUSTOM:
+				case _SOURCE_TYPE_METHOD_ASSIGN:
+				case _SOURCE_TYPE_METHOD_ACCESS:
+					// Placeholder, these have already updated pRoot and p by the call
+					break;
+			
+				default:
+					// Should never happen
+					*pRoot	= NULL;
+					*p		= NULL;
+					return(false);
 			}
 
 
 		//////////
-		// If we get here, failure
+		// Indicate success
 		//////
-			return(false);
+			return(true);
 	}
 
 

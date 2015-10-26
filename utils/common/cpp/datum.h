@@ -151,6 +151,7 @@ struct SComp;
 	void					iDatum_duplicate						(SDatum* datumDst, SDatum* datumSrc);
 	void					iDatum_duplicate_fromComp				(SDatum* datum, SComp* comp);
 	void					iiDatum_duplicate_fromComp				(SDatum* datum, SComp* comp);
+	SDatum*					iDatum_populate_fromComp				(SDatum* datum, SComp* comp);
 
 	bool					iDatum_resize							(SDatum* datum, s32 newDataLength);
 	s32						iDatum_compare							(SDatum* datumLeft, SDatum* datumRight);

@@ -158,17 +158,24 @@
 //////////
 // Source types
 //////
+	const s32		_SOURCE_TYPE__CUSTOM_FLAG						= 1 << 28;	// Note:  These are &obj->firstMethod references, which are functions
+	const s32		_SOURCE_TYPE__ASSIGN_FLAG						= 1 << 29;	// Note:  These are &obj->firstAssign references, which are functions
+	const s32		_SOURCE_TYPE__ACCESS_FLAG						= 1 << 30;	// Note:  These are &obj->firstAccess references, which are functions
 	const s32		_SOURCE_TYPE_NOT_FOUND							= 0;
 	const s32		_SOURCE_TYPE_ALIAS								= 1;
 	const s32		_SOURCE_TYPE_FIELD								= 2;		// It's actually a variable, but it came from a field
 	const s32		_SOURCE_TYPE_OBJECT								= 3;
 	const s32		_SOURCE_TYPE_VARIABLE							= 4;		// Note:  variables can actually be other things, you must look at var->varType to know for sure
 	const s32		_SOURCE_TYPE_PROPERTY							= 5;
+	const s32		_SOURCE_TYPE_PROPERTY_CUSTOM					= 5 + _SOURCE_TYPE__CUSTOM_FLAG;
 	const s32		_SOURCE_TYPE_ADHOC								= 6;
 	const s32		_SOURCE_TYPE_FUNCTION							= 7;
 	const s32		_SOURCE_TYPE_DLLFUNC							= 8;
 	const s32		_SOURCE_TYPE_EVENT_OR_METHOD					= 9;		// Note:  These are &obj->ev.methods[index].userEventCode references, which are functions
-	const s32		_SOURCE_TYPE_EVENT_OR_METHOD_DEFAULT_HANDLER	= 10;		// Note:  These are actually &gsEvents_master[index] (but by index can also point to &obj->ev.methods[index]) references, which are default handlers
+	const s32		_SOURCE_TYPE_METHOD_CUSTOM						= 10 + _SOURCE_TYPE__CUSTOM_FLAG;
+	const s32		_SOURCE_TYPE_METHOD_ASSIGN						= 10 + _SOURCE_TYPE__ASSIGN_FLAG;
+	const s32		_SOURCE_TYPE_METHOD_ACCESS						= 10 + _SOURCE_TYPE__ACCESS_FLAG;
+	const s32		_SOURCE_TYPE_EVENT_OR_METHOD_INTERNAL_HANDLER	= 11;		// Note:  These are &gsEvents_master[index] references or &obj->ev.methods[index] references (obj->ev.methods[index] may be override default handlers for special-case uses, though they should otherwise mirror gsEvents_master[index])
 
 
 //////////

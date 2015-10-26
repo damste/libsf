@@ -975,8 +975,8 @@ struct SBasePropMap;
 	SVariable*				iObjProp_get							(SThisCode* thisCode, SObject* obj, s32 tnIndex);
 	s32						iObjProp_get_varAndType					(SThisCode* thisCode, SObject* obj, s32 tnIndex, SVariable** varDst);
 	SVariable*				iObjProp_get_var_byIndex				(SThisCode* thisCode, SObject* obj, s32 tnIndex, SBasePropMap** baseProp = NULL, SObjPropMap** objProp = NULL);
-	SVariable*				iObjProp_get_var_byComp					(SThisCode* thisCode, SObject* obj, SComp* comp,                  bool tlSearchDefaultProps = true,  bool tlSearchUserProps = true, u32* tnIndex = NULL);
-	SVariable*				iObjProp_get_var_byName					(SThisCode* thisCode, SObject* obj, u8* tcName, u32 tnNameLength, bool tlSearchDefaultProps = true,  bool tlSearchUserProps = true, u32* tnIndex = NULL);
+	SVariable*				iObjProp_get_var_byComp					(SThisCode* thisCode, SObject* obj, SComp* comp,                  bool tlSearchDefaultProps = true,  bool tlSearchUserProps = true, u32* tnIndex = NULL, s32* tnType = NULL);
+	SVariable*				iObjProp_get_var_byName					(SThisCode* thisCode, SObject* obj, u8* tcName, u32 tnNameLength, bool tlSearchDefaultProps = true,  bool tlSearchUserProps = true, u32* tnIndex = NULL, s32* tnType = NULL);
 	SBitmap*				iObjProp_get_bitmap						(SThisCode* thisCode, SObject* obj, s32 tnIndex);
 	SVariable*				iObjProp_get_character					(SThisCode* thisCode, SObject* obj, s32 tnIndex);
 	f64						iObjProp_get_f64_direct					(SThisCode* thisCode, SObject* obj, s32 tnIndex);
@@ -1010,8 +1010,8 @@ struct SBasePropMap;
 // For events
 //////
 	bool					iObjEvent_set_function					(SThisCode* thisCode, SObject* obj, s32 tnIndex, SFunction** funcRoot, SDatum* newSourceCode);
-	SDatum*					iObjEvent_get_name_asDatum				(SThisCode* thisCode, s32 tnIndex, SDatum** nameToUpdate);
-	s32						iObjEvent_get_eventOrMethod_byComp		(SThisCode* thisCode, SObject* obj, SComp* comp,                  bool tlSearchDefaultEMs   = false, bool tlSearchUserEMs   = true, u32* tnIndex = NULL);
+	SDatum*					iObjEvent_get_name_asDatum				(SThisCode* thisCode, s32 tnIndex, SDatum* nameToUpdate);
+	s32						iObjEvent_get_eventOrMethod_byComp		(SThisCode* thisCode, SObject* obj, SComp* comp, bool tlSearchDefaultEMs = true, bool tlSearchUserEMs = true, u32* tnIndex = NULL, SFunction** tsFuncRoot = NULL, SFunction** tsFunc = NULL);
 
 
 

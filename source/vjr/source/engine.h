@@ -93,8 +93,8 @@
 	void					iEngine_get_functionResult				(SThisCode* thisCode, SComp* comp, s32 tnRcount, SFunctionParams* rpar);
 
 	// Use these for root-searching named components, or components within objects
-	bool					iEngine_get_namedSourceAndType_byComp			(SThisCode* thisCode,				SComp* comp, void** p, s32* tnType);
-	bool					iiEngine_get_namedSourceAndType_ofObj_byComp	(SThisCode* thisCode, SObject* obj,	SComp* comp, void** p, s32* tnType, s32* tnIndex);
+	bool					iEngine_get_namedSourceAndType_byComp			(SThisCode* thisCode,				SComp* comp,               void** p, s32* tnType);
+	bool					iiEngine_get_namedSourceAndType_ofObj_byComp	(SThisCode* thisCode, SObject* obj,	SComp* comp, void** pRoot, void** p, s32* tnType, u32* tnIndex);
 
 	void					iEngine_executeSetter					(SThisCode* thisCode, cs8* name, SVariable* varOld, SVariable* varNew);
 	void					iEngine_executeSetter					(SThisCode* thisCode, s8*  name, SVariable* varOld, SVariable* varNew);
