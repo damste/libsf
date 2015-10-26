@@ -302,7 +302,7 @@
 
 		// Initially populate _screen
 		// Load in the history if it exists
-		if (!iSEM_loadFromDisk(thisCode, NULL, screenData, cgcScreenDataFilename, false, true))
+		if (!iSEM_load_fromDisk(thisCode, NULL, screenData, cgcScreenDataFilename, false, true))
 		{
 			// Indicate success
 			sprintf((s8*)logBuffer, "Loaded: %s\0", cgcScreenDataFilename);
@@ -335,7 +335,7 @@
 
 		// Initially populate _jdebi
 		// Load in the history if it exists
-		if (!iSEM_loadFromDisk(thisCode, NULL, _command_editbox->p.sem, cgcCommandHistoryFilename, true, true))
+		if (!iSEM_load_fromDisk(thisCode, NULL, _command_editbox->p.sem, cgcCommandHistoryFilename, true, true))
 		{
 			// Indicate success
 			sprintf((s8*)logBuffer, "Loaded: %s\0", cgcCommandHistoryFilename);
@@ -359,7 +359,7 @@
 		}
 
 		// Load some source code
-		if (iSEM_loadFromDisk(thisCode, _sourceCode_rider, _sourceCode_editbox->p.sem, cgcStartupPrgFilename, true, true))
+		if (iSEM_load_fromDisk(thisCode, _sourceCode_rider, _sourceCode_editbox->p.sem, cgcStartupPrgFilename, true, true))
 		{
 			// Indicate success
 			sprintf((s8*)logBuffer, "Loaded: %s\0", cgcStartupPrgFilename);

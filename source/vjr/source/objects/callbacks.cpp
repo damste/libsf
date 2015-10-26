@@ -319,7 +319,7 @@
 			if (lfPercent < 0.0)
 				lfPercent += 1.0;
 
-			valueMin = iObjProp_get_variable_byIndex(thisCode, obj, _INDEX_VALUE_MINIMUM);
+			valueMin = iObjProp_get_var_byIndex(thisCode, obj, _INDEX_VALUE_MINIMUM);
 			iObjProp_set_f64_direct(thisCode, obj, _INDEX_VALUE, get_f64(valueMin) + (lfPercent * (iObjProp_get_f64_direct(thisCode, obj, _INDEX_VALUE_MAXIMUM) - get_f64(valueMin))));
 			iObj_setDirtyRender_ascent(thisCode, obj, true);
 			iWindow_render(thisCode, win, false);
@@ -445,7 +445,7 @@
 			if (lfPercent < 0.0)
 				lfPercent += 1.0;
 
-			valueMin	= iObjProp_get_variable_byIndex(thisCode, obj, _INDEX_VALUE_MINIMUM);
+			valueMin	= iObjProp_get_var_byIndex(thisCode, obj, _INDEX_VALUE_MINIMUM);
 			lfValue		= get_f64(valueMin) + (lfPercent * (iObjProp_get_f64_direct(thisCode, obj, _INDEX_VALUE_MAXIMUM) - get_f64(valueMin)));
 			iObjProp_set_f64_direct(thisCode, obj, _INDEX_VALUE, lfValue);
 

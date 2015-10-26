@@ -250,17 +250,16 @@
 // Loads in a text file into an EM beginning optionally near ecHint.
 //
 //////
-	bool iSEM_loadFromDisk(SThisCode* thisCode, SObject* objParent, SEM* sem, cs8* tcPathname, bool isSourceCode, bool tlLogIt)
+	bool iSEM_load_fromDisk(SThisCode* thisCode, SObject* objParent, SEM* sem, cs8* tcPathname, bool isSourceCode, bool tlLogIt)
 	{
-		return(iSEM_loadFromDisk(thisCode, objParent, sem, (cu8*)tcPathname, isSourceCode, tlLogIt));
+		return(iSEM_load_fromDisk(thisCode, objParent, sem, (cu8*)tcPathname, isSourceCode, tlLogIt));
 	}
-	bool iSEM_loadFromDisk(SThisCode* thisCode, SObject* objParent, SEM* sem, cu8* tcPathname, bool isSourceCode, bool tlLogIt)
+	bool iSEM_load_fromDisk(SThisCode* thisCode, SObject* objParent, SEM* sem, cu8* tcPathname, bool isSourceCode, bool tlLogIt)
 	{
-		s32			lnI, lnJ, lnLast, lnPathnameLength, lnFnameLength;
-		bool		llOtherCharacters;
+		s32			lnPathnameLength, lnFnameLength;
+		bool		llResult;
 		SBuilder*	content;
-		SLine*		start;
-		SLine*		end;
+		SDatum		datum;
 		s8*			lcFname;
 		u8			buffer[_MAX_PATH + 64];
 
@@ -292,72 +291,24 @@
 			content = NULL;
 			if (iBuilder_asciiReadFromFile(&content, tcPathname))
 			{
-				// Read in the file
-				start	= NULL;
-				end		= NULL;
+				// Load it
+				datum.data_s8	= content->data_s8;
+				datum.length	= content->populatedLength;
+				llResult		= iSEM_load_fromMemory(thisCode, objParent, sem, &datum, isSourceCode, false);
 
-				// Copy through lines into the ecm
-				llOtherCharacters = false;
-				for (lnI = 0, lnLast = 0; (u32)lnI < content->populatedLength; )
-				{
-					// Are we on a CR/LF combination?
-					for (lnJ = 0; (content->data_u8[lnI] == 13 || content->data_u8[lnI] == 10) && lnJ < 2 && (u32)lnI < content->populatedLength; lnJ++)
-						++lnI;	// Increase also past this CR/LF character
-
-					// If we found a CR/LF combination
-					if (lnJ != 0 || (u32)lnI >= content->populatedLength)
-					{
-						// We've entered into a CR/LF block, append a new line
-						if (!llOtherCharacters)
-						{
-							// We only had CR+LF characters, no data
-							end = iSEM_appendLine(thisCode, sem, content->data_u8 + lnLast, 0, false);
-
-						} else {
-							// We had at least some data
-							end = iSEM_appendLine(thisCode, sem, content->data_u8 + lnLast, lnI - lnJ - lnLast, false);
-						}
-						if (!start)
-							start = end;
-
-						// Indicate where we are now
-						llOtherCharacters	= false;
-						lnLast				= lnI;
-
-					} else {
-						llOtherCharacters = true;
-						++lnI;
-					}
-					// Continue on processing the next line if we have room
-				}
-
-				// Release it
+				// Clean house
 				iBuilder_freeAndRelease(&content);
 
-				// Renumber everything
-				iSEM_renumber(thisCode, sem, 1);
-
-				// Parse the content if it's source code
-				if (isSourceCode)
-				{
-					// Iterate from start to end and parse each source code line
-					while (start && (SLine*)start->ll.prev != end)
-					{
-						// Parse it
-						iEngine_parseSourceCodeLine(NULL, start);
-
-						// Move to next line
-						start = (SLine*)start->ll.next;
-					}
-				}
-
+				// Log if need be
 				if (tlLogIt)
 				{
 					// Log it
 					sprintf((s8*)buffer, "Load %s\0", tcPathname);
 					iVjr_appendSystemLog(thisCode, buffer);
 				}
-				return(true);
+
+				// Indicate our result
+				return(llResult);
 
 			} else if (tlLogIt) {
 				// Log it
@@ -367,6 +318,104 @@
 		}
 		// If we get here, failure
 		return(false);
+	}
+
+
+
+
+//////////
+//
+// Called to load a SEM from a memory block (a raw block of data)
+//
+//////
+	bool iSEM_load_fromMemory(SThisCode* thisCode, SObject* objParent, SEM* sem, SDatum* datum,   bool isSourceCode, bool tlLogIt)
+	{
+		s32			lnI, lnJ, lnLast;
+		bool		llOtherCharacters;
+		SLine*		start;
+		SLine*		end;
+		u8			buffer[64];
+
+
+		//////////
+		// Iterate through breaking out the content
+		//////
+			start				= NULL;
+			end					= NULL;
+			llOtherCharacters	= false;
+			for (lnI = 0, lnLast = 0; lnI < datum->length; )
+			{
+				// Are we on a CR/LF combination?
+				for (lnJ = 0; (datum->data_u8[lnI] == 13 || datum->data_u8[lnI] == 10) && lnJ < 2 && lnI < datum->length; lnJ++)
+					++lnI;	// Increase also past this CR/LF character
+
+				// If we found a CR/LF combination
+				if (lnJ != 0 || lnI >= datum->length)
+				{
+					// We've entered into a CR/LF block, append a new line
+					if (!llOtherCharacters)
+					{
+						// We only had CR+LF characters, no data
+						end = iSEM_appendLine(thisCode, sem, datum->data_u8 + lnLast, 0, false);
+
+					} else {
+						// We had at least some data
+						end = iSEM_appendLine(thisCode, sem, datum->data_u8 + lnLast, lnI - lnJ - lnLast, false);
+					}
+					if (!start)
+						start = end;
+
+					// Indicate where we are now
+					llOtherCharacters	= false;
+					lnLast				= lnI;
+
+				} else {
+					llOtherCharacters = true;
+					++lnI;
+				}
+				// Continue on processing the next line if we have room
+			}
+
+
+		//////////
+		// Renumber everything
+		//////
+			iSEM_renumber(thisCode, sem, 1);
+
+
+		//////////
+		// Parse the content if it's flagged as source code
+		//////
+			if (isSourceCode)
+			{
+				// Iterate from start to end and parse each source code line
+				while (start && (SLine*)start->ll.prev != end)
+				{
+					// Parse it
+					iEngine_parseSourceCodeLine(NULL, start);
+
+					// Move to next line
+					start = (SLine*)start->ll.next;
+				}
+			}
+
+
+		//////////
+		// Log if need be
+		//////
+			if (tlLogIt)
+			{
+				// Log it
+				sprintf((s8*)buffer, "Loaded %d from memory\0", datum->length);
+				iVjr_appendSystemLog(thisCode, buffer);
+			}
+
+
+		//////////
+		// Indicate success
+		//////
+			return(true);
+
 	}
 
 

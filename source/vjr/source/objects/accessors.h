@@ -921,6 +921,7 @@ struct SBasePropMap;
 	// Note:  The _direct()* function variations are used to bypass the normal setters
 	//         and getters, and should be used for internal use only.
 	void					iObjProp_init_fixup						(void);
+	SDatum*					iObjProp_get_name_asDatum				(SThisCode* thisCode, s32 tnIndex, SDatum** nameToUpdate);
 	bool					iObjProp_set							(SThisCode* thisCode, SObject* obj, s32 tnIndex, SVariable* varNewValue, bool tlNestedSet = false);
 	bool					iObjProp_set_function					(SThisCode* thisCode, SObject* obj, s32 tnIndex, SFunction** funcRoot, SDatum* sourceCode);
 	bool					iObjProp_set_bitmap_direct				(SThisCode* thisCode, SObject* obj, s32 tnIndex, SBitmap* bmp);
@@ -973,10 +974,10 @@ struct SBasePropMap;
 	SVariable*				iObjProp_getUdfParams					(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
 
 	SVariable*				iObjProp_get							(SThisCode* thisCode, SObject* obj, s32 tnIndex);
-	s32						iObjProp_getVarAndType					(SThisCode* thisCode, SObject* obj, s32 tnIndex, SVariable** varDst);
-	SVariable*				iObjProp_get_variable_byIndex			(SThisCode* thisCode, SObject* obj, s32 tnIndex, SBasePropMap** baseProp = NULL, SObjPropMap** objProp = NULL);
-	SVariable*				iObjProp_get_variable_byComp			(SThisCode* thisCode, SObject* obj, SComp* comp,                  bool tlSearchDefaultProps = true,  bool tlSearchUserProps = true, u32* tnIndex = NULL);
-	SVariable*				iObjProp_get_variable_byName			(SThisCode* thisCode, SObject* obj, u8* tcName, u32 tnNameLength, bool tlSearchDefaultProps = true,  bool tlSearchUserProps = true, u32* tnIndex = NULL);
+	s32						iObjProp_get_varAndType					(SThisCode* thisCode, SObject* obj, s32 tnIndex, SVariable** varDst);
+	SVariable*				iObjProp_get_var_byIndex				(SThisCode* thisCode, SObject* obj, s32 tnIndex, SBasePropMap** baseProp = NULL, SObjPropMap** objProp = NULL);
+	SVariable*				iObjProp_get_var_byComp					(SThisCode* thisCode, SObject* obj, SComp* comp,                  bool tlSearchDefaultProps = true,  bool tlSearchUserProps = true, u32* tnIndex = NULL);
+	SVariable*				iObjProp_get_var_byName					(SThisCode* thisCode, SObject* obj, u8* tcName, u32 tnNameLength, bool tlSearchDefaultProps = true,  bool tlSearchUserProps = true, u32* tnIndex = NULL);
 	s32						iObjProp_get_eventOrMethod_byComp		(SThisCode* thisCode, SObject* obj, SComp* comp,                  bool tlSearchDefaultEMs   = false, bool tlSearchUserEMs   = true, u32* tnIndex = NULL);
 	SBitmap*				iObjProp_get_bitmap						(SThisCode* thisCode, SObject* obj, s32 tnIndex);
 	SVariable*				iObjProp_get_character					(SThisCode* thisCode, SObject* obj, s32 tnIndex);
@@ -1005,6 +1006,13 @@ struct SBasePropMap;
 	bool					iObjProp_setter_iconOnChild				(SThisCode* thisCode, SObject* obj, s32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp);
 	bool					iObjProp_setter_editboxMirror			(SThisCode* thisCode, SObject* obj, s32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp);
 	bool					iObjProp_setter_fontProperty			(SThisCode* thisCode, SObject* obj, s32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp);
+
+
+//////////
+// For events
+//////
+	SDatum*					iObjEvent_get_name_asDatum				(SThisCode* thisCode, s32 tnIndex, SDatum** nameToUpdate);
+
 
 
 	// For different types of properties
@@ -1503,7 +1511,7 @@ struct SBasePropMap;
 		{	_INDEX_SET_VECSEPARATOR,						_ICODE_VECSEPARATOR,				cgc_setVecSeparator,				sizeof(cgc_setVecSeparator) - 1,					_VAR_TYPE_CHARACTER,		0, 0, 0,		(uptr)&cgcComma[0]				,NULL	},	// One byte default separator for the vector values
 		{	0,												0,									NULL,								0,													0,						    0, 0, 0,		0								,NULL	}
 	};
-	const s32 gsProps_masterSize = sizeof(gsProps_master) / sizeof(SBasePropMap) - 1;
+	const s32 gnProps_masterSize = sizeof(gsProps_master) / sizeof(SBasePropMap) - 1;
 
 
 	// For different types of properties

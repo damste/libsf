@@ -243,6 +243,7 @@ struct SThisCode;
 
 	// Function functions (LOL)
 	SFunction*				iFunction_allocate							(SThisCode* thisCode, SComp* compName);
+	SFunction*				iFunction_allocate							(SThisCode* thisCode, SDatum* datumName);
 	SFunction*				iFunction_allocate							(SThisCode* thisCode, u8* tcFuncName);
 	SVariable*				iFunction_addVariable_scoped				(SThisCode* thisCode, SFunction* func);
 	void					iFunction_politelyDeleteCompiledInfo		(SThisCode* thisCode, SFunction* func, bool tlDeleteSelf);

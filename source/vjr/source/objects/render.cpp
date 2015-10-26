@@ -898,8 +898,8 @@
 					lrc.left += 4;	// Adjusts between the left-side checkbox image, and the text
 
 				// Draw the text
-				caption = iObjProp_get_variable_byIndex(thisCode, obj, _INDEX_CAPTION);
-				value	= iObjProp_get_variable_byIndex(thisCode, obj, _INDEX_VALUE);
+				caption = iObjProp_get_var_byIndex(thisCode, obj, _INDEX_CAPTION);
+				value	= iObjProp_get_var_byIndex(thisCode, obj, _INDEX_VALUE);
 				DrawText(obj->bmp->hdc, caption->value.data, caption->value.length, &lrc, lnFormat | DT_END_ELLIPSIS | DT_SINGLELINE);
 
 				// And adjust back if need be
@@ -1037,7 +1037,7 @@
 				}
 
 				// Draw the text
-				value = iObjProp_get_variable_byIndex(thisCode, obj, _INDEX_VALUE);
+				value = iObjProp_get_var_byIndex(thisCode, obj, _INDEX_VALUE);
 				DrawText(obj->bmp->hdc, value->value.data, value->value.length, &lrc2, lnFormat | DT_VCENTER | DT_END_ELLIPSIS);
 
 				// Frame rectangle
@@ -1145,7 +1145,7 @@
 				}
 
 				// Draw the text
-				caption = iObjProp_get_variable_byIndex(thisCode, obj, _INDEX_CAPTION);
+				caption = iObjProp_get_var_byIndex(thisCode, obj, _INDEX_CAPTION);
 				DrawText(obj->bmp->hdc, caption->value.data, caption->value.length, &lrc2, lnFormat | DT_VCENTER | DT_END_ELLIPSIS);
 
 				// Frame rectangle

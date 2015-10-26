@@ -186,7 +186,7 @@
 		// Find out how we're reprocessing
 		//////
 			dl		= (SDiskLock*)dcb->extra;
-			lnType	= iObjProp_getVarAndType(thisCode, _settings, _INDEX_SET_REPROCESS, &varReprocess);
+			lnType	= iObjProp_get_varAndType(thisCode, _settings, _INDEX_SET_REPROCESS, &varReprocess);
 			if (varReprocess)
 			{
 				// Grab our interval and max attempts

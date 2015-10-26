@@ -925,7 +925,7 @@ _asm nop;
 				if (propGet_settings_ncset_directNativeMembers(_settings) && _this)
 				{
 					// Try to locate the native member for the current this object
-					var = iObjProp_get_variable_byComp(thisCode, _this, comp);
+					var = iObjProp_get_var_byComp(thisCode, _this, comp);
 					if (var)
 					{
 						// We found the native property
@@ -1196,7 +1196,7 @@ _asm nop;
 		//////////
 		// Try to locate the native property for the current this object
 		//////
-			var = iObjProp_get_variable_byComp(thisCode, obj, comp, true, true, &lnIndex);
+			var = iObjProp_get_var_byComp(thisCode, obj, comp, true, true, &lnIndex);
 			if (var)
 			{
 				// We found the native property

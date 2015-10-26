@@ -112,6 +112,29 @@
 
 //////////
 //
+// Called to get the name of the property
+//
+//////
+	SDatum* iObjProp_get_name_asDatum(SThisCode* thisCode, s32 tnIndex, SDatum** nameToUpdate)
+	{
+		// Make sure the environment is sane
+		nameToUpdate = 0;
+		if (nameToUpdate && tnIndex <= gnProps_masterSize)
+		{
+			// Store the raw property entries (if requested)
+			(*nameToUpdate)->data_cs8	= gsProps_master[tnIndex - 1].propName_s8;
+			(*nameToUpdate)->length		= gsProps_master[tnIndex - 1].propNameLength;
+		}
+
+		// Indicate our name
+		return(*nameToUpdate);
+	}
+
+
+
+
+//////////
+//
 // Called to set the f64 variable to the indicated input
 //
 // Note:  For nested sets, such as something already calling setterObject_set(), which then calls here,
@@ -130,7 +153,7 @@
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_variable_byIndex(thisCode, obj, tnIndex, &baseProp, &objProp);
+			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex, &baseProp, &objProp);
 			if (var)
 			{
 				// Validate against the object class if available, and if not then the base class if available, and if not then just copy
@@ -157,22 +180,55 @@
 //////
 	bool iObjProp_set_function(SThisCode* thisCode, SObject* obj, s32 tnIndex, SFunction** funcRoot, SDatum* sourceCode)
 	{
-		bool llResult;
+		bool		llResult;
+		SFunction*	func;
+		SDatum*		name;
 
 
 		// Make sure our environment is sane
 		llResult = false;
 		if (obj && funcRoot && sourceCode && sourceCode->data_s8 && sourceCode->length >= 1)
 		{
-// TODO:  working here
-			if (!*funcRoot)
-			{
-				// This is the first function reference
-			}
 
-			// Create a new SEM from sourceCode
+			//////////
+			// If we don't already have a user function, allocate one
+			//////
+				func = iFunction_allocate(thisCode, iObjProp_get_name_asDatum(thisCode, tnIndex, &name));
+				if (!func)
+					return(false);
 
-			// Prepend to the (*funcRoot)->sourceCode
+
+			//////////
+			// Create a new SEM to hold the source code
+			//////
+				func->sourceCode = iSEM_allocate(thisCode, true);
+				if (!func->sourceCode)
+				{
+					// Clean house
+					iFunction_politelyDeleteChain(thisCode, &func);
+					return(false);
+				}
+
+
+			//////////
+			// Populate the program into it
+			//////
+				llResult = iSEM_load_fromMemory(thisCode, obj, func->sourceCode, sourceCode, true, false);
+
+
+			//////////
+			// Store the new function
+			//////
+				if (!*funcRoot)
+				{
+					// This is the first function reference
+					*funcRoot = func;
+
+				} else {
+					// Prepend the new function before the current one so it will be used when calling this code in the future
+					iLl_appendExistingNodeAtBeginning((SLL**)funcRoot, (SLL*)func);
+				}
+
 		}
 
 		// Indicate our result
@@ -202,7 +258,7 @@
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_variable_byIndex(thisCode, obj, tnIndex, &baseProp, &objProp);
+			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex, &baseProp, &objProp);
 			if (var)
 			{
 				// Create a temporary variable
@@ -294,7 +350,7 @@
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_variable_byIndex(thisCode, obj, tnIndex, &baseProp, &objProp);
+			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex, &baseProp, &objProp);
 			if (var)
 			{
 				// Create a temporary variable
@@ -330,7 +386,7 @@
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_variable_byIndex(thisCode, obj, tnIndex, &baseProp, &objProp);
+			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex, &baseProp, &objProp);
 			if (var)
 			{
 				// Create a temporary variable
@@ -411,7 +467,7 @@
 			}
 
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_variable_byIndex(thisCode, obj, tnIndex, &baseProp, &objProp);
+			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex, &baseProp, &objProp);
 			if (var)
 			{
 				// Create a temporary variable
@@ -461,7 +517,7 @@
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_variable_byIndex(thisCode, obj, tnIndex, &baseProp, &objProp);
+			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex, &baseProp, &objProp);
 			if (var)
 			{
 				// Create a temporary variable
@@ -511,7 +567,7 @@
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_variable_byIndex(thisCode, obj, tnIndex, &baseProp, &objProp);
+			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex, &baseProp, &objProp);
 			if (var)
 			{
 				// Create a temporary variable
@@ -561,7 +617,7 @@
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_variable_byIndex(thisCode, obj, tnIndex, &baseProp, &objProp);
+			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex, &baseProp, &objProp);
 			if (var)
 			{
 				// Create a temporary variable
@@ -611,7 +667,7 @@
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_variable_byIndex(thisCode, obj, tnIndex, &baseProp, &objProp);
+			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex, &baseProp, &objProp);
 			if (var)
 			{
 				// Create a temporary variable
@@ -661,7 +717,7 @@
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_variable_byIndex(thisCode, obj, tnIndex, &baseProp, &objProp);
+			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex, &baseProp, &objProp);
 			if (var)
 			{
 				// Create a temporary variable
@@ -708,8 +764,8 @@
 		if (objDst && objSrc)
 		{
 			// Grab the variable associated with this object's property
-			varDst = iObjProp_get_variable_byIndex(thisCode, objDst, tnIndexDst);
-			varSrc = iObjProp_get_variable_byIndex(thisCode, objSrc, tnIndexDst);
+			varDst = iObjProp_get_var_byIndex(thisCode, objDst, tnIndexDst);
+			varSrc = iObjProp_get_var_byIndex(thisCode, objSrc, tnIndexDst);
 			if (varDst && varSrc)
 				return(iVariable_copy(thisCode, varDst, varSrc));
 		}
@@ -2274,7 +2330,7 @@ debug_break;
 	{
 		// Make sure the environment is sane
 		if (obj)
-			return(iObjProp_get_variable_byIndex(thisCode, obj, tnIndex));
+			return(iObjProp_get_var_byIndex(thisCode, obj, tnIndex));
 
 		// If we get here, failure
 		return(NULL);
@@ -2288,7 +2344,7 @@ debug_break;
 // Called to get the type of the variable for the indicated property
 //
 //////
-	s32 iObjProp_getVarAndType(SThisCode* thisCode, SObject* obj, s32 tnIndex, SVariable** varDst)
+	s32 iObjProp_get_varAndType(SThisCode* thisCode, SObject* obj, s32 tnIndex, SVariable** varDst)
 	{
 		SVariable* var;
 
@@ -2306,7 +2362,7 @@ debug_break;
 			//////////
 			// Grab the variable
 			//////
-				*varDst = iObjProp_get_variable_byIndex(thisCode, obj, tnIndex);
+				*varDst = iObjProp_get_var_byIndex(thisCode, obj, tnIndex);
 
 
 			//////////
@@ -2331,7 +2387,7 @@ debug_break;
 //        variable, not a copy.
 //
 //////
-	SVariable* iObjProp_get_variable_byIndex(SThisCode* thisCode, SObject* obj, s32 tnIndex, SBasePropMap** baseProp, SObjPropMap** objProp)
+	SVariable* iObjProp_get_var_byIndex(SThisCode* thisCode, SObject* obj, s32 tnIndex, SBasePropMap** baseProp, SObjPropMap** objProp)
 	{
 		s32				lnI;
 		SBaseClassMap*	baseClassMap;
@@ -2387,13 +2443,13 @@ debug_break;
 //		tlSearchClassProps	-- Search obj->firstProperty link list for custom added properties with ADDPROPERTY()
 //
 //////
-	SVariable* iObjProp_get_variable_byComp(SThisCode* thisCode, SObject* obj, SComp* comp, bool tlSearchDefaultProps, bool tlSearchUserProps, u32* tnIndex)
+	SVariable* iObjProp_get_var_byComp(SThisCode* thisCode, SObject* obj, SComp* comp, bool tlSearchDefaultProps, bool tlSearchUserProps, u32* tnIndex)
 	{
 		// Make sure our environment is sane
 		if (comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data_s8 && comp->start + comp->length <= comp->line->sourceCode->length)
 		{
 			// We're good
-			return(iObjProp_get_variable_byName(thisCode, obj, comp->line->sourceCode->data_u8 + comp->start, comp->length, tlSearchDefaultProps, tlSearchUserProps, tnIndex));
+			return(iObjProp_get_var_byName(thisCode, obj, comp->line->sourceCode->data_u8 + comp->start, comp->length, tlSearchDefaultProps, tlSearchUserProps, tnIndex));
 
 		} else {
 			// Something's invalid
@@ -2401,7 +2457,7 @@ debug_break;
 		}
 	}
 
-	SVariable* iObjProp_get_variable_byName(SThisCode* thisCode, SObject* obj, u8* tcName, u32 tnNameLength, bool tlSearchDefaultProps, bool tlSearchUserProps, u32* tnIndex)
+	SVariable* iObjProp_get_var_byName(SThisCode* thisCode, SObject* obj, u8* tcName, u32 tnNameLength, bool tlSearchDefaultProps, bool tlSearchUserProps, u32* tnIndex)
 	{
 		s32					lnI, lnIndex;
 		SBaseClassMap*		baseClassMap;
@@ -2544,7 +2600,7 @@ debug_break;
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_variable_byIndex(thisCode, obj, tnIndex);
+			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex);
 			if (var && var->varType == _VAR_TYPE_BITMAP)
 				return(var->bmp);
 		}
@@ -2569,7 +2625,7 @@ debug_break;
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_variable_byIndex(thisCode, obj, tnIndex);
+			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex);
 			if (var && var->varType == _VAR_TYPE_CHARACTER)
 				return(var);
 		}
@@ -2594,7 +2650,7 @@ debug_break;
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_variable_byIndex(thisCode, obj, tnIndex);
+			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex);
 			if (var && var->varType == _VAR_TYPE_F32)
 				return(var);
 		}
@@ -2623,7 +2679,7 @@ debug_break;
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_variable_byIndex(thisCode, obj, tnIndex);
+			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex);
 			if (var && var->varType == _VAR_TYPE_F32)
 			{
 				// Try to get the value
@@ -2662,7 +2718,7 @@ debug_break;
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_variable_byIndex(thisCode, obj, tnIndex);
+			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex);
 			if (var)
 			{
 				// Try to get the value
@@ -2697,7 +2753,7 @@ debug_break;
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_variable_byIndex(thisCode, obj, tnIndex);
+			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex);
 			if (var && var->varType == _VAR_TYPE_LOGICAL)
 				return(var);
 		}
@@ -2725,7 +2781,7 @@ debug_break;
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_variable_byIndex(thisCode, obj, tnIndex);
+			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex);
 			if (var)
 			{
 				// Try to get the value
@@ -2757,7 +2813,7 @@ debug_break;
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_variable_byIndex(thisCode, obj, tnIndex);
+			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex);
 			if (var && var->varType == _VAR_TYPE_OBJECT)
 				return(var);
 		}
@@ -2785,7 +2841,7 @@ debug_break;
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_variable_byIndex(thisCode, obj, tnIndex);
+			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex);
 			if (var)
 			{
 				// Try to get the value
@@ -2820,7 +2876,7 @@ debug_break;
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_variable_byIndex(thisCode, obj, tnIndex);
+			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex);
 			if (var)
 			{
 				// Try to get the value
@@ -2859,7 +2915,7 @@ debug_break;
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_variable_byIndex(thisCode, obj, tnIndex);
+			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex);
 			if (var)
 			{
 				// Try to get the value
@@ -2925,7 +2981,7 @@ debug_break;
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_variable_byIndex(thisCode, obj, tnIndex);
+			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex);
 			if (var && var->varType == _VAR_TYPE_BITMAP)
 			{
 				iVariable_delete(thisCode, var, false);
@@ -2953,7 +3009,7 @@ debug_break;
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_variable_byIndex(thisCode, obj, tnIndex);
+			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex);
 			if (var && var->varType == _VAR_TYPE_CHARACTER)
 				return(iDatum_compare(&var->value, tcText, tnTextLength));	// Do the compare normally
 		}
@@ -2991,7 +3047,7 @@ debug_break;
 				if (propIsName_byText(objChild, cgcName_caption))
 				{
 					// Set the caption here
-					varChild = iObjProp_get_variable_byIndex(thisCode, objChild, _INDEX_CAPTION);
+					varChild = iObjProp_get_var_byIndex(thisCode, objChild, _INDEX_CAPTION);
 					if (varChild)
 						return(iVariable_copy(thisCode, varChild, varNewValue));
 
@@ -3038,7 +3094,7 @@ debug_break;
 				if (propIsName_byText(objChild, cgcName_icon))
 				{
 					// Set the caption here
-					varChild = iObjProp_get_variable_byIndex(thisCode, objChild, _INDEX_ICON);
+					varChild = iObjProp_get_var_byIndex(thisCode, objChild, _INDEX_ICON);
 					if (varChild)
 						return(iVariable_copy(thisCode, varChild, varNewValue));
 
@@ -3319,4 +3375,27 @@ debug_break;
 		// Indicate our status
 		//////
 			return(llResult);
+	}
+
+
+
+
+//////////
+//
+// Called to get the name of the event
+//
+//////
+	SDatum* iObjEvent_get_name_asDatum(SThisCode* thisCode, s32 tnIndex, SDatum** nameToUpdate)
+	{
+		// Make sure the environment is sane
+		nameToUpdate = 0;
+		if (nameToUpdate && tnIndex <= gnEvents_masterSize)
+		{
+			// Store the raw property entries (if requested)
+			(*nameToUpdate)->data_cs8	= gsEvents_master[tnIndex - 1].eventName_s8;
+			(*nameToUpdate)->length		= gsEvents_master[tnIndex - 1].eventNameLength;
+		}
+
+		// Indicate our name
+		return(*nameToUpdate);
 	}

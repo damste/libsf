@@ -1553,7 +1553,7 @@
 					// Physically create the window
 					//////
 						// Window name
-						var = iObjProp_get_variable_byIndex(thisCode, obj, _INDEX_NAME);
+						var = iObjProp_get_var_byIndex(thisCode, obj, _INDEX_NAME);
 						if (var->varType != _VAR_TYPE_CHARACTER)
 						{
 							// Use a default name

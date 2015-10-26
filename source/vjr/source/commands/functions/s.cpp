@@ -582,7 +582,7 @@
 					//////////
 					// This is the setting
 					//////
-						var = iObjProp_get_variable_byIndex(thisCode, _settings, gsProps_master[lnIndex].index, &baseProp, &objProp);
+						var = iObjProp_get_var_byIndex(thisCode, _settings, gsProps_master[lnIndex].index, &baseProp, &objProp);
 						if (!var || !baseProp || !objProp)
 						{
 							// Should never happen, if it does it means something's not setup properly in the properties, or there's a memory corruption
@@ -621,7 +621,7 @@
 												llProcessed = true;
 
 												// Grab the _INDEX_SET_DEVICE2 entry for its filename
-												var = iObjProp_get_variable_byIndex(thisCode, _settings, _INDEX_SET_DEVICE2, &baseProp, &objProp);
+												var = iObjProp_get_var_byIndex(thisCode, _settings, _INDEX_SET_DEVICE2, &baseProp, &objProp);
 												if (!var || !baseProp || !objProp)
 												{
 													// Should never happen, if it does it means something's not setup properly in the properties, or there's a memory corruption

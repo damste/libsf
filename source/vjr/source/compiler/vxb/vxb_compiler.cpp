@@ -5381,6 +5381,7 @@ debug_break;
 		{
 			// Initialize
 			memset(funcNew, 0, sizeof(SFunction));
+			funcNew->ll.uniqueId = iGetNextUid(thisCode);
 
 			// Store name if provided
 			if (compName && compName->line && compName->line->sourceCode && compName->line->sourceCode->data)
@@ -5401,6 +5402,28 @@ debug_break;
 		return(funcNew);
 	}
 
+	SFunction* iFunction_allocate(SThisCode* thisCode, SDatum* datumName)
+	{
+		SFunction* funcNew;
+
+
+		// Create the function
+		funcNew = (SFunction*)malloc(sizeof(SFunction));
+		if (funcNew)
+		{
+			// Initialize
+			memset(funcNew, 0, sizeof(SFunction));
+			funcNew->ll.uniqueId = iGetNextUid(thisCode);
+
+			// Store name if provided
+			if (datumName)
+				iDatum_duplicate(&funcNew->name, datumName);
+		}
+
+		// Indicate our status
+		return(funcNew);
+	}
+
 	SFunction* iFunction_allocate(SThisCode* thisCode, u8* tcFuncName)
 	{
 		SFunction* funcNew;
@@ -5412,6 +5435,7 @@ debug_break;
 		{
 			// Initialize
 			memset(funcNew, 0, sizeof(SFunction));
+			funcNew->ll.uniqueId = iGetNextUid(thisCode);
 
 			// Store name if provided
 			if (tcFuncName)
@@ -6648,7 +6672,7 @@ debug_break;
 		s32 lnI;
 
 
-		for (lnI = 0; lnI < gsProps_masterSize; lnI++)
+		for (lnI = 0; lnI < gnProps_masterSize; lnI++)
 		{
 			// Create the variable
 			gsProps_master[lnI].varInit = iVariable_create(thisCode, gsProps_master[lnI].varType, NULL, true);

@@ -2913,7 +2913,7 @@
 				//////////
 				// Find out what the xyz is for SET xyz TO ...
 				//////
-					varSet = iObjProp_get_variable_byIndex(thisCode, _settings, lnIndex, &baseProp, &objProp);
+					varSet = iObjProp_get_var_byIndex(thisCode, _settings, lnIndex, &baseProp, &objProp);
 					if (varSet && objProp && baseProp)
 					{
 						// We found the setting and the default variable type
