@@ -157,6 +157,7 @@
 		{
 			SLine*		firstLine;										// First in the chain (first->prev is NULL)
 			SLine*		lastLine;										// Last in the chain (last->next is NULL)
+			bool		isStale;										// A general purpose flag indicating if the source code within this SEM is stale
 			bool		isReadOnly;										// If read-only no changes are allowed, only navigation
 			bool		stopNavigationOnNbsp;							// Do ctrl+left/right operations stop at every part of nbsp names (by default, no)?
 

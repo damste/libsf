@@ -1210,16 +1210,16 @@ _asm nop;
 		//////////
 		// See if it's an event or method
 		//////
-			lnSourceType = iObjProp_get_eventOrMethod_byComp(thisCode, obj, comp, false, true, &lnIndex);
+			lnSourceType = iObjEvent_get_eventOrMethod_byComp(thisCode, obj, comp, false, true, &lnIndex);
 			if (lnSourceType != _SOURCE_TYPE_NOT_FOUND)
 			{
 				// We found the name on the object, either as user code or as a default handler
 				// Note:  If there is a default handler, the user code is returned
 
 				// Which is it?
-					 if (lnSourceType == _SOURCE_TYPE_FUNCTION)				*p = &obj->ev.methods[lnIndex].userEventCode;
-				else if (lnSourceType == _SOURCE_TYPE_DEFAULT_HANDLER)		*p = &gsEvents_master[lnIndex];
-				else	/* this else should never happen */					*p = NULL;
+				     if (lnSourceType == _SOURCE_TYPE_EVENT_OR_METHOD)						*p = &obj->ev.methods[lnIndex].userEventCode;
+				else if (lnSourceType == _SOURCE_TYPE_EVENT_OR_METHOD_DEFAULT_HANDLER)		*p = &gsEvents_master[lnIndex];
+				else	/* this else should never happen */									*p = NULL;
 
 				// Store the type
 				*tnType		= lnSourceType;
@@ -1776,11 +1776,6 @@ _asm nop;
 			*sourceCode = NULL;
 
 			// Delete the items
-			iFunction_politelyDeleteChain(thisCode, &sc->firstFunction);
-			iVariable_politelyDeleteChain(thisCode, &sc->params,		true);
-			iVariable_politelyDeleteChain(thisCode, &sc->returns,		true);
-			iVariable_politelyDeleteChain(thisCode, &sc->privates,		true);
-			iVariable_politelyDeleteChain(thisCode, &sc->locals,		true);
-			iVariable_politelyDeleteChain(thisCode, &sc->scoped,		true);
+			iFunction_politelyDelete_chain(thisCode, &sc->firstFunction, false);
 		}
 	}

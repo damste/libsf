@@ -3467,14 +3467,14 @@ if (!obj->props[lnI])
 		// Any dynamic properties within
 		//////
 			if (tlResetProperties)
-				iVariable_politelyDeleteChain(thisCode, &obj->firstProperty, true);
+				iVariable_politelyDelete_chain(thisCode, &obj->firstProperty, true);
 
 
 		//////////
 		// Any methods defined
 		//////
 			if (tlResetMethods)
-				iFunction_politelyDeleteChain(thisCode, &obj->firstMethod);
+				iFunction_politelyDelete_chain(thisCode, &obj->firstMethod, true);
 
 
 		//////////

@@ -175,71 +175,6 @@
 
 //////////
 //
-// Called to change the source code associated with this method at runtime.
-//
-//////
-	bool iObjProp_set_function(SThisCode* thisCode, SObject* obj, s32 tnIndex, SFunction** funcRoot, SDatum* sourceCode)
-	{
-		bool		llResult;
-		SFunction*	func;
-		SDatum*		name;
-
-
-		// Make sure our environment is sane
-		llResult = false;
-		if (obj && funcRoot && sourceCode && sourceCode->data_s8 && sourceCode->length >= 1)
-		{
-
-			//////////
-			// If we don't already have a user function, allocate one
-			//////
-				func = iFunction_allocate(thisCode, iObjProp_get_name_asDatum(thisCode, tnIndex, &name));
-				if (!func)
-					return(false);
-
-
-			//////////
-			// Create a new SEM to hold the source code
-			//////
-				func->sourceCode = iSEM_allocate(thisCode, true);
-				if (!func->sourceCode)
-				{
-					// Clean house
-					iFunction_politelyDeleteChain(thisCode, &func);
-					return(false);
-				}
-
-
-			//////////
-			// Populate the program into it
-			//////
-				llResult = iSEM_load_fromMemory(thisCode, obj, func->sourceCode, sourceCode, true, false);
-
-
-			//////////
-			// Store the new function
-			//////
-				if (!*funcRoot)
-				{
-					// This is the first function reference
-					*funcRoot = func;
-
-				} else {
-					// Prepend the new function before the current one so it will be used when calling this code in the future
-					iLl_appendExistingNodeAtBeginning((SLL**)funcRoot, (SLL*)func);
-				}
-
-		}
-
-		// Indicate our result
-		return(llResult);
-	}
-
-
-
-
-//////////
-//
 // Called to set the bitmap to the indicated bitmap
 //
 //////
@@ -2510,84 +2445,6 @@ debug_break;
 
 //////////
 //
-// Called to search events and methods to see if the name indicated is found
-//
-//////
-	s32 iObjProp_get_eventOrMethod_byComp(SThisCode* thisCode, SObject* obj, SComp* comp, bool tlSearchDefaultEMs, bool tlSearchUserEMs, u32* tnIndex)
-	{
-		s32			lnI;
-		s8*			lcData;
-		SEvent*		e;
-		SFunction*	func;
-
-
-		// Make sure our environment is sane
-		if (obj && comp)
-		{
-			// Grab a start
-			lcData = comp->line->sourceCode->data_s8 + comp->start;
-			
-			// Iterate through all base class events and methods
-			for (lnI = 0, e = &obj->ev.methods[0]; lnI < _EVENT_MAX_COUNT; lnI++, e++)
-			{
-				// Is this event valid for this class?
-				if (e->_event)
-				{
-
-					//////////
-					// User code?
-					//////
-						// Locate the event name
-						if (tlSearchUserEMs && e->userEventCode)
-						{
-							// Iterate through user functions (there will typically only be one, but theoretically there could be more than one because func->ll exists)
-							for (func = e->userEventCode; func; func = func->ll.nextFunc)
-							{
-								// Is it a match?
-								if (func->name.length == comp->length && _memicmp(func->name.data_s8, lcData, comp->length) == 0)
-								{
-									// Yes
-									if (tnIndex)
-										*tnIndex = lnI;
-
-									// Indicate the reference
-									return(_SOURCE_TYPE_FUNCTION);
-								}
-							}
-							// If we get here, not found
-						}
-
-
-					//////////
-					// Default handlers?
-					//////
-						if (tlSearchDefaultEMs)
-						{
-							// Is it a match?
-							if (gsEvents_master[lnI].eventNameLength == comp->length && _memicmp(gsEvents_master[lnI].eventName_s8, lcData, comp->length) == 0)
-							{
-								// Yes
-								if (tnIndex)
-									*tnIndex = lnI;
-
-								// Indicate the reference
-								return(_SOURCE_TYPE_DEFAULT_HANDLER);
-							}
-						}
-
-				}
-			}
-		}
-
-		// If we get here, failure
-		return(_SOURCE_TYPE_NOT_FOUND);
-	}
-
-
-
-
-//////////
-//
 // Called to get the bitmap from the indicated object
 //
 //////
@@ -3382,6 +3239,86 @@ debug_break;
 
 //////////
 //
+// Called to change the source code associated with this method at runtime.
+// It can either replace the function, or clear it out by passing an empty
+// newSourceCode member (by either a NULL parameter, NULL newSourceCode->data_s8
+// member, or newSourceCode->length <= 0).
+//
+//////
+	bool iObjEvent_set_function(SThisCode* thisCode, SObject* obj, s32 tnIndex, SFunction** funcRoot, SDatum* newSourceCode)
+	{
+		bool		llResult;
+		SFunction*	func;
+		SDatum*		name;
+
+
+		// Make sure our environment is sane
+		llResult = false;
+		if (obj && funcRoot)
+		{
+
+			//////////
+			// If we don't already have a user function, allocate one
+			//////
+				func = iFunction_allocate(thisCode, iObjEvent_get_name_asDatum(thisCode, tnIndex, &name));
+				if (!func)
+					return(false);
+
+
+			//////////
+			// Create a new SEM to hold the source code
+			//////
+				func->sourceCode = iSEM_allocate(thisCode, true);
+				if (!func->sourceCode)
+				{
+					// Clean house
+					iFunction_politelyDelete(thisCode, func, true);
+					return(false);
+				}
+
+
+			//////////
+			// Are they setting source code, or clearing it out?
+			//////
+				if (newSourceCode && newSourceCode->data_s8 && newSourceCode->length >= 1)
+				{
+					// Populate the program into it
+					llResult = iSEM_load_fromMemory(thisCode, obj, func->sourceCode, newSourceCode, true, false);
+
+				} else {
+					// The code will be cleared out
+					llResult = true;
+				}
+
+
+			//////////
+			// Store the new function
+			//////
+				if (!*funcRoot)
+				{
+					// This is the first function reference
+					*funcRoot = func;
+
+				} else {
+					// Mark the existing function stale
+					if ((*funcRoot)->sourceCode)
+						(*funcRoot)->sourceCode->isStale = true;
+
+					// Prepend the new function before the current one so it will be used when calling this code in the future
+					iLl_appendExistingNodeAtBeginning((SLL**)funcRoot, (SLL*)func);
+				}
+
+		}
+
+		// Indicate our result
+		return(llResult);
+	}
+
+
+
+
+//////////
+//
 // Called to get the name of the event
 //
 //////
@@ -3398,4 +3335,82 @@ debug_break;
 
 		// Indicate our name
 		return(*nameToUpdate);
+	}
+
+
+
+
+//////////
+//
+// Called to search events and methods to see if the name indicated is found
+//
+//////
+	s32 iObjEvent_get_eventOrMethod_byComp(SThisCode* thisCode, SObject* obj, SComp* comp, bool tlSearchDefaultEMs, bool tlSearchUserEMs, u32* tnIndex)
+	{
+		s32			lnI;
+		s8*			lcData;
+		SEvent*		e;
+		SFunction*	func;
+
+
+		// Make sure our environment is sane
+		if (obj && comp)
+		{
+			// Grab a start
+			lcData = comp->line->sourceCode->data_s8 + comp->start;
+			
+			// Iterate through all base class events and methods
+			for (lnI = 0, e = &obj->ev.methods[0]; lnI < _EVENT_MAX_COUNT; lnI++, e++)
+			{
+				// Is this event valid for this class?
+				if (e->_event)
+				{
+
+					//////////
+					// User code?
+					//////
+						// Locate the event name
+						if (tlSearchUserEMs && e->userEventCode)
+						{
+							// Iterate through user functions (there will typically only be one, but theoretically there could be more than one because func->ll exists)
+							for (func = e->userEventCode; func; func = func->ll.nextFunc)
+							{
+								// Is it a match?
+								if (func->name.length == comp->length && _memicmp(func->name.data_s8, lcData, comp->length) == 0)
+								{
+									// Yes
+									if (tnIndex)
+										*tnIndex = lnI;
+
+									// Indicate the reference
+									return(_SOURCE_TYPE_EVENT_OR_METHOD);
+								}
+							}
+							// If we get here, not found
+						}
+
+
+					//////////
+					// Default handlers?
+					//////
+						if (tlSearchDefaultEMs)
+						{
+							// Is it a match?
+							if (gsEvents_master[lnI].eventNameLength == comp->length && _memicmp(gsEvents_master[lnI].eventName_s8, lcData, comp->length) == 0)
+							{
+								// Yes
+								if (tnIndex)
+									*tnIndex = lnI;
+
+								// Indicate the reference
+								return(_SOURCE_TYPE_EVENT_OR_METHOD_DEFAULT_HANDLER);
+							}
+						}
+
+				}
+			}
+		}
+
+		// If we get here, failure
+		return(_SOURCE_TYPE_NOT_FOUND);
 	}

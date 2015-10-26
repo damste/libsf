@@ -167,7 +167,8 @@
 	const s32		_SOURCE_TYPE_ADHOC								= 6;
 	const s32		_SOURCE_TYPE_FUNCTION							= 7;
 	const s32		_SOURCE_TYPE_DLLFUNC							= 8;
-	const s32		_SOURCE_TYPE_DEFAULT_HANDLER					= 9;
+	const s32		_SOURCE_TYPE_EVENT_OR_METHOD					= 9;		// Note:  These are &obj->ev.methods[index].userEventCode references, which are functions
+	const s32		_SOURCE_TYPE_EVENT_OR_METHOD_DEFAULT_HANDLER	= 10;		// Note:  These are actually &gsEvents_master[index] (but by index can also point to &obj->ev.methods[index]) references, which are default handlers
 
 
 //////////

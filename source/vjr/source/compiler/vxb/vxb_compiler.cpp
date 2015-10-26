@@ -5347,7 +5347,7 @@ debug_break;
 			// Delete the variable chain
 			//////
 				if (node->opData->firstVariable)
-					iVariable_politelyDeleteChain(thisCode, &node->opData->firstVariable, true);
+					iVariable_politelyDelete_chain(thisCode, &node->opData->firstVariable, true);
 
 
 			//////////
@@ -5488,29 +5488,33 @@ debug_break;
 
 
 		// Make sure our environment is sane
-		if (func && func->firstLine)
+		if (func)
 		{
-			// Disconnect everything in its source code lines from the function
-			line		= func->firstLine;
-			llContinue	= true;
-
-			// Iterate through every line between first and last inclusive
-			while (line && llContinue)
+			// Remove all compiler info for the source code lines (if any)
+			if (func->firstLine)
 			{
-				// Delete every node if need be
-				if (line->compilerInfo && line->compilerInfo->firstNodeEngaged)
+				// Disconnect everything in its source code lines from the function
+				line		= func->firstLine;
+				llContinue	= true;
+
+				// Iterate through every line between first and last inclusive
+				while (line && llContinue)
 				{
-					// Delete from regular components, and whitespaces
-					iComps_deleteAll_byFirstComp(thisCode, &line->compilerInfo->firstComp);
-					iComps_deleteAll_byFirstComp(thisCode, &line->compilerInfo->firstWhitespace);
+					// Delete every node if need be
+					if (line->compilerInfo && line->compilerInfo->firstNodeEngaged)
+					{
+						// Delete from regular components, and whitespaces
+						iComps_deleteAll_byFirstComp(thisCode, &line->compilerInfo->firstComp);
+						iComps_deleteAll_byFirstComp(thisCode, &line->compilerInfo->firstWhitespace);
+					}
+
+					// Mark it so that it will be force-re-compiled
+					line->forceRecompile = true;
+
+					// Move to next line
+					llContinue	= (line != func->lastLine);
+					line		= (SLine*)line->ll.next;
 				}
-
-				// Mark it so that it will be force-re-compiled
-				line->forceRecompile = true;
-
-				// Move to next line
-				llContinue	= (line != func->lastLine);
-				line		= (SLine*)line->ll.next;
 			}
 
 			// Should we delete self?
@@ -5527,35 +5531,67 @@ debug_break;
 // Called to politely delete everything contained within the function
 //
 //////
-	void iFunction_politelyDeleteChain(SThisCode* thisCode, SFunction** rootFunc)
+	void iFunction_politelyDelete(SThisCode* thisCode, SFunction* func, bool tlDeleteSelf)
 	{
-		SFunction* func;
+		// Make sure our environment is sane
+		if (func)
+		{
+			// Delete this function's variables
+			iVariable_politelyDelete_chain(thisCode,	&func->params,			true);
+			iVariable_politelyDelete_chain(thisCode,	&func->locals,			true);
+			iVariable_politelyDelete_chain(thisCode,	&func->returns,			true);
+			iVariable_politelyDelete_chain(thisCode,	&func->scoped,			true);
+			iVariable_politelyDelete_chain(thisCode,	&func->params,			true);
+
+			// Delete the adhocs for this function
+			iFunction_politelyDelete_chain(thisCode,	&func->firstAdhoc,		true);
+			iFunction_politelyDelete_chain(thisCode,	&func->firstFlowof,		true);
+
+			// Delete the function itself if need be
+			if (tlDeleteSelf)
+			{
+				// Orphanize this item
+				iLl_orphanizeNode((SLL*)func);
+
+				// Delete the name
+				iDatum_delete(&func->name, false);
+
+				// Clear out any compiler info
+				iFunction_politelyDeleteCompiledInfo(thisCode, func, tlDeleteSelf);
+			}
+		}
+	}
+
+
+
+
+//////////
+//
+// Called to delete every function in the chain
+//
+//////
+	void iFunction_politelyDelete_chain(SThisCode* thisCode, SFunction** rootFunc, bool tlDeleteSelf)
+	{
+		SFunction*	func;
+		SFunction*	funcPrev;
 
 
 		// Make sure our environment is sane
 		if (rootFunc && *rootFunc)
 		{
-			// Delete the items
-			func = *rootFunc;
+			// Reach the end
+			for (func = *rootFunc; func->ll.nextFunc; )
+				func = func->ll.nextFunc;
 
-			// Clear this item
-			*rootFunc = NULL;
+			// Iterate backwards, deleting each
+			for (func = *rootFunc; func; func = funcPrev)
+			{
+				// Grab the previous function
+				funcPrev = func->ll.prevFunc;
 
-			// Orphanize this item
-			iLl_orphanizeNode((SLL*)func);
-
-			// Delete the name
-			iDatum_delete(&func->name, false);
-
-			// Delete this function's variables
-			iVariable_politelyDeleteChain(thisCode, &func->params, true);
-			iVariable_politelyDeleteChain(thisCode, &func->locals, true);
-			iVariable_politelyDeleteChain(thisCode, &func->returns, true);
-			iVariable_politelyDeleteChain(thisCode, &func->scoped, true);
-			iVariable_politelyDeleteChain(thisCode, &func->params, true);
-
-			// Delete the adhocs for this function
-			iFunction_politelyDeleteChain(thisCode, &func->firstAdhoc);
+				// Delete this one (deleting self always if it's not the first, and if it's the first then IF we are to delete self)
+				iFunction_politelyDelete(thisCode, func, (tlDeleteSelf || func != *rootFunc));
+			}
 		}
 	}
 
@@ -6277,13 +6313,13 @@ debug_break;
 							break;
 
 						case _SOURCE_TYPE_FUNCTION:
-						case _SOURCE_TYPE_DEFAULT_HANDLER:
+						case _SOURCE_TYPE_EVENT_OR_METHOD_DEFAULT_HANDLER:
 							// What are they setting?
 							if (varNewValue->varType == _VAR_TYPE_CHARACTER)
 							{
 								// They're setting the source code for this user method
 // TODO:  We could use a feature here to allow for an ADDITIVE method, so that the existing one remains, and this one is appended to the chain
-								return(iObjProp_set_function(thisCode, obj, lnIndex, &obj->ev.methods[lnIndex].userEventCode, &varNewValue->value));
+								return(iObjEvent_set_function(thisCode, obj, lnIndex, &obj->ev.methods[lnIndex].userEventCode, &varNewValue->value));
 
 							} else {
 								// Unhandled request
@@ -9618,7 +9654,7 @@ debug_break;
 // to delete all of them
 //
 //////
-	void iVariable_politelyDeleteChain(SThisCode* thisCode, SVariable** root, bool tlDeleteSelf)
+	void iVariable_politelyDelete_chain(SThisCode* thisCode, SVariable** root, bool tlDeleteSelf)
 	{
 		SVariable*		var;
 		SLLCallback		cb;
@@ -9632,7 +9668,7 @@ debug_break;
 debug_break;
 			// Use the linked list functions, which will callback repeatedly for every entry
 			var			= *root;
-			cb._func	= (uptr)&iVariable_politelyDeleteChain_callback;
+			cb._func	= (uptr)&iVariable_politelyDelete_chain_callback;
 
 			// Mark the variables there empty
 			if (tlDeleteSelf)
@@ -9657,7 +9693,7 @@ debug_break;
 	}
 
 	// Note:  cb->node is the SVariable* we're deleting
-	void iVariable_politelyDeleteChain_callback(SLLCallback* cb)
+	void iVariable_politelyDelete_chain_callback(SLLCallback* cb)
 	{
 		// Delete this variable appropriately
 		iVariable_delete(cb->thisCode, (SVariable*)cb->node, false);

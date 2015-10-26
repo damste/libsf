@@ -247,7 +247,8 @@ struct SThisCode;
 	SFunction*				iFunction_allocate							(SThisCode* thisCode, u8* tcFuncName);
 	SVariable*				iFunction_addVariable_scoped				(SThisCode* thisCode, SFunction* func);
 	void					iFunction_politelyDeleteCompiledInfo		(SThisCode* thisCode, SFunction* func, bool tlDeleteSelf);
-	void					iFunction_politelyDeleteChain				(SThisCode* thisCode, SFunction** rootFunc);
+	void					iFunction_politelyDelete					(SThisCode* thisCode, SFunction* func, bool tlDeleteSelf);
+	void					iFunction_politelyDelete_chain				(SThisCode* thisCode, SFunction** rootFunc, bool tlDeleteSelf);
 
 	// Variable functions
 	SVariable*				iiVariable_terminateIndirect				(SThisCode* thisCode, SVariable* var);
@@ -298,8 +299,8 @@ struct SThisCode;
 	SVariable*				iVariable_convertForDisplay					(SThisCode* thisCode, SVariable* var);
 	SVariable*				iVariable_get_typeDetail					(SThisCode* thisCode, SVariable* var);
 	void					iVariable_delete							(SThisCode* thisCode, SVariable* var, bool tlDeleteSelf, bool tlOverrideDelete = false);
-	void					iVariable_politelyDeleteChain				(SThisCode* thisCode, SVariable** root, bool tlDeleteSelf);
-	void					iVariable_politelyDeleteChain_callback		(SLLCallback* cb);
+	void					iVariable_politelyDelete_chain				(SThisCode* thisCode, SVariable** root, bool tlDeleteSelf);
+	void					iVariable_politelyDelete_chain_callback		(SLLCallback* cb);
 	SVariable*				iiVariable_getAs_datetime					(SThisCode* thisCode, SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum);
 	bool					iiVariable_getAs_bool						(SThisCode* thisCode, SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum);
 	s8						iiVariable_getAs_s8							(SThisCode* thisCode, SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum);
