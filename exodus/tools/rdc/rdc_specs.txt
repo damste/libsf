@@ -198,6 +198,12 @@ RDC Specifications Document
 	snew				-- Scoped. Creates a dynamically allocated instance of a class, and automatically deletes it when leaving current scope.
 	sdelete				-- Scoped. Explicitly deletes all instances of all classes that are currently defined in current scope (sdelete class;)
 
+	lalloc				-- Scoped. Allocates dynamic local data on the stack.
+	lfree				-- Scoped. Frees dynamic local data from the stack created with lalloc().
+	flalloc				-- Scoped. Fast. Special purpose.  Immediately allocates N bytes on the stack.
+	flfree				-- Scoped. Fast. Special purpose.  Frees N bytes from the stack.  Only used for flalloc().
+						   * Note:  flalloc() and flfree() must be mated 1:1 to operate properly.
+
 	adhoc				-- Declares an adhoc
 	function			-- Declares a function
 	port				-- Declares an initial launch port within a function
