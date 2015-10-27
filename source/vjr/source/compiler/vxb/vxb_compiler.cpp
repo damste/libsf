@@ -1496,9 +1496,11 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 					*tnMateDirection = -1;
 					return(true);
 
+				case _ICODE_DOUBLE_BRACE_LEFT:
 				case _ICODE_BRACE_LEFT:
 					*tnMateDirection = 1;
 					return(true);
+				case _ICODE_DOUBLE_BRACE_RIGHT:
 				case _ICODE_BRACE_RIGHT:
 					*tnMateDirection = -1;
 					return(true);
@@ -1624,6 +1626,20 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 				lniCodeNeedle		= _ICODE_BRACKET_LEFT;
 				lniCodeNeedleMate	= _ICODE_BRACKET_RIGHT;
 
+			} else if (compStart->iCode == _ICODE_DOUBLE_BRACE_LEFT) {
+				// We're on {{
+				lnDirection			= 1;
+				*compPBBLeft		= compStart;
+				lniCodeNeedle		= _ICODE_DOUBLE_BRACE_RIGHT;
+				lniCodeNeedleMate	= _ICODE_DOUBLE_BRACE_LEFT;
+
+			} else if (compStart->iCode == _ICODE_DOUBLE_BRACE_RIGHT) {
+				// We're on }}
+				lnDirection			= -1;
+				*compPBBRight		= compStart;
+				lniCodeNeedle		= _ICODE_DOUBLE_BRACE_LEFT;
+				lniCodeNeedleMate	= _ICODE_DOUBLE_BRACE_RIGHT;
+
 			} else if (compStart->iCode == _ICODE_BRACE_LEFT) {
 				// We're on {
 				lnDirection			= 1;
@@ -1730,6 +1746,8 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 				case _ICODE_PARENTHESIS_RIGHT:
 				case _ICODE_BRACKET_LEFT:
 				case _ICODE_BRACKET_RIGHT:
+				case _ICODE_DOUBLE_BRACE_LEFT:
+				case _ICODE_DOUBLE_BRACE_RIGHT:
 				case _ICODE_BRACE_LEFT:
 				case _ICODE_BRACE_RIGHT:
 					return(true);
@@ -1764,6 +1782,12 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 
 			case _ICODE_BRACKET_RIGHT:
 				return(compTest->iCode == _ICODE_BRACKET_LEFT);
+
+			case _ICODE_DOUBLE_BRACE_LEFT:
+				return(compTest->iCode == _ICODE_DOUBLE_BRACE_RIGHT);
+
+			case _ICODE_DOUBLE_BRACE_RIGHT:
+				return(compTest->iCode == _ICODE_DOUBLE_BRACE_LEFT);
 
 			case _ICODE_BRACE_LEFT:
 				return(compTest->iCode == _ICODE_BRACE_RIGHT);

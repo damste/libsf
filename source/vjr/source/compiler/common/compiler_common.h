@@ -208,6 +208,8 @@
 	cs32			_ICODE_MODULO_EQUAL								= 56;
 	cs32			_ICODE_OR_ASSIGNMENT							= 57;
 	cs32			_ICODE_DOLLAR_SIGN								= 58;
+	cs32			_ICODE_DOUBLE_BRACE_LEFT						= 59;
+	cs32			_ICODE_DOUBLE_BRACE_RIGHT						= 60;
 
 	// Preprocessor
 	cs32			_ICODE_DEFINE_PRAGMA							= 101;
@@ -346,6 +348,8 @@
 		{ ")",						1,			false,		_ICODE_PARENTHESIS_RIGHT,				false,				_ICAT_GENERIC,					&colorSynHi_bracket,		true,						null0,					null0,		null0	},
 		{ "[",						1,			false,		_ICODE_BRACKET_LEFT,					false,				_ICAT_GENERIC,					&colorSynHi_bracket,		true,						null0,					null0,		null0	},
 		{ "]",						1,			false,		_ICODE_BRACKET_RIGHT,					false,				_ICAT_GENERIC,					&colorSynHi_bracket,		true,						null0,					null0,		null0	},
+		{ "{{",						2,			false,		_ICODE_DOUBLE_BRACE_LEFT,				false,				_ICAT_GENERIC,					&colorSynHi_bracket,		true,						null0,					null0,		null0	},
+		{ "}}",						2,			false,		_ICODE_DOUBLE_BRACE_RIGHT,				false,				_ICAT_GENERIC,					&colorSynHi_bracket,		true,						null0,					null0,		null0	},
 		{ "{",						1,			false,		_ICODE_BRACE_LEFT,						false,				_ICAT_GENERIC,					&colorSynHi_bracket,		true,						null0,					null0,		null0	},
 		{ "}",						1,			false,		_ICODE_BRACE_RIGHT,						false,				_ICAT_GENERIC,					&colorSynHi_bracket,		true,						null0,					null0,		null0	},
 		{ "++",						2,			false,		_ICODE_PLUS_PLUS,						false,				_ICAT_UNARY,					&colorSynHi_operator,		true,						null0,					null0,		null0	},
