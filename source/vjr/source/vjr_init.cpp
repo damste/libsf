@@ -146,7 +146,7 @@
 		gsFontCask					= iFont_create(cgcFontName_cask,			20, FW_BOLD,	0, 0);
 
 		// Initialize the sound system
-		isound_initialize();
+		iSound_initialize();
 		memset(&gseRootSounds, 0, sizeof(gseRootSounds));	// Initialize our root sounds array
 
 //////////
@@ -157,6 +157,12 @@
 //		hRes = OleInitialize(NULL);
 //		CoCreateInstance(CLSID_TaskbarList, 0, CLSCTX_INPROC_SERVER, IID_ITaskbarList, (void**)&giTaskbar);
 //////////
+
+
+		//////////
+		// Initialize our gsThisCode segment
+		//////
+			iEngine_startup_initialization();
 
 
 		//////////

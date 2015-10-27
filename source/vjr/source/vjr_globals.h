@@ -136,7 +136,14 @@
 	HINSTANCE			ghInstance							= null0;
 	bool				glShuttingDown						= false;
 //	ITaskbarList*		giTaskbar							= NULL;
-	SThisCode*			_thisCodeNull						= NULL;
+
+
+//////////
+// ThisCode
+//////
+	bool				glThisCodeInitialized				= false;
+	SThisCode			gsThisCode[_MAX_PROCEDURE_LEVELS];
+	s32					gnThisCodeLevel						= 0;
 
 
 //////////

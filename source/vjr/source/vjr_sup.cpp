@@ -1275,9 +1275,9 @@
 			soundCount	/= 4;	// Each sound item is an f32
 
 			// Attempt to create the sound stream
-			lnSoundHandle	= sound_createStream(thisCode, 44100, (u64)&iPlay_ariaSplash_callback);
+			lnSoundHandle	= iSound_createStream(thisCode, 44100, (u64)&iPlay_ariaSplash_callback);
 			lfVolume		= 1.0f;//0.25f;
-			sound_playStart(thisCode, lnSoundHandle, lfVolume);
+			iSound_playStart(thisCode, lnSoundHandle, lfVolume);
 
 			// Repeat until the splash screen is over, or the song ends
 			stopTickCount = GetTickCount() + 2500;
@@ -1296,7 +1296,7 @@
 			{
 				// Turn down the volume 1/10th
 				lfVolume -= 0.025f;
-				sound_setVolume(thisCode, lnSoundHandle, lfVolume);
+				iSound_setVolume(thisCode, lnSoundHandle, lfVolume);
 
 				// Wait 1/10th second
 				Sleep(100);
@@ -1306,7 +1306,7 @@
 			iVjr_appendSystemLog(thisCode, buffer);
 
 			// When we get here, we're done playing
-			sound_playCancel(thisCode, lnSoundHandle);
+			iSound_playCancel(thisCode, lnSoundHandle);
 
 			// Raise the termination flag until we can shut down the playback
 			soundOffset = soundCount;
@@ -1316,7 +1316,7 @@
 			soundData_s8 = NULL;
 
 			// Clear the handle
-			sound_deleteHandle(thisCode, lnSoundHandle);
+			iSound_deleteHandle(thisCode, lnSoundHandle);
 
 		} else {
 			// Log it

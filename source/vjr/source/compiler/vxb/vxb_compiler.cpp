@@ -173,9 +173,9 @@
 // Called during the cgcKeywordsVxb[] parsing phase on a. thru j., and m. and t. forms to make sure they're really dot forms
 //
 //////
-	bool iValidate_xDot(SAsciiCompSearcher* tacs, u8* tcStart, s32 tnLength)
+	bool iiVerify_xDot_callback(SAsciiCompSearcher* tacs, u8* tcStart, s32 tnLength)
 	{
-		return(tcStart[1] == '.');
+		return(tnLength >= 1 && tcStart[1] == '.');
 	}
 
 
@@ -351,7 +351,7 @@
 						//////////
 						// Translate sequences to known keywords
 						//////
-							iComps_translateToOthers(thisCode, &cgcKeywordsVxb[0], vxb->line);
+							iComps_translateToOthers(thisCode, &cgcKeywordsVxb[0], vxb->line->compilerInfo->firstComp, true);
 
 
 						//////////
@@ -1200,22 +1200,24 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // alpha/alphanumeric/numeric forms to other forms.
 //
 //////
-	bool iComps_translateToOthers(SThisCode* thisCode, SAsciiCompSearcher* tacsRoot, SLine* line)
+	bool iComps_translateToOthers(SThisCode* thisCode, SAsciiCompSearcher* tacsRoot, SComp* comp, bool tlDescendIntoFirstCombineds)
 	{
 		bool					llResult;
 		s32						lnTacsLength;
-		SComp*					comp;
 		SAsciiCompSearcher*		tacs;
 
 
 		// Make sure the environment is sane
 		llResult = false;
-		if (tacsRoot && line)
+		if (tacsRoot && comp && comp->line && comp->line->sourceCode)
 		{
 			// Grab our pointers into recognizable thingamajigs
-			comp = line->compilerInfo->firstComp;
 			while (comp)
 			{
+				// Parse those things which were combined if need be
+				if (tlDescendIntoFirstCombineds && comp->firstCombined)
+					iComps_translateToOthers(thisCode, tacsRoot, comp->firstCombined, true);
+
 				// Iterate through this item to see if any match
 				tacs = tacsRoot;
 				for (/* tacs is initialize above */; tacs->length != 0; tacs++)
@@ -1889,12 +1891,12 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 	{
 		if (comp)
 		{
-			if (comp->iCode == _ICODE_DOT_VARIABLE)
+			if (comp->iCode == _ICODE_DOT)
 			{
 				// Return the next one, whether it's right, wrong, or indifferent
 				return(comp->ll.nextComp);
 
-			} else if (comp->ll.nextComp && comp->ll.nextComp->iCode == _ICODE_DOT_VARIABLE) {
+			} else if (comp->ll.nextComp && comp->ll.nextComp->iCode == _ICODE_DOT) {
 				// Return the 2nd one, whether it's right, wrong, or indifferent
 				return(comp->ll.nextComp->ll.nextComp);
 			}
@@ -4151,8 +4153,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 		//////////
 		// Get our value and increment
 		//////
-			lnValue = gnNextUniqueId;
-			++gnNextUniqueId;
+			lnValue = gnNextUniqueId++;
 
 
 		//////////
@@ -5961,7 +5962,6 @@ debug_break;
 		s32			lnN, lnType;
 		bool		llResult;
 		void*		p;
-		SComp*		comp;
 		SComp*		compNext;
 		SWorkArea*	workarea;
 		SVariable*	var;
@@ -5973,12 +5973,12 @@ debug_break;
 
 		// Make sure our environment is sane
 		llResult = false;
-		if (compDotName && varNewValue && compDotName->iCode == _ICODE_DOT_VARIABLE && (comp = compDotName->firstCombined))
+		if (compDotName && varNewValue)
 		{
 			//////////
 			// Grab the next dot variable
 			//////
-				compNext = iComps_getNext_afterDot(thisCode, comp);
+				compNext = iComps_getNext_afterDot(thisCode, compDotName);
 				if (compNext)
 				{
 					//////////
@@ -5990,7 +5990,7 @@ debug_break;
 					//////////
 					// Try to find the root source for the first dot name
 					//////
-						if (iEngine_get_namedSourceAndType_byComp(thisCode, comp, &p, &lnType))
+						if (iEngine_get_namedSourceAndType_byComp(thisCode, compDotName, &p, &lnType))
 						{
 							// Note:  Every instance of p is a reference only
 							switch (lnType)
@@ -6220,7 +6220,7 @@ debug_break;
 
 								default:
 									// Should never happen because iEngine_get_namedSource_andType() should return a type we explicitly test for
-									iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, comp, false);
+									iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, compDotName, false);
 									return(false);
 							}
 						}
@@ -6511,39 +6511,39 @@ debug_break;
 			llVarsFirst = propGet_settings_VariablesFirst(_settings);
 			if (llVarsFirst)
 			{
-				if (thisCode && thisCode->live)
+				if (thisCode)
 				{
 					// (1) Params
-					if (thisCode->live->params)
+					if (thisCode->live.params)
 					{
-						var = iiVariable_searchForName_variables(thisCode, thisCode->live->params, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
+						var = iiVariable_searchForName_variables(thisCode, thisCode->live.params, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
 						if (var)
 							return(var);
 					}
 
 					// (2) Return variables
-					if (thisCode->live->returns)
+					if (thisCode->live.returns)
 					{
-						var = iiVariable_searchForName_variables(thisCode, thisCode->live->returns, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
+						var = iiVariable_searchForName_variables(thisCode, thisCode->live.returns, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
 						if (var)
 							return(var);
 					}
 
 					// (3) Locals
-					if (thisCode->live->locals)
+					if (thisCode->live.locals)
 					{
-						var = iiVariable_searchForName_variables(thisCode, thisCode->live->locals, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
+						var = iiVariable_searchForName_variables(thisCode, thisCode->live.locals, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
 						if (var)
 							return(var);
 					}
 	
 					// (4) Search recursively up the all stack for private variables
-					if (thisCode->live->privates)
+					if (thisCode->live.privates)
 					{
 						for (thisCodeSearch = thisCode; thisCodeSearch; thisCodeSearch = thisCodeSearch->ll.prevThisCode)
 						{
 							// Search at this level
-							var = iiVariable_searchForName_variables(thisCode, thisCodeSearch->live->privates, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
+							var = iiVariable_searchForName_variables(thisCode, thisCodeSearch->live.privates, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
 							if (var)
 								return(var);
 						}
@@ -6566,39 +6566,39 @@ debug_break;
 				if (var)
 					return(var);
 
-				if (thisCode && thisCode->live)
+				if (thisCode)
 				{
 					// (2) Params
-					if (thisCode->live->params)
+					if (thisCode->live.params)
 					{
-						var = iiVariable_searchForName_variables(thisCode, thisCode->live->params, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
+						var = iiVariable_searchForName_variables(thisCode, thisCode->live.params, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
 						if (var)
 							return(var);
 					}
 
 					// (3) Return variables
-					if (thisCode->live->returns)
+					if (thisCode->live.returns)
 					{
-						var = iiVariable_searchForName_variables(thisCode, thisCode->live->returns, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
+						var = iiVariable_searchForName_variables(thisCode, thisCode->live.returns, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
 						if (var)
 							return(var);
 					}
 
 					// (4) Locals
-					if (thisCode->live->locals)
+					if (thisCode->live.locals)
 					{
-						var = iiVariable_searchForName_variables(thisCode, thisCode->live->locals, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
+						var = iiVariable_searchForName_variables(thisCode, thisCode->live.locals, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
 						if (var)
 							return(var);
 					}
 
 					// (5) Search recursively up the all stack for private variables
-					if (thisCode->live->privates)
+					if (thisCode->live.privates)
 					{
 						for (thisCodeSearch = thisCode; thisCodeSearch; thisCodeSearch = thisCodeSearch->ll.prevThisCode)
 						{
 							// Search at this level
-							var = iiVariable_searchForName_variables(thisCode, thisCodeSearch->live->privates, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
+							var = iiVariable_searchForName_variables(thisCode, thisCodeSearch->live.privates, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
 							if (var)
 								return(var);
 						}
@@ -14873,16 +14873,20 @@ _asm int 3;
 // Called to delete the previous allocated compiler data
 //
 //////
-	void iCompiler_delete(SThisCode* thisCode, SCompiler** root, bool tlDeleteSelf)
+	void iCompiler_delete(SThisCode* thisCode, SCompiler** compilerInfoRoot, bool tlDeleteSelf)
 	{
 		SCompiler* compilerInfo;
 
 
 		// Make sure our environment is sane
-		if (root && *root)
+		if (compilerInfoRoot && *compilerInfoRoot)
 		{
 			// Grab the pointer
-			compilerInfo = *root;
+			compilerInfo = *compilerInfoRoot;
+
+			// Delete the source code
+			iDatum_delete(compilerInfo->sourceCode, true);
+			compilerInfo->sourceCode = NULL;
 
 			// Delete the items here
 			iCompileNote_removeAll(thisCode, &compilerInfo->firstWarning);
@@ -14900,7 +14904,7 @@ _asm int 3;
 			// Delete self if need be
 			if (tlDeleteSelf)
 			{
-				*root = NULL;
+				*compilerInfoRoot = NULL;
 				free(compilerInfo);
 			}
 		}

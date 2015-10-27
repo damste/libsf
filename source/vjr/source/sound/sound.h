@@ -185,19 +185,19 @@
 //////////
 // Forward declarations
 //////
-	void			isound_initialize			(void);
-	void			isound_playControl			(bool tlShouldBePlaying);
-	void			isound_sdl_callback			(void* user, Uint8* stream, int length);
-	bool			isound_DeleteValidate		(SStartEndCallback* cb);
-	void			isound_requestStreams		(SStartEndCallback* cb);
-	void			iisound_generateTones		(_isSSound* tss, u32 tnSamples);
+	void			iSound_initialize			(void);
+	void			iSound_playControl			(bool tlShouldBePlaying);
+	void			iSound_sdl_callback			(void* user, Uint8* stream, int length);
+	bool			iSound_DeleteValidate		(SStartEndCallback* cb);
+	void			iSound_requestStreams		(SStartEndCallback* cb);
+	void			iiSound_generateTones		(_isSSound* tss, u32 tnSamples);
 
 	// These two create functions return a handle
-	u64				sound_createTone			(SThisCode* thisCode, f32 tfHertz1, f32 tfHertz2, f32 tfHertz3, f32 tfHertz4, u32 tnDurationMilliseconds);
-	u64				sound_createStream			(SThisCode* thisCode, u32 tnSamplesPerSecond, u64 tnSoundFillerCallbackFunction);
+	u64				iSound_createTone			(SThisCode* thisCode, f32 tfHertz1, f32 tfHertz2, f32 tfHertz3, f32 tfHertz4, u32 tnDurationMilliseconds);
+	u64				iSound_createStream			(SThisCode* thisCode, u32 tnSamplesPerSecond, u64 tnSoundFillerCallbackFunction);
 
 	// These functions are used once a tone or stream was already created
-	u64				sound_setVolume				(SThisCode* thisCode, u64 tnHandle, f32 tfVolume);	// Volume in range 0..1
-	u64				sound_playStart				(SThisCode* thisCode, u64 tnHandle, f32 tfVolume);
-	u64				sound_playCancel			(SThisCode* thisCode, u64 tnHandle);
-	u64				sound_deleteHandle			(SThisCode* thisCode, u64 tnHandle);
+	u64				iSound_setVolume			(SThisCode* thisCode, u64 tnHandle, f32 tfVolume);	// Volume in range 0..1
+	u64				iSound_playStart			(SThisCode* thisCode, u64 tnHandle, f32 tfVolume);
+	u64				iSound_playCancel			(SThisCode* thisCode, u64 tnHandle);
+	u64				iSound_deleteHandle			(SThisCode* thisCode, u64 tnHandle);

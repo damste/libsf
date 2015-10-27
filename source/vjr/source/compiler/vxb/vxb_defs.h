@@ -116,7 +116,7 @@ struct SThisCode;
 // compiler.cpp
 //////////
 	u32						compile_vxb									(SThisCode* thisCode, SEM* codeBlock, SCompileVxbContext* vxbParam, SCompileStats* stats);
-	bool					iValidate_xDot								(SAsciiCompSearcher* tacs, u8* tcStart, s32 tnLength);
+	bool					iiVerify_xDot_callback						(SAsciiCompSearcher* tacs, u8* tcStart, s32 tnLength);
 	void					iiCompile_vxb_precompile_forLiveCode		(SThisCode* thisCode, SCompileVxbContext* vxb);
 	void					iiCompile_vxb_compile_forLiveCode			(SThisCode* thisCode, SCompileVxbContext* vxb);
 	void					iiCompile_vxb_postcompile_forLiveCode		(SThisCode* thisCode, SCompileVxbContext* vxb);
@@ -142,7 +142,7 @@ struct SThisCode;
 	SComp*					iComps_delete								(SThisCode* thisCode, SComp* comp, bool tlDeleteSelf);
 	void					iComps_copyMembers							(SThisCode* thisCode, SComp* compTo, SComp* compFrom, bool tlAllocated, bool tlCopyLl, s32 tnBackoff);
  	SComp*					iComps_translateSourceLineTo				(SThisCode* thisCode, SAsciiCompSearcher* tsComps, SLine* line);
- 	bool					iComps_translateToOthers					(SThisCode* thisCode, SAsciiCompSearcher* tsComps, SLine* line);
+ 	bool					iComps_translateToOthers					(SThisCode* thisCode, SAsciiCompSearcher* tsComps, SComp* comp, bool tlDescendIntoFirstCombineds);
 	bool					iComps_areAllPrecedingCompsWhitespaces		(SThisCode* thisCode, SComp* comp);
 	s32						iComps_translateToOthers_testIfMatch		(SThisCode* thisCode, cu8* tcHaystack, cu8* tcNeedle, s32 tnLength);
 	SComp*					iComps_findNextBy_iCode						(SThisCode* thisCode, SComp* comp, s32 tniCode, SComp** compLastScanned);
@@ -386,7 +386,7 @@ struct SThisCode;
 
 	// Compiler functions
 	SCompiler*				iCompiler_allocate							(SThisCode* thisCode, SLine* parent);
-	void					iCompiler_delete							(SThisCode* thisCode, SCompiler** root, bool tlDeleteSelf);
+	void					iCompiler_delete							(SThisCode* thisCode, SCompiler** compilerInfoRoot, bool tlDeleteSelf);
 
 	// Compile note functions
 	SCompileNote*			iCompileNote_create							(SThisCode* thisCode, SCompileNote** noteRoot, u32 tnStart,			u32 tnEnd,			u32 tnNumber, cu8* tcMessage);

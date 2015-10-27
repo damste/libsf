@@ -84,6 +84,68 @@
 
 //////////
 //
+// Initialize the main engine
+//
+//////
+	void iEngine_startup_initialization(void)
+	{
+		s32			lnI, lnJ;
+		SThisCode*	thisCode;
+
+
+		// Only run once at startup
+		if (!glThisCodeInitialized)
+		{
+
+			//////////
+			// thisCode hierarchy
+			//////
+				memset(&gsThisCode, 0, sizeof(gsThisCode));
+				for (lnI = 0, thisCode = &gsThisCode[0]; lnI < _MAX_PROCEDURE_LEVELS; lnI++, thisCode = &gsThisCode[lnI])
+				{
+					// Points backward to previous
+					if (lnI != 0)
+						thisCode->ll.prevThisCode = &gsThisCode[lnI - 1];
+
+					// Points forward to next
+					if (lnI < _MAX_PROCEDURE_LEVELS - 1)
+						thisCode->ll.nextThisCode = &gsThisCode[lnI + 1];
+
+					// Returns
+					thisCode->live.returnsCount = _MAX_RETURNS_COUNT;
+					for (lnJ = 0; lnJ < _MAX_RETURNS_COUNT; lnJ++)
+						iLl_appendExistingNodeAtBeginning((SLL**)&thisCode->live.returns, (SLL*)iVariable_create(NULL, _VAR_TYPE_LOGICAL, NULL, true));
+
+					// Parameters
+					thisCode->live.paramsCount = _MAX_PARAMS_COUNT;
+					for (lnJ = 0; lnJ < _MAX_PARAMS_COUNT; lnJ++)
+						iLl_appendExistingNodeAtBeginning((SLL**)&thisCode->live.params, (SLL*)iVariable_create(NULL, _VAR_TYPE_LOGICAL, NULL, true));
+
+					// Scoped
+					thisCode->live.scopedCount = _MAX_SCOPED_COUNT;
+					for (lnJ = 0; lnJ < _MAX_SCOPED_COUNT; lnJ++)
+						iLl_appendExistingNodeAtBeginning((SLL**)&thisCode->live.scoped, (SLL*)iVariable_create(NULL, _VAR_TYPE_LOGICAL, NULL, true));
+
+					// Locals
+					thisCode->live.localsCount = _MAX_LOCALS_COUNT;
+					for (lnJ = 0; lnJ < _MAX_LOCALS_COUNT; lnJ++)
+						iLl_appendExistingNodeAtBeginning((SLL**)&thisCode->live.locals, (SLL*)iVariable_create(NULL, _VAR_TYPE_LOGICAL, NULL, true));
+				}
+
+
+			//////////
+			// All done
+			//////
+				glThisCodeInitialized = true;
+
+		}
+	}
+
+
+
+
+//////////
+//
 // Called to execute a stand-alone command, such as from the command window.
 //
 //////
@@ -107,9 +169,17 @@
 		if (line && line->sourceCode && line->sourceCode->data && line->sourceCode_populatedLength > 0)
 		{
 			//////////
-			// Parse it
+			// Parse it out (if need be)
 			//////
-				comp = iEngine_parseSourceCodeLine(thisCode, line);
+				if (!line->compilerInfo || iDatum_compare(line->sourceCode, line->compilerInfo->sourceCode) != 0)
+				{
+					// Something's changed, re-parse
+					comp = iEngine_parseSourceCodeLine(thisCode, line);
+
+				} else {
+					// Still the same
+					comp = line->compilerInfo->firstComp;
+				}
 
 
 			//////////
@@ -260,9 +330,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 							if (comp->iCode == _ICODE_DOT_VARIABLE)
 							{
 								// Set the dot value
-// TODO:  working here
-_asm nop;
-								iVariable_searchRoot_forDotName_andSet_byVar(thisCode, comp, var, &error, &errorNum);
+								iVariable_searchRoot_forDotName_andSet_byVar(thisCode, comp->firstCombined, var, &error, &errorNum);
 								iVariable_delete(NULL, var, true);
 								if (error)
 								{
@@ -355,6 +423,20 @@ _asm nop;
 			if (line->compilerInfo)		iCompiler_delete(thisCode, &line->compilerInfo, false);
 			else						line->compilerInfo = iCompiler_allocate(thisCode, line);		// Allocate a new one
 
+			// Do we have a compiler info block?
+			if (!line->compilerInfo)
+			{
+				// Indicate an internal error
+				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, NULL, false);
+				return(NULL);			// Error
+			}
+
+
+		//////////
+		// Copy the source code line
+		//////
+			iDatum_duplicate(line->compilerInfo->sourceCode, line->sourceCode->data_s8, line->sourceCode_populatedLength);
+
 
 		//////////
 		// Parse out the line
@@ -394,7 +476,7 @@ _asm nop;
 		//////////
 		// Translate sequences to known keywords
 		//////
-			iComps_translateToOthers(thisCode, &cgcKeywordsVxb[0], line);
+			iComps_translateToOthers(thisCode, &cgcKeywordsVxb[0], line->compilerInfo->firstComp, true);
 
 
 		//////////
@@ -780,7 +862,7 @@ _asm nop;
 						//////
 							rpar->rpMax		= funcData->max_rcount;
 							rpar->rpMin		= funcData->req_rcount;
-							rpar->rpCount	= ((tnRcount >= 0) ? min(tnRcount, _MAX_RETURN_COUNT) : rpar->rpMax);
+							rpar->rpCount	= ((tnRcount >= 0) ? min(tnRcount, _MAX_RETURNS_COUNT) : rpar->rpMax);
 							rpar->ipCount	= lnParamsFound;
 
 
@@ -793,7 +875,7 @@ _asm nop;
 						//////////
 						// Free every parameter we created
 						//////
-							for (lnI = 0; lnI < _MAX_PARAMETER_COUNT; lnI++)
+							for (lnI = 0; lnI < _MAX_PARAMS_COUNT; lnI++)
 							{
 
 								// Delete if populated
@@ -879,7 +961,7 @@ _asm nop;
 			//////////
 			// (1) standard name
 			//////
-				_this = thisCode->live->_this;
+				_this = thisCode->live._this;
 				if (between(comp->iCode, _ICODE_NATIVE_OBJECTS_MIN, _ICODE_NATIVE_OBJECTS_MAX))
 				{
 					// Yes, which one?
@@ -954,12 +1036,12 @@ _asm nop;
 				llVarsFirst = propGet_settings_VariablesFirst(_settings);
 				if (llVarsFirst)
 				{
-					if (thisCode && thisCode->live)
+					if (thisCode)
 					{
 						// (4) Params
-						if (thisCode->live->params)
+						if (thisCode->live.params)
 						{
-							var = iiVariable_searchForName_variables(thisCode, thisCode->live->params, lcVarName, lnVarNameLength, comp, true);
+							var = iiVariable_searchForName_variables(thisCode, thisCode->live.params, lcVarName, lnVarNameLength, comp, true);
 							if (var)
 							{
 								*tnType	= _SOURCE_TYPE_VARIABLE;
@@ -969,9 +1051,9 @@ _asm nop;
 						}
 
 						// (5) Return variables
-						if (thisCode->live->returns)
+						if (thisCode->live.returns)
 						{
-							var = iiVariable_searchForName_variables(thisCode, thisCode->live->returns, lcVarName, lnVarNameLength, comp, true);
+							var = iiVariable_searchForName_variables(thisCode, thisCode->live.returns, lcVarName, lnVarNameLength, comp, true);
 							if (var)
 							{
 								*tnType	= _SOURCE_TYPE_VARIABLE;
@@ -981,9 +1063,9 @@ _asm nop;
 						}
 
 						// (6) Locals
-						if (thisCode->live->locals)
+						if (thisCode->live.locals)
 						{
-							var = iiVariable_searchForName_variables(thisCode, thisCode->live->locals, lcVarName, lnVarNameLength, comp, true);
+							var = iiVariable_searchForName_variables(thisCode, thisCode->live.locals, lcVarName, lnVarNameLength, comp, true);
 							if (var)
 							{
 								*tnType	= _SOURCE_TYPE_VARIABLE;
@@ -993,12 +1075,12 @@ _asm nop;
 						}
 		
 						// (7) Search recursively up the all stack for private variables
-						if (thisCode->live->privates)
+						if (thisCode->live.privates)
 						{
 							for (thisCodeSearch = thisCode; thisCodeSearch; thisCodeSearch = thisCodeSearch->ll.prevThisCode)
 							{
 								// Search at this level
-								var = iiVariable_searchForName_variables(thisCode, thisCodeSearch->live->privates, lcVarName, lnVarNameLength, comp, true);
+								var = iiVariable_searchForName_variables(thisCode, thisCodeSearch->live.privates, lcVarName, lnVarNameLength, comp, true);
 								if (var)
 								{
 									*tnType	= _SOURCE_TYPE_VARIABLE;
@@ -1038,12 +1120,12 @@ _asm nop;
 						return(true);
 					}
 
-					if (thisCode && thisCode->live)
+					if (thisCode)
 					{
 						// (5) Params
-						if (thisCode->live->params)
+						if (thisCode->live.params)
 						{
-							var = iiVariable_searchForName_variables(thisCode, thisCode->live->params, lcVarName, lnVarNameLength, comp, true);
+							var = iiVariable_searchForName_variables(thisCode, thisCode->live.params, lcVarName, lnVarNameLength, comp, true);
 							if (var)
 							{
 								*tnType	= _SOURCE_TYPE_VARIABLE;
@@ -1053,9 +1135,9 @@ _asm nop;
 						}
 
 						// (6) Return variables
-						if (thisCode->live->returns)
+						if (thisCode->live.returns)
 						{
-							var = iiVariable_searchForName_variables(thisCode, thisCode->live->returns, lcVarName, lnVarNameLength, comp, true);
+							var = iiVariable_searchForName_variables(thisCode, thisCode->live.returns, lcVarName, lnVarNameLength, comp, true);
 							if (var)
 							{
 								*tnType	= _SOURCE_TYPE_VARIABLE;
@@ -1065,9 +1147,9 @@ _asm nop;
 						}
 
 						// (7) Locals
-						if (thisCode->live->locals)
+						if (thisCode->live.locals)
 						{
-							var = iiVariable_searchForName_variables(thisCode, thisCode->live->locals, lcVarName, lnVarNameLength, comp, true);
+							var = iiVariable_searchForName_variables(thisCode, thisCode->live.locals, lcVarName, lnVarNameLength, comp, true);
 							if (var)
 							{
 								*tnType	= _SOURCE_TYPE_VARIABLE;
@@ -1077,12 +1159,12 @@ _asm nop;
 						}
 
 						// (8) Search recursively up the all stack for private variables
-						if (thisCode->live->privates)
+						if (thisCode->live.privates)
 						{
 							for (thisCodeSearch = thisCode; thisCodeSearch; thisCodeSearch = thisCodeSearch->ll.prevThisCode)
 							{
 								// Search at this level
-								var = iiVariable_searchForName_variables(thisCode, thisCodeSearch->live->privates, lcVarName, lnVarNameLength, comp, true);
+								var = iiVariable_searchForName_variables(thisCode, thisCodeSearch->live.privates, lcVarName, lnVarNameLength, comp, true);
 								if (var)
 								{
 									*tnType	= _SOURCE_TYPE_VARIABLE;
@@ -1599,7 +1681,7 @@ _asm nop;
 		// Initialize
 		//////
 			llUdfParamsByRef = propGet_settings_UdfParamsReference(_settings);
-			for (lnI = 0; lnI < _MAX_PARAMETER_COUNT; lnI++)
+			for (lnI = 0; lnI < _MAX_PARAMS_COUNT; lnI++)
 				rpar->ip[lnI] = NULL;
 
 
@@ -1803,6 +1885,6 @@ _asm nop;
 			*sourceCode = NULL;
 
 			// Delete the items
-			iFunction_politelyDelete_chain(thisCode, &sc->firstFunction, false);
+			iFunction_politelyDelete_chain(thisCode, &sc->func, false);
 		}
 	}

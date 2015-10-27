@@ -3304,8 +3304,8 @@ debug_break;
 			//////////
 			// Create a new SEM to hold the source code
 			//////
-				func->sourceCode = iSEM_allocate(thisCode, true);
-				if (!func->sourceCode)
+				func->sem = iSEM_allocate(thisCode, true);
+				if (!func->sem)
 				{
 					// Clean house
 					iFunction_politelyDelete(thisCode, func, true);
@@ -3319,7 +3319,7 @@ debug_break;
 				if (newSourceCode && newSourceCode->data_s8 && newSourceCode->length >= 1)
 				{
 					// Populate the program into it
-					llResult = iSEM_load_fromMemory(thisCode, obj, func->sourceCode, newSourceCode, true, false);
+					llResult = iSEM_load_fromMemory(thisCode, obj, func->sem, newSourceCode, true, false);
 
 				} else {
 					// The code will be cleared out
@@ -3337,8 +3337,8 @@ debug_break;
 
 				} else {
 					// Mark the existing function stale
-					if ((*funcRoot)->sourceCode)
-						(*funcRoot)->sourceCode->isStale = true;
+					if ((*funcRoot)->sem)
+						(*funcRoot)->sem->isStale = true;
 
 					// Prepend the new function before the current one so it will be used when calling this code in the future
 					iLl_appendExistingNodeAtBeginning((SLL**)funcRoot, (SLL*)func);

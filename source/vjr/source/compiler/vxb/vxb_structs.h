@@ -146,7 +146,7 @@ struct SCompileNote;
 		SDatum			name;											// Function name (Note that code appearing at the top of a program without being enclosed in a function will have the source code line "FUNCTION top_of_program" automatically inserted at compile time
 
 		// Where are we in the function?
-		SEM*			sourceCode;										// Function source code
+		SEM*			sem;										// Function source code
 		SEM*			sourceCode_ref;									// Program source code currently running
 		// Note:  sourceCode_ref is a reference to the actual source code when on the stack.
 		// Note:  current_sourceCode->line_cursor points to the command that's currently executing

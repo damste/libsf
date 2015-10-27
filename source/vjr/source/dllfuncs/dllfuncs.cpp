@@ -171,7 +171,7 @@ extern "C"
 		//////////
 		// Free every parameter we created
 		//////
-			for (lnI = 0; lnI < _MAX_PARAMETER_COUNT; lnI++)
+			for (lnI = 0; lnI < _MAX_PARAMS_COUNT; lnI++)
 			{
 
 				// Delete if populated

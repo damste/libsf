@@ -449,7 +449,7 @@ return;
 				iBuilder_append_label_uptr(data, (s8*)"next",		(uptr)thisCode->ll.next);
 				iBuilder_append_label_uptr(data, (s8*)"window",		(uptr)thisCode->win);
 				iBuilder_append_label_uptr(data, (s8*)"definition",	(uptr)thisCode->definition);
-				iBuilder_append_label_uptr(data, (s8*)"live",		(uptr)thisCode->live);
+				iBuilder_append_label_uptr(data, (s8*)"live",		(uptr)&thisCode->live);
 
 				iBuilder_appendData(data, " }", -1);
 
@@ -464,8 +464,7 @@ return;
 			//////////
 			// live
 			//////
-				if (thisCode->live)
-					iJDebiC_sourceCode(data, items, thisCode->live);
+				iJDebiC_sourceCode(data, items, &thisCode->live);
 		}
 	}
 
@@ -499,26 +498,26 @@ return;
 				iBuilder_appendData(data, "sourceCode = { ", -1);
 				sprintf(buffer, "id = %08x, \0", (u32)(uptr)sourceCode);
 				iBuilder_appendData(data, buffer, -1);
-				if (sourceCode->firstFunction)		iBuilder_append_label_uptr(data, (s8*)"firstFunction",	(uptr)sourceCode->firstFunction);
-				if (sourceCode->params)				iBuilder_append_label_uptr(data, (s8*)"params",			(uptr)sourceCode->params);
-				if (sourceCode->returns)			iBuilder_append_label_uptr(data, (s8*)"returns",		(uptr)sourceCode->returns);
-				if (sourceCode->privates)			iBuilder_append_label_uptr(data, (s8*)"privates",		(uptr)sourceCode->privates);
-				if (sourceCode->locals)				iBuilder_append_label_uptr(data, (s8*)"locals",			(uptr)sourceCode->locals);
-				if (sourceCode->scoped)				iBuilder_append_label_uptr(data, (s8*)"scoped",			(uptr)sourceCode->scoped);
-				if (sourceCode->sem)				iBuilder_append_label_uptr(data, (s8*)"sem",			(uptr)sourceCode->sem);
+				if (sourceCode->func)			iBuilder_append_label_uptr(data, (s8*)"firstFunction",	(uptr)sourceCode->func);
+				if (sourceCode->params)			iBuilder_append_label_uptr(data, (s8*)"params",			(uptr)sourceCode->params);
+				if (sourceCode->returns)		iBuilder_append_label_uptr(data, (s8*)"returns",		(uptr)sourceCode->returns);
+				if (sourceCode->privates)		iBuilder_append_label_uptr(data, (s8*)"privates",		(uptr)sourceCode->privates);
+				if (sourceCode->locals)			iBuilder_append_label_uptr(data, (s8*)"locals",			(uptr)sourceCode->locals);
+				if (sourceCode->scoped)			iBuilder_append_label_uptr(data, (s8*)"scoped",			(uptr)sourceCode->scoped);
+				if (sourceCode->func)			iBuilder_append_label_uptr(data, (s8*)"sourceCode",		(uptr)sourceCode->func);
 				iBuilder_appendData(data, " }", -1);
 
 
 			//////////
 			// Append related items
 			//////
-				if (sourceCode->firstFunction)		iJDebiC_function(data, items, sourceCode->firstFunction);
-				if (sourceCode->params)				iJDebiC_variable(data, items, sourceCode->params);
-				if (sourceCode->returns)			iJDebiC_variable(data, items, sourceCode->returns);
-				if (sourceCode->privates)			iJDebiC_variable(data, items, sourceCode->privates);
-				if (sourceCode->locals)				iJDebiC_variable(data, items, sourceCode->locals);
-				if (sourceCode->scoped)				iJDebiC_variable(data, items, sourceCode->scoped);
-				if (sourceCode->sem)				iJDebiC_sem(data, items, sourceCode->sem);
+				if (sourceCode->func)			iJDebiC_function(data, items, sourceCode->func);
+				if (sourceCode->params)			iJDebiC_variable(data, items, sourceCode->params);
+				if (sourceCode->returns)		iJDebiC_variable(data, items, sourceCode->returns);
+				if (sourceCode->privates)		iJDebiC_variable(data, items, sourceCode->privates);
+				if (sourceCode->locals)			iJDebiC_variable(data, items, sourceCode->locals);
+				if (sourceCode->scoped)			iJDebiC_variable(data, items, sourceCode->scoped);
+				if (sourceCode->func)			iJDebiC_sem(data, items, sourceCode->func->sem);
 
 		}
 	}

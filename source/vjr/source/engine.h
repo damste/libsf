@@ -85,6 +85,7 @@
 //////////
 // Forward declarations
 //////
+	void					iEngine_startup_initialization			(void);
 	bool					iEngine_executeStandaloneCommand		(SThisCode* thisCode, SLine* line);
 	SComp*					iEngine_parseSourceCodeLine				(SThisCode* thisCode, SLine* line);
 	SVariable*				iEngine_get_variableName_fromComponent	(SThisCode* thisCode, SComp* comp, bool* tlManufactured, bool tlByRef);

@@ -226,7 +226,7 @@
 		//////////
 		// Each type must be fundamentally the same type
 		//////
-			for (lnI = 1, lnType = iVariable_get_fundamentalType(thisCode, varValue); lnI < (s32)_MAX_PARAMETER_COUNT && rpar->ip[lnI]; lnI++)
+			for (lnI = 1, lnType = iVariable_get_fundamentalType(thisCode, varValue); lnI < (s32)_MAX_PARAMS_COUNT && rpar->ip[lnI]; lnI++)
 			{
 
 				//////////
@@ -245,7 +245,7 @@
 		//////////
 		// Iterate through to see if the parameters are equal
 		//////
-			for (lnI = 1, llResult = false; lnI < (s32)_MAX_PARAMETER_COUNT && rpar->ip[lnI]; lnI++)
+			for (lnI = 1, llResult = false; lnI < (s32)_MAX_PARAMS_COUNT && rpar->ip[lnI]; lnI++)
 			{
 
 				//////////

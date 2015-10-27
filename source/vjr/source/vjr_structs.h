@@ -156,16 +156,31 @@ struct SHover
 // TODO:  These should be moved to a shared file for use with iJDebiC_thisCode()
 			struct SSourceCode
 			{
-				SFunction*		firstFunction;			// First function in the program
-				SFunction*		firstAdhoc;				// First adhoc in this block
+				// Function source code
+				SFunction*		func;
 
-				SVariable*		params;					// The first parameter in the function
-				SVariable*		returns;				// The first return variable declared
-				SVariable*		privates;				// The first private variable declared
-				SVariable*		locals;					// The first local variable declared
-				SVariable*		scoped;					// The first scoped/temporary variable used by the function
+				// First adhoc in this block
+				SFunction*		firstAdhoc;
 
-				SEM*			sem;					// The source code for this program
+				// The function parameters
+				SVariable*		params;
+				s32				paramsCount;
+
+				// The first return variable declared
+				SVariable*		returns;
+				s32				returnsCount;
+
+				// The first private variable declared
+				SVariable*		privates;
+				s32				privatesCount;
+
+				// The first local variable declared
+				SVariable*		locals;
+				s32				localsCount;
+
+				// The first scoped/temporary variable used by the function
+				SVariable*		scoped;
+				s32				scopedCount;
 
 				// Contextual references
 				SObject*		_this;					// Current object
@@ -179,7 +194,7 @@ struct SHover
 				SFunction*		func;					// Current function engaged
 
 				SSourceCode*	definition;				// As defined at compile time
-				SSourceCode*	live;					// As exists live in this instance at this level
+				SSourceCode		live;					// As exists live in this instance at this level
 			};
 			//
 		//////
@@ -250,13 +265,13 @@ struct SFunctionParams
 	SErrorInfo		ei;									// If any error info needs logged, it will be here
 
 	// Return parameters
-	SVariable*		rp[_MAX_RETURN_COUNT];				// Return parameters
+	SVariable*		rp[_MAX_RETURNS_COUNT];				// Return parameters
 	s32				rpCount;							// Actual number of return parameters specified
 	s32				rpMax;								// Maximum number allowed
 	s32				rpMin;								// Minimum number required
 
 	// Input parameters
-	SVariable*		ip[_MAX_PARAMETER_COUNT];			// Input parameters
+	SVariable*		ip[_MAX_PARAMS_COUNT];			// Input parameters
 	s32				ipCount;							// Number of input parameters actually passed
 };
 

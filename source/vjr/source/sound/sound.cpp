@@ -87,7 +87,7 @@
 // Called to initialize the sound system
 //
 //////
-	void isound_initialize(void)
+	void iSound_initialize(void)
 	{
 		//////////
 		// Initialize our root sounds array
@@ -103,7 +103,7 @@
 			gsdlDesired.format		= AUDIO_S16SYS;			// 16-bit signed audio
 			gsdlDesired.channels	= 1;					// Mono
 			gsdlDesired.samples		= gnFrequency / 50;		// Audio buffer (larger buffers reduces risk of dropouts but increases response time)
-			gsdlDesired.callback	= isound_sdl_callback;	// Our callback function
+			gsdlDesired.callback	= iSound_sdl_callback;	// Our callback function
 			gsdlDesired.userdata	= NULL;					// No user data is passed
 
 
@@ -142,7 +142,7 @@
 // Called to begin or end playing
 //
 //////
-	void isound_playControl(bool tlShouldBePlaying)
+	void iSound_playControl(bool tlShouldBePlaying)
 	{
 		// Did SDL initialize properly?
 		if (glSDL_Initialized)
@@ -162,7 +162,7 @@
 // Callback from SDL itself to fill a stream bucket
 //
 //////
-	void isound_sdl_callback(void* user, Uint8* stream, int length)
+	void iSound_sdl_callback(void* user, Uint8* stream, int length)
 	{
 		SThisCode*			thisCode = NULL;
 		f64					lfSampleTotal;
@@ -178,7 +178,7 @@
 		{
 			// Populate the streams based on inputs
 			lnLength = length / sizeof(Sint16);
-			cb._func	= (uptr)&isound_requestStreams;
+			cb._func	= (uptr)&iSound_requestStreams;
 			cb.extra	= lnLength;
 			iSEChain_iterateThroughForCallback(thisCode, &gseRootSounds, &cb);
 			// Once we get here, all streams have been populated
@@ -219,7 +219,7 @@
 				{
 					// Nothing is currently being played, which means everything turned off during the last cycle
 					// Tell SDL to stop wasting its time. :-)
-					isound_playControl(false);
+					iSound_playControl(false);
 					break;
 				}
 
@@ -239,7 +239,7 @@
 // Returns the first item it finds playing
 //
 //////
-	bool isound_DeleteValidate(SStartEndCallback* cb)
+	bool iSound_DeleteValidate(SStartEndCallback* cb)
 	{
 		// Make sure our environment is sane
 		if (cb && cb->ptr && ((_isSSound*)cb->ptr)->isPlaying)
@@ -257,7 +257,7 @@
 // Called to request that each stream populate itself
 //
 //////
-	void isound_requestStreams(SStartEndCallback* cb)
+	void iSound_requestStreams(SStartEndCallback* cb)
 	{
 		_isSSound* lss;
 
@@ -283,7 +283,7 @@
 
 				} else {
 					// Generate the tone(s)
-					iisound_generateTones(lss, (u32)cb->extra);
+					iiSound_generateTones(lss, (u32)cb->extra);
 				}
 			}
 		}
@@ -297,7 +297,7 @@
 // Called to generate tones upon demand
 //
 //////
-	void iisound_generateTones(_isSSound* tss, u32 tnSamples)
+	void iiSound_generateTones(_isSSound* tss, u32 tnSamples)
 	{
 		u32		lnI;
 		f32		lfCount, lfTone, lfHertz1, lfHertz2, lfHertz3, lfHertz4;
@@ -450,7 +450,7 @@
 // Note:  Use -1 for hertz entries to disable that tone channel.
 //
 //////
-	u64 sound_createTone(SThisCode* thisCode, f32 tfHertz1, f32 tfHertz2, f32 tfHertz3, f32 tfHertz4, u32 tnDurationMilliseconds)
+	u64 iSound_createTone(SThisCode* thisCode, f32 tfHertz1, f32 tfHertz2, f32 tfHertz3, f32 tfHertz4, u32 tnDurationMilliseconds)
 	{
 		_isSSound*	lss;
 		bool		llResult;
@@ -495,7 +495,7 @@
 // Returns a handle which can be used to play or terminate the stream.
 //
 //////
-	u64 sound_createStream(SThisCode* thisCode, u32 tnSamplesPerSecond, u64 tnSoundFillerCallbackFunction)
+	u64 iSound_createStream(SThisCode* thisCode, u32 tnSamplesPerSecond, u64 tnSoundFillerCallbackFunction)
 	{
 		_isSSound*	lss;
 		bool		llResult;
@@ -531,7 +531,7 @@
 // Called to set the volume either on-the-fly while the stream is playing, or before or after it plays.
 //
 //////
-	u64 sound_setVolume(SThisCode* thisCode, u64 tnHandle, f32 tfVolume)
+	u64 iSound_setVolume(SThisCode* thisCode, u64 tnHandle, f32 tfVolume)
 	{
 		_isSSound*	lss;
 
@@ -561,7 +561,7 @@
 //         oss_soundPlayStart(handle, 0.5f)          // Change the volume of the sound, and start it if it's stopped, but if it's already started then just change the volume (don't restart the sound)
 //
 //////
-	u64 sound_playStart(SThisCode* thisCode, u64 tnHandle, f32 tfVolume)
+	u64 iSound_playStart(SThisCode* thisCode, u64 tnHandle, f32 tfVolume)
 	{
 		_isSSound*	lss;
 
@@ -589,7 +589,7 @@
 			}
 
 			// Tell SDL to turn itself on (in case it's off, it might already be playing)
-			isound_playControl(true);
+			iSound_playControl(true);
 
 			// All done
 			return(lss->ll.uniqueId);
@@ -606,7 +606,7 @@
 // Called to cancel a playing sound
 //
 //////
-	u64 sound_playCancel(SThisCode* thisCode, u64 tnHandle)
+	u64 iSound_playCancel(SThisCode* thisCode, u64 tnHandle)
 	{
 		_isSSound*	lss;
 
@@ -633,7 +633,7 @@
 // Called to delete a previous sound handle
 //
 //////
-	u64 sound_deleteHandle(SThisCode* thisCode, u64 tnHandle)
+	u64 iSound_deleteHandle(SThisCode* thisCode, u64 tnHandle)
 	{
 		_isSSound*			lss;
 		_isSSound*			lssPlaying;
@@ -649,14 +649,14 @@
 			lss->inDeleteQueue	= true;
 
 			// We need to see if this is the last item playing, and if so, then turn off SDL
-			cb._func	= (uptr)&isound_DeleteValidate;
+			cb._func	= (uptr)&iSound_DeleteValidate;
 			lssPlaying	= (_isSSound*)iSEChain_searchByCallback(thisCode, &gseRootSounds, &cb);
 
 			// Is anything else still playing?
 			if (!lssPlaying)
 			{
 				// Nope
-				isound_playControl(false);
+				iSound_playControl(false);
 			}
 
 			// All done

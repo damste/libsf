@@ -534,9 +534,12 @@ typedef SEM**		SEMpp;
 //////////
 // Constants
 //////
-	const u32			_MAX_PARAMETER_COUNT				= 26;						// 26 passed parameters
-	const u32			_MAX_RETURN_COUNT					= 10;						// 10 return parameters
+	const u32			_MAX_PARAMS_COUNT					= 26;						// 26 passed parameters
+	const u32			_MAX_RETURNS_COUNT					= 10;						// 10 return parameters
+	const u32			_MAX_SCOPED_COUNT					= 10;						// 10 scoped variables by default, expands as needed
+	const u32			_MAX_LOCALS_COUNT					= 50;						// 50 local variables by default, expands as needed
 	const u32			_MAX_DLL_PARAMS						= 26;						// 26 passed parameters into the called DLL
+	const u32			_MAX_PROCEDURE_LEVELS				= 260;						// 260 call stack levels
 
 
 //////////
