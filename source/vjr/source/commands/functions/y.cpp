@@ -111,7 +111,7 @@
 //    ? YEAR(dt)		&& Displays 2015
 //    ? YEAR()			&& Displays current date's year number
 //////
-	void function_year(SFunctionParams* rpar)
+	void function_year(SReturnsParams* rpar)
 	{
 		SVariable* varParam = rpar->ip[0];
 

@@ -118,7 +118,7 @@ extern "C"
 // Called to call into the dll function
 //
 //////
-	void iDllFunc_dispatch(SFunctionParams* rpar, SDllFunc* dfunc, SComp* compDllName)
+	void iDllFunc_dispatch(SReturnsParams* rpar, SDllFunc* dfunc, SComp* compDllName)
 	{
 		s32		lnI;
 		u32		lnParamsFound;
@@ -188,7 +188,7 @@ extern "C"
 
 	}
 
-	void iiDllFunc_dispatch_lowLevel(SFunctionParams* rpar, SDllFunc* dfunc)
+	void iiDllFunc_dispatch_lowLevel(SReturnsParams* rpar, SDllFunc* dfunc)
 	{
 		s32 lnI;
 
@@ -644,7 +644,7 @@ extern "C"
 // Add the DLL reference to their list of known functions
 //
 //////
-	bool iDllFunc_add(SFunctionParams* rpar, SDllFuncParam* rp, SDllFuncParam ip[], s32 tnIpCount, SComp* compFunctionName, SComp* compAliasName, SComp* compDllName, SThisCode* onAccess, SThisCode* onAssign, bool tlNoPrototype, bool tlVariadic)
+	bool iDllFunc_add(SReturnsParams* rpar, SDllFuncParam* rp, SDllFuncParam ip[], s32 tnIpCount, SComp* compFunctionName, SComp* compAliasName, SComp* compDllName, SThisCode* onAccess, SThisCode* onAssign, bool tlNoPrototype, bool tlVariadic)
 	{
 		s32			lnI, lnAttempt, lnFuncNameLength;
 		void*		funcAddress;

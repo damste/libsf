@@ -606,8 +606,8 @@
 		cvarSpace1				= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, cgc_spaceText, 1,	false);
 		cvarEmptyString			= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, (cu8*)NULL, 0,		false);
 		cvarSpace2000			= iVariable_create(_VAR_TYPE_CHARACTER, NULL, true);
-		cvarTrue				= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, (cu8*)NULL, 0,		false);
-		cvarFalse				= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, (cu8*)NULL, 0,		false);
+		cvarTrue				= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, iVariable_populate_byBool(true),	0,	false);
+		cvarFalse				= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, iVariable_populate_byBool(false),	0,	false);
 		cvarZero				= iVariable_create(_VAR_TYPE_S64, NULL, true);
 
 		lnValue	= 6;
@@ -631,10 +631,6 @@
 		// 2000 blank spaces
 		iDatum_allocateSpace(&cvarSpace2000->value, 2000);
 		memset(cvarSpace2000->value.data, 32, 2000);
-
-		// Constant logical
-		*cvarTrue->value.data_s8	= (s8)_LOGICAL_TRUE;
-		*cvarFalse->value.data_s8	= (s8)_LOGICAL_FALSE;
 
 		// Datetime constants for parsing
 		cvarSetDateAmerican	= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, "11/22/3333 12:34:56.000 AP", -1, true);
@@ -670,7 +666,7 @@
 		s8				lnVal_s8;
 		s32				lnVal_s32;
 		f32				lfVal_f32;
-		SFunctionParams	lsrpar;
+		SReturnsParams	lsrpar;
 
 
 		//////////

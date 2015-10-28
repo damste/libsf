@@ -1296,7 +1296,7 @@
 //    The sum of p1 + p2
 //
 //////
-	void function_concatenate(SFunctionParams* rpar)
+	void function_concatenate(SReturnsParams* rpar)
 	{
 		SVariable*	varString1	= rpar->ip[0];
 		SVariable*	varString2	= rpar->ip[1];
@@ -1375,7 +1375,7 @@
 //    The sum of p1 + p2
 //
 //////
-	void function_add(SFunctionParams* rpar)
+	void function_add(SReturnsParams* rpar)
 	{
 		SVariable*	varNum1	= rpar->ip[0];
 		SVariable*	varNum2	= rpar->ip[1];
@@ -1534,7 +1534,7 @@
 //    The sum of p1 - p2
 //
 //////
-	void function_sub(SFunctionParams* rpar)
+	void function_sub(SReturnsParams* rpar)
 	{
 		SVariable*	varNum1	= rpar->ip[0];
 		SVariable*	varNum2	= rpar->ip[1];
@@ -1693,7 +1693,7 @@
 //    The sum of p1 * p2
 //
 //////
-	void function_mul(SFunctionParams* rpar)
+	void function_mul(SReturnsParams* rpar)
 	{
 		SVariable*	varNum1	= rpar->ip[0];
 		SVariable*	varNum2	= rpar->ip[1];
@@ -1852,7 +1852,7 @@
 //    The sum of p1 / p2
 //
 //////
-	void function_div(SFunctionParams* rpar)
+	void function_div(SReturnsParams* rpar)
 	{
 		SVariable*	varNum1	= rpar->ip[0];
 		SVariable*	varNum2	= rpar->ip[1];
@@ -2019,7 +2019,7 @@
 // Returns:
 //		Nothing, but whatever it is that's being modified may be open for modifying.
 //////
-	void command_clear(SComp* compCommand, SFunctionParams* rpar)
+	void command_clear(SComp* compCommand, SReturnsParams* rpar)
 	{
 		SComp*			compClear = compCommand;
 		s32				lnClearLines, lnSaveLines;
@@ -2262,7 +2262,7 @@
 // Returns:
 //		Nothing. The thing being declared has been declared, or there is an error.
 //////
-	void command_declare(SComp* compCommand, SFunctionParams* rpar)
+	void command_declare(SComp* compCommand, SReturnsParams* rpar)
 	{
 		SComp*			compDeclare = compCommand;
 
@@ -2598,7 +2598,7 @@
 // Returns:
 //		Nothing, but whatever it is that's being modified may be open for modifying.
 //////
-	void command_modify(SComp* compCommand, SFunctionParams* rpar)
+	void command_modify(SComp* compCommand, SReturnsParams* rpar)
 	{
 		SComp*	compModify = compCommand;
 		SComp*	compType;
@@ -2721,7 +2721,7 @@
 // Returns:
 //		Nothing, but the environment may be changed.
 //////
-	void command_open(SComp* compCommand, SFunctionParams* rpar)
+	void command_open(SComp* compCommand, SReturnsParams* rpar)
 	{
 		SComp*	compOpen = compCommand;
 		s32		lnLength;
@@ -2854,7 +2854,7 @@
 // Returns:
 //    Nothing, but the environment may be changed.
 //////
-	void command_set(SComp* compCommand, SFunctionParams* rpar)
+	void command_set(SComp* compCommand, SReturnsParams* rpar)
 	{
 		SComp*			compSet = compCommand;
 		s32				lnIndex;
@@ -2978,7 +2978,7 @@
 // Returns:
 //    Nothing, but the environment may be changed.
 //////
-	void command_use(SComp* compCommand, SFunctionParams* rpar)
+	void command_use(SComp* compCommand, SReturnsParams* rpar)
 	{
 		SComp*		compUse = compCommand;
 		sptr		lnWorkArea, lnWorkAreaAlias;

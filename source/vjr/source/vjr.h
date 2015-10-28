@@ -208,7 +208,7 @@
 	//////////
 	// Added for test purposes
 	//////
-		void iTest1(SFunctionParams* rpar);
+		void iTest1(SReturnsParams* rpar);
 		#include "\libsf\source\vjr\source\test\test.cpp"
 
 
@@ -371,7 +371,7 @@
 	//////////
 	// Added for test purposes
 	//////
-		void iTest1(SFunctionParams* rpar);
+		void iTest1(SReturnsParams* rpar);
 		#include "/libsf/source/vjr/source/test/test.cpp"
 
 
@@ -524,7 +524,7 @@
 	//////////
 	// Added for test purposes
 	//////
-		void iTest1(SFunctionParams* rpar);
+		void iTest1(SReturnsParams* rpar);
 		#include "/libsf/source/vjr/source/test/test.cpp"
 
 

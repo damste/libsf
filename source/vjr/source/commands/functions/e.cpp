@@ -114,7 +114,7 @@
 //    ? EMPTY("  ")	&& Display .T.
 //    ? EMPTY(0.0)	&& Display .T.
 //////
-	void function_empty(SFunctionParams* rpar)
+	void function_empty(SReturnsParams* rpar)
 	{
 		SVariable*	varExpr = rpar->ip[0];
 		bool		llEmpty;
@@ -136,7 +136,7 @@
 		// Create and populate the return variable
 		//////
 			llEmpty	= function_isempty_common(rpar, varExpr);
-			result	= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, (cs8*)((llEmpty) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, false);
+			result	= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, iVariable_populate_byBool(llEmpty), 1, false);
 			if (!result)
 				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varExpr), false);
 
@@ -148,7 +148,7 @@
 
 	}
 
-	bool function_isempty_common(SFunctionParams* rpar, SVariable* varExpr)
+	bool function_isempty_common(SReturnsParams* rpar, SVariable* varExpr)
 	{
 		s8			c, cPointChar;
 		u32			lnI;
@@ -309,7 +309,7 @@
 //    Logical		-- .t. if the search string is found in the string, .f. otherwise
 //
 //////
-	void function_endswith(SFunctionParams* rpar)
+	void function_endswith(SReturnsParams* rpar)
 	{
 		SVariable* varString	= rpar->ip[0];
 //		SVariable* varSearch	= rpar->params[1];
@@ -330,7 +330,7 @@
 // Case-insensitive version of ENDSWITH()
 //
 //////
-	void function_endswithc(SFunctionParams* rpar)
+	void function_endswithc(SReturnsParams* rpar)
 	{
 		SVariable* varString	= rpar->ip[0];
 //		SVariable* varSearch	= rpar->params[1];
@@ -370,7 +370,7 @@
 // Example:
 //    ? EVL("  ", "None")	&& Display "None"
 //////
-	void function_evl(SFunctionParams* rpar)
+	void function_evl(SReturnsParams* rpar)
 	{
 		SVariable*	varExpr1 = rpar->ip[0];
 		SVariable*	varExpr2 = rpar->ip[1];
@@ -441,7 +441,7 @@
 // Example:
 //    ? EXP(2)		&& Display 7.39
 //////
-    void function_exp(SFunctionParams* rpar)
+    void function_exp(SReturnsParams* rpar)
     {
 		SVariable* varNumber = rpar->ip[0];
 
@@ -451,7 +451,7 @@
 	}
 
 	// Common numeric functions used for EXP(), LOG(), LOG10(), PI(), SQRT(), CEILING(), FLOOR(), DTOR(), RTOD(), ...
-    void ifunction_numbers_common(SFunctionParams* rpar, SVariable* varNumber1, SVariable* varNumber2, SVariable* varNumber3, u32 tnFunctionType, const u32 tnResultType, bool tlSameInputType, bool tlNoEmptyParam)
+    void ifunction_numbers_common(SReturnsParams* rpar, SVariable* varNumber1, SVariable* varNumber2, SVariable* varNumber3, u32 tnFunctionType, const u32 tnResultType, bool tlSameInputType, bool tlNoEmptyParam)
     {
 		f64			lfResult, lfValue1, lfValue2, lfValue3;
 		u32			errorNum;

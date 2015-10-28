@@ -444,8 +444,8 @@ return;
 
 				iBuilder_append_label_uptr(data, (s8*)"prev",		(uptr)thisCode->ll.prev);
 				iBuilder_append_label_uptr(data, (s8*)"next",		(uptr)thisCode->ll.next);
-				iBuilder_append_label_uptr(data, (s8*)"window",		(uptr)thisCode->win);
-				iBuilder_append_label_uptr(data, (s8*)"definition",	(uptr)thisCode->definition);
+				iBuilder_append_label_uptr(data, (s8*)"window",		(uptr)iObj_find_thisForm_window(thisCode->live._this));
+				iBuilder_append_label_uptr(data, (s8*)"definition",	(uptr)thisCode->def);
 				iBuilder_append_label_uptr(data, (s8*)"live",		(uptr)&thisCode->live);
 
 				iBuilder_appendData(data, " }", -1);
@@ -454,8 +454,8 @@ return;
 			//////////
 			// definition
 			//////
-				if (thisCode->definition)
-					iJDebiC_sourceCode(data, items, thisCode->definition);
+				if (thisCode->def)
+					iJDebiC_sourceCode(data, items, thisCode->def);
 
 
 			//////////

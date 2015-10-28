@@ -126,6 +126,7 @@ struct SObjEventMap;
 	SObject*				iObj_find_rootmostObject				(SObject*  obj);
 	bool					iObj_find_screenRect					(SObject*  obj, RECT* rc);
 	bool					iObj_find_relativeRect					(SObject*  objThis, SObject* objTarget, s32 x, s32 y, RECT* rc, bool tlProcessChildren, bool tlProcessSiblings);
+	SWindow*				iObj_find_thisForm_window				(SObject*  obj);
 	SObject*				iObj_find_thisForm						(SObject*  obj);
 	SObject*				iObj_find_thisSubform					(SObject*  obj);
 	SObject*				iObj_find_thisRider						(SObject*  obj);
@@ -476,9 +477,9 @@ struct SObjEventMap;
 // DLL-related functions
 //////
 	// Dll functions
-	void					iDllFunc_dispatch						(SFunctionParams* rpar, SDllFunc* dfunc, SComp* compDllName);
-	void					iiDllFunc_dispatch_lowLevel				(SFunctionParams* rpar, SDllFunc* dfunc);
-	bool					iDllFunc_add							(SFunctionParams* rpar, SDllFuncParam* rp, SDllFuncParam ip[], s32 tnIpCount, SComp* compFunctionName, SComp* compAliasName, SComp* compDllName, SThisCode* onAccess, SThisCode* onAssign, bool tlNoPrototype, bool tlVariadic);
+	void					iDllFunc_dispatch						(SReturnsParams* rpar, SDllFunc* dfunc, SComp* compDllName);
+	void					iiDllFunc_dispatch_lowLevel				(SReturnsParams* rpar, SDllFunc* dfunc);
+	bool					iDllFunc_add							(SReturnsParams* rpar, SDllFuncParam* rp, SDllFuncParam ip[], s32 tnIpCount, SComp* compFunctionName, SComp* compAliasName, SComp* compDllName, SThisCode* onAccess, SThisCode* onAssign, bool tlNoPrototype, bool tlVariadic);
 	SDllFunc*				iDllFunc_find_byName					(s8* funcName, s32 lnFuncNameLength);
 
 	// Dll library (the physical c:\path\to\theFile.dll

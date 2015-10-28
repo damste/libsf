@@ -107,7 +107,7 @@
 // Returns:
 //    Character		-- The string of the left N characters
 //////
-	void function_left(SFunctionParams* rpar)
+	void function_left(SReturnsParams* rpar)
 	{
 		SVariable*	varString	= rpar->ip[0];
 		SVariable*	varCount	= rpar->ip[1];
@@ -197,7 +197,7 @@
 // Returns:
 //    Numeric		-- The length of the string
 //////
-	void function_len(SFunctionParams* rpar)
+	void function_len(SReturnsParams* rpar)
 	{
 		SVariable* varString = rpar->ip[0];
         SVariable* result;
@@ -261,7 +261,7 @@
 // Returns:
 //    Bool		-- pString must match pPattern character for character in order for LIKE() to return true (.T.).
 //////
-	void function_like(SFunctionParams* rpar)
+	void function_like(SReturnsParams* rpar)
 	{
 		SVariable*	varPattern	= rpar->ip[0];
 		SVariable*	varString	= rpar->ip[1];
@@ -341,7 +341,7 @@
 		//////////
 		// Create and populate the return variable
 		//////
-			rpar->rp[0]	= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, (cs8*)((llResult) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, true);
+			rpar->rp[0]	= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, iVariable_populate_byBool(llResult), 1, true);
 			if (!rpar->rp[0])
 				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varPattern), false);
 	}
@@ -372,7 +372,7 @@
 // Example:
 //    ? LOG(2)		&& Display 0.69
 //////
-    void function_log(SFunctionParams* rpar)
+    void function_log(SReturnsParams* rpar)
     {
 		SVariable* varNumber = rpar->ip[0];
 
@@ -407,7 +407,7 @@
 // Example:
 //    ? LOG10(2)		&& Display 0.30
 //////
-    void function_log10(SFunctionParams* rpar)
+    void function_log10(SReturnsParams* rpar)
     {
 		SVariable* varNumber = rpar->ip[0];
 
@@ -439,7 +439,7 @@
 // Returns:
 //    Character		-- The string with all lowercase characters converted to lowercase
 //////
-	void function_lower(SFunctionParams* rpar)
+	void function_lower(SReturnsParams* rpar)
 	{
 		SVariable*	varString = rpar->ip[0];
 		s32			lnI;
@@ -514,7 +514,7 @@
 // Returns:
 //    Character		-- The string with any leading spaces removed
 //////
-	void function_ltrim(SFunctionParams* rpar)
+	void function_ltrim(SReturnsParams* rpar)
 	{
 		SVariable* varString			= rpar->ip[0];
 		SVariable* varCaseInsensitive	= rpar->ip[1];

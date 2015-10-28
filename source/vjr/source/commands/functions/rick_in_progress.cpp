@@ -110,7 +110,7 @@
 //    k = "Apr.26.2015, 8:15p"
 //    ? CXLATD(k)
 //////
-	void function_cxlatd(SFunctionParams* rpar)
+	void function_cxlatd(SReturnsParams* rpar)
 	{
 		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		rpar->rp[0] = NULL;
@@ -143,7 +143,7 @@
 //    k = "Apr.26.2015, 8:15p"
 //    ? CXLATT(k)
 //////
-	void function_cxlatt(SFunctionParams* rpar)
+	void function_cxlatt(SReturnsParams* rpar)
 	{
 		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		rpar->rp[0] = NULL;
@@ -176,7 +176,7 @@
 //    k = "Apr.26.2015, 8:15p"
 //    ? CXLATX(k)
 //////
-	void function_cxlatx(SFunctionParams* rpar)
+	void function_cxlatx(SReturnsParams* rpar)
 	{
 		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		rpar->rp[0] = NULL;
@@ -234,7 +234,7 @@
 //    ldDate = DBUNDLE(tDatetime)
 //    ldDate = DBUNDLE(sDatetimex)
 //////
-	void function_dbundle(SFunctionParams* rpar)
+	void function_dbundle(SReturnsParams* rpar)
 	{
 		SVariable*	varR1;
 		SVariable*	varP1;
@@ -494,7 +494,7 @@
 //    DUNBUNDLE(k, lnYear, lnMonth, lnDay)
 //    lnYear, lnMonth, lnDay = DUNBUNDLE(k)
 //////
-	void function_dunbundle(SFunctionParams* rpar)
+	void function_dunbundle(SReturnsParams* rpar)
 	{
 		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
@@ -553,7 +553,7 @@
 //    TBUNDLE(ltDatetime, 2015, 4, 26, 12, 15, 04, 291)
 //    ltDatetime = DBUNDLE(2015, 4, 26, 12, 15, 04, 291)		&& Identical to DATETIME()
 //////
-	void function_tbundle(SFunctionParams* rpar)
+	void function_tbundle(SReturnsParams* rpar)
 	{
 		//////////
 		// If we get here, they're bundling on-the-fly
@@ -615,7 +615,7 @@
 //    TUNBUNDLE(k, lnYear, lnMonth, lnDay, lnHour, lnMinute, lnSecond, lnMillisecond)
 //    lnYear, lnMonth, lnDay, lnHour, lnMinute, lnSecond, lnMillisecond = TUNBUNDLE(k)
 //////
-	void function_tunbundle(SFunctionParams* rpar)
+	void function_tunbundle(SReturnsParams* rpar)
 	{
 		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
@@ -676,7 +676,7 @@
 //    XBUNDLE(lsDatetime, 2015, 4, 26, 12, 15, 04, 291, 291393)
 //    lsDatetimex = XBUNDLE(2015, 4, 26, 12, 15, 04, 291, 291393)		&& Identical to DATETIMEX()
 //////
-	void function_xbundle(SFunctionParams* rpar)
+	void function_xbundle(SReturnsParams* rpar)
 	{
 		//////////
 		// If we get here, they're bundling on-the-fly
@@ -740,7 +740,7 @@
 //    XUNBUNDLE(k, lnYear, lnMonth, lnDay, lnHour, lnMinute, lnSecond, lnMillisecond, lnMicrosecond)
 //    lnYear, lnMonth, lnDay, lnHour, lnMinute, lnSecond, lnMillisecond, lnMicrosecond = XUNBUNDLE(k)
 //////
-	void function_xunbundle(SFunctionParams* rpar)
+	void function_xunbundle(SReturnsParams* rpar)
 	{
 		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
@@ -792,7 +792,7 @@
 //    TIMEBUNDLE(lcTime, 12, 15, 04, 291)
 //    lcTime = TIMEBUNDLE(12, 15, 04, 291)
 //////
-	void function_timebundle(SFunctionParams* rpar)
+	void function_timebundle(SReturnsParams* rpar)
 	{
 		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
@@ -845,7 +845,7 @@
 //    TIMEUNBUNDLE(k, lnHour, lnMinute, lnSecond, lnMillisecond)
 //    lnHour, lnMinute, lnSecond, lnMillisecond = TIMEUNBUNDLE(k)
 //////
-	void function_timeunbundle(SFunctionParams* rpar)
+	void function_timeunbundle(SReturnsParams* rpar)
 	{
 		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
@@ -899,7 +899,7 @@
 //    TIMEXBUNDLE(lcTime, 12, 15, 04, 291, 291393)
 //    lcTime = TIMEXBUNDLE(12, 15, 04, 291, 291393)
 //////
-	void function_timexbundle(SFunctionParams* rpar)
+	void function_timexbundle(SReturnsParams* rpar)
 	{
 		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
@@ -954,7 +954,7 @@
 //    TIMEXUNBUNDLE(k, lnHour, lnMinute, lnSecond, lnMillisecond, lnMicrosecond)
 //    lnHour, lnMinute, lnSecond, lnMillisecond, lnMicrosecond = TIMEXUNBUNDLE(k)
 //////
-	void function_timexunbundle(SFunctionParams* rpar)
+	void function_timexunbundle(SReturnsParams* rpar)
 	{
 		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
@@ -1006,7 +1006,7 @@
 //    SECONDSBUNDLE(lfTime, 12, 15, 04, 291)
 //    lfTime = SECONDSBUNDLE(12, 15, 04, 291)
 //////
-	void function_secondsbundle(SFunctionParams* rpar)
+	void function_secondsbundle(SReturnsParams* rpar)
 	{
 		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
@@ -1059,7 +1059,7 @@
 //    SECONDSUNBUNDLE(k, lnHour, lnMinute, lnSecond, lnMillisecond)
 //    lnHour, lnMinute, lnSecond, lnMillisecond = SECONDSUNBUNDLE(k)
 //////
-	void function_secondsunbundle(SFunctionParams* rpar)
+	void function_secondsunbundle(SReturnsParams* rpar)
 	{
 		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
@@ -1113,7 +1113,7 @@
 //    SECONDSXBUNDLE(lfTime, 12, 15, 04, 291, 291393)
 //    lfTime = SECONDSXBUNDLE(12, 15, 04, 291, 291393)
 //////
-	void function_secondsxbundle(SFunctionParams* rpar)
+	void function_secondsxbundle(SReturnsParams* rpar)
 	{
 		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
@@ -1168,7 +1168,7 @@
 //    SECONDSXUNBUNDLE(k, lnHour, lnMinute, lnSecond, lnMillisecond, lnMicrosecond)
 //    lnHour, lnMinute, lnSecond, lnMillisecond, lnMicrosecond = SECONDSXUNBUNDLE(k)
 //////
-	void function_secondsxunbundle(SFunctionParams* rpar)
+	void function_secondsxunbundle(SReturnsParams* rpar)
 	{
 		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
@@ -1197,7 +1197,7 @@
 // Example:
 //    lnJob = PDJOBSTART("My Print Job")
 //////
-	void function_pdjobstart(SFunctionParams* rpar)
+	void function_pdjobstart(SReturnsParams* rpar)
 	{
 		SVariable*	varDocName = rpar->ip[0];
 
@@ -1235,7 +1235,7 @@
 // Example:
 //    lnPage = PDADDPAGE(lnJob, RGB(255,255,255), 8.5, 11.0, 0.75, 0.75, 0.75, 0.75)
 //////
-	void function_pdaddpage(SFunctionParams* rpar)
+	void function_pdaddpage(SReturnsParams* rpar)
 	{
 		SVariable*	varJobHandle	= rpar->ip[0];
 		SVariable*	varPageColor	= rpar->ip[1];
@@ -1276,7 +1276,7 @@
 // Example:
 //    lnPage = PDADDPAGE(lnJob, RGB(255,255,255), 8.5, 11.0, 0.75, 0.75, 0.75, 0.75)
 //////
-	void function_pdaddpanel(SFunctionParams* rpar)
+	void function_pdaddpanel(SReturnsParams* rpar)
 	{
 		SVariable*	varJobHandle	= rpar->ip[0];
 		SVariable*	varPanelColor	= rpar->ip[1];
@@ -1318,7 +1318,7 @@
 // Example:
 //    PDTEXT(lnJob, lnPage, 1.0, 1.0, RGB(255,255,0), RGB(0,0,0), "Sample text", "Ubuntu", 12, "B")
 //////
-	void function_pdtext(SFunctionParams* rpar)
+	void function_pdtext(SReturnsParams* rpar)
 	{
 		SVariable*	varJobHandle			= rpar->ip[0];
 		SVariable*	varPageOrPanelHandle	= rpar->ip[1];
@@ -1366,7 +1366,7 @@
 // Example:
 //    PDTEXTEVAL(lnJob, lnPage, 1.0, 1.0, RGB(255,255,0), RGB(0,0,0), "ALLTRIM(myAlias.cField)", "Ubuntu", 12, "B")
 //////
-	void function_pdtexteval(SFunctionParams* rpar)
+	void function_pdtexteval(SReturnsParams* rpar)
 	{
 		SVariable*	varJobHandle			= rpar->ip[0];
 		SVariable*	varPageOrPanelHandle	= rpar->ip[1];
@@ -1411,7 +1411,7 @@
 // Example:
 //    PDIMAGE(lnJob, lnPage, 1.0, 1.0, 3.0, 3.0, "c:\path\to\myimg.png")
 //////
-	void function_pdimage(SFunctionParams* rpar)
+	void function_pdimage(SReturnsParams* rpar)
 	{
 		SVariable*	varJobHandle			= rpar->ip[0];
 		SVariable*	varPageOrPanelHandle	= rpar->ip[1];
@@ -1453,7 +1453,7 @@
 // Example:
 //    PDPANEL(lnJob, lnPage, lnPanel, 1.0, 1.0, 4.5, 1.5,)
 //////
-	void function_pdpanel(SFunctionParams* rpar)
+	void function_pdpanel(SReturnsParams* rpar)
 	{
 		SVariable*	varJobHandle			= rpar->ip[0];
 		SVariable*	varPageOrPanelHandleDst	= rpar->ip[1];
@@ -1495,7 +1495,7 @@
 // Example:
 //    PDHLINE(lnJob, lnPage, RGB(0,0,0), 3.0, 1.0, 7.5, 0.1)
 //////
-	void function_pdhline(SFunctionParams* rpar)
+	void function_pdhline(SReturnsParams* rpar)
 	{
 		SVariable*	varJobHandle			= rpar->ip[0];
 		SVariable*	varPageOrPanelHandle	= rpar->ip[1];
@@ -1537,7 +1537,7 @@
 // Example:
 //    PDVLINE(lnJob, lnPage, RGB(0,0,0), 3.0, 1.0, 7.5, 0.1)
 //////
-	void function_pdVline(SFunctionParams* rpar)
+	void function_pdVline(SReturnsParams* rpar)
 	{
 		SVariable*	varJobHandle			= rpar->ip[0];
 		SVariable*	varPageOrPanelHandle	= rpar->ip[1];
@@ -1580,7 +1580,7 @@
 // Example:
 //    PDRECT(lnJob, lnPage, RGB(0,0,0), 1.0, 1.0, 4.0, 4.0, 0.1)
 //////
-	void function_pdrect(SFunctionParams* rpar)
+	void function_pdrect(SReturnsParams* rpar)
 	{
 		SVariable*	varJobHandle			= rpar->ip[0];
 		SVariable*	varPageOrPanelHandle	= rpar->ip[1];
@@ -1618,7 +1618,7 @@
 // Example:
 //    PDPAGEDELETE(lnJob, lnPage)
 //////
-	void function_pdpagedelete(SFunctionParams* rpar)
+	void function_pdpagedelete(SReturnsParams* rpar)
 	{
 		SVariable*	varJobHandle	= rpar->ip[0];
 		SVariable*	varPageHandle	= rpar->ip[1];
@@ -1652,7 +1652,7 @@
 // Example:
 //    PGPAGEREORDER(lnJob, lnPage, lnPageMove, .t.)
 //////
-	void function_pdpagereorder(SFunctionParams* rpar)
+	void function_pdpagereorder(SReturnsParams* rpar)
 	{
 		SVariable*	varJobHandle		= rpar->ip[0];
 		SVariable*	varPageHandleRef	= rpar->ip[1];
@@ -1688,7 +1688,7 @@
 //    lfWidth = PDWIDTH(lnJob, lnPage)
 //    lfWidth = PDWIDTH(lnJob, lnPanel)
 //////
-	void function_pdwidth(SFunctionParams* rpar)
+	void function_pdwidth(SReturnsParams* rpar)
 	{
 		SVariable*	varJobHandle	= rpar->ip[0];
 		SVariable*	varPageHandle	= rpar->ip[1];
@@ -1722,7 +1722,7 @@
 //    lfHeight = PDHEIGHT(lnJob, lnPage)
 //    lfHeight = PDHEIGHT(lnJob, lnPanel)
 //////
-	void function_pdheight(SFunctionParams* rpar)
+	void function_pdheight(SReturnsParams* rpar)
 	{
 		SVariable*	varJobHandle	= rpar->ip[0];
 		SVariable*	varPageHandle	= rpar->ip[1];
@@ -1763,7 +1763,7 @@
 //    lfHeight = PDPMETRICS(lnJob, lnPage)
 //    lfHeight = PDPMETRICS(lnJob, lnPanel)
 //////
-	void function_pdpmetrics(SFunctionParams* rpar)
+	void function_pdpmetrics(SReturnsParams* rpar)
 	{
 		SVariable*	varJobHandle			= rpar->ip[0];
 		SVariable*	varPageOrPanelHandle	= rpar->ip[1];
@@ -1802,7 +1802,7 @@
 //    lfHeight = PDTEXTMETRICS(lnJob, lnPage, "Sample text", "Ubuntu", 12, "B")
 //    lfHeight = PDTEXTMETRICS(lnJob, lnPanel, "Sample text", "Ubuntu", 12, "B")
 //////
-	void function_pdtextmetrics(SFunctionParams* rpar)
+	void function_pdtextmetrics(SReturnsParams* rpar)
 	{
 		SVariable*	varJobHandle			= rpar->ip[0];
 		SVariable*	varPageOrPanelHandle	= rpar->ip[1];
@@ -1839,7 +1839,7 @@
 // Example:
 //    PDJOBDELETE(lnJob)
 //////
-	void function_pdjobdelete(SFunctionParams* rpar)
+	void function_pdjobdelete(SReturnsParams* rpar)
 	{
 		SVariable*	varJobHandle	= rpar->ip[0];
 

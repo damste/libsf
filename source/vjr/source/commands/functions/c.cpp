@@ -111,7 +111,7 @@
 //    ? CDOW(dt)		&& Displays Monday
 //    ? CDOW()          && Displays current date's character day of week
 //////
-	void function_cdow(SFunctionParams* rpar)
+	void function_cdow(SReturnsParams* rpar)
 	{
 		SVariable* varParam = rpar->ip[0];
 
@@ -171,7 +171,7 @@
 
 	}
 
-	u32	ifunction_dow_common(SFunctionParams* rpar, u32 tnYear, u32 tnMonth, u32 tnDay)
+	u32	ifunction_dow_common(SReturnsParams* rpar, u32 tnYear, u32 tnMonth, u32 tnDay)
 	{
 		u32			lnYear, lnDow;
 		static cs8	cgCdowData[] = { 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 };
@@ -231,7 +231,7 @@
 // Example:
 //    ? CEILING(2.2)		&& Display 3
 //////
-    void function_ceiling(SFunctionParams* rpar)
+    void function_ceiling(SReturnsParams* rpar)
     {
 		SVariable* varNumber = rpar->ip[0];
 
@@ -262,7 +262,7 @@
 // Returns:
 //    Character		-- Input number converted to character
 //////
-    void function_chr(SFunctionParams* rpar)
+    void function_chr(SReturnsParams* rpar)
     {
 		SVariable*	varNumber = rpar->ip[0];
         s32			value;
@@ -352,7 +352,7 @@
 //    A copy of the pOriginalString with everything converted.
 //
 //////
-	void function_chrtran(SFunctionParams* rpar)
+	void function_chrtran(SReturnsParams* rpar)
 	{
 		SVariable* varString	= rpar->ip[0];
 		SVariable* varSearch	= rpar->ip[1];
@@ -363,7 +363,7 @@
 		ifunction_chrtran_common(rpar, varString, varSearch, varReplace, true);
 	}
 
-	void function_chrtranc(SFunctionParams* rpar)
+	void function_chrtranc(SReturnsParams* rpar)
 	{
 		SVariable* varString	= rpar->ip[0];
 		SVariable* varSearch	= rpar->ip[1];
@@ -374,7 +374,7 @@
 		ifunction_chrtran_common(rpar, varString, varSearch, varReplace, false);
 	}
 
-	void ifunction_chrtran_common(SFunctionParams* rpar, SVariable* varString, SVariable* varSearch, SVariable* varReplace, bool tlCaseSensitive)
+	void ifunction_chrtran_common(SReturnsParams* rpar, SVariable* varString, SVariable* varSearch, SVariable* varReplace, bool tlCaseSensitive)
 	{
 		s8			c1, c2;
 		s32			lnSrc, lnDst, lnSearch;
@@ -536,7 +536,7 @@
 //    ? CMONTH(dt)		&& Displays April
 //    ? CMONTH()        && Displays current date's character month
 //////
-	void function_cmonth(SFunctionParams* rpar)
+	void function_cmonth(SReturnsParams* rpar)
 	{
 		SVariable* varParam = rpar->ip[0];
 
@@ -625,7 +625,7 @@
 //    Numeric			-- The resulting colorized color
 //
 //////
-	void function_colorize(SFunctionParams* rpar)
+	void function_colorize(SReturnsParams* rpar)
 	{
 		SVariable* varColor			= rpar->ip[0];
 		SVariable* varColorTarget	= rpar->ip[1];
@@ -636,7 +636,7 @@
 		ifunction_colorize_common(rpar, varColor, varColorTarget, varPercentage, true);
 	}
 
-	void ifunction_colorize_common(SFunctionParams* rpar, SVariable* varColor, SVariable* varColorTarget, SVariable* varPercentage, bool tlApplyColorTarget)
+	void ifunction_colorize_common(SReturnsParams* rpar, SVariable* varColor, SVariable* varColorTarget, SVariable* varPercentage, bool tlApplyColorTarget)
 	{
 		u32			lnColor, lnColorTarget, lnColorNew;
 		f32			lfRedC, lfGrnC, lfBluC, lfAlpC;		// varColor
@@ -821,7 +821,7 @@
 // Example:
 //    ? COS(0)		&& Display 1.00
 //////
-    void function_cos(SFunctionParams* rpar)
+    void function_cos(SReturnsParams* rpar)
     {
 		SVariable* varNumber = rpar->ip[0];
 
@@ -855,7 +855,7 @@
 //    Object		-- The class instance object is returned
 //
 //////
-	void function_createobject(SFunctionParams* rpar)
+	void function_createobject(SReturnsParams* rpar)
 	{
 		SVariable*	varClass = rpar->ip[0];
 		s32			lnObjType;
@@ -955,7 +955,7 @@
 //    ?CTOD("12-25-15 12:33:44.555") &&Displays 12-25-2015
 //
 //////
-	void function_ctod(SFunctionParams* rpar)
+	void function_ctod(SReturnsParams* rpar)
 	{
 		SVariable* varString = rpar->ip[0];
 
@@ -963,7 +963,7 @@
 		ifunction_ctox_common(rpar, varString, true);
 	}
 
-	void ifunction_ctox_common(SFunctionParams* rpar, SVariable* varCtoxString, bool tlIncludeTime)
+	void ifunction_ctox_common(SReturnsParams* rpar, SVariable* varCtoxString, bool tlIncludeTime)
 	{
 		s8			c1, c2, cx, cMark;
 		s32			lnI, lnSkip, lnStop, lnDate;
@@ -1251,7 +1251,7 @@ debug_break;
 //    ?CTOD("12-25-15 12:33:44.555") &&Displays 12-25-2015 12:33:44
 //
 //////
-	void function_ctot(SFunctionParams* rpar)
+	void function_ctot(SReturnsParams* rpar)
 	{
 		SVariable* varString = rpar->ip[0];
 
@@ -1282,7 +1282,7 @@ debug_break;
 // Returns:
 //		Character		-- Current directory
 //////
-	void function_curdir(SFunctionParams* rpar)
+	void function_curdir(SReturnsParams* rpar)
 	{
 		u8			curdir[_MAX_PATH];
 		SVariable*	result;

@@ -801,6 +801,20 @@
 
 //////////
 //
+// 
+//
+//////
+	SWindow* iObj_find_thisForm_window(SObject*  obj)
+	{
+		logfunc(__FUNCTION__);
+		return(iWindow_findByObj(iiObj_findParentObject_byType(obj, _OBJ_TYPE_FORM, true)));
+	}
+
+
+
+
+//////////
+//
 // Called to find the thisForm
 //
 //////
@@ -2397,7 +2411,7 @@ debug_break;
 			{
 				// Has the position changed?
 				if (lrco.left != obj->rc.left || lrco.top != obj->rc.top)
-					iEngine_raise_event(_EVENT_ONMOVED, gsThisCode[gnThisCode].win, obj, &obj->rc);
+					iEngine_raise_event(_EVENT_ONMOVED, iObj_find_thisForm_window(obj), obj, &obj->rc);
 			}
 
 
@@ -3014,11 +3028,11 @@ debug_break;
 				//////
 					// Position?
 					if (lrco.left != obj->rc.left || lrco.top != obj->rc.top)
-						iEngine_raise_event(_EVENT_ONMOVED, gsThisCode[gnThisCode].win, obj, &obj->rc);
+						iEngine_raise_event(_EVENT_ONMOVED, iObj_find_thisForm_window(obj), obj, &obj->rc);
 
 					// Size?
 					if (lrco.right - lrco.left != obj->rc.right - obj->rc.left || lrco.bottom - lrco.top != obj->rc.bottom - obj->rc.top)
-						iEngine_raise_event(_EVENT_ONRESIZE, gsThisCode[gnThisCode].win, obj, iiMath_computeRectDeltas(&lrcDeltas, &lrco, &obj->rc));
+						iEngine_raise_event(_EVENT_ONRESIZE, iObj_find_thisForm_window(obj), obj, iiMath_computeRectDeltas(&lrcDeltas, &lrco, &obj->rc));
 			}
 
 

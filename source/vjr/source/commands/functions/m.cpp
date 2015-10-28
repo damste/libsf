@@ -112,7 +112,7 @@
 //   ? malp(lnColor, .t.)     && Returns integer
 //   ? malp(lnColor, .f.)     && Returns floating point
 //////
-	void function_malp(SFunctionParams* rpar)
+	void function_malp(SReturnsParams* rpar)
 	{
 		SVariable*	varColor		= rpar->ip[0];
 		SVariable*	varAsInteger	= rpar->ip[1];
@@ -238,7 +238,7 @@
 //    If they're equal, a copy of pLeft is returned.
 //
 //////
-	void function_max(SFunctionParams* rpar)
+	void function_max(SReturnsParams* rpar)
 	{
 		SVariable*	varLeft		= rpar->ip[0];
 		SVariable*	varRight	= rpar->ip[1];
@@ -485,7 +485,7 @@
 //    Character - If SET CENTURY is OFF, the character expression is returned in a month dd, yy format. 
 //	  If SET CENTURY is ON, the format is month dd, yyyy.
 //////
-	void function_mdy(SFunctionParams* rpar)
+	void function_mdy(SReturnsParams* rpar)
 	{
 		SVariable* varParam = rpar->ip[0];
 
@@ -517,7 +517,7 @@
 // Returns:
 //    f64		-- A floating point value containing the number of one millionths of a second which have gone by this second
 //////
-	void function_microsecond(SFunctionParams* rpar)
+	void function_microsecond(SReturnsParams* rpar)
 	{
 		ifunction_xseconds_common(rpar, _XSECONDS_FUNCTION_MICROSECOND);
 	}
@@ -548,7 +548,7 @@
 //    If they're equal, a copy of pLeft is returned.
 //
 //////
-	void function_min(SFunctionParams* rpar)
+	void function_min(SReturnsParams* rpar)
 	{
 		SVariable*	varLeft		= rpar->ip[0];
 		SVariable*	varRight	= rpar->ip[1];
@@ -788,7 +788,7 @@
 // Returns:
 //    MINUTE( ) returns a numeric value.
 //////
-	void function_minute(SFunctionParams* rpar)
+	void function_minute(SReturnsParams* rpar)
 	{
 		SVariable*	varParam = rpar->ip[0];
 
@@ -830,7 +830,7 @@
 //    ? MOD(5.3, 2)    && 1.3
 //    ? MOD(5.3, -2)   && -0.7
 //////
-	void function_mod(SFunctionParams* rpar)
+	void function_mod(SReturnsParams* rpar)
 	{
 		SVariable*	varDividend	= rpar->ip[0];
 		SVariable*	varDivisor	= rpar->ip[1];
@@ -868,7 +868,7 @@
 //    ? MONTH(dt)		&& Displays 4
 //    ? MONTH()			&& Displays current date's month number
 //////
-	void function_month(SFunctionParams* rpar)
+	void function_month(SReturnsParams* rpar)
 	{
 		SVariable* varParam = rpar->ip[0];
 

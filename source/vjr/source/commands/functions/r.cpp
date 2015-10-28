@@ -116,7 +116,7 @@
 //	x = RANGER(x, 20, 80)          && Can be used as assignment
 //	? x							   && Displays 20
 //////
-	void function_ranger(SFunctionParams* rpar)
+	void function_ranger(SReturnsParams* rpar)
 	{
 		SVariable* varExpr	= rpar->ip[0];
 		SVariable* varMin	= rpar->ip[1];
@@ -127,7 +127,7 @@
 		ifunction_ranger_common(rpar, varExpr, varMin, varMax, NULL);
 	}
 
-	void function_ranger2(SFunctionParams* rpar)
+	void function_ranger2(SReturnsParams* rpar)
 	{
 		SVariable*	varExpr	= rpar->ip[0];
 		SVariable*	varMin	= rpar->ip[1];
@@ -150,14 +150,14 @@
 				iVariable_set(varExpr, result);
 	}
 
-	void ifunction_ranger_common(SFunctionParams* rpar, SVariable* varExpr, SVariable* varMin, SVariable* varMax, bool* tlRanged)
+	void ifunction_ranger_common(SReturnsParams* rpar, SVariable* varExpr, SVariable* varMin, SVariable* varMax, bool* tlRanged)
 	{
 		SVariable*		tempMin;
 		SVariable*		tempMax;
 		SVariable*		tempResult1;
 		SVariable*		tempResult2;
 		SVariable*		result;
-		SFunctionParams	lsrpar;
+		SReturnsParams	lsrpar;
 
 
 
@@ -321,7 +321,7 @@
 // Returns:
 //    Character		-- The string of the input replicated N times
 //////
-	void function_replicate(SFunctionParams* rpar)
+	void function_replicate(SReturnsParams* rpar)
 	{
 		SVariable*	varString	= rpar->ip[0];
 		SVariable*	varCount	= rpar->ip[1];
@@ -415,7 +415,7 @@
 //    Numeric		-- Constructed RGB() integer
 //
 //////
-	void function_rgb(SFunctionParams* rpar)
+	void function_rgb(SReturnsParams* rpar)
 	{
 		SVariable* varRed	= rpar->ip[0];
 		SVariable* varGrn	= rpar->ip[1];
@@ -426,7 +426,7 @@
 		ifunction_rgba_common(rpar, varRed, varGrn, varBlu, NULL);
 	}
 
-	void ifunction_rgba_common(SFunctionParams* rpar, SVariable* varRed, SVariable* varGrn, SVariable* varBlu, SVariable* varAlp)
+	void ifunction_rgba_common(SReturnsParams* rpar, SVariable* varRed, SVariable* varGrn, SVariable* varBlu, SVariable* varAlp)
 	{
 		f32			lfRed, lfGrn, lfBlu, lfAlp;
 		s32			lnRed, lnGrn, lnBlu, lnAlp;
@@ -654,7 +654,7 @@
 //    Numeric		-- Constructed RGBA() integer
 //
 //////
-	void function_rgba(SFunctionParams* rpar)
+	void function_rgba(SReturnsParams* rpar)
 	{
 		SVariable* varRed	= rpar->ip[0];
 		SVariable* varGrn	= rpar->ip[1];
@@ -689,7 +689,7 @@
 // Returns:
 //    Numeric	-- Input number converted to ASCII value number
 //////
-	void function_red(SFunctionParams* rpar)
+	void function_red(SReturnsParams* rpar)
 	{
 		SVariable* varColor = rpar->ip[0];
 
@@ -698,7 +698,7 @@
 		ifunction_color_common(rpar, varColor, 0x000000ff, 0);
 	}
 
-	void ifunction_color_common(SFunctionParams* rpar, SVariable* varColor, u32 tnMask, u32 tnShift)
+	void ifunction_color_common(SReturnsParams* rpar, SVariable* varColor, u32 tnMask, u32 tnShift)
 	{
 		u32			lnColor;
 		bool		error;
@@ -778,7 +778,7 @@
 // Returns:
 //    Character		-- The string of the right N characters
 //////
-	void function_right(SFunctionParams* rpar)
+	void function_right(SReturnsParams* rpar)
 	{
 		SVariable*	varString	= rpar->ip[0];
 		SVariable*	varCount	= rpar->ip[1];
@@ -881,7 +881,7 @@
 //    ? ROUND(53.213, 2)   && 53.21
 //    ? ROUND(532, -2)     && 500
 //////
-	void function_round(SFunctionParams* rpar)
+	void function_round(SReturnsParams* rpar)
 	{
 		SVariable*	varNumber			= rpar->ip[0];
 		SVariable*	varDecimalPlaces	= rpar->ip[1];
@@ -1004,7 +1004,7 @@
 // Example:
 //    ? RTOD(PI())		&& Display 180.00
 //////
-    void function_rtod(SFunctionParams* rpar)
+    void function_rtod(SReturnsParams* rpar)
     {
 		SVariable* varNumber = rpar->ip[0];
 
@@ -1036,7 +1036,7 @@
 // Returns:
 //    Character		-- The string with any trailing spaces removed
 //////
-	void function_rtrim(SFunctionParams* rpar)
+	void function_rtrim(SReturnsParams* rpar)
 	{
 		SVariable* varString			= rpar->ip[0];
 		SVariable* varCaseInsensitive	= rpar->ip[1];

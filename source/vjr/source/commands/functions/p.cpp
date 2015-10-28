@@ -111,7 +111,7 @@
 //                         then padded to its destination size. If the string is larger than
 //                         the destination, then it remains as it is.
 //////
-	void function_padc(SFunctionParams* rpar)
+	void function_padc(SReturnsParams* rpar)
 	{
 		SVariable* varExpr			= rpar->ip[0];
 		SVariable* varResultSize	= rpar->ip[1];
@@ -122,7 +122,7 @@
 		ifunction_pad_common(rpar, varExpr, varResultSize, varPadCharacter, true, true);
 	}
 
-	void function_padl(SFunctionParams* rpar)
+	void function_padl(SReturnsParams* rpar)
 	{
 		SVariable* varExpr			= rpar->ip[0];
 		SVariable* varResultSize	= rpar->ip[1];
@@ -133,7 +133,7 @@
 		ifunction_pad_common(rpar, varExpr, varResultSize, varPadCharacter, true, false);
 	}
 
-	void function_padr(SFunctionParams* rpar)
+	void function_padr(SReturnsParams* rpar)
 	{
 		SVariable* varExpr			= rpar->ip[0];
 		SVariable* varResultSize	= rpar->ip[1];
@@ -144,7 +144,7 @@
 		ifunction_pad_common(rpar, varExpr, varResultSize, varPadCharacter, false, true);
 	}
 
-	void ifunction_pad_common(SFunctionParams* rpar, SVariable* varExpr, SVariable* varResultSize, SVariable* varPadCharacter, bool tlPadLeft, bool tlPadRight)
+	void ifunction_pad_common(SReturnsParams* rpar, SVariable* varExpr, SVariable* varResultSize, SVariable* varPadCharacter, bool tlPadLeft, bool tlPadRight)
 	{
 		u32			errorNum;
 		s32			lnI, lnResultSize, lnCopyStart, lnPadLeftStopper, lnPadRightStart, lnPadRightStopper;
@@ -342,7 +342,7 @@
 // Example:
 //   ? PAYMENT(500, 0.006, 48)	&& Displays 12.02
 //////
-	void function_payment(SFunctionParams* rpar)
+	void function_payment(SReturnsParams* rpar)
 	{
 		SVariable* varPayment		= rpar->ip[0];
 		SVariable* varInterestRate	= rpar->ip[1];
@@ -378,7 +378,7 @@
 // Example:
 //    ? pi()				&& Displays 3.14
 //////
-	void function_pi(SFunctionParams* rpar)
+	void function_pi(SReturnsParams* rpar)
 	{
 		// Return pi
 		ifunction_numbers_common(rpar, NULL, NULL, NULL, _FP_COMMON_PI, _VAR_TYPE_F64, false, false);
@@ -413,7 +413,7 @@
 //    ? pow(10, 3456789, 3)				&& Displays 1
 //    ? pow(10.0, 3456789.0, 3.0)		&& Displays 1.00
 //////
-	void function_pow(SFunctionParams* rpar)
+	void function_pow(SReturnsParams* rpar)
 	{
 		SVariable*	varP1 = rpar->ip[0];
 		SVariable*	varP2 = rpar->ip[1];
@@ -604,7 +604,7 @@
 // Returns:
 //    Character		-- The string with all words proper'd (if I can use that as a verb)
 //////
-	void function_proper(SFunctionParams* rpar)
+	void function_proper(SReturnsParams* rpar)
 	{
 		SVariable*	varString = rpar->ip[0];
 		s32			lnI;
@@ -706,7 +706,7 @@
 // Example:
 //   ? PV(500, 0.006, 48)	&& Displays 20799.41
 //////
-	void function_pv(SFunctionParams* rpar)
+	void function_pv(SReturnsParams* rpar)
 	{
 		SVariable* varPayment		= rpar->ip[0];
 		SVariable* varInterestRate	= rpar->ip[1];

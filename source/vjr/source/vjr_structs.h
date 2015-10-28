@@ -143,6 +143,37 @@ struct SHover
 	SBitmap*	bmp;						// Bitmap for the hover text
 };
 
+// Class objects are only held for loaded classes, for templates.
+// All other classes exist as base classes known to the system, or 
+struct SClassObj
+{
+	s32			classObjType;				// See _CLASS_OBJECT_* constants
+	SObject*	baseObj;					// The base class used to create instances of this class
+};
+
+struct SEngineLoad
+{
+	SFunction*	firstFunc;					// First new function that was loaded in parsing the source code
+	SDllFunc*	firstDllFunc;				// First new DLL function that was loaded in parsing the source code
+	SClassObj*	firstClassObj;				// First new class that was loaded
+};
+
+struct SReturnsParams
+{
+	// If there's an error, these are set
+	SErrorInfo		ei;									// If any error info needs logged, it will be here
+
+	// Return parameters
+	SVariable*		rp[_MAX_RETURNS_COUNT];				// Return parameters
+	s32				rpCount;							// Actual number of return parameters specified
+	s32				rpMax;								// Maximum number allowed
+	s32				rpMin;								// Minimum number required
+
+	// Input parameters
+	SVariable*		ip[_MAX_PARAMS_COUNT];			// Input parameters
+	s32				ipCount;							// Number of input parameters actually passed
+};
+
 
 //////////
 // Structures used for processing
@@ -156,31 +187,26 @@ struct SHover
 // TODO:  These should be moved to a shared file for use with iJDebiC_thisCode()
 			struct SSourceCode
 			{
-				// Function source code
-				SFunction*		func;
+				SFunction*		func;					// Function source code
+				SFunction*		firstAdhoc;				// First adhoc in this block
 
-				// First adhoc in this block
-				SFunction*		firstAdhoc;
+				// Related to this function
+				SVariable*		returns;				// The first return variable declared
+				SVariable*		params;					// The function parameters
+				SVariable*		privates;				// The first private variable declared
+				SVariable*		locals;					// The first local variable declared
+				SVariable*		scoped;					// The first scoped/temporary variable used by the function
 
-				// The function parameters
-				SVariable*		params;
-				s32				paramsCount;
+				// Counts for populated values as this structure is fixed and reused on the stack, and to save speed it does not delete variables, but only large allocations upon exit
+				s32				returnsCount;			// Number of valid returns in returns
+				s32				paramsCount;			// Number of valid parameters in params
+				s32				privatesCount;			// Number of valid private variables in privates
+				s32				localsCount;			// Number of valid locals in locals
+				s32				scopedCount;			// Number of valid scoped variables in scoped
 
-				// The first return variable declared
-				SVariable*		returns;
-				s32				returnsCount;
-
-				// The first private variable declared
-				SVariable*		privates;
-				s32				privatesCount;
-
-				// The first local variable declared
-				SVariable*		locals;
-				s32				localsCount;
-
-				// The first scoped/temporary variable used by the function
-				SVariable*		scoped;
-				s32				scopedCount;
+				// Temporary returns/params level for nested functions in flight
+				SReturnsParams	rp[_MAX_NESTED_FUNCTION_CALLS];
+				// Note:  rp[0].rp[N] contains the return values for this function
 
 				// Contextual references
 				SObject*		_this;					// Current object
@@ -190,11 +216,8 @@ struct SHover
 			{
 				SLL				ll;
 
-				SWindow*		win;					// Current window
-				SFunction*		func;					// Current function engaged
-
-				SSourceCode*	definition;				// As defined at compile time
-				SSourceCode		live;					// As exists live in this instance at this level
+				SSourceCode*	def;					// Defined from compile time
+				SSourceCode		live;					// Live state in this instance at this level
 			};
 			//
 		//////
@@ -258,22 +281,6 @@ struct SDllFunc
 };
 
 // Note:  See vjr_structs0.h for struct SDllVals
-
-struct SFunctionParams
-{
-	// If there's an error, these are set
-	SErrorInfo		ei;									// If any error info needs logged, it will be here
-
-	// Return parameters
-	SVariable*		rp[_MAX_RETURNS_COUNT];				// Return parameters
-	s32				rpCount;							// Actual number of return parameters specified
-	s32				rpMax;								// Maximum number allowed
-	s32				rpMin;								// Minimum number required
-
-	// Input parameters
-	SVariable*		ip[_MAX_PARAMS_COUNT];			// Input parameters
-	s32				ipCount;							// Number of input parameters actually passed
-};
 
 
 struct SEvent

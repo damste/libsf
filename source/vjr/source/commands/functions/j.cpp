@@ -105,7 +105,7 @@
 // Returns:
 //		Character		-- The drive component of the pathname, or the current drive if it wasn't specified, ("c:" of "c:\path\to\sample.txt")
 //////
-	void function_justdrive(SFunctionParams* rpar)
+	void function_justdrive(SReturnsParams* rpar)
 	{
 		SVariable*	varString = rpar->ip[0];
 		u8*			ptr;
@@ -185,7 +185,7 @@
 // Returns:
 //		Character		-- The file extension component, or an empty string if one was not specified, ("txt" of "c:\path\to\sample.txt")
 //////
-	void function_justext(SFunctionParams* rpar)
+	void function_justext(SReturnsParams* rpar)
 	{
 		SVariable*	varString = rpar->ip[0];
 		s32			lnI, lnLength;
@@ -274,7 +274,7 @@
 // Returns:
 //		Character		-- The file name portion of the pathname ("sample.txt" of "c:\path\to\sample.txt")
 //////
-	void function_justfname(SFunctionParams* rpar)
+	void function_justfname(SReturnsParams* rpar)
 	{
 		SVariable*	varString = rpar->ip[0];
 		s32			lnI, lnLength;
@@ -366,7 +366,7 @@
 // Returns:
 //		Character		-- The file path of the pathname ("c:\path\to" of "c:\path\to\sample.txt")
 //////
-	void function_justpath(SFunctionParams* rpar)
+	void function_justpath(SReturnsParams* rpar)
 	{
 		SVariable*	varString = rpar->ip[0];
 		s32			lnLength;
@@ -458,7 +458,7 @@
 // Returns:
 //		Character		-- The file name portion of the pathname ("sample" of "c:\path\to\sample.txt")
 //////
-	void function_juststem(SFunctionParams* rpar)
+	void function_juststem(SReturnsParams* rpar)
 	{
 		SVariable*	varString		= rpar->ip[0];
 		SVariable*	varPostfixWidth	= rpar->ip[1];

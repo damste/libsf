@@ -149,6 +149,7 @@ typedef SEM**		SEMpp;
 	#define iVariable_isValid(var)						(var && var->varType >= _VAR_TYPE_START && var->varType <= _VAR_TYPE_END && var->value.data && (var->varType == _VAR_TYPE_CHARACTER || var->value.length > 0))
 	#define iVariable_isValidType(var)					(var && var->varType >= _VAR_TYPE_START && var->varType <= _VAR_TYPE_END)
 	#define iVariable_isEmpty(var)						(!var->value.data || var->value.length <= 0)
+	#define iVariable_populate_byBool(testVar)			((cs8*)((testVar) ? &_LOGICAL_FALSE : &_LOGICAL_TRUE))
 
 	#define validateVariable(var, error)				if (!iVariable_isValid(var)) \
 														{ \
@@ -536,10 +537,18 @@ typedef SEM**		SEMpp;
 //////
 	const u32			_MAX_PARAMS_COUNT					= 26;						// 26 passed parameters
 	const u32			_MAX_RETURNS_COUNT					= 10;						// 10 return parameters
-	const u32			_MAX_SCOPED_COUNT					= 10;						// 10 scoped variables by default, expands as needed
+	const u32			_MAX_SCOPED_COUNT					= 26;						// 26 scoped variables by default, expands as needed
 	const u32			_MAX_LOCALS_COUNT					= 50;						// 50 local variables by default, expands as needed
 	const u32			_MAX_DLL_PARAMS						= 26;						// 26 passed parameters into the called DLL
 	const u32			_MAX_PROCEDURE_LEVELS				= 260;						// 260 call stack levels
+	const u32			_MAX_NESTED_FUNCTION_CALLS			= 26;						// 26 nested function calls (like f1(f2(f3(f4(f5(....f29(f30)....)))))
+
+
+//////////
+// Class objects that have been loaded, either from PRG or source file
+//////
+	const u32			_CLASS_OBJECT_PRG					= 1;		// Source is .prg file, and a DEFINE CLASS...ENDDEFINE block
+	const u32			_CLASS_OBJECT_VCX					= 2;		// Source is .vcx file, and is a class name within
 
 
 //////////
@@ -1546,3 +1555,9 @@ typedef SEM**		SEMpp;
 	const u8			cgcTaskpaneFilename[]				= "taskpane.prg";
 	const u8			cgcToolboxFilename[]				= "toolbox.app";
 	const u8			cgcWizardFilename[]					= "wizard.app";
+
+	const s8			baseline_prg[]						=	"FUNCTION __vjr_root__\n"
+																"    * Process events whenever no program is running"
+																"    DO WHILE _VJRSYS(1)    && DO WHILE isRunning\n"
+																"        READ EVENTS\n"
+																"    ENDDO\n";

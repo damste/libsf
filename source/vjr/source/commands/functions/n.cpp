@@ -106,7 +106,7 @@
 // Returns:
 //    f64		-- A floating point value containing the number of one billionths of a second which have gone by this second
 //////
-	void function_nanosecond(SFunctionParams* rpar)
+	void function_nanosecond(SReturnsParams* rpar)
 	{
 		ifunction_xseconds_common(rpar, _XSECONDS_FUNCTION_NANOSECOND);
 	}
@@ -136,7 +136,7 @@
 // Returns:
 //    s32			-- The number of times
 //////
-	void function_ncset(SFunctionParams* rpar)
+	void function_ncset(SReturnsParams* rpar)
 	{
 		SVariable*	varIndex	= rpar->ip[0];
 		SVariable*	varP1		= rpar->ip[1];
@@ -280,7 +280,7 @@
 		//////////
 		// Create the return variable
 		//////
-			result = iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, (cs8*)((llEnabled) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, false);
+			result = iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, iVariable_populate_byBool(llEnabled), 1, false);
 			if (!result)
 				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varIndex), false);
 
@@ -322,7 +322,7 @@
 //    M.dSecondNoNull=date()
 //    ? NVL(FirstIsNull, M.dSecondNoNull)	&& Display value of M.dSecondNoNull
 //////
-	void function_nvl(SFunctionParams* rpar)
+	void function_nvl(SReturnsParams* rpar)
 	{
 		SVariable*	varExpr1 = rpar->ip[0];
 		SVariable*	varExpr2 = rpar->ip[1];

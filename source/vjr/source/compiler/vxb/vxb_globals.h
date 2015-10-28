@@ -704,6 +704,7 @@
 		{ cgc_updated,				7,			false,		_ICODE_UPDATED,							false,				_ICAT_FUNCTION,		&colorSynHi_function,		false,						null0,					null0,		null0 },
 		{ cgc_upper,				5,			false,		_ICODE_UPPER,							false,				_ICAT_FUNCTION,		&colorSynHi_function,		false,						null0,					null0,		null0 },
 		{ cgc_used,					4,			false,		_ICODE_USED,							false,				_ICAT_FUNCTION,		&colorSynHi_function,		false,						null0,					null0,		null0 },
+		{ cgc__vjrsys,				7,			false,		_ICODE__VJRSYS,							false,				_ICAT_FUNCTION,		&colorSynHi_function,		false,						null0,					null0,		null0 },
 		{ cgc_val,					3,			false,		_ICODE_VAL,								false,				_ICAT_FUNCTION,		&colorSynHi_function,		false,						null0,					null0,		null0 },
 		{ cgc_varread,				7,			false,		_ICODE_VARREAD,							false,				_ICAT_FUNCTION,		&colorSynHi_function,		false,						null0,					null0,		null0 },
 		{ cgc_vartype,				7,			false,		_ICODE_VARTYPE,							false,				_ICAT_FUNCTION,		&colorSynHi_function,		false,						null0,					null0,		null0 },

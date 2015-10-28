@@ -106,7 +106,7 @@
 // Returns:
 //    Character		-- The string with all lowercase characters converted to uppercase
 //////
-	void function_upper(SFunctionParams* rpar)
+	void function_upper(SReturnsParams* rpar)
 	{
 		SVariable*	varString = rpar->ip[0];
 		s32			lnI;

@@ -106,7 +106,7 @@
 // Returns:
 //    HOUR( ) returns a numeric value based on a 24 hour format.
 //////
-	void function_hour(SFunctionParams* rpar)
+	void function_hour(SReturnsParams* rpar)
 	{
 		SVariable*	varParam	= rpar->ip[0];
 
@@ -115,7 +115,7 @@
 		ifunction_hhmmss_common(rpar, varParam, _HMS_COMMON_HOUR);
 	}
 
-	void ifunction_hhmmss_common(SFunctionParams* rpar, SVariable* varParam, u32 tnFunctionType)
+	void ifunction_hhmmss_common(SReturnsParams* rpar, SVariable* varParam, u32 tnFunctionType)
 	{
 
 		s32			lnMillisecond, lnMicrosecond;

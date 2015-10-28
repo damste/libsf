@@ -108,7 +108,7 @@
 // Returns:
 //    Date			-- Current date(), or input converted to date
 //////
-	void function_date(SFunctionParams* rpar)
+	void function_date(SReturnsParams* rpar)
 	{
 		SVariable*	varYear			= rpar->ip[0];
 		SVariable*	varMonth		= rpar->ip[1];
@@ -246,7 +246,7 @@
 //    Datetime		-- Current datetime(), or input converted to datetime
 //
 //////
-	void function_datetime(SFunctionParams* rpar)
+	void function_datetime(SReturnsParams* rpar)
 	{
 		// Return datetime
 		ifunction_datetimex_common(rpar, false);
@@ -283,13 +283,13 @@
 //    Datetimex		-- Current datetimex(), or input converted to datetimex
 //
 //////
-	void function_datetimex(SFunctionParams* rpar)
+	void function_datetimex(SReturnsParams* rpar)
 	{
 		// Return datetimex
 		ifunction_datetimex_common(rpar, true);
 	}
 
-	void ifunction_datetimex_common(SFunctionParams* rpar, bool tlIsDatetimeX)
+	void ifunction_datetimex_common(SReturnsParams* rpar, bool tlIsDatetimeX)
 	{
 		SVariable*	varYear			= rpar->ip[0];
 		SVariable*	varMonth		= rpar->ip[1];
@@ -568,7 +568,7 @@
 //    ? DAY(dt)		&& Displays 6
 //    ? DAY()       && Displays current date's day of month
 //////
-	void function_day(SFunctionParams* rpar)
+	void function_day(SReturnsParams* rpar)
 	{
 		SVariable* varParam = rpar->ip[0];
 
@@ -578,7 +578,7 @@
 	}
 
 	// Common date functions used for DAY(), MONTH(), YEAR()
-	void ifunction_day_month_year_common(SFunctionParams* rpar, SVariable* varParam, u32 tnFunctionType)
+	void ifunction_day_month_year_common(SReturnsParams* rpar, SVariable* varParam, u32 tnFunctionType)
 	{
 		u32			lnResult, lnYear, lnMonth, lnDay;
 		SYSTEMTIME	lst;
@@ -672,7 +672,7 @@
 // Returns:
 //    Numeric		-- The more alike the two expressions are spelled, the higher the number DIFFERENCE() returns.
 //////
-	void function_difference(SFunctionParams* rpar)
+	void function_difference(SReturnsParams* rpar)
 	{
 		SVariable* varString1	= rpar->ip[0];
 		SVariable* varString2	= rpar->ip[1];
@@ -779,7 +779,7 @@
 // Returns:
 //    Character - If SET CENTURY is OFF, DMY( ) returns a character string in a dd-Month-yy format (for example, 16 February 98).
 //////
-	void function_dmy(SFunctionParams* rpar)
+	void function_dmy(SReturnsParams* rpar)
 	{
 		SVariable* varParam = rpar->ip[0];
 
@@ -788,7 +788,7 @@
 		ifunction_dtoc_common(rpar, varParam, _DMY_COMMON_DMY);
 	}
 
-	void ifunction_dtoc_common(SFunctionParams* rpar, SVariable* varParam, u32 tnFunctionType)
+	void ifunction_dtoc_common(SReturnsParams* rpar, SVariable* varParam, u32 tnFunctionType)
 	{
 		u32			lnYear, lnMonth, lnDay;
 		s8			lnMonthIdx;
@@ -906,7 +906,7 @@
 //    ? DOW()           && Displays current date's number day of week
 //
 //////
-	void function_dow(SFunctionParams* rpar)
+	void function_dow(SReturnsParams* rpar)
 	{
 		SVariable* varDateOrDatetime	= rpar->ip[0];
 		SVariable* varFirstDow			= rpar->ip[1];
@@ -1057,7 +1057,7 @@
 //	  The date format is determined by SET CENTURY and SET DATE.
 //
 //////
-	void function_dtoc(SFunctionParams* rpar)
+	void function_dtoc(SReturnsParams* rpar)
 	{
 		SVariable* varParam	= rpar->ip[0];
 		SVariable* varFlag	= rpar->ip[1];
@@ -1204,7 +1204,7 @@
 // Example:
 //    ? DTOR(180)		&& Display 3.14
 //////
-    void function_dtor(SFunctionParams* rpar)
+    void function_dtor(SReturnsParams* rpar)
     {
 		SVariable* varNumber = rpar->ip[0];
 
@@ -1238,7 +1238,7 @@
 //	  It is equivalent to DTOC( ) when its optional 1 argument is included.
 //
 //////
-	void function_dtos(SFunctionParams* rpar)
+	void function_dtos(SReturnsParams* rpar)
 	{
 		SVariable* varParam = rpar->ip[0];
 
@@ -1272,7 +1272,7 @@
 //    Datetime	-- DTOT( ) adds a default time of 12:00:00 AM (if SET HOURS is 12) or 00:00:00 (if SET HOURS is 24) to the date to produce a valid DateTime value.
 //                 If the second parameter is provided and is valid, it will override the default midnight time.
 //////
-	void function_dtot(SFunctionParams* rpar)
+	void function_dtot(SReturnsParams* rpar)
 	{
 		// Return dtot
 		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_DATE, _CONVERSION_FUNCTION_DATETIME);
@@ -1305,7 +1305,7 @@
 //    k = DATE()
 //    ? DTOX(k)
 //////
-	void function_dtox(SFunctionParams* rpar)
+	void function_dtox(SReturnsParams* rpar)
 	{
 		// Return dtox
 		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_DATE, _CONVERSION_FUNCTION_DATETIMEX);
@@ -1372,7 +1372,7 @@
 // Returns:
 //    Formatted string.
 //////
-	void function_dtransform(SFunctionParams* rpar)
+	void function_dtransform(SReturnsParams* rpar)
 	{
 		SVariable* varFormatStr = rpar->ip[0];
 
@@ -1486,7 +1486,7 @@
 	// %o	-- Day of month Jan, Feb, etc...
 	// %L	-- Local or System time based on SET("TIME") setting
 	//
-	u32 ifunction_dtransform_textmerge_common(SFunctionParams* rpar, s8** tcResult, cs8* tcFormatStr, s32 tnFormatStrLength, SDatum* leftTextmergeDelim, SDatum* rightTextmergeDelim, SVariable* varDatesOrDatetimes[9], bool tlDateCodes, bool tlTextMerge)
+	u32 ifunction_dtransform_textmerge_common(SReturnsParams* rpar, s8** tcResult, cs8* tcFormatStr, s32 tnFormatStrLength, SDatum* leftTextmergeDelim, SDatum* rightTextmergeDelim, SVariable* varDatesOrDatetimes[9], bool tlDateCodes, bool tlTextMerge)
 	{
 		s8				c, cMark;
 		s32				lnI, lnJ, lnPass, lnAllocationLength, lnOffset, lnMillisecond, lnNanosecond;

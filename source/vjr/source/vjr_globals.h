@@ -147,6 +147,22 @@
 
 
 //////////
+// Known system entities
+// Note:  See dbf*.* and cdx*.* for code related to dbfs
+//////
+	// Functions
+	SFunction*			gsRootFunc							= NULL;									// Pointer to first function encountered
+	SClassObj*			gsRootClassObj						= NULL;									// Known class definitions
+
+	// Loaded DLLs
+	SDllLib*			gsRootDllLib						= NULL;									// Pointer to first loaded DLL
+	SDllFunc*			gsRootDllFunc						= NULL;									// Pointer to first function from a DLL that's been defined
+
+	// Global variables
+	SVariable*			varGlobals							= NULL;									// All global variables are stored
+
+
+//////////
 // TOOD: We need to add semaphores to these because the ultimate goal is to allow multiple
 //       threads running simultaneously, but each of them running completely independent programs.
 // BEGIN
@@ -175,16 +191,6 @@
 	// Main screen display history, and system log data
 	SEM*				screenData							= NULL;									// The data displayed on the screen
 	SEM*				systemLog							= NULL;									// The data displayed on the screen
-
-	// Loaded functions
-	SFunction*			gsRootFunc							= NULL;									// Pointer to first function encountered
-
-	// Loaded DLLs
-	SDllLib*			gsRootDllLib						= NULL;									// Pointer to first loaded DLL
-	SDllFunc*			gsRootDllFunc						= NULL;									// Pointer to first function from a DLL that's been defined
-
-	// Global variables
-	SVariable*			varGlobals							= NULL;									// All global variables are stored
 
 	// Specific variables in the global variable pool
 	SVariable*			varAlignment						= NULL;

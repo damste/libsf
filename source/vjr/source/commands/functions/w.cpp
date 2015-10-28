@@ -112,7 +112,7 @@
 //	  dt = datetime()	&& May.01.2015
 //    ? WEEK(dt)		&& Displays 18
 //////
-	void function_week(SFunctionParams* rpar)
+	void function_week(SReturnsParams* rpar)
 	{
 		SVariable*	varParam			= rpar->ip[0];
 		SVariable*	varFirstWeek		= rpar->ip[1];
@@ -241,7 +241,7 @@
 
 	}
 
-	s32	ifunction_week_common(SFunctionParams* rpar, u32 tnYear, u32 tnMonth, u32 tnDay, s32 tnMinDaysInWeek, s32 tnFirstDayOfWeek)
+	s32	ifunction_week_common(SReturnsParams* rpar, u32 tnYear, u32 tnMonth, u32 tnDay, s32 tnMinDaysInWeek, s32 tnFirstDayOfWeek)
 	{
 		s32	lnWeek, ln1WDay, lnDayOfYear, lnDaysInYear, lnDaysNextYear;
 		s32 lnTempDays;

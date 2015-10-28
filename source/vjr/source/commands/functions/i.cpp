@@ -108,7 +108,7 @@
 // Returns:
 //    A copy of either varTrue or varFalse.
 //////
-	void function_iif(SFunctionParams* rpar)
+	void function_iif(SReturnsParams* rpar)
 	{
 		SVariable*	varTest		= rpar->ip[0];
 		SVariable*	varTrue		= rpar->ip[1];
@@ -196,7 +196,7 @@
 // Returns:
 //    Logical		-- .t. if the item is found in the list, .f. otherwise
 //////
-	void function_inlist(SFunctionParams* rpar)
+	void function_inlist(SReturnsParams* rpar)
 	{
 		SVariable*	varValue = rpar->ip[0];
 		SVariable*	varList1 = rpar->ip[1];
@@ -274,7 +274,7 @@
 		//////////
 		// Based on the result, create the return(result)
 		//////
-			result = iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, ((llResult) ? (s8*)&_LOGICAL_TRUE : (s8*)&_LOGICAL_FALSE), 1, false);
+			result = iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, iVariable_populate_byBool(llResult), 1, false);
 			if (!result)
 				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varValue), false);
 
@@ -310,7 +310,7 @@
 // Returns:
 //    INT(n) of the value in p1
 //////
-    void function_int(SFunctionParams* rpar)
+    void function_int(SReturnsParams* rpar)
     {
 		SVariable*	varNumber = rpar->ip[0];
 		f64			fValue;
@@ -401,7 +401,7 @@
 //    ? ISALPHA("A2", .T.) 	&& Display .F.
 //    ? ISALPHA("AA", .T.)	&& Display .T.
 //////
-	void function_isalpha(SFunctionParams* rpar)
+	void function_isalpha(SReturnsParams* rpar)
 	{
 		SVariable*	varStr				= rpar->ip[0];
 		SVariable*	varTestWholeString	= rpar->ip[1];
@@ -451,7 +451,7 @@
 		// Create and populate the return variable
 		//////
 			llIsAlpha	= ifunction_iscommon(varStr, llTestWholeString, _isAlpha);
-			rpar->rp[0]	= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, (cs8*)((llIsAlpha) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, true);
+			rpar->rp[0]	= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, iVariable_populate_byBool(llIsAlpha), 1, true);
 			if (!rpar->rp[0])
 				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varStr), false);
 
@@ -549,7 +549,7 @@
 //    ? ISDIGIT("2a", .T.)  && Display .F.
 //    ? ISDIGIT("22", .T.)	&& Display .T.
 //////
-	void function_isdigit(SFunctionParams* rpar)
+	void function_isdigit(SReturnsParams* rpar)
 	{
 		SVariable*	varStr				= rpar->ip[0];
 		SVariable*	varTestWholeString	= rpar->ip[1];
@@ -599,7 +599,7 @@
 		// Create and populate the return variable
 		//////
 			llIsDigit	= ifunction_iscommon(varStr, llTestWholeString, _isDigit);
-			rpar->rp[0]	= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, (cs8*)((llIsDigit) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, true);
+			rpar->rp[0]	= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, iVariable_populate_byBool(llIsDigit), 1, true);
 			if (!rpar->rp[0])
 				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varStr), false);
 
@@ -636,7 +636,7 @@
 //    ? ISLOWER("aA", .T.) 	&& Display .F.
 //    ? ISLOWER("aa", .T.)	&& Display .T.
 //////
-	void function_islower(SFunctionParams* rpar)
+	void function_islower(SReturnsParams* rpar)
 	{
 		SVariable*	varStr				= rpar->ip[0];
 		SVariable*	varTestWholeString	= rpar->ip[1];
@@ -686,7 +686,7 @@
 		// Create and populate the return variable
 		//////
 			llIsLower	= ifunction_iscommon(varStr, llTestWholeString, _isLower);
-			rpar->rp[0]	= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, (cs8*)((llIsLower) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, true);
+			rpar->rp[0]	= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, iVariable_populate_byBool(llIsLower), 1, true);
 			if (!rpar->rp[0])
 				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varStr), false);
 
@@ -723,7 +723,7 @@
 //    ? ISUPPER("Aa", .T.) 	&& Display .F.
 //    ? ISUPPER("AA", .T.)	&& Display .T.
 //////
-	void function_isupper(SFunctionParams* rpar)
+	void function_isupper(SReturnsParams* rpar)
 	{
 		SVariable*	varStr				= rpar->ip[0];
 		SVariable*	varTestWholeString	= rpar->ip[1];
@@ -773,7 +773,7 @@
 		// Create and populate the return variable
 		//////
 			llIsUpper	= ifunction_iscommon(varStr, llTestWholeString, _isUpper);
-			rpar->rp[0]	= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, (cs8*)((llIsUpper) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, true);
+			rpar->rp[0]	= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, iVariable_populate_byBool(llIsUpper), 1, true);
 			if (!rpar->rp[0])
 				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varStr), false);
 
@@ -809,7 +809,7 @@
 //    ? ISNULL(0.0)  	&& Display .F.
 //    ? ISNULL(.null.)  && Display .T.
 //////
-	void function_isnull(SFunctionParams* rpar)
+	void function_isnull(SReturnsParams* rpar)
 	{
 		SVariable*	varExpr = rpar->ip[0];
 
@@ -831,7 +831,7 @@
 		// Create and populate the return variable
 		//////
 			llIsNull	= ifunction_isnull_common(varExpr);
-			rpar->rp[0]	= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, (cs8*)((llIsNull) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, true);
+			rpar->rp[0]	= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, iVariable_populate_byBool(llIsNull), 1, true);
 			if (!rpar->rp[0])
 				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varExpr), false);
 

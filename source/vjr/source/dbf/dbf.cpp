@@ -1913,7 +1913,7 @@
 		u32				lnI_max, lnAppendValue;
 		bool			llAppendedSix;
 		SVariable*		varAlias;
-		SFunctionParams	rpar;
+		SReturnsParams	rpar;
 
 
 		//////////

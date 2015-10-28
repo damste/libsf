@@ -110,7 +110,7 @@
 //    k = DATETIMEX()
 //    ? XTOD(k)
 //////
-	void function_xtod(SFunctionParams* rpar)
+	void function_xtod(SReturnsParams* rpar)
 	{
 		// Return xtod
 		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_DATETIMEX, _CONVERSION_FUNCTION_DATE);
@@ -143,7 +143,7 @@
 //    k = DATETIMEX()
 //    ? XTOSECONDS(k)
 //////
-	void function_xtoseconds(SFunctionParams* rpar)
+	void function_xtoseconds(SReturnsParams* rpar)
 	{
 		// Return xtoseconds
 		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_DATETIMEX, _CONVERSION_FUNCTION_SECONDS);
@@ -176,7 +176,7 @@
 //    k = DATETIMEX()
 //    ? XTOSECONDSX(k)
 //////
-	void function_xtosecondsx(SFunctionParams* rpar)
+	void function_xtosecondsx(SReturnsParams* rpar)
 	{
 		// Return xtosecondsx
 		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_DATETIMEX, _CONVERSION_FUNCTION_SECONDSX);
@@ -209,7 +209,7 @@
 //    k = DATETIMEX()
 //    ? XTOTIME(k)
 //////
-	void function_xtotime(SFunctionParams* rpar)
+	void function_xtotime(SReturnsParams* rpar)
 	{
 		// Return xtotime
 		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_DATETIMEX, _CONVERSION_FUNCTION_TIME);
@@ -242,7 +242,7 @@
 //    k = DATETIMEX()
 //    ? XTOTIMEX(k)
 //////
-	void function_xtotimex(SFunctionParams* rpar)
+	void function_xtotimex(SReturnsParams* rpar)
 	{
 		// Return xtotimex
 		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_DATETIMEX, _CONVERSION_FUNCTION_TIMEX);
@@ -275,7 +275,7 @@
 //    k = DATETIMEX()
 //    ? XTOT(k)
 //////
-	void function_xtot(SFunctionParams* rpar)
+	void function_xtot(SReturnsParams* rpar)
 	{
 		// Return xtot
 		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_DATETIMEX, _CONVERSION_FUNCTION_DATETIME);

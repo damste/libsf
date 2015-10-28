@@ -88,11 +88,17 @@
 	void					iEngine_startup_initialization			(void);
 	void					iEngine_engage							(void);
 	bool					iEngine_engage_oneCommand				(SLine* line);
+
+	void					iEngine_dispatch_function				(SFunction* func);
+
+	void					iEngine_loadPrg							(SEngineLoad** el, cs8* tcPrg, s32 tnPrgLength, bool tlPopulateKnownFunctions, bool* error, u32* errorNum);
+
 	SComp*					iEngine_parse_sourceCodeLine			(SLine* line);
+
 	SVariable*				iEngine_get_variableName_fromComponent	(SComp* comp, bool* tlManufactured, bool tlByRef);
 	SVariable*				iEngine_get_variableName_fromText		(cs8* tcText, u32 tnTextLength, SComp* comp, bool* tlManufactured, bool tlByRef);
 	SVariable*				iEngine_get_contiguousComponents		(SComp* comp, bool* tlManufactured, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount);
-	void					iEngine_get_functionResult				(SComp* comp, s32 tnRcount, SFunctionParams* rpar);
+	void					iEngine_get_functionResult				(SComp* comp, s32 tnRcount, SReturnsParams* rpar);
 
 	// Use these for root-searching named components, or components within objects
 	bool					iEngine_get_namedSourceAndType_byComp			(               SComp* comp,               void** p, s32* tnType);
@@ -117,7 +123,7 @@
 	void					iEngine_update_meta8					(SVariable* varSrc);
 	void					iEngine_update_meta9					(SVariable* varSrc);
 
-	bool					iiEngine_getParametersBetween			(s8* map_byRefOrByVal, SComp* compLeftParen, u32* paramsFound, u32 requiredCount, u32 maxCount, SFunctionParams* rpar, bool tlForceByRef = false);
+	bool					iiEngine_getParametersBetween			(s8* map_byRefOrByVal, SComp* compLeftParen, u32* paramsFound, u32 requiredCount, u32 maxCount, SReturnsParams* rpar, bool tlForceByRef = false);
 
 	void					iBreakpoint_delete						(SBreakpoint** breakpoint);
 	SBreakpoint* 			iBreakpoint_add							(SBreakpoint** breakpoint, u32 tnType);

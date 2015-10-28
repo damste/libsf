@@ -1131,6 +1131,11 @@
 		{	0,										0,	0,	0,	0,	0	}
 	};
 
+	SSourceLightData gsSourceLight__vjrsys[] =
+	{
+		{	0,										0,	0,	0,	0,	0	}
+	};
+
 	SSourceLightData gsSourceLight_val[] =
 	{
 		{	0,										0,	0,	0,	0,	0	}

@@ -109,7 +109,7 @@
 // Example:
 //    ? TAN(0)		&& Display 0.00
 //////
-    void function_tan(SFunctionParams* rpar)
+    void function_tan(SReturnsParams* rpar)
     {
 		SVariable* varNumber = rpar->ip[0];
 
@@ -123,7 +123,7 @@
 //////////
 // Rick's test code functionality using the _test() function
 //////
-	void function__test(SFunctionParams* rpar)
+	void function__test(SReturnsParams* rpar)
 	{
 		SVariable*	varIndex = rpar->ip[0];
 		s32			lnIndex;
@@ -161,7 +161,7 @@
 		//////////
 		// Create our return variable
 		/////
-			rpar->rp[0] = iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, (cs8*)((llValid) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, true);
+			rpar->rp[0] = iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, iVariable_populate_byBool(llValid), 1, true);
 	}
 
 
@@ -190,7 +190,7 @@
 // Returns:
 //    Character		-- The string after text merging
 //////
-	void function_textmerge(SFunctionParams* rpar)
+	void function_textmerge(SReturnsParams* rpar)
 	{
 		SVariable* varFormatStr		= rpar->ip[0];
 		SVariable* varRecursive		= rpar->ip[1];
@@ -377,13 +377,13 @@ debug_break;
 //                                    as HH:MM:SS     if we don't want milliseconds
 //
 //////
-	void function_time(SFunctionParams* rpar)
+	void function_time(SReturnsParams* rpar)
 	{
 		// Return time
 		ifunction_timex_common(rpar, false);
 	}
 
-	void ifunction_timex_common(SFunctionParams* rpar, bool tlIsTimeX)
+	void ifunction_timex_common(SReturnsParams* rpar, bool tlIsTimeX)
 	{
 		SVariable*	varP1	= rpar->ip[0];
 		SVariable*	varP2	= rpar->ip[1];
@@ -636,7 +636,7 @@ debug_break;
 //    k = TIME()
 //    ? TIMETOSECONDS(k)
 //////
-	void function_timetoseconds(SFunctionParams* rpar)
+	void function_timetoseconds(SReturnsParams* rpar)
 	{
 		// Return timetoseconds
 		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_TIME, _CONVERSION_FUNCTION_SECONDS);
@@ -644,7 +644,7 @@ debug_break;
 
 	// Note: Functions that use this must guarantee that at least one parameter is provided
 	// Note: Two parameters are only valid if the output is a datetime or datetimex, the second parameter is used to obtain the missing information
-	void ifunction_timesAndDatesConversion_common(SFunctionParams* rpar, s32 tnIn, s32 tnOut)
+	void ifunction_timesAndDatesConversion_common(SReturnsParams* rpar, s32 tnIn, s32 tnOut)
 	{
 		SVariable* varP1 = rpar->ip[0];
 		SVariable* varP2 = rpar->ip[1];
@@ -1029,7 +1029,7 @@ debug_break;
 //    k = TIME()
 //    ? TIMETOSECONDSX(k)
 //////
-	void function_timetosecondsx(SFunctionParams* rpar)
+	void function_timetosecondsx(SReturnsParams* rpar)
 	{
 		// Return timetosecondsx
 		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_TIME, _CONVERSION_FUNCTION_SECONDSX);
@@ -1064,7 +1064,7 @@ debug_break;
 //    t = DATE()
 //    ? TIMETOT(k, t)
 //////
-	void function_timetot(SFunctionParams* rpar)
+	void function_timetot(SReturnsParams* rpar)
 	{
 		// Return timetot
 		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_TIME, _CONVERSION_FUNCTION_DATETIME);
@@ -1099,7 +1099,7 @@ debug_break;
 //    t = DATE()
 //    ? TIMETOX(k, t)
 //////
-	void function_timetox(SFunctionParams* rpar)
+	void function_timetox(SReturnsParams* rpar)
 	{
 		// Return timetox
 		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_TIME, _CONVERSION_FUNCTION_DATETIMEX);
@@ -1130,7 +1130,7 @@ debug_break;
 //    Character		-- Current time() as HH:MM:SS.Micsss
 //
 //////
-	void function_timex(SFunctionParams* rpar)
+	void function_timex(SReturnsParams* rpar)
 	{
 		// Return timex
 		ifunction_timex_common(rpar, true);
@@ -1163,7 +1163,7 @@ debug_break;
 //    k = TIMEX()
 //    ? TIMEXTOSECONDS(k)
 //////
-	void function_timextoseconds(SFunctionParams* rpar)
+	void function_timextoseconds(SReturnsParams* rpar)
 	{
 		// Return timextoseconds
 		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_TIMEX, _CONVERSION_FUNCTION_SECONDS);
@@ -1196,7 +1196,7 @@ debug_break;
 //    k = TIMEX()
 //    ? TIMEXTOSECONDSX(k)
 //////
-	void function_timextosecondsx(SFunctionParams* rpar)
+	void function_timextosecondsx(SReturnsParams* rpar)
 	{
 		// Return timextosecondsx
 		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_TIMEX, _CONVERSION_FUNCTION_SECONDSX);
@@ -1231,7 +1231,7 @@ debug_break;
 //    t = DATE()
 //    ? TIMEXTOT(k, t)
 //////
-	void function_timextot(SFunctionParams* rpar)
+	void function_timextot(SReturnsParams* rpar)
 	{
 		// Return timextot
 		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_TIMEX, _CONVERSION_FUNCTION_DATETIME);
@@ -1266,7 +1266,7 @@ debug_break;
 //    t = DATE()
 //    ? TIMEXTOX(k, t)
 //////
-	void function_timextox(SFunctionParams* rpar)
+	void function_timextox(SReturnsParams* rpar)
 	{
 		// Return timextox
 		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_TIMEX, _CONVERSION_FUNCTION_DATETIMEX);
@@ -1296,7 +1296,7 @@ debug_break;
 // Returns:
 //    Character		-- The string after the variable was converted and formatted
 //////
-	void function_transform(SFunctionParams* rpar)
+	void function_transform(SReturnsParams* rpar)
 	{
 		SVariable* varVariable	= rpar->ip[0];
 		SVariable* varFormat	= rpar->ip[1];
@@ -1394,7 +1394,7 @@ debug_break;
 // Returns:
 //    Character. TTOC( ) returns a DateTime expression as a character string.
 //////
-	void function_ttoc(SFunctionParams* rpar)
+	void function_ttoc(SReturnsParams* rpar)
 	{
 		SVariable* varParam = rpar->ip[0];
 		SVariable* varFlag	= rpar->ip[1];
@@ -1573,7 +1573,7 @@ debug_break;
 // Returns:
 //    Datetime	-- DTOT( ) adds a default time of 12:00:00 AM (if SET HOURS is 12) or 00:00:00 (if SET HOURS is 24) to the date to produce a valid DateTime value.
 //////
-	void function_ttod(SFunctionParams* rpar)
+	void function_ttod(SReturnsParams* rpar)
 	{
 		// Return ttod
 		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_DATETIME, _CONVERSION_FUNCTION_DATE);
@@ -1606,7 +1606,7 @@ debug_break;
 //    k = DATETIME()
 //    ? TTOSECONDS(k)
 //////
-	void function_ttoseconds(SFunctionParams* rpar)
+	void function_ttoseconds(SReturnsParams* rpar)
 	{
 		// Return ttoseconds
 		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_DATETIME, _CONVERSION_FUNCTION_SECONDS);
@@ -1639,7 +1639,7 @@ debug_break;
 //    k = DATETIME()
 //    ? TTOSECONDSX(k)
 //////
-	void function_ttosecondsx(SFunctionParams* rpar)
+	void function_ttosecondsx(SReturnsParams* rpar)
 	{
 		// Return ttosecondsx
 		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_DATETIME, _CONVERSION_FUNCTION_SECONDSX);
@@ -1672,7 +1672,7 @@ debug_break;
 //    k = DATETIME()
 //    ? TTOTIME(k)
 //////
-	void function_ttotime(SFunctionParams* rpar)
+	void function_ttotime(SReturnsParams* rpar)
 	{
 		// Return ttotime
 		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_DATETIME, _CONVERSION_FUNCTION_TIME);
@@ -1705,7 +1705,7 @@ debug_break;
 //    k = DATETIME()
 //    ? TTOTIMEX(k)
 //////
-	void function_ttotimex(SFunctionParams* rpar)
+	void function_ttotimex(SReturnsParams* rpar)
 	{
 		// Return ttotimex
 		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_DATETIME, _CONVERSION_FUNCTION_TIMEX);
@@ -1738,7 +1738,7 @@ debug_break;
 //    k = DATETIME()
 //    ? TTOX(k)
 //////
-	void function_ttox(SFunctionParams* rpar)
+	void function_ttox(SReturnsParams* rpar)
 	{
 		// Return ttox
 		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_DATETIME, _CONVERSION_FUNCTION_DATETIMEX);
@@ -1768,7 +1768,7 @@ debug_break;
 // Returns:
 //    Character		-- A one-digit code indicating the type
 //////
-	void function_type(SFunctionParams* rpar)
+	void function_type(SReturnsParams* rpar)
 	{
 		SVariable* varLookup	= rpar->ip[0];
 		SVariable* varExtraInfo	= rpar->ip[1];
@@ -1870,7 +1870,7 @@ debug_break;
 	}
 
 	// Handles type() and vartype()
-	void ifunction_type_common(SFunctionParams* rpar, SVariable* var, bool tlExtraInfo, bool tlIsVartype, bool tlNullIsType)
+	void ifunction_type_common(SReturnsParams* rpar, SVariable* var, bool tlExtraInfo, bool tlIsVartype, bool tlNullIsType)
 	{
 		s8				c;
 		SBaseClassMap*	baseClassMap;
@@ -2048,7 +2048,7 @@ debug_break;
 // Returns:
 //    Character		-- The expanded detail type string
 //////
-	void function_typedetail(SFunctionParams* rpar)
+	void function_typedetail(SReturnsParams* rpar)
 	{
 		SVariable* var = rpar->ip[0];
 

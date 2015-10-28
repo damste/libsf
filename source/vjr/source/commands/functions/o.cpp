@@ -108,7 +108,7 @@
 // Returns:
 //    s32			-- The number of times
 //////
-	void function_occurs(SFunctionParams* rpar)
+	void function_occurs(SReturnsParams* rpar)
 	{
 		SVariable*	varNeedle	= rpar->ip[0];
 		SVariable*	varHaystack	= rpar->ip[1];
@@ -126,7 +126,7 @@
 		}
 	}
 
-	void function_occursc(SFunctionParams* rpar)
+	void function_occursc(SReturnsParams* rpar)
 	{
 		SVariable*	varNeedle	= rpar->ip[0];
 		SVariable*	varHaystack	= rpar->ip[1];
@@ -170,7 +170,7 @@
 // Returns:
 //    Logical		-- .t. if the item is not inclusively between the values of two expressions of the same type, .f. if between
 //////
-	void function_outside(SFunctionParams* rpar)
+	void function_outside(SReturnsParams* rpar)
 	{
 		SVariable* result;
 

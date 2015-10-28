@@ -87,7 +87,7 @@
 // Added to allow a simple place to execute various tests.
 //
 //////
-	void iTest1(SFunctionParams* rpar)
+	void iTest1(SReturnsParams* rpar)
 	{
 		s32				lnI;
 		union {

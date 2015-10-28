@@ -109,7 +109,7 @@
 // Example:
 //    ? FLOOR(2.2)		&& Display 2
 //////
-    void function_floor(SFunctionParams* rpar)
+    void function_floor(SReturnsParams* rpar)
     {
 		SVariable* varNumber = rpar->ip[0];
 
@@ -150,7 +150,7 @@
 //    ? FORCEEXT("c:\mydir.mydir\foo",	"prg")		&& Displays "c:\mydir.mydir\fred.prg"
 //    ? FORCEEXT("c:\mydir\fred.txt",	"")			&& Displays "c:\mydir\fred"
 //////
-	void function_forceext(SFunctionParams* rpar)
+	void function_forceext(SReturnsParams* rpar)
 	{
 		SVariable* varPathname		= rpar->ip[0];
 		SVariable* varNewExtension	= rpar->ip[1];
@@ -274,7 +274,7 @@
 // tnFNameOffset	-- offset to start of file name
 // tnExtOffset		-- offset to start of file extension
 //////
-	bool ifunction_pathname_common(SFunctionParams* rpar, SVariable* varPathname, s32* tnFNameOffset, s32* tnExtOffset)
+	bool ifunction_pathname_common(SReturnsParams* rpar, SVariable* varPathname, s32* tnFNameOffset, s32* tnExtOffset)
 	{
 		s8		lc;
 		s32		lnI, lnLookingFor;
@@ -371,7 +371,7 @@
 // Returns:
 //    The input pathname with the filename.
 //////
-	void function_forcefname(SFunctionParams* rpar)
+	void function_forcefname(SReturnsParams* rpar)
 	{
 		SVariable* varPathname		= rpar->ip[0];
 		SVariable* varNewFilename	= rpar->ip[1];
@@ -497,7 +497,7 @@
 // Returns:
 //    The input pathname with the new path.
 //////
-	void function_forcepath(SFunctionParams* rpar)
+	void function_forcepath(SReturnsParams* rpar)
 	{
 		SVariable* varPathname		= rpar->ip[0];
 		SVariable* varNewPathname	= rpar->ip[1];
@@ -649,7 +649,7 @@
 // Returns:
 //    The input pathname with the new stem.
 //////
-	void function_forcestem(SFunctionParams* rpar)
+	void function_forcestem(SReturnsParams* rpar)
 	{
 		SVariable* varPathname	= rpar->ip[0];
 		SVariable* varNewStem	= rpar->ip[1];
@@ -786,7 +786,7 @@
 // Example:
 //   ? FV(500, 0.006, 48)	&& Displays 27717.50
 //////
-	void function_fv(SFunctionParams* rpar)
+	void function_fv(SReturnsParams* rpar)
 	{
 		SVariable* varPayment		= rpar->ip[0];
 		SVariable* varInterestRate	= rpar->ip[1];

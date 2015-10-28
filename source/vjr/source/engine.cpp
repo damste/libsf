@@ -89,8 +89,11 @@
 //////
 	void iEngine_startup_initialization(void)
 	{
-		s32			lnI, lnJ;
-		SThisCode*	thisCode;
+		s32				lnI, lnJ;
+		SThisCode*		thisCode;
+		SEngineLoad*	el;
+		bool			error;
+		u32				errorNum;
 
 
 		// Only run once at startup
@@ -139,6 +142,13 @@
 
 
 			//////////
+			// Load the internal baseline.prg program
+			//////
+				iEngine_loadPrg(&el, baseline_prg, sizeof(baseline_prg) - 1, true, &error, &errorNum);
+				iEngine_dispatch_function(el->firstFunc);
+
+
+			//////////
 			// All done
 			//////
 				glThisCodeInitialized = true;
@@ -151,7 +161,7 @@
 
 //////////
 //
-// Runs a VXB program.
+// Runs a VXB program
 //
 //////
 	void iEngine_engage(void)
@@ -175,7 +185,7 @@
 		SVariable*		var;	// Ignore the GCC warning message here... I don't know why it's throwing a warning.  var is used correctly below.
 		SVariable*		varExisting;
 		SVariable*		varText;
-		SFunctionParams	lrpar;
+		SReturnsParams	lrpar;
 		SCommandData*	cmd;
 		SDllFunc*		dfunc;
 		bool			error;
@@ -420,6 +430,32 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 			// Failure
 			return(false);
 		}
+	}
+
+
+
+
+//////////
+//
+// Called to dispatch a function
+//
+//////
+	void iEngine_dispatch_function(SFunction* func)
+	{
+		debug_break;
+	}
+
+
+
+
+//////////
+//
+// Called to load and parse a prg, and populate into known functions if it's being
+//
+//////
+	void iEngine_loadPrg(SEngineLoad** elRoot, cs8* tcPrg, s32 tnPrgLength, bool tlPopulateKnownFunctions, bool* error, u32* errorNum)
+	{
+		debug_break;
 	}
 
 
@@ -835,7 +871,7 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 // Called to find the function, execute it, and return the result
 //
 //////
-	void iEngine_get_functionResult(SComp* comp, s32 tnRcount, SFunctionParams* rpar)
+	void iEngine_get_functionResult(SComp* comp, s32 tnRcount, SReturnsParams* rpar)
 	{
 		u32				lnI, lnParamsFound;
 		SFunctionData*	funcData;
@@ -1206,7 +1242,7 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 			for (thisCodeSearch = &gsThisCode[gnThisCode]; thisCodeSearch; thisCodeSearch = thisCodeSearch->ll.prevThisCode)
 			{
 				// Iterate through all adhocs at this level
-				for (adhoc = thisCodeSearch->func->firstAdhoc; adhoc; adhoc = adhoc->ll.nextFunc)
+				for (adhoc = thisCodeSearch->live.firstAdhoc; adhoc; adhoc = adhoc->ll.nextFunc)
 				{
 					// Is it the same length?
 					if (!adhoc->isPrivate && adhoc->name.length == lnVarNameLength)
@@ -1680,7 +1716,7 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 // Called to obtain the parameters between the indicated parenthesis.
 //
 //////
-	bool iiEngine_getParametersBetween(s8* map_byRefOrByVal, SComp* compLeftParen, u32* paramsFound, u32 requiredCount, u32 maxCount, SFunctionParams* rpar, bool tlForceByRef)
+	bool iiEngine_getParametersBetween(s8* map_byRefOrByVal, SComp* compLeftParen, u32* paramsFound, u32 requiredCount, u32 maxCount, SReturnsParams* rpar, bool tlForceByRef)
 	{
 		u32			lnI, lnParamCount;
 		bool		llManufactured, llByRef, llUdfParamsByRef;

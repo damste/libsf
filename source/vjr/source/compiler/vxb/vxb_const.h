@@ -895,6 +895,7 @@
 	const s32		_ICODE_UPDATED                                  = 1402;
 	const s32		_ICODE_UPPER                                    = 1403;
 	const s32		_ICODE_USED                                     = 1404;
+	const s32		_ICODE__VJRSYS									= 1521;
 	const s32		_ICODE_VAL                                      = 1405;
 	const s32		_ICODE_VALUE									= 1520;
 	const s32		_ICODE_VARREAD                                  = 1406;
@@ -982,6 +983,8 @@
 	// secondsxtot		= 1515				secondsxtox		= 1516
 	// dbundle			= 1517				dunbundle		= 1518
 	// reference		= 1519				value			= 1520
+	// _vjrsys			= 1521
+
 
 
 // Temporarily added until the processing engine is coded
@@ -1977,6 +1980,7 @@
 	const s8		cgc_updated[]									= "updated";
 	const s8		cgc_upper[]										= "upper";
 	const s8		cgc_used[]										= "used";
+	const s8		cgc__vjrsys[]									= "_vjrsys";
 	const s8		cgc_val[]										= "val";
 	const s8		cgc_varread[]									= "varread";
 	const s8		cgc_vartype[]									= "vartype";

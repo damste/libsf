@@ -88,6 +88,73 @@
 
 //////////
 //
+// Function: _VJRSYS()
+// Internal function.  Not published.  Used to access VJr system variables.
+//
+//////
+// Version 0.58
+// Last update:
+//     Oct.28.2015
+//////
+// Change log:
+//     Oct.28.2015 - Initial creation by Rick C. Hodgin
+//////
+// Parameters:
+//     varIndex			-- Index function to access the variable
+//
+//////
+// Returns:
+//     Varies			-- Based on index, returns the VJr system variable
+//////
+	void function__vjrsys(SReturnsParams* rpar)
+	{
+		SVariable* varIndex		= rpar->ip[0];
+
+		s32			lnIndex;
+		u32			errorNum;
+		bool		error;
+
+
+		//////////
+		// Parameter 1 must be valid and numeric
+		//////
+			rpar->rp[0] = NULL;
+			if (!iVariable_isValid(varIndex) || !iVariable_isTypeNumeric(varIndex))
+			{
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varIndex), false);
+				return;
+			}
+
+			// Grab the index value
+			lnIndex = iiVariable_getAs_s32(varIndex, false, &error, &errorNum);
+			if (error)
+			{
+				iError_reportByNumber(errorNum, iVariable_get_relatedComp(varIndex), false);
+				return;
+			}
+
+
+		//////////
+		// Dispatch based on operation
+		//////
+			switch (lnIndex)
+			{
+				case 1:
+					rpar->rp[0] = iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, iVariable_populate_byBool(glShuttingDown), 1, false);
+					break;
+
+				default:
+					iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(varIndex), false);
+					break;
+			}
+
+	}
+
+
+
+
+//////////
+//
 // Function: VAL()
 // Returns a numeric or currency value from a expression.
 //
@@ -109,10 +176,11 @@
 //						Leading blanks are ignored.
 //						VAL( ) returns 0 if the first character of the character expression is not a number, a dollar sign ($), a plus sign (+), or minus sign (-).
 //////
-	void function_val(SFunctionParams* rpar)
+	void function_val(SReturnsParams* rpar)
 	{
 		SVariable*	varExpr			= rpar->ip[0];
 		SVariable*	varIgnoreChars	= rpar->ip[1];
+
 		s8			c, cCurrency, cPoint, cSeparator;
 		s32			lnI, lnJ, lnBuffOffset;
 		s64			lnValue;
@@ -136,6 +204,7 @@
 				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varExpr), false);
 				return;
 			}
+
 
 		//////////
 		// If numeric, copy whatever's already there
@@ -389,7 +458,7 @@
 // Returns:
 //    Character		-- A one-digit value indicating the type
 //////
-	void function_vartype(SFunctionParams* rpar)
+	void function_vartype(SReturnsParams* rpar)
 	{
 		SVariable* var		= rpar->ip[0];
 		SVariable* varNull	= rpar->ip[1];
@@ -476,7 +545,7 @@
 // Returns:
 //    Vector		-- The concatenated value, assumes the current SET VECSEPARATOR symbol
 //////
-	void function_vec(SFunctionParams* rpar)
+	void function_vec(SReturnsParams* rpar)
 	{
 		SVariable* varV1 = rpar->ip[0];
 
@@ -509,7 +578,7 @@
 // Returns:
 //     Numeric, the number of elements in the vector.
 //////
-	void function_veccount(SFunctionParams* rpar)
+	void function_veccount(SReturnsParams* rpar)
 	{
 		SVariable* varVec = rpar->ip[0];
 
@@ -545,7 +614,7 @@
 //    if varNewValue was specified, returns the new vector
 //    else                          returns the value of that element
 //////
-	void function_vecel(SFunctionParams* rpar)
+	void function_vecel(SReturnsParams* rpar)
 	{
 		SVariable* varVec		= rpar->ip[0];
 //		SVariable* varEl		= rpar->params[1];
@@ -582,7 +651,7 @@
 // Returns:
 //     The extracted element or elements as a vector.
 //////
-	void function_vecslice(SFunctionParams* rpar)
+	void function_vecslice(SReturnsParams* rpar)
 	{
 //		SVariable* varVec		= rpar->params[0];
 //		SVariable* varStartEl	= rpar->params[1];
@@ -618,7 +687,7 @@
 // Returns:
 //     A character string containing the vector values interspersed with symbol space, or the varSymbolOverride
 //////
-	void function_vecstr(SFunctionParams* rpar)
+	void function_vecstr(SReturnsParams* rpar)
 	{
 //		SVariable* varVec				= rpar->params[0];
 //		SVariable* varSymbolOverride	= rpar->params[1];
@@ -656,7 +725,7 @@
 //    if varNewValue was specified, returns the new vector
 //    else                          returns the value of that element
 //////
-	void function_vecstuff(SFunctionParams* rpar)
+	void function_vecstuff(SReturnsParams* rpar)
 	{
 		SVariable* varVec			= rpar->ip[0];
 //		SVariable* varStartEl		= rpar->params[1];
@@ -695,7 +764,7 @@
 //    if varNewSymbol was specified, returns the old symbol
 //    else                           returns the current symbol
 //////
-	void function_vecsymbol(SFunctionParams* rpar)
+	void function_vecsymbol(SReturnsParams* rpar)
 	{
 		SVariable* varVec		= rpar->ip[0];
 //		SVariable* varEl		= rpar->params[1];
@@ -730,7 +799,7 @@
 // Returns:
 //    Numeric or Character	-- Depending on index, various values are returned
 //////
-    void function_version(SFunctionParams* rpar)
+    void function_version(SReturnsParams* rpar)
     {
 		SVariable*	varIndex = rpar->ip[0];
         s32			index;

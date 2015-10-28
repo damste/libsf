@@ -109,7 +109,7 @@
 //    Numeric.
 //
 //////
-	void function_getwordcount(SFunctionParams* rpar)
+	void function_getwordcount(SReturnsParams* rpar)
 	{
 		SVariable*	varStr			= rpar->ip[0];
 		SVariable*	varDelimiters	= rpar->ip[1];
@@ -306,7 +306,7 @@
 //    Character.
 //
 //////
-	void function_getwordnum(SFunctionParams* rpar)
+	void function_getwordnum(SReturnsParams* rpar)
 	{
 		SVariable*	varStr			= rpar->ip[0];
 		SVariable*	varIndex		= rpar->ip[1];
@@ -402,7 +402,7 @@
 //////
 	static cs8 cgGoMonthData[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
-	VOID function_gomonth(SFunctionParams* rpar)
+	VOID function_gomonth(SReturnsParams* rpar)
 	{
 		SVariable* varParam = rpar->ip[0];
 		SVariable* varMonth = rpar->ip[1];
@@ -590,7 +590,7 @@
 // Returns:
 //    The input pathname with the new stem.
 //////
-	void function_grayscale(SFunctionParams* rpar)
+	void function_grayscale(SReturnsParams* rpar)
 	{
 		SVariable* varColor			= rpar->ip[0];
 		SVariable* varPercentage	= rpar->ip[1];
@@ -623,7 +623,7 @@
 // Returns:
 //    Numeric	-- Input number converted to ASCII value number
 //////
-	void function_grn(SFunctionParams* rpar)
+	void function_grn(SReturnsParams* rpar)
 	{
 		SVariable* varColor = rpar->ip[0];
 
