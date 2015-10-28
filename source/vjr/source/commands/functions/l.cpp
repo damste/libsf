@@ -107,7 +107,7 @@
 // Returns:
 //    Character		-- The string of the left N characters
 //////
-	void function_left(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_left(SFunctionParams* rpar)
 	{
 		SVariable*	varString	= rpar->ip[0];
 		SVariable*	varCount	= rpar->ip[1];
@@ -123,7 +123,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString) || iVariable_getType(varString) != _VAR_TYPE_CHARACTER)
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varString), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varString), false);
 				return;
 			}
 
@@ -133,7 +133,7 @@
 		//////
 			if (!iVariable_isValid(varCount) || !iVariable_isTypeNumeric(varCount))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varCount), false);
+				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varCount), false);
 				return;
 			}
 
@@ -141,10 +141,10 @@
 		//////////
         // Find out how long they want our string to be
 		//////
-			lnLength = iiVariable_getAs_s32(thisCode, varCount, false, &error, &errorNum);
+			lnLength = iiVariable_getAs_s32(varCount, false, &error, &errorNum);
 			if (error)
 			{
-				iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varCount), false);
+				iError_reportByNumber(errorNum, iVariable_get_relatedComp(varCount), false);
 				return;
 			}
 
@@ -152,10 +152,10 @@
 		//////////
         // Create our return result
 		//////
-	        result = iVariable_create(thisCode, _VAR_TYPE_CHARACTER, NULL, true);
+	        result = iVariable_create(_VAR_TYPE_CHARACTER, NULL, true);
 			if (!result)
 			{
-				iError_report(thisCode, cgcInternalError, false);
+				iError_report(cgcInternalError, false);
 				return;
 			}
 
@@ -197,7 +197,7 @@
 // Returns:
 //    Numeric		-- The length of the string
 //////
-	void function_len(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_len(SFunctionParams* rpar)
 	{
 		SVariable* varString = rpar->ip[0];
         SVariable* result;
@@ -209,7 +209,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString) || iVariable_getType(varString) != _VAR_TYPE_CHARACTER)
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varString), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varString), false);
 				return;
 			}
 
@@ -217,10 +217,10 @@
 		//////////
         // Create our return result
 		//////
-	        result = iVariable_create(thisCode, _VAR_TYPE_S32, NULL, true);
+	        result = iVariable_create(_VAR_TYPE_S32, NULL, true);
 			if (!result)
 			{
-				iError_report(thisCode, cgcInternalError, false);
+				iError_report(cgcInternalError, false);
 				return;
 			}
 
@@ -261,7 +261,7 @@
 // Returns:
 //    Bool		-- pString must match pPattern character for character in order for LIKE() to return true (.T.).
 //////
-	void function_like(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_like(SFunctionParams* rpar)
 	{
 		SVariable*	varPattern	= rpar->ip[0];
 		SVariable*	varString	= rpar->ip[1];
@@ -277,7 +277,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varPattern) || iVariable_getType(varPattern) != _VAR_TYPE_CHARACTER)
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varPattern), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varPattern), false);
 				return;
 			}
 
@@ -287,7 +287,7 @@
 		//////
 			if (!iVariable_isValid(varString) || iVariable_getType(varString) != _VAR_TYPE_CHARACTER)
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varString), false);
+				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varString), false);
 				return;
 			}
 
@@ -341,9 +341,9 @@
 		//////////
 		// Create and populate the return variable
 		//////
-			rpar->rp[0]	= iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_LOGICAL, (cs8*)((llResult) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, true);
+			rpar->rp[0]	= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, (cs8*)((llResult) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, true);
 			if (!rpar->rp[0])
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varPattern), false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varPattern), false);
 	}
 
 
@@ -372,13 +372,13 @@
 // Example:
 //    ? LOG(2)		&& Display 0.69
 //////
-    void function_log(SThisCode* thisCode, SFunctionParams* rpar)
+    void function_log(SFunctionParams* rpar)
     {
 		SVariable* varNumber = rpar->ip[0];
 
 
         // Return log
-		ifunction_numbers_common(thisCode, rpar, varNumber, NULL, NULL, _FP_COMMON_LOG, _VAR_TYPE_F64, false, false);
+		ifunction_numbers_common(rpar, varNumber, NULL, NULL, _FP_COMMON_LOG, _VAR_TYPE_F64, false, false);
 	}
 
 
@@ -407,13 +407,13 @@
 // Example:
 //    ? LOG10(2)		&& Display 0.30
 //////
-    void function_log10(SThisCode* thisCode, SFunctionParams* rpar)
+    void function_log10(SFunctionParams* rpar)
     {
 		SVariable* varNumber = rpar->ip[0];
 
 
         // Return log10
-		ifunction_numbers_common(thisCode, rpar, varNumber, NULL, NULL, _FP_COMMON_LOG10, _VAR_TYPE_F64, false, false);
+		ifunction_numbers_common(rpar, varNumber, NULL, NULL, _FP_COMMON_LOG10, _VAR_TYPE_F64, false, false);
 	}
 
 
@@ -439,7 +439,7 @@
 // Returns:
 //    Character		-- The string with all lowercase characters converted to lowercase
 //////
-	void function_lower(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_lower(SFunctionParams* rpar)
 	{
 		SVariable*	varString = rpar->ip[0];
 		s32			lnI;
@@ -452,7 +452,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString) || iVariable_getType(varString) != _VAR_TYPE_CHARACTER)
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varString), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varString), false);
 				return;
 			}
 
@@ -460,10 +460,10 @@
 		//////////
         // Create our return result
 		//////
-	        result = iVariable_create(thisCode, _VAR_TYPE_CHARACTER, NULL, true);
+	        result = iVariable_create(_VAR_TYPE_CHARACTER, NULL, true);
 			if (!result)
 			{
-				iError_report(thisCode, cgcInternalError, false);
+				iError_report(cgcInternalError, false);
 				return;
 			}
 
@@ -514,7 +514,7 @@
 // Returns:
 //    Character		-- The string with any leading spaces removed
 //////
-	void function_ltrim(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_ltrim(SFunctionParams* rpar)
 	{
 		SVariable* varString			= rpar->ip[0];
 		SVariable* varCaseInsensitive	= rpar->ip[1];
@@ -523,5 +523,5 @@
 
 
 		// Return ltrim
-		ifunction_trim_common(thisCode, rpar, varString, varCaseInsensitive, varTrimChars1, varTrimChars2, true, false);
+		ifunction_trim_common(rpar, varString, varCaseInsensitive, varTrimChars1, varTrimChars2, true, false);
 	}

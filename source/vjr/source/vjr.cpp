@@ -123,13 +123,13 @@
 	//////
 		ghInstance = hInstance;
 		iVjr_init(&hAccelTable);
-		iVjr_appendSystemLog(thisCode, (u8*)"Initialization complete");
+		iVjr_appendSystemLog((u8*)"Initialization complete");
 
 
 	//////////
 	// Read events
 	//////
-		iVjr_appendSystemLog(thisCode, (u8*)"Engage main loop");
+		iVjr_appendSystemLog((u8*)"Engage main loop");
 		while (!glShuttingDown && GetMessage(&msg, null0, 0, 0))
 		{
 			TranslateMessage(&msg);
@@ -142,7 +142,7 @@
 	// Do allocated resource shutdown
 	//////
 		if (!glShuttingDown)
-			iVjr_shutdown(thisCode);
+			iVjr_shutdown();
 
 
 	//////////

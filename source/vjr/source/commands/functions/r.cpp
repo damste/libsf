@@ -116,7 +116,7 @@
 //	x = RANGER(x, 20, 80)          && Can be used as assignment
 //	? x							   && Displays 20
 //////
-	void function_ranger(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_ranger(SFunctionParams* rpar)
 	{
 		SVariable* varExpr	= rpar->ip[0];
 		SVariable* varMin	= rpar->ip[1];
@@ -124,10 +124,10 @@
 
 
 		// Return ranger
-		ifunction_ranger_common(thisCode, rpar, varExpr, varMin, varMax, NULL);
+		ifunction_ranger_common(rpar, varExpr, varMin, varMax, NULL);
 	}
 
-	void function_ranger2(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_ranger2(SFunctionParams* rpar)
 	{
 		SVariable*	varExpr	= rpar->ip[0];
 		SVariable*	varMin	= rpar->ip[1];
@@ -139,7 +139,7 @@
 		//////////
 		// Range the result
 		//////
-			ifunction_ranger_common(thisCode, rpar, varExpr, varMin, varMax, &llRanged);
+			ifunction_ranger_common(rpar, varExpr, varMin, varMax, &llRanged);
 			result = rpar->rp[0];
 
 
@@ -147,10 +147,10 @@
 		// If ranged, update varExpr to the new range
 		//////
 			if (llRanged && result && iVariable_isValid(varExpr))
-				iVariable_set(thisCode, varExpr, result);
+				iVariable_set(varExpr, result);
 	}
 
-	void ifunction_ranger_common(SThisCode* thisCode, SFunctionParams* rpar, SVariable* varExpr, SVariable* varMin, SVariable* varMax, bool* tlRanged)
+	void ifunction_ranger_common(SFunctionParams* rpar, SVariable* varExpr, SVariable* varMin, SVariable* varMax, bool* tlRanged)
 	{
 		SVariable*		tempMin;
 		SVariable*		tempMax;
@@ -167,7 +167,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varExpr))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varExpr), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varExpr), false);
 				return;
 			}
 
@@ -177,7 +177,7 @@
 		//////
 			if (!iVariable_isValid(varMin))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varMin), false);
+				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varMin), false);
 				return;
 			}
 
@@ -187,7 +187,7 @@
 		//////
 			if (!iVariable_isValid(varMax))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varMax), false);
+				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varMax), false);
 				return;
 			}
 
@@ -195,16 +195,16 @@
 		//////////
 		// They must be the same type
 		//////
-			if (iVariable_get_fundamentalType(thisCode, varExpr) != iVariable_get_fundamentalType(thisCode, varMin))
+			if (iVariable_get_fundamentalType(varExpr) != iVariable_get_fundamentalType(varMin))
 			{
 				// Operand mismatch
-				iError_reportByNumber(thisCode, _ERROR_DATA_TYPE_MISMATCH, iVariable_get_relatedComp(thisCode, varMin), false);
+				iError_reportByNumber(_ERROR_DATA_TYPE_MISMATCH, iVariable_get_relatedComp(varMin), false);
 				return;
 			}
-			if (iVariable_get_fundamentalType(thisCode, varExpr) != iVariable_get_fundamentalType(thisCode, varMax))
+			if (iVariable_get_fundamentalType(varExpr) != iVariable_get_fundamentalType(varMax))
 			{
 				// Operand mismatch
-				iError_reportByNumber(thisCode, _ERROR_DATA_TYPE_MISMATCH, iVariable_get_relatedComp(thisCode, varMax), false);
+				iError_reportByNumber(_ERROR_DATA_TYPE_MISMATCH, iVariable_get_relatedComp(varMax), false);
 				return;
 			}
 
@@ -226,16 +226,16 @@
 				memcpy(&lsrpar, rpar, sizeof(lsrpar));
 				lsrpar.ip[0] = varMin;
 				lsrpar.ip[1] = varMax;
-				function_min(thisCode, &lsrpar);
+				function_min(&lsrpar);
 				if ((tempMin = lsrpar.rp[0]) == NULL)
 				{
-					iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varMax), false);
+					iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varMax), false);
 					return;
 				}
-				function_max(thisCode, &lsrpar);
+				function_max(&lsrpar);
 				if ((tempMax = lsrpar.rp[0]) == NULL)
 				{
-					iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varMax), false);
+					iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varMax), false);
 					break;
 				}
 
@@ -246,33 +246,33 @@
 				// Compute first part of result
 				lsrpar.ip[0] = varExpr;
 				lsrpar.ip[1] = tempMin;
-				function_max(thisCode, &lsrpar);
+				function_max(&lsrpar);
 				if ((tempResult1 = lsrpar.rp[0]) == NULL)
 				{
-					iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varMax), false);
+					iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varMax), false);
 					break;
 				}
 
 				// Compute the final result
 				lsrpar.ip[0]	= tempResult1;
 				lsrpar.ip[1]	= tempMax;
-				function_min(thisCode, &lsrpar);
+				function_min(&lsrpar);
 				tempResult2			= lsrpar.rp[0];
 
 				// Force the result into the same form as varExpr originally was
 				if (tempResult2)
 				{
 					// Create one of the same type, and populate
-					result = iVariable_create(thisCode, varExpr->varType, NULL, true);
+					result = iVariable_create(varExpr->varType, NULL, true);
 					if (result)
 					{
 						// Convert to the target type for propagation through the expression
-						if (!iVariable_setNumeric_toDestinationType(thisCode, result, tempResult2))
-							iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varExpr), false);
+						if (!iVariable_setNumeric_toDestinationType(result, tempResult2))
+							iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varExpr), false);
 					}
 
 				} else {
-					iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varMax), false);
+					iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varMax), false);
 				}
 
 				// All done
@@ -284,10 +284,10 @@
 		//////////
 		// Delete our temporary variables
 		/////
-			if (tempMin)		iVariable_delete(thisCode, tempMin,		true);
-			if (tempMax)		iVariable_delete(thisCode, tempMax,		true);
-			if (tempResult1)	iVariable_delete(thisCode, tempResult1,	true);
-			if (tempResult2)	iVariable_delete(thisCode, tempResult2,	true);
+			if (tempMin)		iVariable_delete(tempMin,		true);
+			if (tempMax)		iVariable_delete(tempMax,		true);
+			if (tempResult1)	iVariable_delete(tempResult1,	true);
+			if (tempResult2)	iVariable_delete(tempResult2,	true);
 
 
 		//////////
@@ -321,7 +321,7 @@
 // Returns:
 //    Character		-- The string of the input replicated N times
 //////
-	void function_replicate(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_replicate(SFunctionParams* rpar)
 	{
 		SVariable*	varString	= rpar->ip[0];
 		SVariable*	varCount	= rpar->ip[1];
@@ -337,7 +337,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString) || iVariable_getType(varString) != _VAR_TYPE_CHARACTER)
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varString), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varString), false);
 				return;
 			}
 
@@ -347,7 +347,7 @@
 		//////
 			if (!iVariable_isValid(varCount) || !iVariable_isTypeNumeric(varCount))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varCount), false);
+				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varCount), false);
 				return;
 			}
 
@@ -355,10 +355,10 @@
 		//////////
         // Find out how long they want our string to be
 		//////
-			lnCopies = iiVariable_getAs_s32(thisCode, varCount, false, &error, &errorNum);
+			lnCopies = iiVariable_getAs_s32(varCount, false, &error, &errorNum);
 			if (error)
 			{
-				iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varCount), false);
+				iError_reportByNumber(errorNum, iVariable_get_relatedComp(varCount), false);
 				return;
 			}
 
@@ -366,10 +366,10 @@
 		//////////
         // Create our return result
 		//////
-			result = iVariable_create(thisCode, _VAR_TYPE_CHARACTER, NULL, true);
+			result = iVariable_create(_VAR_TYPE_CHARACTER, NULL, true);
 			if (!result)
 			{
-				iError_report(thisCode, cgcInternalError, false);
+				iError_report(cgcInternalError, false);
 				return;
 			}
 
@@ -415,7 +415,7 @@
 //    Numeric		-- Constructed RGB() integer
 //
 //////
-	void function_rgb(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_rgb(SFunctionParams* rpar)
 	{
 		SVariable* varRed	= rpar->ip[0];
 		SVariable* varGrn	= rpar->ip[1];
@@ -423,10 +423,10 @@
 
 
 		// Return rgb
-		ifunction_rgba_common(thisCode, rpar, varRed, varGrn, varBlu, NULL);
+		ifunction_rgba_common(rpar, varRed, varGrn, varBlu, NULL);
 	}
 
-	void ifunction_rgba_common(SThisCode* thisCode, SFunctionParams* rpar, SVariable* varRed, SVariable* varGrn, SVariable* varBlu, SVariable* varAlp)
+	void ifunction_rgba_common(SFunctionParams* rpar, SVariable* varRed, SVariable* varGrn, SVariable* varBlu, SVariable* varAlp)
 	{
 		f32			lfRed, lfGrn, lfBlu, lfAlp;
 		s32			lnRed, lnGrn, lnBlu, lnAlp;
@@ -441,7 +441,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varRed) || !iVariable_isTypeNumeric(varRed))
 			{
-				iError_reportByNumber(thisCode, _ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varRed), false);
+				iError_reportByNumber(_ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(varRed), false);
 				return;
 			}
 
@@ -451,7 +451,7 @@
 		//////
 			if (!iVariable_isValid(varGrn) || !iVariable_isTypeNumeric(varGrn))
 			{
-				iError_reportByNumber(thisCode, _ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varGrn), false);
+				iError_reportByNumber(_ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(varGrn), false);
 				return;
 			}
 
@@ -461,7 +461,7 @@
 		//////
 			if (!iVariable_isValid(varBlu) || !iVariable_isTypeNumeric(varBlu))
 			{
-				iError_reportByNumber(thisCode, _ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varBlu), false);
+				iError_reportByNumber(_ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(varBlu), false);
 				return;
 			}
 
@@ -473,7 +473,7 @@
 			{
 				if (!iVariable_isValid(varAlp) || !iVariable_isTypeNumeric(varAlp))
 				{
-					iError_reportByNumber(thisCode, _ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varAlp), false);
+					iError_reportByNumber(_ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(varAlp), false);
 					return;
 				}
 
@@ -490,26 +490,26 @@
 			if (iVariable_isTypeFloatingPoint(varRed))
 			{
 				// It is a floating point, which means it must be in the range 0..1
-				lfRed = iiVariable_getAs_f32(thisCode, varRed, false, &error, &errorNum);
+				lfRed = iiVariable_getAs_f32(varRed, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varRed), false);
+					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varRed), false);
 					return;
 				}
 				lnRed = (s32)(255.0f * min(max(lfRed, 0.0f), 1.0f));
 
 			} else {
 				// It is an integer, which means it must be in the range 0..255
-				lnRed = iiVariable_getAs_s32(thisCode, varRed, false, &error, &errorNum);
+				lnRed = iiVariable_getAs_s32(varRed, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varRed), false);
+					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varRed), false);
 					return;
 				}
 			}
 			if (lnRed < 0 || lnRed > 255)
 			{
-				iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(thisCode, varRed), false);
+				iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varRed), false);
 				return;
 			}
 
@@ -520,26 +520,26 @@
 			if (iVariable_isTypeFloatingPoint(varGrn))
 			{
 				// It is a floating point, which means it must be in the range 0..1
-				lfGrn = iiVariable_getAs_f32(thisCode, varGrn, false, &error, &errorNum);
+				lfGrn = iiVariable_getAs_f32(varGrn, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varGrn), false);
+					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varGrn), false);
 					return;
 				}
 				lnGrn = (s32)(255.0f * min(max(lfGrn, 0.0f), 1.0f));
 
 			} else {
 				// It is an integer, which means it must be in the range 0..255
-				lnGrn = iiVariable_getAs_s32(thisCode, varGrn, false, &error, &errorNum);
+				lnGrn = iiVariable_getAs_s32(varGrn, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varGrn), false);
+					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varGrn), false);
 					return;
 				}
 			}
 			if (lnGrn < 0 || lnGrn > 255)
 			{
-				iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(thisCode, varGrn), false);
+				iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varGrn), false);
 				return;
 			}
 
@@ -550,26 +550,26 @@
 			if (iVariable_isTypeFloatingPoint(varBlu))
 			{
 				// It is a floating point, which means it must be in the range 0..1
-				lfBlu = iiVariable_getAs_f32(thisCode, varBlu, false, &error, &errorNum);
+				lfBlu = iiVariable_getAs_f32(varBlu, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varBlu), false);
+					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varBlu), false);
 					return;
 				}
 				lnBlu = (s32)(255.0f * min(max(lfBlu, 0.0f), 1.0f));
 
 			} else {
 				// It is an integer, which means it must be in the range 0..255
-				lnBlu	= iiVariable_getAs_s32(thisCode, varBlu, false, &error, &errorNum);
+				lnBlu	= iiVariable_getAs_s32(varBlu, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varBlu), false);
+					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varBlu), false);
 					return;
 				}
 			}
 			if (lnBlu < 0 || lnBlu > 255)
 			{
-				iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(thisCode, varBlu), false);
+				iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varBlu), false);
 				return;
 			}
 
@@ -580,26 +580,26 @@
 			if (iVariable_isTypeFloatingPoint(varAlp))
 			{
 				// It is a floating point, which means it must be in the range 0..1
-				lfAlp = iiVariable_getAs_f32(thisCode, varAlp, false, &error, &errorNum);
+				lfAlp = iiVariable_getAs_f32(varAlp, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varAlp), false);
+					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varAlp), false);
 					return;
 				}
 				lnAlp = (s32)(255.0f * min(max(lfAlp, 0.0f), 1.0f));
 
 			} else {
 				// It is an integer, which means it must be in the range 0..255
-				lnAlp	= iiVariable_getAs_s32(thisCode, varAlp, false, &error, &errorNum);
+				lnAlp	= iiVariable_getAs_s32(varAlp, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varAlp), false);
+					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varAlp), false);
 					return;
 				}
 			}
 			if (lnAlp < 0 || lnAlp > 255)
 			{
-				iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(thisCode, varAlp), false);
+				iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varAlp), false);
 				return;
 			}
 
@@ -607,10 +607,10 @@
 		//////////
         // Create the return(result)
 		//////
-	        result = iVariable_create(thisCode, _VAR_TYPE_U32, NULL, true);
+	        result = iVariable_create(_VAR_TYPE_U32, NULL, true);
 			if (!result)
 			{
-				iError_report(thisCode, cgcInternalError, false);
+				iError_report(cgcInternalError, false);
 				return;
 			}
 
@@ -654,7 +654,7 @@
 //    Numeric		-- Constructed RGBA() integer
 //
 //////
-	void function_rgba(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_rgba(SFunctionParams* rpar)
 	{
 		SVariable* varRed	= rpar->ip[0];
 		SVariable* varGrn	= rpar->ip[1];
@@ -663,7 +663,7 @@
 
 
 		// Return rgba
-		ifunction_rgba_common(thisCode, rpar, varRed, varGrn, varBlu, varAlp);
+		ifunction_rgba_common(rpar, varRed, varGrn, varBlu, varAlp);
 	}
 
 
@@ -689,16 +689,16 @@
 // Returns:
 //    Numeric	-- Input number converted to ASCII value number
 //////
-	void function_red(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_red(SFunctionParams* rpar)
 	{
 		SVariable* varColor = rpar->ip[0];
 
 
 		// Return red
-		ifunction_color_common(thisCode, rpar, varColor, 0x000000ff, 0);
+		ifunction_color_common(rpar, varColor, 0x000000ff, 0);
 	}
 
-	void ifunction_color_common(SThisCode* thisCode, SFunctionParams* rpar, SVariable* varColor, u32 tnMask, u32 tnShift)
+	void ifunction_color_common(SFunctionParams* rpar, SVariable* varColor, u32 tnMask, u32 tnShift)
 	{
 		u32			lnColor;
 		bool		error;
@@ -712,7 +712,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varColor) || !iVariable_isTypeNumeric(varColor))
 			{
-				iError_reportByNumber(thisCode, _ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varColor), false);
+				iError_reportByNumber(_ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(varColor), false);
 				return;
 			}
 
@@ -720,10 +720,10 @@
 		//////////
 		// Grab the value
 		//////
-			lnColor = iiVariable_getAs_u32(thisCode, varColor, false, &error, &errorNum);
+			lnColor = iiVariable_getAs_u32(varColor, false, &error, &errorNum);
 			if (error)
 			{
-				iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varColor), false);
+				iError_reportByNumber(errorNum, iVariable_get_relatedComp(varColor), false);
 				return;
 			}
 
@@ -739,10 +739,10 @@
 		//////////
 		// Construct our result
 		//////
-			result = iVariable_create(thisCode, _VAR_TYPE_U32, NULL, true);
+			result = iVariable_create(_VAR_TYPE_U32, NULL, true);
 			if (!result)
 			{
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, NULL, false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, NULL, false);
 				return;
 			}
 
@@ -778,7 +778,7 @@
 // Returns:
 //    Character		-- The string of the right N characters
 //////
-	void function_right(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_right(SFunctionParams* rpar)
 	{
 		SVariable*	varString	= rpar->ip[0];
 		SVariable*	varCount	= rpar->ip[1];
@@ -794,7 +794,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString) || iVariable_getType(varString) != _VAR_TYPE_CHARACTER)
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varString), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varString), false);
 				return;
 			}
 
@@ -804,7 +804,7 @@
 		//////
 			if (!iVariable_isValid(varCount) || !iVariable_isTypeNumeric(varCount))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varCount), false);
+				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varCount), false);
 				return;
 			}
 
@@ -812,10 +812,10 @@
 		//////////
         // Find out how long they want our string to be
 		//////
-			lnLength = iiVariable_getAs_s32(thisCode, varCount, false, &error, &errorNum);
+			lnLength = iiVariable_getAs_s32(varCount, false, &error, &errorNum);
 			if (error)
 			{
-				iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varCount), false);
+				iError_reportByNumber(errorNum, iVariable_get_relatedComp(varCount), false);
 				return;
 			}
 
@@ -823,10 +823,10 @@
 		//////////
         // Create our return result
 		//////
-	        result = iVariable_create(thisCode, _VAR_TYPE_CHARACTER, NULL, true);
+	        result = iVariable_create(_VAR_TYPE_CHARACTER, NULL, true);
 			if (!result)
 			{
-				iError_report(thisCode, cgcInternalError, false);
+				iError_report(cgcInternalError, false);
 				return;
 			}
 
@@ -881,7 +881,7 @@
 //    ? ROUND(53.213, 2)   && 53.21
 //    ? ROUND(532, -2)     && 500
 //////
-	void function_round(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_round(SFunctionParams* rpar)
 	{
 		SVariable*	varNumber			= rpar->ip[0];
 		SVariable*	varDecimalPlaces	= rpar->ip[1];
@@ -900,7 +900,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varNumber) || !iVariable_isTypeNumeric(varNumber))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNumber), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varNumber), false);
 				return;
 			}
 
@@ -910,7 +910,7 @@
 		//////
 			if (!iVariable_isValid(varDecimalPlaces) || !iVariable_isTypeNumeric(varDecimalPlaces))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varDecimalPlaces), false);
+				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varDecimalPlaces), false);
 				return;
 			}
 
@@ -918,10 +918,10 @@
 		//////////
 		// Grab the p1, convert to f64
 		//////
-			lfValue = iiVariable_getAs_f64(thisCode, varNumber, false, &error, &errorNum);
+			lfValue = iiVariable_getAs_f64(varNumber, false, &error, &errorNum);
 			if (error)
 			{
-				iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNumber), false);
+				iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNumber), false);
 				return;
 			}
 
@@ -929,10 +929,10 @@
 		//////////
 		// Grab the p2, convert to s32
 		//////
-			lnDecimalPlaces = iiVariable_getAs_s32(thisCode, varDecimalPlaces, false, &error, &errorNum);
+			lnDecimalPlaces = iiVariable_getAs_s32(varDecimalPlaces, false, &error, &errorNum);
 			if (error)
 			{
-				iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varDecimalPlaces), false);
+				iError_reportByNumber(errorNum, iVariable_get_relatedComp(varDecimalPlaces), false);
 				return;
 			}
 
@@ -942,7 +942,7 @@
 		//////
 			if (lnDecimalPlaces < -18 || lnDecimalPlaces > 16)
 			{
-				iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(thisCode, varDecimalPlaces), false);
+				iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varDecimalPlaces), false);
 				return;
 			}
 
@@ -955,10 +955,10 @@
 		//////////
         // Create the return(result)
 		//////
-	        result = iVariable_create(thisCode, varNumber->varType, NULL, true);
+	        result = iVariable_create(varNumber->varType, NULL, true);
 			if (!result)
 			{
-				iError_report(thisCode, cgcInternalError, false);
+				iError_report(cgcInternalError, false);
 				return;
 			}
 
@@ -966,8 +966,8 @@
 		//////////
         // Populate the return value
 		//////
-			if (!iVariable_setNumeric_toNumericType(thisCode, result, NULL, &lfRounded, NULL, NULL, NULL, NULL))
-				iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNumber), false);
+			if (!iVariable_setNumeric_toNumericType(result, NULL, &lfRounded, NULL, NULL, NULL, NULL))
+				iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNumber), false);
 
 
 		//////////
@@ -1004,13 +1004,13 @@
 // Example:
 //    ? RTOD(PI())		&& Display 180.00
 //////
-    void function_rtod(SThisCode* thisCode, SFunctionParams* rpar)
+    void function_rtod(SFunctionParams* rpar)
     {
 		SVariable* varNumber = rpar->ip[0];
 
 
         // Return rtod
-		ifunction_numbers_common(thisCode, rpar, varNumber, NULL, NULL, _FP_COMMON_RTOD, _VAR_TYPE_F64, false, false);
+		ifunction_numbers_common(rpar, varNumber, NULL, NULL, _FP_COMMON_RTOD, _VAR_TYPE_F64, false, false);
 	}
 
 
@@ -1036,7 +1036,7 @@
 // Returns:
 //    Character		-- The string with any trailing spaces removed
 //////
-	void function_rtrim(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_rtrim(SFunctionParams* rpar)
 	{
 		SVariable* varString			= rpar->ip[0];
 		SVariable* varCaseInsensitive	= rpar->ip[1];
@@ -1045,5 +1045,5 @@
 
 
 		// Return rtrim
-		ifunction_trim_common(thisCode, rpar, varString, varCaseInsensitive, varTrimChars1, varTrimChars2, false, true);
+		ifunction_trim_common(rpar, varString, varCaseInsensitive, varTrimChars1, varTrimChars2, false, true);
 	}

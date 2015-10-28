@@ -87,7 +87,7 @@
 // Creates a new toolbar from the indicated XML file
 //
 //////
-	SObject* iToolbar_loadFrom_xml(SThisCode* thisCode, cu8* tcXml, u32 tnXmlLength, cs8* tcTagRoot, cs8* tcTagSub)
+	SObject* iToolbar_loadFrom_xml(cu8* tcXml, u32 tnXmlLength, cs8* tcTagRoot, cs8* tcTagSub)
 	{
 		SBitmap*	bmpIconRef;
 		CXmlp		bxml, bxmlRoot, bxmlRootSub, bxmlToolbars, bxmlToolbar, bxmlName, bxmlIcon, bxmlIconName;
@@ -147,7 +147,7 @@
 		//////////
 		// Create the container
 		//////
-			loContainer = iObj_create(thisCode, _OBJ_TYPE_CONTAINER, NULL);
+			loContainer = iObj_create(_OBJ_TYPE_CONTAINER, NULL);
 			if (!loContainer)
 			{
 				debug_break;	// Should never happen
@@ -172,14 +172,14 @@
 					if ((bxmlName = bxmlToolbar->attribute(cgcTag_name)) && (xdNameData = bxmlName->data()))
 					{
 						// Construct the toolbar instance
-						loToolbar = iObj_addChild(NULL, _OBJ_TYPE_TOOLBAR, loContainer);
+						loToolbar = iObj_addChild(_OBJ_TYPE_TOOLBAR, loContainer);
 						if (!loToolbar)
 						{
 							debug_break;	// Should never happen
 
 						} else {
 							// Assign its name
-							iObjProp_set_character_direct(thisCode, loToolbar, _INDEX_NAME, xdNameData->as_datum(&d));
+							iObjProp_set_character_direct(loToolbar, _INDEX_NAME, xdNameData->as_datum(&d));
 
 
 							//////////
@@ -203,7 +203,7 @@
 											if (xdIconNameData->length() == sizeof(cgcTag_separator) - 1 && iDatum_compare(xdIconNameData->as_datum(&d), cgcTag_separator, sizeof(cgcTag_separator) - 1) == 0)
 											{
 												// Append the separator
-												lo = iObj_addChild(NULL, _OBJ_TYPE_SEPARATOR, loToolbar);
+												lo = iObj_addChild(_OBJ_TYPE_SEPARATOR, loToolbar);
 												if (!lo)
 													debug_break;	// Should never happen
 
@@ -219,12 +219,12 @@
 												}
 
 												// Append the image instance
-												lo = iObj_addChild(NULL, _OBJ_TYPE_IMAGE, loToolbar);
+												lo = iObj_addChild(_OBJ_TYPE_IMAGE, loToolbar);
 												if (!lo)
 													debug_break;	// Should never happen
 
 												// Set the size and copy the bitmap
-												iObj_setSize(NULL, lo, 0, 0, bmpIconRef->bi.biWidth, bmpIconRef->bi.biHeight);
+												iObj_setSize(lo, 0, 0, bmpIconRef->bi.biWidth, bmpIconRef->bi.biHeight);
 												propSetPictureBmp		(lo, bmpIconRef);
 												propSetPictureBmpDown	(lo, bmpIconRef);
 											}
@@ -252,7 +252,7 @@
 // Called to create toolbars on the individual object
 //
 //////
-	bool iToolbar_applyTo_obj(SThisCode* thisCode, SObject* objParent, SObject* objToolbarContainer, cu8* tcXml, u32 tnXmlLength, cs8* tcTagRoot, cs8* tcTagSub)
+	bool iToolbar_applyTo_obj(SObject* objParent, SObject* objToolbarContainer, cu8* tcXml, u32 tnXmlLength, cs8* tcTagRoot, cs8* tcTagSub)
 	{
 		s32			lnX, lnY, lnWidth, lnHeight, lnIconWidth, lnIconHeight;
 		bool		llResult, llVisible;
@@ -326,13 +326,13 @@
 					if ((bxmlName = bxmlToolbar->attribute(cgcTag_name)) && (xdTagName = bxmlName->data()))
 					{
 						// Make sure this toolbar reference is in the container
-						if ((loToolbarSource = iiObj_findChildObject_byName(thisCode, objToolbarContainer->firstChild, xdTagName->as_datum(&d), true, false, true)))
+						if ((loToolbarSource = iiObj_findChildObject_byName(objToolbarContainer->firstChild, xdTagName->as_datum(&d), true, false, true)))
 						{
 
 							//////////
 							// Construct the toolbar class copy
 							//////
-								loToolbarCopy = iObj_copy(NULL, loToolbarSource, NULL, NULL, NULL, true, false, true);
+								loToolbarCopy = iObj_copy(loToolbarSource, NULL, NULL, NULL, true, false, true);
 								if (!loToolbarCopy)
 									debug_break;	// Should never happen
 
@@ -410,14 +410,14 @@
 
 									// Is it an icon?
 									if (objToolbarItem->objType == _OBJ_TYPE_IMAGE)
-										iObj_setSize(thisCode, objToolbarItem, objToolbarItem->rc.left, objToolbarItem->rc.top, lnIconWidth, lnIconHeight);
+										iObj_setSize(objToolbarItem, objToolbarItem->rc.left, objToolbarItem->rc.top, lnIconWidth, lnIconHeight);
 								}
 
 
 							//////////
 							// Set the properties for this toolbar
 							//////
-								iObj_setSize(thisCode, loToolbarCopy, lnX, lnY, lnWidth, lnHeight);
+								iObj_setSize(loToolbarCopy, lnX, lnY, lnWidth, lnHeight);
 								propSetVisible_fromBool(loToolbarCopy, llVisible);
 								propSetMargin(loToolbarCopy, 6);
 
@@ -453,7 +453,7 @@
 		// Create the object and its sub-objects
 		//////
 			// Create object
-			_jdebi = iObj_create(thisCode, _OBJ_TYPE_FORM, NULL);
+			_jdebi = iObj_create(_OBJ_TYPE_FORM, NULL);
 			if (!_jdebi)
 				return;
 
@@ -480,20 +480,20 @@
 			lnTop		= (lrc.bottom - lrc.top)  / 32;
 			lnWidth		-= (2 * lnLeft);
 			lnHeight	-= (2 * lnTop);
-			iObj_setSize(thisCode, _jdebi, lnLeft, lnTop, lnWidth, lnHeight);
+			iObj_setSize(_jdebi, lnLeft, lnTop, lnWidth, lnHeight);
 
 
 		//////////
 		// Create the subforms
 		//////
-			_sourceCode		= iObj_addChild(thisCode, _OBJ_TYPE_SUBFORM, _jdebi);
-			_locals			= iObj_addChild(thisCode, _OBJ_TYPE_SUBFORM, _jdebi);
-			_watch			= iObj_addChild(thisCode, _OBJ_TYPE_SUBFORM, _jdebi);
-			_cmd			= iObj_addChild(thisCode, _OBJ_TYPE_SUBFORM, _jdebi);
-			_debug			= iObj_addChild(thisCode, _OBJ_TYPE_SUBFORM, _jdebi);
-			_output			= iObj_addChild(thisCode, _OBJ_TYPE_SUBFORM, _jdebi);
-			_sourceLight	= iObj_addChild(thisCode, _OBJ_TYPE_SUBFORM, _jdebi);
-			_screen			= iObj_addChild(thisCode, _OBJ_TYPE_SUBFORM, _jdebi);
+			_sourceCode		= iObj_addChild(_OBJ_TYPE_SUBFORM, _jdebi);
+			_locals			= iObj_addChild(_OBJ_TYPE_SUBFORM, _jdebi);
+			_watch			= iObj_addChild(_OBJ_TYPE_SUBFORM, _jdebi);
+			_cmd			= iObj_addChild(_OBJ_TYPE_SUBFORM, _jdebi);
+			_debug			= iObj_addChild(_OBJ_TYPE_SUBFORM, _jdebi);
+			_output			= iObj_addChild(_OBJ_TYPE_SUBFORM, _jdebi);
+			_sourceLight	= iObj_addChild(_OBJ_TYPE_SUBFORM, _jdebi);
+			_screen			= iObj_addChild(_OBJ_TYPE_SUBFORM, _jdebi);
 
 			// Set the names, icons, and make them visible
 			propSetName(_sourceCode,	cgcName_sourceCode,		sizeof(cgcName_sourceCode) - 1);
@@ -529,12 +529,12 @@
 		//////
 			lnWidth		= (_jdebi->rcClient.right - _jdebi->rcClient.left) / 8;
 			lnHeight	= (_jdebi->rcClient.bottom - _jdebi->rcClient.top) / 8;
-			iObj_setSize(thisCode, _sourceCode,	0,						0,							4 * lnWidth,																4 * lnHeight);
-			iObj_setSize(thisCode, _locals,			_sourceCode->rc.right,	0,							lnWidth * 3 / 2,															3 * lnHeight / 2);
-			iObj_setSize(thisCode, _watch,			_locals->rc.right,		0,							(_jdebi->rcClient.right - _jdebi->rcClient.left) - _locals->rc.right,		3 * lnHeight / 2);
-			iObj_setSize(thisCode, _cmd,			0,						_sourceCode->rc.bottom,		4 * lnWidth,																(_jdebi->rcClient.bottom - _jdebi->rcClient.top) - _sourceCode->rc.bottom);
-			iObj_setSize(thisCode, _sourceLight,	_sourceCode->rc.right,	_watch->rc.bottom,			(_jdebi->rcClient.right - _jdebi->rcClient.left) - _sourceCode->rc.right,	3 * lnHeight);
-			iObj_setSize(thisCode, _screen,			_sourceCode->rc.right,	_sourceLight->rc.bottom,	(_jdebi->rcClient.right - _jdebi->rcClient.left) - _sourceCode->rc.right,	(_jdebi->rcClient.bottom - _jdebi->rcClient.top) - _sourceLight->rc.bottom);
+			iObj_setSize(_sourceCode,	0,						0,							4 * lnWidth,																4 * lnHeight);
+			iObj_setSize(_locals,			_sourceCode->rc.right,	0,							lnWidth * 3 / 2,															3 * lnHeight / 2);
+			iObj_setSize(_watch,			_locals->rc.right,		0,							(_jdebi->rcClient.right - _jdebi->rcClient.left) - _locals->rc.right,		3 * lnHeight / 2);
+			iObj_setSize(_cmd,			0,						_sourceCode->rc.bottom,		4 * lnWidth,																(_jdebi->rcClient.bottom - _jdebi->rcClient.top) - _sourceCode->rc.bottom);
+			iObj_setSize(_sourceLight,	_sourceCode->rc.right,	_watch->rc.bottom,			(_jdebi->rcClient.right - _jdebi->rcClient.left) - _sourceCode->rc.right,	3 * lnHeight);
+			iObj_setSize(_screen,			_sourceCode->rc.right,	_sourceLight->rc.bottom,	(_jdebi->rcClient.right - _jdebi->rcClient.left) - _sourceCode->rc.right,	(_jdebi->rcClient.bottom - _jdebi->rcClient.top) - _sourceLight->rc.bottom);
 
 			// These are created, but they are not visible
 // 			iObj_setSize(debug,			command->rc.right,		watch->rc.bottom,			(sourceCode->rc.right - command->rc.right) / 2,									(_jdebi->rcClient.bottom - _jdebi->rcClient.top) - watch->rc.bottom);
@@ -543,16 +543,16 @@
 		//////////
 		// Add the editbox controls to the subforms
 		//////
-			_sourceCode_carousel	= iObj_addChild(thisCode,	_OBJ_TYPE_CAROUSEL,		_sourceCode);
-			_sourceCode_rider		= iObj_addChild(thisCode,	_OBJ_TYPE_RIDER,		_sourceCode_carousel);
-			_sourceCode_editbox		= iObj_addChild(thisCode,	_OBJ_TYPE_EDITBOX,		_sourceCode_rider);
-			_locals_editbox			= iObj_addChild(thisCode,	_OBJ_TYPE_EDITBOX,		_locals);
-			_watch_editbox			= iObj_addChild(thisCode,	_OBJ_TYPE_EDITBOX,		_watch);
-			_command_editbox		= iObj_addChild(thisCode,	_OBJ_TYPE_EDITBOX,		_cmd);
-			_debug_editbox			= iObj_addChild(thisCode,	_OBJ_TYPE_EDITBOX,		_debug);
-			_output_editbox			= iObj_addChild(thisCode,	_OBJ_TYPE_EDITBOX,		_output);
-			_screen_editbox			= iObj_addChild(thisCode,	_OBJ_TYPE_EDITBOX,		_screen);
-			_sourceLight_empty		= iObj_addChild(thisCode,	_OBJ_TYPE_EMPTY,		_sourceLight);
+			_sourceCode_carousel	= iObj_addChild(_OBJ_TYPE_CAROUSEL,		_sourceCode);
+			_sourceCode_rider		= iObj_addChild(_OBJ_TYPE_RIDER,		_sourceCode_carousel);
+			_sourceCode_editbox		= iObj_addChild(_OBJ_TYPE_EDITBOX,		_sourceCode_rider);
+			_locals_editbox			= iObj_addChild(_OBJ_TYPE_EDITBOX,		_locals);
+			_watch_editbox			= iObj_addChild(_OBJ_TYPE_EDITBOX,		_watch);
+			_command_editbox		= iObj_addChild(_OBJ_TYPE_EDITBOX,		_cmd);
+			_debug_editbox			= iObj_addChild(_OBJ_TYPE_EDITBOX,		_debug);
+			_output_editbox			= iObj_addChild(_OBJ_TYPE_EDITBOX,		_output);
+			_screen_editbox			= iObj_addChild(_OBJ_TYPE_EDITBOX,		_screen);
+			_sourceLight_empty		= iObj_addChild(_OBJ_TYPE_EMPTY,		_sourceLight);
 
 
 		//////////
@@ -574,17 +574,17 @@
 		// Position and size each control
 		//////
 			lnHeight = (_jdebi->rcClient.bottom - _jdebi->rcClient.top) / 8;
-			iObj_setSize(thisCode, _sourceCode_carousel,	50,	-1,		_sourceCode->rcClient.right				- _sourceCode->rcClient.left - 49,		_sourceCode->rcClient.bottom			- _sourceCode->rcClient.top - 2);
-			iObj_setSize(thisCode, _sourceCode_rider,		0,	0,		_sourceCode_carousel->rcClient.right	- _sourceCode_carousel->rcClient.left,	_sourceCode_carousel->rcClient.bottom	- _sourceCode_carousel->rcClient.top);
-			iObj_setSize(thisCode, _sourceCode_editbox,		0,	0,		_sourceCode_rider->rcClient.right		- _sourceCode_rider->rcClient.left,		_sourceCode_rider->rcClient.bottom		- _sourceCode_rider->rcClient.top);
-			iEngine_raise_event(thisCode, _EVENT_RESIZE, NULL, _sourceCode_carousel, &_sourceCode_carousel->rc);
-			iObj_setSize(thisCode, _locals_editbox,			8,	0,		_locals->rcClient.right					- _locals->rcClient.left - 8,			_locals->rcClient.bottom				- _locals->rcClient.top);
-			iObj_setSize(thisCode, _watch_editbox,			8,	0,		_watch->rcClient.right					- _watch->rcClient.left - 8,			_watch->rcClient.bottom					- _watch->rcClient.top);
-			iObj_setSize(thisCode, _command_editbox,		8,	0,		_cmd->rcClient.right					- _cmd->rcClient.left - 8,				_cmd->rcClient.bottom					- _cmd->rcClient.top);
-			iObj_setSize(thisCode, _debug_editbox,			8,	0,		_debug->rcClient.right					- _debug->rcClient.left - 8,			_debug->rcClient.bottom					- _debug->rcClient.top);
-			iObj_setSize(thisCode, _output_editbox,			8,	0,		_output->rcClient.right					- _output->rcClient.left - 8,			_output->rcClient.bottom				- _output->rcClient.top);
-			iObj_setSize(thisCode, _screen_editbox,			8,	0,		_screen->rcClient.right					- _screen->rcClient.left - 8,			_screen->rcClient.bottom				- _screen->rcClient.top);
-			iObj_setSize(thisCode, _sourceLight_empty,		0,	0,		_sourceLight->rcClient.right			- _sourceLight->rcClient.left,			_sourceLight->rcClient.bottom			- _sourceLight->rcClient.top);
+			iObj_setSize(_sourceCode_carousel,	50,	-1,		_sourceCode->rcClient.right				- _sourceCode->rcClient.left - 49,		_sourceCode->rcClient.bottom			- _sourceCode->rcClient.top - 2);
+			iObj_setSize(_sourceCode_rider,		0,	0,		_sourceCode_carousel->rcClient.right	- _sourceCode_carousel->rcClient.left,	_sourceCode_carousel->rcClient.bottom	- _sourceCode_carousel->rcClient.top);
+			iObj_setSize(_sourceCode_editbox,		0,	0,		_sourceCode_rider->rcClient.right		- _sourceCode_rider->rcClient.left,		_sourceCode_rider->rcClient.bottom		- _sourceCode_rider->rcClient.top);
+			iEngine_raise_event(_EVENT_RESIZE, NULL, _sourceCode_carousel, &_sourceCode_carousel->rc);
+			iObj_setSize(_locals_editbox,			8,	0,		_locals->rcClient.right					- _locals->rcClient.left - 8,			_locals->rcClient.bottom				- _locals->rcClient.top);
+			iObj_setSize(_watch_editbox,			8,	0,		_watch->rcClient.right					- _watch->rcClient.left - 8,			_watch->rcClient.bottom					- _watch->rcClient.top);
+			iObj_setSize(_command_editbox,		8,	0,		_cmd->rcClient.right					- _cmd->rcClient.left - 8,				_cmd->rcClient.bottom					- _cmd->rcClient.top);
+			iObj_setSize(_debug_editbox,			8,	0,		_debug->rcClient.right					- _debug->rcClient.left - 8,			_debug->rcClient.bottom					- _debug->rcClient.top);
+			iObj_setSize(_output_editbox,			8,	0,		_output->rcClient.right					- _output->rcClient.left - 8,			_output->rcClient.bottom				- _output->rcClient.top);
+			iObj_setSize(_screen_editbox,			8,	0,		_screen->rcClient.right					- _screen->rcClient.left - 8,			_screen->rcClient.bottom				- _screen->rcClient.top);
+			iObj_setSize(_sourceLight_empty,		0,	0,		_sourceLight->rcClient.right			- _sourceLight->rcClient.left,			_sourceLight->rcClient.bottom			- _sourceLight->rcClient.top);
 
 
 		//////////
@@ -603,7 +603,7 @@
 			((SObject*)_sourceCode->firstChild->ll.next)->rc.right = 90;
 
 			_sourceCode_editbox->p.font					= iFont_create(cgcFontName_defaultFixed, 10, FW_MEDIUM, false, false);
-			iEngine_set_event(thisCode, _EVENT_ONKEYDOWN, NULL, _sourceCode_editbox, (uptr)&iSEM_onKeyDown_sourceCode);
+			iEngine_set_event(_EVENT_ONKEYDOWN, NULL, _sourceCode_editbox, (uptr)&iSEM_onKeyDown_sourceCode);
 			propSetBorderStyle(_sourceCode_editbox, _BORDER_STYLE_FIXED);
 			propSetBorderColor(_sourceCode_editbox, lineNumberBackColor);
 			_sourceCode_editbox->p.sem->showCursorLine	= true;
@@ -617,13 +617,13 @@
 		//////////
 		// Locals window caption and font
 		//////
-			iObjProp_set_character_direct(thisCode, _locals, _INDEX_CAPTION, cgcLocalsTitle, sizeof(cgcLocalsTitle) - 1);
+			iObjProp_set_character_direct(_locals, _INDEX_CAPTION, cgcLocalsTitle, sizeof(cgcLocalsTitle) - 1);
 			_locals_editbox->p.font					= iFont_create(cgcFontName_defaultFixed, 10, FW_MEDIUM, false, false);
-			iEngine_set_event(thisCode, _EVENT_ONKEYDOWN, NULL, _locals_editbox, (uptr)&iSEM_onKeyDown);
+			iEngine_set_event(_EVENT_ONKEYDOWN, NULL, _locals_editbox, (uptr)&iSEM_onKeyDown);
 			_locals_editbox->p.sem->showCursorLine	= true;
 			_locals_editbox->p.sem->isSourceCode		= true;
 			_locals_editbox->p.sem->showLineNumbers	= true;
-			iSEM_appendLine(thisCode, _locals_editbox->p.sem, NULL, 0, false);
+			iSEM_appendLine(_locals_editbox->p.sem, NULL, 0, false);
 
 			// Adjust the caption width
 			((SObject*)_locals->firstChild->ll.next)->rc.right = 65;
@@ -632,13 +632,13 @@
 		//////////
 		// Watch window caption and font
 		//////
-			iObjProp_set_character_direct(thisCode, _watch, _INDEX_CAPTION, cgcWatchTitle, sizeof(cgcWatchTitle) - 1);
+			iObjProp_set_character_direct(_watch, _INDEX_CAPTION, cgcWatchTitle, sizeof(cgcWatchTitle) - 1);
 			_watch_editbox->p.font					= iFont_create(cgcFontName_defaultFixed, 10, FW_MEDIUM, false, false);
-			iEngine_set_event(thisCode, _EVENT_ONKEYDOWN, NULL, _watch_editbox, (uptr)&iSEM_onKeyDown);
+			iEngine_set_event(_EVENT_ONKEYDOWN, NULL, _watch_editbox, (uptr)&iSEM_onKeyDown);
 			_watch_editbox->p.sem->showCursorLine	= true;
 			_watch_editbox->p.sem->isSourceCode		= true;
 			_watch_editbox->p.sem->showLineNumbers	= true;
-			iSEM_appendLine(thisCode, _watch_editbox->p.sem, NULL, 0, false);
+			iSEM_appendLine(_watch_editbox->p.sem, NULL, 0, false);
 
 			// Adjust the caption width
 			((SObject*)_watch->firstChild->ll.next)->rc.right = 65;
@@ -647,9 +647,9 @@
 		//////////
 		// Command window caption and font
 		//////
-			iObjProp_set_character_direct(thisCode, _cmd, _INDEX_CAPTION, cgcCommandTitle, sizeof(cgcCommandTitle) - 1);
+			iObjProp_set_character_direct(_cmd, _INDEX_CAPTION, cgcCommandTitle, sizeof(cgcCommandTitle) - 1);
 			_command_editbox->p.font					= iFont_create(cgcFontName_defaultFixed, 10, FW_MEDIUM, false, false);
-			iEngine_set_event(thisCode, _EVENT_ONKEYDOWN, NULL, _command_editbox, (uptr)&iSEM_onKeyDown_sourceCode);
+			iEngine_set_event(_EVENT_ONKEYDOWN, NULL, _command_editbox, (uptr)&iSEM_onKeyDown_sourceCode);
 			_command_editbox->p.hasFocus					= true;
 			_command_editbox->p.sem->showCursorLine		= true;
 			_command_editbox->p.sem->isSourceCode		= true;
@@ -662,9 +662,9 @@
 		//////////
 		// Debug window caption and font
 		//////
-			iObjProp_set_character_direct(thisCode, _debug, _INDEX_CAPTION, cgcDebugTitle, sizeof(cgcDebugTitle) - 1);
+			iObjProp_set_character_direct(_debug, _INDEX_CAPTION, cgcDebugTitle, sizeof(cgcDebugTitle) - 1);
 			_debug_editbox->p.font					= iFont_create(cgcFontName_defaultFixed, 10, FW_MEDIUM, false, false);
-			iEngine_set_event(thisCode, _EVENT_ONKEYDOWN, NULL, _debug_editbox, (uptr)&iSEM_onKeyDown);
+			iEngine_set_event(_EVENT_ONKEYDOWN, NULL, _debug_editbox, (uptr)&iSEM_onKeyDown);
 			_debug_editbox->p.sem->showCursorLine	= true;
 
 			// Adjust the caption width
@@ -674,9 +674,9 @@
 		//////////
 		// Output window caption and font
 		//////
-			iObjProp_set_character_direct(thisCode, _output, _INDEX_CAPTION, cgcOutputTitle, sizeof(cgcOutputTitle) - 1);
+			iObjProp_set_character_direct(_output, _INDEX_CAPTION, cgcOutputTitle, sizeof(cgcOutputTitle) - 1);
 			_output_editbox->p.font					= iFont_create(cgcFontName_defaultFixed, 8, FW_MEDIUM, false, false);
-			iEngine_set_event(thisCode, _EVENT_ONKEYDOWN, NULL, _output_editbox, (uptr)&iSEM_onKeyDown);
+			iEngine_set_event(_EVENT_ONKEYDOWN, NULL, _output_editbox, (uptr)&iSEM_onKeyDown);
 			_output_editbox->p.sem->showCursorLine	= true;
 
 			// Adjust the caption width
@@ -686,17 +686,17 @@
 		//////////
 		// SourceLight a caption and font
 		//////
-			iObjProp_set_character_direct(thisCode, _sourceLight, _INDEX_CAPTION, cgcSourceLightTitle, sizeof(cgcSourceLightTitle) - 1);
+			iObjProp_set_character_direct(_sourceLight, _INDEX_CAPTION, cgcSourceLightTitle, sizeof(cgcSourceLightTitle) - 1);
 			_sourceLight->p.font = iFont_create(cgcFontName_defaultFixed, 10, FW_MEDIUM, false, false);
 			propSetVisible(_sourceLight, _LOGICAL_TRUE);
 			propSetBackStyle(_sourceLight, _BACK_STYLE_OPAQUE);
-			iEngine_set_event(thisCode, _EVENT_ONRENDER, NULL, _sourceLight_empty, (uptr)&iSourceLight_copy);
+			iEngine_set_event(_EVENT_ONRENDER, NULL, _sourceLight_empty, (uptr)&iSourceLight_copy);
 
 
 		//////////
 		// _screen a caption and font
 		//////
-			iObjProp_set_character_direct(thisCode, _screen, _INDEX_CAPTION, cgcScreenTitle, sizeof(cgcScreenTitle) - 1);
+			iObjProp_set_character_direct(_screen, _INDEX_CAPTION, cgcScreenTitle, sizeof(cgcScreenTitle) - 1);
 			_screen->p.font = iFont_create(cgcFontName_defaultFixed, 10, FW_MEDIUM, false, false);
 
 
@@ -704,7 +704,7 @@
 		// Setup _screen's editbox
 		//////
 			_screen_editbox->p.font		= iFont_create(cgcFontName_defaultFixed, 10, FW_MEDIUM, false, false);
-			iEngine_set_event(thisCode, _EVENT_ONKEYDOWN, NULL, _screen_editbox, (uptr)&iSEM_onKeyDown);
+			iEngine_set_event(_EVENT_ONKEYDOWN, NULL, _screen_editbox, (uptr)&iSEM_onKeyDown);
 			screenData					= _screen_editbox->p.sem;
 			screenData->showCursorLine	= true;
 			screenData->showEndLine		= true;
@@ -734,13 +734,13 @@
 			//////////
 			// Load the master JDebi toolbars
 			//////
-				jdebiToolbarsContainer = iToolbar_loadFrom_xml(NULL, cgc_JDebiBxml, sizeof(cgc_JDebiBxml), cgcTag_jdebi, cgcTag_source_code);
+				jdebiToolbarsContainer = iToolbar_loadFrom_xml(cgc_JDebiBxml, sizeof(cgc_JDebiBxml), cgcTag_jdebi, cgcTag_source_code);
 
 
 			//////////
 			// Apply whatever toolbars are live and visible as they're currently laid out
 			//////
-				iToolbar_applyTo_obj(NULL, _sourceCode, jdebiToolbarsContainer, cgc_JDebiLayoutBxml, sizeof(cgc_JDebiLayoutBxml), cgcTag_jdebi, cgcTag_source_code);
+				iToolbar_applyTo_obj(_sourceCode, jdebiToolbarsContainer, cgc_JDebiLayoutBxml, sizeof(cgc_JDebiLayoutBxml), cgcTag_jdebi, cgcTag_source_code);
 
 		}
 	}
@@ -761,7 +761,7 @@
 		//////////
 		// Jan.01.2000 00:00:00.000
 		//////
-			_datetime_Jan_01_2000 = iVariable_create(NULL, _VAR_TYPE_DATETIME, NULL, true);
+			_datetime_Jan_01_2000 = iVariable_create(_VAR_TYPE_DATETIME, NULL, true);
 			dt.julian	= 2451545;
 			dt.seconds	= 0.0f;
 			iDatum_duplicate(&_datetime_Jan_01_2000->value, (u8*)&dt, 8);
@@ -838,7 +838,7 @@
 // Append to the system log
 //
 //////
-	void iVjr_appendSystemLog(SThisCode* thisCode, u8* tcLogText)
+	void iVjr_appendSystemLog(u8* tcLogText)
 	{
 		u8 buffer[2048];
 
@@ -848,7 +848,7 @@
 
 		// Append to it
 		sprintf((s8*)buffer, (s8*)"[%u] %s\0", (u32)((s64)GetTickCount() - systemStartedTickCount), (s8*)tcLogText);
-		iSEM_appendLine(thisCode, systemLog, buffer, -1, false);
+		iSEM_appendLine(systemLog, buffer, -1, false);
 
 		// Release it
 		LeaveCriticalSection(&cs_logData);
@@ -868,9 +868,9 @@
 // Called to flush the system log to disk
 //
 //////
-	void iVjr_flushSystemLog(SThisCode* thisCode)
+	void iVjr_flushSystemLog()
 	{
-		iSEM_saveToDisk(thisCode, systemLog, cgcSystemLogFilename);
+		iSEM_saveToDisk(systemLog, cgcSystemLogFilename);
 	}
 
 
@@ -948,20 +948,20 @@
 		iVjr_release_jdebi();
 
 		// Global variables
-		iVariable_delete(NULL, varGlobals,			true);
-		iVariable_delete(NULL, cvarSpace1,			true);
-		iVariable_delete(NULL, cvarEmptyString,		true);
-		iVariable_delete(NULL, cvarSpace2000,		true);
-		iVariable_delete(NULL, cvarTrue,			true);
-		iVariable_delete(NULL, cvarFalse,			true);
+		iVariable_delete(varGlobals,		true);
+		iVariable_delete(cvarSpace1,		true);
+		iVariable_delete(cvarEmptyString,	true);
+		iVariable_delete(cvarSpace2000,		true);
+		iVariable_delete(cvarTrue,			true);
+		iVariable_delete(cvarFalse,			true);
 
 		// Delete the splash objects and images
-		iObj_delete(NULL, &gobj_splashListing, true, true, true);
-		iBmp_delete(&gSplash.bmp, true, false);
+		iObj_delete(&gobj_splashListing,	true, true, true);
+		iBmp_delete(&gSplash.bmp,			true, false);
 
 		// Release our builders
-		iWindow_releaseAll(&gWindows, true);
-		iFont_releaseAll(gFonts, true);
+		iWindow_releaseAll(&gWindows,		true);
+		iFont_releaseAll(gFonts,			true);
 	}
 
 
@@ -974,26 +974,26 @@
 //////
 	void iVjr_releaseAllDefaultDatetimes(void)
 	{
-		iVariable_delete(NULL, _datetime_Jan_01_2000, true);
+		iVariable_delete(_datetime_Jan_01_2000, true);
 	}
 
 	void iVjr_releaseAllDefaultObjects(void)
 	{
-		iObj_delete(NULL, &gobj_defaultEmpty,		true, true, true);
-		iObj_delete(NULL, &gobj_defaultLabel,		true, true, true);
-		iObj_delete(NULL, &gobj_defaultTextbox,		true, true, true);
-		iObj_delete(NULL, &gobj_defaultButton,		true, true, true);
-		iObj_delete(NULL, &gobj_defaultImage,		true, true, true);
-		iObj_delete(NULL, &gobj_defaultCheckbox,	true, true, true);
-		iObj_delete(NULL, &gobj_defaultOption,		true, true, true);
-		iObj_delete(NULL, &gobj_defaultRadio,		true, true, true);
-		iObj_delete(NULL, &gobj_defaultForm,		true, true, true);
-		iObj_delete(NULL, &gobj_defaultSubform,		true, true, true);
+		iObj_delete(&gobj_defaultEmpty,		true, true, true);
+		iObj_delete(&gobj_defaultLabel,		true, true, true);
+		iObj_delete(&gobj_defaultTextbox,		true, true, true);
+		iObj_delete(&gobj_defaultButton,		true, true, true);
+		iObj_delete(&gobj_defaultImage,		true, true, true);
+		iObj_delete(&gobj_defaultCheckbox,	true, true, true);
+		iObj_delete(&gobj_defaultOption,		true, true, true);
+		iObj_delete(&gobj_defaultRadio,		true, true, true);
+		iObj_delete(&gobj_defaultForm,		true, true, true);
+		iObj_delete(&gobj_defaultSubform,		true, true, true);
 	}
 
 	void iVjr_release_jdebi(void)
 	{
-		iObj_delete(NULL, &_jdebi, true, true, true);
+		iObj_delete(&_jdebi, true, true, true);
 	}
 
 	void iVjr_releaseCaskIcons(void)
@@ -1029,7 +1029,7 @@
 // Called as a central location to shutdown the system politely.
 //
 //////
-	void iVjr_shutdown(SThisCode* thisCode)
+	void iVjr_shutdown()
 	{
 // 		bool	error;
 // 		u32		errorNum;
@@ -1040,21 +1040,21 @@
 
 #if !defined(_NONVJR_COMPILE)
 		// System is shutting down
-		iVjr_appendSystemLog(thisCode, (u8*)"Unengage VJr");
+		iVjr_appendSystemLog((u8*)"Unengage VJr");
 
 		// Tell OS to unengage our process
-		iVjr_appendSystemLog(thisCode, (u8*)"Notify OS to shutdown");
+		iVjr_appendSystemLog((u8*)"Notify OS to shutdown");
 
 		// Flush the log
-		iVjr_flushSystemLog(thisCode);
+		iVjr_flushSystemLog();
 
 		// Save where we are
-		iSEM_saveToDisk(thisCode, screenData,				cgcScreenDataFilename);
-		iSEM_saveToDisk(thisCode, _command_editbox->p.sem,	cgcCommandHistoryFilename);
+		iSEM_saveToDisk(screenData,				cgcScreenDataFilename);
+		iSEM_saveToDisk(_command_editbox->p.sem,	cgcCommandHistoryFilename);
 
 		// Save the system layout
 // Temporarily disabled
-//		iObj_saveLayoutAs_bxml(thisCode, _jdebi, cgcScreenLayoutFilename, true, true, true, &error, &errorNum);
+//		iObj_saveLayoutAs_bxml(_jdebi, cgcScreenLayoutFilename, true, true, true, &error, &errorNum);
 #endif
 
 		// Close the allocated memory blocks
@@ -1148,7 +1148,7 @@
 				}
 		}
 		// Log it
-		iVjr_appendSystemLog(thisCode, (u8*)"Splash screen unengaged");
+		iVjr_appendSystemLog((u8*)"Splash screen unengaged");
 
 		// Delete the timer
 		KillTimer(gSplash.hwnd, 0);
@@ -1178,9 +1178,6 @@
 //////
 	DWORD WINAPI iSplash_delete(LPVOID lpParameter)
 	{
-		SThisCode* thisCode = NULL;
-
-
 		// Close any prior splash screen
 		if (gSplash.isEnabled)
 		{
@@ -1188,7 +1185,7 @@
 			Sleep((DWORD)(uptr)lpParameter);
 
 			// Log it
-			iVjr_appendSystemLog(thisCode, (u8*)"Splash screen can unengage");
+			iVjr_appendSystemLog((u8*)"Splash screen can unengage");
 
 			// Indicate no longer valid
 			gSplash.isEnabled = false;
@@ -1268,16 +1265,16 @@
 		{
 			// Log it
 			sprintf((s8*)buffer, "Engage %s\0", (s8*)lpParameter);
-			iVjr_appendSystemLog(thisCode, buffer);
+			iVjr_appendSystemLog(buffer);
 
 			// Begin at the beginning
 			soundOffset = 0;
 			soundCount	/= 4;	// Each sound item is an f32
 
 			// Attempt to create the sound stream
-			lnSoundHandle	= iSound_createStream(thisCode, 44100, (u64)&iPlay_ariaSplash_callback);
+			lnSoundHandle	= iSound_createStream(44100, (u64)&iPlay_ariaSplash_callback);
 			lfVolume		= 1.0f;//0.25f;
-			iSound_playStart(thisCode, lnSoundHandle, lfVolume);
+			iSound_playStart(lnSoundHandle, lfVolume);
 
 			// Repeat until the splash screen is over, or the song ends
 			stopTickCount = GetTickCount() + 2500;
@@ -1296,17 +1293,17 @@
 			{
 				// Turn down the volume 1/10th
 				lfVolume -= 0.025f;
-				iSound_setVolume(thisCode, lnSoundHandle, lfVolume);
+				iSound_setVolume(lnSoundHandle, lfVolume);
 
 				// Wait 1/10th second
 				Sleep(100);
 			}
 			// Log it
 			sprintf((s8*)buffer, "Unengage %s\0", (s8*)lpParameter);
-			iVjr_appendSystemLog(thisCode, buffer);
+			iVjr_appendSystemLog(buffer);
 
 			// When we get here, we're done playing
-			iSound_playCancel(thisCode, lnSoundHandle);
+			iSound_playCancel(lnSoundHandle);
 
 			// Raise the termination flag until we can shut down the playback
 			soundOffset = soundCount;
@@ -1316,12 +1313,12 @@
 			soundData_s8 = NULL;
 
 			// Clear the handle
-			iSound_deleteHandle(thisCode, lnSoundHandle);
+			iSound_deleteHandle(lnSoundHandle);
 
 		} else {
 			// Log it
 			sprintf((s8*)buffer, "Inquiry on sound file %s\0", (s8*)lpParameter);
-			iVjr_appendSystemLog(thisCode, buffer);
+			iVjr_appendSystemLog(buffer);
 		}
 
 		// Completed
@@ -1381,7 +1378,7 @@
 						win->mouseCurrent.positionInOsDesktop.y = lpt.y;
 
 						// Reposition or resize
-						iiMouse_processMouseEvents_windowSpecial(NULL, win);
+						iiMouse_processMouseEvents_windowSpecial(win);
 					}
 					break;
 
@@ -1396,7 +1393,7 @@
 
 				case WM_SETFOCUS:
 				case WM_WINDOWPOSCHANGED:
-					iWindow_render(NULL, win, true);
+					iWindow_render(win, true);
 					break;
 
 				case WM_LBUTTONDOWN:
@@ -1415,18 +1412,18 @@
 				case WM_MOUSEMOVE:
 				case WM_MOUSEHOVER:
 					if (!win->isMoving && !win->isResizing)
-						return((LRESULT)(sptr)iMouse_processMessage(NULL, win, m, w, l));
+						return((LRESULT)(sptr)iMouse_processMessage(win, m, w, l));
 					break;
 
 				case WM_SYSKEYDOWN:
 				case WM_SYSKEYUP:
-					if (w == VK_F10)		return((LRESULT)(sptr)iKeyboard_processMessage(NULL, win, ((WM_SYSKEYDOWN) ? WM_KEYDOWN : WM_KEYUP), w, l));
-					else					return((LRESULT)(sptr)iKeyboard_processMessage(NULL, win, m, w, l));		// Send it as is
+					if (w == VK_F10)		return((LRESULT)(sptr)iKeyboard_processMessage(win, ((WM_SYSKEYDOWN) ? WM_KEYDOWN : WM_KEYUP), w, l));
+					else					return((LRESULT)(sptr)iKeyboard_processMessage(win, m, w, l));		// Send it as is
 					break;
 
 				case WM_KEYDOWN:
 				case WM_KEYUP:
-					return((LRESULT)(sptr)iKeyboard_processMessage(NULL, win, m, w, l));
+					return((LRESULT)(sptr)iKeyboard_processMessage(win, m, w, l));
 
 				case WM_CAPTURECHANGED:
 					if (win->isMoving)
@@ -1467,7 +1464,7 @@
 // Note:  Any object can be presented in a window, though typically on form objects are.
 //
 //////
-	SWindow* iWindow_createForObject(SThisCode* thisCode, SObject* obj, SWindow* winReuse, s32 icon)
+	SWindow* iWindow_createForObject(SObject* obj, SWindow* winReuse, s32 icon)
 	{
 		s32				lnWidth, lnHeight;
 		SWindow*		winNew;
@@ -1553,7 +1550,7 @@
 					// Physically create the window
 					//////
 						// Window name
-						var = iObjProp_get_var_byIndex(thisCode, obj, _INDEX_NAME);
+						var = iObjProp_get_var_byIndex(obj, _INDEX_NAME);
 						if (var->varType != _VAR_TYPE_CHARACTER)
 						{
 							// Use a default name
@@ -1631,7 +1628,7 @@
 
 					// Delete
 					if (win->isValid)
-						iWindow_delete(NULL, win, false);		// Delete the window (marks itself invalid)
+						iWindow_delete(win, false);		// Delete the window (marks itself invalid)
 
 					// Unlock it
 					LeaveCriticalSection(&win->cs);
@@ -1655,14 +1652,14 @@
 // Note:  When called, the window must be already locked (if required).
 //
 //////
-	void iWindow_delete(SThisCode* thisCode, SWindow* win, bool tlDeleteSelf)
+	void iWindow_delete(SWindow* win, bool tlDeleteSelf)
 	{
 		// Make sure our environment is sane
 		if (win && iWindow_isPointerValid(win))
 		{
 			// Delete it
 			iBmp_delete(&win->bmp, true, true);
-			iObj_delete(thisCode, &win->obj, true, true, true);
+			iObj_delete(&win->obj, true, true, true);
 
 			// Delete self
 			if (tlDeleteSelf)
@@ -1737,7 +1734,7 @@
 // Called to search the known windows for the indicated window by object
 //
 //////
-	SWindow* iWindow_findByObj(SThisCode* thisCode, SObject* obj)
+	SWindow* iWindow_findByObj(SObject* obj)
 	{
 		u32			lnI;
 		SObject*	wobj;
@@ -1785,9 +1782,9 @@
 // Called to search for the window from the object on a 
 //
 //////
-	SWindow* iWindow_findRoot_byObj(SThisCode* thisCode, SObject* obj)
+	SWindow* iWindow_findRoot_byObj(SObject* obj)
 	{
-		return(iWindow_findByObj(thisCode, iObj_find_rootmostObject(thisCode, obj)));
+		return(iWindow_findByObj(iObj_find_rootmostObject(obj)));
 	}
 
 
@@ -1883,7 +1880,7 @@
 // Called to re-render the indicated window
 //
 //////
-	void iWindow_render(SThisCode* thisCode, SWindow* win, bool tlForce)
+	void iWindow_render(SWindow* win, bool tlForce)
 	{
 		// Make sure we have something to render
 		if (win && win->obj && iWindow_isPointerValid(win))
@@ -1898,10 +1895,10 @@
 				if (!propGet_settings_LockScreen(_settings))
 				{
 					// Render anything needing rendering
-					iObj_renderChildrenAndSiblings(thisCode, win->obj, true, true, tlForce);
+					iObj_renderChildrenAndSiblings(win->obj, true, true, tlForce);
 
 					// Publish anything needing publishing
-					iObj_publish(thisCode, win->obj, &win->rc, win->bmp, true, true, tlForce, 0);
+					iObj_publish(win->obj, &win->rc, win->bmp, true, true, tlForce, 0);
 
 //////////
 // Disabled ... cannot find a good (or should I say "real-time") scaling algorithm for forms bitmaps
@@ -1912,7 +1909,7 @@
 #endif
 
 					// Determine the focus highlights
-					iObj_setFocusHighlights(thisCode, win, win->obj, 0, 0, true, true);
+					iObj_setFocusHighlights(win, win->obj, 0, 0, true, true);
 
 					// And force the redraw
 					InvalidateRect(win->hwnd, 0, FALSE);
@@ -2523,8 +2520,8 @@
 			//////////
 			// Grab our scroll offsets
 			//////
-				scrollX = iObjProp_get_s32_direct(thisCode, obj, _INDEX_SCROLLX);
-				scrollY = iObjProp_get_s32_direct(thisCode, obj, _INDEX_SCROLLX);
+				scrollX = iObjProp_get_s32_direct(obj, _INDEX_SCROLLX);
+				scrollY = iObjProp_get_s32_direct(obj, _INDEX_SCROLLX);
 
 
 			//////////
@@ -3467,7 +3464,7 @@
 // Called to process the mouse messages.
 //
 //////
-	s32 iMouse_processMessage(SThisCode* thisCode, SWindow* win, UINT msg, WPARAM w, LPARAM l)
+	s32 iMouse_processMessage(SWindow* win, UINT msg, WPARAM w, LPARAM l)
 	{
 		//////////
 		// If we're a valid window, process the mouse
@@ -3478,10 +3475,10 @@
 				memcpy(&win->mousePrior, &win->mouseCurrent, sizeof(win->mousePrior));
 
 				// Translate the mouse from the scaled position to its real position
-				iiMouse_translatePosition(thisCode, win, (POINTS*)&l, msg);
+				iiMouse_translatePosition(win, (POINTS*)&l, msg);
 
 				// Signal the event(s)
-				iiMouse_processMouseEvents(thisCode, win, msg, w, l);
+				iiMouse_processMouseEvents(win, msg, w, l);
 			}
 			// If we get here, invalid
 			return(-1);
@@ -3496,7 +3493,7 @@
 // Note:  The win parameter is required.
 //
 //////
-	void iiMouse_translatePosition(SThisCode* thisCode, SWindow* win, POINTS* pt, UINT msg)
+	void iiMouse_translatePosition(SWindow* win, POINTS* pt, UINT msg)
 	{
 		POINT	lpt, lptOnOSDesktop;
 		bool	llWheelMessage;
@@ -3559,7 +3556,7 @@
 // Process the mouse events in the client area for this form
 //
 //////
-	s32 iiMouse_processMouseEvents(SThisCode* thisCode, SWindow* win, UINT msg, WPARAM w, LPARAM l)
+	s32 iiMouse_processMouseEvents(SWindow* win, UINT msg, WPARAM w, LPARAM l)
 	{
 		s32			lnResult;
 		bool		llProcessed;
@@ -3595,7 +3592,7 @@
 					{
 						win->mouseCurrent.wheelDeltaV	= (s32)((s16)(((u32)w) >> 16)) / WHEEL_DELTA;
 						win->mouseCurrent.wheelDeltaH	= 0;
-						iiMouse_processMouseEvents_common(thisCode, win, obj, &obj->rc, msg, true, true, &llProcessed);
+						iiMouse_processMouseEvents_common(win, obj, &obj->rc, msg, true, true, &llProcessed);
 					}
 					break;
 
@@ -3606,7 +3603,7 @@
 					{
 						win->mouseCurrent.wheelDeltaV	= 0;
 						win->mouseCurrent.wheelDeltaH	= (s32)((s16)(((u32)w) >> 16)) / WHEEL_DELTA;
-						iiMouse_processMouseEvents_common(thisCode, win, obj, &obj->rc, msg, true, true, &llProcessed);
+						iiMouse_processMouseEvents_common(win, obj, &obj->rc, msg, true, true, &llProcessed);
 					}
 					break;
 #endif
@@ -3616,7 +3613,7 @@
 					if (!win->isMoving && !win->isResizing)
 					{
 						// Process normal mouse moves
-						iiMouse_processMouseEvents_mouseMove(thisCode, win, obj, &obj->rc, true, true, &llProcessed);
+						iiMouse_processMouseEvents_mouseMove(win, obj, &obj->rc, true, true, &llProcessed);
 
 						// The mouse has moved, reset the hover counter
 						obj->ev.startHoverTickCount	= GetTickCount();
@@ -3629,7 +3626,7 @@
 				case WM_RBUTTONDOWN:
 				case WM_MBUTTONDOWN:
 					// Signal a mouseDown, then a click
-					if (iiMouse_processMouseEvents_common(thisCode, win, obj, &obj->rc, msg, true, true, &llProcessed))
+					if (iiMouse_processMouseEvents_common(win, obj, &obj->rc, msg, true, true, &llProcessed))
 					{
 						// Set the last click
 						obj->ev._lastClick = obj->ev.thisClick;
@@ -3643,7 +3640,7 @@
 					if (!win->isMoving && !win->isResizing)
 					{
 						// A mouse button was released
-						iiMouse_processMouseEvents_common(thisCode, win, obj, &obj->rc, msg, true, true, &llProcessed);
+						iiMouse_processMouseEvents_common(win, obj, &obj->rc, msg, true, true, &llProcessed);
 					}
 					break;
 
@@ -3677,7 +3674,7 @@
 // Called as a common function to obtain the coordinates for the current object descent
 //
 //////
-	bool iiMouse_processMouseEvents_getRectDescent(SThisCode* thisCode, SWindow* win, SObject* obj, RECT* rc, RECT& lrc, RECT& lrcClient)
+	bool iiMouse_processMouseEvents_getRectDescent(SWindow* win, SObject* obj, RECT* rc, RECT& lrc, RECT& lrcClient)
 	{
 		//////////
 		// Determine the position within the parent's rectangle where this object will go
@@ -3734,7 +3731,7 @@
 // Called to process the mouse move events when the window is being moved or resized
 //
 //////
-	void iiMouse_processMouseEvents_windowSpecial(SThisCode* thisCode, SWindow* win)
+	void iiMouse_processMouseEvents_windowSpecial(SWindow* win)
 	{
 		s32 lnDeltaX, lnDeltaY;
 
@@ -3811,7 +3808,7 @@
 // Called to process mouseEnter and mouseLeave events based on mouse movement
 //
 //////
-	bool iiMouse_processMouseEvents_mouseMove(SThisCode* thisCode, SWindow* win, SObject* obj, RECT* rc, bool tlProcessChildren, bool tlProcessSiblings, bool* tlProcessed)
+	bool iiMouse_processMouseEvents_mouseMove(SWindow* win, SObject* obj, RECT* rc, bool tlProcessChildren, bool tlProcessSiblings, bool* tlProcessed)
 	{
 		bool		llContinue, llInClientArea;
 		RECT		lrc, lrcClient;
@@ -3826,7 +3823,7 @@
 			//////////
 			// Get the rectangle we're in at this level
 			/////
-				llInClientArea = iiMouse_processMouseEvents_getRectDescent(thisCode, win, obj, rc, lrc, lrcClient);
+				llInClientArea = iiMouse_processMouseEvents_getRectDescent(win, obj, rc, lrc, lrcClient);
 
 
 			//////////
@@ -3834,7 +3831,7 @@
 			//////
 				if (tlProcessChildren && obj->firstChild)
 				{
-					llContinue = iiMouse_processMouseEvents_mouseMove(thisCode, win, obj->firstChild, &lrcClient, true, true, tlProcessed);
+					llContinue = iiMouse_processMouseEvents_mouseMove(win, obj->firstChild, &lrcClient, true, true, tlProcessed);
 					if (!llContinue)
 						break;
 				}
@@ -3848,7 +3845,7 @@
 					// We are in this object
 					*tlProcessed = true;	// Indicate we've processed this
 					if (!obj->ev.isMouseOver)
-						iEngine_raise_event(thisCode, _EVENT_ONMOUSEENTER, win, obj);
+						iEngine_raise_event(_EVENT_ONMOUSEENTER, win, obj);
 
 
 					// Are we in the client area?
@@ -3857,7 +3854,7 @@
 						//////////
 						// Signal the mouseMove event
 						//////
-							llContinue = iiEventDispatch_onMouseMove(thisCode, win, obj,
+							llContinue = iiEventDispatch_onMouseMove(win, obj,
 																		win->mouseCurrent.position.x - lrc.left,
 																		win->mouseCurrent.position.y - lrc.top,
 																		win->mouseCurrent.isCtrl, win->mouseCurrent.isAlt, win->mouseCurrent.isShift,
@@ -3876,7 +3873,7 @@
 						// with values extending beyond the width and height if it is in the outer area
 						//////
 							*tlProcessed = true;	// Indicate we've processed this
-							llContinue = iiEventDispatch_onMouseMove(thisCode, win, obj,
+							llContinue = iiEventDispatch_onMouseMove(win, obj,
 																		win->mouseCurrent.position.x - lrcClient.left,
 																		win->mouseCurrent.position.y - lrcClient.top,
 																		win->mouseCurrent.isCtrl, win->mouseCurrent.isAlt, win->mouseCurrent.isShift,
@@ -3888,7 +3885,7 @@
 				} else {
 					// We are outside of this object
 					if (obj->ev.isMouseOver)
-						iEngine_raise_event(thisCode, _EVENT_ONMOUSELEAVE, win, obj);
+						iEngine_raise_event(_EVENT_ONMOUSELEAVE, win, obj);
 				}
 
 
@@ -3902,7 +3899,7 @@
 					while (objSib)
 					{
 						// Process this sibling
-						llContinue = iiMouse_processMouseEvents_mouseMove(thisCode, win, objSib, rc, true, false, tlProcessed);
+						llContinue = iiMouse_processMouseEvents_mouseMove(win, objSib, rc, true, false, tlProcessed);
 						if (!llContinue)
 							break;
 
@@ -3927,7 +3924,7 @@
 // Called to signal a mouseDown event, then the mouseClickEx event
 //
 //////
-	bool iiMouse_processMouseEvents_common(SThisCode* thisCode, SWindow* win, SObject* obj, RECT* rc, UINT m, bool tlProcessChildren, bool tlProcessSiblings, bool* tlProcessed)
+	bool iiMouse_processMouseEvents_common(SWindow* win, SObject* obj, RECT* rc, UINT m, bool tlProcessChildren, bool tlProcessSiblings, bool* tlProcessed)
 	{
 		bool		llInObjectArea, llInClientArea, llContinue, llEnabled, llVisible;
 		RECT		lrc, lrcClient;
@@ -3935,7 +3932,7 @@
 
 
 		// Make sure our environment is sane
-JDebiC_debug(thisCode, win, obj);
+JDebiC_debug(win, obj);
 		llContinue = true;
 		if (obj)
 		{
@@ -3948,7 +3945,7 @@ JDebiC_debug(thisCode, win, obj);
 				//////////
 				// Get the rectangle we're in at this level
 				//////
-					llInClientArea	= iiMouse_processMouseEvents_getRectDescent(thisCode, win, obj, rc, lrc, lrcClient);
+					llInClientArea	= iiMouse_processMouseEvents_getRectDescent(win, obj, rc, lrc, lrcClient);
 					llInObjectArea	= (PtInRect(&lrc, win->mouseCurrent.position) == TRUE);
 
 
@@ -3962,7 +3959,7 @@ JDebiC_debug(thisCode, win, obj);
 				// Process any children
 				//////
 					if (tlProcessChildren && obj->firstChild)
-						llContinue = iiMouse_processMouseEvents_common(thisCode, win, obj->firstChild, &lrcClient, m, true, true, tlProcessed);
+						llContinue = iiMouse_processMouseEvents_common(win, obj->firstChild, &lrcClient, m, true, true, tlProcessed);
 
 
 				//////////
@@ -3983,7 +3980,7 @@ JDebiC_debug(thisCode, win, obj);
 								// Signal the mouseDown event
 								*tlProcessed = true;		// Indicate we've processed this
 								if (llContinue)
-									llContinue = iiEventDispatch_onMouseDown(thisCode, win, obj,
+									llContinue = iiEventDispatch_onMouseDown(win, obj,
 																				win->mouseCurrent.position.x - lrc.left,
 																				win->mouseCurrent.position.y - lrc.top,
 																				win->mouseCurrent.isCtrl, win->mouseCurrent.isAlt, win->mouseCurrent.isShift,
@@ -3991,7 +3988,7 @@ JDebiC_debug(thisCode, win, obj);
 
 								// Signal the click event
 								if (llContinue)
-									llContinue = iiEventDispatch_onMouseClickEx(thisCode, win, obj,
+									llContinue = iiEventDispatch_onMouseClickEx(win, obj,
 																					win->mouseCurrent.position.x - lrc.left,
 																					win->mouseCurrent.position.y - lrc.top,
 																					win->mouseCurrent.isCtrl, win->mouseCurrent.isAlt, win->mouseCurrent.isShift,
@@ -4005,7 +4002,7 @@ JDebiC_debug(thisCode, win, obj);
 								// Signal the mouseUp event
 								*tlProcessed = true;		// Indicate we've processed this
 								if (llContinue)
-									llContinue = iiEventDispatch_onMouseUp(thisCode, win, obj,
+									llContinue = iiEventDispatch_onMouseUp(win, obj,
 																			win->mouseCurrent.position.x - lrc.left,
 																			win->mouseCurrent.position.y - lrc.top,
 																			win->mouseCurrent.isCtrl, win->mouseCurrent.isAlt, win->mouseCurrent.isShift,
@@ -4019,7 +4016,7 @@ JDebiC_debug(thisCode, win, obj);
 								// Signal the mouseWheel event
 								*tlProcessed = true;		// Indicate we've processed this
 								if (llContinue)
-									llContinue = iiEventDispatch_onMouseWheel(thisCode, win, obj,
+									llContinue = iiEventDispatch_onMouseWheel(win, obj,
 																				win->mouseCurrent.position.x - lrc.left,
 																				win->mouseCurrent.position.y - lrc.top,
 																				win->mouseCurrent.isCtrl, win->mouseCurrent.isAlt, win->mouseCurrent.isShift,
@@ -4046,7 +4043,7 @@ JDebiC_debug(thisCode, win, obj);
 								// Signal the mouseDown event
 								*tlProcessed = true;		// Indicate we've processed this
 								if (llContinue)
-									llContinue = iiEventDispatch_onMouseDown(thisCode, win, obj,
+									llContinue = iiEventDispatch_onMouseDown(win, obj,
 																				win->mouseCurrent.position.x - lrcClient.left,
 																				win->mouseCurrent.position.y - lrcClient.top,
 																				win->mouseCurrent.isCtrl, win->mouseCurrent.isAlt, win->mouseCurrent.isShift,
@@ -4055,7 +4052,7 @@ JDebiC_debug(thisCode, win, obj);
 
 								// Signal the click event
 								if (llContinue)
-									llContinue = iiEventDispatch_onMouseClickEx(thisCode, win, obj,
+									llContinue = iiEventDispatch_onMouseClickEx(win, obj,
 																					win->mouseCurrent.position.x - lrcClient.left,
 																					win->mouseCurrent.position.y - lrcClient.top,
 																					win->mouseCurrent.isCtrl, win->mouseCurrent.isAlt, win->mouseCurrent.isShift,
@@ -4069,7 +4066,7 @@ JDebiC_debug(thisCode, win, obj);
 								// Signal the mouseUp event
 								*tlProcessed = true;		// Indicate we've processed this
 								if (llContinue)
-									llContinue = iiEventDispatch_onMouseUp(thisCode, win, obj,
+									llContinue = iiEventDispatch_onMouseUp(win, obj,
 																			win->mouseCurrent.position.x - lrcClient.left,
 																			win->mouseCurrent.position.y - lrcClient.top,
 																			win->mouseCurrent.isCtrl, win->mouseCurrent.isAlt, win->mouseCurrent.isShift,
@@ -4083,7 +4080,7 @@ JDebiC_debug(thisCode, win, obj);
 								// Signal the mouseWheel event
 								*tlProcessed = true;		// Indicate we've processed this
 								if (llContinue)
-									llContinue = iiEventDispatch_onMouseWheel(thisCode, win, obj,
+									llContinue = iiEventDispatch_onMouseWheel(win, obj,
 																				win->mouseCurrent.position.x - lrcClient.left,
 																				win->mouseCurrent.position.y - lrcClient.top,
 																				win->mouseCurrent.isCtrl, win->mouseCurrent.isAlt, win->mouseCurrent.isShift,
@@ -4106,7 +4103,7 @@ JDebiC_debug(thisCode, win, obj);
 					while (llContinue && objSib)
 					{
 						// Process this sibling
-						llContinue = iiMouse_processMouseEvents_common(thisCode, win, objSib, rc, m, true, false, tlProcessed);
+						llContinue = iiMouse_processMouseEvents_common(win, objSib, rc, m, true, false, tlProcessed);
 						if (!llContinue)
 							break;
 
@@ -4129,7 +4126,7 @@ JDebiC_debug(thisCode, win, obj);
 // // Process the mouse events in the non-client area for this form
 // //
 // //////
-// 	s32 iiMouse_processMouseEvents_nonclient(SThisCode* thisCode, SWindow* win, UINT m, WPARAM w, LPARAM l)
+// 	s32 iiMouse_processMouseEvents_nonclient(SWindow* win, UINT m, WPARAM w, LPARAM l)
 // 	{
 // 		s32			lnResult, lnDeltaX, lnDeltaY, lnWidth, lnHeight, lnLeft, lnTop;
 // 		bool		llCtrl, llAlt, llShift, llLeft, llRight, llMiddle, llCaps;
@@ -4336,7 +4333,7 @@ JDebiC_debug(thisCode, win, obj);
 // Process the indicated keystroke
 //
 //////
-	s32 iKeyboard_processMessage(SThisCode* thisCode, SWindow* win, UINT m, WPARAM vKey, LPARAM tnScanCode)
+	s32 iKeyboard_processMessage(SWindow* win, UINT m, WPARAM vKey, LPARAM tnScanCode)
 	{
 		s16			lnAsciiChar;
 		u32			lnI, lnScanCode, lnObjFocusControlsCount;
@@ -4371,7 +4368,7 @@ JDebiC_debug(thisCode, win, obj);
 		//////////
 		// Find out which objects within has focus
 		//////
-			iObj_findFocusControls(thisCode, win->obj, objFocusControls, true);
+			iObj_findFocusControls(win->obj, objFocusControls, true);
 			lnObjFocusControlsCount = objFocusControls->populatedLength / sizeof(SObject*);
 			if (lnObjFocusControlsCount == 0)
 				return(0);		// Nothing to process
@@ -4395,11 +4392,11 @@ JDebiC_debug(thisCode, win, obj);
 				if (m == WM_KEYDOWN)
 				{
 					// Signal the down key event
-					iiEventDispatch_onKeyDown(thisCode, win, obj, llCtrl, llAlt, llShift, llCaps, lnAsciiChar, (u16)vKey, llIsCAS, llIsAscii);
+					iiEventDispatch_onKeyDown(win, obj, llCtrl, llAlt, llShift, llCaps, lnAsciiChar, (u16)vKey, llIsCAS, llIsAscii);
 
 				} else if (m == WM_KEYUP) {
 					// Signal the up key event
-					iiEventDispatch_onKeyUp(thisCode, win, obj, llCtrl, llAlt, llShift, llCaps, lnAsciiChar, (u16)vKey, llIsCAS, llIsAscii);
+					iiEventDispatch_onKeyUp(win, obj, llCtrl, llAlt, llShift, llCaps, lnAsciiChar, (u16)vKey, llIsCAS, llIsAscii);
 				}
 			}
 
@@ -4426,20 +4423,17 @@ JDebiC_debug(thisCode, win, obj);
 //////
 	void iVjr_createOverlayListing(SBitmap* bmp, RECT* trc)
 	{
-		SThisCode* thisCode = NULL;
-
-
 		//////////
 		// Create the object
 		//////
 			// Create object
-			gobj_splashListing = iObj_create(thisCode, _OBJ_TYPE_SUBFORM, NULL);
+			gobj_splashListing = iObj_create(_OBJ_TYPE_SUBFORM, NULL);
 			if (!gobj_splashListing)
 				return;
 
 			// Set the icon and border
-			iObjProp_set_bitmap_direct(thisCode, gobj_splashListing, _INDEX_ICON, bmpOutputIcon);
-			iObjProp_set_s32_direct(thisCode, gobj_splashListing, _INDEX_BORDERSTYLE, _BORDER_STYLE_FIXED);
+			iObjProp_set_bitmap_direct(gobj_splashListing, _INDEX_ICON, bmpOutputIcon);
+			iObjProp_set_s32_direct(gobj_splashListing, _INDEX_BORDERSTYLE, _BORDER_STYLE_FIXED);
 
 
 		//////////
@@ -4451,7 +4445,7 @@ JDebiC_debug(thisCode, win, obj);
 		//////////
 		// Size and position it
 		//////
-			iObj_setSize(thisCode, gobj_splashListing, trc->left, trc->top, trc->right - trc->left, bmp->bi.biHeight);
+			iObj_setSize(gobj_splashListing, trc->left, trc->top, trc->right - trc->left, bmp->bi.biHeight);
 			gobj_splashListing->bmp = iBmp_allocate();
 			iBmp_createBySize(gobj_splashListing->bmp, trc->right - trc->left, trc->bottom - trc->top, bmp->bi.biBitCount);
 
@@ -4459,14 +4453,14 @@ JDebiC_debug(thisCode, win, obj);
 		//////////
 		// Add the editbox
 		//////
-			gobj_splashListingEditbox							= iObj_addChild(thisCode, _OBJ_TYPE_EDITBOX,	gobj_splashListing);
-			iObj_setSize(thisCode, gobj_splashListingEditbox, 0, 0, gobj_splashListing->rcClient.right - gobj_splashListing->rcClient.left, gobj_splashListing->rcClient.bottom - gobj_splashListing->rcClient.top);
+			gobj_splashListingEditbox							= iObj_addChild(_OBJ_TYPE_EDITBOX,	gobj_splashListing);
+			iObj_setSize(gobj_splashListingEditbox, 0, 0, gobj_splashListing->rcClient.right - gobj_splashListing->rcClient.left, gobj_splashListing->rcClient.bottom - gobj_splashListing->rcClient.top);
 			gobj_splashListingEditbox->bmp = iBmp_allocate();
 			iBmp_createBySize(gobj_splashListingEditbox->bmp, gobj_splashListing->rcClient.right - gobj_splashListing->rcClient.left, gobj_splashListing->rcClient.bottom - gobj_splashListing->rcClient.top, bmp->bi.biBitCount);
 			gobj_splashListingEditbox->p.font					= iFont_create(cgcFontName_defaultFixed, 8, FW_NORMAL, false, false);
 			gobj_splashListingEditbox->p.sem->font				= iFont_create(cgcFontName_defaultFixed, 8, FW_NORMAL, false, false);
-			iEngine_set_event(thisCode, _EVENT_ONKEYDOWN, NULL, gobj_splashListingEditbox, (uptr)&iSEM_onKeyDown);
-			iObjProp_set_logical_fromLogicalConstants(thisCode, gobj_splashListingEditbox, _INDEX_VISIBLE, _LOGICAL_TRUE);
+			iEngine_set_event(_EVENT_ONKEYDOWN, NULL, gobj_splashListingEditbox, (uptr)&iSEM_onKeyDown);
+			iObjProp_set_logical_fromLogicalConstants(gobj_splashListingEditbox, _INDEX_VISIBLE, _LOGICAL_TRUE);
 			systemLog											= gobj_splashListingEditbox->p.sem;
 			systemLog->showEndLine								= true;
 			systemLog->showCursorLine							= true;
@@ -4475,7 +4469,7 @@ JDebiC_debug(thisCode, win, obj);
 		//////////
 		// Set it visible
 		//////
-			iObjProp_set_logical_fromLogicalConstants(thisCode, gobj_splashListing, _INDEX_VISIBLE, _LOGICAL_TRUE);
+			iObjProp_set_logical_fromLogicalConstants(gobj_splashListing, _INDEX_VISIBLE, _LOGICAL_TRUE);
 	}
 
 
@@ -4496,19 +4490,19 @@ JDebiC_debug(thisCode, win, obj);
 		if (gobj_splashListing && gobj_splashListingEditbox)
 		{
 			// Move to the end of the list
-			iSEM_navigateToEndLine(thisCode, gobj_splashListingEditbox->p.sem, gobj_splashListing);
+			iSEM_navigateToEndLine(gobj_splashListingEditbox->p.sem, gobj_splashListing);
 
 			if (trc && gobj_splashListing->bmp)
 			{
 				// Render
-				iObj_renderChildrenAndSiblings(thisCode, gobj_splashListing, true, true, true);
+				iObj_renderChildrenAndSiblings(gobj_splashListing, true, true, true);
 
 				// Publish it if we can
 				if (bmp)
 				{
 					// Publish
 					SetRect(&lrc, 0, 0, gobj_splashListing->bmp->bi.biWidth, gobj_splashListing->bmp->bi.biHeight);
-					iObj_publish(thisCode, gobj_splashListing, &lrc, bmp, true, true, true, 0);
+					iObj_publish(gobj_splashListing, &lrc, bmp, true, true, true, 0);
 
 					// Update our bitmap
 					iBmp_bitBlt(bmp, trc, gobj_splashListing->bmp);

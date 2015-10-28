@@ -87,7 +87,7 @@
 // Added to allow a simple place to execute various tests.
 //
 //////
-	void iTest1(SThisCode* thisCode, SFunctionParams* rpar)
+	void iTest1(SFunctionParams* rpar)
 	{
 		s32				lnI;
 		union {
@@ -102,7 +102,7 @@
 		//////////
 		// Open the test table
 		//////
-			_wa = iDbf_open(thisCode, "c:\\libsf_offline\\source\\vjr\\test\\cdx\\test.dbf", "test", true, false, true, false, false, false, false);
+			_wa = iDbf_open("c:\\libsf_offline\\source\\vjr\\test\\cdx\\test.dbf", "test", true, false, true, false, false, false, false);
 			if (_wa <= 0)
 				debug_break;	// An error occurred
 
@@ -110,20 +110,20 @@
 		//////////
 		// Set the index
 		//////
-			if (!iCdx_setActiveTag(thisCode, wa, 0, &tagRoot, &error, &errorNum))
+			if (!iCdx_setActiveTag(wa, 0, &tagRoot, &error, &errorNum))
 				debug_break;
 
 
 		//////////
 		// Iterate through the table
 		//////
-			for (lnI = 1; lnI <= iDbf_getReccount(thisCode, wa); lnI++)
+			for (lnI = 1; lnI <= iDbf_getReccount(wa); lnI++)
 			{
 
 				//////////
 				// Go to the record
 				//////
-					if (iDbf_gotoRecord(thisCode, wa, lnI) != lnI)
+					if (iDbf_gotoRecord(wa, lnI) != lnI)
 						debug_break;	// Error seeking to the indicated record
 
 

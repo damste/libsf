@@ -112,7 +112,7 @@
 //	  dt = datetime()	&& May.01.2015
 //    ? WEEK(dt)		&& Displays 18
 //////
-	void function_week(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_week(SFunctionParams* rpar)
 	{
 		SVariable*	varParam			= rpar->ip[0];
 		SVariable*	varFirstWeek		= rpar->ip[1];
@@ -134,7 +134,7 @@
 			{
 				if (!iVariable_isValid(varParam) || !(iVariable_isTypeDate(varParam) || iVariable_isTypeDatetime(varParam) || iVariable_isTypeDatetimeX(varParam)))
 				{
-					iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varParam), false);
+					iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varParam), false);
 					return;
 				}
 
@@ -163,22 +163,22 @@
 			{
 				if (!iVariable_isValid(varFirstWeek) || !iVariable_isTypeNumeric(varFirstWeek))
 				{
-					iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varFirstWeek), false);
+					iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varFirstWeek), false);
 					return;
 				}
 
 				// Grab the minimum number of days in week
-				lnMinDaysInWeek = iiVariable_getAs_s32(thisCode, varFirstWeek, false, &error, &errorNum);
+				lnMinDaysInWeek = iiVariable_getAs_s32(varFirstWeek, false, &error, &errorNum);
 				if (error)
 				{
 					// An error extracting the value (should never happen)
-					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varFirstWeek), false);
+					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varFirstWeek), false);
 					return;
 				}
 
 				if (lnMinDaysInWeek < 1 || 7 < lnMinDaysInWeek)
 				{
-					iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(thisCode, varFirstWeek), false);
+					iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varFirstWeek), false);
 					return;				
 				}
 
@@ -195,22 +195,22 @@
 			{
 				if (!iVariable_isValid(varFirstDayOfWeek) || !iVariable_isTypeNumeric(varFirstDayOfWeek))
 				{
-					iError_reportByNumber(thisCode, _ERROR_P3_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varFirstDayOfWeek), false);
+					iError_reportByNumber(_ERROR_P3_IS_INCORRECT, iVariable_get_relatedComp(varFirstDayOfWeek), false);
 					return;
 				}
 
 				// Grab the first day of week
-				lnFirstDayOfWeek = iiVariable_getAs_s32(thisCode, varFirstDayOfWeek, false, &error, &errorNum);
+				lnFirstDayOfWeek = iiVariable_getAs_s32(varFirstDayOfWeek, false, &error, &errorNum);
 				if (error)
 				{
 					// An error extracting the value (should never happen)
-					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varFirstDayOfWeek), false);
+					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varFirstDayOfWeek), false);
 					return;
 				}
 
 				if (lnFirstDayOfWeek < 0 || 6 < lnFirstDayOfWeek)
 				{
-					iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(thisCode, varFirstWeek), false);
+					iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varFirstWeek), false);
 					return;				
 				}
 
@@ -223,15 +223,15 @@
 		/////////
 		// Grab week
 		//////
-			lnWeek = ifunction_week_common(thisCode, rpar, lnYear, lnMonth, lnDay, lnMinDaysInWeek, lnFirstDayOfWeek);
+			lnWeek = ifunction_week_common(rpar, lnYear, lnMonth, lnDay, lnMinDaysInWeek, lnFirstDayOfWeek);
 
 
 		//////////
 		// Create and populate our output variable
 		//////
-			result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_S32, (cs8*)&lnWeek, 4, false);
+			result = iVariable_createAndPopulate_byText(_VAR_TYPE_S32, (cs8*)&lnWeek, 4, false);
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varParam), false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varParam), false);
 
 
 		//////////
@@ -241,14 +241,14 @@
 
 	}
 
-	s32	ifunction_week_common(SThisCode* thisCode, SFunctionParams* rpar, u32 tnYear, u32 tnMonth, u32 tnDay, s32 tnMinDaysInWeek, s32 tnFirstDayOfWeek)
+	s32	ifunction_week_common(SFunctionParams* rpar, u32 tnYear, u32 tnMonth, u32 tnDay, s32 tnMinDaysInWeek, s32 tnFirstDayOfWeek)
 	{
 		s32	lnWeek, ln1WDay, lnDayOfYear, lnDaysInYear, lnDaysNextYear;
 		s32 lnTempDays;
 
 
 		// Day of week January 1 
-		ln1WDay		= ifunction_dow_common(thisCode, rpar, tnYear, 1, 1);
+		ln1WDay		= ifunction_dow_common(rpar, tnYear, 1, 1);
 
 		// Day of year 
 		lnDayOfYear	= iDateMath_getDayNumberIntoYear(tnYear, tnMonth, tnDay) - 1/*-1 because weekdays start at 0*/;
@@ -278,7 +278,7 @@
 
 						} else if (lnWeek == 53) {
 							lnDaysInYear	= iDateMath_isLeapYear(tnYear) ? 366 : 365;
-							lnDaysNextYear	= ifunction_dow_common(thisCode, rpar, tnYear + 1, 1, 1);
+							lnDaysNextYear	= ifunction_dow_common(rpar, tnYear + 1, 1, 1);
 							lnDaysNextYear	= (lnDaysNextYear + (7 - tnFirstDayOfWeek)) % 7;
 
 							if (lnDayOfYear > (lnDaysInYear-lnDaysNextYear-1))
@@ -297,7 +297,7 @@
 					// First week of a year is equal to the last week of the previous year
 					//////
 						if (lnWeek == 0)
-							lnWeek = ifunction_week_common(thisCode, rpar, tnYear - 1, 12, 31, tnMinDaysInWeek, tnFirstDayOfWeek);
+							lnWeek = ifunction_week_common(rpar, tnYear - 1, 12, 31, tnMinDaysInWeek, tnFirstDayOfWeek);
 
 						break;
 
@@ -334,10 +334,10 @@
 							{ 
 								// next Sunday is equal to first Sunday in the new year
 								lnTempDays	= iiDateMath_get_julian_from_YyyyMmDd(NULL, tnYear, tnMonth, tnDay);
-								lnTempDays	+=  6 - (ifunction_dow_common(thisCode, rpar, tnYear, tnMonth, tnDay) + (7 - tnFirstDayOfWeek)) % 7;
+								lnTempDays	+=  6 - (ifunction_dow_common(rpar, tnYear, tnMonth, tnDay) + (7 - tnFirstDayOfWeek)) % 7;
 								iiDateMath_get_YyyyMmDd_from_julian(lnTempDays, &tnYear, &tnMonth, &tnDay);
 
-								lnWeek		= ifunction_week_common(thisCode, rpar, tnYear, tnMonth, tnDay, tnMinDaysInWeek, tnFirstDayOfWeek);
+								lnWeek		= ifunction_week_common(rpar, tnYear, tnMonth, tnDay, tnMinDaysInWeek, tnFirstDayOfWeek);
 							}
 						}
 

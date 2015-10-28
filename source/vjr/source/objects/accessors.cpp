@@ -115,7 +115,7 @@
 // Called to get the name of the property
 //
 //////
-	SDatum* iObjProp_get_name_asDatum(SThisCode* thisCode, s32 tnIndex, SDatum** nameToUpdate)
+	SDatum* iObjProp_get_name_asDatum(s32 tnIndex, SDatum** nameToUpdate)
 	{
 		// Make sure the environment is sane
 		nameToUpdate = 0;
@@ -141,7 +141,7 @@
 //        we want it to then go through the normal setterObject() function.
 //
 //////
-	bool iObjProp_set(SThisCode* thisCode, SObject* obj, s32 tnIndex, SVariable* varNewValue, bool tlNestedSet)
+	bool iObjProp_set(SObject* obj, s32 tnIndex, SVariable* varNewValue, bool tlNestedSet)
 	{
 		bool			llResult;
 		SBasePropMap*	baseProp;
@@ -153,14 +153,14 @@
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex, &baseProp, &objProp);
+			var = iObjProp_get_var_byIndex(obj, tnIndex, &baseProp, &objProp);
 			if (var)
 			{
 				// Validate against the object class if available, and if not then the base class if available, and if not then just copy
-				     if (objProp->_setterObject     && !tlNestedSet && tnIndex <  (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject(thisCode, obj, tnIndex, var, varNewValue, baseProp, objProp);
-				else if (objProp->_setterObject_set && !tlNestedSet && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(thisCode, var, NULL, varNewValue, false);
-				else if (baseProp->_setterBase)																		llResult = baseProp->setterBase	(thisCode, obj, tnIndex, var, varNewValue, baseProp, objProp);
-				else																								llResult = iVariable_copy(thisCode, var, varNewValue);
+				     if (objProp->_setterObject     && !tlNestedSet && tnIndex <  (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject(obj, tnIndex, var, varNewValue, baseProp, objProp);
+				else if (objProp->_setterObject_set && !tlNestedSet && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, varNewValue, false);
+				else if (baseProp->_setterBase)																		llResult = baseProp->setterBase	(obj, tnIndex, var, varNewValue, baseProp, objProp);
+				else																								llResult = iVariable_copy(var, varNewValue);
 
 				// Indicate our status
 				return(llResult);
@@ -178,7 +178,7 @@
 // Called to set the bitmap to the indicated bitmap
 //
 //////
-	bool iObjProp_set_bitmap_direct(SThisCode* thisCode, SObject* obj, s32 tnIndex, SBitmap* bmp)
+	bool iObjProp_set_bitmap_direct(SObject* obj, s32 tnIndex, SBitmap* bmp)
 	{
 		bool			llResult;
 		SBasePropMap*	baseProp;
@@ -193,30 +193,30 @@
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex, &baseProp, &objProp);
+			var = iObjProp_get_var_byIndex(obj, tnIndex, &baseProp, &objProp);
 			if (var)
 			{
 				// Create a temporary variable
-				varNewValue = iVariable_create(thisCode, _VAR_TYPE_NULL, NULL, true);
+				varNewValue = iVariable_create(_VAR_TYPE_NULL, NULL, true);
 				varNewValue->bmp = bmp;
 
 				// Perform the set
-				     if (objProp->_setterObject     && tnIndex <  (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject(thisCode, obj, tnIndex, var, varNewValue, baseProp, objProp);
-				else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(thisCode, var, NULL, varNewValue, false);
-				else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(thisCode, obj, tnIndex, var, varNewValue, baseProp, objProp);
-				else																				llResult = iVariable_set_bitmap(thisCode, var, bmp);
+				     if (objProp->_setterObject     && tnIndex <  (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject(obj, tnIndex, var, varNewValue, baseProp, objProp);
+				else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, varNewValue, false);
+				else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(obj, tnIndex, var, varNewValue, baseProp, objProp);
+				else																				llResult = iVariable_set_bitmap(var, bmp);
 
 				// If they just set the picture on an image or checkbox, then we need to propagate through to the down and over
 				if ((obj->objType == _OBJ_TYPE_IMAGE || obj->objType == _OBJ_TYPE_CHECKBOX) && tnIndex == _INDEX_PICTUREBMP)
 				{
 					// Set the two
-					iObjProp_set_bitmap_direct(thisCode, obj, _INDEX_PICTUREBMP_DOWN, bmp);
-					iObjProp_set_bitmap_direct(thisCode, obj, _INDEX_PICTUREBMP_OVER, bmp);
+					iObjProp_set_bitmap_direct(obj, _INDEX_PICTUREBMP_DOWN, bmp);
+					iObjProp_set_bitmap_direct(obj, _INDEX_PICTUREBMP_OVER, bmp);
 
 					// Colorize
 					SetRect(&lrc, 0, 0, bmp->bi.biWidth, bmp->bi.biHeight);
-					bmp = iObjProp_get_bitmap(thisCode, obj, _INDEX_PICTUREBMP_OVER);		iBmp_colorize(bmp, &lrc, colorMouseOver, false, 0.25f + ((obj->objType == _OBJ_TYPE_CHECKBOX) ? 0.25f : 0.0f));
-					bmp = iObjProp_get_bitmap(thisCode, obj, _INDEX_PICTUREBMP_DOWN);		iBmp_colorize(bmp, &lrc, colorMouseDown, false, 0.25f + ((obj->objType == _OBJ_TYPE_CHECKBOX) ? 0.25f : 0.0f));
+					bmp = iObjProp_get_bitmap(obj, _INDEX_PICTUREBMP_OVER);		iBmp_colorize(bmp, &lrc, colorMouseOver, false, 0.25f + ((obj->objType == _OBJ_TYPE_CHECKBOX) ? 0.25f : 0.0f));
+					bmp = iObjProp_get_bitmap(obj, _INDEX_PICTUREBMP_DOWN);		iBmp_colorize(bmp, &lrc, colorMouseDown, false, 0.25f + ((obj->objType == _OBJ_TYPE_CHECKBOX) ? 0.25f : 0.0f));
 
 				} else if ((obj->objType == _OBJ_TYPE_FORM || obj->objType == _OBJ_TYPE_SUBFORM) && tnIndex == _INDEX_ICON) {
 					// Icons propagate through to the child's _icon member as their picturebmp
@@ -226,7 +226,7 @@
 						if (objChild->objType == _OBJ_TYPE_IMAGE && propIsName_byText(objChild, cgcName_icon))
 						{
 							// Sets the three by setting the one (see how it handles _INDEX_PICTUREBMP above)
-							iObjProp_set_bitmap_direct(thisCode, objChild, _INDEX_PICTUREBMP, bmp);
+							iObjProp_set_bitmap_direct(objChild, _INDEX_PICTUREBMP, bmp);
 
 							// All done
 							break;
@@ -239,7 +239,7 @@
 				}
 
 				// Delete our temporary variable
-				iVariable_delete(thisCode, varNewValue, true);
+				iVariable_delete(varNewValue, true);
 
 				// Indicate our status
 				return(llResult);
@@ -257,22 +257,22 @@
 // Called to set the character variable to the indicated input
 //
 //////
-	bool iObjProp_set_character_direct (SThisCode* thisCode, SObject* obj, s32 tnIndex, cs8* tcText, u32 tnTextLength)
+	bool iObjProp_set_character_direct (SObject* obj, s32 tnIndex, cs8* tcText, u32 tnTextLength)
 	{
-		return(iObjProp_set_character_direct(thisCode, obj, tnIndex, (u8*)tcText, tnTextLength));
+		return(iObjProp_set_character_direct(obj, tnIndex, (u8*)tcText, tnTextLength));
 	}
 
-	bool iObjProp_set_character_direct (SThisCode* thisCode, SObject* obj, s32 tnIndex, s8* tcText, u32 tnTextLength)
+	bool iObjProp_set_character_direct (SObject* obj, s32 tnIndex, s8* tcText, u32 tnTextLength)
 	{
-		return(iObjProp_set_character_direct(thisCode, obj, tnIndex, (u8*)tcText, tnTextLength));
+		return(iObjProp_set_character_direct(obj, tnIndex, (u8*)tcText, tnTextLength));
 	}
 
-	bool iObjProp_set_character_direct (SThisCode* thisCode, SObject* obj, s32 tnIndex, cu8* tcText, u32 tnTextLength)
+	bool iObjProp_set_character_direct (SObject* obj, s32 tnIndex, cu8* tcText, u32 tnTextLength)
 	{
-		return(iObjProp_set_character_direct(thisCode, obj, tnIndex, (u8*)tcText, tnTextLength));
+		return(iObjProp_set_character_direct(obj, tnIndex, (u8*)tcText, tnTextLength));
 	}
 
-	bool iObjProp_set_character_direct(SThisCode* thisCode, SObject* obj, s32 tnIndex, u8* tcText, u32 tnTextLength)
+	bool iObjProp_set_character_direct(SObject* obj, s32 tnIndex, u8* tcText, u32 tnTextLength)
 	{
 		bool			llResult;
 		SBasePropMap*	baseProp;
@@ -285,20 +285,20 @@
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex, &baseProp, &objProp);
+			var = iObjProp_get_var_byIndex(obj, tnIndex, &baseProp, &objProp);
 			if (var)
 			{
 				// Create a temporary variable
-				varNewValue = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, tcText, tnTextLength, false);
+				varNewValue = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, tcText, tnTextLength, false);
 
 				// Perform the set
-				     if (objProp->_setterObject     && tnIndex <  (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject(thisCode, obj, tnIndex, var, varNewValue, baseProp, objProp);
-				else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(thisCode, var, NULL, varNewValue, false);
-				else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(thisCode, obj, tnIndex, var, varNewValue, baseProp, objProp);
-				else																				llResult = iVariable_copy(thisCode, var, varNewValue);
+				     if (objProp->_setterObject     && tnIndex <  (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject(obj, tnIndex, var, varNewValue, baseProp, objProp);
+				else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, varNewValue, false);
+				else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(obj, tnIndex, var, varNewValue, baseProp, objProp);
+				else																				llResult = iVariable_copy(var, varNewValue);
 
 				// Delete our temporary variable
-				iVariable_delete(thisCode, varNewValue, true);
+				iVariable_delete(varNewValue, true);
 
 				// Indicate our status
 				return(llResult);
@@ -308,7 +308,7 @@
 		return(false);
 	}
 
-	bool iObjProp_set_character_direct(SThisCode* thisCode, SObject* obj, s32 tnIndex, SDatum* datum)
+	bool iObjProp_set_character_direct(SObject* obj, s32 tnIndex, SDatum* datum)
 	{
 		bool			llResult;
 		SBasePropMap*	baseProp;
@@ -321,17 +321,17 @@
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex, &baseProp, &objProp);
+			var = iObjProp_get_var_byIndex(obj, tnIndex, &baseProp, &objProp);
 			if (var)
 			{
 				// Create a temporary variable
-				varNewValue = iVariable_createAndPopulate_byDatum(thisCode, _VAR_TYPE_CHARACTER, datum, true);
+				varNewValue = iVariable_createAndPopulate_byDatum(_VAR_TYPE_CHARACTER, datum, true);
 
 				// Perform the set
-				     if (objProp->_setterObject     && tnIndex <  (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject(thisCode, obj, tnIndex, var, varNewValue, baseProp, objProp);
-				else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(thisCode, var, NULL, varNewValue, false);
-				else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(thisCode, obj, tnIndex, var, varNewValue, baseProp, objProp);
-				else																				llResult = iVariable_copy(thisCode, var, varNewValue);
+				     if (objProp->_setterObject     && tnIndex <  (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject(obj, tnIndex, var, varNewValue, baseProp, objProp);
+				else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, varNewValue, false);
+				else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(obj, tnIndex, var, varNewValue, baseProp, objProp);
+				else																				llResult = iVariable_copy(var, varNewValue);
 
 //////////
 // Include some extra debugging information to aid in tracking down those little peskies
@@ -350,7 +350,7 @@
 #endif
 
 				// Delete our temporary variable
-				iVariable_delete(thisCode, varNewValue, true);
+				iVariable_delete(varNewValue, true);
 
 				// Indicate our status
 				return(llResult);
@@ -368,12 +368,12 @@
 // Called to set the s32 variable directly by value
 //
 //////
-	bool iObjProp_set_logical_direct(SThisCode* thisCode, SObject* obj, s32 tnIndex, bool tlValue)
+	bool iObjProp_set_logical_direct(SObject* obj, s32 tnIndex, bool tlValue)
 	{
-		return(iObjProp_set_logical_fromLogicalConstants(thisCode, obj, tnIndex, ((tlValue) ? _LOGICAL_TRUE : _LOGICAL_FALSE)));
+		return(iObjProp_set_logical_fromLogicalConstants(obj, tnIndex, ((tlValue) ? _LOGICAL_TRUE : _LOGICAL_FALSE)));
 	}
 
-	bool iObjProp_set_logical_fromLogicalConstants(SThisCode* thisCode, SObject* obj, s32 tnIndex, s32 tnValue)
+	bool iObjProp_set_logical_fromLogicalConstants(SObject* obj, s32 tnIndex, s32 tnValue)
 	{
 		bool			llResult;
 		SBasePropMap*	baseProp;
@@ -402,24 +402,24 @@
 			}
 
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex, &baseProp, &objProp);
+			var = iObjProp_get_var_byIndex(obj, tnIndex, &baseProp, &objProp);
 			if (var)
 			{
 				// Create a temporary variable
-				varNewValue = iVariable_create(thisCode, _VAR_TYPE_LOGICAL, NULL, true);
+				varNewValue = iVariable_create(_VAR_TYPE_LOGICAL, NULL, true);
 				if (varNewValue)
 				{
 					// Populate the variable the indicated value
-					iVariable_set_logical(thisCode, varNewValue, tnValue);
+					iVariable_set_logical(varNewValue, tnValue);
 
 					// Perform the set
-						 if (objProp->_setterObject     && tnIndex <  (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject(thisCode, obj, tnIndex, var, varNewValue, baseProp, objProp);
-					else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(thisCode, var, NULL, varNewValue, false);
-					else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(thisCode, obj, tnIndex, var, varNewValue, baseProp, objProp);
-					else																				llResult = iVariable_copy(thisCode, var, varNewValue);
+						 if (objProp->_setterObject     && tnIndex <  (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject(obj, tnIndex, var, varNewValue, baseProp, objProp);
+					else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, varNewValue, false);
+					else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(obj, tnIndex, var, varNewValue, baseProp, objProp);
+					else																				llResult = iVariable_copy(var, varNewValue);
 
 					// Delete our temporary variable
-					iVariable_delete(thisCode, varNewValue, true);
+					iVariable_delete(varNewValue, true);
 
 					// Indicate our status
 					return(llResult);
@@ -439,7 +439,7 @@
 // Called to set the s32 variable directly by value
 //
 //////
-	bool iObjProp_set_s32_direct(SThisCode* thisCode, SObject* obj, s32 tnIndex, s32 tnValue)
+	bool iObjProp_set_s32_direct(SObject* obj, s32 tnIndex, s32 tnValue)
 	{
 		bool				llResult;
 		SBasePropMap*	baseProp;
@@ -452,24 +452,24 @@
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex, &baseProp, &objProp);
+			var = iObjProp_get_var_byIndex(obj, tnIndex, &baseProp, &objProp);
 			if (var)
 			{
 				// Create a temporary variable
-				varNewValue = iVariable_create(thisCode, _VAR_TYPE_S32, NULL, true);
+				varNewValue = iVariable_create(_VAR_TYPE_S32, NULL, true);
 				if (varNewValue)
 				{
 					// Populate the variable the indicated value
-					iVariable_set_s32(thisCode, varNewValue, tnValue);
+					iVariable_set_s32(varNewValue, tnValue);
 
 					// Perform the set
-						 if (objProp->_setterObject     && tnIndex <  (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject(thisCode, obj, tnIndex, var, varNewValue, baseProp, objProp);
-					else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(thisCode, var, NULL, varNewValue, false);
-					else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(thisCode, obj, tnIndex, var, varNewValue, baseProp, objProp);
-					else																				llResult = iVariable_copy(thisCode, var, varNewValue);
+						 if (objProp->_setterObject     && tnIndex <  (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject(obj, tnIndex, var, varNewValue, baseProp, objProp);
+					else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, varNewValue, false);
+					else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(obj, tnIndex, var, varNewValue, baseProp, objProp);
+					else																				llResult = iVariable_copy(var, varNewValue);
 
 					// Delete our temporary variable
-					iVariable_delete(thisCode, varNewValue, true);
+					iVariable_delete(varNewValue, true);
 
 					// Indicate our status
 					return(llResult);
@@ -489,7 +489,7 @@
 // Called to set the u32 variable directly by value
 //
 //////
-	bool iObjProp_set_u32_direct(SThisCode* thisCode, SObject* obj, s32 tnIndex, u32 tnValue)
+	bool iObjProp_set_u32_direct(SObject* obj, s32 tnIndex, u32 tnValue)
 	{
 		bool				llResult;
 		SBasePropMap*	baseProp;
@@ -502,24 +502,24 @@
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex, &baseProp, &objProp);
+			var = iObjProp_get_var_byIndex(obj, tnIndex, &baseProp, &objProp);
 			if (var)
 			{
 				// Create a temporary variable
-				varNewValue = iVariable_create(thisCode, _VAR_TYPE_U32, NULL, true);
+				varNewValue = iVariable_create(_VAR_TYPE_U32, NULL, true);
 				if (varNewValue)
 				{
 					// Populate the variable the indicated value
-					iVariable_set_u32(thisCode, varNewValue, tnValue);
+					iVariable_set_u32(varNewValue, tnValue);
 
 					// Perform the set
-						 if (objProp->_setterObject     && tnIndex <  (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject(thisCode, obj, tnIndex, var, varNewValue, baseProp, objProp);
-					else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(thisCode, var, NULL, varNewValue, false);
-					else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(thisCode, obj, tnIndex, var, varNewValue, baseProp, objProp);
-					else																				llResult = iVariable_copy(thisCode, var, varNewValue);
+						 if (objProp->_setterObject     && tnIndex <  (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject(obj, tnIndex, var, varNewValue, baseProp, objProp);
+					else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, varNewValue, false);
+					else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(obj, tnIndex, var, varNewValue, baseProp, objProp);
+					else																				llResult = iVariable_copy(var, varNewValue);
 
 					// Delete our temporary variable
-					iVariable_delete(thisCode, varNewValue, true);
+					iVariable_delete(varNewValue, true);
 
 					// Indicate our status
 					return(llResult);
@@ -539,7 +539,7 @@
 // Called to set the f32 value directly by value
 //
 //////
-	bool iObjProp_set_f32_direct(SThisCode* thisCode, SObject* obj, s32 tnIndex, f32 tfValue)
+	bool iObjProp_set_f32_direct(SObject* obj, s32 tnIndex, f32 tfValue)
 	{
 		bool				llResult;
 		SBasePropMap*	baseProp;
@@ -552,24 +552,24 @@
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex, &baseProp, &objProp);
+			var = iObjProp_get_var_byIndex(obj, tnIndex, &baseProp, &objProp);
 			if (var)
 			{
 				// Create a temporary variable
-				varNewValue = iVariable_create(thisCode, _VAR_TYPE_F32, NULL, true);
+				varNewValue = iVariable_create(_VAR_TYPE_F32, NULL, true);
 				if (varNewValue)
 				{
 					// Populate the variable the indicated value
-					iVariable_set_f32(thisCode, varNewValue, tfValue);
+					iVariable_set_f32(varNewValue, tfValue);
 
 					// Perform the set
-						 if (objProp->_setterObject     && tnIndex <  (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject(thisCode, obj, tnIndex, var, varNewValue, baseProp, objProp);
-					else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(thisCode, var, NULL, varNewValue, false);
-					else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(thisCode, obj, tnIndex, var, varNewValue, baseProp, objProp);
-					else																				llResult = iVariable_copy(thisCode, var, varNewValue);
+						 if (objProp->_setterObject     && tnIndex <  (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject(obj, tnIndex, var, varNewValue, baseProp, objProp);
+					else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, varNewValue, false);
+					else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(obj, tnIndex, var, varNewValue, baseProp, objProp);
+					else																				llResult = iVariable_copy(var, varNewValue);
 
 					// Delete our temporary variable
-					iVariable_delete(thisCode, varNewValue, true);
+					iVariable_delete(varNewValue, true);
 
 					// Indicate our status
 					return(llResult);
@@ -589,7 +589,7 @@
 // Called to set the f64 value directly by value
 //
 //////
-	bool iObjProp_set_f64_direct(SThisCode* thisCode, SObject* obj, s32 tnIndex, f64 tfValue)
+	bool iObjProp_set_f64_direct(SObject* obj, s32 tnIndex, f64 tfValue)
 	{
 		bool				llResult;
 		SBasePropMap*	baseProp;
@@ -602,24 +602,24 @@
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex, &baseProp, &objProp);
+			var = iObjProp_get_var_byIndex(obj, tnIndex, &baseProp, &objProp);
 			if (var)
 			{
 				// Create a temporary variable
-				varNewValue = iVariable_create(thisCode, _VAR_TYPE_F64, NULL, true);
+				varNewValue = iVariable_create(_VAR_TYPE_F64, NULL, true);
 				if (varNewValue)
 				{
 					// Populate the variable the indicated value
-					iVariable_set_f64(thisCode, varNewValue, tfValue);
+					iVariable_set_f64(varNewValue, tfValue);
 
 					// Perform the set
-						 if (objProp->_setterObject     && tnIndex <  (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject(thisCode, obj, tnIndex, var, varNewValue, baseProp, objProp);
-					else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(thisCode, var, NULL, varNewValue, false);
-					else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(thisCode, obj, tnIndex, var, varNewValue, baseProp, objProp);
-					else																				llResult = iVariable_copy(thisCode, var, varNewValue);
+						 if (objProp->_setterObject     && tnIndex <  (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject(obj, tnIndex, var, varNewValue, baseProp, objProp);
+					else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, varNewValue, false);
+					else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(obj, tnIndex, var, varNewValue, baseProp, objProp);
+					else																				llResult = iVariable_copy(var, varNewValue);
 
 					// Delete our temporary variable
-					iVariable_delete(thisCode, varNewValue, true);
+					iVariable_delete(varNewValue, true);
 
 					// Indicate our status
 					return(llResult);
@@ -639,7 +639,7 @@
 // Called to set the SBgra variable directly by value
 //
 //////
-	bool iObjProp_set_sbgra_direct(SThisCode* thisCode, SObject* obj, s32 tnIndex, SBgra color)
+	bool iObjProp_set_sbgra_direct(SObject* obj, s32 tnIndex, SBgra color)
 	{
 		bool				llResult;
 		SBasePropMap*	baseProp;
@@ -652,24 +652,24 @@
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex, &baseProp, &objProp);
+			var = iObjProp_get_var_byIndex(obj, tnIndex, &baseProp, &objProp);
 			if (var)
 			{
 				// Create a temporary variable
-				varNewValue = iVariable_create(thisCode, _VAR_TYPE_U32, NULL, true);
+				varNewValue = iVariable_create(_VAR_TYPE_U32, NULL, true);
 				if (varNewValue)
 				{
 					// Populate the variable the indicated value
-					iVariable_set_u32(thisCode, varNewValue, color.color);
+					iVariable_set_u32(varNewValue, color.color);
 
 					// Perform the set
-						 if (objProp->_setterObject     && tnIndex <  (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject(thisCode, obj, tnIndex, var, varNewValue, baseProp, objProp);
-					else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(thisCode, var, NULL, varNewValue, false);
-					else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(thisCode, obj, tnIndex, var, varNewValue, baseProp, objProp);
-					else																				llResult = iVariable_copy(thisCode, var, varNewValue);
+						 if (objProp->_setterObject     && tnIndex <  (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject(obj, tnIndex, var, varNewValue, baseProp, objProp);
+					else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, varNewValue, false);
+					else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(obj, tnIndex, var, varNewValue, baseProp, objProp);
+					else																				llResult = iVariable_copy(var, varNewValue);
 
 					// Delete our temporary variable
-					iVariable_delete(thisCode, varNewValue, true);
+					iVariable_delete(varNewValue, true);
 
 					// Indicate our status
 					return(llResult);
@@ -689,7 +689,7 @@
 // Called to copy the indicated variable
 //
 //////
-	bool iObjProp_copy_byIndex(SThisCode* thisCode, SObject* objDst, s32 tnIndexDst, SObject* objSrc, s32 tnIndexSrc)
+	bool iObjProp_copy_byIndex(SObject* objDst, s32 tnIndexDst, SObject* objSrc, s32 tnIndexSrc)
 	{
 		SVariable* varDst;
 		SVariable* varSrc;
@@ -699,10 +699,10 @@
 		if (objDst && objSrc)
 		{
 			// Grab the variable associated with this object's property
-			varDst = iObjProp_get_var_byIndex(thisCode, objDst, tnIndexDst);
-			varSrc = iObjProp_get_var_byIndex(thisCode, objSrc, tnIndexDst);
+			varDst = iObjProp_get_var_byIndex(objDst, tnIndexDst);
+			varSrc = iObjProp_get_var_byIndex(objSrc, tnIndexDst);
 			if (varDst && varSrc)
-				return(iVariable_copy(thisCode, varDst, varSrc));
+				return(iVariable_copy(varDst, varSrc));
 		}
 		// If we get here, failure
 		return(false);
@@ -716,7 +716,7 @@
 // Copy all of the properties
 //
 //////
-	bool iObjProp_copyAll(SThisCode* thisCode, SObject* objDst, SObject* objSrc, bool tlCopyDynamicProperties)
+	bool iObjProp_copyAll(SObject* objDst, SObject* objSrc, bool tlCopyDynamicProperties)
 	{
 		s32		lnI;
 		bool	llResult;
@@ -738,7 +738,7 @@
 						if (objDst->props[lnI])
 						{
 							// Delete the variable
-							iVariable_delete(thisCode, objDst->props[lnI], true);
+							iVariable_delete(objDst->props[lnI], true);
 							objDst->props[lnI] = NULL;
 						}
 					}
@@ -769,14 +769,14 @@
 						{
 							// Copy the property if populated
 							if (objSrc->props[lnI])
-								objDst->props[lnI] = iVariable_copy(thisCode, objSrc->props[lnI], false);
+								objDst->props[lnI] = iVariable_copy(objSrc->props[lnI], false);
 						}
 
 
 					//////////
 					// Copy dynamic properties if need be
 					//////
-						if (tlCopyDynamicProperties)		llResult = iObjProp_copyDynamic(thisCode, objDst, objSrc);
+						if (tlCopyDynamicProperties)		llResult = iObjProp_copyDynamic(objDst, objSrc);
 						else								llResult = true;
 				}
 
@@ -794,7 +794,7 @@
 // Copy the dynamic runtime properties
 //
 //////
-	bool iObjProp_copyDynamic(SThisCode* thisCode, SObject* objDst, SObject* objSrc)
+	bool iObjProp_copyDynamic(SObject* objDst, SObject* objSrc)
 	{
 		bool		llResult;
 		SVariable*	var;
@@ -821,7 +821,7 @@ debug_break;
 						varNext = var->ll.nextVar;
 
 						// Delete it
-						iVariable_delete(thisCode, var, true);
+						iVariable_delete(var, true);
 					}
 
 					// Indicate they're gone
@@ -844,7 +844,7 @@ debug_break;
 				for (var = objSrc->firstProperty; var; var = var->ll.nextVar)
 				{
 					// Copy it
-					varNew = iVariable_copy(thisCode, var, false);
+					varNew = iVariable_copy(var, false);
 
 					// Append it
 					iLl_appendExistingNodeAtEnd((SLL**)&objSrc->firstProperty, (SLL*)varNew);
@@ -864,7 +864,7 @@ debug_break;
 // Called to set the value using an on/off component
 //
 //////
-	bool iObjProp_setOnOff(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_setOnOff(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 		bool llResult;
 
@@ -876,7 +876,7 @@ debug_break;
 			if (compNew && (compNew->iCode == _ICODE_ON || compNew->iCode == _ICODE_OFF))
 			{
 				// Set the value
-				iVariable_set_logical(thisCode, varSet, ((compNew->iCode == _ICODE_ON) ? _LOGICAL_TRUE : _LOGICAL_FALSE));
+				iVariable_set_logical(varSet, ((compNew->iCode == _ICODE_ON) ? _LOGICAL_TRUE : _LOGICAL_FALSE));
 
 				// Indicate success
 				llResult = true;
@@ -887,7 +887,7 @@ debug_break;
 		// Optionally clean house
 		//////
 			if (tlDeleteVarNewAfterSet)
-				iVariable_delete(thisCode, varNew, true);
+				iVariable_delete(varNew, true);
 
 
 		//////////
@@ -904,7 +904,7 @@ debug_break;
 // Called to set the value using the valid date texts
 //
 //////
-	bool iObjProp_setDate(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_setDate(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 		u32		lnDateType;
 		bool	llResult;
@@ -942,7 +942,7 @@ debug_break;
 			// Should the value be set?
 			//////
 				if (llResult)
-					iVariable_set_u32(thisCode, varSet, lnDateType);
+					iVariable_set_u32(varSet, lnDateType);
 
 
 		} else {
@@ -962,7 +962,7 @@ debug_break;
 // Called to set the integer using the valid settings for decimals (0..18)
 //
 //////
-	bool iObjProp_setDecimals(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_setDecimals(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 		s32		lnDecimals;
 		bool	llResult;
@@ -979,11 +979,11 @@ debug_break;
 				//////////
 				// Grab our value
 				//////
-					lnDecimals = iiVariable_getAs_s32(thisCode, varNew, false, &error, &errorNum);
+					lnDecimals = iiVariable_getAs_s32(varNew, false, &error, &errorNum);
 					if (!error && lnDecimals >= (s32)_MIN_SET_DECIMALS && lnDecimals <= (s32)_MAX_SET_DECIMALS)
 					{
 						// Set the value
-						iVariable_set(thisCode, varSet, varNew);
+						iVariable_set(varSet, varNew);
 
 						// Indicate success
 						llResult = true;
@@ -995,7 +995,7 @@ debug_break;
 		// Optionally clean house
 		//////
 			if (tlDeleteVarNewAfterSet)
-				iVariable_delete(thisCode, varNew, true);
+				iVariable_delete(varNew, true);
 
 
 		//////////
@@ -1012,7 +1012,7 @@ debug_break;
 // Called to set the device output to some location
 //
 //////
-	bool iObjProp_setDevice(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_setDevice(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 		s32			lnLength;
 		bool		llResult, llManufactured, llIsValid;
@@ -1030,11 +1030,11 @@ debug_break;
 		//////////
 		// Locate any additional components
 		//////
-			compScreen		= iComps_findNextBy_iCode(thisCode, compNew, _ICODE_SCREEN,		NULL);
-			compPrinter		= iComps_findNextBy_iCode(thisCode, compNew, _ICODE_PRINTER,	NULL);
-			compPrompt		= iComps_findNextBy_iCode(thisCode, compNew, _ICODE_PROMPT,		NULL);
-			compFile		= iComps_findNextBy_iCode(thisCode, compNew, _ICODE_FILE,		NULL);
-			compAdditive	= iComps_findNextBy_iCode(thisCode, compNew, _ICODE_ADDITIVE,	NULL);
+			compScreen		= iComps_findNextBy_iCode(compNew, _ICODE_SCREEN,		NULL);
+			compPrinter		= iComps_findNextBy_iCode(compNew, _ICODE_PRINTER,	NULL);
+			compPrompt		= iComps_findNextBy_iCode(compNew, _ICODE_PROMPT,		NULL);
+			compFile		= iComps_findNextBy_iCode(compNew, _ICODE_FILE,		NULL);
+			compAdditive	= iComps_findNextBy_iCode(compNew, _ICODE_ADDITIVE,	NULL);
 
 
 		//////////
@@ -1048,13 +1048,13 @@ debug_break;
 				{
 					// SET DEVICE TO SCREEN
 					llResult = true;
-					iVariable_set_s32(thisCode, varSet, _SET_DEVICE_SCREEN);
+					iVariable_set_s32(varSet, _SET_DEVICE_SCREEN);
 
 				} else if (compNew == compPrinter) {
 					// SET DEVICE TO PRINTER
 					llResult = true;
-					if (compPrompt)		iVariable_set_s32(thisCode, varSet, _SET_DEVICE_PRINTER_PROMPT);
-					else				iVariable_set_s32(thisCode, varSet, _SET_DEVICE_PRINTER_NO_PROMPT);
+					if (compPrompt)		iVariable_set_s32(varSet, _SET_DEVICE_PRINTER_PROMPT);
+					else				iVariable_set_s32(varSet, _SET_DEVICE_PRINTER_NO_PROMPT);
 
 				} else if (compNew == compFile) {
 					// SET DEVICE TO FILE
@@ -1076,12 +1076,12 @@ debug_break;
 								// It's something other than quoted text
 								// See if it's a variable
 								llIsValid	= false;
-								varLookup	= iEngine_get_variableName_fromComponent(thisCode, compFilename, &llManufactured, false);
+								varLookup	= iEngine_get_variableName_fromComponent(compFilename, &llManufactured, false);
 								if (!varLookup)
 								{
 									// It's not a known variable, so it must be just something they want to use as a filename
 									llIsValid	= true;
-									lnLength	= iComps_getContiguousLength(thisCode, compFilename, NULL, 0, NULL);
+									lnLength	= iComps_getContiguousLength(compFilename, NULL, 0, NULL);
 									memcpy(buffer, compFilename->line->sourceCode->data_cs8 + compFilename->start, lnLength);
 
 								} else {
@@ -1095,7 +1095,7 @@ debug_break;
 
 								// Clean house
 								if (varLookup && llManufactured)
-									iVariable_delete(thisCode, varLookup, true);
+									iVariable_delete(varLookup, true);
 						}
 
 						// If we're still valid, try to open the filename
@@ -1110,17 +1110,17 @@ debug_break;
 							{
 								// Indicate success
 								llResult = true;
-								iVariable_set_s32(thisCode, varSet, _SET_DEVICE_FILE);
+								iVariable_set_s32(varSet, _SET_DEVICE_FILE);
 
 								// Create a variable for population into _INDEX_SET_DEVICE2's character memory variable
-								varFilename = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, buffer, (s32)strlen(buffer), false);
+								varFilename = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, buffer, (s32)strlen(buffer), false);
 								if (varFilename)
 								{
 									// Copy it over
-									iObjProp_set(thisCode, _settings, _INDEX_SET_DEVICE2, varFilename, true);
+									iObjProp_set(_settings, _INDEX_SET_DEVICE2, varFilename, true);
 
 									// Clean house
-									iVariable_delete(thisCode, varFilename, true);
+									iVariable_delete(varFilename, true);
 
 								} else {
 									// Failure on indicating our filename
@@ -1138,7 +1138,7 @@ debug_break;
 		// Optionally clean house
 		//////
 			if (tlDeleteVarNewAfterSet)
-				iVariable_delete(thisCode, varNew, true);
+				iVariable_delete(varNew, true);
 
 
 		//////////
@@ -1155,7 +1155,7 @@ debug_break;
 // Called to set the integer using the valid integer variable
 //
 //////
-	bool iObjProp_setInteger(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_setInteger(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 		bool llResult;
 
@@ -1167,7 +1167,7 @@ debug_break;
 			if (iVariable_isValid(varNew) && iVariable_isTypeNumeric(varNew))
 			{
 				// Set the value
-				iVariable_set(thisCode, varSet, varNew);
+				iVariable_set(varSet, varNew);
 
 				// Indicate success
 				llResult = true;
@@ -1178,7 +1178,7 @@ debug_break;
 		// Optionally clean house
 		//////
 			if (tlDeleteVarNewAfterSet)
-				iVariable_delete(thisCode, varNew, true);
+				iVariable_delete(varNew, true);
 
 
 		//////////
@@ -1195,7 +1195,7 @@ debug_break;
 // Called to set the integer to either 12 or 24
 //
 //////
-	bool iObjProp_setIneger_12_24(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_setIneger_12_24(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 		s32		lnValue;
 		bool	llResult;
@@ -1210,11 +1210,11 @@ debug_break;
 			if (iVariable_isValid(varNew) && iVariable_isTypeNumeric(varNew))
 			{
 				// Gab the value
-				lnValue = iiVariable_getAs_s32(thisCode, varNew, false, &error, &errorNum);
+				lnValue = iiVariable_getAs_s32(varNew, false, &error, &errorNum);
 				if (!error && (lnValue == 12 || lnValue == 24))
 				{
 					// Set the value
-					iVariable_set(thisCode, varSet, varNew);
+					iVariable_set(varSet, varNew);
 
 					// Indicate success
 					llResult = true;
@@ -1226,7 +1226,7 @@ debug_break;
 		// Optionally clean house
 		//////
 			if (tlDeleteVarNewAfterSet)
-				iVariable_delete(thisCode, varNew, true);
+				iVariable_delete(varNew, true);
 
 
 		//////////
@@ -1243,7 +1243,7 @@ debug_break;
 // Called to set the integer to the closest 64-bit range from the value indicated, using a minimum of 128
 //
 //////
-	bool iObjProp_setInteger_bits(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_setInteger_bits(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 		s32		lnValue;
 		bool	llResult;
@@ -1258,15 +1258,15 @@ debug_break;
 			if (iVariable_isValid(varNew) && iVariable_isTypeNumeric(varNew))
 			{
 				// Gab the value
-				lnValue = iiVariable_getAs_s32(thisCode, varNew, false, &error, &errorNum);
+				lnValue = iiVariable_getAs_s32(varNew, false, &error, &errorNum);
 				if (!error)
 				{
 					// Potentially adjust the value
 					lnValue = max(128, ((lnValue / 64) + ((lnValue % 64 != 0) ? 1 : 0)) * 64);
-					iVariable_setNumeric_toNumericType(thisCode, varNew, NULL, NULL, &lnValue, NULL, NULL, NULL);
+					iVariable_setNumeric_toNumericType(varNew, NULL, NULL, &lnValue, NULL, NULL, NULL);
 
 					// Set the value
-					iVariable_set(thisCode, varSet, varNew);
+					iVariable_set(varSet, varNew);
 
 					// Indicate success
 					llResult = true;
@@ -1278,7 +1278,7 @@ debug_break;
 		// Optionally clean house
 		//////
 			if (tlDeleteVarNewAfterSet)
-				iVariable_delete(thisCode, varNew, true);
+				iVariable_delete(varNew, true);
 
 
 		//////////
@@ -1295,7 +1295,7 @@ debug_break;
 // Called to set the u16 value from the indicated input
 //
 //////
-	bool iObjProp_set_u16(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_set_u16(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 		s64		lnValue;
 		bool	llResult;
@@ -1312,11 +1312,11 @@ debug_break;
 				//////////
 				// Grab our value
 				//////
-					lnValue = iiVariable_getAs_s64(thisCode, varNew, false, &error, &errorNum);
+					lnValue = iiVariable_getAs_s64(varNew, false, &error, &errorNum);
 					if (!error && lnValue >= 0 && lnValue <= (s64)_u16_max)
 					{
 						// Set the value
-						iVariable_set(thisCode, varSet, varNew);
+						iVariable_set(varSet, varNew);
 
 						// Indicate success
 						llResult = true;
@@ -1328,7 +1328,7 @@ debug_break;
 		// Optionally clean house
 		//////
 			if (tlDeleteVarNewAfterSet)
-				iVariable_delete(thisCode, varNew, true);
+				iVariable_delete(varNew, true);
 
 
 		//////////
@@ -1345,7 +1345,7 @@ debug_break;
 // Called to set the value using the valid date texts
 //
 //////
-	bool iObjProp_setLanguage(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_setLanguage(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 // TODO:  This will need to be implemented once we get resources moved out to loadable DLLs.  We'll look for a vjrres_en.dll, for example
 		return(false);
@@ -1359,7 +1359,7 @@ debug_break;
 // Called to set the logical using the variable converted to logical
 //
 //////
-	bool iObjProp_setLogical(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_setLogical(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 		bool llResult;
 
@@ -1371,7 +1371,7 @@ debug_break;
 			if (iVariable_isValid(varNew) && iVariable_isFundamentalTypeLogical(varNew))
 			{
 				// Set the value
-				iVariable_set(thisCode, varSet, varNew);
+				iVariable_set(varSet, varNew);
 
 				// Indicate success
 				llResult = true;
@@ -1382,7 +1382,7 @@ debug_break;
 		// Optionally clean house
 		//////
 			if (tlDeleteVarNewAfterSet)
-				iVariable_delete(thisCode, varNew, true);
+				iVariable_delete(varNew, true);
 
 
 		//////////
@@ -1400,7 +1400,7 @@ debug_break;
 // Defaults to TF.
 //
 ///////
-	bool iObjProp_setLogicalX(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_setLogicalX(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 		u32		lnLogicalType;
 		bool	llResult;
@@ -1445,7 +1445,7 @@ debug_break;
 			// Should the value be set?
 			//////
 				if (llResult)
-					iVariable_set_u32(thisCode, varSet, lnLogicalType);
+					iVariable_set_u32(varSet, lnLogicalType);
 
 
 		} else {
@@ -1467,7 +1467,7 @@ debug_break;
 // Note:  Reprocess is logical, or numeric. When numeric if negative it is attempts, if positive it is seconds
 //
 //////
-	bool iObjProp_setReprocess(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_setReprocess(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 		s32		lnValue;
 		bool	llResult;
@@ -1480,8 +1480,8 @@ debug_break;
 		//////////
 		// Locate any additional components
 		//////
-			compSystem	= iComps_findNextBy_iCode(thisCode, compNew, _ICODE_SYSTEM, NULL);
-			compSeconds	= iComps_findNextBy_iCode(thisCode, compNew, _ICODE_SECONDS, NULL);
+			compSystem	= iComps_findNextBy_iCode(compNew, _ICODE_SYSTEM, NULL);
+			compSeconds	= iComps_findNextBy_iCode(compNew, _ICODE_SECONDS, NULL);
 
 
 		//////////
@@ -1494,7 +1494,7 @@ debug_break;
 				if (iVariable_isTypeNumeric(varNew))
 				{
 					// Grab the value
-					lnValue = iiVariable_getAs_s32(thisCode, varNew, false, &error, &errorNum);
+					lnValue = iiVariable_getAs_s32(varNew, false, &error, &errorNum);
 
 					// Must be positive, and there must have been no error in conversion
 					if (lnValue >= 0 && !error)
@@ -1516,11 +1516,11 @@ debug_break;
 							if (compSystem)
 							{
 								// Setting the system reprocess
-								iObjProp_set(thisCode, _settings, _INDEX_SET_REPROCESS_SYSTEM, varNew, true);
+								iObjProp_set(_settings, _INDEX_SET_REPROCESS_SYSTEM, varNew, true);
 
 							} else {
 								// Setting the normal reprocess
-								iObjProp_set(thisCode, _settings, _INDEX_SET_REPROCESS, varNew, true);
+								iObjProp_set(_settings, _INDEX_SET_REPROCESS, varNew, true);
 							}
 
 					}
@@ -1538,11 +1538,11 @@ debug_break;
 					if (compSystem)
 					{
 						// Setting the system reprocess to true (automatic)
-						iObjProp_set(thisCode, _settings, _INDEX_SET_REPROCESS_SYSTEM, cvarTrue, true);
+						iObjProp_set(_settings, _INDEX_SET_REPROCESS_SYSTEM, cvarTrue, true);
 
 					} else {
 						// Setting the normal reprocess to true (automatic)
-						iObjProp_set(thisCode, _settings, _INDEX_SET_REPROCESS, cvarTrue, true);
+						iObjProp_set(_settings, _INDEX_SET_REPROCESS, cvarTrue, true);
 					}
 			}
 
@@ -1551,7 +1551,7 @@ debug_break;
 		// Optionally clean house
 		//////
 			if (tlDeleteVarNewAfterSet)
-				iVariable_delete(thisCode, varNew, true);
+				iVariable_delete(varNew, true);
 
 
 		//////////
@@ -1568,7 +1568,7 @@ debug_break;
 // Called to set the time using the valid time texts
 //
 //////
-	bool iObjProp_setTime(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_setTime(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 		bool llResult;
 
@@ -1580,7 +1580,7 @@ debug_break;
 			if (compNew && (compNew->iCode == _ICODE_SYSTEM || compNew->iCode == _ICODE_LOCAL))
 			{
 				// Set the value
-				iVariable_set_s32(thisCode, varSet, ((compNew->iCode == _ICODE_SYSTEM) ? _TIME_SYSTEM : _TIME_LOCAL));
+				iVariable_set_s32(varSet, ((compNew->iCode == _ICODE_SYSTEM) ? _TIME_SYSTEM : _TIME_LOCAL));
 
 				// Indicate success
 				llResult = true;
@@ -1591,7 +1591,7 @@ debug_break;
 		// Optionally clean house
 		//////
 			if (tlDeleteVarNewAfterSet)
-				iVariable_delete(thisCode, varNew, true);
+				iVariable_delete(varNew, true);
 
 
 		//////////
@@ -1608,7 +1608,7 @@ debug_break;
 // Called to set the user-defined parameter passing protocol to reference or value
 //
 //////
-	bool iObjProp_setUdfParams(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_setUdfParams(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 		bool llResult;
 
@@ -1620,7 +1620,7 @@ debug_break;
 			if (compNew && (compNew->iCode == _ICODE_REFERENCE || compNew->iCode == _ICODE_VALUE))
 			{
 				// Set the value
-				iVariable_set_s32(thisCode, varSet, ((compNew->iCode == _ICODE_REFERENCE) ? _UDFPARMS_REFERENCE : _UDFPARMS_VALUE));
+				iVariable_set_s32(varSet, ((compNew->iCode == _ICODE_REFERENCE) ? _UDFPARMS_REFERENCE : _UDFPARMS_VALUE));
 
 				// Indicate success
 				llResult = true;
@@ -1631,7 +1631,7 @@ debug_break;
 		// Optionally clean house
 		//////
 			if (tlDeleteVarNewAfterSet)
-				iVariable_delete(thisCode, varNew, true);
+				iVariable_delete(varNew, true);
 
 
 		//////////
@@ -1649,7 +1649,7 @@ debug_break;
 // Called to set the expression to the input character expression
 //
 //////
-	bool iObjProp_setCharacter(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_setCharacter(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 		bool llResult;
 
@@ -1661,7 +1661,7 @@ debug_break;
 			if (iVariable_isTypeCharacter(varNew) && varNew->value.length >= 1)
 			{
 				llResult = true;
-				iVariable_copy(thisCode, varSet, varNew);
+				iVariable_copy(varSet, varNew);
 			}
 
 
@@ -1669,7 +1669,7 @@ debug_break;
 		// Optionally clean house
 		//////
 			if (tlDeleteVarNewAfterSet)
-				iVariable_delete(thisCode, varNew, true);
+				iVariable_delete(varNew, true);
 
 
 		//////////
@@ -1686,7 +1686,7 @@ debug_break;
 // Called to set the expression to the left-most character of the input character expression
 //
 //////
-	bool iObjProp_setCharacter1(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_setCharacter1(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 		bool llResult;
 
@@ -1709,7 +1709,7 @@ debug_break;
 		// Optionally clean house
 		//////
 			if (tlDeleteVarNewAfterSet)
-				iVariable_delete(thisCode, varNew, true);
+				iVariable_delete(varNew, true);
 
 
 		//////////
@@ -1726,7 +1726,7 @@ debug_break;
 // Called to obtain the date type of the indicated variable
 //
 //////
-	SVariable* iObjProp_getDate(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning)
+	SVariable* iObjProp_getDate(SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning)
 	{
 		s32			lnValue;
 		SVariable*	result;
@@ -1741,7 +1741,7 @@ debug_break;
 			if (iVariable_isValid(varSet) && iVariable_isTypeNumeric(varSet))
 			{
 				// Get the setting as an s32
-				lnValue = iiVariable_getAs_s32(thisCode, varSet, false, &error, &errorNum);
+				lnValue = iiVariable_getAs_s32(varSet, false, &error, &errorNum);
 				if (!error)
 				{
 					// Okay... which one are we?
@@ -1749,46 +1749,46 @@ debug_break;
 					{
 						default:
 						case _SET_DATE_AMERICAN:
-							result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_american, sizeof(cgc_american) - 1, false);
+							result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, cgc_american, sizeof(cgc_american) - 1, false);
 							break;
 						case _SET_DATE_ANSI:
-							result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_ansi, sizeof(cgc_ansi) - 1, false);
+							result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, cgc_ansi, sizeof(cgc_ansi) - 1, false);
 							break;
 						case _SET_DATE_BRITISH:
-							result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_british, sizeof(cgc_british) - 1, false);
+							result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, cgc_british, sizeof(cgc_british) - 1, false);
 							break;
 						case _SET_DATE_DMY:
-							result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_dmy, sizeof(cgc_dmy) - 1, false);
+							result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, cgc_dmy, sizeof(cgc_dmy) - 1, false);
 							break;
 						case _SET_DATE_FRENCH:
-							result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_french, sizeof(cgc_french) - 1, false);
+							result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, cgc_french, sizeof(cgc_french) - 1, false);
 							break;
 						case _SET_DATE_GERMAN:
-							result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_german, sizeof(cgc_german) - 1, false);
+							result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, cgc_german, sizeof(cgc_german) - 1, false);
 							break;
 						case _SET_DATE_ITALIAN:
-							result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_italian, sizeof(cgc_italian) - 1, false);
+							result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, cgc_italian, sizeof(cgc_italian) - 1, false);
 							break;
 						case _SET_DATE_JAPAN:
-							result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_japan, sizeof(cgc_japan) - 1, false);
+							result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, cgc_japan, sizeof(cgc_japan) - 1, false);
 							break;
 						case _SET_DATE_LONG:
-							result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_long, sizeof(cgc_long) - 1, false);
+							result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, cgc_long, sizeof(cgc_long) - 1, false);
 							break;
 						case _SET_DATE_MDY:
-							result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_mdy, sizeof(cgc_mdy) - 1, false);
+							result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, cgc_mdy, sizeof(cgc_mdy) - 1, false);
 							break;
 						case _SET_DATE_SHORT:
-							result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_short, sizeof(cgc_short) - 1, false);
+							result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, cgc_short, sizeof(cgc_short) - 1, false);
 							break;
 						case _SET_DATE_TAIWAN:
-							result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_taiwan, sizeof(cgc_taiwan) - 1, false);
+							result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, cgc_taiwan, sizeof(cgc_taiwan) - 1, false);
 							break;
 						case _SET_DATE_USA:
-							result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_usa, sizeof(cgc_usa) - 1, false);
+							result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, cgc_usa, sizeof(cgc_usa) - 1, false);
 							break;
 						case _SET_DATE_YMD:
-							result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_ymd, sizeof(cgc_ymd) - 1, false);
+							result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, cgc_ymd, sizeof(cgc_ymd) - 1, false);
 							break;
 					}
 				}
@@ -1799,7 +1799,7 @@ debug_break;
 		// Optionally clean house
 		//////
 			if (tlDeleteVarSetBeforeReturning)
-				iVariable_delete(thisCode, varSet, true);
+				iVariable_delete(varSet, true);
 
 
 		//////////
@@ -1816,7 +1816,7 @@ debug_break;
 // Called to obtain the current device setting
 //
 //////
-	SVariable* iObjProp_getDevice(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning)
+	SVariable* iObjProp_getDevice(SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning)
 	{
 		s32			lnValue;
 		SVariable*	result;
@@ -1833,7 +1833,7 @@ debug_break;
 				if (iVariable_isTypeNumeric(varSet))
 				{
 					// Get the setting as an s32
-					lnValue = iiVariable_getAs_s32(thisCode, varSet, false, &error, &errorNum);
+					lnValue = iiVariable_getAs_s32(varSet, false, &error, &errorNum);
 					if (!error)
 					{
 						// Positive = seconds, negative = attempts
@@ -1841,15 +1841,15 @@ debug_break;
 						{
 							case _SET_DEVICE_PRINTER_NO_PROMPT:
 							case _SET_DEVICE_PRINTER_PROMPT:
-								result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_printer, sizeof(cgc_printer) - 1, false);
+								result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, cgc_printer, sizeof(cgc_printer) - 1, false);
 								break;
 
 							case _SET_DEVICE_FILE:
-								result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_file, sizeof(cgc_file) - 1, false);
+								result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, cgc_file, sizeof(cgc_file) - 1, false);
 								break;
 
 							default:
-								result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_screen, sizeof(cgc_screen) - 1, false);
+								result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, cgc_screen, sizeof(cgc_screen) - 1, false);
 								break;
 						}
 					}
@@ -1861,7 +1861,7 @@ debug_break;
 		// Optionally clean house
 		//////
 			if (tlDeleteVarSetBeforeReturning)
-				iVariable_delete(thisCode, varSet, true);
+				iVariable_delete(varSet, true);
 
 
 		//////////
@@ -1878,7 +1878,7 @@ debug_break;
 // Called to obtain the integer of the indicated variable
 //
 //////
-	SVariable* iObjProp_getInteger(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning)
+	SVariable* iObjProp_getInteger(SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning)
 	{
 		SVariable* result;
 
@@ -1888,14 +1888,14 @@ debug_break;
 		//////
 			result = NULL;
 			if (iVariable_isValid(varSet) && iVariable_isTypeNumeric(varSet))
-				result = iVariable_copy(thisCode, varSet, false);
+				result = iVariable_copy(varSet, false);
 
 
 		//////////
 		// Optionally clean house
 		//////
 			if (tlDeleteVarSetBeforeReturning)
-				iVariable_delete(thisCode, varSet, true);
+				iVariable_delete(varSet, true);
 
 
 		//////////
@@ -1912,7 +1912,7 @@ debug_break;
 // Called to obtain the language setting of the indicated variable
 //
 //////
-	SVariable* iObjProp_getLanguage(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning)
+	SVariable* iObjProp_getLanguage(SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning)
 	{
 // TODO:  This will need to be implemented once we get resources moved out to loadable DLLs.  We'll look for a vjrres_en.dll, for example
 		return(NULL);
@@ -1926,7 +1926,7 @@ debug_break;
 // Called to obtain the logical setting of the indicated variable
 //
 //////
-	SVariable* iObjProp_getLogical(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning)
+	SVariable* iObjProp_getLogical(SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning)
 	{
 		SVariable* result;
 
@@ -1936,14 +1936,14 @@ debug_break;
 		//////
 			result = NULL;
 			if (iVariable_isValid(varSet) && iVariable_isTypeLogical(varSet))
-				result = iVariable_copy(thisCode, varSet, false);
+				result = iVariable_copy(varSet, false);
 
 
 		//////////
 		// Optionally clean house
 		//////
 			if (tlDeleteVarSetBeforeReturning)
-				iVariable_delete(thisCode, varSet, true);
+				iVariable_delete(varSet, true);
 
 
 		//////////
@@ -1960,7 +1960,7 @@ debug_break;
 // Called to obtain the logicalx setting of the indicated variable
 //
 //////
-	SVariable* iObjProp_getLogicalX(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning)
+	SVariable* iObjProp_getLogicalX(SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning)
 	{
 		s32			lnValue;
 		SVariable*	result;
@@ -1975,7 +1975,7 @@ debug_break;
 			if (iVariable_isValid(varSet) && iVariable_isTypeNumeric(varSet))
 			{
 				// Get the setting
-				lnValue = iiVariable_getAs_s32(thisCode, varSet, false, &error, &errorNum);
+				lnValue = iiVariable_getAs_s32(varSet, false, &error, &errorNum);
 				if (!error)
 				{
 					// Okay... which one are we?
@@ -1983,13 +1983,13 @@ debug_break;
 					{
 						default:
 						case _LOGICAL_TF:
-							result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_default, sizeof(cgc_default) - 1, false);
+							result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, cgc_default, sizeof(cgc_default) - 1, false);
 							break;
 						case _LOGICAL_YN:
-							result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_yn, sizeof(cgc_yn) - 1, false);
+							result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, cgc_yn, sizeof(cgc_yn) - 1, false);
 							break;
 						case _LOGICAL_UD:
-							result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_ud, sizeof(cgc_ud) - 1, false);
+							result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, cgc_ud, sizeof(cgc_ud) - 1, false);
 							break;
 					}
 				}
@@ -2000,7 +2000,7 @@ debug_break;
 		// Optionally clean house
 		//////
 			if (tlDeleteVarSetBeforeReturning)
-				iVariable_delete(thisCode, varSet, true);
+				iVariable_delete(varSet, true);
 
 
 		//////////
@@ -2017,7 +2017,7 @@ debug_break;
 // Called to obtain the on/off status of the indicated variable
 //
 //////
-	SVariable* iObjProp_getOnOff(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning)
+	SVariable* iObjProp_getOnOff(SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning)
 	{
 		bool		llOn;
 		SVariable*	result;
@@ -2032,18 +2032,18 @@ debug_break;
 			if (iVariable_isValid(varSet) && iVariable_isTypeLogical(varSet))
 			{
 				// Get the ON/OFF setting as a logical
-				llOn = iiVariable_getAs_bool(thisCode, varSet, false, &error, &errorNum);
+				llOn = iiVariable_getAs_bool(varSet, false, &error, &errorNum);
 				if (!error)
 				{
 					// Okay... are we ON or OFF?
 					if (llOn)
 					{
 						// ON
-						result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_on, sizeof(cgc_on) - 1, false);
+						result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, cgc_on, sizeof(cgc_on) - 1, false);
 
 					} else {
 						// OFF
-						result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_on, sizeof(cgc_on) - 1, false);
+						result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, cgc_on, sizeof(cgc_on) - 1, false);
 					}
 				}
 			}
@@ -2053,7 +2053,7 @@ debug_break;
 		// Optionally clean house
 		//////
 			if (tlDeleteVarSetBeforeReturning)
-				iVariable_delete(thisCode, varSet, true);
+				iVariable_delete(varSet, true);
 
 
 		//////////
@@ -2070,7 +2070,7 @@ debug_break;
 // Called to obtain the reprocess setting of the indicated variable
 //
 //////
-	SVariable* iObjProp_getReprocess(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning)
+	SVariable* iObjProp_getReprocess(SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning)
 	{
 		s32			lnValue;
 		bool		llAutomatic;
@@ -2089,18 +2089,18 @@ debug_break;
 				if (iVariable_isTypeLogical(varSet))
 				{
 					// If .T. then AUTOMATIC, if .F. then it's an error because only logical true is supported here
-					llAutomatic = iiVariable_getAs_bool(thisCode, varSet, false, &error, &errorNum);
+					llAutomatic = iiVariable_getAs_bool(varSet, false, &error, &errorNum);
 					if (!error)
 					{
 						// If true, it's valid
 						if (llAutomatic)
 						{
 							// It's set to automatic
-							result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_automatic, sizeof(cgc_automatic) - 1, false);
+							result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, cgc_automatic, sizeof(cgc_automatic) - 1, false);
 
 						} else {
 							// This should never happen
-							iError_signal(thisCode, _ERROR_INTERNAL_ERROR, NULL, false, NULL, false);
+							iError_signal(_ERROR_INTERNAL_ERROR, NULL, false, NULL, false);
 							debug_nop;
 						}
 					}
@@ -2108,7 +2108,7 @@ debug_break;
 				} else {
 					// It's set to either a number of attempts or seconds
 					// Get the setting as an s32
-					lnValue = iiVariable_getAs_s32(thisCode, varSet, false, &error, &errorNum);
+					lnValue = iiVariable_getAs_s32(varSet, false, &error, &errorNum);
 					if (!error)
 					{
 						// Positive = seconds, negative = attempts
@@ -2123,7 +2123,7 @@ debug_break;
 						}
 
 						// Create the variable
-						result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, buffer, (u32)strlen(buffer), false);
+						result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, buffer, (u32)strlen(buffer), false);
 					}
 				}
 			}
@@ -2133,7 +2133,7 @@ debug_break;
 		// Optionally clean house
 		//////
 			if (tlDeleteVarSetBeforeReturning)
-				iVariable_delete(thisCode, varSet, true);
+				iVariable_delete(varSet, true);
 
 
 		//////////
@@ -2150,7 +2150,7 @@ debug_break;
 // Called to obtain the time setting of the indicated variable
 //
 //////
-	SVariable* iObjProp_getTime(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning)
+	SVariable* iObjProp_getTime(SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning)
 	{
 		s32			lnValue;
 		SVariable*	result;
@@ -2165,7 +2165,7 @@ debug_break;
 			if (iVariable_isValid(varSet) && iVariable_isTypeNumeric(varSet))
 			{
 				// Get the setting
-				lnValue = iiVariable_getAs_s32(thisCode, varSet, false, &error, &errorNum);
+				lnValue = iiVariable_getAs_s32(varSet, false, &error, &errorNum);
 				if (!error)
 				{
 					// Okay... are we LOCAL or SYSTEM?
@@ -2173,11 +2173,11 @@ debug_break;
 					{
 						default:
 						case _TIME_LOCAL:
-							result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_local, sizeof(cgc_local) - 1, false);
+							result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, cgc_local, sizeof(cgc_local) - 1, false);
 							break;
 
 						case _TIME_SYSTEM:
-							result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_system, sizeof(cgc_system) - 1, false);
+							result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, cgc_system, sizeof(cgc_system) - 1, false);
 							break;
 					}
 				}
@@ -2188,7 +2188,7 @@ debug_break;
 		// Optionally clean house
 		//////
 			if (tlDeleteVarSetBeforeReturning)
-				iVariable_delete(thisCode, varSet, true);
+				iVariable_delete(varSet, true);
 
 
 		//////////
@@ -2205,7 +2205,7 @@ debug_break;
 // Returns reference or value
 //
 //////
-	SVariable* iObjProp_getUdfParams(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning)
+	SVariable* iObjProp_getUdfParams(SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning)
 	{
 		s32			lnValue;
 		SVariable*	result;
@@ -2220,7 +2220,7 @@ debug_break;
 			if (iVariable_isValid(varSet) && iVariable_isTypeNumeric(varSet))
 			{
 				// Get the setting
-				lnValue = iiVariable_getAs_s32(thisCode, varSet, false, &error, &errorNum);
+				lnValue = iiVariable_getAs_s32(varSet, false, &error, &errorNum);
 				if (!error)
 				{
 					// Okay... are we REFERENCE or VALUE?
@@ -2228,11 +2228,11 @@ debug_break;
 					{
 						default:
 						case _UDFPARMS_VALUE:
-							result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_value, sizeof(cgc_value) - 1, false);
+							result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, cgc_value, sizeof(cgc_value) - 1, false);
 							break;
 
 						case _UDFPARMS_REFERENCE:
-							result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_reference, sizeof(cgc_reference) - 1, false);
+							result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, cgc_reference, sizeof(cgc_reference) - 1, false);
 							break;
 					}
 				}
@@ -2243,7 +2243,7 @@ debug_break;
 		// Optionally clean house
 		//////
 			if (tlDeleteVarSetBeforeReturning)
-				iVariable_delete(thisCode, varSet, true);
+				iVariable_delete(varSet, true);
 
 
 		//////////
@@ -2261,11 +2261,11 @@ debug_break;
 // Called to get the f64 variable from the indicated object
 //
 //////
-	SVariable* iObjProp_get(SThisCode* thisCode, SObject* obj, s32 tnIndex)
+	SVariable* iObjProp_get(SObject* obj, s32 tnIndex)
 	{
 		// Make sure the environment is sane
 		if (obj)
-			return(iObjProp_get_var_byIndex(thisCode, obj, tnIndex));
+			return(iObjProp_get_var_byIndex(obj, tnIndex));
 
 		// If we get here, failure
 		return(NULL);
@@ -2279,7 +2279,7 @@ debug_break;
 // Called to get the type of the variable for the indicated property
 //
 //////
-	s32 iObjProp_get_varAndType(SThisCode* thisCode, SObject* obj, s32 tnIndex, SVariable** varDst)
+	s32 iObjProp_get_varAndType(SObject* obj, s32 tnIndex, SVariable** varDst)
 	{
 		SVariable* var;
 
@@ -2297,7 +2297,7 @@ debug_break;
 			//////////
 			// Grab the variable
 			//////
-				*varDst = iObjProp_get_var_byIndex(thisCode, obj, tnIndex);
+				*varDst = iObjProp_get_var_byIndex(obj, tnIndex);
 
 
 			//////////
@@ -2322,7 +2322,7 @@ debug_break;
 //        variable, not a copy.
 //
 //////
-	SVariable* iObjProp_get_var_byIndex(SThisCode* thisCode, SObject* obj, s32 tnIndex, SBasePropMap** baseProp, SObjPropMap** objProp)
+	SVariable* iObjProp_get_var_byIndex(SObject* obj, s32 tnIndex, SBasePropMap** baseProp, SObjPropMap** objProp)
 	{
 		s32				lnI;
 		SBaseClassMap*	baseClassMap;
@@ -2334,7 +2334,7 @@ debug_break;
 		{
 			// Locate the base class
 // TODO:  We could add a speedup here by storing the baseClassMap location in the object itself at the time of creation
-			baseClassMap = iiObj_getBaseclass_byType(thisCode, obj->objType);
+			baseClassMap = iiObj_getBaseclass_byType(obj->objType);
 			if (baseClassMap)
 			{
 				// Locate the property within the object's properties
@@ -2378,13 +2378,13 @@ debug_break;
 //		tlSearchClassProps	-- Search obj->firstProperty link list for custom added properties with ADDPROPERTY()
 //
 //////
-	SVariable* iObjProp_get_var_byComp(SThisCode* thisCode, SObject* obj, SComp* comp, bool tlSearchDefaultProps, bool tlSearchUserProps, u32* tnIndex, s32* tnType)
+	SVariable* iObjProp_get_var_byComp(SObject* obj, SComp* comp, bool tlSearchDefaultProps, bool tlSearchUserProps, u32* tnIndex, s32* tnType)
 	{
 		// Make sure our environment is sane
 		if (comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data_s8 && comp->start + comp->length <= comp->line->sourceCode->length)
 		{
 			// We're good
-			return(iObjProp_get_var_byName(thisCode, obj, comp->line->sourceCode->data_u8 + comp->start, comp->length, tlSearchDefaultProps, tlSearchUserProps, tnIndex, tnType));
+			return(iObjProp_get_var_byName(obj, comp->line->sourceCode->data_u8 + comp->start, comp->length, tlSearchDefaultProps, tlSearchUserProps, tnIndex, tnType));
 
 		} else {
 			// Something's invalid
@@ -2395,7 +2395,7 @@ debug_break;
 	// Note:  If _SOURCE_TYPE_PROPERTY, the index it returns is the index into baseClassMap->objProps and obj->props.  Use gsPropsmaster[obj->props.index - 1] to access the base class property settings for it.
 	// Note:  I _SOURCE_TYPE_PROPERTY_CUSTOM, no index is returned
 	// Note:  The return value is the exactly variable in the property array or custom property chain.
-	SVariable* iObjProp_get_var_byName(SThisCode* thisCode, SObject* obj, u8* tcName, u32 tnNameLength, bool tlSearchDefaultProps, bool tlSearchUserProps, u32* tnIndex, s32* tnType)
+	SVariable* iObjProp_get_var_byName(SObject* obj, u8* tcName, u32 tnNameLength, bool tlSearchDefaultProps, bool tlSearchUserProps, u32* tnIndex, s32* tnType)
 	{
 		s32					lnI, lnIndex;
 		SBaseClassMap*		baseClassMap;
@@ -2413,7 +2413,7 @@ debug_break;
 				if (tlSearchDefaultProps)
 				{
 					// Locate the base class
-					baseClassMap = iiObj_getBaseclass_byType(thisCode, obj->objType);
+					baseClassMap = iiObj_getBaseclass_byType(obj->objType);
 					if (baseClassMap)
 					{
 
@@ -2443,7 +2443,7 @@ debug_break;
 					}
 
 					// If we get here, there's an internal system error
-					iError_signal(thisCode, _ERROR_INTERNAL_ERROR, NULL, true, NULL, true);
+					iError_signal(_ERROR_INTERNAL_ERROR, NULL, true, NULL, true);
 					return(NULL);
 				}
 
@@ -2485,7 +2485,7 @@ debug_break;
 // Called to get the bitmap from the indicated object
 //
 //////
-	SBitmap* iObjProp_get_bitmap(SThisCode* thisCode, SObject* obj, s32 tnIndex)
+	SBitmap* iObjProp_get_bitmap(SObject* obj, s32 tnIndex)
 	{
 		SVariable* var;
 
@@ -2494,7 +2494,7 @@ debug_break;
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex);
+			var = iObjProp_get_var_byIndex(obj, tnIndex);
 			if (var && var->varType == _VAR_TYPE_BITMAP)
 				return(var->bmp);
 		}
@@ -2510,7 +2510,7 @@ debug_break;
 // Called to get the character from the indicated object
 //
 //////
-	SVariable* iObjProp_get_character(SThisCode* thisCode, SObject* obj, s32 tnIndex)
+	SVariable* iObjProp_get_character(SObject* obj, s32 tnIndex)
 	{
 		SVariable* var;
 
@@ -2519,7 +2519,7 @@ debug_break;
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex);
+			var = iObjProp_get_var_byIndex(obj, tnIndex);
 			if (var && var->varType == _VAR_TYPE_CHARACTER)
 				return(var);
 		}
@@ -2535,7 +2535,7 @@ debug_break;
 // Called to get the f32 variable from the indicated object
 //
 //////
-	SVariable* iObjProp_get_f32(SThisCode* thisCode, SObject* obj, s32 tnIndex)
+	SVariable* iObjProp_get_f32(SObject* obj, s32 tnIndex)
 	{
 		SVariable* var;
 
@@ -2544,7 +2544,7 @@ debug_break;
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex);
+			var = iObjProp_get_var_byIndex(obj, tnIndex);
 			if (var && var->varType == _VAR_TYPE_F32)
 				return(var);
 		}
@@ -2560,7 +2560,7 @@ debug_break;
 // Called to get the f32 from the indicated object
 //
 //////
-	f64 iObjProp_get_f32_direct(SThisCode* thisCode, SObject* obj, s32 tnIndex)
+	f64 iObjProp_get_f32_direct(SObject* obj, s32 tnIndex)
 	{
 		bool		error;
 		f32			lfResult;
@@ -2573,11 +2573,11 @@ debug_break;
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex);
+			var = iObjProp_get_var_byIndex(obj, tnIndex);
 			if (var && var->varType == _VAR_TYPE_F32)
 			{
 				// Try to get the value
-				return(iiVariable_getAs_f32(thisCode, var, false, &error, &errorNum));
+				return(iiVariable_getAs_f32(var, false, &error, &errorNum));
 
 				// If we got it...
 				if (!error)
@@ -2599,7 +2599,7 @@ debug_break;
 // Called to get the f64 from the indicated object
 //
 //////
-	f64 iObjProp_get_f64_direct(SThisCode* thisCode, SObject* obj, s32 tnIndex)
+	f64 iObjProp_get_f64_direct(SObject* obj, s32 tnIndex)
 	{
 		bool		error;
 		f64			lfResult;
@@ -2612,11 +2612,11 @@ debug_break;
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex);
+			var = iObjProp_get_var_byIndex(obj, tnIndex);
 			if (var)
 			{
 				// Try to get the value
-				return(iiVariable_getAs_f64(thisCode, var, false, &error, &errorNum));
+				return(iiVariable_getAs_f64(var, false, &error, &errorNum));
 
 				// If we got it...
 				if (!error)
@@ -2638,7 +2638,7 @@ debug_break;
 // Called to get the logical from the indicated object
 //
 //////
-	SVariable* iObjProp_get_logical(SThisCode* thisCode, SObject* obj, s32 tnIndex)
+	SVariable* iObjProp_get_logical(SObject* obj, s32 tnIndex)
 	{
 		SVariable* var;
 
@@ -2647,7 +2647,7 @@ debug_break;
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex);
+			var = iObjProp_get_var_byIndex(obj, tnIndex);
 			if (var && var->varType == _VAR_TYPE_LOGICAL)
 				return(var);
 		}
@@ -2663,7 +2663,7 @@ debug_break;
 // Called to obtain the property's direct value
 //
 //////
-	s32 iObjProp_get_logical_fromLogicalConstants(SThisCode* thisCode, SObject* obj, s32 tnIndex)
+	s32 iObjProp_get_logical_fromLogicalConstants(SObject* obj, s32 tnIndex)
 	{
 		bool		error;
 		s32			lnResult;
@@ -2675,11 +2675,11 @@ debug_break;
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex);
+			var = iObjProp_get_var_byIndex(obj, tnIndex);
 			if (var)
 			{
 				// Try to get the value
-				lnResult = iiVariable_getAs_s32(thisCode, var, false, &error, &errorNum);
+				lnResult = iiVariable_getAs_s32(var, false, &error, &errorNum);
 
 				// If we got it...
 				if (!error)
@@ -2698,7 +2698,7 @@ debug_break;
 // Called to get the object from the indicated object
 //
 //////
-	SVariable* iObjProp_get_object(SThisCode* thisCode, SObject* obj, s32 tnIndex)
+	SVariable* iObjProp_get_object(SObject* obj, s32 tnIndex)
 	{
 		SVariable* var;
 
@@ -2707,7 +2707,7 @@ debug_break;
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex);
+			var = iObjProp_get_var_byIndex(obj, tnIndex);
 			if (var && var->varType == _VAR_TYPE_OBJECT)
 				return(var);
 		}
@@ -2723,7 +2723,7 @@ debug_break;
 // Called to get the s8 from the indicated object directly
 //
 //////
-	s8 iObjProp_get_s8_direct(SThisCode* thisCode, SObject* obj, s32 tnIndex)
+	s8 iObjProp_get_s8_direct(SObject* obj, s32 tnIndex)
 	{
 		bool		error;
 		s32			lnResult;
@@ -2735,11 +2735,11 @@ debug_break;
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex);
+			var = iObjProp_get_var_byIndex(obj, tnIndex);
 			if (var)
 			{
 				// Try to get the value
-				lnResult = iiVariable_getAs_s8(thisCode, var, false, &error, &errorNum);
+				lnResult = iiVariable_getAs_s8(var, false, &error, &errorNum);
 
 				// If we got it...
 				if (!error)
@@ -2758,7 +2758,7 @@ debug_break;
 // Called to get the s32 from the indicated object directly
 //
 //////
-	s32 iObjProp_get_s32_direct(SThisCode* thisCode, SObject* obj, s32 tnIndex)
+	s32 iObjProp_get_s32_direct(SObject* obj, s32 tnIndex)
 	{
 		bool		error;
 		s32			lnResult;
@@ -2770,11 +2770,11 @@ debug_break;
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex);
+			var = iObjProp_get_var_byIndex(obj, tnIndex);
 			if (var)
 			{
 				// Try to get the value
-				lnResult = iiVariable_getAs_s32(thisCode, var, false, &error, &errorNum);
+				lnResult = iiVariable_getAs_s32(var, false, &error, &errorNum);
 
 				// If we got it...
 				if (!error)
@@ -2793,7 +2793,7 @@ debug_break;
 // Called to obtain the s32 value as an SBgra color
 //
 //////
-	SBgra iObjProp_get_sbgra_direct(SThisCode* thisCode, SObject* obj, s32 tnIndex)
+	SBgra iObjProp_get_sbgra_direct(SObject* obj, s32 tnIndex)
 	{
 		s64			_color64;
 		union {
@@ -2809,11 +2809,11 @@ debug_break;
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex);
+			var = iObjProp_get_var_byIndex(obj, tnIndex);
 			if (var)
 			{
 				// Try to get the value
-				_color64 = iiVariable_getAs_s64(thisCode, var, false, &error, &errorNum);
+				_color64 = iiVariable_getAs_s64(var, false, &error, &errorNum);
 				_color	= (u32)_color64;
 
 				// If we got it...
@@ -2836,7 +2836,7 @@ debug_break;
 // into its proper _INDEX_SET_* value.
 //
 //////
-	s32 iObjProp_settingsTranslate(SThisCode* thisCode, s32 tniCodeKeyword)
+	s32 iObjProp_settingsTranslate(s32 tniCodeKeyword)
 	{
 		SBasePropMap* baseProps;
 
@@ -2866,7 +2866,7 @@ debug_break;
 // Called to delete the variable associated with the index
 //
 //////
-	bool iObjProp_delete_variable_byIndex(SThisCode* thisCode, SObject* obj, s32 tnIndex)
+	bool iObjProp_delete_variable_byIndex(SObject* obj, s32 tnIndex)
 	{
 		SVariable* var;
 
@@ -2875,10 +2875,10 @@ debug_break;
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex);
+			var = iObjProp_get_var_byIndex(obj, tnIndex);
 			if (var && var->varType == _VAR_TYPE_BITMAP)
 			{
-				iVariable_delete(thisCode, var, false);
+				iVariable_delete(var, false);
 				return(true);
 			}
 		}
@@ -2894,7 +2894,7 @@ debug_break;
 // Called to compare the indicated character variable with the indicated text
 //
 //////
-	s32 iObjProp_compare_character(SThisCode* thisCode, SObject* obj, s32 tnIndex, s8* tcText, u32 tnTextLength)
+	s32 iObjProp_compare_character(SObject* obj, s32 tnIndex, s8* tcText, u32 tnTextLength)
 	{
 		SVariable* var;
 
@@ -2903,7 +2903,7 @@ debug_break;
 		if (obj)
 		{
 			// Grab the variable associated with this object's property
-			var = iObjProp_get_var_byIndex(thisCode, obj, tnIndex);
+			var = iObjProp_get_var_byIndex(obj, tnIndex);
 			if (var && var->varType == _VAR_TYPE_CHARACTER)
 				return(iDatum_compare(&var->value, tcText, tnTextLength));	// Do the compare normally
 		}
@@ -2921,7 +2921,7 @@ debug_break;
 // has its own properties, and these are used for rendering.
 //
 //////
-	bool iObjProp_setter_captionOnChild(SThisCode* thisCode, SObject* obj, s32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp)
+	bool iObjProp_setter_captionOnChild(SObject* obj, s32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp)
 	{
 		SObject*	objChild;
 		SVariable*	varChild;
@@ -2931,7 +2931,7 @@ debug_break;
 		if (obj && var && varNewValue)
 		{
 			// Set the caption
-			iVariable_copy(thisCode, var, varNewValue);
+			iVariable_copy(var, varNewValue);
 
 			// For the items with captions, we set the caption on the parent as well as the child
 			objChild = obj->firstChild;
@@ -2941,9 +2941,9 @@ debug_break;
 				if (propIsName_byText(objChild, cgcName_caption))
 				{
 					// Set the caption here
-					varChild = iObjProp_get_var_byIndex(thisCode, objChild, _INDEX_CAPTION);
+					varChild = iObjProp_get_var_byIndex(objChild, _INDEX_CAPTION);
 					if (varChild)
-						return(iVariable_copy(thisCode, varChild, varNewValue));
+						return(iVariable_copy(varChild, varNewValue));
 
 					// If we get here, we could not update it
 					break;
@@ -2968,7 +2968,7 @@ debug_break;
 // has its own properties, and these are used for rendering.
 //
 //////
-	bool iObjProp_setter_iconOnChild(SThisCode* thisCode, SObject* obj, s32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp)
+	bool iObjProp_setter_iconOnChild(SObject* obj, s32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp)
 	{
 		SObject*	objChild;
 		SVariable*	varChild;
@@ -2978,7 +2978,7 @@ debug_break;
 		if (obj && var && varNewValue)
 		{
 			// Set the caption
-			iVariable_copy(thisCode, var, varNewValue);
+			iVariable_copy(var, varNewValue);
 
 			// For the items with captions, we set the caption on the parent as well as the child
 			objChild = obj->firstChild;
@@ -2988,9 +2988,9 @@ debug_break;
 				if (propIsName_byText(objChild, cgcName_icon))
 				{
 					// Set the caption here
-					varChild = iObjProp_get_var_byIndex(thisCode, objChild, _INDEX_ICON);
+					varChild = iObjProp_get_var_byIndex(objChild, _INDEX_ICON);
 					if (varChild)
-						return(iVariable_copy(thisCode, varChild, varNewValue));
+						return(iVariable_copy(varChild, varNewValue));
 
 					// If we get here, we could not update it
 					break;
@@ -3013,7 +3013,7 @@ debug_break;
 // Called to mirror the color setting into the parent object into the nested child object
 //
 //////
-	bool iObjProp_setter_editboxMirror(SThisCode* thisCode, SObject* obj, s32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp)
+	bool iObjProp_setter_editboxMirror(SObject* obj, s32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp)
 	{
 		// Make sure our environment is sane
 		if (obj && obj->objType == _OBJ_TYPE_EDITBOX && var && varNewValue)
@@ -3159,7 +3159,7 @@ debug_break;
 
 				default:
 					// Set the property to whatever is indicated, even though there is no mirror value in the SEM
-					iVariable_copy(thisCode, var, varNewValue);
+					iVariable_copy(var, varNewValue);
 			}
 
 			// Success
@@ -3178,7 +3178,7 @@ debug_break;
 // Called to set the font object members associated with the object's font property settings.
 //
 //////
-	bool iObjProp_setter_fontProperty(SThisCode* thisCode, SObject* obj, s32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp)
+	bool iObjProp_setter_fontProperty(SObject* obj, s32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp)
 	{
 		bool llResult;
 
@@ -3186,7 +3186,7 @@ debug_break;
 		//////////
 		// Perform the actual set on the property
 		//////
-			llResult = iVariable_copy(thisCode, var, varNewValue);
+			llResult = iVariable_copy(var, varNewValue);
 			if (llResult)
 			{
 				//////////
@@ -3254,7 +3254,7 @@ debug_break;
 				//////////
 				// Signal that this object needs redrawn
 				//////
-					iObj_setDirtyRender_ascent(thisCode, obj, true);
+					iObj_setDirtyRender_ascent(obj, true);
 			}
 
 
@@ -3262,7 +3262,7 @@ debug_break;
 		// For editboxes, we need to mirror the font settings through to the SEM
 		//////
 			if (obj->objType == _OBJ_TYPE_EDITBOX)
-				iObjProp_setter_editboxMirror(thisCode, obj, tnIndex, var, varNewValue, baseProp, objProp);
+				iObjProp_setter_editboxMirror(obj, tnIndex, var, varNewValue, baseProp, objProp);
 
 
 		//////////
@@ -3282,7 +3282,7 @@ debug_break;
 // member, or newSourceCode->length <= 0).
 //
 //////
-	bool iObjEvent_set_function(SThisCode* thisCode, SObject* obj, s32 tnIndex, SFunction** funcRoot, SDatum* newSourceCode, SDatum* name)
+	bool iObjEvent_set_function(SObject* obj, s32 tnIndex, SFunction** funcRoot, SDatum* newSourceCode, SDatum* name)
 	{
 		bool		llResult;
 		SFunction*	func;
@@ -3296,7 +3296,7 @@ debug_break;
 			//////////
 			// If we don't already have a user function, allocate one
 			//////
-				func = iFunction_allocate(thisCode, name);
+				func = iFunction_allocate(name);
 				if (!func)
 					return(false);
 
@@ -3304,11 +3304,11 @@ debug_break;
 			//////////
 			// Create a new SEM to hold the source code
 			//////
-				func->sem = iSEM_allocate(thisCode, true);
+				func->sem = iSEM_allocate(true);
 				if (!func->sem)
 				{
 					// Clean house
-					iFunction_politelyDelete(thisCode, func, true);
+					iFunction_politelyDelete(func, true);
 					return(false);
 				}
 
@@ -3319,7 +3319,7 @@ debug_break;
 				if (newSourceCode && newSourceCode->data_s8 && newSourceCode->length >= 1)
 				{
 					// Populate the program into it
-					llResult = iSEM_load_fromMemory(thisCode, obj, func->sem, newSourceCode, true, false);
+					llResult = iSEM_load_fromMemory(obj, func->sem, newSourceCode, true, false);
 
 				} else {
 					// The code will be cleared out
@@ -3358,7 +3358,7 @@ debug_break;
 // Called to get the name of the event
 //
 //////
-	SDatum* iObjEvent_get_name_asDatum(SThisCode* thisCode, s32 tnIndex, SDatum* nameToUpdate)
+	SDatum* iObjEvent_get_name_asDatum(s32 tnIndex, SDatum* nameToUpdate)
 	{
 		// Make sure the environment is sane
 		if (nameToUpdate && tnIndex <= gnEvents_masterSize)
@@ -3380,7 +3380,7 @@ debug_break;
 // Called to search events and methods to see if the name indicated is found
 //
 //////
-	s32 iObjEvent_get_eventOrMethod_byComp(SThisCode* thisCode, SObject* obj, SComp* comp, bool tlSearchDefaultEMs, bool tlSearchUserEMs, u32* tnIndex, SFunction** tsFuncRoot, SFunction** tsFunc)
+	s32 iObjEvent_get_eventOrMethod_byComp(SObject* obj, SComp* comp, bool tlSearchDefaultEMs, bool tlSearchUserEMs, u32* tnIndex, SFunction** tsFuncRoot, SFunction** tsFunc)
 	{
 		s32			lnI, lnDataLength, lnType;
 		s8*			lcData;

@@ -341,7 +341,7 @@
 //		Number of changes made (if tlRecover), or would've been made (if !tlRecover).
 //
 //////
-	s32 iDbc_validate(SThisCode* thisCode, SWorkArea* wa, bool tlRecover, SEM* sem, SWindow* win)
+	s32 iDbc_validate(SWorkArea* wa, bool tlRecover, SEM* sem, SWindow* win)
 	{
 // TODO:  Write the DBC validation algorithm.  A small task I assure you. :-)
 		return(-1);

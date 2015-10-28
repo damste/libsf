@@ -189,7 +189,7 @@
 			glGraceInitialized = true;
 
 			// Re-render the main window
-			iWindow_render(NULL, gsGraceParams->win, true);
+			iWindow_render(gsGraceParams->win, true);
 
 
 		//////////

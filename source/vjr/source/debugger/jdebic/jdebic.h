@@ -93,7 +93,7 @@
 //////////
 //
 // Data preparation functions:
-//		JDebiC_debug		-- Prepare and transmit thisCode, win, obj data to the remote
+//		JDebiC_debug		-- Prepare and transmit win, obj data to the remote
 //		JDebiC_text			-- Prepare and transmit text to display in the text window
 //		JDebiC_data			-- Prepare and transmit data to parse remotely and have available for display
 //
@@ -114,7 +114,7 @@
 //////////
 // Forward declarations
 //////
-	void		JDebiC_debug					(SThisCode* thisCode, SWindow* win, SObject* obj);
+	void		JDebiC_debug					(SWindow* win, SObject* obj);
 	void		JDebiC_text						(s8* tcText);
 	void		JDebiC_data						(s8* tcData, s32 tnDataLength, u32 tnDataType);
 

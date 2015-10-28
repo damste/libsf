@@ -92,13 +92,13 @@
 // Called to copy the indicated empty from source to destination
 //
 //////
-	void iiSubobj_copyEmpty(SThisCode* thisCode, SObject* emptyDst, SObject* emptySrc)
+	void iiSubobj_copyEmpty(SObject* emptyDst, SObject* emptySrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, emptyDst, emptySrc);
+			iObj_duplicateChildren(emptyDst, emptySrc);
 	}
 
 
@@ -109,7 +109,7 @@
 // Called to copy the indicated form from source to destination
 //
 //////
-	void iiSubobj_copyForm(SThisCode* thisCode, SObject* formDst, SObject* formSrc)
+	void iiSubobj_copyForm(SObject* formDst, SObject* formSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -122,8 +122,8 @@
 		// Copy the allocatables
 		//////
 			formDst->p.font	= iFont_duplicate(formSrc->p.font);
-			iObjProp_set_bitmap_direct(thisCode, formDst, _INDEX_ICON, iObjProp_get_bitmap(thisCode, formSrc, _INDEX_ICON));
-			iObjProp_copy_byIndex(thisCode, formDst, _INDEX_CAPTION, formSrc, _INDEX_CAPTION);
+			iObjProp_set_bitmap_direct(formDst, _INDEX_ICON, iObjProp_get_bitmap(formSrc, _INDEX_ICON));
+			iObjProp_copy_byIndex(formDst, _INDEX_CAPTION, formSrc, _INDEX_CAPTION);
 
 
 		//////////
@@ -135,7 +135,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, formDst, formSrc);
+			iObj_duplicateChildren(formDst, formSrc);
 	}
 
 
@@ -146,7 +146,7 @@
 // Called to copy the indicated empty subform source to destination
 //
 //////
-	void iiSubobj_copySubform(SThisCode* thisCode, SObject* subformDst, SObject* subformSrc)
+	void iiSubobj_copySubform(SObject* subformDst, SObject* subformSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -159,14 +159,14 @@
 		// Copy the allocatables
 		//////
 			subformDst->p.font	= iFont_duplicate(subformSrc->p.font);
-			iObjProp_set_bitmap_direct(thisCode, subformDst, _INDEX_ICON, iObjProp_get_bitmap(thisCode, subformSrc, _INDEX_ICON));
-			iObjProp_copy_byIndex(thisCode, subformDst, _INDEX_CAPTION, subformSrc, _INDEX_CAPTION);
+			iObjProp_set_bitmap_direct(subformDst, _INDEX_ICON, iObjProp_get_bitmap(subformSrc, _INDEX_ICON));
+			iObjProp_copy_byIndex(subformDst, _INDEX_CAPTION, subformSrc, _INDEX_CAPTION);
 
 			// Picture
-			iObjProp_copy_byIndex(thisCode, subformDst, _INDEX_PICTURE,			subformSrc, _INDEX_PICTURE);
-			iObjProp_copy_byIndex(thisCode, subformDst, _INDEX_PICTUREBMP,		subformSrc, _INDEX_PICTUREBMP);
-			iObjProp_copy_byIndex(thisCode, subformDst, _INDEX_PICTUREBMP_DOWN,	subformSrc, _INDEX_PICTUREBMP_DOWN);
-			iObjProp_copy_byIndex(thisCode, subformDst, _INDEX_PICTUREBMP_OVER,	subformSrc, _INDEX_PICTUREBMP_OVER);
+			iObjProp_copy_byIndex(subformDst, _INDEX_PICTURE,			subformSrc, _INDEX_PICTURE);
+			iObjProp_copy_byIndex(subformDst, _INDEX_PICTUREBMP,		subformSrc, _INDEX_PICTUREBMP);
+			iObjProp_copy_byIndex(subformDst, _INDEX_PICTUREBMP_DOWN,	subformSrc, _INDEX_PICTUREBMP_DOWN);
+			iObjProp_copy_byIndex(subformDst, _INDEX_PICTUREBMP_OVER,	subformSrc, _INDEX_PICTUREBMP_OVER);
 
 
 		//////////
@@ -178,7 +178,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, subformDst, subformSrc);
+			iObj_duplicateChildren(subformDst, subformSrc);
 	}
 
 
@@ -189,7 +189,7 @@
 // Called to copy the indicated carousel source to destination
 //
 //////
-	void iiSubobj_copyCarousel(SThisCode* thisCode, SObject* carouselDst, SObject* carouselSrc)
+	void iiSubobj_copyCarousel(SObject* carouselDst, SObject* carouselSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -207,7 +207,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, carouselDst, carouselSrc);
+			iObj_duplicateChildren(carouselDst, carouselSrc);
 	}
 
 
@@ -218,7 +218,7 @@
 // Called to copy the indicated rider source to destination
 //
 //////
-	void iiSubobj_copyRider(SThisCode* thisCode, SObject* riderDst, SObject* riderSrc)
+	void iiSubobj_copyRider(SObject* riderDst, SObject* riderSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -236,7 +236,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, riderDst, riderSrc);
+			iObj_duplicateChildren(riderDst, riderSrc);
 	}
 
 
@@ -247,7 +247,7 @@
 // Called to copy the indicated label from source to destination
 //
 //////
-	void iiSubobj_copyLabel(SThisCode* thisCode, SObject* labelDst, SObject* labelSrc)
+	void iiSubobj_copyLabel(SObject* labelDst, SObject* labelSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -262,7 +262,7 @@
 			labelDst->p.font = iFont_duplicate(labelSrc->p.font);
 
 			// Caption
-			iObjProp_copy_byIndex(thisCode, labelDst, _INDEX_CAPTION, labelSrc, _INDEX_CAPTION);
+			iObjProp_copy_byIndex(labelDst, _INDEX_CAPTION, labelSrc, _INDEX_CAPTION);
 
 
 		//////////
@@ -274,7 +274,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, labelDst, labelSrc);
+			iObj_duplicateChildren(labelDst, labelSrc);
 	}
 
 
@@ -285,7 +285,7 @@
 // Called to copy the indicated textbox from source to destination
 //
 //////
-	void iiSubobj_copyTextbox(SThisCode* thisCode, SObject* textboxDst, SObject* textboxSrc)
+	void iiSubobj_copyTextbox(SObject* textboxDst, SObject* textboxSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -298,18 +298,18 @@
 		// Copy the allocatables
 		//////
 			textboxDst->p.font		= iFont_duplicate(textboxSrc->p.font);
-			iObjProp_set_bitmap_direct(thisCode, textboxDst, _INDEX_ICON, iObjProp_get_bitmap(thisCode, textboxSrc, _INDEX_ICON));
+			iObjProp_set_bitmap_direct(textboxDst, _INDEX_ICON, iObjProp_get_bitmap(textboxSrc, _INDEX_ICON));
 
 			// Caption
-			iObjProp_copy_byIndex(thisCode, textboxDst, _INDEX_CAPTION,				textboxSrc, _INDEX_CAPTION);
+			iObjProp_copy_byIndex(textboxDst, _INDEX_CAPTION,				textboxSrc, _INDEX_CAPTION);
 
 			// Value
-			iObjProp_copy_byIndex(thisCode, textboxDst, _INDEX_VALUE,				textboxSrc, _INDEX_VALUE);
-			iObjProp_copy_byIndex(thisCode, textboxDst, _INDEX_PICTURE,				textboxSrc, _INDEX_PICTURE);
-			iObjProp_copy_byIndex(thisCode, textboxDst, _INDEX_PICTUREBMP,			textboxSrc, _INDEX_PICTUREBMP);
-			iObjProp_copy_byIndex(thisCode, textboxDst, _INDEX_PICTUREBMP_DOWN,		textboxSrc, _INDEX_PICTUREBMP_DOWN);
-			iObjProp_copy_byIndex(thisCode, textboxDst, _INDEX_PICTUREBMP_OVER,		textboxSrc, _INDEX_PICTUREBMP_OVER);
-			iObjProp_copy_byIndex(thisCode, textboxDst, _INDEX_MASK,				textboxSrc, _INDEX_MASK);
+			iObjProp_copy_byIndex(textboxDst, _INDEX_VALUE,				textboxSrc, _INDEX_VALUE);
+			iObjProp_copy_byIndex(textboxDst, _INDEX_PICTURE,				textboxSrc, _INDEX_PICTURE);
+			iObjProp_copy_byIndex(textboxDst, _INDEX_PICTUREBMP,			textboxSrc, _INDEX_PICTUREBMP);
+			iObjProp_copy_byIndex(textboxDst, _INDEX_PICTUREBMP_DOWN,		textboxSrc, _INDEX_PICTUREBMP_DOWN);
+			iObjProp_copy_byIndex(textboxDst, _INDEX_PICTUREBMP_OVER,		textboxSrc, _INDEX_PICTUREBMP_OVER);
+			iObjProp_copy_byIndex(textboxDst, _INDEX_MASK,				textboxSrc, _INDEX_MASK);
 	
 
 		//////////
@@ -321,7 +321,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, textboxDst, textboxSrc);
+			iObj_duplicateChildren(textboxDst, textboxSrc);
 	}
 
 
@@ -332,7 +332,7 @@
 // Called to copy the indicated button from source to destination
 //
 //////
-	void iiSubobj_copyButton(SThisCode* thisCode, SObject* buttonDst, SObject* buttonSrc)
+	void iiSubobj_copyButton(SObject* buttonDst, SObject* buttonSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -347,13 +347,13 @@
 			buttonDst->p.font		= iFont_duplicate(buttonSrc->p.font);
 
 			// Caption
-			iObjProp_copy_byIndex(thisCode, buttonDst, _INDEX_CAPTION,			buttonSrc, _INDEX_CAPTION);
+			iObjProp_copy_byIndex(buttonDst, _INDEX_CAPTION,			buttonSrc, _INDEX_CAPTION);
 
 			// Picture
-			iObjProp_copy_byIndex(thisCode, buttonDst, _INDEX_PICTURE,			buttonSrc, _INDEX_PICTURE);
-			iObjProp_copy_byIndex(thisCode, buttonDst, _INDEX_PICTUREBMP,			buttonSrc, _INDEX_PICTUREBMP);
-			iObjProp_copy_byIndex(thisCode, buttonDst, _INDEX_PICTUREBMP_DOWN,	buttonSrc, _INDEX_PICTUREBMP_DOWN);
-			iObjProp_copy_byIndex(thisCode, buttonDst, _INDEX_PICTUREBMP_OVER,	buttonSrc, _INDEX_PICTUREBMP_OVER);
+			iObjProp_copy_byIndex(buttonDst, _INDEX_PICTURE,			buttonSrc, _INDEX_PICTURE);
+			iObjProp_copy_byIndex(buttonDst, _INDEX_PICTUREBMP,			buttonSrc, _INDEX_PICTUREBMP);
+			iObjProp_copy_byIndex(buttonDst, _INDEX_PICTUREBMP_DOWN,	buttonSrc, _INDEX_PICTUREBMP_DOWN);
+			iObjProp_copy_byIndex(buttonDst, _INDEX_PICTUREBMP_OVER,	buttonSrc, _INDEX_PICTUREBMP_OVER);
 
 
 		//////////
@@ -365,7 +365,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, buttonDst, buttonSrc);
+			iObj_duplicateChildren(buttonDst, buttonSrc);
 	}
 
 
@@ -376,7 +376,7 @@
 // Called to copy the indicated editbox from source to destination
 //
 //////
-	void iiSubobj_copyEditbox(SThisCode* thisCode, SObject* editboxDst, SObject* editboxSrc)
+	void iiSubobj_copyEditbox(SObject* editboxDst, SObject* editboxSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -389,18 +389,18 @@
 		// Copy the allocatables
 		//////
 			editboxDst->p.font	= iFont_duplicate(editboxSrc->p.font);
-			iObjProp_copy_byIndex(thisCode, editboxDst, _INDEX_ICON,				editboxSrc, _INDEX_ICON);
+			iObjProp_copy_byIndex(editboxDst, _INDEX_ICON,				editboxSrc, _INDEX_ICON);
 
 			// Caption
-			iObjProp_copy_byIndex(thisCode, editboxDst, _INDEX_CAPTION,			editboxSrc, _INDEX_CAPTION);
+			iObjProp_copy_byIndex(editboxDst, _INDEX_CAPTION,			editboxSrc, _INDEX_CAPTION);
 
 			// Value
-			iObjProp_copy_byIndex(thisCode, editboxDst, _INDEX_VALUE,				editboxSrc, _INDEX_VALUE);
-			iObjProp_copy_byIndex(thisCode, editboxDst, _INDEX_PICTURE,			editboxSrc, _INDEX_PICTURE);
-			iObjProp_copy_byIndex(thisCode, editboxDst, _INDEX_PICTUREBMP,		editboxSrc, _INDEX_PICTUREBMP);
-			iObjProp_copy_byIndex(thisCode, editboxDst, _INDEX_PICTUREBMP_DOWN,	editboxSrc, _INDEX_PICTUREBMP_DOWN);
-			iObjProp_copy_byIndex(thisCode, editboxDst, _INDEX_PICTUREBMP_OVER,	editboxSrc, _INDEX_PICTUREBMP_OVER);
-			iObjProp_copy_byIndex(thisCode, editboxDst, _INDEX_MASK,				editboxSrc, _INDEX_MASK);
+			iObjProp_copy_byIndex(editboxDst, _INDEX_VALUE,				editboxSrc, _INDEX_VALUE);
+			iObjProp_copy_byIndex(editboxDst, _INDEX_PICTURE,			editboxSrc, _INDEX_PICTURE);
+			iObjProp_copy_byIndex(editboxDst, _INDEX_PICTUREBMP,		editboxSrc, _INDEX_PICTUREBMP);
+			iObjProp_copy_byIndex(editboxDst, _INDEX_PICTUREBMP_DOWN,	editboxSrc, _INDEX_PICTUREBMP_DOWN);
+			iObjProp_copy_byIndex(editboxDst, _INDEX_PICTUREBMP_OVER,	editboxSrc, _INDEX_PICTUREBMP_OVER);
+			iObjProp_copy_byIndex(editboxDst, _INDEX_MASK,				editboxSrc, _INDEX_MASK);
 
 
 		//////////
@@ -412,7 +412,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, editboxDst, editboxSrc);
+			iObj_duplicateChildren(editboxDst, editboxSrc);
 	}
 
 
@@ -423,7 +423,7 @@
 // Called to copy the indicated image from source to destination
 //
 //////
-	void iiSubobj_copyImage(SThisCode* thisCode, SObject* imageDst, SObject* imageSrc)
+	void iiSubobj_copyImage(SObject* imageDst, SObject* imageSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -447,7 +447,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, imageDst, imageSrc);
+			iObj_duplicateChildren(imageDst, imageSrc);
 	}
 
 
@@ -458,7 +458,7 @@
 // Called to copy the indicated checkbox from source to destination
 //
 //////
-	void iiSubobj_copyCheckbox(SThisCode* thisCode, SObject* checkboxDst, SObject* checkboxSrc)
+	void iiSubobj_copyCheckbox(SObject* checkboxDst, SObject* checkboxSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -482,7 +482,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, checkboxDst, checkboxSrc);
+			iObj_duplicateChildren(checkboxDst, checkboxSrc);
 	}
 
 
@@ -493,7 +493,7 @@
 // Called to copy the indicated option from source to destination
 //
 //////
-	void iiSubobj_copyOption(SThisCode* thisCode, SObject* optionDst, SObject* optionSrc)
+	void iiSubobj_copyOption(SObject* optionDst, SObject* optionSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -517,7 +517,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, optionDst, optionSrc);
+			iObj_duplicateChildren(optionDst, optionSrc);
 	}
 
 
@@ -528,7 +528,7 @@
 // Called to copy the indicated radio from source to destination
 //
 //////
-	void iiSubobj_copyRadio(SThisCode* thisCode, SObject* radioDst, SObject* radioSrc)
+	void iiSubobj_copyRadio(SObject* radioDst, SObject* radioSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -552,7 +552,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, radioDst, radioSrc);
+			iObj_duplicateChildren(radioDst, radioSrc);
 	}
 
 
@@ -563,7 +563,7 @@
 // Called to copy the indicated cmdGroup from source to destination
 //
 //////
-	void iiSubobj_copyCmdGroup(SThisCode* thisCode, SObject* cmdGroupDst, SObject* cmdGroupSrc)
+	void iiSubobj_copyCmdGroup(SObject* cmdGroupDst, SObject* cmdGroupSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -587,7 +587,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, cmdGroupDst, cmdGroupSrc);
+			iObj_duplicateChildren(cmdGroupDst, cmdGroupSrc);
 	}
 
 
@@ -598,7 +598,7 @@
 // Called to copy the indicated optGroup from source to destination
 //
 //////
-	void iiSubobj_copyOptGroup(SThisCode* thisCode, SObject* optGroupDst, SObject* optGroupSrc)
+	void iiSubobj_copyOptGroup(SObject* optGroupDst, SObject* optGroupSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -622,7 +622,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, optGroupDst, optGroupSrc);
+			iObj_duplicateChildren(optGroupDst, optGroupSrc);
 	}
 
 
@@ -633,7 +633,7 @@
 // Called to copy the indicated listbox from source to destination
 //
 //////
-	void iiSubobj_copyListbox(SThisCode* thisCode, SObject* listboxDst, SObject* listboxSrc)
+	void iiSubobj_copyListbox(SObject* listboxDst, SObject* listboxSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -657,7 +657,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, listboxDst, listboxSrc);
+			iObj_duplicateChildren(listboxDst, listboxSrc);
 	}
 
 
@@ -668,7 +668,7 @@
 // Called to copy the indicated combobox from source to destination
 //
 //////
-	void iiSubobj_copyCombobox(SThisCode* thisCode, SObject* comboboxDst, SObject* comboboxSrc)
+	void iiSubobj_copyCombobox(SObject* comboboxDst, SObject* comboboxSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -692,7 +692,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, comboboxDst, comboboxSrc);
+			iObj_duplicateChildren(comboboxDst, comboboxSrc);
 	}
 
 
@@ -703,7 +703,7 @@
 // Called to copy the indicated formset from source to destination
 //
 //////
-	void iiSubobj_copyFormset(SThisCode* thisCode, SObject* formsetDst, SObject* formsetSrc)
+	void iiSubobj_copyFormset(SObject* formsetDst, SObject* formsetSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -727,7 +727,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, formsetDst, formsetSrc);
+			iObj_duplicateChildren(formsetDst, formsetSrc);
 	}
 
 
@@ -738,7 +738,7 @@
 // Called to copy the indicated toolbar from source to destination
 //
 //////
-	void iiSubobj_copyToolbar(SThisCode* thisCode, SObject* toolbarDst, SObject* toolbarSrc)
+	void iiSubobj_copyToolbar(SObject* toolbarDst, SObject* toolbarSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -762,7 +762,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, toolbarDst, toolbarSrc);
+			iObj_duplicateChildren(toolbarDst, toolbarSrc);
 	}
 
 
@@ -773,7 +773,7 @@
 // Called to copy the indicated separator from source to destination
 //
 //////
-	void iiSubobj_copySeparator(SThisCode* thisCode, SObject* separatorDst, SObject* separatorSrc)
+	void iiSubobj_copySeparator(SObject* separatorDst, SObject* separatorSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -797,7 +797,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, separatorDst, separatorSrc);
+			iObj_duplicateChildren(separatorDst, separatorSrc);
 	}
 
 
@@ -808,7 +808,7 @@
 // Called to copy the indicated line from source to destination
 //
 //////
-	void iiSubobj_copyLine(SThisCode* thisCode, SObject* lineDst, SObject* lineSrc)
+	void iiSubobj_copyLine(SObject* lineDst, SObject* lineSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -832,7 +832,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, lineDst, lineSrc);
+			iObj_duplicateChildren(lineDst, lineSrc);
 	}
 
 
@@ -843,7 +843,7 @@
 // Called to copy the indicated shape from source to destination
 //
 //////
-	void iiSubobj_copyShape(SThisCode* thisCode, SObject* shapeDst, SObject* shapeSrc)
+	void iiSubobj_copyShape(SObject* shapeDst, SObject* shapeSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -867,7 +867,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, shapeDst, shapeSrc);
+			iObj_duplicateChildren(shapeDst, shapeSrc);
 	}
 
 
@@ -878,7 +878,7 @@
 // Called to copy the indicated container from source to destination
 //
 //////
-	void iiSubobj_copyContainer(SThisCode* thisCode, SObject* containerDst, SObject* containerSrc)
+	void iiSubobj_copyContainer(SObject* containerDst, SObject* containerSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -902,7 +902,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, containerDst, containerSrc);
+			iObj_duplicateChildren(containerDst, containerSrc);
 	}
 
 
@@ -913,7 +913,7 @@
 // Called to copy the indicated control from source to destination
 //
 //////
-	void iiSubobj_copyControl(SThisCode* thisCode, SObject* controlDst, SObject* controlSrc)
+	void iiSubobj_copyControl(SObject* controlDst, SObject* controlSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -937,7 +937,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, controlDst, controlSrc);
+			iObj_duplicateChildren(controlDst, controlSrc);
 	}
 
 
@@ -948,7 +948,7 @@
 // Called to copy the indicated grid from source to destination
 //
 //////
-	void iiSubobj_copyGrid(SThisCode* thisCode, SObject* gridDst, SObject* gridSrc)
+	void iiSubobj_copyGrid(SObject* gridDst, SObject* gridSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -972,7 +972,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, gridDst, gridSrc);
+			iObj_duplicateChildren(gridDst, gridSrc);
 	}
 
 
@@ -983,7 +983,7 @@
 // Called to copy the indicated column from source to destination
 //
 //////
-	void iiSubobj_copyColumn(SThisCode* thisCode, SObject* columnDst, SObject* columnSrc)
+	void iiSubobj_copyColumn(SObject* columnDst, SObject* columnSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -1007,7 +1007,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, columnDst, columnSrc);
+			iObj_duplicateChildren(columnDst, columnSrc);
 	}
 
 
@@ -1018,7 +1018,7 @@
 // Called to copy the indicated header from source to destination
 //
 //////
-	void iiSubobj_copyHeader(SThisCode* thisCode, SObject* headerDst, SObject* headerSrc)
+	void iiSubobj_copyHeader(SObject* headerDst, SObject* headerSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -1042,7 +1042,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, headerDst, headerSrc);
+			iObj_duplicateChildren(headerDst, headerSrc);
 	}
 
 
@@ -1053,7 +1053,7 @@
 // Called to copy the indicated oleBound from source to destination
 //
 //////
-	void iiSubobj_copyOleBound(SThisCode* thisCode, SObject* oleBoundDst, SObject* oleBoundSrc)
+	void iiSubobj_copyOleBound(SObject* oleBoundDst, SObject* oleBoundSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -1077,7 +1077,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, oleBoundDst, oleBoundSrc);
+			iObj_duplicateChildren(oleBoundDst, oleBoundSrc);
 	}
 
 
@@ -1088,7 +1088,7 @@
 // Called to copy the indicated oleContain from source to destination
 //
 //////
-	void iiSubobj_copyOleContain(SThisCode* thisCode, SObject* oleContainDst, SObject* oleContainSrc)
+	void iiSubobj_copyOleContain(SObject* oleContainDst, SObject* oleContainSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -1112,7 +1112,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, oleContainDst, oleContainSrc);
+			iObj_duplicateChildren(oleContainDst, oleContainSrc);
 	}
 
 
@@ -1123,7 +1123,7 @@
 // Called to copy the indicated spinner from source to destination
 //
 //////
-	void iiSubobj_copySpinner(SThisCode* thisCode, SObject* spinnerDst, SObject* spinnerSrc)
+	void iiSubobj_copySpinner(SObject* spinnerDst, SObject* spinnerSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -1147,7 +1147,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, spinnerDst, spinnerSrc);
+			iObj_duplicateChildren(spinnerDst, spinnerSrc);
 	}
 
 
@@ -1158,7 +1158,7 @@
 // Called to copy the indicated timer from source to destination
 //
 //////
-	void iiSubobj_copyTimer(SThisCode* thisCode, SObject* timerDst, SObject* timerSrc)
+	void iiSubobj_copyTimer(SObject* timerDst, SObject* timerSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -1182,7 +1182,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, timerDst, timerSrc);
+			iObj_duplicateChildren(timerDst, timerSrc);
 	}
 
 
@@ -1193,7 +1193,7 @@
 // Called to copy the indicated hyperlink from source to destination
 //
 //////
-	void iiSubobj_copyHyperlink(SThisCode* thisCode, SObject* hyperlinkDst, SObject* hyperlinkSrc)
+	void iiSubobj_copyHyperlink(SObject* hyperlinkDst, SObject* hyperlinkSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -1217,7 +1217,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, hyperlinkDst, hyperlinkSrc);
+			iObj_duplicateChildren(hyperlinkDst, hyperlinkSrc);
 	}
 
 
@@ -1228,7 +1228,7 @@
 // Called to copy the indicated collection from source to destination
 //
 //////
-	void iiSubobj_copyCollection(SThisCode* thisCode, SObject* collectionDst, SObject* collectionSrc)
+	void iiSubobj_copyCollection(SObject* collectionDst, SObject* collectionSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -1252,7 +1252,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, collectionDst, collectionSrc);
+			iObj_duplicateChildren(collectionDst, collectionSrc);
 	}
 
 
@@ -1263,7 +1263,7 @@
 // Called to copy the indicated page from source to destination
 //
 //////
-	void iiSubobj_copyPage(SThisCode* thisCode, SObject* pageDst, SObject* pageSrc)
+	void iiSubobj_copyPage(SObject* pageDst, SObject* pageSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -1287,7 +1287,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, pageDst, pageSrc);
+			iObj_duplicateChildren(pageDst, pageSrc);
 	}
 
 
@@ -1298,7 +1298,7 @@
 // Called to copy the indicated pageframe from source to destination
 //
 //////
-	void iiSubobj_copyPageframe(SThisCode* thisCode, SObject* pageframeDst, SObject* pageframeSrc)
+	void iiSubobj_copyPageframe(SObject* pageframeDst, SObject* pageframeSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -1322,7 +1322,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, pageframeDst, pageframeSrc);
+			iObj_duplicateChildren(pageframeDst, pageframeSrc);
 	}
 
 
@@ -1333,7 +1333,7 @@
 // Called to copy the indicated session from source to destination
 //
 //////
-	void iiSubobj_copySession(SThisCode* thisCode, SObject* sessionDst, SObject* sessionSrc)
+	void iiSubobj_copySession(SObject* sessionDst, SObject* sessionSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -1357,7 +1357,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, sessionDst, sessionSrc);
+			iObj_duplicateChildren(sessionDst, sessionSrc);
 	}
 
 
@@ -1368,7 +1368,7 @@
 // Called to copy the indicated custom from source to destination
 //
 //////
-	void iiSubobj_copyCustom(SThisCode* thisCode, SObject* customDst, SObject* customSrc)
+	void iiSubobj_copyCustom(SObject* customDst, SObject* customSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -1392,7 +1392,7 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, customDst, customSrc);
+			iObj_duplicateChildren(customDst, customSrc);
 	}
 
 
@@ -1403,7 +1403,7 @@
 // Called to copy the indicated exception from source to destination
 //
 //////
-	void iiSubobj_copyException(SThisCode* thisCode, SObject* exceptionDst, SObject* exceptionSrc)
+	void iiSubobj_copyException(SObject* exceptionDst, SObject* exceptionSrc)
 	{
 		logfunc(__FUNCTION__);
 		//////////
@@ -1427,5 +1427,5 @@
 		//////////
 		// Duplicate all children for this object
 		//////
-			iObj_duplicateChildren(thisCode, exceptionDst, exceptionSrc);
+			iObj_duplicateChildren(exceptionDst, exceptionSrc);
 	}

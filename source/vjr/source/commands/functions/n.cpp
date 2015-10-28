@@ -106,9 +106,9 @@
 // Returns:
 //    f64		-- A floating point value containing the number of one billionths of a second which have gone by this second
 //////
-	void function_nanosecond(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_nanosecond(SFunctionParams* rpar)
 	{
-		ifunction_xseconds_common(thisCode, rpar, _XSECONDS_FUNCTION_NANOSECOND);
+		ifunction_xseconds_common(rpar, _XSECONDS_FUNCTION_NANOSECOND);
 	}
 
 
@@ -136,7 +136,7 @@
 // Returns:
 //    s32			-- The number of times
 //////
-	void function_ncset(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_ncset(SFunctionParams* rpar)
 	{
 		SVariable*	varIndex	= rpar->ip[0];
 		SVariable*	varP1		= rpar->ip[1];
@@ -156,17 +156,17 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varIndex))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varIndex), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varIndex), false);
 				return;
 			}
 			if (iVariable_isTypeNumeric(varIndex))
 			{
 				// They have specified an index
 				// We'll receive whatever they give, as it will be reported in error below
-				lnIndex = iiVariable_getAs_s32(thisCode, varIndex, false, &error, &errorNum);
+				lnIndex = iiVariable_getAs_s32(varIndex, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varIndex), false);
+					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varIndex), false);
 					return;
 				}
 
@@ -207,7 +207,7 @@
 
 					default:
 						// Unrecognized option
-						iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(thisCode, varIndex), false);
+						iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(varIndex), false);
 						return;
 				}
 
@@ -236,14 +236,14 @@
 				if (!llFound)
 				{
 					// They've specified something we don't have
-					iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(thisCode, varIndex), false);
+					iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(varIndex), false);
 					return;
 				}
 				// When we get here, lnIndexProp is set
 
 			} else {
 				// Invalid
-				iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varIndex), false);
+				iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varIndex), false);
 				return;
 			}
 
@@ -259,10 +259,10 @@
 				if (iVariable_isFundamentalTypeLogical(varP1))
 				{
 					// Obtain its value as a logical
-					llNewValue = iiVariable_getAs_bool(thisCode, varP1, false, &error, &errorNum);
+					llNewValue = iiVariable_getAs_bool(varP1, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varIndex), false);
+						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varIndex), false);
 						return;
 					}
 
@@ -271,7 +271,7 @@
 
 				} else {
 					// The variable is not a type that can be processed as logical
-					iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varP1), false);
+					iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varP1), false);
 					return;
 				}
 			}
@@ -280,9 +280,9 @@
 		//////////
 		// Create the return variable
 		//////
-			result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_LOGICAL, (cs8*)((llEnabled) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, false);
+			result = iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, (cs8*)((llEnabled) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, false);
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varIndex), false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varIndex), false);
 
 
 		//////////
@@ -322,7 +322,7 @@
 //    M.dSecondNoNull=date()
 //    ? NVL(FirstIsNull, M.dSecondNoNull)	&& Display value of M.dSecondNoNull
 //////
-	void function_nvl(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_nvl(SFunctionParams* rpar)
 	{
 		SVariable*	varExpr1 = rpar->ip[0];
 		SVariable*	varExpr2 = rpar->ip[1];
@@ -336,7 +336,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValidType(varExpr1))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varExpr1), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varExpr1), false);
 				return;
 			}
 
@@ -346,7 +346,7 @@
 		//////
 			if (!iVariable_isValid(varExpr2))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varExpr2), false);
+				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varExpr2), false);
 				return;
 			}
 
@@ -354,9 +354,9 @@
 		//////////
 		// Create our result
 		//////
-			llIsNull	= ifunction_isnull_common(thisCode, varExpr1);
-			rpar->rp[0]	= iVariable_copy(thisCode, ((llIsNull) ? varExpr2 : varExpr1), false);
+			llIsNull	= ifunction_isnull_common(varExpr1);
+			rpar->rp[0]	= iVariable_copy(((llIsNull) ? varExpr2 : varExpr1), false);
 			if (!rpar->rp[0])
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, ((llIsNull) ? varExpr2 : varExpr1)), false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(((llIsNull) ? varExpr2 : varExpr1)), false);
 
 	}

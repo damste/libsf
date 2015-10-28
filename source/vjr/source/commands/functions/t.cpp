@@ -109,13 +109,13 @@
 // Example:
 //    ? TAN(0)		&& Display 0.00
 //////
-    void function_tan(SThisCode* thisCode, SFunctionParams* rpar)
+    void function_tan(SFunctionParams* rpar)
     {
 		SVariable* varNumber = rpar->ip[0];
 
 
 		// Return sin
-		ifunction_numbers_common(thisCode, rpar, varNumber, NULL, NULL, _FP_COMMON_TAN, _VAR_TYPE_F64, false, false);
+		ifunction_numbers_common(rpar, varNumber, NULL, NULL, _FP_COMMON_TAN, _VAR_TYPE_F64, false, false);
 	}
 
 
@@ -123,7 +123,7 @@
 //////////
 // Rick's test code functionality using the _test() function
 //////
-	void function__test(SThisCode* thisCode, SFunctionParams* rpar)
+	void function__test(SFunctionParams* rpar)
 	{
 		SVariable*	varIndex = rpar->ip[0];
 		s32			lnIndex;
@@ -136,7 +136,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varIndex) || !iVariable_isTypeNumeric(varIndex))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varIndex), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varIndex), false);
 				return;
 			}
 
@@ -145,15 +145,15 @@
 		// Execute the function
 		//////
 			llValid	= false;
-			lnIndex	= iiVariable_getAs_s32(thisCode, varIndex, false, NULL, NULL);
+			lnIndex	= iiVariable_getAs_s32(varIndex, false, NULL, NULL);
 			switch (lnIndex)
 			{
 				case 1:
-					iTest1(thisCode, rpar);
+					iTest1(rpar);
 					break;
 
 				default:
-					iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(thisCode, varIndex), false);
+					iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(varIndex), false);
 					break;
 			}
 
@@ -161,7 +161,7 @@
 		//////////
 		// Create our return variable
 		/////
-			rpar->rp[0] = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_LOGICAL, (cs8*)((llValid) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, true);
+			rpar->rp[0] = iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, (cs8*)((llValid) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, true);
 	}
 
 
@@ -190,7 +190,7 @@
 // Returns:
 //    Character		-- The string after text merging
 //////
-	void function_textmerge(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_textmerge(SFunctionParams* rpar)
 	{
 		SVariable* varFormatStr		= rpar->ip[0];
 		SVariable* varRecursive		= rpar->ip[1];
@@ -214,7 +214,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varFormatStr) || !iVariable_isTypeCharacter(varFormatStr))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varFormatStr), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varFormatStr), false);
 				return;
 			}
 
@@ -227,15 +227,15 @@
 				// Logical
 				if (!iVariable_isValid(varRecursive) || !iVariable_isFundamentalTypeLogical(varRecursive))
 				{
-					iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varRecursive), false);
+					iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varRecursive), false);
 					return;
 				}
 
 				// Grab its value
-				llRecursive = iiVariable_getAs_bool(thisCode, varRecursive, false, &error, &errorNum);
+				llRecursive = iiVariable_getAs_bool(varRecursive, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varRecursive), false);
+					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varRecursive), false);
 					return;
 				}
 
@@ -245,10 +245,10 @@
 			}
 
 			// Copy the format string
-			varFormatRecursion = iVariable_copy(thisCode, varFormatStr, false);
+			varFormatRecursion = iVariable_copy(varFormatStr, false);
 			if (!varFormatRecursion)
 			{
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, NULL, false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, NULL, false);
 				return;
 			}
 
@@ -261,7 +261,7 @@
 				// Character
 				if (!iVariable_isValid(varLeftDelim) || !iVariable_isTypeCharacter(varLeftDelim))
 				{
-					iError_reportByNumber(thisCode, _ERROR_P3_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varLeftDelim), false);
+					iError_reportByNumber(_ERROR_P3_IS_INCORRECT, iVariable_get_relatedComp(varLeftDelim), false);
 					return;
 				}
 
@@ -280,7 +280,7 @@
 				// Character
 				if (!iVariable_isValid(varRightDelim) || !iVariable_isTypeCharacter(varRightDelim))
 				{
-					iError_reportByNumber(thisCode, _ERROR_P3_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varRightDelim), false);
+					iError_reportByNumber(_ERROR_P3_IS_INCORRECT, iVariable_get_relatedComp(varRightDelim), false);
 					return;
 				}
 
@@ -318,7 +318,7 @@ debug_break;
 				}
 
 				// Perform this iteration
-				lnResultLength	= ifunction_dtransform_textmerge_common(thisCode, rpar, &lcResult, varFormatRecursion->value.data_cs8, varFormatRecursion->value.length, &leftDelim, &rightDelim, &rpar->ip[1], false, true);
+				lnResultLength	= ifunction_dtransform_textmerge_common(rpar, &lcResult, varFormatRecursion->value.data_cs8, varFormatRecursion->value.length, &leftDelim, &rightDelim, &rpar->ip[1], false, true);
 
 			} while (llRecursive && lnResultLengthLast != lnResultLength);
 
@@ -326,13 +326,13 @@ debug_break;
 		//////////
 		// Clean house
 		//////
-			iVariable_delete(thisCode, varFormatRecursion, true);
+			iVariable_delete(varFormatRecursion, true);
 
 
 		//////////
 		// Create our result
 		//////
-			if (lnResultLength != 0 && lcResult)		result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, (cs8*)lcResult, lnResultLength, true);
+			if (lnResultLength != 0 && lcResult)		result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, (cs8*)lcResult, lnResultLength, true);
 			else										result = NULL;
 
 
@@ -340,7 +340,7 @@ debug_break;
 		// Are we good?
 		//////
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varFormatStr), false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varFormatStr), false);
 
 
 		//////////
@@ -377,13 +377,13 @@ debug_break;
 //                                    as HH:MM:SS     if we don't want milliseconds
 //
 //////
-	void function_time(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_time(SFunctionParams* rpar)
 	{
 		// Return time
-		ifunction_timex_common(thisCode, rpar, false);
+		ifunction_timex_common(rpar, false);
 	}
 
-	void ifunction_timex_common(SThisCode* thisCode, SFunctionParams* rpar, bool tlIsTimeX)
+	void ifunction_timex_common(SFunctionParams* rpar, bool tlIsTimeX)
 	{
 		SVariable*	varP1	= rpar->ip[0];
 		SVariable*	varP2	= rpar->ip[1];
@@ -429,7 +429,7 @@ debug_break;
 				// It's either logical, or a datetime/floating point
 				if (!iVariable_isValid(varP1))
 				{
-					iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varP1), false);
+					iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varP1), false);
 					return;
 				}
 
@@ -451,10 +451,10 @@ debug_break;
 
 				} else if (!tlIsTimeX && iVariable_isFundamentalTypeLogical(varP1)) {
 					// It's logical, which means they're indicating if they want the milliseconds
-					llExtendedTime = iiVariable_getAs_bool(thisCode, varP1, false, &error, &errorNum);
+					llExtendedTime = iiVariable_getAs_bool(varP1, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varP1), false);
+						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varP1), false);
 						return;
 					}
 
@@ -463,7 +463,7 @@ debug_break;
 
 				} else {
 					// Invalid
-					iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varP1), false);
+					iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varP1), false);
 					return;
 				}
 				break;
@@ -491,7 +491,7 @@ debug_break;
 
 					} else {
 						// Invalid
-						iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varP1), false);
+						iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varP1), false);
 						return;
 					}
 
@@ -501,15 +501,15 @@ debug_break;
 				//////
 					if (!iVariable_isFundamentalTypeLogical(varP2))
 					{
-						iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varP2), false);
+						iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varP2), false);
 						return;
 					}
 
 					// Grab the milliseconds flag
-					llExtendedTime = iiVariable_getAs_bool(thisCode, varP2, false, &error, &errorNum);
+					llExtendedTime = iiVariable_getAs_bool(varP2, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varP2), false);
+						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varP2), false);
 						return;
 					}
 					break;
@@ -525,10 +525,10 @@ debug_break;
 				if (tlIsTimeX)
 				{
 					// Grab the secondsx
-					lfSecondsx = iiVariable_getAs_f64(thisCode, varSeconds, false, &error, &errorNum);
+					lfSecondsx = iiVariable_getAs_f64(varSeconds, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varSeconds), false);
+						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varSeconds), false);
 						return;
 					}
 
@@ -537,10 +537,10 @@ debug_break;
 
 				} else {
 					// Grab the seconds
-					lfSeconds = iiVariable_getAs_f32(thisCode, varSeconds, false, &error, &errorNum);
+					lfSeconds = iiVariable_getAs_f32(varSeconds, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varSeconds), false);
+						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varSeconds), false);
 						return;
 					}
 
@@ -597,9 +597,9 @@ debug_break;
 		//////////
 		// Create the result
 		//////
-			result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, buffer, (u32)strlen(buffer), false);
+			result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, buffer, (u32)strlen(buffer), false);
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, NULL, false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, NULL, false);
 
 
 		//////////
@@ -636,15 +636,15 @@ debug_break;
 //    k = TIME()
 //    ? TIMETOSECONDS(k)
 //////
-	void function_timetoseconds(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_timetoseconds(SFunctionParams* rpar)
 	{
 		// Return timetoseconds
-		ifunction_timesAndDatesConversion_common(thisCode, rpar, _CONVERSION_FUNCTION_TIME, _CONVERSION_FUNCTION_SECONDS);
+		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_TIME, _CONVERSION_FUNCTION_SECONDS);
 	}
 
 	// Note: Functions that use this must guarantee that at least one parameter is provided
 	// Note: Two parameters are only valid if the output is a datetime or datetimex, the second parameter is used to obtain the missing information
-	void ifunction_timesAndDatesConversion_common(SThisCode* thisCode, SFunctionParams* rpar, s32 tnIn, s32 tnOut)
+	void ifunction_timesAndDatesConversion_common(SFunctionParams* rpar, s32 tnIn, s32 tnOut)
 	{
 		SVariable* varP1 = rpar->ip[0];
 		SVariable* varP2 = rpar->ip[1];
@@ -664,7 +664,7 @@ debug_break;
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varP1))
 			{
-				iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varP1), false);
+				iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varP1), false);
 				return;
 			}
 
@@ -687,10 +687,10 @@ debug_break;
 							if (iVariable_isTypeNumeric(varP2))
 							{
 								// Can be seconds,secondsx
-								adt.fVal64 = iiVariable_getAs_f64(thisCode, varP2, false, &error, &errorNum);
+								adt.fVal64 = iiVariable_getAs_f64(varP2, false, &error, &errorNum);
 								if (error)
 								{
-									iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varP1), false);
+									iError_reportByNumber(errorNum, iVariable_get_relatedComp(varP1), false);
 									return;
 								}
 								iiDateMath_get_HhMmSsMss_from_seconds((f32)adt.fVal64, &adt.nHour, &adt.nMinute, &adt.nSecond, &adt.nMillisecond);
@@ -705,7 +705,7 @@ debug_break;
 
 							} else {
 								// Invalid
-								iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varP1), false);
+								iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varP1), false);
 								return;
 							}
 							break;
@@ -731,14 +731,14 @@ debug_break;
 
 							} else {
 								// Invalid
-								iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varP1), false);
+								iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varP1), false);
 								return;
 							}
 							break;
 
 						default:
 							// These cannot receive the date parameter
-							iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varP1), false);
+							iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varP1), false);
 							return;
 					}
 
@@ -749,7 +749,7 @@ debug_break;
 
 				} else {
 					// Invalid for this type
-					iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varP1), false);
+					iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varP1), false);
 					return;
 				}
 			}
@@ -765,7 +765,7 @@ debug_break;
 					// Hh:Mm:Ss[.Mss]
 					if (!iVariable_isTypeCharacter(varP1) || varP1->value.length < 8 || varP1->value.data[2] != ':' || varP1->value.data[5] != ':')
 					{
-						iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varP1), false);
+						iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varP1), false);
 						return;
 					}
 
@@ -783,7 +783,7 @@ debug_break;
 					// Hh:Mm:Ss[.Nanosssss]
 					if (!iVariable_isTypeCharacter(varP1) || varP1->value.length < 12 || varP1->value.data[2] != ':' || varP1->value.data[5] != ':')
 					{
-						iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varP1), false);
+						iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varP1), false);
 						return;
 					}
 					adt.nHour	= atoi(varP1->value.data_s8);
@@ -813,13 +813,13 @@ debug_break;
 				case _CONVERSION_FUNCTION_SECONDS:
 					if (!iVariable_isTypeNumeric(varP1))
 					{
-						iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varP1), false);
+						iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varP1), false);
 						return;
 					}
-					adt.fVal64 = iiVariable_getAs_f64(thisCode, varP1, false, &error, &errorNum);
+					adt.fVal64 = iiVariable_getAs_f64(varP1, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varP1), false);
+						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varP1), false);
 						return;
 					}
 					break;
@@ -827,13 +827,13 @@ debug_break;
 				case _CONVERSION_FUNCTION_SECONDSX:
 					if (!iVariable_isTypeNumeric(varP1))
 					{
-						iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varP1), false);
+						iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varP1), false);
 						return;
 					}
-					adt.fVal64 = iiVariable_getAs_f64(thisCode, varP1, false, &error, &errorNum);
+					adt.fVal64 = iiVariable_getAs_f64(varP1, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varP1), false);
+						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varP1), false);
 						return;
 					}
 					break;
@@ -841,7 +841,7 @@ debug_break;
 				case _CONVERSION_FUNCTION_DATE:
 					if (!iVariable_isTypeDate(varP1))
 					{
-						iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varP1), false);
+						iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varP1), false);
 						return;
 					}
 					iiDateMath_get_YyyyMmDd_from_YYYYMMDD(varP1->value.data_u8, &adt.nYear, &adt.nMonth, &adt.nDay);
@@ -850,7 +850,7 @@ debug_break;
 				case _CONVERSION_FUNCTION_DATETIME:
 					if (!iVariable_isTypeDatetime(varP1))
 					{
-						iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varP1), false);
+						iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varP1), false);
 						return;
 					}
 					iiDateMath_get_YyyyMmDd_from_julian(varP1->value.data_dt->julian, &adt.nYear, &adt.nMonth, &adt.nDay);
@@ -861,7 +861,7 @@ debug_break;
 				case _CONVERSION_FUNCTION_DATETIMEX:
 					if (!iVariable_isTypeDatetimeX(varP1))
 					{
-						iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varP1), false);
+						iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varP1), false);
 						return;
 					}
 					iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds(varP1->value.data_dtx->jseconds, NULL, &adt.nYear, &adt.nMonth, &adt.nDay, &adt.nHour, &adt.nMinute, &adt.nSecond, &adt.nMillisecond, &adt.nMicrosecond);
@@ -873,7 +873,7 @@ debug_break;
 					// Should never happen
 					// Check the call stack to determine the function which sent the incorrect parameter
 					debug_nop;
-					iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varP1), false);
+					iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varP1), false);
 					return;
 			}
 
@@ -895,7 +895,7 @@ debug_break;
 
 					// Convert
 					sprintf(buffer, "%02u:%02u:%02u.%03u\0", adt.nHour, adt.nMinute, adt.nSecond, adt.nMillisecond);
-					result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, (cs8*)buffer, -1, false);
+					result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, (cs8*)buffer, -1, false);
 					break;
 
 				case _CONVERSION_FUNCTION_TIMEX:
@@ -916,7 +916,7 @@ debug_break;
 					else if (adt.lMillisecondValid)		sprintf(buffer, "%02u:%02u:%02u.%03u\0",	adt.nHour, adt.nMinute, adt.nSecond, adt.nMillisecond);
 					else /* Default to microsecond */	sprintf(buffer, "%02u:%02u:%02u.%06u\0",	adt.nHour, adt.nMinute, adt.nSecond, adt.nMicrosecond);
 
-					result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, (cs8*)buffer, -1, false);
+					result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, (cs8*)buffer, -1, false);
 					break;
 
 				case _CONVERSION_FUNCTION_SECONDS:
@@ -924,7 +924,7 @@ debug_break;
 					lfVal32 =	(f32)((adt.nHour * 60 * 60) + (adt.nMinute * 60) + (adt.nSecond));
 					lfVal32 +=	(f32)adt.nMillisecond / 1000.0f;
 
-					result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_F32, (cs8*)&lfVal32, sizeof(lfVal32), false);
+					result = iVariable_createAndPopulate_byText(_VAR_TYPE_F32, (cs8*)&lfVal32, sizeof(lfVal32), false);
 					break;
 
 				case _CONVERSION_FUNCTION_SECONDSX:
@@ -936,18 +936,18 @@ debug_break;
 					else if (adt.lMillisecondValid)		lfVal64 += (f64)adt.nMillisecond / 1000.0f;
 					else /* Default to microseconds */	lfVal64 += (f64)adt.nMicrosecond / 1000000.0f;
 
-					result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_F64, (cs8*)&lfVal64, sizeof(lfVal64), false);
+					result = iVariable_createAndPopulate_byText(_VAR_TYPE_F64, (cs8*)&lfVal64, sizeof(lfVal64), false);
 					break;
 
 				case _CONVERSION_FUNCTION_DATE:
-					result = iVariable_create(thisCode, _VAR_TYPE_DATE, NULL, true);
+					result = iVariable_create(_VAR_TYPE_DATE, NULL, true);
 					if (result)
 						iiDateMath_get_YYYYMMDD_from_YyyyMmDd(result->value.data_s8, adt.nYear, adt.nMonth, adt.nDay);
 
 					break;
 
 				case _CONVERSION_FUNCTION_DATETIME:
-					result = iVariable_create(thisCode, _VAR_TYPE_DATETIME, NULL, true);
+					result = iVariable_create(_VAR_TYPE_DATETIME, NULL, true);
 					if (result)
 					{
 						switch (tnIn)
@@ -964,7 +964,7 @@ debug_break;
 					break;
 
 				case _CONVERSION_FUNCTION_DATETIMEX:
-					result = iVariable_create(thisCode, _VAR_TYPE_DATETIMEX, NULL, true);
+					result = iVariable_create(_VAR_TYPE_DATETIMEX, NULL, true);
 					if (result)
 					{
 						switch (tnIn)
@@ -983,7 +983,7 @@ debug_break;
 					// Should never happen
 					// Check the call stack to determine the function which sent the incorrect parameter
 					debug_nop;
-					iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, NULL, false);
+					iError_reportByNumber(_ERROR_INTERNAL_ERROR, NULL, false);
 					return;
 			}
 
@@ -992,7 +992,7 @@ debug_break;
 		// Are we good?
 		//////
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, NULL, false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, NULL, false);
 
 
 		//////////
@@ -1029,10 +1029,10 @@ debug_break;
 //    k = TIME()
 //    ? TIMETOSECONDSX(k)
 //////
-	void function_timetosecondsx(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_timetosecondsx(SFunctionParams* rpar)
 	{
 		// Return timetosecondsx
-		ifunction_timesAndDatesConversion_common(thisCode, rpar, _CONVERSION_FUNCTION_TIME, _CONVERSION_FUNCTION_SECONDSX);
+		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_TIME, _CONVERSION_FUNCTION_SECONDSX);
 	}
 
 
@@ -1064,10 +1064,10 @@ debug_break;
 //    t = DATE()
 //    ? TIMETOT(k, t)
 //////
-	void function_timetot(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_timetot(SFunctionParams* rpar)
 	{
 		// Return timetot
-		ifunction_timesAndDatesConversion_common(thisCode, rpar, _CONVERSION_FUNCTION_TIME, _CONVERSION_FUNCTION_DATETIME);
+		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_TIME, _CONVERSION_FUNCTION_DATETIME);
 	}
 
 
@@ -1099,10 +1099,10 @@ debug_break;
 //    t = DATE()
 //    ? TIMETOX(k, t)
 //////
-	void function_timetox(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_timetox(SFunctionParams* rpar)
 	{
 		// Return timetox
-		ifunction_timesAndDatesConversion_common(thisCode, rpar, _CONVERSION_FUNCTION_TIME, _CONVERSION_FUNCTION_DATETIMEX);
+		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_TIME, _CONVERSION_FUNCTION_DATETIMEX);
 	}
 
 
@@ -1130,10 +1130,10 @@ debug_break;
 //    Character		-- Current time() as HH:MM:SS.Micsss
 //
 //////
-	void function_timex(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_timex(SFunctionParams* rpar)
 	{
 		// Return timex
-		ifunction_timex_common(thisCode, rpar, true);
+		ifunction_timex_common(rpar, true);
 	}
 
 
@@ -1163,10 +1163,10 @@ debug_break;
 //    k = TIMEX()
 //    ? TIMEXTOSECONDS(k)
 //////
-	void function_timextoseconds(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_timextoseconds(SFunctionParams* rpar)
 	{
 		// Return timextoseconds
-		ifunction_timesAndDatesConversion_common(thisCode, rpar, _CONVERSION_FUNCTION_TIMEX, _CONVERSION_FUNCTION_SECONDS);
+		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_TIMEX, _CONVERSION_FUNCTION_SECONDS);
 	}
 
 
@@ -1196,10 +1196,10 @@ debug_break;
 //    k = TIMEX()
 //    ? TIMEXTOSECONDSX(k)
 //////
-	void function_timextosecondsx(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_timextosecondsx(SFunctionParams* rpar)
 	{
 		// Return timextosecondsx
-		ifunction_timesAndDatesConversion_common(thisCode, rpar, _CONVERSION_FUNCTION_TIMEX, _CONVERSION_FUNCTION_SECONDSX);
+		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_TIMEX, _CONVERSION_FUNCTION_SECONDSX);
 	}
 
 
@@ -1231,10 +1231,10 @@ debug_break;
 //    t = DATE()
 //    ? TIMEXTOT(k, t)
 //////
-	void function_timextot(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_timextot(SFunctionParams* rpar)
 	{
 		// Return timextot
-		ifunction_timesAndDatesConversion_common(thisCode, rpar, _CONVERSION_FUNCTION_TIMEX, _CONVERSION_FUNCTION_DATETIME);
+		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_TIMEX, _CONVERSION_FUNCTION_DATETIME);
 	}
 
 
@@ -1266,10 +1266,10 @@ debug_break;
 //    t = DATE()
 //    ? TIMEXTOX(k, t)
 //////
-	void function_timextox(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_timextox(SFunctionParams* rpar)
 	{
 		// Return timextox
-		ifunction_timesAndDatesConversion_common(thisCode, rpar, _CONVERSION_FUNCTION_TIMEX, _CONVERSION_FUNCTION_DATETIMEX);
+		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_TIMEX, _CONVERSION_FUNCTION_DATETIMEX);
 	}
 
 
@@ -1296,7 +1296,7 @@ debug_break;
 // Returns:
 //    Character		-- The string after the variable was converted and formatted
 //////
-	void function_transform(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_transform(SFunctionParams* rpar)
 	{
 		SVariable* varVariable	= rpar->ip[0];
 		SVariable* varFormat	= rpar->ip[1];
@@ -1309,7 +1309,7 @@ debug_break;
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varVariable))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varVariable), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varVariable), false);
 				return;
 			}
 
@@ -1322,7 +1322,7 @@ debug_break;
 				// ...it must be character
 				if (!iVariable_isTypeCharacter(varFormat))
 				{
-					iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varFormat), false);
+					iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varFormat), false);
 					return;
 				}
 			}
@@ -1331,7 +1331,7 @@ debug_break;
 		//////////
 		// Create the return variable
 		//////
-			result = iVariable_convertForDisplay(thisCode, varVariable);
+			result = iVariable_convertForDisplay(varVariable);
 
 
 		//////////
@@ -1394,7 +1394,7 @@ debug_break;
 // Returns:
 //    Character. TTOC( ) returns a DateTime expression as a character string.
 //////
-	void function_ttoc(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_ttoc(SFunctionParams* rpar)
 	{
 		SVariable* varParam = rpar->ip[0];
 		SVariable* varFlag	= rpar->ip[1];
@@ -1417,7 +1417,7 @@ debug_break;
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varParam) || !iVariable_isTypeDatetime(varParam) || iVariable_isTypeDatetime(varParam))
 			{
-				iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varParam), false);
+				iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varParam), false);
 				return;
 			}
 
@@ -1432,7 +1432,7 @@ debug_break;
 				//////
 					if (!iVariable_isValid(varFlag) || !iVariable_isTypeNumeric(varFlag))
 					{
-						iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varFlag), false);
+						iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varFlag), false);
 						return;
 					}
 
@@ -1440,11 +1440,11 @@ debug_break;
 				//////////
 				// Grab the flag value
 				//////
-					lnFlag = iiVariable_getAs_s32(thisCode, varFlag, false, &error, &errorNum);
+					lnFlag = iiVariable_getAs_s32(varFlag, false, &error, &errorNum);
 					if (error)
 					{
 						// An error extracting the value (should never happen)
-						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varFlag), false);
+						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varFlag), false);
 						return;
 					}
 
@@ -1517,7 +1517,7 @@ debug_break;
 
 						default:
 							// If we get here, invalid parameter specified
-							iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varFlag), false);
+							iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varFlag), false);
 							return;
 					}
 
@@ -1525,14 +1525,14 @@ debug_break;
 				//////////
 				// Create and populate the return variable
 				//////
-					result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, (cs8*)buffer, (u32)strlen(buffer), false);
+					result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, (cs8*)buffer, (u32)strlen(buffer), false);
 
 			} else {
 
 				//////////
 				// Create and populate the return variable from the standard / default ttoc() algorithm
 				//////
-					result = iVariable_convertForDisplay(thisCode, varParam);
+					result = iVariable_convertForDisplay(varParam);
 			}
 
 
@@ -1540,7 +1540,7 @@ debug_break;
 		// Are we good?
 		//////
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, NULL, false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, NULL, false);
 
 
 		//////////
@@ -1573,10 +1573,10 @@ debug_break;
 // Returns:
 //    Datetime	-- DTOT( ) adds a default time of 12:00:00 AM (if SET HOURS is 12) or 00:00:00 (if SET HOURS is 24) to the date to produce a valid DateTime value.
 //////
-	void function_ttod(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_ttod(SFunctionParams* rpar)
 	{
 		// Return ttod
-		ifunction_timesAndDatesConversion_common(thisCode, rpar, _CONVERSION_FUNCTION_DATETIME, _CONVERSION_FUNCTION_DATE);
+		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_DATETIME, _CONVERSION_FUNCTION_DATE);
 	}
 
 
@@ -1606,10 +1606,10 @@ debug_break;
 //    k = DATETIME()
 //    ? TTOSECONDS(k)
 //////
-	void function_ttoseconds(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_ttoseconds(SFunctionParams* rpar)
 	{
 		// Return ttoseconds
-		ifunction_timesAndDatesConversion_common(thisCode, rpar, _CONVERSION_FUNCTION_DATETIME, _CONVERSION_FUNCTION_SECONDS);
+		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_DATETIME, _CONVERSION_FUNCTION_SECONDS);
 	}
 
 
@@ -1639,10 +1639,10 @@ debug_break;
 //    k = DATETIME()
 //    ? TTOSECONDSX(k)
 //////
-	void function_ttosecondsx(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_ttosecondsx(SFunctionParams* rpar)
 	{
 		// Return ttosecondsx
-		ifunction_timesAndDatesConversion_common(thisCode, rpar, _CONVERSION_FUNCTION_DATETIME, _CONVERSION_FUNCTION_SECONDSX);
+		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_DATETIME, _CONVERSION_FUNCTION_SECONDSX);
 	}
 
 
@@ -1672,10 +1672,10 @@ debug_break;
 //    k = DATETIME()
 //    ? TTOTIME(k)
 //////
-	void function_ttotime(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_ttotime(SFunctionParams* rpar)
 	{
 		// Return ttotime
-		ifunction_timesAndDatesConversion_common(thisCode, rpar, _CONVERSION_FUNCTION_DATETIME, _CONVERSION_FUNCTION_TIME);
+		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_DATETIME, _CONVERSION_FUNCTION_TIME);
 	}
 
 
@@ -1705,10 +1705,10 @@ debug_break;
 //    k = DATETIME()
 //    ? TTOTIMEX(k)
 //////
-	void function_ttotimex(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_ttotimex(SFunctionParams* rpar)
 	{
 		// Return ttotimex
-		ifunction_timesAndDatesConversion_common(thisCode, rpar, _CONVERSION_FUNCTION_DATETIME, _CONVERSION_FUNCTION_TIMEX);
+		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_DATETIME, _CONVERSION_FUNCTION_TIMEX);
 	}
 
 
@@ -1738,10 +1738,10 @@ debug_break;
 //    k = DATETIME()
 //    ? TTOX(k)
 //////
-	void function_ttox(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_ttox(SFunctionParams* rpar)
 	{
 		// Return ttox
-		ifunction_timesAndDatesConversion_common(thisCode, rpar, _CONVERSION_FUNCTION_DATETIME, _CONVERSION_FUNCTION_DATETIMEX);
+		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_DATETIME, _CONVERSION_FUNCTION_DATETIMEX);
 	}
 
 
@@ -1768,7 +1768,7 @@ debug_break;
 // Returns:
 //    Character		-- A one-digit code indicating the type
 //////
-	void function_type(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_type(SFunctionParams* rpar)
 	{
 		SVariable* varLookup	= rpar->ip[0];
 		SVariable* varExtraInfo	= rpar->ip[1];
@@ -1787,7 +1787,7 @@ debug_break;
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varLookup) || !iVariable_isTypeCharacter(varLookup))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varLookup), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varLookup), false);
 				return;
 			}
 
@@ -1803,7 +1803,7 @@ debug_break;
 				//////
 					if (!iVariable_isValid(varExtraInfo) || !iVariable_isTypeNumeric(varExtraInfo))
 					{
-						iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varExtraInfo), false);
+						iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varExtraInfo), false);
 						return;
 					}
 
@@ -1811,10 +1811,10 @@ debug_break;
 				//////////
 				// Grab the value
 				//////
-					lnExtraInfo = iiVariable_getAs_s32(thisCode, varExtraInfo, false, &error, &errorNum);
+					lnExtraInfo = iiVariable_getAs_s32(varExtraInfo, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varExtraInfo), false);
+						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varExtraInfo), false);
 						return;
 					}
 
@@ -1824,7 +1824,7 @@ debug_break;
 				//////
 					if (lnExtraInfo != 1)
 					{
-						iError_reportByNumber(thisCode, _ERROR_PARAMETER_MUST_BE_1, iVariable_get_relatedComp(thisCode, varExtraInfo), false);
+						iError_reportByNumber(_ERROR_PARAMETER_MUST_BE_1, iVariable_get_relatedComp(varExtraInfo), false);
 						return;
 					}
 
@@ -1844,14 +1844,14 @@ debug_break;
 		//////////
 		// The varLookup points to something that needs to be looked up indirectly
 		//////
-			compVarLookup			= iVariable_get_relatedComp(thisCode, varLookup);
+			compVarLookup			= iVariable_get_relatedComp(varLookup);
 			compVarLookup->iCode	= _ICODE_ALPHANUMERIC;
 			compVarLookup->start	+= 1;		// Skip leading quote for start
 			compVarLookup->length	-= 2;		// Back off for both quotes for length
-			var = iEngine_get_variableName_fromComponent(thisCode, compVarLookup, &llManufactured, false);
+			var = iEngine_get_variableName_fromComponent(compVarLookup, &llManufactured, false);
 			if (!var)
 			{
-				iError_reportByNumber(thisCode, _ERROR_VARIABLE_NOT_FOUND, iVariable_get_relatedComp(thisCode, varLookup), false);
+				iError_reportByNumber(_ERROR_VARIABLE_NOT_FOUND, iVariable_get_relatedComp(varLookup), false);
 				return;
 			}
 
@@ -1859,18 +1859,18 @@ debug_break;
 		//////////
 		// Compute our result
 		//////
-			ifunction_type_common(thisCode, rpar, var, llExtraInfo, false, false);
+			ifunction_type_common(rpar, var, llExtraInfo, false, false);
 
 
 		//////////
 		// Clean house
 		//////
 			if (llManufactured)
-				iVariable_delete(thisCode, var, true);
+				iVariable_delete(var, true);
 	}
 
 	// Handles type() and vartype()
-	void ifunction_type_common(SThisCode* thisCode, SFunctionParams* rpar, SVariable* var, bool tlExtraInfo, bool tlIsVartype, bool tlNullIsType)
+	void ifunction_type_common(SFunctionParams* rpar, SVariable* var, bool tlExtraInfo, bool tlIsVartype, bool tlNullIsType)
 	{
 		s8				c;
 		SBaseClassMap*	baseClassMap;
@@ -1887,7 +1887,7 @@ debug_break;
 				if (var->varType == _VAR_TYPE_OBJECT)
 				{
 					// It is a collection class?
-					baseClassMap = iiObj_getBaseclass_byType(thisCode, var->obj->objType);
+					baseClassMap = iiObj_getBaseclass_byType(var->obj->objType);
 					if (baseClassMap && baseClassMap->objProps == &gsProps_collection[0])
 					{
 						// It is a collection
@@ -2013,9 +2013,9 @@ debug_break;
 		//////////
 		// Create our return result
 		//////
-			result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, &c, 1, false);
+			result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, &c, 1, false);
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, NULL, false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, NULL, false);
 
 
 		//////////
@@ -2048,11 +2048,11 @@ debug_break;
 // Returns:
 //    Character		-- The expanded detail type string
 //////
-	void function_typedetail(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_typedetail(SFunctionParams* rpar)
 	{
 		SVariable* var = rpar->ip[0];
 
 
 		// Return typedetail
-		rpar->rp[0] = iVariable_get_typeDetail(thisCode, var);
+		rpar->rp[0] = iVariable_get_typeDetail(var);
 	}

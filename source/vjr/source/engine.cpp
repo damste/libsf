@@ -98,9 +98,14 @@
 		{
 
 			//////////
+			// Initialize the group
+			//////
+				memset(&gsThisCode[0], 0, sizeof(gsThisCode));
+
+
+			//////////
 			// thisCode hierarchy
 			//////
-				memset(&gsThisCode, 0, sizeof(gsThisCode));
 				for (lnI = 0, thisCode = &gsThisCode[0]; lnI < _MAX_PROCEDURE_LEVELS; lnI++, thisCode = &gsThisCode[lnI])
 				{
 					// Points backward to previous
@@ -114,22 +119,22 @@
 					// Returns
 					thisCode->live.returnsCount = _MAX_RETURNS_COUNT;
 					for (lnJ = 0; lnJ < _MAX_RETURNS_COUNT; lnJ++)
-						iLl_appendExistingNodeAtBeginning((SLL**)&thisCode->live.returns, (SLL*)iVariable_create(NULL, _VAR_TYPE_LOGICAL, NULL, true));
+						iLl_appendExistingNodeAtBeginning((SLL**)&thisCode->live.returns, (SLL*)iVariable_create(_VAR_TYPE_LOGICAL, NULL, true));
 
 					// Parameters
 					thisCode->live.paramsCount = _MAX_PARAMS_COUNT;
 					for (lnJ = 0; lnJ < _MAX_PARAMS_COUNT; lnJ++)
-						iLl_appendExistingNodeAtBeginning((SLL**)&thisCode->live.params, (SLL*)iVariable_create(NULL, _VAR_TYPE_LOGICAL, NULL, true));
+						iLl_appendExistingNodeAtBeginning((SLL**)&thisCode->live.params, (SLL*)iVariable_create(_VAR_TYPE_LOGICAL, NULL, true));
 
 					// Scoped
 					thisCode->live.scopedCount = _MAX_SCOPED_COUNT;
 					for (lnJ = 0; lnJ < _MAX_SCOPED_COUNT; lnJ++)
-						iLl_appendExistingNodeAtBeginning((SLL**)&thisCode->live.scoped, (SLL*)iVariable_create(NULL, _VAR_TYPE_LOGICAL, NULL, true));
+						iLl_appendExistingNodeAtBeginning((SLL**)&thisCode->live.scoped, (SLL*)iVariable_create(_VAR_TYPE_LOGICAL, NULL, true));
 
 					// Locals
 					thisCode->live.localsCount = _MAX_LOCALS_COUNT;
 					for (lnJ = 0; lnJ < _MAX_LOCALS_COUNT; lnJ++)
-						iLl_appendExistingNodeAtBeginning((SLL**)&thisCode->live.locals, (SLL*)iVariable_create(NULL, _VAR_TYPE_LOGICAL, NULL, true));
+						iLl_appendExistingNodeAtBeginning((SLL**)&thisCode->live.locals, (SLL*)iVariable_create(_VAR_TYPE_LOGICAL, NULL, true));
 				}
 
 
@@ -146,10 +151,22 @@
 
 //////////
 //
+// Runs a VXB program.
+//
+//////
+	void iEngine_engage(void)
+	{
+	}
+
+
+
+
+//////////
+//
 // Called to execute a stand-alone command, such as from the command window.
 //
 //////
-	bool iEngine_executeStandaloneCommand(SThisCode* thisCode, SLine* line)
+	bool iEngine_engage_oneCommand(SLine* line)
 	{
 		bool			llManufactured;
 		SComp*			comp;
@@ -174,7 +191,7 @@
 				if (!line->compilerInfo || iDatum_compare(line->sourceCode, line->compilerInfo->sourceCode) != 0)
 				{
 					// Something's changed, re-parse
-					comp = iEngine_parseSourceCodeLine(thisCode, line);
+					comp = iEngine_parse_sourceCodeLine(line);
 
 				} else {
 					// Still the same
@@ -186,7 +203,7 @@
 			// Do we have anything to do?
 			//////
 s8 vizbuf[32768];
-iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, sizeof(vizbuf), true, &cgcFundamentalSymbols[0], &cgcKeywordsVxb[0]);
+iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &cgcFundamentalSymbols[0], &cgcKeywordsVxb[0]);
 				if (!comp || comp->iCode == _ICODE_COMMENT || comp->iCode == _ICODE_LINE_COMMENT)
 					return(false);
 
@@ -200,7 +217,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 				{
 					case _ICODE_QUIT:
 						// They want to quit
-						iVjr_shutdown(thisCode);
+						iVjr_shutdown();
 						break;
 //
 // 					case _ICODE_CLEAR:
@@ -208,7 +225,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 // 						iSEM_navigateToTopLine(screenData, _screen);
 // 						iSEM_deleteChain(&screenData, false);
 // 						screen_editbox->isDirtyRender = true;
-// 						iWindow_render(NULL, gWinJDebi, false);
+// 						iWindow_render(gWinJDebi, false);
 // 						break;
 
 					case _ICODE_QUESTION_MARK:
@@ -216,31 +233,31 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 						if (!compNext)
 						{
 							// Syntax error, expected "? something" got only "?"
-							iSEM_appendLine(thisCode, screenData, (u8*)cgcSyntaxError, -1, false);
-							iSEM_navigateToEndLine(thisCode, screenData, _screen);
+							iSEM_appendLine(screenData, (u8*)cgcSyntaxError, -1, false);
+							iSEM_navigateToEndLine(screenData, _screen);
 							_screen_editbox->isDirtyRender = true;
-							iWindow_render(NULL, gWinJDebi, false);
+							iWindow_render(gWinJDebi, false);
 							return(false);
 
 						} else {
 							// It's a number, display it
-							if (dfunc = iDllFunc_find_byName(thisCode, compNext->line->sourceCode->data_s8 + compNext->start, compNext->length))
+							if (dfunc = iDllFunc_find_byName(compNext->line->sourceCode->data_s8 + compNext->start, compNext->length))
 							{
 								// It is a DLL function
 								if (dfunc->rp.type == _DLL_TYPE_VOID)
 								{
 									// No return value
-									iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, compNext, false);
+									iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, compNext, false);
 
 									// Update the screen
-									_screen_editbox->isDirtyRender |= iSEM_navigateToEndLine(thisCode, screenData, _screen);
-									iWindow_render(NULL, gWinJDebi, false);
+									_screen_editbox->isDirtyRender |= iSEM_navigateToEndLine(screenData, _screen);
+									iWindow_render(gWinJDebi, false);
 									return(false);
 								}
 								memset(&lrpar, 0, sizeof(lrpar));
-								iDllFunc_dispatch(thisCode, &lrpar, dfunc, compNext);
+								iDllFunc_dispatch(&lrpar, dfunc, compNext);
 								if (lrpar.ei.error)
-									iError_reportByNumber(thisCode, lrpar.ei.errorNum, lrpar.ei.errorComp, false);
+									iError_reportByNumber(lrpar.ei.errorNum, lrpar.ei.errorComp, false);
 
 								// Grab the return value (if any)
 								llManufactured	= ((lrpar.rp[0]) ? lrpar.rp[0]->isVarAllocated : false);
@@ -250,44 +267,44 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 								// It is something like "? func(x)"
 								llManufactured = true;
 								memset(&lrpar, 0, sizeof(lrpar));
-								iEngine_get_functionResult(thisCode, compNext, -1, &lrpar);
+								iEngine_get_functionResult(compNext, -1, &lrpar);
 								if (lrpar.ei.error || !(var = lrpar.rp[0]))
 								{
 									// Unknown function, or parameters were not correct
 									if (lrpar.ei.error)
-										iError_reportByNumber(thisCode, lrpar.ei.errorNum, compNext, false);
+										iError_reportByNumber(lrpar.ei.errorNum, compNext, false);
 
 									// Update the screen
-									_screen_editbox->isDirtyRender |= iSEM_navigateToEndLine(thisCode, screenData, _screen);
-									iWindow_render(NULL, gWinJDebi, false);
+									_screen_editbox->isDirtyRender |= iSEM_navigateToEndLine(screenData, _screen);
+									iWindow_render(gWinJDebi, false);
 									return(false);
 								}
 
 							} else if (iCat(compNext->iCat) == _ICAT_GENERIC) {
 								// It is something like "? k" or "? 29"
-								var = iEngine_get_variableName_fromComponent(thisCode, compNext, &llManufactured, false);
+								var = iEngine_get_variableName_fromComponent(compNext, &llManufactured, false);
 								if (!var)
 								{
 									// Unknown parameter
-									iError_report(thisCode, cgcUnrecognizedParameter, false);
-									_screen_editbox->isDirtyRender |= iSEM_navigateToEndLine(thisCode, screenData, _screen);
-									iWindow_render(NULL, gWinJDebi, false);
+									iError_report(cgcUnrecognizedParameter, false);
+									_screen_editbox->isDirtyRender |= iSEM_navigateToEndLine(screenData, _screen);
+									iWindow_render(gWinJDebi, false);
 									return(false);
 								}
 							}
 							// We have a variable we can display its contents
-							varText = iVariable_convertForDisplay(NULL, var);
+							varText = iVariable_convertForDisplay(var);
 
 							// Add its contents to _screen
-							iSEM_appendLine(thisCode, screenData, varText->value.data_u8, varText->value.length, false);
-							iSEM_navigateToEndLine(thisCode, screenData, _screen);
+							iSEM_appendLine(screenData, varText->value.data_u8, varText->value.length, false);
+							iSEM_navigateToEndLine(screenData, _screen);
 							_screen_editbox->isDirtyRender = true;
-							iWindow_render(NULL, gWinJDebi, false);
+							iWindow_render(gWinJDebi, false);
 
 							// Release the variable if it was manufactured
-							iVariable_delete(NULL, varText, true);
+							iVariable_delete(varText, true);
 							if (llManufactured)
-								iVariable_delete(NULL, var, true);
+								iVariable_delete(var, true);
 						}
 						break;
 
@@ -300,27 +317,27 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 							{
 								// It is something like "? func(x)"
 								memset(&lrpar, 0, sizeof(lrpar));
-								iEngine_get_functionResult(thisCode, compThird, 10, &lrpar);
+								iEngine_get_functionResult(compThird, 10, &lrpar);
 								if (lrpar.ei.error || !(var = lrpar.rp[0]))
 								{
 									// Unknown function, or parameters were not correct
 									if (lrpar.ei.error)
-										iError_reportByNumber(thisCode, lrpar.ei.errorNum, compThird, false);
+										iError_reportByNumber(lrpar.ei.errorNum, compThird, false);
 
 									// Update the screen
-									_screen_editbox->isDirtyRender |= iSEM_navigateToEndLine(thisCode, screenData, _screen);
-									iWindow_render(NULL, gWinJDebi, false);
+									_screen_editbox->isDirtyRender |= iSEM_navigateToEndLine(screenData, _screen);
+									iWindow_render(gWinJDebi, false);
 									return(false);
 								}
 
 							} else if (iCat(compThird->iCat) == _ICAT_GENERIC) {
 								// It is something like "x = y" or "x = 29"
-								if (!(var = iEngine_get_variableName_fromComponent(thisCode, compThird, &llManufactured, false)))
+								if (!(var = iEngine_get_variableName_fromComponent(compThird, &llManufactured, false)))
 								{
 									// Unknown parameter
-									iError_report(thisCode, cgcUnrecognizedParameter, false);
-									_screen_editbox->isDirtyRender |= iSEM_navigateToEndLine(thisCode, screenData, _screen);
-									iWindow_render(NULL, gWinJDebi, false);
+									iError_report(cgcUnrecognizedParameter, false);
+									_screen_editbox->isDirtyRender |= iSEM_navigateToEndLine(screenData, _screen);
+									iWindow_render(gWinJDebi, false);
 									return(false);
 								}
 							}
@@ -330,24 +347,24 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 							if (comp->iCode == _ICODE_DOT_VARIABLE)
 							{
 								// Set the dot value
-								iVariable_searchRoot_forDotName_andSet_byVar(thisCode, comp->firstCombined, var, &error, &errorNum);
-								iVariable_delete(NULL, var, true);
+								iVariable_searchRoot_forDotName_andSet_byVar(comp->firstCombined, var, &error, &errorNum);
+								iVariable_delete(var, true);
 								if (error)
 								{
 									// Unknown parameter
-									iError_reportByNumber(thisCode, errorNum, comp, false);
-									_screen_editbox->isDirtyRender |= iSEM_navigateToEndLine(thisCode, screenData, _screen);
-									iWindow_render(NULL, gWinJDebi, false);
+									iError_reportByNumber(errorNum, comp, false);
+									_screen_editbox->isDirtyRender |= iSEM_navigateToEndLine(screenData, _screen);
+									iWindow_render(gWinJDebi, false);
 									return(false);
 								}
 
 							} else {
-								varExisting = iVariable_searchForName(thisCode, comp->line->sourceCode->data + comp->start, comp->length, comp, true);
+								varExisting = iVariable_searchForName(comp->line->sourceCode->data + comp->start, comp->length, comp, true);
 								if (varExisting)
 								{
 									// We are updating the value
-									iVariable_copy(NULL, varExisting, var);
-									iVariable_delete(NULL, var, true);
+									iVariable_copy(varExisting, var);
+									iVariable_delete(var, true);
 
 								} else {
 									// We are creating a new variable
@@ -358,19 +375,19 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 
 						} else {
 							// It may be a DLL
-							if (dfunc = iDllFunc_find_byName(thisCode, comp->line->sourceCode->data_s8 + comp->start, comp->length))
+							if (dfunc = iDllFunc_find_byName(comp->line->sourceCode->data_s8 + comp->start, comp->length))
 							{
 								// It is a DLL function
 								memset(&lrpar, 0, sizeof(lrpar));
-								iDllFunc_dispatch(thisCode, &lrpar, dfunc, comp);
+								iDllFunc_dispatch(&lrpar, dfunc, comp);
 								if (lrpar.ei.error)
 								{
 									// There was an error
-									iError_reportByNumber(thisCode, lrpar.ei.errorNum, lrpar.ei.errorComp, false);
+									iError_reportByNumber(lrpar.ei.errorNum, lrpar.ei.errorComp, false);
 
 									// Update the screen
-									_screen_editbox->isDirtyRender |= iSEM_navigateToEndLine(thisCode, screenData, _screen);
-									iWindow_render(NULL, gWinJDebi, false);
+									_screen_editbox->isDirtyRender |= iSEM_navigateToEndLine(screenData, _screen);
+									iWindow_render(gWinJDebi, false);
 								}
 
 								// Indicate success or failure
@@ -386,7 +403,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 								{
 									// Yes, execute it (self-contained execution and error reporting on every command)
 									memset(&lrpar, 0, sizeof(lrpar));
-									cmd->command(thisCode, comp, &lrpar);
+									cmd->command(comp, &lrpar);
 // TODO:  We should examine lrpar here for the error condition, and report it if need be
 									return(!lrpar.ei.error);
 								}
@@ -414,20 +431,20 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 // This process does not process variables, table names, fields, etc.
 //
 //////
-	SComp* iEngine_parseSourceCodeLine(SThisCode* thisCode, SLine* line)
+	SComp* iEngine_parse_sourceCodeLine(SLine* line)
 	{
 
 		//////////
 		// If we have existing compiler data, get rid of it
 		//////
-			if (line->compilerInfo)		iCompiler_delete(thisCode, &line->compilerInfo, false);
-			else						line->compilerInfo = iCompiler_allocate(thisCode, line);		// Allocate a new one
+			if (line->compilerInfo)		iCompiler_delete(&line->compilerInfo, false);
+			else						line->compilerInfo = iCompiler_allocate(line);		// Allocate a new one
 
 			// Do we have a compiler info block?
 			if (!line->compilerInfo)
 			{
 				// Indicate an internal error
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, NULL, false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, NULL, false);
 				return(NULL);			// Error
 			}
 
@@ -441,12 +458,12 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 		//////////
 		// Parse out the line
 		//////
-			iComps_translateSourceLineTo(thisCode, &cgcFundamentalSymbols[0], line);
+			iComps_translateSourceLineTo(&cgcFundamentalSymbols[0], line);
 			if (!line->compilerInfo->firstComp)
 				return(NULL);		// Nothing to compile on this line
 
 			// Remove whitespaces [use][whitespace][foo] becomes [use][foo]
-			iComps_removeLeadingWhitespaces(thisCode, line);
+			iComps_removeLeadingWhitespaces(line);
 
 
 		//////////
@@ -456,7 +473,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 			{
 				// Combine every item after this to a single comment
 // TODO:  This algorithm could changed so that casks in comments show up graphically, rather than as raw comment text
-				iComps_combineN(thisCode, line->compilerInfo->firstComp, 99999, line->compilerInfo->firstComp->iCode, line->compilerInfo->firstComp->iCat, line->compilerInfo->firstComp->color);
+				iComps_combineN(line->compilerInfo->firstComp, 99999, line->compilerInfo->firstComp->iCode, line->compilerInfo->firstComp->iCat, line->compilerInfo->firstComp->color);
 
 				// Return the first component
 				return(line->compilerInfo->firstComp);
@@ -466,17 +483,17 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 		//////////
 		// Perform natural source code fixups
 		//////
-			iComps_removeStartEndComments(thisCode, line);		// Remove /* comments */
-			iComps_combineCasks(thisCode, line);				// Replace [(|][alpha][|)] with [(|alpha|)]
-			iComps_fixupNaturalGroupings(thisCode, line);		// Fixup natural groupings [_][aaa][999] becomes [_aaa999], [999][.][99] becomes [999.99], etc.
-			iComps_combineAdjacentDotForms(thisCode, line);		// Fixup [.][t][.] into [.t.] and [thisForm][.][width] into [thisForm.width]
-			iComps_removeWhitespaces(thisCode, line);			// Remove all whitespaces after everything else was parsed [use][whitespace][foo] becomes [use][foo]
+			iComps_removeStartEndComments(line);		// Remove /* comments */
+			iComps_combineCasks(line);				// Replace [(|][alpha][|)] with [(|alpha|)]
+			iComps_fixupNaturalGroupings(line);		// Fixup natural groupings [_][aaa][999] becomes [_aaa999], [999][.][99] becomes [999.99], etc.
+			iComps_combineAdjacentDotForms(line);		// Fixup [.][t][.] into [.t.] and [thisForm][.][width] into [thisForm.width]
+			iComps_removeWhitespaces(line);			// Remove all whitespaces after everything else was parsed [use][whitespace][foo] becomes [use][foo]
 
 
 		//////////
 		// Translate sequences to known keywords
 		//////
-			iComps_translateToOthers(thisCode, &cgcKeywordsVxb[0], line->compilerInfo->firstComp, true);
+			iComps_translateToOthers(&cgcKeywordsVxb[0], line->compilerInfo->firstComp, true);
 
 
 		//////////
@@ -495,7 +512,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 // reference.
 //
 //////
-	SVariable* iEngine_get_variableName_fromComponent(SThisCode* thisCode, SComp* comp, bool* tlManufactured, bool tlByRef)
+	SVariable* iEngine_get_variableName_fromComponent(SComp* comp, bool* tlManufactured, bool tlByRef)
 	{
 		s32			lnI;
 		s64			lnValue;
@@ -521,7 +538,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 			{
 				case _ICODE_NULL:
 					*tlManufactured = true;
-					return(iVariable_create(NULL, _VAR_TYPE_LOGICAL, NULL, false));
+					return(iVariable_create(_VAR_TYPE_LOGICAL, NULL, false));
 
 				case _ICODE_NUMERIC:
 					// It's a raw number
@@ -549,13 +566,13 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 							if (lnValue >= (s64)_s32_min && lnValue <= (s64)_s32_max)
 							{
 								// Store as 32-bits
-								var = iVariable_create(NULL, _VAR_TYPE_S32, NULL, true);
+								var = iVariable_create(_VAR_TYPE_S32, NULL, true);
 								if (var)
 									*var->value.data_s32 = (s32)lnValue;
 
 							} else {
 								// Store as 64-bits
-								var = iVariable_create(NULL, _VAR_TYPE_S64, NULL, true);
+								var = iVariable_create(_VAR_TYPE_S64, NULL, true);
 								if (var)
 									*var->value.data_s64 = lnValue;
 							}
@@ -572,13 +589,13 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 							if (lfValue >= (f64)_f32_min && lfValue <= (f64)_f32_max)
 							{
 								// Store as 32-bits
-								var = iVariable_create(NULL, _VAR_TYPE_F32, NULL, true);
+								var = iVariable_create(_VAR_TYPE_F32, NULL, true);
 								if (var)
 									*var->value.data_f32 = (f32)lfValue;
 
 							} else {
 								// Store as 64-bits
-								var = iVariable_create(NULL, _VAR_TYPE_F64, NULL, true);
+								var = iVariable_create(_VAR_TYPE_F64, NULL, true);
 								if (var)
 									*var->value.data_f64 = lfValue;
 							}
@@ -602,7 +619,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 				case _ICODE_YES:
 				case _ICODE_UP:
 					// It's a .T. or some equivalent
-					var = iVariable_create(NULL, _VAR_TYPE_LOGICAL, NULL, true);
+					var = iVariable_create(_VAR_TYPE_LOGICAL, NULL, true);
 					if (var)
 					{
 						*tlManufactured		= true;
@@ -616,7 +633,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 				case _ICODE_NO:
 				case _ICODE_DOWN:
 					// It's a .F. or some equivalent
-					var = iVariable_create(NULL, _VAR_TYPE_LOGICAL, NULL, true);
+					var = iVariable_create(_VAR_TYPE_LOGICAL, NULL, true);
 					if (var)
 					{
 						*tlManufactured		= true;
@@ -628,7 +645,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 
 				case _ICODE_EXTRA:
 					// It's a .X.
-					var = iVariable_create(NULL, _VAR_TYPE_LOGICAL, NULL, true);
+					var = iVariable_create(_VAR_TYPE_LOGICAL, NULL, true);
 					if (var)
 					{
 						*tlManufactured		= true;
@@ -640,7 +657,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 
 				case _ICODE_YET_ANOTHER:
 					// It's a .Y.
-					var = iVariable_create(NULL, _VAR_TYPE_LOGICAL, NULL, true);
+					var = iVariable_create(_VAR_TYPE_LOGICAL, NULL, true);
 					if (var)
 					{
 						*tlManufactured		= true;
@@ -652,7 +669,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 
 				case _ICODE_ZATS_ALL_FOLKS:
 					// It's a .X.
-					var = iVariable_create(NULL, _VAR_TYPE_LOGICAL, NULL, true);
+					var = iVariable_create(_VAR_TYPE_LOGICAL, NULL, true);
 					if (var)
 					{
 						*tlManufactured		= true;
@@ -665,7 +682,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 				case _ICODE_ALPHANUMERIC:
 				case _ICODE_ALPHA:
 					// It's some kind of text, could be a field or variable
-					return(iEngine_get_variableName_fromText(thisCode, comp->line->sourceCode->data_cs8 + comp->start, comp->length, comp, tlManufactured, tlByRef));
+					return(iEngine_get_variableName_fromText(comp->line->sourceCode->data_cs8 + comp->start, comp->length, comp, tlManufactured, tlByRef));
 
 
 				case _ICODE_SINGLE_QUOTED_TEXT:
@@ -675,7 +692,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 					// Create and populate our output variable
 					//////
 						*tlManufactured	= true;
-						var = iVariable_create(NULL, _VAR_TYPE_CHARACTER, NULL, true);
+						var = iVariable_create(_VAR_TYPE_CHARACTER, NULL, true);
 						if (var)
 							iDatum_duplicate(&var->value, comp->line->sourceCode->data_u8 + comp->start + 1, comp->length - 2);
 
@@ -704,7 +721,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 // Called to lookup the variable based on text
 //
 //////
-	SVariable* iEngine_get_variableName_fromText(SThisCode* thisCode, cs8* tcText, u32 tnTextLength, SComp* comp, bool* tlManufactured, bool tlByRef)
+	SVariable* iEngine_get_variableName_fromText(cs8* tcText, u32 tnTextLength, SComp* comp, bool* tlManufactured, bool tlByRef)
 	{
 		SVariable* var;
 		SVariable* varCopy;
@@ -716,7 +733,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 			if (propGet_settings_VariablesFirst(_settings))
 			{
 				// Searching variables first, field names last.
-				if ((var = iVariable_searchForName(thisCode, tcText, tnTextLength, NULL, true)))
+				if ((var = iVariable_searchForName(tcText, tnTextLength, NULL, true)))
 				{
 					// It was found in the global variables
 
@@ -733,7 +750,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 					// It was found in a table field
 					return(var);
 
-				} else*/ if ((var = iVariable_searchForName(thisCode, tcText, tnTextLength, NULL, true))) {
+				} else*/ if ((var = iVariable_searchForName(tcText, tnTextLength, NULL, true))) {
 					// It was found in the global variables
 				}
 			}
@@ -748,19 +765,19 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 				if (var->varType == _VAR_TYPE_OBJECT)
 				{
 					// It's an object
-					varCopy = iVariable_create(NULL, _VAR_TYPE_CHARACTER, NULL, true);
+					varCopy = iVariable_create(_VAR_TYPE_CHARACTER, NULL, true);
 					if (varCopy)
 						iDatum_duplicate(&varCopy->value, cgcObjectText, -1);
 
 				} else if (var->varType == _VAR_TYPE_THISCODE) {
 					// It's a thisCode reference
-					varCopy = iVariable_create(NULL, _VAR_TYPE_CHARACTER, NULL, true);
+					varCopy = iVariable_create(_VAR_TYPE_CHARACTER, NULL, true);
 					if (varCopy)
 						iDatum_duplicate(&varCopy->value, cgcThisCodeText, -1);
 
 				} else {
 					// It's a traditional variable
-					varCopy = iVariable_copy(NULL, var, tlByRef);
+					varCopy = iVariable_copy(var, tlByRef);
 				}
 				varCopy->compRelated = comp;
 				return(varCopy);
@@ -781,7 +798,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 // or the quoted content.
 //
 //////
-	SVariable* iEngine_get_contiguousComponents(SThisCode* thisCode, SComp* comp, bool* tlManufactured, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount)
+	SVariable* iEngine_get_contiguousComponents(SComp* comp, bool* tlManufactured, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount)
 	{
 		SVariable* varPathname;
 
@@ -796,12 +813,12 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 				case _ICODE_DOUBLE_QUOTED_TEXT:
 				case _ICODE_SINGLE_QUOTED_TEXT:
 					// By definition, quoted content is its own independent thing
-					varPathname = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, comp->line->sourceCode->data_u8 + comp->start, comp->length, true);
+					varPathname = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, comp->line->sourceCode->data_u8 + comp->start, comp->length, true);
 					break;
 
 				default:
 					// Get every contiguous component
-					varPathname	= iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, comp->line->sourceCode->data_u8 + comp->start, iComps_getContiguousLength(thisCode, comp, valid_iCodeArray, tnValid_iCodeArrayCount, NULL), true);
+					varPathname	= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, comp->line->sourceCode->data_u8 + comp->start, iComps_getContiguousLength(comp, valid_iCodeArray, tnValid_iCodeArrayCount, NULL), true);
 					break;
 			}
 		}
@@ -818,7 +835,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 // Called to find the function, execute it, and return the result
 //
 //////
-	void iEngine_get_functionResult(SThisCode* thisCode, SComp* comp, s32 tnRcount, SFunctionParams* rpar)
+	void iEngine_get_functionResult(SComp* comp, s32 tnRcount, SFunctionParams* rpar)
 	{
 		u32				lnI, lnParamsFound;
 		SFunctionData*	funcData;
@@ -849,7 +866,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 						//////////
 						// We need to find the minimum number of parameters between)
 						//////
-							if (!iiEngine_getParametersBetween(thisCode, ((funcData->map_byValOrByRef) ? funcData->map_byValOrByRef : NULL), compLeftParen, &lnParamsFound, funcData->req_pcount, funcData->max_pcount, rpar))
+							if (!iiEngine_getParametersBetween(((funcData->map_byValOrByRef) ? funcData->map_byValOrByRef : NULL), compLeftParen, &lnParamsFound, funcData->req_pcount, funcData->max_pcount, rpar))
 							{
 								rpar->ei.error		= true;
 								rpar->ei.errorNum	= _ERROR_INVALID_PARAMETERS;
@@ -869,7 +886,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 						//////////
 						// Perform the function
 						//////
-							funcData->func(NULL, rpar);
+							funcData->func(rpar);
 
 
 						//////////
@@ -880,7 +897,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 
 								// Delete if populated
 								if (rpar->ip[lnI])
-									iVariable_delete(thisCode, rpar->ip[lnI], true);
+									iVariable_delete(rpar->ip[lnI], true);
 
 							}
 
@@ -919,7 +936,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 //        alter the *tnType value accordingly.
 //
 //////
-	bool iEngine_get_namedSourceAndType_byComp(SThisCode* thisCode, SComp* comp, void** p, s32* tnType)
+	bool iEngine_get_namedSourceAndType_byComp(SComp* comp, void** p, s32* tnType)
 	{
 		s32				lnI, lnCount;
 		bool			llResult, llVarsFirst;
@@ -961,7 +978,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 			//////////
 			// (1) standard name
 			//////
-				_this = thisCode->live._this;
+				_this = gsThisCode[gnThisCode].live._this;
 				if (between(comp->iCode, _ICODE_NATIVE_OBJECTS_MIN, _ICODE_NATIVE_OBJECTS_MAX))
 				{
 					// Yes, which one?
@@ -969,7 +986,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 					{
 						case _ICODE_THISFORM:
 							 // thisForm
-							 *p = iObj_find_thisForm(thisCode, _this);
+							 *p = iObj_find_thisForm(_this);
 
 						case _ICODE_THIS:
 							 // this
@@ -1007,11 +1024,11 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 				if (propGet_settings_ncset_directNativeMembers(_settings) && _this)
 				{
 					// Try to locate the native member for the current this object
-					var = iObjProp_get_var_byComp(thisCode, _this, comp);
+					var = iObjProp_get_var_byComp(_this, comp);
 					if (var)
 					{
 						// We found the native property
-						*p = iVariable_copy(thisCode, var, true);
+						*p = iVariable_copy(var, true);
 						return(true);
 					}
 				}
@@ -1020,7 +1037,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 			//////////
 			// (3) aliases
 			//////
-				iDbf_get_workArea_byAlias_byComp(thisCode, &wa, comp);
+				iDbf_get_workArea_byAlias_byComp(&wa, comp);
 				if (wa)
 				{
 					// It was found as an alias
@@ -1036,63 +1053,60 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 				llVarsFirst = propGet_settings_VariablesFirst(_settings);
 				if (llVarsFirst)
 				{
-					if (thisCode)
+					// (4) Params
+					if (gsThisCode[gnThisCode].live.paramsCount > 0)
 					{
-						// (4) Params
-						if (thisCode->live.params)
+						var = iiVariable_searchForName_variables(gsThisCode[gnThisCode].live.params, lcVarName, lnVarNameLength, comp, true, gsThisCode[gnThisCode].live.paramsCount);
+						if (var)
 						{
-							var = iiVariable_searchForName_variables(thisCode, thisCode->live.params, lcVarName, lnVarNameLength, comp, true);
-							if (var)
-							{
-								*tnType	= _SOURCE_TYPE_VARIABLE;
-								*p		= var;
-								return(true);
-							}
+							*tnType	= _SOURCE_TYPE_VARIABLE;
+							*p		= var;
+							return(true);
 						}
+					}
 
-						// (5) Return variables
-						if (thisCode->live.returns)
+					// (5) Return variables
+					if (gsThisCode[gnThisCode].live.returnsCount > 0)
+					{
+						var = iiVariable_searchForName_variables(gsThisCode[gnThisCode].live.returns, lcVarName, lnVarNameLength, comp, true, gsThisCode[gnThisCode].live.returnsCount);
+						if (var)
 						{
-							var = iiVariable_searchForName_variables(thisCode, thisCode->live.returns, lcVarName, lnVarNameLength, comp, true);
-							if (var)
-							{
-								*tnType	= _SOURCE_TYPE_VARIABLE;
-								*p		= var;
-								return(true);
-							}
+							*tnType	= _SOURCE_TYPE_VARIABLE;
+							*p		= var;
+							return(true);
 						}
+					}
 
-						// (6) Locals
-						if (thisCode->live.locals)
+					// (6) Locals
+					if (gsThisCode[gnThisCode].live.localsCount > 0)
+					{
+						var = iiVariable_searchForName_variables(gsThisCode[gnThisCode].live.locals, lcVarName, lnVarNameLength, comp, true, gsThisCode[gnThisCode].live.localsCount);
+						if (var)
 						{
-							var = iiVariable_searchForName_variables(thisCode, thisCode->live.locals, lcVarName, lnVarNameLength, comp, true);
+							*tnType	= _SOURCE_TYPE_VARIABLE;
+							*p		= var;
+							return(true);
+						}
+					}
+	
+					// (7) Search recursively up the all stack for private variables
+					if (gsThisCode[gnThisCode].live.privatesCount > 0)
+					{
+						for (thisCodeSearch = &gsThisCode[gnThisCode]; thisCodeSearch; thisCodeSearch = thisCodeSearch->ll.prevThisCode)
+						{
+							// Search at this level
+							var = iiVariable_searchForName_variables(thisCodeSearch->live.privates, lcVarName, lnVarNameLength, comp, true, gsThisCode[gnThisCode].live.privatesCount);
 							if (var)
 							{
 								*tnType	= _SOURCE_TYPE_VARIABLE;
 								*p		= var;
 								return(true);
-							}
-						}
-		
-						// (7) Search recursively up the all stack for private variables
-						if (thisCode->live.privates)
-						{
-							for (thisCodeSearch = thisCode; thisCodeSearch; thisCodeSearch = thisCodeSearch->ll.prevThisCode)
-							{
-								// Search at this level
-								var = iiVariable_searchForName_variables(thisCode, thisCodeSearch->live.privates, lcVarName, lnVarNameLength, comp, true);
-								if (var)
-								{
-									*tnType	= _SOURCE_TYPE_VARIABLE;
-									*p		= var;
-									return(true);
-								}
 							}
 						}
 					}
 
 					// (8) Globals
-					var = iiVariable_searchForName_variables(thisCode, varGlobals, lcVarName, lnVarNameLength, comp, true);
+					var = iiVariable_searchForName_variables(varGlobals, lcVarName, lnVarNameLength, comp, true);
 					if (var)
 					{
 						*tnType	= _SOURCE_TYPE_VARIABLE;
@@ -1101,7 +1115,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 					}
 
 					// (9) Fields
-					var = iiVariable_searchForName_fields(thisCode, lcVarName, lnVarNameLength, comp, true);
+					var = iiVariable_searchForName_fields(lcVarName, lnVarNameLength, comp, true);
 					if (var)
 					{
 						*tnType	= _SOURCE_TYPE_FIELD;
@@ -1112,7 +1126,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 
 				} else {
 					// (4) Fields
-					var = iiVariable_searchForName_fields(thisCode, lcVarName, lnVarNameLength, comp, true);
+					var = iiVariable_searchForName_fields(lcVarName, lnVarNameLength, comp, true);
 					if (var)
 					{
 						*tnType	= _SOURCE_TYPE_FIELD;
@@ -1120,63 +1134,60 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 						return(true);
 					}
 
-					if (thisCode)
+					// (5) Params
+					if (gsThisCode[gnThisCode].live.paramsCount > 0)
 					{
-						// (5) Params
-						if (thisCode->live.params)
+						var = iiVariable_searchForName_variables(gsThisCode[gnThisCode].live.params, lcVarName, lnVarNameLength, comp, true, gsThisCode[gnThisCode].live.paramsCount);
+						if (var)
 						{
-							var = iiVariable_searchForName_variables(thisCode, thisCode->live.params, lcVarName, lnVarNameLength, comp, true);
+							*tnType	= _SOURCE_TYPE_VARIABLE;
+							*p		= var;
+							return(true);
+						}
+					}
+
+					// (6) Return variables
+					if (gsThisCode[gnThisCode].live.returnsCount > 0)
+					{
+						var = iiVariable_searchForName_variables(gsThisCode[gnThisCode].live.returns, lcVarName, lnVarNameLength, comp, true, gsThisCode[gnThisCode].live.returnsCount);
+						if (var)
+						{
+							*tnType	= _SOURCE_TYPE_VARIABLE;
+							*p		= var;
+							return(true);
+						}
+					}
+
+					// (7) Locals
+					if (gsThisCode[gnThisCode].live.localsCount > 0)
+					{
+						var = iiVariable_searchForName_variables(gsThisCode[gnThisCode].live.locals, lcVarName, lnVarNameLength, comp, true, gsThisCode[gnThisCode].live.localsCount);
+						if (var)
+						{
+							*tnType	= _SOURCE_TYPE_VARIABLE;
+							*p		= var;
+							return(true);
+						}
+					}
+
+					// (8) Search recursively up the all stack for private variables
+					if (gsThisCode[gnThisCode].live.privatesCount > 0)
+					{
+						for (thisCodeSearch = &gsThisCode[gnThisCode]; thisCodeSearch; thisCodeSearch = thisCodeSearch->ll.prevThisCode)
+						{
+							// Search at this level
+							var = iiVariable_searchForName_variables(thisCodeSearch->live.privates, lcVarName, lnVarNameLength, comp, true, gsThisCode[gnThisCode].live.privatesCount);
 							if (var)
 							{
 								*tnType	= _SOURCE_TYPE_VARIABLE;
 								*p		= var;
 								return(true);
-							}
-						}
-
-						// (6) Return variables
-						if (thisCode->live.returns)
-						{
-							var = iiVariable_searchForName_variables(thisCode, thisCode->live.returns, lcVarName, lnVarNameLength, comp, true);
-							if (var)
-							{
-								*tnType	= _SOURCE_TYPE_VARIABLE;
-								*p		= var;
-								return(true);
-							}
-						}
-
-						// (7) Locals
-						if (thisCode->live.locals)
-						{
-							var = iiVariable_searchForName_variables(thisCode, thisCode->live.locals, lcVarName, lnVarNameLength, comp, true);
-							if (var)
-							{
-								*tnType	= _SOURCE_TYPE_VARIABLE;
-								*p		= var;
-								return(true);
-							}
-						}
-
-						// (8) Search recursively up the all stack for private variables
-						if (thisCode->live.privates)
-						{
-							for (thisCodeSearch = thisCode; thisCodeSearch; thisCodeSearch = thisCodeSearch->ll.prevThisCode)
-							{
-								// Search at this level
-								var = iiVariable_searchForName_variables(thisCode, thisCodeSearch->live.privates, lcVarName, lnVarNameLength, comp, true);
-								if (var)
-								{
-									*tnType	= _SOURCE_TYPE_VARIABLE;
-									*p		= var;
-									return(true);
-								}
 							}
 						}
 					}
 
 					// (9) Globals
-					var = iiVariable_searchForName_variables(thisCode, varGlobals, lcVarName, lnVarNameLength, comp, true);
+					var = iiVariable_searchForName_variables(varGlobals, lcVarName, lnVarNameLength, comp, true);
 					if (var)
 					{
 						*tnType	= _SOURCE_TYPE_VARIABLE;
@@ -1192,7 +1203,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 		// (10) adhocs
 		//////
 			// Begin at current stack level, and iterate upwards
-			for (thisCodeSearch = thisCode; thisCodeSearch; thisCodeSearch = thisCodeSearch->ll.prevThisCode)
+			for (thisCodeSearch = &gsThisCode[gnThisCode]; thisCodeSearch; thisCodeSearch = thisCodeSearch->ll.prevThisCode)
 			{
 				// Iterate through all adhocs at this level
 				for (adhoc = thisCodeSearch->func->firstAdhoc; adhoc; adhoc = adhoc->ll.nextFunc)
@@ -1281,7 +1292,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 // Note 2:  The actual desired reference may actually be &obj->ev.methods[tnIndex].userEventCode, but since nothing was yet defined there, it returns the default handler.
 //
 //////
-	bool iiEngine_get_namedSourceAndType_ofObj_byComp(SThisCode* thisCode, SObject* obj, SComp* comp, void** pRoot, void** p, s32* tnType, u32* tnIndex)
+	bool iiEngine_get_namedSourceAndType_ofObj_byComp(SObject* obj, SComp* comp, void** pRoot, void** p, s32* tnType, u32* tnIndex)
 	{
 		s32			lnType;
 		u32			lnIndex;
@@ -1291,12 +1302,12 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 		//////////
 		// Try to locate the native property for the current this object
 		//////
-			var = iObjProp_get_var_byComp(thisCode, obj, comp, true, true, &lnIndex, &lnType);
+			var = iObjProp_get_var_byComp(obj, comp, true, true, &lnIndex, &lnType);
 			if (var)
 			{
 				// We found the native property
 				*tnType		= lnType;
-				*p			= iVariable_copy(thisCode, var, true);
+				*p			= iVariable_copy(var, true);
 				*tnIndex	= lnIndex;
 				return(true);
 			}
@@ -1305,7 +1316,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 		//////////
 		// See if it's an event or method
 		//////
-			*tnType = iObjEvent_get_eventOrMethod_byComp(thisCode, obj, comp, false, true, tnIndex, (SFunction**)pRoot, (SFunction**)p);
+			*tnType = iObjEvent_get_eventOrMethod_byComp(obj, comp, false, true, tnIndex, (SFunction**)pRoot, (SFunction**)p);
 
 			// Which is it?
 			switch (*tnType)
@@ -1351,7 +1362,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 // Called to find the indicated setter, and execute it if found
 //
 //////
-	void iEngine_executeSetter(SThisCode* thisCode, cs8* name, SVariable* varOld, SVariable* varNew)
+	void iEngine_executeSetter(cs8* name, SVariable* varOld, SVariable* varNew)
 	{
 // TODO:  When the engine is developed and working, a found setter will suspend execution and branch to that location
 	}
@@ -1364,7 +1375,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 // Called to report the indicated error and relate it to the indicated variable (if any)
 //
 //////
-	void iEngine_error(SThisCode* thisCode, u32 tnErrorNumber, SVariable* varRelated)
+	void iEngine_error(u32 tnErrorNumber, SVariable* varRelated)
 	{
 // TODO:  Report the error and relate the variable
 	}
@@ -1378,7 +1389,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 // convey both meta data as well as
 //
 //////
-	bool iEngine_signal_onValidate(SThisCode* thisCode, SVariable* varTableName, SVariable* varAlias, SVariable* varCdxName, SVariable* varTag, SVariable* varcMessage, SVariable* varIsError, SVariable* varRebuildIndexRequired)
+	bool iEngine_signal_onValidate(SVariable* varTableName, SVariable* varAlias, SVariable* varCdxName, SVariable* varTag, SVariable* varcMessage, SVariable* varIsError, SVariable* varRebuildIndexRequired)
 	{
 		// Returns the return variable, if we should continue
 		// For now, simulate continuing
@@ -1395,7 +1406,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 //
 // Note:  The return value indicates if the calling signaler should continue propagating this event through to other parent objects (at the same coordinates).
 //////
-	bool iEngine_raise_event(SThisCode* thisCode, u32 tnEventId, SWindow* win, SObject* obj, void* p)
+	bool iEngine_raise_event(u32 tnEventId, SWindow* win, SObject* obj, void* p)
 	{
 		if (obj)
 		{
@@ -1403,7 +1414,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 			{
 				// Should never happen
 // TODO:  For the extra info, we could add a call stack trace here
-				iError_signal(thisCode, _ERROR_INTERNAL_ERROR, NULL, true, NULL, false);
+				iError_signal(_ERROR_INTERNAL_ERROR, NULL, true, NULL, false);
 				return(false);
 			}
 
@@ -1416,32 +1427,32 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 			switch (tnEventId)
 			{
 				case _EVENT_ONMOUSEMOVE:
-					return(obj->ev.methods[tnEventId].event_8(thisCode, win, obj,		obj->ev.varX_onMouseMove,			obj->ev.varY_onMouseMove,
+					return(obj->ev.methods[tnEventId].event_8(win, obj,		obj->ev.varX_onMouseMove,			obj->ev.varY_onMouseMove,
 																						obj->ev.varCtrl_onMouseMove,		obj->ev.varAlt_onMouseMove,			obj->ev.varShift_onMouseMove,
 																						obj->ev.varClick_onMouseMove));
 				case _EVENT_ONMOUSEDOWN:
-					return(obj->ev.methods[tnEventId].event_8(thisCode, win, obj,		obj->ev.varX_onMouseDown,			obj->ev.varY_onMouseDown,
+					return(obj->ev.methods[tnEventId].event_8(win, obj,		obj->ev.varX_onMouseDown,			obj->ev.varY_onMouseDown,
 																						obj->ev.varCtrl_onMouseDown,		obj->ev.varAlt_onMouseDown,			obj->ev.varShift_onMouseDown,
 																						obj->ev.varClick_onMouseDown));
 				case _EVENT_ONMOUSEUP:
-					return(obj->ev.methods[tnEventId].event_8(thisCode, win, obj,		obj->ev.varX_onMouseUp,				obj->ev.varY_onMouseUp,
+					return(obj->ev.methods[tnEventId].event_8(win, obj,		obj->ev.varX_onMouseUp,				obj->ev.varY_onMouseUp,
 																						obj->ev.varCtrl_onMouseUp,			obj->ev.varAlt_onMouseUp,			obj->ev.varShift_onMouseUp,
 																						obj->ev.varClick_onMouseUp));
 				case _EVENT_ONMOUSEWHEEL:
-					return(obj->ev.methods[tnEventId].event_9(thisCode, win, obj,		obj->ev.varX_onMouseWheel,			obj->ev.varY_onMouseWheel,
+					return(obj->ev.methods[tnEventId].event_9(win, obj,		obj->ev.varX_onMouseWheel,			obj->ev.varY_onMouseWheel,
 																						obj->ev.varCtrl_onMouseWheel,		obj->ev.varAlt_onMouseWheel,		obj->ev.varShift_onMouseWheel,
 																						obj->ev.varClick_onMouseWheel,
 																						obj->ev.varDeltaY_onMouseWheel));
 				case _EVENT_ONMOUSECLICKEX:
-					return(obj->ev.methods[tnEventId].event_8(thisCode, win, obj,		obj->ev.varX_onMouseClickEx,		obj->ev.varY_onMouseClickEx,
+					return(obj->ev.methods[tnEventId].event_8(win, obj,		obj->ev.varX_onMouseClickEx,		obj->ev.varY_onMouseClickEx,
 																						obj->ev.varCtrl_onMouseClickEx,		obj->ev.varAlt_onMouseClickEx,		obj->ev.varShift_onMouseClickEx,
 																						obj->ev.varClick_onMouseClickEx));
 				case _EVENT_ONKEYDOWN:
-					return(obj->ev.methods[tnEventId].event_10(thisCode, win, obj,		obj->ev.varCtrl_onKeyDown,			obj->ev.varAlt_onKeyDown,			obj->ev.varShift_onKeyDown,
+					return(obj->ev.methods[tnEventId].event_10(win, obj,		obj->ev.varCtrl_onKeyDown,			obj->ev.varAlt_onKeyDown,			obj->ev.varShift_onKeyDown,
 																						obj->ev.varCaps_onKeyDown,			obj->ev.varAsciiChar_onKeyDown,		obj->ev.varVKey_onKeyDown,
 																						obj->ev.varIsCAS_onKeyDown,			obj->ev.varIsAscii_onKeyDown));
 				case _EVENT_ONKEYUP:
-					return(obj->ev.methods[tnEventId].event_10(thisCode, win, obj,		obj->ev.varCtrl_onKeyUp,			obj->ev.varAlt_onKeyUp,				obj->ev.varShift_onKeyUp,
+					return(obj->ev.methods[tnEventId].event_10(win, obj,		obj->ev.varCtrl_onKeyUp,			obj->ev.varAlt_onKeyUp,				obj->ev.varShift_onKeyUp,
 																						obj->ev.varCaps_onKeyUp,			obj->ev.varAsciiChar_onKeyUp,		obj->ev.varVKey_onKeyUp,
 																						obj->ev.varIsCAS_onKeyUp,			obj->ev.varIsAscii_onKeyUp));
 				case _EVENT_RESIZE:
@@ -1449,12 +1460,12 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 					if (p)
 					{
 						// Signal the resize event
-						return(obj->ev.methods[tnEventId].event_11(thisCode, win, obj, (RECT*)p));
+						return(obj->ev.methods[tnEventId].event_11(win, obj, (RECT*)p));
 
 					} else {
 						// Should never happen, if it does it's a programming error
 // TODO:  For the extra info, we could add a call stack trace here
-						iError_signal(thisCode, _ERROR_INTERNAL_ERROR, NULL, true, NULL, false);
+						iError_signal(_ERROR_INTERNAL_ERROR, NULL, true, NULL, false);
 					}
 					break;
 
@@ -1463,12 +1474,12 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 					if (p)
 					{
 						// Signal the onResize() event
-						return(obj->ev.methods[tnEventId].event_11(thisCode, win, obj, (RECT*)p));
+						return(obj->ev.methods[tnEventId].event_11(win, obj, (RECT*)p));
 
 					} else {
 						// Should never happen, if it does it's a programming error
 // TODO:  For the extra info, we could add a call stack trace here
-						iError_signal(thisCode, _ERROR_INTERNAL_ERROR, NULL, true, NULL, false);
+						iError_signal(_ERROR_INTERNAL_ERROR, NULL, true, NULL, false);
 					}
 					break;
 
@@ -1477,17 +1488,17 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 					if (p)
 					{
 						// Signal the onMoved event
-						return(obj->ev.methods[tnEventId].event_11(thisCode, win, obj, (RECT*)p));
+						return(obj->ev.methods[tnEventId].event_11(win, obj, (RECT*)p));
 
 					} else {
 						// Should never happen, if it does it's a programming error
 // TODO:  For the extra info, we could add a call stack trace here
-						iError_signal(thisCode, _ERROR_INTERNAL_ERROR, NULL, true, NULL, false);
+						iError_signal(_ERROR_INTERNAL_ERROR, NULL, true, NULL, false);
 					}
 					break;
 
 				case _EVENT_CAROUSEL_ONTABCLOSE:
-					return(obj->ev.methods[tnEventId].event_1(thisCode, win, obj));
+					return(obj->ev.methods[tnEventId].event_1(win, obj));
 					break;
 
 				case _EVENT_CAROUSEL_ONTABCLICK:
@@ -1497,12 +1508,12 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 				case _EVENT_CAROUSEL_ONTABMOUSEUP:
 				case _EVENT_CAROUSEL_ONTABMOUSEENTER:
 				case _EVENT_CAROUSEL_ONTABMOUSELEAVE:
-					return(obj->ev.methods[tnEventId].event_12(thisCode, win, obj, p));
+					return(obj->ev.methods[tnEventId].event_12(win, obj, p));
 					break;
 
 				default:
 					// The rest of these events are all handled in the standard way
-					return(obj->ev.methods[tnEventId].event_1(thisCode, win, obj));
+					return(obj->ev.methods[tnEventId].event_1(win, obj));
 					//	_EVENT_ONMOUSEENTER
 					//	_EVENT_ONMOUSELEAVE
 					//	_EVENT_ONMOUSEHOVER
@@ -1545,7 +1556,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 // Called to set an event's destination ip address
 //
 //////
-	bool iEngine_set_event(SThisCode* thisCode, u32 tnEventId, SWindow* win, SObject* obj, uptr tnEventAddress)
+	bool iEngine_set_event(u32 tnEventId, SWindow* win, SObject* obj, uptr tnEventAddress)
 	{
 		// Make sure our environment is sane
 		if (obj)
@@ -1573,7 +1584,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 // Called to update the global _tally value
 //
 //////
-	s64 iEngine_update_tally(SThisCode* thisCode, s64 tnValue)
+	s64 iEngine_update_tally(s64 tnValue)
 	{
 		s64 lnOldValue;
 
@@ -1592,7 +1603,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 // Called to update the global _metaN values
 //
 //////
-	s64 iEngine_update_meta1(SThisCode* thisCode, s64 tnValue)
+	s64 iEngine_update_meta1(s64 tnValue)
 	{
 		s64 lnOldValue;
 
@@ -1603,7 +1614,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 		return(lnOldValue);
 	}
 
-	s64 iEngine_update_meta2(SThisCode* thisCode, s64 tnValue)
+	s64 iEngine_update_meta2(s64 tnValue)
 	{
 		s64 lnOldValue;
 
@@ -1614,7 +1625,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 		return(lnOldValue);
 	}
 
-	s64 iEngine_update_meta3(SThisCode* thisCode, s64 tnValue)
+	s64 iEngine_update_meta3(s64 tnValue)
 	{
 		s64 lnOldValue;
 
@@ -1625,7 +1636,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 		return(lnOldValue);
 	}
 
-	s64 iEngine_update_meta4(SThisCode* thisCode, s64 tnValue)
+	s64 iEngine_update_meta4(s64 tnValue)
 	{
 		s64 lnOldValue;
 
@@ -1636,29 +1647,29 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 		return(lnOldValue);
 	}
 
-	void iEngine_update_meta5(SThisCode* thisCode, SDatum* data)
+	void iEngine_update_meta5(SDatum* data)
 	{
 		iDatum_duplicate(&varMeta5->value, data);
 	}
 
-	void iEngine_update_meta6(SThisCode* thisCode, SDatum* data)
+	void iEngine_update_meta6(SDatum* data)
 	{
 		iDatum_duplicate(&varMeta6->value, data);
 	}
 
-	void iEngine_update_meta7(SThisCode* thisCode, SVariable* varSrc)
+	void iEngine_update_meta7(SVariable* varSrc)
 	{
-		iVariable_copy(NULL, varMeta7, varSrc);
+		iVariable_copy(varMeta7, varSrc);
 	}
 
-	void iEngine_update_meta8(SThisCode* thisCode, SVariable* varSrc)
+	void iEngine_update_meta8(SVariable* varSrc)
 	{
-		iVariable_copy(NULL, varMeta8, varSrc);
+		iVariable_copy(varMeta8, varSrc);
 	}
 
-	void iEngine_update_meta9(SThisCode* thisCode, SVariable* varSrc)
+	void iEngine_update_meta9(SVariable* varSrc)
 	{
-		iVariable_copy(NULL, varMeta9, varSrc);
+		iVariable_copy(varMeta9, varSrc);
 	}
 
 
@@ -1669,7 +1680,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 // Called to obtain the parameters between the indicated parenthesis.
 //
 //////
-	bool iiEngine_getParametersBetween(SThisCode* thisCode, s8* map_byRefOrByVal, SComp* compLeftParen, u32* paramsFound, u32 requiredCount, u32 maxCount, SFunctionParams* rpar, bool tlForceByRef)
+	bool iiEngine_getParametersBetween(s8* map_byRefOrByVal, SComp* compLeftParen, u32* paramsFound, u32 requiredCount, u32 maxCount, SFunctionParams* rpar, bool tlForceByRef)
 	{
 		u32			lnI, lnParamCount;
 		bool		llManufactured, llByRef, llUdfParamsByRef;
@@ -1698,7 +1709,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 					if (lnParamCount > maxCount)
 					{
 						// Too many parameters
-						iError_reportByNumber(thisCode, _ERROR_TOO_MANY_PARAMETERS, comp, false);
+						iError_reportByNumber(_ERROR_TOO_MANY_PARAMETERS, comp, false);
 						return(NULL);
 					}
 
@@ -1710,7 +1721,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 					if (!compComma || (compComma->iCode != _ICODE_COMMA && compComma->iCode != _ICODE_PARENTHESIS_RIGHT && lnParamCount > requiredCount))
 					{
 						// Comma expected error
-						iError_reportByNumber(thisCode, _ERROR_COMMA_EXPECTED, comp, false);
+						iError_reportByNumber(_ERROR_COMMA_EXPECTED, comp, false);
 						return(NULL);
 					}
 
@@ -1723,12 +1734,12 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 					else						llByRef = llUdfParamsByRef | (map_byRefOrByVal[lnI] == (_UDFPARMS_REFERENCE + '0'));
 
 					// Grab the variable reference
-					rpar->ip[lnI] = iEngine_get_variableName_fromComponent(thisCode, comp, &llManufactured, tlForceByRef | llByRef);
+					rpar->ip[lnI] = iEngine_get_variableName_fromComponent(comp, &llManufactured, tlForceByRef | llByRef);
 
 
 				// Move to next component
 				++lnParamCount;
-				comp = iComps_getNth(thisCode, compComma, 1);
+				comp = iComps_getNth(compComma, 1);
 			}
 
 
@@ -1752,7 +1763,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 // Called to delete the indicated breakpoint
 //
 //////
-	void iBreakpoint_delete(SThisCode* thisCode, SBreakpoint** breakpoint)
+	void iBreakpoint_delete(SBreakpoint** breakpoint)
 	{
 		SBreakpoint* bp;
 
@@ -1773,7 +1784,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 
 			// Delete any source code for this breakpoint
 			if (bp->executeCode)
-				iSourceCode_delete(thisCode, &bp->executeCode);
+				iSourceCode_delete(&bp->executeCode);
 		}
 	}
 
@@ -1787,7 +1798,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 // and added manually by the code in the calling algorithm.
 //
 //////
-	SBreakpoint* iBreakpoint_add(SThisCode* thisCode, SBreakpoint** breakpoint, u32 tnType)
+	SBreakpoint* iBreakpoint_add(SBreakpoint** breakpoint, u32 tnType)
 	{
 		u32				lnI;
 		SBreakpoint*	bp;
@@ -1870,7 +1881,7 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 // Called to delete the source code item
 //
 //////
-	void iSourceCode_delete(SThisCode* thisCode, SSourceCode** sourceCode)
+	void iSourceCode_delete(SSourceCode** sourceCode)
 	{
 		SSourceCode* sc;
 
@@ -1885,6 +1896,6 @@ iComps_visualize(thisCode, comp, (s32)iComps_count(thisCode, comp), vizbuf, size
 			*sourceCode = NULL;
 
 			// Delete the items
-			iFunction_politelyDelete_chain(thisCode, &sc->func, false);
+			iFunction_politelyDelete_chain(&sc->func, false);
 		}
 	}

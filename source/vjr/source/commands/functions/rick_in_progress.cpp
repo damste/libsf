@@ -110,9 +110,9 @@
 //    k = "Apr.26.2015, 8:15p"
 //    ? CXLATD(k)
 //////
-	void function_cxlatd(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_cxlatd(SFunctionParams* rpar)
 	{
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		rpar->rp[0] = NULL;
 	}
 
@@ -143,9 +143,9 @@
 //    k = "Apr.26.2015, 8:15p"
 //    ? CXLATT(k)
 //////
-	void function_cxlatt(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_cxlatt(SFunctionParams* rpar)
 	{
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		rpar->rp[0] = NULL;
 	}
 
@@ -176,9 +176,9 @@
 //    k = "Apr.26.2015, 8:15p"
 //    ? CXLATX(k)
 //////
-	void function_cxlatx(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_cxlatx(SFunctionParams* rpar)
 	{
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		rpar->rp[0] = NULL;
 	}
 
@@ -234,7 +234,7 @@
 //    ldDate = DBUNDLE(tDatetime)
 //    ldDate = DBUNDLE(sDatetimex)
 //////
-	void function_dbundle(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_dbundle(SFunctionParams* rpar)
 	{
 		SVariable*	varR1;
 		SVariable*	varP1;
@@ -325,7 +325,7 @@
 
 					} else {
 						// Invalid
-						iError_reportByNumber(thisCode, lnP1Error, iVariable_get_relatedComp(thisCode, varP1), false);
+						iError_reportByNumber(lnP1Error, iVariable_get_relatedComp(varP1), false);
 						return;
 					}
 
@@ -339,7 +339,7 @@
 					// It needs to be 1600 <= year <= 9999
 					if (lnYear < 1600 || lnYear > 9999)
 					{
-						iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(thisCode, varP1), false);
+						iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varP1), false);
 						return;
 					}
 					// When we get here, the year is good
@@ -363,7 +363,7 @@
 				// It needs to be 1 <= month <= 12, and we'll test later the validity of the indicated date
 				if (lnMonth < 1 || lnMonth > 12)
 				{
-					iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(thisCode, varP2), false);
+					iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varP2), false);
 					return;
 				}
 				// When we get here, the year is good
@@ -386,7 +386,7 @@
 				// It needs to be 1 <= day <= 31, and we'll test later the validity of the indicated date
 				if (lnMonth < 1 || lnMonth > 31)
 				{
-					iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(thisCode, varP3), false);
+					iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varP3), false);
 					return;
 				}
 				// When we get here, the year is good
@@ -399,7 +399,7 @@
 		//////
 			if (!iDateMath_isValidDate(lst.wYear, lst.wMonth, lst.wDay))
 			{
-				iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varP1), false);
+				iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varP1), false);
 				return;
 			}
 
@@ -410,27 +410,27 @@
 			if (llCreateResult)
 			{
 				// Create our result
-				varR1 = iVariable_create(thisCode, _VAR_TYPE_DATE, NULL, true);
+				varR1 = iVariable_create(_VAR_TYPE_DATE, NULL, true);
 				if (!varR1)
 				{
-					iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, NULL, false);
+					iError_reportByNumber(_ERROR_INTERNAL_ERROR, NULL, false);
 					return;
 				}
 
 			} else {
 				// Use whatever's there, and force it into a date type
 				if (varR1->varType != _VAR_TYPE_DATE)
-					iVariable_setVarType(thisCode, varR1, _VAR_TYPE_DATE);
+					iVariable_setVarType(varR1, _VAR_TYPE_DATE);
 			}
 
 
 		//////////
 		// Terminate any indirect variable to its source for the update
 		//////
-			varResult = iiVariable_terminateIndirect(thisCode, varR1);
+			varResult = iiVariable_terminateIndirect(varR1);
 			if (!varResult->value.data || varResult->value.length == 0)
 			{
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varR1), false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varR1), false);
 				return;
 			}
 
@@ -494,9 +494,9 @@
 //    DUNBUNDLE(k, lnYear, lnMonth, lnDay)
 //    lnYear, lnMonth, lnDay = DUNBUNDLE(k)
 //////
-	void function_dunbundle(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_dunbundle(SFunctionParams* rpar)
 	{
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -553,12 +553,12 @@
 //    TBUNDLE(ltDatetime, 2015, 4, 26, 12, 15, 04, 291)
 //    ltDatetime = DBUNDLE(2015, 4, 26, 12, 15, 04, 291)		&& Identical to DATETIME()
 //////
-	void function_tbundle(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_tbundle(SFunctionParams* rpar)
 	{
 		//////////
 		// If we get here, they're bundling on-the-fly
 		//////
-			iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+			iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 			return;
 	}
 
@@ -615,9 +615,9 @@
 //    TUNBUNDLE(k, lnYear, lnMonth, lnDay, lnHour, lnMinute, lnSecond, lnMillisecond)
 //    lnYear, lnMonth, lnDay, lnHour, lnMinute, lnSecond, lnMillisecond = TUNBUNDLE(k)
 //////
-	void function_tunbundle(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_tunbundle(SFunctionParams* rpar)
 	{
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -676,12 +676,12 @@
 //    XBUNDLE(lsDatetime, 2015, 4, 26, 12, 15, 04, 291, 291393)
 //    lsDatetimex = XBUNDLE(2015, 4, 26, 12, 15, 04, 291, 291393)		&& Identical to DATETIMEX()
 //////
-	void function_xbundle(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_xbundle(SFunctionParams* rpar)
 	{
 		//////////
 		// If we get here, they're bundling on-the-fly
 		//////
-			iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+			iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 			return;
 	}
 
@@ -740,9 +740,9 @@
 //    XUNBUNDLE(k, lnYear, lnMonth, lnDay, lnHour, lnMinute, lnSecond, lnMillisecond, lnMicrosecond)
 //    lnYear, lnMonth, lnDay, lnHour, lnMinute, lnSecond, lnMillisecond, lnMicrosecond = XUNBUNDLE(k)
 //////
-	void function_xunbundle(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_xunbundle(SFunctionParams* rpar)
 	{
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -792,9 +792,9 @@
 //    TIMEBUNDLE(lcTime, 12, 15, 04, 291)
 //    lcTime = TIMEBUNDLE(12, 15, 04, 291)
 //////
-	void function_timebundle(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_timebundle(SFunctionParams* rpar)
 	{
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -845,9 +845,9 @@
 //    TIMEUNBUNDLE(k, lnHour, lnMinute, lnSecond, lnMillisecond)
 //    lnHour, lnMinute, lnSecond, lnMillisecond = TIMEUNBUNDLE(k)
 //////
-	void function_timeunbundle(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_timeunbundle(SFunctionParams* rpar)
 	{
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -899,9 +899,9 @@
 //    TIMEXBUNDLE(lcTime, 12, 15, 04, 291, 291393)
 //    lcTime = TIMEXBUNDLE(12, 15, 04, 291, 291393)
 //////
-	void function_timexbundle(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_timexbundle(SFunctionParams* rpar)
 	{
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -954,9 +954,9 @@
 //    TIMEXUNBUNDLE(k, lnHour, lnMinute, lnSecond, lnMillisecond, lnMicrosecond)
 //    lnHour, lnMinute, lnSecond, lnMillisecond, lnMicrosecond = TIMEXUNBUNDLE(k)
 //////
-	void function_timexunbundle(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_timexunbundle(SFunctionParams* rpar)
 	{
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1006,9 +1006,9 @@
 //    SECONDSBUNDLE(lfTime, 12, 15, 04, 291)
 //    lfTime = SECONDSBUNDLE(12, 15, 04, 291)
 //////
-	void function_secondsbundle(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_secondsbundle(SFunctionParams* rpar)
 	{
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1059,9 +1059,9 @@
 //    SECONDSUNBUNDLE(k, lnHour, lnMinute, lnSecond, lnMillisecond)
 //    lnHour, lnMinute, lnSecond, lnMillisecond = SECONDSUNBUNDLE(k)
 //////
-	void function_secondsunbundle(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_secondsunbundle(SFunctionParams* rpar)
 	{
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1113,9 +1113,9 @@
 //    SECONDSXBUNDLE(lfTime, 12, 15, 04, 291, 291393)
 //    lfTime = SECONDSXBUNDLE(12, 15, 04, 291, 291393)
 //////
-	void function_secondsxbundle(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_secondsxbundle(SFunctionParams* rpar)
 	{
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1168,9 +1168,9 @@
 //    SECONDSXUNBUNDLE(k, lnHour, lnMinute, lnSecond, lnMillisecond, lnMicrosecond)
 //    lnHour, lnMinute, lnSecond, lnMillisecond, lnMicrosecond = SECONDSXUNBUNDLE(k)
 //////
-	void function_secondsxunbundle(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_secondsxunbundle(SFunctionParams* rpar)
 	{
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1197,11 +1197,11 @@
 // Example:
 //    lnJob = PDJOBSTART("My Print Job")
 //////
-	void function_pdjobstart(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_pdjobstart(SFunctionParams* rpar)
 	{
 		SVariable*	varDocName = rpar->ip[0];
 
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1235,7 +1235,7 @@
 // Example:
 //    lnPage = PDADDPAGE(lnJob, RGB(255,255,255), 8.5, 11.0, 0.75, 0.75, 0.75, 0.75)
 //////
-	void function_pdaddpage(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_pdaddpage(SFunctionParams* rpar)
 	{
 		SVariable*	varJobHandle	= rpar->ip[0];
 		SVariable*	varPageColor	= rpar->ip[1];
@@ -1246,7 +1246,7 @@
 		SVariable*	varRight		= rpar->ip[6];
 		SVariable*	varBottom		= rpar->ip[7];
 
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1276,14 +1276,14 @@
 // Example:
 //    lnPage = PDADDPAGE(lnJob, RGB(255,255,255), 8.5, 11.0, 0.75, 0.75, 0.75, 0.75)
 //////
-	void function_pdaddpanel(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_pdaddpanel(SFunctionParams* rpar)
 	{
 		SVariable*	varJobHandle	= rpar->ip[0];
 		SVariable*	varPanelColor	= rpar->ip[1];
 		SVariable*	varWidth		= rpar->ip[2];
 		SVariable*	varHeight		= rpar->ip[3];
 
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1318,7 +1318,7 @@
 // Example:
 //    PDTEXT(lnJob, lnPage, 1.0, 1.0, RGB(255,255,0), RGB(0,0,0), "Sample text", "Ubuntu", 12, "B")
 //////
-	void function_pdtext(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_pdtext(SFunctionParams* rpar)
 	{
 		SVariable*	varJobHandle			= rpar->ip[0];
 		SVariable*	varPageOrPanelHandle	= rpar->ip[1];
@@ -1331,7 +1331,7 @@
 		SVariable*	varFontSize				= rpar->ip[8];
 		SVariable*	varFontFlags			= rpar->ip[9];
 
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1366,7 +1366,7 @@
 // Example:
 //    PDTEXTEVAL(lnJob, lnPage, 1.0, 1.0, RGB(255,255,0), RGB(0,0,0), "ALLTRIM(myAlias.cField)", "Ubuntu", 12, "B")
 //////
-	void function_pdtexteval(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_pdtexteval(SFunctionParams* rpar)
 	{
 		SVariable*	varJobHandle			= rpar->ip[0];
 		SVariable*	varPageOrPanelHandle	= rpar->ip[1];
@@ -1379,7 +1379,7 @@
 		SVariable*	varFontSize				= rpar->ip[8];
 		SVariable*	varFontFlags			= rpar->ip[9];
 
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1411,7 +1411,7 @@
 // Example:
 //    PDIMAGE(lnJob, lnPage, 1.0, 1.0, 3.0, 3.0, "c:\path\to\myimg.png")
 //////
-	void function_pdimage(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_pdimage(SFunctionParams* rpar)
 	{
 		SVariable*	varJobHandle			= rpar->ip[0];
 		SVariable*	varPageOrPanelHandle	= rpar->ip[1];
@@ -1421,7 +1421,7 @@
 		SVariable*	varHeight				= rpar->ip[5];
 		SVariable*	varPathname				= rpar->ip[6];
 
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1453,7 +1453,7 @@
 // Example:
 //    PDPANEL(lnJob, lnPage, lnPanel, 1.0, 1.0, 4.5, 1.5,)
 //////
-	void function_pdpanel(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_pdpanel(SFunctionParams* rpar)
 	{
 		SVariable*	varJobHandle			= rpar->ip[0];
 		SVariable*	varPageOrPanelHandleDst	= rpar->ip[1];
@@ -1463,7 +1463,7 @@
 		SVariable*	varWidth				= rpar->ip[5];
 		SVariable*	varHeight				= rpar->ip[6];
 
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1495,7 +1495,7 @@
 // Example:
 //    PDHLINE(lnJob, lnPage, RGB(0,0,0), 3.0, 1.0, 7.5, 0.1)
 //////
-	void function_pdhline(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_pdhline(SFunctionParams* rpar)
 	{
 		SVariable*	varJobHandle			= rpar->ip[0];
 		SVariable*	varPageOrPanelHandle	= rpar->ip[1];
@@ -1505,7 +1505,7 @@
 		SVariable*	varRightX				= rpar->ip[5];
 		SVariable*	varThickness			= rpar->ip[6];
 
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1537,7 +1537,7 @@
 // Example:
 //    PDVLINE(lnJob, lnPage, RGB(0,0,0), 3.0, 1.0, 7.5, 0.1)
 //////
-	void function_pdVline(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_pdVline(SFunctionParams* rpar)
 	{
 		SVariable*	varJobHandle			= rpar->ip[0];
 		SVariable*	varPageOrPanelHandle	= rpar->ip[1];
@@ -1547,7 +1547,7 @@
 		SVariable*	varBottomY				= rpar->ip[5];
 		SVariable*	varThickness			= rpar->ip[6];
 
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1580,7 +1580,7 @@
 // Example:
 //    PDRECT(lnJob, lnPage, RGB(0,0,0), 1.0, 1.0, 4.0, 4.0, 0.1)
 //////
-	void function_pdrect(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_pdrect(SFunctionParams* rpar)
 	{
 		SVariable*	varJobHandle			= rpar->ip[0];
 		SVariable*	varPageOrPanelHandle	= rpar->ip[1];
@@ -1591,7 +1591,7 @@
 		SVariable*	varLowerRightX			= rpar->ip[6];
 		SVariable*	varThickness			= rpar->ip[7];
 
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1618,12 +1618,12 @@
 // Example:
 //    PDPAGEDELETE(lnJob, lnPage)
 //////
-	void function_pdpagedelete(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_pdpagedelete(SFunctionParams* rpar)
 	{
 		SVariable*	varJobHandle	= rpar->ip[0];
 		SVariable*	varPageHandle	= rpar->ip[1];
 
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1652,14 +1652,14 @@
 // Example:
 //    PGPAGEREORDER(lnJob, lnPage, lnPageMove, .t.)
 //////
-	void function_pdpagereorder(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_pdpagereorder(SFunctionParams* rpar)
 	{
 		SVariable*	varJobHandle		= rpar->ip[0];
 		SVariable*	varPageHandleRef	= rpar->ip[1];
 		SVariable*	varPageHandleMove	= rpar->ip[2];
 		SVariable*	varMoveAfter		= rpar->ip[3];
 
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1688,12 +1688,12 @@
 //    lfWidth = PDWIDTH(lnJob, lnPage)
 //    lfWidth = PDWIDTH(lnJob, lnPanel)
 //////
-	void function_pdwidth(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_pdwidth(SFunctionParams* rpar)
 	{
 		SVariable*	varJobHandle	= rpar->ip[0];
 		SVariable*	varPageHandle	= rpar->ip[1];
 
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1722,12 +1722,12 @@
 //    lfHeight = PDHEIGHT(lnJob, lnPage)
 //    lfHeight = PDHEIGHT(lnJob, lnPanel)
 //////
-	void function_pdheight(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_pdheight(SFunctionParams* rpar)
 	{
 		SVariable*	varJobHandle	= rpar->ip[0];
 		SVariable*	varPageHandle	= rpar->ip[1];
 
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1763,12 +1763,12 @@
 //    lfHeight = PDPMETRICS(lnJob, lnPage)
 //    lfHeight = PDPMETRICS(lnJob, lnPanel)
 //////
-	void function_pdpmetrics(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_pdpmetrics(SFunctionParams* rpar)
 	{
 		SVariable*	varJobHandle			= rpar->ip[0];
 		SVariable*	varPageOrPanelHandle	= rpar->ip[1];
 
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1802,7 +1802,7 @@
 //    lfHeight = PDTEXTMETRICS(lnJob, lnPage, "Sample text", "Ubuntu", 12, "B")
 //    lfHeight = PDTEXTMETRICS(lnJob, lnPanel, "Sample text", "Ubuntu", 12, "B")
 //////
-	void function_pdtextmetrics(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_pdtextmetrics(SFunctionParams* rpar)
 	{
 		SVariable*	varJobHandle			= rpar->ip[0];
 		SVariable*	varPageOrPanelHandle	= rpar->ip[1];
@@ -1811,7 +1811,7 @@
 		SVariable*	varFontSize				= rpar->ip[4];
 		SVariable*	varFontFlags			= rpar->ip[5];
 
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1839,10 +1839,10 @@
 // Example:
 //    PDJOBDELETE(lnJob)
 //////
-	void function_pdjobdelete(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_pdjobdelete(SFunctionParams* rpar)
 	{
 		SVariable*	varJobHandle	= rpar->ip[0];
 
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}

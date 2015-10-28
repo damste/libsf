@@ -108,7 +108,7 @@
 // Returns:
 //    Date			-- Current date(), or input converted to date
 //////
-	void function_date(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_date(SFunctionParams* rpar)
 	{
 		SVariable*	varYear			= rpar->ip[0];
 		SVariable*	varMonth		= rpar->ip[1];
@@ -145,13 +145,13 @@
 					// They gave us a pYear
 					if (!iVariable_isTypeNumeric(varYear))
 					{
-						iError_report(thisCode, (cu8*)"Year must be numeric", false);
+						iError_report((cu8*)"Year must be numeric", false);
 						return;
 					}
-					lst.wYear = (u16)iiVariable_getAs_s32(thisCode, varYear, false, &error, &errorNum);
+					lst.wYear = (u16)iiVariable_getAs_s32(varYear, false, &error, &errorNum);
 					if (!error && (lst.wYear < 1600 || lst.wYear > 2400))
 					{
-						iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(thisCode, varYear), false);
+						iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varYear), false);
 						return;
 					}
 				}
@@ -165,13 +165,13 @@
 					// They gave us a pMonth
 					if (!iVariable_isTypeNumeric(varMonth))
 					{
-						iError_report(thisCode, (cu8*)"Month must be numeric", false);
+						iError_report((cu8*)"Month must be numeric", false);
 						return;
 					}
-					lst.wMonth = (u16)iiVariable_getAs_s32(thisCode, varMonth, false, &error, &errorNum);
+					lst.wMonth = (u16)iiVariable_getAs_s32(varMonth, false, &error, &errorNum);
 					if (!error && (lst.wMonth < 1 || lst.wMonth > 12))
 					{
-						iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(thisCode, varMonth), false);
+						iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varMonth), false);
 						return;
 					}
 				}
@@ -185,13 +185,13 @@
 					// They gave us a pDay
 					if (!iVariable_isTypeNumeric(varDay))
 					{
-						iError_report(thisCode, (cu8*)"Day must be numeric", false);
+						iError_report((cu8*)"Day must be numeric", false);
 						return;
 					}
-					lst.wDay = (u16)iiVariable_getAs_s32(thisCode, varDay, false, &error, &errorNum);
+					lst.wDay = (u16)iiVariable_getAs_s32(varDay, false, &error, &errorNum);
 					if (!error && !iDateMath_isValidDate(lst.wYear, lst.wMonth, lst.wDay))
 					{
-						iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(thisCode, varDay), false);
+						iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varDay), false);
 						return;
 					}
 				}
@@ -204,9 +204,9 @@
 		//////
 			// Date is stored as YYYYMMDD
 			iiDateMath_get_YYYYMMDD_from_YyyyMmDd(buffer, lst.wYear, lst.wMonth, lst.wDay);
-			result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_DATE, buffer, 8, false);
+			result = iVariable_createAndPopulate_byText(_VAR_TYPE_DATE, buffer, 8, false);
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, NULL, false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, NULL, false);
 
 
 		//////////
@@ -246,10 +246,10 @@
 //    Datetime		-- Current datetime(), or input converted to datetime
 //
 //////
-	void function_datetime(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_datetime(SFunctionParams* rpar)
 	{
 		// Return datetime
-		ifunction_datetimex_common(thisCode, rpar, false);
+		ifunction_datetimex_common(rpar, false);
 	}
 
 
@@ -283,13 +283,13 @@
 //    Datetimex		-- Current datetimex(), or input converted to datetimex
 //
 //////
-	void function_datetimex(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_datetimex(SFunctionParams* rpar)
 	{
 		// Return datetimex
-		ifunction_datetimex_common(thisCode, rpar, true);
+		ifunction_datetimex_common(rpar, true);
 	}
 
-	void ifunction_datetimex_common(SThisCode* thisCode, SFunctionParams* rpar, bool tlIsDatetimeX)
+	void ifunction_datetimex_common(SFunctionParams* rpar, bool tlIsDatetimeX)
 	{
 		SVariable*	varYear			= rpar->ip[0];
 		SVariable*	varMonth		= rpar->ip[1];
@@ -342,13 +342,13 @@
 					// They gave us a pYear
 					if (!iVariable_isTypeNumeric(varYear))
 					{
-						iError_report(thisCode, (cu8*)"Year must be numeric", false);
+						iError_report((cu8*)"Year must be numeric", false);
 						return;
 					}
-					lst.wYear = (u16)iiVariable_getAs_s32(thisCode, varYear, false, &error, &errorNum);
+					lst.wYear = (u16)iiVariable_getAs_s32(varYear, false, &error, &errorNum);
 					if (!error && (lst.wYear < 1600 || lst.wYear > 2400))
 					{
-						iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(thisCode, varYear), false);
+						iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varYear), false);
 						return;
 					}
 				}
@@ -362,13 +362,13 @@
 					// They gave us a pMonth
 					if (!iVariable_isTypeNumeric(varMonth))
 					{
-						iError_report(thisCode, (cu8*)"Month must be numeric", false);
+						iError_report((cu8*)"Month must be numeric", false);
 						return;
 					}
-					lst.wMonth = (u16)iiVariable_getAs_s32(thisCode, varMonth, false, &error, &errorNum);
+					lst.wMonth = (u16)iiVariable_getAs_s32(varMonth, false, &error, &errorNum);
 					if (!error && (lst.wMonth < 1 || lst.wMonth > 12))
 					{
-						iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(thisCode, varMonth), false);
+						iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varMonth), false);
 						return;
 					}
 				}
@@ -382,13 +382,13 @@
 					// They gave us a pDay
 					if (!iVariable_isTypeNumeric(varDay))
 					{
-						iError_report(thisCode, (cu8*)"Day must be numeric", false);
+						iError_report((cu8*)"Day must be numeric", false);
 						return;
 					}
-					lst.wDay = (u16)iiVariable_getAs_s32(thisCode, varDay, false, &error, &errorNum);
+					lst.wDay = (u16)iiVariable_getAs_s32(varDay, false, &error, &errorNum);
 					if (!error && !iDateMath_isValidDate(lst.wYear, lst.wMonth, lst.wDay))
 					{
-						iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(thisCode, varDay), false);
+						iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varDay), false);
 						return;
 					}
 				}
@@ -402,13 +402,13 @@
 					// They gave us a pHour
 					if (!iVariable_isTypeNumeric(varHour))
 					{
-						iError_report(thisCode, (cu8*)"Hours must be numeric", false);
+						iError_report((cu8*)"Hours must be numeric", false);
 						return;
 					}
-					lst.wHour = (u16)iiVariable_getAs_s32(thisCode, varHour, false, &error, &errorNum);
+					lst.wHour = (u16)iiVariable_getAs_s32(varHour, false, &error, &errorNum);
 					if (!error && (lst.wHour < 0 || lst.wHour > 23))
 					{
-						iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(thisCode, varHour), false);
+						iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varHour), false);
 						return;
 					}
 				}
@@ -422,13 +422,13 @@
 					// They gave us a pMinute
 					if (!iVariable_isTypeNumeric(varMinute))
 					{
-						iError_report(thisCode, (cu8*)"Minutes must be numeric", false);
+						iError_report((cu8*)"Minutes must be numeric", false);
 						return;
 					}
-					lst.wMinute = (u16)iiVariable_getAs_s32(thisCode, varMinute, false, &error, &errorNum);
+					lst.wMinute = (u16)iiVariable_getAs_s32(varMinute, false, &error, &errorNum);
 					if (!error && (lst.wMinute < 0 || lst.wMinute > 59))
 					{
-						iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(thisCode, varMinute), false);
+						iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varMinute), false);
 						return;
 					}
 				}
@@ -442,13 +442,13 @@
 					// They gave us a pSecond
 					if (!iVariable_isTypeNumeric(varSecond))
 					{
-						iError_report(thisCode, (cu8*)"Seconds must be numeric", false);
+						iError_report((cu8*)"Seconds must be numeric", false);
 						return;
 					}
-					lst.wSecond = (u16)iiVariable_getAs_s32(thisCode, varSecond, false, &error, &errorNum);
+					lst.wSecond = (u16)iiVariable_getAs_s32(varSecond, false, &error, &errorNum);
 					if (!error && (lst.wSecond < 0 || lst.wSecond > 59))
 					{
-						iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(thisCode, varSecond), false);
+						iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varSecond), false);
 						return;
 					}
 				}
@@ -462,13 +462,13 @@
 					// They gave us a pMillisecond
 					if (!iVariable_isTypeNumeric(varMillisecond))
 					{
-						iError_report(thisCode, (cu8*)"Milliseconds must be numeric", false);
+						iError_report((cu8*)"Milliseconds must be numeric", false);
 						return;
 					}
-					lst.wMilliseconds = (u16)iiVariable_getAs_s32(thisCode, varMillisecond, false, &error, &errorNum);
+					lst.wMilliseconds = (u16)iiVariable_getAs_s32(varMillisecond, false, &error, &errorNum);
 					if (!error && (lst.wMilliseconds < 0 || lst.wMilliseconds > 999))
 					{
-						iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(thisCode, varMillisecond), false);
+						iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varMillisecond), false);
 						return;
 					}
 				}
@@ -485,13 +485,13 @@
 						// They gave us a pNanosecond
 						if (!iVariable_isTypeNumeric(varNanosecond))
 						{
-							iError_report(thisCode, (cu8*)"Nanoseconds must be numeric", false);
+							iError_report((cu8*)"Nanoseconds must be numeric", false);
 							return;
 						}
-						lnMicrosecond = iiVariable_getAs_s32(thisCode, varNanosecond, false, &error, &errorNum);
+						lnMicrosecond = iiVariable_getAs_s32(varNanosecond, false, &error, &errorNum);
 						if (!error && (lnMicrosecond < 0 || lnMicrosecond > 999999999))
 						{
-							iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(thisCode, varNanosecond), false);
+							iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varNanosecond), false);
 							return;
 						}
 
@@ -504,7 +504,7 @@
 					// DatetimeX nanosecond is NOT allowed
 					if (iVariable_isValid(varNanosecond))
 					{
-						iError_reportByNumber(thisCode, _ERROR_TOO_MANY_PARAMETERS, iVariable_get_relatedComp(thisCode, varNanosecond), false);
+						iError_reportByNumber(_ERROR_TOO_MANY_PARAMETERS, iVariable_get_relatedComp(varNanosecond), false);
 						return;
 					}
 				}
@@ -514,10 +514,10 @@
 		//////////
 		// Convert lst.* into a VJr datetime variable
 		//////
-			result = iVariable_create(thisCode, ((tlIsDatetimeX) ? _VAR_TYPE_DATETIMEX : _VAR_TYPE_DATETIME), NULL, true);
+			result = iVariable_create(((tlIsDatetimeX) ? _VAR_TYPE_DATETIMEX : _VAR_TYPE_DATETIME), NULL, true);
 			if (!result)
 			{
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varYear), false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varYear), false);
 				return;
 			}
 
@@ -568,17 +568,17 @@
 //    ? DAY(dt)		&& Displays 6
 //    ? DAY()       && Displays current date's day of month
 //////
-	void function_day(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_day(SFunctionParams* rpar)
 	{
 		SVariable* varParam = rpar->ip[0];
 
 
 		// Return day
-		ifunction_day_month_year_common(thisCode, rpar, varParam, _DMY_COMMON_DAY);
+		ifunction_day_month_year_common(rpar, varParam, _DMY_COMMON_DAY);
 	}
 
 	// Common date functions used for DAY(), MONTH(), YEAR()
-	void ifunction_day_month_year_common(SThisCode* thisCode, SFunctionParams* rpar, SVariable* varParam, u32 tnFunctionType)
+	void ifunction_day_month_year_common(SFunctionParams* rpar, SVariable* varParam, u32 tnFunctionType)
 	{
 		u32			lnResult, lnYear, lnMonth, lnDay;
 		SYSTEMTIME	lst;
@@ -593,7 +593,7 @@
 			{
 				if (!iVariable_isValid(varParam) || !(iVariable_isTypeDate(varParam) || iVariable_isTypeDatetime(varParam) || iVariable_isTypeDatetimeX(varParam)))
 				{
-					iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varParam), false);
+					iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varParam), false);
 					return;
 				}
 
@@ -628,7 +628,7 @@
 
 				// Should never happen
 				default:
-					iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varParam), false);
+					iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varParam), false);
 					return;
 			}
 
@@ -636,9 +636,9 @@
 		//////////
 		// Create the value
 		//////
-			result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_U32, (cs8*)&lnResult, sizeof(lnResult), false);
+			result = iVariable_createAndPopulate_byText(_VAR_TYPE_U32, (cs8*)&lnResult, sizeof(lnResult), false);
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varParam), false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varParam), false);
 
 
 		//////////
@@ -672,7 +672,7 @@
 // Returns:
 //    Numeric		-- The more alike the two expressions are spelled, the higher the number DIFFERENCE() returns.
 //////
-	void function_difference(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_difference(SFunctionParams* rpar)
 	{
 		SVariable* varString1	= rpar->ip[0];
 		SVariable* varString2	= rpar->ip[1];
@@ -689,7 +689,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString1) || !iVariable_isTypeCharacter(varString1))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varString1), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varString1), false);
 				return;
 			}
 
@@ -698,26 +698,26 @@
 		//////
 			if (!iVariable_isValid(varString2) || !iVariable_isTypeCharacter(varString2))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varString2), false);
+				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varString2), false);
 				return;
 			}
 
 		//////////
 		// Compute Soundex
 		//////
-			SoundexVarStr1 = ifunction_soundex_common(thisCode, varString1);
+			SoundexVarStr1 = ifunction_soundex_common(varString1);
 			if (!SoundexVarStr1)
 			{
 				return;
 			}
 
-			SoundexVarStr2 = ifunction_soundex_common(thisCode, varString2);
+			SoundexVarStr2 = ifunction_soundex_common(varString2);
 			if (!SoundexVarStr2)
 			{
 				//////////
 				// Clean house
 				//////
-					iVariable_delete(thisCode, SoundexVarStr1, true);
+					iVariable_delete(SoundexVarStr1, true);
 					return;
 			}
 
@@ -737,16 +737,16 @@
 		//////////
 		// Clean house
 		//////
-			iVariable_delete(thisCode, SoundexVarStr1, true);
-			iVariable_delete(thisCode, SoundexVarStr2, true);		
+			iVariable_delete(SoundexVarStr1, true);
+			iVariable_delete(SoundexVarStr2, true);		
 
 
 		//////////
 		// Create and populate our output variable
 		//////
-			result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_U32, (cs8*)&lnMatch, 4, false);
+			result = iVariable_createAndPopulate_byText(_VAR_TYPE_U32, (cs8*)&lnMatch, 4, false);
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varString1), false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varString1), false);
 
 
 		//////////
@@ -779,16 +779,16 @@
 // Returns:
 //    Character - If SET CENTURY is OFF, DMY( ) returns a character string in a dd-Month-yy format (for example, 16 February 98).
 //////
-	void function_dmy(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_dmy(SFunctionParams* rpar)
 	{
 		SVariable* varParam = rpar->ip[0];
 
 
 		// Return dmy
-		ifunction_dtoc_common(thisCode, rpar, varParam, _DMY_COMMON_DMY);
+		ifunction_dtoc_common(rpar, varParam, _DMY_COMMON_DMY);
 	}
 
-	void ifunction_dtoc_common(SThisCode* thisCode, SFunctionParams* rpar, SVariable* varParam, u32 tnFunctionType)
+	void ifunction_dtoc_common(SFunctionParams* rpar, SVariable* varParam, u32 tnFunctionType)
 	{
 		u32			lnYear, lnMonth, lnDay;
 		s8			lnMonthIdx;
@@ -805,7 +805,7 @@
 			{
 				if (!iVariable_isValid(varParam) || !(iVariable_isTypeDate(varParam) || iVariable_isTypeDatetime(varParam) || iVariable_isTypeDatetimeX(varParam)))
 				{
-					iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varParam), false);
+					iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varParam), false);
 					return;
 				}
 
@@ -855,7 +855,7 @@
 
 				// Should never happen
 				default:
-					iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varParam), false);
+					iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varParam), false);
 					return;
 			}
 
@@ -863,9 +863,9 @@
 		//////////
 		// Create our result
 		//////
-			result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, (cs8*)buffer, (u32)strlen(buffer), false);
+			result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, (cs8*)buffer, (u32)strlen(buffer), false);
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, NULL, false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, NULL, false);
 
 
 		//////////
@@ -906,7 +906,7 @@
 //    ? DOW()           && Displays current date's number day of week
 //
 //////
-	void function_dow(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_dow(SFunctionParams* rpar)
 	{
 		SVariable* varDateOrDatetime	= rpar->ip[0];
 		SVariable* varFirstDow			= rpar->ip[1];
@@ -927,7 +927,7 @@
 			{
 				if (!iVariable_isValid(varDateOrDatetime) || !(iVariable_isTypeDate(varDateOrDatetime) || iVariable_isTypeDatetime(varDateOrDatetime) || iVariable_isTypeDatetime(varDateOrDatetime)))
 				{
-					iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varDateOrDatetime), false);
+					iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varDateOrDatetime), false);
 					return;
 				}
 
@@ -951,7 +951,7 @@
 		//////////
 		// Grab day of week
 		//////
-			lnDow = (s32)ifunction_dow_common(thisCode, rpar, lnYear, lnMonth, lnDay);
+			lnDow = (s32)ifunction_dow_common(rpar, lnYear, lnMonth, lnDay);
 
 
 		//////////
@@ -965,7 +965,7 @@
 				//////
 					if (!iVariable_isValid(varFirstDow) || !iVariable_isTypeNumeric(varFirstDow))
 					{
-						iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varFirstDow), false);
+						iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varFirstDow), false);
 						return;
 					}
 
@@ -973,15 +973,15 @@
 				//////////
 				// Grab the value
 				//////
-					lnFirstDow = iiVariable_getAs_s32(thisCode, varFirstDow, false, &error, &errorNum);
+					lnFirstDow = iiVariable_getAs_s32(varFirstDow, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varFirstDow), false);
+						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varFirstDow), false);
 						return;
 					}
 					if (lnFirstDow < 0 || lnFirstDow > 7)
 					{
-						iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varFirstDow), false);
+						iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varFirstDow), false);
 						return;
 					}
 
@@ -1019,9 +1019,9 @@
 		//////////
 		// Create and populate our output variable
 		//////
-			result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_U32, (cs8*)&lnDow, 4, false);
+			result = iVariable_createAndPopulate_byText(_VAR_TYPE_U32, (cs8*)&lnDow, 4, false);
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varDateOrDatetime), false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varDateOrDatetime), false);
 
 
 		//////////
@@ -1057,7 +1057,7 @@
 //	  The date format is determined by SET CENTURY and SET DATE.
 //
 //////
-	void function_dtoc(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_dtoc(SFunctionParams* rpar)
 	{
 		SVariable* varParam	= rpar->ip[0];
 		SVariable* varFlag	= rpar->ip[1];
@@ -1080,28 +1080,28 @@
 			{
 				if (!iVariable_isValid(varFlag) || !iVariable_isTypeNumeric(varFlag))
 				{
-					iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varFlag), false);
+					iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varFlag), false);
 					return;
 				}
 
 				// Grab the flag
-				lnFlag = iiVariable_getAs_s32(thisCode, varFlag, false, &error, &errorNum);
+				lnFlag = iiVariable_getAs_s32(varFlag, false, &error, &errorNum);
 				if (error)
 				{
 					// An error extracting the value (should never happen)
-					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varFlag), false);
+					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varFlag), false);
 					return;
 				}
 
 				// DTOC(--, 1) is DTOS(--)
 				if (lnFlag == 1)
 				{
-					ifunction_dtoc_common(thisCode, rpar, varParam, _DMY_COMMON_DTOS);
+					ifunction_dtoc_common(rpar, varParam, _DMY_COMMON_DTOS);
 					return;
 				}
 
 				// If we get here, invalid parameter specified
-				iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varFlag), false);
+				iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varFlag), false);
 				return;
 			}
 
@@ -1114,14 +1114,14 @@
 // TODO:  Must also support DATETIMEX at some point
 				if (!iVariable_isValid(varParam) || !(iVariable_isTypeDate(varParam) || iVariable_isTypeDatetime(varParam)))
 				{
-					iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varParam), false);
+					iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varParam), false);
 					return;
 				}
 
 				// If date we finished
 				if (iVariable_isTypeDate(varParam))
 				{
-					rpar->rp[0] = iVariable_convertForDisplay(thisCode, varParam);
+					rpar->rp[0] = iVariable_convertForDisplay(varParam);
 					return;
 				}
 
@@ -1148,11 +1148,11 @@
 		//////
 			// Date is stored as YYYYMMDD
 			iiDateMath_get_YYYYMMDD_from_YyyyMmDd(buffer, lnYear, lnMonth, lnDay);
-			varTempDate = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_DATE, buffer, 8, false);
+			varTempDate = iVariable_createAndPopulate_byText(_VAR_TYPE_DATE, buffer, 8, false);
 			if (!varTempDate)
 			{
 				// Fatal error
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, NULL, false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, NULL, false);
 				return;
 			}
 
@@ -1160,15 +1160,15 @@
 		//////////
 		// Create and populate the return variable
 		//////
-			result = iVariable_convertForDisplay(thisCode, varTempDate);
+			result = iVariable_convertForDisplay(varTempDate);
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varParam), false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varParam), false);
 
 
 		//////////
 		// Clean house
 		//////
-			iVariable_delete(thisCode, varTempDate, true);
+			iVariable_delete(varTempDate, true);
 
 
 		//////////
@@ -1204,13 +1204,13 @@
 // Example:
 //    ? DTOR(180)		&& Display 3.14
 //////
-    void function_dtor(SThisCode* thisCode, SFunctionParams* rpar)
+    void function_dtor(SFunctionParams* rpar)
     {
 		SVariable* varNumber = rpar->ip[0];
 
 
 		// Return dtor
-		ifunction_numbers_common(thisCode, rpar, varNumber, NULL, NULL, _FP_COMMON_DTOR, _VAR_TYPE_F64, false, false);
+		ifunction_numbers_common(rpar, varNumber, NULL, NULL, _FP_COMMON_DTOR, _VAR_TYPE_F64, false, false);
 	}
 
 
@@ -1238,13 +1238,13 @@
 //	  It is equivalent to DTOC( ) when its optional 1 argument is included.
 //
 //////
-	void function_dtos(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_dtos(SFunctionParams* rpar)
 	{
 		SVariable* varParam = rpar->ip[0];
 
 
 		// Return dtos
-		ifunction_dtoc_common(thisCode, rpar, varParam, _DMY_COMMON_DTOS);
+		ifunction_dtoc_common(rpar, varParam, _DMY_COMMON_DTOS);
 	}
 
 
@@ -1272,10 +1272,10 @@
 //    Datetime	-- DTOT( ) adds a default time of 12:00:00 AM (if SET HOURS is 12) or 00:00:00 (if SET HOURS is 24) to the date to produce a valid DateTime value.
 //                 If the second parameter is provided and is valid, it will override the default midnight time.
 //////
-	void function_dtot(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_dtot(SFunctionParams* rpar)
 	{
 		// Return dtot
-		ifunction_timesAndDatesConversion_common(thisCode, rpar, _CONVERSION_FUNCTION_DATE, _CONVERSION_FUNCTION_DATETIME);
+		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_DATE, _CONVERSION_FUNCTION_DATETIME);
 	}
 
 
@@ -1305,10 +1305,10 @@
 //    k = DATE()
 //    ? DTOX(k)
 //////
-	void function_dtox(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_dtox(SFunctionParams* rpar)
 	{
 		// Return dtox
-		ifunction_timesAndDatesConversion_common(thisCode, rpar, _CONVERSION_FUNCTION_DATE, _CONVERSION_FUNCTION_DATETIMEX);
+		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_DATE, _CONVERSION_FUNCTION_DATETIMEX);
 	}
 
 
@@ -1372,7 +1372,7 @@
 // Returns:
 //    Formatted string.
 //////
-	void function_dtransform(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_dtransform(SFunctionParams* rpar)
 	{
 		SVariable* varFormatStr = rpar->ip[0];
 
@@ -1388,7 +1388,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varFormatStr) || !iVariable_isTypeCharacter(varFormatStr))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varFormatStr), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varFormatStr), false);
 				return;
 			}
 
@@ -1406,7 +1406,7 @@
 					if (!iVariable_isValid(param) || !(iVariable_isTypeDate(param) || iVariable_isTypeDatetime(param)))
 					{
 						// The types do not match
-						iError_reportByNumber(thisCode, _ERROR_DATA_TYPE_MISMATCH, iVariable_get_relatedComp(thisCode, param), false);
+						iError_reportByNumber(_ERROR_DATA_TYPE_MISMATCH, iVariable_get_relatedComp(param), false);
 						return;
 					}
 
@@ -1417,13 +1417,13 @@
 		// Call the common function
 		//////
 			lcResult		= NULL;
-			lnResultLength	= ifunction_dtransform_textmerge_common(thisCode, rpar, &lcResult, varFormatStr->value.data_cs8, varFormatStr->value.length, NULL, NULL, &rpar->ip[1], true, true);
+			lnResultLength	= ifunction_dtransform_textmerge_common(rpar, &lcResult, varFormatStr->value.data_cs8, varFormatStr->value.length, NULL, NULL, &rpar->ip[1], true, true);
 
 
 		//////////
 		// Create our result
 		//////
-			if (lnResultLength != 0 && lcResult)		result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, (cs8*)lcResult, lnResultLength, true);
+			if (lnResultLength != 0 && lcResult)		result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, (cs8*)lcResult, lnResultLength, true);
 			else										result = NULL;
 
 
@@ -1431,7 +1431,7 @@
 		// Are we good?
 		//////
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varFormatStr), false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varFormatStr), false);
 
 
 		//////////
@@ -1486,7 +1486,7 @@
 	// %o	-- Day of month Jan, Feb, etc...
 	// %L	-- Local or System time based on SET("TIME") setting
 	//
-	u32 ifunction_dtransform_textmerge_common(SThisCode* thisCode, SFunctionParams* rpar, s8** tcResult, cs8* tcFormatStr, s32 tnFormatStrLength, SDatum* leftTextmergeDelim, SDatum* rightTextmergeDelim, SVariable* varDatesOrDatetimes[9], bool tlDateCodes, bool tlTextMerge)
+	u32 ifunction_dtransform_textmerge_common(SFunctionParams* rpar, s8** tcResult, cs8* tcFormatStr, s32 tnFormatStrLength, SDatum* leftTextmergeDelim, SDatum* rightTextmergeDelim, SVariable* varDatesOrDatetimes[9], bool tlDateCodes, bool tlTextMerge)
 	{
 		s8				c, cMark;
 		s32				lnI, lnJ, lnPass, lnAllocationLength, lnOffset, lnMillisecond, lnNanosecond;
@@ -1544,7 +1544,7 @@
 
 						} else {
 							// Something else
-							iError_reportByNumber(thisCode, _ERROR_DATA_TYPE_MISMATCH, iVariable_get_relatedComp(thisCode, var), false);
+							iError_reportByNumber(_ERROR_DATA_TYPE_MISMATCH, iVariable_get_relatedComp(var), false);
 							return(0);
 						}
 
@@ -1559,7 +1559,7 @@
 						dtInfo[lnI].wMinute			= lnMinute;
 						dtInfo[lnI].wSecond			= lnSecond;
 						dtInfo[lnI].wMilliseconds	= lnMillisecond;
-						dtInfo[lnI].wDayOfWeek		= ifunction_dow_common(thisCode, rpar, lnYear, lnMonth, lnDay);
+						dtInfo[lnI].wDayOfWeek		= ifunction_dow_common(rpar, lnYear, lnMonth, lnDay);
 				}
 
 
@@ -1656,7 +1656,7 @@
 						lcResult = (s8*)malloc(lnAllocationLength + 1);
 						if (!lcResult)
 						{
-							iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, NULL, false);
+							iError_reportByNumber(_ERROR_INTERNAL_ERROR, NULL, false);
 							*tcResult = NULL;
 							return(0);
 						}
@@ -2001,7 +2001,7 @@
 									if (iDatum_compare(rightTextmergeDelim, tcFormatStr + lnJ, rightTextmergeDelim->length) == 0)
 									{
 										// We've found the range
-										varTextmerge = iEngine_get_variableName_fromText(thisCode, tcFormatStr + lnI + leftTextmergeDelim->length, lnJ - lnI - rightTextmergeDelim->length, NULL, &llManufactured, false);
+										varTextmerge = iEngine_get_variableName_fromText(tcFormatStr + lnI + leftTextmergeDelim->length, lnJ - lnI - rightTextmergeDelim->length, NULL, &llManufactured, false);
 										break;
 									}
 								}
@@ -2014,11 +2014,11 @@
 									lnI = lnJ + rightTextmergeDelim->length;
 
 									// Convert it for display
-									varDisplay = iVariable_convertForDisplay(thisCode, varTextmerge);
+									varDisplay = iVariable_convertForDisplay(varTextmerge);
 
 									// Clean house
 									if (llManufactured)
-										iVariable_delete(thisCode, varTextmerge, true);
+										iVariable_delete(varTextmerge, true);
 
 									if (varDisplay)
 									{
@@ -2035,7 +2035,7 @@
 										}
 
 										// Delete the variable
-										iVariable_delete(thisCode, varDisplay, true);
+										iVariable_delete(varDisplay, true);
 									}
 								}
 

@@ -115,8 +115,8 @@
 		iBmp_createBySize(bmpNoImage, 1, 1, 24);
 
 		// Initialize primitive variables
-		iVariable_createDefaultValues(NULL);
-		iVariable_createPropsMaster(NULL);
+		iVariable_createDefaultValues();
+		iVariable_createPropsMaster();
 		iVjr_init_createConstants();
 
 		// Initialize our critical sections
@@ -257,124 +257,124 @@
 
 			// Play the startup music if any
 			sprintf((s8*)logBuffer, "VJr launched %u milliseconds after system boot\0", systemStartedTickCount);
-			iVjr_appendSystemLog(thisCode, logBuffer);
+			iVjr_appendSystemLog(logBuffer);
 			if (glShowSplashScreen)
 				CreateThread(0, 0, &iPlay_ariaSplash, (LPVOID)cgcSoundStartupWav, 0, 0);
 #endif
 
 		// Focus window accumulator
 #if !defined(_NONVJR_COMPILE)
-		iVjr_appendSystemLog(thisCode, (u8*)"Create focus highlight buffer");
+		iVjr_appendSystemLog((u8*)"Create focus highlight buffer");
 #endif
 		iBuilder_createAndInitialize(&gFocusHighlights, -1);
 
 		// Create the default reference datetimes
 #if !defined(_NONVJR_COMPILE)
-		iVjr_appendSystemLog(thisCode, (u8*)"Create default datetime variables");
+		iVjr_appendSystemLog((u8*)"Create default datetime variables");
 #endif
 		iVjr_init_createDefaultDatetimes();
 
 		// Create our message window
 #if !defined(_NONVJR_COMPILE)
-		iVjr_appendSystemLog(thisCode, (u8*)"Create message window");
+		iVjr_appendSystemLog((u8*)"Create message window");
 #endif
 		iVjr_init_createMessageWindow();
 
 		// Create our global variables
 #if !defined(_NONVJR_COMPILE)
-		iVjr_appendSystemLog(thisCode, (u8*)"Create global and system variables");
+		iVjr_appendSystemLog((u8*)"Create global and system variables");
 #endif
 		iVjr_init_createGlobalSystemVariables();
 
 		// Create our default objects
 #if !defined(_NONVJR_COMPILE)
-		iVjr_appendSystemLog(thisCode, (u8*)"Create default objects");
+		iVjr_appendSystemLog((u8*)"Create default objects");
 #endif
 		iVjr_init_createDefaultObjects();
 
 		// Create our main screen window
 #if !defined(_NONVJR_COMPILE)
-		iVjr_appendSystemLog(thisCode, (u8*)"TEMPORARY:  Manually create _jdebi");
+		iVjr_appendSystemLog((u8*)"TEMPORARY:  Manually create _jdebi");
 		iVjr_init_jdebi_create();
 
 		// Initially render each one
-		iVjr_appendSystemLog(thisCode, (u8*)"Render _jdebi");
-		iObj_render(NULL, _jdebi, true);
+		iVjr_appendSystemLog((u8*)"Render _jdebi");
+		iObj_render(_jdebi, true);
 
 		// Attach them to physical windows
-		iVjr_appendSystemLog(thisCode, (u8*)"Allocate OS Window for _jdebi");
+		iVjr_appendSystemLog((u8*)"Allocate OS Window for _jdebi");
 		gWinJDebi = iWindow_allocate();
-		iObj_createWindowForForm(NULL, _jdebi, gWinJDebi, IDI_JDEBI);
+		iObj_createWindowForForm(_jdebi, gWinJDebi, IDI_JDEBI);
 
 		// Initially populate _screen
 		// Load in the history if it exists
-		if (!iSEM_load_fromDisk(thisCode, NULL, screenData, cgcScreenDataFilename, false, true))
+		if (!iSEM_load_fromDisk(NULL, screenData, cgcScreenDataFilename, false, true))
 		{
 			// Indicate success
 			sprintf((s8*)logBuffer, "Loaded: %s\0", cgcScreenDataFilename);
-			iSEM_appendLine(thisCode, _output_editbox->p.sem, logBuffer, (s32)strlen(logBuffer), false);
-			iVjr_appendSystemLog(thisCode, (u8*)"Populate _screen with default data");
-			iSEM_appendLine(thisCode, screenData, (u8*)cgcScreenTitle, -1, false);
-			iSEM_appendLine(thisCode, screenData, NULL, 0, false);
-			iSEM_appendLine(thisCode, screenData, (u8*)"Please report any bugs:  http://www.visual-freepro.org/vjr", -1, false);
-			iSEM_appendLine(thisCode, screenData, (u8*)"Thank you, and may the Lord Jesus Christ bless you richly. :-)", -1, false);
-			iSEM_appendLine(thisCode, screenData, NULL, 0, false);
-			iSEM_appendLine(thisCode, screenData, (u8*)"              _____              In God's sight we've come together.", -1, false);
-			iSEM_appendLine(thisCode, screenData, (u8*)"             |     |             We've come together to help each other.", -1, false);
-			iSEM_appendLine(thisCode, screenData, (u8*)"             |     |             Let's grow this project up ... together!", -1, false);
-			iSEM_appendLine(thisCode, screenData, (u8*)"     ________|     |________     In service and love to The Lord, forever!", -1, false);
-			iSEM_appendLine(thisCode, screenData, (u8*)"    |                       |", -1, false);
-			iSEM_appendLine(thisCode, screenData, (u8*)"    |________       ________|    Sponsored by:", -1, false);
-			iSEM_appendLine(thisCode, screenData, (u8*)"             |     |                 LibSF -- Liberty Software Foundation", -1, false);
-			iSEM_appendLine(thisCode, screenData, (u8*)"             |     |", -1, false);
-			iSEM_appendLine(thisCode, screenData, (u8*)"             |     |    Contributors:", -1, false);
-			iSEM_appendLine(thisCode, screenData, (u8*)"             |     |        Hernan Cano, Stefano D'Amico", -1, false);
-			iSEM_appendLine(thisCode, screenData, (u8*)"             |     |", -1, false);
-			iSEM_appendLine(thisCode, screenData, (u8*)"             |     |    Lead Project Contact:  rick.c.hodgin@gmail.com", -1, false);
-			iSEM_appendLine(thisCode, screenData, (u8*)"             |     |", -1, false);
-			iSEM_appendLine(thisCode, screenData, (u8*)"             |     |    We need more coders. Please consider helping out.", -1, false);
-			iSEM_appendLine(thisCode, screenData, (u8*)"             |_____|    Your contribution would make a difference. :-)", -1, false);
-			iSEM_appendLine(thisCode, screenData, NULL, 0, false);
+			iSEM_appendLine(_output_editbox->p.sem, logBuffer, (s32)strlen(logBuffer), false);
+			iVjr_appendSystemLog((u8*)"Populate _screen with default data");
+			iSEM_appendLine(screenData, (u8*)cgcScreenTitle, -1, false);
+			iSEM_appendLine(screenData, NULL, 0, false);
+			iSEM_appendLine(screenData, (u8*)"Please report any bugs:  http://www.visual-freepro.org/vjr", -1, false);
+			iSEM_appendLine(screenData, (u8*)"Thank you, and may the Lord Jesus Christ bless you richly. :-)", -1, false);
+			iSEM_appendLine(screenData, NULL, 0, false);
+			iSEM_appendLine(screenData, (u8*)"              _____              In God's sight we've come together.", -1, false);
+			iSEM_appendLine(screenData, (u8*)"             |     |             We've come together to help each other.", -1, false);
+			iSEM_appendLine(screenData, (u8*)"             |     |             Let's grow this project up ... together!", -1, false);
+			iSEM_appendLine(screenData, (u8*)"     ________|     |________     In service and love to The Lord, forever!", -1, false);
+			iSEM_appendLine(screenData, (u8*)"    |                       |", -1, false);
+			iSEM_appendLine(screenData, (u8*)"    |________       ________|    Sponsored by:", -1, false);
+			iSEM_appendLine(screenData, (u8*)"             |     |                 LibSF -- Liberty Software Foundation", -1, false);
+			iSEM_appendLine(screenData, (u8*)"             |     |", -1, false);
+			iSEM_appendLine(screenData, (u8*)"             |     |    Contributors:", -1, false);
+			iSEM_appendLine(screenData, (u8*)"             |     |        Hernan Cano, Stefano D'Amico", -1, false);
+			iSEM_appendLine(screenData, (u8*)"             |     |", -1, false);
+			iSEM_appendLine(screenData, (u8*)"             |     |    Lead Project Contact:  rick.c.hodgin@gmail.com", -1, false);
+			iSEM_appendLine(screenData, (u8*)"             |     |", -1, false);
+			iSEM_appendLine(screenData, (u8*)"             |     |    We need more coders. Please consider helping out.", -1, false);
+			iSEM_appendLine(screenData, (u8*)"             |_____|    Your contribution would make a difference. :-)", -1, false);
+			iSEM_appendLine(screenData, NULL, 0, false);
 		}
 		// Navigate to the end of the content
-		iSEM_navigateToEndLine(thisCode, screenData, _screen);
+		iSEM_navigateToEndLine(screenData, _screen);
 
 		// Initially populate _jdebi
 		// Load in the history if it exists
-		if (!iSEM_load_fromDisk(thisCode, NULL, _command_editbox->p.sem, cgcCommandHistoryFilename, true, true))
+		if (!iSEM_load_fromDisk(NULL, _command_editbox->p.sem, cgcCommandHistoryFilename, true, true))
 		{
 			// Indicate success
 			sprintf((s8*)logBuffer, "Loaded: %s\0", cgcCommandHistoryFilename);
-			iSEM_appendLine(thisCode, _output_editbox->p.sem, logBuffer, (s32)strlen(logBuffer), false);
-			iSEM_appendLine(thisCode, _command_editbox->p.sem, (u8*)"*** Welcome to Visual FreePro, Junior! :-)", -1, false);
-			iSEM_appendLine(thisCode, _command_editbox->p.sem, (u8*)"*** For now, this can be thought of as a command window ... with a twist.", -1, false);
-			iSEM_appendLine(thisCode, _command_editbox->p.sem, (u8*)"*** It works like an editor window.  You can insert new lines, edit old ones, etc.", -1, false);
-			iSEM_appendLine(thisCode, _command_editbox->p.sem, (u8*)"*** To execute a command, press F6. If you're on the last line use F6 or Enter.", -1, false);
-			iSEM_appendLine(thisCode, _command_editbox->p.sem, (u8*)"*** See http://www.visual-freepro.org/wiki/index.php/VXB for supported commands.", -1, false);
-			iSEM_appendLine(thisCode, _command_editbox->p.sem, (u8*)"*** Remember always:  Love makes you smile. It keeps an inner peace like no other. :-)", -1, false);
+			iSEM_appendLine(_output_editbox->p.sem, logBuffer, (s32)strlen(logBuffer), false);
+			iSEM_appendLine(_command_editbox->p.sem, (u8*)"*** Welcome to Visual FreePro, Junior! :-)", -1, false);
+			iSEM_appendLine(_command_editbox->p.sem, (u8*)"*** For now, this can be thought of as a command window ... with a twist.", -1, false);
+			iSEM_appendLine(_command_editbox->p.sem, (u8*)"*** It works like an editor window.  You can insert new lines, edit old ones, etc.", -1, false);
+			iSEM_appendLine(_command_editbox->p.sem, (u8*)"*** To execute a command, press F6. If you're on the last line use F6 or Enter.", -1, false);
+			iSEM_appendLine(_command_editbox->p.sem, (u8*)"*** See http://www.visual-freepro.org/wiki/index.php/VXB for supported commands.", -1, false);
+			iSEM_appendLine(_command_editbox->p.sem, (u8*)"*** Remember always:  Love makes you smile. It keeps an inner peace like no other. :-)", -1, false);
 		}
 
 		// Navigate to the last line
-		iSEM_navigateToEndLine(thisCode, _command_editbox->p.sem, _command_editbox);
+		iSEM_navigateToEndLine(_command_editbox->p.sem, _command_editbox);
 
 		// Make sure there's a blank line at the end
 		if (_command_editbox->p.sem->line_cursor->sourceCode_populatedLength != 0)
 		{
-			iSEM_appendLine(thisCode, _command_editbox->p.sem, NULL, 0, false);
-			iSEM_navigateToEndLine(thisCode, _command_editbox->p.sem, _command_editbox);
+			iSEM_appendLine(_command_editbox->p.sem, NULL, 0, false);
+			iSEM_navigateToEndLine(_command_editbox->p.sem, _command_editbox);
 		}
 
 		// Load some source code
-		if (iSEM_load_fromDisk(thisCode, _sourceCode_rider, _sourceCode_editbox->p.sem, cgcStartupPrgFilename, true, true))
+		if (iSEM_load_fromDisk(_sourceCode_rider, _sourceCode_editbox->p.sem, cgcStartupPrgFilename, true, true))
 		{
 			// Indicate success
 			sprintf((s8*)logBuffer, "Loaded: %s\0", cgcStartupPrgFilename);
-			iSEM_appendLine(thisCode, _output_editbox->p.sem, logBuffer, (s32)strlen(logBuffer), false);
+			iSEM_appendLine(_output_editbox->p.sem, logBuffer, (s32)strlen(logBuffer), false);
 		}
 
 		// Redraw
-		iVjr_appendSystemLog(thisCode, (u8*)"Final render _jdebi");
-		iWindow_render(NULL, gWinJDebi, true);
+		iVjr_appendSystemLog((u8*)"Final render _jdebi");
+		iWindow_render(gWinJDebi, true);
 
 		// Remove the splash screen 1/2 second later
 		CreateThread(0, 0, &iSplash_delete, (LPVOID)500, 0, 0);
@@ -603,30 +603,30 @@
 
 
 		// System constants used internally
-		cvarSpace1				= iVariable_createAndPopulate_byText(NULL, _VAR_TYPE_CHARACTER, cgc_spaceText, 1,	false);
-		cvarEmptyString			= iVariable_createAndPopulate_byText(NULL, _VAR_TYPE_CHARACTER, (cu8*)NULL, 0,		false);
-		cvarSpace2000			= iVariable_create(NULL, _VAR_TYPE_CHARACTER, NULL, true);
-		cvarTrue				= iVariable_createAndPopulate_byText(NULL, _VAR_TYPE_LOGICAL, (cu8*)NULL, 0,		false);
-		cvarFalse				= iVariable_createAndPopulate_byText(NULL, _VAR_TYPE_LOGICAL, (cu8*)NULL, 0,		false);
-		cvarZero				= iVariable_create(NULL, _VAR_TYPE_S64, NULL, true);
+		cvarSpace1				= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, cgc_spaceText, 1,	false);
+		cvarEmptyString			= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, (cu8*)NULL, 0,		false);
+		cvarSpace2000			= iVariable_create(_VAR_TYPE_CHARACTER, NULL, true);
+		cvarTrue				= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, (cu8*)NULL, 0,		false);
+		cvarFalse				= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, (cu8*)NULL, 0,		false);
+		cvarZero				= iVariable_create(_VAR_TYPE_S64, NULL, true);
 
 		lnValue	= 6;
-		cvarSix					= iVariable_createAndPopulate_byText(NULL, _VAR_TYPE_S32, (cu8*)&lnValue, 4, false);
+		cvarSix					= iVariable_createAndPopulate_byText(_VAR_TYPE_S32, (cu8*)&lnValue, 4, false);
 		lnValue	= 8;
-		cvarEight				= iVariable_createAndPopulate_byText(NULL, _VAR_TYPE_S32, (cu8*)&lnValue, 4, false);
+		cvarEight				= iVariable_createAndPopulate_byText(_VAR_TYPE_S32, (cu8*)&lnValue, 4, false);
 		lnValue	= 16;
-		cvarSixteen				= iVariable_createAndPopulate_byText(NULL, _VAR_TYPE_S32, (cu8*)&lnValue, 4, false);
+		cvarSixteen				= iVariable_createAndPopulate_byText(_VAR_TYPE_S32, (cu8*)&lnValue, 4, false);
 		lnValue	= 32;
-		cvarThirtyTwo			= iVariable_createAndPopulate_byText(NULL, _VAR_TYPE_S32, (cu8*)&lnValue, 4, false);
+		cvarThirtyTwo			= iVariable_createAndPopulate_byText(_VAR_TYPE_S32, (cu8*)&lnValue, 4, false);
 		lnValue	= 64;
-		cvarSixtyFour			= iVariable_createAndPopulate_byText(NULL, _VAR_TYPE_S32, (cu8*)&lnValue, 4, false);
+		cvarSixtyFour			= iVariable_createAndPopulate_byText(_VAR_TYPE_S32, (cu8*)&lnValue, 4, false);
 		lnValue	= 255;
-		cvarTwoFiftyFive		= iVariable_createAndPopulate_byText(NULL, _VAR_TYPE_S32, (cu8*)&lnValue, 4, false);
+		cvarTwoFiftyFive		= iVariable_createAndPopulate_byText(_VAR_TYPE_S32, (cu8*)&lnValue, 4, false);
 
 		lfValue	= 0.5f;
-		cvarFiftyPercent		= iVariable_createAndPopulate_byText(NULL, _VAR_TYPE_F32, (cu8*)&lfValue, 4, false);
+		cvarFiftyPercent		= iVariable_createAndPopulate_byText(_VAR_TYPE_F32, (cu8*)&lfValue, 4, false);
 		lfValue	= 0.5f;
-		cvarOneHundredPercent	= iVariable_createAndPopulate_byText(NULL, _VAR_TYPE_F32, (cu8*)&lfValue, 4, false);
+		cvarOneHundredPercent	= iVariable_createAndPopulate_byText(_VAR_TYPE_F32, (cu8*)&lfValue, 4, false);
 
 		// 2000 blank spaces
 		iDatum_allocateSpace(&cvarSpace2000->value, 2000);
@@ -637,24 +637,24 @@
 		*cvarFalse->value.data_s8	= (s8)_LOGICAL_FALSE;
 
 		// Datetime constants for parsing
-		cvarSetDateAmerican	= iVariable_createAndPopulate_byText(NULL, _VAR_TYPE_CHARACTER, "11/22/3333 12:34:56.000 AP", -1, true);
-		cvarSetDateAnsi		= iVariable_createAndPopulate_byText(NULL, _VAR_TYPE_CHARACTER, "3333.22.11 12:34:56.000 AP", -1, true);
-		cvarSetDateBritish	= iVariable_createAndPopulate_byText(NULL, _VAR_TYPE_CHARACTER, "22/11/3333 12:34:56.000 AP", -1, true);
+		cvarSetDateAmerican	= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, "11/22/3333 12:34:56.000 AP", -1, true);
+		cvarSetDateAnsi		= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, "3333.22.11 12:34:56.000 AP", -1, true);
+		cvarSetDateBritish	= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, "22/11/3333 12:34:56.000 AP", -1, true);
 		cvarSetDateFrench	= cvarSetDateBritish;
-		cvarSetDateGerman	= iVariable_createAndPopulate_byText(NULL, _VAR_TYPE_CHARACTER, "22.11.3333 12:34:56.000 AP", -1, true);
-		cvarSetDateItalian	= iVariable_createAndPopulate_byText(NULL, _VAR_TYPE_CHARACTER, "22-11-3333 12:34:56.000 AP", -1, true);
-		cvarSetDateJapan		= iVariable_createAndPopulate_byText(NULL, _VAR_TYPE_CHARACTER, "3333/11/22 12:34:56.000 AP", -1, true);
+		cvarSetDateGerman	= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, "22.11.3333 12:34:56.000 AP", -1, true);
+		cvarSetDateItalian	= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, "22-11-3333 12:34:56.000 AP", -1, true);
+		cvarSetDateJapan		= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, "3333/11/22 12:34:56.000 AP", -1, true);
 		cvarSetDateTaiwan	= cvarSetDateJapan;
-		cvarSetDateLong		= iVariable_createAndPopulate_byText(NULL, _VAR_TYPE_CHARACTER, "Dow, Mon 22, 3333 12:34:56.000 AP", -1, true);
+		cvarSetDateLong		= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, "Dow, Mon 22, 3333 12:34:56.000 AP", -1, true);
 		cvarSetDateShort		= cvarSetDateAmerican;
-		cvarSetDateUsa		= iVariable_createAndPopulate_byText(NULL, _VAR_TYPE_CHARACTER, "11-22-33333 12:34:56.000 AP", -1, true);
+		cvarSetDateUsa		= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, "11-22-33333 12:34:56.000 AP", -1, true);
 		cvarSetDateDmy		= cvarSetDateBritish;
 		cvarSetDateMdy		= cvarSetDateAmerican;
 		cvarSetDateYmd		= cvarSetDateJapan;
 
 		// Other datetime constants for fixed date types
-		varSetDateYyyyMmDdTHhMmSsMss	= iVariable_createAndPopulate_byText(NULL, _VAR_TYPE_CHARACTER, "3333-11-22 12:34:56.000 AP", -1, true);
-		varSetDateYyyyMmDdTHhMmSs		= iVariable_createAndPopulate_byText(NULL, _VAR_TYPE_CHARACTER, "3333-11-22 12:34:56 AP", -1, true);
+		varSetDateYyyyMmDdTHhMmSsMss	= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, "3333-11-22 12:34:56.000 AP", -1, true);
+		varSetDateYyyyMmDdTHhMmSs		= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, "3333-11-22 12:34:56 AP", -1, true);
 	}
 
 
@@ -677,7 +677,7 @@
 		// _startupTime
 		//////
 			memset(&lsrpar, 0, sizeof(lsrpar));
-			function_datetime(NULL, &lsrpar);
+			function_datetime(&lsrpar);
 			varStartupTime = lsrpar.rp[0];
 			iDatum_duplicate(&varStartupTime->name, cgcName_startupTime, -1);
 			iLl_appendExistingNodeAtBeginning((SLL**)&varGlobals, (SLL*)varStartupTime);
@@ -807,8 +807,8 @@
 	void iiVjr_init_createGlobalSystemVariable(SVariable** var, s32 tnType, cu8* tcName, cs8* tcInitValue, u32 tnInitValueLength)
 	{
 		// Create it
-		if (!tcInitValue)		*var = iVariable_create(NULL, tnType, NULL, true);
-		else					*var = iVariable_createAndPopulate_byText(NULL, tnType, tcInitValue, tnInitValueLength, false);
+		if (!tcInitValue)		*var = iVariable_create(tnType, NULL, true);
+		else					*var = iVariable_createAndPopulate_byText(tnType, tcInitValue, tnInitValueLength, false);
 
 		// Name it
 		iDatum_duplicate(&(*var)->name, tcName, -1);
@@ -833,51 +833,51 @@
 		//////////
 		// Create base objects
 		//////
-			_settings				= iObj_create(NULL, _OBJ_TYPE_SETTINGS, NULL);
+			_settings				= iObj_create(_OBJ_TYPE_SETTINGS, NULL);
 
 
 		//////////
 		// Create each default object
 		//////
-			gobj_defaultEmpty		= iObj_create(NULL, _OBJ_TYPE_EMPTY,		NULL);
-			gobj_defaultLabel		= iObj_create(NULL, _OBJ_TYPE_LABEL,		NULL);
-			gobj_defaultTextbox		= iObj_create(NULL, _OBJ_TYPE_TEXTBOX,		NULL);
-			gobj_defaultButton		= iObj_create(NULL, _OBJ_TYPE_BUTTON,		NULL);
-			gobj_defaultImage		= iObj_create(NULL, _OBJ_TYPE_IMAGE,		NULL);
-			gobj_defaultCheckbox	= iObj_create(NULL, _OBJ_TYPE_CHECKBOX,		NULL);
-			gobj_defaultCmdGroup	= iObj_create(NULL, _OBJ_TYPE_CMDGROUP,		NULL);
-			gobj_defaultOptGroup	= iObj_create(NULL, _OBJ_TYPE_OPTGROUP,		NULL);
-			gobj_defaultListbox		= iObj_create(NULL, _OBJ_TYPE_LISTBOX,		NULL);
-			gobj_defaultCombobox	= iObj_create(NULL, _OBJ_TYPE_COMBOBOX,		NULL);
-			gobj_defaultFormset		= iObj_create(NULL, _OBJ_TYPE_FORMSET,		NULL);
-			gobj_defaultToolbar		= iObj_create(NULL, _OBJ_TYPE_TOOLBAR,		NULL);
-			gobj_defaultSeparator	= iObj_create(NULL, _OBJ_TYPE_SEPARATOR,	NULL);
-			gobj_defaultLine		= iObj_create(NULL, _OBJ_TYPE_LINE,			NULL);
-			gobj_defaultShape		= iObj_create(NULL, _OBJ_TYPE_SHAPE,		NULL);
-			gobj_defaultContainer	= iObj_create(NULL, _OBJ_TYPE_CONTAINER,	NULL);
-			gobj_defaultControl		= iObj_create(NULL, _OBJ_TYPE_CONTROL,		NULL);
-			gobj_defaultGrid		= iObj_create(NULL, _OBJ_TYPE_GRID,			NULL);
-			gobj_defaultColumn		= iObj_create(NULL, _OBJ_TYPE_COLUMN,		NULL);
-			gobj_defaultHeader		= iObj_create(NULL, _OBJ_TYPE_HEADER,		NULL);
-			gobj_defaultOleBound	= iObj_create(NULL, _OBJ_TYPE_OLEBOUND,		NULL);
-			gobj_defaultOleContain	= iObj_create(NULL, _OBJ_TYPE_OLECONTAIN,	NULL);
-			gobj_defaultSpinner		= iObj_create(NULL, _OBJ_TYPE_SPINNER,		NULL);
-			gobj_defaultTimer		= iObj_create(NULL, _OBJ_TYPE_TIMER,		NULL);
-			gobj_defaultHyperlink	= iObj_create(NULL, _OBJ_TYPE_HYPERLINK,	NULL);
-			gobj_defaultCollection	= iObj_create(NULL, _OBJ_TYPE_COLLECTION,	NULL);
-			gobj_defaultPage		= iObj_create(NULL, _OBJ_TYPE_PAGE,			NULL);
-			gobj_defaultPageFrame	= iObj_create(NULL, _OBJ_TYPE_PAGEFRAME,	NULL);
-			gobj_defaultSession		= iObj_create(NULL, _OBJ_TYPE_SESSION,		NULL);
-			gobj_defaultCustom		= iObj_create(NULL, _OBJ_TYPE_CUSTOM,		NULL);
-			gobj_defaultException	= iObj_create(NULL, _OBJ_TYPE_EXCEPTION,	NULL);
-			gobj_defaultSettings	= iObj_create(NULL, _OBJ_TYPE_SETTINGS,		NULL);
+			gobj_defaultEmpty		= iObj_create(_OBJ_TYPE_EMPTY,		NULL);
+			gobj_defaultLabel		= iObj_create(_OBJ_TYPE_LABEL,		NULL);
+			gobj_defaultTextbox		= iObj_create(_OBJ_TYPE_TEXTBOX,		NULL);
+			gobj_defaultButton		= iObj_create(_OBJ_TYPE_BUTTON,		NULL);
+			gobj_defaultImage		= iObj_create(_OBJ_TYPE_IMAGE,		NULL);
+			gobj_defaultCheckbox	= iObj_create(_OBJ_TYPE_CHECKBOX,		NULL);
+			gobj_defaultCmdGroup	= iObj_create(_OBJ_TYPE_CMDGROUP,		NULL);
+			gobj_defaultOptGroup	= iObj_create(_OBJ_TYPE_OPTGROUP,		NULL);
+			gobj_defaultListbox		= iObj_create(_OBJ_TYPE_LISTBOX,		NULL);
+			gobj_defaultCombobox	= iObj_create(_OBJ_TYPE_COMBOBOX,		NULL);
+			gobj_defaultFormset		= iObj_create(_OBJ_TYPE_FORMSET,		NULL);
+			gobj_defaultToolbar		= iObj_create(_OBJ_TYPE_TOOLBAR,		NULL);
+			gobj_defaultSeparator	= iObj_create(_OBJ_TYPE_SEPARATOR,	NULL);
+			gobj_defaultLine		= iObj_create(_OBJ_TYPE_LINE,			NULL);
+			gobj_defaultShape		= iObj_create(_OBJ_TYPE_SHAPE,		NULL);
+			gobj_defaultContainer	= iObj_create(_OBJ_TYPE_CONTAINER,	NULL);
+			gobj_defaultControl		= iObj_create(_OBJ_TYPE_CONTROL,		NULL);
+			gobj_defaultGrid		= iObj_create(_OBJ_TYPE_GRID,			NULL);
+			gobj_defaultColumn		= iObj_create(_OBJ_TYPE_COLUMN,		NULL);
+			gobj_defaultHeader		= iObj_create(_OBJ_TYPE_HEADER,		NULL);
+			gobj_defaultOleBound	= iObj_create(_OBJ_TYPE_OLEBOUND,		NULL);
+			gobj_defaultOleContain	= iObj_create(_OBJ_TYPE_OLECONTAIN,	NULL);
+			gobj_defaultSpinner		= iObj_create(_OBJ_TYPE_SPINNER,		NULL);
+			gobj_defaultTimer		= iObj_create(_OBJ_TYPE_TIMER,		NULL);
+			gobj_defaultHyperlink	= iObj_create(_OBJ_TYPE_HYPERLINK,	NULL);
+			gobj_defaultCollection	= iObj_create(_OBJ_TYPE_COLLECTION,	NULL);
+			gobj_defaultPage		= iObj_create(_OBJ_TYPE_PAGE,			NULL);
+			gobj_defaultPageFrame	= iObj_create(_OBJ_TYPE_PAGEFRAME,	NULL);
+			gobj_defaultSession		= iObj_create(_OBJ_TYPE_SESSION,		NULL);
+			gobj_defaultCustom		= iObj_create(_OBJ_TYPE_CUSTOM,		NULL);
+			gobj_defaultException	= iObj_create(_OBJ_TYPE_EXCEPTION,	NULL);
+			gobj_defaultSettings	= iObj_create(_OBJ_TYPE_SETTINGS,		NULL);
 
 			// Option and radio both have label controls within
-			gobj_defaultOption		= iObj_create(NULL, _OBJ_TYPE_OPTION,		NULL);
-			gobj_defaultRadio		= iObj_create(NULL, _OBJ_TYPE_RADIO,		NULL);
+			gobj_defaultOption		= iObj_create(_OBJ_TYPE_OPTION,		NULL);
+			gobj_defaultRadio		= iObj_create(_OBJ_TYPE_RADIO,		NULL);
 			// Forms and subforms are created last because they have internal child objects references to classes which must be created before
-			gobj_defaultForm		= iObj_create(NULL, _OBJ_TYPE_FORM,			NULL);
-			gobj_defaultSubform		= iObj_create(NULL, _OBJ_TYPE_SUBFORM,		NULL);
+			gobj_defaultForm		= iObj_create(_OBJ_TYPE_FORM,			NULL);
+			gobj_defaultSubform		= iObj_create(_OBJ_TYPE_SUBFORM,		NULL);
 	}
 
 

@@ -921,78 +921,78 @@ struct SBasePropMap;
 	// Note:  The _direct()* function variations are used to bypass the normal setters
 	//         and getters, and should be used for internal use only.
 	void					iObjProp_init_fixup						(void);
-	SDatum*					iObjProp_get_name_asDatum				(SThisCode* thisCode, s32 tnIndex, SDatum** nameToUpdate);
-	bool					iObjProp_set							(SThisCode* thisCode, SObject* obj, s32 tnIndex, SVariable* varNewValue, bool tlNestedSet = false);
-	bool					iObjProp_set_bitmap_direct				(SThisCode* thisCode, SObject* obj, s32 tnIndex, SBitmap* bmp);
-	bool					iObjProp_set_character					(SThisCode* thisCode, SObject* obj, s32 tnIndex, SVariable* varNewValue);
-	bool					iObjProp_set_character_direct			(SThisCode* thisCode, SObject* obj, s32 tnIndex, cs8* tcText, u32 tnTextLength);
-	bool					iObjProp_set_character_direct			(SThisCode* thisCode, SObject* obj, s32 tnIndex,  s8* tcText, u32 tnTextLength);
-	bool					iObjProp_set_character_direct			(SThisCode* thisCode, SObject* obj, s32 tnIndex, cu8* tcText, u32 tnTextLength);
-	bool					iObjProp_set_character_direct			(SThisCode* thisCode, SObject* obj, s32 tnIndex,  u8* tcText, u32 tnTextLength);
-	bool					iObjProp_set_character_direct			(SThisCode* thisCode, SObject* obj, s32 tnIndex, SDatum* datum);
-	bool					iObjProp_set_logical_direct				(SThisCode* thisCode, SObject* obj, s32 tnIndex, bool tlValue);
-	bool					iObjProp_set_logical_fromLogicalConstants(SThisCode* thisCode, SObject* obj, s32 tnIndex, s32 tnValue);
-	bool					iObjProp_set_s32_direct					(SThisCode* thisCode, SObject* obj, s32 tnIndex, s32 tnValue);
-	bool					iObjProp_set_u32_direct					(SThisCode* thisCode, SObject* obj, s32 tnIndex, u32 tnValue);
-	bool					iObjProp_set_f32_direct					(SThisCode* thisCode, SObject* obj, s32 tnIndex, f32 tfValue);
-	bool					iObjProp_set_f64_direct					(SThisCode* thisCode, SObject* obj, s32 tnIndex, f64 tfValue);
-	bool					iObjProp_set_sbgra_direct				(SThisCode* thisCode, SObject* obj, s32 tnIndex, SBgra color);
+	SDatum*					iObjProp_get_name_asDatum				(s32 tnIndex, SDatum** nameToUpdate);
+	bool					iObjProp_set							(SObject* obj, s32 tnIndex, SVariable* varNewValue, bool tlNestedSet = false);
+	bool					iObjProp_set_bitmap_direct				(SObject* obj, s32 tnIndex, SBitmap* bmp);
+	bool					iObjProp_set_character					(SObject* obj, s32 tnIndex, SVariable* varNewValue);
+	bool					iObjProp_set_character_direct			(SObject* obj, s32 tnIndex, cs8* tcText, u32 tnTextLength);
+	bool					iObjProp_set_character_direct			(SObject* obj, s32 tnIndex,  s8* tcText, u32 tnTextLength);
+	bool					iObjProp_set_character_direct			(SObject* obj, s32 tnIndex, cu8* tcText, u32 tnTextLength);
+	bool					iObjProp_set_character_direct			(SObject* obj, s32 tnIndex,  u8* tcText, u32 tnTextLength);
+	bool					iObjProp_set_character_direct			(SObject* obj, s32 tnIndex, SDatum* datum);
+	bool					iObjProp_set_logical_direct				(SObject* obj, s32 tnIndex, bool tlValue);
+	bool					iObjProp_set_logical_fromLogicalConstants(SObject* obj, s32 tnIndex, s32 tnValue);
+	bool					iObjProp_set_s32_direct					(SObject* obj, s32 tnIndex, s32 tnValue);
+	bool					iObjProp_set_u32_direct					(SObject* obj, s32 tnIndex, u32 tnValue);
+	bool					iObjProp_set_f32_direct					(SObject* obj, s32 tnIndex, f32 tfValue);
+	bool					iObjProp_set_f64_direct					(SObject* obj, s32 tnIndex, f64 tfValue);
+	bool					iObjProp_set_sbgra_direct				(SObject* obj, s32 tnIndex, SBgra color);
 
-	bool					iObjProp_copy_byIndex					(SThisCode* thisCode, SObject* objDst, s32 tnIndexDst, SObject* objSrc, s32 tnIndexSrc);
-	bool					iObjProp_copyAll						(SThisCode* thisCode, SObject* objDst, SObject* objSrc, bool tlCopyDynamicProperties);
-	bool					iObjProp_copyDynamic					(SThisCode* thisCode, SObject* objDst, SObject* objSrc);
+	bool					iObjProp_copy_byIndex					(SObject* objDst, s32 tnIndexDst, SObject* objSrc, s32 tnIndexSrc);
+	bool					iObjProp_copyAll						(SObject* objDst, SObject* objSrc, bool tlCopyDynamicProperties);
+	bool					iObjProp_copyDynamic					(SObject* objDst, SObject* objSrc);
 
 	// Used for SET xyz TO compNew/VarNew
-	bool					iObjProp_setOnOff						(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
-	bool					iObjProp_setDate						(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
-	bool					iObjProp_setDecimals					(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
-	bool					iObjProp_setDevice						(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
-	bool					iObjProp_setInteger						(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
-	bool					iObjProp_setIneger_12_24				(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
-	bool					iObjProp_setInteger_bits				(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
-	bool					iObjProp_set_u16						(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
-	bool					iObjProp_setLanguage					(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
-	bool					iObjProp_setLogical						(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
-	bool					iObjProp_setLogicalX					(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
-	bool					iObjProp_setReprocess					(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
-	bool					iObjProp_setTime						(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
-	bool					iObjProp_setUdfParams					(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
-	bool					iObjProp_setCharacter					(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
-	bool					iObjProp_setCharacter1					(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setOnOff						(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setDate						(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setDecimals					(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setDevice						(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setInteger						(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setIneger_12_24				(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setInteger_bits				(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_set_u16						(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setLanguage					(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setLogical						(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setLogicalX					(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setReprocess					(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setTime						(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setUdfParams					(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setCharacter					(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setCharacter1					(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
 
 	// Used for SET("xyz")
-	SVariable* 				iObjProp_getDate						(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
-	SVariable*				iObjProp_getDevice						(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
-	SVariable* 				iObjProp_getInteger						(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
-	SVariable* 				iObjProp_getLanguage					(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
-	SVariable* 				iObjProp_getLogical						(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
-	SVariable* 				iObjProp_getLogicalX					(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
-	SVariable* 				iObjProp_getOnOff						(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
-	SVariable* 				iObjProp_getReprocess					(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
-	SVariable* 				iObjProp_getTime						(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
-	SVariable*				iObjProp_getUdfParams					(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
+	SVariable* 				iObjProp_getDate						(SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
+	SVariable*				iObjProp_getDevice						(SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
+	SVariable* 				iObjProp_getInteger						(SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
+	SVariable* 				iObjProp_getLanguage					(SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
+	SVariable* 				iObjProp_getLogical						(SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
+	SVariable* 				iObjProp_getLogicalX					(SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
+	SVariable* 				iObjProp_getOnOff						(SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
+	SVariable* 				iObjProp_getReprocess					(SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
+	SVariable* 				iObjProp_getTime						(SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
+	SVariable*				iObjProp_getUdfParams					(SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
 
-	SVariable*				iObjProp_get							(SThisCode* thisCode, SObject* obj, s32 tnIndex);
-	s32						iObjProp_get_varAndType					(SThisCode* thisCode, SObject* obj, s32 tnIndex, SVariable** varDst);
-	SVariable*				iObjProp_get_var_byIndex				(SThisCode* thisCode, SObject* obj, s32 tnIndex, SBasePropMap** baseProp = NULL, SObjPropMap** objProp = NULL);
-	SVariable*				iObjProp_get_var_byComp					(SThisCode* thisCode, SObject* obj, SComp* comp,                  bool tlSearchDefaultProps = true,  bool tlSearchUserProps = true, u32* tnIndex = NULL, s32* tnType = NULL);
-	SVariable*				iObjProp_get_var_byName					(SThisCode* thisCode, SObject* obj, u8* tcName, u32 tnNameLength, bool tlSearchDefaultProps = true,  bool tlSearchUserProps = true, u32* tnIndex = NULL, s32* tnType = NULL);
-	SBitmap*				iObjProp_get_bitmap						(SThisCode* thisCode, SObject* obj, s32 tnIndex);
-	SVariable*				iObjProp_get_character					(SThisCode* thisCode, SObject* obj, s32 tnIndex);
-	f64						iObjProp_get_f64_direct					(SThisCode* thisCode, SObject* obj, s32 tnIndex);
-	SVariable*				iObjProp_get_logical					(SThisCode* thisCode, SObject* obj, s32 tnIndex);
+	SVariable*				iObjProp_get							(SObject* obj, s32 tnIndex);
+	s32						iObjProp_get_varAndType					(SObject* obj, s32 tnIndex, SVariable** varDst);
+	SVariable*				iObjProp_get_var_byIndex				(SObject* obj, s32 tnIndex, SBasePropMap** baseProp = NULL, SObjPropMap** objProp = NULL);
+	SVariable*				iObjProp_get_var_byComp					(SObject* obj, SComp* comp,                  bool tlSearchDefaultProps = true,  bool tlSearchUserProps = true, u32* tnIndex = NULL, s32* tnType = NULL);
+	SVariable*				iObjProp_get_var_byName					(SObject* obj, u8* tcName, u32 tnNameLength, bool tlSearchDefaultProps = true,  bool tlSearchUserProps = true, u32* tnIndex = NULL, s32* tnType = NULL);
+	SBitmap*				iObjProp_get_bitmap						(SObject* obj, s32 tnIndex);
+	SVariable*				iObjProp_get_character					(SObject* obj, s32 tnIndex);
+	f64						iObjProp_get_f64_direct					(SObject* obj, s32 tnIndex);
+	SVariable*				iObjProp_get_logical					(SObject* obj, s32 tnIndex);
 	// Note:  The s32 value returned will be a _LOGICAL_* or _LOGICALX_* value.  To test for .T., use (x != _LOGICAL_FALSE).
-	s32						iObjProp_get_logical_fromLogicalConstants(SThisCode* thisCode, SObject* obj, s32 tnIndex);
-	SVariable*				iObjProp_get_object						(SThisCode* thisCode, SObject* obj, s32 tnIndex);
-	s8						iObjProp_get_s8_direct					(SThisCode* thisCode, SObject* obj, s32 tnIndex);
-	s32						iObjProp_get_s32_direct					(SThisCode* thisCode, SObject* obj, s32 tnIndex);
-	SBgra					iObjProp_get_sbgra_direct				(SThisCode* thisCode, SObject* obj, s32 tnIndex);
+	s32						iObjProp_get_logical_fromLogicalConstants(SObject* obj, s32 tnIndex);
+	SVariable*				iObjProp_get_object						(SObject* obj, s32 tnIndex);
+	s8						iObjProp_get_s8_direct					(SObject* obj, s32 tnIndex);
+	s32						iObjProp_get_s32_direct					(SObject* obj, s32 tnIndex);
+	SBgra					iObjProp_get_sbgra_direct				(SObject* obj, s32 tnIndex);
 
-	s32						iObjProp_settingsTranslate				(SThisCode* thisCode, s32 tniCodeKeyword);
+	s32						iObjProp_settingsTranslate				(s32 tniCodeKeyword);
 
-	bool					iObjProp_delete_variable_byIndex		(SThisCode* thisCode, SObject* obj, s32 tnIndex);
+	bool					iObjProp_delete_variable_byIndex		(SObject* obj, s32 tnIndex);
 
-	s32						iObjProp_compare_character				(SThisCode* thisCode, SObject* obj, s32 tnIndex, s8* tcText, u32 tnTextLength);
+	s32						iObjProp_compare_character				(SObject* obj, s32 tnIndex, s8* tcText, u32 tnTextLength);
 
 
 //////////
@@ -1000,18 +1000,18 @@ struct SBasePropMap;
 // Note:  Because of 8.5.1/15, braced union declarations are limited only to first member so we cannot validate these parameters are correct at compile time.
 // Note:  But, it's pretty easy to learn if they're wrong because you'll get stack errors in debug mode.
 //////
-	bool					iObjProp_setter_captionOnChild			(SThisCode* thisCode, SObject* obj, s32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp);
-	bool					iObjProp_setter_iconOnChild				(SThisCode* thisCode, SObject* obj, s32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp);
-	bool					iObjProp_setter_editboxMirror			(SThisCode* thisCode, SObject* obj, s32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp);
-	bool					iObjProp_setter_fontProperty			(SThisCode* thisCode, SObject* obj, s32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp);
+	bool					iObjProp_setter_captionOnChild			(SObject* obj, s32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp);
+	bool					iObjProp_setter_iconOnChild				(SObject* obj, s32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp);
+	bool					iObjProp_setter_editboxMirror			(SObject* obj, s32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp);
+	bool					iObjProp_setter_fontProperty			(SObject* obj, s32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp);
 
 
 //////////
 // For events
 //////
-	bool					iObjEvent_set_function					(SThisCode* thisCode, SObject* obj, s32 tnIndex, SFunction** funcRoot, SDatum* newSourceCode);
-	SDatum*					iObjEvent_get_name_asDatum				(SThisCode* thisCode, s32 tnIndex, SDatum* nameToUpdate);
-	s32						iObjEvent_get_eventOrMethod_byComp		(SThisCode* thisCode, SObject* obj, SComp* comp, bool tlSearchDefaultEMs = true, bool tlSearchUserEMs = true, u32* tnIndex = NULL, SFunction** tsFuncRoot = NULL, SFunction** tsFunc = NULL);
+	bool					iObjEvent_set_function					(SObject* obj, s32 tnIndex, SFunction** funcRoot, SDatum* newSourceCode);
+	SDatum*					iObjEvent_get_name_asDatum				(s32 tnIndex, SDatum* nameToUpdate);
+	s32						iObjEvent_get_eventOrMethod_byComp		(SObject* obj, SComp* comp, bool tlSearchDefaultEMs = true, bool tlSearchUserEMs = true, u32* tnIndex = NULL, SFunction** tsFuncRoot = NULL, SFunction** tsFunc = NULL);
 
 
 
@@ -1037,19 +1037,19 @@ struct SBasePropMap;
 		// Initter
 		union {
 			uptr		_initterBase;
-			bool		(*initterBase)	(SThisCode* thisCode, SObject* obj, u32 tnIndex);
+			bool		(*initterBase)	(SObject* obj, u32 tnIndex);
 		};
 
 		// Setter
 		union {
 			uptr		_setterBase;
-			bool		(*setterBase)	(SThisCode* thisCode, SObject* obj, u32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp);
+			bool		(*setterBase)	(SObject* obj, u32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp);
 		};
 
 		// Getter
 		union {
 			uptr		_getterBase;
-			SVariable*	(*getterBase)	(SThisCode* thisCode, SObject* obj, u32 tnIndex);
+			SVariable*	(*getterBase)	(SObject* obj, u32 tnIndex);
 		};
 
 		// An amalgam of default values, see varType
@@ -1082,21 +1082,21 @@ struct SBasePropMap;
 
 		union {
 			uptr		_initterObject;
-			bool		(*initterObject)	(SThisCode* thisCode, SObject* obj, u32 tnIndex);
+			bool		(*initterObject)	(SObject* obj, u32 tnIndex);
 		};
 
 		union {
 			uptr		_setterObject;
-			bool		(*setterObject)		(SThisCode* thisCode, SObject* obj, u32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp);
+			bool		(*setterObject)		(SObject* obj, u32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp);
 			uptr		_setterObject_set;
-			bool		(*setterObject_set)	(SThisCode* thisCode, SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+			bool		(*setterObject_set)	(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
 		};
 
 		union {
 			uptr		_getterObject;
-			SVariable*	(*getterObject)		(SThisCode* thisCode, SObject* obj, u32 tnIndex);
+			SVariable*	(*getterObject)		(SObject* obj, u32 tnIndex);
 			uptr		_getterObject_get;
-			SVariable*	(*getterObject_get)	(SThisCode* thisCode, SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarNewAfterSet);
+			SVariable*	(*getterObject_get)	(SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarNewAfterSet);
 		};
 	};
 
@@ -1533,7 +1533,7 @@ struct SBasePropMap;
 		// Default handler
 		union {
 			uptr	_defaultHandler;
-			bool	(*defaultHandler)	(SThisCode* thisCode, SObject* obj, u32 tnIndex);
+			bool	(*defaultHandler)	(SObject* obj, u32 tnIndex);
 		};
 	};
 
@@ -1543,7 +1543,7 @@ struct SBasePropMap;
 
 		union {
 			uptr	_defaultHandler;
-			bool	(*defaultHandler)	(SThisCode* thisCode, SObject* obj, u32 tnIndex);
+			bool	(*defaultHandler)	(SObject* obj, u32 tnIndex);
 		};
 	};
 

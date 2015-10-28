@@ -286,18 +286,18 @@ struct SEvent
 		uptr	_event;
 
 		// Based on the event type, the appropriate form is called
-		bool	(*event_1)		(SThisCode* thisCode, SWindow* win, SObject* obj);
-		bool	(*event_2)		(SThisCode* thisCode, SWindow* win, SObject* obj, SObject* obj1);
-		bool	(*event_3)		(SThisCode* thisCode, SWindow* win, SObject* obj, SVariable* var1);
-		bool	(*event_4)		(SThisCode* thisCode, SWindow* win, SObject* obj, SVariable* var1, SVariable* var2);
-		bool	(*event_5)		(SThisCode* thisCode, SWindow* win, SObject* obj, SVariable* var1, SVariable* var2, SVariable* var3);
-		bool	(*event_6)		(SThisCode* thisCode, SWindow* win, SObject* obj, SVariable* var1, SVariable* var2, SVariable* var3, SVariable* var4);
-		bool	(*event_7)		(SThisCode* thisCode, SWindow* win, SObject* obj, SVariable* var1, SVariable* var2, SVariable* var3, SVariable* var4, SVariable* var5);
-		bool	(*event_8)		(SThisCode* thisCode, SWindow* win, SObject* obj, SVariable* var1, SVariable* var2, SVariable* var3, SVariable* var4, SVariable* var5, SVariable* var6);
-		bool	(*event_9)		(SThisCode* thisCode, SWindow* win, SObject* obj, SVariable* var1, SVariable* var2, SVariable* var3, SVariable* var4, SVariable* var5, SVariable* var6, SVariable* var7);
-		bool	(*event_10)		(SThisCode* thisCode, SWindow* win, SObject* obj, SVariable* var1, SVariable* var2, SVariable* var3, SVariable* var4, SVariable* var5, SVariable* var6, SVariable* var7, SVariable* var8);
-		bool	(*event_11)		(SThisCode* thisCode, SWindow* win, SObject* obj, RECT* rc);
-		bool	(*event_12)		(SThisCode* thisCode, SWindow* win, SObject* obj, void* p);
+		bool	(*event_1)		(SWindow* win, SObject* obj);
+		bool	(*event_2)		(SWindow* win, SObject* obj, SObject* obj1);
+		bool	(*event_3)		(SWindow* win, SObject* obj, SVariable* var1);
+		bool	(*event_4)		(SWindow* win, SObject* obj, SVariable* var1, SVariable* var2);
+		bool	(*event_5)		(SWindow* win, SObject* obj, SVariable* var1, SVariable* var2, SVariable* var3);
+		bool	(*event_6)		(SWindow* win, SObject* obj, SVariable* var1, SVariable* var2, SVariable* var3, SVariable* var4);
+		bool	(*event_7)		(SWindow* win, SObject* obj, SVariable* var1, SVariable* var2, SVariable* var3, SVariable* var4, SVariable* var5);
+		bool	(*event_8)		(SWindow* win, SObject* obj, SVariable* var1, SVariable* var2, SVariable* var3, SVariable* var4, SVariable* var5, SVariable* var6);
+		bool	(*event_9)		(SWindow* win, SObject* obj, SVariable* var1, SVariable* var2, SVariable* var3, SVariable* var4, SVariable* var5, SVariable* var6, SVariable* var7);
+		bool	(*event_10)		(SWindow* win, SObject* obj, SVariable* var1, SVariable* var2, SVariable* var3, SVariable* var4, SVariable* var5, SVariable* var6, SVariable* var7, SVariable* var8);
+		bool	(*event_11)		(SWindow* win, SObject* obj, RECT* rc);
+		bool	(*event_12)		(SWindow* win, SObject* obj, void* p);
 	};
 };
 

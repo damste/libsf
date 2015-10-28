@@ -136,9 +136,9 @@
 //////////
 // ExtraInfo
 //////
-	SExtraInfo*		iExtraInfo_allocate						(SThisCode* thisCode, SEM* sem, SLine* line, SExtraInfo** root);
-	void			iExtraInfo_removeAll					(SThisCode* thisCode, SEM* sem, SLine* line, SExtraInfo** root, bool tlDeleteSelf);
-	void			iExtraInfo_access						(SThisCode* thisCode, SEM* sem, SLine* line);
-	void			iExtraInfo_arrival						(SThisCode* thisCode, SEM* sem, SLine* line);
-	void			iExtraInfo_update						(SThisCode* thisCode, SEM* sem, SLine* line);
-	void			iiExtraInfo_callbackCommon				(SThisCode* thisCode, SEM* sem, SLine* line, s32 tnCallbackType);
+	SExtraInfo*		iExtraInfo_allocate						(SEM* sem, SLine* line, SExtraInfo** root);
+	void			iExtraInfo_removeAll					(SEM* sem, SLine* line, SExtraInfo** root, bool tlDeleteSelf);
+	void			iExtraInfo_access						(SEM* sem, SLine* line);
+	void			iExtraInfo_arrival						(SEM* sem, SLine* line);
+	void			iExtraInfo_update						(SEM* sem, SLine* line);
+	void			iiExtraInfo_callbackCommon				(SEM* sem, SLine* line, s32 tnCallbackType);

@@ -91,10 +91,10 @@
 // Called to signal an error in the current running program
 //
 //////
-	void iError_signal(SThisCode* thisCode, u32 tnErrorNum, SComp* comp, bool tlInvasive, s8* tcExtraInfo, bool tlFatal)
+	void iError_signal(u32 tnErrorNum, SComp* comp, bool tlInvasive, s8* tcExtraInfo, bool tlFatal)
 	{
 // TODO:  This will need to potentially break the program execution
-		iError_reportByNumber(thisCode, tnErrorNum, comp, tlInvasive);
+		iError_reportByNumber(tnErrorNum, comp, tlInvasive);
 
 		if (tlInvasive)
 			debug_break;
@@ -108,17 +108,17 @@
 // Reports an error
 //
 //////
-	void iError_report(SThisCode* thisCode, cu8* constantErrorText, bool tlInvasive)
+	void iError_report(cu8* constantErrorText, bool tlInvasive)
 	{
-		iError_report(thisCode, (u8*)constantErrorText, tlInvasive);
+		iError_report((u8*)constantErrorText, tlInvasive);
 	}
 
-	void iError_report(SThisCode* thisCode, u8* errorText, bool tlInvasive)
+	void iError_report(u8* errorText, bool tlInvasive)
 	{
 		if (!tlInvasive)
 		{
 			// Append the error to the EM
-			iSEM_appendLine(thisCode, screenData, errorText, -1, false);
+			iSEM_appendLine(screenData, errorText, -1, false);
 			_screen_editbox->isDirtyRender = true;
 
 		} else {
@@ -135,89 +135,89 @@
 // Reports an error by number
 //
 //////
-	void iError_reportByNumber(SThisCode* thisCode, u32 tnErrorNum, SComp* comp, bool tlInvasive)
+	void iError_reportByNumber(u32 tnErrorNum, SComp* comp, bool tlInvasive)
 	{
 		switch (tnErrorNum)
 		{
-			case _ERROR_OUT_OF_MEMORY:						{	iError_report(thisCode, cgcOutOfMemory,						tlInvasive);		break;	}
-			case _ERROR_UNEXPECTED_COMMAND:					{	iError_report(thisCode, cgcUnexpectedCommand,				tlInvasive);		break;	}
-			case _ERROR_CONTEXT_HAS_CHANGED:				{	iError_report(thisCode, cgcContextHasChanged,				tlInvasive);		break;	}
-			case _ERROR_FULL_RECOMPILE_REQUIRED:			{	iError_report(thisCode, cgcFullRecompileRequired,			tlInvasive);		break;	}
-			case _ERROR_NOT_A_VARIABLE:						{	iError_report(thisCode, cgcNotAVariable,					tlInvasive);		break;	}
-			case _ERROR_NUMERIC_OVERFLOW:					{	iError_report(thisCode, cgcNumericOverflow,					tlInvasive);		break;	}
-			case _ERROR_NOT_NUMERIC:						{	iError_report(thisCode, cgcNotNumeric,						tlInvasive);		break;	}
-			case _ERROR_EMPTY_STRING:						{	iError_report(thisCode, cgcEmptyString,						tlInvasive);		break;	}
-			case _ERROR_SYNTAX:								{	iError_report(thisCode, cgcSyntaxError,						tlInvasive);		break;	}
-			case _ERROR_UNRECOGNIZED_PARAMETER:				{	iError_report(thisCode, cgcUnrecognizedParameter,			tlInvasive);		break;	}
-			case _ERROR_OUT_OF_RANGE:						{	iError_report(thisCode, cgcOutOfRange,						tlInvasive);		break;	}
-			case _ERROR_COMMA_EXPECTED:						{	iError_report(thisCode, cgcCommaExpected,					tlInvasive);		break;	}
-			case _ERROR_TOO_MANY_PARAMETERS:				{	iError_report(thisCode, cgcTooManyParameters,				tlInvasive);		break;	}
-			case _ERROR_DATA_TYPE_MISMATCH:					{	iError_report(thisCode, cgcDataTypeMismatch,				tlInvasive);		break;	}
-			case _ERROR_FEATURE_NOT_AVAILABLE:				{	iError_report(thisCode, cgcFeatureNotAvailable,				tlInvasive);		break;	}
-			case _ERROR_P1_IS_INCORRECT:					{	iError_report(thisCode, cgcP1IsIncorrect,					tlInvasive);		break;	}
-			case _ERROR_P2_IS_INCORRECT:					{	iError_report(thisCode, cgcP2IsIncorrect,					tlInvasive);		break;	}
-			case _ERROR_P3_IS_INCORRECT:					{	iError_report(thisCode, cgcP3IsIncorrect,					tlInvasive);		break;	}
-			case _ERROR_P4_IS_INCORRECT:					{	iError_report(thisCode, cgcP4IsIncorrect,					tlInvasive);		break;	}
-			case _ERROR_P5_IS_INCORRECT:					{	iError_report(thisCode, cgcP5IsIncorrect,					tlInvasive);		break;	}
-			case _ERROR_P6_IS_INCORRECT:					{	iError_report(thisCode, cgcP6IsIncorrect,					tlInvasive);		break;	}
-			case _ERROR_P7_IS_INCORRECT:					{	iError_report(thisCode, cgcP7IsIncorrect,					tlInvasive);		break;	}
-			case _ERROR_INTERNAL_ERROR:						{	iError_report(thisCode, cgcInternalError,					tlInvasive);		break;	}
-			case _ERROR_INVALID_ARGUMENT_TYPE_COUNT:		{	iError_report(thisCode, cgcInvalidArgumentTypeCountError,	tlInvasive);		break;	}
-			case _ERROR_VARIABLE_NOT_FOUND:					{	iError_report(thisCode, cgcVariableNotFoundError,			tlInvasive);		break;	}
-			case _ERROR_ALIAS_NOT_FOUND:					{	iError_report(thisCode, cgcAliasNotFoundError,				tlInvasive);		break;	}
-			case _ERROR_INVALID_WORK_AREA:					{	iError_report(thisCode, cgcInvalidWorkArea,					tlInvasive);		break;	}
-			case _ERROR_ALIAS_ALREADY_IN_USE:				{	iError_report(thisCode, cgcAliasAlreadyInUse,				tlInvasive);		break;	}
-			case _ERROR_PARENTHESIS_EXPECTED:				{	iError_report(thisCode, cgcParenthesisExpected,				tlInvasive);		break;	}
-			case _ERROR_MISSING_PARAMETER:					{	iError_report(thisCode, cgcMissingParameter,				tlInvasive);		break;	}
+			case _ERROR_OUT_OF_MEMORY:						{	iError_report(cgcOutOfMemory,						tlInvasive);		break;	}
+			case _ERROR_UNEXPECTED_COMMAND:					{	iError_report(cgcUnexpectedCommand,				tlInvasive);		break;	}
+			case _ERROR_CONTEXT_HAS_CHANGED:				{	iError_report(cgcContextHasChanged,				tlInvasive);		break;	}
+			case _ERROR_FULL_RECOMPILE_REQUIRED:			{	iError_report(cgcFullRecompileRequired,			tlInvasive);		break;	}
+			case _ERROR_NOT_A_VARIABLE:						{	iError_report(cgcNotAVariable,					tlInvasive);		break;	}
+			case _ERROR_NUMERIC_OVERFLOW:					{	iError_report(cgcNumericOverflow,					tlInvasive);		break;	}
+			case _ERROR_NOT_NUMERIC:						{	iError_report(cgcNotNumeric,						tlInvasive);		break;	}
+			case _ERROR_EMPTY_STRING:						{	iError_report(cgcEmptyString,						tlInvasive);		break;	}
+			case _ERROR_SYNTAX:								{	iError_report(cgcSyntaxError,						tlInvasive);		break;	}
+			case _ERROR_UNRECOGNIZED_PARAMETER:				{	iError_report(cgcUnrecognizedParameter,			tlInvasive);		break;	}
+			case _ERROR_OUT_OF_RANGE:						{	iError_report(cgcOutOfRange,						tlInvasive);		break;	}
+			case _ERROR_COMMA_EXPECTED:						{	iError_report(cgcCommaExpected,					tlInvasive);		break;	}
+			case _ERROR_TOO_MANY_PARAMETERS:				{	iError_report(cgcTooManyParameters,				tlInvasive);		break;	}
+			case _ERROR_DATA_TYPE_MISMATCH:					{	iError_report(cgcDataTypeMismatch,				tlInvasive);		break;	}
+			case _ERROR_FEATURE_NOT_AVAILABLE:				{	iError_report(cgcFeatureNotAvailable,				tlInvasive);		break;	}
+			case _ERROR_P1_IS_INCORRECT:					{	iError_report(cgcP1IsIncorrect,					tlInvasive);		break;	}
+			case _ERROR_P2_IS_INCORRECT:					{	iError_report(cgcP2IsIncorrect,					tlInvasive);		break;	}
+			case _ERROR_P3_IS_INCORRECT:					{	iError_report(cgcP3IsIncorrect,					tlInvasive);		break;	}
+			case _ERROR_P4_IS_INCORRECT:					{	iError_report(cgcP4IsIncorrect,					tlInvasive);		break;	}
+			case _ERROR_P5_IS_INCORRECT:					{	iError_report(cgcP5IsIncorrect,					tlInvasive);		break;	}
+			case _ERROR_P6_IS_INCORRECT:					{	iError_report(cgcP6IsIncorrect,					tlInvasive);		break;	}
+			case _ERROR_P7_IS_INCORRECT:					{	iError_report(cgcP7IsIncorrect,					tlInvasive);		break;	}
+			case _ERROR_INTERNAL_ERROR:						{	iError_report(cgcInternalError,					tlInvasive);		break;	}
+			case _ERROR_INVALID_ARGUMENT_TYPE_COUNT:		{	iError_report(cgcInvalidArgumentTypeCountError,	tlInvasive);		break;	}
+			case _ERROR_VARIABLE_NOT_FOUND:					{	iError_report(cgcVariableNotFoundError,			tlInvasive);		break;	}
+			case _ERROR_ALIAS_NOT_FOUND:					{	iError_report(cgcAliasNotFoundError,				tlInvasive);		break;	}
+			case _ERROR_INVALID_WORK_AREA:					{	iError_report(cgcInvalidWorkArea,					tlInvasive);		break;	}
+			case _ERROR_ALIAS_ALREADY_IN_USE:				{	iError_report(cgcAliasAlreadyInUse,				tlInvasive);		break;	}
+			case _ERROR_PARENTHESIS_EXPECTED:				{	iError_report(cgcParenthesisExpected,				tlInvasive);		break;	}
+			case _ERROR_MISSING_PARAMETER:					{	iError_report(cgcMissingParameter,				tlInvasive);		break;	}
 
-			case _ERROR_DBF_UNABLE_TO_OPEN_TABLE:			{	iError_report(thisCode, cgcDbfUnableToOpenTable,			tlInvasive);		break;	}
-			case _ERROR_DBF_WORK_AREA_ALREADY_IN_USE:		{	iError_report(thisCode, cgcDbfWorkAreaAlreadyInUse,			tlInvasive);		break;	}
-			case _ERROR_DBF_ERROR_OPENING_DBC:				{	iError_report(thisCode, cgcDbfErrorOpeningDbc,				tlInvasive);		break;	}
-			case _ERROR_DBF_WORK_AREA_NOT_IN_USE:			{	iError_report(thisCode, cgcDbfWorkAreaNotInUse,				tlInvasive);		break;	}
-			case _ERROR_DBF_ERROR_READING_HEADER1:			{	iError_report(thisCode, cgcDbfErrorReadingHeader1,			tlInvasive);		break;	}
-			case _ERROR_DBF_UNKNOWN_TABLE_TYPE:				{	iError_report(thisCode, cgcDbfUnknownTableType,				tlInvasive);		break;	}
-			case _ERROR_DBF_MEMORY_ALLOCATION:				{	iError_report(thisCode, cgcDbfMemoryAllocation,				tlInvasive);		break;	}
-			case _ERROR_DBF_ERROR_READING_HEADER2:			{	iError_report(thisCode, cgcDbfErrorReadingHeader2,			tlInvasive);		break;	}
-			case _ERROR_DBF_TABLE_NAME_TOO_LONG:			{	iError_report(thisCode, cgcDbfTableNameTooLong,				tlInvasive);		break;	}
-			case _ERROR_DBF_MEMORY_ROW:						{	iError_report(thisCode, cgcDbfMemoryRow,					tlInvasive);		break;	}
-			case _ERROR_DBF_MEMORY_ORIGINAL:				{	iError_report(thisCode, cgcDbfMemoryOriginal,				tlInvasive);		break;	}
-			case _ERROR_DBF_MEMORY_INDEX:					{	iError_report(thisCode, cgcDbfMemoryIndex,					tlInvasive);		break;	}
-			case _ERROR_DBF_INVALID_WORK_AREA:				{	iError_report(thisCode, cgcDbfInvalidWorkArea,				tlInvasive);		break;	}
-			case _ERROR_DBF_NO_MORE_WORK_AREAS:				{	iError_report(thisCode, cgcDbfNoMoreWorkAreas,				tlInvasive);		break;	}
-			case _ERROR_DBF_LOCKING:						{	iError_report(thisCode, cgcDbfLocking,						tlInvasive);		break;	}
-			case _ERROR_DBF_WRITING:						{	iError_report(thisCode, cgcDbfWriting,						tlInvasive);		break;	}
-			case _ERROR_DBF_SEEKING:						{	iError_report(thisCode, cgcDbfSeeking,						tlInvasive);		break;	}
-			case _ERROR_DBF_NO_DATA:						{	iError_report(thisCode, cgcDbfNoData,						tlInvasive);		break;	}
-			case _ERROR_DBF_UNKNOWN_MEMO_FORMAT:			{	iError_report(thisCode, cgcDbfUnknownMemoFormat,			tlInvasive);		break;	}
+			case _ERROR_DBF_UNABLE_TO_OPEN_TABLE:			{	iError_report(cgcDbfUnableToOpenTable,			tlInvasive);		break;	}
+			case _ERROR_DBF_WORK_AREA_ALREADY_IN_USE:		{	iError_report(cgcDbfWorkAreaAlreadyInUse,			tlInvasive);		break;	}
+			case _ERROR_DBF_ERROR_OPENING_DBC:				{	iError_report(cgcDbfErrorOpeningDbc,				tlInvasive);		break;	}
+			case _ERROR_DBF_WORK_AREA_NOT_IN_USE:			{	iError_report(cgcDbfWorkAreaNotInUse,				tlInvasive);		break;	}
+			case _ERROR_DBF_ERROR_READING_HEADER1:			{	iError_report(cgcDbfErrorReadingHeader1,			tlInvasive);		break;	}
+			case _ERROR_DBF_UNKNOWN_TABLE_TYPE:				{	iError_report(cgcDbfUnknownTableType,				tlInvasive);		break;	}
+			case _ERROR_DBF_MEMORY_ALLOCATION:				{	iError_report(cgcDbfMemoryAllocation,				tlInvasive);		break;	}
+			case _ERROR_DBF_ERROR_READING_HEADER2:			{	iError_report(cgcDbfErrorReadingHeader2,			tlInvasive);		break;	}
+			case _ERROR_DBF_TABLE_NAME_TOO_LONG:			{	iError_report(cgcDbfTableNameTooLong,				tlInvasive);		break;	}
+			case _ERROR_DBF_MEMORY_ROW:						{	iError_report(cgcDbfMemoryRow,					tlInvasive);		break;	}
+			case _ERROR_DBF_MEMORY_ORIGINAL:				{	iError_report(cgcDbfMemoryOriginal,				tlInvasive);		break;	}
+			case _ERROR_DBF_MEMORY_INDEX:					{	iError_report(cgcDbfMemoryIndex,					tlInvasive);		break;	}
+			case _ERROR_DBF_INVALID_WORK_AREA:				{	iError_report(cgcDbfInvalidWorkArea,				tlInvasive);		break;	}
+			case _ERROR_DBF_NO_MORE_WORK_AREAS:				{	iError_report(cgcDbfNoMoreWorkAreas,				tlInvasive);		break;	}
+			case _ERROR_DBF_LOCKING:						{	iError_report(cgcDbfLocking,						tlInvasive);		break;	}
+			case _ERROR_DBF_WRITING:						{	iError_report(cgcDbfWriting,						tlInvasive);		break;	}
+			case _ERROR_DBF_SEEKING:						{	iError_report(cgcDbfSeeking,						tlInvasive);		break;	}
+			case _ERROR_DBF_NO_DATA:						{	iError_report(cgcDbfNoData,						tlInvasive);		break;	}
+			case _ERROR_DBF_UNKNOWN_MEMO_FORMAT:			{	iError_report(cgcDbfUnknownMemoFormat,			tlInvasive);		break;	}
 
-			case _ERROR_CONFLICTING_PARAMETERS:				{	iError_report(thisCode, cgcConflictingParameters,			tlInvasive);		break;	}
-			case _ERROR_PARAMETER_IS_INCORRECT:				{	iError_report(thisCode, cgcParameterIsIncorrect,			tlInvasive);		break;	}
-			case _ERROR_TABLE_ALREADY_IN_USE:				{	iError_report(thisCode, cgcTableAlreadyInUse,				tlInvasive);		break;	}
-			case _ERROR_PARAMETER_TOO_LONG:					{	iError_report(thisCode, cgcParameterTooLong,				tlInvasive);		break;	}
-			case _ERROR_UNABLE_TO_OPEN_DBC:					{	iError_report(thisCode, cgcUnableToOpenDbc,					tlInvasive);		break;	}
-			case _ERROR_DIVISION_BY_ZERO:					{	iError_report(thisCode, cgcDivisionByZero,					tlInvasive);		break;	}
-			case _ERROR_CANNOT_BE_NEGATIVE:					{	iError_report(thisCode, cgcCannotBeNegative,				tlInvasive);		break;	}
-			case _ERROR_CANNOT_BE_ZERO_OR_NEGATIVE:			{	iError_report(thisCode, cgcCannotBeZeroOrNegative,			tlInvasive);		break;	}
-			case _ERROR_UNABLE_TO_AUTOVALIDATE:				{	iError_report(thisCode, cgcUnableToAutoValidate,			tlInvasive);		break;	}
-			case _ERROR_DBF_GENERAL_ERROR:					{	iError_report(thisCode, cgcGeneralErrorDbf,					tlInvasive);		break;	}
-			case _ERROR_CANNOT_BE_ZERO:						{	iError_report(thisCode, cgcCannotBeZero,					tlInvasive);		break;	}
-			case _ERROR_MUST_BE_LOGICAL:					{	iError_report(thisCode, cgcMustBeLogical,					tlInvasive);		break;	}
-			case _ERROR_PARAMETER_MUST_BE_8_16_32_64:		{	iError_report(thisCode, cgcParameterMustBe8_16_32_64,		tlInvasive);		break;	}
-			case _ERROR_TOO_BIG_FOR_TARGET:					{	iError_report(thisCode, cgcTooBigForTarget,					tlInvasive);		break;	}
-			case _ERROR_NO_INDEX_IS_LOADED:					{	iError_report(thisCode, cgcNoIndexIsLoaded,					tlInvasive);		break;	}
-			case _ERROR_INVALID_INDEX_TAG:					{	iError_report(thisCode, cgcInvalidIndextag,					tlInvasive);		break;	}
-			case _ERROR_UNABLE_TO_SAVE:						{	iError_report(thisCode, cgcUnableToSave,					tlInvasive);		break;	}
-			case _ERROR_INVALID_PARAMETERS:					{	iError_report(thisCode, cgcInvalidParameters,				tlInvasive);		break;	}
-			case _ERROR_PARAMETER_MUST_BE_1:				{	iError_report(thisCode, cgcParameterMustBeOne,				tlInvasive);		break;	}
-			case _ERROR_INVALID_CORRUPT_NEEDS_REBUILT:		{	iError_report(thisCode, cgcIndexCorruptNeedsRebuilt,		tlInvasive);		break;	}
-			case _ERROR_UNABLE_TO_LOCK_FOR_WRITE:			{	iError_report(thisCode, cgcUnableToLockForWrite,			tlInvasive);		break;	}
-			case _ERROR_UNABLE_TO_LOCK_FOR_READ:			{	iError_report(thisCode, cgcUnableToLockForRead,				tlInvasive);		break;	}
-			case _ERROR_UNABLE_TO_INITIALIZE:				{	iError_report(thisCode, cgcUnableToInitialize,				tlInvasive);		break;	}
-			case _ERROR_UNKNOWN_FUNCTION:					{	iError_report(thisCode, cgcUnknownFunction,					tlInvasive);		break;	}
-			case _ERROR_DLL_NOT_FOUND:						{	iError_report(thisCode, cgcDllNotFound,						tlInvasive);		break;	}
-			case _ERROR_FUNCTION_NOT_FOUND:					{	iError_report(thisCode, cgcFunctionNotFound,				tlInvasive);		break;	}
-			case _ERROR_VARIABLE_IS_FIXED:					{	iError_report(thisCode, cgcVariableIsFixed,					tlInvasive);		break;	}
-			case _ERROR_FEATURE_NOT_YET_CODED:				{	iError_report(thisCode, cgcFeatureNotYetCoded,				tlInvasive);		break;	}
+			case _ERROR_CONFLICTING_PARAMETERS:				{	iError_report(cgcConflictingParameters,			tlInvasive);		break;	}
+			case _ERROR_PARAMETER_IS_INCORRECT:				{	iError_report(cgcParameterIsIncorrect,			tlInvasive);		break;	}
+			case _ERROR_TABLE_ALREADY_IN_USE:				{	iError_report(cgcTableAlreadyInUse,				tlInvasive);		break;	}
+			case _ERROR_PARAMETER_TOO_LONG:					{	iError_report(cgcParameterTooLong,				tlInvasive);		break;	}
+			case _ERROR_UNABLE_TO_OPEN_DBC:					{	iError_report(cgcUnableToOpenDbc,					tlInvasive);		break;	}
+			case _ERROR_DIVISION_BY_ZERO:					{	iError_report(cgcDivisionByZero,					tlInvasive);		break;	}
+			case _ERROR_CANNOT_BE_NEGATIVE:					{	iError_report(cgcCannotBeNegative,				tlInvasive);		break;	}
+			case _ERROR_CANNOT_BE_ZERO_OR_NEGATIVE:			{	iError_report(cgcCannotBeZeroOrNegative,			tlInvasive);		break;	}
+			case _ERROR_UNABLE_TO_AUTOVALIDATE:				{	iError_report(cgcUnableToAutoValidate,			tlInvasive);		break;	}
+			case _ERROR_DBF_GENERAL_ERROR:					{	iError_report(cgcGeneralErrorDbf,					tlInvasive);		break;	}
+			case _ERROR_CANNOT_BE_ZERO:						{	iError_report(cgcCannotBeZero,					tlInvasive);		break;	}
+			case _ERROR_MUST_BE_LOGICAL:					{	iError_report(cgcMustBeLogical,					tlInvasive);		break;	}
+			case _ERROR_PARAMETER_MUST_BE_8_16_32_64:		{	iError_report(cgcParameterMustBe8_16_32_64,		tlInvasive);		break;	}
+			case _ERROR_TOO_BIG_FOR_TARGET:					{	iError_report(cgcTooBigForTarget,					tlInvasive);		break;	}
+			case _ERROR_NO_INDEX_IS_LOADED:					{	iError_report(cgcNoIndexIsLoaded,					tlInvasive);		break;	}
+			case _ERROR_INVALID_INDEX_TAG:					{	iError_report(cgcInvalidIndextag,					tlInvasive);		break;	}
+			case _ERROR_UNABLE_TO_SAVE:						{	iError_report(cgcUnableToSave,					tlInvasive);		break;	}
+			case _ERROR_INVALID_PARAMETERS:					{	iError_report(cgcInvalidParameters,				tlInvasive);		break;	}
+			case _ERROR_PARAMETER_MUST_BE_1:				{	iError_report(cgcParameterMustBeOne,				tlInvasive);		break;	}
+			case _ERROR_INVALID_CORRUPT_NEEDS_REBUILT:		{	iError_report(cgcIndexCorruptNeedsRebuilt,		tlInvasive);		break;	}
+			case _ERROR_UNABLE_TO_LOCK_FOR_WRITE:			{	iError_report(cgcUnableToLockForWrite,			tlInvasive);		break;	}
+			case _ERROR_UNABLE_TO_LOCK_FOR_READ:			{	iError_report(cgcUnableToLockForRead,				tlInvasive);		break;	}
+			case _ERROR_UNABLE_TO_INITIALIZE:				{	iError_report(cgcUnableToInitialize,				tlInvasive);		break;	}
+			case _ERROR_UNKNOWN_FUNCTION:					{	iError_report(cgcUnknownFunction,					tlInvasive);		break;	}
+			case _ERROR_DLL_NOT_FOUND:						{	iError_report(cgcDllNotFound,						tlInvasive);		break;	}
+			case _ERROR_FUNCTION_NOT_FOUND:					{	iError_report(cgcFunctionNotFound,				tlInvasive);		break;	}
+			case _ERROR_VARIABLE_IS_FIXED:					{	iError_report(cgcVariableIsFixed,					tlInvasive);		break;	}
+			case _ERROR_FEATURE_NOT_YET_CODED:				{	iError_report(cgcFeatureNotYetCoded,				tlInvasive);		break;	}
 
 		}
 
@@ -265,7 +265,7 @@
 // Called to signal an error if the f32 value is outside the valid range for the target type
 //
 //////
-	f32 iErrorCandidate_signalOutOfRange_f32(SThisCode* thisCode, SErrorInfo* ei, f32 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
+	f32 iErrorCandidate_signalOutOfRange_f32(SErrorInfo* ei, f32 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
 	{
 		bool lError, lSignal;
 
@@ -365,7 +365,7 @@
 		// Should the error be signaled
 		//////
 			if (lSignal)
-				iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				iError_signal(_ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
 
 
 		//////////
@@ -382,7 +382,7 @@
 // Called to signal an error if the f64 value is outside the valid range for the target type
 //
 //////
-	f64 iErrorCandidate_signalOutOfRange_f64(SThisCode* thisCode, SErrorInfo* ei, f64 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
+	f64 iErrorCandidate_signalOutOfRange_f64(SErrorInfo* ei, f64 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
 	{
 		bool lError, lSignal;
 
@@ -482,7 +482,7 @@
 		// Should the error be signaled
 		//////
 			if (lSignal)
-				iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				iError_signal(_ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
 
 
 		//////////
@@ -500,7 +500,7 @@
 // Called to signal an error if the u16 value is outside the valid range for the target type
 //
 //////
-	u8 iErrorCandidate_signalOutOfRange_u8(SThisCode* thisCode, SErrorInfo* ei, u8 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
+	u8 iErrorCandidate_signalOutOfRange_u8(SErrorInfo* ei, u8 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
 	{
 		bool lError, lSignal;
 
@@ -537,7 +537,7 @@
 		// Should the error be signaled
 		//////
 			if (lSignal)
-				iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				iError_signal(_ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
 
 
 		//////////
@@ -555,7 +555,7 @@
 // Called to signal an error if the s16 value is outside the valid range for the target type
 //
 //////
-	s16 iErrorCandidate_signalOutOfRange_s16(SThisCode* thisCode, SErrorInfo* ei, s16 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
+	s16 iErrorCandidate_signalOutOfRange_s16(SErrorInfo* ei, s16 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
 	{
 		bool lError, lSignal;
 
@@ -601,7 +601,7 @@
 		// Should the error be signaled
 		//////
 			if (lSignal)
-				iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				iError_signal(_ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
 
 
 		//////////
@@ -619,7 +619,7 @@
 // Called to signal an error if the u16 value is outside the valid range for the target type
 //
 //////
-	u16 iErrorCandidate_signalOutOfRange_u16(SThisCode* thisCode, SErrorInfo* ei, u16 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
+	u16 iErrorCandidate_signalOutOfRange_u16(SErrorInfo* ei, u16 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
 	{
 		bool lError, lSignal;
 
@@ -674,7 +674,7 @@
 		// Should the error be signaled
 		//////
 			if (lSignal)
-				iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				iError_signal(_ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
 
 
 		//////////
@@ -692,7 +692,7 @@
 // Called to signal an error if the s32 value is outside the valid range for the target type
 //
 //////
-	s32 iErrorCandidate_signalOutOfRange_s32(SThisCode* thisCode, SErrorInfo* ei, s32 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
+	s32 iErrorCandidate_signalOutOfRange_s32(SErrorInfo* ei, s32 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
 	{
 		bool lError, lSignal;
 
@@ -756,7 +756,7 @@
 		// Should the error be signaled
 		//////
 			if (lSignal)
-				iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				iError_signal(_ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
 
 
 		//////////
@@ -774,7 +774,7 @@
 // Called to signal an error if the s32 value is outside the valid range for the target type
 //
 //////
-	u32 iErrorCandidate_signalOutOfRange_u32(SThisCode* thisCode, SErrorInfo* ei, u32 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
+	u32 iErrorCandidate_signalOutOfRange_u32(SErrorInfo* ei, u32 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
 	{
 		bool lError, lSignal;
 
@@ -838,7 +838,7 @@
 		// Should the error be signaled
 		//////
 			if (lSignal)
-				iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				iError_signal(_ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
 
 
 		//////////
@@ -856,7 +856,7 @@
 // Called to signal an error if the s64 value is outside the valid range for the target type
 //
 //////
-	s64 iErrorCandidate_signalOutOfRange_s64(SThisCode* thisCode, SErrorInfo* ei, s64 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
+	s64 iErrorCandidate_signalOutOfRange_s64(SErrorInfo* ei, s64 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
 	{
 		bool lError, lSignal;
 
@@ -938,7 +938,7 @@
 		// Should the error be signaled
 		//////
 			if (lSignal)
-				iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				iError_signal(_ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
 
 
 		//////////
@@ -956,7 +956,7 @@
 // Called to signal an error if the s64 value is outside the valid range for the target type
 //
 //////
-	u64 iErrorCandidate_signalOutOfRange_u64(SThisCode* thisCode, SErrorInfo* ei, u64 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
+	u64 iErrorCandidate_signalOutOfRange_u64(SErrorInfo* ei, u64 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
 	{
 		bool lError, lSignal;
 
@@ -1047,7 +1047,7 @@
 		// Should the error be signaled
 		//////
 			if (lSignal)
-				iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				iError_signal(_ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
 
 
 		//////////
@@ -1065,7 +1065,7 @@
 // Called to signal an error if the numeric value is outside the valid range for the target type
 //
 //////
-	f64 iErrorCandidate_signalOutOfRange_numeric(SThisCode* thisCode, SErrorInfo* ei, SDatum* value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
+	f64 iErrorCandidate_signalOutOfRange_numeric(SErrorInfo* ei, SDatum* value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo)
 	{
 		f64	lfValue;
 		s8	buffer[64];
@@ -1191,7 +1191,7 @@
 		// Should the error be signaled
 		//////
 			if (lSignal)
-				iError_signal(thisCode, _ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
+				iError_signal(_ERROR_OUT_OF_RANGE, compRelated, tlInvasive, tcExtraInfo, false);
 
 
 		//////////
@@ -1296,7 +1296,7 @@
 //    The sum of p1 + p2
 //
 //////
-	void function_concatenate(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_concatenate(SFunctionParams* rpar)
 	{
 		SVariable*	varString1	= rpar->ip[0];
 		SVariable*	varString2	= rpar->ip[1];
@@ -1309,7 +1309,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString1) || !iVariable_isTypeCharacter(varString1))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varString1), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varString1), false);
 				return;
 			}
 
@@ -1319,7 +1319,7 @@
 		//////
 			if (!iVariable_isValid(varString2) || !iVariable_isTypeCharacter(varString2))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varString2), false);
+				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varString2), false);
 				return;
 			}
 
@@ -1327,10 +1327,10 @@
 		//////////
 		// Allocate enough space for the assemblage
 		//////
-			result = iVariable_create(thisCode, _VAR_TYPE_CHARACTER, NULL, true);
+			result = iVariable_create(_VAR_TYPE_CHARACTER, NULL, true);
 			if (!result)
 			{
-				iError_report(thisCode, cgcInternalError, false);
+				iError_report(cgcInternalError, false);
 				return;
 			}
 
@@ -1375,7 +1375,7 @@
 //    The sum of p1 + p2
 //
 //////
-	void function_add(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_add(SFunctionParams* rpar)
 	{
 		SVariable*	varNum1	= rpar->ip[0];
 		SVariable*	varNum2	= rpar->ip[1];
@@ -1392,7 +1392,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varNum1) || !iVariable_isTypeNumeric(varNum1))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNum1), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varNum1), false);
 				return;
 			}
 
@@ -1402,7 +1402,7 @@
 		//////
 			if (!iVariable_isValid(varNum2) || !iVariable_isTypeNumeric(varNum2))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNum2), false);
+				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varNum2), false);
 				return;
 			}
 
@@ -1413,25 +1413,25 @@
 			if (iVariable_isTypeFloatingPoint(varNum1))
 			{
 				// p1 is floating point, meaning the result will be too
-				lfValue1 = iiVariable_getAs_f64(thisCode, varNum1, false, &error, &errorNum);
+				lfValue1 = iiVariable_getAs_f64(varNum1, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum1), false);
+					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum1), false);
 					return;
 				}
 
 				// Create our floating point result
-				result = iVariable_create(thisCode, _VAR_TYPE_F64, NULL, true);
+				result = iVariable_create(_VAR_TYPE_F64, NULL, true);
 				if (result)
 				{
 					// Grab p2
 					if (iVariable_isTypeFloatingPoint(varNum2))
 					{
 						// p2 is floating point
-						lfValue2 = iiVariable_getAs_f64(thisCode, varNum2, false, &error, &errorNum);
+						lfValue2 = iiVariable_getAs_f64(varNum2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum2), false);
+							iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
 							return;
 						}
 
@@ -1440,10 +1440,10 @@
 
 					} else  {
 						// p2 is not floating point, so we'll get it as an integer
-						lnValue2 = iiVariable_getAs_s64(thisCode, varNum2, false, &error, &errorNum);
+						lnValue2 = iiVariable_getAs_s64(varNum2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum2), false);
+							iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
 							return;
 						}
 
@@ -1454,10 +1454,10 @@
 
 			} else {
 				// p1 is integer, result is determined by what p2 is, either integer or floating point
-				lnValue1 = iiVariable_getAs_s64(thisCode, varNum1, false, &error, &errorNum);
+				lnValue1 = iiVariable_getAs_s64(varNum1, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum1), false);
+					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum1), false);
 					return;
 				}
 
@@ -1465,29 +1465,29 @@
 				if (iVariable_isTypeFloatingPoint(varNum2))
 				{
 					// p2 is floating point
-					lfValue2 = iiVariable_getAs_f64(thisCode, varNum2, false, &error, &errorNum);
+					lfValue2 = iiVariable_getAs_f64(varNum2, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum2), false);
+						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
 						return;
 					}
 
 					// Create our floating point result
-					result = iVariable_create(thisCode, _VAR_TYPE_F64, NULL, true);
+					result = iVariable_create(_VAR_TYPE_F64, NULL, true);
 					if (result)
 						*(f64*)result->value.data = (f64)lnValue1 + lfValue2;
 
 				} else  {
 					// p2 is not floating point, so we'll get it as an integer
-					lnValue2 = iiVariable_getAs_s64(thisCode, varNum2, false, &error, &errorNum);
+					lnValue2 = iiVariable_getAs_s64(varNum2, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum2), false);
+						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
 						return;
 					}
 
 					// Create our floating point result
-					result = iVariable_create(thisCode, _VAR_TYPE_S64, NULL, true);
+					result = iVariable_create(_VAR_TYPE_S64, NULL, true);
 					if (result)
 						*(s64*)result->value.data = lnValue1 + lnValue2;
 				}
@@ -1498,7 +1498,7 @@
 		// Are we good?
 		//////
 			if (!result)
-				iError_report(thisCode, cgcInternalError, false);
+				iError_report(cgcInternalError, false);
 
 
 		//////////
@@ -1534,7 +1534,7 @@
 //    The sum of p1 - p2
 //
 //////
-	void function_sub(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_sub(SFunctionParams* rpar)
 	{
 		SVariable*	varNum1	= rpar->ip[0];
 		SVariable*	varNum2	= rpar->ip[1];
@@ -1551,7 +1551,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varNum1) || !iVariable_isTypeNumeric(varNum1))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNum1), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varNum1), false);
 				return;
 			}
 
@@ -1561,7 +1561,7 @@
 		//////
 			if (!iVariable_isValid(varNum2) || !iVariable_isTypeNumeric(varNum2))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNum2), false);
+				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varNum2), false);
 				return;
 			}
 
@@ -1572,25 +1572,25 @@
 			if (iVariable_isTypeFloatingPoint(varNum1))
 			{
 				// p1 is floating point, meaning the result will be too
-				lfValue1 = iiVariable_getAs_f64(thisCode, varNum1, false, &error, &errorNum);
+				lfValue1 = iiVariable_getAs_f64(varNum1, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum1), false);
+					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum1), false);
 					return;
 				}
 
 				// Create our floating point result
-				result = iVariable_create(thisCode, _VAR_TYPE_F64, NULL, true);
+				result = iVariable_create(_VAR_TYPE_F64, NULL, true);
 				if (result)
 				{
 					// Grab p2
 					if (iVariable_isTypeFloatingPoint(varNum2))
 					{
 						// p2 is floating point
-						lfValue2 = iiVariable_getAs_f64(thisCode, varNum2, false, &error, &errorNum);
+						lfValue2 = iiVariable_getAs_f64(varNum2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum2), false);
+							iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
 							return;
 						}
 
@@ -1599,10 +1599,10 @@
 
 					} else  {
 						// p2 is not floating point, so we'll get it as an integer
-						lnValue2 = iiVariable_getAs_s64(thisCode, varNum2, false, &error, &errorNum);
+						lnValue2 = iiVariable_getAs_s64(varNum2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum2), false);
+							iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
 							return;
 						}
 
@@ -1613,10 +1613,10 @@
 
 			} else {
 				// p1 is integer, result is determined by what p2 is, either integer or floating point
-				lnValue1 = iiVariable_getAs_s64(thisCode, varNum1, false, &error, &errorNum);
+				lnValue1 = iiVariable_getAs_s64(varNum1, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum1), false);
+					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum1), false);
 					return;
 				}
 
@@ -1624,29 +1624,29 @@
 				if (iVariable_isTypeFloatingPoint(varNum2))
 				{
 					// p2 is floating point
-					lfValue2 = iiVariable_getAs_f64(thisCode, varNum2, false, &error, &errorNum);
+					lfValue2 = iiVariable_getAs_f64(varNum2, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum2), false);
+						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
 						return;
 					}
 
 					// Create our floating point result
-					result = iVariable_create(thisCode, _VAR_TYPE_F64, NULL, true);
+					result = iVariable_create(_VAR_TYPE_F64, NULL, true);
 					if (result)
 						*(f64*)result->value.data = (f64)lnValue1 - lfValue2;
 
 				} else  {
 					// p2 is not floating point, so we'll get it as an integer
-					lnValue2 = iiVariable_getAs_s64(thisCode, varNum2, false, &error, &errorNum);
+					lnValue2 = iiVariable_getAs_s64(varNum2, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum2), false);
+						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
 						return;
 					}
 
 					// Create our floating point result
-					result = iVariable_create(thisCode, _VAR_TYPE_S64, NULL, true);
+					result = iVariable_create(_VAR_TYPE_S64, NULL, true);
 					if (result)
 						*(s64*)result->value.data = lnValue1 - lnValue2;
 				}
@@ -1657,7 +1657,7 @@
 		// Are we good?
 		//////
 			if (!result)
-				iError_report(thisCode, cgcInternalError, false);
+				iError_report(cgcInternalError, false);
 
 
 		//////////
@@ -1693,7 +1693,7 @@
 //    The sum of p1 * p2
 //
 //////
-	void function_mul(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_mul(SFunctionParams* rpar)
 	{
 		SVariable*	varNum1	= rpar->ip[0];
 		SVariable*	varNum2	= rpar->ip[1];
@@ -1710,7 +1710,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varNum1) || !iVariable_isTypeNumeric(varNum1))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNum1), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varNum1), false);
 				return;
 			}
 
@@ -1720,7 +1720,7 @@
 		//////
 			if (!iVariable_isValid(varNum2) || !iVariable_isTypeNumeric(varNum2))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNum2), false);
+				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varNum2), false);
 				return;
 			}
 
@@ -1731,25 +1731,25 @@
 			if (iVariable_isTypeFloatingPoint(varNum1))
 			{
 				// p1 is floating point, meaning the result will be too
-				lfValue1 = iiVariable_getAs_f64(thisCode, varNum1, false, &error, &errorNum);
+				lfValue1 = iiVariable_getAs_f64(varNum1, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum1), false);
+					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum1), false);
 					return;
 				}
 
 				// Create our floating point result
-				result = iVariable_create(thisCode, _VAR_TYPE_F64, NULL, true);
+				result = iVariable_create(_VAR_TYPE_F64, NULL, true);
 				if (result)
 				{
 					// Grab p2
 					if (iVariable_isTypeFloatingPoint(varNum2))
 					{
 						// p2 is floating point
-						lfValue2 = iiVariable_getAs_f64(thisCode, varNum2, false, &error, &errorNum);
+						lfValue2 = iiVariable_getAs_f64(varNum2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum2), false);
+							iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
 							return;
 						}
 
@@ -1758,10 +1758,10 @@
 
 					} else  {
 						// p2 is not floating point, so we'll get it as an integer
-						lnValue2 = iiVariable_getAs_s64(thisCode, varNum2, false, &error, &errorNum);
+						lnValue2 = iiVariable_getAs_s64(varNum2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum2), false);
+							iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
 							return;
 						}
 
@@ -1772,10 +1772,10 @@
 
 			} else {
 				// p1 is integer, result is determined by what p2 is, either integer or floating point
-				lnValue1 = iiVariable_getAs_s64(thisCode, varNum1, false, &error, &errorNum);
+				lnValue1 = iiVariable_getAs_s64(varNum1, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum1), false);
+					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum1), false);
 					return;
 				}
 
@@ -1783,29 +1783,29 @@
 				if (iVariable_isTypeFloatingPoint(varNum2))
 				{
 					// p2 is floating point
-					lfValue2 = iiVariable_getAs_f64(thisCode, varNum2, false, &error, &errorNum);
+					lfValue2 = iiVariable_getAs_f64(varNum2, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum2), false);
+						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
 						return;
 					}
 
 					// Create our floating point result
-					result = iVariable_create(thisCode, _VAR_TYPE_F64, NULL, true);
+					result = iVariable_create(_VAR_TYPE_F64, NULL, true);
 					if (result)
 						*(f64*)result->value.data = (f64)lnValue1 * lfValue2;
 
 				} else  {
 					// p2 is not floating point, so we'll get it as an integer
-					lnValue2 = iiVariable_getAs_s64(thisCode, varNum2, false, &error, &errorNum);
+					lnValue2 = iiVariable_getAs_s64(varNum2, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum2), false);
+						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
 						return;
 					}
 
 					// Create our floating point result
-					result = iVariable_create(thisCode, _VAR_TYPE_S64, NULL, true);
+					result = iVariable_create(_VAR_TYPE_S64, NULL, true);
 					if (result)
 						*(s64*)result->value.data = lnValue1 * lnValue2;
 				}
@@ -1816,7 +1816,7 @@
 		// Are we good?
 		//////
 			if (!result)
-				iError_report(thisCode, cgcInternalError, false);
+				iError_report(cgcInternalError, false);
 
 
 		//////////
@@ -1852,7 +1852,7 @@
 //    The sum of p1 / p2
 //
 //////
-	void function_div(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_div(SFunctionParams* rpar)
 	{
 		SVariable*	varNum1	= rpar->ip[0];
 		SVariable*	varNum2	= rpar->ip[1];
@@ -1869,7 +1869,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varNum1) || !iVariable_isTypeNumeric(varNum1))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNum1), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varNum1), false);
 				return;
 			}
 
@@ -1879,7 +1879,7 @@
 		//////
 			if (!iVariable_isValid(varNum2) || !iVariable_isTypeNumeric(varNum2))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNum2), false);
+				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varNum2), false);
 				return;
 			}
 
@@ -1887,10 +1887,10 @@
 		//////////
 		// Parameter 2 cannot be 0
 		//////
-			lfValue1 = iiVariable_getAs_f64(thisCode, varNum2, false, &error, &errorNum);
+			lfValue1 = iiVariable_getAs_f64(varNum2, false, &error, &errorNum);
 			if (lfValue1 == 0.0 || error)
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNum2), false);
+				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varNum2), false);
 				return;
 			}
 
@@ -1901,25 +1901,25 @@
 			if (iVariable_isTypeFloatingPoint(varNum1))
 			{
 				// p1 is floating point, meaning the result will be too
-				lfValue1 = iiVariable_getAs_f64(thisCode, varNum1, false, &error, &errorNum);
+				lfValue1 = iiVariable_getAs_f64(varNum1, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum1), false);
+					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum1), false);
 					return;
 				}
 
 				// Create our floating point result
-				result = iVariable_create(thisCode, _VAR_TYPE_F64, NULL, true);
+				result = iVariable_create(_VAR_TYPE_F64, NULL, true);
 				if (result)
 				{
 					// Grab p2
 					if (iVariable_isTypeFloatingPoint(varNum2))
 					{
 						// p2 is floating point
-						lfValue2 = iiVariable_getAs_f64(thisCode, varNum2, false, &error, &errorNum);
+						lfValue2 = iiVariable_getAs_f64(varNum2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum2), false);
+							iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
 							return;
 						}
 
@@ -1928,10 +1928,10 @@
 
 					} else  {
 						// p2 is not floating point, so we'll get it as an integer
-						lnValue2 = iiVariable_getAs_s64(thisCode, varNum2, false, &error, &errorNum);
+						lnValue2 = iiVariable_getAs_s64(varNum2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum2), false);
+							iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
 							return;
 						}
 
@@ -1942,25 +1942,25 @@
 
 			} else {
 				// p1 is integer, result is determined by what p2 is, either integer or floating point
-				lnValue1 = iiVariable_getAs_s64(thisCode, varNum1, false, &error, &errorNum);
+				lnValue1 = iiVariable_getAs_s64(varNum1, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum1), false);
+					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum1), false);
 					return;
 				}
 
 				// Create our floating point result
-				result = iVariable_create(thisCode, _VAR_TYPE_F64, NULL, true);
+				result = iVariable_create(_VAR_TYPE_F64, NULL, true);
 				if (result)
 				{
 					// Grab p2
 					if (iVariable_isTypeFloatingPoint(varNum2))
 					{
 						// p2 is floating point
-						lfValue2 = iiVariable_getAs_f64(thisCode, varNum2, false, &error, &errorNum);
+						lfValue2 = iiVariable_getAs_f64(varNum2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum2), false);
+							iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
 							return;
 						}
 
@@ -1969,10 +1969,10 @@
 
 					} else  {
 						// p2 is not floating point, so we'll get it as an integer
-						lnValue2 = iiVariable_getAs_s64(thisCode, varNum2, false, &error, &errorNum);
+						lnValue2 = iiVariable_getAs_s64(varNum2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNum2), false);
+							iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
 							return;
 						}
 
@@ -1987,7 +1987,7 @@
 		// Are we good?
 		//////
 			if (!result)
-				iError_report(thisCode, cgcInternalError, false);
+				iError_report(cgcInternalError, false);
 
 
 		//////////
@@ -2019,7 +2019,7 @@
 // Returns:
 //		Nothing, but whatever it is that's being modified may be open for modifying.
 //////
-	void command_clear(SThisCode* thisCode, SComp* compCommand, SFunctionParams* rpar)
+	void command_clear(SComp* compCommand, SFunctionParams* rpar)
 	{
 		SComp*			compClear = compCommand;
 		s32				lnClearLines, lnSaveLines;
@@ -2030,32 +2030,32 @@
 		u32				errorNum;
 
 
-// 		SComp*	compAll				= iComps_findNextBy_iCode(thisCode, compModify, _ICODE_ALL,			NULL);
-// 		SComp*	compClass			= iComps_findNextBy_iCode(thisCode, compModify, _ICODE_CLASS,		NULL);
-// 		SComp*	compClassName		= iComps_getNth(thisCode, compClass, 1);
-// 		SComp*	compClassLib		= iComps_findNextBy_iCode(thisCode, compModify, _ICODE_CLASSLIB,	NULL);
-// 		SComp*	compClassLibName	= iComps_getNth(thisCode, compClassLib, 1);
-		SComp*	compKeep			= iComps_findNextBy_iCode(thisCode, compClear, _ICODE_KEEP,			NULL);
-		SComp*	compKeepCount		= iComps_getNth(thisCode, compKeep, 1);
-		SComp*	compLast			= iComps_findNextBy_iCode(thisCode, compClear, _ICODE_LAST,			NULL);
-		SComp*	compLastCount		= iComps_getNth(thisCode, compLast, 1);
-// 		SComp*	compDebug			= iComps_findNextBy_iCode(thisCode, compModify, _ICODE_DEBUG,		NULL);
-// 		SComp*	compDlls			= iComps_findNextBy_iCode(thisCode, compModify, _ICODE_DLLS,		NULL);
-// 		SComp*	compDllAlias		= iComps_getNth(thisCode, compDlls, 1);
-// 		SComp*	compEvents			= iComps_findNextBy_iCode(thisCode, compModify, _ICODE_EVENTS,		NULL);
-// 		SComp*	compError			= iComps_findNextBy_iCode(thisCode, compModify, _ICODE_ERROR,		NULL);
-// 		SComp*	compFields			= iComps_findNextBy_iCode(thisCode, compModify, _ICODE_FIELDS,		NULL);
-// 		SComp*	compGets			= iComps_findNextBy_iCode(thisCode, compModify, _ICODE_GETS,		NULL);
-// 		SComp*	compMacros			= iComps_findNextBy_iCode(thisCode, compModify, _ICODE_MACROS,		NULL);
-// 		SComp*	compMemory			= iComps_findNextBy_iCode(thisCode, compModify, _ICODE_MEMORY,		NULL);
-// 		SComp*	compMenus			= iComps_findNextBy_iCode(thisCode, compModify, _ICODE_MENUS,		NULL);
-// 		SComp*	compPopups			= iComps_findNextBy_iCode(thisCode, compModify, _ICODE_POPUPS,		NULL);
-// 		SComp*	compProgram			= iComps_findNextBy_iCode(thisCode, compModify, _ICODE_PROGRAM,		NULL);
-// 		SComp*	compPrompt			= iComps_findNextBy_iCode(thisCode, compModify, _ICODE_PROMPT,		NULL);
-// 		SComp*	compRead			= iComps_findNextBy_iCode(thisCode, compModify, _ICODE_READ,		NULL);
-// 		SComp*	compResources		= iComps_findNextBy_iCode(thisCode, compModify, _ICODE_RESOURCES,	NULL);
-// 		SComp*	compTypeahead		= iComps_findNextBy_iCode(thisCode, compModify, _ICODE_TYPEAHEAD,	NULL);
-// 		SComp*	compWindows			= iComps_findNextBy_iCode(thisCode, compModify, _ICODE_WINDOWS,		NULL);
+// 		SComp*	compAll				= iComps_findNextBy_iCode(compModify, _ICODE_ALL,			NULL);
+// 		SComp*	compClass			= iComps_findNextBy_iCode(compModify, _ICODE_CLASS,		NULL);
+// 		SComp*	compClassName		= iComps_getNth(compClass, 1);
+// 		SComp*	compClassLib		= iComps_findNextBy_iCode(compModify, _ICODE_CLASSLIB,	NULL);
+// 		SComp*	compClassLibName	= iComps_getNth(compClassLib, 1);
+		SComp*	compKeep			= iComps_findNextBy_iCode(compClear, _ICODE_KEEP,			NULL);
+		SComp*	compKeepCount		= iComps_getNth(compKeep, 1);
+		SComp*	compLast			= iComps_findNextBy_iCode(compClear, _ICODE_LAST,			NULL);
+		SComp*	compLastCount		= iComps_getNth(compLast, 1);
+// 		SComp*	compDebug			= iComps_findNextBy_iCode(compModify, _ICODE_DEBUG,		NULL);
+// 		SComp*	compDlls			= iComps_findNextBy_iCode(compModify, _ICODE_DLLS,		NULL);
+// 		SComp*	compDllAlias		= iComps_getNth(compDlls, 1);
+// 		SComp*	compEvents			= iComps_findNextBy_iCode(compModify, _ICODE_EVENTS,		NULL);
+// 		SComp*	compError			= iComps_findNextBy_iCode(compModify, _ICODE_ERROR,		NULL);
+// 		SComp*	compFields			= iComps_findNextBy_iCode(compModify, _ICODE_FIELDS,		NULL);
+// 		SComp*	compGets			= iComps_findNextBy_iCode(compModify, _ICODE_GETS,		NULL);
+// 		SComp*	compMacros			= iComps_findNextBy_iCode(compModify, _ICODE_MACROS,		NULL);
+// 		SComp*	compMemory			= iComps_findNextBy_iCode(compModify, _ICODE_MEMORY,		NULL);
+// 		SComp*	compMenus			= iComps_findNextBy_iCode(compModify, _ICODE_MENUS,		NULL);
+// 		SComp*	compPopups			= iComps_findNextBy_iCode(compModify, _ICODE_POPUPS,		NULL);
+// 		SComp*	compProgram			= iComps_findNextBy_iCode(compModify, _ICODE_PROGRAM,		NULL);
+// 		SComp*	compPrompt			= iComps_findNextBy_iCode(compModify, _ICODE_PROMPT,		NULL);
+// 		SComp*	compRead			= iComps_findNextBy_iCode(compModify, _ICODE_READ,		NULL);
+// 		SComp*	compResources		= iComps_findNextBy_iCode(compModify, _ICODE_RESOURCES,	NULL);
+// 		SComp*	compTypeahead		= iComps_findNextBy_iCode(compModify, _ICODE_TYPEAHEAD,	NULL);
+// 		SComp*	compWindows			= iComps_findNextBy_iCode(compModify, _ICODE_WINDOWS,		NULL);
 // 		SComp*	compFilename		= iComps_getNth(compWindows, 1);
 
 		if (compLast)
@@ -2066,11 +2066,11 @@
 				//////////
 				// CLEAR LAST nCount
 				//////
-					var = iEngine_get_variableName_fromComponent(thisCode, compLastCount, &llManufactured, false);
+					var = iEngine_get_variableName_fromComponent(compLastCount, &llManufactured, false);
 					if (!var)
 					{
 						// Unknown parameter
-						iError_reportByNumber(thisCode, _ERROR_UNRECOGNIZED_PARAMETER, compLastCount, false);
+						iError_reportByNumber(_ERROR_UNRECOGNIZED_PARAMETER, compLastCount, false);
 						return;
 					}
 
@@ -2078,10 +2078,10 @@
 				//////////
 				// Find out how many lines
 				//////
-					lnClearLines = iiVariable_getAs_s32(thisCode, var, false, &error, &errorNum);
+					lnClearLines = iiVariable_getAs_s32(var, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, compLastCount, false);
+						iError_reportByNumber(errorNum, compLastCount, false);
 						return;
 					}
 
@@ -2090,7 +2090,7 @@
 				// Clean house
 				//////
 					if (llManufactured)
-						iVariable_delete(thisCode, var, true);
+						iVariable_delete(var, true);
 
 
 				//////////
@@ -2098,7 +2098,7 @@
 				//////
 					if (lnClearLines < 0)
 					{
-						iError_reportByNumber(thisCode, _ERROR_CANNOT_BE_NEGATIVE, compLastCount, false);
+						iError_reportByNumber(_ERROR_CANNOT_BE_NEGATIVE, compLastCount, false);
 						return;
 					}
 
@@ -2114,27 +2114,27 @@
 				memset(&ecb, 0, sizeof(ecb));
 				ecb._callback = (uptr)&iiCommand_clear_last_callback;
 				ecb.extra1 = (uptr)lnClearLines;
-				ecb.extra2 = (uptr)iSEM_renumber(thisCode, screenData, 1);
+				ecb.extra2 = (uptr)iSEM_renumber(screenData, 1);
 
 
 			//////////
 			// Clear
 			//////
-				iSEM_deleteChainWithCallback(thisCode, &screenData, false, &ecb);
+				iSEM_deleteChainWithCallback(&screenData, false, &ecb);
 
 
 			//////////
 			// Count what remains, and set _tally
 			//////
-				iEngine_update_tally(thisCode, iSEM_renumber(thisCode, screenData, 1));
+				iEngine_update_tally(iSEM_renumber(screenData, 1));
 
 
 			//////////
 			// Redraw what remains
 			//////
-				iSEM_navigateToEndLine(thisCode, screenData, _screen);
+				iSEM_navigateToEndLine(screenData, _screen);
 				_screen_editbox->isDirtyRender = true;
-				iWindow_render(NULL, gWinJDebi, false);
+				iWindow_render(gWinJDebi, false);
 
 			//////////
 			// All done
@@ -2149,11 +2149,11 @@
 				//////////
 				// CLEAR KEEP nCount
 				//////
-					var = iEngine_get_variableName_fromComponent(thisCode, compKeepCount, &llManufactured, false);
+					var = iEngine_get_variableName_fromComponent(compKeepCount, &llManufactured, false);
 					if (!var)
 					{
 						// Unknown parameter
-						iError_reportByNumber(thisCode, _ERROR_UNRECOGNIZED_PARAMETER, compKeepCount, false);
+						iError_reportByNumber(_ERROR_UNRECOGNIZED_PARAMETER, compKeepCount, false);
 						return;
 					}
 
@@ -2161,10 +2161,10 @@
 				//////////
 				// Find out how many lines
 				//////
-					lnSaveLines = iiVariable_getAs_s32(thisCode, var, false, &error, &errorNum);
+					lnSaveLines = iiVariable_getAs_s32(var, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, compKeepCount, false);
+						iError_reportByNumber(errorNum, compKeepCount, false);
 						return;
 					}
 
@@ -2173,7 +2173,7 @@
 				// Clean house
 				//////
 					if (llManufactured)
-						iVariable_delete(thisCode, var, true);
+						iVariable_delete(var, true);
 
 
 				//////////
@@ -2181,7 +2181,7 @@
 				//////
 					if (lnSaveLines < 0)
 					{
-						iError_reportByNumber(thisCode, _ERROR_CANNOT_BE_NEGATIVE, compKeepCount, false);
+						iError_reportByNumber(_ERROR_CANNOT_BE_NEGATIVE, compKeepCount, false);
 						return;
 					}
 
@@ -2202,27 +2202,27 @@
 			memset(&ecb, 0, sizeof(ecb));
 			ecb._callback = (uptr)&iiCommand_clear_keep_callback;
 			ecb.extra1 = (uptr)lnSaveLines;
-			ecb.extra2 = (uptr)iSEM_renumber(thisCode, screenData, 1);
+			ecb.extra2 = (uptr)iSEM_renumber(screenData, 1);
 
 
 		//////////
 		// Clear
 		//////
-			iSEM_deleteChainWithCallback(thisCode, &screenData, false, &ecb);
+			iSEM_deleteChainWithCallback(&screenData, false, &ecb);
 
 
 		//////////
 		// Count what remains, and set _tally
 		//////
-			iEngine_update_tally(thisCode, iSEM_renumber(thisCode, screenData, 1));
+			iEngine_update_tally(iSEM_renumber(screenData, 1));
 
 
 		//////////
 		// Redraw what remains
 		//////
-			iSEM_navigateToEndLine(thisCode, screenData, _screen);
+			iSEM_navigateToEndLine(screenData, _screen);
 			_screen_editbox->isDirtyRender = true;
-			iWindow_render(NULL, gWinJDebi, false);
+			iWindow_render(gWinJDebi, false);
 			// All done
 	}
 
@@ -2262,7 +2262,7 @@
 // Returns:
 //		Nothing. The thing being declared has been declared, or there is an error.
 //////
-	void command_declare(SThisCode* thisCode, SComp* compCommand, SFunctionParams* rpar)
+	void command_declare(SComp* compCommand, SFunctionParams* rpar)
 	{
 		SComp*			compDeclare = compCommand;
 
@@ -2287,10 +2287,10 @@
 		//////////
 		// See if we're working with an array definition. The syntax will be: DECLARE laName[quantity] or DECLARE laName(quantity)
 		//////
-			if ((compVar = iComps_getNth(thisCode, compDeclare, 1)) && (compLBracket = iComps_getNth(thisCode, compVar, 1)) && (compLBracket->iCode == _ICODE_BRACKET_LEFT || compLBracket->iCode == _ICODE_PARENTHESIS_LEFT))
+			if ((compVar = iComps_getNth(compDeclare, 1)) && (compLBracket = iComps_getNth(compVar, 1)) && (compLBracket->iCode == _ICODE_BRACKET_LEFT || compLBracket->iCode == _ICODE_PARENTHESIS_LEFT))
 			{
 				// It is of the array structure
-				iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, compVar, false);
+				iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, compVar, false);
 				return;
 
 			}
@@ -2300,11 +2300,11 @@
 		// It might be a DECLARE DLL form
 		//////
 			// DECLARE [return_type] functionName IN WIN32API|dllpathname.dll [ALIAS cName] [type [@]name][,type [@]name][,...][,type [@]name]
-			compAlias		= iComps_findNextBy_iCode(thisCode, compDeclare, _ICODE_ALIAS,			NULL);
-			compIn			= iComps_findNextBy_iCode(thisCode, compDeclare, _ICODE_IN,				NULL);
-			compWin32Api	= iComps_findNextBy_iCode(thisCode, compDeclare, _ICODE_WIN32API,		NULL);
-			compNoPrototype	= iComps_findNextBy_iCode(thisCode, compDeclare, _ICODE_NOPROTOTYPE,	NULL);
-			compVariadic	= iComps_findNextBy_iCode(thisCode, compDeclare, _ICODE_VARIADIC,		NULL);
+			compAlias		= iComps_findNextBy_iCode(compDeclare, _ICODE_ALIAS,			NULL);
+			compIn			= iComps_findNextBy_iCode(compDeclare, _ICODE_IN,				NULL);
+			compWin32Api	= iComps_findNextBy_iCode(compDeclare, _ICODE_WIN32API,		NULL);
+			compNoPrototype	= iComps_findNextBy_iCode(compDeclare, _ICODE_NOPROTOTYPE,	NULL);
+			compVariadic	= iComps_findNextBy_iCode(compDeclare, _ICODE_VARIADIC,		NULL);
 			
 
 		//////////
@@ -2321,10 +2321,10 @@
 		//////////
 		// There should be something after declare
 		//////
-			if (!(compNext = iComps_getNth(thisCode, compDeclare, 1)) || !compIn)
+			if (!(compNext = iComps_getNth(compDeclare, 1)) || !compIn)
 			{
 				// Syntax error
-				iError_reportByNumber(thisCode, _ERROR_SYNTAX, compDeclare, false);
+				iError_reportByNumber(_ERROR_SYNTAX, compDeclare, false);
 				return;
 			}
 
@@ -2333,10 +2333,10 @@
 		// Is it a return type?
 		//////
 			iDatum_duplicate(&returnParam.name, cgc_ret1, sizeof(cgc_ret1) - 1);
-			if (iiComps_validate(thisCode, compNext, &gsCompList_dllTypes[0], gnCompList_dllTypes_length))
+			if (iiComps_validate(compNext, &gsCompList_dllTypes[0], gnCompList_dllTypes_length))
 			{
 				// It is a valid return type
-				compFunctionName = iiCommand_declare_storeParameterType(thisCode, &returnParam, compNext);
+				compFunctionName = iiCommand_declare_storeParameterType(&returnParam, compNext);
 
 			} else {
 				// The function name is next
@@ -2348,10 +2348,10 @@
 		//////////
 		// Is the name valid?
 		//////
-			if (!iiComps_isAlphanumeric(thisCode, compFunctionName))
+			if (!iiComps_isAlphanumeric(compFunctionName))
 			{
 				// Syntax error
-				iError_reportByNumber(thisCode, _ERROR_SYNTAX, compFunctionName, false);
+				iError_reportByNumber(_ERROR_SYNTAX, compFunctionName, false);
 				return;
 			}
 
@@ -2359,8 +2359,8 @@
 		//////////
 		// IN win32api | pathname.dll
 		//////
-			compDllName = iComps_getNth(thisCode, compIn, 1);
-			iComps_combineAdjacent(thisCode, compDllName, _ICODE_ALPHA, _ICAT_GENERIC, &colorSynHi_operator, gsCompList_filenameTypes, gnCompList_filenameTypes_length);
+			compDllName = iComps_getNth(compIn, 1);
+			iComps_combineAdjacent(compDllName, _ICODE_ALPHA, _ICAT_GENERIC, &colorSynHi_operator, gsCompList_filenameTypes, gnCompList_filenameTypes_length);
 
 
 		//////////
@@ -2369,19 +2369,19 @@
 			if (compAlias)
 			{
 				// Get the name after
-				if (!(compAliasName = iComps_getNth(thisCode, compAlias, 1)) || !iiComps_validate(thisCode, compAliasName, gsCompList_alphanumericTypes, gnCompList_alphanumericTypes_length))
+				if (!(compAliasName = iComps_getNth(compAlias, 1)) || !iiComps_validate(compAliasName, gsCompList_alphanumericTypes, gnCompList_alphanumericTypes_length))
 				{
 					// Syntax error
-					iError_reportByNumber(thisCode, _ERROR_SYNTAX, compAlias, false);
+					iError_reportByNumber(_ERROR_SYNTAX, compAlias, false);
 					return;
 				}
 
 				// First parameter begins after compAliasName
-				compParam = iComps_getNth(thisCode, compAliasName, 1);
+				compParam = iComps_getNth(compAliasName, 1);
 
 			} else {
 				// First parameter begins after compDllName
-				compParam = iComps_getNth(thisCode, compDllName, 1);
+				compParam = iComps_getNth(compDllName, 1);
 			}
 
 
@@ -2390,7 +2390,7 @@
 		//////
 #if defined(__64_BIT_COMPILER__)
 			while (compParam->iCode == _ICODE_NOPROTOTYPE || compParam->iCode == _ICODE_VARIADIC)
-				compParam = iComps_getNth(thisCode, compParam, 1);
+				compParam = iComps_getNth(compParam, 1);
 #endif
 
 
@@ -2403,10 +2403,10 @@
 				for (lnI = 0; compParam && lnI < _MAX_DLL_PARAMS; lnI++)
 				{
 					// The format for each must be:  type [@] [name] [comma]
-					if (iiComps_validate(thisCode, compParam, gsCompList_dllTypes, gnCompList_dllTypes_length))
+					if (iiComps_validate(compParam, gsCompList_dllTypes, gnCompList_dllTypes_length))
 					{
 						// Grab type
-						compParam = iiCommand_declare_storeParameterType(thisCode, &inputParams[lnI], compParam);
+						compParam = iiCommand_declare_storeParameterType(&inputParams[lnI], compParam);
 						if (compParam)
 						{
 							// Is there an at sign?
@@ -2414,7 +2414,7 @@
 							{
 								// by-ref
 								inputParams[lnI].udfSetting	= _UDFPARMS_REFERENCE;
-								compParam					= iComps_getNth(thisCode, compParam, 1);
+								compParam					= iComps_getNth(compParam, 1);
 
 							} else {
 								// by-val
@@ -2422,10 +2422,10 @@
 							}
 
 							// Is there a name?
-							if (compParam->iCode != _ICODE_COMMA && iiComps_isAlphanumeric(thisCode, compParam))
+							if (compParam->iCode != _ICODE_COMMA && iiComps_isAlphanumeric(compParam))
 							{
 								// Grab the name (for debugging)
-								compParam = iiCommand_declare_storeParameterName(thisCode, &inputParams[lnI], compParam, lnI + 1);
+								compParam = iiCommand_declare_storeParameterName(&inputParams[lnI], compParam, lnI + 1);
 
 							} else {
 								// Use a default name
@@ -2439,11 +2439,11 @@
 								if (compParam->iCode == _ICODE_COMMA)
 								{
 									// We're good, continue on past the comma
-									compParam = iComps_getNth(thisCode, compParam, 1);
+									compParam = iComps_getNth(compParam, 1);
 
 								} else {
 									// Syntax error
-									iError_reportByNumber(thisCode, _ERROR_SYNTAX, compParam, false);
+									iError_reportByNumber(_ERROR_SYNTAX, compParam, false);
 									return;
 								}
 							}
@@ -2452,7 +2452,7 @@
 
 					} else {
 						// Syntax error
-						iError_reportByNumber(thisCode, _ERROR_SYNTAX, compParam, false);
+						iError_reportByNumber(_ERROR_SYNTAX, compParam, false);
 						return;
 					}
 				}
@@ -2461,7 +2461,7 @@
 				if (compParam)
 				{
 					// Too many parameters
-					iError_reportByNumber(thisCode, _ERROR_TOO_MANY_PARAMETERS, compParam, false);
+					iError_reportByNumber(_ERROR_TOO_MANY_PARAMETERS, compParam, false);
 					return;
 				}
 
@@ -2476,15 +2476,15 @@
 		//////
 #if defined(__64_BIT_COMPILER__)
 			// 64-bit, noprototype and variadic are based on components flags
-			iDllFunc_add(thisCode, rpar, &returnParam, inputParams, lnI, compFunctionName, compAliasName, compDllName, NULL, NULL, (compNoPrototype != NULL), (compVariadic != NULL));
+			iDllFunc_add(rpar, &returnParam, inputParams, lnI, compFunctionName, compAliasName, compDllName, NULL, NULL, (compNoPrototype != NULL), (compVariadic != NULL));
 #else
 			// 32-bit and therefore not noprototype or variadic
-			iDllFunc_add(thisCode, rpar, &returnParam, inputParams, lnI, compFunctionName, compAliasName, compDllName, NULL, NULL, false, false);
+			iDllFunc_add(rpar, &returnParam, inputParams, lnI, compFunctionName, compAliasName, compDllName, NULL, NULL, false, false);
 #endif
 
 	}
 
-	SComp* iiCommand_declare_storeParameterType(SThisCode* thisCode, SDllFuncParam* dp, SComp* comp)
+	SComp* iiCommand_declare_storeParameterType(SDllFuncParam* dp, SComp* comp)
 	{
 		// Based on the type, set the parameter
 		switch (comp->iCode)
@@ -2541,10 +2541,10 @@
 		}
 
 		// Return the component after this one
-		return(iComps_getNth(thisCode, comp, 1));
+		return(iComps_getNth(comp, 1));
 	}
 
-	SComp* iiCommand_declare_storeParameterName(SThisCode* thisCode, SDllFuncParam* dp, SComp* comp/*name or at sign*/, s32 tnParamNum)
+	SComp* iiCommand_declare_storeParameterName(SDllFuncParam* dp, SComp* comp/*name or at sign*/, s32 tnParamNum)
 	{
 
 		//////////
@@ -2554,7 +2554,7 @@
 			{
 				// By-ref as it is prefixed with an @ sign
 				dp->udfSetting		= _UDFPARMS_REFERENCE;
-				comp	= iComps_getNth(thisCode, comp, 1);
+				comp	= iComps_getNth(comp, 1);
 
 			} else {
 				// By-value
@@ -2567,7 +2567,7 @@
 		//////
 			// Use the name as given
 			iDatum_duplicate(&dp->name, comp->line->sourceCode->data_cs8 + comp->start, comp->length);
-			comp = iComps_getNth(thisCode, comp, 1);
+			comp = iComps_getNth(comp, 1);
 
 
 		//////////
@@ -2598,7 +2598,7 @@
 // Returns:
 //		Nothing, but whatever it is that's being modified may be open for modifying.
 //////
-	void command_modify(SThisCode* thisCode, SComp* compCommand, SFunctionParams* rpar)
+	void command_modify(SComp* compCommand, SFunctionParams* rpar)
 	{
 		SComp*	compModify = compCommand;
 		SComp*	compType;
@@ -2608,10 +2608,10 @@
 		//////////
 		// Make sure there's something after the modify command
 		//////
-			if (!(compType = iComps_getNth(thisCode, compModify, 1)))
+			if (!(compType = iComps_getNth(compModify, 1)))
 			{
 				// There was nothing after, which means syntax error
-				iError_reportByNumber(thisCode, _ERROR_MISSING_PARAMETER, compModify, false);
+				iError_reportByNumber(_ERROR_MISSING_PARAMETER, compModify, false);
 				return;
 			}
 
@@ -2696,7 +2696,7 @@
 		//////////
 		// If we get here, syntax error
 		//////
-			iError_reportByNumber(thisCode, _ERROR_SYNTAX, compType, false);
+			iError_reportByNumber(_ERROR_SYNTAX, compType, false);
 	}
 
 
@@ -2721,7 +2721,7 @@
 // Returns:
 //		Nothing, but the environment may be changed.
 //////
-	void command_open(SThisCode* thisCode, SComp* compCommand, SFunctionParams* rpar)
+	void command_open(SComp* compCommand, SFunctionParams* rpar)
 	{
 		SComp*	compOpen = compCommand;
 		s32		lnLength;
@@ -2740,12 +2740,12 @@
 		//////////
 		// Access the options which are available for this command
 		//////
-			compDatabase	= iComps_findNextBy_iCode(thisCode, compOpen, _ICODE_DATABASE,	NULL);
-			compExclusive	= iComps_findNextBy_iCode(thisCode, compOpen, _ICODE_EXCLUSIVE,	NULL);
-			compShared		= iComps_findNextBy_iCode(thisCode, compOpen, _ICODE_SHARED,	NULL);
-			compValidate	= iComps_findNextBy_iCode(thisCode, compOpen, _ICODE_VALIDATE,	NULL);
-			compRecover		= iComps_findNextBy_iCode(thisCode, compOpen, _ICODE_RECOVER,	NULL);
-			compNoUpdate	= iComps_findNextBy_iCode(thisCode, compOpen, _ICODE_NOUPDATE,	NULL);
+			compDatabase	= iComps_findNextBy_iCode(compOpen, _ICODE_DATABASE,	NULL);
+			compExclusive	= iComps_findNextBy_iCode(compOpen, _ICODE_EXCLUSIVE,	NULL);
+			compShared		= iComps_findNextBy_iCode(compOpen, _ICODE_SHARED,	NULL);
+			compValidate	= iComps_findNextBy_iCode(compOpen, _ICODE_VALIDATE,	NULL);
+			compRecover		= iComps_findNextBy_iCode(compOpen, _ICODE_RECOVER,	NULL);
+			compNoUpdate	= iComps_findNextBy_iCode(compOpen, _ICODE_NOUPDATE,	NULL);
 
 
 		//////////
@@ -2754,27 +2754,27 @@
 			if (!compDatabase)
 			{
 				// Syntax error
-				iError_reportByNumber(thisCode, _ERROR_SYNTAX, compOpen, false);
+				iError_reportByNumber(_ERROR_SYNTAX, compOpen, false);
 				return;
 			}
 			if (!compDatabase->ll.next)
 			{
 				// Syntax error
-				iError_reportByNumber(thisCode, _ERROR_SYNTAX, compDatabase, false);
+				iError_reportByNumber(_ERROR_SYNTAX, compDatabase, false);
 				return;
 			}
 			// Grab the component after [database]
-			compPathname = iComps_getNth(thisCode, compDatabase, 1);
+			compPathname = iComps_getNth(compDatabase, 1);
 
 
 		//////////
 		// Extract the DBC name
 		//////
-			lnLength = iComps_getContiguousLength(thisCode, compPathname, NULL, 0, NULL);
+			lnLength = iComps_getContiguousLength(compPathname, NULL, 0, NULL);
 			if (lnLength >= (s32)sizeof(dbcNameBuffer))
 			{
 				// Parameter is too long
-				iError_reportByNumber(thisCode, _ERROR_PARAMETER_TOO_LONG, compPathname, false);
+				iError_reportByNumber(_ERROR_PARAMETER_TOO_LONG, compPathname, false);
 				return;
 			}
 			memset(dbcNameBuffer, 0, sizeof(dbcNameBuffer));
@@ -2786,7 +2786,7 @@
 		//////
 			if (compShared && compExclusive)
 			{
-				iError_reportByNumber(thisCode, _ERROR_CONFLICTING_PARAMETERS, ((compShared->ll.uniqueId < compExclusive->ll.uniqueId) ? compExclusive : compShared), false);
+				iError_reportByNumber(_ERROR_CONFLICTING_PARAMETERS, ((compShared->ll.uniqueId < compExclusive->ll.uniqueId) ? compExclusive : compShared), false);
 				return;
 			}
 
@@ -2815,11 +2815,11 @@
 		//////////
 		// Try to open it
 		//////
-			lnDbcArea = iDbf_open(thisCode, (cs8*)dbcNameBuffer, (cs8*)cgcDbcKeyName, llIsExclusive, false, false, false, false, false, llIsNoUpdate);
+			lnDbcArea = iDbf_open((cs8*)dbcNameBuffer, (cs8*)cgcDbcKeyName, llIsExclusive, false, false, false, false, false, llIsNoUpdate);
 			if (lnDbcArea < 0)
 			{
 				// Unable to open
-				iError_reportByNumber(thisCode, _ERROR_UNABLE_TO_OPEN_DBC, compPathname, false);
+				iError_reportByNumber(_ERROR_UNABLE_TO_OPEN_DBC, compPathname, false);
 				return;
 			}
 
@@ -2829,7 +2829,7 @@
 		//////
 			// Pass it our output screen
 			if (compValidate)
-				iDbc_validate(thisCode, &gsDbcArea[lnDbcArea], (compRecover != NULL), ((propGet_settings_Talk(_settings)) ? _screen_editbox->p.sem : NULL), gWinJDebi);
+				iDbc_validate(&gsDbcArea[lnDbcArea], (compRecover != NULL), ((propGet_settings_Talk(_settings)) ? _screen_editbox->p.sem : NULL), gWinJDebi);
 	}
 
 
@@ -2854,7 +2854,7 @@
 // Returns:
 //    Nothing, but the environment may be changed.
 //////
-	void command_set(SThisCode* thisCode, SComp* compCommand, SFunctionParams* rpar)
+	void command_set(SComp* compCommand, SFunctionParams* rpar)
 	{
 		SComp*			compSet = compCommand;
 		s32				lnIndex;
@@ -2866,13 +2866,13 @@
 		SVariable*		varSet;
 		SVariable*		varSetNewValue;
 
-// iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, compSet, false);
+// iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, compSet, false);
 // return;
 
 		//////////
 		// Get the next component
 		//////
-			compSetTarget = iComps_getNth(thisCode, compSet, 1);
+			compSetTarget = iComps_getNth(compSet, 1);
 			if (compSetTarget)
 			{
 				// SET SOMETHING
@@ -2881,11 +2881,11 @@
 				//////////
 				// The thing after should be the value, or the keyword TO
 				//////
-					compSetValue = iComps_getNth(thisCode, compSetTarget, 1);
+					compSetValue = iComps_getNth(compSetTarget, 1);
 
 					// TO is superfluous, so if it exists, skip it
 					if (compSetValue && compSetValue->iCode == _ICODE_TO)
-						compSetValue = iComps_getNth(thisCode, compSetValue, 1);
+						compSetValue = iComps_getNth(compSetValue, 1);
 
 
 				//////////
@@ -2894,7 +2894,7 @@
 					if (!compSetValue)
 					{
 						// Syntax error
-						iError_reportByNumber(thisCode, _ERROR_SYNTAX, compSetTarget, false);
+						iError_reportByNumber(_ERROR_SYNTAX, compSetTarget, false);
 						return;
 					}
 
@@ -2902,10 +2902,10 @@
 				//////////
 				// Translate the xyz part of the SET xyz TO abcc into the actual _INDEX_SET_* value
 				/////
-					lnIndex = iObjProp_settingsTranslate(thisCode, compSetTarget->iCode);
+					lnIndex = iObjProp_settingsTranslate(compSetTarget->iCode);
 					if (lnIndex <= 0)
 					{
-						iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, compSetTarget, false);
+						iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, compSetTarget, false);
 						return;
 					}
 
@@ -2913,11 +2913,11 @@
 				//////////
 				// Find out what the xyz is for SET xyz TO ...
 				//////
-					varSet = iObjProp_get_var_byIndex(thisCode, _settings, lnIndex, &baseProp, &objProp);
+					varSet = iObjProp_get_var_byIndex(_settings, lnIndex, &baseProp, &objProp);
 					if (varSet && objProp && baseProp)
 					{
 						// We found the setting and the default variable type
-						varSetNewValue = iEngine_get_variableName_fromComponent(thisCode, compSetValue, &llManufactured, false);
+						varSetNewValue = iEngine_get_variableName_fromComponent(compSetValue, &llManufactured, false);
 //////////
 // Note:
 //		Settings are handled a little differently compared to other objects.
@@ -2930,18 +2930,18 @@
 						if (objProp->_setterObject_set)
 						{
 							// We have our own value, use it
-							if (objProp->setterObject_set(thisCode, varSet, compSetValue, varSetNewValue, llManufactured))
+							if (objProp->setterObject_set(varSet, compSetValue, varSetNewValue, llManufactured))
 								return;		// If we get here, we're good
 
 							// If we get here, it couldn't be set
-							iError_reportByNumber(thisCode, _ERROR_SYNTAX, compSetValue, false);
+							iError_reportByNumber(_ERROR_SYNTAX, compSetValue, false);
 							return;
 						}
 
 						// If we get here, try the standard method
-						if (!iObjProp_set(thisCode, _settings, compSetTarget->iCode, varSetNewValue))
+						if (!iObjProp_set(_settings, compSetTarget->iCode, varSetNewValue))
 						{
-							iError_reportByNumber(thisCode, _ERROR_PARAMETER_IS_INCORRECT, compSetTarget, false);
+							iError_reportByNumber(_ERROR_PARAMETER_IS_INCORRECT, compSetTarget, false);
 							return;
 						}
 					}
@@ -2953,7 +2953,7 @@
 		//////////
 		// If we get here, syntax error
 		//////
-			iError_reportByNumber(thisCode, _ERROR_SYNTAX, compSet, false);
+			iError_reportByNumber(_ERROR_SYNTAX, compSet, false);
 	}
 
 
@@ -2978,7 +2978,7 @@
 // Returns:
 //    Nothing, but the environment may be changed.
 //////
-	void command_use(SThisCode* thisCode, SComp* compCommand, SFunctionParams* rpar)
+	void command_use(SComp* compCommand, SFunctionParams* rpar)
 	{
 		SComp*		compUse = compCommand;
 		sptr		lnWorkArea, lnWorkAreaAlias;
@@ -3007,25 +3007,25 @@
 		//////////
 		// Access the options which are available for this command
 		//////
-			SComp*	compAgain				= iComps_findNextBy_iCode(thisCode, compUse, _ICODE_AGAIN,				NULL);
-//			SComp*	compNoRequery			= iComps_findNextBy_iCode(thisCode, compUse, _ICODE_NOREQUERY,			NULL);
-//			SComp*	compNoData				= iComps_findNextBy_iCode(thisCode, compUse, _ICODE_NODATA,				NULL);
-//			SComp*	compNoUpdate			= iComps_findNextBy_iCode(thisCode, compUse, _ICODE_NOUPDATE,			NULL);
-//			SComp*	compExclamationPoint	= iComps_findNextBy_iCode(thisCode, compUse, _ICODE_EXCLAMATION_POINT,	NULL);
-			SComp*	compIn					= iComps_findNextBy_iCode(thisCode, compUse, _ICODE_IN,					NULL);
-//			SComp*	compIndex				= iComps_findNextBy_iCode(thisCode, compUse, _ICODE_INDEX,				NULL);
-//			SComp*	compOrder				= iComps_findNextBy_iCode(thisCode, compUse, _ICODE_ORDER,				NULL);
-//			SComp*	compTag					= iComps_findNextBy_iCode(thisCode, compUse, _ICODE_TAG,				NULL);
-			SComp*	compAscending			= iComps_findNextBy_iCode(thisCode, compUse, _ICODE_ASCENDING,			NULL);
-			SComp*	compDescending			= iComps_findNextBy_iCode(thisCode, compUse, _ICODE_DESCENDING,			NULL);
-			SComp*	compAlias				= iComps_findNextBy_iCode(thisCode, compUse, _ICODE_ALIAS,				NULL);
-			SComp*	compExclusive			= iComps_findNextBy_iCode(thisCode, compUse, _ICODE_EXCLUSIVE,			NULL);
-			SComp*	compShared				= iComps_findNextBy_iCode(thisCode, compUse, _ICODE_SHARED,				NULL);
-			SComp*	compNoUpdate			= iComps_findNextBy_iCode(thisCode, compUse, _ICODE_NOUPDATE,			NULL);
-//			SComp*	compConnString			= iComps_findNextBy_iCode(thisCode, compUse, _ICODE_CONNSTRING,			NULL);
-			SComp*	compValidate			= iComps_findNextBy_iCode(thisCode, compUse, _ICODE_VALIDATE,			NULL);
-			SComp*	compVisualize			= iComps_findNextBy_iCode(thisCode, compUse, _ICODE_VISUALIZE,			NULL);		// USE fred.dbf VISUALIZE	&& Creates disk-defrag-like display of table and index
-			SComp*	compJournal				= iComps_findNextBy_iCode(thisCode, compUse, _ICODE_JOURNAL,			NULL);		// USE fred.dbf JOURNAL		&& Creates fred.jrn with every write change made to table or index
+			SComp*	compAgain				= iComps_findNextBy_iCode(compUse, _ICODE_AGAIN,				NULL);
+//			SComp*	compNoRequery			= iComps_findNextBy_iCode(compUse, _ICODE_NOREQUERY,			NULL);
+//			SComp*	compNoData				= iComps_findNextBy_iCode(compUse, _ICODE_NODATA,				NULL);
+//			SComp*	compNoUpdate			= iComps_findNextBy_iCode(compUse, _ICODE_NOUPDATE,			NULL);
+//			SComp*	compExclamationPoint	= iComps_findNextBy_iCode(compUse, _ICODE_EXCLAMATION_POINT,	NULL);
+			SComp*	compIn					= iComps_findNextBy_iCode(compUse, _ICODE_IN,					NULL);
+//			SComp*	compIndex				= iComps_findNextBy_iCode(compUse, _ICODE_INDEX,				NULL);
+//			SComp*	compOrder				= iComps_findNextBy_iCode(compUse, _ICODE_ORDER,				NULL);
+//			SComp*	compTag					= iComps_findNextBy_iCode(compUse, _ICODE_TAG,				NULL);
+			SComp*	compAscending			= iComps_findNextBy_iCode(compUse, _ICODE_ASCENDING,			NULL);
+			SComp*	compDescending			= iComps_findNextBy_iCode(compUse, _ICODE_DESCENDING,			NULL);
+			SComp*	compAlias				= iComps_findNextBy_iCode(compUse, _ICODE_ALIAS,				NULL);
+			SComp*	compExclusive			= iComps_findNextBy_iCode(compUse, _ICODE_EXCLUSIVE,			NULL);
+			SComp*	compShared				= iComps_findNextBy_iCode(compUse, _ICODE_SHARED,				NULL);
+			SComp*	compNoUpdate			= iComps_findNextBy_iCode(compUse, _ICODE_NOUPDATE,			NULL);
+//			SComp*	compConnString			= iComps_findNextBy_iCode(compUse, _ICODE_CONNSTRING,			NULL);
+			SComp*	compValidate			= iComps_findNextBy_iCode(compUse, _ICODE_VALIDATE,			NULL);
+			SComp*	compVisualize			= iComps_findNextBy_iCode(compUse, _ICODE_VISUALIZE,			NULL);		// USE fred.dbf VISUALIZE	&& Creates disk-defrag-like display of table and index
+			SComp*	compJournal				= iComps_findNextBy_iCode(compUse, _ICODE_JOURNAL,			NULL);		// USE fred.dbf JOURNAL		&& Creates fred.jrn with every write change made to table or index
 
 
 		//////////
@@ -3036,7 +3036,7 @@
 			//////
 				if (compAscending && compDescending)
 				{
-					iError_reportByNumber(thisCode, _ERROR_CONFLICTING_PARAMETERS, ((compAscending->ll.uniqueId < compDescending->ll.uniqueId) ? compDescending : compAscending), false);
+					iError_reportByNumber(_ERROR_CONFLICTING_PARAMETERS, ((compAscending->ll.uniqueId < compDescending->ll.uniqueId) ? compDescending : compAscending), false);
 					goto clean_exit;
 				}
 
@@ -3046,7 +3046,7 @@
 			//////
 				if (compShared && compExclusive)
 				{
-					iError_reportByNumber(thisCode, _ERROR_CONFLICTING_PARAMETERS, ((compShared->ll.uniqueId < compExclusive->ll.uniqueId) ? compExclusive : compShared), false);
+					iError_reportByNumber(_ERROR_CONFLICTING_PARAMETERS, ((compShared->ll.uniqueId < compExclusive->ll.uniqueId) ? compExclusive : compShared), false);
 					goto clean_exit;
 				}
 
@@ -3073,7 +3073,7 @@
 // debug_break;
 				if (compIn && !compIn->ll.next)
 				{
-					iError_reportByNumber(thisCode, _ERROR_SYNTAX, compIn, false);
+					iError_reportByNumber(_ERROR_SYNTAX, compIn, false);
 					goto clean_exit;
 				}
 
@@ -3087,7 +3087,7 @@
 			//////
 				if (compAlias && !compAlias->ll.next)
 				{
-					iError_reportByNumber(thisCode, _ERROR_SYNTAX, compAlias, false);
+					iError_reportByNumber(_ERROR_SYNTAX, compAlias, false);
 					goto clean_exit;
 				}
 
@@ -3102,15 +3102,15 @@
 				if (compUse && !compUse->ll.next)
 				{
 					// USE ... They have specified USE by itself, closing the current work area
-					if ((lnWorkArea = iDbf_get_workArea_current(thisCode, cgcDbfKeyName)) >= 0)
+					if ((lnWorkArea = iDbf_get_workArea_current(cgcDbfKeyName)) >= 0)
 					{
 						// Close it
-						iDbf_close(thisCode, &gsWorkArea[lnWorkArea]);
+						iDbf_close(&gsWorkArea[lnWorkArea]);
 
 					} else {
 						// The current work area is invalid
 						// Hmmm... this shouldn't ever happen. Ever. :-)
-						iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, compUse, false);
+						iError_reportByNumber(_ERROR_INTERNAL_ERROR, compUse, false);
 					}
 
 					// We're good
@@ -3130,7 +3130,7 @@
 				// Get what comes after the IN
 				comp3 = NULL;
 				comp4 = NULL;
-				if ((comp2 = iComps_getNth(thisCode, compIn, 1)) && (comp3 = iComps_getNth(thisCode, comp2, 1)) && (comp4 = iComps_getNth(thisCode, comp3, 1)))
+				if ((comp2 = iComps_getNth(compIn, 1)) && (comp3 = iComps_getNth(comp2, 1)) && (comp4 = iComps_getNth(comp3, 1)))
 				{
 					// Placeholder to allow engagement through the if expression as far as it will go
 				}
@@ -3142,37 +3142,37 @@
 					// Perform tests on what comes after SELECT()
 					if (!comp2) {
 						// Syntax error
-						iError_reportByNumber(thisCode, _ERROR_SYNTAX, compIn, false);
+						iError_reportByNumber(_ERROR_SYNTAX, compIn, false);
 						goto clean_exit;
 
 					} else if (comp2->iCode != _ICODE_PARENTHESIS_LEFT) {
 						// Syntax error missing parenthesis
-						iError_reportByNumber(thisCode, _ERROR_SYNTAX, comp2, false);
+						iError_reportByNumber(_ERROR_SYNTAX, comp2, false);
 						goto clean_exit;
 
 					} else if (!comp3) {
 						// Syntax error missing parameter
-						iError_reportByNumber(thisCode, _ERROR_MISSING_PARAMETER, comp2, false);
+						iError_reportByNumber(_ERROR_MISSING_PARAMETER, comp2, false);
 						goto clean_exit;
 
-					} else if (!(comp4 = iComps_getNth(thisCode, comp3, 1))) {
+					} else if (!(comp4 = iComps_getNth(comp3, 1))) {
 						// Syntax error
-						iError_reportByNumber(thisCode, _ERROR_SYNTAX, comp3, false);
+						iError_reportByNumber(_ERROR_SYNTAX, comp3, false);
 						goto clean_exit;
 
 					} else if (comp4->iCode != _ICODE_PARENTHESIS_RIGHT) {
 						// Syntax error parenthesis expected
-						iError_reportByNumber(thisCode, _ERROR_PARENTHESIS_EXPECTED, comp4, false);
+						iError_reportByNumber(_ERROR_PARENTHESIS_EXPECTED, comp4, false);
 						goto clean_exit;
 					}
 					// Once we get here, we know we have SELECT(...something
 
 					// They've specified USE IN SELECT(something)
-					varInWorkArea = iEngine_get_variableName_fromComponent(thisCode, comp3, &llManufacturedAliasName, false);
+					varInWorkArea = iEngine_get_variableName_fromComponent(comp3, &llManufacturedAliasName, false);
 
 				} else {
 					// They must've specified a number or alias name
-					varInWorkArea = iEngine_get_variableName_fromComponent(thisCode, compIn, &llManufacturedAliasName, false);
+					varInWorkArea = iEngine_get_variableName_fromComponent(compIn, &llManufacturedAliasName, false);
 				}
 			}
 
@@ -3188,38 +3188,38 @@
 					if (iVariable_isTypeNumeric(varInWorkArea))
 					{
 						// They're are specifying a number
-						lnWorkArea = iiVariable_getAs_s32(thisCode, varInWorkArea, false, &error, &errorNum);
-						if (error)	{ iError_reportByNumber(thisCode, errorNum, compIn, false); return; }
+						lnWorkArea = iiVariable_getAs_s32(varInWorkArea, false, &error, &errorNum);
+						if (error)	{ iError_reportByNumber(errorNum, compIn, false); return; }
 
 					} else if (iVariable_isTypeCharacter(varInWorkArea)) {
 						// They specified something character (could be a work area letter, or alias)
-						if (iDbf_isWorkAreaLetter(thisCode, varInWorkArea))
+						if (iDbf_isWorkAreaLetter(varInWorkArea))
 						{
 							// Work area letter
 							lnWorkArea = iUpperCase(varInWorkArea->value.data_s8[0]) - (s32)'A' + 1;
 
 						} else {
 							// Alias name
-							lnWorkArea = iDbf_get_workArea_byAlias_byVar(thisCode, varInWorkArea, NULL, NULL);
+							lnWorkArea = iDbf_get_workArea_byAlias_byVar(varInWorkArea, NULL, NULL);
 						}
 
 						// Did we get a valid work area?
 						if (lnWorkArea < 0)
 						{
-							iError_reportByNumber(thisCode, _ERROR_ALIAS_NOT_FOUND, iVariable_get_relatedComp(thisCode, varInWorkArea), false);
+							iError_reportByNumber(_ERROR_ALIAS_NOT_FOUND, iVariable_get_relatedComp(varInWorkArea), false);
 							goto clean_exit;
 						}
 						// If we get here, we have our work area number
 
 					} else {
 						// Unrecognized syntax
-						iError_reportByNumber(thisCode, _ERROR_SYNTAX, compIn->ll.nextComp, false);
+						iError_reportByNumber(_ERROR_SYNTAX, compIn->ll.nextComp, false);
 						goto clean_exit;
 					}
 
 			} else {
 				// Just grab the current work area
-				lnWorkArea = (s32)iDbf_get_workArea_current(thisCode, cgcDbfKeyName);
+				lnWorkArea = (s32)iDbf_get_workArea_current(cgcDbfKeyName);
 			}
 
 
@@ -3230,7 +3230,7 @@
 			if (compUse->iCode == _ICODE_IN)
 			{
 				// Yes, close that work area and we're done
-				iDbf_close(thisCode, &gsWorkArea[lnWorkArea]);
+				iDbf_close(&gsWorkArea[lnWorkArea]);
 				goto clean_exit;
 			}
 
@@ -3239,11 +3239,11 @@
 		// Get the table name
 		//////
 			// Note:  compUse is actually pointing to whatever was after USE by this point
-			if ((varTableName = iEngine_get_variableName_fromComponent(thisCode, compUse, &llManufacturedTableName, false))) {
+			if ((varTableName = iEngine_get_variableName_fromComponent(compUse, &llManufacturedTableName, false))) {
 				// Placeholder, we were able to obtain a variable name
 				// Note:  The variable is checked for sanity below
 
-			} else if ((varTableName = iEngine_get_contiguousComponents(thisCode, compUse, &llManufacturedTableName, NULL, 0))) {
+			} else if ((varTableName = iEngine_get_contiguousComponents(compUse, &llManufacturedTableName, NULL, 0))) {
 					// Placeholder, we were able to obtain a contiguous stream of characters
 //////////
 // TODO:	Enhancement consideration.  May not ever be needed.
@@ -3275,7 +3275,7 @@
 			if (!varTableName || !iVariable_isTypeCharacter(varTableName))
 			{
 				// We didn't get what we needed
-				iError_reportByNumber(thisCode, _ERROR_UNRECOGNIZED_PARAMETER, compUse, false);
+				iError_reportByNumber(_ERROR_UNRECOGNIZED_PARAMETER, compUse, false);
 				goto clean_exit;
 			}
 			// Note:	The parameter, while character, may still be incorrect.
@@ -3289,10 +3289,10 @@
 			{
 				// No AGAIN clause was specified, so make sure it isn't already found as being in use
 // TODO:  Need FULLPATH() here
-				if (iDbf_get_workArea_byTablePathname(thisCode, varTableName, null) >= 0)
+				if (iDbf_get_workArea_byTablePathname(varTableName, null) >= 0)
 				{
 					// It was found, which means it's already in use
-					iError_reportByNumber(thisCode, _ERROR_TABLE_ALREADY_IN_USE, compUse, false);
+					iError_reportByNumber(_ERROR_TABLE_ALREADY_IN_USE, compUse, false);
 					goto clean_exit;
 				}
 			}
@@ -3304,8 +3304,8 @@
 			if (compAlias)
 			{
 				// They've specified an alias
-				varAliasName	= iEngine_get_variableName_fromComponent(thisCode, compAlias->ll.nextComp, &llManufacturedTableName, false);
-				lnWorkAreaAlias	= iDbf_get_workArea_byAlias_byVar(thisCode, varAliasName, NULL, NULL);
+				varAliasName	= iEngine_get_variableName_fromComponent(compAlias->ll.nextComp, &llManufacturedTableName, false);
+				lnWorkAreaAlias	= iDbf_get_workArea_byAlias_byVar(varAliasName, NULL, NULL);
 				if (lnWorkAreaAlias > 0)
 				{
 					// They've specified an alias name
@@ -3313,24 +3313,24 @@
 					if (lnWorkArea != lnWorkAreaAlias)
 					{
 						// Nope, they're trying to re-use an alias already in use
-						iError_reportByNumber(thisCode, _ERROR_ALIAS_ALREADY_IN_USE, compAlias, false);
+						iError_reportByNumber(_ERROR_ALIAS_ALREADY_IN_USE, compAlias, false);
 						goto clean_exit;
 					}
 					// If we get here, the work area is okay
 
 				} else {
 					// Unknown alias
-					iError_reportByNumber(thisCode, _ERROR_ALIAS_NOT_FOUND, compAlias, false);
+					iError_reportByNumber(_ERROR_ALIAS_NOT_FOUND, compAlias, false);
 					goto clean_exit;
 				}
 
 			} else {
 				// We need to construct the alias from the table name
-				varAliasName = iDbf_get_alias_fromPathname(thisCode, varTableName, null);
+				varAliasName = iDbf_get_alias_fromPathname(varTableName, null);
 			}
 			if (!varAliasName)
 			{
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, compUse, false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, compUse, false);
 				goto clean_exit;
 			}
 
@@ -3338,28 +3338,28 @@
 		//////////
 		// See if the current work area already has a table open
 		//////
-			llIsInUse = iDbf_isWorkAreaUsed(thisCode, &gsWorkArea[lnWorkArea], &llIsValidWorkArea);
+			llIsInUse = iDbf_isWorkAreaUsed(&gsWorkArea[lnWorkArea], &llIsValidWorkArea);
 			if (!llIsValidWorkArea)
 			{
 				// They specified an invalid work area number
-				iError_reportByNumber(thisCode, _ERROR_INVALID_WORK_AREA, compIn, false);
+				iError_reportByNumber(_ERROR_INVALID_WORK_AREA, compIn, false);
 				goto clean_exit;
 
 			} else if (llIsInUse) {
 				// If it's already open, close it
-				iDbf_close(thisCode, &gsWorkArea[lnWorkArea]);
+				iDbf_close(&gsWorkArea[lnWorkArea]);
 			}
 
 
 		//////////
 		// Get the alias
 		//////
-			iDbf_set_workArea_current(thisCode, (u32)lnWorkArea, null);
-			lnWorkArea = iDbf_open(thisCode, varTableName, varAliasName, llIsExclusive, (compAgain != NULL), (compValidate != NULL), (compDescending != NULL), (compVisualize != NULL), (compJournal != NULL), (compNoUpdate != NULL));
+			iDbf_set_workArea_current((u32)lnWorkArea, null);
+			lnWorkArea = iDbf_open(varTableName, varAliasName, llIsExclusive, (compAgain != NULL), (compValidate != NULL), (compDescending != NULL), (compVisualize != NULL), (compJournal != NULL), (compNoUpdate != NULL));
 			if (lnWorkArea < 0)
 			{
 				// The negative work area number indicates the error
-				iError_signal(thisCode, iDbf_translateError(thisCode, (s32)lnWorkArea), compUse, false, NULL, false);
+				iError_signal(iDbf_translateError((s32)lnWorkArea), compUse, false, NULL, false);
 
 			} else {
 				// Set any meta data about the table
@@ -3382,7 +3382,7 @@
 
 clean_exit:
 			// Release variables
-			if (varInWorkArea)		iVariable_delete(thisCode, varInWorkArea,	true);
-			if (varTableName)		iVariable_delete(thisCode, varTableName,	true);
-			if (varAliasName)		iVariable_delete(thisCode, varAliasName,	true);
+			if (varInWorkArea)		iVariable_delete(varInWorkArea,	true);
+			if (varTableName)		iVariable_delete(varTableName,	true);
+			if (varAliasName)		iVariable_delete(varAliasName,	true);
 	}

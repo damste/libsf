@@ -109,7 +109,7 @@
 // Returns:
 //    Logical		-- .t. if the item is inclusively between the values of two expressions of the same type, .f. otherwise
 //////
-	void function_between(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_between(SFunctionParams* rpar)
 	{
 		SVariable*	varValue		= rpar->ip[0];
 		SVariable*	varLowValue		= rpar->ip[1];
@@ -127,17 +127,17 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varValue))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varValue), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varValue), false);
 				return;
 			}
 			if (!iVariable_isValid(varLowValue))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varLowValue), false);
+				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varLowValue), false);
 				return;
 			}
 			if (!iVariable_isValid(varHighValue))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P3_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varHighValue), false);
+				iError_reportByNumber(_ERROR_P3_IS_INCORRECT, iVariable_get_relatedComp(varHighValue), false);
 				return;
 			}
 
@@ -145,15 +145,15 @@
 		//////////
 		// Each type must be fundamentally the same type
 		//////
-			for (lnI = 1, lnType = iVariable_get_fundamentalType(thisCode, varValue); lnI <= 3 && rpar->ip[lnI]; lnI++)
+			for (lnI = 1, lnType = iVariable_get_fundamentalType(varValue); lnI <= 3 && rpar->ip[lnI]; lnI++)
 			{
 				//////////
 				// Make sure this variable type matches the test value
 				//////
-					if (iVariable_get_fundamentalType(thisCode, rpar->ip[lnI]) != lnType)
+					if (iVariable_get_fundamentalType(rpar->ip[lnI]) != lnType)
 					{
 						// The types do not match
-						iError_reportByNumber(thisCode, _ERROR_DATA_TYPE_MISMATCH, iVariable_get_relatedComp(thisCode, rpar->ip[lnI]), false);
+						iError_reportByNumber(_ERROR_DATA_TYPE_MISMATCH, iVariable_get_relatedComp(rpar->ip[lnI]), false);
 						return;
 					}
 
@@ -163,10 +163,10 @@
 		//////////
 		// Compare value and low
 		//////
-			lnComp = iVariable_compare(thisCode, varValue, varLowValue, false, &error, &errorNum);
+			lnComp = iVariable_compare(varValue, varLowValue, false, &error, &errorNum);
 			if (error)
 			{
-				iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varLowValue), false);
+				iError_reportByNumber(errorNum, iVariable_get_relatedComp(varLowValue), false);
 				return;
 			}
 
@@ -181,10 +181,10 @@
 			if (llInRange)
 			{
 				// Compare value to high
-				lnComp = iVariable_compare(thisCode, varValue, varHighValue, false, &error, &errorNum);
+				lnComp = iVariable_compare(varValue, varHighValue, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varHighValue), false);
+					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varHighValue), false);
 					return;
 				}
 
@@ -196,9 +196,9 @@
 		//////////
 		// Based on the result, create the return(result)
 		//////
-			result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_LOGICAL, ((llInRange) ? (s8*)&_LOGICAL_TRUE : (s8*)&_LOGICAL_FALSE), 1, false);
+			result = iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, ((llInRange) ? (s8*)&_LOGICAL_TRUE : (s8*)&_LOGICAL_FALSE), 1, false);
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varValue), false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varValue), false);
 
 
 		//////////
@@ -232,7 +232,7 @@
 // Returns:
 //    Numeric		-- The input is populated into the big floating point
 //////
-	void function_bfp(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_bfp(SFunctionParams* rpar)
 	{
 		SVariable* varP1	= rpar->ip[0];
 		SVariable* varP2	= rpar->ip[1];
@@ -262,7 +262,7 @@
 					//////
 						if (!iVariable_isValid(varP1) || (!iVariable_isTypeNumeric(varP1) && !iVariable_isTypeCharacter(varP1)))
 						{
-							iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varP1), false);
+							iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varP1), false);
 							return;
 						}
 
@@ -279,12 +279,12 @@
 					//////
 						if (!iVariable_isValid(varP1) || (!iVariable_isTypeNumeric(varP1) && !iVariable_isTypeCharacter(varP1)))
 						{
-							iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varP1), false);
+							iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varP1), false);
 							return;
 						}
 						if (!iVariable_isValid(varP2) || !iVariable_isTypeNumeric(varP2))
 						{
-							iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varP2), false);
+							iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varP2), false);
 							return;
 						}
 
@@ -292,10 +292,10 @@
 					//////////
 					// Grab the bits
 					//////
-						lnBits = iiVariable_getAs_s32(thisCode, varP2, false, &error, &errorNum);
+						lnBits = iiVariable_getAs_s32(varP2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varP2), false);
+							iError_reportByNumber(errorNum, iVariable_get_relatedComp(varP2), false);
 							return;
 						}
 						break;
@@ -306,7 +306,7 @@
 		//////////
 		// Construct the appropriate variable
 		//////
-			result = iVariable_create(thisCode, _VAR_TYPE_BFP, NULL, true, lnBits);
+			result = iVariable_create(_VAR_TYPE_BFP, NULL, true, lnBits);
 			if (result && rpar->ipCount >= 1)
 			{
 				// Initialize
@@ -321,11 +321,11 @@
 
 				} else if (iVariable_isTypeInteger(varP1)) {
 					// Integer
-					lnVal64 = iiVariable_getAs_s64(thisCode, varP1, false, &error, &errorNum);
+					lnVal64 = iiVariable_getAs_s64(varP1, false, &error, &errorNum);
 					if (error)
 					{
 						// Should never happen
-						iError_reportByNumber(thisCode, _ERROR_UNABLE_TO_INITIALIZE, iVariable_get_relatedComp(thisCode, varP2), false);
+						iError_reportByNumber(_ERROR_UNABLE_TO_INITIALIZE, iVariable_get_relatedComp(varP2), false);
 
 					} else {
 						// We're good
@@ -343,11 +343,11 @@
 
 				} else {
 					// Floating point
-					lfVal64 = iiVariable_getAs_f64(thisCode, varP1, false, &error, &errorNum);
+					lfVal64 = iiVariable_getAs_f64(varP1, false, &error, &errorNum);
 					if (error)
 					{
 						// Should never happen
-						iError_reportByNumber(thisCode, _ERROR_UNABLE_TO_INITIALIZE, iVariable_get_relatedComp(thisCode, varP2), false);
+						iError_reportByNumber(_ERROR_UNABLE_TO_INITIALIZE, iVariable_get_relatedComp(varP2), false);
 
 					} else {
 						// We're good
@@ -361,7 +361,7 @@
 		// Are we good?
 		//////
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varP1), false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varP1), false);
 
 
 		//////////
@@ -396,7 +396,7 @@
 // Returns:
 //    Numeric		-- The input is populated into the big integer
 //////
-	void function_bi(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_bi(SFunctionParams* rpar)
 	{
 		SVariable* varP1	= rpar->ip[0];
 		SVariable* varP2	= rpar->ip[1];
@@ -426,7 +426,7 @@
 					//////
 						if (!iVariable_isValid(varP1) || (!iVariable_isTypeNumeric(varP1) && !iVariable_isTypeCharacter(varP1)))
 						{
-							iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varP1), false);
+							iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varP1), false);
 							return;
 						}
 
@@ -443,12 +443,12 @@
 					//////
 						if (!iVariable_isValid(varP1) || (!iVariable_isTypeNumeric(varP1) && !iVariable_isTypeCharacter(varP1)))
 						{
-							iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varP1), false);
+							iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varP1), false);
 							return;
 						}
 						if (!iVariable_isValid(varP2) || !iVariable_isTypeNumeric(varP2))
 						{
-							iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varP2), false);
+							iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varP2), false);
 							return;
 						}
 
@@ -456,10 +456,10 @@
 					//////////
 					// Grab the bits
 					//////
-						lnBits = iiVariable_getAs_s32(thisCode, varP2, false, &error, &errorNum);
+						lnBits = iiVariable_getAs_s32(varP2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varP2), false);
+							iError_reportByNumber(errorNum, iVariable_get_relatedComp(varP2), false);
 							return;
 						}
 						break;
@@ -470,7 +470,7 @@
 		//////////
 		// Construct the appropriate variable
 		//////
-			result = iVariable_create(thisCode, _VAR_TYPE_BI, NULL, true, lnBits);
+			result = iVariable_create(_VAR_TYPE_BI, NULL, true, lnBits);
 			if (result && rpar->ipCount >= 1)
 			{
 				// Initialize
@@ -485,11 +485,11 @@
 
 				} else if (iVariable_isTypeInteger(varP1)) {
 					// Integer
-					lnVal64 = iiVariable_getAs_s64(thisCode, varP1, false, &error, &errorNum);
+					lnVal64 = iiVariable_getAs_s64(varP1, false, &error, &errorNum);
 					if (error)
 					{
 						// Should never happen
-						iError_reportByNumber(thisCode, _ERROR_UNABLE_TO_INITIALIZE, iVariable_get_relatedComp(thisCode, varP2), false);
+						iError_reportByNumber(_ERROR_UNABLE_TO_INITIALIZE, iVariable_get_relatedComp(varP2), false);
 
 					} else {
 						// We're good
@@ -507,11 +507,11 @@
 
 				} else {
 					// Floating point
-					lfVal64 = iiVariable_getAs_f64(thisCode, varP1, false, &error, &errorNum);
+					lfVal64 = iiVariable_getAs_f64(varP1, false, &error, &errorNum);
 					if (error)
 					{
 						// Should never happen
-						iError_reportByNumber(thisCode, _ERROR_UNABLE_TO_INITIALIZE, iVariable_get_relatedComp(thisCode, varP2), false);
+						iError_reportByNumber(_ERROR_UNABLE_TO_INITIALIZE, iVariable_get_relatedComp(varP2), false);
 
 					} else {
 						// We're good
@@ -525,7 +525,7 @@
 		// Are we good?
 		//////
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varP1), false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varP1), false);
 
 
 		//////////
@@ -558,17 +558,17 @@
 // Returns:
 //    Numeric		-- Input bits converted to an unsigned integer of the appropriate size (up to 64-bits)
 //////
-	void function_bits(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_bits(SFunctionParams* rpar)
 	{
 		SVariable* varBits		= rpar->ip[0];
 		SVariable* varBitWidth	= rpar->ip[1];
 
 
 		// Return bits
-		ifunction_bits_common(thisCode, rpar, varBits, varBitWidth);
+		ifunction_bits_common(rpar, varBits, varBitWidth);
 	}
 
-	void ifunction_bits_common(SThisCode* thisCode, SFunctionParams* rpar, SVariable* varBits, SVariable* varBitWidth)
+	void ifunction_bits_common(SFunctionParams* rpar, SVariable* varBits, SVariable* varBitWidth)
 	{
 		s8			c;
 		u8			lnOrValue;
@@ -584,7 +584,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varBits) || !iVariable_isTypeCharacter(varBits) || varBits->value.length > 64)
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varBits), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varBits), false);
 				return;
 			}
 
@@ -596,22 +596,22 @@
 			{
 				if (!iVariable_isValid(varBitWidth) || !iVariable_isTypeNumeric(varBitWidth))
 				{
-					iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varBitWidth), false);
+					iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varBitWidth), false);
 					return;
 				}
 
 				// Grab the width
-				lnWidth = iiVariable_getAs_s32(thisCode, varBitWidth, false, &error, &errorNum);
+				lnWidth = iiVariable_getAs_s32(varBitWidth, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varBitWidth), false);
+					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varBitWidth), false);
 					return;
 				}
 
 				// Must be 8, 16, 32, or 64
 				if (lnWidth != 8 && lnWidth != 16 && lnWidth != 32 && lnWidth != 64)
 				{
-					iError_reportByNumber(thisCode, _ERROR_PARAMETER_MUST_BE_8_16_32_64, iVariable_get_relatedComp(thisCode, varBitWidth), false);
+					iError_reportByNumber(_ERROR_PARAMETER_MUST_BE_8_16_32_64, iVariable_get_relatedComp(varBitWidth), false);
 					return;
 				}
 
@@ -632,7 +632,7 @@
 				// Is it anything other than binary digits
 				if (c != '0' && c != '1')
 				{
-					iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varBits), false);
+					iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varBits), false);
 					return;
 				}
 			}
@@ -650,7 +650,7 @@
 		//////
 			if (lnBit > lnWidth)
 			{
-				iError_reportByNumber(thisCode, _ERROR_TOO_BIG_FOR_TARGET, iVariable_get_relatedComp(thisCode, varBits), false);
+				iError_reportByNumber(_ERROR_TOO_BIG_FOR_TARGET, iVariable_get_relatedComp(varBits), false);
 				return;
 			}
 
@@ -661,19 +661,19 @@
 			switch (lnWidth)
 			{
 				case 8:
-					result = iVariable_create(thisCode, _VAR_TYPE_U8, NULL, true);
+					result = iVariable_create(_VAR_TYPE_U8, NULL, true);
 					break;
 				case 16:
-					result = iVariable_create(thisCode, _VAR_TYPE_U16, NULL, true);
+					result = iVariable_create(_VAR_TYPE_U16, NULL, true);
 					break;
 				case 32:
-					result = iVariable_create(thisCode, _VAR_TYPE_U32, NULL, true);
+					result = iVariable_create(_VAR_TYPE_U32, NULL, true);
 					break;
 				case 64:
-					result = iVariable_create(thisCode, _VAR_TYPE_U64, NULL, true);
+					result = iVariable_create(_VAR_TYPE_U64, NULL, true);
 					break;
 				default:
-					iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varBits), false);
+					iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varBits), false);
 					return;
 			}
 
@@ -682,7 +682,7 @@
 		// Are we good?
 		//////
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varBits), false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varBits), false);
 
 
 		//////////
@@ -759,13 +759,13 @@
 // Returns:
 //    Numeric		-- Input bits converted to an 8-bit unsigned integer
 //////
-	void function_bits8(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_bits8(SFunctionParams* rpar)
 	{
 		SVariable* varBits = rpar->ip[0];
 
 
 		// Return bits8()
-		ifunction_bits_common(thisCode, rpar, varBits, cvarEight);
+		ifunction_bits_common(rpar, varBits, cvarEight);
 	}
 
 
@@ -791,13 +791,13 @@
 // Returns:
 //    Numeric		-- Input bits converted to an 16-bit unsigned integer
 //////
-	void function_bits16(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_bits16(SFunctionParams* rpar)
 	{
 		SVariable* varBits = rpar->ip[0];
 
 
 		// Return bits16()
-		ifunction_bits_common(thisCode, rpar, varBits, cvarSixteen);
+		ifunction_bits_common(rpar, varBits, cvarSixteen);
 	}
 
 
@@ -823,13 +823,13 @@
 // Returns:
 //    Numeric		-- Input bits converted to an 32-bit unsigned integer
 //////
-	void function_bits32(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_bits32(SFunctionParams* rpar)
 	{
 		SVariable* varBits = rpar->ip[0];
 
 
 		// Return bits32()
-		ifunction_bits_common(thisCode, rpar, varBits, cvarThirtyTwo);
+		ifunction_bits_common(rpar, varBits, cvarThirtyTwo);
 	}
 
 
@@ -855,13 +855,13 @@
 // Returns:
 //    Numeric		-- Input bits converted to an 64-bit unsigned integer
 //////
-	void function_bits64(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_bits64(SFunctionParams* rpar)
 	{
 		SVariable* varBits = rpar->ip[0];
 
 
 		// Return bits64()
-		ifunction_bits_common(thisCode, rpar, varBits, cvarSixtyFour);
+		ifunction_bits_common(rpar, varBits, cvarSixtyFour);
 	}
 
 
@@ -889,7 +889,7 @@
 // Returns:
 //    Numeric		-- The extracted bits as a numeric unsigned integer of the same size as the original.
 //////
-	void function_bitslice(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_bitslice(SFunctionParams* rpar)
 	{
 //		SVariable* varValue		= rpar->params[0];
 //		SVariable* varBitStart	= rpar->params[1];
@@ -897,7 +897,7 @@
 
 
 		// Not yet completed
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 	}
 
 
@@ -924,14 +924,14 @@
 // Returns:
 //    Character		-- The extracted bits as a character string
 //////
-	void function_bitstr(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_bitstr(SFunctionParams* rpar)
 	{
 //		SVariable* varValue		= rpar->params[0];
 //		SVariable* varLength	= rpar->params[1];
 
 
 		// Not yet completed
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 	}
 
 
@@ -957,13 +957,13 @@
 // Returns:
 //    Numeric	-- Input number converted to ASCII value number
 //////
-	void function_blu(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_blu(SFunctionParams* rpar)
 	{
 		SVariable* varColor = rpar->ip[0];
 
 
 		// Return blu
-		ifunction_color_common(thisCode, rpar, varColor, 0x00ff0000, 16);
+		ifunction_color_common(rpar, varColor, 0x00ff0000, 16);
 	}
 
 
@@ -992,7 +992,7 @@
 //    Numeric		-- Constructed system-wide RGBA() integer
 //
 //////
-	void function_bgr(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_bgr(SFunctionParams* rpar)
 	{
 		SVariable* varBlu = rpar->ip[0];
 		SVariable* varGrn = rpar->ip[1];
@@ -1000,7 +1000,7 @@
 
 
 		// Return bgr
-		ifunction_rgba_common(thisCode, rpar, varRed, varGrn, varBlu, NULL);
+		ifunction_rgba_common(rpar, varRed, varGrn, varBlu, NULL);
 	}
 
 
@@ -1030,7 +1030,7 @@
 //    Numeric		-- Constructed system-wide RGBA() integer
 //
 //////
-	void function_bgra(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_bgra(SFunctionParams* rpar)
 	{
 		SVariable* varBlu = rpar->ip[0];
 		SVariable* varGrn = rpar->ip[1];
@@ -1039,5 +1039,5 @@
 
 
 		// Return bgra
-		ifunction_rgba_common(thisCode, rpar, varRed, varGrn, varBlu, varAlp);
+		ifunction_rgba_common(rpar, varRed, varGrn, varBlu, varAlp);
 	}

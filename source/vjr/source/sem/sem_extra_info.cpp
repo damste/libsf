@@ -87,7 +87,7 @@
 // Called to allocate a new extra info and append it from the chain
 //
 //////
-	SExtraInfo* iExtraInfo_allocate(SThisCode* thisCode, SEM* sem, SLine* line, SExtraInfo** root)
+	SExtraInfo* iExtraInfo_allocate(SEM* sem, SLine* line, SExtraInfo** root)
 	{
 		SExtraInfo* ei;
 
@@ -112,7 +112,7 @@
 // Called to free the extra info associated with this entry
 //
 //////
-	void iExtraInfo_removeAll(SThisCode* thisCode, SEM* sem, SLine* line, SExtraInfo** root, bool tlDeleteSelf)
+	void iExtraInfo_removeAll(SEM* sem, SLine* line, SExtraInfo** root, bool tlDeleteSelf)
 	{
 		SExtraInfo*		ei;
 		SExtraInfo*		eiNext;
@@ -162,28 +162,28 @@ debug_break;
 // Called to process the extra info block's callbacks (if any)
 //
 //////
-	void iExtraInfo_access(SThisCode* thisCode, SEM* sem, SLine* line)
+	void iExtraInfo_access(SEM* sem, SLine* line)
 	{
 		// If there's a callback, call it
 		if (sem && line && line->extra_info)
-			iiExtraInfo_callbackCommon(thisCode, sem, line, _EXTRA_INFO_ON_ACCESS);
+			iiExtraInfo_callbackCommon(sem, line, _EXTRA_INFO_ON_ACCESS);
 	}
 
-	void iExtraInfo_arrival(SThisCode* thisCode, SEM* sem, SLine* line)
+	void iExtraInfo_arrival(SEM* sem, SLine* line)
 	{
 		// If there's a callback, call it
 		if (sem && line && line->extra_info)
-			iiExtraInfo_callbackCommon(thisCode, sem, line, _EXTRA_INFO_ON_ARRIVAL);
+			iiExtraInfo_callbackCommon(sem, line, _EXTRA_INFO_ON_ARRIVAL);
 	}
 
-	void iExtraInfo_update(SThisCode* thisCode, SEM* sem, SLine* line)
+	void iExtraInfo_update(SEM* sem, SLine* line)
 	{
 		// If there's a callback, call it
 		if (sem && line && line->extra_info)
-			iiExtraInfo_callbackCommon(thisCode, sem, line, _EXTRA_INFO_ON_UPDATE);
+			iiExtraInfo_callbackCommon(sem, line, _EXTRA_INFO_ON_UPDATE);
 	}
 
-	void iiExtraInfo_callbackCommon(SThisCode* thisCode, SEM* sem, SLine* line, s32 tnCallbackType)
+	void iiExtraInfo_callbackCommon(SEM* sem, SLine* line, s32 tnCallbackType)
 	{
 		SExtraInfo* ei;
 

@@ -92,128 +92,128 @@
 // Creates the object structure
 //
 //////
-	SObject* iObj_create(SThisCode* thisCode, s32 objType, SObject* objParent)
+	SObject* iObj_create(s32 objType, SObject* objParent)
 	{
 		// We need to create it
 		logfunc(__FUNCTION__);
 		switch (objType)
 		{
 			case _OBJ_TYPE_EMPTY:		// Empty, used as a placeholder object that is not drawn
-				return(iSubobj_createEmpty(thisCode, NULL, objParent));
+				return(iSubobj_createEmpty(NULL, objParent));
 
 			case _OBJ_TYPE_FORM:			// Form class, the main outer window the OS sees
-				return(iSubobj_createForm(thisCode, NULL, objParent));
+				return(iSubobj_createForm(NULL, objParent));
 
 			case _OBJ_TYPE_SUBFORM:		// A new class which has its own drawing content and can be moved about using UI features
-				return(iSubobj_createSubform(thisCode, NULL, objParent));
+				return(iSubobj_createSubform(NULL, objParent));
 
 			case _OBJ_TYPE_CAROUSEL:	// A new class which is its a holder for riders, allowing multiple classes to be docked and interacted with/upon as a group
-				return(iSubobj_createCarousel(thisCode, NULL, objParent));
+				return(iSubobj_createCarousel(NULL, objParent));
 
 			case _OBJ_TYPE_RIDER:		// A new class which wraps around a form or subform allowing it to be presented inside a carousel
-				return(iSubobj_createRider(thisCode, NULL, objParent));
+				return(iSubobj_createRider(NULL, objParent));
 
 			case _OBJ_TYPE_LABEL:		// A label
-				return(iSubobj_createLabel(thisCode, NULL, objParent));
+				return(iSubobj_createLabel(NULL, objParent));
 
 			case _OBJ_TYPE_TEXTBOX:		// An input textbox
-				return(iSubobj_createTextbox(thisCode, NULL, objParent));
+				return(iSubobj_createTextbox(NULL, objParent));
 
 			case _OBJ_TYPE_BUTTON:		// A push button
-				return(iSubobj_createButton(thisCode, NULL, objParent));
+				return(iSubobj_createButton(NULL, objParent));
 
 			case _OBJ_TYPE_EDITBOX:		// An input multi-line editbox
-				return(iSubobj_createEditbox(thisCode, NULL, objParent));
+				return(iSubobj_createEditbox(NULL, objParent));
 
 			case _OBJ_TYPE_IMAGE:		// A graphical image
-				return(iSubobj_createImage(thisCode, NULL, objParent));
+				return(iSubobj_createImage(NULL, objParent));
 
 			case _OBJ_TYPE_CHECKBOX:		// A checkbox
-				return(iSubobj_createCheckbox(thisCode, NULL, objParent));
+				return(iSubobj_createCheckbox(NULL, objParent));
 
 			case _OBJ_TYPE_OPTION:		// A combination selection
-				return(iSubobj_createOption(thisCode, NULL, objParent));
+				return(iSubobj_createOption(NULL, objParent));
 
 			case _OBJ_TYPE_RADIO:		// A radio dial, which can also present as a slider or spinner
-				return(iSubobj_createRadio(thisCode, NULL, objParent));
+				return(iSubobj_createRadio(NULL, objParent));
 
 			case _OBJ_TYPE_CMDGROUP:	// A command button group
-				return(iSubobj_createCmdGroup(thisCode, NULL, objParent));
+				return(iSubobj_createCmdGroup(NULL, objParent));
 
 			case _OBJ_TYPE_OPTGROUP:	// An option group
-				return(iSubobj_createOptGroup(thisCode, NULL, objParent));
+				return(iSubobj_createOptGroup(NULL, objParent));
 
 			case _OBJ_TYPE_LISTBOX:		// A listbox
-				return(iSubobj_createListbox(thisCode, NULL, objParent));
+				return(iSubobj_createListbox(NULL, objParent));
 
 			case _OBJ_TYPE_COMBOBOX:	// A combobox
-				return(iSubobj_createCombobox(thisCode, NULL, objParent));
+				return(iSubobj_createCombobox(NULL, objParent));
 
 			case _OBJ_TYPE_FORMSET:		// A formset
-				return(iSubobj_createFormset(thisCode, NULL, objParent));
+				return(iSubobj_createFormset(NULL, objParent));
 
 			case _OBJ_TYPE_TOOLBAR:		// A toolbar
-				return(iSubobj_createToolbar(thisCode, NULL, objParent));
+				return(iSubobj_createToolbar(NULL, objParent));
 
 			case _OBJ_TYPE_SEPARATOR:	// A separator
-				return(iSubobj_createSeparator(thisCode, NULL, objParent));
+				return(iSubobj_createSeparator(NULL, objParent));
 
 			case _OBJ_TYPE_LINE:		// A line
-				return(iSubobj_createLine(thisCode, NULL, objParent));
+				return(iSubobj_createLine(NULL, objParent));
 
 			case _OBJ_TYPE_SHAPE:		// A shape
-				return(iSubobj_createShape(thisCode, NULL, objParent));
+				return(iSubobj_createShape(NULL, objParent));
 
 			case _OBJ_TYPE_CONTAINER:	// A container
-				return(iSubobj_createContainer(thisCode, NULL, objParent));
+				return(iSubobj_createContainer(NULL, objParent));
 
 			case _OBJ_TYPE_CONTROL:		// A blocking container
-				return(iSubobj_createControl(thisCode, NULL, objParent));
+				return(iSubobj_createControl(NULL, objParent));
 
 			case _OBJ_TYPE_GRID:		// A grid
-				return(iSubobj_createGrid(thisCode, NULL, objParent));
+				return(iSubobj_createGrid(NULL, objParent));
 
 			case _OBJ_TYPE_COLUMN:		// A grid's column object
-				return(iSubobj_createColumn(thisCode, NULL, objParent));
+				return(iSubobj_createColumn(NULL, objParent));
 
 			case _OBJ_TYPE_HEADER:		// A grid's header object
-				return(iSubobj_createHeader(thisCode, NULL, objParent));
+				return(iSubobj_createHeader(NULL, objParent));
 
 			case _OBJ_TYPE_OLEBOUND:	// A bound OLE object
-				return(iSubobj_createOleBound(thisCode, NULL, objParent));
+				return(iSubobj_createOleBound(NULL, objParent));
 
 			case _OBJ_TYPE_OLECONTAIN:	// An OLE container control object
-				return(iSubobj_createOleContain(thisCode, NULL, objParent));
+				return(iSubobj_createOleContain(NULL, objParent));
 
 			case _OBJ_TYPE_SPINNER:		// A spinner
-				return(iSubobj_createSpinner(thisCode, NULL, objParent));
+				return(iSubobj_createSpinner(NULL, objParent));
 
 			case _OBJ_TYPE_TIMER:		// A timer
-				return(iSubobj_createTimer(thisCode, NULL, objParent));
+				return(iSubobj_createTimer(NULL, objParent));
 
 			case _OBJ_TYPE_HYPERLINK:	// A hyperlink
-				return(iSubobj_createHyperlink(thisCode, NULL, objParent));
+				return(iSubobj_createHyperlink(NULL, objParent));
 
 			case _OBJ_TYPE_COLLECTION:	// A collection
-				return(iSubobj_createCollection(thisCode, NULL, objParent));
+				return(iSubobj_createCollection(NULL, objParent));
 
 			case _OBJ_TYPE_PAGE:		// A page within a pageframe
-				return(iSubobj_createPage(thisCode, NULL, objParent));
+				return(iSubobj_createPage(NULL, objParent));
 
 			case _OBJ_TYPE_PAGEFRAME:	// A pageframe
-				return(iSubobj_createPageFrame(thisCode, NULL, objParent));
+				return(iSubobj_createPageFrame(NULL, objParent));
 
 			case _OBJ_TYPE_SESSION:		// A session
-				return(iSubobj_createSession(thisCode, NULL, objParent));
+				return(iSubobj_createSession(NULL, objParent));
 
 			case _OBJ_TYPE_CUSTOM:		// A custom class
-				return(iSubobj_createCustom(thisCode, NULL, objParent));
+				return(iSubobj_createCustom(NULL, objParent));
 
 			case _OBJ_TYPE_EXCEPTION:	// An exception
-				return(iSubobj_createException(thisCode, NULL, objParent));
+				return(iSubobj_createException(NULL, objParent));
 
 			case _OBJ_TYPE_SETTINGS:	// Settings
-				return(iSubobj_createSettings(thisCode, NULL, objParent));
+				return(iSubobj_createSettings(NULL, objParent));
 
 			default:
 // TODO:  We should never get here.  If we do it's a developer error.  Check the call stack and determine the cause.
@@ -236,7 +236,7 @@
 //		sub_obj_output	-- Populated with the pointer of the sub-object
 //
 //////
-	SObject* iObj_addChild(SThisCode* thisCode, s32 objType, SObject* objParent)
+	SObject* iObj_addChild(s32 objType, SObject* objParent)
 	{
 		SObject* objNew;
 
@@ -247,11 +247,11 @@
 		if (objParent)
 		{
 			// Create the new object using the default template
-			objNew = iObj_create(thisCode, objType, objParent);
+			objNew = iObj_create(objType, objParent);
 
 			// Append if valid
 			if (objNew)
-				iObj_appendObjToParent(thisCode, objParent, objNew);
+				iObj_appendObjToParent(objParent, objNew);
 		}
 
 		// Indicate our status
@@ -266,7 +266,7 @@
 // Copy the indicated object.
 //
 //////
-	SObject* iObj_copy(SThisCode* thisCode, SObject* template_obj, SObject* prevObj, SObject* nextObj, SObject* parent, bool tlCopyChildren, bool tlCopySiblings, bool tlCreateSeparateBitmapBuffers)
+	SObject* iObj_copy(SObject* template_obj, SObject* prevObj, SObject* nextObj, SObject* parent, bool tlCopyChildren, bool tlCopySiblings, bool tlCreateSeparateBitmapBuffers)
 	{
 		SObject* obj;
 		SObject* objSib;
@@ -323,7 +323,7 @@
 			//////////
 			// Copy all of the properties one-by-one
 			//////
-				iObjProp_copyAll(thisCode, obj, template_obj, true);
+				iObjProp_copyAll(obj, template_obj, true);
 
 
 			//////////
@@ -337,7 +337,7 @@
 			// Copy children if need be
 			//////
 				if (tlCopyChildren && template_obj->firstChild)
-					obj->firstChild = iObj_copy(thisCode, template_obj->firstChild, NULL, NULL, obj, true, true, tlCreateSeparateBitmapBuffers);
+					obj->firstChild = iObj_copy(template_obj->firstChild, NULL, NULL, obj, true, true, tlCreateSeparateBitmapBuffers);
 
 
 			//////////
@@ -358,7 +358,7 @@
 						for (objSib = template_obj->ll.nextObj; objSib; objSib = objSib->ll.nextObj)
 						{
 							// Copy this sibling
-							objNew = iObj_copy(thisCode, objSib, NULL, NULL, obj, true, false, tlCreateSeparateBitmapBuffers);
+							objNew = iObj_copy(objSib, NULL, NULL, obj, true, false, tlCreateSeparateBitmapBuffers);
 							if (objNew)
 							{
 								// Append it to the chain
@@ -367,7 +367,7 @@
 							} else {
 								// Should never happen
 // TODO:  For extra info, we could create the call stack
-								iError_signal(thisCode, _ERROR_INTERNAL_ERROR, NULL, true, NULL, false);
+								iError_signal(_ERROR_INTERNAL_ERROR, NULL, true, NULL, false);
 							}
 						}
 
@@ -387,7 +387,7 @@
 // Delete the indicated object.
 //
 //////
-	void iObj_delete(SThisCode* thisCode, SObject** objRoot, bool tlDeleteSelf, bool tlDeleteChildren, bool tlDeleteSiblings)
+	void iObj_delete(SObject** objRoot, bool tlDeleteSelf, bool tlDeleteChildren, bool tlDeleteSiblings)
 	{
 		SObject* obj;
 		SObject* objSib;
@@ -409,7 +409,7 @@
 			// Delete children
 			//////
 				if (tlDeleteChildren && obj->firstChild)
-					iObj_delete(thisCode, &obj->firstChild, true, true, true);
+					iObj_delete(&obj->firstChild, true, true, true);
 
 
 			//////////
@@ -425,7 +425,7 @@
 						objSibNext = objSib->ll.nextObj;
 
 						// Delete this sibling
-						iObj_delete(thisCode, &objSib, true, true, false);
+						iObj_delete(&objSib, true, true, false);
 
 						// Move to next sibling
 						objSib = objSibNext;
@@ -439,121 +439,121 @@
 				switch (obj->objType)
 				{
 					case _OBJ_TYPE_EMPTY:
-						iSubobj_deleteEmpty(thisCode, obj, true);
+						iSubobj_deleteEmpty(obj, true);
 						break;
 					case _OBJ_TYPE_FORM:
-						iSubobj_deleteForm(thisCode, obj, true);
+						iSubobj_deleteForm(obj, true);
 						break;
 					case _OBJ_TYPE_SUBFORM:
-						iSubobj_deleteSubform(thisCode, obj, true);
+						iSubobj_deleteSubform(obj, true);
 						break;
 					case _OBJ_TYPE_CAROUSEL:
-						iSubobj_deleteCarousel(thisCode, obj, true, tlDeleteChildren, tlDeleteChildren);
+						iSubobj_deleteCarousel(obj, true, tlDeleteChildren, tlDeleteChildren);
 						break;
 					case _OBJ_TYPE_RIDER:
-						iSubobj_deleteRider(thisCode, obj, true, false);
+						iSubobj_deleteRider(obj, true, false);
 						break;
 					case _OBJ_TYPE_LABEL:
-						iSubobj_deleteLabel(thisCode, obj, true);
+						iSubobj_deleteLabel(obj, true);
 						break;
 					case _OBJ_TYPE_TEXTBOX:
-						iSubobj_deleteTextbox(thisCode, obj, true);
+						iSubobj_deleteTextbox(obj, true);
 						break;
 					case _OBJ_TYPE_BUTTON:
-						iSubobj_deleteButton(thisCode, obj, true);
+						iSubobj_deleteButton(obj, true);
 						break;
 					case _OBJ_TYPE_EDITBOX:
-						iSubobj_deleteEditbox(thisCode, obj, true);
+						iSubobj_deleteEditbox(obj, true);
 						break;
 					case _OBJ_TYPE_IMAGE:
-						iSubobj_deleteImage(thisCode, obj, true);
+						iSubobj_deleteImage(obj, true);
 						break;
 					case _OBJ_TYPE_CHECKBOX:
-						iSubobj_deleteCheckbox(thisCode, obj, true);
+						iSubobj_deleteCheckbox(obj, true);
 						break;
 					case _OBJ_TYPE_OPTION:
-						iSubobj_deleteOption(thisCode, obj, true);
+						iSubobj_deleteOption(obj, true);
 						break;
 					case _OBJ_TYPE_RADIO:
-						iSubobj_deleteRadio(thisCode, obj, true);
+						iSubobj_deleteRadio(obj, true);
 						break;
 					case _OBJ_TYPE_CMDGROUP:
-						iSubobj_deleteCmdGroup(thisCode, obj, true);
+						iSubobj_deleteCmdGroup(obj, true);
 						break;
 					case _OBJ_TYPE_OPTGROUP:
-						iSubobj_deleteOptGroup(thisCode, obj, true);
+						iSubobj_deleteOptGroup(obj, true);
 						break;
 					case _OBJ_TYPE_LISTBOX:
-						iSubobj_deleteListbox(thisCode, obj, true);
+						iSubobj_deleteListbox(obj, true);
 						break;
 					case _OBJ_TYPE_COMBOBOX:
-						iSubobj_deleteCombobox(thisCode, obj, true);
+						iSubobj_deleteCombobox(obj, true);
 						break;
 					case _OBJ_TYPE_FORMSET:
-						iSubobj_deleteFormset(thisCode, obj, true);
+						iSubobj_deleteFormset(obj, true);
 						break;
 					case _OBJ_TYPE_TOOLBAR:
-						iSubobj_deleteToolbar(thisCode, obj, true);
+						iSubobj_deleteToolbar(obj, true);
 						break;
 					case _OBJ_TYPE_SEPARATOR:
-						iSubobj_deleteSeparator(thisCode, obj, true);
+						iSubobj_deleteSeparator(obj, true);
 						break;
 					case _OBJ_TYPE_LINE:
-						iSubobj_deleteLine(thisCode, obj, true);
+						iSubobj_deleteLine(obj, true);
 						break;
 					case _OBJ_TYPE_SHAPE:
-						iSubobj_deleteShape(thisCode, obj, true);
+						iSubobj_deleteShape(obj, true);
 						break;
 					case _OBJ_TYPE_CONTAINER:
-						iSubobj_deleteContainer(thisCode, obj, true);
+						iSubobj_deleteContainer(obj, true);
 						break;
 					case _OBJ_TYPE_CONTROL:
-						iSubobj_deleteControl(thisCode, obj, true);
+						iSubobj_deleteControl(obj, true);
 						break;
 					case _OBJ_TYPE_GRID:
-						iSubobj_deleteGrid(thisCode, obj, true);
+						iSubobj_deleteGrid(obj, true);
 						break;
 					case _OBJ_TYPE_COLUMN:
-						iSubobj_deleteColumn(thisCode, obj, true);
+						iSubobj_deleteColumn(obj, true);
 						break;
 					case _OBJ_TYPE_HEADER:
-						iSubobj_deleteHeader(thisCode, obj, true);
+						iSubobj_deleteHeader(obj, true);
 						break;
 					case _OBJ_TYPE_OLEBOUND:
-						iSubobj_deleteOleBound(thisCode, obj, true);
+						iSubobj_deleteOleBound(obj, true);
 						break;
 					case _OBJ_TYPE_OLECONTAIN:
-						iSubobj_deleteOleContain(thisCode, obj, true);
+						iSubobj_deleteOleContain(obj, true);
 						break;
 					case _OBJ_TYPE_SPINNER:
-						iSubobj_deleteSpinner(thisCode, obj, true);
+						iSubobj_deleteSpinner(obj, true);
 						break;
 					case _OBJ_TYPE_TIMER:
-						iSubobj_deleteTimer(thisCode, obj, true);
+						iSubobj_deleteTimer(obj, true);
 						break;
 					case _OBJ_TYPE_HYPERLINK:
-						iSubobj_deleteHyperlink(thisCode, obj, true);
+						iSubobj_deleteHyperlink(obj, true);
 						break;
 					case _OBJ_TYPE_COLLECTION:
-						iSubobj_deleteCollection(thisCode, obj, true);
+						iSubobj_deleteCollection(obj, true);
 						break;
 					case _OBJ_TYPE_PAGE:
-						iSubobj_deletePage(thisCode, obj, true);
+						iSubobj_deletePage(obj, true);
 						break;
 					case _OBJ_TYPE_PAGEFRAME:
-						iSubobj_deletePageFrame(thisCode, obj, true);
+						iSubobj_deletePageFrame(obj, true);
 						break;
 					case _OBJ_TYPE_SESSION:
-						iSubobj_deleteSession(thisCode, obj, true);
+						iSubobj_deleteSession(obj, true);
 						break;
 					case _OBJ_TYPE_CUSTOM:
-						iSubobj_deleteCustom(thisCode, obj, true);
+						iSubobj_deleteCustom(obj, true);
 						break;
 					case _OBJ_TYPE_EXCEPTION:
-						iSubobj_deleteException(thisCode, obj, true);
+						iSubobj_deleteException(obj, true);
 						break;
 					case _OBJ_TYPE_SETTINGS:
-						iSubobj_deleteSettings(thisCode, obj, true);
+						iSubobj_deleteSettings(obj, true);
 						break;
 				}
 		}
@@ -567,12 +567,12 @@
 // Called to set focus on the indicated control.
 //
 //////
-	bool iObj_setFocus(SThisCode* thisCode, SWindow* win, SObject* obj, bool tlClearOtherControlsWithFocus)
+	bool iObj_setFocus(SWindow* win, SObject* obj, bool tlClearOtherControlsWithFocus)
 	{
 		logfunc(__FUNCTION__);
 		// Clear the focus if we should
 		if (tlClearOtherControlsWithFocus)
-			iObj_clearFocus(thisCode, win, iObj_find_rootmostObject(thisCode, obj), true, true);
+			iObj_clearFocus(win, iObj_find_rootmostObject(obj), true, true);
 
 		// Set the focus
 		if (!obj->p.hasFocus)
@@ -581,10 +581,10 @@
 			obj->p.hasFocus = true;
 
 			// Mark the object dirty
-			iObj_setDirtyRender_ascent(thisCode, obj, true);
+			iObj_setDirtyRender_ascent(obj, true);
 
 			// Signal the change
-			iEngine_raise_event(thisCode, _EVENT_ONGOTFOCUS, win, obj);
+			iEngine_raise_event(_EVENT_ONGOTFOCUS, win, obj);
 
 			// Indicate we set focus
 			return(true);
@@ -602,7 +602,7 @@
 // Clear the focus.
 //
 //////
-	void iObj_clearFocus(SThisCode* thisCode, SWindow* win, SObject* obj, bool tlClearChildren, bool tlClearSiblings)
+	void iObj_clearFocus(SWindow* win, SObject* obj, bool tlClearChildren, bool tlClearSiblings)
 	{
 		SObject*			objSib;
 		SFocusHighlight*	focus;
@@ -611,7 +611,7 @@
 		// Clear children
 		logfunc(__FUNCTION__);
 		if (tlClearChildren && obj->firstChild)
-			iObj_clearFocus(thisCode, win, obj->firstChild, true, true);
+			iObj_clearFocus(win, obj->firstChild, true, true);
 
 		// Clear self
 		if (obj->p.hasFocus)
@@ -620,7 +620,7 @@
 			obj->p.hasFocus = false;
 
 			// Mark the object dirty
-			iObj_setDirtyRender_ascent(thisCode, obj, true);
+			iObj_setDirtyRender_ascent(obj, true);
 
 			// Remove the focus highlight window around the control (if any)
 			focus = iFocusHighlight_findByObj(obj);
@@ -637,7 +637,7 @@
 			}
 
 			// Signal the change
-			iEngine_raise_event(thisCode, _EVENT_ONLOSTFOCUS, win, obj);
+			iEngine_raise_event(_EVENT_ONLOSTFOCUS, win, obj);
 		}
 
 		// Clear siblings
@@ -648,7 +648,7 @@
 			while (objSib)
 			{
 				// Clear this sibling
-				iObj_clearFocus(thisCode, win, objSib, true, false);
+				iObj_clearFocus(win, objSib, true, false);
 
 				// Move to the next sibling
 				objSib = objSib->ll.nextObj;
@@ -664,11 +664,11 @@
 // Finds the root parent and returns that value
 //
 //////
-	SObject* iObj_find_rootmostObject(SThisCode* thisCode, SObject* obj)
+	SObject* iObj_find_rootmostObject(SObject* obj)
 	{
 		// If there's a parent, continue up the chain
 		logfunc(__FUNCTION__);
-		if (obj->parent)		return(iObj_find_rootmostObject(thisCode, obj->parent));
+		if (obj->parent)		return(iObj_find_rootmostObject(obj->parent));
 		else					return(obj);		// This is the parent-most object
 	}
 
@@ -680,7 +680,7 @@
 // Called to find the RECT of the indicated object in screen coordinates
 //
 //////
-	bool iObj_find_screenRect(SThisCode* thisCode, SObject* obj, RECT* rc)
+	bool iObj_find_screenRect(SObject* obj, RECT* rc)
 	{
 		SObject*	objRoot;
 		SWindow*	win;
@@ -692,10 +692,10 @@
 		if (obj && rc)
 		{
 			// Grab the parent-most object
-			objRoot = iObj_find_rootmostObject(thisCode, obj);
+			objRoot = iObj_find_rootmostObject(obj);
 
 			// It must be a form, so we look for the form on the window
-			win = iWindow_findByObj(thisCode, objRoot);
+			win = iWindow_findByObj(objRoot);
 			if (win)
 			{
 				// Get the coordinates
@@ -703,7 +703,7 @@
 				SetRect(&lrcObj, 0, 0, objRoot->bmp->bi.biWidth, objRoot->bmp->bi.biHeight);
 
 				// Adjust for the child object's location within
-				if (iObj_find_relativeRect(thisCode, objRoot, obj, 0, 0, &lrcObj, true, true))
+				if (iObj_find_relativeRect(objRoot, obj, 0, 0, &lrcObj, true, true))
 				{
 					// Calculate the adjustment
 					SetRect(rc, lrcWin.left + lrcObj.left, lrcWin.top + lrcObj.top, lrcWin.left + lrcObj.right, lrcWin.top + lrcObj.bottom);
@@ -725,7 +725,7 @@
 // Called to find the relative rectangle of the indicated
 //
 //////
-	bool iObj_find_relativeRect(SThisCode* thisCode, SObject* objThis, SObject* objTarget, s32 x, s32 y, RECT* rc, bool tlProcessChildren, bool tlProcessSiblings)
+	bool iObj_find_relativeRect(SObject* objThis, SObject* objTarget, s32 x, s32 y, RECT* rc, bool tlProcessChildren, bool tlProcessSiblings)
 	{
 		s32			lnX, lnY;
 		SObject*	objSib;
@@ -768,7 +768,7 @@
 			//////
 				if (objThis->firstChild && tlProcessChildren)
 				{
-					if (iObj_find_relativeRect(thisCode, objThis->firstChild, objTarget, lnX, lnY, rc, true, true))
+					if (iObj_find_relativeRect(objThis->firstChild, objTarget, lnX, lnY, rc, true, true))
 						return(true);
 				}
 
@@ -783,7 +783,7 @@
 					while (objSib)
 					{
 						// Process this sibling
-						if (iObj_find_relativeRect(thisCode, objSib, objTarget, x, y, rc, true, false))
+						if (iObj_find_relativeRect(objSib, objTarget, x, y, rc, true, false))
 							return(true);
 
 						// Move to the next sibling
@@ -804,10 +804,10 @@
 // Called to find the thisForm
 //
 //////
-	SObject* iObj_find_thisForm(SThisCode* thisCode, SObject* obj)
+	SObject* iObj_find_thisForm(SObject* obj)
 	{
 		logfunc(__FUNCTION__);
-		return(iiObj_findParentObject_byType(thisCode, obj, _OBJ_TYPE_FORM, true));
+		return(iiObj_findParentObject_byType(obj, _OBJ_TYPE_FORM, true));
 	}
 
 
@@ -818,10 +818,10 @@
 // Called to find the thisSubform object
 //
 //////
-	SObject* iObj_find_thisSubform(SThisCode* thisCode, SObject* obj)
+	SObject* iObj_find_thisSubform(SObject* obj)
 	{
 		logfunc(__FUNCTION__);
-		return(iiObj_findParentObject_byType(thisCode, obj, _OBJ_TYPE_SUBFORM, true));
+		return(iiObj_findParentObject_byType(obj, _OBJ_TYPE_SUBFORM, true));
 	}
 
 
@@ -832,10 +832,10 @@
 // Called to find the thisRider object
 //
 //////
-	SObject* iObj_find_thisRider(SThisCode* thisCode, SObject* obj)
+	SObject* iObj_find_thisRider(SObject* obj)
 	{
 		logfunc(__FUNCTION__);
-		return(iiObj_findParentObject_byType(thisCode, obj, _OBJ_TYPE_RIDER, true));
+		return(iiObj_findParentObject_byType(obj, _OBJ_TYPE_RIDER, true));
 	}
 
 
@@ -846,7 +846,7 @@
 // Called to search for the indicated object
 //
 //////
-	SObject* iiObj_findParentObject_byType(SThisCode* thisCode, SObject* objStart, s32 objType, bool tlSearchSelf)
+	SObject* iiObj_findParentObject_byType(SObject* objStart, s32 objType, bool tlSearchSelf)
 	{
 		logfunc(__FUNCTION__);
 
@@ -857,7 +857,7 @@
 
 		} else {
 			// If we can traverse higher, go higher, if not we're done
-			if (objStart->parent)		return(iiObj_findParentObject_byType(thisCode, objStart->parent, objType, true));
+			if (objStart->parent)		return(iiObj_findParentObject_byType(objStart->parent, objType, true));
 			else						return(NULL);
 		}
 	}
@@ -870,7 +870,7 @@
 // Called to find the indicated child object by name
 //
 //////
-	SObject* iiObj_findChildObject_byName(SThisCode* thisCode, SObject* objStart, SDatum* name, bool tlSearchSelf, bool tlSearchChildren, bool tlSearchSiblings)
+	SObject* iiObj_findChildObject_byName(SObject* objStart, SDatum* name, bool tlSearchSelf, bool tlSearchChildren, bool tlSearchSiblings)
 	{
 		SObject*	objFound;
 		SObject*	objSib;
@@ -890,7 +890,7 @@
 		//////
 			if (tlSearchChildren && objStart->firstChild)
 			{
-				if ((objFound = iiObj_findChildObject_byName(thisCode, objStart->firstChild, name, true, tlSearchSiblings, tlSearchChildren)))
+				if ((objFound = iiObj_findChildObject_byName(objStart->firstChild, name, true, tlSearchSiblings, tlSearchChildren)))
 					return(objFound);
 			}
 
@@ -903,7 +903,7 @@
 				for (objSib = objStart->ll.nextObj; objSib; objSib = objSib->ll.nextObj)
 				{
 					// Search this sibling
-					if ((objFound = iiObj_findChildObject_byName(thisCode, objSib, name, true, tlSearchChildren, false)))
+					if ((objFound = iiObj_findChildObject_byName(objSib, name, true, tlSearchChildren, false)))
 						return(objFound);
 				}
 			}
@@ -923,7 +923,7 @@
 // Called to determine if the indicated object is the command window
 //
 //////
-	bool iObj_isCommandWindow(SThisCode* thisCode, SObject* obj)
+	bool iObj_isCommandWindow(SObject* obj)
 	{
 		logfunc(__FUNCTION__);
 		return(obj == _cmd);
@@ -937,7 +937,7 @@
 // Called to set the focus highlights (blue borders around the focused control)
 //
 //////
-	void iObj_setFocusHighlights(SThisCode* thisCode, SWindow* win, SObject* obj, s32 x, s32 y, bool tlProcessChildren, bool tlProcessSiblings)
+	void iObj_setFocusHighlights(SWindow* win, SObject* obj, s32 x, s32 y, bool tlProcessChildren, bool tlProcessSiblings)
 	{
 		u32					lnI;
 		s32					lnX, lnY, lnFocusHighlightPixels, lnFocusHighlightBorderPixels;
@@ -969,7 +969,7 @@
 			// Scan through children
 			//////
 				if (obj->firstChild && tlProcessChildren)
-					iObj_setFocusHighlights(thisCode, win, obj->firstChild, lnX, lnY, true, true);
+					iObj_setFocusHighlights(win, obj->firstChild, lnX, lnY, true, true);
 
 
 			//////////
@@ -1055,7 +1055,7 @@
 					while (objSib)
 					{
 						// Process this sibling
-						iObj_setFocusHighlights(thisCode, win, objSib, x, y, true, false);
+						iObj_setFocusHighlights(win, objSib, x, y, true, false);
 
 						// Move to the next sibling
 						objSib = objSib->ll.nextObj;
@@ -1072,7 +1072,7 @@
 // Called to get a list of controls which have focus
 //
 //////
-	void iObj_findFocusControls(SThisCode* thisCode, SObject* obj, SBuilder* objFocusControls, bool tlProcessSiblings)
+	void iObj_findFocusControls(SObject* obj, SBuilder* objFocusControls, bool tlProcessSiblings)
 	{
 		SObject* objSib;
 
@@ -1082,7 +1082,7 @@
 		// Process any children first
 		//////
 			if (obj->firstChild)
-				iObj_findFocusControls(thisCode, obj->firstChild, objFocusControls, true);
+				iObj_findFocusControls(obj->firstChild, objFocusControls, true);
 
 
 		//////////
@@ -1102,7 +1102,7 @@
 				while (objSib)
 				{
 					// Process this sibling
-					iObj_findFocusControls(thisCode, objSib, objFocusControls, false);
+					iObj_findFocusControls(objSib, objFocusControls, false);
 
 					// Move to next sibling
 					objSib = objSib->ll.nextObj;
@@ -1118,12 +1118,12 @@
 // Called to move to set focus on the previous control
 //
 //////
-	bool iObj_setFocusObjectPrev(SThisCode* thisCode, SWindow* win, SObject* obj)
+	bool iObj_setFocusObjectPrev(SWindow* win, SObject* obj)
 	{
 		// Attempt the focus
 		logfunc(__FUNCTION__);
 		if (obj->ll.prev)
-			return(iObj_setFocus(thisCode, win, (SObject*)obj->ll.prev, true));
+			return(iObj_setFocus(win, (SObject*)obj->ll.prev, true));
 
 		// Nothing before
 		return(false);
@@ -1137,12 +1137,12 @@
 // Called to move to set focus on the next control
 //
 //////
-	bool iObj_setFocusObjectNext(SThisCode* thisCode, SWindow* win, SObject* obj)
+	bool iObj_setFocusObjectNext(SWindow* win, SObject* obj)
 	{
 		// Attempt the focus
 		logfunc(__FUNCTION__);
 		if (obj->ll.next)
-			return(iObj_setFocus(thisCode, win, obj->ll.nextObj, true));
+			return(iObj_setFocus(win, obj->ll.nextObj, true));
 
 		// Nothing after
 		return(false);
@@ -1156,9 +1156,9 @@
 // Called to check to see if any object at or below the indicated object has focus
 //
 //////
-	bool iObj_focus_descentCheck(SThisCode* thisCode, SObject* obj, bool tlCheckChildren, bool tlCheckSiblings)
+	bool iObj_focus_descentCheck(SObject* obj, bool tlCheckChildren, bool tlCheckSiblings)
 	{
-		return((iObj_focus_descentCheckObj(thisCode, obj, tlCheckChildren, tlCheckSiblings) != NULL));
+		return((iObj_focus_descentCheckObj(obj, tlCheckChildren, tlCheckSiblings) != NULL));
 	}
 
 
@@ -1169,7 +1169,7 @@
 // Called to return which control (if any) has focus
 //
 //////
-	SObject* iObj_focus_descentCheckObj(SThisCode* thisCode, SObject* obj, bool tlCheckChildren, bool tlCheckSiblings)
+	SObject* iObj_focus_descentCheckObj(SObject* obj, bool tlCheckChildren, bool tlCheckSiblings)
 	{
 		SObject* objSib;
 		SObject* objFocus;
@@ -1185,7 +1185,7 @@
 		//////////
 		// Check the children
 		//////
-			if (tlCheckChildren && obj->firstChild && (objFocus = iObj_focus_descentCheckObj(thisCode, obj->firstChild, true, true)))
+			if (tlCheckChildren && obj->firstChild && (objFocus = iObj_focus_descentCheckObj(obj->firstChild, true, true)))
 				return(objFocus);
 
 
@@ -1199,7 +1199,7 @@
 				while (objSib)
 				{
 					// See if this one has focus
-					if ((objFocus = iObj_focus_descentCheckObj(thisCode, objSib, true, false)))
+					if ((objFocus = iObj_focus_descentCheckObj(objSib, true, false)))
 						return(objFocus);
 
 					// Move to next sibling
@@ -1222,7 +1222,7 @@
 // Called to mark the object dirty for rendering.
 //
 //////
-	void iObj_setDirtyRender_ascent(SThisCode* thisCode, SObject* obj, bool tlMarkParents)
+	void iObj_setDirtyRender_ascent(SObject* obj, bool tlMarkParents)
 	{
 		logfunc(__FUNCTION__);
 		if (obj)
@@ -1235,7 +1235,7 @@
 			// Mark the parent
 // TODO:  This can be made into an iterative loop rather than a recursive function
 			if (tlMarkParents && obj->parent)
-				iObj_setDirtyRender_ascent(thisCode, obj->parent, true);
+				iObj_setDirtyRender_ascent(obj->parent, true);
 		}
 	}
 
@@ -1247,7 +1247,7 @@
 // Called to mark the object and optionally all its children and siblings
 //
 //////
-	void iObj_setDirtyRender_descent(SThisCode* thisCode, SObject* obj, bool tlProcessChildren, bool tlProcessSiblings)
+	void iObj_setDirtyRender_descent(SObject* obj, bool tlProcessChildren, bool tlProcessSiblings)
 	{
 		SObject* objSib;
 
@@ -1266,7 +1266,7 @@
 			// Process children?
 			//////
 				if (tlProcessChildren && obj->firstChild)
-					iObj_setDirtyRender_descent(thisCode, obj, true, true);
+					iObj_setDirtyRender_descent(obj, true, true);
 
 
 			//////////
@@ -1279,7 +1279,7 @@
 					while (objSib)
 					{
 						// Process this sibling
-						iObj_setDirtyRender_descent(thisCode, objSib, true, false);
+						iObj_setDirtyRender_descent(objSib, true, false);
 
 						// Move to next sibling
 						objSib = objSib->ll.nextObj;
@@ -1296,7 +1296,7 @@
 // Called to mark the object dirty for publishing.
 //
 //////
-	void iObj_setDirtyPublish_ascent(SThisCode* thisCode, SObject* obj, bool tlMarkParents)
+	void iObj_setDirtyPublish_ascent(SObject* obj, bool tlMarkParents)
 	{
 		logfunc(__FUNCTION__);
 		if (obj)
@@ -1307,7 +1307,7 @@
 			// Mark the parent
 // TODO:  This can be made into an iterative loop rather than a recursive function
 			if (tlMarkParents && obj->parent)
-				iObj_setDirtyPublish_ascent(thisCode, obj->parent, true);
+				iObj_setDirtyPublish_ascent(obj->parent, true);
 		}
 	}
 
@@ -1319,7 +1319,7 @@
 // Called to mark the object and optionally all its children and siblings
 //
 //////
-	void iObj_setDirtyPublish_descent(SThisCode* thisCode, SObject* obj, bool tlProcessChildren, bool tlProcessSiblings)
+	void iObj_setDirtyPublish_descent(SObject* obj, bool tlProcessChildren, bool tlProcessSiblings)
 	{
 		SObject* objSib;
 
@@ -1337,7 +1337,7 @@
 			// Process children?
 			//////
 				if ((tlProcessChildren || obj->objType == _OBJ_TYPE_CAROUSEL || obj->objType == _OBJ_TYPE_RIDER) && obj->firstChild)
-					iObj_setDirtyPublish_descent(thisCode, obj, true, true);
+					iObj_setDirtyPublish_descent(obj, true, true);
 
 
 			//////////
@@ -1350,7 +1350,7 @@
 					while (objSib)
 					{
 						// Process this sibling
-						iObj_setDirtyPublish_descent(thisCode, objSib, true, false);
+						iObj_setDirtyPublish_descent(objSib, true, false);
 
 						// Move to next sibling
 						objSib = objSib->ll.nextObj;
@@ -1367,7 +1367,7 @@
 // Called to render the indicated object
 //
 //////
-	u32 iObj_render(SThisCode* thisCode, SObject* obj, bool tlForceRender)
+	u32 iObj_render(SObject* obj, bool tlForceRender)
 	{
 		u32			lnPixelsRendered;
 		SObject*	objRoot;
@@ -1411,12 +1411,12 @@
 			// See if there is any onRender() algorithm associated with this object
 			//////
 				// Find the root object
-				objRoot = iObj_find_rootmostObject(thisCode, obj);
+				objRoot = iObj_find_rootmostObject(obj);
 				if (objRoot)
 				{
 					// Locate the associated window (if any)
-					win = iWindow_findByObj(thisCode, objRoot);
-					iEngine_raise_event(thisCode, _EVENT_ONRENDER, win, obj);
+					win = iWindow_findByObj(objRoot);
+					iEngine_raise_event(_EVENT_ONRENDER, win, obj);
 				}
 
 
@@ -1426,121 +1426,121 @@
 				switch (obj->objType)
 				{
 					case _OBJ_TYPE_EMPTY:		// Empty, used as a placeholder object that is not drawn
-						lnPixelsRendered += iSubobj_renderEmpty(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderEmpty(obj);
 						break;
 					case _OBJ_TYPE_FORM:			// Form class, the main outer window the OS sees
-						lnPixelsRendered += iSubobj_renderForm(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderForm(obj);
 						break;
 					case _OBJ_TYPE_SUBFORM:		// A new class which has its own drawing content and can be moved about using UI features
-						lnPixelsRendered += iSubobj_renderSubform(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderSubform(obj);
 						break;
 					case _OBJ_TYPE_CAROUSEL:	// A new class which holds riders, and allows multiple contents drawn in a new way
-						lnPixelsRendered += iSubobj_renderCarousel(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderCarousel(obj);
 						break;
 					case _OBJ_TYPE_RIDER:		// A new class which holds other objects, and allows its content to be drawn in a new way
-						lnPixelsRendered += iSubobj_renderRider(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderRider(obj);
 						break;
 					case _OBJ_TYPE_LABEL:		// A label
-						lnPixelsRendered += iSubobj_renderLabel(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderLabel(obj);
 						break;
 					case _OBJ_TYPE_TEXTBOX:		// An input textbox
-						lnPixelsRendered += iSubobj_renderTextbox(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderTextbox(obj);
 						break;
 					case _OBJ_TYPE_BUTTON:		// A push button
-						lnPixelsRendered += iSubobj_renderButton(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderButton(obj);
 						break;
 					case _OBJ_TYPE_EDITBOX:		// An input multi-line editbox
-						lnPixelsRendered += iSubobj_renderEditbox(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderEditbox(obj);
 						break;
 					case _OBJ_TYPE_IMAGE:		// A graphical image
-						lnPixelsRendered += iSubobj_renderImage(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderImage(obj);
 						break;
 					case _OBJ_TYPE_CHECKBOX:		// A checkbox
-						lnPixelsRendered += iSubobj_renderCheckbox(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderCheckbox(obj);
 						break;
 					case _OBJ_TYPE_OPTION:		// A combination selection
-						lnPixelsRendered += iSubobj_renderOption(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderOption(obj);
 						break;
 					case _OBJ_TYPE_RADIO:		// A radio dial, which can also present as a slider or spinner
-						lnPixelsRendered += iSubobj_renderRadio(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderRadio(obj);
 						break;
 					case _OBJ_TYPE_CMDGROUP:
-						lnPixelsRendered += iSubobj_renderCmdGroup(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderCmdGroup(obj);
 						break;
 					case _OBJ_TYPE_OPTGROUP:
-						lnPixelsRendered += iSubobj_renderOptGroup(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderOptGroup(obj);
 						break;
 					case _OBJ_TYPE_LISTBOX:
-						lnPixelsRendered += iSubobj_renderListbox(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderListbox(obj);
 						break;
 					case _OBJ_TYPE_COMBOBOX:
-						lnPixelsRendered += iSubobj_renderCombobox(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderCombobox(obj);
 						break;
 					case _OBJ_TYPE_FORMSET:
-						lnPixelsRendered += iSubobj_renderFormset(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderFormset(obj);
 						break;
 					case _OBJ_TYPE_TOOLBAR:
-						lnPixelsRendered += iSubobj_renderToolbar(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderToolbar(obj);
 						break;
 					case _OBJ_TYPE_SEPARATOR:
-						lnPixelsRendered += iSubobj_renderSeparator(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderSeparator(obj);
 						break;
 					case _OBJ_TYPE_LINE:
-						lnPixelsRendered += iSubobj_renderLine(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderLine(obj);
 						break;
 					case _OBJ_TYPE_SHAPE:
-						lnPixelsRendered += iSubobj_renderShape(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderShape(obj);
 						break;
 					case _OBJ_TYPE_CONTAINER:
-						lnPixelsRendered += iSubobj_renderContainer(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderContainer(obj);
 						break;
 					case _OBJ_TYPE_CONTROL:
-						lnPixelsRendered += iSubobj_renderControl(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderControl(obj);
 						break;
 					case _OBJ_TYPE_GRID:
-						lnPixelsRendered += iSubobj_renderGrid(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderGrid(obj);
 						break;
 					case _OBJ_TYPE_COLUMN:
-						lnPixelsRendered += iSubobj_renderColumn(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderColumn(obj);
 						break;
 					case _OBJ_TYPE_HEADER:
-						lnPixelsRendered += iSubobj_renderHeader(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderHeader(obj);
 						break;
 					case _OBJ_TYPE_OLEBOUND:
-						lnPixelsRendered += iSubobj_renderOleBound(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderOleBound(obj);
 						break;
 					case _OBJ_TYPE_OLECONTAIN:
-						lnPixelsRendered += iSubobj_renderOleContain(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderOleContain(obj);
 						break;
 					case _OBJ_TYPE_SPINNER:
-						lnPixelsRendered += iSubobj_renderSpinner(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderSpinner(obj);
 						break;
 					case _OBJ_TYPE_TIMER:
-						lnPixelsRendered += iSubobj_renderTimer(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderTimer(obj);
 						break;
 					case _OBJ_TYPE_HYPERLINK:
-						lnPixelsRendered += iSubobj_renderHyperlink(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderHyperlink(obj);
 						break;
 					case _OBJ_TYPE_COLLECTION:
-						lnPixelsRendered += iSubobj_renderCollection(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderCollection(obj);
 						break;
 					case _OBJ_TYPE_PAGE:
-						lnPixelsRendered += iSubobj_renderPage(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderPage(obj);
 						break;
 					case _OBJ_TYPE_PAGEFRAME:
-						lnPixelsRendered += iSubobj_renderPageFrame(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderPageFrame(obj);
 						break;
 					case _OBJ_TYPE_SESSION:
-						lnPixelsRendered += iSubobj_renderSession(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderSession(obj);
 						break;
 					case _OBJ_TYPE_CUSTOM:
-						lnPixelsRendered += iSubobj_renderCustom(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderCustom(obj);
 						break;
 					case _OBJ_TYPE_EXCEPTION:
-						lnPixelsRendered += iSubobj_renderException(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderException(obj);
 						break;
 					case _OBJ_TYPE_SETTINGS:
-						lnPixelsRendered += iSubobj_renderSettings(thisCode, obj);
+						lnPixelsRendered += iSubobj_renderSettings(obj);
 						break;
 
 					default:
@@ -1561,7 +1561,7 @@
 // Called to descend through the children to see if anything needs to be rendered.
 //
 //////
-	bool iObj_render_descentCheck(SThisCode* thisCode, SObject* obj, bool tlCheckChildren, bool tlCheckSiblings)
+	bool iObj_render_descentCheck(SObject* obj, bool tlCheckChildren, bool tlCheckSiblings)
 	{
 		SObject* objSib;
 
@@ -1576,7 +1576,7 @@
 		//////////
 		// Check the children
 		//////
-			if (tlCheckChildren && obj->firstChild && iObj_render_descentCheck(thisCode, obj->firstChild, true, true))
+			if (tlCheckChildren && obj->firstChild && iObj_render_descentCheck(obj->firstChild, true, true))
 				return(true);
 
 
@@ -1590,7 +1590,7 @@
 				while (objSib)
 				{
 					// See if this one needs rendering
-					if (iObj_render_descentCheck(thisCode, objSib, true, false))
+					if (iObj_render_descentCheck(objSib, true, false))
 						return(true);
 
 					// Move to next sibling
@@ -1613,7 +1613,7 @@
 // Called from subobjects to render any object children and sibling they may have based on flags
 //
 //////
-	u32 iObj_renderChildrenAndSiblings(SThisCode* thisCode, SObject* obj, bool tlRenderChildren, bool tlRenderSiblings, bool tlForceRender)
+	u32 iObj_renderChildrenAndSiblings(SObject* obj, bool tlRenderChildren, bool tlRenderSiblings, bool tlForceRender)
 	{
 		u32			lnPixelsRendered;
 		SObject*	objSib;
@@ -1625,14 +1625,14 @@
 		//////
 			lnPixelsRendered = 0;
 			if (tlRenderChildren && obj->firstChild)
-				lnPixelsRendered += iObj_renderChildrenAndSiblings(thisCode, obj->firstChild, true, true, tlForceRender);
+				lnPixelsRendered += iObj_renderChildrenAndSiblings(obj->firstChild, true, true, tlForceRender);
 
 
 		//////////
 		// Render self
 		//////
 			obj->isDirtyRender |= tlForceRender;
-			lnPixelsRendered += iObj_render(thisCode, obj, tlForceRender);
+			lnPixelsRendered += iObj_render(obj, tlForceRender);
 
 
 		//////////
@@ -1644,7 +1644,7 @@
 				while (objSib)
 				{
 					// Render this sibling
-					lnPixelsRendered += iObj_renderChildrenAndSiblings(thisCode, objSib, true, false, tlForceRender);
+					lnPixelsRendered += iObj_renderChildrenAndSiblings(objSib, true, false, tlForceRender);
 
 					// Move to next sibling
 					objSib = objSib->ll.nextObj;
@@ -1667,7 +1667,7 @@
 // and overlays them where they should be.
 //
 //////
-	u32 iObj_publish(SThisCode* thisCode, SObject* obj, RECT* rc, SBitmap* bmpDst, bool tlPublishChildren, bool tlPublishSiblings, bool tlForcePublish, s32 tnLevel)
+	u32 iObj_publish(SObject* obj, RECT* rc, SBitmap* bmpDst, bool tlPublishChildren, bool tlPublishSiblings, bool tlForcePublish, s32 tnLevel)
 	{
 		s32			lnWidth, lnHeight, lnBackStyle;
 		u32			lnPixelsRendered;
@@ -1716,7 +1716,7 @@
 
 						// Validate if anything has changed on this subform's children, if not then we don't need to publish anything below
 						if (!obj->isDirtyPublish && obj->firstChild)
-							llPublishChildren = iObj_publish_descentCheck(thisCode, obj->firstChild, true, true);
+							llPublishChildren = iObj_publish_descentCheck(obj->firstChild, true, true);
 						break;
 				}
 
@@ -1738,7 +1738,7 @@
 				llIsEnabled = propIsEnabled(obj);
 				lnBackStyle	= propBackStyle(obj);
 				if (llPublishChildren && llIsVisible && tlPublishChildren && obj->firstChild)
-					lnPixelsRendered += iObj_publish(thisCode, obj->firstChild, &lrcChild, obj->bmp, true, true, tlForcePublish, tnLevel + 1);
+					lnPixelsRendered += iObj_publish(obj->firstChild, &lrcChild, obj->bmp, true, true, tlForcePublish, tnLevel + 1);
 
 
 			//////////
@@ -1750,12 +1750,12 @@
 					// See if there is any onPublish() algorithm associated with this object
 					//////
 						// Find the root object
-						objRoot = iObj_find_rootmostObject(thisCode, obj);
+						objRoot = iObj_find_rootmostObject(obj);
 						if (objRoot)
 						{
 							// Locate the associated window (if any)
-							win = iWindow_findByObj(thisCode, objRoot);
-							iEngine_raise_event(thisCode, _EVENT_ONPUBLISH, win, obj);
+							win = iWindow_findByObj(objRoot);
+							iEngine_raise_event(_EVENT_ONPUBLISH, win, obj);
 						}
 
 
@@ -1833,7 +1833,7 @@
 									case _OBJ_TYPE_LABEL:
 										// Non-opaque labels are rendered as black on white, with that grayscale being used to influence the forecolor
 										if (lnBackStyle == _BACK_STYLE_OPAQUE)		lnPixelsRendered += iBmp_bitBlt(bmpDst, &lrc, obj->bmp);
-										else										lnPixelsRendered += iBmp_bitBlt_byGraymask(bmpDst, &lrc, obj->bmp, iObjProp_get_sbgra_direct(thisCode, obj, _INDEX_FORECOLOR));
+										else										lnPixelsRendered += iBmp_bitBlt_byGraymask(bmpDst, &lrc, obj->bmp, iObjProp_get_sbgra_direct(obj, _INDEX_FORECOLOR));
 										break;
 
 									default:
@@ -1868,7 +1868,7 @@
 					while (objSib)
 					{
 						// Publish this sibling
-						lnPixelsRendered += iObj_publish(thisCode, objSib, rc, bmpDst, true, false, tlForcePublish, tnLevel);
+						lnPixelsRendered += iObj_publish(objSib, rc, bmpDst, true, false, tlForcePublish, tnLevel);
 
 						// Move to next sibling
 						objSib = objSib->ll.nextObj;
@@ -1891,7 +1891,7 @@
 // Called to descend through the children to see if anything needs to be published.
 //
 //////
-	bool iObj_publish_descentCheck(SThisCode* thisCode, SObject * obj, bool tlCheckChildren, bool tlCheckSiblings)
+	bool iObj_publish_descentCheck(SObject * obj, bool tlCheckChildren, bool tlCheckSiblings)
 	{
 		SObject* objSib;
 
@@ -1906,7 +1906,7 @@
 		//////////
 		// Check the children
 		//////
-			if (tlCheckChildren && obj->firstChild && iObj_publish_descentCheck(thisCode, obj->firstChild, true, true))
+			if (tlCheckChildren && obj->firstChild && iObj_publish_descentCheck(obj->firstChild, true, true))
 				return(true);
 
 
@@ -1920,7 +1920,7 @@
 				while (objSib)
 				{
 					// See if this one needs to be published
-					if (iObj_publish_descentCheck(thisCode, objSib, true, false))
+					if (iObj_publish_descentCheck(objSib, true, false))
 						return(true);
 
 					// Move to next sibling
@@ -1943,7 +1943,7 @@
 // Saves the object layout from the current object
 //
 //////
-	CXml* iObj_saveLayoutAs_bxml(SThisCode* thisCode, SObject* obj, cu8* tcFilename, bool tlFullProperties, bool tlSaveChildren, bool tlSaveSiblings, bool* error, u32* errorNum)
+	CXml* iObj_saveLayoutAs_bxml(SObject* obj, cu8* tcFilename, bool tlFullProperties, bool tlSaveChildren, bool tlSaveSiblings, bool* error, u32* errorNum)
 	{
 		uptr		lnResult;
 		union {
@@ -1986,7 +1986,7 @@
 		//////////
 		// Iterate through each object, appending its content
 		//////
-			iiObj_saveLayoutAs_bxml_saveObject(thisCode, bxml, obj, tlFullProperties, tlSaveChildren, tlSaveSiblings);
+			iiObj_saveLayoutAs_bxml_saveObject(bxml, obj, tlFullProperties, tlSaveChildren, tlSaveSiblings);
 
 
 		//////////
@@ -2015,7 +2015,7 @@
 // Save the indicated object to the indicated bxml
 //
 //////
-	CXml* iiObj_saveLayoutAs_bxml_saveObject(SThisCode* thisCode, CXml* bxml, SObject* obj, bool tlFullProperties, bool tlSaveChildren, bool tlSaveSiblings)
+	CXml* iiObj_saveLayoutAs_bxml_saveObject(CXml* bxml, SObject* obj, bool tlFullProperties, bool tlSaveChildren, bool tlSaveSiblings)
 	{
 		s32				lnI;
 		SBaseClassMap*	baseClassMap;
@@ -2079,7 +2079,7 @@
 				{
 					// Locate the base class
 // TODO:  We could add a speedup here by storing the baseClassMap location in the object itself at the time of creation
-					baseClassMap = iiObj_getBaseclass_byType(thisCode, obj->objType);
+					baseClassMap = iiObj_getBaseclass_byType(obj->objType);
 					if (baseClassMap)
 					{
 						// Create the props tag
@@ -2115,8 +2115,8 @@
 									//////////
 									// Get the current property in a display-as-text form
 									//////
-										varData	= iVariable_convertForDisplay(thisCode, iObjProp_get(thisCode, obj, lnI));
-										varTypeDetail = iVariable_get_typeDetail(thisCode, varData);
+										varData	= iVariable_convertForDisplay(iObjProp_get(obj, lnI));
+										varTypeDetail = iVariable_get_typeDetail(varData);
 
 
 									//////////
@@ -2130,8 +2130,8 @@
 									//////////
 									// Delete the variables
 									//////
-										iVariable_delete(thisCode, varData,			true);
-										iVariable_delete(thisCode, varTypeDetail,	true);
+										iVariable_delete(varData,			true);
+										iVariable_delete(varTypeDetail,	true);
 										break;
 							}
 
@@ -2161,7 +2161,7 @@ debug_break;
 // Duplicate the chain of ObjectLabels, so the destination has a copy of each.
 //
 //////
-	void iObj_duplicateChain(SThisCode* thisCode, SObject** root, SObject* chain)
+	void iObj_duplicateChain(SObject** root, SObject* chain)
 	{
 		SObject*	obj;
 		SObject**	oPrevPtr;
@@ -2176,7 +2176,7 @@ debug_break;
 			while (chain)
 			{
 				// Create this object
-				obj = iObj_copy(thisCode, chain, NULL, NULL, chain, true, false, true);
+				obj = iObj_copy(chain, NULL, NULL, chain, true, false, true);
 				if (obj)
 				{
 					// Update the duplicate object's forward pointer in the chain
@@ -2200,7 +2200,7 @@ debug_break;
 // Called to append the indicated object to the parent
 //
 //////
-	void iObj_appendObjToParent(SThisCode* thisCode, SObject* parent, SObject* obj)
+	void iObj_appendObjToParent(SObject* parent, SObject* obj)
 	{
 		// Make sure our environment is sane
 		logfunc(__FUNCTION__);
@@ -2216,7 +2216,7 @@ debug_break;
 // Called to duplicate the child objects to this object
 //
 //////
-	void iObj_duplicateChildren(SThisCode* thisCode, SObject* objDst, SObject* objSrc)
+	void iObj_duplicateChildren(SObject* objDst, SObject* objSrc)
 	{
 		SObject*	objChild;
 		SObject*	objCopy;
@@ -2234,115 +2234,115 @@ debug_break;
 				switch (objChild->objType)
 				{
 					case _OBJ_TYPE_EMPTY:
-						objCopy = iSubobj_createForm(thisCode, objChild, objDst);
+						objCopy = iSubobj_createForm(objChild, objDst);
 						break;
 					case _OBJ_TYPE_FORM:
-						objCopy = iSubobj_createForm(thisCode, objChild, objDst);
+						objCopy = iSubobj_createForm(objChild, objDst);
 						break;
 					case _OBJ_TYPE_SUBFORM:
-						objCopy = iSubobj_createSubform(thisCode, objChild, objDst);
+						objCopy = iSubobj_createSubform(objChild, objDst);
 						break;
 					case _OBJ_TYPE_LABEL:
-						objCopy = iSubobj_createLabel(thisCode, objChild, objDst);
+						objCopy = iSubobj_createLabel(objChild, objDst);
 						break;
 					case _OBJ_TYPE_TEXTBOX:
-						objCopy = iSubobj_createTextbox(thisCode, objChild, objDst);
+						objCopy = iSubobj_createTextbox(objChild, objDst);
 						break;
 					case _OBJ_TYPE_BUTTON:
-						objCopy = iSubobj_createButton(thisCode, objChild, objDst);
+						objCopy = iSubobj_createButton(objChild, objDst);
 						break;
 					case _OBJ_TYPE_EDITBOX:
-						objCopy = iSubobj_createEditbox(thisCode, objChild, objDst);
+						objCopy = iSubobj_createEditbox(objChild, objDst);
 						break;
 					case _OBJ_TYPE_IMAGE:
-						objCopy = iSubobj_createImage(thisCode, objChild, objDst);
+						objCopy = iSubobj_createImage(objChild, objDst);
 						break;
 					case _OBJ_TYPE_CHECKBOX:
-						objCopy = iSubobj_createCheckbox(thisCode, objChild, objDst);
+						objCopy = iSubobj_createCheckbox(objChild, objDst);
 						break;
 					case _OBJ_TYPE_OPTION:
-						objCopy = iSubobj_createOption(thisCode, objChild, objDst);
+						objCopy = iSubobj_createOption(objChild, objDst);
 						break;
 					case _OBJ_TYPE_RADIO:
-						objCopy = iSubobj_createRadio(thisCode, objChild, objDst);
+						objCopy = iSubobj_createRadio(objChild, objDst);
 						break;
 					case _OBJ_TYPE_CMDGROUP:
-						objCopy = iSubobj_createCmdGroup(thisCode, objChild, objDst);
+						objCopy = iSubobj_createCmdGroup(objChild, objDst);
 						break;
 					case _OBJ_TYPE_OPTGROUP:
-						objCopy = iSubobj_createOptGroup(thisCode, objChild, objDst);
+						objCopy = iSubobj_createOptGroup(objChild, objDst);
 						break;
 					case _OBJ_TYPE_LISTBOX:
-						objCopy = iSubobj_createListbox(thisCode, objChild, objDst);
+						objCopy = iSubobj_createListbox(objChild, objDst);
 						break;
 					case _OBJ_TYPE_COMBOBOX:
-						objCopy = iSubobj_createCombobox(thisCode, objChild, objDst);
+						objCopy = iSubobj_createCombobox(objChild, objDst);
 						break;
 					case _OBJ_TYPE_FORMSET:
-						objCopy = iSubobj_createFormset(thisCode, objChild, objDst);
+						objCopy = iSubobj_createFormset(objChild, objDst);
 						break;
 					case _OBJ_TYPE_TOOLBAR:
-						objCopy = iSubobj_createToolbar(thisCode, objChild, objDst);
+						objCopy = iSubobj_createToolbar(objChild, objDst);
 						break;
 					case _OBJ_TYPE_SEPARATOR:
-						objCopy = iSubobj_createSeparator(thisCode, objChild, objDst);
+						objCopy = iSubobj_createSeparator(objChild, objDst);
 						break;
 					case _OBJ_TYPE_LINE:
-						objCopy = iSubobj_createLine(thisCode, objChild, objDst);
+						objCopy = iSubobj_createLine(objChild, objDst);
 						break;
 					case _OBJ_TYPE_SHAPE:
-						objCopy = iSubobj_createShape(thisCode, objChild, objDst);
+						objCopy = iSubobj_createShape(objChild, objDst);
 						break;
 					case _OBJ_TYPE_CONTAINER:
-						objCopy = iSubobj_createContainer(thisCode, objChild, objDst);
+						objCopy = iSubobj_createContainer(objChild, objDst);
 						break;
 					case _OBJ_TYPE_CONTROL:
-						objCopy = iSubobj_createControl(thisCode, objChild, objDst);
+						objCopy = iSubobj_createControl(objChild, objDst);
 						break;
 					case _OBJ_TYPE_GRID:
-						objCopy = iSubobj_createGrid(thisCode, objChild, objDst);
+						objCopy = iSubobj_createGrid(objChild, objDst);
 						break;
 					case _OBJ_TYPE_COLUMN:
-						objCopy = iSubobj_createColumn(thisCode, objChild, objDst);
+						objCopy = iSubobj_createColumn(objChild, objDst);
 						break;
 					case _OBJ_TYPE_HEADER:
-						objCopy = iSubobj_createHeader(thisCode, objChild, objDst);
+						objCopy = iSubobj_createHeader(objChild, objDst);
 						break;
 					case _OBJ_TYPE_OLEBOUND:
-						objCopy = iSubobj_createOleBound(thisCode, objChild, objDst);
+						objCopy = iSubobj_createOleBound(objChild, objDst);
 						break;
 					case _OBJ_TYPE_OLECONTAIN:
-						objCopy = iSubobj_createOleContain(thisCode, objChild, objDst);
+						objCopy = iSubobj_createOleContain(objChild, objDst);
 						break;
 					case _OBJ_TYPE_SPINNER:
-						objCopy = iSubobj_createSpinner(thisCode, objChild, objDst);
+						objCopy = iSubobj_createSpinner(objChild, objDst);
 						break;
 					case _OBJ_TYPE_TIMER:
-						objCopy = iSubobj_createTimer(thisCode, objChild, objDst);
+						objCopy = iSubobj_createTimer(objChild, objDst);
 						break;
 					case _OBJ_TYPE_HYPERLINK:
-						objCopy = iSubobj_createHyperlink(thisCode, objChild, objDst);
+						objCopy = iSubobj_createHyperlink(objChild, objDst);
 						break;
 					case _OBJ_TYPE_COLLECTION:
-						objCopy = iSubobj_createCollection(thisCode, objChild, objDst);
+						objCopy = iSubobj_createCollection(objChild, objDst);
 						break;
 					case _OBJ_TYPE_PAGE:
-						objCopy = iSubobj_createPage(thisCode, objChild, objDst);
+						objCopy = iSubobj_createPage(objChild, objDst);
 						break;
 					case _OBJ_TYPE_PAGEFRAME:
-						objCopy = iSubobj_createPageFrame(thisCode, objChild, objDst);
+						objCopy = iSubobj_createPageFrame(objChild, objDst);
 						break;
 					case _OBJ_TYPE_SESSION:
-						objCopy = iSubobj_createSession(thisCode, objChild, objDst);
+						objCopy = iSubobj_createSession(objChild, objDst);
 						break;
 					case _OBJ_TYPE_CUSTOM:
-						objCopy = iSubobj_createCustom(thisCode, objChild, objDst);
+						objCopy = iSubobj_createCustom(objChild, objDst);
 						break;
 					case _OBJ_TYPE_EXCEPTION:
-						objCopy = iSubobj_createException(thisCode, objChild, objDst);
+						objCopy = iSubobj_createException(objChild, objDst);
 						break;
 					case _OBJ_TYPE_SETTINGS:
-						objCopy = iSubobj_createSettings(thisCode, objChild, objDst);
+						objCopy = iSubobj_createSettings(objChild, objDst);
 						break;
 
 					default:
@@ -2352,7 +2352,7 @@ debug_break;
 
 				// Append the copy if valid
 				if (objCopy)
-					iObj_appendObjToParent(thisCode, objDst, objChild);
+					iObj_appendObjToParent(objDst, objChild);
 
 				// Move to next
 				objChild = objChild->ll.nextObj;
@@ -2372,7 +2372,7 @@ debug_break;
 //        This will signal the onMoved() event if it actually moved.
 //
 //////
-	void iObj_setPosition(SThisCode* thisCode, SObject* obj, s32 tnLeft, s32 tnTop)
+	void iObj_setPosition(SObject* obj, s32 tnLeft, s32 tnTop)
 	{
 		RECT lrco;
 
@@ -2397,7 +2397,7 @@ debug_break;
 			{
 				// Has the position changed?
 				if (lrco.left != obj->rc.left || lrco.top != obj->rc.top)
-					iEngine_raise_event(thisCode, _EVENT_ONMOVED, ((thisCode) ? thisCode->win : NULL), obj, &obj->rc);
+					iEngine_raise_event(_EVENT_ONMOVED, gsThisCode[gnThisCode].win, obj, &obj->rc);
 			}
 
 
@@ -2415,7 +2415,7 @@ debug_break;
 //        This will signal the onMoved() event if it actually moved.
 //
 //////
-	void iObj_setSize(SThisCode* thisCode, SObject* obj, s32 tnLeft, s32 tnTop, s32 tnWidth, s32 tnHeight)
+	void iObj_setSize(SObject* obj, s32 tnLeft, s32 tnTop, s32 tnWidth, s32 tnHeight)
 	{
 		s32			lnAlignment, lnBorderStyle, lnLeft, lnTop;
 		bool		llTitleBar, llBorder;
@@ -2431,7 +2431,7 @@ debug_break;
 
 		// If it's a toolbar, the size they dictate may not be the final size
 		if (obj->objType == _OBJ_TYPE_TOOLBAR)
-			iiObj_setSize_snapForToolbar(thisCode, obj, &tnWidth, &tnHeight);	// Determine the real size requirement for the toolbar given this "proposed" width
+			iiObj_setSize_snapForToolbar(obj, &tnWidth, &tnHeight);	// Determine the real size requirement for the toolbar given this "proposed" width
 
 		// Note the original locations
 		CopyRect(&lrco, &obj->rc);
@@ -2528,7 +2528,7 @@ debug_break;
 										1 + bmpArrowUl->bi.biHeight - obj->rcClient.top);
 
 							// Update the size
-							iObj_setSize(thisCode, objChild, objChild->rc.left, objChild->rc.top, objChild->rc.right - objChild->rc.left, objChild->rc.bottom - objChild->rc.top);
+							iObj_setSize(objChild, objChild->rc.left, objChild->rc.top, objChild->rc.right - objChild->rc.left, objChild->rc.bottom - objChild->rc.top);
 
 
 						} else if (objChild->objType == _OBJ_TYPE_LABEL && propIsName_byText(objChild, cgcName_caption)) {
@@ -2541,7 +2541,7 @@ debug_break;
 										1 + bmpArrowUl->bi.biHeight - obj->rcClient.top);
 
 							// Update the size
-							iObj_setSize(thisCode, objChild, objChild->rc.left, objChild->rc.top, objChild->rc.right - objChild->rc.left, objChild->rc.bottom - objChild->rc.top);
+							iObj_setSize(objChild, objChild->rc.left, objChild->rc.top, objChild->rc.right - objChild->rc.left, objChild->rc.bottom - objChild->rc.top);
 
 
 						} else if (objChild->objType == _OBJ_TYPE_IMAGE && propIsName_byText(objChild, cgcName_iconMove)) {
@@ -2554,7 +2554,7 @@ debug_break;
 										1 + bmpArrowUl->bi.biHeight - obj->rcClient.top);
 
 							// Update the size
-							iObj_setSize(thisCode, objChild, objChild->rc.left, objChild->rc.top, objChild->rc.right - objChild->rc.left, objChild->rc.bottom - objChild->rc.top);
+							iObj_setSize(objChild, objChild->rc.left, objChild->rc.top, objChild->rc.right - objChild->rc.left, objChild->rc.bottom - objChild->rc.top);
 
 
 						} else if (objChild->objType == _OBJ_TYPE_IMAGE && propIsName_byText(objChild, cgcName_iconMinimize)) {
@@ -2567,7 +2567,7 @@ debug_break;
 										1 + bmpArrowUl->bi.biHeight - obj->rcClient.top);
 
 							// Update the size
-							iObj_setSize(thisCode, objChild, objChild->rc.left, objChild->rc.top, objChild->rc.right - objChild->rc.left, objChild->rc.bottom - objChild->rc.top);
+							iObj_setSize(objChild, objChild->rc.left, objChild->rc.top, objChild->rc.right - objChild->rc.left, objChild->rc.bottom - objChild->rc.top);
 
 
 						} else if (objChild->objType == _OBJ_TYPE_IMAGE && propIsName_byText(objChild, cgcName_iconMaximize)) {
@@ -2580,7 +2580,7 @@ debug_break;
 										1 + bmpArrowUl->bi.biHeight - obj->rcClient.top);
 
 							// Update the size
-							iObj_setSize(thisCode, objChild, objChild->rc.left, objChild->rc.top, objChild->rc.right - objChild->rc.left, objChild->rc.bottom - objChild->rc.top);
+							iObj_setSize(objChild, objChild->rc.left, objChild->rc.top, objChild->rc.right - objChild->rc.left, objChild->rc.bottom - objChild->rc.top);
 
 
 						} else if (objChild->objType == _OBJ_TYPE_IMAGE && propIsName_byText(objChild, cgcName_iconClose)) {
@@ -2593,7 +2593,7 @@ debug_break;
 										1 + bmpArrowUl->bi.biHeight - obj->rcClient.top);
 
 							// Update the size
-							iObj_setSize(thisCode, objChild, objChild->rc.left, objChild->rc.top, objChild->rc.right - objChild->rc.left, objChild->rc.bottom - objChild->rc.top);
+							iObj_setSize(objChild, objChild->rc.left, objChild->rc.top, objChild->rc.right - objChild->rc.left, objChild->rc.bottom - objChild->rc.top);
 
 
 						} else if (objChild->objType == _OBJ_TYPE_IMAGE && propIsName_byText(objChild, cgcName_iconScaleUl)) {
@@ -2606,7 +2606,7 @@ debug_break;
 											1 + bmpArrowUl->bi.biHeight - obj->rcClient.top);
 
 							// Update the size
-							iObj_setSize(thisCode, objChild, objChild->rc.left, objChild->rc.top, objChild->rc.right - objChild->rc.left, objChild->rc.bottom - objChild->rc.top);
+							iObj_setSize(objChild, objChild->rc.left, objChild->rc.top, objChild->rc.right - objChild->rc.left, objChild->rc.bottom - objChild->rc.top);
 
 
 						} else if (objChild->objType == _OBJ_TYPE_IMAGE && propIsName_byText(objChild, cgcName_iconScaleUr)) {
@@ -2619,7 +2619,7 @@ debug_break;
 											1 - obj->rcClient.top + bmpArrowUr->bi.biHeight);
 
 							// Update the size
-							iObj_setSize(thisCode, objChild, objChild->rc.left, objChild->rc.top, objChild->rc.right - objChild->rc.left, objChild->rc.bottom - objChild->rc.top);
+							iObj_setSize(objChild, objChild->rc.left, objChild->rc.top, objChild->rc.right - objChild->rc.left, objChild->rc.bottom - objChild->rc.top);
 
 
 						} else if (objChild->objType == _OBJ_TYPE_IMAGE && propIsName_byText(objChild, cgcName_iconScaleLr)) {
@@ -2632,7 +2632,7 @@ debug_break;
 											tnHeight - obj->rcClient.top - 1);
 
 							// Update the size
-							iObj_setSize(thisCode, objChild, objChild->rc.left, objChild->rc.top, objChild->rc.right - objChild->rc.left, objChild->rc.bottom - objChild->rc.top);
+							iObj_setSize(objChild, objChild->rc.left, objChild->rc.top, objChild->rc.right - objChild->rc.left, objChild->rc.bottom - objChild->rc.top);
 
 
 						} else if (objChild->objType == _OBJ_TYPE_IMAGE && propIsName_byText(objChild, cgcName_iconScaleLl)) {
@@ -2645,7 +2645,7 @@ debug_break;
 											tnHeight - obj->rcClient.top - 1);
 
 							// Update the size
-							iObj_setSize(thisCode, objChild, objChild->rc.left, objChild->rc.top, objChild->rc.right - objChild->rc.left, objChild->rc.bottom - objChild->rc.top);
+							iObj_setSize(objChild, objChild->rc.left, objChild->rc.top, objChild->rc.right - objChild->rc.left, objChild->rc.bottom - objChild->rc.top);
 						}
 
 						// Move to next object
@@ -2689,7 +2689,7 @@ debug_break;
 										1 + bmpArrowUl->bi.biHeight - obj->rcClient.top);
 
 							// Update the size
-							iObj_setSize(thisCode, objChild, objChild->rc.left, objChild->rc.top, objChild->rc.right - objChild->rc.left, objChild->rc.bottom - objChild->rc.top);
+							iObj_setSize(objChild, objChild->rc.left, objChild->rc.top, objChild->rc.right - objChild->rc.left, objChild->rc.bottom - objChild->rc.top);
 
 
 						} else if (objChild->objType == _OBJ_TYPE_LABEL && propIsName_byText(objChild, cgcName_caption)) {
@@ -2702,11 +2702,11 @@ debug_break;
 										2 - obj->rcClient.top + objChild->p.font->tm.tmHeight + 2);
 
 							// Update the size
-							iObj_setSize(thisCode,	objChild,
-													objChild->rc.left,
-													objChild->rc.top,
-													objChild->rc.right  - objChild->rc.left,
-													objChild->rc.bottom - objChild->rc.top);
+							iObj_setSize(	objChild,
+											objChild->rc.left,
+											objChild->rc.top,
+											objChild->rc.right  - objChild->rc.left,
+											objChild->rc.bottom - objChild->rc.top		);
 						}
 
 						// Move to next object
@@ -2794,7 +2794,7 @@ debug_break;
 														obj->rcClient.top - lnTop);
 
 								// Update the size
-								iObj_setSize(thisCode, objChild, objChild->rc.left, objChild->rc.top, objChild->rc.right - objChild->rc.left, objChild->rc.bottom - objChild->rc.top);
+								iObj_setSize(objChild, objChild->rc.left, objChild->rc.top, objChild->rc.right - objChild->rc.left, objChild->rc.bottom - objChild->rc.top);
 
 							} else {
 								// Make this content invisible
@@ -2819,7 +2819,7 @@ debug_break;
 														obj->rcClient.top - lnTop);
 
 								// Update the size
-								iObj_setSize(thisCode, objChild, objChild->rc.left, objChild->rc.top, objChild->rc.right - objChild->rc.left, objChild->rc.bottom - objChild->rc.top);
+								iObj_setSize(objChild, objChild->rc.left, objChild->rc.top, objChild->rc.right - objChild->rc.left, objChild->rc.bottom - objChild->rc.top);
 
 							} else {
 								// Make this content invisible
@@ -2844,7 +2844,7 @@ debug_break;
 														obj->rcClient.top - lnTop);
 
 								// Update the size
-								iObj_setSize(thisCode, objChild, objChild->rc.left, objChild->rc.top, objChild->rc.right - objChild->rc.left, objChild->rc.bottom - objChild->rc.top);
+								iObj_setSize(objChild, objChild->rc.left, objChild->rc.top, objChild->rc.right - objChild->rc.left, objChild->rc.bottom - objChild->rc.top);
 
 							} else {
 								// Make this content invisible
@@ -2869,7 +2869,7 @@ debug_break;
 														obj->rcClient.top - lnTop);
 
 								// Update the size
-								iObj_setSize(thisCode, objChild, objChild->rc.left, objChild->rc.top, objChild->rc.right - objChild->rc.left, objChild->rc.bottom - objChild->rc.top);
+								iObj_setSize(objChild, objChild->rc.left, objChild->rc.top, objChild->rc.right - objChild->rc.left, objChild->rc.bottom - objChild->rc.top);
 
 							} else {
 								// Make this content invisible
@@ -2883,7 +2883,7 @@ debug_break;
 							CopyRect(&objChild->rc,	&obj->rcClient);
 
 							// Update the size
-							iObj_setSize(thisCode, objChild, objChild->rc.left, objChild->rc.top, objChild->rc.right - objChild->rc.left, objChild->rc.bottom - objChild->rc.top);
+							iObj_setSize(objChild, objChild->rc.left, objChild->rc.top, objChild->rc.right - objChild->rc.left, objChild->rc.bottom - objChild->rc.top);
 						}
 
 						// Move to next object
@@ -2927,11 +2927,11 @@ debug_break;
 							{
 								default:
 								case _ALIGNMENT_LEFT:
-									iObj_setSize(thisCode, objChild, 0, 0, tnHeight, tnHeight);
+									iObj_setSize(objChild, 0, 0, tnHeight, tnHeight);
 									break;
 
 								case _ALIGNMENT_RIGHT:
-									iObj_setSize(thisCode, objChild, obj->rc.right - tnHeight, 0, obj->rc.right - obj->rc.left - tnHeight, tnHeight);
+									iObj_setSize(objChild, obj->rc.right - tnHeight, 0, obj->rc.right - obj->rc.left - tnHeight, tnHeight);
 									break;
 							}
 
@@ -2940,7 +2940,7 @@ debug_break;
 							iBmp_createBySize(bmp, tnHeight, tnHeight, 24);
 
 							// Based on type, populate the image
-							if (iObjProp_get_s32_direct(thisCode, obj, _INDEX_VALUE) == 0)
+							if (iObjProp_get_s32_direct(obj, _INDEX_VALUE) == 0)
 							{
 								// Off
 								iBmp_scale(bmp, bmpCheckboxOff);		// Set the new
@@ -2951,16 +2951,16 @@ debug_break;
 							}
 
 							// Populate the standard image
-							iObjProp_set_bitmap_direct(thisCode, obj, _INDEX_PICTUREBMP,		bmp);
-							iObjProp_set_bitmap_direct(thisCode, obj, _INDEX_PICTUREBMP_DOWN,	bmp);
-							iObjProp_set_bitmap_direct(thisCode, obj, _INDEX_PICTUREBMP_OVER,	bmp);
+							iObjProp_set_bitmap_direct(obj, _INDEX_PICTUREBMP,		bmp);
+							iObjProp_set_bitmap_direct(obj, _INDEX_PICTUREBMP_DOWN,	bmp);
+							iObjProp_set_bitmap_direct(obj, _INDEX_PICTUREBMP_OVER,	bmp);
 
 							// Delete our template
 							iBmp_delete(&bmp, true, true);
 
 							// Add highlighting for the over and down
-							bmp = iObjProp_get_bitmap(thisCode, obj, _INDEX_PICTUREBMP_OVER);			iBmp_colorize(bmp, &lrc, colorMouseOver, false, 0.5f);
-							bmp = iObjProp_get_bitmap(thisCode, obj, _INDEX_PICTUREBMP_DOWN);			iBmp_colorize(bmp, &lrc, colorMouseDown, false, 0.5f);
+							bmp = iObjProp_get_bitmap(obj, _INDEX_PICTUREBMP_OVER);			iBmp_colorize(bmp, &lrc, colorMouseOver, false, 0.5f);
+							bmp = iObjProp_get_bitmap(obj, _INDEX_PICTUREBMP_DOWN);			iBmp_colorize(bmp, &lrc, colorMouseDown, false, 0.5f);
 
 							// Mark it for re-render
 							objChild->isDirtyRender = true;
@@ -2972,11 +2972,11 @@ debug_break;
 							{
 								default:
 								case _ALIGNMENT_LEFT:
-									iObj_setSize(thisCode, objChild, tnHeight, 0, obj->rc.right - obj->rc.left - tnHeight, tnHeight);
+									iObj_setSize(objChild, tnHeight, 0, obj->rc.right - obj->rc.left - tnHeight, tnHeight);
 									break;
 
 								case _ALIGNMENT_RIGHT:
-									iObj_setSize(thisCode, objChild, 0, 0, obj->rc.right - obj->rc.left - tnHeight, tnHeight);
+									iObj_setSize(objChild, 0, 0, obj->rc.right - obj->rc.left - tnHeight, tnHeight);
 									break;
 							}
 
@@ -3014,11 +3014,11 @@ debug_break;
 				//////
 					// Position?
 					if (lrco.left != obj->rc.left || lrco.top != obj->rc.top)
-						iEngine_raise_event(thisCode, _EVENT_ONMOVED, ((thisCode) ? thisCode->win : NULL), obj, &obj->rc);
+						iEngine_raise_event(_EVENT_ONMOVED, gsThisCode[gnThisCode].win, obj, &obj->rc);
 
 					// Size?
 					if (lrco.right - lrco.left != obj->rc.right - obj->rc.left || lrco.bottom - lrco.top != obj->rc.bottom - obj->rc.top)
-						iEngine_raise_event(thisCode, _EVENT_ONRESIZE, ((thisCode) ? thisCode->win : NULL), obj, iiMath_computeRectDeltas(&lrcDeltas, &lrco, &obj->rc));
+						iEngine_raise_event(_EVENT_ONRESIZE, gsThisCode[gnThisCode].win, obj, iiMath_computeRectDeltas(&lrcDeltas, &lrco, &obj->rc));
 			}
 
 
@@ -3040,7 +3040,7 @@ debug_break;
 // and auto-adjust the height to the appropriate height.
 //
 //////
-	void iiObj_setSize_snapForToolbar(SThisCode* thisCode, SObject* obj, s32* tnWidth, s32* tnHeight)
+	void iiObj_setSize_snapForToolbar(SObject* obj, s32* tnWidth, s32* tnHeight)
 	{
 		s32			lnI, lnMargin, lnMaxWidth, lnMaxHeight, lnWidth, lnHeight, lnNewX, lnNewY, lnRowWidth, lnRowHeight;
 		bool		llAtLeastOne;
@@ -3108,7 +3108,7 @@ debug_break;
 				//////////
 				// Position this child object at its new location
 				//////
-					iObj_setSize(thisCode, objChild, obj->rc.left + lnNewX, obj->rc.top + lnNewY, lnWidth, lnHeight);
+					iObj_setSize(objChild, obj->rc.left + lnNewX, obj->rc.top + lnNewY, lnWidth, lnHeight);
 			}
 
 
@@ -3132,7 +3132,7 @@ debug_break;
 // used as an off-screen buffer in that way.
 //
 //////
-	SWindow* iObj_createWindowForForm(SThisCode* thisCode, SObject* obj_form, SWindow* winReuse, s32 icon)
+	SWindow* iObj_createWindowForForm(SObject* obj_form, SWindow* winReuse, s32 icon)
 	{
 		SWindow* winNew;
 
@@ -3141,7 +3141,7 @@ debug_break;
 		logfunc(__FUNCTION__);
 		winNew = NULL;
 		if (obj_form)
-			winNew = iWindow_createForObject(thisCode, obj_form, winReuse, icon);
+			winNew = iWindow_createForObject(obj_form, winReuse, icon);
 
 		// Indicate our status
 		return(winNew);
@@ -3155,7 +3155,7 @@ debug_break;
 // Searches the indicated object for the indicated property
 //
 //////
-	SVariable* iObj_getPropertyAsVariable(SThisCode* thisCode, SObject* obj, s8* tcPropertyName, u32 tnPropertyNameLength, SComp* comp, bool tlCreateAsReference)
+	SVariable* iObj_getPropertyAsVariable(SObject* obj, s8* tcPropertyName, u32 tnPropertyNameLength, SComp* comp, bool tlCreateAsReference)
 	{
 		SBaseClassMap*	lbcl;
 		SObjPropMap*	lpm;
@@ -3166,7 +3166,7 @@ debug_break;
 		if (obj)
 		{
 			// Find out our property interface
-			lbcl = iiObj_getBaseclass_byType(thisCode, obj->objType);
+			lbcl = iiObj_getBaseclass_byType(obj->objType);
 			if (lbcl)
 			{
 				// Search through the properties
@@ -3175,7 +3175,7 @@ debug_break;
 				{
 					// Is this the name?
 					if (gsProps_master[lpm->index].propNameLength == tnPropertyNameLength && _memicmp(tcPropertyName, gsProps_master[lpm->index].propName_u8, tnPropertyNameLength) == 0)
-						return(iVariable_copy(thisCode, obj->props[lpm->index], tlCreateAsReference));
+						return(iVariable_copy(obj->props[lpm->index], tlCreateAsReference));
 
 					// Move to next property
 					++lpm;
@@ -3198,7 +3198,7 @@ debug_break;
 // all default base class objects thereafter.
 //
 //////
-	void iiObj_resetToDefault(SThisCode* thisCode, SObject* obj, bool tlResetProperties, bool tlResetMethods)
+	void iiObj_resetToDefault(SObject* obj, bool tlResetProperties, bool tlResetMethods)
 	{
 		// Make sure our environment is sane
 		logfunc(__FUNCTION__);
@@ -3208,151 +3208,151 @@ debug_break;
 			switch (obj->objType)
 			{
 				case _OBJ_TYPE_EMPTY:		// Empty, used as a placeholder object that is not drawn
-					iiSubobj_resetToDefaultEmpty(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_empty[0], gnProps_emptySize, &gsEvents_empty[0], gnEvents_emptySize);
+					iiSubobj_resetToDefaultEmpty(obj, tlResetProperties, tlResetMethods, &gsProps_empty[0], gnProps_emptySize, &gsEvents_empty[0], gnEvents_emptySize);
 					break;
 
 				case _OBJ_TYPE_FORM:			// Form class, the main outer window the OS sees
-					iiSubobj_resetToDefaultForm(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_form[0], gnProps_formSize, &gsEvents_form[0], gnEvents_formSize);
+					iiSubobj_resetToDefaultForm(obj, tlResetProperties, tlResetMethods, &gsProps_form[0], gnProps_formSize, &gsEvents_form[0], gnEvents_formSize);
 					break;
 
 				case _OBJ_TYPE_SUBFORM:		// A new class which has its own drawing content and can be moved about using UI features
-					iiSubobj_resetToDefaultSubform(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_subform[0], gnProps_subformSize, &gsEvents_subform[0], gnEvents_subformSize);
+					iiSubobj_resetToDefaultSubform(obj, tlResetProperties, tlResetMethods, &gsProps_subform[0], gnProps_subformSize, &gsEvents_subform[0], gnEvents_subformSize);
 					break;
 
 				case _OBJ_TYPE_LABEL:		// A label
-					iiSubobj_resetToDefaultLabel(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_label[0], gnProps_labelSize, &gsEvents_label[0], gnEvents_labelSize);
+					iiSubobj_resetToDefaultLabel(obj, tlResetProperties, tlResetMethods, &gsProps_label[0], gnProps_labelSize, &gsEvents_label[0], gnEvents_labelSize);
 					break;
 
 				case _OBJ_TYPE_TEXTBOX:		// An input textbox
-					iiSubobj_resetToDefaultTextbox(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_textbox[0], gnProps_textboxSize, &gsEvents_textbox[0], gnEvents_textboxSize);
+					iiSubobj_resetToDefaultTextbox(obj, tlResetProperties, tlResetMethods, &gsProps_textbox[0], gnProps_textboxSize, &gsEvents_textbox[0], gnEvents_textboxSize);
 					break;
 
 				case _OBJ_TYPE_BUTTON:		// A push button
-					iiSubobj_resetToDefaultButton(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_button[0], gnProps_buttonSize, &gsEvents_button[0], gnEvents_buttonSize);
+					iiSubobj_resetToDefaultButton(obj, tlResetProperties, tlResetMethods, &gsProps_button[0], gnProps_buttonSize, &gsEvents_button[0], gnEvents_buttonSize);
 					break;
 
 				case _OBJ_TYPE_EDITBOX:		// An input multi-line editbox
-					iiSubobj_resetToDefaultEditbox(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_editbox[0], gnProps_editboxSize, &gsEvents_editbox[0], gnEvents_editboxSize);
+					iiSubobj_resetToDefaultEditbox(obj, tlResetProperties, tlResetMethods, &gsProps_editbox[0], gnProps_editboxSize, &gsEvents_editbox[0], gnEvents_editboxSize);
 					break;
 
 				case _OBJ_TYPE_IMAGE:		// A graphical image
-					iiSubobj_resetToDefaultImage(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_image[0], gnProps_imageSize, &gsEvents_image[0], gnEvents_imageSize);
+					iiSubobj_resetToDefaultImage(obj, tlResetProperties, tlResetMethods, &gsProps_image[0], gnProps_imageSize, &gsEvents_image[0], gnEvents_imageSize);
 					break;
 
 				case _OBJ_TYPE_CHECKBOX:		// A checkbox
-					iiSubobj_resetToDefaultCheckbox(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_checkbox[0], gnProps_checkboxSize, &gsEvents_checkbox[0], gnEvents_checkboxSize);
+					iiSubobj_resetToDefaultCheckbox(obj, tlResetProperties, tlResetMethods, &gsProps_checkbox[0], gnProps_checkboxSize, &gsEvents_checkbox[0], gnEvents_checkboxSize);
 					break;
 
 				case _OBJ_TYPE_OPTION:		// A combination selection
-					iiSubobj_resetToDefaultOption(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_option[0], gnProps_optionSize, &gsEvents_option[0], gnEvents_optionSize);
+					iiSubobj_resetToDefaultOption(obj, tlResetProperties, tlResetMethods, &gsProps_option[0], gnProps_optionSize, &gsEvents_option[0], gnEvents_optionSize);
 					break;
 
 				case _OBJ_TYPE_RADIO:		// A radio dial, which can also present as a slider or spinner
-					iiSubobj_resetToDefaultRadio(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_radio[0], gnProps_radioSize, &gsEvents_radio[0], gnEvents_radioSize);
+					iiSubobj_resetToDefaultRadio(obj, tlResetProperties, tlResetMethods, &gsProps_radio[0], gnProps_radioSize, &gsEvents_radio[0], gnEvents_radioSize);
 					break;
 
 				case _OBJ_TYPE_CMDGROUP:	// A command button group
-					iiSubobj_resetToDefaultCmdGroup(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_cmdgroup[0], gnProps_cmdgroupSize, &gsEvents_cmdgroup[0], gnEvents_cmdgroupSize);
+					iiSubobj_resetToDefaultCmdGroup(obj, tlResetProperties, tlResetMethods, &gsProps_cmdgroup[0], gnProps_cmdgroupSize, &gsEvents_cmdgroup[0], gnEvents_cmdgroupSize);
 					break;
 
 				case _OBJ_TYPE_OPTGROUP:	// An option group
-					iiSubobj_resetToDefaultOptGroup(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_optgroup[0], gnProps_optgroupSize, &gsEvents_optgroup[0], gnEvents_optgroupSize);
+					iiSubobj_resetToDefaultOptGroup(obj, tlResetProperties, tlResetMethods, &gsProps_optgroup[0], gnProps_optgroupSize, &gsEvents_optgroup[0], gnEvents_optgroupSize);
 					break;
 
 				case _OBJ_TYPE_LISTBOX:		// A listbox
-					iiSubobj_resetToDefaultListbox(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_listbox[0], gnProps_listboxSize, &gsEvents_listbox[0], gnEvents_listboxSize);
+					iiSubobj_resetToDefaultListbox(obj, tlResetProperties, tlResetMethods, &gsProps_listbox[0], gnProps_listboxSize, &gsEvents_listbox[0], gnEvents_listboxSize);
 					break;
 
 				case _OBJ_TYPE_COMBOBOX:	// A combobox
-					iiSubobj_resetToDefaultCombobox(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_combobox[0], gnProps_comboboxSize, &gsEvents_combobox[0], gnEvents_comboboxSize);
+					iiSubobj_resetToDefaultCombobox(obj, tlResetProperties, tlResetMethods, &gsProps_combobox[0], gnProps_comboboxSize, &gsEvents_combobox[0], gnEvents_comboboxSize);
 					break;
 
 				case _OBJ_TYPE_FORMSET:		// A formset
-					iiSubobj_resetToDefaultFormset(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_formset[0], gnProps_formsetSize, &gsEvents_formset[0], gnEvents_formsetSize);
+					iiSubobj_resetToDefaultFormset(obj, tlResetProperties, tlResetMethods, &gsProps_formset[0], gnProps_formsetSize, &gsEvents_formset[0], gnEvents_formsetSize);
 					break;
 
 				case _OBJ_TYPE_TOOLBAR:		// A toolbar
-					iiSubobj_resetToDefaultToolbar(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_toolbar[0], gnProps_toolbarSize, &gsEvents_toolbar[0], gnEvents_toolbarSize);
+					iiSubobj_resetToDefaultToolbar(obj, tlResetProperties, tlResetMethods, &gsProps_toolbar[0], gnProps_toolbarSize, &gsEvents_toolbar[0], gnEvents_toolbarSize);
 					break;
 
 				case _OBJ_TYPE_SEPARATOR:	// A separator
-					iiSubobj_resetToDefaultSeparator(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_separator[0], gnProps_separatorSize, &gsEvents_separator[0], gnEvents_separatorSize);
+					iiSubobj_resetToDefaultSeparator(obj, tlResetProperties, tlResetMethods, &gsProps_separator[0], gnProps_separatorSize, &gsEvents_separator[0], gnEvents_separatorSize);
 					break;
 
 				case _OBJ_TYPE_LINE:		// A line
-					iiSubobj_resetToDefaultLine(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_line[0], gnProps_lineSize, &gsEvents_line[0], gnEvents_lineSize);
+					iiSubobj_resetToDefaultLine(obj, tlResetProperties, tlResetMethods, &gsProps_line[0], gnProps_lineSize, &gsEvents_line[0], gnEvents_lineSize);
 					break;
 
 				case _OBJ_TYPE_SHAPE:		// A shape
-					iiSubobj_resetToDefaultShape(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_shape[0], gnProps_shapeSize, &gsEvents_shape[0], gnEvents_shapeSize);
+					iiSubobj_resetToDefaultShape(obj, tlResetProperties, tlResetMethods, &gsProps_shape[0], gnProps_shapeSize, &gsEvents_shape[0], gnEvents_shapeSize);
 					break;
 
 				case _OBJ_TYPE_CONTAINER:	// A container
-					iiSubobj_resetToDefaultContainer(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_container[0], gnProps_containerSize, &gsEvents_container[0], gnEvents_containerSize);
+					iiSubobj_resetToDefaultContainer(obj, tlResetProperties, tlResetMethods, &gsProps_container[0], gnProps_containerSize, &gsEvents_container[0], gnEvents_containerSize);
 					break;
 
 				case _OBJ_TYPE_CONTROL:		// A blocking container
-					iiSubobj_resetToDefaultControl(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_control[0], gnProps_controlSize, &gsEvents_control[0], gnEvents_controlSize);
+					iiSubobj_resetToDefaultControl(obj, tlResetProperties, tlResetMethods, &gsProps_control[0], gnProps_controlSize, &gsEvents_control[0], gnEvents_controlSize);
 					break;
 
 				case _OBJ_TYPE_GRID:		// A grid
-					iiSubobj_resetToDefaultGrid(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_grid[0], gnProps_gridSize, &gsEvents_grid[0], gnEvents_gridSize);
+					iiSubobj_resetToDefaultGrid(obj, tlResetProperties, tlResetMethods, &gsProps_grid[0], gnProps_gridSize, &gsEvents_grid[0], gnEvents_gridSize);
 					break;
 
 				case _OBJ_TYPE_COLUMN:		// A grid's column object
-					iiSubobj_resetToDefaultColumn(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_column[0], gnProps_columnSize, &gsEvents_column[0], gnEvents_columnSize);
+					iiSubobj_resetToDefaultColumn(obj, tlResetProperties, tlResetMethods, &gsProps_column[0], gnProps_columnSize, &gsEvents_column[0], gnEvents_columnSize);
 					break;
 
 				case _OBJ_TYPE_HEADER:		// A grid's header object
-					iiSubobj_resetToDefaultHeader(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_header[0], gnProps_headerSize, &gsEvents_header[0], gnEvents_headerSize);
+					iiSubobj_resetToDefaultHeader(obj, tlResetProperties, tlResetMethods, &gsProps_header[0], gnProps_headerSize, &gsEvents_header[0], gnEvents_headerSize);
 					break;
 
 				case _OBJ_TYPE_OLEBOUND:	// A bound OLE object
-					iiSubobj_resetToDefaultOleBound(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_olebound[0], gnProps_oleboundSize, &gsEvents_olebound[0], gnEvents_oleboundSize);
+					iiSubobj_resetToDefaultOleBound(obj, tlResetProperties, tlResetMethods, &gsProps_olebound[0], gnProps_oleboundSize, &gsEvents_olebound[0], gnEvents_oleboundSize);
 					break;
 
 				case _OBJ_TYPE_OLECONTAIN:	// An OLE container control object
-					iiSubobj_resetToDefaultOleContain(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_olecontain[0], gnProps_olecontainSize, &gsEvents_olecontain[0], gnEvents_olecontainSize);
+					iiSubobj_resetToDefaultOleContain(obj, tlResetProperties, tlResetMethods, &gsProps_olecontain[0], gnProps_olecontainSize, &gsEvents_olecontain[0], gnEvents_olecontainSize);
 					break;
 
 				case _OBJ_TYPE_SPINNER:		// A spinner
-					iiSubobj_resetToDefaultOleContain(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_olecontain[0], gnProps_olecontainSize, &gsEvents_olecontain[0], gnEvents_olecontainSize);
+					iiSubobj_resetToDefaultOleContain(obj, tlResetProperties, tlResetMethods, &gsProps_olecontain[0], gnProps_olecontainSize, &gsEvents_olecontain[0], gnEvents_olecontainSize);
 					break;
 
 				case _OBJ_TYPE_TIMER:		// A timer
-					iiSubobj_resetToDefaultTimer(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_timer[0], gnProps_timerSize, &gsEvents_timer[0], gnEvents_timerSize);
+					iiSubobj_resetToDefaultTimer(obj, tlResetProperties, tlResetMethods, &gsProps_timer[0], gnProps_timerSize, &gsEvents_timer[0], gnEvents_timerSize);
 					break;
 
 				case _OBJ_TYPE_HYPERLINK:	// A hyperlink
-					iiSubobj_resetToDefaultHyperlink(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_hyperlink[0], gnProps_hyperlinkSize, &gsEvents_hyperlink[0], gnEvents_hyperlinkSize);
+					iiSubobj_resetToDefaultHyperlink(obj, tlResetProperties, tlResetMethods, &gsProps_hyperlink[0], gnProps_hyperlinkSize, &gsEvents_hyperlink[0], gnEvents_hyperlinkSize);
 					break;
 
 				case _OBJ_TYPE_COLLECTION:	// A collection
-					iiSubobj_resetToDefaultCollection(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_collection[0], gnProps_collectionSize, &gsEvents_collection[0], gnEvents_collectionSize);
+					iiSubobj_resetToDefaultCollection(obj, tlResetProperties, tlResetMethods, &gsProps_collection[0], gnProps_collectionSize, &gsEvents_collection[0], gnEvents_collectionSize);
 					break;
 
 				case _OBJ_TYPE_PAGE:		// A page within a pageframe
-					iiSubobj_resetToDefaultPage(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_page[0], gnProps_pageSize, &gsEvents_page[0], gnEvents_pageSize);
+					iiSubobj_resetToDefaultPage(obj, tlResetProperties, tlResetMethods, &gsProps_page[0], gnProps_pageSize, &gsEvents_page[0], gnEvents_pageSize);
 					break;
 
 				case _OBJ_TYPE_PAGEFRAME:	// A pageframe
-					iiSubobj_resetToDefaultPageframe(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_pageframe[0], gnProps_pageframeSize, &gsEvents_pageframe[0], gnEvents_pageframeSize);
+					iiSubobj_resetToDefaultPageframe(obj, tlResetProperties, tlResetMethods, &gsProps_pageframe[0], gnProps_pageframeSize, &gsEvents_pageframe[0], gnEvents_pageframeSize);
 					break;
 
 				case _OBJ_TYPE_SESSION:		// A session
-					iiSubobj_resetToDefaultSession(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_session[0], gnProps_sessionSize, &gsEvents_session[0], gnEvents_sessionSize);
+					iiSubobj_resetToDefaultSession(obj, tlResetProperties, tlResetMethods, &gsProps_session[0], gnProps_sessionSize, &gsEvents_session[0], gnEvents_sessionSize);
 					break;
 
 				case _OBJ_TYPE_CUSTOM:		// A custom class
-					iiSubobj_resetToDefaultCustom(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_custom[0], gnProps_customSize, &gsEvents_custom[0], gnEvents_customSize);
+					iiSubobj_resetToDefaultCustom(obj, tlResetProperties, tlResetMethods, &gsProps_custom[0], gnProps_customSize, &gsEvents_custom[0], gnEvents_customSize);
 					break;
 
 				case _OBJ_TYPE_EXCEPTION:	// An exception
-					iiSubobj_resetToDefaultException(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_exception[0], gnProps_exceptionSize, &gsEvents_exception[0], gnEvents_exceptionSize);
+					iiSubobj_resetToDefaultException(obj, tlResetProperties, tlResetMethods, &gsProps_exception[0], gnProps_exceptionSize, &gsEvents_exception[0], gnEvents_exceptionSize);
 					break;
 
 				case _OBJ_TYPE_SETTINGS:	// Settings (SET TALK ON, etc.)
-					iiSubobj_resetToDefaultSettings(thisCode, obj, tlResetProperties, tlResetMethods, &gsProps_settings[0], gnProps_settingsSize, &gsEvents_settings[0], gnEvents_settingsSize);
+					iiSubobj_resetToDefaultSettings(obj, tlResetProperties, tlResetMethods, &gsProps_settings[0], gnProps_settingsSize, &gsEvents_settings[0], gnEvents_settingsSize);
 					break;
 
 				default:
@@ -3370,7 +3370,7 @@ debug_break;
 // Resets common object properties to their defaults.
 //
 //////
-	void iiObj_resetToDefaultCommon(SThisCode* thisCode, SObject* obj, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propMap, s32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
+	void iiObj_resetToDefaultCommon(SObject* obj, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propMap, s32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
 	{
 		s32 lnI, lnIndex, lnAllocationSize;
 
@@ -3417,7 +3417,7 @@ debug_break;
 				//////
 					if (obj->props[lnI])
 					{
-						iVariable_delete(thisCode, obj->props[lnI], true);
+						iVariable_delete(obj->props[lnI], true);
 						obj->props[lnI] = NULL;
 					}
 
@@ -3427,7 +3427,7 @@ debug_break;
 				//////
 // if (lnIndex == 235 || lnIndex == 234 || lnIndex == 233)
 // 	debug_break;
-					obj->props[lnI] = iVariable_copy(thisCode, gsProps_master[lnIndex - 1].varInit, false);
+					obj->props[lnI] = iVariable_copy(gsProps_master[lnIndex - 1].varInit, false);
 
 // Should never happen
 // This usually means a property was added to a gsProps_class, but not to the full gsProps_master
@@ -3435,21 +3435,21 @@ debug_break;
 if (!obj->props[lnI])
 	debug_break;
 					// Set its name
-					iVariable_setName(thisCode, obj->props[lnI], gsProps_master[lnIndex - 1].propName_u8, gsProps_master[lnIndex - 1].propNameLength);
+					iVariable_setName(obj->props[lnI], gsProps_master[lnIndex - 1].propName_u8, gsProps_master[lnIndex - 1].propNameLength);
 
 
 				//////////
 				// Perform any base class initialization
 				//////
 					if (gsProps_master[lnIndex - 1]._initterBase)
-						gsProps_master[lnIndex - 1].initterBase(thisCode, obj, lnIndex);
+						gsProps_master[lnIndex - 1].initterBase(obj, lnIndex);
 
 
 				//////////
 				// Finalize the initialization with any additional steps specific to the object
 				//////
 					if (propMap[lnI]._initterObject)
-						propMap[lnI].initterObject(thisCode, obj, lnIndex);
+						propMap[lnI].initterObject(obj, lnIndex);
 
 			}
 
@@ -3467,20 +3467,20 @@ if (!obj->props[lnI])
 		// Any dynamic properties within
 		//////
 			if (tlResetProperties)
-				iVariable_politelyDelete_chain(thisCode, &obj->firstProperty, true);
+				iVariable_politelyDelete_chain(&obj->firstProperty, true);
 
 
 		//////////
 		// Any methods defined
 		//////
 			if (tlResetMethods)
-				iFunction_politelyDelete_chain(thisCode, &obj->firstMethod, true);
+				iFunction_politelyDelete_chain(&obj->firstMethod, true);
 
 
 		//////////
 		// Events
 		//////
-			iEvents_resetToDefault(thisCode, obj, eventList, tnEventCount);
+			iEvents_resetToDefault(obj, eventList, tnEventCount);
 
 
 		//////////
@@ -3503,7 +3503,7 @@ if (!obj->props[lnI])
 // Called to translate the text-based class name to its internal object type.
 //
 //////
-	s32 iiObj_getBaseclassType_byName(SThisCode* thisCode, s8* tcTextname, s32 tnTextnameLength)
+	s32 iiObj_getBaseclassType_byName(s8* tcTextname, s32 tnTextnameLength)
 	{
 		s32 lnI;
 
@@ -3528,7 +3528,7 @@ if (!obj->props[lnI])
 // Called to translate the text-based class name to its internal object reference
 //
 //////
-	SBaseClassMap* iiObj_getBaseclass_byName(SThisCode* thisCode, s8* tcTextname, s32 tnTextnameLength)
+	SBaseClassMap* iiObj_getBaseclass_byName(s8* tcTextname, s32 tnTextnameLength)
 	{
 		s32 lnI;
 
@@ -3555,7 +3555,7 @@ if (!obj->props[lnI])
 // Note:  tnObjType is obj->objType
 //
 //////
-	SBaseClassMap* iiObj_getBaseclass_byType(SThisCode* thisCode, s32 tnObjType)
+	SBaseClassMap* iiObj_getBaseclass_byType(s32 tnObjType)
 	{
 		// Iterate through each function for matches
 		logfunc(__FUNCTION__);

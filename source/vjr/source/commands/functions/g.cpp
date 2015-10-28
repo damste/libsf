@@ -109,7 +109,7 @@
 //    Numeric.
 //
 //////
-	void function_getwordcount(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_getwordcount(SFunctionParams* rpar)
 	{
 		SVariable*	varStr			= rpar->ip[0];
 		SVariable*	varDelimiters	= rpar->ip[1];
@@ -123,7 +123,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varStr) || !iVariable_isTypeCharacter(varStr))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varStr), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varStr), false);
 				return;
 			}
 
@@ -136,7 +136,7 @@
 				// Logical
 				if (!iVariable_isValid(varDelimiters) || !iVariable_isTypeCharacter(varDelimiters))
 				{
-					iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varDelimiters), false);
+					iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varDelimiters), false);
 					return;
 				}
 
@@ -154,12 +154,12 @@
 		//////////
 		// Return the result
 		//////
-			rpar->rp[0] = ifunction_getword_common(thisCode, varStr, delimiters, 0, true);
+			rpar->rp[0] = ifunction_getword_common(varStr, delimiters, 0, true);
 
 	}
 
 	// Common getword function used for GETWORDNUM(), GETWORDCOUNT()
-	SVariable* ifunction_getword_common(SThisCode* thisCode,SVariable* varStr, SDatum delimiters, s32 tnIndex, bool tlIsCount)
+	SVariable* ifunction_getword_common(SVariable* varStr, SDatum delimiters, s32 tnIndex, bool tlIsCount)
 	{
 		s32			lnI, lnJ, lnAllocationLength, lnCount, lnPass, lnPassMax, lnOffset;
 		s8			c;
@@ -187,7 +187,7 @@
 						lcResult = (s8*)malloc(lnAllocationLength + 1);
 						if (!lcResult)
 						{
-							iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, NULL, false);
+							iError_reportByNumber(_ERROR_INTERNAL_ERROR, NULL, false);
 							return(NULL);
 						}
 
@@ -258,12 +258,12 @@
 			if (tlIsCount)
 			{
 				// Just a count
-				result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_S32, (cs8*)&lnCount, sizeof(lnCount), false);
+				result = iVariable_createAndPopulate_byText(_VAR_TYPE_S32, (cs8*)&lnCount, sizeof(lnCount), false);
 
 			} else {
 				// Store the result
-				if (lnAllocationLength != 0 && lcResult)	result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, (cs8*)lcResult, lnAllocationLength, true);
-				else										result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, cgc_spaceText, 0, false);
+				if (lnAllocationLength != 0 && lcResult)	result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, (cs8*)lcResult, lnAllocationLength, true);
+				else										result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, cgc_spaceText, 0, false);
 			}
 
 
@@ -271,7 +271,7 @@
 		// Are we good?
 		//////
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varStr), false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varStr), false);
 
 
 		//////////
@@ -306,7 +306,7 @@
 //    Character.
 //
 //////
-	void function_getwordnum(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_getwordnum(SFunctionParams* rpar)
 	{
 		SVariable*	varStr			= rpar->ip[0];
 		SVariable*	varIndex		= rpar->ip[1];
@@ -324,7 +324,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varStr) || !iVariable_isTypeCharacter(varStr))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varStr), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varStr), false);
 				return;
 			}
 
@@ -334,7 +334,7 @@
 		//////
 			if (!iVariable_isValid(varIndex) || !iVariable_isTypeNumeric(varIndex))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varIndex), false);
+				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varIndex), false);
 				return;
 			}
 
@@ -347,7 +347,7 @@
 				// Logical
 				if (!iVariable_isValid(varDelimiters) || !iVariable_isTypeCharacter(varDelimiters))
 				{
-					iError_reportByNumber(thisCode, _ERROR_P3_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varDelimiters), false);
+					iError_reportByNumber(_ERROR_P3_IS_INCORRECT, iVariable_get_relatedComp(varDelimiters), false);
 					return;
 				}
 
@@ -365,13 +365,13 @@
 		//////////
 		// Grab index
 		//////		
-			lnIndex = iiVariable_getAs_s32(thisCode, varIndex, false, &error, &errorNum);
+			lnIndex = iiVariable_getAs_s32(varIndex, false, &error, &errorNum);
 
 
 		//////////
 		// Indicate our result
 		//////
-			rpar->rp[0] = ifunction_getword_common(thisCode, varStr, delimiters, lnIndex, false);
+			rpar->rp[0] = ifunction_getword_common(varStr, delimiters, lnIndex, false);
 
 	}
 
@@ -402,7 +402,7 @@
 //////
 	static cs8 cgGoMonthData[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
-	VOID function_gomonth(SThisCode* thisCode, SFunctionParams* rpar)
+	VOID function_gomonth(SFunctionParams* rpar)
 	{
 		SVariable* varParam = rpar->ip[0];
 		SVariable* varMonth = rpar->ip[1];
@@ -423,7 +423,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varParam) || !(iVariable_isTypeDate(varParam) || iVariable_isTypeDatetimeX(varParam) || iVariable_isTypeDatetime(varParam)))
 			{
-				iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varParam), false);
+				iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varParam), false);
 				return;
 			}
 
@@ -443,7 +443,7 @@
 			if (!iVariable_isValid(varMonth) || !iVariable_isTypeNumeric(varMonth))
 			{
 				// Invalid second parameter
-				iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varMonth), false);
+				iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varMonth), false);
 				return;
 			}
 
@@ -451,10 +451,10 @@
 		//////////
 		// Grab the value
 		//////
-			lnNumOfMonths = iiVariable_getAs_s32(thisCode, varMonth, false, &error, &errorNum);
+			lnNumOfMonths = iiVariable_getAs_s32(varMonth, false, &error, &errorNum);
 			if (error)
 			{
-				iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varMonth), false);
+				iError_reportByNumber(errorNum, iVariable_get_relatedComp(varMonth), false);
 				return;
 			}
 
@@ -482,7 +482,7 @@
 					// Is year in range 1600..2400
 					if (lnYear < 1600 || lnYear > 2400)
 					{
-						iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(thisCode, varParam), false);
+						iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varParam), false);
 						return;
 					}
 
@@ -523,7 +523,7 @@
 					if (iVariable_isTypeDatetime(varParam))
 					{
 						// Datetime
-						result = iVariable_create(thisCode, _VAR_TYPE_DATETIME, NULL, true);
+						result = iVariable_create(_VAR_TYPE_DATETIME, NULL, true);
 						if (result)
 						{
 							// Date is stored as julian day number
@@ -533,7 +533,7 @@
 
 					} else if (iVariable_isTypeDatetimeX(varParam)) {
 						// DatetimeX
-						result = iVariable_create(thisCode, _VAR_TYPE_DATETIMEX, NULL, true);
+						result = iVariable_create(_VAR_TYPE_DATETIMEX, NULL, true);
 						if (result)
 						{
 							// Date is stored as julian day number
@@ -544,12 +544,12 @@
 					} else {
 						// Date is stored as YYYYMMDD
 						iiDateMath_get_YYYYMMDD_from_YyyyMmDd(buffer, lnYear, (u32)lnMonth, lnDay);
-						result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_DATE, buffer, 8, false);
+						result = iVariable_createAndPopulate_byText(_VAR_TYPE_DATE, buffer, 8, false);
 					}
 
 			} else {
 				// No month movement, copy original
-				result	= iVariable_copy(thisCode, varParam, false);
+				result	= iVariable_copy(varParam, false);
 			}
 
 
@@ -557,7 +557,7 @@
 		// Are we good?
 		//////
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varParam), false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varParam), false);
 
 
 		//////////
@@ -590,14 +590,14 @@
 // Returns:
 //    The input pathname with the new stem.
 //////
-	void function_grayscale(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_grayscale(SFunctionParams* rpar)
 	{
 		SVariable* varColor			= rpar->ip[0];
 		SVariable* varPercentage	= rpar->ip[1];
 
 
 		// Return grayscale
-		ifunction_colorize_common(thisCode, rpar, varColor, NULL, varPercentage, false);
+		ifunction_colorize_common(rpar, varColor, NULL, varPercentage, false);
 	}
 
 
@@ -623,11 +623,11 @@
 // Returns:
 //    Numeric	-- Input number converted to ASCII value number
 //////
-	void function_grn(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_grn(SFunctionParams* rpar)
 	{
 		SVariable* varColor = rpar->ip[0];
 
 
 		// Return grn
-		ifunction_color_common(thisCode, rpar, varColor, 0x0000ff00, 8);
+		ifunction_color_common(rpar, varColor, 0x0000ff00, 8);
 	}

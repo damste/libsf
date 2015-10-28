@@ -111,11 +111,11 @@
 //    ? YEAR(dt)		&& Displays 2015
 //    ? YEAR()			&& Displays current date's year number
 //////
-	void function_year(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_year(SFunctionParams* rpar)
 	{
 		SVariable* varParam = rpar->ip[0];
 
 
 		// Return year
-		ifunction_day_month_year_common(thisCode, rpar, varParam, _DMY_COMMON_YEAR);
+		ifunction_day_month_year_common(rpar, varParam, _DMY_COMMON_YEAR);
 	}

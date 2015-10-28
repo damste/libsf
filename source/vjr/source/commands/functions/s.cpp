@@ -106,13 +106,13 @@
 // Returns:
 //    SEC( ) returns a numeric value.
 //////
-	void function_sec(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_sec(SFunctionParams* rpar)
 	{
 		SVariable*	varParam = rpar->ip[0];
 
 
 		// Return second
-		ifunction_hhmmss_common(thisCode, rpar, varParam, _HMS_COMMON_SECOND);
+		ifunction_hhmmss_common(rpar, varParam, _HMS_COMMON_SECOND);
 	}
 
 
@@ -138,12 +138,12 @@
 // Returns:
 //    Numeric. SECONDS( ) returns a numeric value in decimal format with a resolution of 1 millisecond.
 //////
-	void function_seconds(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_seconds(SFunctionParams* rpar)
 	{
-		ifunction_xseconds_common(thisCode, rpar, _XSECONDS_FUNCTION_SECONDS);
+		ifunction_xseconds_common(rpar, _XSECONDS_FUNCTION_SECONDS);
 	}
 
-	void ifunction_xseconds_common(SThisCode* thisCode, SFunctionParams* rpar, s32 tnFunction)
+	void ifunction_xseconds_common(SFunctionParams* rpar, s32 tnFunction)
 	{
 		f64			lfResult;
 		s32			lnNanosecond;
@@ -193,7 +193,7 @@
 							// Should never happen, indicates an internal programming error.
 							// Check the call stack to see what was passed incorrectly into this function.
 							debug_nop;
-							iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, NULL, false);
+							iError_reportByNumber(_ERROR_INTERNAL_ERROR, NULL, false);
 							return;
 					}
 
@@ -204,9 +204,9 @@
 		// Create and populate output variable
 		//////
 			// Note:  There is a dependency in SYS(2) that this value be an f64 type:
-			result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_F64, (s8*)&lfResult, sizeof(lfResult), false);
+			result = iVariable_createAndPopulate_byText(_VAR_TYPE_F64, (s8*)&lfResult, sizeof(lfResult), false);
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, NULL, false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, NULL, false);
 
 
 		//////////
@@ -243,10 +243,10 @@
 //    k = SECONDS()
 //    ? SECONDSTOTIME(k)
 //////
-	void function_secondstotime(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_secondstotime(SFunctionParams* rpar)
 	{
 		// Return secondstotime
-		ifunction_timesAndDatesConversion_common(thisCode, rpar, _CONVERSION_FUNCTION_SECONDS, _CONVERSION_FUNCTION_TIME);
+		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_SECONDS, _CONVERSION_FUNCTION_TIME);
 	}
 
 
@@ -276,10 +276,10 @@
 //    k = SECONDS()
 //    ? SECONDSTOTIMEX(k)
 //////
-	void function_secondstotimex(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_secondstotimex(SFunctionParams* rpar)
 	{
 		// Return secondstotimex
-		ifunction_timesAndDatesConversion_common(thisCode, rpar, _CONVERSION_FUNCTION_SECONDS, _CONVERSION_FUNCTION_TIMEX);
+		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_SECONDS, _CONVERSION_FUNCTION_TIMEX);
 	}
 
 
@@ -311,10 +311,10 @@
 //    d = DATE()
 //    ? SECONDSTOT(k, d)
 //////
-	void function_secondstot(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_secondstot(SFunctionParams* rpar)
 	{
 		// Return secondstot
-		ifunction_timesAndDatesConversion_common(thisCode, rpar, _CONVERSION_FUNCTION_SECONDS, _CONVERSION_FUNCTION_DATETIME);
+		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_SECONDS, _CONVERSION_FUNCTION_DATETIME);
 	}
 
 
@@ -346,10 +346,10 @@
 //    d = DATE()
 //    ? SECONDSTOX(k, d)
 //////
-	void function_secondstox(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_secondstox(SFunctionParams* rpar)
 	{
 		// Return secondstox
-		ifunction_timesAndDatesConversion_common(thisCode, rpar, _CONVERSION_FUNCTION_SECONDS, _CONVERSION_FUNCTION_DATETIMEX);
+		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_SECONDS, _CONVERSION_FUNCTION_DATETIMEX);
 	}
 
 
@@ -375,9 +375,9 @@
 // Returns:
 //    Numeric. SECONDSX( ) returns a numeric value in decimal format with a resolution of 1 microsecond.
 //////
-	void function_secondsx(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_secondsx(SFunctionParams* rpar)
 	{
-		ifunction_xseconds_common(thisCode, rpar, _XSECONDS_FUNCTION_SECONDSX);
+		ifunction_xseconds_common(rpar, _XSECONDS_FUNCTION_SECONDSX);
 	}
 
 
@@ -407,10 +407,10 @@
 //    k = SECONDSX()
 //    ? SECONDSXTOTIME(k)
 //////
-	void function_secondsxtotime(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_secondsxtotime(SFunctionParams* rpar)
 	{
 		// Return secondsxtotime
-		ifunction_timesAndDatesConversion_common(thisCode, rpar, _CONVERSION_FUNCTION_SECONDSX, _CONVERSION_FUNCTION_TIME);
+		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_SECONDSX, _CONVERSION_FUNCTION_TIME);
 	}
 
 
@@ -440,10 +440,10 @@
 //    k = SECONDSX()
 //    ? SECONDSXTOTIMEX(k)
 //////
-	void function_secondsxtotimex(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_secondsxtotimex(SFunctionParams* rpar)
 	{
 		// Return secondsxtotimex
-		ifunction_timesAndDatesConversion_common(thisCode, rpar, _CONVERSION_FUNCTION_SECONDSX, _CONVERSION_FUNCTION_TIMEX);
+		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_SECONDSX, _CONVERSION_FUNCTION_TIMEX);
 	}
 
 
@@ -475,10 +475,10 @@
 //    d = DATE()
 //    ? SECONDSXTOT(k, d)
 //////
-	void function_secondsxtot(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_secondsxtot(SFunctionParams* rpar)
 	{
 		// Return secondsxtot
-		ifunction_timesAndDatesConversion_common(thisCode, rpar, _CONVERSION_FUNCTION_SECONDSX, _CONVERSION_FUNCTION_DATETIME);
+		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_SECONDSX, _CONVERSION_FUNCTION_DATETIME);
 	}
 
 
@@ -510,10 +510,10 @@
 //    d = DATE()
 //    ? SECONDSXTOX(k, d)
 //////
-	void function_secondsxtox(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_secondsxtox(SFunctionParams* rpar)
 	{
 		// Returns secondsxtox
-		ifunction_timesAndDatesConversion_common(thisCode, rpar, _CONVERSION_FUNCTION_SECONDSX, _CONVERSION_FUNCTION_DATETIMEX);
+		ifunction_timesAndDatesConversion_common(rpar, _CONVERSION_FUNCTION_SECONDSX, _CONVERSION_FUNCTION_DATETIMEX);
 	}
 
 
@@ -539,7 +539,7 @@
 // Returns:
 //    Character		-- The string with any trailing spaces removed
 //////
-	void function_set(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_set(SFunctionParams* rpar)
 	{
 		SVariable*		varIdentifier	= rpar->ip[0];
 		SVariable*		varExtraInfo	= rpar->ip[1];
@@ -559,7 +559,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varIdentifier) || !iVariable_isTypeCharacter(varIdentifier))
 			{
-				iError_reportByNumber(thisCode, _ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varIdentifier), false);
+				iError_reportByNumber(_ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(varIdentifier), false);
 				return;
 			}
 
@@ -582,11 +582,11 @@
 					//////////
 					// This is the setting
 					//////
-						var = iObjProp_get_var_byIndex(thisCode, _settings, gsProps_master[lnIndex].index, &baseProp, &objProp);
+						var = iObjProp_get_var_byIndex(_settings, gsProps_master[lnIndex].index, &baseProp, &objProp);
 						if (!var || !baseProp || !objProp)
 						{
 							// Should never happen, if it does it means something's not setup properly in the properties, or there's a memory corruption
-							iError_signal(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varIdentifier), false, NULL, false);
+							iError_signal(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varIdentifier), false, NULL, false);
 							return;
 						}
 						// Note:  var is the actual _settings variable, so a copy must be made if returning this value.
@@ -601,10 +601,10 @@
 							if (iVariable_isTypeNumeric(varExtraInfo))
 							{
 								// Grab the value
-								lnValue = iiVariable_getAs_s32(thisCode, varExtraInfo, false, &error, &errorNum);
+								lnValue = iiVariable_getAs_s32(varExtraInfo, false, &error, &errorNum);
 								if (error)
 								{
-									iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varExtraInfo), false);
+									iError_reportByNumber(errorNum, iVariable_get_relatedComp(varExtraInfo), false);
 									return;
 								}
 
@@ -615,48 +615,48 @@
 										if (objProp->index == _INDEX_SET_DEVICE)
 										{
 											// SET("device", 1) ... they want to know the filename if it's SET DEVICE TO FILE
-											if (iiVariable_getAs_s32(thisCode, var, false, &error, &errorNum) == _SET_DEVICE_FILE)
+											if (iiVariable_getAs_s32(var, false, &error, &errorNum) == _SET_DEVICE_FILE)
 											{
 												// We have processed into this option
 												llProcessed = true;
 
 												// Grab the _INDEX_SET_DEVICE2 entry for its filename
-												var = iObjProp_get_var_byIndex(thisCode, _settings, _INDEX_SET_DEVICE2, &baseProp, &objProp);
+												var = iObjProp_get_var_byIndex(_settings, _INDEX_SET_DEVICE2, &baseProp, &objProp);
 												if (!var || !baseProp || !objProp)
 												{
 													// Should never happen, if it does it means something's not setup properly in the properties, or there's a memory corruption
-													iError_signal(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varIdentifier), false, NULL, false);
+													iError_signal(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varIdentifier), false, NULL, false);
 													return;
 												}
 												// Note:  var is the actual _settings variable, so a copy must be made if returning this value.
-												rpar->rp[0] = iVariable_copy(thisCode, var, false);
+												rpar->rp[0] = iVariable_copy(var, false);
 											}
 										}
 										break;
 
 									case 2:
 										// Not currently used, but it is defined
-										iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(thisCode, varExtraInfo), false);
+										iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(varExtraInfo), false);
 										break;
 
 									case 3:
 										// Not currently used, but it is defined
-										iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(thisCode, varExtraInfo), false);
+										iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(varExtraInfo), false);
 										break;
 
 									case 4:
 										// Not currently used, but it is defined
-										iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(thisCode, varExtraInfo), false);
+										iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(varExtraInfo), false);
 										break;
 								}
 
 							} else if (iVariable_isTypeCharacter(varExtraInfo)) {
 								// SET("abc", cExpression)
 								// Not currently used, but it is defined
-								iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(thisCode, varExtraInfo), false);
+								iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(varExtraInfo), false);
 
 							} else {
-								iError_reportByNumber(thisCode, _ERROR_SYNTAX, iVariable_get_relatedComp(thisCode, varExtraInfo), false);
+								iError_reportByNumber(_ERROR_SYNTAX, iVariable_get_relatedComp(varExtraInfo), false);
 								return;
 							}
 						}
@@ -670,11 +670,11 @@
 							if (objProp->_getterObject_get)
 							{
 								// Get the displayable form
-								rpar->rp[0] = objProp->getterObject_get(thisCode, var, iVariable_get_relatedComp(thisCode, varIdentifier), false);
+								rpar->rp[0] = objProp->getterObject_get(var, iVariable_get_relatedComp(varIdentifier), false);
 
 							} else {
 								// If we get here, return a copy of the value
-								rpar->rp[0] = iVariable_copy(thisCode, var, false);
+								rpar->rp[0] = iVariable_copy(var, false);
 							}
 						}
 
@@ -683,7 +683,7 @@
 					// Are we good?
 					//////
 						if (!rpar->rp[0])
-							iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varIdentifier), false);
+							iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varIdentifier), false);
 
 
 					//////////
@@ -698,7 +698,7 @@
 		//////////
 		// If we get here, we didn't find that setting
 		//////
-			iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+			iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 	}
 
 
@@ -741,25 +741,25 @@
 //    ? sign(2.65656)		&& Displays 1
 //    ? sign(-2.65656)		&& Displays -1
 //////
-    void function_sign(SThisCode* thisCode, SFunctionParams* rpar)
+    void function_sign(SFunctionParams* rpar)
     {
 		SVariable* varNumber = rpar->ip[0];
 
 
 		// Return sign -- returns -1, 0, or 1
-		ifunction_sign_common(thisCode, rpar, varNumber, false);
+		ifunction_sign_common(rpar, varNumber, false);
 	}
 
-	void function_sign2(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_sign2(SFunctionParams* rpar)
 	{
 		SVariable* varNumber = rpar->ip[0];
 
 
 		// Return sign2 -- returns -1 if non-zero negative, 1 otherwise
-		ifunction_sign_common(thisCode, rpar, varNumber, true);
+		ifunction_sign_common(rpar, varNumber, true);
 	}
 
-	void ifunction_sign_common(SThisCode* thisCode, SFunctionParams* rpar, SVariable* varNumber, bool tlIncrementZero)
+	void ifunction_sign_common(SFunctionParams* rpar, SVariable* varNumber, bool tlIncrementZero)
 	{
 		f64			lfValue;
 		bool		error;
@@ -773,7 +773,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varNumber) || !iVariable_isTypeNumeric(varNumber))
 			{
-				iError_reportByNumber(thisCode, _ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNumber), false);
+				iError_reportByNumber(_ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(varNumber), false);
 				return;
 			}
 
@@ -781,10 +781,10 @@
 		//////////
 		// Parameter 1, Convert to f64
 		//////
-			lfValue = iiVariable_getAs_f64(thisCode, varNumber, false, &error, &errorNum);
+			lfValue = iiVariable_getAs_f64(varNumber, false, &error, &errorNum);
 			if (error)
 			{
-				iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNumber), false);
+				iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNumber), false);
 				return;
 			}
 
@@ -795,15 +795,15 @@
 			if (propGet_settings_ncset_signSign2(_settings))
 			{
 				// They want it to be the input type if possible
-				result = iVariable_create(thisCode, varNumber->varType, NULL, true);
+				result = iVariable_create(varNumber->varType, NULL, true);
 
 			} else {
 				// Always an integer return value
-				result = iVariable_create(thisCode, _VAR_TYPE_S32, NULL, true);
+				result = iVariable_create(_VAR_TYPE_S32, NULL, true);
 			}
 			if (!result)
 			{
-				iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNumber), false);
+				iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNumber), false);
 				return;
 			}
 
@@ -825,8 +825,8 @@
 		//////////
 		// Set the value
 		//////
-			if (!iVariable_setNumeric_toNumericType(thisCode, result, NULL, &lfValue, NULL, NULL, NULL, NULL))
-				iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNumber), false);
+			if (!iVariable_setNumeric_toNumericType(result, NULL, &lfValue, NULL, NULL, NULL, NULL))
+				iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNumber), false);
 
 
 		//////////
@@ -862,13 +862,13 @@
 // Example:
 //    ? SIN(0)		&& Display 0.00
 //////
-    void function_sin(SThisCode* thisCode, SFunctionParams* rpar)
+    void function_sin(SFunctionParams* rpar)
     {
 		SVariable* varNumber = rpar->ip[0];
 
 
 		// Return sin
-		ifunction_numbers_common(thisCode, rpar, varNumber, NULL, NULL, _FP_COMMON_SIN, _VAR_TYPE_F64, false, false);
+		ifunction_numbers_common(rpar, varNumber, NULL, NULL, _FP_COMMON_SIN, _VAR_TYPE_F64, false, false);
 	}
 
 
@@ -896,7 +896,7 @@
 // Returns:
 //    Character		-- The string which was extracted.
 //////
-	void function_slice(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_slice(SFunctionParams* rpar)
 	{
 //		SVariable* varString	= rpar->params[0];
 //		SVariable* varStart		= rpar->params[1];
@@ -904,7 +904,7 @@
 
 
 		// Not yet completed
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		rpar->rp[0] = NULL;
 	}
 
@@ -931,7 +931,7 @@
 // Returns:
 //    Character		-- SOUNDEX() returns a four-character string.
 //////
-	void function_soundex(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_soundex(SFunctionParams* rpar)
 	{
 		SVariable* varString	= rpar->ip[0];
 
@@ -942,7 +942,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString) || !iVariable_isTypeCharacter(varString))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varString), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varString), false);
 				return;
 			}
 
@@ -950,11 +950,11 @@
 		//////////
 		// Return the result
 		//////
-			rpar->rp[0] = ifunction_soundex_common(thisCode, varString);
+			rpar->rp[0] = ifunction_soundex_common(varString);
 	}
 
 	#define UPPER(c)   ((c >= 'a' && c <= 'z') ? c - 0x20 : c)
-	SVariable* ifunction_soundex_common(SThisCode* thisCode, SVariable* varStr)
+	SVariable* ifunction_soundex_common(SVariable* varStr)
 	{
 		s8		lcResult[5], c, lcCode, lcLast;
 		s32		lnI, lnJ;
@@ -1031,14 +1031,14 @@
 		//////////
 		// Create our result
 		//////
-			result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, lcResult, 5, false);
+			result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, lcResult, 5, false);
 
 
 		//////////
 		// Are we good?
 		//////
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varStr), false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varStr), false);
 
 
 		//////////
@@ -1070,7 +1070,7 @@
 // Returns:
 //    Character		-- The string with any leading and trailing spaces removed
 //////
-	void function_space(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_space(SFunctionParams* rpar)
 	{
 		SVariable*	varCount = rpar->ip[0];
 		s32			lnLength;
@@ -1085,7 +1085,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varCount) || !iVariable_isTypeNumeric(varCount))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varCount), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varCount), false);
 				return;
 			}
 
@@ -1093,10 +1093,10 @@
 		//////////
         // Find out how long they want our string to be
 		//////
-			lnLength = iiVariable_getAs_s32(thisCode, varCount, false, &error, &errorNum);
+			lnLength = iiVariable_getAs_s32(varCount, false, &error, &errorNum);
 			if (error)
 			{
-				iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varCount), false);
+				iError_reportByNumber(errorNum, iVariable_get_relatedComp(varCount), false);
 				return;
 			}
 
@@ -1104,10 +1104,10 @@
 		//////////
         // Create our return result
 		//////
-			result = iVariable_create(thisCode, _VAR_TYPE_CHARACTER, NULL, true);
+			result = iVariable_create(_VAR_TYPE_CHARACTER, NULL, true);
 			if (!result)
 			{
-				iError_report(thisCode, cgcInternalError, false);
+				iError_report(cgcInternalError, false);
 				return;
 			}
 
@@ -1154,13 +1154,13 @@
 //    ? SQRT(2.0)	&& Display 1.41
 //    ? SQRT(-2)	&& Error: argument cannot be negative
 //////
-    void function_sqrt(SThisCode* thisCode, SFunctionParams* rpar)
+    void function_sqrt(SFunctionParams* rpar)
 	{
 		SVariable* varNumber = rpar->ip[0];
 
 
 		// Return sqrt
-		ifunction_numbers_common(thisCode, rpar, varNumber, NULL, NULL, _FP_COMMON_SQRT, _VAR_TYPE_F64, false, false);
+		ifunction_numbers_common(rpar, varNumber, NULL, NULL, _FP_COMMON_SQRT, _VAR_TYPE_F64, false, false);
 	}
 
 
@@ -1189,7 +1189,7 @@
 //    Logical		-- .t. if the search string is found in the string, .f. otherwise
 //
 //////
-	void function_startswith(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_startswith(SFunctionParams* rpar)
 	{
 		SVariable* varString	= rpar->ip[0];
 //		SVariable* varSearch	= rpar->params[1];
@@ -1197,7 +1197,7 @@
 
 
 		// Not yet completed
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(thisCode, varString), false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(varString), false);
 		rpar->rp[0] = NULL;
 	}
 
@@ -1210,7 +1210,7 @@
 // Case-insensitive version of STARTSWITH().
 //
 //////
-	void function_startswithc(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_startswithc(SFunctionParams* rpar)
 	{
 		SVariable* varString	= rpar->ip[0];
 //		SVariable* varSearch	= rpar->params[1];
@@ -1218,7 +1218,7 @@
 
 
 		// Not yet completed
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(thisCode, varString), false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(varString), false);
 		rpar->rp[0] = NULL;
 	}
 
@@ -1249,7 +1249,7 @@
 //    Character		-- The original string with all components replaced
 //
 //////
-	void function_strtran(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_strtran(SFunctionParams* rpar)
 	{
 		SVariable* varString			= rpar->ip[0];
 		SVariable* varSearch			= rpar->ip[1];
@@ -1258,10 +1258,10 @@
 
 
 		// Return strtran
-		ifunction_strtran_common(thisCode, rpar, varString, varSearch, varReplace, varRecursiveCount, true);
+		ifunction_strtran_common(rpar, varString, varSearch, varReplace, varRecursiveCount, true);
 	}
 
-	void function_strtranc(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_strtranc(SFunctionParams* rpar)
 	{
 		SVariable* varString			= rpar->ip[0];
 		SVariable* varSearch			= rpar->ip[1];
@@ -1270,10 +1270,10 @@
 
 
 		// Return strtranc
-		ifunction_strtran_common(thisCode, rpar, varString, varSearch, varReplace, varRecursiveCount, false);
+		ifunction_strtran_common(rpar, varString, varSearch, varReplace, varRecursiveCount, false);
 	}
 
-	void ifunction_strtran_common(SThisCode* thisCode, SFunctionParams* rpar, SVariable* varString, SVariable* varSearch, SVariable* varReplace, SVariable* varRecursiveCount, bool tlCaseSensitive)
+	void ifunction_strtran_common(SFunctionParams* rpar, SVariable* varString, SVariable* varSearch, SVariable* varReplace, SVariable* varRecursiveCount, bool tlCaseSensitive)
 	{
 		s32			lnI, lnIteration, lnSrc, lnDst, lnLength, lnRecursiveCount, lnFoundCount;
 		bool		error;
@@ -1288,7 +1288,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString) || !iVariable_isTypeCharacter(varString))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varString), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varString), false);
 				return;
 			}
 
@@ -1298,7 +1298,7 @@
 		//////
 			if (!iVariable_isValid(varSearch) || !iVariable_isTypeCharacter(varSearch))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varSearch), false);
+				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varSearch), false);
 				return;
 			}
 
@@ -1313,7 +1313,7 @@
 
 			} else if (!iVariable_isTypeCharacter(varReplace)) {
 				// It is invalid
-				iError_reportByNumber(thisCode, _ERROR_P3_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varReplace), false);
+				iError_reportByNumber(_ERROR_P3_IS_INCORRECT, iVariable_get_relatedComp(varReplace), false);
 				return;
 			}
 
@@ -1328,22 +1328,22 @@
 
 			} else if (!iVariable_isTypeNumeric(varRecursiveCount)) {
 				// It is invalid
-				iError_reportByNumber(thisCode, _ERROR_P4_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varRecursiveCount), false);
+				iError_reportByNumber(_ERROR_P4_IS_INCORRECT, iVariable_get_relatedComp(varRecursiveCount), false);
 				return;
 
 			} else {
 				// Grab the actual value
-				lnRecursiveCount = iiVariable_getAs_s32(thisCode, varRecursiveCount, false, &error, &errorNum);
+				lnRecursiveCount = iiVariable_getAs_s32(varRecursiveCount, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varRecursiveCount), false);
+					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varRecursiveCount), false);
 					return;
 				}
 
 				if (lnRecursiveCount < 0)
 				{
 					// It is invalid
-					iError_reportByNumber(thisCode, _ERROR_P4_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varRecursiveCount), false);
+					iError_reportByNumber(_ERROR_P4_IS_INCORRECT, iVariable_get_relatedComp(varRecursiveCount), false);
 					return;
 				}
 			}
@@ -1356,7 +1356,7 @@
 			if (varSearch->value.length == 0 || varSearch->value.length > varString->value.length)
 			{
 				// Allocate a full copy of the original string
-				rpar->rp[0] = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, varString->value.data_u8, varString->value.length, false);
+				rpar->rp[0] = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, varString->value.data_u8, varString->value.length, false);
 				return;
 			}
 
@@ -1404,7 +1404,7 @@
 				{
 					// If we haven't made an official copy yet, we need to do so now
 					if (result == varString)
-						result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, varString->value.data_u8, varString->value.length, false);
+						result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, varString->value.data_u8, varString->value.length, false);
 
 					// Return our result
 					rpar->rp[0] = result;
@@ -1415,7 +1415,7 @@
 				lnLength = result->value.length - (lnFoundCount * varSearch->value.length) + (lnFoundCount * varReplace->value.length);
 
 				// Allocate a new string of that length
-				resultNew = iVariable_create(thisCode, _VAR_TYPE_CHARACTER, NULL, true);
+				resultNew = iVariable_create(_VAR_TYPE_CHARACTER, NULL, true);
 				iDatum_allocateSpace(&resultNew->value, lnLength);
 
 				// Copy the content
@@ -1459,7 +1459,7 @@
 
 				// Delete our original (if it wasn't pointing to our source string)
 				if (result != varString)
-					iVariable_delete(thisCode, result, true);
+					iVariable_delete(result, true);
 
 				// Set the new to our result
 				result = resultNew;
@@ -1501,7 +1501,7 @@
 //    Character		-- String has been modified as per the STUFF() function.
 //
 //////
-	void function_stuff(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_stuff(SFunctionParams* rpar)
 	{
 		SVariable*	varOriginalString	= rpar->ip[0];
 		SVariable*	varStartPos			= rpar->ip[1];
@@ -1520,7 +1520,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varOriginalString) || !iVariable_isTypeCharacter(varOriginalString))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varOriginalString), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varOriginalString), false);
 				return;
 			}
 
@@ -1530,7 +1530,7 @@
 		//////
 			if (!iVariable_isValid(varStartPos) || !iVariable_isTypeNumeric(varStartPos))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varStartPos), false);
+				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varStartPos), false);
 				return;
 			}
 
@@ -1540,7 +1540,7 @@
 		//////
 			if (!iVariable_isValid(varNumToRemove) || !iVariable_isTypeNumeric(varNumToRemove))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P3_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNumToRemove), false);
+				iError_reportByNumber(_ERROR_P3_IS_INCORRECT, iVariable_get_relatedComp(varNumToRemove), false);
 				return;
 			}
 
@@ -1550,7 +1550,7 @@
 		//////
 			if (!iVariable_isValid(varStuffString) || !iVariable_isTypeCharacter(varStuffString))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P4_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varStuffString), false);
+				iError_reportByNumber(_ERROR_P4_IS_INCORRECT, iVariable_get_relatedComp(varStuffString), false);
 				return;
 			}
 
@@ -1559,8 +1559,8 @@
 		// Grab the parameters as usable values
 		//////
 			// Your algorithm code goes here
-			lnStartPosition	= iiVariable_getAs_s32(thisCode, varStartPos, false, &error, &errorNum);
-			lnRemoveCount	= iiVariable_getAs_s32(thisCode, varNumToRemove, false, &error, &errorNum);
+			lnStartPosition	= iiVariable_getAs_s32(varStartPos, false, &error, &errorNum);
+			lnRemoveCount	= iiVariable_getAs_s32(varNumToRemove, false, &error, &errorNum);
 
 
 		//////////
@@ -1589,7 +1589,7 @@
 			lcBuffer = (u8*)malloc(lnBufferLength);
 			if (!lcBuffer)
 			{
-				iError_reportByNumber(thisCode, _ERROR_OUT_OF_MEMORY, NULL, false);
+				iError_reportByNumber(_ERROR_OUT_OF_MEMORY, NULL, false);
 				return;
 			}
 
@@ -1612,10 +1612,10 @@
 		//////////
         // Create the return(result)
 		//////
-	        result = iVariable_create(thisCode, _VAR_TYPE_CHARACTER, NULL, true);
+	        result = iVariable_create(_VAR_TYPE_CHARACTER, NULL, true);
 			if (!result)
 			{
-				iError_report(thisCode, (u8*)"Internal error.", false);
+				iError_report((u8*)"Internal error.", false);
 				return;
 			}
 
@@ -1673,7 +1673,7 @@
 //		11				-- Character, returns a Character-type Julian day number from a date
 //		2015			-- Character, unique procedure name
 //////
-	void function_sys(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_sys(SFunctionParams* rpar)
 	{
 		SVariable*	varIndex	= rpar->ip[0];
 		SVariable*	varP1		= rpar->ip[1];
@@ -1701,16 +1701,16 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varIndex) || !iVariable_isTypeNumeric(varIndex))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varIndex), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varIndex), false);
 				return;
 			}
 
 			// Grab the index
-			lnIndex = iiVariable_getAs_s32(thisCode, varIndex, false, &error, &errorNum);
+			lnIndex = iiVariable_getAs_s32(varIndex, false, &error, &errorNum);
 			if (error)
 			{
 				// An error extracting the value (should never happen)
-				iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varIndex), false);
+				iError_reportByNumber(errorNum, iVariable_get_relatedComp(varIndex), false);
 				return;
 			}
 
@@ -1739,7 +1739,7 @@
 					//////////
 					// Create our result and exit to report any errors
 					//////
-						result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, (cs8*)buffer, (u32)strlen(buffer), false);
+						result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, (cs8*)buffer, (u32)strlen(buffer), false);
 						goto clean_exit;
 
 
@@ -1748,7 +1748,7 @@
 					//////////
 					// Grab seconds()
 					//////
-						function_seconds(thisCode, rpar);
+						function_seconds(rpar);
 						result = rpar->rp[0];
 						if (result)
 						{
@@ -1783,7 +1783,7 @@
 					//////
 						memset(curdir, 0, sizeof(curdir));
 						GetCurrentDirectory(_MAX_PATH, curdir);
-						result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, curdir, 2, false);
+						result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, curdir, 2, false);
 						goto clean_exit;
 
 
@@ -1794,7 +1794,7 @@
 					//////
 						if (!iVariable_isValid(varP1) || !iVariable_isTypeNumeric(varP1))
 						{
-							iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varP1), false);
+							iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varP1), false);
 							return;
 						}
 
@@ -1802,10 +1802,10 @@
 					//////////
 					// Grab julian number
 					//////
-						lfJulian = iiVariable_getAs_f32(thisCode, varP1, false, &error, &errorNum);
+						lfJulian = iiVariable_getAs_f32(varP1, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varP1), false);
+							iError_reportByNumber(errorNum, iVariable_get_relatedComp(varP1), false);
 							return;
 						}
 
@@ -1816,7 +1816,7 @@
 						if (lfJulian < 2361222/*Sep.14.1752*/ || lfJulian > 5373484/*Dec.31.9999*/)
 						{
 							// For these values, return a blank date
-							result = iVariable_create(thisCode, _VAR_TYPE_DATE, NULL, true);
+							result = iVariable_create(_VAR_TYPE_DATE, NULL, true);
 							if (result)
 								memset(result->value.data, 32, result->value.length);	// Make it all spaces
 
@@ -1836,11 +1836,11 @@
 					//////
 						// Date is stored as YYYYMMDD
 						iiDateMath_get_YYYYMMDD_from_YyyyMmDd(buffer, lnYear, lnMonth, lnDay);
-						varTemp = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_DATE, buffer, 8, false);
+						varTemp = iVariable_createAndPopulate_byText(_VAR_TYPE_DATE, buffer, 8, false);
 						if (!varTemp)
 						{
 							// Fatal error
-							iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, NULL, false);
+							iError_reportByNumber(_ERROR_INTERNAL_ERROR, NULL, false);
 							return;
 						}
 
@@ -1848,13 +1848,13 @@
 					//////////
 					// Create and populate the return variable
 					//////
-						result = iVariable_convertForDisplay(thisCode, varTemp);
+						result = iVariable_convertForDisplay(varTemp);
 
 
 					//////////
 					// Clean house and exit to report any errors
 					//////
-						iVariable_delete(thisCode, varTemp, true);
+						iVariable_delete(varTemp, true);
 						goto clean_exit;
 
 
@@ -1866,7 +1866,7 @@
 					//////
 						if (!iVariable_isValid(varP1) || !(iVariable_isTypeCharacter(varP1) || iVariable_isTypeDate(varP1) || iVariable_isTypeDatetime(varP1) || iVariable_isTypeDatetimeX(varP1)))
 						{
-							iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varP1), false);
+							iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varP1), false);
 							return;
 						}
 
@@ -1885,10 +1885,10 @@
 							//////////
 							// Use common function to extract the date
 							//////
-								ifunction_ctox_common(thisCode, &lsrpar, varP1, true);
+								ifunction_ctox_common(&lsrpar, varP1, true);
 								if (!lsrpar.rp[0])
 								{
-									iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varP1), false);
+									iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varP1), false);
 									return;
 								}
 
@@ -1918,13 +1918,13 @@
 						sprintf(buffer, "%d\0", (s32)lfJulian);
 
 						// Delete temp (no longer needed)
-						iVariable_delete(thisCode, varTemp, true);
+						iVariable_delete(varTemp, true);
 
 
 					//////////
 					// Create our result and exit to report any errors
 					//////
-						result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, (cs8*)buffer, (u32)strlen(buffer), false);
+						result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, (cs8*)buffer, (u32)strlen(buffer), false);
 						goto clean_exit;
 
 
@@ -1936,7 +1936,7 @@
 					//////
 						memset(curdir, 0, sizeof(curdir));
 						GetCurrentDirectory(_MAX_PATH, curdir);
-						result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, curdir + 2, (s32)strlen(curdir + 2), false);
+						result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, curdir + 2, (s32)strlen(curdir + 2), false);
 						goto clean_exit;
 
 
@@ -1965,7 +1965,7 @@
 						//////
 							if (!iVariable_isTypeNumeric(varP1))
 							{
-								iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varP1), false);
+								iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varP1), false);
 								goto clean_exit;
 							}
 
@@ -1973,10 +1973,10 @@
 						//////////
 						// Get the prefix width
 						//////
-							lnExtraPrefixWidth = iiVariable_getAs_s32(thisCode, varP1, false, &error, &errorNum);
+							lnExtraPrefixWidth = iiVariable_getAs_s32(varP1, false, &error, &errorNum);
 							if (error)
 							{
-								iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varP1), false);
+								iError_reportByNumber(errorNum, iVariable_get_relatedComp(varP1), false);
 								goto clean_exit;
 							}
 							// Right now, we have lnExtraPrefixWidth
@@ -1992,7 +1992,7 @@
 								//////
 									if (!iVariable_isTypeNumeric(varP2))
 									{
-										iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varP2), false);
+										iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varP2), false);
 										goto clean_exit;
 									}
 
@@ -2000,10 +2000,10 @@
 								//////////
 								// Get the postfix width
 								//////
-									lnExtraPostfixWidth = iiVariable_getAs_s32(thisCode, varP2, false, &error, &errorNum);
+									lnExtraPostfixWidth = iiVariable_getAs_s32(varP2, false, &error, &errorNum);
 									if (error)
 									{
-										iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varP2), false);
+										iError_reportByNumber(errorNum, iVariable_get_relatedComp(varP2), false);
 										goto clean_exit;
 									}
 									// Right now, we have lnExtraPostfixWidth
@@ -2019,7 +2019,7 @@
 					}
 
 					// Create a variable in base-36 (uses 0..9, A..Z)
-					result = iVariable_createByRadix(thisCode, ln2015, 36, 1 + lnExtraPrefixWidth, lnExtraPostfixWidth);
+					result = iVariable_createByRadix(ln2015, 36, 1 + lnExtraPrefixWidth, lnExtraPostfixWidth);
 
 					// Prefix with an underscore
 					if (result)
@@ -2036,14 +2036,14 @@
 					//////
 						memset(curdir, 0, sizeof(curdir));
 						GetTempPath(sizeof(curdir), curdir);
-						result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, curdir, (s32)strlen(curdir), false);
+						result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, curdir, (s32)strlen(curdir), false);
 						goto clean_exit;
 
 
 				// Unknown
 				default:
 					// Not currently supported
-					iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(thisCode, varIndex), false);
+					iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(varIndex), false);
 					return;
 			}
 
@@ -2052,7 +2052,7 @@ clean_exit:
 		// Are we good?
 		//////
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, NULL, false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, NULL, false);
 
 
 		//////////
@@ -2063,7 +2063,7 @@ clean_exit:
 	}
 
 	// Note:  Helper function.  iFunction_sys2015() is a shortcut function for accessing the oft-used get-unique-procedure-name feature
-	SVariable* iFunction_sys2015(SThisCode* thisCode, u32 tnPrefixWidth, u32 tnPostfixWidth)
+	SVariable* iFunction_sys2015(u32 tnPrefixWidth, u32 tnPostfixWidth)
 	{
 		s32				ln2015;
 		SVariable*		varSys2015;
@@ -2077,24 +2077,24 @@ debug_break;
 		//////
 			memset(&lsrpar, 0, sizeof(lsrpar));
 			ln2015 = 2015;
-			lsrpar.ip[0/*2015*/]		= iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_S32,	(cu8*)&ln2015,			sizeof(ln2015),			false);
-			lsrpar.ip[1/*prefix*/]	= iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_S32,	(cu8*)&tnPrefixWidth,	sizeof(tnPrefixWidth),	false);
-			lsrpar.ip[2/*postfix*/]	= iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_S32,	(cu8*)&tnPostfixWidth,	sizeof(tnPostfixWidth), false);
+			lsrpar.ip[0/*2015*/]		= iVariable_createAndPopulate_byText(_VAR_TYPE_S32,	(cu8*)&ln2015,			sizeof(ln2015),			false);
+			lsrpar.ip[1/*prefix*/]	= iVariable_createAndPopulate_byText(_VAR_TYPE_S32,	(cu8*)&tnPrefixWidth,	sizeof(tnPrefixWidth),	false);
+			lsrpar.ip[2/*postfix*/]	= iVariable_createAndPopulate_byText(_VAR_TYPE_S32,	(cu8*)&tnPostfixWidth,	sizeof(tnPostfixWidth), false);
 
 
 		//////////
 		// Call the function
 		//////
-			function_sys(thisCode, &lsrpar);
+			function_sys(&lsrpar);
 			varSys2015 = lsrpar.rp[0];
 
 
 		//////////
 		// Clean house
 		//////
-			iVariable_delete(thisCode, lsrpar.ip[0], true);
-			iVariable_delete(thisCode, lsrpar.ip[1], true);
-			iVariable_delete(thisCode, lsrpar.ip[2], true);
+			iVariable_delete(lsrpar.ip[0], true);
+			iVariable_delete(lsrpar.ip[1], true);
+			iVariable_delete(lsrpar.ip[2], true);
 
 
 		//////////
@@ -2126,7 +2126,7 @@ debug_break;
 // Returns:
 //    Numeric		-- Depending on index, various value ranges are returned
 //////
-    void function_sysmetric(SThisCode* thisCode, SFunctionParams* rpar)
+    void function_sysmetric(SFunctionParams* rpar)
     {
 		SVariable*	varIndex = rpar->ip[0];
         s32			index;
@@ -2142,7 +2142,7 @@ debug_break;
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varIndex) || !iVariable_isTypeNumeric(varIndex))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varIndex), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varIndex), false);
 				return;
 			}
 
@@ -2150,15 +2150,15 @@ debug_break;
 		//////////
         // It must be in the range 1..34
 		//////
-			index = iiVariable_getAs_s32(thisCode, varIndex, false, &error, &errorNum);
+			index = iiVariable_getAs_s32(varIndex, false, &error, &errorNum);
 			if (error)
 			{
-				iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varIndex), false);
+				iError_reportByNumber(errorNum, iVariable_get_relatedComp(varIndex), false);
 				return;
 
 			} else if (index > 34 || index < 1) {
 				// We report our own error
-				iError_report(thisCode, (cu8*)"Parameter must be in the range 1..34", false);
+				iError_report((cu8*)"Parameter must be in the range 1..34", false);
 				return;
 			}
 
@@ -2166,10 +2166,10 @@ debug_break;
 		//////////
         // Create our return result
 		//////
-	        result = iVariable_create(thisCode, _VAR_TYPE_S32, NULL, true);
+	        result = iVariable_create(_VAR_TYPE_S32, NULL, true);
 			if (!result)
 			{
-				iError_report(thisCode, cgcInternalError, false);
+				iError_report(cgcInternalError, false);
 				return;
 			}
 

@@ -107,7 +107,7 @@
 // start over.
 //
 //////
-	u32 compile_vxb(SThisCode* thisCode, SEM* codeBlock, SCompileVxbContext* vxbParam, SCompileStats* stats)
+	u32 compile_vxb(SEM* codeBlock, SCompileVxbContext* vxbParam, SCompileStats* stats)
 	{
 		SCompileVxbContext*	vxb;
 		SCompileVxbContext	vxbLocal;
@@ -149,13 +149,13 @@
 			if (vxb->codeBlock && vxb->codeBlock->firstLine)
 			{
 				// Before compilation, we need to remove any dependencies on things that have changed
-				iiCompile_vxb_precompile_forLiveCode(thisCode, vxb);
+				iiCompile_vxb_precompile_forLiveCode(vxb);
 
 				// Physically compile
-				iiCompile_vxb_compile_forLiveCode(thisCode, vxb);		// Note:  Compilation compiles source code, and generates executable ops
+				iiCompile_vxb_compile_forLiveCode(vxb);		// Note:  Compilation compiles source code, and generates executable ops
 
 				// After compilation, clean up anything that's dead
-				iiCompile_vxb_postcompile_forLiveCode(thisCode, vxb);
+				iiCompile_vxb_postcompile_forLiveCode(vxb);
 			}
 
 
@@ -193,7 +193,7 @@
 // references what will become the new function, new adhoc, or new variable.
 //
 //////
-	void iiCompile_vxb_precompile_forLiveCode(SThisCode* thisCode, SCompileVxbContext* vxb)
+	void iiCompile_vxb_precompile_forLiveCode(SCompileVxbContext* vxb)
 	{
 		SLine*	line;
 
@@ -205,7 +205,7 @@
 			for (line = vxb->codeBlock->firstLine; line; line = line->ll.nextLine)
 			{
 				// If this line has existing compilerInfo_LiveCode, free it
-				iiCompile_LiveCode_free(thisCode, line->compilerInfo_LiveCode);
+				iiCompile_LiveCode_free(line->compilerInfo_LiveCode);
 			}
 		}
 	}
@@ -218,7 +218,7 @@
 // Called to physically compile each line of source code.
 //
 //////
-	void iiCompile_vxb_compile_forLiveCode(SThisCode* thisCode, SCompileVxbContext* vxb)
+	void iiCompile_vxb_compile_forLiveCode(SCompileVxbContext* vxb)
 	{
 		// Begin compiling
 		vxb->currentFunction	= NULL;
@@ -237,7 +237,7 @@
 
 			// Make sure we have a compilerInfo object
 			if (!vxb->line->compilerInfo)
-				vxb->line->compilerInfo = iCompiler_allocate(thisCode, vxb->line);
+				vxb->line->compilerInfo = iCompiler_allocate(vxb->line);
 
 			// Is there anything to parse on this line?
 			if (vxb->line->sourceCode && vxb->line->sourceCode_populatedLength > 0)
@@ -314,14 +314,14 @@
 						//////////
 						// We need to clear out anything from any prior compile
 						//////
-							iComps_deleteAll_byLine(thisCode, vxb->line);
-							iCompiler_delete(thisCode, &vxb->line->compilerInfo, false);
+							iComps_deleteAll_byLine(vxb->line);
+							iCompiler_delete(&vxb->line->compilerInfo, false);
 
 
 						//////////
 						// Convert raw source code to known character sequences
 						//////
-							iComps_translateSourceLineTo(thisCode, &cgcFundamentalSymbols[0], vxb->line);
+							iComps_translateSourceLineTo(&cgcFundamentalSymbols[0], vxb->line);
 							if (!vxb->line->compilerInfo->firstComp)
 							{
 								++vxb->stats->blankLineCount;
@@ -343,15 +343,15 @@
 						//////////
 						// Perform fixups
 						//////
-							iComps_removeStartEndComments(thisCode, vxb->line);			// Remove /* comments */
-							iComps_fixupNaturalGroupings(thisCode, vxb->line);			// Fixup natural groupings [_][aaa][999] becomes [_aaa999], [999][.][99] becomes [999.99], etc.
-							iComps_removeWhitespaces(thisCode, vxb->line);				// Remove whitespaces [use][whitespace][foo] becomes [use][foo]
+							iComps_removeStartEndComments(vxb->line);			// Remove /* comments */
+							iComps_fixupNaturalGroupings(vxb->line);			// Fixup natural groupings [_][aaa][999] becomes [_aaa999], [999][.][99] becomes [999.99], etc.
+							iComps_removeWhitespaces(vxb->line);				// Remove whitespaces [use][whitespace][foo] becomes [use][foo]
 
 
 						//////////
 						// Translate sequences to known keywords
 						//////
-							iComps_translateToOthers(thisCode, &cgcKeywordsVxb[0], vxb->line->compilerInfo->firstComp, true);
+							iComps_translateToOthers(&cgcKeywordsVxb[0], vxb->line->compilerInfo->firstComp, true);
 
 
 						//////////
@@ -360,45 +360,45 @@
 							if (vxb->comp->iCode == _ICODE_FUNCTION)
 							{
 								// They are adding another function
-								vxb->currentFunction = iiComps_decodeSyntax_function(thisCode, vxb);
+								vxb->currentFunction = iiComps_decodeSyntax_function(vxb);
 
 
 							} else if (vxb->comp->iCode == _ICODE_ADHOC) {
 								// They are adding an adhoc function
-								iiComps_decodeSyntax_adhoc(thisCode, vxb);
+								iiComps_decodeSyntax_adhoc(vxb);
 
 
 							} else if (vxb->comp->iCode == _ICODE_PARAMS) {
 								// They are adding parameters
 								// Process the PARAMS line
 // TODO:  working here
-								iiComps_decodeSyntax_params(thisCode, vxb);
+								iiComps_decodeSyntax_params(vxb);
 
 
 							} else if (vxb->comp->iCode == _ICODE_LOBJECT) {
 								// They are adding parameters via an object
 								// Process the LOBJECT line
 // TODO:  working here
-								iiComps_decodeSyntax_lobject(thisCode, vxb);
+								iiComps_decodeSyntax_lobject(vxb);
 
 
 							} else if (vxb->comp->iCode == _ICODE_LPARAMETERS) {
 								// They are adding lparameters
 								// Process the LPARAMETERS line
 // TODO:  working here
-								iiComps_decodeSyntax_lparameters(thisCode, vxb);
+								iiComps_decodeSyntax_lparameters(vxb);
 
 
 							} else if (vxb->comp->iCode == _ICODE_RETURNS) {
 								// They are specifying returns
 								// Process the RETURNS line
 // TODO:  working here
-								iiComps_decodeSyntax_returns(thisCode, vxb);
+								iiComps_decodeSyntax_returns(vxb);
 
 
 							} else {
 								// Translate into operations
-								iiComps_xlatToNodes(thisCode, vxb->line, vxb->line->compilerInfo);
+								iiComps_xlatToNodes(vxb->line, vxb->line->compilerInfo);
 								// Note:  Right now, line->errors and line->warnings have notes attached to them about the compilation of this line
 							}
 
@@ -418,7 +418,7 @@
 // Called to post-compile, primarily to flag variables that are not referenced
 //
 //////
-	void iiCompile_vxb_postcompile_forLiveCode(SThisCode* thisCode, SCompileVxbContext* vxb)
+	void iiCompile_vxb_postcompile_forLiveCode(SCompileVxbContext* vxb)
 	{
 	}
 
@@ -432,7 +432,7 @@
 // Syntax:	FUNCTION cFunctionName
 //
 //////
-	SFunction* iiComps_decodeSyntax_function(SThisCode* thisCode, SCompileVxbContext* vxb)
+	SFunction* iiComps_decodeSyntax_function(SCompileVxbContext* vxb)
 	{
 		SComp*		comp;
 		SComp*		compName;
@@ -456,7 +456,7 @@
 // TODO:  We need to do a lookup on this name to see if we're replacing a function, or adding a new one
 
 						// Create the new function
-						func = iFunction_allocate(thisCode, compName);
+						func = iFunction_allocate(compName);
 
 						// Indicate information about this function
 						func->firstLine	= vxb->line;
@@ -465,7 +465,7 @@
 // TODO:  Needs added to the current function chain
 
 						// Generate warnings for ignored components if any appear after
-						iComp_reportWarningsOnRemainder(thisCode, compName->ll.nextComp, _WARNING_SPURIOUS_COMPONENTS_IGNORED, (cu8*)cgcSpuriousIgnored);
+						iComp_reportWarningsOnRemainder(compName->ll.nextComp, _WARNING_SPURIOUS_COMPONENTS_IGNORED, (cu8*)cgcSpuriousIgnored);
 					}
 				}
 			}
@@ -485,7 +485,7 @@
 // Syntax:	ADHOC cAdhocName
 //
 //////
-	SFunction* iiComps_decodeSyntax_adhoc(SThisCode* thisCode, SCompileVxbContext* vxb)
+	SFunction* iiComps_decodeSyntax_adhoc(SCompileVxbContext* vxb)
 	{
 		SComp*		comp;
 		SComp*		compName;
@@ -509,7 +509,7 @@
 // TODO:  We need to do a lookup on this name to see if we're replacing an adhoc, or adding a new one
 
 						// Create the new adhoc
-						adhoc = iFunction_allocate(thisCode, compName);
+						adhoc = iFunction_allocate(compName);
 
 						// Indicate information about this adhoc
 						adhoc->firstLine	= vxb->line;
@@ -518,7 +518,7 @@
 // TODO:  Needs added to the current function
 
 						// Generate warnings for ignored components if any appear after
-						iComp_reportWarningsOnRemainder(thisCode, compName->ll.nextComp, _WARNING_SPURIOUS_COMPONENTS_IGNORED, cgcSpuriousIgnored);
+						iComp_reportWarningsOnRemainder(compName->ll.nextComp, _WARNING_SPURIOUS_COMPONENTS_IGNORED, cgcSpuriousIgnored);
 					}
 				}
 			}
@@ -531,22 +531,22 @@
 
 
 
-void iiComps_decodeSyntax_params(SThisCode* thisCode, SCompileVxbContext* vxb)
+void iiComps_decodeSyntax_params(SCompileVxbContext* vxb)
 {
 // TODO:  write this function
 }
 
-void iiComps_decodeSyntax_lobject(SThisCode* thisCode, SCompileVxbContext* vxb)
+void iiComps_decodeSyntax_lobject(SCompileVxbContext* vxb)
 {
 // TODO:  write this function
 }
 
-void iiComps_decodeSyntax_lparameters(SThisCode* thisCode, SCompileVxbContext* vxb)
+void iiComps_decodeSyntax_lparameters(SCompileVxbContext* vxb)
 {
 // TODO:  write this function
 }
 
-void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
+void iiComps_decodeSyntax_returns(SCompileVxbContext* vxb)
 {
 // TODO:  write this function
 }
@@ -559,7 +559,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Release the compiler info contained here
 //
 //////
-	void iiCompile_LiveCode_free(SThisCode* thisCode, SCompiler* compiler)
+	void iiCompile_LiveCode_free(SCompiler* compiler)
 	{
 		//////////
 		// Free this copy of the original source code line if need be
@@ -574,8 +574,8 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 		//////////
 		// Free the components and whitespaces
 		//////
-			iComps_deleteAll(thisCode, compiler->firstComp);
-			iComps_deleteAll(thisCode, compiler->firstWhitespace);
+			iComps_deleteAll(compiler->firstComp);
+			iComps_deleteAll(compiler->firstWhitespace);
 
 
 		//////////
@@ -606,15 +606,15 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 		//////////
 		// Delete any errors, warnings, or notes
 		//////
-			iCompileNote_removeAll(thisCode, &compiler->firstError);
-			iCompileNote_removeAll(thisCode, &compiler->firstWarning);
-			iCompileNote_removeAll(thisCode, &compiler->firstNote);
+			iCompileNote_removeAll(&compiler->firstError);
+			iCompileNote_removeAll(&compiler->firstWarning);
+			iCompileNote_removeAll(&compiler->firstNote);
 
 
 		//////////
 		// Delete any extra info that's stored
 		//////
-			iExtraInfo_removeAll(thisCode, NULL, NULL, &compiler->firstExtraInfo, true);
+			iExtraInfo_removeAll(NULL, NULL, &compiler->firstExtraInfo, true);
 	}
 
 
@@ -625,7 +625,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Translates components into a sequence of sub-instruction operations.
 //
 /////
-	bool iiComps_xlatToNodes(SThisCode* thisCode, SLine* line, SCompiler* compiler)
+	bool iiComps_xlatToNodes(SLine* line, SCompiler* compiler)
 	{
 		SComp*		comp;
 		SNode*		nodeActive;			// Current active node
@@ -634,7 +634,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 		// Iterate through every component building the operations as we go
 		comp		= line->compilerInfo->firstComp;
 //		compLast	= comp;
-		nodeActive	= iNode_create(thisCode, &compiler->firstNodeEngaged, NULL, 0, NULL, NULL, NULL, NULL, NULL);
+		nodeActive	= iNode_create(&compiler->firstNodeEngaged, NULL, 0, NULL, NULL, NULL, NULL, NULL);
 		while (comp)
 		{
 			//////////
@@ -644,12 +644,12 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 				{
 					// (
 					case _ICODE_PARENTHESIS_LEFT:
-						nodeActive = iiComps_xlatToNodes_parenthesis_left(thisCode, &compiler->firstNodeEngaged, nodeActive, comp);
+						nodeActive = iiComps_xlatToNodes_parenthesis_left(&compiler->firstNodeEngaged, nodeActive, comp);
 						break;
 
 					// )
 					case _ICODE_PARENTHESIS_RIGHT:
-						nodeActive = iiComps_xlatToNodes_parenthesis_right(thisCode, &compiler->firstNodeEngaged, nodeActive, comp);
+						nodeActive = iiComps_xlatToNodes_parenthesis_right(&compiler->firstNodeEngaged, nodeActive, comp);
 						break;
 
 					// [
@@ -811,14 +811,14 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 //          [?]
 //
 //////
-	SNode* iiComps_xlatToNodes_parenthesis_left(SThisCode* thisCode, SNode** root, SNode* active, SComp* comp)
+	SNode* iiComps_xlatToNodes_parenthesis_left(SNode** root, SNode* active, SComp* comp)
 	{
 		SNode*		node;
 		SVariable*	var;
 
 
 		// Insert a parenthesis node at the active node, and direct the active node to the right
-		node = iNode_insertBetween(thisCode, root, active->parent, active, _NODE_PARENT, _NODE_RIGHT);
+		node = iNode_insertBetween(root, active->parent, active, _NODE_PARENT, _NODE_RIGHT);
 		if (node)
 		{
 			//////////
@@ -831,15 +831,15 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 			//////////
 			// Indicate we'll need a temporary variable for our result
 			//////
-				var = iVariable_create(thisCode, _VAR_TYPE_NULL, NULL, true);
+				var = iVariable_create(_VAR_TYPE_NULL, NULL, true);
 				if (var)
 				{
 					// Append the temporary variable
-					iOp_setVariable_scoped(thisCode, &node->opData->op, var, true);
+					iOp_setVariable_scoped(&node->opData->op, var, true);
 
 				} else {
 					// Internal compile error
-					iComp_appendError(thisCode, comp, _ERROR_OUT_OF_MEMORY, (u8*)cgcOutOfMemory);
+					iComp_appendError(comp, _ERROR_OUT_OF_MEMORY, (u8*)cgcOutOfMemory);
 					iOp_setNull(&node->opData->op);
 				}
 		}
@@ -856,7 +856,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Process the right parenthesis.
 //
 //////
-	SNode* iiComps_xlatToNodes_parenthesis_right(SThisCode* thisCode, SNode** root, SNode* active, SComp* comp)
+	SNode* iiComps_xlatToNodes_parenthesis_right(SNode** root, SNode* active, SComp* comp)
 	{
 // TODO:  Working here
 		return(NULL);
@@ -870,7 +870,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 //
 //
 //////
-	void iComps_deleteAll(SThisCode* thisCode, SComp* comp)
+	void iComps_deleteAll(SComp* comp)
 	{
 		SComp* compNext;
 
@@ -882,7 +882,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 			compNext = comp->ll.nextComp;
 
 			// Delete this one
-			iComps_delete(thisCode, comp, true);
+			iComps_delete(comp, true);
 
 			// Move to the next one
 			comp = compNext;
@@ -897,19 +897,19 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Called to remove all components for this line
 //
 //////
-	void iComps_deleteAll_byLine(SThisCode* thisCode, SLine* line)
+	void iComps_deleteAll_byLine(SLine* line)
 	{
 		// Make sure our environment is sane
 		if (line && line->compilerInfo)
 		{
 			// Delete all components
-			iComps_deleteAll(thisCode, line->compilerInfo->firstComp);
+			iComps_deleteAll(line->compilerInfo->firstComp);
 
 			// Reset the pointer
 			line->compilerInfo->firstComp = NULL;
 
 			// Clear the compilerInfo
-			iCompiler_delete(thisCode, &line->compilerInfo, true);
+			iCompiler_delete(&line->compilerInfo, true);
 		}
 	}
 
@@ -921,7 +921,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Deletes everything from this first component
 //
 //////
-	void iComps_deleteAll_byFirstComp(SThisCode* thisCode, SComp** firstComp)
+	void iComps_deleteAll_byFirstComp(SComp** firstComp)
 	{
 		SComp* comp;
 		SComp* compNext;
@@ -937,7 +937,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 				compNext = comp->ll.nextComp;
 
 				// Delete this one
-				iComps_delete(thisCode, comp, true);
+				iComps_delete(comp, true);
 
 				// Move to the next one
 				comp = compNext;
@@ -957,7 +957,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 //
 //////
 // TODO:  We could add a tlDeepCopy here, which would also copy the firstCombined records, the bitmap cache, etc.
-	SComp* iComps_duplicate(SThisCode* thisCode, SComp* comp)
+	SComp* iComps_duplicate(SComp* comp)
 	{
 		SComp* compNew;
 
@@ -976,7 +976,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 				// Clear off some variable parts
 				compNew->ll.next		= NULL;
 				compNew->ll.prev		= NULL;
-				compNew->ll.uniqueId	= iGetNextUid(thisCode);
+				compNew->ll.uniqueId	= iGetNextUid();
 				compNew->firstCombined	= NULL;
 				compNew->bc				= NULL;
 			}
@@ -994,7 +994,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Called to delete the indicated comp
 //
 //////
-	SComp* iComps_delete(SThisCode* thisCode, SComp* comp, bool tlDeleteSelf)
+	SComp* iComps_delete(SComp* comp, bool tlDeleteSelf)
 	{
 		SComp* compNext;
 
@@ -1019,7 +1019,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Called to copy the inner contents of a component
 //
 //////
-	void iComps_copyMembers(SThisCode* thisCode, SComp* compTo, SComp* compFrom, bool tlAllocated, bool tlCopyLl, s32 tnBackoff)
+	void iComps_copyMembers(SComp* compTo, SComp* compFrom, bool tlAllocated, bool tlCopyLl, s32 tnBackoff)
 	{
 		if (tlCopyLl)
 			memcpy(&compTo->ll, &compFrom->ll, sizeof(compFrom->ll));
@@ -1062,7 +1062,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 //		The first component created (if any)
 //
 //////
-	SComp* iComps_translateSourceLineTo(SThisCode* thisCode, SAsciiCompSearcher* tsComps, SLine* line)
+	SComp* iComps_translateSourceLineTo(SAsciiCompSearcher* tsComps, SLine* line)
 	{
 		s32						lnI, lnMaxLength, lnStart, lnLength, lnLacsLength;
 		SComp*					compFirst;
@@ -1094,11 +1094,11 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 					lnLacsLength	= abs(lacs->length);
 
 					// Process through this entry
-					if ((!lacs->firstOnLine || lnI == 0 || iComps_areAllPrecedingCompsWhitespaces(thisCode, compLast)) && lnLacsLength <= lnMaxLength - lnI)
+					if ((!lacs->firstOnLine || lnI == 0 || iComps_areAllPrecedingCompsWhitespaces(compLast)) && lnLacsLength <= lnMaxLength - lnI)
 					{
 						// There is enough room for this component to be examined
 						// See if it matches
-						if (		iComps_xlatToComps_withTest(thisCode, lacs->keyword_cu8, lcData + lnI, lacs->length) == 0
+						if (		iComps_xlatToComps_withTest(lacs->keyword_cu8, lcData + lnI, lacs->length) == 0
 								&&	(!lacs->_onCandidateMatch || lacs->onCandidateMatch(lacs, lcData + lnI, lacs->length))		)
 						{
 							// It matches
@@ -1109,7 +1109,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 							if (lacs->repeats)
 							{
 								while (	lnStart + lnLength + lnLacsLength <= lnMaxLength
-										&& iComps_xlatToComps_withTest(thisCode, lacs->keyword_cu8, lcData + lnStart + lnLength, lacs->length) == 0)
+										&& iComps_xlatToComps_withTest(lacs->keyword_cu8, lcData + lnStart + lnLength, lacs->length) == 0)
 								{
 									// We found another repeated entry
 									lnLength += lnLacsLength;
@@ -1122,7 +1122,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 							//////////
 							// Allocate this entry
 							///////
-								comp = (SComp*)iLl_appendNewNode((SLL**)&line->compilerInfo->firstComp, (SLL*)compLast, NULL, (SLL*)compLast, iGetNextUid(thisCode), sizeof(SComp));
+								comp = (SComp*)iLl_appendNewNode((SLL**)&line->compilerInfo->firstComp, (SLL*)compLast, NULL, (SLL*)compLast, iGetNextUid(), sizeof(SComp));
 
 
 							//////////
@@ -1200,7 +1200,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // alpha/alphanumeric/numeric forms to other forms.
 //
 //////
-	bool iComps_translateToOthers(SThisCode* thisCode, SAsciiCompSearcher* tacsRoot, SComp* comp, bool tlDescendIntoFirstCombineds)
+	bool iComps_translateToOthers(SAsciiCompSearcher* tacsRoot, SComp* comp, bool tlDescendIntoFirstCombineds)
 	{
 		bool					llResult;
 		s32						lnTacsLength;
@@ -1216,7 +1216,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 			{
 				// Parse those things which were combined if need be
 				if (tlDescendIntoFirstCombineds && comp->firstCombined)
-					iComps_translateToOthers(thisCode, tacsRoot, comp->firstCombined, true);
+					iComps_translateToOthers(tacsRoot, comp->firstCombined, true);
 
 				// Iterate through this item to see if any match
 				tacs = tacsRoot;
@@ -1230,10 +1230,10 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 					{
 						// We only test if this item is not the first item on line, or if must be the first
 						// item on the line, then this component must be the first component on the line.  Simple, yes? :-)
-						if (!tacs->firstOnLine || !comp->ll.prev || iComps_areAllPrecedingCompsWhitespaces(thisCode, comp))
+						if (!tacs->firstOnLine || !comp->ll.prev || iComps_areAllPrecedingCompsWhitespaces(comp))
 						{
 							// Physically conduct the exact comparison
-							if (iComps_translateToOthers_testIfMatch(thisCode, tacs->keyword_cu8, comp->line->sourceCode->data_cu8 + comp->start, tacs->length) == 0)
+							if (iComps_translateToOthers_testIfMatch(tacs->keyword_cu8, comp->line->sourceCode->data_cu8 + comp->start, tacs->length) == 0)
 							{
 								// This is a match
 								llResult			= true;
@@ -1277,7 +1277,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // component on the line.
 //
 //////
-	bool iComps_areAllPrecedingCompsWhitespaces(SThisCode* thisCode, SComp* comp)
+	bool iComps_areAllPrecedingCompsWhitespaces(SComp* comp)
 	{
 		while (comp)
 		{
@@ -1313,7 +1313,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 //		!0		= does not tmach
 //
 //////
-	s32 iComps_translateToOthers_testIfMatch(SThisCode* thisCode, cu8* tcHaystack, cu8* tcNeedle, s32 tnLength)
+	s32 iComps_translateToOthers_testIfMatch(cu8* tcHaystack, cu8* tcNeedle, s32 tnLength)
 	{
 		u32		lnI;
 		bool	llSigned;
@@ -1408,7 +1408,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 //		If NULL, the compLastScanned indicates the last component that was searched where it wasn't found
 //
 //////
-	SComp* iComps_findNextBy_iCode(SThisCode* thisCode, SComp* comp, s32 tniCode, SComp** compLastScanned)
+	SComp* iComps_findNextBy_iCode(SComp* comp, s32 tniCode, SComp** compLastScanned)
 	{
 		// Initially indicate failure
 		if (compLastScanned)
@@ -1441,7 +1441,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Returns which component the cursor is currently on
 //
 //////
-	SComp* iComps_activeComp_inSEM(SThisCode* thisCode, SEM* sem)
+	SComp* iComps_activeComp_inSEM(SEM* sem)
 	{
 		SComp* comp;
 
@@ -1475,7 +1475,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // or backward in source code).
 //
 //////
-	bool iComps_getMateDirection(SThisCode* thisCode, SComp* comp, s32* tnMateDirection)
+	bool iComps_getMateDirection(SComp* comp, s32* tnMateDirection)
 	{
 		if (comp && tnMateDirection)
 		{
@@ -1586,7 +1586,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // search the appropriate direction and find the matching one, and return those components.
 //
 //////
-	bool iComps_findClosest_parensBracketsBraces(SThisCode* thisCode, SComp* compRelative, SComp* compStart, SComp** compPBBLeft, SComp** compPBBRight)
+	bool iComps_findClosest_parensBracketsBraces(SComp* compRelative, SComp* compStart, SComp** compPBBLeft, SComp** compPBBRight)
 	{
 		s32 lnDirection, lniCodeNeedle, lniCodeNeedleMate, lnLevel;
 
@@ -1671,7 +1671,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 							case _ICODE_PARENTHESIS_RIGHT:
 							case _ICODE_BRACKET_RIGHT:
 							case _ICODE_BRACE_RIGHT:
-								if (!iComps_findClosest_parensBracketsBraces(thisCode, compRelative, compStart, compPBBLeft, compPBBRight))
+								if (!iComps_findClosest_parensBracketsBraces(compRelative, compStart, compPBBLeft, compPBBRight))
 									return(false);
 
 								// If the left component begins before our reference component we're good, otherwise we're still looking
@@ -1737,7 +1737,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Called to see if a component is a parenthesis, bracket, or brace
 //
 //////
-	bool iComps_isParensBracketsBraces(SThisCode* thisCode, SComp* comp)
+	bool iComps_isParensBracketsBraces(SComp* comp)
 	{
 		// Make sure our environment is sane
 		if (comp)
@@ -1769,7 +1769,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Is the reference the mate of iCodeMate
 //
 //////
-	bool iComps_isMateOf(SThisCode* thisCode, SComp* compTest, s32 tniCodeMate)
+	bool iComps_isMateOf(SComp* compTest, s32 tniCodeMate)
 	{
 		switch (tniCodeMate)
 		{
@@ -1845,7 +1845,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Searches for the next component that is not of type tniIcode, including itself
 //
 //////
-	SComp* iComps_skipPast_iCode(SThisCode* thisCode, SComp* comp, s32 tniCode)
+	SComp* iComps_skipPast_iCode(SComp* comp, s32 tniCode)
 	{
 		while (comp && comp->iCode == tniCode)
 		{
@@ -1864,7 +1864,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Searches beyond this component until we find the indicated component
 //
 //////
-	SComp* iComps_skipTo_iCode(SThisCode* thisCode, SComp* comp, s32 tniCode)
+	SComp* iComps_skipTo_iCode(SComp* comp, s32 tniCode)
 	{
 		// Skip to next comp
 		comp = comp->ll.nextComp;
@@ -1887,7 +1887,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // the one after that.
 //
 //////
-	SComp* iComps_getNext_afterDot(SThisCode* thisCode, SComp* comp)
+	SComp* iComps_getNext_afterDot(SComp* comp)
 	{
 		if (comp)
 		{
@@ -1914,7 +1914,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Returns the Nth component beyond the current one
 //
 //////
-	SComp* iComps_getNth(SThisCode* thisCode, SComp* comp, s32 tnCount)
+	SComp* iComps_getNth(SComp* comp, s32 tnCount)
 	{
 		s32 lnI;
 
@@ -1938,7 +1938,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Otherwise, the node that was merged in is deleted.
 //
 //////
-	u32 iComps_combineN(SThisCode* thisCode, SComp* comp, u32 tnCount, s32 tnNew_iCode, u32 tnNew_iCat, SBgra* newColor, SComp** compMigrateRefs)
+	u32 iComps_combineN(SComp* comp, u32 tnCount, s32 tnNew_iCode, u32 tnNew_iCat, SBgra* newColor, SComp** compMigrateRefs)
 	{
 		u32		lnCount;
 		SComp*	compNext;
@@ -1961,10 +1961,10 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 					{
 						// If we have a migrate buffer, and it's the first one, we need to duplicate it so it shows up in the migrate buffer properly
 						if (lnCount == 1 && compMigrateRefs)
-							iLl_appendExistingNodeAtEnd((SLL**)compMigrateRefs, (SLL*)iComps_duplicate(thisCode, comp));
+							iLl_appendExistingNodeAtEnd((SLL**)compMigrateRefs, (SLL*)iComps_duplicate(comp));
 
 						// Add in the length of the next component, plus any spaces between them
-						comp->length	+= (compNext->length + iiComps_get_charactersBetween(thisCode, comp, compNext));
+						comp->length	+= (compNext->length + iiComps_get_charactersBetween(comp, compNext));
 						comp->nbspCount	+= compNext->nbspCount;
 
 						// Migrate or delete the next component
@@ -2015,7 +2015,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // component of [c:\some\dir\file.txt].
 //
 //////
-	u32 iComps_combineAdjacent(SThisCode* thisCode, SComp* compLeftmost, s32 tniCode, u32 tniCat, SBgra* tnColor, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount)
+	u32 iComps_combineAdjacent(SComp* compLeftmost, s32 tniCode, u32 tniCat, SBgra* tnColor, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount)
 	{
 		u32 lnCombined;
 
@@ -2028,14 +2028,14 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 			for ( ; compLeftmost->ll.next; lnCombined++)
 			{
 				// And continue so long as they are immediately adjacent
-				if (iiComps_get_charactersBetween(thisCode, compLeftmost, compLeftmost->ll.nextComp) != 0)
+				if (iiComps_get_charactersBetween(compLeftmost, compLeftmost->ll.nextComp) != 0)
 					return(lnCombined);	// All done
 
 				// Validate if need be
 				if (tnValid_iCodeArrayCount > 0 && valid_iCodeArray)
 				{
 					// If it's valid, add it
-					if (!iiComps_validate(thisCode, compLeftmost->ll.nextComp, valid_iCodeArray, tnValid_iCodeArrayCount))
+					if (!iiComps_validate(compLeftmost->ll.nextComp, valid_iCodeArray, tnValid_iCodeArrayCount))
 						return(lnCombined);		// Invalid
 
 					// If we get here, it is still valid
@@ -2043,7 +2043,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 				// else no validation is required
 
 				// Combine these two...
-				iComps_combineN(thisCode, compLeftmost, 2, tniCode, tniCat, tnColor);
+				iComps_combineN(compLeftmost, 2, tniCode, tniCat, tnColor);
 				// ...and continue on to the next component after
 			}
 		}
@@ -2062,7 +2062,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // branded as alphanumeric.
 //
 //////
-	u32 iComps_combineAdjacentAlphanumeric(SThisCode* thisCode, SLine* line)
+	u32 iComps_combineAdjacentAlphanumeric(SLine* line)
 	{
 		u32		lnCombined;
 		SComp*	comp;
@@ -2086,7 +2086,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 					{
 						// Combine so long as the following are immediately adjacent, and are one of underscore, alpha, numeric, alphanumeric
 						while (	(compNext = comp->ll.nextComp)
-								&& iiComps_get_charactersBetween(thisCode, comp, compNext) == 0
+								&& iiComps_get_charactersBetween(comp, compNext) == 0
 								&& (	compNext->iCode == _ICODE_UNDERSCORE
 									||	compNext->iCode == _ICODE_ALPHA
 									||	compNext->iCode == _ICODE_NUMERIC
@@ -2095,7 +2095,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 							)
 						{
 							// Combine this comp and the next one into one
-							iComps_combineN(thisCode, comp, 2, _ICODE_ALPHANUMERIC, comp->iCat, comp->color);
+							iComps_combineN(comp, 2, _ICODE_ALPHANUMERIC, comp->iCat, comp->color);
 							++lnCombined;
 						}
 					}
@@ -2121,7 +2121,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // adjacent, it is included as well.
 //
 //////
-	u32 iComps_combineAdjacentNumeric(SThisCode* thisCode, SLine* line)
+	u32 iComps_combineAdjacentNumeric(SLine* line)
 	{
 		u32		lnCombined;
 		SComp*	comp;
@@ -2139,7 +2139,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 			while (comp)
 			{
 				// Grab the next component
-				if ((compNext1 = comp->ll.nextComp) && iiComps_get_charactersBetween(thisCode, comp, compNext1) == 0)
+				if ((compNext1 = comp->ll.nextComp) && iiComps_get_charactersBetween(comp, compNext1) == 0)
 				{
 					// Is this an underscore, alpha, or alphanumeric?
 					if ((comp->iCode == _ICODE_PLUS || comp->iCode == _ICODE_HYPHEN) && compNext1->iCode == _ICODE_NUMERIC)
@@ -2151,18 +2151,18 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 							if ((compNext3 = compNext2->ll.nextComp) && compNext3->iCode == _ICODE_NUMERIC)
 							{
 								// We have +-999.99
-								iComps_combineN(thisCode, comp, 4, _ICODE_NUMERIC, comp->iCat, comp->color);
+								iComps_combineN(comp, 4, _ICODE_NUMERIC, comp->iCat, comp->color);
 								lnCombined += 3;
 
 							} else {
 								// Combine the +- with the 999 and the .
-								iComps_combineN(thisCode, comp, 3, _ICODE_NUMERIC, comp->iCat, comp->color);
+								iComps_combineN(comp, 3, _ICODE_NUMERIC, comp->iCat, comp->color);
 								lnCombined += 2;
 							}
 
 						} else {
 							// Combine the +- with the 999 into one
-							iComps_combineN(thisCode, comp, 2, _ICODE_NUMERIC, comp->iCat, comp->color);
+							iComps_combineN(comp, 2, _ICODE_NUMERIC, comp->iCat, comp->color);
 							++lnCombined;
 						}
 
@@ -2174,12 +2174,12 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 							if ((compNext2 = compNext1->ll.nextComp) && compNext2->iCode == _ICODE_NUMERIC)
 							{
 								// We have 999.99
-								iComps_combineN(thisCode, comp, 3, _ICODE_NUMERIC, comp->iCat, comp->color);
+								iComps_combineN(comp, 3, _ICODE_NUMERIC, comp->iCat, comp->color);
 								lnCombined += 2;
 
 							} else {
 								// We just have 999.
-								iComps_combineN(thisCode, comp, 2, _ICODE_NUMERIC, comp->iCat, comp->color);
+								iComps_combineN(comp, 2, _ICODE_NUMERIC, comp->iCat, comp->color);
 								++lnCombined;
 							}
 						}
@@ -2204,7 +2204,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Called to combine things like [.][t][.] into [.t.], [xyz][.][abc] into [xyz.abc]
 //
 //////
-	u32 iComps_combineAdjacentDotForms(SThisCode* thisCode, SLine* line)
+	u32 iComps_combineAdjacentDotForms(SLine* line)
 	{
 		u32		lnCombined;
 		u8		c;
@@ -2244,8 +2244,8 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 					if (	compThisPlus1 && compThisPlus2
 						&&	compThisPlus1->iCode == _ICODE_ALPHA
 						&&	compThisPlus2->iCode == _ICODE_DOT
-						&&	iiComps_get_charactersBetween(thisCode, compThisPlus0,	compThisPlus1)	== 0
-						&&	iiComps_get_charactersBetween(thisCode, compThisPlus1,	compThisPlus2)	== 0)
+						&&	iiComps_get_charactersBetween(compThisPlus0,	compThisPlus1)	== 0
+						&&	iiComps_get_charactersBetween(compThisPlus1,	compThisPlus2)	== 0)
 					{
 						// What is the component in the middle?
 						switch (compThisPlus1->length)
@@ -2255,20 +2255,20 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 								c = compThisPlus1->line->sourceCode->data[compThisPlus1->start];
 
 								// Which one is it?
-									 if (c == 't' || c == 'T')		{ iComps_combineN(thisCode, compThisPlus0, 3, _ICODE_TRUE,				compThisPlus1->iCat, compThisPlus1->color);		lnCombined += 3;	llProcessed = true; }
-								else if (c == 'f' || c == 'F')		{ iComps_combineN(thisCode, compThisPlus0, 3, _ICODE_FALSE,				compThisPlus1->iCat, compThisPlus1->color);		lnCombined += 3;	llProcessed = true; }
-								else if (c == 'o' || c == 'O')		{ iComps_combineN(thisCode, compThisPlus0, 3, _ICODE_OTHER,				compThisPlus1->iCat, compThisPlus1->color);		lnCombined += 3;	llProcessed = true; }
-								else if (c == 'p' || c == 'P')		{ iComps_combineN(thisCode, compThisPlus0, 3, _ICODE_PARTIAL,			compThisPlus1->iCat, compThisPlus1->color);		lnCombined += 3;	llProcessed = true; }
-								else if (c == 'x' || c == 'X')		{ iComps_combineN(thisCode, compThisPlus0, 3, _ICODE_EXTRA,				compThisPlus1->iCat, compThisPlus1->color);		lnCombined += 3;	llProcessed = true; }
-								else if (c == 'y' || c == 'Y')		{ iComps_combineN(thisCode, compThisPlus0, 3, _ICODE_YET_ANOTHER,		compThisPlus1->iCat, compThisPlus1->color);		lnCombined += 3;	llProcessed = true; }
-								else if (c == 'z' || c == 'Z')		{ iComps_combineN(thisCode, compThisPlus0, 3, _ICODE_ZATS_ALL_FOLKS,	compThisPlus1->iCat, compThisPlus1->color);		lnCombined += 3;	llProcessed = true; }
+									 if (c == 't' || c == 'T')		{ iComps_combineN(compThisPlus0, 3, _ICODE_TRUE,				compThisPlus1->iCat, compThisPlus1->color);		lnCombined += 3;	llProcessed = true; }
+								else if (c == 'f' || c == 'F')		{ iComps_combineN(compThisPlus0, 3, _ICODE_FALSE,				compThisPlus1->iCat, compThisPlus1->color);		lnCombined += 3;	llProcessed = true; }
+								else if (c == 'o' || c == 'O')		{ iComps_combineN(compThisPlus0, 3, _ICODE_OTHER,				compThisPlus1->iCat, compThisPlus1->color);		lnCombined += 3;	llProcessed = true; }
+								else if (c == 'p' || c == 'P')		{ iComps_combineN(compThisPlus0, 3, _ICODE_PARTIAL,			compThisPlus1->iCat, compThisPlus1->color);		lnCombined += 3;	llProcessed = true; }
+								else if (c == 'x' || c == 'X')		{ iComps_combineN(compThisPlus0, 3, _ICODE_EXTRA,				compThisPlus1->iCat, compThisPlus1->color);		lnCombined += 3;	llProcessed = true; }
+								else if (c == 'y' || c == 'Y')		{ iComps_combineN(compThisPlus0, 3, _ICODE_YET_ANOTHER,		compThisPlus1->iCat, compThisPlus1->color);		lnCombined += 3;	llProcessed = true; }
+								else if (c == 'z' || c == 'Z')		{ iComps_combineN(compThisPlus0, 3, _ICODE_ZATS_ALL_FOLKS,	compThisPlus1->iCat, compThisPlus1->color);		lnCombined += 3;	llProcessed = true; }
 								break;
 
 							case 2:
 								// Could be .or.
 								if (_memicmp(compThisPlus1->line->sourceCode->data + compThisPlus2->start, "or", 2) == 0)
 								{
-									iComps_combineN(thisCode, compThisPlus0, 3, _ICODE_OR, compThisPlus1->iCat, compThisPlus1->color);
+									iComps_combineN(compThisPlus0, 3, _ICODE_OR, compThisPlus1->iCat, compThisPlus1->color);
 									lnCombined	+= 3;
 									llProcessed	= true;
 								}
@@ -2279,13 +2279,13 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 								if (_memicmp(compThisPlus1->line->sourceCode->data + compThisPlus2->start, "and", 3) == 0)
 								{
 									// AND
-									iComps_combineN(thisCode, compThisPlus0, 3, _ICODE_AND, compThisPlus1->iCat, compThisPlus1->color);
+									iComps_combineN(compThisPlus0, 3, _ICODE_AND, compThisPlus1->iCat, compThisPlus1->color);
 									lnCombined	+= 3;
 									llProcessed	= true;
 
 								} else if (_memicmp(compThisPlus1->line->sourceCode->data + compThisPlus2->start, "not", 3) == 0) {
 									// NOT
-									iComps_combineN(thisCode, compThisPlus0, 3, _ICODE_NOT, compThisPlus1->iCat, compThisPlus1->color);
+									iComps_combineN(compThisPlus0, 3, _ICODE_NOT, compThisPlus1->iCat, compThisPlus1->color);
 									lnCombined	+= 3;
 									llProcessed	= true;
 								}
@@ -2296,7 +2296,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 								if (_memicmp(compThisPlus1->line->sourceCode->data + compThisPlus2->start, "null", 4) == 0)
 								{
 									// NULL
-									iComps_combineN(thisCode, compThisPlus0, 3, _ICODE_NULL, compThisPlus1->iCat, compThisPlus1->color);
+									iComps_combineN(compThisPlus0, 3, _ICODE_NULL, compThisPlus1->iCat, compThisPlus1->color);
 									lnCombined	+= 3;
 									llProcessed	= true;
 								}
@@ -2317,7 +2317,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 							&&	(compThisPlus2->iCode == _ICODE_ALPHA || compThisPlus2->iCode == _ICODE_ALPHANUMERIC))
 				{
 					// It's something like [x][.] where [x] is some valid form to be aggregated into a single dot variable
-					iComps_combineN(thisCode, compThisPlus0, 3, _ICODE_DOT_VARIABLE, compThisPlus0->iCat, compThisPlus0->color, &compThisPlus0->firstCombined);
+					iComps_combineN(compThisPlus0, 3, _ICODE_DOT_VARIABLE, compThisPlus0->iCat, compThisPlus0->color, &compThisPlus0->firstCombined);
 					lnCombined += 3;
 
 				} else {
@@ -2385,7 +2385,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // a || whitespace if two, or a ||| comment if greater
 //
 //////
-	u32 iComps_combineAdjacentLeadingPipesigns(SThisCode* thisCode, SLine* line)
+	u32 iComps_combineAdjacentLeadingPipesigns(SLine* line)
 	{
 		s32		lniCat, lniCode;
 		u32		lnCombined;
@@ -2399,7 +2399,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 		if (line && line->compilerInfo && (comp = line->compilerInfo->firstComp) && comp->iCode == _ICODE_PIPE_SIGN)
 		{
 			// Is it followed by a pipe sign?
-			if ((compPipesign2 = comp->ll.nextComp) && iiComps_get_charactersBetween(thisCode, comp, compPipesign2) == 0 && compPipesign2->iCode == _ICODE_PIPE_SIGN)
+			if ((compPipesign2 = comp->ll.nextComp) && iiComps_get_charactersBetween(comp, compPipesign2) == 0 && compPipesign2->iCode == _ICODE_PIPE_SIGN)
 			{
 
 				//////////
@@ -2408,7 +2408,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 				//		Whitespace	-- double-pipe-sign
 				//		Comment		-- triple-pipe-sign or more
 				//////
-					if ((compPipesign3 = compPipesign2->ll.nextComp) && iiComps_get_charactersBetween(thisCode, compPipesign2, compPipesign3) == 0 && compPipesign3->iCode == _ICODE_PIPE_SIGN)
+					if ((compPipesign3 = compPipesign2->ll.nextComp) && iiComps_get_charactersBetween(compPipesign2, compPipesign3) == 0 && compPipesign3->iCode == _ICODE_PIPE_SIGN)
 					{
 						// Translate to comment
 						// Find out how many there are
@@ -2427,7 +2427,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 				// Combine
 				//////
 					lniCat	= comp->iCat;
-					iComps_combineN(thisCode, comp, lnCombined, lniCode, lniCat, comp->color);
+					iComps_combineN(comp, lnCombined, lniCode, lniCat, comp->color);
 
 			}
 		}
@@ -2449,7 +2449,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // After:		[u8][whitespace][name][left bracket][right bracket][whitespace][equal][whitespace][double quote text]
 //
 //////
-	u32 iComps_combineAllBetween(SThisCode* thisCode, SLine* line, s32 tniCodeNeedle, s32 tniCodeCombined, SBgra* syntaxHighlightColor)
+	u32 iComps_combineAllBetween(SLine* line, s32 tniCodeNeedle, s32 tniCodeCombined, SBgra* syntaxHighlightColor)
 	{
 		u32		lnCount;
 		SComp*	compNext;
@@ -2535,7 +2535,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Called to search for unmatched codes, a left and right, and combines everything between
 //
 //////
-	u32 iComps_combineAllBetween2(SThisCode* thisCode, SLine* line, s32 tniCodeNeedleLeft, s32 tniCodeNeedleRight, s32 tniCodeCombined, u32 tniCat, SBgra* syntaxHighlightColor, bool tlUseBoldFont)
+	u32 iComps_combineAllBetween2(SLine* line, s32 tniCodeNeedleLeft, s32 tniCodeNeedleRight, s32 tniCodeCombined, u32 tniCat, SBgra* syntaxHighlightColor, bool tlUseBoldFont)
 	{
 		u32		lnCount;
 		SComp*	compNext;
@@ -2625,7 +2625,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Called to combine everything after the indicated component into that one component.
 //
 //////
-	u32 iComps_combineAllAfter(SThisCode* thisCode, SLine* line, s32 tniCodeNeedle)
+	u32 iComps_combineAllAfter(SLine* line, s32 tniCodeNeedle)
 	{
 		u32		lnCombined;
 		SComp*	comp;
@@ -2648,7 +2648,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 					while (comp->ll.next)
 					{
 						// Combine
-						iComps_combineN(thisCode, comp, 2, tniCodeNeedle, comp->iCat, comp->color);
+						iComps_combineN(comp, 2, tniCodeNeedle, comp->iCat, comp->color);
 
 						// Indicate the number combined
 						++lnCombined;
@@ -2672,7 +2672,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Called to delete everything after the indicated component
 //
 //////
-	u32 iComps_deleteAllAfter(SThisCode* thisCode, SLine* line, s32 tniCodeNeedle)
+	u32 iComps_deleteAllAfter(SLine* line, s32 tniCodeNeedle)
 	{
 		u32		lnDeleted;
 		SComp*	comp;
@@ -2704,7 +2704,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 					}
 
 					// Delete from here on out
-					iComps_deleteAll_byFirstComp(thisCode, compLast);
+					iComps_deleteAll_byFirstComp(compLast);
 					break;
 				}
 
@@ -2727,7 +2727,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Note:  This function can be called at any time.
 //
 //////
-	u32 iComps_removeLeadingWhitespaces(SThisCode* thisCode, SLine* line)
+	u32 iComps_removeLeadingWhitespaces(SLine* line)
 	{
 		u32		lnRemoved;
 		SComp*	comp;
@@ -2764,7 +2764,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 //        processed, such that all quoted text items are already combined into a single icode.
 //
 //////
-	u32 iComps_removeWhitespaces(SThisCode* thisCode, SLine* line)
+	u32 iComps_removeWhitespaces(SLine* line)
 	{
 		u32		lnRemoved;
 		SComp*	comp;
@@ -2815,7 +2815,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Called to remove any /* comments */ from the current chain of comps.
 //
 //////
-	void iComps_removeStartEndComments(SThisCode* thisCode, SLine* line)
+	void iComps_removeStartEndComments(SLine* line)
 	{
 		SComp*	comp;
 		SComp*	compNext;
@@ -2835,11 +2835,11 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 					{
 						// Delete everything forward until we reach _ICODE_COMMENT_END or the last comp
 						while ((compNext = comp->ll.nextComp) && compNext->iCode != _ICODE_COMMENT_END)
-							iComps_combineN(thisCode, comp, 2, comp->iCode, comp->iCat, comp->color);
+							iComps_combineN(comp, 2, comp->iCode, comp->iCat, comp->color);
 
 						// When we get here, we're sitting on the _ICODE_COMMENT_END
 						if ((compNext = comp->ll.nextComp) && compNext->iCode == _ICODE_COMMENT_END)
-							iComps_combineN(thisCode, comp, 2, comp->iCode, comp->iCat, comp->color);
+							iComps_combineN(comp, 2, comp->iCode, comp->iCat, comp->color);
 
 						// Migrate the (now single) comment
 						comp = (SComp*)iLl_migrateNodeToOther((SLL**)&line->compilerInfo->firstComp, (SLL**)&line->compilerInfo->firstComment, (SLL*)comp, true);
@@ -2866,7 +2866,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Truncates the components at the first comment, leaving only things up to that point in place
 //
 //////
-	s32 iComps_truncateAtComments(SThisCode* thisCode, SLine* line)
+	s32 iComps_truncateAtComments(SLine* line)
 	{
 		u32		lnMigrated;
 		SComp*	comp;
@@ -2886,7 +2886,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 					while (comp->ll.nextComp)
 					{
 						// Combine these
-						iComps_combineN(thisCode, comp, 2, comp->iCode, comp->iCat, comp->color);
+						iComps_combineN(comp, 2, comp->iCode, comp->iCat, comp->color);
 
 						// Increase our count
 						++lnMigrated;
@@ -2913,7 +2913,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Called to combine casks
 //
 //////
-	void iComps_combineCasks(SThisCode* thisCode, SLine* line)
+	void iComps_combineCasks(SLine* line)
 	{
 		SComp* comp;
 
@@ -2929,16 +2929,16 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 				if (comp->iCode >= _ICODE_CASK_SIDE_MINIMUM && comp->iCode <= _ICODE_CASK_SIDE_MAXIMUM)
 				{
 					// Try normal forms without parameters
-					iComps_combineAllBetween2(thisCode, line,		_ICODE_CASK_ROUND_OPEN,				_ICODE_CASK_ROUND_CLOSE,				_ICODE_CASK_ROUND,				_ICAT_CASK, (SBgra*)&blackColor, false);
-					iComps_combineAllBetween2(thisCode, line,		_ICODE_CASK_SQUARE_OPEN,			_ICODE_CASK_SQUARE_CLOSE,				_ICODE_CASK_SQUARE,				_ICAT_CASK, (SBgra*)&blackColor, false);
-					iComps_combineAllBetween2(thisCode, line,		_ICODE_CASK_TRIANGLE_OPEN,			_ICODE_CASK_TRIANGLE_CLOSE,				_ICODE_CASK_TRIANGLE,			_ICAT_CASK, (SBgra*)&blackColor, false);
-					iComps_combineAllBetween2(thisCode, line,		_ICODE_CASK_TILDE_OPEN,				_ICODE_CASK_TILDE_CLOSE,				_ICODE_CASK_TILDE,				_ICAT_CASK, (SBgra*)&blackColor, false);
+					iComps_combineAllBetween2(line,		_ICODE_CASK_ROUND_OPEN,				_ICODE_CASK_ROUND_CLOSE,				_ICODE_CASK_ROUND,				_ICAT_CASK, (SBgra*)&blackColor, false);
+					iComps_combineAllBetween2(line,		_ICODE_CASK_SQUARE_OPEN,			_ICODE_CASK_SQUARE_CLOSE,				_ICODE_CASK_SQUARE,				_ICAT_CASK, (SBgra*)&blackColor, false);
+					iComps_combineAllBetween2(line,		_ICODE_CASK_TRIANGLE_OPEN,			_ICODE_CASK_TRIANGLE_CLOSE,				_ICODE_CASK_TRIANGLE,			_ICAT_CASK, (SBgra*)&blackColor, false);
+					iComps_combineAllBetween2(line,		_ICODE_CASK_TILDE_OPEN,				_ICODE_CASK_TILDE_CLOSE,				_ICODE_CASK_TILDE,				_ICAT_CASK, (SBgra*)&blackColor, false);
 
 					// Try normal forms with parameters
-					iComps_combineAllBetween2(thisCode, line,		_ICODE_CASK_ROUND_OPEN_PARAMS,		_ICODE_CASK_ROUND_CLOSE_PARAMS,			_ICODE_CASK_ROUND_PARAMS,		_ICAT_CASK, (SBgra*)&blackColor, false);
-					iComps_combineAllBetween2(thisCode, line,		_ICODE_CASK_SQUARE_OPEN_PARAMS,		_ICODE_CASK_SQUARE_CLOSE_PARAMS,		_ICODE_CASK_SQUARE_PARAMS,		_ICAT_CASK, (SBgra*)&blackColor, false);
-					iComps_combineAllBetween2(thisCode, line,		_ICODE_CASK_TRIANGLE_OPEN_PARAMS,	_ICODE_CASK_TRIANGLE_CLOSE_PARAMS,		_ICODE_CASK_TRIANGLE_PARAMS,	_ICAT_CASK, (SBgra*)&blackColor, false);
-					iComps_combineAllBetween2(thisCode, line,		_ICODE_CASK_TILDE_OPEN_PARAMS,		_ICODE_CASK_TILDE_CLOSE_PARAMS,			_ICODE_CASK_TILDE_PARAMS,		_ICAT_CASK, (SBgra*)&blackColor, false);
+					iComps_combineAllBetween2(line,		_ICODE_CASK_ROUND_OPEN_PARAMS,		_ICODE_CASK_ROUND_CLOSE_PARAMS,			_ICODE_CASK_ROUND_PARAMS,		_ICAT_CASK, (SBgra*)&blackColor, false);
+					iComps_combineAllBetween2(line,		_ICODE_CASK_SQUARE_OPEN_PARAMS,		_ICODE_CASK_SQUARE_CLOSE_PARAMS,		_ICODE_CASK_SQUARE_PARAMS,		_ICAT_CASK, (SBgra*)&blackColor, false);
+					iComps_combineAllBetween2(line,		_ICODE_CASK_TRIANGLE_OPEN_PARAMS,	_ICODE_CASK_TRIANGLE_CLOSE_PARAMS,		_ICODE_CASK_TRIANGLE_PARAMS,	_ICAT_CASK, (SBgra*)&blackColor, false);
+					iComps_combineAllBetween2(line,		_ICODE_CASK_TILDE_OPEN_PARAMS,		_ICODE_CASK_TILDE_CLOSE_PARAMS,			_ICODE_CASK_TILDE_PARAMS,		_ICAT_CASK, (SBgra*)&blackColor, false);
 
 					// Done
 					return;
@@ -2958,16 +2958,16 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Fixes up common things found in VXB source code.
 //
 //////
-	void iComps_fixupNaturalGroupings(SThisCode* thisCode, SLine* line)
+	void iComps_fixupNaturalGroupings(SLine* line)
 	{
 		if (line && line->compilerInfo && line->compilerInfo->firstComp)
 		{
 			//////////
 			// Fixup quotes, comments
 			//////
-				iComps_combineAllBetween(thisCode, line, _ICODE_SINGLE_QUOTE,		_ICODE_SINGLE_QUOTED_TEXT,	&colorSynHi_quotedText);
-				iComps_combineAllBetween(thisCode, line, _ICODE_DOUBLE_QUOTE,		_ICODE_DOUBLE_QUOTED_TEXT,	&colorSynHi_quotedText);
-				iComps_combineAllAfter(thisCode, line, _ICODE_LINE_COMMENT);
+				iComps_combineAllBetween(line, _ICODE_SINGLE_QUOTE,		_ICODE_SINGLE_QUOTED_TEXT,	&colorSynHi_quotedText);
+				iComps_combineAllBetween(line, _ICODE_DOUBLE_QUOTE,		_ICODE_DOUBLE_QUOTED_TEXT,	&colorSynHi_quotedText);
+				iComps_combineAllAfter(line, _ICODE_LINE_COMMENT);
 
 
 			//////////
@@ -2975,9 +2975,9 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 			// which then alternate in some form of alpha, numeric, underscore, etc., and translate to
 			// alphanumeric.  For numeric it looks for +-999.99 completely adjacent, and combines into one.
 			//////
-				iComps_combineAdjacentAlphanumeric(thisCode, line);
-				iComps_combineAdjacentNumeric(thisCode, line);
-				iComps_combineAdjacentDotForms(thisCode, line);
+				iComps_combineAdjacentAlphanumeric(line);
+				iComps_combineAdjacentNumeric(line);
+				iComps_combineAdjacentDotForms(line);
 		}
 	}
 
@@ -2989,7 +2989,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Takes sequences like \{, \}, and \\ and replaces them solely with {, }, and \
 //
 //////
-	s32 iComps_unescape_iCodes(SThisCode* thisCode, SComp* compStart, s32 tniCode1, s32 tniCode2, s32 tniCode3, s32 tniCodeEscape)
+	s32 iComps_unescape_iCodes(SComp* compStart, s32 tniCode1, s32 tniCode2, s32 tniCode3, s32 tniCodeEscape)
 	{
 		s32		lnCount;
 		SComp*	comp;
@@ -3007,17 +3007,17 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 				if (comp->iCode == tniCodeEscape)
 				{
 					// Is there a component after?
-					if (compNext = iComps_getNth(thisCode, comp, 1))
+					if (compNext = iComps_getNth(comp, 1))
 					{
 						// Is it iCode1, iCode2, or iCode3
 						if ((compNext->iCode == tniCode1 || compNext->iCode == tniCode2 || compNext->iCode == tniCode3))
 						{
 							// Are they directly adjacent?
-							if (iiComps_areCompsAdjacent(thisCode, comp, compNext))
+							if (iiComps_areCompsAdjacent(comp, compNext))
 							{
 								// Remove the escape
 								++lnCount;
-								comp = iComps_delete(thisCode, comp, true);
+								comp = iComps_delete(comp, true);
 							}
 						}
 					}
@@ -3039,7 +3039,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 //
 //////
 	// If tlMakeReferences, content is not physically copied to lineNew->sourceCode, but only references to the compStart->line->sourceCode content are made
-	s32 iComps_copyTo(SThisCode* thisCode, SLine* line, SComp* compStart, SComp* compEnd, bool tlMakeReferences)
+	s32 iComps_copyTo(SLine* line, SComp* compStart, SComp* compEnd, bool tlMakeReferences)
 	{
 		s32		lnPass, lnCount, lnStart, lnEnd, lnLength;
 		SComp*	comp;
@@ -3115,7 +3115,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 								if (compNew)
 								{
 									// Copy members
-									iComps_copyMembers(NULL, compNew, comp, true/*isAllocated*/, false/*copyLl*/, ((tlMakeReferences) ? 0 : lnStart)/*backoff*/);
+									iComps_copyMembers(compNew, comp, true/*isAllocated*/, false/*copyLl*/, ((tlMakeReferences) ? 0 : lnStart)/*backoff*/);
 
 									// Update the new line if need be
 									if (!tlMakeReferences)
@@ -3148,7 +3148,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Called to copy components based on feedback or guidance from a callback function
 //
 //////
-	s32 iComps_copyTo_withCallback(SThisCode* thisCode, SLine* line, SComp* compStart, SCallback* cb, bool tlMakeReferences)
+	s32 iComps_copyTo_withCallback(SLine* line, SComp* compStart, SCallback* cb, bool tlMakeReferences)
 	{
 		s32		lnCount, lnPass, lnStart, lnEnd, lnLength;
 		bool	llContinue;
@@ -3237,7 +3237,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 								if (compNew)
 								{
 									// Copy members
-									iComps_copyMembers(NULL, compNew, comp, true/*isAllocated*/, false/*copyLl*/, ((tlMakeReferences) ? 0 : lnStart)/*backoff*/);
+									iComps_copyMembers(compNew, comp, true/*isAllocated*/, false/*copyLl*/, ((tlMakeReferences) ? 0 : lnStart)/*backoff*/);
 
 									// Update the new line if need be
 									if (!tlMakeReferences)
@@ -3266,7 +3266,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Returns true of false if two components are directly adjacent (no whitespace between)
 //
 //////
-	bool iiComps_areCompsAdjacent(SThisCode* thisCode, SComp* compLeft, SComp* compRight)
+	bool iiComps_areCompsAdjacent(SComp* compLeft, SComp* compRight)
 	{
 		// If [start+length] equals [start] of the next, they're adjacent
 		return(compLeft->start + compLeft->length == compRight->start);
@@ -3280,7 +3280,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Returns the number of characters between two components.
 //
 //////
-	s32 iiComps_get_charactersBetween(SThisCode* thisCode, SComp* compLeft, SComp* compRight)
+	s32 iiComps_get_charactersBetween(SComp* compLeft, SComp* compRight)
 	{
 		// Start of right component and end of left component
 		return(compRight->start - (compLeft->start + compLeft->length));
@@ -3294,7 +3294,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Called to convert the value in this component to an s32 or s64 integer, or f64 floating point
 //
 //////
-	s32 iComps_getAs_s32(SThisCode* thisCode, SComp* comp)
+	s32 iComps_getAs_s32(SComp* comp)
 	{
 		s8 buffer[32];
 
@@ -3311,7 +3311,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 		return(0);
 	}
 
-	s64 iComps_getAs_s64(SThisCode* thisCode, SComp* comp)
+	s64 iComps_getAs_s64(SComp* comp)
 	{
 		s8 buffer[32];
 
@@ -3328,7 +3328,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 		return(0);
 	}
 
-	f64 iComps_getAs_f64(SThisCode* thisCode, SComp* comp)
+	f64 iComps_getAs_f64(SComp* comp)
 	{
 		s8 buffer[32];
 
@@ -3393,7 +3393,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Called to get the length of the contiguous components
 //
 //////
-	s32 iComps_getContiguousLength(SThisCode* thisCode, SComp* comp, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount, s32* tnCount)
+	s32 iComps_getContiguousLength(SComp* comp, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount, s32* tnCount)
 	{
 		s32		lnCount, lnLength, lnThisSpacing;
 		bool	llAtLeastOne, llIsValid;
@@ -3415,7 +3415,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 					//////////
 					// See if it's contiguously adjoined
 					//////
-						if ((lnThisSpacing = iiComps_get_charactersBetween(thisCode, comp, comp->ll.nextComp)) != 0)
+						if ((lnThisSpacing = iiComps_get_charactersBetween(comp, comp->ll.nextComp)) != 0)
 							break;		// We're done
 
 
@@ -3425,7 +3425,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 						if (tnValid_iCodeArrayCount > 0 && valid_iCodeArray)
 						{
 							// We do need to validate
-							if (!iiComps_validate(thisCode, comp, valid_iCodeArray, tnValid_iCodeArrayCount))
+							if (!iiComps_validate(comp, valid_iCodeArray, tnValid_iCodeArrayCount))
 							{
 								// If we get here, it did not pass validation
 								llIsValid = false;
@@ -3463,7 +3463,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 					if (tnValid_iCodeArrayCount > 0 && valid_iCodeArray)
 					{
 						// If it's valid, add it
-						if (iiComps_validate(thisCode, comp, valid_iCodeArray, tnValid_iCodeArrayCount))
+						if (iiComps_validate(comp, valid_iCodeArray, tnValid_iCodeArrayCount))
 						{
 							lnLength += comp->length;	// It's valid
 							++lnCount;
@@ -3494,7 +3494,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Counts the number of components from here to the end of the chain
 //
 //////
-	u32 iComps_count(SThisCode* thisCode, SComp* comp)
+	u32 iComps_count(SComp* comp)
 	{
 		return(iLl_countNodesToEnd((SLL*)comp));
 	}
@@ -3507,7 +3507,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Called to validate the indicated component against a valid array list
 //
 //////
-	bool iiComps_validate(SThisCode* thisCode, SComp* comp, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount)
+	bool iiComps_validate(SComp* comp, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount)
 	{
 		s32 lnI;
 
@@ -3536,7 +3536,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // known keyword, but can also be used as a variable name.
 //
 //////
-	bool iiComps_isAlphanumeric(SThisCode* thisCode, SComp* comp)
+	bool iiComps_isAlphanumeric(SComp* comp)
 	{
 		s32		lnI;
 		char	c;
@@ -3568,7 +3568,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Format:  [raw_text iCode,start,length]
 //
 //////
-	s8* iComps_visualize(SThisCode* thisCode, SComp* comp, s32 tnCount, s8* outputBuffer, s32 tnBufferLength, bool tlUseDefaultCompSearcher, SAsciiCompSearcher* tsComps1, SAsciiCompSearcher* tsComps2)
+	s8* iComps_visualize(SComp* comp, s32 tnCount, s8* outputBuffer, s32 tnBufferLength, bool tlUseDefaultCompSearcher, SAsciiCompSearcher* tsComps1, SAsciiCompSearcher* tsComps2)
 	{
 		s32						lnI, lnJ, lnLength, lnOffset;
 		bool					llFound;
@@ -3640,7 +3640,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 										{
 											// Include any previously combined references for what they are
 											sprintf(outputBuffer + lnOffset, "<!--");
-											iComps_visualize(thisCode, comp->firstCombined, iComps_count(thisCode, comp->firstCombined), outputBuffer + lnOffset + 4, tnBufferLength - lnOffset - 4, tlUseDefaultCompSearcher, tsComps1, tsComps2);
+											iComps_visualize(comp->firstCombined, iComps_count(comp->firstCombined), outputBuffer + lnOffset + 4, tnBufferLength - lnOffset - 4, tlUseDefaultCompSearcher, tsComps1, tsComps2);
 											lnOffset = strlen(outputBuffer);
 											sprintf(outputBuffer + lnOffset, "-->");
 											lnOffset += 3;
@@ -3680,7 +3680,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 								{
 									// Include any previously combined references for what they are
 									sprintf(outputBuffer + lnOffset, "<!--");
-									iComps_visualize(thisCode, comp->firstCombined, iComps_count(thisCode, comp->firstCombined), outputBuffer + lnOffset + 4, tnBufferLength - lnOffset - 4, tlUseDefaultCompSearcher, tsComps1, tsComps2);
+									iComps_visualize(comp->firstCombined, iComps_count(comp->firstCombined), outputBuffer + lnOffset + 4, tnBufferLength - lnOffset - 4, tlUseDefaultCompSearcher, tsComps1, tsComps2);
 									lnOffset = strlen(outputBuffer);
 									sprintf(outputBuffer + lnOffset, "-->");
 									lnOffset += 3;
@@ -3719,7 +3719,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // nothing whitespaces, content, and total line length (including cr/lf combinations at the end)
 //
 //////
-	u32 iBreakoutAsciiTextDataIntoLines_ScanLine(SThisCode* thisCode, s8* tcData, u32 tnMaxLength, u32* tnLength, u32* tnWhitespaces)
+	u32 iBreakoutAsciiTextDataIntoLines_ScanLine(s8* tcData, u32 tnMaxLength, u32* tnLength, u32* tnWhitespaces)
 	{
 		u32 lnLength, lnWhitespaces, lnCRLF_Length;
 
@@ -3731,13 +3731,13 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 		if (tcData && tnMaxLength > 0)
 		{
 			// Skip past any whitespaces
-			lnWhitespaces = iSkip_whitespaces(thisCode, tcData, tnMaxLength);
+			lnWhitespaces = iSkip_whitespaces(tcData, tnMaxLength);
 			if (tnWhitespaces)
 				*tnWhitespaces = lnWhitespaces;
 
 
 			// Skip to the ending carriage return / line feed
-			lnLength = iSkip_toCrLf(thisCode, tcData + lnWhitespaces, tnMaxLength - lnWhitespaces, &lnCRLF_Length);
+			lnLength = iSkip_toCrLf(tcData + lnWhitespaces, tnMaxLength - lnWhitespaces, &lnCRLF_Length);
 			if (tnLength)
 				*tnLength = lnLength;
 		}
@@ -3757,7 +3757,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 //		false	- not found, tnPosition unchanged
 //
 //////
-	bool iFindFirstOccurrenceOfAsciiCharacter(SThisCode* thisCode, s8* tcHaystack, u32 tnHaystackLength, s8 tcNeedle, u32* tnPosition)
+	bool iFindFirstOccurrenceOfAsciiCharacter(s8* tcHaystack, u32 tnHaystackLength, s8 tcNeedle, u32* tnPosition)
 	{
 		u32		lnI;
 		bool	llFound;
@@ -3798,7 +3798,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Called to translate the indicated keywords into their corresponding operation.
 //
 //////
-	void iiComps_xlatToSubInstr(SThisCode* thisCode, SLine* line)
+	void iiComps_xlatToSubInstr(SLine* line)
 	{
 		SNode	si;
 
@@ -3812,7 +3812,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 		//////////
 		// Find the inmost expression
 		//////
-			while (iiComps_xlatToSubInstr_findInmostExpression(thisCode, &si, line))
+			while (iiComps_xlatToSubInstr_findInmostExpression(&si, line))
 			{
 				// Was it a valid operation?
 				if (si.opData->subInstr >= 0)
@@ -3834,7 +3834,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 		// There are no more "inner" expressions.
 		// Now we parse out by keyword.
 		//////
-			if (iiComps_xlatToSubInstr_isEqualAssignment(thisCode, line))
+			if (iiComps_xlatToSubInstr_isEqualAssignment(line))
 			{
 				// It's something like x = y, but it could be x,y,z = a(b,c)
 
@@ -3861,7 +3861,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 //		(6)
 //
 //////
-	SComp* iiComps_xlatToSubInstr_findInmostExpression(SThisCode* thisCode, SNode* si, SLine* line)
+	SComp* iiComps_xlatToSubInstr_findInmostExpression(SNode* si, SLine* line)
 	{
 		bool	llFound;
 		SComp*	comp;
@@ -3946,7 +3946,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // We scan backwards until we get to any component other than a period or exclamation point.
 //
 //////
-	void iiComps_xlatToSubInstr_findStartOfComponent(SThisCode* thisCode, SComp* compRoot, SOp* op)
+	void iiComps_xlatToSubInstr_findStartOfComponent(SComp* compRoot, SOp* op)
 	{
 		SComp*	comp;
 		SComp*	compPrev;
@@ -3957,7 +3957,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 		//////
 			comp		= compRoot;
 			op->count	= 0;
-			while (comp && comp->ll.prev && iiComps_get_charactersBetween(thisCode, (SComp*)comp->ll.prev, comp) == 0)
+			while (comp && comp->ll.prev && iiComps_get_charactersBetween((SComp*)comp->ll.prev, comp) == 0)
 			{
 				//////////
 				// Previous component
@@ -3995,7 +3995,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // immediately adjacent.
 //
 //////
-	void iiComps_xlatToSubInstr_findFullComponent(SThisCode* thisCode, SComp* compRoot, SOp* op)
+	void iiComps_xlatToSubInstr_findFullComponent(SComp* compRoot, SOp* op)
 	{
 		SComp*	comp;
 		SComp*	compNext;
@@ -4006,7 +4006,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 		//////
 			comp		= compRoot;
 			op->count	= 0;
-			while (comp && comp->ll.next && iiComps_get_charactersBetween(thisCode, comp, comp->ll.nextComp) == 0)
+			while (comp && comp->ll.next && iiComps_get_charactersBetween(comp, comp->ll.nextComp) == 0)
 			{
 				//////////
 				// Next component
@@ -4044,7 +4044,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 //		x = y
 //
 //////
-	bool iiComps_xlatToSubInstr_isEqualAssignment(SThisCode* thisCode, SLine* line)
+	bool iiComps_xlatToSubInstr_isEqualAssignment(SLine* line)
 	{
 // TODO:  Write this function :-)
 		return(false);
@@ -4058,7 +4058,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Scans from the indicated location forward until finding a non-whitespace character
 //
 //////
-	u32 iSkip_whitespaces(SThisCode* thisCode, s8* tcData, u32 tnMaxLength)
+	u32 iSkip_whitespaces(s8* tcData, u32 tnMaxLength)
 	{
 		u32 lnLength;
 
@@ -4084,7 +4084,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Scans from the indicated location forward until finding CR/LF or any combination thereof
 //
 //////
-	u32 iSkip_toCrLf(SThisCode* thisCode, s8* tcData, u32 tnMaxLength, u32* tnCRLF_Length)
+	u32 iSkip_toCrLf(s8* tcData, u32 tnMaxLength, u32* tnCRLF_Length)
 	{
 		u32 lnLength, lnCRLF_Length;
 
@@ -4139,7 +4139,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 // Get the next Unique ID
 //
 //////
-	u32 iGetNextUid(SThisCode* thisCode)
+	u32 iGetNextUid()
 	{
 		u32 lnValue;
 
@@ -4168,18 +4168,18 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 
 
 
-	void* iSEChain_prepend(SThisCode* thisCode, SStartEnd* ptrSE, u32 tnUniqueId, u32 tnUniqueIdExtra, u32 tnSize, u32 tnBlockSizeIfNewBlockNeeded, bool* tlResult)
+	void* iSEChain_prepend(SStartEnd* ptrSE, u32 tnUniqueId, u32 tnUniqueIdExtra, u32 tnSize, u32 tnBlockSizeIfNewBlockNeeded, bool* tlResult)
 	{
-		return(iSEChain_appendOrPrepend(thisCode, ptrSE, tnUniqueId, tnUniqueIdExtra, tnSize, tnBlockSizeIfNewBlockNeeded, true, tlResult));
+		return(iSEChain_appendOrPrepend(ptrSE, tnUniqueId, tnUniqueIdExtra, tnSize, tnBlockSizeIfNewBlockNeeded, true, tlResult));
 	}
 
-	void* iSEChain_append(SThisCode* thisCode, SStartEnd* ptrSE, u32 tnUniqueId, u32 tnUniqueIdExtra, u32 tnSize, u32 tnBlockSizeIfNewBlockNeeded, bool* tlResult)
+	void* iSEChain_append(SStartEnd* ptrSE, u32 tnUniqueId, u32 tnUniqueIdExtra, u32 tnSize, u32 tnBlockSizeIfNewBlockNeeded, bool* tlResult)
 	{
-		return(iSEChain_appendOrPrepend(thisCode, ptrSE, tnUniqueId, tnUniqueIdExtra, tnSize, tnBlockSizeIfNewBlockNeeded, false, tlResult));
+		return(iSEChain_appendOrPrepend(ptrSE, tnUniqueId, tnUniqueIdExtra, tnSize, tnBlockSizeIfNewBlockNeeded, false, tlResult));
 	}
 
 	// Prepends or appends to the Start/end chain
-	void* iSEChain_appendOrPrepend(SThisCode* thisCode, SStartEnd* ptrSE, u32 tnUniqueId, u32 tnUniqueIdExtra, u32 tnSize, u32 tnBlockSizeIfNewBlockNeeded, bool tlPrepend, bool* tlResult)
+	void* iSEChain_appendOrPrepend(SStartEnd* ptrSE, u32 tnUniqueId, u32 tnUniqueIdExtra, u32 tnSize, u32 tnBlockSizeIfNewBlockNeeded, bool tlPrepend, bool* tlResult)
 	{
 		SLL*			ptrCaller;
 		SMasterList*	ptrNew;
@@ -4253,7 +4253,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 					}
 
 					// Store it in the master list (so when VM is suspended, this data gets saved)
-					iSEChain_appendMasterList(thisCode, ptrSE, ptrNew, 0, tnBlockSizeIfNewBlockNeeded);
+					iSEChain_appendMasterList(ptrSE, ptrNew, 0, tnBlockSizeIfNewBlockNeeded);
 
 					// All done!
 				}
@@ -4269,7 +4269,7 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 	}
 
 	// NOTE!  Do not call this function directly!  Call iAppendToStarEndChain() only.
-	void iSEChain_appendMasterList(SThisCode* thisCode, SStartEnd* ptrSE, SMasterList* ptrNew, u32 tnHint, u32 tnBlockSizeIfNewBlockNeeded)
+	void iSEChain_appendMasterList(SStartEnd* ptrSE, SMasterList* ptrNew, u32 tnHint, u32 tnBlockSizeIfNewBlockNeeded)
 	{
 		// This function should not be called directly.  It is automatically called from
 		// iAppendToStarEndChain().  It stores pointers in the master list, pointers
@@ -4304,13 +4304,13 @@ void iiComps_decodeSyntax_returns(SThisCode* thisCode, SCompileVxbContext* vxb)
 			// If we get here, no slots are available, add some more
 
 			// Allocate some pointer space
-			iSEChain_allocateAdditionalMasterSlots(thisCode, ptrSE, tnBlockSizeIfNewBlockNeeded);
+			iSEChain_allocateAdditionalMasterSlots(ptrSE, tnBlockSizeIfNewBlockNeeded);
 			// We never break out of this loop because we will always return above from it
 		}
 	}
 
 
-	bool iSEChain_allocateAdditionalMasterSlots(SThisCode* thisCode, SStartEnd* ptrSE, u32 tnBlockSize)
+	bool iSEChain_allocateAdditionalMasterSlots(SStartEnd* ptrSE, u32 tnBlockSize)
 	{
 		bool			llResult;
 		SMasterList**	lml;
@@ -4374,7 +4374,7 @@ debug_break;
 //		The associated pointer if found
 //
 //////
-	void* iSEChain_searchByCallback(SThisCode* thisCode, SStartEnd* ptrSE, SStartEndCallback* cb)
+	void* iSEChain_searchByCallback(SStartEnd* ptrSE, SStartEndCallback* cb)
 	{
 		u32 lnI;
 
@@ -4413,7 +4413,7 @@ debug_break;
 //		The associated pointer if found
 //
 //////
-	void* iSEChain_searchByUniqueId(SThisCode* thisCode, SStartEnd* ptrSE, u64 tnUniqueId)
+	void* iSEChain_searchByUniqueId(SStartEnd* ptrSE, u64 tnUniqueId)
 	{
 		u32 lnI;
 
@@ -4443,7 +4443,7 @@ debug_break;
 // Iterates through the indicated Start/End list, calling back the callback function for every item.
 //
 //////
-	void iSEChain_iterateThroughForCallback(SThisCode* thisCode, SStartEnd* ptrSE, SStartEndCallback* cb)
+	void iSEChain_iterateThroughForCallback(SStartEnd* ptrSE, SStartEndCallback* cb)
 	{
 		u32 lnI;
 
@@ -4475,7 +4475,7 @@ debug_break;
 // Delete the indicated item from the chain
 //
 //////
-	void iSEChain_deleteFrom(SThisCode* thisCode, SStartEnd* ptrSE, void* ptrCaller, bool tlDeletePointers)
+	void iSEChain_deleteFrom(SStartEnd* ptrSE, void* ptrCaller, bool tlDeletePointers)
 	{
 		u32				lnI;
 		SMasterList*	ptrDel;
@@ -4567,7 +4567,7 @@ debug_break;
 // to another, by either pointer or physical position number.
 //
 //////
-	SLL* iSEChain_completelyMigrateSLLByPtr(SThisCode* thisCode, SStartEnd* ptrSEDst, SStartEnd* ptrSESrc, SLL* ptr, u32 tnHint, u32 tnBlockSize)
+	SLL* iSEChain_completelyMigrateSLLByPtr(SStartEnd* ptrSEDst, SStartEnd* ptrSESrc, SLL* ptr, u32 tnHint, u32 tnBlockSize)
 	{
 		u32 lnI;
 
@@ -4582,7 +4582,7 @@ debug_break;
 				{
 					// This is our man, migrate it
 // TODO:  (enhancement) we want some kind of better hinting algorithm here, such as the end of the list - common block size, for now we'll just pass 0
-					return(iSEChain_completelyMigrateSLLByNum(thisCode, ptrSEDst, ptrSESrc, lnI, 0, tnBlockSize));
+					return(iSEChain_completelyMigrateSLLByNum(ptrSEDst, ptrSESrc, lnI, 0, tnBlockSize));
 				}
 			}
 			// If we get here, not found
@@ -4591,7 +4591,7 @@ debug_break;
 		return(NULL);
 	}
 
-	SLL* iSEChain_completelyMigrateSLLByNum(SThisCode* thisCode, SStartEnd* ptrSEDst, SStartEnd* ptrSESrc, u32 lnSrcNum, u32 tnHint, u32 tnBlockSize)
+	SLL* iSEChain_completelyMigrateSLLByNum(SStartEnd* ptrSEDst, SStartEnd* ptrSESrc, u32 lnSrcNum, u32 tnHint, u32 tnBlockSize)
 	{
 		SLL*			lllPrev;
 		SLL*			lllNext;
@@ -4603,7 +4603,7 @@ debug_break;
 		if (ptrSEDst && ptrSESrc && lnSrcNum < ptrSESrc->masterCount && lnSrcNum <= ptrSESrc->masterCount)
 		{
 			// Migrate it, and get its SMasterList entry
-			lml = iSEChain_migrateByNum(thisCode, ptrSEDst, ptrSESrc, lnSrcNum, tnHint, tnBlockSize);
+			lml = iSEChain_migrateByNum(ptrSEDst, ptrSESrc, lnSrcNum, tnHint, tnBlockSize);
 			if (lml && lml->ptr)
 			{
 				// Grab the pointer to the SLL entry
@@ -4644,7 +4644,7 @@ debug_break;
 		return(NULL);
 	}
 
-	SMasterList* iSEChain_migrateByNum(SThisCode* thisCode, SStartEnd* ptrSEDst, SStartEnd* ptrSESrc, u32 lnSrcNum, u32 tnHint, u32 tnBlockSize)
+	SMasterList* iSEChain_migrateByNum(SStartEnd* ptrSEDst, SStartEnd* ptrSESrc, u32 lnSrcNum, u32 tnHint, u32 tnBlockSize)
 	{
 		u32				lnI;
 		SMasterList*	lml;
@@ -4716,7 +4716,7 @@ debug_break;
 					}
 				}
 				// If we get here, no empty slots. Allocate some, rinse, and repeat. :-)
-				iSEChain_allocateAdditionalMasterSlots(thisCode, ptrSEDst, tnBlockSize);
+				iSEChain_allocateAdditionalMasterSlots(ptrSEDst, tnBlockSize);
 
 				// Process through again beginning at the newly added portion
 				tnHint = lnI;
@@ -4749,7 +4749,7 @@ debug_break;
 //		!0		= does not tmach
 //
 //////
-	s32 iComps_xlatToComps_withTest(SThisCode* thisCode, cu8* tcHaystack, cu8* tcNeedle, s32 tnLength)
+	s32 iComps_xlatToComps_withTest(cu8* tcHaystack, cu8* tcNeedle, s32 tnLength)
 	{
 		u32		lnI;
 		bool	llCase;
@@ -4801,7 +4801,7 @@ debug_break;
 // Note:  Always returns false, so it will continue being fed every component
 //
 //////
-	bool iiComps_xlatToOthers_callback(SThisCode* thisCode, SStartEndCallback* cb)
+	bool iiComps_xlatToOthers_callback(SStartEndCallback* cb)
 	{
 		s32						lnLacsLength;
 		SComp*					comp;
@@ -4831,10 +4831,9 @@ debug_break;
 					if (!lacs->firstOnLine || !comp->ll.prev)
 					{
 						// Physically conduct the exact comparison
-						if (iComps_xlatToComps_withTest(thisCode,
-													lacs->keyword_cu8,
-													comp->line->sourceCode->data_u8 + comp->start,
-													lacs->length) == 0)
+						if (iComps_xlatToComps_withTest(lacs->keyword_cu8,
+														comp->line->sourceCode->data_u8 + comp->start,
+														lacs->length) == 0)
 						{
 							// This is a match
 							// Convert it, translate it, whatever you want to call it, just make it be the new code, per the user's request, got it? :-)
@@ -4861,7 +4860,7 @@ debug_break;
 //        then it will need to be either manually added to the line->comps, or manually tended to.
 //
 //////
-	void iiComps_xlatToOthers_callback__insertCompByCompCallback(SThisCode* thisCode, SComp* compRef, SComp* compNew, bool tlInsertAfter)
+	void iiComps_xlatToOthers_callback__insertCompByCompCallback(SComp* compRef, SComp* compNew, bool tlInsertAfter)
 	{
 // TODO:  untested code, breakpoint and examine
 debug_break;
@@ -4899,7 +4898,7 @@ debug_break;
 // Called as a callback from the custom handler callback function, to do some manual insertion.
 //
 //////
-	void iiComps_xlatToOthers_callback__insertCompByParamsCallback(SThisCode* thisCode, SComp* compRef, SLine* line, u32 tniCode, u32 tnStart, s32 tnLength, bool tlInsertAfter)
+	void iiComps_xlatToOthers_callback__insertCompByParamsCallback(SComp* compRef, SLine* line, u32 tniCode, u32 tnStart, s32 tnLength, bool tlInsertAfter)
 	{
 		SComp* compNew;
 
@@ -4910,7 +4909,7 @@ debug_break;
 		if (compRef && line && line->compilerInfo)
 		{
 			// Allocate a new pointer
-			compNew = (SComp*)iLl_appendNewNode((SLL**)&line->compilerInfo->firstComp, NULL, NULL, NULL, iGetNextUid(thisCode), sizeof(SComp));
+			compNew = (SComp*)iLl_appendNewNode((SLL**)&line->compilerInfo->firstComp, NULL, NULL, NULL, iGetNextUid(), sizeof(SComp));
 			if (compNew)
 			{
 				// Initialize it
@@ -4923,7 +4922,7 @@ debug_break;
 				compNew->length		= tnLength;
 
 				// Add the new component as a component
-				iiComps_xlatToOthers_callback__insertCompByCompCallback(thisCode, compRef, compNew, tlInsertAfter);
+				iiComps_xlatToOthers_callback__insertCompByCompCallback(compRef, compNew, tlInsertAfter);
 			}
 		}
 	}
@@ -4937,7 +4936,7 @@ debug_break;
 // indicated component.
 //
 //////
-	void iiComps_xlatToOthers_callback__deleteCompsCallback(SThisCode* thisCode, SComp* comp, SLine* line)
+	void iiComps_xlatToOthers_callback__deleteCompsCallback(SComp* comp, SLine* line)
 	{
 // TODO:  untested code, breakpoint and examine
 debug_break;
@@ -4977,7 +4976,7 @@ debug_break;
 // component.  If line is not NULL, the component is automatically added to line->comps;
 //
 //////
-	SComp* iiComps_xlatToOthers_callback__cloneCompsCallback(SThisCode* thisCode, SComp* comp, SLine* line)
+	SComp* iiComps_xlatToOthers_callback__cloneCompsCallback(SComp* comp, SLine* line)
 	{
 		SComp* compNew;
 
@@ -4992,7 +4991,7 @@ debug_break;
 			if (line && line->compilerInfo)
 			{
 				// Add the new component to line->comps
-				compNew = (SComp*)iLl_appendNewNode((SLL**)&line->compilerInfo->firstComp, NULL, NULL, NULL, iGetNextUid(thisCode), sizeof(SComp));
+				compNew = (SComp*)iLl_appendNewNode((SLL**)&line->compilerInfo->firstComp, NULL, NULL, NULL, iGetNextUid(), sizeof(SComp));
 
 			} else {
 				// Just create a rogue one
@@ -5033,7 +5032,7 @@ debug_break;
 //        handle that condition.
 //
 //////
-	SComp* iiComps_xlatToOthers_callback__mergeCompsCallback(SThisCode* thisCode, SComp* comp, SLine* line, u32 tnCount, u32 tniCodeNew)
+	SComp* iiComps_xlatToOthers_callback__mergeCompsCallback(SComp* comp, SLine* line, u32 tnCount, u32 tniCodeNew)
 	{
 		u32			lnI;
 		SComp*	compThis;
@@ -5051,7 +5050,7 @@ debug_break;
 				comp->length += compThis->length;
 
 				// Delete this component
-				iiComps_xlatToOthers_callback__deleteCompsCallback(thisCode, compThis, comp->line);
+				iiComps_xlatToOthers_callback__deleteCompsCallback(compThis, comp->line);
 
 				// Note:  compThis is always assigned comp->ll.next, because its next component keeps being updated after the delete
 			}
@@ -5065,7 +5064,7 @@ debug_break;
 // Called to create a new node and attach it to the hint as indicated.
 //
 //////
-	SNode* iNode_create(SThisCode* thisCode, SNode** root, SNode* hint, u32 tnDirection, SNode* parent, SNode* prev, SNode* next, SNode* left, SNode* right)
+	SNode* iNode_create(SNode** root, SNode* hint, u32 tnDirection, SNode* parent, SNode* prev, SNode* next, SNode* left, SNode* right)
 	{
 		SNode*		nodeNew;
 		SNode**		nodePrev;
@@ -5162,7 +5161,7 @@ debug_break;
 // Creates a new node and inserts it where node1 currently points to node2.
 //
 //////
-	SNode* iNode_insertBetween(SThisCode* thisCode, SNode** root, SNode* node1, SNode* node2, u32 tnNode1Direction, u32 tnNode2Direction)
+	SNode* iNode_insertBetween(SNode** root, SNode* node1, SNode* node2, u32 tnNode1Direction, u32 tnNode2Direction)
 	{
 		u32		lnNode1Direction, lnNode2Direction;
 		SNode*	nodeNew;
@@ -5209,7 +5208,7 @@ debug_break;
 
 
 			// Create an orphan node
-			nodeNew = iNode_create(thisCode, root, NULL, 0, NULL, NULL, NULL, NULL, NULL);
+			nodeNew = iNode_create(root, NULL, 0, NULL, NULL, NULL, NULL, NULL);
 			if (nodeNew)
 			{
 				//////////
@@ -5299,7 +5298,7 @@ debug_break;
 // Called to delete the entire node change recursively
 //
 //////
-	void iNode_politelyDeleteAll(SThisCode* thisCode, SNode** root, bool tlDeleteSelf, bool tlTraverseParent, bool tlTraversePrev, bool tlTraverseNext, bool tlTraverseLeft, bool tlTraverseRight)
+	void iNode_politelyDeleteAll(SNode** root, bool tlDeleteSelf, bool tlTraverseParent, bool tlTraversePrev, bool tlTraverseNext, bool tlTraverseLeft, bool tlTraverseRight)
 	{
 		SNode* node;
 
@@ -5317,7 +5316,7 @@ debug_break;
 			//////
 				if (tlTraverseParent && node->parent)
 				{
-					iNode_politelyDeleteAll(thisCode, &node->parent, true, node->parent->parent != node, node->prev->prev != node, node->prev->next != node, node->prev->left != node, node->prev->right != node);
+					iNode_politelyDeleteAll(&node->parent, true, node->parent->parent != node, node->prev->prev != node, node->prev->next != node, node->prev->left != node, node->prev->right != node);
 					node->prev = NULL;
 				}
 
@@ -5327,7 +5326,7 @@ debug_break;
 			//////
 				if (tlTraversePrev && node->prev)
 				{
-					iNode_politelyDeleteAll(thisCode, &node->prev, true, node->parent->parent != node, node->prev->prev != node, node->prev->next != node, node->prev->left != node, node->prev->right != node);
+					iNode_politelyDeleteAll(&node->prev, true, node->parent->parent != node, node->prev->prev != node, node->prev->next != node, node->prev->left != node, node->prev->right != node);
 					node->prev = NULL;
 				}
 
@@ -5337,7 +5336,7 @@ debug_break;
 			//////
 				if (tlTraverseNext && node->next)
 				{
-					iNode_politelyDeleteAll(thisCode, &node->next, true, node->parent->parent != node, node->next->prev != node, node->next->next != node, node->next->left != node, node->next->right != node);
+					iNode_politelyDeleteAll(&node->next, true, node->parent->parent != node, node->next->prev != node, node->next->next != node, node->next->left != node, node->next->right != node);
 					node->next = NULL;
 				}
 
@@ -5347,7 +5346,7 @@ debug_break;
 			//////
 				if (tlTraverseLeft && node->left)
 				{
-					iNode_politelyDeleteAll(thisCode, &node->left, true, node->parent->parent != node, node->left->prev != node, node->left->next != node, node->left->left != node, node->left->right != node);
+					iNode_politelyDeleteAll(&node->left, true, node->parent->parent != node, node->left->prev != node, node->left->next != node, node->left->left != node, node->left->right != node);
 					node->left = NULL;
 				}
 
@@ -5357,7 +5356,7 @@ debug_break;
 			//////
 				if (tlTraverseRight && node->right)
 				{
-					iNode_politelyDeleteAll(thisCode, &node->right, true, node->parent->parent != node, node->right->prev != node, node->right->next != node, node->right->left != node, node->right->right != node);
+					iNode_politelyDeleteAll(&node->right, true, node->parent->parent != node, node->right->prev != node, node->right->next != node, node->right->left != node, node->right->right != node);
 					node->right = NULL;
 				}
 
@@ -5365,14 +5364,14 @@ debug_break;
 			//////////
 			// Delete the op if need be
 			//////
-				iOp_politelyDelete(thisCode, &node->opData->op, false);
+				iOp_politelyDelete(&node->opData->op, false);
 
 
 			//////////
 			// Delete the variable chain
 			//////
 				if (node->opData->firstVariable)
-					iVariable_politelyDelete_chain(thisCode, &node->opData->firstVariable, true);
+					iVariable_politelyDelete_chain(&node->opData->firstVariable, true);
 
 
 			//////////
@@ -5395,7 +5394,7 @@ debug_break;
 // Called to create an empty function with a name.
 //
 //////
-	SFunction* iFunction_allocate(SThisCode* thisCode, SComp* compName)
+	SFunction* iFunction_allocate(SComp* compName)
 	{
 		SFunction* funcNew;
 
@@ -5406,7 +5405,7 @@ debug_break;
 		{
 			// Initialize
 			memset(funcNew, 0, sizeof(SFunction));
-			funcNew->ll.uniqueId = iGetNextUid(thisCode);
+			funcNew->ll.uniqueId = iGetNextUid();
 
 			// Store name if provided
 			if (compName && compName->line && compName->line->sourceCode && compName->line->sourceCode->data)
@@ -5427,7 +5426,7 @@ debug_break;
 		return(funcNew);
 	}
 
-	SFunction* iFunction_allocate(SThisCode* thisCode, SDatum* datumName)
+	SFunction* iFunction_allocate(SDatum* datumName)
 	{
 		SFunction* funcNew;
 
@@ -5438,7 +5437,7 @@ debug_break;
 		{
 			// Initialize
 			memset(funcNew, 0, sizeof(SFunction));
-			funcNew->ll.uniqueId = iGetNextUid(thisCode);
+			funcNew->ll.uniqueId = iGetNextUid();
 
 			// Store name if provided
 			if (datumName)
@@ -5449,7 +5448,7 @@ debug_break;
 		return(funcNew);
 	}
 
-	SFunction* iFunction_allocate(SThisCode* thisCode, u8* tcFuncName)
+	SFunction* iFunction_allocate(u8* tcFuncName)
 	{
 		SFunction* funcNew;
 
@@ -5460,7 +5459,7 @@ debug_break;
 		{
 			// Initialize
 			memset(funcNew, 0, sizeof(SFunction));
-			funcNew->ll.uniqueId = iGetNextUid(thisCode);
+			funcNew->ll.uniqueId = iGetNextUid();
 
 			// Store name if provided
 			if (tcFuncName)
@@ -5479,7 +5478,7 @@ debug_break;
 // Called to add a scoped variable to the function
 //
 //////
-	SVariable* iFunction_addVariable_scoped(SThisCode* thisCode, SFunction* func)
+	SVariable* iFunction_addVariable_scoped(SFunction* func)
 	{
 		SVariable*	varNew;
 
@@ -5506,7 +5505,7 @@ debug_break;
 // information, including all variables that were found.
 //
 //////
-	void iFunction_politelyDeleteCompiledInfo(SThisCode* thisCode, SFunction* func, bool tlDeleteSelf)
+	void iFunction_politelyDeleteCompiledInfo(SFunction* func, bool tlDeleteSelf)
 	{
 		bool	llContinue;
 		SLine*	line;
@@ -5529,8 +5528,8 @@ debug_break;
 					if (line->compilerInfo && line->compilerInfo->firstNodeEngaged)
 					{
 						// Delete from regular components, and whitespaces
-						iComps_deleteAll_byFirstComp(thisCode, &line->compilerInfo->firstComp);
-						iComps_deleteAll_byFirstComp(thisCode, &line->compilerInfo->firstWhitespace);
+						iComps_deleteAll_byFirstComp(&line->compilerInfo->firstComp);
+						iComps_deleteAll_byFirstComp(&line->compilerInfo->firstWhitespace);
 					}
 
 					// Mark it so that it will be force-re-compiled
@@ -5556,21 +5555,21 @@ debug_break;
 // Called to politely delete everything contained within the function
 //
 //////
-	void iFunction_politelyDelete(SThisCode* thisCode, SFunction* func, bool tlDeleteSelf)
+	void iFunction_politelyDelete(SFunction* func, bool tlDeleteSelf)
 	{
 		// Make sure our environment is sane
 		if (func)
 		{
 			// Delete this function's variables
-			iVariable_politelyDelete_chain(thisCode,	&func->params,			true);
-			iVariable_politelyDelete_chain(thisCode,	&func->locals,			true);
-			iVariable_politelyDelete_chain(thisCode,	&func->returns,			true);
-			iVariable_politelyDelete_chain(thisCode,	&func->scoped,			true);
-			iVariable_politelyDelete_chain(thisCode,	&func->params,			true);
+			iVariable_politelyDelete_chain(&func->params,			true);
+			iVariable_politelyDelete_chain(&func->locals,			true);
+			iVariable_politelyDelete_chain(&func->returns,			true);
+			iVariable_politelyDelete_chain(&func->scoped,			true);
+			iVariable_politelyDelete_chain(&func->params,			true);
 
 			// Delete the adhocs for this function
-			iFunction_politelyDelete_chain(thisCode,	&func->firstAdhoc,		true);
-			iFunction_politelyDelete_chain(thisCode,	&func->firstFlowof,		true);
+			iFunction_politelyDelete_chain(&func->firstAdhoc,		true);
+			iFunction_politelyDelete_chain(&func->firstFlowof,		true);
 
 			// Delete the function itself if need be
 			if (tlDeleteSelf)
@@ -5582,7 +5581,7 @@ debug_break;
 				iDatum_delete(&func->name, false);
 
 				// Clear out any compiler info
-				iFunction_politelyDeleteCompiledInfo(thisCode, func, tlDeleteSelf);
+				iFunction_politelyDeleteCompiledInfo(func, tlDeleteSelf);
 			}
 		}
 	}
@@ -5595,7 +5594,7 @@ debug_break;
 // Called to delete every function in the chain
 //
 //////
-	void iFunction_politelyDelete_chain(SThisCode* thisCode, SFunction** rootFunc, bool tlDeleteSelf)
+	void iFunction_politelyDelete_chain(SFunction** rootFunc, bool tlDeleteSelf)
 	{
 		SFunction*	func;
 		SFunction*	funcPrev;
@@ -5615,7 +5614,7 @@ debug_break;
 				funcPrev = func->ll.prevFunc;
 
 				// Delete this one (deleting self always if it's not the first, and if it's the first then IF we are to delete self)
-				iFunction_politelyDelete(thisCode, func, (tlDeleteSelf || func != *rootFunc));
+				iFunction_politelyDelete(func, (tlDeleteSelf || func != *rootFunc));
 			}
 		}
 	}
@@ -5628,7 +5627,7 @@ debug_break;
 // Called to terminate the indirect references to the point of
 //
 //////
-	SVariable* iiVariable_terminateIndirect(SThisCode* thisCode, SVariable* var)
+	SVariable* iiVariable_terminateIndirect(SVariable* var)
 	{
 		// Dereference all indirect references
 		while (var && var->indirect)
@@ -5647,7 +5646,7 @@ debug_break;
 // no identity.
 //
 //////
-	SVariable* iVariable_create(SThisCode* thisCode, s32 tnVarType, SVariable* varIndirect, bool tlAllocateDefaultValue, s32 tnBitsFor_bfp_bi)
+	SVariable* iVariable_create(s32 tnVarType, SVariable* varIndirect, bool tlAllocateDefaultValue, s32 tnBitsFor_bfp_bi)
 	{
 		SVariable*	varDefault;
 		SVariable*	varNew;
@@ -5665,7 +5664,7 @@ debug_break;
 			if (varNew)
 			{
 				// Dereference
-				varIndirect = iiVariable_terminateIndirect(thisCode, varIndirect);
+				varIndirect = iiVariable_terminateIndirect(varIndirect);
 
 				// Initialize
 				memset(varNew, 0, sizeof(SVariable));
@@ -5748,7 +5747,7 @@ debug_break;
 							varNew->value.length	= tnBitsFor_bfp_bi;
 
 							// Store the bits for this creation in
-							iEngine_update_meta1(thisCode, (s64)tnBitsFor_bfp_bi);
+							iEngine_update_meta1((s64)tnBitsFor_bfp_bi);
 							break;
 
 						default:
@@ -5758,12 +5757,12 @@ debug_break;
 							{
 								// Grab the default initialization type, which is logical false unless otherwise set
 								varDefault = propGet_settings_InitializeDefaultValue(_settings);
-								if (varDefault)		varNew = iVariable_copy(thisCode, varDefault, false);
-								else				varNew = iVariable_create(thisCode, _VAR_TYPE_LOGICAL, NULL, true);
+								if (varDefault)		varNew = iVariable_copy(varDefault, false);
+								else				varNew = iVariable_create(_VAR_TYPE_LOGICAL, NULL, true);
 
 							} else {
 								// Create default type until initialization is complete
-								varNew = iVariable_create(thisCode, _VAR_TYPE_LOGICAL, NULL, true);
+								varNew = iVariable_create(_VAR_TYPE_LOGICAL, NULL, true);
 							}
 					}
 				}
@@ -5784,19 +5783,19 @@ debug_break;
 // Called to create and populate a new variable in one go
 //
 //////
-	SVariable* iVariable_createAndPopulate_byDatum(SThisCode* thisCode, s32 tnVarType, SDatum* datum, bool tlCreateReference)
+	SVariable* iVariable_createAndPopulate_byDatum(s32 tnVarType, SDatum* datum, bool tlCreateReference)
 	{
-		if (datum)		return(iVariable_createAndPopulate_byText(thisCode, tnVarType, datum->data_u8, datum->length, tlCreateReference));
+		if (datum)		return(iVariable_createAndPopulate_byText(tnVarType, datum->data_u8, datum->length, tlCreateReference));
 		else			return(NULL);
 	}
 
-	SVariable* iVariable_createAndPopulate_byText(SThisCode* thisCode, s32 tnVarType, u8* tcData, s32 tnDataLength, bool tlCreateReference)
+	SVariable* iVariable_createAndPopulate_byText(s32 tnVarType, u8* tcData, s32 tnDataLength, bool tlCreateReference)
 	{
 		SVariable* var;
 
 
 		// Create the variable
-		var = iVariable_create(thisCode, tnVarType, NULL, !tlCreateReference);
+		var = iVariable_create(tnVarType, NULL, !tlCreateReference);
 		if (var && tcData)
 		{
 			// Populate it
@@ -5834,19 +5833,19 @@ debug_break;
 		return(var);
 	}
 
-	SVariable* iVariable_createAndPopulate_byText(SThisCode* thisCode, s32 tnVarType, s8* tcData, s32 tnDataLength, bool tlCreateReference)
+	SVariable* iVariable_createAndPopulate_byText(s32 tnVarType, s8* tcData, s32 tnDataLength, bool tlCreateReference)
 	{
-		return(iVariable_createAndPopulate_byText(thisCode, tnVarType, (u8*)tcData, tnDataLength, tlCreateReference));
+		return(iVariable_createAndPopulate_byText(tnVarType, (u8*)tcData, tnDataLength, tlCreateReference));
 	}
 
-	SVariable* iVariable_createAndPopulate_byText(SThisCode* thisCode, s32 tnVarType, cu8* tcData, s32 tnDataLength, bool tlCreateReference)
+	SVariable* iVariable_createAndPopulate_byText(s32 tnVarType, cu8* tcData, s32 tnDataLength, bool tlCreateReference)
 	{
-		return(iVariable_createAndPopulate_byText(thisCode, tnVarType, (u8*)tcData, tnDataLength, tlCreateReference));
+		return(iVariable_createAndPopulate_byText(tnVarType, (u8*)tcData, tnDataLength, tlCreateReference));
 	}
 
-	SVariable* iVariable_createAndPopulate_byText(SThisCode* thisCode, s32 tnVarType, cs8* tcData, s32 tnDataLength, bool tlCreateReference)
+	SVariable* iVariable_createAndPopulate_byText(s32 tnVarType, cs8* tcData, s32 tnDataLength, bool tlCreateReference)
 	{
-		return(iVariable_createAndPopulate_byText(thisCode, tnVarType, (u8*)tcData, tnDataLength, tlCreateReference));
+		return(iVariable_createAndPopulate_byText(tnVarType, (u8*)tcData, tnDataLength, tlCreateReference));
 	}
 
 
@@ -5857,7 +5856,7 @@ debug_break;
 // Called to create a character variable using the indicated base/radix
 //
 //////
-	SVariable* iVariable_createByRadix(SThisCode* thisCode, u64 tnValue, u64 tnBase, u32 tnPrefixChars, u32 tnPostfixChars)
+	SVariable* iVariable_createByRadix(u64 tnValue, u64 tnBase, u32 tnPrefixChars, u32 tnPostfixChars)
 	{
 		s32			lnI, lnLength;
 		SVariable*	result;
@@ -5925,7 +5924,7 @@ debug_break;
 				//////////
 				// Create the variable
 				//////
-					result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, buffer, lnLength + tnPrefixChars + tnPostfixChars, false);
+					result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, buffer, lnLength + tnPrefixChars + tnPostfixChars, false);
 					if (result)
 					{
 						// Reset everything
@@ -5957,7 +5956,7 @@ debug_break;
 // Called to search for dot variables (like lo.visible) and drill down to their [lo][.][visible] components
 //
 //////
-	bool iVariable_searchRoot_forDotName_andSet_byVar(SThisCode* thisCode, SComp* compDotName, SVariable* varNewValue, bool* tlError, u32* tnErrorNum)
+	bool iVariable_searchRoot_forDotName_andSet_byVar(SComp* compDotName, SVariable* varNewValue, bool* tlError, u32* tnErrorNum)
 	{
 		s32			lnN, lnType;
 		bool		llResult;
@@ -5978,7 +5977,7 @@ debug_break;
 			//////////
 			// Grab the next dot variable
 			//////
-				compNext = iComps_getNext_afterDot(thisCode, compDotName);
+				compNext = iComps_getNext_afterDot(compDotName);
 				if (compNext)
 				{
 					//////////
@@ -5990,7 +5989,7 @@ debug_break;
 					//////////
 					// Try to find the root source for the first dot name
 					//////
-						if (iEngine_get_namedSourceAndType_byComp(thisCode, compDotName, &p, &lnType))
+						if (iEngine_get_namedSourceAndType_byComp(compDotName, &p, &lnType))
 						{
 							// Note:  Every instance of p is a reference only
 							switch (lnType)
@@ -6069,7 +6068,7 @@ debug_break;
 									{
 										case _VAR_TYPE_OBJECT:
 											// It's lo.something
-											return(iVariable_searchObj_forDotName_andSet_byVar(thisCode, var->obj, compNext, varNewValue, tlError, tnErrorNum));
+											return(iVariable_searchObj_forDotName_andSet_byVar(var->obj, compNext, varNewValue, tlError, tnErrorNum));
 
 										case _VAR_TYPE_VECTOR:
 											// It's vec.N or vec.builtin()
@@ -6120,7 +6119,7 @@ debug_break;
 
 										default:
 											// Is it a normal variable type (data types)?
-											if (iVariable_isFundamentalType(thisCode, var))
+											if (iVariable_isFundamentalType(var))
 											{
 												// var.N or var.builtin()
 												if (compNext->iCode == _ICODE_NUMERIC)
@@ -6220,7 +6219,7 @@ debug_break;
 
 								default:
 									// Should never happen because iEngine_get_namedSource_andType() should return a type we explicitly test for
-									iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, compDotName, false);
+									iError_reportByNumber(_ERROR_INTERNAL_ERROR, compDotName, false);
 									return(false);
 							}
 						}
@@ -6249,7 +6248,7 @@ debug_break;
 // Called to continue drilling down in/on an object in a dot sequence
 //
 //////
-	bool iVariable_searchObj_forDotName_andSet_byVar(SThisCode* thisCode, SObject* obj, SComp* compDotName, SVariable* varNewValue, bool* tlError, u32* tnErrorNum)
+	bool iVariable_searchObj_forDotName_andSet_byVar(SObject* obj, SComp* compDotName, SVariable* varNewValue, bool* tlError, u32* tnErrorNum)
 	{
 		s32			lnN, lnType;
 		u32			lnIndex;
@@ -6270,7 +6269,7 @@ debug_break;
 			//////////
 			// Grab the next dot component (if any)
 			//////
-				compNext = iComps_getNext_afterDot(thisCode, compDotName);
+				compNext = iComps_getNext_afterDot(compDotName);
 				if (compNext->iCode == _ICODE_NUMERIC)
 					lnN = iiComps_getAs_s32(compNext);
 
@@ -6278,7 +6277,7 @@ debug_break;
 			//////////
 			// See if we can find the indicated attribute
 			//////
-				if (iiEngine_get_namedSourceAndType_ofObj_byComp(thisCode, obj, compDotName, &pRoot, &p, &lnType, &lnIndex))
+				if (iiEngine_get_namedSourceAndType_ofObj_byComp(obj, compDotName, &pRoot, &p, &lnType, &lnIndex))
 				{
 					// Copy compDotName's name members into name's members
 					iDatum_populate_fromComp(&name, compDotName);
@@ -6327,7 +6326,7 @@ debug_break;
 										{
 											case _VAR_TYPE_OBJECT:
 												// Descending into an object further
-												llResult = iVariable_searchObj_forDotName_andSet_byVar(thisCode, var->obj, compNext, varNewValue, tlError, tnErrorNum);
+												llResult = iVariable_searchObj_forDotName_andSet_byVar(var->obj, compNext, varNewValue, tlError, tnErrorNum);
 												break;
 
 											default:
@@ -6348,14 +6347,14 @@ debug_break;
 								}
 
 								// Delete our property variable
-								iVariable_delete(thisCode, var, true);
+								iVariable_delete(var, true);
 
 								// Indicate our status
 								return(llResult);
 
 							} else {
 								// This is the termination point in the dot variable, so we're performing the set here
-								return(iObjProp_set(thisCode, obj, lnIndex, (SVariable*)p));
+								return(iObjProp_set(obj, lnIndex, (SVariable*)p));
 							}
 							break;
 
@@ -6368,8 +6367,8 @@ debug_break;
 							{
 								// They're setting the source code for this user method
 								func = (SFunction*)p;
-								if (func->ll.prevFunc)		llResult = iObjEvent_set_function(thisCode, obj, lnIndex, &func->ll.prevFunc->ll.nextFunc,	&varNewValue->value,	&name);
-								else						llResult = iObjEvent_set_function(thisCode, obj, lnIndex, &obj->firstMethod,				&varNewValue->value,	&name);
+								if (func->ll.prevFunc)		llResult = iObjEvent_set_function(obj, lnIndex, &func->ll.prevFunc->ll.nextFunc,	&varNewValue->value,	&name);
+								else						llResult = iObjEvent_set_function(obj, lnIndex, &obj->firstMethod,				&varNewValue->value,	&name);
 
 							} else {
 								// Unhandled request
@@ -6384,7 +6383,7 @@ debug_break;
 							if (varNewValue->varType == _VAR_TYPE_CHARACTER)
 							{
 								// They're setting the source code for this user method
-								llResult = iObjEvent_set_function(thisCode, obj, lnIndex, &obj->firstAssign, &varNewValue->value, &name);
+								llResult = iObjEvent_set_function(obj, lnIndex, &obj->firstAssign, &varNewValue->value, &name);
 //////////
 // TODO:  Need to verify the first non-comment line begins with LPARAMETERS.
 //        If not, need to insert the code, where propName is searched for either in base properties, or custom properties:
@@ -6413,7 +6412,7 @@ debug_break;
 							if (varNewValue->varType == _VAR_TYPE_CHARACTER)
 							{
 								// They're setting the source code for this user method
-								llResult = iObjEvent_set_function(thisCode, obj, lnIndex, &obj->firstAccess, &varNewValue->value, &name);
+								llResult = iObjEvent_set_function(obj, lnIndex, &obj->firstAccess, &varNewValue->value, &name);
 
 							} else {
 								// Unhandled request
@@ -6431,8 +6430,8 @@ debug_break;
 							{
 								// They're setting the source code for this user method
 								// Name is derived from its system name
-								iObjEvent_get_name_asDatum(thisCode, lnIndex, &name);
-								llResult	= iObjEvent_set_function(thisCode, obj, lnIndex, &obj->ev.methods[lnIndex].userEventCode, &varNewValue->value, &name);
+								iObjEvent_get_name_asDatum(lnIndex, &name);
+								llResult	= iObjEvent_set_function(obj, lnIndex, &obj->ev.methods[lnIndex].userEventCode, &varNewValue->value, &name);
 
 							} else {
 								// Unhandled request
@@ -6469,7 +6468,7 @@ debug_break;
 //        expanded data.
 //
 //////
-	SVariable* iVariable_searchForName(SThisCode* thisCode, cs8* tcVarName, u32 tnVarNameLength, SComp* comp, bool tlCreateAsReference)
+	SVariable* iVariable_searchForName(cs8* tcVarName, u32 tnVarNameLength, SComp* comp, bool tlCreateAsReference)
 	{
 		bool		llVarsFirst;
 		cs8*		lcVarName;
@@ -6511,102 +6510,96 @@ debug_break;
 			llVarsFirst = propGet_settings_VariablesFirst(_settings);
 			if (llVarsFirst)
 			{
-				if (thisCode)
+				// (1) Params
+				if (gsThisCode[gnThisCode].live.paramsCount > 0)
 				{
-					// (1) Params
-					if (thisCode->live.params)
-					{
-						var = iiVariable_searchForName_variables(thisCode, thisCode->live.params, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
-						if (var)
-							return(var);
-					}
+					var = iiVariable_searchForName_variables(gsThisCode[gnThisCode].live.params, lcVarName, lnVarNameLength, comp, tlCreateAsReference, gsThisCode[gnThisCode].live.paramsCount);
+					if (var)
+						return(var);
+				}
 
-					// (2) Return variables
-					if (thisCode->live.returns)
-					{
-						var = iiVariable_searchForName_variables(thisCode, thisCode->live.returns, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
-						if (var)
-							return(var);
-					}
+				// (2) Return variables
+				if (gsThisCode[gnThisCode].live.returnsCount > 0)
+				{
+					var = iiVariable_searchForName_variables(gsThisCode[gnThisCode].live.returns, lcVarName, lnVarNameLength, comp, tlCreateAsReference, gsThisCode[gnThisCode].live.returnsCount);
+					if (var)
+						return(var);
+				}
 
-					// (3) Locals
-					if (thisCode->live.locals)
+				// (3) Locals
+				if (gsThisCode[gnThisCode].live.localsCount > 0)
+				{
+					var = iiVariable_searchForName_variables(gsThisCode[gnThisCode].live.locals, lcVarName, lnVarNameLength, comp, tlCreateAsReference, gsThisCode[gnThisCode].live.localsCount);
+					if (var)
+						return(var);
+				}
+
+				// (4) Search recursively up the all stack for private variables
+				if (gsThisCode[gnThisCode].live.privatesCount > 0)
+				{
+					for (thisCodeSearch = &gsThisCode[gnThisCode]; thisCodeSearch; thisCodeSearch = thisCodeSearch->ll.prevThisCode)
 					{
-						var = iiVariable_searchForName_variables(thisCode, thisCode->live.locals, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
+						// Search at this level
+						var = iiVariable_searchForName_variables(thisCodeSearch->live.privates, lcVarName, lnVarNameLength, comp, tlCreateAsReference, gsThisCode[gnThisCode].live.privatesCount);
 						if (var)
 							return(var);
-					}
-	
-					// (4) Search recursively up the all stack for private variables
-					if (thisCode->live.privates)
-					{
-						for (thisCodeSearch = thisCode; thisCodeSearch; thisCodeSearch = thisCodeSearch->ll.prevThisCode)
-						{
-							// Search at this level
-							var = iiVariable_searchForName_variables(thisCode, thisCodeSearch->live.privates, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
-							if (var)
-								return(var);
-						}
 					}
 				}
 
 				// (5) Globals
-				var = iiVariable_searchForName_variables(thisCode, varGlobals, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
+				var = iiVariable_searchForName_variables(varGlobals, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
 				if (var)
 					return(var);
 
 				// (6) Fields
-				var = iiVariable_searchForName_fields(thisCode, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
+				var = iiVariable_searchForName_fields(lcVarName, lnVarNameLength, comp, tlCreateAsReference);
 				if (var)
 					return(var);
 
 			} else {
 				// (1) Fields
-				var = iiVariable_searchForName_fields(thisCode, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
+				var = iiVariable_searchForName_fields(lcVarName, lnVarNameLength, comp, tlCreateAsReference);
 				if (var)
 					return(var);
 
-				if (thisCode)
+				// (2) Params
+				if (gsThisCode[gnThisCode].live.paramsCount > 0)
 				{
-					// (2) Params
-					if (thisCode->live.params)
+					var = iiVariable_searchForName_variables(gsThisCode[gnThisCode].live.params, lcVarName, lnVarNameLength, comp, tlCreateAsReference, gsThisCode[gnThisCode].live.paramsCount);
+					if (var)
+						return(var);
+				}
+
+				// (3) Return variables
+				if (gsThisCode[gnThisCode].live.returnsCount > 0)
+				{
+					var = iiVariable_searchForName_variables(gsThisCode[gnThisCode].live.returns, lcVarName, lnVarNameLength, comp, tlCreateAsReference, gsThisCode[gnThisCode].live.returnsCount);
+					if (var)
+						return(var);
+				}
+
+				// (4) Locals
+				if (gsThisCode[gnThisCode].live.localsCount > 0)
+				{
+					var = iiVariable_searchForName_variables(gsThisCode[gnThisCode].live.locals, lcVarName, lnVarNameLength, comp, tlCreateAsReference, gsThisCode[gnThisCode].live.localsCount);
+					if (var)
+						return(var);
+				}
+
+				// (5) Search recursively up the all stack for private variables
+				if (gsThisCode[gnThisCode].live.privatesCount > 0)
+				{
+					for (thisCodeSearch = &gsThisCode[gnThisCode]; thisCodeSearch; thisCodeSearch = thisCodeSearch->ll.prevThisCode)
 					{
-						var = iiVariable_searchForName_variables(thisCode, thisCode->live.params, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
+						// Search at this level
+						var = iiVariable_searchForName_variables(thisCodeSearch->live.privates, lcVarName, lnVarNameLength, comp, tlCreateAsReference, gsThisCode[gnThisCode].live.privatesCount);
 						if (var)
 							return(var);
-					}
-
-					// (3) Return variables
-					if (thisCode->live.returns)
-					{
-						var = iiVariable_searchForName_variables(thisCode, thisCode->live.returns, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
-						if (var)
-							return(var);
-					}
-
-					// (4) Locals
-					if (thisCode->live.locals)
-					{
-						var = iiVariable_searchForName_variables(thisCode, thisCode->live.locals, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
-						if (var)
-							return(var);
-					}
-
-					// (5) Search recursively up the all stack for private variables
-					if (thisCode->live.privates)
-					{
-						for (thisCodeSearch = thisCode; thisCodeSearch; thisCodeSearch = thisCodeSearch->ll.prevThisCode)
-						{
-							// Search at this level
-							var = iiVariable_searchForName_variables(thisCode, thisCodeSearch->live.privates, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
-							if (var)
-								return(var);
-						}
 					}
 				}
 
 				// (6) Globals
-				var = iiVariable_searchForName_variables(thisCode, varGlobals, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
+				var = iiVariable_searchForName_variables(varGlobals, lcVarName, lnVarNameLength, comp, tlCreateAsReference);
 				if (var)
 					return(var);
 			}
@@ -6619,7 +6612,7 @@ debug_break;
 
 	}
 
-	SVariable* iiVariable_searchForName_variables(SThisCode* thisCode, SVariable* varRoot, cs8* tcVarName, u32 tnVarNameLength, SComp* comp, bool tlCreateAsReference)
+	SVariable* iiVariable_searchForName_variables(SVariable* varRoot, cs8* tcVarName, u32 tnVarNameLength, SComp* comp, bool tlCreateAsReference, s32 tnMaxVarDepth)
 	{
 		s32			lnDepth;
 		SComp*		compNext1;
@@ -6630,7 +6623,7 @@ debug_break;
 		//////////
 		// Iterate through until we find it
 		//////
-			for (var = varRoot, lnDepth = 0; var; var = var->ll.nextVar, lnDepth++)
+			for (var = varRoot, lnDepth = 0; var && lnDepth < tnMaxVarDepth; var = var->ll.nextVar, lnDepth++)
 			{
 				// Is the name the same length?  And if so, does it match?
 				if (var->name.length == (s32)tnVarNameLength && _memicmp(tcVarName, var->name.data, tnVarNameLength) == 0)
@@ -6643,7 +6636,7 @@ debug_break;
 							if ((compNext1 = comp->ll.nextComp) && compNext1->iCode == _ICODE_DOT && (compNext2 = compNext1->ll.nextComp) && (compNext2->iCode == _ICODE_ALPHA || compNext2->iCode == _ICODE_ALPHANUMERIC))
 							{
 								// We've found something like "lo." where lo is an object, and there is a name reference after it
-								var = iObj_getPropertyAsVariable(thisCode, var->obj, compNext2->line->sourceCode->data + compNext2->start, compNext2->length, compNext2, tlCreateAsReference);
+								var = iObj_getPropertyAsVariable(var->obj, compNext2->line->sourceCode->data + compNext2->start, compNext2->length, compNext2, tlCreateAsReference);
 							}
 							// If we get here, then they did not have a "." after the the object reference, and are referencing the object directly
 							break;
@@ -6652,7 +6645,7 @@ debug_break;
 							// They could be referencing a variable from that location
 							if ((compNext1 = comp->ll.nextComp) && compNext1->iCode == _ICODE_DOT)
 							{
-								// We've found something like "fred." where fred is a thisCode, and there is a name reference after it
+								// We've found something like "fred." where fred is a and there is a name reference after it
 // TODO:  We need to search the thisCode object for the indicated name
 debug_break;
 							}
@@ -6678,9 +6671,9 @@ debug_break;
 		return(var);
 	}
 
-	SVariable* iiVariable_searchForName_fields(SThisCode* thisCode, cs8* tcVarName, u32 tnVarNameLength, SComp* comp, bool tlCreateAsReference)
+	SVariable* iiVariable_searchForName_fields(cs8* tcVarName, u32 tnVarNameLength, SComp* comp, bool tlCreateAsReference)
 	{
-		return(iDbf_getField_byName2_asVariable(thisCode, iDbf_get_workArea_current_wa(thisCode, cgcDbfKeyName), (u8*)tcVarName, tnVarNameLength, tlCreateAsReference));
+		return(iDbf_getField_byName2_asVariable(iDbf_get_workArea_current_wa(cgcDbfKeyName), (u8*)tcVarName, tnVarNameLength, tlCreateAsReference));
 	}
 
 
@@ -6691,7 +6684,7 @@ debug_break;
 // Returns the fundamental type
 //
 //////
-	SComp* iVariable_get_relatedComp(SThisCode* thisCode, SVariable* var)
+	SComp* iVariable_get_relatedComp(SVariable* var)
 	{
 		// If it's valid, convey
 		if (var)
@@ -6709,12 +6702,12 @@ debug_break;
 // Returns the fundamental weakly typed xbase variable form that would match the actual varType.
 //
 //////
-	s32 iVariable_get_fundamentalType(SThisCode* thisCode, SVariable* var)
+	s32 iVariable_get_fundamentalType(SVariable* var)
 	{
 		if (var)
 		{
 			// De-reference the variable
-			var = iiVariable_terminateIndirect(thisCode, var);
+			var = iiVariable_terminateIndirect(var);
 
 			// What type is it?
 			switch (var->varType)
@@ -6767,7 +6760,7 @@ debug_break;
 // Returns true or false if it's a fundamental data type
 //
 //////
-	bool iVariable_isFundamentalType(SThisCode* thisCode, SVariable* var)
+	bool iVariable_isFundamentalType(SVariable* var)
 	{
 		// Fundamental types are basic data types ... they refer to one thing, and they directly store it
 		return(between(var->varType, _VAR_TYPE_FUNDAMENTAL_START, _VAR_TYPE_FUNDAMENTAL_END));
@@ -6781,27 +6774,27 @@ debug_break;
 // Called to create all of the default variable values
 //
 //////
-	void iVariable_createDefaultValues(SThisCode* thisCode)
+	void iVariable_createDefaultValues()
 	{
-		varDefault_null			= iVariable_create(thisCode, _VAR_TYPE_NULL,		NULL, true);
-		varDefault_numeric		= iVariable_create(thisCode, _VAR_TYPE_NUMERIC,		NULL, true);
-		varDefault_s32			= iVariable_create(thisCode, _VAR_TYPE_S32,			NULL, true);
-		varDefault_u32			= iVariable_create(thisCode, _VAR_TYPE_U32,			NULL, true);
-		varDefault_f32			= iVariable_create(thisCode, _VAR_TYPE_F32,			NULL, true);
-		varDefault_s64			= iVariable_create(thisCode, _VAR_TYPE_S64,			NULL, true);
-		varDefault_u64			= iVariable_create(thisCode, _VAR_TYPE_U64,			NULL, true);
-		varDefault_f64			= iVariable_create(thisCode, _VAR_TYPE_F64,			NULL, true);
-		varDefault_date			= iVariable_create(thisCode, _VAR_TYPE_DATE,		NULL, true);
-		varDefault_datetime		= iVariable_create(thisCode, _VAR_TYPE_DATETIME,	NULL, true);
-		varDefault_datetimex	= iVariable_create(thisCode, _VAR_TYPE_DATETIMEX,	NULL, true);
-		varDefault_currency		= iVariable_create(thisCode, _VAR_TYPE_CURRENCY,	NULL, true);
-		varDefault_s16			= iVariable_create(thisCode, _VAR_TYPE_S16,			NULL, true);
-		varDefault_u16			= iVariable_create(thisCode, _VAR_TYPE_U16,			NULL, true);
-		varDefault_s8			= iVariable_create(thisCode, _VAR_TYPE_S8,			NULL, true);
-		varDefault_u8			= iVariable_create(thisCode, _VAR_TYPE_U8,			NULL, true);
-		varDefault_logical		= iVariable_create(thisCode, _VAR_TYPE_LOGICAL,		NULL, true);
-		varDefault_bitmap		= iVariable_create(thisCode, _VAR_TYPE_BITMAP,		NULL, true);
-		varDefault_thiscode		= iVariable_create(thisCode, _VAR_TYPE_THISCODE,	NULL, true);
+		varDefault_null			= iVariable_create(_VAR_TYPE_NULL,		NULL, true);
+		varDefault_numeric		= iVariable_create(_VAR_TYPE_NUMERIC,		NULL, true);
+		varDefault_s32			= iVariable_create(_VAR_TYPE_S32,			NULL, true);
+		varDefault_u32			= iVariable_create(_VAR_TYPE_U32,			NULL, true);
+		varDefault_f32			= iVariable_create(_VAR_TYPE_F32,			NULL, true);
+		varDefault_s64			= iVariable_create(_VAR_TYPE_S64,			NULL, true);
+		varDefault_u64			= iVariable_create(_VAR_TYPE_U64,			NULL, true);
+		varDefault_f64			= iVariable_create(_VAR_TYPE_F64,			NULL, true);
+		varDefault_date			= iVariable_create(_VAR_TYPE_DATE,		NULL, true);
+		varDefault_datetime		= iVariable_create(_VAR_TYPE_DATETIME,	NULL, true);
+		varDefault_datetimex	= iVariable_create(_VAR_TYPE_DATETIMEX,	NULL, true);
+		varDefault_currency		= iVariable_create(_VAR_TYPE_CURRENCY,	NULL, true);
+		varDefault_s16			= iVariable_create(_VAR_TYPE_S16,			NULL, true);
+		varDefault_u16			= iVariable_create(_VAR_TYPE_U16,			NULL, true);
+		varDefault_s8			= iVariable_create(_VAR_TYPE_S8,			NULL, true);
+		varDefault_u8			= iVariable_create(_VAR_TYPE_U8,			NULL, true);
+		varDefault_logical		= iVariable_create(_VAR_TYPE_LOGICAL,		NULL, true);
+		varDefault_bitmap		= iVariable_create(_VAR_TYPE_BITMAP,		NULL, true);
+		varDefault_thiscode		= iVariable_create(_VAR_TYPE_THISCODE,	NULL, true);
 
 
 	}
@@ -6814,7 +6807,7 @@ debug_break;
 // Called to initialize all of the gsProps_master[] variables
 //
 //////
-	void iVariable_createPropsMaster(SThisCode* thisCode)
+	void iVariable_createPropsMaster()
 	{
 		s32 lnI;
 
@@ -6822,7 +6815,7 @@ debug_break;
 		for (lnI = 0; lnI < gnProps_masterSize; lnI++)
 		{
 			// Create the variable
-			gsProps_master[lnI].varInit = iVariable_create(thisCode, gsProps_master[lnI].varType, NULL, true);
+			gsProps_master[lnI].varInit = iVariable_create(gsProps_master[lnI].varType, NULL, true);
 
 			// If a valid variable was created, initialize it to the static baseclass values
 			if (gsProps_master[lnI].varInit)
@@ -6869,12 +6862,12 @@ debug_break;
 						break;
 
 					case _VAR_TYPE_CHARACTER:
-						iVariable_set_character(thisCode, gsProps_master[lnI].varInit, gsProps_master[lnI]._u8p, -1);
+						iVariable_set_character(gsProps_master[lnI].varInit, gsProps_master[lnI]._u8p, -1);
 						break;
 
 					case _VAR_TYPE_BITMAP:
-						if (gsProps_master[lnI]._bmp)		iVariable_set_bitmap(thisCode, gsProps_master[lnI].varInit, gsProps_master[lnI]._bmp);
-						else								iVariable_set_bitmap(thisCode, gsProps_master[lnI].varInit, bmpNoImage);
+						if (gsProps_master[lnI]._bmp)		iVariable_set_bitmap(gsProps_master[lnI].varInit, gsProps_master[lnI]._bmp);
+						else								iVariable_set_bitmap(gsProps_master[lnI].varInit, bmpNoImage);
 						break;
 
 					case _VAR_TYPE_LOGICAL:
@@ -6908,7 +6901,7 @@ if (!gsProps_master[lnI].varInit)
 // associated default value for the variable type.
 //
 //////
-	bool iVariable_isVarTypeValid(SThisCode* thisCode, s32 tnVarType, SVariable** varDefaultValue)
+	bool iVariable_isVarTypeValid(s32 tnVarType, SVariable** varDefaultValue)
 	{
 		SVariable* holder;
 
@@ -7014,15 +7007,15 @@ if (!gsProps_master[lnI].varInit)
 // Note:  The logical portion relates to the varTypes supported in iiVariable_getAs_bool()
 //
 //////
-	bool iVariable_areTypesCompatible(SThisCode* thisCode, SVariable* var1, SVariable* var2)
+	bool iVariable_areTypesCompatible(SVariable* var1, SVariable* var2)
 	{
 		if (var1 && var2)
 		{
 			//////////
 			// De-reference the variable
 			//////
-				var1 = iiVariable_terminateIndirect(thisCode, var1);
-				var2 = iiVariable_terminateIndirect(thisCode, var2);
+				var1 = iiVariable_terminateIndirect(var1);
+				var2 = iiVariable_terminateIndirect(var2);
 
 
 			//////////
@@ -7035,7 +7028,7 @@ if (!gsProps_master[lnI].varInit)
 			//////////
 			// Are they both of the same fundamental type?
 			//////
-				if (iVariable_get_fundamentalType(thisCode, var1) == iVariable_get_fundamentalType(thisCode, var2))
+				if (iVariable_get_fundamentalType(var1) == iVariable_get_fundamentalType(var2))
 					return(true);
 
 
@@ -7106,7 +7099,7 @@ if (!gsProps_master[lnI].varInit)
 // Called to replace the varDst with the varSrc.
 //
 //////
-	bool iVariable_copy(SThisCode* thisCode, SVariable* varDst, SVariable* varSrc)
+	bool iVariable_copy(SVariable* varDst, SVariable* varSrc)
 	{
 		bool llResult;
 
@@ -7118,7 +7111,7 @@ if (!gsProps_master[lnI].varInit)
 			//////////
 			// Make sure we're dealing with the actual variable
 			//////
-				varSrc = iiVariable_terminateIndirect(thisCode, varSrc);
+				varSrc = iiVariable_terminateIndirect(varSrc);
 
 
 			//////////
@@ -7131,7 +7124,7 @@ if (!gsProps_master[lnI].varInit)
 			//////////
 			// Delete the existing variable contents
 			//////
-				iVariable_delete(thisCode, varDst, false);
+				iVariable_delete(varDst, false);
 
 
 			//////////
@@ -7159,7 +7152,7 @@ if (!gsProps_master[lnI].varInit)
 						{
 							case _VAR_TYPE_OBJECT:
 								// Copy the object
-								varDst->obj = iObj_copy(thisCode, varSrc->obj, NULL, NULL, NULL, true, false, true);
+								varDst->obj = iObj_copy(varSrc->obj, NULL, NULL, NULL, true, false, true);
 								break;
 
 							case _VAR_TYPE_BITMAP:
@@ -7195,7 +7188,7 @@ if (!gsProps_master[lnI].varInit)
 // Called to copy the variable to a new variable
 //
 //////
-	SVariable* iVariable_copy(SThisCode* thisCode, SVariable* varSrc, bool tlMakeReference)
+	SVariable* iVariable_copy(SVariable* varSrc, bool tlMakeReference)
 	{
 		SVariable* varDst;
 
@@ -7204,18 +7197,18 @@ if (!gsProps_master[lnI].varInit)
 		if (varSrc)
 		{
 			// De-reference the variable
-			varSrc = iiVariable_terminateIndirect(thisCode, varSrc);
+			varSrc = iiVariable_terminateIndirect(varSrc);
 
 			// Should we create a real variable? Or a reference?
 			if (tlMakeReference)
 			{
 				// Just create a reference to the variable
-				varDst = iVariable_create(thisCode, varSrc->varType, varSrc, true);
+				varDst = iVariable_create(varSrc->varType, varSrc, true);
 
 			} else {
 				// Create a new real variable, a full copy of the original
-				varDst = iVariable_create(thisCode, varSrc->varType, NULL, true);
-				iVariable_copy(thisCode, varDst, varSrc);
+				varDst = iVariable_create(varSrc->varType, NULL, true);
+				iVariable_copy(varDst, varSrc);
 			}
 
 			// Success or failure ... it's in the allocation
@@ -7235,11 +7228,11 @@ if (!gsProps_master[lnI].varInit)
 // Called to set the variable to the value of the other variable
 //
 //////
-	bool iVariable_set(SThisCode* thisCode, SVariable* varDst, SVariable* varSrc)
+	bool iVariable_set(SVariable* varDst, SVariable* varSrc)
 	{
 		// De-reference the variable
-		varDst = iiVariable_terminateIndirect(thisCode, varDst);
-		varSrc = iiVariable_terminateIndirect(thisCode, varSrc);
+		varDst = iiVariable_terminateIndirect(varDst);
+		varSrc = iiVariable_terminateIndirect(varSrc);
 
 		// Are we still valid?
 // TODO:  Need to check the variable type before performing the varDst->value test
@@ -7273,11 +7266,11 @@ if (!gsProps_master[lnI].varInit)
 				if (!varDst->isVarTypeFixed)
 				{
 					// Copy
-					iVariable_copy(thisCode, varDst, varSrc);
+					iVariable_copy(varDst, varSrc);
 
 				} else {
 					// Can only populate into its existing type
-					iEngine_error(thisCode, _ERROR_VARIABLE_IS_FIXED, varDst);
+					iEngine_error(_ERROR_VARIABLE_IS_FIXED, varDst);
 					return(false);
 				}
 			}
@@ -7287,7 +7280,7 @@ if (!gsProps_master[lnI].varInit)
 
 		} else {
 			// Failure
-			iEngine_error(thisCode, _ERROR_VARIABLE_NOT_FOUND, ((varDst) ? varDst : varSrc));
+			iEngine_error(_ERROR_VARIABLE_NOT_FOUND, ((varDst) ? varDst : varSrc));
 			return(false);
 		}
 	}
@@ -7301,7 +7294,7 @@ if (!gsProps_master[lnI].varInit)
 // through its indirect chain
 //
 //////
-	void iVariable_setVarType(SThisCode* thisCode, SVariable* var, u32 tnVarTypeNew)
+	void iVariable_setVarType(SVariable* var, u32 tnVarTypeNew)
 	{
 		// Make sure our environment is sane
 		if (var && !var->isVarTypeFixed)
@@ -7310,7 +7303,7 @@ if (!gsProps_master[lnI].varInit)
 			if (var->indirect)
 			{
 				// Do the indirect layer
-				iVariable_setVarType(thisCode, var->indirect, tnVarTypeNew);
+				iVariable_setVarType(var->indirect, tnVarTypeNew);
 
 				// Set this one
 				if (var->varType != tnVarTypeNew)
@@ -7321,10 +7314,10 @@ if (!gsProps_master[lnI].varInit)
 				if (var->varType != tnVarTypeNew)
 				{
 					// Delete the existing variable
-					iVariable_delete(thisCode, var, false);
+					iVariable_delete(var, false);
 
 					// Populate to the new one
-					iVariable_reset(thisCode, var, false);
+					iVariable_reset(var, false);
 				}
 			}
 		}
@@ -7338,7 +7331,7 @@ if (!gsProps_master[lnI].varInit)
 // Called to set the input variable of varying types to the output variable of existing type
 //
 //////
-	bool iVariable_setNumeric_toNumericType(SThisCode* thisCode, SVariable* varDst, f32* val_f32, f64* val_f64, s32* val_s32, u32* val_u32, s64* val_s64, u64* val_u64)
+	bool iVariable_setNumeric_toNumericType(SVariable* varDst, f32* val_f32, f64* val_f64, s32* val_s32, u32* val_u32, s64* val_s64, u64* val_u64)
 	{
 		s32	lnI;
 		f64	lfValue;
@@ -7357,11 +7350,11 @@ if (!gsProps_master[lnI].varInit)
 					case _VAR_TYPE_F32:
 						// For any type that can be converted, convert it
 						     if (val_f32)		*varDst->value.data_f32 = (f32)*val_f32;
-						else if (val_f64)		*varDst->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_f64(thisCode, NULL, *val_f64, _VAR_TYPE_F32, NULL, false, NULL);
-						else if (val_s32)		*varDst->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_s32(thisCode, NULL, *val_s32, _VAR_TYPE_F32, NULL, false, NULL);
-						else if (val_u32)		*varDst->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_u32(thisCode, NULL, *val_u32, _VAR_TYPE_F32, NULL, false, NULL);
-						else if (val_s64)		*varDst->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_s64(thisCode, NULL, *val_s64, _VAR_TYPE_F32, NULL, false, NULL);
-						else if (val_u64)		*varDst->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_u64(thisCode, NULL, *val_u64, _VAR_TYPE_F32, NULL, false, NULL);
+						else if (val_f64)		*varDst->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_F32, NULL, false, NULL);
+						else if (val_s32)		*varDst->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_s32(NULL, *val_s32, _VAR_TYPE_F32, NULL, false, NULL);
+						else if (val_u32)		*varDst->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_F32, NULL, false, NULL);
+						else if (val_s64)		*varDst->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_F32, NULL, false, NULL);
+						else if (val_u64)		*varDst->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_F32, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7386,12 +7379,12 @@ if (!gsProps_master[lnI].varInit)
 
 					case _VAR_TYPE_S32:
 						// For any type that can be converted, convert it
-						     if (val_f32)		*varDst->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_f32(thisCode, NULL, *val_f32, _VAR_TYPE_S32, NULL, false, NULL);
-						else if (val_f64)		*varDst->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_f64(thisCode, NULL, *val_f64, _VAR_TYPE_S32, NULL, false, NULL);
+						     if (val_f32)		*varDst->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_S32, NULL, false, NULL);
+						else if (val_f64)		*varDst->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_S32, NULL, false, NULL);
 						else if (val_s32)		*varDst->value.data_s32 = (s32)*val_s32;
-						else if (val_u32)		*varDst->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_u32(thisCode, NULL, *val_u32, _VAR_TYPE_S32, NULL, false, NULL);
-						else if (val_s64)		*varDst->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_s64(thisCode, NULL, *val_s64, _VAR_TYPE_S32, NULL, false, NULL);
-						else if (val_u64)		*varDst->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_u64(thisCode, NULL, *val_u64, _VAR_TYPE_S32, NULL, false, NULL);
+						else if (val_u32)		*varDst->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_S32, NULL, false, NULL);
+						else if (val_s64)		*varDst->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_S32, NULL, false, NULL);
+						else if (val_u64)		*varDst->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_S32, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7401,12 +7394,12 @@ if (!gsProps_master[lnI].varInit)
 
 					case _VAR_TYPE_U32:
 						// For any type that can be converted, convert it
-						     if (val_f32)		*varDst->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_f32(thisCode, NULL, *val_f32, _VAR_TYPE_U32, NULL, false, NULL);
-						else if (val_f64)		*varDst->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_f64(thisCode, NULL, *val_f64, _VAR_TYPE_U32, NULL, false, NULL);
+						     if (val_f32)		*varDst->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_U32, NULL, false, NULL);
+						else if (val_f64)		*varDst->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_U32, NULL, false, NULL);
 						else if (val_s32)		*varDst->value.data_u32 = (u32)*val_s32;
 						else if (val_u32)		*varDst->value.data_u32 = (u32)*val_u32;
-						else if (val_s64)		*varDst->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_s64(thisCode, NULL, *val_s64, _VAR_TYPE_U32, NULL, false, NULL);
-						else if (val_u64)		*varDst->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_u64(thisCode, NULL, *val_u64, _VAR_TYPE_U32, NULL, false, NULL);
+						else if (val_s64)		*varDst->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_U32, NULL, false, NULL);
+						else if (val_u64)		*varDst->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_U32, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7417,12 +7410,12 @@ if (!gsProps_master[lnI].varInit)
 					case _VAR_TYPE_CURRENCY:
 					case _VAR_TYPE_S64:
 						// For any type that can be converted, convert it
-						     if (val_f32)		*varDst->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_f32(thisCode, NULL, *val_f32, _VAR_TYPE_S64, NULL, false, NULL);
-						else if (val_f64)		*varDst->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_f64(thisCode, NULL, *val_f64, _VAR_TYPE_S64, NULL, false, NULL);
+						     if (val_f32)		*varDst->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_S64, NULL, false, NULL);
+						else if (val_f64)		*varDst->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_S64, NULL, false, NULL);
 						else if (val_s32)		*varDst->value.data_s64 = (s64)*val_s32;
 						else if (val_u32)		*varDst->value.data_s64 = (s64)*val_u32;
 						else if (val_s64)		*varDst->value.data_s64 = (s64)*val_s64;
-						else if (val_u64)		*varDst->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_u64(thisCode, NULL, *val_u64, _VAR_TYPE_S64, NULL, false, NULL);
+						else if (val_u64)		*varDst->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_S64, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7432,8 +7425,8 @@ if (!gsProps_master[lnI].varInit)
 
 					case _VAR_TYPE_U64:
 						// For any type that can be converted, convert it
-						     if (val_f32)		*varDst->value.data_u64 = (u64)iErrorCandidate_signalOutOfRange_f32(thisCode, NULL, *val_f32, _VAR_TYPE_U64, NULL, false, NULL);
-						else if (val_f64)		*varDst->value.data_u64 = (u64)iErrorCandidate_signalOutOfRange_f64(thisCode, NULL, *val_f64, _VAR_TYPE_U64, NULL, false, NULL);
+						     if (val_f32)		*varDst->value.data_u64 = (u64)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_U64, NULL, false, NULL);
+						else if (val_f64)		*varDst->value.data_u64 = (u64)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_U64, NULL, false, NULL);
 						else if (val_s32)		*varDst->value.data_u64 = (u64)*val_s32;
 						else if (val_u32)		*varDst->value.data_u64 = (u64)*val_u32;
 						else if (val_s64)		*varDst->value.data_u64 = (u64)*val_s64;
@@ -7447,12 +7440,12 @@ if (!gsProps_master[lnI].varInit)
 
 					case _VAR_TYPE_S8:
 						// For any type that can be converted, convert it
-						     if (val_f32)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_f32(thisCode, NULL, *val_f32, _VAR_TYPE_S8, NULL, false, NULL);
-						else if (val_f64)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_f64(thisCode, NULL, *val_f64, _VAR_TYPE_S8, NULL, false, NULL);
-						else if (val_s32)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_s32(thisCode, NULL, *val_s32, _VAR_TYPE_S8, NULL, false, NULL);
-						else if (val_u32)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_u32(thisCode, NULL, *val_u32, _VAR_TYPE_S8, NULL, false, NULL);
-						else if (val_s64)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_s64(thisCode, NULL, *val_s64, _VAR_TYPE_S8, NULL, false, NULL);
-						else if (val_u64)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_u64(thisCode, NULL, *val_u64, _VAR_TYPE_S8, NULL, false, NULL);
+						     if (val_f32)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_S8, NULL, false, NULL);
+						else if (val_f64)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_S8, NULL, false, NULL);
+						else if (val_s32)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_s32(NULL, *val_s32, _VAR_TYPE_S8, NULL, false, NULL);
+						else if (val_u32)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_S8, NULL, false, NULL);
+						else if (val_s64)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_S8, NULL, false, NULL);
+						else if (val_u64)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_S8, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7462,12 +7455,12 @@ if (!gsProps_master[lnI].varInit)
 
 					case _VAR_TYPE_U8:
 						// For any type that can be converted, convert it
-						     if (val_f32)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_f32(thisCode, NULL, *val_f32, _VAR_TYPE_U8, NULL, false, NULL);
-						else if (val_f64)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_f64(thisCode, NULL, *val_f64, _VAR_TYPE_U8, NULL, false, NULL);
-						else if (val_s32)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_s32(thisCode, NULL, *val_s32, _VAR_TYPE_U8, NULL, false, NULL);
-						else if (val_u32)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_u32(thisCode, NULL, *val_u32, _VAR_TYPE_U8, NULL, false, NULL);
-						else if (val_s64)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_s64(thisCode, NULL, *val_s64, _VAR_TYPE_U8, NULL, false, NULL);
-						else if (val_u64)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_u64(thisCode, NULL, *val_u64, _VAR_TYPE_U8, NULL, false, NULL);
+						     if (val_f32)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_U8, NULL, false, NULL);
+						else if (val_f64)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_U8, NULL, false, NULL);
+						else if (val_s32)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_s32(NULL, *val_s32, _VAR_TYPE_U8, NULL, false, NULL);
+						else if (val_u32)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_U8, NULL, false, NULL);
+						else if (val_s64)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_U8, NULL, false, NULL);
+						else if (val_u64)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_U8, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7477,12 +7470,12 @@ if (!gsProps_master[lnI].varInit)
 
 					case _VAR_TYPE_S16:
 						// For any type that can be converted, convert it
-						     if (val_f32)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_f32(thisCode, NULL, *val_f32, _VAR_TYPE_S16, NULL, false, NULL);
-						else if (val_f64)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_f64(thisCode, NULL, *val_f64, _VAR_TYPE_S16, NULL, false, NULL);
-						else if (val_s32)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_s32(thisCode, NULL, *val_s32, _VAR_TYPE_S16, NULL, false, NULL);
-						else if (val_u32)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_u32(thisCode, NULL, *val_u32, _VAR_TYPE_S16, NULL, false, NULL);
-						else if (val_s64)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_s64(thisCode, NULL, *val_s64, _VAR_TYPE_S16, NULL, false, NULL);
-						else if (val_u64)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_u64(thisCode, NULL, *val_u64, _VAR_TYPE_S16, NULL, false, NULL);
+						     if (val_f32)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_S16, NULL, false, NULL);
+						else if (val_f64)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_S16, NULL, false, NULL);
+						else if (val_s32)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_s32(NULL, *val_s32, _VAR_TYPE_S16, NULL, false, NULL);
+						else if (val_u32)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_S16, NULL, false, NULL);
+						else if (val_s64)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_S16, NULL, false, NULL);
+						else if (val_u64)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_S16, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7492,12 +7485,12 @@ if (!gsProps_master[lnI].varInit)
 
 					case _VAR_TYPE_U16:
 						// For any type that can be converted, convert it
-						     if (val_f32)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_f32(thisCode, NULL, *val_f32, _VAR_TYPE_U16, NULL, false, NULL);
-						else if (val_f64)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_f64(thisCode, NULL, *val_f64, _VAR_TYPE_U16, NULL, false, NULL);
-						else if (val_s32)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_s32(thisCode, NULL, *val_s32, _VAR_TYPE_U16, NULL, false, NULL);
-						else if (val_u32)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_u32(thisCode, NULL, *val_u32, _VAR_TYPE_U16, NULL, false, NULL);
-						else if (val_s64)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_s64(thisCode, NULL, *val_s64, _VAR_TYPE_U16, NULL, false, NULL);
-						else if (val_u64)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_u64(thisCode, NULL, *val_u64, _VAR_TYPE_U16, NULL, false, NULL);
+						     if (val_f32)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_U16, NULL, false, NULL);
+						else if (val_f64)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_U16, NULL, false, NULL);
+						else if (val_s32)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_s32(NULL, *val_s32, _VAR_TYPE_U16, NULL, false, NULL);
+						else if (val_u32)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_U16, NULL, false, NULL);
+						else if (val_s64)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_U16, NULL, false, NULL);
+						else if (val_u64)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_U16, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7538,7 +7531,7 @@ do_as_numeric:
 
 					case _VAR_TYPE_BI:
 					case _VAR_TYPE_BFP:
-						iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+						iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 						break;
 
 					default:
@@ -7569,7 +7562,7 @@ do_as_numeric:
 							}
 
 						} else {
-							iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, NULL, false);
+							iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, NULL, false);
 							return(false);
 						}
 						break;
@@ -7588,7 +7581,7 @@ do_as_numeric:
 // Called to store the varSrc into the format of the varDst, converting its value as needed into the varDst
 //
 //////
-	bool iVariable_setNumeric_toDestinationType(SThisCode* thisCode, SVariable* varDst, SVariable* varSrc)
+	bool iVariable_setNumeric_toDestinationType(SVariable* varDst, SVariable* varSrc)
 	{
 		s32	lnI;
 		f64	lfValue;
@@ -7610,7 +7603,7 @@ do_as_numeric:
 
 
 		// De-reference the variable
-		varSrc = iiVariable_terminateIndirect(thisCode, varSrc);
+		varSrc = iiVariable_terminateIndirect(varSrc);
 
 		// Make sure our environment is sane
 		if (varDst && varDst->value.data && varDst->value.length > 0 && varSrc && varSrc->value.data && varSrc->value.length > 0)
@@ -7626,16 +7619,16 @@ do_as_numeric:
 					case _VAR_TYPE_F32:
 						// For any type that can be converted, convert it
 						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data_f32 = (f32)*val_f32;
-						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_f64(thisCode, NULL, *val_f64, _VAR_TYPE_F32, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_s32(thisCode, NULL, *val_s32, _VAR_TYPE_F32, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_u32(thisCode, NULL, *val_u32, _VAR_TYPE_F32, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_s64(thisCode, NULL, *val_s64, _VAR_TYPE_F32, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_u64(thisCode, NULL, *val_u64, _VAR_TYPE_F32, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_F32, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_s32(NULL, *val_s32, _VAR_TYPE_F32, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_F32, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_F32, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_F32, NULL, false, NULL);
 						else if (varSrc->varType == _VAR_TYPE_S8)		*varDst->value.data_f32 = (f32)*val_s8;
 						else if (varSrc->varType == _VAR_TYPE_U8)		*varDst->value.data_f32 = (f32)*val_u8;
 						else if (varSrc->varType == _VAR_TYPE_S16)		*varDst->value.data_f32 = (f32)*val_s16;
 						else if (varSrc->varType == _VAR_TYPE_U16)		*varDst->value.data_f32 = (f32)*val_u16;
-						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_numeric(thisCode, NULL, &varSrc->value, _VAR_TYPE_F32, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_numeric(NULL, &varSrc->value, _VAR_TYPE_F32, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7655,7 +7648,7 @@ do_as_numeric:
 						else if (varSrc->varType == _VAR_TYPE_U8)		*varDst->value.data_f64 = (f64)*val_u8;
 						else if (varSrc->varType == _VAR_TYPE_S16)		*varDst->value.data_f64 = (f64)*val_s16;
 						else if (varSrc->varType == _VAR_TYPE_U16)		*varDst->value.data_f64 = (f64)*val_u16;
-						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data_f64 = (f64)iErrorCandidate_signalOutOfRange_numeric(thisCode, NULL, &varSrc->value, _VAR_TYPE_F64, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data_f64 = (f64)iErrorCandidate_signalOutOfRange_numeric(NULL, &varSrc->value, _VAR_TYPE_F64, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7665,17 +7658,17 @@ do_as_numeric:
 
 					case _VAR_TYPE_S32:
 						// For any type that can be converted, convert it
-						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_f32(thisCode, NULL, *val_f32, _VAR_TYPE_S32, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_f64(thisCode, NULL, *val_f64, _VAR_TYPE_S32, NULL, false, NULL);
+						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_S32, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_S32, NULL, false, NULL);
 						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data_s32 = (s32)*val_s32;
-						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_u32(thisCode, NULL, *val_u32, _VAR_TYPE_S32, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_s64(thisCode, NULL, *val_s64, _VAR_TYPE_S32, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_u64(thisCode, NULL, *val_u64, _VAR_TYPE_S32, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_S32, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_S32, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_S32, NULL, false, NULL);
 						else if (varSrc->varType == _VAR_TYPE_S8)		*varDst->value.data_s32 = (s32)*val_s8;
 						else if (varSrc->varType == _VAR_TYPE_U8)		*varDst->value.data_s32 = (s32)*val_u8;
 						else if (varSrc->varType == _VAR_TYPE_S16)		*varDst->value.data_s32 = (s32)*val_s16;
 						else if (varSrc->varType == _VAR_TYPE_U16)		*varDst->value.data_s32 = (s32)*val_u16;
-						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_numeric(thisCode, NULL, &varSrc->value, _VAR_TYPE_S32, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_numeric(NULL, &varSrc->value, _VAR_TYPE_S32, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7685,17 +7678,17 @@ do_as_numeric:
 
 					case _VAR_TYPE_U32:
 						// For any type that can be converted, convert it
-						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_f32(thisCode, NULL, *val_f32, _VAR_TYPE_U32, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_f64(thisCode, NULL, *val_f64, _VAR_TYPE_U32, NULL, false, NULL);
+						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_U32, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_U32, NULL, false, NULL);
 						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data_u32 = (u32)*val_s32;
 						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data_u32 = (u32)*val_u32;
-						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_s64(thisCode, NULL, *val_s64, _VAR_TYPE_U32, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_u64(thisCode, NULL, *val_u64, _VAR_TYPE_U32, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_U32, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_U32, NULL, false, NULL);
 						else if (varSrc->varType == _VAR_TYPE_S8)		*varDst->value.data_u32 = (u32)*val_s8;
 						else if (varSrc->varType == _VAR_TYPE_U8)		*varDst->value.data_u32 = (u32)*val_u8;
 						else if (varSrc->varType == _VAR_TYPE_S16)		*varDst->value.data_u32 = (u32)*val_s16;
 						else if (varSrc->varType == _VAR_TYPE_U16)		*varDst->value.data_u32 = (u32)*val_u16;
-						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_numeric(thisCode, NULL, &varSrc->value, _VAR_TYPE_U32, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_numeric(NULL, &varSrc->value, _VAR_TYPE_U32, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7706,17 +7699,17 @@ do_as_numeric:
 					case _VAR_TYPE_CURRENCY:
 					case _VAR_TYPE_S64:
 						// For any type that can be converted, convert it
-						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_f32(thisCode, NULL, *val_f32, _VAR_TYPE_S64, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_f64(thisCode, NULL, *val_f64, _VAR_TYPE_S64, NULL, false, NULL);
+						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_S64, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_S64, NULL, false, NULL);
 						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data_s64 = (s64)*val_s32;
 						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data_s64 = (s64)*val_u32;
 						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data_s64 = (s64)*val_s64;
-						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_u64(thisCode, NULL, *val_u64, _VAR_TYPE_S64, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_S64, NULL, false, NULL);
 						else if (varSrc->varType == _VAR_TYPE_S8)		*varDst->value.data_s64 = (s64)*val_s8;
 						else if (varSrc->varType == _VAR_TYPE_U8)		*varDst->value.data_s64 = (s64)*val_u8;
 						else if (varSrc->varType == _VAR_TYPE_S16)		*varDst->value.data_s64 = (s64)*val_s16;
 						else if (varSrc->varType == _VAR_TYPE_U16)		*varDst->value.data_s64 = (s64)*val_u16;
-						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_numeric(thisCode, NULL, &varSrc->value, _VAR_TYPE_S64, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_numeric(NULL, &varSrc->value, _VAR_TYPE_S64, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7726,8 +7719,8 @@ do_as_numeric:
 
 					case _VAR_TYPE_U64:
 						// For any type that can be converted, convert it
-						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data_u64 = (u64)iErrorCandidate_signalOutOfRange_f32(thisCode, NULL, *val_f32, _VAR_TYPE_U64, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data_u64 = (u64)iErrorCandidate_signalOutOfRange_f64(thisCode, NULL, *val_f64, _VAR_TYPE_U64, NULL, false, NULL);
+						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data_u64 = (u64)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_U64, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data_u64 = (u64)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_U64, NULL, false, NULL);
 						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data_u64 = (u64)*val_s32;
 						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data_u64 = (u64)*val_u32;
 						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data_u64 = (u64)*val_s64;
@@ -7736,7 +7729,7 @@ do_as_numeric:
 						else if (varSrc->varType == _VAR_TYPE_U8)		*varDst->value.data_u64 = (u64)*val_u8;
 						else if (varSrc->varType == _VAR_TYPE_S16)		*varDst->value.data_u64 = (u64)*val_s16;
 						else if (varSrc->varType == _VAR_TYPE_U16)		*varDst->value.data_u64 = (u64)*val_u16;
-						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data_u64 = (u64)iErrorCandidate_signalOutOfRange_numeric(thisCode, NULL, &varSrc->value, _VAR_TYPE_U64, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data_u64 = (u64)iErrorCandidate_signalOutOfRange_numeric(NULL, &varSrc->value, _VAR_TYPE_U64, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7746,17 +7739,17 @@ do_as_numeric:
 
 					case _VAR_TYPE_S8:
 						// For any type that can be converted, convert it
-						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_f32(thisCode, NULL, *val_f32, _VAR_TYPE_S8, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_f64(thisCode, NULL, *val_f64, _VAR_TYPE_S8, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_s32(thisCode, NULL, *val_s32, _VAR_TYPE_S8, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_u32(thisCode, NULL, *val_u32, _VAR_TYPE_S8, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_s64(thisCode, NULL, *val_s64, _VAR_TYPE_S8, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_u64(thisCode, NULL, *val_u64, _VAR_TYPE_S8, NULL, false, NULL);
+						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_S8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_S8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_s32(NULL, *val_s32, _VAR_TYPE_S8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_S8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_S8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_S8, NULL, false, NULL);
 						else if (varSrc->varType == _VAR_TYPE_S8)		*varDst->value.data_s8 = (s8)*val_s8;
-						else if (varSrc->varType == _VAR_TYPE_U8)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_u8 (thisCode, NULL, *val_u8,  _VAR_TYPE_S8, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S16)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_s16(thisCode, NULL, *val_s16, _VAR_TYPE_S8, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_U16)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_u16(thisCode, NULL, *val_u16, _VAR_TYPE_S8, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_numeric(thisCode, NULL, &varSrc->value, _VAR_TYPE_S8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_U8)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_u8 (NULL, *val_u8,  _VAR_TYPE_S8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S16)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_s16(NULL, *val_s16, _VAR_TYPE_S8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_U16)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_u16(NULL, *val_u16, _VAR_TYPE_S8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_numeric(NULL, &varSrc->value, _VAR_TYPE_S8, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7766,17 +7759,17 @@ do_as_numeric:
 
 					case _VAR_TYPE_U8:
 						// For any type that can be converted, convert it
-						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_f32(thisCode, NULL, *val_f32, _VAR_TYPE_U8, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_f64(thisCode, NULL, *val_f64, _VAR_TYPE_U8, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_s32(thisCode, NULL, *val_s32, _VAR_TYPE_U8, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_u32(thisCode, NULL, *val_u32, _VAR_TYPE_U8, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_s64(thisCode, NULL, *val_s64, _VAR_TYPE_U8, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_u64(thisCode, NULL, *val_u64, _VAR_TYPE_U8, NULL, false, NULL);
+						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_U8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_U8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_s32(NULL, *val_s32, _VAR_TYPE_U8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_U8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_U8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_U8, NULL, false, NULL);
 						else if (varSrc->varType == _VAR_TYPE_S8)		*varDst->value.data_u8 = (u8)*val_s8;
 						else if (varSrc->varType == _VAR_TYPE_U8)		*varDst->value.data_u8 = (u8)*val_u8;
-						else if (varSrc->varType == _VAR_TYPE_S16)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_u64(thisCode, NULL, *val_s16, _VAR_TYPE_U8, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_U16)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_u64(thisCode, NULL, *val_u16, _VAR_TYPE_U8, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_numeric(thisCode, NULL, &varSrc->value, _VAR_TYPE_U8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S16)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_u64(NULL, *val_s16, _VAR_TYPE_U8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_U16)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u16, _VAR_TYPE_U8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_numeric(NULL, &varSrc->value, _VAR_TYPE_U8, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7786,17 +7779,17 @@ do_as_numeric:
 
 					case _VAR_TYPE_S16:
 						// For any type that can be converted, convert it
-						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_f32(thisCode, NULL, *val_f32, _VAR_TYPE_S16, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_f64(thisCode, NULL, *val_f64, _VAR_TYPE_S16, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_s32(thisCode, NULL, *val_s32, _VAR_TYPE_S16, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_u32(thisCode, NULL, *val_u32, _VAR_TYPE_S16, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_s64(thisCode, NULL, *val_s64, _VAR_TYPE_S16, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_u64(thisCode, NULL, *val_u64, _VAR_TYPE_S16, NULL, false, NULL);
+						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_S16, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_S16, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_s32(NULL, *val_s32, _VAR_TYPE_S16, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_S16, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_S16, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_S16, NULL, false, NULL);
 						else if (varSrc->varType == _VAR_TYPE_S8)		*varDst->value.data_s16 = (s16)*val_s8;
 						else if (varSrc->varType == _VAR_TYPE_U8)		*varDst->value.data_s16 = (s16)*val_u8;
 						else if (varSrc->varType == _VAR_TYPE_S16)		*varDst->value.data_s16 = (s16)*val_s16;
-						else if (varSrc->varType == _VAR_TYPE_U16)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_u64(thisCode, NULL, *val_u16, _VAR_TYPE_S16, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_numeric(thisCode, NULL, &varSrc->value, _VAR_TYPE_S16, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_U16)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u16, _VAR_TYPE_S16, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_numeric(NULL, &varSrc->value, _VAR_TYPE_S16, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7806,17 +7799,17 @@ do_as_numeric:
 
 					case _VAR_TYPE_U16:
 						// For any type that can be converted, convert it
-						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_f32(thisCode, NULL, *val_f32, _VAR_TYPE_U16, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_f64(thisCode, NULL, *val_f64, _VAR_TYPE_U16, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_s32(thisCode, NULL, *val_s32, _VAR_TYPE_U16, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_u32(thisCode, NULL, *val_u32, _VAR_TYPE_U16, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_s64(thisCode, NULL, *val_s64, _VAR_TYPE_U16, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_u64(thisCode, NULL, *val_u64, _VAR_TYPE_U16, NULL, false, NULL);
+						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_U16, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_U16, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_s32(NULL, *val_s32, _VAR_TYPE_U16, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_U16, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_U16, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_U16, NULL, false, NULL);
 						else if (varSrc->varType == _VAR_TYPE_S8)		*varDst->value.data_u16 = (u16)*val_s8;
 						else if (varSrc->varType == _VAR_TYPE_U8)		*varDst->value.data_u16 = (u16)*val_u8;
 						else if (varSrc->varType == _VAR_TYPE_S16)		*varDst->value.data_u16 = (u16)*val_s16;
 						else if (varSrc->varType == _VAR_TYPE_U16)		*varDst->value.data_u16 = (u16)*val_u16;
-						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_numeric(thisCode, NULL, &varSrc->value, _VAR_TYPE_U16, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_numeric(NULL, &varSrc->value, _VAR_TYPE_U16, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7840,7 +7833,7 @@ do_as_numeric:
 						else if (varSrc->varType == _VAR_TYPE_NUMERIC)
 						{
 							// It's already in the correct form
-							iVariable_set(thisCode, varDst, varSrc);
+							iVariable_set(varDst, varSrc);
 							return(true);
 
 						} else {
@@ -7867,7 +7860,7 @@ do_as_numeric:
 
 					case _VAR_TYPE_BI:
 					case _VAR_TYPE_BFP:
-						iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+						iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 						break;
 
 					default:
@@ -7889,7 +7882,7 @@ do_as_numeric:
 									else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data_u8 = (((u8)*val_u32 == 0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
 									else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data_u8 = (((u8)*val_s64 == 0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
 									else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data_u8 = (((u8)*val_u64 == 0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
-									else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data_u8 = (((u8)iErrorCandidate_signalOutOfRange_numeric(thisCode, NULL, &varSrc->value, _VAR_TYPE_S32, NULL, false, NULL) == 0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
+									else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data_u8 = (((u8)iErrorCandidate_signalOutOfRange_numeric(NULL, &varSrc->value, _VAR_TYPE_S32, NULL, false, NULL) == 0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
 									else {
 										// Every parameter they passed was NULL
 										debug_break;
@@ -7899,7 +7892,7 @@ do_as_numeric:
 							}
 
 						} else {
-							iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, NULL, false);
+							iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, NULL, false);
 							return(false);
 						}
 						break;
@@ -7918,7 +7911,7 @@ do_as_numeric:
 // Called to set the f32 value to the existing type of the variable, forcing it into that type
 //
 //////
-	bool iVariable_set_s32_toExistingType(SThisCode* thisCode, SErrorInfo* ei, SVariable* var, s32 value)
+	bool iVariable_set_s32_toExistingType(SErrorInfo* ei, SVariable* var, s32 value)
 	{
 		s32	lnI;
 		s8	formatter[16];
@@ -7926,7 +7919,7 @@ do_as_numeric:
 
 
 		// De-reference the variable
-		var = iiVariable_terminateIndirect(thisCode, var);
+		var = iiVariable_terminateIndirect(var);
 
 		// Reset the error if any
 		if (ei)
@@ -7942,7 +7935,7 @@ do_as_numeric:
 				switch (var->varType)
 				{
 					case _VAR_TYPE_F32:
-						 *var->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_s32(thisCode, ei, value, _VAR_TYPE_F32, NULL, false, NULL);
+						 *var->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_s32(ei, value, _VAR_TYPE_F32, NULL, false, NULL);
 						 return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_F64:
@@ -7950,36 +7943,36 @@ do_as_numeric:
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S32:
-						*var->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_s32(thisCode, ei, value, _VAR_TYPE_S32, NULL, false, NULL);
+						*var->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_s32(ei, value, _VAR_TYPE_S32, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U32:
-						*var->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_s32(thisCode, ei, value, _VAR_TYPE_U32, NULL, false, NULL);
+						*var->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_s32(ei, value, _VAR_TYPE_U32, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_CURRENCY:
 					case _VAR_TYPE_S64:
-						*var->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_s32(thisCode, ei, value, _VAR_TYPE_S64, NULL, false, NULL);
+						*var->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_s32(ei, value, _VAR_TYPE_S64, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U64:
-						*var->value.data_u64 = (u64)iErrorCandidate_signalOutOfRange_s32(thisCode, ei, value, _VAR_TYPE_U64, NULL, false, NULL);
+						*var->value.data_u64 = (u64)iErrorCandidate_signalOutOfRange_s32(ei, value, _VAR_TYPE_U64, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S8:
-						*var->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_s32(thisCode, ei, value, _VAR_TYPE_S8, NULL, false, NULL);
+						*var->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_s32(ei, value, _VAR_TYPE_S8, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U8:
-						*var->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_s32(thisCode, ei, value, _VAR_TYPE_U8, NULL, false, NULL);
+						*var->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_s32(ei, value, _VAR_TYPE_U8, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S16:
-						*var->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_s32(thisCode, ei, value, _VAR_TYPE_S16, NULL, false, NULL);
+						*var->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_s32(ei, value, _VAR_TYPE_S16, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U16:
-						*var->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_s32(thisCode, ei, value, _VAR_TYPE_U16, NULL, false, NULL);
+						*var->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_s32(ei, value, _VAR_TYPE_U16, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_NUMERIC:
@@ -8013,7 +8006,7 @@ do_as_numeric:
 						} else {
 							// Signal
 MessageBox(GetDesktopWindow(), "There is BI and BFP code which needs completed in vxb_compiler.cpp.", "BI and BFP incomplete", MB_OK);
-							iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+							iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 						}
 						break;
 
@@ -8044,7 +8037,7 @@ MessageBox(GetDesktopWindow(), "There is BI and BFP code which needs completed i
 
 							} else {
 								// Signal
-								iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, NULL, false);
+								iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, NULL, false);
 							}
 						}
 						break;
@@ -8063,7 +8056,7 @@ MessageBox(GetDesktopWindow(), "There is BI and BFP code which needs completed i
 // Called to set the f32 value to the existing type of the variable, forcing it into that type
 //
 //////
-	bool iVariable_set_s64_toExistingType(SThisCode* thisCode, SErrorInfo* ei, SVariable* var, s64 value)
+	bool iVariable_set_s64_toExistingType(SErrorInfo* ei, SVariable* var, s64 value)
 	{
 		s32	lnI;
 		s8	formatter[16];
@@ -8071,7 +8064,7 @@ MessageBox(GetDesktopWindow(), "There is BI and BFP code which needs completed i
 
 
 		// De-reference the variable
-		var = iiVariable_terminateIndirect(thisCode, var);
+		var = iiVariable_terminateIndirect(var);
 
 		// Reset the error if any
 		if (ei)
@@ -8086,7 +8079,7 @@ MessageBox(GetDesktopWindow(), "There is BI and BFP code which needs completed i
 				switch (var->varType)
 				{
 					case _VAR_TYPE_F32:
-						 *var->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_s64(thisCode, ei, value, _VAR_TYPE_F32, NULL, false, NULL);
+						 *var->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_s64(ei, value, _VAR_TYPE_F32, NULL, false, NULL);
 						 return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_F64:
@@ -8094,36 +8087,36 @@ MessageBox(GetDesktopWindow(), "There is BI and BFP code which needs completed i
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S32:
-						*var->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_s64(thisCode, ei, value, _VAR_TYPE_S32, NULL, false, NULL);
+						*var->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_s64(ei, value, _VAR_TYPE_S32, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U32:
-						*var->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_s64(thisCode, ei, value, _VAR_TYPE_U32, NULL, false, NULL);
+						*var->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_s64(ei, value, _VAR_TYPE_U32, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_CURRENCY:
 					case _VAR_TYPE_S64:
-						*var->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_s64(thisCode, ei, value, _VAR_TYPE_S64, NULL, false, NULL);
+						*var->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_s64(ei, value, _VAR_TYPE_S64, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U64:
-						*var->value.data_u64 = (u64)iErrorCandidate_signalOutOfRange_s64(thisCode, ei, value, _VAR_TYPE_U64, NULL, false, NULL);
+						*var->value.data_u64 = (u64)iErrorCandidate_signalOutOfRange_s64(ei, value, _VAR_TYPE_U64, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S8:
-						*var->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_s64(thisCode, ei, value, _VAR_TYPE_S8, NULL, false, NULL);
+						*var->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_s64(ei, value, _VAR_TYPE_S8, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U8:
-						*var->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_s64(thisCode, ei, value, _VAR_TYPE_U8, NULL, false, NULL);
+						*var->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_s64(ei, value, _VAR_TYPE_U8, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S16:
-						*var->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_s64(thisCode, ei, value, _VAR_TYPE_S16, NULL, false, NULL);
+						*var->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_s64(ei, value, _VAR_TYPE_S16, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U16:
-						*var->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_s64(thisCode, ei, value, _VAR_TYPE_U16, NULL, false, NULL);
+						*var->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_s64(ei, value, _VAR_TYPE_U16, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_NUMERIC:
@@ -8147,7 +8140,7 @@ do_as_numeric:
 
 					case _VAR_TYPE_BI:
 					case _VAR_TYPE_BFP:
-						iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+						iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 						break;
 
 					default:
@@ -8177,7 +8170,7 @@ do_as_numeric:
 
 							} else {
 								// Signal
-								iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, NULL, false);
+								iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, NULL, false);
 							}
 						}
 						break;
@@ -8196,7 +8189,7 @@ do_as_numeric:
 // Called to set the f32 value to the existing type of the variable, forcing it into that type
 //
 //////
-	bool iVariable_set_f32_toExistingType(SThisCode* thisCode, SErrorInfo* ei, SVariable* var, f32 value)
+	bool iVariable_set_f32_toExistingType(SErrorInfo* ei, SVariable* var, f32 value)
 	{
 		s32	lnI;
 		s8	formatter[16];
@@ -8204,7 +8197,7 @@ do_as_numeric:
 
 
 		// De-reference the variable
-		var = iiVariable_terminateIndirect(thisCode, var);
+		var = iiVariable_terminateIndirect(var);
 
 		// Reset the error if any
 		if (ei)
@@ -8220,7 +8213,7 @@ do_as_numeric:
 				{
 					case _VAR_TYPE_F32:
 						// For any type that can be converted, convert it
-						 *var->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_f32(thisCode, ei, value, _VAR_TYPE_F32, NULL, false, NULL);
+						 *var->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_f32(ei, value, _VAR_TYPE_F32, NULL, false, NULL);
 						 return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_F64:
@@ -8230,43 +8223,43 @@ do_as_numeric:
 
 					case _VAR_TYPE_S32:
 						// For any type that can be converted, convert it
-						*var->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_f32(thisCode, ei, value, _VAR_TYPE_S32, NULL, false, NULL);
+						*var->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_f32(ei, value, _VAR_TYPE_S32, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U32:
 						// For any type that can be converted, convert it
-						*var->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_f32(thisCode, ei, value, _VAR_TYPE_U32, NULL, false, NULL);
+						*var->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_f32(ei, value, _VAR_TYPE_U32, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_CURRENCY:
 					case _VAR_TYPE_S64:
 						// For any type that can be converted, convert it
-						*var->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_f32(thisCode, ei, value, _VAR_TYPE_S64, NULL, false, NULL);
+						*var->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_f32(ei, value, _VAR_TYPE_S64, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U64:
 						// For any type that can be converted, convert it
-						*var->value.data_u64 = (u64)iErrorCandidate_signalOutOfRange_f32(thisCode, ei, value, _VAR_TYPE_U64, NULL, false, NULL);
+						*var->value.data_u64 = (u64)iErrorCandidate_signalOutOfRange_f32(ei, value, _VAR_TYPE_U64, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S8:
 						// For any type that can be converted, convert it
-						*var->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_f32(thisCode, ei, value, _VAR_TYPE_S8, NULL, false, NULL);
+						*var->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_f32(ei, value, _VAR_TYPE_S8, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U8:
 						// For any type that can be converted, convert it
-						*var->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_f32(thisCode, ei, value, _VAR_TYPE_U8, NULL, false, NULL);
+						*var->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_f32(ei, value, _VAR_TYPE_U8, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S16:
 						// For any type that can be converted, convert it
-						*var->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_f32(thisCode, ei, value, _VAR_TYPE_S16, NULL, false, NULL);
+						*var->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_f32(ei, value, _VAR_TYPE_S16, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U16:
 						// For any type that can be converted, convert it
-						*var->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_f32(thisCode, ei, value, _VAR_TYPE_U16, NULL, false, NULL);
+						*var->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_f32(ei, value, _VAR_TYPE_U16, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_NUMERIC:
@@ -8290,7 +8283,7 @@ do_as_numeric:
 
 					case _VAR_TYPE_BI:
 					case _VAR_TYPE_BFP:
-						iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+						iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 						break;
 
 					default:
@@ -8320,7 +8313,7 @@ do_as_numeric:
 
 							} else {
 								// Signal
-								iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, NULL, false);
+								iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, NULL, false);
 							}
 						}
 						break;
@@ -8339,7 +8332,7 @@ do_as_numeric:
 // Called to set the f32 value to the existing type of the variable, forcing it into that type
 //
 //////
-	bool iVariable_set_f64_toExistingType(SThisCode* thisCode, SErrorInfo* ei, SVariable* var, f64 value)
+	bool iVariable_set_f64_toExistingType(SErrorInfo* ei, SVariable* var, f64 value)
 	{
 		s32	lnI;
 		s8	formatter[16];
@@ -8347,7 +8340,7 @@ do_as_numeric:
 
 
 		// De-reference the variable
-		var = iiVariable_terminateIndirect(thisCode, var);
+		var = iiVariable_terminateIndirect(var);
 
 		// Reset the error if any
 		if (ei)
@@ -8363,7 +8356,7 @@ do_as_numeric:
 				{
 					case _VAR_TYPE_F32:
 						// For any type that can be converted, convert it
-						 *var->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_f64(thisCode, ei, value, _VAR_TYPE_F32, NULL, false, NULL);
+						 *var->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_f64(ei, value, _VAR_TYPE_F32, NULL, false, NULL);
 						 return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_F64:
@@ -8373,43 +8366,43 @@ do_as_numeric:
 
 					case _VAR_TYPE_S32:
 						// For any type that can be converted, convert it
-						*var->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_f64(thisCode, ei, value, _VAR_TYPE_S32, NULL, false, NULL);
+						*var->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_f64(ei, value, _VAR_TYPE_S32, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U32:
 						// For any type that can be converted, convert it
-						*var->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_f64(thisCode, ei, value, _VAR_TYPE_U32, NULL, false, NULL);
+						*var->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_f64(ei, value, _VAR_TYPE_U32, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_CURRENCY:
 					case _VAR_TYPE_S64:
 						// For any type that can be converted, convert it
-						*var->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_f64(thisCode, ei, value, _VAR_TYPE_S64, NULL, false, NULL);
+						*var->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_f64(ei, value, _VAR_TYPE_S64, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U64:
 						// For any type that can be converted, convert it
-						*var->value.data_u64 = (u64)iErrorCandidate_signalOutOfRange_f64(thisCode, ei, value, _VAR_TYPE_U64, NULL, false, NULL);
+						*var->value.data_u64 = (u64)iErrorCandidate_signalOutOfRange_f64(ei, value, _VAR_TYPE_U64, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S8:
 						// For any type that can be converted, convert it
-						*var->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_f64(thisCode, ei, value, _VAR_TYPE_S8, NULL, false, NULL);
+						*var->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_f64(ei, value, _VAR_TYPE_S8, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U8:
 						// For any type that can be converted, convert it
-						*var->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_f64(thisCode, ei, value, _VAR_TYPE_U8, NULL, false, NULL);
+						*var->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_f64(ei, value, _VAR_TYPE_U8, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S16:
 						// For any type that can be converted, convert it
-						*var->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_f64(thisCode, ei, value, _VAR_TYPE_S16, NULL, false, NULL);
+						*var->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_f64(ei, value, _VAR_TYPE_S16, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U16:
 						// For any type that can be converted, convert it
-						*var->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_f64(thisCode, ei, value, _VAR_TYPE_U16, NULL, false, NULL);
+						*var->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_f64(ei, value, _VAR_TYPE_U16, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_NUMERIC:
@@ -8433,7 +8426,7 @@ do_as_numeric:
 
 					case _VAR_TYPE_BI:
 					case _VAR_TYPE_BFP:
-						iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+						iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 						break;
 
 					default:
@@ -8463,7 +8456,7 @@ do_as_numeric:
 
 							} else {
 								// Signal
-								iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, NULL, false);
+								iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, NULL, false);
 							}
 						}
 						break;
@@ -8482,7 +8475,7 @@ do_as_numeric:
 // Called to set the f32 value to the existing type of the variable, forcing it into that type
 //
 //////
-	bool iVariable_set_u32_toExistingType(SThisCode* thisCode, SErrorInfo* ei, SVariable* var, u32 value)
+	bool iVariable_set_u32_toExistingType(SErrorInfo* ei, SVariable* var, u32 value)
 	{
 		s32	lnI;
 		s8	formatter[16];
@@ -8490,7 +8483,7 @@ do_as_numeric:
 
 
 		// De-reference the variable
-		var = iiVariable_terminateIndirect(thisCode, var);
+		var = iiVariable_terminateIndirect(var);
 
 		// Reset the error if any
 		if (ei)
@@ -8505,7 +8498,7 @@ do_as_numeric:
 				switch (var->varType)
 				{
 					case _VAR_TYPE_F32:
-						*var->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_u32(thisCode, ei, value, _VAR_TYPE_F32, NULL, false, NULL);
+						*var->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_u32(ei, value, _VAR_TYPE_F32, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_F64:
@@ -8513,36 +8506,36 @@ do_as_numeric:
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S32:
-						*var->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_u32(thisCode, ei, value, _VAR_TYPE_S32, NULL, false, NULL);
+						*var->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_u32(ei, value, _VAR_TYPE_S32, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U32:
-						*var->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_u32(thisCode, ei, value, _VAR_TYPE_U32, NULL, false, NULL);
+						*var->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_u32(ei, value, _VAR_TYPE_U32, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_CURRENCY:
 					case _VAR_TYPE_S64:
-						*var->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_u32(thisCode, ei, value, _VAR_TYPE_S64, NULL, false, NULL);
+						*var->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_u32(ei, value, _VAR_TYPE_S64, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U64:
-						*var->value.data_u64 = (u64)iErrorCandidate_signalOutOfRange_u32(thisCode, ei, value, _VAR_TYPE_U64, NULL, false, NULL);
+						*var->value.data_u64 = (u64)iErrorCandidate_signalOutOfRange_u32(ei, value, _VAR_TYPE_U64, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S8:
-						*var->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_u32(thisCode, ei, value, _VAR_TYPE_S8, NULL, false, NULL);
+						*var->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_u32(ei, value, _VAR_TYPE_S8, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U8:
-						*var->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_u32(thisCode, ei, value, _VAR_TYPE_U8, NULL, false, NULL);
+						*var->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_u32(ei, value, _VAR_TYPE_U8, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S16:
-						*var->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_u32(thisCode, ei, value, _VAR_TYPE_S16, NULL, false, NULL);
+						*var->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_u32(ei, value, _VAR_TYPE_S16, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U16:
-						*var->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_u32(thisCode, ei, value, _VAR_TYPE_U16, NULL, false, NULL);
+						*var->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_u32(ei, value, _VAR_TYPE_U16, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_NUMERIC:
@@ -8566,7 +8559,7 @@ do_as_numeric:
 
 					case _VAR_TYPE_BI:
 					case _VAR_TYPE_BFP:
-						iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+						iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 						break;
 
 					default:
@@ -8596,7 +8589,7 @@ do_as_numeric:
 
 							} else {
 								// Signal
-								iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, NULL, false);
+								iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, NULL, false);
 							}
 						}
 						break;
@@ -8621,7 +8614,7 @@ do_as_numeric:
 // Called to set the f32 value to the existing type of the variable, forcing it into that type
 //
 //////
-	bool iVariable_set_u64_toExistingType(SThisCode* thisCode, SErrorInfo* ei, SVariable* var, u64 value)
+	bool iVariable_set_u64_toExistingType(SErrorInfo* ei, SVariable* var, u64 value)
 	{
 		s32	lnI;
 		s8	formatter[16];
@@ -8629,7 +8622,7 @@ do_as_numeric:
 
 
 		// De-reference the variable
-		var = iiVariable_terminateIndirect(thisCode, var);
+		var = iiVariable_terminateIndirect(var);
 
 		// Reset the error if any
 		if (ei)
@@ -8644,7 +8637,7 @@ do_as_numeric:
 				switch (var->varType)
 				{
 					case _VAR_TYPE_F32:
-						 *var->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_u64(thisCode, ei, value, _VAR_TYPE_F32, NULL, false, NULL);
+						 *var->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_u64(ei, value, _VAR_TYPE_F32, NULL, false, NULL);
 						 return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_F64:
@@ -8652,36 +8645,36 @@ do_as_numeric:
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S32:
-						*var->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_u64(thisCode, ei, value, _VAR_TYPE_S32, NULL, false, NULL);
+						*var->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_u64(ei, value, _VAR_TYPE_S32, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U32:
-						*var->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_u64(thisCode, ei, value, _VAR_TYPE_U32, NULL, false, NULL);
+						*var->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_u64(ei, value, _VAR_TYPE_U32, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_CURRENCY:
 					case _VAR_TYPE_S64:
-						*var->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_u64(thisCode, ei, value, _VAR_TYPE_S64, NULL, false, NULL);
+						*var->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_u64(ei, value, _VAR_TYPE_S64, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U64:
-						*var->value.data_u64 = (u64)iErrorCandidate_signalOutOfRange_u64(thisCode, ei, value, _VAR_TYPE_U64, NULL, false, NULL);
+						*var->value.data_u64 = (u64)iErrorCandidate_signalOutOfRange_u64(ei, value, _VAR_TYPE_U64, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S8:
-						*var->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_u64(thisCode, ei, value, _VAR_TYPE_S8, NULL, false, NULL);
+						*var->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_u64(ei, value, _VAR_TYPE_S8, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U8:
-						*var->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_u64(thisCode, ei, value, _VAR_TYPE_U8, NULL, false, NULL);
+						*var->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_u64(ei, value, _VAR_TYPE_U8, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S16:
-						*var->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_u64(thisCode, ei, value, _VAR_TYPE_S16, NULL, false, NULL);
+						*var->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_u64(ei, value, _VAR_TYPE_S16, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U16:
-						*var->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_u64(thisCode, ei, value, _VAR_TYPE_U16, NULL, false, NULL);
+						*var->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_u64(ei, value, _VAR_TYPE_U16, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_NUMERIC:
@@ -8705,7 +8698,7 @@ do_as_numeric:
 
 					case _VAR_TYPE_BI:
 					case _VAR_TYPE_BFP:
-						iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+						iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 						break;
 
 					default:
@@ -8735,7 +8728,7 @@ do_as_numeric:
 
 							} else {
 								// Signal
-								iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, NULL, false);
+								iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, NULL, false);
 							}
 						}
 						break;
@@ -8760,10 +8753,10 @@ do_as_numeric:
 // Called to set the variable name
 //
 //////
-	SDatum* iVariable_setName(SThisCode* thisCode, SVariable* var, cu8* tcName, s32 tnNameLength)
+	SDatum* iVariable_setName(SVariable* var, cu8* tcName, s32 tnNameLength)
 	{
 		// De-reference the variable
-		var = iiVariable_terminateIndirect(thisCode, var);
+		var = iiVariable_terminateIndirect(var);
 
 		// Make sure our environment is sane
 		if (var && tcName && tnNameLength > 0)
@@ -8787,10 +8780,10 @@ do_as_numeric:
 // Called to set the value to an s16 value
 //
 //////
-	bool iVariable_set_s16(SThisCode* thisCode, SVariable* var, s16 value)
+	bool iVariable_set_s16(SVariable* var, s16 value)
 	{
 		// De-reference the variable
-		var = iiVariable_terminateIndirect(thisCode, var);
+		var = iiVariable_terminateIndirect(var);
 
 		// Are we still valid?
 		if (var && var->varType == _VAR_TYPE_S16 && var->value.data_s16)
@@ -8815,10 +8808,10 @@ do_as_numeric:
 // Called to set the value to an s32 value
 //
 //////
-	bool iVariable_set_s32(SThisCode* thisCode, SVariable* var, s32 value)
+	bool iVariable_set_s32(SVariable* var, s32 value)
 	{
 		// De-reference the variable
-		var = iiVariable_terminateIndirect(thisCode, var);
+		var = iiVariable_terminateIndirect(var);
 
 		// Are we still valid?
 		if (var && var->varType == _VAR_TYPE_S32 && var->value.data_s32)
@@ -8843,10 +8836,10 @@ do_as_numeric:
 // Called to set the value to a u16 value
 //
 //////
-	bool iVariable_set_u16(SThisCode* thisCode, SVariable* var, u16 value)
+	bool iVariable_set_u16(SVariable* var, u16 value)
 	{
 		// De-reference the variable
-		var = iiVariable_terminateIndirect(thisCode, var);
+		var = iiVariable_terminateIndirect(var);
 
 		// Are we still valid?
 		if (var && var->varType == _VAR_TYPE_U16 && var->value.data_u16)
@@ -8871,10 +8864,10 @@ do_as_numeric:
 // Called to set the value to a u32 value
 //
 //////
-	bool iVariable_set_u32(SThisCode* thisCode, SVariable* var, u32 value)
+	bool iVariable_set_u32(SVariable* var, u32 value)
 	{
 		// De-reference the variable
-		var = iiVariable_terminateIndirect(thisCode, var);
+		var = iiVariable_terminateIndirect(var);
 
 		// Are we still valid?
 		if (var && var->varType == _VAR_TYPE_U32 && var->value.data_u32)
@@ -8899,10 +8892,10 @@ do_as_numeric:
 // Called to set the value to a f32 value
 //
 //////
-	bool iVariable_set_f32(SThisCode* thisCode, SVariable* var, f32 value)
+	bool iVariable_set_f32(SVariable* var, f32 value)
 	{
 		// De-reference the variable
-		var = iiVariable_terminateIndirect(thisCode, var);
+		var = iiVariable_terminateIndirect(var);
 
 		// Are we still valid?
 		if (var && var->varType == _VAR_TYPE_F32 && var->value.data_f32)
@@ -8927,10 +8920,10 @@ do_as_numeric:
 // Called to set the value to a f64 value
 //
 //////
-	bool iVariable_set_f64(SThisCode* thisCode, SVariable* var, f64 value)
+	bool iVariable_set_f64(SVariable* var, f64 value)
 	{
 		// De-reference the variable
-		var = iiVariable_terminateIndirect(thisCode, var);
+		var = iiVariable_terminateIndirect(var);
 
 		// Are we still valid?
 		if (var && var->varType == _VAR_TYPE_F64 && var->value.data_f64)
@@ -8955,16 +8948,16 @@ do_as_numeric:
 // Called to set the bool value
 //
 //////
-	bool iVariable_set_logical(SThisCode* thisCode, SVariable* var, bool tlValue)
+	bool iVariable_set_logical(SVariable* var, bool tlValue)
 	{
 		// Translate bool to logical true or false
-		return(iVariable_set_logical(thisCode, var, ((tlValue) ? _LOGICAL_TRUE : _LOGICAL_FALSE)));
+		return(iVariable_set_logical(var, ((tlValue) ? _LOGICAL_TRUE : _LOGICAL_FALSE)));
 	}
 
-	bool iVariable_set_logical(SThisCode* thisCode, SVariable* var, s32 value)
+	bool iVariable_set_logical(SVariable* var, s32 value)
 	{
 		// De-reference the variable
-		var = iiVariable_terminateIndirect(thisCode, var);
+		var = iiVariable_terminateIndirect(var);
 
 		// Are we still valid?
 		if (var && var->varType == _VAR_TYPE_LOGICAL && var->value.data_s8)
@@ -8989,10 +8982,10 @@ do_as_numeric:
 // Called to set the bitmap value for the indicated variable
 //
 //////
-	bool iVariable_set_bitmap(SThisCode* thisCode, SVariable* var, SBitmap* bmp)
+	bool iVariable_set_bitmap(SVariable* var, SBitmap* bmp)
 	{
 		// De-reference the variable
-		var = iiVariable_terminateIndirect(thisCode, var);
+		var = iiVariable_terminateIndirect(var);
 
 		// Make sure the environment is sane
 		if (var && bmp && (var->varType == _VAR_TYPE_BITMAP || !var->isVarTypeFixed))
@@ -9002,7 +8995,7 @@ do_as_numeric:
 			{
 				// We need to refactor this variable into a bitmap
 				// Delete the old contents
-				iVariable_delete(thisCode, var, false);
+				iVariable_delete(var, false);
 
 				// At this point, var->varType = _VAR_TYPE_NULL
 				var->varType = _VAR_TYPE_BITMAP;
@@ -9031,10 +9024,10 @@ do_as_numeric:
 // Called to set the character value for the indicated variable
 //
 //////
-	bool iVariable_set_character(SThisCode* thisCode, SVariable* var, u8* tcData, u32 tnDataLength)
+	bool iVariable_set_character(SVariable* var, u8* tcData, u32 tnDataLength)
 	{
 		// De-reference the variable
-		var = iiVariable_terminateIndirect(thisCode, var);
+		var = iiVariable_terminateIndirect(var);
 
 		// Make sure our environment is sane
 		if (var && tcData && tnDataLength != 0 && (var->varType == _VAR_TYPE_CHARACTER || !var->isVarTypeFixed))
@@ -9044,7 +9037,7 @@ do_as_numeric:
 			{
 				// We need to refactor this variable into a character
 				// Delete the old contents
-				iVariable_delete(thisCode, var, false);
+				iVariable_delete(var, false);
 
 				// At this point, var->varType = _VAR_TYPE_NULL
 				var->varType = _VAR_TYPE_CHARACTER;
@@ -9062,10 +9055,10 @@ do_as_numeric:
 		return(false);
 	}
 
-	bool iVariable_set_character(SThisCode* thisCode, SVariable* var, SDatum* datum)
+	bool iVariable_set_character(SVariable* var, SDatum* datum)
 	{
 		// De-reference the variable
-		var = iiVariable_terminateIndirect(thisCode, var);
+		var = iiVariable_terminateIndirect(var);
 
 		// Make sure our environment is sane
 		if (var && datum && (var->varType == _VAR_TYPE_CHARACTER || !var->isVarTypeFixed))
@@ -9076,7 +9069,7 @@ debug_break;
 			{
 				// We need to refactor this variable into a character
 				// Delete the old contents
-				iVariable_delete(thisCode, var, false);
+				iVariable_delete(var, false);
 
 				// At this point, var->varType = _VAR_TYPE_NULL
 				var->varType = _VAR_TYPE_CHARACTER;
@@ -9102,13 +9095,13 @@ debug_break;
 // Reset the variables to their default types
 //
 //////
-	void iVariable_reset(SThisCode* thisCode, SVariable* var, bool tlTerminateIndirect)
+	void iVariable_reset(SVariable* var, bool tlTerminateIndirect)
 	{
 		//////////
 		// De-reference the variable
 		//////
 			if (tlTerminateIndirect)
-				var = iiVariable_terminateIndirect(thisCode, var);
+				var = iiVariable_terminateIndirect(var);
 
 
 		//////////
@@ -9260,7 +9253,7 @@ debug_break;
 // Converts the indicated variable to a form suitable for display.
 //
 //////
-	SVariable* iVariable_convertForDisplay(SThisCode* thisCode, SVariable* var)
+	SVariable* iVariable_convertForDisplay(SVariable* var)
 	{
 		s32			lnI, lnYearOffset, lnSetLogical, lnMillisecond, lnNanosecond;
 		u32			lnYear, lnMonth, lnDay, lnHour, lnHourAdjusted, lnMinute, lnSecond;
@@ -9275,10 +9268,10 @@ debug_break;
 
 
 		// De-reference the variable
-		var = iiVariable_terminateIndirect(thisCode, var);
+		var = iiVariable_terminateIndirect(var);
 
 		// Make sure our environment is sane
-		varDisp = iVariable_create(thisCode, _VAR_TYPE_CHARACTER, NULL, true);
+		varDisp = iVariable_create(_VAR_TYPE_CHARACTER, NULL, true);
 		if (var && varDisp)
 		{
 			// Initialize
@@ -9392,12 +9385,12 @@ debug_break;
 
 					case _VAR_TYPE_BFP:
 						varDisp->isValueAllocated = true;
-						iiBfp_convertForDisplay(thisCode, varDisp, var);
+						iiBfp_convertForDisplay(varDisp, var);
 						break;
 
 					case _VAR_TYPE_BI:
 						varDisp->isValueAllocated = true;
-						iiBi_convertForDisplay(thisCode, varDisp, var);
+						iiBi_convertForDisplay(varDisp, var);
 						break;
 
 					case _VAR_TYPE_DATE:
@@ -9641,7 +9634,7 @@ debug_break;
 // Returns a unique type code for every variable type.
 //
 //////
-	SVariable* iVariable_get_typeDetail(SThisCode* thisCode, SVariable* var)
+	SVariable* iVariable_get_typeDetail(SVariable* var)
 	{
 		SVariable*		result;
 		SVarTypeXlat	xlatLocalData;
@@ -9658,7 +9651,7 @@ debug_break;
 
 			} else {
 				// It's invalid
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, NULL, false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, NULL, false);
 
 				// Set it to an unknown type
 				xlat						= &xlatLocalData;
@@ -9670,7 +9663,7 @@ debug_break;
 		//////////
 		// Create a new variable
 		//////
-			result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, xlat->keyword, xlat->keywordLength, false);
+			result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, xlat->keyword, xlat->keywordLength, false);
 
 
 		//////////
@@ -9688,7 +9681,7 @@ debug_break;
 //
 //////
 	// Override delete should be used when a variable must fall out of scope, and therefore its isProtected setting is ignored
-	void iVariable_delete(SThisCode* thisCode, SVariable* var, bool tlDeleteSelf, bool tlOverrideDelete)
+	void iVariable_delete(SVariable* var, bool tlDeleteSelf, bool tlOverrideDelete)
 	{
 		// Make sure our environment is sane
 		if (var && !var->isSysVar && (tlOverrideDelete || !var->isProtected))
@@ -9710,7 +9703,7 @@ debug_break;
 					{
 						case _VAR_TYPE_OBJECT:
 							// Delete the object
-							iObj_delete(thisCode, &var->obj, true, true, true);
+							iObj_delete(&var->obj, true, true, true);
 							var->obj = NULL;
 							break;
 
@@ -9765,7 +9758,7 @@ debug_break;
 // to delete all of them
 //
 //////
-	void iVariable_politelyDelete_chain(SThisCode* thisCode, SVariable** root, bool tlDeleteSelf)
+	void iVariable_politelyDelete_chain(SVariable** root, bool tlDeleteSelf)
 	{
 		SVariable*		var;
 		SLLCallback		cb;
@@ -9807,7 +9800,7 @@ debug_break;
 	void iVariable_politelyDelete_chain_callback(SLLCallback* cb)
 	{
 		// Delete this variable appropriately
-		iVariable_delete(cb->thisCode, (SVariable*)cb->node, false);
+		iVariable_delete((SVariable*)cb->node, false);
 	}
 
 
@@ -9818,7 +9811,7 @@ debug_break;
 // Called to translate a date or datetime to a datetime
 //
 //////
-	SVariable* iiVariable_getAs_datetime(SThisCode* thisCode, SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum)
+	SVariable* iiVariable_getAs_datetime(SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum)
 	{
 		s32			millisecond, nanosecond;
 		u32			year, month, day, hour, minute, second;
@@ -9832,7 +9825,7 @@ debug_break;
 			{
 				case _VAR_TYPE_DATE:
 					// Translate to datetime
-					result = iVariable_create(thisCode, _VAR_TYPE_DATETIME, NULL, true);
+					result = iVariable_create(_VAR_TYPE_DATETIME, NULL, true);
 					if (!result)
 					{
 						*tlError	= true;
@@ -9851,7 +9844,7 @@ debug_break;
 
 				case _VAR_TYPE_DATETIME:
 					// Copy
-					result = iVariable_copy(thisCode, var, false);
+					result = iVariable_copy(var, false);
 					if (!result)
 					{
 						*tlError	= true;
@@ -9865,7 +9858,7 @@ debug_break;
 					return(result);
 
 				case _VAR_TYPE_DATETIMEX:
-					result = iVariable_create(thisCode, _VAR_TYPE_DATETIME, NULL, true);
+					result = iVariable_create(_VAR_TYPE_DATETIME, NULL, true);
 					if (!result)
 					{
 						*tlError	= true;
@@ -9903,7 +9896,7 @@ debug_break;
 //////
 	static SMapm* ljMinAs_bool = NULL;
 	static SMapm* ljMaxAs_bool = NULL;
-	bool iiVariable_getAs_bool(SThisCode* thisCode, SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum)
+	bool iiVariable_getAs_bool(SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum)
 	{
 		union {
 			s8			lnValue_s8;
@@ -9922,7 +9915,7 @@ debug_break;
 
 
 		// De-reference the variable
-		var = iiVariable_terminateIndirect(thisCode, var);
+		var = iiVariable_terminateIndirect(var);
 
 		// Make sure we have error and errorNum parameters
 		if (!tlError)		tlError		= &llError;
@@ -9987,7 +9980,7 @@ debug_break;
 
 					} else {
 						// It is one byte long, so we will test for Y,N,T,F
-						switch (iObjProp_get_s32_direct(thisCode, _settings, _INDEX_SET_LOGICAL))
+						switch (iObjProp_get_s32_direct(_settings, _INDEX_SET_LOGICAL))
 						{
 							case _LOGICAL_TF:		return(iiLowerCase_char(var->value.data_u8[0]) == 't');
 							case _LOGICAL_YN:		return(iiLowerCase_char(var->value.data_u8[0]) == 'y');
@@ -10019,7 +10012,7 @@ debug_break;
 //////
 	static SMapm* ljMinAs_s8 = NULL;
 	static SMapm* ljMaxAs_s8 = NULL;
-	s8 iiVariable_getAs_s8(SThisCode* thisCode, SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum)
+	s8 iiVariable_getAs_s8(SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum)
 	{
 		s8		buffer[16];
 		union {
@@ -10040,7 +10033,7 @@ debug_break;
 
 
 		// De-reference the variable
-		var = iiVariable_terminateIndirect(thisCode, var);
+		var = iiVariable_terminateIndirect(var);
 
 		// Make sure we have error and errorNum parameters
 		if (!tlError)		tlError		= &llError;
@@ -10379,7 +10372,7 @@ debug_break;
 //////
 	static SMapm* ljMinAs_s16 = NULL;
 	static SMapm* ljMaxAs_s16 = NULL;
-	s16 iiVariable_getAs_s16(SThisCode* thisCode, SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum)
+	s16 iiVariable_getAs_s16(SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum)
 	{
 		union {
 			s8			lnValue_s8;
@@ -10400,7 +10393,7 @@ debug_break;
 
 
 		// De-reference the variable
-		var = iiVariable_terminateIndirect(thisCode, var);
+		var = iiVariable_terminateIndirect(var);
 
 		// Make sure we have error and errorNum parameters
 		if (!tlError)		tlError		= &llError;
@@ -10685,7 +10678,7 @@ debug_break;
 					//////////
 					// We can convert this from its text form into numeric, and if it's in the range of an s32 then we're good to go
 					//////
-						lnValue_s64 = iiVariable_compute_DatetimeDifference_getAs_s64(thisCode, var, _datetime_Jan_01_2000);
+						lnValue_s64 = iiVariable_compute_DatetimeDifference_getAs_s64(var, _datetime_Jan_01_2000);
 						if (lnValue_s64 >= (s64)_s16_min && lnValue_s64 <= (s64)_s16_max)
 							return((s16)lnValue_s64);
 
@@ -10740,7 +10733,7 @@ debug_break;
 //////
 	static SMapm* ljMinAs_s32 = NULL;
 	static SMapm* ljMaxAs_s32 = NULL;
-	s32 iiVariable_getAs_s32(SThisCode* thisCode, SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum)
+	s32 iiVariable_getAs_s32(SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum)
 	{
 		union {
 			s8			lnValue_s8;
@@ -10760,7 +10753,7 @@ debug_break;
 
 
 		// De-reference the variable
-		var = iiVariable_terminateIndirect(thisCode, var);
+		var = iiVariable_terminateIndirect(var);
 
 		// Make sure we have error and errorNum parameters
 		if (!tlError)		tlError		= &llError;
@@ -11033,7 +11026,7 @@ debug_break;
 					//////////
 					// We can convert this from its text form into numeric, and if it's in the range of an s32 then we're good to go
 					//////
-						lnValue_s64 = iiVariable_compute_DatetimeDifference_getAs_s64(thisCode, var, _datetime_Jan_01_2000);
+						lnValue_s64 = iiVariable_compute_DatetimeDifference_getAs_s64(var, _datetime_Jan_01_2000);
 						if (lnValue_s64 > (s64)_s32_min && lnValue_s64 < (s64)_s32_max)
 							return((s32)lnValue_s64);
 
@@ -11088,7 +11081,7 @@ debug_break;
 //////
 	static SMapm* ljMinAs_u16 = NULL;
 	static SMapm* ljMaxAs_u16 = NULL;
-	u16 iiVariable_getAs_u16(SThisCode* thisCode, SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum)
+	u16 iiVariable_getAs_u16(SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum)
 	{
 		union {
 			s8			lnValue_s8;
@@ -11109,7 +11102,7 @@ debug_break;
 
 
 		// De-reference the variable
-		var = iiVariable_terminateIndirect(thisCode, var);
+		var = iiVariable_terminateIndirect(var);
 
 		// Make sure we have error and errorNum parameters
 		if (!tlError)		tlError		= &llError;
@@ -11354,7 +11347,7 @@ debug_break;
 					//////////
 					// We can convert this from its text form into numeric, and if it's in the range of an u32 then we're good to go
 					//////
-						lnValue_s64 = iiVariable_compute_DatetimeDifference_getAs_s64(thisCode, var, _datetime_Jan_01_2000);
+						lnValue_s64 = iiVariable_compute_DatetimeDifference_getAs_s64(var, _datetime_Jan_01_2000);
 						if (lnValue_s64 >= 0 && lnValue_s64 <= (s64)_u16_max)
 							return((u16)lnValue_s64);
 
@@ -11409,7 +11402,7 @@ debug_break;
 //////
 	static SMapm* ljMinAs_u32 = NULL;
 	static SMapm* ljMaxAs_u32 = NULL;
-	u32 iiVariable_getAs_u32(SThisCode* thisCode, SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum)
+	u32 iiVariable_getAs_u32(SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum)
 	{
 		union {
 			s8			lnValue_s8;
@@ -11429,7 +11422,7 @@ debug_break;
 
 
 		// De-reference the variable
-		var = iiVariable_terminateIndirect(thisCode, var);
+		var = iiVariable_terminateIndirect(var);
 
 		// Make sure we have error and errorNum parameters
 		if (!tlError)		tlError		= &llError;
@@ -11674,7 +11667,7 @@ debug_break;
 					//////////
 					// We can convert this from its text form into numeric, and if it's in the range of an u32 then we're good to go
 					//////
-						lnValue_s64 = iiVariable_compute_DatetimeDifference_getAs_s64(thisCode, var, _datetime_Jan_01_2000);
+						lnValue_s64 = iiVariable_compute_DatetimeDifference_getAs_s64(var, _datetime_Jan_01_2000);
 						if (lnValue_s64 >= 0 && lnValue_s64 <= (s64)_u32_max)
 							return((u32)lnValue_s64);
 
@@ -11729,7 +11722,7 @@ debug_break;
 //////
 	static SMapm* ljMinAs_s64 = NULL;
 	static SMapm* ljMaxAs_s64 = NULL;
-	s64 iiVariable_getAs_s64(SThisCode* thisCode, SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum)
+	s64 iiVariable_getAs_s64(SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum)
 	{
 		union {
 			s8			lnValue_s8;
@@ -11751,7 +11744,7 @@ debug_break;
 
 
 		// De-reference the variable
-		var = iiVariable_terminateIndirect(thisCode, var);
+		var = iiVariable_terminateIndirect(var);
 
 		// Make sure we have error and errorNum parameters
 		if (!tlError)		tlError		= &error;
@@ -11959,7 +11952,7 @@ debug_break;
 //////
 	static SMapm* ljMinAs_u64 = NULL;
 	static SMapm* ljMaxAs_u64 = NULL;
-	u64 iiVariable_getAs_u64(SThisCode* thisCode, SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum)
+	u64 iiVariable_getAs_u64(SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum)
 	{
 		union {
 			s8			lnValue_s8;
@@ -11981,7 +11974,7 @@ debug_break;
 
 
 		// De-reference the variable
-		var = iiVariable_terminateIndirect(thisCode, var);
+		var = iiVariable_terminateIndirect(var);
 
 		// Make sure we have error and errorNum parameters
 		if (!tlError)		tlError		= &error;
@@ -12189,7 +12182,7 @@ debug_break;
 //////
 	static SMapm* ljMinAs_f32 = NULL;
 	static SMapm* ljMaxAs_f32 = NULL;
-	f32 iiVariable_getAs_f32(SThisCode* thisCode, SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum)
+	f32 iiVariable_getAs_f32(SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum)
 	{
 		union {
 			s8			lnValue_s8;
@@ -12214,7 +12207,7 @@ debug_break;
 
 
 		// De-reference the variable
-		var = iiVariable_terminateIndirect(thisCode, var);
+		var = iiVariable_terminateIndirect(var);
 
 		// Make sure we have error and errorNum parameters
 		if (!tlError)		tlError		= &llError;
@@ -12316,7 +12309,7 @@ debug_break;
 					bufferBig.length	= 0;
 					iDatum_allocateSpace(&bufferBig, iiBfp_calc_significantDigits_bySize(var) * 2);
 					m_apm_to_string(bufferBig.data_s8, bufferBig.length / 2, var->value.data_big);
-					iiBfp_convertFrom_scientificNotation(thisCode, &bufferBig, var);
+					iiBfp_convertFrom_scientificNotation(&bufferBig, var);
 
 					// Get the value
 					lfVal32 = (f32)atof(bufferBig.data_s8);
@@ -12411,7 +12404,7 @@ debug_break;
 //////
 	static SMapm* ljMinAs_f64 = NULL;
 	static SMapm* ljMaxAs_f64 = NULL;
-	f64 iiVariable_getAs_f64(SThisCode* thisCode, SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum)
+	f64 iiVariable_getAs_f64(SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum)
 	{
 		union {
 			s8			lnValue_s8;
@@ -12436,7 +12429,7 @@ debug_break;
 
 
 		// De-reference the variable
-		var = iiVariable_terminateIndirect(thisCode, var);
+		var = iiVariable_terminateIndirect(var);
 
 		// Make sure we have error and errorNum parameters
 		if (!tlError)		tlError		= &llError;
@@ -12523,7 +12516,7 @@ debug_break;
 					bufferBig.length	= 0;
 					iDatum_allocateSpace(&bufferBig, iiBfp_calc_significantDigits_bySize(var) * 2);
 					m_apm_to_string(bufferBig.data_s8, bufferBig.length / 2, var->value.data_big);
-					iiBfp_convertFrom_scientificNotation(thisCode, &bufferBig, var);
+					iiBfp_convertFrom_scientificNotation(&bufferBig, var);
 
 					// Get the value
 					lfVal64 = atof(bufferBig.data_s8);
@@ -12620,7 +12613,7 @@ debug_break;
 //		1		-- Left greater than right
 //
 //////
-	s32 iVariable_compare(SThisCode* thisCode, SVariable* varLeft, SVariable* varRight, bool tlForceConvert, bool* tlError, u32* tnErrorNum)
+	s32 iVariable_compare(SVariable* varLeft, SVariable* varRight, bool tlForceConvert, bool* tlError, u32* tnErrorNum)
 	{
 		s32		lnMillisecond, lnMillisecond2, lnMicrosecond;
 		u32		lnYear,  lnMonth,  lnDay,  lnHour,  lnMinute,  lnSecond,  lnDate;
@@ -12633,8 +12626,8 @@ debug_break;
 		//////////
 		// De-reference the variables
 		//////
-			varLeft		= iiVariable_terminateIndirect(thisCode, varLeft);
-			varRight	= iiVariable_terminateIndirect(thisCode, varRight);
+			varLeft		= iiVariable_terminateIndirect(varLeft);
+			varRight	= iiVariable_terminateIndirect(varRight);
 
 
 		//////////
@@ -12650,10 +12643,10 @@ debug_break;
 				if (varLeft->varType == varRight->varType)
 				{
 					// Do a direct compare
-					return(iiVariable_compareMatchingTypes(thisCode, varLeft, varRight, tlError, tnErrorNum));
+					return(iiVariable_compareMatchingTypes(varLeft, varRight, tlError, tnErrorNum));
 
 
-				} else if (iVariable_get_fundamentalType(thisCode, varLeft) == iVariable_get_fundamentalType(thisCode, varRight)) {
+				} else if (iVariable_get_fundamentalType(varLeft) == iVariable_get_fundamentalType(varRight)) {
 					// They are the same general type
 					llLeftFp		= (varLeft->varType  >= _VAR_TYPE_NUMERIC_FLOATING_POINT_START	&&	varLeft->varType  <= _VAR_TYPE_NUMERIC_FLOATING_POINT_END);
 					llRightFp		= (varRight->varType >= _VAR_TYPE_NUMERIC_FLOATING_POINT_START	&&	varRight->varType <= _VAR_TYPE_NUMERIC_FLOATING_POINT_END);
@@ -12667,19 +12660,19 @@ debug_break;
 					if (llLeftFp && llRightFp)
 					{
 						// They are both floating point
-						return(iiVariable_compareNonmatchingTypesAs_f64(thisCode, varLeft, varRight, tlForceConvert, tlError, tnErrorNum));
+						return(iiVariable_compareNonmatchingTypesAs_f64(varLeft, varRight, tlForceConvert, tlError, tnErrorNum));
 
 
 					} else if (llLeftInt && llRightInt) {
 						// They are both integer
-						     if (llLeftSigned && llRightSigned)			return(iiVariable_compareNonmatchingTypesAs_s64(thisCode, varLeft, varRight, tlForceConvert, tlError, tnErrorNum));
-						else if (!llLeftSigned && !llRightSigned)		return(iiVariable_compareNonmatchingTypesAs_u64(thisCode, varLeft, varRight, tlForceConvert, tlError, tnErrorNum));
-						else											return(iiVariable_compareNonmatchingTypesAs_f64(thisCode, varLeft, varRight, tlForceConvert, tlError, tnErrorNum));
+						     if (llLeftSigned && llRightSigned)			return(iiVariable_compareNonmatchingTypesAs_s64(varLeft, varRight, tlForceConvert, tlError, tnErrorNum));
+						else if (!llLeftSigned && !llRightSigned)		return(iiVariable_compareNonmatchingTypesAs_u64(varLeft, varRight, tlForceConvert, tlError, tnErrorNum));
+						else											return(iiVariable_compareNonmatchingTypesAs_f64(varLeft, varRight, tlForceConvert, tlError, tnErrorNum));
 
 
 					} else if (llLeftNum && llRightNum) {
 						// They are all numbers, so we'll just compare them as floats
-						return(iiVariable_compareNonmatchingTypesAs_f64(thisCode, varLeft, varRight, tlForceConvert, tlError, tnErrorNum));
+						return(iiVariable_compareNonmatchingTypesAs_f64(varLeft, varRight, tlForceConvert, tlError, tnErrorNum));
 					}
 
 					// If we get here, they're trying to compare things we don't current have defined as to how to compare
@@ -12914,7 +12907,7 @@ debug_break;
 			return(0);
 	}
 
-	s32 iiVariable_compareNonmatchingTypesAs_f64(SThisCode* thisCode, SVariable* varLeft, SVariable* varRight, bool tlForceConvert, bool* tlError, u32* tnErrorNum)
+	s32 iiVariable_compareNonmatchingTypesAs_f64(SVariable* varLeft, SVariable* varRight, bool tlForceConvert, bool* tlError, u32* tnErrorNum)
 	{
 		f64 lfLeft, lfRight;
 
@@ -12922,14 +12915,14 @@ debug_break;
 		//////////
 		// Grab left
 		//////
-			lfLeft = iiVariable_getAs_f64(thisCode, varLeft, tlForceConvert, tlError, tnErrorNum);
+			lfLeft = iiVariable_getAs_f64(varLeft, tlForceConvert, tlError, tnErrorNum);
 			if (*tlError)
 				return(0);
 
 		//////////
 		// Grab right
 		//////
-			lfRight = iiVariable_getAs_f64(thisCode, varRight, tlForceConvert, tlError, tnErrorNum);
+			lfRight = iiVariable_getAs_f64(varRight, tlForceConvert, tlError, tnErrorNum);
 			if (*tlError)
 				return(0);
 
@@ -12942,7 +12935,7 @@ debug_break;
 			else								return(1);			// Greater than
 	}
 
-	s32 iiVariable_compareNonmatchingTypesAs_s64(SThisCode* thisCode, SVariable* varLeft, SVariable* varRight, bool tlForceConvert, bool* tlError, u32* tnErrorNum)
+	s32 iiVariable_compareNonmatchingTypesAs_s64(SVariable* varLeft, SVariable* varRight, bool tlForceConvert, bool* tlError, u32* tnErrorNum)
 	{
 		s64 lnLeft, lnRight;
 
@@ -12950,14 +12943,14 @@ debug_break;
 		//////////
 		// Grab left
 		//////
-			lnLeft = iiVariable_getAs_s64(thisCode, varLeft, tlForceConvert, tlError, tnErrorNum);
+			lnLeft = iiVariable_getAs_s64(varLeft, tlForceConvert, tlError, tnErrorNum);
 			if (*tlError)
 				return(0);
 
 		//////////
 		// Grab right
 		//////
-			lnRight = iiVariable_getAs_s64(thisCode, varRight, tlForceConvert, tlError, tnErrorNum);
+			lnRight = iiVariable_getAs_s64(varRight, tlForceConvert, tlError, tnErrorNum);
 			if (*tlError)
 				return(0);
 
@@ -12970,7 +12963,7 @@ debug_break;
 			else								return(1);			// Greater than
 	}
 
-	s32 iiVariable_compareNonmatchingTypesAs_u64(SThisCode* thisCode, SVariable* varLeft, SVariable* varRight, bool tlForceConvert, bool* tlError, u32* tnErrorNum)
+	s32 iiVariable_compareNonmatchingTypesAs_u64(SVariable* varLeft, SVariable* varRight, bool tlForceConvert, bool* tlError, u32* tnErrorNum)
 	{
 		u64 lnLeft, lnRight;
 
@@ -12978,14 +12971,14 @@ debug_break;
 		//////////
 		// Grab left
 		//////
-			lnLeft = iiVariable_getAs_u64(thisCode, varLeft, tlForceConvert, tlError, tnErrorNum);
+			lnLeft = iiVariable_getAs_u64(varLeft, tlForceConvert, tlError, tnErrorNum);
 			if (*tlError)
 				return(0);
 
 		//////////
 		// Grab right
 		//////
-			lnRight = iiVariable_getAs_u64(thisCode, varRight, tlForceConvert, tlError, tnErrorNum);
+			lnRight = iiVariable_getAs_u64(varRight, tlForceConvert, tlError, tnErrorNum);
 			if (*tlError)
 				return(0);
 
@@ -13006,7 +12999,7 @@ debug_break;
 // Compares two types of variables that are known to be exactly the same type.
 //
 //////
-	s32 iiVariable_compareMatchingTypes(SThisCode* thisCode, SVariable* varLeft, SVariable* varRight, bool* tlError, u32* tnErrorNum)
+	s32 iiVariable_compareMatchingTypes(SVariable* varLeft, SVariable* varRight, bool* tlError, u32* tnErrorNum)
 	{
 		s32		lnResult;
 		s64		lnLeft, lnRight;
@@ -13085,11 +13078,11 @@ debug_break;
 					//////////
 					// Convert each to numeric
 					//////
-						lnLeft	= iiVariable_getAs_s64(thisCode, varLeft, false, tlError, tnErrorNum);
+						lnLeft	= iiVariable_getAs_s64(varLeft, false, tlError, tnErrorNum);
 						if (*tlError)
 							return(0);
 
-						lnRight	= iiVariable_getAs_s64(thisCode, varRight, false, tlError, tnErrorNum);
+						lnRight	= iiVariable_getAs_s64(varRight, false, tlError, tnErrorNum);
 						if (*tlError)
 							return(0);
 
@@ -13144,12 +13137,12 @@ debug_break;
 // formula:  result = (dt1 - dt2).
 //
 //////
-	s64 iiVariable_compute_DatetimeDifference_getAs_s64(SThisCode* thisCode, SVariable* dtVar1, SVariable* dtVar2)
+	s64 iiVariable_compute_DatetimeDifference_getAs_s64(SVariable* dtVar1, SVariable* dtVar2)
 	{
-		return((s64)iiVariable_compute_DatetimeDifference_getAs_f64(thisCode, dtVar1, dtVar2));
+		return((s64)iiVariable_compute_DatetimeDifference_getAs_f64(dtVar1, dtVar2));
 	}
 
-	f64 iiVariable_compute_DatetimeDifference_getAs_f64(SThisCode* thisCode, SVariable* dtVar1, SVariable* dtVar2)
+	f64 iiVariable_compute_DatetimeDifference_getAs_f64(SVariable* dtVar1, SVariable* dtVar2)
 	{
 		SDateTime*	dt1;
 		SDateTime*	dt2;
@@ -13157,8 +13150,8 @@ debug_break;
 
 
 		// De-reference the variables
-		dtVar1 = iiVariable_terminateIndirect(thisCode, dtVar1);
-		dtVar2 = iiVariable_terminateIndirect(thisCode, dtVar2);
+		dtVar1 = iiVariable_terminateIndirect(dtVar1);
+		dtVar2 = iiVariable_terminateIndirect(dtVar2);
 
 
 		//////////
@@ -13192,9 +13185,6 @@ debug_break;
 //////
 	SVariable* iiDateMath_get_dateTemplate(s32 tnDateFormat)
 	{
-		SThisCode* thisCode = NULL;
-
-
 		// Populate if missing
 		if (tnDateFormat < (s32)_SET_DATE_START || tnDateFormat > (s32)_SET_DATE_END)
 			tnDateFormat = propGet_settings_Date(_settings);
@@ -13905,7 +13895,7 @@ debug_break;
 		return((s32)lfVal32);
 	}
 
-	void iiBfp_convertForDisplay(SThisCode* thisCode, SVariable* varDisp, SVariable* varVal)
+	void iiBfp_convertForDisplay(SVariable* varDisp, SVariable* varVal)
 	{
 		s32 lnLength;
 
@@ -13921,12 +13911,12 @@ debug_break;
 		//////////
 		// Fixup
 		//////
-			iiBfp_convertFrom_scientificNotation(thisCode, &varDisp->value, varVal);
+			iiBfp_convertFrom_scientificNotation(&varDisp->value, varVal);
 
 	}
 
 	// This adjusts the display version of the value, which must be in sync (being just converted, for example)
-	void iiBfp_convertFrom_scientificNotation(SThisCode* thisCode, SDatum* datum, SVariable* varVal)
+	void iiBfp_convertFrom_scientificNotation(SDatum* datum, SVariable* varVal)
 	{
 		s32 lnI, lnSigDigs;
 
@@ -13966,7 +13956,7 @@ debug_break;
 		return((s32)(1.0 + ((f32)varVal->value.length * 0.3010299957/*Log10(2)*/)));
 	}
 
-	void iiBi_convertForDisplay(SThisCode* thisCode, SVariable* varDisp, SVariable* varVal)
+	void iiBi_convertForDisplay(SVariable* varDisp, SVariable* varVal)
 	{
 		s32 lnLength;
 
@@ -13988,12 +13978,12 @@ debug_break;
 		//////////
 		// Fixup
 		//////
-			iiBi_convertFrom_scientificNotation(thisCode, &varDisp->value, varVal);
+			iiBi_convertFrom_scientificNotation(&varDisp->value, varVal);
 
 	}
 
 	// This adjusts the display version of the value, which must be in sync (being just converted, for example)
-	void iiBi_convertFrom_scientificNotation(SThisCode* thisCode, SDatum* datum, SVariable* varVal)
+	void iiBi_convertFrom_scientificNotation(SDatum* datum, SVariable* varVal)
 	{
 		s32 lnSigDigs;
 
@@ -14027,11 +14017,11 @@ debug_break;
 		return(false);
 	}
 
-	bool iOp_setVariable_param(SThisCode* thisCode, SOp* op, SVariable* var, bool isOpAllocated)
+	bool iOp_setVariable_param(SOp* op, SVariable* var, bool isOpAllocated)
 	{
 		if (op)
 		{
-			op->variable		= iiVariable_terminateIndirect(thisCode, var);
+			op->variable		= iiVariable_terminateIndirect(var);
 			op->opType			= _OP_TYPE_PARAM;
 			op->isOpDataAllocated	= isOpAllocated;
 			return(true);
@@ -14041,11 +14031,11 @@ debug_break;
 		return(false);
 	}
 
-	bool iOp_setVariable_local(SThisCode* thisCode, SOp* op, SVariable* var, bool isOpAllocated)
+	bool iOp_setVariable_local(SOp* op, SVariable* var, bool isOpAllocated)
 	{
 		if (op)
 		{
-			op->variable		= iiVariable_terminateIndirect(thisCode, var);
+			op->variable		= iiVariable_terminateIndirect(var);
 			op->opType			= _OP_TYPE_LOCAL;
 			op->isOpDataAllocated	= isOpAllocated;
 			return(true);
@@ -14055,11 +14045,11 @@ debug_break;
 		return(false);
 	}
 
-	bool iOp_setVariable_scoped(SThisCode* thisCode, SOp* op, SVariable* var, bool isOpAllocated)
+	bool iOp_setVariable_scoped(SOp* op, SVariable* var, bool isOpAllocated)
 	{
 		if (op)
 		{
-			op->variable		= iiVariable_terminateIndirect(thisCode, var);
+			op->variable		= iiVariable_terminateIndirect(var);
 			op->opType			= _OP_TYPE_SCOPED;
 			op->isOpDataAllocated	= isOpAllocated;
 			return(true);
@@ -14069,11 +14059,11 @@ debug_break;
 		return(false);
 	}
 
-	bool iOp_setVariable_return(SThisCode* thisCode, SOp* op, SVariable* var, bool isOpAllocated)
+	bool iOp_setVariable_return(SOp* op, SVariable* var, bool isOpAllocated)
 	{
 		if (op)
 		{
-			op->variable		= iiVariable_terminateIndirect(thisCode, var);
+			op->variable		= iiVariable_terminateIndirect(var);
 			op->opType			= _OP_TYPE_RETURNS;
 			op->isOpDataAllocated	= isOpAllocated;
 			return(true);
@@ -14091,7 +14081,7 @@ debug_break;
 // Called to delete anything on the op, and optionally the op itself.
 //
 //////
-	void iOp_politelyDelete(SThisCode* thisCode, SOp* op, bool tlDeleteSelf)
+	void iOp_politelyDelete(SOp* op, bool tlDeleteSelf)
 	{
 		// Make sure our environment is sane
 		if (op && op->isOpDataAllocated)
@@ -14105,23 +14095,23 @@ debug_break;
 					switch (op->opType)
 					{
 						case _OP_TYPE_PARAM:
-							iVariable_delete(NULL, op->param, true);
+							iVariable_delete(op->param, true);
 							break;
 
 						case _OP_TYPE_LOCAL:
-							iVariable_delete(NULL, op->local, true);
+							iVariable_delete(op->local, true);
 							break;
 
 						case _OP_TYPE_SCOPED:
-							iVariable_delete(NULL, op->scoped, true);
+							iVariable_delete(op->scoped, true);
 							break;
 
 						case _OP_TYPE_RETURNS:
-							iVariable_delete(NULL, op->returns, true);
+							iVariable_delete(op->returns, true);
 							break;
 
 						case _OP_TYPE_OBJECT:
-							iObj_delete(NULL, &op->obj, true, true, true);
+							iObj_delete(&op->obj, true, true, true);
 							break;
 
 // These types are only referenced
@@ -14149,10 +14139,10 @@ debug_break;
 // Called to append an error to the indicated component
 //
 //////
-	void iComp_appendError(SThisCode* thisCode, SComp* comp, u32 tnErrorNum, cu8* tcMessage)
+	void iComp_appendError(SComp* comp, u32 tnErrorNum, cu8* tcMessage)
 	{
 		if (comp && comp->line)
-			iLine_appendError(thisCode, comp->line, tnErrorNum, tcMessage, comp->start, comp->length);
+			iLine_appendError(comp->line, tnErrorNum, tcMessage, comp->start, comp->length);
 	}
 
 
@@ -14163,10 +14153,10 @@ debug_break;
 // Called to append a warning to the indicated component
 //
 //////
-	void iComp_appendWarning(SThisCode* thisCode, SComp* comp, u32 tnWarningNum, cu8* tcMessage)
+	void iComp_appendWarning(SComp* comp, u32 tnWarningNum, cu8* tcMessage)
 	{
 		if (comp && comp->line)
-			iLine_appendWarning(thisCode, comp->line, tnWarningNum, tcMessage, comp->start, comp->length);
+			iLine_appendWarning(comp->line, tnWarningNum, tcMessage, comp->start, comp->length);
 	}
 
 
@@ -14177,12 +14167,12 @@ debug_break;
 // Called to report the indicated message
 //
 //////
-	void iComp_reportWarningsOnRemainder(SThisCode* thisCode, SComp* comp, u32 tnWarningNum, cu8* tcMessage)
+	void iComp_reportWarningsOnRemainder(SComp* comp, u32 tnWarningNum, cu8* tcMessage)
 	{
 		while (comp)
 		{
 			// Append the warning
-			iComp_appendWarning(thisCode, comp, tnWarningNum, ((tcMessage) ? tcMessage : (u8*)cgcUnspecifiedWarning));
+			iComp_appendWarning(comp, tnWarningNum, ((tcMessage) ? tcMessage : (u8*)cgcUnspecifiedWarning));
 
 			// Move to next component
 			comp = comp->ll.nextComp;
@@ -14197,7 +14187,7 @@ debug_break;
 // Called to create a new line
 //
 //////
-	SLine* iLine_createNew(SThisCode* thisCode, bool tlAllocCompilerInfo)
+	SLine* iLine_createNew(bool tlAllocCompilerInfo)
 	{
 		SLine* line;
 
@@ -14212,7 +14202,7 @@ debug_break;
 
 			// Add SCompiler if need be
 			if (tlAllocCompilerInfo)
-				line->compilerInfo = iCompiler_allocate(thisCode, line);
+				line->compilerInfo = iCompiler_allocate(line);
 
 		}
 
@@ -14228,10 +14218,10 @@ debug_break;
 // Called to append a new line to a chain (without regards to honoring the chain)
 //
 //////
-	SLine* iLine_appendNew(SThisCode* thisCode, SLine* line, bool tlAllocCompilerInfo)
+	SLine* iLine_appendNew(SLine* line, bool tlAllocCompilerInfo)
 	{
 		// Append the line to the chain
-		line->ll.nextLine = iLine_createNew(thisCode, tlAllocCompilerInfo);
+		line->ll.nextLine = iLine_createNew(tlAllocCompilerInfo);
 
 		// Indicate the new line
 		return(line->ll.nextLine);
@@ -14245,13 +14235,13 @@ debug_break;
 // Called to insert a new line to a chain
 //
 //////
-	SLine* iLine_insertNew(SThisCode* thisCode, SLine* lineRef, bool tlAllocCompilerInfo, bool tlAfter)
+	SLine* iLine_insertNew(SLine* lineRef, bool tlAllocCompilerInfo, bool tlAfter)
 	{
 		SLine*	lineNew;
 
 
 		// Append the line to the chain
-		lineNew = iLine_createNew(thisCode, tlAllocCompilerInfo);
+		lineNew = iLine_createNew(tlAllocCompilerInfo);
 		if (lineNew)
 			iLl_insertNode((SLL*)lineNew, (SLL*)lineRef, tlAfter);
 
@@ -14267,11 +14257,11 @@ debug_break;
 // Called to append an error the indicated source code line
 //
 //////
-	void iLine_appendError(SThisCode* thisCode, SLine* line, u32 tnErrorNum, cu8* tcMessage, u32 tnStartColumn, u32 tnLength)
+	void iLine_appendError(SLine* line, u32 tnErrorNum, cu8* tcMessage, u32 tnStartColumn, u32 tnLength)
 	{
 		if (line && line->compilerInfo)
 		{
-			iCompileNote_appendMessage(thisCode, &line->compilerInfo->firstError, tnStartColumn, tnStartColumn + tnLength, tnErrorNum, tcMessage);
+			iCompileNote_appendMessage(&line->compilerInfo->firstError, tnStartColumn, tnStartColumn + tnLength, tnErrorNum, tcMessage);
 		}
 	}
 
@@ -14283,11 +14273,11 @@ debug_break;
 // Called to append a warning to the indicated source code line
 //
 //////
-	void iLine_appendWarning(SThisCode* thisCode, SLine* line, u32 tnWarningNum, cu8* tcMessage, u32 tnStartColumn, u32 tnLength)
+	void iLine_appendWarning(SLine* line, u32 tnWarningNum, cu8* tcMessage, u32 tnStartColumn, u32 tnLength)
 	{
 		if (line && line->compilerInfo)
 		{
-			iCompileNote_appendMessage(thisCode, &line->compilerInfo->firstError, tnStartColumn, tnStartColumn + tnLength, tnWarningNum, tcMessage);
+			iCompileNote_appendMessage(&line->compilerInfo->firstError, tnStartColumn, tnStartColumn + tnLength, tnWarningNum, tcMessage);
 		}
 	}
 
@@ -14302,7 +14292,7 @@ debug_break;
 //			comp->ll.nextComp is NULL, line->ll.nextLine will be used
 //////
 	// Note:  cb->lFound also indicates if something was found
-	bool iLine_scanComps_forward_withCallback(SThisCode* thisCode, SLine* line, SComp* comp, SCallback* cb, bool tlSkipFirst)
+	bool iLine_scanComps_forward_withCallback(SLine* line, SComp* comp, SCallback* cb, bool tlSkipFirst)
 	{
 		// Make sure our environment is sane
 		if (line && comp && cb && cb->_func)
@@ -14374,7 +14364,7 @@ goto_next_component:
 // Called to convert all \{ and \} (for example) to just { and }
 //
 //////
-	s32 iLines_unescape_iCodes(SThisCode* thisCode, SLine* lineStart, s32 tniCode1, s32 tniCode2, s32 tniCode3, s32 tniCodeEscape)
+	s32 iLines_unescape_iCodes(SLine* lineStart, s32 tniCode1, s32 tniCode2, s32 tniCode3, s32 tniCodeEscape)
 	{
 		s32		lnUnescapeCount;
 		SLine*	line;
@@ -14385,7 +14375,7 @@ goto_next_component:
 		{
 			// Remove escapes from this line
 			if (line->compilerInfo && line->compilerInfo->firstComp)
-				lnUnescapeCount += iComps_unescape_iCodes(thisCode, line->compilerInfo->firstComp, tniCode1, tniCode2, tniCode3);
+				lnUnescapeCount += iComps_unescape_iCodes(line->compilerInfo->firstComp, tniCode1, tniCode2, tniCode3);
 		}
 
 		// Indicate how many were unescaped
@@ -14400,7 +14390,7 @@ goto_next_component:
 // Moves all lines from one file to another, before or after the target line
 //
 //////
-	s32 iLine_migrateLines(SThisCode* thisCode, SLine** linesFrom, SLine* lineTarget)
+	s32 iLine_migrateLines(SLine** linesFrom, SLine* lineTarget)
 	{
 		s32		lnLineCount;
 		SLine*	temp;
@@ -14455,7 +14445,7 @@ _asm int 3;
 // Note:  It will left-justify the starting component if specified, otherwise it will prefix with spaces
 //
 //////
-	SLine* iLine_copyComps_toNewLines(SThisCode* thisCode, SLine* lineStart, SComp* compStart, SLine* lineEnd, SComp* compEnd, bool tlLeftJustifyStart, bool tlSkipBlankLines)
+	SLine* iLine_copyComps_toNewLines(SLine* lineStart, SComp* compStart, SLine* lineEnd, SComp* compEnd, bool tlLeftJustifyStart, bool tlSkipBlankLines)
 	{
 		SLine*	lineNew;
 		SLine*	lineCopy;
@@ -14469,11 +14459,11 @@ _asm int 3;
 			// First line
 			//////
 				// New line
-				if (!(lineNew = iLine_createNew(thisCode, true)))
+				if (!(lineNew = iLine_createNew(true)))
 					return(NULL);
 
 				// Copy components
-				iComps_copyTo(thisCode, lineNew, compStart, compEnd, false);
+				iComps_copyTo(lineNew, compStart, compEnd, false);
 
 				// If we're only doing one line, we're done
 				if (lineStart == lineEnd)
@@ -14489,10 +14479,10 @@ _asm int 3;
 					if (!tlSkipBlankLines || !lineCopy->compilerInfo->firstComp)
 					{
 						// New line
-						lineNew = iLine_appendNew(thisCode, lineNew, true);
+						lineNew = iLine_appendNew(lineNew, true);
 
 						// Copy all line components up to the end
-						iComps_copyTo(thisCode, lineNew, lineCopy->compilerInfo->firstComp, compEnd, false);
+						iComps_copyTo(lineNew, lineCopy->compilerInfo->firstComp, compEnd, false);
 					}
 				}
 
@@ -14504,16 +14494,16 @@ _asm int 3;
 				if (lineCopy != lineEnd)
 				{
 					// New line
-					lineNew = iLine_appendNew(thisCode, lineNew, true);
+					lineNew = iLine_appendNew(lineNew, true);
 
 					// Copy all line components up to the end
-					iComps_copyTo(thisCode, lineNew, lineCopy->compilerInfo->firstComp, compEnd, false);
+					iComps_copyTo(lineNew, lineCopy->compilerInfo->firstComp, compEnd, false);
 				}
 				
 
 		} else {
 			// Invalid content, just create a blank line
-			lineNew = iLine_createNew(thisCode, true);
+			lineNew = iLine_createNew(true);
 			// Note: We don't reposition the component here because nothing moved
 		}
 
@@ -14539,7 +14529,7 @@ _asm int 3;
 		bool	lContinuationFound;
 	};
 
-	SLine* iLine_copyComps_toNewLines_untilTerminating(SThisCode* thisCode, SLine* lineStart, SComp* compStart, s32 tniCodeContinuation, bool tlLeftJustifyStart, bool tlSkipBlankLines, SCallback* cb)
+	SLine* iLine_copyComps_toNewLines_untilTerminating(SLine* lineStart, SComp* compStart, s32 tniCodeContinuation, bool tlLeftJustifyStart, bool tlSkipBlankLines, SCallback* cb)
 	{
 		SLine*		lineNew;
 		SLine*		lineCopy;
@@ -14554,7 +14544,7 @@ _asm int 3;
 			// First line
 			//////
 				// New line
-				if (!(lineNew = iLine_createNew(thisCode, true)))
+				if (!(lineNew = iLine_createNew(true)))
 					return(NULL);
 
 				// Copy components smartly
@@ -14562,7 +14552,7 @@ _asm int 3;
 				memset(&x, 0, sizeof(x));
 				cb->_func	= (sptr)&iiLine_copyComps_toNewLines_untilTerminating__callback;
 				cb->x		= (void*)&x;
-				iComps_copyTo_withCallback(thisCode, lineNew, compStart, cb, false);
+				iComps_copyTo_withCallback(lineNew, compStart, cb, false);
 
 				// If the last component was not a continuation character, we're done
 				if (!x.lContinuationFound)
@@ -14578,17 +14568,17 @@ _asm int 3;
 					if (!tlSkipBlankLines || lineCopy->compilerInfo->firstComp->iCode != _ICODE_BACKSLASH)
 					{
 						// New line
-						lineNew = iLine_appendNew(thisCode, lineNew, true);
+						lineNew = iLine_appendNew(lineNew, true);
 
 						// Copy all line components up to the end
-						iComps_copyTo_withCallback(thisCode, lineNew, lineCopy->compilerInfo->firstComp, cb, false);
+						iComps_copyTo_withCallback(lineNew, lineCopy->compilerInfo->firstComp, cb, false);
 					}
 				}
 				
 
 		} else {
 			// Invalid content, just create a blank line
-			lineNew = iLine_createNew(thisCode, true);
+			lineNew = iLine_createNew(true);
 			// Note: We don't reposition the component here because nothing moved
 		}
 
@@ -14649,7 +14639,7 @@ _asm int 3;
 // Called to skip to the next component
 //
 //////
-	s32 iiLine_skipTo_nextComp(SThisCode* thisCode, SLine** lineProcessing, SComp** compProcessing)
+	s32 iiLine_skipTo_nextComp(SLine** lineProcessing, SComp** compProcessing)
 	{
 		s32		lnCount;
 		SComp*	comp;
@@ -14737,7 +14727,7 @@ _asm int 3;
 // Called to skip to the previous component
 //
 //////
-	s32 iiLine_skipTo_prevComp(SThisCode* thiscode, SLine** lineProcessing, SComp** compProcessing)
+	s32 iiLine_skipTo_prevComp(SLine** lineProcessing, SComp** compProcessing)
 	{
 		s32		lnCount;
 		SComp*	comp;
@@ -14835,7 +14825,7 @@ _asm int 3;
 // Allocates an SCompiler structure.  Initializes it to all NULLs.
 //
 //////
-	SCompiler* iCompiler_allocate(SThisCode* thisCode, SLine* parent)
+	SCompiler* iCompiler_allocate(SLine* parent)
 	{
 		SCompiler* compilerNew;
 
@@ -14873,7 +14863,7 @@ _asm int 3;
 // Called to delete the previous allocated compiler data
 //
 //////
-	void iCompiler_delete(SThisCode* thisCode, SCompiler** compilerInfoRoot, bool tlDeleteSelf)
+	void iCompiler_delete(SCompiler** compilerInfoRoot, bool tlDeleteSelf)
 	{
 		SCompiler* compilerInfo;
 
@@ -14889,17 +14879,17 @@ _asm int 3;
 			compilerInfo->sourceCode = NULL;
 
 			// Delete the items here
-			iCompileNote_removeAll(thisCode, &compilerInfo->firstWarning);
-			iCompileNote_removeAll(thisCode, &compilerInfo->firstError);
+			iCompileNote_removeAll(&compilerInfo->firstWarning);
+			iCompileNote_removeAll(&compilerInfo->firstError);
 
 			// Delete combined component references
 			if (compilerInfo->firstComp && compilerInfo->firstComp->firstCombined)
-				iComps_deleteAll_byFirstComp(thisCode, &compilerInfo->firstComp->firstCombined);
+				iComps_deleteAll_byFirstComp(&compilerInfo->firstComp->firstCombined);
 
 			// Delete regular components, whitespaces, and comments
-			iComps_deleteAll_byFirstComp(thisCode, &compilerInfo->firstComp);
-			iComps_deleteAll_byFirstComp(thisCode, &compilerInfo->firstWhitespace);
-			iComps_deleteAll_byFirstComp(thisCode, &compilerInfo->firstComment);
+			iComps_deleteAll_byFirstComp(&compilerInfo->firstComp);
+			iComps_deleteAll_byFirstComp(&compilerInfo->firstWhitespace);
+			iComps_deleteAll_byFirstComp(&compilerInfo->firstComment);
 
 			// Delete self if need be
 			if (tlDeleteSelf)
@@ -14918,7 +14908,7 @@ _asm int 3;
 // Called to create a new note
 //
 //////
-	SCompileNote* iCompileNote_create(SThisCode* thisCode, SCompileNote** noteRoot, u32 tnStart, u32 tnEnd, u32 tnNumber, cu8* tcMessage)
+	SCompileNote* iCompileNote_create(SCompileNote** noteRoot, u32 tnStart, u32 tnEnd, u32 tnNumber, cu8* tcMessage)
 	{
 		SCompileNote* note;
 
@@ -14948,7 +14938,7 @@ _asm int 3;
 // Called to append a compiler note
 //
 //////
-	SCompileNote* iCompileNote_appendMessage(SThisCode* thisCode, SCompileNote** noteRoot, u32 tnStartColumn, u32 tnEndColumn, u32 tnNumber, cu8* tcMessage)
+	SCompileNote* iCompileNote_appendMessage(SCompileNote** noteRoot, u32 tnStartColumn, u32 tnEndColumn, u32 tnNumber, cu8* tcMessage)
 	{
 		SCompileNote* noteNew;
 
@@ -14958,7 +14948,7 @@ _asm int 3;
 		if (noteRoot && tcMessage)
 		{
 			// Create the new note
-			noteNew = iCompileNote_create(thisCode, noteRoot, tnStartColumn, tnEndColumn, tnNumber, tcMessage);
+			noteNew = iCompileNote_create(noteRoot, tnStartColumn, tnEndColumn, tnNumber, tcMessage);
 		}
 
 		// Indicate our status
@@ -14973,7 +14963,7 @@ _asm int 3;
 // Called to remove all compile notes in the chain
 //
 //////
-	void iCompileNote_removeAll(SThisCode* thisCode, SCompileNote** noteRoot)
+	void iCompileNote_removeAll(SCompileNote** noteRoot)
 	{
 		// Make sure our environment is sane
 		if (noteRoot && *noteRoot)

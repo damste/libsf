@@ -118,7 +118,7 @@ extern "C"
 // Called to call into the dll function
 //
 //////
-	void iDllFunc_dispatch(SThisCode* thisCode, SFunctionParams* rpar, SDllFunc* dfunc, SComp* compDllName)
+	void iDllFunc_dispatch(SFunctionParams* rpar, SDllFunc* dfunc, SComp* compDllName)
 	{
 		s32		lnI;
 		u32		lnParamsFound;
@@ -138,7 +138,7 @@ extern "C"
 			//////////
 			// We need to find the minimum number of parameters between)
 			//////
-				llResult = iiEngine_getParametersBetween(thisCode, NULL, iComps_getNth(thisCode, compDllName, 1), &lnParamsFound, dfunc->ipCount, dfunc->ipCount, rpar, true);
+				llResult = iiEngine_getParametersBetween(NULL, iComps_getNth(compDllName, 1), &lnParamsFound, dfunc->ipCount, dfunc->ipCount, rpar, true);
 				if (!llResult || lnParamsFound != dfunc->ipCount)
 				{
 					rpar->ei.error		= true;
@@ -159,7 +159,7 @@ extern "C"
 			//////////
 			// Dispatch into the DLL
 			//////
-				iiDllFunc_dispatch_lowLevel(thisCode, rpar, dfunc);
+				iiDllFunc_dispatch_lowLevel(rpar, dfunc);
 
 
 			// Structured exit
@@ -176,7 +176,7 @@ extern "C"
 
 				// Delete if populated
 				if (rpar->ip[lnI] && rpar->ip[lnI]->isVarAllocated)
-					iVariable_delete(thisCode, rpar->ip[lnI], true);
+					iVariable_delete(rpar->ip[lnI], true);
 
 			}
 
@@ -188,7 +188,7 @@ extern "C"
 
 	}
 
-	void iiDllFunc_dispatch_lowLevel(SThisCode* thisCode, SFunctionParams* rpar, SDllFunc* dfunc)
+	void iiDllFunc_dispatch_lowLevel(SFunctionParams* rpar, SDllFunc* dfunc)
 	{
 		s32 lnI;
 
@@ -229,14 +229,14 @@ extern "C"
 
 								} else {
 									// We must translate it, then store it back afterward
-									gnDll_values[lnI]._s16	= iiVariable_getAs_s16(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+									gnDll_values[lnI]._s16	= iiVariable_getAs_s16(rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
 									gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._s16;
 									gnDll_types[lnI]		= _DLL_TYPE__byRef_postProcess;
 								}
 
 							} else {
 								// By value
-								gnDll_values[lnI]._s16	= iiVariable_getAs_s16(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+								gnDll_values[lnI]._s16	= iiVariable_getAs_s16(rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
 								gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._s16;
 							}
 							break;
@@ -254,14 +254,14 @@ extern "C"
 
 								} else {
 									// We must translate it, then store it back afterward
-									gnDll_values[lnI]._u16	= iiVariable_getAs_u16(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+									gnDll_values[lnI]._u16	= iiVariable_getAs_u16(rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
 									gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._u16;
 									gnDll_types[lnI]		= _DLL_TYPE__byRef_postProcess;
 								}
 
 							} else {
 								// By value
-								gnDll_values[lnI]._u16	= iiVariable_getAs_u16(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+								gnDll_values[lnI]._u16	= iiVariable_getAs_u16(rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
 								gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._u16;
 							}
 							break;
@@ -279,14 +279,14 @@ extern "C"
 
 								} else {
 									// We must translate it, then store it back afterward
-									gnDll_values[lnI]._s32	= iiVariable_getAs_s32(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+									gnDll_values[lnI]._s32	= iiVariable_getAs_s32(rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
 									gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._s32;
 									gnDll_types[lnI]		= _DLL_TYPE__byRef_postProcess;
 								}
 
 							} else {
 								// By value
-								gnDll_values[lnI]._s32	= iiVariable_getAs_s32(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+								gnDll_values[lnI]._s32	= iiVariable_getAs_s32(rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
 								gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._s32;
 							}
 							break;
@@ -304,14 +304,14 @@ extern "C"
 
 								} else {
 									// We must translate it, then store it back afterward
-									gnDll_values[lnI]._u32	= iiVariable_getAs_u32(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+									gnDll_values[lnI]._u32	= iiVariable_getAs_u32(rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
 									gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._u32;
 									gnDll_types[lnI]		= _DLL_TYPE__byRef_postProcess;
 								}
 
 							} else {
 								// By value
-								gnDll_values[lnI]._u32	= iiVariable_getAs_u32(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+								gnDll_values[lnI]._u32	= iiVariable_getAs_u32(rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
 								gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._u32;
 							}
 							break;
@@ -333,14 +333,14 @@ extern "C"
 
 									} else {
 										// We must translate it, then store it back afterward
-										gnDll_values[lnI]._f64	= iiVariable_getAs_f64(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+										gnDll_values[lnI]._f64	= iiVariable_getAs_f64(rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
 										gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._f64;
 										gnDll_types[lnI]		= _DLL_TYPE__byRef_postProcess;
 									}
 
 								} else {
 									// By value
-									gnDll_values[lnI]._f64	= iiVariable_getAs_f64(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+									gnDll_values[lnI]._f64	= iiVariable_getAs_f64(rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
 									gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._f64;
 								}
 
@@ -357,14 +357,14 @@ extern "C"
 
 									} else {
 										// We must translate it, then store it back afterward
-										gnDll_values[lnI]._f32	= iiVariable_getAs_f32(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+										gnDll_values[lnI]._f32	= iiVariable_getAs_f32(rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
 										gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._f32;
 										gnDll_types[lnI]		= _DLL_TYPE__byRef_postProcess;
 									}
 
 								} else {
 									// By value
-									gnDll_values[lnI]._f32	= iiVariable_getAs_f32(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+									gnDll_values[lnI]._f32	= iiVariable_getAs_f32(rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
 									gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._f32;
 								}
 #if defined(__64_BIT_COMPILER__)
@@ -385,14 +385,14 @@ extern "C"
 
 								} else {
 									// We must translate it, then store it back afterward
-									gnDll_values[lnI]._f64	= iiVariable_getAs_f64(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+									gnDll_values[lnI]._f64	= iiVariable_getAs_f64(rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
 									gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._f64;
 									gnDll_types[lnI]		= _DLL_TYPE__byRef_postProcess;
 								}
 
 							} else {
 								// By value
-								gnDll_values[lnI]._f64	= iiVariable_getAs_f64(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+								gnDll_values[lnI]._f64	= iiVariable_getAs_f64(rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
 								gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._f64;
 							}
 							break;
@@ -410,14 +410,14 @@ extern "C"
 
 								} else {
 									// We must translate it, then store it back afterward
-									gnDll_values[lnI]._s64	= iiVariable_getAs_s64(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+									gnDll_values[lnI]._s64	= iiVariable_getAs_s64(rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
 									gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._s64;
 									gnDll_types[lnI]		= _DLL_TYPE__byRef_postProcess;
 								}
 
 							} else {
 								// By value
-								gnDll_values[lnI]._s64	= iiVariable_getAs_s64(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+								gnDll_values[lnI]._s64	= iiVariable_getAs_s64(rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
 								gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._s64;
 							}
 							break;
@@ -435,14 +435,14 @@ extern "C"
 
 								} else {
 									// We must translate it, then store it back afterward
-									gnDll_values[lnI]._u64	= iiVariable_getAs_u64(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+									gnDll_values[lnI]._u64	= iiVariable_getAs_u64(rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
 									gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._u64;
 									gnDll_types[lnI]		= _DLL_TYPE__byRef_postProcess;
 								}
 
 							} else {
 								// By value
-								gnDll_values[lnI]._u64	= iiVariable_getAs_u64(thisCode, rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
+								gnDll_values[lnI]._u64	= iiVariable_getAs_u64(rpar->ip[lnI], false, &rpar->ei.error, &rpar->ei.errorNum);
 								gnDll_pointers[lnI]		= (void*)&gnDll_values[lnI]._u64;
 							}
 							break;
@@ -526,45 +526,45 @@ extern "C"
 		//////
 			// Make sure the variable is there
 			if (dfunc->rp.type != _DLL_TYPE_VOID && !rpar->rp[0])
-				rpar->rp[0] = iVariable_create(thisCode, _VAR_TYPE_S32, NULL, true, 0);
+				rpar->rp[0] = iVariable_create(_VAR_TYPE_S32, NULL, true, 0);
 
 			// Based on the type, populate it
 			switch (dfunc->rp.type)
 			{
 				case _DLL_TYPE_S16:
 				case _DLL_TYPE_S32:
-					iVariable_setVarType(thisCode, rpar->rp[0], _VAR_TYPE_S32);
+					iVariable_setVarType(rpar->rp[0], _VAR_TYPE_S32);
 					*rpar->rp[0]->value.data_s32 = gnDll_values[0]._s32;
 					break;
 
 				case _DLL_TYPE_U16:
 				case _DLL_TYPE_U32:
-					iVariable_setVarType(thisCode, rpar->rp[0], _VAR_TYPE_U32);
+					iVariable_setVarType(rpar->rp[0], _VAR_TYPE_U32);
 					*rpar->rp[0]->value.data_u32 = gnDll_values[0]._u32;
 					break;
 
 				case _DLL_TYPE_F32:
-					iVariable_setVarType(thisCode, rpar->rp[0], _VAR_TYPE_F32);
+					iVariable_setVarType(rpar->rp[0], _VAR_TYPE_F32);
 					*rpar->rp[0]->value.data_f32 = gnDll_values[0]._f32;
 					break;
 
 				case _DLL_TYPE_F64:
-					iVariable_setVarType(thisCode, rpar->rp[0], _VAR_TYPE_F64);
+					iVariable_setVarType(rpar->rp[0], _VAR_TYPE_F64);
 					*rpar->rp[0]->value.data_f64 = gnDll_values[0]._f64;
 					break;
 
 				case _DLL_TYPE_S64:
-					iVariable_setVarType(thisCode, rpar->rp[0], _VAR_TYPE_S64);
+					iVariable_setVarType(rpar->rp[0], _VAR_TYPE_S64);
 					*rpar->rp[0]->value.data_s64 = gnDll_values[0]._s64;
 					break;
 
 				case _DLL_TYPE_U64:
-					iVariable_setVarType(thisCode, rpar->rp[0], _VAR_TYPE_U64);
+					iVariable_setVarType(rpar->rp[0], _VAR_TYPE_U64);
 					*rpar->rp[0]->value.data_u64 = gnDll_values[0]._u64;
 					break;
 
 				case _DLL_TYPE_STRING:
-					iVariable_setVarType(thisCode, rpar->rp[0], _VAR_TYPE_CHARACTER);
+					iVariable_setVarType(rpar->rp[0], _VAR_TYPE_CHARACTER);
 					iDatum_duplicate(&rpar->rp[0]->value, gnDll_values[0]._s8p, (s32)strlen(gnDll_values[0]._s8p));
 					break;
 			}
@@ -586,40 +586,40 @@ extern "C"
 						switch (dfunc->ip[lnI].type)
 						{
 							case _DLL_TYPE_S16:
-								iVariable_set_s32_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], (s32)gnDll_values[lnI]._s16);
+								iVariable_set_s32_toExistingType(&rpar->ei, rpar->ip[lnI], (s32)gnDll_values[lnI]._s16);
 								break;
 							case _DLL_TYPE_U16:
-								iVariable_set_u32_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], (u32)gnDll_values[lnI]._u16);
+								iVariable_set_u32_toExistingType(&rpar->ei, rpar->ip[lnI], (u32)gnDll_values[lnI]._u16);
 								break;
 							case _DLL_TYPE_S32:
-								iVariable_set_s32_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], gnDll_values[lnI]._s32);
+								iVariable_set_s32_toExistingType(&rpar->ei, rpar->ip[lnI], gnDll_values[lnI]._s32);
 								break;
 							case _DLL_TYPE_U32:
-								iVariable_set_u32_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], gnDll_values[lnI]._u32);
+								iVariable_set_u32_toExistingType(&rpar->ei, rpar->ip[lnI], gnDll_values[lnI]._u32);
 								break;
 							case _DLL_TYPE_F32:
 #if defined(__64_BIT_COMPILER__)
 								if (dfunc->noPrototype)
 								{
 									// Non-prototyped functions actually physically pass 64-bit values for 32-bit definitions
-									iVariable_set_f64_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], gnDll_values[lnI]._f64);
+									iVariable_set_f64_toExistingType(&rpar->ei, rpar->ip[lnI], gnDll_values[lnI]._f64);
 
 								} else {
 #endif
 									// Normal 32-bit conveyance
-									iVariable_set_f32_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], gnDll_values[lnI]._f32);
+									iVariable_set_f32_toExistingType(&rpar->ei, rpar->ip[lnI], gnDll_values[lnI]._f32);
 #if defined(__64_BIT_COMPILER__)
 								}
 #endif
 								break;
 							case _DLL_TYPE_F64:
-								iVariable_set_f64_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], gnDll_values[lnI]._f64);
+								iVariable_set_f64_toExistingType(&rpar->ei, rpar->ip[lnI], gnDll_values[lnI]._f64);
 								break;
 							case _DLL_TYPE_S64:
-								iVariable_set_s64_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], gnDll_values[lnI]._s64);
+								iVariable_set_s64_toExistingType(&rpar->ei, rpar->ip[lnI], gnDll_values[lnI]._s64);
 								break;
 							case _DLL_TYPE_U64:
-								iVariable_set_u64_toExistingType(thisCode, &rpar->ei, rpar->ip[lnI], gnDll_values[lnI]._u64);
+								iVariable_set_u64_toExistingType(&rpar->ei, rpar->ip[lnI], gnDll_values[lnI]._u64);
 								break;
 
 							case _DLL_TYPE_STRING:
@@ -644,7 +644,7 @@ extern "C"
 // Add the DLL reference to their list of known functions
 //
 //////
-	bool iDllFunc_add(SThisCode* thisCode, SFunctionParams* rpar, SDllFuncParam* rp, SDllFuncParam ip[], s32 tnIpCount, SComp* compFunctionName, SComp* compAliasName, SComp* compDllName, SThisCode* onAccess, SThisCode* onAssign, bool tlNoPrototype, bool tlVariadic)
+	bool iDllFunc_add(SFunctionParams* rpar, SDllFuncParam* rp, SDllFuncParam ip[], s32 tnIpCount, SComp* compFunctionName, SComp* compAliasName, SComp* compDllName, SThisCode* onAccess, SThisCode* onAssign, bool tlNoPrototype, bool tlVariadic)
 	{
 		s32			lnI, lnAttempt, lnFuncNameLength;
 		void*		funcAddress;
@@ -662,7 +662,7 @@ extern "C"
 			//////////
 			// Try to open the DLL
 			//////
-				if (!(dlib = iDllLib_open(thisCode, compDllName)))
+				if (!(dlib = iDllLib_open(compDllName)))
 				{
 					// Unknown
 					rpar->ei.error		= true;
@@ -698,7 +698,7 @@ extern "C"
 				if (funcAddress)
 				{
 					// Try to find the existing function
-					dfunc = iDllFunc_find_byName(thisCode, funcName, lnFuncNameLength);
+					dfunc = iDllFunc_find_byName(funcName, lnFuncNameLength);
 					if (!dfunc)
 					{
 						// Create a new entry
@@ -762,7 +762,7 @@ extern "C"
 // Called to locate a dll function that's been declared by name.
 //
 //////
-	SDllFunc* iDllFunc_find_byName(SThisCode* thisCode, s8* funcName, s32 lnFuncNameLength)
+	SDllFunc* iDllFunc_find_byName(s8* funcName, s32 lnFuncNameLength)
 	{
 // TODO:  No support for overloaded functions, but there probably should be.
 		SDllFunc* dfunc;
@@ -809,7 +809,7 @@ extern "C"
 	HMODULE		ghModule_mpr			= NULL;
 	HMODULE		ghModule_advapi32		= NULL;
 
-	SDllLib* iDllLib_open(SThisCode* thisCode, SComp* compDllName)
+	SDllLib* iDllLib_open(SComp* compDllName)
 	{
 		s32			lnLength;
 		HMODULE		dllHandle;

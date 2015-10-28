@@ -117,372 +117,372 @@ struct SObjEventMap;
 // objects/base.cpp
 // Note:  Property accessors are in the object_accessors.h and object_accessors.cpp source files
 //////
-	SObject*				iObj_create								(SThisCode* thisCode, s32 objType, SObject* objParent);
-	SObject*				iObj_addChild							(SThisCode* thisCode, s32 objType, SObject* objParent);
-	SObject*				iObj_copy								(SThisCode* thisCode, SObject*  template_obj, SObject* prevObj, SObject* nextObj, SObject* parent, bool tlCopyChildren, bool tlCopySiblings, bool tlCreateSeparateBitmapBuffers);
-	void					iObj_delete								(SThisCode* thisCode, SObject** obj, bool tlDeleteSelf, bool tlDeleteChildren, bool tlDeleteSiblings);
-	bool					iObj_setFocus							(SThisCode* thisCode, SWindow*  win, SObject* obj, bool tlClearOtherControlsWithFocus);
-	void					iObj_clearFocus							(SThisCode* thisCode, SWindow*  win, SObject* obj, bool tlClearChildren, bool tlClearSiblings);
-	SObject*				iObj_find_rootmostObject				(SThisCode* thisCode, SObject*  obj);
-	bool					iObj_find_screenRect					(SThisCode* thisCode, SObject*  obj, RECT* rc);
-	bool					iObj_find_relativeRect					(SThisCode* thisCode, SObject*  objThis, SObject* objTarget, s32 x, s32 y, RECT* rc, bool tlProcessChildren, bool tlProcessSiblings);
-	SObject*				iObj_find_thisForm						(SThisCode* thisCode, SObject*  obj);
-	SObject*				iObj_find_thisSubform					(SThisCode* thisCode, SObject*  obj);
-	SObject*				iObj_find_thisRider						(SThisCode* thisCode, SObject*  obj);
-	SObject*				iiObj_findParentObject_byType			(SThisCode* thisCode, SObject*  objStart, s32 objType, bool tlSearchSelf);
-	SObject*				iiObj_findChildObject_byName			(SThisCode* thisCode, SObject*  objStart, SDatum* name, bool tlSearchSelf, bool tlSearchChildren, bool tlSearchSiblings);
-	bool					iObj_isCommandWindow					(SThisCode* thisCode, SObject*  obj);
-	void					iObj_setFocusHighlights					(SThisCode* thisCode, SWindow*  win, SObject* obj, s32 x, s32 y, bool tlProcessChildren, bool tlProcessSiblings);
-	void					iObj_findFocusControls					(SThisCode* thisCode, SObject*  obj, SBuilder* objFocusControls, bool tlProcessSiblings);
-	bool					iObj_setFocusObjectPrev					(SThisCode* thisCode, SWindow*  win, SObject* obj);
-	bool					iObj_setFocusObjectNext					(SThisCode* thisCode, SWindow*  win, SObject* obj);
-	bool					iObj_focus_descentCheck					(SThisCode* thisCode, SObject*  obj, bool tlCheckChildren, bool tlCheckSiblings);
-	SObject*				iObj_focus_descentCheckObj				(SThisCode* thisCode, SObject*  obj, bool tlCheckChildren, bool tlCheckSiblings);
-	void					iObj_setDirtyRender_ascent				(SThisCode* thisCode, SObject*  obj, bool tlMarkParents);
-	void					iObj_setDirtyRender_descent				(SThisCode* thisCode, SObject*  obj, bool tlProcessChildren, bool tlProcessSiblings);
-	void					iObj_setDirtyPublish_ascent				(SThisCode* thisCode, SObject*  obj, bool tlMarkParents);
-	void					iObj_setDirtyPublish_descent			(SThisCode* thisCode, SObject*  obj, bool tlProcessChildren, bool tlProcessSiblings);
-	u32						iObj_render								(SThisCode* thisCode, SObject*  obj, bool tlForceRender);
-	bool					iObj_render_descentCheck				(SThisCode* thisCode, SObject*  obj, bool tlCheckChildren, bool tlCheckSiblings);
-	u32						iObj_renderChildrenAndSiblings			(SThisCode* thisCode, SObject*  obj, bool tlRenderChildren, bool tlRenderSiblings, bool tlForceRender);
-	u32						iObj_publish							(SThisCode* thisCode, SObject*  obj, RECT* rc, SBitmap* bmpDst, bool tlPublishChildren, bool tlPublishSiblings, bool tlForcePublish, s32 tnLevel);
-	bool					iObj_publish_descentCheck				(SThisCode* thisCode, SObject*  obj, bool tlCheckChildren, bool tlCheckSiblings);
-	CXml*					iObj_saveLayoutAs_bxml					(SThisCode* thisCode, SObject* obj, cu8* tcFilename, bool tlFullProperties, bool tlSaveChildren, bool tlSaveSiblings, bool* error, u32* errorNum);
-	CXml*					iiObj_saveLayoutAs_bxml_saveObject		(SThisCode* thisCode, CXml* bxml, SObject* obj, bool tlFullProperties, bool tlSaveChildren, bool tlSaveSiblings);
-	void					iObj_duplicateChain						(SThisCode* thisCode, SObject** root, SObject* chain);
-	void					iObj_appendObjToParent					(SThisCode* thisCode, SObject*  parent, SObject* obj);
-	void					iObj_duplicateChildren					(SThisCode* thisCode, SObject*  objDst, SObject* objSrc);
-	void					iObj_setPosition						(SThisCode* thisCode, SObject*  obj, s32 tnLeft, s32 tnTop);
-	void					iObj_setSize							(SThisCode* thisCode, SObject*  obj, s32 tnLeft, s32 tnTop, s32 tnWidth, s32 tnHeight);
-	void					iiObj_setSize_snapForToolbar			(SThisCode* thisCode, SObject*  obj, s32* tnWidth, s32* tnHeight);
-	SWindow* 				iObj_createWindowForForm				(SThisCode* thisCode, SObject*  form, SWindow* win, s32 icon);
-	SVariable*				iObj_getPropertyAsVariable				(SThisCode* thisCode, SObject*  obj, s8* tcPropertyName, u32 tnPropertyNameLength, SComp* comp, bool tlCreateAsReference);
-	void					iiObj_resetToDefault					(SThisCode* thisCode, SObject*  obj, bool tlResetProperties, bool tlResetMethods);
-	void					iiObj_resetToDefaultCommon				(SThisCode* thisCode, SObject*  obj, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, s32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	s32						iiObj_getBaseclassType_byName			(SThisCode* thisCode, s8* tcTextname, s32 tnTextnameLength);
-	SBaseClassMap*			iiObj_getBaseclass_byName				(SThisCode* thisCode, s8* tcTextname, s32 tnTextnameLength);
-	SBaseClassMap*			iiObj_getBaseclass_byType				(SThisCode* thisCode, s32 tnObjType);
+	SObject*				iObj_create								(s32 objType, SObject* objParent);
+	SObject*				iObj_addChild							(s32 objType, SObject* objParent);
+	SObject*				iObj_copy								(SObject*  template_obj, SObject* prevObj, SObject* nextObj, SObject* parent, bool tlCopyChildren, bool tlCopySiblings, bool tlCreateSeparateBitmapBuffers);
+	void					iObj_delete								(SObject** obj, bool tlDeleteSelf, bool tlDeleteChildren, bool tlDeleteSiblings);
+	bool					iObj_setFocus							(SWindow*  win, SObject* obj, bool tlClearOtherControlsWithFocus);
+	void					iObj_clearFocus							(SWindow*  win, SObject* obj, bool tlClearChildren, bool tlClearSiblings);
+	SObject*				iObj_find_rootmostObject				(SObject*  obj);
+	bool					iObj_find_screenRect					(SObject*  obj, RECT* rc);
+	bool					iObj_find_relativeRect					(SObject*  objThis, SObject* objTarget, s32 x, s32 y, RECT* rc, bool tlProcessChildren, bool tlProcessSiblings);
+	SObject*				iObj_find_thisForm						(SObject*  obj);
+	SObject*				iObj_find_thisSubform					(SObject*  obj);
+	SObject*				iObj_find_thisRider						(SObject*  obj);
+	SObject*				iiObj_findParentObject_byType			(SObject*  objStart, s32 objType, bool tlSearchSelf);
+	SObject*				iiObj_findChildObject_byName			(SObject*  objStart, SDatum* name, bool tlSearchSelf, bool tlSearchChildren, bool tlSearchSiblings);
+	bool					iObj_isCommandWindow					(SObject*  obj);
+	void					iObj_setFocusHighlights					(SWindow*  win, SObject* obj, s32 x, s32 y, bool tlProcessChildren, bool tlProcessSiblings);
+	void					iObj_findFocusControls					(SObject*  obj, SBuilder* objFocusControls, bool tlProcessSiblings);
+	bool					iObj_setFocusObjectPrev					(SWindow*  win, SObject* obj);
+	bool					iObj_setFocusObjectNext					(SWindow*  win, SObject* obj);
+	bool					iObj_focus_descentCheck					(SObject*  obj, bool tlCheckChildren, bool tlCheckSiblings);
+	SObject*				iObj_focus_descentCheckObj				(SObject*  obj, bool tlCheckChildren, bool tlCheckSiblings);
+	void					iObj_setDirtyRender_ascent				(SObject*  obj, bool tlMarkParents);
+	void					iObj_setDirtyRender_descent				(SObject*  obj, bool tlProcessChildren, bool tlProcessSiblings);
+	void					iObj_setDirtyPublish_ascent				(SObject*  obj, bool tlMarkParents);
+	void					iObj_setDirtyPublish_descent			(SObject*  obj, bool tlProcessChildren, bool tlProcessSiblings);
+	u32						iObj_render								(SObject*  obj, bool tlForceRender);
+	bool					iObj_render_descentCheck				(SObject*  obj, bool tlCheckChildren, bool tlCheckSiblings);
+	u32						iObj_renderChildrenAndSiblings			(SObject*  obj, bool tlRenderChildren, bool tlRenderSiblings, bool tlForceRender);
+	u32						iObj_publish							(SObject*  obj, RECT* rc, SBitmap* bmpDst, bool tlPublishChildren, bool tlPublishSiblings, bool tlForcePublish, s32 tnLevel);
+	bool					iObj_publish_descentCheck				(SObject*  obj, bool tlCheckChildren, bool tlCheckSiblings);
+	CXml*					iObj_saveLayoutAs_bxml					(SObject* obj, cu8* tcFilename, bool tlFullProperties, bool tlSaveChildren, bool tlSaveSiblings, bool* error, u32* errorNum);
+	CXml*					iiObj_saveLayoutAs_bxml_saveObject		(CXml* bxml, SObject* obj, bool tlFullProperties, bool tlSaveChildren, bool tlSaveSiblings);
+	void					iObj_duplicateChain						(SObject** root, SObject* chain);
+	void					iObj_appendObjToParent					(SObject*  parent, SObject* obj);
+	void					iObj_duplicateChildren					(SObject*  objDst, SObject* objSrc);
+	void					iObj_setPosition						(SObject*  obj, s32 tnLeft, s32 tnTop);
+	void					iObj_setSize							(SObject*  obj, s32 tnLeft, s32 tnTop, s32 tnWidth, s32 tnHeight);
+	void					iiObj_setSize_snapForToolbar			(SObject*  obj, s32* tnWidth, s32* tnHeight);
+	SWindow* 				iObj_createWindowForForm				(SObject*  form, SWindow* win, s32 icon);
+	SVariable*				iObj_getPropertyAsVariable				(SObject*  obj, s8* tcPropertyName, u32 tnPropertyNameLength, SComp* comp, bool tlCreateAsReference);
+	void					iiObj_resetToDefault					(SObject*  obj, bool tlResetProperties, bool tlResetMethods);
+	void					iiObj_resetToDefaultCommon				(SObject*  obj, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, s32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	s32						iiObj_getBaseclassType_byName			(s8* tcTextname, s32 tnTextnameLength);
+	SBaseClassMap*			iiObj_getBaseclass_byName				(s8* tcTextname, s32 tnTextnameLength);
+	SBaseClassMap*			iiObj_getBaseclass_byType				(s32 tnObjType);
 
 
 //////////
 // objects/create.cpp
 //////
 	// Creation of individual sub-objects
-	SObject*				iSubobj_createEmpty						(SThisCode* thisCode, SObject*	template_empty,			SObject* parent);
-	SObject*				iSubobj_createForm						(SThisCode* thisCode, SObject*	template_form,			SObject* parent);
-	SObject*				iSubobj_createSubform					(SThisCode* thisCode, SObject*	template_subform,		SObject* parent);
-	SObject*				iSubobj_createCarousel					(SThisCode* thisCode, SObject*	template_carousel,		SObject* parent);
-	SObject*				iSubobj_createRider						(SThisCode* thisCode, SObject*	template_rider,			SObject* parent);
-	SObject*				iSubobj_createLabel						(SThisCode* thisCode, SObject*	template_label,			SObject* parent);
-	SObject*				iSubobj_createTextbox					(SThisCode* thisCode, SObject*	template_textbox,		SObject* parent);
-	SObject*				iSubobj_createButton					(SThisCode* thisCode, SObject*	template_button,		SObject* parent);
-	SObject*				iSubobj_createEditbox					(SThisCode* thisCode, SObject*	template_editbox,		SObject* parent);
-	SObject*				iSubobj_createImage						(SThisCode* thisCode, SObject*	template_image,			SObject* parent);
-	SObject*				iSubobj_createCheckbox					(SThisCode* thisCode, SObject*	template_checkbox,		SObject* parent);
-	SObject*				iSubobj_createOption					(SThisCode* thisCode, SObject*	template_option,		SObject* parent);
-	SObject*				iSubobj_createRadio						(SThisCode* thisCode, SObject*	template_radio,			SObject* parent);
-	SObject*				iSubobj_createCmdGroup					(SThisCode* thisCode, SObject*	template_CmdGroup,		SObject* parent);
-	SObject*				iSubobj_createOptGroup					(SThisCode* thisCode, SObject*	template_OptGroup,		SObject* parent);
-	SObject*				iSubobj_createListbox					(SThisCode* thisCode, SObject*	template_Listbox,		SObject* parent);
-	SObject*				iSubobj_createCombobox					(SThisCode* thisCode, SObject*	template_Combobox,		SObject* parent);
-	SObject*				iSubobj_createFormset					(SThisCode* thisCode, SObject*	template_Formset,		SObject* parent);
-	SObject*				iSubobj_createToolbar					(SThisCode* thisCode, SObject*	template_Toolbar,		SObject* parent);
-	SObject*				iSubobj_createSeparator					(SThisCode* thisCode, SObject*	template_Separator,		SObject* parent);
-	SObject*				iSubobj_createLine						(SThisCode* thisCode, SObject*	template_Line,			SObject* parent);
-	SObject*				iSubobj_createShape						(SThisCode* thisCode, SObject*	template_Shape,			SObject* parent);
-	SObject*				iSubobj_createContainer					(SThisCode* thisCode, SObject*	template_Container,		SObject* parent);
-	SObject*				iSubobj_createControl					(SThisCode* thisCode, SObject*	template_Control,		SObject* parent);
-	SObject*				iSubobj_createGrid						(SThisCode* thisCode, SObject*	template_Grid,			SObject* parent);
-	SObject*				iSubobj_createColumn					(SThisCode* thisCode, SObject*	template_Column,		SObject* parent);
-	SObject*				iSubobj_createHeader					(SThisCode* thisCode, SObject*	template_Header,		SObject* parent);
-	SObject*				iSubobj_createOleBound					(SThisCode* thisCode, SObject*	template_OleBound,		SObject* parent);
-	SObject*				iSubobj_createOleContain				(SThisCode* thisCode, SObject*	template_OleContain,	SObject* parent);
-	SObject*				iSubobj_createSpinner					(SThisCode* thisCode, SObject*	template_Spinner,		SObject* parent);
-	SObject*				iSubobj_createTimer						(SThisCode* thisCode, SObject*	template_Timer,			SObject* parent);
-	SObject*				iSubobj_createHyperlink					(SThisCode* thisCode, SObject*	template_Hyperlink,		SObject* parent);
-	SObject*				iSubobj_createCollection				(SThisCode* thisCode, SObject*	template_Collection,	SObject* parent);
-	SObject*				iSubobj_createPage						(SThisCode* thisCode, SObject*	template_Page,			SObject* parent);
-	SObject*				iSubobj_createPageFrame					(SThisCode* thisCode, SObject*	template_Pageframe,		SObject* parent);
-	SObject*				iSubobj_createSession					(SThisCode* thisCode, SObject*	template_Session,		SObject* parent);
-	SObject*				iSubobj_createCustom					(SThisCode* thisCode, SObject*	template_Custom,		SObject* parent);
-	SObject*				iSubobj_createException					(SThisCode* thisCode, SObject*	template_Exception,		SObject* parent);
-	SObject*				iSubobj_createSettings					(SThisCode* thisCode, SObject*	template_Settings,		SObject* parent);
+	SObject*				iSubobj_createEmpty						(SObject*	template_empty,			SObject* parent);
+	SObject*				iSubobj_createForm						(SObject*	template_form,			SObject* parent);
+	SObject*				iSubobj_createSubform					(SObject*	template_subform,		SObject* parent);
+	SObject*				iSubobj_createCarousel					(SObject*	template_carousel,		SObject* parent);
+	SObject*				iSubobj_createRider						(SObject*	template_rider,			SObject* parent);
+	SObject*				iSubobj_createLabel						(SObject*	template_label,			SObject* parent);
+	SObject*				iSubobj_createTextbox					(SObject*	template_textbox,		SObject* parent);
+	SObject*				iSubobj_createButton					(SObject*	template_button,		SObject* parent);
+	SObject*				iSubobj_createEditbox					(SObject*	template_editbox,		SObject* parent);
+	SObject*				iSubobj_createImage						(SObject*	template_image,			SObject* parent);
+	SObject*				iSubobj_createCheckbox					(SObject*	template_checkbox,		SObject* parent);
+	SObject*				iSubobj_createOption					(SObject*	template_option,		SObject* parent);
+	SObject*				iSubobj_createRadio						(SObject*	template_radio,			SObject* parent);
+	SObject*				iSubobj_createCmdGroup					(SObject*	template_CmdGroup,		SObject* parent);
+	SObject*				iSubobj_createOptGroup					(SObject*	template_OptGroup,		SObject* parent);
+	SObject*				iSubobj_createListbox					(SObject*	template_Listbox,		SObject* parent);
+	SObject*				iSubobj_createCombobox					(SObject*	template_Combobox,		SObject* parent);
+	SObject*				iSubobj_createFormset					(SObject*	template_Formset,		SObject* parent);
+	SObject*				iSubobj_createToolbar					(SObject*	template_Toolbar,		SObject* parent);
+	SObject*				iSubobj_createSeparator					(SObject*	template_Separator,		SObject* parent);
+	SObject*				iSubobj_createLine						(SObject*	template_Line,			SObject* parent);
+	SObject*				iSubobj_createShape						(SObject*	template_Shape,			SObject* parent);
+	SObject*				iSubobj_createContainer					(SObject*	template_Container,		SObject* parent);
+	SObject*				iSubobj_createControl					(SObject*	template_Control,		SObject* parent);
+	SObject*				iSubobj_createGrid						(SObject*	template_Grid,			SObject* parent);
+	SObject*				iSubobj_createColumn					(SObject*	template_Column,		SObject* parent);
+	SObject*				iSubobj_createHeader					(SObject*	template_Header,		SObject* parent);
+	SObject*				iSubobj_createOleBound					(SObject*	template_OleBound,		SObject* parent);
+	SObject*				iSubobj_createOleContain				(SObject*	template_OleContain,	SObject* parent);
+	SObject*				iSubobj_createSpinner					(SObject*	template_Spinner,		SObject* parent);
+	SObject*				iSubobj_createTimer						(SObject*	template_Timer,			SObject* parent);
+	SObject*				iSubobj_createHyperlink					(SObject*	template_Hyperlink,		SObject* parent);
+	SObject*				iSubobj_createCollection				(SObject*	template_Collection,	SObject* parent);
+	SObject*				iSubobj_createPage						(SObject*	template_Page,			SObject* parent);
+	SObject*				iSubobj_createPageFrame					(SObject*	template_Pageframe,		SObject* parent);
+	SObject*				iSubobj_createSession					(SObject*	template_Session,		SObject* parent);
+	SObject*				iSubobj_createCustom					(SObject*	template_Custom,		SObject* parent);
+	SObject*				iSubobj_createException					(SObject*	template_Exception,		SObject* parent);
+	SObject*				iSubobj_createSettings					(SObject*	template_Settings,		SObject* parent);
 
 
 //////////
 // objects/copy.cpp
 //////
 	// For copy operations
-	void					iiSubobj_copyEmpty						(SThisCode* thisCode, SObject*	emptyDst,		SObject*	emptySrc);
-	void					iiSubobj_copyForm						(SThisCode* thisCode, SObject*	formDst,		SObject*	formSrc);
-	void					iiSubobj_copySubform					(SThisCode* thisCode, SObject*	subformDst,		SObject*	subformSrc);
-	void					iiSubobj_copyCarousel					(SThisCode* thisCode, SObject*	carouselDst,	SObject*	carouselSrc);
-	void					iiSubobj_copyRider						(SThisCode* thisCode, SObject*	riderDst,		SObject*	riderSrc);
-	void					iiSubobj_copyLabel						(SThisCode* thisCode, SObject*	labelDst,		SObject*	labelSrc);
-	void					iiSubobj_copyTextbox					(SThisCode* thisCode, SObject*	textboxDst,		SObject*	textboxSrc);
-	void					iiSubobj_copyButton						(SThisCode* thisCode, SObject*	buttonDst,		SObject*	buttonSrc);
-	void					iiSubobj_copyEditbox					(SThisCode* thisCode, SObject*	editboxDst,		SObject*	editboxSrc);
-	void					iiSubobj_copyImage						(SThisCode* thisCode, SObject*	imageDst,		SObject*	imageSrc);
-	void					iiSubobj_copyCheckbox					(SThisCode* thisCode, SObject*	checkboxDst,	SObject*	checkboxSrc);
-	void					iiSubobj_copyOption						(SThisCode* thisCode, SObject*	optionDst,		SObject*	optionSrc);
-	void					iiSubobj_copyRadio						(SThisCode* thisCode, SObject*	radioDst,		SObject*	radioSrc);
-	void					iiSubobj_copyCmdGroup					(SThisCode* thisCode, SObject*	cmdGroupDst,	SObject*	cmdGroupSrc);
-	void					iiSubobj_copyOptGroup					(SThisCode* thisCode, SObject*	optGroupDst,	SObject*	optGroupSrc);
-	void					iiSubobj_copyListbox					(SThisCode* thisCode, SObject*	listboxDst,		SObject*	listboxSrc);
-	void					iiSubobj_copyCombobox					(SThisCode* thisCode, SObject*	comboboxDst,	SObject*	comboboxSrc);
-	void					iiSubobj_copyFormset					(SThisCode* thisCode, SObject*	formsetDst,		SObject*	formsetSrc);
-	void					iiSubobj_copyToolbar					(SThisCode* thisCode, SObject*	toolbarDst,		SObject*	toolbarSrc);
-	void					iiSubobj_copySeparator					(SThisCode* thisCode, SObject*	separatorDst,	SObject*	separatorSrc);
-	void					iiSubobj_copyLine						(SThisCode* thisCode, SObject*	lineDst,		SObject*	lineSrc);
-	void					iiSubobj_copyShape						(SThisCode* thisCode, SObject*	shapeDst,		SObject*	shapeSrc);
-	void					iiSubobj_copyContainer					(SThisCode* thisCode, SObject*	containerDst,	SObject*	containerSrc);
-	void					iiSubobj_copyControl					(SThisCode* thisCode, SObject*	controlDst,		SObject*	controlSrc);
-	void					iiSubobj_copyGrid						(SThisCode* thisCode, SObject*	gridDst,		SObject*	gridSrc);
-	void					iiSubobj_copyColumn						(SThisCode* thisCode, SObject*	columnDst,		SObject*	columnSrc);
-	void					iiSubobj_copyHeader						(SThisCode* thisCode, SObject*	headerDst,		SObject*	headerSrc);
-	void					iiSubobj_copyOleBound					(SThisCode* thisCode, SObject*	oleBoundDst,	SObject*	oleBoundSrc);
-	void					iiSubobj_copyOleContain					(SThisCode* thisCode, SObject*	oleContainDst,	SObject*	oleContainSrc);
-	void					iiSubobj_copySpinner					(SThisCode* thisCode, SObject*	spinnerDst,		SObject*	spinnerSrc);
-	void					iiSubobj_copyTimer						(SThisCode* thisCode, SObject*	timerDst,		SObject*	timerSrc);
-	void					iiSubobj_copyHyperlink					(SThisCode* thisCode, SObject*	hyperlinkDst,	SObject*	hyperlinkSrc);
-	void					iiSubobj_copyCollection					(SThisCode* thisCode, SObject*	collectionDst,	SObject*	collectionSrc);
-	void					iiSubobj_copyPage						(SThisCode* thisCode, SObject*	pageDst,		SObject*	pageSrc);
-	void					iiSubobj_copyPageframe					(SThisCode* thisCode, SObject*	pageframeDst,	SObject*	pageframeSrc);
-	void					iiSubobj_copySession					(SThisCode* thisCode, SObject*	sessionDst,		SObject*	sessionSrc);
-	void					iiSubobj_copyCustom						(SThisCode* thisCode, SObject*	customDst,		SObject*	customSrc);
-	void					iiSubobj_copyException					(SThisCode* thisCode, SObject*	exceptionDst,	SObject*	exceptionSrc);
+	void					iiSubobj_copyEmpty						(SObject*	emptyDst,		SObject*	emptySrc);
+	void					iiSubobj_copyForm						(SObject*	formDst,		SObject*	formSrc);
+	void					iiSubobj_copySubform					(SObject*	subformDst,		SObject*	subformSrc);
+	void					iiSubobj_copyCarousel					(SObject*	carouselDst,	SObject*	carouselSrc);
+	void					iiSubobj_copyRider						(SObject*	riderDst,		SObject*	riderSrc);
+	void					iiSubobj_copyLabel						(SObject*	labelDst,		SObject*	labelSrc);
+	void					iiSubobj_copyTextbox					(SObject*	textboxDst,		SObject*	textboxSrc);
+	void					iiSubobj_copyButton						(SObject*	buttonDst,		SObject*	buttonSrc);
+	void					iiSubobj_copyEditbox					(SObject*	editboxDst,		SObject*	editboxSrc);
+	void					iiSubobj_copyImage						(SObject*	imageDst,		SObject*	imageSrc);
+	void					iiSubobj_copyCheckbox					(SObject*	checkboxDst,	SObject*	checkboxSrc);
+	void					iiSubobj_copyOption						(SObject*	optionDst,		SObject*	optionSrc);
+	void					iiSubobj_copyRadio						(SObject*	radioDst,		SObject*	radioSrc);
+	void					iiSubobj_copyCmdGroup					(SObject*	cmdGroupDst,	SObject*	cmdGroupSrc);
+	void					iiSubobj_copyOptGroup					(SObject*	optGroupDst,	SObject*	optGroupSrc);
+	void					iiSubobj_copyListbox					(SObject*	listboxDst,		SObject*	listboxSrc);
+	void					iiSubobj_copyCombobox					(SObject*	comboboxDst,	SObject*	comboboxSrc);
+	void					iiSubobj_copyFormset					(SObject*	formsetDst,		SObject*	formsetSrc);
+	void					iiSubobj_copyToolbar					(SObject*	toolbarDst,		SObject*	toolbarSrc);
+	void					iiSubobj_copySeparator					(SObject*	separatorDst,	SObject*	separatorSrc);
+	void					iiSubobj_copyLine						(SObject*	lineDst,		SObject*	lineSrc);
+	void					iiSubobj_copyShape						(SObject*	shapeDst,		SObject*	shapeSrc);
+	void					iiSubobj_copyContainer					(SObject*	containerDst,	SObject*	containerSrc);
+	void					iiSubobj_copyControl					(SObject*	controlDst,		SObject*	controlSrc);
+	void					iiSubobj_copyGrid						(SObject*	gridDst,		SObject*	gridSrc);
+	void					iiSubobj_copyColumn						(SObject*	columnDst,		SObject*	columnSrc);
+	void					iiSubobj_copyHeader						(SObject*	headerDst,		SObject*	headerSrc);
+	void					iiSubobj_copyOleBound					(SObject*	oleBoundDst,	SObject*	oleBoundSrc);
+	void					iiSubobj_copyOleContain					(SObject*	oleContainDst,	SObject*	oleContainSrc);
+	void					iiSubobj_copySpinner					(SObject*	spinnerDst,		SObject*	spinnerSrc);
+	void					iiSubobj_copyTimer						(SObject*	timerDst,		SObject*	timerSrc);
+	void					iiSubobj_copyHyperlink					(SObject*	hyperlinkDst,	SObject*	hyperlinkSrc);
+	void					iiSubobj_copyCollection					(SObject*	collectionDst,	SObject*	collectionSrc);
+	void					iiSubobj_copyPage						(SObject*	pageDst,		SObject*	pageSrc);
+	void					iiSubobj_copyPageframe					(SObject*	pageframeDst,	SObject*	pageframeSrc);
+	void					iiSubobj_copySession					(SObject*	sessionDst,		SObject*	sessionSrc);
+	void					iiSubobj_copyCustom						(SObject*	customDst,		SObject*	customSrc);
+	void					iiSubobj_copyException					(SObject*	exceptionDst,	SObject*	exceptionSrc);
 
 
 //////////
 // objects/reset.cpp
 //////
 	// For initialization
-	void					iiSubobj_resetToDefaultEmpty			(SThisCode* thisCode, SObject*	empty,		bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultForm				(SThisCode* thisCode, SObject*	form,		bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultSubform			(SThisCode* thisCode, SObject*	subform,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultCarousel			(SThisCode* thisCode, SObject*	carousel,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultRider			(SThisCode* thisCode, SObject*	rider,		bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultLabel			(SThisCode* thisCode, SObject*	label,		bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultTextbox			(SThisCode* thisCode, SObject*	textbox,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultButton			(SThisCode* thisCode, SObject*	button,		bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultEditbox			(SThisCode* thisCode, SObject*	editbox,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultImage			(SThisCode* thisCode, SObject*	image,		bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultCheckbox			(SThisCode* thisCode, SObject*	checkbox,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultOption			(SThisCode* thisCode, SObject*	option,		bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultRadio			(SThisCode* thisCode, SObject*	radio,		bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultCmdGroup			(SThisCode* thisCode, SObject*	cmdGroup,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultOptGroup			(SThisCode* thisCode, SObject*	optGroup,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultListbox			(SThisCode* thisCode, SObject*	listbox,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultCombobox			(SThisCode* thisCode, SObject*	combobox,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultFormset			(SThisCode* thisCode, SObject*	formset,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultToolbar			(SThisCode* thisCode, SObject*	toolbar,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultSeparator		(SThisCode* thisCode, SObject*	separator,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultLine				(SThisCode* thisCode, SObject*	line,		bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultShape			(SThisCode* thisCode, SObject*	shape,		bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultContainer		(SThisCode* thisCode, SObject*	container,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultControl			(SThisCode* thisCode, SObject*	control,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultGrid				(SThisCode* thisCode, SObject*	grid,		bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultColumn			(SThisCode* thisCode, SObject*	column,		bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultHeader			(SThisCode* thisCode, SObject*	header,		bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultOleBound			(SThisCode* thisCode, SObject*	oleBound,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultOleContain		(SThisCode* thisCode, SObject*	oleContain,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultSpinner			(SThisCode* thisCode, SObject*	spinner,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultTimer			(SThisCode* thisCode, SObject*	timer,		bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultHyperlink		(SThisCode* thisCode, SObject*	hyperlink,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultCollection		(SThisCode* thisCode, SObject*	collection,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultPage				(SThisCode* thisCode, SObject*	page,		bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultPageframe		(SThisCode* thisCode, SObject*	pageframe,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultSession			(SThisCode* thisCode, SObject*	session,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultCustom			(SThisCode* thisCode, SObject*	custom,		bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultException		(SThisCode* thisCode, SObject*	exception,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
-	void					iiSubobj_resetToDefaultSettings			(SThisCode* thisCode, SObject*	exception,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultEmpty			(SObject*	empty,		bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultForm				(SObject*	form,		bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultSubform			(SObject*	subform,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultCarousel			(SObject*	carousel,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultRider			(SObject*	rider,		bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultLabel			(SObject*	label,		bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultTextbox			(SObject*	textbox,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultButton			(SObject*	button,		bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultEditbox			(SObject*	editbox,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultImage			(SObject*	image,		bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultCheckbox			(SObject*	checkbox,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultOption			(SObject*	option,		bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultRadio			(SObject*	radio,		bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultCmdGroup			(SObject*	cmdGroup,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultOptGroup			(SObject*	optGroup,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultListbox			(SObject*	listbox,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultCombobox			(SObject*	combobox,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultFormset			(SObject*	formset,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultToolbar			(SObject*	toolbar,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultSeparator		(SObject*	separator,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultLine				(SObject*	line,		bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultShape			(SObject*	shape,		bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultContainer		(SObject*	container,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultControl			(SObject*	control,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultGrid				(SObject*	grid,		bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultColumn			(SObject*	column,		bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultHeader			(SObject*	header,		bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultOleBound			(SObject*	oleBound,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultOleContain		(SObject*	oleContain,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultSpinner			(SObject*	spinner,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultTimer			(SObject*	timer,		bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultHyperlink		(SObject*	hyperlink,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultCollection		(SObject*	collection,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultPage				(SObject*	page,		bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultPageframe		(SObject*	pageframe,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultSession			(SObject*	session,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultCustom			(SObject*	custom,		bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultException		(SObject*	exception,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultSettings			(SObject*	exception,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
 
 
 //////////
 // objects/delete.cpp
 //////
 	// Delete individual sub-objects
-	void					iObj_deleteCommon						(SThisCode* thisCode, SObject*	obj);
-	void					iSubobj_deleteEmpty						(SThisCode* thisCode, SObject*	empty,		bool tlDeleteSelf);
-	void					iSubobj_deleteForm						(SThisCode* thisCode, SObject*	form,		bool tlDeleteSelf);
-	void					iSubobj_deleteSubform					(SThisCode* thisCode, SObject*	subform,	bool tlDeleteSelf);
-	void					iSubobj_deleteCarousel					(SThisCode* thisCode, SObject*	carousel,	bool tlDeleteSelf, bool tlLeaveRiders, bool tlLeaveObjects);
-	void					iSubobj_deleteRider						(SThisCode* thisCode, SObject*	rider,		bool tlDeleteSelf, bool tlLeaveObjects);
-	void					iSubobj_deleteLabel						(SThisCode* thisCode, SObject*	label,		bool tlDeleteSelf);
-	void					iSubobj_deleteTextbox					(SThisCode* thisCode, SObject*	textbox,	bool tlDeleteSelf);
-	void					iSubobj_deleteButton					(SThisCode* thisCode, SObject*	button,		bool tlDeleteSelf);
-	void					iSubobj_deleteEditbox					(SThisCode* thisCode, SObject*	editbox,	bool tlDeleteSelf);
-	void					iSubobj_deleteImage						(SThisCode* thisCode, SObject*	image,		bool tlDeleteSelf);
-	void					iSubobj_deleteCheckbox					(SThisCode* thisCode, SObject*	checkbox,	bool tlDeleteSelf);
-	void					iSubobj_deleteOption					(SThisCode* thisCode, SObject*	option,		bool tlDeleteSelf);
-	void					iSubobj_deleteRadio						(SThisCode* thisCode, SObject*	radio,		bool tlDeleteSelf);
-	void					iSubobj_deleteCmdGroup					(SThisCode* thisCode, SObject*	cmdGroup,	bool tlDeleteSelf);
-	void					iSubobj_deleteOptGroup					(SThisCode* thisCode, SObject*	optGroup,	bool tlDeleteSelf);
-	void					iSubobj_deleteListbox					(SThisCode* thisCode, SObject*	listbox,	bool tlDeleteSelf);
-	void					iSubobj_deleteCombobox					(SThisCode* thisCode, SObject*	combobox,	bool tlDeleteSelf);
-	void					iSubobj_deleteFormset					(SThisCode* thisCode, SObject*	formset,	bool tlDeleteSelf);
-	void					iSubobj_deleteToolbar					(SThisCode* thisCode, SObject*	toolbar,	bool tlDeleteSelf);
-	void					iSubobj_deleteSeparator					(SThisCode* thisCode, SObject*	separator,	bool tlDeleteSelf);
-	void					iSubobj_deleteLine						(SThisCode* thisCode, SObject*	line,		bool tlDeleteSelf);
-	void					iSubobj_deleteShape						(SThisCode* thisCode, SObject*	shape,		bool tlDeleteSelf);
-	void					iSubobj_deleteContainer					(SThisCode* thisCode, SObject*	container,	bool tlDeleteSelf);
-	void					iSubobj_deleteControl					(SThisCode* thisCode, SObject*	control,	bool tlDeleteSelf);
-	void					iSubobj_deleteGrid						(SThisCode* thisCode, SObject*	grid,		bool tlDeleteSelf);
-	void					iSubobj_deleteColumn					(SThisCode* thisCode, SObject*	column,		bool tlDeleteSelf);
-	void					iSubobj_deleteHeader					(SThisCode* thisCode, SObject*	header,		bool tlDeleteSelf);
-	void					iSubobj_deleteOleBound					(SThisCode* thisCode, SObject*	oleBound,	bool tlDeleteSelf);
-	void					iSubobj_deleteOleContain				(SThisCode* thisCode, SObject*	oleContain,	bool tlDeleteSelf);
-	void					iSubobj_deleteSpinner					(SThisCode* thisCode, SObject*	spinner,	bool tlDeleteSelf);
-	void					iSubobj_deleteTimer						(SThisCode* thisCode, SObject*	timer,		bool tlDeleteSelf);
-	void					iSubobj_deleteHyperlink					(SThisCode* thisCode, SObject*	hyperlink,	bool tlDeleteSelf);
-	void					iSubobj_deleteCollection				(SThisCode* thisCode, SObject*	collection,	bool tlDeleteSelf);
-	void					iSubobj_deletePage						(SThisCode* thisCode, SObject*	page,		bool tlDeleteSelf);
-	void					iSubobj_deletePageFrame					(SThisCode* thisCode, SObject*	pageFrame,	bool tlDeleteSelf);
-	void					iSubobj_deleteSession					(SThisCode* thisCode, SObject*	session,	bool tlDeleteSelf);
-	void					iSubobj_deleteCustom					(SThisCode* thisCode, SObject*	custom,		bool tlDeleteSelf);
-	void					iSubobj_deleteException					(SThisCode* thisCode, SObject*	exception,	bool tlDeleteSelf);
-	void					iSubobj_deleteSettings					(SThisCode* thisCode, SObject*	settings,	bool tlDeleteSelf);
+	void					iObj_deleteCommon						(SObject*	obj);
+	void					iSubobj_deleteEmpty						(SObject*	empty,		bool tlDeleteSelf);
+	void					iSubobj_deleteForm						(SObject*	form,		bool tlDeleteSelf);
+	void					iSubobj_deleteSubform					(SObject*	subform,	bool tlDeleteSelf);
+	void					iSubobj_deleteCarousel					(SObject*	carousel,	bool tlDeleteSelf, bool tlLeaveRiders, bool tlLeaveObjects);
+	void					iSubobj_deleteRider						(SObject*	rider,		bool tlDeleteSelf, bool tlLeaveObjects);
+	void					iSubobj_deleteLabel						(SObject*	label,		bool tlDeleteSelf);
+	void					iSubobj_deleteTextbox					(SObject*	textbox,	bool tlDeleteSelf);
+	void					iSubobj_deleteButton					(SObject*	button,		bool tlDeleteSelf);
+	void					iSubobj_deleteEditbox					(SObject*	editbox,	bool tlDeleteSelf);
+	void					iSubobj_deleteImage						(SObject*	image,		bool tlDeleteSelf);
+	void					iSubobj_deleteCheckbox					(SObject*	checkbox,	bool tlDeleteSelf);
+	void					iSubobj_deleteOption					(SObject*	option,		bool tlDeleteSelf);
+	void					iSubobj_deleteRadio						(SObject*	radio,		bool tlDeleteSelf);
+	void					iSubobj_deleteCmdGroup					(SObject*	cmdGroup,	bool tlDeleteSelf);
+	void					iSubobj_deleteOptGroup					(SObject*	optGroup,	bool tlDeleteSelf);
+	void					iSubobj_deleteListbox					(SObject*	listbox,	bool tlDeleteSelf);
+	void					iSubobj_deleteCombobox					(SObject*	combobox,	bool tlDeleteSelf);
+	void					iSubobj_deleteFormset					(SObject*	formset,	bool tlDeleteSelf);
+	void					iSubobj_deleteToolbar					(SObject*	toolbar,	bool tlDeleteSelf);
+	void					iSubobj_deleteSeparator					(SObject*	separator,	bool tlDeleteSelf);
+	void					iSubobj_deleteLine						(SObject*	line,		bool tlDeleteSelf);
+	void					iSubobj_deleteShape						(SObject*	shape,		bool tlDeleteSelf);
+	void					iSubobj_deleteContainer					(SObject*	container,	bool tlDeleteSelf);
+	void					iSubobj_deleteControl					(SObject*	control,	bool tlDeleteSelf);
+	void					iSubobj_deleteGrid						(SObject*	grid,		bool tlDeleteSelf);
+	void					iSubobj_deleteColumn					(SObject*	column,		bool tlDeleteSelf);
+	void					iSubobj_deleteHeader					(SObject*	header,		bool tlDeleteSelf);
+	void					iSubobj_deleteOleBound					(SObject*	oleBound,	bool tlDeleteSelf);
+	void					iSubobj_deleteOleContain				(SObject*	oleContain,	bool tlDeleteSelf);
+	void					iSubobj_deleteSpinner					(SObject*	spinner,	bool tlDeleteSelf);
+	void					iSubobj_deleteTimer						(SObject*	timer,		bool tlDeleteSelf);
+	void					iSubobj_deleteHyperlink					(SObject*	hyperlink,	bool tlDeleteSelf);
+	void					iSubobj_deleteCollection				(SObject*	collection,	bool tlDeleteSelf);
+	void					iSubobj_deletePage						(SObject*	page,		bool tlDeleteSelf);
+	void					iSubobj_deletePageFrame					(SObject*	pageFrame,	bool tlDeleteSelf);
+	void					iSubobj_deleteSession					(SObject*	session,	bool tlDeleteSelf);
+	void					iSubobj_deleteCustom					(SObject*	custom,		bool tlDeleteSelf);
+	void					iSubobj_deleteException					(SObject*	exception,	bool tlDeleteSelf);
+	void					iSubobj_deleteSettings					(SObject*	settings,	bool tlDeleteSelf);
 
 
 //////////
 // objects/render.cpp
 //////
 	// Default render of sub-objects
-	u32						iSubobj_renderEmpty						(SThisCode* thisCode, SObject* empty);
-	u32						iSubobj_renderForm						(SThisCode* thisCode, SObject* form);
-	u32						iSubobj_renderSubform					(SThisCode* thisCode, SObject* subform);
-	u32						iSubobj_renderCarousel					(SThisCode* thisCode, SObject* carousel);
-	u32						iSubobj_renderRider						(SThisCode* thisCode, SObject* rider);
-	u32						iSubobj_renderLabel						(SThisCode* thisCode, SObject* label);
-	u32						iSubobj_renderTextbox					(SThisCode* thisCode, SObject* textbox);
-	u32						iSubobj_renderButton					(SThisCode* thisCode, SObject* button);
-	u32						iSubobj_renderEditbox					(SThisCode* thisCode, SObject* editbox);
-	u32						iSubobj_renderImage						(SThisCode* thisCode, SObject* image);
-	u32						iSubobj_renderCheckbox					(SThisCode* thisCode, SObject* checkbox);
-	u32						iSubobj_renderOption					(SThisCode* thisCode, SObject* option);
-	u32						iSubobj_renderRadio						(SThisCode* thisCode, SObject* radio);
-	u32						iSubobj_renderCmdGroup					(SThisCode* thisCode, SObject* cmdGroup);
-	u32						iSubobj_renderOptGroup					(SThisCode* thisCode, SObject* optGroup);
-	u32						iSubobj_renderListbox					(SThisCode* thisCode, SObject* listbox);
-	u32						iSubobj_renderCombobox					(SThisCode* thisCode, SObject* combobox);
-	u32						iSubobj_renderFormset					(SThisCode* thisCode, SObject* formset);
-	u32						iSubobj_renderToolbar					(SThisCode* thisCode, SObject* toolbar);
-	u32						iSubobj_renderSeparator					(SThisCode* thisCode, SObject* separator);
-	u32						iSubobj_renderLine						(SThisCode* thisCode, SObject* line);
-	u32						iSubobj_renderShape						(SThisCode* thisCode, SObject* shape);
-	u32						iSubobj_renderContainer					(SThisCode* thisCode, SObject* container);
-	u32						iSubobj_renderControl					(SThisCode* thisCode, SObject* control);
-	u32						iSubobj_renderGrid						(SThisCode* thisCode, SObject* grid);
-	u32						iSubobj_renderColumn					(SThisCode* thisCode, SObject* column);
-	u32						iSubobj_renderHeader					(SThisCode* thisCode, SObject* header);
-	u32						iSubobj_renderOleBound					(SThisCode* thisCode, SObject* oleBound);
-	u32						iSubobj_renderOleContain				(SThisCode* thisCode, SObject* oleContain);
-	u32						iSubobj_renderSpinner					(SThisCode* thisCode, SObject* spinner);
-	u32						iSubobj_renderTimer						(SThisCode* thisCode, SObject* timer);
-	u32						iSubobj_renderHyperlink					(SThisCode* thisCode, SObject* hyperlink);
-	u32						iSubobj_renderCollection				(SThisCode* thisCode, SObject* collection);
-	u32						iSubobj_renderPage						(SThisCode* thisCode, SObject* page);
-	u32						iSubobj_renderPageFrame					(SThisCode* thisCode, SObject* pageFrame);
-	u32						iSubobj_renderSession					(SThisCode* thisCode, SObject* session);
-	u32						iSubobj_renderCustom					(SThisCode* thisCode, SObject* custom);
-	u32						iSubobj_renderException					(SThisCode* thisCode, SObject* exception);
-	u32						iSubobj_renderSettings					(SThisCode* thisCode, SObject* settings);
+	u32						iSubobj_renderEmpty						(SObject* empty);
+	u32						iSubobj_renderForm						(SObject* form);
+	u32						iSubobj_renderSubform					(SObject* subform);
+	u32						iSubobj_renderCarousel					(SObject* carousel);
+	u32						iSubobj_renderRider						(SObject* rider);
+	u32						iSubobj_renderLabel						(SObject* label);
+	u32						iSubobj_renderTextbox					(SObject* textbox);
+	u32						iSubobj_renderButton					(SObject* button);
+	u32						iSubobj_renderEditbox					(SObject* editbox);
+	u32						iSubobj_renderImage						(SObject* image);
+	u32						iSubobj_renderCheckbox					(SObject* checkbox);
+	u32						iSubobj_renderOption					(SObject* option);
+	u32						iSubobj_renderRadio						(SObject* radio);
+	u32						iSubobj_renderCmdGroup					(SObject* cmdGroup);
+	u32						iSubobj_renderOptGroup					(SObject* optGroup);
+	u32						iSubobj_renderListbox					(SObject* listbox);
+	u32						iSubobj_renderCombobox					(SObject* combobox);
+	u32						iSubobj_renderFormset					(SObject* formset);
+	u32						iSubobj_renderToolbar					(SObject* toolbar);
+	u32						iSubobj_renderSeparator					(SObject* separator);
+	u32						iSubobj_renderLine						(SObject* line);
+	u32						iSubobj_renderShape						(SObject* shape);
+	u32						iSubobj_renderContainer					(SObject* container);
+	u32						iSubobj_renderControl					(SObject* control);
+	u32						iSubobj_renderGrid						(SObject* grid);
+	u32						iSubobj_renderColumn					(SObject* column);
+	u32						iSubobj_renderHeader					(SObject* header);
+	u32						iSubobj_renderOleBound					(SObject* oleBound);
+	u32						iSubobj_renderOleContain				(SObject* oleContain);
+	u32						iSubobj_renderSpinner					(SObject* spinner);
+	u32						iSubobj_renderTimer						(SObject* timer);
+	u32						iSubobj_renderHyperlink					(SObject* hyperlink);
+	u32						iSubobj_renderCollection				(SObject* collection);
+	u32						iSubobj_renderPage						(SObject* page);
+	u32						iSubobj_renderPageFrame					(SObject* pageFrame);
+	u32						iSubobj_renderSession					(SObject* session);
+	u32						iSubobj_renderCustom					(SObject* custom);
+	u32						iSubobj_renderException					(SObject* exception);
+	u32						iSubobj_renderSettings					(SObject* settings);
 
 
 //////////
 // objects/callbacks.cpp
 //////
-	bool					iDefaultCallback_resize					(SThisCode* thisCode, SWindow* win, SObject* obj, RECT* rc);
-	bool					iDefaultCallback_onLoad					(SThisCode* thisCode, SWindow* win, SObject* obj);
-	bool					iDefaultCallback_onInit					(SThisCode* thisCode, SWindow* win, SObject* obj);
-	bool					iDefaultCallback_onCreated				(SThisCode* thisCode, SWindow* win, SObject* obj);
-	bool					iDefaultCallback_onResize				(SThisCode* thisCode, SWindow* win, SObject* obj, SVariable* widthRequired_out, SVariable* heightRequired_out);
-	bool					iDefaultCallback_onRender				(SThisCode* thisCode, SWindow* win, SObject* obj);
-	bool					iDefaultCallback_onPublish				(SThisCode* thisCode, SWindow* win, SObject* obj);
-	bool					iDefaultCallback_onDestroy				(SThisCode* thisCode, SWindow* win, SObject* obj);
-	bool					iDefaultCallback_onUnload				(SThisCode* thisCode, SWindow* win, SObject* obj);
-	bool					iDefaultCallback_onGotFocus				(SThisCode* thisCode, SWindow* win, SObject* obj);
-	bool					iDefaultCallback_onLostFocus			(SThisCode* thisCode, SWindow* win, SObject* obj);
-	bool					iiDefaultCallback_processMouseVariables	(SThisCode* thisCode, 							  SVariable* varX, SVariable* varY, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varClick, s32* lnX, s32* lnY, bool* tlCtrl, bool* tlAlt, bool* tlShift, u32* lnClick);
-	bool					iDefaultCallback_onMouseClickEx			(SThisCode* thisCode, SWindow* win, SObject* obj, SVariable* varX, SVariable* varY, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varClick);
-	bool					iDefaultCallback_onMouseDblClickEx		(SThisCode* thisCode, SWindow* win, SObject* obj, SVariable* varX, SVariable* varY, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varClick);
-	bool					iDefaultCallback_onMouseWheel			(SThisCode* thisCode, SWindow* win, SObject* obj, SVariable* varX, SVariable* varY, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varClick, SVariable* varUnits);
-	bool					iDefaultCallback_onMouseMove			(SThisCode* thisCode, SWindow* win, SObject* obj, SVariable* varX, SVariable* varY, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varClick);
-	bool					iDefaultCallback_onMouseDown			(SThisCode* thisCode, SWindow* win, SObject* obj, SVariable* varX, SVariable* varY, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varClick);
-	bool					iDefaultCallback_onMouseUp				(SThisCode* thisCode, SWindow* win, SObject* obj, SVariable* varX, SVariable* varY, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varClick);
-	bool					iDefaultCallback_onMouseEnter			(SThisCode* thisCode, SWindow* win, SObject* obj);
-	bool					iDefaultCallback_onMouseLeave			(SThisCode* thisCode, SWindow* win, SObject* obj);
-	bool					iDefaultCallback_onMouseHover			(SThisCode* thisCode, SWindow* win, SObject* obj, SVariable* varX, SVariable* varY, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varClick);
-	bool					iiDefaultCallback_processKeyVariables	(SThisCode* thisCode, 							 SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varCaps, SVariable* varAscii, SVariable* varVKey, SVariable* varIsCAS, SVariable* varIsAscii, bool* tlCtrl, bool* tlAlt, bool* tlShift, bool* tlCaps, bool* tlIsCAS, bool* tlIsAscii, s16* lcAscii, u16* lnVKey);
-	bool					iDefaultCallback_onKeyDown				(SThisCode* thisCode, SWindow* win, SObject* obj, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varCaps, SVariable* varAscii, SVariable* varVKey, SVariable* varIsCAS, SVariable* varIsAscii);
-	bool					iDefaultCallback_onKeyUp				(SThisCode* thisCode, SWindow* win, SObject* obj, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varCaps, SVariable* varAscii, SVariable* varVKey, SVariable* varIsCAS, SVariable* varIsAscii);
-	bool					iDefaultCallback_onActivate				(SThisCode* thisCode, SWindow* win, SObject* obj);
-	bool					iDefaultCallback_onDeactivate			(SThisCode* thisCode, SWindow* win, SObject* obj);
-	bool					iDefaultCallback_onInteractiveChange	(SThisCode* thisCode, SWindow* win, SObject* obj);
-	bool					iDefaultCallback_onProgrammaticChange	(SThisCode* thisCode, SWindow* win, SObject* obj);
-	bool					iDefaultCallback_onSelect				(SThisCode* thisCode, SWindow* win, SObject* obj);
-	bool					iDefaultCallback_onDeselect				(SThisCode* thisCode, SWindow* win, SObject* obj);
-	bool					iDefaultCallback_onMoved				(SThisCode* thisCode, SWindow* win, SObject* obj, SVariable* xOverride_out, SVariable* yOverride_out);
-	bool					iDefaultCallback_onQueryUnload			(SThisCode* thisCode, SWindow* win, SObject* obj);
-	bool					iDefaultCallback_onAddObject			(SThisCode* thisCode, SWindow* win, SObject* obj);
-	bool					iDefaultCallback_onAddProperty			(SThisCode* thisCode, SWindow* win, SObject* obj);
-	bool					iDefaultCallback_onError				(SThisCode* thisCode, SWindow* win, SObject* obj);
-	bool					iDefaultCallback_onScrolled				(SThisCode* thisCode, SWindow* win, SObject* obj);
-	bool					iDefaultCallback_onSetActiveControl		(SThisCode* thisCode, SWindow* win, SObject* obj, SVariable* toActive);
-	bool					iDefaultCallback_onSpin					(SThisCode* thisCode, SWindow* win, SObject* obj, SVariable* tnDelta, SVariable* tnDirection, SVariable* tnType);
+	bool					iDefaultCallback_resize					(SWindow* win, SObject* obj, RECT* rc);
+	bool					iDefaultCallback_onLoad					(SWindow* win, SObject* obj);
+	bool					iDefaultCallback_onInit					(SWindow* win, SObject* obj);
+	bool					iDefaultCallback_onCreated				(SWindow* win, SObject* obj);
+	bool					iDefaultCallback_onResize				(SWindow* win, SObject* obj, SVariable* widthRequired_out, SVariable* heightRequired_out);
+	bool					iDefaultCallback_onRender				(SWindow* win, SObject* obj);
+	bool					iDefaultCallback_onPublish				(SWindow* win, SObject* obj);
+	bool					iDefaultCallback_onDestroy				(SWindow* win, SObject* obj);
+	bool					iDefaultCallback_onUnload				(SWindow* win, SObject* obj);
+	bool					iDefaultCallback_onGotFocus				(SWindow* win, SObject* obj);
+	bool					iDefaultCallback_onLostFocus			(SWindow* win, SObject* obj);
+	bool					iiDefaultCallback_processMouseVariables	(							  SVariable* varX, SVariable* varY, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varClick, s32* lnX, s32* lnY, bool* tlCtrl, bool* tlAlt, bool* tlShift, u32* lnClick);
+	bool					iDefaultCallback_onMouseClickEx			(SWindow* win, SObject* obj, SVariable* varX, SVariable* varY, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varClick);
+	bool					iDefaultCallback_onMouseDblClickEx		(SWindow* win, SObject* obj, SVariable* varX, SVariable* varY, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varClick);
+	bool					iDefaultCallback_onMouseWheel			(SWindow* win, SObject* obj, SVariable* varX, SVariable* varY, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varClick, SVariable* varUnits);
+	bool					iDefaultCallback_onMouseMove			(SWindow* win, SObject* obj, SVariable* varX, SVariable* varY, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varClick);
+	bool					iDefaultCallback_onMouseDown			(SWindow* win, SObject* obj, SVariable* varX, SVariable* varY, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varClick);
+	bool					iDefaultCallback_onMouseUp				(SWindow* win, SObject* obj, SVariable* varX, SVariable* varY, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varClick);
+	bool					iDefaultCallback_onMouseEnter			(SWindow* win, SObject* obj);
+	bool					iDefaultCallback_onMouseLeave			(SWindow* win, SObject* obj);
+	bool					iDefaultCallback_onMouseHover			(SWindow* win, SObject* obj, SVariable* varX, SVariable* varY, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varClick);
+	bool					iiDefaultCallback_processKeyVariables	(							 SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varCaps, SVariable* varAscii, SVariable* varVKey, SVariable* varIsCAS, SVariable* varIsAscii, bool* tlCtrl, bool* tlAlt, bool* tlShift, bool* tlCaps, bool* tlIsCAS, bool* tlIsAscii, s16* lcAscii, u16* lnVKey);
+	bool					iDefaultCallback_onKeyDown				(SWindow* win, SObject* obj, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varCaps, SVariable* varAscii, SVariable* varVKey, SVariable* varIsCAS, SVariable* varIsAscii);
+	bool					iDefaultCallback_onKeyUp				(SWindow* win, SObject* obj, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varCaps, SVariable* varAscii, SVariable* varVKey, SVariable* varIsCAS, SVariable* varIsAscii);
+	bool					iDefaultCallback_onActivate				(SWindow* win, SObject* obj);
+	bool					iDefaultCallback_onDeactivate			(SWindow* win, SObject* obj);
+	bool					iDefaultCallback_onInteractiveChange	(SWindow* win, SObject* obj);
+	bool					iDefaultCallback_onProgrammaticChange	(SWindow* win, SObject* obj);
+	bool					iDefaultCallback_onSelect				(SWindow* win, SObject* obj);
+	bool					iDefaultCallback_onDeselect				(SWindow* win, SObject* obj);
+	bool					iDefaultCallback_onMoved				(SWindow* win, SObject* obj, SVariable* xOverride_out, SVariable* yOverride_out);
+	bool					iDefaultCallback_onQueryUnload			(SWindow* win, SObject* obj);
+	bool					iDefaultCallback_onAddObject			(SWindow* win, SObject* obj);
+	bool					iDefaultCallback_onAddProperty			(SWindow* win, SObject* obj);
+	bool					iDefaultCallback_onError				(SWindow* win, SObject* obj);
+	bool					iDefaultCallback_onScrolled				(SWindow* win, SObject* obj);
+	bool					iDefaultCallback_onSetActiveControl		(SWindow* win, SObject* obj, SVariable* toActive);
+	bool					iDefaultCallback_onSpin					(SWindow* win, SObject* obj, SVariable* tnDelta, SVariable* tnDirection, SVariable* tnType);
 
 	// Carousel tab-specific
-	bool					iDefaultCallback_onTabClose				(SThisCode* thisCode, SWindow* win, SObject* obj);
-	bool					iDefaultCallback_onTabClick				(SThisCode* thisCode, SWindow* win, SObject* obj, bool tlOnClose);
-	bool					iDefaultCallback_onTabMouseWheel		(SThisCode* thisCode, SWindow* win, SObject* obj, sptr tnClicks);
-	bool					iDefaultCallback_onTabMouseMove			(SThisCode* thisCode, SWindow* win, SObject* obj, bool tlOnClose);
-	bool					iDefaultCallback_onTabMouseDown			(SThisCode* thisCode, SWindow* win, SObject* obj, bool tlOnClose);
-	bool					iDefaultCallback_onTabMouseUp			(SThisCode* thisCode, SWindow* win, SObject* obj, bool tlOnClose);
-	bool					iDefaultCallback_onTabMouseEnter		(SThisCode* thisCode, SWindow* win, SObject* obj, bool tlOnClose);
-	bool					iDefaultCallback_onTabMouseLeave		(SThisCode* thisCode, SWindow* win, SObject* obj, bool tlOnClose);
+	bool					iDefaultCallback_onTabClose				(SWindow* win, SObject* obj);
+	bool					iDefaultCallback_onTabClick				(SWindow* win, SObject* obj, bool tlOnClose);
+	bool					iDefaultCallback_onTabMouseWheel		(SWindow* win, SObject* obj, sptr tnClicks);
+	bool					iDefaultCallback_onTabMouseMove			(SWindow* win, SObject* obj, bool tlOnClose);
+	bool					iDefaultCallback_onTabMouseDown			(SWindow* win, SObject* obj, bool tlOnClose);
+	bool					iDefaultCallback_onTabMouseUp			(SWindow* win, SObject* obj, bool tlOnClose);
+	bool					iDefaultCallback_onTabMouseEnter		(SWindow* win, SObject* obj, bool tlOnClose);
+	bool					iDefaultCallback_onTabMouseLeave		(SWindow* win, SObject* obj, bool tlOnClose);
 
 
 //////////
 // objects/events.cpp
 //////
-	void					iEvents_resetToDefault					(SThisCode* thisCode, SObject* obj, SObjEventMap* oemap, s32 tnOemapCount);
+	void					iEvents_resetToDefault					(SObject* obj, SObjEventMap* oemap, s32 tnOemapCount);
 	// Helper functions to translate strongly typed values to weakly typed variables
-	bool					iiEventDispatch_onMouseMove				(SThisCode* thisCode, SWindow* win, SObject* obj, s32 x, s32 y, bool tlCtrl, bool tlAlt, bool tlShift, u32 tnClicks);
-	bool					iiEventDispatch_onMouseDown				(SThisCode* thisCode, SWindow* win, SObject* obj, s32 x, s32 y, bool tlCtrl, bool tlAlt, bool tlShift, u32 tnClicks);
-	bool					iiEventDispatch_onMouseClickEx			(SThisCode* thisCode, SWindow* win, SObject* obj, s32 x, s32 y, bool tlCtrl, bool tlAlt, bool tlShift, u32 tnClicks);
-	bool					iiEventDispatch_onMouseUp				(SThisCode* thisCode, SWindow* win, SObject* obj, s32 x, s32 y, bool tlCtrl, bool tlAlt, bool tlShift, u32 tnClicks);
-	bool					iiEventDispatch_onMouseWheel			(SThisCode* thisCode, SWindow* win, SObject* obj, s32 x, s32 y, bool tlCtrl, bool tlAlt, bool tlShift, u32 tnClicks, s32 tnDeltaY);
-	bool					iiEventDispatch_onKeyDown				(SThisCode* thisCode, SWindow* win, SObject* obj, bool tlCtrl, bool tlAlt, bool tlShift, bool tlCaps, u16 tnAsciiChar, u16 tvKey, bool tlIsCAS, bool tlIsAscii);
-	bool					iiEventDispatch_onKeyUp					(SThisCode* thisCode, SWindow* win, SObject* obj, bool tlCtrl, bool tlAlt, bool tlShift, bool tlCaps, u16 tnAsciiChar, u16 tvKey, bool tlIsCAS, bool tlIsAscii);
+	bool					iiEventDispatch_onMouseMove				(SWindow* win, SObject* obj, s32 x, s32 y, bool tlCtrl, bool tlAlt, bool tlShift, u32 tnClicks);
+	bool					iiEventDispatch_onMouseDown				(SWindow* win, SObject* obj, s32 x, s32 y, bool tlCtrl, bool tlAlt, bool tlShift, u32 tnClicks);
+	bool					iiEventDispatch_onMouseClickEx			(SWindow* win, SObject* obj, s32 x, s32 y, bool tlCtrl, bool tlAlt, bool tlShift, u32 tnClicks);
+	bool					iiEventDispatch_onMouseUp				(SWindow* win, SObject* obj, s32 x, s32 y, bool tlCtrl, bool tlAlt, bool tlShift, u32 tnClicks);
+	bool					iiEventDispatch_onMouseWheel			(SWindow* win, SObject* obj, s32 x, s32 y, bool tlCtrl, bool tlAlt, bool tlShift, u32 tnClicks, s32 tnDeltaY);
+	bool					iiEventDispatch_onKeyDown				(SWindow* win, SObject* obj, bool tlCtrl, bool tlAlt, bool tlShift, bool tlCaps, u16 tnAsciiChar, u16 tvKey, bool tlIsCAS, bool tlIsAscii);
+	bool					iiEventDispatch_onKeyUp					(SWindow* win, SObject* obj, bool tlCtrl, bool tlAlt, bool tlShift, bool tlCaps, u16 tnAsciiChar, u16 tvKey, bool tlIsCAS, bool tlIsAscii);
 
 	// Carousel
-	bool					iEvents_carouselMouseWheel				(SThisCode* thisCode, SWindow* win, SObject* obj, s32 lnX, s32 lnY, bool llCtrl, bool llAlt, bool llShift, u32 lnClick);
-	bool					iEvents_carouselMouseMove				(SThisCode* thisCode, SWindow* win, SObject* obj, s32 lnX, s32 lnY, bool llCtrl, bool llAlt, bool llShift, u32 lnClick);
-	bool					iEvents_carouselMouseDown				(SThisCode* thisCode, SWindow* win, SObject* obj, s32 lnX, s32 lnY, bool llCtrl, bool llAlt, bool llShift, u32 lnClick);
-	bool					iEvents_carouselMouseUp					(SThisCode* thisCode, SWindow* win, SObject* obj, s32 lnX, s32 lnY, bool llCtrl, bool llAlt, bool llShift, u32 lnClick);
-	bool					iEvents_carousel_dragStart_tab			(SThisCode* thisCode, SWindow* win, SObject* obj, SBitmap* bmp);
-	bool					iEvents_carousel_dragStart_titlebar		(SThisCode* thisCode, SWindow* win, SObject* obj, SBitmap* bmp);
-	u32						iiEvents_carousel_findTarget			(SThisCode* thisCode, SWindow* win, SObject* obj, s32 tnX, s32 tnY, SObjCarouselTabData** toctd, bool* tlHighlightChanged);
+	bool					iEvents_carouselMouseWheel				(SWindow* win, SObject* obj, s32 lnX, s32 lnY, bool llCtrl, bool llAlt, bool llShift, u32 lnClick);
+	bool					iEvents_carouselMouseMove				(SWindow* win, SObject* obj, s32 lnX, s32 lnY, bool llCtrl, bool llAlt, bool llShift, u32 lnClick);
+	bool					iEvents_carouselMouseDown				(SWindow* win, SObject* obj, s32 lnX, s32 lnY, bool llCtrl, bool llAlt, bool llShift, u32 lnClick);
+	bool					iEvents_carouselMouseUp					(SWindow* win, SObject* obj, s32 lnX, s32 lnY, bool llCtrl, bool llAlt, bool llShift, u32 lnClick);
+	bool					iEvents_carousel_dragStart_tab			(SWindow* win, SObject* obj, SBitmap* bmp);
+	bool					iEvents_carousel_dragStart_titlebar		(SWindow* win, SObject* obj, SBitmap* bmp);
+	u32						iiEvents_carousel_findTarget			(SWindow* win, SObject* obj, s32 tnX, s32 tnY, SObjCarouselTabData** toctd, bool* tlHighlightChanged);
 
 
 //////////
 // Toolbar related
 //////
-	SObject*				iToolbar_loadFrom_xml					(SThisCode* thisCode,                                                   cu8* tcXml, u32 tnXmlLength, cs8* tcTagRoot, cs8* tcTagSub);
-	bool					iToolbar_applyTo_obj					(SThisCode* thisCode, SObject* objParent, SObject* objToolbarContainer, cu8* tcXml, u32 tnXmlLength, cs8* tcTagRoot, cs8* tcTagSub);
+	SObject*				iToolbar_loadFrom_xml					(                                                  cu8* tcXml, u32 tnXmlLength, cs8* tcTagRoot, cs8* tcTagSub);
+	bool					iToolbar_applyTo_obj					(SObject* objParent, SObject* objToolbarContainer, cu8* tcXml, u32 tnXmlLength, cs8* tcTagRoot, cs8* tcTagSub);
 
 
 //////////
 // DLL-related functions
 //////
 	// Dll functions
-	void					iDllFunc_dispatch						(SThisCode* thisCode, SFunctionParams* rpar, SDllFunc* dfunc, SComp* compDllName);
-	void					iiDllFunc_dispatch_lowLevel				(SThisCode* thisCode, SFunctionParams* rpar, SDllFunc* dfunc);
-	bool					iDllFunc_add							(SThisCode* thisCode, SFunctionParams* rpar, SDllFuncParam* rp, SDllFuncParam ip[], s32 tnIpCount, SComp* compFunctionName, SComp* compAliasName, SComp* compDllName, SThisCode* onAccess, SThisCode* onAssign, bool tlNoPrototype, bool tlVariadic);
-	SDllFunc*				iDllFunc_find_byName					(SThisCode* thisCode, s8* funcName, s32 lnFuncNameLength);
+	void					iDllFunc_dispatch						(SFunctionParams* rpar, SDllFunc* dfunc, SComp* compDllName);
+	void					iiDllFunc_dispatch_lowLevel				(SFunctionParams* rpar, SDllFunc* dfunc);
+	bool					iDllFunc_add							(SFunctionParams* rpar, SDllFuncParam* rp, SDllFuncParam ip[], s32 tnIpCount, SComp* compFunctionName, SComp* compAliasName, SComp* compDllName, SThisCode* onAccess, SThisCode* onAssign, bool tlNoPrototype, bool tlVariadic);
+	SDllFunc*				iDllFunc_find_byName					(s8* funcName, s32 lnFuncNameLength);
 
 	// Dll library (the physical c:\path\to\theFile.dll
-	SDllLib*				iDllLib_open							(SThisCode* thisCode, SComp* compDllName);
+	SDllLib*				iDllLib_open							(SComp* compDllName);
 
 
 //////////
@@ -506,14 +506,14 @@ struct SObjEventMap;
 // vjr_sup.cpp
 //////
 	SBitmap*				iiVjr_buildSplashScreen					(SBitmap* bmpSplash);
-	void					iVjr_appendSystemLog					(SThisCode* thisCode, u8* tcLogText);
-	void					iVjr_flushSystemLog						(SThisCode* thisCode);
+	void					iVjr_appendSystemLog					(u8* tcLogText);
+	void					iVjr_flushSystemLog						(void);
 	void					iVjr_releaseMemory						(void);
 	void					iVjr_releaseAllDefaultDatetimes			(void);
 	void					iVjr_releaseAllDefaultObjects			(void);
 	void					iVjr_release_jdebi						(void);
 	void					iVjr_releaseCaskIcons					(void);
-	void					iVjr_shutdown							(SThisCode* thisCode);
+	void					iVjr_shutdown							(void);
 
 	DWORD	WINAPI			iSplash_show							(LPVOID/*SBitmap* bmp*/ lpParameter);
 	DWORD	WINAPI			iSplash_delete							(LPVOID/*bool tlWait*/ lpParameter);
@@ -526,15 +526,15 @@ struct SObjEventMap;
 	DWORD	WINAPI			iReadEvents_messageWindow				(LPVOID lpParameter);
 	LRESULT	CALLBACK		iWindow_wndProcMessage					(HWND hwnd, UINT m, WPARAM w, LPARAM l);
 	LRESULT	CALLBACK		iWindow_wndProcForms					(HWND hwnd, UINT m, WPARAM w, LPARAM l);
-	SWindow* 				iWindow_createForObject					(SThisCode* thisCode, SObject* obj, SWindow* winReuse, s32 icon);
+	SWindow* 				iWindow_createForObject					(SObject* obj, SWindow* winReuse, s32 icon);
 	void					iWindow_releaseAll						(SBuilder** windowRoot, bool tlDeleteSelf);
-	void					iWindow_delete							(SThisCode* thisCode, SWindow* win, bool tlDeleteSelf);
+	void					iWindow_delete							(SWindow* win, bool tlDeleteSelf);
 	SWindow*				iWindow_findByHwnd						(HWND hwnd);
-	SWindow*				iWindow_findByObj						(SThisCode* thisCode, SObject* obj);
-	SWindow*				iWindow_findRoot_byObj					(SThisCode* thisCode, SObject* obj);
+	SWindow*				iWindow_findByObj						(SObject* obj);
+	SWindow*				iWindow_findRoot_byObj					(SObject* obj);
 	SWindow*				iWindow_allocate						(void);
 	void					iWindow_disconnectObj					(SWindow* win, SObject* obj);
-	void					iWindow_render							(SThisCode* thisCode, SWindow* win, bool tlForceRedraw);
+	void					iWindow_render							(SWindow* win, bool tlForceRedraw);
 	void					iWindow_move							(SWindow* win);
 	void					iWindow_minimize						(SWindow* win);
 	void					iWindow_maximize						(SWindow* win);
@@ -599,18 +599,18 @@ struct SObjEventMap;
 	s8*						iDuplicateString						(s8* tcText);
 
 	// Mouse processing (callback from iWindow_wndProc()
-	s32						iMouse_processMessage					(SThisCode* thisCode, SWindow* win, UINT msg, WPARAM w, LPARAM l);
-	void					iiMouse_translatePosition				(SThisCode* thisCode, SWindow* win, POINTS* pt, UINT msg);
-	s32						iiMouse_processMouseEvents				(SThisCode* thisCode, SWindow* win, UINT msg, WPARAM w, LPARAM l);
-	void					iiMouse_processMouseEvents_windowSpecial(SThisCode* thisCode, SWindow* win);
-	bool					iiMouse_processMouseEvents_mouseMove	(SThisCode* thisCode, SWindow* win, SObject* obj, RECT* rc,         bool tlProcessChildren, bool tlProcessSiblings, bool* tlProcessed);
-	bool					iiMouse_processMouseEvents_common		(SThisCode* thisCode, SWindow* win, SObject* obj, RECT* rc, UINT m, bool tlProcessChildren, bool tlProcessSiblings, bool* tlProcessed);
-//	s32						iiMouse_processMouseEvents_nonclient	(SThisCode* thisCode, SWindow* win, UINT m, WPARAM w, LPARAM l);
+	s32						iMouse_processMessage					(SWindow* win, UINT msg, WPARAM w, LPARAM l);
+	void					iiMouse_translatePosition				(SWindow* win, POINTS* pt, UINT msg);
+	s32						iiMouse_processMouseEvents				(SWindow* win, UINT msg, WPARAM w, LPARAM l);
+	void					iiMouse_processMouseEvents_windowSpecial(SWindow* win);
+	bool					iiMouse_processMouseEvents_mouseMove	(SWindow* win, SObject* obj, RECT* rc,         bool tlProcessChildren, bool tlProcessSiblings, bool* tlProcessed);
+	bool					iiMouse_processMouseEvents_common		(SWindow* win, SObject* obj, RECT* rc, UINT m, bool tlProcessChildren, bool tlProcessSiblings, bool* tlProcessed);
+//	s32						iiMouse_processMouseEvents_nonclient	(SWindow* win, UINT m, WPARAM w, LPARAM l);
 	void					iiMouse_getFlags_wparam					(WPARAM w, bool* tlCtrl, bool* tlAlt, bool* tlShift, bool* tlLeft, bool* tlMiddle, bool* tlRight, bool* tlCaps, bool* tlAnyButton);
 	void					iiMouse_getFlags_async					(          bool* tlCtrl, bool* tlAlt, bool* tlShift, bool* tlLeft, bool* tlMiddle, bool* tlRight, bool* tlCaps, bool* tlAnyButton);
 
 	// For processing keystrokes
-	s32						iKeyboard_processMessage				(SThisCode* thisCode, SWindow* win, UINT m, WPARAM w, LPARAM l);
+	s32						iKeyboard_processMessage				(SWindow* win, UINT m, WPARAM w, LPARAM l);
 
 	// EditManager
 	// Moved to sem.cpp and renamed sem (struct edit manager, also a reference to Sammy Edward Mitchell from the SEMware editor, which guided me from 1990s through until today Jan.11.2015 as it is still the best editor I've ever used

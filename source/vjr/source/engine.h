@@ -86,39 +86,40 @@
 // Forward declarations
 //////
 	void					iEngine_startup_initialization			(void);
-	bool					iEngine_executeStandaloneCommand		(SThisCode* thisCode, SLine* line);
-	SComp*					iEngine_parseSourceCodeLine				(SThisCode* thisCode, SLine* line);
-	SVariable*				iEngine_get_variableName_fromComponent	(SThisCode* thisCode, SComp* comp, bool* tlManufactured, bool tlByRef);
-	SVariable*				iEngine_get_variableName_fromText		(SThisCode* thisCode, cs8* tcText, u32 tnTextLength, SComp* comp, bool* tlManufactured, bool tlByRef);
-	SVariable*				iEngine_get_contiguousComponents		(SThisCode* thisCode, SComp* comp, bool* tlManufactured, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount);
-	void					iEngine_get_functionResult				(SThisCode* thisCode, SComp* comp, s32 tnRcount, SFunctionParams* rpar);
+	void					iEngine_engage							(void);
+	bool					iEngine_engage_oneCommand				(SLine* line);
+	SComp*					iEngine_parse_sourceCodeLine			(SLine* line);
+	SVariable*				iEngine_get_variableName_fromComponent	(SComp* comp, bool* tlManufactured, bool tlByRef);
+	SVariable*				iEngine_get_variableName_fromText		(cs8* tcText, u32 tnTextLength, SComp* comp, bool* tlManufactured, bool tlByRef);
+	SVariable*				iEngine_get_contiguousComponents		(SComp* comp, bool* tlManufactured, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount);
+	void					iEngine_get_functionResult				(SComp* comp, s32 tnRcount, SFunctionParams* rpar);
 
 	// Use these for root-searching named components, or components within objects
-	bool					iEngine_get_namedSourceAndType_byComp			(SThisCode* thisCode,				SComp* comp,               void** p, s32* tnType);
-	bool					iiEngine_get_namedSourceAndType_ofObj_byComp	(SThisCode* thisCode, SObject* obj,	SComp* comp, void** pRoot, void** p, s32* tnType, u32* tnIndex);
+	bool					iEngine_get_namedSourceAndType_byComp			(               SComp* comp,               void** p, s32* tnType);
+	bool					iiEngine_get_namedSourceAndType_ofObj_byComp	(SObject* obj,	SComp* comp, void** pRoot, void** p, s32* tnType, u32* tnIndex);
 
-	void					iEngine_executeSetter					(SThisCode* thisCode, cs8* name, SVariable* varOld, SVariable* varNew);
-	void					iEngine_executeSetter					(SThisCode* thisCode, s8*  name, SVariable* varOld, SVariable* varNew);
-	void					iEngine_error							(SThisCode* thisCode, u32 tnErrorNumber, SVariable* varRelated);
+	void					iEngine_executeSetter					(cs8* name, SVariable* varOld, SVariable* varNew);
+	void					iEngine_executeSetter					(s8*  name, SVariable* varOld, SVariable* varNew);
+	void					iEngine_error							(u32 tnErrorNumber, SVariable* varRelated);
 
-	bool					iEngine_signal_onValidate				(SThisCode* thisCode, SVariable* varTableName, SVariable* varAlias, SVariable* varCdxName, SVariable* varTag, SVariable* varcMessage, SVariable* varIsError, SVariable* varRebuildIndexRequired);
-	bool					iEngine_raise_event						(SThisCode* thisCode, u32 tnEventId, SWindow* win, SObject* obj, void* p = NULL);
-	bool					iEngine_set_event						(SThisCode* thisCode, u32 tnEventId, SWindow* win, SObject* obj, uptr tnEventAddress);
+	bool					iEngine_signal_onValidate				(SVariable* varTableName, SVariable* varAlias, SVariable* varCdxName, SVariable* varTag, SVariable* varcMessage, SVariable* varIsError, SVariable* varRebuildIndexRequired);
+	bool					iEngine_raise_event						(u32 tnEventId, SWindow* win, SObject* obj, void* p = NULL);
+	bool					iEngine_set_event						(u32 tnEventId, SWindow* win, SObject* obj, uptr tnEventAddress);
 
-	s64						iEngine_update_tally					(SThisCode* thisCode, s64 tnValue);
-	s64						iEngine_update_meta1					(SThisCode* thisCode, s64 tnValue);
-	s64						iEngine_update_meta2					(SThisCode* thisCode, s64 tnValue);
-	s64						iEngine_update_meta3					(SThisCode* thisCode, s64 tnValue);
-	s64						iEngine_update_meta4					(SThisCode* thisCode, s64 tnValue);
-	void					iEngine_update_meta5					(SThisCode* thisCode, SDatum* data);
-	void					iEngine_update_meta6					(SThisCode* thisCode, SDatum* data);
-	void					iEngine_update_meta7					(SThisCode* thisCode, SVariable* varSrc);
-	void					iEngine_update_meta8					(SThisCode* thisCode, SVariable* varSrc);
-	void					iEngine_update_meta9					(SThisCode* thisCode, SVariable* varSrc);
+	s64						iEngine_update_tally					(s64 tnValue);
+	s64						iEngine_update_meta1					(s64 tnValue);
+	s64						iEngine_update_meta2					(s64 tnValue);
+	s64						iEngine_update_meta3					(s64 tnValue);
+	s64						iEngine_update_meta4					(s64 tnValue);
+	void					iEngine_update_meta5					(SDatum* data);
+	void					iEngine_update_meta6					(SDatum* data);
+	void					iEngine_update_meta7					(SVariable* varSrc);
+	void					iEngine_update_meta8					(SVariable* varSrc);
+	void					iEngine_update_meta9					(SVariable* varSrc);
 
-	bool					iiEngine_getParametersBetween			(SThisCode* thisCode, s8* map_byRefOrByVal, SComp* compLeftParen, u32* paramsFound, u32 requiredCount, u32 maxCount, SFunctionParams* rpar, bool tlForceByRef = false);
+	bool					iiEngine_getParametersBetween			(s8* map_byRefOrByVal, SComp* compLeftParen, u32* paramsFound, u32 requiredCount, u32 maxCount, SFunctionParams* rpar, bool tlForceByRef = false);
 
-	void					iBreakpoint_delete						(SThisCode* thisCode, SBreakpoint** breakpoint);
-	SBreakpoint* 			iBreakpoint_add							(SThisCode* thisCode, SBreakpoint** breakpoint, u32 tnType);
+	void					iBreakpoint_delete						(SBreakpoint** breakpoint);
+	SBreakpoint* 			iBreakpoint_add							(SBreakpoint** breakpoint, u32 tnType);
 
-	void					iSourceCode_delete						(SThisCode* thisCode, SSourceCode** sourceCode);
+	void					iSourceCode_delete						(SSourceCode** sourceCode);

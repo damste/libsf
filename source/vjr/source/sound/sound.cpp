@@ -180,7 +180,7 @@
 			lnLength = length / sizeof(Sint16);
 			cb._func	= (uptr)&iSound_requestStreams;
 			cb.extra	= lnLength;
-			iSEChain_iterateThroughForCallback(thisCode, &gseRootSounds, &cb);
+			iSEChain_iterateThroughForCallback(&gseRootSounds, &cb);
 			// Once we get here, all streams have been populated
 
 			// Iterate through each channel merging them together
@@ -450,7 +450,7 @@
 // Note:  Use -1 for hertz entries to disable that tone channel.
 //
 //////
-	u64 iSound_createTone(SThisCode* thisCode, f32 tfHertz1, f32 tfHertz2, f32 tfHertz3, f32 tfHertz4, u32 tnDurationMilliseconds)
+	u64 iSound_createTone(f32 tfHertz1, f32 tfHertz2, f32 tfHertz3, f32 tfHertz4, u32 tnDurationMilliseconds)
 	{
 		_isSSound*	lss;
 		bool		llResult;
@@ -460,7 +460,7 @@
 		if (glSDL_Initialized)
 		{
 			// Add this item to the list of sounds
-			lss = (_isSSound*)iSEChain_append(thisCode, &gseRootSounds, iGetNextUid(thisCode), iGetNextUid(thisCode), sizeof(_isSSound), 1, &llResult);
+			lss = (_isSSound*)iSEChain_append(&gseRootSounds, iGetNextUid(), iGetNextUid(), sizeof(_isSSound), 1, &llResult);
 			if (lss)
 			{
 				// Store the relevant information
@@ -495,7 +495,7 @@
 // Returns a handle which can be used to play or terminate the stream.
 //
 //////
-	u64 iSound_createStream(SThisCode* thisCode, u32 tnSamplesPerSecond, u64 tnSoundFillerCallbackFunction)
+	u64 iSound_createStream(u32 tnSamplesPerSecond, u64 tnSoundFillerCallbackFunction)
 	{
 		_isSSound*	lss;
 		bool		llResult;
@@ -505,7 +505,7 @@
 		if (glSDL_Initialized)
 		{
 			// Add this item to the list of sounds
-			lss = (_isSSound*)iSEChain_append(thisCode, &gseRootSounds, iGetNextUid(thisCode), iGetNextUid(thisCode), sizeof(_isSSound), 1, &llResult);
+			lss = (_isSSound*)iSEChain_append(&gseRootSounds, iGetNextUid(), iGetNextUid(), sizeof(_isSSound), 1, &llResult);
 			if (lss)
 			{
 				// Store the relevant information
@@ -531,13 +531,13 @@
 // Called to set the volume either on-the-fly while the stream is playing, or before or after it plays.
 //
 //////
-	u64 iSound_setVolume(SThisCode* thisCode, u64 tnHandle, f32 tfVolume)
+	u64 iSound_setVolume(u64 tnHandle, f32 tfVolume)
 	{
 		_isSSound*	lss;
 
 
 		// Search for the indicated handle
-		lss = (_isSSound*)iSEChain_searchByUniqueId(thisCode, &gseRootSounds, tnHandle);
+		lss = (_isSSound*)iSEChain_searchByUniqueId(&gseRootSounds, tnHandle);
 		if (lss && lss->samples)
 		{
 			// They are just updating the volume
@@ -561,13 +561,13 @@
 //         oss_soundPlayStart(handle, 0.5f)          // Change the volume of the sound, and start it if it's stopped, but if it's already started then just change the volume (don't restart the sound)
 //
 //////
-	u64 iSound_playStart(SThisCode* thisCode, u64 tnHandle, f32 tfVolume)
+	u64 iSound_playStart(u64 tnHandle, f32 tfVolume)
 	{
 		_isSSound*	lss;
 
 
 		// Search for the indicated handle
-		lss = (_isSSound*)iSEChain_searchByUniqueId(thisCode, &gseRootSounds, tnHandle);
+		lss = (_isSSound*)iSEChain_searchByUniqueId(&gseRootSounds, tnHandle);
 		if (lss && lss->samples)
 		{
 			// Turn it on (even if it's already on)
@@ -606,13 +606,13 @@
 // Called to cancel a playing sound
 //
 //////
-	u64 iSound_playCancel(SThisCode* thisCode, u64 tnHandle)
+	u64 iSound_playCancel(u64 tnHandle)
 	{
 		_isSSound*	lss;
 
 
 		// Search for the indicated handle
-		lss = (_isSSound*)iSEChain_searchByUniqueId(thisCode, &gseRootSounds, tnHandle);
+		lss = (_isSSound*)iSEChain_searchByUniqueId(&gseRootSounds, tnHandle);
 		if (lss && lss->samples)
 		{
 			// Turn it on (even if it's already on)
@@ -633,7 +633,7 @@
 // Called to delete a previous sound handle
 //
 //////
-	u64 iSound_deleteHandle(SThisCode* thisCode, u64 tnHandle)
+	u64 iSound_deleteHandle(u64 tnHandle)
 	{
 		_isSSound*			lss;
 		_isSSound*			lssPlaying;
@@ -641,7 +641,7 @@
 
 
 		// Search for the indicated handle
-		lss = (_isSSound*)iSEChain_searchByUniqueId(thisCode, &gseRootSounds, tnHandle);
+		lss = (_isSSound*)iSEChain_searchByUniqueId(&gseRootSounds, tnHandle);
 		if (lss)
 		{
 			// Turn it off, and add it to the delete queue
@@ -650,7 +650,7 @@
 
 			// We need to see if this is the last item playing, and if so, then turn off SDL
 			cb._func	= (uptr)&iSound_DeleteValidate;
-			lssPlaying	= (_isSSound*)iSEChain_searchByCallback(thisCode, &gseRootSounds, &cb);
+			lssPlaying	= (_isSSound*)iSEChain_searchByCallback(&gseRootSounds, &cb);
 
 			// Is anything else still playing?
 			if (!lssPlaying)

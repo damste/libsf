@@ -110,13 +110,13 @@
 // Example:
 //    ? ABS(-10)		&& Display 10
 //////
-    void function_abs(SThisCode* thisCode, SFunctionParams* rpar)
+    void function_abs(SFunctionParams* rpar)
     {
 		SVariable* varNumber = rpar->ip[0];
 
 
 		// Return abs
-		ifunction_numbers_common(thisCode, rpar, varNumber, NULL, NULL, _FP_COMMON_ABS, _VAR_TYPE_F64, true, false);
+		ifunction_numbers_common(rpar, varNumber, NULL, NULL, _FP_COMMON_ABS, _VAR_TYPE_F64, true, false);
 	}
 
 
@@ -145,13 +145,13 @@
 // Example:
 //    ? ACOS(0)		&& Display 1.57
 //////
-    void function_acos(SThisCode* thisCode, SFunctionParams* rpar)
+    void function_acos(SFunctionParams* rpar)
     {
 		SVariable* varNumber = rpar->ip[0];
 
 
 		// Return acos
-		ifunction_numbers_common(thisCode, rpar, varNumber, NULL, NULL, _FP_COMMON_ACOS, _VAR_TYPE_F64, false, false);
+		ifunction_numbers_common(rpar, varNumber, NULL, NULL, _FP_COMMON_ACOS, _VAR_TYPE_F64, false, false);
 	}
 
 
@@ -176,7 +176,7 @@
 // Returns:
 //     Character		-- The string with a trailing backspace added if need be
 //////
-	void function_addbs(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_addbs(SFunctionParams* rpar)
 	{
 		SVariable*	varString = rpar->ip[0];
         SVariable*	result;
@@ -188,7 +188,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString) || !iVariable_isTypeCharacter(varString))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varString), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varString), false);
 				return;
 			}
 
@@ -196,10 +196,10 @@
 		//////////
         // Based on its type, process it accordingly
 		//////
-			result = iVariable_create(thisCode, _VAR_TYPE_CHARACTER, NULL, true);
+			result = iVariable_create(_VAR_TYPE_CHARACTER, NULL, true);
 			if (!result)
 			{
-				iError_report(thisCode, cgcInternalError, false);
+				iError_report(cgcInternalError, false);
 				return;
 			}
 
@@ -256,7 +256,7 @@
 // Returns:
 //    Character		-- The string with any leading and trailing spaces removed
 //////
-	void function_alltrim(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_alltrim(SFunctionParams* rpar)
 	{
 		SVariable* varString			= rpar->ip[0];
 		SVariable* varCaseInsensitive	= rpar->ip[1];
@@ -265,7 +265,7 @@
 
 
 		// Return alltrim
-		ifunction_trim_common(thisCode, rpar, varString, varCaseInsensitive, varTrimChars1, varTrimChars2, true, true);
+		ifunction_trim_common(rpar, varString, varCaseInsensitive, varTrimChars1, varTrimChars2, true, true);
 	}
 
 
@@ -281,7 +281,7 @@
 //	    (2)  *TRIM(cString[, nCaseSensitive|lCaseSensitive[, cTrimChar1[, cTrimChar2]]])
 //
 //////
-	void ifunction_trim_common(SThisCode* thisCode, SFunctionParams* rpar, SVariable* varString, SVariable* varCaseInsensitive, SVariable* varTrimChars1, SVariable* varTrimChars2, bool tlTrimTheStart, bool tlTrimTheEnd)
+	void ifunction_trim_common(SFunctionParams* rpar, SVariable* varString, SVariable* varCaseInsensitive, SVariable* varTrimChars1, SVariable* varTrimChars2, bool tlTrimTheStart, bool tlTrimTheEnd)
 	{
 		s32			lnI, lnClipStartPos, lnClipEndPos;
 		s8			lc;
@@ -300,7 +300,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString) || !iVariable_isTypeCharacter(varString))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varString), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varString), false);
 				return;
 			}
 
@@ -324,7 +324,7 @@
 				// See what the parameter is
 				if (!iVariable_isValid(varCaseInsensitive))
 				{
-					iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varCaseInsensitive), false);
+					iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varCaseInsensitive), false);
 					return;
 
 				} else if (iVariable_isTypeNumeric(varCaseInsensitive)) {
@@ -348,7 +348,7 @@
 					llSyntaxForm1	= true;
 
 				} else {
-					iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varCaseInsensitive), false);
+					iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varCaseInsensitive), false);
 					return;
 				}
 			}
@@ -362,7 +362,7 @@
 				// If they're using syntax form1, then the presence of this parameter is a syntax error
 				if (llSyntaxForm1)
 				{
-					iError_reportByNumber(thisCode, _ERROR_TOO_MANY_PARAMETERS, iVariable_get_relatedComp(thisCode, varTrimChars1), false);
+					iError_reportByNumber(_ERROR_TOO_MANY_PARAMETERS, iVariable_get_relatedComp(varTrimChars1), false);
 					return;
 
 				} else if (iVariable_isTypeCharacter(varTrimChars1)) {
@@ -371,7 +371,7 @@
 					trim1Length	= varTrimChars1->value.length;
 
 				} else {
-					iError_reportByNumber(thisCode, _ERROR_P3_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varTrimChars1), false);
+					iError_reportByNumber(_ERROR_P3_IS_INCORRECT, iVariable_get_relatedComp(varTrimChars1), false);
 					return;
 				}
 			}
@@ -395,7 +395,7 @@
 					}
 
 				} else {
-					iError_reportByNumber(thisCode, _ERROR_P4_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varTrimChars2), false);
+					iError_reportByNumber(_ERROR_P4_IS_INCORRECT, iVariable_get_relatedComp(varTrimChars2), false);
 					return;
 				}
 			}
@@ -404,10 +404,10 @@
 		//////////
         // Create our return result
 		//////
-	        result = iVariable_create(thisCode, _VAR_TYPE_CHARACTER, NULL, true);
+	        result = iVariable_create(_VAR_TYPE_CHARACTER, NULL, true);
 			if (!result)
 			{
-				iError_report(thisCode, cgcInternalError, false);
+				iError_report(cgcInternalError, false);
 				return;
 			}
 
@@ -661,13 +661,13 @@
 // Returns:
 //    Numeric	-- Input number converted to ASCII value number
 //////
-	void function_alp(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_alp(SFunctionParams* rpar)
 	{
 		SVariable* varColor = rpar->ip[0];
 
 
 		// Return alp
-		ifunction_color_common(thisCode, rpar, varColor, 0xff000000, 24);
+		ifunction_color_common(rpar, varColor, 0xff000000, 24);
 	}
 
 
@@ -693,7 +693,7 @@
 // Returns:
 //    Numeric	-- Input number converted to ASCII value number
 //////
-    void function_asc(SThisCode* thisCode, SFunctionParams* rpar)
+    void function_asc(SFunctionParams* rpar)
     {
 		SVariable*	varString = rpar->ip[0];
         u8 			value;
@@ -706,7 +706,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString) || !iVariable_isTypeCharacter(varString))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varString), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varString), false);
 				return;
 			}
 
@@ -715,7 +715,7 @@
         // It must be at least one character long
 		//////
 			if (varString->value.length == 0)
-				iError_reportByNumber(thisCode, _ERROR_EMPTY_STRING, iVariable_get_relatedComp(thisCode, varString), false);
+				iError_reportByNumber(_ERROR_EMPTY_STRING, iVariable_get_relatedComp(varString), false);
 
 
 		//////////
@@ -727,10 +727,10 @@
 		//////////
         // Create our return result
 		//////
-	        result = iVariable_create(thisCode, _VAR_TYPE_S32, NULL, true);
+	        result = iVariable_create(_VAR_TYPE_S32, NULL, true);
 			if (!result)
 			{
-				iError_report(thisCode, cgcInternalError, false);
+				iError_report(cgcInternalError, false);
 				return;
 			}
 
@@ -773,13 +773,13 @@
 // Example:
 //    ? ASIN(1)		&& Display 1.57
 //////
-    void function_asin(SThisCode* thisCode, SFunctionParams* rpar)
+    void function_asin(SFunctionParams* rpar)
     {
 		SVariable* varNumber = rpar->ip[0];
 
 
 		// Return asin
-		ifunction_numbers_common(thisCode, rpar, varNumber, NULL, NULL, _FP_COMMON_ASIN, _VAR_TYPE_F64, false, false);
+		ifunction_numbers_common(rpar, varNumber, NULL, NULL, _FP_COMMON_ASIN, _VAR_TYPE_F64, false, false);
 	}
 
 
@@ -808,13 +808,13 @@
 // Example:
 //    ? ATAN(1.57)		&& Display 1.00
 //////
-    void function_atan(SThisCode* thisCode, SFunctionParams* rpar)
+    void function_atan(SFunctionParams* rpar)
     {
 		SVariable* varNumber = rpar->ip[0];
 
 
 		// Return atan
-		ifunction_numbers_common(thisCode, rpar, varNumber, NULL, NULL, _FP_COMMON_ATAN, _VAR_TYPE_F64, false, false);
+		ifunction_numbers_common(rpar, varNumber, NULL, NULL, _FP_COMMON_ATAN, _VAR_TYPE_F64, false, false);
 	}
 
 
@@ -847,7 +847,7 @@
 // Returns:
 //    u32			-- Location of the find, or 0 if not found
 //////
-	void function_at(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_at(SFunctionParams* rpar)
 	{
 		SVariable* varNeedle		= rpar->ip[0];
 		SVariable* varHaystack		= rpar->ip[1];
@@ -855,10 +855,10 @@
 
 
 		// Return at
-		ifunction_at_occurs_common(thisCode, rpar, varNeedle, varHaystack, varOccurrence, true, false, NULL);
+		ifunction_at_occurs_common(rpar, varNeedle, varHaystack, varOccurrence, true, false, NULL);
 	}
 
-	void function_atc(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_atc(SFunctionParams* rpar)
 	{
 		SVariable* varNeedle		= rpar->ip[0];
 		SVariable* varHaystack		= rpar->ip[1];
@@ -866,10 +866,10 @@
 
 
 		// Return atc
-		ifunction_at_occurs_common(thisCode, rpar, varNeedle, varHaystack, varOccurrence, false, false, NULL);
+		ifunction_at_occurs_common(rpar, varNeedle, varHaystack, varOccurrence, false, false, NULL);
 	}
 
-	void function_rat(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_rat(SFunctionParams* rpar)
 	{
 		SVariable* varNeedle		= rpar->ip[0];
 		SVariable* varHaystack		= rpar->ip[1];
@@ -877,10 +877,10 @@
 
 
 		// Return rat
-		ifunction_at_occurs_common(thisCode, rpar, varNeedle, varHaystack, varOccurrence, true, true, NULL);
+		ifunction_at_occurs_common(rpar, varNeedle, varHaystack, varOccurrence, true, true, NULL);
 	}
 
-	void function_ratc(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_ratc(SFunctionParams* rpar)
 	{
 		SVariable* varNeedle		= rpar->ip[0];
 		SVariable* varHaystack		= rpar->ip[1];
@@ -888,10 +888,10 @@
 
 
 		// Return ratc
-		ifunction_at_occurs_common(thisCode, rpar, varNeedle, varHaystack, varOccurrence, false, true, NULL);
+		ifunction_at_occurs_common(rpar, varNeedle, varHaystack, varOccurrence, false, true, NULL);
 	}
 
-	void ifunction_at_occurs_common(SThisCode* thisCode, SFunctionParams* rpar, SVariable* varNeedle, SVariable* varHaystack, SVariable* varOccurrence, bool tlCaseSensitive, bool tlScanBackward, u32* tnFoundCount)
+	void ifunction_at_occurs_common(SFunctionParams* rpar, SVariable* varNeedle, SVariable* varHaystack, SVariable* varOccurrence, bool tlCaseSensitive, bool tlScanBackward, u32* tnFoundCount)
 	{
 		u32			errorNum;
 		s32			lnI, lnStart, lnInc, lnStopper, lnFoundCount, lnOccurrence;
@@ -905,7 +905,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varNeedle) || !iVariable_isTypeCharacter(varNeedle))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNeedle), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varNeedle), false);
 				return;
 			}
 
@@ -915,7 +915,7 @@
 		//////
 			if (!iVariable_isValid(varHaystack) || !iVariable_isTypeCharacter(varHaystack))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varHaystack), false);
+				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varHaystack), false);
 				return;
 			}
 
@@ -928,22 +928,22 @@
 				// ...it must be numeric
 				if (!iVariable_isTypeNumeric(varOccurrence))
 				{
-					iError_reportByNumber(thisCode, _ERROR_P3_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varOccurrence), false);
+					iError_reportByNumber(_ERROR_P3_IS_INCORRECT, iVariable_get_relatedComp(varOccurrence), false);
 					return;
 				}
 
 				// Grab the occurrence
-				lnOccurrence = iiVariable_getAs_s32(thisCode, varOccurrence, false, &error, &errorNum);
+				lnOccurrence = iiVariable_getAs_s32(varOccurrence, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varOccurrence), false);
+					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varOccurrence), false);
 					return;
 				}
 
 				// Validate that the occurrence is
 				if (lnOccurrence <= 0)
 				{
-					iError_report(thisCode, (cu8*)"Parameter 3 must be 1 or greater", false);
+					iError_report((cu8*)"Parameter 3 must be 1 or greater", false);
 					return;
 				}
 
@@ -956,10 +956,10 @@
 		//////////
 		// Create the return variable
 		//////
-			result = iVariable_create(thisCode, _VAR_TYPE_S32, NULL, true);
+			result = iVariable_create(_VAR_TYPE_S32, NULL, true);
 			if (!result)
 			{
-				iError_report(thisCode, cgcInternalError, false);
+				iError_report(cgcInternalError, false);
 				return;
 			}
 
@@ -1075,12 +1075,12 @@
 // Example:
 //    ? ATN2(5,3)		&& Display 1.03
 //////
-	void function_atn2(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_atn2(SFunctionParams* rpar)
 	{
 		SVariable* varY = rpar->ip[0];
 		SVariable* varX = rpar->ip[1];
 
 
 		// Return atn2
-		ifunction_numbers_common(thisCode, rpar, varY, varX, NULL, _FP_COMMON_ATN2, _VAR_TYPE_F64, false, false);
+		ifunction_numbers_common(rpar, varY, varX, NULL, _FP_COMMON_ATN2, _VAR_TYPE_F64, false, false);
 	}

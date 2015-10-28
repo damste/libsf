@@ -108,7 +108,7 @@
 // Returns:
 //    A copy of either varTrue or varFalse.
 //////
-	void function_iif(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_iif(SFunctionParams* rpar)
 	{
 		SVariable*	varTest		= rpar->ip[0];
 		SVariable*	varTrue		= rpar->ip[1];
@@ -125,7 +125,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varTest) || !iVariable_isFundamentalTypeLogical(varTest))
 			{
-				iError_reportByNumber(thisCode, _ERROR_MUST_BE_LOGICAL, iVariable_get_relatedComp(thisCode, varTest), false);
+				iError_reportByNumber(_ERROR_MUST_BE_LOGICAL, iVariable_get_relatedComp(varTest), false);
 				return;
 			}
 
@@ -133,10 +133,10 @@
 		//////////
         // Grab the test result
 		//////
-			llTest = iiVariable_getAs_bool(thisCode, varTest, false, &error, &errorNum);
+			llTest = iiVariable_getAs_bool(varTest, false, &error, &errorNum);
 			if (error)
 			{
-				iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varTest), false);
+				iError_reportByNumber(errorNum, iVariable_get_relatedComp(varTest), false);
 				return;
 			}
 
@@ -147,11 +147,11 @@
 			if (llTest)
 			{
 				// Copy true
-				result = iVariable_copy(thisCode, varTrue, false);
+				result = iVariable_copy(varTrue, false);
 
 			} else {
 				// Copy false
-				result = iVariable_copy(thisCode, varFalse, false);
+				result = iVariable_copy(varFalse, false);
 			}
 
 
@@ -159,7 +159,7 @@
 		// Are we good?
 		//////
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, ((llTest) ? varTrue : varFalse)), false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(((llTest) ? varTrue : varFalse)), false);
 
 
 		//////////
@@ -196,7 +196,7 @@
 // Returns:
 //    Logical		-- .t. if the item is found in the list, .f. otherwise
 //////
-	void function_inlist(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_inlist(SFunctionParams* rpar)
 	{
 		SVariable*	varValue = rpar->ip[0];
 		SVariable*	varList1 = rpar->ip[1];
@@ -213,12 +213,12 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varValue))
 			{
-				iError_reportByNumber(thisCode, _ERROR_MISSING_PARAMETER, iVariable_get_relatedComp(thisCode, varValue), false);
+				iError_reportByNumber(_ERROR_MISSING_PARAMETER, iVariable_get_relatedComp(varValue), false);
 				return;
 			}
 			if (!iVariable_isValid(varList1))
 			{
-				iError_reportByNumber(thisCode, _ERROR_MISSING_PARAMETER, iVariable_get_relatedComp(thisCode, varList1), false);
+				iError_reportByNumber(_ERROR_MISSING_PARAMETER, iVariable_get_relatedComp(varList1), false);
 				return;
 			}
 
@@ -226,16 +226,16 @@
 		//////////
 		// Each type must be fundamentally the same type
 		//////
-			for (lnI = 1, lnType = iVariable_get_fundamentalType(thisCode, varValue); lnI < (s32)_MAX_PARAMS_COUNT && rpar->ip[lnI]; lnI++)
+			for (lnI = 1, lnType = iVariable_get_fundamentalType(varValue); lnI < (s32)_MAX_PARAMS_COUNT && rpar->ip[lnI]; lnI++)
 			{
 
 				//////////
 				// Make sure this variable type matches the test value
 				//////
-					if (iVariable_get_fundamentalType(thisCode, rpar->ip[lnI]) != lnType)
+					if (iVariable_get_fundamentalType(rpar->ip[lnI]) != lnType)
 					{
 						// The types do not match
-						iError_reportByNumber(thisCode, _ERROR_DATA_TYPE_MISMATCH, iVariable_get_relatedComp(thisCode, rpar->ip[lnI]), false);
+						iError_reportByNumber(_ERROR_DATA_TYPE_MISMATCH, iVariable_get_relatedComp(rpar->ip[lnI]), false);
 						return;
 					}
 
@@ -251,7 +251,7 @@
 				//////////
 				// Compare the value with each list item
 				//////
-					if (iVariable_compare(thisCode, varValue, rpar->ip[lnI], false, &error, &errorNum) == 0 && !error)
+					if (iVariable_compare(varValue, rpar->ip[lnI], false, &error, &errorNum) == 0 && !error)
 					{
 						// We found a match
 						llResult = true;
@@ -264,7 +264,7 @@
 				//////
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, rpar->ip[lnI]), false);
+						iError_reportByNumber(errorNum, iVariable_get_relatedComp(rpar->ip[lnI]), false);
 						return;
 					}
 
@@ -274,9 +274,9 @@
 		//////////
 		// Based on the result, create the return(result)
 		//////
-			result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_LOGICAL, ((llResult) ? (s8*)&_LOGICAL_TRUE : (s8*)&_LOGICAL_FALSE), 1, false);
+			result = iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, ((llResult) ? (s8*)&_LOGICAL_TRUE : (s8*)&_LOGICAL_FALSE), 1, false);
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varValue), false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varValue), false);
 
 
 		//////////
@@ -310,7 +310,7 @@
 // Returns:
 //    INT(n) of the value in p1
 //////
-    void function_int(SThisCode* thisCode, SFunctionParams* rpar)
+    void function_int(SFunctionParams* rpar)
     {
 		SVariable*	varNumber = rpar->ip[0];
 		f64			fValue;
@@ -325,7 +325,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varNumber) || !iVariable_isTypeNumeric(varNumber))
 			{
-				iError_reportByNumber(thisCode, _ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNumber), false);
+				iError_reportByNumber(_ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(varNumber), false);
 				return;
 			}
 
@@ -335,21 +335,21 @@
 		//////
 			if (iVariable_isTypeFloatingPoint(varNumber))
 			{
-				fValue = iiVariable_getAs_f64(thisCode, varNumber, false, &error, &errorNum);
+				fValue = iiVariable_getAs_f64(varNumber, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNumber), false);
+					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNumber), false);
 					return;
 				}
 
 				// Convert to S64
-				result = iVariable_create(thisCode, _VAR_TYPE_S64, NULL, true);
+				result = iVariable_create(_VAR_TYPE_S64, NULL, true);
 				if (result)
 					*(s64*)result->value.data = (s64)fValue;
 
 			} else {
 				// Copy whatever it already is
-				result = iVariable_copy(thisCode, varNumber, false);
+				result = iVariable_copy(varNumber, false);
 			}
 
 
@@ -358,7 +358,7 @@
 		//////
 			if (!result)
 			{
-				iError_report(thisCode, cgcInternalError, false);
+				iError_report(cgcInternalError, false);
 				return;
 			}
 
@@ -401,7 +401,7 @@
 //    ? ISALPHA("A2", .T.) 	&& Display .F.
 //    ? ISALPHA("AA", .T.)	&& Display .T.
 //////
-	void function_isalpha(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_isalpha(SFunctionParams* rpar)
 	{
 		SVariable*	varStr				= rpar->ip[0];
 		SVariable*	varTestWholeString	= rpar->ip[1];
@@ -417,7 +417,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varStr) || !iVariable_isTypeCharacter(varStr))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varStr), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varStr), false);
 				return;
 			}
 
@@ -429,15 +429,15 @@
 			{
 				if (!iVariable_isFundamentalTypeLogical(varTestWholeString))
 				{
-					iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varTestWholeString), false);
+					iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varTestWholeString), false);
 					return;
 				}
 
 				// Grab the value
-				llTestWholeString = iiVariable_getAs_bool(thisCode, varTestWholeString, false, &error, &errorNum);
+				llTestWholeString = iiVariable_getAs_bool(varTestWholeString, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varTestWholeString), false);
+					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varTestWholeString), false);
 					return;
 				}
 
@@ -450,15 +450,15 @@
 		//////////
 		// Create and populate the return variable
 		//////
-			llIsAlpha	= ifunction_iscommon(thisCode, varStr, llTestWholeString, _isAlpha);
-			rpar->rp[0]	= iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_LOGICAL, (cs8*)((llIsAlpha) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, true);
+			llIsAlpha	= ifunction_iscommon(varStr, llTestWholeString, _isAlpha);
+			rpar->rp[0]	= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, (cs8*)((llIsAlpha) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, true);
 			if (!rpar->rp[0])
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varStr), false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varStr), false);
 
 	}
 
 	// Common for isalpha(), isdigit(), islower(), isupper()
-	bool ifunction_iscommon(SThisCode* thisCode, SVariable* varStr, bool tlWhole, u32 tnIsCommonOp)
+	bool ifunction_iscommon(SVariable* varStr, bool tlWhole, u32 tnIsCommonOp)
 	{
 		s32		lnI, lnMaxLength;
 		s8		c;
@@ -549,7 +549,7 @@
 //    ? ISDIGIT("2a", .T.)  && Display .F.
 //    ? ISDIGIT("22", .T.)	&& Display .T.
 //////
-	void function_isdigit(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_isdigit(SFunctionParams* rpar)
 	{
 		SVariable*	varStr				= rpar->ip[0];
 		SVariable*	varTestWholeString	= rpar->ip[1];
@@ -565,7 +565,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varStr) || !iVariable_isTypeCharacter(varStr))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varStr), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varStr), false);
 				return;
 			}
 
@@ -577,15 +577,15 @@
 			{
 				if (!iVariable_isFundamentalTypeLogical(varTestWholeString))
 				{
-					iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varTestWholeString), false);
+					iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varTestWholeString), false);
 					return;
 				}
 
 				// Grab the value
-				llTestWholeString = iiVariable_getAs_bool(thisCode, varTestWholeString, false, &error, &errorNum);
+				llTestWholeString = iiVariable_getAs_bool(varTestWholeString, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varTestWholeString), false);
+					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varTestWholeString), false);
 					return;
 				}
 
@@ -598,10 +598,10 @@
 		//////////
 		// Create and populate the return variable
 		//////
-			llIsDigit	= ifunction_iscommon(thisCode, varStr, llTestWholeString, _isDigit);
-			rpar->rp[0]	= iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_LOGICAL, (cs8*)((llIsDigit) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, true);
+			llIsDigit	= ifunction_iscommon(varStr, llTestWholeString, _isDigit);
+			rpar->rp[0]	= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, (cs8*)((llIsDigit) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, true);
 			if (!rpar->rp[0])
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varStr), false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varStr), false);
 
 	}
 
@@ -636,7 +636,7 @@
 //    ? ISLOWER("aA", .T.) 	&& Display .F.
 //    ? ISLOWER("aa", .T.)	&& Display .T.
 //////
-	void function_islower(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_islower(SFunctionParams* rpar)
 	{
 		SVariable*	varStr				= rpar->ip[0];
 		SVariable*	varTestWholeString	= rpar->ip[1];
@@ -652,7 +652,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varStr) || !iVariable_isTypeCharacter(varStr))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varStr), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varStr), false);
 				return;
 			}
 
@@ -664,15 +664,15 @@
 			{
 				if (!iVariable_isFundamentalTypeLogical(varTestWholeString))
 				{
-					iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varTestWholeString), false);
+					iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varTestWholeString), false);
 					return;
 				}
 
 				// Grab the value
-				llTestWholeString = iiVariable_getAs_bool(thisCode, varTestWholeString, false, &error, &errorNum);
+				llTestWholeString = iiVariable_getAs_bool(varTestWholeString, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varTestWholeString), false);
+					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varTestWholeString), false);
 					return;
 				}
 
@@ -685,10 +685,10 @@
 		//////////
 		// Create and populate the return variable
 		//////
-			llIsLower	= ifunction_iscommon(thisCode, varStr, llTestWholeString, _isLower);
-			rpar->rp[0]	= iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_LOGICAL, (cs8*)((llIsLower) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, true);
+			llIsLower	= ifunction_iscommon(varStr, llTestWholeString, _isLower);
+			rpar->rp[0]	= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, (cs8*)((llIsLower) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, true);
 			if (!rpar->rp[0])
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varStr), false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varStr), false);
 
 	}
 
@@ -723,7 +723,7 @@
 //    ? ISUPPER("Aa", .T.) 	&& Display .F.
 //    ? ISUPPER("AA", .T.)	&& Display .T.
 //////
-	void function_isupper(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_isupper(SFunctionParams* rpar)
 	{
 		SVariable*	varStr				= rpar->ip[0];
 		SVariable*	varTestWholeString	= rpar->ip[1];
@@ -739,7 +739,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varStr) || !iVariable_isTypeCharacter(varStr))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varStr), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varStr), false);
 				return;
 			}
 
@@ -751,15 +751,15 @@
 			{
 				if (!iVariable_isFundamentalTypeLogical(varTestWholeString))
 				{
-					iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varTestWholeString), false);
+					iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varTestWholeString), false);
 					return;
 				}
 
 				// Grab the value
-				llTestWholeString = iiVariable_getAs_bool(thisCode, varTestWholeString, false, &error, &errorNum);
+				llTestWholeString = iiVariable_getAs_bool(varTestWholeString, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varTestWholeString), false);
+					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varTestWholeString), false);
 					return;
 				}
 
@@ -772,10 +772,10 @@
 		//////////
 		// Create and populate the return variable
 		//////
-			llIsUpper	= ifunction_iscommon(thisCode, varStr, llTestWholeString, _isUpper);
-			rpar->rp[0]	= iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_LOGICAL, (cs8*)((llIsUpper) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, true);
+			llIsUpper	= ifunction_iscommon(varStr, llTestWholeString, _isUpper);
+			rpar->rp[0]	= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, (cs8*)((llIsUpper) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, true);
 			if (!rpar->rp[0])
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varStr), false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varStr), false);
 
 	}
 
@@ -809,7 +809,7 @@
 //    ? ISNULL(0.0)  	&& Display .F.
 //    ? ISNULL(.null.)  && Display .T.
 //////
-	void function_isnull(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_isnull(SFunctionParams* rpar)
 	{
 		SVariable*	varExpr = rpar->ip[0];
 
@@ -822,7 +822,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValidType(varExpr))
 			{
-				iError_reportByNumber(thisCode, _ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varExpr), false);
+				iError_reportByNumber(_ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(varExpr), false);
 				return;
 			}
 
@@ -830,14 +830,14 @@
 		//////////
 		// Create and populate the return variable
 		//////
-			llIsNull	= ifunction_isnull_common(thisCode, varExpr);
-			rpar->rp[0]	= iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_LOGICAL, (cs8*)((llIsNull) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, true);
+			llIsNull	= ifunction_isnull_common(varExpr);
+			rpar->rp[0]	= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, (cs8*)((llIsNull) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, true);
 			if (!rpar->rp[0])
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varExpr), false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varExpr), false);
 
 	}
 
-	bool ifunction_isnull_common(SThisCode* thisCode, SVariable* varExpr)
+	bool ifunction_isnull_common(SVariable* varExpr)
 	{
 		bool llIsNull;
 
@@ -873,7 +873,7 @@
 
 				// We cannot (yet??) test NULL on the other types
 				default:
-					iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+					iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 					return(false);
 			}
 

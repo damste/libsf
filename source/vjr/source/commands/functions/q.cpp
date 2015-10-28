@@ -109,7 +109,7 @@
 //	  QUARTER( ) returns the quarter of the year in which a date occurs, and the values can be 1, 2, 3, or 4.
 //
 //////
-	void function_quarter(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_quarter(SFunctionParams* rpar)
 	{
 		SVariable* varParam = rpar->ip[0];
 		SVariable* varMonth = rpar->ip[1];
@@ -129,7 +129,7 @@
 			{
 				if (!iVariable_isValid(varParam) || !(iVariable_isTypeDate(varParam) || iVariable_isTypeDatetime(varParam) || iVariable_isTypeDatetime(varParam)))
 				{
-					iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varParam), false);
+					iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varParam), false);
 					return;
 				}
 
@@ -161,23 +161,23 @@
 				if (iVariable_isValid(varMonth) && iVariable_isTypeNumeric(varMonth))
 				{
 					// Grab the value
-					lnStartingMonth = (u16)iiVariable_getAs_s32(thisCode, varMonth, false, &error, &errorNum);
+					lnStartingMonth = (u16)iiVariable_getAs_s32(varMonth, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varMonth), false);
+						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varMonth), false);
 						return;
 					}
 
 					// Make sure it's 1..12
 					if (lnStartingMonth < 1 || lnStartingMonth > 12)
 					{
-						iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(thisCode, varMonth), false);
+						iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varMonth), false);
 						return;
 					}
 
 				} else {
 					// Invalid second parameter
-					iError_reportByNumber(thisCode, _ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(thisCode, varMonth), false);
+					iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varMonth), false);
 					return;
 				}
 
@@ -196,9 +196,9 @@
 		//////////
 		// Create the value
 		//////
-			result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_U32, (cs8*)&lnQuarter, sizeof(lnQuarter), false);
+			result = iVariable_createAndPopulate_byText(_VAR_TYPE_U32, (cs8*)&lnQuarter, sizeof(lnQuarter), false);
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varParam), false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varParam), false);
 
 
 		//////////

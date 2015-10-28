@@ -114,7 +114,7 @@
 //    ? EMPTY("  ")	&& Display .T.
 //    ? EMPTY(0.0)	&& Display .T.
 //////
-	void function_empty(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_empty(SFunctionParams* rpar)
 	{
 		SVariable*	varExpr = rpar->ip[0];
 		bool		llEmpty;
@@ -127,7 +127,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varExpr))
 			{
-				iError_reportByNumber(thisCode, _ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varExpr), false);
+				iError_reportByNumber(_ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(varExpr), false);
 				return;
 			}
 
@@ -135,10 +135,10 @@
 		//////////
 		// Create and populate the return variable
 		//////
-			llEmpty	= function_isempty_common(thisCode, rpar, varExpr);
-			result	= iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_LOGICAL, (cs8*)((llEmpty) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, false);
+			llEmpty	= function_isempty_common(rpar, varExpr);
+			result	= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, (cs8*)((llEmpty) ? &_LOGICAL_TRUE : &_LOGICAL_FALSE), 1, false);
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varExpr), false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varExpr), false);
 
 
 		//////////
@@ -148,7 +148,7 @@
 
 	}
 
-	bool function_isempty_common(SThisCode* thisCode, SFunctionParams* rpar, SVariable* varExpr)
+	bool function_isempty_common(SFunctionParams* rpar, SVariable* varExpr)
 	{
 		s8			c, cPointChar;
 		u32			lnI;
@@ -196,7 +196,7 @@
 						{
 							// Extract it
 							cPointChar	= varPoint->value.data_s8[0];
-							iVariable_delete(thisCode, varPoint, true);
+							iVariable_delete(varPoint, true);
 
 						} else {
 							// Default to the standard period
@@ -270,7 +270,7 @@
 //					break;
 
 				default:
-					iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+					iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 					return(NULL);
 			}
 
@@ -309,7 +309,7 @@
 //    Logical		-- .t. if the search string is found in the string, .f. otherwise
 //
 //////
-	void function_endswith(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_endswith(SFunctionParams* rpar)
 	{
 		SVariable* varString	= rpar->ip[0];
 //		SVariable* varSearch	= rpar->params[1];
@@ -318,7 +318,7 @@
 
 
 		// Not yet completed
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(thisCode, varString), false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(varString), false);
 	}
 
 
@@ -330,7 +330,7 @@
 // Case-insensitive version of ENDSWITH()
 //
 //////
-	void function_endswithc(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_endswithc(SFunctionParams* rpar)
 	{
 		SVariable* varString	= rpar->ip[0];
 //		SVariable* varSearch	= rpar->params[1];
@@ -339,7 +339,7 @@
 
 
 		// Not yet completed
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(thisCode, varString), false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(varString), false);
 	}
 
 
@@ -370,7 +370,7 @@
 // Example:
 //    ? EVL("  ", "None")	&& Display "None"
 //////
-	void function_evl(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_evl(SFunctionParams* rpar)
 	{
 		SVariable*	varExpr1 = rpar->ip[0];
 		SVariable*	varExpr2 = rpar->ip[1];
@@ -384,7 +384,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varExpr1))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varExpr1), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varExpr1), false);
 				return;
 			}
 
@@ -394,7 +394,7 @@
 		//////
 			if (!iVariable_isValid(varExpr2))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varExpr2), false);
+				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varExpr2), false);
 				return;
 			}
 
@@ -402,10 +402,10 @@
 		//////////
 		// Create our result
 		//////
-			llEmpty	= function_isempty_common(thisCode, rpar, varExpr1);
-			result	= iVariable_copy(thisCode, ((llEmpty) ? varExpr2 : varExpr1), false);
+			llEmpty	= function_isempty_common(rpar, varExpr1);
+			result	= iVariable_copy(((llEmpty) ? varExpr2 : varExpr1), false);
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, ((llEmpty) ? varExpr2 : varExpr1)), false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(((llEmpty) ? varExpr2 : varExpr1)), false);
 
 
 		//////////
@@ -441,17 +441,17 @@
 // Example:
 //    ? EXP(2)		&& Display 7.39
 //////
-    void function_exp(SThisCode* thisCode, SFunctionParams* rpar)
+    void function_exp(SFunctionParams* rpar)
     {
 		SVariable* varNumber = rpar->ip[0];
 
 
 		// Return exp
-		ifunction_numbers_common(thisCode, rpar, varNumber, NULL, NULL, _FP_COMMON_EXP, _VAR_TYPE_F64, false, false);
+		ifunction_numbers_common(rpar, varNumber, NULL, NULL, _FP_COMMON_EXP, _VAR_TYPE_F64, false, false);
 	}
 
 	// Common numeric functions used for EXP(), LOG(), LOG10(), PI(), SQRT(), CEILING(), FLOOR(), DTOR(), RTOD(), ...
-    void ifunction_numbers_common(SThisCode* thisCode, SFunctionParams* rpar, SVariable* varNumber1, SVariable* varNumber2, SVariable* varNumber3, u32 tnFunctionType, const u32 tnResultType, bool tlSameInputType, bool tlNoEmptyParam)
+    void ifunction_numbers_common(SFunctionParams* rpar, SVariable* varNumber1, SVariable* varNumber2, SVariable* varNumber3, u32 tnFunctionType, const u32 tnResultType, bool tlSameInputType, bool tlNoEmptyParam)
     {
 		f64			lfResult, lfValue1, lfValue2, lfValue3;
 		u32			errorNum;
@@ -470,7 +470,7 @@
 				//////
 					if (!iVariable_isValid(varNumber1) || !iVariable_isTypeNumeric(varNumber1))
 					{
-						iError_reportByNumber(thisCode, _ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNumber1), false);
+						iError_reportByNumber(_ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(varNumber1), false);
 						return;
 					}
 
@@ -478,10 +478,10 @@
 				//////////
 				// Convert to f64
 				//////
-					lfValue1 = iiVariable_getAs_f64(thisCode, varNumber1, false, &error, &errorNum);
+					lfValue1 = iiVariable_getAs_f64(varNumber1, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNumber1), false);
+						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNumber1), false);
 						return;
 					}
 
@@ -490,7 +490,7 @@
 				//////
 					if (tlNoEmptyParam && lfValue1 == 0.0)
 					{
-						iError_reportByNumber(thisCode, _ERROR_CANNOT_BE_ZERO, iVariable_get_relatedComp(thisCode, varNumber1), false);
+						iError_reportByNumber(_ERROR_CANNOT_BE_ZERO, iVariable_get_relatedComp(varNumber1), false);
 						return;
 					}
 
@@ -509,7 +509,7 @@
 				//////
 					if (!iVariable_isValid(varNumber2) || !iVariable_isTypeNumeric(varNumber2))
 					{
-						iError_reportByNumber(thisCode, _ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNumber2), false);
+						iError_reportByNumber(_ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(varNumber2), false);
 						return;
 					}
 
@@ -517,10 +517,10 @@
 				//////////
 				// Convert to f64
 				//////
-					lfValue2 = iiVariable_getAs_f64(thisCode, varNumber2, false, &error, &errorNum);
+					lfValue2 = iiVariable_getAs_f64(varNumber2, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNumber2), false);
+						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNumber2), false);
 						return;
 					}
 
@@ -529,7 +529,7 @@
 				//////
 					if (tlNoEmptyParam && lfValue2 == 0.0)
 					{
-						iError_reportByNumber(thisCode, _ERROR_CANNOT_BE_ZERO, iVariable_get_relatedComp(thisCode, varNumber2), false);
+						iError_reportByNumber(_ERROR_CANNOT_BE_ZERO, iVariable_get_relatedComp(varNumber2), false);
 						return;
 					}
 
@@ -548,7 +548,7 @@
 				//////
 					if (!iVariable_isValid(varNumber3) || !iVariable_isTypeNumeric(varNumber3))
 					{
-						iError_reportByNumber(thisCode, _ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNumber3), false);
+						iError_reportByNumber(_ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(varNumber3), false);
 						return;
 					}
 
@@ -556,10 +556,10 @@
 				//////////
 				// Convert to f64
 				//////
-					lfValue3 = iiVariable_getAs_f64(thisCode, varNumber3, false, &error, &errorNum);
+					lfValue3 = iiVariable_getAs_f64(varNumber3, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNumber3), false);
+						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNumber3), false);
 						return;
 					}
 
@@ -568,7 +568,7 @@
 				//////
 					if (tlNoEmptyParam && lfValue3 == 0.0)
 					{
-						iError_reportByNumber(thisCode, _ERROR_CANNOT_BE_ZERO, iVariable_get_relatedComp(thisCode, varNumber3), false);
+						iError_reportByNumber(_ERROR_CANNOT_BE_ZERO, iVariable_get_relatedComp(varNumber3), false);
 						return;
 					}
 
@@ -592,7 +592,7 @@
 						if (lfValue1 < 0.0)
 						{
 							// Oops!
-							iError_reportByNumber(thisCode, _ERROR_CANNOT_BE_NEGATIVE, iVariable_get_relatedComp(thisCode, varNumber1), false);
+							iError_reportByNumber(_ERROR_CANNOT_BE_NEGATIVE, iVariable_get_relatedComp(varNumber1), false);
 							return;
 						}
 
@@ -624,7 +624,7 @@
 						if (lfValue1 <= 0.0)
 						{
 							// Oops!
-							iError_reportByNumber(thisCode, _ERROR_CANNOT_BE_ZERO_OR_NEGATIVE, iVariable_get_relatedComp(thisCode, varNumber1), false);
+							iError_reportByNumber(_ERROR_CANNOT_BE_ZERO_OR_NEGATIVE, iVariable_get_relatedComp(varNumber1), false);
 							return;
 						}
 
@@ -682,7 +682,7 @@
 						if (lfValue1 < -1 || lfValue1 > 1)
 						{
 							// Oops!
-							iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(thisCode, varNumber1), false);
+							iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varNumber1), false);
 							return;
 						}
 
@@ -702,7 +702,7 @@
 						if (lfValue1 < -_MATH_PI2 || lfValue1 > _MATH_PI2)
 						{
 							// Oops!
-							iError_reportByNumber(thisCode, _ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(thisCode, varNumber1), false);
+							iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varNumber1), false);
 							return;
 						}
 
@@ -729,7 +729,7 @@
 						if (lfValue2 == 0.0)
 						{
 							// Oops!
-							iError_reportByNumber(thisCode, _ERROR_DIVISION_BY_ZERO, iVariable_get_relatedComp(thisCode, varNumber2), false);
+							iError_reportByNumber(_ERROR_DIVISION_BY_ZERO, iVariable_get_relatedComp(varNumber2), false);
 							return;
 						}
 
@@ -772,7 +772,7 @@
 
 				default:
 					// Programmer error... this is an internal function and we should never get here
-					iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varNumber1), false);
+					iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varNumber1), false);
 					return;
 			}
 
@@ -780,12 +780,12 @@
 		//////////
 		// Create output variable
 		//////
-			if (tlSameInputType)	result = iVariable_create(thisCode, varNumber1->varType, NULL, true);
-			else					result = iVariable_create(thisCode, tnResultType, NULL, true);
+			if (tlSameInputType)	result = iVariable_create(varNumber1->varType, NULL, true);
+			else					result = iVariable_create(tnResultType, NULL, true);
 
 			if (!result)
 			{
-				iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNumber1), false);
+				iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNumber1), false);
 				return;
 			}
 
@@ -793,8 +793,8 @@
 		//////////
 		// Set the value
 		//////
-			if (!iVariable_setNumeric_toNumericType(thisCode, result, NULL, &lfResult, NULL, NULL, NULL, NULL))
-				iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNumber1), false);
+			if (!iVariable_setNumeric_toNumericType(result, NULL, &lfResult, NULL, NULL, NULL, NULL))
+				iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNumber1), false);
 
 
 		//////////

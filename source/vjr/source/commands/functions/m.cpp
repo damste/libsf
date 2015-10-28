@@ -112,7 +112,7 @@
 //   ? malp(lnColor, .t.)     && Returns integer
 //   ? malp(lnColor, .f.)     && Returns floating point
 //////
-	void function_malp(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_malp(SFunctionParams* rpar)
 	{
 		SVariable*	varColor		= rpar->ip[0];
 		SVariable*	varAsInteger	= rpar->ip[1];
@@ -130,7 +130,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varColor) || !iVariable_isTypeNumeric(varColor))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varColor), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varColor), false);
 				return;
 			}
 
@@ -142,15 +142,15 @@
 			{
 				if (!iVariable_isFundamentalTypeLogical(varAsInteger))
 				{
-					iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varColor), false);
+					iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varColor), false);
 					return;
 				}
 
 				// Grab the value
-				llAsInteger = iiVariable_getAs_bool(thisCode, varAsInteger, false, &error, &errorNum);
+				llAsInteger = iiVariable_getAs_bool(varAsInteger, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varColor), false);
+					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varColor), false);
 					return;
 				}
 
@@ -163,10 +163,10 @@
 		//////////
 		// Grab the value
 		//////
-			lnColor = iiVariable_getAs_u32(thisCode, varColor, false, &error, &errorNum);
+			lnColor = iiVariable_getAs_u32(varColor, false, &error, &errorNum);
 			if (error)
 			{
-				iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varColor), false);
+				iError_reportByNumber(errorNum, iVariable_get_relatedComp(varColor), false);
 				return;
 			}
 
@@ -180,12 +180,12 @@
 			{
 				// Unsigned 32-bit integer
 				lnColor	= 255 - lnColor;
-				result	= iVariable_create(thisCode, _VAR_TYPE_U32, NULL, true);
+				result	= iVariable_create(_VAR_TYPE_U32, NULL, true);
 
 			} else {
 				// Floating point
 				lfMalp	= 1.0f - ((255.0f - (f32)lnColor) / 255.0f);
-				result	= iVariable_create(thisCode, _VAR_TYPE_F32, NULL, true);
+				result	= iVariable_create(_VAR_TYPE_F32, NULL, true);
 			}
 
 
@@ -194,7 +194,7 @@
 		//////
 			if (!result)
 			{
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, NULL, false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, NULL, false);
 
 			} else {
 				//////////
@@ -238,7 +238,7 @@
 //    If they're equal, a copy of pLeft is returned.
 //
 //////
-	void function_max(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_max(SFunctionParams* rpar)
 	{
 		SVariable*	varLeft		= rpar->ip[0];
 		SVariable*	varRight	= rpar->ip[1];
@@ -259,7 +259,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varLeft))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varLeft), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varLeft), false);
 				return;
 			}
 
@@ -269,7 +269,7 @@
 		//////
 			if (!iVariable_isValid(varRight))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varRight), false);
+				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varRight), false);
 				return;
 			}
 
@@ -277,10 +277,10 @@
 		//////////
 		// They must be the same type
 		//////
-			if (iVariable_get_fundamentalType(thisCode, varLeft) != iVariable_get_fundamentalType(thisCode, varRight))
+			if (iVariable_get_fundamentalType(varLeft) != iVariable_get_fundamentalType(varRight))
 			{
 				// Operand mismatch
-				iError_reportByNumber(thisCode, _ERROR_DATA_TYPE_MISMATCH, iVariable_get_relatedComp(thisCode, varRight), false);
+				iError_reportByNumber(_ERROR_DATA_TYPE_MISMATCH, iVariable_get_relatedComp(varRight), false);
 				return;
 			}
 
@@ -344,22 +344,22 @@
 					if (iVariable_isTypeBig(varLeft) || iVariable_isTypeBig(varRight))
 					{
 						// It's a character compared to a character
-						iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+						iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 						return;
 
 					} else if (iVariable_isTypeFloatingPoint(varLeft) || iVariable_isTypeFloatingPoint(varRight)) {
 						// Comparing floating point values
-						lfLeft64	= iiVariable_getAs_f64(thisCode, varLeft, false, &error, &errorNum);
+						lfLeft64	= iiVariable_getAs_f64(varLeft, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varLeft), false);
+							iError_reportByNumber(errorNum, iVariable_get_relatedComp(varLeft), false);
 							return;
 						}
 
-						lfRight64	= iiVariable_getAs_f64(thisCode, varRight, false, &error, &errorNum);
+						lfRight64	= iiVariable_getAs_f64(varRight, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varRight), false);
+							iError_reportByNumber(errorNum, iVariable_get_relatedComp(varRight), false);
 							return;
 						}
 
@@ -378,17 +378,17 @@
 						if (iVariable_isNumeric64Bit(varLeft) || iVariable_isNumeric64Bit(varRight))
 						{
 							// It requires a 64-bit signed compare
-							lnLeft64	= iiVariable_getAs_s64(thisCode, varLeft, false, &error, &errorNum);
+							lnLeft64	= iiVariable_getAs_s64(varLeft, false, &error, &errorNum);
 							if (error)
 							{
-								iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varLeft), false);
+								iError_reportByNumber(errorNum, iVariable_get_relatedComp(varLeft), false);
 								return;
 							}
 
-							lnRight64	= iiVariable_getAs_s64(thisCode, varRight, false, &error, &errorNum);
+							lnRight64	= iiVariable_getAs_s64(varRight, false, &error, &errorNum);
 							if (error)
 							{
-								iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varRight), false);
+								iError_reportByNumber(errorNum, iVariable_get_relatedComp(varRight), false);
 								return;
 							}
 
@@ -404,17 +404,17 @@
 
 						} else {
 							// It can be done in a 32-bit signed compare
-							lnLeft32	= iiVariable_getAs_s32(thisCode, varLeft, false, &error, &errorNum);
+							lnLeft32	= iiVariable_getAs_s32(varLeft, false, &error, &errorNum);
 							if (error)
 							{
-								iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varLeft), false);
+								iError_reportByNumber(errorNum, iVariable_get_relatedComp(varLeft), false);
 								return;
 							}
 
-							lnRight32	= iiVariable_getAs_s32(thisCode, varRight, false, &error, &errorNum);
+							lnRight32	= iiVariable_getAs_s32(varRight, false, &error, &errorNum);
 							if (error)
 							{
-								iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varRight), false);
+								iError_reportByNumber(errorNum, iVariable_get_relatedComp(varRight), false);
 								return;
 							}
 
@@ -431,7 +431,7 @@
 
 					} else {
 						// We cannot compare these types
-						iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(thisCode, varLeft), false);
+						iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(varLeft), false);
 						return;
 					}
 			}
@@ -439,11 +439,11 @@
 			if (llLeft)
 			{
 				// Left is less, so duplicate right
-				result = iVariable_copy(thisCode, varRight, false);
+				result = iVariable_copy(varRight, false);
 
 			} else {
 				// Right is less, so duplicate left
-				result = iVariable_copy(thisCode, varLeft, false);
+				result = iVariable_copy(varLeft, false);
 			}
 
 
@@ -451,7 +451,7 @@
 		// Are we good?
 		//////
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varLeft), false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varLeft), false);
 
 
 		//////////
@@ -485,13 +485,13 @@
 //    Character - If SET CENTURY is OFF, the character expression is returned in a month dd, yy format. 
 //	  If SET CENTURY is ON, the format is month dd, yyyy.
 //////
-	void function_mdy(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_mdy(SFunctionParams* rpar)
 	{
 		SVariable* varParam = rpar->ip[0];
 
 
 		// Return mdy
-		ifunction_dtoc_common(thisCode, rpar, varParam, _DMY_COMMON_MDY);
+		ifunction_dtoc_common(rpar, varParam, _DMY_COMMON_MDY);
 	}
 
 
@@ -517,9 +517,9 @@
 // Returns:
 //    f64		-- A floating point value containing the number of one millionths of a second which have gone by this second
 //////
-	void function_microsecond(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_microsecond(SFunctionParams* rpar)
 	{
-		ifunction_xseconds_common(thisCode, rpar, _XSECONDS_FUNCTION_MICROSECOND);
+		ifunction_xseconds_common(rpar, _XSECONDS_FUNCTION_MICROSECOND);
 	}
 
 
@@ -548,7 +548,7 @@
 //    If they're equal, a copy of pLeft is returned.
 //
 //////
-	void function_min(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_min(SFunctionParams* rpar)
 	{
 		SVariable*	varLeft		= rpar->ip[0];
 		SVariable*	varRight	= rpar->ip[1];
@@ -569,7 +569,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varLeft))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varLeft), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varLeft), false);
 				return;
 			}
 
@@ -579,7 +579,7 @@
 		//////
 			if (!iVariable_isValid(varRight))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varRight), false);
+				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varRight), false);
 				return;
 			}
 
@@ -587,10 +587,10 @@
 		//////////
 		// They must be the same type
 		//////
-			if (iVariable_get_fundamentalType(thisCode, varLeft) != iVariable_get_fundamentalType(thisCode, varRight))
+			if (iVariable_get_fundamentalType(varLeft) != iVariable_get_fundamentalType(varRight))
 			{
 				// Operand mismatch
-				iError_reportByNumber(thisCode, _ERROR_DATA_TYPE_MISMATCH, iVariable_get_relatedComp(thisCode, varRight), false);
+				iError_reportByNumber(_ERROR_DATA_TYPE_MISMATCH, iVariable_get_relatedComp(varRight), false);
 				return;
 			}
 
@@ -654,22 +654,22 @@
 					if (iVariable_isTypeBig(varLeft) || iVariable_isTypeBig(varRight))
 					{
 						// It's a character compared to a character
-						iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+						iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 						return;
 
 					} else if (iVariable_isTypeFloatingPoint(varLeft) || iVariable_isTypeFloatingPoint(varRight)) {
 						// Comparing floating point values
-						lfLeft64	= iiVariable_getAs_f64(thisCode, varLeft, false, &error, &errorNum);
+						lfLeft64	= iiVariable_getAs_f64(varLeft, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varLeft), false);
+							iError_reportByNumber(errorNum, iVariable_get_relatedComp(varLeft), false);
 							return;
 						}
 
-						lfRight64	= iiVariable_getAs_f64(thisCode, varRight, false, &error, &errorNum);
+						lfRight64	= iiVariable_getAs_f64(varRight, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varRight), false);
+							iError_reportByNumber(errorNum, iVariable_get_relatedComp(varRight), false);
 							return;
 						}
 
@@ -688,17 +688,17 @@
 						if (iVariable_isNumeric64Bit(varLeft) || iVariable_isNumeric64Bit(varRight) || iVariable_isTypeDatetimeX(varLeft) || iVariable_isTypeDatetimeX(varRight))
 						{
 							// It requires a 64-bit signed compare
-							lnLeft64	= iiVariable_getAs_s64(thisCode, varLeft, false, &error, &errorNum);
+							lnLeft64	= iiVariable_getAs_s64(varLeft, false, &error, &errorNum);
 							if (error)
 							{
-								iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varLeft), false);
+								iError_reportByNumber(errorNum, iVariable_get_relatedComp(varLeft), false);
 								return;
 							}
 
-							lnRight64	= iiVariable_getAs_s64(thisCode, varRight, false, &error, &errorNum);
+							lnRight64	= iiVariable_getAs_s64(varRight, false, &error, &errorNum);
 							if (error)
 							{
-								iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varRight), false);
+								iError_reportByNumber(errorNum, iVariable_get_relatedComp(varRight), false);
 								return;
 							}
 
@@ -714,17 +714,17 @@
 
 						} else {
 							// It can be done in a 32-bit signed compare
-							lnLeft32	= iiVariable_getAs_s32(thisCode, varLeft, false, &error, &errorNum);
+							lnLeft32	= iiVariable_getAs_s32(varLeft, false, &error, &errorNum);
 							if (error)
 							{
-								iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varLeft), false);
+								iError_reportByNumber(errorNum, iVariable_get_relatedComp(varLeft), false);
 								return;
 							}
 
-							lnRight32	= iiVariable_getAs_s32(thisCode, varRight, false, &error, &errorNum);
+							lnRight32	= iiVariable_getAs_s32(varRight, false, &error, &errorNum);
 							if (error)
 							{
-								iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varRight), false);
+								iError_reportByNumber(errorNum, iVariable_get_relatedComp(varRight), false);
 								return;
 							}
 
@@ -741,7 +741,7 @@
 
 					} else {
 						// We cannot compare these types
-						iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(thisCode, varLeft), false);
+						iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(varLeft), false);
 						return;
 					}
 			}
@@ -749,16 +749,16 @@
 			if (llLeft)
 			{
 				// Left is less, so copy left
-				result = iVariable_copy(thisCode, varLeft, false);
+				result = iVariable_copy(varLeft, false);
 
 			} else {
 				// Right is less, so copy right
-				result = iVariable_copy(thisCode, varRight, false);
+				result = iVariable_copy(varRight, false);
 			}
 
 			// Are we good?
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varLeft), false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varLeft), false);
 
 			// Indicate our result
 			rpar->rp[0] = result;
@@ -788,13 +788,13 @@
 // Returns:
 //    MINUTE( ) returns a numeric value.
 //////
-	void function_minute(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_minute(SFunctionParams* rpar)
 	{
 		SVariable*	varParam = rpar->ip[0];
 
 
 		// Return minute
-		ifunction_hhmmss_common(thisCode, rpar, varParam, _HMS_COMMON_MINUTE);
+		ifunction_hhmmss_common(rpar, varParam, _HMS_COMMON_MINUTE);
 	}
 
 
@@ -830,14 +830,14 @@
 //    ? MOD(5.3, 2)    && 1.3
 //    ? MOD(5.3, -2)   && -0.7
 //////
-	void function_mod(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_mod(SFunctionParams* rpar)
 	{
 		SVariable*	varDividend	= rpar->ip[0];
 		SVariable*	varDivisor	= rpar->ip[1];
 
 
 		// Return mod
-		ifunction_numbers_common(thisCode, rpar, varDividend, varDivisor, NULL, _FP_COMMON_MOD, _VAR_TYPE_F64, true, false);
+		ifunction_numbers_common(rpar, varDividend, varDivisor, NULL, _FP_COMMON_MOD, _VAR_TYPE_F64, true, false);
 	}
 
 
@@ -868,11 +868,11 @@
 //    ? MONTH(dt)		&& Displays 4
 //    ? MONTH()			&& Displays current date's month number
 //////
-	void function_month(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_month(SFunctionParams* rpar)
 	{
 		SVariable* varParam = rpar->ip[0];
 
 
 		// Return month
-		ifunction_day_month_year_common(thisCode, rpar, varParam, _DMY_COMMON_MONTH);
+		ifunction_day_month_year_common(rpar, varParam, _DMY_COMMON_MONTH);
 	}

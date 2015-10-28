@@ -105,7 +105,7 @@
 // Returns:
 //		Character		-- The drive component of the pathname, or the current drive if it wasn't specified, ("c:" of "c:\path\to\sample.txt")
 //////
-	void function_justdrive(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_justdrive(SFunctionParams* rpar)
 	{
 		SVariable*	varString = rpar->ip[0];
 		u8*			ptr;
@@ -118,7 +118,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString) || !iVariable_isTypeCharacter(varString))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varString), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varString), false);
 				return;
 			}
 
@@ -126,10 +126,10 @@
 		//////////
         // Based on its type, process it accordingly
 		//////
-			result = iVariable_create(thisCode, _VAR_TYPE_CHARACTER, NULL, true);
+			result = iVariable_create(_VAR_TYPE_CHARACTER, NULL, true);
 			if (!result)
 			{
-				iError_report(thisCode, cgcInternalError, false);
+				iError_report(cgcInternalError, false);
 				return;
 			}
 
@@ -185,7 +185,7 @@
 // Returns:
 //		Character		-- The file extension component, or an empty string if one was not specified, ("txt" of "c:\path\to\sample.txt")
 //////
-	void function_justext(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_justext(SFunctionParams* rpar)
 	{
 		SVariable*	varString = rpar->ip[0];
 		s32			lnI, lnLength;
@@ -199,7 +199,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString) || !iVariable_isTypeCharacter(varString))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varString), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varString), false);
 				return;
 			}
 
@@ -230,11 +230,11 @@
 			if (!ptr)
 			{
 				// Create a blank string
-				result = iVariable_create(thisCode, _VAR_TYPE_CHARACTER, NULL, true);
+				result = iVariable_create(_VAR_TYPE_CHARACTER, NULL, true);
 
 			} else {
 				// Create and copy our portion
-				result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, ptr, lnLength, false);
+				result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, ptr, lnLength, false);
 			}
 
 
@@ -242,7 +242,7 @@
 		// Are we good?
 		//////
 			if (!result)
-				iError_report(thisCode, cgcInternalError, false);
+				iError_report(cgcInternalError, false);
 
 
 		//////////
@@ -274,7 +274,7 @@
 // Returns:
 //		Character		-- The file name portion of the pathname ("sample.txt" of "c:\path\to\sample.txt")
 //////
-	void function_justfname(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_justfname(SFunctionParams* rpar)
 	{
 		SVariable*	varString = rpar->ip[0];
 		s32			lnI, lnLength;
@@ -287,7 +287,7 @@
 		//////
 			if (!iVariable_isValid(varString) || !iVariable_isTypeCharacter(varString))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varString), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varString), false);
 				return;
 			}
 
@@ -321,11 +321,11 @@
 			if (!ptr)
 			{
 				// Create a blank string
-				result = iVariable_create(thisCode, _VAR_TYPE_CHARACTER, NULL, true);
+				result = iVariable_create(_VAR_TYPE_CHARACTER, NULL, true);
 
 			} else {
 				// Create and copy our portion
-				result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, ptr, lnLength, false);
+				result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, ptr, lnLength, false);
 			}
 
 
@@ -333,7 +333,7 @@
 		// Are we good?
 		//////
 			if (!result)
-				iError_report(thisCode, cgcInternalError, false);
+				iError_report(cgcInternalError, false);
 
 
 		//////////
@@ -366,7 +366,7 @@
 // Returns:
 //		Character		-- The file path of the pathname ("c:\path\to" of "c:\path\to\sample.txt")
 //////
-	void function_justpath(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_justpath(SFunctionParams* rpar)
 	{
 		SVariable*	varString = rpar->ip[0];
 		s32			lnLength;
@@ -380,7 +380,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString) || !iVariable_isTypeCharacter(varString))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varString), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varString), false);
 				return;
 			}
 
@@ -413,11 +413,11 @@
 			if (!ptr)
 			{
 				// Create a blank string
-				result = iVariable_create(thisCode, _VAR_TYPE_CHARACTER, NULL, true);
+				result = iVariable_create(_VAR_TYPE_CHARACTER, NULL, true);
 
 			} else {
 				// Create and copy our portion
-				result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, ptr, lnLength, false);
+				result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, ptr, lnLength, false);
 			}
 
 
@@ -425,7 +425,7 @@
 		// Are we good?
 		//////
 			if (!result)
-				iError_report(thisCode, cgcInternalError, false);
+				iError_report(cgcInternalError, false);
 
 
 		//////////
@@ -458,7 +458,7 @@
 // Returns:
 //		Character		-- The file name portion of the pathname ("sample" of "c:\path\to\sample.txt")
 //////
-	void function_juststem(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_juststem(SFunctionParams* rpar)
 	{
 		SVariable*	varString		= rpar->ip[0];
 		SVariable*	varPostfixWidth	= rpar->ip[1];
@@ -475,7 +475,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString) || !iVariable_isTypeCharacter(varString))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varString), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varString), false);
 				return;
 			}
 
@@ -487,11 +487,11 @@
 			{
 				if (!iVariable_isValid(varPostfixWidth) || !iVariable_isTypeNumeric(varPostfixWidth))
 				{
-					iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varPostfixWidth), false);
+					iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varPostfixWidth), false);
 					return;
 				}
 				// Grab the postfix width
-				lnPostfixWidth = iiVariable_getAs_s32(thisCode, varPostfixWidth, false, &error, &errorNum);
+				lnPostfixWidth = iiVariable_getAs_s32(varPostfixWidth, false, &error, &errorNum);
 
 			} else {
 				// No postfix
@@ -503,10 +503,10 @@
         // Based on its type, process it accordingly
 		//////
 			ptr		= NULL;
-			result	= iVariable_create(thisCode, _VAR_TYPE_CHARACTER, NULL, true);
+			result	= iVariable_create(_VAR_TYPE_CHARACTER, NULL, true);
 			if (!result)
 			{
-				iError_report(thisCode, cgcInternalError, false);
+				iError_report(cgcInternalError, false);
 				return;
 			}
 

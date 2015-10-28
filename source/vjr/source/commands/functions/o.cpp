@@ -108,7 +108,7 @@
 // Returns:
 //    s32			-- The number of times
 //////
-	void function_occurs(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_occurs(SFunctionParams* rpar)
 	{
 		SVariable*	varNeedle	= rpar->ip[0];
 		SVariable*	varHaystack	= rpar->ip[1];
@@ -117,7 +117,7 @@
 
 
 		// Compute the found count
-		ifunction_at_occurs_common(thisCode, rpar, varNeedle, varHaystack, NULL, true, false, &lnFoundCount);
+		ifunction_at_occurs_common(rpar, varNeedle, varHaystack, NULL, true, false, &lnFoundCount);
 		result = rpar->rp[0];
 		if (result)
 		{
@@ -126,7 +126,7 @@
 		}
 	}
 
-	void function_occursc(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_occursc(SFunctionParams* rpar)
 	{
 		SVariable*	varNeedle	= rpar->ip[0];
 		SVariable*	varHaystack	= rpar->ip[1];
@@ -135,7 +135,7 @@
 
 
 		// Compute the found count
-		ifunction_at_occurs_common(thisCode, rpar, varNeedle, varHaystack, NULL, false, false, &lnFoundCount);
+		ifunction_at_occurs_common(rpar, varNeedle, varHaystack, NULL, false, false, &lnFoundCount);
 		result = rpar->rp[0];
 		if (result)
 		{
@@ -170,7 +170,7 @@
 // Returns:
 //    Logical		-- .t. if the item is not inclusively between the values of two expressions of the same type, .f. if between
 //////
-	void function_outside(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_outside(SFunctionParams* rpar)
 	{
 		SVariable* result;
 
@@ -178,7 +178,7 @@
 		//////////
 		// Invoke BETWEEN()
 		//////
-			function_between(thisCode, rpar);
+			function_between(rpar);
 			result = rpar->rp[0];
 
 

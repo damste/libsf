@@ -95,7 +95,7 @@
 // Called to send over debugging information for the current context
 //
 //////
-	void JDebiC_debug(SThisCode* thisCode, SWindow* win, SObject* obj)
+	void JDebiC_debug(SWindow* win, SObject* obj)
 	{
 		SDatum		data;
 		SBuilder*	builder;
@@ -105,7 +105,7 @@
 // Temporarily disabled
 return;
 		// Are we connected?
-		if (iJDebiC_connect() && (thisCode || win || obj))
+		if (iJDebiC_connect() && (win || obj))
 		{
 
 			//////////
@@ -118,13 +118,10 @@ return;
 			//////////
 			// thisCode
 			//////
-				if (thisCode)
-				{
-					iJDebiC_thisCode(builder, items, thisCode);
-					data.length = builder->populatedLength;
-					iJDebiC_transmit_viaPipe(&data, NULL, _WMJDEBIC_DATA_TYPE_THISCODE);
-					iBuilder_rewind(builder);
-				}
+				iJDebiC_thisCode(builder, items, &gsThisCode[gnThisCode]);
+				data.length = builder->populatedLength;
+				iJDebiC_transmit_viaPipe(&data, NULL, _WMJDEBIC_DATA_TYPE_THISCODE);
+				iBuilder_rewind(builder);
 
 
 			//////////

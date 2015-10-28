@@ -149,89 +149,89 @@ struct SFieldRecord2;
 	void 				iDbf_shutdown									(void);
 
 	// User interaction functions
-	bool				iiDbf_continueWithLockOperation					(SThisCode* thisCode, SDiskLockCallback* dcb, s32 tnAttempts, s32 tnMillisecondsSpentThusFar);
+	bool				iiDbf_continueWithLockOperation					(SDiskLockCallback* dcb, s32 tnAttempts, s32 tnMillisecondsSpentThusFar);
 
-	s32					iDbf_translateError								(SThisCode* thisCode, s32 tnDbfErrorCode);
+	s32					iDbf_translateError								(s32 tnDbfErrorCode);
 
 	// DBF functions
-	uptr				iDbf_open										(SThisCode* thisCode, SVariable* table,	SVariable* alias,	bool tlExclusive, bool tlAgain, bool tlValidate, bool tlDescending, bool tlVisualize, bool tlJournal, bool tlNoUpdate);
-	uptr				iDbf_open										(SThisCode* thisCode, cs8* table,		cs8* alias,			bool tlExclusive, bool tlAgain, bool tlValidate, bool tlDescending, bool tlVisualize, bool tlJournal, bool tlNoUpdate);
-	uptr				iDbf_openRemote									(SThisCode* thisCode, s8* connString);
-	uptr				iDbf_cacheAllRowData							(SThisCode* thisCode, SWorkArea* wa);
-	uptr				iDbf_close										(SThisCode* thisCode, SWorkArea* wa);
-	uptr				iDbf_hasCdx										(SThisCode* thisCode, SWorkArea* wa);
-	bool				iDbf_isWorkAreaValid							(SThisCode* thisCode, SWorkArea* wa, cu8** tcSpecialWorkAreaKeyName);
-	bool				iDbf_isWorkAreaUsed								(SThisCode* thisCode, SWorkArea* wa, bool* tlIsValidWorkArea);
-	bool				iDbf_isWorkAreaLetter							(SThisCode* thisCode, SVariable* var);
-	sptr				iDbf_set_workArea_current						(SThisCode* thisCode, u32 tnWorkArea,								cu8* tcSpecialKeyName = NULL);
-	sptr				iDbf_get_workArea_current						(SThisCode* thisCode, 												cu8* tcSpecialKeyName = NULL);
-	SWorkArea*			iDbf_get_workArea_current_wa					(SThisCode* thisCode, 												cu8* tcSpecialKeyName = NULL);
-	sptr				iDbf_get_workArea_lowestFree					(SThisCode* thisCode, 												cu8* tcSpecialKeyName = NULL);
-	sptr				iDbf_get_workArea_highestFree					(SThisCode* thisCode, 												cu8* tcSpecialKeyName = NULL);
-	sptr				iDbf_get_workArea_byTablePathname				(SThisCode* thisCode, SVariable* varPathname,						cu8* tcSpecialKeyName = NULL);
-	sptr				iDbf_get_workArea_byTablePathname				(SThisCode* thisCode, cs8* varPathname,								cu8* tcSpecialKeyName = NULL);
-	sptr				iDbf_get_workArea_byAlias_byVar					(SThisCode* thisCode, SWorkArea** wa, SVariable* var,				cu8* tcSpecialKeyName = NULL);
-	sptr				iDbf_get_workArea_byAlias_byComp				(SThisCode* thisCode, SWorkArea** wa, SComp* comp,					cu8* tcSpecialKeyName = NULL);
-	sptr				iDbf_get_workArea_byAlias_byName				(SThisCode* thisCode, SWorkArea** wa, s8* tcName, u32 tnNameLength,	cu8* tcSpecialKeyName = NULL);
-	sptr				iDbf_get_workArea_byAlias_byVar					(SThisCode* thisCode, SVariable* var,								cu8* tcSpecialKeyName = NULL, SWorkArea** waBase = NULL);
-	sptr				iDbf_get_workArea_byAlias_byComp				(SThisCode* thisCode, SComp* comp,									cu8* tcSpecialKeyName = NULL, SWorkArea** waBase = NULL);
-	sptr				iDbf_get_workArea_byAlias_byName				(SThisCode* thisCode, s8* tcName, u32 tnNameLength,					cu8* tcSpecialKeyName = NULL, SWorkArea** waBase = NULL);
-	SVariable*			iDbf_get_alias_fromPathname						(SThisCode* thisCode, SVariable* varPathname,						cu8* tcSpecialKeyName = NULL);
+	uptr				iDbf_open										(SVariable* table,	SVariable* alias,	bool tlExclusive, bool tlAgain, bool tlValidate, bool tlDescending, bool tlVisualize, bool tlJournal, bool tlNoUpdate);
+	uptr				iDbf_open										(cs8* table,		cs8* alias,			bool tlExclusive, bool tlAgain, bool tlValidate, bool tlDescending, bool tlVisualize, bool tlJournal, bool tlNoUpdate);
+	uptr				iDbf_openRemote									(s8* connString);
+	uptr				iDbf_cacheAllRowData							(SWorkArea* wa);
+	uptr				iDbf_close										(SWorkArea* wa);
+	uptr				iDbf_hasCdx										(SWorkArea* wa);
+	bool				iDbf_isWorkAreaValid							(SWorkArea* wa, cu8** tcSpecialWorkAreaKeyName);
+	bool				iDbf_isWorkAreaUsed								(SWorkArea* wa, bool* tlIsValidWorkArea);
+	bool				iDbf_isWorkAreaLetter							(SVariable* var);
+	sptr				iDbf_set_workArea_current						(u32 tnWorkArea,								cu8* tcSpecialKeyName = NULL);
+	sptr				iDbf_get_workArea_current						(												cu8* tcSpecialKeyName = NULL);
+	SWorkArea*			iDbf_get_workArea_current_wa					(												cu8* tcSpecialKeyName = NULL);
+	sptr				iDbf_get_workArea_lowestFree					(												cu8* tcSpecialKeyName = NULL);
+	sptr				iDbf_get_workArea_highestFree					(												cu8* tcSpecialKeyName = NULL);
+	sptr				iDbf_get_workArea_byTablePathname				(SVariable* varPathname,						cu8* tcSpecialKeyName = NULL);
+	sptr				iDbf_get_workArea_byTablePathname				(cs8* varPathname,								cu8* tcSpecialKeyName = NULL);
+	sptr				iDbf_get_workArea_byAlias_byVar					(SWorkArea** wa, SVariable* var,				cu8* tcSpecialKeyName = NULL);
+	sptr				iDbf_get_workArea_byAlias_byComp				(SWorkArea** wa, SComp* comp,					cu8* tcSpecialKeyName = NULL);
+	sptr				iDbf_get_workArea_byAlias_byName				(SWorkArea** wa, s8* tcName, u32 tnNameLength,	cu8* tcSpecialKeyName = NULL);
+	sptr				iDbf_get_workArea_byAlias_byVar					(SVariable* var,								cu8* tcSpecialKeyName = NULL, SWorkArea** waBase = NULL);
+	sptr				iDbf_get_workArea_byAlias_byComp				(SComp* comp,									cu8* tcSpecialKeyName = NULL, SWorkArea** waBase = NULL);
+	sptr				iDbf_get_workArea_byAlias_byName				(s8* tcName, u32 tnNameLength,					cu8* tcSpecialKeyName = NULL, SWorkArea** waBase = NULL);
+	SVariable*			iDbf_get_alias_fromPathname						(SVariable* varPathname,						cu8* tcSpecialKeyName = NULL);
 
-	sptr				iDbf_gotoRecord									(SThisCode* thisCode, SWorkArea* wa, s32 recordNumber);
-	sptr				iDbf_gotoTop									(SThisCode* thisCode, SWorkArea* wa);
-	sptr				iDbf_writeChanges								(SThisCode* thisCode, SWorkArea* wa);
-	bool				iiDbf_readMemo									(SThisCode* thisCode, SWorkArea* wa, SFieldRecord2* fr2Ptr);
-	bool				iiDbf_writeMemo									(SThisCode* thisCode, SWorkArea* wa, SFieldRecord2* fr2Ptr);
+	sptr				iDbf_gotoRecord									(SWorkArea* wa, s32 recordNumber);
+	sptr				iDbf_gotoTop									(SWorkArea* wa);
+	sptr				iDbf_writeChanges								(SWorkArea* wa);
+	bool				iiDbf_readMemo									(SWorkArea* wa, SFieldRecord2* fr2Ptr);
+	bool				iiDbf_writeMemo									(SWorkArea* wa, SFieldRecord2* fr2Ptr);
 
-	uptr				iDbf_getFieldCount								(SThisCode* thisCode, SWorkArea* wa);
+	uptr				iDbf_getFieldCount								(SWorkArea* wa);
 	u32					iiDbf_getFieldCount								(SWorkArea* wa);
-	sptr				iDbf_getReccount								(SThisCode* thisCode, SWorkArea* wa);
+	sptr				iDbf_getReccount								(SWorkArea* wa);
 	u32					iiDbf_getReccount								(SWorkArea* wa);
 
-	uptr				iDbf_getField_name								(SThisCode* thisCode, SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength);
-	uptr				iDbf_getField_type								(SThisCode* thisCode, SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength);
-	uptr				iDbf_getField_type_verbose						(SThisCode* thisCode, SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength);
-	uptr				iDbf_getField_type_extended						(SThisCode* thisCode, SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength);
-	uptr				iDbf_getField_length							(SThisCode* thisCode, SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength);
-	uptr				iDbf_getIndex_length							(SThisCode* thisCode, SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength);
-	uptr				iDbf_getField_decimals							(SThisCode* thisCode, SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength);
-	uptr				iDbf_getField_isBinary							(SThisCode* thisCode, SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength);
-	uptr				iDbf_getField_allowNulls						(SThisCode* thisCode, SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength);
-	uptr				iDbf_getNull_flag								(SThisCode* thisCode, SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength);
-	bool				iDbf_getNull_offsetAndMask						(SThisCode* thisCode, SWorkArea* wa, u32 fieldNumber, u32* nullOffset, u8* nullMask);
-	uptr				iDbf_getField_autoinc_next						(SThisCode* thisCode, SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength);
-	uptr				iDbf_getField_autoinc_step						(SThisCode* thisCode, SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength);
-	s8*					iDbf_getField_data								(SThisCode* thisCode, SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength);
-	SVariable*			iDbf_getField_data_asVar						(SThisCode* thisCode, SWorkArea* wa, SFieldRecord2* fptr2, bool tlCreateAsReference);
-	s8*					iiDbf_getField_data2							(SThisCode* thisCode, SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength, bool tlRetrieveAsIndexKey);
-	uptr				iDbf_getField_dataOffset						(SThisCode* thisCode, SWorkArea* wa, u32 fieldNumber);
-	uptr				iDbf_getIndexFixupOp							(SThisCode* thisCode, SWorkArea* wa, u32 fieldNumber);
-	uptr				iDbf_setField_data								(SThisCode* thisCode, SWorkArea* wa, s32 fieldNumber, u8* dest, u32 destLength, bool tlPartOfATransaction);
-	uptr				iDbf_getField_validateContents					(SThisCode* thisCode, SWorkArea* wa, u32 fieldNumber, u8* src, u32 srcLength);
+	uptr				iDbf_getField_name								(SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength);
+	uptr				iDbf_getField_type								(SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength);
+	uptr				iDbf_getField_type_verbose						(SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength);
+	uptr				iDbf_getField_type_extended						(SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength);
+	uptr				iDbf_getField_length							(SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength);
+	uptr				iDbf_getIndex_length							(SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength);
+	uptr				iDbf_getField_decimals							(SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength);
+	uptr				iDbf_getField_isBinary							(SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength);
+	uptr				iDbf_getField_allowNulls						(SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength);
+	uptr				iDbf_getNull_flag								(SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength);
+	bool				iDbf_getNull_offsetAndMask						(SWorkArea* wa, u32 fieldNumber, u32* nullOffset, u8* nullMask);
+	uptr				iDbf_getField_autoinc_next						(SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength);
+	uptr				iDbf_getField_autoinc_step						(SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength);
+	s8*					iDbf_getField_data								(SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength);
+	SVariable*			iDbf_getField_data_asVar						(SWorkArea* wa, SFieldRecord2* fptr2, bool tlCreateAsReference);
+	s8*					iiDbf_getField_data2							(SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength, bool tlRetrieveAsIndexKey);
+	uptr				iDbf_getField_dataOffset						(SWorkArea* wa, u32 fieldNumber);
+	uptr				iDbf_getIndexFixupOp							(SWorkArea* wa, u32 fieldNumber);
+	uptr				iDbf_setField_data								(SWorkArea* wa, s32 fieldNumber, u8* dest, u32 destLength, bool tlPartOfATransaction);
+	uptr				iDbf_getField_validateContents					(SWorkArea* wa, u32 fieldNumber, u8* src, u32 srcLength);
 
-	SFieldRecord1*		iDbf_getField_byName1							(SThisCode* thisCode, SWorkArea* wa, cu8* fieldName);
-	SFieldRecord1*		iDbf_getField_byNumber1							(SThisCode* thisCode, SWorkArea* wa, u32 fieldNumber);
-	SFieldRecord2*		iDbf_getField_byName2							(SThisCode* thisCode, SWorkArea* wa, cu8* fieldName);
-	SFieldRecord2*		iDbf_getField_byNumber2							(SThisCode* thisCode, SWorkArea* wa, u32 fieldNumber);
-	SVariable*			iDbf_getField_byName2_asVariable				(SThisCode* thisCode, SWorkArea* wa, u8* fieldName, u32 fieldNameLength, bool tlCreateAsReference);
-	u8					iDbf_getField_type								(SThisCode* thisCode, SWorkArea* wa, u8* keyExpression, bool* swapEndians, bool* needsSignBitToggled);
-	uptr				iDbf_getFieldExpression_name					(SThisCode* thisCode, u8* expression, const u8* foundFieldName);
+	SFieldRecord1*		iDbf_getField_byName1							(SWorkArea* wa, cu8* fieldName);
+	SFieldRecord1*		iDbf_getField_byNumber1							(SWorkArea* wa, u32 fieldNumber);
+	SFieldRecord2*		iDbf_getField_byName2							(SWorkArea* wa, cu8* fieldName);
+	SFieldRecord2*		iDbf_getField_byNumber2							(SWorkArea* wa, u32 fieldNumber);
+	SVariable*			iDbf_getField_byName2_asVariable				(SWorkArea* wa, u8* fieldName, u32 fieldNameLength, bool tlCreateAsReference);
+	u8					iDbf_getField_type								(SWorkArea* wa, u8* keyExpression, bool* swapEndians, bool* needsSignBitToggled);
+	uptr				iDbf_getFieldExpression_name					(u8* expression, const u8* foundFieldName);
 
 
 //////////
 // Container functions
 //////
-	void				iiDbc_lookupTableField							(SThisCode* thisCode, SWorkArea* wa, bool* tlIsValid, bool tlExcusive);
-	void				iiDbf_getRelativeDbc							(SThisCode* thisCode, SWorkArea* wa, s8* dbcName);
-	s32					iDbc_validate									(SThisCode* thisCode, SWorkArea* wa, bool tlRecover, SEM* sem, SWindow* win);
+	void				iiDbc_lookupTableField							(SWorkArea* wa, bool* tlIsValid, bool tlExcusive);
+	void				iiDbf_getRelativeDbc							(SWorkArea* wa, s8* dbcName);
+	s32					iDbc_validate									(SWorkArea* wa, bool tlRecover, SEM* sem, SWindow* win);
 
 
 //////////
 // FOR clauses used to test row data for inclusion in various operations
 //////
-	SForClause*			iDbf_forClause_allocate							(SThisCode* thisCode, SForClause** tsFor);
-	void				iDbf_forClause_delete							(SThisCode* thisCode, SForClause** tsFor);
+	SForClause*			iDbf_forClause_allocate							(SForClause** tsFor);
+	void				iDbf_forClause_delete							(SForClause** tsFor);
 	bool				iiDbf_forClause_isRowIncluded					(SWorkArea* wa, SForClause* tsFor);
 	bool				iiDbf_forClause_subitems_parse					(SCdxHeader* head, SForClause* tsFor);
 	SForSubItem* 		iiDbf_forClause_subitems_appendItem				(SForClause* tsFor);
@@ -242,12 +242,12 @@ struct SFieldRecord2;
 //////////
 // Structure tests from iDbf_open() for specific file types
 //////
-	SFieldRecord2*		iDbf_validate_fieldExists						(SThisCode* thisCode, SWorkArea* wa, cu8* tcFieldName, cs8* tcFieldType, s32 length, s32 decimals);
-	bool				iDbf_validate_isDbc								(SThisCode* thisCode, SWorkArea* wa);
-	bool				iDbf_validate_isScx								(SThisCode* thisCode, SWorkArea* wa);
-	bool				iDbf_validate_isVcx								(SThisCode* thisCode, SWorkArea* wa);
-	bool				iDbf_validate_isFrx								(SThisCode* thisCode, SWorkArea* wa);
-	bool				iDbf_validate_isMnx								(SThisCode* thisCode, SWorkArea* wa);
+	SFieldRecord2*		iDbf_validate_fieldExists						(SWorkArea* wa, cu8* tcFieldName, cs8* tcFieldType, s32 length, s32 decimals);
+	bool				iDbf_validate_isDbc								(SWorkArea* wa);
+	bool				iDbf_validate_isScx								(SWorkArea* wa);
+	bool				iDbf_validate_isVcx								(SWorkArea* wa);
+	bool				iDbf_validate_isFrx								(SWorkArea* wa);
+	bool				iDbf_validate_isMnx								(SWorkArea* wa);
 	
 	
 

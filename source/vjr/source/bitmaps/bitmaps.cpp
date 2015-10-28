@@ -3395,7 +3395,7 @@ return;
 
 				} else {
 					// Unknown format
-					iError_signal(NULL, _ERROR_INTERNAL_ERROR, NULL, false, (s8*)"dapple bitcount", false);
+					iError_signal(_ERROR_INTERNAL_ERROR, NULL, false, (s8*)"dapple bitcount", false);
 					return;
 				}
 

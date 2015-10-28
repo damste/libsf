@@ -109,13 +109,13 @@
 // Example:
 //    ? FLOOR(2.2)		&& Display 2
 //////
-    void function_floor(SThisCode* thisCode, SFunctionParams* rpar)
+    void function_floor(SFunctionParams* rpar)
     {
 		SVariable* varNumber = rpar->ip[0];
 
 
         // Return floor
-		ifunction_numbers_common(thisCode, rpar, varNumber, NULL, NULL, _FP_COMMON_FLOOR, _VAR_TYPE_S64, propGet_settings_ncset_ceilingFloor(_settings), false);
+		ifunction_numbers_common(rpar, varNumber, NULL, NULL, _FP_COMMON_FLOOR, _VAR_TYPE_S64, propGet_settings_ncset_ceilingFloor(_settings), false);
 	}
 
 
@@ -150,7 +150,7 @@
 //    ? FORCEEXT("c:\mydir.mydir\foo",	"prg")		&& Displays "c:\mydir.mydir\fred.prg"
 //    ? FORCEEXT("c:\mydir\fred.txt",	"")			&& Displays "c:\mydir\fred"
 //////
-	void function_forceext(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_forceext(SFunctionParams* rpar)
 	{
 		SVariable* varPathname		= rpar->ip[0];
 		SVariable* varNewExtension	= rpar->ip[1];
@@ -166,7 +166,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varPathname) || !iVariable_isTypeCharacter(varPathname))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varPathname), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varPathname), false);
 				return;
 			}
 
@@ -176,7 +176,7 @@
 		//////
 			if (!iVariable_isValid(varNewExtension) || !iVariable_isTypeCharacter(varNewExtension))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNewExtension), false);
+				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varNewExtension), false);
 				return;
 			}
 
@@ -184,7 +184,7 @@
 		//////////
 		// Based on its type, process it accordingly
 		//////
-			if (ifunction_pathname_common(thisCode, rpar, varPathname, &lnFNameOffset, &lnExtOffset))
+			if (ifunction_pathname_common(rpar, varPathname, &lnFNameOffset, &lnExtOffset))
 			{
 
 				//////////
@@ -207,7 +207,7 @@
 							if (lnLength >= (s32)sizeof(newFilename))
 							{
 								// Too big
-								iError_reportByNumber(thisCode, _ERROR_TOO_BIG_FOR_TARGET, iVariable_get_relatedComp(thisCode, varNewExtension), false);
+								iError_reportByNumber(_ERROR_TOO_BIG_FOR_TARGET, iVariable_get_relatedComp(varNewExtension), false);
 								return;
 							}
 
@@ -220,7 +220,7 @@
 							if (lnLength >= (s32)sizeof(newFilename))
 							{
 								// Too big
-								iError_reportByNumber(thisCode, _ERROR_TOO_BIG_FOR_TARGET, iVariable_get_relatedComp(thisCode, varNewExtension), false);
+								iError_reportByNumber(_ERROR_TOO_BIG_FOR_TARGET, iVariable_get_relatedComp(varNewExtension), false);
 								return;
 							}
 
@@ -238,13 +238,13 @@
 				//////////
 				// Allocate our result
 				//////
-					result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, newFilename, lnLength, false);
+					result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, newFilename, lnLength, false);
 
 
 			} else {
 				// Unable to parse the string properly, so return whatever they supplied
 				lnLength	= varPathname->value.length;
-				result		= iVariable_copy(thisCode, varPathname, false);
+				result		= iVariable_copy(varPathname, false);
 			}
 
 
@@ -254,12 +254,12 @@
 			if (!result->value.data || result->value.length != lnLength)
 			{
 				// Unable to allocate our variable's contents
-				iVariable_delete(thisCode, result, true);
+				iVariable_delete(result, true);
 				result = NULL;
 			}
 
 			if (!result)
-				iError_report(thisCode, cgcInternalError, false);
+				iError_report(cgcInternalError, false);
 
 
 		//////////
@@ -274,7 +274,7 @@
 // tnFNameOffset	-- offset to start of file name
 // tnExtOffset		-- offset to start of file extension
 //////
-	bool ifunction_pathname_common(SThisCode* thisCode, SFunctionParams* rpar, SVariable* varPathname, s32* tnFNameOffset, s32* tnExtOffset)
+	bool ifunction_pathname_common(SFunctionParams* rpar, SVariable* varPathname, s32* tnFNameOffset, s32* tnExtOffset)
 	{
 		s8		lc;
 		s32		lnI, lnLookingFor;
@@ -371,7 +371,7 @@
 // Returns:
 //    The input pathname with the filename.
 //////
-	void function_forcefname(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_forcefname(SFunctionParams* rpar)
 	{
 		SVariable* varPathname		= rpar->ip[0];
 		SVariable* varNewFilename	= rpar->ip[1];
@@ -387,7 +387,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varPathname) || !iVariable_isTypeCharacter(varPathname))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varPathname), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varPathname), false);
 				return;
 			}
 
@@ -397,7 +397,7 @@
 		//////
 			if (!iVariable_isValid(varNewFilename) || !iVariable_isTypeCharacter(varNewFilename))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNewFilename), false);
+				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varNewFilename), false);
 				return;
 			}
 
@@ -405,7 +405,7 @@
 		//////////
 		// Based on its type, process it accordingly
 		//////
-			if (ifunction_pathname_common(thisCode, rpar, varPathname, &lnFNameOffset, &lnExtOffset))
+			if (ifunction_pathname_common(rpar, varPathname, &lnFNameOffset, &lnExtOffset))
 			{
 
 				//////////
@@ -425,7 +425,7 @@
 						if (lnLength >= (s32)sizeof(newFilename))
 						{
 							// Too big
-							iError_reportByNumber(thisCode, _ERROR_TOO_BIG_FOR_TARGET, iVariable_get_relatedComp(thisCode, varNewFilename), false);
+							iError_reportByNumber(_ERROR_TOO_BIG_FOR_TARGET, iVariable_get_relatedComp(varNewFilename), false);
 							return;
 						}
 
@@ -441,13 +441,13 @@
 				//////////
 				// Allocate our result
 				//////
-					result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, newFilename, lnLength, false);
+					result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, newFilename, lnLength, false);
 
 
 			} else {
 				// Unable to parse the string properly, so return whatever they supplied
 				lnLength	= varPathname->value.length;
-				result		= iVariable_copy(thisCode, varPathname, false);
+				result		= iVariable_copy(varPathname, false);
 			}
 
 
@@ -457,12 +457,12 @@
 			if (!result->value.data || result->value.length != lnLength)
 			{
 				// Unable to allocate our variable's contents
-				iVariable_delete(thisCode, result, true);
+				iVariable_delete(result, true);
 				result = NULL;
 			}
 
 			if (!result)
-				iError_report(thisCode, cgcInternalError, false);
+				iError_report(cgcInternalError, false);
 
 
 		//////////
@@ -497,7 +497,7 @@
 // Returns:
 //    The input pathname with the new path.
 //////
-	void function_forcepath(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_forcepath(SFunctionParams* rpar)
 	{
 		SVariable* varPathname		= rpar->ip[0];
 		SVariable* varNewPathname	= rpar->ip[1];
@@ -514,7 +514,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varPathname) || !iVariable_isTypeCharacter(varPathname))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varPathname), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varPathname), false);
 				return;
 			}
 
@@ -524,14 +524,14 @@
 		//////
 		if (!iVariable_isValid(varNewPathname) || !iVariable_isTypeCharacter(varNewPathname))
 		{
-			iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNewPathname), false);
+			iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varNewPathname), false);
 			return;
 		}
 
 		//////////
 		// Based on its type, process it accordingly
 		//////
-			if (ifunction_pathname_common(thisCode, rpar, varPathname, &lnFNameOffset, &lnExtOffset))
+			if (ifunction_pathname_common(rpar, varPathname, &lnFNameOffset, &lnExtOffset))
 			{
 
 				//////////
@@ -559,7 +559,7 @@
 							if (lnLength >= (s32)sizeof(newFilename))
 							{
 								// Too big
-								iError_reportByNumber(thisCode, _ERROR_TOO_BIG_FOR_TARGET, iVariable_get_relatedComp(thisCode, varNewPathname), false);
+								iError_reportByNumber(_ERROR_TOO_BIG_FOR_TARGET, iVariable_get_relatedComp(varNewPathname), false);
 								return;
 							}
 
@@ -574,7 +574,7 @@
 							if (lnLength >= (s32)sizeof(newFilename))
 							{
 								// Too big
-								iError_reportByNumber(thisCode, _ERROR_TOO_BIG_FOR_TARGET, iVariable_get_relatedComp(thisCode, varNewPathname), false);
+								iError_reportByNumber(_ERROR_TOO_BIG_FOR_TARGET, iVariable_get_relatedComp(varNewPathname), false);
 								return;
 							}
 
@@ -593,13 +593,13 @@
 				//////////
 				// Allocate our result
 				//////
-					result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, newFilename, lnLength, false);
+					result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, newFilename, lnLength, false);
 
 
 			} else {
 				// Unable to parse the string properly, so return whatever they supplied
 				lnFNameLength	= varPathname->value.length;
-				result			= iVariable_copy(thisCode, varPathname, false);
+				result			= iVariable_copy(varPathname, false);
 			}
 
 
@@ -609,12 +609,12 @@
 			if (!result->value.data || result->value.length != lnLength)
 			{
 				// Unable to allocate our variable's contents
-				iVariable_delete(thisCode, result, true);
+				iVariable_delete(result, true);
 				result = NULL;
 			}
 
 			if (!result)
-				iError_report(thisCode, cgcInternalError, false);
+				iError_report(cgcInternalError, false);
 
 
 		//////////
@@ -649,7 +649,7 @@
 // Returns:
 //    The input pathname with the new stem.
 //////
-	void function_forcestem(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_forcestem(SFunctionParams* rpar)
 	{
 		SVariable* varPathname	= rpar->ip[0];
 		SVariable* varNewStem	= rpar->ip[1];
@@ -665,7 +665,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varPathname) || !iVariable_isTypeCharacter(varPathname))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varPathname), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varPathname), false);
 				return;
 			}
 
@@ -675,7 +675,7 @@
 		//////
 			if (!iVariable_isValid(varNewStem) || !iVariable_isTypeCharacter(varNewStem))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNewStem), false);
+				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varNewStem), false);
 				return;
 			}
 
@@ -683,7 +683,7 @@
 		//////////
 		// Based on its type, process it accordingly
 		//////
-			if (ifunction_pathname_common(thisCode, rpar, varPathname, &lnFNameOffset, &lnExtOffset))
+			if (ifunction_pathname_common(rpar, varPathname, &lnFNameOffset, &lnExtOffset))
 			{
 
 				//////////
@@ -709,7 +709,7 @@
 						if (lnLength >= (s32)sizeof(newFilename))
 						{
 							// Too big
-							iError_reportByNumber(thisCode, _ERROR_TOO_BIG_FOR_TARGET, iVariable_get_relatedComp(thisCode, varNewStem), false);
+							iError_reportByNumber(_ERROR_TOO_BIG_FOR_TARGET, iVariable_get_relatedComp(varNewStem), false);
 							return;
 						}
 
@@ -729,12 +729,12 @@
 				//////////
 				// Allocate our result
 				//////
-					result = iVariable_createAndPopulate_byText(thisCode, _VAR_TYPE_CHARACTER, newFilename, lnLength, false);
+					result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, newFilename, lnLength, false);
 
 
 			} else {
 				// Unable to parse the string properly, so return whatever they supplied
-				result = iVariable_copy(thisCode, varPathname, false);
+				result = iVariable_copy(varPathname, false);
 			}
 
 
@@ -744,12 +744,12 @@
 			if (!result->value.data || result->value.length != lnLength)
 			{
 				// Unable to allocate our variable's contents
-				iVariable_delete(thisCode, result, true);
+				iVariable_delete(result, true);
 				result = NULL;
 			}
 
 			if (!result)
-				iError_report(thisCode, cgcInternalError, false);
+				iError_report(cgcInternalError, false);
 
 
 		//////////
@@ -786,7 +786,7 @@
 // Example:
 //   ? FV(500, 0.006, 48)	&& Displays 27717.50
 //////
-	void function_fv(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_fv(SFunctionParams* rpar)
 	{
 		SVariable* varPayment		= rpar->ip[0];
 		SVariable* varInterestRate	= rpar->ip[1];
@@ -794,5 +794,5 @@
 
 
 		// Return fv
-		ifunction_numbers_common(thisCode, rpar, varPayment, varInterestRate, varPeriods, _FP_COMMON_FV, _VAR_TYPE_F64, false, true);
+		ifunction_numbers_common(rpar, varPayment, varInterestRate, varPeriods, _FP_COMMON_FV, _VAR_TYPE_F64, false, true);
 	}

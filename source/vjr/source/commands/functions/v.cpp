@@ -109,7 +109,7 @@
 //						Leading blanks are ignored.
 //						VAL( ) returns 0 if the first character of the character expression is not a number, a dollar sign ($), a plus sign (+), or minus sign (-).
 //////
-	void function_val(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_val(SFunctionParams* rpar)
 	{
 		SVariable*	varExpr			= rpar->ip[0];
 		SVariable*	varIgnoreChars	= rpar->ip[1];
@@ -133,7 +133,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varExpr))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varExpr), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varExpr), false);
 				return;
 			}
 
@@ -143,9 +143,9 @@
 			if (varExpr->varType >= _VAR_TYPE_NUMERIC_START && varExpr->varType <= _VAR_TYPE_NUMERIC_END)
 			{
 				// Copy The existing variable
-				result = iVariable_copy(thisCode, varExpr, false);
+				result = iVariable_copy(varExpr, false);
 				if (!result)
-					iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varExpr), false);
+					iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varExpr), false);
 
 				// Success or failure, return our result
 				rpar->rp[0] = result;
@@ -160,19 +160,19 @@
 			switch (varExpr->varType)
 			{
 				case _VAR_TYPE_NULL:
-					iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varExpr), false);
+					iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varExpr), false);
 					return;
 					break;
 
 				case _VAR_TYPE_LOGICAL:		// 0=.F., 1=.T.
 				case _VAR_TYPE_DATE:		// YYYYMMDD
-					result = iVariable_create(thisCode, _VAR_TYPE_S32, NULL, true);
+					result = iVariable_create(_VAR_TYPE_S32, NULL, true);
 					if (result)
 					{
 						// Populate the s32
-						*result->value.data_s32 = iiVariable_getAs_s32(thisCode, varExpr, true, &error, &errorNum);
+						*result->value.data_s32 = iiVariable_getAs_s32(varExpr, true, &error, &errorNum);
 						if (error)
-							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varExpr), false);
+							iError_reportByNumber(errorNum, iVariable_get_relatedComp(varExpr), false);
 					}
 					break;
 
@@ -180,13 +180,13 @@
 					// YYYYMMDDHhMmSsMss as s64
 				case _VAR_TYPE_DATETIMEX:
 					// YYYYMMDDHhMmSsNssssssss
-					result = iVariable_create(thisCode, _VAR_TYPE_S64, NULL, true);
+					result = iVariable_create(_VAR_TYPE_S64, NULL, true);
 					if (result)
 					{
 						// Populate the s64
-						*result->value.data_s64 = iiVariable_getAs_s64(thisCode, varExpr, true, &error, &errorNum);
+						*result->value.data_s64 = iiVariable_getAs_s64(varExpr, true, &error, &errorNum);
 						if (error)
-							iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varExpr), false);
+							iError_reportByNumber(errorNum, iVariable_get_relatedComp(varExpr), false);
 					}
 					break;
 
@@ -199,7 +199,7 @@
 						{
 							if (!iVariable_isValid(varIgnoreChars) || !iVariable_isTypeCharacter(varIgnoreChars))
 							{
-								iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varIgnoreChars), false);
+								iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varIgnoreChars), false);
 								return;
 							}
 						}
@@ -214,7 +214,7 @@
 						if (!varCurrency || !varPoint || !varSeparator)
 						{
 							// Should never happen
-							iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, NULL, false);
+							iError_reportByNumber(_ERROR_INTERNAL_ERROR, NULL, false);
 							return;
 						}
 
@@ -304,17 +304,17 @@
 							{
 								// Multiply by 10000 to obtain the 4 implied decimal places
 								lnValue = lnValue * 10000;
-								result	= iVariable_create(thisCode, _VAR_TYPE_CURRENCY, NULL, true);
+								result	= iVariable_create(_VAR_TYPE_CURRENCY, NULL, true);
 
 							} else {
 								if (lnValue < (s64)_s32_max)
 								{
 									// We can create as an s32
-									result = iVariable_create(thisCode, _VAR_TYPE_S32, NULL, true);
+									result = iVariable_create(_VAR_TYPE_S32, NULL, true);
 
 								} else {
 									// Create as an s64
-									result = iVariable_create(thisCode, _VAR_TYPE_S64, NULL, true);
+									result = iVariable_create(_VAR_TYPE_S64, NULL, true);
 								}
 							}
 
@@ -325,11 +325,11 @@
 							{
 								// As currency
 								lfValue	*= 10000.0;
-								result	= iVariable_create(thisCode, _VAR_TYPE_CURRENCY, NULL, true);
+								result	= iVariable_create(_VAR_TYPE_CURRENCY, NULL, true);
 
 							} else {
 								// As is
-								result	= iVariable_create(thisCode, _VAR_TYPE_F64, NULL, true);
+								result	= iVariable_create(_VAR_TYPE_F64, NULL, true);
 							}
 						}
 
@@ -339,14 +339,14 @@
 					//////
 						if (result)
 						{
-							if (llAsInteger)	iVariable_setNumeric_toNumericType(thisCode, result, NULL, NULL, NULL, NULL, &lnValue, NULL);
-							else				iVariable_setNumeric_toNumericType(thisCode, result, NULL, &lfValue, NULL, NULL, NULL, NULL);
+							if (llAsInteger)	iVariable_setNumeric_toNumericType(result, NULL, NULL, NULL, NULL, &lnValue, NULL);
+							else				iVariable_setNumeric_toNumericType(result, NULL, &lfValue, NULL, NULL, NULL, NULL);
 						}
 						break;
 
 				default:
 					// Unrecognized type
-					iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(thisCode, varExpr), false);
+					iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(varExpr), false);
 					return;
 			}
 
@@ -355,7 +355,7 @@
 		// Are we good?
 		//////
 			if (!result)
-				iError_reportByNumber(thisCode, _ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(thisCode, varExpr), false);
+				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varExpr), false);
 
 
 		//////////
@@ -389,7 +389,7 @@
 // Returns:
 //    Character		-- A one-digit value indicating the type
 //////
-	void function_vartype(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_vartype(SFunctionParams* rpar)
 	{
 		SVariable* var		= rpar->ip[0];
 		SVariable* varNull	= rpar->ip[1];
@@ -405,7 +405,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValidType(var))
 			{
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, var), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(var), false);
 				return;
 			}
 
@@ -421,7 +421,7 @@
 				//////
 					if (!iVariable_isValid(varNull) || !iVariable_isTypeLogical(varNull))
 					{
-						iError_reportByNumber(thisCode, _ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varNull), false);
+						iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varNull), false);
 						return;
 					}
 
@@ -429,10 +429,10 @@
 				//////////
 				// Grab the value
 				//////
-					llNullIsType = iiVariable_getAs_bool(thisCode, varNull, false, &error, &errorNum);
+					llNullIsType = iiVariable_getAs_bool(varNull, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varNull), false);
+						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNull), false);
 						return;
 					}
 
@@ -446,7 +446,7 @@
 		//////////
 		// Compute our result
 		//////
-			ifunction_type_common(thisCode, rpar, var, false, true, llNullIsType);
+			ifunction_type_common(rpar, var, false, true, llNullIsType);
 
 	}
 
@@ -476,13 +476,13 @@
 // Returns:
 //    Vector		-- The concatenated value, assumes the current SET VECSEPARATOR symbol
 //////
-	void function_vec(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_vec(SFunctionParams* rpar)
 	{
 		SVariable* varV1 = rpar->ip[0];
 
 
 		// Not yet completed
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(thisCode, varV1), false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(varV1), false);
 		rpar->rp[0] = NULL;
 	}
 
@@ -509,13 +509,13 @@
 // Returns:
 //     Numeric, the number of elements in the vector.
 //////
-	void function_veccount(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_veccount(SFunctionParams* rpar)
 	{
 		SVariable* varVec = rpar->ip[0];
 
 
 		// Not yet completed
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(thisCode, varVec), false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(varVec), false);
 		rpar->rp[0] = NULL;
 	}
 
@@ -545,7 +545,7 @@
 //    if varNewValue was specified, returns the new vector
 //    else                          returns the value of that element
 //////
-	void function_vecel(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_vecel(SFunctionParams* rpar)
 	{
 		SVariable* varVec		= rpar->ip[0];
 //		SVariable* varEl		= rpar->params[1];
@@ -553,7 +553,7 @@
 
 
 		// Not yet completed
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(thisCode, varVec), false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(varVec), false);
 		rpar->rp[0] = NULL;
 	}
 
@@ -582,7 +582,7 @@
 // Returns:
 //     The extracted element or elements as a vector.
 //////
-	void function_vecslice(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_vecslice(SFunctionParams* rpar)
 	{
 //		SVariable* varVec		= rpar->params[0];
 //		SVariable* varStartEl	= rpar->params[1];
@@ -590,7 +590,7 @@
 
 
 		// Not yet completed
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		rpar->rp[0] = NULL;
 	}
 
@@ -618,14 +618,14 @@
 // Returns:
 //     A character string containing the vector values interspersed with symbol space, or the varSymbolOverride
 //////
-	void function_vecstr(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_vecstr(SFunctionParams* rpar)
 	{
 //		SVariable* varVec				= rpar->params[0];
 //		SVariable* varSymbolOverride	= rpar->params[1];
 
 
 		// Not yet completed
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		rpar->rp[0] = NULL;
 	}
 
@@ -656,7 +656,7 @@
 //    if varNewValue was specified, returns the new vector
 //    else                          returns the value of that element
 //////
-	void function_vecstuff(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_vecstuff(SFunctionParams* rpar)
 	{
 		SVariable* varVec			= rpar->ip[0];
 //		SVariable* varStartEl		= rpar->params[1];
@@ -665,7 +665,7 @@
 
 
 		// Not yet completed
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(thisCode, varVec), false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(varVec), false);
 		rpar->rp[0] = NULL;
 	}
 
@@ -695,7 +695,7 @@
 //    if varNewSymbol was specified, returns the old symbol
 //    else                           returns the current symbol
 //////
-	void function_vecsymbol(SThisCode* thisCode, SFunctionParams* rpar)
+	void function_vecsymbol(SFunctionParams* rpar)
 	{
 		SVariable* varVec		= rpar->ip[0];
 //		SVariable* varEl		= rpar->params[1];
@@ -703,7 +703,7 @@
 
 
 		// Not yet completed
-		iError_reportByNumber(thisCode, _ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(thisCode, varVec), false);
+		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(varVec), false);
 		rpar->rp[0] = NULL;
 	}
 
@@ -730,7 +730,7 @@
 // Returns:
 //    Numeric or Character	-- Depending on index, various values are returned
 //////
-    void function_version(SThisCode* thisCode, SFunctionParams* rpar)
+    void function_version(SFunctionParams* rpar)
     {
 		SVariable*	varIndex = rpar->ip[0];
         s32			index;
@@ -752,20 +752,20 @@
 
 			} else if (!iVariable_isTypeNumeric(varIndex)) {
 				// The parameter is not numeric
-				iError_reportByNumber(thisCode, _ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(thisCode, varIndex), false);
+				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varIndex), false);
 				return;
 
 			} else {
 				// It must be in the range 1..5
-				index = iiVariable_getAs_s32(thisCode, varIndex, false, &error, &errorNum);
+				index = iiVariable_getAs_s32(varIndex, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(thisCode, errorNum, iVariable_get_relatedComp(thisCode, varIndex), false);
+					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varIndex), false);
 					return;
 
 				} else if (index < 1 || index > 5) {
 					// We report our own error
-					iError_report(thisCode, (cu8*)"Parameter must be in the range 1..5", false);
+					iError_report((cu8*)"Parameter must be in the range 1..5", false);
 					return;
 				}
 			}
@@ -777,7 +777,7 @@
 			if (lptr || index == 1 || index == 4)
 			{
 				// Character return
-				result = iVariable_create(thisCode, _VAR_TYPE_CHARACTER, NULL, true);
+				result = iVariable_create(_VAR_TYPE_CHARACTER, NULL, true);
 				if (lptr)
 				{
 					// Copy the version info
@@ -793,7 +793,7 @@
 				}
 
 			} else {
-				result = iVariable_create(thisCode, _VAR_TYPE_S32, NULL, true);
+				result = iVariable_create(_VAR_TYPE_S32, NULL, true);
 				if (index == 2)
 				{
 					// 0=runtime, 1=standard, 2=professional
@@ -810,7 +810,7 @@
 			}
 			if (!result)
 			{
-				iError_report(thisCode, cgcInternalError, false);
+				iError_report(cgcInternalError, false);
 				return;
 			}
 

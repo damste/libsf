@@ -111,7 +111,7 @@
 //		tnExplicitIndexType	--
 //
 //////
-	u32 cdx_open(SThisCode* thisCode, SWorkArea* wa, s8* tcCdxFilename, u32 tnCdxFilenameLength, u32 tnExplicitIndexType, bool tlValidate, bool tlDescending)
+	u32 cdx_open(SWorkArea* wa, s8* tcCdxFilename, u32 tnCdxFilenameLength, u32 tnExplicitIndexType, bool tlValidate, bool tlDescending)
 	{
 		bool		llIsValid;
 		u64			lnFileSize, lnNumread;
@@ -123,7 +123,7 @@
 		//////////
 		// Validate that our environment is sane
 		//////
-			if (!iDbf_isWorkAreaUsed(thisCode, wa, &llIsValid) || !llIsValid)
+			if (!iDbf_isWorkAreaUsed(wa, &llIsValid) || !llIsValid)
 				return(_CDX_ERROR_INVALID_WORK_AREA);		// Invalid work area
 			if (tnCdxFilenameLength >= sizeof(wa->idxCdxDcxPathname))
 				return(_CDX_ERROR_INDEX_NAME_TOO_LONG);
@@ -132,7 +132,7 @@
 		//////////
 		// If an index is already open, close it
 		//////
-			cdx_close(thisCode, wa);
+			cdx_close(wa);
 
 
 		//////////
@@ -225,7 +225,7 @@
 					wa->idx_header = (SIdxHeader*)malloc(sizeof(wa->idx_header));
 					if (!wa->idx_header)
 					{
-						cdx_close(thisCode, wa);
+						cdx_close(wa);
 						return(_CDX_ERROR_MEMORY_IDX);
 					}
 
@@ -234,7 +234,7 @@
 				// Read the first block
 				//////
 					if (wa->isExclusive)		lnNumread = iDisk_read(wa->fhIdxCdxDcx, 0, wa->idx_header, sizeof(wa->idx_header), &error, &errorNum);
-					else						lnNumread = iDisk_readShared_withRetryCallback(thisCode, wa->idxCdxDcxFileLocks, wa->fhIdxCdxDcx, 0, wa->idx_header, sizeof(wa->idx_header), &error, &errorNum, (uptr)&iiDbf_continueWithLockOperation, (uptr)&dl, &dl, true);
+					else						lnNumread = iDisk_readShared_withRetryCallback(wa->idxCdxDcxFileLocks, wa->fhIdxCdxDcx, 0, wa->idx_header, sizeof(wa->idx_header), &error, &errorNum, (uptr)&iiDbf_continueWithLockOperation, (uptr)&dl, &dl, true);
 
 
 				//////////
@@ -243,13 +243,13 @@
 					if (error && errorNum == _ERROR_UNABLE_TO_LOCK_FOR_READ)
 					{
 						// Adjust the error to make it specific
-						cdx_close(thisCode, wa);
+						cdx_close(wa);
 						return(_CDX_ERROR_READING_HEADER_IDX);
 					}
 
 					if (error || lnNumread != sizeof(wa->idx_header))
 					{
-						cdx_close(thisCode, wa);
+						cdx_close(wa);
 						return(_CDX_ERROR_READING_HEADER_CDX);
 					}
 
@@ -278,7 +278,7 @@
 					wa->cdx_root = (SCdxHeader*)malloc(sizeof(*wa->cdx_root));
 					if (!wa->cdx_root)
 					{
-						cdx_close(thisCode, wa);
+						cdx_close(wa);
 						return(_CDX_ERROR_MEMORY_CDX);
 					}
 
@@ -287,7 +287,7 @@
 				// Read
 				//////
 					if (wa->isExclusive)		lnNumread = iDisk_read(wa->fhIdxCdxDcx, 0, wa->cdx_root, sizeof(*wa->cdx_root), &error, &errorNum);
-					else						lnNumread = iDisk_readShared_withRetryCallback(thisCode, wa->idxCdxDcxFileLocks, wa->fhIdxCdxDcx, 0, wa->cdx_root, sizeof(*wa->cdx_root), &error, &errorNum, (uptr)&iiDbf_continueWithLockOperation, (uptr)&dl, &dl, true);
+					else						lnNumread = iDisk_readShared_withRetryCallback(wa->idxCdxDcxFileLocks, wa->fhIdxCdxDcx, 0, wa->cdx_root, sizeof(*wa->cdx_root), &error, &errorNum, (uptr)&iiDbf_continueWithLockOperation, (uptr)&dl, &dl, true);
 
 
 				//////////
@@ -295,13 +295,13 @@
 				//////
 					if (error && errorNum == _ERROR_UNABLE_TO_LOCK_FOR_READ)
 					{
-						cdx_close(thisCode, wa);
+						cdx_close(wa);
 						return(_CDX_ERROR_LOCKING_HEADER_CDX);
 					}
 
 					if (error || lnNumread != sizeof(*wa->cdx_root))
 					{
-						cdx_close(thisCode, wa);
+						cdx_close(wa);
 						return(_CDX_ERROR_READING_HEADER_CDX);
 					}
 
@@ -319,7 +319,7 @@
 				// Auto-validate the index if need be
 				//////
 					if (tlValidate || propGet_settings_AutoValidate(_settings))
-						iCdx_validateCdx(thisCode, wa, -1, NULL, 0, NULL, 0);	// Will signal ON VALIDATE messages for any errors found
+						iCdx_validateCdx(wa, -1, NULL, 0, NULL, 0);	// Will signal ON VALIDATE messages for any errors found
 			}
 
 
@@ -335,7 +335,7 @@
 // Called to close an open index
 //
 //////
-	u32 cdx_close(SThisCode* thisCode, SWorkArea* wa)
+	u32 cdx_close(SWorkArea* wa)
 	{
 		s32		lnI;
 		bool	llIsValid;
@@ -344,7 +344,7 @@
 		//////////
 		// Validate that our environment is sane
 		//////
-			if (!iDbf_isWorkAreaUsed(thisCode, wa, &llIsValid) || !llIsValid)
+			if (!iDbf_isWorkAreaUsed(wa, &llIsValid) || !llIsValid)
 				return(_DBF_ERROR_INVALID_WORK_AREA);
 
 
@@ -352,7 +352,7 @@
 		// Release any and all locks
 		//////
 			if (wa->idxCdxDcxFileLocks)
-				iDisk_unlock_all(thisCode, wa->idxCdxDcxFileLocks);
+				iDisk_unlock_all(wa->idxCdxDcxFileLocks);
 
 
 		//////////
@@ -392,7 +392,7 @@
 							{
 								// Clear the FOR clause if need be
 								if (wa->cdx_keyOps[lnI].forClause)
-									iDbf_forClause_delete(thisCode, &wa->cdx_keyOps[lnI].forClause);
+									iDbf_forClause_delete(&wa->cdx_keyOps[lnI].forClause);
 
 								// Free key ops
 								if (wa->cdx_keyOps[lnI].keyOps)
@@ -439,7 +439,7 @@
 // Called to retrieve tag information based on the tag index
 //
 /////
-	u32 cdx_get_tag(SThisCode* thisCode, SWorkArea* wa,
+	u32 cdx_get_tag(SWorkArea* wa,
 					u32 tnTagIndex,
 					s8* tcTagName,		u32 tnTagNameLength,
 					s8* tcExpression,	u32 tnExpressionLength,
@@ -459,7 +459,7 @@
 		//////////
 		// Validate that our environment is sane
 		//////
-			if (!iDbf_isWorkAreaUsed(thisCode, wa, &llIsValid) || !llIsValid)
+			if (!iDbf_isWorkAreaUsed(wa, &llIsValid) || !llIsValid)
 				return(_DBF_ERROR_INVALID_WORK_AREA);
 
 
@@ -472,7 +472,7 @@
 		//////////
 		// Iterate through the various tags
 		//////
-			if (iCdx_getRootmostCompoundTag_byTagnum(thisCode, wa, head, NULL, tnTagIndex, &tagRoot))
+			if (iCdx_getRootmostCompoundTag_byTagnum(wa, head, NULL, tnTagIndex, &tagRoot))
 			{
 				// Copy the tag name
 				for (lnI = 0; lnI < tagRoot.keyLength && lnI < tnTagNameLength; lnI++)
@@ -483,7 +483,7 @@
 					tcTagName[lnI] = 32;
 
 				// Grab the node with the key information
-				nodeTag		= iCdx_getCompactIdxNode_byOffset(thisCode, head, tagRoot.keyNode);
+				nodeTag		= iCdx_getCompactIdxNode_byOffset(head, tagRoot.keyNode);
 				nodePtr		= (s8*)nodeTag;
 				expForPtr	= nodePtr + 512;
 
@@ -506,10 +506,10 @@
 				sprintf(tcKeyLength4, "%04u", tagRoot.keyLength);
 
 				// Store the flags if need be
-				iiTwoChoice(tcCompact1,		iiCdx_isCompact		(thisCode, head),		cgc_y,	cgc_n);
-				iiTwoChoice(tcCompound1,	iiCdx_isCompound	(thisCode, head),		cgc_y,	cgc_n);
-				iiTwoChoice(tcUnique1,		iiCdx_isUnique		(thisCode, head),		cgc_y,	cgc_n);
-				iiTwoChoice(tcOrder1,		iiCdx_isDescending	(thisCode, head),		cgc_d,	cgc_a);
+				iiTwoChoice(tcCompact1,		iiCdx_isCompact		(head),		cgc_y,	cgc_n);
+				iiTwoChoice(tcCompound1,	iiCdx_isCompound	(head),		cgc_y,	cgc_n);
+				iiTwoChoice(tcUnique1,		iiCdx_isUnique		(head),		cgc_y,	cgc_n);
+				iiTwoChoice(tcOrder1,		iiCdx_isDescending	(head),		cgc_d,	cgc_a);
 
 				// Indicate the length of the key as a success
 				return(tagRoot.keyLength);
@@ -535,7 +535,7 @@
 // Called to find the explicitly indicated key
 //
 //////
-	u32 cdx_find_key(SThisCode* thisCode, u32 tnWorkArea, s32 tnTagIndex, u8* tcKey, u32 tnKeyLength)
+	u32 cdx_find_key(u32 tnWorkArea, s32 tnTagIndex, u8* tcKey, u32 tnKeyLength)
 	{
 		u32				lnResult, lnKeyOpCount;
 		SForClause*		lsFor;
@@ -564,18 +564,18 @@
 		// Grab the index tag header info so we can generate the keys
 		//////
 			memset(&tagRoot, 0, sizeof(tagRoot));
-			if (!iCdx_getRootmostCompoundTag_byTagnum(thisCode, wa, wa->cdx_root, NULL, tnTagIndex, &tagRoot))
+			if (!iCdx_getRootmostCompoundTag_byTagnum(wa, wa->cdx_root, NULL, tnTagIndex, &tagRoot))
 				return(_CDX_ERROR_INVALID_TAG);
 
 			// Right now, head and tagRoot are setup
 			// Grab the actual key node
-			tagHeader = (SCdxHeader*)iCdx_getCompactIdxNode_byOffset(thisCode, wa->cdx_root, tagRoot.keyNode);
+			tagHeader = (SCdxHeader*)iCdx_getCompactIdxNode_byOffset(wa->cdx_root, tagRoot.keyNode);
 
 
 		//////////
 		// Get or build the buildOps for this key
 		//////
-			if (!iiCdx_get_buildOps(thisCode, wa, tnTagIndex, tagHeader, &lsFor, &lsKeyOp, &lnKeyOpCount, &lnResult))
+			if (!iiCdx_get_buildOps(wa, tnTagIndex, tagHeader, &lsFor, &lsKeyOp, &lnKeyOpCount, &lnResult))
 				return(_CDX_ERROR_CONTEXTUAL + lnResult);	// Something is invalid
 
 
@@ -589,7 +589,7 @@
 		//////////
 		// Find the key
 		//////
-			return(iCdx_findKey(thisCode, wa, &tagRoot, tcKey, tnKeyLength));
+			return(iCdx_findKey(wa, &tagRoot, tcKey, tnKeyLength));
 	}
 
 
@@ -608,7 +608,7 @@
 	// Note:  Data is pulled from the data loaded into dbf_set_field_data() with negative field
 	//        numbers.  It automatically constructs the appropriate key on the fly.
 	//////
-	u32 cdx_build_and_find_key(SThisCode* thisCode, u32 tnWorkArea, s32 tnTagIndex, u32 tnKeyLength)
+	u32 cdx_build_and_find_key(u32 tnWorkArea, s32 tnTagIndex, u32 tnKeyLength)
 	{
 		u32				lnResult, lnKeyOpCount;
 		SForClause*		lsFor;
@@ -636,12 +636,12 @@
 		// Grab the index tag header info so we can generate the keys
 		//////
 			memset(&tagRoot, 0, sizeof(tagRoot));
-			if (!iCdx_getRootmostCompoundTag_byTagnum(thisCode, wa, wa->cdx_root, NULL, tnTagIndex, &tagRoot))
+			if (!iCdx_getRootmostCompoundTag_byTagnum(wa, wa->cdx_root, NULL, tnTagIndex, &tagRoot))
 				return(-2);
 
 			// Right now, head and tagRoot are setup
 			// Grab the actual key node
-			tagHeader = (SCdxHeader*)iCdx_getCompactIdxNode_byOffset(thisCode, wa->cdx_root, tagRoot.keyNode);
+			tagHeader = (SCdxHeader*)iCdx_getCompactIdxNode_byOffset(wa->cdx_root, tagRoot.keyNode);
 
 
 		//////////
@@ -654,21 +654,21 @@
 		//////////
 		// Get or build the buildOps for this key
 		//////
-			if (!iiCdx_get_buildOps(thisCode, wa, tnTagIndex, tagHeader, &lsFor, &cko, &lnKeyOpCount, &lnResult))
+			if (!iiCdx_get_buildOps(wa, tnTagIndex, tagHeader, &lsFor, &cko, &lnKeyOpCount, &lnResult))
 				return(_CDX_ERROR_CONTEXTUAL + lnResult);	// Something is invalid
 
 
 		//////////
 		// Build keys from the DBF's index field data
 		//////
-			iiCdx_generateKey_byOps(thisCode, wa, cko, lnKeyOpCount, keyBuffer, true);
+			iiCdx_generateKey_byOps(wa, cko, lnKeyOpCount, keyBuffer, true);
 			// Right now, keyBuffer is populated with the key to find
 
 
 		//////////
 		// Find the key
 		//////
-			return(iCdx_findKey(thisCode, wa, &tagRoot, keyBuffer, tnKeyLength));
+			return(iCdx_findKey(wa, &tagRoot, keyBuffer, tnKeyLength));
 	}
 
 
@@ -679,7 +679,7 @@
 // Called to SKIP N records forward or backward from the current location in the CDX.
 //
 //////
-	u32 cdx_skip_n(SThisCode* thisCode, u32 tnWorkArea, s32 tnTagIndex, s32 tnDelta)
+	u32 cdx_skip_n(u32 tnWorkArea, s32 tnTagIndex, s32 tnDelta)
 	{
 		return(0);
 	}
@@ -692,7 +692,7 @@
 // Called to go to the first record in the CDX.
 //
 //////
-	u32 cdx_top(SThisCode* thisCode, u32 tnWorkArea, s32 tnTagIndex)
+	u32 cdx_top(u32 tnWorkArea, s32 tnTagIndex)
 	{
 		return(0);
 	}
@@ -705,7 +705,7 @@
 // Called to go to the last record in the CDX.
 //
 //////
-	u32 cdx_bottom(SThisCode* thisCode, u32 tnWorkArea, s32 tnTagIndex)
+	u32 cdx_bottom(u32 tnWorkArea, s32 tnTagIndex)
 	{
 		return(0);
 	}
@@ -724,10 +724,9 @@
 //		others			- index is good
 //
 /////
-	u32 cdx_validate_tag(SThisCode* thisCode,
-							u32 tnWorkArea,		s32 tnTagIndex,
+	u32 cdx_validate_tag(	u32 tnWorkArea,		s32 tnTagIndex,
 							s8* tcMetaData,		u32 tnMetaDataLength,
-							s8* tcErrorsFound,	u32 tnErrorsFoundLength)
+							s8* tcErrorsFound,	u32 tnErrorsFoundLength		)
 	{
 		SWorkArea* wa;
 
@@ -743,8 +742,8 @@
 		// If an index is already open, close it
 		//////
 			wa = &gsWorkArea[tnWorkArea];
-			if (wa->isCdx)		return(iCdx_validateCdx(thisCode, wa, tnTagIndex, tcMetaData, tnMetaDataLength, tcErrorsFound, tnErrorsFoundLength));
-			else				return(iCdx_validateIdx(thisCode, wa,             tcMetaData, tnMetaDataLength, tcErrorsFound, tnErrorsFoundLength));
+			if (wa->isCdx)		return(iCdx_validateCdx(wa, tnTagIndex, tcMetaData, tnMetaDataLength, tcErrorsFound, tnErrorsFoundLength));
+			else				return(iCdx_validateIdx(wa,             tcMetaData, tnMetaDataLength, tcErrorsFound, tnErrorsFoundLength));
 	}
 
 
@@ -761,10 +760,9 @@
 //		others			- index is good
 //
 /////
-	u32 cdx_validate_keys(SThisCode* thisCode,
-							u32 tnWorkArea,			s32 tnTagIndex,
+	u32 cdx_validate_keys(	u32 tnWorkArea,			s32 tnTagIndex,
 							s8* tcMetaData,			u32 tnMetaDataLength,
-							s8* tcErrorsFound,		u32 tnErrorsFoundLength)
+							s8* tcErrorsFound,		u32 tnErrorsFoundLength		)
 	{
 		SWorkArea* wa;
 
@@ -780,8 +778,8 @@
 		// If an index is already open, close it
 		//////
 			wa = &gsWorkArea[tnWorkArea];
-			if (wa->isCdx)		return(iCdx_validateCdxKeys(thisCode, wa, tnWorkArea, tnTagIndex, tcMetaData, tnMetaDataLength, tcErrorsFound, tnErrorsFoundLength));
-			else				return(iCdx_validateIdxKeys(thisCode, wa,                         tcMetaData, tnMetaDataLength, tcErrorsFound, tnErrorsFoundLength));
+			if (wa->isCdx)		return(iCdx_validateCdxKeys(wa, tnWorkArea, tnTagIndex, tcMetaData, tnMetaDataLength, tcErrorsFound, tnErrorsFoundLength));
+			else				return(iCdx_validateIdxKeys(wa,                         tcMetaData, tnMetaDataLength, tcErrorsFound, tnErrorsFoundLength));
 	}
 
 
@@ -799,11 +797,10 @@
 // tcDecodeExpression	- The VFP code to use to decode the index
 //
 /////
-	u32 cdx_get_all_keys(SThisCode* thisCode,
-							u32 tnWorkArea,				s32 tnTagIndex,
+	u32 cdx_get_all_keys(	u32 tnWorkArea,				s32 tnTagIndex,
 							u8* tcKeySpace,				u32 tnKeySpaceLength,
 							u8* tcDecodeExpression,		u32 tnDecodeExpressionLength,
-							s8* tcKeyLength4)
+							s8* tcKeyLength4	)
 	{
 		SWorkArea* wa;
 
@@ -819,8 +816,8 @@
 		// If an index is already open, close it
 		//////
 			wa = &gsWorkArea[tnWorkArea];
-			if (wa->isCdx)		return(iCdx_getAllKeysCdx(thisCode, wa, tnTagIndex, tcKeySpace, tnKeySpaceLength, tcDecodeExpression, tnDecodeExpressionLength, tcKeyLength4));
-			else				return(iCdx_getAllKeysIdx(thisCode, wa,             tcKeySpace, tnKeySpaceLength, tcDecodeExpression, tnDecodeExpressionLength, tcKeyLength4));
+			if (wa->isCdx)		return(iCdx_getAllKeysCdx(wa, tnTagIndex, tcKeySpace, tnKeySpaceLength, tcDecodeExpression, tnDecodeExpressionLength, tcKeyLength4));
+			else				return(iCdx_getAllKeysIdx(wa,             tcKeySpace, tnKeySpaceLength, tcDecodeExpression, tnDecodeExpressionLength, tcKeyLength4));
 	}
 
 
@@ -831,10 +828,10 @@
 // Called to validate that the IDX header is valid
 //
 //////
-	bool iCdx_validateIdx(SThisCode* thisCode, SWorkArea* wa, s8* tcMetaData, u32 tnMetaDataLength, s8* tcErrorsFound, u32 tnErrorsFoundLength)
+	bool iCdx_validateIdx(SWorkArea* wa, s8* tcMetaData, u32 tnMetaDataLength, s8* tcErrorsFound, u32 tnErrorsFoundLength)
 	{
-		if (wa->isIdxCompact)		return(iCdx_validateIdx_compact( thisCode, wa, tcMetaData, tnMetaDataLength, tcErrorsFound, tnErrorsFoundLength));
-		else						return(iCdx_validateIdx_standard(thisCode, wa, tcMetaData, tnMetaDataLength, tcErrorsFound, tnErrorsFoundLength));
+		if (wa->isIdxCompact)		return(iCdx_validateIdx_compact( wa, tcMetaData, tnMetaDataLength, tcErrorsFound, tnErrorsFoundLength));
+		else						return(iCdx_validateIdx_standard(wa, tcMetaData, tnMetaDataLength, tcErrorsFound, tnErrorsFoundLength));
 	}
 
 
@@ -845,7 +842,7 @@
 // Called to process a compact index.
 //
 //////
-	bool iCdx_validateIdx_compact(SThisCode* thisCode, SWorkArea* wa, s8* tcMetaData, u32 tnMetaDataLength, s8* tcErrorsFound, u32 tnErrorsFoundLength)
+	bool iCdx_validateIdx_compact(SWorkArea* wa, s8* tcMetaData, u32 tnMetaDataLength, s8* tcErrorsFound, u32 tnErrorsFoundLength)
 	{
 		u32					lnI, lnNode, lnMaxNode, lnKeyNumber;
 		SCdxHeader*			head;
@@ -867,14 +864,14 @@
 		//////////
 		// Validate the header for a compact .IDX
 		//////
-			iCdx_getCompactRootNode(thisCode, wa, head, NULL, &tagRoot);
+			iCdx_getCompactRootNode(wa, head, NULL, &tagRoot);
 			lnMaxNode = (head->fileSize - 1024) / 512;
 			for (lnNode = 1; lnNode < lnMaxNode; lnNode++)
 			{
 				//////////
 				// Get and indicate the type it is
 				//////
-					node = iCdx_getCompactIdxNode_byNumber(thisCode, head, lnNode);
+					node = iCdx_getCompactIdxNode_byNumber(head, lnNode);
 					switch (node->type)
 					{
 						case _CDX_NODE_INDEX:		// Index node
@@ -910,7 +907,7 @@
 					{
 						// Get the key here
 // TODO:  The value 32 here needs to be based on the field type of the index key expression
-						if (iCdx_getCompactIdxKey_byNumber(thisCode, head, head->keyLength, 32, lnKeyNumber, lnKeyNumber, node, &key, &tagRoot, true, true))
+						if (iCdx_getCompactIdxKey_byNumber(head, head->keyLength, 32, lnKeyNumber, lnKeyNumber, node, &key, &tagRoot, true, true))
 						{
 							// Print out the key information
 							memset(buffer, 0, sizeof(buffer));
@@ -968,7 +965,7 @@
 // Called to process a non-compact index.
 //
 //////
-	bool iCdx_validateIdx_standard(SThisCode* thisCode, SWorkArea* wa, s8* tcMetaData, u32 tnMetaDataLength, s8* tcErrorsFound, u32 tnErrorsFoundLength)
+	bool iCdx_validateIdx_standard(SWorkArea* wa, s8* tcMetaData, u32 tnMetaDataLength, s8* tcErrorsFound, u32 tnErrorsFoundLength)
 	{
 		u32				lnI, lnNode, lnMaxNode, lnKeyNumber;
 		SIdxHeader*		head;
@@ -991,13 +988,13 @@
 		// Validate the header for a .IDX
 		//////
 			lnMaxNode = (head->fileSize - 512) / 512;
-			iCdx_getStandardRootNode(thisCode, wa, head, NULL, &tagRoot);
+			iCdx_getStandardRootNode(wa, head, NULL, &tagRoot);
 			for (lnNode = 1; lnNode < lnMaxNode; lnNode++)
 			{
 				//////////
 				// Get and indicate the type it is
 				//////
-					node = iCdx_getStandardIdxNode_byNumber(thisCode, head, lnNode);
+					node = iCdx_getStandardIdxNode_byNumber(head, lnNode);
 					switch (node->type)
 					{
 						case _CDX_NODE_INDEX:		// Index node
@@ -1030,7 +1027,7 @@
 					for (lnKeyNumber = 0; lnKeyNumber < node->keyCount; lnKeyNumber++)
 					{
 						// Get the key here
-						if (iCdx_getStandardIdxKey_byNumber(thisCode, head, tagRoot.fillChar, lnKeyNumber, node, &key, &tagRoot, true, true))
+						if (iCdx_getStandardIdxKey_byNumber(head, tagRoot.fillChar, lnKeyNumber, node, &key, &tagRoot, true, true))
 						{
 							// Print out the key information
 							memset(buffer, 0, sizeof(buffer));
@@ -1082,7 +1079,7 @@
 // Note:  Use tnTagIndex of -1 to validate all tags
 //
 //////
-	s32 iCdx_validateCdx(SThisCode* thisCode, SWorkArea* wa, s32 tnTagIndex, s8* tcMetaData, u32 tnMetaDataLength, s8* tcErrorData, u32 tnErrorDataLength)
+	s32 iCdx_validateCdx(SWorkArea* wa, s32 tnTagIndex, s8* tcMetaData, u32 tnMetaDataLength, s8* tcErrorData, u32 tnErrorDataLength)
 	{
 		u32				lnTagNum, lnNodeNumber, lnKeyNumber, lnStartTagNum, lnEndTagNum, lnTotalKeyCount;
 		bool			llProcessed, llContinue;
@@ -1116,13 +1113,13 @@
 		//////////
 		// Create callback variables
 		//////
-			varTableName			= iVariable_createAndPopulate_byText(thisCode,		_VAR_TYPE_CHARACTER,	wa->tablePathname,		wa->tablePathnameLength,		true);
-			varAlias				= iVariable_createAndPopulate_byText(thisCode,		_VAR_TYPE_CHARACTER,	wa->alias,				wa->aliasLength,				true);
-			varCdxName				= iVariable_createAndPopulate_byText(thisCode,		_VAR_TYPE_CHARACTER,	wa->idxCdxDcxPathname,	wa->idxCdxDcxPathnameLength,	true);
-			varTag					= iVariable_create(thisCode,	_VAR_TYPE_CHARACTER,	NULL, true);
-			varMessage				= iVariable_create(thisCode,	_VAR_TYPE_CHARACTER,	NULL, true);
-			varIsError				= iVariable_create(thisCode,	_VAR_TYPE_LOGICAL,		NULL, true);
-			varRebuildIndexRequired	= iVariable_create(thisCode,	_VAR_TYPE_LOGICAL,		NULL, true);
+			varTableName			= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER,	wa->tablePathname,		wa->tablePathnameLength,		true);
+			varAlias				= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER,	wa->alias,				wa->aliasLength,				true);
+			varCdxName				= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER,	wa->idxCdxDcxPathname,	wa->idxCdxDcxPathnameLength,	true);
+			varTag					= iVariable_create(_VAR_TYPE_CHARACTER,	NULL, true);
+			varMessage				= iVariable_create(_VAR_TYPE_CHARACTER,	NULL, true);
+			varIsError				= iVariable_create(_VAR_TYPE_LOGICAL,	NULL, true);
+			varRebuildIndexRequired	= iVariable_create(_VAR_TYPE_LOGICAL,	NULL, true);
 
 			// Were they all created okay?
 			if (!varTableName || !varAlias || !varCdxName || !varTag || !varMessage || !varIsError || !varRebuildIndexRequired)
@@ -1131,7 +1128,7 @@
 				//////////
 				// Signal the error and fail
 				//////
-					iError_signal(thisCode, _ERROR_UNABLE_TO_AUTOVALIDATE, NULL, false, NULL, false);
+					iError_signal(_ERROR_UNABLE_TO_AUTOVALIDATE, NULL, false, NULL, false);
 					llProcessed = false;
 					goto clean_house;
 
@@ -1155,7 +1152,7 @@
 			}
 
 			// Iterate through one tag, or all of the tags
-			for (lnTagNum = lnStartTagNum, llProcessed = false, llContinue = true; llContinue && lnTagNum <= lnEndTagNum && iCdx_getRootmostCompoundTag_byTagnum(thisCode, wa, wa->cdx_root, NULL, lnTagNum, &tagRoot); lnTagNum++)
+			for (lnTagNum = lnStartTagNum, llProcessed = false, llContinue = true; llContinue && lnTagNum <= lnEndTagNum && iCdx_getRootmostCompoundTag_byTagnum(wa, wa->cdx_root, NULL, lnTagNum, &tagRoot); lnTagNum++)
 			{
 				// Indicate we processed at last one thing
 				llProcessed = true;
@@ -1173,11 +1170,11 @@
 
 					} else {
 						// Signal validation begin
-						iVariable_set_character(thisCode,	varTag,						tagRoot.tagName,	iiCountContiguousCharacters(&tagRoot.tagName[0], sizeof(tagRoot.tagName)));
-						iVariable_set_character(thisCode,	varMessage,					(u8*)cgcValidateBegin,	sizeof(cgcValidateBegin) - 1);
-						iVariable_set_logical(thisCode,		varIsError,					false);
-						iVariable_set_logical(thisCode,		varRebuildIndexRequired,	false);
-						llContinue = iEngine_signal_onValidate(thisCode, varTableName, varAlias, varCdxName, varTag, varMessage, varIsError, varRebuildIndexRequired);
+						iVariable_set_character(varTag,					tagRoot.tagName,	iiCountContiguousCharacters(&tagRoot.tagName[0], sizeof(tagRoot.tagName)));
+						iVariable_set_character(varMessage,				(u8*)cgcValidateBegin,	sizeof(cgcValidateBegin) - 1);
+						iVariable_set_logical(varIsError,				false);
+						iVariable_set_logical(varRebuildIndexRequired,	false);
+						llContinue = iEngine_signal_onValidate(varTableName, varAlias, varCdxName, varTag, varMessage, varIsError, varRebuildIndexRequired);
 						if (!llContinue)
 							return(0);
 					}
@@ -1186,8 +1183,8 @@
 				//////////
 				// Validate the header for a this compact .IDX
 				//////
-					node			= iCdx_getCompactIdxNode_byOffset(thisCode, wa->cdx_root, tagRoot.leftmostNode);
-//					head			= (SCdxHeader*)iCdx_getCompactIdxNode_byOffset(thisCode, wa->cdx_root, tagRoot.keyNode);
+					node			= iCdx_getCompactIdxNode_byOffset(wa->cdx_root, tagRoot.leftmostNode);
+//					head			= (SCdxHeader*)iCdx_getCompactIdxNode_byOffset(wa->cdx_root, tagRoot.keyNode);
 					lnTotalKeyCount	= 0;
 					while (node)
 					{
@@ -1213,10 +1210,10 @@
 
 									} else {
 										// Signal validation error
-										iVariable_set_character(thisCode,	varMessage,					(u8*)cgcValidateInvalidNode,	sizeof(cgcValidateInvalidNode) - 1);
-										iVariable_set_logical(thisCode,		varIsError,					true);
-										iVariable_set_logical(thisCode,		varRebuildIndexRequired,	true);
-										llContinue = iEngine_signal_onValidate(thisCode, varTableName, varAlias, varCdxName, varTag, varMessage, varIsError, varRebuildIndexRequired);
+										iVariable_set_character(varMessage,				(u8*)cgcValidateInvalidNode,	sizeof(cgcValidateInvalidNode) - 1);
+										iVariable_set_logical(varIsError,				true);
+										iVariable_set_logical(varRebuildIndexRequired,	true);
+										llContinue = iEngine_signal_onValidate(varTableName, varAlias, varCdxName, varTag, varMessage, varIsError, varRebuildIndexRequired);
 									}
 
 									// Bad index
@@ -1233,7 +1230,7 @@
 								for (lnKeyNumber = 0; lnKeyNumber < node->keyCount; lnKeyNumber++)
 								{
 									// Get the key here
-									if (iCdx_getCompactIdxKey_byNumber(thisCode, wa->cdx_root, tagRoot.keyLength, tagRoot.fillChar, lnKeyNumber, lnKeyNumber, node, &key, &tagRoot, false, false))
+									if (iCdx_getCompactIdxKey_byNumber(wa->cdx_root, tagRoot.keyLength, tagRoot.fillChar, lnKeyNumber, lnKeyNumber, node, &key, &tagRoot, false, false))
 									{
 										// Indicate our key count has gone up
 										++lnTotalKeyCount;
@@ -1266,10 +1263,10 @@
 
 														} else {
 															// Signal validation error
-															iVariable_set_character(thisCode,	varMessage,					(u8*)cgcValidateKeysOutOfOrder,	sizeof(cgcValidateKeysOutOfOrder) - 1);
-															iVariable_set_logical(thisCode,		varIsError,					true);
-															iVariable_set_logical(thisCode,		varRebuildIndexRequired,	false);
-															llContinue = iEngine_signal_onValidate(thisCode, varTableName, varAlias, varCdxName, varTag, varMessage, varIsError, varRebuildIndexRequired);
+															iVariable_set_character(varMessage,				(u8*)cgcValidateKeysOutOfOrder,	sizeof(cgcValidateKeysOutOfOrder) - 1);
+															iVariable_set_logical(varIsError,				true);
+															iVariable_set_logical(varRebuildIndexRequired,	false);
+															llContinue = iEngine_signal_onValidate(varTableName, varAlias, varCdxName, varTag, varMessage, varIsError, varRebuildIndexRequired);
 															if (!llContinue)
 																goto we_are_done;
 														}
@@ -1288,10 +1285,10 @@
 
 														} else {
 															// Signal validation error
-															iVariable_set_character(thisCode,	varMessage,					(u8*)cgcValidateKeysOutOfOrder,	sizeof(cgcValidateKeysOutOfOrder) - 1);
-															iVariable_set_logical(thisCode,		varIsError,					true);
-															iVariable_set_logical(thisCode,		varRebuildIndexRequired,	false);
-															llContinue = iEngine_signal_onValidate(thisCode, varTableName, varAlias, varCdxName, varTag, varMessage, varIsError, varRebuildIndexRequired);
+															iVariable_set_character(varMessage,				(u8*)cgcValidateKeysOutOfOrder,	sizeof(cgcValidateKeysOutOfOrder) - 1);
+															iVariable_set_logical(varIsError,				true);
+															iVariable_set_logical(varRebuildIndexRequired,	false);
+															llContinue = iEngine_signal_onValidate(varTableName, varAlias, varCdxName, varTag, varMessage, varIsError, varRebuildIndexRequired);
 															if (!llContinue)
 																goto we_are_done;
 														}
@@ -1310,10 +1307,10 @@
 
 										} else {
 											// Signal validation error
-											iVariable_set_character(thisCode,	varMessage,					(u8*)cgcValidateKeyNotPresent,	sizeof(cgcValidateKeyNotPresent) - 1);
-											iVariable_set_logical(thisCode,		varIsError,					true);
-											iVariable_set_logical(thisCode,		varRebuildIndexRequired,	true);
-											llContinue = iEngine_signal_onValidate(thisCode, varTableName, varAlias, varCdxName, varTag, varMessage, varIsError, varRebuildIndexRequired);
+											iVariable_set_character(varMessage,				(u8*)cgcValidateKeyNotPresent,	sizeof(cgcValidateKeyNotPresent) - 1);
+											iVariable_set_logical(varIsError,				true);
+											iVariable_set_logical(varRebuildIndexRequired,	true);
+											llContinue = iEngine_signal_onValidate(varTableName, varAlias, varCdxName, varTag, varMessage, varIsError, varRebuildIndexRequired);
 										}
 
 										goto we_are_done;
@@ -1331,10 +1328,10 @@
 
 									} else {
 										// Signal validation error
-										iVariable_set_character(thisCode,	varMessage,					(u8*)cgcValidateEmptyNode,	sizeof(cgcValidateEmptyNode) - 1);
-										iVariable_set_logical(thisCode,		varIsError,					true);
-										iVariable_set_logical(thisCode,		varRebuildIndexRequired,	false);
-										llContinue = iEngine_signal_onValidate(thisCode, varTableName, varAlias, varCdxName, varTag, varMessage, varIsError, varRebuildIndexRequired);
+										iVariable_set_character(varMessage,				(u8*)cgcValidateEmptyNode,	sizeof(cgcValidateEmptyNode) - 1);
+										iVariable_set_logical(varIsError,				true);
+										iVariable_set_logical(varRebuildIndexRequired,	false);
+										llContinue = iEngine_signal_onValidate(varTableName, varAlias, varCdxName, varTag, varMessage, varIsError, varRebuildIndexRequired);
 										if (!llContinue)
 											goto we_are_done;
 									}
@@ -1350,7 +1347,7 @@
 								break;	// All done
 
 							// Move to the next lead node right and continue through the keys
-							node = iCdx_getCompactIdxNode_byOffset(thisCode, wa->cdx_root, node->nodeRight);
+							node = iCdx_getCompactIdxNode_byOffset(wa->cdx_root, node->nodeRight);
 					}
 we_are_done:
 
@@ -1368,15 +1365,15 @@ we_are_done:
 						{
 							// We're good, indicate the number of keys
 							sprintf((s8*)output, "%s, %u keys in index\0", cgcValidateEnd, lnTotalKeyCount);
-							iVariable_set_character(thisCode,	varMessage,		output, (u32)strlen(output));
+							iVariable_set_character(varMessage,		output, (u32)strlen(output));
 
 						} else {
 							// Indicate we are done
-							iVariable_set_character(thisCode,	varMessage,		(u8*)cgcValidateEnd,	sizeof(cgcValidateEnd) - 1);
+							iVariable_set_character(varMessage,		(u8*)cgcValidateEnd,	sizeof(cgcValidateEnd) - 1);
 						}
-						iVariable_set_logical(thisCode,		varIsError,					false);
-						iVariable_set_logical(thisCode,		varRebuildIndexRequired,	false);
-						llContinue = iEngine_signal_onValidate(thisCode, varTableName, varAlias, varCdxName, varTag, varMessage, varIsError, varRebuildIndexRequired);
+						iVariable_set_logical(varIsError,				false);
+						iVariable_set_logical(varRebuildIndexRequired,	false);
+						llContinue = iEngine_signal_onValidate(varTableName, varAlias, varCdxName, varTag, varMessage, varIsError, varRebuildIndexRequired);
 					}
 			}
 
@@ -1402,13 +1399,13 @@ clean_house:
 		//////////
 		// Delete any variables that actually did make it
 		//////
-			iVariable_delete(thisCode, varTableName,			true);
-			iVariable_delete(thisCode, varAlias,				true);
-			iVariable_delete(thisCode, varCdxName,				true);
-			iVariable_delete(thisCode, varTag,					true);
-			iVariable_delete(thisCode, varMessage,				true);
-			iVariable_delete(thisCode, varIsError,				true);
-			iVariable_delete(thisCode, varRebuildIndexRequired,	true);
+			iVariable_delete(varTableName,				true);
+			iVariable_delete(varAlias,					true);
+			iVariable_delete(varCdxName,				true);
+			iVariable_delete(varTag,					true);
+			iVariable_delete(varMessage,				true);
+			iVariable_delete(varIsError,				true);
+			iVariable_delete(varRebuildIndexRequired,	true);
 
 
 		//////////
@@ -1426,7 +1423,7 @@ clean_house:
 // on single field keys, or simple concatenated string keys (a+b+c).
 //
 //////
-	s32 iCdx_validateCdxKeys(SThisCode* thisCode, SWorkArea* wa, u32 tnWorkArea, s32 tnTagIndex, s8* tcMetaData, u32 tnMetaDataLength, s8* tcErrorsFound, u32 tnErrorsFoundLength)
+	s32 iCdx_validateCdxKeys(SWorkArea* wa, u32 tnWorkArea, s32 tnTagIndex, s8* tcMetaData, u32 tnMetaDataLength, s8* tcErrorsFound, u32 tnErrorsFoundLength)
 	{
 		u32				lnRecno, lnDbfRecno, lnCdxRecno;
 		s32				lnI, lnKey, lnCdxKeyCount, lnDbfKeyCount, lnKeyOpCount;
@@ -1453,14 +1450,14 @@ clean_house:
 		// Grab the index tag header info so we can generate the keys
 		//////
 			memset(&tagRoot, 0, sizeof(tagRoot));
-			if (!iCdx_getRootmostCompoundTag_byTagnum(thisCode, wa, wa->cdx_root, NULL, tnTagIndex, &tagRoot))
+			if (!iCdx_getRootmostCompoundTag_byTagnum(wa, wa->cdx_root, NULL, tnTagIndex, &tagRoot))
 			{
 				sprintf(tcMetaData, "Unable to access tag index %u\n", tnTagIndex);
 				return(-1);
 			}
 			// Right now, head and tagRoot are setup
 			// Grab the actual key node
-			tagHeader = (SCdxHeader*)iCdx_getCompactIdxNode_byOffset(thisCode, wa->cdx_root, tagRoot.keyNode);
+			tagHeader = (SCdxHeader*)iCdx_getCompactIdxNode_byOffset(wa->cdx_root, tagRoot.keyNode);
 
 
 		//////////
@@ -1486,10 +1483,10 @@ clean_house:
 			iBuilder_appendData(metaData, tagHeader->keyExpression, tagHeader->keyExpressionLength - 1);
 			iBuilder_appendData(metaData, (cu8*)" ", -1);
 
-			if (iiCdx_isUnique(thisCode, tagHeader))
+			if (iiCdx_isUnique(tagHeader))
 				iBuilder_appendData(metaData, (cu8*)"UNIQUE ", -1);
 
-			if (iiCdx_isDescending(thisCode, tagHeader))
+			if (iiCdx_isDescending(tagHeader))
 				iBuilder_appendData(metaData, (cu8*)"DESCENDING ", -1);
 
 			if (tagHeader->forClauseLength > 1)
@@ -1505,7 +1502,7 @@ clean_house:
 		// Only those which are simple logical field tests are supported.
 		//////
 			lsFor = NULL;
-			if (iCdx_isForClauseComplex(thisCode, wa, tagHeader, &lsFor))
+			if (iCdx_isForClauseComplex(wa, tagHeader, &lsFor))
 			{
 				// Tell them why we're failing this process
 				if (tcMetaData)
@@ -1524,7 +1521,7 @@ clean_house:
 		// Generate DBF keys based on raw table data
 		//////
 			iBuilder_allocateBytes(dbfKeys, wa->header.records * (tagRoot.keyLength + 4));
-			cko = iiCdx_generateKey_buildOps(thisCode, wa, &tagHeader->keyExpression[0], &lnKeyOpCount);
+			cko = iiCdx_generateKey_buildOps(wa, &tagHeader->keyExpression[0], &lnKeyOpCount);
 			if (!cko)
 			{
 				// Key expression could not be parsed
@@ -1547,7 +1544,7 @@ clean_house:
 				//////////
 				// Load this record
 				//////
-					iDbf_gotoRecord(thisCode, wa, lnRecno);
+					iDbf_gotoRecord(wa, lnRecno);
 
 
 				//////////
@@ -1560,7 +1557,7 @@ clean_house:
 				//////////
 				// Generate and store the key
 				//////
-					iiCdx_generateKey_byOps(thisCode, wa, cko, lnKeyOpCount, dbfKeys->data_u8 + (lnDbfKeyCount * (tagRoot.keyLength + 4)), false);
+					iiCdx_generateKey_byOps(wa, cko, lnKeyOpCount, dbfKeys->data_u8 + (lnDbfKeyCount * (tagRoot.keyLength + 4)), false);
 
 					// Append the record number
 					*(u32*)(dbfKeys->data_u8 + (lnDbfKeyCount * (tagRoot.keyLength + 4) + tagRoot.keyLength)) = iiSwapEndian32(lnRecno);
@@ -1579,7 +1576,7 @@ clean_house:
 			iBuilder_allocateBytes(cdxKeys, wa->header.records * (tagRoot.keyLength + 4));
 // if (iIsNeedleInHaystack(metaData->buffer, metaData->populatedLength, "cdosname", 8))
 // 	_asm nop;
-			lnCdxKeyCount = iCdx_getAllKeysCdx(thisCode, wa, tnTagIndex, cdxKeys->data_u8, cdxKeys->totSize, &lcDecodeExpression[0], sizeof(lcDecodeExpression), &lcKeyLength4[0]);
+			lnCdxKeyCount = iCdx_getAllKeysCdx(wa, tnTagIndex, cdxKeys->data_u8, cdxKeys->totSize, &lcDecodeExpression[0], sizeof(lcDecodeExpression), &lcKeyLength4[0]);
 			// Remove any keys that weren't included
 			iBuilder_setSize(cdxKeys, lnCdxKeyCount * (tagRoot.keyLength + 4));
 
@@ -1606,7 +1603,7 @@ clean_house:
 				// Sort the DBF keys
 				//////
 					gnCdx_sort_keyLength = tagRoot.keyLength + 4;
-					if (iiCdx_isDescending(thisCode, tagHeader))	qsort(dbfKeys->buffer,	lnDbfKeyCount,	tagRoot.keyLength + 4,	iiKeys_qsortDescending_callback);
+					if (iiCdx_isDescending(tagHeader))	qsort(dbfKeys->buffer,	lnDbfKeyCount,	tagRoot.keyLength + 4,	iiKeys_qsortDescending_callback);
 					else											qsort(dbfKeys->buffer,	lnDbfKeyCount,	tagRoot.keyLength + 4,	iiKeys_qsortAscending_callback);
 			}
 
@@ -1617,7 +1614,7 @@ clean_house:
 			for (lnI = 0; lnI < (s32)dbfKeys->populatedLength; lnI += (tagRoot.keyLength + 4))
 			{
 				// Fixup any on the key data
-				iiCdx_generateKey_byOps_fixup(thisCode, wa, cko, lnKeyOpCount, dbfKeys->data_u8 + lnI, false);
+				iiCdx_generateKey_byOps_fixup(wa, cko, lnKeyOpCount, dbfKeys->data_u8 + lnI, false);
 
 				// Fixup the recno()
 				*(u32*)(dbfKeys->buffer + lnI + tagRoot.keyLength) = iiSwapEndian32(*(u32*)(dbfKeys->buffer + lnI + tagRoot.keyLength));
@@ -1631,7 +1628,7 @@ clean_house:
 			for (lnI = 0; lnI < (s32)cdxKeys->populatedLength; lnI += (tagRoot.keyLength + 4))
 			{
 				// Early out
-				if (!iiCdx_generateKey_byOps_fixup(thisCode, wa, cko, lnKeyOpCount, cdxKeys->data_u8 + lnI, true))
+				if (!iiCdx_generateKey_byOps_fixup(wa, cko, lnKeyOpCount, cdxKeys->data_u8 + lnI, true))
 					break;
 			}
 
@@ -1640,7 +1637,7 @@ clean_house:
 		// Iterate through all of the dbfKeys and make sure there is a matching entry in
 		// the cdxKeys.  Report any errors.
 		//////
-			if (iiCdx_isUnique(thisCode, tagHeader))
+			if (iiCdx_isUnique(tagHeader))
 			{
 				//////////
 				// The index key must match the first entry found in the dbfKeys
@@ -1758,7 +1755,7 @@ close_and_quit:
 		//////
 			// Free FOR clause
 			if (lsFor)
-				iDbf_forClause_delete(thisCode, &lsFor);
+				iDbf_forClause_delete(&lsFor);
 
 			// Free key ops
 			if (cko)
@@ -1798,7 +1795,7 @@ close_and_quit:
 // Not currently supported, but defined because ... well that's just the kind of guy I am (hopeful that in the future I or other developers will step forward to contribute from their own bosom into this project)
 //
 //////
-	s32 iCdx_validateIdxKeys(SThisCode* thisCode, SWorkArea* wa, s8* tcMetaData, u32 tnMetaDataLength, s8* tcErrorsFound, u32 tnErrorsFoundLength)
+	s32 iCdx_validateIdxKeys(SWorkArea* wa, s8* tcMetaData, u32 tnMetaDataLength, s8* tcErrorsFound, u32 tnErrorsFoundLength)
 	{
 // TODO:  Not currently supported
 		debug_break;
@@ -1821,7 +1818,7 @@ close_and_quit:
 // Note:  Nodes are base-1, so the disk location is calculated as ((node-1) * 512).
 //
 //////
-	SCdxNodeCache* iCdx_cacheNode(SThisCode* thisCode, SWorkArea* wa, SCdxHeader* tagHeader, s32 tnNodeNum, SCdxNode** nodeDst)
+	SCdxNodeCache* iCdx_cacheNode(SWorkArea* wa, SCdxHeader* tagHeader, s32 tnNodeNum, SCdxNode** nodeDst)
 	{
 		s32				lnNumread;
 		u32				lnI;
@@ -1912,7 +1909,7 @@ close_and_quit:
 					//////////
 					// Validate what we have cached is still in sync with whatever's presently on disk
 					//////
-						lnNumread = iDisk_readShared_withRetryCallback(thisCode, wa->idxCdxDcxFileLocks, wa->fhIdxCdxDcx, lnOffset, &diskNode, 512, &error, &errorNum, (uptr)&iiDbf_continueWithLockOperation, (uptr)&dl, &dl, true);
+						lnNumread = iDisk_readShared_withRetryCallback(wa->idxCdxDcxFileLocks, wa->fhIdxCdxDcx, lnOffset, &diskNode, 512, &error, &errorNum, (uptr)&iiDbf_continueWithLockOperation, (uptr)&dl, &dl, true);
 						if (error || lnNumread != 512 || !dl)
 						{
 							// Error reading this node
@@ -1939,7 +1936,7 @@ close_and_quit:
 					//////////
 					// We need to dump what we have and reload the cache
 					//////
-						iiCdx_cacheNode_delete(thisCode, wa, tagHeader, thisNodeCache, true);
+						iiCdx_cacheNode_delete(wa, tagHeader, thisNodeCache, true);
 
 				}
 			}
@@ -1949,7 +1946,7 @@ close_and_quit:
 		//////////
 		// Allocate a cache node
 		//////
-			thisNodeCache = iiCdx_cacheNode_allocate(thisCode, wa, tagHeader, tnNodeNum, true);
+			thisNodeCache = iiCdx_cacheNode_allocate(wa, tagHeader, tnNodeNum, true);
 			if (!thisNodeCache)
 			{
 				wa->idxCdxDcxLastError = _CDX_ERROR_MEMORY_CDX;
@@ -1981,7 +1978,7 @@ close_and_quit:
 // Note:  If node is specified, it goes ahead and automatically populates the keys into the cache
 //
 //////
-	SCdxNodeCache* iiCdx_cacheNode_allocate(SThisCode* thisCode, SWorkArea* wa, SCdxHeader* tagHeader, s32 tnNodeNum, bool tlAutoPopulate)
+	SCdxNodeCache* iiCdx_cacheNode_allocate(SWorkArea* wa, SCdxHeader* tagHeader, s32 tnNodeNum, bool tlAutoPopulate)
 	{
 		SCdxNodeCache* thisNodeCache;
 
@@ -2016,7 +2013,7 @@ close_and_quit:
 		// Populate the node?
 		//////
 			if (tlAutoPopulate)
-				iiCdx_cacheNode_populate(thisCode, wa, tagHeader, thisNodeCache, true);
+				iiCdx_cacheNode_populate(wa, tagHeader, thisNodeCache, true);
 // TODO:  Working here
 
 
@@ -2036,7 +2033,7 @@ close_and_quit:
 // Will automatically de-populate if already populated.
 //
 //////
-	void iiCdx_cacheNode_populate(SThisCode* thisCode, SWorkArea* wa, SCdxHeader* tagHeader, SCdxNodeCache* nodeKeys, bool tlAllocateLiberally)
+	void iiCdx_cacheNode_populate(SWorkArea* wa, SCdxHeader* tagHeader, SCdxNodeCache* nodeKeys, bool tlAllocateLiberally)
 	{
 		s32				/*lnI, lnCount,*/ lnNumread, lnKeyAllocateCount;
 		SDiskLock*		dl;
@@ -2050,7 +2047,7 @@ close_and_quit:
 		// Remove any existing keys
 		//////
 			if (nodeKeys->keyDecodedAllocated != 0 || nodeKeys->keyDecodedBuffer)
-				iiCdx_cacheNode_depopulate(thisCode, wa, tagHeader, nodeKeys);
+				iiCdx_cacheNode_depopulate(wa, tagHeader, nodeKeys);
 
 
 		//////////
@@ -2070,7 +2067,7 @@ close_and_quit:
 				// Physical read from disk
 				//////
 					if (wa->isExclusive)		lnNumread = iDisk_read(wa->fhIdxCdxDcx, nodeKeys->nodeNum * 512, nodeKeys->cachedNode, 512, &error, &errorNum);
-					else						lnNumread = iDisk_readShared_withRetryCallback(thisCode, wa->idxCdxDcxFileLocks, wa->fhIdxCdxDcx, nodeKeys->nodeNum * 512, nodeKeys->cachedNode, 512, &error, &errorNum, (uptr)&iiDbf_continueWithLockOperation, (uptr)&dl, &dl, true);
+					else						lnNumread = iDisk_readShared_withRetryCallback(wa->idxCdxDcxFileLocks, wa->fhIdxCdxDcx, nodeKeys->nodeNum * 512, nodeKeys->cachedNode, 512, &error, &errorNum, (uptr)&iiDbf_continueWithLockOperation, (uptr)&dl, &dl, true);
 
 
 				//////////
@@ -2137,10 +2134,10 @@ close_and_quit:
 				// Decode
 				//////
 // TODO:  Working here
-// 					iCdx_getCompactRootNode(thisCode, wa, tagHeader, NULL, &tagRoot);
+// 					iCdx_getCompactRootNode(wa, tagHeader, NULL, &tagRoot);
 // 					for (lnI = 0, lnCount = (s32)nodeKeys->cachedNode->keyCount; lnI < lnCount; lnI++)
 // 					{
-// 						if (!iCdx_getCompactIdxKey_byNumber(thisCode, wa->cdx_root, tagHeader->keyLength, ->fillChar, lnKeyNumber, lnKeyNumber, node, &key, &tagRoot, true, true))
+// 						if (!iCdx_getCompactIdxKey_byNumber(wa->cdx_root, tagHeader->keyLength, ->fillChar, lnKeyNumber, lnKeyNumber, node, &key, &tagRoot, true, true))
 // 						{
 //
 // 						}
@@ -2159,7 +2156,7 @@ close_and_quit:
 // same number of keys).
 //
 //////
-	void iiCdx_cacheNode_depopulate(SThisCode* thisCode, SWorkArea* wa, SCdxHeader* tagHeader, SCdxNodeCache* nodeKeys)
+	void iiCdx_cacheNode_depopulate(SWorkArea* wa, SCdxHeader* tagHeader, SCdxNodeCache* nodeKeys)
 	{
 		u32 lnI;
 
@@ -2199,7 +2196,7 @@ close_and_quit:
 // but rather it is kept as isUsed = true so it doesn't need to be allocated again.
 //
 //////
-	void iiCdx_cacheNode_delete(SThisCode* thisCode, SWorkArea* wa, SCdxHeader* tagHeader, SCdxNodeCache* nodeKeys, bool tlImmediateReuse)
+	void iiCdx_cacheNode_delete(SWorkArea* wa, SCdxHeader* tagHeader, SCdxNodeCache* nodeKeys, bool tlImmediateReuse)
 	{
 	}
 
@@ -2213,7 +2210,7 @@ close_and_quit:
 // and creating keys very fast.
 //
 //////
-	SCdxKeyOp* iiCdx_generateKey_buildOps(SThisCode* thisCode, SWorkArea* wa, u8* keyExpression, s32* tnKeyOpCount)
+	SCdxKeyOp* iiCdx_generateKey_buildOps(SWorkArea* wa, u8* keyExpression, s32* tnKeyOpCount)
 	{
 		s32			lnKeyLength, lnFieldLength, lnIndexLength, lnKeyFieldNameLength, lnLkoNum;
 		sptr		lnFieldNumber;
@@ -2261,7 +2258,7 @@ close_and_quit:
 					lnFieldLength			= 0;
 					llIsValid				= true;
 					lnKeyFieldNameLength	= 6;
-					if (iiCdx_generateKey_buildOps_markClosingParenthesis(thisCode, keyStart + 5, (s8)255))
+					if (iiCdx_generateKey_buildOps_markClosingParenthesis(keyStart + 5, (s8)255))
 						lnFixup = _DBF_INDEX_FIXUP_UPPER;
 
 				} else if (_memicmp(keyStart, "lower(", 6) == 0) {
@@ -2269,14 +2266,14 @@ close_and_quit:
 					lnFieldLength			= 0;
 					llIsValid				= true;
 					lnKeyFieldNameLength	= 6;
-					if (iiCdx_generateKey_buildOps_markClosingParenthesis(thisCode, keyStart + 5, (s8)255))
+					if (iiCdx_generateKey_buildOps_markClosingParenthesis(keyStart + 5, (s8)255))
 						lnFixup = _DBF_INDEX_FIXUP_LOWER;
 
 				} else if (*keyStart != 255) {
 					//////////
 					// Find out how long this key is
 					//////
-						lnKeyFieldNameLength = (s32)iDbf_getFieldExpression_name(thisCode, keyStart, &fieldName[0]);
+						lnKeyFieldNameLength = (s32)iDbf_getFieldExpression_name(keyStart, &fieldName[0]);
 						if (lnKeyFieldNameLength < 1)
 							goto failed_parsing;
 
@@ -2284,7 +2281,7 @@ close_and_quit:
 					//////////
 					// Locate this key in the current table
 					//////
-						lnFieldNumber = (sptr)iDbf_getField_byName2(thisCode, wa, fieldName);
+						lnFieldNumber = (sptr)iDbf_getField_byName2(wa, fieldName);
 						if (lnFieldNumber <= 0)
 							goto failed_parsing;
 
@@ -2292,18 +2289,18 @@ close_and_quit:
 					//////////
 					// Grab its length
 					//////
-						lnFieldLength = (s32)iDbf_getField_length(thisCode, wa, (u32)lnFieldNumber, NULL, 0);
-						lnIndexLength = (s32)iDbf_getIndex_length(thisCode, wa, (u32)lnFieldNumber, NULL, 0);
+						lnFieldLength = (s32)iDbf_getField_length(wa, (u32)lnFieldNumber, NULL, 0);
+						lnIndexLength = (s32)iDbf_getIndex_length(wa, (u32)lnFieldNumber, NULL, 0);
 
 
 					//////////
 					// If the field allows NULLs, allow for that byte
 					// Note:  The _DBF_INDEX_FIXUP_NULL is used for the index_fixup, so the content will be adjusted appropriately
 					//////
-						if (iDbf_getField_allowNulls(thisCode, wa, (u32)lnFieldNumber, NULL, 0))
+						if (iDbf_getField_allowNulls(wa, (u32)lnFieldNumber, NULL, 0))
 						{
 							// Grab the offset and mask for rapid updating as we generate each field
-							iDbf_getNull_offsetAndMask(thisCode, wa, (u32)lnFieldNumber, &cko[lnLkoNum].null_offset, &cko[lnLkoNum].null_mask);
+							iDbf_getNull_offsetAndMask(wa, (u32)lnFieldNumber, &cko[lnLkoNum].null_offset, &cko[lnLkoNum].null_mask);
 							++lnIndexLength;
 						}
 
@@ -2311,11 +2308,11 @@ close_and_quit:
 					//////////
 					// Append the contents of this key to the op
 					//////
-						cko[lnLkoNum].offsetRow		= (u32)iDbf_getField_dataOffset(thisCode, wa, (u32)lnFieldNumber);
+						cko[lnLkoNum].offsetRow		= (u32)iDbf_getField_dataOffset(wa, (u32)lnFieldNumber);
 						cko[lnLkoNum].offsetKey		= lnKeyLength;
 						cko[lnLkoNum].length		= lnIndexLength;
 						cko[lnLkoNum].fieldLength	= lnFieldLength;
-						cko[lnLkoNum].indexFixup	= (u32)iDbf_getIndexFixupOp(thisCode, wa, (u32)lnFieldNumber) | lnFixup;
+						cko[lnLkoNum].indexFixup	= (u32)iDbf_getIndexFixupOp(wa, (u32)lnFieldNumber) | lnFixup;
 						llIsValid					= true;
 
 				} else {
@@ -2359,7 +2356,7 @@ failed_parsing:
 		return(NULL);
 	}
 
-	bool iiCdx_generateKey_buildOps_markClosingParenthesis(SThisCode* thisCode, u8* leftParenthesis, u8 fixupAscii)
+	bool iiCdx_generateKey_buildOps_markClosingParenthesis(u8* leftParenthesis, u8 fixupAscii)
 	{
 		s32 lnLevel;
 
@@ -2404,7 +2401,7 @@ failed_parsing:
 // header key directly.
 //
 //////
-	u32 iiCdx_generateKey(SThisCode* thisCode, SWorkArea* wa, SCdxHeader* head, u8* keyOut)
+	u32 iiCdx_generateKey(SWorkArea* wa, SCdxHeader* head, u8* keyOut)
 	{
 		s32				lnKeyLength, lnFieldLength, lnKeyFieldNameLength;
 		u8*				keyStart;
@@ -2420,7 +2417,7 @@ failed_parsing:
 			//////////
 			// Find out how long this key is
 			//////
-				lnKeyFieldNameLength = (s32)iDbf_getFieldExpression_name(thisCode, keyStart, &fieldName[0]);
+				lnKeyFieldNameLength = (s32)iDbf_getFieldExpression_name(keyStart, &fieldName[0]);
 				if (lnKeyFieldNameLength < 1)
 					return(-1);
 
@@ -2428,7 +2425,7 @@ failed_parsing:
 			//////////
 			// Locate this key in the current table
 			//////
-				lfptr2 = iDbf_getField_byName2(thisCode, wa, fieldName);
+				lfptr2 = iDbf_getField_byName2(wa, fieldName);
 				if (!lfptr2)
 					return(-2);
 
@@ -2439,7 +2436,7 @@ failed_parsing:
 			//////////
 			// Append the contents of this key
 			//////
-				iiDbf_getField_data2(thisCode, wa, lfptr2->fieldNumber, keyOut, lnFieldLength, true);
+				iiDbf_getField_data2(wa, lfptr2->fieldNumber, keyOut, lnFieldLength, true);
 
 
 			//////////
@@ -2469,7 +2466,7 @@ failed_parsing:
 // Called to populate the key by the data stored in the ops
 //
 //////
-	void iiCdx_generateKey_byOps(SThisCode* thisCode, SWorkArea* wa, SCdxKeyOp* keyOps, s32 tnKeyOpCount, u8* keyOut, bool tlBuildFromIndexData)
+	void iiCdx_generateKey_byOps(SWorkArea* wa, SCdxKeyOp* keyOps, s32 tnKeyOpCount, u8* keyOut, bool tlBuildFromIndexData)
 	{
 		s32			lnI, lnJ;
 		u8*			keyPart;
@@ -2497,12 +2494,12 @@ failed_parsing:
 				{
 					case _DBF_INDEX_FIXUP_SWAP_ENDIAN:
 						// Fixup integers stored as 4-byte or 8-byte (currency)
-						iiCdx_generateKey_byOps_fixup_swapEndian(thisCode, cko, keyPart);
+						iiCdx_generateKey_byOps_fixup_swapEndian(cko, keyPart);
 						break;
 
 					case _DBF_INDEX_FIXUP_FLOAT_DOUBLE:
 						// Fixup float or double
-						iiCdx_generateKey_byOps_fixup_double(thisCode, cko, keyPart);
+						iiCdx_generateKey_byOps_fixup_double(cko, keyPart);
 						break;
 
 					case _DBF_INDEX_FIXUP_DATETIME:
@@ -2519,7 +2516,7 @@ failed_parsing:
 
 					case _DBF_INDEX_FIXUP_DATE:
 						// Dates are stored as Julian day numbers
-						iiCdx_generateKey_byOps_fixup_date(thisCode, cko, keyPart);
+						iiCdx_generateKey_byOps_fixup_date(cko, keyPart);
 						// All done
 						break;
 
@@ -2531,7 +2528,7 @@ failed_parsing:
 
 					case _DBF_INDEX_FIXUP_NUMERIC:
 						// Numeric fields are converted to f64 for comparison
-						iiCdx_generateKey_byOps_fixup_numeric(thisCode, cko, keyPart, wa);
+						iiCdx_generateKey_byOps_fixup_numeric(cko, keyPart, wa);
 						break;
 				}
 
@@ -2565,7 +2562,7 @@ failed_parsing:
 		}
 	}
 
-	void iiCdx_generateKey_byOps_fixup_swapEndian(SThisCode* thisCode, SCdxKeyOp* lko, u8* keyPart)
+	void iiCdx_generateKey_byOps_fixup_swapEndian(SCdxKeyOp* lko, u8* keyPart)
 	{
 		switch (lko->length)
 		{
@@ -2600,7 +2597,7 @@ failed_parsing:
 		}
 	}
 
-	void iiCdx_generateKey_byOps_fixup_date(SThisCode* thisCode, SCdxKeyOp* lko, u8* keyPart)
+	void iiCdx_generateKey_byOps_fixup_date(SCdxKeyOp* lko, u8* keyPart)
 	{
 		s32	lnI;
 		s8	julianBuffer[16];
@@ -2636,7 +2633,7 @@ failed_parsing:
 	}
 
 
-	void iiCdx_generateKey_byOps_fixup_double(SThisCode* thisCode, SCdxKeyOp* lko, u8* keyPart)
+	void iiCdx_generateKey_byOps_fixup_double(SCdxKeyOp* lko, u8* keyPart)
 	{
 		switch (lko->length)
 		{
@@ -2664,7 +2661,7 @@ failed_parsing:
 		}
 	}
 
-	void iiCdx_generateKey_byOps_fixup_numeric(SThisCode* thisCode, SCdxKeyOp* lko, u8* keyPart, SWorkArea* wa)
+	void iiCdx_generateKey_byOps_fixup_numeric(SCdxKeyOp* lko, u8* keyPart, SWorkArea* wa)
 	{
 		s8 numericBuffer[256];
 
@@ -2685,7 +2682,7 @@ failed_parsing:
 		//////////
 		// Fixup per the normal double swap endian
 		//////
-			iiCdx_generateKey_byOps_fixup_double(thisCode, lko, keyPart);
+			iiCdx_generateKey_byOps_fixup_double(lko, keyPart);
 	}
 
 
@@ -2707,7 +2704,7 @@ failed_parsing:
 // If used on CDX index keys, only certain operations are performed, so use tlIsCdxKey = true.
 //
 //////
-	bool iiCdx_generateKey_byOps_fixup(SThisCode* thisCode, SWorkArea* wa, SCdxKeyOp* keyOps, s32 tnKeyOpCount, u8* keyOut, bool tlIsCdxKey)
+	bool iiCdx_generateKey_byOps_fixup(SWorkArea* wa, SCdxKeyOp* keyOps, s32 tnKeyOpCount, u8* keyOut, bool tlIsCdxKey)
 	{
 		s32		lnI, lnJ;
 		bool	llAnyFixupApplied;	// used for early-out by the caller
@@ -2871,7 +2868,7 @@ failed_parsing:
 // Called to obtain or create the buildOps for the indicated index tag.
 //
 //////
-	bool iiCdx_get_buildOps(SThisCode* thisCode, SWorkArea* wa, s32 tnTagIndex, SCdxHeader* tagHeader, SForClause** tsFor, SCdxKeyOp** tsKeyOp, u32* tnKeyOpCount, u32* tnResult)
+	bool iiCdx_get_buildOps(SWorkArea* wa, s32 tnTagIndex, SCdxHeader* tagHeader, SForClause** tsFor, SCdxKeyOp** tsKeyOp, u32* tnKeyOpCount, u32* tnResult)
 	{
 		//////////
 		// Are we trying to access a key beyond what we have?
@@ -2895,7 +2892,7 @@ failed_parsing:
 				//////
 					if (!wa->cdx_keyOps[tnTagIndex].forClause)
 					{
-						if (iCdx_isForClauseComplex(thisCode, wa, tagHeader, &wa->cdx_keyOps[tnTagIndex].forClause))
+						if (iCdx_isForClauseComplex(wa, tagHeader, &wa->cdx_keyOps[tnTagIndex].forClause))
 						{
 							*tnResult = -2;		// FOR clause is too complex
 							return(false);
@@ -2906,7 +2903,7 @@ failed_parsing:
 				//////////
 				// Generate DBF keys based on raw table data
 				//////
-					wa->cdx_keyOps[tnTagIndex].keyOps = iiCdx_generateKey_buildOps(thisCode, wa, &tagHeader->keyExpression[0], &wa->cdx_keyOps[tnTagIndex].keyOpCount);
+					wa->cdx_keyOps[tnTagIndex].keyOps = iiCdx_generateKey_buildOps(wa, &tagHeader->keyExpression[0], &wa->cdx_keyOps[tnTagIndex].keyOpCount);
 					if (!wa->cdx_keyOps[tnTagIndex].keyOps)
 					{
 						*tnResult = -3;		// Key expression could not be parsed
@@ -2943,7 +2940,7 @@ failed_parsing:
 // If not found, it returns _CDX_NO_FIND.
 //
 //////
-	s32 iCdx_findKey(SThisCode* thisCode, SWorkArea* wa, STagRoot* tagRoot, u8* keyBuffer, u32 tnKeyLength)
+	s32 iCdx_findKey(SWorkArea* wa, STagRoot* tagRoot, u8* keyBuffer, u32 tnKeyLength)
 	{
 		s32				lnTranslatedResult;
 		u32				lnKeyNumber;
@@ -2955,7 +2952,7 @@ debug_break;
 		//////////
 		// Find the node it relates to
 		//////
-			node		= iCdx_getCompactIdxNode_byOffset(thisCode, wa->cdx_root, tagRoot->highestNode);
+			node		= iCdx_getCompactIdxNode_byOffset(wa->cdx_root, tagRoot->highestNode);
 			tnKeyLength	= max(min(tnKeyLength, tagRoot->keyLength), 1);
 			while (node)
 			{
@@ -2968,7 +2965,7 @@ debug_break;
 						for (lnKeyNumber = 0; lnKeyNumber < node->keyCount; lnKeyNumber++)
 						{
 							// See if this key is beyond the thing we're searching for, if so then the candidate key is the previous one
-							if (iCdx_getCompactIdxKey_byNumber(thisCode, wa->cdx_root, tagRoot->keyLength, tagRoot->fillChar, lnKeyNumber, lnKeyNumber, node, &key, tagRoot, true, true))
+							if (iCdx_getCompactIdxKey_byNumber(wa->cdx_root, tagRoot->keyLength, tagRoot->fillChar, lnKeyNumber, lnKeyNumber, node, &key, tagRoot, true, true))
 							{
 								//////////
 								// See if this key is beyond us.
@@ -2977,7 +2974,7 @@ debug_break;
 									if (iiCdx_translateActualResultThroughIndexOrder(tagRoot, keyBuffer, &key.key[0], tnKeyLength) <= 0)
 									{
 										// We've reached (=) or passed where the key should've been
-										node = iCdx_getCompactIdxNode_byOffset(thisCode, wa->cdx_root, key.fileOffset);
+										node = iCdx_getCompactIdxNode_byOffset(wa->cdx_root, key.fileOffset);
 									}
 									// else
 									// We are continuing with the next index node key in the for loop
@@ -2998,7 +2995,7 @@ debug_break;
 						for (lnKeyNumber = 0; lnKeyNumber < node->keyCount; lnKeyNumber++)
 						{
 							// Get the first key on this node
-							if (iCdx_getCompactIdxKey_byNumber(thisCode, wa->cdx_root, tagRoot->keyLength, tagRoot->fillChar, lnKeyNumber, 0, node, &key, tagRoot, true, true))
+							if (iCdx_getCompactIdxKey_byNumber(wa->cdx_root, tagRoot->keyLength, tagRoot->fillChar, lnKeyNumber, 0, node, &key, tagRoot, true, true))
 							{
 								//////////
 								// See if this key is beyond us.
@@ -3028,7 +3025,7 @@ debug_break;
 				if (node->nodeRight != (u32)-1)
 				{
 					// Grab that node and continue
-					node = iCdx_getCompactIdxNode_byOffset(thisCode, wa->cdx_root, node->nodeRight);
+					node = iCdx_getCompactIdxNode_byOffset(wa->cdx_root, node->nodeRight);
 
 				} else {
 					// Nothing else to search
@@ -3051,14 +3048,14 @@ debug_break;
 // Called to position the record pointer of a CDX.
 //
 //////
-	s32 iCdx_gotoTop(SThisCode* thisCode, SWorkArea* wa)
+	s32 iCdx_gotoTop(SWorkArea* wa)
 	{
 		// Make sure the index is loaded
 		if (wa->isIndexLoaded)
 		{
 			// Is it an idx?
 			if (!wa->isCdx)
-				return(iIdx_gotoTop(thisCode, wa));
+				return(iIdx_gotoTop(wa));
 
 			// If we get here, it is a cdx
 // TODO:  Write this algorithm
@@ -3068,14 +3065,14 @@ debug_break;
 		return(-1);
 	}
 
-	s32 iCdx_skip(SThisCode* thisCode, SWorkArea* wa, s32 tnDelta)
+	s32 iCdx_skip(SWorkArea* wa, s32 tnDelta)
 	{
 		// Make sure the index is loaded
 		if (wa->isIndexLoaded)
 		{
 			// Is it an idx?
 			if (!wa->isCdx)
-				return(iIdx_skip(thisCode, wa, tnDelta));
+				return(iIdx_skip(wa, tnDelta));
 
 			// If we get here, it is a cdx
 // TODO:  Write this algorithm
@@ -3085,14 +3082,14 @@ debug_break;
 		return(-1);
 	}
 
-	s32 iCdx_gotoBottom(SThisCode* thisCode, SWorkArea* wa)
+	s32 iCdx_gotoBottom(SWorkArea* wa)
 	{
 		// Make sure the index is loaded
 		if (wa->isIndexLoaded)
 		{
 			// Is it an idx?
 			if (!wa->isCdx)
-				return(iIdx_gotoBottom(thisCode, wa));
+				return(iIdx_gotoBottom(wa));
 
 			// If we get here, it is a cdx
 // TODO:  Write this algorithm
@@ -3110,14 +3107,14 @@ debug_break;
 // Called to position the record pointer of a IDX.
 //
 //////
-	s32 iIdx_gotoTop(SThisCode* thisCode, SWorkArea* wa)
+	s32 iIdx_gotoTop(SWorkArea* wa)
 	{
 		// Is an index loaded?
 		if (wa->isIndexLoaded)
 		{
 			// Is it an idx?
 			if (wa->isCdx)
-				return(iCdx_gotoTop(thisCode, wa));
+				return(iCdx_gotoTop(wa));
 
 			// If we get here, it is a cdx
 // TODO:  Write this algorithm
@@ -3127,14 +3124,14 @@ debug_break;
 		return(-1);
 	}
 
-	s32 iIdx_skip(SThisCode* thisCode, SWorkArea* wa, s32 tnDelta)
+	s32 iIdx_skip(SWorkArea* wa, s32 tnDelta)
 	{
 		// Is an index loaded?
 		if (wa->isIndexLoaded)
 		{
 			// Is it an idx?
 			if (wa->isCdx)
-				return(iCdx_skip(thisCode, wa, tnDelta));
+				return(iCdx_skip(wa, tnDelta));
 
 			// If we get here, it is a cdx
 // TODO:  Write this algorithm
@@ -3144,14 +3141,14 @@ debug_break;
 		return(-1);
 	}
 
-	s32 iIdx_gotoBottom(SThisCode* thisCode, SWorkArea* wa)
+	s32 iIdx_gotoBottom(SWorkArea* wa)
 	{
 		// Is an index loaded?
 		if (wa->isIndexLoaded)
 		{
 			// Is it an idx?
 			if (wa->isCdx)
-				return(iCdx_gotoBottom(thisCode, wa));
+				return(iCdx_gotoBottom(wa));
 
 			// If we get here, it is a cdx
 // TODO:  Write this algorithm
@@ -3267,7 +3264,7 @@ debug_break;
 //		lnKeyRecno = CTOBIN(SUBSTR(lcKeys, 1 + (((lnI-1) * 8) + 4), 4), "4")		&& Obtains the record number as an encoded integer
 //
 //////
-	u32 iCdx_getAllKeysCdx(SThisCode* thisCode, SWorkArea* wa, s32 tnTagIndex, u8* tcKeySpace, u32 tnKeySpaceLength, u8* tcDecodeExpression, u32 tnDecodeExpressionLength, s8* tcKeyLength4)
+	u32 iCdx_getAllKeysCdx(SWorkArea* wa, s32 tnTagIndex, u8* tcKeySpace, u32 tnKeySpaceLength, u8* tcDecodeExpression, u32 tnDecodeExpressionLength, s8* tcKeyLength4)
 	{
 		u32				lnKeyNumber, lnTotalKeyCount;
 		SCdxNode*		node;
@@ -3288,12 +3285,12 @@ debug_break;
 		//////
 			lnTotalKeyCount	= 0;
 			memset(&tagRoot, 0, sizeof(tagRoot));
-			if (iCdx_getRootmostCompoundTag_byTagnum(thisCode, wa, wa->cdx_root, NULL, tnTagIndex, &tagRoot))
+			if (iCdx_getRootmostCompoundTag_byTagnum(wa, wa->cdx_root, NULL, tnTagIndex, &tagRoot))
 			{
 				//////////
 				// Iterate through the keys
 				//////
-					node = iCdx_getCompactIdxNode_byOffset(thisCode, wa->cdx_root, tagRoot.leftmostNode);
+					node = iCdx_getCompactIdxNode_byOffset(wa->cdx_root, tagRoot.leftmostNode);
 					while (node)
 					{
 						// Iterate through every key for this node
@@ -3303,7 +3300,7 @@ debug_break;
 							for (lnKeyNumber = 0; lnKeyNumber < node->keyCount; lnKeyNumber++)
 							{
 								// Get the key here
-								if (iCdx_getCompactIdxKey_byNumber(thisCode, wa->cdx_root, tagRoot.keyLength, tagRoot.fillChar, lnKeyNumber, lnKeyNumber, node, &key, &tagRoot, true, true))
+								if (iCdx_getCompactIdxKey_byNumber(wa->cdx_root, tagRoot.keyLength, tagRoot.fillChar, lnKeyNumber, lnKeyNumber, node, &key, &tagRoot, true, true))
 								{
 									// Indicate our key count has gone up
 									++lnTotalKeyCount;
@@ -3323,7 +3320,7 @@ debug_break;
 							break;	// All done
 
 						// Move to the next lead node right and continue through the keys
-						node = iCdx_getCompactIdxNode_byOffset(thisCode, wa->cdx_root, node->nodeRight);
+						node = iCdx_getCompactIdxNode_byOffset(wa->cdx_root, node->nodeRight);
 					}
 			}
 
@@ -3426,7 +3423,7 @@ debug_break;
 //		lnKeyRecno = CTOBIN(SUBSTR(lcKeys, (lnI * 8) + 4, 4), "4")		&& Obtains the record number as an encoded integer
 //
 //////
-	u32 iCdx_getAllKeysIdx(SThisCode* thisCode, SWorkArea* wa, u8* tcKeySpace, u32 tnKeySpaceLength, u8* tcDecodeExpression, u32 tnDecodeExpressionLength, s8* tcKeyLength4)
+	u32 iCdx_getAllKeysIdx(SWorkArea* wa, u8* tcKeySpace, u32 tnKeySpaceLength, u8* tcDecodeExpression, u32 tnDecodeExpressionLength, s8* tcKeyLength4)
 	{
 		u32					lnKeyNumber, lnTotalKeyCount;
 		bool				llResult;
@@ -3462,8 +3459,8 @@ debug_break;
 			memset(&tagRoot, 0, sizeof(tagRoot));
 
 			// Based on the type, retrieve the result
-			if (wa->isIdxCompact)		llResult = iCdx_getCompactRootNode( thisCode, wa, headCdx, NULL, &tagRoot);
-			else						llResult = iCdx_getStandardRootNode(thisCode, wa, headIdx, NULL, &tagRoot);
+			if (wa->isIdxCompact)		llResult = iCdx_getCompactRootNode( wa, headCdx, NULL, &tagRoot);
+			else						llResult = iCdx_getStandardRootNode(wa, headIdx, NULL, &tagRoot);
 
 			// Are we good?
 			if (llResult)
@@ -3472,8 +3469,8 @@ debug_break;
 				// Iterate through the keys
 				//////
 					// Based on type, retrieve the node
-					if (wa->isIdxCompact)		nodeCdx = iCdx_getCompactIdxNode_byOffset( thisCode, headCdx, tagRoot.leftmostNode);
-					else						nodeIdx = iCdx_getStandardIdxNode_byOffset(thisCode, headIdx, tagRoot.leftmostNode);
+					if (wa->isIdxCompact)		nodeCdx = iCdx_getCompactIdxNode_byOffset( headCdx, tagRoot.leftmostNode);
+					else						nodeIdx = iCdx_getStandardIdxNode_byOffset(headIdx, tagRoot.leftmostNode);
 
 					// Process so long as there are nodes
 					while (nodeCdx)
@@ -3485,8 +3482,8 @@ debug_break;
 							for (lnKeyNumber = 0; lnKeyNumber < nodeCdx->keyCount; lnKeyNumber++)
 							{
 								// Based on the type, get the key
-								if (wa->isIdxCompact)		llResult = iCdx_getCompactIdxKey_byNumber( thisCode, headCdx, tagRoot.keyLength, tagRoot.fillChar, lnKeyNumber, lnKeyNumber, nodeCdx, &keyCdx, &tagRoot, true, true);
-								else						llResult = iCdx_getStandardIdxKey_byNumber(thisCode, headIdx,                    tagRoot.fillChar,              lnKeyNumber, nodeIdx, &keyIdx, &tagRoot, true, true);
+								if (wa->isIdxCompact)		llResult = iCdx_getCompactIdxKey_byNumber( headCdx, tagRoot.keyLength, tagRoot.fillChar, lnKeyNumber, lnKeyNumber, nodeCdx, &keyCdx, &tagRoot, true, true);
+								else						llResult = iCdx_getStandardIdxKey_byNumber(headIdx,                    tagRoot.fillChar,              lnKeyNumber, nodeIdx, &keyIdx, &tagRoot, true, true);
 
 								// Get the key here
 								if (llResult)
@@ -3518,8 +3515,8 @@ debug_break;
 							break;	// All done
 
 						// Move to the next lead node right and continue through the keys
-						if (wa->isIdxCompact)		nodeCdx = iCdx_getCompactIdxNode_byOffset( thisCode, headCdx, nodeCdx->nodeRight);
-						else						nodeIdx = iCdx_getStandardIdxNode_byOffset(thisCode, headIdx, nodeIdx->nodeRight);
+						if (wa->isIdxCompact)		nodeCdx = iCdx_getCompactIdxNode_byOffset( headCdx, nodeCdx->nodeRight);
+						else						nodeIdx = iCdx_getStandardIdxNode_byOffset(headIdx, nodeIdx->nodeRight);
 					}
 			}
 
@@ -3587,19 +3584,19 @@ debug_break;
 // Called to set the active index tag to the indicated tag number / index.
 //
 //////
-	bool iCdx_setActiveTag(SThisCode* thisCode, SWorkArea* wa, s32 tnTagIndex, STagRoot* tagRoot, bool* tlError, u32* tnErrorNum)
+	bool iCdx_setActiveTag(SWorkArea* wa, s32 tnTagIndex, STagRoot* tagRoot, bool* tlError, u32* tnErrorNum)
 	{
 		// Make sure our environment is sane
-		if (thisCode && wa && tagRoot)
+		if (wa && tagRoot)
 		{
 			// Is it a valid work area?
-			if (iDbf_isWorkAreaValid(thisCode, wa, NULL) && wa->isUsed)
+			if (iDbf_isWorkAreaValid(wa, NULL) && wa->isUsed)
 			{
 				// Is there an index loaded?
 				if (wa->isIndexLoaded && wa->isCdx)
 				{
 					// Try to access the indicated tag
-					*tlError = !iCdx_getRootmostCompoundTag_byTagnum(thisCode, wa, wa->cdx_root, NULL, tnTagIndex, tagRoot);
+					*tlError = !iCdx_getRootmostCompoundTag_byTagnum(wa, wa->cdx_root, NULL, tnTagIndex, tagRoot);
 					if (*tlError)
 					{
 						// Error accessing the index tag
@@ -3646,7 +3643,7 @@ debug_break;
 // reason why index tag name lengths can't be larger than 10 characters.  It seems to be merely convention.
 //
 //////
-	bool iCdx_getRootmostCompoundTag_byTagnum(SThisCode* thisCode, SWorkArea* wa, SCdxHeader* head, SCdxNode* node, s32 lnTagNum, STagRoot* tagRoot)
+	bool iCdx_getRootmostCompoundTag_byTagnum(SWorkArea* wa, SCdxHeader* head, SCdxNode* node, s32 lnTagNum, STagRoot* tagRoot)
 	{
 		SCdxKeyLeafRaw	key;
 		SCdxHeader*		nodeTag;
@@ -3669,7 +3666,7 @@ debug_break;
 			}
 
 			// Current node
-			if (!node && !iCdx_cacheNode(thisCode, wa, head, 3, &node))
+			if (!node && !iCdx_cacheNode(wa, head, 3, &node))
 			{
 				// Node is not available
 				wa->idxCdxDcxLastError = _CDX_ERROR_INVALID_NODE;
@@ -3685,11 +3682,11 @@ debug_break;
 				case _CDX_NODE_INDEX:	// Index node, pointing to other sub-indexes
 				case _CDX_NODE_ROOT: // Root node, pointing to other sub-indexes
 					// Find the first node, and visit it (left-most)
-					if (!iCdx_getCompactIdxKey_byNumber(thisCode, head, 10, 32, 0, 0, node, &key, tagRoot, true, true))
+					if (!iCdx_getCompactIdxKey_byNumber(head, 10, 32, 0, 0, node, &key, tagRoot, true, true))
 						return(false);		// Failure obtaining the tag name, which is a fatal error (the index is likely corrupt)
 
 					// Continue processing
-					node = iCdx_getCompactIdxNode_byOffset(thisCode, head, key.fileOffset);
+					node = iCdx_getCompactIdxNode_byOffset(head, key.fileOffset);
 					break;
 
 				case _CDX_NODE_LEAF:		// Leaf
@@ -3699,26 +3696,26 @@ debug_break;
 					if (lnTagNum < node->keyCount)
 					{
 						// It's on this node
-						if (iCdx_getCompactIdxKey_byNumber(thisCode, head, 10, 32, lnTagNum, lnTagNum, node, &key, tagRoot, false, false))
+						if (iCdx_getCompactIdxKey_byNumber(head, 10, 32, lnTagNum, lnTagNum, node, &key, tagRoot, false, false))
 						{
 							// We found it
 							tagRoot->keyNode		= key.fileOffset;				// Offset to the tag's info node
-							nodeTag					= (SCdxHeader*)iCdx_getCompactIdxNode_byOffset(thisCode, head, tagRoot->keyNode);
+							nodeTag					= (SCdxHeader*)iCdx_getCompactIdxNode_byOffset(head, tagRoot->keyNode);
 							tagRoot->leftmostNode	= *(u32*)nodeTag;				// First 32-bits of tag's info node is the first index node
 							tagRoot->keyLength		= (u32)nodeTag->keyLength;
 							tagRoot->highestNode	= tagRoot->leftmostNode;
 
 							// Determine what field type the index expression is
 // TODO:  This is not fool-proof, but rather it works only with concatenated character fields, or single fields or additive single fields
-							tagRoot->fillChar		= iDbf_getField_type(thisCode, wa, (u8*)nodeTag + 512, &tagRoot->swapEndians, &tagRoot->needsSignBitToggled);
-							tagRoot->indexIsDesc	= iiCdx_isDescending(thisCode, nodeTag);
+							tagRoot->fillChar		= iDbf_getField_type(wa, (u8*)nodeTag + 512, &tagRoot->swapEndians, &tagRoot->needsSignBitToggled);
+							tagRoot->indexIsDesc	= iiCdx_isDescending(nodeTag);
 
 							// See if that first/highest node is an index node, if so then we descend until we find the left-most leaf node
-							nodeFirst				= iCdx_getCompactIdxNode_byOffset(thisCode, head, tagRoot->leftmostNode);
+							nodeFirst				= iCdx_getCompactIdxNode_byOffset(head, tagRoot->leftmostNode);
 							memcpy(&tagRoot->tagName[0], key.key, 10);
 
 							// If it's an index node, we need to move to the first entry
-							tagRoot->leftmostNode	= iCdx_descendToLeftmostNode(thisCode, head, tagRoot->keyLength, nodeFirst, tagRoot);
+							tagRoot->leftmostNode	= iCdx_descendToLeftmostNode(head, tagRoot->keyLength, nodeFirst, tagRoot);
 
 							// Indicate success
 							return(true);
@@ -3733,7 +3730,7 @@ debug_break;
 						lnTagNum -= node->keyCount;
 
 						// Get the right node and continue processing
-						node = iCdx_getCompactIdxNode_byOffset(thisCode, head, node->nodeRight);
+						node = iCdx_getCompactIdxNode_byOffset(head, node->nodeRight);
 					}
 					break;
 
@@ -3741,7 +3738,7 @@ debug_break;
 					// Should never happen.
 					// It means the indicated node was loaded, but it did not identify itself as a valid _CDX_NODE_* type.
 					// This usually means the index is corrupt and needs to be rebuilt.
-					iError_signal(thisCode, _ERROR_INVALID_CORRUPT_NEEDS_REBUILT, NULL, false, NULL, false);
+					iError_signal(_ERROR_INVALID_CORRUPT_NEEDS_REBUILT, NULL, false, NULL, false);
 					break;
 			}
 		}
@@ -3757,7 +3754,7 @@ debug_break;
 // Called to get the tagRoot information for the a compact-only IDX, not compound CDX
 //
 //////
-	bool iCdx_getCompactRootNode(SThisCode* thisCode, SWorkArea* wa, SCdxHeader* head, SCdxNode* node, STagRoot* tagRoot)
+	bool iCdx_getCompactRootNode(SWorkArea* wa, SCdxHeader* head, SCdxNode* node, STagRoot* tagRoot)
 	{
 // Untested code, breakpoint and examine
 debug_break;
@@ -3774,7 +3771,7 @@ debug_break;
 				case _CDX_NODE_INDEX:	// Index node, pointing to other sub-indexes
 				case _CDX_NODE_ROOT: // Root node, pointing to other sub-indexes
 					// Find the first node, and visit it (left-most)
-					node = iCdx_getCompactIdxNode_byOffset(thisCode, head, node->nodeLeft);
+					node = iCdx_getCompactIdxNode_byOffset(head, node->nodeLeft);
 					break;
 
 				case _CDX_NODE_LEAF:		// Leaf
@@ -3783,7 +3780,7 @@ debug_break;
 					// Populate the common fields
 					tagRoot->indexIsDesc	= false;		// No indication in documentation about how to obtain this value, will need to research manually
 					tagRoot->keyLength		= head->keyLength;
-					tagRoot->fillChar		= iDbf_getField_type(thisCode, wa, &head->keyExpression[0], &tagRoot->swapEndians, &tagRoot->needsSignBitToggled);
+					tagRoot->fillChar		= iDbf_getField_type(wa, &head->keyExpression[0], &tagRoot->swapEndians, &tagRoot->needsSignBitToggled);
 					tagRoot->highestNode	= sizeof(SCdxHeader);	// Always the node after head
 					tagRoot->leftmostNode	= (u32)((uptr)node - (uptr)head);
 
@@ -3803,7 +3800,7 @@ debug_break;
 // Called to get the tagRoot information for the IDX
 //
 //////
-	bool iCdx_getStandardRootNode(SThisCode* thisCode, SWorkArea* wa, SIdxHeader* head, SIdxNode* node, STagRoot* tagRoot)
+	bool iCdx_getStandardRootNode(SWorkArea* wa, SIdxHeader* head, SIdxNode* node, STagRoot* tagRoot)
 	{
 // Untested code, breakpoint and examine
 debug_break;
@@ -3820,7 +3817,7 @@ debug_break;
 				case _CDX_NODE_INDEX:	// Index node, pointing to other sub-indexes
 				case _CDX_NODE_ROOT: // Root node, pointing to other sub-indexes
 					// Find the first node, and visit it (left-most)
-					node = iCdx_getStandardIdxNode_byOffset(thisCode, head, node->nodeLeft);
+					node = iCdx_getStandardIdxNode_byOffset(head, node->nodeLeft);
 					break;
 
 				case _CDX_NODE_LEAF:		// Leaf
@@ -3829,7 +3826,7 @@ debug_break;
 					// Populate the common fields
 					tagRoot->indexIsDesc	= false;		// No indication in documentation about how to obtain this value, will need to research manually
 					tagRoot->keyLength		= head->keyLength;
-					tagRoot->fillChar		= iDbf_getField_type(thisCode, wa, &head->keyExpression[0], &tagRoot->swapEndians, &tagRoot->needsSignBitToggled);
+					tagRoot->fillChar		= iDbf_getField_type(wa, &head->keyExpression[0], &tagRoot->swapEndians, &tagRoot->needsSignBitToggled);
 					tagRoot->highestNode	= sizeof(SIdxHeader);		// Always the node after head
 					tagRoot->leftmostNode	= (u32)((uptr)node - (uptr)head);
 
@@ -3852,31 +3849,31 @@ debug_break;
 //		Descending setting.  Returns true if descending, otherwise false.
 //
 //////
-	bool iiCdx_isCompact(SThisCode* thisCode, SCdxHeader* head)
+	bool iiCdx_isCompact(SCdxHeader* head)
 	{
 		if ((head->options & _BIT_COMPACT_INDEX) != 0)		return(true);
 		else												return(false);
 	}
 
-	bool iiCdx_isCompound(SThisCode* thisCode, SCdxHeader* head)
+	bool iiCdx_isCompound(SCdxHeader* head)
 	{
 		if ((head->options & _BIT_COMPOUND_INDEX) != 0)		return(true);
 		else												return(false);
 	}
 
-	bool iiCdx_isUnique(SThisCode* thisCode, SCdxHeader* head)
+	bool iiCdx_isUnique(SCdxHeader* head)
 	{
 		if ((head->options & _BIT_UNIQUE) != 0)				return(true);
 		else												return(false);
 	}
 
-	bool iiCdx_isDescending(SThisCode* thisCode, SCdxHeader* head)
+	bool iiCdx_isDescending(SCdxHeader* head)
 	{
 		if (head->order != 0)								return(true);
 		else												return(false);
 	}
 
-	bool iiCdx_isPrimaryKeySet(SThisCode* thisCode, SWorkArea* wa)
+	bool iiCdx_isPrimaryKeySet(SWorkArea* wa)
 	{
 		// Is an index loaded?
 		if (wa->isIndexLoaded)
@@ -3899,7 +3896,7 @@ debug_break;
 		return(false);
 	}
 
-	bool iCdx_isForClauseComplex(SThisCode* thisCode, SWorkArea* wa, SCdxHeader* head, SForClause** tsFor)
+	bool iCdx_isForClauseComplex(SWorkArea* wa, SCdxHeader* head, SForClause** tsFor)
 	{
 		s32				lnI;
 		u32				lnForModifier;
@@ -3916,7 +3913,7 @@ debug_break;
 			//////////
 			// Reset the for clause, which should've already been delete
 			//////
-				if (tsFor)		iDbf_forClause_delete(thisCode, tsFor);	// Reset whatever's there
+				if (tsFor)		iDbf_forClause_delete(tsFor);	// Reset whatever's there
 				else			return(true);					// Invalid parameter, so indicate it's too complex
 
 
@@ -3928,7 +3925,7 @@ debug_break;
 					//////////
 					// Allocate space for our for clause
 					//////
-						lsFor = iDbf_forClause_allocate(thisCode, tsFor);
+						lsFor = iDbf_forClause_allocate(tsFor);
 						if (!lsFor)				// TODO:  Capture some error here
 							return(true);		// Unable to allocate, so indicate it is too complex
 
@@ -3939,7 +3936,7 @@ debug_break;
 						if (!iiDbf_forClause_subitems_parse(head, lsFor))
 						{
 							// Something happened while parsing that we don't support
-							iDbf_forClause_delete(thisCode, tsFor);	// Reset whatever's there
+							iDbf_forClause_delete(tsFor);	// Reset whatever's there
 							return(true);					// Too complex
 						}
 
@@ -3973,11 +3970,11 @@ debug_break;
 									// We need to do a lookup on the fieldname to make sure it exists
 									//////
 										iResetThenCopyString(fieldName, (s32)sizeof(fieldName), lfsi->start, (s32)lfsi->length);
-										lfptr2 = iDbf_getField_byName2(thisCode, wa, fieldName);
+										lfptr2 = iDbf_getField_byName2(wa, fieldName);
 										if (!lfptr2)
 										{
 											// We've encountered an unknown fieldname3
-											iDbf_forClause_delete(thisCode, tsFor);	// Reset whatever's there
+											iDbf_forClause_delete(tsFor);	// Reset whatever's there
 											return(true);					// Too complex
 										}
 
@@ -3985,11 +3982,11 @@ debug_break;
 									//////////
 									// We have the field name, get its type, must be logical
 									//////
-										iDbf_getField_type(thisCode, wa, lfptr2->fieldNumber, fieldName, sizeof(fieldName));
+										iDbf_getField_type(wa, lfptr2->fieldNumber, fieldName, sizeof(fieldName));
 										if (fieldName[0] != 'L' && fieldName[0] != 'l')
 										{
 											// Unsupported type
-											iDbf_forClause_delete(thisCode, tsFor);	// Reset whatever's there
+											iDbf_forClause_delete(tsFor);	// Reset whatever's there
 											return(true);					// Too complex
 										}
 
@@ -3999,7 +3996,7 @@ debug_break;
 									//////
 										lfco				= iiDbf_forClause_ops_appendItem(lsFor);
 										lfco->op			= _FOR_CLAUSE_OPS_EQUAL_TEMPORARY | lnForModifier;
-										lfco->offsetL		= iDbf_getField_dataOffset(thisCode, wa, lfptr2->fieldNumber);
+										lfco->offsetL		= iDbf_getField_dataOffset(wa, lfptr2->fieldNumber);
 										lfco->tempIndexR	= iiDbf_forClause_temp_appendConstant(lsFor, (s8*)"T", 1);
 										lfco->lengthL		= 1;	// 1 byte for logical
 
@@ -4035,7 +4032,7 @@ debug_break;
 
 								default:
 									// We don't support whatever's here
-									iDbf_forClause_delete(thisCode, tsFor);	// Reset whatever's there because...
+									iDbf_forClause_delete(tsFor);	// Reset whatever's there because...
 									return(true);					// Too complex
 							}
 						}
@@ -4058,7 +4055,7 @@ debug_break;
 // Called to get the indicated node by number
 //
 //////
-	SIdxNode* iCdx_getStandardIdxNode_byNumber(SThisCode* thisCode, SIdxHeader* head, u32 tnNodeNumber)
+	SIdxNode* iCdx_getStandardIdxNode_byNumber(SIdxHeader* head, u32 tnNodeNumber)
 	{
 		SIdxNode* node;
 
@@ -4085,7 +4082,7 @@ debug_break;
 // Called to get the indicated node by number
 //
 //////
-	SIdxNode* iCdx_getStandardIdxNode_byOffset(SThisCode* thisCode, SIdxHeader* head, u32 tnOffset)
+	SIdxNode* iCdx_getStandardIdxNode_byOffset(SIdxHeader* head, u32 tnOffset)
 	{
 		SIdxNode* node;
 
@@ -4112,7 +4109,7 @@ debug_break;
 // Called to get the standard IDX key for the indicated key number within the indicated node.
 //
 //////
-	bool iCdx_getStandardIdxKey_byNumber(SThisCode* thisCode, SIdxHeader* head, u8 tcFillChar, u32 tnNumber, SIdxNode* node, SIdxKey* key, STagRoot* tagRoot, bool tlFixupEndian, bool tlFixupSignBit)
+	bool iCdx_getStandardIdxKey_byNumber(SIdxHeader* head, u8 tcFillChar, u32 tnNumber, SIdxNode* node, SIdxKey* key, STagRoot* tagRoot, bool tlFixupEndian, bool tlFixupSignBit)
 	{
 		u32 lnKeyLength;
 
@@ -4161,7 +4158,7 @@ debug_break;
 // Called to obtain the indicated node by number
 //
 //////
-	SCdxNode* iCdx_getCompactIdxNode_byNumber(SThisCode* thisCode, SCdxHeader* head, u32 tnNodeNumber)
+	SCdxNode* iCdx_getCompactIdxNode_byNumber(SCdxHeader* head, u32 tnNodeNumber)
 	{
 		SCdxNode* node;
 
@@ -4188,7 +4185,7 @@ debug_break;
 // Called to obtain the indicated node by file offset
 //
 //////
-	SCdxNode* iCdx_getCompactIdxNode_byOffset(SThisCode* thisCode, SCdxHeader* head, u32 tnOffset)
+	SCdxNode* iCdx_getCompactIdxNode_byOffset(SCdxHeader* head, u32 tnOffset)
 	{
 		SCdxNode* node;
 
@@ -4227,7 +4224,7 @@ debug_break;
 //////
 // END
 //////////
-	bool iCdx_getCompactIdxKey_byNumber(SThisCode* thisCode, SCdxHeader* head, u32 keyLength, u8 tcFillChar, u32 tnKeyNumberTarget, u32 tnKeyNumberThis, SCdxNode* node, SCdxKeyLeafRaw* key, STagRoot* tagRoot, bool tlFixupEndian, bool tlFixupSignBit)
+	bool iCdx_getCompactIdxKey_byNumber(SCdxHeader* head, u32 keyLength, u8 tcFillChar, u32 tnKeyNumberTarget, u32 tnKeyNumberThis, SCdxNode* node, SCdxKeyLeafRaw* key, STagRoot* tagRoot, bool tlFixupEndian, bool tlFixupSignBit)
 	{
 		u32						lnKeyLength, lnVariableLength;
 		s8*						keyPtr;
@@ -4242,13 +4239,13 @@ debug_break;
 			if (iiGetIndexNodeType(node->type) == 2 || iiGetIndexNodeType(node->type) == 3)
 			{
 				// Process the exterior/leaf node
-				iiCdx_extractExteriorNode_nodeKeyAccessData(thisCode, node, tnKeyNumberThis, &keyTrail);	// Node-specific key information
+				iiCdx_extractExteriorNode_nodeKeyAccessData(node, tnKeyNumberThis, &keyTrail);	// Node-specific key information
 
 				// If we are duplicating bytes from the previous key, we need that key
 				if (tnKeyNumberThis != 0)
 				{
 					// Grab the prior key, which may grab the prior key, which may grab the prior key, and so on... UGH!  What a horrible design.
-					iCdx_getCompactIdxKey_byNumber(thisCode, head, keyLength, tcFillChar, tnKeyNumberTarget, tnKeyNumberThis - 1, node, &keyPrior, tagRoot, false, false);
+					iCdx_getCompactIdxKey_byNumber(head, keyLength, tcFillChar, tnKeyNumberTarget, tnKeyNumberThis - 1, node, &keyPrior, tagRoot, false, false);
 
 					// Copy the prior key if need be
 					if (keyTrail.count_DC != 0)
@@ -4338,7 +4335,7 @@ debug_break;
 // Called to descend the tree to find the left-most node by offset
 //
 //////
-	u32 iCdx_descendToLeftmostNode(SThisCode* thisCode, SCdxHeader* head, u32 keyLength, SCdxNode* node, STagRoot* tagRoot)
+	u32 iCdx_descendToLeftmostNode(SCdxHeader* head, u32 keyLength, SCdxNode* node, STagRoot* tagRoot)
 	{
 		u32				lnNodeType;
 		SCdxKeyLeafRaw	key;
@@ -4356,8 +4353,8 @@ debug_break;
 
 			} else if (lnNodeType == 0 || lnNodeType == 1) {
 				// Index node or root node, we need to descend into the first entry
-				iCdx_getCompactIdxKey_byNumber(thisCode, head, keyLength, tagRoot->fillChar, 0, 0, node, &key, tagRoot, true, true);
-				return(iCdx_descendToLeftmostNode(thisCode, head, keyLength, iCdx_getCompactIdxNode_byOffset(thisCode, head, key.fileOffset), tagRoot));
+				iCdx_getCompactIdxKey_byNumber(head, keyLength, tagRoot->fillChar, 0, 0, node, &key, tagRoot, true, true);
+				return(iCdx_descendToLeftmostNode(head, keyLength, iCdx_getCompactIdxNode_byOffset(head, key.fileOffset), tagRoot));
 
 			} else {
 				// Not sure what to do here
@@ -4415,7 +4412,7 @@ debug_break;
 		u8		after[4];			// Puts a buffer after keyBuffer
 	};
 
-	void iiCdx_extractExteriorNode_nodeKeyAccessData(SThisCode* thisCode, SCdxNode* node, u32 tnNumber, SCdxKeyTrail* keyTrail)
+	void iiCdx_extractExteriorNode_nodeKeyAccessData(SCdxNode* node, u32 tnNumber, SCdxKeyTrail* keyTrail)
 	{
 		u32			lnBitsPerKey, lnFirstByte;
 		SSafeData	data;
@@ -4531,7 +4528,7 @@ debug_break;
 //
 // Called to lock the entire file
 //////
-	uptr iiCdx_lock_file(SThisCode* thisCode, SWorkArea* wa, STagRoot* tagRoot)
+	uptr iiCdx_lock_file(SWorkArea* wa, STagRoot* tagRoot)
 	{
 		s32			lnFileSize;
 		SDiskLock*	dl;
@@ -4543,7 +4540,7 @@ debug_break;
 		{
 			// Retry until stopped
 			lnFileSize	= (s32)iDisk_getFileSize(wa->fhIdxCdxDcx);
-			dl			= iDisk_lock_range_retryCallback(thisCode, wa->idxCdxDcxFileLocks, wa->fhIdxCdxDcx, 0, lnFileSize, 0, 0);
+			dl			= iDisk_lock_range_retryCallback(wa->idxCdxDcxFileLocks, wa->fhIdxCdxDcx, 0, lnFileSize, 0, 0);
 
 			// Indicate our success or failure
 			return(((dl && dl->nLength == lnFileSize) ? _CDX_OKAY : _CDX_LOCK_FAILURE));
@@ -4561,7 +4558,7 @@ debug_break;
 //
 // Called to lock the indicated range
 //////
-	uptr iiCdx_lock_node(SThisCode* thisCode, SWorkArea* wa, STagRoot* tagRoot, s32 tnNode)
+	uptr iiCdx_lock_node(SWorkArea* wa, STagRoot* tagRoot, s32 tnNode)
 	{
 		SDiskLock* dl;
 
@@ -4570,7 +4567,7 @@ debug_break;
 		if (wa->isIndexLoaded)
 		{
 			// Retry until stopped
-			dl = iDisk_lock_range_retryCallback(thisCode, wa->idxCdxDcxFileLocks, wa->fhIdxCdxDcx, (tnNode * 512), 512, 0, 0);
+			dl = iDisk_lock_range_retryCallback(wa->idxCdxDcxFileLocks, wa->fhIdxCdxDcx, (tnNode * 512), 512, 0, 0);
 
 			// Indicate our success or failure
 			return(((dl && dl->nLength == 512) ? _CDX_OKAY : _CDX_LOCK_FAILURE));
@@ -4588,7 +4585,7 @@ debug_break;
 //
 // Called to lock the entire file
 //////
-	uptr iiCdx_lock_range(SThisCode* thisCode, SWorkArea* wa, STagRoot* tagRoot, s32 tnOffset, s32 tnLength)
+	uptr iiCdx_lock_range(SWorkArea* wa, STagRoot* tagRoot, s32 tnOffset, s32 tnLength)
 	{
 		SDiskLock* dl;
 
@@ -4597,7 +4594,7 @@ debug_break;
 		if (wa->isIndexLoaded)
 		{
 			// Retry until stopped
-			dl = iDisk_lock_range_retryCallback(thisCode, wa->idxCdxDcxFileLocks, wa->fhIdxCdxDcx, tnOffset, tnLength, 0, 0);
+			dl = iDisk_lock_range_retryCallback(wa->idxCdxDcxFileLocks, wa->fhIdxCdxDcx, tnOffset, tnLength, 0, 0);
 
 			// Indicate our success or failure
 			return(((dl && dl->nLength == tnLength) ? _CDX_OKAY : _CDX_LOCK_FAILURE));
@@ -4615,7 +4612,7 @@ debug_break;
 //
 // Called to lock the entire file
 //////
-	bool iiCdx_unlock(SThisCode* thisCode, SWorkArea* wa, SDiskLock* dl)
+	bool iiCdx_unlock(SWorkArea* wa, SDiskLock* dl)
 	{
-		return(iDisk_unlock(thisCode, wa->idxCdxDcxFileLocks, dl));
+		return(iDisk_unlock(wa->idxCdxDcxFileLocks, dl));
 	}

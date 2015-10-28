@@ -85,14 +85,14 @@
 //////////
 // Forward declarations
 //////
-	void					iSEMLine_free								(SThisCode* thisCode, SLine** root, bool tlDeleteSelf);
-	void					iSEMLine_ensureLineLength					(SThisCode* thisCode, SLine* em, s32 newLineLength);
+	void					iSEMLine_free								(SLine** root, bool tlDeleteSelf);
+	void					iSEMLine_ensureLineLength					(SLine* em, s32 newLineLength);
 
 	// For editing
-	bool					iSEMLine_characterInsert					(SThisCode* thisCode, SEM* sem, u8 asciiChar);
-	bool					iSEMLine_characterOverwrite					(SThisCode* thisCode, SEM* sem, u8 asciiChar);
-	bool					iSEMLine_characterDelete					(SThisCode* thisCode, SEM* sem);
-	SBreakpoint*			iSEMLine_toggleBreakpoint					(SThisCode* thisCode, SEM* sem);
+	bool					iSEMLine_characterInsert					(SEM* sem, u8 asciiChar);
+	bool					iSEMLine_characterOverwrite					(SEM* sem, u8 asciiChar);
+	bool					iSEMLine_characterDelete					(SEM* sem);
+	SBreakpoint*			iSEMLine_toggleBreakpoint					(SEM* sem);
 
 	// For reporting on a line's state
-	bool					iSEMLine_hasChanged							(SThisCode* thisCode, SLine* ec);
+	bool					iSEMLine_hasChanged							(SLine* ec);

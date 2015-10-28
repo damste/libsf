@@ -142,8 +142,8 @@
 // ThisCode
 //////
 	bool				glThisCodeInitialized				= false;
-	SThisCode			gsThisCode[_MAX_PROCEDURE_LEVELS];
-	s32					gnThisCodeLevel						= 0;
+	SThisCode			gsThisCode[_MAX_PROCEDURE_LEVELS];											// Call stack
+	s32					gnThisCode							= 0;									// Current level of execution
 
 
 //////////

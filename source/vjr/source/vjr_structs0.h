@@ -383,7 +383,7 @@ struct SAllDatetime
 struct SVariable
 {
 	SLL			ll;
-	SVariable*	indirect;												// If non-NULL, and not an object or thisCode, this variable is an indirect reference to an underlying variable.
+	SVariable*	indirect;												// If non-NULL, and not an object or this variable is an indirect reference to an underlying variable.
 	bool		isVarAllocated;											// If true, this variable structure was allocated, and needs to be released upon delete.
 	bool		isSysVar;												// If true, it's a system variable and cannot be deleted
 	bool		isProtected;											// If true, the variable has been specifically protected and cannot be deleted until un-protected
