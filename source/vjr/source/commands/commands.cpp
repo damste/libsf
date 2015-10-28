@@ -215,9 +215,10 @@
 			case _ERROR_UNABLE_TO_INITIALIZE:				{	iError_report(cgcUnableToInitialize,				tlInvasive);		break;	}
 			case _ERROR_UNKNOWN_FUNCTION:					{	iError_report(cgcUnknownFunction,					tlInvasive);		break;	}
 			case _ERROR_DLL_NOT_FOUND:						{	iError_report(cgcDllNotFound,						tlInvasive);		break;	}
-			case _ERROR_FUNCTION_NOT_FOUND:					{	iError_report(cgcFunctionNotFound,				tlInvasive);		break;	}
+			case _ERROR_FUNCTION_NOT_FOUND:					{	iError_report(cgcFunctionNotFound,					tlInvasive);		break;	}
 			case _ERROR_VARIABLE_IS_FIXED:					{	iError_report(cgcVariableIsFixed,					tlInvasive);		break;	}
 			case _ERROR_FEATURE_NOT_YET_CODED:				{	iError_report(cgcFeatureNotYetCoded,				tlInvasive);		break;	}
+			case _ERROR_NESTING_ERROR:						{	iError_report(cgcNestingError,						tlInvasive);		break;	}
 
 		}
 

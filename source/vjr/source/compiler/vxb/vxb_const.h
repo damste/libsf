@@ -276,6 +276,7 @@
 	const u8		cgcFunctionNotFound[]							= "function not found";
 	const u8		cgcVariableIsFixed[]							= "variable is a fixed type";
 	const u8		cgcFeatureNotYetCoded[]							= "feature is not yet coded";
+	const u8		cgcNestingError[]								= "nesting error";
 #else
 	#error Language not specified
 #endif
@@ -1077,6 +1078,7 @@
 	const s32       _ICODE_DECIMALS                                 = 2063;
 	const s32       _ICODE_DECLARE                                  = 2064;
 	const s32       _ICODE_DEFAULT                                  = 2065;
+	const s32		_ICODE_DEFINE									= 2389;
 	const s32       _ICODE_DELETE                                   = 2066;
 	const s32       _ICODE_DELIMITERS                               = 2067;
 	const s32       _ICODE_DEVELOPMENT                              = 2068;
@@ -1103,7 +1105,9 @@
 	const s32		_ICODE_ELSE										= 2280;
 	const s32       _ICODE_END                                      = 2084;
 	const s32       _ICODE_ENDCASE                                  = 2085;
+	const s32		_ICODE_ENDDEFINE								= 2390;
 	const s32       _ICODE_ENDDO                                    = 2086;
+	const s32		_ICODE_ENDFIF									= 2387;
 	const s32       _ICODE_ENDFOR                                   = 2087;
 	const s32		_ICODE_ENDFUNCTION								= 2276;
 	const s32       _ICODE_ENDIF                                    = 2088;
@@ -1219,7 +1223,8 @@
 	const s32		_ICODE_NCSETPLACEHOLDER2						= 2343;
 	const s32		_ICODE_NCSETDIRECTNATIVEMEMBERS					= 2344;
 	const s32       _ICODE_NEAR									    = 2167;
-// 	const s32       _ICODE_NEXT                                     = 2168;
+// Note:  This code is not used because _ICODE_ENDFOR is mapped for both "endfor" and "next" keywords
+// 	const s32       _ICODE_NEXT                                     = ;
 	const s32       _ICODE_NOCPTRANS                                = 2169;
 	const s32       _ICODE_NOTE                                     = 2170;
 	const s32       _ICODE_NOTIFY                                   = 2171;
@@ -1379,6 +1384,7 @@
 	const s32		_ICODE_YMD										= 2324;
 	const s32		_ICODE_YN										= 2331;
 	const s32       _ICODE_ZAP                                      = 2271;
+	//		__unused__		= 2168
 	// DOCASE				= 2272			DOFORM					= 2273
 	// DOPROGRAM			= 2274			DOWHILE					= 2275
 	// ENDFUNCTION			= 2276			ENDPROCEDURE			= 2277
@@ -1436,7 +1442,9 @@
 	// ONMOUSEUP			= 2380			ONMOUSEENTER			= 2381
 	// ONMOUSELEAVE			= 2382			ONMOUSEHOVER			= 2383
 	// ONKEYDOWN			= 2384			ONKEYUP					= 2385
-	// RESIZE				= 2386
+	// RESIZE				= 2386			ENDFIF					= 2387
+	//		__unused__		= 2388			DEFINE					= 2389
+	// ENDDEFINE			= 2390
 
 
 //////////
@@ -2136,10 +2144,13 @@
 	const s8		cgc_else[]										= "else";
 	const s8		cgc_end[]										= "end";
 	const s8		cgc_endcase[]									= "endcase";
+	const s8		cgc_enddefine[]									= "enddefine";
 	const s8		cgc_enddo[]										= "enddo";
+	const s8		cgc_endfif[]									= "endfif";
 	const s8		cgc_endfor[]									= "endfor";
 	const s8		cgc_endfunction[]								= "endfunction";
 	const s8		cgc_endif[]										= "endif";
+	const s8		cgc_endlif[]									= "endlif";
 	const s8		cgc_endprocedure[]								= "endprocedure";
 	const s8		cgc_endscan[]									= "endscan";
 	const s8		cgc_endtext[]									= "endtext";

@@ -187,7 +187,10 @@ struct SThisCode;
 	u32						iComps_count								(SComp* comp);
 	bool					iiComps_validate							(SComp* comp, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount);
 	bool					iiComps_isAlphanumeric						(SComp* comp);
-	#define					iiComps_isComment(tniCode)					(tniCode == _ICODE_COMMENT || tniCode == _ICODE_LINE_COMMENT)
+	bool					iiComps_isVxbLogicBlock_entry				(SComp* comp, bool tlIncludeAdhocs);
+	bool					iiComps_isVxbLogicBlock_exit				(SComp* comp, bool tlIncludeAdhocs);
+	#define					iiComps_isComment(iCode)					(iCode == _ICODE_COMMENT || iCode == _ICODE_LINE_COMMENT)
+	#define					iiComps_isVxbFunction(iCode)				(iCode == _ICODE_FUNCTION || iCode == _ICODE_PROCEDURE)
 	s8*						iComps_visualize							(SComp* comp, s32 tnCount, s8* outputBuffer, s32 tnBufferLength, bool tlUseDefaultCompSearcher, SAsciiCompSearcher* tsComps1, SAsciiCompSearcher* tsComps2);
 	s8*						iiComps_visualize_lookup_iCode				(s32 tniCode);
 

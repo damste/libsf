@@ -392,7 +392,7 @@
 				while (start && (SLine*)start->ll.prev != end)
 				{
 					// Parse it
-					iEngine_parse_sourceCodeLine(start);
+					iEngine_parse_sourceCode_line(start);
 
 					// Move to next line
 					start = (SLine*)start->ll.next;
@@ -3260,7 +3260,7 @@ renderAsOnlyText:
 			iObj_setDirtyRender_ascent(obj, true);
 
 			// Reprocess the source code on the line
-			iEngine_parse_sourceCodeLine(sem->line_cursor);
+			iEngine_parse_sourceCode_line(sem->line_cursor);
 
 			// Verify our cursor is visible
 			iSEM_verifyCursorIsVisible(sem, obj);
@@ -4737,7 +4737,7 @@ renderAsOnlyText:
 				}
 
 				// Reprocess the source code on the line
-				iEngine_parse_sourceCodeLine(sem->line_cursor);
+				iEngine_parse_sourceCode_line(sem->line_cursor);
 
 
 				//////////
@@ -4783,7 +4783,7 @@ renderAsOnlyText:
 				}
 
 				// Reprocess the source code on the line
-				iEngine_parse_sourceCodeLine(sem->line_cursor);
+				iEngine_parse_sourceCode_line(sem->line_cursor);
 
 
 				//////////
@@ -4849,7 +4849,7 @@ renderAsOnlyText:
 
 					// Reprocess the source code on the line if need be
 					if (sem->isSourceCode)
-						iEngine_parse_sourceCodeLine(sem->line_cursor);
+						iEngine_parse_sourceCode_line(sem->line_cursor);
 
 					// Indicate success
 					return(true);
@@ -4913,7 +4913,7 @@ renderAsOnlyText:
 
 							// Reprocess the source code on the line if need be
 							if (sem->isSourceCode)
-								iEngine_parse_sourceCodeLine(sem->line_cursor);
+								iEngine_parse_sourceCode_line(sem->line_cursor);
 
 							// Indicate success
 							return(true);
@@ -4930,7 +4930,7 @@ renderAsOnlyText:
 
 							// Reprocess the source code on the line if need be
 							if (sem->isSourceCode)
-								iEngine_parse_sourceCodeLine(sem->line_cursor);
+								iEngine_parse_sourceCode_line(sem->line_cursor);
 
 							// Indicate success
 							return(true);

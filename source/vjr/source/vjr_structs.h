@@ -190,6 +190,9 @@ struct SReturnsParams
 				SFunction*		func;					// Function source code
 				SFunction*		firstAdhoc;				// First adhoc in this block
 
+				// The first class object defined in this source code (only present in thisCode->def, never copied into thisCode->live)
+				SClassObj*		firstClassObj;			// Also SET LOCALCLASSLIB definitions
+
 				// Related to this function
 				SVariable*		returns;				// The first return variable declared
 				SVariable*		params;					// The function parameters

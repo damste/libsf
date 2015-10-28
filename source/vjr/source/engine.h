@@ -91,9 +91,10 @@
 
 	void					iEngine_dispatch_function				(SFunction* func);
 
-	void					iEngine_loadPrg							(SEngineLoad** el, cs8* tcPrg, s32 tnPrgLength, bool tlPopulateKnownFunctions, bool* error, u32* errorNum);
+	void					iEngine_loadPrg							(SEngineLoad* el, cs8* tcPrg, s32 tnPrgLength, bool tlExposeFunctionsAsPublic, bool* error, u32* errorNum);
 
-	SComp*					iEngine_parse_sourceCodeLine			(SLine* line);
+	SComp*					iEngine_parse_sourceCode_line			(SLine* line);
+	SLine*					iEngine_parse_sourceCode_block			(SEngineLoad* el, SEM* sem, bool tlExposeFunctionsAsPublic, bool* error, u32* errorNum);
 
 	SVariable*				iEngine_get_variableName_fromComponent	(SComp* comp, bool* tlManufactured, bool tlByRef);
 	SVariable*				iEngine_get_variableName_fromText		(cs8* tcText, u32 tnTextLength, SComp* comp, bool* tlManufactured, bool tlByRef);

@@ -1773,67 +1773,37 @@ void iiComps_decodeSyntax_returns(SCompileVxbContext* vxb)
 	{
 		switch (tniCodeMate)
 		{
-			case _ICODE_PARENTHESIS_LEFT:
-				return(compTest->iCode == _ICODE_PARENTHESIS_RIGHT);
-
-			case _ICODE_PARENTHESIS_RIGHT:
-				return(compTest->iCode == _ICODE_PARENTHESIS_LEFT);
-
-			case _ICODE_BRACKET_LEFT:
-				return(compTest->iCode == _ICODE_BRACKET_RIGHT);
-
-			case _ICODE_BRACKET_RIGHT:
-				return(compTest->iCode == _ICODE_BRACKET_LEFT);
-
-			case _ICODE_DOUBLE_BRACE_LEFT:
-				return(compTest->iCode == _ICODE_DOUBLE_BRACE_RIGHT);
-
-			case _ICODE_DOUBLE_BRACE_RIGHT:
-				return(compTest->iCode == _ICODE_DOUBLE_BRACE_LEFT);
-
-			case _ICODE_BRACE_LEFT:
-				return(compTest->iCode == _ICODE_BRACE_RIGHT);
-
-			case _ICODE_BRACE_RIGHT:
-				return(compTest->iCode == _ICODE_BRACE_LEFT);
-
-			case _ICODE_ADHOC:
-				return(compTest->iCode == _ICODE_ENDADHOC);
-
-			case _ICODE_ENDADHOC:
-				return(compTest->iCode == _ICODE_ADHOC);
-
-			case _ICODE_IF:
-				return(compTest->iCode == _ICODE_ENDIF);
-
-			case _ICODE_ENDIF:
-				return(compTest->iCode == _ICODE_IF);
-
-			case _ICODE_LIF:
-				return(compTest->iCode == _ICODE_LELSE);
-
-			case _ICODE_LELSE:
-				return(compTest->iCode == _ICODE_LIF);
-
-			case _ICODE_FOR:
-				return(compTest->iCode == _ICODE_ENDFOR);
-
-			case _ICODE_ENDFOR:
-				return(compTest->iCode == _ICODE_FOR);
-
-			case _ICODE_SCAN:
-				return(compTest->iCode == _ICODE_ENDSCAN);
-
-			case _ICODE_ENDSCAN:
-				return(compTest->iCode == _ICODE_SCAN);
-
-			case _ICODE_ENDDO:
-				return(compTest->iCode == _ICODE_DOWHILE);
-
-			case _ICODE_DOWHILE:
-				return(compTest->iCode == _ICODE_ENDDO);
+			case _ICODE_PARENTHESIS_LEFT:				return(compTest->iCode == _ICODE_PARENTHESIS_RIGHT);
+			case _ICODE_PARENTHESIS_RIGHT:				return(compTest->iCode == _ICODE_PARENTHESIS_LEFT);
+			case _ICODE_BRACKET_LEFT:					return(compTest->iCode == _ICODE_BRACKET_RIGHT);
+			case _ICODE_BRACKET_RIGHT:					return(compTest->iCode == _ICODE_BRACKET_LEFT);
+			case _ICODE_DOUBLE_BRACE_LEFT:				return(compTest->iCode == _ICODE_DOUBLE_BRACE_RIGHT);
+			case _ICODE_DOUBLE_BRACE_RIGHT:				return(compTest->iCode == _ICODE_DOUBLE_BRACE_LEFT);
+			case _ICODE_BRACE_LEFT:						return(compTest->iCode == _ICODE_BRACE_RIGHT);
+			case _ICODE_BRACE_RIGHT:					return(compTest->iCode == _ICODE_BRACE_LEFT);
+			case _ICODE_ADHOC:							return(compTest->iCode == _ICODE_ENDADHOC);
+			case _ICODE_ENDADHOC:						return(compTest->iCode == _ICODE_ADHOC);
+			case _ICODE_FIF:							return(compTest->iCode == _ICODE_ENDFIF);
+			case _ICODE_ENDFIF:							return(compTest->iCode == _ICODE_FIF);
+			case _ICODE_IF:								return(compTest->iCode == _ICODE_ENDIF);
+			case _ICODE_ENDIF:							return(compTest->iCode == _ICODE_IF);
+			case _ICODE_LIF:							return(compTest->iCode == _ICODE_LELSE);
+			case _ICODE_LELSE:							return(compTest->iCode == _ICODE_LIF);
+			case _ICODE_FOR:							return(compTest->iCode == _ICODE_ENDFOR);
+			case _ICODE_ENDFOR:							return(compTest->iCode == _ICODE_FOR);
+			case _ICODE_SCAN:							return(compTest->iCode == _ICODE_ENDSCAN);
+			case _ICODE_ENDSCAN:						return(compTest->iCode == _ICODE_SCAN);
+			case _ICODE_ENDDO:							return(compTest->iCode == _ICODE_DOWHILE);
+			case _ICODE_DOWHILE:						return(compTest->iCode == _ICODE_ENDDO);
+			case _ICODE_TEXT:							return(compTest->iCode == _ICODE_ENDTEXT);
+			case _ICODE_ENDTEXT:						return(compTest->iCode == _ICODE_TEXT);
+			case _ICODE_DEFINE:							return(compTest->iCode == _ICODE_ENDDEFINE);
+			case _ICODE_ENDDEFINE:						return(compTest->iCode == _ICODE_DEFINE);
+			case _ICODE_WITH:							return(compTest->iCode == _ICODE_ENDWITH);
+			case _ICODE_ENDWITH:						return(compTest->iCode == _ICODE_WITH);
 		}
-		// If we get here, unknown
+
+		// If we get here, not a mate
 		return(false);
 	}
 
@@ -3556,6 +3526,82 @@ void iiComps_decodeSyntax_returns(SCompileVxbContext* vxb)
 			return(true);
 		}
 		// If we get here, not alphanumeric
+		return(false);
+	}
+
+
+
+
+//////////
+//
+// Is it a VXB entry or exit, like IF..ENDIF, SCAN..ENDSCAN, etc.
+//
+//////
+	bool iiComps_isVxbLogicBlock_entry(SComp* comp, bool tlIncludeAdhocs)
+	{
+		// See if it's a block entry code
+		switch (comp->iCode)
+		{
+			case _ICODE_IF:
+			case _ICODE_FIF:
+			case _ICODE_LIF:
+			case _ICODE_SCAN:
+			case _ICODE_FOR:
+			case _ICODE_TEXT:
+			case _ICODE_DEFINE:
+			case _ICODE_WITH:
+			case _ICODE_DOWHILE:
+				return(true);
+
+			case _ICODE_DO:
+				// DO can also be a command, it must be followed by WHILE or CASE in order to be a block entry
+				if (comp->ll.nextComp)
+				{
+					// See what the next component is
+					switch (comp->ll.nextComp->iCode)
+					{
+						case _ICODE_WHILE:		// do while
+						case _ICODE_CASE:		// do case
+							return(true);
+					}
+				}
+				break;
+
+			default:
+				if (comp->iCode == _ICODE_ADHOC && tlIncludeAdhocs)
+					return(true);
+				
+				break;
+		}
+
+		// If we get here, didn't match
+		return(false);
+	}
+
+	bool iiComps_isVxbLogicBlock_exit(SComp* comp, bool tlIncludeAdhocs)
+	{
+		// See if it's a block entry code
+		switch (comp->iCode)
+		{
+			case _ICODE_ENDIF:
+			case _ICODE_LELSE:
+			case _ICODE_ENDFIF:
+			case _ICODE_ENDSCAN:
+			case _ICODE_ENDFOR:			// Mapped to both endfor and next
+			case _ICODE_ENDDO:
+			case _ICODE_ENDTEXT:
+			case _ICODE_ENDDEFINE:
+			case _ICODE_ENDWITH:
+				return(true);
+
+			default:
+				if (comp->iCode == _ICODE_ADHOC && tlIncludeAdhocs)
+					return(true);
+
+				break;
+		}
+
+		// If we get here, didn't match
 		return(false);
 	}
 

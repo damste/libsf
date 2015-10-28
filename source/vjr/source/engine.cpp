@@ -91,7 +91,7 @@
 	{
 		s32				lnI, lnJ;
 		SThisCode*		thisCode;
-		SEngineLoad*	el;
+		SEngineLoad		el;
 		bool			error;
 		u32				errorNum;
 
@@ -145,7 +145,7 @@
 			// Load the internal baseline.prg program
 			//////
 				iEngine_loadPrg(&el, baseline_prg, sizeof(baseline_prg) - 1, true, &error, &errorNum);
-				iEngine_dispatch_function(el->firstFunc);
+				iEngine_dispatch_function(el.firstFunc);
 
 
 			//////////
@@ -201,7 +201,7 @@
 				if (!line->compilerInfo || iDatum_compare(line->sourceCode, line->compilerInfo->sourceCode) != 0)
 				{
 					// Something's changed, re-parse
-					comp = iEngine_parse_sourceCodeLine(line);
+					comp = iEngine_parse_sourceCode_line(line);
 
 				} else {
 					// Still the same
@@ -453,9 +453,58 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 // Called to load and parse a prg, and populate into known functions if it's being
 //
 //////
-	void iEngine_loadPrg(SEngineLoad** elRoot, cs8* tcPrg, s32 tnPrgLength, bool tlPopulateKnownFunctions, bool* error, u32* errorNum)
+	void iEngine_loadPrg(SEngineLoad* el, cs8* tcPrg, s32 tnPrgLength, bool tlExposeFunctionsAsPublic, bool* error, u32* errorNum)
 	{
-		debug_break;
+		SEM*			sem;
+		SDatum			sourceCode;
+		SEngineLoad		_el_local;
+
+
+		// Make sure our environment is sane
+		if (tcPrg && tnPrgLength > 0)
+		{
+			//////////
+			// Engine load block
+			//////
+				// Make sure we have an el
+				if (!el)
+					el = &_el_local;
+
+				// Initialize
+				memset(el, 0, sizeof(*el));
+
+
+			//////////
+			// Setup
+			//////
+				sourceCode.data_cs8	= tcPrg;
+				sourceCode.length	= tnPrgLength;
+				sem = iSEM_allocate(true);
+
+
+			//////////
+			// Load the source file into a SEM
+			//////
+				iSEM_load_fromMemory(NULL, sem, &sourceCode, true, true);
+				if (!sem)
+				{
+					// Unable to load from memory
+					*error		= true;
+					*errorNum	= _ERROR_OUT_OF_MEMORY;
+				}
+
+
+			//////////
+			// Parse out functions and classes
+			//////
+				iEngine_parse_sourceCode_block(el, sem, tlExposeFunctionsAsPublic, error, errorNum);
+
+		} else {
+			// An error in internal programming
+			iError_track();
+			*error		= true;
+			*errorNum	= _ERROR_INTERNAL_ERROR;
+		}
 	}
 
 
@@ -467,7 +516,7 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 // This process does not process variables, table names, fields, etc.
 //
 //////
-	SComp* iEngine_parse_sourceCodeLine(SLine* line)
+	SComp* iEngine_parse_sourceCode_line(SLine* line)
 	{
 
 		//////////
@@ -536,6 +585,106 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 		// Return the first component
 		//////
 			return(line->compilerInfo->firstComp);
+
+	}
+
+
+
+
+//////////
+//
+// Parses out the equivalent of a method or .prg file, extracting out entries to
+//
+//////
+	SLine* iEngine_parse_sourceCode_block(SEngineLoad* el, SEM* sem, bool tlExposeFunctionsAsPublic, bool* error, u32* errorNum)
+	{
+		bool		llFirstCompFound, llSilenceNestingErrors;
+		s32			lnStackLevel;
+		s32			stack[_MAX_NESTED_LOGIC_LEVELS];
+		SLine*		line;
+
+
+		//////////
+		// Initialize our loader
+		//////
+			memset(el, 0, sizeof(*el));
+
+
+		//////////
+		// Parse through each line of source code
+		//////
+			for (line = sem->firstLine; line; line = line->ll.nextLine)
+				iEngine_parse_sourceCode_line(line);
+
+
+		//////////
+		// Identify all functions contained within
+		//////
+			llFirstCompFound		= false;
+			llSilenceNestingErrors	= false;
+			for (line = sem->firstLine, lnStackLevel = -1; line; line = line->ll.nextLine)
+			{
+				// Is there a component here?
+				if (line->compilerInfo && line->compilerInfo->firstComp && !iiComps_isComment(line->compilerInfo->firstComp->iCode))
+				{
+					// Is it a function?
+					switch (line->compilerInfo->firstComp->iCode)
+					{
+						case _ICODE_FUNCTION:
+						case _ICODE_PROCEDURE:
+							if (!llFirstCompFound)
+							{
+								// First non-comment component is a function
+// TODO:  Oct.28.2015 -- working here
+
+							} else {
+								// Another function has been found
+							}
+							break;
+
+						case _ICODE_ENDFUNCTION:
+						case _ICODE_ENDPROCEDURE:
+							// Reset for this new function
+							llSilenceNestingErrors	= true;
+							lnStackLevel			= 0;
+							break;
+
+						case _ICODE_ADHOC:
+							break;
+
+						case _ICODE_ENDADHOC:
+							break;
+
+						default:
+							if (iiComps_isVxbLogicBlock_entry(line->compilerInfo->firstComp, false))
+							{
+								// It's entry into another block
+								stack[++lnStackLevel] = line->compilerInfo->firstComp->iCode;
+
+							} else if (iiComps_isVxbLogicBlock_exit(line->compilerInfo->firstComp, false)) {
+								// It's exit from another block
+								if (lnStackLevel < 0 || !iComps_isMateOf(line->compilerInfo->firstComp, stack[lnStackLevel]))
+								{
+									// Unmatched block
+									iError_reportByNumber(_ERROR_NESTING_ERROR, line->compilerInfo->firstComp, false);
+									llSilenceNestingErrors = true;
+
+								} else {
+									// We're mated, to go back out/up
+									--lnStackLevel;
+								}
+							}
+							break;
+					}
+				}
+			}
+
+
+		//////////
+		// Indicate the first line
+		//////
+			return(sem->firstLine);
+
 	}
 
 

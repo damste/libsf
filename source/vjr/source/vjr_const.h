@@ -487,6 +487,7 @@ typedef SEM**		SEMpp;
 	const u32			_ERROR_FUNCTION_NOT_FOUND				= 105;
 	const u32			_ERROR_VARIABLE_IS_FIXED				= 106;
 	const u32			_ERROR_FEATURE_NOT_YET_CODED			= 107;
+	const u32			_ERROR_NESTING_ERROR					= 108;
 
 
 
@@ -542,6 +543,7 @@ typedef SEM**		SEMpp;
 	const u32			_MAX_DLL_PARAMS						= 26;						// 26 passed parameters into the called DLL
 	const u32			_MAX_PROCEDURE_LEVELS				= 260;						// 260 call stack levels
 	const u32			_MAX_NESTED_FUNCTION_CALLS			= 26;						// 26 nested function calls (like f1(f2(f3(f4(f5(....f29(f30)....)))))
+	const u32			_MAX_NESTED_LOGIC_LEVELS			= 26;						// 26 nested logic levels (IF, DO, FOR, SCAN, etc.)
 
 
 //////////
@@ -1558,6 +1560,6 @@ typedef SEM**		SEMpp;
 
 	const s8			baseline_prg[]						=	"FUNCTION __vjr_root__\n"
 																"    * Process events whenever no program is running"
-																"    DO WHILE _VJRSYS(1)    && DO WHILE isRunning\n"
+																"    DO WHILE _VJRSYS(1)    && DO WHILE NOT shutting down\n"
 																"        READ EVENTS\n"
 																"    ENDDO\n";
