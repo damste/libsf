@@ -138,10 +138,11 @@ RDC Specifications Document
 	// Note:  On LibSF 386-x40 (James 4:15), these will be auto-converting to 40-bits, not 64-bits, and xs56,xu56 will not be supported
 
 	be,le				-- Augments a type to indicate the data should be stored in memory as big endan, or little endian
-	ro,rw				-- Augments a type to indicate it is read-only, or read-write
-	live				-- Augments a type to indicate it is volatile, and should be re-sampled from memory at every use
+	ro,rw,rwp			-- Augments a type to indicate it is read-only, or read-write, or read-write-protected
+	volatile,live		-- Augments a type to indicate it is volatile, and should be re-sampled from memory at every use
 	static				-- Augments a definition to make it a singleton
 	extern				-- Augments a type to indicate its body is populated elsewhere
+	hide				-- Augments a type to indicate it should not be visible in SourceLight
 
 	sizeof				-- Returns the size of a type
 	countof				-- Returns the count of a type in its immediately more fundamental form
@@ -168,8 +169,8 @@ RDC Specifications Document
 	#define				-- Pragma to define a token hereafter
 	#undefine			-- Pragma to un-define a token
 	#typedef			-- Pragma to alias one type to another name hereafter
-	#hide				-- Pragma to default it should not be visible in SourceLight
-	#order				-- Pragma to change the display order in the debugger (#order N)
+	#hide				-- Pragma to indicate the following members should not be visible in SourceLight
+	#show				-- Pragma to indicate the following members should be visible in SourceLight
 
 	#if					-- Pragma logic test for conditionally compiled code
 	#else				-- Pragma logic test for conditionally compiled code
@@ -204,14 +205,15 @@ RDC Specifications Document
 	flfree				-- Scoped. Fast. Special purpose.  Frees N bytes from the stack.  Only used for flalloc().
 						   * Note:  flalloc() and flfree() must be mated 1:1 to operate properly.
 
-	adhoc				-- Declares an adhoc
 	function			-- Declares a function
+	adhoc				-- Declares an adhoc
+	flowof				-- Defines the function to be a flow of another function
 	port				-- Declares an initial launch port within a function
 	purpose				-- Declares a purpose within a function
 	return				-- Declares any output return value(s)
 	params				-- Declares any input parameter(s)
+
 	inline				-- Provides an explicit optimization hint
-	flowof				-- Defines the function to be a flow of another function
 	nostepinto			-- Declares that a function should not be entered on single-step debugging
 	breakpoint			-- Code will trap to the debugger if connected and engaged, ignored otherwise
 
