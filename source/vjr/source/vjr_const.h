@@ -1559,7 +1559,7 @@ typedef SEM**		SEMpp;
 	const u8			cgcWizardFilename[]					= "wizard.app";
 
 	const s8			baseline_prg[]						=	"FUNCTION __vjr_root__\n"
-																"    * Process events whenever no program is running"
-																"    DO WHILE _VJRSYS(1)    && DO WHILE NOT shutting down\n"
+																"* Process events whenever no program is running\n"
+																"    DO WHILE _VJRSYS(1)    && _VJRSYS(1) = (NOT shutting down)\n"
 																"        READ EVENTS\n"
 																"    ENDDO\n";

@@ -342,7 +342,7 @@ struct SReturnsParams;
 	void				ifunction_strtran_common					(SReturnsParams* rpar, SVariable* varString, SVariable* varSearch, SVariable* varReplace, SVariable* varRecursiveCount, bool tlCaseSensitive);
 	void				function_stuff								(SReturnsParams* rpar);
 	void				function_sys								(SReturnsParams* rpar);
-	SVariable*			iFunction_sys2015							(u32 tnPrefixWidth, u32 tnPostfixWidth, SReturnsParams* rpar);
+	SVariable*			iFunction_sys2015							(u32 tnPrefixWidth, u32 tnPostfixWidth);
 	void				function_sysmetric							(SReturnsParams* rpar);
 	void				function_tan		/* Stefano D'Amico */	(SReturnsParams* rpar);
 	void				function__test								(SReturnsParams* rpar);

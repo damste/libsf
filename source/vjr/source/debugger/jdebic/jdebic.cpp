@@ -559,7 +559,6 @@ return;
 				if (func->scoped)				iBuilder_append_label_uptr(data,	(s8*)"scoped",			(uptr)func->scoped);
 
 				if (func->firstAdhoc)			iBuilder_append_label_uptr(data,	(s8*)"firstAdhoc",		(uptr)func->firstAdhoc);
-				if (func->firstFlowof)			iBuilder_append_label_uptr(data,	(s8*)"firstAdhoc",		(uptr)func->firstFlowof);
 
 //////////
 // Oct.24.2015 -- removed in favor of creating a SEM* reference for each block, which is func->sourceCode
@@ -580,7 +579,6 @@ return;
 				if (func->scoped)				iJDebiC_variable(data, items, func->scoped);
 
 				if (func->firstAdhoc)			iJDebiC_function(data, items, func->firstAdhoc);
-				if (func->firstFlowof)			iJDebiC_function(data, items, func->firstFlowof);
 		}
 	}
 

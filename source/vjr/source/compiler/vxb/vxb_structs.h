@@ -142,14 +142,15 @@ struct SCompileNote;
 	struct SFunction
 	{
 		SLL				ll;
-		bool			isPrivate;										// Used only on adhocs when they are declared private (used locally only within the one function they are declared, and are not visible to called child functions)
+		bool			isPrivate;										// Used only on adhocs, and only when they are declared private (meaning they're used locally only within the one function they're declared, and are not visible to any called child functions)
 		SDatum			name;											// Function name (Note that code appearing at the top of a program without being enclosed in a function will have the source code line "FUNCTION top_of_program" automatically inserted at compile time
 
-		// Where are we in the function?
-		SEM*			sem;										// Function source code
-		SEM*			sourceCode_ref;									// Program source code currently running
-		// Note:  sourceCode_ref is a reference to the actual source code when on the stack.
-		// Note:  current_sourceCode->line_cursor points to the command that's currently executing
+		// Function code?
+		SEM*			sem;											// Function source code
+		SLine*			firstLine;										// Within sem, the first line for the function
+		SLine*			lastLine;										// Within sem, the last line for the function
+		// Note:  sem is a reference to the actual source code when on the stack.
+		// Note:  sem->line_cursor points to the command that's currently executing
 
 		// Knowns identified during compilation
 		SVariable*		params;											// The first parameter in the function
@@ -159,12 +160,6 @@ struct SCompileNote;
 
 		// Embedded functions within this function
 		SFunction*		firstAdhoc;										// First ADHOC function contained within this function
-		SFunction*		firstFlowof;									// First FLOWOF function related to this function
-
-// DEPRECATED, will be migrated to sourceCode->* members
-		// Pointers within sourceCode
-		SLine*			firstLine;
-		SLine*			lastLine;
 	};
 
 	struct SCompileStats

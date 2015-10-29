@@ -3355,6 +3355,32 @@ void iiComps_decodeSyntax_returns(SCompileVxbContext* vxb)
 		return(atof(buffer));
 	}
 
+	// Note:  The name is only in scope so long as either comp exists (if valid), or *varSys2015 exists if comp was not valid
+	// Note:  If comp was not valid, and varSys2015 was provided, *varSys2015 must be explicitly deleted at some point
+	SDatum* iiComps_populateAs_datum(SDatum* datum, SComp* comp, SVariable** varSys2015)
+	{
+		// Populate if possible
+		if (datum)
+		{
+			// Is the component valid
+			if (comp && comp->line && comp->line->sourceCode)
+			{
+				// Store the component's name
+				datum->data_cs8		= comp->line->sourceCode->data_cs8 + comp->start;
+				datum->length		= comp->length;
+
+			} else if (varSys2015) {
+				// Create a unique name
+				*varSys2015			= iFunction_sys2015(0, 0);
+				datum->data_cs8		= (*varSys2015)->value.data_cs8;
+				datum->length		= (*varSys2015)->value.length;
+			}
+		}
+
+		// Pass-thru
+		return(datum);
+	}
+
 
 
 
@@ -5615,7 +5641,6 @@ debug_break;
 
 			// Delete the adhocs for this function
 			iFunction_politelyDelete_chain(&func->firstAdhoc,		true);
-			iFunction_politelyDelete_chain(&func->firstFlowof,		true);
 
 			// Delete the function itself if need be
 			if (tlDeleteSelf)

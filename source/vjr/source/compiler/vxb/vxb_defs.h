@@ -183,6 +183,7 @@ struct SThisCode;
 	s32						iiComps_getAs_s32							(SComp* comp);
 	s64						iiComps_getAs_s64							(SComp* comp);
 	f64						iiComps_getAs_f64							(SComp* comp);
+	SDatum*					iiComps_populateAs_datum					(SDatum* datum, SComp* comp, SVariable** varSys2015);
 	s32						iComps_getContiguousLength					(SComp* comp, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount, s32* tnCount);
 	u32						iComps_count								(SComp* comp);
 	bool					iiComps_validate							(SComp* comp, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount);

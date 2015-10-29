@@ -89,12 +89,15 @@
 	void					iEngine_engage							(void);
 	bool					iEngine_engage_oneCommand				(SLine* line);
 
+	SFunction*				iEngine_create_adhoc					(SDatum* name, SEM* sem, SLine* line);
+	SFunction*				iEngine_create_function					(SDatum* name, SEM* sem, SLine* line);
+
 	void					iEngine_dispatch_function				(SFunction* func);
 
-	void					iEngine_loadPrg							(SEngineLoad* el, cs8* tcPrg, s32 tnPrgLength, bool tlExposeFunctionsAsPublic, bool* error, u32* errorNum);
+	void					iEngine_loadPrg							(SEngineLoad* el, SDatum* name, cs8* tcPrg, s32 tnPrgLength, bool tlExposeFunctionsAsPublic, bool* error, u32* errorNum);
 
 	SComp*					iEngine_parse_sourceCode_line			(SLine* line);
-	SLine*					iEngine_parse_sourceCode_block			(SEngineLoad* el, SEM* sem, bool tlExposeFunctionsAsPublic, bool* error, u32* errorNum);
+	SLine*					iEngine_parse_sourceCode_block			(SEngineLoad* el, SDatum* name, SEM* sem, bool tlExposeFunctionsAsPublic, bool* error, u32* errorNum);
 
 	SVariable*				iEngine_get_variableName_fromComponent	(SComp* comp, bool* tlManufactured, bool tlByRef);
 	SVariable*				iEngine_get_variableName_fromText		(cs8* tcText, u32 tnTextLength, SComp* comp, bool* tlManufactured, bool tlByRef);
