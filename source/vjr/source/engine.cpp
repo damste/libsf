@@ -494,6 +494,7 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 		SEM*			sem;
 		SDatum			sourceCode;
 		SEngineLoad		_el_local;
+		SNoteLog*		noteLog;
 
 
 		// Make sure our environment is sane
@@ -533,7 +534,17 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 			//////////
 			// Parse out functions and classes
 			//////
-				iEngine_parse_sourceCode_block(el, name, sem, tlExposeFunctionsAsPublic, error, errorNum);
+				iEngine_parse_sourceCode_block(el, name, sem);
+				if (sem->firstNote)
+				{
+					// Report all the errors if SET TALK ON
+					if (propGet_settings_Talk(_settings))
+					{
+						// Report all errors
+						for (noteLog = sem->firstNote; noteLog; noteLog = noteLog->ll.nextNoteLog)
+							iSEM_appendLine(screenData, noteLog->line, false);
+					}
+				}
 
 
 		} else {
@@ -635,7 +646,7 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 // Note:  If tlExposeFunctionsAsPublic, every function found is added to gsRootFunc.  It would be used with SET PROCEDURE TO ... [ADDITIVE] for example.
 //
 //////
-	SLine* iEngine_parse_sourceCode_block(SEngineLoad* el, SDatum* name, SEM* sem, bool tlExposeFunctionsAsPublic, bool* error, u32* errorNum)
+	SLine* iEngine_parse_sourceCode_block(SEngineLoad* el, SDatum* name, SEM* sem)
 	{
 		bool		llFirstCompFound, llSilenceNestingErrors, llDeleteVarSys2015;
 		s32			lnStackLevel, lniCode;
@@ -671,7 +682,7 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 		//////
 			llFirstCompFound		= false;
 			llSilenceNestingErrors	= false;
-			for (line = sem->firstLine, lnStackLevel = -1, func = NULL; line; line = line->ll.nextLine, llFirstCompFound = true)
+			for (line = sem->firstLine, lnStackLevel = -1, adhoc = NULL, func = NULL; line; line = line->ll.nextLine, llFirstCompFound = true)
 			{
 				// Is there a component here?
 				if (line->compilerInfo && (comp = line->compilerInfo->firstComp) && !iiComps_isComment(comp->iCode))
@@ -693,6 +704,8 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 									adhoc = NULL;
 
 									// Unmatched block
+									iNoteLog_create(&sem->firstNote,					comp, _ERROR_NESTING_ERROR, NULL);
+									iNoteLog_create(&line->compilerInfo->firstError,	comp, _ERROR_NESTING_ERROR, NULL);
 									if (!llSilenceNestingErrors)
 										iError_reportByNumber(_ERROR_NESTING_ERROR, comp, false);
 								}
@@ -715,8 +728,11 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 							if (!func)
 							{
 								// Unmatched block
+								iNoteLog_create(&sem->firstNote,					comp, _ERROR_NESTING_ERROR, NULL);
+								iNoteLog_create(&line->compilerInfo->firstError,	comp, _ERROR_NESTING_ERROR, NULL);
 								if (!llSilenceNestingErrors)
 									iError_reportByNumber(_ERROR_NESTING_ERROR, comp, false);
+
 							}
 
 							// Close it out
@@ -732,12 +748,18 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 						case _ICODE_ADHOC:
 							// If we're in an existing adhoc, nesting error
 							if (adhoc)
+							{
+								iNoteLog_create(&sem->firstNote,					comp, _ERROR_NESTING_ERROR, NULL);
+								iNoteLog_create(&line->compilerInfo->firstError,	comp, _ERROR_NESTING_ERROR, NULL);
 								iError_reportByNumber(_ERROR_NESTING_ERROR, comp, false);
+							}
 
 							// If we're not inside a function, error
 							if (!func)
 							{
 								// This adhoc cannot be processed
+								iNoteLog_create(&sem->firstNote,					comp, _ERROR_NESTING_ERROR, NULL);
+								iNoteLog_create(&line->compilerInfo->firstError,	comp, _ERROR_NESTING_ERROR, NULL);
 								iError_reportByNumber(_ERROR_NESTING_ERROR, comp, false);
 
 							} else {
@@ -759,6 +781,8 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 							if (!adhoc)
 							{
 								// They tried to end an adhoc that hadn't started yet
+								iNoteLog_create(&sem->firstNote,					comp, _ERROR_NESTING_ERROR, NULL);
+								iNoteLog_create(&line->compilerInfo->firstError,	comp, _ERROR_NESTING_ERROR, NULL);
 								iError_reportByNumber(_ERROR_NESTING_ERROR, comp, false);
 
 							} else {
@@ -785,6 +809,8 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 									// Unmatched block
 									if (!llSilenceNestingErrors)
 									{
+										iNoteLog_create(&sem->firstNote,					comp, _ERROR_NESTING_ERROR, NULL);
+										iNoteLog_create(&line->compilerInfo->firstError,	comp, _ERROR_NESTING_ERROR, NULL);
 										iError_reportByNumber(_ERROR_NESTING_ERROR, comp, false);
 										llSilenceNestingErrors = true;
 									}

@@ -606,9 +606,9 @@ void iiComps_decodeSyntax_returns(SCompileVxbContext* vxb)
 		//////////
 		// Delete any errors, warnings, or notes
 		//////
-			iCompileNote_removeAll(&compiler->firstError);
-			iCompileNote_removeAll(&compiler->firstWarning);
-			iCompileNote_removeAll(&compiler->firstNote);
+			iNoteLog_removeAll(&compiler->firstError);
+			iNoteLog_removeAll(&compiler->firstWarning);
+			iNoteLog_removeAll(&compiler->firstNote);
 
 
 		//////////
@@ -13367,14 +13367,14 @@ debug_break;
 // Extracts the datetimex value from the year, month, day, hour, minute, second, (millisecond or nanosecond)
 //
 //////
-	u64 iiDateMath_get_jseconds_from_YyyyMmDdHhMmSsMssMics(f64* tfDtx, u32 year, u32 month, u32 day, u32 hour, u32 minute, u32 second, s32 millisecond, s32 microsecond)
+	u64 iiDateMath_get_jseconds_from_YyyyMmDdHhMmSsMssMics(u64* tnDtx, u32 year, u32 month, u32 day, u32 hour, u32 minute, u32 second, s32 millisecond, s32 microsecond)
 	{
 		u32 julian;
 
 
 		// Grab the julian, and then call the sister function
 		julian = iiDateMath_get_julian_from_YyyyMmDd(NULL, year, month, day);
-		return(iiDateMath_get_jseconds_from_julian_and_HhMmSsMssMics(tfDtx, julian, hour, minute, second, millisecond, microsecond));
+		return(iiDateMath_get_jseconds_from_julian_and_HhMmSsMssMics(tnDtx, julian, hour, minute, second, millisecond, microsecond));
 	}
 
 
@@ -13385,7 +13385,7 @@ debug_break;
 // Extracts the datetimex value from the julian, hour, minute, second, (millisecond or microsecond)
 //
 //////
-	u64 iiDateMath_get_jseconds_from_julian_and_HhMmSsMssMics(f64* tfDtx, u32 julian, u32 hour, u32 minute, u32 second, s32 millisecond, s32 microsecond)
+	u64 iiDateMath_get_jseconds_from_julian_and_HhMmSsMssMics(u64* tnDtx, u32 julian, u32 hour, u32 minute, u32 second, s32 millisecond, s32 microsecond)
 	{
 		u64 result;
 
@@ -13418,7 +13418,14 @@ debug_break;
 
 
 		//////////
-		// Indicate the
+		// Store the data pointed to
+		//////
+			if (tnDtx)
+				*tnDtx = result;
+
+
+		//////////
+		// Indicate the result
 		//////
 			return(result);
 	}
@@ -13871,7 +13878,7 @@ debug_break;
 // Called to calculate if the indicated day number is appropriate for the month.
 //
 //////
-	bool iDateMath_isValidDate(u32 year, u32 month, u32 day)
+	bool iiDateMath_isValidDate(u32 year, u32 month, u32 day)
 	{
 		// The only valid days are 1..31
 		if (day < 1 || day > 31)
@@ -13894,7 +13901,7 @@ debug_break;
 			return(false);
 
 		// We'll only get here if we're in February
-		if (iDateMath_isLeapYear(year) && day <= 29)
+		if (iiDateMath_isLeapYear(year) && day <= 29)
 			return(true);		// We are in a leap year, 29 days or less is valid
 
 		// If we get here, it's not a leap year, so we're invalid
@@ -13910,7 +13917,7 @@ debug_break;
 // Leap years occur every 4 years, except in century years, except for centuries evenly divisible by 400
 //
 //////
-	bool iDateMath_isLeapYear(u32 year)
+	bool iiDateMath_isLeapYear(u32 year)
 	{
 		return((year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)));
 	}
@@ -13923,7 +13930,7 @@ debug_break;
 // Called to obtain the day number into the year
 //
 //////
-	u32	iDateMath_getDayNumberIntoYear(u32 tnYear, u32 tnMonth, u32 tnDay)
+	u32	iiDateMath_get_dayNumberIntoYear(u32 tnYear, u32 tnMonth, u32 tnDay)
 	{
 		u32				result;
 		static cu32		cgDayOfYear[] = { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 };
@@ -13938,7 +13945,7 @@ debug_break;
 		//////////
 		// Adjust for leap year
 		//////
-			if (tnMonth > 2 && iDateMath_isLeapYear(tnYear))
+			if (tnMonth > 2 && iiDateMath_isLeapYear(tnYear))
 				++result;
 
 
@@ -13946,6 +13953,31 @@ debug_break;
 		// Return the day of year
 		//////
 			return(result);
+	}
+
+
+
+
+//////////
+//
+// Called to populate a datetimex value directly with the current time
+//
+//////
+	void iiDateMath_get_datetimeX(SDateTimeX* dtx, bool tlUseLocalTime)
+	{
+		SYSTEMTIME lst;
+
+
+		// Make sure our environment is sane
+		if (dtx)
+		{
+			// Grab the time
+			if (tlUseLocalTime)		GetLocalTime(&lst);
+			else					GetSystemTime(&lst);
+
+			// Store in jseconds
+			iiDateMath_get_jseconds_from_YyyyMmDdHhMmSsMssMics(&dtx->jseconds, lst.wYear, lst.wMonth, lst.wDay, lst.wHour, lst.wMinute, lst.wSecond, lst.wMilliseconds, 0);
+		}
 	}
 
 
@@ -14331,9 +14363,7 @@ debug_break;
 	void iLine_appendError(SLine* line, u32 tnErrorNum, cu8* tcMessage, u32 tnStartColumn, u32 tnLength)
 	{
 		if (line && line->compilerInfo)
-		{
-			iCompileNote_appendMessage(&line->compilerInfo->firstError, tnStartColumn, tnStartColumn + tnLength, tnErrorNum, tcMessage);
-		}
+			iNoteLog_create(&line->compilerInfo->firstError, line, tnStartColumn, tnStartColumn + tnLength, tnErrorNum, tcMessage);
 	}
 
 
@@ -14347,9 +14377,7 @@ debug_break;
 	void iLine_appendWarning(SLine* line, u32 tnWarningNum, cu8* tcMessage, u32 tnStartColumn, u32 tnLength)
 	{
 		if (line && line->compilerInfo)
-		{
-			iCompileNote_appendMessage(&line->compilerInfo->firstError, tnStartColumn, tnStartColumn + tnLength, tnWarningNum, tcMessage);
-		}
+			iNoteLog_create(&line->compilerInfo->firstError, line, tnStartColumn, tnStartColumn + tnLength, tnWarningNum, tcMessage);
 	}
 
 
@@ -14950,8 +14978,8 @@ _asm int 3;
 			compilerInfo->sourceCode = NULL;
 
 			// Delete the items here
-			iCompileNote_removeAll(&compilerInfo->firstWarning);
-			iCompileNote_removeAll(&compilerInfo->firstError);
+			iNoteLog_removeAll(&compilerInfo->firstWarning);
+			iNoteLog_removeAll(&compilerInfo->firstError);
 
 			// Delete combined component references
 			if (compilerInfo->firstComp && compilerInfo->firstComp->firstCombined)
@@ -14979,51 +15007,35 @@ _asm int 3;
 // Called to create a new note
 //
 //////
-	SCompileNote* iCompileNote_create(SCompileNote** noteRoot, u32 tnStart, u32 tnEnd, u32 tnNumber, cu8* tcMessage)
+	SNoteLog* iNoteLog_create(SNoteLog** noteRoot, SLine* line, u32 tnStart, u32 tnEnd, u32 tnNumber, cu8* tcMessage)
 	{
-		SCompileNote* note;
+		SNoteLog* note;
 
 
 		// Create the new note
-		note = (SCompileNote*)iLl_appendNewNodeAtEnd((SLL**)noteRoot, sizeof(SCompileNote));
+		note = (SNoteLog*)iLl_appendNewNodeAtEnd((SLL**)noteRoot, sizeof(SNoteLog));
 		if (note)
 		{
 			// Initialize it
-			memset(note, 0, sizeof(SCompileNote));
+			memset(note, 0, sizeof(SNoteLog));
 
 			// Populate it
+			iiDateMath_get_datetimeX(&note->datetimex);
+			note->line		= line;
 			note->start		= tnStart;
 			note->end		= tnEnd;
 			note->number	= tnNumber;
-			note->msg		= iDatum_allocate(tcMessage, -1);
+			note->note		= iDatum_allocate(tcMessage, -1);
 		}
 
 		// Indicate our status
 		return(note);
 	}
 
-
-
-//////////
-//
-// Called to append a compiler note
-//
-//////
-	SCompileNote* iCompileNote_appendMessage(SCompileNote** noteRoot, u32 tnStartColumn, u32 tnEndColumn, u32 tnNumber, cu8* tcMessage)
+	SNoteLog* iNoteLog_create(SNoteLog** noteRoot, SComp* comp, u32 tnNumber, cu8* tcMessage)
 	{
-		SCompileNote* noteNew;
-
-
-		// Make sure our environment is sane
-		noteNew = NULL;
-		if (noteRoot && tcMessage)
-		{
-			// Create the new note
-			noteNew = iCompileNote_create(noteRoot, tnStartColumn, tnEndColumn, tnNumber, tcMessage);
-		}
-
-		// Indicate our status
-		return(noteNew);
+		if (comp)		return(iNoteLog_create(noteRoot, comp->line, comp->start, comp->start + comp->length - 1, tnNumber, tcMessage));
+		else			return(NULL);
 	}
 
 
@@ -15034,7 +15046,7 @@ _asm int 3;
 // Called to remove all compile notes in the chain
 //
 //////
-	void iCompileNote_removeAll(SCompileNote** noteRoot)
+	void iNoteLog_removeAll(SNoteLog** noteRoot)
 	{
 		// Make sure our environment is sane
 		if (noteRoot && *noteRoot)

@@ -854,6 +854,11 @@ debug_break;
 // Called to append a line of text to the indicated SEM.
 //
 //////
+	SLine* iSEM_appendLine(SEM* sem, SLine* line, bool tlSetNewLineFlag)
+	{
+		return(iSEM_appendLine(sem, line->sourceCode->data_u8, line->sourceCode_populatedLength, tlSetNewLineFlag));
+	}
+
 	SLine* iSEM_appendLine(SEM* sem, u8* tcText, s32 tnTextLength, bool tlSetNewLineFlag)
 	{
 		s32		lnI, lnJ, lnPass, lnTextLength, lnCount;

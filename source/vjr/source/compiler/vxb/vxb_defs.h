@@ -102,7 +102,7 @@ struct SComp;
 struct SCompCallback;
 struct SCompiler;
 struct SCompileStats;
-struct SCompileNote;
+struct SNoteLog;
 struct SAsciiCompSearcher;
 struct SStartEnd;
 struct SStartEndCallback;
@@ -328,8 +328,8 @@ struct SThisCode;
 	SVariable*				iiDateMath_get_dateTemplate										(s32 tnDateFormat);
 	void					iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds				(u64  tnDtx, f64* tfDtx,              u32* year, u32* month, u32* day, u32* hour, u32* minute, u32* second, s32* millisecond, s32* microsecond);
 	void					iiDateMath_get_julian_and_YyyyMmDdHhMmSsMssNss_from_jseconds	(u64  tnDtx, f64* tfDtx, u32* julian, u32* year, u32* month, u32* day, u32* hour, u32* minute, u32* second, s32* millisecond, s32* microsecond);
-	u64						iiDateMath_get_jseconds_from_YyyyMmDdHhMmSsMssMics				(f64* tfDtx,                          u32  year, u32  month, u32  day, u32  hour, u32  minute, u32  second, s32  millisecond, s32  microsecond);
-	u64						iiDateMath_get_jseconds_from_julian_and_HhMmSsMssMics			(f64* tfDtx,             u32  julian,                                  u32  hour, u32  minute, u32  second, s32  millisecond, s32  microsecond);
+	u64						iiDateMath_get_jseconds_from_YyyyMmDdHhMmSsMssMics				(u64* tnDtx,                          u32  year, u32  month, u32  day, u32  hour, u32  minute, u32  second, s32  millisecond, s32  microsecond);
+	u64						iiDateMath_get_jseconds_from_julian_and_HhMmSsMssMics			(u64* tnDtx,             u32  julian,                                  u32  hour, u32  minute, u32  second, s32  millisecond, s32  microsecond);
 	s32						iiDateMath_get_julian_from_YyyyMmDd								(f32* tnJulianDayNumber, u32  year, u32  month, u32  day);
 	void					iiDateMath_get_YyyyMmDd_from_julian								(u32  tnJulianDayNumber, u32* year, u32* month, u32* day);
 	void					iiDateMath_get_YyyyMmDd_from_YYYYMMDD							(u8* YYYYMMDD,           u32* year, u32* month, u32* day);
@@ -342,9 +342,10 @@ struct SThisCode;
 	void					iiDateMath_get_YYYYMMDD_from_YyyyMmDd							(s8* YYYYMMDD, u32  year, u32  month, u32  day);
 	void					iiDateMath_get_SYSTEMTIME_from_SECONDS							(SYSTEMTIME* st, f32 tfSeconds);
 	void					iiDateMath_get_SYSTEMTIME_from_SECONDSX							(SYSTEMTIME* st, f64 tfSecondsx, s32* tnMicroseconds, s32* tnNanosecond);
-	bool					iDateMath_isValidDate											(u32 year, u32 month, u32 day);
-	bool					iDateMath_isLeapYear											(u32 year);
-	u32						iDateMath_getDayNumberIntoYear									(u32 tnYear, u32 tnMonth, u32 tnDay);
+	bool					iiDateMath_isValidDate											(u32 year, u32 month, u32 day);
+	bool					iiDateMath_isLeapYear											(u32 year);
+	u32						iiDateMath_get_dayNumberIntoYear								(u32 tnYear, u32 tnMonth, u32 tnDay);
+	void					iiDateMath_get_datetimeX										(SDateTimeX* dtx, bool tlUseLocalTime = true);
 
 	// Big floating point
 	s32						iiBfp_calc_significantDigits_bySize			(SVariable* varVal);
@@ -393,6 +394,6 @@ struct SThisCode;
 	void					iCompiler_delete							(SCompiler** compilerInfoRoot, bool tlDeleteSelf);
 
 	// Compile note functions
-	SCompileNote*			iCompileNote_create							(SCompileNote** noteRoot, u32 tnStart,			u32 tnEnd,			u32 tnNumber, cu8* tcMessage);
-	SCompileNote*			iCompileNote_appendMessage					(SCompileNote** noteRoot, u32 tnStartColumn,	u32 tnEndColumn,	u32 tnNumber, cu8* tcMessage);
-	void					iCompileNote_removeAll						(SCompileNote** noteRoot);
+	SNoteLog*				iNoteLog_create								(SNoteLog** noteRoot, SLine* line, u32 tnStart,	u32 tnEnd,	u32 tnNumber, cu8* tcMessage);
+	SNoteLog*				iNoteLog_create								(SNoteLog** noteRoot, SComp* comp, u32 tnNumber, cu8* tcMessage);
+	void					iNoteLog_removeAll							(SNoteLog** noteRoot);

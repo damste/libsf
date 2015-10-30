@@ -69,6 +69,7 @@ struct SExtraInfo;
 struct SThisCode;
 struct SFunction;
 struct SDllFunc;
+struct SNoteLog;
 
 
 
@@ -90,6 +91,7 @@ struct SDllFunc;
 			SExtraInfo*	nextExtraInfo;
 			SFunction*	nextFunc;
 			SDllFunc*	nextDllFunc;
+			SNoteLog*	nextNoteLog;
 		};
 		union {
 			SLL*		prev;					// Previous entry in linked list
@@ -101,6 +103,7 @@ struct SDllFunc;
 			SExtraInfo*	prevExtraInfo;
 			SFunction*	prevFunc;
 			SDllFunc*	prevDllFunc;
+			SNoteLog*	prevNoteLog;
 		};
 		u32				uniqueId;				// Unique id associated with this object
 	};

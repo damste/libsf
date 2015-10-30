@@ -397,7 +397,7 @@
 		//////////
 		// Validate the date is valid
 		//////
-			if (!iDateMath_isValidDate(lst.wYear, lst.wMonth, lst.wDay))
+			if (!iiDateMath_isValidDate(lst.wYear, lst.wMonth, lst.wDay))
 			{
 				iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varP1), false);
 				return;

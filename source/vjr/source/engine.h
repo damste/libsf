@@ -97,7 +97,7 @@
 	void					iEngine_loadPrg							(SEngineLoad* el, SDatum* name, cs8* tcPrg, s32 tnPrgLength, bool tlExposeFunctionsAsPublic, bool* error, u32* errorNum);
 
 	SComp*					iEngine_parse_sourceCode_line			(SLine* line);
-	SLine*					iEngine_parse_sourceCode_block			(SEngineLoad* el, SDatum* name, SEM* sem, bool tlExposeFunctionsAsPublic, bool* error, u32* errorNum);
+	SLine*					iEngine_parse_sourceCode_block			(SEngineLoad* el, SDatum* name, SEM* sem);
 
 	SVariable*				iEngine_get_variableName_fromComponent	(SComp* comp, bool* tlManufactured, bool tlByRef);
 	SVariable*				iEngine_get_variableName_fromText		(cs8* tcText, u32 tnTextLength, SComp* comp, bool* tlManufactured, bool tlByRef);

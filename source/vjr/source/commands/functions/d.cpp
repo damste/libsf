@@ -189,7 +189,7 @@
 						return;
 					}
 					lst.wDay = (u16)iiVariable_getAs_s32(varDay, false, &error, &errorNum);
-					if (!error && !iDateMath_isValidDate(lst.wYear, lst.wMonth, lst.wDay))
+					if (!error && !iiDateMath_isValidDate(lst.wYear, lst.wMonth, lst.wDay))
 					{
 						iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varDay), false);
 						return;
@@ -386,7 +386,7 @@
 						return;
 					}
 					lst.wDay = (u16)iiVariable_getAs_s32(varDay, false, &error, &errorNum);
-					if (!error && !iDateMath_isValidDate(lst.wYear, lst.wMonth, lst.wDay))
+					if (!error && !iiDateMath_isValidDate(lst.wYear, lst.wMonth, lst.wDay))
 					{
 						iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varDay), false);
 						return;
@@ -1912,7 +1912,7 @@
 
 											case 'j':
 												// Day number into year
-												sprintf(buffer, "%u\0", iDateMath_getDayNumberIntoYear(dt->wYear, dt->wMonth, dt->wDay));
+												sprintf(buffer, "%u\0", iiDateMath_get_dayNumberIntoYear(dt->wYear, dt->wMonth, dt->wDay));
 												if (lnPass == 1)		lnAllocationLength	+= (s32)strlen(buffer);
 												else					lnOffset			+= iifunction_append_text(lcResult + lnOffset, buffer, -1);
 												break;

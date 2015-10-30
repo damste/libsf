@@ -251,7 +251,7 @@
 		ln1WDay		= ifunction_dow_common(rpar, tnYear, 1, 1);
 
 		// Day of year 
-		lnDayOfYear	= iDateMath_getDayNumberIntoYear(tnYear, tnMonth, tnDay) - 1/*-1 because weekdays start at 0*/;
+		lnDayOfYear	= iiDateMath_get_dayNumberIntoYear(tnYear, tnMonth, tnDay) - 1/*-1 because weekdays start at 0*/;
 
 		// Account for first day of week
 		ln1WDay		= (ln1WDay + (7 - tnFirstDayOfWeek)) % 7;
@@ -277,7 +277,7 @@
 							lnWeek = 1;
 
 						} else if (lnWeek == 53) {
-							lnDaysInYear	= iDateMath_isLeapYear(tnYear) ? 366 : 365;
+							lnDaysInYear	= iiDateMath_isLeapYear(tnYear) ? 366 : 365;
 							lnDaysNextYear	= ifunction_dow_common(rpar, tnYear + 1, 1, 1);
 							lnDaysNextYear	= (lnDaysNextYear + (7 - tnFirstDayOfWeek)) % 7;
 
@@ -317,7 +317,7 @@
 						} else if (ln1WDay == tnMinDaysInWeek + 1) {
 							// Saturday
 							// Year after leapyear
-							if (iDateMath_isLeapYear(tnYear - 1))		lnWeek = 53;
+							if (iiDateMath_isLeapYear(tnYear - 1))		lnWeek = 53;
 							else										lnWeek = 52;
 
 						} else {

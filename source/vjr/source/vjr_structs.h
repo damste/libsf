@@ -590,3 +590,17 @@ struct SSplash
 	RECT		rc;													// In screen coordinates
 	SBitmap*	bmp;												// The rendered bitmap
 };
+
+// For warnings, errors, and notes
+struct SNoteLog
+{
+	SLL				ll;
+	SDateTimeX		datetimex;										// When did the note get logged?
+
+	SLine*			line;											// Associated line (if not already on a line)
+	u32				start;											// Column the note begins on
+	u32				end;											// Column the note ends on
+
+	u32				number;											// A related number
+	SDatum*			note;											// The message
+};

@@ -104,7 +104,8 @@ struct SLL;
 struct SLLCallback;
 struct SVariable;
 struct SCompileStats;
-struct SCompileNote;
+struct SNoteLog;
+struct SDateTimeX;
 
 
 
@@ -387,17 +388,6 @@ struct SCompileNote;
 		};
 	};
 
-	// For warnings, errors, and notes
-	struct SCompileNote
-	{
-		SLL				ll;
-		u32				start;											// Column the note begins on
-		u32				end;											// Column the note ends on
-
-		u32				number;											// Related number
-		SDatum*			msg;											// The message
-	};
-
 	// Holds compiler data
 	struct SCompiler
 	{
@@ -443,7 +433,7 @@ struct SCompileNote;
 	//////////
 	// Results of compilation
 	//////
-		SCompileNote*	firstError;										// Noted error(s) on this source code line
-		SCompileNote*	firstWarning;									// Noted warning(s) on this source code line
-		SCompileNote*	firstNote;										// Noted note(s) on this source code line
+		SNoteLog*	firstError;										// Noted error(s) on this source code line
+		SNoteLog*	firstWarning;									// Noted warning(s) on this source code line
+		SNoteLog*	firstNote;										// Noted note(s) on this source code line
 	};

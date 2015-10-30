@@ -502,7 +502,7 @@
 					if (lnDay > 28)
 					{
 						// Grab last day of month
-						if (lnMonth == 2 && iDateMath_isLeapYear(lnYear))
+						if (lnMonth == 2 && iiDateMath_isLeapYear(lnYear))
 						{
 							// February leap year
 							lnLastDay = 29;

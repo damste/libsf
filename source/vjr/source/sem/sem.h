@@ -226,6 +226,7 @@
 		// For compiled programs
 		//////
 			SFunction	firstFunction;									// By default, we always create a function head for any code blocks that don't have an explicit "FUNCTION" at the top.
+			SNoteLog*	firstNote;										// Notes during load or parsing
 
 
 		//////////
@@ -277,6 +278,7 @@
 	void					iSEM_deleteChain					(SEM** root, bool tlDeleteSelf);
 	void					iSEM_deleteChainWithCallback		(SEM** root, bool tlDeleteSelf, SEM_callback* ecb);
 	u32						iSEM_renumber						(SEM* sem, u32 tnStartingLineNumber);
+	SLine*					iSEM_appendLine						(SEM* sem, SLine* line, bool tlSetNewLineFlag);
 	SLine*					iSEM_appendLine						(SEM* sem, u8* tcText, s32 tnTextLength, bool tlSetNewLineFlag);
 	SLine*					iSEM_insertLine						(SEM* sem, u8* tcText, s32 tnTextLength, SLine* line, bool tlInsertAfter, bool tlSetNewLineFlag);
 	void					iSEM_deleteLine						(SEM* sem);
