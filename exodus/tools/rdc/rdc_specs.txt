@@ -112,8 +112,8 @@ RDC Specifications Document
 	<|cask|>			-- Logic cask
 	~|cask|~			-- Utility cask
 	
-	|||					-- If three or more pipe signs leading on a source code line, line comment
-	||					-- If two pipe signs leading on a source code line, whitespace
+	||||				-- If four or more pipe signs leading on a source code line, line comment
+	|||					-- If three pipe signs leading on a source code line, whitespace
 	N|					-- Reorders groups of source code lines to execute in the order specified
 
 	void				-- An empty type
