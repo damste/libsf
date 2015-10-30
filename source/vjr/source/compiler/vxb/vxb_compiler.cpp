@@ -321,7 +321,7 @@
 						//////////
 						// Convert raw source code to known character sequences
 						//////
-							iComps_translateSourceLineTo(&cgcFundamentalSymbols[0], vxb->line);
+							iComps_translate_sourceLineTo(&cgcFundamentalSymbols[0], vxb->line);
 							if (!vxb->line->compilerInfo->firstComp)
 							{
 								++vxb->stats->blankLineCount;
@@ -343,15 +343,15 @@
 						//////////
 						// Perform fixups
 						//////
-							iComps_removeStartEndComments(vxb->line);			// Remove /* comments */
-							iComps_fixupNaturalGroupings(vxb->line);			// Fixup natural groupings [_][aaa][999] becomes [_aaa999], [999][.][99] becomes [999.99], etc.
-							iComps_removeWhitespaces(vxb->line);				// Remove whitespaces [use][whitespace][foo] becomes [use][foo]
+							iComps_remove_startEndComments(vxb->line);			// Remove /* comments */
+							iComps_fixup_naturalGroupings(vxb->line);			// Fixup natural groupings [_][aaa][999] becomes [_aaa999], [999][.][99] becomes [999.99], etc.
+							iComps_remove_whitespaces(vxb->line);				// Remove whitespaces [use][whitespace][foo] becomes [use][foo]
 
 
 						//////////
 						// Translate sequences to known keywords
 						//////
-							iComps_translateToOthers(&cgcKeywordsVxb[0], vxb->line->compilerInfo->firstComp, true);
+							iComps_translate_toOthers(&cgcKeywordsVxb[0], vxb->line->compilerInfo->firstComp, true);
 
 
 						//////////
@@ -1062,7 +1062,7 @@ void iiComps_decodeSyntax_returns(SCompileVxbContext* vxb)
 //		The first component created (if any)
 //
 //////
-	SComp* iComps_translateSourceLineTo(SAsciiCompSearcher* tsComps, SLine* line)
+	SComp* iComps_translate_sourceLineTo(SAsciiCompSearcher* tsComps, SLine* line)
 	{
 		s32						lnI, lnMaxLength, lnStart, lnLength, lnLacsLength;
 		SComp*					compFirst;
@@ -1200,7 +1200,7 @@ void iiComps_decodeSyntax_returns(SCompileVxbContext* vxb)
 // alpha/alphanumeric/numeric forms to other forms.
 //
 //////
-	bool iComps_translateToOthers(SAsciiCompSearcher* tacsRoot, SComp* comp, bool tlDescendIntoFirstCombineds)
+	bool iComps_translate_toOthers(SAsciiCompSearcher* tacsRoot, SComp* comp, bool tlDescendIntoFirstCombineds)
 	{
 		bool					llResult;
 		s32						lnTacsLength;
@@ -1216,7 +1216,7 @@ void iiComps_decodeSyntax_returns(SCompileVxbContext* vxb)
 			{
 				// Parse those things which were combined if need be
 				if (tlDescendIntoFirstCombineds && comp->firstCombined)
-					iComps_translateToOthers(tacsRoot, comp->firstCombined, true);
+					iComps_translate_toOthers(tacsRoot, comp->firstCombined, true);
 
 				// Iterate through this item to see if any match
 				tacs = tacsRoot;
@@ -1475,7 +1475,7 @@ void iiComps_decodeSyntax_returns(SCompileVxbContext* vxb)
 // or backward in source code).
 //
 //////
-	bool iComps_getMateDirection(SComp* comp, s32* tnMateDirection)
+	bool iComps_get_mateDirection(SComp* comp, s32* tnMateDirection)
 	{
 		if (comp && tnMateDirection)
 		{
@@ -1985,7 +1985,7 @@ void iiComps_decodeSyntax_returns(SCompileVxbContext* vxb)
 // component of [c:\some\dir\file.txt].
 //
 //////
-	u32 iComps_combineAdjacent(SComp* compLeftmost, s32 tniCode, u32 tniCat, SBgra* tnColor, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount)
+	u32 iComps_combine_adjacent(SComp* compLeftmost, s32 tniCode, u32 tniCat, SBgra* tnColor, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount)
 	{
 		u32 lnCombined;
 
@@ -2032,7 +2032,7 @@ void iiComps_decodeSyntax_returns(SCompileVxbContext* vxb)
 // branded as alphanumeric.
 //
 //////
-	u32 iComps_combineAdjacentAlphanumeric(SLine* line)
+	u32 iComps_combine_adjacentAlphanumeric(SLine* line)
 	{
 		u32		lnCombined;
 		SComp*	comp;
@@ -2091,7 +2091,7 @@ void iiComps_decodeSyntax_returns(SCompileVxbContext* vxb)
 // adjacent, it is included as well.
 //
 //////
-	u32 iComps_combineAdjacentNumeric(SLine* line)
+	u32 iComps_combine_adjacentNumeric(SLine* line)
 	{
 		u32		lnCombined;
 		SComp*	comp;
@@ -2174,7 +2174,7 @@ void iiComps_decodeSyntax_returns(SCompileVxbContext* vxb)
 // Called to combine things like [.][t][.] into [.t.], [xyz][.][abc] into [xyz.abc]
 //
 //////
-	u32 iComps_combineAdjacentDotForms(SLine* line)
+	u32 iComps_combine_adjacentDotForms(SLine* line)
 	{
 		u32		lnCombined;
 		u8		c;
@@ -2280,7 +2280,7 @@ void iiComps_decodeSyntax_returns(SCompileVxbContext* vxb)
 					// It was processed above, move to the next component
 					compThisPlus0 = compThisPlus0->ll.nextComp;
 
-				} else if (		iiComps_isKnownDotForm(compThisPlus0)
+				} else if (		iiComps_isKnown_dotForm(compThisPlus0)
 							&&	(compThisPlus0 != line->compilerInfo->firstComp || compThisPlus0->iCode != _ICODE_NUMERIC)/*do not allow numeric dot members in first position*/
 							&& 	compThisPlus1 && compThisPlus2
 							&&	compThisPlus1->iCode == _ICODE_DOT
@@ -2310,7 +2310,7 @@ void iiComps_decodeSyntax_returns(SCompileVxbContext* vxb)
 // suitable for aggregation into a single _ICODE_DOT_FORM component.
 //
 //////
-	bool iiComps_isKnownDotForm(SComp* comp)
+	bool iiComps_isKnown_dotForm(SComp* comp)
 	{
 		bool llResult;
 
@@ -2355,7 +2355,7 @@ void iiComps_decodeSyntax_returns(SCompileVxbContext* vxb)
 // a || whitespace if two, or a ||| comment if greater
 //
 //////
-	u32 iComps_combineAdjacentLeadingPipesigns(SLine* line)
+	u32 iComps_combine_adjacentLeadingPipesigns(SLine* line)
 	{
 		s32		lniCat, lniCode;
 		u32		lnCombined;
@@ -2419,7 +2419,7 @@ void iiComps_decodeSyntax_returns(SCompileVxbContext* vxb)
 // After:		[u8][whitespace][name][left bracket][right bracket][whitespace][equal][whitespace][double quote text]
 //
 //////
-	u32 iComps_combineAllBetween(SLine* line, s32 tniCodeNeedle, s32 tniCodeCombined, SBgra* syntaxHighlightColor)
+	u32 iComps_combineAll_between(SLine* line, s32 tniCodeNeedle, s32 tniCodeCombined, SBgra* syntaxHighlightColor)
 	{
 		u32		lnCount;
 		SComp*	compNext;
@@ -2465,8 +2465,8 @@ void iiComps_decodeSyntax_returns(SCompileVxbContext* vxb)
 								// Increase our count
 								++lnCount;
 
-								// Delete this one (as it was technically merged above with the comp->length = line)
-								iLl_deleteNode((SLL*)compNext, true);
+								// Migrate this one to the combined node (as it was technically merged above with the comp->length = line)
+								iLl_migrateNodeToOther((SLL**)&line->compilerInfo->firstComp, (SLL**)&comp->firstCombined, (SLL*)compNext, true);
 
 								// See if we're done
 								if (compNext == compSearcher)
@@ -2505,7 +2505,7 @@ void iiComps_decodeSyntax_returns(SCompileVxbContext* vxb)
 // Called to search for unmatched codes, a left and right, and combines everything between
 //
 //////
-	u32 iComps_combineAllBetween2(SLine* line, s32 tniCodeNeedleLeft, s32 tniCodeNeedleRight, s32 tniCodeCombined, u32 tniCat, SBgra* syntaxHighlightColor, bool tlUseBoldFont)
+	u32 iComps_combineAll_betweenTwo(SLine* line, s32 tniCodeNeedleLeft, s32 tniCodeNeedleRight, s32 tniCodeCombined, u32 tniCat, SBgra* syntaxHighlightColor, bool tlUseBoldFont)
 	{
 		u32		lnCount;
 		SComp*	compNext;
@@ -2555,8 +2555,8 @@ void iiComps_decodeSyntax_returns(SCompileVxbContext* vxb)
 								// Add in our count
 								comp->nbspCount += compNext->nbspCount;
 
-								// Delete this one (as it was technically merged above with the comp->length = line)
-								iLl_deleteNode((SLL*)compNext, true);
+								// Migrate this one to the combined node (as it was technically merged above with the comp->length = line)
+								iLl_migrateNodeToOther((SLL**)&line->compilerInfo->firstComp, (SLL**)&comp->firstCombined, (SLL*)compNext, true);
 
 								// See if we're done
 								if (compNext == compSearcher)
@@ -2595,7 +2595,7 @@ void iiComps_decodeSyntax_returns(SCompileVxbContext* vxb)
 // Called to combine everything after the indicated component into that one component.
 //
 //////
-	u32 iComps_combineAllAfter(SLine* line, s32 tniCodeNeedle)
+	u32 iComps_combineAll_after(SLine* line, s32 tniCodeNeedle)
 	{
 		u32		lnCombined;
 		SComp*	comp;
@@ -2642,7 +2642,7 @@ void iiComps_decodeSyntax_returns(SCompileVxbContext* vxb)
 // Called to delete everything after the indicated component
 //
 //////
-	u32 iComps_deleteAllAfter(SLine* line, s32 tniCodeNeedle)
+	u32 iComps_deleteAll_after(SLine* line, s32 tniCodeNeedle)
 	{
 		u32		lnDeleted;
 		SComp*	comp;
@@ -2697,7 +2697,7 @@ void iiComps_decodeSyntax_returns(SCompileVxbContext* vxb)
 // Note:  This function can be called at any time.
 //
 //////
-	u32 iComps_removeLeadingWhitespaces(SLine* line)
+	u32 iComps_remove_leadingWhitespaces(SLine* line)
 	{
 		u32		lnRemoved;
 		SComp*	comp;
@@ -2734,7 +2734,7 @@ void iiComps_decodeSyntax_returns(SCompileVxbContext* vxb)
 //        processed, such that all quoted text items are already combined into a single icode.
 //
 //////
-	u32 iComps_removeWhitespaces(SLine* line)
+	u32 iComps_remove_whitespaces(SLine* line)
 	{
 		u32		lnRemoved;
 		SComp*	comp;
@@ -2785,7 +2785,7 @@ void iiComps_decodeSyntax_returns(SCompileVxbContext* vxb)
 // Called to remove any /* comments */ from the current chain of comps.
 //
 //////
-	void iComps_removeStartEndComments(SLine* line)
+	void iComps_remove_startEndComments(SLine* line)
 	{
 		SComp*	comp;
 		SComp*	compNext;
@@ -2836,7 +2836,7 @@ void iiComps_decodeSyntax_returns(SCompileVxbContext* vxb)
 // Truncates the components at the first comment, leaving only things up to that point in place
 //
 //////
-	s32 iComps_truncateAtComments(SLine* line)
+	s32 iComps_truncate_atComments(SLine* line)
 	{
 		u32		lnMigrated;
 		SComp*	comp;
@@ -2883,7 +2883,7 @@ void iiComps_decodeSyntax_returns(SCompileVxbContext* vxb)
 // Called to combine casks
 //
 //////
-	void iComps_combineCasks(SLine* line)
+	void iComps_combine_casks(SLine* line)
 	{
 		SComp* comp;
 
@@ -2892,30 +2892,28 @@ void iiComps_decodeSyntax_returns(SCompileVxbContext* vxb)
 		if (line && line->compilerInfo && line->compilerInfo->firstComp)
 		{
 			// See if there are any cask components on this line
-			comp = line->compilerInfo->firstComp;
-			while (comp)
+			for (comp = line->compilerInfo->firstComp; comp; comp = comp->ll.nextComp)
 			{
-				// Is this a cask?
-				if (comp->iCode >= _ICODE_CASK_SIDE_MINIMUM && comp->iCode <= _ICODE_CASK_SIDE_MAXIMUM)
+				// Is it a cask?
+				if (between(comp->iCode, _ICODE_CASK_SIDE_MINIMUM, _ICODE_CASK_SIDE_MAXIMUM))
 				{
-					// Try normal forms without parameters
-					iComps_combineAllBetween2(line,		_ICODE_CASK_ROUND_OPEN,				_ICODE_CASK_ROUND_CLOSE,				_ICODE_CASK_ROUND,				_ICAT_CASK, (SBgra*)&blackColor, false);
-					iComps_combineAllBetween2(line,		_ICODE_CASK_SQUARE_OPEN,			_ICODE_CASK_SQUARE_CLOSE,				_ICODE_CASK_SQUARE,				_ICAT_CASK, (SBgra*)&blackColor, false);
-					iComps_combineAllBetween2(line,		_ICODE_CASK_TRIANGLE_OPEN,			_ICODE_CASK_TRIANGLE_CLOSE,				_ICODE_CASK_TRIANGLE,			_ICAT_CASK, (SBgra*)&blackColor, false);
-					iComps_combineAllBetween2(line,		_ICODE_CASK_TILDE_OPEN,				_ICODE_CASK_TILDE_CLOSE,				_ICODE_CASK_TILDE,				_ICAT_CASK, (SBgra*)&blackColor, false);
+					// WITH parameters
+					iComps_combineAll_betweenTwo(line,		_ICODE_CASK_ROUND_OPEN_PARAMS,		_ICODE_CASK_ROUND_CLOSE_PARAMS,		_ICODE_CASK_ROUND_PARAMS,		_ICAT_CASK, (SBgra*)&blackColor, false);
+					iComps_combineAll_betweenTwo(line,		_ICODE_CASK_SQUARE_OPEN_PARAMS,		_ICODE_CASK_SQUARE_CLOSE_PARAMS,	_ICODE_CASK_SQUARE_PARAMS,		_ICAT_CASK, (SBgra*)&blackColor, false);
+					iComps_combineAll_betweenTwo(line,		_ICODE_CASK_TRIANGLE_OPEN_PARAMS,	_ICODE_CASK_TRIANGLE_CLOSE_PARAMS,	_ICODE_CASK_TRIANGLE_PARAMS,	_ICAT_CASK, (SBgra*)&blackColor, false);
+					iComps_combineAll_betweenTwo(line,		_ICODE_CASK_UTILITY_OPEN_PARAMS,	_ICODE_CASK_UTILITY_CLOSE_PARAMS,	_ICODE_CASK_TILDE_PARAMS,		_ICAT_CASK, (SBgra*)&blackColor, false);
+					iComps_combineAll_betweenTwo(line,		_ICODE_CASK_CODE_OPEN_PARAMS,		_ICODE_CASK_CODE_CLOSE_PARAMS,		_ICODE_CASK_TILDE_PARAMS,		_ICAT_CASK, (SBgra*)&blackColor, false);
 
-					// Try normal forms with parameters
-					iComps_combineAllBetween2(line,		_ICODE_CASK_ROUND_OPEN_PARAMS,		_ICODE_CASK_ROUND_CLOSE_PARAMS,			_ICODE_CASK_ROUND_PARAMS,		_ICAT_CASK, (SBgra*)&blackColor, false);
-					iComps_combineAllBetween2(line,		_ICODE_CASK_SQUARE_OPEN_PARAMS,		_ICODE_CASK_SQUARE_CLOSE_PARAMS,		_ICODE_CASK_SQUARE_PARAMS,		_ICAT_CASK, (SBgra*)&blackColor, false);
-					iComps_combineAllBetween2(line,		_ICODE_CASK_TRIANGLE_OPEN_PARAMS,	_ICODE_CASK_TRIANGLE_CLOSE_PARAMS,		_ICODE_CASK_TRIANGLE_PARAMS,	_ICAT_CASK, (SBgra*)&blackColor, false);
-					iComps_combineAllBetween2(line,		_ICODE_CASK_TILDE_OPEN_PARAMS,		_ICODE_CASK_TILDE_CLOSE_PARAMS,			_ICODE_CASK_TILDE_PARAMS,		_ICAT_CASK, (SBgra*)&blackColor, false);
+					// NO parameters
+					iComps_combineAll_betweenTwo(line,		_ICODE_CASK_ROUND_OPEN,				_ICODE_CASK_ROUND_CLOSE,			_ICODE_CASK_ROUND,				_ICAT_CASK, (SBgra*)&blackColor, false);
+					iComps_combineAll_betweenTwo(line,		_ICODE_CASK_SQUARE_OPEN,			_ICODE_CASK_SQUARE_CLOSE,			_ICODE_CASK_SQUARE,				_ICAT_CASK, (SBgra*)&blackColor, false);
+					iComps_combineAll_betweenTwo(line,		_ICODE_CASK_TRIANGLE_OPEN,			_ICODE_CASK_TRIANGLE_CLOSE,			_ICODE_CASK_TRIANGLE,			_ICAT_CASK, (SBgra*)&blackColor, false);
+					iComps_combineAll_betweenTwo(line,		_ICODE_CASK_UTILITY_OPEN,			_ICODE_CASK_UTILITY_CLOSE,			_ICODE_CASK_TILDE,				_ICAT_CASK, (SBgra*)&blackColor, false);
+					iComps_combineAll_betweenTwo(line,		_ICODE_CASK_CODE_OPEN,				_ICODE_CASK_CODE_CLOSE,				_ICODE_CASK_TILDE,				_ICAT_CASK, (SBgra*)&blackColor, false);
 
 					// Done
 					return;
 				}
-
-				// Move to next comp
-				comp = comp->ll.nextComp;
 			}
 		}
 	}
@@ -2928,16 +2926,16 @@ void iiComps_decodeSyntax_returns(SCompileVxbContext* vxb)
 // Fixes up common things found in VXB source code.
 //
 //////
-	void iComps_fixupNaturalGroupings(SLine* line)
+	void iComps_fixup_naturalGroupings(SLine* line)
 	{
 		if (line && line->compilerInfo && line->compilerInfo->firstComp)
 		{
 			//////////
 			// Fixup quotes, comments
 			//////
-				iComps_combineAllBetween(line, _ICODE_SINGLE_QUOTE,		_ICODE_SINGLE_QUOTED_TEXT,	&colorSynHi_quotedText);
-				iComps_combineAllBetween(line, _ICODE_DOUBLE_QUOTE,		_ICODE_DOUBLE_QUOTED_TEXT,	&colorSynHi_quotedText);
-				iComps_combineAllAfter(line, _ICODE_LINE_COMMENT);
+				iComps_combineAll_between(line, _ICODE_SINGLE_QUOTE,		_ICODE_SINGLE_QUOTED_TEXT,	&colorSynHi_quotedText);
+				iComps_combineAll_between(line, _ICODE_DOUBLE_QUOTE,		_ICODE_DOUBLE_QUOTED_TEXT,	&colorSynHi_quotedText);
+				iComps_combineAll_after(line, _ICODE_LINE_COMMENT);
 
 
 			//////////
@@ -2945,9 +2943,9 @@ void iiComps_decodeSyntax_returns(SCompileVxbContext* vxb)
 			// which then alternate in some form of alpha, numeric, underscore, etc., and translate to
 			// alphanumeric.  For numeric it looks for +-999.99 completely adjacent, and combines into one.
 			//////
-				iComps_combineAdjacentAlphanumeric(line);
-				iComps_combineAdjacentNumeric(line);
-				iComps_combineAdjacentDotForms(line);
+				iComps_combine_adjacentAlphanumeric(line);
+				iComps_combine_adjacentNumeric(line);
+				iComps_combine_adjacentDotForms(line);
 		}
 	}
 

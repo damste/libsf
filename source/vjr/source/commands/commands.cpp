@@ -2361,7 +2361,7 @@
 		// IN win32api | pathname.dll
 		//////
 			compDllName = iComps_getNth(compIn, 1);
-			iComps_combineAdjacent(compDllName, _ICODE_ALPHA, _ICAT_GENERIC, &colorSynHi_operator, gsCompList_filenameTypes, gnCompList_filenameTypes_length);
+			iComps_combine_adjacent(compDllName, _ICODE_ALPHA, _ICAT_GENERIC, &colorSynHi_operator, gsCompList_filenameTypes, gnCompList_filenameTypes_length);
 
 
 		//////////

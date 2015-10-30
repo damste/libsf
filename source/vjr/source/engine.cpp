@@ -591,12 +591,12 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 		//////////
 		// Parse out the line
 		//////
-			iComps_translateSourceLineTo(&cgcFundamentalSymbols[0], line);
+			iComps_translate_sourceLineTo(&cgcFundamentalSymbols[0], line);
 			if (!line->compilerInfo->firstComp)
 				return(NULL);		// Nothing to compile on this line
 
 			// Remove whitespaces [use][whitespace][foo] becomes [use][foo]
-			iComps_removeLeadingWhitespaces(line);
+			iComps_remove_leadingWhitespaces(line);
 
 
 		//////////
@@ -616,17 +616,17 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 		//////////
 		// Perform natural source code fixups
 		//////
-			iComps_removeStartEndComments(line);		// Remove /* comments */
-			iComps_combineCasks(line);				// Replace [(|][alpha][|)] with [(|alpha|)]
-			iComps_fixupNaturalGroupings(line);		// Fixup natural groupings [_][aaa][999] becomes [_aaa999], [999][.][99] becomes [999.99], etc.
-			iComps_combineAdjacentDotForms(line);		// Fixup [.][t][.] into [.t.] and [thisForm][.][width] into [thisForm.width]
-			iComps_removeWhitespaces(line);			// Remove all whitespaces after everything else was parsed [use][whitespace][foo] becomes [use][foo]
+			iComps_remove_startEndComments(line);		// Remove /* comments */
+			iComps_combine_casks(line);					// Replace [(|][alpha][|)] with [(|alpha|)]
+			iComps_fixup_naturalGroupings(line);			// Fixup natural groupings [_][aaa][999] becomes [_aaa999], [999][.][99] becomes [999.99], etc.
+			iComps_combine_adjacentDotForms(line);		// Fixup [.][t][.] into [.t.] and [thisForm][.][width] into [thisForm.width]
+			iComps_remove_whitespaces(line);				// Remove all whitespaces after everything else was parsed [use][whitespace][foo] becomes [use][foo]
 
 
 		//////////
 		// Translate sequences to known keywords
 		//////
-			iComps_translateToOthers(&cgcKeywordsVxb[0], line->compilerInfo->firstComp, true);
+			iComps_translate_toOthers(&cgcKeywordsVxb[0], line->compilerInfo->firstComp, true);
 
 
 		//////////
