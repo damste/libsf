@@ -160,12 +160,6 @@
 
 
 		//////////
-		// Initialize our gsThisCode segment
-		//////
-			iEngine_startup_initialization();
-
-
-		//////////
 		// Allocate a sourceLight area
 		//////
 			bmpSourceLight = iBmp_allocate();

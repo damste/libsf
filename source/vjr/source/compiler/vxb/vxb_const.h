@@ -186,7 +186,8 @@
 
 	// Messages
 	const u8		cgcSpuriousIgnored[]							= "spurious, ignored";
-	const u8		cgcUnspecifiedWarning[]							= "warning";
+	const u8		cgcUnspecifiedWarning[]							= "unspecified warning";
+	const u8		cgcUnspecifiedError[]							= "unspecified error";
 
 	// Fill ins
 	const u8		cgc_notFoundOrInvalidDataType[]					= "not found or is invalid data type";

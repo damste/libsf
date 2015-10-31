@@ -109,9 +109,12 @@
 							int			nCmdShow	)
 #endif
 {
-	SThisCode*	thisCode = NULL;
-	MSG			msg;
-	HACCEL		hAccelTable;
+	SThisCode*		thisCode = NULL;
+	MSG				msg;
+	HACCEL			hAccelTable;
+	SCompilerStats	stats;
+	bool			error;
+	u32				errorNum;
 #if defined(__linux__) || defined(__solaris__)
 	HINSTANCE	hInstance = 0;
 #endif
@@ -124,6 +127,14 @@
 		ghInstance = hInstance;
 		iVjr_init(&hAccelTable);
 		iVjr_appendSystemLog((u8*)"Initialization complete");
+
+
+	//////////
+	// Initialize the processing engine, and load our nep() (the internal baseline.prg program)
+	//////
+		iEngine_startup_initialization();
+		iEngine_loadPrg(&stats, NULL, baseline_prg, sizeof(baseline_prg) - 1, true, &error, &errorNum);
+		iEngine_dispatch_function(stats.el.firstFunc);
 
 
 	//////////

@@ -125,7 +125,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varTest) || !iVariable_isFundamentalTypeLogical(varTest))
 			{
-				iError_reportByNumber(_ERROR_MUST_BE_LOGICAL, iVariable_get_relatedComp(varTest), false);
+				iError_report_byNumber(_ERROR_MUST_BE_LOGICAL, iVariable_get_relatedComp(varTest), false);
 				return;
 			}
 
@@ -136,7 +136,7 @@
 			llTest = iiVariable_getAs_bool(varTest, false, &error, &errorNum);
 			if (error)
 			{
-				iError_reportByNumber(errorNum, iVariable_get_relatedComp(varTest), false);
+				iError_report_byNumber(errorNum, iVariable_get_relatedComp(varTest), false);
 				return;
 			}
 
@@ -159,7 +159,7 @@
 		// Are we good?
 		//////
 			if (!result)
-				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(((llTest) ? varTrue : varFalse)), false);
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(((llTest) ? varTrue : varFalse)), false);
 
 
 		//////////
@@ -213,12 +213,12 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varValue))
 			{
-				iError_reportByNumber(_ERROR_MISSING_PARAMETER, iVariable_get_relatedComp(varValue), false);
+				iError_report_byNumber(_ERROR_MISSING_PARAMETER, iVariable_get_relatedComp(varValue), false);
 				return;
 			}
 			if (!iVariable_isValid(varList1))
 			{
-				iError_reportByNumber(_ERROR_MISSING_PARAMETER, iVariable_get_relatedComp(varList1), false);
+				iError_report_byNumber(_ERROR_MISSING_PARAMETER, iVariable_get_relatedComp(varList1), false);
 				return;
 			}
 
@@ -235,7 +235,7 @@
 					if (iVariable_get_fundamentalType(rpar->ip[lnI]) != lnType)
 					{
 						// The types do not match
-						iError_reportByNumber(_ERROR_DATA_TYPE_MISMATCH, iVariable_get_relatedComp(rpar->ip[lnI]), false);
+						iError_report_byNumber(_ERROR_DATA_TYPE_MISMATCH, iVariable_get_relatedComp(rpar->ip[lnI]), false);
 						return;
 					}
 
@@ -264,7 +264,7 @@
 				//////
 					if (error)
 					{
-						iError_reportByNumber(errorNum, iVariable_get_relatedComp(rpar->ip[lnI]), false);
+						iError_report_byNumber(errorNum, iVariable_get_relatedComp(rpar->ip[lnI]), false);
 						return;
 					}
 
@@ -276,7 +276,7 @@
 		//////
 			result = iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, iVariable_populate_byBool(llResult), 1, false);
 			if (!result)
-				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varValue), false);
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varValue), false);
 
 
 		//////////
@@ -325,7 +325,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varNumber) || !iVariable_isTypeNumeric(varNumber))
 			{
-				iError_reportByNumber(_ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(varNumber), false);
+				iError_report_byNumber(_ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(varNumber), false);
 				return;
 			}
 
@@ -338,7 +338,7 @@
 				fValue = iiVariable_getAs_f64(varNumber, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNumber), false);
+					iError_report_byNumber(errorNum, iVariable_get_relatedComp(varNumber), false);
 					return;
 				}
 
@@ -417,7 +417,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varStr) || !iVariable_isTypeCharacter(varStr))
 			{
-				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varStr), false);
+				iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varStr), false);
 				return;
 			}
 
@@ -429,7 +429,7 @@
 			{
 				if (!iVariable_isFundamentalTypeLogical(varTestWholeString))
 				{
-					iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varTestWholeString), false);
+					iError_report_byNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varTestWholeString), false);
 					return;
 				}
 
@@ -437,7 +437,7 @@
 				llTestWholeString = iiVariable_getAs_bool(varTestWholeString, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varTestWholeString), false);
+					iError_report_byNumber(errorNum, iVariable_get_relatedComp(varTestWholeString), false);
 					return;
 				}
 
@@ -453,7 +453,7 @@
 			llIsAlpha	= ifunction_iscommon(varStr, llTestWholeString, _isAlpha);
 			rpar->rp[0]	= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, iVariable_populate_byBool(llIsAlpha), 1, true);
 			if (!rpar->rp[0])
-				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varStr), false);
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varStr), false);
 
 	}
 
@@ -565,7 +565,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varStr) || !iVariable_isTypeCharacter(varStr))
 			{
-				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varStr), false);
+				iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varStr), false);
 				return;
 			}
 
@@ -577,7 +577,7 @@
 			{
 				if (!iVariable_isFundamentalTypeLogical(varTestWholeString))
 				{
-					iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varTestWholeString), false);
+					iError_report_byNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varTestWholeString), false);
 					return;
 				}
 
@@ -585,7 +585,7 @@
 				llTestWholeString = iiVariable_getAs_bool(varTestWholeString, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varTestWholeString), false);
+					iError_report_byNumber(errorNum, iVariable_get_relatedComp(varTestWholeString), false);
 					return;
 				}
 
@@ -601,7 +601,7 @@
 			llIsDigit	= ifunction_iscommon(varStr, llTestWholeString, _isDigit);
 			rpar->rp[0]	= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, iVariable_populate_byBool(llIsDigit), 1, true);
 			if (!rpar->rp[0])
-				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varStr), false);
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varStr), false);
 
 	}
 
@@ -652,7 +652,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varStr) || !iVariable_isTypeCharacter(varStr))
 			{
-				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varStr), false);
+				iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varStr), false);
 				return;
 			}
 
@@ -664,7 +664,7 @@
 			{
 				if (!iVariable_isFundamentalTypeLogical(varTestWholeString))
 				{
-					iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varTestWholeString), false);
+					iError_report_byNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varTestWholeString), false);
 					return;
 				}
 
@@ -672,7 +672,7 @@
 				llTestWholeString = iiVariable_getAs_bool(varTestWholeString, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varTestWholeString), false);
+					iError_report_byNumber(errorNum, iVariable_get_relatedComp(varTestWholeString), false);
 					return;
 				}
 
@@ -688,7 +688,7 @@
 			llIsLower	= ifunction_iscommon(varStr, llTestWholeString, _isLower);
 			rpar->rp[0]	= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, iVariable_populate_byBool(llIsLower), 1, true);
 			if (!rpar->rp[0])
-				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varStr), false);
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varStr), false);
 
 	}
 
@@ -739,7 +739,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varStr) || !iVariable_isTypeCharacter(varStr))
 			{
-				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varStr), false);
+				iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varStr), false);
 				return;
 			}
 
@@ -751,7 +751,7 @@
 			{
 				if (!iVariable_isFundamentalTypeLogical(varTestWholeString))
 				{
-					iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varTestWholeString), false);
+					iError_report_byNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varTestWholeString), false);
 					return;
 				}
 
@@ -759,7 +759,7 @@
 				llTestWholeString = iiVariable_getAs_bool(varTestWholeString, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varTestWholeString), false);
+					iError_report_byNumber(errorNum, iVariable_get_relatedComp(varTestWholeString), false);
 					return;
 				}
 
@@ -775,7 +775,7 @@
 			llIsUpper	= ifunction_iscommon(varStr, llTestWholeString, _isUpper);
 			rpar->rp[0]	= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, iVariable_populate_byBool(llIsUpper), 1, true);
 			if (!rpar->rp[0])
-				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varStr), false);
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varStr), false);
 
 	}
 
@@ -822,7 +822,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValidType(varExpr))
 			{
-				iError_reportByNumber(_ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(varExpr), false);
+				iError_report_byNumber(_ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(varExpr), false);
 				return;
 			}
 
@@ -833,7 +833,7 @@
 			llIsNull	= ifunction_isnull_common(varExpr);
 			rpar->rp[0]	= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, iVariable_populate_byBool(llIsNull), 1, true);
 			if (!rpar->rp[0])
-				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varExpr), false);
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varExpr), false);
 
 	}
 
@@ -873,7 +873,7 @@
 
 				// We cannot (yet??) test NULL on the other types
 				default:
-					iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+					iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 					return(false);
 			}
 

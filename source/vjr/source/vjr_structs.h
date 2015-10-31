@@ -147,15 +147,15 @@ struct SHover
 // All other classes exist as base classes known to the system, or 
 struct SClassObj
 {
+	SLL			ll;							// Link list
+	SDatum		name;						// Class name
+
 	s32			classObjType;				// See _CLASS_OBJECT_* constants
 	SObject*	baseObj;					// The base class used to create instances of this class
-};
 
-struct SEngineLoad
-{
-	SFunction*	firstFunc;					// First new function that was loaded in parsing the source code
-	SDllFunc*	firstDllFunc;				// First new DLL function that was loaded in parsing the source code
-	SClassObj*	firstClassObj;				// First new class that was loaded
+	SEM*		sem;						// SEM this classobj was defined in
+	SLine*		firstLine;					// First line in source code where the DEFINE CLASS begins
+	SLine*		lastLine;					// Last line in source code where the ENDDEFINE ends
 };
 
 struct SReturnsParams

@@ -92,6 +92,7 @@ struct SComp;
 struct SCompiler;
 struct SFunction;
 struct SObjPropMap;
+struct SClassObj;
 
 
 
@@ -639,4 +640,11 @@ struct SDllVals
 
 		SDatum		_datum;			// Used for creating a copy of character data when it's passed by value (so any changes made are made to the copy)
 	};
+};
+
+struct SEngineLoad
+{
+	SFunction*	firstFunc;					// First new function that was loaded in parsing the source code
+	SDllFunc*	firstDllFunc;				// First new DLL function that was loaded in parsing the source code
+	SClassObj*	firstClassObj;				// First new class that was loaded
 };

@@ -94,7 +94,7 @@
 	void iError_signal(u32 tnErrorNum, SComp* comp, bool tlInvasive, s8* tcExtraInfo, bool tlFatal)
 	{
 // TODO:  This will need to potentially break the program execution
-		iError_reportByNumber(tnErrorNum, comp, tlInvasive);
+		iError_report_byNumber(tnErrorNum, comp, tlInvasive);
 
 		if (tlInvasive)
 			debug_break;
@@ -118,8 +118,12 @@
 		if (!tlInvasive)
 		{
 			// Append the error to the EM
-			iSEM_appendLine(screenData, errorText, -1, false);
-			_screen_editbox->isDirtyRender = true;
+			if (screenData)
+				iSEM_appendLine(screenData, errorText, -1, false);
+
+			// Indicate it needs a re-render
+			if (_screen_editbox)
+				_screen_editbox->isDirtyRender = true;
 
 		} else {
 			// Immediate need
@@ -135,98 +139,105 @@
 // Reports an error by number
 //
 //////
-	void iError_reportByNumber(u32 tnErrorNum, SComp* comp, bool tlInvasive)
+	void iError_report_byNumber(u32 tnErrorNum, SComp* comp, bool tlInvasive)
 	{
-		switch (tnErrorNum)
-		{
-			case _ERROR_OUT_OF_MEMORY:						{	iError_report(cgcOutOfMemory,						tlInvasive);		break;	}
-			case _ERROR_UNEXPECTED_COMMAND:					{	iError_report(cgcUnexpectedCommand,				tlInvasive);		break;	}
-			case _ERROR_CONTEXT_HAS_CHANGED:				{	iError_report(cgcContextHasChanged,				tlInvasive);		break;	}
-			case _ERROR_FULL_RECOMPILE_REQUIRED:			{	iError_report(cgcFullRecompileRequired,			tlInvasive);		break;	}
-			case _ERROR_NOT_A_VARIABLE:						{	iError_report(cgcNotAVariable,					tlInvasive);		break;	}
-			case _ERROR_NUMERIC_OVERFLOW:					{	iError_report(cgcNumericOverflow,					tlInvasive);		break;	}
-			case _ERROR_NOT_NUMERIC:						{	iError_report(cgcNotNumeric,						tlInvasive);		break;	}
-			case _ERROR_EMPTY_STRING:						{	iError_report(cgcEmptyString,						tlInvasive);		break;	}
-			case _ERROR_SYNTAX:								{	iError_report(cgcSyntaxError,						tlInvasive);		break;	}
-			case _ERROR_UNRECOGNIZED_PARAMETER:				{	iError_report(cgcUnrecognizedParameter,			tlInvasive);		break;	}
-			case _ERROR_OUT_OF_RANGE:						{	iError_report(cgcOutOfRange,						tlInvasive);		break;	}
-			case _ERROR_COMMA_EXPECTED:						{	iError_report(cgcCommaExpected,					tlInvasive);		break;	}
-			case _ERROR_TOO_MANY_PARAMETERS:				{	iError_report(cgcTooManyParameters,				tlInvasive);		break;	}
-			case _ERROR_DATA_TYPE_MISMATCH:					{	iError_report(cgcDataTypeMismatch,				tlInvasive);		break;	}
-			case _ERROR_FEATURE_NOT_AVAILABLE:				{	iError_report(cgcFeatureNotAvailable,				tlInvasive);		break;	}
-			case _ERROR_P1_IS_INCORRECT:					{	iError_report(cgcP1IsIncorrect,					tlInvasive);		break;	}
-			case _ERROR_P2_IS_INCORRECT:					{	iError_report(cgcP2IsIncorrect,					tlInvasive);		break;	}
-			case _ERROR_P3_IS_INCORRECT:					{	iError_report(cgcP3IsIncorrect,					tlInvasive);		break;	}
-			case _ERROR_P4_IS_INCORRECT:					{	iError_report(cgcP4IsIncorrect,					tlInvasive);		break;	}
-			case _ERROR_P5_IS_INCORRECT:					{	iError_report(cgcP5IsIncorrect,					tlInvasive);		break;	}
-			case _ERROR_P6_IS_INCORRECT:					{	iError_report(cgcP6IsIncorrect,					tlInvasive);		break;	}
-			case _ERROR_P7_IS_INCORRECT:					{	iError_report(cgcP7IsIncorrect,					tlInvasive);		break;	}
-			case _ERROR_INTERNAL_ERROR:						{	iError_report(cgcInternalError,					tlInvasive);		break;	}
-			case _ERROR_INVALID_ARGUMENT_TYPE_COUNT:		{	iError_report(cgcInvalidArgumentTypeCountError,	tlInvasive);		break;	}
-			case _ERROR_VARIABLE_NOT_FOUND:					{	iError_report(cgcVariableNotFoundError,			tlInvasive);		break;	}
-			case _ERROR_ALIAS_NOT_FOUND:					{	iError_report(cgcAliasNotFoundError,				tlInvasive);		break;	}
-			case _ERROR_INVALID_WORK_AREA:					{	iError_report(cgcInvalidWorkArea,					tlInvasive);		break;	}
-			case _ERROR_ALIAS_ALREADY_IN_USE:				{	iError_report(cgcAliasAlreadyInUse,				tlInvasive);		break;	}
-			case _ERROR_PARENTHESIS_EXPECTED:				{	iError_report(cgcParenthesisExpected,				tlInvasive);		break;	}
-			case _ERROR_MISSING_PARAMETER:					{	iError_report(cgcMissingParameter,				tlInvasive);		break;	}
-
-			case _ERROR_DBF_UNABLE_TO_OPEN_TABLE:			{	iError_report(cgcDbfUnableToOpenTable,			tlInvasive);		break;	}
-			case _ERROR_DBF_WORK_AREA_ALREADY_IN_USE:		{	iError_report(cgcDbfWorkAreaAlreadyInUse,			tlInvasive);		break;	}
-			case _ERROR_DBF_ERROR_OPENING_DBC:				{	iError_report(cgcDbfErrorOpeningDbc,				tlInvasive);		break;	}
-			case _ERROR_DBF_WORK_AREA_NOT_IN_USE:			{	iError_report(cgcDbfWorkAreaNotInUse,				tlInvasive);		break;	}
-			case _ERROR_DBF_ERROR_READING_HEADER1:			{	iError_report(cgcDbfErrorReadingHeader1,			tlInvasive);		break;	}
-			case _ERROR_DBF_UNKNOWN_TABLE_TYPE:				{	iError_report(cgcDbfUnknownTableType,				tlInvasive);		break;	}
-			case _ERROR_DBF_MEMORY_ALLOCATION:				{	iError_report(cgcDbfMemoryAllocation,				tlInvasive);		break;	}
-			case _ERROR_DBF_ERROR_READING_HEADER2:			{	iError_report(cgcDbfErrorReadingHeader2,			tlInvasive);		break;	}
-			case _ERROR_DBF_TABLE_NAME_TOO_LONG:			{	iError_report(cgcDbfTableNameTooLong,				tlInvasive);		break;	}
-			case _ERROR_DBF_MEMORY_ROW:						{	iError_report(cgcDbfMemoryRow,					tlInvasive);		break;	}
-			case _ERROR_DBF_MEMORY_ORIGINAL:				{	iError_report(cgcDbfMemoryOriginal,				tlInvasive);		break;	}
-			case _ERROR_DBF_MEMORY_INDEX:					{	iError_report(cgcDbfMemoryIndex,					tlInvasive);		break;	}
-			case _ERROR_DBF_INVALID_WORK_AREA:				{	iError_report(cgcDbfInvalidWorkArea,				tlInvasive);		break;	}
-			case _ERROR_DBF_NO_MORE_WORK_AREAS:				{	iError_report(cgcDbfNoMoreWorkAreas,				tlInvasive);		break;	}
-			case _ERROR_DBF_LOCKING:						{	iError_report(cgcDbfLocking,						tlInvasive);		break;	}
-			case _ERROR_DBF_WRITING:						{	iError_report(cgcDbfWriting,						tlInvasive);		break;	}
-			case _ERROR_DBF_SEEKING:						{	iError_report(cgcDbfSeeking,						tlInvasive);		break;	}
-			case _ERROR_DBF_NO_DATA:						{	iError_report(cgcDbfNoData,						tlInvasive);		break;	}
-			case _ERROR_DBF_UNKNOWN_MEMO_FORMAT:			{	iError_report(cgcDbfUnknownMemoFormat,			tlInvasive);		break;	}
-
-			case _ERROR_CONFLICTING_PARAMETERS:				{	iError_report(cgcConflictingParameters,			tlInvasive);		break;	}
-			case _ERROR_PARAMETER_IS_INCORRECT:				{	iError_report(cgcParameterIsIncorrect,			tlInvasive);		break;	}
-			case _ERROR_TABLE_ALREADY_IN_USE:				{	iError_report(cgcTableAlreadyInUse,				tlInvasive);		break;	}
-			case _ERROR_PARAMETER_TOO_LONG:					{	iError_report(cgcParameterTooLong,				tlInvasive);		break;	}
-			case _ERROR_UNABLE_TO_OPEN_DBC:					{	iError_report(cgcUnableToOpenDbc,					tlInvasive);		break;	}
-			case _ERROR_DIVISION_BY_ZERO:					{	iError_report(cgcDivisionByZero,					tlInvasive);		break;	}
-			case _ERROR_CANNOT_BE_NEGATIVE:					{	iError_report(cgcCannotBeNegative,				tlInvasive);		break;	}
-			case _ERROR_CANNOT_BE_ZERO_OR_NEGATIVE:			{	iError_report(cgcCannotBeZeroOrNegative,			tlInvasive);		break;	}
-			case _ERROR_UNABLE_TO_AUTOVALIDATE:				{	iError_report(cgcUnableToAutoValidate,			tlInvasive);		break;	}
-			case _ERROR_DBF_GENERAL_ERROR:					{	iError_report(cgcGeneralErrorDbf,					tlInvasive);		break;	}
-			case _ERROR_CANNOT_BE_ZERO:						{	iError_report(cgcCannotBeZero,					tlInvasive);		break;	}
-			case _ERROR_MUST_BE_LOGICAL:					{	iError_report(cgcMustBeLogical,					tlInvasive);		break;	}
-			case _ERROR_PARAMETER_MUST_BE_8_16_32_64:		{	iError_report(cgcParameterMustBe8_16_32_64,		tlInvasive);		break;	}
-			case _ERROR_TOO_BIG_FOR_TARGET:					{	iError_report(cgcTooBigForTarget,					tlInvasive);		break;	}
-			case _ERROR_NO_INDEX_IS_LOADED:					{	iError_report(cgcNoIndexIsLoaded,					tlInvasive);		break;	}
-			case _ERROR_INVALID_INDEX_TAG:					{	iError_report(cgcInvalidIndextag,					tlInvasive);		break;	}
-			case _ERROR_UNABLE_TO_SAVE:						{	iError_report(cgcUnableToSave,					tlInvasive);		break;	}
-			case _ERROR_INVALID_PARAMETERS:					{	iError_report(cgcInvalidParameters,				tlInvasive);		break;	}
-			case _ERROR_PARAMETER_MUST_BE_1:				{	iError_report(cgcParameterMustBeOne,				tlInvasive);		break;	}
-			case _ERROR_INVALID_CORRUPT_NEEDS_REBUILT:		{	iError_report(cgcIndexCorruptNeedsRebuilt,		tlInvasive);		break;	}
-			case _ERROR_UNABLE_TO_LOCK_FOR_WRITE:			{	iError_report(cgcUnableToLockForWrite,			tlInvasive);		break;	}
-			case _ERROR_UNABLE_TO_LOCK_FOR_READ:			{	iError_report(cgcUnableToLockForRead,				tlInvasive);		break;	}
-			case _ERROR_UNABLE_TO_INITIALIZE:				{	iError_report(cgcUnableToInitialize,				tlInvasive);		break;	}
-			case _ERROR_UNKNOWN_FUNCTION:					{	iError_report(cgcUnknownFunction,					tlInvasive);		break;	}
-			case _ERROR_DLL_NOT_FOUND:						{	iError_report(cgcDllNotFound,						tlInvasive);		break;	}
-			case _ERROR_FUNCTION_NOT_FOUND:					{	iError_report(cgcFunctionNotFound,					tlInvasive);		break;	}
-			case _ERROR_VARIABLE_IS_FIXED:					{	iError_report(cgcVariableIsFixed,					tlInvasive);		break;	}
-			case _ERROR_FEATURE_NOT_YET_CODED:				{	iError_report(cgcFeatureNotYetCoded,				tlInvasive);		break;	}
-			case _ERROR_NESTING_ERROR:						{	iError_report(cgcNestingError,						tlInvasive);		break;	}
-
-		}
+		iError_report(iError_getText_byNumber(tnErrorNum), tlInvasive);
 
 		// Flag the component
 		if (comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data && comp->line->sourceCode_populatedLength != 0)
 		{
 			// Flag it for error
 			comp->isError = true;
+		}
+	}
+
+	cu8* iError_getText_byNumber(u32 tnErrorNum)
+	{
+		switch (tnErrorNum)
+		{
+			case _ERROR_OUT_OF_MEMORY:						return(cgcOutOfMemory);
+			case _ERROR_UNEXPECTED_COMMAND:					return(cgcUnexpectedCommand);
+			case _ERROR_CONTEXT_HAS_CHANGED:				return(cgcContextHasChanged);
+			case _ERROR_FULL_RECOMPILE_REQUIRED:			return(cgcFullRecompileRequired);
+			case _ERROR_NOT_A_VARIABLE:						return(cgcNotAVariable);
+			case _ERROR_NUMERIC_OVERFLOW:					return(cgcNumericOverflow);
+			case _ERROR_NOT_NUMERIC:						return(cgcNotNumeric);
+			case _ERROR_EMPTY_STRING:						return(cgcEmptyString);
+			case _ERROR_SYNTAX:								return(cgcSyntaxError);
+			case _ERROR_UNRECOGNIZED_PARAMETER:				return(cgcUnrecognizedParameter);
+			case _ERROR_OUT_OF_RANGE:						return(cgcOutOfRange);
+			case _ERROR_COMMA_EXPECTED:						return(cgcCommaExpected);
+			case _ERROR_TOO_MANY_PARAMETERS:				return(cgcTooManyParameters);
+			case _ERROR_DATA_TYPE_MISMATCH:					return(cgcDataTypeMismatch);
+			case _ERROR_FEATURE_NOT_AVAILABLE:				return(cgcFeatureNotAvailable);
+			case _ERROR_P1_IS_INCORRECT:					return(cgcP1IsIncorrect);
+			case _ERROR_P2_IS_INCORRECT:					return(cgcP2IsIncorrect);
+			case _ERROR_P3_IS_INCORRECT:					return(cgcP3IsIncorrect);
+			case _ERROR_P4_IS_INCORRECT:					return(cgcP4IsIncorrect);
+			case _ERROR_P5_IS_INCORRECT:					return(cgcP5IsIncorrect);
+			case _ERROR_P6_IS_INCORRECT:					return(cgcP6IsIncorrect);
+			case _ERROR_P7_IS_INCORRECT:					return(cgcP7IsIncorrect);
+			case _ERROR_INTERNAL_ERROR:						return(cgcInternalError);
+			case _ERROR_INVALID_ARGUMENT_TYPE_COUNT:		return(cgcInvalidArgumentTypeCountError);
+			case _ERROR_VARIABLE_NOT_FOUND:					return(cgcVariableNotFoundError);
+			case _ERROR_ALIAS_NOT_FOUND:					return(cgcAliasNotFoundError);
+			case _ERROR_INVALID_WORK_AREA:					return(cgcInvalidWorkArea);
+			case _ERROR_ALIAS_ALREADY_IN_USE:				return(cgcAliasAlreadyInUse);
+			case _ERROR_PARENTHESIS_EXPECTED:				return(cgcParenthesisExpected);
+			case _ERROR_MISSING_PARAMETER:					return(cgcMissingParameter);
+
+			case _ERROR_DBF_UNABLE_TO_OPEN_TABLE:			return(cgcDbfUnableToOpenTable);
+			case _ERROR_DBF_WORK_AREA_ALREADY_IN_USE:		return(cgcDbfWorkAreaAlreadyInUse);
+			case _ERROR_DBF_ERROR_OPENING_DBC:				return(cgcDbfErrorOpeningDbc);
+			case _ERROR_DBF_WORK_AREA_NOT_IN_USE:			return(cgcDbfWorkAreaNotInUse);
+			case _ERROR_DBF_ERROR_READING_HEADER1:			return(cgcDbfErrorReadingHeader1);
+			case _ERROR_DBF_UNKNOWN_TABLE_TYPE:				return(cgcDbfUnknownTableType);
+			case _ERROR_DBF_MEMORY_ALLOCATION:				return(cgcDbfMemoryAllocation);
+			case _ERROR_DBF_ERROR_READING_HEADER2:			return(cgcDbfErrorReadingHeader2);
+			case _ERROR_DBF_TABLE_NAME_TOO_LONG:			return(cgcDbfTableNameTooLong);
+			case _ERROR_DBF_MEMORY_ROW:						return(cgcDbfMemoryRow);
+			case _ERROR_DBF_MEMORY_ORIGINAL:				return(cgcDbfMemoryOriginal);
+			case _ERROR_DBF_MEMORY_INDEX:					return(cgcDbfMemoryIndex);
+			case _ERROR_DBF_INVALID_WORK_AREA:				return(cgcDbfInvalidWorkArea);
+			case _ERROR_DBF_NO_MORE_WORK_AREAS:				return(cgcDbfNoMoreWorkAreas);
+			case _ERROR_DBF_LOCKING:						return(cgcDbfLocking);
+			case _ERROR_DBF_WRITING:						return(cgcDbfWriting);
+			case _ERROR_DBF_SEEKING:						return(cgcDbfSeeking);
+			case _ERROR_DBF_NO_DATA:						return(cgcDbfNoData);
+			case _ERROR_DBF_UNKNOWN_MEMO_FORMAT:			return(cgcDbfUnknownMemoFormat);
+
+			case _ERROR_CONFLICTING_PARAMETERS:				return(cgcConflictingParameters);
+			case _ERROR_PARAMETER_IS_INCORRECT:				return(cgcParameterIsIncorrect);
+			case _ERROR_TABLE_ALREADY_IN_USE:				return(cgcTableAlreadyInUse);
+			case _ERROR_PARAMETER_TOO_LONG:					return(cgcParameterTooLong);
+			case _ERROR_UNABLE_TO_OPEN_DBC:					return(cgcUnableToOpenDbc);
+			case _ERROR_DIVISION_BY_ZERO:					return(cgcDivisionByZero);
+			case _ERROR_CANNOT_BE_NEGATIVE:					return(cgcCannotBeNegative);
+			case _ERROR_CANNOT_BE_ZERO_OR_NEGATIVE:			return(cgcCannotBeZeroOrNegative);
+			case _ERROR_UNABLE_TO_AUTOVALIDATE:				return(cgcUnableToAutoValidate);
+			case _ERROR_DBF_GENERAL_ERROR:					return(cgcGeneralErrorDbf);
+			case _ERROR_CANNOT_BE_ZERO:						return(cgcCannotBeZero);
+			case _ERROR_MUST_BE_LOGICAL:					return(cgcMustBeLogical);
+			case _ERROR_PARAMETER_MUST_BE_8_16_32_64:		return(cgcParameterMustBe8_16_32_64);
+			case _ERROR_TOO_BIG_FOR_TARGET:					return(cgcTooBigForTarget);
+			case _ERROR_NO_INDEX_IS_LOADED:					return(cgcNoIndexIsLoaded);
+			case _ERROR_INVALID_INDEX_TAG:					return(cgcInvalidIndextag);
+			case _ERROR_UNABLE_TO_SAVE:						return(cgcUnableToSave);
+			case _ERROR_INVALID_PARAMETERS:					return(cgcInvalidParameters);
+			case _ERROR_PARAMETER_MUST_BE_1:				return(cgcParameterMustBeOne);
+			case _ERROR_INVALID_CORRUPT_NEEDS_REBUILT:		return(cgcIndexCorruptNeedsRebuilt);
+			case _ERROR_UNABLE_TO_LOCK_FOR_WRITE:			return(cgcUnableToLockForWrite);
+			case _ERROR_UNABLE_TO_LOCK_FOR_READ:			return(cgcUnableToLockForRead);
+			case _ERROR_UNABLE_TO_INITIALIZE:				return(cgcUnableToInitialize);
+			case _ERROR_UNKNOWN_FUNCTION:					return(cgcUnknownFunction);
+			case _ERROR_DLL_NOT_FOUND:						return(cgcDllNotFound);
+			case _ERROR_FUNCTION_NOT_FOUND:					return(cgcFunctionNotFound);
+			case _ERROR_VARIABLE_IS_FIXED:					return(cgcVariableIsFixed);
+			case _ERROR_FEATURE_NOT_YET_CODED:				return(cgcFeatureNotYetCoded);
+			case _ERROR_NESTING_ERROR:						return(cgcNestingError);
+
+			default:
+				return(cgcUnspecifiedError);
 		}
 	}
 
@@ -1310,7 +1321,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString1) || !iVariable_isTypeCharacter(varString1))
 			{
-				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varString1), false);
+				iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varString1), false);
 				return;
 			}
 
@@ -1320,7 +1331,7 @@
 		//////
 			if (!iVariable_isValid(varString2) || !iVariable_isTypeCharacter(varString2))
 			{
-				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varString2), false);
+				iError_report_byNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varString2), false);
 				return;
 			}
 
@@ -1393,7 +1404,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varNum1) || !iVariable_isTypeNumeric(varNum1))
 			{
-				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varNum1), false);
+				iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varNum1), false);
 				return;
 			}
 
@@ -1403,7 +1414,7 @@
 		//////
 			if (!iVariable_isValid(varNum2) || !iVariable_isTypeNumeric(varNum2))
 			{
-				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varNum2), false);
+				iError_report_byNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varNum2), false);
 				return;
 			}
 
@@ -1417,7 +1428,7 @@
 				lfValue1 = iiVariable_getAs_f64(varNum1, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum1), false);
+					iError_report_byNumber(errorNum, iVariable_get_relatedComp(varNum1), false);
 					return;
 				}
 
@@ -1432,7 +1443,7 @@
 						lfValue2 = iiVariable_getAs_f64(varNum2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
+							iError_report_byNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
 							return;
 						}
 
@@ -1444,7 +1455,7 @@
 						lnValue2 = iiVariable_getAs_s64(varNum2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
+							iError_report_byNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
 							return;
 						}
 
@@ -1458,7 +1469,7 @@
 				lnValue1 = iiVariable_getAs_s64(varNum1, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum1), false);
+					iError_report_byNumber(errorNum, iVariable_get_relatedComp(varNum1), false);
 					return;
 				}
 
@@ -1469,7 +1480,7 @@
 					lfValue2 = iiVariable_getAs_f64(varNum2, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
+						iError_report_byNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
 						return;
 					}
 
@@ -1483,7 +1494,7 @@
 					lnValue2 = iiVariable_getAs_s64(varNum2, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
+						iError_report_byNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
 						return;
 					}
 
@@ -1552,7 +1563,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varNum1) || !iVariable_isTypeNumeric(varNum1))
 			{
-				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varNum1), false);
+				iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varNum1), false);
 				return;
 			}
 
@@ -1562,7 +1573,7 @@
 		//////
 			if (!iVariable_isValid(varNum2) || !iVariable_isTypeNumeric(varNum2))
 			{
-				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varNum2), false);
+				iError_report_byNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varNum2), false);
 				return;
 			}
 
@@ -1576,7 +1587,7 @@
 				lfValue1 = iiVariable_getAs_f64(varNum1, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum1), false);
+					iError_report_byNumber(errorNum, iVariable_get_relatedComp(varNum1), false);
 					return;
 				}
 
@@ -1591,7 +1602,7 @@
 						lfValue2 = iiVariable_getAs_f64(varNum2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
+							iError_report_byNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
 							return;
 						}
 
@@ -1603,7 +1614,7 @@
 						lnValue2 = iiVariable_getAs_s64(varNum2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
+							iError_report_byNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
 							return;
 						}
 
@@ -1617,7 +1628,7 @@
 				lnValue1 = iiVariable_getAs_s64(varNum1, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum1), false);
+					iError_report_byNumber(errorNum, iVariable_get_relatedComp(varNum1), false);
 					return;
 				}
 
@@ -1628,7 +1639,7 @@
 					lfValue2 = iiVariable_getAs_f64(varNum2, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
+						iError_report_byNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
 						return;
 					}
 
@@ -1642,7 +1653,7 @@
 					lnValue2 = iiVariable_getAs_s64(varNum2, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
+						iError_report_byNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
 						return;
 					}
 
@@ -1711,7 +1722,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varNum1) || !iVariable_isTypeNumeric(varNum1))
 			{
-				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varNum1), false);
+				iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varNum1), false);
 				return;
 			}
 
@@ -1721,7 +1732,7 @@
 		//////
 			if (!iVariable_isValid(varNum2) || !iVariable_isTypeNumeric(varNum2))
 			{
-				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varNum2), false);
+				iError_report_byNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varNum2), false);
 				return;
 			}
 
@@ -1735,7 +1746,7 @@
 				lfValue1 = iiVariable_getAs_f64(varNum1, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum1), false);
+					iError_report_byNumber(errorNum, iVariable_get_relatedComp(varNum1), false);
 					return;
 				}
 
@@ -1750,7 +1761,7 @@
 						lfValue2 = iiVariable_getAs_f64(varNum2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
+							iError_report_byNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
 							return;
 						}
 
@@ -1762,7 +1773,7 @@
 						lnValue2 = iiVariable_getAs_s64(varNum2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
+							iError_report_byNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
 							return;
 						}
 
@@ -1776,7 +1787,7 @@
 				lnValue1 = iiVariable_getAs_s64(varNum1, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum1), false);
+					iError_report_byNumber(errorNum, iVariable_get_relatedComp(varNum1), false);
 					return;
 				}
 
@@ -1787,7 +1798,7 @@
 					lfValue2 = iiVariable_getAs_f64(varNum2, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
+						iError_report_byNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
 						return;
 					}
 
@@ -1801,7 +1812,7 @@
 					lnValue2 = iiVariable_getAs_s64(varNum2, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
+						iError_report_byNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
 						return;
 					}
 
@@ -1870,7 +1881,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varNum1) || !iVariable_isTypeNumeric(varNum1))
 			{
-				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varNum1), false);
+				iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varNum1), false);
 				return;
 			}
 
@@ -1880,7 +1891,7 @@
 		//////
 			if (!iVariable_isValid(varNum2) || !iVariable_isTypeNumeric(varNum2))
 			{
-				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varNum2), false);
+				iError_report_byNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varNum2), false);
 				return;
 			}
 
@@ -1891,7 +1902,7 @@
 			lfValue1 = iiVariable_getAs_f64(varNum2, false, &error, &errorNum);
 			if (lfValue1 == 0.0 || error)
 			{
-				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varNum2), false);
+				iError_report_byNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varNum2), false);
 				return;
 			}
 
@@ -1905,7 +1916,7 @@
 				lfValue1 = iiVariable_getAs_f64(varNum1, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum1), false);
+					iError_report_byNumber(errorNum, iVariable_get_relatedComp(varNum1), false);
 					return;
 				}
 
@@ -1920,7 +1931,7 @@
 						lfValue2 = iiVariable_getAs_f64(varNum2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
+							iError_report_byNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
 							return;
 						}
 
@@ -1932,7 +1943,7 @@
 						lnValue2 = iiVariable_getAs_s64(varNum2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
+							iError_report_byNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
 							return;
 						}
 
@@ -1946,7 +1957,7 @@
 				lnValue1 = iiVariable_getAs_s64(varNum1, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum1), false);
+					iError_report_byNumber(errorNum, iVariable_get_relatedComp(varNum1), false);
 					return;
 				}
 
@@ -1961,7 +1972,7 @@
 						lfValue2 = iiVariable_getAs_f64(varNum2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
+							iError_report_byNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
 							return;
 						}
 
@@ -1973,7 +1984,7 @@
 						lnValue2 = iiVariable_getAs_s64(varNum2, false, &error, &errorNum);
 						if (error)
 						{
-							iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
+							iError_report_byNumber(errorNum, iVariable_get_relatedComp(varNum2), false);
 							return;
 						}
 
@@ -2071,7 +2082,7 @@
 					if (!var)
 					{
 						// Unknown parameter
-						iError_reportByNumber(_ERROR_UNRECOGNIZED_PARAMETER, compLastCount, false);
+						iError_report_byNumber(_ERROR_UNRECOGNIZED_PARAMETER, compLastCount, false);
 						return;
 					}
 
@@ -2082,7 +2093,7 @@
 					lnClearLines = iiVariable_getAs_s32(var, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(errorNum, compLastCount, false);
+						iError_report_byNumber(errorNum, compLastCount, false);
 						return;
 					}
 
@@ -2099,7 +2110,7 @@
 				//////
 					if (lnClearLines < 0)
 					{
-						iError_reportByNumber(_ERROR_CANNOT_BE_NEGATIVE, compLastCount, false);
+						iError_report_byNumber(_ERROR_CANNOT_BE_NEGATIVE, compLastCount, false);
 						return;
 					}
 
@@ -2154,7 +2165,7 @@
 					if (!var)
 					{
 						// Unknown parameter
-						iError_reportByNumber(_ERROR_UNRECOGNIZED_PARAMETER, compKeepCount, false);
+						iError_report_byNumber(_ERROR_UNRECOGNIZED_PARAMETER, compKeepCount, false);
 						return;
 					}
 
@@ -2165,7 +2176,7 @@
 					lnSaveLines = iiVariable_getAs_s32(var, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(errorNum, compKeepCount, false);
+						iError_report_byNumber(errorNum, compKeepCount, false);
 						return;
 					}
 
@@ -2182,7 +2193,7 @@
 				//////
 					if (lnSaveLines < 0)
 					{
-						iError_reportByNumber(_ERROR_CANNOT_BE_NEGATIVE, compKeepCount, false);
+						iError_report_byNumber(_ERROR_CANNOT_BE_NEGATIVE, compKeepCount, false);
 						return;
 					}
 
@@ -2291,7 +2302,7 @@
 			if ((compVar = iComps_getNth(compDeclare, 1)) && (compLBracket = iComps_getNth(compVar, 1)) && (compLBracket->iCode == _ICODE_BRACKET_LEFT || compLBracket->iCode == _ICODE_PARENTHESIS_LEFT))
 			{
 				// It is of the array structure
-				iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, compVar, false);
+				iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, compVar, false);
 				return;
 
 			}
@@ -2325,7 +2336,7 @@
 			if (!(compNext = iComps_getNth(compDeclare, 1)) || !compIn)
 			{
 				// Syntax error
-				iError_reportByNumber(_ERROR_SYNTAX, compDeclare, false);
+				iError_report_byNumber(_ERROR_SYNTAX, compDeclare, false);
 				return;
 			}
 
@@ -2352,7 +2363,7 @@
 			if (!iiComps_isAlphanumeric(compFunctionName))
 			{
 				// Syntax error
-				iError_reportByNumber(_ERROR_SYNTAX, compFunctionName, false);
+				iError_report_byNumber(_ERROR_SYNTAX, compFunctionName, false);
 				return;
 			}
 
@@ -2373,7 +2384,7 @@
 				if (!(compAliasName = iComps_getNth(compAlias, 1)) || !iiComps_validate(compAliasName, gsCompList_alphanumericTypes, gnCompList_alphanumericTypes_length))
 				{
 					// Syntax error
-					iError_reportByNumber(_ERROR_SYNTAX, compAlias, false);
+					iError_report_byNumber(_ERROR_SYNTAX, compAlias, false);
 					return;
 				}
 
@@ -2444,7 +2455,7 @@
 
 								} else {
 									// Syntax error
-									iError_reportByNumber(_ERROR_SYNTAX, compParam, false);
+									iError_report_byNumber(_ERROR_SYNTAX, compParam, false);
 									return;
 								}
 							}
@@ -2453,7 +2464,7 @@
 
 					} else {
 						// Syntax error
-						iError_reportByNumber(_ERROR_SYNTAX, compParam, false);
+						iError_report_byNumber(_ERROR_SYNTAX, compParam, false);
 						return;
 					}
 				}
@@ -2462,7 +2473,7 @@
 				if (compParam)
 				{
 					// Too many parameters
-					iError_reportByNumber(_ERROR_TOO_MANY_PARAMETERS, compParam, false);
+					iError_report_byNumber(_ERROR_TOO_MANY_PARAMETERS, compParam, false);
 					return;
 				}
 
@@ -2612,7 +2623,7 @@
 			if (!(compType = iComps_getNth(compModify, 1)))
 			{
 				// There was nothing after, which means syntax error
-				iError_reportByNumber(_ERROR_MISSING_PARAMETER, compModify, false);
+				iError_report_byNumber(_ERROR_MISSING_PARAMETER, compModify, false);
 				return;
 			}
 
@@ -2697,7 +2708,7 @@
 		//////////
 		// If we get here, syntax error
 		//////
-			iError_reportByNumber(_ERROR_SYNTAX, compType, false);
+			iError_report_byNumber(_ERROR_SYNTAX, compType, false);
 	}
 
 
@@ -2755,13 +2766,13 @@
 			if (!compDatabase)
 			{
 				// Syntax error
-				iError_reportByNumber(_ERROR_SYNTAX, compOpen, false);
+				iError_report_byNumber(_ERROR_SYNTAX, compOpen, false);
 				return;
 			}
 			if (!compDatabase->ll.next)
 			{
 				// Syntax error
-				iError_reportByNumber(_ERROR_SYNTAX, compDatabase, false);
+				iError_report_byNumber(_ERROR_SYNTAX, compDatabase, false);
 				return;
 			}
 			// Grab the component after [database]
@@ -2775,7 +2786,7 @@
 			if (lnLength >= (s32)sizeof(dbcNameBuffer))
 			{
 				// Parameter is too long
-				iError_reportByNumber(_ERROR_PARAMETER_TOO_LONG, compPathname, false);
+				iError_report_byNumber(_ERROR_PARAMETER_TOO_LONG, compPathname, false);
 				return;
 			}
 			memset(dbcNameBuffer, 0, sizeof(dbcNameBuffer));
@@ -2787,7 +2798,7 @@
 		//////
 			if (compShared && compExclusive)
 			{
-				iError_reportByNumber(_ERROR_CONFLICTING_PARAMETERS, ((compShared->ll.uniqueId < compExclusive->ll.uniqueId) ? compExclusive : compShared), false);
+				iError_report_byNumber(_ERROR_CONFLICTING_PARAMETERS, ((compShared->ll.uniqueId < compExclusive->ll.uniqueId) ? compExclusive : compShared), false);
 				return;
 			}
 
@@ -2820,7 +2831,7 @@
 			if (lnDbcArea < 0)
 			{
 				// Unable to open
-				iError_reportByNumber(_ERROR_UNABLE_TO_OPEN_DBC, compPathname, false);
+				iError_report_byNumber(_ERROR_UNABLE_TO_OPEN_DBC, compPathname, false);
 				return;
 			}
 
@@ -2895,7 +2906,7 @@
 					if (!compSetValue)
 					{
 						// Syntax error
-						iError_reportByNumber(_ERROR_SYNTAX, compSetTarget, false);
+						iError_report_byNumber(_ERROR_SYNTAX, compSetTarget, false);
 						return;
 					}
 
@@ -2906,7 +2917,7 @@
 					lnIndex = iObjProp_settingsTranslate(compSetTarget->iCode);
 					if (lnIndex <= 0)
 					{
-						iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, compSetTarget, false);
+						iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, compSetTarget, false);
 						return;
 					}
 
@@ -2935,14 +2946,14 @@
 								return;		// If we get here, we're good
 
 							// If we get here, it couldn't be set
-							iError_reportByNumber(_ERROR_SYNTAX, compSetValue, false);
+							iError_report_byNumber(_ERROR_SYNTAX, compSetValue, false);
 							return;
 						}
 
 						// If we get here, try the standard method
 						if (!iObjProp_set(_settings, compSetTarget->iCode, varSetNewValue))
 						{
-							iError_reportByNumber(_ERROR_PARAMETER_IS_INCORRECT, compSetTarget, false);
+							iError_report_byNumber(_ERROR_PARAMETER_IS_INCORRECT, compSetTarget, false);
 							return;
 						}
 					}
@@ -2954,7 +2965,7 @@
 		//////////
 		// If we get here, syntax error
 		//////
-			iError_reportByNumber(_ERROR_SYNTAX, compSet, false);
+			iError_report_byNumber(_ERROR_SYNTAX, compSet, false);
 	}
 
 
@@ -3037,7 +3048,7 @@
 			//////
 				if (compAscending && compDescending)
 				{
-					iError_reportByNumber(_ERROR_CONFLICTING_PARAMETERS, ((compAscending->ll.uniqueId < compDescending->ll.uniqueId) ? compDescending : compAscending), false);
+					iError_report_byNumber(_ERROR_CONFLICTING_PARAMETERS, ((compAscending->ll.uniqueId < compDescending->ll.uniqueId) ? compDescending : compAscending), false);
 					goto clean_exit;
 				}
 
@@ -3047,7 +3058,7 @@
 			//////
 				if (compShared && compExclusive)
 				{
-					iError_reportByNumber(_ERROR_CONFLICTING_PARAMETERS, ((compShared->ll.uniqueId < compExclusive->ll.uniqueId) ? compExclusive : compShared), false);
+					iError_report_byNumber(_ERROR_CONFLICTING_PARAMETERS, ((compShared->ll.uniqueId < compExclusive->ll.uniqueId) ? compExclusive : compShared), false);
 					goto clean_exit;
 				}
 
@@ -3074,7 +3085,7 @@
 // debug_break;
 				if (compIn && !compIn->ll.next)
 				{
-					iError_reportByNumber(_ERROR_SYNTAX, compIn, false);
+					iError_report_byNumber(_ERROR_SYNTAX, compIn, false);
 					goto clean_exit;
 				}
 
@@ -3088,7 +3099,7 @@
 			//////
 				if (compAlias && !compAlias->ll.next)
 				{
-					iError_reportByNumber(_ERROR_SYNTAX, compAlias, false);
+					iError_report_byNumber(_ERROR_SYNTAX, compAlias, false);
 					goto clean_exit;
 				}
 
@@ -3111,7 +3122,7 @@
 					} else {
 						// The current work area is invalid
 						// Hmmm... this shouldn't ever happen. Ever. :-)
-						iError_reportByNumber(_ERROR_INTERNAL_ERROR, compUse, false);
+						iError_report_byNumber(_ERROR_INTERNAL_ERROR, compUse, false);
 					}
 
 					// We're good
@@ -3143,27 +3154,27 @@
 					// Perform tests on what comes after SELECT()
 					if (!comp2) {
 						// Syntax error
-						iError_reportByNumber(_ERROR_SYNTAX, compIn, false);
+						iError_report_byNumber(_ERROR_SYNTAX, compIn, false);
 						goto clean_exit;
 
 					} else if (comp2->iCode != _ICODE_PARENTHESIS_LEFT) {
 						// Syntax error missing parenthesis
-						iError_reportByNumber(_ERROR_SYNTAX, comp2, false);
+						iError_report_byNumber(_ERROR_SYNTAX, comp2, false);
 						goto clean_exit;
 
 					} else if (!comp3) {
 						// Syntax error missing parameter
-						iError_reportByNumber(_ERROR_MISSING_PARAMETER, comp2, false);
+						iError_report_byNumber(_ERROR_MISSING_PARAMETER, comp2, false);
 						goto clean_exit;
 
 					} else if (!(comp4 = iComps_getNth(comp3, 1))) {
 						// Syntax error
-						iError_reportByNumber(_ERROR_SYNTAX, comp3, false);
+						iError_report_byNumber(_ERROR_SYNTAX, comp3, false);
 						goto clean_exit;
 
 					} else if (comp4->iCode != _ICODE_PARENTHESIS_RIGHT) {
 						// Syntax error parenthesis expected
-						iError_reportByNumber(_ERROR_PARENTHESIS_EXPECTED, comp4, false);
+						iError_report_byNumber(_ERROR_PARENTHESIS_EXPECTED, comp4, false);
 						goto clean_exit;
 					}
 					// Once we get here, we know we have SELECT(...something
@@ -3190,7 +3201,7 @@
 					{
 						// They're are specifying a number
 						lnWorkArea = iiVariable_getAs_s32(varInWorkArea, false, &error, &errorNum);
-						if (error)	{ iError_reportByNumber(errorNum, compIn, false); return; }
+						if (error)	{ iError_report_byNumber(errorNum, compIn, false); return; }
 
 					} else if (iVariable_isTypeCharacter(varInWorkArea)) {
 						// They specified something character (could be a work area letter, or alias)
@@ -3207,14 +3218,14 @@
 						// Did we get a valid work area?
 						if (lnWorkArea < 0)
 						{
-							iError_reportByNumber(_ERROR_ALIAS_NOT_FOUND, iVariable_get_relatedComp(varInWorkArea), false);
+							iError_report_byNumber(_ERROR_ALIAS_NOT_FOUND, iVariable_get_relatedComp(varInWorkArea), false);
 							goto clean_exit;
 						}
 						// If we get here, we have our work area number
 
 					} else {
 						// Unrecognized syntax
-						iError_reportByNumber(_ERROR_SYNTAX, compIn->ll.nextComp, false);
+						iError_report_byNumber(_ERROR_SYNTAX, compIn->ll.nextComp, false);
 						goto clean_exit;
 					}
 
@@ -3276,7 +3287,7 @@
 			if (!varTableName || !iVariable_isTypeCharacter(varTableName))
 			{
 				// We didn't get what we needed
-				iError_reportByNumber(_ERROR_UNRECOGNIZED_PARAMETER, compUse, false);
+				iError_report_byNumber(_ERROR_UNRECOGNIZED_PARAMETER, compUse, false);
 				goto clean_exit;
 			}
 			// Note:	The parameter, while character, may still be incorrect.
@@ -3293,7 +3304,7 @@
 				if (iDbf_get_workArea_byTablePathname(varTableName, null) >= 0)
 				{
 					// It was found, which means it's already in use
-					iError_reportByNumber(_ERROR_TABLE_ALREADY_IN_USE, compUse, false);
+					iError_report_byNumber(_ERROR_TABLE_ALREADY_IN_USE, compUse, false);
 					goto clean_exit;
 				}
 			}
@@ -3314,14 +3325,14 @@
 					if (lnWorkArea != lnWorkAreaAlias)
 					{
 						// Nope, they're trying to re-use an alias already in use
-						iError_reportByNumber(_ERROR_ALIAS_ALREADY_IN_USE, compAlias, false);
+						iError_report_byNumber(_ERROR_ALIAS_ALREADY_IN_USE, compAlias, false);
 						goto clean_exit;
 					}
 					// If we get here, the work area is okay
 
 				} else {
 					// Unknown alias
-					iError_reportByNumber(_ERROR_ALIAS_NOT_FOUND, compAlias, false);
+					iError_report_byNumber(_ERROR_ALIAS_NOT_FOUND, compAlias, false);
 					goto clean_exit;
 				}
 
@@ -3331,7 +3342,7 @@
 			}
 			if (!varAliasName)
 			{
-				iError_reportByNumber(_ERROR_INTERNAL_ERROR, compUse, false);
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, compUse, false);
 				goto clean_exit;
 			}
 
@@ -3343,7 +3354,7 @@
 			if (!llIsValidWorkArea)
 			{
 				// They specified an invalid work area number
-				iError_reportByNumber(_ERROR_INVALID_WORK_AREA, compIn, false);
+				iError_report_byNumber(_ERROR_INVALID_WORK_AREA, compIn, false);
 				goto clean_exit;
 
 			} else if (llIsInUse) {

@@ -101,7 +101,7 @@ struct SLLCallback;
 struct SComp;
 struct SCompCallback;
 struct SCompiler;
-struct SCompileStats;
+struct SCompilerStats;
 struct SNoteLog;
 struct SAsciiCompSearcher;
 struct SStartEnd;
@@ -110,12 +110,13 @@ struct SOp;
 struct SMasterList;
 struct SVariable;
 struct SThisCode;
+struct SClassObj;
 
 
 //////////
 // compiler.cpp
 //////////
-	u32						compile_vxb									(SEM* codeBlock, SCompileVxbContext* vxbParam, SCompileStats* stats);
+	u32						compile_vxb									(SEM* codeBlock, SCompileVxbContext* vxbParam, SCompilerStats* stats);
 	bool					iiVerify_xDot_callback						(SAsciiCompSearcher* tacs, u8* tcStart, s32 tnLength);
 	void					iiCompile_vxb_precompile_forLiveCode		(SCompileVxbContext* vxb);
 	void					iiCompile_vxb_compile_forLiveCode			(SCompileVxbContext* vxb);
@@ -253,6 +254,9 @@ struct SThisCode;
 	void					iFunction_politelyDeleteCompiledInfo		(SFunction* func, bool tlDeleteSelf);
 	void					iFunction_politelyDelete					(SFunction* func, bool tlDeleteSelf);
 	void					iFunction_politelyDelete_chain				(SFunction** rootFunc, bool tlDeleteSelf);
+
+	// ClassObj
+	SClassObj*				iClassObj_allocate							(SDatum* datumName);
 
 	// Variable functions
 	SVariable*				iiVariable_terminateIndirect				(SVariable* var);
@@ -396,4 +400,5 @@ struct SThisCode;
 	// Compile note functions
 	SNoteLog*				iNoteLog_create								(SNoteLog** noteRoot, SLine* line, u32 tnStart,	u32 tnEnd,	u32 tnNumber, cu8* tcMessage);
 	SNoteLog*				iNoteLog_create								(SNoteLog** noteRoot, SComp* comp, u32 tnNumber, cu8* tcMessage);
+	SNoteLog*				iNoteLog_create_byErrorNumber				(SNoteLog** noteRoot, SComp* comp, u32 tnErrorNumber);
 	void					iNoteLog_removeAll							(SNoteLog** noteRoot);

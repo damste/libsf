@@ -3690,7 +3690,7 @@ debug_break;
 // 							case 'Q':	// Varbinary
 // 							case 'V':	// Varchar
 							default:
-								iError_reportByNumber(_ERROR_DBF_GENERAL_ERROR, NULL, false);
+								iError_report_byNumber(_ERROR_DBF_GENERAL_ERROR, NULL, false);
 								var = NULL;
 						}
 

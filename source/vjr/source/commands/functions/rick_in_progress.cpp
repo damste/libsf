@@ -112,7 +112,7 @@
 //////
 	void function_cxlatd(SReturnsParams* rpar)
 	{
-		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		rpar->rp[0] = NULL;
 	}
 
@@ -145,7 +145,7 @@
 //////
 	void function_cxlatt(SReturnsParams* rpar)
 	{
-		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		rpar->rp[0] = NULL;
 	}
 
@@ -178,7 +178,7 @@
 //////
 	void function_cxlatx(SReturnsParams* rpar)
 	{
-		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		rpar->rp[0] = NULL;
 	}
 
@@ -325,7 +325,7 @@
 
 					} else {
 						// Invalid
-						iError_reportByNumber(lnP1Error, iVariable_get_relatedComp(varP1), false);
+						iError_report_byNumber(lnP1Error, iVariable_get_relatedComp(varP1), false);
 						return;
 					}
 
@@ -339,7 +339,7 @@
 					// It needs to be 1600 <= year <= 9999
 					if (lnYear < 1600 || lnYear > 9999)
 					{
-						iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varP1), false);
+						iError_report_byNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varP1), false);
 						return;
 					}
 					// When we get here, the year is good
@@ -363,7 +363,7 @@
 				// It needs to be 1 <= month <= 12, and we'll test later the validity of the indicated date
 				if (lnMonth < 1 || lnMonth > 12)
 				{
-					iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varP2), false);
+					iError_report_byNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varP2), false);
 					return;
 				}
 				// When we get here, the year is good
@@ -386,7 +386,7 @@
 				// It needs to be 1 <= day <= 31, and we'll test later the validity of the indicated date
 				if (lnMonth < 1 || lnMonth > 31)
 				{
-					iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varP3), false);
+					iError_report_byNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varP3), false);
 					return;
 				}
 				// When we get here, the year is good
@@ -399,7 +399,7 @@
 		//////
 			if (!iiDateMath_isValidDate(lst.wYear, lst.wMonth, lst.wDay))
 			{
-				iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varP1), false);
+				iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varP1), false);
 				return;
 			}
 
@@ -413,7 +413,7 @@
 				varR1 = iVariable_create(_VAR_TYPE_DATE, NULL, true);
 				if (!varR1)
 				{
-					iError_reportByNumber(_ERROR_INTERNAL_ERROR, NULL, false);
+					iError_report_byNumber(_ERROR_INTERNAL_ERROR, NULL, false);
 					return;
 				}
 
@@ -430,7 +430,7 @@
 			varResult = iiVariable_terminateIndirect(varR1);
 			if (!varResult->value.data || varResult->value.length == 0)
 			{
-				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varR1), false);
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varR1), false);
 				return;
 			}
 
@@ -496,7 +496,7 @@
 //////
 	void function_dunbundle(SReturnsParams* rpar)
 	{
-		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -558,7 +558,7 @@
 		//////////
 		// If we get here, they're bundling on-the-fly
 		//////
-			iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+			iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 			return;
 	}
 
@@ -617,7 +617,7 @@
 //////
 	void function_tunbundle(SReturnsParams* rpar)
 	{
-		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -681,7 +681,7 @@
 		//////////
 		// If we get here, they're bundling on-the-fly
 		//////
-			iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+			iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 			return;
 	}
 
@@ -742,7 +742,7 @@
 //////
 	void function_xunbundle(SReturnsParams* rpar)
 	{
-		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -794,7 +794,7 @@
 //////
 	void function_timebundle(SReturnsParams* rpar)
 	{
-		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -847,7 +847,7 @@
 //////
 	void function_timeunbundle(SReturnsParams* rpar)
 	{
-		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -901,7 +901,7 @@
 //////
 	void function_timexbundle(SReturnsParams* rpar)
 	{
-		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -956,7 +956,7 @@
 //////
 	void function_timexunbundle(SReturnsParams* rpar)
 	{
-		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1008,7 +1008,7 @@
 //////
 	void function_secondsbundle(SReturnsParams* rpar)
 	{
-		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1061,7 +1061,7 @@
 //////
 	void function_secondsunbundle(SReturnsParams* rpar)
 	{
-		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1115,7 +1115,7 @@
 //////
 	void function_secondsxbundle(SReturnsParams* rpar)
 	{
-		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1170,7 +1170,7 @@
 //////
 	void function_secondsxunbundle(SReturnsParams* rpar)
 	{
-		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1201,7 +1201,7 @@
 	{
 		SVariable*	varDocName = rpar->ip[0];
 
-		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1246,7 +1246,7 @@
 		SVariable*	varRight		= rpar->ip[6];
 		SVariable*	varBottom		= rpar->ip[7];
 
-		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1283,7 +1283,7 @@
 		SVariable*	varWidth		= rpar->ip[2];
 		SVariable*	varHeight		= rpar->ip[3];
 
-		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1331,7 +1331,7 @@
 		SVariable*	varFontSize				= rpar->ip[8];
 		SVariable*	varFontFlags			= rpar->ip[9];
 
-		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1379,7 +1379,7 @@
 		SVariable*	varFontSize				= rpar->ip[8];
 		SVariable*	varFontFlags			= rpar->ip[9];
 
-		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1421,7 +1421,7 @@
 		SVariable*	varHeight				= rpar->ip[5];
 		SVariable*	varPathname				= rpar->ip[6];
 
-		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1463,7 +1463,7 @@
 		SVariable*	varWidth				= rpar->ip[5];
 		SVariable*	varHeight				= rpar->ip[6];
 
-		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1505,7 +1505,7 @@
 		SVariable*	varRightX				= rpar->ip[5];
 		SVariable*	varThickness			= rpar->ip[6];
 
-		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1547,7 +1547,7 @@
 		SVariable*	varBottomY				= rpar->ip[5];
 		SVariable*	varThickness			= rpar->ip[6];
 
-		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1591,7 +1591,7 @@
 		SVariable*	varLowerRightX			= rpar->ip[6];
 		SVariable*	varThickness			= rpar->ip[7];
 
-		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1623,7 +1623,7 @@
 		SVariable*	varJobHandle	= rpar->ip[0];
 		SVariable*	varPageHandle	= rpar->ip[1];
 
-		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1659,7 +1659,7 @@
 		SVariable*	varPageHandleMove	= rpar->ip[2];
 		SVariable*	varMoveAfter		= rpar->ip[3];
 
-		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1693,7 +1693,7 @@
 		SVariable*	varJobHandle	= rpar->ip[0];
 		SVariable*	varPageHandle	= rpar->ip[1];
 
-		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1727,7 +1727,7 @@
 		SVariable*	varJobHandle	= rpar->ip[0];
 		SVariable*	varPageHandle	= rpar->ip[1];
 
-		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1768,7 +1768,7 @@
 		SVariable*	varJobHandle			= rpar->ip[0];
 		SVariable*	varPageOrPanelHandle	= rpar->ip[1];
 
-		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1811,7 +1811,7 @@
 		SVariable*	varFontSize				= rpar->ip[4];
 		SVariable*	varFontFlags			= rpar->ip[5];
 
-		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}
 
@@ -1843,6 +1843,6 @@
 	{
 		SVariable*	varJobHandle	= rpar->ip[0];
 
-		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 		return;
 	}

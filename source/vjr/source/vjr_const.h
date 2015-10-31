@@ -153,32 +153,32 @@ typedef SEM**		SEMpp;
 
 	#define validateVariable(var, error)				if (!iVariable_isValid(var)) \
 														{ \
-															iError_reportByNumber(error, iVariable_get_relatedComp(var), false); \
+															iError_report_byNumber(error, iVariable_get_relatedComp(var), false); \
 															return; \
 														}
 
 	#define validateNumeric(var, error)					if (!iVariable_isTypeNumeric(var)) \
 														{ \
-															iError_reportByNumber(error, iVariable_get_relatedComp(var), false); \
+															iError_report_byNumber(error, iVariable_get_relatedComp(var), false); \
 															return; \
 														}
 
 	#define validateCharacter(var, error)				if (!iVariable_isTypeCharacter(var)) \
 														{ \
-															iError_reportByNumber(error, iVariable_get_relatedComp(var), false); \
+															iError_report_byNumber(error, iVariable_get_relatedComp(var), false); \
 															return; \
 														}
 
 	#define validateFloatingPoint(var, error)			if (!iVariable_isTypeFloatingPoint(var)) \
 														{ \
-															iError_reportByNumber(error, iVariable_get_relatedComp(var), false); \
+															iError_report_byNumber(error, iVariable_get_relatedComp(var), false); \
 															return; \
 														}
 
 	#define getAs_s32(local, var)						local = iiVariable_getAs_s32(var, false, &error, &errorNum); \
 														if (error) \
 														{ \
-															iError_reportByNumber(errorNum, iVariable_get_relatedComp(var), false); \
+															iError_report_byNumber(errorNum, iVariable_get_relatedComp(var), false); \
 															return; \
 														}
 
@@ -1573,6 +1573,8 @@ typedef SEM**		SEMpp;
 																"FUNCTION func2\n"
 																"LOCAL lnI AS Integer\n"
 																"    ? 'func2()'\n"
+																"    SCAN\n"
+																"    ENDIF"
 																"\n"
 																"FUNCTION func3\n"
 																"LOCAL lnI AS Integer\n"

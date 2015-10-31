@@ -156,7 +156,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varIndex))
 			{
-				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varIndex), false);
+				iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varIndex), false);
 				return;
 			}
 			if (iVariable_isTypeNumeric(varIndex))
@@ -166,7 +166,7 @@
 				lnIndex = iiVariable_getAs_s32(varIndex, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varIndex), false);
+					iError_report_byNumber(errorNum, iVariable_get_relatedComp(varIndex), false);
 					return;
 				}
 
@@ -207,7 +207,7 @@
 
 					default:
 						// Unrecognized option
-						iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(varIndex), false);
+						iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(varIndex), false);
 						return;
 				}
 
@@ -236,14 +236,14 @@
 				if (!llFound)
 				{
 					// They've specified something we don't have
-					iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(varIndex), false);
+					iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(varIndex), false);
 					return;
 				}
 				// When we get here, lnIndexProp is set
 
 			} else {
 				// Invalid
-				iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varIndex), false);
+				iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varIndex), false);
 				return;
 			}
 
@@ -262,7 +262,7 @@
 					llNewValue = iiVariable_getAs_bool(varP1, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varIndex), false);
+						iError_report_byNumber(errorNum, iVariable_get_relatedComp(varIndex), false);
 						return;
 					}
 
@@ -271,7 +271,7 @@
 
 				} else {
 					// The variable is not a type that can be processed as logical
-					iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varP1), false);
+					iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varP1), false);
 					return;
 				}
 			}
@@ -282,7 +282,7 @@
 		//////
 			result = iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, iVariable_populate_byBool(llEnabled), 1, false);
 			if (!result)
-				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varIndex), false);
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varIndex), false);
 
 
 		//////////
@@ -336,7 +336,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValidType(varExpr1))
 			{
-				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varExpr1), false);
+				iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varExpr1), false);
 				return;
 			}
 
@@ -346,7 +346,7 @@
 		//////
 			if (!iVariable_isValid(varExpr2))
 			{
-				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varExpr2), false);
+				iError_report_byNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varExpr2), false);
 				return;
 			}
 
@@ -357,6 +357,6 @@
 			llIsNull	= ifunction_isnull_common(varExpr1);
 			rpar->rp[0]	= iVariable_copy(((llIsNull) ? varExpr2 : varExpr1), false);
 			if (!rpar->rp[0])
-				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(((llIsNull) ? varExpr2 : varExpr1)), false);
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(((llIsNull) ? varExpr2 : varExpr1)), false);
 
 	}

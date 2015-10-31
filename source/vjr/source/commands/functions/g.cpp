@@ -123,7 +123,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varStr) || !iVariable_isTypeCharacter(varStr))
 			{
-				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varStr), false);
+				iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varStr), false);
 				return;
 			}
 
@@ -136,7 +136,7 @@
 				// Logical
 				if (!iVariable_isValid(varDelimiters) || !iVariable_isTypeCharacter(varDelimiters))
 				{
-					iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varDelimiters), false);
+					iError_report_byNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varDelimiters), false);
 					return;
 				}
 
@@ -187,7 +187,7 @@
 						lcResult = (s8*)malloc(lnAllocationLength + 1);
 						if (!lcResult)
 						{
-							iError_reportByNumber(_ERROR_INTERNAL_ERROR, NULL, false);
+							iError_report_byNumber(_ERROR_INTERNAL_ERROR, NULL, false);
 							return(NULL);
 						}
 
@@ -271,7 +271,7 @@
 		// Are we good?
 		//////
 			if (!result)
-				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varStr), false);
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varStr), false);
 
 
 		//////////
@@ -324,7 +324,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varStr) || !iVariable_isTypeCharacter(varStr))
 			{
-				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varStr), false);
+				iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varStr), false);
 				return;
 			}
 
@@ -334,7 +334,7 @@
 		//////
 			if (!iVariable_isValid(varIndex) || !iVariable_isTypeNumeric(varIndex))
 			{
-				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varIndex), false);
+				iError_report_byNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varIndex), false);
 				return;
 			}
 
@@ -347,7 +347,7 @@
 				// Logical
 				if (!iVariable_isValid(varDelimiters) || !iVariable_isTypeCharacter(varDelimiters))
 				{
-					iError_reportByNumber(_ERROR_P3_IS_INCORRECT, iVariable_get_relatedComp(varDelimiters), false);
+					iError_report_byNumber(_ERROR_P3_IS_INCORRECT, iVariable_get_relatedComp(varDelimiters), false);
 					return;
 				}
 
@@ -423,7 +423,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varParam) || !(iVariable_isTypeDate(varParam) || iVariable_isTypeDatetimeX(varParam) || iVariable_isTypeDatetime(varParam)))
 			{
-				iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varParam), false);
+				iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varParam), false);
 				return;
 			}
 
@@ -443,7 +443,7 @@
 			if (!iVariable_isValid(varMonth) || !iVariable_isTypeNumeric(varMonth))
 			{
 				// Invalid second parameter
-				iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varMonth), false);
+				iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varMonth), false);
 				return;
 			}
 
@@ -454,7 +454,7 @@
 			lnNumOfMonths = iiVariable_getAs_s32(varMonth, false, &error, &errorNum);
 			if (error)
 			{
-				iError_reportByNumber(errorNum, iVariable_get_relatedComp(varMonth), false);
+				iError_report_byNumber(errorNum, iVariable_get_relatedComp(varMonth), false);
 				return;
 			}
 
@@ -482,7 +482,7 @@
 					// Is year in range 1600..2400
 					if (lnYear < 1600 || lnYear > 2400)
 					{
-						iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varParam), false);
+						iError_report_byNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varParam), false);
 						return;
 					}
 
@@ -557,7 +557,7 @@
 		// Are we good?
 		//////
 			if (!result)
-				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varParam), false);
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varParam), false);
 
 
 		//////////

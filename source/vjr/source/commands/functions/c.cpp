@@ -130,7 +130,7 @@
 // TODO:  Must also support DATETIMEX at some point
 				if (!iVariable_isValid(varParam) || !(iVariable_isTypeDate(varParam) || iVariable_isTypeDatetime(varParam)))
 				{
-					iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varParam), false);
+					iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varParam), false);
 					return;
 				}
 
@@ -161,7 +161,7 @@
 		//////
 			result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, (cs8*)cgcDayOfWeekNames[lnDow], (u32)strlen(cgcDayOfWeekNames[lnDow]), false);
 			if (!result)
-				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varParam), false);
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varParam), false);
 
 
 		//////////
@@ -278,7 +278,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varNumber) || !iVariable_isTypeNumeric(varNumber))
 			{
-				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varNumber), false);
+				iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varNumber), false);
 				return;
 			}
 
@@ -291,7 +291,7 @@
 			{
 				// The iVariable_getAs_s32() function reported an error.
 				// This means the user is trying to obtain an integer value from a logical, or something similar.
-				iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNumber), false);
+				iError_report_byNumber(errorNum, iVariable_get_relatedComp(varNumber), false);
 				return;
 
 			} else if (value > 255 || value < 0) {
@@ -388,7 +388,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString) || !iVariable_isTypeCharacter(varString))
 			{
-				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varString), false);
+				iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varString), false);
 				return;
 			}
 
@@ -398,7 +398,7 @@
 		//////
 			if (!iVariable_isValid(varSearch) || !iVariable_isTypeCharacter(varSearch))
 			{
-				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varSearch), false);
+				iError_report_byNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varSearch), false);
 				return;
 			}
 
@@ -413,7 +413,7 @@
 
 			} else if (!iVariable_isTypeCharacter(varReplace)) {
 				// It is invalid
-				iError_reportByNumber(_ERROR_P3_IS_INCORRECT, iVariable_get_relatedComp(varReplace), false);
+				iError_report_byNumber(_ERROR_P3_IS_INCORRECT, iVariable_get_relatedComp(varReplace), false);
 				return;
 			}
 
@@ -555,7 +555,7 @@
 // TODO:  Must also support DATETIMEX at some point
 				if (!iVariable_isValid(varParam) || !(iVariable_isTypeDate(varParam) || iVariable_isTypeDatetime(varParam)))
 				{
-					iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varParam), false);
+					iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varParam), false);
 					return;
 				}
 
@@ -589,7 +589,7 @@
 		//////
 			result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, (cs8*)cgcMonthNames[lnMonthIdx], (u32)strlen(cgcMonthNames[lnMonthIdx]), false);
 			if (!result)
-				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varParam), false);
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varParam), false);
 
 
 		//////////
@@ -653,7 +653,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varColor) || !iVariable_isTypeNumeric(varColor))
 			{
-				iError_reportByNumber(_ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(varColor), false);
+				iError_report_byNumber(_ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(varColor), false);
 				return;
 			}
 
@@ -665,7 +665,7 @@
 			{
 				if (!iVariable_isValid(varColorTarget) || !iVariable_isTypeNumeric(varColorTarget))
 				{
-					iError_reportByNumber(_ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(varColorTarget), false);
+					iError_report_byNumber(_ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(varColorTarget), false);
 					return;
 				}
 			}
@@ -679,7 +679,7 @@
 				// Must be floating point
 				if (!iVariable_isValid(varPercentage) || !iVariable_isTypeFloatingPoint(varPercentage))
 				{
-					iError_reportByNumber(_ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(varPercentage), false);
+					iError_report_byNumber(_ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(varPercentage), false);
 					return;
 				}
 
@@ -687,14 +687,14 @@
 				lfAlp = iiVariable_getAs_f32(varPercentage, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varPercentage), false);
+					iError_report_byNumber(errorNum, iVariable_get_relatedComp(varPercentage), false);
 					return;
 				}
 
 				// Must be in the range 0.0 to 1.0
 				if (lfAlp < 0.0f || lfAlp > 1.0f)
 				{
-					iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varPercentage), false);
+					iError_report_byNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varPercentage), false);
 					return;
 				}
 				// If we get here, we're good
@@ -716,7 +716,7 @@
 			lnColor = iiVariable_getAs_u32(varColor, false, &error, &errorNum);
 			if (error)
 			{
-				iError_reportByNumber(errorNum, iVariable_get_relatedComp(varColor), false);
+				iError_report_byNumber(errorNum, iVariable_get_relatedComp(varColor), false);
 				return;
 			}
 
@@ -736,7 +736,7 @@
 				lnColorTarget = iiVariable_getAs_u32(varColorTarget, false, &error, &errorNum);
 				if (error)
 				{
-					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varColor), false);
+					iError_report_byNumber(errorNum, iVariable_get_relatedComp(varColor), false);
 					return;
 				}
 
@@ -780,7 +780,7 @@
 			result = iVariable_create(_VAR_TYPE_U32, NULL, true);
 			if (!result)
 			{
-				iError_reportByNumber(_ERROR_INTERNAL_ERROR, NULL, false);
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, NULL, false);
 
 			} else {
 				// Populate
@@ -869,7 +869,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varClass) || !iVariable_isTypeCharacter(varClass))
 			{
-				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varClass), false);
+				iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varClass), false);
 				return;
 			}
 
@@ -878,7 +878,7 @@
         // It must be at least one character long
 		//////
 			if (varClass->value.length == 0)
-				iError_reportByNumber(_ERROR_EMPTY_STRING, iVariable_get_relatedComp(varClass), false);
+				iError_report_byNumber(_ERROR_EMPTY_STRING, iVariable_get_relatedComp(varClass), false);
 
 
 		//////////
@@ -991,7 +991,7 @@ debug_break;
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varCtoxString) || !iVariable_isTypeCharacter(varCtoxString))
 			{
-				iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varCtoxString),false);
+				iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varCtoxString),false);
 				return;
 			}
 
@@ -1207,7 +1207,7 @@ debug_break;
 
 			} else {
 				// Should never happen
-				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varCtoxString), false);
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varCtoxString), false);
 			}
 
 
@@ -1296,7 +1296,7 @@ debug_break;
 		// Create the output variable
 		result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, curdir + 2, (u32)strlen(curdir + 2), false);
 		if (!result)
-			iError_reportByNumber(_ERROR_INTERNAL_ERROR, NULL, false);
+			iError_report_byNumber(_ERROR_INTERNAL_ERROR, NULL, false);
 
 		// Indicate our result
 		rpar->rp[0] = result;

@@ -107,7 +107,7 @@
 // start over.
 //
 //////
-	u32 compile_vxb(SEM* codeBlock, SCompileVxbContext* vxbParam, SCompileStats* stats)
+	u32 compile_vxb(SEM* codeBlock, SCompileVxbContext* vxbParam, SCompilerStats* stats)
 	{
 		SCompileVxbContext*	vxb;
 		SCompileVxbContext	vxbLocal;
@@ -140,7 +140,7 @@
 				vxb->stats = &vxb->statsLocal;
 
 			// Reset all our stats
-			memset(vxb->stats, 0, sizeof(SCompileStats));
+			memset(vxb->stats, 0, sizeof(SCompilerStats));
 
 
 		//////////
@@ -5693,6 +5693,36 @@ debug_break;
 
 //////////
 //
+// Called to allocate a classobj
+//
+//////
+	SClassObj* iClassObj_allocate(SDatum* datumName)
+	{
+		SClassObj* classobjNew;
+
+
+		// Create the function
+		classobjNew = (SClassObj*)malloc(sizeof(SClassObj));
+		if (classobjNew)
+		{
+			// Initialize
+			memset(classobjNew, 0, sizeof(SClassObj));
+			classobjNew->ll.uniqueId = iGetNextUid();
+
+			// Store name if provided
+			if (datumName)
+				iDatum_duplicate(&classobjNew->name, datumName);
+		}
+
+		// Indicate our status
+		return(classobjNew);
+	}
+
+
+
+
+//////////
+//
 // Called to terminate the indirect references to the point of
 //
 //////
@@ -6288,7 +6318,7 @@ debug_break;
 
 								default:
 									// Should never happen because iEngine_get_namedSource_andType() should return a type we explicitly test for
-									iError_reportByNumber(_ERROR_INTERNAL_ERROR, compDotName, false);
+									iError_report_byNumber(_ERROR_INTERNAL_ERROR, compDotName, false);
 									return(false);
 							}
 						}
@@ -7600,7 +7630,7 @@ do_as_numeric:
 
 					case _VAR_TYPE_BI:
 					case _VAR_TYPE_BFP:
-						iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+						iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 						break;
 
 					default:
@@ -7631,7 +7661,7 @@ do_as_numeric:
 							}
 
 						} else {
-							iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, NULL, false);
+							iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, NULL, false);
 							return(false);
 						}
 						break;
@@ -7929,7 +7959,7 @@ do_as_numeric:
 
 					case _VAR_TYPE_BI:
 					case _VAR_TYPE_BFP:
-						iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+						iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 						break;
 
 					default:
@@ -7961,7 +7991,7 @@ do_as_numeric:
 							}
 
 						} else {
-							iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, NULL, false);
+							iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, NULL, false);
 							return(false);
 						}
 						break;
@@ -8075,7 +8105,7 @@ do_as_numeric:
 						} else {
 							// Signal
 MessageBox(GetDesktopWindow(), "There is BI and BFP code which needs completed in vxb_compiler.cpp.", "BI and BFP incomplete", MB_OK);
-							iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+							iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 						}
 						break;
 
@@ -8106,7 +8136,7 @@ MessageBox(GetDesktopWindow(), "There is BI and BFP code which needs completed i
 
 							} else {
 								// Signal
-								iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, NULL, false);
+								iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, NULL, false);
 							}
 						}
 						break;
@@ -8209,7 +8239,7 @@ do_as_numeric:
 
 					case _VAR_TYPE_BI:
 					case _VAR_TYPE_BFP:
-						iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+						iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 						break;
 
 					default:
@@ -8239,7 +8269,7 @@ do_as_numeric:
 
 							} else {
 								// Signal
-								iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, NULL, false);
+								iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, NULL, false);
 							}
 						}
 						break;
@@ -8352,7 +8382,7 @@ do_as_numeric:
 
 					case _VAR_TYPE_BI:
 					case _VAR_TYPE_BFP:
-						iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+						iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 						break;
 
 					default:
@@ -8382,7 +8412,7 @@ do_as_numeric:
 
 							} else {
 								// Signal
-								iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, NULL, false);
+								iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, NULL, false);
 							}
 						}
 						break;
@@ -8495,7 +8525,7 @@ do_as_numeric:
 
 					case _VAR_TYPE_BI:
 					case _VAR_TYPE_BFP:
-						iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+						iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 						break;
 
 					default:
@@ -8525,7 +8555,7 @@ do_as_numeric:
 
 							} else {
 								// Signal
-								iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, NULL, false);
+								iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, NULL, false);
 							}
 						}
 						break;
@@ -8628,7 +8658,7 @@ do_as_numeric:
 
 					case _VAR_TYPE_BI:
 					case _VAR_TYPE_BFP:
-						iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+						iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 						break;
 
 					default:
@@ -8658,7 +8688,7 @@ do_as_numeric:
 
 							} else {
 								// Signal
-								iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, NULL, false);
+								iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, NULL, false);
 							}
 						}
 						break;
@@ -8767,7 +8797,7 @@ do_as_numeric:
 
 					case _VAR_TYPE_BI:
 					case _VAR_TYPE_BFP:
-						iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+						iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 						break;
 
 					default:
@@ -8797,7 +8827,7 @@ do_as_numeric:
 
 							} else {
 								// Signal
-								iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, NULL, false);
+								iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, NULL, false);
 							}
 						}
 						break;
@@ -9720,7 +9750,7 @@ debug_break;
 
 			} else {
 				// It's invalid
-				iError_reportByNumber(_ERROR_INTERNAL_ERROR, NULL, false);
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, NULL, false);
 
 				// Set it to an unknown type
 				xlat						= &xlatLocalData;
@@ -15034,6 +15064,19 @@ _asm int 3;
 	{
 		if (comp)		return(iNoteLog_create(noteRoot, comp->line, comp->start, comp->start + comp->length - 1, tnNumber, tcMessage));
 		else			return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Called to notelog the error
+//
+//////
+	SNoteLog* iNoteLog_create_byErrorNumber(SNoteLog** noteRoot, SComp* comp, u32 tnErrorNumber)
+	{
+		return(iNoteLog_create(noteRoot, comp, tnErrorNumber, iError_getText_byNumber(tnErrorNumber)));
 	}
 
 

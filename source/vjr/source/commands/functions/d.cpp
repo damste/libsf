@@ -151,7 +151,7 @@
 					lst.wYear = (u16)iiVariable_getAs_s32(varYear, false, &error, &errorNum);
 					if (!error && (lst.wYear < 1600 || lst.wYear > 2400))
 					{
-						iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varYear), false);
+						iError_report_byNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varYear), false);
 						return;
 					}
 				}
@@ -171,7 +171,7 @@
 					lst.wMonth = (u16)iiVariable_getAs_s32(varMonth, false, &error, &errorNum);
 					if (!error && (lst.wMonth < 1 || lst.wMonth > 12))
 					{
-						iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varMonth), false);
+						iError_report_byNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varMonth), false);
 						return;
 					}
 				}
@@ -191,7 +191,7 @@
 					lst.wDay = (u16)iiVariable_getAs_s32(varDay, false, &error, &errorNum);
 					if (!error && !iiDateMath_isValidDate(lst.wYear, lst.wMonth, lst.wDay))
 					{
-						iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varDay), false);
+						iError_report_byNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varDay), false);
 						return;
 					}
 				}
@@ -206,7 +206,7 @@
 			iiDateMath_get_YYYYMMDD_from_YyyyMmDd(buffer, lst.wYear, lst.wMonth, lst.wDay);
 			result = iVariable_createAndPopulate_byText(_VAR_TYPE_DATE, buffer, 8, false);
 			if (!result)
-				iError_reportByNumber(_ERROR_INTERNAL_ERROR, NULL, false);
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, NULL, false);
 
 
 		//////////
@@ -348,7 +348,7 @@
 					lst.wYear = (u16)iiVariable_getAs_s32(varYear, false, &error, &errorNum);
 					if (!error && (lst.wYear < 1600 || lst.wYear > 2400))
 					{
-						iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varYear), false);
+						iError_report_byNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varYear), false);
 						return;
 					}
 				}
@@ -368,7 +368,7 @@
 					lst.wMonth = (u16)iiVariable_getAs_s32(varMonth, false, &error, &errorNum);
 					if (!error && (lst.wMonth < 1 || lst.wMonth > 12))
 					{
-						iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varMonth), false);
+						iError_report_byNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varMonth), false);
 						return;
 					}
 				}
@@ -388,7 +388,7 @@
 					lst.wDay = (u16)iiVariable_getAs_s32(varDay, false, &error, &errorNum);
 					if (!error && !iiDateMath_isValidDate(lst.wYear, lst.wMonth, lst.wDay))
 					{
-						iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varDay), false);
+						iError_report_byNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varDay), false);
 						return;
 					}
 				}
@@ -408,7 +408,7 @@
 					lst.wHour = (u16)iiVariable_getAs_s32(varHour, false, &error, &errorNum);
 					if (!error && (lst.wHour < 0 || lst.wHour > 23))
 					{
-						iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varHour), false);
+						iError_report_byNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varHour), false);
 						return;
 					}
 				}
@@ -428,7 +428,7 @@
 					lst.wMinute = (u16)iiVariable_getAs_s32(varMinute, false, &error, &errorNum);
 					if (!error && (lst.wMinute < 0 || lst.wMinute > 59))
 					{
-						iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varMinute), false);
+						iError_report_byNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varMinute), false);
 						return;
 					}
 				}
@@ -448,7 +448,7 @@
 					lst.wSecond = (u16)iiVariable_getAs_s32(varSecond, false, &error, &errorNum);
 					if (!error && (lst.wSecond < 0 || lst.wSecond > 59))
 					{
-						iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varSecond), false);
+						iError_report_byNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varSecond), false);
 						return;
 					}
 				}
@@ -468,7 +468,7 @@
 					lst.wMilliseconds = (u16)iiVariable_getAs_s32(varMillisecond, false, &error, &errorNum);
 					if (!error && (lst.wMilliseconds < 0 || lst.wMilliseconds > 999))
 					{
-						iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varMillisecond), false);
+						iError_report_byNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varMillisecond), false);
 						return;
 					}
 				}
@@ -491,7 +491,7 @@
 						lnMicrosecond = iiVariable_getAs_s32(varNanosecond, false, &error, &errorNum);
 						if (!error && (lnMicrosecond < 0 || lnMicrosecond > 999999999))
 						{
-							iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varNanosecond), false);
+							iError_report_byNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varNanosecond), false);
 							return;
 						}
 
@@ -504,7 +504,7 @@
 					// DatetimeX nanosecond is NOT allowed
 					if (iVariable_isValid(varNanosecond))
 					{
-						iError_reportByNumber(_ERROR_TOO_MANY_PARAMETERS, iVariable_get_relatedComp(varNanosecond), false);
+						iError_report_byNumber(_ERROR_TOO_MANY_PARAMETERS, iVariable_get_relatedComp(varNanosecond), false);
 						return;
 					}
 				}
@@ -517,7 +517,7 @@
 			result = iVariable_create(((tlIsDatetimeX) ? _VAR_TYPE_DATETIMEX : _VAR_TYPE_DATETIME), NULL, true);
 			if (!result)
 			{
-				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varYear), false);
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varYear), false);
 				return;
 			}
 
@@ -593,7 +593,7 @@
 			{
 				if (!iVariable_isValid(varParam) || !(iVariable_isTypeDate(varParam) || iVariable_isTypeDatetime(varParam) || iVariable_isTypeDatetimeX(varParam)))
 				{
-					iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varParam), false);
+					iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varParam), false);
 					return;
 				}
 
@@ -628,7 +628,7 @@
 
 				// Should never happen
 				default:
-					iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varParam), false);
+					iError_report_byNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varParam), false);
 					return;
 			}
 
@@ -638,7 +638,7 @@
 		//////
 			result = iVariable_createAndPopulate_byText(_VAR_TYPE_U32, (cs8*)&lnResult, sizeof(lnResult), false);
 			if (!result)
-				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varParam), false);
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varParam), false);
 
 
 		//////////
@@ -689,7 +689,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString1) || !iVariable_isTypeCharacter(varString1))
 			{
-				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varString1), false);
+				iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varString1), false);
 				return;
 			}
 
@@ -698,7 +698,7 @@
 		//////
 			if (!iVariable_isValid(varString2) || !iVariable_isTypeCharacter(varString2))
 			{
-				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varString2), false);
+				iError_report_byNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varString2), false);
 				return;
 			}
 
@@ -746,7 +746,7 @@
 		//////
 			result = iVariable_createAndPopulate_byText(_VAR_TYPE_U32, (cs8*)&lnMatch, 4, false);
 			if (!result)
-				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varString1), false);
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varString1), false);
 
 
 		//////////
@@ -805,7 +805,7 @@
 			{
 				if (!iVariable_isValid(varParam) || !(iVariable_isTypeDate(varParam) || iVariable_isTypeDatetime(varParam) || iVariable_isTypeDatetimeX(varParam)))
 				{
-					iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varParam), false);
+					iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varParam), false);
 					return;
 				}
 
@@ -855,7 +855,7 @@
 
 				// Should never happen
 				default:
-					iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varParam), false);
+					iError_report_byNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varParam), false);
 					return;
 			}
 
@@ -865,7 +865,7 @@
 		//////
 			result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, (cs8*)buffer, (u32)strlen(buffer), false);
 			if (!result)
-				iError_reportByNumber(_ERROR_INTERNAL_ERROR, NULL, false);
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, NULL, false);
 
 
 		//////////
@@ -927,7 +927,7 @@
 			{
 				if (!iVariable_isValid(varDateOrDatetime) || !(iVariable_isTypeDate(varDateOrDatetime) || iVariable_isTypeDatetime(varDateOrDatetime) || iVariable_isTypeDatetime(varDateOrDatetime)))
 				{
-					iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varDateOrDatetime), false);
+					iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varDateOrDatetime), false);
 					return;
 				}
 
@@ -965,7 +965,7 @@
 				//////
 					if (!iVariable_isValid(varFirstDow) || !iVariable_isTypeNumeric(varFirstDow))
 					{
-						iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varFirstDow), false);
+						iError_report_byNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varFirstDow), false);
 						return;
 					}
 
@@ -976,12 +976,12 @@
 					lnFirstDow = iiVariable_getAs_s32(varFirstDow, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varFirstDow), false);
+						iError_report_byNumber(errorNum, iVariable_get_relatedComp(varFirstDow), false);
 						return;
 					}
 					if (lnFirstDow < 0 || lnFirstDow > 7)
 					{
-						iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varFirstDow), false);
+						iError_report_byNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varFirstDow), false);
 						return;
 					}
 
@@ -1021,7 +1021,7 @@
 		//////
 			result = iVariable_createAndPopulate_byText(_VAR_TYPE_U32, (cs8*)&lnDow, 4, false);
 			if (!result)
-				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varDateOrDatetime), false);
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varDateOrDatetime), false);
 
 
 		//////////
@@ -1080,7 +1080,7 @@
 			{
 				if (!iVariable_isValid(varFlag) || !iVariable_isTypeNumeric(varFlag))
 				{
-					iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varFlag), false);
+					iError_report_byNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varFlag), false);
 					return;
 				}
 
@@ -1089,7 +1089,7 @@
 				if (error)
 				{
 					// An error extracting the value (should never happen)
-					iError_reportByNumber(errorNum, iVariable_get_relatedComp(varFlag), false);
+					iError_report_byNumber(errorNum, iVariable_get_relatedComp(varFlag), false);
 					return;
 				}
 
@@ -1101,7 +1101,7 @@
 				}
 
 				// If we get here, invalid parameter specified
-				iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varFlag), false);
+				iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varFlag), false);
 				return;
 			}
 
@@ -1114,7 +1114,7 @@
 // TODO:  Must also support DATETIMEX at some point
 				if (!iVariable_isValid(varParam) || !(iVariable_isTypeDate(varParam) || iVariable_isTypeDatetime(varParam)))
 				{
-					iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varParam), false);
+					iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varParam), false);
 					return;
 				}
 
@@ -1152,7 +1152,7 @@
 			if (!varTempDate)
 			{
 				// Fatal error
-				iError_reportByNumber(_ERROR_INTERNAL_ERROR, NULL, false);
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, NULL, false);
 				return;
 			}
 
@@ -1162,7 +1162,7 @@
 		//////
 			result = iVariable_convertForDisplay(varTempDate);
 			if (!result)
-				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varParam), false);
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varParam), false);
 
 
 		//////////
@@ -1388,7 +1388,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varFormatStr) || !iVariable_isTypeCharacter(varFormatStr))
 			{
-				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varFormatStr), false);
+				iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varFormatStr), false);
 				return;
 			}
 
@@ -1406,7 +1406,7 @@
 					if (!iVariable_isValid(param) || !(iVariable_isTypeDate(param) || iVariable_isTypeDatetime(param)))
 					{
 						// The types do not match
-						iError_reportByNumber(_ERROR_DATA_TYPE_MISMATCH, iVariable_get_relatedComp(param), false);
+						iError_report_byNumber(_ERROR_DATA_TYPE_MISMATCH, iVariable_get_relatedComp(param), false);
 						return;
 					}
 
@@ -1431,7 +1431,7 @@
 		// Are we good?
 		//////
 			if (!result)
-				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varFormatStr), false);
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varFormatStr), false);
 
 
 		//////////
@@ -1544,7 +1544,7 @@
 
 						} else {
 							// Something else
-							iError_reportByNumber(_ERROR_DATA_TYPE_MISMATCH, iVariable_get_relatedComp(var), false);
+							iError_report_byNumber(_ERROR_DATA_TYPE_MISMATCH, iVariable_get_relatedComp(var), false);
 							return(0);
 						}
 
@@ -1656,7 +1656,7 @@
 						lcResult = (s8*)malloc(lnAllocationLength + 1);
 						if (!lcResult)
 						{
-							iError_reportByNumber(_ERROR_INTERNAL_ERROR, NULL, false);
+							iError_report_byNumber(_ERROR_INTERNAL_ERROR, NULL, false);
 							*tcResult = NULL;
 							return(0);
 						}

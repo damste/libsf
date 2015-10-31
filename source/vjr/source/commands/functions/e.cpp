@@ -127,7 +127,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varExpr))
 			{
-				iError_reportByNumber(_ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(varExpr), false);
+				iError_report_byNumber(_ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(varExpr), false);
 				return;
 			}
 
@@ -138,7 +138,7 @@
 			llEmpty	= function_isempty_common(rpar, varExpr);
 			result	= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, iVariable_populate_byBool(llEmpty), 1, false);
 			if (!result)
-				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varExpr), false);
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varExpr), false);
 
 
 		//////////
@@ -270,7 +270,7 @@
 //					break;
 
 				default:
-					iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+					iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
 					return(NULL);
 			}
 
@@ -318,7 +318,7 @@
 
 
 		// Not yet completed
-		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(varString), false);
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(varString), false);
 	}
 
 
@@ -339,7 +339,7 @@
 
 
 		// Not yet completed
-		iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(varString), false);
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(varString), false);
 	}
 
 
@@ -384,7 +384,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varExpr1))
 			{
-				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varExpr1), false);
+				iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varExpr1), false);
 				return;
 			}
 
@@ -394,7 +394,7 @@
 		//////
 			if (!iVariable_isValid(varExpr2))
 			{
-				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varExpr2), false);
+				iError_report_byNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varExpr2), false);
 				return;
 			}
 
@@ -405,7 +405,7 @@
 			llEmpty	= function_isempty_common(rpar, varExpr1);
 			result	= iVariable_copy(((llEmpty) ? varExpr2 : varExpr1), false);
 			if (!result)
-				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(((llEmpty) ? varExpr2 : varExpr1)), false);
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(((llEmpty) ? varExpr2 : varExpr1)), false);
 
 
 		//////////
@@ -470,7 +470,7 @@
 				//////
 					if (!iVariable_isValid(varNumber1) || !iVariable_isTypeNumeric(varNumber1))
 					{
-						iError_reportByNumber(_ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(varNumber1), false);
+						iError_report_byNumber(_ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(varNumber1), false);
 						return;
 					}
 
@@ -481,7 +481,7 @@
 					lfValue1 = iiVariable_getAs_f64(varNumber1, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNumber1), false);
+						iError_report_byNumber(errorNum, iVariable_get_relatedComp(varNumber1), false);
 						return;
 					}
 
@@ -490,7 +490,7 @@
 				//////
 					if (tlNoEmptyParam && lfValue1 == 0.0)
 					{
-						iError_reportByNumber(_ERROR_CANNOT_BE_ZERO, iVariable_get_relatedComp(varNumber1), false);
+						iError_report_byNumber(_ERROR_CANNOT_BE_ZERO, iVariable_get_relatedComp(varNumber1), false);
 						return;
 					}
 
@@ -509,7 +509,7 @@
 				//////
 					if (!iVariable_isValid(varNumber2) || !iVariable_isTypeNumeric(varNumber2))
 					{
-						iError_reportByNumber(_ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(varNumber2), false);
+						iError_report_byNumber(_ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(varNumber2), false);
 						return;
 					}
 
@@ -520,7 +520,7 @@
 					lfValue2 = iiVariable_getAs_f64(varNumber2, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNumber2), false);
+						iError_report_byNumber(errorNum, iVariable_get_relatedComp(varNumber2), false);
 						return;
 					}
 
@@ -529,7 +529,7 @@
 				//////
 					if (tlNoEmptyParam && lfValue2 == 0.0)
 					{
-						iError_reportByNumber(_ERROR_CANNOT_BE_ZERO, iVariable_get_relatedComp(varNumber2), false);
+						iError_report_byNumber(_ERROR_CANNOT_BE_ZERO, iVariable_get_relatedComp(varNumber2), false);
 						return;
 					}
 
@@ -548,7 +548,7 @@
 				//////
 					if (!iVariable_isValid(varNumber3) || !iVariable_isTypeNumeric(varNumber3))
 					{
-						iError_reportByNumber(_ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(varNumber3), false);
+						iError_report_byNumber(_ERROR_PARAMETER_IS_INCORRECT, iVariable_get_relatedComp(varNumber3), false);
 						return;
 					}
 
@@ -559,7 +559,7 @@
 					lfValue3 = iiVariable_getAs_f64(varNumber3, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNumber3), false);
+						iError_report_byNumber(errorNum, iVariable_get_relatedComp(varNumber3), false);
 						return;
 					}
 
@@ -568,7 +568,7 @@
 				//////
 					if (tlNoEmptyParam && lfValue3 == 0.0)
 					{
-						iError_reportByNumber(_ERROR_CANNOT_BE_ZERO, iVariable_get_relatedComp(varNumber3), false);
+						iError_report_byNumber(_ERROR_CANNOT_BE_ZERO, iVariable_get_relatedComp(varNumber3), false);
 						return;
 					}
 
@@ -592,7 +592,7 @@
 						if (lfValue1 < 0.0)
 						{
 							// Oops!
-							iError_reportByNumber(_ERROR_CANNOT_BE_NEGATIVE, iVariable_get_relatedComp(varNumber1), false);
+							iError_report_byNumber(_ERROR_CANNOT_BE_NEGATIVE, iVariable_get_relatedComp(varNumber1), false);
 							return;
 						}
 
@@ -624,7 +624,7 @@
 						if (lfValue1 <= 0.0)
 						{
 							// Oops!
-							iError_reportByNumber(_ERROR_CANNOT_BE_ZERO_OR_NEGATIVE, iVariable_get_relatedComp(varNumber1), false);
+							iError_report_byNumber(_ERROR_CANNOT_BE_ZERO_OR_NEGATIVE, iVariable_get_relatedComp(varNumber1), false);
 							return;
 						}
 
@@ -682,7 +682,7 @@
 						if (lfValue1 < -1 || lfValue1 > 1)
 						{
 							// Oops!
-							iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varNumber1), false);
+							iError_report_byNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varNumber1), false);
 							return;
 						}
 
@@ -702,7 +702,7 @@
 						if (lfValue1 < -_MATH_PI2 || lfValue1 > _MATH_PI2)
 						{
 							// Oops!
-							iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varNumber1), false);
+							iError_report_byNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varNumber1), false);
 							return;
 						}
 
@@ -729,7 +729,7 @@
 						if (lfValue2 == 0.0)
 						{
 							// Oops!
-							iError_reportByNumber(_ERROR_DIVISION_BY_ZERO, iVariable_get_relatedComp(varNumber2), false);
+							iError_report_byNumber(_ERROR_DIVISION_BY_ZERO, iVariable_get_relatedComp(varNumber2), false);
 							return;
 						}
 
@@ -772,7 +772,7 @@
 
 				default:
 					// Programmer error... this is an internal function and we should never get here
-					iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varNumber1), false);
+					iError_report_byNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varNumber1), false);
 					return;
 			}
 
@@ -785,7 +785,7 @@
 
 			if (!result)
 			{
-				iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNumber1), false);
+				iError_report_byNumber(errorNum, iVariable_get_relatedComp(varNumber1), false);
 				return;
 			}
 
@@ -794,7 +794,7 @@
 		// Set the value
 		//////
 			if (!iVariable_setNumeric_toNumericType(result, NULL, &lfResult, NULL, NULL, NULL, NULL))
-				iError_reportByNumber(errorNum, iVariable_get_relatedComp(varNumber1), false);
+				iError_report_byNumber(errorNum, iVariable_get_relatedComp(varNumber1), false);
 
 
 		//////////

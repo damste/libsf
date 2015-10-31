@@ -89,11 +89,8 @@
 //////
 	void iEngine_startup_initialization(void)
 	{
-		s32				lnI, lnJ;
-		SThisCode*		thisCode;
-		SEngineLoad		el;
-		bool			error;
-		u32				errorNum;
+		s32			lnI, lnJ;
+		SThisCode*	thisCode;
 
 
 		// Only run once at startup
@@ -139,13 +136,6 @@
 					for (lnJ = 0; lnJ < _MAX_LOCALS_COUNT; lnJ++)
 						iLl_appendExistingNodeAtBeginning((SLL**)&thisCode->live.locals, (SLL*)iVariable_create(_VAR_TYPE_LOGICAL, NULL, true));
 				}
-
-
-			//////////
-			// Load the internal baseline.prg program
-			//////
-				iEngine_loadPrg(&el, NULL, baseline_prg, sizeof(baseline_prg) - 1, true, &error, &errorNum);
-				iEngine_dispatch_function(el.firstFunc);
 
 
 			//////////
@@ -257,7 +247,7 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 								if (dfunc->rp.type == _DLL_TYPE_VOID)
 								{
 									// No return value
-									iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, compNext, false);
+									iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, compNext, false);
 
 									// Update the screen
 									_screen_editbox->isDirtyRender |= iSEM_navigateToEndLine(screenData, _screen);
@@ -267,7 +257,7 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 								memset(&lrpar, 0, sizeof(lrpar));
 								iDllFunc_dispatch(&lrpar, dfunc, compNext);
 								if (lrpar.ei.error)
-									iError_reportByNumber(lrpar.ei.errorNum, lrpar.ei.errorComp, false);
+									iError_report_byNumber(lrpar.ei.errorNum, lrpar.ei.errorComp, false);
 
 								// Grab the return value (if any)
 								llManufactured	= ((lrpar.rp[0]) ? lrpar.rp[0]->isVarAllocated : false);
@@ -282,7 +272,7 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 								{
 									// Unknown function, or parameters were not correct
 									if (lrpar.ei.error)
-										iError_reportByNumber(lrpar.ei.errorNum, compNext, false);
+										iError_report_byNumber(lrpar.ei.errorNum, compNext, false);
 
 									// Update the screen
 									_screen_editbox->isDirtyRender |= iSEM_navigateToEndLine(screenData, _screen);
@@ -332,7 +322,7 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 								{
 									// Unknown function, or parameters were not correct
 									if (lrpar.ei.error)
-										iError_reportByNumber(lrpar.ei.errorNum, compThird, false);
+										iError_report_byNumber(lrpar.ei.errorNum, compThird, false);
 
 									// Update the screen
 									_screen_editbox->isDirtyRender |= iSEM_navigateToEndLine(screenData, _screen);
@@ -362,7 +352,7 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 								if (error)
 								{
 									// Unknown parameter
-									iError_reportByNumber(errorNum, comp, false);
+									iError_report_byNumber(errorNum, comp, false);
 									_screen_editbox->isDirtyRender |= iSEM_navigateToEndLine(screenData, _screen);
 									iWindow_render(gWinJDebi, false);
 									return(false);
@@ -393,7 +383,7 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 								if (lrpar.ei.error)
 								{
 									// There was an error
-									iError_reportByNumber(lrpar.ei.errorNum, lrpar.ei.errorComp, false);
+									iError_report_byNumber(lrpar.ei.errorNum, lrpar.ei.errorComp, false);
 
 									// Update the screen
 									_screen_editbox->isDirtyRender |= iSEM_navigateToEndLine(screenData, _screen);
@@ -468,6 +458,27 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 		return(func);
 	}
 
+	SClassObj* iEngine_create_classObj(SDatum* name, SEM* sem, SLine* line)
+	{
+		SClassObj* classobj;
+
+
+		// Make sure our environment is sane
+		classobj = NULL;
+		if (sem && name && line)
+		{
+			// Allocate a function
+			classobj = iClassObj_allocate(name);
+
+			// Assign the code
+			classobj->sem			= sem;
+			classobj->firstLine		= line;
+		}
+
+		// Indicate our new function
+		return(classobj);
+	}
+
 
 
 
@@ -502,11 +513,11 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 // Called to load and parse a prg, and populate into known functions if it's being
 //
 //////
-	void iEngine_loadPrg(SEngineLoad* el, SDatum* name, cs8* tcPrg, s32 tnPrgLength, bool tlExposeFunctionsAsPublic, bool* error, u32* errorNum)
+	void iEngine_loadPrg(SCompilerStats* stats, SDatum* name, cs8* tcPrg, s32 tnPrgLength, bool tlExposeFunctionsAsPublic, bool* error, u32* errorNum)
 	{
 		SEM*			sem;
 		SDatum			sourceCode;
-		SEngineLoad		_el_local;
+		SCompilerStats	_stats_local;
 		SNoteLog*		noteLog;
 
 
@@ -517,11 +528,11 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 			// Engine load block
 			//////
 				// Make sure we have an el
-				if (!el)
-					el = &_el_local;
+				if (!stats)
+					stats = &_stats_local;
 
 				// Initialize
-				memset(el, 0, sizeof(*el));
+				memset(stats, 0, sizeof(*stats));
 
 
 			//////////
@@ -547,8 +558,8 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 			//////////
 			// Parse out functions and classes
 			//////
-				iEngine_parse_sourceCode_block(el, name, sem);
-				if (sem->firstNote)
+				iEngine_parse_sourceCode_block(stats, name, sem);
+				if (stats->errorCount != 0)
 				{
 					// Report all the errors if SET TALK ON
 					if (propGet_settings_Talk(_settings))
@@ -558,6 +569,11 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 							iSEM_appendLine(screenData, noteLog->line, false);
 					}
 				}
+
+
+			//////////
+			// Compile 
+			//////
 
 
 		} else {
@@ -590,7 +606,7 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 			if (!line->compilerInfo)
 			{
 				// Indicate an internal error
-				iError_reportByNumber(_ERROR_INTERNAL_ERROR, NULL, false);
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, NULL, false);
 				return(NULL);			// Error
 			}
 
@@ -659,9 +675,9 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 // Note:  If tlExposeFunctionsAsPublic, every function found is added to gsRootFunc.  It would be used with SET PROCEDURE TO ... [ADDITIVE] for example.
 //
 //////
-	SLine* iEngine_parse_sourceCode_block(SEngineLoad* el, SDatum* name, SEM* sem)
+	SLine* iEngine_parse_sourceCode_block(SCompilerStats* stats, SDatum* name, SEM* sem)
 	{
-		bool		llFirstCompFound, llSilenceNestingErrors, llDeleteVarSys2015;
+		bool		llFirstCompFound, llDeleteVarSys2015, llHandled;
 		s32			lnStackLevel, lniCode;
 		s32			stack[_MAX_NESTED_LOGIC_LEVELS];
 		SDatum		nameLocal;
@@ -670,12 +686,13 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 		SLine*		line;
 		SFunction*	func;
 		SFunction*	adhoc;
+		SClassObj*	classobj;
 
 
 		//////////
 		// Initialize our loader
 		//////
-			memset(el, 0, sizeof(*el));
+			memset(stats, 0, sizeof(*stats));
 			if (!name)
 			{
 				memset(&nameLocal, 0, sizeof(nameLocal));
@@ -693,176 +710,224 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 		//////////
 		// Identify all functions contained within
 		//////
-			llFirstCompFound		= false;
-			llSilenceNestingErrors	= false;
+			llFirstCompFound = false;
 			for (line = sem->firstLine, lnStackLevel = -1, adhoc = NULL, func = NULL; line; line = line->ll.nextLine, llFirstCompFound = true)
 			{
 				// Is there a component here?
-				if (line->compilerInfo && (comp = line->compilerInfo->firstComp) && !iiComps_isComment(comp->iCode))
+				if (line->compilerInfo)
 				{
-					// Is it a function?
-					lniCode = comp->iCode;
-					switch (lniCode)
+					if (!(comp = line->compilerInfo->firstComp))
 					{
-						case _ICODE_FUNCTION:
-						case _ICODE_PROCEDURE:
-							// Has another function already been found?
-							if (llFirstCompFound)
-							{
-								// Yes
-								// If we're currently in an adhoc, it's a nesting error
-								if (adhoc)
+						// Blank line
+						++stats->blankLineCount;
+
+
+					} else if (iiComps_isComment(comp->iCode)) {
+						// Comment
+						++stats->commentLineCount;
+
+
+					} else {
+						// What is it?
+						lniCode = comp->iCode;
+						switch (lniCode)
+						{
+							case _ICODE_FUNCTION:
+							case _ICODE_PROCEDURE:
+								// Has another function already been found?
+								if (llFirstCompFound)
 								{
-									// Close it out
-									adhoc = NULL;
+									// Yes
+									// If we're currently in an adhoc, it's a nesting error
+									if (adhoc)
+									{
+										// Close it out
+										adhoc = NULL;
 
-									// Unmatched block
-									iNoteLog_create(&sem->firstNote,					comp, _ERROR_NESTING_ERROR, NULL);
-									iNoteLog_create(&line->compilerInfo->firstError,	comp, _ERROR_NESTING_ERROR, NULL);
-									if (!llSilenceNestingErrors)
-										iError_reportByNumber(_ERROR_NESTING_ERROR, comp, false);
+										// Unmatched block
+										iNoteLog_create_byErrorNumber(&sem->firstNote,					comp, _ERROR_NESTING_ERROR);
+										iNoteLog_create_byErrorNumber(&line->compilerInfo->firstError,	comp, _ERROR_NESTING_ERROR);
+									}
 								}
-							}
 
-							// Begin the new function
-							varSys2015	= NULL;
-							func		= iEngine_create_function(iiComps_populateAs_datum(name, comp->ll.nextComp, &varSys2015), sem, line);
-							if (varSys2015)
-								iVariable_delete(varSys2015, true);
-
-							// Append the function to the created chain
-							iLl_appendExistingNodeAtEnd((SLL**)&el->firstFunc, (SLL*)func);
-							break;
-
-
-						case _ICODE_ENDFUNCTION:
-						case _ICODE_ENDPROCEDURE:
-							// If we're not in a function, nesting error
-							if (!func)
-							{
-								// Unmatched block
-								iNoteLog_create(&sem->firstNote,					comp, _ERROR_NESTING_ERROR, NULL);
-								iNoteLog_create(&line->compilerInfo->firstError,	comp, _ERROR_NESTING_ERROR, NULL);
-								if (!llSilenceNestingErrors)
-									iError_reportByNumber(_ERROR_NESTING_ERROR, comp, false);
-
-							}
-
-							// Close it out
-							func->lastLine			= line;
-							func					= NULL;
-
-							// Reset for this new function
-							llSilenceNestingErrors	= false;
-							lnStackLevel			= -1;
-							break;
-
-
-						case _ICODE_ADHOC:
-							// If we're in an existing adhoc, nesting error
-							if (adhoc)
-							{
-								iNoteLog_create(&sem->firstNote,					comp, _ERROR_NESTING_ERROR, NULL);
-								iNoteLog_create(&line->compilerInfo->firstError,	comp, _ERROR_NESTING_ERROR, NULL);
-								iError_reportByNumber(_ERROR_NESTING_ERROR, comp, false);
-							}
-
-							// If we're not inside a function, error
-							if (!func)
-							{
-								// This adhoc cannot be processed
-								iNoteLog_create(&sem->firstNote,					comp, _ERROR_NESTING_ERROR, NULL);
-								iNoteLog_create(&line->compilerInfo->firstError,	comp, _ERROR_NESTING_ERROR, NULL);
-								iError_reportByNumber(_ERROR_NESTING_ERROR, comp, false);
-
-							} else {
-								// We're good
-								// Begin the new adhoc
+								// Begin the new function
 								varSys2015	= NULL;
-								adhoc		= iEngine_create_adhoc(iiComps_populateAs_datum(name, comp->ll.nextComp, &varSys2015), sem, line);
+								func		= iEngine_create_function(iiComps_populateAs_datum(name, comp->ll.nextComp, &varSys2015), sem, line);
 								if (varSys2015)
 									iVariable_delete(varSys2015, true);
 
-								// Append the adhoc to the function's adhoc chain
-								iLl_appendExistingNodeAtEnd((SLL**)&func->firstAdhoc, (SLL*)adhoc);
-							}
-							break;
+								// Append the function to the created chain
+								iLl_appendExistingNodeAtEnd((SLL**)&stats->el.firstFunc, (SLL*)func);
+								++stats->functionCount;
+								break;
 
 
-						case _ICODE_ENDADHOC:
-							// If we're not inside an adhoc, nesting error
-							if (!adhoc)
-							{
-								// They tried to end an adhoc that hadn't started yet
-								iNoteLog_create(&sem->firstNote,					comp, _ERROR_NESTING_ERROR, NULL);
-								iNoteLog_create(&line->compilerInfo->firstError,	comp, _ERROR_NESTING_ERROR, NULL);
-								iError_reportByNumber(_ERROR_NESTING_ERROR, comp, false);
-
-							} else {
-								// Close it out
-								adhoc->lastLine = line;
-								adhoc			= NULL;
-							}
-							break;
-
-
-						default:
-							// It's not a function, adhoc, or endfunc or endadhoc
-
-							// Is it a flow control block entry or exit?
-							if (iiComps_isVxbLogicBlock_entry(comp, false))
-							{
-								// It's entry into another block
-								stack[++lnStackLevel] = lniCode;
-
-							} else if (iiComps_isVxbLogicBlock_exit(comp, false)) {
-								// It's exit from another block
-								if (lnStackLevel < 0 || !iComps_isMateOf(comp, stack[lnStackLevel]))
+							case _ICODE_ENDFUNCTION:
+							case _ICODE_ENDPROCEDURE:
+								// If we're not in a function, nesting error
+								if (!func)
 								{
 									// Unmatched block
-									if (!llSilenceNestingErrors)
-									{
-										iNoteLog_create(&sem->firstNote,					comp, _ERROR_NESTING_ERROR, NULL);
-										iNoteLog_create(&line->compilerInfo->firstError,	comp, _ERROR_NESTING_ERROR, NULL);
-										iError_reportByNumber(_ERROR_NESTING_ERROR, comp, false);
-										llSilenceNestingErrors = true;
-									}
+									iNoteLog_create_byErrorNumber(&sem->firstNote,					comp, _ERROR_NESTING_ERROR);
+									iNoteLog_create_byErrorNumber(&line->compilerInfo->firstError,	comp, _ERROR_NESTING_ERROR);
+
+								}
+
+								// Close it out
+								func->lastLine	= line;
+								func			= NULL;
+
+								// Reset for this new function
+								lnStackLevel	= -1;
+								break;
+
+
+							case _ICODE_ADHOC:
+								// If we're in an existing adhoc, nesting error
+								if (adhoc)
+								{
+									iNoteLog_create_byErrorNumber(&sem->firstNote,					comp, _ERROR_NESTING_ERROR);
+									iNoteLog_create_byErrorNumber(&line->compilerInfo->firstError,	comp, _ERROR_NESTING_ERROR);
+								}
+
+								// If we're not inside a function, error
+								if (!func)
+								{
+									// This adhoc cannot be processed
+									iNoteLog_create_byErrorNumber(&sem->firstNote,					comp, _ERROR_NESTING_ERROR);
+									iNoteLog_create_byErrorNumber(&line->compilerInfo->firstError,	comp, _ERROR_NESTING_ERROR);
 
 								} else {
-									// We're mated, so back out/up normally
-									--lnStackLevel;
-								}
-
-							} else {
-								// Is the first non-comment component something other than a FUNCTION definition?
-								if (!llFirstCompFound)
-								{
-									// Yes
-									// So, we need to create an implicit natural function with either the program's name or a sys(2015) name
-									if (!name || !name->_data || name->length <= 0)
-									{
-										// Create a unique name
-										llDeleteVarSys2015	= true;
-										varSys2015			= iFunction_sys2015(0, 0);
-										name->data_cs8		= varSys2015->value.data_cs8;
-										name->length		= varSys2015->value.length;
-									}
-
-									// Append the natural function name
-									func = iEngine_create_function(name, sem, line);
-									if (llDeleteVarSys2015)
+									// We're good
+									// Begin the new adhoc
+									varSys2015	= NULL;
+									adhoc		= iEngine_create_adhoc(iiComps_populateAs_datum(name, comp->ll.nextComp, &varSys2015), sem, line);
+									if (varSys2015)
 										iVariable_delete(varSys2015, true);
 
-									// Append the function to the created chain
-									iLl_appendExistingNodeAtEnd((SLL**)&el->firstFunc, (SLL*)func);
+									// Append the adhoc to the function's adhoc chain
+									iLl_appendExistingNodeAtEnd((SLL**)&func->firstAdhoc, (SLL*)adhoc);
+									++stats->adhocsCount;
 								}
-							}
-							break;
+								break;
+
+
+							case _ICODE_ENDADHOC:
+								// If we're not inside an adhoc, nesting error
+								if (!adhoc)
+								{
+									// They tried to end an adhoc that hadn't started yet
+									iNoteLog_create_byErrorNumber(&sem->firstNote,					comp, _ERROR_NESTING_ERROR);
+									iNoteLog_create_byErrorNumber(&line->compilerInfo->firstError,	comp, _ERROR_NESTING_ERROR);
+
+								} else {
+									// Close it out
+									adhoc->lastLine = line;
+									adhoc			= NULL;
+								}
+								break;
+
+
+							default:
+								// It's not a function, adhoc, or endfunc or endadhoc
+								llHandled = false;
+								if (lniCode == _ICODE_DEFINE)
+								{
+									// DEFINE ...?
+									if (comp->ll.nextComp && comp->ll.nextComp->iCode == _ICODE_CLASS)
+									{
+										// DEFINE CLASS
+										if (classobj)
+										{
+											// They tried to end an adhoc that hadn't started yet
+											iNoteLog_create_byErrorNumber(&sem->firstNote,					comp, _ERROR_NESTING_ERROR);
+											iNoteLog_create_byErrorNumber(&line->compilerInfo->firstError,	comp, _ERROR_NESTING_ERROR);
+										}
+
+										// Begin the new class
+										varSys2015	= NULL;
+										classobj	= iEngine_create_classObj(iiComps_populateAs_datum(name, comp->ll.nextComp, &varSys2015), sem, line);
+										if (varSys2015)
+											iVariable_delete(varSys2015, true);
+
+										// Append the adhoc to the function's adhoc chain
+										iLl_appendExistingNodeAtEnd((SLL**)&stats->el.firstClassObj, (SLL*)classobj);
+										++stats->classObjCount;
+
+										// It was handled
+										llHandled = true;
+
+									} else {
+										// Not handled
+									}
+
+								} else if (classobj && lniCode == _ICODE_ENDDEFINE) {
+									// ENDDEFINE
+									// Close it out
+									classobj->lastLine	= line;
+									classobj			= NULL;
+
+									// It was handled
+									llHandled			= true;
+								}
+
+								// Was it handled above?
+								if (!llHandled)
+								{
+									// No.
+									// Is it a flow control block entry or exit?
+									if (iiComps_isVxbLogicBlock_entry(comp, false))
+									{
+										// It's entry into another block
+										stack[++lnStackLevel] = lniCode;
+
+									} else if (iiComps_isVxbLogicBlock_exit(comp, false)) {
+										// It's exit from another block
+										if (lnStackLevel < 0 || !iComps_isMateOf(comp, stack[lnStackLevel]))
+										{
+											// Unmatched block
+											iNoteLog_create_byErrorNumber(&sem->firstNote,					comp, _ERROR_NESTING_ERROR);
+											iNoteLog_create_byErrorNumber(&line->compilerInfo->firstError,	comp, _ERROR_NESTING_ERROR);
+
+										} else {
+											// We're mated, so back out/up normally
+											--lnStackLevel;
+										}
+
+									} else {
+										// Is the first non-comment component something other than a FUNCTION definition?
+										if (!llFirstCompFound)
+										{
+											// Yes
+											// So, we need to create an implicit natural function with either the program's name or a sys(2015) name
+											if (!name || !name->_data || name->length <= 0)
+											{
+												// Create a unique name
+												llDeleteVarSys2015	= true;
+												varSys2015			= iFunction_sys2015(0, 0);
+												name->data_cs8		= varSys2015->value.data_cs8;
+												name->length		= varSys2015->value.length;
+											}
+
+											// Append the natural function name
+											func = iEngine_create_function(name, sem, line);
+											if (llDeleteVarSys2015)
+												iVariable_delete(varSys2015, true);
+
+											// Append the function to the created chain
+											iLl_appendExistingNodeAtEnd((SLL**)&stats->el.firstFunc, (SLL*)func);
+											++stats->functionCount;
+										}
+									}
+								}
+								break;
+						}
 					}
 
 					// Update the ends of things
-					if (adhoc)		adhoc->lastLine	= line;
-					if (func)		func->lastLine	= line;
+					if (adhoc)		adhoc->lastLine		= line;
+					if (func)		func->lastLine		= line;
+					if (classobj)	classobj->lastLine	= line;
 				}
 			}
 
@@ -2081,7 +2146,7 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 					if (lnParamCount > maxCount)
 					{
 						// Too many parameters
-						iError_reportByNumber(_ERROR_TOO_MANY_PARAMETERS, comp, false);
+						iError_report_byNumber(_ERROR_TOO_MANY_PARAMETERS, comp, false);
 						return(NULL);
 					}
 
@@ -2093,7 +2158,7 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 					if (!compComma || (compComma->iCode != _ICODE_COMMA && compComma->iCode != _ICODE_PARENTHESIS_RIGHT && lnParamCount > requiredCount))
 					{
 						// Comma expected error
-						iError_reportByNumber(_ERROR_COMMA_EXPECTED, comp, false);
+						iError_report_byNumber(_ERROR_COMMA_EXPECTED, comp, false);
 						return(NULL);
 					}
 

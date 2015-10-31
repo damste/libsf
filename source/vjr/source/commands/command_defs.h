@@ -122,7 +122,8 @@ struct SReturnsParams;
 	void				iError_signal								(u32 tnErrorNum, SComp* comp, bool tlInvasive, s8* tcExtraInfo, bool tlFatal);
 	void				iError_report								(cu8* constantErrorText, bool tlInvasive);
 	void				iError_report								(u8* errorText, bool tlInvasive);
-	void				iError_reportByNumber						(u32 tnErrorNum, SComp* comp, bool tlInvasive);
+	void				iError_report_byNumber						(u32 tnErrorNum, SComp* comp, bool tlInvasive);
+	cu8*				iError_getText_byNumber						(u32 tnErrorNum);
 	void				iError_track								(void);
 	void				iError_silent								(void);
 

@@ -129,7 +129,7 @@
 			{
 				if (!iVariable_isValid(varParam) || !(iVariable_isTypeDate(varParam) || iVariable_isTypeDatetime(varParam) || iVariable_isTypeDatetime(varParam)))
 				{
-					iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varParam), false);
+					iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varParam), false);
 					return;
 				}
 
@@ -164,20 +164,20 @@
 					lnStartingMonth = (u16)iiVariable_getAs_s32(varMonth, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varMonth), false);
+						iError_report_byNumber(errorNum, iVariable_get_relatedComp(varMonth), false);
 						return;
 					}
 
 					// Make sure it's 1..12
 					if (lnStartingMonth < 1 || lnStartingMonth > 12)
 					{
-						iError_reportByNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varMonth), false);
+						iError_report_byNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varMonth), false);
 						return;
 					}
 
 				} else {
 					// Invalid second parameter
-					iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varMonth), false);
+					iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varMonth), false);
 					return;
 				}
 
@@ -198,7 +198,7 @@
 		//////
 			result = iVariable_createAndPopulate_byText(_VAR_TYPE_U32, (cs8*)&lnQuarter, sizeof(lnQuarter), false);
 			if (!result)
-				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varParam), false);
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varParam), false);
 
 
 		//////////

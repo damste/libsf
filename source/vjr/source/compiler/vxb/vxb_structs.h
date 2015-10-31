@@ -103,7 +103,7 @@ struct SStartEndCallback;
 struct SLL;
 struct SLLCallback;
 struct SVariable;
-struct SCompileStats;
+struct SCompilerStats;
 struct SNoteLog;
 struct SDateTimeX;
 
@@ -156,6 +156,7 @@ struct SDateTimeX;
 		// Knowns identified during compilation
 		SVariable*		params;											// The first parameter in the function
 		SVariable*		locals;											// The first local variable declared
+		SVariable*		privates;										// The first private variable declared, which supersedes PUBLIC definitions of the same name
 		SVariable*		returns;										// The first return variable declared
 		SVariable*		scoped;											// The first scoped/temporary variable needed by the function
 
@@ -163,27 +164,28 @@ struct SDateTimeX;
 		SFunction*		firstAdhoc;										// First ADHOC function contained within this function
 	};
 
-	struct SCompileStats
+	struct SCompilerStats
 	{
 		// Counters
 		u32				sourceLineCount;								// Raw source lines, blank, comment, or otherwise
 		u32				blankLineCount;									// Only blank lines, or lines that only have whitespaces
 		u32				commentLineCount;								// Lines with comments
+
 		u32				functionCount;									// Hard function or procedure definitions
 		u32				methodCount;									// Methods in class code (in any form, ?CX or source code)
+		u32				classObjCount;									// Number of define class found
 		u32				paramsCount;									// Number of declared parameters
 		u32				localsCount;									// Number of declared local variables
 		u32				scopedCount;									// Number of scoped variables in use
 		u32				returnsCount;									// Number of return variables
 		u32				adhocsCount;									// Number of adhoc functions
 		u32				flowofsCount;									// Number of flowof functions
+
 		u32				errorCount;										// Number of errors
 		u32				warningCount;									// Number of warnings
 
 		// Pointers
-		SFunction*		firstFunction;									// First stand-alone function
-		SFunction*		firstAdhoc;										// First stand-alone adhoc
-		SFunction*		firstFlowof;									// First flowof function
+		SEngineLoad		el;												// Stats related to parsed code
 	};
 
 	// Used during the the compile_Vxb() functions (so one parameter is passed rather than multiple)
@@ -191,8 +193,8 @@ struct SDateTimeX;
 	{
 		// These are parameters passed at various places in compile_vxb()
 		SEM*			codeBlock;										// The code block being compiled
-		SCompileStats*	stats;											// Statistics about the compilee
-		SCompileStats	statsLocal;										// A dummy stats block we use if the compile requester did not send their own stats in
+		SCompilerStats*	stats;											// Statistics about the compilee
+		SCompilerStats	statsLocal;										// A dummy stats block we use if the compile requester did not send their own stats in
 		bool			processThisLine;								// Should this line be processed?
 
 		// Parameters used while processing, calling sub-functions, etc.

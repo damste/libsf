@@ -159,7 +159,7 @@
 			rpar->rp[0] = NULL;
 			if (!tlPadLeft && !tlPadRight)
 			{
-				iError_reportByNumber(_ERROR_INTERNAL_ERROR, NULL, false);
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, NULL, false);
 				return;
 			}
 
@@ -169,7 +169,7 @@
 		//////
 			if (!iVariable_isValid(varExpr))
 			{
-				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, NULL, false);
+				iError_report_byNumber(_ERROR_P1_IS_INCORRECT, NULL, false);
 				return;
 			}
 
@@ -179,13 +179,13 @@
 		//////
 			if (!iVariable_isValid(varResultSize) || !iVariable_isTypeNumeric(varResultSize))
 			{
-				iError_reportByNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varResultSize), false);
+				iError_report_byNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varResultSize), false);
 				return;
 			}
 			lnResultSize = iiVariable_getAs_s32(varResultSize, false, &error, &errorNum);
 			if (error)
 			{
-				iError_reportByNumber(errorNum, iVariable_get_relatedComp(varResultSize), false);
+				iError_report_byNumber(errorNum, iVariable_get_relatedComp(varResultSize), false);
 				return;
 			}
 
@@ -198,7 +198,7 @@
 				// ...it must be character
 				if (!iVariable_isTypeCharacter(varPadCharacter))
 				{
-					iError_reportByNumber(_ERROR_P3_IS_INCORRECT, iVariable_get_relatedComp(varPadCharacter), false);
+					iError_report_byNumber(_ERROR_P3_IS_INCORRECT, iVariable_get_relatedComp(varPadCharacter), false);
 					return;
 				}
 
@@ -460,7 +460,7 @@
 		//////
 			if (!llIsP1Valid || !llIsP2Valid || !llIsP3Valid)
 			{
-				iError_reportByNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(((!llIsP1Valid) ? varP1 : ((!llIsP2Valid) ? varP2 : varP3))), false);
+				iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(((!llIsP1Valid) ? varP1 : ((!llIsP2Valid) ? varP2 : varP3))), false);
 				return;
 			}
 
@@ -477,7 +477,7 @@
 					lnPower = iiVariable_getAs_s64(varP1, false, &error, &errorNum);
 					if (error)
 					{
-						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varP1), false);
+						iError_report_byNumber(errorNum, iVariable_get_relatedComp(varP1), false);
 						return;
 					}
 
@@ -488,7 +488,7 @@
 					lnExp = iiVariable_getAs_s64(varP2, false, &error, &errorNum);
 					if (error || (lnExp < 0 && (errorNum = _ERROR_PARAMETER_IS_INCORRECT)))
 					{
-						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varP2), false);
+						iError_report_byNumber(errorNum, iVariable_get_relatedComp(varP2), false);
 						return;
 					}
 
@@ -500,7 +500,7 @@
 					if (error || (lnMod == 0 && (errorNum = _ERROR_CANNOT_BE_ZERO)))
 					{
 						// Error, or 0
-						iError_reportByNumber(errorNum, iVariable_get_relatedComp(varP3), false);
+						iError_report_byNumber(errorNum, iVariable_get_relatedComp(varP3), false);
 						return;
 					}
 
@@ -540,7 +540,7 @@
 					// Make sure we don't have an error in conversion, and that lfValue3 is > 0.0
 					if (error1 || error2 || error3 || (lfVal3 <= 0.0 && (error3 = true) && (errorNum = _ERROR_INVALID_ARGUMENT_TYPE_COUNT)))
 					{
-						iError_reportByNumber(errorNum, iVariable_get_relatedComp(((error1) ? varP1 : ((error2) ? varP2 : varP3))), false);
+						iError_report_byNumber(errorNum, iVariable_get_relatedComp(((error1) ? varP1 : ((error2) ? varP2 : varP3))), false);
 						return;
 					}
 
@@ -570,7 +570,7 @@
 		// Are we good?
 		//////
 			if (!result)
-				iError_reportByNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varP1), false);
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varP1), false);
 
 
 		//////////
@@ -618,7 +618,7 @@
 			rpar->rp[0] = NULL;
 			if (!iVariable_isValid(varString) || iVariable_getType(varString) != _VAR_TYPE_CHARACTER)
 			{
-				iError_reportByNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varString), false);
+				iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varString), false);
 				return;
 			}
 
