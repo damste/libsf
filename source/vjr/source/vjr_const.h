@@ -1558,8 +1558,23 @@ typedef SEM**		SEMpp;
 	const u8			cgcToolboxFilename[]				= "toolbox.app";
 	const u8			cgcWizardFilename[]					= "wizard.app";
 
-	const s8			baseline_prg[]						=	"FUNCTION __vjr_root__\n"
+	const s8			baseline_prg[]						=	"FUNCTION start\n"
 																"* Process events whenever no program is running\n"
-																"    DO WHILE _VJRSYS(1)    && _VJRSYS(1) = (NOT shutting down)\n"
+																"    ADHOC notShuttingDown\n"
+																"    RETURNS rlFlag\n"
+																"        * _VJRSYS(1) = (NOT shutting down)\n"
+																"        rlFlag = _VJRSYS(1)\n"
+																"    ENDADHOC\n"
+																"\n"
+																"    DO WHILE notShuttingDown()\n"
 																"        READ EVENTS\n"
-																"    ENDDO\n";
+																"    ENDDO\n"
+																"\n"
+																"FUNCTION func2\n"
+																"LOCAL lnI AS Integer\n"
+																"    ? 'func2()'\n"
+																"\n"
+																"FUNCTION func3\n"
+																"LOCAL lnI AS Integer\n"
+																"    ? 'fun32()'\n"
+																"\n";

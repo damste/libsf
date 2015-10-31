@@ -473,12 +473,25 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 
 //////////
 //
-// Called to dispatch a function
+// Called to context switch, and dispatch the indicated function
 //
 //////
 	void iEngine_dispatch_function(SFunction* func)
 	{
-		debug_break;
+		s32 lnThisCode;
+
+
+		//////////
+		// Dispatch to the proper slot
+		//////
+			if (gnThisCode == 0 && !gsThisCode[gnThisCode].live.func)		lnThisCode = 0;		// This is the first dispatch function
+			else															lnThisCode = ++gnThisCode;
+
+
+		//////////
+		// Copy definition into live slot
+		//////
+// TODO:  working here
 	}
 
 
