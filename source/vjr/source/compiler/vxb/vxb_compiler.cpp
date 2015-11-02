@@ -99,70 +99,12 @@
 
 //////////
 //
-// Compiles a VXB source code block.  If tlLiveCode is true, then only those
-// lines which have differing line->compilerInfo->sourceCode and line->sourceCode are
-// compiled.  If the current debug environment is operating on this line, the debugger
-// will need to take special note about the before and after sub-instructions to
-// to determine if the current location can be maintained, or if the line needs to
-// start over.
+// Called during the cgcKeywordsVxb[] parsing phase on a. thru j., and m. and t. forms to make sure they're really dot forms
 //
 //////
-	u32 compile_vxb(SEM* codeBlock, SCompileVxbContext* vxbParam, SCompilerStats* stats)
+	bool iiVerify_xDot_callback(SAsciiCompSearcher* tacs, u8* tcStart, s32 tnLength)
 	{
-		SCompileVxbContext*	vxb;
-		SCompileVxbContext	vxbLocal;
-
-
-		//////////
-		// Use their compile context if provided, otherwise use our pseudo one
-		//////
-			if (vxbParam)
-			{
-				// Using theirs
-				vxb = vxbParam;
-
-			} else {
-				// Using our temporary one
-				memset(&vxbLocal, 0, sizeof(vxbLocal));
-				vxb = &vxbLocal;
-			}
-
-
-		//////////
-		// Initialize the compile context
-		//////
-			memset(vxb, 0, sizeof(SCompileVxbContext));
-			vxb->codeBlock	= codeBlock;
-			vxb->stats		= stats;
-
-			// If they provided stats, then we'll use those
-			if (!vxb->stats)
-				vxb->stats = &vxb->statsLocal;
-
-			// Reset all our stats
-			memset(vxb->stats, 0, sizeof(SCompilerStats));
-
-
-		//////////
-		// Make sure our environment is sane
-		//////
-			if (vxb->codeBlock && vxb->codeBlock->firstLine)
-			{
-				// Before compilation, we need to remove any dependencies on things that have changed
-				iiCompile_vxb_precompile_forLiveCode(vxb);
-
-				// Physically compile
-				iiCompile_vxb_compile_forLiveCode(vxb);		// Note:  Compilation compiles source code, and generates executable ops
-
-				// After compilation, clean up anything that's dead
-				iiCompile_vxb_postcompile_forLiveCode(vxb);
-			}
-
-
-		//////////
-		// Indicate our result
-		//////
-			return(vxb->stats->sourceLineCount);
+		return(tnLength >= 1 && tcStart[1] == '.');
 	}
 
 
@@ -170,12 +112,69 @@
 
 //////////
 //
-// Called during the cgcKeywordsVxb[] parsing phase on a. thru j., and m. and t. forms to make sure they're really dot forms
+// Compiles a VXB source code block.  If tlLiveCode is true, then only those
+// lines which have differing line->compilerInfo->sourceCode and line->sourceCode are
+// compiled.  If the current debug environment is operating on this line, the debugger
+// will need to take special note about the before and after sub-instructions to
+// to determine if the current location can be maintained, or if the line needs to
+// start over.
+//
+// Note:  By the time this function is called, iEngine_parse_sourceCode() should've been called
 //
 //////
-	bool iiVerify_xDot_callback(SAsciiCompSearcher* tacs, u8* tcStart, s32 tnLength)
+	// Returns source line count compiled
+	u32 iVxb_compile(SEM* sem, SVxbContext* vxbParams, SVxbStats* stats)
 	{
-		return(tnLength >= 1 && tcStart[1] == '.');
+		SVxbContext*	vxb;
+		SVxbContext		_vxbLocal;
+		SVxbStats		_statsLocal;										// A dummy stats block we use if the compile requester did not send their own stats in
+
+
+		//////////
+		// Use their compile context if provided, otherwise use our pseudo one
+		//////
+			if (vxbParams)
+			{
+				// Using theirs
+				vxb = vxbParams;
+
+			} else {
+				// Using our temporary one
+				memset(&_vxbLocal, 0, sizeof(_vxbLocal));
+				vxb = &_vxbLocal;
+			}
+
+
+		//////////
+		// Initialize the compile context
+		//////
+			memset(vxb, 0, sizeof(SVxbContext));
+			vxb->sem	= sem;
+			vxb->stats	= stats;
+
+			// If they provided stats, then we'll use those
+			if (!vxb->stats)
+				vxb->stats = &_statsLocal;
+
+			// Reset all our stats
+			memset(vxb->stats, 0, sizeof(SVxbStats));
+
+
+		//////////
+		// Make sure our environment is sane
+		//////
+			if (vxb->sem && vxb->sem->firstLine)
+			{
+				iiVxb_compile_stage1(vxb);		// Make notes for any changing context
+				iiVxb_compile_stage2(vxb);		// Physically compile
+				iiVxb_compile_stage3(vxb);		// Re-connect changed things, clean up anything that's out of scope
+			}
+
+
+		//////////
+		// Indicate our result
+		//////
+			return(vxb->stats->sourceLineCount);
 	}
 
 
@@ -193,19 +192,19 @@
 // references what will become the new function, new adhoc, or new variable.
 //
 //////
-	void iiCompile_vxb_precompile_forLiveCode(SCompileVxbContext* vxb)
+	void iiVxb_compile_stage1(SVxbContext* vxb)
 	{
 		SLine*	line;
 
 
 		// Make sure the codeBlock is sane
-		if (vxb->codeBlock)
+		if (vxb->sem)
 		{
 			// Iterate through every source line, copying everything through to compilerInfo_LiveCode
-			for (line = vxb->codeBlock->firstLine; line; line = line->ll.nextLine)
+			for (line = vxb->sem->firstLine; line; line = line->ll.nextLine)
 			{
 				// If this line has existing compilerInfo_LiveCode, free it
-				iiCompile_LiveCode_free(line->compilerInfo_LiveCode);
+				iiVxb_free_liveCode(line->compilerInfo_LiveCode);
 			}
 		}
 	}
@@ -218,16 +217,16 @@
 // Called to physically compile each line of source code.
 //
 //////
-	void iiCompile_vxb_compile_forLiveCode(SCompileVxbContext* vxb)
+	void iiVxb_compile_stage2(SVxbContext* vxb)
 	{
 		// Begin compiling
-		vxb->currentFunction	= NULL;
-		vxb->currentAdhoc		= NULL;
-		vxb->currentFlowof		= NULL;
+		vxb->func	= NULL;
+		vxb->adhoc		= NULL;
+		vxb->flowof		= NULL;
 
 		// Iterate through every line in this codeBlock
 		for (
-				vxb->line = vxb->codeBlock->firstLine;		// Init
+				vxb->line = vxb->sem->firstLine;		// Init
 				vxb->line;									// Test
 				vxb->line = (SLine*)vxb->line->ll.next		// Increment
 			)
@@ -297,7 +296,7 @@
 
 								} else if (vxb->line->compilerInfo->firstComp->iCode == _ICODE_ENDADHOC) {
 									// We've moved out of the adhoc
-									vxb->currentAdhoc = NULL;
+									vxb->adhoc = NULL;
 								}
 						}
 						// Move on to next line
@@ -360,7 +359,7 @@
 							if (vxb->comp->iCode == _ICODE_FUNCTION)
 							{
 								// They are adding another function
-								vxb->currentFunction = iiComps_decodeSyntax_function(vxb);
+								vxb->func = iiComps_decodeSyntax_function(vxb);
 
 
 							} else if (vxb->comp->iCode == _ICODE_ADHOC) {
@@ -418,7 +417,7 @@
 // Called to post-compile, primarily to flag variables that are not referenced
 //
 //////
-	void iiCompile_vxb_postcompile_forLiveCode(SCompileVxbContext* vxb)
+	void iiVxb_compile_stage3(SVxbContext* vxb)
 	{
 	}
 
@@ -432,7 +431,7 @@
 // Syntax:	FUNCTION cFunctionName
 //
 //////
-	SFunction* iiComps_decodeSyntax_function(SCompileVxbContext* vxb)
+	SFunction* iiComps_decodeSyntax_function(SVxbContext* vxb)
 	{
 		SComp*		comp;
 		SComp*		compName;
@@ -441,7 +440,7 @@
 
 		// Make sure our environment is sane
 		func = NULL;
-		if (vxb->codeBlock && vxb->line && vxb->line->compilerInfo)
+		if (vxb->sem && vxb->line && vxb->line->compilerInfo)
 		{
 			// The syntax must be [FUNCTION][cFunctionName]
 			if ((comp = vxb->line->compilerInfo->firstComp) && comp->iCode == _ICODE_FUNCTION)
@@ -485,7 +484,7 @@
 // Syntax:	ADHOC cAdhocName
 //
 //////
-	SFunction* iiComps_decodeSyntax_adhoc(SCompileVxbContext* vxb)
+	SFunction* iiComps_decodeSyntax_adhoc(SVxbContext* vxb)
 	{
 		SComp*		comp;
 		SComp*		compName;
@@ -494,7 +493,7 @@
 
 		// Make sure our environment is sane
 		adhoc = NULL;
-		if (vxb->codeBlock && vxb->line && vxb->line->compilerInfo)
+		if (vxb->sem && vxb->line && vxb->line->compilerInfo)
 		{
 			// The syntax must be [ADHOC][cAdhocName]
 			if ((comp = vxb->line->compilerInfo->firstComp) && comp->iCode == _ICODE_ADHOC)
@@ -531,22 +530,22 @@
 
 
 
-void iiComps_decodeSyntax_params(SCompileVxbContext* vxb)
+void iiComps_decodeSyntax_params(SVxbContext* vxb)
 {
 // TODO:  write this function
 }
 
-void iiComps_decodeSyntax_lobject(SCompileVxbContext* vxb)
+void iiComps_decodeSyntax_lobject(SVxbContext* vxb)
 {
 // TODO:  write this function
 }
 
-void iiComps_decodeSyntax_lparameters(SCompileVxbContext* vxb)
+void iiComps_decodeSyntax_lparameters(SVxbContext* vxb)
 {
 // TODO:  write this function
 }
 
-void iiComps_decodeSyntax_returns(SCompileVxbContext* vxb)
+void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 {
 // TODO:  write this function
 }
@@ -559,16 +558,13 @@ void iiComps_decodeSyntax_returns(SCompileVxbContext* vxb)
 // Release the compiler info contained here
 //
 //////
-	void iiCompile_LiveCode_free(SCompiler* compiler)
+	void iiVxb_free_liveCode(SCompiler* compiler)
 	{
 		//////////
 		// Free this copy of the original source code line if need be
 		/////
 			if (compiler->sourceCode)
-			{
-				iDatum_delete(compiler->sourceCode, true);
-				compiler->sourceCode = NULL;
-			}
+				iDatum_delete(&compiler->sourceCode);
 
 
 		//////////

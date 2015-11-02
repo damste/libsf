@@ -513,11 +513,12 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 // Called to load and parse a prg, and populate into known functions if it's being
 //
 //////
-	void iEngine_loadPrg(SCompilerStats* stats, SDatum* name, cs8* tcPrg, s32 tnPrgLength, bool tlExposeFunctionsAsPublic, bool* error, u32* errorNum)
+	void iEngine_loadPrg(SVxbContext* vxbParams, SVxbStats* stats, SDatum* name, cs8* tcPrg, s32 tnPrgLength, bool tlExposeFunctionsAsPublic, bool* error, u32* errorNum)
 	{
 		SEM*			sem;
 		SDatum			sourceCode;
-		SCompilerStats	_stats_local;
+		SVxbStats		_stats_local;
+		SVxbContext		_vxbParam_local;
 		SNoteLog*		noteLog;
 
 
@@ -527,11 +528,18 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 			//////////
 			// Engine load block
 			//////
-				// Make sure we have an el
+				// Make sure we have a stats
 				if (!stats)
 					stats = &_stats_local;
 
-				// Initialize
+				// Make sure we have a vxbParams
+				if (!vxbParams)
+					vxbParams = &_vxbParam_local;
+
+
+			//////////
+			// Initialize
+			//////
 				memset(stats, 0, sizeof(*stats));
 
 
@@ -574,6 +582,7 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 			//////////
 			// Compile 
 			//////
+				iVxb_compile(sem, vxbParams, stats);
 
 
 		} else {
@@ -675,7 +684,7 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 // Note:  If tlExposeFunctionsAsPublic, every function found is added to gsRootFunc.  It would be used with SET PROCEDURE TO ... [ADDITIVE] for example.
 //
 //////
-	SLine* iEngine_parse_sourceCode_block(SCompilerStats* stats, SDatum* name, SEM* sem)
+	SLine* iEngine_parse_sourceCode_block(SVxbStats* stats, SDatum* name, SEM* sem)
 	{
 		bool		llFirstCompFound, llDeleteVarSys2015, llHandled;
 		s32			lnStackLevel, lniCode;
@@ -831,35 +840,28 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 							default:
 								// It's not a function, adhoc, or endfunc or endadhoc
 								llHandled = false;
-								if (lniCode == _ICODE_DEFINE)
+								if (lniCode == _ICODE_DEFINE && comp->ll.nextComp && comp->ll.nextComp->iCode == _ICODE_CLASS)
 								{
-									// DEFINE ...?
-									if (comp->ll.nextComp && comp->ll.nextComp->iCode == _ICODE_CLASS)
+									// DEFINE CLASS
+									if (classobj)
 									{
-										// DEFINE CLASS
-										if (classobj)
-										{
-											// They tried to end an adhoc that hadn't started yet
-											iNoteLog_create_byErrorNumber(&sem->firstNote,					comp, _ERROR_NESTING_ERROR);
-											iNoteLog_create_byErrorNumber(&line->compilerInfo->firstError,	comp, _ERROR_NESTING_ERROR);
-										}
-
-										// Begin the new class
-										varSys2015	= NULL;
-										classobj	= iEngine_create_classObj(iiComps_populateAs_datum(name, comp->ll.nextComp, &varSys2015), sem, line);
-										if (varSys2015)
-											iVariable_delete(varSys2015, true);
-
-										// Append the adhoc to the function's adhoc chain
-										iLl_appendExistingNodeAtEnd((SLL**)&stats->el.firstClassObj, (SLL*)classobj);
-										++stats->classObjCount;
-
-										// It was handled
-										llHandled = true;
-
-									} else {
-										// Not handled
+										// They tried to end an adhoc that hadn't started yet
+										iNoteLog_create_byErrorNumber(&sem->firstNote,					comp, _ERROR_NESTING_ERROR);
+										iNoteLog_create_byErrorNumber(&line->compilerInfo->firstError,	comp, _ERROR_NESTING_ERROR);
 									}
+
+									// Begin the new class
+									varSys2015	= NULL;
+									classobj	= iEngine_create_classObj(iiComps_populateAs_datum(name, comp->ll.nextComp, &varSys2015), sem, line);
+									if (varSys2015)
+										iVariable_delete(varSys2015, true);
+
+									// Append the adhoc to the function's adhoc chain
+									iLl_appendExistingNodeAtEnd((SLL**)&stats->el.firstClassObj, (SLL*)classobj);
+									++stats->classObjCount;
+
+									// It was handled
+									llHandled = true;
 
 								} else if (classobj && lniCode == _ICODE_ENDDEFINE) {
 									// ENDDEFINE

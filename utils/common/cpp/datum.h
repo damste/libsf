@@ -159,6 +159,7 @@ struct SComp;
 	s32						iDatum_compare							(SDatum* datumLeft, cs8* data, s32 dataLength);
 	s32						iDatum_compare							(SDatum* datumLeft, u8*  data, s32 dataLength);
 	s32						iDatum_compare							(SDatum* datumLeft, cu8* data, s32 dataLength);
+	void					iDatum_delete							(SDatum** datum);
 	void					iDatum_delete							(SDatum* datum, bool tlDeleteSelf);
 	void					iiDatum_delete							(SDatum* datum);
 

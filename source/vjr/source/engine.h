@@ -95,10 +95,10 @@
 
 	void					iEngine_dispatch_function				(SFunction* func);
 
-	void					iEngine_loadPrg							(SCompilerStats* stats, SDatum* name, cs8* tcPrg, s32 tnPrgLength, bool tlExposeFunctionsAsPublic, bool* error, u32* errorNum);
+	void					iEngine_loadPrg							(SVxbContext* vxbParams, SVxbStats* stats, SDatum* name, cs8* tcPrg, s32 tnPrgLength, bool tlExposeFunctionsAsPublic, bool* error, u32* errorNum);
 
 	SComp*					iEngine_parse_sourceCode_line			(SLine* line);
-	SLine*					iEngine_parse_sourceCode_block			(SCompilerStats* stats, SDatum* name, SEM* sem);
+	SLine*					iEngine_parse_sourceCode_block			(SVxbStats* stats, SDatum* name, SEM* sem);
 
 	SVariable*				iEngine_get_variableName_fromComponent	(SComp* comp, bool* tlManufactured, bool tlByRef);
 	SVariable*				iEngine_get_variableName_fromText		(cs8* tcText, u32 tnTextLength, SComp* comp, bool* tlManufactured, bool tlByRef);

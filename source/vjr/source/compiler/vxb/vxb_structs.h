@@ -103,7 +103,7 @@ struct SStartEndCallback;
 struct SLL;
 struct SLLCallback;
 struct SVariable;
-struct SCompilerStats;
+struct SVxbStats;
 struct SNoteLog;
 struct SDateTimeX;
 
@@ -164,7 +164,7 @@ struct SDateTimeX;
 		SFunction*		firstAdhoc;										// First ADHOC function contained within this function
 	};
 
-	struct SCompilerStats
+	struct SVxbStats
 	{
 		// Counters
 		u32				sourceLineCount;								// Raw source lines, blank, comment, or otherwise
@@ -188,27 +188,27 @@ struct SDateTimeX;
 		SEngineLoad		el;												// Stats related to parsed code
 	};
 
-	// Used during the the compile_Vxb() functions (so one parameter is passed rather than multiple)
-	struct SCompileVxbContext
+	// Used during the the iVxb_compile() functions (so one parameter is passed rather than multiple)
+	struct SVxbContext
 	{
 		// These are parameters passed at various places in compile_vxb()
-		SEM*			codeBlock;										// The code block being compiled
-		SCompilerStats*	stats;											// Statistics about the compilee
-		SCompilerStats	statsLocal;										// A dummy stats block we use if the compile requester did not send their own stats in
+		SEM*			sem;											// The code block being compiled
+		SVxbStats*		stats;											// Statistics about the compilee
 		bool			processThisLine;								// Should this line be processed?
 
 		// Parameters used while processing, calling sub-functions, etc.
 		SLine*			line;											// Current line
 		SComp*			comp;											// Current component on the current line
 
-		SFunction*		func;											// First function in the codeBlock
-		SFunction*		currentFunction;								// Current unction in the codeBlock
+		SFunction*		firstFunc;										// First function in the codeBlock
+		SFunction*		firstAdhoc;										// First adhoc in the codeBlock
+		SFunction*		firstFlowof;									// First flowof in the codeBlock
+		SObject*		firstClass;										// First class defined by codeblock
 
-		SFunction*		adhoc;											// First adhoc in the codeBlock
-		SFunction*		currentAdhoc;									// Current adhoc in the current function
-
-		SFunction*		flowof;											// First flowof in the codeBlock
-		SFunction*		currentFlowof;									// Current flowof in the codeBlock
+		SFunction*		func;											// Current function being compiled in the codeBlock
+		SFunction*		adhoc;											// Current adhoc being compiled in the current function
+		SFunction*		flowof;											// Current flowof being compiled in the codeBlock
+		SObject*		obj;											// Current object being compiled in the codeblock
 	};
 
 	struct SOp

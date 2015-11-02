@@ -336,6 +336,16 @@
 		return(iDatum_compare(datumLeft, (s8*)data, dataLength));
 	}
 
+	void iDatum_delete(SDatum** datum)
+	{
+		if (datum)
+		{
+			// Delete and reset our pointer
+			iDatum_delete(*datum, true);
+			*datum = NULL;
+		}
+	}
+
 	void iDatum_delete(SDatum* datum, bool tlDeleteSelf)
 	{
 		// Make sure our environment is sane

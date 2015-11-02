@@ -101,7 +101,7 @@ struct SLLCallback;
 struct SComp;
 struct SCompCallback;
 struct SCompiler;
-struct SCompilerStats;
+struct SVxbStats;
 struct SNoteLog;
 struct SAsciiCompSearcher;
 struct SStartEnd;
@@ -111,26 +111,27 @@ struct SMasterList;
 struct SVariable;
 struct SThisCode;
 struct SClassObj;
+struct SVxbContext;
 
 
 //////////
 // compiler.cpp
 //////////
-	u32						compile_vxb									(SEM* codeBlock, SCompileVxbContext* vxbParam, SCompilerStats* stats);
 	bool					iiVerify_xDot_callback						(SAsciiCompSearcher* tacs, u8* tcStart, s32 tnLength);
-	void					iiCompile_vxb_precompile_forLiveCode		(SCompileVxbContext* vxb);
-	void					iiCompile_vxb_compile_forLiveCode			(SCompileVxbContext* vxb);
-	void					iiCompile_vxb_postcompile_forLiveCode		(SCompileVxbContext* vxb);
+	u32						iVxb_compile								(SEM* sem, SVxbContext* vxbParams, SVxbStats* stats);
+	void					iiVxb_compile_stage1						(SVxbContext* vxb);
+	void					iiVxb_compile_stage2						(SVxbContext* vxb);
+	void					iiVxb_compile_stage3						(SVxbContext* vxb);
 
-	SFunction*				iiComps_decodeSyntax_function				(SCompileVxbContext* vxb);
-	SFunction*				iiComps_decodeSyntax_adhoc					(SCompileVxbContext* vxb);
-	void					iiComps_decodeSyntax_params					(SCompileVxbContext* vxb);
-	void					iiComps_decodeSyntax_lobject				(SCompileVxbContext* vxb);
-	void					iiComps_decodeSyntax_lparameters			(SCompileVxbContext* vxb);
-	void					iiComps_decodeSyntax_returns				(SCompileVxbContext* vxb);
+	SFunction*				iiComps_decodeSyntax_function				(SVxbContext* vxb);
+	SFunction*				iiComps_decodeSyntax_adhoc					(SVxbContext* vxb);
+	void					iiComps_decodeSyntax_params					(SVxbContext* vxb);
+	void					iiComps_decodeSyntax_lobject				(SVxbContext* vxb);
+	void					iiComps_decodeSyntax_lparameters			(SVxbContext* vxb);
+	void					iiComps_decodeSyntax_returns				(SVxbContext* vxb);
 
 	// LiveCode
-	void					iiCompile_LiveCode_free						(SCompiler* compiler);
+	void					iiVxb_free_liveCode							(SCompiler* compiler);
 
 	bool					iiComps_xlatToNodes							(SLine* line, SCompiler* compiler);
 	SNode*					iiComps_xlatToNodes_parenthesis_left		(SNode** root, SNode* active, SComp* comp);
