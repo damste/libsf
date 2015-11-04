@@ -200,12 +200,9 @@
 		// Make sure the codeBlock is sane
 		if (vxb->sem)
 		{
-			// Iterate through every source line, copying everything through to compilerInfo_LiveCode
+			// Iterate through every source line
 			for (line = vxb->sem->firstLine; line; line = line->ll.nextLine)
-			{
-				// If this line has existing compilerInfo_LiveCode, free it
-				iiVxb_free_liveCode(line->compilerInfo_LiveCode);
-			}
+				iiVxb_free_liveCode(line->compilerInfo);
 		}
 	}
 

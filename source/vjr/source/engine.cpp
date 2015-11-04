@@ -720,7 +720,7 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 		// Identify all functions contained within
 		//////
 			llFirstCompFound = false;
-			for (line = sem->firstLine, lnStackLevel = -1, adhoc = NULL, func = NULL; line; line = line->ll.nextLine, llFirstCompFound = true)
+			for (line = sem->firstLine, lnStackLevel = -1, adhoc = NULL, func = NULL, classobj = NULL; line; line = line->ll.nextLine, llFirstCompFound = true)
 			{
 				// Is there a component here?
 				if (line->compilerInfo)

@@ -92,13 +92,14 @@
 	//////////
 	// Splash
 	//////
- 		//bool glShowSplashScreen = true;
- 		bool glShowSplashScreen = false;
+ 		bool glShowSplashScreen = true;
+ 		//bool glShowSplashScreen = false;
 
 
 	//////////
 	// Focus highlight border
 	//////
+// TODO:  I observed after disabling this that the system renders MUCH faster.  Need to investgate what's going on there.
 		//bool glShowFocusHighlightBorder = true;
 		bool glShowFocusHighlightBorder = false;
 

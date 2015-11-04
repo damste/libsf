@@ -513,7 +513,6 @@ struct SLine
 	// Compiler information (see compiler.cpp)
 	bool			forceRecompile;									// A flag that if set forces a recompile of this line
 	SCompiler*		compilerInfo;									// Information about the last time this line was compiled
-	SCompiler*		compilerInfo_LiveCode;							// Used during LiveCode compilation
 
 	// General purpose extra data
 	SBreakpoint*	breakpoint;										// If there's a breakpoint here, what kind?
