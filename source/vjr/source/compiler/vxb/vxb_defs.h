@@ -95,7 +95,7 @@
 struct SEM;
 struct SLine;
 struct SFunction;
-struct SNode;
+struct SNode9;
 struct SLL;
 struct SLLCallback;
 struct SComp;
@@ -134,8 +134,8 @@ struct SVxbContext;
 	void					iiVxb_free_liveCode							(SCompiler* compiler);
 
 	bool					iiComps_xlatToNodes							(SLine* line, SCompiler* compiler);
-	SNode*					iiComps_xlatToNodes_parenthesis_left		(SNode** root, SNode* active, SComp* comp);
-	SNode*					iiComps_xlatToNodes_parenthesis_right		(SNode** root, SNode* active, SComp* comp);
+	SNode9*					iiComps_xlatToNodes_parenthesis_left		(SNode9** root, SNode9* active, SComp* comp);
+	SNode9*					iiComps_xlatToNodes_parenthesis_right		(SNode9** root, SNode9* active, SComp* comp);
 
 	void					iComps_deleteAll							(SComp** compRoot);
 	void					iComps_deleteAll_byLine						(SLine* line);
@@ -206,7 +206,7 @@ struct SVxbContext;
 // BEGIN
 //////
 	void					iiComps_xlatToSubInstr						(SLine* line);
-	SComp*					iiComps_xlatToSubInstr_findInmostExpression	(SNode* si, SLine* line);
+	SComp*					iiComps_xlatToSubInstr_findInmostExpression	(SNode9* si, SLine* line);
 	void					iiComps_xlatToSubInstr_findStartOfComponent	(SComp* compRoot, SOp* op);
 	void					iiComps_xlatToSubInstr_findFullComponent	(SComp* compRoot, SOp* op);
 	bool					iiComps_xlatToSubInstr_isEqualAssignment	(SLine* line);
@@ -244,9 +244,9 @@ struct SVxbContext;
 	SComp*					iiComps_xlatToOthers_callback__mergeCompsCallback			(SComp* comp, SLine* line, u32 tnCount, u32 tniCodeNew);
 
 	// Node functions
-	SNode*					iNode_create								(SNode** root, SNode* hint, u32 tnDirection, SNode* parent, SNode* prev, SNode* next, SNode* left, SNode* right);
-	SNode*					iNode_insertBetween							(SNode** root, SNode* node1, SNode* node2, u32 tnNode1Direction, u32 tnNode2Direction);
-	void					iNode_politelyDeleteAll						(SNode** root, bool tlDeleteSelf, bool tlTraverseParent, bool tlTraversePrev, bool tlTraverseNext, bool tlTraverseLeft, bool tlTraverseRight);
+	SNode9*					iNode9_create								(SNode9** root, SNode9* n, SNode9* e, SNode9* s, SNode9* w, SNode9* nw, SNode9* ne, SNode9* sw, SNode9* se, SNode9* m);
+	SNode9*					iNode9_insert_between						(SNode9** root, SNode9* node1, SNode9* node2, u32 tnNode1Direction, u32 tnNode2Direction);
+	void					iNode9_deleteAll_politely					(SNode9** root, SNode9* nodeOrigin, bool tlDeleteSelf, bool tlTraverseN, bool tlTraverseE, bool tlTraverseS, bool tlTraverseW, bool tlTraverseNW, bool tlTraverseNE, bool tlTraverseSW, bool tlTraverseSE, bool tlTraverseM);
 
 	// Function functions (LOL)
 	SFunction*				iFunction_allocate							(SComp* compName);
@@ -369,6 +369,7 @@ struct SVxbContext;
 	bool					iOp_setVariable_local						(SOp* op, SVariable* var, bool isOpAllocated);
 	bool					iOp_setVariable_scoped						(SOp* op, SVariable* var, bool isOpAllocated);
 	bool					iOp_setVariable_return						(SOp* op, SVariable* var, bool isOpAllocated);
+	void					iOp_politelyDelete							(SOp** opRoot, bool tlDeleteSelf);
 	void					iOp_politelyDelete							(SOp* op, bool tlDeleteSelf);
 
 	// Error and warning functions

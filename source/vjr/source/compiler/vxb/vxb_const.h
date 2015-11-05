@@ -136,11 +136,25 @@
 	const u32		_OP_TYPE_PARENTHESIS_LEFT						= 9;// (Temporary) A left parenthesis
 
 	const u32		_NODE_NONE										= 0;
+	const u32		_NODE_N											= 1;
 	const u32		_NODE_PARENT									= 1;
+	const u32		_NODE_W											= 2;
 	const u32		_NODE_PREV										= 2;
+	const u32		_NODE_E											= 3;
 	const u32		_NODE_NEXT										= 3;
+	const u32		_NODE_SW										= 4;
 	const u32		_NODE_LEFT										= 4;
+	const u32		_NODE_LEFT_DN									= 4;
+	const u32		_NODE_SE										= 5;
 	const u32		_NODE_RIGHT										= 5;
+	const u32		_NODE_RIGHT_DN									= 5;
+	const u32		_NODE_S											= 6;
+	const u32		_NODE_DOWN										= 6;
+	const u32		_NODE_NW										= 7;
+	const u32		_NODE_LEFT_UP									= 7;
+	const u32		_NODE_NE										= 8;
+	const u32		_NODE_RIGHT_UP									= 8;
+	const u32		_NODE_M											= 9;
 
 
 //////////

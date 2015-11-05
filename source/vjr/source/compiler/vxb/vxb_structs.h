@@ -96,7 +96,7 @@ struct SStartEnd;
 struct SMasterList;
 struct SComp;
 struct SCompCallback;
-struct SNode;
+struct SNode9;
 struct SOp;
 struct SAsciiCompSearcher;
 struct SStartEndCallback;
@@ -214,22 +214,25 @@ struct SExtraInfo;
 
 	struct SOp
 	{
-		u32				opType;											// The type of operand, see _OP_TYPE_* constants
+		u32				type;											// The type of operand, see _OP_TYPE_* constants
 
 		// Pointer to item, or first item if they are in succession (such as pointing to the left-parenthesis of a complex expression)
 		bool			isOpDataAllocated;								// Is the op below allocated?  If false, then it points to one allocated elsewhere
 		union {
-			uptr		_opData;										// Used as a general test to see if something exists (if (op_data != 0))
+			uptr		_data;											// Used as a general test to see if something exists (if (_data != 0))
 
 			// Actual data items based on op_type
-			SComp*		comp;											// The first component
-			SVariable*	variable;										// Generic access to (param, local, scoped, other)
+			SVariable*	var;											// Generic access to (param, local, scoped, other)
 			SVariable*	param;											// A parameter variable or reference
 			SVariable*	local;											// A local variable or reference
 			SVariable*	scoped;											// A scoped/temporary variable or reference used for inter-source-code-line processing
 			SVariable*	returns;										// A returns variable or reference
 			SVariable*	other;											// Unknown item which must be looked up in the context of the runtime environment
+
+			SComp*		comp;											// The first component
+
 			SObject*	obj;											// An object reference
+
 			SFunction*	func;											// A function reference
 			SFunction*	adhoc;											// An adhoc reference
 			SFunction*	flowof;											// A flowof reference
@@ -282,32 +285,54 @@ struct SExtraInfo;
 		u32				variable_count;									// The number of variables
 	};
 
-	// General nodes
-	struct SNode
+
+//////////
+// General nine-way nodes:
+//
+//            parent
+//              n
+//         nw   |   ne
+//           \  |  /
+//            + + +
+//     w ---- + + + ---- e       + --- m (middle)
+//  prev      + + +      next
+//           /  |  \
+//         sw   |   se
+//       left   s   right
+//             down
+//////
+	struct SNode9
 	{
 		u32				uid;											// Unique ID for this sub-instruction
 
 		// Directions from the central node
 		union {
-			SNode*		parent;											// Up to the higher node
-			SNode*		north;
+			SNode9*		n;												// North
+			SNode9*		parent;
 		};
 		union {
-			SNode*		prev;											// Previous item in the horizontal chain
-			SNode*		west;
+			SNode9*		w;												// West
+			SNode9*		prev;
 		};
 		union {
-			SNode*		next;											// Next item in the horizontal chain
-			SNode*		east;
+			SNode9*		e;												// East
+			SNode9*		next;
 		};
 		union {
-			SNode*		left;											// Left node
-			SNode*		extra;											// Pointer to an extra direction for this node
+			SNode9*		s;												// South
+			SNode9*		down;
+		};
+		SNode9*		nw;													// Northwest
+		SNode9*		ne;													// Northeast
+		union {
+			SNode9*		sw;												// Southwest
+			SNode9*		left;
 		};
 		union {
-			SNode*		right;											// Right node
-			SNode*		south;
+			SNode9*		se;												// Southeast
+			SNode9*		right;
 		};
+		SNode9*		m;													// Middle
 
 		// Node data
 		union {
@@ -419,10 +444,10 @@ struct SExtraInfo;
 	//		(2) optimize	-- Optimize
 	//		(3) generate	-- Write the sequenced engagement code for the target
 	//////
-		SNode*			first_nodeParse;					// (1)  Component sequencing prior to optimization
+		SNode9*			first_nodeParse;					// (1)  Component sequencing prior to optimization
 		u32				count_nodeParse;					//      How many nodes after parsing
-		SNode*			first_nodeOptimize;					// (2)  Component sequencing after optimization
+		SNode9*			first_nodeOptimize;					// (2)  Component sequencing after optimization
 		u32				count_nodeOptimize;					//      How many nodes after optimization
-		SNode*			first_nodeEngage;					// (3)  Final generation of engagement code steps
+		SNode9*			first_nodeEngage;					// (3)  Final generation of engagement code steps
 		u32				count_nodeArray;					//      How many nodes in engagement code
 	};

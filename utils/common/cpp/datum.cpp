@@ -122,6 +122,16 @@
 		}
 	}
 
+	SDatum* iDatum_allocate(cs8* data, s32 dataLength)
+	{
+		return(iDatum_allocate((u8*)data, dataLength));
+	}
+
+	SDatum* iDatum_allocate(s8* data, s32 dataLength)
+	{
+		return(iDatum_allocate((u8*)data, dataLength));
+	}
+
 	SDatum* iDatum_allocate(cu8* data, s32 dataLength)
 	{
 		return(iDatum_allocate((u8*)data, dataLength));
