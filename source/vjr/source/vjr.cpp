@@ -136,8 +136,8 @@
 		iEngine_startup_initialization();
 		memset(&vxbParams,	0, sizeof(vxbParams));
 		memset(&stats,		0, sizeof(stats));
-//		iEngine_loadPrg(&vxbParams, &stats, NULL, baseline_prg, sizeof(baseline_prg) - 1, true, &error, &errorNum);
-//		iEngine_dispatch_function(stats.el.firstFunc);
+		iEngine_loadPrg(&vxbParams, &stats, NULL, baseline_prg, sizeof(baseline_prg) - 1, true, &error, &errorNum);
+		iEngine_dispatch_function(stats.el.firstFunc);
 
 
 	//////////

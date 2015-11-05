@@ -112,6 +112,7 @@
 // Uses Visual FreePro, Jr's existing facilities to simplify our processing
 //////
 	#define _OPPIE1_COMPILE		// Turns off some features in VJr that fail on compilation from here
+	#define _NONVJR_COMPILE		// Turns off some features in VJr that fail on compilation from here
 	#define _BMP_LOCALITY 1		// Force definitions to be local
 	#include "\libsf\source\vjr\source\vjr.h"
 	#undef main
@@ -121,6 +122,14 @@
 // Instruction encoding
 //////
 	#include "..\common\instructions.h"
+
+
+//////////
+// Global variables
+//////
+	s32		gnWidth		= 800;
+	s32		gnHeight	= 600;
+
 
 
 //////////

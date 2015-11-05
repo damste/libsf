@@ -161,6 +161,8 @@
 
 	struct SOppie1Instruction
 	{
+		SLL		ll;							// Link list
+
 		s32		org;						// The offset into memory for this item
 		s32		size;						// Number of bytes for this item, either 0, or greater
 

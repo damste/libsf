@@ -156,6 +156,9 @@
 
 			// Create fake startups for glut
 			argc	= 1;
+#ifndef cgc_appName
+	char cgc_appName[]="Application";
+#endif
 			argv[0]	= (s8*)&cgc_appName;
 
 			// Determine our window size (for now we use 3/4 of the desktop area)

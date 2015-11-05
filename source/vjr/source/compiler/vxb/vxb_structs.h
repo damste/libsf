@@ -106,6 +106,7 @@ struct SVariable;
 struct SVxbStats;
 struct SNoteLog;
 struct SDateTimeX;
+struct SExtraInfo;
 
 
 
@@ -235,7 +236,7 @@ struct SDateTimeX;
 		};
 
 		// Number of components found (such as between parenthesis)
-		s32				count;											// The number of components (in comp or other) as input
+		s32				count;											// The number of components in the chain as input
 	};
 
 /*
@@ -394,48 +395,34 @@ struct SDateTimeX;
 	struct SCompiler
 	{
 		// EC was designed with source code in mind, and that means a tight compiler relationship
-		SLine*			parent;											// SEMLine this compiler data belongs to (parent->compilerInfo points back to here)
+		SLine*			parent;								// SEMLine this compiler data belongs to (parent->compilerInfo points back to here)
 
 		// The last source code line
-		SDatum*			sourceCode;										// Copy at last compile of LEFT(parent->sourceCode.data, parent->sourceCodePopulated)
+		SDatum*			sourceCode;							// Copy at last compile of LEFT(parent->sourceCode.data, parent->sourceCodePopulated)
 		// Note:  If the source code line ended in a semicolon, the following sourceCode line(s) will be appended here on top of the semicolon until there are no more semicolon lines
 
-		// Extra information
-		SExtraInfo*		firstExtraInfo;									// Specific to the application, contains triggers on errors, warnings, notes, etc.
-
 		// Components compiled in prior compiler passes
-		SComp*			firstComp;										// Pointer to the first component identified on this line
-		SComp*			firstWhitespace;								// Whitespaces are removed for ease of compilation, but they persist here for rendering and reference
-		SComp*			firstComment;									// Comments are migrated over
+		SComp*			firstComp;							// Pointer to the first component identified on this line
+
+		// Results of compilation
+		SNoteLog*		firstError;							// Noted error(s) on this source code line
+		SNoteLog*		firstWarning;						// Noted warning(s) on this source code line
+		SNoteLog*		firstNote;							// Noted note(s) on this source code line
+
+		// Extra information
+		SExtraInfo*		first_extraInfo;					// Specific to the application, also may contain triggers on errors, warnings, and notes
 
 
 	//////////
 	// During compilation, three steps:
 	//		(1) parse		-- Parse out the components into sequenced steps
-	//		(2) optimize	-- Optimize away redundancy, combine literals, possibly reorder
+	//		(2) optimize	-- Optimize
 	//		(3) generate	-- Write the sequenced engagement code for the target
 	//////
-		// (1) parse
-		SNode*			firstNodeParsed;								// Component sequencing prior to optimization
-		u32				nodeParsedCount;								// How many nodes after parsing
-
-		// (2) optimize
-		SNode*			firstNodeOptimized;								// Component sequencing after optimization
-		u32				nodeOptimizedCount;								// How many nodes after optimization
-
-		// (3) generate
-		SNode*			firstNodeEngaged;								// Final generation of engagement code steps
-		u32				nodeArrayCount;									// How many nodes in engagement code
-	//////
-	// Note:  The firstNodeEngaged code generated here will be added to the function's complete
-	//        engagement code, sequenced with meta data for flow control and error reporting.
-	//////////
-
-
-	//////////
-	// Results of compilation
-	//////
-		SNoteLog*	firstError;										// Noted error(s) on this source code line
-		SNoteLog*	firstWarning;									// Noted warning(s) on this source code line
-		SNoteLog*	firstNote;										// Noted note(s) on this source code line
+		SNode*			first_nodeParse;					// (1)  Component sequencing prior to optimization
+		u32				count_nodeParse;					//      How many nodes after parsing
+		SNode*			first_nodeOptimize;					// (2)  Component sequencing after optimization
+		u32				count_nodeOptimize;					//      How many nodes after optimization
+		SNode*			first_nodeEngage;					// (3)  Final generation of engagement code steps
+		u32				count_nodeArray;					//      How many nodes in engagement code
 	};

@@ -123,9 +123,8 @@
 //
 //////
 	// Returns source line count compiled
-	u32 iVxb_compile(SEM* sem, SVxbContext* vxbParams, SVxbStats* stats)
+	u32 iVxb_compile(SEM* sem, SVxbContext* vxb, SVxbStats* stats)
 	{
-		SVxbContext*	vxb;
 		SVxbContext		_vxbLocal;
 		SVxbStats		_statsLocal;										// A dummy stats block we use if the compile requester did not send their own stats in
 
@@ -133,31 +132,21 @@
 		//////////
 		// Use their compile context if provided, otherwise use our pseudo one
 		//////
-			if (vxbParams)
-			{
-				// Using theirs
-				vxb = vxbParams;
+			// Compile context
+			if (!vxb)
+				vxb = &_vxbLocal;		// Using our temporary one
 
-			} else {
-				// Using our temporary one
-				memset(&_vxbLocal, 0, sizeof(_vxbLocal));
-				vxb = &_vxbLocal;
-			}
-
-
-		//////////
-		// Initialize the compile context
-		//////
+			// Initialize
 			memset(vxb, 0, sizeof(SVxbContext));
 			vxb->sem	= sem;
 			vxb->stats	= stats;
 
-			// If they provided stats, then we'll use those
-			if (!vxb->stats)
-				vxb->stats = &_statsLocal;
+			// Statistics
+			if (!stats)
+				stats = &_statsLocal;
 
-			// Reset all our stats
-			memset(vxb->stats, 0, sizeof(SVxbStats));
+			// Initialize
+			memset(stats, 0, sizeof(SVxbStats));
 
 
 		//////////
@@ -202,7 +191,11 @@
 		{
 			// Iterate through every source line
 			for (line = vxb->sem->firstLine; line; line = line->ll.nextLine)
-				iiVxb_free_liveCode(line->compilerInfo);
+			{
+				// Delete anything that was there previously
+				if (line->compilerInfo)
+					iiVxb_free_liveCode(line->compilerInfo);
+			}
 		}
 	}
 
@@ -216,17 +209,14 @@
 //////
 	void iiVxb_compile_stage2(SVxbContext* vxb)
 	{
+return;
 		// Begin compiling
-		vxb->func	= NULL;
+		vxb->func		= NULL;
 		vxb->adhoc		= NULL;
 		vxb->flowof		= NULL;
 
 		// Iterate through every line in this codeBlock
-		for (
-				vxb->line = vxb->sem->firstLine;		// Init
-				vxb->line;									// Test
-				vxb->line = (SLine*)vxb->line->ll.next		// Increment
-			)
+		for (vxb->line = vxb->sem->firstLine; vxb->line; vxb->line = vxb->line->ll.nextLine)
 		{
 			// Increase our line count
 			++vxb->stats->sourceLineCount;
@@ -565,34 +555,33 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 
 
 		//////////
-		// Free the components and whitespaces
+		// Free the components
 		//////
-			iComps_deleteAll(compiler->firstComp);
-			iComps_deleteAll(compiler->firstWhitespace);
+			iComps_deleteAll(&compiler->firstComp);
 
 
 		//////////
 		// Free the previous parse, optimize, and engage nodes
 		//////
-			if (compiler->firstNodeParsed)
+			if (compiler->first_nodeParse)
 			{
 				// Release the array
-				free(compiler->firstNodeParsed);
-				compiler->nodeParsedCount = 0;
+				free(compiler->first_nodeParse);
+				compiler->count_nodeParse = 0;
 			}
 
-			if (compiler->firstNodeOptimized)
+			if (compiler->first_nodeOptimize)
 			{
 				// Release the array
-				free(compiler->firstNodeOptimized);
-				compiler->nodeOptimizedCount = 0;
+				free(compiler->first_nodeOptimize);
+				compiler->count_nodeOptimize = 0;
 			}
 
-			if (compiler->firstNodeEngaged)
+			if (compiler->first_nodeEngage)
 			{
 				// Release the array
-				free(compiler->firstNodeEngaged);
-				compiler->nodeArrayCount = 0;
+				free(compiler->first_nodeEngage);
+				compiler->count_nodeArray = 0;
 			}
 
 
@@ -607,7 +596,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 		//////////
 		// Delete any extra info that's stored
 		//////
-			iExtraInfo_removeAll(NULL, NULL, &compiler->firstExtraInfo, true);
+			iExtraInfo_removeAll(NULL, NULL, &compiler->first_extraInfo, true);
 	}
 
 
@@ -627,7 +616,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 		// Iterate through every component building the operations as we go
 		comp		= line->compilerInfo->firstComp;
 //		compLast	= comp;
-		nodeActive	= iNode_create(&compiler->firstNodeEngaged, NULL, 0, NULL, NULL, NULL, NULL, NULL);
+		nodeActive	= iNode_create(&compiler->first_nodeEngage, NULL, 0, NULL, NULL, NULL, NULL, NULL);
 		while (comp)
 		{
 			//////////
@@ -637,12 +626,12 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 				{
 					// (
 					case _ICODE_PARENTHESIS_LEFT:
-						nodeActive = iiComps_xlatToNodes_parenthesis_left(&compiler->firstNodeEngaged, nodeActive, comp);
+						nodeActive = iiComps_xlatToNodes_parenthesis_left(&compiler->first_nodeEngage, nodeActive, comp);
 						break;
 
 					// )
 					case _ICODE_PARENTHESIS_RIGHT:
-						nodeActive = iiComps_xlatToNodes_parenthesis_right(&compiler->firstNodeEngaged, nodeActive, comp);
+						nodeActive = iiComps_xlatToNodes_parenthesis_right(&compiler->first_nodeEngage, nodeActive, comp);
 						break;
 
 					// [
@@ -863,22 +852,31 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 //
 //
 //////
-	void iComps_deleteAll(SComp* comp)
+	void iComps_deleteAll(SComp** compRoot)
 	{
+		SComp* comp;
 		SComp* compNext;
 
 
-		// Iterate while there's something to delete
-		while (comp)
+		// Make sure our environment is sane
+		if (compRoot && *compRoot)
 		{
-			// Grab the next comp
-			compNext = comp->ll.nextComp;
+			// Iterate while there's something to delete
+			comp = *compRoot;
+			while (comp)
+			{
+				// Grab the next comp
+				compNext = comp->ll.nextComp;
 
-			// Delete this one
-			iComps_delete(comp, true);
+				// Delete this one
+				iComps_delete(comp, true);
 
-			// Move to the next one
-			comp = compNext;
+				// Move to the next one
+				comp = compNext;
+			}
+
+			// Reset the root
+			*compRoot = NULL;
 		}
 	}
 
@@ -896,10 +894,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 		if (line && line->compilerInfo)
 		{
 			// Delete all components
-			iComps_deleteAll(line->compilerInfo->firstComp);
-
-			// Reset the pointer
-			line->compilerInfo->firstComp = NULL;
+			iComps_deleteAll(&line->compilerInfo->firstComp);
 
 			// Clear the compilerInfo
 			iCompiler_delete(&line->compilerInfo, true);
@@ -923,17 +918,12 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 		// Make sure the environment is sane
 		if (firstComp && *firstComp)
 		{
-			comp = *firstComp;
-			while (comp)
+			// Delete all the components
+			for (comp = *firstComp; comp; comp = compNext)
 			{
-				// Grab the next comp
-				compNext = comp->ll.nextComp;
-
-				// Delete this one
-				iComps_delete(comp, true);
-
-				// Move to the next one
-				comp = compNext;
+				// Delete this component
+				compNext = comp->ll.nextComp;		// Grab the next comp
+				iComps_delete(comp, true);			// Delete this one
 			}
 
 			// Reset the pointer
@@ -987,6 +977,26 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 // Called to delete the indicated comp
 //
 //////
+	SComp* iComps_delete(SComp** compRoot)
+	{
+		SComp* comp;
+
+
+		// Make sure our environment is sane
+		comp = NULL;
+		if (compRoot && *compRoot)
+		{
+			// Delete the component chain
+			comp = iComps_delete(*compRoot, true);
+
+			// Reset the variable
+			*compRoot = NULL;
+		}
+
+		// Indicate our status
+		return(comp);
+	}
+
 	SComp* iComps_delete(SComp* comp, bool tlDeleteSelf)
 	{
 		SComp* compNext;
@@ -996,7 +1006,12 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 		if (comp->bc)
 			iBmp_deleteCache(&comp->bc);
 
-		// Delete this node
+		// If it has combined comps, delete them
+		if (comp->firstCombined)		iComps_delete(&comp->firstCombined);
+		if (comp->firstWhitespace)		iComps_delete(&comp->firstWhitespace);
+		if (comp->firstComment)			iComps_delete(&comp->firstComment);
+
+		// Delete this node from the chain
 		compNext = comp->ll.nextComp;
 		iLl_deleteNode((SLL*)comp, tlDeleteSelf);
 
@@ -2705,7 +2720,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 			while (comp && comp->iCode == _ICODE_WHITESPACE)
 			{
 				// Migrate this whitespace from firstComp to firstWhitespace
-				comp = (SComp*)iLl_migrateNodeToOther((SLL**)&line->compilerInfo->firstComp, (SLL**)&line->compilerInfo->firstWhitespace, (SLL*)comp, true);
+				comp = (SComp*)iLl_migrateNodeToOther((SLL**)&line->compilerInfo->firstComp, (SLL**)&line->compilerInfo->firstComp->firstWhitespace, (SLL*)comp, true);
 				++lnRemoved;
 
 				// comp is now pointing to what would've been comp->ll.next
@@ -2751,7 +2766,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 							line->compilerInfo->firstComp = comp->ll.nextComp;
 
 						// Migrate this whitespace to the whitespace area
-						comp = (SComp*)iLl_migrateNodeToOther((SLL**)&line->compilerInfo->firstComp, (SLL**)&line->compilerInfo->firstWhitespace, (SLL*)comp, true);
+						comp = (SComp*)iLl_migrateNodeToOther((SLL**)&line->compilerInfo->firstComp, (SLL**)&line->compilerInfo->firstComp->firstWhitespace, (SLL*)comp, true);
 
 						// Increase our counter
 						++lnRemoved;
@@ -2805,7 +2820,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 							iComps_combineN(comp, 2, comp->iCode, comp->iCat, comp->color);
 
 						// Migrate the (now single) comment
-						comp = (SComp*)iLl_migrateNodeToOther((SLL**)&line->compilerInfo->firstComp, (SLL**)&line->compilerInfo->firstComment, (SLL*)comp, true);
+						comp = (SComp*)iLl_migrateNodeToOther((SLL**)&line->compilerInfo->firstComp, (SLL**)&line->compilerInfo->firstComp->firstComment, (SLL*)comp, true);
 
 						// Done
 						return;
@@ -2856,7 +2871,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 					}
 
 					// Migrate the (now single) comment
-					comp = (SComp*)iLl_migrateNodeToOther((SLL**)&line->compilerInfo->firstComp, (SLL**)&line->compilerInfo->firstComment, (SLL*)comp, true);
+					comp = (SComp*)iLl_migrateNodeToOther((SLL**)&line->compilerInfo->firstComp, (SLL**)&line->compilerInfo->firstComp->firstComment, (SLL*)comp, true);
 
 					// All done
 					break;
@@ -5588,11 +5603,10 @@ debug_break;
 				while (line && llContinue)
 				{
 					// Delete every node if need be
-					if (line->compilerInfo && line->compilerInfo->firstNodeEngaged)
+					if (line->compilerInfo && line->compilerInfo->first_nodeEngage)
 					{
-						// Delete from regular components, and whitespaces
+						// Delete from regular components
 						iComps_deleteAll_byFirstComp(&line->compilerInfo->firstComp);
-						iComps_deleteAll_byFirstComp(&line->compilerInfo->firstWhitespace);
 					}
 
 					// Mark it so that it will be force-re-compiled
@@ -14950,29 +14964,17 @@ _asm int 3;
 		SCompiler* compilerNew;
 
 
-		//////////
-		// Allocate
-		//////
-			compilerNew = (SCompiler*)malloc(sizeof(SCompiler));
+		// Allocate and initialize
+		compilerNew = (SCompiler*)malloc(sizeof(SCompiler));
+		if (compilerNew)
+		{
+			// Initialize
+			memset(compilerNew, 0, sizeof(SCompiler));
+			compilerNew->parent = parent;
+		}
 
-
-		//////////
-		// Initialize
-		//////
-			if (compilerNew)
-			{
-				// Initialize
-				memset(compilerNew, 0, sizeof(SCompiler));
-
-				// Populate
-				compilerNew->parent = parent;
-			}
-
-
-		//////////
 		// Indicate our status
-		//////
-			return(compilerNew);
+		return(compilerNew);
 	}
 
 
@@ -14989,27 +14991,18 @@ _asm int 3;
 
 
 		// Make sure our environment is sane
-		if (compilerInfoRoot && *compilerInfoRoot)
+		if (compilerInfoRoot && (compilerInfo = *compilerInfoRoot))
 		{
-			// Grab the pointer
-			compilerInfo = *compilerInfoRoot;
-
 			// Delete the source code
-			iDatum_delete(compilerInfo->sourceCode, true);
-			compilerInfo->sourceCode = NULL;
+			iDatum_delete(&compilerInfo->sourceCode);
 
 			// Delete the items here
 			iNoteLog_removeAll(&compilerInfo->firstWarning);
 			iNoteLog_removeAll(&compilerInfo->firstError);
+			iNoteLog_removeAll(&compilerInfo->firstNote);
 
-			// Delete combined component references
-			if (compilerInfo->firstComp && compilerInfo->firstComp->firstCombined)
-				iComps_deleteAll_byFirstComp(&compilerInfo->firstComp->firstCombined);
-
-			// Delete regular components, whitespaces, and comments
+			// Delete regular components
 			iComps_deleteAll_byFirstComp(&compilerInfo->firstComp);
-			iComps_deleteAll_byFirstComp(&compilerInfo->firstWhitespace);
-			iComps_deleteAll_byFirstComp(&compilerInfo->firstComment);
 
 			// Delete self if need be
 			if (tlDeleteSelf)

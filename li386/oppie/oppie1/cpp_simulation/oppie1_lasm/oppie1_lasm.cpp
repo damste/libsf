@@ -101,7 +101,7 @@
 //////
 	#define _NONVJR_COMPILE		// Turns off some features in VJr that fail on compilation from here
 	#define _BMP_LOCALITY 1		// Force definitions to be local
-	#include "\libsf\source\vjr\vjr.h"
+	#include "\libsf\source\vjr\source\vjr.h"
 	#undef main
 
 
@@ -181,7 +181,7 @@
 
 				} else {
 					// Try to physically load it
-					if (!iSEM_loadFromDisk(asmFile, argv[1], false, false))
+					if (!iSEM_load_fromDisk(NULL, asmFile, argv[1], false, false))
 					{
 						// Error opening
 						printf("Unable to open %s\n", argv[1]);
@@ -227,7 +227,7 @@
 								//////////
 								// Based on the type update it
 								//////
-									instr = (SOppie1Instruction*)line->compilerInfo->extra_info;
+									instr = (SOppie1Instruction*)line->compilerInfo->first_extraInfo;
 									if (instr->isOrg)
 									{
 										// Update the origin
@@ -270,7 +270,7 @@
 								//////////
 								// Grab the instruction for this line
 								//////
-									instr = (SOppie1Instruction*)line->compilerInfo->extra_info;
+									instr = (SOppie1Instruction*)line->compilerInfo->first_extraInfo;
 									if (instr->size != 0)
 									{
 										// There's some content there
@@ -388,7 +388,7 @@
 										//////////
 										// Grab the instruction for this line
 										//////
-											instr = (SOppie1Instruction*)line->compilerInfo->extra_info;
+											instr = (SOppie1Instruction*)line->compilerInfo->first_extraInfo;
 											if (instr->size != 0)
 											{
 												//////////
@@ -436,7 +436,7 @@
 								// Save the map file
 								//////
 									memcpy(argv[1] + strlen(argv[1]) - 4, ".map", 4);
-									iBuilder_asciiWriteOutFile(map, argv[1]);
+									iBuilder_asciiWriteOutFile(map, (u8*)argv[1]);
 
 							}
 
@@ -474,8 +474,9 @@
 //////
 	SComp* iParseSourceCodeLine(SLine* line)
 	{
-		SComp* comp;
-		SComp* compNext;
+		SComp*				comp;
+		SComp*				compNext;
+		SOppie1Instruction*	instr;
 
 
 		//////////
@@ -496,31 +497,34 @@
 		//////////
 		// Make sure we have our SOppie1Instruction allocated
 		//////
-			if (!line->compilerInfo->extra_info)
+			if (!line->compilerInfo->first_extraInfo)
 			{
 				// Allocate a structure
-				line->compilerInfo->extra_info = (SOppie1Instruction*)malloc(sizeof(SOppie1Instruction));
-				if (!line->compilerInfo->extra_info)
+				instr = (SOppie1Instruction*)malloc(sizeof(SOppie1Instruction));
+				if (!instr)
 				{
 					// Should never happen
 					printf("Out of memory\n");
 					exit_program(-998);
 				}
 
+				// Add to the chain
+				iLl_appendExistingNodeAtEnd((SLL**)&line->compilerInfo->first_extraInfo, (SLL*)instr);
+
 				// Initialize to NULLs
-				memset(line->compilerInfo->extra_info, 0, sizeof(SOppie1Instruction));
+				memset(line->compilerInfo->first_extraInfo, 0, sizeof(SOppie1Instruction));
 			}
 
 
 		//////////
 		// Parse out the line
 		//////
-			iComps_translateSourceLineTo(&cgcFundamentalSymbols[0], line);
+			iComps_translate_sourceLineTo(&cgcFundamentalSymbols[0], line);
 			if (!line->compilerInfo->firstComp)
 				return(NULL);	// Nothing to compile on this blank line
 
 			// Remove whitespaces [x][whitespace][y] becomes [x][y]
-			iComps_removeLeadingWhitespaces(line);
+			iComps_remove_leadingWhitespaces(line);
 			if (!line->compilerInfo->firstComp)
 				return(NULL);	// Nothing to compile on this line with only whitespaces
 
@@ -539,15 +543,15 @@
 				//////////
 				// Perform natural source code fixups
 				//////
-					iComps_removeStartEndComments(line);		// Remove /* comments */
-					iComps_fixupNaturalGroupings(line);			// Fixup natural groupings [_][aaa][999] becomes [_aaa999], [999][.][99] becomes [999.99], etc.
-					iComps_removeWhitespaces(line);				// Remove all whitespaces after everything else was parsed [use][whitespace][foo] becomes [use][foo]
+					iComps_remove_startEndComments(line);		// Remove /* comments */
+					iComps_fixup_naturalGroupings(line);			// Fixup natural groupings [_][aaa][999] becomes [_aaa999], [999][.][99] becomes [999.99], etc.
+					iComps_remove_whitespaces(line);				// Remove all whitespaces after everything else was parsed [use][whitespace][foo] becomes [use][foo]
 
 
 				//////////
 				// Translate sequences to known keywords
 				//////
-					iComps_translateToOthers((SAsciiCompSearcher*)&cgcKeywordsOppie1[0], line);
+					iComps_translate_toOthers((SAsciiCompSearcher*)&cgcKeywordsOppie1[0], line->compilerInfo->firstComp, false);
 
 
 				//////////
@@ -654,7 +658,7 @@
 					if (!llMatchFailure)
 					{
 						// A full match
-						instr = (SOppie1Instruction*)line->compilerInfo->extra_info;
+						instr = (SOppie1Instruction*)line->compilerInfo->first_extraInfo;
 						switch (cmd->opcodeType)
 						{
 							//////////
@@ -898,7 +902,7 @@ _asm int 3;
 				line = (SLine*)line->ll.next)
 		{
 			// Is this one a label
-			instr = (SOppie1Instruction*)line->compilerInfo->extra_info;
+			instr = (SOppie1Instruction*)line->compilerInfo->first_extraInfo;
 			if (instr->isLabel)
 			{
 				//////////
@@ -961,7 +965,7 @@ _asm int 3;
 		//////////
 		// Setup the instruction
 		//////
-			instr = (SOppie1Instruction*)line->compilerInfo->extra_info;
+			instr = (SOppie1Instruction*)line->compilerInfo->first_extraInfo;
 			instr->isOrg	= true;
 			instr->org		= lnOrg;
 	}
@@ -982,7 +986,7 @@ _asm int 3;
 		//////////
 		// Setup the instruction
 		//////
-			instr = (SOppie1Instruction*)line->compilerInfo->extra_info;
+			instr = (SOppie1Instruction*)line->compilerInfo->first_extraInfo;
 			instr->isLabel				= true;
 			instr->labelComponentNumber	= cmd->componentLabelOrNumber;
 	}
@@ -1023,7 +1027,7 @@ _asm int 3;
 		//////////
 		// Setup the instruction
 		//////
-			instr = (SOppie1Instruction*)line->compilerInfo->extra_info;
+			instr = (SOppie1Instruction*)line->compilerInfo->first_extraInfo;
 			instr->isData	= true;
 			instr->size		= lnCount;
 			instr->data		= (u8*)malloc(lnCount);
@@ -1067,7 +1071,7 @@ _asm int 3;
 		//////////
 		// Setup the instruction
 		//////
-			instr = (SOppie1Instruction*)line->compilerInfo->extra_info;
+			instr = (SOppie1Instruction*)line->compilerInfo->first_extraInfo;
 			instr->isData	= true;
 			instr->size		= 1;
 			instr->data		= (u8*)malloc(1);

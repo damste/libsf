@@ -120,7 +120,7 @@ struct SDatum;
 	void		iBuilder_backoffTrailingWhitespaces			(SBuilder* buffRoot);
 	void		iBuilder_setSize							(SBuilder* buffRoot, u32 tnBufferLength);
 	void		iBuilder_freeAndRelease						(SBuilder** buffRoot);
-	u32			iBuilder_asciiWriteOutFile					(SBuilder* buffRoot, cu8* tcPathname, bool tlAppend);
+	u32			iBuilder_asciiWriteOutFile					(SBuilder* buffRoot, cu8* tcPathname, bool tlAppend = false);
 	bool		iBuilder_asciiReadFromFile					(SBuilder** buffRoot, cu8* tcPathname);
 	void		iBuilder_compactData						(SBuilder* buffRoot, u32 tnStart, u32 tnStride, u32 tnCompactCallbackFunction);
 	s8*			iBuilder_insertBytes						(SBuilder* buffRoot, u32 tnStart, u32 tnLength);

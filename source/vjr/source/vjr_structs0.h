@@ -545,6 +545,8 @@ struct SComp
 
 	// Combined components into this one
 	SComp*			firstCombined;									// Combined components, like [a].[b] combined into [a.b] dot variable, keeps [.] and [b] in this
+	SComp*			firstWhitespace;								// Whitespaces are removed for ease of compilation, but they persist here for rendering and reference
+	SComp*			firstComment;									// Comments within a line are removed, these include "/*comments*/" and "// comments"
 
 	// Should the syntax highlighting for this component be bold?
 	bool			useBoldFont;									// Syntax highlight font should be bold?

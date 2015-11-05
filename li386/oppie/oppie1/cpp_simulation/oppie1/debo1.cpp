@@ -140,8 +140,8 @@
 //////////
 // Fonts in use
 //////
-	s8				cgcUbuntu[]									= "Ubuntu";
-	s8				cgcUbuntuMono[]								= "Ubuntu Mono";
+	u8				cgcUbuntu[]									= "Ubuntu";
+	u8				cgcUbuntuMono[]								= "Ubuntu Mono";
 	SFont*			fontUbuntuMono8								= NULL;
 	SFont*			fontUbuntuMono10							= NULL;
 	SFont*			fontUbuntu14								= NULL;

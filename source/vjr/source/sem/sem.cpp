@@ -2285,7 +2285,7 @@ debug_break;
 						{
 							// Highlight both components and whitespaces
 							iSEM_render_highlightSelectedComps(sem, line->compilerInfo->firstComp);
-							iSEM_render_highlightSelectedComps(sem, line->compilerInfo->firstWhitespace);
+							iSEM_render_highlightSelectedComps(sem, line->compilerInfo->firstComp->firstWhitespace);
 						}
 
 
@@ -2300,7 +2300,7 @@ debug_break;
 								{
 									// Determine if we're rendering components or whitespaces
 									if (lnI == 1)		comp = line->compilerInfo->firstComp;
-									else				comp = line->compilerInfo->firstWhitespace;
+									else				comp = line->compilerInfo->firstComp->firstWhitespace;
 
 									// For all of these, render them one by one
 									while (comp)

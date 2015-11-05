@@ -126,7 +126,9 @@
 	#include <sqlext.h>
 	#include <errno.h>
 	#include <shlObj.h>
+#if !defined(_NONVJR_COMPILE)
 	#include "resource.h"
+#endif
 
 	#define _USE_MATH_DEFINES
 	#include <math.h>

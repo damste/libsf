@@ -118,7 +118,7 @@ struct SVxbContext;
 // compiler.cpp
 //////////
 	bool					iiVerify_xDot_callback						(SAsciiCompSearcher* tacs, u8* tcStart, s32 tnLength);
-	u32						iVxb_compile								(SEM* sem, SVxbContext* vxbParams, SVxbStats* stats);
+	u32						iVxb_compile								(SEM* sem, SVxbContext* vxb, SVxbStats* stats);
 	void					iiVxb_compile_stage1						(SVxbContext* vxb);
 	void					iiVxb_compile_stage2						(SVxbContext* vxb);
 	void					iiVxb_compile_stage3						(SVxbContext* vxb);
@@ -137,10 +137,11 @@ struct SVxbContext;
 	SNode*					iiComps_xlatToNodes_parenthesis_left		(SNode** root, SNode* active, SComp* comp);
 	SNode*					iiComps_xlatToNodes_parenthesis_right		(SNode** root, SNode* active, SComp* comp);
 
-	void					iComps_deleteAll							(SComp* comp);
+	void					iComps_deleteAll							(SComp** compRoot);
 	void					iComps_deleteAll_byLine						(SLine* line);
 	void					iComps_deleteAll_byFirstComp				(SComp** firstComp);
 	SComp*					iComps_duplicate							(SComp* comp);
+	SComp*					iComps_delete								(SComp** compRoot);
 	SComp*					iComps_delete								(SComp* comp, bool tlDeleteSelf);
 	void					iComps_copyMembers							(SComp* compTo, SComp* compFrom, bool tlAllocated, bool tlCopyLl, s32 tnBackoff);
  	SComp*					iComps_translate_sourceLineTo				(SAsciiCompSearcher* tsComps, SLine* line);
