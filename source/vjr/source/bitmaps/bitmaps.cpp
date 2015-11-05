@@ -2981,7 +2981,20 @@
 					if (tlOverrideColors)
 					{
 						caskColor->color	= pastelBlueColor.color;
-						textColor.color		= blackColor.color;
+						textColor.color		= whiteColor.color;
+					}
+					llAddParams		= true;
+					break;
+
+				case _ICODE_CASK_CODE_PARAMS:
+					// \||code||/
+					*tnSkipChars	= 3;
+					bmpLeft			= bmpCaskCodeLeft;
+					bmpRight		= bmpCaskCodeRight;
+					if (tlOverrideColors)
+					{
+						caskColor->color	= pastelRedColor.color;
+						textColor.color		= whiteColor.color;
 					}
 					llAddParams		= true;
 					break;
@@ -3022,6 +3035,8 @@
 					}
 					break;
 
+				default:
+					iError_silent();
 				case _ICODE_CASK_TILDE:
 					// ~|tilde|~
 					*tnSkipChars	= 2;
@@ -3030,7 +3045,19 @@
 					if (tlOverrideColors)
 					{
 						caskColor->color	= pastelBlueColor.color;
-						textColor.color		= blackColor.color;
+						textColor.color		= whiteColor.color;
+					}
+					break;
+
+				case _ICODE_CASK_CODE:
+					// \|code|/
+					*tnSkipChars	= 2;
+					bmpLeft			= bmpCaskCodeLeft;
+					bmpRight		= bmpCaskCodeRight;
+					if (tlOverrideColors)
+					{
+						caskColor->color	= pastelRedColor.color;
+						textColor.color		= whiteColor.color;
 					}
 					break;
 			}

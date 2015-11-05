@@ -890,10 +890,12 @@
 		bmpCaskRoundRight			= iBmp_createAndExtractRect(bmpCaskIconsTiled, 33, 2, 52, 38);
 		bmpCaskSquareLeft			= iBmp_createAndExtractRect(bmpCaskIconsTiled, 12, 44, 31, 80);
 		bmpCaskSquareRight			= iBmp_createAndExtractRect(bmpCaskIconsTiled, 33, 44, 52, 80);
-		bmpCaskTriangleLeft			= iBmp_createAndExtractRect(bmpCaskIconsTiled, 2, 86, 31, 122);
-		bmpCaskTriangleRight		= iBmp_createAndExtractRect(bmpCaskIconsTiled, 33, 86, 62, 122);
-		bmpCaskTildeLeft			= iBmp_createAndExtractRect(bmpCaskIconsTiled, 125, 86, 142, 122);
-		bmpCaskTildeRight			= iBmp_createAndExtractRect(bmpCaskIconsTiled, 144, 86, 161, 122);
+		bmpCaskTriangleLeft			= iBmp_createAndExtractRect(bmpCaskIconsTiled, 12, 86, 30, 122);
+		bmpCaskTriangleRight		= iBmp_createAndExtractRect(bmpCaskIconsTiled, 34, 86, 52, 122);
+		bmpCaskTildeLeft			= iBmp_createAndExtractRect(bmpCaskIconsTiled, 115, 86, 132, 122);
+		bmpCaskTildeRight			= iBmp_createAndExtractRect(bmpCaskIconsTiled, 134, 86, 151, 122);
+		bmpCaskCodeLeft				= iBmp_createAndExtractRect(bmpCaskIconsTiled, 156, 86, 174, 122);
+		bmpCaskCodeRight			= iBmp_createAndExtractRect(bmpCaskIconsTiled, 177, 86, 195, 122);
 		bmpCaskPips1				= iBmp_createAndExtractRect(bmpCaskIconsTiled, 54, 7, 65, 33);
 		bmpCaskPips2				= iBmp_createAndExtractRect(bmpCaskIconsTiled, 67, 7, 78, 33);
 		bmpCaskPips3				= iBmp_createAndExtractRect(bmpCaskIconsTiled, 80, 7, 91, 33);

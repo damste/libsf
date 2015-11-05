@@ -421,6 +421,8 @@
 	SBitmap*			bmpCaskTriangleRight				= NULL;
 	SBitmap*			bmpCaskTildeLeft					= NULL;
 	SBitmap*			bmpCaskTildeRight					= NULL;
+	SBitmap*			bmpCaskCodeLeft						= NULL;
+	SBitmap*			bmpCaskCodeRight					= NULL;
 	SBitmap*			bmpCaskPips1						= NULL;
 	SBitmap*			bmpCaskPips2						= NULL;
 	SBitmap*			bmpCaskPips3						= NULL;
@@ -604,11 +606,11 @@
 		const SBgra		darkOrangeColor						= { rgba(128, 64, 0, 255) };
 		const SBgra		darkGreenColor						= { rgba(0, 80, 0, 255) };
 		const SBgra		darkBlueColor						= { rgba(0, 0, 80, 255) };
-		const SBgra		pastelYellowColor					= { rgba(255, 255, 192, 255) };
-		const SBgra		pastelRedColor						= { rgba(255, 210, 210, 255) };
-		const SBgra		pastelOrangeColor					= { rgba(255, 215, 164, 255) };
-		const SBgra		pastelGreenColor					= { rgba(192, 255, 192, 255) };
-		const SBgra		pastelBlueColor						= { rgba(210, 210, 255, 255) };
+		const SBgra		pastelYellowColor					= { rgba(255, 255, 128, 255) };
+		const SBgra		pastelRedColor						= { rgba(255, 200, 200, 255) };
+		const SBgra		pastelOrangeColor					= { rgba(255, 205, 155, 255) };
+		const SBgra		pastelGreenColor					= { rgba(200, 255, 200, 255) };
+		const SBgra		pastelBlueColor						= { rgba(215, 215, 255, 255) };
 		const SBgra		maskColor							= { rgba(222, 22, 222, 255) };			// Hideous fuscia (by design)
 		SBgra			tooltipNwBackColor					= { rgba(255, 254, 230, 255) };			// Pastel yellow
 		SBgra			tooltipNeBackColor					= { rgba(252, 242, 192, 25) };			// Less pastel yellow, somewhat pale

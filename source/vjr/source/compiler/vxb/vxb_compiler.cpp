@@ -2895,14 +2895,14 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 					iComps_combineAll_betweenTwo(line,		_ICODE_CASK_SQUARE_OPEN_PARAMS,		_ICODE_CASK_SQUARE_CLOSE_PARAMS,	_ICODE_CASK_SQUARE_PARAMS,		_ICAT_CASK, (SBgra*)&blackColor, false);
 					iComps_combineAll_betweenTwo(line,		_ICODE_CASK_TRIANGLE_OPEN_PARAMS,	_ICODE_CASK_TRIANGLE_CLOSE_PARAMS,	_ICODE_CASK_TRIANGLE_PARAMS,	_ICAT_CASK, (SBgra*)&blackColor, false);
 					iComps_combineAll_betweenTwo(line,		_ICODE_CASK_UTILITY_OPEN_PARAMS,	_ICODE_CASK_UTILITY_CLOSE_PARAMS,	_ICODE_CASK_TILDE_PARAMS,		_ICAT_CASK, (SBgra*)&blackColor, false);
-					iComps_combineAll_betweenTwo(line,		_ICODE_CASK_CODE_OPEN_PARAMS,		_ICODE_CASK_CODE_CLOSE_PARAMS,		_ICODE_CASK_TILDE_PARAMS,		_ICAT_CASK, (SBgra*)&blackColor, false);
+					iComps_combineAll_betweenTwo(line,		_ICODE_CASK_CODE_OPEN_PARAMS,		_ICODE_CASK_CODE_CLOSE_PARAMS,		_ICODE_CASK_CODE_PARAMS,		_ICAT_CASK, (SBgra*)&blackColor, false);
 
 					// NO parameters
 					iComps_combineAll_betweenTwo(line,		_ICODE_CASK_ROUND_OPEN,				_ICODE_CASK_ROUND_CLOSE,			_ICODE_CASK_ROUND,				_ICAT_CASK, (SBgra*)&blackColor, false);
 					iComps_combineAll_betweenTwo(line,		_ICODE_CASK_SQUARE_OPEN,			_ICODE_CASK_SQUARE_CLOSE,			_ICODE_CASK_SQUARE,				_ICAT_CASK, (SBgra*)&blackColor, false);
 					iComps_combineAll_betweenTwo(line,		_ICODE_CASK_TRIANGLE_OPEN,			_ICODE_CASK_TRIANGLE_CLOSE,			_ICODE_CASK_TRIANGLE,			_ICAT_CASK, (SBgra*)&blackColor, false);
 					iComps_combineAll_betweenTwo(line,		_ICODE_CASK_UTILITY_OPEN,			_ICODE_CASK_UTILITY_CLOSE,			_ICODE_CASK_TILDE,				_ICAT_CASK, (SBgra*)&blackColor, false);
-					iComps_combineAll_betweenTwo(line,		_ICODE_CASK_CODE_OPEN,				_ICODE_CASK_CODE_CLOSE,				_ICODE_CASK_TILDE,				_ICAT_CASK, (SBgra*)&blackColor, false);
+					iComps_combineAll_betweenTwo(line,		_ICODE_CASK_CODE_OPEN,				_ICODE_CASK_CODE_CLOSE,				_ICODE_CASK_CODE,				_ICAT_CASK, (SBgra*)&blackColor, false);
 
 					// Done
 					return;
