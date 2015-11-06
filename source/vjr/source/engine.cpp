@@ -203,7 +203,7 @@
 			// Do we have anything to do?
 			//////
 s8 vizbuf[32768];
-iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &cgcFundamentalSymbols[0], &cgcKeywordsVxb[0]);
+iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &cgcFundamentalSymbols[0], &cgcVxbKeywords[0]);
 				if (!comp || comp->iCode == _ICODE_COMMENT || comp->iCode == _ICODE_LINE_COMMENT)
 					return(false);
 
@@ -664,7 +664,7 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 		//////////
 		// Translate sequences to known keywords
 		//////
-			iComps_translate_toOthers(&cgcKeywordsVxb[0], line->compilerInfo->firstComp, true);
+			iComps_translate_toOthers(&cgcVxbKeywords[0], line->compilerInfo->firstComp, true);
 
 
 		//////////

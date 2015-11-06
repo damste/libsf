@@ -190,9 +190,11 @@ struct SVxbContext;
 	s32						iComps_getContiguousLength					(SComp* comp, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount, s32* tnCount);
 	u32						iComps_count								(SComp* comp);
 	bool					iiComps_validate							(SComp* comp, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount);
-	bool					iiComps_isAlphanumeric						(SComp* comp);
+	bool					iiComps_isAlphanumeric_byHardScan			(SComp* comp);
 	bool					iiComps_isVxbLogicBlock_entry				(SComp* comp, bool tlIncludeAdhocs);
 	bool					iiComps_isVxbLogicBlock_exit				(SComp* comp, bool tlIncludeAdhocs);
+	#define					iiComps_isAlphanumeric_by_iCode(iCode)		(iCode == _ICODE_ALPHA || iCode == _ICODE_ALPHANUMERIC)
+	#define					iiComps_isNumeric(iCode)					(iCode == _ICODE_NUMERIC)
 	#define					iiComps_isComment(iCode)					(iCode == _ICODE_COMMENT || iCode == _ICODE_LINE_COMMENT)
 	#define					iiComps_isVxbFunction(iCode)				(iCode == _ICODE_FUNCTION || iCode == _ICODE_PROCEDURE)
 	s8*						iComps_visualize							(SComp* comp, s32 tnCount, s8* outputBuffer, s32 tnBufferLength, bool tlUseDefaultCompSearcher, SAsciiCompSearcher* tsComps1, SAsciiCompSearcher* tsComps2);

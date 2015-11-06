@@ -197,7 +197,7 @@
 //////////
 // Keywords for VXB
 //////
-	SAsciiCompSearcher	cgcKeywordsVxb[] =
+	SAsciiCompSearcher	cgcVxbKeywords[] =
 	{
 		// keyword					length		repeats?	extra (type)							first on line?		category			syntax highlight color		syntax highlight bold		onCandidateMatch()		onFind()	compilerDictionaryLookup()
 		// Reinterpret previously parsed forms to others

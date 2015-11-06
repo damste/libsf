@@ -334,6 +334,9 @@ struct SExtraInfo;
 		};
 		SNode9*		m;													// Middle
 
+		// Related data
+		SComp*		comp;												// Related component
+
 		// Node data
 		union {
 			void*		extraData;										// General purpose data

@@ -2070,8 +2070,6 @@ clean_exit:
 		SReturnsParams	lsrpar;
 
 
-// TODO:  Untested function, breakpoint and examine
-debug_break;
 		//////////
 		// Setup the function call variables
 		//////

@@ -217,7 +217,7 @@
 				for (lnIndex = (s32)_INDEX_SET_NCSET_START, baseProp = &gsProps_master[_INDEX_SET_NCSET_START - 1], llFound = false; !llFound && lnIndex <= (s32)_INDEX_SET_NCSET_END; lnIndex++, baseProp++)
 				{
 					// Translate the property _INDEX to its related iCode
-					for (asciiComp = &cgcKeywordsVxb[0]; asciiComp->iCode != 0; asciiComp++)
+					for (asciiComp = &cgcVxbKeywords[0]; asciiComp->iCode != 0; asciiComp++)
 					{
 						// If this is the component which relates to the indicated iCode...
 						if (asciiComp->iCode == baseProp->associated_iCode)

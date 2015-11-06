@@ -337,7 +337,7 @@ return;
 						//////////
 						// Translate sequences to known keywords
 						//////
-							iComps_translate_toOthers(&cgcKeywordsVxb[0], vxb->line->compilerInfo->firstComp, true);
+							iComps_translate_toOthers(&cgcVxbKeywords[0], vxb->line->compilerInfo->firstComp, true);
 
 
 						//////////
