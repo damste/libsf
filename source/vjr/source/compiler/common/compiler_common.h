@@ -128,17 +128,21 @@
 	cs32			_ICODE_CASK_UTILITY_CLOSE_PARAMS				= 1000008;
 	cs32			_ICODE_CASK_CODE_OPEN_PARAMS					= 1000009;
 	cs32			_ICODE_CASK_CODE_CLOSE_PARAMS					= 1000010;
-	cs32			_ICODE_CASK_ROUND_OPEN							= 1000011;
-	cs32			_ICODE_CASK_ROUND_CLOSE							= 1000012;
-	cs32			_ICODE_CASK_SQUARE_OPEN							= 1000013;
-	cs32			_ICODE_CASK_SQUARE_CLOSE						= 1000014;
-	cs32			_ICODE_CASK_TRIANGLE_OPEN						= 1000015;
-	cs32			_ICODE_CASK_TRIANGLE_CLOSE						= 1000016;
-	cs32			_ICODE_CASK_UTILITY_OPEN						= 1000017;
-	cs32			_ICODE_CASK_UTILITY_CLOSE						= 1000018;
-	cs32			_ICODE_CASK_CODE_OPEN							= 1000019;
-	cs32			_ICODE_CASK_CODE_CLOSE							= 1000020;
-	cs32						_ICODE_CASK_SIDE_MAXIMUM			= 1000020;
+	cs32			_ICODE_CASK_AUTO_OPEN_PARAMS					= 1000011;
+	cs32			_ICODE_CASK_AUTO_CLOSE_PARAMS					= 1000012;
+	cs32			_ICODE_CASK_ROUND_OPEN							= 1000013;
+	cs32			_ICODE_CASK_ROUND_CLOSE							= 1000014;
+	cs32			_ICODE_CASK_SQUARE_OPEN							= 1000015;
+	cs32			_ICODE_CASK_SQUARE_CLOSE						= 1000016;
+	cs32			_ICODE_CASK_TRIANGLE_OPEN						= 1000017;
+	cs32			_ICODE_CASK_TRIANGLE_CLOSE						= 1000018;
+	cs32			_ICODE_CASK_UTILITY_OPEN						= 1000019;
+	cs32			_ICODE_CASK_UTILITY_CLOSE						= 1000020;
+	cs32			_ICODE_CASK_CODE_OPEN							= 1000021;
+	cs32			_ICODE_CASK_CODE_CLOSE							= 1000022;
+	cs32			_ICODE_CASK_AUTO_OPEN							= 1000023;
+	cs32			_ICODE_CASK_AUTO_CLOSE							= 1000024;
+	cs32						_ICODE_CASK_SIDE_MAXIMUM			= 1000024;
 
 	cs32						_ICODE_CASK_MINIMUM					= 1000101;
 	cs32			_ICODE_CASK_ROUND_PARAMS						= 1000101;
@@ -146,12 +150,14 @@
 	cs32			_ICODE_CASK_TRIANGLE_PARAMS						= 1000103;
 	cs32			_ICODE_CASK_TILDE_PARAMS						= 1000104;
 	cs32			_ICODE_CASK_CODE_PARAMS							= 1000105;
-	cs32			_ICODE_CASK_ROUND								= 1000106;
-	cs32			_ICODE_CASK_SQUARE								= 1000107;
-	cs32			_ICODE_CASK_TRIANGLE							= 1000108;
-	cs32			_ICODE_CASK_TILDE								= 1000109;
-	cs32			_ICODE_CASK_CODE								= 1000110;
-	cs32						_ICODE_CASK_MAXIMUM					= 1000110;
+	cs32			_ICODE_CASK_AUTO_PARAMS							= 1000106;
+	cs32			_ICODE_CASK_ROUND								= 1000107;
+	cs32			_ICODE_CASK_SQUARE								= 1000108;
+	cs32			_ICODE_CASK_TRIANGLE							= 1000109;
+	cs32			_ICODE_CASK_TILDE								= 1000110;
+	cs32			_ICODE_CASK_CODE								= 1000111;
+	cs32			_ICODE_CASK_AUTO								= 1000112;
+	cs32						_ICODE_CASK_MAXIMUM					= 1000112;
 
 	// Standard types
 	cs32			_ICODE_UNKNOWN									= -1;
@@ -297,6 +303,8 @@
 	cs8			cgcCaskUtilityCloseParams[]						= "||~";
 	cs8			cgcCaskCodeOpenParams[]							= "\\||";
 	cs8			cgcCaskCodeCloseParams[]						= "||/";
+	cs8			cgcCaskAutoOpenParams[]							= "/||";
+	cs8			cgcCaskAutoCloseParams[]						= "||\\";
 	cs8			cgcCaskRoundOpen[]								= "(|";
 	cs8			cgcCaskRoundClose[]								= "|)";
 	cs8			cgcCaskSquareOpen[]								= "[|";
@@ -307,6 +315,8 @@
 	cs8			cgcCaskUtilityClose[]							= "|~";
 	cs8			cgcCaskCodeOpen[]								= "\\|";
 	cs8			cgcCaskCodeClose[]								= "|/";
+	cs8			cgcCaskAutoOpen[]								= "/|";
+	cs8			cgcCaskAutoClose[]								= "|\\";
 
 	cs8			cgcDefinePragma[]								= "#define";
 	cs8			cgcElsePragma[]									= "#else";
@@ -337,20 +347,24 @@
 		{ cgcCaskUtilityCloseParams,3,			false,		_ICODE_CASK_UTILITY_CLOSE_PARAMS,		false,				_ICAT_CASK,						NULL,						false,						null0,					null0,		null0	},
 		{ cgcCaskCodeOpenParams,	3,			false,		_ICODE_CASK_CODE_OPEN_PARAMS,			false,				_ICAT_CASK,						NULL,						false,						null0,					null0,		null0	},
 		{ cgcCaskCodeCloseParams,	3,			false,		_ICODE_CASK_CODE_CLOSE_PARAMS,			false,				_ICAT_CASK,						NULL,						false,						null0,					null0,		null0	},
+		{ cgcCaskAutoOpenParams,	3,			false,		_ICODE_CASK_AUTO_OPEN_PARAMS,			false,				_ICAT_CASK,						NULL,						false,						null0,					null0,		null0	},
+		{ cgcCaskAutoCloseParams,	3,			false,		_ICODE_CASK_AUTO_CLOSE_PARAMS,			false,				_ICAT_CASK,						NULL,						false,						null0,					null0,		null0	},
 		{ cgcCaskRoundOpen,			2,			false,		_ICODE_CASK_ROUND_OPEN,					false,				_ICAT_CASK,						NULL,						false,						null0,					null0,		null0	},
 		{ cgcCaskRoundClose,		2,			false,		_ICODE_CASK_ROUND_CLOSE,				false,				_ICAT_CASK,						NULL,						false,						null0,					null0,		null0	},
 		{ cgcCaskSquareOpen,		2,			false,		_ICODE_CASK_SQUARE_OPEN,				false,				_ICAT_CASK,						NULL,						false,						null0,					null0,		null0	},
 		{ cgcCaskSquareClose,		2,			false,		_ICODE_CASK_SQUARE_CLOSE,				false,				_ICAT_CASK,						NULL,						false,						null0,					null0,		null0	},
 		{ cgcCaskTriangleOpen,		2,			false,		_ICODE_CASK_TRIANGLE_OPEN,				false,				_ICAT_CASK,						NULL,						false,						null0,					null0,		null0	},
 		{ cgcCaskTriangleClose,		2,			false,		_ICODE_CASK_TRIANGLE_CLOSE,				false,				_ICAT_CASK,						NULL,						false,						null0,					null0,		null0	},
-		{ cgcCaskUtilityOpen,		2,			false,		_ICODE_CASK_UTILITY_OPEN,				false,				_ICAT_GENERIC,					NULL,						false,						null0,					null0,		null0	},
-		{ cgcCaskUtilityClose,		2,			false,		_ICODE_CASK_UTILITY_CLOSE,				false,				_ICAT_GENERIC,					NULL,						false,						null0,					null0,		null0	},
-		{ cgcCaskCodeOpen,			2,			false,		_ICODE_CASK_CODE_OPEN,					false,				_ICAT_GENERIC,					NULL,						false,						null0,					null0,		null0	},
-		{ cgcCaskCodeClose,			2,			false,		_ICODE_CASK_CODE_CLOSE,					false,				_ICAT_GENERIC,					NULL,						false,						null0,					null0,		null0	},
+		{ cgcCaskUtilityOpen,		2,			false,		_ICODE_CASK_UTILITY_OPEN,				false,				_ICAT_CASK,						NULL,						false,						null0,					null0,		null0	},
+		{ cgcCaskUtilityClose,		2,			false,		_ICODE_CASK_UTILITY_CLOSE,				false,				_ICAT_CASK,						NULL,						false,						null0,					null0,		null0	},
+		{ cgcCaskCodeOpen,			2,			false,		_ICODE_CASK_CODE_OPEN,					false,				_ICAT_CASK,						NULL,						false,						null0,					null0,		null0	},
+		{ cgcCaskCodeClose,			2,			false,		_ICODE_CASK_CODE_CLOSE,					false,				_ICAT_CASK,						NULL,						false,						null0,					null0,		null0	},
+		{ cgcCaskAutoOpen,			2,			false,		_ICODE_CASK_AUTO_OPEN,					false,				_ICAT_CASK,						NULL,						false,						null0,					null0,		null0	},
+		{ cgcCaskAutoClose,			2,			false,		_ICODE_CASK_AUTO_CLOSE,					false,				_ICAT_CASK,						NULL,						false,						null0,					null0,		null0	},
 //////////
 // Note:  Cask physical appearances:
-//		(||round params||)		[||square params||]		<||triangle params||>		~||utility params||~		\||code params||/
-//		(|round|)				[|square|]				<|triangle|>				~|utility|~					\|code|/
+//		(||round params||)		[||square params||]		<||triangle params||>		~||utility params||~		\||code params||/		/||auto||\ cask
+//		(|round|)				[|square|]				<|triangle|>				~|utility|~					\|code|/				/|auto|\ cask
 //////
 
 		// Native characters and symbols

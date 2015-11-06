@@ -820,6 +820,7 @@
 //////
 	void iVjr_init_createDefaultObjects(void)
 	{
+
 		//////////
 		// Create base objects
 		//////
@@ -831,43 +832,43 @@
 		//////
 			gobj_defaultEmpty		= iObj_create(_OBJ_TYPE_EMPTY,		NULL);
 			gobj_defaultLabel		= iObj_create(_OBJ_TYPE_LABEL,		NULL);
-			gobj_defaultTextbox		= iObj_create(_OBJ_TYPE_TEXTBOX,		NULL);
+			gobj_defaultTextbox		= iObj_create(_OBJ_TYPE_TEXTBOX,	NULL);
 			gobj_defaultButton		= iObj_create(_OBJ_TYPE_BUTTON,		NULL);
 			gobj_defaultImage		= iObj_create(_OBJ_TYPE_IMAGE,		NULL);
-			gobj_defaultCheckbox	= iObj_create(_OBJ_TYPE_CHECKBOX,		NULL);
-			gobj_defaultCmdGroup	= iObj_create(_OBJ_TYPE_CMDGROUP,		NULL);
-			gobj_defaultOptGroup	= iObj_create(_OBJ_TYPE_OPTGROUP,		NULL);
-			gobj_defaultListbox		= iObj_create(_OBJ_TYPE_LISTBOX,		NULL);
-			gobj_defaultCombobox	= iObj_create(_OBJ_TYPE_COMBOBOX,		NULL);
-			gobj_defaultFormset		= iObj_create(_OBJ_TYPE_FORMSET,		NULL);
-			gobj_defaultToolbar		= iObj_create(_OBJ_TYPE_TOOLBAR,		NULL);
+			gobj_defaultCheckbox	= iObj_create(_OBJ_TYPE_CHECKBOX,	NULL);
+			gobj_defaultCmdGroup	= iObj_create(_OBJ_TYPE_CMDGROUP,	NULL);
+			gobj_defaultOptGroup	= iObj_create(_OBJ_TYPE_OPTGROUP,	NULL);
+			gobj_defaultListbox		= iObj_create(_OBJ_TYPE_LISTBOX,	NULL);
+			gobj_defaultCombobox	= iObj_create(_OBJ_TYPE_COMBOBOX,	NULL);
+			gobj_defaultFormset		= iObj_create(_OBJ_TYPE_FORMSET,	NULL);
+			gobj_defaultToolbar		= iObj_create(_OBJ_TYPE_TOOLBAR,	NULL);
 			gobj_defaultSeparator	= iObj_create(_OBJ_TYPE_SEPARATOR,	NULL);
-			gobj_defaultLine		= iObj_create(_OBJ_TYPE_LINE,			NULL);
+			gobj_defaultLine		= iObj_create(_OBJ_TYPE_LINE,		NULL);
 			gobj_defaultShape		= iObj_create(_OBJ_TYPE_SHAPE,		NULL);
 			gobj_defaultContainer	= iObj_create(_OBJ_TYPE_CONTAINER,	NULL);
-			gobj_defaultControl		= iObj_create(_OBJ_TYPE_CONTROL,		NULL);
-			gobj_defaultGrid		= iObj_create(_OBJ_TYPE_GRID,			NULL);
+			gobj_defaultControl		= iObj_create(_OBJ_TYPE_CONTROL,	NULL);
+			gobj_defaultGrid		= iObj_create(_OBJ_TYPE_GRID,		NULL);
 			gobj_defaultColumn		= iObj_create(_OBJ_TYPE_COLUMN,		NULL);
 			gobj_defaultHeader		= iObj_create(_OBJ_TYPE_HEADER,		NULL);
-			gobj_defaultOleBound	= iObj_create(_OBJ_TYPE_OLEBOUND,		NULL);
+			gobj_defaultOleBound	= iObj_create(_OBJ_TYPE_OLEBOUND,	NULL);
 			gobj_defaultOleContain	= iObj_create(_OBJ_TYPE_OLECONTAIN,	NULL);
-			gobj_defaultSpinner		= iObj_create(_OBJ_TYPE_SPINNER,		NULL);
+			gobj_defaultSpinner		= iObj_create(_OBJ_TYPE_SPINNER,	NULL);
 			gobj_defaultTimer		= iObj_create(_OBJ_TYPE_TIMER,		NULL);
 			gobj_defaultHyperlink	= iObj_create(_OBJ_TYPE_HYPERLINK,	NULL);
 			gobj_defaultCollection	= iObj_create(_OBJ_TYPE_COLLECTION,	NULL);
-			gobj_defaultPage		= iObj_create(_OBJ_TYPE_PAGE,			NULL);
+			gobj_defaultPage		= iObj_create(_OBJ_TYPE_PAGE,		NULL);
 			gobj_defaultPageFrame	= iObj_create(_OBJ_TYPE_PAGEFRAME,	NULL);
-			gobj_defaultSession		= iObj_create(_OBJ_TYPE_SESSION,		NULL);
+			gobj_defaultSession		= iObj_create(_OBJ_TYPE_SESSION,	NULL);
 			gobj_defaultCustom		= iObj_create(_OBJ_TYPE_CUSTOM,		NULL);
 			gobj_defaultException	= iObj_create(_OBJ_TYPE_EXCEPTION,	NULL);
-			gobj_defaultSettings	= iObj_create(_OBJ_TYPE_SETTINGS,		NULL);
+			gobj_defaultSettings	= iObj_create(_OBJ_TYPE_SETTINGS,	NULL);
 
 			// Option and radio both have label controls within
 			gobj_defaultOption		= iObj_create(_OBJ_TYPE_OPTION,		NULL);
 			gobj_defaultRadio		= iObj_create(_OBJ_TYPE_RADIO,		NULL);
 			// Forms and subforms are created last because they have internal child objects references to classes which must be created before
-			gobj_defaultForm		= iObj_create(_OBJ_TYPE_FORM,			NULL);
-			gobj_defaultSubform		= iObj_create(_OBJ_TYPE_SUBFORM,		NULL);
+			gobj_defaultForm		= iObj_create(_OBJ_TYPE_FORM,		NULL);
+			gobj_defaultSubform		= iObj_create(_OBJ_TYPE_SUBFORM,	NULL);
 	}
 
 
@@ -880,6 +881,9 @@
 //////
 	void iVjr_init_loadCaskIcons(void)
 	{
+		RECT lrc;
+
+
 // TODO:  There's a BXML file with this information (cask_icons.bxml).
 //        BXML support should be added to VJr and then that information used to do this, rather than by hard-coding.
 #ifndef _NONVJR_COMPILE
@@ -896,6 +900,15 @@
 		bmpCaskTildeRight			= iBmp_createAndExtractRect(bmpCaskIconsTiled, 134, 86, 151, 122);
 		bmpCaskCodeLeft				= iBmp_createAndExtractRect(bmpCaskIconsTiled, 156, 86, 174, 122);
 		bmpCaskCodeRight			= iBmp_createAndExtractRect(bmpCaskIconsTiled, 177, 86, 195, 122);
+
+		// /|auto|\ casks are inverted code casks
+		bmpCaskAutoLeft				= iBmp_copy(bmpCaskCodeLeft);
+		bmpCaskAutoRight			= iBmp_copy(bmpCaskCodeRight);
+		CopyRect(&lrc, &bmpCaskAutoLeft->rc);
+		iBmp_bitBlt_rotated(bmpCaskAutoLeft, &lrc, bmpCaskCodeRight, 180);
+		CopyRect(&lrc, &bmpCaskAutoRight->rc);
+		iBmp_bitBlt_rotated(bmpCaskAutoRight, &lrc, bmpCaskCodeLeft, 180);
+
 		bmpCaskPips1				= iBmp_createAndExtractRect(bmpCaskIconsTiled, 54, 7, 65, 33);
 		bmpCaskPips2				= iBmp_createAndExtractRect(bmpCaskIconsTiled, 67, 7, 78, 33);
 		bmpCaskPips3				= iBmp_createAndExtractRect(bmpCaskIconsTiled, 80, 7, 91, 33);

@@ -1124,11 +1124,11 @@
 					case 180:
 						// Clock-wise 180 degrees
 						lnXDstStart	= trc->right;
-						lnYDstStart	= trc->top;
+						lnYDstStart	= trc->bottom;
 						lnXDstEnd	= trc->left - 1;
-						lnYDstEnd	= trc->bottom + 1;
+						lnYDstEnd	= trc->top - 1;
 						lnXinc_onY	= 0;
-						lnYinc_onY	= 1;
+						lnYinc_onY	= -1;
 						lnXinc_onX	= -1;
 						lnYinc_onX	= 0;
 						break;
@@ -1157,7 +1157,7 @@
 				for (
 						lnY = 0, lnXDst = lnXDstStart, lnYDst = lnYDstStart;
 						lnY < bmpSrc->bi.biHeight && lnYDst != lnYDstEnd && lnXDst != lnXDstEnd;
-						lnXDstStart += lnXinc_onY, lnYDstStart += lnYinc_onY, lnYDst = lnYDstStart, lnY++
+						lnXDstStart += lnXinc_onY, lnYDstStart += lnYinc_onY, lnXDst = lnYDstStart, lnYDst = lnYDstStart, lnY++
 					)
 				{
 					// Are we on the image?
@@ -2999,6 +2999,19 @@
 					llAddParams		= true;
 					break;
 
+				case _ICODE_CASK_AUTO_PARAMS:
+					// /||code||\ cask
+					*tnSkipChars	= 3;
+					bmpLeft			= bmpCaskAutoLeft;
+					bmpRight		= bmpCaskAutoRight;
+					if (tlOverrideColors)
+					{
+						caskColor->color	= whiteColor.color;
+						textColor.color		= blackColor.color;
+					}
+					llAddParams		= true;
+					break;
+
 				case _ICODE_CASK_ROUND:
 					// (|round|)
 					*tnSkipChars	= 2;
@@ -3058,6 +3071,18 @@
 					{
 						caskColor->color	= pastelRedColor.color;
 						textColor.color		= whiteColor.color;
+					}
+					break;
+
+				case _ICODE_CASK_AUTO:
+					// /|code|\ cask
+					*tnSkipChars	= 2;
+					bmpLeft			= bmpCaskAutoLeft;
+					bmpRight		= bmpCaskAutoRight;
+					if (tlOverrideColors)
+					{
+						caskColor->color	= whiteColor.color;
+						textColor.color		= blackColor.color;
 					}
 					break;
 			}

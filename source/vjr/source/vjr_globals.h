@@ -423,6 +423,8 @@
 	SBitmap*			bmpCaskTildeRight					= NULL;
 	SBitmap*			bmpCaskCodeLeft						= NULL;
 	SBitmap*			bmpCaskCodeRight					= NULL;
+	SBitmap*			bmpCaskAutoLeft						= NULL;
+	SBitmap*			bmpCaskAutoRight					= NULL;
 	SBitmap*			bmpCaskPips1						= NULL;
 	SBitmap*			bmpCaskPips2						= NULL;
 	SBitmap*			bmpCaskPips3						= NULL;
