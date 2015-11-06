@@ -1465,8 +1465,8 @@
 //////////
 // VXB iCat codes
 //////
-	const s32		_ICAT_DOT_VARIABLE								= 100;// The . in thisForm.xyz
-	const s32		_ICAT_EXCLAMATION_POINT_VARIABLE				= 101;// The ! in thisForm!xyz
+	const s32		_ICAT_DOT_VARIABLE								= 50000;	// The . in thisForm.xyz
+	const s32		_ICAT_EXCLAMATION_POINT_VARIABLE				= 50001;	// The ! in thisForm!xyz
 
 
 //////////

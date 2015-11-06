@@ -94,24 +94,32 @@
 
 //////////
 // iCat values
-// Note:  Use the macro iCat() to read only the lower 256-value
+// Note:  Use the macro iCat() to read only the lower portion without the upper bits set
 //////
 	const u32		_ICAT_GENERIC									= 0;
 	const u32		_ICAT_COMMAND									= 1;
 	const u32		_ICAT_FUNCTION									= 2;
 	const u32		_ICAT_FLOW										= 3;
-	const u32		_ICAT_OPERATOR									= 4;
-	const u32		_ICAT_CASK										= 5;
+	const u32		_ICAT_OPERATOR									= 4;	// + - * / 
+	const u32		_ICAT_CASK										= 5;	// (|cask|), etc.
 	const u32		_ICAT_OPTION									= 6;	// An option like "AGAIN" on "USE xyz AGAIN"
-	const u32		_ICAT_PRAGMA									= 7;
-	// Values up to 256 indicate type
-	// Bit settings from bit position 8 and greater are flags indicating specific attributes
-	const u32		_ICAT_LOGIC										= 1 << 8;
-	const u32		_ICAT_UNARY										= 1 << 9;
-	const u32		_ICAT_BITWISE									= 1 << 10;
-	const u32		_ICAT_ASSIGN									= 1 << 11;
-	const u32		_ICAT_DEFINITION								= 1 << 12;
+	const u32		_ICAT_PRAGMA									= 7;	// #something
+	const u32		_ICAT_DESCENT									= 8;	// ( [ { {{
+	const u32		_ICAT_ASCENT									= 9;	// ) ] } }}
+	const u32		_ICAT_PARAM										= 10;	// ,
+	const u32		_ICAT_REFERENCE									= 11;	// @
+	const u32		_ICAT_SCOPE										= 12;	// ::
+	const u32		_ICAT_RANGE										= 13;	// ..
+	const u32		_ICAT_COMMENT									= 14;	// * /* */ /+ +/ && //
+	// Bit settings
+	const u32		_ICAT_DOT										= 1 << 25;
+	const u32		_ICAT_LOGIC										= 1 << 26;
+	const u32		_ICAT_UNARY										= 1 << 27;
+	const u32		_ICAT_BITWISE									= 1 << 28;
+	const u32		_ICAT_ASSIGN									= 1 << 29;
+	const u32		_ICAT_ASSIGN_OP									= 1 << 30;
 	const u32		_ICAT_STOPPER									= 1 << 31;
+	const u32		_ICAT_MASK										= _ICAT_DOT | _ICAT_LOGIC | _ICAT_UNARY | _ICAT_BITWISE | _ICAT_ASSIGN | _ICAT_ASSIGN_OP | _ICAT_STOPPER;
 
 
 /////////
@@ -184,7 +192,8 @@
 	cs32			_ICODE_EXCLAMATION_POINT						= 19;
 	cs32			_ICODE_POUND_SIGN								= 20;
 	cs32			_ICODE_PERCENT_SIGN								= 21;
-	cs32			_ICODE_EXPONENT									= 22;
+	cs32			_ICODE_EXPONENT								= 22;			// ^
+	cs32			_ICODE_XOR									= 22;
 	cs32			_ICODE_AMPERSAND								= 23;
 	cs32			_ICODE_EQUAL_SIGN								= 24;
 	cs32			_ICODE_PIPE_SIGN								= 25;
@@ -222,6 +231,7 @@
 	cs32			_ICODE_DOLLAR_SIGN								= 58;
 	cs32			_ICODE_DOUBLE_BRACE_LEFT						= 59;
 	cs32			_ICODE_DOUBLE_BRACE_RIGHT						= 60;
+	cs32			_ICODE_SCOPE									= 61;
 
 	// Preprocessor
 	cs32			_ICODE_DEFINE_PRAGMA							= 101;
@@ -375,44 +385,47 @@
 		{ "\t",						1,			true,		_ICODE_WHITESPACE,						false,				_ICAT_GENERIC,					&colorSynHi_comment1,		false,						null0,					null0,		null0	},
 		{ "|||",					3,			false,		_ICODE_WHITESPACE,						false,				_ICAT_GENERIC,					&colorSynHi_comment1,		false,						null0,					null0,		null0	},
 		{ "___",					1,			false,		_ICODE_UNDERSCORE,						false,				_ICAT_GENERIC,					NULL,						false,						null0,					null0,		null0	},
-		{ "(",						1,			false,		_ICODE_PARENTHESIS_LEFT,				false,				_ICAT_GENERIC,					&colorSynHi_bracket,		true,						null0,					null0,		null0	},
-		{ ")",						1,			false,		_ICODE_PARENTHESIS_RIGHT,				false,				_ICAT_GENERIC,					&colorSynHi_bracket,		true,						null0,					null0,		null0	},
-		{ "[",						1,			false,		_ICODE_BRACKET_LEFT,					false,				_ICAT_GENERIC,					&colorSynHi_bracket,		true,						null0,					null0,		null0	},
-		{ "]",						1,			false,		_ICODE_BRACKET_RIGHT,					false,				_ICAT_GENERIC,					&colorSynHi_bracket,		true,						null0,					null0,		null0	},
-		{ "{{",						2,			false,		_ICODE_DOUBLE_BRACE_LEFT,				false,				_ICAT_GENERIC,					&colorSynHi_bracket,		true,						null0,					null0,		null0	},
-		{ "}}",						2,			false,		_ICODE_DOUBLE_BRACE_RIGHT,				false,				_ICAT_GENERIC,					&colorSynHi_bracket,		true,						null0,					null0,		null0	},
-		{ "{",						1,			false,		_ICODE_BRACE_LEFT,						false,				_ICAT_GENERIC,					&colorSynHi_bracket,		true,						null0,					null0,		null0	},
-		{ "}",						1,			false,		_ICODE_BRACE_RIGHT,						false,				_ICAT_GENERIC,					&colorSynHi_bracket,		true,						null0,					null0,		null0	},
+		{ "(",						1,			false,		_ICODE_PARENTHESIS_LEFT,				false,				_ICAT_DESCENT,					&colorSynHi_bracket,		true,						null0,					null0,		null0	},
+		{ ")",						1,			false,		_ICODE_PARENTHESIS_RIGHT,				false,				_ICAT_ASCENT,					&colorSynHi_bracket,		true,						null0,					null0,		null0	},
+		{ "[",						1,			false,		_ICODE_BRACKET_LEFT,					false,				_ICAT_DESCENT,					&colorSynHi_bracket,		true,						null0,					null0,		null0	},
+		{ "]",						1,			false,		_ICODE_BRACKET_RIGHT,					false,				_ICAT_ASCENT,					&colorSynHi_bracket,		true,						null0,					null0,		null0	},
+		{ "{{",						2,			false,		_ICODE_DOUBLE_BRACE_LEFT,				false,				_ICAT_DESCENT,					&colorSynHi_bracket,		true,						null0,					null0,		null0	},
+		{ "}}",						2,			false,		_ICODE_DOUBLE_BRACE_RIGHT,				false,				_ICAT_ASCENT,					&colorSynHi_bracket,		true,						null0,					null0,		null0	},
+		{ "{",						1,			false,		_ICODE_BRACE_LEFT,						false,				_ICAT_DESCENT,					&colorSynHi_bracket,		true,						null0,					null0,		null0	},
+		{ "}",						1,			false,		_ICODE_BRACE_RIGHT,						false,				_ICAT_ASCENT,					&colorSynHi_bracket,		true,						null0,					null0,		null0	},
 		{ "++",						2,			false,		_ICODE_PLUS_PLUS,						false,				_ICAT_UNARY,					&colorSynHi_operator,		true,						null0,					null0,		null0	},
-		{ "+=",						2,			false,		_ICODE_ADD_EQUAL,						false,				_ICAT_GENERIC,					&colorSynHi_operator,		false,						null0,					null0,		null0	},
-		{ "+",						1,			false,		_ICODE_PLUS,							false,				_ICAT_GENERIC,					&colorSynHi_operator,		true,						null0,					null0,		null0	},
+		{ "+=",						2,			false,		_ICODE_ADD_EQUAL,						false,				_ICAT_ASSIGN_OP,				&colorSynHi_operator,		false,						null0,					null0,		null0	},
+		{ "+",						1,			false,		_ICODE_PLUS,							false,				_ICAT_OPERATOR,					&colorSynHi_operator,		true,						null0,					null0,		null0	},
 		{ "--",						2,			false,		_ICODE_MINUS_MINUS,						false,				_ICAT_UNARY,					&colorSynHi_operator,		true,						null0,					null0,		null0	},
-		{ "-=",						2,			false,		_ICODE_MINUS_EQUAL,						false,				_ICAT_GENERIC,					&colorSynHi_operator,		false,						null0,					null0,		null0	},
-		{ "-",						1,			false,		_ICODE_HYPHEN,							false,				_ICAT_GENERIC,					&colorSynHi_operator,		true,						null0,					null0,		null0	},
-		{ "^=",						2,			false,		_ICODE_XOR_EQUAL,						false,				_ICAT_GENERIC,					&colorSynHi_operator,		false,						null0,					null0,		null0	},
-		{ "^",						1,			false,		_ICODE_EXPONENT,						false,				_ICAT_GENERIC,					&colorSynHi_operator,		true,						null0,					null0,		null0	},
-		{ "/*",						2,			true,		_ICODE_COMMENT_START,					false,				_ICAT_GENERIC,					&colorSynHi_comment3,		false,						null0,					null0,		null0	},
-		{ "*/",						2,			true,		_ICODE_COMMENT_END,						false,				_ICAT_GENERIC,					&colorSynHi_comment3,		false,						null0,					null0,		null0	},
-		{ "||||",					4,			false,		_ICODE_COMMENT,							false,				_ICAT_GENERIC,					&colorSynHi_comment1,		false,						null0,					null0,		null0	},
-		{ "//",						2,			true,		_ICODE_COMMENT,							true,				_ICAT_GENERIC,					&colorSynHi_comment1,		false,						null0,					null0,		null0	},
-		{ "*=",						2,			false,		_ICODE_MULTIPLY_EQUAL,					false,				_ICAT_GENERIC,					&colorSynHi_operator,		false,						null0,					null0,		null0	},
+		{ "-=",						2,			false,		_ICODE_MINUS_EQUAL,						false,				_ICAT_ASSIGN_OP,				&colorSynHi_operator,		false,						null0,					null0,		null0	},
+		{ "-",						1,			false,		_ICODE_HYPHEN,							false,				_ICAT_OPERATOR,					&colorSynHi_operator,		true,						null0,					null0,		null0	},
+		{ "^=",						2,			false,		_ICODE_XOR_EQUAL,						false,				_ICAT_ASSIGN_OP,				&colorSynHi_operator,		false,						null0,					null0,		null0	},
+		{ "^",						1,			false,		_ICODE_XOR,								false,				_ICAT_BITWISE,					&colorSynHi_operator,		true,						null0,					null0,		null0	},
+		{ "/+",						2,			true,		_ICODE_COMMENT_START,					false,				_ICAT_COMMENT,					&colorSynHi_comment3,		false,						null0,					null0,		null0	},
+		{ "+/",						2,			true,		_ICODE_COMMENT_END,						false,				_ICAT_COMMENT,					&colorSynHi_comment3,		false,						null0,					null0,		null0	},
+		{ "/*",						2,			true,		_ICODE_COMMENT_START,					false,				_ICAT_COMMENT,					&colorSynHi_comment3,		false,						null0,					null0,		null0	},
+		{ "*/",						2,			true,		_ICODE_COMMENT_END,						false,				_ICAT_COMMENT,					&colorSynHi_comment3,		false,						null0,					null0,		null0	},
+		{ "||||",					4,			false,		_ICODE_COMMENT,							false,				_ICAT_COMMENT,					&colorSynHi_comment1,		false,						null0,					null0,		null0	},
+		{ "//",						2,			true,		_ICODE_COMMENT,							true,				_ICAT_COMMENT,					&colorSynHi_comment1,		false,						null0,					null0,		null0	},
+		{ "*=",						2,			false,		_ICODE_MULTIPLY_EQUAL,					false,				_ICAT_ASSIGN_OP,				&colorSynHi_operator,		false,						null0,					null0,		null0	},
 		{ "*",						1,			true,		_ICODE_COMMENT,							true,				_ICAT_GENERIC,					&colorSynHi_comment1,		false,						null0,					null0,		null0	},
-		{ "*",						1,			false,		_ICODE_MULTIPLY,						false,				_ICAT_GENERIC,					&colorSynHi_comment1,		false,						null0,					null0,		null0	},
-		{ "*",						1,			true,		_ICODE_ASTERISK,						false,				_ICAT_GENERIC,					&colorSynHi_operator,		true,						null0,					null0,		null0	},
+		{ "*",						1,			false,		_ICODE_MULTIPLY,						false,				_ICAT_OPERATOR,					&colorSynHi_comment1,		false,						null0,					null0,		null0	},
+		{ "*",						1,			true,		_ICODE_ASTERISK,						false,				_ICAT_COMMENT,					&colorSynHi_operator,		true,						null0,					null0,		null0	},
 		{ "\\",						1,			true,		_ICODE_BACKSLASH,						false,				_ICAT_GENERIC,					NULL,						false,						null0,					null0,		null0	},
 		{ "**",						2,			false,		_ICODE_EXPONENT,						false,				_ICAT_GENERIC,					NULL,						false,						null0,					null0,		null0	},
-		{ "/=",						2,			false,		_ICODE_DIVIDE_EQUAL,					false,				_ICAT_GENERIC,					&colorSynHi_operator,		false,						null0,					null0,		null0	},
+		{ "/=",						2,			false,		_ICODE_DIVIDE_EQUAL,					false,				_ICAT_ASSIGN_OP,				&colorSynHi_operator,		false,						null0,					null0,		null0	},
 		{ "/",						1,			true,		_ICODE_SLASH,							false,				_ICAT_GENERIC,					NULL,						false,						null0,					null0,		null0	},
 		{ "\"",						1,			false,		_ICODE_DOUBLE_QUOTE,					false,				_ICAT_GENERIC,					NULL,						false,						null0,					null0,		null0	},
 		{ "'",						1,			false,		_ICODE_SINGLE_QUOTE,					false,				_ICAT_GENERIC,					NULL,						false,						null0,					null0,		null0	},
-		{ "..",						2,			false,		_ICODE_RANGE,							false,				_ICAT_GENERIC,					NULL,						false,						null0,					null0,		null0	},
-		{ ".",						1,			false,		_ICODE_DOT,								false,				_ICAT_GENERIC,					NULL,						false,						null0,					null0,		null0	},
-		{ ",",						1,			false,		_ICODE_COMMA,							false,				_ICAT_GENERIC,					&colorSynHi_bracket,		true,						null0,					null0,		null0	},
-		{ ":=",						2,			false,		_ICODE_EQUAL_SIGN,						false,				_ICAT_GENERIC,					&colorSynHi_operator,		true,						null0,					null0,		null0	},
+		{ "..",						2,			false,		_ICODE_RANGE,							false,				_ICAT_RANGE,					NULL,						false,						null0,					null0,		null0	},
+		{ ".",						1,			false,		_ICODE_DOT,								false,				_ICAT_DOT,						NULL,						false,						null0,					null0,		null0	},
+		{ ",",						1,			false,		_ICODE_COMMA,							false,				_ICAT_PARAM,					&colorSynHi_bracket,		true,						null0,					null0,		null0	},
+		{ ":=",						2,			false,		_ICODE_EQUAL_SIGN,						false,				_ICAT_ASSIGN,					&colorSynHi_operator,		true,						null0,					null0,		null0	},
+		{ "::",						2,			false,		_ICODE_SCOPE,							false,				_ICAT_SCOPE,					NULL,						false,						null0,					null0,		null0	},
 		{ ":",						1,			false,		_ICODE_COLON,							false,				_ICAT_GENERIC,					NULL,						false,						null0,					null0,		null0	},
 		{ "_",						1,			false,		_ICODE_UNDERSCORE,						false,				_ICAT_GENERIC,					NULL,						false,						null0,					null0,		null0	},
 		{ "~",						1,			false,		_ICODE_TILDE,							false,				_ICAT_BITWISE,					NULL,						false,						null0,					null0,		null0	},
-		{ "@",						1,			false,		_ICODE_AT_SIGN,							false,				_ICAT_GENERIC,					NULL,						false,						null0,					null0,		null0	},
+		{ "@",						1,			false,		_ICODE_AT_SIGN,							false,				_ICAT_REFERENCE,				NULL,						false,						null0,					null0,		null0	},
 		{ "#",						1,			false,		_ICODE_POUND_SIGN,						false,				_ICAT_LOGIC,					&colorSynHi_operator,		false,						null0,					null0,		null0	},
 		{ "$",						1,			false,		_ICODE_DOLLAR_SIGN,						false,				_ICAT_LOGIC,					&colorSynHi_operator,		false,						null0,					null0,		null0	},
 		{ "?",						1,			false,		_ICODE_QUESTION_MARK,					false,				_ICAT_LOGIC,					NULL,						false,						null0,					null0,		null0	},
@@ -421,7 +434,7 @@
 		{ "!>",						2,			false,		_ICODE_LESS_THAN_OR_EQUAL_TO,			false,				_ICAT_LOGIC,					&colorSynHi_operator,		true,						null0,					null0,		null0	},
 		{ "!<=",					3,			false,		_ICODE_GREATER_THAN,					false,				_ICAT_LOGIC,					&colorSynHi_operator,		true,						null0,					null0,		null0	},
 		{ "!>=",					3,			false,		_ICODE_LESS_THAN,						false,				_ICAT_LOGIC,					&colorSynHi_operator,		true,						null0,					null0,		null0	},
-		{ "!",						1,			false,		_ICODE_EXCLAMATION_POINT,				false,				_ICAT_LOGIC | _ICAT_BITWISE,	&colorSynHi_logical,		true,						null0,					null0,		null0	},
+		{ "!",						1,			false,		_ICODE_EXCLAMATION_POINT,				false,				_ICAT_LOGIC | _ICAT_DOT | _ICAT_BITWISE,	&colorSynHi_logical,		true,						null0,					null0,		null0	},
 		{ cgcDefinePragma,			7,			false,		_ICODE_DEFINE_PRAGMA,					true,				_ICAT_PRAGMA,					&colorSynHi_pragmas,		false,						null0,					null0,		null0	},
 		{ cgcElsePragma,			5,			false,		_ICODE_ELSE_PRAGMA,						true,				_ICAT_PRAGMA,					&colorSynHi_pragmas,		false,						null0,					null0,		null0	},
 		{ cgcElseifPragma,			7,			false,		_ICODE_ELSEIF_PRAGMA,					true,				_ICAT_PRAGMA,					&colorSynHi_pragmas,		false,						null0,					null0,		null0	},
@@ -431,16 +444,16 @@
 		{ cgcIfndefPragma,			7,			false,		_ICODE_IFNDEF_PRAGMA,					true,				_ICAT_PRAGMA,					&colorSynHi_pragmas,		false,						null0,					null0,		null0	},
 		{ cgcIncludePragma,			8,			false,		_ICODE_INCLUDE_PRAGMA,					true,				_ICAT_PRAGMA,					&colorSynHi_pragmas,		false,						null0,					null0,		null0	},
 		{ cgcUndefPragma,			6,			false,		_ICODE_UNDEF_PRAGMA,					true,				_ICAT_PRAGMA,					&colorSynHi_pragmas,		false,						null0,					null0,		null0	},
-		{ "%=",						2,			false,		_ICODE_MODULO_EQUAL,					false,				_ICAT_OPERATOR | _ICAT_ASSIGN,	&colorSynHi_operator,		false,						null0,					null0,		null0	},
+		{ "%=",						2,			false,		_ICODE_MODULO_EQUAL,					false,				_ICAT_ASSIGN_OP,				&colorSynHi_operator,		false,						null0,					null0,		null0	},
 		{ "%",						1,			false,		_ICODE_PERCENT_SIGN,					false,				_ICAT_OPERATOR,					&colorSynHi_operator,		false,						null0,					null0,		null0	},
 		{ "&&",						2,			false,		_ICODE_AND,								false,				_ICAT_LOGIC,					&colorSynHi_logical,		false,						null0,					null0,		null0	},
-		{ "&",						1,			false,		_ICODE_AMPERSAND,						false,				_ICAT_LOGIC,					&colorSynHi_operator,		false,						null0,					null0,		null0	},
+		{ "&",						1,			false,		_ICODE_AMPERSAND,						false,				_ICAT_BITWISE,					&colorSynHi_operator,		false,						null0,					null0,		null0	},
 		{ "=<",						2,			false,		_ICODE_LESS_THAN_OR_EQUAL_TO,			false,				_ICAT_LOGIC,					&colorSynHi_operator,		true,						null0,					null0,		null0	},
 		{ "=>",						2,			false,		_ICODE_GREATER_THAN_OR_EQUAL_TO,		false,				_ICAT_LOGIC,					&colorSynHi_operator,		true,						null0,					null0,		null0	},
 		{ "==",						2,			false,		_ICODE_EXACTLY_EQUAL_TO,				false,				_ICAT_LOGIC,					&colorSynHi_operator,		true,						null0,					null0,		null0	},
 		{ "=",						1,			false,		_ICODE_EQUAL_SIGN,						false,				_ICAT_ASSIGN,					&colorSynHi_operator,		true,						null0,					null0,		null0	},
 		{ "||",						2,			false,		_ICODE_OR,								false,				_ICAT_LOGIC,					&colorSynHi_logical,		false,						null0,					null0,		null0	},
-		{ "|=",						2,			false,		_ICODE_OR_ASSIGNMENT,					false,				_ICAT_BITWISE | _ICAT_ASSIGN,	&colorSynHi_operator,		false,						null0,					null0,		null0	},
+		{ "|=",						2,			false,		_ICODE_OR_ASSIGNMENT,					false,				_ICAT_BITWISE | _ICAT_ASSIGN_OP, &colorSynHi_operator,		false,						null0,					null0,		null0	},
 		{ "|",						1,			false,		_ICODE_PIPE_SIGN,						false,				_ICAT_BITWISE,					&colorSynHi_operator,		false,						null0,					null0,		null0	},
 		{ "`",						1,			false,		_ICODE_REVERSE_QUOTE,					false,				_ICAT_GENERIC,					NULL,						false,						null0,					null0,		null0	},
 		{ ";",						1,			false,		_ICODE_SEMICOLON,						false,				_ICAT_STOPPER,					NULL,						false,						null0,					null0,		null0	},

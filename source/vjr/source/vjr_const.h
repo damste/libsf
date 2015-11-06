@@ -109,9 +109,10 @@ typedef SEM**		SEMpp;
 
 
 //////////
-// For the lower 256 values of flag-mapped comp->iCat codes
+// For the lower 64K values of flag-mapped comp->iCat codes
 //////
-	#define iCat(x)										(x & 0xff)
+	#define iCat(x)										(x & 0xffff)
+	#define iCatBits(x)									(x & _ICAT_MASK);
 
 
 //////////
