@@ -135,26 +135,56 @@
 	const u32		_OP_TYPE_OBJECT									= 8;// An object
 	const u32		_OP_TYPE_PARENTHESIS_LEFT						= 9;// (Temporary) A left parenthesis
 
-	const u32		_NODE_NONE										= 0;
-	const u32		_NODE_N											= 1;
-	const u32		_NODE_PARENT									= 1;
+	const u32									_NODE_MIN		= 0;
+	const u32		_NODE_N											= 0;
+	const u32		_NODE_NORTH										= 0;
+	const u32		_NODE_PARENT									= 0;
+	const u32		_NODE_UP										= 0;
+	const u32		_NODE_E										= 1;
+	const u32		_NODE_EAST									= 1;
+	const u32		_NODE_NEXT									= 1;
+	const u32		_NODE_RIGHT									= 1;
 	const u32		_NODE_W											= 2;
+	const u32		_NODE_WEST										= 2;
 	const u32		_NODE_PREV										= 2;
-	const u32		_NODE_E											= 3;
-	const u32		_NODE_NEXT										= 3;
+	const u32		_NODE_LEFT										= 2;
+	const u32		_NODE_S										= 3;
+	const u32		_NODE_SOUTH									= 3;
+	const u32		_NODE_DOWN									= 3;
 	const u32		_NODE_SW										= 4;
-	const u32		_NODE_LEFT										= 4;
+	const u32		_NODE_SOUTHWEST									= 4;
 	const u32		_NODE_LEFT_DN									= 4;
-	const u32		_NODE_SE										= 5;
-	const u32		_NODE_RIGHT										= 5;
-	const u32		_NODE_RIGHT_DN									= 5;
-	const u32		_NODE_S											= 6;
-	const u32		_NODE_DOWN										= 6;
-	const u32		_NODE_NW										= 7;
-	const u32		_NODE_LEFT_UP									= 7;
-	const u32		_NODE_NE										= 8;
-	const u32		_NODE_RIGHT_UP									= 8;
-	const u32		_NODE_M											= 9;
+	const u32		_NODE_SE									= 5;
+	const u32		_NODE_SOUTHEAST								= 5;
+	const u32		_NODE_RIGHT_DN								= 5;
+	const u32		_NODE_NW										= 6;
+	const u32		_NODE_NORTHWEST									= 6;
+	const u32		_NODE_LEFT_UP									= 6;
+	const u32		_NODE_NE									= 7;
+	const u32		_NODE_NORTHEAST								= 7;
+	const u32		_NODE_RIGHT_UP								= 7;
+	const u32		_NODE_BACK										= 8;
+	const u32		_NODE_FRO										= 8;
+	const u32		_NODE_FRONT									= 9;
+	const u32		_NODE_TO									= 9;
+	const u32									_NODE_MAX		= 9;
+	const u32									_NODE_COUNT		= 9;
+
+	// A translation matrix 
+	const u32	gnNodeMirrors[_NODE_COUNT + 1] =
+	{
+	//	Orientation				Mirror
+		_NODE_S,			// _NODE_N
+		_NODE_W,			// _NODE_E
+		_NODE_E,			// _NODE_W
+		_NODE_N,			// _NODE_S
+		_NODE_NE,			// _NODE_SW
+		_NODE_NW,			// _NODE_SE
+		_NODE_SE,			// _NODE_NW
+		_NODE_SW,			// _NODE_NE
+		_NODE_TO,			// _NODE_FRO
+		_NODE_FRO,			// _NODE_TO
+};
 
 
 //////////

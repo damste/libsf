@@ -304,44 +304,15 @@ struct SExtraInfo;
 	struct SNode9
 	{
 		u32				uid;											// Unique ID for this sub-instruction
+		SNode9*			n[_NODE_COUNT];									// Offshoot nodes
 
-		// Directions from the central node
-		union {
-			SNode9*		n;												// North
-			SNode9*		parent;
-		};
-		union {
-			SNode9*		w;												// West
-			SNode9*		prev;
-		};
-		union {
-			SNode9*		e;												// East
-			SNode9*		next;
-		};
-		union {
-			SNode9*		s;												// South
-			SNode9*		down;
-		};
-		SNode9*		nw;													// Northwest
-		SNode9*		ne;													// Northeast
-		union {
-			SNode9*		sw;												// Southwest
-			SNode9*		left;
-		};
-		union {
-			SNode9*		se;												// Southeast
-			SNode9*		right;
-		};
-		SNode9*		m;													// Middle
+		// Associated data
+		SComp*			comp;
+		void*			extraData;										// General purpose data
+		SSubInstr*		opData;											// When used as for processing ops
 
-		// Related data
-		SComp*		comp;												// Related component
-
-		// Node data
-		union {
-			void*		extraData;										// General purpose data
-			SSubInstr*	opData;											// When used as for processing ops
-		};
+		// For graphics rendering
+		SBitmap*		bmp;
 	};
 
 	struct SCompCallback

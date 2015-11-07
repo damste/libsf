@@ -246,8 +246,10 @@ struct SVxbContext;
 	SComp*					iiComps_xlatToOthers_callback__mergeCompsCallback			(SComp* comp, SLine* line, u32 tnCount, u32 tniCodeNew);
 
 	// Node functions
-	SNode9*					iNode9_create								(SNode9** root, SNode9* n, SNode9* e, SNode9* s, SNode9* w, SNode9* nw, SNode9* ne, SNode9* sw, SNode9* se, SNode9* m);
-	SNode9*					iNode9_insert_between						(SNode9** root, SNode9* node1, SNode9* node2, u32 tnNode1Direction, u32 tnNode2Direction);
+	SNode9*					iNode9_create								(SNode9** root, SNode9* n[_NODE_COUNT]);
+	SNode9*					iNode9_extrude								(SNode9** root, u32 tnExtrudeDirection);
+	SNode9*					iNode9_bump									(SNode9** root, u32 tnBumpDirection);
+	SNode9*					iNode9_insert_between						(SNode9* node1, SNode9* node2, u32 tnNode1Direction, u32 tnNode2Direction);
 	void					iNode9_deleteAll_politely					(SNode9** root, SNode9* nodeOrigin, bool tlDeleteSelf, bool tlTraverseN, bool tlTraverseE, bool tlTraverseS, bool tlTraverseW, bool tlTraverseNW, bool tlTraverseNE, bool tlTraverseSW, bool tlTraverseSE, bool tlTraverseM);
 
 	// Function functions (LOL)

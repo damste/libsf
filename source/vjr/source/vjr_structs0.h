@@ -142,12 +142,13 @@ struct SBitmap
 	HDC					hdc;
 	HBITMAP				hbmp;
 	RECT				rc;
+	u32					iter;					// For graphics ops, holds a rendering iteration count
 
 	// Raw bitmap data (suitable for writing to disk)
 	BITMAPFILEHEADER	bh;
 	BITMAPINFOHEADER	bi;
 	s8*					bd;
-	u32					rowWidth;
+	u32					rowWidth;				// See: iBmp_computeRowWidth()
 };
 
 struct SBmpCache

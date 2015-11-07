@@ -616,7 +616,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 		// Iterate through every component building the operations as we go
 		comp		= line->compilerInfo->firstComp;
 //		compLast	= comp;
-		nodeActive	= iNode9_create(&compiler->first_nodeEngage, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+		nodeActive	= iNode9_create(&compiler->first_nodeEngage, NULL);
 		while (comp)
 		{
 			//////////
@@ -800,7 +800,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 
 
 		// Insert a parenthesis node at the active node, and direct the active node to the right
-		node = iNode9_insert_between(root, active->parent, active, _NODE_PARENT, _NODE_RIGHT);
+		node = iNode9_insert_between(active->n[_NODE_PARENT], active, _NODE_PARENT, _NODE_RIGHT);
 		if (node)
 		{
 			//////////
@@ -5148,9 +5148,10 @@ debug_break;
 // Called to create a new node and attach it to the hint as indicated.
 //
 //////
-	SNode9* iNode9_create(SNode9** root, SNode9* n, SNode9* e, SNode9* s, SNode9* w, SNode9* nw, SNode9* ne, SNode9* sw, SNode9* se, SNode9* m)
+	SNode9* iNode9_create(SNode9** root, SNode9* n[_NODE_COUNT])
 	{
-		SNode9* nodeNew;
+		s32			lnI;
+		SNode9*		nodeNew;
 
 
 		// Make sure our environment is sane
@@ -5160,19 +5161,12 @@ debug_break;
 			memset(nodeNew, 0, sizeof(SNode9));
 
 			// Populate the target
-			if (root)
+			if (root && *root)
 				*root = nodeNew;
 
 			// Connect our new node to anything it's connected to
-			nodeNew->n		= n;
-			nodeNew->e		= e;
-			nodeNew->s		= s;
-			nodeNew->w		= w;
-			nodeNew->nw		= nw;
-			nodeNew->ne		= ne;
-			nodeNew->sw		= sw;
-			nodeNew->se		= se;
-			nodeNew->m		= m;
+			for (lnI = 0; lnI < _NODE_COUNT; lnI++)
+				nodeNew->n[lnI] = n[lnI];
 		}
 
 		// Indicate our status
@@ -5184,158 +5178,154 @@ debug_break;
 
 //////////
 //
+// Extrudes a node in the indicated direction (creates a new node in that way)
+//
+// Suppose you're on the + node, and you want to extrude southeast:
+//
+//     Before:
+//            2
+//           / \
+//          1   +
+//             / \
+//            3   4
+//
+//     After:
+//            2
+//           / \
+//          1   +
+//             / \
+//            3   4
+//                 \
+//                  5   <=== newly inserted node, extruded along southeast
+//
+//////
+	// Note:  rootNode should point to the node to extrude from
+	SNode9* iNode9_extrude(SNode9** rootNode, u32 tnExtrudeDirection)
+	{
+		SNode9*		node;
+		SNode9*		nodeNew;
+
+
+		// Make sure the environment is sane
+		if (!rootNode || !between(tnExtrudeDirection, _NODE_MIN, _NODE_MAX))
+			return(NULL);
+
+		// If nothing already exists there, just create it and it will become the central node
+		if (!*rootNode)
+			return(iNode9_create(rootNode, NULL));
+
+		// Descend down that direction
+		for (node = *rootNode; node->n[tnExtrudeDirection]; )
+			node = node->n[tnExtrudeDirection];
+
+		// Add the new offshoot, and point back-and-forth to the last one
+		nodeNew = iNode9_create(rootNode, NULL);
+		if (nodeNew)
+		{
+			// New node points back to the last node in the run
+			node->n[tnExtrudeDirection]						= nodeNew;
+			nodeNew->n[gnNodeMirrors[tnExtrudeDirection]]	= node;
+		}
+
+		// Indicate the new item
+		return(nodeNew);
+	}
+
+
+
+
+///////////
+//
+// Bumps the node you're on over, inserting a new node in its place.
+//
+// Suppose you're on the + node, and you want to bump everything southwest:
+//
+//     Before:
+//            2
+//           / \
+//          1   +
+//             / \
+//            3   4
+//
+//     After:
+//            2
+//           / \
+//          1   5   <=== newly inserted node, migrated + and everything attached southwest from it's location
+//             /
+//            +
+//           / \
+//          3   4
+//////
+	SNode9* iNode9_bump(SNode9** rootNode, u32 tnBumpDirection)
+	{
+		SNode9*		node;
+		SNode9*		nodeNew;
+
+
+		// Make sure the environment is sane
+		if (!rootNode || !between(tnBumpDirection, _NODE_MIN, _NODE_MAX))
+			return(NULL);
+
+		// If nothing already exists there, just create it and it will become the central node
+		if (!*rootNode)
+			return(iNode9_create(rootNode, NULL));
+
+		// Grab the node
+		node = *rootNode;
+
+		// Create the new node
+		nodeNew = iNode9_create(rootNode, NULL);
+		if (nodeNew)
+		{
+			// Node mirror points to new
+			if (node->n[gnNodeMirrors[tnBumpDirection]])
+			{
+				nodeNew->n[tnBumpDirection]					= (node->n[gnNodeMirrors[tnBumpDirection]])->n[tnBumpDirection];
+				nodeNew->n[gnNodeMirrors[tnBumpDirection]]	= node->n[gnNodeMirrors[tnBumpDirection]];
+			}
+
+			// Previous pointed to node points back to new, new points forward to that one
+			node->n[gnNodeMirrors[tnBumpDirection]]	= nodeNew;
+			nodeNew->n[tnBumpDirection]				= node->n[gnNodeMirrors[tnBumpDirection]];
+		}
+
+		// Indicate our result
+		return(node);
+	}
+
+
+
+
+//////////
+//
 // Creates a new node and inserts it between where node1 points to node2.
 //
 //////
-	SNode9* iNode9_insert_between(SNode9** root, SNode9* node1, SNode9* node2, u32 tnNode1Direction, u32 tnNode2Direction)
+	SNode9* iNode9_insert_between(SNode9* node1, SNode9* node2, u32 tnNode1Direction, u32 tnNode2Direction)
 	{
-		u32			lnNode1_direction, lnNode2_direction;
+		SNode9*		n[_NODE_COUNT];
 		SNode9*		nodeNew;
 
 
 		// Make sure our environment is sane
-		if (root && (nodeNew = iNode9_create(root, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)))
+		if (!between(tnNode1Direction, _NODE_MIN, _NODE_MAX) || !between(tnNode2Direction, _NODE_MIN, _NODE_MAX) || tnNode1Direction == tnNode2Direction)
+			return(NULL);
+
+		// Initialize
+		memset(&n[0], 0, sizeof(n));
+
+		// Create and populate our new node
+		if ((nodeNew = iNode9_create(NULL, &n[0])))
 		{
+			// New points mirror-back to node1 and node2
+			nodeNew->n[gnNodeMirrors[tnNode1Direction]] = node1;
+			nodeNew->n[gnNodeMirrors[tnNode2Direction]]	= node2;
 
-			//////////
-			// Find out where we're going node1 to node2
-			//////
-				     if (node1->n == node2)			lnNode1_direction = _NODE_N;		// north
-				else if (node1->e == node2)			lnNode1_direction = _NODE_E;		// east
-				else if (node1->s == node2)			lnNode1_direction = _NODE_S;		// south
-				else if (node1->w == node2)			lnNode1_direction = _NODE_W;		// west
-				else if (node1->nw == node2)		lnNode1_direction = _NODE_NW;		// northwest
-				else if (node1->ne == node2)		lnNode1_direction = _NODE_NE;		// northeast
-				else if (node1->sw == node2)		lnNode1_direction = _NODE_SW;		// southwest
-				else if (node1->se == node2)		lnNode1_direction = _NODE_SE;		// southeast
-				else if (node1->m == node2)			lnNode1_direction = _NODE_M;		// middle
-				else								lnNode1_direction = _NODE_NONE;		// not connected
+			// node1 points to new
+			node1->n[tnNode1Direction]	= nodeNew;
 
-
-			//////////
-			// Find out where we're going node2 to node1
-			//////
-				     if (node2->n == node1)			lnNode2_direction = _NODE_N;		// north
-				else if (node2->e == node1)			lnNode2_direction = _NODE_E;		// east
-				else if (node2->s == node1)			lnNode2_direction = _NODE_S;		// south
-				else if (node2->w == node1)			lnNode2_direction = _NODE_W;		// west
-				else if (node2->nw == node1)		lnNode2_direction = _NODE_NW;		// northwest
-				else if (node2->ne == node1)		lnNode2_direction = _NODE_NE;		// northeast
-				else if (node2->sw == node1)		lnNode2_direction = _NODE_SW;		// southwest
-				else if (node2->se == node1)		lnNode2_direction = _NODE_SE;		// southeast
-				else if (node2->m == node1)			lnNode2_direction = _NODE_M;		// middle
-				else								lnNode2_direction = _NODE_NONE;		// not connected
-
-
-			//////////
-			// Hook it up to node1
-			//////
-				switch (lnNode1_direction)
-				{
-					case _NODE_N:
-						// Going north from node1 to nodeNew to node2
-						nodeNew->n	= node2;
-						node1->n	= nodeNew;
-						break;
-
-					case _NODE_E:
-						// Going east from node1 to nodeNew to node2
-						nodeNew->e	= node2;
-						node1->e	= nodeNew;
-						break;
-
-					case _NODE_S:
-						// Going south from node1 to nodeNew to node2
-						nodeNew->s	= node2;
-						node1->s	= nodeNew;
-						break;
-
-					case _NODE_W:
-						// It's going west from node1 to node2
-						nodeNew->w	= node2;
-						node1->w	= nodeNew;
-						break;
-
-					case _NODE_NW:
-						// It's going northwest from node1 to node2
-						nodeNew->nw	= node2;
-						node1->nw	= nodeNew;
-						break;
-
-					case _NODE_NE:
-						// It's going northeast from node1 to node2
-						nodeNew->ne	= node2;
-						node1->ne	= nodeNew;
-						break;
-
-					case _NODE_SW:
-						// It's going southwest from node1 to node2
-						nodeNew->sw	= node2;
-						node1->sw	= nodeNew;
-						break;
-
-					case _NODE_SE:
-						// It's going southeast from node1 to node2
-						nodeNew->se	= node2;
-						node1->se	= nodeNew;
-						break;
-				}
-
-
-			//////////
-			// Hook it up to node2
-			//////
-				switch (lnNode2_direction)
-				{
-					case _NODE_N:
-						// Going north from node2 to nodeNew to node1
-						nodeNew->n	= node1;
-						node2->n	= nodeNew;
-						break;
-
-					case _NODE_E:
-						// Going east from node2 to nodeNew to node1
-						nodeNew->e	= node1;
-						node2->e	= nodeNew;
-						break;
-
-					case _NODE_S:
-						// Going south from node2 to nodeNew to node1
-						nodeNew->s	= node1;
-						node2->s	= nodeNew;
-						break;
-
-					case _NODE_W:
-						// Going west from node2 to nodeNew to node1
-						nodeNew->w	= node1;
-						node2->w	= nodeNew;
-						break;
-
-					case _NODE_NW:
-						// Going northwest from node2 to nodeNew to node1
-						nodeNew->nw	= node1;
-						node2->nw	= nodeNew;
-						break;
-
-					case _NODE_NE:
-						// Going northeast from node2 to nodeNew to node1
-						nodeNew->ne	= node1;
-						node2->ne	= nodeNew;
-						break;
-
-					case _NODE_SW:
-						// Going southwest from node2 to nodeNew to node1
-						nodeNew->sw	= node1;
-						node2->sw	= nodeNew;
-						break;
-
-					case _NODE_SE:
-						// Going southeast from node2 to nodeNew to node1
-						nodeNew->se	= node1;
-						node2->se	= nodeNew;
-						break;
-				}
-
+			// node2 points to n32
+			node2->n[tnNode2Direction]	= nodeNew;
 		}
 
 		// Indicate our status
@@ -5350,17 +5340,18 @@ debug_break;
 // Called to delete the entire node leg as indicated
 //
 //////
-	#define node9Params(x)		node-> ## x ## ->n		!= nodeOrigin, \
-								node-> ## x ## ->e		!= nodeOrigin, \
-								node-> ## x ## ->s		!= nodeOrigin, \
-								node-> ## x ## ->w		!= nodeOrigin, \
-								node-> ## x ## ->nw		!= nodeOrigin, \
-								node-> ## x ## ->ne		!= nodeOrigin, \
-								node-> ## x ## ->sw		!= nodeOrigin, \
-								node-> ## x ## ->se		!= nodeOrigin, \
-								node-> ## x ## ->m		!= nodeOrigin
+	#define node9Params		node->n[_NODE_N]	!= nodeOrigin, \
+							node->n[_NODE_E]	!= nodeOrigin, \
+							node->n[_NODE_S]	!= nodeOrigin, \
+							node->n[_NODE_W]	!= nodeOrigin, \
+							node->n[_NODE_NW]	!= nodeOrigin, \
+							node->n[_NODE_NE]	!= nodeOrigin, \
+							node->n[_NODE_SW]	!= nodeOrigin, \
+							node->n[_NODE_SE]	!= nodeOrigin, \
+							node->n[_NODE_TO]	!= nodeOrigin, \
+							node->n[_NODE_FRO]	!= nodeOrigin
 
-	void iNode9_deleteAll_politely(SNode9** root, SNode9* nodeOrigin, bool tlDeleteSelf, bool tlTraverseN, bool tlTraverseE, bool tlTraverseS, bool tlTraverseW, bool tlTraverseNW, bool tlTraverseNE, bool tlTraverseSW, bool tlTraverseSE, bool tlTraverseM)
+	void iNode9_deleteAll_politely(SNode9** root, SNode9* nodeOrigin, bool tlDeleteSelf, bool tlTraverseN, bool tlTraverseE, bool tlTraverseS, bool tlTraverseW, bool tlTraverseNW, bool tlTraverseNE, bool tlTraverseSW, bool tlTraverseSE, bool tlTraverseTo, bool tlTraverseFro)
 	{
 		SNode9* node;
 
@@ -5369,22 +5360,27 @@ debug_break;
 		if (root && (node = *root))
 		{
 			// Traverse the delete paths that should be deleted
-			if (tlTraverseN  && node->n)			iNode9_deleteAll_politely(&node->n,		nodeOrigin,		true,	node9Params(n));
-			if (tlTraverseE  && node->e)			iNode9_deleteAll_politely(&node->e,		nodeOrigin,		true,	node9Params(e));
-			if (tlTraverseS  && node->s)			iNode9_deleteAll_politely(&node->s,		nodeOrigin,		true,	node9Params(s));
-			if (tlTraverseW  && node->w)			iNode9_deleteAll_politely(&node->w,		nodeOrigin,		true,	node9Params(w));
-			if (tlTraverseNW && node->nw)			iNode9_deleteAll_politely(&node->nw,	nodeOrigin,		true,	node9Params(nw));
-			if (tlTraverseNE && node->ne)			iNode9_deleteAll_politely(&node->ne,	nodeOrigin,		true,	node9Params(ne));
-			if (tlTraverseSW && node->sw)			iNode9_deleteAll_politely(&node->sw,	nodeOrigin,		true,	node9Params(sw));
-			if (tlTraverseSE && node->se)			iNode9_deleteAll_politely(&node->se,	nodeOrigin,		true,	node9Params(se));
-			if (tlTraverseM  && node->m)			iNode9_deleteAll_politely(&node->m,		nodeOrigin,		true,	node9Params(m));
+			if (tlTraverseN   && node->n[_NODE_N])				iNode9_deleteAll_politely(&node->n[_NODE_N],	nodeOrigin,		true,	node9Params);
+			if (tlTraverseE   && node->n[_NODE_E])				iNode9_deleteAll_politely(&node->n[_NODE_E],	nodeOrigin,		true,	node9Params);
+			if (tlTraverseS   && node->n[_NODE_S])				iNode9_deleteAll_politely(&node->n[_NODE_S],	nodeOrigin,		true,	node9Params);
+			if (tlTraverseW   && node->n[_NODE_W])				iNode9_deleteAll_politely(&node->n[_NODE_W],	nodeOrigin,		true,	node9Params);
+			if (tlTraverseNW  && node->n[_NODE_NW])				iNode9_deleteAll_politely(&node->n[_NODE_NW],	nodeOrigin,		true,	node9Params);
+			if (tlTraverseNE  && node->n[_NODE_NE])				iNode9_deleteAll_politely(&node->n[_NODE_NE],	nodeOrigin,		true,	node9Params);
+			if (tlTraverseSW  && node->n[_NODE_SW])				iNode9_deleteAll_politely(&node->n[_NODE_SW],	nodeOrigin,		true,	node9Params);
+			if (tlTraverseSE  && node->n[_NODE_SE])				iNode9_deleteAll_politely(&node->n[_NODE_SE],	nodeOrigin,		true,	node9Params);
+			if (tlTraverseTo  && node->n[_NODE_TO])				iNode9_deleteAll_politely(&node->n[_NODE_TO],	nodeOrigin,		true,	node9Params);
+			if (tlTraverseFro && node->n[_NODE_FRO])			iNode9_deleteAll_politely(&node->n[_NODE_FRO],	nodeOrigin,		true,	node9Params);
 
 			// Delete the op if need be
-			iOp_politelyDelete(&node->opData->op, false);
+			if (node->opData)
+			{
+				// Delete op chain
+				iOp_politelyDelete(&node->opData->op, false);
 
-			// Delete the variable chain
-			if (node->opData->firstVariable)
-				iVariable_politelyDelete_chain(&node->opData->firstVariable, true);
+				// Delete the variable chain
+				if (node->opData->firstVariable)
+					iVariable_politelyDelete_chain(&node->opData->firstVariable, true);
+			}
 
 			// Delete self
 			if (tlDeleteSelf)
