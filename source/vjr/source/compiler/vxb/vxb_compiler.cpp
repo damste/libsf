@@ -5145,7 +5145,31 @@ debug_break;
 
 //////////
 //
-// Called to create a new node and attach it to the hint as indicated.
+// Called to create a new node and attach it to the nodes provided in each direction.
+//
+// Nodes have these + connection points to other nodes.  The two in the middle are to/fro:
+//
+//         +---+---+
+//         |       |
+//         +  + +  +
+//         |       |
+//         +---+---+
+//
+// The connection points are numbered thusly:
+//
+//         6---0---7        0 = North       4 = Southwest        8 = To (toward)
+//         |       |        1 = East        5 = Southeast        9 = Fro (away)
+//         3  8 9  1        2 = South       6 = Northwest
+//         |       |        3 = West        7 = Northeast
+//         4---2---5
+//
+// Basic construction as by iterating through an expression:
+//
+//           =                2
+//          / \              / \            x = y + z
+//         x   +            1   4           1 2 3 4 5
+//            / \              / \
+//           y   z            3   5
 //
 //////
 	SNode9* iNode9_create(SNode9** root, SNode9* n[_NODE_COUNT])
@@ -5164,9 +5188,13 @@ debug_break;
 			if (root && *root)
 				*root = nodeNew;
 
-			// Connect our new node to anything it's connected to
-			for (lnI = 0; lnI < _NODE_COUNT; lnI++)
-				nodeNew->n[lnI] = n[lnI];
+			// Hook it up to anything it needs hooked up to
+			if (n)
+			{
+				// Connect each node
+				for (lnI = 0; lnI < _NODE_COUNT; lnI++)
+					nodeNew->n[lnI] = n[lnI];
+			}
 		}
 
 		// Indicate our status
@@ -5185,7 +5213,7 @@ debug_break;
 //     Before:
 //            2
 //           / \
-//          1   +
+//          1   +       <=== current node, extrude southeast
 //             / \
 //            3   4
 //
@@ -5196,13 +5224,15 @@ debug_break;
 //             / \
 //            3   4
 //                 \
-//                  5   <=== newly inserted node, extruded along southeast
+//                  5   <=== newly inserted node, extruded at the end of the chain
+//
+// Note:  If you need to insert a node between + and 4, then use iNode9_bump() or iNode9_insert_between()
 //
 //////
 	// Note:  rootNode should point to the node to extrude from
 	SNode9* iNode9_extrude(SNode9** rootNode, u32 tnExtrudeDirection)
 	{
-		SNode9*		node;
+		SNode9*		nodeLast;
 		SNode9*		nodeNew;
 
 
@@ -5215,16 +5245,18 @@ debug_break;
 			return(iNode9_create(rootNode, NULL));
 
 		// Descend down that direction
-		for (node = *rootNode; node->n[tnExtrudeDirection]; )
-			node = node->n[tnExtrudeDirection];
+		for (nodeLast = *rootNode; nodeLast->n[tnExtrudeDirection]; )
+			nodeLast = nodeLast->n[tnExtrudeDirection];
 
 		// Add the new offshoot, and point back-and-forth to the last one
 		nodeNew = iNode9_create(rootNode, NULL);
 		if (nodeNew)
 		{
-			// New node points back to the last node in the run
-			node->n[tnExtrudeDirection]						= nodeNew;
-			nodeNew->n[gnNodeMirrors[tnExtrudeDirection]]	= node;
+			// New points back to last
+			nodeNew->n[gnNodeMirrors[tnExtrudeDirection]]	= nodeLast;
+
+			// Last points forward to new
+			nodeLast->n[tnExtrudeDirection]					= nodeNew;
 		}
 
 		// Indicate the new item
@@ -5238,25 +5270,43 @@ debug_break;
 //
 // Bumps the node you're on over, inserting a new node in its place.
 //
-// Suppose you're on the + node, and you want to bump everything southwest:
+// Suppose you're on the + node, and you want to bump it southwest, anchoring to the northwest.
+// By 
 //
-//     Before:
-//            2
-//           / \
-//          1   +
-//             / \
-//            3   4
+//     Before:                   Nodes to update in the bump:
+//            2                    +---+---+        7---1---8
+//           / \                   |       |        |       |
+//          1   b                  +  + +  +        4  9 10 2
+//             / \                 |       |        |       |
+//            3   4                +---+---+        5---3---6
 //
 //     After:
-//            2
+//            2         <=== node, needs 6 updated
 //           / \
-//          1   5   <=== newly inserted node, migrated + and everything attached southwest from it's location
+//          1   5       <=== newNode, needs 7 and 5 updated
 //             /
-//            +
+//            b         <=== bumpNode, needs 8 updated and 7 NULL'd
 //           / \
 //          3   4
+//
+// -----
+// After bump, a total of five node connections need to be updated:
+//
+//         Node                       Operation
+//     ------------        -----------------------------
+//      2, node            a   to newNode
+//      5, newNode         am  to node,  b   to bumpNode
+//      b, bumpNode        bm  to new,   am  to NULL
+//
+//		Node directions:	a	-- anchor
+//							am	-- anchor-mirror
+//							b	-- bump
+//							bm	-- bump-mirror
+//
 //////
-	SNode9* iNode9_bump(SNode9** rootNode, u32 tnBumpDirection)
+	// Note:  The anchor direction would be the one which pointed up to 2 in the above example
+	// Note:  The bump direction would be the southwest direction in the above example
+	SNode9* iNode9_bump(SNode9** rootNode, u32 tnBumpDirection, u32 tnAnchorDirection)
 	{
 		SNode9*		node;
 		SNode9*		nodeNew;
@@ -5277,16 +5327,21 @@ debug_break;
 		nodeNew = iNode9_create(rootNode, NULL);
 		if (nodeNew)
 		{
-			// Node mirror points to new
-			if (node->n[gnNodeMirrors[tnBumpDirection]])
-			{
-				nodeNew->n[tnBumpDirection]					= (node->n[gnNodeMirrors[tnBumpDirection]])->n[tnBumpDirection];
-				nodeNew->n[gnNodeMirrors[tnBumpDirection]]	= node->n[gnNodeMirrors[tnBumpDirection]];
-			}
+			// New points back to the anchor bumped had
+			nodeNew->n[gnNodeMirrors[tnAnchorDirection]]	= node->n[gnNodeMirrors[tnAnchorDirection]]
 
-			// Previous pointed to node points back to new, new points forward to that one
-			node->n[gnNodeMirrors[tnBumpDirection]]	= nodeNew;
-			nodeNew->n[tnBumpDirection]				= node->n[gnNodeMirrors[tnBumpDirection]];
+			// Node anchors to new
+			if (node->n[gnNodeMirrors[tnAnchorDirection]])
+				node->n[gnNodeMirrors[tnAnchorDirection]]->n[tnAnchorDirection] = nodeNew;
+
+			// Bumped no longer mirror-anchors back to node
+			node->n[gnNodeMirrors[tnAnchorDirection]]		= NULL;
+
+			// Bumped back to new along bumped mirror
+			node->n[gnNodeMirrors[tnBumpDirection]] = new;
+
+			// New to node along bump
+			nodeNew->n[tnBumpDirection] = node;
 		}
 
 		// Indicate our result

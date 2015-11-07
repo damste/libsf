@@ -248,7 +248,7 @@ struct SVxbContext;
 	// Node functions
 	SNode9*					iNode9_create								(SNode9** root, SNode9* n[_NODE_COUNT]);
 	SNode9*					iNode9_extrude								(SNode9** root, u32 tnExtrudeDirection);
-	SNode9*					iNode9_bump									(SNode9** root, u32 tnBumpDirection);
+	SNode9*					iNode9_bump									(SNode9** root, u32 tnBumpDirection, u32 tnAnchorDirection);
 	SNode9*					iNode9_insert_between						(SNode9* node1, SNode9* node2, u32 tnNode1Direction, u32 tnNode2Direction);
 	void					iNode9_deleteAll_politely					(SNode9** root, SNode9* nodeOrigin, bool tlDeleteSelf, bool tlTraverseN, bool tlTraverseE, bool tlTraverseS, bool tlTraverseW, bool tlTraverseNW, bool tlTraverseNE, bool tlTraverseSW, bool tlTraverseSE, bool tlTraverseM);
 

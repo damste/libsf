@@ -163,10 +163,10 @@
 	const u32		_NODE_NE									= 7;
 	const u32		_NODE_NORTHEAST								= 7;
 	const u32		_NODE_RIGHT_UP								= 7;
-	const u32		_NODE_BACK										= 8;
-	const u32		_NODE_FRO										= 8;
-	const u32		_NODE_FRONT									= 9;
-	const u32		_NODE_TO									= 9;
+	const u32		_NODE_FRONT										= 8;
+	const u32		_NODE_TO										= 8;
+	const u32		_NODE_BACK									= 9;
+	const u32		_NODE_FRO									= 9;
 	const u32									_NODE_MAX		= 9;
 	const u32									_NODE_COUNT		= 9;
 
