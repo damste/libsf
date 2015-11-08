@@ -95,7 +95,7 @@
 struct SEM;
 struct SLine;
 struct SFunction;
-struct SNode9;
+struct SNode;
 struct SLL;
 struct SLLCallback;
 struct SComp;
@@ -134,8 +134,8 @@ struct SVxbContext;
 	void					iiVxb_free_liveCode							(SCompiler* compiler);
 
 	bool					iiComps_xlatToNodes							(SLine* line, SCompiler* compiler);
-	SNode9*					iiComps_xlatToNodes_parenthesis_left		(SNode9** root, SNode9* active, SComp* comp);
-	SNode9*					iiComps_xlatToNodes_parenthesis_right		(SNode9** root, SNode9* active, SComp* comp);
+	SNode*					iiComps_xlatToNodes_parenthesis_left		(SNode** root, SNode* active, SComp* comp);
+	SNode*					iiComps_xlatToNodes_parenthesis_right		(SNode** root, SNode* active, SComp* comp);
 
 	void					iComps_deleteAll							(SComp** compRoot);
 	void					iComps_deleteAll_byLine						(SLine* line);
@@ -208,7 +208,7 @@ struct SVxbContext;
 // BEGIN
 //////
 	void					iiComps_xlatToSubInstr						(SLine* line);
-	SComp*					iiComps_xlatToSubInstr_findInmostExpression	(SNode9* si, SLine* line);
+	SComp*					iiComps_xlatToSubInstr_findInmostExpression	(SNode* si, SLine* line);
 	void					iiComps_xlatToSubInstr_findStartOfComponent	(SComp* compRoot, SOp* op);
 	void					iiComps_xlatToSubInstr_findFullComponent	(SComp* compRoot, SOp* op);
 	bool					iiComps_xlatToSubInstr_isEqualAssignment	(SLine* line);
@@ -246,11 +246,14 @@ struct SVxbContext;
 	SComp*					iiComps_xlatToOthers_callback__mergeCompsCallback			(SComp* comp, SLine* line, u32 tnCount, u32 tniCodeNew);
 
 	// Node functions
-	SNode9*					iNode9_create								(SNode9** root, SNode9* n[_NODE_COUNT]);
-	SNode9*					iNode9_extrude								(SNode9** root, u32 tnExtrudeDirection);
-	SNode9*					iNode9_bump									(SNode9** root, u32 tnBumpDirection, u32 tnAnchorDirection);
-	SNode9*					iNode9_insert_between						(SNode9* node1, SNode9* node2, u32 tnNode1Direction, u32 tnNode2Direction);
-	void					iNode9_deleteAll_politely					(SNode9** root, SNode9* nodeOrigin, bool tlDeleteSelf, bool tlTraverseN, bool tlTraverseE, bool tlTraverseS, bool tlTraverseW, bool tlTraverseNW, bool tlTraverseNE, bool tlTraverseSW, bool tlTraverseSE, bool tlTraverseM);
+	SNode*					iNode_create								(SNode** root, SNode* n[_NODE_COUNT]);
+	SNode*					iNode_extrude								(SNode** root, u32 tnExtrudeDirection);
+	SNode*					iNode_bump									(SNode** root, u32 tnBumpDirection, u32 tnAnchorDirection);
+	SNode*					iNode_insert_between						(SNode* node1, SNode* node2, u32 tnNode1Direction, u32 tnNode2Direction);
+	void					iNode_deleteAll_politely					(SNode** root, SNode* nodeOrigin, bool tlDeleteSelf, bool tlTraverseN, bool tlTraverseE, bool tlTraverseS, bool tlTraverseW, bool tlTraverseNW, bool tlTraverseNE, bool tlTraverseSW, bool tlTraverseSE, bool tlTraverseM);
+	SBitmap*				iNode_renderBitmap							(SNode* node, SNodeGoDirs* nodeFlags, s32 tnMaxLength = 4, s32 tnNodeRodLength = 24, s32 tnMarginWidth = 4, s32 tnBorderWidth = 2);
+	void					iiNode_renderBitmap							(SNode* node, SNode* nodeStopper, s32 tnMaxLength, SNodeProps props[], s32 tnPropsCount, u32 tnIter_uid, bool tlGoDeeper);
+	void					iiNode_get_bitmapExtents					(SNode* node, s32 tnArrivalDirection, RECT* rc, POINTS p);
 
 	// Function functions (LOL)
 	SFunction*				iFunction_allocate							(SComp* compName);
@@ -273,8 +276,8 @@ struct SVxbContext;
 	SVariable*				iVariable_createAndPopulate_byText			(s32 tnVarType, cu8* tcData, s32 tnDataLength, bool tlCreateReference);
 	SVariable*				iVariable_createAndPopulate_byText			(s32 tnVarType, cs8* tcData, s32 tnDataLength, bool tlCreateReference);
 	SVariable*				iVariable_createByRadix						(u64 tnValue, u64 tnBase, u32 tnPrefixChars, u32 tnPostfixChars);
-	bool					iVariable_searchRoot_forDotName_andSet_byVar	(              SComp* compDotName, SVariable* varNewValue, bool* tlError, u32* tnErrorNum);
-	bool					iVariable_searchObj_forDotName_andSet_byVar		(SObject* obj, SComp* compDotName, SVariable* varNewValue, bool* tlError, u32* tnErrorNum);
+	bool					iVariable_searchRoot_forDotName_andSet_byVar(              SComp* compDotName, SVariable* varNewValue, bool* tlError, u32* tnErrorNum);
+	bool					iVariable_searchObj_forDotName_andSet_byVar	(SObject* obj, SComp* compDotName, SVariable* varNewValue, bool* tlError, u32* tnErrorNum);
 	SVariable*				iVariable_searchForName						(cs8* tcVarName, u32 tnVarNameLength, SComp* comp, bool tlCreateAsReference);
 	SVariable*				iiVariable_searchForName_variables			(SVariable* varRoot, cs8* tcVarName, u32 tnVarNameLength, SComp* comp, bool tlCreateAsReference, s32 tnMaxVarDepth = 9999999);
 	SVariable*				iiVariable_searchForName_fields				(cs8* tcVarName, u32 tnVarNameLength, SComp* comp, bool tlCreateAsReference);

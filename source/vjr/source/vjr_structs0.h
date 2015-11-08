@@ -93,6 +93,7 @@ struct SCompiler;
 struct SFunction;
 struct SObjPropMap;
 struct SClassObj;
+struct SFont;
 
 
 
@@ -143,6 +144,7 @@ struct SBitmap
 	HBITMAP				hbmp;
 	RECT				rc;
 	u32					iter;					// For graphics ops, holds a rendering iteration count
+	SFont*				font;					// If a font is associated with this context, it is set here
 
 	// Raw bitmap data (suitable for writing to disk)
 	BITMAPFILEHEADER	bh;

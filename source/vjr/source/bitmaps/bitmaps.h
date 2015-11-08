@@ -113,7 +113,7 @@ class CXml;
 	s32						iBmp_computeRowWidth					(SBitmap* bmp);
 	void					iBmp_createBySize						(SBitmap* bmp, u32 width, u32 height, u32 tnBitCount);
 	void					iBmp_populateBitmapStructure			(SBitmap* bmp, u32 tnWidth, u32 tnHeight, u32 tnBitCount);
-	void					iBmp_delete								(SBitmap** bmp, bool tlFreeBits, bool tlDeleteSelf);
+	void					iBmp_delete								(SBitmap** bmp, bool tlFreeBits, bool tlDeleteSelf, bool tlDeleteFont = true);
 	void					iBmp_invert								(SBitmap* bmp, s32 tnUlX, s32 tnUlY, s32 tnLrX, s32 tnLrY);
 	void					iBmp_bitBltObject						(SBitmap* bmpDst, SObject* obj, SBitmap* bmpSrc);
 	void					iBmp_bitBltObjectMask					(SBitmap* bmpDst, SObject* obj, SBitmap* bmpSrc);
@@ -141,10 +141,10 @@ class CXml;
 	void					iBmp_dapple								(SBitmap* bmp, SBitmap* bmpDapple, SBitmap* bmpDappleTmp, f32 tfBias, f32 tfInfluence);
 // TODO:  The following void functions need to be changed to u32 and indicate how many pixels were rendered
 	void					iBmp_drawPoint							(SBitmap* bmp, s32 tnX, s32 tnY, SBgra color);
-	void					iBmp_fillRect							(SBitmap* bmp, RECT* rc, SBgra colorNW, SBgra colorNE, SBgra colorSW, SBgra colorSE, bool tlUseGradient, RECT* rcClip, bool tluseClip);
+	void					iBmp_fillRect							(SBitmap* bmp, RECT* rc, SBgra colorNW, SBgra colorNE = whiteColor, SBgra colorSW = whiteColor, SBgra colorSE = whiteColor, bool tlUseGradient = false, RECT* rcClip = NULL, bool tluseClip = false);
 	void					iBmp_fillRect_op						(SBitmap* bmp, RECT* rc, SBgra colorOn, SBgra colorOff, u32 tnOp);
-	void					iBmp_frameRect							(SBitmap* bmp, RECT* rc, SBgra colorNW, SBgra colorNE, SBgra colorSW, SBgra colorSE, bool tlUseGradient, RECT* rcClip, bool tluseClip);
-	void					iBmp_colorizeRect						(SBitmap* bmp, RECT* rc, SBgra colorNW, SBgra colorNE, SBgra colorSW, SBgra colorSE, bool tlUseGradient, RECT* rcClip, bool tluseClip, f32 alpha);
+	void					iBmp_frameRect							(SBitmap* bmp, RECT* rc, SBgra colorNW, SBgra colorNE = whiteColor, SBgra colorSW = whiteColor, SBgra colorSE = whiteColor, bool tlUseGradient = false, RECT* rcClip = NULL, bool tluseClip = false);
+	void					iBmp_colorizeRect						(SBitmap* bmp, RECT* rc, SBgra colorNW, SBgra colorNE = whiteColor, SBgra colorSW = whiteColor, SBgra colorSE = whiteColor, bool tlUseGradient = false, RECT* rcClip = NULL, bool tluseClip = false, f32 alpha = 1.0f);
 	void					iiBmp_frameInNineParts					(SBitmap* bmpDst, RECT* trc, SBitmap* bmpFrame);
 	void					iiBmp_bitBltPortion						(SBitmap* bmpDst, s32 tnX, s32 tnY, s32 tnWidth, s32 tnHeight, SBitmap* bmpSrc, s32 tnXStart, s32 tnYStart);
 	void					iBmp_drawArbitraryLine					(SBitmap* bmp, s32 tnX1, s32 tnY1, s32 tnX2, s32 tnY2, SBgra color);
@@ -159,6 +159,9 @@ class CXml;
 	void					iBmp_colorizeVerticalLineGradient		(SBitmap* bmp, s32 tnY1, s32 tnY2, s32 tnX, f32 tfRed, f32 tfGrn, f32 tfBlu, f32 tfRedInc, f32 tfGrnInc, f32 tfBluInc, RECT* rcClip, bool tluseClip, f32 alpha);
 	f32						iiBmp_squeezeColorChannel				(f32 color, f32 minColor);
 	u32						iiBmp_setPixel							(SBitmap* bmp, s32 tnX, s32 tnY, SBgra color);
+
+	// For nodes
+	void					iBmp_node_renderComp					(SNode* node, s32 tnMaxLength, SNodeProps props[], s32 tnPropsCount, u32 tnIter_uid);
 
 	//////////
 	// For scaling

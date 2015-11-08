@@ -799,7 +799,7 @@
 //        the container SBitmap being deleted, but not the bits and related data within.
 //
 //////
-	void iBmp_delete(SBitmap** bmpRoot, bool tlFreeBits, bool tlDeleteSelf)
+	void iBmp_delete(SBitmap** bmpRoot, bool tlFreeBits, bool tlDeleteSelf, bool tlDeleteFont)
 	{
 		SBitmap* bmp;
 
@@ -808,6 +808,10 @@
 		{
 			// Grab the pointer
 			bmp = *bmpRoot;
+
+			// Release the font
+			if (tlDeleteFont && bmp->font)
+				iFont_delete(&bmp->font, true);
 
 			// Do we need to free the internals?
 			if (tlFreeBits)
@@ -4700,6 +4704,150 @@ return;
 
 		// Indicate our draw count
 		return(lnPixelsRendered);
+	}
+
+
+
+
+//////////
+//
+// Called to render the node to a bitmap
+//
+//////
+	void iBmp_node_renderComp(SNode* node, s32 tnMaxLength, SNodeProps props[], s32 tnPropsCount, u32 tnIter_uid)
+	{
+		s32			lnI, lnStart, lnEnd, lnWidth, lnHeight;
+		s8*			lciCodeName;
+		RECT		lrc;
+		SNodeProps	_propsLocal;
+		SNodeProps*	prop;
+		s8			buffer[2048];
+		
+
+		// Make sure our environment is sane
+		if (node && node->comp && node->comp->line && node->comp->line->sourceCode_populatedLength > 0 && node->comp->line->sourceCode->_data)
+		{
+
+			//////////
+			// Get the correct props
+			//////
+				if (tnPropsCount > 0 && node->propsIndex > 0 && node->propsIndex <= tnPropsCount)
+				{
+					// We can grab it from the array
+					prop = &props[node->propsIndex];
+
+				} else {
+					// Create a default entry
+					_propsLocal.backColor		= whiteColor;
+					_propsLocal.foreColor		= blackColor;
+					_propsLocal.marginWidth		= 4;
+					_propsLocal.fillColor		= whiteColor;
+					_propsLocal.borderWidth		= 2;
+					_propsLocal.borderColor		= blackColor;
+					prop = &_propsLocal;
+				}
+
+				// Validate border and margin
+				prop->marginWidth	= min(max(0, prop->marginWidth), 64);		// Max of 64-pixel margin
+				prop->borderWidth	= min(max(0, prop->borderWidth), 16);		// Max of 16-pixel border
+
+
+			//////////
+			// Determine the text that will be rendered
+			//////
+				memset(buffer, 0, sizeof(buffer));
+				sprintf(buffer, "[");
+				memcpy(buffer + strlen(buffer), node->comp->line->sourceCode->data_s8 + node->comp->start, min(node->comp->length, (s32)sizeof(buffer) - 20));
+
+				// Try to do a reverse lookup on the iCode
+				if (lciCodeName = iiComps_visualize_lookup_iCode(node->comp->iCode))
+				{
+					// Grab the name
+					lnStart = strlen(buffer);
+					sprintf(buffer + strlen(buffer), " %s,", lciCodeName);
+					lnEnd	= strlen(buffer);
+
+					// Make sure the length isn't longer than their max length
+					if (lnEnd - lnStart > tnMaxLength)
+						buffer[lnStart + tnMaxLength] = 0;
+
+				} else {
+					// The name could not be looked up, so we just use the number, and in this case we ignore the max length and use the whole number
+					sprintf(buffer + strlen(buffer), " %d,", node->comp->iCode);
+				}
+
+				// Close it out
+				sprintf(buffer + strlen(buffer), "%u,%u]", node->comp->start, node->comp->length);
+
+
+			//////////
+			// Make sure the bitmap exists
+			//////
+				if (!node->bmp)
+				{
+					// Create a default image
+					node->bmp = iBmp_allocate();
+					if (!node->bmp)
+						return;
+
+					// Create a 20x20 image
+					iBmp_createBySize(node->bmp, 20, 20, 24);
+				}
+
+
+			//////////
+			// Create the font
+			//////
+				if (!node->bmp->font)
+					node->bmp->font = iFont_create(cgcFontName_defaultFixed);
+
+
+			//////////
+			// Find out how big it would be
+			//////
+				SelectObject(node->bmp->hdc, node->bmp->font->hfont);
+				SetRect(&lrc, 0, 0, 0, 0);
+				DrawText(node->bmp->hdc, buffer, strlen(buffer), &lrc, DT_CALCRECT | DT_SINGLELINE);
+
+
+			//////////
+			// Compute the true size
+			//////
+				lnWidth		= (lrc.right - lrc.left) + (prop->marginWidth * 2) + (prop->borderWidth * 2);
+				lnHeight	= (lrc.bottom - lrc.top) + (prop->marginWidth * 2) + (prop->borderWidth * 2);
+			
+
+			//////////
+			// Adjust the bitmap size if need be
+			//////
+				if (node->bmp->bi.biWidth != lnWidth || node->bmp->bi.biHeight != lnHeight)
+					iBmp_verifySizeOrResize(node->bmp, lnWidth, lnHeight, node->bmp->bi.biBitCount);
+
+
+			//////////
+			// Render
+			//////
+				// Frame
+				SetRect(&lrc, 0, 0, lnWidth, lnHeight);
+				for (lnI = prop->borderWidth; lnI > 0; lnI--)
+				{
+					iBmp_frameRect(node->bmp, &lrc, prop->borderColor);
+					InflateRect(&lrc, -1, -1);
+				}
+
+				// Fill
+				iBmp_fillRect(node->bmp, &lrc, prop->fillColor);
+				InflateRect(&lrc, -prop->marginWidth, -prop->marginWidth);
+
+				// Text
+				SetTextColor(node->bmp->hdc, RGB(prop->foreColor.red, prop->foreColor.grn, prop->foreColor.blu));
+				SetBkColor(node->bmp->hdc, RGB(prop->backColor.red, prop->backColor.grn, prop->backColor.blu));
+				SetBkMode(node->bmp->hdc, OPAQUE);
+				DrawText(node->bmp->hdc, buffer, strlen(buffer), &lrc, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
+
+				// Update iteration
+				node->iter_uid = tnIter_uid;
+		}
 	}
 
 

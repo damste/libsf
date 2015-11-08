@@ -96,7 +96,7 @@ struct SStartEnd;
 struct SMasterList;
 struct SComp;
 struct SCompCallback;
-struct SNode9;
+struct SNode;
 struct SOp;
 struct SAsciiCompSearcher;
 struct SStartEndCallback;
@@ -287,32 +287,56 @@ struct SExtraInfo;
 
 
 //////////
-// General nine-way nodes:
 //
-//            parent
-//              n
-//         nw   |   ne
-//           \  |  /
-//            + + +
-//     w ---- + + + ---- e       + --- m (middle)
-//  prev      + + +      next
-//           /  |  \
-//         sw   |   se
-//       left   s   right
-//             down
+// General ten-way node.  Picture a square.  At all cardinal and ordinal points,
+// there are node extending out, plus two in the middle, one toward (to), the
+// other away (fro):
+//
+//                 parent
+//                   n
+//             nw    |    ne
+//               \   |   /
+//                +  +  +
+//         w ---- + + + + ---- e       + + --- to, fro
+//      prev      +  +  +      next
+//               /   |   \
+//             sw    |    se
+//           left    s    right
+//                  down
+//
 //////
-	struct SNode9
+	// Go directions (from the current node)
+	struct SNodeGoDirs
+	{
+		bool			n[_NODE_COUNT];									// A flag relates to each node direction
+	};
+
+	struct SNodeProps
+	{
+		SBgra			backColor;										// Text back color, 
+		SBgra			foreColor;										// Text fore color, typically black
+
+		s32				marginWidth;									// Width between text and the inner border
+		SBgra			fillColor;										// Fill color, typically white
+
+		s32				borderWidth;									// Width of the border in pixels
+		SBgra			borderColor;									// Color of the border, typically black
+	};
+
+	struct SNode
 	{
 		u32				uid;											// Unique ID for this sub-instruction
-		SNode9*			n[_NODE_COUNT];									// Offshoot nodes
+		SNode*			n[_NODE_COUNT];									// Offshoot nodes
+		SComp*			comp;											// The component this node relates to
 
-		// Associated data
-		SComp*			comp;
+		// Extra/associated data
 		void*			extraData;										// General purpose data
 		SSubInstr*		opData;											// When used as for processing ops
 
 		// For graphics rendering
-		SBitmap*		bmp;
+		SBitmap*		bmp;											// An image for this node's content
+		u32				iter_uid;										// The last iteration this item was updated
+		s32				propsIndex;										// An index into the properties for how this node is configured
 	};
 
 	struct SCompCallback
@@ -418,10 +442,10 @@ struct SExtraInfo;
 	//		(2) optimize	-- Optimize
 	//		(3) generate	-- Write the sequenced engagement code for the target
 	//////
-		SNode9*			first_nodeParse;					// (1)  Component sequencing prior to optimization
+		SNode*			first_nodeParse;					// (1)  Component sequencing prior to optimization
 		u32				count_nodeParse;					//      How many nodes after parsing
-		SNode9*			first_nodeOptimize;					// (2)  Component sequencing after optimization
+		SNode*			first_nodeOptimize;					// (2)  Component sequencing after optimization
 		u32				count_nodeOptimize;					//      How many nodes after optimization
-		SNode9*			first_nodeEngage;					// (3)  Final generation of engagement code steps
+		SNode*			first_nodeEngage;					// (3)  Final generation of engagement code steps
 		u32				count_nodeArray;					//      How many nodes in engagement code
 	};

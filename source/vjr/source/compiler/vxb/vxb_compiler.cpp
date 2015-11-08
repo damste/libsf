@@ -610,13 +610,13 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 	bool iiComps_xlatToNodes(SLine* line, SCompiler* compiler)
 	{
 		SComp*		comp;
-		SNode9*		nodeActive;			// Current active node
+		SNode*		nodeActive;			// Current active node
 
 
 		// Iterate through every component building the operations as we go
 		comp		= line->compilerInfo->firstComp;
 //		compLast	= comp;
-		nodeActive	= iNode9_create(&compiler->first_nodeEngage, NULL);
+		nodeActive	= iNode_create(&compiler->first_nodeEngage, NULL);
 		while (comp)
 		{
 			//////////
@@ -793,14 +793,14 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 //          [?]
 //
 //////
-	SNode9* iiComps_xlatToNodes_parenthesis_left(SNode9** root, SNode9* active, SComp* comp)
+	SNode* iiComps_xlatToNodes_parenthesis_left(SNode** root, SNode* active, SComp* comp)
 	{
-		SNode9*		node;
+		SNode*		node;
 		SVariable*	var;
 
 
 		// Insert a parenthesis node at the active node, and direct the active node to the right
-		node = iNode9_insert_between(active->n[_NODE_PARENT], active, _NODE_PARENT, _NODE_RIGHT);
+		node = iNode_insert_between(active->n[_NODE_PARENT], active, _NODE_PARENT, _NODE_RIGHT);
 		if (node)
 		{
 			//////////
@@ -838,7 +838,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 // Process the right parenthesis.
 //
 //////
-	SNode9* iiComps_xlatToNodes_parenthesis_right(SNode9** root, SNode9* active, SComp* comp)
+	SNode* iiComps_xlatToNodes_parenthesis_right(SNode** root, SNode* active, SComp* comp)
 	{
 // TODO:  Working here
 		return(NULL);
@@ -3880,7 +3880,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 //////
 	void iiComps_xlatToSubInstr(SLine* line)
 	{
-		SNode9	si;
+		SNode	si;
 
 
 		//////////
@@ -3941,7 +3941,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 //		(6)
 //
 //////
-	SComp* iiComps_xlatToSubInstr_findInmostExpression(SNode9* si, SLine* line)
+	SComp* iiComps_xlatToSubInstr_findInmostExpression(SNode* si, SLine* line)
 	{
 		bool	llFound;
 		SComp*	comp;
@@ -3950,7 +3950,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 		//////////
 		// Initially indicate that we did not find an inmost expression
 		//////
-			memset(si, 0, sizeof(SNode9));
+			memset(si, 0, sizeof(SNode));
 			si->opData->subInstr	= -1;			// Indicate failure initially (until something is found)
 			si->opData->subLevel	= -1;			// Unused during parsing
 
@@ -5172,17 +5172,17 @@ debug_break;
 //           y   z            3   5
 //
 //////
-	SNode9* iNode9_create(SNode9** root, SNode9* n[_NODE_COUNT])
+	SNode* iNode_create(SNode** root, SNode* n[_NODE_COUNT])
 	{
 		s32			lnI;
-		SNode9*		nodeNew;
+		SNode*		nodeNew;
 
 
 		// Make sure our environment is sane
-		if ((nodeNew = (SNode9*)malloc(sizeof(SNode9))))
+		if ((nodeNew = (SNode*)malloc(sizeof(SNode))))
 		{
 			// Initialize
-			memset(nodeNew, 0, sizeof(SNode9));
+			memset(nodeNew, 0, sizeof(SNode));
 
 			// Populate the target
 			if (root && *root)
@@ -5230,10 +5230,10 @@ debug_break;
 //
 //////
 	// Note:  rootNode should point to the node to extrude from
-	SNode9* iNode9_extrude(SNode9** rootNode, u32 tnExtrudeDirection)
+	SNode* iNode_extrude(SNode** rootNode, u32 tnExtrudeDirection)
 	{
-		SNode9*		nodeLast;
-		SNode9*		nodeNew;
+		SNode*		nodeLast;
+		SNode*		nodeNew;
 
 
 		// Make sure the environment is sane
@@ -5242,14 +5242,14 @@ debug_break;
 
 		// If nothing already exists there, just create it and it will become the central node
 		if (!*rootNode)
-			return(iNode9_create(rootNode, NULL));
+			return(iNode_create(rootNode, NULL));
 
 		// Descend down that direction
 		for (nodeLast = *rootNode; nodeLast->n[tnExtrudeDirection]; )
 			nodeLast = nodeLast->n[tnExtrudeDirection];
 
 		// Add the new offshoot, and point back-and-forth to the last one
-		nodeNew = iNode9_create(rootNode, NULL);
+		nodeNew = iNode_create(rootNode, NULL);
 		if (nodeNew)
 		{
 			// New points back to last
@@ -5306,10 +5306,10 @@ debug_break;
 //////
 	// Note:  The anchor direction would be the one which pointed up to 2 in the above example
 	// Note:  The bump direction would be the southwest direction in the above example
-	SNode9* iNode9_bump(SNode9** rootNode, u32 tnBumpDirection, u32 tnAnchorDirection)
+	SNode* iNode_bump(SNode** rootNode, u32 tnBumpDirection, u32 tnAnchorDirection)
 	{
-		SNode9*		node;
-		SNode9*		nodeNew;
+		SNode*		node;
+		SNode*		nodeNew;
 
 
 		// Make sure the environment is sane
@@ -5318,27 +5318,27 @@ debug_break;
 
 		// If nothing already exists there, just create it and it will become the central node
 		if (!*rootNode)
-			return(iNode9_create(rootNode, NULL));
+			return(iNode_create(rootNode, NULL));
 
 		// Grab the node
 		node = *rootNode;
 
 		// Create the new node
-		nodeNew = iNode9_create(rootNode, NULL);
+		nodeNew = iNode_create(rootNode, NULL);
 		if (nodeNew)
 		{
 			// New points back to the anchor bumped had
-			nodeNew->n[gnNodeMirrors[tnAnchorDirection]]	= node->n[gnNodeMirrors[tnAnchorDirection]]
+			nodeNew->n[gnNodeMirrors[tnAnchorDirection]]	= node->n[gnNodeMirrors[tnAnchorDirection]];
 
 			// Node anchors to new
 			if (node->n[gnNodeMirrors[tnAnchorDirection]])
 				node->n[gnNodeMirrors[tnAnchorDirection]]->n[tnAnchorDirection] = nodeNew;
 
 			// Bumped no longer mirror-anchors back to node
-			node->n[gnNodeMirrors[tnAnchorDirection]]		= NULL;
+			node->n[gnNodeMirrors[tnAnchorDirection]] = NULL;
 
 			// Bumped back to new along bumped mirror
-			node->n[gnNodeMirrors[tnBumpDirection]] = new;
+			node->n[gnNodeMirrors[tnBumpDirection]] = nodeNew;
 
 			// New to node along bump
 			nodeNew->n[tnBumpDirection] = node;
@@ -5356,10 +5356,10 @@ debug_break;
 // Creates a new node and inserts it between where node1 points to node2.
 //
 //////
-	SNode9* iNode9_insert_between(SNode9* node1, SNode9* node2, u32 tnNode1Direction, u32 tnNode2Direction)
+	SNode* iNode_insert_between(SNode* node1, SNode* node2, u32 tnNode1Direction, u32 tnNode2Direction)
 	{
-		SNode9*		n[_NODE_COUNT];
-		SNode9*		nodeNew;
+		SNode*		n[_NODE_COUNT];
+		SNode*		nodeNew;
 
 
 		// Make sure our environment is sane
@@ -5370,7 +5370,7 @@ debug_break;
 		memset(&n[0], 0, sizeof(n));
 
 		// Create and populate our new node
-		if ((nodeNew = iNode9_create(NULL, &n[0])))
+		if ((nodeNew = iNode_create(NULL, &n[0])))
 		{
 			// New points mirror-back to node1 and node2
 			nodeNew->n[gnNodeMirrors[tnNode1Direction]] = node1;
@@ -5406,25 +5406,25 @@ debug_break;
 							node->n[_NODE_TO]	!= nodeOrigin, \
 							node->n[_NODE_FRO]	!= nodeOrigin
 
-	void iNode9_deleteAll_politely(SNode9** root, SNode9* nodeOrigin, bool tlDeleteSelf, bool tlTraverseN, bool tlTraverseE, bool tlTraverseS, bool tlTraverseW, bool tlTraverseNW, bool tlTraverseNE, bool tlTraverseSW, bool tlTraverseSE, bool tlTraverseTo, bool tlTraverseFro)
+	void iNode_deleteAll_politely(SNode** root, SNode* nodeOrigin, bool tlDeleteSelf, bool tlTraverseN, bool tlTraverseE, bool tlTraverseS, bool tlTraverseW, bool tlTraverseNW, bool tlTraverseNE, bool tlTraverseSW, bool tlTraverseSE, bool tlTraverseTo, bool tlTraverseFro)
 	{
-		SNode9* node;
+		SNode* node;
 
 
 		// Make sure we have something to act upon
 		if (root && (node = *root))
 		{
 			// Traverse the delete paths that should be deleted
-			if (tlTraverseN   && node->n[_NODE_N])				iNode9_deleteAll_politely(&node->n[_NODE_N],	nodeOrigin,		true,	node9Params);
-			if (tlTraverseE   && node->n[_NODE_E])				iNode9_deleteAll_politely(&node->n[_NODE_E],	nodeOrigin,		true,	node9Params);
-			if (tlTraverseS   && node->n[_NODE_S])				iNode9_deleteAll_politely(&node->n[_NODE_S],	nodeOrigin,		true,	node9Params);
-			if (tlTraverseW   && node->n[_NODE_W])				iNode9_deleteAll_politely(&node->n[_NODE_W],	nodeOrigin,		true,	node9Params);
-			if (tlTraverseNW  && node->n[_NODE_NW])				iNode9_deleteAll_politely(&node->n[_NODE_NW],	nodeOrigin,		true,	node9Params);
-			if (tlTraverseNE  && node->n[_NODE_NE])				iNode9_deleteAll_politely(&node->n[_NODE_NE],	nodeOrigin,		true,	node9Params);
-			if (tlTraverseSW  && node->n[_NODE_SW])				iNode9_deleteAll_politely(&node->n[_NODE_SW],	nodeOrigin,		true,	node9Params);
-			if (tlTraverseSE  && node->n[_NODE_SE])				iNode9_deleteAll_politely(&node->n[_NODE_SE],	nodeOrigin,		true,	node9Params);
-			if (tlTraverseTo  && node->n[_NODE_TO])				iNode9_deleteAll_politely(&node->n[_NODE_TO],	nodeOrigin,		true,	node9Params);
-			if (tlTraverseFro && node->n[_NODE_FRO])			iNode9_deleteAll_politely(&node->n[_NODE_FRO],	nodeOrigin,		true,	node9Params);
+			if (tlTraverseN   && node->n[_NODE_N])				iNode_deleteAll_politely(&node->n[_NODE_N],		nodeOrigin,		true,	node9Params);
+			if (tlTraverseE   && node->n[_NODE_E])				iNode_deleteAll_politely(&node->n[_NODE_E],		nodeOrigin,		true,	node9Params);
+			if (tlTraverseS   && node->n[_NODE_S])				iNode_deleteAll_politely(&node->n[_NODE_S],		nodeOrigin,		true,	node9Params);
+			if (tlTraverseW   && node->n[_NODE_W])				iNode_deleteAll_politely(&node->n[_NODE_W],		nodeOrigin,		true,	node9Params);
+			if (tlTraverseNW  && node->n[_NODE_NW])				iNode_deleteAll_politely(&node->n[_NODE_NW],	nodeOrigin,		true,	node9Params);
+			if (tlTraverseNE  && node->n[_NODE_NE])				iNode_deleteAll_politely(&node->n[_NODE_NE],	nodeOrigin,		true,	node9Params);
+			if (tlTraverseSW  && node->n[_NODE_SW])				iNode_deleteAll_politely(&node->n[_NODE_SW],	nodeOrigin,		true,	node9Params);
+			if (tlTraverseSE  && node->n[_NODE_SE])				iNode_deleteAll_politely(&node->n[_NODE_SE],	nodeOrigin,		true,	node9Params);
+			if (tlTraverseTo  && node->n[_NODE_TO])				iNode_deleteAll_politely(&node->n[_NODE_TO],	nodeOrigin,		true,	node9Params);
+			if (tlTraverseFro && node->n[_NODE_FRO])			iNode_deleteAll_politely(&node->n[_NODE_FRO],	nodeOrigin,		true,	node9Params);
 
 			// Delete the op if need be
 			if (node->opData)
@@ -5443,6 +5443,162 @@ debug_break;
 				*root = NULL;
 				free(node);
 			}
+		}
+	}
+
+
+
+
+//////////
+//
+// Called to render a bitmap which is a visualization of the node
+//
+//////
+	SBitmap* iNode_renderBitmap(SNode* node, SNodeGoDirs* goDirs, s32 tnMaxLength, s32 tnNodeRodLength, s32 tnMarginWidth, s32 tnBorderWidth)
+	{
+		s32			lnI, lnIter_uid;
+		POINTS		p;
+		RECT		lrc;
+		SBitmap*	bmp;
+		SNodeProps	props[1];
+
+
+		// Make sure our environment is sane
+		bmp = NULL;
+		if (node)
+		{
+			//////////
+			// (Re-)Render everything
+			//////
+				// Grab a uid
+				lnIter_uid = iGetNextUid();
+
+				// Setup the render prop
+				props->backColor	= whiteColor;
+				props->foreColor	= blackColor;
+				props->marginWidth	= tnMarginWidth;
+				props->fillColor	= whiteColor;
+				props->borderWidth	= tnBorderWidth;
+				props->borderColor	= blackColor;
+
+				// Render this one
+				iBmp_node_renderComp(node, 4, props, 1, lnIter_uid);
+
+				// Kick off renderings in all directions from this root node
+				for (lnI = 0; lnI < _NODE_COUNT; lnI++)
+				{
+					// Kick off this if we're supposed to go that way
+					if (goDirs->n[lnI] && node->n[lnI])
+					{
+						// Indicate that we want to render everything out from there
+						iiNode_renderBitmap(node->n[lnI], node, tnMaxLength, props, 1, lnIter_uid, true);
+					}
+				}
+
+
+			//////////
+			// Determine maximum size of the bitmap given its nodes
+			//////
+				SetRect(&lrc, 0, 0, 0, 0);
+				p.x = 0;
+				p.y = 0;
+				iiNode_get_bitmapExtents(node, _NODE_SE, &lrc, p);		// For initial computation, pretend we're coming down on a southeast node rod
+
+				// Kick off a "get extents" on every rendered
+				for (lnI = 0; lnI < _NODE_COUNT; lnI++)
+				{
+					// Kick off this if we're supposed to go that way
+					if (goDirs->n[lnI] && node->n[lnI])
+					{
+						// Indicate that we want to render everything out from there
+						iiNode_renderBitmap(node->n[lnI], node, tnMaxLength, props, 1, lnIter_uid, true);
+					}
+				}
+
+		}
+
+		// Indicate our rendered bitmap
+		return(bmp);
+	}
+
+	void iiNode_renderBitmap(SNode* node, SNode* nodeStopper, s32 tnMaxLength, SNodeProps props[], s32 tnPropsCount, u32 tnIter_uid, bool tlGoDeeper)
+	{
+		s32		lnI;
+
+
+		// Nope, render this one
+		iBmp_node_renderComp(node, tnMaxLength, props, tnPropsCount, tnIter_uid);
+
+		// Kick off all renderings from here
+		if (tlGoDeeper)
+		{
+			for (lnI = 0; lnI < _NODE_COUNT; lnI++)
+			{
+				// Are we're supposed to go this way?
+				if (node->n[lnI] && node->n[lnI] != nodeStopper && node->n[lnI]->iter_uid != tnIter_uid)
+				{
+					// Indicate that we want to render everything out from there
+					iiNode_renderBitmap(node->n[lnI], nodeStopper, tnMaxLength, props, tnPropsCount, tnIter_uid, true);
+				}
+			}
+		}
+	}
+
+	void iiNode_get_bitmapExtents(SNode* node, s32 tnArrivalDirection, RECT* rc, POINTS p)
+	{
+		s32		lnWidth, lnHeight;
+		RECT	lrc;
+
+
+		// Compute this size
+		lrc.left	= (node->bmp->bi.biWidth  / 2);
+		lrc.top		= (node->bmp->bi.biHeight / 2);
+		lrc.right	= lrc.left + node->bmp->bi.biWidth;
+		lrc.bottom	= lrc.top  + node->bmp->bi.biHeight;
+
+		// Width and Height
+		lnWidth		= node->bmp->bi.biWidth;
+		lnHeight	= node->bmp->bi.biHeight;
+
+		// Based on the arrival direction, increase the rc extents
+		switch (tnArrivalDirection)
+		{
+			case _NODE_N:
+				rc->left	= min(rc->left,		p.x - lrc.left);					// Connecting point:  +--+--+
+				rc->top		= min(rc->top,		p.y + lnHeight);					//                    + + + +
+				rc->right	= max(rc->right,	p.x - lrc.left + lnWidth);			//                    +--o--+
+				break;
+
+			case _NODE_E:
+				rc->top		= max(rc->top,		p.y - lrc.top);						// Connecting point:  +--+--+
+				rc->right	= min(rc->right,	p.x + lnWidth);						//                    o + + +
+				rc->bottom	= max(rc->bottom,	p.y - lrc.top + lnHeight);			//                    +--+--+
+				break;
+
+			case _NODE_S:
+// TODO:  working here
+				break;
+
+			case _NODE_W:
+				break;
+
+			case _NODE_SW:
+				break;
+
+			case _NODE_SE:
+				break;
+
+			case _NODE_NW:
+				break;
+
+			case _NODE_NE:
+				break;
+
+			case _NODE_TO:
+				break;
+
+			case _NODE_FRO:
+				break;
 		}
 	}
 
