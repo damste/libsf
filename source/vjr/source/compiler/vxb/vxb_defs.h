@@ -251,9 +251,9 @@ struct SVxbContext;
 	SNode*					iNode_bump									(SNode** root, u32 tnBumpDirection, u32 tnAnchorDirection);
 	SNode*					iNode_insert_between						(SNode* node1, SNode* node2, u32 tnNode1Direction, u32 tnNode2Direction);
 	void					iNode_deleteAll_politely					(SNode** root, SNode* nodeOrigin, bool tlDeleteSelf, bool tlTraverseN, bool tlTraverseE, bool tlTraverseS, bool tlTraverseW, bool tlTraverseNW, bool tlTraverseNE, bool tlTraverseSW, bool tlTraverseSE, bool tlTraverseM);
-	SBitmap*				iNode_renderBitmap							(SNode* node, SNodeGoDirs* nodeFlags, s32 tnMaxLength = 4, s32 tnNodeRodLength = 24, s32 tnMarginWidth = 4, s32 tnBorderWidth = 2);
+	SBitmap*				iNode_renderBitmap							(SNode* node, SNodeGoDirs* nodeFlags, s32 tnMaxLength = 4, f64 tfRodLength = 24.0, s32 tnMarginWidth = 4, s32 tnBorderWidth = 2);
 	void					iiNode_renderBitmap							(SNode* node, SNode* nodeStopper, s32 tnMaxLength, SNodeProps props[], s32 tnPropsCount, u32 tnIter_uid, bool tlGoDeeper);
-	void					iiNode_get_bitmapExtents					(SNode* node, s32 tnArrivalDirection, RECT* rc, POINTS p);
+	void					iiNode_get_bitmapExtents					(SNode* node, SNode* nodeStopper, s32 tnArrivalDirection, SBitmap* bmp, RECT* rc, POINTS p_arrival, f64 tfRodLength, u32 tnIter_uid, SNodeProps* props, bool tlGoDeeper);
 
 	// Function functions (LOL)
 	SFunction*				iFunction_allocate							(SComp* compName);

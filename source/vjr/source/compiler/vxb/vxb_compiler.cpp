@@ -5454,7 +5454,7 @@ debug_break;
 // Called to render a bitmap which is a visualization of the node
 //
 //////
-	SBitmap* iNode_renderBitmap(SNode* node, SNodeGoDirs* goDirs, s32 tnMaxLength, s32 tnNodeRodLength, s32 tnMarginWidth, s32 tnBorderWidth)
+	SBitmap* iNode_renderBitmap(SNode* node, SNodeGoDirs* goDirs, s32 tnMaxLength, f64 tfRodLength, s32 tnMarginWidth, s32 tnBorderWidth)
 	{
 		s32			lnI, lnIter_uid;
 		POINTS		p;
@@ -5470,7 +5470,7 @@ debug_break;
 			//////////
 			// (Re-)Render everything
 			//////
-				// Grab a uid
+				// Grab a uid for render
 				lnIter_uid = iGetNextUid();
 
 				// Setup the render prop
@@ -5480,6 +5480,7 @@ debug_break;
 				props->fillColor	= whiteColor;
 				props->borderWidth	= tnBorderWidth;
 				props->borderColor	= blackColor;
+				props->rodColor		= grayColor;
 
 				// Render this one
 				iBmp_node_renderComp(node, 4, props, 1, lnIter_uid);
@@ -5499,10 +5500,14 @@ debug_break;
 			//////////
 			// Determine maximum size of the bitmap given its nodes
 			//////
+				// Grab a uid for get extents
+				lnIter_uid = iGetNextUid();
+
+				// Get our starting point
 				SetRect(&lrc, 0, 0, 0, 0);
 				p.x = 0;
 				p.y = 0;
-				iiNode_get_bitmapExtents(node, _NODE_SE, &lrc, p);		// For initial computation, pretend we're coming down on a southeast node rod
+				iiNode_get_bitmapExtents(node, NULL, _NODE_SE, NULL, &lrc, p, tfRodLength, lnIter_uid, props, false);		// For initial computation, pretend we're coming down on a southeast node rod
 
 				// Kick off a "get extents" on every rendered
 				for (lnI = 0; lnI < _NODE_COUNT; lnI++)
@@ -5511,7 +5516,7 @@ debug_break;
 					if (goDirs->n[lnI] && node->n[lnI])
 					{
 						// Indicate that we want to render everything out from there
-						iiNode_renderBitmap(node->n[lnI], node, tnMaxLength, props, 1, lnIter_uid, true);
+						iiNode_get_bitmapExtents(node->n[lnI], node, lnI, NULL, &lrc, p, tfRodLength, lnIter_uid, props, true);		// For initial computation, pretend we're coming down on a southeast node rod
 					}
 				}
 
@@ -5544,61 +5549,168 @@ debug_break;
 		}
 	}
 
-	void iiNode_get_bitmapExtents(SNode* node, s32 tnArrivalDirection, RECT* rc, POINTS p)
+	// Note:  tfSquareSize is how far each side of the square should extend out from the connection point for the node lines
+	void iiNode_get_bitmapExtents(SNode* node, SNode* nodeStopper, s32 tnArrivalDirection, SBitmap* bmp, RECT* rc, POINTS p_arrival, f64 tfRodLength, u32 tnIter_uid, SNodeProps* props, bool tlGoDeeper)
 	{
-		s32		lnWidth, lnHeight;
+		s32		lnI, lnWidth, lnHeight;
+		f64		lfHalfHeight, lfHalfWidth;
+		POINTS	p_origin, p_rodStart, p_rodEnd;
 		RECT	lrc;
 
 
-		// Compute this size
-		lrc.left	= (node->bmp->bi.biWidth  / 2);
-		lrc.top		= (node->bmp->bi.biHeight / 2);
-		lrc.right	= lrc.left + node->bmp->bi.biWidth;
-		lrc.bottom	= lrc.top  + node->bmp->bi.biHeight;
-
-		// Width and Height
-		lnWidth		= node->bmp->bi.biWidth;
-		lnHeight	= node->bmp->bi.biHeight;
-
-		// Based on the arrival direction, increase the rc extents
-		switch (tnArrivalDirection)
+		// Make sure our environment is sane, and that we're not walking over ourselves
+		if (node && node->bmp && node->iter_uid != tnIter_uid)
 		{
-			case _NODE_N:
-				rc->left	= min(rc->left,		p.x - lrc.left);					// Connecting point:  +--+--+
-				rc->top		= min(rc->top,		p.y + lnHeight);					//                    + + + +
-				rc->right	= max(rc->right,	p.x - lrc.left + lnWidth);			//                    +--o--+
-				break;
 
-			case _NODE_E:
-				rc->top		= max(rc->top,		p.y - lrc.top);						// Connecting point:  +--+--+
-				rc->right	= min(rc->right,	p.x + lnWidth);						//                    o + + +
-				rc->bottom	= max(rc->bottom,	p.y - lrc.top + lnHeight);			//                    +--+--+
-				break;
+			//////////
+			// Compute this overall size
+			/////
+				lrc.left	= (node->bmp->bi.biWidth  / 2);
+				lrc.top		= (node->bmp->bi.biHeight / 2);
+				lrc.right	= lrc.left + node->bmp->bi.biWidth;
+				lrc.bottom	= lrc.top  + node->bmp->bi.biHeight;
 
-			case _NODE_S:
-// TODO:  working here
-				break;
+				// Simplify width and height
+				lnWidth		= node->bmp->bi.biWidth;
+				lnHeight	= node->bmp->bi.biHeight;
 
-			case _NODE_W:
-				break;
 
-			case _NODE_SW:
-				break;
+			//////////
+			// Note:  rc grows in these directions, to encompass the entire creation:
+			//
+			//                top
+			//                 -
+			//              +-----+
+			//     left -   |     |   right +
+			//              +-----+
+			//                 +
+			//               bottom
+			//////
+				// Based on the arrival direction of the rod, increase rc's extents if needed
+				switch (tnArrivalDirection)
+				{
+					case _NODE_TO:
+						// Here we use the same as _NODE_N for 2D rendering							// Connecting point:  +--+--+	// Though we use the p spot for the connection
+																									//                    + o + +
+																									//                    +--p--+
+					case _NODE_N:
+						rc->left	= min(rc->left,		p_arrival.x - lrc.left);					// Connecting point:  +--+--+
+						rc->top		= min(rc->top,		p_arrival.y - lnHeight);					//                    + + + +
+						rc->right	= max(rc->right,	p_arrival.x - lrc.left + lnWidth);			//                    +--o--+
+						SetRect(&node->rc, p_arrival.x - lrc.left, p_arrival.y - lnHeight, p_arrival.x - lrc.left + lnWidth, p_arrival.y);
+						p_origin.x	= p_arrival.x;
+						p_origin.y	= p_arrival.y - (s16)lnHeight + (s16)lrc.top;
+						break;
 
-			case _NODE_SE:
-				break;
+					case _NODE_E:
+						rc->top		= min(rc->top,		p_arrival.y - lrc.top);						// Connecting point:  +--+--+
+						rc->right	= max(rc->right,	p_arrival.x + lnWidth);						//                    o + + +
+						rc->bottom	= max(rc->bottom,	p_arrival.y - lrc.top + lnHeight);			//                    +--+--+
+						SetRect(&node->rc, p_arrival.x, p_arrival.y - lrc.top, p_arrival.x + lnWidth, p_arrival.y - lrc.top + lnHeight);
+						p_origin.x	= p_arrival.x + (s16)lrc.left;
+						p_origin.y	= p_arrival.y;
+						break;
 
-			case _NODE_NW:
-				break;
+					case _NODE_FRO:
+						// Here we use the same as _NODE_S for 2D rendering							// Connecting point:  +--b--+	// Though we use the b spot for the connection
+																									//                    + + o +
+																									//                    +--+--+
+					case _NODE_S:
+						rc->left	= min(rc->left,		p_arrival.x - lrc.left);					// Connecting point:  +--o--+
+						rc->right	= max(rc->right,	p_arrival.x - lrc.left + lnWidth);			//                    + + + +
+						rc->bottom	= max(rc->bottom,	p_arrival.y + lnHeight);					//                    +--+--+
+						SetRect(&node->rc, p_arrival.x - lrc.left, p_arrival.y, p_arrival.x - lrc.left + lnWidth, p_arrival.y + lnHeight);
+						p_origin.x	= p_arrival.x;
+						p_origin.y	= p_arrival.y + (s16)lrc.top;
+						break;
 
-			case _NODE_NE:
-				break;
+					case _NODE_W:
+						rc->top		= min(rc->top,		p_arrival.y - lrc.top);						// Connecting point:  +--+--+
+						rc->left	= min(rc->right,	p_arrival.x - lnWidth);						//                    + + + o
+						rc->bottom	= max(rc->bottom,	p_arrival.y - lrc.top + lnHeight);			//                    +--+--+
+						SetRect(&node->rc, p_arrival.x - lnWidth, p_arrival.y - lrc.top, p_arrival.x, p_arrival.y - lrc.top + lnHeight);
+						p_origin.x	= p_arrival.x - (s16)lnWidth + (s16)lrc.left;
+						p_origin.y	= p_arrival.y;
+						break;
 
-			case _NODE_TO:
-				break;
+					case _NODE_SW:
+						rc->left	= min(rc->left,		p_arrival.x - lnWidth);						// Connecting point:  +--+--o
+						rc->bottom	= max(rc->right,	p_arrival.y + lnHeight);					//                    + + + +
+																									//                    +--+--+
+						SetRect(&node->rc, p_arrival.x - lnWidth, p_arrival.y, p_arrival.x, p_arrival.y + lnHeight);
+						p_origin.x	= p_arrival.x - (s16)lnWidth + (s16)lrc.left;
+						p_origin.y	= p_arrival.y + (s16)lrc.top;
+						break;
 
-			case _NODE_FRO:
-				break;
+					case _NODE_SE:
+						rc->right	= max(rc->right,	p_arrival.x + lnWidth);						// Connecting point:  o--+--+
+						rc->bottom	= max(rc->bottom,	p_arrival.y + lnHeight);					//                    + + + +
+																									//                    +--+--+
+						SetRect(&node->rc, p_arrival.x, p_arrival.y, p_arrival.x + lnWidth, p_arrival.y + lnHeight);
+						p_origin.x	= p_arrival.x + (s16)lrc.left;
+						p_origin.y	= p_arrival.y + (s16)lrc.top;
+						break;
+
+					case _NODE_NW:
+						rc->left	= min(rc->left,		p_arrival.x - lnWidth);						// Connecting point:  +--+--+
+						rc->top		= min(rc->top,		p_arrival.y - lnHeight);					//                    + + + +
+																									//                    +--+--o
+						SetRect(&node->rc, p_arrival.x - lnWidth, p_arrival.y - lnHeight, p_arrival.x, p_arrival.y);
+						p_origin.x	= p_arrival.x - (s16)lnWidth  + (s16)lrc.left;
+						p_origin.y	= p_arrival.y - (s16)lnHeight + (s16)lrc.top;
+						break;
+
+					case _NODE_NE:
+						rc->right	= max(rc->right,	p_arrival.x + lnWidth);						// Connecting point:  +--+--+
+						rc->top		= min(rc->top,		p_arrival.y - lnHeight);					//                    + + + +
+																									//                    o--+--+
+						SetRect(&node->rc, p_arrival.x, p_arrival.y - lnHeight, p_arrival.x + lnWidth, p_arrival.y);
+						p_origin.x	= p_arrival.x + (s16)lrc.left;
+						p_origin.y	= p_arrival.y - (s16)lnHeight + (s16)lrc.top;
+						break;
+				}
+
+				// Set the iteration uid
+				node->iter_uid = tnIter_uid;
+
+				// Render the rectangle (if need be)
+				if (bmp)
+					iBmp_bitBlt(bmp, &node->rc, node->bmp);
+
+				// Compute distances from the origin to side and top, which then can extend to all 8 points through gnNodeRodeMaps[]
+				lfHalfHeight	= (f64)(lnHeight / 2.0);
+				lfHalfWidth		= (f64)(lnWidth  / 2.0);
+
+
+			//////////
+			// Kick off the nodes in each direction
+			//////
+				if (tlGoDeeper)
+				{
+					// Iterate off in all directions
+					for (lnI = 0; lnI < _NODE_COUNT; lnI++)
+					{
+						// Are we're supposed to go this way?
+						if (node->n[lnI] && node->n[lnI] != nodeStopper && node->n[lnI]->iter_uid != tnIter_uid)
+						{
+							// Determine the ending point at the connecting rod
+							p_rodStart.x	= p_origin.x	+ (s32)(gsfNodeRodMaps[lnI].x * lfHalfWidth);
+							p_rodStart.y	= p_origin.y	+ (s32)(gsfNodeRodMaps[lnI].y * lfHalfHeight);
+							p_rodEnd.x		= p_rodStart.x	+ (s32)(gsfNodeRodMaps[lnI].x * tfRodLength);
+							p_rodEnd.y		= p_rodStart.y	+ (s32)(gsfNodeRodMaps[lnI].y * tfRodLength);
+
+							// Draw the rod between this node and the next
+							iBmp_drawArbitraryLine(bmp, p_rodStart.x, p_rodStart.y, p_rodEnd.x, p_rodEnd.y, props->rodColor);
+
+							// Fill in little connecting bullets at each end
+							iBmp_drawBullet(bmp,	p_rodStart.x,	p_rodStart.y,	props->borderColor);
+							iBmp_drawBullet(bmp,	p_rodEnd.x,		p_rodEnd.y,		props->borderColor);
+
+							// Indicate that we want to render everything out from there
+							iiNode_get_bitmapExtents(node->n[lnI], nodeStopper, lnI, bmp, rc, p_rodEnd, tfRodLength, tnIter_uid, props, true);
+						}
+					}
+				}
 		}
 	}
 

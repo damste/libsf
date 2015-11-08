@@ -3609,6 +3609,23 @@ return;
 		}
 	}
 
+	void iBmp_drawBullet(SBitmap* bmp, s32 tnX, s32 tnY, SBgra color)
+	{
+		iBmp_drawPoint(bmp, tnX-1,	tnY-1,	color);		// 1
+		iBmp_drawPoint(bmp, tnX,	tnY-1,	color);		// 2
+		iBmp_drawPoint(bmp, tnX+1,	tnY-1,	color);		// 3
+
+		iBmp_drawPoint(bmp, tnX,	tnY-2,	color);		// 4      Draws one of these using 11 points:
+		iBmp_drawPoint(bmp, tnX,	tnY-1,	color);		// 5                      123
+		iBmp_drawPoint(bmp, tnX,	tnY,	color);		// 6                     45678
+		iBmp_drawPoint(bmp, tnX,	tnY+1,	color);		// 7                      901
+		iBmp_drawPoint(bmp, tnX,	tnY+2,	color);		// 8
+
+		iBmp_drawPoint(bmp, tnX-1,	tnY+1,	color);		// 9
+		iBmp_drawPoint(bmp, tnX,	tnY+1,	color);		// 10
+		iBmp_drawPoint(bmp, tnX+1,	tnY+1,	color);		// 11
+	}
+
 	void iBmp_fillRect(SBitmap* bmp, RECT* rc, SBgra colorNW, SBgra colorNE, SBgra colorSW, SBgra colorSE, bool tlUseGradient, RECT* rcClip, bool tluseClip)
 	{
 		s32		lnY;

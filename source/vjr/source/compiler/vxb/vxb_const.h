@@ -144,13 +144,13 @@
 	const u32		_NODE_EAST									= 1;
 	const u32		_NODE_NEXT									= 1;
 	const u32		_NODE_RIGHT									= 1;
-	const u32		_NODE_W											= 2;
-	const u32		_NODE_WEST										= 2;
-	const u32		_NODE_PREV										= 2;
-	const u32		_NODE_LEFT										= 2;
-	const u32		_NODE_S										= 3;
-	const u32		_NODE_SOUTH									= 3;
-	const u32		_NODE_DOWN									= 3;
+	const u32		_NODE_S											= 2;
+	const u32		_NODE_SOUTH										= 2;
+	const u32		_NODE_DOWN										= 2;
+	const u32		_NODE_W										= 3;
+	const u32		_NODE_WEST									= 3;
+	const u32		_NODE_PREV									= 3;
+	const u32		_NODE_LEFT									= 3;
 	const u32		_NODE_SW										= 4;
 	const u32		_NODE_SOUTHWEST									= 4;
 	const u32		_NODE_LEFT_DN									= 4;
@@ -168,10 +168,23 @@
 	const u32		_NODE_BACK									= 9;
 	const u32		_NODE_FRO									= 9;
 	const u32									_NODE_MAX		= 9;
-	const u32									_NODE_COUNT		= 9;
+	const u32									_NODE_COUNT		= 10;
+//////////
+// Source code shortcuts:
+// 	case _NODE_N
+// 	case _NODE_E
+// 	case _NODE_S
+// 	case _NODE_W
+// 	case _NODE_SW
+// 	case _NODE_SE
+// 	case _NODE_NW
+// 	case _NODE_NE
+// 	case _NODE_TO
+// 	case _NODE_FRO
+//////
 
 	// A translation matrix 
-	const u32	gnNodeMirrors[_NODE_COUNT + 1] =
+	const u32	gnNodeMirrors[_NODE_COUNT] =
 	{
 	//	Orientation				Mirror
 		_NODE_S,			// _NODE_N
@@ -184,7 +197,7 @@
 		_NODE_SW,			// _NODE_NE
 		_NODE_TO,			// _NODE_FRO
 		_NODE_FRO,			// _NODE_TO
-};
+	};
 
 
 //////////

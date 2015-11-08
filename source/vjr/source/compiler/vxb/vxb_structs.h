@@ -305,7 +305,28 @@ struct SExtraInfo;
 //                  down
 //
 //////
-	// Go directions (from the current node)
+	// Go and map directions (from the current node)
+	struct SNodeRodMaps
+	{
+		f64		x;														// X (side-to-side distance)
+		f64		y;														// Y (up-and-down distance)
+	};
+
+	// Constant rod map values multipliers
+	SNodeRodMaps gsfNodeRodMaps[_NODE_COUNT] =
+	{
+		{	0.0,	-1.0	},	// _NODE_N
+		{	1.0,	0.0		},	// _NODE_E
+		{	0.0,	1.0		},	// _NODE_S
+		{	-1.0,	0.0		},	// _NODE_W
+		{	-1.0,	-1.0	},	// _NODE_SW
+		{	1.0,	-1.0	},	// _NODE_SE
+		{	-1.0,	1.0		},	// _NODE_NW
+		{	1.0,	1.0		},	// _NODE_NE
+		{	0.0,	-1.0	},	// _NODE_TO		// Same as _NODE_N on 2D presentation
+		{	0.0,	1.0		}	// _NODE_FRO	// Same as _NODE_S on 2D presentation
+	};
+
 	struct SNodeGoDirs
 	{
 		bool			n[_NODE_COUNT];									// A flag relates to each node direction
@@ -321,6 +342,8 @@ struct SExtraInfo;
 
 		s32				borderWidth;									// Width of the border in pixels
 		SBgra			borderColor;									// Color of the border, typically black
+
+		SBgra			rodColor;										// Connecting rods
 	};
 
 	struct SNode
@@ -335,6 +358,7 @@ struct SExtraInfo;
 
 		// For graphics rendering
 		SBitmap*		bmp;											// An image for this node's content
+		RECT			rc;												// Render rc as of last computation
 		u32				iter_uid;										// The last iteration this item was updated
 		s32				propsIndex;										// An index into the properties for how this node is configured
 	};

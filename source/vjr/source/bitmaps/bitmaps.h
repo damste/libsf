@@ -141,6 +141,7 @@ class CXml;
 	void					iBmp_dapple								(SBitmap* bmp, SBitmap* bmpDapple, SBitmap* bmpDappleTmp, f32 tfBias, f32 tfInfluence);
 // TODO:  The following void functions need to be changed to u32 and indicate how many pixels were rendered
 	void					iBmp_drawPoint							(SBitmap* bmp, s32 tnX, s32 tnY, SBgra color);
+	void					iBmp_drawBullet							(SBitmap* bmp, s32 tnX, s32 tnY, SBgra color);
 	void					iBmp_fillRect							(SBitmap* bmp, RECT* rc, SBgra colorNW, SBgra colorNE = whiteColor, SBgra colorSW = whiteColor, SBgra colorSE = whiteColor, bool tlUseGradient = false, RECT* rcClip = NULL, bool tluseClip = false);
 	void					iBmp_fillRect_op						(SBitmap* bmp, RECT* rc, SBgra colorOn, SBgra colorOff, u32 tnOp);
 	void					iBmp_frameRect							(SBitmap* bmp, RECT* rc, SBgra colorNW, SBgra colorNE = whiteColor, SBgra colorSW = whiteColor, SBgra colorSE = whiteColor, bool tlUseGradient = false, RECT* rcClip = NULL, bool tluseClip = false);
