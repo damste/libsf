@@ -5395,36 +5395,30 @@ debug_break;
 // Called to delete the entire node leg as indicated
 //
 //////
-	#define node9Params		node->n[_NODE_N]	!= nodeOrigin, \
-							node->n[_NODE_E]	!= nodeOrigin, \
-							node->n[_NODE_S]	!= nodeOrigin, \
-							node->n[_NODE_W]	!= nodeOrigin, \
-							node->n[_NODE_NW]	!= nodeOrigin, \
-							node->n[_NODE_NE]	!= nodeOrigin, \
-							node->n[_NODE_SW]	!= nodeOrigin, \
-							node->n[_NODE_SE]	!= nodeOrigin, \
-							node->n[_NODE_TO]	!= nodeOrigin, \
-							node->n[_NODE_FRO]	!= nodeOrigin
-
-	void iNode_deleteAll_politely(SNode** root, SNode* nodeOrigin, bool tlDeleteSelf, bool tlTraverseN, bool tlTraverseE, bool tlTraverseS, bool tlTraverseW, bool tlTraverseNW, bool tlTraverseNE, bool tlTraverseSW, bool tlTraverseSE, bool tlTraverseTo, bool tlTraverseFro)
+	void iNode_deleteAll_politely(SNode** root, SNode* nodeStopper1, SNode* nodeStopper2, bool tlDeleteSelf, SNodeGoDirs* goDirs)
 	{
-		SNode* node;
+		s32				lnI, lnJ;
+		SNode*			node;
+		SNodeGoDirs		_goDirsLocal;
 
 
 		// Make sure we have something to act upon
-		if (root && (node = *root))
+		if (root && (node = *root) && node != nodeStopper1 && node != nodeStopper2)
 		{
 			// Traverse the delete paths that should be deleted
-			if (tlTraverseN   && node->n[_NODE_N])				iNode_deleteAll_politely(&node->n[_NODE_N],		nodeOrigin,		true,	node9Params);
-			if (tlTraverseE   && node->n[_NODE_E])				iNode_deleteAll_politely(&node->n[_NODE_E],		nodeOrigin,		true,	node9Params);
-			if (tlTraverseS   && node->n[_NODE_S])				iNode_deleteAll_politely(&node->n[_NODE_S],		nodeOrigin,		true,	node9Params);
-			if (tlTraverseW   && node->n[_NODE_W])				iNode_deleteAll_politely(&node->n[_NODE_W],		nodeOrigin,		true,	node9Params);
-			if (tlTraverseNW  && node->n[_NODE_NW])				iNode_deleteAll_politely(&node->n[_NODE_NW],	nodeOrigin,		true,	node9Params);
-			if (tlTraverseNE  && node->n[_NODE_NE])				iNode_deleteAll_politely(&node->n[_NODE_NE],	nodeOrigin,		true,	node9Params);
-			if (tlTraverseSW  && node->n[_NODE_SW])				iNode_deleteAll_politely(&node->n[_NODE_SW],	nodeOrigin,		true,	node9Params);
-			if (tlTraverseSE  && node->n[_NODE_SE])				iNode_deleteAll_politely(&node->n[_NODE_SE],	nodeOrigin,		true,	node9Params);
-			if (tlTraverseTo  && node->n[_NODE_TO])				iNode_deleteAll_politely(&node->n[_NODE_TO],	nodeOrigin,		true,	node9Params);
-			if (tlTraverseFro && node->n[_NODE_FRO])			iNode_deleteAll_politely(&node->n[_NODE_FRO],	nodeOrigin,		true,	node9Params);
+			for (lnI = 0; lnI < _NODE_COUNT; lnI++)
+			{
+				// Set the directions
+				if (goDirs->n[lnI] && node->n[lnI])
+				{
+					// Populate our goDirs directions from here
+					for (lnJ = 0; lnJ < _NODE_COUNT; lnJ++)
+						_goDirsLocal.n[lnI] = (node->n[lnI]	!= nodeStopper1);
+
+					// Go deeper
+					iNode_deleteAll_politely(&node->n[lnI], nodeStopper1, nodeStopper2, true, &_goDirsLocal);
+				}
+			}
 
 			// Delete the op if need be
 			if (node->opData)
@@ -5456,7 +5450,7 @@ debug_break;
 //////
 	SBitmap* iNode_renderBitmap(SNode* node, SNodeGoDirs* goDirs, s32 tnMaxLength, f64 tfRodLength, s32 tnMarginWidth, s32 tnBorderWidth)
 	{
-		s32			lnI, lnIter_uid;
+		s32			lnI, lnIter_uid, lnWidth, lnHeight;
 		POINTS		p;
 		RECT		lrc;
 		SBitmap*	bmp;
@@ -5520,6 +5514,41 @@ debug_break;
 					}
 				}
 
+
+			//////////
+			// Render into the bmp
+			//////
+				bmp = iBmp_allocate();
+				if (bmp)
+				{
+					// get our sizes
+					lnWidth		= lrc.right - lrc.left;
+					lnHeight	= lrc.bottom - lrc.top;
+
+					// Create the bitmap
+					iBmp_createBySize(bmp, lnWidth, lnHeight, 24);
+
+					// Grab a uid for get extents
+					lnIter_uid = iGetNextUid();
+
+					// Get our starting point
+					p.x			= (s16)-lrc.left;
+					p.y			= (s16)-lrc.top;
+					SetRect(&lrc, 0, 0, lnWidth, lnHeight);
+					iiNode_get_bitmapExtents(node, NULL, _NODE_SE, bmp, &lrc, p, tfRodLength, lnIter_uid, props, false);		// For initial computation, pretend we're coming down on a southeast node rod
+
+					// Kick off a render on every rendered
+					for (lnI = 0; lnI < _NODE_COUNT; lnI++)
+					{
+						// Kick off this if we're supposed to go that way
+						if (goDirs->n[lnI] && node->n[lnI])
+						{
+							// Indicate that we want to render everything out from there
+							iiNode_get_bitmapExtents(node->n[lnI], node, lnI, bmp, &lrc, p, tfRodLength, lnIter_uid, props, true);		// For initial computation, pretend we're coming down on a southeast node rod
+						}
+					}
+				}
+
 		}
 
 		// Indicate our rendered bitmap
@@ -5531,19 +5560,22 @@ debug_break;
 		s32		lnI;
 
 
-		// Nope, render this one
-		iBmp_node_renderComp(node, tnMaxLength, props, tnPropsCount, tnIter_uid);
-
-		// Kick off all renderings from here
-		if (tlGoDeeper)
+		if (node->iter_uid != tnIter_uid)
 		{
-			for (lnI = 0; lnI < _NODE_COUNT; lnI++)
+			// Nope, render this one
+			iBmp_node_renderComp(node, tnMaxLength, props, tnPropsCount, tnIter_uid);
+
+			// Kick off all renderings from here
+			if (tlGoDeeper)
 			{
-				// Are we're supposed to go this way?
-				if (node->n[lnI] && node->n[lnI] != nodeStopper && node->n[lnI]->iter_uid != tnIter_uid)
+				for (lnI = 0; lnI < _NODE_COUNT; lnI++)
 				{
-					// Indicate that we want to render everything out from there
-					iiNode_renderBitmap(node->n[lnI], nodeStopper, tnMaxLength, props, tnPropsCount, tnIter_uid, true);
+					// Are we're supposed to go this way?
+					if (node->n[lnI] && node->n[lnI] != nodeStopper && node->n[lnI]->iter_uid != tnIter_uid)
+					{
+						// Indicate that we want to render everything out from there
+						iiNode_renderBitmap(node->n[lnI], nodeStopper, tnMaxLength, props, tnPropsCount, tnIter_uid, true);
+					}
 				}
 			}
 		}
