@@ -209,30 +209,51 @@
 //////
 	void iiVxb_compile_stage2(SVxbContext* vxb)
 	{
-return;
 		// Begin compiling
 		vxb->func		= NULL;
 		vxb->adhoc		= NULL;
 		vxb->flowof		= NULL;
 
+
 		// Iterate through every line in this codeBlock
 		for (vxb->line = vxb->sem->firstLine; vxb->line; vxb->line = vxb->line->ll.nextLine)
 		{
-			// Increase our line count
-			++vxb->stats->sourceLineCount;
 
-			// Make sure we have a compilerInfo object
-			if (!vxb->line->compilerInfo)
-				vxb->line->compilerInfo = iCompiler_allocate(vxb->line);
+			//////////
+			// Initialize
+			//////
+				++vxb->stats->sourceLineCount;
+				if (!vxb->line->compilerInfo)
+					vxb->line->compilerInfo = iCompiler_allocate(vxb->line);
 
+
+			//////////
 			// Is there anything to parse on this line?
+			//////
 			if (vxb->line->sourceCode && vxb->line->sourceCode_populatedLength > 0)
 			{
+
 				//////////
 				// Determine if this line needs compiled
 				//////
 					// We are in LiveCode mode, which means we only process this line
 					// if its contents have changed.  Otherwise, we use what was already compiled.
+//////////
+// Consider what this would look like with ~|utility|~ casks:
+//
+// Source code definition:
+//		if (~|!vxb->line->compilerInfo->sourceCode || vxb->line->forceRecompile || !vxb->line->compilerInfo->firstComp|~.name(not yet compiled))
+//
+// As would be visible in the GUI editor:
+//		if (~|not yet compiled|~)
+//
+// Such a presentation removes the need for comments, and would allow stacking of the below operation visibly like this:
+// 		     if (~|not yet compiled|~)			vxb->processThisLine = true;
+// 		else if (~|source length changed|~)		vxb->processThisLine = true;
+// 		else if (~|source content changed|~)	vxb->processThisLine = true;
+// 		else if (~|warnings or inquirys|~)		vxb->processThisLine = true;
+// 		else									vxb->processThisLine = false;	// source code's unchanged
+//////
 					if (!vxb->line->compilerInfo->sourceCode || vxb->line->forceRecompile || !vxb->line->compilerInfo->firstComp)
 					{
 						// This line has not yet been compiled
@@ -243,11 +264,11 @@ return;
 						vxb->processThisLine = true;
 
 					} else if (iDatum_compare(vxb->line->sourceCode, vxb->line->compilerInfo->sourceCode) != 0) {
-						// The source code contents vary
+						// The source code contents vary from the last compilation
 						vxb->processThisLine = true;
 
-					} else if (vxb->line->compilerInfo->firstWarning || vxb->line->compilerInfo->firstError) {
-						// Warnings or errors are attached to it, so it needs recompiled to see if those will have been resolved by other source code lines having changed
+					} else if (vxb->line->compilerInfo->firstWarning || vxb->line->compilerInfo->firstInquiry) {
+						// Warnings or inquiries are attached to it, so it needs recompiled regardless (to see if those will have been resolved by other source code lines having changed)
 						vxb->processThisLine = true;
 
 					} else {
@@ -257,7 +278,8 @@ return;
 
 
 				//////////
-				// If we're not processing, synchronize movement through the source file
+				// If we're not processing, we still need to synchronize movement
+				// through the source file to maintain our compilation state
 				//////
 					if (!vxb->processThisLine)
 					{
@@ -297,12 +319,6 @@ return;
 				//////
 					while (1)
 					{
-						//////////
-						// We need to clear out anything from any prior compile
-						//////
-							iComps_deleteAll_byLine(vxb->line);
-							iCompiler_delete(&vxb->line->compilerInfo, false);
-
 
 						//////////
 						// Convert raw source code to known character sequences
@@ -547,8 +563,9 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 //////
 	void iiVxb_free_liveCode(SCompiler* compiler)
 	{
+
 		//////////
-		// Free this copy of the original source code line if need be
+		// Free this copy of the original source code line (if need be)
 		/////
 			if (compiler->sourceCode)
 				iDatum_delete(&compiler->sourceCode);
@@ -588,7 +605,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 		//////////
 		// Delete any errors, warnings, or notes
 		//////
-			iNoteLog_removeAll(&compiler->firstError);
+			iNoteLog_removeAll(&compiler->firstInquiry);
 			iNoteLog_removeAll(&compiler->firstWarning);
 			iNoteLog_removeAll(&compiler->firstNote);
 
@@ -597,6 +614,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 		// Delete any extra info that's stored
 		//////
 			iExtraInfo_removeAll(NULL, NULL, &compiler->first_extraInfo, true);
+
 	}
 
 
@@ -5395,48 +5413,58 @@ debug_break;
 // Called to delete the entire node leg as indicated
 //
 //////
-	void iNode_deleteAll_politely(SNode** root, SNode* nodeStopper1, SNode* nodeStopper2, bool tlDeleteSelf, SNodeGoDirs* goDirs)
+	void iNode_deleteAll_politely(SNode** root, SNode* nodeStopper1, SNode* nodeStopper2, bool tlDeleteSelf, SNodeFlags* nodeFlags)
 	{
 		s32				lnI, lnJ;
 		SNode*			node;
-		SNodeGoDirs		_goDirsLocal;
+		SNodeFlags		_nodeFlagsLocal;
 
 
 		// Make sure we have something to act upon
 		if (root && (node = *root) && node != nodeStopper1 && node != nodeStopper2)
 		{
+
+			//////////
 			// Traverse the delete paths that should be deleted
-			for (lnI = 0; lnI < _NODE_COUNT; lnI++)
-			{
-				// Set the directions
-				if (goDirs->n[lnI] && node->n[lnI])
+			//////
+				for (lnI = 0; lnI < _NODE_COUNT; lnI++)
 				{
-					// Populate our goDirs directions from here
-					for (lnJ = 0; lnJ < _NODE_COUNT; lnJ++)
-						_goDirsLocal.n[lnI] = (node->n[lnI]	!= nodeStopper1);
+					// Set the directions
+					if (nodeFlags->n[lnI] && node->n[lnI])
+					{
+						// Populate our goDirs directions from here
+						for (lnJ = 0; lnJ < _NODE_COUNT; lnJ++)
+							_nodeFlagsLocal.n[lnI] = (node->n[lnI]	!= nodeStopper1);
 
-					// Go deeper
-					iNode_deleteAll_politely(&node->n[lnI], nodeStopper1, nodeStopper2, true, &_goDirsLocal);
+						// Go deeper
+						iNode_deleteAll_politely(&node->n[lnI], nodeStopper1, nodeStopper2, true, &_nodeFlagsLocal);
+					}
 				}
-			}
 
+
+			//////////
 			// Delete the op if need be
-			if (node->opData)
-			{
-				// Delete op chain
-				iOp_politelyDelete(&node->opData->op, false);
+			//////
+				if (node->opData)
+				{
+					// Delete op chain
+					iOp_politelyDelete(&node->opData->op, false);
 
-				// Delete the variable chain
-				if (node->opData->firstVariable)
-					iVariable_politelyDelete_chain(&node->opData->firstVariable, true);
-			}
+					// Delete the variable chain
+					if (node->opData->firstVariable)
+						iVariable_politelyDelete_chain(&node->opData->firstVariable, true);
+				}
 
+
+			//////////
 			// Delete self
-			if (tlDeleteSelf)
-			{
-				*root = NULL;
-				free(node);
-			}
+			//////
+				if (tlDeleteSelf)
+				{
+					*root = NULL;
+					free(node);
+				}
+
 		}
 	}
 
@@ -5448,7 +5476,7 @@ debug_break;
 // Called to render a bitmap which is a visualization of the node
 //
 //////
-	SBitmap* iNode_renderBitmap(SNode* node, SNodeGoDirs* goDirs, s32 tnMaxLength, f64 tfRodLength, s32 tnMarginWidth, s32 tnBorderWidth)
+	SBitmap* iNode_renderBitmap(SNode* node, SNodeFlags* nodeFlags, s32 tnMaxLength, f64 tfRodLength, s32 tnMarginWidth, s32 tnBorderWidth)
 	{
 		s32			lnI, lnIter_uid, lnWidth, lnHeight;
 		POINTS		p;
@@ -5461,6 +5489,7 @@ debug_break;
 		bmp = NULL;
 		if (node)
 		{
+
 			//////////
 			// (Re-)Render everything
 			//////
@@ -5483,7 +5512,7 @@ debug_break;
 				for (lnI = 0; lnI < _NODE_COUNT; lnI++)
 				{
 					// Kick off this if we're supposed to go that way
-					if (goDirs->n[lnI] && node->n[lnI])
+					if (nodeFlags->n[lnI] && node->n[lnI])
 					{
 						// Indicate that we want to render everything out from there
 						iiNode_renderBitmap(node->n[lnI], node, tnMaxLength, props, 1, lnIter_uid, true);
@@ -5507,7 +5536,7 @@ debug_break;
 				for (lnI = 0; lnI < _NODE_COUNT; lnI++)
 				{
 					// Kick off this if we're supposed to go that way
-					if (goDirs->n[lnI] && node->n[lnI])
+					if (nodeFlags->n[lnI] && node->n[lnI])
 					{
 						// Indicate that we want to render everything out from there
 						iiNode_get_bitmapExtents(node->n[lnI], node, lnI, NULL, &lrc, p, tfRodLength, lnIter_uid, props, true);		// For initial computation, pretend we're coming down on a southeast node rod
@@ -5541,7 +5570,7 @@ debug_break;
 					for (lnI = 0; lnI < _NODE_COUNT; lnI++)
 					{
 						// Kick off this if we're supposed to go that way
-						if (goDirs->n[lnI] && node->n[lnI])
+						if (nodeFlags->n[lnI] && node->n[lnI])
 						{
 							// Indicate that we want to render everything out from there
 							iiNode_get_bitmapExtents(node->n[lnI], node, lnI, bmp, &lrc, p, tfRodLength, lnIter_uid, props, true);		// For initial computation, pretend we're coming down on a southeast node rod
@@ -5560,6 +5589,7 @@ debug_break;
 		s32		lnI;
 
 
+		// Make sure we haven't already rendered this node
 		if (node->iter_uid != tnIter_uid)
 		{
 			// Nope, render this one
@@ -10068,6 +10098,20 @@ debug_break;
 // Called to delete the indicated variable
 //
 //////
+	void iVariable_delete(SVariable** var)
+	{
+		SVariable* t;
+
+
+		// Make sure our environment is sane
+		if (var)
+		{
+			t		= *var;
+			*var	= NULL;
+			iVariable_delete(t, true, true);
+		}
+	}
+
 	// Override delete should be used when a variable must fall out of scope, and therefore its isProtected setting is ignored
 	void iVariable_delete(SVariable* var, bool tlDeleteSelf, bool tlOverrideDelete)
 	{
@@ -13563,6 +13607,16 @@ debug_break;
 			return(diffJulian + diffSeconds);
 	}
 
+	s32 iiVariable_getType_character(void)
+	{
+		return(_VAR_TYPE_CHARACTER);
+	}
+
+	s32 iiVariable_getType_s32(void)
+	{
+		return(_VAR_TYPE_S32);
+	}
+
 
 
 
@@ -14679,7 +14733,7 @@ debug_break;
 	void iLine_appendError(SLine* line, u32 tnErrorNum, cu8* tcMessage, u32 tnStartColumn, u32 tnLength)
 	{
 		if (line && line->compilerInfo)
-			iNoteLog_create(&line->compilerInfo->firstError, line, tnStartColumn, tnStartColumn + tnLength, tnErrorNum, tcMessage);
+			iNoteLog_create(&line->compilerInfo->firstInquiry, line, tnStartColumn, tnStartColumn + tnLength, tnErrorNum, tcMessage);
 	}
 
 
@@ -14693,7 +14747,7 @@ debug_break;
 	void iLine_appendWarning(SLine* line, u32 tnWarningNum, cu8* tcMessage, u32 tnStartColumn, u32 tnLength)
 	{
 		if (line && line->compilerInfo)
-			iNoteLog_create(&line->compilerInfo->firstError, line, tnStartColumn, tnStartColumn + tnLength, tnWarningNum, tcMessage);
+			iNoteLog_create(&line->compilerInfo->firstInquiry, line, tnStartColumn, tnStartColumn + tnLength, tnWarningNum, tcMessage);
 	}
 
 
@@ -15279,7 +15333,7 @@ _asm int 3;
 
 			// Delete the items here
 			iNoteLog_removeAll(&compilerInfo->firstWarning);
-			iNoteLog_removeAll(&compilerInfo->firstError);
+			iNoteLog_removeAll(&compilerInfo->firstInquiry);
 			iNoteLog_removeAll(&compilerInfo->firstNote);
 
 			// Delete regular components

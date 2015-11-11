@@ -754,8 +754,8 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 										adhoc = NULL;
 
 										// Unmatched block
-										iNoteLog_create_byErrorNumber(&sem->firstNote,					comp, _ERROR_NESTING_ERROR);
-										iNoteLog_create_byErrorNumber(&line->compilerInfo->firstError,	comp, _ERROR_NESTING_ERROR);
+										iNoteLog_create_byErrorNumber(&sem->firstNote,						comp, _ERROR_NESTING_ERROR);
+										iNoteLog_create_byErrorNumber(&line->compilerInfo->firstInquiry,	comp, _ERROR_NESTING_ERROR);
 									}
 								}
 
@@ -777,8 +777,8 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 								if (!func)
 								{
 									// Unmatched block
-									iNoteLog_create_byErrorNumber(&sem->firstNote,					comp, _ERROR_NESTING_ERROR);
-									iNoteLog_create_byErrorNumber(&line->compilerInfo->firstError,	comp, _ERROR_NESTING_ERROR);
+									iNoteLog_create_byErrorNumber(&sem->firstNote,						comp, _ERROR_NESTING_ERROR);
+									iNoteLog_create_byErrorNumber(&line->compilerInfo->firstInquiry,	comp, _ERROR_NESTING_ERROR);
 
 								}
 
@@ -795,16 +795,16 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 								// If we're in an existing adhoc, nesting error
 								if (adhoc)
 								{
-									iNoteLog_create_byErrorNumber(&sem->firstNote,					comp, _ERROR_NESTING_ERROR);
-									iNoteLog_create_byErrorNumber(&line->compilerInfo->firstError,	comp, _ERROR_NESTING_ERROR);
+									iNoteLog_create_byErrorNumber(&sem->firstNote,						comp, _ERROR_NESTING_ERROR);
+									iNoteLog_create_byErrorNumber(&line->compilerInfo->firstInquiry,	comp, _ERROR_NESTING_ERROR);
 								}
 
 								// If we're not inside a function, error
 								if (!func)
 								{
 									// This adhoc cannot be processed
-									iNoteLog_create_byErrorNumber(&sem->firstNote,					comp, _ERROR_NESTING_ERROR);
-									iNoteLog_create_byErrorNumber(&line->compilerInfo->firstError,	comp, _ERROR_NESTING_ERROR);
+									iNoteLog_create_byErrorNumber(&sem->firstNote,						comp, _ERROR_NESTING_ERROR);
+									iNoteLog_create_byErrorNumber(&line->compilerInfo->firstInquiry,	comp, _ERROR_NESTING_ERROR);
 
 								} else {
 									// We're good
@@ -826,8 +826,8 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 								if (!adhoc)
 								{
 									// They tried to end an adhoc that hadn't started yet
-									iNoteLog_create_byErrorNumber(&sem->firstNote,					comp, _ERROR_NESTING_ERROR);
-									iNoteLog_create_byErrorNumber(&line->compilerInfo->firstError,	comp, _ERROR_NESTING_ERROR);
+									iNoteLog_create_byErrorNumber(&sem->firstNote,						comp, _ERROR_NESTING_ERROR);
+									iNoteLog_create_byErrorNumber(&line->compilerInfo->firstInquiry,	comp, _ERROR_NESTING_ERROR);
 
 								} else {
 									// Close it out
@@ -846,8 +846,8 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 									if (classobj)
 									{
 										// They tried to end an adhoc that hadn't started yet
-										iNoteLog_create_byErrorNumber(&sem->firstNote,					comp, _ERROR_NESTING_ERROR);
-										iNoteLog_create_byErrorNumber(&line->compilerInfo->firstError,	comp, _ERROR_NESTING_ERROR);
+										iNoteLog_create_byErrorNumber(&sem->firstNote,						comp, _ERROR_NESTING_ERROR);
+										iNoteLog_create_byErrorNumber(&line->compilerInfo->firstInquiry,	comp, _ERROR_NESTING_ERROR);
 									}
 
 									// Begin the new class
@@ -888,8 +888,8 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 										if (lnStackLevel < 0 || !iComps_isMateOf(comp, stack[lnStackLevel]))
 										{
 											// Unmatched block
-											iNoteLog_create_byErrorNumber(&sem->firstNote,					comp, _ERROR_NESTING_ERROR);
-											iNoteLog_create_byErrorNumber(&line->compilerInfo->firstError,	comp, _ERROR_NESTING_ERROR);
+											iNoteLog_create_byErrorNumber(&sem->firstNote,						comp, _ERROR_NESTING_ERROR);
+											iNoteLog_create_byErrorNumber(&line->compilerInfo->firstInquiry,	comp, _ERROR_NESTING_ERROR);
 
 										} else {
 											// We're mated, so back out/up normally

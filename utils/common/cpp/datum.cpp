@@ -382,3 +382,177 @@
 		// Reset the length to zero
 		datum->length = 0;
 	}
+
+
+
+
+//////////
+//
+// Combined properties
+//
+//////
+	SProperty* iProperty_allocateAs_character_fromComp(SComp* name, SComp* value, s32 tnOverrideNameLength, s32 tnOverrideValueLength)
+	{
+		s32 lnNameLength, lnValueLength;
+
+
+		// Make sure our environment is sane
+		if (name && value && name->line && name->line->sourceCode && name->line->sourceCode->_data && value->line && value->line->sourceCode && value->line->sourceCode->_data)
+		{
+			// Get the names
+			lnNameLength	= ((tnOverrideNameLength > 0)	? tnOverrideNameLength	: name->length);
+			lnValueLength	= ((tnOverrideValueLength > 0)	? tnOverrideValueLength	: value->length);
+
+			// Create the property
+			return(iProperty_allocateAs_character(name->line->sourceCode->data_cu8, lnNameLength, value->line->sourceCode->data_cu8, lnValueLength));
+
+		} else {
+			// Failure
+			return(NULL);
+		}
+	}
+
+	SProperty* iProperty_allocateAs_character(cu8* tcName, s32 tnNameLength, cu8* tcValue, s32 tnValueLength)
+	{
+		SDatum*		name;
+		SVariable*	value;
+		SProperty*	p;
+
+
+		// Make sure our environment is sane
+		p = NULL;
+		if (tcName)
+		{
+			// Allocate a name
+			name = iDatum_allocate(tcName, tnNameLength);
+			if (name)
+			{
+				// Allocate the value
+				value = iVariable_createAndPopulate_byText(iiVariable_getType_character(), tcValue, tnValueLength, false);
+				if (value)
+				{
+					// Allocate a property
+					p = iiProperty_allocate(name, value);
+					if (p)
+					{
+						// Both were allocated
+						p->name_allocated	= true;
+						p->value_allocated	= true;
+
+					} else {
+						// Failure on creating the property
+						iDatum_delete(&name);
+						iVariable_delete(&value);
+					}
+
+				} else {
+					// Failure on creating the variable
+					iDatum_delete(&name);
+				}
+			}
+		}
+
+		// Indicate our property
+		return(p);
+	}
+
+	SProperty* iProperty_allocateAs_s32(cu8* tcName, s32 tnNameLength, s32 tnValue)
+	{
+		SDatum*		d;
+		SProperty*	p;
+
+
+		// Make sure our environment is sane
+		p = NULL;
+		if (tcName)
+		{
+			// Allocate a name
+			d = iDatum_allocate(tcName, tnNameLength);
+			if (d)
+			{
+				// Allocate a property
+				p = iProperty_allocateAs_s32(d, tnValue);
+				if (p)
+					p->name_allocated = true;
+			}
+		}
+
+		// Indicate our property
+		return(p);
+	}
+
+	SProperty* iProperty_allocateAs_s32(SDatum* name, s32 tnValue)
+	{
+		SProperty*	p;
+		SVariable*	value;
+
+
+		// Make sure our environment is sane
+		p = NULL;
+		if (name)
+		{
+			// Create a variable
+			value = iVariable_createAndPopulate_byText(iiVariable_getType_s32(), (cs8*)&tnValue, 4, false);
+			if (value)
+			{
+				// Create the property
+				p = iiProperty_allocate(name, value);
+				if (p)
+					p->value_allocated = true;
+
+			}
+		}
+
+		// Indicate our property
+		return(p);
+	}
+
+	SProperty* iiProperty_allocate(SDatum* name, SVariable* value)
+	{
+		SProperty*	p;
+
+
+		// Allocate a new one
+		p = (SProperty*)malloc(sizeof(SProperty));
+		if (p)
+		{
+			// Pass-thru whatever they send, NULL or otherwise
+			p->name		= name;
+			p->value	= value;
+		}
+
+		// Indicate our new property
+		return(p);
+	}
+
+	void iProperty_delete(SProperty** p)
+	{
+		SProperty* t;
+
+
+		// Make sure our environment is sane
+		if (p)
+		{
+			t	= *p;
+			*p	= NULL;
+			iProperty_delete(t, true);
+		}
+	}
+
+	SProperty* iProperty_delete(SProperty* p, bool tlDeleteSelf)
+	{
+		// Make sure our environment is sane
+		if (p)
+		{
+			// Clean up the name and value
+			if (p->name  && p->name_allocated)		iDatum_delete(&p->name);
+			if (p->value && p->value_allocated)		iVariable_delete(&p->value);
+
+			// Delete self
+			if (tlDeleteSelf)
+				free(p);
+		}
+
+		// Pass-thru
+		return(p);
+	}

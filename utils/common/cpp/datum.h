@@ -136,15 +136,24 @@ struct SComp;
 			SBgr*		data_bgr;				// To access the data as SBgr
 			SMapm*		data_big;				// To access the data as an arbitrary precision structure wrapped around SMapm (see 3rd_party\mapm\m_apm.h)
 		};
-		s32				length;												// Content length
+		s32				length;					// Content length
+	};
+
+	struct SProperty
+	{
+		bool		name_allocated;				// Was the name datum allocated?
+		bool		value_allocated;			// Was the value datum allocated?
+
+		SDatum*		name;						// Name for this property
+		SVariable*	value;						// Value for this name
 	};
 
 
-	void					iDatum_allocateSpace					(SDatum* datum,            s32 dataLength);
-	SDatum*					iDatum_allocate							(               cs8* data, s32 dataLength = -1);
-	SDatum*					iDatum_allocate							(                s8* data, s32 dataLength = -1);
-	SDatum*					iDatum_allocate							(               cu8* data, s32 dataLength = -1);
-	SDatum*					iDatum_allocate							(                u8* data, s32 dataLength = -1);
+	void					iDatum_allocateSpace					(SDatum* datum,		s32 dataLength);
+	SDatum*					iDatum_allocate							(cs8* data,			s32 dataLength = -1);
+	SDatum*					iDatum_allocate							( s8* data,			s32 dataLength = -1);
+	SDatum*					iDatum_allocate							(cu8* data,			s32 dataLength = -1);
+	SDatum*					iDatum_allocate							( u8* data,			s32 dataLength = -1);
 
 	void					iDatum_duplicate						(SDatum* datum,  u8* data, s32 dataLength);
 	void					iDatum_duplicate						(SDatum* datum,  s8* data, s32 dataLength);
@@ -164,5 +173,13 @@ struct SComp;
 	void					iDatum_delete							(SDatum** datum);
 	void					iDatum_delete							(SDatum* datum, bool tlDeleteSelf);
 	void					iiDatum_delete							(SDatum* datum);
+
+	SProperty*				iProperty_allocateAs_character_fromComp	(SComp* name, SComp* value, s32 tnOverrideNameLength = -1, s32 tnOverrideValueLength = -1);
+	SProperty*				iProperty_allocateAs_character			(cu8* tcName, s32 tnNameLength, cu8* tcValue, s32 tnValueLength);
+	SProperty*				iProperty_allocateAs_s32				(cu8* tcName, s32 tnNameLength, s32 tnValue);
+	SProperty*				iProperty_allocateAs_s32				(SDatum* name, s32 tnValue);
+	SProperty*				iiProperty_allocate						(SDatum* name, SVariable* value);
+	void					iProperty_delete						(SProperty** p);
+	SProperty*				iProperty_delete						(SProperty* p, bool tlDeleteSelf);
 
 #endif

@@ -143,6 +143,7 @@
 
 	#include "vjr_const.h"
 	#include "vjr_structs00.h"
+	#include "vjr_defs0.h"
 
 	#include "\libsf\utils\common\cpp\datum.h"
 	#include "\libsf\utils\common\cpp\builder.h"
@@ -301,6 +302,7 @@
 
 	#include "vjr_const.h"
 	#include "vjr_structs00.h"
+	#include "vjr_defs0.h"
 
 	#if defined(__linux__)
 		#include "/libsf/utils/common/cpp/linux/windows.h"
@@ -456,6 +458,7 @@
 
 	#include "vjr_const.h"
 	#include "vjr_structs00.h"
+	#include "vjr_defs0.h"
 
     #include "/libsf/utils/common/cpp/linux/windows.h"
     #include "/libsf/utils/common/cpp/linux/hwndx.h"

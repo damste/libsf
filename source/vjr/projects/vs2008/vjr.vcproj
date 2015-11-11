@@ -388,6 +388,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\vjr_defs0.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\vjr_globals.h"
 					>
 				</File>

@@ -250,8 +250,8 @@ struct SVxbContext;
 	SNode*					iNode_extrude								(SNode** root, u32 tnExtrudeDirection);
 	SNode*					iNode_bump									(SNode** root, u32 tnBumpDirection, u32 tnAnchorDirection);
 	SNode*					iNode_insert_between						(SNode* node1, SNode* node2, u32 tnNode1Direction, u32 tnNode2Direction);
-	void					iNode_deleteAll_politely					(SNode** root, SNode* nodeStopper, SNode* nodeStopper2, bool tlDeleteSelf, SNodeGoDirs* goDirs);
-	SBitmap*				iNode_renderBitmap							(SNode* node, SNodeGoDirs* nodeFlags, s32 tnMaxLength = 4, f64 tfRodLength = 24.0, s32 tnMarginWidth = 4, s32 tnBorderWidth = 2);
+	void					iNode_deleteAll_politely					(SNode** root, SNode* nodeStopper, SNode* nodeStopper2, bool tlDeleteSelf, SNodeFlags* nodeFlags);
+	SBitmap*				iNode_renderBitmap							(SNode* node, SNodeFlags* nodeFlags = &gsfNodeFlags_all, s32 tnMaxLength = 4, f64 tfRodLength = 24.0, s32 tnMarginWidth = 4, s32 tnBorderWidth = 2);
 	void					iiNode_renderBitmap							(SNode* node, SNode* nodeStopper, s32 tnMaxLength, SNodeProps props[], s32 tnPropsCount, u32 tnIter_uid, bool tlGoDeeper);
 	void					iiNode_get_bitmapExtents					(SNode* node, SNode* nodeStopper, s32 tnArrivalDirection, SBitmap* bmp, RECT* rc, POINTS p_arrival, f64 tfRodLength, u32 tnIter_uid, SNodeProps* props, bool tlGoDeeper);
 
@@ -271,10 +271,11 @@ struct SVxbContext;
 	SVariable*				iiVariable_terminateIndirect				(SVariable* var);
 	SVariable*				iVariable_create							(s32 tnVarType, SVariable* varIndirect, bool tlAllocateDefaultValue, s32 tnBitsFor_bfp_bi = -1);
 	SVariable*				iVariable_createAndPopulate_byDatum			(s32 tnVarType, SDatum* datum, bool tlCreateReference);
-	SVariable*				iVariable_createAndPopulate_byText			(s32 tnVarType, u8*  tcData, s32 tnDataLength, bool tlCreateReference);
-	SVariable*				iVariable_createAndPopulate_byText			(s32 tnVarType, s8*  tcData, s32 tnDataLength, bool tlCreateReference);
-	SVariable*				iVariable_createAndPopulate_byText			(s32 tnVarType, cu8* tcData, s32 tnDataLength, bool tlCreateReference);
-	SVariable*				iVariable_createAndPopulate_byText			(s32 tnVarType, cs8* tcData, s32 tnDataLength, bool tlCreateReference);
+// Moved to vjr_defs0.h
+// 	SVariable*				iVariable_createAndPopulate_byText			(s32 tnVarType, u8*  tcData, s32 tnDataLength, bool tlCreateReference);
+// 	SVariable*				iVariable_createAndPopulate_byText			(s32 tnVarType, s8*  tcData, s32 tnDataLength, bool tlCreateReference);
+// 	SVariable*				iVariable_createAndPopulate_byText			(s32 tnVarType, cu8* tcData, s32 tnDataLength, bool tlCreateReference);
+// 	SVariable*				iVariable_createAndPopulate_byText			(s32 tnVarType, cs8* tcData, s32 tnDataLength, bool tlCreateReference);
 	SVariable*				iVariable_createByRadix						(u64 tnValue, u64 tnBase, u32 tnPrefixChars, u32 tnPostfixChars);
 	bool					iVariable_searchRoot_forDotName_andSet_byVar(              SComp* compDotName, SVariable* varNewValue, bool* tlError, u32* tnErrorNum);
 	bool					iVariable_searchObj_forDotName_andSet_byVar	(SObject* obj, SComp* compDotName, SVariable* varNewValue, bool* tlError, u32* tnErrorNum);
@@ -315,7 +316,9 @@ struct SVxbContext;
 	void					iVariable_reset								(SVariable* var, bool tlTerminateIndirect);
 	SVariable*				iVariable_convertForDisplay					(SVariable* var);
 	SVariable*				iVariable_get_typeDetail					(SVariable* var);
-	void					iVariable_delete							(SVariable* var, bool tlDeleteSelf, bool tlOverrideDelete = false);
+// Moved to vjr_defs.0.h
+// 	void					iVariable_delete							(SVariable** var);
+// 	void					iVariable_delete							(SVariable* var, bool tlDeleteSelf, bool tlOverrideDelete = false);
 	void					iVariable_politelyDelete_chain				(SVariable** root, bool tlDeleteSelf);
 	void					iVariable_politelyDelete_chain_callback		(SLLCallback* cb);
 	SVariable*				iiVariable_getAs_datetime					(SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum);
@@ -336,6 +339,10 @@ struct SVxbContext;
 	s32						iiVariable_compareMatchingTypes				(SVariable* varLeft, SVariable* varRight, bool* tlError, u32* tnErrorNum);
 	s64						iiVariable_compute_DatetimeDifference_getAs_s64(SVariable* dtVar1, SVariable* dtVar2);
 	f64						iiVariable_compute_DatetimeDifference_getAs_f64(SVariable* dtVar1, SVariable* dtVar2);
+	// Helper functions
+// Moved to vjr_defs0.h
+// 	s32						iiVariable_getType_character				(void);
+// 	s32						iiVariable_getType_s32						(void);
 
 	// Support functions
 	SVariable*				iiDateMath_get_dateTemplate										(s32 tnDateFormat);

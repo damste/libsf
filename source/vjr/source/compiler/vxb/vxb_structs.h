@@ -311,39 +311,57 @@ struct SExtraInfo;
 		f64		x;														// X (side-to-side distance)
 		f64		y;														// Y (up-and-down distance)
 	};
+	///////
+	// Holds the default rod directions for each connection
+	//////////
+			// Constant rod map values multipliers
+			SNodeRodMaps gsfNodeRodMaps[_NODE_COUNT] =
+			{
+				{	0.0,	-1.0	},	// _NODE_N
+				{	1.0,	0.0		},	// _NODE_E
+				{	0.0,	1.0		},	// _NODE_S
+				{	-1.0,	0.0		},	// _NODE_W
+				{	-1.0,	-1.0	},	// _NODE_SW
+				{	1.0,	-1.0	},	// _NODE_SE
+				{	-1.0,	1.0		},	// _NODE_NW
+				{	1.0,	1.0		},	// _NODE_NE
+				{	0.0,	-1.0	},	// _NODE_TO		// Same as _NODE_N on 2D presentation
+				{	0.0,	1.0		}	// _NODE_FRO	// Same as _NODE_S on 2D presentation
+			};
 
-	// Constant rod map values multipliers
-	SNodeRodMaps gsfNodeRodMaps[_NODE_COUNT] =
-	{
-		{	0.0,	-1.0	},	// _NODE_N
-		{	1.0,	0.0		},	// _NODE_E
-		{	0.0,	1.0		},	// _NODE_S
-		{	-1.0,	0.0		},	// _NODE_W
-		{	-1.0,	-1.0	},	// _NODE_SW
-		{	1.0,	-1.0	},	// _NODE_SE
-		{	-1.0,	1.0		},	// _NODE_NW
-		{	1.0,	1.0		},	// _NODE_NE
-		{	0.0,	-1.0	},	// _NODE_TO		// Same as _NODE_N on 2D presentation
-		{	0.0,	1.0		}	// _NODE_FRO	// Same as _NODE_S on 2D presentation
-	};
 
-	struct SNodeGoDirs
+	struct SNodeFlags
 	{
-		bool			n[_NODE_COUNT];									// A flag relates to each node direction
+		bool			n[_NODE_COUNT];									// A flag relates to each node direction, whether or not it should be traversed / processed / whatever
 	};
+	//////
+	// Holds the default flag set that allows traversal in all directions
+	//////////
+			// Allow full traversal
+			SNodeFlags gsfNodeFlags_all =
+			{
+				true,	// _NODE_N
+				true,	// _NODE_E
+				true,	// _NODE_S
+				true,	// _NODE_W
+				true,	// _NODE_SW
+				true,	// _NODE_SE
+				true,	// _NODE_NW
+				true,	// _NODE_NE
+				true,	// _NODE_TO		// Same as _NODE_N on 2D presentation
+				true	// _NODE_FRO	// Same as _NODE_S on 2D presentation
+			};
+
 
 	struct SNodeProps
 	{
 		SBgra			backColor;										// Text back color, 
 		SBgra			foreColor;										// Text fore color, typically black
-
-		s32				marginWidth;									// Width between text and the inner border
-		SBgra			fillColor;										// Fill color, typically white
-
-		s32				borderWidth;									// Width of the border in pixels
-		SBgra			borderColor;									// Color of the border, typically black
-
 		SBgra			rodColor;										// Connecting rods
+		SBgra			fillColor;										// Fill color, typically white
+		SBgra			borderColor;									// Color of the border, typically black
+		s32				borderWidth;									// Width of the border in pixels
+		s32				marginWidth;									// Width between text and the inner border
 	};
 
 	struct SNode
@@ -452,7 +470,7 @@ struct SExtraInfo;
 		SComp*			firstComp;							// Pointer to the first component identified on this line
 
 		// Results of compilation
-		SNoteLog*		firstError;							// Noted error(s) on this source code line
+		SNoteLog*		firstInquiry;						// Noted inquiry(s) on this source code line
 		SNoteLog*		firstWarning;						// Noted warning(s) on this source code line
 		SNoteLog*		firstNote;							// Noted note(s) on this source code line
 
@@ -467,9 +485,20 @@ struct SExtraInfo;
 	//		(3) generate	-- Write the sequenced engagement code for the target
 	//////
 		SNode*			first_nodeParse;					// (1)  Component sequencing prior to optimization
-		u32				count_nodeParse;					//      How many nodes after parsing
 		SNode*			first_nodeOptimize;					// (2)  Component sequencing after optimization
-		u32				count_nodeOptimize;					//      How many nodes after optimization
 		SNode*			first_nodeEngage;					// (3)  Final generation of engagement code steps
-		u32				count_nodeArray;					//      How many nodes in engagement code
+
+		u32				count_nodeParse;					// (1)  How many nodes after parsing
+		u32				count_nodeOptimize;					// (2)  How many nodes after optimization
+		u32				count_nodeArray;					// (3)  How many nodes in engagement code
+	};
+
+	struct SPragma
+	{
+		SLL				ll;									// Link list
+		s32				type;								// Type of #pragma here
+		union {
+			SDatum		d;
+			SProperty*	prop;								// A property (#define x = y)
+		};
 	};
