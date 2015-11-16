@@ -288,45 +288,91 @@ struct SExtraInfo;
 
 //////////
 //
-// General ten-way node.  Picture a square.  At all cardinal and ordinal points,
-// there are node extending out, plus two in the middle, one toward (to), the
-// other away (fro):
+// General 9-way node plane.  Picture a square.  At all cardinal and
+// ordinal points, there are node extending out, plus one in the middle:
 //
-//                 parent
-//                   n
-//             nw    |    ne
-//               \   |   /
-//                +  +  +
-//         w ---- + + + + ---- e       + + --- to, fro
-//      prev      +  +  +      next
-//               /   |   \
-//             sw    |    se
-//           left    s    right
-//                  down
+//                   parent
+//                     n
+//             nw      |      ne
+//               \     |     /
+//                +----+----+
+//                |         |
+//         w ---- +    o    + ---- e
+//                |  center |
+//      prev      +----+----+      next
+//               /     |     \
+//             sw      |      se
+//           left      s      right
+//                    down
+//
+// Now picture that plane placed into a three-way system.  Imagine
+// looking at the image above from the e side, looking toward w:
+//
+//                                              Perspective view:
+//                                            2          1            0
+//            Side-on-view:          nw2----  +          + nw         +  ----nw0
+//            2    1    0                     |\         |\           |\
+//            +    +    +             w2----  + +        + + n        + +  ----n0
+//            |    |    |                     |  \       |  \         |  \
+//            o    o    o            sw2----  + o +      + o + ne     + o +  ----ne0
+//            |    |    |                      \  |       \  |         \  |
+//            +    +    +               s2----  + +        + + e        + +  ----e0
+//                                               \|         \|           \|
+//                                       se2----  +          + se         +  ----se0
+//
+// This yields a node array configuration that has 9 nodes per plane,
+// with a three-way configuration constructing a perfect cube, resulting
+// in 27-separate nodes.  These are called:
+//
+//		C0, N0, NE0, E0, SE0, S0, SW0, W0, NW0
+//		C1, N1, NE1, E1, SE1, S1, SW1, W1, NW1		// Aliased to:  C, N, NE, E, SE, S, SW, W, NW
+//		C2, N2, NE2, E2, SE2, S2, SW2, W2, NW2
 //
 //////
 	// Go and map directions (from the current node)
+	// Note:  The + origin is at the logical center of the screen
 	struct SNodeRodMaps
 	{
-		f64		x;														// X (side-to-side distance)
-		f64		y;														// Y (up-and-down distance)
-	};
+		f64		x;			//  o-y					// y is negative going up, positive going down
+		f64		y;			//  |   .o+z			// z is positive going away, negative coming toward
+		f64		z;			//  | .' 
+	};						//  +'----o+x			// x is positive going right, negative going left
 	///////
-	// Holds the default rod directions for each connection
+	// Holds the default rod directions for each connection based on a cube centered at C1 being at (0,0,0) and oriented normally (C0 away, C2 toward)
 	//////////
 			// Constant rod map values multipliers
 			SNodeRodMaps gsfNodeRodMaps[_NODE_COUNT] =
-			{
-				{	0.0,	-1.0	},	// _NODE_N
-				{	1.0,	0.0		},	// _NODE_E
-				{	0.0,	1.0		},	// _NODE_S
-				{	-1.0,	0.0		},	// _NODE_W
-				{	-1.0,	-1.0	},	// _NODE_SW
-				{	1.0,	-1.0	},	// _NODE_SE
-				{	-1.0,	1.0		},	// _NODE_NW
-				{	1.0,	1.0		},	// _NODE_NE
-				{	0.0,	-1.0	},	// _NODE_TO		// Same as _NODE_N on 2D presentation
-				{	0.0,	1.0		}	// _NODE_FRO	// Same as _NODE_S on 2D presentation
+			{	//	  x		  y		  z
+				//	-----	-----	-----
+				{	0.0,	-1.0,	1.0		},		// _NODE_N0
+				{	1.0,	0.0,	1.0		},		// _NODE_E0
+				{	0.0,	1.0,	1.0		},		// _NODE_S0
+				{	-1.0,	0.0,	1.0		},		// _NODE_W0
+				{	1.0,	-1.0,	1.0		},		// _NODE_NE0
+				{	1.0,	1.0,	1.0		},		// _NODE_SE0
+				{	-1.0,	1.0,	1.0		},		// _NODE_SW0
+				{	-1.0,	-1.0,	1.0		},		// _NODE_NW0
+				{	0.0,	0.0,	1.0		},		// _NODE_C0
+
+				{	0.0,	-1.0,	0.0		},		// _NODE_N		// Same as _NODE_N1
+				{	1.0,	0.0,	0.0		},		// _NODE_E		// Same as _NODE_E1
+				{	0.0,	1.0,	0.0		},		// _NODE_S		// Same as _NODE_S1
+				{	-1.0,	0.0,	0.0		},		// _NODE_W		// Same as _NODE_W1
+				{	1.0,	-1.0,	0.0		},		// _NODE_NE		// Same as _NODE_NE1
+				{	1.0,	1.0,	0.0		},		// _NODE_SE		// Same as _NODE_SE1
+				{	-1.0,	1.0,	0.0		},		// _NODE_SW		// Same as _NODE_SW1
+				{	-1.0,	-1.0,	0.0		},		// _NODE_NW		// Same as _NODE_NW1
+				{	0.0,	0.0,	0.0		},		// _NODE_C		// Same as _NODE_C1
+
+				{	0.0,	-1.0,	-1.0	},		// _NODE_N2
+				{	1.0,	0.0,	-1.0	},		// _NODE_E2
+				{	0.0,	1.0,	-1.0	},		// _NODE_S2
+				{	-1.0,	0.0,	-1.0	},		// _NODE_W2
+				{	1.0,	-1.0,	-1.0	},		// _NODE_NE2
+				{	1.0,	1.0,	-1.0	},		// _NODE_SE2
+				{	-1.0,	1.0,	-1.0	},		// _NODE_SW2
+				{	-1.0,	-1.0,	-1.0	},		// _NODE_NW2
+				{	0.0,	0.0,	-1.0	}		// _NODE_C2
 			};
 
 
@@ -340,16 +386,35 @@ struct SExtraInfo;
 			// Allow full traversal
 			SNodeFlags gsfNodeFlags_all =
 			{
-				true,	// _NODE_N
-				true,	// _NODE_E
-				true,	// _NODE_S
-				true,	// _NODE_W
-				true,	// _NODE_SW
-				true,	// _NODE_SE
-				true,	// _NODE_NW
-				true,	// _NODE_NE
-				true,	// _NODE_TO		// Same as _NODE_N on 2D presentation
-				true	// _NODE_FRO	// Same as _NODE_S on 2D presentation
+				true,	// _NODE_N0
+				true,	// _NODE_E0
+				true,	// _NODE_S0
+				true,	// _NODE_W0
+				true,	// _NODE_NE0
+				true,	// _NODE_SE0
+				true,	// _NODE_SW0
+				true,	// _NODE_NW0
+				true,	// _NODE_C0
+
+				true,	// _NODE_N		// Save as _NODE_N1
+				true,	// _NODE_E		// Save as _NODE_E1
+				true,	// _NODE_S		// Save as _NODE_S1
+				true,	// _NODE_W		// Save as _NODE_W1
+				true,	// _NODE_NE		// Save as _NODE_NE1
+				true,	// _NODE_SE		// Save as _NODE_SE1
+				true,	// _NODE_SW		// Save as _NODE_SW1
+				true,	// _NODE_NW		// Save as _NODE_NW1
+				true,	// _NODE_C		// Save as _NODE_C1
+
+				true,	// _NODE_N2
+				true,	// _NODE_E2
+				true,	// _NODE_S2
+				true,	// _NODE_W2
+				true,	// _NODE_NE2
+				true,	// _NODE_SE2
+				true,	// _NODE_SW2
+				true,	// _NODE_NW2
+				true	// _NODE_C2
 			};
 
 

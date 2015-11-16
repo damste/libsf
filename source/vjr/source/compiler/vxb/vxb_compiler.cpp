@@ -242,16 +242,16 @@
 // Consider what this would look like with ~|utility|~ casks:
 //
 // Source code definition:
-//		if (~|!vxb->line->compilerInfo->sourceCode || vxb->line->forceRecompile || !vxb->line->compilerInfo->firstComp|~.name(not yet compiled))
+//		if ([|!vxb->line->compilerInfo->sourceCode || vxb->line->forceRecompile || !vxb->line->compilerInfo->firstComp|].name(not yet compiled))
 //
 // As would be visible in the GUI editor:
-//		if (~|not yet compiled|~)
+//		if ([|not yet compiled|])
 //
 // Such a presentation removes the need for comments, and would allow stacking of the below operation visibly like this:
-// 		     if (~|not yet compiled|~)			vxb->processThisLine = true;
-// 		else if (~|source length changed|~)		vxb->processThisLine = true;
-// 		else if (~|source content changed|~)	vxb->processThisLine = true;
-// 		else if (~|warnings or inquirys|~)		vxb->processThisLine = true;
+// 		     if ([|not yet compiled|])			vxb->processThisLine = true;
+// 		else if ([|source length changed|])		vxb->processThisLine = true;
+// 		else if ([|source content changed|])	vxb->processThisLine = true;
+// 		else if ([|warnings or inquirys|])		vxb->processThisLine = true;
 // 		else									vxb->processThisLine = false;	// source code's unchanged
 //////
 					if (!vxb->line->compilerInfo->sourceCode || vxb->line->forceRecompile || !vxb->line->compilerInfo->firstComp)
@@ -818,7 +818,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 
 
 		// Insert a parenthesis node at the active node, and direct the active node to the right
-		node = iNode_insert_between(active->n[_NODE_PARENT], active, _NODE_PARENT, _NODE_RIGHT);
+		node = iNode_insert_between(active->n[_NODE_SE], active, _NODE_SE, _NODE_SE);
 		if (node)
 		{
 			//////////
@@ -5621,7 +5621,7 @@ debug_break;
 
 
 		// Make sure our environment is sane, and that we're not walking over ourselves
-		if (node && node->bmp && node->iter_uid != tnIter_uid)
+		if (node && node->bmp && node->iter_uid != tnIter_uid && between(tnArrivalDirection, _NODE_MIN, _NODE_MAX))
 		{
 
 			//////////
@@ -5651,83 +5651,97 @@ debug_break;
 				// Based on the arrival direction of the rod, increase rc's extents if needed
 				switch (tnArrivalDirection)
 				{
-					case _NODE_TO:
-						// Here we use the same as _NODE_N for 2D rendering							// Connecting point:  +--+--+	// Though we use the p spot for the connection
-																									//                    + o + +
-																									//                    +--p--+
-					case _NODE_N:
+					case _NODE_N0:
+					case _NODE_N1:
+					case _NODE_N2:
 						rc->left	= min(rc->left,		p_arrival.x - lrc.left);					// Connecting point:  +--+--+
-						rc->top		= min(rc->top,		p_arrival.y - lnHeight);					//                    + + + +
+						rc->top		= min(rc->top,		p_arrival.y - lnHeight);					//                    +  +  +
 						rc->right	= max(rc->right,	p_arrival.x - lrc.left + lnWidth);			//                    +--o--+
 						SetRect(&node->rc, p_arrival.x - lrc.left, p_arrival.y - lnHeight, p_arrival.x - lrc.left + lnWidth, p_arrival.y);
 						p_origin.x	= p_arrival.x;
 						p_origin.y	= p_arrival.y - (s16)lnHeight + (s16)lrc.top;
 						break;
 
-					case _NODE_E:
+					case _NODE_E0:
+					case _NODE_E1:
+					case _NODE_E2:
 						rc->top		= min(rc->top,		p_arrival.y - lrc.top);						// Connecting point:  +--+--+
-						rc->right	= max(rc->right,	p_arrival.x + lnWidth);						//                    o + + +
+						rc->right	= max(rc->right,	p_arrival.x + lnWidth);						//                    o  +  +
 						rc->bottom	= max(rc->bottom,	p_arrival.y - lrc.top + lnHeight);			//                    +--+--+
 						SetRect(&node->rc, p_arrival.x, p_arrival.y - lrc.top, p_arrival.x + lnWidth, p_arrival.y - lrc.top + lnHeight);
 						p_origin.x	= p_arrival.x + (s16)lrc.left;
 						p_origin.y	= p_arrival.y;
 						break;
 
-					case _NODE_FRO:
-						// Here we use the same as _NODE_S for 2D rendering							// Connecting point:  +--b--+	// Though we use the b spot for the connection
-																									//                    + + o +
-																									//                    +--+--+
-					case _NODE_S:
+					case _NODE_C0:
+					case _NODE_C1:
+					case _NODE_C2:
+						// Here we use the same as _NODE_S for 2D rendering							// Connecting point:  +--+--+	// Though we use the p spot for the connection
+																									//                    +  o +
+																									//                    +--p--+
+					case _NODE_S0:
+					case _NODE_S1:
+					case _NODE_S2:
 						rc->left	= min(rc->left,		p_arrival.x - lrc.left);					// Connecting point:  +--o--+
-						rc->right	= max(rc->right,	p_arrival.x - lrc.left + lnWidth);			//                    + + + +
+						rc->right	= max(rc->right,	p_arrival.x - lrc.left + lnWidth);			//                    +  +  +
 						rc->bottom	= max(rc->bottom,	p_arrival.y + lnHeight);					//                    +--+--+
 						SetRect(&node->rc, p_arrival.x - lrc.left, p_arrival.y, p_arrival.x - lrc.left + lnWidth, p_arrival.y + lnHeight);
 						p_origin.x	= p_arrival.x;
 						p_origin.y	= p_arrival.y + (s16)lrc.top;
 						break;
 
-					case _NODE_W:
+					case _NODE_W0:
+					case _NODE_W1:
+					case _NODE_W2:
 						rc->top		= min(rc->top,		p_arrival.y - lrc.top);						// Connecting point:  +--+--+
-						rc->left	= min(rc->right,	p_arrival.x - lnWidth);						//                    + + + o
+						rc->left	= min(rc->right,	p_arrival.x - lnWidth);						//                    +  +  o
 						rc->bottom	= max(rc->bottom,	p_arrival.y - lrc.top + lnHeight);			//                    +--+--+
 						SetRect(&node->rc, p_arrival.x - lnWidth, p_arrival.y - lrc.top, p_arrival.x, p_arrival.y - lrc.top + lnHeight);
 						p_origin.x	= p_arrival.x - (s16)lnWidth + (s16)lrc.left;
 						p_origin.y	= p_arrival.y;
 						break;
 
-					case _NODE_SW:
-						rc->left	= min(rc->left,		p_arrival.x - lnWidth);						// Connecting point:  +--+--o
-						rc->bottom	= max(rc->right,	p_arrival.y + lnHeight);					//                    + + + +
-																									//                    +--+--+
-						SetRect(&node->rc, p_arrival.x - lnWidth, p_arrival.y, p_arrival.x, p_arrival.y + lnHeight);
-						p_origin.x	= p_arrival.x - (s16)lnWidth + (s16)lrc.left;
-						p_origin.y	= p_arrival.y + (s16)lrc.top;
+					case _NODE_NE0:
+					case _NODE_NE1:
+					case _NODE_NE2:
+						rc->right	= max(rc->right,	p_arrival.x + lnWidth);						// Connecting point:  +--+--+
+						rc->top		= min(rc->top,		p_arrival.y - lnHeight);					//                    +  +  +
+																									//                    o--+--+
+						SetRect(&node->rc, p_arrival.x, p_arrival.y - lnHeight, p_arrival.x + lnWidth, p_arrival.y);
+						p_origin.x	= p_arrival.x + (s16)lrc.left;
+						p_origin.y	= p_arrival.y - (s16)lnHeight + (s16)lrc.top;
 						break;
 
-					case _NODE_SE:
+					case _NODE_SE0:
+					case _NODE_SE1:
+					case _NODE_SE2:
 						rc->right	= max(rc->right,	p_arrival.x + lnWidth);						// Connecting point:  o--+--+
-						rc->bottom	= max(rc->bottom,	p_arrival.y + lnHeight);					//                    + + + +
+						rc->bottom	= max(rc->bottom,	p_arrival.y + lnHeight);					//                    +  +  +
 																									//                    +--+--+
 						SetRect(&node->rc, p_arrival.x, p_arrival.y, p_arrival.x + lnWidth, p_arrival.y + lnHeight);
 						p_origin.x	= p_arrival.x + (s16)lrc.left;
 						p_origin.y	= p_arrival.y + (s16)lrc.top;
 						break;
 
-					case _NODE_NW:
+					case _NODE_SW0:
+					case _NODE_SW1:
+					case _NODE_SW2:
+						rc->left	= min(rc->left,		p_arrival.x - lnWidth);						// Connecting point:  +--+--o
+						rc->bottom	= max(rc->right,	p_arrival.y + lnHeight);					//                    +  +  +
+																									//                    +--+--+
+						SetRect(&node->rc, p_arrival.x - lnWidth, p_arrival.y, p_arrival.x, p_arrival.y + lnHeight);
+						p_origin.x	= p_arrival.x - (s16)lnWidth + (s16)lrc.left;
+						p_origin.y	= p_arrival.y + (s16)lrc.top;
+						break;
+
+					case _NODE_NW0:
+					case _NODE_NW1:
+					case _NODE_NW2:
 						rc->left	= min(rc->left,		p_arrival.x - lnWidth);						// Connecting point:  +--+--+
-						rc->top		= min(rc->top,		p_arrival.y - lnHeight);					//                    + + + +
+						rc->top		= min(rc->top,		p_arrival.y - lnHeight);					//                    +  +  +
 																									//                    +--+--o
 						SetRect(&node->rc, p_arrival.x - lnWidth, p_arrival.y - lnHeight, p_arrival.x, p_arrival.y);
 						p_origin.x	= p_arrival.x - (s16)lnWidth  + (s16)lrc.left;
-						p_origin.y	= p_arrival.y - (s16)lnHeight + (s16)lrc.top;
-						break;
-
-					case _NODE_NE:
-						rc->right	= max(rc->right,	p_arrival.x + lnWidth);						// Connecting point:  +--+--+
-						rc->top		= min(rc->top,		p_arrival.y - lnHeight);					//                    + + + +
-																									//                    o--+--+
-						SetRect(&node->rc, p_arrival.x, p_arrival.y - lnHeight, p_arrival.x + lnWidth, p_arrival.y);
-						p_origin.x	= p_arrival.x + (s16)lrc.left;
 						p_origin.y	= p_arrival.y - (s16)lnHeight + (s16)lrc.top;
 						break;
 				}

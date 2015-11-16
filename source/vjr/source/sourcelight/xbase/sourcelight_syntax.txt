@@ -1,74 +1,56 @@
-[nameStatic]
-Global name to reference this SourceLight entry.
+The SourceLight definition language uses a bracket syntax to prototype
+what's expected in source code.  All keywords are enclosed in brackets
+directly.  Anything that's a variable is enclosed in brackets, but is
+prefixed with an @ for the member name, and then (algorithm) indicating
+which algorithm is used to extract and store the name.
 
-title:
-Something like "USE command" or "MYFUNCTION()".
+----------
+	Example:
+		#define xyz 123
+	-----
+	In order to process this, it would be setup like this:
+		if ([#]["define"])
+		{
+			remove whitespaces;
+			if ([alpha] or [alphanumeric])
+			{
+				if ([{{])
+				{
+					define_double_bracket();
 
-[short]
-Short description (five words or so, "Opens a table for editing").
+				} else {
+					define();
+				}
 
-[category]
-Internal use.
+			} else {
+				error;
+			}
+		}
+----------
 
-[subcategory]
-Internal use.
+In this example, the SourceLight compiler would see [#define] as the
+"#define" keyword, which, because of the symbols in use, is recognized
+as being processed in two steps from source code, to fundamental symbols,
+into a combined keyword, which is [#][define] translated later into a
+single [#define] keyword.
 
-[preface]
-A brief description before the syntax.
+After that it sees the next component must be alphanumeric
 
-[syntax]
-An example of this command or function's options.
 
-[long]
-Long description
 
-[notes]
-Additional remarks about the function
-<pre></pre>
-<b></b>
-<i></i>
-<u></u>
-Combinations like <bi> <ui>, etc.
-<color=#ffffff></color>
+[(]--[p]--[p]--[p]--[)]
+      |    |    |
 
-[command]
-USE
+x = ((a + b) * 3)
 
-[function]
-SAMPLE()
-
-[flags]
-(SHARED,EXCLUSIVE)
-AGAIN
-READONLY
-
-[params]
-(required) VARIABLE cTable FOLLOWS use
-(optional) KEYWORD order
-(optional) KEYWORD alias
-(optional) KEYWORD in FOLLOWS cTable
-(optional) VARIABLE cAlias FOLLOWS alias
-(required) VARIABLE xWorkArea FOLLOWS in
-(optional) KEYWORD tag FOLLOWS order
-(required) VARIABLE cName FOLLOWS order OR tag
-
-[returns]
-(none)
-
-[defaults]
-variable = default value
-
-[flow]
-META
-MEFA
-MEMA
-MERA
-
-[example]
-source code showing an example usage
-
-[similar]
-A list of nameStatic names, of which title and short are pulled in.
-
-[related]
-A list of nameStatic names, of which title and short are pulled in.
+	[=]
+   /   \
+ [x]   [t2]
+         |
+        [*]
+       /   \
+    [t1]   [3]
+      |
+     [+]
+    /   \
+  [a]   [b]

@@ -89,12 +89,14 @@
 
 //////////
 //
-// Pass-0 -- Parse each line and conduct these operations:
+// Pass-0 -- Conducts these operations:
 //
-//		blank lines
-//		comment lines
-//		#include files
-//		#define statements
+//		fundamental symbols and symbol groupings
+//		removes blank lines
+//		removes comment lines
+//		loads #include files
+//		stores #define statements
+//		at the end of pass-0, it re-processes #define statements for any nested macros
 //
 //////
 	void ilasm_pass0(SLasmFile* file)
@@ -117,6 +119,7 @@
 				// Blank line
 				line->status.isCompleted = true;
 
+
 			} else {
 				// See if we're done
 				if (comp->iCode == _ICODE_COMMENT)
@@ -124,7 +127,8 @@
 					// Comment, we're done
 					line->status.isCompleted = true;
 
-				} else if (compNext = iComps_getNth(NULL, comp, 1)) {
+
+				} else if (compNext = iComps_getNth(comp, 1)) {
 					// # prefix
 					if (comp->iCode == _ICODE_POUND_SIGN)
 					{
@@ -134,7 +138,7 @@
 						if (compNext->iCode == _ICODE_LASM_INCLUDE)
 						{
 							// The next component needs to be the filename
-							if ((compFile = iComps_getNth(NULL, compNext, 1)) && (compFile->iCode == _ICODE_DOUBLE_QUOTED_TEXT || compFile->iCode == _ICODE_SINGLE_QUOTED_TEXT))
+							if ((compFile = iComps_getNth(compNext, 1)) && (compFile->iCode == _ICODE_DOUBLE_QUOTED_TEXT || compFile->iCode == _ICODE_SINGLE_QUOTED_TEXT))
 							{
 								// Copy the filename to a local buffer
 								memcpy(fileName, line->sourceCode->data_s8 + compFile->start, compFile->length);
@@ -151,11 +155,12 @@
 								// We have the file loaded
 
 								// Insert its lines after this #include line
-								iLine_migrateLines(NULL, &file->firstLine, line);
+								iLine_migrateLines(&file->firstLine, line);
 
 								// We're done
 								fileInclude->status.isCompleted	= true;
 								line->status.isCompleted		= true;
+
 
 							} else {
 								// Syntax error
@@ -195,8 +200,8 @@
 		//////////
 		// If we have existing compiler data, get rid of it
 		//////
-			if (line->compilerInfo)		iCompiler_delete(NULL, &line->compilerInfo, false);
-			else						line->compilerInfo = iCompiler_allocate(NULL, line);		// Allocate a new one
+			if (line->compilerInfo)		iCompiler_delete(&line->compilerInfo, false);
+			else						line->compilerInfo = iCompiler_allocate(line);		// Allocate a new one
 
 
 		// Loop added only for structured exit
@@ -206,7 +211,7 @@
 			//////////
 			// Parse out the line fundamentally
 			//////
-				iComps_translateSourceLineTo(NULL, &cgcFundamentalSymbols[0], line);
+				iComps_translate_sourceLineTo(&cgcFundamentalSymbols[0], line);
 				if (!line->compilerInfo->firstComp)
 					break;		// Nothing to compile on this line
 
@@ -214,16 +219,17 @@
 			//////////
 			// If it's a line comment, we don't need to process it
 			//////
-				iComps_removeLeadingWhitespaces(NULL, line);
-				iComps_removeStartEndComments(NULL, line);				// Removes /* comments */
+				iComps_remove_leadingWhitespaces(line);
+				iComps_remove_startEndComments(line);					// Removes /*comments*/ and /+comments+/
 				if (!line->compilerInfo->firstComp)
 					break;
+
 
 				// If it's a line comment, we're done
 				if (line->compilerInfo->firstComp->iCode == _ICODE_COMMENT || line->compilerInfo->firstComp->iCode == _ICODE_LINE_COMMENT)
 				{
 					// Combine every item after this to a single comment
-					iComps_combineN(NULL, line->compilerInfo->firstComp, 99999, _ICODE_COMMENT, line->compilerInfo->firstComp->iCat, line->compilerInfo->firstComp->color);
+					iComps_combineN(line->compilerInfo->firstComp, 99999, _ICODE_COMMENT, line->compilerInfo->firstComp->iCat, line->compilerInfo->firstComp->color);
 					break;
 				}
 
@@ -231,29 +237,30 @@
 			//////////
 			// Perform natural source code fixups
 			//////
-				iComps_fixupNaturalGroupings(NULL, line);				// Fixup natural groupings [_][aaa][999] becomes [_aaa999], [999][.][99] becomes [999.99], etc.
-				iComps_removeWhitespaces(NULL, line);					// Remove all whitespaces after everything else was parsed [use][whitespace][foo] becomes [use][foo]
+				iComps_fixup_naturalGroupings(line);				// Fixup natural groupings [_][aaa][999] becomes [_aaa999], [999][.][99] becomes [999.99], etc.
+				iComps_remove_whitespaces(line);					// Remove all whitespaces after everything else was parsed [use][whitespace][foo] becomes [use][foo]
 				if (!line->compilerInfo->firstComp)
 					break;
 
 
 			//////////
-			// Remove or replace || and ||| portions
+			// Remove or replace ||| and |||| portions
 			//////
-				iComps_combineAdjacentLeadingPipesigns(NULL, line);		// Combines each leading || to whitespace, and ||| (or longer) to a line comment
+				iComps_combine_adjacentLeadingPipesigns(line);		// Combines each leading ||| to whitespace, and |||| (or longer) to a line comment
 
 				// We may have re-introduced a || whitespace, which would've been removed above
 				if (line->compilerInfo->firstComp->iCode == _ICODE_WHITESPACE)
 				{
-					iComps_removeWhitespaces(NULL, line);
+					iComps_remove_whitespaces(line);
 					if (!line->compilerInfo->firstComp)
 						break;
 				}
 
+
 				// We may have re-introduced line comments (by converting ||| (or longer) to a line comment)
 				if (iiComps_isComment(line->compilerInfo->firstComp->iCode))
 				{
-					iComps_truncateAtComments(NULL, line);
+					iComps_truncate_atComments(line);
 					if (!line->compilerInfo->firstComp)
 						break;
 				}
@@ -262,7 +269,7 @@
 			//////////
 			// Translate remaining sequences to known lasm keywords
 			//////
-				iComps_translateToOthers(NULL, (SAsciiCompSearcher*)&cgcKeywordsLasm[0], line);
+				iComps_translate_toOthers((SAsciiCompSearcher*)&cgcKeywordsLasm[0], line->compilerInfo->firstComp);
 
 
 			// Exit for structured programming
@@ -286,7 +293,7 @@
 //
 //		"#define"
 //		name
-//	
+//
 //		optional "("
 //			:repeat until matching ")"
 //				name
@@ -295,9 +302,11 @@
 //					else
 //						exit
 //			:end
-//		
+//
 //		optional {
 //			all content to matching }, with every intermediate \} escaped
+//		optional {{
+//			all content to matching }}, with every intermediate \} escaped
 //		else
 //			:repeat
 //				all content to end of line
@@ -328,7 +337,7 @@
 				//////////
 				// Validate it's alphanumeric
 				//////
-					if (!iiComps_isAlphanumeric(NULL, compName))
+					if (!iiComps_isAlphanumeric(compName))
 					{
 						++line->status.errors;
 						printf("--Error(%d,%d): alphanumeric was expected in %s\n", line->lineNumber, compName->start, file->fileName.data_s8);
@@ -355,7 +364,7 @@
 				//////////
 				// Load any optional parameters
 				//////
-					compNext = iComps_getNth(NULL, compName, 1);
+					compNext = iComps_getNth(compName, 1);
 					if (compNext->iCode == _ICODE_PARENTHESIS_LEFT)
 					{
 						// It begins with an open parenthesis
@@ -368,7 +377,7 @@
 						// When we get here, line and compNext are pointing to the closing )
 
 						// Skip past the closing )
-						if (!iiLine_skipTo_nextComp(NULL, &line, &compNext))
+						if (!iiLine_skipTo_nextComp(&line, &compNext))
 						{
 							++line->status.errors;
 							printf("--Error: unexpected end of file in %s\n", file->fileName.data_s8);
@@ -390,7 +399,7 @@
 							// Find closing }
 							memset(&cb, 0, sizeof(cb));
 							cb._func = (sptr)&iilasm_pass0_define__callback_bypassEscapedBraces;
-							if (!iLine_scanComps_forward_withCallback(NULL, line, compNext, &cb, true))
+							if (!iLine_scanComps_forward_withCallback(line, compNext, &cb, true))
 							{
 								// Not found
 								++line->status.errors;
@@ -403,19 +412,19 @@
 						///////////
 						// Move to post-{ and pre-}
 						//////
-							iiLine_skipTo_nextComp(NULL,	&line,		&compNext);
-							iiLine_skipTo_prevComp(NULL,	&cb.line,	&cb.comp);
+							iiLine_skipTo_nextComp(&line,		&compNext);
+							iiLine_skipTo_prevComp(&cb.line,	&cb.comp);
 
 
 						//////////
 						// Copy inner content (between the { and }, and excluding those two characters)
 						//////
-							define->firstLine = iLine_copyComps_toNewLines(NULL, line, compNext, cb.line, cb.comp, true, true);
+							define->firstLine = iLine_copyComps_toNewLines(line, compNext, cb.line, cb.comp, true, true);
 
 
 					} else {
 						// Copy everything, including multiple lines ending in '\'
-						define->firstLine = iLine_copyComps_toNewLines_untilTerminating(NULL, line, compNext, _ICODE_BACKSLASH, true, true, &cb);
+						define->firstLine = iLine_copyComps_toNewLines_untilTerminating(line, compNext, _ICODE_BACKSLASH, true, true, &cb);
 					}
 					// If we get here, success
 
@@ -423,7 +432,7 @@
 				//////////
 				// Unescape \{, \}, and \\ within the block
 				//////
-					iLines_unescape_iCodes(NULL, define->firstLine, _ICODE_BRACE_LEFT,	_ICODE_BRACE_RIGHT, _ICODE_BACKSLASH);
+					iLines_unescape_iCodes(define->firstLine, _ICODE_BRACE_LEFT,	_ICODE_BRACE_RIGHT, _ICODE_BACKSLASH);
 
 
 				//////////
@@ -468,7 +477,7 @@ politely_fail:
 				if (compNext && (compNext->iCode == _ICODE_BRACE_LEFT || compNext->iCode == _ICODE_BRACE_RIGHT))
 				{
 					// Yes, but are they directly adjacent?
-					if (iiComps_areCompsAdjacent(NULL, cb->comp, compNext))
+					if (iiComps_areCompsAdjacent(cb->comp, compNext))
 					{
 						// Yes, so skip this one because it's escaped
 						cb->comp = compNext;
@@ -538,7 +547,7 @@ politely_fail:
 				//////////
 				// Validate it's a token
 				//////
-					if (!llSkipTest && !iiComps_isAlphanumeric(NULL, comp))
+					if (!llSkipTest && !iiComps_isAlphanumeric(comp))
 					{
 						++line->status.errors;
 						printf("--Error(%d,%d): expected token in %s\n", line->lineNumber, comp->start, file->fileName.data_s8);
@@ -557,7 +566,7 @@ politely_fail:
 				//////////
 				// Skip to next parameter
 				//////
-					if (iiLine_skipTo_nextComp(NULL, &line, &comp) < 0)
+					if (iiLine_skipTo_nextComp(&line, &comp) < 0)
 					{
 						// Unexpected end of file
 						printf("--Error: unexpected end of file in %s\n", file->fileName.data_s8);
@@ -574,7 +583,7 @@ politely_fail:
 						//////////
 						// Skip past it
 						//////
-							if (iiLine_skipTo_nextComp(NULL, &line, &comp) < 0)
+							if (iiLine_skipTo_nextComp(&line, &comp) < 0)
 							{
 								// Unexpected end of file
 								printf("--Error: unexpected end of file in %s\n", file->fileName.data_s8);
@@ -585,7 +594,7 @@ politely_fail:
 						//////////
 						// Next component must be right parenthesis or alphanumeric
 						//////
-							if (comp->iCode != _ICODE_PARENTHESIS_RIGHT && !iiComps_isAlphanumeric(NULL, comp))
+							if (comp->iCode != _ICODE_PARENTHESIS_RIGHT && !iiComps_isAlphanumeric(comp))
 							{
 								++line->status.errors;
 								printf("--Error(%d,%d): expected token or right parenthesis in %s\n", line->lineNumber, comp->start, file->fileName.data_s8);

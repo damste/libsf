@@ -111,6 +111,7 @@
 	const u32		_ICAT_SCOPE										= 12;	// ::
 	const u32		_ICAT_RANGE										= 13;	// ..
 	const u32		_ICAT_COMMENT									= 14;	// * /* */ /+ +/ && //
+	const u32		_ICAT_DEFINITION								= 15;	// Definition keyword, function, adhoc, struct, class, union, enum, etc.
 	// Bit settings
 	const u32		_ICAT_DOT										= 1 << 25;
 	const u32		_ICAT_LOGIC										= 1 << 26;

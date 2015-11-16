@@ -1,0 +1,74 @@
+[nameStatic]
+Global name to reference this SourceLight entry.
+
+title:
+Something like "USE command" or "MYFUNCTION()".
+
+[short]
+Short description (five words or so, "Opens a table for editing").
+
+[category]
+Internal use.
+
+[subcategory]
+Internal use.
+
+[preface]
+A brief description before the syntax.
+
+[syntax]
+An example of this command or function's options.
+
+[long]
+Long description
+
+[notes]
+Additional remarks about the function
+<pre></pre>
+<b></b>
+<i></i>
+<u></u>
+Combinations like <bi> <ui>, etc.
+<color=#ffffff></color>
+
+[command]
+USE
+
+[function]
+SAMPLE()
+
+[flags]
+(SHARED,EXCLUSIVE)
+AGAIN
+READONLY
+
+[params]
+(required) VARIABLE cTable FOLLOWS use
+(optional) KEYWORD order
+(optional) KEYWORD alias
+(optional) KEYWORD in FOLLOWS cTable
+(optional) VARIABLE cAlias FOLLOWS alias
+(required) VARIABLE xWorkArea FOLLOWS in
+(optional) KEYWORD tag FOLLOWS order
+(required) VARIABLE cName FOLLOWS order OR tag
+
+[returns]
+(none)
+
+[defaults]
+variable = default value
+
+[flow]
+META
+MEFA
+MEMA
+MERA
+
+[example]
+source code showing an example usage
+
+[similar]
+A list of nameStatic names, of which title and short are pulled in.
+
+[related]
+A list of nameStatic names, of which title and short are pulled in.

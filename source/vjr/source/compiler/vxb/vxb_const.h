@@ -136,67 +136,114 @@
 	const u32		_OP_TYPE_PARENTHESIS_LEFT						= 9;// (Temporary) A left parenthesis
 
 	const u32									_NODE_MIN		= 0;
-	const u32		_NODE_N											= 0;
-	const u32		_NODE_NORTH										= 0;
-	const u32		_NODE_PARENT									= 0;
-	const u32		_NODE_UP										= 0;
-	const u32		_NODE_E										= 1;
-	const u32		_NODE_EAST									= 1;
-	const u32		_NODE_NEXT									= 1;
-	const u32		_NODE_RIGHT									= 1;
-	const u32		_NODE_S											= 2;
-	const u32		_NODE_SOUTH										= 2;
-	const u32		_NODE_DOWN										= 2;
-	const u32		_NODE_W										= 3;
-	const u32		_NODE_WEST									= 3;
-	const u32		_NODE_PREV									= 3;
-	const u32		_NODE_LEFT									= 3;
-	const u32		_NODE_SW										= 4;
-	const u32		_NODE_SOUTHWEST									= 4;
-	const u32		_NODE_LEFT_DN									= 4;
-	const u32		_NODE_SE									= 5;
-	const u32		_NODE_SOUTHEAST								= 5;
-	const u32		_NODE_RIGHT_DN								= 5;
-	const u32		_NODE_NW										= 6;
-	const u32		_NODE_NORTHWEST									= 6;
-	const u32		_NODE_LEFT_UP									= 6;
-	const u32		_NODE_NE									= 7;
-	const u32		_NODE_NORTHEAST								= 7;
-	const u32		_NODE_RIGHT_UP								= 7;
-	const u32		_NODE_FRONT										= 8;
-	const u32		_NODE_TO										= 8;
-	const u32		_NODE_BACK									= 9;
-	const u32		_NODE_FRO									= 9;
-	const u32									_NODE_MAX		= 9;
-	const u32									_NODE_COUNT		= 10;
+	const u32									_NODE0_MIN		= 0;
+	const u32		_NODE_N0										= 0;
+	const u32		_NODE_E0										= 1;
+	const u32		_NODE_S0										= 2;
+	const u32		_NODE_W0										= 3;
+	const u32		_NODE_NE0										= 4;
+	const u32		_NODE_SE0										= 5;
+	const u32		_NODE_SW0										= 6;
+	const u32		_NODE_NW0										= 7;
+	const u32		_NODE_C0										= 8;
+	const u32									_NODE0_MAX		= 8;
+	const u32									_NODE1_MIN		= 9;
+	const u32		_NODE_N											= 9;
+	const u32		_NODE_N1										= 9;
+	const u32		_NODE_E											= 10;
+	const u32		_NODE_E1										= 10;
+	const u32		_NODE_S											= 11;
+	const u32		_NODE_S1										= 11;
+	const u32		_NODE_W											= 12;
+	const u32		_NODE_W1										= 12;
+	const u32		_NODE_NE										= 13;
+	const u32		_NODE_NE1										= 13;
+	const u32		_NODE_SE										= 14;
+	const u32		_NODE_SE1										= 14;
+	const u32		_NODE_SW										= 15;
+	const u32		_NODE_SW1										= 15;
+	const u32		_NODE_NW										= 16;
+	const u32		_NODE_NW1										= 16;
+	const u32		_NODE_C											= 17;
+	const u32		_NODE_C1										= 17;
+	const u32									_NODE1_MAX		= 17;
+	const u32									_NODE2_MIN		= 18;
+	const u32		_NODE_N2										= 18;
+	const u32		_NODE_E2										= 19;
+	const u32		_NODE_S2										= 20;
+	const u32		_NODE_W2										= 21;
+	const u32		_NODE_NE2										= 22;
+	const u32		_NODE_SE2										= 23;
+	const u32		_NODE_SW2										= 24;
+	const u32		_NODE_NW2										= 25;
+	const u32		_NODE_C2										= 26;
+	const u32									_NODE2_MAX		= 27;
+	const u32									_NODE_MAX		= 27;
+	const u32									_NODE_COUNT		= 27;
 //////////
 // Source code shortcuts:
-// 	case _NODE_N
-// 	case _NODE_E
-// 	case _NODE_S
-// 	case _NODE_W
-// 	case _NODE_SW
-// 	case _NODE_SE
-// 	case _NODE_NW
-// 	case _NODE_NE
-// 	case _NODE_TO
-// 	case _NODE_FRO
+// 	case _NODE_N0
+// 	case _NODE_E0
+// 	case _NODE_S0
+// 	case _NODE_W0
+// 	case _NODE_SW0
+// 	case _NODE_SE0
+// 	case _NODE_NW0
+// 	case _NODE_NE0
+// 	case _NODE_C0
+// 	case _NODE_N:	// Aliased to: _NODE_N1
+// 	case _NODE_E	// Aliased to: _NODE_E1
+// 	case _NODE_S	// Aliased to: _NODE_S1
+// 	case _NODE_W	// Aliased to: _NODE_W1
+// 	case _NODE_SW	// Aliased to: _NODE_SW1
+// 	case _NODE_SE	// Aliased to: _NODE_SE1
+// 	case _NODE_NW	// Aliased to: _NODE_NW1
+// 	case _NODE_NE	// Aliased to: _NODE_NE1
+// 	case _NODE_C	// Aliased to: _NODE_C1
+// 	case _NODE_N2
+// 	case _NODE_E2
+// 	case _NODE_S2
+// 	case _NODE_W2
+// 	case _NODE_SW2
+// 	case _NODE_SE2
+// 	case _NODE_NW2
+// 	case _NODE_NE2
+// 	case _NODE_C2
 //////
 
 	// A translation matrix 
 	const u32	gnNodeMirrors[_NODE_COUNT] =
 	{
-	//	Orientation				Mirror
+	//	Mirror...				...of slot
+		_NODE_S2,			// _NODE_N0
+		_NODE_W2,			// _NODE_E0
+		_NODE_N2,			// _NODE_S0
+		_NODE_E2,			// _NODE_W0
+		_NODE_SW2,			// _NODE_NE0
+		_NODE_NW2,			// _NODE_SE0
+		_NODE_NE2,			// _NODE_SW0
+		_NODE_SE2,			// _NODE_NW0
+		_NODE_C2,			// _NODE_C0
+
 		_NODE_S,			// _NODE_N
 		_NODE_W,			// _NODE_E
-		_NODE_E,			// _NODE_W
 		_NODE_N,			// _NODE_S
-		_NODE_NE,			// _NODE_SW
-		_NODE_NW,			// _NODE_SE
-		_NODE_SE,			// _NODE_NW
+		_NODE_E,			// _NODE_W
 		_NODE_SW,			// _NODE_NE
-		_NODE_TO,			// _NODE_FRO
-		_NODE_FRO,			// _NODE_TO
+		_NODE_NW,			// _NODE_SE
+		_NODE_NE,			// _NODE_SW
+		_NODE_SE,			// _NODE_NW
+		_NODE_C,			// _NODE_C
+
+		_NODE_S0,			// _NODE_N2
+		_NODE_W0,			// _NODE_E2
+		_NODE_N0,			// _NODE_S2
+		_NODE_E0,			// _NODE_W2
+		_NODE_SW0,			// _NODE_NE2
+		_NODE_NW0,			// _NODE_SE2
+		_NODE_NE0,			// _NODE_SW2
+		_NODE_SE0,			// _NODE_NW2
+		_NODE_C0			// _NODE_C2
 	};
 
 
