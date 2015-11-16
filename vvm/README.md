@@ -1,14 +1,7 @@
-VVM
-====
-        Visual FreePro Virtual Machine, independent and capable of being used for non-VFrP applications.
+Nov.16.2015
+-----------
 
-Timeline
-====
-        Apr.29.2013 - Visual FreePro development suspended pending completion of WhiteBox.
-        Feb.20.2013 - RXML engine has been coded, partially tested. A proper test harness and related support infrastructure is being created.
-        Feb.17.2013 - Added SHA-1 support to VVM for reliable hashing.
-        Dec.28.2012 - Working no RXML support engine.
-        Nov.13.2012 - Added vvmmc, vasm, associated localization DLLs.
-        Oct.05.2012 - Added ENU and ES resource DLLs. Need someone to translate for ES resource DLL. Am using Google Translate.
-        Oct.03.2012 - Instantiating, handling OS-specific messages properly.
+&nbsp;&nbsp;&nbsp;&nbsp;The source folder contains all source code for the full VFrP Visual FreePro Project, written by Liberty Software Foundation.  Our talents and skills given back to God, from whom they came, being used to serve His Kingdom here upon this Earth.  In much prayer and supplication, knowing that He is able to do exceedingly abundantly beyond any of our needs.  Jesus Christ, our Savior, to Him be all the glory.
+
+&nbsp;&nbsp;&nbsp;&nbsp;Development is currently suspended pending completion of [Visual FreePro, Jr.](https://github.com/RickCHodgin/libsf/tree/master/source/vjr/projects) and [source code](https://github.com/RickCHodgin/libsf/tree/master/source/vjr/source).
 
