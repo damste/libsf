@@ -3400,7 +3400,7 @@ debug_break;
 			//////////
 			// Iterate through all base class events and methods
 			//////
-				for (lnI = 0, e = &obj->ev.methods[0]; lnI < _EVENT_MAX_COUNT; lnI++, e++)
+				for (lnI = 0, e = &obj->ev.methods[0]; lnI < (s32)_EVENT_MAX_COUNT; lnI++, e++)
 				{
 					// Is this event valid for this class?
 					if (e->_event)
@@ -3437,7 +3437,7 @@ debug_break;
 							if (tlSearchDefaultEMs)
 							{
 								// Is it a match?
-								if (gsEvents_master[lnI].eventNameLength == lnDataLength && _memicmp(gsEvents_master[lnI].eventName_s8, lcData, lnDataLength) == 0)
+								if ((s32)gsEvents_master[lnI].eventNameLength == lnDataLength && _memicmp(gsEvents_master[lnI].eventName_s8, lcData, lnDataLength) == 0)
 								{
 									// Yes
 									if (tnIndex)		*tnIndex	= lnI;

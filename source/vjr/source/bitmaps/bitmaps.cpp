@@ -4777,7 +4777,7 @@ return;
 				memcpy(buffer + strlen(buffer), node->comp->line->sourceCode->data_s8 + node->comp->start, min(node->comp->length, (s32)sizeof(buffer) - 20));
 
 				// Try to do a reverse lookup on the iCode
-				if (lciCodeName = iiComps_visualize_lookup_iCode(node->comp->iCode))
+				if ((lciCodeName = iiComps_visualize_lookup_iCode(node->comp->iCode)))
 				{
 					// Grab the name
 					lnStart = strlen(buffer);

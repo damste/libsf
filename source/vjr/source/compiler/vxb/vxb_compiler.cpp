@@ -214,7 +214,7 @@
 		vxb->adhoc		= NULL;
 		vxb->flowof		= NULL;
 
-
+return;
 		// Iterate through every line in this codeBlock
 		for (vxb->line = vxb->sem->firstLine; vxb->line; vxb->line = vxb->line->ll.nextLine)
 		{
@@ -3003,7 +3003,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 				if (comp->iCode == tniCodeEscape)
 				{
 					// Is there a component after?
-					if (compNext = iComps_getNth(comp, 1))
+					if ((compNext = iComps_getNth(comp, 1)))
 					{
 						// Is it iCode1, iCode2, or iCode3
 						if ((compNext->iCode == tniCode1 || compNext->iCode == tniCode2 || compNext->iCode == tniCode3))
@@ -3723,7 +3723,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 										sprintf(accumBuffer, "[");
 										memcpy(accumBuffer + strlen(accumBuffer), comp->line->sourceCode->data_s8 + comp->start, min(comp->length, (s32)sizeof(accumBuffer) - 20));
 
-										if (lciCodeName = iiComps_visualize_lookup_iCode(comp->iCode))		sprintf(accumBuffer + strlen(accumBuffer), " %s,", lciCodeName);
+										if ((lciCodeName = iiComps_visualize_lookup_iCode(comp->iCode)))	sprintf(accumBuffer + strlen(accumBuffer), " %s,", lciCodeName);
 										else																sprintf(accumBuffer + strlen(accumBuffer), " %d,", comp->iCode);
 
 										sprintf(accumBuffer + strlen(accumBuffer), "%u,%u]", comp->start, comp->length);
@@ -3763,7 +3763,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 								sprintf(accumBuffer, "[");
 								memcpy(accumBuffer+ strlen(accumBuffer), comp->line->sourceCode->data_s8 + comp->start, min(comp->length, (s32)sizeof(accumBuffer) - 20));
 
-								if (lciCodeName = iiComps_visualize_lookup_iCode(comp->iCode))		sprintf(accumBuffer + strlen(accumBuffer), " %s,", lciCodeName);
+								if ((lciCodeName = iiComps_visualize_lookup_iCode(comp->iCode)))	sprintf(accumBuffer + strlen(accumBuffer), " %s,", lciCodeName);
 								else																sprintf(accumBuffer + strlen(accumBuffer), " %d,", comp->iCode);
 
 								sprintf(accumBuffer + strlen(accumBuffer), "%u,%u]", comp->start, comp->length);
@@ -5210,7 +5210,7 @@ debug_break;
 			if (n)
 			{
 				// Connect each node
-				for (lnI = 0; lnI < _NODE_COUNT; lnI++)
+				for (lnI = 0; lnI < (s32)_NODE_COUNT; lnI++)
 					nodeNew->n[lnI] = n[lnI];
 			}
 		}
@@ -5427,13 +5427,13 @@ debug_break;
 			//////////
 			// Traverse the delete paths that should be deleted
 			//////
-				for (lnI = 0; lnI < _NODE_COUNT; lnI++)
+				for (lnI = 0; lnI < (s32)_NODE_COUNT; lnI++)
 				{
 					// Set the directions
 					if (nodeFlags->n[lnI] && node->n[lnI])
 					{
 						// Populate our goDirs directions from here
-						for (lnJ = 0; lnJ < _NODE_COUNT; lnJ++)
+						for (lnJ = 0; lnJ < (s32)_NODE_COUNT; lnJ++)
 							_nodeFlagsLocal.n[lnI] = (node->n[lnI]	!= nodeStopper1);
 
 						// Go deeper
@@ -5509,7 +5509,7 @@ debug_break;
 				iBmp_node_renderComp(node, 4, props, 1, lnIter_uid);
 
 				// Kick off renderings in all directions from this root node
-				for (lnI = 0; lnI < _NODE_COUNT; lnI++)
+				for (lnI = 0; lnI < (s32)_NODE_COUNT; lnI++)
 				{
 					// Kick off this if we're supposed to go that way
 					if (nodeFlags->n[lnI] && node->n[lnI])
@@ -5533,7 +5533,7 @@ debug_break;
 				iiNode_get_bitmapExtents(node, NULL, _NODE_SE, NULL, &lrc, p, tfRodLength, lnIter_uid, props, false);		// For initial computation, pretend we're coming down on a southeast node rod
 
 				// Kick off a "get extents" on every rendered
-				for (lnI = 0; lnI < _NODE_COUNT; lnI++)
+				for (lnI = 0; lnI < (s32)_NODE_COUNT; lnI++)
 				{
 					// Kick off this if we're supposed to go that way
 					if (nodeFlags->n[lnI] && node->n[lnI])
@@ -5567,7 +5567,7 @@ debug_break;
 					iiNode_get_bitmapExtents(node, NULL, _NODE_SE, bmp, &lrc, p, tfRodLength, lnIter_uid, props, false);		// For initial computation, pretend we're coming down on a southeast node rod
 
 					// Kick off a render on every rendered
-					for (lnI = 0; lnI < _NODE_COUNT; lnI++)
+					for (lnI = 0; lnI < (s32)_NODE_COUNT; lnI++)
 					{
 						// Kick off this if we're supposed to go that way
 						if (nodeFlags->n[lnI] && node->n[lnI])
@@ -5598,7 +5598,7 @@ debug_break;
 			// Kick off all renderings from here
 			if (tlGoDeeper)
 			{
-				for (lnI = 0; lnI < _NODE_COUNT; lnI++)
+				for (lnI = 0; lnI < (s32)_NODE_COUNT; lnI++)
 				{
 					// Are we're supposed to go this way?
 					if (node->n[lnI] && node->n[lnI] != nodeStopper && node->n[lnI]->iter_uid != tnIter_uid)
@@ -5621,7 +5621,7 @@ debug_break;
 
 
 		// Make sure our environment is sane, and that we're not walking over ourselves
-		if (node && node->bmp && node->iter_uid != tnIter_uid && between(tnArrivalDirection, _NODE_MIN, _NODE_MAX))
+		if (node && node->bmp && node->iter_uid != tnIter_uid && between(tnArrivalDirection, (s32)_NODE_MIN, (s32)_NODE_MAX))
 		{
 
 			//////////
@@ -5642,9 +5642,11 @@ debug_break;
 			//
 			//                top
 			//                 -
-			//              +-----+
-			//     left -   |     |   right +
-			//              +-----+
+			//
+			//              +--+--+
+			//   left -     +  +  +     + right
+			//              +--+--+
+			//
 			//                 +
 			//               bottom
 			//////
@@ -5764,7 +5766,7 @@ debug_break;
 				if (tlGoDeeper)
 				{
 					// Iterate off in all directions
-					for (lnI = 0; lnI < _NODE_COUNT; lnI++)
+					for (lnI = 0; lnI < (s32)_NODE_COUNT; lnI++)
 					{
 						// Are we're supposed to go this way?
 						if (node->n[lnI] && node->n[lnI] != nodeStopper && node->n[lnI]->iter_uid != tnIter_uid)
@@ -14885,7 +14887,7 @@ goto_next_component:
 		if (linesFrom && *linesFrom && lineTarget)
 		{
 // TODO:  Untested.  Breakpoint and examine.
-_asm int 3;
+debug_break;
 			//////////
 			// Point lineTarget to the start of the line block
 			//////
@@ -15031,7 +15033,7 @@ _asm int 3;
 					return(NULL);
 
 				// Copy components smartly
-				memset(cb, 0, sizeof(cb));
+				memset(cb, 0, sizeof(*cb));
 				memset(&x, 0, sizeof(x));
 				cb->_func	= (sptr)&iiLine_copyComps_toNewLines_untilTerminating__callback;
 				cb->x		= (void*)&x;

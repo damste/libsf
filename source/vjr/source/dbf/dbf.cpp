@@ -1886,7 +1886,7 @@
 			for (lnI = 0; lnI < lnI_max; lnI++, wa++)
 			{
 				// If it's a table, and the alias name is the same length, continue checking the name
-				if (wa->isUsed && wa->aliasLength == tnNameLength)
+				if (wa->isUsed && wa->aliasLength == (s32)tnNameLength)
 				{
 					// Check the name
 					if (_memicmp(wa->alias, tcName, tnNameLength) == 0)
@@ -3031,6 +3031,7 @@ debug_break;
 	{
 // Code is incomplete.  Needs to be written to copy the field contents into a variable
 		debug_break;
+		return(NULL);
 	}
 
 	s8* iiDbf_getField_data2(SWorkArea* wa, u32 fieldNumber, u8* dest, u32 destLength, bool tlRetrieveAsIndexKey)

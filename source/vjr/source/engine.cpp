@@ -106,34 +106,34 @@
 			//////////
 			// thisCode hierarchy
 			//////
-				for (lnI = 0, thisCode = &gsThisCode[0]; lnI < _MAX_PROCEDURE_LEVELS; lnI++, thisCode = &gsThisCode[lnI])
+				for (lnI = 0, thisCode = &gsThisCode[0]; lnI < (s32)_MAX_PROCEDURE_LEVELS; lnI++, thisCode = &gsThisCode[lnI])
 				{
 					// Points backward to previous
 					if (lnI != 0)
 						thisCode->ll.prevThisCode = &gsThisCode[lnI - 1];
 
 					// Points forward to next
-					if (lnI < _MAX_PROCEDURE_LEVELS - 1)
+					if (lnI < (s32)_MAX_PROCEDURE_LEVELS - 1)
 						thisCode->ll.nextThisCode = &gsThisCode[lnI + 1];
 
 					// Returns
 					thisCode->live.returnsCount = _MAX_RETURNS_COUNT;
-					for (lnJ = 0; lnJ < _MAX_RETURNS_COUNT; lnJ++)
+					for (lnJ = 0; lnJ < (s32)_MAX_RETURNS_COUNT; lnJ++)
 						iLl_appendExistingNodeAtBeginning((SLL**)&thisCode->live.returns, (SLL*)iVariable_create(_VAR_TYPE_LOGICAL, NULL, true));
 
 					// Parameters
 					thisCode->live.paramsCount = _MAX_PARAMS_COUNT;
-					for (lnJ = 0; lnJ < _MAX_PARAMS_COUNT; lnJ++)
+					for (lnJ = 0; lnJ < (s32)_MAX_PARAMS_COUNT; lnJ++)
 						iLl_appendExistingNodeAtBeginning((SLL**)&thisCode->live.params, (SLL*)iVariable_create(_VAR_TYPE_LOGICAL, NULL, true));
 
 					// Scoped
 					thisCode->live.scopedCount = _MAX_SCOPED_COUNT;
-					for (lnJ = 0; lnJ < _MAX_SCOPED_COUNT; lnJ++)
+					for (lnJ = 0; lnJ < (s32)_MAX_SCOPED_COUNT; lnJ++)
 						iLl_appendExistingNodeAtBeginning((SLL**)&thisCode->live.scoped, (SLL*)iVariable_create(_VAR_TYPE_LOGICAL, NULL, true));
 
 					// Locals
 					thisCode->live.localsCount = _MAX_LOCALS_COUNT;
-					for (lnJ = 0; lnJ < _MAX_LOCALS_COUNT; lnJ++)
+					for (lnJ = 0; lnJ < (s32)_MAX_LOCALS_COUNT; lnJ++)
 						iLl_appendExistingNodeAtBeginning((SLL**)&thisCode->live.locals, (SLL*)iVariable_create(_VAR_TYPE_LOGICAL, NULL, true));
 				}
 
@@ -241,7 +241,7 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 
 						} else {
 							// It's a number, display it
-							if (dfunc = iDllFunc_find_byName(compNext->line->sourceCode->data_s8 + compNext->start, compNext->length))
+							if ((dfunc = iDllFunc_find_byName(compNext->line->sourceCode->data_s8 + compNext->start, compNext->length)))
 							{
 								// It is a DLL function
 								if (dfunc->rp.type == _DLL_TYPE_VOID)
@@ -375,7 +375,7 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 
 						} else {
 							// It may be a DLL
-							if (dfunc = iDllFunc_find_byName(comp->line->sourceCode->data_s8 + comp->start, comp->length))
+							if ((dfunc = iDllFunc_find_byName(comp->line->sourceCode->data_s8 + comp->start, comp->length)))
 							{
 								// It is a DLL function
 								memset(&lrpar, 0, sizeof(lrpar));
@@ -1648,7 +1648,7 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 				for (adhoc = thisCodeSearch->live.firstAdhoc; adhoc; adhoc = adhoc->ll.nextFunc)
 				{
 					// Is it the same length?
-					if (!adhoc->isPrivate && adhoc->name.length == lnVarNameLength)
+					if (!adhoc->isPrivate && adhoc->name.length == (s32)lnVarNameLength)
 					{
 						// Is it the same name?
 						if (_memicmp(adhoc->name.data_cs8, lcVarName, lnVarNameLength) == 0)
@@ -1669,7 +1669,7 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 			for (func = gsRootFunc; func; func = func->ll.nextFunc)
 			{
 				// Is it the same length?
-				if (func->name.length == lnVarNameLength)
+				if (func->name.length == (s32)lnVarNameLength)
 				{
 					// Is it the same name?
 					if (_memicmp(func->name.data_cs8, lcVarName, lnVarNameLength) == 0)
@@ -1689,7 +1689,7 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 			for (dllfunc = gsRootDllFunc; dllfunc; dllfunc = dllfunc->ll.nextDllFunc)
 			{
 				// Is it the same length?
-				if (dllfunc->name.length == lnVarNameLength)
+				if (dllfunc->name.length == (s32)lnVarNameLength)
 				{
 					// Is it the same name?
 					if (_memicmp(dllfunc->name.data_cs8, lcVarName, lnVarNameLength) == 0)

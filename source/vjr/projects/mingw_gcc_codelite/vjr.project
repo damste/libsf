@@ -40,7 +40,7 @@
   <VirtualDirectory Name="src">
     <File Name="../../source/vjr.cpp"/>
     <File Name="../../source/vjr_sup.cpp" ExcludeProjConfig="Debug;Debug64;Release"/>
-    <File Name="../../source/bmps/bmps.cpp"/>
+    <File Name="../../source/bmps/bmps.cpp" ExcludeProjConfig=""/>
   </VirtualDirectory>
   <VirtualDirectory Name="header">
     <File Name="../../source/compiler_const.h"/>
@@ -64,9 +64,9 @@
     <File Name="../../source/bmps/graphics/bitmaps.h"/>
     <File Name="../../source/forms3d/grace.h"/>
     <File Name="../../source/compiler/vxb/vxb_defs.h"/>
+    <File Name="../../source/vjr_structs00.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="other">
-    <File Name="../../source/bitmaps.cpp" ExcludeProjConfig="Debug;Debug64;Release"/>
     <File Name="../../source/builder.cpp" ExcludeProjConfig="Debug;Debug64;Release"/>
     <File Name="../../source/callbacks.cpp" ExcludeProjConfig="Debug;Debug64;Release"/>
     <File Name="../../source/compiler.cpp" ExcludeProjConfig="Debug;Debug64;Release"/>
@@ -79,6 +79,8 @@
     <File Name="../../source/sound/sound.cpp" ExcludeProjConfig="Debug;Debug64;Release"/>
     <File Name="../../../../utils/common/cpp/ll.cpp" ExcludeProjConfig="Debug;Debug64;Release"/>
     <File Name="../../../../utils/common/cpp/builder.cpp" ExcludeProjConfig="Debug;Debug64;Release"/>
+    <File Name="../../source/objects/accessors.cpp" ExcludeProjConfig="Debug"/>
+    <File Name="../../source/bitmaps/bitmaps.cpp" ExcludeProjConfig="Debug"/>
   </VirtualDirectory>
   <VirtualDirectory Name="commands">
     <File Name="../../source/commands/command_defs.h"/>
@@ -272,4 +274,17 @@
       </Completion>
     </Configuration>
   </Settings>
+  <VirtualDirectory Name="compiler">
+    <File Name="../../source/compiler/vxb/vxb_compiler.cpp" ExcludeProjConfig="Debug"/>
+    <File Name="../../source/compiler/vxb/vxb_const.h"/>
+    <File Name="../../source/compiler/vxb/vxb_dictionary.cpp" ExcludeProjConfig="Debug"/>
+    <File Name="../../source/compiler/vxb/vxb_dictionary.h"/>
+    <File Name="../../source/compiler/vxb/vxb_globals.h"/>
+    <File Name="../../source/compiler/vxb/vxb_structs.h"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="dllfuncs">
+    <File Name="../../source/dllfuncs/dll_dispatch_32.asm"/>
+    <File Name="../../source/dllfuncs/dll_dispatch_64.asm"/>
+    <File Name="../../source/dllfuncs/dllfuncs.cpp" ExcludeProjConfig="Debug"/>
+  </VirtualDirectory>
 </CodeLite_Project>

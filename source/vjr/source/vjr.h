@@ -142,6 +142,7 @@
 	#include <stdlib.h>
 
 	#include "vjr_const.h"
+	#include "\libsf\utils\common\cpp\ll.h"
 	#include "vjr_structs00.h"
 	#include "vjr_defs0.h"
 
@@ -301,6 +302,7 @@
 	#endif
 
 	#include "vjr_const.h"
+	#include "\libsf\utils\common\cpp\ll.h"
 	#include "vjr_structs00.h"
 	#include "vjr_defs0.h"
 

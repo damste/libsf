@@ -120,8 +120,7 @@ extern "C"
 //////
 	void iDllFunc_dispatch(SReturnsParams* rpar, SDllFunc* dfunc, SComp* compDllName)
 	{
-		s32		lnI;
-		u32		lnParamsFound;
+		s32		lnI, lnParamsFound;
 		bool	llResult;
 
 #if defined(__GNUC__)
@@ -138,7 +137,7 @@ extern "C"
 			//////////
 			// We need to find the minimum number of parameters between)
 			//////
-				llResult = iiEngine_getParametersBetween(NULL, iComps_getNth(compDllName, 1), &lnParamsFound, dfunc->ipCount, dfunc->ipCount, rpar, true);
+				llResult = iiEngine_getParametersBetween(NULL, iComps_getNth(compDllName, 1), (u32*)&lnParamsFound, dfunc->ipCount, dfunc->ipCount, rpar, true);
 				if (!llResult || lnParamsFound != dfunc->ipCount)
 				{
 					rpar->ei.error		= true;
@@ -171,7 +170,7 @@ extern "C"
 		//////////
 		// Free every parameter we created
 		//////
-			for (lnI = 0; lnI < _MAX_PARAMS_COUNT; lnI++)
+			for (lnI = 0; lnI < (s32)_MAX_PARAMS_COUNT; lnI++)
 			{
 
 				// Delete if populated
@@ -818,6 +817,11 @@ extern "C"
 		s8			dllName[_MAX_PATH];
 
 
+#if defined(__GNUC__)
+		// No GCC support yet for DLL function dispatch
+		dlib	= NULL;
+
+#else
 		//////////
 		// Initialize
 		//////
@@ -943,7 +947,7 @@ extern "C"
 					iDatum_duplicate(&dlib->dllName, compDllName->line->sourceCode->data_cs8 + compDllName->start, compDllName->length);
 
 			}
-
+#endif
 
 		//////////
 		// Return the entry

@@ -91,7 +91,7 @@
 // Note:  This code is inline to the iiDllFunc_dispatch_lowLevel() function.
 // Note:  See dllfuncs.cpp, and search for the #include "dll_dispatch_32.asm" source code line.
 //////////
-#if !defined(__solaris__)
+#if !defined(__GNUC__) && !defined(__solaris__)
 _asm {
 	//////////
 	//

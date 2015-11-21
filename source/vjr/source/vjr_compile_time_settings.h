@@ -92,8 +92,8 @@
 	//////////
 	// Splash
 	//////
- 		bool glShowSplashScreen = true;
- 		//bool glShowSplashScreen = false;
+ 		//bool glShowSplashScreen = true;
+ 		bool glShowSplashScreen = false;
 
 
 	//////////

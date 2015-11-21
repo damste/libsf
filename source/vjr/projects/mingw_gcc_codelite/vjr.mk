@@ -12,11 +12,11 @@ OutDir                 := $(IntermediateDirectory)
 CurrentFileName        :=
 CurrentFilePath        :=
 CurrentFileFullPath    :=
-User                   :=rhodgin
-Date                   :=28/08/2015
+User                   :=Rick
+Date                   :=11/21/15
 CodeLitePath           :="C:\Program Files (x86)\CodeLite"
-LinkerName             :=C:/MinGW_old/MinGW/bin/g++.exe
-SharedObjectLinkerName :=C:/MinGW_old/MinGW/bin/g++.exe -shared -fPIC
+LinkerName             :=C:\MinGW-4.8.1\bin\g++.exe 
+SharedObjectLinkerName :=C:\MinGW-4.8.1\bin\g++.exe -shared -fPIC
 ObjectSuffix           :=.o
 DependSuffix           :=.o.d
 PreprocessSuffix       :=.i
@@ -36,7 +36,7 @@ ObjectsFileList        :="vjr.txt"
 PCHCompileFlags        :=
 MakeDirCommand         :=makedir
 RcCmpOptions           := 
-RcCompilerName         :=C:/MinGW_old/MinGW/bin/windres.exe
+RcCompilerName         :=C:\MinGW-4.8.1\bin\windres.exe 
 LinkOptions            :=  -g
 IncludePath            :=  $(IncludeSwitch). $(IncludeSwitch). $(IncludeSwitch)C:/libsf/source/vjr/projects/vs2010/ 
 IncludePCH             := 
@@ -49,13 +49,13 @@ LibPath                := $(LibraryPathSwitch). $(LibraryPathSwitch)C:/libsf/sou
 ## Common variables
 ## AR, CXX, CC, AS, CXXFLAGS and CFLAGS can be overriden using an environment variables
 ##
-AR       := C:/MinGW_old/MinGW/bin/ar.exe rcu
-CXX      := C:/MinGW_old/MinGW/bin/g++.exe
-CC       := C:/MinGW_old/MinGW/bin/gcc.exe
+AR       := C:\MinGW-4.8.1\bin\ar.exe rcu
+CXX      := C:\MinGW-4.8.1\bin\g++.exe 
+CC       := C:\MinGW-4.8.1\bin\gcc.exe 
 CXXFLAGS :=  -g -O0 -Wall -Wno-comment -Wno-multichar -Wno-narrowing -Wno-write-strings -Wno-format-contains-nul -Wno-reorder -Wno-strict-aliasing -Wno-char-subscripts -Wno-unused-variable $(Preprocessors)
 CFLAGS   :=  -g -O0 -Wall -Wno-comment -Wno-multichar -Wno-narrowing -Wno-write-strings -Wno-format-contains-nul -Wno-strict-aliasing -Wno-char-subscripts $(Preprocessors)
 ASFLAGS  := 
-AS       := C:/MinGW_old/MinGW/bin/as.exe
+AS       := C:\MinGW-4.8.1\bin\as.exe 
 
 
 ##
@@ -420,6 +420,128 @@ $(IntermediateDirectory)/mapm_mapmutl2.c$(PreprocessSuffix): ../../source/3rd_pa
 ## Clean
 ##
 clean:
-	$(RM) -r ./Debug/
+	$(RM) $(IntermediateDirectory)/source_vjr.cpp$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/source_vjr.cpp$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/source_vjr.cpp$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/bmps_bmps.cpp$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/bmps_bmps.cpp$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/bmps_bmps.cpp$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_add.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_add.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_add.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_cpi.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_cpi.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_cpi.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_div.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_div.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_div.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_exp.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_exp.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_exp.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_fam.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_fam.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_fam.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_fft.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_fft.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_fft.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_flr.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_flr.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_flr.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_fpf.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_fpf.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_fpf.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_gcd.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_gcd.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_gcd.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_lg2.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_lg2.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_lg2.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_lg3.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_lg3.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_lg3.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_lg4.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_lg4.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_lg4.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_log.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_log.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_log.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_mul.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_mul.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_mul.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_pow.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_pow.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_pow.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_rcp.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_rcp.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_rcp.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_rnd.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_rnd.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_rnd.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_set.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_set.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_set.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_sin.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_sin.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm_sin.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm5sin.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm5sin.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapm5sin.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmasin.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmasin.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmasin.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmasn0.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmasn0.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmasn0.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmcbrt.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmcbrt.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmcbrt.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmcnst.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmcnst.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmcnst.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmfact.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmfact.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmfact.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmfmul.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmfmul.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmfmul.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmgues.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmgues.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmgues.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmhasn.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmhasn.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmhasn.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmhsin.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmhsin.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmhsin.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmipwr.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmipwr.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmipwr.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmistr.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmistr.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmistr.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmpwr2.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmpwr2.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmpwr2.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmrsin.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmrsin.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmrsin.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmsqrt.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmsqrt.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmsqrt.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmstck.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmstck.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmstck.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmutil.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmutil.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmutil.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmutl1.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmutl1.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmutl1.c$(PreprocessSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmutl2.c$(ObjectSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmutl2.c$(DependSuffix)
+	$(RM) $(IntermediateDirectory)/mapm_mapmutl2.c$(PreprocessSuffix)
+	$(RM) $(OutputFile)
+	$(RM) $(OutputFile).exe
+	$(RM) ".build-release/vjr"
 
 
