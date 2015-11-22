@@ -1,29 +1,54 @@
-Aug.06.2015
-
 LibSF Logician Fundamental Types
 --------------------------------
+
+    Created:          Aug.06.2015
+    Updated History:  Nov.22.2015 -- Flip, Diff, Same, added Logic for Flip, Any0, All0, MOS0, MOS1
+
+
+
 
 Overview
 --------
 
-    Invert        -- A logical NOT for Signal or Data
-    Any1        -- A logical OR for Signal or Data
-    All1        -- A logical AND for Signal or Data
-    Diff1        -- A logical XOR for Signal or Data
-    Any0        -- A logical NAND for Signal or Data
-    All0        -- A logical NOR for Signal or Data
-    Diff0        -- A logical XNOR for Signal or Dat
+    Flip        -- Logical NOT  for Signal or Data   -- (1 yields 0, 0 yields 1)
+    Any1        -- Logical OR   for Signal or Data   -- (1 on any input 1)
+    All1        -- Logical AND  for Signal or Data   -- (1 on all input 1)
+    Any0        -- Logical NAND for Signal or Data   -- (1 on any input 0)
+    All0        -- Logical NOR  for Signal or Data   -- (1 on all input 0)
+    Diff        -- Logical XNOR for Signal or Data   -- (1 on inputs are different)
+    Same        -- Logical XOR  for Signal or Data   -- (1 on inputs are same)
 
 
 
 
-Invert -- A logical NOT for Signal or Data
-------------------------------------------
+CMOS
+----
+    MOS0        -- NMOS transistor (gate 0 conveys Ground)
+    MOS1        -- PMOS transistor (gate 1 conveys Vdd)
+
+
+
+
+Flip -- A logical NOT for Signal or Data
+----------------------------------------
 
     Input    |    Output
     -----    |    ------
-      0        |      1
-      1        |      0
+      0      |      1
+      1      |      0
+
+
+    Logic:
+
+                   Vdd
+                    |
+                +-(MOS1)
+                |   |
+        Input---+   +------Output
+                |   |
+                +-(MOS0)
+                    |
+                  Ground
 
 
 
@@ -31,12 +56,22 @@ Invert -- A logical NOT for Signal or Data
 Any1 -- A logical OR for Signal or Data
 ---------------------------------------
 
-    Input-1        Input-2        |    Output
-    -------        -------        |    ------
+    Input-1        Input-2    |    Output
+    -------        -------    |    ------
         0            0        |      0
         0            1        |      1
         1            0        |      1
         1            1        |      1
+
+
+    Logic:
+
+                  +---------+      +--------+
+        Input-1---+         |      |        |
+                  |  All0   +------+ Invert +----Output
+                  | Circuit |      |        |
+        Input-2---+         |      +--------+
+                  +---------+
 
     
 
@@ -44,25 +79,22 @@ Any1 -- A logical OR for Signal or Data
 All1 -- A logical AND for Signal or Data
 ----------------------------------------
 
-    Input-1        Input-2        |    Output
-    -------        -------        |    ------
+    Input-1        Input-2    |    Output
+    -------        -------    |    ------
         0            0        |      0
         0            1        |      0
         1            0        |      0
         1            1        |      1
 
 
+    Logic:
 
-
-Diff1 -- A logical XOR for Signal or Data
------------------------------------------
-
-    Input-1        Input-2        |    Output
-    -------        -------        |    ------
-        0            0        |      0
-        0            1        |      1
-        1            0        |      1
-        1            1        |      0
+                  +---------+      +--------+
+        Input-1---+         |      |        |
+                  |  Any0   +------+ Invert +----Output
+                  | Circuit |      |        |
+        Input-2---+         |      +--------+
+                  +---------+
 
 
 
@@ -70,12 +102,31 @@ Diff1 -- A logical XOR for Signal or Data
 Any0 -- A logical NAND for Signal or Data
 -----------------------------------------
 
-    Input-1        Input-2        |    Output
-    -------        -------        |    ------
+    Input-1        Input-2    |    Output
+    -------        -------    |    ------
         0            0        |      1
         0            1        |      1
         1            0        |      1
         1            1        |      0
+
+
+    Logic:
+
+                        Vdd        Vdd
+                         |          |
+                  +-------------+   |
+                  |      |      |   |
+                  |      |      |   |
+        Input-1---|--o-(MOS1)   +-(MOS1)
+                  |  |   |          |
+        Input-2---o  |   +----o-----o-----Output
+                  |  |        |
+                  |  |        |
+                  |  +------(MOS0)
+                  |           |
+                  +---------(MOS0)
+                              |
+                            Ground
 
 
 
@@ -83,22 +134,55 @@ Any0 -- A logical NAND for Signal or Data
 All0 -- A logical NOR for Signal or Data
 ----------------------------------------
 
-    Input-1        Input-2        |    Output
-    -------        -------        |    ------
+    Input-1        Input-2    |    Output
+    -------        -------    |    ------
         0            0        |      1
         0            1        |      0
         1            0        |      0
         1            1        |      0
 
 
+    Logic:
+                             Vdd
+                              |
+        Input-1---o---------(MOS1)
+                  |           |
+                  |           |
+        Input-2---|--o------(MOS1)
+                  |  |        |
+                  |  |        o--------Output
+                  |  |        |
+                  |  |   +----o----+
+                  |  |   |         |
+                  |  +-(MOS0)  +-(MOS0)
+                  |      |     |   |
+                  +------------+   |
+                         |         |
+                       Ground    Ground
 
 
-Diff0 -- A logical XNOR for Signal or Data
+
+
+Diff -- A logical XOR for Signal or Data
+----------------------------------------
+
+    Input-1        Input-2    |    Output
+    -------        -------    |    ------
+        0            0        |      0
+        0            1        |      1
+        1            0        |      1
+        1            1        |      0
+
+
+
+
+Same -- A logical XNOR for Signal or Data
 -----------------------------------------
 
-    Input-1        Input-2        |    Output
-    -------        -------        |    ------
+    Input-1        Input-2    |    Output
+    -------        -------    |    ------
         0            0        |      1
         0            1        |      0
         1            0        |      0
         1            1        |      1
+
