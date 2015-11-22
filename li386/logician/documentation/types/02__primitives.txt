@@ -16,6 +16,7 @@ Overview:
 	Regs		-- Data storage aggregates for I/O
 	Logic		-- A logic block
 	Clock		-- A synchronous clock
+	Decoder		-- A signal-to-pin decoder 
 	History		-- A history of values
 	Delta		-- A history of changed values
 	Vent		-- A debug port (with asynchronous pause)
@@ -281,6 +282,36 @@ Clock -- A synchronous clock
 	HI		-- When clock is high
 	DN		-- Falling edge of clock cycle
 	LO		-- When clock is low
+
+
+
+
+Decoder -- A signal-to-pin decoder
+----------------------------------
+
+	       +-------------+
+	+-+----|   Decoder   |
+	| |    |             |------+
+	@ |DIN |             | Pins |
+	| |    |             |------|
+	+-|    |             |  p0  |@
+	  |    |             |  p1  |@
+	  |    |             |  p2  |@
+	 @|ENAB|             |  ... |
+	  |    |             | pMax |@
+	  |    |             |------+
+	+-|    |             |
+	| |    |             |
+	@ |DOUT|             |
+	| |    |             |
+	+-+----|             |
+		  =|vent         |
+	       +-------------+
+	
+	DIN			-- (I) Data in (N pins)
+	ENAB		-- (I) Enable translation
+	DOUT		-- (O) Data out (N pins)
+	p0...pMax	-- (O) Decoded signal pins ((2^N)-1)
 
 
 

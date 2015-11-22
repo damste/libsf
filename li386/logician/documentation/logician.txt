@@ -33,6 +33,7 @@ Primitive types:
 	Regs		-- Data storage aggregates for I/O
 	Logic		-- A logic block
 	Clock		-- A synchronous clock
+	Decoder		-- A signal-to-pin decoder 
 	History		-- A history of values
 	Delta		-- A history of changed values
 	Vent		-- A debug port (with asynchronous pause)
