@@ -81,8 +81,9 @@ struct SNoteLog;
 //////
 	struct SLL
 	{
+		// Next entry in linked list
 		union {
-			SLL*		next;					// Next entry in linked list
+			SLL*		next;
 			SComp*		nextComp;
 			SLine*		nextLine;
 			SObject*	nextObj;
@@ -93,8 +94,10 @@ struct SNoteLog;
 			SDllFunc*	nextDllFunc;
 			SNoteLog*	nextNoteLog;
 		};
+		
+		// Previous entry in linked list
 		union {
-			SLL*		prev;					// Previous entry in linked list
+			SLL*		prev;
 			SComp*		prevComp;
 			SLine*		prevLine;
 			SObject*	prevObj;

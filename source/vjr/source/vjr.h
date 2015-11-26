@@ -144,6 +144,7 @@
 	#include "vjr_const.h"
 	#include "\libsf\utils\common\cpp\ll.h"
 	#include "vjr_structs00.h"
+	#include "\libsf\utils\common\cpp\node.h"
 	#include "vjr_defs0.h"
 
 	#include "\libsf\utils\common\cpp\datum.h"
@@ -205,6 +206,7 @@
 	#include "\libsf\source\vjr\source\bmps\graphics\bitmaps.h"
 	#include "\libsf\source\vjr\source\settings\settings.h"
 
+	#include "\libsf\utils\common\cpp\node.cpp"
 	#include "\libsf\utils\sha1\sha1.h"
 	#include "\libsf\utils\sha1\sha1.cpp"
 
@@ -220,6 +222,7 @@
 	// Source files are all included in this one source file
 	// for ease of compilation across platforms and compilers.
 	//////
+		#include "\libsf\source\vjr\source\test\vjr_test.cpp"
 		#include "vjr_sup.cpp"
 		#include "vjr_init.cpp"
 		#include "\libsf\source\vjr\source\objects\accessors.cpp"
@@ -302,8 +305,9 @@
 	#endif
 
 	#include "vjr_const.h"
-	#include "\libsf\utils\common\cpp\ll.h"
+	#include "/libsf/utils/common/cpp/ll.h"
 	#include "vjr_structs00.h"
+	#include "/libsf/utils/common/cpp/node.h"
 	#include "vjr_defs0.h"
 
 	#if defined(__linux__)
@@ -370,6 +374,7 @@
 	#include "/libsf/source/vjr/source/bmps/graphics/bitmaps.h"
 	#include "/libsf/source/vjr/source/settings/settings.h"
 
+	#include "/libsf/utils/common/cpp/node.cpp"
 	#include "/libsf/utils/sha1/sha1.h"
 	#include "/libsf/utils/sha1/sha1.cpp"
 
@@ -385,6 +390,7 @@
 	// Source files are all included in this one source file
 	// for ease of compilation across platforms and compilers.
 	//////
+		#include "/libsf/source/vjr/source/test/vjr_test.cpp"
 		#include "vjr_sup.cpp"
 		#include "vjr_init.cpp"
 		#include "/libsf/source/vjr/source/objects/accessors.cpp"
@@ -459,7 +465,9 @@
     #include <SDL/SDL_audio.h>
 
 	#include "vjr_const.h"
+	#include "/libsf/utils/common/cpp/ll.h"
 	#include "vjr_structs00.h"
+	#include "/libsf/utils/common/cpp/node.h"
 	#include "vjr_defs0.h"
 
     #include "/libsf/utils/common/cpp/linux/windows.h"
@@ -524,6 +532,7 @@
 	#include "/libsf/source/vjr/source/bmps/graphics/bitmaps.h"
 	#include "/libsf/source/vjr/source/settings/settings.h"
 
+	#include "/libsf/utils/common/cpp/node.cpp"
 	#include "/libsf/utils/sha1/sha1.h"
 	#include "/libsf/utils/sha1/sha1.cpp"
 
@@ -539,6 +548,7 @@
 	// Source files are all included in this one source file
 	// for ease of compilation across platforms and compilers.
 	//////
+		#include "/libsf/source/vjr/source/test/vjr_test.cpp"
 		#include "vjr_sup.cpp"
 		#include "vjr_init.cpp"
 		#include "/libsf/source/vjr/source/objects/accessors.cpp"

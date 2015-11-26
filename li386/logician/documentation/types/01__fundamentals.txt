@@ -23,8 +23,8 @@ Overview
 
 CMOS
 ----
-    MOS0        -- NMOS transistor (gate 0 conveys Ground)
-    MOS1        -- PMOS transistor (gate 1 conveys Vdd)
+    MOS0        -- PMOS transistor (gate 0 conveys Vdd)
+    MOS1        -- NMOS transistor (gate 1 conveys Ground)
 
 
 

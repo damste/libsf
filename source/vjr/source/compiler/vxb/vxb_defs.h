@@ -245,16 +245,6 @@ struct SVxbContext;
 	SComp*					iiComps_xlatToOthers_callback__cloneCompsCallback			(SComp* comp, SLine* line);
 	SComp*					iiComps_xlatToOthers_callback__mergeCompsCallback			(SComp* comp, SLine* line, u32 tnCount, u32 tniCodeNew);
 
-	// Node functions
-	SNode*					iNode_create								(SNode** root, SNode* n[_NODE_COUNT]);
-	SNode*					iNode_extrude								(SNode** root, u32 tnExtrudeDirection);
-	SNode*					iNode_bump									(SNode** root, u32 tnBumpDirection, u32 tnAnchorDirection);
-	SNode*					iNode_insert_between						(SNode* node1, SNode* node2, u32 tnNode1Direction, u32 tnNode2Direction);
-	void					iNode_deleteAll_politely					(SNode** root, SNode* nodeStopper, SNode* nodeStopper2, bool tlDeleteSelf, SNodeFlags* nodeFlags);
-	SBitmap*				iNode_renderBitmap							(SNode* node, SNodeFlags* nodeFlags = &gsfNodeFlags_all, s32 tnMaxLength = 4, f64 tfRodLength = 24.0, s32 tnMarginWidth = 4, s32 tnBorderWidth = 2);
-	void					iiNode_renderBitmap							(SNode* node, SNode* nodeStopper, s32 tnMaxLength, SNodeProps props[], s32 tnPropsCount, u32 tnIter_uid, bool tlGoDeeper);
-	void					iiNode_get_bitmapExtents					(SNode* node, SNode* nodeStopper, s32 tnArrivalDirection, SBitmap* bmp, RECT* rc, POINTS p_arrival, f64 tfRodLength, u32 tnIter_uid, SNodeProps* props, bool tlGoDeeper);
-
 	// Function functions (LOL)
 	SFunction*				iFunction_allocate							(SComp* compName);
 	SFunction*				iFunction_allocate							(SDatum* datumName);

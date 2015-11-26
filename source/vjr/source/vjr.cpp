@@ -130,6 +130,12 @@
 		iVjr_appendSystemLog((u8*)"Initialization complete");
 
 
+	///////////
+	// Call our resident test function (see test.cpp)
+	//////
+		iVjr_test();
+
+
 	//////////
 	// Initialize the processing engine, and load our nep() (the internal baseline.prg program)
 	//////
