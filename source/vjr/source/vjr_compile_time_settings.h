@@ -182,7 +182,7 @@
 ///////////
 // Should extra debugging information be included?
 //////
-	#define _EXTRA_DEBUGGING_DATA
+	#define _EXTRA_DEBUGGING_DATA 1
 
 
 //////////

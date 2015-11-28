@@ -581,7 +581,7 @@
 			obj->p.hasFocus = true;
 
 			// Mark the object dirty
-			iObj_setDirtyRender_ascent(obj, true);
+			iObj_setDirtyRender_ascent(obj, true, true);
 
 			// Signal the change
 			iEngine_raise_event(_EVENT_ONGOTFOCUS, win, obj);
@@ -1236,20 +1236,22 @@
 // Called to mark the object dirty for rendering.
 //
 //////
-	void iObj_setDirtyRender_ascent(SObject* obj, bool tlMarkParents)
+	void iObj_setDirtyRender_ascent(SObject* obj, bool tlMarkParents, bool tlMarkSubformsDown)
 	{
 		logfunc(__FUNCTION__);
 		if (obj)
 		{
 			// Mark the object dirty
 			obj->isDirtyRender	= true;
-// TODO:  Consider if this should mark something dirty for publishing as well...
 			obj->isDirtyPublish	= true;
 
 			// Mark the parent
-// TODO:  This can be made into an iterative loop rather than a recursive function
 			if (tlMarkParents && obj->parent)
 				iObj_setDirtyRender_ascent(obj->parent, true);
+
+			// If we're on a subform, descend into children if need be
+			if (tlMarkSubformsDown && obj->objType == _OBJ_TYPE_SUBFORM && obj->firstChild)
+				iObj_setDirtyRender_descent(obj->firstChild, true, true);
 		}
 	}
 
@@ -1280,7 +1282,7 @@
 			// Process children?
 			//////
 				if (tlProcessChildren && obj->firstChild)
-					iObj_setDirtyRender_descent(obj, true, true);
+					iObj_setDirtyRender_descent(obj->firstChild, true, true);
 
 
 			//////////
@@ -1310,7 +1312,7 @@
 // Called to mark the object dirty for publishing.
 //
 //////
-	void iObj_setDirtyPublish_ascent(SObject* obj, bool tlMarkParents)
+	void iObj_setDirtyPublish_ascent(SObject* obj, bool tlMarkParents, bool tlMarkSubformsDown)
 	{
 		logfunc(__FUNCTION__);
 		if (obj)
@@ -1319,9 +1321,12 @@
 			obj->isDirtyPublish = true;
 
 			// Mark the parent
-// TODO:  This can be made into an iterative loop rather than a recursive function
 			if (tlMarkParents && obj->parent)
 				iObj_setDirtyPublish_ascent(obj->parent, true);
+
+			// If we're on a subform, descend into children if need be
+			if (tlMarkSubformsDown && obj->objType == _OBJ_TYPE_SUBFORM && obj->firstChild)
+				iObj_setDirtyPublish_descent(obj->firstChild, true, true);
 		}
 	}
 

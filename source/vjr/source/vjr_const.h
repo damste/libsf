@@ -353,16 +353,16 @@ typedef SEM**		SEMpp;
 	#define _seColor_subform				rgba(133,185,245,255)
 	#define _swColor_subform				rgba(164,192,255,255)
 
-// Golden orange theme:
+	// Golden orange theme:
 // 	#define	_nwColor_focus					rgba(245, 225, 175, 255)
 // 	#define	_neColor_focus					rgba(252, 242, 192, 25)
 // 	#define	_swColor_focus					rgba(249, 222, 133, 255)
 // 	#define	_seColor_focus					rgba(247, 210, 96, 255)
 
-// Purple theme
-	#define	_nwColor_focus					rgba(192, 164, 235, 255)
-	#define	_neColor_focus					rgba(205, 172, 255, 255)
-	#define	_swColor_focus					rgba(233, 219, 255, 255)
+	// Purple theme
+	#define	_nwColor_focus					rgba(205, 172, 255, 255)
+	#define	_neColor_focus					rgba(192, 164, 235, 255)/*rgba(233, 219, 255, 255)*/
+	#define	_swColor_focus					rgba(192, 164, 235, 255)
 	#define	_seColor_focus					rgba(182, 153, 226, 255)
 
 

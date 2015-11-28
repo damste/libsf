@@ -1261,7 +1261,7 @@
 	u32 iSubobj_renderImage(SObject* obj)
 	{
 		u32			lnPixelsRendered;
-		bool		llSubformHasFocusControl, llDeleteBmpMask;
+		bool		llDeleteBmpMask;
 		SBgra		color;
 		SBitmap*	bmp;
 		SBitmap*	bmpMask;
@@ -1301,18 +1301,18 @@
 				//////
 					if (propBackMask(obj))
 					{
-						subform = iObj_find_thisSubform(obj);
-						if (subform)
+						// If we're on a subform, and it has focus, use the focus color
+						if ((subform = iObj_find_thisSubform(obj)) && iObj_focus_descentCheck(subform, true, false))
 						{
-							// If the subform has focus, a different color is used
-							llSubformHasFocusControl = iObj_focus_descentCheck(subform, true, false);
-							if (llSubformHasFocusControl)		color = nwColor_focus;
-							else								color = iObjProp_get_sbgra_direct(subform, _INDEX_NWCOLOR);
+							// It has focus, use the focus color
+							color = nwColor_focus;
 
 						} else {
 							// Search for the parent nwColor
 							color = iObj_getColor_ascent(obj, _INDEX_NWCOLOR, false, nwColor_subform);
 						}
+
+						// Make a copy for the color swap
 						llDeleteBmpMask	= true;
 						bmpMask			= iBmp_copy(bmp);
 						iBmp_swapColors(bmpMask, maskColor, color);

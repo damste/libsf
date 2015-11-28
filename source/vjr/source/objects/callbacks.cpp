@@ -350,7 +350,7 @@
 
 	bool iDefaultCallback_onMouseDown(SWindow* win, SObject* obj, SVariable* varX, SVariable* varY, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varClick)
 	{
-		bool		llMouseDown, llResult;
+		bool		llMouseDown, llResult, llFocusChanged;
 		f64			lfPercent, lfX, lfY, lfWidth, lfHeight, lfValue;
 		s32			lnX, lnY;
 		u32			lnClick;
@@ -377,7 +377,11 @@
 				iObj_clearFocus(win, objRoot, true, true);
 
 			iObj_setFocus(win, obj, true);
-			iObj_setDirtyRender_ascent(objRoot, true);
+			iObj_setDirtyRender_ascent(obj, true, true);
+			llFocusChanged = true;
+
+		} else {
+			llFocusChanged = false;
 		}
 
 		// For forms, they can be clicking down on special things for various operations
@@ -494,8 +498,8 @@
 
 		// Update our condition
 		obj->ev.isMouseDown = llMouseDown;
-		iObj_setDirtyRender_ascent(obj, true);
-		iWindow_render(win, false);
+		iObj_setDirtyRender_ascent(obj, true, true);
+		iWindow_render(win, llFocusChanged);
 
 		// Do not continue to propagate this message to other objects
 		return(llResult);

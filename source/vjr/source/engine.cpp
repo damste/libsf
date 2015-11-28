@@ -1867,33 +1867,33 @@ iComps_visualize(comp, (s32)iComps_count(comp), vizbuf, sizeof(vizbuf), true, &c
 			{
 				case _EVENT_ONMOUSEMOVE:
 					return(obj->ev.methods[tnEventId].event_8(win, obj,		obj->ev.varX_onMouseMove,			obj->ev.varY_onMouseMove,
-																						obj->ev.varCtrl_onMouseMove,		obj->ev.varAlt_onMouseMove,			obj->ev.varShift_onMouseMove,
-																						obj->ev.varClick_onMouseMove));
+																			obj->ev.varCtrl_onMouseMove,		obj->ev.varAlt_onMouseMove,			obj->ev.varShift_onMouseMove,
+																			obj->ev.varClick_onMouseMove));
 				case _EVENT_ONMOUSEDOWN:
 					return(obj->ev.methods[tnEventId].event_8(win, obj,		obj->ev.varX_onMouseDown,			obj->ev.varY_onMouseDown,
-																						obj->ev.varCtrl_onMouseDown,		obj->ev.varAlt_onMouseDown,			obj->ev.varShift_onMouseDown,
-																						obj->ev.varClick_onMouseDown));
+																			obj->ev.varCtrl_onMouseDown,		obj->ev.varAlt_onMouseDown,			obj->ev.varShift_onMouseDown,
+																			obj->ev.varClick_onMouseDown));
 				case _EVENT_ONMOUSEUP:
 					return(obj->ev.methods[tnEventId].event_8(win, obj,		obj->ev.varX_onMouseUp,				obj->ev.varY_onMouseUp,
-																						obj->ev.varCtrl_onMouseUp,			obj->ev.varAlt_onMouseUp,			obj->ev.varShift_onMouseUp,
-																						obj->ev.varClick_onMouseUp));
+																			obj->ev.varCtrl_onMouseUp,			obj->ev.varAlt_onMouseUp,			obj->ev.varShift_onMouseUp,
+																			obj->ev.varClick_onMouseUp));
 				case _EVENT_ONMOUSEWHEEL:
 					return(obj->ev.methods[tnEventId].event_9(win, obj,		obj->ev.varX_onMouseWheel,			obj->ev.varY_onMouseWheel,
-																						obj->ev.varCtrl_onMouseWheel,		obj->ev.varAlt_onMouseWheel,		obj->ev.varShift_onMouseWheel,
-																						obj->ev.varClick_onMouseWheel,
-																						obj->ev.varDeltaY_onMouseWheel));
+																			obj->ev.varCtrl_onMouseWheel,		obj->ev.varAlt_onMouseWheel,		obj->ev.varShift_onMouseWheel,
+																			obj->ev.varClick_onMouseWheel,
+																			obj->ev.varDeltaY_onMouseWheel));
 				case _EVENT_ONMOUSECLICKEX:
 					return(obj->ev.methods[tnEventId].event_8(win, obj,		obj->ev.varX_onMouseClickEx,		obj->ev.varY_onMouseClickEx,
-																						obj->ev.varCtrl_onMouseClickEx,		obj->ev.varAlt_onMouseClickEx,		obj->ev.varShift_onMouseClickEx,
-																						obj->ev.varClick_onMouseClickEx));
+																			obj->ev.varCtrl_onMouseClickEx,		obj->ev.varAlt_onMouseClickEx,		obj->ev.varShift_onMouseClickEx,
+																			obj->ev.varClick_onMouseClickEx));
 				case _EVENT_ONKEYDOWN:
-					return(obj->ev.methods[tnEventId].event_10(win, obj,		obj->ev.varCtrl_onKeyDown,			obj->ev.varAlt_onKeyDown,			obj->ev.varShift_onKeyDown,
-																						obj->ev.varCaps_onKeyDown,			obj->ev.varAsciiChar_onKeyDown,		obj->ev.varVKey_onKeyDown,
-																						obj->ev.varIsCAS_onKeyDown,			obj->ev.varIsAscii_onKeyDown));
+					return(obj->ev.methods[tnEventId].event_10(win, obj,	obj->ev.varCtrl_onKeyDown,			obj->ev.varAlt_onKeyDown,			obj->ev.varShift_onKeyDown,
+																			obj->ev.varCaps_onKeyDown,			obj->ev.varAsciiChar_onKeyDown,		obj->ev.varVKey_onKeyDown,
+																			obj->ev.varIsCAS_onKeyDown,			obj->ev.varIsAscii_onKeyDown));
 				case _EVENT_ONKEYUP:
-					return(obj->ev.methods[tnEventId].event_10(win, obj,		obj->ev.varCtrl_onKeyUp,			obj->ev.varAlt_onKeyUp,				obj->ev.varShift_onKeyUp,
-																						obj->ev.varCaps_onKeyUp,			obj->ev.varAsciiChar_onKeyUp,		obj->ev.varVKey_onKeyUp,
-																						obj->ev.varIsCAS_onKeyUp,			obj->ev.varIsAscii_onKeyUp));
+					return(obj->ev.methods[tnEventId].event_10(win, obj,	obj->ev.varCtrl_onKeyUp,			obj->ev.varAlt_onKeyUp,				obj->ev.varShift_onKeyUp,
+																			obj->ev.varCaps_onKeyUp,			obj->ev.varAsciiChar_onKeyUp,		obj->ev.varVKey_onKeyUp,
+																			obj->ev.varIsCAS_onKeyUp,			obj->ev.varIsAscii_onKeyUp));
 				case _EVENT_RESIZE:
 					// The passed parameter p must be valid, and is the RECT* of its new size and position
 					if (p)

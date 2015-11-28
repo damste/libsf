@@ -338,6 +338,9 @@
 								if (!loToolbarCopy)
 									debug_break;	// Should never happen
 
+								// Store the parent
+								loToolbarCopy->parent = objParent;
+
 								// Right now, loToolbarCopy is an orphan object
 								// Give it a parent
 								if (!iLl_appendExistingNodeAtEnd((SLL**)&objParent, (SLL*)loToolbarCopy))

@@ -235,8 +235,8 @@
 		//////
 			iVariable_set_s32		(obj->ev.varX_onMouseDown,			x);
 			iVariable_set_s32		(obj->ev.varY_onMouseDown,			y);
-			iVariable_set_logical	(obj->ev.varCtrl_onMouseDown,			((tlCtrl)	? _LOGICAL_TRUE : _LOGICAL_FALSE));
-			iVariable_set_logical	(obj->ev.varAlt_onMouseDown,			((tlAlt)	? _LOGICAL_TRUE : _LOGICAL_FALSE));
+			iVariable_set_logical	(obj->ev.varCtrl_onMouseDown,		((tlCtrl)	? _LOGICAL_TRUE : _LOGICAL_FALSE));
+			iVariable_set_logical	(obj->ev.varAlt_onMouseDown,		((tlAlt)	? _LOGICAL_TRUE : _LOGICAL_FALSE));
 			iVariable_set_logical	(obj->ev.varShift_onMouseDown,		((tlShift)	? _LOGICAL_TRUE : _LOGICAL_FALSE));
 			iVariable_set_s32		(obj->ev.varClick_onMouseDown,		tnClicks);
 
