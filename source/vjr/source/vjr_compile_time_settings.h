@@ -99,9 +99,10 @@
 	//////////
 	// Focus highlight border
 	//////
-// TODO:  I observed after disabling this that the system renders MUCH faster.  Need to investgate what's going on there.
-		//bool glShowFocusHighlightBorder = true;
-		bool glShowFocusHighlightBorder = false;
+// TODO:  Nov.15.2015 -- I observed after disabling this that the system renders MUCH faster.
+// TOOD:  Nov.15.2015 -- Need to investigate what's going on there.
+		bool glShowFocusHighlightBorder = true;
+		//bool glShowFocusHighlightBorder = false;
 
 
 //////////
@@ -159,6 +160,12 @@
 	#else
 		#define logfunc(x)
 	#endif
+
+
+//////////
+// Added to track down silent errors, ones that don't really affect anything, but still shouldn't exist
+//////
+	#define error_silent		iError_silent(__FUNCTION__)
 
 
 //////////

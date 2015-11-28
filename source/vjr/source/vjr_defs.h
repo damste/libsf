@@ -107,7 +107,7 @@ struct SObjEventMap;
 //	int APIENTRY			WinMain									(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, s32 nCmdShow);
 	void					iVjr_createOverlayListing				(SBitmap* bmp, RECT* trc);
 	void					iVjr_renderOverlayListing				(SBitmap* bmp, RECT* trc);
-	void					iiVjr_renderAccomplishment				(SBitmap* bmp, RECT* trc, s32 tnRAG, cs8* tcAccomplishment, s8* tcVersion, bool tlBold, bool tlItalic, bool tlUnderline, s32 tnAdjustAccomplishmentFontSize, s32 tnAdjustVersionFontSize);
+	void					iiVjr_renderAccomplishment				(SBitmap* bmp, RECT* trc, s32 tnRAG, cs8* tcAccomplishment, cs8* tcVersion, bool tlBold, bool tlItalic, bool tlUnderline, s32 tnAdjustAccomplishmentFontSize, s32 tnAdjustVersionFontSize);
 	void					iVjr_renderAccomplishments				(SBitmap* bmp, RECT* trc);
 
 	void					iDatum_duplicate						(SDatum* datumDst, SVariable* varSrc);

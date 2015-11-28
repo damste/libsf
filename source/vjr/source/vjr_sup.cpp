@@ -530,11 +530,11 @@
 			lnWidth		= (_jdebi->rcClient.right - _jdebi->rcClient.left) / 8;
 			lnHeight	= (_jdebi->rcClient.bottom - _jdebi->rcClient.top) / 8;
 			iObj_setSize(_sourceCode,	0,						0,							4 * lnWidth,																4 * lnHeight);
-			iObj_setSize(_locals,			_sourceCode->rc.right,	0,							lnWidth * 3 / 2,															3 * lnHeight / 2);
-			iObj_setSize(_watch,			_locals->rc.right,		0,							(_jdebi->rcClient.right - _jdebi->rcClient.left) - _locals->rc.right,		3 * lnHeight / 2);
+			iObj_setSize(_locals,		_sourceCode->rc.right,	0,							lnWidth * 3 / 2,															3 * lnHeight / 2);
+			iObj_setSize(_watch,		_locals->rc.right,		0,							(_jdebi->rcClient.right - _jdebi->rcClient.left) - _locals->rc.right,		3 * lnHeight / 2);
 			iObj_setSize(_cmd,			0,						_sourceCode->rc.bottom,		4 * lnWidth,																(_jdebi->rcClient.bottom - _jdebi->rcClient.top) - _sourceCode->rc.bottom);
 			iObj_setSize(_sourceLight,	_sourceCode->rc.right,	_watch->rc.bottom,			(_jdebi->rcClient.right - _jdebi->rcClient.left) - _sourceCode->rc.right,	3 * lnHeight);
-			iObj_setSize(_screen,			_sourceCode->rc.right,	_sourceLight->rc.bottom,	(_jdebi->rcClient.right - _jdebi->rcClient.left) - _sourceCode->rc.right,	(_jdebi->rcClient.bottom - _jdebi->rcClient.top) - _sourceLight->rc.bottom);
+			iObj_setSize(_screen,		_sourceCode->rc.right,	_sourceLight->rc.bottom,	(_jdebi->rcClient.right - _jdebi->rcClient.left) - _sourceCode->rc.right,	(_jdebi->rcClient.bottom - _jdebi->rcClient.top) - _sourceLight->rc.bottom);
 
 			// These are created, but they are not visible
 // 			iObj_setSize(debug,			command->rc.right,		watch->rc.bottom,			(sourceCode->rc.right - command->rc.right) / 2,									(_jdebi->rcClient.bottom - _jdebi->rcClient.top) - watch->rc.bottom);
@@ -574,13 +574,13 @@
 		// Position and size each control
 		//////
 			lnHeight = (_jdebi->rcClient.bottom - _jdebi->rcClient.top) / 8;
-			iObj_setSize(_sourceCode_carousel,	50,	-1,		_sourceCode->rcClient.right				- _sourceCode->rcClient.left - 49,		_sourceCode->rcClient.bottom			- _sourceCode->rcClient.top - 2);
-			iObj_setSize(_sourceCode_rider,		0,	0,		_sourceCode_carousel->rcClient.right	- _sourceCode_carousel->rcClient.left,	_sourceCode_carousel->rcClient.bottom	- _sourceCode_carousel->rcClient.top);
+			iObj_setSize(_sourceCode_carousel,		50,	-1,		_sourceCode->rcClient.right				- _sourceCode->rcClient.left - 49,		_sourceCode->rcClient.bottom			- _sourceCode->rcClient.top - 2);
+			iObj_setSize(_sourceCode_rider,			0,	0,		_sourceCode_carousel->rcClient.right	- _sourceCode_carousel->rcClient.left,	_sourceCode_carousel->rcClient.bottom	- _sourceCode_carousel->rcClient.top);
 			iObj_setSize(_sourceCode_editbox,		0,	0,		_sourceCode_rider->rcClient.right		- _sourceCode_rider->rcClient.left,		_sourceCode_rider->rcClient.bottom		- _sourceCode_rider->rcClient.top);
 			iEngine_raise_event(_EVENT_RESIZE, NULL, _sourceCode_carousel, &_sourceCode_carousel->rc);
 			iObj_setSize(_locals_editbox,			8,	0,		_locals->rcClient.right					- _locals->rcClient.left - 8,			_locals->rcClient.bottom				- _locals->rcClient.top);
 			iObj_setSize(_watch_editbox,			8,	0,		_watch->rcClient.right					- _watch->rcClient.left - 8,			_watch->rcClient.bottom					- _watch->rcClient.top);
-			iObj_setSize(_command_editbox,		8,	0,		_cmd->rcClient.right					- _cmd->rcClient.left - 8,				_cmd->rcClient.bottom					- _cmd->rcClient.top);
+			iObj_setSize(_command_editbox,			8,	0,		_cmd->rcClient.right					- _cmd->rcClient.left - 8,				_cmd->rcClient.bottom					- _cmd->rcClient.top);
 			iObj_setSize(_debug_editbox,			8,	0,		_debug->rcClient.right					- _debug->rcClient.left - 8,			_debug->rcClient.bottom					- _debug->rcClient.top);
 			iObj_setSize(_output_editbox,			8,	0,		_output->rcClient.right					- _output->rcClient.left - 8,			_output->rcClient.bottom				- _output->rcClient.top);
 			iObj_setSize(_screen_editbox,			8,	0,		_screen->rcClient.right					- _screen->rcClient.left - 8,			_screen->rcClient.bottom				- _screen->rcClient.top);
@@ -600,14 +600,14 @@
 			propSetCaption(_sourceCode, cgcSourceCodeTitle);
 
 			// Adjust the caption width
-			((SObject*)_sourceCode->firstChild->ll.next)->rc.right = 90;
+			((SObject*)_sourceCode->firstChild->ll.next)->rc.right = 110;
 
 			_sourceCode_editbox->p.font					= iFont_create(cgcFontName_defaultFixed, 10, FW_MEDIUM, false, false);
 			iEngine_set_event(_EVENT_ONKEYDOWN, NULL, _sourceCode_editbox, (uptr)&iSEM_onKeyDown_sourceCode);
 			propSetBorderStyle(_sourceCode_editbox, _BORDER_STYLE_FIXED);
 			propSetBorderColor(_sourceCode_editbox, lineNumberBackColor);
 			_sourceCode_editbox->p.sem->showCursorLine	= true;
-			_sourceCode_editbox->p.sem->isSourceCode		= true;
+			_sourceCode_editbox->p.sem->isSourceCode	= true;
 			_sourceCode_editbox->p.sem->showLineNumbers	= true;
 
 			// Decorate with toolbars
@@ -621,12 +621,9 @@
 			_locals_editbox->p.font					= iFont_create(cgcFontName_defaultFixed, 10, FW_MEDIUM, false, false);
 			iEngine_set_event(_EVENT_ONKEYDOWN, NULL, _locals_editbox, (uptr)&iSEM_onKeyDown);
 			_locals_editbox->p.sem->showCursorLine	= true;
-			_locals_editbox->p.sem->isSourceCode		= true;
+			_locals_editbox->p.sem->isSourceCode	= true;
 			_locals_editbox->p.sem->showLineNumbers	= true;
 			iSEM_appendLine(_locals_editbox->p.sem, NULL, 0, false);
-
-			// Adjust the caption width
-			((SObject*)_locals->firstChild->ll.next)->rc.right = 65;
 
 
 		//////////
@@ -640,9 +637,6 @@
 			_watch_editbox->p.sem->showLineNumbers	= true;
 			iSEM_appendLine(_watch_editbox->p.sem, NULL, 0, false);
 
-			// Adjust the caption width
-			((SObject*)_watch->firstChild->ll.next)->rc.right = 65;
-
 
 		//////////
 		// Command window caption and font
@@ -650,13 +644,10 @@
 			iObjProp_set_character_direct(_cmd, _INDEX_CAPTION, cgcCommandTitle, sizeof(cgcCommandTitle) - 1);
 			_command_editbox->p.font					= iFont_create(cgcFontName_defaultFixed, 10, FW_MEDIUM, false, false);
 			iEngine_set_event(_EVENT_ONKEYDOWN, NULL, _command_editbox, (uptr)&iSEM_onKeyDown_sourceCode);
-			_command_editbox->p.hasFocus					= true;
+			_command_editbox->p.hasFocus				= true;
 			_command_editbox->p.sem->showCursorLine		= true;
 			_command_editbox->p.sem->isSourceCode		= true;
-			_command_editbox->p.sem->showLineNumbers		= true;
-
-			// Adjust the caption width
-			((SObject*)_cmd->firstChild->ll.next)->rc.right = 80;
+			_command_editbox->p.sem->showLineNumbers	= true;
 
 
 		//////////
@@ -667,9 +658,6 @@
 			iEngine_set_event(_EVENT_ONKEYDOWN, NULL, _debug_editbox, (uptr)&iSEM_onKeyDown);
 			_debug_editbox->p.sem->showCursorLine	= true;
 
-			// Adjust the caption width
-			((SObject*)_debug->firstChild->ll.next)->rc.right = 65;
-
 
 		//////////
 		// Output window caption and font
@@ -678,9 +666,6 @@
 			_output_editbox->p.font					= iFont_create(cgcFontName_defaultFixed, 8, FW_MEDIUM, false, false);
 			iEngine_set_event(_EVENT_ONKEYDOWN, NULL, _output_editbox, (uptr)&iSEM_onKeyDown);
 			_output_editbox->p.sem->showCursorLine	= true;
-
-			// Adjust the caption width
-			((SObject*)_output->firstChild->ll.next)->rc.right = 70;
 
 
 		//////////
@@ -4527,7 +4512,7 @@ JDebiC_debug(win, obj);
 	#define _GREEN	2
 	#define _BLUE	3
 
-	void iiVjr_renderAccomplishment(SBitmap* bmp, RECT* trc, s32 tnRAGB, cs8* tcAccomplishment, s8* tcVersion, bool tlBold, bool tlItalic, bool tlUnderline, s32 tnAdjustAccomplishmentFontSize, s32 tnAdjustVersionFontSize)
+	void iiVjr_renderAccomplishment(SBitmap* bmp, RECT* trc, s32 tnRAGB, cs8* tcAccomplishment, cs8* tcVersion, bool tlBold, bool tlItalic, bool tlUnderline, s32 tnAdjustAccomplishmentFontSize, s32 tnAdjustVersionFontSize)
 	{
 		s32			lnWidthAccomplishment;//, lnWidthVersion;
 		RECT		lrc, lrc2, lrcAccomplishment, lrcVersion;
@@ -4702,8 +4687,8 @@ JDebiC_debug(win, obj);
 	const s8 cgcFormsWorking_070[]					= "Forms working (future, James 4:15)";
 	const s8 cgcCompilerCompleted_065[]				= "Compiler completed (future, James 4:15)";
 	const s8 cgcRunningPrograms_060[]				= "Running programs (future, James 4:15)";
-	const s8 cgcHernanCano_057[]					= "Hernan Cano is a VJr developer";
-	const s8 cgcVersion_057[]						= "174 functions completed";
+	const s8 cgcVersion_058[]						= "Refactoring, 10 new functions";
+	const s8 cgcVersion_057[]						= "Hernan Cano is a VJr developer";
 	const s8 cgcVersion_056[]						= "Stefano D'Amico is a VJr developer";
 	const s8 cgc64bitAnd32bit_055[]					= "Native 32-bit and 64-bit Versions";
 	const s8 cgcShiftSpaceInNames_054[]				= "Support for Shift+Spaces in names";
@@ -4711,40 +4696,52 @@ JDebiC_debug(win, obj);
 	const s8 cgcChrtranStrtran_052[]				= "CHRTRAN() and STRTRAN()";
 	const s8 cgcBugFixesMemoryLeaksRemoved_051[]	= "Bug fixes, memory leaks removed";
 	const s8 cgcEditorHighlightsWord_050[]			= "Editor highlights word under cursor";
-	const s8 cgcEditorResize_047[]					= "Editor resize CTRL+ and CTRL-";
+//	const s8 cgcEditorResize_047[]					= "Editor resize CTRL+ and CTRL-";
 	const s8 cgcTransformPartiallySupported_043[]	= "TRANSFORM() partially supported";
 	const s8 cgcTooltipsFramed_039[]				= "Tooltips framed (hover framed)";
+	const s8 cgcVersion_0_70[]						= "0." "70";
+	const s8 cgcVersion_0_65[]						= "0." "65";
+	const s8 cgcVersion_0_60[]						= "0." "60";
+	const s8 cgcVersion_0_58[]						= "0." "58";
+	const s8 cgcVersion_0_57[]						= "0." "57";
+	const s8 cgcVersion_0_56[]						= "0." "56";
+	const s8 cgcVersion_0_55[]						= "0." "55";
+	const s8 cgcVersion_0_54[]						= "0." "54";
+	const s8 cgcVersion_0_52[]						= "0." "52";
+	const s8 cgcVersion_0_51[]						= "0." "51";
+	const s8 cgcVersion_0_50[]						= "0." "50";
+	const s8 cgcVersion_0_43[]						= "0." "43";
+	const s8 cgcVersion_0_39[]						= "0." "39";
 #else
 	#error Language not specified
 #endif
 
-		iiVjr_renderAccomplishment(bmp, &lrc, _BLUE, cgcFormsWorking_070,							(s8*)"0.70", false, false, false, -2, 0);
-		iiVjr_renderAccomplishment(bmp, &lrc, _BLUE, cgcCompilerCompleted_065,						(s8*)"0.65", false, false, false, -2, 0);
-		iiVjr_renderAccomplishment(bmp, &lrc, _BLUE, cgcRunningPrograms_060,						(s8*)"0.60", false, false, false, -2, 0);
-		iiVjr_renderAccomplishment(bmp, &lrc, _BLUE, cgcHernanCano_057,								(s8*)"0.58", false, false, false, 0, 0);
+		iiVjr_renderAccomplishment(bmp, &lrc, _BLUE, cgcFormsWorking_070,							cgcVersion_0_70, false, false, false, -2, 0);
+		iiVjr_renderAccomplishment(bmp, &lrc, _BLUE, cgcCompilerCompleted_065,						cgcVersion_0_65, false, false, false, -2, 0);
+		iiVjr_renderAccomplishment(bmp, &lrc, _BLUE, cgcRunningPrograms_060,						cgcVersion_0_60, false, false, false, -2, 0);
 
-		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcVersion_057,								(s8*)"0.58", false, false, false, 0, 0);
+		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcVersion_058,								cgcVersion_0_58, false, false, false, 0, 0);
 
-		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcVersion_056,								(s8*)"0.56", false, false, false, -2, 0);
-		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgc64bitAnd32bit_055,							(s8*)"0.55", false, false, false, -2, 0);
-		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcShiftSpaceInNames_054,						(s8*)"0.54", false, false, false, -2, 0);
-		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcInternalPropertyRefactoring_054,			(s8*)"0.54", false, false, false, -2, 0);
-		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcChrtranStrtran_052,						(s8*)"0.52", false, false, false, -2, 0);
-		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcBugFixesMemoryLeaksRemoved_051,			(s8*)"0.51", false, false, false, -2, 0);
-		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcEditorHighlightsWord_050,					(s8*)"0.50", false, false, false, -2, 0);
+		iiVjr_renderAccomplishment(bmp, &lrc, _BLUE, cgcVersion_057,								cgcVersion_0_57, false, false, false, -2, 0);
+		iiVjr_renderAccomplishment(bmp, &lrc, _BLUE, cgcVersion_056,								cgcVersion_0_56, false, false, false, -2, 0);
+		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgc64bitAnd32bit_055,							cgcVersion_0_55, false, false, false, -2, 0);
+		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcShiftSpaceInNames_054,						cgcVersion_0_54, false, false, false, -2, 0);
+		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcInternalPropertyRefactoring_054,			cgcVersion_0_54, false, false, false, -2, 0);
+		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcChrtranStrtran_052,						cgcVersion_0_52, false, false, false, -2, 0);
+		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcBugFixesMemoryLeaksRemoved_051,			cgcVersion_0_51, false, false, false, -2, 0);
+		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcEditorHighlightsWord_050,					cgcVersion_0_50, false, false, false, -2, 0);
+
+// Some work still needed:
+		iiVjr_renderAccomplishment(bmp, &lrc, _AMBER, cgcTransformPartiallySupported_043,			cgcVersion_0_43, false, true, false, -1, 0);
+		iiVjr_renderAccomplishment(bmp, &lrc, _AMBER, cgcTooltipsFramed_039,						cgcVersion_0_39, false, true, false, -1, 0);
 
 //		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "UI redesign geared toward debugger",			(s8*)"0.50", false, false, false, -2, 0);
 //		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "Editor development",							(s8*)"0.49", false, false, false, -2, 0);
 //		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "Editor line numbers, breakpoints",			(s8*)"0.48", false, false, false, -2, 0);
-
-		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcEditorResize_047,							(s8*)"0.47", false, false, false, -2, 0);
-
+//		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcEditorResize_047,							(s8*)"0.47", false, false, false, -2, 0);
 //		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "Casks",										(s8*)"0.46", false, true, false, -2, 0);
 //		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "Syntax highlighting",						(s8*)"0.45", false, true, false, -2, 0);
 // 		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "Tabs expanded, mouse wheel",					(s8*)"0.44", false, true, false, -2, 0);
-
-// Planned:
-		iiVjr_renderAccomplishment(bmp, &lrc, _AMBER, cgcTransformPartiallySupported_043,			(s8*)"0.43", false, true, false, -1, 0);
 //		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "PADC(), PADL(), PADR()",						(s8*)"0.43", false, true, false, -2, 0);
 // 		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "OCCURS(), OCCURSC()",						(s8*)"0.43", false, true, false, -2, 0);
 // 		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "AT(), ATC(), RAT(), RATC()",					(s8*)"0.43", false, true, false, -2, 0);
@@ -4754,7 +4751,6 @@ JDebiC_debug(win, obj);
 //		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "Memory leak bug fixes",						(s8*)"0.41", false, true, false, -2, 0);
 // 		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "Sound support",								(s8*)"0.40", false, true, false, -2, 0);
 //		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "Focus highlight border",						(s8*)"0.39", false, true, false, -2, 0);
- 		iiVjr_renderAccomplishment(bmp, &lrc, _AMBER, cgcTooltipsFramed_039,						(s8*)"0.39", false, true, false, -1, 0);
 // 		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "_screen editable",							(s8*)"0.39", false, true, false, -2, 0);
 //		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, "MinGW GCC 4.8.1 and CodeLite",				(s8*)"0.38", false, true, false, -2, 0);
 	}

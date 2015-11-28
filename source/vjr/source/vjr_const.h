@@ -224,7 +224,7 @@ typedef SEM**		SEMpp;
 	#define propSetValueRoundTo(obj, value)				iObjProp_set_f64_direct			(obj, _INDEX_ROUND_TO,			value)
 
 	#define propSetBackColor(obj, color)				iObjProp_set_sbgra_direct		(obj, _INDEX_BACKCOLOR,			color)
-	#define propSetBorderColor(obj, color)				iObjProp_set_sbgra_direct		(obj, _INDEX_BORDERCOLOR,			color)
+	#define propSetBorderColor(obj, color)				iObjProp_set_sbgra_direct		(obj, _INDEX_BORDERCOLOR,		color)
 	#define propSetDisabledBackColor(obj, color)		iObjProp_set_sbgra_direct		(obj, _INDEX_DISABLEDBACKCOLOR,	color)
 	#define propSetDisabledForeColor(obj, color)		iObjProp_set_sbgra_direct		(obj, _INDEX_DISABLEDFORECOLOR,	color)
 	#define propSetForeColor(obj, color)				iObjProp_set_sbgra_direct		(obj, _INDEX_FORECOLOR,			color)
@@ -232,24 +232,24 @@ typedef SEM**		SEMpp;
 	#define propSetSelectedForeColor(obj, color)		iObjProp_set_sbgra_direct		(obj, _INDEX_SELECTEDFORECOLOR,	color);
 
 	#define propSetAlignment(obj, value)				iObjProp_set_s32_direct			(obj, _INDEX_ALIGNMENT,			value)
-	#define propSetAnchor(obj, value)					iObjProp_set_s32_direct			(obj, _INDEX_ANCHOR,				value)
+	#define propSetAnchor(obj, value)					iObjProp_set_s32_direct			(obj, _INDEX_ANCHOR,			value)
 	#define propSetBackStyle(obj, value)				iObjProp_set_s32_direct			(obj, _INDEX_BACKSTYLE,			value)
-	#define propSetBorderStyle(obj, value)				iObjProp_set_s32_direct			(obj, _INDEX_BORDERSTYLE,			value)
-	#define propSetCaption(obj, value)					iObjProp_set_character_direct	(obj, _INDEX_CAPTION,				(u8*)value,		sizeof(value) - 1)
+	#define propSetBorderStyle(obj, value)				iObjProp_set_s32_direct			(obj, _INDEX_BORDERSTYLE,		value)
+	#define propSetCaption(obj, value)					iObjProp_set_character_direct	(obj, _INDEX_CAPTION,			(u8*)value,		sizeof(value) - 1)
 	#define propSetCount(obj, value)					iObjProp_set_s32_direct			(obj, _INDEX_COUNT,				value)
 	#define propSetEnabled(obj, value)					iObjProp_set_logical_fromLogicalConstants(obj, _INDEX_ENABLED, value);
 	#define propSetIcon(obj, bmp)						iObjProp_set_bitmap_direct		(obj, _INDEX_ICON,				bmp)
-	#define propSetMargin(obj, value)					iObjProp_set_s32_direct			(obj, _INDEX_MARGIN,				value)
+	#define propSetMargin(obj, value)					iObjProp_set_s32_direct			(obj, _INDEX_MARGIN,			value)
 	#define propSetMultiSelect(obj, value)				iObjProp_set_logical_fromLogicalConstants(obj, _INDEX_MULTISELECT, value)
 	#define propSetName(obj, value, valueLength)		iObjProp_set_character_direct	(obj, _INDEX_NAME,				(u8*)value,		valueLength)
-	#define propSetPictureBmp(obj, bmp)					iObjProp_set_bitmap_direct		(obj, _INDEX_PICTUREBMP,			bmp)
-	#define propSetPictureBmpDown(obj, bmp)				iObjProp_set_bitmap_direct		(obj, _INDEX_PICTUREBMP_DOWN,		bmp)
+	#define propSetPictureBmp(obj, bmp)					iObjProp_set_bitmap_direct		(obj, _INDEX_PICTUREBMP,		bmp)
+	#define propSetPictureBmpDown(obj, bmp)				iObjProp_set_bitmap_direct		(obj, _INDEX_PICTUREBMP_DOWN,	bmp)
 	#define propSetRiderTab(obj, value, valueLength)	iObjProp_set_character_direct	(obj, _INDEX_RIDERTAB,			(u8*)value,		valueLength)
 	#define propSetStyle(obj, value)					iObjProp_set_s32_direct			(obj, _INDEX_STYLE,				value)
 	#define propSetTitlebar(obj, value)					iObjProp_set_logical_fromLogicalConstants(obj, _INDEX_TITLEBAR,	value)
 	#define propSetVisible(obj, value)					iObjProp_set_logical_fromLogicalConstants(obj, _INDEX_VISIBLE,	value)
 	#define propSetVisible_fromBool(obj, value)			iObjProp_set_logical_direct(obj, _INDEX_VISIBLE, value)
-	#define propSetPictureBmpOver(obj, bmp)				iObjProp_set_bitmap_direct		(obj, _INDEX_PICTUREBMP_OVER,		bmp)
+	#define propSetPictureBmpOver(obj, bmp)				iObjProp_set_bitmap_direct		(obj, _INDEX_PICTUREBMP_OVER,	bmp)
 
 
 //////////
@@ -339,10 +339,16 @@ typedef SEM**		SEMpp;
 	#define _swFocusColor					rgba(245, 225, 215, 255)
 	#define _seFocusColor					rgba(235, 215, 215, 255)
 
-	#define _nwColor						rgba(245, 250, 255, 255)
-	#define _neColor						rgba(220, 240, 255, 255)
-	#define _swColor						rgba(235, 245, 255, 255)
-	#define _seColor						rgba(205, 225, 245, 255)
+	// Color theme per Stefano D'Amico, suggested Mar.25.2015
+	#define _nwColor_form					rgba(96,163,241,255)		/*rgba(245, 250, 255, 255)*/
+	#define _neColor_form					rgba(60,144,241,255)		/*rgba(220, 240, 255, 255)*/
+	#define _seColor_form					rgba(40,121,217,255)		/*rgba(205, 225, 245, 255)*/
+	#define _swColor_form					rgba(60,144,241,255)		/*rgba(235, 245, 255, 255)*/
+
+	#define _nwColor_subform				rgba(164,212,255,255)
+	#define _neColor_subform				rgba(138,190,248,255)
+	#define _seColor_subform				rgba(156,204,240,255)
+	#define _swColor_subform				rgba(138,190,248,255)
 
 
 //////////
@@ -1489,12 +1495,13 @@ typedef SEM**		SEMpp;
 
 	#include "vjr_const_version.h"
 
-	const u8			cgcFontName_default[]				= "Ubuntu";
-	const u8			cgcFontName_defaultFixed[]			= "Ubuntu Mono";
-	const u8			cgcFontName_windowTitleBar[]		= "Ubuntu Condensed";
-	const u8			cgcFontName_subwindowTitleBar[]		= "Ubuntu Condensed";
-	const u8			cgcFontName_defaultTooltip[]		= "Ubuntu Condensed";
-	const u8			cgcFontName_cask[]					= "Ubuntu Mono";
+	const u32			gnFont_defaultPointSize				= 10;
+	const u8			cgcFontName_default[]				= "Arial";
+	const u8			cgcFontName_defaultFixed[]			= "Courier New";
+	const u8			cgcFontName_windowTitleBar[]		= "Arial";
+	const u8			cgcFontName_subwindowTitleBar[]		= "Tahoma";
+	const u8			cgcFontName_defaultTooltip[]		= "Tahoma";
+	const u8			cgcFontName_cask[]					= "Courier New";
 
 	const u8			cgcCommandHistoryFilename[]			= "command.vjr";
 	const u8			cgcDefault[]						= "default";

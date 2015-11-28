@@ -3053,7 +3053,7 @@
 					break;
 
 				default:
-					iError_silent();
+					error_silent;
 				case _ICODE_CASK_TILDE:
 					// ~|tilde|~
 					*tnSkipChars	= 2;

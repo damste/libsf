@@ -218,7 +218,7 @@
 				AdditionalIncludeDirectories="\libsf\source\vjr\include;\libsf\source\vjr\projects\vs2008"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS"
 				BasicRuntimeChecks="0"
-				RuntimeLibrary="0"
+				RuntimeLibrary="2"
 				StructMemberAlignment="1"
 				EnableFunctionLevelLinking="false"
 				EnableEnhancedInstructionSet="0"

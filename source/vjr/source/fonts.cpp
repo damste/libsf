@@ -113,6 +113,42 @@
 // Create a new font
 //
 //////
+	SFont* iFont_create(SObject* obj)
+	{
+		bool		llBold, llItalic, llUnderline;
+		SVariable*	varName;
+		SVariable*	varPointSize;
+
+
+		//////////
+		// Make sure our environment is sane
+		//////
+			if (obj && (varName = iObjProp_get_var_byIndex(obj, _INDEX_FONTNAME)) && (varPointSize = iObjProp_get_var_byIndex(obj, _INDEX_FONTSIZE)))
+			{
+				// Grab the criteria
+				llBold			= iiVariable_getAs_bool(iObjProp_get_logical(obj, _INDEX_FONTBOLD));
+				llItalic		= iiVariable_getAs_bool(iObjProp_get_logical(obj, _INDEX_FONTITALIC));
+				llUnderline		= iiVariable_getAs_bool(iObjProp_get_logical(obj, _INDEX_FONTUNDERLINE));
+
+				// cgcFontName_windowTitleBar, 10, FW_BOLD, false, false);
+				return(iFont_create(
+										((varName) ? varName->value.data_cu8 : cgcFontName_default),
+										iiVariable_getAs_u32(varPointSize),
+										((llBold)		? FW_BOLD	: FW_NORMAL),
+										((llItalic)		? 1			: 0),
+										((llUnderline)	? 1			: 0)
+								));
+			}
+
+
+		//////////
+		// If we get here, error
+		//////
+			error_silent;
+			return(iFont_create(cgcFontName_default, gnFont_defaultPointSize, FW_BOLD, 0, 0));
+
+	}
+	
 	SFont* iFont_create(cu8* tcFontName, u32 tnFontSize, u32 tnFontWeight, u32 tnItalics, u32 tnUnderline)
 	{
 		s32		lnLength;

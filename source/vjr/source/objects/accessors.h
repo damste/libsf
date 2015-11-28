@@ -925,10 +925,10 @@ struct SBasePropMap;
 	bool					iObjProp_set							(SObject* obj, s32 tnIndex, SVariable* varNewValue, bool tlNestedSet = false);
 	bool					iObjProp_set_bitmap_direct				(SObject* obj, s32 tnIndex, SBitmap* bmp);
 	bool					iObjProp_set_character					(SObject* obj, s32 tnIndex, SVariable* varNewValue);
-	bool					iObjProp_set_character_direct			(SObject* obj, s32 tnIndex, cs8* tcText, u32 tnTextLength);
-	bool					iObjProp_set_character_direct			(SObject* obj, s32 tnIndex,  s8* tcText, u32 tnTextLength);
-	bool					iObjProp_set_character_direct			(SObject* obj, s32 tnIndex, cu8* tcText, u32 tnTextLength);
-	bool					iObjProp_set_character_direct			(SObject* obj, s32 tnIndex,  u8* tcText, u32 tnTextLength);
+	bool					iObjProp_set_character_direct			(SObject* obj, s32 tnIndex, cs8* tcText, u32 tnTextLength = -1);
+	bool					iObjProp_set_character_direct			(SObject* obj, s32 tnIndex,  s8* tcText, u32 tnTextLength = -1);
+	bool					iObjProp_set_character_direct			(SObject* obj, s32 tnIndex, cu8* tcText, u32 tnTextLength = -1);
+	bool					iObjProp_set_character_direct			(SObject* obj, s32 tnIndex,  u8* tcText, u32 tnTextLength = -1);
 	bool					iObjProp_set_character_direct			(SObject* obj, s32 tnIndex, SDatum* datum);
 	bool					iObjProp_set_logical_direct				(SObject* obj, s32 tnIndex, bool tlValue);
 	bool					iObjProp_set_logical_fromLogicalConstants(SObject* obj, s32 tnIndex, s32 tnValue);
@@ -1318,12 +1318,12 @@ struct SBasePropMap;
 		{	_INDEX_MOVERBARS,								-1,					cgc_moverBars,							sizeof(cgc_moverBars) - 1,							_VAR_TYPE_LOGICAL,			0, 0, 0,		_LOGICAL_FALSE					,NULL	},	// .t.=show, .f.=hide (default), are mover bars shown on listboxes?
 		{	_INDEX_MULTISELECT,								-1,					cgc_multiSelect,						sizeof(cgc_multiSelect) - 1,						_VAR_TYPE_S32,				0, 0, 0,		0								,NULL	},	// 0=no multi-select (default), 1=multi-select
 		{	_INDEX_NAME,									-1,					cgc_name,								sizeof(cgc_name) - 1,								_VAR_TYPE_CHARACTER,		0, 0, 0,		(uptr)&cgcNullString[0]			,NULL	},	// Object name
-		{	_INDEX_NECOLOR,									-1,					cgc_neColor,							sizeof(cgc_neColor) - 1,							_VAR_TYPE_S32,				0, 0, 0,		_neColor						,NULL	},	// Northeast color
+		{	_INDEX_NECOLOR,									-1,					cgc_neColor,							sizeof(cgc_neColor) - 1,							_VAR_TYPE_S32,				0, 0, 0,		_neColor_form						,NULL	},	// Northeast color
 		{	_INDEX_NEWINDEX,								-1,					cgc_newIndex,							sizeof(cgc_newIndex) - 1,							_VAR_TYPE_S32,				0, 0, 0,		0								,NULL	},	// When an item is added to a sorted listbox or combobox, newIndex indicates its position
 		{	_INDEX_NEWITEMID,								-1,					cgc_newItemID,							sizeof(cgc_newItemID) - 1,							_VAR_TYPE_S32,				0, 0, 0,		0								,NULL	},	// When an item is added to a listbox or combobox, the uid of the added item
 		{	_INDEX_NULLDISPLAY,								-1,					cgc_nullDisplay,						sizeof(cgc_nullDisplay) - 1,						_VAR_TYPE_CHARACTER,		0, 0, 0,		(uptr)&cgcNullText[0]			,NULL	},	// The text to display for .NULL. items
 		{	_INDEX_NUMBEROFELEMENTS,						-1,					cgc_numberOfElements,					sizeof(cgc_numberOfElements) - 1,					_VAR_TYPE_S32,				0, 0, 0,		0								,NULL	},	// How many items in an array are used to populate items in a listbox or combobox
-		{	_INDEX_NWCOLOR,									-1,					cgc_nwColor,							sizeof(cgc_nwColor) - 1,							_VAR_TYPE_S32,				0, 0, 0,		_nwColor						,NULL	},	// Northwest color
+		{	_INDEX_NWCOLOR,									-1,					cgc_nwColor,							sizeof(cgc_nwColor) - 1,							_VAR_TYPE_S32,				0, 0, 0,		_nwColor_form						,NULL	},	// Northwest color
 		{	_INDEX_OBJECT,									-1,					cgc_object,								sizeof(cgc_object) - 1,								_VAR_TYPE_OBJECT,			0, 0, 0,		0								,NULL	},	// A pseudo-object to access data within the OLE object
 		{	_INDEX_OBJECTS,									-1,					cgc_objects,							sizeof(cgc_objects) - 1,							_VAR_TYPE_OBJECT,			0, 0, 0,		0								,NULL	},	// A pseudo-object to access child objects
 		{	_INDEX_OLECLASS,								-1,					cgc_oLEClass,							sizeof(cgc_oLEClass) - 1,							_VAR_TYPE_CHARACTER,		0, 0, 0,		(uptr)&cgcNullString[0]			,NULL	},	// Name of the class ID for an OLE object
@@ -1389,7 +1389,7 @@ struct SBasePropMap;
 		{	_INDEX_SCROLLBARS,								-1,					cgc_scrollBars,							sizeof(cgc_scrollBars) - 1,							_VAR_TYPE_S32,				0, 0, 0,		_SCROLL_BARS_BOTH				,NULL	},	// 0=none, 1=horizontal, 2=vertical, can be combined for 3=both (default)
 		{	_INDEX_SCROLLX,									-1,					cgc_scrollX,							sizeof(cgc_scrollX) - 1,							_VAR_TYPE_S32,				0, 0, 0,		0								,NULL	},	// Deafult to not scrolling
 		{	_INDEX_SCROLLY,									-1,					cgc_scrollY,							sizeof(cgc_scrollY) - 1,							_VAR_TYPE_S32,				0, 0, 0,		0								,NULL	},	// Deafult to not scrolling
-		{	_INDEX_SECOLOR,									-1,					cgc_seColor,							sizeof(cgc_seColor) - 1,							_VAR_TYPE_S32,				0, 0, 0,		_seColor						,NULL	},	// Southeast color
+		{	_INDEX_SECOLOR,									-1,					cgc_seColor,							sizeof(cgc_seColor) - 1,							_VAR_TYPE_S32,				0, 0, 0,		_seColor_form						,NULL	},	// Southeast color
 		{	_INDEX_SECONDS,									-1,					cgc_seconds,							sizeof(cgc_seconds) - 1,							_VAR_TYPE_S32,				0, 0, 0,		_SECONDS_SET					,NULL	},	// 0=off, 1=on, 2=use SET SECONDS (default)
 		{	_INDEX_SELECTED,								-1,					cgc_selected,							sizeof(cgc_selected) - 1,							_VAR_TYPE_LOGICAL,			0, 0, 0,		_LOGICAL_FALSE					,NULL	},	// .t.=yes, .f.=no (default), if the item is selected in a listbox or combobox
 		{	_INDEX_SELECTEDBACKCOLOR,						-1,					cgc_selectedBackColor,					sizeof(cgc_selectedBackColor) - 1,					_VAR_TYPE_S32,				0, 0, 0,		_selectedBackColor				,NULL	},	// Selected back color
@@ -1417,7 +1417,7 @@ struct SBasePropMap;
 		{	_INDEX_STRETCH,									-1,					cgc_stretch,							sizeof(cgc_stretch) - 1,							_VAR_TYPE_S32,				0, 0, 0,		_STRETCH_CLIP					,NULL	},	// 0=clip, 1=scale, 2=stretch
 		{	_INDEX_STRICTDATEENTRY,							-1,					cgc_strictDateEntry,					sizeof(cgc_strictDateEntry) - 1,					_VAR_TYPE_S32,				0, 0, 0,		_STRICT_DATE_LOOSE				,NULL	},	// 0=loose (default), 1=strict, date input allowance
 		{	_INDEX_STYLE,									-1,					cgc_style,								sizeof(cgc_style) - 1,								_VAR_TYPE_S32,				0, 0, 0,		0								,NULL	},	// Varies by control
-		{	_INDEX_SWCOLOR,									-1,					cgc_swColor,							sizeof(cgc_swColor) - 1,							_VAR_TYPE_S32,				0, 0, 0,		_swColor						,NULL	},	// Southwest color
+		{	_INDEX_SWCOLOR,									-1,					cgc_swColor,							sizeof(cgc_swColor) - 1,							_VAR_TYPE_S32,				0, 0, 0,		_swColor_form						,NULL	},	// Southwest color
 		{	_INDEX_TABINDEX,								-1,					cgc_tabIndex,							sizeof(cgc_tabIndex) - 1,							_VAR_TYPE_S32,				0, 0, 0,		0								,NULL	},	// Set by control
 		{	_INDEX_TABORIENTATION,							-1,					cgc_tabOrientation,						sizeof(cgc_tabOrientation) - 1,						_VAR_TYPE_S32,				0, 0, 0,		_TAB_ORIENTATION_TOP			,NULL	},	// 0=top (default), 1=bottom, 2=left, 3=right, where the tabs appear on a pageframe
 		{	_INDEX_TABS,									-1,					cgc_tabs,								sizeof(cgc_tabs) - 1,								_VAR_TYPE_LOGICAL,			0, 0, 0,		_LOGICAL_TRUE					,NULL	},	// .t.=show (default), .f.=hide, are tabs shown on a pageframe?

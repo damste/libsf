@@ -149,6 +149,15 @@
 
 
 			//////////
+			// Reset nw/ne/se/sw colors
+			//////
+				iObjProp_set_sbgra_direct(form, _INDEX_NWCOLOR, nwColor_form);
+				iObjProp_set_sbgra_direct(form, _INDEX_NECOLOR, neColor_form);
+				iObjProp_set_sbgra_direct(form, _INDEX_SECOLOR, seColor_form);
+				iObjProp_set_sbgra_direct(form, _INDEX_SWCOLOR, swColor_form);
+
+
+			//////////
 			// Reset our min/max
 			//////
 				SetRect(&form->p.rcMax, -1, -1, -1, -1);
@@ -186,8 +195,11 @@
 
 						propSetCaption(objChild, cgcName_formCaption);
 						iObjProp_set_s32_direct(objChild, _INDEX_BACKSTYLE, _BACK_STYLE_TRANSPARENT);
+						iObjProp_set_sbgra_direct(objChild, _INDEX_FORECOLOR, whiteColor);
+						iObjProp_set_logical_direct(objChild, _INDEX_FONTBOLD, true);
 						iFont_delete(&objChild->p.font, true);
-						objChild->p.font		= iFont_create(cgcFontName_windowTitleBar, 11, FW_NORMAL, false, false);
+//						objChild->p.font		= iFont_create(cgcFontName_windowTitleBar, 11, FW_NORMAL, false, false);
+						objChild->p.font = iFont_create(objChild);
 						propSetVisible(objChild, _LOGICAL_TRUE);
 
 					} else if (objChild->objType == _OBJ_TYPE_IMAGE && propIsName_byText(objChild, cgcName_iconMove)) {
@@ -362,6 +374,15 @@
 
 
 			//////////
+			// Reset nw/ne/se/sw colors
+			//////
+				iObjProp_set_sbgra_direct(subform, _INDEX_NWCOLOR, nwColor_subform);
+				iObjProp_set_sbgra_direct(subform, _INDEX_NECOLOR, neColor_subform);
+				iObjProp_set_sbgra_direct(subform, _INDEX_SECOLOR, seColor_subform);
+				iObjProp_set_sbgra_direct(subform, _INDEX_SWCOLOR, swColor_subform);
+
+
+			//////////
 			// Default child settings
 			//////
 				SetRect(&lrc, 0, 0, bmpArrowUl->bi.biWidth, bmpArrowUl->bi.biHeight);
@@ -389,8 +410,11 @@
 						// Caption
 						iObjProp_set_character_direct(objChild, _INDEX_CAPTION, cgcName_formCaption, -1);
 						iObjProp_set_s32_direct(objChild, _INDEX_BACKSTYLE, _BACK_STYLE_TRANSPARENT);
+						iObjProp_set_sbgra_direct(objChild, _INDEX_FORECOLOR, whiteColor);
+						iObjProp_set_logical_direct(objChild, _INDEX_FONTBOLD, true);
 						iFont_delete(&objChild->p.font, true);
-						objChild->p.font = iFont_create(cgcFontName_windowTitleBar, 10, FW_NORMAL, false, false);
+//						objChild->p.font = iFont_create(cgcFontName_windowTitleBar, 10, FW_NORMAL, false, false);
+						objChild->p.font = iFont_create(objChild);
 						propSetVisible(objChild, _LOGICAL_TRUE);
 					}
 

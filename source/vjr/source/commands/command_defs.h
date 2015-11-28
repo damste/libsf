@@ -125,7 +125,7 @@ struct SReturnsParams;
 	void				iError_report_byNumber						(u32 tnErrorNum, SComp* comp, bool tlInvasive);
 	cu8*				iError_getText_byNumber						(u32 tnErrorNum);
 	void				iError_track								(void);
-	void				iError_silent								(void);
+	void				iError_silent								(s8* tcFuncName);
 
 	// Called to check if potential errors exist
 	f32					iErrorCandidate_signalOutOfRange_f32		(SErrorInfo* ei, f32 value, s32 tnVarType, SComp* compRelated, bool tlInvasive, s8* tcExtraInfo);

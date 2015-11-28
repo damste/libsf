@@ -5827,7 +5827,7 @@ debug_break;
 
 											} else {
 												// It's beyond the end of the string
-												iError_silent();		// Silently pass thru
+												error_silent;		// Silently pass thru
 												return(true);
 											}
 
@@ -5935,7 +5935,7 @@ debug_break;
 
 														} else {
 															// It's beyond the end of the string
-															iError_silent();		// Silently pass thru
+															error_silent;		// Silently pass thru
 															return(true);
 														}
 
@@ -12435,6 +12435,15 @@ debug_break;
 		u64		lnDatetime, lnDatetime2;
 		bool	llLeftFp, llRightFp, llLeftInt, llRightInt, llLeftSigned, llRightSigned, llLeftNum, llRightNum, llProcess;
 		s8		buffer[64];
+		bool	llError;
+		u32		lnErrorNum;
+
+
+		//////////
+		// Make sure we have error criteria
+		//////
+			if (!tlError)		tlError		= &llError;
+			if (!tnErrorNum)	tnErrorNum	= &lnErrorNum;
 
 
 		//////////
@@ -12817,6 +12826,15 @@ debug_break;
 	{
 		s32		lnResult;
 		s64		lnLeft, lnRight;
+		bool	llError;
+		u32		lnErrorNum;
+
+
+		//////////
+		// Make sure we have error criteria
+		//////
+			if (!tlError)		tlError		= &llError;
+			if (!tnErrorNum)	tnErrorNum	= &lnErrorNum;
 
 
 		//////////

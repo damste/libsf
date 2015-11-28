@@ -284,6 +284,10 @@
 		// Make sure the environment is sane
 		if (obj)
 		{
+			// Make sure the length is valid
+			if ((s32)tnTextLength < 0)
+				tnTextLength = strlen(tcText);
+
 			// Grab the variable associated with this object's property
 			var = iObjProp_get_var_byIndex(obj, tnIndex, &baseProp, &objProp);
 			if (var)
@@ -3215,7 +3219,9 @@ debug_break;
 							break;
 
 						case _INDEX_FONTNAME:
-							iDatum_duplicate(&obj->p.sem->font->name, &obj->p.font->name);
+							iDatum_duplicate(&obj->p.font->name, &obj->p.font->name);
+							if (obj->p.sem)
+								iDatum_duplicate(&obj->p.sem->font->name, &obj->p.font->name);
 							break;
 
 						case _INDEX_FONTOUTLINE:

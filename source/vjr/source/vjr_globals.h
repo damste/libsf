@@ -594,6 +594,17 @@
 		SFont*			gsFontDefaultTooltip				= NULL;									// Ubuntu Condensed Bold 9 pt
 		SFont*			gsFontCask							= NULL;									// Cask font, Ubuntu Bold 30 pt
 		// Global colors
+
+		const SBgra		nwColor_form						= { _nwColor_form };
+		const SBgra		neColor_form						= { _neColor_form };
+		const SBgra		seColor_form						= { _seColor_form };
+		const SBgra		swColor_form						= { _swColor_form };
+
+		const SBgra		nwColor_subform						= { _nwColor_subform };
+		const SBgra		neColor_subform						= { _neColor_subform };
+		const SBgra		seColor_subform						= { _seColor_subform };
+		const SBgra		swColor_subform						= { _swColor_subform };
+
 		const SBgra		whiteColor							= { _whiteColor };
 		const SBgra		grayColor							= { _grayColor };
 		const SBgra		blackColor							= { _blackColor };
@@ -651,7 +662,7 @@
 		SBgra			carouselTabBackColor				= { rgba(255, 255, 255, 255) };			// White
 		SBgra			carouselTabForeColor				= { rgba(64, 64, 88, 255) };			// Darker purpleish-gray
 		SBgra			carouselTabForeColorHighlight		= { rgba(32, 32, 44, 255) };			// Darkest purpleish-gray
-		SBgra			toolbarBackColor					= { _nwColor };
+		SBgra			toolbarBackColor					= { _nwColor_form };
 
 
 		// Forms four-corner window color schemes (eventually these will be loaded from themes.dbf)
@@ -673,10 +684,10 @@
 // 		SBgra			SwColor2							= { rgba(249, 222, 133, 255) };			// Orange/golden yellow
 // 		SBgra			SeColor2							= { rgba(247, 210, 96, 255) };			// More orange/golden yellow
 // Blue theme:
-		const SBgra		NwNonfocusColor						= { _nwColor };
-		const SBgra		NeNonfocusColor						= { _neColor };
-		const SBgra		SwNonfocusColor						= { _swColor };
-		const SBgra		SeNonfocusColor						= { _seColor };
+		const SBgra		NwNonfocusColor						= { _nwColor_form };
+		const SBgra		NeNonfocusColor						= { _neColor_form };
+		const SBgra		SwNonfocusColor						= { _swColor_form };
+		const SBgra		SeNonfocusColor						= { _seColor_form };
 // Orange theme:
 // 		const SBgra		NwColor2							= { rgba(255, 222, 156, 255) };
 // 		const SBgra		NeColor2							= { rgba(255, 200, 92, 255) };
@@ -694,8 +705,8 @@
 		const SBgra		SeCheckboxOffColor					= { rgba(212, 128, 131, 255) };
 
 		// Colors for the focus window
-		SBgra			focusHighlightReadWriteColor		= { rgba(112, 164, 255, 255) };
-		SBgra			focusHighlightReadOnlyColor			= { rgba(255, 112, 112, 255) };
+		SBgra			focusHighlightReadWriteColor		= { rgba(255, 184, 92, 255) };			// { rgba(112, 164, 255, 255) };
+		SBgra			focusHighlightReadOnlyColor			= { rgba(255, 112, 112, 255) };			// { rgba(255, 112, 112, 255) };
 
 
 	//////////

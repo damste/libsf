@@ -84,6 +84,7 @@
 
 	SFont*			iFont_duplicate							(SFont* fontSource);
 	SFont*			iFont_create							(cu8* tcFontName, u32 tnFontSize = 10, u32 tnFontWeight = FW_NORMAL, u32 tnItalics = 0, u32 tnUnderline = 0);
+	SFont*			iFont_create							(SObject* obj);
 	SFont*			iFont_bigger							(SFont* font, bool tlDeleteAfterCreateNew);
 	SFont*			iFont_smaller							(SFont* font, bool tlDeleteAfterCreateNew);
 	void			iiFont_refresh							(SFont* font);

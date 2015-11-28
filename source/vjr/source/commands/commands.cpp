@@ -264,8 +264,10 @@
 // Ultimately they could be used to signal warnings, or meta data calls.
 //
 //////
-	void iError_silent(void)
+	// May be called through use of error_silent() macro
+	void iError_silent(s8* tcFuncName)
 	{
+		logfunc(tcFuncName);
 		debug_nop;
 	}
 

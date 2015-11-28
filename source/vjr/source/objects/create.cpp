@@ -198,21 +198,23 @@
 					scaleUr		= iObj_addChild(_OBJ_TYPE_IMAGE, formNew);
 					scaleLr		= iObj_addChild(_OBJ_TYPE_IMAGE, formNew);
 					scaleLl		= iObj_addChild(_OBJ_TYPE_IMAGE, formNew);
+					iObjProp_set_s32_direct(caption, _INDEX_FONTSIZE, gsWindowTitleBarFont->_size);
+					iObjProp_set_character_direct(caption, _INDEX_FONTNAME, &gsWindowTitleBarFont->name);
 
 
 				//////////
 				// Give them proper names
 				//////
 					var = iObjProp_get_var_byIndex(icon,		_INDEX_NAME);		iDatum_duplicate(&var->value,	cgcName_icon,			-1);
-					var = iObjProp_get_var_byIndex(caption,	_INDEX_NAME);		iDatum_duplicate(&var->value,	cgcName_caption,		-1);
+					var = iObjProp_get_var_byIndex(caption,		_INDEX_NAME);		iDatum_duplicate(&var->value,	cgcName_caption,		-1);
 					var = iObjProp_get_var_byIndex(move,		_INDEX_NAME);		iDatum_duplicate(&var->value,	cgcName_iconMove,		-1);
 					var = iObjProp_get_var_byIndex(minimize,	_INDEX_NAME);		iDatum_duplicate(&var->value,	cgcName_iconMinimize,	-1);
 					var = iObjProp_get_var_byIndex(maximize,	_INDEX_NAME);		iDatum_duplicate(&var->value,	cgcName_iconMaximize,	-1);
-					var = iObjProp_get_var_byIndex(close,	_INDEX_NAME);		iDatum_duplicate(&var->value,	cgcName_iconClose,		-1);
-					var = iObjProp_get_var_byIndex(scaleUl,	_INDEX_NAME);		iDatum_duplicate(&var->value,	cgcName_iconScaleUl,	-1);
-					var = iObjProp_get_var_byIndex(scaleUr,	_INDEX_NAME);		iDatum_duplicate(&var->value,	cgcName_iconScaleUr,	-1);
-					var = iObjProp_get_var_byIndex(scaleLr,	_INDEX_NAME);		iDatum_duplicate(&var->value,	cgcName_iconScaleLr,	-1);
-					var = iObjProp_get_var_byIndex(scaleLl,	_INDEX_NAME);		iDatum_duplicate(&var->value,	cgcName_iconScaleLl,	-1);
+					var = iObjProp_get_var_byIndex(close,		_INDEX_NAME);		iDatum_duplicate(&var->value,	cgcName_iconClose,		-1);
+					var = iObjProp_get_var_byIndex(scaleUl,		_INDEX_NAME);		iDatum_duplicate(&var->value,	cgcName_iconScaleUl,	-1);
+					var = iObjProp_get_var_byIndex(scaleUr,		_INDEX_NAME);		iDatum_duplicate(&var->value,	cgcName_iconScaleUr,	-1);
+					var = iObjProp_get_var_byIndex(scaleLr,		_INDEX_NAME);		iDatum_duplicate(&var->value,	cgcName_iconScaleLr,	-1);
+					var = iObjProp_get_var_byIndex(scaleLl,		_INDEX_NAME);		iDatum_duplicate(&var->value,	cgcName_iconScaleLl,	-1);
 
 
 				//////////
@@ -284,12 +286,14 @@
 				//////
 					icon		= iObj_addChild(_OBJ_TYPE_IMAGE, subformNew);
 					caption		= iObj_addChild(_OBJ_TYPE_LABEL, subformNew);
+					iObjProp_set_s32_direct(caption, _INDEX_FONTSIZE, gsWindowTitleBarFontSubform->_size);
+					iObjProp_set_character_direct(caption, _INDEX_FONTNAME, &gsWindowTitleBarFontSubform->name);
 
 
 				//////////
 				// Give them proper names
 				//////
-					var = iObjProp_get_var_byIndex(icon,		_INDEX_NAME);		iDatum_duplicate(&var->value,	cgcName_icon,		-1);
+					var = iObjProp_get_var_byIndex(icon,	_INDEX_NAME);		iDatum_duplicate(&var->value,	cgcName_icon,		-1);
 					var = iObjProp_get_var_byIndex(caption,	_INDEX_NAME);		iDatum_duplicate(&var->value,	cgcName_caption,	-1);
 
 
@@ -302,7 +306,7 @@
 				propSetEnabled(subformNew, _LOGICAL_TRUE);
 				subformNew->isRendered	= true;
 				subformNew->isPublished	= true;
-				var = iObjProp_get_var_byIndex(subformNew, _INDEX_NAME);				iDatum_duplicate(&var->value, cgcName_subform, -1);
+				var = iObjProp_get_var_byIndex(subformNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_subform, -1);
 				var = iObjProp_get_var_byIndex(subformNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_subform, -1);
 				var = iObjProp_get_var_byIndex(subformNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_subform, -1);
 				iEvents_resetToDefault(subformNew, &gsEvents_subform[0], gnEvents_subformSize);
@@ -371,9 +375,9 @@
 				// Give them proper names
 				//////
 					var = iObjProp_get_var_byIndex(icon,			_INDEX_NAME);		iDatum_duplicate(&var->value,	cgcName_icon,			-1);
-					var = iObjProp_get_var_byIndex(caption,		_INDEX_NAME);		iDatum_duplicate(&var->value,	cgcName_caption,		-1);
+					var = iObjProp_get_var_byIndex(caption,			_INDEX_NAME);		iDatum_duplicate(&var->value,	cgcName_caption,		-1);
 					var = iObjProp_get_var_byIndex(carouselIcon,	_INDEX_NAME);		iDatum_duplicate(&var->value,	cgcName_iconCarousel,	-1);
-					var = iObjProp_get_var_byIndex(close,		_INDEX_NAME);		iDatum_duplicate(&var->value,	cgcName_iconClose,		-1);
+					var = iObjProp_get_var_byIndex(close,			_INDEX_NAME);		iDatum_duplicate(&var->value,	cgcName_iconClose,		-1);
 
 
 				//////////
