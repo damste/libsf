@@ -18,7 +18,7 @@
 //      \_/  |_|  |_|  |_|
 //
 //////
-// Version 0.57
+// Version 0.58
 // Copyright (c) 2014 by Rick C. Hodgin
 //////
 // Last update:
@@ -4721,9 +4721,9 @@ JDebiC_debug(win, obj);
 		iiVjr_renderAccomplishment(bmp, &lrc, _BLUE, cgcFormsWorking_070,							(s8*)"0.70", false, false, false, -2, 0);
 		iiVjr_renderAccomplishment(bmp, &lrc, _BLUE, cgcCompilerCompleted_065,						(s8*)"0.65", false, false, false, -2, 0);
 		iiVjr_renderAccomplishment(bmp, &lrc, _BLUE, cgcRunningPrograms_060,						(s8*)"0.60", false, false, false, -2, 0);
-		iiVjr_renderAccomplishment(bmp, &lrc, _BLUE, cgcHernanCano_057,								(s8*)"0.57", false, false, false, 0, 0);
+		iiVjr_renderAccomplishment(bmp, &lrc, _BLUE, cgcHernanCano_057,								(s8*)"0.58", false, false, false, 0, 0);
 
-		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcVersion_057,								(s8*)"0.57", false, false, false, 0, 0);
+		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcVersion_057,								(s8*)"0.58", false, false, false, 0, 0);
 
 		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgcVersion_056,								(s8*)"0.56", false, false, false, -2, 0);
 		iiVjr_renderAccomplishment(bmp, &lrc, _GREEN, cgc64bitAnd32bit_055,							(s8*)"0.55", false, false, false, -2, 0);

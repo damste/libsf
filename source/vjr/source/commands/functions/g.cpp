@@ -18,7 +18,7 @@
 //      \_/  |_|  |_|  |_|
 //
 //////
-// Version 0.57
+// Version 0.58
 // Copyright (c) 2014 by Rick C. Hodgin
 //////
 // Last update:
@@ -384,7 +384,7 @@
 // Returns the date that is a specified number of months before or after a given Date or DateTime expression.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.06.2015
 //////
@@ -576,7 +576,7 @@
 // Grayscales a color.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.16.2015
 //////
@@ -609,7 +609,7 @@
 // Retrieves the green channel from an RGBA or BGRA color.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.16.2015
 //////

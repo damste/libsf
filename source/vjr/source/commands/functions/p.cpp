@@ -18,7 +18,7 @@
 //      \_/  |_|  |_|  |_|
 //
 //////
-// Version 0.57
+// Version 0.58
 // Copyright (c) 2014 by Rick C. Hodgin
 //////
 // Last update:
@@ -93,7 +93,7 @@
 // and lowercases everything else.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Aug.03.2014
 //////
@@ -323,7 +323,7 @@
 // Returns the amount of each periodic payment on a fixed-interest loan.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.19.2015
 //////
@@ -362,7 +362,7 @@
 // Returns the numeric constant pi.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.15.2015
 //////
@@ -393,7 +393,7 @@
 // Return x to the power y, if z is present, return x to the power y, modulo z.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -590,7 +590,7 @@
 // and lowercases everything else.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Jul.12.2014
 //////
@@ -686,7 +686,7 @@
 // Returns the present value of an investment.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.19.2015
 //////

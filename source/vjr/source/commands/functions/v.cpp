@@ -18,7 +18,7 @@
 //      \_/  |_|  |_|  |_|
 //
 //////
-// Version 0.57
+// Version 0.58
 // Copyright (c) 2014 by Rick C. Hodgin
 //////
 // Last update:
@@ -159,7 +159,7 @@
 // Returns a numeric or currency value from a expression.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.22.2015
 //////
@@ -443,7 +443,7 @@
 // Returns the variable type, parsing NULL values.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.06.2015
 //////
@@ -528,7 +528,7 @@
 // Creates a vector.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.21.2015
 //////
@@ -564,7 +564,7 @@
 // The vector element count.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.21.2015
 //////
@@ -597,7 +597,7 @@
 // Accesses or updates a vector element.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.21.2015
 //////
@@ -635,7 +635,7 @@
 // Extracts elements from a vector.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.22.2015
 //////
@@ -672,7 +672,7 @@
 // Generates a character string containing the vectors.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.21.2015
 //////
@@ -707,7 +707,7 @@
 // Updates or resizes a vector element. Works like STUFF().
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.21.2015
 //////
@@ -747,7 +747,7 @@
 // Access or updates the symbol used after a vector element.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.21.2015
 //////
@@ -785,7 +785,7 @@
 // Based on input, retrieves various version information.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Jul.13.2014
 //////

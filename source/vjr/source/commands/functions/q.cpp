@@ -18,7 +18,7 @@
 //      \_/  |_|  |_|  |_|
 //
 //////
-// Version 0.57
+// Version 0.58
 // Copyright (c) 2014 by Rick C. Hodgin
 //////
 // Last update:
@@ -92,7 +92,7 @@
 // Returns the quarter of the year in which a date or datetime expression occurs.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.05.2015
 //////

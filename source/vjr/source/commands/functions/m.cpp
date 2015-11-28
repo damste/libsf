@@ -18,7 +18,7 @@
 //      \_/  |_|  |_|  |_|
 //
 //////
-// Version 0.57
+// Version 0.58
 // Copyright (c) 2014 by Rick C. Hodgin
 //////
 // Last update:
@@ -92,7 +92,7 @@
 // Returns the 1.0 - ((255 - ALP()) / 255) calculation.
 //
 //////
-// Version 0.57   (Determine the current version from the header in vjr.cpp)
+// Version 0.58   (Determine the current version from the header in vjr.cpp)
 // Last update:
 //     Mar.16.2015
 //////
@@ -221,7 +221,7 @@
 // Returns the maximum value of the two inputs.
 //
 //////
-// Version 0.57   (Determine the current version from the header in vjr.cpp)
+// Version 0.58   (Determine the current version from the header in vjr.cpp)
 // Last update:
 //     Jul.12.2014
 //////
@@ -470,7 +470,7 @@
 // Returns the specified date or datetime expression in month-day-year format with the name of the month spelled out.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.07.2015
 //////
@@ -503,7 +503,7 @@
 // The current microsecond (1/1000000 one millionth of a second) as a floating point in the range 0..999999.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -531,7 +531,7 @@
 // Returns the minimum value of the two inputs.
 //
 //////
-// Version 0.57   (Determine the current version from the header in vjr.cpp)
+// Version 0.58   (Determine the current version from the header in vjr.cpp)
 // Last update:
 //     Jul.12.2014
 //////
@@ -774,7 +774,7 @@
 // Returns the minute portion from a DateTime expression.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.07.2015
 //////
@@ -806,7 +806,7 @@
 // Divides one numeric expression by another numeric expression and returns the remainder.
 //
 //////
-// Version 0.57   (Determine the current version from the header in vjr.cpp)
+// Version 0.58   (Determine the current version from the header in vjr.cpp)
 // Last update:
 //     Mar.19.2015
 //////
@@ -849,7 +849,7 @@
 // Returns the number of the month for a given Date or DateTime expression.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.04.2015
 //////

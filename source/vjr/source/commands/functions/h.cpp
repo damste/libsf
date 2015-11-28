@@ -18,7 +18,7 @@
 //      \_/  |_|  |_|  |_|
 //
 //////
-// Version 0.57
+// Version 0.58
 // Copyright (c) 2014 by Rick C. Hodgin
 //////
 // Last update:
@@ -92,7 +92,7 @@
 // Returns the hour portion from a DateTime expression.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.07.2015
 //////

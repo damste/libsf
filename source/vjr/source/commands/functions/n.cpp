@@ -18,7 +18,7 @@
 //      \_/  |_|  |_|  |_|
 //
 //////
-// Version 0.57
+// Version 0.58
 // Copyright (c) 2014 by Rick C. Hodgin
 //////
 // Last update:
@@ -92,7 +92,7 @@
 // The current nanosecond (1/1000000000 one billionth of a second) as a floating point in the range 0..999999999
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -121,7 +121,7 @@
 // in VXB which may not be present in other xbase languages.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.15.2015
 //////
@@ -301,7 +301,7 @@
 // Returns a non-null value from two expressions.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     2015.04.09
 //////

@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/source/vjr/bmps/bmps.cpp
+// /libsf/source/vjr/source/vjr_const_version.h
 //
 //////
 //    _     _ _     _____ _____
@@ -19,13 +19,13 @@
 //
 //////
 // Version 0.58
-// Copyright (c) 2014 by Rick C. Hodgin
+// Copyright (c) 2015 by Rick C. Hodgin
 //////
 // Last update:
-//     Nov.13.2014
+//     Nov.28.2015
 //////
 // Change log:
-//     Nov.13.2014 - Initial creation
+//     Nov.28.2015 - Initial creation
 //////
 //
 // This document is released as Liberty Software under a Repeat License, as governed
@@ -80,20 +80,45 @@
 //
 
 
-#if defined(_MSC_VER)
-	#include "\libsf\utils\common\cpp\common_types.h"
 
-	// Force the bitmaps to be for definition
-	#define _BMP_LOCALITY 1
-	#include "\libsf\source\vjr\source\bmps\graphics\bitmaps.h"
 
-#elif defined(__GNUC__) || defined(__solaris__)
-	#include "/libsf/utils/common/cpp/common_types.h"
-
-	// Force the bitmaps to be for definition
-	#define _BMP_LOCALITY 1
-	#include "/libsf/source/vjr/source/bmps/graphics/bitmaps.h"
-
-#else
-	#error Unknown target for compilation (must be Windows, Linux, or Solaris (OpenIndiana))
+//////////
+// Version information
+//////
+	const u8			cgcVersionShort[]					= "Version 0.58";
+#if !defined(_NONVJR_COMPILE)
+	const u8			cgc_appName[]						= "Visual FreePro, Jr.";				// Used for Grace 3D's OpenGL window (each app that uss the VJr engine can have its own name)
 #endif
+#ifdef __GNUC__
+	#ifndef __amd64
+		const u8		cgcScreenTitle[]					= "Visual FreePro, Jr. Version 0.58 -- Nov.30.2015 -- GCC 32-bit";
+		const u8		cgcJDebiTitle[]						= "JDebi Debugger Version 0.58 -- Nov.30.2015 -- GCC 32-bit";
+		const u8		cgcVersionText[]					= "Visual FreePro, Jr. 32-bit 00.58.0001.9999 for Windows";
+		const u8		cgcVersion1Text[]					= "Visual FreePro, Jr. 32-bit 00.58.0001.9999 for Windows [Nov.30.2015 00:00:00] Product ID 31415-926-5358979-32384";
+		const u8		cgcVersion4Text[]					= "00.58.3201.9999";
+	#else
+		const u8		cgcScreenTitle[]					= "Visual FreePro, Jr. Version 0.58 -- Nov.30.2015   -- GCC 64-bit";
+		const u8		cgcJDebiTitle[]						= "JDebi Debugger Version 0.58 -- Nov.30.2015 -- GCC 64-bit";
+		const u8		cgcVersionText[]					= "Visual FreePro, Jr. 64-bit 00.58.0001.9999 for Windows";
+		const u8		cgcVersion1Text[]					= "Visual FreePro, Jr. 64-bit 00.58.0001.9999 for Windows [Nov.30.2015 00:00:00] Product ID 31415-926-5358979-32384";
+		const u8		cgcVersion4Text[]					= "00.58.6401.9999";
+	#endif
+#else
+	#if !defined(__64_BIT_COMPILER__)
+		const u8		cgcScreenTitle[]					= "Visual FreePro, Jr. Version 0.58 -- Nov.30.2015 -- MSVC 32-bit";
+		const u8		cgcJDebiTitle[]						= "JDebi Debugger Version 0.58 -- Nov.30.2015 -- MSVC 32-bit";
+		const u8		cgcVersionText[]					= "Visual FreePro, Jr. 32-bit 00.58.0001.9999 for Windows";
+		const u8		cgcVersion1Text[]					= "Visual FreePro, Jr. 32-bit 00.58.0001.9999 for Windows [Nov.30.2015 00:00:00] Product ID 31415-926-5358979-32384";
+		const u8		cgcVersion4Text[]					= "00.58.3201.9999";
+	#else
+		const u8		cgcScreenTitle[]					= "Visual FreePro, Jr. Version 0.58 -- Nov.30.2015 -- MSVC 64-bit";
+		const u8		cgcJDebiTitle[]						= "JDebi Debugger Version 0.58 -- Nov.30.2015 -- MSVC 64-bit";
+		// VERSION() support
+		const u8		cgcVersionText[]					= "Visual FreePro, Jr. 64-bit 00.58.0001.9999 for Windows";
+		const u8		cgcVersion1Text[]					= "Visual FreePro, Jr. 64-bit 00.58.0001.9999 for Windows [Nov.30.2015 00:00:00] Product ID 31415-926-5358979-32384";
+		const u8		cgcVersion4Text[]					= "00.58.6401.9999";
+	#endif
+#endif
+	const s32			gnVersion5							= (s32)(0.58 * 100.0);		// Version 0.58	(Nov.28.2015 RCH -- stored as (cs32)58, but shown here as 0.58 so it's auto-updated in find-and-replace operations)
+	const s32			gnVersion2							= 2;						// Professional
+	const s32			gnVersion3							= 0;						// English

@@ -38,6 +38,7 @@ Nov.27.2014
 &nbsp;&nbsp;&nbsp;&nbsp;(5)  Oppie-5 -- A single-thread LibSF 386-x40, see the [design](https://github.com/RickCHodgin/libsf/blob/master/li386/oppie/oppie-5.png).<br>
 &nbsp;&nbsp;&nbsp;&nbsp;(6)  Oppie-6 -- Add Love Threading, Love Processing, see the [design](https://github.com/RickCHodgin/libsf/blob/master/li386/oppie/oppie-6.png).<br>
 &nbsp;&nbsp;&nbsp;&nbsp;(7)  Oppie-7 -- Dual-core Oppie-6, see the [design](https://github.com/RickCHodgin/libsf/blob/master/li386/oppie/oppie-7.png).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(8)  Oppie-8 -- Dual-core Oppie-7, see the [design](https://github.com/RickCHodgin/libsf/blob/master/li386/oppie/oppie-8.png).<br>
 
 &nbsp;&nbsp;&nbsp;&nbsp;Best regards,
 &nbsp;&nbsp;&nbsp;&nbsp;Rick C. Hodgin

@@ -18,7 +18,7 @@
 //      \_/  |_|  |_|  |_|
 //
 //////
-// Version 0.57
+// Version 0.58
 // Copyright (c) 2014 by Rick C. Hodgin
 //////
 // Last update:
@@ -92,7 +92,7 @@
 // Returns the current local time, or uses the input variables to create the indicated date.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.04.2015
 //////
@@ -225,7 +225,7 @@
 // Returns the current local time, or uses the input variables to create the indicated datetime.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Jul.10.2014
 //////
@@ -261,7 +261,7 @@
 // Returns the current local time, or uses the input variables to create the indicated datetimex.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.25.2015
 //////
@@ -549,7 +549,7 @@
 // Returns the numeric day of the month for a given Date or DateTime expression.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.04.2015
 //////
@@ -765,7 +765,7 @@
 // Returns a character expression in day-month-year format (for example, 31 May 1998).
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.07.2015
 //////
@@ -885,7 +885,7 @@
 // ToDo: receive a second parameter for the first day of the week (from 0 to 7); currently assumes 1 for Sunday.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.20.2015
 //////
@@ -1040,7 +1040,7 @@
 // Returns a Character-type date from a Date or DateTime expression.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.07.2015
 //////
@@ -1187,7 +1187,7 @@
 // Converts degrees to radians.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.16.2015
 //////
@@ -1222,7 +1222,7 @@
 // Returns a character-string date in a yyyymmdd format from a specified Date or DateTime expression.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.07.2015
 //////
@@ -1256,7 +1256,7 @@
 // Returns a DateTime value from a Date expression.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.07.2015
 //////
@@ -1287,7 +1287,7 @@
 // Converts a DATE() into a DATETIMEX().
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -1355,7 +1355,7 @@
 //			%o  Month                 Apr
 //			%t  Timestamp			  20150402
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.16.2015
 //////

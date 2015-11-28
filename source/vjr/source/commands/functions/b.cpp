@@ -18,7 +18,7 @@
 //      \_/  |_|  |_|  |_|
 //
 //////
-// Version 0.57
+// Version 0.58
 // Copyright (c) 2014 by Rick C. Hodgin
 //////
 // Last update:
@@ -93,7 +93,7 @@
 // between the values of two expressions of the same type.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.23.2015
 //////
@@ -216,7 +216,7 @@
 // Creates an arbitrary precision big floating point value.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.27.2015
 //////
@@ -380,7 +380,7 @@
 // Creates an arbitrary precision big integer value.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.27.2015
 //////
@@ -544,7 +544,7 @@
 // Creates the closest larger 2^n numeric value than the size indicated by bits.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.22.2015
 //////
@@ -745,7 +745,7 @@
 // Creates an 8-bit integer populated with the indicated bits.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.22.2015
 //////
@@ -777,7 +777,7 @@
 // Creates a 16-bit integer populated with the indicated bits.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.22.2015
 //////
@@ -809,7 +809,7 @@
 // Creates a 32-bit integer populated with the indicated bits.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.22.2015
 //////
@@ -841,7 +841,7 @@
 // Creates a 64-bit integer populated with the indicated bits.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.22.2015
 //////
@@ -873,7 +873,7 @@
 // Extracts a bit portion from a value.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.22.2015
 //////
@@ -909,7 +909,7 @@
 // Converts a value into its bit pattern.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.22.2015
 //////
@@ -943,7 +943,7 @@
 // Retrieves the blue channel from an RGBA or BGRA color.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.16.2015
 //////
@@ -975,7 +975,7 @@
 // Returns the BGR() of the three input values.
 //
 //////
-// Version 0.57   (Determine the current version from the header in vjr.cpp)
+// Version 0.58   (Determine the current version from the header in vjr.cpp)
 // Last update:
 //     Mar.16.2015
 //////
@@ -1012,7 +1012,7 @@
 // Returns the BGRA() of the four input values.
 //
 //////
-// Version 0.57   (Determine the current version from the header in vjr.cpp)
+// Version 0.58   (Determine the current version from the header in vjr.cpp)
 // Last update:
 //     Mar.16.2015
 //////

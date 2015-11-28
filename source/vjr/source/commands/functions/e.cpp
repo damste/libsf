@@ -18,7 +18,7 @@
 //      \_/  |_|  |_|  |_|
 //
 //////
-// Version 0.57
+// Version 0.58
 // Copyright (c) 2014 by Rick C. Hodgin
 //////
 // Last update:
@@ -92,7 +92,7 @@
 // Determines whether an expression evaluates to empty.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.20.2015
 //////
@@ -291,7 +291,7 @@
 // Determines if the character string ends with the search string.
 //
 //////
-// Version 0.57   (Determine the current version from the header in vjr.cpp)
+// Version 0.58   (Determine the current version from the header in vjr.cpp)
 // Last update:
 //     Mar.22.2015
 //////
@@ -351,7 +351,7 @@
 // Returns a non-empty value from two expressions.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.20.2015
 //////
@@ -424,7 +424,7 @@
 // Returns the value of e^x where x is a specified numeric expression.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.15.2015
 //////

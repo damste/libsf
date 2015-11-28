@@ -18,7 +18,7 @@
 //      \_/  |_|  |_|  |_|
 //
 //////
-// Version 0.57
+// Version 0.58
 // Copyright (c) 2014 by Rick C. Hodgin
 //////
 // Last update:
@@ -92,7 +92,7 @@
 // This trigonometric function returns the tangent of an angle.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.19.2015
 //////
@@ -173,7 +173,7 @@
 // Receives an input string, and processes into it encoded variables.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.20.2015
 //////
@@ -359,7 +359,7 @@ debug_break;
 // Returns the time in Hh:Mm:Ss or Hh:Mm:Ss:Mss format
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.20.2015
 //////
@@ -618,7 +618,7 @@ debug_break;
 // Converts a TIME() into a SECONDS().
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -1011,7 +1011,7 @@ debug_break;
 // Converts a TIME() into a SECONDSX().
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -1044,7 +1044,7 @@ debug_break;
 // Converts a TIME() into a DATETIME().
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -1079,7 +1079,7 @@ debug_break;
 // Converts a TIME() into a DATETIMEX().
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -1114,7 +1114,7 @@ debug_break;
 // Returns the timex in Hh:Mm:Ss:Micsss format
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.25.2015
 //////
@@ -1145,7 +1145,7 @@ debug_break;
 // Converts a TIMEX() into a SECONDS().
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -1178,7 +1178,7 @@ debug_break;
 // Converts a TIMEX() into a SECONDSX().
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -1211,7 +1211,7 @@ debug_break;
 // Converts a TIMEX() into a DATETIME().
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -1246,7 +1246,7 @@ debug_break;
 // Converts a TIMEX() into a DATETIMEX().
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -1281,7 +1281,7 @@ debug_break;
 // Converts any variable input to a character form, and applies formatting based on codes.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Aug.03.2014
 //////
@@ -1377,7 +1377,7 @@ debug_break;
 // Converts a DateTime expression to a Character value with the specified format.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.07.2015
 //////
@@ -1559,7 +1559,7 @@ debug_break;
 // Returns a Date value from a Datetime expression.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.07.2015
 //////
@@ -1588,7 +1588,7 @@ debug_break;
 // Converts a DATETIME() into a SECONDS().
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -1621,7 +1621,7 @@ debug_break;
 // Converts a DATETIME() into a SECONDSX().
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -1654,7 +1654,7 @@ debug_break;
 // Converts a DATETIME() into a TIME().
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -1687,7 +1687,7 @@ debug_break;
 // Converts a DATETIME() into a TIMEX().
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -1720,7 +1720,7 @@ debug_break;
 // Converts a DATETIME() into a DATETIMEX().
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -1753,7 +1753,7 @@ debug_break;
 // Returns the TYPE() for the indicated variable
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.05.2015
 //////
@@ -2034,7 +2034,7 @@ debug_break;
 // Returns the detailed TYPE() information.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.05.2015
 //////

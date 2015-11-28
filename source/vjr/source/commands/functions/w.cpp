@@ -18,7 +18,7 @@
 //      \_/  |_|  |_|  |_|
 //
 //////
-// Version 0.57
+// Version 0.58
 // Copyright (c) 2014 by Rick C. Hodgin
 //////
 // Last update:
@@ -92,7 +92,7 @@
 // Returns a number representing the week of the year from a Date or DateTime expression.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     May.01.2015
 //////

@@ -18,7 +18,7 @@
 //      \_/  |_|  |_|  |_|
 //
 //////
-// Version 0.57
+// Version 0.58
 // Copyright (c) 2014 by Rick C. Hodgin
 //////
 // Last update:
@@ -92,7 +92,7 @@
 // Converts a loose character date expression into a DATE().
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -125,7 +125,7 @@
 // Converts a loose character date expression into a DATETIME().
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -158,7 +158,7 @@
 // Converts a loose character date expression into a DATETIMEX().
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -192,7 +192,7 @@
 // Note:  DBUNDLE() is identical to DATE() if a return parameter is specified.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -458,7 +458,7 @@
 // Disassembles components of a date from a date.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -510,7 +510,7 @@
 // Note:  TBUNDLE() is identical to DATETIME() if a return parameter is specified.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -571,7 +571,7 @@
 // Disassembles components of a datetime from a datetime.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -631,7 +631,7 @@
 // Note:  XBUNDLE() is identical to DATETIMEX() if a return parameter is specified.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -694,7 +694,7 @@
 // Disassembles components of a datetimex from a datetimex.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -755,7 +755,7 @@
 // Assembles components of a time into a time.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -807,7 +807,7 @@
 // Disassembles components of a time from a time.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -860,7 +860,7 @@
 // Assembles components of a timex into a timex.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -914,7 +914,7 @@
 // Disassembles components of a timex from a timex.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -969,7 +969,7 @@
 // Assembles components of a time into a seconds.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -1021,7 +1021,7 @@
 // Disassembles components of a time from a seconds.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -1074,7 +1074,7 @@
 // Assembles components of a timex into a secondsx.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -1128,7 +1128,7 @@
 // Disassembles components of a timex from a secondsx.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////

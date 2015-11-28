@@ -18,7 +18,7 @@
 //      \_/  |_|  |_|  |_|
 //
 //////
-// Version 0.57
+// Version 0.58
 // Copyright (c) 2014 by Rick C. Hodgin
 //////
 // Last update:
@@ -92,7 +92,7 @@
 // Returns the number of the month for a given Date or DateTime expression.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.04.2015
 //////

@@ -18,7 +18,7 @@
 //      \_/  |_|  |_|  |_|
 //
 //////
-// Version 0.57
+// Version 0.58
 // Copyright (c) 2014 by Rick C. Hodgin
 //////
 // Last update:
@@ -92,7 +92,7 @@
 // Force Into Range.  The function is the equivalent of xResult = MIN(MAX(xVar, xMin), xMax)).
 //
 //////
-// Version 0.57   (Determine the current version from the header in vjr.cpp)
+// Version 0.58   (Determine the current version from the header in vjr.cpp)
 // Last update:
 //     Mar.14.2015
 //////
@@ -306,7 +306,7 @@
 // Returns the indicated string replicated N times.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Jul.12.2014
 //////
@@ -398,7 +398,7 @@
 // Returns the RGB() of the three input values.
 //
 //////
-// Version 0.57   (Determine the current version from the header in vjr.cpp)
+// Version 0.58   (Determine the current version from the header in vjr.cpp)
 // Last update:
 //     Jul.13.2014
 //////
@@ -636,7 +636,7 @@
 // Returns the RGBA() of the four input values.
 //
 //////
-// Version 0.57   (Determine the current version from the header in vjr.cpp)
+// Version 0.58   (Determine the current version from the header in vjr.cpp)
 // Last update:
 //     Jul.13.2014
 //////
@@ -675,7 +675,7 @@
 // Retrieves the red channel from an RGBA or BGRA color.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.16.2015
 //////
@@ -763,7 +763,7 @@
 // Returns the right N characters of a string.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Jul.12.2014
 //////
@@ -862,7 +862,7 @@
 // Returns a numeric expression rounded to a specified number of decimal places.
 //
 //////
-// Version 0.57   (Determine the current version from the header in vjr.cpp)
+// Version 0.58   (Determine the current version from the header in vjr.cpp)
 // Last update:
 //     Mar.17.2015
 //////
@@ -987,7 +987,7 @@
 // Converts radians to its equivalent in degrees.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.16.2015
 //////
@@ -1022,7 +1022,7 @@
 // Trims spaces off the end of the string.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Jul.12.2014
 //////

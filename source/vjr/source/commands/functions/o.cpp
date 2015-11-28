@@ -18,7 +18,7 @@
 //      \_/  |_|  |_|  |_|
 //
 //////
-// Version 0.57
+// Version 0.58
 // Copyright (c) 2014 by Rick C. Hodgin
 //////
 // Last update:
@@ -93,7 +93,7 @@
 // optionally with regards to case.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Aug.03.2014
 //////
@@ -154,7 +154,7 @@
 // between the values of two expressions of the same type.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.23.2015
 //////

@@ -18,7 +18,7 @@
 //      \_/  |_|  |_|  |_|
 //
 //////
-// Version 0.57
+// Version 0.58
 // Copyright (c) 2014 by Rick C. Hodgin
 //////
 // Last update:
@@ -93,7 +93,7 @@
 // Returns the absolute value of the specified numeric expression.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.18.2015
 //////
@@ -128,7 +128,7 @@
 // Returns the arc cosine of a specified numeric expression.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.18.2015
 //////
@@ -163,7 +163,7 @@
 // Adds a backslash to a path if it needs one
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //	   Dec.26.2014
 //////
@@ -239,7 +239,7 @@
 // Trims spaces off the start and end of the string.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Jul.12.2014
 //////
@@ -647,7 +647,7 @@
 // Retrieves the alpha channel from an RGBA or BGRA color.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.16.2015
 //////
@@ -679,7 +679,7 @@
 // Takes a character input and converts it to its ASCII value.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Jul.05.2014
 //////
@@ -756,7 +756,7 @@
 // Returns in radians the arc sine of a numeric expression.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.18.2015
 //////
@@ -791,7 +791,7 @@
 // Returns in radians the arc tangent of a numeric expression.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.18.2015
 //////
@@ -831,7 +831,7 @@
 // times the search string is found, and optionally with regard to case (trailing "C").
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Aug.03.2014
 //////
@@ -1057,7 +1057,7 @@
 // Returns in radians the arc tangent of the x,y numeric expression
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.18.2015
 //////

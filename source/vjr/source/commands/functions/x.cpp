@@ -18,7 +18,7 @@
 //      \_/  |_|  |_|  |_|
 //
 //////
-// Version 0.57
+// Version 0.58
 // Copyright (c) 2014 by Rick C. Hodgin
 //////
 // Last update:
@@ -92,7 +92,7 @@
 // Converts a DATETIMEX() into a DATE().
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -125,7 +125,7 @@
 // Converts a DATETIMEX() into a SECONDS().
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -158,7 +158,7 @@
 // Converts a DATETIMEX() into a SECONDSX().
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -191,7 +191,7 @@
 // Converts a DATETIMEX() into a TIME().
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -224,7 +224,7 @@
 // Converts a DATETIMEX() into a TIMEX().
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -257,7 +257,7 @@
 // Converts a DATETIMEX() into a DATETIME().
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////

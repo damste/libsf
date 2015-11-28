@@ -18,7 +18,7 @@
 //      \_/  |_|  |_|  |_|
 //
 //////
-// Version 0.57
+// Version 0.58
 // Copyright (c) 2014 by Rick C. Hodgin
 //////
 // Last update:
@@ -92,7 +92,7 @@
 // Returns the seconds portion from a DateTime expression.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.07.2015
 //////
@@ -124,7 +124,7 @@
 // Returns the number of seconds that have elapsed since midnight.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.07.2015
 //////
@@ -225,7 +225,7 @@
 // Converts a SECONDS() into a TIME().
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -258,7 +258,7 @@
 // Converts a SECONDS() into a TIMEX().
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -291,7 +291,7 @@
 // Converts a SECONDS() into a DATETIME().
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -326,7 +326,7 @@
 // Converts a SECONDS() into a DATETIMEX().
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -361,7 +361,7 @@
 // Returns the number of seconds that have elapsed since midnight in extended precision.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.25.2015
 //////
@@ -389,7 +389,7 @@
 // Converts a SECONDSX() into a TIME().
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -422,7 +422,7 @@
 // Converts a SECONDSX() into a TIMEX().
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -455,7 +455,7 @@
 // Converts a SECONDSX() into a DATETIMEX().
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -490,7 +490,7 @@
 // Converts a SECONDSX() into a DATETIMEX().
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.26.2015
 //////
@@ -525,7 +525,7 @@
 // Retrieves current settings
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Jul.12.2014
 //////
@@ -716,7 +716,7 @@
 // Returns a numeric value of 1 if varNumber >= 0, and -1 otherwise.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.14.2015
 //////
@@ -845,7 +845,7 @@
 // Returns the sine of an angle.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.17.2015
 //////
@@ -880,7 +880,7 @@
 // Extracts a portion of a string.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.22.2015
 //////
@@ -1056,7 +1056,7 @@
 // Creates a character variable initialized with spaces.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Jul.12.2014
 //////
@@ -1135,7 +1135,7 @@
 // Returns the square root of the specified numeric expression.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.15.2015
 //////
@@ -1172,7 +1172,7 @@
 // Determines if the character string starts with the search string.
 //
 //////
-// Version 0.57   (Determine the current version from the header in vjr.cpp)
+// Version 0.58   (Determine the current version from the header in vjr.cpp)
 // Last update:
 //     Mar.22.2015
 //////
@@ -1231,7 +1231,7 @@
 // Converts the matching portions of the string from one form to another.
 //
 //////
-// Version 0.57   (Determine the current version from the header in vjr.cpp)
+// Version 0.58   (Determine the current version from the header in vjr.cpp)
 // Last update:
 //     Aug.21.2014
 //////
@@ -1483,7 +1483,7 @@
 // Returns a string which has been modified, having optionally some characters optionally removed, some optionally inserted.
 //
 //////
-// Version 0.57   (Determine the current version from the header in vjr.cpp)
+// Version 0.58   (Determine the current version from the header in vjr.cpp)
 // Last update:
 //     Jul.12.2014
 //////
@@ -2110,7 +2110,7 @@ clean_exit:
 // Based on the index, returns a wide array of information.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Jul.13.2014
 //////

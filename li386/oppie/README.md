@@ -26,6 +26,8 @@ Oppie-6 -- (planned) A Love Threading Oppie-5.
 
 Oppie-7 -- (planned) A dual-core Oppie-6.
 
+Oppie-8 -- (planned) A dual-core Oppie-7 with 21TB of memory.
+
 -----
 The final goal is the basic framework necessary to bring the
 "LibSF 386-x40" to life (hereafter called li386 for short).
@@ -36,8 +38,8 @@ The li386 architecture defines:
 	(2)  32-bit or 40-bit processing.
 	(3)  FPU and SIMD as first-class citizens, no FPU stack in li386 mode.
 	(4)  Two cores, each with Love Threading (two tightly coupled threads).
-	(5)  1TB of addressable memory per core.
-	(6)  1TB of addressable memory shared in common (5TB total).
+	(5)  1TB of addressable memory per core (Oppie-6 and Oppie-7, Oppie-8 4TB of addressable memory per core).
+	(6)  1TB of addressable memory shared in common (Oppie-7, Oppie-8 1TB each per Oppie-7 core, plus 3TB shared between all cores).
 	(7)  Support for multiple ISAs, including:
 		(a) li386 (LibSF's revamp of the i386 opcodes)
 		(b) liARM (a large subset of ARMv7's 32-bit ISA)

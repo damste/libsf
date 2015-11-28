@@ -18,7 +18,7 @@
 //      \_/  |_|  |_|  |_|
 //
 //////
-// Version 0.57
+// Version 0.58
 // Copyright (c) 2014 by Rick C. Hodgin
 //////
 // Last update:
@@ -92,7 +92,7 @@
 // Returns the nearest integer that is less than or equal to the specified numeric expression.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.16.2015
 //////
@@ -127,7 +127,7 @@
 // Takes a pathname and forces the file extension to the new value
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.30.2015
 //////
@@ -355,7 +355,7 @@
 // Takes a pathname and forces the filename to the new value
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.30.2015
 //////
@@ -481,7 +481,7 @@
 // Takes a pathname and forces the path to the new value
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.30.2015
 //////
@@ -633,7 +633,7 @@
 // Takes a pathname and forces the stem to the new value
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.30.2015
 //////
@@ -768,7 +768,7 @@
 // Returns the future value of a financial investment.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.19.2015
 //////

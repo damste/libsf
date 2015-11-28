@@ -384,6 +384,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\vjr_const_version.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\vjr_defs.h"
 					>
 				</File>

@@ -18,7 +18,7 @@
 //      \_/  |_|  |_|  |_|
 //
 //////
-// Version 0.57
+// Version 0.58
 // Copyright (c) 2014 by Rick C. Hodgin
 //////
 // Last update:
@@ -92,7 +92,7 @@
 // Returns the drive letter from the input pathname
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //		Dec.25.2014
 //////
@@ -171,7 +171,7 @@
 // Returns the file extension from the input pathname
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //		Dec.25.2014
 //////
@@ -261,7 +261,7 @@
 // Returns the file name from the input pathname
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //		Dec.25.2014
 //////
@@ -352,7 +352,7 @@
 // Returns the path from the input pathname
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //		Apr.02.2015
 //////
@@ -444,7 +444,7 @@
 // Returns the stem (filename left of dot-extension) from the input pathname
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //		Dec.25.2014
 //////

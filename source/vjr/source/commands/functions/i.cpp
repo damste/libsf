@@ -18,7 +18,7 @@
 //      \_/  |_|  |_|  |_|
 //
 //////
-// Version 0.57
+// Version 0.58
 // Copyright (c) 2014 by Rick C. Hodgin
 //////
 // Last update:
@@ -92,7 +92,7 @@
 // Immediate if.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.22.2015
 //////
@@ -178,7 +178,7 @@
 // A test if the value is in the list.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Mar.22.2015
 //////
@@ -295,7 +295,7 @@
 // Takes a value and returns the INT(n) of that value.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.02.2015
 //////
@@ -788,7 +788,7 @@
 // Determines whether an expression evaluates to null.
 //
 //////
-// Version 0.57
+// Version 0.58
 // Last update:
 //     Apr.22.2015
 //////
