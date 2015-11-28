@@ -662,51 +662,34 @@
 		SBgra			carouselTabBackColor				= { rgba(255, 255, 255, 255) };			// White
 		SBgra			carouselTabForeColor				= { rgba(64, 64, 88, 255) };			// Darker purpleish-gray
 		SBgra			carouselTabForeColorHighlight		= { rgba(32, 32, 44, 255) };			// Darkest purpleish-gray
-		SBgra			toolbarBackColor					= { _nwColor_form };
+		SBgra			toolbarBackColor					= { _nwColor_subform };
 
 
 		// Forms four-corner window color schemes (eventually these will be loaded from themes.dbf)
 // Orange theme:
-		const SBgra		NwFocusColor						= { _nwFocusColor };
-		const SBgra		NeFocusColor						= { _neFocusColor };
-		const SBgra		SwFocusColor						= { _swFocusColor };
-		const SBgra		SeFocusColor						= { _seFocusColor };
-// Purple theme
-// 		const SBgra		NwFocusColor						= { rgba(233, 219, 255, 255) };
-// 		const SBgra		NeFocusColor						= { rgba(205, 172, 255, 255) };
-// 		const SBgra		SwFocusColor						= { rgba(233, 219, 255, 255) };
-// 		const SBgra		SeFocusColor						= { rgba(182, 153, 226, 255) };
+		const SBgra		nwColor_focus						= { _nwColor_focus };
+		const SBgra		neColor_focus						= { _neColor_focus };
+		const SBgra		swColor_focus						= { _swColor_focus };
+		const SBgra		seColor_focus						= { _seColor_focus };
 
-		// Subforms four-corner window color schemes (eventually these will be loaded from themes.dbf)
-// Golden theme:
-// 		SBgra			NwColor2							= { rgba(245, 225, 175, 255) };
-// 		SBgra			NeColor2							= { rgba(252, 242, 192, 25) };			// Less pastel yellow, somewhat pale
-// 		SBgra			SwColor2							= { rgba(249, 222, 133, 255) };			// Orange/golden yellow
-// 		SBgra			SeColor2							= { rgba(247, 210, 96, 255) };			// More orange/golden yellow
-// Blue theme:
-		const SBgra		NwNonfocusColor						= { _nwColor_form };
-		const SBgra		NeNonfocusColor						= { _neColor_form };
-		const SBgra		SwNonfocusColor						= { _swColor_form };
-		const SBgra		SeNonfocusColor						= { _seColor_form };
-// Orange theme:
-// 		const SBgra		NwColor2							= { rgba(255, 222, 156, 255) };
-// 		const SBgra		NeColor2							= { rgba(255, 200, 92, 255) };
-// 		const SBgra		SwColor2							= { rgba(255, 222, 156, 255) };
-// 		const SBgra		SeColor2							= { rgba(229, 180, 83, 255) };
+		const SBgra		nwColor_nonfocus					= { _nwColor_form };
+		const SBgra		neColor_nonfocus					= { _neColor_form };
+		const SBgra		swColor_nonfocus					= { _swColor_form };
+		const SBgra		seColor_nonfocus					= { _seColor_form };
 
 		// Colors for checkbox corners
-		const SBgra		NwCheckboxOnColor					= { rgba(24, 153, 2, 255) };			// Green
-		const SBgra		NeCheckboxOnColor					= { rgba(37, 163, 3, 255) };
-		const SBgra		SwCheckboxOnColor					= { rgba(5, 140, 0, 255) };
-		const SBgra		SeCheckboxOnColor					= { rgba(131, 220, 11, 255) };
-		const SBgra		NwCheckboxOffColor					= { rgba(193, 34, 34, 255) };			// Red
-		const SBgra		NeCheckboxOffColor					= { rgba(181, 64, 64, 255) };
-		const SBgra		SwCheckboxOffColor					= { rgba(171, 92, 94, 255) };
-		const SBgra		SeCheckboxOffColor					= { rgba(212, 128, 131, 255) };
+		const SBgra		nwColor_checkboxOn					= { rgba(24, 153, 2, 255) };			// Green
+		const SBgra		neColor_checkboxOn					= { rgba(37, 163, 3, 255) };
+		const SBgra		swColor_checkboxOn					= { rgba(5, 140, 0, 255) };
+		const SBgra		seColor_checkboxOn					= { rgba(131, 220, 11, 255) };
+		const SBgra		nwColor_checkboxOff					= { rgba(193, 34, 34, 255) };			// Red
+		const SBgra		neColor_checkboxOff					= { rgba(181, 64, 64, 255) };
+		const SBgra		swColor_checkboxOff					= { rgba(171, 92, 94, 255) };
+		const SBgra		seColor_checkboxOff					= { rgba(212, 128, 131, 255) };
 
 		// Colors for the focus window
-		SBgra			focusHighlightReadWriteColor		= { rgba(255, 184, 92, 255) };			// { rgba(112, 164, 255, 255) };
-		SBgra			focusHighlightReadOnlyColor			= { rgba(255, 112, 112, 255) };			// { rgba(255, 112, 112, 255) };
+		SBgra			focusHighlightColor_readWrite		= { _focusHighlightColor_readWrite	};
+		SBgra			focusHighlightColor_readOnly		= { _focusHighlightColor_readOnly	};
 
 
 	//////////

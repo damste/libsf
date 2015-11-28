@@ -157,6 +157,7 @@ struct SObjEventMap;
 	void					iObj_setSize							(SObject*  obj, s32 tnLeft, s32 tnTop, s32 tnWidth, s32 tnHeight);
 	void					iiObj_setSize_snapForToolbar			(SObject*  obj, s32* tnWidth, s32* tnHeight);
 	SWindow* 				iObj_createWindowForForm				(SObject*  form, SWindow* win, s32 icon);
+	SBgra					iObj_getColor_ascent					(SObject*  obj, s32 tnColorIndex, bool tlMustBeOpaque, SBgra fallbackColor);
 	SVariable*				iObj_getPropertyAsVariable				(SObject*  obj, s8* tcPropertyName, u32 tnPropertyNameLength, SComp* comp, bool tlCreateAsReference);
 	void					iiObj_resetToDefault					(SObject*  obj, bool tlResetProperties, bool tlResetMethods);
 	void					iiObj_resetToDefaultCommon				(SObject*  obj, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, s32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);

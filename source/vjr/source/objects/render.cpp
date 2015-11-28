@@ -259,10 +259,22 @@
 				if (obj->isDirtyRender)
 				{
 					//////////
+					// Determine if a control on this subform has focus
+					//////
+						llIsFocusSubform = iObj_focus_descentCheck(obj, true, false);
+						if (llIsFocusSubform)
+						{
+							// This subform has focus
+							nwRgba = nwColor_focus;
+							neRgba = neColor_focus;
+							swRgba = swColor_focus;
+							seRgba = seColor_focus;
+						}
+
+
+					//////////
 					// Frame it
 					//////
-						// Determine if a control on this subform has focus
-						llIsFocusSubform = iObj_focus_descentCheck(obj, true, false);
 						if (!obj->bc || !iBmp_isValidCache(&obj->bc, nwRgba.color, neRgba.color, swRgba.color, seRgba.color, obj->rc.right - obj->rc.left, obj->rc.bottom - obj->rc.top, obj->bmp->bi.biWidth, obj->bmp->bi.biHeight, (u32)llIsFocusSubform, 0, 0, 0, 0, 0))
 						{
 							// The bitmap cache is no longer valid
@@ -273,7 +285,7 @@
 							{
 								// Render the subform and client area
 								iBmp_fillRect(obj->bmp, &lrc, nwRgba, neRgba, swRgba, seRgba, true, &obj->rcClient, true);
-
+								
 								// Make the client area white
 								iBmp_fillRect(obj->bmp, &obj->rcClient, backColor, backColor, backColor, backColor, false, NULL, false);
 
@@ -283,7 +295,7 @@
 							}
 
 							// Apply a dappling
-							iBmp_dapple(obj->bmp, bmpDapple1, bmpDapple1Tmp, 215.0f, 10);
+							iBmp_dapple(obj->bmp, bmpDapple1, bmpDapple1Tmp, 215.0f, 33);
 
 							// Save the cache
 							iBmp_createCache(&obj->bc, obj->bmp, nwRgba.color, neRgba.color, swRgba.color, seRgba.color, obj->rc.right - obj->rc.left, obj->rc.bottom - obj->rc.top, obj->bmp->bi.biWidth, obj->bmp->bi.biHeight, (u32)llIsFocusSubform, 0, 0, 0, 0, 0, true);
@@ -918,11 +930,11 @@
 					if (get_s32(value) == 0)
 					{
 						// It's off, so color it red
-						iBmp_fillRect(obj->bmp, &lrc2, NwCheckboxOffColor, NeCheckboxOffColor, SwCheckboxOffColor, SeCheckboxOffColor, true, NULL, false);
+						iBmp_fillRect(obj->bmp, &lrc2, nwColor_checkboxOff, neColor_checkboxOff, swColor_checkboxOff, seColor_checkboxOff, true, NULL, false);
 
 					} else {
 						// It's on, so color it green
-						iBmp_fillRect(obj->bmp, &lrc2, NwCheckboxOnColor, NeCheckboxOnColor, SwCheckboxOnColor, SeCheckboxOnColor, true, NULL, false);
+						iBmp_fillRect(obj->bmp, &lrc2, nwColor_checkboxOn, neColor_checkboxOn, swColor_checkboxOn, seColor_checkboxOn, true, NULL, false);
 					}
 
 					// Colorize the area
@@ -1249,7 +1261,11 @@
 	u32 iSubobj_renderImage(SObject* obj)
 	{
 		u32			lnPixelsRendered;
+		bool		llSubformHasFocusControl, llDeleteBmpMask;
+		SBgra		color;
 		SBitmap*	bmp;
+		SBitmap*	bmpMask;
+		SObject*	subform;
 		RECT		lrc;
 
 
@@ -1262,41 +1278,82 @@
 			SetRect(&lrc, 0, 0, obj->bmp->bi.biWidth, obj->bmp->bi.biHeight);
 			if (obj->isDirtyRender)
 			{
+				//////////
 				// Based on the current conditions, render the appropriate image
-				if (obj->ev.isMouseDown)
-				{
-					// Mouse is down on this item
-					bmp = iObjProp_get_bitmap(obj, _INDEX_PICTUREBMP_DOWN);
+				//////
+					if (obj->ev.isMouseDown)
+					{
+						// Mouse is down on this item
+						bmp = iObjProp_get_bitmap(obj, _INDEX_PICTUREBMP_DOWN);
 
-				} else if (obj->ev.isMouseOver) {
-					// Mouse is over this item
-					bmp = iObjProp_get_bitmap(obj, _INDEX_PICTUREBMP_OVER);
+					} else if (obj->ev.isMouseOver) {
+						// Mouse is over this item
+						bmp = iObjProp_get_bitmap(obj, _INDEX_PICTUREBMP_OVER);
 
-				} else {
-					// Render normally
-					bmp = iObjProp_get_bitmap(obj, _INDEX_PICTUREBMP);
-				}
+					} else {
+						// Render normally
+						bmp = iObjProp_get_bitmap(obj, _INDEX_PICTUREBMP);
+					}
 
-				// Render it
-				if (bmp->bi.biWidth == lrc.right - lrc.left && bmp->bi.biHeight == lrc.bottom - lrc.top)
-				{
-					// Direct copy
-					lnPixelsRendered += iBmp_bitBlt(obj->bmp, &lrc, bmp);
 
-				} else {
-					// Scaled render
-// 					SetStretchBltMode(obj->bmp->hdc, HALFTONE);
-// 					StretchBlt(obj->bmp->hdc, lrc.left, lrc.top, lrc.right - lrc.left, lrc.bottom - lrc.top, bmp->hdc, 0, 0, bmp->bi.biWidth, bmp->bi.biHeight, SRCCOPY);
-					iBmp_scale(obj->bmp, bmp);
-				}
+				//////////
+				// Grab the background color for any mask colors
+				//////
+					if (propBackMask(obj))
+					{
+						subform = iObj_find_thisSubform(obj);
+						if (subform)
+						{
+							// If the subform has focus, a different color is used
+							llSubformHasFocusControl = iObj_focus_descentCheck(subform, true, false);
+							if (llSubformHasFocusControl)		color = nwColor_focus;
+							else								color = iObjProp_get_sbgra_direct(subform, _INDEX_NWCOLOR);
 
+						} else {
+							// Search for the parent nwColor
+							color = iObj_getColor_ascent(obj, _INDEX_NWCOLOR, false, nwColor_subform);
+						}
+						llDeleteBmpMask	= true;
+						bmpMask			= iBmp_copy(bmp);
+						iBmp_swapColors(bmpMask, maskColor, color);
+
+					} else {
+						llDeleteBmpMask	= false;
+						bmpMask			= bmp;
+					}
+
+
+				//////////
+				// Render
+				//////
+					if (bmp->bi.biWidth == lrc.right - lrc.left && bmp->bi.biHeight == lrc.bottom - lrc.top)
+					{
+						// Direct copy
+						lnPixelsRendered += iBmp_bitBlt(obj->bmp, &lrc, bmpMask);
+
+					} else {
+						// Scale
+						// Nov.29.2015 RCH -- The scale algorithm isn't quite working properly, so we fall back on StretchBlt()
+						// iBmp_scale(obj->bmp, bmp);
+						SetStretchBltMode(obj->bmp->hdc, HALFTONE);
+						StretchBlt(obj->bmp->hdc, lrc.left, lrc.top, lrc.right - lrc.left, lrc.bottom - lrc.top, bmpMask->hdc, 0, 0, bmpMask->bi.biWidth, bmpMask->bi.biHeight, SRCCOPY);
+						lnPixelsRendered += (lrc.right - lrc.left) * (lrc.bottom - lrc.top);
+					}
+
+					// Clean up if need be
+					if (llDeleteBmpMask)
+						iBmp_delete(&bmpMask, true, true);
+
+
+				//////////
 				// For checkbox images, we colorize them differently
-				if (obj->parent && obj->parent->objType == _OBJ_TYPE_CHECKBOX)
-				{
-					// Colorize
-						 if (obj->ev.isMouseDown)		iBmp_colorize(obj->bmp, &lrc, colorMouseDown,	false, 0.0f);
-					else if (obj->ev.isMouseOver)		iBmp_colorize(obj->bmp, &lrc, colorMouseOver,	false, 0.0f);
-				}
+				//////
+					if (obj->parent && obj->parent->objType == _OBJ_TYPE_CHECKBOX)
+					{
+						// Colorize
+							 if (obj->ev.isMouseDown)		iBmp_colorize(obj->bmp, &lrc, colorMouseDown,	false, 0.0f);
+						else if (obj->ev.isMouseOver)		iBmp_colorize(obj->bmp, &lrc, colorMouseOver,	false, 0.0f);
+					}
 
 
 				//////////

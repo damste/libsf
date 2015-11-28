@@ -227,9 +227,9 @@
 				propSetEnabled(formNew, _LOGICAL_TRUE);
 				formNew->isRendered		= true;
 				formNew->isPublished	= true;
-				var = iObjProp_get_var_byIndex(formNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_form, -1);
-				var = iObjProp_get_var_byIndex(formNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_form, -1);
-				var = iObjProp_get_var_byIndex(formNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_form, -1);
+				propSetName(formNew,		cgcName_form, sizeof(cgcName_form) - 1);
+				propSetClass(formNew,		cgcName_form, sizeof(cgcName_form) - 1);
+				propSetBaseClass(formNew,	cgcName_form, sizeof(cgcName_form) - 1);
 				iEvents_resetToDefault(formNew, &gsEvents_form[0], gnEvents_formSize);
 				iObj_setSize(formNew, 0, 0, 375, 250);
 
@@ -255,6 +255,7 @@
 //////
 	SObject* iSubobj_createSubform(SObject* template_subform, SObject* parent)
 	{
+		SBgra		cyan = {bgra(92,92,32,255)};
 		SObject*	subformNew;
 		SObject*	icon;
 		SObject*	caption;
@@ -306,9 +307,9 @@
 				propSetEnabled(subformNew, _LOGICAL_TRUE);
 				subformNew->isRendered	= true;
 				subformNew->isPublished	= true;
-				var = iObjProp_get_var_byIndex(subformNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_subform, -1);
-				var = iObjProp_get_var_byIndex(subformNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_subform, -1);
-				var = iObjProp_get_var_byIndex(subformNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_subform, -1);
+				propSetName(subformNew,			cgcName_subform, sizeof(cgcName_subform) - 1);
+				propSetClass(subformNew,		cgcName_subform, sizeof(cgcName_subform) - 1);
+				propSetBaseClass(subformNew,	cgcName_subform, sizeof(cgcName_subform) - 1);
 				iEvents_resetToDefault(subformNew, &gsEvents_subform[0], gnEvents_subformSize);
 				iObj_setSize(subformNew, 0, 0, 200, 100);
 
@@ -390,9 +391,9 @@
 				propSetEnabled(carouselNew, _LOGICAL_TRUE);
 				carouselNew->isRendered		= true;
 				carouselNew->isPublished	= true;
-				var = iObjProp_get_var_byIndex(carouselNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_carousel, -1);
-				var = iObjProp_get_var_byIndex(carouselNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_carousel, -1);
-				var = iObjProp_get_var_byIndex(carouselNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_carousel, -1);
+				propSetName(carouselNew,		cgcName_carousel, sizeof(cgcName_carousel) - 1);
+				propSetClass(carouselNew,		cgcName_carousel, sizeof(cgcName_carousel) - 1);
+				propSetBaseClass(carouselNew,	cgcName_carousel, sizeof(cgcName_carousel) - 1);
 				iEvents_resetToDefault(carouselNew, &gsEvents_carousel[0], gnEvents_carouselSize);
 				iObj_setSize(carouselNew, 0, 0, 320, 480);
 
@@ -419,7 +420,6 @@
 	SObject* iSubobj_createRider(SObject* template_rider, SObject* parent)
 	{
 		SObject*	riderNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -446,9 +446,9 @@
 				propSetEnabled(riderNew, _LOGICAL_TRUE);
 				riderNew->isRendered	= true;
 				riderNew->isPublished	= true;
-				var = iObjProp_get_var_byIndex(riderNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_rider, -1);
-				var = iObjProp_get_var_byIndex(riderNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_rider, -1);
-				var = iObjProp_get_var_byIndex(riderNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_rider, -1);
+				propSetName(riderNew,		cgcName_rider, sizeof(cgcName_rider) - 1);
+				propSetClass(riderNew,		cgcName_rider, sizeof(cgcName_rider) - 1);
+				propSetBaseClass(riderNew,	cgcName_rider, sizeof(cgcName_rider) - 1);
 				iEvents_resetToDefault(riderNew, &gsEvents_rider[0], gnEvents_riderSize);
 				iObj_setSize(riderNew, 0, 0, 320, 480);
 
@@ -475,7 +475,6 @@
 	SObject* iSubobj_createLabel(SObject* template_label, SObject* parent)
 	{
 		SObject*	labelNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -502,9 +501,9 @@
 				propSetEnabled(labelNew, _LOGICAL_TRUE);
 				labelNew->isRendered	= true;
 				labelNew->isPublished	= true;
-				var = iObjProp_get_var_byIndex(labelNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_label, -1);
-				var = iObjProp_get_var_byIndex(labelNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_label, -1);
-				var = iObjProp_get_var_byIndex(labelNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_label, -1);
+				propSetName(labelNew,		cgcName_label, sizeof(cgcName_label) - 1);
+				propSetClass(labelNew,		cgcName_label, sizeof(cgcName_label) - 1);
+				propSetBaseClass(labelNew,	cgcName_label, sizeof(cgcName_label) - 1);
 				iEvents_resetToDefault(labelNew, &gsEvents_label[0], gnEvents_labelSize);
 				iObj_setSize(labelNew, 0, 0, 40, 17);
 
@@ -531,7 +530,6 @@
 	SObject* iSubobj_createTextbox(SObject* template_textbox, SObject* parent)
 	{
 		SObject*	textboxNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -558,9 +556,9 @@
 				propSetEnabled(textboxNew, _LOGICAL_TRUE);
 				textboxNew->isRendered	= true;
 				textboxNew->isPublished	= true;
-				var = iObjProp_get_var_byIndex(textboxNew, _INDEX_NAME);				iDatum_duplicate(&var->value, cgcName_textbox, -1);
-				var = iObjProp_get_var_byIndex(textboxNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_textbox, -1);
-				var = iObjProp_get_var_byIndex(textboxNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_textbox, -1);
+				propSetName(textboxNew,			cgcName_textbox, sizeof(cgcName_textbox) - 1);
+				propSetClass(textboxNew,		cgcName_textbox, sizeof(cgcName_textbox) - 1);
+				propSetBaseClass(textboxNew,	cgcName_textbox, sizeof(cgcName_textbox) - 1);
 				iEvents_resetToDefault(textboxNew, &gsEvents_textbox[0], gnEvents_textboxSize);
 				iObj_setSize(textboxNew, 0, 0, 100, 23);
 
@@ -587,7 +585,6 @@
 	SObject* iSubobj_createButton(SObject* template_button, SObject* parent)
 	{
 		SObject*	buttonNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -614,9 +611,9 @@
 				propSetEnabled(buttonNew, _LOGICAL_TRUE);
 				buttonNew->isRendered	= true;
 				buttonNew->isPublished	= true;
-				var = iObjProp_get_var_byIndex(buttonNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_button, -1);
-				var = iObjProp_get_var_byIndex(buttonNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_button, -1);
-				var = iObjProp_get_var_byIndex(buttonNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_button, -1);
+				propSetName(buttonNew,			cgcName_button, sizeof(cgcName_button) - 1);
+				propSetClass(buttonNew,			cgcName_button, sizeof(cgcName_button) - 1);
+				propSetBaseClass(buttonNew,		cgcName_button, sizeof(cgcName_button) - 1);
 				iEvents_resetToDefault(buttonNew, &gsEvents_button[0], gnEvents_buttonSize);
 				iObj_setSize(buttonNew, 0, 0, 84, 27);
 
@@ -643,7 +640,6 @@
 	SObject* iSubobj_createEditbox(SObject* template_editbox, SObject* parent)
 	{
 		SObject*	editboxNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -670,9 +666,9 @@
 				propSetEnabled(editboxNew, _LOGICAL_TRUE);
 				editboxNew->isRendered	= true;
 				editboxNew->isPublished	= true;
-				var = iObjProp_get_var_byIndex(editboxNew, _INDEX_NAME);				iDatum_duplicate(&var->value, cgcName_editbox, -1);
-				var = iObjProp_get_var_byIndex(editboxNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_editbox, -1);
-				var = iObjProp_get_var_byIndex(editboxNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_editbox, -1);
+				propSetName(editboxNew,			cgcName_editbox, sizeof(cgcName_editbox) - 1);
+				propSetClass(editboxNew,		cgcName_editbox, sizeof(cgcName_editbox) - 1);
+				propSetBaseClass(editboxNew,	cgcName_editbox, sizeof(cgcName_editbox) - 1);
 				iEvents_resetToDefault(editboxNew, &gsEvents_editbox[0], gnEvents_editboxSize);
 				iObj_setSize(editboxNew, 0, 0, 100, 53);
 
@@ -699,7 +695,6 @@
 	SObject* iSubobj_createImage(SObject* template_image, SObject* parent)
 	{
 		SObject*	imageNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -726,9 +721,9 @@
 				propSetEnabled(imageNew, _LOGICAL_TRUE);
 				imageNew->isRendered	= true;
 				imageNew->isPublished	= true;
-				var = iObjProp_get_var_byIndex(imageNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_image, -1);
-				var = iObjProp_get_var_byIndex(imageNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_image, -1);
-				var = iObjProp_get_var_byIndex(imageNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_image, -1);
+				propSetName(imageNew,			cgcName_image, sizeof(cgcName_image) - 1);
+				propSetClass(imageNew,			cgcName_image, sizeof(cgcName_image) - 1);
+				propSetBaseClass(imageNew,		cgcName_image, sizeof(cgcName_image) - 1);
 				iEvents_resetToDefault(imageNew, &gsEvents_image[0], gnEvents_imageSize);
 				iObj_setSize(imageNew, 0, 0, 100, 36);
 
@@ -804,9 +799,9 @@
 				propSetEnabled(checkboxNew, _LOGICAL_TRUE);
 				checkboxNew->isRendered		= true;
 				checkboxNew->isPublished	= true;
-				var = iObjProp_get_var_byIndex(checkboxNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_checkbox, -1);
-				var = iObjProp_get_var_byIndex(checkboxNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_checkbox, -1);
-				var = iObjProp_get_var_byIndex(checkboxNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_checkbox, -1);
+				propSetName(checkboxNew,			cgcName_checkbox, sizeof(cgcName_checkbox) - 1);
+				propSetClass(checkboxNew,			cgcName_checkbox, sizeof(cgcName_checkbox) - 1);
+				propSetBaseClass(checkboxNew,		cgcName_checkbox, sizeof(cgcName_checkbox) - 1);
 				iEvents_resetToDefault(checkboxNew, &gsEvents_checkbox[0], gnEvents_checkboxSize);
 				iObj_setSize(checkboxNew, 0, 0, 60, 17);
 
@@ -833,7 +828,6 @@
 	SObject* iSubobj_createOption(SObject* template_option, SObject* parent)
 	{
 		SObject*	optionNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -860,9 +854,9 @@
 				propSetEnabled(optionNew, _LOGICAL_TRUE);
 				optionNew->isRendered	= true;
 				optionNew->isPublished	= true;
-				var = iObjProp_get_var_byIndex(optionNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_option, -1);
-				var = iObjProp_get_var_byIndex(optionNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_option, -1);
-				var = iObjProp_get_var_byIndex(optionNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_option, -1);
+				propSetName(optionNew,			cgcName_option, sizeof(cgcName_option) - 1);
+				propSetClass(optionNew,			cgcName_option, sizeof(cgcName_option) - 1);
+				propSetBaseClass(optionNew,		cgcName_option, sizeof(cgcName_option) - 1);
 				iEvents_resetToDefault(optionNew, &gsEvents_option[0], gnEvents_optionSize);
 				iObj_setSize(optionNew, 0, 0, 60, 40);
 
@@ -889,7 +883,6 @@
 	SObject* iSubobj_createRadio(SObject* template_radio, SObject* parent)
 	{
 		SObject*	radioNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -916,9 +909,9 @@
 				propSetEnabled(radioNew, _LOGICAL_TRUE);
 				radioNew->isRendered	= true;
 				radioNew->isPublished	= true;
-				var = iObjProp_get_var_byIndex(radioNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_radio, -1);
-				var = iObjProp_get_var_byIndex(radioNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_radio, -1);
-				var = iObjProp_get_var_byIndex(radioNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_radio, -1);
+				propSetName(radioNew,			cgcName_radio, sizeof(cgcName_radio) - 1);
+				propSetClass(radioNew,			cgcName_radio, sizeof(cgcName_radio) - 1);
+				propSetBaseClass(radioNew,		cgcName_radio, sizeof(cgcName_radio) - 1);
 				iEvents_resetToDefault(radioNew, &gsEvents_radio[0], gnEvents_radioSize);
 				iObj_setSize(radioNew, 0, 0, 100, 100);
 
@@ -945,7 +938,6 @@
 	SObject* iSubobj_createCmdGroup(SObject* template_cmdGroup, SObject* parent)
 	{
 		SObject*	cmdGroupNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -972,9 +964,9 @@
 				propSetEnabled(cmdGroupNew, _LOGICAL_TRUE);
 				cmdGroupNew->isRendered		= true;
 				cmdGroupNew->isPublished	= true;
-				var = iObjProp_get_var_byIndex(cmdGroupNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_cmdgroup, -1);
-				var = iObjProp_get_var_byIndex(cmdGroupNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_cmdgroup, -1);
-				var = iObjProp_get_var_byIndex(cmdGroupNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_cmdgroup, -1);
+				propSetName(cmdGroupNew,			cgcName_cmdgroup, sizeof(cgcName_cmdgroup) - 1);
+				propSetClass(cmdGroupNew,			cgcName_cmdgroup, sizeof(cgcName_cmdgroup) - 1);
+				propSetBaseClass(cmdGroupNew,		cgcName_cmdgroup, sizeof(cgcName_cmdgroup) - 1);
 				iEvents_resetToDefault(cmdGroupNew, &gsEvents_cmdgroup[0], gnEvents_cmdgroupSize);
 				iObj_setSize(cmdGroupNew, 0, 0, 100, 100);
 
@@ -1001,7 +993,6 @@
 	SObject* iSubobj_createOptGroup(SObject* template_optGroup, SObject* parent)
 	{
 		SObject*	optGroupNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -1028,9 +1019,9 @@
 				propSetEnabled(optGroupNew, _LOGICAL_TRUE);
 				optGroupNew->isRendered		= true;
 				optGroupNew->isPublished	= true;
-				var = iObjProp_get_var_byIndex(optGroupNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_optgroup, -1);
-				var = iObjProp_get_var_byIndex(optGroupNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_optgroup, -1);
-				var = iObjProp_get_var_byIndex(optGroupNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_optgroup, -1);
+				propSetName(optGroupNew,			cgcName_optgroup, sizeof(cgcName_optgroup) - 1);
+				propSetClass(optGroupNew,			cgcName_optgroup, sizeof(cgcName_optgroup) - 1);
+				propSetBaseClass(optGroupNew,		cgcName_optgroup, sizeof(cgcName_optgroup) - 1);
 				iEvents_resetToDefault(optGroupNew, &gsEvents_optgroup[0], gnEvents_optgroupSize);
 				iObj_setSize(optGroupNew, 0, 0, 100, 100);
 
@@ -1057,7 +1048,6 @@
 	SObject* iSubobj_createListbox(SObject* template_listbox, SObject* parent)
 	{
 		SObject*	listboxNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -1084,9 +1074,9 @@
 				propSetEnabled(listboxNew, _LOGICAL_TRUE);
 				listboxNew->isRendered		= true;
 				listboxNew->isPublished		= true;
-				var = iObjProp_get_var_byIndex(listboxNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_listbox, -1);
-				var = iObjProp_get_var_byIndex(listboxNew, _INDEX_CLASS);		iDatum_duplicate(&var->value, cgcName_listbox, -1);
-				var = iObjProp_get_var_byIndex(listboxNew, _INDEX_BASECLASS);	iDatum_duplicate(&var->value, cgcName_listbox, -1);
+				propSetName(listboxNew,			cgcName_listbox, sizeof(cgcName_listbox) - 1);
+				propSetClass(listboxNew,		cgcName_listbox, sizeof(cgcName_listbox) - 1);
+				propSetBaseClass(listboxNew,	cgcName_listbox, sizeof(cgcName_listbox) - 1);
 				iEvents_resetToDefault(listboxNew, &gsEvents_listbox[0], gnEvents_listboxSize);
 				iObj_setSize(listboxNew, 0, 0, 100, 100);
 
@@ -1113,7 +1103,6 @@
 	SObject* iSubobj_createCombobox(SObject* template_combobox, SObject* parent)
 	{
 		SObject*	comboboxNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -1140,9 +1129,9 @@
 				propSetEnabled(comboboxNew, _LOGICAL_TRUE);
 				comboboxNew->isRendered		= true;
 				comboboxNew->isPublished	= true;
-				var = iObjProp_get_var_byIndex(comboboxNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_combobox, -1);
-				var = iObjProp_get_var_byIndex(comboboxNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_combobox, -1);
-				var = iObjProp_get_var_byIndex(comboboxNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_combobox, -1);
+				propSetName(comboboxNew,			cgcName_combobox, sizeof(cgcName_combobox) - 1);
+				propSetClass(comboboxNew,			cgcName_combobox, sizeof(cgcName_combobox) - 1);
+				propSetBaseClass(comboboxNew,		cgcName_combobox, sizeof(cgcName_combobox) - 1);
 				iEvents_resetToDefault(comboboxNew, &gsEvents_combobox[0], gnEvents_comboboxSize);
 				iObj_setSize(comboboxNew, 0, 0, 100, 100);
 
@@ -1169,7 +1158,6 @@
 	SObject* iSubobj_createFormset(SObject* template_formset, SObject* parent)
 	{
 		SObject*	formsetNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -1196,9 +1184,9 @@
 				propSetEnabled(formsetNew, _LOGICAL_TRUE);
 				formsetNew->isRendered		= true;
 				formsetNew->isPublished		= true;
-				var = iObjProp_get_var_byIndex(formsetNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_formset, -1);
-				var = iObjProp_get_var_byIndex(formsetNew, _INDEX_CLASS);		iDatum_duplicate(&var->value, cgcName_formset, -1);
-				var = iObjProp_get_var_byIndex(formsetNew, _INDEX_BASECLASS);	iDatum_duplicate(&var->value, cgcName_formset, -1);
+				propSetName(formsetNew,			cgcName_formset, sizeof(cgcName_formset) - 1);
+				propSetClass(formsetNew,		cgcName_formset, sizeof(cgcName_formset) - 1);
+				propSetBaseClass(formsetNew,	cgcName_formset, sizeof(cgcName_formset) - 1);
 				iEvents_resetToDefault(formsetNew, &gsEvents_formset[0], gnEvents_formsetSize);
 				iObj_setSize(formsetNew, 0, 0, 100, 100);
 
@@ -1225,7 +1213,6 @@
 	SObject* iSubobj_createToolbar(SObject* template_toolbar, SObject* parent)
 	{
 		SObject*	toolbarNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -1252,9 +1239,9 @@
 				propSetEnabled(toolbarNew, _LOGICAL_TRUE);
 				toolbarNew->isRendered		= true;
 				toolbarNew->isPublished		= true;
-				var = iObjProp_get_var_byIndex(toolbarNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_toolbar, -1);
-				var = iObjProp_get_var_byIndex(toolbarNew, _INDEX_CLASS);		iDatum_duplicate(&var->value, cgcName_toolbar, -1);
-				var = iObjProp_get_var_byIndex(toolbarNew, _INDEX_BASECLASS);	iDatum_duplicate(&var->value, cgcName_toolbar, -1);
+				propSetName(toolbarNew,			cgcName_toolbar, sizeof(cgcName_toolbar) - 1);
+				propSetClass(toolbarNew,		cgcName_toolbar, sizeof(cgcName_toolbar) - 1);
+				propSetBaseClass(toolbarNew,	cgcName_toolbar, sizeof(cgcName_toolbar) - 1);
 				iEvents_resetToDefault(toolbarNew, &gsEvents_toolbar[0], gnEvents_toolbarSize);
 				iObj_setSize(toolbarNew, 0, 0, 100, 100);
 
@@ -1281,7 +1268,6 @@
 	SObject* iSubobj_createSeparator(SObject* template_separator, SObject* parent)
 	{
 		SObject*	separatorNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -1308,9 +1294,9 @@
 				propSetEnabled(separatorNew, _LOGICAL_TRUE);
 				separatorNew->isRendered	= true;
 				separatorNew->isPublished	= true;
-				var = iObjProp_get_var_byIndex(separatorNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_separator, -1);
-				var = iObjProp_get_var_byIndex(separatorNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_separator, -1);
-				var = iObjProp_get_var_byIndex(separatorNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_separator, -1);
+				propSetName(separatorNew,			cgcName_separator, sizeof(cgcName_separator) - 1);
+				propSetClass(separatorNew,			cgcName_separator, sizeof(cgcName_separator) - 1);
+				propSetBaseClass(separatorNew,		cgcName_separator, sizeof(cgcName_separator) - 1);
 				iEvents_resetToDefault(separatorNew, &gsEvents_separator[0], gnEvents_separatorSize);
 				iObj_setSize(separatorNew, 0, 0, 100, 100);
 
@@ -1337,7 +1323,6 @@
 	SObject* iSubobj_createLine(SObject* template_line, SObject* parent)
 	{
 		SObject*	lineNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -1364,9 +1349,9 @@
 				propSetEnabled(lineNew, _LOGICAL_TRUE);
 				lineNew->isRendered		= true;
 				lineNew->isPublished	= true;
-				var = iObjProp_get_var_byIndex(lineNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_line, -1);
-				var = iObjProp_get_var_byIndex(lineNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_line, -1);
-				var = iObjProp_get_var_byIndex(lineNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_line, -1);
+				propSetName(lineNew,			cgcName_line, sizeof(cgcName_line) - 1);
+				propSetClass(lineNew,			cgcName_line, sizeof(cgcName_line) - 1);
+				propSetBaseClass(lineNew,		cgcName_line, sizeof(cgcName_line) - 1);
 				iEvents_resetToDefault(lineNew, &gsEvents_line[0], gnEvents_lineSize);
 				iObj_setSize(lineNew, 0, 0, 100, 100);
 
@@ -1393,7 +1378,6 @@
 	SObject* iSubobj_createShape(SObject* template_shape, SObject* parent)
 	{
 		SObject*	shapeNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -1420,9 +1404,9 @@
 				propSetEnabled(shapeNew, _LOGICAL_TRUE);
 				shapeNew->isRendered	= true;
 				shapeNew->isPublished	= true;
-				var = iObjProp_get_var_byIndex(shapeNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_shape, -1);
-				var = iObjProp_get_var_byIndex(shapeNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_shape, -1);
-				var = iObjProp_get_var_byIndex(shapeNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_shape, -1);
+				propSetName(shapeNew,			cgcName_shape, sizeof(cgcName_shape) - 1);
+				propSetClass(shapeNew,			cgcName_shape, sizeof(cgcName_shape) - 1);
+				propSetBaseClass(shapeNew,		cgcName_shape, sizeof(cgcName_shape) - 1);
 				iEvents_resetToDefault(shapeNew, &gsEvents_shape[0], gnEvents_shapeSize);
 				iObj_setSize(shapeNew, 0, 0, 100, 100);
 
@@ -1449,7 +1433,6 @@
 	SObject* iSubobj_createContainer(SObject* template_container, SObject* parent)
 	{
 		SObject*	containerNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -1476,9 +1459,9 @@
 				propSetEnabled(containerNew, _LOGICAL_TRUE);
 				containerNew->isRendered	= true;
 				containerNew->isPublished	= true;
-				var = iObjProp_get_var_byIndex(containerNew, _INDEX_NAME);		iDatum_duplicate(&var->value, cgcName_container, -1);
-				var = iObjProp_get_var_byIndex(containerNew, _INDEX_CLASS);		iDatum_duplicate(&var->value, cgcName_container, -1);
-				var = iObjProp_get_var_byIndex(containerNew, _INDEX_BASECLASS);	iDatum_duplicate(&var->value, cgcName_container, -1);
+				propSetName(containerNew,			cgcName_container, sizeof(cgcName_container) - 1);
+				propSetClass(containerNew,			cgcName_container, sizeof(cgcName_container) - 1);
+				propSetBaseClass(containerNew,		cgcName_container, sizeof(cgcName_container) - 1);
 				iEvents_resetToDefault(containerNew, &gsEvents_container[0], gnEvents_containerSize);
 				iObj_setSize(containerNew, 0, 0, 100, 100);
 
@@ -1505,7 +1488,6 @@
 	SObject* iSubobj_createControl(SObject* template_control, SObject* parent)
 	{
 		SObject*	controlNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -1532,9 +1514,9 @@
 				propSetEnabled(controlNew, _LOGICAL_TRUE);
 				controlNew->isRendered		= true;
 				controlNew->isPublished		= true;
-				var = iObjProp_get_var_byIndex(controlNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_control, -1);
-				var = iObjProp_get_var_byIndex(controlNew, _INDEX_CLASS);		iDatum_duplicate(&var->value, cgcName_control, -1);
-				var = iObjProp_get_var_byIndex(controlNew, _INDEX_BASECLASS);	iDatum_duplicate(&var->value, cgcName_control, -1);
+				propSetName(controlNew,			cgcName_control, sizeof(cgcName_control) - 1);
+				propSetClass(controlNew,		cgcName_control, sizeof(cgcName_control) - 1);
+				propSetBaseClass(controlNew,	cgcName_control, sizeof(cgcName_control) - 1);
 				iEvents_resetToDefault(controlNew, &gsEvents_control[0], gnEvents_controlSize);
 				iObj_setSize(controlNew, 0, 0, 100, 100);
 
@@ -1561,7 +1543,6 @@
 	SObject* iSubobj_createGrid(SObject* template_grid, SObject* parent)
 	{
 		SObject*	gridNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -1588,9 +1569,9 @@
 				propSetEnabled(gridNew, _LOGICAL_TRUE);
 				gridNew->isRendered		= true;
 				gridNew->isPublished	= true;
-				var = iObjProp_get_var_byIndex(gridNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_grid, -1);
-				var = iObjProp_get_var_byIndex(gridNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_grid, -1);
-				var = iObjProp_get_var_byIndex(gridNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_grid, -1);
+				propSetName(gridNew,			cgcName_grid, sizeof(cgcName_grid) - 1);
+				propSetClass(gridNew,			cgcName_grid, sizeof(cgcName_grid) - 1);
+				propSetBaseClass(gridNew,		cgcName_grid, sizeof(cgcName_grid) - 1);
 				iEvents_resetToDefault(gridNew, &gsEvents_grid[0], gnEvents_gridSize);
 				iObj_setSize(gridNew, 0, 0, 100, 100);
 
@@ -1617,7 +1598,6 @@
 	SObject* iSubobj_createColumn(SObject* template_column, SObject* parent)
 	{
 		SObject*	columnNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -1644,9 +1624,9 @@
 				propSetEnabled(columnNew, _LOGICAL_TRUE);
 				columnNew->isRendered	= true;
 				columnNew->isPublished	= true;
-				var = iObjProp_get_var_byIndex(columnNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_column, -1);
-				var = iObjProp_get_var_byIndex(columnNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_column, -1);
-				var = iObjProp_get_var_byIndex(columnNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_column, -1);
+				propSetName(columnNew,			cgcName_column, sizeof(cgcName_column) - 1);
+				propSetClass(columnNew,			cgcName_column, sizeof(cgcName_column) - 1);
+				propSetBaseClass(columnNew,		cgcName_column, sizeof(cgcName_column) - 1);
 				iEvents_resetToDefault(columnNew, &gsEvents_column[0], gnEvents_columnSize);
 				iObj_setSize(columnNew, 0, 0, 100, 100);
 
@@ -1673,7 +1653,6 @@
 	SObject* iSubobj_createHeader(SObject* template_header, SObject* parent)
 	{
 		SObject*	headerNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -1700,9 +1679,9 @@
 				propSetEnabled(headerNew, _LOGICAL_TRUE);
 				headerNew->isRendered	= true;
 				headerNew->isPublished	= true;
-				var = iObjProp_get_var_byIndex(headerNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_header, -1);
-				var = iObjProp_get_var_byIndex(headerNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_header, -1);
-				var = iObjProp_get_var_byIndex(headerNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_header, -1);
+				propSetName(headerNew,			cgcName_header, sizeof(cgcName_header) - 1);
+				propSetClass(headerNew,			cgcName_header, sizeof(cgcName_header) - 1);
+				propSetBaseClass(headerNew,		cgcName_header, sizeof(cgcName_header) - 1);
 				iEvents_resetToDefault(headerNew, &gsEvents_header[0], gnEvents_headerSize);
 				iObj_setSize(headerNew, 0, 0, 100, 100);
 
@@ -1729,7 +1708,6 @@
 	SObject* iSubobj_createOleBound(SObject* template_oleBound, SObject* parent)
 	{
 		SObject*	oleBoundNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -1756,9 +1734,9 @@
 				propSetEnabled(oleBoundNew, _LOGICAL_TRUE);
 				oleBoundNew->isRendered		= true;
 				oleBoundNew->isPublished	= true;
-				var = iObjProp_get_var_byIndex(oleBoundNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_olebound, -1);
-				var = iObjProp_get_var_byIndex(oleBoundNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_olebound, -1);
-				var = iObjProp_get_var_byIndex(oleBoundNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_olebound, -1);
+				propSetName(oleBoundNew,			cgcName_olebound, sizeof(cgcName_olebound) - 1);
+				propSetClass(oleBoundNew,			cgcName_olebound, sizeof(cgcName_olebound) - 1);
+				propSetBaseClass(oleBoundNew,		cgcName_olebound, sizeof(cgcName_olebound) - 1);
 				iEvents_resetToDefault(oleBoundNew, &gsEvents_olebound[0], gnEvents_oleboundSize);
 				iObj_setSize(oleBoundNew, 0, 0, 100, 100);
 
@@ -1785,7 +1763,6 @@
 	SObject* iSubobj_createOleContain(SObject* template_oleContain, SObject* parent)
 	{
 		SObject*	oleContainNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -1812,9 +1789,9 @@
 				propSetEnabled(oleContainNew, _LOGICAL_TRUE);
 				oleContainNew->isRendered	= true;
 				oleContainNew->isPublished	= true;
-				var = iObjProp_get_var_byIndex(oleContainNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_olecontain, -1);
-				var = iObjProp_get_var_byIndex(oleContainNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_olecontain, -1);
-				var = iObjProp_get_var_byIndex(oleContainNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_olecontain, -1);
+				propSetName(oleContainNew,			cgcName_olecontain, sizeof(cgcName_olecontain) - 1);
+				propSetClass(oleContainNew,			cgcName_olecontain, sizeof(cgcName_olecontain) - 1);
+				propSetBaseClass(oleContainNew,		cgcName_olecontain, sizeof(cgcName_olecontain) - 1);
 				iEvents_resetToDefault(oleContainNew, &gsEvents_olecontain[0], gnEvents_olecontainSize);
 				iObj_setSize(oleContainNew, 0, 0, 100, 100);
 
@@ -1841,7 +1818,6 @@
 	SObject* iSubobj_createSpinner(SObject* template_spinner, SObject* parent)
 	{
 		SObject*	spinnerNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -1868,9 +1844,9 @@
 				propSetEnabled(spinnerNew, _LOGICAL_TRUE);
 				spinnerNew->isRendered		= true;
 				spinnerNew->isPublished		= true;
-				var = iObjProp_get_var_byIndex(spinnerNew, _INDEX_NAME);				iDatum_duplicate(&var->value, cgcName_spinner, -1);
-				var = iObjProp_get_var_byIndex(spinnerNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_spinner, -1);
-				var = iObjProp_get_var_byIndex(spinnerNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_spinner, -1);
+				propSetName(spinnerNew,				cgcName_spinner, sizeof(cgcName_spinner) - 1);
+				propSetClass(spinnerNew,			cgcName_spinner, sizeof(cgcName_spinner) - 1);
+				propSetBaseClass(spinnerNew,		cgcName_spinner, sizeof(cgcName_spinner) - 1);
 				iEvents_resetToDefault(spinnerNew, &gsEvents_spinner[0], gnEvents_spinnerSize);
 				iObj_setSize(spinnerNew, 0, 0, 100, 100);
 
@@ -1897,7 +1873,6 @@
 	SObject* iSubobj_createTimer(SObject* template_timer, SObject* parent)
 	{
 		SObject*	timerNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -1924,9 +1899,9 @@
 				propSetEnabled(timerNew, _LOGICAL_TRUE);
 				timerNew->isRendered	= true;
 				timerNew->isPublished	= true;
-				var = iObjProp_get_var_byIndex(timerNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_timer, -1);
-				var = iObjProp_get_var_byIndex(timerNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_timer, -1);
-				var = iObjProp_get_var_byIndex(timerNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_timer, -1);
+				propSetName(timerNew,			cgcName_timer, sizeof(cgcName_timer) - 1);
+				propSetClass(timerNew,			cgcName_timer, sizeof(cgcName_timer) - 1);
+				propSetBaseClass(timerNew,		cgcName_timer, sizeof(cgcName_timer) - 1);
 				iEvents_resetToDefault(timerNew, &gsEvents_timer[0], gnEvents_timerSize);
 				iObj_setSize(timerNew, 0, 0, 100, 100);
 
@@ -1953,7 +1928,6 @@
 	SObject* iSubobj_createHyperlink(SObject* template_hyperlink, SObject* parent)
 	{
 		SObject*	hyperlinkNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -1980,9 +1954,9 @@
 				propSetEnabled(hyperlinkNew, _LOGICAL_TRUE);
 				hyperlinkNew->isRendered	= true;
 				hyperlinkNew->isPublished	= true;
-				var = iObjProp_get_var_byIndex(hyperlinkNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_hyperlink, -1);
-				var = iObjProp_get_var_byIndex(hyperlinkNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_hyperlink, -1);
-				var = iObjProp_get_var_byIndex(hyperlinkNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_hyperlink, -1);
+				propSetName(hyperlinkNew,			cgcName_hyperlink, sizeof(cgcName_hyperlink) - 1);
+				propSetClass(hyperlinkNew,			cgcName_hyperlink, sizeof(cgcName_hyperlink) - 1);
+				propSetBaseClass(hyperlinkNew,		cgcName_hyperlink, sizeof(cgcName_hyperlink) - 1);
 				iEvents_resetToDefault(hyperlinkNew, &gsEvents_hyperlink[0], gnEvents_hyperlinkSize);
 				iObj_setSize(hyperlinkNew, 0, 0, 100, 100);
 
@@ -2009,7 +1983,6 @@
 	SObject* iSubobj_createCollection(SObject* template_collection, SObject* parent)
 	{
 		SObject*	collectionNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -2036,9 +2009,9 @@
 				propSetEnabled(collectionNew, _LOGICAL_TRUE);
 				collectionNew->isRendered		= true;
 				collectionNew->isPublished		= true;
-				var = iObjProp_get_var_byIndex(collectionNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_collection, -1);
-				var = iObjProp_get_var_byIndex(collectionNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_collection, -1);
-				var = iObjProp_get_var_byIndex(collectionNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_collection, -1);
+				propSetName(collectionNew,			cgcName_collection, sizeof(cgcName_collection) - 1);
+				propSetClass(collectionNew,			cgcName_collection, sizeof(cgcName_collection) - 1);
+				propSetBaseClass(collectionNew,		cgcName_collection, sizeof(cgcName_collection) - 1);
 				iEvents_resetToDefault(collectionNew, &gsEvents_collection[0], gnEvents_collectionSize);
 				iObj_setSize(collectionNew, 0, 0, 100, 100);
 
@@ -2065,7 +2038,6 @@
 	SObject* iSubobj_createPage(SObject* template_page, SObject* parent)
 	{
 		SObject*	pageNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -2092,9 +2064,9 @@
 				propSetEnabled(pageNew, _LOGICAL_TRUE);
 				pageNew->isRendered		= true;
 				pageNew->isPublished	= true;
-				var = iObjProp_get_var_byIndex(pageNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_page, -1);
-				var = iObjProp_get_var_byIndex(pageNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_page, -1);
-				var = iObjProp_get_var_byIndex(pageNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_page, -1);
+				propSetName(pageNew,			cgcName_page, sizeof(cgcName_page) - 1);
+				propSetClass(pageNew,			cgcName_page, sizeof(cgcName_page) - 1);
+				propSetBaseClass(pageNew,		cgcName_page, sizeof(cgcName_page) - 1);
 				iEvents_resetToDefault(pageNew, &gsEvents_page[0], gnEvents_pageSize);
 				iObj_setSize(pageNew, 0, 0, 100, 100);
 
@@ -2121,7 +2093,6 @@
 	SObject* iSubobj_createPageFrame(SObject* template_pageframe, SObject* parent)
 	{
 		SObject*	pageframeNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -2148,9 +2119,9 @@
 				propSetEnabled(pageframeNew, _LOGICAL_TRUE);
 				pageframeNew->isRendered	= true;
 				pageframeNew->isPublished	= true;
-				var = iObjProp_get_var_byIndex(pageframeNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_pageframe, -1);
-				var = iObjProp_get_var_byIndex(pageframeNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_pageframe, -1);
-				var = iObjProp_get_var_byIndex(pageframeNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_pageframe, -1);
+				propSetName(pageframeNew,			cgcName_pageframe, sizeof(cgcName_pageframe) - 1);
+				propSetClass(pageframeNew,			cgcName_pageframe, sizeof(cgcName_pageframe) - 1);
+				propSetBaseClass(pageframeNew,		cgcName_pageframe, sizeof(cgcName_pageframe) - 1);
 				iEvents_resetToDefault(pageframeNew, &gsEvents_pageframe[0], gnEvents_pageframeSize);
 				iObj_setSize(pageframeNew, 0, 0, 100, 100);
 
@@ -2177,7 +2148,6 @@
 	SObject* iSubobj_createSession(SObject* template_session, SObject* parent)
 	{
 		SObject*	sessionNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -2204,9 +2174,9 @@
 				propSetEnabled(sessionNew, _LOGICAL_TRUE);
 				sessionNew->isRendered		= true;
 				sessionNew->isPublished		= true;
-				var = iObjProp_get_var_byIndex(sessionNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_session, -1);
-				var = iObjProp_get_var_byIndex(sessionNew, _INDEX_CLASS);		iDatum_duplicate(&var->value, cgcName_session, -1);
-				var = iObjProp_get_var_byIndex(sessionNew, _INDEX_BASECLASS);	iDatum_duplicate(&var->value, cgcName_session, -1);
+				propSetName(sessionNew,				cgcName_session, sizeof(cgcName_session) - 1);
+				propSetClass(sessionNew,			cgcName_session, sizeof(cgcName_session) - 1);
+				propSetBaseClass(sessionNew,		cgcName_session, sizeof(cgcName_session) - 1);
 				iEvents_resetToDefault(sessionNew, &gsEvents_session[0], gnEvents_sessionSize);
 				iObj_setSize(sessionNew, 0, 0, 100, 100);
 
@@ -2233,7 +2203,6 @@
 	SObject* iSubobj_createCustom(SObject* template_custom, SObject* parent)
 	{
 		SObject*	customNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -2260,9 +2229,9 @@
 				propSetEnabled(customNew, _LOGICAL_TRUE);
 				customNew->isRendered		= true;
 				customNew->isPublished		= true;
-				var = iObjProp_get_var_byIndex(customNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_custom, -1);
-				var = iObjProp_get_var_byIndex(customNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_custom, -1);
-				var = iObjProp_get_var_byIndex(customNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_custom, -1);
+				propSetName(customNew,				cgcName_custom, sizeof(cgcName_custom) - 1);
+				propSetClass(customNew,				cgcName_custom, sizeof(cgcName_custom) - 1);
+				propSetBaseClass(customNew,			cgcName_custom, sizeof(cgcName_custom) - 1);
 				iEvents_resetToDefault(customNew, &gsEvents_custom[0], gnEvents_customSize);
 				iObj_setSize(customNew, 0, 0, 100, 100);
 
@@ -2289,7 +2258,6 @@
 	SObject* iSubobj_createException(SObject* template_exception, SObject* parent)
 	{
 		SObject*	exceptionNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -2316,9 +2284,9 @@
 				propSetEnabled(exceptionNew, _LOGICAL_TRUE);
 				exceptionNew->isRendered		= true;
 				exceptionNew->isPublished		= true;
-				var = iObjProp_get_var_byIndex(exceptionNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_exception, -1);
-				var = iObjProp_get_var_byIndex(exceptionNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_exception, -1);
-				var = iObjProp_get_var_byIndex(exceptionNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_exception, -1);
+				propSetName(exceptionNew,			cgcName_exception, sizeof(cgcName_exception) - 1);
+				propSetClass(exceptionNew,			cgcName_exception, sizeof(cgcName_exception) - 1);
+				propSetBaseClass(exceptionNew,		cgcName_exception, sizeof(cgcName_exception) - 1);
 				iEvents_resetToDefault(exceptionNew, &gsEvents_exception[0], gnEvents_exceptionSize);
 				iObj_setSize(exceptionNew, 0, 0, 100, 100);
 
@@ -2345,7 +2313,6 @@
 	SObject* iSubobj_createSettings(SObject* template_Settings, SObject* parent)
 	{
 		SObject*	settingsNew;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -2371,9 +2338,9 @@
 				// Initially populate
 				settingsNew->isRendered		= false;
 				settingsNew->isPublished	= false;
-				var = iObjProp_get_var_byIndex(settingsNew, _INDEX_NAME);			iDatum_duplicate(&var->value, cgcName_settings, -1);
-				var = iObjProp_get_var_byIndex(settingsNew, _INDEX_CLASS);			iDatum_duplicate(&var->value, cgcName_settings, -1);
-				var = iObjProp_get_var_byIndex(settingsNew, _INDEX_BASECLASS);		iDatum_duplicate(&var->value, cgcName_settings, -1);
+				propSetName(settingsNew,			cgcName_settings, sizeof(cgcName_settings) - 1);
+				propSetClass(settingsNew,			cgcName_settings, sizeof(cgcName_settings) - 1);
+				propSetBaseClass(settingsNew,		cgcName_settings, sizeof(cgcName_settings) - 1);
 				iEvents_resetToDefault(settingsNew, &gsEvents_settings[0], gnEvents_settingsSize);
 
 				// Initialize based on template

@@ -199,12 +199,13 @@ typedef SEM**		SEMpp;
 
 	#define propAlignment(obj)							iObjProp_get_s32_direct			(obj, _INDEX_ALIGNMENT)
 	#define propBackColor(obj)							iObjProp_get_sbgra_direct		(obj, _INDEX_BACKCOLOR)
+	#define propBackMask(obj)							(iObjProp_get_logical_fromLogicalConstants(obj, _INDEX_BACKMASK)	!= _LOGICAL_FALSE)
 	#define propBackStyle(obj)							iObjProp_get_s32_direct			(obj, _INDEX_BACKSTYLE)
-	#define propBaseclass(obj)							iObjProp_get_character			(obj, _INDEX_BASECLASS);
+	#define propBaseclass(obj)							iObjProp_get_character			(obj, _INDEX_BASECLASS)
 	#define propBorderColor(obj)						iObjProp_get_sbgra_direct		(obj, _INDEX_BORDERCOLOR)
 	#define propBorderStyle(obj)						iObjProp_get_s32_direct			(obj, _INDEX_BORDERSTYLE)
 	#define propClass(obj)								iObjProp_get_character			(obj, _INDEX_CLASS);
-	#define propClassLibrary(obj)						iObjProp_get_character			(obj, _INDEX_CLASSLIBRARY);
+	#define propClassLibrary(obj)						iObjProp_get_character			(obj, _INDEX_CLASSLIBRARY)
 	#define propForeColor(obj)							iObjProp_get_sbgra_direct		(obj, _INDEX_FORECOLOR)
 	#define propMargin(obj)								iObjProp_get_s32_direct			(obj, _INDEX_MARGIN)
 	#define propName(obj)								iObjProp_get_character			(obj, _INDEX_NAME);
@@ -228,20 +229,23 @@ typedef SEM**		SEMpp;
 	#define propSetDisabledBackColor(obj, color)		iObjProp_set_sbgra_direct		(obj, _INDEX_DISABLEDBACKCOLOR,	color)
 	#define propSetDisabledForeColor(obj, color)		iObjProp_set_sbgra_direct		(obj, _INDEX_DISABLEDFORECOLOR,	color)
 	#define propSetForeColor(obj, color)				iObjProp_set_sbgra_direct		(obj, _INDEX_FORECOLOR,			color)
-	#define propSetSelectedBackColor(obj, color)		iObjProp_set_sbgra_direct		(obj, _INDEX_SELECTEDBACKCOLOR,	color);
-	#define propSetSelectedForeColor(obj, color)		iObjProp_set_sbgra_direct		(obj, _INDEX_SELECTEDFORECOLOR,	color);
+	#define propSetSelectedBackColor(obj, color)		iObjProp_set_sbgra_direct		(obj, _INDEX_SELECTEDBACKCOLOR,	color)
+	#define propSetSelectedForeColor(obj, color)		iObjProp_set_sbgra_direct		(obj, _INDEX_SELECTEDFORECOLOR,	color)
 
 	#define propSetAlignment(obj, value)				iObjProp_set_s32_direct			(obj, _INDEX_ALIGNMENT,			value)
 	#define propSetAnchor(obj, value)					iObjProp_set_s32_direct			(obj, _INDEX_ANCHOR,			value)
+	#define propSetBackMask(obj, value)					iObjProp_set_logical_fromLogicalConstants(obj, _INDEX_BACKMASK, value)
 	#define propSetBackStyle(obj, value)				iObjProp_set_s32_direct			(obj, _INDEX_BACKSTYLE,			value)
 	#define propSetBorderStyle(obj, value)				iObjProp_set_s32_direct			(obj, _INDEX_BORDERSTYLE,		value)
 	#define propSetCaption(obj, value)					iObjProp_set_character_direct	(obj, _INDEX_CAPTION,			(u8*)value,		sizeof(value) - 1)
 	#define propSetCount(obj, value)					iObjProp_set_s32_direct			(obj, _INDEX_COUNT,				value)
-	#define propSetEnabled(obj, value)					iObjProp_set_logical_fromLogicalConstants(obj, _INDEX_ENABLED, value);
+	#define propSetEnabled(obj, value)					iObjProp_set_logical_fromLogicalConstants(obj, _INDEX_ENABLED, value)
 	#define propSetIcon(obj, bmp)						iObjProp_set_bitmap_direct		(obj, _INDEX_ICON,				bmp)
 	#define propSetMargin(obj, value)					iObjProp_set_s32_direct			(obj, _INDEX_MARGIN,			value)
 	#define propSetMultiSelect(obj, value)				iObjProp_set_logical_fromLogicalConstants(obj, _INDEX_MULTISELECT, value)
 	#define propSetName(obj, value, valueLength)		iObjProp_set_character_direct	(obj, _INDEX_NAME,				(u8*)value,		valueLength)
+	#define propSetClass(obj, value, valueLength)		iObjProp_set_character_direct	(obj, _INDEX_CLASS,				(u8*)value,		valueLength)
+	#define propSetBaseClass(obj, value, valueLength)	iObjProp_set_character_direct	(obj, _INDEX_BASECLASS,			(u8*)value,		valueLength)
 	#define propSetPictureBmp(obj, bmp)					iObjProp_set_bitmap_direct		(obj, _INDEX_PICTUREBMP,		bmp)
 	#define propSetPictureBmpDown(obj, bmp)				iObjProp_set_bitmap_direct		(obj, _INDEX_PICTUREBMP_DOWN,	bmp)
 	#define propSetRiderTab(obj, value, valueLength)	iObjProp_set_character_direct	(obj, _INDEX_RIDERTAB,			(u8*)value,		valueLength)
@@ -334,31 +338,42 @@ typedef SEM**		SEMpp;
 	#define _selectedBackColor				rgba(220, 235, 255, 255)
 	#define _selectedForeColor				rgba(0, 0, 164, 255)
 
-	#define _nwFocusColor					rgba(255, 245, 235, 255)
-	#define _neFocusColor					rgba(245, 225, 215, 255)
-	#define _swFocusColor					rgba(245, 225, 215, 255)
-	#define _seFocusColor					rgba(235, 215, 215, 255)
+	#define _focusHighlightColor_readWrite	rgba(97,31,128, 255)
+	#define _focusHighlightColor_readOnly	rgba(255, 112, 112, 255)
+
 
 	// Color theme per Stefano D'Amico, suggested Mar.25.2015
-	#define _nwColor_form					rgba(96,163,241,255)		/*rgba(245, 250, 255, 255)*/
-	#define _neColor_form					rgba(60,144,241,255)		/*rgba(220, 240, 255, 255)*/
-	#define _seColor_form					rgba(40,121,217,255)		/*rgba(205, 225, 245, 255)*/
-	#define _swColor_form					rgba(60,144,241,255)		/*rgba(235, 245, 255, 255)*/
+	#define _nwColor_form					rgba(35,101,178,255)
+	#define _neColor_form					rgba(37,108,192,255)
+	#define _swColor_form					rgba(37,108,192,255)
+	#define _seColor_form					rgba(40,116,204,255)
 
-	#define _nwColor_subform				rgba(164,212,255,255)
-	#define _neColor_subform				rgba(138,190,248,255)
-	#define _seColor_subform				rgba(156,204,240,255)
-	#define _swColor_subform				rgba(138,190,248,255)
+	#define _nwColor_subform				rgba(164,192,255,255)
+	#define _neColor_subform				rgba(133,185,245,255)
+	#define _seColor_subform				rgba(133,185,245,255)
+	#define _swColor_subform				rgba(164,192,255,255)
+
+// Golden orange theme:
+// 	#define	_nwColor_focus					rgba(245, 225, 175, 255)
+// 	#define	_neColor_focus					rgba(252, 242, 192, 25)
+// 	#define	_swColor_focus					rgba(249, 222, 133, 255)
+// 	#define	_seColor_focus					rgba(247, 210, 96, 255)
+
+// Purple theme
+	#define	_nwColor_focus					rgba(192, 164, 235, 255)
+	#define	_neColor_focus					rgba(205, 172, 255, 255)
+	#define	_swColor_focus					rgba(233, 219, 255, 255)
+	#define	_seColor_focus					rgba(182, 153, 226, 255)
 
 
 //////////
 // min and max
 //////
 	#ifndef max
-		#define max(a,b)					((a >= b) ? a : b)
+		#define max(a,b)					(((a) >= (b)) ? (a) : (b))
 	#endif
 	#ifndef min
-		#define min(a,b)					((a <= b) ? a : b)
+		#define min(a,b)					(((a) <= (b)) ? (a) : (b))
 	#endif
 
 

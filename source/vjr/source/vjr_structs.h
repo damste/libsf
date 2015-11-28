@@ -469,6 +469,7 @@ struct SField
 			SObject*	firstChild;											// Pointer to child objects (all objects are containers)
 
 #ifdef _EXTRA_DEBUGGING_DATA
+			SDatum		dbgBaseclass;
 			SDatum		dbgClass;
 			SDatum		dbgName;
 #endif

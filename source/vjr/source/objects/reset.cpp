@@ -411,6 +411,7 @@
 						iObjProp_set_character_direct(objChild, _INDEX_CAPTION, cgcName_formCaption, -1);
 						iObjProp_set_s32_direct(objChild, _INDEX_BACKSTYLE, _BACK_STYLE_TRANSPARENT);
 						iObjProp_set_sbgra_direct(objChild, _INDEX_FORECOLOR, whiteColor);
+// 						iObjProp_set_sbgra_direct(objChild, _INDEX_FORECOLOR, blackColor);
 						iObjProp_set_logical_direct(objChild, _INDEX_FONTBOLD, true);
 						iFont_delete(&objChild->p.font, true);
 //						objChild->p.font = iFont_create(cgcFontName_windowTitleBar, 10, FW_NORMAL, false, false);
@@ -452,6 +453,15 @@
 
 
 			//////////
+			// Set colors to match the form, so on a subform they show up in nice contrast
+			//////
+				iObjProp_set_sbgra_direct(carousel, _INDEX_NWCOLOR, nwColor_form);
+				iObjProp_set_sbgra_direct(carousel, _INDEX_NECOLOR, neColor_form);
+				iObjProp_set_sbgra_direct(carousel, _INDEX_SWCOLOR, swColor_form);
+				iObjProp_set_sbgra_direct(carousel, _INDEX_SECOLOR, seColor_form);
+
+
+			//////////
 			// Set default size and position
 			//////
 				SetRect(&carousel->rc, 0, 0, 320, 480);
@@ -474,7 +484,7 @@
 					if (objChild->objType == _OBJ_TYPE_IMAGE && propIsName_byText(objChild, cgcName_icon))
 					{
 						// Carousel icon
-						iObjProp_set_bitmap_direct(objChild, _INDEX_PICTUREBMP,		bmpCarouselIcon);
+						iObjProp_set_bitmap_direct(objChild, _INDEX_PICTUREBMP,			bmpCarouselIcon);
 						iObjProp_set_bitmap_direct(objChild, _INDEX_PICTUREBMP_DOWN,	bmpCarouselIcon);
 						iObjProp_set_bitmap_direct(objChild, _INDEX_PICTUREBMP_OVER,	bmpCarouselIcon);
 						propSetBackStyle(objChild, _BACK_STYLE_TRANSPARENT);
@@ -499,7 +509,7 @@
 
 					} else if (objChild->objType == _OBJ_TYPE_IMAGE && propIsName_byText(objChild, cgcName_iconCarousel)) {
 						// Carousel tabs icon
-						iObjProp_set_bitmap_direct(objChild, _INDEX_PICTUREBMP,		bmpCarouselTabsIcon);
+						iObjProp_set_bitmap_direct(objChild, _INDEX_PICTUREBMP,			bmpCarouselTabsIcon);
 						iObjProp_set_bitmap_direct(objChild, _INDEX_PICTUREBMP_DOWN,	bmpCarouselTabsIcon);
 						iObjProp_set_bitmap_direct(objChild, _INDEX_PICTUREBMP_OVER,	bmpCarouselTabsIcon);
 						propSetBackStyle(objChild, _BACK_STYLE_TRANSPARENT);
@@ -512,7 +522,7 @@
 
 					} else if (objChild->objType == _OBJ_TYPE_IMAGE && propIsName_byText(objChild, cgcName_iconClose)) {
 						// Close icon
-						iObjProp_set_bitmap_direct(objChild, _INDEX_PICTUREBMP,		bmpClose);
+						iObjProp_set_bitmap_direct(objChild, _INDEX_PICTUREBMP,			bmpClose);
 						iObjProp_set_bitmap_direct(objChild, _INDEX_PICTUREBMP_DOWN,	bmpClose);
 						iObjProp_set_bitmap_direct(objChild, _INDEX_PICTUREBMP_OVER,	bmpClose);
 						propSetBackStyle(objChild, _BACK_STYLE_TRANSPARENT);

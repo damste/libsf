@@ -225,6 +225,8 @@
 
 												// Set the size and copy the bitmap
 												iObj_setSize(lo, 0, 0, bmpIconRef->bi.biWidth, bmpIconRef->bi.biHeight);
+												propSetBackStyle		(lo, _BACK_STYLE_TRANSPARENT);
+												propSetBackMask			(lo, _LOGICAL_TRUE);
 												propSetPictureBmp		(lo, bmpIconRef);
 												propSetPictureBmpDown	(lo, bmpIconRef);
 											}
@@ -2039,8 +2041,8 @@
 		//////////
 		// Store the settings
 		//////
-			focus->readWriteBrush	= CreateSolidBrush(RGB(focusHighlightReadWriteColor.red,	focusHighlightReadWriteColor.grn,	focusHighlightReadWriteColor.blu));
-			focus->readOnlyBrush	= CreateSolidBrush(RGB(focusHighlightReadOnlyColor.red,	focusHighlightReadOnlyColor.grn,	focusHighlightReadOnlyColor.blu));
+			focus->readWriteBrush	= CreateSolidBrush(RGB(focusHighlightColor_readWrite.red,	focusHighlightColor_readWrite.grn,	focusHighlightColor_readWrite.blu));
+			focus->readOnlyBrush	= CreateSolidBrush(RGB(focusHighlightColor_readOnly.red,	focusHighlightColor_readOnly.grn,	focusHighlightColor_readOnly.blu));
 			GetWindowRect(focus->hwnd, &focus->rc);
 
 

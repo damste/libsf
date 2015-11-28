@@ -3166,6 +3166,42 @@ debug_break;
 
 //////////
 //
+// Searches the parents for the first opaque back color
+//
+//////
+	SBgra iObj_getColor_ascent(SObject* obj, s32 tnColorIndex, bool tlMustBeOpaque, SBgra fallbackColor)
+	{
+		s32 lnBackStyle;
+
+
+		// Make sure our environment is sane
+		logfunc(__FUNCTION__);
+		if (obj)
+		{
+			// Does it have a backStyle property?  And is it opaque?
+			if (!tlMustBeOpaque || (iObjProp_propertyDoesExist(obj, _INDEX_BACKSTYLE) && (lnBackStyle = iObjProp_get_s32_direct(obj, _INDEX_BACKSTYLE)) == _BACK_STYLE_OPAQUE))
+			{
+				// Does it have a backColor?
+				if (iObjProp_propertyDoesExist(obj, tnColorIndex))
+				{
+					// This is the opaque color
+					return(iObjProp_get_sbgra_direct(obj, tnColorIndex));
+				}
+			}
+			// If we get here, not found, try deeper
+			return(iObj_getColor_ascent(obj->parent, tnColorIndex, tlMustBeOpaque, fallbackColor));
+
+		} else {
+			// Pass-thru what we have already
+			return(fallbackColor);
+		}
+	}
+
+
+
+
+//////////
+//
 // Searches the indicated object for the indicated property
 //
 //////

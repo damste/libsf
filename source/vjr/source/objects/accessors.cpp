@@ -165,6 +165,26 @@
 				// Indicate our status
 				return(llResult);
 			}
+
+//////////
+// Include some extra debugging information to aid in tracking down those little peskies
+//////
+#ifdef _EXTRA_DEBUGGING_DATA
+	switch (tnIndex)
+	{
+		case _INDEX_BASECLASS:
+			iDatum_duplicate(&obj->dbgBaseclass, varNewValue);
+			break;
+
+		case _INDEX_CLASS:
+			iDatum_duplicate(&obj->dbgClass, varNewValue);
+			break;
+
+		case _INDEX_NAME:
+			iDatum_duplicate(&obj->dbgName, varNewValue);
+			break;
+	}
+#endif
 		}
 		// If we get here, failure
 		return(false);
@@ -301,6 +321,26 @@
 				else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(obj, tnIndex, var, varNewValue, baseProp, objProp);
 				else																				llResult = iVariable_copy(var, varNewValue);
 
+//////////
+// Include some extra debugging information to aid in tracking down those little peskies
+//////
+#ifdef _EXTRA_DEBUGGING_DATA
+	switch (tnIndex)
+	{
+		case _INDEX_BASECLASS:
+			iDatum_duplicate(&obj->dbgBaseclass, varNewValue);
+			break;
+
+		case _INDEX_CLASS:
+			iDatum_duplicate(&obj->dbgClass, varNewValue);
+			break;
+
+		case _INDEX_NAME:
+			iDatum_duplicate(&obj->dbgName, varNewValue);
+			break;
+	}
+#endif
+
 				// Delete our temporary variable
 				iVariable_delete(varNewValue, true);
 
@@ -343,6 +383,10 @@
 #ifdef _EXTRA_DEBUGGING_DATA
 	switch (tnIndex)
 	{
+		case _INDEX_BASECLASS:
+			iDatum_duplicate(&obj->dbgBaseclass, varNewValue);
+			break;
+
 		case _INDEX_CLASS:
 			iDatum_duplicate(&obj->dbgClass, varNewValue);
 			break;
@@ -2262,6 +2306,27 @@ debug_break;
 
 //////////
 //
+// Called to determine if the indicated property exists on this object
+//
+//////
+	bool iObjProp_propertyDoesExist(SObject* obj, s32 tnIndex)
+	{
+		SVariable* var;
+
+
+		// If the obj is valid, and the property returns a value
+		if (obj && (var = iObjProp_get_var_byIndex(obj, tnIndex, NULL, NULL, false)))		// Note:  var is used for debugging only
+			return(true);
+
+		// If we get here, error or does not exist
+		return(false);
+	}
+
+
+
+
+//////////
+//
 // Called to get the f64 variable from the indicated object
 //
 //////
@@ -2326,48 +2391,62 @@ debug_break;
 //        variable, not a copy.
 //
 //////
-	SVariable* iObjProp_get_var_byIndex(SObject* obj, s32 tnIndex, SBasePropMap** baseProp, SObjPropMap** objProp)
+	SVariable* iObjProp_get_var_byIndex(SObject* obj, s32 tnIndex, SBasePropMap** baseProp, SObjPropMap** objProp, bool tlStopOnError)
 	{
 		s32				lnI;
 		SBaseClassMap*	baseClassMap;
 		SObjPropMap*	thisObjProp;
 
 
+		//////////
 		// Make sure the environment is sane
-		if (obj)
-		{
-			// Locate the base class
-// TODO:  We could add a speedup here by storing the baseClassMap location in the object itself at the time of creation
-			baseClassMap = iiObj_getBaseclass_byType(obj->objType);
-			if (baseClassMap)
+		//////
+			if (obj)
 			{
-				// Locate the property within the object's properties
-				thisObjProp = baseClassMap->objProps;
-// TODO:  We could add a speedup by sorting at startup each baseclassList->objProps, and then use a binary search
-				for (lnI = 0; lnI < baseClassMap->objPropsCount && lnI < thisObjProp[lnI].index; lnI++)
+				// Locate the base class
+// TODO:  We could add a speedup here by storing the baseClassMap location in the object itself at the time of creation
+				baseClassMap = iiObj_getBaseclass_byType(obj->objType);
+				if (baseClassMap)
 				{
-					// Is this it?
-					if (thisObjProp[lnI].index == tnIndex)
+					// Locate the property within the object's properties
+					thisObjProp = baseClassMap->objProps;
+// TODO:  We could add a speedup by sorting at startup each baseclassList->objProps, and then use a binary search
+					for (lnI = 0; lnI < baseClassMap->objPropsCount && lnI < thisObjProp[lnI].index; lnI++)
 					{
-						// Store the raw property entries (if requested)
-						if (baseProp)		*baseProp	= &gsProps_master[tnIndex - 1];
-						if (objProp)		*objProp	= &thisObjProp[lnI];
+						// Is this it?
+						if (thisObjProp[lnI].index == tnIndex)
+						{
+							// Store the raw property entries (if requested)
+							if (baseProp)		*baseProp	= &gsProps_master[tnIndex - 1];
+							if (objProp)		*objProp	= &thisObjProp[lnI];
 
-						// Return the variable associated with this position
-						return(obj->props[lnI]);
+							// Return the variable associated with this position
+							return(obj->props[lnI]);
+						}
 					}
+					// If we get here, not found
 				}
-				// If we get here, not found
 			}
-		}
 
-// This should never happen.
-// If it does it's a design-time error.  Search the call stack to determine which _INDEX_* variable was referenced.
-// That variable needs to be added to the gsProps_* related to this object (such as gsProps_empty for objType = _OBJ_TYPE_EMPTY).
-// If a new class has been added, it might be missing from gsKnownBaseclasses as per the iiObj_getBaseclass_byType() function.
-debug_break;
+
+		//////////
+		// The only time we should NOT stop on error is if we're are calling from the iObjProp_propertyDoesExist() function
+		//////
+			if (tlStopOnError)
+			{
+				// This should never happen.
+				// If it does it's a design-time error.  Search the call stack to determine which _INDEX_* variable was referenced.
+				// That variable needs to be added to the gsProps_* related to this object (such as gsProps_empty for objType = _OBJ_TYPE_EMPTY).
+				// If a new class has been added, it might be missing from gsKnownBaseclasses as per the iiObj_getBaseclass_byType() function.
+				debug_break;
+			}
+
+
+		//////////
 		// Invalid
-		return(NULL);
+		//////
+			return(NULL);
+
 	}
 
 
