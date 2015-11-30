@@ -2999,12 +2999,60 @@ debug_break;
 
 //////////
 //
+// Called to set the autoSize property, which will auto-resize the control if it's being enabled
+//
+//////
+	bool iObjProp_setter_autoSize(SObject* obj, s32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp)
+	{
+		s32			lnLeft, lnTop, lnWidth, lnHeight;
+		SVariable*	varCaption;
+		RECT		lrc;
+
+
+		// Make sure our environment is sane
+		if (obj && var && varNewValue)
+		{
+			// Set the autoSize value
+			iVariable_copy(var, varNewValue);
+
+			// If autoSize is enabled, resize
+			if (iiVariable_getAs_bool(varNewValue, false, NULL, NULL))
+			{
+				// If there's a caption
+				varCaption = iObjProp_get_var_byIndex(obj, _INDEX_CAPTION, NULL, NULL, false);
+				if (varCaption)
+				{
+					// Grab it's existing dimensions
+					lnLeft		= obj->rc.left;
+					lnTop		= obj->rc.top;
+
+					// Determine the required width and height
+					SetRect(&lrc, 0, 0, 0, 0);
+					DrawText(obj->p.font->hdc, varCaption->value.data_cs8, varCaption->value.length, &lrc, DT_CALCRECT);
+					lnWidth		= lrc.right - lrc.left;
+					lnHeight	= lrc.bottom - lrc.top;
+
+					// Set the physical size
+					iObj_setSize(obj, lnLeft, lnTop, lnWidth, lnHeight);
+				}
+			}
+		}
+
+		// If we get here, failure
+		return(false);
+	}
+
+
+
+
+//////////
+//
 // Called to set the caption on items which have captions.  The caption is not merely on
 // the parent, but subforms also contain a default child object called _caption which
 // has its own properties, and these are used for rendering.
 //
 //////
-	bool iObjProp_setter_captionOnChild(SObject* obj, s32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp)
+	bool iObjProp_setter_caption_onChild(SObject* obj, s32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp)
 	{
 		SObject*	objChild;
 		SVariable*	varChild;
@@ -3051,7 +3099,7 @@ debug_break;
 // has its own properties, and these are used for rendering.
 //
 //////
-	bool iObjProp_setter_iconOnChild(SObject* obj, s32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp)
+	bool iObjProp_setter_icon_onChild(SObject* obj, s32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp)
 	{
 		SObject*	objChild;
 		SVariable*	varChild;
@@ -3096,7 +3144,7 @@ debug_break;
 // Called to mirror the color setting into the parent object into the nested child object
 //
 //////
-	bool iObjProp_setter_editboxMirror(SObject* obj, s32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp)
+	bool iObjProp_setter_editbox_mirror(SObject* obj, s32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp)
 	{
 		// Make sure our environment is sane
 		if (obj && obj->objType == _OBJ_TYPE_EDITBOX && var && varNewValue)
@@ -3347,7 +3395,7 @@ debug_break;
 		// For editboxes, we need to mirror the font settings through to the SEM
 		//////
 			if (obj->objType == _OBJ_TYPE_EDITBOX)
-				iObjProp_setter_editboxMirror(obj, tnIndex, var, varNewValue, baseProp, objProp);
+				iObjProp_setter_editbox_mirror(obj, tnIndex, var, varNewValue, baseProp, objProp);
 
 
 		//////////

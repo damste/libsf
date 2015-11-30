@@ -522,6 +522,7 @@
 	SObject*			jdebiToolbarsContainer				= NULL;
 	SObject*			_sourceCode							= NULL;
 	SObject*			_locals								= NULL;
+	SObject*			_locals_checkbox					= NULL;
 	SObject*			_watch								= NULL;
 	SObject*			_cmd								= NULL;
 	SObject*			_debug								= NULL;

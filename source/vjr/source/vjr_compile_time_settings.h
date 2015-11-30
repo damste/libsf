@@ -85,7 +85,7 @@
 // on a single monitor machine (like a notebook) during the initial startup.
 // You can set this property to false and prevent the splash screen from appearing.
 // Also the focus border can sometimes be annoying if it's not rendered in blue
-// and is merely a defined window consuming screen real-estable, but not re-rendering
+// and is merely a defined window consuming screen real-estate, but not re-rendering
 // itself because the process is suspended in the debugger.  Oh, the humanity! :-)
 //////
 
@@ -99,8 +99,6 @@
 	//////////
 	// Focus highlight border
 	//////
-// TODO:  Nov.15.2015 -- I observed after disabling this that the system renders MUCH faster.
-// TOOD:  Nov.15.2015 -- Need to investigate what's going on there.
 		bool glShowFocusHighlightBorder = true;
 		//bool glShowFocusHighlightBorder = false;
 

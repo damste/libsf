@@ -234,6 +234,7 @@ typedef SEM**		SEMpp;
 
 	#define propSetAlignment(obj, value)				iObjProp_set_s32_direct			(obj, _INDEX_ALIGNMENT,			value)
 	#define propSetAnchor(obj, value)					iObjProp_set_s32_direct			(obj, _INDEX_ANCHOR,			value)
+	#define propSetAutoSize(obj, value)					iObjProp_set_logical_fromLogicalConstants(obj, _INDEX_AUTOSIZE, value)
 	#define propSetBackMask(obj, value)					iObjProp_set_logical_fromLogicalConstants(obj, _INDEX_BACKMASK, value)
 	#define propSetBackStyle(obj, value)				iObjProp_set_s32_direct			(obj, _INDEX_BACKSTYLE,			value)
 	#define propSetBorderStyle(obj, value)				iObjProp_set_s32_direct			(obj, _INDEX_BORDERSTYLE,		value)
@@ -1500,6 +1501,7 @@ typedef SEM**		SEMpp;
 	const u8			cgcSplashClass[]					= "VJr.SplashWindow";
 	const u8			cgcSourceCodeTitle[]				= "SourceCode";
 	const u8			cgcLocalsTitle[]					= "Locals";
+	const u8			cgcLocals_includeGlobals[]			= "Globals?";
 	const u8			cgcWatchTitle[]						= "Watch";
 	const u8			cgcCommandTitle[]					= "Command";
 	const u8			cgcDebugTitle[]						= "Debug";

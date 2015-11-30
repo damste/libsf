@@ -862,18 +862,102 @@
 //////
 	SObject* iiObj_findParentObject_byType(SObject* objStart, s32 objType, bool tlSearchSelf)
 	{
+		// Is this us?
 		logfunc(__FUNCTION__);
-
 		if (tlSearchSelf && objStart->objType == objType)
-		{
-			// This is the subform
-			return(objStart);
+			return(objStart);	// This is the object
 
-		} else {
-			// If we can traverse higher, go higher, if not we're done
-			if (objStart->parent)		return(iiObj_findParentObject_byType(objStart->parent, objType, true));
-			else						return(NULL);
-		}
+		// If we can traverse higher, go higher, if not we're done
+		if (objStart->parent)		return(iiObj_findParentObject_byType(objStart->parent, objType, true));
+		else						return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Called to search for the indicated object in the children
+//
+//////
+	SObject* iiObj_findChildObject_byType(SObject* objStart, s32 objType, bool tlSearchSelf, bool tlSearchChildren, bool tlSearchSiblings)
+	{
+		SObject*	objSib;
+		SObject*	objFind;
+
+
+		//////////
+		// Is this us?
+		//////
+			logfunc(__FUNCTION__);
+			if (tlSearchSelf && objStart->objType == objType)
+				return(objStart);	// This is the object
+
+
+		//////////
+		// If we can traverse lower, do so
+		//////
+			if (tlSearchChildren && objStart->firstChild)
+			{
+				// Search children
+				objFind = iiObj_findChildObject_byType(objStart->firstChild, objType, true, true, true);
+				if (objFind)
+					return(objFind);
+			}
+
+
+		//////////
+		// Search siblings if allowed
+		//////
+			if (tlSearchSiblings)
+			{
+
+				//////////
+				// Iterate to the top of the sibling stack
+				//////
+					if (objStart->ll.prevObj)
+					{
+						// Go backward up to the first sibling
+						for (objSib = objStart->ll.prevObj; objSib->ll.prevObj; )
+							objSib = objSib->ll.prevObj;
+
+					} else {
+						// Begin at the one after where we are now (because we've already searched us)
+						objSib = objStart->ll.nextObj;
+					}
+
+
+				//////////
+				// Iterate forward through all siblings
+				//////
+					for ( ; objSib; objSib = objSib->ll.nextObj)
+					{
+						// If we're not on our starting object, try its children
+						if (objSib != objStart)
+						{
+							// Is this the object?
+							if (objSib->objType == objType)
+								return(objSib);
+
+							// Search children
+							if (tlSearchChildren && objSib->firstChild)
+							{
+								// Search the child's siblings and children
+								objFind = iiObj_findChildObject_byType(objSib->firstChild, objType, true, true, true);
+								if (objFind)
+									return(objFind);
+							}
+						}
+					}
+
+			}
+
+
+		//////////
+		// If we get here, not found
+		//////
+			return(NULL);
+
 	}
 
 
@@ -886,7 +970,7 @@
 //////
 	SObject* iiObj_findChildObject_byName(SObject* objStart, SDatum* name, bool tlSearchSelf, bool tlSearchChildren, bool tlSearchSiblings)
 	{
-		SObject*	objFound;
+		SObject*	objFind;
 		SObject*	objSib;
 
 
@@ -900,12 +984,12 @@
 
 
 		//////////
-		// See if they are searching grandchildren
+		// See if they are searching children
 		//////
 			if (tlSearchChildren && objStart->firstChild)
 			{
-				if ((objFound = iiObj_findChildObject_byName(objStart->firstChild, name, true, tlSearchSiblings, tlSearchChildren)))
-					return(objFound);
+				if ((objFind = iiObj_findChildObject_byName(objStart->firstChild, name, true, tlSearchSiblings, tlSearchChildren)))
+					return(objFind);
 			}
 
 
@@ -914,12 +998,44 @@
 		//////
 			if (tlSearchSiblings)
 			{
-				for (objSib = objStart->ll.nextObj; objSib; objSib = objSib->ll.nextObj)
-				{
-					// Search this sibling
-					if ((objFound = iiObj_findChildObject_byName(objSib, name, true, tlSearchChildren, false)))
-						return(objFound);
-				}
+
+				//////////
+				// Iterate to the top of the sibling stack
+				//////
+					if (objStart->ll.prevObj)
+					{
+						// Go backward up to the first sibling
+						for (objSib = objStart->ll.prevObj; objSib->ll.prevObj; )
+							objSib = objSib->ll.prevObj;
+
+					} else {
+						// Begin at the one after where we are now (because we've already searched us)
+						objSib = objStart->ll.nextObj;
+					}
+
+
+				//////////
+				// Iterate forward through all siblings
+				//////
+					for (objSib = objStart->ll.nextObj; objSib; objSib = objSib->ll.nextObj)
+					{
+						if (objSib != objStart)
+						{
+							// Search this sibling
+							if (propIsName_byDatum(objSib, name))
+								return(objSib);
+
+							// Search children
+							if (tlSearchChildren && objSib->firstChild)
+							{
+								// Search the child's siblings and children
+								objFind = iiObj_findChildObject_byName(objSib->firstChild, name, true, true, true);
+								if (objFind)
+									return(objFind);
+							}
+						}
+					}
+
 			}
 
 

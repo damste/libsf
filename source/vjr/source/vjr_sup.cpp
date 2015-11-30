@@ -450,6 +450,7 @@
 	void iVjr_init_jdebi_create(void)
 	{
 		SThisCode*	thisCode = NULL;
+		SObject*	obj;
 		s32			lnLeft, lnTop, lnWidth, lnHeight;
 		RECT		lrc;
 
@@ -541,17 +542,15 @@
 			iObj_setSize(_sourceLight,	_sourceCode->rc.right,	_watch->rc.bottom,			(_jdebi->rcClient.right - _jdebi->rcClient.left) - _sourceCode->rc.right,	3 * lnHeight);
 			iObj_setSize(_screen,		_sourceCode->rc.right,	_sourceLight->rc.bottom,	(_jdebi->rcClient.right - _jdebi->rcClient.left) - _sourceCode->rc.right,	(_jdebi->rcClient.bottom - _jdebi->rcClient.top) - _sourceLight->rc.bottom);
 
-			// These are created, but they are not visible
-// 			iObj_setSize(debug,			command->rc.right,		watch->rc.bottom,			(sourceCode->rc.right - command->rc.right) / 2,									(_jdebi->rcClient.bottom - _jdebi->rcClient.top) - watch->rc.bottom);
-// 			iObj_setSize(output,		debug->rc.right,		watch->rc.bottom,			sourceCode->rc.right - debug->rc.right,											(_jdebi->rcClient.bottom - _jdebi->rcClient.top) - watch->rc.bottom);
 
 		//////////
-		// Add the editbox controls to the subforms
+		// Add controls to the subforms
 		//////
 			_sourceCode_carousel	= iObj_addChild(_OBJ_TYPE_CAROUSEL,		_sourceCode);
 			_sourceCode_rider		= iObj_addChild(_OBJ_TYPE_RIDER,		_sourceCode_carousel);
 			_sourceCode_editbox		= iObj_addChild(_OBJ_TYPE_EDITBOX,		_sourceCode_rider);
 			_locals_editbox			= iObj_addChild(_OBJ_TYPE_EDITBOX,		_locals);
+			_locals_checkbox		= iObj_addChild(_OBJ_TYPE_CHECKBOX,		_locals);
 			_watch_editbox			= iObj_addChild(_OBJ_TYPE_EDITBOX,		_watch);
 			_command_editbox		= iObj_addChild(_OBJ_TYPE_EDITBOX,		_cmd);
 			_debug_editbox			= iObj_addChild(_OBJ_TYPE_EDITBOX,		_debug);
@@ -622,6 +621,8 @@
 		//////////
 		// Locals window caption and font
 		//////
+			obj = iiObj_findChildObject_byType(_locals, _OBJ_TYPE_LABEL);
+			propSetAutoSize(obj, _LOGICAL_TRUE);
 			iObjProp_set_character_direct(_locals, _INDEX_CAPTION, cgcLocalsTitle, sizeof(cgcLocalsTitle) - 1);
 			_locals_editbox->p.font					= iFont_create(cgcFontName_defaultFixed, 10, FW_MEDIUM, false, false);
 			iEngine_set_event(_EVENT_ONKEYDOWN, NULL, _locals_editbox, (uptr)&iSEM_onKeyDown);
@@ -629,6 +630,12 @@
 			_locals_editbox->p.sem->isSourceCode	= true;
 			_locals_editbox->p.sem->showLineNumbers	= true;
 			iSEM_appendLine(_locals_editbox->p.sem, NULL, 0, false);
+
+// TODO:  Nov.29.2015 -- Working here, there is an error on the checkbox click event to update its value property
+// 			// Position checkbox
+// 			iObj_setSize(_locals_checkbox, 100, -20, 85, 16);
+// 			propSetCaption(_locals_checkbox, cgcLocals_includeGlobals);
+// 			propSetVisible(_locals_checkbox, _LOGICAL_TRUE);
 
 
 		//////////
