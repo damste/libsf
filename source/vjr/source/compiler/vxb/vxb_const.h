@@ -1133,8 +1133,8 @@
 	const s32       _ICODE_FIND                                     = 2111;
 	const s32       _ICODE_FIXED                                    = 2112;
 	const s32       _ICODE_FLUSH                                    = 2113;
-	const s32		_ICODE_FOCUSHIGHLIGHTBORDERPIXELS				= 2296;
-	const s32		_ICODE_FOCUSHIGHLIGHTPIXELS						= 2297;
+	const s32		_ICODE_FOCUSOBJBORDERPIXELS						= 2296;
+	const s32		_ICODE_FOCUSOBJPIXELS							= 2297;
 	const s32       _ICODE_FORMAT                                   = 2114;
 	const s32       _ICODE_FORM                                     = 2115;
 	const s32       _ICODE_FREE                                     = 2116;

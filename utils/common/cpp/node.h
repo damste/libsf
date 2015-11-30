@@ -131,6 +131,7 @@ struct SGraceLine;
 // 	case _NODE_NW0
 // 	case _NODE_NE0
 // 	case _NODE_C0
+//
 // 	case _NODE_N:	// Aliased to: _NODE_N1
 // 	case _NODE_E	// Aliased to: _NODE_E1
 // 	case _NODE_S	// Aliased to: _NODE_S1
@@ -140,6 +141,7 @@ struct SGraceLine;
 // 	case _NODE_NW	// Aliased to: _NODE_NW1
 // 	case _NODE_NE	// Aliased to: _NODE_NE1
 // 	case _NODE_C	// Aliased to: _NODE_C1
+//
 // 	case _NODE_N2
 // 	case _NODE_E2
 // 	case _NODE_S2
@@ -165,15 +167,15 @@ struct SGraceLine;
 		_NODE_SE2,			// _NODE_NW0
 		_NODE_C2,			// _NODE_C0
 
-		_NODE_S,			// _NODE_N
-		_NODE_W,			// _NODE_E
-		_NODE_N,			// _NODE_S
-		_NODE_E,			// _NODE_W
-		_NODE_SW,			// _NODE_NE
-		_NODE_NW,			// _NODE_SE
-		_NODE_NE,			// _NODE_SW
-		_NODE_SE,			// _NODE_NW
-		_NODE_C,			// _NODE_C
+		_NODE_S,			// _NODE_N		// Same as _NODE_S1, _NODE_N1
+		_NODE_W,			// _NODE_E		// Same as _NODE_W1, _NODE_E1
+		_NODE_N,			// _NODE_S		// Same as _NODE_N1, _NODE_S1
+		_NODE_E,			// _NODE_W		// Same as _NODE_E1, _NODE_W1
+		_NODE_SW,			// _NODE_NE		// Same as _NODE_SW1, _NODE_NE1
+		_NODE_NW,			// _NODE_SE		// Same as _NODE_NW1, _NODE_SE1
+		_NODE_NE,			// _NODE_SW		// Same as _NODE_NE1, _NODE_SW1
+		_NODE_SE,			// _NODE_NW		// Same as _NODE_SE1, _NODE_NW1
+		_NODE_C,			// _NODE_C		// Same as _NODE_C1, _NODE_C1		// Note:  Doesn't really have a mirror
 
 		_NODE_S0,			// _NODE_N2
 		_NODE_W0,			// _NODE_E2
@@ -236,7 +238,7 @@ struct SGraceLine;
 	// Note:  The + origin is at the logical center of the screen
 	struct SNodeRodMaps
 	{
-		// Relates to screen coordinates
+		// Relates to screen coordinates with a z-axis added in:
 		f64		x;			//  o-y					// y is negative going up, positive going down
 		f64		y;			//  |   .o+z			// z is positive going away, negative coming toward
 		f64		z;			//  | .' 
@@ -248,7 +250,7 @@ struct SGraceLine;
 			SNodeRodMaps gsfNodeRodMaps[_NODE_COUNT] =
 			{	//	  x		  y		  z
 				//	-----	-----	-----
-				{	0.0,	-1.0,	1.0		},		// _NODE_N0
+				{	0.0,	-1.0,	1.0		},		// _NODE_N0		// Away
 				{	1.0,	0.0,	1.0		},		// _NODE_E0
 				{	0.0,	1.0,	1.0		},		// _NODE_S0
 				{	-1.0,	0.0,	1.0		},		// _NODE_W0
@@ -268,7 +270,7 @@ struct SGraceLine;
 				{	-1.0,	-1.0,	0.0		},		// _NODE_NW		// Same as _NODE_NW1
 				{	0.0,	0.0,	0.0		},		// _NODE_C		// Same as _NODE_C1
 
-				{	0.0,	-1.0,	-1.0	},		// _NODE_N2
+				{	0.0,	-1.0,	-1.0	},		// _NODE_N2		// Toward
 				{	1.0,	0.0,	-1.0	},		// _NODE_E2
 				{	0.0,	1.0,	-1.0	},		// _NODE_S2
 				{	-1.0,	0.0,	-1.0	},		// _NODE_W2
@@ -300,15 +302,15 @@ struct SGraceLine;
 				true,	// _NODE_NW0
 				true,	// _NODE_C0
 
-				true,	// _NODE_N		// Save as _NODE_N1
-				true,	// _NODE_E		// Save as _NODE_E1
-				true,	// _NODE_S		// Save as _NODE_S1
-				true,	// _NODE_W		// Save as _NODE_W1
-				true,	// _NODE_NE		// Save as _NODE_NE1
-				true,	// _NODE_SE		// Save as _NODE_SE1
-				true,	// _NODE_SW		// Save as _NODE_SW1
-				true,	// _NODE_NW		// Save as _NODE_NW1
-				true,	// _NODE_C		// Save as _NODE_C1
+				true,	// _NODE_N		// Same as _NODE_N1
+				true,	// _NODE_E		// Same as _NODE_E1
+				true,	// _NODE_S		// Same as _NODE_S1
+				true,	// _NODE_W		// Same as _NODE_W1
+				true,	// _NODE_NE		// Same as _NODE_NE1
+				true,	// _NODE_SE		// Same as _NODE_SE1
+				true,	// _NODE_SW		// Same as _NODE_SW1
+				true,	// _NODE_NW		// Same as _NODE_NW1
+				true,	// _NODE_C		// Same as _NODE_C1
 
 				true,	// _NODE_N2
 				true,	// _NODE_E2
@@ -333,10 +335,25 @@ struct SGraceLine;
 		s32				marginWidth;									// Width between text and the inner border
 	};
 
+	// Holds render information for the node
+	struct SNodeRender
+	{
+		SBitmap*	bmp;											// An image for this node's content
+		RECT		rc;												// Render rc as of last computation
+		u32			iter_uid;										// The last iteration this item was updated
+		s32			propsIndex;										// An index into the properties for how this node is configured
+
+		// For 3D rendering using iGrace()
+		SGraceRect*	grace;											// An array of vectors outlining everything to render the node centered around (0,0,0)
+		s32			graceCount;										// The number of elements in grace
+	};
+
 	struct SNode
 	{
-		u32				uid;											// Unique ID for this sub-instruction
 		SNode*			n[_NODE_COUNT];									// Offshoot nodes
+		u32				uid;											// Unique ID for this node
+
+		// Related info
 		SComp*			comp;											// The component this node relates to
 
 		// Extra/associated data
@@ -344,14 +361,7 @@ struct SGraceLine;
 		SSubInstr*		opData;											// When used as for processing ops
 
 		// For graphics rendering
-		SBitmap*		bmp;											// An image for this node's content
-		RECT			rc;												// Render rc as of last computation
-		u32				iter_uid;										// The last iteration this item was updated
-		s32				propsIndex;										// An index into the properties for how this node is configured
-
-		// For 3D rendering using iGrace()
-		SGraceRect*		grace;											// An array of vectors outlining everything to render the node centered around (0,0,0)
-		s32				graceCount;										// The number of elements in grace
+		SNodeRender		render;
 	};
 
 

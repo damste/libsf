@@ -90,7 +90,7 @@
 			memset(nodeNew, 0, sizeof(SNode));
 
 			// Populate the target
-			if (root && *root)
+			if (root)
 				*root = nodeNew;
 
 			// Hook it up to anything it needs hooked up to
@@ -154,15 +154,9 @@
 			nodeLast = nodeLast->n[tnExtrudeDirection];
 
 		// Add the new offshoot, and point back-and-forth to the last one
-		nodeNew = iNode_create(rootNode, NULL);
+		nodeNew = iNode_create(&nodeLast->n[tnExtrudeDirection], NULL);		// Last points forward to new
 		if (nodeNew)
-		{
-			// New points back to last
-			nodeNew->n[gnNodeMirrors[tnExtrudeDirection]]	= nodeLast;
-
-			// Last points forward to new
-			nodeLast->n[tnExtrudeDirection]					= nodeNew;
-		}
+			nodeNew->n[gnNodeMirrors[tnExtrudeDirection]]	= nodeLast;		// New points back to last
 
 		// Indicate the new item
 		return(nodeNew);
@@ -397,7 +391,7 @@
 				for (lnI = 0; lnI < (s32)_NODE_COUNT; lnI++)
 				{
 					// Kick off this if we're supposed to go that way
-					if (nodeFlags->n[lnI] && node->n[lnI])
+					if (nodeFlags->n[lnI] && node->n[lnI] && node->n[lnI] != node)
 					{
 						// Indicate that we want to render everything out from there
 						iiNode_renderBitmap(node->n[lnI], node, tnMaxLength, props, 1, lnIter_uid, true);
@@ -484,7 +478,7 @@
 
 
 		// Make sure we haven't already rendered this node
-		if (node->iter_uid != tnIter_uid)
+		if (node->render.iter_uid != tnIter_uid)
 		{
 			// Nope, render this one
 			iBmp_node_renderComp(node, tnMaxLength, props, tnPropsCount, tnIter_uid);
@@ -495,7 +489,7 @@
 				for (lnI = 0; lnI < (s32)_NODE_COUNT; lnI++)
 				{
 					// Are we're supposed to go this way?
-					if (node->n[lnI] && node->n[lnI] != nodeStopper && node->n[lnI]->iter_uid != tnIter_uid)
+					if (node->n[lnI] && node->n[lnI] != node && node->n[lnI]->n[gnNodeMirrors[lnI]] != node && node->n[lnI] != nodeStopper && node->n[lnI]->render.iter_uid != tnIter_uid)
 					{
 						// Indicate that we want to render everything out from there
 						iiNode_renderBitmap(node->n[lnI], nodeStopper, tnMaxLength, props, tnPropsCount, tnIter_uid, true);
@@ -515,20 +509,20 @@
 
 
 		// Make sure our environment is sane, and that we're not walking over ourselves
-		if (node && node->bmp && node->iter_uid != tnIter_uid && between(tnArrivalDirection, (s32)_NODE_MIN, (s32)_NODE_MAX))
+		if (node && node->render.bmp && node->render.iter_uid != tnIter_uid && between(tnArrivalDirection, (s32)_NODE_MIN, (s32)_NODE_MAX))
 		{
 
 			//////////
 			// Compute this overall size
 			/////
-				lrc.left	= (node->bmp->bi.biWidth  / 2);
-				lrc.top		= (node->bmp->bi.biHeight / 2);
-				lrc.right	= lrc.left + node->bmp->bi.biWidth;
-				lrc.bottom	= lrc.top  + node->bmp->bi.biHeight;
+				lrc.left	= (node->render.bmp->bi.biWidth  / 2);
+				lrc.top		= (node->render.bmp->bi.biHeight / 2);
+				lrc.right	= lrc.left + node->render.bmp->bi.biWidth;
+				lrc.bottom	= lrc.top  + node->render.bmp->bi.biHeight;
 
 				// Simplify width and height
-				lnWidth		= node->bmp->bi.biWidth;
-				lnHeight	= node->bmp->bi.biHeight;
+				lnWidth		= node->render.bmp->bi.biWidth;
+				lnHeight	= node->render.bmp->bi.biHeight;
 
 
 			//////////
@@ -553,7 +547,7 @@
 						rc->left	= min(rc->left,		p_arrival.x - lrc.left);					// Connecting point:  +--+--+
 						rc->top		= min(rc->top,		p_arrival.y - lnHeight);					//                    +  +  +
 						rc->right	= max(rc->right,	p_arrival.x - lrc.left + lnWidth);			//                    +--o--+
-						SetRect(&node->rc, p_arrival.x - lrc.left, p_arrival.y - lnHeight, p_arrival.x - lrc.left + lnWidth, p_arrival.y);
+						SetRect(&node->render.rc, p_arrival.x - lrc.left, p_arrival.y - lnHeight, p_arrival.x - lrc.left + lnWidth, p_arrival.y);
 						p_origin.x	= p_arrival.x;
 						p_origin.y	= p_arrival.y - (s16)lnHeight + (s16)lrc.top;
 						break;
@@ -564,7 +558,7 @@
 						rc->top		= min(rc->top,		p_arrival.y - lrc.top);						// Connecting point:  +--+--+
 						rc->right	= max(rc->right,	p_arrival.x + lnWidth);						//                    o  +  +
 						rc->bottom	= max(rc->bottom,	p_arrival.y - lrc.top + lnHeight);			//                    +--+--+
-						SetRect(&node->rc, p_arrival.x, p_arrival.y - lrc.top, p_arrival.x + lnWidth, p_arrival.y - lrc.top + lnHeight);
+						SetRect(&node->render.rc, p_arrival.x, p_arrival.y - lrc.top, p_arrival.x + lnWidth, p_arrival.y - lrc.top + lnHeight);
 						p_origin.x	= p_arrival.x + (s16)lrc.left;
 						p_origin.y	= p_arrival.y;
 						break;
@@ -581,7 +575,7 @@
 						rc->left	= min(rc->left,		p_arrival.x - lrc.left);					// Connecting point:  +--o--+
 						rc->right	= max(rc->right,	p_arrival.x - lrc.left + lnWidth);			//                    +  +  +
 						rc->bottom	= max(rc->bottom,	p_arrival.y + lnHeight);					//                    +--+--+
-						SetRect(&node->rc, p_arrival.x - lrc.left, p_arrival.y, p_arrival.x - lrc.left + lnWidth, p_arrival.y + lnHeight);
+						SetRect(&node->render.rc, p_arrival.x - lrc.left, p_arrival.y, p_arrival.x - lrc.left + lnWidth, p_arrival.y + lnHeight);
 						p_origin.x	= p_arrival.x;
 						p_origin.y	= p_arrival.y + (s16)lrc.top;
 						break;
@@ -592,7 +586,7 @@
 						rc->top		= min(rc->top,		p_arrival.y - lrc.top);						// Connecting point:  +--+--+
 						rc->left	= min(rc->right,	p_arrival.x - lnWidth);						//                    +  +  o
 						rc->bottom	= max(rc->bottom,	p_arrival.y - lrc.top + lnHeight);			//                    +--+--+
-						SetRect(&node->rc, p_arrival.x - lnWidth, p_arrival.y - lrc.top, p_arrival.x, p_arrival.y - lrc.top + lnHeight);
+						SetRect(&node->render.rc, p_arrival.x - lnWidth, p_arrival.y - lrc.top, p_arrival.x, p_arrival.y - lrc.top + lnHeight);
 						p_origin.x	= p_arrival.x - (s16)lnWidth + (s16)lrc.left;
 						p_origin.y	= p_arrival.y;
 						break;
@@ -603,7 +597,7 @@
 						rc->right	= max(rc->right,	p_arrival.x + lnWidth);						// Connecting point:  +--+--+
 						rc->top		= min(rc->top,		p_arrival.y - lnHeight);					//                    +  +  +
 																									//                    o--+--+
-						SetRect(&node->rc, p_arrival.x, p_arrival.y - lnHeight, p_arrival.x + lnWidth, p_arrival.y);
+						SetRect(&node->render.rc, p_arrival.x, p_arrival.y - lnHeight, p_arrival.x + lnWidth, p_arrival.y);
 						p_origin.x	= p_arrival.x + (s16)lrc.left;
 						p_origin.y	= p_arrival.y - (s16)lnHeight + (s16)lrc.top;
 						break;
@@ -614,7 +608,7 @@
 						rc->right	= max(rc->right,	p_arrival.x + lnWidth);						// Connecting point:  o--+--+
 						rc->bottom	= max(rc->bottom,	p_arrival.y + lnHeight);					//                    +  +  +
 																									//                    +--+--+
-						SetRect(&node->rc, p_arrival.x, p_arrival.y, p_arrival.x + lnWidth, p_arrival.y + lnHeight);
+						SetRect(&node->render.rc, p_arrival.x, p_arrival.y, p_arrival.x + lnWidth, p_arrival.y + lnHeight);
 						p_origin.x	= p_arrival.x + (s16)lrc.left;
 						p_origin.y	= p_arrival.y + (s16)lrc.top;
 						break;
@@ -625,7 +619,7 @@
 						rc->left	= min(rc->left,		p_arrival.x - lnWidth);						// Connecting point:  +--+--o
 						rc->bottom	= max(rc->right,	p_arrival.y + lnHeight);					//                    +  +  +
 																									//                    +--+--+
-						SetRect(&node->rc, p_arrival.x - lnWidth, p_arrival.y, p_arrival.x, p_arrival.y + lnHeight);
+						SetRect(&node->render.rc, p_arrival.x - lnWidth, p_arrival.y, p_arrival.x, p_arrival.y + lnHeight);
 						p_origin.x	= p_arrival.x - (s16)lnWidth + (s16)lrc.left;
 						p_origin.y	= p_arrival.y + (s16)lrc.top;
 						break;
@@ -636,18 +630,18 @@
 						rc->left	= min(rc->left,		p_arrival.x - lnWidth);						// Connecting point:  +--+--+
 						rc->top		= min(rc->top,		p_arrival.y - lnHeight);					//                    +  +  +
 																									//                    +--+--o
-						SetRect(&node->rc, p_arrival.x - lnWidth, p_arrival.y - lnHeight, p_arrival.x, p_arrival.y);
+						SetRect(&node->render.rc, p_arrival.x - lnWidth, p_arrival.y - lnHeight, p_arrival.x, p_arrival.y);
 						p_origin.x	= p_arrival.x - (s16)lnWidth  + (s16)lrc.left;
 						p_origin.y	= p_arrival.y - (s16)lnHeight + (s16)lrc.top;
 						break;
 				}
 
 				// Set the iteration uid
-				node->iter_uid = tnIter_uid;
+				node->render.iter_uid = tnIter_uid;
 
 				// Render the rectangle (if need be)
 				if (bmp)
-					iBmp_bitBlt(bmp, &node->rc, node->bmp);
+					iBmp_bitBlt(bmp, &node->render.rc, node->render.bmp);
 
 				// Compute distances from the origin to side and top, which then can extend to all 8 points through gnNodeRodeMaps[]
 				lfHalfHeight	= (f64)(lnHeight / 2.0);
@@ -663,7 +657,7 @@
 					for (lnI = 0; lnI < (s32)_NODE_COUNT; lnI++)
 					{
 						// Are we're supposed to go this way?
-						if (node->n[lnI] && node->n[lnI] != nodeStopper && node->n[lnI]->iter_uid != tnIter_uid)
+						if (node->n[lnI] && node->n[lnI] != nodeStopper && node->n[lnI]->render.iter_uid != tnIter_uid)
 						{
 							// Determine the ending point at the connecting rod
 							p_rodStart.x	= p_origin.x	+ (s32)(gsfNodeRodMaps[lnI].x * lfHalfWidth);

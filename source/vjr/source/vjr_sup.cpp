@@ -1985,6 +1985,7 @@
 	{
 		SThisCode*	thisCode = NULL;
 		s32			lnFocusHighlightPixels;
+		SBgra		color;
 		WNDCLASSEX	wcex;
 		ATOM		atom;
 		HRGN		lrgn;
@@ -2041,7 +2042,7 @@
 		//////
 			GetClientRect(focus->hwnd, &lrc);
 			focus->hrgn				= CreateRectRgnIndirect(&lrc);
-			lnFocusHighlightPixels	= propGet_settings_FocusHighlightPixels(_settings);
+			lnFocusHighlightPixels	= propGet_settings_focusObjPixels(_settings);
 			InflateRect(&lrc, -lnFocusHighlightPixels, -lnFocusHighlightPixels);
 			lrgn = CreateRectRgnIndirect(&lrc);
 			CombineRgn(focus->hrgn, focus->hrgn, lrgn, RGN_XOR);		// Create a region with the inner part masked out
@@ -2051,8 +2052,11 @@
 		//////////
 		// Store the settings
 		//////
-			focus->readWriteBrush	= CreateSolidBrush(RGB(focusHighlightColor_readWrite.red,	focusHighlightColor_readWrite.grn,	focusHighlightColor_readWrite.blu));
-			focus->readOnlyBrush	= CreateSolidBrush(RGB(focusHighlightColor_readOnly.red,	focusHighlightColor_readOnly.grn,	focusHighlightColor_readOnly.blu));
+			if (focus->obj->objType == _OBJ_TYPE_SUBFORM || focus->obj->objType == _OBJ_TYPE_EDITBOX)		color = focusObjColor_readWrite_container;
+			else																							color = focusObjColor_readWrite_obj;
+
+			focus->readWriteBrush	= CreateSolidBrush(RGB(color.red,							color.grn,							color.blu));
+			focus->readOnlyBrush	= CreateSolidBrush(RGB(focusObjColor_readOnly.red,	focusObjColor_readOnly.grn,	focusObjColor_readOnly.blu));
 			GetWindowRect(focus->hwnd, &focus->rc);
 
 

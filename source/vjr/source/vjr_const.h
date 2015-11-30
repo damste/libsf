@@ -271,7 +271,7 @@ typedef SEM**		SEMpp;
 	#define propGet_settings_Hours(obj)								iObjProp_get_s32_direct			(obj, _INDEX_SET_HOURS)
 	#define propGet_settings_Hours12(obj)							(iObjProp_get_s32_direct		(obj, _INDEX_SET_HOURS)							== 12)
 	#define propGet_settings_Hours24(obj)							(iObjProp_get_s32_direct		(obj, _INDEX_SET_HOURS)							== 24)
-	#define propGet_settings_FocusHighlightPixels(obj)				iObjProp_get_s32_direct			(obj, _INDEX_SET_FOCUS_HIGHLIGHT_PIXELS)
+	#define propGet_settings_focusObjPixels(obj)					iObjProp_get_s32_direct			(obj, _INDEX_SET_FOCUS_OBJ_PIXELS)
 	#define propGet_settings_InitializeDefaultValue(obj)			iObjProp_get_var_byIndex		(obj, _INDEX_SET_INITIALIZE_DEFAULT_VALUE)
 	#define propGet_settings_LoadReceivesParams(obj)				(iObjProp_get_logical_fromLogicalConstants(obj, _INDEX_SET_LOAD_RECEIVES_PARAMS)	!= _LOGICAL_FALSE)
 	#define propGet_settings_LockScreen(obj)						(iObjProp_get_logical_fromLogicalConstants(obj, _INDEX_SET_LOCK_SCREEN)			!= _LOGICAL_FALSE)
@@ -339,8 +339,9 @@ typedef SEM**		SEMpp;
 	#define _selectedBackColor				rgba(220, 235, 255, 255)
 	#define _selectedForeColor				rgba(0, 0, 164, 255)
 
-	#define _focusHighlightColor_readWrite	rgba(97,31,128, 255)
-	#define _focusHighlightColor_readOnly	rgba(255, 112, 112, 255)
+	#define _focusObjColor_readWrite_container	rgba(97,31,128, 255)
+	#define _focusObjColor_readWrite_obj		rgba(112,164,255, 255)
+	#define _focusObjColor_readOnly				rgba(255, 112, 112, 255)
 
 
 	// Color theme per Stefano D'Amico, suggested Mar.25.2015

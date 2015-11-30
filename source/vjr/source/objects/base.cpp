@@ -1156,7 +1156,7 @@
 							// Populate the new entry
 							focus->obj	= obj;
 							focus->win	= win;
-							lnFocusHighlightPixels			= propGet_settings_FocusHighlightPixels(_settings);
+							lnFocusHighlightPixels			= propGet_settings_focusObjPixels(_settings);
 							lnFocusHighlightBorderPixels	= propGet_settings_FocusHighlightBorderPixels(_settings);
 							SetRect(&lrc,	lnX - ((obj->objType == _OBJ_TYPE_FORM || obj->objType == _OBJ_TYPE_SUBFORM) ? obj->rcClient.left : 0) - lnFocusHighlightPixels - lnFocusHighlightBorderPixels,
 											lnY - ((obj->objType == _OBJ_TYPE_FORM || obj->objType == _OBJ_TYPE_SUBFORM) ? obj->rcClient.top  : 0) - lnFocusHighlightPixels - lnFocusHighlightBorderPixels,

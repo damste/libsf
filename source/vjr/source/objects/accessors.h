@@ -466,8 +466,8 @@ struct SBasePropMap;
 	const s8		cgc_setDevice[]											= "device";
 	const s8		cgc_setDeviceFilename[]									= "devicefilename";
 	const s8		cgc_setExclusive[]										= "exclusive";
-	const s8		cgc_setFocusHighlightBorderPixels[]						= "focusHighlightBorderPixels";
-	const s8		cgc_setFocusHighlightPixels[]							= "focusHighlightPixels";
+	const s8		cgc_setFocusObjBorderPixels[]							= "focusObjBorderPixels";
+	const s8		cgc_setFocusObjPixels[]									= "focusObjPixels";
 	const s8		cgc_setHonorBarriers[]									= "honorBarriers";
 	const s8		cgc_setHours[]											= "hours";
 	const s8		cgc_setImplicitParams[]									= "implicitParams";
@@ -874,7 +874,7 @@ struct SBasePropMap;
 	const u32		_INDEX_SET_DEVICE2										= 362;
 	const u32		_INDEX_SET_EXCLUSIVE									= 363;
 	const u32		_INDEX_SET_FOCUS_HIGHLIGHT_BORDER_PIXELS				= 364;
-	const u32		_INDEX_SET_FOCUS_HIGHLIGHT_PIXELS						= 365;
+	const u32		_INDEX_SET_FOCUS_OBJ_PIXELS						= 365;
 	const u32		_INDEX_SET_HONOR_BARRIERS								= 366;
 	const u32		_INDEX_SET_HOURS										= 367;
 	const u32		_INDEX_SET_IMPLICIT_PARAMS								= 368;
@@ -1476,8 +1476,8 @@ struct SBasePropMap;
 		{	_INDEX_SET_DEVICE,								_ICODE_DEVICE,						cgc_setDevice,						sizeof(cgc_setDevice) - 1,							_VAR_TYPE_S32,				0, 0, 0,		_SET_DEVICE_SCREEN				,NULL	},	// See the _SET_DEVICE_* constants (uses also _INDEX_SET_DEVICE2 for filename)
 		{	_INDEX_SET_DEVICE2,								_ICODE_DEVICE_FILENAME,				cgc_setDeviceFilename,				sizeof(cgc_setDeviceFilename) - 1,					_VAR_TYPE_CHARACTER,		0, 0, 0,		(uptr)&cgcNullString			,NULL	},	// Extra data for _INDEX_SET_DEVICE if type=2 file, holds the fully qualified pathname
 		{	_INDEX_SET_EXCLUSIVE,							_ICODE_EXCLUSIVE,					cgc_setExclusive,					sizeof(cgc_setExclusive) - 1,						_VAR_TYPE_LOGICAL,			0, 0, 0,		_LOGICAL_TRUE					,NULL	},	// .t.=exclusive access, .f.=shared access
-		{	_INDEX_SET_FOCUS_HIGHLIGHT_BORDER_PIXELS,		_ICODE_FOCUSHIGHLIGHTBORDERPIXELS,	cgc_setFocusHighlightBorderPixels,	sizeof(cgc_setFocusHighlightBorderPixels) -1,		_VAR_TYPE_S32,				0, 0, 0,		0								,NULL	},	// Number of pixels between the object and the focus highlight border
-		{	_INDEX_SET_FOCUS_HIGHLIGHT_PIXELS,				_ICODE_FOCUSHIGHLIGHTPIXELS,		cgc_setFocusHighlightPixels,		sizeof(cgc_setFocusHighlightPixels) - 1,			_VAR_TYPE_S32,				0, 0, 0,		4								,NULL	},	// Number of pixels thick the focus highlight border is
+		{	_INDEX_SET_FOCUS_HIGHLIGHT_BORDER_PIXELS,		_ICODE_FOCUSOBJBORDERPIXELS,		cgc_setFocusObjBorderPixels,		sizeof(cgc_setFocusObjBorderPixels) -1,				_VAR_TYPE_S32,				0, 0, 0,		1								,NULL	},	// Number of pixels between the object and the focus highlight border
+		{	_INDEX_SET_FOCUS_OBJ_PIXELS,					_ICODE_FOCUSOBJPIXELS,				cgc_setFocusObjPixels,				sizeof(cgc_setFocusObjPixels) - 1,					_VAR_TYPE_S32,				0, 0, 0,		4								,NULL	},	// Number of pixels thick the focus highlight border is
 		{	_INDEX_SET_HONOR_BARRIERS,						_ICODE_HONORBARRIERS,				cgc_setHonorBarriers,				sizeof(cgc_setHonorBarriers) - 1,					_VAR_TYPE_LOGICAL,			0, 0, 0,		_LOGICAL_TRUE					,NULL	},	// .t.=honors the 2GB file size barrier, .f.=allows file sizes larger than 2GB
 		{	_INDEX_SET_HOURS,								_ICODE_HOURS,						cgc_setHours,						sizeof(cgc_setHours) - 1,							_VAR_TYPE_S32,				0, 0, 0,		12								,NULL	},	// 12=uses am/pm, 24=no military
 		{	_INDEX_SET_IMPLICIT_PARAMS,						_ICODE_IMPLICITPARAMS,				cgc_setImplicitParams,				sizeof(cgc_setImplicitParams) - 1,					_VAR_TYPE_LOGICAL,			0, 0, 0,		_LOGICAL_FALSE					,NULL	},	// .t.=allows empty or partially empty parameters, .f.=requires 1:1 received parameters to passed parameters
@@ -5636,7 +5636,7 @@ struct SBasePropMap;
 		{	_INDEX_SET_DEVICE2,							0, (uptr)&iObjProp_setCharacter,	0	},		// character
 		{	_INDEX_SET_EXCLUSIVE,						0, (uptr)&iObjProp_setOnOff,		(uptr)&iObjProp_getOnOff },		// bool
 		{	_INDEX_SET_FOCUS_HIGHLIGHT_BORDER_PIXELS,	0, (uptr)&iObjProp_setInteger,		(uptr)&iObjProp_getInteger },	// s32
-		{	_INDEX_SET_FOCUS_HIGHLIGHT_PIXELS,			0, (uptr)&iObjProp_setInteger,		(uptr)&iObjProp_getInteger },	// s32
+		{	_INDEX_SET_FOCUS_OBJ_PIXELS,			0, (uptr)&iObjProp_setInteger,		(uptr)&iObjProp_getInteger },	// s32
 		{	_INDEX_SET_HONOR_BARRIERS,					0, (uptr)&iObjProp_setOnOff,		(uptr)&iObjProp_getOnOff },		// bool
 		{	_INDEX_SET_HOURS,							0, (uptr)&iObjProp_setIneger_12_24,	(uptr)&iObjProp_getInteger},	// s32
 		{	_INDEX_SET_IMPLICIT_PARAMS,					0, (uptr)&iObjProp_setOnOff,		(uptr)&iObjProp_getOnOff },		// bool

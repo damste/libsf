@@ -58,45 +58,50 @@
 	void iVjr_test(void)
 	{
 		s32			lnI;
+		SBitmap*	bmp;
+		SNode*		node;
+		SNode*		nodeNew;
 		SNode*		n[_NODE_COUNT];
 		SComp		comp[_NODE_COUNT];
 		SLine		line[_NODE_COUNT];
 		SDatum		datum[_NODE_COUNT];
-		SBitmap*	bmp;
 		s8			buffer[_NODE_COUNT * 8];
 
 
-return;
 		///////////
-		// Create a center node
+		// Create center node
 		//////
 			memset(&n, 0, sizeof(n));
-			memset(&buffer, 0, sizeof(buffer));
-			n[_NODE_C] = iNode_create(&n[0], NULL);
+			iNode_create(&node, NULL);
 
 
 		///////////
 		// Extrude nodes in every direction
 		//////
-			for (lnI = _NODE1_MIN; lnI < _NODE1_MAX; lnI++)
+			for (lnI = _NODE1_MIN, buffer[0] = 0; lnI < _NODE1_MAX; lnI++)
 			{
 				// Create a node in each direction
-				if (lnI != _NODE_C)
-					n[lnI] = iNode_extrude(&n[_NODE_C], lnI);
+				nodeNew = iNode_extrude(&node, lnI);
 
 				// Hook it up to something
-				n[lnI]->comp			= &comp[lnI];
-				comp[lnI].line			= &line[lnI];
-				line[lnI].sourceCode	= &datum[lnI];
-				datum[lnI].data_s8		= &buffer[0] + strlen(buffer);
+				nodeNew->comp							= &comp[lnI];
+				comp[lnI].line							= &line[lnI];
+				line[lnI].sourceCode					= &datum[lnI];
+
+				// It will simply say "009" and so on...
+				datum[lnI].data_s8						= &buffer[0] + strlen(buffer);
 				sprintf(buffer + strlen(buffer), "%03d", lnI);
-				datum[lnI].length		= strlen(datum[lnI].data_cs8);
+				datum[lnI].length						= strlen(datum[lnI].data_cs8);
+				line[lnI].sourceCode_populatedLength	= datum[lnI].length;
+				comp[lnI].length						= datum[lnI].length;
+				comp[lnI].start							= 0;
+				comp[lnI].iCode							= 0;
 			}
 
 
 		//////////
 		// Render
 		//////
-			bmp = iNode_renderBitmap(n[_NODE_C]);
+			bmp = iNode_renderBitmap(node);
 			iBmp_saveToDisk(bmp, "c:\\temp\\node.bmp");
 	}

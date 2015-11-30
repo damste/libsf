@@ -121,7 +121,7 @@
 
 
 //////////
-// Rick's test code functionality using the _test() function
+// Rick's test code functionality using the hidden _test() function
 //////
 	void function__test(SReturnsParams* rpar)
 	{

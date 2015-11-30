@@ -4748,10 +4748,10 @@ return;
 			//////////
 			// Get the correct props
 			//////
-				if (tnPropsCount > 0 && node->propsIndex > 0 && node->propsIndex <= tnPropsCount)
+				if (tnPropsCount > 0 && node->render.propsIndex > 0 && node->render.propsIndex <= tnPropsCount)
 				{
 					// We can grab it from the array
-					prop = &props[node->propsIndex];
+					prop = &props[node->render.propsIndex];
 
 				} else {
 					// Create a default entry
@@ -4800,31 +4800,31 @@ return;
 			//////////
 			// Make sure the bitmap exists
 			//////
-				if (!node->bmp)
+				if (!node->render.bmp)
 				{
 					// Create a default image
-					node->bmp = iBmp_allocate();
-					if (!node->bmp)
+					node->render.bmp = iBmp_allocate();
+					if (!node->render.bmp)
 						return;
 
 					// Create a 20x20 image
-					iBmp_createBySize(node->bmp, 20, 20, 24);
+					iBmp_createBySize(node->render.bmp, 20, 20, 24);
 				}
 
 
 			//////////
 			// Create the font
 			//////
-				if (!node->bmp->font)
-					node->bmp->font = iFont_create(cgcFontName_defaultFixed);
+				if (!node->render.bmp->font)
+					node->render.bmp->font = iFont_create(cgcFontName_defaultFixed);
 
 
 			//////////
 			// Find out how big it would be
 			//////
-				SelectObject(node->bmp->hdc, node->bmp->font->hfont);
+				SelectObject(node->render.bmp->hdc, node->render.bmp->font->hfont);
 				SetRect(&lrc, 0, 0, 0, 0);
-				DrawText(node->bmp->hdc, buffer, strlen(buffer), &lrc, DT_CALCRECT | DT_SINGLELINE);
+				DrawText(node->render.bmp->hdc, buffer, strlen(buffer), &lrc, DT_CALCRECT | DT_SINGLELINE);
 
 
 			//////////
@@ -4837,8 +4837,8 @@ return;
 			//////////
 			// Adjust the bitmap size if need be
 			//////
-				if (node->bmp->bi.biWidth != lnWidth || node->bmp->bi.biHeight != lnHeight)
-					iBmp_verifySizeOrResize(node->bmp, lnWidth, lnHeight, node->bmp->bi.biBitCount);
+				if (node->render.bmp->bi.biWidth != lnWidth || node->render.bmp->bi.biHeight != lnHeight)
+					node->render.bmp = iBmp_verifySizeOrResize(node->render.bmp, lnWidth, lnHeight, node->render.bmp->bi.biBitCount);
 
 
 			//////////
@@ -4848,22 +4848,24 @@ return;
 				SetRect(&lrc, 0, 0, lnWidth, lnHeight);
 				for (lnI = prop->borderWidth; lnI > 0; lnI--)
 				{
-					iBmp_frameRect(node->bmp, &lrc, prop->borderColor);
+					iBmp_frameRect(node->render.bmp, &lrc, prop->borderColor);
 					InflateRect(&lrc, -1, -1);
 				}
 
 				// Fill
-				iBmp_fillRect(node->bmp, &lrc, prop->fillColor);
+				iBmp_fillRect(node->render.bmp, &lrc, prop->fillColor);
 				InflateRect(&lrc, -prop->marginWidth, -prop->marginWidth);
 
 				// Text
-				SetTextColor(node->bmp->hdc, RGB(prop->foreColor.red, prop->foreColor.grn, prop->foreColor.blu));
-				SetBkColor(node->bmp->hdc, RGB(prop->backColor.red, prop->backColor.grn, prop->backColor.blu));
-				SetBkMode(node->bmp->hdc, OPAQUE);
-				DrawText(node->bmp->hdc, buffer, strlen(buffer), &lrc, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
+				SetTextColor(node->render.bmp->hdc, RGB(prop->foreColor.red, prop->foreColor.grn, prop->foreColor.blu));
+				SetBkColor(node->render.bmp->hdc, RGB(prop->backColor.red, prop->backColor.grn, prop->backColor.blu));
+				SetBkMode(node->render.bmp->hdc, OPAQUE);
+				DrawText(node->render.bmp->hdc, buffer, strlen(buffer), &lrc, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
+
+iBmp_saveToDisk(node->render.bmp, "c:\\temp\\node_render.bmp");
 
 				// Update iteration
-				node->iter_uid = tnIter_uid;
+				node->render.iter_uid = tnIter_uid;
 		}
 	}
 

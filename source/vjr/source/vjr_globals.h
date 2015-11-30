@@ -688,9 +688,10 @@
 		const SBgra		swColor_checkboxOff					= { rgba(171, 92, 94, 255) };
 		const SBgra		seColor_checkboxOff					= { rgba(212, 128, 131, 255) };
 
-		// Colors for the focus window
-		SBgra			focusHighlightColor_readWrite		= { _focusHighlightColor_readWrite	};
-		SBgra			focusHighlightColor_readOnly		= { _focusHighlightColor_readOnly	};
+		// Colors for the focus window (highlights controls)
+		SBgra			focusObjColor_readWrite_container	= { _focusObjColor_readWrite_container };
+		SBgra			focusObjColor_readWrite_obj			= { _focusObjColor_readWrite_obj };
+		SBgra			focusObjColor_readOnly				= { _focusObjColor_readOnly };
 
 
 	//////////
