@@ -631,11 +631,11 @@
 			_locals_editbox->p.sem->showLineNumbers	= true;
 			iSEM_appendLine(_locals_editbox->p.sem, NULL, 0, false);
 
-// TODO:  Nov.29.2015 -- Working here, there is an error on the checkbox click event to update its value property
-// 			// Position checkbox
-// 			iObj_setSize(_locals_checkbox, 100, -20, 85, 16);
-// 			propSetCaption(_locals_checkbox, cgcLocals_includeGlobals);
-// 			propSetVisible(_locals_checkbox, _LOGICAL_TRUE);
+			// Position checkbox
+			iObj_setSize(_locals_checkbox, 100, -21, 85, 18);
+			obj = iiObj_findChildObject_byType(_locals_checkbox, _OBJ_TYPE_LABEL);
+			propSetCaption(obj, cgcLocals_includeGlobals);
+			propSetVisible(_locals_checkbox, _LOGICAL_TRUE);
 
 
 		//////////

@@ -414,14 +414,11 @@
 		{
 			// For checkboxes, we toggle
 			// They're clicking on a checkbox, toggle the value and re-render
-			iObjProp_set_s32_direct(obj, _INDEX_VALUE, ((iObjProp_get_s32_direct(obj, _INDEX_VALUE) != 0) ? 0 : 1));
+			iObjProp_set_s32_direct(obj->parent, _INDEX_VALUE, ((iObjProp_get_s32_direct(obj->parent, _INDEX_VALUE) != 0) ? 0 : 1));
 
-			// Calling the size with its current size forces the refresh
-			iObj_setSize(obj->parent,
-									obj->parent->rc.left,
-									obj->parent->rc.top,
-									obj->parent->rc.right  - obj->parent->rc.left,
-									obj->parent->rc.bottom - obj->parent->rc.top);
+			// Force a refresh
+			obj->parent->isDirtyRender	= true;
+			obj->parent->isDirtyPublish	= true;
 
 			// Do not continue to propagate
 			llResult = false;

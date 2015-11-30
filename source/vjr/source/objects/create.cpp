@@ -752,7 +752,6 @@
 		SObject*	checkboxNew;
 		SObject*	image;
 		SObject*	label;
-		SVariable*	var;
 
 
 		logfunc(__FUNCTION__);
@@ -780,13 +779,10 @@
 				//////
 					image	= iObj_addChild(_OBJ_TYPE_IMAGE, checkboxNew);
 					label	= iObj_addChild(_OBJ_TYPE_LABEL, checkboxNew);
-
-
-				//////////
-				// Give them proper names
-				//////
-					var = iObjProp_get_var_byIndex(image,	_INDEX_NAME);			iDatum_duplicate(&var->value,	cgcName_checkboxImage,	-1);
-					var = iObjProp_get_var_byIndex(label,	_INDEX_NAME);			iDatum_duplicate(&var->value,	cgcName_checkboxLabel,	-1);
+					propSetName(image, cgcName_checkboxImage, -1);
+					propSetName(label, cgcName_checkboxLabel, -1);
+					propSetEnabled(image, _LOGICAL_TRUE);
+					propSetEnabled(label, _LOGICAL_TRUE);
 
 
 				//////////

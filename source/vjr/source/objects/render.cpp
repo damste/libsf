@@ -911,7 +911,6 @@
 
 				// Draw the text
 				caption = iObjProp_get_var_byIndex(obj, _INDEX_CAPTION);
-				value	= iObjProp_get_var_byIndex(obj, _INDEX_VALUE);
 				DrawText(obj->bmp->hdc, caption->value.data, caption->value.length, &lrc, lnFormat | DT_END_ELLIPSIS | DT_SINGLELINE);
 
 				// And adjust back if need be
@@ -927,6 +926,7 @@
 				{
 					// Append the color marker at the end of the label
 					SetRect(&lrc2, lrc.right - ((lrc.bottom - lrc.top) / 2), 0, lrc.right, lrc.bottom);
+					value = iObjProp_get_var_byIndex(obj->parent, _INDEX_VALUE);
 					if (get_s32(value) == 0)
 					{
 						// It's off, so color it red
@@ -1392,8 +1392,9 @@
 //////
 	u32 iSubobj_renderCheckbox(SObject* obj)
 	{
-		u32		lnPixelsRendered;
-		RECT	lrc;
+		u32			lnPixelsRendered;
+		SObject*	objChild;
+		RECT		lrc;
 
 
 		// Make sure our environment is sane
@@ -1407,11 +1408,20 @@
 			// There is nothing actually rendered here, but the child renders into it
 			if (obj->isDirtyRender)
 			{
+// TODO:  Nov.30.2015 -- Working here, this will force a redraw of children, but they should be being redrawn automatically ... so something's awry
+// TODO:  Nov.30.2015 -- Also, green bmp isn't being changed, and green right-rectangle isn't being colorized
+				// Render children onto this one
+				for (objChild = obj->firstChild; objChild; objChild = objChild->ll.nextObj)
+					iBmp_bitBlt(obj->bmp, &objChild->rc, objChild->bmp);
+
+
 				//////////
 				// Copy to prior rendered bitmap
 				//////
 					// Make sure our bmpPriorRendered exists
 					obj->bmpPriorRendered = iBmp_verifyCopyIsSameSize(obj->bmpPriorRendered, obj->bmp);
+// iBmp_saveToDisk(obj->bmpPriorRendered, "c:\\temp\\checkbox_prior.bmp");
+// iBmp_saveToDisk(obj->bmp, "c:\\temp\\checkbox.bmp");
 
 					// Copy to the prior rendered version
 					memcpy(obj->bmpPriorRendered->bd, obj->bmp->bd, obj->bmpPriorRendered->bi.biSizeImage);
