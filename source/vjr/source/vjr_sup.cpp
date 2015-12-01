@@ -550,7 +550,7 @@
 			_sourceCode_rider		= iObj_addChild(_OBJ_TYPE_RIDER,		_sourceCode_carousel);
 			_sourceCode_editbox		= iObj_addChild(_OBJ_TYPE_EDITBOX,		_sourceCode_rider);
 			_locals_editbox			= iObj_addChild(_OBJ_TYPE_EDITBOX,		_locals);
-			_locals_checkbox		= iObj_addChild(_OBJ_TYPE_CHECKBOX,		_locals);
+//			_locals_checkbox		= iObj_addChild(_OBJ_TYPE_CHECKBOX,		_locals);
 			_watch_editbox			= iObj_addChild(_OBJ_TYPE_EDITBOX,		_watch);
 			_command_editbox		= iObj_addChild(_OBJ_TYPE_EDITBOX,		_cmd);
 			_debug_editbox			= iObj_addChild(_OBJ_TYPE_EDITBOX,		_debug);
@@ -632,10 +632,10 @@
 			iSEM_appendLine(_locals_editbox->p.sem, NULL, 0, false);
 
 			// Position checkbox
-			iObj_setSize(_locals_checkbox, 100, -21, 85, 18);
-			obj = iiObj_findChildObject_byType(_locals_checkbox, _OBJ_TYPE_LABEL);
-			propSetCaption(obj, cgcLocals_includeGlobals);
-			propSetVisible(_locals_checkbox, _LOGICAL_TRUE);
+// 			iObj_setSize(_locals_checkbox, 100, -21, 85, 18);
+// 			obj = iiObj_findChildObject_byType(_locals_checkbox, _OBJ_TYPE_LABEL);
+// 			propSetCaption(obj, cgcLocals_includeGlobals);
+// 			propSetVisible(_locals_checkbox, _LOGICAL_TRUE);
 
 
 		//////////

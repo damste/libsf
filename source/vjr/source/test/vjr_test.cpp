@@ -68,6 +68,7 @@
 		s8			buffer[_NODE_COUNT * 8];
 
 
+return;
 		///////////
 		// Create center node
 		//////
@@ -104,4 +105,5 @@
 		//////
 			bmp = iNode_renderBitmap(node);
 			iBmp_saveToDisk(bmp, "c:\\temp\\node.bmp");
+
 	}

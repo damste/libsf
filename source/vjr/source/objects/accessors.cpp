@@ -306,7 +306,7 @@
 		{
 			// Make sure the length is valid
 			if ((s32)tnTextLength < 0)
-				tnTextLength = strlen(tcText);
+				tnTextLength = (u32)strlen(tcText);
 
 			// Grab the variable associated with this object's property
 			var = iObjProp_get_var_byIndex(obj, tnIndex, &baseProp, &objProp);

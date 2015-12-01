@@ -3739,7 +3739,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 											// Include any previously combined references for what they are
 											sprintf(outputBuffer + lnOffset, "<!--");
 											iComps_visualize(comp->firstCombined, iComps_count(comp->firstCombined), outputBuffer + lnOffset + 4, tnBufferLength - lnOffset - 4, tlUseDefaultCompSearcher, tsComps1, tsComps2);
-											lnOffset = strlen(outputBuffer);
+											lnOffset = (s32)strlen(outputBuffer);
 											sprintf(outputBuffer + lnOffset, "-->");
 											lnOffset += 3;
 										}
@@ -3779,7 +3779,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 									// Include any previously combined references for what they are
 									sprintf(outputBuffer + lnOffset, "<!--");
 									iComps_visualize(comp->firstCombined, iComps_count(comp->firstCombined), outputBuffer + lnOffset + 4, tnBufferLength - lnOffset - 4, tlUseDefaultCompSearcher, tsComps1, tsComps2);
-									lnOffset = strlen(outputBuffer);
+									lnOffset = (s32)strlen(outputBuffer);
 									sprintf(outputBuffer + lnOffset, "-->");
 									lnOffset += 3;
 								}

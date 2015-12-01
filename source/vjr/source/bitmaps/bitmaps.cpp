@@ -4780,9 +4780,9 @@ return;
 				if ((lciCodeName = iiComps_visualize_lookup_iCode(node->comp->iCode)))
 				{
 					// Grab the name
-					lnStart = strlen(buffer);
+					lnStart = (s32)strlen(buffer);
 					sprintf(buffer + strlen(buffer), " %s,", lciCodeName);
-					lnEnd	= strlen(buffer);
+					lnEnd	= (s32)strlen(buffer);
 
 					// Make sure the length isn't longer than their max length
 					if (lnEnd - lnStart > tnMaxLength)
@@ -4824,7 +4824,7 @@ return;
 			//////
 				SelectObject(node->render.bmp->hdc, node->render.bmp->font->hfont);
 				SetRect(&lrc, 0, 0, 0, 0);
-				DrawText(node->render.bmp->hdc, buffer, strlen(buffer), &lrc, DT_CALCRECT | DT_SINGLELINE);
+				DrawText(node->render.bmp->hdc, buffer, (int)strlen(buffer), &lrc, DT_CALCRECT | DT_SINGLELINE);
 
 
 			//////////
@@ -4860,7 +4860,7 @@ return;
 				SetTextColor(node->render.bmp->hdc, RGB(prop->foreColor.red, prop->foreColor.grn, prop->foreColor.blu));
 				SetBkColor(node->render.bmp->hdc, RGB(prop->backColor.red, prop->backColor.grn, prop->backColor.blu));
 				SetBkMode(node->render.bmp->hdc, OPAQUE);
-				DrawText(node->render.bmp->hdc, buffer, strlen(buffer), &lrc, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
+				DrawText(node->render.bmp->hdc, buffer, (int)strlen(buffer), &lrc, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
 
 iBmp_saveToDisk(node->render.bmp, "c:\\temp\\node_render.bmp");
 

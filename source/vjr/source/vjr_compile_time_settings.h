@@ -92,8 +92,8 @@
 	//////////
 	// Splash
 	//////
- 		//bool glShowSplashScreen = true;
- 		bool glShowSplashScreen = false;
+ 		bool glShowSplashScreen = true;
+ 		//bool glShowSplashScreen = false;
 
 
 	//////////
@@ -163,7 +163,7 @@
 //////////
 // Added to track down silent errors, ones that don't really affect anything, but still shouldn't exist
 //////
-	#define error_silent		iError_silent(__FUNCTION__)
+	#define error_silent		iError_silent((char*)__FUNCTION__)
 
 
 //////////
