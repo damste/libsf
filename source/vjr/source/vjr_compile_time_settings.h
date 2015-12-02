@@ -19,7 +19,7 @@
 //
 //////
 // Version 0.58
-// Copyright (c) 2014 by Rick C. Hodgin
+// Copyright (c) 2014-2015 by Rick C. Hodgin
 //////
 // Last update:
 //     Nov.05.2014
@@ -92,15 +92,15 @@
 	//////////
 	// Splash
 	//////
- 		bool glShowSplashScreen = true;
- 		//bool glShowSplashScreen = false;
+ 		//bool glShowSplashScreen = true;
+ 		bool glShowSplashScreen = false;
 
 
 	//////////
-	// Focus highlight border
+	// Focus object border
 	//////
-		bool glShowFocusHighlightBorder = true;
-		//bool glShowFocusHighlightBorder = false;
+		//bool glShowFocusObjBorder = true;
+		bool glShowFocusObjBorder = false;
 
 
 //////////

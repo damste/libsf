@@ -19,7 +19,7 @@
 //
 //////
 // Version 0.58
-// Copyright (c) 2014 by Rick C. Hodgin
+// Copyright (c) 2014-2015 by Rick C. Hodgin
 //////
 // Last update:
 //     Feb.12.2014
@@ -1995,7 +1995,7 @@
 		//////////
 		// Are they shunning the focus highlight borders?
 		//////
-			if (!glShowFocusHighlightBorder)
+			if (!glShowFocusObjBorder)
 				return;		// Yes
 
 

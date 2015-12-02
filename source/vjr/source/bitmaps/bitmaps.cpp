@@ -19,7 +19,7 @@
 //
 //////
 // Version 0.58
-// Copyright (c) 2014 by Rick C. Hodgin
+// Copyright (c) 2014-2015 by Rick C. Hodgin
 //////
 // Last update:
 //     Jun.17.2014
@@ -4731,7 +4731,7 @@ return;
 // Called to render the node to a bitmap
 //
 //////
-	void iBmp_node_renderComp(SNode* node, s32 tnMaxLength, SNodeProps props[], s32 tnPropsCount, u32 tnIter_uid)
+	void iBmp_node_renderComp(SNode* node, s32 tnMaxTokenLength, s32 tnMaxOverallLength, SNodeProps props[], s32 tnPropsCount, u32 tnIter_uid)
 	{
 		s32			lnI, lnStart, lnEnd, lnWidth, lnHeight;
 		s8*			lciCodeName;
@@ -4785,8 +4785,8 @@ return;
 					lnEnd	= (s32)strlen(buffer);
 
 					// Make sure the length isn't longer than their max length
-					if (lnEnd - lnStart > tnMaxLength)
-						buffer[lnStart + tnMaxLength] = 0;
+					if (lnEnd - lnStart > tnMaxTokenLength)
+						buffer[lnStart + tnMaxTokenLength] = 0;
 
 				} else {
 					// The name could not be looked up, so we just use the number, and in this case we ignore the max length and use the whole number
@@ -4795,6 +4795,14 @@ return;
 
 				// Close it out
 				sprintf(buffer + strlen(buffer), "%u,%u]", node->comp->start, node->comp->length);
+
+				// Make sure it's not too long overall
+				if (strlen(buffer) > tnMaxOverallLength)
+				{
+					// Close it out at the max length distance with ]
+					buffer[tnMaxOverallLength - 1]	= ']';
+					buffer[tnMaxOverallLength]		= 0;
+				}
 
 
 			//////////
@@ -4862,7 +4870,13 @@ return;
 				SetBkMode(node->render.bmp->hdc, OPAQUE);
 				DrawText(node->render.bmp->hdc, buffer, (int)strlen(buffer), &lrc, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
 
-iBmp_saveToDisk(node->render.bmp, "c:\\temp\\node_render.bmp");
+//////////
+// Added for debugging:
+memset(buffer, 0, sizeof(buffer));
+memcpy(buffer, node->comp->line->sourceCode->data_s8 + node->comp->start, node->comp->length);
+sprintf(buffer, "c:\\temp\\node_render__%s.bmp", buffer);
+iBmp_saveToDisk(node->render.bmp, buffer);
+//////
 
 				// Update iteration
 				node->render.iter_uid = tnIter_uid;

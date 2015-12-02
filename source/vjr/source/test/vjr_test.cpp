@@ -68,28 +68,39 @@
 		s8			buffer[_NODE_COUNT * 8];
 
 
+// TODO:  Dec.01.2015 RCH -- This process is working, except the extents it's retrieving are not correct, the height is more than doubled
 return;
-		///////////
+		//////////
+		// Initialize
+		//////
+			memset(&n,		0, sizeof(n));
+			memset(&comp,	0, sizeof(comp));
+			memset(&line,	0, sizeof(line));
+			memset(&datum,	0, sizeof(datum));
+			memset(buffer,	0, sizeof(buffer));
+
+
+		//////////
 		// Create center node
 		//////
-			memset(&n, 0, sizeof(n));
 			iNode_create(&node, NULL);
 
 
 		///////////
-		// Extrude nodes in every direction
+		// Extrude nodes out in every direction (except center)
 		//////
-			for (lnI = _NODE1_MIN, buffer[0] = 0; lnI < _NODE1_MAX; lnI++)
+			for (lnI = _NODE1_MIN; lnI <= _NODE1_MAX; lnI++)
 			{
-				// Create a node in each direction
-				nodeNew = iNode_extrude(&node, lnI);
+				// Extrude, except center
+				if (lnI != _NODE_C1)					nodeNew = iNode_extrude(&node, lnI);
+				else									nodeNew = node;
 
-				// Hook it up to something
+				// Then hook it up...
 				nodeNew->comp							= &comp[lnI];
 				comp[lnI].line							= &line[lnI];
 				line[lnI].sourceCode					= &datum[lnI];
 
-				// It will simply say "009" and so on...
+				// ...to have its direction number
 				datum[lnI].data_s8						= &buffer[0] + strlen(buffer);
 				sprintf(buffer + strlen(buffer), "%03d", lnI);
 				datum[lnI].length						= strlen(datum[lnI].data_cs8);
