@@ -4731,11 +4731,15 @@ return;
 // Called to render the node to a bitmap
 //
 //////
-	void iBmp_node_renderComp(SNode* node, s32 tnMaxTokenLength, s32 tnMaxOverallLength, SNodeProps props[], s32 tnPropsCount, u32 tnIter_uid)
+	// 
+	void iBmp_node_renderComp(SNode* node, s32 tnMaxTokenLength, s32 tnMaxOverallLength, bool tlIncludeExtraInfo, SNodeProps props[], s32 tnPropsCount, u32 tnIter_uid)
 	{
 		s32			lnI, lnStart, lnEnd, lnWidth, lnHeight;
+		bool		llDeleteFont;
 		s8*			lciCodeName;
 		RECT		lrc;
+		SFont*		font;
+		HGDIOBJ		lhOldFont;
 		SNodeProps	_propsLocal;
 		SNodeProps*	prop;
 		s8			buffer[2048];
@@ -4748,8 +4752,12 @@ return;
 			//////////
 			// Get the correct props
 			//////
-				if (tnPropsCount > 0 && node->render.propsIndex > 0 && node->render.propsIndex <= tnPropsCount)
+				if (node->render_override)
 				{
+					// Use their custom instance override
+					prop = node->render_override;
+
+				} else if (tnPropsCount > 0 && node->render.propsIndex > 0 && node->render.propsIndex <= tnPropsCount) {
 					// We can grab it from the array
 					prop = &props[node->render.propsIndex];
 
@@ -4768,33 +4776,56 @@ return;
 				prop->marginWidth	= min(max(0, prop->marginWidth), 64);		// Max of 64-pixel margin
 				prop->borderWidth	= min(max(0, prop->borderWidth), 16);		// Max of 16-pixel border
 
+				// Create our font
+				if (prop->font)
+				{
+					// Use their happy font
+					llDeleteFont	= false;
+					font			= prop->font;
+
+				} else {
+					// Create our own font
+					llDeleteFont	= true;
+					font			= iFont_create(cgcFontName_defaultFixed, 9, FW_NORMAL, 0, 0);
+				}
+
+
 
 			//////////
 			// Determine the text that will be rendered
 			//////
 				memset(buffer, 0, sizeof(buffer));
-				sprintf(buffer, "[");
+
+				// Prepend a "]" if need be
+				if (tlIncludeExtraInfo)
+					sprintf(buffer, "[");
+
+				// Copy the contents of the physical token
 				memcpy(buffer + strlen(buffer), node->comp->line->sourceCode->data_s8 + node->comp->start, min(node->comp->length, (s32)sizeof(buffer) - 20));
 
-				// Try to do a reverse lookup on the iCode
-				if ((lciCodeName = iiComps_visualize_lookup_iCode(node->comp->iCode)))
+				// Include the iCode, start and length of the token on the line
+				if (tlIncludeExtraInfo)
 				{
-					// Grab the name
-					lnStart = (s32)strlen(buffer);
-					sprintf(buffer + strlen(buffer), " %s,", lciCodeName);
-					lnEnd	= (s32)strlen(buffer);
+					// Try to do a reverse lookup on the iCode
+					if ((lciCodeName = iiComps_visualize_lookup_iCode(node->comp->iCode)))
+					{
+						// Grab the name
+						lnStart = (s32)strlen(buffer);
+						sprintf(buffer + strlen(buffer), " %s,", lciCodeName);
+						lnEnd	= (s32)strlen(buffer);
 
-					// Make sure the length isn't longer than their max length
-					if (lnEnd - lnStart > tnMaxTokenLength)
-						buffer[lnStart + tnMaxTokenLength] = 0;
+						// Make sure the length isn't longer than their max length
+						if (lnEnd - lnStart > tnMaxTokenLength)
+							buffer[lnStart + tnMaxTokenLength] = 0;
 
-				} else {
-					// The name could not be looked up, so we just use the number, and in this case we ignore the max length and use the whole number
-					sprintf(buffer + strlen(buffer), " %d,", node->comp->iCode);
+					} else {
+						// The name could not be looked up, so we just use the number, and in this case we ignore the max length and use the whole number
+						sprintf(buffer + strlen(buffer), " %d,", node->comp->iCode);
+					}
+
+					// Close it out
+					sprintf(buffer + strlen(buffer), "%u,%u]", node->comp->start, node->comp->length);
 				}
-
-				// Close it out
-				sprintf(buffer + strlen(buffer), "%u,%u]", node->comp->start, node->comp->length);
 
 				// Make sure it's not too long overall
 				if (strlen(buffer) > tnMaxOverallLength)
@@ -4821,18 +4852,12 @@ return;
 
 
 			//////////
-			// Create the font
-			//////
-				if (!node->render.bmp->font)
-					node->render.bmp->font = iFont_create(cgcFontName_defaultFixed);
-
-
-			//////////
 			// Find out how big it would be
 			//////
-				SelectObject(node->render.bmp->hdc, node->render.bmp->font->hfont);
 				SetRect(&lrc, 0, 0, 0, 0);
+				lhOldFont = SelectObject(node->render.bmp->hdc, font->hfont);
 				DrawText(node->render.bmp->hdc, buffer, (int)strlen(buffer), &lrc, DT_CALCRECT | DT_SINGLELINE);
+				SelectObject(node->render.bmp->hdc, lhOldFont);
 
 
 			//////////
@@ -4854,7 +4879,7 @@ return;
 			//////
 				// Frame
 				SetRect(&lrc, 0, 0, lnWidth, lnHeight);
-				for (lnI = prop->borderWidth; lnI > 0; lnI--)
+				for (lnI = max(0, min(prop->borderWidth, lnHeight / 2 - 1)); lnI > 0; lnI--)
 				{
 					iBmp_frameRect(node->render.bmp, &lrc, prop->borderColor);
 					InflateRect(&lrc, -1, -1);
@@ -4868,18 +4893,28 @@ return;
 				SetTextColor(node->render.bmp->hdc, RGB(prop->foreColor.red, prop->foreColor.grn, prop->foreColor.blu));
 				SetBkColor(node->render.bmp->hdc, RGB(prop->backColor.red, prop->backColor.grn, prop->backColor.blu));
 				SetBkMode(node->render.bmp->hdc, OPAQUE);
+				lhOldFont = SelectObject(node->render.bmp->hdc, font->hfont);
 				DrawText(node->render.bmp->hdc, buffer, (int)strlen(buffer), &lrc, DT_SINGLELINE | DT_VCENTER | DT_CENTER);
+				SelectObject(node->render.bmp->hdc, lhOldFont);
 
-//////////
-// Added for debugging:
-memset(buffer, 0, sizeof(buffer));
-memcpy(buffer, node->comp->line->sourceCode->data_s8 + node->comp->start, node->comp->length);
-sprintf(buffer, "c:\\temp\\node_render__%s.bmp", buffer);
-iBmp_saveToDisk(node->render.bmp, buffer);
-//////
+
+			//////////
+			// Clean house
+			//////
+				if (llDeleteFont)
+					iFont_delete(&font, true);
 
 				// Update iteration
 				node->render.iter_uid = tnIter_uid;
+
+//////////
+// Added for debugging:
+// s8 buffer2[32];
+// memset(buffer2, 0, sizeof(buffer2));
+// memcpy(buffer2, node->comp->line->sourceCode->data_s8 + node->comp->start, min(node->comp->length, 16));
+// sprintf(buffer, "c:\\temp\\node_render__%s.bmp", buffer2);
+// iBmp_saveToDisk(node->render.bmp, buffer);
+//////
 		}
 	}
 

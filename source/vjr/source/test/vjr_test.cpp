@@ -49,6 +49,11 @@
 
 
 
+// Forward declarations
+void iVjr_test_nodes(void);
+
+
+
 
 //////////
 //
@@ -57,64 +62,229 @@
 //////
 	void iVjr_test(void)
 	{
-		s32			lnI;
-		SBitmap*	bmp;
-		SNode*		node;
-		SNode*		nodeNew;
-		SNode*		n[_NODE_COUNT];
-		SComp		comp[_NODE_COUNT];
-		SLine		line[_NODE_COUNT];
-		SDatum		datum[_NODE_COUNT];
-		s8			buffer[_NODE_COUNT * 8];
+		// Nodes -- Dec.03.2015 RCH -- Appears to be working.  Test code is commented out, but still there
+		//iVjr_test_nodes();
+	}
 
-
-return;
-		//////////
-		// Initialize
-		//////
-			memset(&n,		0, sizeof(n));
-			memset(&comp,	0, sizeof(comp));
-			memset(&line,	0, sizeof(line));
-			memset(&datum,	0, sizeof(datum));
-			memset(buffer,	0, sizeof(buffer));
-
-
-		//////////
-		// Create center node
-		//////
-			iNode_create(&node, NULL);
-
-
-		///////////
-		// Extrude nodes out in every direction (except center)
-		//////
-			for (lnI = _NODE1_MIN; lnI <= _NODE1_MAX; lnI++)
-			{
-				// Extrude, except center
-				if (lnI != _NODE_C1)					nodeNew = iNode_extrude(&node, lnI);
-				else									nodeNew = node;
-
-				// Then hook it up...
-				nodeNew->comp							= &comp[lnI];
-				comp[lnI].line							= &line[lnI];
-				line[lnI].sourceCode					= &datum[lnI];
-
-				// ...to have its direction number
-				datum[lnI].data_s8						= &buffer[0] + strlen(buffer);
-				sprintf(buffer + strlen(buffer), "%03d", lnI);
-				datum[lnI].length						= strlen(datum[lnI].data_cs8);
-				line[lnI].sourceCode_populatedLength	= datum[lnI].length;
-				comp[lnI].length						= datum[lnI].length;
-				comp[lnI].start							= 0;
-				comp[lnI].iCode							= 0;
-			}
-
-
-		//////////
-		// Render
-		//////
-// TODO:  Dec.02.2015 RCH -- Appears to be working. more testing.
-			bmp = iNode_renderBitmap(node);
-			iBmp_saveToDisk(bmp, "c:\\temp\\node.bmp");
-
+	void iVjr_test_nodes(void)
+	{
+// 		s32			lnI;
+// 		SBitmap*	bmp;
+// 		SNode*		node;
+// 		SNode*		nodeNew;
+// 		SNodeProps	props[3];
+// 		SNodeProps*	propRed;
+// 		SNodeProps*	propWhite;
+// 		SNodeProps*	propBlue;
+// 		s8			buffer[_NODE_COUNT * 2 * 8];
+// 
+// 		// First level extrusion from node
+// 		SComp		comp[_NODE_COUNT];
+// 		SLine		line[_NODE_COUNT];
+// 		SDatum		datum[_NODE_COUNT];
+// 
+// 		// Second level extrusion
+// 		SComp		comp2[4];
+// 		SLine		line2[4];
+// 		SDatum		datum2[4];
+// 
+// 		// Third level extrusion
+// 		SComp		comp3[4];
+// 		SLine		line3[4];
+// 		SDatum		datum3[4];
+// 
+// 		// Extra extrusions
+// 		SComp		comp4[_NODE_COUNT];
+// 		SLine		line4[_NODE_COUNT];
+// 		SDatum		datum4[_NODE_COUNT];
+// 
+// 
+// 		//////////
+// 		// Initialize
+// 		//////
+// 			memset(&comp,	0, sizeof(comp));
+// 			memset(&line,	0, sizeof(line));
+// 			memset(&datum,	0, sizeof(datum));
+// 			memset(&comp2,	0, sizeof(comp2));
+// 			memset(&line2,	0, sizeof(line2));
+// 			memset(&datum2,	0, sizeof(datum2));
+// 			memset(&comp3,	0, sizeof(comp3));
+// 			memset(&line3,	0, sizeof(line3));
+// 			memset(&datum3,	0, sizeof(datum3));
+// 			memset(&comp4,	0, sizeof(comp4));
+// 			memset(&line4,	0, sizeof(line4));
+// 			memset(&datum4,	0, sizeof(datum4));
+// 
+// 			memset(buffer,	0, sizeof(buffer));
+// 			memset(&props,	0, sizeof(props));
+// 
+// 			propRed					= &props[0];
+// 			propWhite				= &props[1];
+// 			propBlue				= &props[2];
+// 
+// 			propRed->backColor		= pastelRedColor;
+// 			propRed->foreColor		= blackColor;
+// 			propRed->marginWidth	= 2;
+// 			propRed->fillColor		= pastelRedColor;
+// 			propRed->borderWidth	= 0;
+// 			propRed->borderColor	= blackColor;
+// 			propRed->font			= iFont_create(cgcFontName_windowTitleBar, 12, FW_BOLD, 1, 0);
+// 
+// 			propWhite->backColor	= silverColor;
+// 			propWhite->foreColor	= blackColor;
+// 			propWhite->marginWidth	= 2;
+// 			propWhite->fillColor	= silverColor;
+// 			propWhite->borderWidth	= 0;
+// 			propWhite->borderColor	= grayColor;
+// 
+// 			propBlue->backColor		= pastelBlueColor;
+// 			propBlue->foreColor		= blackColor;
+// 			propBlue->marginWidth	= 2;
+// 			propBlue->fillColor		= pastelBlueColor;
+// 			propBlue->borderWidth	= 0;
+// 			propBlue->borderColor	= blackColor;
+// 
+// 
+// 
+// 		//////////
+// 		// Create center node
+// 		//////
+// 			iNode_create(&node, NULL);
+// 
+// 
+// 		///////////
+// 		// Extrude nodes out in every direction (except center)
+// 		//////
+// 			for (lnI = _NODE1_MIN; lnI <= _NODE1_MAX; lnI++)
+// 			{
+// 				// Extrude, except center
+// 				if (lnI != _NODE_C1)					nodeNew = iNode_extrude(&node, lnI);
+// 				else									nodeNew = node;
+// 
+// 				// Then hook it up...
+// 				nodeNew->comp							= &comp[lnI];
+// 				nodeNew->render_override				= propRed;
+// 				comp[lnI].line							= &line[lnI];
+// 				line[lnI].sourceCode					= &datum[lnI];
+// 
+// 				// ...to have its direction number
+// 				datum[lnI].data_s8						= &buffer[0] + strlen(buffer);
+// 				sprintf(buffer + strlen(buffer), "%03d", lnI);
+// 				datum[lnI].length						= strlen(datum[lnI].data_cs8);
+// 				line[lnI].sourceCode_populatedLength	= datum[lnI].length;
+// 				comp[lnI].length						= datum[lnI].length;
+// 				comp[lnI].start							= 0;
+// 				comp[lnI].iCode							= 0;
+// 
+// 				if (lnI == _NODE_NW1)
+// 				{
+// 					// Change it to blue
+// 					nodeNew->render_override = propBlue;
+// 
+// 					// Create a new one
+// 					nodeNew = iNode_extrude(&nodeNew, _NODE_W1);
+// 
+// 					// Then hook it up...
+// 					nodeNew->comp							= &comp4[lnI];
+// 					nodeNew->render_override				= propBlue;
+// 					comp4[lnI].line							= &line4[lnI];
+// 					line4[lnI].sourceCode					= &datum4[lnI];
+// 
+// 					// ...to have its direction number
+// 					datum4[lnI].data_s8						= &buffer[0] + strlen(buffer);
+// 					sprintf(buffer + strlen(buffer), "%03d", lnI);
+// 					datum4[lnI].length						= strlen(datum4[lnI].data_cs8);
+// 					line4[lnI].sourceCode_populatedLength	= datum4[lnI].length;
+// 					comp4[lnI].length						= datum4[lnI].length;
+// 					comp4[lnI].start						= 0;
+// 					comp4[lnI].iCode						= 0;
+// 				}
+// 			}
+// 
+// 
+// 		//////////
+// 		// Extrude more out on each corner
+// 		//////
+// 			for (lnI = 0; lnI < 4; lnI++)
+// 			{
+// 				// Extrude out NE,SE,SW,NW
+// 				switch (lnI)
+// 				{
+// 					case 0:
+// 						nodeNew = iNode_extrude(&node, _NODE_NE1);
+// 						break;
+// 					case 1:
+// 						nodeNew = iNode_extrude(&node, _NODE_SE1);
+// 						break;
+// 					case 2:
+// 						nodeNew = iNode_extrude(&node, _NODE_SW1);
+// 						break;
+// 					case 3:
+// 						nodeNew = iNode_extrude(&node, _NODE_NW1);
+// 						break;
+// 				}
+// 
+// 				// Then hook it up...
+// 				nodeNew->comp							= &comp2[lnI];
+// 				nodeNew->render_override				= propWhite;
+// 				comp2[lnI].line							= &line2[lnI];
+// 				line2[lnI].sourceCode					= &datum2[lnI];
+// 
+// 				// ...to have its direction number
+// 				datum2[lnI].data_s8						= &buffer[0] + strlen(buffer);
+// 				sprintf(buffer + strlen(buffer), "%03d", lnI);
+// 				datum2[lnI].length						= strlen(datum2[lnI].data_cs8);
+// 				line2[lnI].sourceCode_populatedLength	= datum2[lnI].length;
+// 				comp2[lnI].length						= datum2[lnI].length;
+// 				comp2[lnI].start						= 0;
+// 				comp2[lnI].iCode						= 0;
+// 			}
+// 
+// 
+// 		//////////
+// 		// Extrude more out on each corner
+// 		//////
+// 			for (lnI = 0; lnI < 4; lnI++)
+// 			{
+// 				// Extrude out NE,SE,SW,NW
+// 				switch (lnI)
+// 				{
+// 					case 0:
+// 						nodeNew = iNode_extrude(&node, _NODE_NE1);
+// 						break;
+// 					case 1:
+// 						nodeNew = iNode_extrude(&node, _NODE_SE1);
+// 						break;
+// 					case 2:
+// 						nodeNew = iNode_extrude(&node, _NODE_SW1);
+// 						break;
+// 					case 3:
+// 						nodeNew = iNode_extrude(&node, _NODE_NW1);
+// 						break;
+// 				}
+// 
+// 				// Then hook it up...
+// 				nodeNew->comp							= &comp3[lnI];
+// 				nodeNew->render_override				= propBlue;
+// 				comp3[lnI].line							= &line3[lnI];
+// 				line3[lnI].sourceCode					= &datum3[lnI];
+// 
+// 				// ...to have its direction number
+// 				datum3[lnI].data_s8						= &buffer[0] + strlen(buffer);
+// 				sprintf(buffer + strlen(buffer), "%03d", lnI);
+// 				datum3[lnI].length						= strlen(datum3[lnI].data_cs8);
+// 				line3[lnI].sourceCode_populatedLength	= datum3[lnI].length;
+// 				comp3[lnI].length						= datum3[lnI].length;
+// 				comp3[lnI].start						= 0;
+// 				comp3[lnI].iCode						= 0;
+// 			}
+// 
+// 
+// 		//////////
+// 		// Render
+// 		//////
+// 			// Dec.03.2015 RCH -- Appears to be working.
+// 			bmp = iNode_renderBitmap(node);
+// 			iBmp_saveToDisk(bmp, "c:\\temp\\node.bmp");
+// 
 	}

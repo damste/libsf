@@ -284,7 +284,7 @@
 		// Create the font
 		//////
 			font->_sizeUsedForCreateFont	= -MulDiv(font->_size, GetDeviceCaps(GetDC(GetDesktopWindow()), LOGPIXELSY), 72);
-			font->hfont						= CreateFont(font->_sizeUsedForCreateFont, 0, 0, 0, font->_weight, (font->isItalic ? 1 : 0), (font->isUnderline ? 1 : 0), false, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_NATURAL_QUALITY, FF_SWISS, font->name.data);
+			font->hfont						= CreateFont(font->_sizeUsedForCreateFont, 0, 0, 0, font->_weight, (font->isItalic ? 1 : 0), (font->isUnderline ? 1 : 0), false, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_NATURAL_QUALITY, FF_DONTCARE, font->name.data);
 
 			// Find out the text metrics
 			GetTextMetricsA(font->hdc, &font->tm);

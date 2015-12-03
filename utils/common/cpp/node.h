@@ -61,6 +61,7 @@
 
 
 
+struct SFont;
 struct SBitmap;
 struct SSubInstr;
 struct SGraceRect;
@@ -190,6 +191,13 @@ struct SGraceLine;
 
 
 //////////
+//
+// Nodes provide a multi-ported way to hook things up.  They are intended
+// to be used with components (SComp), which provide their context and all
+// information they'll display.  As such, nodes is dependent upon the
+// iBmp_node_renderComp() function, which renders the graphical portion of
+// the node.  If you do not want to use the default rendering algorithm,
+// then you can replace it with whatever you need.
 //
 // General 27-way node cube.  Picture a square.  At all cardinal and
 // ordinal points, there are node extending out, plus one in the middle.
@@ -328,12 +336,50 @@ struct SGraceLine;
 	{
 		SBgra			backColor;										// Text back color, 
 		SBgra			foreColor;										// Text fore color, typically black
-		SBgra			rodColor;										// Connecting rods
-		SBgra			fillColor;										// Fill color, typically white
-		SBgra			borderColor;									// Color of the border, typically black
-		s32				borderWidth;									// Width of the border in pixels
 		s32				marginWidth;									// Width between text and the inner border
+		SBgra			fillColor;										// Fill color, typically white
+		s32				borderWidth;									// Width of the border in pixels
+		SBgra			borderColor;									// Color of the border, typically black
+		SBgra			rodColor;										// Connecting rods
+
+		// Font settings
+		SFont*			font;											// If non-NULL, font override to use, otherwise uses default font
 	};
+
+	const SBgra		node_whiteColor			= { rgba(255, 255, 255, 255) };
+	const SBgra		node_silverColor		= { rgba(225, 225, 225, 255) };
+	const SBgra		node_grayColor			= { rgba(192, 192, 192, 255) };
+	const SBgra		node_blackColor			= { rgba(0, 0, 0, 255) };
+	const SBgra		node_pastelYellowColor	= { rgba(255, 255, 128, 255) };
+	const SBgra		node_pastelRedColor		= { rgba(255, 200, 200, 255) };
+	const SBgra		node_pastelOrangeColor	= { rgba(255, 205, 155, 255) };
+	const SBgra		node_pastelGreenColor	= { rgba(200, 255, 200, 255) };
+	const SBgra		node_pastelBlueColor	= { rgba(215, 215, 255, 255) };
+
+	SNodeProps	gsNodeProps_defaults[9] =
+	{
+								//	BackColor					Forecolor				Margin		FillColor					Border		BorderColor			RodColor			Font
+		/* gsPropWhite */		{	node_whiteColor,			node_blackColor,		2,			node_whiteColor,			1,			node_grayColor,		node_grayColor,		NULL	},
+		/* gsPropSilver */		{	node_silverColor,			node_blackColor,		2,			node_silverColor,			0,			node_grayColor,		node_grayColor,		NULL	},
+		/* gsPropGray*/			{	node_grayColor,				node_blackColor,		2,			node_grayColor,				0,			node_blackColor,	node_grayColor,		NULL	},
+		/* gsPropRed */			{	node_pastelRedColor,		node_blackColor,		2,			node_pastelRedColor,		0,			node_blackColor,	node_grayColor,		NULL	},
+		/* gsPropBlue */		{	node_pastelBlueColor,		node_blackColor,		2,			node_pastelBlueColor,		0,			node_blackColor,	node_grayColor,		NULL	},
+		/* gsPropGreen */		{	node_pastelGreenColor,		node_blackColor,		2,			node_pastelGreenColor,		0,			node_blackColor,	node_grayColor,		NULL	},
+		/* gsPropYellow */		{	node_pastelYellowColor,		node_blackColor,		2,			node_pastelYellowColor,		0,			node_blackColor,	node_grayColor,		NULL	},
+		/* gsPropOrange */		{	node_pastelOrangeColor,		node_blackColor,		2,			node_pastelOrangeColor,		0,			node_blackColor,	node_grayColor,		NULL	},
+		/* gsPropBlack */		{	node_blackColor,			node_whiteColor,		2,			node_blackColor,			0,			node_grayColor,		node_grayColor,		NULL	},
+	};
+
+	// NodeProps defaults to use for common coloring themes			// Suggestion for use:
+	SNodeProps*	gsPropSilver	= &gsNodeProps_defaults[0];			// Normal
+	SNodeProps*	gsPropWhite		= &gsNodeProps_defaults[1];			// Normal
+	SNodeProps*	gsPropGray		= &gsNodeProps_defaults[2];			// Processed / completed
+	SNodeProps*	gsPropRed		= &gsNodeProps_defaults[3];			// Error
+	SNodeProps*	gsPropBlue		= &gsNodeProps_defaults[4];			// Extra info
+	SNodeProps*	gsPropGreen		= &gsNodeProps_defaults[5];			// Optional highlighted
+	SNodeProps*	gsPropYellow	= &gsNodeProps_defaults[6];			// Optional highlighted
+	SNodeProps*	gsPropOrange	= &gsNodeProps_defaults[7];			// Optional highlighted
+	SNodeProps*	gsPropBlack		= &gsNodeProps_defaults[8];			// Highlighted
 
 	// Holds render information for the node
 	struct SNodeRender
@@ -362,7 +408,16 @@ struct SGraceLine;
 
 		// For graphics rendering
 		SNodeRender		render;
+		SNodeProps*		render_override;								// Use these properties instead of those indicated by render (used for highlighting explicit nodes)
 	};
+
+
+
+
+//////////
+// Global variables for nodes
+//////
+	bool				glNode_initialized						= false;
 
 
 
@@ -370,6 +425,7 @@ struct SGraceLine;
 //////////
 // Forward declarations (some of the functions below call themselves)
 //////
+	void					iNode_init									(void);
 	SNode*					iNode_create								(SNode** root, SNode* n_defaults[_NODE_COUNT]);
 	SNode*					iNode_extrude								(SNode** root, u32 tnExtrudeDirection);
 	SNode*					iNode_bump									(SNode** root, u32 tnBumpDirection, u32 tnAnchorDirection);
@@ -377,9 +433,9 @@ struct SGraceLine;
 	void					iNode_deleteAll_politely					(SNode** root, SNode* nodeStopper, SNode* nodeStopper2, bool tlDeleteSelf, SNodeFlags* nodeFlags);
 
 	// Bitmap
-	SBitmap*				iNode_renderBitmap							(SNode* node, s32 tnMaxTokenLength = 6, s32 tnMaxOverallLength = 12, f64 tfRodLength = 24.0, s32 tnMarginWidth = 4, s32 tnBorderWidth = 2,												bool tlGoDeeper = true, SNodeFlags* nodeFlags = &gsfNodeFlags_all, bool tlDeeperNodesExtendInAllDirections = true);
-	void					iiNode_renderBitmap							(SNode* node, SNode* nodeStopper1, SNode* nodeStopper2, s32 tnMaxTokenLength, s32 tnMaxOverallLength, SNodeProps props[], s32 tnPropsCount, u32 tnIter_uid,								bool tlGoDeeper = true, SNodeFlags* nodeFlags = &gsfNodeFlags_all, bool tlDeeperNodesExtendInAllDirections = true);
-	void					iiNode_get_bitmapExtents					(SNode* node, SNode* nodeStopper1, SNode* nodeStopper2, s32 tnArrivalDirection, SBitmap* bmp, RECT* rc, POINTS p_anchor, POINTS p_arrival, f64 tfRodLength, u32 tnIter_uid, SNodeProps* props,			bool tlGoDeeper = true, SNodeFlags* nodeFlags = &gsfNodeFlags_all, bool tlDeeperNodesExtendInAllDirections = true);
+	SBitmap*				iNode_renderBitmap							(SNode* node, s32 tnMaxTokenLength = 6, s32 tnMaxOverallLength = 12, f64 tfRodLength = 8.0, s32 tnMarginWidth = 2, s32 tnBorderWidth = 0, bool tlIncludeExtraInfo = false,						bool tlGoDeeper = true, SNodeFlags* nodeFlags = &gsfNodeFlags_all, bool tlDeeperNodesExtendInAllDirections = true);
+	void					iiNode_renderBitmap							(SNode* node, SNode* nodeStopper1, SNode* nodeStopper2, s32 tnMaxTokenLength, s32 tnMaxOverallLength, SNodeProps props[], s32 tnPropsCount, u32 tnIter_uid, bool tlIncludeExtraInfo,			bool tlGoDeeper = true, SNodeFlags* nodeFlags = &gsfNodeFlags_all, bool tlDeeperNodesExtendInAllDirections = true);
+	void					iiNode_get_bitmapExtents					(SNode* node, SNode* nodeStopper1, SNode* nodeStopper2, s32 tnArrivalDirection, SBitmap* bmp, RECT* rc, POINTS p_anchor, POINTS p_arrival, f64 tfRodLength, u32 tnIter_uid, SNodeProps* props,	bool tlGoDeeper = true, SNodeFlags* nodeFlags = &gsfNodeFlags_all, bool tlDeeperNodesExtendInAllDirections = true);
 
 // 	// OpenGL
 // 	void					iiNode_renderGrace							(SNode* node, SNode* nodeStopper1, SNode* nodeStopper2, s32 tnMaxTokenLength, s32 tnMaxOverallLength, SNodeProps props[], s32 tnPropsCount, u32 tnIter_uid,								bool tlGoDeeper = true, SNodeFlags* nodeFlags = &gsfNodeFlags_all, bool tlDeeperNodesExtendInAllDirections = true);

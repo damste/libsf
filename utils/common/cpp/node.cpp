@@ -73,6 +73,22 @@
 
 
 //////////
+// Called once at startup to initialize the default SNodeProps for rendering
+//////
+	void iNode_init(void)
+	{
+		if (!glNode_initialized)
+		{
+
+			// Indicate we've initialized
+			glNode_initialized = true;
+		}
+	}
+
+
+
+
+//////////
 //
 // Called to create a new node and attach it to the default nodes provided in each direction.
 //
@@ -355,7 +371,7 @@
 // Called to render a bitmap which is a visualization of the node
 //
 //////
-	SBitmap* iNode_renderBitmap(SNode* node, s32 tnMaxTokenLength, s32 tnMaxOverallLength, f64 tfRodLength, s32 tnMarginWidth, s32 tnBorderWidth, bool tlGoDeeper, SNodeFlags* nodeFlags, bool tlDeeperNodesExtendInAllDirections)
+	SBitmap* iNode_renderBitmap(SNode* node, s32 tnMaxTokenLength, s32 tnMaxOverallLength, f64 tfRodLength, s32 tnMarginWidth, s32 tnBorderWidth, bool tlIncludeExtraInfo, bool tlGoDeeper, SNodeFlags* nodeFlags, bool tlDeeperNodesExtendInAllDirections)
 	{
 		s32			lnIter_uid, lnWidth, lnHeight;
 		POINTS		p;
@@ -385,7 +401,7 @@
 				props->rodColor		= grayColor;
 
 				// Render out in all directions from this point
-				iiNode_renderBitmap(node, node, NULL, tnMaxTokenLength, tnMaxOverallLength, props, 1, lnIter_uid, tlGoDeeper, nodeFlags, tlDeeperNodesExtendInAllDirections);
+				iiNode_renderBitmap(node, node, NULL, tnMaxTokenLength, tnMaxOverallLength, props, 1, lnIter_uid, tlIncludeExtraInfo, tlGoDeeper, nodeFlags, tlDeeperNodesExtendInAllDirections);
 
 
 			//////////
@@ -435,7 +451,7 @@
 	}
 
 	// Note:  This is a 2D rendering, which renders into node->bmp
-	void iiNode_renderBitmap(SNode* node, SNode* nodeStopper1, SNode* nodeStopper2, s32 tnMaxTokenLength, s32 tnMaxOverallLength, SNodeProps props[], s32 tnPropsCount, u32 tnIter_uid, bool tlGoDeeper, SNodeFlags* nodeFlags, bool tlDeeperNodesExtendInAllDirections)
+	void iiNode_renderBitmap(SNode* node, SNode* nodeStopper1, SNode* nodeStopper2, s32 tnMaxTokenLength, s32 tnMaxOverallLength, SNodeProps props[], s32 tnPropsCount, u32 tnIter_uid, bool tlIncludeExtraInfo, bool tlGoDeeper, SNodeFlags* nodeFlags, bool tlDeeperNodesExtendInAllDirections)
 	{
 		// Make sure we haven't already rendered this node
 		if (node->render.iter_uid != tnIter_uid)
@@ -444,7 +460,7 @@
 			//////////
 			// Render node
 			//////
-				iBmp_node_renderComp(node, tnMaxTokenLength, tnMaxOverallLength, props, tnPropsCount, tnIter_uid);
+				iBmp_node_renderComp(node, tnMaxTokenLength, tnMaxOverallLength, tlIncludeExtraInfo, props, tnPropsCount, tnIter_uid);
 
 
 			//////////
@@ -464,7 +480,7 @@
 								if (node->n[lnI] != nodeStopper1 && node->n[lnI] != nodeStopper2)
 								{
 									// Indicate that we want to render everything out from there
-									iiNode_renderBitmap(node->n[lnI], nodeStopper1, node, tnMaxTokenLength, tnMaxOverallLength, props, tnPropsCount, tnIter_uid, true, ((tlDeeperNodesExtendInAllDirections) ? &gsfNodeFlags_all : nodeFlags), tlDeeperNodesExtendInAllDirections);
+									iiNode_renderBitmap(node->n[lnI], nodeStopper1, node, tnMaxTokenLength, tnMaxOverallLength, props, tnPropsCount, tnIter_uid, tlIncludeExtraInfo, true, ((tlDeeperNodesExtendInAllDirections) ? &gsfNodeFlags_all : nodeFlags), tlDeeperNodesExtendInAllDirections);
 								}
 							}
 						}

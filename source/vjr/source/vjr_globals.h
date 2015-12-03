@@ -585,15 +585,16 @@
 	//////////
 	// General defaults
 	//////
-		SFont*			gsFontDefault						= NULL;									// Ubuntu 10 pt
-		SFont*			gsFontDefault9						= NULL;									// Ubuntu 9 pt
-		SFont*			gsFontDefaultBold					= NULL;									// Ubuntu 10 pt bold
-		SFont*			gsFontDefaultItalic8				= NULL;									// Ubuntu 9 pt Italic
-		SFont*			gsFontDefaultFixedPoint				= NULL;									// Ubuntu Mono 10 pt
-		SFont*			gsWindowTitleBarFont				= NULL;									// Ubuntu Condensed Bold 12 pt
-		SFont*			gsWindowTitleBarFontSubform			= NULL;									// Ubuntu Condensed Bold 10 pt
-		SFont*			gsFontDefaultTooltip				= NULL;									// Ubuntu Condensed Bold 9 pt
-		SFont*			gsFontCask							= NULL;									// Cask font, Ubuntu Bold 30 pt
+		SFont*			gsFontDefault						= NULL;									// Default 10 pt
+		SFont*			gsFontDefault9						= NULL;									// Default 9 pt
+		SFont*			gsFontDefaultBold					= NULL;									// Default 10 pt bold
+		SFont*			gsFontDefaultItalic8				= NULL;									// Default 9 pt Italic
+		SFont*			gsFontDefaultFixedPoint9			= NULL;									// Default Mono 9 pt
+		SFont*			gsFontDefaultFixedPoint10			= NULL;									// Default Mono 10 pt
+		SFont*			gsWindowTitleBarFont				= NULL;									// Default Condensed Bold 12 pt
+		SFont*			gsWindowTitleBarFontSubform			= NULL;									// Default Condensed Bold 10 pt
+		SFont*			gsFontDefaultTooltip				= NULL;									// Default Condensed Bold 9 pt
+		SFont*			gsFontCask							= NULL;									// Cask font, Default Bold 30 pt
 		// Global colors
 
 		const SBgra		nwColor_form						= { _nwColor_form };
@@ -607,6 +608,7 @@
 		const SBgra		swColor_subform						= { _swColor_subform };
 
 		const SBgra		whiteColor							= { _whiteColor };
+		const SBgra		silverColor							= { _silverColor };
 		const SBgra		grayColor							= { _grayColor };
 		const SBgra		blackColor							= { _blackColor };
 		const SBgra		yellowColor							= { rgba(255, 255, 0, 255) };

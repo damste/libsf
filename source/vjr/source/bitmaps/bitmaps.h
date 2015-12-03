@@ -162,7 +162,7 @@ class CXml;
 	u32						iiBmp_setPixel							(SBitmap* bmp, s32 tnX, s32 tnY, SBgra color);
 
 	// For nodes
-	void					iBmp_node_renderComp					(SNode* node, s32 tnMaxTokenLength, s32 tnMaxOverallLength, SNodeProps props[], s32 tnPropsCount, u32 tnIter_uid);
+	void					iBmp_node_renderComp					(SNode* node, s32 tnMaxTokenLength, s32 tnMaxOverallLength, bool tlIncludeExtraInfo, SNodeProps props[], s32 tnPropsCount, u32 tnIter_uid);
 
 	//////////
 	// For scaling

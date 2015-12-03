@@ -334,6 +334,7 @@ typedef SEM**		SEMpp;
 	#define _disabledBackColor				rgba(255, 255, 255, 255)
 	#define _disabledForeColor				rgba(192, 192, 230, 255)
 	#define _whiteColor						rgba(255, 255, 255, 255)
+	#define _silverColor					rgba(225, 225, 225, 255)
 	#define _grayColor						rgba(192, 192, 192, 255)
 	#define _blackColor						rgba(0, 0, 0, 255)
 	#define _selectedBackColor				rgba(220, 235, 255, 255)

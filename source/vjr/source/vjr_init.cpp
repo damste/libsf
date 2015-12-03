@@ -118,6 +118,7 @@
 		iVariable_createDefaultValues();
 		iVariable_createPropsMaster();
 		iVjr_init_createConstants();
+		iNode_init();
 
 		// Initialize our critical sections
 		InitializeCriticalSection(&cs_uniqueIdAccess);
@@ -139,7 +140,8 @@
 		gsFontDefault9				= iFont_create(cgcFontName_default,				9,	FW_NORMAL,	0, 0);
 		gsFontDefaultBold			= iFont_create(cgcFontName_default,				10,	FW_BOLD,	0, 0);
 		gsFontDefaultItalic8		= iFont_create(cgcFontName_default,				8,	FW_NORMAL,	1, 0);
-		gsFontDefaultFixedPoint		= iFont_create(cgcFontName_defaultFixed,		10,	FW_NORMAL,	0, 0);
+		gsFontDefaultFixedPoint9	= iFont_create(cgcFontName_defaultFixed,		9,	FW_NORMAL,	0, 0);
+		gsFontDefaultFixedPoint10	= iFont_create(cgcFontName_defaultFixed,		10,	FW_NORMAL,	0, 0);
 		gsWindowTitleBarFont		= iFont_create(cgcFontName_windowTitleBar,		11,	FW_NORMAL,	0, 0);
 		gsWindowTitleBarFontSubform	= iFont_create(cgcFontName_subwindowTitleBar,	10,	FW_NORMAL,	0, 0);
 		gsFontDefaultTooltip		= iFont_create(cgcFontName_defaultTooltip,		9,	FW_BOLD,	0, 0);
