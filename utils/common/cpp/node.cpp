@@ -400,7 +400,7 @@
 				p.y = 0;
 
 				// Get our extents
-				iiNode_get_bitmapExtents(node, node, NULL, _NODE_SE, NULL, &lrc, p, tfRodLength, lnIter_uid, props, tlGoDeeper, nodeFlags, tlDeeperNodesExtendInAllDirections);
+				iiNode_get_bitmapExtents(node, node, NULL, _NODE_SE, NULL, &lrc, p, p, tfRodLength, lnIter_uid, props, tlGoDeeper, nodeFlags, tlDeeperNodesExtendInAllDirections);
 
 
 			//////////
@@ -411,7 +411,7 @@
 				{
 					// get our sizes
 					lnWidth		= lrc.right - lrc.left;
-					lnHeight	= (lrc.bottom - lrc.top) / 2;
+					lnHeight	= lrc.bottom - lrc.top;
 
 					// Create the bitmap
 					iBmp_createBySize(bmp, lnWidth, lnHeight, 24);
@@ -425,7 +425,7 @@
 					SetRect(&lrc, 0, 0, lnWidth, lnHeight);
 
 					// Actually render
-					iiNode_get_bitmapExtents(node, node, NULL, _NODE_SE, bmp, &lrc, p, tfRodLength, lnIter_uid, props, tlGoDeeper, nodeFlags, tlDeeperNodesExtendInAllDirections);
+					iiNode_get_bitmapExtents(node, node, NULL, _NODE_SE, bmp, &lrc, p, p, tfRodLength, lnIter_uid, props, tlGoDeeper, nodeFlags, tlDeeperNodesExtendInAllDirections);
 				}
 
 		}
@@ -474,8 +474,14 @@
 		}
 	}
 
+	s32 iDelta(s32 tnOrigin, s32 tnPoint)
+	{
+		if (tnOrigin >= tnPoint)		return(tnOrigin - tnPoint);
+		else							return(tnPoint - tnOrigin);
+	}
+
 	// Note:  tfSquareSize is how far each side of the square should extend out from the connection point for the node lines
-	void iiNode_get_bitmapExtents(SNode* node, SNode* nodeStopper1, SNode* nodeStopper2, s32 tnArrivalDirection, SBitmap* bmp, RECT* rc, POINTS p_arrival, f64 tfRodLength, u32 tnIter_uid, SNodeProps* props, bool tlGoDeeper, SNodeFlags* nodeFlags, bool tlDeeperNodesExtendInAllDirections)
+	void iiNode_get_bitmapExtents(SNode* node, SNode* nodeStopper1, SNode* nodeStopper2, s32 tnArrivalDirection, SBitmap* bmp, RECT* rc, POINTS p_anchor, POINTS p_arrival, f64 tfRodLength, u32 tnIter_uid, SNodeProps* props, bool tlGoDeeper, SNodeFlags* nodeFlags, bool tlDeeperNodesExtendInAllDirections)
 	{
 		s32		lnI, lnWidth, lnHeight, lnHalfWidth, lnHalfHeight;
 		f64		lfHalfHeight, lfHalfWidth;
@@ -524,101 +530,128 @@
 					case _NODE_N0:
 					case _NODE_N1:
 					case _NODE_N2:
-						rc->left	= min(rc->left,		p_arrival.x - lnHalfWidth);					// Connecting point:  +--+--+
-						rc->top		= min(rc->top,		p_arrival.y - lnHeight);					//                    +  +  +
-						rc->right	= max(rc->right,	p_arrival.x - lnHalfWidth + lnWidth);		//                    +--o--+
-						SetRect(&node->render.rc, p_arrival.x - lnHalfWidth, p_arrival.y - lnHeight, p_arrival.x - lnHalfWidth + lnWidth, p_arrival.y);
+						rc->left	= min(rc->left,		p_anchor.x + iDelta(p_anchor.x, p_arrival.x - lnHalfWidth));				// Connecting point:  +--+--+
+						rc->top		= min(rc->top,		p_anchor.y - iDelta(p_anchor.y, p_arrival.y - lnHeight));					//                    +  +  +
+						rc->right	= max(rc->right,	p_anchor.x + iDelta(p_anchor.x, p_arrival.x - lnHalfWidth + lnWidth));		//                    +--o--+
 						p_origin.x	= p_arrival.x;
 						p_origin.y	= p_arrival.y - (s16)lnHeight + (s16)lnHalfHeight;
+						SetRect(&node->render.rc,	p_arrival.x - lnHalfWidth,
+													p_arrival.y - lnHeight,
+													p_arrival.x - lnHalfWidth + lnWidth,
+													p_arrival.y);
 						break;
 
 					case _NODE_E0:
 					case _NODE_E1:
 					case _NODE_E2:
-						rc->top		= min(rc->top,		p_arrival.y - lnHalfHeight);				// Connecting point:  +--+--+
-						rc->right	= max(rc->right,	p_arrival.x + lnWidth);						//                    o  +  +
-						rc->bottom	= max(rc->bottom,	p_arrival.y - lnHalfHeight + lnHeight);		//                    +--+--+
-						SetRect(&node->render.rc, p_arrival.x, p_arrival.y - lnHalfHeight, p_arrival.x + lnWidth, p_arrival.y - lnHalfHeight + lnHeight);
+						rc->top		= min(rc->top,		p_anchor.y - iDelta(p_anchor.y, p_arrival.y - lnHalfHeight));				// Connecting point:  +--+--+
+						rc->right	= max(rc->right,	p_anchor.x + iDelta(p_anchor.x, p_arrival.x + lnWidth));					//                    o  +  +
+						rc->bottom	= max(rc->bottom,	p_anchor.y + iDelta(p_anchor.y, p_arrival.y - lnHalfHeight + lnHeight));	//                    +--+--+
 						p_origin.x	= p_arrival.x + (s16)lnHalfWidth;
 						p_origin.y	= p_arrival.y;
+						SetRect(&node->render.rc,	p_arrival.x,
+													p_arrival.y - lnHalfHeight,
+													p_arrival.x + lnWidth,
+													p_arrival.y - lnHalfHeight + lnHeight);
 						break;
 
 					case _NODE_C0:
 					case _NODE_C1:
 					case _NODE_C2:
-						rc->left	= min(rc->left,		p_arrival.x - lnHalfWidth);					// Connecting point:  +--+--+
-						rc->right	= max(rc->right,	p_arrival.x - lnHalfWidth + lnWidth);		//                    +  o  +
-						rc->top		= min(rc->top,		p_arrival.y - lnHalfHeight);				//                    +--+--+
-						rc->bottom	= max(rc->bottom,	p_arrival.y - lnHalfHeight + lnHeight);		//
-						SetRect(&node->render.rc, p_arrival.x - lnHalfWidth, p_arrival.y - lnHalfHeight, p_arrival.x - lnHalfWidth + lnWidth, p_arrival.y - lnHalfHeight + lnHeight);
+						rc->left	= min(rc->left,		p_anchor.x - iDelta(p_anchor.x, p_arrival.x - lnHalfWidth));				// Connecting point:  +--+--+
+						rc->right	= max(rc->right,	p_anchor.x + iDelta(p_anchor.x, p_arrival.x - lnHalfWidth + lnWidth));		//                    +  o  +
+						rc->top		= min(rc->top,		p_anchor.y - iDelta(p_anchor.y, p_arrival.y - lnHalfHeight));				//                    +--+--+
+						rc->bottom	= max(rc->bottom,	p_anchor.y + iDelta(p_anchor.y, p_arrival.y - lnHalfHeight + lnHeight));	//
 						p_origin.x	= p_arrival.x;
 						p_origin.y	= p_arrival.y;
+						SetRect(&node->render.rc,	p_arrival.x - lnHalfWidth,
+													p_arrival.y - lnHalfHeight,
+													p_arrival.x - lnHalfWidth + lnWidth,
+													p_arrival.y - lnHalfHeight + lnHeight);
 						break;
 
 					case _NODE_S0:
 					case _NODE_S1:
 					case _NODE_S2:
-						rc->left	= min(rc->left,		p_arrival.x - lnHalfWidth);					// Connecting point:  +--o--+
-						rc->right	= max(rc->right,	p_arrival.x - lnHalfWidth + lnWidth);		//                    +  +  +
-						rc->bottom	= max(rc->bottom,	p_arrival.y + lnHeight);					//                    +--+--+
-						SetRect(&node->render.rc, p_arrival.x - lnHalfWidth, p_arrival.y, p_arrival.x - lnHalfWidth + lnWidth, p_arrival.y + lnHeight);
+						rc->left	= min(rc->left,		p_anchor.x - iDelta(p_anchor.x, p_arrival.x - lnHalfWidth));				// Connecting point:  +--o--+
+						rc->right	= max(rc->right,	p_anchor.x + iDelta(p_anchor.x, p_arrival.x - lnHalfWidth + lnWidth));		//                    +  +  +
+						rc->bottom	= max(rc->bottom,	p_anchor.y + iDelta(p_anchor.y, p_arrival.y + lnHeight));					//                    +--+--+
 						p_origin.x	= p_arrival.x;
 						p_origin.y	= p_arrival.y + (s16)lnHalfHeight;
+						SetRect(&node->render.rc,	p_arrival.x - lnHalfWidth,
+													p_arrival.y,
+													p_arrival.x - lnHalfWidth + lnWidth,
+													p_arrival.y + lnHeight);
 						break;
 
 					case _NODE_W0:
 					case _NODE_W1:
 					case _NODE_W2:
-						rc->top		= min(rc->top,		p_arrival.y - lnHalfHeight);				// Connecting point:  +--+--+
-						rc->left	= min(rc->left,		p_arrival.x - lnWidth);						//                    +  +  o
-						rc->bottom	= max(rc->bottom,	p_arrival.y - lnHalfHeight + lnHeight);		//                    +--+--+
-						SetRect(&node->render.rc, p_arrival.x - lnWidth, p_arrival.y - lnHalfHeight, p_arrival.x, p_arrival.y - lnHalfHeight + lnHeight);
+						rc->top		= min(rc->top,		p_anchor.x - iDelta(p_anchor.y, p_arrival.y - lnHalfHeight));				// Connecting point:  +--+--+
+						rc->left	= min(rc->left,		p_anchor.x - iDelta(p_anchor.x, p_arrival.x - lnWidth));					//                    +  +  o
+						rc->bottom	= max(rc->bottom,	p_anchor.y + iDelta(p_anchor.y, p_arrival.y - lnHalfHeight + lnHeight));	//                    +--+--+
 						p_origin.x	= p_arrival.x - (s16)lnWidth + (s16)lnHalfWidth;
 						p_origin.y	= p_arrival.y;
+						SetRect(&node->render.rc,	p_arrival.x - lnWidth,
+													p_arrival.y - lnHalfHeight,
+													p_arrival.x,
+													p_arrival.y - lnHalfHeight + lnHeight);
 						break;
 
 					case _NODE_NE0:
 					case _NODE_NE1:
 					case _NODE_NE2:
-						rc->right	= max(rc->right,	p_arrival.x + lnWidth);						// Connecting point:  +--+--+
-						rc->top		= min(rc->top,		p_arrival.y - lnHeight);					//                    +  +  +
-																									//                    o--+--+
-						SetRect(&node->render.rc, p_arrival.x, p_arrival.y - lnHeight, p_arrival.x + lnWidth, p_arrival.y);
+						rc->right	= max(rc->right,	p_anchor.x + iDelta(p_anchor.x, p_arrival.x + lnWidth));					// Connecting point:  +--+--+
+						rc->top		= min(rc->top,		p_anchor.y - iDelta(p_anchor.y, p_arrival.y - lnHeight));					//                    +  +  +
+																																	//                    o--+--+
 						p_origin.x	= p_arrival.x + (s16)lnHalfWidth;
 						p_origin.y	= p_arrival.y - (s16)lnHeight + (s16)lnHalfHeight;
+						SetRect(&node->render.rc,	p_arrival.x,
+													p_arrival.y - lnHeight,
+													p_arrival.x + lnWidth,
+													p_arrival.y);
 						break;
 
 					case _NODE_SE0:
 					case _NODE_SE1:
 					case _NODE_SE2:
-						rc->right	= max(rc->right,	p_arrival.x + lnWidth);						// Connecting point:  o--+--+
-						rc->bottom	= max(rc->bottom,	p_arrival.y + lnHeight);					//                    +  +  +
-																									//                    +--+--+
-						SetRect(&node->render.rc, p_arrival.x, p_arrival.y, p_arrival.x + lnWidth, p_arrival.y + lnHeight);
+						rc->right	= max(rc->right,	p_anchor.x + iDelta(p_anchor.x, p_arrival.x + lnWidth));					// Connecting point:  o--+--+
+						rc->bottom	= max(rc->bottom,	p_anchor.x + iDelta(p_anchor.y, p_arrival.y + lnHeight));					//                    +  +  +
+																																	//                    +--+--+
 						p_origin.x	= p_arrival.x + (s16)lnHalfWidth;
 						p_origin.y	= p_arrival.y + (s16)lnHalfHeight;
+						SetRect(&node->render.rc,	p_arrival.x,
+													p_arrival.y,
+													p_arrival.x + lnWidth,
+													p_arrival.y + lnHeight);
 						break;
 
 					case _NODE_SW0:
 					case _NODE_SW1:
 					case _NODE_SW2:
-						rc->left	= min(rc->left,		p_arrival.x - lnWidth);						// Connecting point:  +--+--o
-						rc->bottom	= max(rc->right,	p_arrival.y + lnHeight);					//                    +  +  +
-																									//                    +--+--+
-						SetRect(&node->render.rc, p_arrival.x - lnWidth, p_arrival.y, p_arrival.x, p_arrival.y + lnHeight);
+						rc->left	= min(rc->left,		p_anchor.x - iDelta(p_anchor.x, p_arrival.x - lnWidth));					// Connecting point:  +--+--o
+						rc->bottom	= max(rc->bottom,	p_anchor.y + iDelta(p_anchor.y, p_arrival.y + lnHeight));					//                    +  +  +
+																																	//                    +--+--+
 						p_origin.x	= p_arrival.x - (s16)lnWidth + (s16)lnHalfWidth;
 						p_origin.y	= p_arrival.y + (s16)lnHalfHeight;
+						SetRect(&node->render.rc,	p_arrival.x - lnWidth,
+													p_arrival.y,
+													p_arrival.x,
+													p_arrival.y + lnHeight);
 						break;
 
 					case _NODE_NW0:
 					case _NODE_NW1:
 					case _NODE_NW2:
-						rc->left	= min(rc->left,		p_arrival.x - lnWidth);						// Connecting point:  +--+--+
-						rc->top		= min(rc->top,		p_arrival.y - lnHeight);					//                    +  +  +
-																									//                    +--+--o
-						SetRect(&node->render.rc, p_arrival.x - lnWidth, p_arrival.y - lnHeight, p_arrival.x, p_arrival.y);
+						rc->left	= min(rc->left,		p_anchor.x - iDelta(p_anchor.x, p_arrival.x - lnWidth));					// Connecting point:  +--+--+
+						rc->top		= min(rc->top,		p_anchor.y - iDelta(p_anchor.y, p_arrival.y - lnHeight));					//                    +  +  +
+																																	//                    +--+--o
 						p_origin.x	= p_arrival.x - (s16)lnWidth  + (s16)lnHalfWidth;
 						p_origin.y	= p_arrival.y - (s16)lnHeight + (s16)lnHalfHeight;
+						SetRect(&node->render.rc,	p_arrival.x - lnWidth,
+													p_arrival.y - lnHeight,
+													p_arrival.x,
+													p_arrival.y);
 						break;
 				}
 
@@ -664,7 +697,7 @@
 										iBmp_drawArbitraryLine(bmp, p_rodStart.x, p_rodStart.y, p_rodEnd.x, p_rodEnd.y, props->rodColor);
 
 									// Indicate that we want to render everything out from there
-									iiNode_get_bitmapExtents(node->n[lnI], nodeStopper1, node, lnI, bmp, rc, p_rodEnd, tfRodLength, tnIter_uid, props, true, ((tlDeeperNodesExtendInAllDirections) ? &gsfNodeFlags_all : nodeFlags), tlDeeperNodesExtendInAllDirections);
+									iiNode_get_bitmapExtents(node->n[lnI], nodeStopper1, node, lnI, bmp, rc, p_anchor, p_rodEnd, tfRodLength, tnIter_uid, props, true, ((tlDeeperNodesExtendInAllDirections) ? &gsfNodeFlags_all : nodeFlags), tlDeeperNodesExtendInAllDirections);
 								}
 							}
 						}

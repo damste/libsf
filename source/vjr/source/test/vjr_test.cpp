@@ -68,7 +68,6 @@
 		s8			buffer[_NODE_COUNT * 8];
 
 
-// TODO:  Dec.01.2015 RCH -- This process is working, except the extents it's retrieving are not correct, the height is more than doubled
 return;
 		//////////
 		// Initialize
@@ -114,6 +113,7 @@ return;
 		//////////
 		// Render
 		//////
+// TODO:  Dec.02.2015 RCH -- Appears to be working. more testing.
 			bmp = iNode_renderBitmap(node);
 			iBmp_saveToDisk(bmp, "c:\\temp\\node.bmp");
 
