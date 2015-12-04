@@ -238,22 +238,6 @@ return;
 				//////
 					// We are in LiveCode mode, which means we only process this line
 					// if its contents have changed.  Otherwise, we use what was already compiled.
-//////////
-// Consider what this would look like with ~|utility|~ casks:
-//
-// Source code definition:
-//		if ([|!vxb->line->compilerInfo->sourceCode || vxb->line->forceRecompile || !vxb->line->compilerInfo->firstComp|].name(not yet compiled))
-//
-// As would be visible in the GUI editor:
-//		if ([|not yet compiled|])
-//
-// Such a presentation removes the need for comments, and would allow stacking of the below operation visibly like this:
-// 		     if ([|not yet compiled|])			vxb->processThisLine = true;
-// 		else if ([|source length changed|])		vxb->processThisLine = true;
-// 		else if ([|source content changed|])	vxb->processThisLine = true;
-// 		else if ([|warnings or inquirys|])		vxb->processThisLine = true;
-// 		else									vxb->processThisLine = false;	// source code's unchanged
-//////
 					if (!vxb->line->compilerInfo->sourceCode || vxb->line->forceRecompile || !vxb->line->compilerInfo->firstComp)
 					{
 						// This line has not yet been compiled
@@ -408,6 +392,7 @@ return;
 						// All done with this line
 						break;
 					}
+
 			}
 		}
 	}
@@ -818,7 +803,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 
 
 		// Insert a parenthesis node at the active node, and direct the active node to the right
-		node = iNode_insert_between(active->n[_NODE_SE], active, _NODE_SE, _NODE_SE);
+		node = iNode_insert(&active->n[_NODE_SE], _NODE_SE);
 		if (node)
 		{
 			//////////

@@ -427,9 +427,9 @@ struct SGraceLine;
 //////
 	void					iNode_init									(void);
 	SNode*					iNode_create								(SNode** root, SNode* n_defaults[_NODE_COUNT]);
-	SNode*					iNode_extrude								(SNode** root, u32 tnExtrudeDirection);
-	SNode*					iNode_bump									(SNode** root, u32 tnBumpDirection, u32 tnAnchorDirection);
-	SNode*					iNode_insert_between						(SNode* node1, SNode* node2, u32 tnNode1Direction, u32 tnNode2Direction);
+	SNode*					iNode_extrude								(SNode** root, s32 tnExtrudeDirection);
+	SNode*					iNode_bump									(SNode** root, s32 tnBump/*BumpDirection*/, s32 tnAnchor/*AnchorDirection*/);
+	SNode*					iNode_insert						(SNode** root, s32 tnDirection);
 	void					iNode_deleteAll_politely					(SNode** root, SNode* nodeStopper, SNode* nodeStopper2, bool tlDeleteSelf, SNodeFlags* nodeFlags);
 
 	// Bitmap

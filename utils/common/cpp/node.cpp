@@ -151,7 +151,7 @@
 //
 //////
 	// Note:  rootNode should point to the node to extrude from
-	SNode* iNode_extrude(SNode** rootNode, u32 tnExtrudeDirection)
+	SNode* iNode_extrude(SNode** rootNode, s32 tnExtrudeDirection)
 	{
 		SNode*		nodeLast;
 		SNode*		nodeNew;
@@ -185,7 +185,7 @@
 //
 // Bumps the node you're on over, inserting a new node in its place.
 //
-// Suppose you're on the + node, and you want to bump it southwest, anchoring to the northwest.
+// Suppose you're on the b node, and you want to bump it southwest, anchoring to the northwest (to the 2).
 // By 
 //
 //     Before:                   Nodes to update in the bump:
@@ -207,9 +207,9 @@
 //
 //         Node                       Operation
 //     ------------        -----------------------------
-//      2, node            a   to newNode
-//      5, newNode         am  to node,  b   to bumpNode
-//      b, bumpNode        bm  to new,   am  to NULL
+//      2, anchorNode       a  to newNode
+//      5, newNode         am  to anchorNode,     b  to bumpNode,     bm to whatever bumpNode had in that direction
+//      b, bumpNode        bm  to newNode,       am  to NULL
 //
 //		Node directions:	a	-- anchor
 //							am	-- anchor-mirror
@@ -219,46 +219,53 @@
 //////
 	// Note:  The anchor direction would be the one which pointed up to 2 in the above example
 	// Note:  The bump direction would be the southwest direction in the above example
-	SNode* iNode_bump(SNode** rootNode, u32 tnBumpDirection, u32 tnAnchorDirection)
+	SNode* iNode_bump(SNode** rootNode, s32 tnBump/*BumpDirection*/, s32 tnAnchor/*AnchorDirection*/)
 	{
-		SNode*		node;
-		SNode*		nodeNew;
+		s32			lnAnchorMirror, lnBumpMirror;
+		SNode*		anchorNode;
+		SNode*		newNode;
+		SNode*		bumpNode;
 
 
 		// Make sure the environment is sane
-		if (!rootNode || !between(tnBumpDirection, _NODE_MIN, _NODE_MAX))
+		if (!rootNode || !between(tnBump, _NODE_MIN, _NODE_MAX))
 			return(NULL);
 
 		// If nothing already exists there, just create it and it will become the central node
 		if (!*rootNode)
-			return(iNode_create(rootNode, NULL));
+		{
+			newNode		= iNode_create(rootNode, NULL);
+			*rootNode	= newNode;
+			return(newNode);
+		}
 
-		// Grab the node
-		node = *rootNode;
+		// Create our mirror directions
+		lnAnchorMirror	= gnNodeMirrors[tnAnchor];
+		lnBumpMirror	= gnNodeMirrors[tnBump];
+
+		// Grab the known nodes
+		bumpNode		= *rootNode;
+		anchorNode		= bumpNode->n[tnAnchor];
 
 		// Create the new node
-		nodeNew = iNode_create(rootNode, NULL);
-		if (nodeNew)
+		newNode = iNode_create(rootNode, NULL);
+		if (newNode)
 		{
-			// New points back to the anchor bumped had
-			nodeNew->n[gnNodeMirrors[tnAnchorDirection]]	= node->n[gnNodeMirrors[tnAnchorDirection]];
+			// Update connections
+			// If there is a valid anchorNode, it needs to point to the newNode
+			if (anchorNode)
+				anchorNode->n[lnAnchorMirror]	= newNode;						// anchorNode points to newNode
 
-			// Node anchors to new
-			if (node->n[gnNodeMirrors[tnAnchorDirection]])
-				node->n[gnNodeMirrors[tnAnchorDirection]]->n[tnAnchorDirection] = nodeNew;
-
-			// Bumped no longer mirror-anchors back to node
-			node->n[gnNodeMirrors[tnAnchorDirection]] = NULL;
-
-			// Bumped back to new along bumped mirror
-			node->n[gnNodeMirrors[tnBumpDirection]] = nodeNew;
-
-			// New to node along bump
-			nodeNew->n[tnBumpDirection] = node;
+			// Hook up newNode and bumpNode
+			newNode->n[tnAnchor]			= anchorNode;						// newNode anchors to anchorNOde
+			newNode->n[tnBump]				= bumpNode;							// newNode attaches to bumpNode
+			newNode->n[lnBumpMirror]		= bumpNode->n[lnBumpMirror];		// newNode takes on whatever existed at bumpNode's bumpMirror direction
+			bumpNode->n[lnBumpMirror]		= newNode;							// bumpNode bumpMirror's to newNode
+			bumpNode->n[tnAnchor]			= NULL;								// bumpNode disconnects from anchorNode
 		}
 
 		// Indicate our result
-		return(node);
+		return(newNode);
 	}
 
 
@@ -266,38 +273,44 @@
 
 //////////
 //
-// Creates a new node and inserts it between where node1 points to node2.
+// Creates a new node and inserts it between where node1 (*root) points to node2.
 //
 //////
-	SNode* iNode_insert_between(SNode* node1, SNode* node2, u32 tnNode1Direction, u32 tnNode2Direction)
+	SNode* iNode_insert(SNode** root, s32 tnDirection)
 	{
+		s32			lnMirrorDirection;
 		SNode*		n[_NODE_COUNT];
-		SNode*		nodeNew;
+		SNode*		node1;
+		SNode*		node2;
+		SNode*		newNode;
 
 
 		// Make sure our environment is sane
-		if (!between(tnNode1Direction, _NODE_MIN, _NODE_MAX) || !between(tnNode2Direction, _NODE_MIN, _NODE_MAX) || tnNode1Direction == tnNode2Direction)
+		if (!root || !between(tnDirection, _NODE_MIN, _NODE_MAX))
 			return(NULL);
 
 		// Initialize
 		memset(&n[0], 0, sizeof(n));
+		node1				= *root;
+		node2				= node1->n[tnDirection];
+		lnMirrorDirection	= gnNodeMirrors[tnDirection];
 
 		// Create and populate our new node
-		if ((nodeNew = iNode_create(NULL, &n[0])))
+		newNode = iNode_create(NULL, &n[0]);
+		if (newNode)
 		{
 			// New points mirror-back to node1 and node2
-			nodeNew->n[gnNodeMirrors[tnNode1Direction]] = node1;
-			nodeNew->n[gnNodeMirrors[tnNode2Direction]]	= node2;
+			newNode->n[lnMirrorDirection]	= node1;		// newNode points to node1
+			newNode->n[tnDirection]			= node2;		// newNode points to node2
+			node1->n[tnDirection]			= newNode;		// node1 points to newNode
 
-			// node1 points to new
-			node1->n[tnNode1Direction]	= nodeNew;
-
-			// node2 points to n32
-			node2->n[tnNode2Direction]	= nodeNew;
+			// If there was really a node out there, hook it up
+			if (node2)
+				node2->n[lnMirrorDirection]	= newNode;		// node2 points to newNode
 		}
 
 		// Indicate our status
-		return(nodeNew);
+		return(newNode);
 	}
 
 

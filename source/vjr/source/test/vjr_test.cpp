@@ -63,7 +63,7 @@ void iVjr_test_nodes(void);
 	void iVjr_test(void)
 	{
 		// Nodes -- Dec.03.2015 RCH -- Appears to be working.  Test code is commented out, but still there
-		//iVjr_test_nodes();
+		iVjr_test_nodes();
 	}
 
 	void iVjr_test_nodes(void)
@@ -169,20 +169,34 @@ void iVjr_test_nodes(void);
 // 
 // 				// ...to have its direction number
 // 				datum[lnI].data_s8						= &buffer[0] + strlen(buffer);
-// 				sprintf(buffer + strlen(buffer), "%03d", lnI);
+// 				sprintf(buffer + strlen(buffer), "%d", lnI);
 // 				datum[lnI].length						= strlen(datum[lnI].data_cs8);
 // 				line[lnI].sourceCode_populatedLength	= datum[lnI].length;
 // 				comp[lnI].length						= datum[lnI].length;
 // 				comp[lnI].start							= 0;
 // 				comp[lnI].iCode							= 0;
 // 
+// 				// Extend the NW node west
 // 				if (lnI == _NODE_NW1)
 // 				{
-// 					// Change it to blue
-// 					nodeNew->render_override = propBlue;
+// 					// Change NW to blue
+// 					nodeNew->render_override				= propBlue;
 // 
-// 					// Create a new one
-// 					nodeNew = iNode_extrude(&nodeNew, _NODE_W1);
+// 					// Tests added for extrude, bump, and insert
+// 					if (0)
+// 					{
+// 						// Extrude a new one
+// 						nodeNew = iNode_extrude(&nodeNew, _NODE_W1);
+// 
+// 					} else if (0) {
+// 						// Bump the existing one, adding a new one in-between.
+// 						// Bumps southwest, anchored back to the southeast
+// 						nodeNew = iNode_bump(&nodeNew, _NODE_SW1, _NODE_SE1);
+// 
+// 					} else if (1) {
+// 						// Insert one between our new node and the middle
+// 						nodeNew = iNode_insert(&nodeNew, _NODE_SE1);
+// 					}
 // 
 // 					// Then hook it up...
 // 					nodeNew->comp							= &comp4[lnI];
@@ -192,7 +206,7 @@ void iVjr_test_nodes(void);
 // 
 // 					// ...to have its direction number
 // 					datum4[lnI].data_s8						= &buffer[0] + strlen(buffer);
-// 					sprintf(buffer + strlen(buffer), "%03d", lnI);
+// 					sprintf(buffer + strlen(buffer), "inserted");
 // 					datum4[lnI].length						= strlen(datum4[lnI].data_cs8);
 // 					line4[lnI].sourceCode_populatedLength	= datum4[lnI].length;
 // 					comp4[lnI].length						= datum4[lnI].length;
@@ -232,7 +246,7 @@ void iVjr_test_nodes(void);
 // 
 // 				// ...to have its direction number
 // 				datum2[lnI].data_s8						= &buffer[0] + strlen(buffer);
-// 				sprintf(buffer + strlen(buffer), "%03d", lnI);
+// 				sprintf(buffer + strlen(buffer), "%d", lnI);
 // 				datum2[lnI].length						= strlen(datum2[lnI].data_cs8);
 // 				line2[lnI].sourceCode_populatedLength	= datum2[lnI].length;
 // 				comp2[lnI].length						= datum2[lnI].length;
@@ -271,7 +285,7 @@ void iVjr_test_nodes(void);
 // 
 // 				// ...to have its direction number
 // 				datum3[lnI].data_s8						= &buffer[0] + strlen(buffer);
-// 				sprintf(buffer + strlen(buffer), "%03d", lnI);
+// 				sprintf(buffer + strlen(buffer), "%d", lnI);
 // 				datum3[lnI].length						= strlen(datum3[lnI].data_cs8);
 // 				line3[lnI].sourceCode_populatedLength	= datum3[lnI].length;
 // 				comp3[lnI].length						= datum3[lnI].length;
