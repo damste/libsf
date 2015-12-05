@@ -91,10 +91,11 @@
 
 
 
+
 //////////
 // Syntax highlight colors for SourceLight
 //////
-	SBgra			colorSynHi_keyword				= { rgba(0, 128, 164, 255) };			// Sky blue
+	SBgra				colorSynHi_keyword					= { rgba(0, 128, 164, 255) };			// Sky blue
 
 
 

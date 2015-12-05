@@ -66,6 +66,16 @@ void iVjr_test_nodes(void);
 		iVjr_test_nodes();
 	}
 
+
+
+
+///////////
+//
+// Tests the nodes.h/cpp functionality.  It creates a node structure with, depending on
+// source code settings, some nodes extruded out from a center direction, and then renders
+// the 
+//
+//////
 	void iVjr_test_nodes(void)
 	{
 // 		s32			lnI;

@@ -520,7 +520,6 @@ typedef SEM**		SEMpp;
 // System constants
 //////
 	const s32			_MENU_BAR_HEIGHT					= 16;						// Each menu is 16 pixels high
-	const s32			_SOURCELIGHT_MARGIN					= 8;
 
 
 //////////

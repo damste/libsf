@@ -1226,11 +1226,13 @@ debug_break;
 
 
 		// Make sure our environment is sane
+		logfunc(__FUNCTION__);
 		if (!iiDefaultCallback_processKeyVariables(varCtrl, varAlt, varShift, varCaps, varAscii, varVKey, varIsCAS, varIsAscii, &llCtrl, &llAlt, &llShift, &llCaps, &llIsCAS, &llIsAscii, &lcAscii, &lnVKey))
 			return(false);
 
+		// Kick off a sourceLight thread
+		CreateThread(NULL, 0, &iSourceLight_update, (void*)obj, 0, 0);
 
-		logfunc(__FUNCTION__);
 		// Make sure our environment is sane
 		sem = NULL;
 		if (obj && obj->objType == _OBJ_TYPE_EDITBOX)

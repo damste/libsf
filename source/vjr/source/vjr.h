@@ -153,14 +153,20 @@
 	#include "\libsf\utils\common\cpp\time.h"
 	#include "\libsf\utils\common\cpp\disk.h"
 	#include "\libsf\utils\common\cpp\xml\xml.h"
+	#include "\libsf\utils\common\cpp\threadpool.h"
 
 	#include "vjr_structs0.h"
+
+	#include "\libsf\source\vjr\source\sourcelight\sourcelight_const.h"
+	#include "\libsf\source\vjr\source\sourcelight\sourcelight_globals.h"
+	#include "\libsf\source\vjr\source\sourcelight\sourcelight_defs.h"
 
 	#include "\libsf\utils\common\cpp\datum.cpp"
 	#include "\libsf\utils\common\cpp\builder.cpp"
 	#include "\libsf\utils\common\cpp\time.cpp"
 	#include "\libsf\utils\common\cpp\disk.cpp"
 	#include "\libsf\utils\common\cpp\xml\xml.cpp"
+	#include "\libsf\utils\common\cpp\threadpool.cpp"
 
 	#include "\libsf\source\vjr\source\compiler\common\compiler_common.h"
 
@@ -179,7 +185,6 @@
 	#include "\libsf\source\vjr\source\compiler\licoa\licoa_structs.h"
 	#include "\libsf\source\vjr\source\compiler\licoa\licoa_defs.h"
 	#include "\libsf\source\vjr\source\compiler\licoa\licoa_globals.h"
-
 	#include "\libsf\source\vjr\source\compiler\sourcelight\sourcelight_globals.h"
 
 	#include "dbf\dbf.h"
@@ -252,6 +257,7 @@
 		#include "\libsf\source\vjr\source\forms3d\grace.cpp"
 		#include "\libsf\source\vjr\source\fonts.cpp"
 		#include "\libsf\source\vjr\source\dllfuncs\dllfuncs.cpp"
+		#include "\libsf\source\vjr\source\sourcelight\sourcelight.cpp"
 
 
 #elif defined(__GNUC__)
@@ -320,8 +326,13 @@
 	#include "/libsf/utils/common/cpp/time.h"
 	#include "/libsf/utils/common/cpp/disk.h"
 	#include "/libsf/utils/common/cpp/xml/xml.h"
+	#include "/libsf/utils/common/cpp/threadpool.h"
 
 	#include "vjr_structs0.h"
+
+	#include "/libsf/source/vjr/source/sourcelight/sourcelight_const.h"
+	#include "/libsf/source/vjr/source/sourcelight/sourcelight_globals.h"
+	#include "/libsf/source/vjr/source/sourcelight/sourcelight_defs.h"
 
 	#include "/libsf/utils/common/cpp/datum.cpp"
 	#include "/libsf/utils/common/cpp/builder.cpp"
@@ -329,6 +340,7 @@
 	#include "/libsf/utils/common/cpp/time.cpp"
 	#include "/libsf/utils/common/cpp/disk.cpp"
 	#include "/libsf/utils/common/cpp/xml/xml.cpp"
+	#include "/libsf/utils/common/cpp/threadpool.cpp"
 
 	#include "/libsf/source/vjr/source/compiler/common/compiler_common.h"
 
@@ -347,7 +359,6 @@
 	#include "/libsf/source/vjr/source/compiler/licoa/licoa_structs.h"
 	#include "/libsf/source/vjr/source/compiler/licoa/licoa_defs.h"
 	#include "/libsf/source/vjr/source/compiler/licoa/licoa_globals.h"
-
 	#include "/libsf/source/vjr/source/compiler/sourcelight/sourcelight_globals.h"
 
 	#include "/libsf/source/vjr/source/dbf/dbf.h"
@@ -420,6 +431,7 @@
 		#include "/libsf/source/vjr/source/forms3d/grace.cpp"
 		#include "/libsf/source/vjr/source/fonts.cpp"
 		#include "/libsf/source/vjr/source/dllfuncs/dllfuncs.cpp"
+		#include "/libsf/source/vjr/source/sourcelight/sourcelight.cpp"
 
 		#if defined(__linux__)
 			#include "/libsf/utils/common/cpp/linux/windows.cpp"
@@ -478,8 +490,13 @@
 	#include "/libsf/utils/common/cpp/time.h"
 	#include "/libsf/utils/common/cpp/disk.h"
 	#include "/libsf/utils/common/cpp/xml/xml.h"
+	#include "/libsf/utils/common/cpp/threadpool.h"
 
 	#include "vjr_structs0.h"
+
+	#include "/libsf/source/vjr/source/sourcelight/sourcelight_const.h"
+	#include "/libsf/source/vjr/source/sourcelight/sourcelight_globals.h"
+	#include "/libsf/source/vjr/source/sourcelight/sourcelight_defs.h"
 
 	#include "/libsf/utils/common/cpp/datum.cpp"
 	#include "/libsf/utils/common/cpp/builder.cpp"
@@ -487,6 +504,7 @@
 	#include "/libsf/utils/common/cpp/time.cpp"
 	#include "/libsf/utils/common/cpp/disk.cpp"
 	#include "/libsf/utils/common/cpp/xml/xml.cpp"
+	#include "/libsf/utils/common/cpp/threadpool.cpp"
 
 	#include "/libsf/source/vjr/source/compiler/common/compiler_common.h"
 
@@ -505,7 +523,6 @@
 	#include "/libsf/source/vjr/source/compiler/licoa/licoa_structs.h"
 	#include "/libsf/source/vjr/source/compiler/licoa/licoa_defs.h"
 	#include "/libsf/source/vjr/source/compiler/licoa/licoa_globals.h"
-
 	#include "/libsf/source/vjr/source/compiler/sourcelight/sourcelight_globals.h"
 
 	#include "/libsf/source/vjr/source/dbf/dbf.h"
@@ -578,6 +595,7 @@
 		#include "/libsf/source/vjr/source/forms3d/grace.cpp"
 		#include "/libsf/source/vjr/source/fonts.cpp"
 		#include "/libsf/source/vjr/source/dllfuncs/dllfuncs.cpp"
+		#include "/libsf/source/vjr/source/sourcelight/sourcelight.cpp"
 
         #include "/libsf/utils/common/cpp/linux/windows.cpp"
         #include "/libsf/utils/common/cpp/linux/hwndx.cpp"

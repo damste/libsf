@@ -557,9 +557,6 @@ struct SObjEventMap;
 	void					iTooltip_delete							(STooltip* tooltip);
 	LRESULT CALLBACK		iTooltip_wndProc						(HWND hwnd, UINT m, WPARAM w, LPARAM l);
 
-	void					iSourceLight_reset						(void);
-	bool					iSourceLight_copy						(SWindow* win, SObject* obj);
-
 	bool					iFile_readContents						(s8* tcFilename, FILE** tfh, s8** data, u32* dataLength);
 	bool					iFile_get_justfname						(s8* tcPathname, s32 tnFilenameLength, s8** tcFname, s32* tnFnameLength);
 	s32						iFile_parseIntoLines					(SLine** firstLine, s8* data, u32 dataLength);

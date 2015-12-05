@@ -940,6 +940,50 @@
 							>
 						</File>
 					</Filter>
+					<Filter
+						Name="threadPool"
+						>
+						<File
+							RelativePath="..\..\..\..\utils\common\cpp\threadpool.cpp"
+							>
+							<FileConfiguration
+								Name="Debug|Win32"
+								ExcludedFromBuild="true"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Debug|x64"
+								ExcludedFromBuild="true"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Release|Win32"
+								ExcludedFromBuild="true"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Release|x64"
+								ExcludedFromBuild="true"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+								/>
+							</FileConfiguration>
+						</File>
+						<File
+							RelativePath="..\..\..\..\utils\common\cpp\threadpool.h"
+							>
+						</File>
+					</Filter>
 				</Filter>
 			</Filter>
 			<Filter
@@ -3053,6 +3097,58 @@
 						>
 					</File>
 				</Filter>
+			</Filter>
+			<Filter
+				Name="sourcelight"
+				>
+				<File
+					RelativePath="..\..\source\sourcelight\sourcelight.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|x64"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|x64"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\source\sourcelight\sourcelight_const.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\sourcelight\sourcelight_defs.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\sourcelight\sourcelight_globals.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 	</Files>
