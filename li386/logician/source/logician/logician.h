@@ -86,3 +86,5 @@
 #include "log_structs.h"
 #include "log_defs.h"
 #include "log_globals.h"
+
+#include "bmps\bitmaps.h"

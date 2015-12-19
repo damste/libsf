@@ -1558,129 +1558,137 @@
 			//////////
 			// Which object are they rendering?
 			//////
-				switch (obj->objType)
+				if (obj->ev._renderFunc)
 				{
-					case _OBJ_TYPE_EMPTY:		// Empty, used as a placeholder object that is not drawn
-						lnPixelsRendered += iSubobj_renderEmpty(obj);
-						break;
-					case _OBJ_TYPE_FORM:			// Form class, the main outer window the OS sees
-						lnPixelsRendered += iSubobj_renderForm(obj);
-						break;
-					case _OBJ_TYPE_SUBFORM:		// A new class which has its own drawing content and can be moved about using UI features
-						lnPixelsRendered += iSubobj_renderSubform(obj);
-						break;
-					case _OBJ_TYPE_CAROUSEL:	// A new class which holds riders, and allows multiple contents drawn in a new way
-						lnPixelsRendered += iSubobj_renderCarousel(obj);
-						break;
-					case _OBJ_TYPE_RIDER:		// A new class which holds other objects, and allows its content to be drawn in a new way
-						lnPixelsRendered += iSubobj_renderRider(obj);
-						break;
-					case _OBJ_TYPE_LABEL:		// A label
-						lnPixelsRendered += iSubobj_renderLabel(obj);
-						break;
-					case _OBJ_TYPE_TEXTBOX:		// An input textbox
-						lnPixelsRendered += iSubobj_renderTextbox(obj);
-						break;
-					case _OBJ_TYPE_BUTTON:		// A push button
-						lnPixelsRendered += iSubobj_renderButton(obj);
-						break;
-					case _OBJ_TYPE_EDITBOX:		// An input multi-line editbox
-						lnPixelsRendered += iSubobj_renderEditbox(obj);
-						break;
-					case _OBJ_TYPE_IMAGE:		// A graphical image
-						lnPixelsRendered += iSubobj_renderImage(obj);
-						break;
-					case _OBJ_TYPE_CHECKBOX:		// A checkbox
-						lnPixelsRendered += iSubobj_renderCheckbox(obj);
-						break;
-					case _OBJ_TYPE_OPTION:		// A combination selection
-						lnPixelsRendered += iSubobj_renderOption(obj);
-						break;
-					case _OBJ_TYPE_RADIO:		// A radio dial, which can also present as a slider or spinner
-						lnPixelsRendered += iSubobj_renderRadio(obj);
-						break;
-					case _OBJ_TYPE_CMDGROUP:
-						lnPixelsRendered += iSubobj_renderCmdGroup(obj);
-						break;
-					case _OBJ_TYPE_OPTGROUP:
-						lnPixelsRendered += iSubobj_renderOptGroup(obj);
-						break;
-					case _OBJ_TYPE_LISTBOX:
-						lnPixelsRendered += iSubobj_renderListbox(obj);
-						break;
-					case _OBJ_TYPE_COMBOBOX:
-						lnPixelsRendered += iSubobj_renderCombobox(obj);
-						break;
-					case _OBJ_TYPE_FORMSET:
-						lnPixelsRendered += iSubobj_renderFormset(obj);
-						break;
-					case _OBJ_TYPE_TOOLBAR:
-						lnPixelsRendered += iSubobj_renderToolbar(obj);
-						break;
-					case _OBJ_TYPE_SEPARATOR:
-						lnPixelsRendered += iSubobj_renderSeparator(obj);
-						break;
-					case _OBJ_TYPE_LINE:
-						lnPixelsRendered += iSubobj_renderLine(obj);
-						break;
-					case _OBJ_TYPE_SHAPE:
-						lnPixelsRendered += iSubobj_renderShape(obj);
-						break;
-					case _OBJ_TYPE_CONTAINER:
-						lnPixelsRendered += iSubobj_renderContainer(obj);
-						break;
-					case _OBJ_TYPE_CONTROL:
-						lnPixelsRendered += iSubobj_renderControl(obj);
-						break;
-					case _OBJ_TYPE_GRID:
-						lnPixelsRendered += iSubobj_renderGrid(obj);
-						break;
-					case _OBJ_TYPE_COLUMN:
-						lnPixelsRendered += iSubobj_renderColumn(obj);
-						break;
-					case _OBJ_TYPE_HEADER:
-						lnPixelsRendered += iSubobj_renderHeader(obj);
-						break;
-					case _OBJ_TYPE_OLEBOUND:
-						lnPixelsRendered += iSubobj_renderOleBound(obj);
-						break;
-					case _OBJ_TYPE_OLECONTAIN:
-						lnPixelsRendered += iSubobj_renderOleContain(obj);
-						break;
-					case _OBJ_TYPE_SPINNER:
-						lnPixelsRendered += iSubobj_renderSpinner(obj);
-						break;
-					case _OBJ_TYPE_TIMER:
-						lnPixelsRendered += iSubobj_renderTimer(obj);
-						break;
-					case _OBJ_TYPE_HYPERLINK:
-						lnPixelsRendered += iSubobj_renderHyperlink(obj);
-						break;
-					case _OBJ_TYPE_COLLECTION:
-						lnPixelsRendered += iSubobj_renderCollection(obj);
-						break;
-					case _OBJ_TYPE_PAGE:
-						lnPixelsRendered += iSubobj_renderPage(obj);
-						break;
-					case _OBJ_TYPE_PAGEFRAME:
-						lnPixelsRendered += iSubobj_renderPageFrame(obj);
-						break;
-					case _OBJ_TYPE_SESSION:
-						lnPixelsRendered += iSubobj_renderSession(obj);
-						break;
-					case _OBJ_TYPE_CUSTOM:
-						lnPixelsRendered += iSubobj_renderCustom(obj);
-						break;
-					case _OBJ_TYPE_EXCEPTION:
-						lnPixelsRendered += iSubobj_renderException(obj);
-						break;
-					case _OBJ_TYPE_SETTINGS:
-						lnPixelsRendered += iSubobj_renderSettings(obj);
-						break;
+					// It has a custom render function (which may be the same as one of the below, but just faster
+					lnPixelsRendered += obj->ev.renderFunc(obj);
 
-					default:
+				} else {
+					switch (obj->objType)
+					{
+						case _OBJ_TYPE_EMPTY:		// Empty, used as a placeholder object that is not drawn
+							lnPixelsRendered += iSubobj_renderEmpty(obj);
+							break;
+						case _OBJ_TYPE_FORM:			// Form class, the main outer window the OS sees
+							lnPixelsRendered += iSubobj_renderForm(obj);
+							break;
+						case _OBJ_TYPE_SUBFORM:		// A new class which has its own drawing content and can be moved about using UI features
+							lnPixelsRendered += iSubobj_renderSubform(obj);
+							break;
+						case _OBJ_TYPE_CAROUSEL:	// A new class which holds riders, and allows multiple contents drawn in a new way
+							lnPixelsRendered += iSubobj_renderCarousel(obj);
+							break;
+						case _OBJ_TYPE_RIDER:		// A new class which holds other objects, and allows its content to be drawn in a new way
+							lnPixelsRendered += iSubobj_renderRider(obj);
+							break;
+						case _OBJ_TYPE_LABEL:		// A label
+							lnPixelsRendered += iSubobj_renderLabel(obj);
+							break;
+						case _OBJ_TYPE_TEXTBOX:		// An input textbox
+							lnPixelsRendered += iSubobj_renderTextbox(obj);
+							break;
+						case _OBJ_TYPE_BUTTON:		// A push button
+							lnPixelsRendered += iSubobj_renderButton(obj);
+							break;
+						case _OBJ_TYPE_EDITBOX:		// An input multi-line editbox
+							lnPixelsRendered += iSubobj_renderEditbox(obj);
+							break;
+						case _OBJ_TYPE_IMAGE:		// A graphical image
+							lnPixelsRendered += iSubobj_renderImage(obj);
+							break;
+						case _OBJ_TYPE_CHECKBOX:		// A checkbox
+							lnPixelsRendered += iSubobj_renderCheckbox(obj);
+							break;
+						case _OBJ_TYPE_OPTION:		// A combination selection
+							lnPixelsRendered += iSubobj_renderOption(obj);
+							break;
+						case _OBJ_TYPE_RADIO:		// A radio dial, which can also present as a slider or spinner
+							lnPixelsRendered += iSubobj_renderRadio(obj);
+							break;
+						case _OBJ_TYPE_CMDGROUP:
+							lnPixelsRendered += iSubobj_renderCmdGroup(obj);
+							break;
+						case _OBJ_TYPE_OPTGROUP:
+							lnPixelsRendered += iSubobj_renderOptGroup(obj);
+							break;
+						case _OBJ_TYPE_LISTBOX:
+							lnPixelsRendered += iSubobj_renderListbox(obj);
+							break;
+						case _OBJ_TYPE_COMBOBOX:
+							lnPixelsRendered += iSubobj_renderCombobox(obj);
+							break;
+						case _OBJ_TYPE_FORMSET:
+							lnPixelsRendered += iSubobj_renderFormset(obj);
+							break;
+						case _OBJ_TYPE_TOOLBAR:
+							lnPixelsRendered += iSubobj_renderToolbar(obj);
+							break;
+						case _OBJ_TYPE_SEPARATOR:
+							lnPixelsRendered += iSubobj_renderSeparator(obj);
+							break;
+						case _OBJ_TYPE_LINE:
+							lnPixelsRendered += iSubobj_renderLine(obj);
+							break;
+						case _OBJ_TYPE_SHAPE:
+							lnPixelsRendered += iSubobj_renderShape(obj);
+							break;
+						case _OBJ_TYPE_CONTAINER:
+							lnPixelsRendered += iSubobj_renderContainer(obj);
+							break;
+						case _OBJ_TYPE_CONTROL:
+							lnPixelsRendered += iSubobj_renderControl(obj);
+							break;
+						case _OBJ_TYPE_GRID:
+							lnPixelsRendered += iSubobj_renderGrid(obj);
+							break;
+						case _OBJ_TYPE_COLUMN:
+							lnPixelsRendered += iSubobj_renderColumn(obj);
+							break;
+						case _OBJ_TYPE_HEADER:
+							lnPixelsRendered += iSubobj_renderHeader(obj);
+							break;
+						case _OBJ_TYPE_OLEBOUND:
+							lnPixelsRendered += iSubobj_renderOleBound(obj);
+							break;
+						case _OBJ_TYPE_OLECONTAIN:
+							lnPixelsRendered += iSubobj_renderOleContain(obj);
+							break;
+						case _OBJ_TYPE_SPINNER:
+							lnPixelsRendered += iSubobj_renderSpinner(obj);
+							break;
+						case _OBJ_TYPE_TIMER:
+							lnPixelsRendered += iSubobj_renderTimer(obj);
+							break;
+						case _OBJ_TYPE_HYPERLINK:
+							lnPixelsRendered += iSubobj_renderHyperlink(obj);
+							break;
+						case _OBJ_TYPE_COLLECTION:
+							lnPixelsRendered += iSubobj_renderCollection(obj);
+							break;
+						case _OBJ_TYPE_PAGE:
+							lnPixelsRendered += iSubobj_renderPage(obj);
+							break;
+						case _OBJ_TYPE_PAGEFRAME:
+							lnPixelsRendered += iSubobj_renderPageFrame(obj);
+							break;
+						case _OBJ_TYPE_SESSION:
+							lnPixelsRendered += iSubobj_renderSession(obj);
+							break;
+						case _OBJ_TYPE_CUSTOM:
+							lnPixelsRendered += iSubobj_renderCustom(obj);
+							break;
+						case _OBJ_TYPE_EXCEPTION:
+							lnPixelsRendered += iSubobj_renderException(obj);
+							break;
+						case _OBJ_TYPE_SETTINGS:
+							lnPixelsRendered += iSubobj_renderSettings(obj);
+							break;
+
+						default:
 // TODO:  We should never get here... we should fire off an internal consistency error ... or a signal flare.  Something to draw attention.
-						break;
+							iError_silent(__FUNCTION__);
+							break;
+					}
 				}
 		}
 
@@ -3652,6 +3660,132 @@ if (!obj->props[lnI])
 		// Events
 		//////
 			iEvents_resetToDefault(obj, eventList, tnEventCount);
+
+			// Update default render algorithm (if it exists)
+			switch (obj->objType)
+			{
+				case _OBJ_TYPE_EMPTY:		// Empty, used as a placeholder object that is not drawn
+					obj->ev.renderFunc = &iSubobj_renderEmpty;
+					break;
+				case _OBJ_TYPE_FORM:			// Form class, the main outer window the OS sees
+					obj->ev.renderFunc = &iSubobj_renderForm;
+					break;
+				case _OBJ_TYPE_SUBFORM:		// A new class which has its own drawing content and can be moved about using UI features
+					obj->ev.renderFunc = &iSubobj_renderSubform;
+					break;
+				case _OBJ_TYPE_CAROUSEL:	// A new class which holds riders, and allows multiple contents drawn in a new way
+					obj->ev.renderFunc = &iSubobj_renderCarousel;
+					break;
+				case _OBJ_TYPE_RIDER:		// A new class which holds other objects, and allows its content to be drawn in a new way
+					obj->ev.renderFunc = &iSubobj_renderRider;
+					break;
+				case _OBJ_TYPE_LABEL:		// A label
+					obj->ev.renderFunc = &iSubobj_renderLabel;
+					break;
+				case _OBJ_TYPE_TEXTBOX:		// An input textbox
+					obj->ev.renderFunc = &iSubobj_renderTextbox;
+					break;
+				case _OBJ_TYPE_BUTTON:		// A push button
+					obj->ev.renderFunc = &iSubobj_renderButton;
+					break;
+				case _OBJ_TYPE_EDITBOX:		// An input multi-line editbox
+					obj->ev.renderFunc = &iSubobj_renderEditbox;
+					break;
+				case _OBJ_TYPE_IMAGE:		// A graphical image
+					obj->ev.renderFunc = &iSubobj_renderImage;
+					break;
+				case _OBJ_TYPE_CHECKBOX:		// A checkbox
+					obj->ev.renderFunc = &iSubobj_renderCheckbox;
+					break;
+				case _OBJ_TYPE_OPTION:		// A combination selection
+					obj->ev.renderFunc = &iSubobj_renderOption;
+					break;
+				case _OBJ_TYPE_RADIO:		// A radio dial, which can also present as a slider or spinner
+					obj->ev.renderFunc = &iSubobj_renderRadio;
+					break;
+				case _OBJ_TYPE_CMDGROUP:
+					obj->ev.renderFunc = &iSubobj_renderCmdGroup;
+					break;
+				case _OBJ_TYPE_OPTGROUP:
+					obj->ev.renderFunc = &iSubobj_renderOptGroup;
+					break;
+				case _OBJ_TYPE_LISTBOX:
+					obj->ev.renderFunc = &iSubobj_renderListbox;
+					break;
+				case _OBJ_TYPE_COMBOBOX:
+					obj->ev.renderFunc = &iSubobj_renderCombobox;
+					break;
+				case _OBJ_TYPE_FORMSET:
+					obj->ev.renderFunc = &iSubobj_renderFormset;
+					break;
+				case _OBJ_TYPE_TOOLBAR:
+					obj->ev.renderFunc = &iSubobj_renderToolbar;
+					break;
+				case _OBJ_TYPE_SEPARATOR:
+					obj->ev.renderFunc = &iSubobj_renderSeparator;
+					break;
+				case _OBJ_TYPE_LINE:
+					obj->ev.renderFunc = &iSubobj_renderLine;
+					break;
+				case _OBJ_TYPE_SHAPE:
+					obj->ev.renderFunc = &iSubobj_renderShape;
+					break;
+				case _OBJ_TYPE_CONTAINER:
+					obj->ev.renderFunc = &iSubobj_renderContainer;
+					break;
+				case _OBJ_TYPE_CONTROL:
+					obj->ev.renderFunc = &iSubobj_renderControl;
+					break;
+				case _OBJ_TYPE_GRID:
+					obj->ev.renderFunc = &iSubobj_renderGrid;
+					break;
+				case _OBJ_TYPE_COLUMN:
+					obj->ev.renderFunc = &iSubobj_renderColumn;
+					break;
+				case _OBJ_TYPE_HEADER:
+					obj->ev.renderFunc = &iSubobj_renderHeader;
+					break;
+				case _OBJ_TYPE_OLEBOUND:
+					obj->ev.renderFunc = &iSubobj_renderOleBound;
+					break;
+				case _OBJ_TYPE_OLECONTAIN:
+					obj->ev.renderFunc = &iSubobj_renderOleContain;
+					break;
+				case _OBJ_TYPE_SPINNER:
+					obj->ev.renderFunc = &iSubobj_renderSpinner;
+					break;
+				case _OBJ_TYPE_TIMER:
+					obj->ev.renderFunc = &iSubobj_renderTimer;
+					break;
+				case _OBJ_TYPE_HYPERLINK:
+					obj->ev.renderFunc = &iSubobj_renderHyperlink;
+					break;
+				case _OBJ_TYPE_COLLECTION:
+					obj->ev.renderFunc = &iSubobj_renderCollection;
+					break;
+				case _OBJ_TYPE_PAGE:
+					obj->ev.renderFunc = &iSubobj_renderPage;
+					break;
+				case _OBJ_TYPE_PAGEFRAME:
+					obj->ev.renderFunc = &iSubobj_renderPageFrame;
+					break;
+				case _OBJ_TYPE_SESSION:
+					obj->ev.renderFunc = &iSubobj_renderSession;
+					break;
+				case _OBJ_TYPE_CUSTOM:
+					obj->ev.renderFunc = &iSubobj_renderCustom;
+					break;
+				case _OBJ_TYPE_EXCEPTION:
+					obj->ev.renderFunc = &iSubobj_renderException;
+					break;
+				case _OBJ_TYPE_SETTINGS:
+					obj->ev.renderFunc = &iSubobj_renderSettings;
+					break;
+				default:
+// TODO:  We should never get here... we should fire off an internal consistency error ... or a signal flare.  Something to draw attention.
+					obj->ev._renderFunc = 0;
+					iError_silent(__FUNCTION__);
+			}
 
 
 		//////////

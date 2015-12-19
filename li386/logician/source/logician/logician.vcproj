@@ -394,6 +394,10 @@
 				RelativePath=".\resource.h"
 				>
 			</File>
+			<File
+				RelativePath="..\..\..\..\source\vjr\source\vjr.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

@@ -195,7 +195,7 @@
 
 
 // TODO:  Dec.04.2015 RCH -- code is under development
-return;
+return 0;
 		// Make sure we're the only thread running
 		iiSourceLight_oneThread();
 

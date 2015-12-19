@@ -82,3 +82,15 @@
 
 
 
+
+
+
+
+
+//////////
+// Global variables
+//////
+	SObject*		goLogicianForm						= NULL;
+	SWindow*		gLogicianWin						= NULL;
+	SBitmap*		bmpLogicianIcon						= NULL;
+	cs8				cgcLogicianTitle[]					= "Logician";

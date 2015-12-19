@@ -82,3 +82,13 @@
 
 
 
+
+
+
+
+
+//////////
+// logician.cpp
+//////
+	void			iLogician_init_createMainForm			(void);
+	void			iLogician_init_spawn3dThread			(void);

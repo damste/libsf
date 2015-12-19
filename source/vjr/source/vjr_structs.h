@@ -316,6 +316,12 @@ struct SEvents
 	// Array of events for the class
 	SEvent		methods[_EVENT_MAX_COUNT];							// Pointer to the the array for every built-in event/method handler
 
+	// Object's render function (or custom render function)
+	union {
+		uptr	_renderFunc;
+		u32		(*renderFunc)(SObject* obj);						// By default, for the object type, calls iSubobj_render*(), but allows for custom rendering algorithms
+	};
+
 	// Holds status for changes
 	u32			_lastClick;											// When the last mouseClickEx was called, what was the tnClick value?
 	u32			thisClick;											// The tnClick parameter passed below, it is the _MOUSE_*_BUTTON amalgam based on the current mouse button state

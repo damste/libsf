@@ -25,7 +25,7 @@
 //     Aug.08.2015
 //////
 // Change log:
-//     Aug.08.2015 - Initial creation
+//     Dec.08.2015 - Logician icon
 //////
 //
 // This document and all documents contained within are released as Liberty Software
@@ -83,4 +83,4 @@
 
 
 
-// #include "h\somefile.h"
+#include "h\logician_app_icon.h"

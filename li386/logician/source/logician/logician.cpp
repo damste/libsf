@@ -101,25 +101,6 @@
 	#undef main
 
 
-//////////
-// Global variables
-//////
-	SObject*		goLogicianForm						= NULL;
-
-
-//////////
-// Forward declarations
-//////
-	void			iLogician_init_createMainForm			(void);
-	void			iLogician_init_spawn3dThread			(void);
-
-
-//////////
-// other.cpp
-//////
-	//#include "other.cpp"
-
-
 
 
 //////////
@@ -143,6 +124,8 @@
 		// Initialize
 		//////
 			// Initialize main engine
+			bmpCaskIconsTiled	= iBmp_rawLoad(cgc_caskIconsBmp);
+			bmpLogicianIcon		= iBmp_rawLoad(cgc_logicianAppIconBmp);
 			iVjr_init(NULL);
 
 			// Initialize Logician
@@ -162,7 +145,7 @@
 
 			// Do allocated resource shutdown
 			if (!glShuttingDown)
-				iVjr_shutdown(NULL);
+				iVjr_shutdown();
 
 
 		//////////
@@ -182,16 +165,12 @@
 //////
 	void iLogician_init_createMainForm(void)
 	{
-		RECT		lrc;
-		s32			lnLeft, lnTop, lnWidth, lnHeight;
-		SThisCode*	thisCode;
+		RECT	lrc;
+		s32		lnLeft, lnTop, lnWidth, lnHeight;
 
-
-		// Initialize
-		thisCode = NULL;
 
 		// Create the main form
-		goLogicianForm = iObj_create(thisCode, _OBJ_TYPE_FORM, NULL);
+		goLogicianForm = iObj_create(_OBJ_TYPE_FORM, NULL);
 
 		// Give it a fixed point font
 		goLogicianForm->p.font = iFont_create(cgcFontName_defaultFixed, 10, FW_MEDIUM, false, false);
@@ -206,18 +185,18 @@
 		lnTop		= (lrc.bottom - lrc.top)  / 32;
 		lnWidth		-= (2 * lnLeft);
 		lnHeight	-= (2 * lnTop);
-		iObj_setSize(NULL, goLogicianForm, lnLeft, lnTop, lnWidth, lnHeight);
+		iObj_setSize(goLogicianForm, lnLeft, lnTop, lnWidth, lnHeight);
 
 		// Set the app icon and enable the border
 		propSetPictureBmp	(goLogicianForm,	bmpJDebiIcon);
 		propSetBorderStyle	(goLogicianForm,	_BORDER_STYLE_FIXED);
 		propSetName			(goLogicianForm,	cgcName_jdebi,		sizeof(cgcName_jdebi) - 1);
-		propSetIcon			(goLogicianForm,	bmpJDebiIcon);
-		propSetCaption		(goLogicianForm,	cgcJDebiTitle);
+		propSetIcon			(goLogicianForm,	bmpLogicianIcon);
+		propSetCaption		(goLogicianForm,	cgcLogicianTitle);
 		propSetVisible		(goLogicianForm,	_LOGICAL_TRUE);
 
 		// Render
-		iObj_render(NULL, goLogicianForm, true);
+		iObj_render(goLogicianForm, true);
 	}
 
 
@@ -230,31 +209,31 @@
 //////
 	void iLogician_init_spawn3dThread(void)
 	{
-		SGraceParams* params;
-
-
-		// Create a thread to display the content in 3D
-		params = (SGraceParams*)malloc(sizeof(SGraceParams));
-		if (params)
-		{
-			// Initialize
-			memset(params, 0, sizeof(params));
-
-			// Populate
-			params->_func_mouse			= (uptr)&iGrace_mouse;
-			params->_func_motion		= (uptr)&iGrace_motion;
-			params->_func_passiveMotion	= (uptr)&iGrace_passiveMotion;
-			params->_func_key			= (uptr)&iGrace_key;
-			params->_func_special		= (uptr)&iGrace_special;
-			params->_func_reshape		= (uptr)&iGrace_reshape;
-			params->_func_display		= (uptr)&iGrace_display;
-			params->_func_idle			= (uptr)&iGrace_idle;
+// 		SGraceParams* params;
+// 
+// 
+// 		// Create a thread to display the content in 3D
+// 		params = (SGraceParams*)malloc(sizeof(SGraceParams));
+// 		if (params)
+// 		{
+// 			// Initialize
+// 			memset(params, 0, sizeof(params));
+// 
+// 			// Populate
+// 			params->_func_mouse			= (uptr)&iGrace_mouse;
+// 			params->_func_motion		= (uptr)&iGrace_motion;
+// 			params->_func_passiveMotion	= (uptr)&iGrace_passiveMotion;
+// 			params->_func_key			= (uptr)&iGrace_key;
+// 			params->_func_special		= (uptr)&iGrace_special;
+// 			params->_func_reshape		= (uptr)&iGrace_reshape;
+// 			params->_func_display		= (uptr)&iGrace_display;
+// 			params->_func_idle			= (uptr)&iGrace_idle;
 
 			// Create the associated VJr window
-			params->win					= iWindow_allocate();
-			iObj_createWindowForForm(NULL, goLogicianForm, params->win, NULL);
-
-			// Launch the 3D render thread
-			CreateThread(0, 0, &iGrace, (LPVOID)params, 0, 0);
-		}
+			gLogicianWin = iWindow_allocate();
+			iObj_createWindowForForm(goLogicianForm, gLogicianWin, NULL);
+// 
+// 			// Launch the 3D render thread
+// 			CreateThread(0, 0, &iGrace, (LPVOID)params, 0, 0);
+// 		}
 	}
