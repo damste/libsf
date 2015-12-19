@@ -84,6 +84,7 @@ struct SDatum;
 	struct SBuilder
 	{
 		union {
+			s8*		data;
 			s8*		data_s8;												// Pointer to a buffer allocated in blocks
 			u8*		data_u8;
 			s8*		buffer;

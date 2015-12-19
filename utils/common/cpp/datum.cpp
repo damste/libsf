@@ -216,6 +216,7 @@
 			iDatum_duplicate(datumDst, datumSrc->data_u8, datumSrc->length);
 	}
 
+#ifdef SComp
 	void iDatum_duplicate_fromComp(SDatum* datum, SComp* comp)
 	{
 		// Make sure our environment is sane
@@ -240,6 +241,7 @@
 		// Pass-thru
 		return(datum);
 	}
+#endif
 
 	bool iDatum_resize(SDatum* datum, s32 newDataLength)
 	{
@@ -391,6 +393,7 @@
 // Combined properties
 //
 //////
+#ifdef SComp
 	SProperty* iProperty_allocateAs_character_fromComp(SComp* name, SComp* value, s32 tnOverrideNameLength, s32 tnOverrideValueLength)
 	{
 		s32 lnNameLength, lnValueLength;
@@ -411,7 +414,9 @@
 			return(NULL);
 		}
 	}
+#endif
 
+#ifdef SProperty
 	SProperty* iProperty_allocateAs_character(cu8* tcName, s32 tnNameLength, cu8* tcValue, s32 tnValueLength)
 	{
 		SDatum*		name;
@@ -556,3 +561,4 @@
 		// Pass-thru
 		return(p);
 	}
+#endif

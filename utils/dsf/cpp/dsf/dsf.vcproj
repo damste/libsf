@@ -223,7 +223,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\scale.cpp"
+				RelativePath="..\..\..\common\cpp\scale.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"

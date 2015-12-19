@@ -168,16 +168,16 @@
 		//////////
 		// Allocate our instance
 		//////
-			p = (SInstance*)builder_allocateBytes(instances, sizeof(SInstance));
+			p = (SInstance*)iBuilder_allocateBytes(instances, sizeof(SInstance));
 
 
 		//////////
 		// Initialize it
 		//////
 			memset(p, 0, sizeof(SInstance));
-			builder_createAndInitialize(&p->chars,	-1);
-			builder_createAndInitialize(&p->refs,	-1);
-			builder_createAndInitialize(&p->hwnds,	-1);
+			iBuilder_createAndInitialize(&p->chars,	-1);
+			iBuilder_createAndInitialize(&p->refs,	-1);
+			iBuilder_createAndInitialize(&p->hwnds,	-1);
 
 
 		//////////
@@ -349,7 +349,7 @@
 			if (!r)
 			{
 				// It's a new entry
-				r = (SRefs*)builder_allocateBytes(p->refs, sizeof(SRefs));
+				r = (SRefs*)iBuilder_allocateBytes(p->refs, sizeof(SRefs));
 				if (!r)
 					return(-2);		// Error allocating
 
@@ -388,7 +388,7 @@
 		//////////
 		// Release the floan data.  It will be re-populated later if this ref is ever referenced
 		//////
-			builder_freeAndRelease(&r->floans);
+			iBuilder_freeAndRelease(&r->floans);
 
 
 		//////////
@@ -499,7 +499,7 @@
 					if (c->temsRaw->populatedLength != 0)
 					{
 						// Initialize our builder
-						builder_createAndInitialize(&temsTempBuilder, -1);
+						iBuilder_createAndInitialize(&temsTempBuilder, -1);
 
 
 						//////////
@@ -514,7 +514,7 @@
 								t = (STems*)(c->temsRaw->data + lnJ);
 
 								// Create the temporary list of aliased pixel values
-								temsTemp = (SXYS32*)builder_allocateBytes(temsTempBuilder, sizeof(SXYS32));
+								temsTemp = (SXYS32*)iBuilder_allocateBytes(temsTempBuilder, sizeof(SXYS32));
 								if (temsTemp)
 								{
 									// Translate through to the aliased size
@@ -543,7 +543,7 @@
 									temsTempLast = temsTemp;
 
 									// Create the converted data
-									t = (STems*)builder_allocateBytes(c->tems, sizeof(STems));
+									t = (STems*)iBuilder_allocateBytes(c->tems, sizeof(STems));
 									if (t)
 									{
 										// Translate through to the aliased size
@@ -558,7 +558,7 @@
 						//////////
 						// Release our builder
 						//////
-							builder_freeAndRelease(&temsTempBuilder);
+							iBuilder_freeAndRelease(&temsTempBuilder);
 					}
 			}
 	}
@@ -1308,8 +1308,8 @@
 		//////////
 		// Initialize our global buffers
 		/////
-			builder_createAndInitialize(&instances, -1);
-			builder_createAndInitialize(&placeholder, -1);
+			iBuilder_createAndInitialize(&instances, -1);
+			iBuilder_createAndInitialize(&placeholder, -1);
 
 
 		//////////
@@ -1386,7 +1386,7 @@
 		//////////
 		// Add the midpoint as the spline, and use the slope of the line to determine the rotation.
 		//////
-			s = (SSpline*)builder_allocateBytes(b, sizeof(SSpline));
+			s = (SSpline*)iBuilder_allocateBytes(b, sizeof(SSpline));
 			if (s)
 			{
 				// Initialize everything
@@ -1430,7 +1430,7 @@
 		//////////
 		// Add the midpoint as the spline, and use the slope of the line to determine the rotation.
 		//////
-			s = (SSpline*)builder_allocateBytes(b, sizeof(SSpline));
+			s = (SSpline*)iBuilder_allocateBytes(b, sizeof(SSpline));
 			if (s)
 			{
 				// Initialize everything
@@ -1868,8 +1868,8 @@
 		//////////
 		// Initialize
 		//////
-			builder_createAndInitialize(&floans,	65536);
-			builder_createAndInitialize(&floansCsv,	65536);
+			iBuilder_createAndInitialize(&floans,	65536);
+			iBuilder_createAndInitialize(&floansCsv,	65536);
 
 
 		//////////
@@ -1896,7 +1896,7 @@
 
 						// Make sure it's on the reservation :-)
 						if (point.x >= 0.0 && point.y >= 0.0)
-							builder_appendData(floans, (s8*)&point, sizeof(point));
+							iBuilder_appendData(floans, (s8*)&point, sizeof(point));
 
 						// Prepare for our next test
 						lfLastGray = lfGray;
@@ -1929,7 +1929,7 @@
 
 						// Make sure it's on the reservation :-)
 						if (point.x >= 0.0 && point.y >= 0.0)
-							builder_appendData(floans, (s8*)&point, sizeof(point));
+							iBuilder_appendData(floans, (s8*)&point, sizeof(point));
 
 						// Prepare for our next test
 						lfLastGray = lfGray;
@@ -1983,7 +1983,7 @@
 		//////////
 		// Resize (floans are already in correct order)
 		//////
-			builder_setSize(floans, lnNewFloanCount * sizeof(SFloanPoint));
+			iBuilder_setSize(floans, lnNewFloanCount * sizeof(SFloanPoint));
 
 
 		//////////
@@ -1996,9 +1996,9 @@
 				sprintf(buffer, "%15.12f, %15.12f\n\0", pSrc->x, pSrc->y);
 
 				// Append it to the builder
-				builder_appendData(floansCsv, buffer, strlen(buffer));
+				iBuilder_appendData(floansCsv, buffer, strlen(buffer));
 			}
-			builder_asciiWriteOutFile(floansCsv, tcFloanFilename);
+			iBuilder_asciiWriteOutFile(floansCsv, (cu8*)tcFloanFilename);
 
 
 		//////////
@@ -2050,8 +2050,8 @@
 		//////////
 		// Clean house
 		//////
-			builder_freeAndRelease(&floans);
-			builder_freeAndRelease(&floansCsv);
+			iBuilder_freeAndRelease(&floans);
+			iBuilder_freeAndRelease(&floansCsv);
 
 
 		//////////
@@ -2224,16 +2224,16 @@
 			for (lnI = lnStart; lnI <= lnEnd; lnI += sizeof(SChars))
 			{
 				// Grab the pointer
-				thisChar = (SChars*)builder_allocateBytes(charsBuilder, sizeof(SChars));
+				thisChar = (SChars*)iBuilder_allocateBytes(charsBuilder, sizeof(SChars));
 
 				// Initialize it
 				memset(thisChar, 0, sizeof(SChars));
 
 				// Create new builders for it
-				builder_createAndInitialize(&thisChar->splines,		-1);
-				builder_createAndInitialize(&thisChar->temsRaw,		-1);
-				builder_createAndInitialize(&thisChar->tems,		-1);
-				builder_createAndInitialize(&thisChar->temsLines,	-1);
+				iBuilder_createAndInitialize(&thisChar->splines,		-1);
+				iBuilder_createAndInitialize(&thisChar->temsRaw,		-1);
+				iBuilder_createAndInitialize(&thisChar->tems,		-1);
+				iBuilder_createAndInitialize(&thisChar->temsLines,	-1);
 			}
 		}
 
@@ -2290,7 +2290,7 @@
 			if (tlAddIfNotFound)
 			{
 				// Create a new entry
-				return((SSpline*)builder_allocateBytes(thisSplineBuilder, sizeof(SSpline)));
+				return((SSpline*)iBuilder_allocateBytes(thisSplineBuilder, sizeof(SSpline)));
 
 			} else {
 				// 
@@ -2331,7 +2331,7 @@
 			if (tlAddIfNotFound)
 			{
 				// Create a new entry
-				return((SSpline*)builder_allocateBytes(thisSplineBuilder, sizeof(SSpline)));
+				return((SSpline*)iBuilder_allocateBytes(thisSplineBuilder, sizeof(SSpline)));
 
 			} else {
 				// 
@@ -2372,7 +2372,7 @@
 			if (tlAddIfNotFound)
 			{
 				// Create a new entry
-				return((SSpline*)builder_allocateBytes(thisSplineBuilder, sizeof(SSpline)));
+				return((SSpline*)iBuilder_allocateBytes(thisSplineBuilder, sizeof(SSpline)));
 
 			} else {
 				// 
@@ -2439,7 +2439,7 @@
 			if (thisChars)
 			{
 				// Allocate and return the new template
-				t = (STems*)builder_allocateBytes(thisChars->temsRaw, sizeof(STems));
+				t = (STems*)iBuilder_allocateBytes(thisChars->temsRaw, sizeof(STems));
 
 				// Initialize the memory
 				if (t)
@@ -3512,8 +3512,8 @@
 			if (!llNoAlpha)
 			{
 				// Allocate a map buffer to indicate which bits have been drawn already
-				builder_createAndInitialize(&pointsDrawn, -1);
-				lptr = builder_allocateBytes(pointsDrawn, h->w * h->h);
+				iBuilder_createAndInitialize(&pointsDrawn, -1);
+				lptr = iBuilder_allocateBytes(pointsDrawn, h->w * h->h);
 				memset(lptr, 0, h->w * h->h);
 			}
 
@@ -3563,7 +3563,7 @@
 		// Destroy the points drawn buffer
 		//////
 			if (!llNoAlpha)
-				builder_freeAndRelease(&pointsDrawn);
+				iBuilder_freeAndRelease(&pointsDrawn);
 	}
 
 	void iSetPoint(SXYF64* p, f64 x, f64 y)
@@ -4342,7 +4342,7 @@
 		//////////
 		// Add it
 		//////
-			h = (SHwnd*)builder_allocateBytes(hwnds, sizeof(SHwnd));
+			h = (SHwnd*)iBuilder_allocateBytes(hwnds, sizeof(SHwnd));
 			if (h)
 			{
 				// Initialize it

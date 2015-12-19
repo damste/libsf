@@ -75,46 +75,18 @@
 #include <math.h>
 #include <Shobjidl.h>
 
-
-// Unsigned
-typedef		unsigned __int64	u64;
-typedef		unsigned long		u32;
-typedef		unsigned short		u16;
-typedef		unsigned char		u8;
-
-// Signed
-typedef		LARGE_INTEGER		i64;
-typedef		__int64				s64;
-typedef		long				s32;
-typedef		short				s16;
-typedef		char				s8;
-
-// Floating point
-typedef		float				f32;
-typedef		double				f64;
-
-// Constant signed
-typedef		const s8			cs8;
-typedef		const s16			cs16;
-typedef		const s32			cs32;
-typedef		const s64			cs64;
-
-// Constant unsigned
-typedef		const u8			cu8;
-typedef		const u16			cu16;
-typedef		const u32			cu32;
-typedef		const u64			cu64;
-
-// Constant floating point
-typedef		const f64			cf64;
-typedef		const f64			cf64;
+#include "\libsf\utils\common\cpp\common_types.h"
 
 
 //////////
 // Source code files to include
 //////
-	#include "scale.cpp"
-	#include "builder.cpp"
+	#include "\libsf\utils\common\cpp\datum.h"
+	#include "\libsf\utils\common\cpp\datum.cpp"
+	#include "\libsf\utils\common\cpp\builder.h"
+	#include "\libsf\utils\common\cpp\builder.cpp"
+	#include "\libsf\utils\common\cpp\scale.h"
+	#include "\libsf\utils\common\cpp\scale.cpp"
 
 
 
