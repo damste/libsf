@@ -149,10 +149,10 @@
 // Adds a new spline to the builder, computing its components based on a straight line from L to R.
 //
 //////
-	SSpline* iDsf_addSpline_fromToLR(SBuilder* b, bool tlPenDown, f64 tfXL, f64 tfYL, f64 tfXR, f64 tfYR)
+	SDsf_spline* iDsf_addSpline_fromToLR(SBuilder* b, bool tlPenDown, f64 tfXL, f64 tfYL, f64 tfXR, f64 tfYR)
 	{
 		SDsf_line_f64	line;
-		SSpline*	s;
+		SDsf_spline*	s;
 
 
 		//////////
@@ -162,17 +162,17 @@
 			line.p1.y	= tfYL;
 			line.p2.x	= tfXR;
 			line.p2.y	= tfYR;
-			iDsf_computeLine(&line);
+			iDsf_compute_line(&line);
 
 
 		//////////
 		// Add the midpoint as the spline, and use the slope of the line to determine the rotation.
 		//////
-			s = (SSpline*)iBuilder_allocateBytes(b, sizeof(SSpline));
+			s = (SDsf_spline*)iBuilder_allocateBytes(b, sizeof(SDsf_spline));
 			if (s)
 			{
 				// Initialize everything
-				memset(s, 0, sizeof(SSpline));
+				memset(s, 0, sizeof(SDsf_spline));
 
 				// Populate
 				s->ox	= line.mid.x;
@@ -204,19 +204,19 @@
 // is from left to right in our system, as per the standard Quad 1 X,Y coordinate system.
 //
 //////
-	SSpline* iDsf_addSpline_centerThetaRadiusLR(SBuilder* b, bool tlPenDown, f64 tfX, f64 tfY, f64 tfRadius, f64 tfThetaL, f64 tfThetaR)
+	SDsf_spline* iDsf_addSpline_centerThetaRadiusLR(SBuilder* b, bool tlPenDown, f64 tfX, f64 tfY, f64 tfRadius, f64 tfThetaL, f64 tfThetaR)
 	{
-		SSpline* s;
+		SDsf_spline* s;
 
 
 		//////////
 		// Add the midpoint as the spline, and use the slope of the line to determine the rotation.
 		//////
-			s = (SSpline*)iBuilder_allocateBytes(b, sizeof(SSpline));
+			s = (SDsf_spline*)iBuilder_allocateBytes(b, sizeof(SDsf_spline));
 			if (s)
 			{
 				// Initialize everything
-				memset(s, 0, sizeof(SSpline));
+				memset(s, 0, sizeof(SDsf_spline));
 
 				// Populate
 				s->ox	= tfX;
@@ -289,7 +289,7 @@
 // matching character reference.
 //
 //////
-	SSpline* iDsf_find_splineInstance(SBuilder* charsBuilder, u32 tnIid, u8 tcType, u32 tiOrder, u32 tiLnkId, u32 tiLnkOrder)
+	SDsf_spline* iDsf_find_splineInstance(SBuilder* charsBuilder, u32 tnIid, u8 tcType, u32 tiOrder, u32 tiLnkId, u32 tiLnkOrder)
 	{
 		SDsf_chars*		thisChar;
 		SBuilder*	thisSplineBuilder;
@@ -409,10 +409,10 @@
 		}
 	}
 
-	SSpline* iDsf_find_splineInstance_SD(SBuilder* thisSplineBuilder, u32 tnIid, u32 tiOrder, bool tlAddIfNotFound)
+	SDsf_spline* iDsf_find_splineInstance_SD(SBuilder* thisSplineBuilder, u32 tnIid, u32 tiOrder, bool tlAddIfNotFound)
 	{
 		u32			lnI;
-		SSpline*	s;
+		SDsf_spline*	s;
 
 
 		//////////
@@ -425,10 +425,10 @@
 		//////////
 		// Search for it
 		//////
-			for (lnI = 0; lnI < thisSplineBuilder->populatedLength; lnI += sizeof(SSpline))
+			for (lnI = 0; lnI < thisSplineBuilder->populatedLength; lnI += sizeof(SDsf_spline))
 			{
 				// Grab the pointer
-				s = (SSpline*)(thisSplineBuilder->data + lnI);
+				s = (SDsf_spline*)(thisSplineBuilder->data + lnI);
 
 				// See if this is it
 				if (s->iid == tnIid && s->iOrder == tiOrder)
@@ -442,7 +442,7 @@
 			if (tlAddIfNotFound)
 			{
 				// Create a new entry
-				return((SSpline*)iBuilder_allocateBytes(thisSplineBuilder, sizeof(SSpline)));
+				return((SDsf_spline*)iBuilder_allocateBytes(thisSplineBuilder, sizeof(SDsf_spline)));
 
 			} else {
 				// 
@@ -450,10 +450,10 @@
 			}
 	}
 
-	SSpline* iDsf_find_splineInstance_R(SBuilder* thisSplineBuilder, u32 tnIid, u32 tiOrder, u32 tiLnkId, bool tlAddIfNotFound)
+	SDsf_spline* iDsf_find_splineInstance_R(SBuilder* thisSplineBuilder, u32 tnIid, u32 tiOrder, u32 tiLnkId, bool tlAddIfNotFound)
 	{
 		u32			lnI;
-		SSpline*	s;
+		SDsf_spline*	s;
 
 
 		//////////
@@ -466,10 +466,10 @@
 		//////////
 		// Search for it
 		//////
-			for (lnI = 0; lnI < thisSplineBuilder->populatedLength; lnI += sizeof(SSpline))
+			for (lnI = 0; lnI < thisSplineBuilder->populatedLength; lnI += sizeof(SDsf_spline))
 			{
 				// Grab the pointer
-				s = (SSpline*)(thisSplineBuilder->data + lnI);
+				s = (SDsf_spline*)(thisSplineBuilder->data + lnI);
 
 				// See if this is it
 				if (s->iid == tnIid && s->iOrder == tiOrder && s->iLnkId == tiLnkId)
@@ -483,7 +483,7 @@
 			if (tlAddIfNotFound)
 			{
 				// Create a new entry
-				return((SSpline*)iBuilder_allocateBytes(thisSplineBuilder, sizeof(SSpline)));
+				return((SDsf_spline*)iBuilder_allocateBytes(thisSplineBuilder, sizeof(SDsf_spline)));
 
 			} else {
 				// 
@@ -491,10 +491,10 @@
 			}
 	}
 
-	SSpline* iDsf_find_splineInstance_L(SBuilder* thisSplineBuilder, u32 tnIid, u32 tiOrder, u32 tiLnkId, u32 tiLnkOrder, bool tlAddIfNotFound)
+	SDsf_spline* iDsf_find_splineInstance_L(SBuilder* thisSplineBuilder, u32 tnIid, u32 tiOrder, u32 tiLnkId, u32 tiLnkOrder, bool tlAddIfNotFound)
 	{
 		u32			lnI;
-		SSpline*	s;
+		SDsf_spline*	s;
 
 
 		//////////
@@ -507,10 +507,10 @@
 		//////////
 		// Search for it
 		//////
-			for (lnI = 0; lnI < thisSplineBuilder->populatedLength; lnI += sizeof(SSpline))
+			for (lnI = 0; lnI < thisSplineBuilder->populatedLength; lnI += sizeof(SDsf_spline))
 			{
 				// Grab the pointer
-				s = (SSpline*)(thisSplineBuilder->data + lnI);
+				s = (SDsf_spline*)(thisSplineBuilder->data + lnI);
 
 				// See if this is it
 				if (s->iid == tnIid && s->iOrder == tiOrder && s->iLnkId == tiLnkId && s->iLnkOrder == tiLnkOrder)
@@ -524,7 +524,7 @@
 			if (tlAddIfNotFound)
 			{
 				// Create a new entry
-				return((SSpline*)iBuilder_allocateBytes(thisSplineBuilder, sizeof(SSpline)));
+				return((SDsf_spline*)iBuilder_allocateBytes(thisSplineBuilder, sizeof(SDsf_spline)));
 
 			} else {
 				// 
@@ -540,20 +540,20 @@
 // Called to search through the existing refs entry to see if the indicated reference is found
 //
 //////
-	SRefs* iDsf_find_refsInstance(SBuilder* refs, u8 tcType, s8* tcDesc40)
+	SDsf_refs* iDsf_find_refsInstance(SBuilder* refs, u8 tcType, s8* tcDesc40)
 	{
 		s32		lnI, lnMaxCount;
-		SRefs*	r;
+		SDsf_refs*	r;
 
 
 		//////////
 		// Make sure our environment is sane
 		//////
-			if (refs && refs->data && refs->populatedLength >= sizeof(SRefs))
+			if (refs && refs->data && refs->populatedLength >= sizeof(SDsf_refs))
 			{
 				// Get our starting and ending points
-				lnMaxCount	= refs->populatedLength / sizeof(SRefs);
-				r			= (SRefs*)refs->data;
+				lnMaxCount	= refs->populatedLength / sizeof(SDsf_refs);
+				r			= (SDsf_refs*)refs->data;
 
 				// Iterate through every ref
 				for (lnI = 0; lnI < lnMaxCount; lnI++, r++)
@@ -578,10 +578,10 @@
 // Called to create a new templates entry as template data is being initially loaded
 //
 //////
-	STems* iDsf_create_newTemsEntry(SBuilder* charsBuilder, u32 tipid)
+	SDsf_tems* iDsf_create_newTemsEntry(SBuilder* charsBuilder, u32 tipid)
 	{
 		SDsf_chars*		thisChars;
-		STems*		t;
+		SDsf_tems*		t;
 
 
 		//////////
@@ -591,11 +591,11 @@
 			if (thisChars)
 			{
 				// Allocate and return the new template
-				t = (STems*)iBuilder_allocateBytes(thisChars->temsRaw, sizeof(STems));
+				t = (SDsf_tems*)iBuilder_allocateBytes(thisChars->temsRaw, sizeof(SDsf_tems));
 
 				// Initialize the memory
 				if (t)
-					memset(t, 0, sizeof(STems));
+					memset(t, 0, sizeof(SDsf_tems));
 
 				// Indicate our pointer
 				return(t);
@@ -642,7 +642,7 @@
 // Called to render the indicated character
 //
 //////
-	int iDsf_render(SDsf* p, SDsf_hwnd* h, SDsf_chars* c, s32 tnWidth, s32 tnHeight, u32 tnHwndParent, s32 tnX, s32 tnY)
+	int iDsf_render(SDsf* dsf, SDsf_hwnd* h, SDsf_chars* c, s32 tnWidth, s32 tnHeight, u32 tnHwndParent, s32 tnX, s32 tnY)
 	{
 		RECT lrc;
 
@@ -651,7 +651,7 @@
 		// Render the character window
 		//////
 			SetRect(&lrc, 0, 0, h->w, h->h);
-			if (p->activeChar < 0)
+			if (dsf->activeChar < 0)
 			{
 				// No valid character has been specified
 				FillRect(h->hdc, &lrc, h->backDarkGrayBrush);
@@ -664,27 +664,27 @@
 					FillRect(h->hdc, &lrc, h->backDarkGrayBrush);
 
 					// Render any cues
-					if (p->cuesUnder)
-						iDsf_render_cues(p, h, c);
+					if (dsf->cuesUnder)
+						iDsf_render_cues(dsf, h, c);
 
 					// Render the splines with markup
-					if (p->showSplines)
-						iDsf_render_splines(p, h, c, h->markup, h->bold, h->italic, h->underline, h->strikethrough);
+					if (dsf->showSplines)
+						iDsf_render_splines(dsf, h, c, h->markup, h->bold, h->italic, h->underline, h->strikethrough);
 
 					// Render any cues
-					if (!p->cuesUnder)
-						iDsf_render_cues(p, h, c);
+					if (!dsf->cuesUnder)
+						iDsf_render_cues(dsf, h, c);
 
 					// Render the mouse coordinates
-					iDsf_render_mouseCoordinates(p, h);
+					iDsf_render_mouseCoordinates(dsf, h);
 
 					// Render the mouse overlay for current mouse activity
-					iDsf_render_mouseOverlay(p, h, c);
+					iDsf_render_mouseOverlay(dsf, h, c);
 
 				} else {
 					// Render final as black text on a white background
 					FillRect(h->hdc, &lrc, (HBRUSH)GetStockObject(WHITE_BRUSH));
-					iDsf_render_splines(p, h, c, h->markup, h->bold, h->italic, h->underline, h->strikethrough);
+					iDsf_render_splines(dsf, h, c, h->markup, h->bold, h->italic, h->underline, h->strikethrough);
 				}
 			}
 
@@ -692,14 +692,14 @@
 		//////////
 		// 
 		//////
-			if (p->zoomLens)
+			if (dsf->zoomLens)
 				iDsf_render_zoomLens(h);
 
 
 		//////////
 		// Invert
 		//////
-			if (p->invert)
+			if (dsf->invert)
 				iDsf_invertImage(h);	// Invert the colors
 
 
@@ -726,7 +726,7 @@
 // Called to put the mouse coordinates in the upper-right, or lower-right, depending on mouse position
 //
 //////
-	void iDsf_render_mouseCoordinates(SDsf* p, SDsf_hwnd* h)
+	void iDsf_render_mouseCoordinates(SDsf* dsf, SDsf_hwnd* h)
 	{
 		RECT	lrcX, lrcY;
 		s8		bufferX[32];
@@ -777,36 +777,36 @@
 // Called to render any cues
 //
 //////
-	void iDsf_render_cues(SDsf* p, SDsf_hwnd* h, SDsf_chars* c)
+	void iDsf_render_cues(SDsf* dsf, SDsf_hwnd* h, SDsf_chars* c)
 	{
-		if (p->grid)				iDsf_render_grid(p, h);						// Render the grid if it's enabled
-		if (p->tems)				iDsf_render_tems(p, h, c);
+		if (dsf->grid)				iDsf_render_grid(dsf, h);						// Render the grid if it's enabled
+		if (dsf->tems)				iDsf_render_tems(dsf, h, c);
 
-		if (p->strikethrough)		iDsf_render_quadH(p, h, c, p->font.fStrikeTop, p->font.fStrikeBot, colorStrikethrough);
-		if (p->underline)			iDsf_render_quadH(p, h, c, p->font.fUnderTop, p->font.fUnderBot, colorUnderline);
+		if (dsf->strikethrough)		iDsf_render_quadH(dsf, h, c, dsf->font.fStrikeTop,	dsf->font.fStrikeBot,	colorStrikethrough);
+		if (dsf->underline)			iDsf_render_quadH(dsf, h, c, dsf->font.fUnderTop,	dsf->font.fUnderBot,	colorUnderline);
 
-		if (p->ascent)				iDsf_render_cueLineH(p, h, c, p->font.fAscent,	colorAscent);
-		if (p->upper)				iDsf_render_cueLineH(p, h, c, p->font.fUpper,	colorUpper);
-		if (p->lower)				iDsf_render_cueLineH(p, h, c, p->font.fLower,	colorLower);
-		if (p->base)				iDsf_render_cueLineH(p, h, c, p->font.fBase,		colorBase);
-		if (p->descent)				iDsf_render_cueLineH(p, h, c, p->font.fDescent,	colorDescent);
-		if (p->left)				iDsf_render_cueLineV(p, h, c, p->font.fLeft,		colorLeft);
-		if (p->right)				iDsf_render_cueLineV(p, h, c, p->font.fRight,	colorRight);
+		if (dsf->ascent)			iDsf_render_cueLineH(dsf, h, c, dsf->font.fAscent,		colorAscent);
+		if (dsf->upper)				iDsf_render_cueLineH(dsf, h, c, dsf->font.fUpper,		colorUpper);
+		if (dsf->lower)				iDsf_render_cueLineH(dsf, h, c, dsf->font.fLower,		colorLower);
+		if (dsf->base)				iDsf_render_cueLineH(dsf, h, c, dsf->font.fBase,		colorBase);
+		if (dsf->descent)			iDsf_render_cueLineH(dsf, h, c, dsf->font.fDescent,		colorDescent);
+		if (dsf->left)				iDsf_render_cueLineV(dsf, h, c, dsf->font.fLeft,		colorLeft);
+		if (dsf->right)				iDsf_render_cueLineV(dsf, h, c, dsf->font.fRight,		colorRight);
 
-		if (p->showRefs)			iDsf_render_refs(p, h, c);
+		if (dsf->showRefs)			iDsf_render_refs(dsf, h, c);
 	}
 
-	void iDsf_render_cueLineH(SDsf* p, SDsf_hwnd* h, SDsf_chars* c, f64 tfY, SBgr color)
+	void iDsf_render_cueLineH(SDsf* dsf, SDsf_hwnd* h, SDsf_chars* c, f64 tfY, SBgr color)
 	{
-		iDsf_colorize_horizontalLine_byPixels(p, h, c, 0, h->w - 1, (s32)(tfY * h->h), color);
+		iDsf_colorize_horizontalLine_byPixels(dsf, h, c, 0, h->w - 1, (s32)(tfY * h->h), color);
 	}
 
-	void iDsf_render_cueLineV(SDsf* p, SDsf_hwnd* h, SDsf_chars* c, f64 tfX, SBgr color)
+	void iDsf_render_cueLineV(SDsf* dsf, SDsf_hwnd* h, SDsf_chars* c, f64 tfX, SBgr color)
 	{
-		iDsf_colorize_verticalLine_byPixels(p, h, c, 0, h->h - 1, (s32)(tfX * h->w), color);
+		iDsf_colorize_verticalLine_byPixels(dsf, h, c, 0, h->h - 1, (s32)(tfX * h->w), color);
 	}
 
-	void iDsf_render_quadH(SDsf* p, SDsf_hwnd* h, SDsf_chars* c, f64 tfTop, f64 tfBottom, SBgr color)
+	void iDsf_render_quadH(SDsf* dsf, SDsf_hwnd* h, SDsf_chars* c, f64 tfTop, f64 tfBottom, SBgr color)
 	{
 		SXy_f64	p1, p2, p3, p4;
 
@@ -826,7 +826,81 @@
 			iDsf_fill_quad_alpha(h, &p1, &p2, &p3, &p4, color, color, color, color, 0.5, 0.5, 0.5, 0.5, gfLinePower);
 	}
 
-	void iDsf_render_refs(SDsf* p, SDsf_hwnd* h, SDsf_chars* c)
+	// Called to render the mouse atop the current image
+	void iDsf_render_mouseOverlay(SDsf* dsf, SDsf_hwnd* h, SDsf_chars* c)
+	{
+		SXy_s32		p1;
+		SDsf_line_f64	line;
+		s32			lnX, lnY, lnYLast;
+		f64			lfTheta, lfThetaStep, lfA, lfB, lfV1, lfV2, lfX, lfY, lfRadius;
+		SBgr		color;
+
+
+		// Invert the Y mouse coordinates for rendering
+		p1.xi = gMouse.xi;
+		p1.yi = h->h - gMouse.yi;
+
+		// Do we need to render the select area?
+		if (glCtrlKeyDown && !(glMouseLeft || glMouseRight))		color = mousePeeakaheadColor;
+		else														color = mouseColor;
+
+		// If the CTRL key is down, compute what would be the closest point, and render that line
+		if (glCtrlKeyDown)
+		{
+			// Compute the closest line to the mouse, but only within a certain radius
+			if (iDsf_compute_closestMouseLine(&line))
+			{
+				// Draw a point at the center of the indicated line
+				iDsf_draw_point_large(h, &line.mid, color);
+			}
+		}
+
+		// Is there a reason to render the rectangles?
+		if (glMouseLeft || glMouseRight)
+		{
+			// The mouse is pressed down, render the select area
+			// Render it (we're basically drawing an oval area the mouse will interact with)
+			lfRadius	= (f64)iDsf_validate_range(dsf->selectArea, _SELECT_AREA_SMALL, _SELECT_AREA_EXTRA_LARGE, _SELECT_AREA_SMALL);
+			lnYLast		= -1;
+			lfA			= lfRadius * 1.0;		// A is 100%
+			lfB			= lfRadius * 0.7;		// B is 70%, this gives us a 10:7 oval
+			lfThetaStep	= _PI / ((f64)gMouseType * 128.0);
+			for (lfTheta = 0; lfTheta < _PI_2; lfTheta += lfThetaStep)
+			{
+				// Compute the X,Y for Quad I, then reflect for lines in Quad2..1, and Quad3..4
+				lfV1		= lfB * cos(lfTheta);
+				lfV2		= lfA * sin(lfTheta);
+				lfRadius	= (lfA*lfB) / sqrt(lfV1*lfV1 + lfV2*lfV2);
+
+				// Compute X and Y given this radius
+				lfX			= lfRadius * cos(lfTheta);
+				lfY			= lfRadius * sin(lfTheta);
+
+				// Convert to integer
+				lnY			= (s32)lfY;
+				lnX			= (s32)lfX;
+
+				// If it's changed, draw it
+				if (lnY != lnYLast)
+				{
+					// Draw the mouse indicator there, and perform any operations
+					iDsf_colorize_andProcessHorizontalLine_byPixels(dsf, h, c, p1.xi - lnX, p1.xi + lnX, p1.yi + lnY, color);		// Above
+					if (lnY != 0)
+						iDsf_colorize_andProcessHorizontalLine_byPixels(dsf, h, c, p1.xi - lnX, p1.xi + lnX, p1.yi - lnY, color);	// Below
+
+					lnYLast = lnY;
+				}
+			}
+		}
+
+		if (p1.xi >= 0 && p1.xi < h->w && p1.yi >= 0 && p1.yi < h->h)
+		{
+			if (dsf->mouseCrosshairX)		iDsf_colorize_horizontalLine_byPixels(dsf, h, c, 0, h->w - 1, p1.yi, mouseColor);		// Horizontal
+			if (dsf->mouseCrosshairY)		iDsf_colorize_verticalLine_byPixels(  dsf, h, c, 0, h->h - 1, p1.xi, mouseColor);		// Vertical
+		}
+	}
+
+	void iDsf_render_refs(SDsf* dsf, SDsf_hwnd* h, SDsf_chars* c)
 	{
 	}
 
@@ -838,7 +912,7 @@
 // Called to render a grid
 //
 //////
-	void iDsf_render_grid(SDsf* p, SDsf_hwnd* h)
+	void iDsf_render_grid(SDsf* dsf, SDsf_hwnd* h)
 	{
 		f64		lfX, lfY;
 		s32		lnX, lnY;
@@ -849,7 +923,7 @@
 		//////////
 		// Depending on whether or not we're tracking to the grid it's rendered in different colors
 		//////
-			if (p->trackGrid && glMouseLeft)			color = gridTrack;		// Only if tracking, and the mouse is down
+			if (dsf->trackGrid && glMouseLeft)			color = gridTrack;		// Only if tracking, and the mouse is down
 			else										color = grid;
 
 
@@ -902,15 +976,15 @@
 // Called to render the indicated splines onto the character
 //
 //////
-	void iDsf_render_splines(SDsf* p, SDsf_hwnd* h, SDsf_chars* c, u32 tlMarkup, u32 tlBold, u32 tlItalic, u32 tlUnderline, u32 tlStrikethrough)
+	void iDsf_render_splines(SDsf* dsf, SDsf_hwnd* h, SDsf_chars* c, u32 tlMarkup, u32 tlBold, u32 tlItalic, u32 tlUnderline, u32 tlStrikethrough)
 	{
 		u32			lnI, lnJ, lnSplineNumber, lnSplineCount;
 		SXy_f64		prLast, poLast, plLast;
 		SXy_f64		pr, po, pl;
 		SDsf_line_f64	line, lineL, lineR, lineLLast, lineRLast, lineLtoLLast, lineRtoRLast;
-		SSpline*	s;
-		SSpline*	sLast;
-		SSpline*	sTest;
+		SDsf_spline*	s;
+		SDsf_spline*	sLast;
+		SDsf_spline*	sTest;
 		SBuilder*	b;
 		SBgr		colorLine;
 		SBgr		quad, quadSelected, p1ColorR, p2ColorR, p3ColorR, p4ColorR, p1ColorL, p2ColorL, p3ColorL, p4ColorL;
@@ -934,36 +1008,36 @@
 			{
 				// It is a final render, black on white
 												quad			= black;
-				if (p->highlighSelection)		quadSelected	= blackSelected;
+				if (dsf->highlighSelection)		quadSelected	= blackSelected;
 				else							quadSelected	= black;
 
 			} else {
 				// It is a markup render, gray on black
-				if (p->splinesType == _SPLINES_FILL)
+				if (dsf->splinesType == _SPLINES_FILL)
 				{
 					// Normal rendering
 					quad			= gray;
-					quadSelected	= ((p->highlighSelection) ? graySelected : gray);
+					quadSelected	= ((dsf->highlighSelection) ? graySelected : gray);
 
 				} else {
 					// Outline or LOR rendering
 					quad			= background;
-					quadSelected	= ((p->highlighSelection) ? backgroundSelected : background);
+					quadSelected	= ((dsf->highlighSelection) ? backgroundSelected : background);
 				}
 			}
 
 			// Splines
-			colorLine = iDsf_setLineColor(p);
+			colorLine = iDsf_setLineColor(dsf);
 
 
 		//////////
 		// Iterate through each spline
 		//////
 			sLast = NULL;
-			for (lnI = 0; lnI < b->populatedLength; lnI += sizeof(SSpline))
+			for (lnI = 0; lnI < b->populatedLength; lnI += sizeof(SDsf_spline))
 			{
 				// Grab the pointer
-				s = (SSpline*)(b->data + lnI);
+				s = (SDsf_spline*)(b->data + lnI);
 
 				// There are negative values which store meta data
 				if (s->iOrder >= 0)
@@ -986,7 +1060,7 @@
 							// Draw in filled in final mode, or when the user wants to see it in markup mode
 							// Lines are drawn p1..p4, p2..p3 using the following form:
 							// iFillQuad(h, &p1, &p2, &p3, &p4, p1Color, p2Color, p3Color, p4Color);
-							if (tlMarkup == 0 || p->splinesType == _SPLINES_FILL)
+							if (tlMarkup == 0 || dsf->splinesType == _SPLINES_FILL)
 							{
 								iDsf_fill_quad_alpha(h, /*p1*/&poLast, /*p2*/&po, /*p3*/&pr, /*p4*/&prLast, p4ColorR, p3ColorR, p2ColorR, p1ColorR, 1.0, 1.0, 1.0, 1.0, gfLinePower);
 								iDsf_fill_quad_alpha(h, /*p1*/&poLast, /*p2*/&po, /*p3*/&pl, /*p4*/&plLast, p1ColorL, p2ColorL, p3ColorL, p4ColorL, 1.0, 1.0, 1.0, 1.0, gfLinePower);
@@ -1010,10 +1084,10 @@
 		//////
 			if (tlMarkup != 0)
 			{
-				for (lnI = 0, lnSplineNumber = 0; lnI < b->populatedLength; lnI += sizeof(SSpline))
+				for (lnI = 0, lnSplineNumber = 0; lnI < b->populatedLength; lnI += sizeof(SDsf_spline))
 				{
 					// Grab the pointer
-					s = (SSpline*)(b->data + lnI);
+					s = (SDsf_spline*)(b->data + lnI);
 
 					// There are negative values which store meta data
 					if (s->iOrder >= 0)
@@ -1032,10 +1106,10 @@
 								// Start of a new stroke, find out how many splines there are in this stroke
 								lnSplineNumber	= 0;
 								lnSplineCount	= 1;
-								for (lnJ = lnI + sizeof(SSpline); lnJ < b->populatedLength; lnJ += sizeof(SSpline))
+								for (lnJ = lnI + sizeof(SDsf_spline); lnJ < b->populatedLength; lnJ += sizeof(SDsf_spline))
 								{
 									// Grab the pointer
-									sTest = (SSpline*)(b->data + lnJ);
+									sTest = (SDsf_spline*)(b->data + lnJ);
 
 									// See if it's a new stroke
 									if (sTest->lPenDown)
@@ -1052,7 +1126,7 @@
 
 								} else {
 									// Determine the color based on the drawing mode
-									colorLine = iDsf_setLineColor(p);
+									colorLine = iDsf_setLineColor(dsf);
 								}
 
 							} else {
@@ -1064,7 +1138,7 @@
 						//////////
 						// If this is the start of a new stroke, render the indicator
 						//////
-							if (p->showPenDowns)
+							if (dsf->showPenDowns)
 							{
 								//////////
 								// For pendown strokes, render the large indicator
@@ -1074,14 +1148,14 @@
 										//////////
 										// Pen down stroke
 										//////
-											iDsf_computeLine_fromTwoPoints(&line, &pl, &pr);				// Compute the line from L to R
+											iDsf_compute_line_fromTwoPoints(&line, &pl, &pr);				// Compute the line from L to R
 											iDsf_draw_penDown(h, &line);									// Draw the pen down flow indicator
 
 										// For the previous stroke, if any, draw the pen up indicator
 										if (sLast && !sLast->lPenDown)
 										{
 											// Pen up stroke
-											iDsf_computeLine_fromTwoPoints(&line, &plLast, &prLast);		// Compute the line from the last L to R
+											iDsf_compute_line_fromTwoPoints(&line, &plLast, &prLast);		// Compute the line from the last L to R
 											iDsf_draw_penUp(h, &line);									// Draw the pen up flow indicator
 										}
 									}
@@ -1093,14 +1167,14 @@
 									if (lnSplineNumber >= 1)
 									{
 										// Compute the line from L to O and O to R on both the current and the last points
-										iDsf_computeLine_fromTwoPoints(&lineL, &pl, &po);
-										iDsf_computeLine_fromTwoPoints(&lineR, &po, &pr);
-										iDsf_computeLine_fromTwoPoints(&lineLLast, &plLast, &poLast);
-										iDsf_computeLine_fromTwoPoints(&lineRLast, &poLast, &prLast);
+										iDsf_compute_line_fromTwoPoints(&lineL, &pl, &po);
+										iDsf_compute_line_fromTwoPoints(&lineR, &po, &pr);
+										iDsf_compute_line_fromTwoPoints(&lineLLast, &plLast, &poLast);
+										iDsf_compute_line_fromTwoPoints(&lineRLast, &poLast, &prLast);
 
 										// Compute a line from the midpoints forward
-										iDsf_computeLine_fromTwoPoints(&lineLtoLLast, &lineLLast.mid, &lineL.mid);
-										iDsf_computeLine_fromTwoPoints(&lineRtoRLast, &lineRLast.mid, &lineR.mid);
+										iDsf_compute_line_fromTwoPoints(&lineLtoLLast, &lineLLast.mid, &lineL.mid);
+										iDsf_compute_line_fromTwoPoints(&lineRtoRLast, &lineRLast.mid, &lineR.mid);
 
 										// Build quads around the endpoints
 										if (lineL.length * (f64)h->w >= 9.0)
@@ -1120,13 +1194,13 @@
 							if (!s->lPenDown)
 							{
 								// Connect left, right as markup lines
-								if (p->splinesType == _SPLINES_FILL || p->splinesType == _SPLINES_OUTLINE)
+								if (dsf->splinesType == _SPLINES_FILL || dsf->splinesType == _SPLINES_OUTLINE)
 								{
 									iDsf_draw_line(h, &pr, &prLast, s->tlRSelected ? colorSelected : colorLine, sLast->tlRSelected ? colorSelected : colorLine, gfLinePower);
 									iDsf_draw_line(h, &po, &poLast, s->tlOSelected ? colorSelected : colorLine, sLast->tlOSelected ? colorSelected : colorLine, gfLinePower);
 									iDsf_draw_line(h, &pl, &plLast, s->tlLSelected ? colorSelected : colorLine, sLast->tlLSelected ? colorSelected : colorLine, gfLinePower);
 								}
-								iDsf_draw_points(p, h, &prLast, &poLast, &plLast, sLast, colorSelected, colorR, colorO, colorL, colorRSelected, colorOSelected, colorLSelected, colorLine);
+								iDsf_draw_points(dsf, h, &prLast, &poLast, &plLast, sLast, colorSelected, colorR, colorO, colorL, colorRSelected, colorOSelected, colorLSelected, colorLine);
 
 							} else {
 								// Reset the spline count
@@ -1136,7 +1210,7 @@
 							// Connect left, middle, right as markup lines
 							iDsf_draw_line(h, &po, &pr, s->tlOSelected ? colorSelected : colorLine, s->tlRSelected ? colorSelected : colorLine, gfLinePower);
 							iDsf_draw_line(h, &po, &pl, s->tlOSelected ? colorSelected : colorLine, s->tlLSelected ? colorSelected : colorLine, gfLinePower);
-							iDsf_draw_points(p, h, &pr, &po, &pl, s, colorSelected, colorR, colorO, colorL, colorRSelected, colorOSelected, colorLSelected, colorLine);
+							iDsf_draw_points(dsf, h, &pr, &po, &pl, s, colorSelected, colorR, colorO, colorL, colorRSelected, colorOSelected, colorLSelected, colorLine);
 
 
 						//////////
@@ -1151,10 +1225,427 @@
 			}
 	}
 
-	SBgr iDsf_setLineColor(SDsf* p)
+	void iDsf_render_hint(SDsf_hwnd* h, SDsf_line_f64* line, SXy_f64* pt)
 	{
-		if (p->splinesType != _SPLINES_FILL)		return(gray);				// They don't want to see it filled in, so make it a little more visible
+		SXy_f64		pLeft;
+		SXy_f64		pForward;
+		SXy_f64		pRight;
+
+
+		//////////
+		// Move the point forward one pixel
+		//////
+			pt->x	= pt->x + ((1.0 / (f64)h->w)  * cos(line->theta));
+			pt->y	= pt->y + ((1.0 / (f64)h->w)  * sin(line->theta));
+
+
+		//////////
+		// Create line moving left, forward, and right from the end of the provided line
+		//////
+			pLeft.x		= pt->x + ((3.0 / (f64)h->w)  * cos(line->theta - _PI_2));
+			pLeft.y		= pt->y + ((3.0 / (f64)h->w)  * sin(line->theta - _PI_2));
+
+			pForward.x	= pt->x + ((6.0 / (f64)h->w)  * cos(line->theta));
+			pForward.y	= pt->y + ((6.0 / (f64)h->w)  * sin(line->theta));
+
+			pRight.x	= pt->x + ((3.0 / (f64)h->w)  * cos(line->theta + _PI_2));
+			pRight.y	= pt->y + ((3.0 / (f64)h->w)  * sin(line->theta + _PI_2));
+
+
+		//////////
+		// Draw the quad (which is really a triangle. :-))
+		//////
+			iDsf_fill_quad_alpha(h, &pLeft, &pForward, &pForward, &pRight, strokeDown, strokeDown, strokeDown, strokeDown, 1.0, 1.0, 1.0, 1.0, 2.0);
+	}
+
+
+
+
+//////////
+//
+// Called to render the markup data onto the character
+//
+//////
+	void iDsf_render_tems(SDsf* dsf, SDsf_hwnd* h, SDsf_chars* c)
+	{
+// 		s32			lnX;
+// 		u32			lnI, lnINext, lnTemsCount;
+// 		STemsLines*	tl;
+// 		STems*		p1;
+// 		STems*		p2;
+// 		SLineS32	line;
+		u32			lnI;
+		f64			lfRed, lfGrn, lfBlu, lfGray, lfMGray;
+		SXy_s32		point;
+		SDsf_tems*		t;
+		SBgr*		lbgr;
+
+
+// Note:  This commented code block was an attempt to overlay using solid areas rather than an outline.
+// Note:  It didn't always work correctly due to noise in the incoming outline data.  At some point I'll
+//        add smoothing algorithms which correct the noise.  Until then, we'll just use the outline.
+// 		//////////
+// 		// Do we need to rebuild the overlay information?
+// 		//////
+// 			if (c->temsLines->populatedLength == 0)
+// 			{
+// 				// Sort the list of tems
+// 				lnTemsCount = c->tems->populatedLength / sizeof(STems);
+// 				qsort(c->tems->data, lnTemsCount, sizeof(STems), iiTems_qsortCallback);
+// 
+// 				// Iterate through each block and grab horizontal line runs in blocks
+// 				// Note:  At each horizontal stop there may be one or more pixels side-by-side.
+// 				//        If they exist in this way, that grouping is considered to be a single
+// 				//        group, and the line data will begin beyond it.
+// 				for (lnI = 0; lnI < lnTemsCount; lnI = lnINext)
+// 				{
+// 					// Grab the next set of line entries for this block
+// 					lnINext = iiRenderMarkup_getNextLineSegment(lnI, lnTemsCount, h, (STems*)c->tems->data, &p1, &p2);
+// 
+// 					// Are we still valid?
+// 					if (lnINext < lnTemsCount)
+// 					{
+// 						//////////
+// 						// Allocate space for the temsLines entry
+// 						//////
+// 							tl = (STemsLines*)builder_allocateBytes(c->temsLines, sizeof(STemsLines));
+// 							if (tl)
+// 							{
+// 								// Store the from and to locations
+// 								tl->p1.x	= p1->fx;
+// 								tl->p1.y	= p1->fy;
+// 								tl->p2.x	= p2->fx;
+// 								tl->p2.y	= p2->fy;
+// 							}
+// 					}
+// 				}
+// 				// When we get here, we have all of the horizontal runs
+// 			}
+// 
+// 
+// 		//////////
+// 		// Iterate through each temsLines entry
+// 		//////
+// 			lfRed = (f64)color.red;
+// 			lfGrn = (f64)color.grn;
+// 			lfBlu = (f64)color.blu;
+// 			for (lnI = 0; lnI < c->temsLines->populatedLength; lnI += sizeof(STemsLines))
+// 			{
+// 				// Grab the pointer
+// 				tl = (STemsLines*)(c->temsLines->data + lnI);
+// 
+// 				// Render this template onto the bitmap
+// 				line.p1i.xi = (s32)(tl->p1.x * (f64)h->w);
+// 				line.p1i.yi = (s32)(tl->p1.y * (f64)h->h);
+// 				line.p2i.xi = (s32)(tl->p2.x * (f64)h->w);
+// 				line.p2i.yi = (s32)(tl->p2.y * (f64)h->h);
+// 
+// 				// Are we on a visible row?
+// 				if (line.p1i.yi >= 0 && line.p1i.yi < h->h)
+// 				{
+// 					// Get the pointer
+// 					lbgr = (SBGR*)((s8*)h->bd + (line.p1i.yi * h->rowWidth) + (line.p1i.xi * 3));
+// 
+// 					// Determine the offset
+// 					for (lnX = line.p1i.xi; lnX <= line.p2i.xi; lnX++, lbgr++)
+// 					{
+// 						// Are we on a visible column?
+// 						if (lnX >= 0 && lnX < h->w)
+// 						{
+// 							// Compute grayscale
+// 							lfGray		= ((0.35 * (f64)lbgr->red) + (0.54 * (f64)lbgr->grn) + (0.11 * (f64)lbgr->blu)) / 255.0;
+// 							lfMGray		= 1.0 - lfGray;
+// 
+// 							// Render it
+// 							lbgr->red	= (u8)min((u32)((lfGray * lfRed) + (lfMGray * (f64)lbgr->red)), 255);
+// 							lbgr->grn	= (u8)min((u32)((lfGray * lfGrn) + (lfMGray * (f64)lbgr->grn)), 255);
+// 							lbgr->blu	= (u8)min((u32)((lfGray * lfBlu) + (lfMGray * (f64)lbgr->blu)), 255);
+// 						}
+// 					}
+// 				}
+// 			}
+
+
+		//////////
+		// Iterate through each tems entries and draw the outline
+		//////
+			lfRed = (f64)colorTems.red;
+			lfGrn = (f64)colorTems.grn;
+			lfBlu = (f64)colorTems.blu;
+			for (lnI = 0; lnI < c->tems->populatedLength; lnI += sizeof(SDsf_tems))
+			{
+				// Grab the pointer
+				t = (SDsf_tems*)(c->tems->data + lnI);
+
+				// Render this template onto the bitmap
+				point.xi = (s32)(t->fx * (f64)h->w);
+				point.yi = (s32)(t->fy * (f64)h->h);
+
+				// Are we on a visible row?
+				if (point.yi >= 0 && point.yi < h->h && point.xi >= 0 && point.xi < h->w)
+				{
+					// Get the pointer
+					lbgr = (SBgr*)((s8*)h->bd + (point.yi * h->rowWidth) + (point.xi * 3));
+
+					// Compute grayscale
+					lfGray		= ((0.35 * (f64)lbgr->red) + (0.54 * (f64)lbgr->grn) + (0.11 * (f64)lbgr->blu)) / 255.0;
+					lfMGray		= 1.0 - lfGray;
+
+					// Render it
+					lbgr->red	= (u8)iDsf_scale_intoRange(min((u32)((lfGray * lfRed) + (lfMGray * (f64)lbgr->red)), 255), 255, 32, 64);
+					lbgr->grn	= (u8)iDsf_scale_intoRange(min((u32)((lfGray * lfGrn) + (lfMGray * (f64)lbgr->grn)), 255), 255, 128, 255);
+					lbgr->blu	= (u8)iDsf_scale_intoRange(min((u32)((lfGray * lfBlu) + (lfMGray * (f64)lbgr->blu)), 255), 255, 32, 64);
+				}
+			}
+	}
+
+	// Zoom the 32x32 box around the mouse coordinates into a zoom lens overlain either on the
+	// upper-left or lower-left (depending on whether or not the mouse is over the default upper-
+	// left display area.  Zoom is fixed at 3x.
+	void iDsf_render_zoomLens(SDsf_hwnd* h)
+	{
+		s32		lnX, lnY, lnX2, lnY2, lnXSrc, lnYSrc, lnXDst, lnYDst;
+		RECT	lrc;
+		SBgr*	lbgrSrc;
+		SBgr*	lbgrDst;
+
+
+		//////////
+		// See if the mouse is in this default upper-left area
+		//////
+			SetRect(&lrc, 0, 0, 96 + 16, 96 + 16);
+			if (gMouse.xi >= lrc.left && gMouse.xi < lrc.right && gMouse.yi >= lrc.top && gMouse.yi < lrc.bottom)
+				SetRect(&lrc, 0, h->h - 96, 96, h->h);
+
+
+		//////////
+		// Copy the image into the area
+		//////
+			for (lnY = 0, lnYSrc = gMouse.yi - 16, lnYDst = lrc.top; lnY < 32; lnY++, lnYSrc++, lnYDst += 3)
+			{
+				// Compute the source pointer for the row
+				lbgrSrc = (SBgr*)((s8*)h->bd + ((h->h - lnYSrc - 1) * h->rowWidth) + ((gMouse.xi - 16) * 3));
+
+				// Copy the columns
+				for (lnX = 0, lnXSrc = gMouse.xi - 16, lnXDst = lrc.left; lnX < 32; lnX++, lnXSrc++, lnXDst += 3, lbgrSrc++)
+				{
+					// Repeat for a 3x zoom
+					for (lnY2 = 0; lnY2 < 3; lnY2++)
+					{
+						// Compute the destination for this row
+						lbgrDst = (SBgr*)((s8*)h->bd + ((h->h - (lnYDst + lnY2)) * h->rowWidth) + (lnXDst * 3));
+
+						// Repeat 3x for the column
+						for (lnX2 = 0; lnX2 < 3; lnX2++, lbgrDst++)
+						{
+							// See if this is a pixel we can copy
+							if (lnXSrc >= 0 && lnXSrc < h->w && lnYSrc >= 0 && lnYSrc < h->h)
+							{
+								// Copy this pixel
+								lbgrDst->red	= (u8)min((u32)lbgrSrc->red + 32, 255);
+								lbgrDst->grn	= (u8)min((u32)lbgrSrc->grn + 32, 255);
+								lbgrDst->blu	= (u8)min((u32)lbgrSrc->blu + 32, 255);
+
+							} else {
+								// Render the edge
+								lbgrDst->red	= white.red;
+								lbgrDst->grn	= white.grn;
+								lbgrDst->blu	= white.blu;
+							}
+						}
+					}
+				}
+			}
+	}
+
+	// Grabs the next line segment as processing through the floans.
+	u32 iiDsf_renderMarkup_getNextLineSegment(u32 tnIndex, u32 tnMaxCount, SDsf_hwnd* h, SDsf_tems* root, SDsf_tems** p1, SDsf_tems** p2)
+	{
+		u32			lnI, lnOffset;
+		SDsf_tems*		t;
+		SXy_s32		lp1, lp2;
+
+
+		// Skip past while the pixels are adjacent
+		t = root + tnIndex;
+		for (lnOffset = 1; tnIndex + lnOffset < tnMaxCount; lnOffset++)
+		{
+			//////////
+			// Are we still on the same row?
+			//////
+				lp1.yi = iiDsf_renderMarkup_getPoint((t + lnOffset + 0)->fy,		h->h);
+				lp2.yi = iiDsf_renderMarkup_getPoint((t + lnOffset - 1)->fy,		h->h);
+				if (lp1.yi != lp2.yi)
+				{
+					// We've passed to another row, we begin again, but from here
+					return(iiDsf_renderMarkup_getNextLineSegment(tnIndex + lnOffset, tnMaxCount, h, root, p1, p2));
+				}
+
+
+			//////////
+			// Are the pixels not adjacent?
+			//////
+				lp1.xi = iiDsf_renderMarkup_getPoint((t + lnOffset + 0)->fx,		h->w);
+				lp2.xi = iiDsf_renderMarkup_getPoint((t + lnOffset - 1)->fx,		h->w);
+				if (lp1.xi > lp2.xi + 1)
+					break;		// Yes, they are not adjacent.  We've found the end of the grouping/run.
+			
+
+			// If we get here, we keep going because we're still on a side-by-side pixel grouping
+		}
+
+		// When we get here, we have found two pixels that are not near each other.
+		*p1 = (t + lnOffset - 1);		// Last pixel in the left-side grouping
+		*p2 = (t + lnOffset);			// First pixel of the right-side grouping
+
+
+		//////////
+		// To determine how much further we go, we now iterate forward while there are two pixels by each other until there is a gap, or end of this row
+		//////
+			for (lnI = 1; tnIndex + lnOffset + lnI < tnMaxCount; lnI++)
+			{
+				lp1.yi = iiDsf_renderMarkup_getPoint((t + lnOffset + lnI + 0)->fy,		h->h);
+				lp1.xi = iiDsf_renderMarkup_getPoint((t + lnOffset + lnI + 0)->fx,		h->w);
+				lp2.yi = iiDsf_renderMarkup_getPoint((t + lnOffset + lnI - 1)->fy,		h->h);
+				lp2.xi = iiDsf_renderMarkup_getPoint((t + lnOffset + lnI - 1)->fx,		h->w);
+				if (lp1.yi != lp2.yi || lp2.xi + 1 != lp1.xi)
+				{
+					lnOffset += (lnI - 1);
+					break;
+				}
+			}
+
+
+		// Indicate how far we moved
+		return(tnIndex + lnOffset + 1);
+	}
+
+	s32 iiDsf_renderMarkup_getPoint(f64 tfValue01, s32 tnMultiplier)
+	{
+		return((s32)(tfValue01 * (f64)tnMultiplier));
+	}
+
+	SBgr iDsf_setLineColor(SDsf* dsf)
+	{
+		if (dsf->splinesType != _SPLINES_FILL)		return(gray);				// They don't want to see it filled in, so make it a little more visible
 		else										return(black);				// They want to see it filled in, so it can be black
+	}
+
+	// Left, Origin, Right
+	void iDsf_compute_LOR(SDsf_spline* s, SXy_f64* pl, SXy_f64* po, SXy_f64* pr)
+	{
+		// left, origin/middle, right
+		iSetPoint(pl,	s->ox + (s->lr * cos(s->ot + s->lt)),	s->oy + (s->lr * sin(s->ot + s->lt)));
+		iSetPoint(po,	s->ox,									s->oy);
+		iSetPoint(pr,	s->ox + (s->rr * cos(s->ot + s->rt)),	s->oy + (s->rr * sin(s->ot + s->rt)));
+	}
+
+	// Order is: prLast..poLast, pr..po, which are quad1from, quad1to, quad2from, quad2to
+	// iFillQuad(h, /*p1*/&prLast, /*p2*/&pr, /*p3*/&po, /*p4*/&poLast, p1ColorR, p2ColorR, p3ColorR, p4ColorR);
+	void iDsf_compute_quadColors_R(SDsf_spline* s, SDsf_spline* sLast, SBgr quadNormal, SBgr quadSelected, SBgr* p1ColorR, SBgr* p2ColorR, SBgr* p3ColorR, SBgr* p4ColorR)
+	{
+		*p1ColorR	= ((sLast->tlRSelected)	? quadSelected : quadNormal);
+		*p2ColorR	= ((s->tlRSelected)		? quadSelected : quadNormal);
+		*p3ColorR	= ((s->tlOSelected)		? quadSelected : quadNormal);
+		*p4ColorR	= ((sLast->tlOSelected)	? quadSelected : quadNormal);
+	}
+
+	// Order is: poLast..plLast, po..pl, which are quad1from, quad1to, quad2from, quad2to
+	// iFillQuad(h, /*p1*/&poLast, /*p2*/&po, /*p3*/&pl, /*p4*/&plLast, quad1fromL, p1ColorL, p2ColorL, p3ColorL, p4ColorL);
+	void iDsf_compute_quadColors_L(SDsf_spline* s, SDsf_spline* sLast, SBgr quadNormal, SBgr quadSelected, SBgr* p1ColorL, SBgr* p2ColorL, SBgr* p3ColorL, SBgr* p4ColorL)
+	{
+		*p1ColorL	= ((sLast->tlOSelected)	? quadSelected : quadNormal);
+		*p2ColorL	= ((s->tlOSelected)		? quadSelected : quadNormal);
+		*p3ColorL	= ((s->tlLSelected)		? quadSelected : quadNormal);
+		*p4ColorL	= ((sLast->tlLSelected)	? quadSelected : quadNormal);
+	}
+
+	bool iDsf_compute_closestMouseLine(SDsf_line_f64* line)
+	{
+		// Find the closest point to the current mouse coordinates
+
+		// Find the closest 20 points to that
+
+		// Determine the slope of every point to every other point
+
+		// Sort the list by slope order
+
+		// Determine the deltas between each item
+
+		// Sort the list by the deltas
+
+		// Using the top 10 deltas, determine the midpoint and average slope and radius
+
+		// Construct a line with that information
+		return(false);
+	}
+
+
+
+
+//////////
+//
+// Called to compute the midpoint, slope, and perpendicular slope of a line
+//
+//////
+	void iDsf_compute_line(SDsf_line_f64* line)
+	{
+		// Midpoint = (x2-x1)/2, (y2-y1)/2
+		line->mid.x			= (line->p1.x + line->p2.x) / 2.0f;
+		line->mid.y			= (line->p1.y + line->p2.y) / 2.0f;
+		line->delta.x		= line->p2.x - line->p1.x;
+		line->delta.y		= line->p2.y - line->p1.y;
+		line->theta			= iDsf_adjustTheta(atan2(line->delta.y, line->delta.x));
+		line->length		= sqrt(line->delta.x*line->delta.x + line->delta.y*line->delta.y);
+
+		// Slope = rise over run
+		line->m				= line->delta.y / ((line->delta.x == 0.0) ? 0.0000000000001 : line->delta.x);
+
+		// Perpendicular slope = -1/m
+		line->mp			= -1.0 / ((line->m == 0.0) ? 0.0000000000001 : line->m);
+
+		// Integer roundings if need be
+		// Start
+		line->p1i.xi	= (s32)line->p1.x;
+		line->p1i.yi	= (s32)line->p1.y;
+		// End
+		line->p2i.xi	= (s32)line->p2.x;
+		line->p2i.yi	= (s32)line->p2.y;
+
+		// Compute the quadrants if need be
+		// Quads 1..4
+		line->p1_quad	= iDsf_compute_quad(&line->p1);
+		line->p2_quad	= iDsf_compute_quad(&line->p2);
+	}
+
+	void iDsf_compute_line_fromTwoPoints(SDsf_line_f64* line, SXy_f64* p1, SXy_f64* p2)
+	{
+		// p1
+		line->p1.x	= p1->x;
+		line->p1.y	= p1->y;
+
+		// p2
+		line->p2.x	= p2->x;
+		line->p2.y	= p2->y;
+
+		// Compute
+		iDsf_compute_line(line);
+	}
+
+	// Returns the quadrant for the indicated point
+	s32 iDsf_compute_quad(SXy_f64* p)
+	{
+		if (p->x >= 0.0)
+		{
+			// Either 1 or 4
+			if (p->y >= 0.0)		return(1);		// X is positive, Y is positive
+			else					return(4);		// X is positive, Y is negative
+
+		} else {
+			// Either 2 or 3
+			if (p->y >= 0.0)		return(2);		// X is negative, Y is positive
+			else					return(3);		// X is negative, Y is negative
+		}
 	}
 
 	void iDsf_draw_penDown(SDsf_hwnd* h, SDsf_line_f64* line)
@@ -1171,7 +1662,7 @@
 			// R
 			line->p2.x        = line->p2.x + ((10.0 / (f64)h->w) * cos(line->theta));
 			line->p2.y        = line->p2.y + ((10.0 / (f64)h->h) * sin(line->theta));
-			iDsf_computeLine(line);
+			iDsf_compute_line(line);
 
 
 		//////////
@@ -1209,7 +1700,7 @@
 			// R
 			line->p2.x        = line->p2.x + ((10.0 / (f64)h->w) * cos(line->theta));
 			line->p2.y        = line->p2.y + ((10.0 / (f64)h->h) * sin(line->theta));
-			iDsf_computeLine(line);
+			iDsf_compute_line(line);
 
 
 		//////////
@@ -1233,68 +1724,7 @@
 			iDsf_fill_quad_alpha(h, &p1, &p2, &p3, &p4, strokeUp, strokeUp, strokeUp, strokeUp, 0.0, 0.0, 1.0, 1.0, 2.0);
 	}
 
-	void iDsf_render_hint(SDsf_hwnd* h, SDsf_line_f64* line, SXy_f64* pt)
-	{
-		SXy_f64		pLeft;
-		SXy_f64		pForward;
-		SXy_f64		pRight;
-
-
-		//////////
-		// Move the point forward one pixel
-		//////
-			pt->x	= pt->x + ((1.0 / (f64)h->w)  * cos(line->theta));
-			pt->y	= pt->y + ((1.0 / (f64)h->w)  * sin(line->theta));
-
-
-		//////////
-		// Create line moving left, forward, and right from the end of the provided line
-		//////
-			pLeft.x		= pt->x + ((3.0 / (f64)h->w)  * cos(line->theta - _PI_2));
-			pLeft.y		= pt->y + ((3.0 / (f64)h->w)  * sin(line->theta - _PI_2));
-
-			pForward.x	= pt->x + ((6.0 / (f64)h->w)  * cos(line->theta));
-			pForward.y	= pt->y + ((6.0 / (f64)h->w)  * sin(line->theta));
-
-			pRight.x	= pt->x + ((3.0 / (f64)h->w)  * cos(line->theta + _PI_2));
-			pRight.y	= pt->y + ((3.0 / (f64)h->w)  * sin(line->theta + _PI_2));
-
-
-		//////////
-		// Draw the quad (which is really a triangle. :-))
-		//////
-			iDsf_fill_quad_alpha(h, &pLeft, &pForward, &pForward, &pRight, strokeDown, strokeDown, strokeDown, strokeDown, 1.0, 1.0, 1.0, 1.0, 2.0);
-	}
-
-	void iDsf_compute_LOR(SSpline* s, SXy_f64* pl, SXy_f64* po, SXy_f64* pr)
-	{
-		// left, origin/middle, right
-		iSetPoint(pl,	s->ox + (s->lr * cos(s->ot + s->lt)),	s->oy + (s->lr * sin(s->ot + s->lt)));
-		iSetPoint(po,	s->ox,									s->oy);
-		iSetPoint(pr,	s->ox + (s->rr * cos(s->ot + s->rt)),	s->oy + (s->rr * sin(s->ot + s->rt)));
-	}
-
-	// Order is: prLast..poLast, pr..po, which are quad1from, quad1to, quad2from, quad2to
-	// iFillQuad(h, /*p1*/&prLast, /*p2*/&pr, /*p3*/&po, /*p4*/&poLast, p1ColorR, p2ColorR, p3ColorR, p4ColorR);
-	void iDsf_compute_quadColors_R(SSpline* s, SSpline* sLast, SBgr quadNormal, SBgr quadSelected, SBgr* p1ColorR, SBgr* p2ColorR, SBgr* p3ColorR, SBgr* p4ColorR)
-	{
-		*p1ColorR	= ((sLast->tlRSelected)	? quadSelected : quadNormal);
-		*p2ColorR	= ((s->tlRSelected)		? quadSelected : quadNormal);
-		*p3ColorR	= ((s->tlOSelected)		? quadSelected : quadNormal);
-		*p4ColorR	= ((sLast->tlOSelected)	? quadSelected : quadNormal);
-	}
-
-	// Order is: poLast..plLast, po..pl, which are quad1from, quad1to, quad2from, quad2to
-	// iFillQuad(h, /*p1*/&poLast, /*p2*/&po, /*p3*/&pl, /*p4*/&plLast, quad1fromL, p1ColorL, p2ColorL, p3ColorL, p4ColorL);
-	void iDsf_compute_quadColors_L(SSpline* s, SSpline* sLast, SBgr quadNormal, SBgr quadSelected, SBgr* p1ColorL, SBgr* p2ColorL, SBgr* p3ColorL, SBgr* p4ColorL)
-	{
-		*p1ColorL	= ((sLast->tlOSelected)	? quadSelected : quadNormal);
-		*p2ColorL	= ((s->tlOSelected)		? quadSelected : quadNormal);
-		*p3ColorL	= ((s->tlLSelected)		? quadSelected : quadNormal);
-		*p4ColorL	= ((sLast->tlLSelected)	? quadSelected : quadNormal);
-	}
-
-	void iDsf_draw_points(SDsf* p, SDsf_hwnd* h, SXy_f64* pr, SXy_f64* po, SXy_f64* pl, SSpline* s, SBgr colorSelected, SBgr colorR, SBgr colorO, SBgr colorL, SBgr colorRSelected, SBgr colorOSelected, SBgr colorLSelected, SBgr colorLine)
+	void iDsf_draw_points(SDsf* dsf, SDsf_hwnd* h, SXy_f64* pr, SXy_f64* po, SXy_f64* pl, SDsf_spline* s, SBgr colorSelected, SBgr colorR, SBgr colorO, SBgr colorL, SBgr colorRSelected, SBgr colorOSelected, SBgr colorLSelected, SBgr colorLine)
 	{
 		//////////
 		// Right
@@ -1389,7 +1819,7 @@
 			line.p1.y	= p1->y * (f64)h->h;
 			line.p2.x	= p2->x * (f64)h->w;
 			line.p2.y	= p2->y * (f64)h->h;
-			iDsf_computeLine(&line);
+			iDsf_compute_line(&line);
 			lfCosTheta	= cos(line.theta);
 			lfSinTheta	= sin(line.theta);
 
@@ -1469,14 +1899,14 @@
 		s32				lnXLast, lnYLast;
 		f64				lfAlp, lfMalp;
 		SBgr*			lbgr;
-		SPointsDrawn*	dp;
+		SDsf_pointsDrawn*	dp;
 
 
 		//////////
 		// Sort the list
 		//////
-			lnCount = pointsDrawn->populatedLength / sizeof(SPointsDrawn);
-			qsort(pointsDrawn->data, lnCount, sizeof(SPointsDrawn), iiDsf_SPointsDrawn_qsortCallback);
+			lnCount = pointsDrawn->populatedLength / sizeof(SDsf_pointsDrawn);
+			qsort(pointsDrawn->data, lnCount, sizeof(SDsf_pointsDrawn), iiDsf_SPointsDrawn_qsortCallback);
 
 
 		//////////
@@ -1484,10 +1914,10 @@
 		//////
 			lnXLast = -10000;
 			lnYLast = -10000;
-			for (lnI = 0; lnI < pointsDrawn->populatedLength; lnI += sizeof(SPointsDrawn))
+			for (lnI = 0; lnI < pointsDrawn->populatedLength; lnI += sizeof(SDsf_pointsDrawn))
 			{
 				// Grab the pointer
-				dp = (SPointsDrawn*)(pointsDrawn->data + lnI);
+				dp = (SDsf_pointsDrawn*)(pointsDrawn->data + lnI);
 
 				// Render this item
 				if (!(dp->pt.xi == lnXLast && dp->pt.yi == lnYLast))
@@ -1620,7 +2050,7 @@
 			p1p4.p1.y	= p1->y;
 			p1p4.p2.x	= p4->x;
 			p1p4.p2.y	= p4->y;
-			iDsf_computeLine(&p1p4);
+			iDsf_compute_line(&p1p4);
 			lfCosThetaP1P4	= cos(p1p4.theta);
 			lfSinThetaP1P4	= sin(p1p4.theta);
 
@@ -1629,7 +2059,7 @@
 			p2p3.p1.y	= p2->y;
 			p2p3.p2.x	= p3->x;
 			p2p3.p2.y	= p3->y;
-			iDsf_computeLine(&p2p3);
+			iDsf_compute_line(&p2p3);
 			lfCosThetaP2P3		= cos(p2p3.theta);
 			lfSinThetaP2P3		= sin(p2p3.theta);
 
@@ -1714,108 +2144,7 @@
 				iBuilder_freeAndRelease(&pointsDrawn);
 	}
 
-
-
-
-//////////
-//
-// Called to render the mouse atop the current image
-//
-//////
-	void iDsf_render_mouseOverlay(SDsf* p, SDsf_hwnd* h, SDsf_chars* c)
-	{
-		SXy_s32		p1;
-		SDsf_line_f64	line;
-		s32			lnX, lnY, lnYLast;
-		f64			lfTheta, lfThetaStep, lfA, lfB, lfV1, lfV2, lfX, lfY, lfRadius;
-		SBgr		color;
-
-
-		// Invert the Y mouse coordinates for rendering
-		p1.xi = gMouse.xi;
-		p1.yi = h->h - gMouse.yi;
-
-		// Do we need to render the select area?
-		if (glCtrlKeyDown && !(glMouseLeft || glMouseRight))		color = mousePeeakaheadColor;
-		else														color = mouseColor;
-
-		// If the CTRL key is down, compute what would be the closest point, and render that line
-		if (glCtrlKeyDown)
-		{
-			// Compute the closest line to the mouse, but only within a certain radius
-			if (iDsf_compute_closestMouseLine(&line))
-			{
-				// Draw a point at the center of the indicated line
-				iDsf_draw_point_large(h, &line.mid, color);
-			}
-		}
-
-		// Is there a reason to render the rectangles?
-		if (glMouseLeft || glMouseRight)
-		{
-			// The mouse is pressed down, render the select area
-			// Render it (we're basically drawing an oval area the mouse will interact with)
-			lfRadius	= (f64)iDsf_validate_range(p->selectArea, _SELECT_AREA_SMALL, _SELECT_AREA_EXTRA_LARGE, _SELECT_AREA_SMALL);
-			lnYLast		= -1;
-			lfA			= lfRadius * 1.0;		// A is 100%
-			lfB			= lfRadius * 0.7;		// B is 70%, this gives us a 10:7 oval
-			lfThetaStep	= _PI / ((f64)gMouseType * 128.0);
-			for (lfTheta = 0; lfTheta < _PI_2; lfTheta += lfThetaStep)
-			{
-				// Compute the X,Y for Quad I, then reflect for lines in Quad2..1, and Quad3..4
-				lfV1		= lfB * cos(lfTheta);
-				lfV2		= lfA * sin(lfTheta);
-				lfRadius	= (lfA*lfB) / sqrt(lfV1*lfV1 + lfV2*lfV2);
-
-				// Compute X and Y given this radius
-				lfX			= lfRadius * cos(lfTheta);
-				lfY			= lfRadius * sin(lfTheta);
-
-				// Convert to integer
-				lnY			= (s32)lfY;
-				lnX			= (s32)lfX;
-
-				// If it's changed, draw it
-				if (lnY != lnYLast)
-				{
-					// Draw the mouse indicator there, and perform any operations
-					iDsf_colorize_andProcessHorizontalLine_byPixels(p, h, c, p1.xi - lnX, p1.xi + lnX, p1.yi + lnY, color);		// Above
-					if (lnY != 0)
-						iDsf_colorize_andProcessHorizontalLine_byPixels(p, h, c, p1.xi - lnX, p1.xi + lnX, p1.yi - lnY, color);	// Below
-
-					lnYLast = lnY;
-				}
-			}
-		}
-
-		if (p1.xi >= 0 && p1.xi < h->w && p1.yi >= 0 && p1.yi < h->h)
-		{
-			if (p->mouseCrosshairX)		iDsf_colorize_horizontalLine_byPixels(p, h, c, 0, h->w - 1, p1.yi, mouseColor);		// Horizontal
-			if (p->mouseCrosshairY)		iDsf_colorize_verticalLine_byPixels(  p, h, c, 0, h->h - 1, p1.xi, mouseColor);		// Vertical
-		}
-	}
-
-	bool iDsf_compute_closestMouseLine(SDsf_line_f64* line)
-	{
-		// Find the closest point to the current mouse coordinates
-
-		// Find the closest 20 points to that
-
-		// Determine the slope of every point to every other point
-
-		// Sort the list by slope order
-
-		// Determine the deltas between each item
-
-		// Sort the list by the deltas
-
-		// Using the top 10 deltas, determine the midpoint and average slope and radius
-
-		// Construct a line with that information
-		return(false);
-	}
-
-	void iDsf_colorize_andProcessHorizontalLine_byPixels(SDsf* p, SDsf_hwnd* h, SDsf_chars* c, s32 x1, s32 x2, s32 y, SBgr color)
+	void iDsf_colorize_andProcessHorizontalLine_byPixels(SDsf* dsf, SDsf_hwnd* h, SDsf_chars* c, s32 x1, s32 x2, s32 y, SBgr color)
 	{
 		SXy_f64 ul, lr;
 
@@ -1829,7 +2158,7 @@
 		//////////
 		// Colorize it
 		//////
-			iDsf_colorize_horizontalLine_byPixels(p, h, c, x1, x2, y, color);
+			iDsf_colorize_horizontalLine_byPixels(dsf, h, c, x1, x2, y, color);
 
 		//////
 		// Process it
@@ -1842,10 +2171,10 @@
 			lr.y = (f64)y                     / (f64)h->h;
 
 			// Process the selection operation on this range
-			iDsf_select_range(p, h, c, &lr, &lr);
+			iDsf_select_range(dsf, h, c, &lr, &lr);
 	}
 
-	void iDsf_colorize_horizontalLine_byPixels(SDsf* p, SDsf_hwnd* h, SDsf_chars* c, s32 x1, s32 x2, s32 y, SBgr color)
+	void iDsf_colorize_horizontalLine_byPixels(SDsf* dsf, SDsf_hwnd* h, SDsf_chars* c, s32 x1, s32 x2, s32 y, SBgr color)
 	{
 		s32		lnX;
 		f64		lfAlp, lfMalp, lfRed, lfGrn, lfBlu;
@@ -1881,7 +2210,7 @@
 
 	}
 
-	void iDsf_colorize_andProcessVerticalLine_byPixels(SDsf* p, SDsf_hwnd* h, SDsf_chars* c, s32 y1, s32 y2, s32 x, SBgr color)
+	void iDsf_colorize_andProcessVerticalLine_byPixels(SDsf* dsf, SDsf_hwnd* h, SDsf_chars* c, s32 y1, s32 y2, s32 x, SBgr color)
 	{
 		SXy_f64 ul, lr;
 
@@ -1895,7 +2224,7 @@
 		//////////
 		// Colorize it
 		//////
-			iDsf_colorize_verticalLine_byPixels(p, h, c, y1, y2, x, color);
+			iDsf_colorize_verticalLine_byPixels(dsf, h, c, y1, y2, x, color);
 
 
 		//////
@@ -1907,10 +2236,10 @@
 			ul.y = ((f64)y1 + 0.999999999999) / (f64)h->h;
 			lr.x = ((f64)x  + 0.999999999999) / (f64)h->w;
 			lr.y = (f64)y2                    / (f64)h->h;
-			iDsf_select_range(p, h, c, &lr, &lr);
+			iDsf_select_range(dsf, h, c, &lr, &lr);
 	}
 
-	void iDsf_colorize_verticalLine_byPixels(SDsf* p, SDsf_hwnd* h, SDsf_chars* c, s32 y1, s32 y2, s32 x, SBgr color)
+	void iDsf_colorize_verticalLine_byPixels(SDsf* dsf, SDsf_hwnd* h, SDsf_chars* c, s32 y1, s32 y2, s32 x, SBgr color)
 	{
 		s32		lnY;
 		f64		lfAlp, lfMalp, lfRed, lfGrn, lfBlu;
@@ -1945,147 +2274,6 @@
 		}
 	}
 
-
-
-
-//////////
-//
-// Called to render the markup data onto the character
-//
-//////
-	void iDsf_render_tems(SDsf* p, SDsf_hwnd* h, SDsf_chars* c)
-	{
-// 		s32			lnX;
-// 		u32			lnI, lnINext, lnTemsCount;
-// 		STemsLines*	tl;
-// 		STems*		p1;
-// 		STems*		p2;
-// 		SLineS32	line;
-		u32			lnI;
-		f64			lfRed, lfGrn, lfBlu, lfGray, lfMGray;
-		SXy_s32		point;
-		STems*		t;
-		SBgr*		lbgr;
-
-
-// Note:  This commented code block was an attempt to overlay using solid areas rather than an outline.
-// Note:  It didn't always work correctly due to noise in the incoming outline data.  At some point I'll
-//        add smoothing algorithms which correct the noise.  Until then, we'll just use the outline.
-// 		//////////
-// 		// Do we need to rebuild the overlay information?
-// 		//////
-// 			if (c->temsLines->populatedLength == 0)
-// 			{
-// 				// Sort the list of tems
-// 				lnTemsCount = c->tems->populatedLength / sizeof(STems);
-// 				qsort(c->tems->data, lnTemsCount, sizeof(STems), iiTems_qsortCallback);
-// 
-// 				// Iterate through each block and grab horizontal line runs in blocks
-// 				// Note:  At each horizontal stop there may be one or more pixels side-by-side.
-// 				//        If they exist in this way, that grouping is considered to be a single
-// 				//        group, and the line data will begin beyond it.
-// 				for (lnI = 0; lnI < lnTemsCount; lnI = lnINext)
-// 				{
-// 					// Grab the next set of line entries for this block
-// 					lnINext = iiRenderMarkup_getNextLineSegment(lnI, lnTemsCount, h, (STems*)c->tems->data, &p1, &p2);
-// 
-// 					// Are we still valid?
-// 					if (lnINext < lnTemsCount)
-// 					{
-// 						//////////
-// 						// Allocate space for the temsLines entry
-// 						//////
-// 							tl = (STemsLines*)builder_allocateBytes(c->temsLines, sizeof(STemsLines));
-// 							if (tl)
-// 							{
-// 								// Store the from and to locations
-// 								tl->p1.x	= p1->fx;
-// 								tl->p1.y	= p1->fy;
-// 								tl->p2.x	= p2->fx;
-// 								tl->p2.y	= p2->fy;
-// 							}
-// 					}
-// 				}
-// 				// When we get here, we have all of the horizontal runs
-// 			}
-// 
-// 
-// 		//////////
-// 		// Iterate through each temsLines entry
-// 		//////
-// 			lfRed = (f64)color.red;
-// 			lfGrn = (f64)color.grn;
-// 			lfBlu = (f64)color.blu;
-// 			for (lnI = 0; lnI < c->temsLines->populatedLength; lnI += sizeof(STemsLines))
-// 			{
-// 				// Grab the pointer
-// 				tl = (STemsLines*)(c->temsLines->data + lnI);
-// 
-// 				// Render this template onto the bitmap
-// 				line.p1i.xi = (s32)(tl->p1.x * (f64)h->w);
-// 				line.p1i.yi = (s32)(tl->p1.y * (f64)h->h);
-// 				line.p2i.xi = (s32)(tl->p2.x * (f64)h->w);
-// 				line.p2i.yi = (s32)(tl->p2.y * (f64)h->h);
-// 
-// 				// Are we on a visible row?
-// 				if (line.p1i.yi >= 0 && line.p1i.yi < h->h)
-// 				{
-// 					// Get the pointer
-// 					lbgr = (SBGR*)((s8*)h->bd + (line.p1i.yi * h->rowWidth) + (line.p1i.xi * 3));
-// 
-// 					// Determine the offset
-// 					for (lnX = line.p1i.xi; lnX <= line.p2i.xi; lnX++, lbgr++)
-// 					{
-// 						// Are we on a visible column?
-// 						if (lnX >= 0 && lnX < h->w)
-// 						{
-// 							// Compute grayscale
-// 							lfGray		= ((0.35 * (f64)lbgr->red) + (0.54 * (f64)lbgr->grn) + (0.11 * (f64)lbgr->blu)) / 255.0;
-// 							lfMGray		= 1.0 - lfGray;
-// 
-// 							// Render it
-// 							lbgr->red	= (u8)min((u32)((lfGray * lfRed) + (lfMGray * (f64)lbgr->red)), 255);
-// 							lbgr->grn	= (u8)min((u32)((lfGray * lfGrn) + (lfMGray * (f64)lbgr->grn)), 255);
-// 							lbgr->blu	= (u8)min((u32)((lfGray * lfBlu) + (lfMGray * (f64)lbgr->blu)), 255);
-// 						}
-// 					}
-// 				}
-// 			}
-
-
-		//////////
-		// Iterate through each tems entries and draw the outline
-		//////
-			lfRed = (f64)colorTems.red;
-			lfGrn = (f64)colorTems.grn;
-			lfBlu = (f64)colorTems.blu;
-			for (lnI = 0; lnI < c->tems->populatedLength; lnI += sizeof(STems))
-			{
-				// Grab the pointer
-				t = (STems*)(c->tems->data + lnI);
-
-				// Render this template onto the bitmap
-				point.xi = (s32)(t->fx * (f64)h->w);
-				point.yi = (s32)(t->fy * (f64)h->h);
-
-				// Are we on a visible row?
-				if (point.yi >= 0 && point.yi < h->h && point.xi >= 0 && point.xi < h->w)
-				{
-					// Get the pointer
-					lbgr = (SBgr*)((s8*)h->bd + (point.yi * h->rowWidth) + (point.xi * 3));
-
-					// Compute grayscale
-					lfGray		= ((0.35 * (f64)lbgr->red) + (0.54 * (f64)lbgr->grn) + (0.11 * (f64)lbgr->blu)) / 255.0;
-					lfMGray		= 1.0 - lfGray;
-
-					// Render it
-					lbgr->red	= (u8)iDsf_scale_intoRange(min((u32)((lfGray * lfRed) + (lfMGray * (f64)lbgr->red)), 255), 255, 32, 64);
-					lbgr->grn	= (u8)iDsf_scale_intoRange(min((u32)((lfGray * lfGrn) + (lfMGray * (f64)lbgr->grn)), 255), 255, 128, 255);
-					lbgr->blu	= (u8)iDsf_scale_intoRange(min((u32)((lfGray * lfBlu) + (lfMGray * (f64)lbgr->blu)), 255), 255, 32, 64);
-				}
-			}
-	}
-
 	void iDsf_invertImage(SDsf_hwnd* h)
 	{
 		s32		lnX, lnY;
@@ -2105,65 +2293,6 @@
 					lbgr->red = 255 - lbgr->red;
 					lbgr->grn = 255 - lbgr->grn;
 					lbgr->blu = 255 - lbgr->blu;
-				}
-			}
-	}
-
-	// Zoom the 32x32 box around the mouse coordinates into a zoom lens overlain either on the
-	// upper-left or lower-left (depending on whether or not the mouse is over the default upper-
-	// left display area.  Zoom is fixed at 3x.
-	void iDsf_render_zoomLens(SDsf_hwnd* h)
-	{
-		s32		lnX, lnY, lnX2, lnY2, lnXSrc, lnYSrc, lnXDst, lnYDst;
-		RECT	lrc;
-		SBgr*	lbgrSrc;
-		SBgr*	lbgrDst;
-
-
-		//////////
-		// See if the mouse is in this default upper-left area
-		//////
-			SetRect(&lrc, 0, 0, 96 + 16, 96 + 16);
-			if (gMouse.xi >= lrc.left && gMouse.xi < lrc.right && gMouse.yi >= lrc.top && gMouse.yi < lrc.bottom)
-				SetRect(&lrc, 0, h->h - 96, 96, h->h);
-
-
-		//////////
-		// Copy the image into the area
-		//////
-			for (lnY = 0, lnYSrc = gMouse.yi - 16, lnYDst = lrc.top; lnY < 32; lnY++, lnYSrc++, lnYDst += 3)
-			{
-				// Compute the source pointer for the row
-				lbgrSrc = (SBgr*)((s8*)h->bd + ((h->h - lnYSrc - 1) * h->rowWidth) + ((gMouse.xi - 16) * 3));
-
-				// Copy the columns
-				for (lnX = 0, lnXSrc = gMouse.xi - 16, lnXDst = lrc.left; lnX < 32; lnX++, lnXSrc++, lnXDst += 3, lbgrSrc++)
-				{
-					// Repeat for a 3x zoom
-					for (lnY2 = 0; lnY2 < 3; lnY2++)
-					{
-						// Compute the destination for this row
-						lbgrDst = (SBgr*)((s8*)h->bd + ((h->h - (lnYDst + lnY2)) * h->rowWidth) + (lnXDst * 3));
-
-						// Repeat 3x for the column
-						for (lnX2 = 0; lnX2 < 3; lnX2++, lbgrDst++)
-						{
-							// See if this is a pixel we can copy
-							if (lnXSrc >= 0 && lnXSrc < h->w && lnYSrc >= 0 && lnYSrc < h->h)
-							{
-								// Copy this pixel
-								lbgrDst->red	= (u8)min((u32)lbgrSrc->red + 32, 255);
-								lbgrDst->grn	= (u8)min((u32)lbgrSrc->grn + 32, 255);
-								lbgrDst->blu	= (u8)min((u32)lbgrSrc->blu + 32, 255);
-
-							} else {
-								// Render the edge
-								lbgrDst->red	= white.red;
-								lbgrDst->grn	= white.grn;
-								lbgrDst->blu	= white.blu;
-							}
-						}
-					}
 				}
 			}
 	}
@@ -2230,13 +2359,13 @@
 	// Sort by Y, then X, ascending in both directions
 	int iiDsf_tems_qsortCallback(const void* l, const void* r)
 	{
-		STems*	left;
-		STems*	right;
+		SDsf_tems*	left;
+		SDsf_tems*	right;
 
 
 		// Get our pointers properly
-		left	= (STems*)l;
-		right	= (STems*)r;
+		left	= (SDsf_tems*)l;
+		right	= (SDsf_tems*)r;
 
 		// See how the cookie crumbles
 		     if (left->fy < right->fy)		return(-1);		// Left is less than right
@@ -2267,13 +2396,13 @@
 
 	int iiDsf_SPointsDrawn_qsortCallback(const void* l, const void* r)
 	{
-		SPointsDrawn*	left;
-		SPointsDrawn*	right;
+		SDsf_pointsDrawn*	left;
+		SDsf_pointsDrawn*	right;
 
 
 		// Get our pointers properly
-		left	= (SPointsDrawn*)l;
-		right	= (SPointsDrawn*)r;
+		left	= (SDsf_pointsDrawn*)l;
+		right	= (SDsf_pointsDrawn*)r;
 
 		// See how the cookie crumbles
 		     if (left->pt.yi < right->pt.yi)		return(-1);		// Left is less than right
@@ -2281,73 +2410,6 @@
 		else if (left->pt.xi < right->pt.xi)		return(-1);		// Left is less than right
 		else if (left->pt.xi > right->pt.xi)		return(1);		// Left is greater than right
 		else										return(0);		// They're equal
-	}
-
-	// Grabs the next line segment as processing through the floans.
-	u32 iiDsf_renderMarkup_getNextLineSegment(u32 tnIndex, u32 tnMaxCount, SDsf_hwnd* h, STems* root, STems** p1, STems** p2)
-	{
-		u32			lnI, lnOffset;
-		STems*		t;
-		SXy_s32		lp1, lp2;
-
-
-		// Skip past while the pixels are adjacent
-		t = root + tnIndex;
-		for (lnOffset = 1; tnIndex + lnOffset < tnMaxCount; lnOffset++)
-		{
-			//////////
-			// Are we still on the same row?
-			//////
-				lp1.yi = iiDsf_getPoint((t + lnOffset + 0)->fy,		h->h);
-				lp2.yi = iiDsf_getPoint((t + lnOffset - 1)->fy,		h->h);
-				if (lp1.yi != lp2.yi)
-				{
-					// We've passed to another row, we begin again, but from here
-					return(iiDsf_renderMarkup_getNextLineSegment(tnIndex + lnOffset, tnMaxCount, h, root, p1, p2));
-				}
-
-
-			//////////
-			// Are the pixels not adjacent?
-			//////
-				lp1.xi = iiDsf_getPoint((t + lnOffset + 0)->fx,		h->w);
-				lp2.xi = iiDsf_getPoint((t + lnOffset - 1)->fx,		h->w);
-				if (lp1.xi > lp2.xi + 1)
-					break;		// Yes, they are not adjacent.  We've found the end of the grouping/run.
-			
-
-			// If we get here, we keep going because we're still on a side-by-side pixel grouping
-		}
-
-		// When we get here, we have found two pixels that are not near each other.
-		*p1 = (t + lnOffset - 1);		// Last pixel in the left-side grouping
-		*p2 = (t + lnOffset);			// First pixel of the right-side grouping
-
-
-		//////////
-		// To determine how much further we go, we now iterate forward while there are two pixels by each other until there is a gap, or end of this row
-		//////
-			for (lnI = 1; tnIndex + lnOffset + lnI < tnMaxCount; lnI++)
-			{
-				lp1.yi = iiDsf_getPoint((t + lnOffset + lnI + 0)->fy,		h->h);
-				lp1.xi = iiDsf_getPoint((t + lnOffset + lnI + 0)->fx,		h->w);
-				lp2.yi = iiDsf_getPoint((t + lnOffset + lnI - 1)->fy,		h->h);
-				lp2.xi = iiDsf_getPoint((t + lnOffset + lnI - 1)->fx,		h->w);
-				if (lp1.yi != lp2.yi || lp2.xi + 1 != lp1.xi)
-				{
-					lnOffset += (lnI - 1);
-					break;
-				}
-			}
-
-
-		// Indicate how far we moved
-		return(tnIndex + lnOffset + 1);
-	}
-
-	s32 iiDsf_getPoint(f64 tfValue01, s32 tnMultiplier)
-	{
-		return((s32)(tfValue01 * (f64)tnMultiplier));
 	}
 
 
@@ -2520,58 +2582,6 @@
 
 //////////
 //
-// Called to compute the midpoint, slope, and perpendicular slope of a line
-//
-//////
-	void iDsf_computeLine(SDsf_line_f64* line)
-	{
-		// Midpoint = (x2-x1)/2, (y2-y1)/2
-		line->mid.x			= (line->p1.x + line->p2.x) / 2.0f;
-		line->mid.y			= (line->p1.y + line->p2.y) / 2.0f;
-		line->delta.x		= line->p2.x - line->p1.x;
-		line->delta.y		= line->p2.y - line->p1.y;
-		line->theta			= iDsf_adjustTheta(atan2(line->delta.y, line->delta.x));
-		line->length		= sqrt(line->delta.x*line->delta.x + line->delta.y*line->delta.y);
-
-		// Slope = rise over run
-		line->m				= line->delta.y / ((line->delta.x == 0.0) ? 0.0000000000001 : line->delta.x);
-
-		// Perpendicular slope = -1/m
-		line->mp			= -1.0 / ((line->m == 0.0) ? 0.0000000000001 : line->m);
-
-		// Integer roundings if need be
-		// Start
-		line->p1i.xi	= (s32)line->p1.x;
-		line->p1i.yi	= (s32)line->p1.y;
-		// End
-		line->p2i.xi	= (s32)line->p2.x;
-		line->p2i.yi	= (s32)line->p2.y;
-
-		// Compute the quadrants if need be
-		// Quads 1..4
-		line->p1_quad	= iDsf_compute_quad(&line->p1);
-		line->p2_quad	= iDsf_compute_quad(&line->p2);
-	}
-
-	void iDsf_computeLine_fromTwoPoints(SDsf_line_f64* line, SXy_f64* p1, SXy_f64* p2)
-	{
-		// p1
-		line->p1.x	= p1->x;
-		line->p1.y	= p1->y;
-
-		// p2
-		line->p2.x	= p2->x;
-		line->p2.y	= p2->y;
-
-		// Compute
-		iDsf_computeLine(line);
-	}
-
-
-
-
-//////////
-//
 // Called to constrain a quad around a line.  It is assumed that the quad runs from p1..p4, and
 // p2..p3 around the line with p1..p4 being near line.p1, and p2..p3 being near line.p2.  The
 // constraining distances are maximum radii out from the line to the corner points of the quad.
@@ -2599,7 +2609,7 @@
 			line.p1.y = po->y;
 			line.p2.x = pToConstrain->x;
 			line.p2.y = pToConstrain->y;
-			iDsf_computeLine(&line);
+			iDsf_compute_line(&line);
 			if (tlForceToLength || line.length > tfMaxLength)
 			{
 				// Force the point to that length's location
@@ -2634,49 +2644,26 @@
 
 //////////
 //
-// Returns the quadrant for the indicated point
-//
-//////
-	s32 iDsf_compute_quad(SXy_f64* p)
-	{
-		if (p->x >= 0.0)
-		{
-			// Either 1 or 4
-			if (p->y >= 0.0)		return(1);		// X is positive, Y is positive
-			else					return(4);		// X is positive, Y is negative
-
-		} else {
-			// Either 2 or 3
-			if (p->y >= 0.0)		return(2);		// X is negative, Y is positive
-			else					return(3);		// X is negative, Y is negative
-		}
-	}
-
-
-
-
-//////////
-//
 // Called when the mouse is selected on this area.  Based on the selection criteria, what is
 // needing to be processed will be processed.
 //
 //////
-	void iDsf_select_range(SDsf* p, SDsf_hwnd* h, SDsf_chars* c, SXy_f64* ul, SXy_f64* lr)
+	void iDsf_select_range(SDsf* dsf, SDsf_hwnd* h, SDsf_chars* c, SXy_f64* ul, SXy_f64* lr)
 	{
 		u32			lnI;
 		bool		llL, llO, llR, llSkipToNextStroke;
 		SXy_f64		pl, po, pr;
-		SSpline*	spline;
-		SSpline*	splineStrokeStart;
+		SDsf_spline*	spline;
+		SDsf_spline*	splineStrokeStart;
 
 
 		// Iterate through each item
 		llSkipToNextStroke	= false;
-		splineStrokeStart	= (SSpline*)c->splines->data;
-		for (lnI = 0; lnI < c->splines->populatedLength; lnI += sizeof(SSpline))
+		splineStrokeStart	= (SDsf_spline*)c->splines->data;
+		for (lnI = 0; lnI < c->splines->populatedLength; lnI += sizeof(SDsf_spline))
 		{
 			// Grab the pointer
-			spline = (SSpline*)(c->splines->data + lnI);
+			spline = (SDsf_spline*)(c->splines->data + lnI);
 
 			// We only process iOrder records above 0
 			if (spline->iOrder > 0)
@@ -2702,34 +2689,34 @@
 					if (llL || llO || llR)
 					{
 						// At least one of these points is in line
-						switch (p->mode)
+						switch (dsf->mode)
 						{
 							case _MODE_POINT:
 								// We are selecting any matching points only
-								if (llL)		iDsf_select_point(p, spline, &spline->tlLSelected);
-								if (llO)		iDsf_select_point(p, spline, &spline->tlOSelected);
-								if (llR)		iDsf_select_point(p, spline, &spline->tlRSelected);
+								if (llL)		iDsf_select_point(dsf, spline, &spline->tlLSelected);
+								if (llO)		iDsf_select_point(dsf, spline, &spline->tlOSelected);
+								if (llR)		iDsf_select_point(dsf, spline, &spline->tlRSelected);
 								break;
 
 							case _MODE_SPLINE:
 								// We are selecting the entire spline
-								iDsf_select_spline(p, spline);
+								iDsf_select_spline(dsf, spline);
 								break;
 
 							case _MODE_STROKE:
 								// We are selecting the entire stroke
-								iDsf_select_stroke(p, splineStrokeStart);
+								iDsf_select_stroke(dsf, splineStrokeStart);
 								llSkipToNextStroke = true;
 								break;
 
 							case _MODE_BEFORE:
 								// We are selecting everything up to and including this spline on the stroke
-								iDsf_select_strokeBefore(p, splineStrokeStart, spline);
+								iDsf_select_strokeBefore(dsf, splineStrokeStart, spline);
 								break;
 
 							case _MODE_AFTER:
 								// We are selecting everything from this spline and beyond on this stroke
-								iDsf_select_strokeAfter(p, spline);
+								iDsf_select_strokeAfter(dsf, spline);
 								llSkipToNextStroke = true;
 								break;
 
@@ -2744,21 +2731,21 @@
 		}
 	}
 
-	void iDsf_select_point(SDsf* p, SSpline* spline, bool* tlSelected)
+	void iDsf_select_point(SDsf* dsf, SDsf_spline* spline, bool* tlSelected)
 	{
-		if (p->disposition == _DISPOSITION_FLIP_LR || p->disposition == _DISPOSITION_FLIP_LM_RM)
+		if (dsf->disposition == _DISPOSITION_FLIP_LR || dsf->disposition == _DISPOSITION_FLIP_LM_RM)
 		{
 			// This is an entire spline operation
-			iDsf_select_spline(p, spline);
+			iDsf_select_spline(dsf, spline);
 			return;
 		}
 
 		// If we get here, it's some other disposition
-		switch (p->method)
+		switch (dsf->method)
 		{
 			case _METHOD_LEFT:
 				// They want the left point selected, and the middle and right points not selected
-				switch (p->disposition)
+				switch (dsf->disposition)
 				{
 					case _DISPOSITION_SELECT:
 						// They are selecting
@@ -2782,7 +2769,7 @@
 
 			case _METHOD_MIDDLE:
 				// They want the middle point selected, and the left and right points not selected
-				switch (p->disposition)
+				switch (dsf->disposition)
 				{
 					case _DISPOSITION_SELECT:
 						// They are selecting
@@ -2806,7 +2793,7 @@
 
 			case _METHOD_RIGHT:
 				// They want the right point selected, and the left and middle points not selected
-				switch (p->disposition)
+				switch (dsf->disposition)
 				{
 					case _DISPOSITION_SELECT:
 						// They are selecting
@@ -2830,7 +2817,7 @@
 
 			case _METHOD_LEFT_MIDDLE:
 				// They want the left and middle points selected, and the right point not selected
-				switch (p->disposition)
+				switch (dsf->disposition)
 				{
 					case _DISPOSITION_SELECT:
 						// They are selecting
@@ -2860,7 +2847,7 @@
 
 			case _METHOD_MIDDLE_RIGHT:
 				// They want the middle and right points selected, and the left point not selected
-				switch (p->disposition)
+				switch (dsf->disposition)
 				{
 					case _DISPOSITION_SELECT:
 						// They are selecting
@@ -2890,7 +2877,7 @@
 
 			case _METHOD_LEFT_RIGHT:
 				// They want the left and right points selected, and the middle point not selected
-				switch (p->disposition)
+				switch (dsf->disposition)
 				{
 					case _DISPOSITION_SELECT:
 						// They are selecting
@@ -2920,7 +2907,7 @@
 
 			case _METHOD_SPLINE:
 				// They want the all three, left, middle, and right points selected
-				switch (p->disposition)
+				switch (dsf->disposition)
 				{
 					case _DISPOSITION_SELECT:
 						// They are selecting
@@ -2958,7 +2945,7 @@
 				break;
 
 			case _METHOD_POINT:
-				switch (p->disposition)
+				switch (dsf->disposition)
 				{
 					case _DISPOSITION_SELECT:
 						// We are simply selecting
@@ -2982,9 +2969,9 @@
 		}
 	}
 
-	void iDsf_select_spline(SDsf* p, SSpline* spline)
+	void iDsf_select_spline(SDsf* dsf, SDsf_spline* spline)
 	{
-		switch (p->disposition)
+		switch (dsf->disposition)
 		{
 			case _DISPOSITION_SELECT:
 				// They are selecting
@@ -3063,25 +3050,25 @@
 		}
 	}
 
-	void iDsf_select_stroke(SDsf* p, SSpline* splineStrokeStart)
+	void iDsf_select_stroke(SDsf* dsf, SDsf_spline* splineStrokeStart)
 	{
 		// Incomplete feature
 		_asm int 3;
 	}
 
-	void iDsf_select_strokeBefore(SDsf* p, SSpline* splineStrokeStart, SSpline* splineStrokeEnd)
+	void iDsf_select_strokeBefore(SDsf* dsf, SDsf_spline* splineStrokeStart, SDsf_spline* splineStrokeEnd)
 	{
 		// Incomplete feature
 		_asm int 3;
 	}
 
-	void iDsf_select_strokeAfter(SDsf* p, SSpline* splineStrokeStart)
+	void iDsf_select_strokeAfter(SDsf* dsf, SDsf_spline* splineStrokeStart)
 	{
 		// Incomplete feature
 		_asm int 3;
 	}
 
-	void iDsf_spline_compute(SSpline* spline, SXy_f64* pl, SXy_f64* po, SXy_f64* pr)
+	void iDsf_spline_compute(SDsf_spline* spline, SXy_f64* pl, SXy_f64* po, SXy_f64* pr)
 	{
 		//////////
 		// Origin is a simple copy
@@ -3125,14 +3112,14 @@
 // Read the mouse position asynchronously
 //
 //////
-	void iDsf_readMousePosition(SDsf* p, SDsf_hwnd* h)
+	void iDsf_read_mousePosition(SDsf* dsf, SDsf_hwnd* h)
 	{
-		u32			lnI, lnJ;
-		bool		llLastMouseLeft, llLastMouseRight, llLastCtrl, llLastShift, llLastAlt, llMoved, llWasOnTheReservation, llOnTheReservation, llSomethingClicked;
-		HWND		hwndFocus;
+		u32				lnI, lnJ;
+		bool			llLastMouseLeft, llLastMouseRight, llLastCtrl, llLastShift, llLastAlt, llMoved, llWasOnTheReservation, llOnTheReservation, llSomethingClicked;
+		HWND			hwndFocus;
 		SDsf_chars*		c;
-		SSpline*	spline;
-		POINT		pt;
+		SDsf_spline*	spline;
+		POINT			pt;
 
 
 		//////////
@@ -3154,7 +3141,7 @@
 		// Adjust for the window
 		//////
 			// Adjust for our window
-			pt.y		-= h->y;
+			pt.y -= h->y;
 
 			// See if it's moved, and if so if it's moved off the reservation
 			llMoved					= !(gMouse.xi == pt.x && gMouse.yi == pt.y);
@@ -3208,16 +3195,16 @@
 					if (!llLastMouseLeft && glMouseLeft)
 					{
 						// Yes, set everything to being not processed
-						for (lnI = 0; lnI < p->chars->populatedLength; lnI += sizeof(SDsf_chars))
+						for (lnI = 0; lnI < dsf->chars->populatedLength; lnI += sizeof(SDsf_chars))
 						{
 							// Grab this pointer
-							c = (SDsf_chars*)(p->chars->data + lnI);
+							c = (SDsf_chars*)(dsf->chars->data + lnI);
 
 							// Do every spline within each character
-							for (lnJ = 0; lnJ < c->splines->populatedLength; lnJ += sizeof(SSpline))
+							for (lnJ = 0; lnJ < c->splines->populatedLength; lnJ += sizeof(SDsf_spline))
 							{
 								// Grab this pointer
-								spline = (SSpline*)(c->splines->data + lnJ);
+								spline = (SDsf_spline*)(c->splines->data + lnJ);
 
 								// We only process positive orders
 								if (spline->iOrder > 0)
@@ -3235,6 +3222,6 @@
 				//////////
 				// Post a message back to the parent to indicate this child needs to be redrawn
 				//////
-					PostMessage(h->hwndParent, WM_REDRAW_WINDOW, (u32)p, h->_hwnd);
+					PostMessage(h->hwndParent, WM_REDRAW_WINDOW, (u32)dsf, h->_hwnd);
 			}
 	}

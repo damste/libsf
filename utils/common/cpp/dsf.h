@@ -16,13 +16,13 @@
 
 
 
-struct SPointsDrawn
+struct SDsf_pointsDrawn
 {
 	SXy_s32		pt;
 	SBgra		color;
 };
 
-struct SLine_s32
+struct SDsf_line_s32
 {
 	// This line is not computed, but holds two points for easy reference
 	SXy_s32		p1i;
@@ -85,7 +85,7 @@ struct SDsf_line_f64
 		SBuilder*	temsLines;						// (STemsLines) Holds all alpha layer rendering data for the comprising
 	};
 
-	struct SSpline
+	struct SDsf_spline
 	{
 		s8			cType;							// S=Spline, D=Definition, R=Reference, L=Link
 		u32			iid;							// Character number (ASCII character)
@@ -115,7 +115,7 @@ struct SDsf_line_f64
 		bool		tlLSelected;					// Is the right-side selected?
 	};
 
-	struct SRefs
+	struct SDsf_refs
 	{
 		s8			cType;							// Line types supported:  H=Horizontal, V=Vertical, 2=Two point, 3=Three point, 5=Five point
 		s8			cDesc[40];						// Description of this reference
@@ -138,7 +138,7 @@ struct SDsf_line_f64
 
 	// Template point -- is an X,Y coordinate for part of an outline or line that was created as a template for the font.
 	// Certain mathematical operations for spline placement use these for reference
-	struct STems
+	struct SDsf_tems
 	{
 		f64		fx;									// X of X,Y coordinate for this outline point
 		f64		fy;									// Y of X,Y coordinate for this outline point
@@ -148,7 +148,7 @@ struct SDsf_line_f64
 		u8		deleted;							// Set when items are deleted
 	};
 
-	struct STemsLines
+	struct SDsf_temsLines
 	{
 		SXy_f64	p1;									// P1 is from location
 		SXy_f64	p2;									// P2 is to location
@@ -348,38 +348,49 @@ struct SDsf_line_f64
 // Forward declarations
 //////
 	void				initialize								(void);
-	SSpline*			iDsf_addSpline_fromToLR					(SBuilder* b, bool tlPenDown, f64 tfXL, f64 tfYL, f64 tfXR, f64 tfYR);
-	SSpline*			iDsf_addSpline_centerThetaRadiusLR		(SBuilder* b, bool tlPenDown, f64 tfX, f64 tfY, f64 tfRadius, f64 tfThetaL, f64 tfThetaR);
+	SDsf_spline*		iDsf_addSpline_fromToLR					(SBuilder* b, bool tlPenDown, f64 tfXL, f64 tfYL, f64 tfXR, f64 tfYR);
+	SDsf_spline*		iDsf_addSpline_centerThetaRadiusLR		(SBuilder* b, bool tlPenDown, f64 tfX, f64 tfY, f64 tfRadius, f64 tfThetaL, f64 tfThetaR);
 
 	SDsf*				iDsf_getInstance						(u32 tnHandle, bool* tlValid);
-	SSpline*			iDsf_find_splineInstance				(SBuilder* charsBuilder, u32 tnIid, u8 tcType, u32 tiOrder, u32 tiLnkId, u32 tiLnkOrder);
+	SDsf_spline*		iDsf_find_splineInstance				(SBuilder* charsBuilder, u32 tnIid, u8 tcType, u32 tiOrder, u32 tiLnkId, u32 tiLnkOrder);
 	SDsf_chars*			iiDsf_findOrCreate_thisChars			(SBuilder* charsBuilder, u32 tnIid);
 	SDsf_chars*			iiDsf_findOnly_thisChars				(SBuilder* charsBuilder, u32 tnIid);
-	SSpline*			iDsf_find_splineInstance_SD				(SBuilder* thisSplineBuilder, u32 tnIid, u32 tiOrder, bool tlAddIfNotFound);
-	SSpline*			iDsf_find_splineInstance_R				(SBuilder* thisSplineBuilder, u32 tnIid, u32 tiOrder, u32 tiLnkId, bool tlAddIfNotFound);
-	SSpline*			iDsf_find_splineInstance_L				(SBuilder* thisSplineBuilder, u32 tnIid, u32 tiOrder, u32 tiLnkId, u32 tiLnkOrder, bool tlAddIfNotFound);
-	SRefs*				iDsf_find_refsInstance					(SBuilder* refs, u8 tcType, s8* tcDesc40);
-	STems*				iDsf_create_newTemsEntry				(SBuilder* charsBuilder, u32 tipid);
+	SDsf_spline*		iDsf_find_splineInstance_SD				(SBuilder* thisSplineBuilder, u32 tnIid, u32 tiOrder, bool tlAddIfNotFound);
+	SDsf_spline*		iDsf_find_splineInstance_R				(SBuilder* thisSplineBuilder, u32 tnIid, u32 tiOrder, u32 tiLnkId, bool tlAddIfNotFound);
+	SDsf_spline*		iDsf_find_splineInstance_L				(SBuilder* thisSplineBuilder, u32 tnIid, u32 tiOrder, u32 tiLnkId, u32 tiLnkOrder, bool tlAddIfNotFound);
+	SDsf_refs*			iDsf_find_refsInstance					(SBuilder* refs, u8 tcType, s8* tcDesc40);
+	SDsf_tems*			iDsf_create_newTemsEntry				(SBuilder* charsBuilder, u32 tipid);
 	SBuilder*			iDsf_get_tems_rawBuilder				(SBuilder* charsBuilder,u32 tipid);
 
-	int					iDsf_render								(SDsf* p, SDsf_hwnd* h, SDsf_chars* c, s32 tnWidth, s32 tnHeight, u32 tnHwndParent, s32 tnX, s32 tnY);
-	void				iDsf_render_mouseCoordinates			(SDsf* p, SDsf_hwnd* h);
-	void				iDsf_render_cues						(SDsf* p, SDsf_hwnd* h, SDsf_chars* c);
-	void				iDsf_render_cueLineH					(SDsf* p, SDsf_hwnd* h, SDsf_chars* c, f64 tfY, SBgr color);
-	void				iDsf_render_cueLineV					(SDsf* p, SDsf_hwnd* h, SDsf_chars* c, f64 tfX, SBgr color);
-	void				iDsf_render_quadH						(SDsf* p, SDsf_hwnd* h, SDsf_chars* c, f64 tfTop, f64 tfBottom, SBgr color);
-	void				iDsf_render_refs						(SDsf* p, SDsf_hwnd* h, SDsf_chars* c);
-	void				iDsf_render_grid						(SDsf* p, SDsf_hwnd* h);
-	void				iDsf_render_splines						(SDsf* p, SDsf_hwnd* h, SDsf_chars* c, u32 tlMarkup, u32 tlBold, u32 tlItalic, u32 tlUnderline, u32 tlStrikethrough);
+	int					iDsf_render								(SDsf* dsf, SDsf_hwnd* h, SDsf_chars* c, s32 tnWidth, s32 tnHeight, u32 tnHwndParent, s32 tnX, s32 tnY);
+	void				iDsf_render_mouseCoordinates			(SDsf* dsf, SDsf_hwnd* h);
+	void				iDsf_render_cues						(SDsf* dsf, SDsf_hwnd* h, SDsf_chars* c);
+	void				iDsf_render_cueLineH					(SDsf* dsf, SDsf_hwnd* h, SDsf_chars* c, f64 tfY, SBgr color);
+	void				iDsf_render_cueLineV					(SDsf* dsf, SDsf_hwnd* h, SDsf_chars* c, f64 tfX, SBgr color);
+	void				iDsf_render_quadH						(SDsf* dsf, SDsf_hwnd* h, SDsf_chars* c, f64 tfTop, f64 tfBottom, SBgr color);
+	void				iDsf_render_mouseOverlay				(SDsf* dsf, SDsf_hwnd* h, SDsf_chars* c);
+	void				iDsf_render_refs						(SDsf* dsf, SDsf_hwnd* h, SDsf_chars* c);
+	void				iDsf_render_grid						(SDsf* dsf, SDsf_hwnd* h);
+	void				iDsf_render_splines						(SDsf* dsf, SDsf_hwnd* h, SDsf_chars* c, u32 tlMarkup, u32 tlBold, u32 tlItalic, u32 tlUnderline, u32 tlStrikethrough);
+	void				iDsf_render_hint						(SDsf_hwnd* h, SDsf_line_f64* line, SXy_f64* pt);
+	void				iDsf_render_tems						(SDsf* dsf, SDsf_hwnd* h, SDsf_chars* c);
+	void				iDsf_render_zoomLens					(SDsf_hwnd* h);
+	u32					iiDsf_renderMarkup_getNextLineSegment	(u32 tnIndex, u32 tnMaxCount, SDsf_hwnd* h, SDsf_tems* root, SDsf_tems** p1, SDsf_tems** p2);
+	s32					iiDsf_renderMarkup_getPoint				(f64 tfValue01, s32 tnMultiplier);
 
-	SBgr				iDsf_setLineColor						(SDsf* p);
+	SBgr				iDsf_setLineColor						(SDsf* dsf);
+
+	void				iDsf_compute_LOR						(SDsf_spline* s, SXy_f64* pl, SXy_f64* po, SXy_f64* pr);
+	void				iDsf_compute_quadColors_R				(SDsf_spline* s, SDsf_spline* sLast, SBgr quadNormal, SBgr quadSelected, SBgr* p1ColorR, SBgr* p2ColorR, SBgr* p3ColorR, SBgr* p4ColorR);
+	void				iDsf_compute_quadColors_L				(SDsf_spline* s, SDsf_spline* sLast, SBgr quadNormal, SBgr quadSelected, SBgr* p1ColorL, SBgr* p2ColorL, SBgr* p3ColorL, SBgr* p4ColorL);
+	bool				iDsf_compute_closestMouseLine			(SDsf_line_f64* line);
+	void				iDsf_compute_line						(SDsf_line_f64* line);
+	void				iDsf_compute_line_fromTwoPoints			(SDsf_line_f64* line, SXy_f64* p1, SXy_f64* p2);
+	s32					iDsf_compute_quad						(SXy_f64* p);
+
 	void				iDsf_draw_penDown						(SDsf_hwnd* h, SDsf_line_f64* line);
 	void				iDsf_draw_penUp							(SDsf_hwnd* h, SDsf_line_f64* line);
-	void				iDsf_render_hint						(SDsf_hwnd* h, SDsf_line_f64* line, SXy_f64* pt);
-	void				iDsf_compute_LOR						(SSpline* s, SXy_f64* pl, SXy_f64* po, SXy_f64* pr);
-	void				iDsf_compute_quadColors_R				(SSpline* s, SSpline* sLast, SBgr quadNormal, SBgr quadSelected, SBgr* p1ColorR, SBgr* p2ColorR, SBgr* p3ColorR, SBgr* p4ColorR);
-	void				iDsf_compute_quadColors_L				(SSpline* s, SSpline* sLast, SBgr quadNormal, SBgr quadSelected, SBgr* p1ColorL, SBgr* p2ColorL, SBgr* p3ColorL, SBgr* p4ColorL);
-	void				iDsf_draw_points						(SDsf* p, SDsf_hwnd* h, SXy_f64* pr, SXy_f64* po, SXy_f64* pl, SSpline* s, SBgr colorSelected, SBgr colorR, SBgr colorO, SBgr colorL, SBgr colorRSelected, SBgr colorOSelected, SBgr colorLSelected, SBgr colorLine);
+	void				iDsf_draw_points						(SDsf* dsf, SDsf_hwnd* h, SXy_f64* pr, SXy_f64* po, SXy_f64* pl, SDsf_spline* s, SBgr colorSelected, SBgr colorR, SBgr colorO, SBgr colorL, SBgr colorRSelected, SBgr colorOSelected, SBgr colorLSelected, SBgr colorLine);
 	void				iDsf_draw_line							(SDsf_hwnd* h, SXy_f64* p1, SXy_f64* p2, SBgr colorStart, SBgr colorEnd, f64 tfPower);
 	void				iDsf_draw_lineAlpha						(SDsf_hwnd* h, SXy_f64* p1, SXy_f64* p2, SBgr_af64* colorStart, SBgr_af64* colorEnd, SBuilder* pointsDrawn, bool tlNoDuplicates, f64 tfPower);
 	void				iDsf_draw_line_alpha_noDuplicates		(SDsf_hwnd* h, SBuilder* pointsDrawn);
@@ -387,17 +398,14 @@ struct SDsf_line_f64
 	void				iDsf_draw_point_small					(SDsf_hwnd* h, SXy_f64* p1, SBgr color);
 	void				iDsf_draw_point_large					(SDsf_hwnd* h, SXy_f64* p1, SBgr color);
 	void				iDsf_draw_line_horizontal_byPixels		(SDsf_hwnd* h, s32 x1, s32 x2, s32 y, SBgr color);
-	void				iDsf_fill_quad_alpha					(SDsf_hwnd* h, SXy_f64* p1, SXy_f64* p2, SXy_f64* p3, SXy_f64* p4, SBgr p1Color, SBgr p2Color, SBgr p3Color, SBgr p4Color, f64 tfP1Alp, f64 tfP2Alp, f64 tfP3Alp, f64 tfP4Alp, f64 tfPower);
-	void				iDsf_render_mouseOverlay				(SDsf* p, SDsf_hwnd* h, SDsf_chars* c);
-	bool				iDsf_compute_closestMouseLine			(SDsf_line_f64* line);
-	void				iDsf_colorize_andProcessHorizontalLine_byPixels(SDsf* p, SDsf_hwnd* h, SDsf_chars* c, s32 x1, s32 x2, s32 y, SBgr color);
-	void				iDsf_colorize_horizontalLine_byPixels	(SDsf* p, SDsf_hwnd* h, SDsf_chars* c, s32 x1, s32 x2, s32 y, SBgr color);
-	void				iDsf_colorize_andProcessVerticalLine_byPixels(SDsf* p, SDsf_hwnd* h, SDsf_chars* c, s32 y1, s32 y2, s32 x, SBgr color);
-	void				iDsf_colorize_verticalLine_byPixels		(SDsf* p, SDsf_hwnd* h, SDsf_chars* c, s32 y1, s32 y2, s32 x, SBgr color);
-	void				iDsf_render_tems						(SDsf* p, SDsf_hwnd* h, SDsf_chars* c);
-	void				iDsf_invertImage						(SDsf_hwnd* h);
-	void				iDsf_render_zoomLens					(SDsf_hwnd* h);
-	u32					iDsf_scale_intoRange						(s32 tnValue, s32 tnValueMax, s32 tnMinRange, s32 tnMaxRange);
+
+	void				iDsf_fill_quad_alpha							(SDsf_hwnd* h, SXy_f64* p1, SXy_f64* p2, SXy_f64* p3, SXy_f64* p4, SBgr p1Color, SBgr p2Color, SBgr p3Color, SBgr p4Color, f64 tfP1Alp, f64 tfP2Alp, f64 tfP3Alp, f64 tfP4Alp, f64 tfPower);
+	void				iDsf_colorize_andProcessHorizontalLine_byPixels	(SDsf* dsf, SDsf_hwnd* h, SDsf_chars* c, s32 x1, s32 x2, s32 y, SBgr color);
+	void				iDsf_colorize_horizontalLine_byPixels			(SDsf* dsf, SDsf_hwnd* h, SDsf_chars* c, s32 x1, s32 x2, s32 y, SBgr color);
+	void				iDsf_colorize_andProcessVerticalLine_byPixels	(SDsf* dsf, SDsf_hwnd* h, SDsf_chars* c, s32 y1, s32 y2, s32 x, SBgr color);
+	void				iDsf_colorize_verticalLine_byPixels				(SDsf* sdf, SDsf_hwnd* h, SDsf_chars* c, s32 y1, s32 y2, s32 x, SBgr color);
+	void				iDsf_invertImage								(SDsf_hwnd* h);
+	u32					iDsf_scale_intoRange					(s32 tnValue, s32 tnValueMax, s32 tnMinRange, s32 tnMaxRange);
 	u32					iDsf_validate_range						(s32 tnValue, s32 tnValueMin, s32 tnValueMax, s32 tnDefaultValue);
 	void				iDsf_makeSure_lowToHigh_u32				(u32* p1, u32* p2);
 	void				iDsf_makeSure_lowToHigh_s32				(s32* p1, s32* p2);
@@ -405,8 +413,6 @@ struct SDsf_line_f64
 	int					iiDsf_tems_qsortCallback				(const void* l, const void* r);
 	int					iiDsf_SXy_s32_qsortCallback				(const void* l, const void* r);
 	int					iiDsf_SPointsDrawn_qsortCallback		(const void* l, const void* r);
-	u32					iiDsf_renderMarkup_getNextLineSegment	(u32 tnIndex, u32 tnMaxCount, SDsf_hwnd* h, STems* root, STems** p1, STems** p2);
-	s32					iiDsf_getPoint							(f64 tfValue01, s32 tnMultiplier);
 
 	SDsf_hwnd*			iDsf_findOnlyHwnd_byHwnd				(SBuilder* hwnds, u32 tnHwndParent, u32 tnHwnd);
 	SDsf_hwnd*			iDsf_findOnlyHwnd_byHwndControl			(SBuilder* hwnds, u32 tnHwndParent, u32 tnHwndControl);
@@ -414,18 +420,15 @@ struct SDsf_line_f64
 	SDsf_hwnd*			iDsf_findOnlyHwnd						(SBuilder* hwnds, u32 tnHwndParent, s32 tnX, s32 tnY, s32 tnWidth, s32 tnHeight);
 	SDsf_hwnd*			iDsf_findHwnd_orCreate					(SBuilder* hwnds, u32 tnHwndParent, s32 tnX, s32 tnY, s32 tnWidth, s32 tnHeight, u32 tlMarkup);
 
-	void				iDsf_computeLine						(SDsf_line_f64* line);
-	void				iDsf_computeLine_fromTwoPoints			(SDsf_line_f64* line, SXy_f64* p1, SXy_f64* p2);
 	void				iDsf_constrain_quadAroundLine			(SDsf_line_f64* lineRef, SXy_f64* p1, SXy_f64* p2, SXy_f64* p3, SXy_f64* p4, f64 tfp1Max, f64 tfp2Max, f64 tfp3Max, f64 tfp4Max, bool tlForceSize);
 	void				iDsf_constrain_lineLength				(SXy_f64* po, SXy_f64* pToConstrain, f64 tfMaxLength, bool tlForceToLength);
 	f64					iDsf_adjustTheta						(f64 tfTheta);
-	s32					iDsf_compute_quad						(SXy_f64* p);
-	void				iDsf_select_range						(SDsf* p, SDsf_hwnd* h, SDsf_chars* c, SXy_f64* ul, SXy_f64* lr);
-	void				iDsf_select_point						(SDsf* p, SSpline* spline, bool* tlSelected);
-	void				iDsf_select_spline						(SDsf* p, SSpline* spline);
-	void				iDsf_select_stroke						(SDsf* p, SSpline* splineStrokeStart);
-	void				iDsf_select_strokeBefore				(SDsf* p, SSpline* splineStrokeStart, SSpline* splineStrokeEnd);
-	void				iDsf_select_strokeAfter					(SDsf* p, SSpline* splineStrokeStart);
-	void				iDsf_spline_compute						(SSpline* spline, SXy_f64* pl, SXy_f64* po, SXy_f64* pr);
+	void				iDsf_select_range						(SDsf* dsf, SDsf_hwnd* h, SDsf_chars* c, SXy_f64* ul, SXy_f64* lr);
+	void				iDsf_select_point						(SDsf* dsf, SDsf_spline* spline, bool* tlSelected);
+	void				iDsf_select_spline						(SDsf* dsf, SDsf_spline* spline);
+	void				iDsf_select_stroke						(SDsf* dsf, SDsf_spline* splineStrokeStart);
+	void				iDsf_select_strokeBefore				(SDsf* dsf, SDsf_spline* splineStrokeStart, SDsf_spline* splineStrokeEnd);
+	void				iDsf_select_strokeAfter					(SDsf* dsf, SDsf_spline* splineStrokeStart);
+	void				iDsf_spline_compute						(SDsf_spline* spline, SXy_f64* pl, SXy_f64* po, SXy_f64* pr);
 	bool				iDsf_isPointInRange						(SXy_f64* pt, SXy_f64* ul, SXy_f64* lr);
-	void				iDsf_readMousePosition					(SDsf* p, SDsf_hwnd* h);
+	void				iDsf_read_mousePosition					(SDsf* dsf, SDsf_hwnd* h);

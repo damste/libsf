@@ -628,7 +628,7 @@
 											u32 tiSubdivs, u32 tiLnkId, u32 tiLnkOrder)
 	{
 		SDsf*		dsf;
-		SSpline*	s;
+		SDsf_spline*	s;
 		bool		llValid;
 
 
@@ -699,7 +699,7 @@
 											bool tlVisible, s8* tcChars1_128, s8* tcChars2_128)
 	{
 		SDsf*		dsf;
-		SRefs*		r;
+		SDsf_refs*		r;
 		bool		llValid;
 
 
@@ -718,12 +718,12 @@
 			if (!r)
 			{
 				// It's a new entry
-				r = (SRefs*)iBuilder_allocateBytes(dsf->refs, sizeof(SRefs));
+				r = (SDsf_refs*)iBuilder_allocateBytes(dsf->refs, sizeof(SDsf_refs));
 				if (!r)
 					return(-2);		// Error allocating
 
 				// Initialize it
-				memset(r, 0, sizeof(SRefs));
+				memset(r, 0, sizeof(SDsf_refs));
 			}
 
 
@@ -778,7 +778,7 @@
 	int iDsf_load_template(u32 tnInstance, u32 tipid, f64 tfX, f64 tfY, u32 tnRecno)
 	{
 		SDsf*		dsf;
-		STems*		t;
+		SDsf_tems*	t;
 		bool		llValid;
 
 
@@ -832,7 +832,7 @@
 		SXy_s32*		temsTemp;
 		SXy_s32*		temsTempLast;
 		SBuilder*		temsTempBuilder;		// Temporary builder used to convert temsRaw into aliased pixel values
-		STems*			t;
+		SDsf_tems*			t;
 		bool			llValid;
 
 
@@ -875,12 +875,12 @@
 						// Iterate through and create entries in temsTemp for the aliased pixel values
 						//////
 							// Sort the raw list
-							lnTemsRawCount = c->temsRaw->populatedLength / sizeof(STems);
-							qsort(c->temsRaw->data, lnTemsRawCount, sizeof(STems), iiDsf_tems_qsortCallback);
-							for (lnJ = 0; lnJ < c->temsRaw->populatedLength; lnJ += sizeof(STems))
+							lnTemsRawCount = c->temsRaw->populatedLength / sizeof(SDsf_tems);
+							qsort(c->temsRaw->data, lnTemsRawCount, sizeof(SDsf_tems), iiDsf_tems_qsortCallback);
+							for (lnJ = 0; lnJ < c->temsRaw->populatedLength; lnJ += sizeof(SDsf_tems))
 							{
 								// Grab the pointer
-								t = (STems*)(c->temsRaw->data + lnJ);
+								t = (SDsf_tems*)(c->temsRaw->data + lnJ);
 
 								// Create the temporary list of aliased pixel values
 								temsTemp = (SXy_s32*)iBuilder_allocateBytes(temsTempBuilder, sizeof(SXy_s32));
@@ -912,7 +912,7 @@
 									temsTempLast = temsTemp;
 
 									// Create the converted data
-									t = (STems*)iBuilder_allocateBytes(c->tems, sizeof(STems));
+									t = (SDsf_tems*)iBuilder_allocateBytes(c->tems, sizeof(SDsf_tems));
 									if (t)
 									{
 										// Translate through to the aliased size
@@ -946,7 +946,7 @@
 		u32			lnI;
 		SDsf*		dsf;
 		SBuilder*	tems;
-		STems*		t;
+		SDsf_tems*		t;
 		bool		llValid;
 
 
@@ -969,10 +969,10 @@
 		//////////
 		// Find the first changed entry
 		//////
-			for (lnI = 0; lnI < tems->populatedLength; lnI += sizeof(STems))
+			for (lnI = 0; lnI < tems->populatedLength; lnI += sizeof(SDsf_tems))
 			{
 				// Grab the pointer
-				t = (STems*)(tems->data + lnI);
+				t = (SDsf_tems*)(tems->data + lnI);
 
 				// If it's changed, but not deleted
 				if (t->changed && !t->deleted)
@@ -1015,7 +1015,7 @@
 		u32			lnI;
 		SDsf*		dsf;
 		SBuilder*	tems;
-		STems*		t;
+		SDsf_tems*		t;
 		bool		llValid;
 
 
@@ -1038,10 +1038,10 @@
 		//////////
 		// Find the first changed entry
 		//////
-			for (lnI = 0; lnI < tems->populatedLength; lnI += sizeof(STems))
+			for (lnI = 0; lnI < tems->populatedLength; lnI += sizeof(SDsf_tems))
 			{
 				// Grab the pointer
-				t = (STems*)(tems->data + lnI);
+				t = (SDsf_tems*)(tems->data + lnI);
 
 				// Report on previously existing deleted items.  If the user adds an item, then
 				// deletes it before saving it is simply an orphan record that will be freed at exit.
@@ -2550,7 +2550,7 @@
 				{
 					// Get the mouse and keyboard state
 					case WM_TIMER:
-						iDsf_readMousePosition(dsf, h);
+						iDsf_read_mousePosition(dsf, h);
 						break;
 
 					// Redraw the window
