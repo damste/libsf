@@ -105,38 +105,6 @@ struct SErrorInfo
 	SComp*	errorComp;			// The comp this error relates to (if any)
 };
 
-struct SBgr
-{
-	union {
-		u8	blu;
-		u8	blu_u8;
-		s8	blu_s8;
-	};
-
-	union {
-		u8	grn;
-		u8	grn_u8;
-		s8	grn_s8;
-	};
-
-	union {
-		u8	red;
-		u8	red_u8;
-		s8	red_s8;
-	};
-};
-
-// Note:  SBgra moved to vjr_stucts00.h due to lin2win dependency
-
-struct SBgraf
-{
-	f32		blu;				// 24-bit RGB values in bitmap files are physically stored as BGR
-	f32		grn;
-	f32		red;
-	f32		alp;				// For 32-bit bitmaps
-	f32		area;				// Holds area
-};
-
 struct SBitmap
 {
 	// Device context and bitmap handle to this data

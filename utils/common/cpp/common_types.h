@@ -151,3 +151,85 @@
 	// For a null that is lower-case ... as it should be. :-)
 	#define null NULL
 #endif
+
+struct SBgr
+{
+	union {
+		u8	blu;
+		u8	blu_u8;
+		s8	blu_s8;
+	};
+
+	union {
+		u8	grn;
+		u8	grn_u8;
+		s8	grn_s8;
+	};
+
+	union {
+		u8	red;
+		u8	red_u8;
+		s8	red_s8;
+	};
+};
+
+// Note:  SBgra moved to vjr_stucts00.h due to lin2win dependency
+
+struct SBgraf
+{
+	f32		blu;				// 24-bit RGB values in bitmap files are physically stored as BGR
+	f32		grn;
+	f32		red;
+	f32		alp;				// For 32-bit bitmaps
+	f32		area;				// Holds area
+};
+
+// Note:  This structure was moved here because of a lin2win dependency when compiling for Linux
+struct SBgra
+{
+	union {
+		u32		color;
+		struct {
+			union {
+				u8	blu;
+				u8	blu_u8;
+				s8	blu_s8;
+			};
+			union {
+				u8	grn;
+				u8	grn_u8;
+				s8	grn_s8;
+			};
+			union {
+				u8	red;
+				u8	red_u8;
+				s8	red_s8;
+			};
+			union {
+				u8	alp;
+				u8	alp_u8;
+				s8	alp_s8;
+			};
+        };
+    };
+};
+
+struct SBgr_af64
+{
+	u8	blu;
+	u8	grn;
+	u8	red;
+	f64	falp;
+};
+
+struct SXy_f64
+{
+	f64	x;
+	f64	y;
+};
+
+struct SXy_s32
+{
+	s32	xi;
+	s32	yi;
+};

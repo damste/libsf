@@ -49,1218 +49,16 @@
 
 //////////
 //
-// Called to obtain the bitmap of the indicated character.
-//
-//////
-	int iDsf_get_character_bitmap(int tnAscii, s8* tcBitmapFilename, s8* tcFloanFilename, s8* tcFontName, int tnHeight, int tnWidth)
-	{
-		int		lnResult;
-		bool	llPseudo;
-		char	buffer[] = "delete_me.bmp";
-
-
-		//////////
-		// Make sure there is a valid filename
-		//////
-			if (!tcBitmapFilename || strlen(tcBitmapFilename) == 0)
-			{
-				llPseudo			= true;
-				tcBitmapFilename	= (s8*)buffer;		// Use our fake filename
-			}
-
-
-		//////////
-		// Grab the bitmap
-		//////
-			lnResult = iGetCharacterBitmap(tnAscii, tcBitmapFilename, tcFontName, tnHeight, tnWidth);
-
-
-		//////////
-		// If they want the floan data, generate it
-		//////
-			if (lnResult == 0 && tcFloanFilename)
-				lnResult = iGetFloanFromBitmap(tnAscii, tcBitmapFilename, tcFloanFilename);
-
-
-		//////////
-		// If we had to create a temporary filename, delete it
-		//////
-			if (llPseudo)
-				DeleteFileA(tcBitmapFilename);
-
-
-		//////////
-		// Indicate success or failure
-		//////
-			return(lnResult);
-	}
-
-
-
-
-//////////
-//
-// Called to scale a bitmap to the indicated size, and clip it to some other portion.  This
-// algorithm was created to allow the user to obtain a font from dsf_get_character_bitmap(),
-// but then to override the default generated image to make it resized appropriately for the
-// target font.
-//
-//////
-	int iDsf_scale_and_clip_bitmap(s8* tcBitmapFilenameIn, s8* tcBitmapFilenameOut, f64 tfWidth, f64 tfHeight, int tnClipLeft, int tnClipTop, int tnNewWidth, int tnNewHeight)
-	{
-// TODO:  This feature may be supplanted by using the templates point system (tems), whereby points are simply manipulated rather than a physical bitmap being scaled.
-		return(0);
-	}
-
-
-
-
-//////////
-//
-//  Called to initiate a new session of editing.
-//
-//////
-	int iDsf_create_new_instance(void)
-	{
-		union {
-			SInstance*	p;
-			u32			value;
-		};
-
-
-		//////////
-		// Allocate our instance
-		//////
-			p = (SInstance*)iBuilder_allocateBytes(instances, sizeof(SInstance));
-
-
-		//////////
-		// Initialize it
-		//////
-			memset(p, 0, sizeof(SInstance));
-			iBuilder_createAndInitialize(&p->chars,	-1);
-			iBuilder_createAndInitialize(&p->refs,	-1);
-			iBuilder_createAndInitialize(&p->hwnds,	-1);
-
-
-		//////////
-		// Brand it
-		//////
-			memcpy(&p->id, cgcDsfBrand, sizeof(p->id));
-			p->id_size		= sizeof(SInstance);
-			p->activeChar	= 65;				// Default to "A"
-
-
-		//////////
-		// Return the address as its handle
-		//////
-			return(value);
-	}
-
-
-
-
-//////////
-//
-// Called to set the data for the font instance
-//
-//////
-	int iDsf_load_font(u32 tnInstance,	f64 tfAscent,	f64 tfUpper,	f64 tfLower,		f64 tfLeft,			f64 tfRight,
-										f64 tfBase,		f64 tfDescent,	f64 tfWidth,
-										f64 tfItalics,	f64 tfBold,		f64 tfUnderTop,		f64 tfUnderBot,		f64 tfStrikeTop,	f64 tfStrikeBot)
-	{
-		SInstance*	p;
-		bool		llValid;
-
-
-		//////////
-		// Make sure our environment is sane
-		//////
-			p = iGetDsfInstance(tnInstance, &llValid);
-			if (!llValid)
-				return(-1);
-
-		//////////
-		// Store the indicated data
-		//////
-			p->font.fAscent		= tfAscent;				// See the explanations in the VFP DSF project, frmEdit::create_tables()
-			p->font.fUpper		= tfUpper;
-			p->font.fLower		= tfLower;
-			p->font.fLeft		= tfLeft;
-			p->font.fRight		= tfRight;
-			p->font.fBase		= tfBase;
-			p->font.fDescent	= tfDescent;
-			p->font.fWidth		= tfWidth;
-			p->font.fItalics	= tfItalics;
-			p->font.fBold		= tfBold;
-			p->font.fUnderTop	= tfUnderTop;
-			p->font.fUnderBot	= tfUnderBot;
-			p->font.fStrikeTop	= tfStrikeTop;
-			p->font.fStrikeBot	= tfStrikeBot;
-
-
-		//////////
-		// Indicate success
-		//////
-			return(0);
-	}
-
-
-
-
-//////////
-//
-// Called to load a character with its data based on (u8)tnType (S=Spline, D=Definition,
-// R=Reference, L=Link). For Definition entries, tiid must be above the standard 0..255 ASCII
-// character range.  Reference entries will be in the 0..255 range, but tiLnkId must refer to
-// an entry 256 or above.  Link entries can refer to any item, but must also include tiLnkOrder
-// to indicate what explicit item they want to modify.
-//
-//////
-	int iDsf_load_character(u32 tnInstance,	u32 tnType, u32 tiid, u32 tiOrder, s8* tcDesc10, u32 tlNewStroke, u32 tlSelected,
-											f64 tfOx, f64 tfOy, f64 tfOt, f64 tfLr, f64 tfLt, f64 tfRr, f64 tfRt, 
-											u32 tiSubdivs, u32 tiLnkId, u32 tiLnkOrder)
-	{
-		SInstance*	p;
-		SSpline*	s;
-		bool		llValid;
-
-
-		//////////
-		// Make sure our environment is sane
-		//////
-			p = iGetDsfInstance(tnInstance, &llValid);
-			if (!llValid)
-				return(-1);
-
-			// See if this character is of a higher number than previous ones
-			if (tiid > p->maxChar)
-				p->maxChar = tiid;
-
-
-		//////////
-		// Find or create the indicated character instance
-		//////
-			s = iFindSplineInstance(p->chars, tiid, (u8)tnType, tiOrder, tiLnkId, tiLnkOrder);
-			if (!s)
-				return(-2);		// Error finding (an invalid combination was provided)
-
-
-		//////////
-		// Populate the data
-		//////
-			s->cType		= (u8)tnType;
-			s->iid			= tiid;
-			s->iOrder		= tiOrder;
-			s->lPenDown	= ((tlNewStroke == 0) ? false : true);
-			s->lSelected	= ((tlSelected == 0) ? false : true);
-			s->ox			= tfOx;
-			s->oy			= tfOy;
-			s->ot			= tfOt;
-			s->lr			= tfLr;
-			s->lt			= tfLt;
-			s->rr			= tfRr;
-			s->rt			= tfRt;
-			s->iSubdivs		= tiSubdivs;
-			s->iLnkId		= tiLnkId;
-			s->iLnkOrder	= tiLnkOrder;
-
-			// Store the description
-			memcpy(&s->cDesc[0], tcDesc10, 10);
-		
-
-		//////////
-		// Indicate success
-		//////
-			return(0);
-	}
-
-
-
-
-//////////
-//
-// Called to load the indicated instance.  We search to see if a previous entry has been added
-// with this information.  If so, it's updated.  If not, it's appended.
-//
-//////
-	int iDsf_load_reference(u32 tnInstance,	u32 tnType, s8* tcDesc40,
-											f64 tfRef1X, f64 tfRef1Y,
-											f64 tfRef2X, f64 tfRef2Y,
-											f64 tfRef3X, f64 tfRef3Y,
-											f64 tfRef4X, f64 tfRef4Y,
-											f64 tfRef5X, f64 tfRef5Y,
-											bool tlVisible, s8* tcChars1_128, s8* tcChars2_128)
-	{
-		SInstance*	p;
-		SRefs*		r;
-		bool		llValid;
-
-
-		//////////
-		// Make sure our environment is sane
-		//////
-			p = iGetDsfInstance(tnInstance, &llValid);
-			if (!llValid)
-				return(-1);
-
-
-		//////////
-		// Try to find the indicated data
-		//////
-			r = iFindRefsInstance(p->refs, (u8)tnType, tcDesc40);
-			if (!r)
-			{
-				// It's a new entry
-				r = (SRefs*)iBuilder_allocateBytes(p->refs, sizeof(SRefs));
-				if (!r)
-					return(-2);		// Error allocating
-
-				// Initialize it
-				memset(r, 0, sizeof(SRefs));
-			}
-
-
-		//////////
-		// Populate the data
-		//////
-			r->cType		= (u8)tnType;
-
-			r->fref1x		= tfRef1X;
-			r->fref1y		= tfRef1Y;
-
-			r->fref2x		= tfRef2X;
-			r->fref2y		= tfRef2Y;
-
-			r->fref3x		= tfRef3X;
-			r->fref3y		= tfRef3Y;
-
-			r->fref4x		= tfRef4X;
-			r->fref4y		= tfRef4Y;
-
-			r->fref5x		= tfRef5X;
-			r->fref5y		= tfRef5Y;
-
-			r->lVisible		= tlVisible;
-
-			memcpy(&r->cDesc[0], tcDesc40, 40);
-			memcpy(&r->cChars1[0], tcChars1_128, 128);
-			memcpy(&r->cChars2[0], tcChars2_128, 128);
-
-
-		//////////
-		// Release the floan data.  It will be re-populated later if this ref is ever referenced
-		//////
-			iBuilder_freeAndRelease(&r->floans);
-
-
-		//////////
-		// Indicate success
-		//////
-			return(0);
-	}
-
-
-
-
-//////////
-//
-// Called to load the indicated instance.  We search to see if a previous entry has been added
-// with this information.  If so, it's updated.  If not, it's appended.
-//
-//////
-	int iDsf_load_template(u32 tnInstance, u32 tipid, f64 tfX, f64 tfY, u32 tnRecno)
-	{
-		SInstance*	p;
-		STems*		t;
-		bool		llValid;
-
-
-		//////////
-		// Make sure our environment is sane
-		//////
-			if (tfX < 0.0 || tfX > 1.0 || tfY < 0.0 || tfY > 1.0)
-				return(-2);		// Invalid parameter
-
-			p = iGetDsfInstance(tnInstance, &llValid);
-			if (!llValid)
-				return(-1);
-
-
-		//////////
-		// Try to find the indicated data
-		//////
-			t = iCreateNewTemsEntry(p->chars, tipid);
-			if (!t)
-				return(-2);		// Error allocating
-
-
-		//////////
-		// Populate the data
-		//////
-			t->fx		= tfX;
-			t->fy		= tfY;
-			t->recno	= tnRecno;
-
-
-		//////////
-		// Indicate success
-		//////
-			return(0);
-	}
-
-
-
-
-//////////
-//
-// Called once all of the initial loading of data is complete.
-//
-//////
-	void iDsf_initial_load_complete(u32 tnInstance, u32 tnWidth, u32 tnHeight)
-	{
-		u32			lnI, lnJ, lnTemsRawCount, lnTemsTempCount;
-		f64			lfWidth, lfHeight;
-		SInstance*	p;
-		SChars*		c;
-		SXYS32*		temsTemp;
-		SXYS32*		temsTempLast;
-		SBuilder*	temsTempBuilder;		// Temporary builder used to convert temsRaw into aliased pixel values
-		STems*		t;
-		bool		llValid;
-
-
-		//////////
-		// Make sure our environment is sane
-		//////
-			p = iGetDsfInstance(tnInstance, &llValid);
-			if (!llValid)
-				return;
-
-
-		//////////
-		// Convert the temsRaw into something used explicitly for the current window size
-		//////
-			lfWidth		= (f64)max(tnWidth,		400);
-			lfHeight	= (f64)max(tnHeight,	400);
-
-
-		//////////
-		// Sort the lists
-		//////
-			for (lnI = 0; lnI < p->chars->populatedLength; lnI += sizeof(SChars))
-			{
-				//////////
-				// Grab this pointer
-				//////
-					c = (SChars*)(p->chars->data + lnI);
-
-
-				//////////
-				// Are there any tems?
-				//////
-					if (c->temsRaw->populatedLength != 0)
-					{
-						// Initialize our builder
-						iBuilder_createAndInitialize(&temsTempBuilder, -1);
-
-
-						//////////
-						// Iterate through and create entries in temsTemp for the aliased pixel values
-						//////
-							// Sort the raw list
-							lnTemsRawCount = c->temsRaw->populatedLength / sizeof(STems);
-							qsort(c->temsRaw->data, lnTemsRawCount, sizeof(STems), iiTems_qsortCallback);
-							for (lnJ = 0; lnJ < c->temsRaw->populatedLength; lnJ += sizeof(STems))
-							{
-								// Grab the pointer
-								t = (STems*)(c->temsRaw->data + lnJ);
-
-								// Create the temporary list of aliased pixel values
-								temsTemp = (SXYS32*)iBuilder_allocateBytes(temsTempBuilder, sizeof(SXYS32));
-								if (temsTemp)
-								{
-									// Translate through to the aliased size
-									temsTemp->xi	= (s32)((f64)t->fx * lfWidth);
-									temsTemp->yi	= (s32)((f64)t->fy * lfHeight);
-								}
-							}
-							// When we get here, we have a completely aliased set of coordinates
-
-
-						//////////
-						// Convert the aliased list into a list of real entries, unique per pixel
-						//////
-							// Sort the aliased list
-							lnTemsTempCount = temsTempBuilder->populatedLength / sizeof(SXYS32);
-							qsort(temsTempBuilder->data, lnTemsTempCount, sizeof(SXYS32), iiSXyS32_qsortCallback);
-							for (lnJ = 0; lnJ < temsTempBuilder->populatedLength; lnJ += sizeof(SXYS32))
-							{
-								// Grab the pointer
-								temsTemp = (SXYS32*)(temsTempBuilder->data + lnJ);
-
-								// Has it changed?
-								if (lnJ == 0 || temsTempLast->xi != temsTemp->xi || temsTempLast->yi != temsTemp->yi)
-								{
-									// This is now our new last item
-									temsTempLast = temsTemp;
-
-									// Create the converted data
-									t = (STems*)iBuilder_allocateBytes(c->tems, sizeof(STems));
-									if (t)
-									{
-										// Translate through to the aliased size
-										t->fx	= ((f64)temsTemp->xi / lfWidth)  + 0.0000001;
-										t->fy	= ((f64)temsTemp->yi / lfHeight) + 0.0000001;
-									}
-								}
-							}
-							// When we get here, c->tems is populated with a list of only aliased pixel values
-
-
-						//////////
-						// Release our builder
-						//////
-							iBuilder_freeAndRelease(&temsTempBuilder);
-					}
-			}
-	}
-
-
-
-
-//////////
-//
-// Called to load the indicated instance.  We search to see if a previous entry has been added
-// with this information.  If so, it's updated.  If not, it's appended.
-//
-//////
-	int iDsf_get_changed_template(u32 tnInstance, u32 tipid, s8* tcY12, s8* tcX12, s8* tcRecno12, u32 tnNextNewRecno)
-	{
-		u32			lnI;
-		SInstance*	p;
-		SBuilder*	tems;
-		STems*		t;
-		bool		llValid;
-
-
-		//////////
-		// Make sure our environment is sane
-		//////
-			p = iGetDsfInstance(tnInstance, &llValid);
-			if (!llValid)
-				return(-1);
-
-
-		//////////
-		// Try to find the indicated data
-		//////
-			tems = iGetTemsRawBuilder(p->chars, tipid);
-			if (!tems)
-				return(-2);		// Error accessing this pid
-
-
-		//////////
-		// Find the first changed entry
-		//////
-			for (lnI = 0; lnI < tems->populatedLength; lnI += sizeof(STems))
-			{
-				// Grab the pointer
-				t = (STems*)(tems->data + lnI);
-
-				// If it's changed, but not deleted
-				if (t->changed && !t->deleted)
-				{
-					// Update the recno() if it's a new item
-					if (t->recno == -1)
-						t->recno = tnNextNewRecno;
-
-					// Store each item
-					sprintf(tcX12,		"%7.5f",	t->fx);
-					sprintf(tcY12,		"%7.5f",	t->fy);
-					sprintf(tcRecno12,	"%u",		t->recno);
-
-					// Mark it no longer changed
-					t->changed = false;
-
-					// Indicate success
-					return(0);
-				}
-			}
-
-
-		//////////
-		// Indicate that there are no more items
-		//////
-			return(-3);
-	}
-
-
-
-
-//////////
-//
-// Called to load the indicated instance.  We search to see if a previous entry has been added
-// with this information.  If so, it's updated.  If not, it's appended.
-//
-//////
-	int iDsf_get_deleted_template(u32 tnInstance, u32 tipid, s8* tcRecno12)
-	{
-		u32			lnI;
-		SInstance*	p;
-		SBuilder*	tems;
-		STems*		t;
-		bool		llValid;
-
-
-		//////////
-		// Make sure our environment is sane
-		//////
-			p = iGetDsfInstance(tnInstance, &llValid);
-			if (!llValid)
-				return(-1);
-
-
-		//////////
-		// Try to find the indicated data
-		//////
-			tems = iGetTemsRawBuilder(p->chars, tipid);
-			if (!tems)
-				return(-2);		// Error accessing this pid
-
-
-		//////////
-		// Find the first changed entry
-		//////
-			for (lnI = 0; lnI < tems->populatedLength; lnI += sizeof(STems))
-			{
-				// Grab the pointer
-				t = (STems*)(tems->data + lnI);
-
-				// Report on previously existing deleted items.  If the user adds an item, then
-				// deletes it before saving it is simply an orphan record that will be freed at exit.
-				if (t->deleted && t->recno != -1)
-				{
-					// Store the record number
-					sprintf(tcRecno12, "%u", t->recno);
-
-					// Indicate success
-					return(0);
-				}
-			}
-
-
-		//////////
-		// Indicate that there are no more items
-		//////
-			return(-3);
-	}
-
-
-
-
-//////////
-//
-// Called to set the cues the user wants to see, along with whether or not the mouse should track
-// near to any of the specified cues.  Will NOT issue a redraw.  Use dsf_user_cues() and then
-// dsf_user_cues2() for updating cues, and then use dsf_user_settings() to issue the redraw.
-//
-//////
-	int iDsf_user_cues(u32 tnInstance,	u32 tnAscent,			u32 tnTrackAscent, 
-										u32 tnUpper,			u32 tnTrackUpper, 
-										u32 tnLower,			u32 tnTrackLower, 
-										u32 tnBase,				u32 tnTrackBase, 
-										u32 tnDescent,			u32 tnTrackDescent, 
-										u32 tnStrikethrough,	u32 tnTrackStrike, 
-										u32 tnUnderline,		u32 tnTrackUnderline, 
-										u32 tnRefs,				u32 tnTrackRefs)
-	{
-		SInstance*	p;
-		bool		llValid;
-
-
-		//////////
-		// Make sure our environment is sane
-		//////
-			p = iGetDsfInstance(tnInstance, &llValid);
-			if (!llValid)
-				return(-1);
-
-
-		//////////
-		// Set the values, and trigger a refresh on any markup windows
-		//////
-			p->ascent			= iValidateRange(tnAscent,			 	_NO, 	_YES,	_NO);
-			p->trackAscent		= iValidateRange(tnTrackAscent,			_NO,	_YES,	_NO);
-			p->upper			= iValidateRange(tnUpper,				_NO,	_YES,	_NO);
-			p->trackUpper		= iValidateRange(tnTrackUpper,			_NO,	_YES,	_NO);
-			p->lower			= iValidateRange(tnLower,				_NO,	_YES,	_NO);
-			p->trackLower		= iValidateRange(tnTrackLower,			_NO,	_YES,	_NO);
-			p->base				= iValidateRange(tnBase,				_NO,	_YES,	_NO);
-			p->trackBase		= iValidateRange(tnTrackBase,			_NO,	_YES,	_NO);
-			p->descent			= iValidateRange(tnDescent,				_NO,	_YES,	_NO);
-			p->trackDescent		= iValidateRange(tnTrackDescent,		_NO,	_YES,	_NO);
-			p->strikethrough	= iValidateRange(tnStrikethrough,		_NO,	_YES,	_NO);
-			p->trackStrike		= iValidateRange(tnTrackStrike,			_NO,	_YES,	_NO);
-			p->underline		= iValidateRange(tnUnderline,			_NO,	_YES,	_NO);
-			p->trackUnderline	= iValidateRange(tnTrackUnderline,		_NO,	_YES,	_NO);
-			p->showRefs			= iValidateRange(tnRefs,				_NO,	_YES,	_NO);
-			p->trackRefs		= iValidateRange(tnTrackRefs,			_NO,	_YES,	_NO);
-			// Note:  We do not render here because the cues and settings are usually sent sequentially, and it only triggers the render on the settings
-
-
-		//////////
-		// Indicate success
-		//////
-			return(0);
-	}
-
-	int iDsf_user_cues2(u32 tnInstance,	u32 tlLeft,		u32 tnTrackLeft, 
-										u32 tlRight,	u32 tnTrackRight, 
-										u32 tlWidth,	u32 tnTrackWidth, 
-										u32 tlTems,		u32 tnTrackTems,
-										u32 tlGrid,		u32 tnTrackGrid)
-	{
-		SInstance*	p;
-		bool		llValid;
-
-
-		//////////
-		// Make sure our environment is sane
-		//////
-			p = iGetDsfInstance(tnInstance, &llValid);
-			if (!llValid)
-				return(-1);
-
-
-		//////////
-		// Set the values, and trigger a refresh on any markup windows
-		//////
-			p->left				= iValidateRange(tlLeft,		 	_NO, 	_YES,	_NO);
-			p->trackLeft		= iValidateRange(tnTrackLeft,	 	_NO, 	_YES,	_NO);
-			p->right			= iValidateRange(tlRight,		 	_NO, 	_YES,	_NO);
-			p->trackRight		= iValidateRange(tnTrackRight,	 	_NO, 	_YES,	_NO);
-			p->width			= iValidateRange(tlWidth,		 	_NO, 	_YES,	_NO);
-			p->trackWidth		= iValidateRange(tnTrackWidth,	 	_NO, 	_YES,	_NO);
-			p->tems				= iValidateRange(tlTems,		 	_NO, 	_YES,	_NO);
-			p->trackTems		= iValidateRange(tnTrackTems,	 	_NO, 	_YES,	_NO);
-			p->grid				= iValidateRange(tlGrid,			_NO,	_YES,	_NO);
-			p->trackGrid		= iValidateRange(tnTrackGrid,		_NO,	_YES,	_NO);
-			// Note:  We do not render here because the cues and settings are usually sent sequentially, and it only triggers the render on the settings
-
-
-		//////////
-		// Indicate success
-		//////
-			return(0);
-
-	}
-
-
-
-
-//////////
-//
-// Called to convey user settings.  Will issue a redraw.
-//
-//////
-	int iDsf_user_settings(u32 tnInstance,
-							u32 tnDisposition, u32 tnMode, u32 tnMethod, u32 tnRange,
-							u32 tlShowSplines, u32 tnSplinesType,
-							u32 tlHighlighSelection, u32 tlShowPenDowns,
-							u32 tlMouseCrosshairX, u32 tlMouseCrosshairY,
-							u32 tlInvert,
-							u32 tlZoomLens,
-							u32 tlCuesUnder, 
-							u32 tnSelectArea)
-	{
-		u32			lnI;
-		SInstance*	p;
-		SHwnd*		h;
-		bool		llValid;
-
-
-		//////////
-		// Make sure our environment is sane
-		//////
-			p = iGetDsfInstance(tnInstance, &llValid);
-			if (!llValid)
-				return(-1);
-
-
-		//////////
-		// Set the values, and trigger a refresh on any markup windows
-		//////
-			p->disposition				= iValidateRange(tnDisposition,				_DISPOSITION_SELECT,	_DISPOSITION_FLIP_LM_RM,	_DISPOSITION_SELECT);
-			p->mode						= iValidateRange(tnMode,					_MODE_POINT,			_MODE_AFTER,				_MODE_POINT);
-			p->method					= iValidateRange(tnMethod,					_METHOD_LEFT,			_METHOD_POINT,				_METHOD_POINT);
-			p->range					= iValidateRange(tnRange,					_RANGE_ACTIVE_CHAR,		_RANGE_ALL,					_RANGE_ACTIVE_CHAR);
-			p->showSplines				= iValidateRange(tlShowSplines,				_NO,					_YES,						_YES);
-			p->splinesType				= iValidateRange(tnSplinesType,				_SPLINES_FILL,			_SPLINES_LOR,				_SPLINES_FILL);
-			p->highlighSelection		= iValidateRange(tlHighlighSelection,		_NO,					_YES,						_YES);
-			p->showPenDowns				= iValidateRange(tlShowPenDowns,			_NO,					_YES,						_NO);
-			p->mouseCrosshairX			= iValidateRange(tlMouseCrosshairX,			_NO,					_YES,						_YES);
-			p->mouseCrosshairY			= iValidateRange(tlMouseCrosshairY,			_NO,					_YES,						_YES);
-			p->invert					= iValidateRange(tlInvert,					_NO,					_YES,						_NO);
-			p->zoomLens					= iValidateRange(tlZoomLens,				_NO,					_YES,						_NO);
-			p->cuesUnder				= iValidateRange(tlCuesUnder,				_NO,					_YES,						_YES);
-			p->selectArea				= iValidateRange(tnSelectArea,				_SELECT_AREA_SMALL,		_SELECT_AREA_EXTRA_LARGE,	_SELECT_AREA_SMALL);
-
-
-		//////////
-		// Force a re-render (whether we need one or not. :-))
-		//////
-			for (lnI = 0; lnI < p->hwnds->populatedLength; lnI += sizeof(SHwnd))
-			{
-				// Grab the pointer
-				h = (SHwnd*)(p->hwnds->data + lnI);
-
-				// If it's a markup window, re-render it
-				PostMessage(h->hwndParent, WM_REDRAW_WINDOW, (u32)p, (u32)h->hwnd);
-			}
-
-
-		//////////
-		// Indicate success
-		//////
-			return(0);
-	}
-
-
-
-
-//////////
-//
-// Called to indicate the user wants to make active another character for editing.  Will issue a redraw.
-//
-//////
-	int iDsf_set_active_character(u32 tnInstance, u32 tiid)
-	{
-		SInstance*	p;
-		bool		llValid;
-
-
-		//////////
-		// Make sure our environment is sane
-		//////
-			p = iGetDsfInstance(tnInstance, &llValid);
-			if (!llValid)
-				return(-1);
-
-
-		//////////
-		// Make sure that character is defined
-		/////
-			if (tiid * sizeof(SChars) < p->chars->populatedLength)
-			{
-				// It exists
-				p->activeChar = tiid;
-				return(0);
-
-			} else {
-				// Invalid character range
-				return(-2);
-			}
-	}
-
-
-
-
-//////////
-//
-// Called to indicate what tool the user wants to use.  Will issue a redraw.
-//
-//////
-	int iDsf_set_active_tool(u32 tnInstance, u32 tnToolNumber)
-	{
-		u32			lnI;
-		SInstance*	p;
-		SHwnd*		h;
-		bool		llValid;
-
-		//////////
-		// Make sure our environment is sane
-		//////
-			p = iGetDsfInstance(tnInstance, &llValid);
-			if (!llValid)
-				return(-1);
-
-
-		//////////
-		// Set the values, and trigger a refresh on any markup windows
-		//////
-			p->activeTool		= iValidateRange(tnToolNumber,		_TOOL_EDIT,		_TOOL_SCALE,	_TOOL_EDIT);
-
-
-		//////////
-		// Force a re-render (whether we need one or not. :-))
-		//////
-			for (lnI = 0; lnI < p->hwnds->populatedLength; lnI += sizeof(SHwnd))
-			{
-				// Grab the pointer
-				h = (SHwnd*)(p->hwnds->data + lnI);
-
-				// If it's a markup window, re-render it
-				PostMessage(h->hwndParent, WM_REDRAW_WINDOW, (u32)p, (u32)h->hwnd);
-			}
-
-
-		//////////
-		// Indicate success
-		//////
-			return(0);
-	}
-
-
-
-
-//////////
-//
-// Called to capture the contents of the indicated window to a disk file.
-//
-//////////
-//
-// Note:  In general, minimized windows can't be captured.
-// Note:  However, if the window is minimized it can still be captured using a type of hack.
-// Note:  This must be done in rapid succession.  In general, it will be, but it remains slower than capturing a visible window.
-// Steps:
-// (1) Disable the MinAnimate() effect globally:
-//		ANIMATIONINFO animInfo;
-//		u32 lnOldState;
-//		SystemParametersInfo(SPI_GETANIMATION, sizeof(ANIMATIONINFO), &animInfo, 0);
-//		lnOldAnim = animInfo.iMinAnimate
-//		animInfo.iMinAnimate = 1;
-//		SystemParametersInfo(SPI_SETANIMATION, sizeof(ANIMATIONINFO), &animInfo, SPIF_SENDCHANGE);
-// (2) Alter the window style to make the window appear completely transparent (so as to hide its restoration)
-//		winLong = GetWindowLong(hwnd, GWL_EXSTYLE);
-//		SetWindowLong(hwnd, GWL_EXSTYLE, winLong | WS_EX_LAYERED);
-//		SetLayeredWindowAttributes(hwnd, 0, 1, LWA_ALPHA);
-// (3) Restore the window
-//		ShowWindow(hwnd, SW_SHOW);
-// (4) Capture
-//		PrintWindow(hwnd, lhdc, PW_CLIENTONLY);
-// (5) Minimize the window
-//		ShowWindow(hwnd, SW_HIDE);
-// (6) Restore the original window style
-//		SetWindowLong(hwnd, GWL_EXSTYLE, winLong);
-// (7) Restore the original MinAnimate() effect
-//		animInfo.iMinAnimate = lnOldAnim;
-//		SystemParametersInfo(SPI_SETANIMATION, sizeof(ANIMATIONINFO), &animInfo, SPIF_SENDCHANGE);
-//
-//////
-//
-//////
-	int iDsf_get_hwnd_contents(u32 tnHwnd, s8* tcBitmapFilename)
-	{
-		union {
-			HWND	hwnd;
-			u32		_hwnd;
-		};
-		HDC					lhdc;
-		HBITMAP				lhbmp;
-		RECT				lrc;
-		BITMAPFILEHEADER	bh;
-		BITMAPINFOHEADER	bi;
-		SBGR*				bd;
-
-
-		//////////
-		// Store the parameter locally
-		//////
-			_hwnd = tnHwnd;
-
-
-		//////////
-		// Make sure it's a valid window
-		//////
-			if (IsWindow(hwnd))
-			{
-				// Get crucial window data
-				GetClientRect(hwnd, &lrc);
-				// Setup crucial window components
-				lhdc	= CreateCompatibleDC(GetDC(hwnd));
-				bd		= NULL;
-				lhbmp	= iCreateBitmap(lhdc, lrc.right - lrc.left, lrc.bottom - lrc.top, 1, 24, (void**)&bd, &bh, &bi);
-				SelectObject(lhdc, lhbmp);
-
-				// Ask Windows to draw its window contents into our device context
-				PrintWindow(hwnd, lhdc, PW_CLIENTONLY);
-
-				// Save the bitmap
-				iSaveBitmapByParams(&bh, &bi, bd, tcBitmapFilename);
-
-				// Cleanup
-				DeleteObject((HGDIOBJ)lhbmp);
-				DeleteDC(lhdc);
-
-				// Success
-				return(0);
-			}
-			return(-1);
-	}
-
-
-
-
-//////////
-//
-// Called to create a scaled interface into the HWND.
-//
-//////
-	int iDsf_scaled_interface_to_hwnd(u32 tnHwnd, s8* tcIdentifer, f32 tfInitialScale)
-	{
-		union {
-			HWND	hwnd;
-			u32		_hwnd;
-		};
-		HDC					lhdc;
-		HBITMAP				lhbmp;
-		RECT				lrc;
-		BITMAPFILEHEADER	bh;
-		BITMAPINFOHEADER	bi;
-		SBGR*				bd;
-
-
-		//////////
-		// Store the parameter locally
-		//////
-			_hwnd = tnHwnd;
-
-
-		//////////
-		// Make sure it's a valid window
-		//////
-			if (IsWindow(hwnd))
-			{
-				// Get crucial window data
-				GetClientRect(hwnd, &lrc);
-
-				// Setup crucial window components
-				lhdc	= CreateCompatibleDC(GetDC(hwnd));
-				bd		= NULL;
-				HMENU hmenu = CreateMenu();
-				lhbmp	= iCreateBitmap(lhdc, lrc.right - lrc.left, lrc.bottom - lrc.top, 1, 24, (void**)&bd, &bh, &bi);
-				SelectObject(lhdc, lhbmp);
-
-				// Ask Windows to draw its window contents into our device context
-				PrintWindow(hwnd, lhdc, PW_CLIENTONLY);
-
-				// Create the scaled window implementation
-
-				// Success
-				return(0);
-			}
-			return(-1);
-	}
-
-
-
-
-//////////
-//
-// Called to show or hide the window on the taskbar
-//
-/////
-	int iDsf_window_on_taskbar(u32 tnHwnd, u32 tnShow)
-	{
-		u32 lnResult;
-		union {
-			HWND	hwnd;
-			u32		_hwnd;
-		};
-
-
-		//////////
-		// If it's a window, process it
-		//////
-			_hwnd = tnHwnd;
-			if (IsWindow(hwnd))
-			{
-				// Show or hide it
-				if (tnShow == 0)		lnResult = giTaskbar->DeleteTab(hwnd);
-				else					lnResult = giTaskbar->AddTab(hwnd);
-
-				return(lnResult != 0);
-			}
-			// Failure
-			return(-1);
-	}
-
-
-
-
-//////////
-//
-// Called to render a markup form used for editing, or for debugging, at the indicated size.  This
-// is what the font looks like in the edit window of the DSF Font Editor.
-//
-//////
-	int iDsf_render_markup(u32 tnInstance, s32 tnWidth, s32 tnHeight, u32 tlBold, u32 tlItalic, u32 tlUnderline, u32 tlStrikethrough, s8* tcBitmapPathname, u32 tnHwnd, s32 tnX, s32 tnY, s32 tnControlX, s32 tnControlY, s32 tnControlWidth, s32 tnControlHeight)
-	{
-		SInstance*	p;
-		SHwnd*		h;
-		SChars*		thisChar;
-		bool		llValid;
-
-
-		//////////
-		// Make sure our environment is sane
-		//////
-			p = iGetDsfInstance(tnInstance, &llValid);
-			if (!llValid)
-				return(-1);
-
-
-		//////////
-		// Find the active character instance
-		//////
-			thisChar = iiFindOnlyThisChars(p->chars, p->activeChar);
-			if (!thisChar)
-				return(-2);		// Error finding (an invalid combination was provided)
-
-
-		//////////
-		// Determine where we will update our bitmap
-		//////
-			h = iFindOrCreateHwnd(p->hwnds, tnHwnd, tnX, tnY, tnWidth, tnHeight, true);
-			if (!h)
-				return(-3);
-
-
-		//////////
-		// Set it
-		//////
-			h->markup			= true;
-			h->bold				= tlBold;
-			h->italic			= tlItalic;
-			h->underline		= tlUnderline;
-			h->strikethrough	= tlStrikethrough;
-
-			// Create our control window if need be
-			if (!h->_hwndControl && tnControlX >= 0 && tnControlY >= 0)
-				h->_hwndControl	= iCreateControlWindow(h, tnControlX, tnControlY, tnControlWidth, tnControlHeight);
-
-
-		//////////
-		// Render it
-		//////
-			return(iRender(p, h, thisChar, tnWidth, tnHeight, tnHwnd, tnX, tnY));
-	}
-
-
-
-
-//////////
-//
-// Called to render a final form at the indicated size.  This is what the font will look like when
-// generated for regular use by the system.
-//
-//////
-	int iDsf_render_final(u32 tnInstance, s32 tnWidth, s32 tnHeight, u32 tlBold, u32 tlItalic, u32 tlUnderline, u32 tlStrikethrough, s8* tcBitmapPathname, u32 tnHwnd, s32 tnX, s32 tnY)
-	{
-		SInstance*	p;
-		SHwnd*		h;
-		SChars*		thisChar;
-		bool		llValid;
-
-
-		//////////
-		// Make sure our environment is sane
-		//////
-			p = iGetDsfInstance(tnInstance, &llValid);
-			if (!llValid)
-				return(-1);
-
-
-		//////////
-		// Find the active character instance
-		//////
-			thisChar = iiFindOnlyThisChars(p->chars, p->activeChar);
-			if (!thisChar)
-				return(-2);		// Error finding (an invalid combination was provided)
-
-
-		//////////
-		// Determine where we will update our bitmap
-		//////
-			h = iFindOrCreateHwnd(p->hwnds, tnHwnd, tnX, tnY, tnWidth, tnHeight, false);
-			if (!h)
-				return(-3);
-
-
-		//////////
-		// Render it
-		//////
-			h->markup			= false;
-			h->bold				= tlBold;
-			h->italic			= tlItalic;
-			h->underline		= tlUnderline;
-			h->strikethrough	= tlStrikethrough;
-			return(iRender(p, h, thisChar, tnWidth, tnHeight, tnHwnd, tnX, tnY));
-	}
-
-
-
-
-//////////
-//
-// Called to re-render a window that has been signaled that it needs re-rendering
-//
-//////
-	int iDsf_re_render(u32 tnInstance, u32 tnHwnd)
-	{
-		SInstance*	p;
-		SChars*		thisChar;
-		SHwnd*		h;
-		bool		llValid;
-
-
-		//////////
-		// Make sure our environment is sane
-		//////
-			p = iGetDsfInstance(tnInstance, &llValid);
-			if (!llValid)
-				return(-1);
-
-
-		//////////
-		// Find the active character instance
-		//////
-			thisChar = iiFindOnlyThisChars(p->chars, p->activeChar);
-			if (!thisChar)
-				return(-2);		// Error finding (an invalid combination was provided)
-
-
-		//////////
-		// See if we're found on this instance
-		//////
-			if (!IsWindow((HWND)tnHwnd))
-				return(-2);		// Invalid window
-
-
-		//////////
-		// Search for it
-		//////
-			h = iFindOnlyHwndByHwnd(p->hwnds, (u32)GetParent((HWND)tnHwnd), tnHwnd);
-			if (h)		return(iRender(p, h, thisChar, h->w, h->h, tnHwnd, h->x, h->y));
-			else		return(-3);
-	}
-
-
-
-
-//////////
-//
 // Miscellaneous functions
 //
 //////
-	void iSetPoint(SXYF64* p, f64 x, f64 y)
+	void iSetPoint(SXy_f64* p, f64 x, f64 y)
 	{
 		p->x = x;
 		p->y = y;
 	}
 
-	void iCopyPoint(SXYF64* pDst, SXYF64* pSrc)
+	void iCopyPoint(SXy_f64* pDst, SXy_f64* pSrc)
 	{
 		pDst->x = pSrc->x;
 		pDst->y = pSrc->y;
@@ -1291,32 +89,32 @@
 		//////////
 		// Initialize our global buffers
 		/////
-			iBuilder_createAndInitialize(&instances, -1);
-			iBuilder_createAndInitialize(&placeholder, -1);
+			iBuilder_createAndInitialize(&gsRootDsfs, -1);
+			iBuilder_createAndInitialize(&gsDefaultChar, -1);
 
 
 		//////////
 		// Build an "i at the cross" for the placeholder (meaning " 'me' at the cross")
 		//////
 			// Cross
-			iAddSplineFromToLR(placeholder, true,		0.4075,		0.975,		0.59,		0.975);
-			iAddSplineFromToLR(placeholder, false,		0.4075,		0.05,		0.59,		0.05);
-			iAddSplineFromToLR(placeholder, true,		0.045,		0.74,		0.955,		0.74);
-			iAddSplineFromToLR(placeholder, false,		0.045,		0.62,		0.955,		0.62);
+			iDsf_addSpline_fromToLR(gsDefaultChar, true,		0.4075,		0.975,		0.59,		0.975);
+			iDsf_addSpline_fromToLR(gsDefaultChar, false,	0.4075,		0.05,		0.59,		0.05);
+			iDsf_addSpline_fromToLR(gsDefaultChar, true,		0.045,		0.74,		0.955,		0.74);
+			iDsf_addSpline_fromToLR(gsDefaultChar, false,	0.045,		0.62,		0.955,		0.62);
 
 			// "i" leg
-			iAddSplineFromToLR(placeholder, true,		0.775,		0.435,		0.85,		0.485);
-			iAddSplineFromToLR(placeholder, false,		0.7825,		0.425,		0.865,		0.47);
-			iAddSplineFromToLR(placeholder, false,		0.7875,		0.415,		0.8775,		0.45);
-			iAddSplineFromToLR(placeholder, false,		0.79,		0.405,		0.8875,		0.425);
-			iAddSplineFromToLR(placeholder, false,		0.7925,		0.3975,		0.8925,		0.405);
-			iAddSplineFromToLR(placeholder, false,		0.7925,		0.39,		0.895,		0.39);
-			iAddSplineFromToLR(placeholder, false,		0.7925,		0.14,		0.895,		0.14);
-			iAddSplineFromToLR(placeholder, false,		0.795,		0.125,		0.895,		0.13);
-			iAddSplineFromToLR(placeholder, false,		0.80,		0.105,		0.8975,		0.12);
-			iAddSplineFromToLR(placeholder, false,		0.81,		0.08,		0.90,		0.1125);
-			iAddSplineFromToLR(placeholder, false,		0.825,		0.06,		0.905,		0.1);
-			iAddSplineFromToLR(placeholder, false,		0.8375,		0.0425,		0.915,		0.095);
+			iDsf_addSpline_fromToLR(gsDefaultChar, true,		0.775,		0.435,		0.85,		0.485);
+			iDsf_addSpline_fromToLR(gsDefaultChar, false,	0.7825,		0.425,		0.865,		0.47);
+			iDsf_addSpline_fromToLR(gsDefaultChar, false,	0.7875,		0.415,		0.8775,		0.45);
+			iDsf_addSpline_fromToLR(gsDefaultChar, false,	0.79,		0.405,		0.8875,		0.425);
+			iDsf_addSpline_fromToLR(gsDefaultChar, false,	0.7925,		0.3975,		0.8925,		0.405);
+			iDsf_addSpline_fromToLR(gsDefaultChar, false,	0.7925,		0.39,		0.895,		0.39);
+			iDsf_addSpline_fromToLR(gsDefaultChar, false,	0.7925,		0.14,		0.895,		0.14);
+			iDsf_addSpline_fromToLR(gsDefaultChar, false,	0.795,		0.125,		0.895,		0.13);
+			iDsf_addSpline_fromToLR(gsDefaultChar, false,	0.80,		0.105,		0.8975,		0.12);
+			iDsf_addSpline_fromToLR(gsDefaultChar, false,	0.81,		0.08,		0.90,		0.1125);
+			iDsf_addSpline_fromToLR(gsDefaultChar, false,	0.825,		0.06,		0.905,		0.1);
+			iDsf_addSpline_fromToLR(gsDefaultChar, false,	0.8375,		0.0425,		0.915,		0.095);
 
 			// "i" dot
 			lfX			= 0.765;
@@ -1331,15 +129,16 @@
 				lfV1		= lfB * cos(lfTheta);
 				lfV2		= lfA * sin(lfTheta);
 				lfRadius	= (lfA * lfB) / sqrt(lfV1*lfV1 + lfV2*lfV2);
-				iAddSplineCenterThetaRadiusLR(placeholder, llPenDown, lfX, lfY, lfRadius, lfTheta, iAdjustTheta(_2PI - lfTheta));
+				iDsf_addSpline_centerThetaRadiusLR(gsDefaultChar, llPenDown, lfX, lfY, lfRadius, lfTheta, iDsf_adjustTheta(_2PI - lfTheta));
 				llPenDown = false;
 			}
-			// Add the final spline
+
+			// Final spline
 			lfTheta		= _PI - (_PI / 2000.0);
 			lfV1		= lfB * cos(lfTheta);
 			lfV2		= lfA * sin(lfTheta);
 			lfRadius	= (lfA * lfB) / sqrt(lfV1*lfV1 + lfV2*lfV2);
-			iAddSplineCenterThetaRadiusLR(placeholder, llPenDown, lfX, lfY, lfRadius, lfTheta, iAdjustTheta(_2PI - lfTheta));
+			iDsf_addSpline_centerThetaRadiusLR(gsDefaultChar, llPenDown, lfX, lfY, lfRadius, lfTheta, iDsf_adjustTheta(_2PI - lfTheta));
 	}
 
 
@@ -1350,9 +149,9 @@
 // Adds a new spline to the builder, computing its components based on a straight line from L to R.
 //
 //////
-	SSpline* iAddSplineFromToLR(SBuilder* b, bool tlPenDown, f64 tfXL, f64 tfYL, f64 tfXR, f64 tfYR)
+	SSpline* iDsf_addSpline_fromToLR(SBuilder* b, bool tlPenDown, f64 tfXL, f64 tfYL, f64 tfXR, f64 tfYR)
 	{
-		SLineF64	line;
+		SDsf_line_f64	line;
 		SSpline*	s;
 
 
@@ -1363,7 +162,7 @@
 			line.p1.y	= tfYL;
 			line.p2.x	= tfXR;
 			line.p2.y	= tfYR;
-			iComputeLine(&line);
+			iDsf_computeLine(&line);
 
 
 		//////////
@@ -1405,7 +204,7 @@
 // is from left to right in our system, as per the standard Quad 1 X,Y coordinate system.
 //
 //////
-	SSpline* iAddSplineCenterThetaRadiusLR(SBuilder* b, bool tlPenDown, f64 tfX, f64 tfY, f64 tfRadius, f64 tfThetaL, f64 tfThetaR)
+	SSpline* iDsf_addSpline_centerThetaRadiusLR(SBuilder* b, bool tlPenDown, f64 tfX, f64 tfY, f64 tfRadius, f64 tfThetaL, f64 tfThetaR)
 	{
 		SSpline* s;
 
@@ -1444,638 +243,14 @@
 
 //////////
 //
-// Physically construct the indicated character.    It does this by sizing some known maximums, and
-// generating the bitmap for our new characters using that size.  We migrate and center the bitmap
-// onto the known maximum bitmap canvas, and then using scale the image down to the indicated size.
-//
-//		(1) "hKltfgpqy" + SPACE(1)
-//		(2) "hKltfgpqy" + SPACE(1) + CHR(tnAscii)
-//
-// Then the second bitmap will be wider than the first, but otherwise identical.  That following
-// portion is the part which is returned to the indicated filename.  An appropriate font size is
-// used based on the height and width, with the final image generated being scaled to the
-//
-//////
-	int iGetCharacterBitmap(int tnAscii, s8* tcBitmapFilename, s8* tcFontName, int tnHeight, int tnWidth)
-	{
-		int			lnWidth, lnHeight, lnMakeWidth;
-		f64			lfH, lfV;
-		HFONT		hfont;
-		HDC			lhdc;
-		HBITMAP		lhbmp2;
-		RECT		lrc1, lrc2, lrcM, lrcW;
-		SBGR*		bd2;
-		char		mbuffer[] = "M";
-		char		wbuffer[] = "W";
-		char		buffer[] = "hKltfgpqy  \0";
-		char		rawBuffer[_MAX_FNAME];
-
-
-		//////////
-		// Create the font
-		//////
-			lnHeight = -MulDiv(tnHeight, GetDeviceCaps(GetDC(GetDesktopWindow()), LOGPIXELSY), 72);
-			hfont = CreateFontA(lnHeight, 0, 0, 0, FW_NORMAL, 0, 0, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, NONANTIALIASED_QUALITY, FF_DONTCARE, tcFontName);
-			if (!hfont)
-				return(-1);
-
-
-		//////////
-		// Generate the two bitmaps
-		//////
-			lhdc = CreateCompatibleDC(GetDC(GetDesktopWindow()));
-			SelectObject(lhdc, hfont);
-			buffer[sizeof(buffer) - 3] = 0;
-
-
-		//////////
-		// Determine sizes
-		//////
-			// Bitmap 1 (without the indicated character)
-			SetRect(&lrc1, 0, 0, 0, 0);
-			DrawTextA(lhdc, buffer, strlen(buffer), &lrc1, DT_CALCRECT);
-
-			// Bitmap 2 (with the indicated character)
-			buffer[sizeof(buffer) - 3] = (char)tnAscii;
-			SetRect(&lrc2, 0, 0, 0, 0);
-			DrawTextA(lhdc, buffer, strlen(buffer), &lrc2, DT_CALCRECT);
-
-			// M
-			SetRect(&lrcM, 0, 0, 0, 0);
-			DrawTextA(lhdc, mbuffer, 1, &lrcM, DT_CALCRECT);
-
-			// W
-			SetRect(&lrcW, 0, 0, 0, 0);
-			DrawTextA(lhdc, wbuffer, 1, &lrcW, DT_CALCRECT);
-
-			// Compute width and height
-			lnWidth		= lrc2.right  - lrc2.left;
-			lnHeight	= lrc2.bottom - lrc2.top;
-			lnMakeWidth	= max(lrcM.right - lrcM.left, lrcW.right - lrcW.left);
-
-
-		//////////
-		// Bitmap 2
-		//////
-			lhbmp2 = iCreateBitmap(lhdc, lnWidth, lnHeight, 1, 24, (void**)&bd2, NULL, NULL);
-			SelectObject(lhdc, lhbmp2);
-			FillRect(lhdc, &lrc2, (HBRUSH)GetStockObject(WHITE_BRUSH));
-			DrawTextA(lhdc, buffer, strlen(buffer), &lrc2, DT_LEFT);
-
-
-		//////////
-		// Write out the portion that's different to a temporary file
-		//////
-			memset(rawBuffer, 0, sizeof(rawBuffer));
-			memcpy(rawBuffer, tcBitmapFilename, min(strlen(tcBitmapFilename), sizeof(rawBuffer) - 1));
-			rawBuffer[strlen(rawBuffer) - 1] = 'q';
-			lnMakeWidth = iSaveBitmap(bd2, lnWidth, lnHeight, lrc1.right - lrc1.left, rawBuffer, lnMakeWidth);
-
-
-		//////////
-		// Release everything
-		//////
-			DeleteObject((HGDIOBJ)hfont);
-			DeleteObject((HGDIOBJ)lhbmp2);
-			DeleteDC(lhdc);
-
-
-		//////////
-		// Scale the generated image up to the indicated size
-		//////
-			lfH = (f64)tnWidth	/ (f64)lnMakeWidth;
-			lfV = (f64)tnHeight	/ (f64)lnHeight;
-			iScaleImage(rawBuffer, tcBitmapFilename, (f64)lfH, (f64)lfV);
-			DeleteFileA(rawBuffer);
-
-
-		//////////
-		// Indicate success
-		//////
-			return(0);
-	}
-
-	int iSaveBitmapByParams(BITMAPFILEHEADER* tbh, BITMAPINFOHEADER* tbi, SBGR* tbd, s8* tcBitmapFilename)
-	{
-		FILE* lfh;
-
-
-		//////////
-		// Simple disk write
-		//////
-			lfh = fopen(tcBitmapFilename, "wb+");
-			if (lfh)
-			{
-				// Write file header, info header, bitmap bits
-				fwrite(tbh, 1, sizeof(BITMAPFILEHEADER), lfh);
-				fwrite(tbi, 1, sizeof(BITMAPINFOHEADER), lfh);
-				fwrite(tbd, 1, tbi->biSizeImage, lfh);
-				// Close
-				fclose(lfh);
-				// Done
-				return(0);
-			}
-			// Failure
-			return(-1);
-	}
-
-	int iSaveBitmap(SBGR* tbd, int tnWidth, int tnHeight, int tnLeft, s8* tcBitmapFilename, int tnMakeWidth)
-	{
-		int					lnY, lnRowWidth, lnWritePels, lnCopyPels, lnOffset, lnCopyWidth;
-		SBGR*				lbgr;
-		SBGR*				lbgrBuffer;
-		BITMAPFILEHEADER	lbh;
-		BITMAPINFOHEADER	lbi;
-		FILE*				lfh;
-
-
-		//////////
-		// Create the output bitmap header
-		//////    This is a test
-			memset(&lbh, 0, sizeof(lbh));
-			lbh.bfType		= 'MB';
-			lbh.bfOffBits	= sizeof(lbh) + sizeof(lbi);
-
-			lnCopyWidth		= max(tnWidth - tnLeft, tnMakeWidth);
-			lnRowWidth		= iComputeRowWidth(tnWidth);
- 
-			memset(&lbi, 0, sizeof(lbi));
-			lbi.biSize		= sizeof(lbi);
-			lbi.biWidth		= lnCopyWidth;
-			lnCopyPels		= (tnWidth - tnLeft) * 3;
-			lnWritePels		= iComputeRowWidth(lbi.biWidth);
-			lbi.biHeight	= tnHeight;
-			lbi.biPlanes	= 1;
-			lbi.biBitCount	= 24;
-			lbi.biSizeImage	= lnWritePels * tnHeight;
-			lbi.biXPelsPerMeter = 3270;
-			lbi.biYPelsPerMeter = 3270;
-
-			lbh.bfSize		= sizeof(lbh) + sizeof(lbi) + lbi.biSizeImage;
-			
-
-		//////////
-		// Get metrics for the incoming image, and create a buffer for each line
-		//////
-			lnOffset	= (lbi.biWidth - (tnWidth - tnLeft)) / 2;
-			lbgrBuffer	= (SBGR*)malloc(lnWritePels);
-			if (lbgrBuffer)
-			{
-			//////////
-			// Write out the header
-			//////
-				lfh = fopen(tcBitmapFilename, "wb+");
-				if (lfh)
-				{
-					fwrite(&lbh, 1, sizeof(lbh), lfh);
-					fwrite(&lbi, 1, sizeof(lbi), lfh);
-
-
-				//////////
-				// Extract out the bitmap portions.
-				// Bitmaps are stored in reverse order, so we can iterate normally down through
-				//////
-					for (lnY = 0; lnY < tnHeight; lnY++)
-					{
-						//////////
-						// Compute the offset to this part
-						//////
-							lbgr = (SBGR*)((s8*)tbd + (lnY * lnRowWidth) + (tnLeft * 3));
-
-
-						//////////
-						// Copy to our buffer row
-						//////
-							memset(lbgrBuffer, 255, lnWritePels);
-							memcpy(lbgrBuffer + lnOffset, lbgr, lnCopyPels);
-
-
-						//////////
-						// Write this row
-						//////
-							fwrite(lbgrBuffer, 1, lnWritePels, lfh);
-					}
-					// When we get here, it's saved
-					fclose(lfh);
-				}
-				// We're done
-				free(lbgrBuffer);
-			}
-			// Indicate how wide it is
-			return(lnCopyWidth);
-	}
-
-	int iComputeRowWidth(int tnWidth)
-	{
-		int lnWidth;
-
-
-		lnWidth = tnWidth * 3;
-		if (lnWidth % 4 == 0)
-			return(lnWidth);
-
-		// Increase the width
-		lnWidth += (4 - (lnWidth % 4));
-		return(lnWidth);
-	}
-
-	HBITMAP iCreateBitmap(HDC thdc, int tnWidth, int tnHeight, int tnPlanes, int tnBits, void** tbd, BITMAPFILEHEADER* tbh, BITMAPINFOHEADER* tbi)
-	{
-		BITMAPFILEHEADER	bf;
-		BITMAPINFOHEADER	bi;
-		BITMAPINFOHEADER*	lbi;
-		HBITMAP				lhbmp;
-
-
-		//////////
-		// Use remote or local
-		//////
-			if (tbi)		lbi = tbi;		// Use caller's
-			else			lbi = &bi;		// Use ours
-
-
-		//////////
-		// Create a new DIB (these parts are required for CreateDIBSection to work)
-		//////
-			memset(lbi, 0, sizeof(BITMAPINFOHEADER));
-			lbi->biSize			= sizeof(BITMAPINFOHEADER);
-			lbi->biWidth		= tnWidth;
-			lbi->biHeight		= tnHeight;
-			lbi->biPlanes		= tnPlanes;
-			lbi->biBitCount		= tnBits;
-
-
-		//////////
-		// Populate caller parts (these parts are also required for disk files)
-		//////
-			if (tbi)
-			{
-				lbi->biSizeImage		= iComputeRowWidth(tnWidth) * tnHeight;
-				lbi->biXPelsPerMeter	= 3270;
-				lbi->biYPelsPerMeter	= 3270;
-			}
-			if (tbh)
-			{
-				tbh->bfType				= 'MB';
-				tbh->bfReserved1		= 0;
-				tbh->bfReserved2		= 0;
-				tbh->bfOffBits			= sizeof(bf) + sizeof(bi);
-				tbh->bfSize				= tbh->bfOffBits + tbi->biSizeImage;
-			}
-
-
-		//////////
-		// Physically create the bitmap
-		//////
-			lhbmp = CreateDIBSection(thdc, (BITMAPINFO*)lbi, DIB_RGB_COLORS, tbd, NULL, 0);
-			return(lhbmp);
-	}
-
-
-
-
-//////////
-//
-// Find every outline point and create a list of the same.
-//
-//////
-	int iGetFloanFromBitmap(u32 tnAscii, s8* tcBitmapFilename, s8* tcFloanFilename)
-	{
-		int					lnI, lnY, lnX, lnRowWidth, lnOldFloanCount, lnNewFloanCount;
-		f64					lfGray, lfLastGray;
-		SBGR*				lbgr;
-		SBGR*				lbgrBuffer;
-		BITMAPFILEHEADER	lbh;
-		BITMAPINFOHEADER	lbi;
-		FILE*				lfh;
-		SBuilder*			floans;
-		SBuilder*			floansCsv;
-		SFloanPoint			point;
-		SFloanPoint*		pDst;
-		SFloanPoint*		pSrc;
-		s8					buffer[256];
-
-
-		//////////
-		// Open the indicated bitmap
-		//////
-			lfh = fopen(tcBitmapFilename, "rb");
-			if (!lfh)
-				return(-1);		// File does not exist
-
-
-		//////////
-		// Read in the header
-		//////
-			fread(&lbh, 1, sizeof(lbh), lfh);
-			fread(&lbi, 1, sizeof(lbi), lfh);
-
-
-		//////////
-		// Make sure it's a sane bitmap
-		//////
-			if (lbh.bfSize != sizeof(lbh) + sizeof(lbi) + lbi.biSizeImage)
-			{
-				fclose(lfh);
-				return(-2);				// Invalid header
-			}
-			if (lbi.biSize != sizeof(lbi))
-			{
-				fclose(lfh);
-				return(-3);				// Invalid info
-			}
-			if (lbi.biPlanes != 1 || lbi.biBitCount != 24)
-			{
-				fclose(lfh);
-				return(-4);				// Invalid bitmap style/format
-			}
-			lnRowWidth = iComputeRowWidth(lbi.biWidth);
-			if (lnRowWidth * lbi.biHeight != lbi.biSizeImage)
-			{
-				fclose(lfh);
-				return(-5);				// Invalid size
-			}
-
-
-		//////////
-		// Load in the data
-		//////
-			lbgrBuffer = (SBGR*)malloc(lbi.biSizeImage);
-			if (!lbgrBuffer)
-			{
-				fclose(lfh);
-				return(-6);				// Out of memory
-			}
-			fread(lbgrBuffer, 1, lbi.biSizeImage, lfh);
-			fclose(lfh);
-
-
-		//////////
-		// Increase contrast to full
-		//////
-			for (lnY = 0; lnY < lbi.biHeight; lnY++)
-			{
-				// Iterate all the way across
-				lbgr = (SBGR*)((s8*)lbgrBuffer + (lnY * lnRowWidth));
-
-				// Look for where things start or stop
-				for (lnX = 0; lnX < lbi.biWidth; lnX++, lbgr++)
-				{
-					// Determine the grayscale value of this pixel
-					lfGray = (((f64)lbgr->red * 0.35f) + ((f64)lbgr->grn * 0.54f) + ((f64)lbgr->blu * 0.11f)) / 255.0f;
-
-					// Is it visibly darkened?
-					if (lfGray < 0.7f)
-					{
-						// Make it black
-						lbgr->red = 0;
-						lbgr->grn = 0;
-						lbgr->blu = 0;
-
-					} else {
-						// Make it white
-						lbgr->red = 255;
-						lbgr->grn = 255;
-						lbgr->blu = 255;
-					}
-				}
-			}
-
-
-		//////////
-		// Initialize
-		//////
-			iBuilder_createAndInitialize(&floans,	65536);
-			iBuilder_createAndInitialize(&floansCsv,	65536);
-
-
-		//////////
-		// Iterate through each row grabbing floan positions
-		//////
-			for (lnY = 0; lnY < lbi.biHeight; lnY++)
-			{
-				// Iterate all the way across
-				lbgr = (SBGR*)((s8*)lbgrBuffer + (lnY * lnRowWidth));
-
-				// Look for where things start or stop
-				lfLastGray = 1.0;		// Assume we start on a white pixel
-				for (lnX = 0; lnX < lbi.biWidth; lnX++, lbgr++)
-				{
-					// Determine the grayscale value of this pixel
-					lfGray = (((f64)lbgr->red * 0.35f) + ((f64)lbgr->grn * 0.54f) + ((f64)lbgr->blu * 0.11f)) / 255.0f;
-
-					// Has something changed?
-					if (fabs(lfGray - lfLastGray) > 0.9f)
-					{
-						// Store the position
-						point.x = (f64)lnX	/ (f64)lbi.biWidth;
-						point.y = (f64)lnY	/ (f64)lbi.biHeight;
-
-						// Make sure it's on the reservation :-)
-						if (point.x >= 0.0 && point.y >= 0.0)
-							iBuilder_appendData(floans, (s8*)&point, sizeof(point));
-
-						// Prepare for our next test
-						lfLastGray = lfGray;
-					}
-				}
-			}
-
-
-		//////////
-		// Iterate through each column grabbing floan positions
-		//////
-			for (lnX = 0; lnX < lbi.biWidth; lnX++)
-			{
-				// Iterate point by point in vertical columns
-				lbgr = (SBGR*)((s8*)lbgrBuffer + (lnX * 3));
-
-				// Look for where things start or stop
-				lfLastGray = 1.0;		// Assume we start on a white pixel
-				for (lnY = 0; lnY < lbi.biHeight; lnY++)
-				{
-					// Determine the grayscale value of this pixel
-					lfGray = (((f64)lbgr->red * 0.35f) + ((f64)lbgr->grn * 0.54f) + ((f64)lbgr->blu * 0.11f)) / 255.0f;
-
-					// Has something changed?
-					if (fabs(lfGray - lfLastGray) > 0.9f)
-					{
-						// Store the position
-						point.x = (f64)lnX	/ (f64)lbi.biWidth;
-						point.y = (f64)lnY	/ (f64)lbi.biHeight;
-
-						// Make sure it's on the reservation :-)
-						if (point.x >= 0.0 && point.y >= 0.0)
-							iBuilder_appendData(floans, (s8*)&point, sizeof(point));
-
-						// Prepare for our next test
-						lfLastGray = lfGray;
-					}
-
-					// Move to next row on same column
-					lbgr = (SBGR*)((s8*)lbgr + lnRowWidth);
-				}
-			}
-
-
-		//////////
-		// Sort the data in Y order ascending, then X ascending
-		//////
-			lnOldFloanCount = floans->populatedLength / sizeof(SFloanPoint);
-			qsort(floans->data, lnOldFloanCount, sizeof(SFloanPoint), iiGetFloanFromBitmap_qsortCallback);
-
-
-		//////////
-		// Wash disparate data points
-		//////
-// TODO: The idea is to grab the points closest to each point, and then average to use the middle, rather than the integer alias
-
-
-		//////////
-		// Remove duplicates
-		//////
-			// Begin at the beginning
-			pDst = (SFloanPoint*)floans->data;
-			pSrc = pDst + 1;
-			for (lnI = 1, lnNewFloanCount = 0; lnI < lnOldFloanCount; lnI++, pSrc++)
-			{
-				//////////
-				// Is this one different?
-				//////
-					if (pDst->y != pSrc->y || pDst->x != pSrc->x)
-					{
-						// Yes, advance our destination pointer
-						++pDst;
-
-						// If we're not overwriting our pointer, then copy
-						if (pDst != pSrc)
-							memcpy(pDst, pSrc, sizeof(SFloanPoint));
-
-						// Increase our count
-						++lnNewFloanCount;
-					}
-			}
-
-
-		//////////
-		// Resize (floans are already in correct order)
-		//////
-			iBuilder_setSize(floans, lnNewFloanCount * sizeof(SFloanPoint));
-
-
-		//////////
-		// Copy to our CSV
-		//////
-			pSrc = (SFloanPoint*)floans->data;
-			for (lnI = 0; lnI < lnNewFloanCount; lnI++, pSrc++)
-			{
-				// Store the output
-				sprintf(buffer, "%15.12f, %15.12f\n\0", pSrc->x, pSrc->y);
-
-				// Append it to the builder
-				iBuilder_appendData(floansCsv, buffer, strlen(buffer));
-			}
-			iBuilder_asciiWriteOutFile(floansCsv, (cu8*)tcFloanFilename);
-
-
-		//////////
-		// For debugging, populate the individual found points within the bitmap in green, and write it back out
-		//////
-			int					lnRowWidth_debug;
-			SBGR*				lbgrBuffer_debug;
-			BITMAPFILEHEADER	lbh_debug;
-			BITMAPINFOHEADER	lbi_debug;
-			FILE*				lfh_debug;
-
-			memcpy(&lbh_debug, &lbh, sizeof(lbh));
-			memcpy(&lbi_debug, &lbi, sizeof(lbi));
-
-			lbi_debug.biWidth		= 400;
-			lbi_debug.biHeight		= 400;
-			lnRowWidth_debug		= iComputeRowWidth(lbi_debug.biWidth);
-			lbi_debug.biSizeImage	= lnRowWidth_debug * lbi_debug.biHeight;
-			lbh_debug.bfSize		= sizeof(lbh_debug) + sizeof(lbi_debug) + lbi_debug.biSizeImage;
-			lbgrBuffer_debug		= (SBGR*)malloc(lbi_debug.biSizeImage);
-			memset(lbgrBuffer_debug, 255, lbi_debug.biSizeImage);
-
-			pSrc = (SFloanPoint*)floans->data;
-			for (lnI = 0; lnI < lnNewFloanCount; lnI++, pSrc++)
-			{
-				// Re-acquire our position
-				lnX = (s32)(pSrc->x * (f64)lbi_debug.biWidth);
-				lnY = (s32)(pSrc->y * (f64)lbi_debug.biHeight);
-
-				// Store it
-				lbgr = (SBGR*)((s8*)lbgrBuffer_debug + (lnY * lnRowWidth_debug) + (lnX * 3));
-
-				// Make it black
-				lbgr->red	= 0;
-				lbgr->grn	= 0;
-				lbgr->blu	= 0;
-			}
-			char filename[_MAX_FNAME];
-			sprintf(filename, "ascii_%03u.bmp\0", tnAscii);
-			lfh_debug = fopen(filename, "wb+");
-			fwrite(&lbh_debug, 1, sizeof(lbh_debug), lfh_debug);
-			fwrite(&lbi_debug, 1, sizeof(lbi_debug), lfh_debug);
-			fwrite(lbgrBuffer_debug, 1, lbi_debug.biSizeImage, lfh_debug);
-			fclose(lfh_debug);
-//			_asm nop;
-//			DeleteFileA(filename);
-
-
-		//////////
-		// Clean house
-		//////
-			iBuilder_freeAndRelease(&floans);
-			iBuilder_freeAndRelease(&floansCsv);
-
-
-		//////////
-		// Indicate our success
-		//////
-			return(lnNewFloanCount);
-	}
-
-
-
-
-//////////
-//
-// QSORT() callback, orders data by Y ascending, then by X ascending.
-//
-//////
-	int iiGetFloanFromBitmap_qsortCallback(const void* l, const void* r)
-	{
-		SFloanPoint*	left;
-		SFloanPoint*	right;
-
-
-		// Get our pointers properly
-		left	= (SFloanPoint*)l;
-		right	= (SFloanPoint*)r;
-
-		// See how the cookie crumbles
-		     if (left->y < right->y)		return(-1);		// Left is less than right
-		else if (left->y > right->y)		return(1);		// Left is greater than right
-		else if (left->x < right->x)		return(-1);		// Left is less than right
-		else if (left->x > right->x)		return(1);		// Left is greater than right
-		else								return(0);		// They're equal
-	}
-
-
-
-
-//////////
-//
 // Called to verify if the indicated handle is valid
 //
 //////
-	SInstance* iGetDsfInstance(u32 tnHandle, bool* tlValid)
+	SDsf* iDsf_getInstance(u32 tnHandle, bool* tlValid)
 	{
 		union {
-			SInstance*	p;
-			u32			_p;
+			u32		_p;
+			SDsf*	p;
 		};
 
 
@@ -2088,10 +263,10 @@
 			if (p)
 			{
 				// Is it in range?
-				if (_p >= instances->_data && _p <= instances->_data + instances->populatedLength)
+				if (_p >= gsRootDsfs->_data && _p <= gsRootDsfs->_data + gsRootDsfs->populatedLength)
 				{
 					// Is it identical?
-					if (_memicmp(p->id, cgcDsfBrand, sizeof(p->id)) == 0 && p->id_size == sizeof(SInstance))
+					if (_memicmp(p->id, cgcDsfBrand, sizeof(p->id)) == 0 && p->id_size == sizeof(SDsf))
 					{
 						// Valid
 						*tlValid = true;
@@ -2114,9 +289,9 @@
 // matching character reference.
 //
 //////
-	SSpline* iFindSplineInstance(SBuilder* charsBuilder, u32 tnIid, u8 tcType, u32 tiOrder, u32 tiLnkId, u32 tiLnkOrder)
+	SSpline* iDsf_find_splineInstance(SBuilder* charsBuilder, u32 tnIid, u8 tcType, u32 tiOrder, u32 tiLnkId, u32 tiLnkOrder)
 	{
-		SChars*		thisChar;
+		SDsf_chars*		thisChar;
 		SBuilder*	thisSplineBuilder;
 
 
@@ -2126,7 +301,7 @@
 			if (charsBuilder && charsBuilder->data)
 			{
 				// Grab that builder
-				thisChar = iiFindOrCreateThisChars(charsBuilder, tnIid);
+				thisChar = iiDsf_findOrCreate_thisChars(charsBuilder, tnIid);
 				if (!thisChar)
 					return(NULL);
 
@@ -2144,7 +319,7 @@
 							return(NULL);		// Invalid spline reference
 
 						// Search for (and add it if need be)
-						return(iFindSplineInstance_SD(thisSplineBuilder, tnIid, tiOrder, true));
+						return(iDsf_find_splineInstance_SD(thisSplineBuilder, tnIid, tiOrder, true));
 
 
 					case 'D':
@@ -2156,7 +331,7 @@
 							return(NULL);		// Error
 
 						// Search for (and add it if need be)
-						return(iFindSplineInstance_SD(thisSplineBuilder, tnIid, tiOrder, true));
+						return(iDsf_find_splineInstance_SD(thisSplineBuilder, tnIid, tiOrder, true));
 
 
 					case 'R':
@@ -2167,7 +342,7 @@
 							return(NULL);		// Error
 
 						// Search for (and add it if need be)
-						return(iFindSplineInstance_R(thisSplineBuilder, tnIid, tiOrder, tiLnkId, true));
+						return(iDsf_find_splineInstance_R(thisSplineBuilder, tnIid, tiOrder, tiLnkId, true));
 
 
 					case 'L':
@@ -2176,7 +351,7 @@
 						// We search by tnIid, tiOrder, tiLnkId, and tiLnkOrder
 
 						// Search for (and add it if need be)
-						return(iFindSplineInstance_L(thisSplineBuilder, tnIid, tiOrder, tiLnkId, tiLnkOrder, true));
+						return(iDsf_find_splineInstance_L(thisSplineBuilder, tnIid, tiOrder, tiLnkId, tiLnkOrder, true));
 
 				}
 			}
@@ -2186,25 +361,25 @@
 		return(NULL);
 	}
 
-	SChars* iiFindOrCreateThisChars(SBuilder* charsBuilder, u32 tnIid)
+	SDsf_chars* iiDsf_findOrCreate_thisChars(SBuilder* charsBuilder, u32 tnIid)
 	{
 		u32			lnI, lnStart, lnEnd;
-		SChars*		thisChar;
+		SDsf_chars*		thisChar;
 
 
 		// See if there's already room for this item
-		if (charsBuilder->populatedLength < tnIid * sizeof(SChars))
+		if (charsBuilder->populatedLength < tnIid * sizeof(SDsf_chars))
 		{
 			// We have to make room for it
-			lnStart = (charsBuilder->populatedLength / sizeof(SChars));
-			lnEnd	= tnIid * sizeof(SChars);
-			for (lnI = lnStart; lnI <= lnEnd; lnI += sizeof(SChars))
+			lnStart = (charsBuilder->populatedLength / sizeof(SDsf_chars));
+			lnEnd	= tnIid * sizeof(SDsf_chars);
+			for (lnI = lnStart; lnI <= lnEnd; lnI += sizeof(SDsf_chars))
 			{
 				// Grab the pointer
-				thisChar = (SChars*)iBuilder_allocateBytes(charsBuilder, sizeof(SChars));
+				thisChar = (SDsf_chars*)iBuilder_allocateBytes(charsBuilder, sizeof(SDsf_chars));
 
 				// Initialize it
-				memset(thisChar, 0, sizeof(SChars));
+				memset(thisChar, 0, sizeof(SDsf_chars));
 
 				// Create new builders for it
 				iBuilder_createAndInitialize(&thisChar->splines,		-1);
@@ -2218,15 +393,15 @@
 		//////////
 		// Return the builder
 		//////
-			return(iiFindOnlyThisChars(charsBuilder, tnIid));
+			return(iiDsf_findOnly_thisChars(charsBuilder, tnIid));
 	}
 
-	SChars* iiFindOnlyThisChars(SBuilder* charsBuilder, u32 tnIid)
+	SDsf_chars* iiDsf_findOnly_thisChars(SBuilder* charsBuilder, u32 tnIid)
 	{
-		if (charsBuilder->populatedLength >= tnIid * sizeof(SChars))
+		if (charsBuilder->populatedLength >= tnIid * sizeof(SDsf_chars))
 		{
 			// There is enough room for this character to exist
-			return((SChars*)(charsBuilder->data + (tnIid * sizeof(SChars))));
+			return((SDsf_chars*)(charsBuilder->data + (tnIid * sizeof(SDsf_chars))));
 
 		} else {
 			// Something's awry
@@ -2234,7 +409,7 @@
 		}
 	}
 
-	SSpline* iFindSplineInstance_SD(SBuilder* thisSplineBuilder, u32 tnIid, u32 tiOrder, bool tlAddIfNotFound)
+	SSpline* iDsf_find_splineInstance_SD(SBuilder* thisSplineBuilder, u32 tnIid, u32 tiOrder, bool tlAddIfNotFound)
 	{
 		u32			lnI;
 		SSpline*	s;
@@ -2275,7 +450,7 @@
 			}
 	}
 
-	SSpline* iFindSplineInstance_R(SBuilder* thisSplineBuilder, u32 tnIid, u32 tiOrder, u32 tiLnkId, bool tlAddIfNotFound)
+	SSpline* iDsf_find_splineInstance_R(SBuilder* thisSplineBuilder, u32 tnIid, u32 tiOrder, u32 tiLnkId, bool tlAddIfNotFound)
 	{
 		u32			lnI;
 		SSpline*	s;
@@ -2316,7 +491,7 @@
 			}
 	}
 
-	SSpline* iFindSplineInstance_L(SBuilder* thisSplineBuilder, u32 tnIid, u32 tiOrder, u32 tiLnkId, u32 tiLnkOrder, bool tlAddIfNotFound)
+	SSpline* iDsf_find_splineInstance_L(SBuilder* thisSplineBuilder, u32 tnIid, u32 tiOrder, u32 tiLnkId, u32 tiLnkOrder, bool tlAddIfNotFound)
 	{
 		u32			lnI;
 		SSpline*	s;
@@ -2365,7 +540,7 @@
 // Called to search through the existing refs entry to see if the indicated reference is found
 //
 //////
-	SRefs* iFindRefsInstance(SBuilder* refs, u8 tcType, s8* tcDesc40)
+	SRefs* iDsf_find_refsInstance(SBuilder* refs, u8 tcType, s8* tcDesc40)
 	{
 		s32		lnI, lnMaxCount;
 		SRefs*	r;
@@ -2403,16 +578,16 @@
 // Called to create a new templates entry as template data is being initially loaded
 //
 //////
-	STems* iCreateNewTemsEntry(SBuilder* charsBuilder, u32 tipid)
+	STems* iDsf_create_newTemsEntry(SBuilder* charsBuilder, u32 tipid)
 	{
-		SChars*		thisChars;
+		SDsf_chars*		thisChars;
 		STems*		t;
 
 
 		//////////
 		// Grab the thisChars parent
 		//////
-			thisChars = iiFindOrCreateThisChars(charsBuilder, tipid);
+			thisChars = iiDsf_findOrCreate_thisChars(charsBuilder, tipid);
 			if (thisChars)
 			{
 				// Allocate and return the new template
@@ -2439,15 +614,15 @@
 // Locate the indicated tems for the associated thisChars
 //
 //////
-	SBuilder* iGetTemsRawBuilder(SBuilder* charsBuilder,u32 tipid)
+	SBuilder* iDsf_get_tems_rawBuilder(SBuilder* charsBuilder,u32 tipid)
 	{
-		SChars*		thisChars;
+		SDsf_chars*		thisChars;
 
 
 		//////////
 		// Grab the thisChars parent
 		//////
-			thisChars = iiFindOnlyThisChars(charsBuilder, tipid);
+			thisChars = iiDsf_findOnly_thisChars(charsBuilder, tipid);
 			if (thisChars)
 			{
 				// Return the template
@@ -2467,7 +642,7 @@
 // Called to render the indicated character
 //
 //////
-	int iRender(SInstance* p, SHwnd* h, SChars* c, s32 tnWidth, s32 tnHeight, u32 tnHwndParent, s32 tnX, s32 tnY)
+	int iDsf_render(SDsf* p, SDsf_hwnd* h, SDsf_chars* c, s32 tnWidth, s32 tnHeight, u32 tnHwndParent, s32 tnX, s32 tnY)
 	{
 		RECT lrc;
 
@@ -2490,26 +665,26 @@
 
 					// Render any cues
 					if (p->cuesUnder)
-						iRenderCues(p, h, c);
+						iDsf_render_cues(p, h, c);
 
 					// Render the splines with markup
 					if (p->showSplines)
-						iRenderSplines(p, h, c, h->markup, h->bold, h->italic, h->underline, h->strikethrough);
+						iDsf_render_splines(p, h, c, h->markup, h->bold, h->italic, h->underline, h->strikethrough);
 
 					// Render any cues
 					if (!p->cuesUnder)
-						iRenderCues(p, h, c);
+						iDsf_render_cues(p, h, c);
 
 					// Render the mouse coordinates
-					iRenderMouseCoordinates(p, h);
+					iDsf_render_mouseCoordinates(p, h);
 
 					// Render the mouse overlay for current mouse activity
-					iRenderMouseOverlay(p, h, c);
+					iDsf_render_mouseOverlay(p, h, c);
 
 				} else {
 					// Render final as black text on a white background
 					FillRect(h->hdc, &lrc, (HBRUSH)GetStockObject(WHITE_BRUSH));
-					iRenderSplines(p, h, c, h->markup, h->bold, h->italic, h->underline, h->strikethrough);
+					iDsf_render_splines(p, h, c, h->markup, h->bold, h->italic, h->underline, h->strikethrough);
 				}
 			}
 
@@ -2518,14 +693,14 @@
 		// 
 		//////
 			if (p->zoomLens)
-				iRenderZoomLens(h);
+				iDsf_render_zoomLens(h);
 
 
 		//////////
 		// Invert
 		//////
 			if (p->invert)
-				iInvertImage(h);	// Invert the colors
+				iDsf_invertImage(h);	// Invert the colors
 
 
 		//////////
@@ -2533,10 +708,6 @@
 		//////
 			if (h->_hwnd)
 			{
-// 				SetRect(&lrc, 0, 0, 10000, 10000);
-// 				if (IsWindow(h->hwndParent))
-// 					InvalidateRect(h->hwndParent, &lrc, TRUE);
-
 				SetRect(&lrc, 0, 0, h->w, h->h);
 				if (IsWindow(h->hwnd))
 					InvalidateRect(h->hwnd, &lrc, TRUE);	
@@ -2555,7 +726,7 @@
 // Called to put the mouse coordinates in the upper-right, or lower-right, depending on mouse position
 //
 //////
-	void iRenderMouseCoordinates(SInstance* p, SHwnd* h)
+	void iDsf_render_mouseCoordinates(SDsf* p, SDsf_hwnd* h)
 	{
 		RECT	lrcX, lrcY;
 		s8		bufferX[32];
@@ -2606,38 +777,38 @@
 // Called to render any cues
 //
 //////
-	void iRenderCues(SInstance* p, SHwnd* h, SChars* c)
+	void iDsf_render_cues(SDsf* p, SDsf_hwnd* h, SDsf_chars* c)
 	{
-		if (p->grid)				iRenderGrid(p, h);						// Render the grid if it's enabled
-		if (p->tems)				iRenderTems(p, h, c);
+		if (p->grid)				iDsf_render_grid(p, h);						// Render the grid if it's enabled
+		if (p->tems)				iDsf_render_tems(p, h, c);
 
-		if (p->strikethrough)		iRenderQuadH(p, h, c, p->font.fStrikeTop, p->font.fStrikeBot, colorStrikethrough);
-		if (p->underline)			iRenderQuadH(p, h, c, p->font.fUnderTop, p->font.fUnderBot, colorUnderline);
+		if (p->strikethrough)		iDsf_render_quadH(p, h, c, p->font.fStrikeTop, p->font.fStrikeBot, colorStrikethrough);
+		if (p->underline)			iDsf_render_quadH(p, h, c, p->font.fUnderTop, p->font.fUnderBot, colorUnderline);
 
-		if (p->ascent)				iRenderCueLineH(p, h, c, p->font.fAscent,	colorAscent);
-		if (p->upper)				iRenderCueLineH(p, h, c, p->font.fUpper,	colorUpper);
-		if (p->lower)				iRenderCueLineH(p, h, c, p->font.fLower,	colorLower);
-		if (p->base)				iRenderCueLineH(p, h, c, p->font.fBase,		colorBase);
-		if (p->descent)				iRenderCueLineH(p, h, c, p->font.fDescent,	colorDescent);
-		if (p->left)				iRenderCueLineV(p, h, c, p->font.fLeft,		colorLeft);
-		if (p->right)				iRenderCueLineV(p, h, c, p->font.fRight,	colorRight);
+		if (p->ascent)				iDsf_render_cueLineH(p, h, c, p->font.fAscent,	colorAscent);
+		if (p->upper)				iDsf_render_cueLineH(p, h, c, p->font.fUpper,	colorUpper);
+		if (p->lower)				iDsf_render_cueLineH(p, h, c, p->font.fLower,	colorLower);
+		if (p->base)				iDsf_render_cueLineH(p, h, c, p->font.fBase,		colorBase);
+		if (p->descent)				iDsf_render_cueLineH(p, h, c, p->font.fDescent,	colorDescent);
+		if (p->left)				iDsf_render_cueLineV(p, h, c, p->font.fLeft,		colorLeft);
+		if (p->right)				iDsf_render_cueLineV(p, h, c, p->font.fRight,	colorRight);
 
-		if (p->showRefs)			iRenderRefs(p, h, c);
+		if (p->showRefs)			iDsf_render_refs(p, h, c);
 	}
 
-	void iRenderCueLineH(SInstance* p, SHwnd* h, SChars* c, f64 tfY, SBGR color)
+	void iDsf_render_cueLineH(SDsf* p, SDsf_hwnd* h, SDsf_chars* c, f64 tfY, SBgr color)
 	{
-		iColorizeHorizontalLineByPixels(p, h, c, 0, h->w - 1, (s32)(tfY * h->h), color);
+		iDsf_colorize_horizontalLine_byPixels(p, h, c, 0, h->w - 1, (s32)(tfY * h->h), color);
 	}
 
-	void iRenderCueLineV(SInstance* p, SHwnd* h, SChars* c, f64 tfX, SBGR color)
+	void iDsf_render_cueLineV(SDsf* p, SDsf_hwnd* h, SDsf_chars* c, f64 tfX, SBgr color)
 	{
-		iColorizeVerticalLineByPixels(p, h, c, 0, h->h - 1, (s32)(tfX * h->w), color);
+		iDsf_colorize_verticalLine_byPixels(p, h, c, 0, h->h - 1, (s32)(tfX * h->w), color);
 	}
 
-	void iRenderQuadH(SInstance* p, SHwnd* h, SChars* c, f64 tfTop, f64 tfBottom, SBGR color)
+	void iDsf_render_quadH(SDsf* p, SDsf_hwnd* h, SDsf_chars* c, f64 tfTop, f64 tfBottom, SBgr color)
 	{
-		SXYF64	p1, p2, p3, p4;
+		SXy_f64	p1, p2, p3, p4;
 
 
 		//////////
@@ -2652,10 +823,10 @@
 		//////////
 		// Rendered p1..p4, p2..p3
 		//////
-			iFillQuadAlpha(h, &p1, &p2, &p3, &p4, color, color, color, color, 0.5, 0.5, 0.5, 0.5, gfLinePower);
+			iDsf_fill_quad_alpha(h, &p1, &p2, &p3, &p4, color, color, color, color, 0.5, 0.5, 0.5, 0.5, gfLinePower);
 	}
 
-	void iRenderRefs(SInstance* p, SHwnd* h, SChars* c)
+	void iDsf_render_refs(SDsf* p, SDsf_hwnd* h, SDsf_chars* c)
 	{
 	}
 
@@ -2667,12 +838,12 @@
 // Called to render a grid
 //
 //////
-	void iRenderGrid(SInstance* p, SHwnd* h)
+	void iDsf_render_grid(SDsf* p, SDsf_hwnd* h)
 	{
 		f64		lfX, lfY;
 		s32		lnX, lnY;
-		SBGR*	lbgr;
-		SBGR	color;
+		SBgr*	lbgr;
+		SBgr	color;
 
 
 		//////////
@@ -2688,7 +859,7 @@
 			for (lfY = 0.05; lfY < 0.99; lfY += 0.05)
 			{
 				// Determine where this will go
-				lbgr = (SBGR*)((s8*)h->bd + ((u32)(lfY * h->h) * h->rowWidth));
+				lbgr = (SBgr*)((s8*)h->bd + ((u32)(lfY * h->h) * h->rowWidth));
 
 				// Render at this X coordinate all the way up and down
 				for (lnX = 0; lnX < h->w; lnX++, lbgr++)
@@ -2707,7 +878,7 @@
 			for (lfX = 0.05; lfX < 0.99; lfX += 0.05)
 			{
 				// Determine where this will go
-				lbgr = (SBGR*)((s8*)h->bd + ((u32)(lfX * h->w) * 3));
+				lbgr = (SBgr*)((s8*)h->bd + ((u32)(lfX * h->w) * 3));
 
 				// Render at this X coordinate all the way up and down
 				for (lnY = 0; lnY < h->h; lnY++)
@@ -2718,7 +889,7 @@
 					lbgr->blu	= color.blu;
 
 					// Move for the next row
-					lbgr = (SBGR*)((s8*)lbgr + h->rowWidth);
+					lbgr = (SBgr*)((s8*)lbgr + h->rowWidth);
 				}
 			}
 	}
@@ -2731,18 +902,18 @@
 // Called to render the indicated splines onto the character
 //
 //////
-	void iRenderSplines(SInstance* p, SHwnd* h, SChars* c, u32 tlMarkup, u32 tlBold, u32 tlItalic, u32 tlUnderline, u32 tlStrikethrough)
+	void iDsf_render_splines(SDsf* p, SDsf_hwnd* h, SDsf_chars* c, u32 tlMarkup, u32 tlBold, u32 tlItalic, u32 tlUnderline, u32 tlStrikethrough)
 	{
 		u32			lnI, lnJ, lnSplineNumber, lnSplineCount;
-		SXYF64		prLast, poLast, plLast;
-		SXYF64		pr, po, pl;
-		SLineF64	line, lineL, lineR, lineLLast, lineRLast, lineLtoLLast, lineRtoRLast;
+		SXy_f64		prLast, poLast, plLast;
+		SXy_f64		pr, po, pl;
+		SDsf_line_f64	line, lineL, lineR, lineLLast, lineRLast, lineLtoLLast, lineRtoRLast;
 		SSpline*	s;
 		SSpline*	sLast;
 		SSpline*	sTest;
 		SBuilder*	b;
-		SBGR		colorLine;
-		SBGR		quad, quadSelected, p1ColorR, p2ColorR, p3ColorR, p4ColorR, p1ColorL, p2ColorL, p3ColorL, p4ColorL;
+		SBgr		colorLine;
+		SBgr		quad, quadSelected, p1ColorR, p2ColorR, p3ColorR, p4ColorR, p1ColorL, p2ColorL, p3ColorL, p4ColorL;
 
 
 		//////////
@@ -2782,7 +953,7 @@
 			}
 
 			// Splines
-			colorLine = iSetLineColor(p);
+			colorLine = iDsf_setLineColor(p);
 
 
 		//////////
@@ -2800,7 +971,7 @@
 					//////////
 					// Compute left, origin/middle, right
 					//////
-						iComputeLOR(s, &pl, &po, &pr);
+						iDsf_compute_LOR(s, &pl, &po, &pr);
 
 
 					//////////
@@ -2809,16 +980,16 @@
 						if (!s->lPenDown)
 						{
 							// Colors are determined by their relative point's selected color
-							iComputeQuadColorsR(s, sLast, quad, quadSelected, &p1ColorR, &p2ColorR, &p3ColorR, &p4ColorR);
-							iComputeQuadColorsL(s, sLast, quad, quadSelected, &p1ColorL, &p2ColorL, &p3ColorL, &p4ColorL);
+							iDsf_compute_quadColors_R(s, sLast, quad, quadSelected, &p1ColorR, &p2ColorR, &p3ColorR, &p4ColorR);
+							iDsf_compute_quadColors_L(s, sLast, quad, quadSelected, &p1ColorL, &p2ColorL, &p3ColorL, &p4ColorL);
 
 							// Draw in filled in final mode, or when the user wants to see it in markup mode
 							// Lines are drawn p1..p4, p2..p3 using the following form:
 							// iFillQuad(h, &p1, &p2, &p3, &p4, p1Color, p2Color, p3Color, p4Color);
 							if (tlMarkup == 0 || p->splinesType == _SPLINES_FILL)
 							{
-								iFillQuadAlpha(h, /*p1*/&poLast, /*p2*/&po, /*p3*/&pr, /*p4*/&prLast, p4ColorR, p3ColorR, p2ColorR, p1ColorR, 1.0, 1.0, 1.0, 1.0, gfLinePower);
-								iFillQuadAlpha(h, /*p1*/&poLast, /*p2*/&po, /*p3*/&pl, /*p4*/&plLast, p1ColorL, p2ColorL, p3ColorL, p4ColorL, 1.0, 1.0, 1.0, 1.0, gfLinePower);
+								iDsf_fill_quad_alpha(h, /*p1*/&poLast, /*p2*/&po, /*p3*/&pr, /*p4*/&prLast, p4ColorR, p3ColorR, p2ColorR, p1ColorR, 1.0, 1.0, 1.0, 1.0, gfLinePower);
+								iDsf_fill_quad_alpha(h, /*p1*/&poLast, /*p2*/&po, /*p3*/&pl, /*p4*/&plLast, p1ColorL, p2ColorL, p3ColorL, p4ColorL, 1.0, 1.0, 1.0, 1.0, gfLinePower);
 							}
 						}
 
@@ -2850,7 +1021,7 @@
 						//////////
 						// Compute left, origin/middle, right
 						//////
-							iComputeLOR(s, &pl, &po, &pr);
+							iDsf_compute_LOR(s, &pl, &po, &pr);
 
 
 						//////////
@@ -2881,7 +1052,7 @@
 
 								} else {
 									// Determine the color based on the drawing mode
-									colorLine = iSetLineColor(p);
+									colorLine = iDsf_setLineColor(p);
 								}
 
 							} else {
@@ -2903,15 +1074,15 @@
 										//////////
 										// Pen down stroke
 										//////
-											iComputeLineFromTwoPoints(&line, &pl, &pr);				// Compute the line from L to R
-											iDrawPenDown(h, &line);									// Draw the pen down flow indicator
+											iDsf_computeLine_fromTwoPoints(&line, &pl, &pr);				// Compute the line from L to R
+											iDsf_draw_penDown(h, &line);									// Draw the pen down flow indicator
 
 										// For the previous stroke, if any, draw the pen up indicator
 										if (sLast && !sLast->lPenDown)
 										{
 											// Pen up stroke
-											iComputeLineFromTwoPoints(&line, &plLast, &prLast);		// Compute the line from the last L to R
-											iDrawPenUp(h, &line);									// Draw the pen up flow indicator
+											iDsf_computeLine_fromTwoPoints(&line, &plLast, &prLast);		// Compute the line from the last L to R
+											iDsf_draw_penUp(h, &line);									// Draw the pen up flow indicator
 										}
 									}
 
@@ -2922,21 +1093,21 @@
 									if (lnSplineNumber >= 1)
 									{
 										// Compute the line from L to O and O to R on both the current and the last points
-										iComputeLineFromTwoPoints(&lineL, &pl, &po);
-										iComputeLineFromTwoPoints(&lineR, &po, &pr);
-										iComputeLineFromTwoPoints(&lineLLast, &plLast, &poLast);
-										iComputeLineFromTwoPoints(&lineRLast, &poLast, &prLast);
+										iDsf_computeLine_fromTwoPoints(&lineL, &pl, &po);
+										iDsf_computeLine_fromTwoPoints(&lineR, &po, &pr);
+										iDsf_computeLine_fromTwoPoints(&lineLLast, &plLast, &poLast);
+										iDsf_computeLine_fromTwoPoints(&lineRLast, &poLast, &prLast);
 
 										// Compute a line from the midpoints forward
-										iComputeLineFromTwoPoints(&lineLtoLLast, &lineLLast.mid, &lineL.mid);
-										iComputeLineFromTwoPoints(&lineRtoRLast, &lineRLast.mid, &lineR.mid);
+										iDsf_computeLine_fromTwoPoints(&lineLtoLLast, &lineLLast.mid, &lineL.mid);
+										iDsf_computeLine_fromTwoPoints(&lineRtoRLast, &lineRLast.mid, &lineR.mid);
 
 										// Build quads around the endpoints
 										if (lineL.length * (f64)h->w >= 9.0)
-											iRenderHint(h, &lineLtoLLast, &lineLtoLLast.p1);			// There's enough room to draw a hint on the left side
+											iDsf_render_hint(h, &lineLtoLLast, &lineLtoLLast.p1);			// There's enough room to draw a hint on the left side
 
 										if (lineR.length * (f64)h->w >= 9.0)
-											iRenderHint(h, &lineRtoRLast, &lineRtoRLast.p1);			// There's enough room to draw a hint on the right side
+											iDsf_render_hint(h, &lineRtoRLast, &lineRtoRLast.p1);			// There's enough room to draw a hint on the right side
 									}
 							}
 
@@ -2951,11 +1122,11 @@
 								// Connect left, right as markup lines
 								if (p->splinesType == _SPLINES_FILL || p->splinesType == _SPLINES_OUTLINE)
 								{
-									iDrawLine(h, &pr, &prLast, s->tlRSelected ? colorSelected : colorLine, sLast->tlRSelected ? colorSelected : colorLine, gfLinePower);
-									iDrawLine(h, &po, &poLast, s->tlOSelected ? colorSelected : colorLine, sLast->tlOSelected ? colorSelected : colorLine, gfLinePower);
-									iDrawLine(h, &pl, &plLast, s->tlLSelected ? colorSelected : colorLine, sLast->tlLSelected ? colorSelected : colorLine, gfLinePower);
+									iDsf_draw_line(h, &pr, &prLast, s->tlRSelected ? colorSelected : colorLine, sLast->tlRSelected ? colorSelected : colorLine, gfLinePower);
+									iDsf_draw_line(h, &po, &poLast, s->tlOSelected ? colorSelected : colorLine, sLast->tlOSelected ? colorSelected : colorLine, gfLinePower);
+									iDsf_draw_line(h, &pl, &plLast, s->tlLSelected ? colorSelected : colorLine, sLast->tlLSelected ? colorSelected : colorLine, gfLinePower);
 								}
-								iDrawPoints(p, h, &prLast, &poLast, &plLast, sLast, colorSelected, colorR, colorO, colorL, colorRSelected, colorOSelected, colorLSelected, colorLine);
+								iDsf_draw_points(p, h, &prLast, &poLast, &plLast, sLast, colorSelected, colorR, colorO, colorL, colorRSelected, colorOSelected, colorLSelected, colorLine);
 
 							} else {
 								// Reset the spline count
@@ -2963,9 +1134,9 @@
 							}
 
 							// Connect left, middle, right as markup lines
-							iDrawLine(h, &po, &pr, s->tlOSelected ? colorSelected : colorLine, s->tlRSelected ? colorSelected : colorLine, gfLinePower);
-							iDrawLine(h, &po, &pl, s->tlOSelected ? colorSelected : colorLine, s->tlLSelected ? colorSelected : colorLine, gfLinePower);
-							iDrawPoints(p, h, &pr, &po, &pl, s, colorSelected, colorR, colorO, colorL, colorRSelected, colorOSelected, colorLSelected, colorLine);
+							iDsf_draw_line(h, &po, &pr, s->tlOSelected ? colorSelected : colorLine, s->tlRSelected ? colorSelected : colorLine, gfLinePower);
+							iDsf_draw_line(h, &po, &pl, s->tlOSelected ? colorSelected : colorLine, s->tlLSelected ? colorSelected : colorLine, gfLinePower);
+							iDsf_draw_points(p, h, &pr, &po, &pl, s, colorSelected, colorR, colorO, colorL, colorRSelected, colorOSelected, colorLSelected, colorLine);
 
 
 						//////////
@@ -2980,15 +1151,15 @@
 			}
 	}
 
-	SBGR iSetLineColor(SInstance* p)
+	SBgr iDsf_setLineColor(SDsf* p)
 	{
 		if (p->splinesType != _SPLINES_FILL)		return(gray);				// They don't want to see it filled in, so make it a little more visible
 		else										return(black);				// They want to see it filled in, so it can be black
 	}
 
-	void iDrawPenDown(SHwnd* h, SLineF64* line)
+	void iDsf_draw_penDown(SDsf_hwnd* h, SDsf_line_f64* line)
 	{
-		SXYF64	p1, p2, p3, p4;
+		SXy_f64	p1, p2, p3, p4;
 
 
 		/////////
@@ -3000,7 +1171,7 @@
 			// R
 			line->p2.x        = line->p2.x + ((10.0 / (f64)h->w) * cos(line->theta));
 			line->p2.y        = line->p2.y + ((10.0 / (f64)h->h) * sin(line->theta));
-			iComputeLine(line);
+			iDsf_computeLine(line);
 
 
 		//////////
@@ -3021,12 +1192,12 @@
 		//////////
 		// Fill this quad in using a bluish cue
 		//////
-			iFillQuadAlpha(h, &p1, &p2, &p3, &p4, strokeDown, strokeDown, strokeDown, strokeDown, 0.0, 0.0, 1.0, 1.0, 2.0);
+			iDsf_fill_quad_alpha(h, &p1, &p2, &p3, &p4, strokeDown, strokeDown, strokeDown, strokeDown, 0.0, 0.0, 1.0, 1.0, 2.0);
 	}
 
-	void iDrawPenUp(SHwnd* h, SLineF64* line)
+	void iDsf_draw_penUp(SDsf_hwnd* h, SDsf_line_f64* line)
 	{
-		SXYF64	p1, p2, p3, p4;
+		SXy_f64	p1, p2, p3, p4;
 
 
 		/////////
@@ -3038,7 +1209,7 @@
 			// R
 			line->p2.x        = line->p2.x + ((10.0 / (f64)h->w) * cos(line->theta));
 			line->p2.y        = line->p2.y + ((10.0 / (f64)h->h) * sin(line->theta));
-			iComputeLine(line);
+			iDsf_computeLine(line);
 
 
 		//////////
@@ -3059,14 +1230,14 @@
 		//////////
 		// Fill this quad in using an orangish cue
 		//////
-			iFillQuadAlpha(h, &p1, &p2, &p3, &p4, strokeUp, strokeUp, strokeUp, strokeUp, 0.0, 0.0, 1.0, 1.0, 2.0);
+			iDsf_fill_quad_alpha(h, &p1, &p2, &p3, &p4, strokeUp, strokeUp, strokeUp, strokeUp, 0.0, 0.0, 1.0, 1.0, 2.0);
 	}
 
-	void iRenderHint(SHwnd* h, SLineF64* line, SXYF64* pt)
+	void iDsf_render_hint(SDsf_hwnd* h, SDsf_line_f64* line, SXy_f64* pt)
 	{
-		SXYF64		pLeft;
-		SXYF64		pForward;
-		SXYF64		pRight;
+		SXy_f64		pLeft;
+		SXy_f64		pForward;
+		SXy_f64		pRight;
 
 
 		//////////
@@ -3092,10 +1263,10 @@
 		//////////
 		// Draw the quad (which is really a triangle. :-))
 		//////
-			iFillQuadAlpha(h, &pLeft, &pForward, &pForward, &pRight, strokeDown, strokeDown, strokeDown, strokeDown, 1.0, 1.0, 1.0, 1.0, 2.0);
+			iDsf_fill_quad_alpha(h, &pLeft, &pForward, &pForward, &pRight, strokeDown, strokeDown, strokeDown, strokeDown, 1.0, 1.0, 1.0, 1.0, 2.0);
 	}
 
-	void iComputeLOR(SSpline* s, SXYF64* pl, SXYF64* po, SXYF64* pr)
+	void iDsf_compute_LOR(SSpline* s, SXy_f64* pl, SXy_f64* po, SXy_f64* pr)
 	{
 		// left, origin/middle, right
 		iSetPoint(pl,	s->ox + (s->lr * cos(s->ot + s->lt)),	s->oy + (s->lr * sin(s->ot + s->lt)));
@@ -3105,7 +1276,7 @@
 
 	// Order is: prLast..poLast, pr..po, which are quad1from, quad1to, quad2from, quad2to
 	// iFillQuad(h, /*p1*/&prLast, /*p2*/&pr, /*p3*/&po, /*p4*/&poLast, p1ColorR, p2ColorR, p3ColorR, p4ColorR);
-	void iComputeQuadColorsR(SSpline* s, SSpline* sLast, SBGR quadNormal, SBGR quadSelected, SBGR* p1ColorR, SBGR* p2ColorR, SBGR* p3ColorR, SBGR* p4ColorR)
+	void iDsf_compute_quadColors_R(SSpline* s, SSpline* sLast, SBgr quadNormal, SBgr quadSelected, SBgr* p1ColorR, SBgr* p2ColorR, SBgr* p3ColorR, SBgr* p4ColorR)
 	{
 		*p1ColorR	= ((sLast->tlRSelected)	? quadSelected : quadNormal);
 		*p2ColorR	= ((s->tlRSelected)		? quadSelected : quadNormal);
@@ -3115,7 +1286,7 @@
 
 	// Order is: poLast..plLast, po..pl, which are quad1from, quad1to, quad2from, quad2to
 	// iFillQuad(h, /*p1*/&poLast, /*p2*/&po, /*p3*/&pl, /*p4*/&plLast, quad1fromL, p1ColorL, p2ColorL, p3ColorL, p4ColorL);
-	void iComputeQuadColorsL(SSpline* s, SSpline* sLast, SBGR quadNormal, SBGR quadSelected, SBGR* p1ColorL, SBGR* p2ColorL, SBGR* p3ColorL, SBGR* p4ColorL)
+	void iDsf_compute_quadColors_L(SSpline* s, SSpline* sLast, SBgr quadNormal, SBgr quadSelected, SBgr* p1ColorL, SBgr* p2ColorL, SBgr* p3ColorL, SBgr* p4ColorL)
 	{
 		*p1ColorL	= ((sLast->tlOSelected)	? quadSelected : quadNormal);
 		*p2ColorL	= ((s->tlOSelected)		? quadSelected : quadNormal);
@@ -3123,19 +1294,19 @@
 		*p4ColorL	= ((sLast->tlLSelected)	? quadSelected : quadNormal);
 	}
 
-	void iDrawPoints(SInstance* p, SHwnd* h, SXYF64* pr, SXYF64* po, SXYF64* pl, SSpline* s, SBGR colorSelected, SBGR colorR, SBGR colorO, SBGR colorL, SBGR colorRSelected, SBGR colorOSelected, SBGR colorLSelected, SBGR colorLine)
+	void iDsf_draw_points(SDsf* p, SDsf_hwnd* h, SXy_f64* pr, SXy_f64* po, SXy_f64* pl, SSpline* s, SBgr colorSelected, SBgr colorR, SBgr colorO, SBgr colorL, SBgr colorRSelected, SBgr colorOSelected, SBgr colorLSelected, SBgr colorLine)
 	{
 		//////////
 		// Right
 		//////
 			if (s->tlRSelected)
 			{
-				iDrawPointLarge(h, pr, colorSelected);
-				iDrawPoint(h, pr, colorRSelected);
+				iDsf_draw_point_large(h, pr, colorSelected);
+				iDsf_draw_point(h, pr, colorRSelected);
 
 			} else {
-				iDrawPointLarge(h, pr, colorLine);
-				iDrawPoint(h, pr, colorR);
+				iDsf_draw_point_large(h, pr, colorLine);
+				iDsf_draw_point(h, pr, colorR);
 			}
 
 
@@ -3144,12 +1315,12 @@
 		//////
 			if (s->tlOSelected)
 			{
-				iDrawPointLarge(h, po, colorSelected);
-				iDrawPoint(h, po, colorOSelected);
+				iDsf_draw_point_large(h, po, colorSelected);
+				iDsf_draw_point(h, po, colorOSelected);
 
 			} else {
-				iDrawPointLarge(h, po, colorLine);
-				iDrawPoint(h, po, colorO);
+				iDsf_draw_point_large(h, po, colorLine);
+				iDsf_draw_point(h, po, colorO);
 			}
 
 
@@ -3158,18 +1329,18 @@
 		//////
 			if (s->tlLSelected)
 			{
-				iDrawPointLarge(h, pl, colorSelected);
-				iDrawPoint(h, pl, colorLSelected);
+				iDsf_draw_point_large(h, pl, colorSelected);
+				iDsf_draw_point(h, pl, colorLSelected);
 
 			} else {
-				iDrawPointLarge(h, pl, colorLine);
-				iDrawPoint(h, pl, colorL);
+				iDsf_draw_point_large(h, pl, colorLine);
+				iDsf_draw_point(h, pl, colorL);
 			}
 	}
 
-	void iDrawLine(SHwnd* h, SXYF64* p1, SXYF64* p2, SBGR colorStart, SBGR colorEnd, f64 tfPower)
+	void iDsf_draw_line(SDsf_hwnd* h, SXy_f64* p1, SXy_f64* p2, SBgr colorStart, SBgr colorEnd, f64 tfPower)
 	{
-		SBGR_AF64	colorStartAlp, colorEndAlp;
+		SBgr_af64	colorStartAlp, colorEndAlp;
 
 
 		//////////
@@ -3191,16 +1362,16 @@
 		//////////
 		// Draw in the alpha algorithm
 		//////
-			iDrawLineAlpha(h, p1, p2, &colorStartAlp, &colorEndAlp, NULL, false, tfPower);
+			iDsf_draw_lineAlpha(h, p1, p2, &colorStartAlp, &colorEndAlp, NULL, false, tfPower);
 	}
 
-	void iDrawLineAlpha(SHwnd* h, SXYF64* p1, SXYF64* p2, SBGR_AF64* colorStart, SBGR_AF64* colorEnd, SBuilder* pointsDrawn, bool tlNoDuplicates, f64 tfPower)
+	void iDsf_draw_lineAlpha(SDsf_hwnd* h, SXy_f64* p1, SXy_f64* p2, SBgr_af64* colorStart, SBgr_af64* colorEnd, SBuilder* pointsDrawn, bool tlNoDuplicates, f64 tfPower)
 	{
 		f64			lfPercent, lfSteps, lfStepInc, lfRadius, lfCosTheta, lfSinTheta;
 		f64			lfRed, lfGrn, lfBlu, lfAlp, lfMalp, lfCos4, lfRedDelta, lfGrnDelta,lfBluDelta, lfAlpDelta;
 		s32			lnX, lnY, lnXLast, lnYLast;
-		SLineF64	line;
-		SBGR*		lbgr;
+		SDsf_line_f64	line;
+		SBgr*		lbgr;
 		u8*			lMastPtr;
 
 
@@ -3218,7 +1389,7 @@
 			line.p1.y	= p1->y * (f64)h->h;
 			line.p2.x	= p2->x * (f64)h->w;
 			line.p2.y	= p2->y * (f64)h->h;
-			iComputeLine(&line);
+			iDsf_computeLine(&line);
 			lfCosTheta	= cos(line.theta);
 			lfSinTheta	= sin(line.theta);
 
@@ -3268,7 +1439,7 @@
 						if (*lMastPtr == 0)
 						{
 							// We can draw it
-							lbgr		= (SBGR*)((s8*)h->bd + (lnY * h->rowWidth) + (lnX * 3));
+							lbgr		= (SBgr*)((s8*)h->bd + (lnY * h->rowWidth) + (lnX * 3));
 							lbgr->red	= (u8)(((f64)lbgr->red * lfMalp) + (lfRed * lfAlp));
 							lbgr->grn	= (u8)(((f64)lbgr->grn * lfMalp) + (lfGrn * lfAlp));
 							lbgr->blu	= (u8)(((f64)lbgr->blu * lfMalp) + (lfBlu * lfAlp));
@@ -3279,7 +1450,7 @@
 
 					} else {
 						// Directly render it
-						lbgr		= (SBGR*)((s8*)h->bd + (lnY * h->rowWidth) + (lnX * 3));
+						lbgr		= (SBgr*)((s8*)h->bd + (lnY * h->rowWidth) + (lnX * 3));
 						lbgr->red	= (u8)(((f64)lbgr->red * lfMalp) + (lfRed * lfAlp));
 						lbgr->grn	= (u8)(((f64)lbgr->grn * lfMalp) + (lfGrn * lfAlp));
 						lbgr->blu	= (u8)(((f64)lbgr->blu * lfMalp) + (lfBlu * lfAlp));
@@ -3292,12 +1463,12 @@
 			}
 	}
 
-	void iDrawLineAlphaNoDuplicates(SHwnd* h, SBuilder* pointsDrawn)
+	void iDsf_draw_line_alpha_noDuplicates(SDsf_hwnd* h, SBuilder* pointsDrawn)
 	{
 		u32				lnI, lnCount;
 		s32				lnXLast, lnYLast;
 		f64				lfAlp, lfMalp;
-		SBGR*			lbgr;
+		SBgr*			lbgr;
 		SPointsDrawn*	dp;
 
 
@@ -3305,7 +1476,7 @@
 		// Sort the list
 		//////
 			lnCount = pointsDrawn->populatedLength / sizeof(SPointsDrawn);
-			qsort(pointsDrawn->data, lnCount, sizeof(SPointsDrawn), iiSPointsDrawn_qsortCallback);
+			qsort(pointsDrawn->data, lnCount, sizeof(SPointsDrawn), iiDsf_SPointsDrawn_qsortCallback);
 
 
 		//////////
@@ -3326,7 +1497,7 @@
 					lfMalp		= 1.0 - lfAlp;
 
 					// Render it
-					lbgr		= (SBGR*)((s8*)h->bd + (dp->pt.yi * h->rowWidth) + (dp->pt.xi * 3));
+					lbgr		= (SBgr*)((s8*)h->bd + (dp->pt.yi * h->rowWidth) + (dp->pt.xi * 3));
 					lbgr->red	= (u8)(((f64)lbgr->red * lfMalp) + ((f64)dp->color.red * lfAlp));
 					lbgr->grn	= (u8)(((f64)lbgr->grn * lfMalp) + ((f64)dp->color.grn * lfAlp));
 					lbgr->blu	= (u8)(((f64)lbgr->blu * lfMalp) + ((f64)dp->color.blu * lfAlp));
@@ -3339,9 +1510,9 @@
 	}
 
 	// Draw the point
-	void iDrawPoint(SHwnd* h, SXYF64* p1, SBGR color)
+	void iDsf_draw_point(SDsf_hwnd* h, SXy_f64* p1, SBgr color)
 	{
-		SXYS32	p;
+		SXy_s32	p;
 
 
 		// Determine the center point
@@ -3349,17 +1520,17 @@
 		p.yi = (s32)(p1->y * (f64)h->h);
 
 		// Draw the circle there
-		iDrawHorizontalLineByPixels(h, p.xi-1, p.xi+1, p.yi-2, color);		//   * * *
-		iDrawHorizontalLineByPixels(h, p.xi-2, p.xi+2, p.yi-1, color);		// * * * * *
-		iDrawHorizontalLineByPixels(h, p.xi-2, p.xi+2, p.yi-0, color);		// * * * * *
-		iDrawHorizontalLineByPixels(h, p.xi-2, p.xi+2, p.yi+1, color);		// * * * * * 
-		iDrawHorizontalLineByPixels(h, p.xi-1, p.xi+1, p.yi+2, color);		//   * * *
+		iDsf_draw_line_horizontal_byPixels(h, p.xi-1, p.xi+1, p.yi-2, color);		//   * * *
+		iDsf_draw_line_horizontal_byPixels(h, p.xi-2, p.xi+2, p.yi-1, color);		// * * * * *
+		iDsf_draw_line_horizontal_byPixels(h, p.xi-2, p.xi+2, p.yi-0, color);		// * * * * *
+		iDsf_draw_line_horizontal_byPixels(h, p.xi-2, p.xi+2, p.yi+1, color);		// * * * * * 
+		iDsf_draw_line_horizontal_byPixels(h, p.xi-1, p.xi+1, p.yi+2, color);		//   * * *
 	}
 
 	// Draw the small middle
-	void iDrawPointSmall(SHwnd* h, SXYF64* p1, SBGR color)
+	void iDsf_draw_point_small(SDsf_hwnd* h, SXy_f64* p1, SBgr color)
 	{
-		SXYS32	p;
+		SXy_s32	p;
 
 
 		// Determine the center point
@@ -3370,13 +1541,13 @@
 // 		iDrawHorizontalLineByPixels(h, p.xi,	p.xi,	p.yi-1,	color);		//   *
 // 		iDrawHorizontalLineByPixels(h, p.xi-1,	p.xi+1,	p.yi-0,	color);		// * * *
 // 		iDrawHorizontalLineByPixels(h, p.xi,	p.xi,	p.yi+1,	color);		//   *
-		iDrawHorizontalLineByPixels(h, p.xi,	p.xi,	p.yi,	color);		//   *
+		iDsf_draw_line_horizontal_byPixels(h, p.xi,	p.xi,	p.yi,	color);		//   *
 	}
 
 	// Draw the point large
-	void iDrawPointLarge(SHwnd* h, SXYF64* p1, SBGR color)
+	void iDsf_draw_point_large(SDsf_hwnd* h, SXy_f64* p1, SBgr color)
 	{
-		SXYS32	p;
+		SXy_s32	p;
 
 
 		// Determine the center point
@@ -3384,19 +1555,19 @@
 		p.yi = (s32)(p1->y * (f64)h->h);
 
 		// Draw the circle there
-		iDrawHorizontalLineByPixels(h, p.xi-1, p.xi+1, p.yi-3, color);		//     * * *
-		iDrawHorizontalLineByPixels(h, p.xi-2, p.xi+2, p.yi-2, color);		//   * * * * *
-		iDrawHorizontalLineByPixels(h, p.xi-3, p.xi+3, p.yi-1, color);		// * * * * * * *
-		iDrawHorizontalLineByPixels(h, p.xi-3, p.xi+3, p.yi-0, color);		// * * * * * * *
-		iDrawHorizontalLineByPixels(h, p.xi-3, p.xi+3, p.yi+1, color);		// * * * * * * *
-		iDrawHorizontalLineByPixels(h, p.xi-2, p.xi+2, p.yi+2, color);		//   * * * * *
-		iDrawHorizontalLineByPixels(h, p.xi-1, p.xi+1, p.yi+3, color);		//     * * *
+		iDsf_draw_line_horizontal_byPixels(h, p.xi-1, p.xi+1, p.yi-3, color);		//     * * *
+		iDsf_draw_line_horizontal_byPixels(h, p.xi-2, p.xi+2, p.yi-2, color);		//   * * * * *
+		iDsf_draw_line_horizontal_byPixels(h, p.xi-3, p.xi+3, p.yi-1, color);		// * * * * * * *
+		iDsf_draw_line_horizontal_byPixels(h, p.xi-3, p.xi+3, p.yi-0, color);		// * * * * * * *
+		iDsf_draw_line_horizontal_byPixels(h, p.xi-3, p.xi+3, p.yi+1, color);		// * * * * * * *
+		iDsf_draw_line_horizontal_byPixels(h, p.xi-2, p.xi+2, p.yi+2, color);		//   * * * * *
+		iDsf_draw_line_horizontal_byPixels(h, p.xi-1, p.xi+1, p.yi+3, color);		//     * * *
 	}
 
-	void iDrawHorizontalLineByPixels(SHwnd* h, s32 x1, s32 x2, s32 y, SBGR color)
+	void iDsf_draw_line_horizontal_byPixels(SDsf_hwnd* h, s32 x1, s32 x2, s32 y, SBgr color)
 	{
 		s32		lnX;
-		SBGR*	lbgr;
+		SBgr*	lbgr;
 
 
 		// Is it out of bounds?
@@ -3404,7 +1575,7 @@
 			return;
 
 		// Get the pointer
-		lbgr = (SBGR*)((s8*)h->bd + (y * h->rowWidth) + (x1 * 3));
+		lbgr = (SBgr*)((s8*)h->bd + (y * h->rowWidth) + (x1 * 3));
 
 		// Iterate for every x
 		for (lnX = x1; lnX <= x2; lnX++, lbgr++)
@@ -3421,14 +1592,14 @@
 	}
 
 	// Draw p1..p2 along the lines from p1..p4, p2..p3
-	void iFillQuadAlpha(SHwnd* h, SXYF64* p1, SXYF64* p2, SXYF64* p3, SXYF64* p4, SBGR p1Color, SBGR p2Color, SBGR p3Color, SBGR p4Color, f64 tfP1Alp, f64 tfP2Alp, f64 tfP3Alp, f64 tfP4Alp, f64 tfPower)
+	void iDsf_fill_quad_alpha(SDsf_hwnd* h, SXy_f64* p1, SXy_f64* p2, SXy_f64* p3, SXy_f64* p4, SBgr p1Color, SBgr p2Color, SBgr p3Color, SBgr p4Color, f64 tfP1Alp, f64 tfP2Alp, f64 tfP3Alp, f64 tfP4Alp, f64 tfPower)
 	{
 		f64			lfPercent, lfStep, lfStepCount, lfCosThetaP1P4, lfSinThetaP1P4, lfCosThetaP2P3, lfSinThetaP2P3, lfMultiplier;
-		SXYF64		lp1, lp2;
-		SLineF64	p1p4, p2p3;
+		SXy_f64		lp1, lp2;
+		SDsf_line_f64	p1p4, p2p3;
 		bool		llNoAlpha;
 		f64			lfRedP1P4Delta, lfGrnP1P4Delta, lfBluP1P4Delta, lfAlpP1P4Delta, lfRedP2P3Delta, lfGrnP2P3Delta, lfBluP2P3Delta, lfAlpP2P3Delta, lfCos4;
-		SBGR_AF64	colorP1P4, colorP2P3;
+		SBgr_af64	colorP1P4, colorP2P3;
 		SBuilder*	pointsDrawn;
 		s8*			lptr;
 
@@ -3449,7 +1620,7 @@
 			p1p4.p1.y	= p1->y;
 			p1p4.p2.x	= p4->x;
 			p1p4.p2.y	= p4->y;
-			iComputeLine(&p1p4);
+			iDsf_computeLine(&p1p4);
 			lfCosThetaP1P4	= cos(p1p4.theta);
 			lfSinThetaP1P4	= sin(p1p4.theta);
 
@@ -3458,7 +1629,7 @@
 			p2p3.p1.y	= p2->y;
 			p2p3.p2.x	= p3->x;
 			p2p3.p2.y	= p3->y;
-			iComputeLine(&p2p3);
+			iDsf_computeLine(&p2p3);
 			lfCosThetaP2P3		= cos(p2p3.theta);
 			lfSinThetaP2P3		= sin(p2p3.theta);
 
@@ -3531,8 +1702,8 @@
 				//////////
 				// Draw this line
 				//////
-					if (llNoAlpha)		iDrawLineAlpha(h, &lp1, &lp2, &colorP1P4, &colorP2P3, NULL,			false,	4.0);
-					else				iDrawLineAlpha(h, &lp1, &lp2, &colorP1P4, &colorP2P3, pointsDrawn,	true,	4.0);
+					if (llNoAlpha)		iDsf_draw_lineAlpha(h, &lp1, &lp2, &colorP1P4, &colorP2P3, NULL,			false,	4.0);
+					else				iDsf_draw_lineAlpha(h, &lp1, &lp2, &colorP1P4, &colorP2P3, pointsDrawn,	true,	4.0);
 			}
 
 
@@ -3551,13 +1722,13 @@
 // Called to render the mouse atop the current image
 //
 //////
-	void iRenderMouseOverlay(SInstance* p, SHwnd* h, SChars* c)
+	void iDsf_render_mouseOverlay(SDsf* p, SDsf_hwnd* h, SDsf_chars* c)
 	{
-		SXYS32		p1;
-		SLineF64	line;
+		SXy_s32		p1;
+		SDsf_line_f64	line;
 		s32			lnX, lnY, lnYLast;
 		f64			lfTheta, lfThetaStep, lfA, lfB, lfV1, lfV2, lfX, lfY, lfRadius;
-		SBGR		color;
+		SBgr		color;
 
 
 		// Invert the Y mouse coordinates for rendering
@@ -3572,10 +1743,10 @@
 		if (glCtrlKeyDown)
 		{
 			// Compute the closest line to the mouse, but only within a certain radius
-			if (iComputeClosestMouseLine(&line))
+			if (iDsf_compute_closestMouseLine(&line))
 			{
 				// Draw a point at the center of the indicated line
-				iDrawPointLarge(h, &line.mid, color);
+				iDsf_draw_point_large(h, &line.mid, color);
 			}
 		}
 
@@ -3584,7 +1755,7 @@
 		{
 			// The mouse is pressed down, render the select area
 			// Render it (we're basically drawing an oval area the mouse will interact with)
-			lfRadius	= (f64)iValidateRange(p->selectArea, _SELECT_AREA_SMALL, _SELECT_AREA_EXTRA_LARGE, _SELECT_AREA_SMALL);
+			lfRadius	= (f64)iDsf_validate_range(p->selectArea, _SELECT_AREA_SMALL, _SELECT_AREA_EXTRA_LARGE, _SELECT_AREA_SMALL);
 			lnYLast		= -1;
 			lfA			= lfRadius * 1.0;		// A is 100%
 			lfB			= lfRadius * 0.7;		// B is 70%, this gives us a 10:7 oval
@@ -3608,9 +1779,9 @@
 				if (lnY != lnYLast)
 				{
 					// Draw the mouse indicator there, and perform any operations
-					iColorizeAndProcessHorizontalLineByPixels(p, h, c, p1.xi - lnX, p1.xi + lnX, p1.yi + lnY, color);		// Above
+					iDsf_colorize_andProcessHorizontalLine_byPixels(p, h, c, p1.xi - lnX, p1.xi + lnX, p1.yi + lnY, color);		// Above
 					if (lnY != 0)
-						iColorizeAndProcessHorizontalLineByPixels(p, h, c, p1.xi - lnX, p1.xi + lnX, p1.yi - lnY, color);	// Below
+						iDsf_colorize_andProcessHorizontalLine_byPixels(p, h, c, p1.xi - lnX, p1.xi + lnX, p1.yi - lnY, color);	// Below
 
 					lnYLast = lnY;
 				}
@@ -3619,12 +1790,12 @@
 
 		if (p1.xi >= 0 && p1.xi < h->w && p1.yi >= 0 && p1.yi < h->h)
 		{
-			if (p->mouseCrosshairX)		iColorizeHorizontalLineByPixels(p, h, c, 0, h->w - 1, p1.yi, mouseColor);		// Horizontal
-			if (p->mouseCrosshairY)		iColorizeVerticalLineByPixels(  p, h, c, 0, h->h - 1, p1.xi, mouseColor);		// Vertical
+			if (p->mouseCrosshairX)		iDsf_colorize_horizontalLine_byPixels(p, h, c, 0, h->w - 1, p1.yi, mouseColor);		// Horizontal
+			if (p->mouseCrosshairY)		iDsf_colorize_verticalLine_byPixels(  p, h, c, 0, h->h - 1, p1.xi, mouseColor);		// Vertical
 		}
 	}
 
-	bool iComputeClosestMouseLine(SLineF64* line)
+	bool iDsf_compute_closestMouseLine(SDsf_line_f64* line)
 	{
 		// Find the closest point to the current mouse coordinates
 
@@ -3644,21 +1815,21 @@
 		return(false);
 	}
 
-	void iColorizeAndProcessHorizontalLineByPixels(SInstance* p, SHwnd* h, SChars* c, s32 x1, s32 x2, s32 y, SBGR color)
+	void iDsf_colorize_andProcessHorizontalLine_byPixels(SDsf* p, SDsf_hwnd* h, SDsf_chars* c, s32 x1, s32 x2, s32 y, SBgr color)
 	{
-		SXYF64 ul, lr;
+		SXy_f64 ul, lr;
 
 
 		//////////
 		// Make sure the values are in the correct order
 		/////
-			iMakeSureLowToHighS32(&x1, &x2);
+			iDsf_makeSure_lowToHigh_s32(&x1, &x2);
 
 
 		//////////
 		// Colorize it
 		//////
-			iColorizeHorizontalLineByPixels(p, h, c, x1, x2, y, color);
+			iDsf_colorize_horizontalLine_byPixels(p, h, c, x1, x2, y, color);
 
 		//////
 		// Process it
@@ -3671,14 +1842,14 @@
 			lr.y = (f64)y                     / (f64)h->h;
 
 			// Process the selection operation on this range
-			iSelectRange(p, h, c, &lr, &lr);
+			iDsf_select_range(p, h, c, &lr, &lr);
 	}
 
-	void iColorizeHorizontalLineByPixels(SInstance* p, SHwnd* h, SChars* c, s32 x1, s32 x2, s32 y, SBGR color)
+	void iDsf_colorize_horizontalLine_byPixels(SDsf* p, SDsf_hwnd* h, SDsf_chars* c, s32 x1, s32 x2, s32 y, SBgr color)
 	{
 		s32		lnX;
 		f64		lfAlp, lfMalp, lfRed, lfGrn, lfBlu;
-		SBGR*	lbgr;
+		SBgr*	lbgr;
 
 
 		// Is it out of bounds?
@@ -3686,7 +1857,7 @@
 			return;
 
 		// Get the pointer
-		lbgr = (SBGR*)((s8*)h->bd + (y * h->rowWidth) + (x1 * 3));
+		lbgr = (SBgr*)((s8*)h->bd + (y * h->rowWidth) + (x1 * 3));
 
 		// Get the colors
 		lfRed	= (f64)color.red;
@@ -3702,29 +1873,29 @@
 			if (lnX >= 0 && lnX < h->w)
 			{
 				// Colorize it
-				lbgr->red	= (u8)iScaleIntoRange((s32)((lfAlp * lfRed) + (lfMalp * (f64)lbgr->red)), 255, 92, 255);
-				lbgr->grn	= (u8)iScaleIntoRange((s32)((lfAlp * lfGrn) + (lfMalp * (f64)lbgr->grn)), 255, 92, 255);
-				lbgr->blu	= (u8)iScaleIntoRange((s32)((lfAlp * lfBlu) + (lfMalp * (f64)lbgr->red)), 255, 92, 255);
+				lbgr->red	= (u8)iDsf_scale_intoRange((s32)((lfAlp * lfRed) + (lfMalp * (f64)lbgr->red)), 255, 92, 255);
+				lbgr->grn	= (u8)iDsf_scale_intoRange((s32)((lfAlp * lfGrn) + (lfMalp * (f64)lbgr->grn)), 255, 92, 255);
+				lbgr->blu	= (u8)iDsf_scale_intoRange((s32)((lfAlp * lfBlu) + (lfMalp * (f64)lbgr->red)), 255, 92, 255);
 			}
 		}
 
 	}
 
-	void iColorizeAndProcessVerticalLineByPixels(SInstance* p, SHwnd* h, SChars* c, s32 y1, s32 y2, s32 x, SBGR color)
+	void iDsf_colorize_andProcessVerticalLine_byPixels(SDsf* p, SDsf_hwnd* h, SDsf_chars* c, s32 y1, s32 y2, s32 x, SBgr color)
 	{
-		SXYF64 ul, lr;
+		SXy_f64 ul, lr;
 
 
 		//////////
 		// Make sure the values are in the correct order
 		/////
-			iMakeSureLowToHighS32(&y1, &y2);
+			iDsf_makeSure_lowToHigh_s32(&y1, &y2);
 
 
 		//////////
 		// Colorize it
 		//////
-			iColorizeVerticalLineByPixels(p, h, c, y1, y2, x, color);
+			iDsf_colorize_verticalLine_byPixels(p, h, c, y1, y2, x, color);
 
 
 		//////
@@ -3736,14 +1907,14 @@
 			ul.y = ((f64)y1 + 0.999999999999) / (f64)h->h;
 			lr.x = ((f64)x  + 0.999999999999) / (f64)h->w;
 			lr.y = (f64)y2                    / (f64)h->h;
-			iSelectRange(p, h, c, &lr, &lr);
+			iDsf_select_range(p, h, c, &lr, &lr);
 	}
 
-	void iColorizeVerticalLineByPixels(SInstance* p, SHwnd* h, SChars* c, s32 y1, s32 y2, s32 x, SBGR color)
+	void iDsf_colorize_verticalLine_byPixels(SDsf* p, SDsf_hwnd* h, SDsf_chars* c, s32 y1, s32 y2, s32 x, SBgr color)
 	{
 		s32		lnY;
 		f64		lfAlp, lfMalp, lfRed, lfGrn, lfBlu;
-		SBGR*	lbgr;
+		SBgr*	lbgr;
 
 
 		// Is it out of bounds?
@@ -3751,7 +1922,7 @@
 			return;
 
 		// Get the pointer
-		lbgr = (SBGR*)((s8*)h->bd + (y1 * h->rowWidth) + (x * 3));
+		lbgr = (SBgr*)((s8*)h->bd + (y1 * h->rowWidth) + (x * 3));
 
 		// Get the colors
 		lfRed	= (f64)color.red;
@@ -3761,15 +1932,15 @@
 		lfMalp	= 1.0 - lfAlp;
 
 		// Iterate for every x
-		for (lnY = y1; lnY <= y2; lnY++, lbgr = (SBGR*)((s8*)lbgr + h->rowWidth))
+		for (lnY = y1; lnY <= y2; lnY++, lbgr = (SBgr*)((s8*)lbgr + h->rowWidth))
 		{
 			// Is it out of bounds?
 			if (lnY >= 0 && lnY < h->h)
 			{
 				// Colorize it
-				lbgr->red	= (u8)iScaleIntoRange((s32)((lfAlp * lfRed) + (lfMalp * (f64)lbgr->red)), 255, 92, 255);
-				lbgr->grn	= (u8)iScaleIntoRange((s32)((lfAlp * lfGrn) + (lfMalp * (f64)lbgr->grn)), 255, 92, 255);
-				lbgr->blu	= (u8)iScaleIntoRange((s32)((lfAlp * lfBlu) + (lfMalp * (f64)lbgr->red)), 255, 92, 255);
+				lbgr->red	= (u8)iDsf_scale_intoRange((s32)((lfAlp * lfRed) + (lfMalp * (f64)lbgr->red)), 255, 92, 255);
+				lbgr->grn	= (u8)iDsf_scale_intoRange((s32)((lfAlp * lfGrn) + (lfMalp * (f64)lbgr->grn)), 255, 92, 255);
+				lbgr->blu	= (u8)iDsf_scale_intoRange((s32)((lfAlp * lfBlu) + (lfMalp * (f64)lbgr->red)), 255, 92, 255);
 			}
 		}
 	}
@@ -3782,7 +1953,7 @@
 // Called to render the markup data onto the character
 //
 //////
-	void iRenderTems(SInstance* p, SHwnd* h, SChars* c)
+	void iDsf_render_tems(SDsf* p, SDsf_hwnd* h, SDsf_chars* c)
 	{
 // 		s32			lnX;
 // 		u32			lnI, lnINext, lnTemsCount;
@@ -3792,9 +1963,9 @@
 // 		SLineS32	line;
 		u32			lnI;
 		f64			lfRed, lfGrn, lfBlu, lfGray, lfMGray;
-		SXYS32		point;
+		SXy_s32		point;
 		STems*		t;
-		SBGR*		lbgr;
+		SBgr*		lbgr;
 
 
 // Note:  This commented code block was an attempt to overlay using solid areas rather than an outline.
@@ -3901,24 +2072,24 @@
 				if (point.yi >= 0 && point.yi < h->h && point.xi >= 0 && point.xi < h->w)
 				{
 					// Get the pointer
-					lbgr = (SBGR*)((s8*)h->bd + (point.yi * h->rowWidth) + (point.xi * 3));
+					lbgr = (SBgr*)((s8*)h->bd + (point.yi * h->rowWidth) + (point.xi * 3));
 
 					// Compute grayscale
 					lfGray		= ((0.35 * (f64)lbgr->red) + (0.54 * (f64)lbgr->grn) + (0.11 * (f64)lbgr->blu)) / 255.0;
 					lfMGray		= 1.0 - lfGray;
 
 					// Render it
-					lbgr->red	= (u8)iScaleIntoRange(min((u32)((lfGray * lfRed) + (lfMGray * (f64)lbgr->red)), 255), 255, 32, 64);
-					lbgr->grn	= (u8)iScaleIntoRange(min((u32)((lfGray * lfGrn) + (lfMGray * (f64)lbgr->grn)), 255), 255, 128, 255);
-					lbgr->blu	= (u8)iScaleIntoRange(min((u32)((lfGray * lfBlu) + (lfMGray * (f64)lbgr->blu)), 255), 255, 32, 64);
+					lbgr->red	= (u8)iDsf_scale_intoRange(min((u32)((lfGray * lfRed) + (lfMGray * (f64)lbgr->red)), 255), 255, 32, 64);
+					lbgr->grn	= (u8)iDsf_scale_intoRange(min((u32)((lfGray * lfGrn) + (lfMGray * (f64)lbgr->grn)), 255), 255, 128, 255);
+					lbgr->blu	= (u8)iDsf_scale_intoRange(min((u32)((lfGray * lfBlu) + (lfMGray * (f64)lbgr->blu)), 255), 255, 32, 64);
 				}
 			}
 	}
 
-	void iInvertImage(SHwnd* h)
+	void iDsf_invertImage(SDsf_hwnd* h)
 	{
 		s32		lnX, lnY;
-		SBGR*	lbgr;
+		SBgr*	lbgr;
 
 
 		//////////
@@ -3927,7 +2098,7 @@
 			for (lnY = 0; lnY < h->h; lnY++)
 			{
 				// Begin on this row
-				lbgr = (SBGR*)((s8*)h->bd + (lnY * h->rowWidth));
+				lbgr = (SBgr*)((s8*)h->bd + (lnY * h->rowWidth));
 				for (lnX = 0; lnX < h->w; lnX++, lbgr++)
 				{
 					// Invert the pixel
@@ -3941,12 +2112,12 @@
 	// Zoom the 32x32 box around the mouse coordinates into a zoom lens overlain either on the
 	// upper-left or lower-left (depending on whether or not the mouse is over the default upper-
 	// left display area.  Zoom is fixed at 3x.
-	void iRenderZoomLens(SHwnd* h)
+	void iDsf_render_zoomLens(SDsf_hwnd* h)
 	{
 		s32		lnX, lnY, lnX2, lnY2, lnXSrc, lnYSrc, lnXDst, lnYDst;
 		RECT	lrc;
-		SBGR*	lbgrSrc;
-		SBGR*	lbgrDst;
+		SBgr*	lbgrSrc;
+		SBgr*	lbgrDst;
 
 
 		//////////
@@ -3963,7 +2134,7 @@
 			for (lnY = 0, lnYSrc = gMouse.yi - 16, lnYDst = lrc.top; lnY < 32; lnY++, lnYSrc++, lnYDst += 3)
 			{
 				// Compute the source pointer for the row
-				lbgrSrc = (SBGR*)((s8*)h->bd + ((h->h - lnYSrc - 1) * h->rowWidth) + ((gMouse.xi - 16) * 3));
+				lbgrSrc = (SBgr*)((s8*)h->bd + ((h->h - lnYSrc - 1) * h->rowWidth) + ((gMouse.xi - 16) * 3));
 
 				// Copy the columns
 				for (lnX = 0, lnXSrc = gMouse.xi - 16, lnXDst = lrc.left; lnX < 32; lnX++, lnXSrc++, lnXDst += 3, lbgrSrc++)
@@ -3972,7 +2143,7 @@
 					for (lnY2 = 0; lnY2 < 3; lnY2++)
 					{
 						// Compute the destination for this row
-						lbgrDst = (SBGR*)((s8*)h->bd + ((h->h - (lnYDst + lnY2)) * h->rowWidth) + (lnXDst * 3));
+						lbgrDst = (SBgr*)((s8*)h->bd + ((h->h - (lnYDst + lnY2)) * h->rowWidth) + (lnXDst * 3));
 
 						// Repeat 3x for the column
 						for (lnX2 = 0; lnX2 < 3; lnX2++, lbgrDst++)
@@ -3997,7 +2168,7 @@
 			}
 	}
 
-	u32 iScaleIntoRange(s32 tnValue, s32 tnValueMax, s32 tnMinRange, s32 tnMaxRange)
+	u32 iDsf_scale_intoRange(s32 tnValue, s32 tnValueMax, s32 tnMinRange, s32 tnMaxRange)
 	{
 		if (tnValue > tnValueMax)
 			tnValue = tnValueMax;
@@ -4005,13 +2176,13 @@
 		return(tnMinRange + (s32)(((f64)tnValue / (f64)tnValueMax) * (f64)(tnMaxRange - tnMinRange)));
 	}
 
-	u32 iValidateRange(s32 tnValue, s32 tnValueMin, s32 tnValueMax, s32 tnDefaultValue)
+	u32 iDsf_validate_range(s32 tnValue, s32 tnValueMin, s32 tnValueMax, s32 tnDefaultValue)
 	{
 		if (tnValue >= tnValueMin && tnValue <= tnValueMax)		return(tnValue);
 		else													return(tnDefaultValue);
 	}
 
-	void iMakeSureLowToHighU32(u32* p1, u32* p2)
+	void iDsf_makeSure_lowToHigh_u32(u32* p1, u32* p2)
 	{
 		u32 lp;
 
@@ -4026,7 +2197,7 @@
 		*p1	= lp;
 	}
 
-	void iMakeSureLowToHighS32(s32* p1, s32* p2)
+	void iDsf_makeSure_lowToHigh_s32(s32* p1, s32* p2)
 	{
 		s32 lp;
 
@@ -4041,7 +2212,7 @@
 		*p1	= lp;
 	}
 
-	void iMakeSureLowToHighF64(f64* p1, f64* p2)
+	void iDsf_makeSure_lowToHigh_f64(f64* p1, f64* p2)
 	{
 		f64 lp;
 
@@ -4057,7 +2228,7 @@
 	}
 
 	// Sort by Y, then X, ascending in both directions
-	int iiTems_qsortCallback(const void* l, const void* r)
+	int iiDsf_tems_qsortCallback(const void* l, const void* r)
 	{
 		STems*	left;
 		STems*	right;
@@ -4076,15 +2247,15 @@
 	}
 
 	// Sort by Y, then X, ascending in both directions
-	int iiSXyS32_qsortCallback(const void* l, const void* r)
+	int iiDsf_SXy_s32_qsortCallback(const void* l, const void* r)
 	{
-		SXYS32*	left;
-		SXYS32*	right;
+		SXy_s32*	left;
+		SXy_s32*	right;
 
 
 		// Get our pointers properly
-		left	= (SXYS32*)l;
-		right	= (SXYS32*)r;
+		left	= (SXy_s32*)l;
+		right	= (SXy_s32*)r;
 
 		// See how the cookie crumbles
 		     if (left->yi < right->yi)		return(-1);		// Left is less than right
@@ -4094,7 +2265,7 @@
 		else								return(0);		// They're equal
 	}
 
-	int iiSPointsDrawn_qsortCallback(const void* l, const void* r)
+	int iiDsf_SPointsDrawn_qsortCallback(const void* l, const void* r)
 	{
 		SPointsDrawn*	left;
 		SPointsDrawn*	right;
@@ -4113,11 +2284,11 @@
 	}
 
 	// Grabs the next line segment as processing through the floans.
-	u32 iiRenderMarkup_getNextLineSegment(u32 tnIndex, u32 tnMaxCount, SHwnd* h, STems* root, STems** p1, STems** p2)
+	u32 iiDsf_renderMarkup_getNextLineSegment(u32 tnIndex, u32 tnMaxCount, SDsf_hwnd* h, STems* root, STems** p1, STems** p2)
 	{
 		u32			lnI, lnOffset;
 		STems*		t;
-		SXYS32		lp1, lp2;
+		SXy_s32		lp1, lp2;
 
 
 		// Skip past while the pixels are adjacent
@@ -4127,20 +2298,20 @@
 			//////////
 			// Are we still on the same row?
 			//////
-				lp1.yi = iiGetPoint((t + lnOffset + 0)->fy,		h->h);
-				lp2.yi = iiGetPoint((t + lnOffset - 1)->fy,		h->h);
+				lp1.yi = iiDsf_getPoint((t + lnOffset + 0)->fy,		h->h);
+				lp2.yi = iiDsf_getPoint((t + lnOffset - 1)->fy,		h->h);
 				if (lp1.yi != lp2.yi)
 				{
 					// We've passed to another row, we begin again, but from here
-					return(iiRenderMarkup_getNextLineSegment(tnIndex + lnOffset, tnMaxCount, h, root, p1, p2));
+					return(iiDsf_renderMarkup_getNextLineSegment(tnIndex + lnOffset, tnMaxCount, h, root, p1, p2));
 				}
 
 
 			//////////
 			// Are the pixels not adjacent?
 			//////
-				lp1.xi = iiGetPoint((t + lnOffset + 0)->fx,		h->w);
-				lp2.xi = iiGetPoint((t + lnOffset - 1)->fx,		h->w);
+				lp1.xi = iiDsf_getPoint((t + lnOffset + 0)->fx,		h->w);
+				lp2.xi = iiDsf_getPoint((t + lnOffset - 1)->fx,		h->w);
 				if (lp1.xi > lp2.xi + 1)
 					break;		// Yes, they are not adjacent.  We've found the end of the grouping/run.
 			
@@ -4158,10 +2329,10 @@
 		//////
 			for (lnI = 1; tnIndex + lnOffset + lnI < tnMaxCount; lnI++)
 			{
-				lp1.yi = iiGetPoint((t + lnOffset + lnI + 0)->fy,		h->h);
-				lp1.xi = iiGetPoint((t + lnOffset + lnI + 0)->fx,		h->w);
-				lp2.yi = iiGetPoint((t + lnOffset + lnI - 1)->fy,		h->h);
-				lp2.xi = iiGetPoint((t + lnOffset + lnI - 1)->fx,		h->w);
+				lp1.yi = iiDsf_getPoint((t + lnOffset + lnI + 0)->fy,		h->h);
+				lp1.xi = iiDsf_getPoint((t + lnOffset + lnI + 0)->fx,		h->w);
+				lp2.yi = iiDsf_getPoint((t + lnOffset + lnI - 1)->fy,		h->h);
+				lp2.xi = iiDsf_getPoint((t + lnOffset + lnI - 1)->fx,		h->w);
 				if (lp1.yi != lp2.yi || lp2.xi + 1 != lp1.xi)
 				{
 					lnOffset += (lnI - 1);
@@ -4174,7 +2345,7 @@
 		return(tnIndex + lnOffset + 1);
 	}
 
-	s32 iiGetPoint(f64 tfValue01, s32 tnMultiplier)
+	s32 iiDsf_getPoint(f64 tfValue01, s32 tnMultiplier)
 	{
 		return((s32)(tfValue01 * (f64)tnMultiplier));
 	}
@@ -4188,19 +2359,19 @@
 // items for preview or examination.
 //
 //////
-	SHwnd* iFindOnlyHwndByHwnd(SBuilder* hwnds, u32 tnHwndParent, u32 tnHwnd)
+	SDsf_hwnd* iDsf_findOnlyHwnd_byHwnd(SBuilder* hwnds, u32 tnHwndParent, u32 tnHwnd)
 	{
 		u32		lnI;
-		SHwnd*	h;
+		SDsf_hwnd*	h;
 
 
 		//////////
 		// See if the existing item exists
 		//////
-			for (lnI = 0; lnI < hwnds->populatedLength; lnI += sizeof(SHwnd))
+			for (lnI = 0; lnI < hwnds->populatedLength; lnI += sizeof(SDsf_hwnd))
 			{
 				// Grab this pointer
-				h = (SHwnd*)(hwnds->data + lnI);
+				h = (SDsf_hwnd*)(hwnds->data + lnI);
 
 				// See if it's a match
 				if (h->_hwndParent == tnHwndParent && h->_hwnd == tnHwnd)
@@ -4213,19 +2384,19 @@
 			return(NULL);
 	}
 
-	SHwnd* iFindOnlyHwndByHwndControl(SBuilder* hwnds, u32 tnHwndParent, u32 tnHwndControl)
+	SDsf_hwnd* iDsf_findOnlyHwnd_byHwndControl(SBuilder* hwnds, u32 tnHwndParent, u32 tnHwndControl)
 	{
 		u32		lnI;
-		SHwnd*	h;
+		SDsf_hwnd*	h;
 
 
 		//////////
 		// See if the existing item exists
 		//////
-			for (lnI = 0; lnI < hwnds->populatedLength; lnI += sizeof(SHwnd))
+			for (lnI = 0; lnI < hwnds->populatedLength; lnI += sizeof(SDsf_hwnd))
 			{
 				// Grab this pointer
-				h = (SHwnd*)(hwnds->data + lnI);
+				h = (SDsf_hwnd*)(hwnds->data + lnI);
 
 				// See if it's a match
 				if (h->_hwndParent == tnHwndParent && h->_hwndControl == tnHwndControl)
@@ -4238,19 +2409,19 @@
 			return(NULL);
 	}
 
-	SHwnd* iFindOnlyHwndByHwndParent(SBuilder* hwnds, u32 tnHwndParent)
+	SDsf_hwnd* iDsf_findOnlyHwnd_byHwndParent(SBuilder* hwnds, u32 tnHwndParent)
 	{
 		u32		lnI;
-		SHwnd*	h;
+		SDsf_hwnd*	h;
 
 
 		//////////
 		// See if the existing item exists
 		//////
-			for (lnI = 0; lnI < hwnds->populatedLength; lnI += sizeof(SHwnd))
+			for (lnI = 0; lnI < hwnds->populatedLength; lnI += sizeof(SDsf_hwnd))
 			{
 				// Grab this pointer
-				h = (SHwnd*)(hwnds->data + lnI);
+				h = (SDsf_hwnd*)(hwnds->data + lnI);
 
 				// See if it's a match
 				if (h->_hwndParent == tnHwndParent && h->markup)
@@ -4263,19 +2434,19 @@
 			return(NULL);
 	}
 
-	SHwnd* iFindOnlyHwnd(SBuilder* hwnds, u32 tnHwndParent, s32 tnX, s32 tnY, s32 tnWidth, s32 tnHeight)
+	SDsf_hwnd* iDsf_findOnlyHwnd(SBuilder* hwnds, u32 tnHwndParent, s32 tnX, s32 tnY, s32 tnWidth, s32 tnHeight)
 	{
 		u32		lnI;
-		SHwnd*	h;
+		SDsf_hwnd*	h;
 
 
 		//////////
 		// See if the existing item exists
 		//////
-			for (lnI = 0; lnI < hwnds->populatedLength; lnI += sizeof(SHwnd))
+			for (lnI = 0; lnI < hwnds->populatedLength; lnI += sizeof(SDsf_hwnd))
 			{
 				// Grab this pointer
-				h = (SHwnd*)(hwnds->data + lnI);
+				h = (SDsf_hwnd*)(hwnds->data + lnI);
 
 				// See if it's a match
 				if (	h->_hwndParent == tnHwndParent
@@ -4292,26 +2463,26 @@
 			return(NULL);
 	}
 
-	SHwnd* iFindOrCreateHwnd(SBuilder* hwnds, u32 tnHwndParent, s32 tnX, s32 tnY, s32 tnWidth, s32 tnHeight, u32 tlMarkup)
+	SDsf_hwnd* iDsf_findHwnd_orCreate(SBuilder* hwnds, u32 tnHwndParent, s32 tnX, s32 tnY, s32 tnWidth, s32 tnHeight, u32 tlMarkup)
 	{
-		SHwnd*	h;
+		SDsf_hwnd*	h;
 
 
 		//////////
 		// See if it already exists
 		//////
-			h = iFindOnlyHwnd(hwnds, tnHwndParent, tnX, tnY, tnWidth, tnHeight);
+			h = iDsf_findOnlyHwnd(hwnds, tnHwndParent, tnX, tnY, tnWidth, tnHeight);
 			if (h)
 				return(h);
 
 		//////////
 		// Add it
 		//////
-			h = (SHwnd*)iBuilder_allocateBytes(hwnds, sizeof(SHwnd));
+			h = (SDsf_hwnd*)iBuilder_allocateBytes(hwnds, sizeof(SDsf_hwnd));
 			if (h)
 			{
 				// Initialize it
-				memset(h, 0, sizeof(SHwnd));
+				memset(h, 0, sizeof(SDsf_hwnd));
 
 				// Populate it
 				h->_hwndParent			= tnHwndParent;
@@ -4338,7 +2509,7 @@
 				h->bh.bfSize			= h->bh.bfOffBits + h->bi.biSizeImage;
 
 				// Create the window
-				h->_hwnd				= iCreateWindow(h);
+				h->_hwnd				= iDsf_createWindow(h);
 			}
 			// Return our pointer
 			return(h);
@@ -4349,190 +2520,17 @@
 
 //////////
 //
-// Called to create a window of the indicated size, and setup the bitmap and DibSection bd bits.
-//
-//////
-	u32 iCreateWindow(SHwnd* h)
-	{
-		ATOM			atom;
-		WNDCLASSEXA		classa;
-		RECT			lrc;
-
-
-		//////////
-		// Register the class if need be
-		//////
-			if (!GetClassInfoExA(ghInstance, cgcPreviewWindowClass, &classa))
-			{
-				// Initialize
-				memset(&classa, 0, sizeof(classa));
-
-				// Populate
-				classa.cbSize				= sizeof(WNDCLASSEXA);
-				classa.hInstance			= ghInstance;
-				classa.style				= CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
-				classa.lpszClassName		= cgcPreviewWindowClass;
-				classa.lpfnWndProc			= (WNDPROC)GetWindowLong(h->hwndParent, GWL_WNDPROC);
-
-				// Register
-				atom = RegisterClassExA(&classa);
-				if (!atom)
-					return(0);		// Failure
-			}
-		
-
-
-		//////////
-		// Create the window
-		//////
-			h->hwnd = CreateWindowA(cgcPreviewWindowClass, cgcPreviewWindowClass, WS_CHILD, h->x, h->y, h->w, h->h, h->hwndParent, NULL, ghInstance, (LPVOID)h);
-			if (h->_hwnd)
-			{
-				// Update the WNDPROC handler so we receive messages
-				h->oldWndProcAddress = (WNDPROC)GetWindowLong(h->hwnd, GWL_WNDPROC);
-				SetWindowLong(h->hwnd, GWL_WNDPROC, (long)&iWindowProcCallback);
-
-				// Add a timer for markup windows (there should only be one)
-				if (h->markup && gnTimer == 0)
-					gnTimer = SetTimer(h->hwnd, (u32)h, 33, NULL);		// Create a timer to read the mouse 30 times per second
-
-				// Create a DIB Section for accessing this window's bits
-				SetRect(&h->rc, h->x, h->y, (h->x + h->w), (h->y + h->h));
-				h->hdc	= CreateCompatibleDC(GetDC(h->hwnd));
-				h->hbmp	= CreateDIBSection(h->hdc, (BITMAPINFO*)&h->bi, DIB_RGB_COLORS, (void**)&h->bd, NULL, 0);
-				SelectObject(h->hdc, h->hbmp);
-
-				// Create a second DIB Section for drawing real-time mouse events
-				h->hdc2		= CreateCompatibleDC(GetDC(h->hwnd));
-				h->hbmp2	= CreateDIBSection(h->hdc2, (BITMAPINFO*)&h->bi, DIB_RGB_COLORS, (void**)&h->bd2, NULL, 0);
-				SelectObject(h->hdc2, h->hbmp2);
-
-				// Create a gray brush
-				h->backDarkGrayBrush = CreateSolidBrush(RGB(background.red, background.grn, background.blu));
-
-				// Create a font for rendering the X,Y coordinate in the lower-right
-				s32 lnHeight = -MulDiv(8, GetDeviceCaps(GetDC(GetDesktopWindow()), LOGPIXELSY), 72);
-				h->fontXY = CreateFontA(lnHeight, 0, 0, 0, FW_NORMAL, 0, 0, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, NONANTIALIASED_QUALITY, FF_DONTCARE, "Tahoma");
-
-				// Make it initially gray
-				SetRect(&lrc, 0, 0, h->w, h->h);
-				FillRect(h->hdc, &lrc, h->backDarkGrayBrush);
-				InvalidateRect(h->hwnd, NULL, FALSE);
-
-				// Make it visible
-				ShowWindow(h->hwnd, SW_SHOW);
-
-			} else {
-				int error = GetLastError();
-				_asm int 3;
-			}
-
-			// Indicate our status
-			return(h->_hwnd);
-	}
-
-
-
-
-//////////
-//
-// Called to create the control window for contextual things related to the selected control.
-//
-//////
-	u32 iCreateControlWindow(SHwnd* h, u32 tnX, u32 tnY, u32 tnW, u32 tnH)
-	{
-		ATOM			atom;
-		WNDCLASSEXA		classa;
-		RECT			lrc;
-
-
-		//////////
-		// Register the class if need be
-		//////
-			if (!GetClassInfoExA(ghInstance, cgcControlWindowClass, &classa))
-			{
-				// Initialize
-				memset(&classa, 0, sizeof(classa));
-
-				// Populate
-				classa.cbSize				= sizeof(WNDCLASSEXA);
-				classa.hInstance			= ghInstance;
-				classa.style				= CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
-				classa.lpszClassName		= cgcControlWindowClass;
-				classa.lpfnWndProc			= (WNDPROC)GetWindowLong(h->hwndParent, GWL_WNDPROC);
-
-				// Register
-				atom = RegisterClassExA(&classa);
-				if (!atom)
-					return(0);		// Failure
-			}
-		
-
-
-		//////////
-		// Create the window
-		//////
-			// Bitmap info
-			h->biControl.biSize				= sizeof(h->biControl);
-			h->biControl.biWidth			= tnW;
-			h->biControl.biHeight			= tnH;
-			h->biControl.biPlanes			= 1;
-			h->biControl.biBitCount			= 24;
-			h->biControl.biXPelsPerMeter	= 3270;
-			h->biControl.biYPelsPerMeter	= 3270;
-			h->biControl.biSizeImage		= h->rowWidth * tnH;
-
-			// Bitmap header
-			h->bhControl.bfType				= 'MB';
-			h->bhControl.bfOffBits			= sizeof(h->bhControl) + sizeof(h->biControl);
-			h->bhControl.bfSize				= h->bhControl.bfOffBits + h->biControl.biSizeImage;
-
-			// Window
-			h->hwndControl = CreateWindowA(cgcControlWindowClass, cgcControlWindowClass, WS_CHILD, tnX, tnY, tnW, tnH, h->hwndParent, NULL, ghInstance, (LPVOID)h);
-			if (h->_hwndControl)
-			{
-				// Update the WNDPROC handler so we receive messages
-				SetWindowLong(h->hwndControl, GWL_WNDPROC, (long)&iControlWindowProcCallback);
-
-				// Create a DIB Section for accessing this window's bits
-				SetRect(&h->rcControl, tnX, tnY, (tnX + tnY), (tnY + tnH));
-				h->hdcControl	= CreateCompatibleDC(GetDC(h->hwndControl));
-				h->hbmpControl	= CreateDIBSection(h->hdcControl, (BITMAPINFO*)&h->biControl, DIB_RGB_COLORS, (void**)&h->bdControl, NULL, 0);
-				SelectObject(h->hdcControl, h->hbmpControl);
-
-				// Make it initially white
-				SetRect(&lrc, 0, 0, tnW, tnH);
-				FillRect(h->hdcControl, &lrc, (HBRUSH)GetStockObject(WHITE_BRUSH));
-				InvalidateRect(h->hwndControl, NULL, FALSE);
-
-				// Make it visible
-				ShowWindow(h->hwndControl, SW_SHOW);
-
-			} else {
-				int error = GetLastError();
-				_asm int 3;
-			}
-
-			// Indicate our status
-			return(h->_hwndControl);
-	}
-
-
-
-
-//////////
-//
 // Called to compute the midpoint, slope, and perpendicular slope of a line
 //
 //////
-	void iComputeLine(SLineF64* line)
+	void iDsf_computeLine(SDsf_line_f64* line)
 	{
 		// Midpoint = (x2-x1)/2, (y2-y1)/2
 		line->mid.x			= (line->p1.x + line->p2.x) / 2.0f;
 		line->mid.y			= (line->p1.y + line->p2.y) / 2.0f;
 		line->delta.x		= line->p2.x - line->p1.x;
 		line->delta.y		= line->p2.y - line->p1.y;
-		line->theta			= iAdjustTheta(atan2(line->delta.y, line->delta.x));
+		line->theta			= iDsf_adjustTheta(atan2(line->delta.y, line->delta.x));
 		line->length		= sqrt(line->delta.x*line->delta.x + line->delta.y*line->delta.y);
 
 		// Slope = rise over run
@@ -4551,11 +2549,11 @@
 
 		// Compute the quadrants if need be
 		// Quads 1..4
-		line->p1_quad	= iComputeQuad(&line->p1);
-		line->p2_quad	= iComputeQuad(&line->p2);
+		line->p1_quad	= iDsf_compute_quad(&line->p1);
+		line->p2_quad	= iDsf_compute_quad(&line->p2);
 	}
 
-	void iComputeLineFromTwoPoints(SLineF64* line, SXYF64* p1, SXYF64* p2)
+	void iDsf_computeLine_fromTwoPoints(SDsf_line_f64* line, SXy_f64* p1, SXy_f64* p2)
 	{
 		// p1
 		line->p1.x	= p1->x;
@@ -4566,7 +2564,7 @@
 		line->p2.y	= p2->y;
 
 		// Compute
-		iComputeLine(line);
+		iDsf_computeLine(line);
 	}
 
 
@@ -4581,17 +2579,17 @@
 // are forcibly constrained to that distance.
 //
 //////
-	void iConstrainQuadAroundLine(SLineF64* lineRef, SXYF64* p1, SXYF64* p2, SXYF64* p3, SXYF64* p4, f64 tfp1Max, f64 tfp2Max, f64 tfp3Max, f64 tfp4Max, bool tlForceSize)
+	void iDsf_constrain_quadAroundLine(SDsf_line_f64* lineRef, SXy_f64* p1, SXy_f64* p2, SXy_f64* p3, SXy_f64* p4, f64 tfp1Max, f64 tfp2Max, f64 tfp3Max, f64 tfp4Max, bool tlForceSize)
 	{
-		iConstrainLineLength(&lineRef->p1, p1, tfp1Max, tlForceSize);
-		iConstrainLineLength(&lineRef->p2, p2, tfp2Max, tlForceSize);
-		iConstrainLineLength(&lineRef->p2, p3, tfp3Max, tlForceSize);
-		iConstrainLineLength(&lineRef->p1, p4, tfp4Max, tlForceSize);
+		iDsf_constrain_lineLength(&lineRef->p1, p1, tfp1Max, tlForceSize);
+		iDsf_constrain_lineLength(&lineRef->p2, p2, tfp2Max, tlForceSize);
+		iDsf_constrain_lineLength(&lineRef->p2, p3, tfp3Max, tlForceSize);
+		iDsf_constrain_lineLength(&lineRef->p1, p4, tfp4Max, tlForceSize);
 	}
 
-	void iConstrainLineLength(SXYF64* po, SXYF64* pToConstrain, f64 tfMaxLength, bool tlForceToLength)
+	void iDsf_constrain_lineLength(SXy_f64* po, SXy_f64* pToConstrain, f64 tfMaxLength, bool tlForceToLength)
 	{
-		SLineF64	line;
+		SDsf_line_f64	line;
 
 
 		//////////
@@ -4601,7 +2599,7 @@
 			line.p1.y = po->y;
 			line.p2.x = pToConstrain->x;
 			line.p2.y = pToConstrain->y;
-			iComputeLine(&line);
+			iDsf_computeLine(&line);
 			if (tlForceToLength || line.length > tfMaxLength)
 			{
 				// Force the point to that length's location
@@ -4618,7 +2616,7 @@
 // Called to adjust theta into the range 0..2pi
 //
 //////
-	f64 iAdjustTheta(f64 tfTheta)
+	f64 iDsf_adjustTheta(f64 tfTheta)
 	{
 		// Validate theta is positive
 		while (tfTheta < 0.0f)
@@ -4639,7 +2637,7 @@
 // Returns the quadrant for the indicated point
 //
 //////
-	s32 iComputeQuad(SXYF64* p)
+	s32 iDsf_compute_quad(SXy_f64* p)
 	{
 		if (p->x >= 0.0)
 		{
@@ -4663,11 +2661,11 @@
 // needing to be processed will be processed.
 //
 //////
-	void iSelectRange(SInstance* p, SHwnd* h, SChars* c, SXYF64* ul, SXYF64* lr)
+	void iDsf_select_range(SDsf* p, SDsf_hwnd* h, SDsf_chars* c, SXy_f64* ul, SXy_f64* lr)
 	{
 		u32			lnI;
 		bool		llL, llO, llR, llSkipToNextStroke;
-		SXYF64		pl, po, pr;
+		SXy_f64		pl, po, pr;
 		SSpline*	spline;
 		SSpline*	splineStrokeStart;
 
@@ -4695,12 +2693,12 @@
 				if (!llSkipToNextStroke)
 				{
 					// Compute the three points
-					iSplineCompute(spline, &pl, &po, &pr);
+					iDsf_spline_compute(spline, &pl, &po, &pr);
 
 					// If any of the points are in range, then we operate appropriately
-					llL		= iIsPointInRange(&pl, ul, lr);
-					llO		= iIsPointInRange(&po, ul, lr);
-					llR		= iIsPointInRange(&pr, ul, lr);
+					llL		= iDsf_isPointInRange(&pl, ul, lr);
+					llO		= iDsf_isPointInRange(&po, ul, lr);
+					llR		= iDsf_isPointInRange(&pr, ul, lr);
 					if (llL || llO || llR)
 					{
 						// At least one of these points is in line
@@ -4708,30 +2706,30 @@
 						{
 							case _MODE_POINT:
 								// We are selecting any matching points only
-								if (llL)		iSelectPoint(p, spline, &spline->tlLSelected);
-								if (llO)		iSelectPoint(p, spline, &spline->tlOSelected);
-								if (llR)		iSelectPoint(p, spline, &spline->tlRSelected);
+								if (llL)		iDsf_select_point(p, spline, &spline->tlLSelected);
+								if (llO)		iDsf_select_point(p, spline, &spline->tlOSelected);
+								if (llR)		iDsf_select_point(p, spline, &spline->tlRSelected);
 								break;
 
 							case _MODE_SPLINE:
 								// We are selecting the entire spline
-								iSelectSpline(p, spline);
+								iDsf_select_spline(p, spline);
 								break;
 
 							case _MODE_STROKE:
 								// We are selecting the entire stroke
-								iSelectStroke(p, splineStrokeStart);
+								iDsf_select_stroke(p, splineStrokeStart);
 								llSkipToNextStroke = true;
 								break;
 
 							case _MODE_BEFORE:
 								// We are selecting everything up to and including this spline on the stroke
-								iSelectStrokeBefore(p, splineStrokeStart, spline);
+								iDsf_select_strokeBefore(p, splineStrokeStart, spline);
 								break;
 
 							case _MODE_AFTER:
 								// We are selecting everything from this spline and beyond on this stroke
-								iSelectStrokeAfter(p, spline);
+								iDsf_select_strokeAfter(p, spline);
 								llSkipToNextStroke = true;
 								break;
 
@@ -4746,12 +2744,12 @@
 		}
 	}
 
-	void iSelectPoint(SInstance* p, SSpline* spline, bool* tlSelected)
+	void iDsf_select_point(SDsf* p, SSpline* spline, bool* tlSelected)
 	{
 		if (p->disposition == _DISPOSITION_FLIP_LR || p->disposition == _DISPOSITION_FLIP_LM_RM)
 		{
 			// This is an entire spline operation
-			iSelectSpline(p, spline);
+			iDsf_select_spline(p, spline);
 			return;
 		}
 
@@ -4984,7 +2982,7 @@
 		}
 	}
 
-	void iSelectSpline(SInstance* p, SSpline* spline)
+	void iDsf_select_spline(SDsf* p, SSpline* spline)
 	{
 		switch (p->disposition)
 		{
@@ -5065,25 +3063,25 @@
 		}
 	}
 
-	void iSelectStroke(SInstance* p, SSpline* splineStrokeStart)
+	void iDsf_select_stroke(SDsf* p, SSpline* splineStrokeStart)
 	{
 		// Incomplete feature
 		_asm int 3;
 	}
 
-	void iSelectStrokeBefore(SInstance* p, SSpline* splineStrokeStart, SSpline* splineStrokeEnd)
+	void iDsf_select_strokeBefore(SDsf* p, SSpline* splineStrokeStart, SSpline* splineStrokeEnd)
 	{
 		// Incomplete feature
 		_asm int 3;
 	}
 
-	void iSelectStrokeAfter(SInstance* p, SSpline* splineStrokeStart)
+	void iDsf_select_strokeAfter(SDsf* p, SSpline* splineStrokeStart)
 	{
 		// Incomplete feature
 		_asm int 3;
 	}
 
-	void iSplineCompute(SSpline* spline, SXYF64* pl, SXYF64* po, SXYF64* pr)
+	void iDsf_spline_compute(SSpline* spline, SXy_f64* pl, SXy_f64* po, SXy_f64* pr)
 	{
 		//////////
 		// Origin is a simple copy
@@ -5105,7 +3103,7 @@
 	}
 
 	// Test the point against the ul..lr range
-	bool iIsPointInRange(SXYF64* pt, SXYF64* ul, SXYF64* lr)
+	bool iDsf_isPointInRange(SXy_f64* pt, SXy_f64* ul, SXy_f64* lr)
 	{
 		if (pt->y >= ul->y && pt->y <= lr->y)
 		{
@@ -5127,12 +3125,12 @@
 // Read the mouse position asynchronously
 //
 //////
-	void iReadMousePosition(SInstance* p, SHwnd* h)
+	void iDsf_readMousePosition(SDsf* p, SDsf_hwnd* h)
 	{
 		u32			lnI, lnJ;
 		bool		llLastMouseLeft, llLastMouseRight, llLastCtrl, llLastShift, llLastAlt, llMoved, llWasOnTheReservation, llOnTheReservation, llSomethingClicked;
 		HWND		hwndFocus;
-		SChars*		c;
+		SDsf_chars*		c;
 		SSpline*	spline;
 		POINT		pt;
 
@@ -5210,10 +3208,10 @@
 					if (!llLastMouseLeft && glMouseLeft)
 					{
 						// Yes, set everything to being not processed
-						for (lnI = 0; lnI < p->chars->populatedLength; lnI += sizeof(SChars))
+						for (lnI = 0; lnI < p->chars->populatedLength; lnI += sizeof(SDsf_chars))
 						{
 							// Grab this pointer
-							c = (SChars*)(p->chars->data + lnI);
+							c = (SDsf_chars*)(p->chars->data + lnI);
 
 							// Do every spline within each character
 							for (lnJ = 0; lnJ < c->splines->populatedLength; lnJ += sizeof(SSpline))
@@ -5239,126 +3237,4 @@
 				//////
 					PostMessage(h->hwndParent, WM_REDRAW_WINDOW, (u32)p, h->_hwnd);
 			}
-	}
-
-
-
-
-//////////
-//
-// Callback for the control window
-//
-//////
-	LRESULT CALLBACK iControlWindowProcCallback(HWND hwnd, UINT m, WPARAM w, LPARAM l)
-	{
-		u32				lnI;
-		PAINTSTRUCT		ps;
-		HDC				lhdc;
-		union {
-			HWND		thisHwnd;
-			u32			_thisHwnd;
-		};
-		union {
-			HWND		hwndParent;
-			u32			_hwndParent;
-		};
-		SHwnd*			h;
-		SInstance*		s;
-
-
-		// See if we know this hwnd
-		thisHwnd	= hwnd;
-		hwndParent	= GetParent(hwnd);
-		for (lnI = 0; lnI < instances->populatedLength; lnI += sizeof(SInstance))
-		{
-			// Grab the pointer
-			s = (SInstance*)(instances->data + lnI);
-
-			// See if we're found on this instance
-			h = iFindOnlyHwndByHwndControl(s->hwnds, _hwndParent, _thisHwnd);
-			if (h)
-			{
-				// It was one of our windows
-				switch (m)
-				{
-					// Redraw the window
-					case WM_PAINT:
-						// Paint it
-						lhdc = BeginPaint(hwnd, &ps);
-						BitBlt(lhdc, 0, 0, h->w, h->h, h->hdcControl, 0, 0, SRCCOPY);
-						EndPaint(hwnd, &ps);
-						// All done
-						// Indicate to Windows that we processed it
-						return 0;
-				}
-				// Call Windows' default procedure handler
-				return(DefWindowProc(hwnd, m, w, l));
-			}
-		}
-		// Call Windows' default procedure handler
-		return(DefWindowProc(hwnd, m, w, l));
-
-	}
-
-
-
-
-//////////
-//
-// Callback for the render and final windows
-//
-//////
-	LRESULT CALLBACK iWindowProcCallback(HWND hwnd, UINT m, WPARAM w, LPARAM l)
-	{
-		u32				lnI;
-		PAINTSTRUCT		ps;
-		HDC				lhdc;
-		union {
-			HWND		thisHwnd;
-			u32			_thisHwnd;
-		};
-		union {
-			HWND		hwndParent;
-			u32			_hwndParent;
-		};
-		SHwnd*			h;
-		SInstance*		s;
-
-
-		// See if we know this hwnd
-		thisHwnd	= hwnd;
-		hwndParent	= GetParent(hwnd);
-		for (lnI = 0; lnI < instances->populatedLength; lnI += sizeof(SInstance))
-		{
-			// Grab the pointer
-			s = (SInstance*)(instances->data + lnI);
-
-			// See if we're found on this instance
-			h = iFindOnlyHwndByHwnd(s->hwnds, _hwndParent, _thisHwnd);
-			if (h)
-			{
-				// It was one of our windows
-				switch (m)
-				{
-					// Get the mouse and keyboard state
-					case WM_TIMER:
-						iReadMousePosition(s, h);
-						break;
-
-					// Redraw the window
-					case WM_PAINT:
-						// Paint it
-						lhdc = BeginPaint(hwnd, &ps);
-						BitBlt(lhdc, 0, 0, h->w, h->h, h->hdc, 0, 0, SRCCOPY);
-						EndPaint(hwnd, &ps);
-						// All done
-						// Indicate to Windows that we processed it
-						return 0;
-				}
-				// Call Windows' default procedure handler
-				return(DefWindowProc(hwnd, m, w, l));
-			}
-		}
-		// Call Windows' default procedure handler
-		return(DefWindowProc(hwnd, m, w, l));
 	}

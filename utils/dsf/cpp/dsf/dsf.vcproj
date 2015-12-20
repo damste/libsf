@@ -293,6 +293,10 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath="..\..\..\common\cpp\common_types.h"
+				>
+			</File>
+			<File
 				RelativePath=".\dsf_dll.h"
 				>
 			</File>

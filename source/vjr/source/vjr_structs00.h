@@ -78,37 +78,3 @@
 // talents, your gifts, your praise, unto Him.  In Jesus' name I pray.  Amen.
 //
 //
-
-
-
-
-// Note:  This structure was moved here because of a lin2win dependency when compiling for Linux
-struct SBgra
-{
-	union {
-		u32		color;
-		struct {
-			union {
-				u8	blu;
-				u8	blu_u8;
-				s8	blu_s8;
-			};
-			union {
-				u8	grn;
-				u8	grn_u8;
-				s8	grn_s8;
-			};
-			union {
-				u8	red;
-				u8	red_u8;
-				s8	red_s8;
-			};
-			union {
-				u8	alp;
-				u8	alp_u8;
-				s8	alp_s8;
-			};
-        };
-    };
-};
-
