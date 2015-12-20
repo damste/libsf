@@ -384,6 +384,7 @@ struct SAllDatetime
 	f64			fVal64;
 };
 
+#define _SVARIABLE_DEFINED 1
 struct SVariable
 {
 	SLL			ll;
@@ -533,6 +534,7 @@ struct SLine
 };
 
 // Structure of parsed components on a line, tokens by another name
+#define _SCOMP_DEFINED
 struct SComp
 {
 	SLL				ll;												// 2-way link list

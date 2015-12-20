@@ -5527,7 +5527,7 @@ debug_break;
 
 						case _VAR_TYPE_BI:
 						case _VAR_TYPE_BFP:
-							tnBitsFor_bfp_bi					= max(tnBitsFor_bfp_bi, 128);
+							tnBitsFor_bfp_bi		= max(tnBitsFor_bfp_bi, 128);
 							varNew->value.data_big	= m_apm_init();
 							varNew->value.length	= tnBitsFor_bfp_bi;
 
