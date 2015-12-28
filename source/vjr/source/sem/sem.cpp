@@ -343,10 +343,10 @@
 			start				= NULL;
 			end					= NULL;
 			llOtherCharacters	= false;
-			for (lnI = 0, lnLast = 0; lnI < datum->length; )
+			for (lnI = 0, lnLast = 0; lnI <= datum->length; )
 			{
 				// Are we on a CR/LF combination?
-				for (lnJ = 0; (datum->data_u8[lnI] == 13 || datum->data_u8[lnI] == 10) && lnJ < 2 && lnI < datum->length; lnJ++)
+				for (lnJ = 0; lnI < datum->length && (datum->data_u8[lnI] == 13 || datum->data_u8[lnI] == 10) && lnJ < 2; lnJ++)
 					++lnI;	// Increase also past this CR/LF character
 
 				// If we found a CR/LF combination
@@ -369,6 +369,10 @@
 					llOtherCharacters	= false;
 					lnLast				= lnI;
 
+					// If we're done, then we're done
+					if (lnI == datum->length)
+						++lnI;
+
 				} else {
 					llOtherCharacters = true;
 					++lnI;
@@ -388,15 +392,9 @@
 		//////
 			if (isSourceCode)
 			{
-				// Iterate from start to end and parse each source code line
-				while (start && (SLine*)start->ll.prev != end)
-				{
-					// Parse it
+				// Parse from start to end
+				for ( ; start && start->ll.prevLine != end; start = start->ll.nextLine)
 					iEngine_parse_sourceCode_line(start);
-
-					// Move to next line
-					start = (SLine*)start->ll.next;
-				}
 			}
 
 
@@ -883,12 +881,12 @@ debug_break;
 					line = sem->line_cursor;
 
 				} else {
-					line = (SLine*)iLl_appendNewNodeAtEnd((SLL**)&sem->lastLine, sizeof(SLine));
+					line = (SLine*)iLl_appendNew__llAtEnd((SLL**)&sem->lastLine, sizeof(SLine));
 				}
 
 			} else {
 				// This is the first line, add it and set the last line to the same
-				line = (SLine*)iLl_appendNewNodeAtEnd((SLL**)&sem->firstLine, sizeof(SLine));
+				line = (SLine*)iLl_appendNew__llAtEnd((SLL**)&sem->firstLine, sizeof(SLine));
 				if (line)
 				{
 					// Update defaults
@@ -1115,7 +1113,7 @@ debug_break;
 			if (sem->firstLine != sem->lastLine)
 			{
 				// Delete the line
-				lineNewCursorLine = (SLine*)iLl_deleteNode((SLL*)sem->line_cursor, true);
+				lineNewCursorLine = (SLine*)iLl_delete__ll((SLL*)sem->line_cursor, true);
 
 			} else {
 				// Set the line to this one line
@@ -1934,8 +1932,8 @@ debug_break;
 				compRunner = comp;
 				do {
 					// Move to next position
-					if (lnMateDirection == -1)		compRunner = (SComp*)compRunner->ll.prev;
-					else							compRunner = (SComp*)compRunner->ll.next;
+					if (lnMateDirection == -1)		compRunner = compRunner->ll.prevComp;
+					else							compRunner = compRunner->ll.nextComp;
 
 					// Is this us?
 					if (compRunner)
@@ -2166,7 +2164,7 @@ debug_break;
 											if (iComps_isParensBracketsBraces(comp))
 											{
 												// Mark all commas between as highlighted
-												comp2	= (SComp*)compPBBLeft->ll.next;
+												comp2	= compPBBLeft->ll.nextComp;
 												lnLevel	= 0;
 												while (comp2 != compPBBRight)
 												{
@@ -2189,7 +2187,7 @@ debug_break;
 													}
 
 													// Move to next component
-													comp2 = (SComp*)comp2->ll.next;
+													comp2 = comp2->ll.nextComp;
 												}
 
 											}

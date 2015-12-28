@@ -701,7 +701,7 @@ extern "C"
 					if (!dfunc)
 					{
 						// Create a new entry
-						dfunc = (SDllFunc*)iLl_appendNewNodeAtEnd((SLL**)&gsRootDllFunc, sizeof(SDllFunc));
+						dfunc = (SDllFunc*)iLl_appendNew__llAtEnd((SLL**)&gsRootDllFunc, sizeof(SDllFunc));
 						if (!dfunc)
 						{
 							// Out of memory
@@ -917,7 +917,7 @@ extern "C"
 			if (!dlib)
 			{
 				// Add a new entry
-				dlib = (SDllLib*)iLl_appendNewNodeAtEnd((SLL**)&gsRootDllLib, sizeof(SDllLib));
+				dlib = (SDllLib*)iLl_appendNew__llAtEnd((SLL**)&gsRootDllLib, sizeof(SDllLib));
 				if (!dlib)
 				{
 					FreeLibrary(dllHandle);

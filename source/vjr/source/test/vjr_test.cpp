@@ -50,6 +50,7 @@
 
 
 // Forward declarations
+void iVjr_test_parser(void);
 void iVjr_test_nodes(void);
 
 
@@ -62,6 +63,9 @@ void iVjr_test_nodes(void);
 //////
 	void iVjr_test(void)
 	{
+		// Parser -- Dec.21.2015 RCH -- In progress
+		iVjr_test_parser();
+
 		// Nodes -- Dec.03.2015 RCH -- Appears to be working.  Test code is commented out, but still there
 		iVjr_test_nodes();
 	}
@@ -71,9 +75,43 @@ void iVjr_test_nodes(void);
 
 ///////////
 //
+// Tests a parsing concept
+//
+//////
+	char sample[] = "x = a + b";
+
+	void iVjr_test_parser(void)
+	{
+		SDatum		prog;
+		SEM*		sem;
+		SBitmap*	bmp;
+
+		// Populate the program
+		prog.data_s8	= sample;
+		prog.length		= sizeof(sample) - 1;
+
+		// Parse it into tokens
+		sem = iSEM_allocate(true);
+		iSEM_load_fromMemory(NULL, sem, &prog, true, false);
+
+		// Nodify it
+		iComps_chainLinkNodes(sem->firstLine->compilerInfo->firstComp);
+
+		// Render for display
+		bmp = iNode_renderBitmap(sem->firstLine->compilerInfo->firstComp->node);
+		iBmp_saveToDisk(bmp, "c:\\temp\\chain_link.bmp");
+		iBmp_delete(&bmp, true, true);
+		// Parse using our algorithm
+	}
+
+
+
+
+///////////
+//
 // Tests the nodes.h/cpp functionality.  It creates a node structure with, depending on
 // source code settings, some nodes extruded out from a center direction, and then renders
-// the 
+// the resulting node tree into a visible bitmap.
 //
 //////
 	void iVjr_test_nodes(void)

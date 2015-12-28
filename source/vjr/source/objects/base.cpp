@@ -362,7 +362,7 @@
 							if (objNew)
 							{
 								// Append it to the chain
-								iLl_appendExistingNodeAtEnd((SLL**)&obj, (SLL*)objNew);
+								iLl_appendExisting__llAtEnd((SLL**)&obj, (SLL*)objNew);
 
 							} else {
 								// Should never happen
@@ -2348,7 +2348,7 @@ debug_break;
 		// Make sure our environment is sane
 		logfunc(__FUNCTION__);
 		if (parent && obj)
-			iLl_appendExistingNodeAtEnd((SLL**)&parent->firstChild, (SLL*)obj);
+			iLl_appendExisting__llAtEnd((SLL**)&parent->firstChild, (SLL*)obj);
 	}
 
 

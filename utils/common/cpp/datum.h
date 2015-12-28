@@ -165,6 +165,7 @@ struct SVariable;
 	void					iDatum_duplicate						(SDatum* datum, cu8* data, s32 dataLength);
 	void					iDatum_duplicate						(SDatum* datum, cs8* data, s32 dataLength);
 	void					iDatum_duplicate						(SDatum* datumDst, SDatum* datumSrc);
+	void					iDatum_duplicate_byRef					(SDatum* datumDst, SDatum* datumSrc);
 	void					iDatum_duplicate_fromComp				(SDatum* datum, SComp* comp);
 	void					iiDatum_duplicate_fromComp				(SDatum* datum, SComp* comp);
 	SDatum*					iDatum_populate_fromComp				(SDatum* datum, SComp* comp);

@@ -895,7 +895,7 @@ debug_break;
 					varNew = iVariable_copy(var, false);
 
 					// Append it
-					iLl_appendExistingNodeAtEnd((SLL**)&objSrc->firstProperty, (SLL*)varNew);
+					iLl_appendExisting__llAtEnd((SLL**)&objSrc->firstProperty, (SLL*)varNew);
 				}
 
 		}
@@ -3474,7 +3474,7 @@ debug_break;
 						(*funcRoot)->sem->isStale = true;
 
 					// Prepend the new function before the current one so it will be used when calling this code in the future
-					iLl_appendExistingNodeAtBeginning((SLL**)funcRoot, (SLL*)func);
+					iLl_appendExisting__llAtBeginning((SLL**)funcRoot, (SLL*)func);
 				}
 
 		}

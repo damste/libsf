@@ -216,6 +216,17 @@
 			iDatum_duplicate(datumDst, datumSrc->data_u8, datumSrc->length);
 	}
 
+	void iDatum_duplicate_byRef(SDatum* datumDst, SDatum* datumSrc)
+	{
+		// Make sure our environment is sane
+		if (datumDst && datumSrc)
+		{
+			// Copy the content as a reference
+			datumDst->_data		= datumSrc->_data;
+			datumDst->length	= datumSrc->length;
+		}
+	}
+
 #ifdef _SCOMP_DEFINED
 	void iDatum_duplicate_fromComp(SDatum* datum, SComp* comp)
 	{

@@ -332,7 +332,10 @@ struct SExtraInfo;
 
 		// Data items for this callback
 		// Primary pointer
-		void*		ptr;
+		union {
+			void*	ptr;
+			SComp*	ptrComp;
+		};
 
 		union {
 			// Extra1

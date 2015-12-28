@@ -277,6 +277,9 @@
     <ClCompile Include="..\..\source\test\vjr_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\utils\common\cpp\fifo.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\utils\common\cpp\common_types.h">
@@ -424,6 +427,9 @@
       <Filter>compiler\rdc</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\utils\common\cpp\node.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\utils\common\cpp\fifo.h">
       <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>

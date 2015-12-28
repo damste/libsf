@@ -401,10 +401,14 @@ struct SGraceLine;
 
 		// Related info
 		SComp*			comp;											// The component this node relates to
+		SSubInstr*		opData;											// When used as for processing ops
 
 		// Extra/associated data
 		void*			extraData;										// General purpose data
-		SSubInstr*		opData;											// When used as for processing ops
+		union {
+			uptr		_extraData_deleteFunc;							// Function to call when deleting
+			void		(*extraData_deleteFunc)(SNode* node);
+		};
 
 		// For graphics rendering
 		SNodeRender		render;
@@ -426,10 +430,12 @@ struct SGraceLine;
 // Forward declarations (some of the functions below call themselves)
 //////
 	void					iNode_init									(void);
-	SNode*					iNode_create								(SNode** root, SNode* n_defaults[_NODE_COUNT]);
+	SNode*					iNode_create								(SNode** root, SComp* comp = NULL, SNode* n_defaults[_NODE_COUNT] = NULL);
 	SNode*					iNode_extrude								(SNode** root, s32 tnExtrudeDirection);
 	SNode*					iNode_bump									(SNode** root, s32 tnBump/*BumpDirection*/, s32 tnAnchor/*AnchorDirection*/);
-	SNode*					iNode_insert						(SNode** root, s32 tnDirection);
+	SNode*					iNode_insert								(SNode** root, s32 tnDirection);
+	void					iNode_delete								(SNode** root, bool tlDeleteSelf = true);
+	void					iNode_orphanize								(SNode** root);
 	void					iNode_deleteAll_politely					(SNode** root, SNode* nodeStopper, SNode* nodeStopper2, bool tlDeleteSelf, SNodeFlags* nodeFlags);
 
 	// Bitmap

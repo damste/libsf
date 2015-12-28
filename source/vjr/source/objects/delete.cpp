@@ -225,7 +225,7 @@
 					riderNext = (SObject*)rider->ll.next;
 
 					// Orphanize this rider
-					iLl_orphanizeNode((SLL*)rider);
+					iLl_orphanize__ll((SLL*)rider);
 
 					// Move to next rider
 					rider = riderNext;

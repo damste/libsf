@@ -508,6 +508,7 @@ struct SComp
 	SLL				ll;												// 2-way link list
 
 	// Information about the component
+	SNode*			node;											// The node this component relates to
 	SLine*			line;											// The line this component relates to
 	s32				iCode;											// Refer to _ICODE_* constants
 	u32				iCat;											// Refer to _ICAT_* constants, and use iCat() macro for accessing the lower portion without bit flags influencing its value

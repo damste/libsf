@@ -119,7 +119,7 @@ typedef SEM**		SEMpp;
 // Macros
 //////
 	// abc = newAlloc(SAbc, gsAbcRoot);
-	#define newAlloc(str, var)							(str*)iLl_appendNewNodeAtEnd((SLL**)&var, sizeof(str))
+	#define newAlloc(str, var)							(str*)iLl_appendNew__llAtEnd((SLL**)&var, sizeof(str))
 	#define between(value, lo, hi)						(value >= lo && value <= hi)
 
 

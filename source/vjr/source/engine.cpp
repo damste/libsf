@@ -119,22 +119,22 @@
 					// Returns
 					thisCode->live.returnsCount = _MAX_RETURNS_COUNT;
 					for (lnJ = 0; lnJ < (s32)_MAX_RETURNS_COUNT; lnJ++)
-						iLl_appendExistingNodeAtBeginning((SLL**)&thisCode->live.returns, (SLL*)iVariable_create(_VAR_TYPE_LOGICAL, NULL, true));
+						iLl_appendExisting__llAtBeginning((SLL**)&thisCode->live.returns, (SLL*)iVariable_create(_VAR_TYPE_LOGICAL, NULL, true));
 
 					// Parameters
 					thisCode->live.paramsCount = _MAX_PARAMS_COUNT;
 					for (lnJ = 0; lnJ < (s32)_MAX_PARAMS_COUNT; lnJ++)
-						iLl_appendExistingNodeAtBeginning((SLL**)&thisCode->live.params, (SLL*)iVariable_create(_VAR_TYPE_LOGICAL, NULL, true));
+						iLl_appendExisting__llAtBeginning((SLL**)&thisCode->live.params, (SLL*)iVariable_create(_VAR_TYPE_LOGICAL, NULL, true));
 
 					// Scoped
 					thisCode->live.scopedCount = _MAX_SCOPED_COUNT;
 					for (lnJ = 0; lnJ < (s32)_MAX_SCOPED_COUNT; lnJ++)
-						iLl_appendExistingNodeAtBeginning((SLL**)&thisCode->live.scoped, (SLL*)iVariable_create(_VAR_TYPE_LOGICAL, NULL, true));
+						iLl_appendExisting__llAtBeginning((SLL**)&thisCode->live.scoped, (SLL*)iVariable_create(_VAR_TYPE_LOGICAL, NULL, true));
 
 					// Locals
 					thisCode->live.localsCount = _MAX_LOCALS_COUNT;
 					for (lnJ = 0; lnJ < (s32)_MAX_LOCALS_COUNT; lnJ++)
-						iLl_appendExistingNodeAtBeginning((SLL**)&thisCode->live.locals, (SLL*)iVariable_create(_VAR_TYPE_LOGICAL, NULL, true));
+						iLl_appendExisting__llAtBeginning((SLL**)&thisCode->live.locals, (SLL*)iVariable_create(_VAR_TYPE_LOGICAL, NULL, true));
 				}
 
 
@@ -370,7 +370,7 @@
 								} else {
 									// We are creating a new variable
 									iDatum_duplicate(&var->name, comp->line->sourceCode->data_u8 + comp->start, comp->length);
-									iLl_appendExistingNodeAtBeginning((SLL**)&varGlobals, (SLL*)var);
+									iLl_appendExisting__llAtBeginning((SLL**)&varGlobals, (SLL*)var);
 								}
 							}
 
@@ -767,7 +767,7 @@
 									iVariable_delete(varSys2015, true);
 
 								// Append the function to the created chain
-								iLl_appendExistingNodeAtEnd((SLL**)&stats->el.firstFunc, (SLL*)func);
+								iLl_appendExisting__llAtEnd((SLL**)&stats->el.firstFunc, (SLL*)func);
 								++stats->functionCount;
 								break;
 
@@ -816,7 +816,7 @@
 										iVariable_delete(varSys2015, true);
 
 									// Append the adhoc to the function's adhoc chain
-									iLl_appendExistingNodeAtEnd((SLL**)&func->firstAdhoc, (SLL*)adhoc);
+									iLl_appendExisting__llAtEnd((SLL**)&func->firstAdhoc, (SLL*)adhoc);
 									++stats->adhocsCount;
 								}
 								break;
@@ -858,7 +858,7 @@
 										iVariable_delete(varSys2015, true);
 
 									// Append the adhoc to the function's adhoc chain
-									iLl_appendExistingNodeAtEnd((SLL**)&stats->el.firstClassObj, (SLL*)classobj);
+									iLl_appendExisting__llAtEnd((SLL**)&stats->el.firstClassObj, (SLL*)classobj);
 									++stats->classObjCount;
 
 									// It was handled
@@ -918,7 +918,7 @@
 												iVariable_delete(varSys2015, true);
 
 											// Append the function to the created chain
-											iLl_appendExistingNodeAtEnd((SLL**)&stats->el.firstFunc, (SLL*)func);
+											iLl_appendExisting__llAtEnd((SLL**)&stats->el.firstFunc, (SLL*)func);
 											++stats->functionCount;
 										}
 									}

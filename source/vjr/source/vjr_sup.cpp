@@ -343,7 +343,7 @@
 
 								// Right now, loToolbarCopy is an orphan object
 								// Give it a parent
-								if (!iLl_appendExistingNodeAtEnd((SLL**)&objParent, (SLL*)loToolbarCopy))
+								if (!iLl_appendExisting__llAtEnd((SLL**)&objParent, (SLL*)loToolbarCopy))
 									debug_break;	// Should never happen
 
 								// Locate the first icon in the toolbar
@@ -2611,7 +2611,7 @@
 					//////////
 					// We've entered into a CR/LF block, append a new line
 					//////
-						line = (SLine*)iLl_appendNewNodeAtEnd((SLL**)lastLine, sizeof(SLine));
+						line = (SLine*)iLl_appendNew__llAtEnd((SLL**)lastLine, sizeof(SLine));
 						if (!line)
 							return(-1);		// Unexpected failure
 

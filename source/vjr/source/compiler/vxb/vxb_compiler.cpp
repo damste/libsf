@@ -619,7 +619,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 		// Iterate through every component building the operations as we go
 		comp		= line->compilerInfo->firstComp;
 //		compLast	= comp;
-		nodeActive	= iNode_create(&compiler->first_nodeEngage, NULL);
+		nodeActive	= iNode_create(&compiler->first_nodeEngage, comp);
 		while (comp)
 		{
 			//////////
@@ -852,7 +852,31 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 
 //////////
 //
+// Appends a new comp to the end of the component chain
 //
+//////
+	SComp* iComps_new(SComp** compRoot, SComp* compHint, SComp* compNext, SComp* compPrev)
+	{
+		SComp* compNew;
+
+
+		// Append the new component
+		compNew = (SComp*)iLl_appendNew__ll((SLL**)compRoot, (SLL*)compHint, (SLL*)compNext, (SLL*)compPrev, iGetNextUid(), sizeof(SComp));
+
+		// If it was created properly, append a node
+		if (compNew)
+			iNode_create(&compNew->node, compNew);
+
+		// Indicate our result
+		return(compNew);
+	}
+
+
+
+
+//////////
+//
+// Deletes all of the comps in the chain
 //
 //////
 	void iComps_deleteAll(SComp** compRoot)
@@ -946,6 +970,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 	SComp* iComps_duplicate(SComp* comp)
 	{
 		SComp* compNew;
+		SComp* compRoot;
 
 
 		// Make sure our environment is sane
@@ -953,19 +978,10 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 		if (comp)
 		{
 			// Create a copy
-			compNew = (SComp*)malloc(sizeof(SComp));
+			compRoot	= NULL;
+			compNew		= iComps_new(&compRoot, NULL, NULL, NULL);
 			if (compNew)
-			{
-				// Copy everything as is
-				memcpy(compNew, comp, sizeof(*comp));
-
-				// Clear off some variable parts
-				compNew->ll.next		= NULL;
-				compNew->ll.prev		= NULL;
-				compNew->ll.uniqueId	= iGetNextUid();
-				compNew->firstCombined	= NULL;
-				compNew->bc				= NULL;
-			}
+				iComps_copyMembers(compNew, comp, true, false, 0);		// Copy the normal members
 		}
 
 		// Indicate our copy
@@ -1014,12 +1030,67 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 		if (comp->firstWhitespace)		iComps_delete(&comp->firstWhitespace);
 		if (comp->firstComment)			iComps_delete(&comp->firstComment);
 
+		// If it has a node, delete it
+		if (comp->node)
+			iNode_delete(&comp->node);			// Delete it
+
 		// Delete this node from the chain
 		compNext = comp->ll.nextComp;
-		iLl_deleteNode((SLL*)comp, tlDeleteSelf);
+		iLl_delete__ll((SLL*)comp, tlDeleteSelf);
 
 		// Indicate our new value
 		return(compNext);
+	}
+
+
+
+
+//////////
+//
+// Called to create nodes across the components, hooking each into each
+//
+//////
+	SNode* iComps_chainLinkNodes(SComp* compLeftMost)
+	{
+		SComp* comp;
+		SComp* compPrev;
+		SComp* compNext;
+
+
+		// Iterate through every comp
+		for (comp = compLeftMost; comp; comp = comp->ll.nextComp)
+		{
+			//////////
+			// Make sure it has a node
+			//////
+				if (!comp->node)
+					comp->node = iNode_create(&comp->node, comp);
+
+
+			//////////
+			// Hook it up
+			//////
+				if (comp->node)
+				{
+					// If there's a component before, hook up its node
+					if ((compPrev = comp->ll.prevComp) && compPrev->node && !compPrev->node->n[_NODE_E])
+					{
+						comp->node->n[_NODE_W]		= compPrev->node;			// New points west to previous node
+						compPrev->node->n[_NODE_E]	= comp->node;				// Previous points east to new
+					}
+
+					// If there's a component after, hook up its node
+					if ((compNext = comp->ll.nextComp) && compNext->node && !compNext->node->n[_NODE_W])
+					{
+						comp->node->n[_NODE_E]		= compNext->node;			// New points east to next node
+						compNext->node->n[_NODE_W]	= comp->node;				// Next node points points west to new
+					}
+				}
+
+		}
+
+		// Return self
+		return(compLeftMost->node);
 	}
 
 
@@ -1133,7 +1204,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 							//////////
 							// Allocate this entry
 							///////
-								comp = (SComp*)iLl_appendNewNode((SLL**)&line->compilerInfo->firstComp, (SLL*)compLast, NULL, (SLL*)compLast, iGetNextUid(), sizeof(SComp));
+								comp = iComps_new(&line->compilerInfo->firstComp, compLast, NULL, compLast);
 
 
 							//////////
@@ -1297,7 +1368,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 				return(false);
 
 			// Move to previous component
-			comp = (SComp*)comp->ll.prev;
+			comp = comp->ll.prevComp;
 		}
 		// If we get here, true
 		return(true);
@@ -1942,7 +2013,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 					{
 						// If we have a migrate buffer, and it's the first one, we need to duplicate it so it shows up in the migrate buffer properly
 						if (lnCount == 1 && compMigrateRefs)
-							iLl_appendExistingNodeAtEnd((SLL**)compMigrateRefs, (SLL*)iComps_duplicate(comp));
+							iLl_appendExisting__llAtEnd((SLL**)compMigrateRefs, (SLL*)iComps_duplicate(comp));
 
 						// Add in the length of the next component, plus any spaces between them
 						comp->length	+= (compNext->length + iiComps_get_charactersBetween(comp, compNext));
@@ -1953,11 +2024,11 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 						{
 							// Combine it if it's part of a chain
 							if (comp->line && comp->line->compilerInfo && comp->line->compilerInfo->firstComp)
-								iLl_migrateNodeToOther((SLL**)&comp->line->compilerInfo->firstComp, (SLL**)compMigrateRefs, (SLL*)compNext, true);
+								iLl_migrate__llToOther((SLL**)&comp->line->compilerInfo->firstComp, (SLL**)compMigrateRefs, (SLL*)compNext, true);
 
 						} else {
 							// Delete it
-							iLl_deleteNode((SLL*)compNext, true);
+							iLl_delete__ll((SLL*)compNext, true);
 						}
 
 					} else {
@@ -2477,7 +2548,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 								++lnCount;
 
 								// Migrate this one to the combined node (as it was technically merged above with the comp->length = line)
-								iLl_migrateNodeToOther((SLL**)&line->compilerInfo->firstComp, (SLL**)&comp->firstCombined, (SLL*)compNext, true);
+								iLl_migrate__llToOther((SLL**)&line->compilerInfo->firstComp, (SLL**)&comp->firstCombined, (SLL*)compNext, true);
 
 								// See if we're done
 								if (compNext == compSearcher)
@@ -2567,7 +2638,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 								comp->nbspCount += compNext->nbspCount;
 
 								// Migrate this one to the combined node (as it was technically merged above with the comp->length = line)
-								iLl_migrateNodeToOther((SLL**)&line->compilerInfo->firstComp, (SLL**)&comp->firstCombined, (SLL*)compNext, true);
+								iLl_migrate__llToOther((SLL**)&line->compilerInfo->firstComp, (SLL**)&comp->firstCombined, (SLL*)compNext, true);
 
 								// See if we're done
 								if (compNext == compSearcher)
@@ -2617,7 +2688,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 		if (line && line->compilerInfo && line->compilerInfo->firstComp)
 		{
 			// Grab the first component
-			comp = (SComp*)line->compilerInfo->firstComp;
+			comp = line->compilerInfo->firstComp;
 
 			// Iterate forward through all components
 			while (comp)
@@ -2665,7 +2736,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 		if (line && line->compilerInfo && line->compilerInfo->firstComp)
 		{
 			// Grab the first component
-			comp		= (SComp*)line->compilerInfo->firstComp;
+			comp		= line->compilerInfo->firstComp;
 			compLast	= (SComp**)&line->compilerInfo->firstComp;
 
 			// Iterate forward through all components
@@ -2708,6 +2779,11 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 // Note:  This function can be called at any time.
 //
 //////
+	SComp* iComps_migrate(SComp** compSource, SComp** compDestination, SComp* compToMove)
+	{
+		return((SComp*)iLl_migrate__llToOther((SLL**)compSource, (SLL**)compDestination, (SLL*)compToMove, true));
+	}
+
 	u32 iComps_remove_leadingWhitespaces(SLine* line)
 	{
 		u32		lnRemoved;
@@ -2723,7 +2799,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 			while (comp && comp->iCode == _ICODE_WHITESPACE)
 			{
 				// Migrate this whitespace from firstComp to firstWhitespace
-				comp = (SComp*)iLl_migrateNodeToOther((SLL**)&line->compilerInfo->firstComp, (SLL**)&line->compilerInfo->firstComp->firstWhitespace, (SLL*)comp, true);
+				comp = iComps_migrate(&line->compilerInfo->firstComp, &line->compilerInfo->firstComp->firstWhitespace, comp);
 				++lnRemoved;
 
 				// comp is now pointing to what would've been comp->ll.next
@@ -2769,7 +2845,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 							line->compilerInfo->firstComp = comp->ll.nextComp;
 
 						// Migrate this whitespace to the whitespace area
-						comp = (SComp*)iLl_migrateNodeToOther((SLL**)&line->compilerInfo->firstComp, (SLL**)&line->compilerInfo->firstComp->firstWhitespace, (SLL*)comp, true);
+						comp = iComps_migrate(&line->compilerInfo->firstComp, &line->compilerInfo->firstComp->firstWhitespace, comp);
 
 						// Increase our counter
 						++lnRemoved;
@@ -2823,7 +2899,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 							iComps_combineN(comp, 2, comp->iCode, comp->iCat, comp->color);
 
 						// Migrate the (now single) comment
-						comp = (SComp*)iLl_migrateNodeToOther((SLL**)&line->compilerInfo->firstComp, (SLL**)&line->compilerInfo->firstComp->firstComment, (SLL*)comp, true);
+						comp = iComps_migrate(&line->compilerInfo->firstComp, &line->compilerInfo->firstComp->firstComment, comp);
 
 						// Done
 						return;
@@ -2874,7 +2950,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 					}
 
 					// Migrate the (now single) comment
-					comp = (SComp*)iLl_migrateNodeToOther((SLL**)&line->compilerInfo->firstComp, (SLL**)&line->compilerInfo->firstComp->firstComment, (SLL*)comp, true);
+					comp = iComps_migrate(&line->compilerInfo->firstComp, &line->compilerInfo->firstComp->firstComment, comp);
 
 					// All done
 					break;
@@ -3503,7 +3579,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 //////
 	u32 iComps_count(SComp* comp)
 	{
-		return(iLl_countNodesToEnd((SLL*)comp));
+		return(iLl_count__llsToEnd((SLL*)comp));
 	}
 
 
@@ -4004,7 +4080,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 						// Search for something to the left of the exponent, like the "someTable.someField" in "k = someTable.someField ^ xyz"
 						// Search for something to the right of the exponent, like the "thisForm.someObject.someProperty" in "k = xyz ^ thisForm.someObject.someProperty"
 // TODO:  Refactor for left and right nodes
-// 						iiComps_xlatToSubInstr_findStartOfComponent	((SComp*)comp->ll.prev, si->op);
+// 						iiComps_xlatToSubInstr_findStartOfComponent	(comp->ll.prevComp, si->op);
 // 						iiComps_xlatToSubInstr_findFullComponent	(comp->ll.nextComp, si->op);
 
 						// When we get here, si has been populated if there are operations there.
@@ -4040,12 +4116,12 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 		//////
 			comp		= compRoot;
 			op->count	= 0;
-			while (comp && comp->ll.prev && iiComps_get_charactersBetween((SComp*)comp->ll.prev, comp) == 0)
+			while (comp && comp->ll.prev && iiComps_get_charactersBetween(comp->ll.prevComp, comp) == 0)
 			{
 				//////////
 				// Previous component
 				//////
-					compPrev = (SComp*)comp->ll.prev;
+					compPrev = comp->ll.prevComp;
 
 
 				//////////
@@ -4895,7 +4971,7 @@ debug_break;
 		if (cb && cb->ptr)
 		{
 			// Grab our pointers into recognizable thingamajigs
-			comp	= (SComp*)cb->ptr;
+			comp	= cb->ptrComp;
 			lacs	= (SAsciiCompSearcher*)cb->extra;
 
 			// Iterate through this item to see if any match
@@ -4984,6 +5060,7 @@ debug_break;
 	void iiComps_xlatToOthers_callback__insertCompByParamsCallback(SComp* compRef, SLine* line, u32 tniCode, u32 tnStart, s32 tnLength, bool tlInsertAfter)
 	{
 		SComp* compNew;
+		SComp* compRoot;
 
 
 // TODO:  untested code, breakpoint and examine
@@ -4991,12 +5068,13 @@ debug_break;
 		// Make sure our environment is sane
 		if (compRef && line && line->compilerInfo)
 		{
-			// Allocate a new pointer
-			compNew = (SComp*)iLl_appendNewNode((SLL**)&line->compilerInfo->firstComp, NULL, NULL, NULL, iGetNextUid(), sizeof(SComp));
+			// Create a copy
+			compRoot	= NULL;
+			compNew		= iComps_new(&compRoot, NULL, NULL, NULL);
 			if (compNew)
 			{
-				// Initialize it
-				memset(compNew, 0, sizeof(SComp));
+				// Copy the normal members
+				iComps_copyMembers(compNew, compRef, true, false, 0);
 
 				// Populate it
 				compNew->line		= line;
@@ -5042,7 +5120,7 @@ debug_break;
 			if (line)
 			{
 				// Delete the entry from line->comps
-				iLl_deleteNode((SLL*)comp, true);
+				iLl_delete__ll((SLL*)comp, true);
 
 			} else {
 				// Free the rogue entry
@@ -5062,6 +5140,7 @@ debug_break;
 	SComp* iiComps_xlatToOthers_callback__cloneCompsCallback(SComp* comp, SLine* line)
 	{
 		SComp* compNew;
+		SComp* compRoot;
 
 
 // TODO:  untested code, breakpoint and examine
@@ -5074,25 +5153,22 @@ debug_break;
 			if (line && line->compilerInfo)
 			{
 				// Add the new component to line->comps
-				compNew = (SComp*)iLl_appendNewNode((SLL**)&line->compilerInfo->firstComp, NULL, NULL, NULL, iGetNextUid(), sizeof(SComp));
+				compNew = iComps_new(&line->compilerInfo->firstComp, NULL, NULL, NULL);
 
 			} else {
 				// Just create a rogue one
-				compNew = (SComp*)malloc(sizeof(SComp));
+				compRoot = NULL;
+				compNew = iComps_new(&compRoot, NULL, NULL, NULL);
 			}
 
 			// Was it valid?
 			if (compNew)
 			{
-				// Initialize it
-				memset(compNew, 0, sizeof(SComp));
-
 				// Populate it
 				compNew->line		= line;
 				compNew->iCode		= comp->iCode;
 				compNew->start		= comp->start;
 				compNew->length		= comp->length;
-
 				// All done!
 			}
 		}
@@ -5245,7 +5321,7 @@ debug_break;
 		if (func)
 		{
 			// We create an empty variable slot, one which will receive the variable content/value at some later time during computation
-			varNew = (SVariable*)iLl_appendNewNodeAtEnd((SLL**)&func->scoped, sizeof(SVariable));		// Create a new variable
+			varNew = (SVariable*)iLl_appendNew__llAtEnd((SLL**)&func->scoped, sizeof(SVariable));		// Create a new variable
 		}
 
 		// Indicate our status
@@ -5330,7 +5406,7 @@ debug_break;
 			if (tlDeleteSelf)
 			{
 				// Orphanize this item
-				iLl_orphanizeNode((SLL*)func);
+				iLl_orphanize__ll((SLL*)func);
 
 				// Delete the name
 				iDatum_delete(&func->name, false);
@@ -9539,7 +9615,7 @@ debug_break;
 				if (tlDeleteSelf)
 				{
 					// Delete this node in the variable link list
-					iLl_deleteNode((SLL*)var, true);
+					iLl_delete__ll((SLL*)var, true);
 
 				} else {
 					// We just need to reset its values as this variable slot will persist
@@ -9577,19 +9653,19 @@ debug_break;
 			if (tlDeleteSelf)
 			{
 				// Delete all of them, and reset the first
-				cb.node	= (SLL*)var;
-				iLl_deleteNodeChainWithCallback(&cb);
+				cb.ll	= (SLL*)var;
+				iLl_delete__llChainWithCallback(&cb);
 				*root	= NULL;
 
 			} else {
 				// We are only freeing everything after this
 				// Delete the first one, but don't free it
-				var = (SVariable*)iLl_deleteNode((SLL*)var, false);
+				var = (SVariable*)iLl_delete__ll((SLL*)var, false);
 				if (var)
 				{
 					// Delete the rest in the chain
-					cb.node	= (SLL*)var;
-					iLl_deleteNodeChainWithCallback(&cb);
+					cb.ll	= (SLL*)var;
+					iLl_delete__llChainWithCallback(&cb);
 				}
 			}
 		}
@@ -9599,7 +9675,7 @@ debug_break;
 	void iVariable_politelyDelete_chain_callback(SLLCallback* cb)
 	{
 		// Delete this variable appropriately
-		iVariable_delete((SVariable*)cb->node, false);
+		iVariable_delete((SVariable*)cb->ll, false);
 	}
 
 
@@ -14101,7 +14177,7 @@ debug_break;
 		// Append the line to the chain
 		lineNew = iLine_createNew(tlAllocCompilerInfo);
 		if (lineNew)
-			iLl_insertNode((SLL*)lineNew, (SLL*)lineRef, tlAfter);
+			iLl_insert__ll((SLL*)lineNew, (SLL*)lineRef, tlAfter);
 
 		// Indicate the new line
 		return(lineNew);
@@ -14747,7 +14823,7 @@ debug_break;
 
 
 		// Create the new note
-		note = (SNoteLog*)iLl_appendNewNodeAtEnd((SLL**)noteRoot, sizeof(SNoteLog));
+		note = (SNoteLog*)iLl_appendNew__llAtEnd((SLL**)noteRoot, sizeof(SNoteLog));
 		if (note)
 		{
 			// Initialize it
@@ -14797,5 +14873,5 @@ debug_break;
 	{
 		// Make sure our environment is sane
 		if (noteRoot && *noteRoot)
-			iLl_deleteNodeChain((SLL**)noteRoot);
+			iLl_delete__llChain((SLL**)noteRoot);
 	}

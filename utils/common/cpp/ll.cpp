@@ -77,39 +77,39 @@
 // iterate from the root node forward.
 //
 //////
-	SLL* iLl_appendNewNode(SLL** root, SLL* nodeHint, SLL* nodeNext, SLL* nodePrev, u32 tnUniqueId, u32 tnSize)
+	SLL* iLl_appendNew__ll(SLL** llRoot, SLL* llHint, SLL* llNext, SLL* llPrev, u32 tnUniqueId, u32 tnSize)
 	{
-		SLL* node;
+		SLL* ll;
 
 
 		// Make sure our environment is sane
-		node = NULL;
-		if (root)
+		ll = NULL;
+		if (llRoot)
 		{
 			// Create a new node
-			node = iLl_createOrphanNode(nodePrev, nodeNext, tnUniqueId, tnSize);
+			ll = iLl_createOrphan__ll(llPrev, llNext, tnUniqueId, tnSize);
 
 			// Append it to the chain
-			if (*root)
+			if (*llRoot)
 			{
 				// There is already data
-				if (!nodeHint)
-					nodeHint = *root;
+				if (!llHint)
+					llHint = *llRoot;
 
 				// Iterate forward until we reach the end
-				while (nodeHint->next)
-					nodeHint = nodeHint->next;
+				while (llHint->next)
+					llHint = llHint->next;
 
 				// Append as the next item from where we are
-				nodeHint->next = node;
+				llHint->next = ll;
 
 			} else {
 				// This will be the first entry
-				*root = node;
+				*llRoot = ll;
 			}
 		}
 		// Indicate our success or failure
-		return(node);
+		return(ll);
 	}
 
 
@@ -120,28 +120,28 @@
 // Creates a new 2-way linked list with optional nodePrev and nodeNext info, using
 // the indicated size for the allocation (which is beyond the SLL portion at the head).
 //////
-	SLL* iLl_createOrphanNode(SLL* nodePrev, SLL* nodeNext, u32 tnUniqueId, u32 tnSize)
+	SLL* iLl_createOrphan__ll(SLL* llPrev, SLL* llNext, u32 tnUniqueId, u32 tnSize)
 	{
-		SLL* node;
+		SLL* ll;
 
 
 		// Allocate the size
-		node = (SLL*)malloc(sizeof(SLL) + tnSize);
-		if (node)
+		ll = (SLL*)malloc(sizeof(SLL) + tnSize);
+		if (ll)
 		{
 			// We're good
-			memset(node, 0, tnSize);
+			memset(ll, 0, tnSize);
 
 			// Store a unique id
-			node->uniqueId	= tnUniqueId;
+			ll->uniqueId	= tnUniqueId;
 
 			// Update our pointers
-			node->prev		= nodePrev;
-			node->next		= nodeNext;
+			ll->prev		= llPrev;
+			ll->next		= llNext;
 		}
 
 		// Indicate our success or failure
-		return(node);
+		return(ll);
 	}
 
 
@@ -152,44 +152,44 @@
 // Called to append the node at the end of the chain
 //
 //////
-	SLL* iLl_appendNewNodeAtEnd(SLL** root, u32 tnSize)
+	SLL* iLl_appendNew__llAtEnd(SLL** llRoot, u32 tnSize)
 	{
-		SLL* node;
-		SLL* nodeNew;
+		SLL* ll;
+		SLL* llNew;
 
 
 		// Make sure our environment is sane
-		nodeNew = NULL;
-		if (root)
+		llNew = NULL;
+		if (llRoot)
 		{
 			// Allocate new
-			nodeNew = (SLL*)malloc(tnSize);
-			if (nodeNew)
+			llNew = (SLL*)malloc(tnSize);
+			if (llNew)
 			{
 				// Initialize
-				memset(nodeNew, 0, tnSize);
+				memset(llNew, 0, tnSize);
 
 				// Determine where it goes
-				if (!*root)
+				if (!*llRoot)
 				{
 					// First entry
-					*root = nodeNew;
+					*llRoot = llNew;
 
 				} else {
 					// Append to end
-					node = *root;
-					while (node->next)
-						node = node->next;
+					ll = *llRoot;
+					while (ll->next)
+						ll = ll->next;
 
 					// Append here
-					node->next		= nodeNew;		// Previous points here
-					nodeNew->prev	= node;			// We point back to previous
+					ll->next		= llNew;		// Previous points here
+					llNew->prev	= ll;			// We point back to previous
 				}
 			}
 		}
 
 		// Indicate our status
-		return(nodeNew);
+		return(llNew);
 	}
 
 
@@ -200,39 +200,39 @@
 // Called to append a new node at the beginning
 //
 //////
-	SLL* iLl_appendNewNodeAtBeginning(SLL** root, u32 tnSize)
+	SLL* iLl_appendNew__llAtBeginning(SLL** llRoot, u32 tnSize)
 	{
-		SLL* node;
-		SLL* nodeNew;
+		SLL* ll;
+		SLL* llNew;
 
 
 		// Make sure our environment is sane
-		nodeNew = NULL;
-		if (root)
+		llNew = NULL;
+		if (llRoot)
 		{
 			// Allocate new
-			nodeNew = (SLL*)malloc(tnSize);
-			if (nodeNew)
+			llNew = (SLL*)malloc(tnSize);
+			if (llNew)
 			{
 				// Initialize
-				memset(nodeNew, 0, tnSize);
+				memset(llNew, 0, tnSize);
 
 				// Set it up
-				node	= *root;
-				*root	= nodeNew;
+				ll	= *llRoot;
+				*llRoot	= llNew;
 
 				// If there was a previous node, insert it
-				if (node)
+				if (ll)
 				{
 					// Append here
-					node->prev		= nodeNew;		// Previous first node points to new first node
-					nodeNew->next	= node;			// New first node points forward to previous first node
+					ll->prev		= llNew;		// Previous first node points to new first node
+					llNew->next	= ll;			// New first node points forward to previous first node
 				}
 			}
 		}
 
 		// Indicate our status
-		return(nodeNew);
+		return(llNew);
 	}
 
 
@@ -243,32 +243,32 @@
 // Called to append a node which already exists to the end
 //
 //////
-	bool iLl_appendExistingNodeAtEnd(SLL** root, SLL* node)
+	bool iLl_appendExisting__llAtEnd(SLL** llRoot, SLL* node)
 	{
 		bool	llAppended;
-		SLL*	nodeLast;
+		SLL*	llLast;
 
 
 		// Make sure our environment is sane
 		llAppended = false;
-		if (root && node)
+		if (llRoot && node)
 		{
 			// Determine where it goes
 			llAppended = true;
-			if (!*root)
+			if (!*llRoot)
 			{
 				// First entry
-				*root = node;
+				*llRoot = node;
 
 			} else {
 				// Append to end
-				nodeLast = *root;
-				while (nodeLast->next)
-					nodeLast = nodeLast->next;
+				llLast = *llRoot;
+				while (llLast->next)
+					llLast = llLast->next;
 
 				// Append here
-				nodeLast->next	= node;			// Last one currently existing points here
-				node->prev		= nodeLast;		// Node points back to previous last one
+				llLast->next	= node;			// Last one currently existing points here
+				node->prev		= llLast;		// Node points back to previous last one
 			}
 		}
 
@@ -284,29 +284,29 @@
 // Called to append the existing node at the beginning
 //
 //////
-	bool iLl_appendExistingNodeAtBeginning(SLL** root, SLL* node)
+	bool iLl_appendExisting__llAtBeginning(SLL** llRoot, SLL* ll)
 	{
 		bool	llAppended;
-		SLL*	nodeFirst;
+		SLL*	llFirst;
 
 
 		// Make sure our environment is sane
 		llAppended = false;
-		if (root && node)
+		if (llRoot && ll)
 		{
 			// Determine where it goes
 			llAppended = true;
-			if (!*root)
+			if (!*llRoot)
 			{
 				// First entry
-				*root = node;
+				*llRoot = ll;
 
 			} else {
 				// Append to beginning
-				nodeFirst		= *root;
-				node->next		= nodeFirst;
-				nodeFirst->prev	= node;		// Ignore the GCC warning message here... I don't know why it's throwing a warning.  Everything here is populated and tested before use.
-				*root			= node;
+				llFirst			= *llRoot;
+				ll->next		= llFirst;
+				llFirst->prev	= ll;		// Ignore the GCC warning message here... I don't know why it's throwing a warning.  Everything here is populated and tested before use.
+				*llRoot			= ll;
 				llAppended		= true;
 			}
 		}
@@ -325,25 +325,25 @@
 // orphan node, or the node->next value if the node was fully deleted.
 //
 //////
-	SLL* iLl_deleteNode(SLL* node, bool tlDeleteSelf)
+	SLL* iLl_delete__ll(SLL* ll, bool tlDeleteSelf)
 	{
-		SLL* nodeNext;
+		SLL* llNext;
 
 
 		// Make sure our environment is sane
-		nodeNext = NULL;
-		if (node)
+		llNext = NULL;
+		if (ll)
 		{
 			//////////
 			// Disconnect
 			//////
 				// find out what would be the next one they'll need to point to
-				if (node->next)		nodeNext = node->next;
-				else				nodeNext = node->prev;
+				if (ll->next)		llNext = ll->next;
+				else				llNext = ll->prev;
 
 				// Orphanize if need be
-				if (node->prev || node->next)
-					iLl_orphanizeNode(node);
+				if (ll->prev || ll->next)
+					iLl_orphanize__ll(ll);
 
 
 			//////////
@@ -352,18 +352,18 @@
 				if (tlDeleteSelf)
 				{
 					// Remove any link-list info
-					memset(node, 0, sizeof(SLL));
+					memset(ll, 0, sizeof(SLL));
 
 					// Delete self
-					free(node);
+					free(ll);
 
 				} else {
-					nodeNext = node;
+					llNext = ll;
 				}
 		}
 
 		// Indicate our status
-		return(nodeNext);
+		return(llNext);
 	}
 
 
@@ -377,52 +377,52 @@
 // point to the one after node.
 //
 //////
-	SLL* iLl_migrateNodeToOther(SLL** nodeSourceRoot, SLL** nodeDestinationRoot, SLL* node, bool tlInsertAtEnd)
+	SLL* iLl_migrate__llToOther(SLL** llSourceRoot, SLL** llDestinationRoot, SLL* ll, bool tlInsertAtEnd)
 	{
-		SLL* nodeRef;
-		SLL* nodeNext;
+		SLL* llRef;
+		SLL* llNext;
 
 
 		// Make sure our environment is sane
-		if (nodeSourceRoot && *nodeSourceRoot && nodeDestinationRoot && node)
+		if (llSourceRoot && *llSourceRoot && llDestinationRoot && ll)
 		{
 			//////////
 			// If the first node is our node, then the first node now becomes the one after our node
 			//////
-				nodeNext = node->next;
-				if (*nodeSourceRoot == node)
-					*nodeSourceRoot = nodeNext;
+				llNext = ll->next;
+				if (*llSourceRoot == ll)
+					*llSourceRoot = llNext;
 
 
 			//////////
 			// Unhook the node from its current location
 			//////
-				iLl_orphanizeNode(node);
+				iLl_orphanize__ll(ll);
 
 
 			//////////
 			// Position the node into its new location
 			//////
-				if (!*nodeDestinationRoot)
+				if (!*llDestinationRoot)
 				{
 					// There are no other nodes. Introduce this one into its new node home as the "de facto leader," as it were...
-					*nodeDestinationRoot = node;
+					*llDestinationRoot = ll;
 
 				} else {
 					// There are others.  We must determine its location (without any hesitation, offered
 					// up by designation, as solid indication, the state of its vocation, made known by
 					// observation, and contextual revelation, for subsequent relocation)
-					if (tlInsertAtEnd)		nodeRef = iLl_getLastNode(*nodeDestinationRoot);
-					else					nodeRef = *nodeDestinationRoot;
+					if (tlInsertAtEnd)		llRef = iLl_getLast__ll(*llDestinationRoot);
+					else					llRef = *llDestinationRoot;
 
 					// Insert it relative to its new home (full of relatives, well ... at least one relative that we know of)
-					iLl_insertNode(node, nodeRef, tlInsertAtEnd);
+					iLl_insert__ll(ll, llRef, tlInsertAtEnd);
 				}
 
 			//////////
 			// Indicate the one after the one we migrated
 			//////
-				return(nodeNext);
+				return(llNext);
 
 		} else {
 			// Failure
@@ -438,15 +438,15 @@
 // Called to delete a link list node with a callback.  If need be it orphanizes the node first.
 //
 //////
-	void iLl_deleteNodesWithCallback(SLLCallback* cb)
+	void iLl_delete__llsWithCallback(SLLCallback* cb)
 	{
-		if (cb && cb->node)
+		if (cb && cb->ll)
 		{
 			//////////
 			// Disconnect
 			//////
-				if (cb->node->prev || cb->node->next)
-					iLl_orphanizeNode(cb->node);
+				if (cb->ll->prev || cb->ll->next)
+					iLl_orphanize__ll(cb->ll);
 
 
 			//////////
@@ -459,7 +459,7 @@
 			//////////
 			// Delete the node
 			//////
-				free(cb->node);
+				free(cb->ll);
 		}
 	}
 
@@ -472,7 +472,7 @@
 // node is already connected, it is disconnected.
 //
 //////
-	bool iLl_insertNode(SLL* node,  SLL* nodeRef,  bool tlAfter)
+	bool iLl_insert__ll(SLL* node,  SLL* nodeRef,  bool tlAfter)
 	{
 // TODO:  UNTESTED CODE
 		// Is our environment sane?
@@ -482,7 +482,7 @@
 			// Disconnect
 			//////
 				if (node->prev || node->next)
-					iLl_orphanizeNode(node);
+					iLl_orphanize__ll(node);
 
 
 			//////////
@@ -538,7 +538,7 @@
 // Disconnects a node from its existing chain
 //
 //////
-	void iLl_orphanizeNode(SLL* node)
+	void iLl_orphanize__ll(SLL* node)
 	{
 // TODO:  UNTESTED CODE
 		// Is our environment sane?
@@ -573,7 +573,7 @@
 // Called to delete the entire chain (beginning from where it's at
 //
 //////
-	void iLl_deleteNodeChain(SLL** root)
+	void iLl_delete__llChain(SLL** root)
 	{
 		SLL* node;
 		SLL* nodeNext;
@@ -610,29 +610,29 @@
 // The callback should not delete the node, but only anything the node points to.
 //
 //////
-	void iLl_deleteNodeChainWithCallback(SLLCallback* cb)
+	void iLl_delete__llChainWithCallback(SLLCallback* cb)
 	{
-		SLL* nodeNext;
+		SLL* llNext;
 
 
 		// Make sure the environment is sane
 		if (cb)
 		{
 			// Iterate through deleting each entry
-			while (cb->node)
+			while (cb->ll)
 			{
 				// Grab the next node
-				nodeNext = cb->node->next;
+				llNext = cb->ll->next;
 
 				// Perform the callback
 				if (cb->_func)
 					cb->funcVoid(cb);
 
 				// Delete the node itself
-				free(cb->node);
+				free(cb->ll);
 
 				// Move to next node
-				cb->node = nodeNext;
+				cb->ll = llNext;
 			}
 			// All done
 		}
@@ -651,7 +651,7 @@
 		//////////
 		// For each node, process its portion
 		//////
-			while (cb->node)
+			while (cb->ll)
 			{
 
 				//////////
@@ -664,7 +664,7 @@
 				//////////
 				// Move to next node
 				//////
-					cb->node = cb->node->next;
+					cb->ll = cb->ll->next;
 			}
 	}
 
@@ -681,7 +681,7 @@
 		//////////
 		// For each node, process its portion
 		//////
-			while (cb->node)
+			while (cb->ll)
 			{
 
 				//////////
@@ -694,7 +694,7 @@
 				//////////
 				// Move to next node
 				//////
-					cb->node = cb->node->prev;
+					cb->ll = cb->ll->prev;
 			}
 	}
 
@@ -706,18 +706,18 @@
 // Called to compute the SHA-1 of the current node as a 64-bit quantity
 //
 //////
-	SLL* iLl_getFirstNode(SLL* node)
+	SLL* iLl_getFirst__ll(SLL* ll)
 	{
 		// Make sure the environment is sane
-		if (node)
+		if (ll)
 		{
 			// Iterate backwards to the top
-			while (node->prev)
-				node = node->prev;
+			while (ll->prev)
+				ll = ll->prev;
 		}
 
 		// Indicate where we are
-		return(node);
+		return(ll);
 	}
 
 
@@ -730,18 +730,18 @@
 // The parameters in the callback are:
 //		ptr			-- LL node
 //////
-	SLL* iLl_getLastNode(SLL* node)
+	SLL* iLl_getLast__ll(SLL* ll)
 	{
 		// Make sure the environment is sane
-		if (node)
+		if (ll)
 		{
 			// Iterate toward the end
-			while (node->next)
-				node = node->next;
+			while (ll->next)
+				ll = ll->next;
 		}
 
 		// Indicate where we are
-		return(node);
+		return(ll);
 	}
 
 
@@ -752,23 +752,23 @@
 // Called to count the nodes to the end
 //
 //////
-	u32 iLl_countNodesToEnd(SLL* node)
+	u32 iLl_count__llsToEnd(SLL* ll)
 	{
 		u32 lnCount;
 
 
 		// Make sure the environment is sane
 		lnCount = 0;
-		if (node)
+		if (ll)
 		{
 			// Iterate toward the end
-			while (node)
+			while (ll)
 			{
 				// Increase our count
 				++lnCount;
 
 				// Continue on so long as we have nodes
-				node = node->next;
+				ll = ll->next;
 			}
 		}
 

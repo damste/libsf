@@ -4757,7 +4757,7 @@ return;
 					// Use their custom instance override
 					prop = node->render_override;
 
-				} else if (tnPropsCount > 0 && node->render.propsIndex > 0 && node->render.propsIndex <= tnPropsCount) {
+				} else if (tnPropsCount > 0 && node->render.propsIndex >= 0 && node->render.propsIndex <= tnPropsCount) {
 					// We can grab it from the array
 					prop = &props[node->render.propsIndex];
 
@@ -4769,7 +4769,8 @@ return;
 					_propsLocal.fillColor		= whiteColor;
 					_propsLocal.borderWidth		= 2;
 					_propsLocal.borderColor		= blackColor;
-					prop = &_propsLocal;
+					_propsLocal.font			= iFont_create(cgcFontName_defaultFixed);
+					prop						= &_propsLocal;
 				}
 
 				// Validate border and margin

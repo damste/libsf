@@ -672,7 +672,7 @@
 			function_datetime(&lsrpar);
 			varStartupTime = lsrpar.rp[0];
 			iDatum_duplicate(&varStartupTime->name, cgcName_startupTime, -1);
-			iLl_appendExistingNodeAtBeginning((SLL**)&varGlobals, (SLL*)varStartupTime);
+			iLl_appendExisting__llAtBeginning((SLL**)&varGlobals, (SLL*)varStartupTime);
 
 
 		//////////
@@ -809,7 +809,7 @@
 		(*var)->isSysVar = true;
 
 		// Append it to global variables
-		iLl_appendExistingNodeAtEnd((SLL**)&varGlobals, (SLL*)*var);
+		iLl_appendExisting__llAtEnd((SLL**)&varGlobals, (SLL*)*var);
 	}
 
 

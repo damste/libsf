@@ -97,7 +97,7 @@
 		if (sem && line && root)
 		{
 			// Allocate a new one
-			ei = (SExtraInfo*)iLl_appendNewNodeAtEnd((SLL**)root, sizeof(SExtraInfo));
+			ei = (SExtraInfo*)iLl_appendNew__llAtEnd((SLL**)root, sizeof(SExtraInfo));
 		}
 
 		// Indicate our status

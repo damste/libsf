@@ -93,7 +93,7 @@
 // Called to create a new node and attach it to the default nodes provided in each direction.
 //
 //////
-	SNode* iNode_create(SNode** root, SNode* n_defaults[_NODE_COUNT])
+	SNode* iNode_create(SNode** root, SComp* comp, SNode* n_defaults[_NODE_COUNT])
 	{
 		s32			lnI;
 		SNode*		nodeNew;
@@ -104,6 +104,9 @@
 		{
 			// Initialize
 			memset(nodeNew, 0, sizeof(SNode));
+
+			// Populate members
+			nodeNew->comp = comp;
 
 			// Populate the target
 			if (root)
@@ -163,14 +166,14 @@
 
 		// If nothing already exists there, just create it and it will become the central node
 		if (!*rootNode)
-			return(iNode_create(rootNode, NULL));
+			return(iNode_create(rootNode));
 
 		// Descend down that direction
 		for (nodeLast = *rootNode; nodeLast->n[tnExtrudeDirection]; )
 			nodeLast = nodeLast->n[tnExtrudeDirection];
 
 		// Add the new offshoot, and point back-and-forth to the last one
-		nodeNew = iNode_create(&nodeLast->n[tnExtrudeDirection], NULL);		// Last points forward to new
+		nodeNew = iNode_create(&nodeLast->n[tnExtrudeDirection]);			// Last points forward to new
 		if (nodeNew)
 			nodeNew->n[gnNodeMirrors[tnExtrudeDirection]]	= nodeLast;		// New points back to last
 
@@ -234,7 +237,7 @@
 		// If nothing already exists there, just create it and it will become the central node
 		if (!*rootNode)
 		{
-			newNode		= iNode_create(rootNode, NULL);
+			newNode		= iNode_create(rootNode);
 			*rootNode	= newNode;
 			return(newNode);
 		}
@@ -248,7 +251,7 @@
 		anchorNode		= bumpNode->n[tnAnchor];
 
 		// Create the new node
-		newNode = iNode_create(rootNode, NULL);
+		newNode = iNode_create(rootNode);
 		if (newNode)
 		{
 			// Update connections
@@ -296,7 +299,7 @@
 		lnMirrorDirection	= gnNodeMirrors[tnDirection];
 
 		// Create and populate our new node
-		newNode = iNode_create(NULL, &n[0]);
+		newNode = iNode_create(NULL, NULL, &n[0]);
 		if (newNode)
 		{
 			// New points mirror-back to node1 and node2
@@ -311,6 +314,106 @@
 
 		// Indicate our status
 		return(newNode);
+	}
+
+
+
+
+//////////
+//
+// Called to delete the indicated node
+//
+//////
+	void iNode_delete(SNode** root, bool tlDeleteSelf)
+	{
+		SNode* node;
+
+
+		// Make sure our environment is sane
+		if (root && (node = *root))
+		{
+			//////////
+			// Delete the op if need be
+			//////
+				if (node->opData)
+				{
+					// Delete op chain
+					iOp_politelyDelete(&node->opData->op, false);
+
+					// Delete the variable chain
+					if (node->opData->firstVariable)
+						iVariable_politelyDelete_chain(&node->opData->firstVariable, true);
+				}
+
+
+			//////////
+			// Physically release the node if need be
+			//////
+				if (tlDeleteSelf)
+				{
+					// Pass everything which points through it to its mirror, and disconnect any nodes that don't pass through
+					iNode_orphanize(root);
+
+					// Delete any extra data
+					if (node->_extraData_deleteFunc)
+						node->extraData_deleteFunc(node);
+
+					// Physically release it
+					*root = NULL;
+					free(node);
+				}
+
+		}
+	}
+
+
+
+
+//////////
+//
+// Called to orphanize a node, to pass everything through that has mirror connections
+//
+//////
+	void iNode_orphanize(SNode** root)
+	{
+		s32		lnI, lnIm;
+		SNode*	nodeOrphan;
+		SNode*	node;
+		SNode*	mirror;
+
+
+		// Make sure our environment is sane
+		if (root && (nodeOrphan = *root))
+		{
+			// Iterate in every direction passing through
+			for (lnI = 0; lnI < _NODE_MAX; lnI++)
+			{
+				// Compute mirror direction
+				lnIm = gnNodeMirrors[lnI];
+
+				// Grab the two pass through nodes in each direction
+				node	= nodeOrphan->n[lnI];
+				mirror	= nodeOrphan->n[lnIm];
+
+				// Is there something on both sides?
+				if (node && mirror)
+				{
+					// Yes, connect them to each other (bypassing us)
+					node->n[lnIm]		= mirror;		// Node mirror points to mirror
+					mirror->n[lnI]		= node;			// Mirror node points to node
+					nodeOrphan->n[lnI]	= NULL;			// Completely disconnected the orphan node...
+					nodeOrphan->n[lnIm]	= NULL;			// ...and in both directions
+
+				} else if (node) {
+					// There is something in node direction
+					node->n[lnIm] = NULL;
+
+				} else if (mirror) {
+					// There is something in mirror direction
+					mirror->n[lnI] = NULL;
+				}
+			}
+		}
 	}
 
 
@@ -351,27 +454,9 @@
 
 
 			//////////
-			// Delete the op if need be
+			// Delete
 			//////
-				if (node->opData)
-				{
-					// Delete op chain
-					iOp_politelyDelete(&node->opData->op, false);
-
-					// Delete the variable chain
-					if (node->opData->firstVariable)
-						iVariable_politelyDelete_chain(&node->opData->firstVariable, true);
-				}
-
-
-			//////////
-			// Delete self
-			//////
-				if (tlDeleteSelf)
-				{
-					*root = NULL;
-					free(node);
-				}
+				iNode_delete(root, tlDeleteSelf);
 
 		}
 	}
@@ -405,13 +490,14 @@
 				lnIter_uid = iGetNextUid();
 
 				// Setup the render prop
-				props->backColor	= whiteColor;
-				props->foreColor	= blackColor;
-				props->marginWidth	= tnMarginWidth;
-				props->fillColor	= whiteColor;
-				props->borderWidth	= tnBorderWidth;
-				props->borderColor	= blackColor;
-				props->rodColor		= grayColor;
+				props[0].backColor		= whiteColor;
+				props[0].foreColor		= blackColor;
+				props[0].marginWidth	= tnMarginWidth;
+				props[0].fillColor		= whiteColor;
+				props[0].borderWidth	= tnBorderWidth;
+				props[0].borderColor	= blackColor;
+				props[0].rodColor		= grayColor;
+				props[0].font			= iFont_create(cgcFontName_defaultFixed);
 
 				// Render out in all directions from this point
 				iiNode_renderBitmap(node, node, NULL, tnMaxTokenLength, tnMaxOverallLength, props, 1, lnIter_uid, tlIncludeExtraInfo, tlGoDeeper, nodeFlags, tlDeeperNodesExtendInAllDirections);
