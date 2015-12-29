@@ -82,9 +82,14 @@ void iVjr_test_nodes(void);
 
 	void iVjr_test_parser(void)
 	{
+		u32			lnId;
 		SDatum		prog;
 		SEM*		sem;
 		SBitmap*	bmp;
+
+
+		// Grab a unique ID for the image
+		lnId = iGetNextUid();
 
 		// Populate the program
 		prog.data_s8	= sample;
@@ -99,8 +104,8 @@ void iVjr_test_nodes(void);
 
 		// Render for display
 		bmp = iNode_renderBitmap(sem->firstLine->compilerInfo->firstComp->node);
-		iBmp_saveToDisk(bmp, "c:\\temp\\chain_link.bmp");
-		iBmp_delete(&bmp, true, true);
+//		iBmp_saveToDisk(bmp, "c:\\temp\\chain_link.bmp");
+		JDebiC_bmp(bmp, true, lnId, true);
 		// Parse using our algorithm
 	}
 
