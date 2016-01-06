@@ -1,0 +1,21 @@
+Ideas for spreadsheet enhancements
+----------------------------------
+
+Jan.06.2016
+
+Allow for an option to display scientific notation using values
+that round to the nearest multiple of 3, or to translate them
+into the closest relative units, such as:
+
+	mu -- milliunits
+	uu -- microunits
+	nu -- nanounits
+	pu -- picounits
+
+And so on... that way rather than 1/1000000000 showing up as
+1.0E-009, it would display as 1 nu, with the ability to
+change the "u" to be some custom character or phrase, allowing
+ps for picoseconds, nm for nanometers, etc.
+
+Best regards,
+Rick C. Hodgin
