@@ -606,6 +606,8 @@
 		const SBgra		silverColor							= { _silverColor };
 		const SBgra		grayColor							= { _grayColor };
 		const SBgra		blackColor							= { _blackColor };
+		const SBgra		darkGrayColor						= { _darkGrayColor };
+		const SBgra		charcoalColor						= { _charcoalColor };
 		const SBgra		yellowColor							= { rgba(255, 255, 0, 255) };
 		const SBgra		redColor							= { rgba(255, 0, 0, 255) };
 		const SBgra		greenColor							= { rgba(0, 255, 0, 255) };

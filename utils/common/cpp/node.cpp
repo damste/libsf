@@ -490,14 +490,16 @@
 				lnIter_uid = iGetNextUid();
 
 				// Setup the render prop
-				props[0].backColor		= whiteColor;
-				props[0].foreColor		= blackColor;
-				props[0].marginWidth	= tnMarginWidth;
-				props[0].fillColor		= whiteColor;
-				props[0].borderWidth	= tnBorderWidth;
-				props[0].borderColor	= blackColor;
-				props[0].rodColor		= grayColor;
-				props[0].font			= iFont_create(cgcFontName_defaultFixed);
+				props[0].backColor			= whiteColor;
+				props[0].foreColor			= blackColor;
+				props[0].marginWidth		= tnMarginWidth;
+				props[0].fillColor			= silverColor;
+				props[0].borderWidth		= tnBorderWidth;
+				props[0].borderColor		= darkGrayColor;
+				props[0].rodColor			= charcoalColor;
+				props[0].colorize			= true;
+				props[0].colorizeColor		= pastelBlueColor;
+				props[0].font				= iFont_create(cgcFontName_defaultFixed);
 
 				// Render out in all directions from this point
 				iiNode_renderBitmap(node, node, NULL, tnMaxTokenLength, tnMaxOverallLength, props, 1, lnIter_uid, tlIncludeExtraInfo, tlGoDeeper, nodeFlags, tlDeeperNodesExtendInAllDirections);

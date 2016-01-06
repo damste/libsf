@@ -93,18 +93,18 @@
 //////////
 //
 // Data preparation functions:
-//		JDebiC_debug		-- Prepare and transmit win, obj data to the remote
-//		JDebiC_text			-- Prepare and transmit text to display in the text window
-//		JDebiC_data			-- Prepare and transmit data to parse remotely and have available for display
+//		JDebiC_debug				-- Prepare and transmit win, obj data to the remote
+//		JDebiC_text					-- Prepare and transmit text to display in the text window
+//		JDebiC_data					-- Prepare and transmit data to parse remotely and have available for display
 //
 // Communication functions:
-//		iJDebiC_connect		-- Connects to remote process
-//		iJDebiC_transmit	-- Transmits data from this process to the other
+//		iJDebiC_connect				-- Connects to remote process
+//		iJDebiC_transmit_viaPipe	-- Transmits data from this process to the other
 //
 // Serialization functions:
-//		iJDebiC_thisCode	-- Converts a thisCode object into its call stack for examination
-//		iJDebiC_win			-- Converts information about a window into text
-//		iJDebiC_obj			-- Converts an object into its text form
+//		iJDebiC_thisCode			-- Converts a thisCode object into its call stack for examination
+//		iJDebiC_win					-- Converts information about a window into text
+//		iJDebiC_obj					-- Converts an object into its text form
 //
 //////////
 
@@ -117,6 +117,8 @@
 	void		JDebiC_debug					(SWindow* win, SObject* obj);
 	void		JDebiC_text						(s8* tcText);
 	void		JDebiC_data						(s8* tcData, s32 tnDataLength, u32 tnDataType);
+	void		JDebiC_bmp						(SBitmap* bmp, bool tlShowImmediately, u32 tnControlId_ifControlled = -1, bool tlDeleteAfterSend = false, bool tlDeleteSelf = true);
+	void		JDebiC_hexdump					(s8* tcData, s32 tnDataLength);
 
 	// Helper functions
 	bool		iJDebiC_connect					(void);
@@ -153,12 +155,21 @@
 //////
 	cu32		_WMJDEBIC_PIPE_REQUEST			= WM_USER + 0;
 	cu32		_WMJDEBIC_DATA_TYPE_DATA		= WM_USER + 1;
-	cu32		_WMJDEBIC_DATA_TYPE_BITMAP		= WM_USER + 2;
-	cu32		_WMJDEBIC_DATA_TYPE_HEXDUMP		= WM_USER + 3;
-	cu32		_WMJDEBIC_DATA_TYPE_TEXT		= WM_USER + 4;
-	cu32		_WMJDEBIC_DATA_TYPE_THISCODE	= WM_USER + 5;
-	cu32		_WMJDEBIC_DATA_TYPE_WIN			= WM_USER + 6;
-	cu32		_WMJDEBIC_DATA_TYPE_OBJ			= WM_USER + 7;
+	cu32		_WMJDEBIC_DATA_TYPE_BITMAP_BH	= WM_USER + 2;
+	cu32		_WMJDEBIC_DATA_TYPE_BITMAP_BI	= WM_USER + 3;
+	cu32		_WMJDEBIC_DATA_TYPE_BITMAP_BD	= WM_USER + 4;
+	cu32		_WMJDEBIC_DATA_TYPE_HEXDUMP		= WM_USER + 5;
+	cu32		_WMJDEBIC_DATA_TYPE_TEXT		= WM_USER + 6;
+	cu32		_WMJDEBIC_DATA_TYPE_THISCODE	= WM_USER + 7;
+	cu32		_WMJDEBIC_DATA_TYPE_WIN			= WM_USER + 8;
+	cu32		_WMJDEBIC_DATA_TYPE_OBJ			= WM_USER + 9;
+
+	// For controlling objects by id
+	cu32		_WMJDEBIC_ID_TAG__MIN		= WM_USER + 100;
+	cu32		_WMJDEBIC_ID_TAG				= WM_USER + 100;
+	cu32		_WMJDEBIC_ID_TAG_PRESENT		= WM_USER + 101;
+	cu32		_WMJDEBIC_ID_TAG_HIDE			= WM_USER + 102;
+	cu32		_WMJDEBIC_ID_TAG__MAX		= WM_USER + 102;
 
 
 //////////

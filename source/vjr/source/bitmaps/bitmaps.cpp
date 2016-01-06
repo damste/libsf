@@ -4900,6 +4900,16 @@ return;
 
 
 			//////////
+			// Colorize
+			//////
+				if (prop->colorize)
+				{
+					SetRect(&lrc, 0, 0, lnWidth, lnHeight);
+					iBmp_colorize(node->render.bmp, &lrc, prop->colorizeColor, false, 0.0f);	// true, prop->colorizeMinColor);
+				}
+
+
+			//////////
 			// Clean house
 			//////
 				if (llDeleteFont)

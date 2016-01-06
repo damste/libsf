@@ -197,19 +197,67 @@ return;
 
 //////////
 //
-// Called to send over some data for a bitmap
+// Called to transmit a bitmap.
+//
+// Note:  Bitmaps must always transmitted without interruption in the order header, info, data.
+// Note:  Use an external tnControlId to refresh the presentation as images change over time.
+// Note:  This system should be sufficient for sending well over 30 fps transfer rates of full-screen images.
 //
 //////
-	void JDebiC_hexdump(SBitmap* bmp)
+	void JDebiC_bmp(SBitmap* bmp, bool tlShowImmediately, u32 tnControlId_ifControlled, bool tlDeleteAfterSend, bool tlDeleteSelf)
 	{
-		SDatum data1, data2;
+		u32		lnId;
+		SDatum	data;
 
 
-		data1.data		= (s8*)bmp;
-		data1.length	= sizeof(*bmp);
-		data2.data		= bmp->bd;
-		data2.length	= bmp->bi.biSizeImage;
-		iJDebiC_transmit_viaPipe(&data1, &data2, _WMJDEBIC_DATA_TYPE_BITMAP);
+		//////////
+		// Id control tag
+		//////
+			lnId		= ((tnControlId_ifControlled == -1) ? iGetNextUid() : tnControlId_ifControlled);
+			data.length = lnId;
+			iJDebiC_transmit_viaPipe(&data, NULL, _WMJDEBIC_ID_TAG);
+
+
+		//////////
+		// Header
+		//////
+			data.data_vp	= &bmp->bh;
+			data.length		= sizeof(bmp->bh);
+			iJDebiC_transmit_viaPipe(&data, NULL, _WMJDEBIC_DATA_TYPE_BITMAP_BH);
+
+
+		//////////
+		// Info
+		//////
+			data.data_vp	= &bmp->bi;
+			data.length		= sizeof(bmp->bi);
+			iJDebiC_transmit_viaPipe(&data, NULL, _WMJDEBIC_DATA_TYPE_BITMAP_BI);
+
+
+		//////////
+		// Data
+		//////
+			data.data_vp	= &bmp->bd;
+			data.length		= (bmp->bi.biHeight * bmp->bi.biWidth * bmp->rowWidth);
+			iJDebiC_transmit_viaPipe(&data, NULL, _WMJDEBIC_DATA_TYPE_BITMAP_BD);
+
+
+		//////////
+		// Show if need be
+		//////
+			if (tlShowImmediately)
+			{
+				data.length = lnId;
+				iJDebiC_transmit_viaPipe(&data, NULL, _WMJDEBIC_ID_TAG_PRESENT);
+			}
+
+
+		//////////
+		// Delete if need be
+		//////
+			if (tlDeleteAfterSend)
+				iBmp_delete(&bmp, true, tlDeleteAfterSend);
+
 	}
 
 
@@ -327,7 +375,7 @@ return;
 
 			} else {
 				// It is known ... see if we have the handles
-				llNeedHandles = ((handleJDebiCOut == null0) ? true : false);
+				llNeedHandles = (handleJDebiCOut == null0);
 			}
 
 
@@ -387,9 +435,17 @@ return;
 			lnNumwritten2 = 0;
 			if (iJDebiC_connect())
 			{
-				// Transmit and signal the transmission
-				if (data1)		WriteFile((HANDLE)handleJDebiCOut, data1->data, data1->length, &lnNumwritten1, NULL);
-				if (data2)		WriteFile((HANDLE)handleJDebiCOut, data2->data, data2->length, &lnNumwritten2, NULL);
+				if (!between(tnDataType, _WMJDEBIC_ID_TAG__MIN, _WMJDEBIC_ID_TAG__MAX))
+				{
+					// Transmit and signal the transmission
+					if (data1)		WriteFile((HANDLE)handleJDebiCOut, data1->data, data1->length, &lnNumwritten1, NULL);
+					if (data2)		WriteFile((HANDLE)handleJDebiCOut, data2->data, data2->length, &lnNumwritten2, NULL);
+
+				} else {
+					// Simulate successful writes
+					lnNumwritten1 = data1->length;
+					lnNumwritten2 = 0;
+				}
 
 				// Did we write anything?
 				if (lnNumwritten1 + lnNumwritten2 > 0)

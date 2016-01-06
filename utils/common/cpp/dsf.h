@@ -77,12 +77,12 @@ struct SDsf_line_f64
 
 	struct SDsf_chars
 	{
-		SBuilder*	splines;						// (SChar) Holds full char records
-		SBuilder*	temsRaw;						// (STems) Holds all raw template points for this character (those sent from the calling app)
+		SBuilder*	splines;						// (SDsf_chars) Holds full char records
+		SBuilder*	temsRaw;						// (SDsf_tems) Holds all raw template points for this character (those sent from the calling app)
 
-		// After the intial load is completed, (or in future upon resize), the temsRaw are aliased down to single instances for the visible size of the edit character window
-		SBuilder*	tems;							// (STems) Holds aliased template points, one per pixel, as per temsRaw and the size of the edit character window (see dsf_initial_load_complete())
-		SBuilder*	temsLines;						// (STemsLines) Holds all alpha layer rendering data for the comprising
+		// After the intitial load is completed, (or in future upon resize), the temsRaw are aliased down to single instances for the visible size of the edit character window
+		SBuilder*	tems;							// (SDsf_tems) Holds aliased template points, one per pixel, as per temsRaw and the size of the edit character window (see dsf_initial_load_complete())
+		SBuilder*	temsLines;						// (SDsf_temsLines) Holds all alpha layer rendering data for the comprising
 	};
 
 	struct SDsf_spline
@@ -90,9 +90,11 @@ struct SDsf_line_f64
 		s8			cType;							// S=Spline, D=Definition, R=Reference, L=Link
 		u32			iid;							// Character number (ASCII character)
 		s32			iOrder;							// Stroke order within the character
+
 		s8			cDesc[10];						// A brief description of this section, usually used with lNewStroke for a new pen stroke
 		bool		lPenDown;						// Used for an "i", for example, when the dot is a different stroke than the lower stock, each time the pen goes down it's a new stroke
 		bool		lSelected;						// Is this item selected?
+
 		f64			ox;								// Origin-X
 		f64			oy;								// Origin-Y
 		f64			ot;								// Origin-Theta (rotation)
@@ -100,6 +102,7 @@ struct SDsf_line_f64
 		f64			lt;								// Left-Theta
 		f64			rr;								// Right-Radius
 		f64			rt;								// Right-Theta
+
 		u32			iSubdivs;						// Automatic sub-divisions between this spline and the next one
 		u32			iLnkId;							// If cType=R, the iid of the definition object; If cType=L, the iid of the link object (used with iLnkOrder to indicate which linked item this one modifies)
 		s32			iLnkOrder;						// If cType=L, the item within the link object that this entry modifies
@@ -119,6 +122,7 @@ struct SDsf_line_f64
 	{
 		s8			cType;							// Line types supported:  H=Horizontal, V=Vertical, 2=Two point, 3=Three point, 5=Five point
 		s8			cDesc[40];						// Description of this reference
+
 		f64			fref1x;							// Used for H,V,2,3,5
 		f64			fref1y;							// Used for H,V,2,3,5
 		f64			fref2x;							// Used for 2,3,5
@@ -129,6 +133,7 @@ struct SDsf_line_f64
 		f64			fref4y;							// Used for 5
 		f64			fref5x;							// Used for 5
 		f64			fref5y;							// Used for 5
+
 		bool		lVisible;						// Should this item be used
 		s8			cChars1[128];					// Characters this item should be displayed on #1
 		s8			cChars2[128];					// Characters this item should be displayed on #2
@@ -159,7 +164,7 @@ struct SDsf_line_f64
 	struct SDsf
 	{
 		s8				id[4];						// Always 'DSF!' (used to identify the handle)
-		u32				id_size;					// sizeof(SInstance)
+		u32				id_size;					// sizeof(SDsf)
 		SDsf_font		font;						// Font information for this instance
 
 		u32				activeTool;					// The current active tool
@@ -208,8 +213,8 @@ struct SDsf_line_f64
 		u32				grid;						// 0=no, 1=yes, should the grid be shown?
 		u32				trackGrid;					// Should the mouse track to the grid?
 
-		SBuilder*		chars;						// (SBuilder) Characters, one SBuilder for every character, with each character SBuilder pointing to its many SChar entries
-		SBuilder*		refs;						// (SRefs) References
+		SBuilder*		chars;						// (SBuilder) of characters, one SBuilder for every character, with each character SBuilder pointing to its many SDsf_chars entries
+		SBuilder*		refs;						// (SDsf_refs) References
 		SBuilder*		hwnds;						// Child window references for this instance
 	};
 
