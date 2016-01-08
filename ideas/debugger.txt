@@ -1,0 +1,10 @@
+Ideas for debugger enhancements
+-------------------------------
+
+Jan.08.2016
+
+Allow for an option play a sound upon entry/engagement of a
+particular breakpoint or codepoint.
+
+Best regards,
+Rick C. Hodgin
