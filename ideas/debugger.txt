@@ -1,10 +1,13 @@
 Ideas for debugger enhancements
+by Rick C. Hodgin
 -------------------------------
 
-Jan.08.2016
+Jan.12.2016 -- An option to perform a simulated call on a function, which
+has its return values and parameters updated by manual settings, with the
+ability to maintain a history of values used.  A new Sim-Step ability,
+which does not actually call the function, but simulates the call by using
+the manually input values.
 
-Allow for an option play a sound upon entry/engagement of a
-particular breakpoint or codepoint.
-
-Best regards,
-Rick C. Hodgin
+-----
+Jan.08.2016 -- Allow for an option play a sound upon entry/engagement of
+a particular breakpoint or codepoint.
