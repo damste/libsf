@@ -348,11 +348,11 @@
 		//////
 			iVariable_set_logical	(obj->ev.varCtrl_onKeyDown,			((tlCtrl)		? _LOGICAL_TRUE : _LOGICAL_FALSE));
 			iVariable_set_logical	(obj->ev.varAlt_onKeyDown,			((tlAlt)		? _LOGICAL_TRUE : _LOGICAL_FALSE));
-			iVariable_set_logical	(obj->ev.varShift_onKeyDown,			((tlShift)		? _LOGICAL_TRUE : _LOGICAL_FALSE));
+			iVariable_set_logical	(obj->ev.varShift_onKeyDown,		((tlShift)		? _LOGICAL_TRUE : _LOGICAL_FALSE));
 			iVariable_set_logical	(obj->ev.varCaps_onKeyDown,			((tlCaps)		? _LOGICAL_TRUE : _LOGICAL_FALSE));
-			iVariable_set_u16		(obj->ev.varAsciiChar_onKeyDown,		tnAsciiChar);
+			iVariable_set_u16		(obj->ev.varAsciiChar_onKeyDown,	tnAsciiChar);
 			iVariable_set_s16		(obj->ev.varVKey_onKeyDown,			tvKey);
-			iVariable_set_logical	(obj->ev.varIsCAS_onKeyDown,			((tlIsCAS)		? _LOGICAL_TRUE : _LOGICAL_FALSE));
+			iVariable_set_logical	(obj->ev.varIsCAS_onKeyDown,		((tlIsCAS)		? _LOGICAL_TRUE : _LOGICAL_FALSE));
 			iVariable_set_logical	(obj->ev.varIsAscii_onKeyDown,		((tlIsAscii)	? _LOGICAL_TRUE : _LOGICAL_FALSE));
 
 

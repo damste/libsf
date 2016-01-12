@@ -598,13 +598,13 @@
 				return(false);	// Do not continue consuming
 			}
 			*tlCtrl		= iiVariable_getAs_bool(varCtrl,		false, NULL, NULL);
-			*tlAlt		= iiVariable_getAs_bool(varAlt,		false, NULL, NULL);
+			*tlAlt		= iiVariable_getAs_bool(varAlt,			false, NULL, NULL);
 			*tlShift	= iiVariable_getAs_bool(varShift,		false, NULL, NULL);
 			*tlCaps		= iiVariable_getAs_bool(varCaps,		false, NULL, NULL);
 			*tlIsCAS	= iiVariable_getAs_bool(varIsCAS,		false, NULL, NULL);
-			*tlIsAscii	= iiVariable_getAs_bool(varIsAscii,	false, NULL, NULL);
+			*tlIsAscii	= iiVariable_getAs_bool(varIsAscii,		false, NULL, NULL);
 			*lcAscii	= iiVariable_getAs_s16(varAscii,		false, NULL, NULL);
-			*lnVKey		= iiVariable_getAs_u16(varVKey,		false, NULL, NULL);
+			*lnVKey		= iiVariable_getAs_u16(varVKey,			false, NULL, NULL);
 
 
 		//////////
