@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_UNIT_TEST"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_UNIT_TEST;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -115,7 +115,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_UNIT_TEST"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_UNIT_TEST;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -167,7 +167,7 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Source Files"
+			Name="source"
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
@@ -181,10 +181,14 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="Header Files"
+			Name="headers"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath="..\..\..\common_types.h"
+				>
+			</File>
 			<File
 				RelativePath="..\..\console_const.h"
 				>
@@ -194,12 +198,16 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\console_globals.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\console_structs.h"
 				>
 			</File>
 		</Filter>
 		<Filter
-			Name="custom"
+			Name="os_specific"
 			>
 			<File
 				RelativePath="..\..\linux\console_linux.h"
@@ -208,6 +216,26 @@
 			<File
 				RelativePath="..\..\solaris\console_solaris.h"
 				>
+			</File>
+			<File
+				RelativePath="..\..\win\console_win.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\win\console_win.h"

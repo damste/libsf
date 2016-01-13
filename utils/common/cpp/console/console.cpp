@@ -97,10 +97,10 @@
 #ifdef _UNIT_TEST
 	// This code is declared if we're compiling for unit tests
 	// This command-line startup function is defined in xyz\console_xyz.h
-	main_function
+	console_main_function
 	{
 		// The unit tests are defined in xyz\console_xyz.h
-		unit_tests;
+		console_unit_tests;
 	}
 #endif
 
@@ -112,8 +112,37 @@
 // Called to allocate a new console
 //
 //////
-	s32 console_allocate(SDatum* title, s32 tnWidth, s32 tnHeight, s32 tnCharWidth, s32 tnCharHeight, SConCallback* cb)
+	uptr console_allocate(SDatum* title, s32 tnLeft, s32 tnTop, s32 tnWidth, s32 tnHeight, s32 tnCharWidth, s32 tnCharHeight, SConCallback* cb)
 	{
+		SConsole* console;
+
+
+		// Make sure our environment is sane
+		if (cb && iConsole_validateInitialization())
+		{
+			// Actually create the console
+			console = (SConsole*)iBuilder_allocateBytes(gsConsoleRoot, sizeof(SConsole));
+			if (console)
+			{
+				// Initialize and copy
+				memset(console, 0, sizeof(*console));
+				console->left			= tnLeft;
+				console->top			= tnTop;
+				console->width			= tnWidth;
+				console->height			= tnHeight;
+				console->char_width		= tnCharWidth;
+				console->char_height	= tnCharHeight;
+				iDatum_duplicate(&console->title, title);
+
+				// Copy over the callback data
+				memcpy(&console->cb, cb, sizeof(console->cb));
+			}
+
+			// Indicate our handle
+			return((uptr)console);
+		}
+
+		// If we get here, invalid
 		return(-1);
 	}
 
@@ -125,8 +154,48 @@
 // Called to allocate a new console
 //
 //////
-	s32 console_allocate(SDatum* settings, SConCallback* cb)
+	uptr console_allocate(SDatum* settings, SConCallback* cb)
 	{
+		SConsole		console_cb;
+		SConsole*		console;
+		SDatumCallback	dcb;
+
+
+		// Make sure our environment is sane
+		if (settings && cb && iConsole_validateInitialization())
+		{
+			// Iterate through properties
+			memset(&dcb,		0, sizeof(dcb));
+			memset(&console_cb,	0, sizeof(console_cb));
+
+			// Some values that need to be set
+			console_cb.left			= 0;
+			console_cb.top			= 0;
+			console_cb.width		= 80;
+			console_cb.height		= 25;
+			console_cb.char_width	= 8;
+			console_cb.char_height	= 16;
+			iDatum_duplicate(&console_cb.title, "Console Window");
+
+			// Perform the processing
+			dcb.extra1 = &console_cb;
+			dcb._propAndValue_func = (uptr)&iiConsole_setOptions_callback;
+			iProperty_iterate(settings, &dcb);
+
+			// Actually create the console
+			console = (SConsole*)iBuilder_allocateBytes(gsConsoleRoot, sizeof(SConsole));
+			if (console)
+			{
+				// Copy
+				memcpy(console, &console_cb, sizeof(*console));		// Copy what we already setup
+				memcpy(&console->cb, cb, sizeof(console->cb));		// Copy over the callback data
+			}
+
+			// Indicate our handle
+			return((uptr)console);
+		}
+
+		// If we get here, invalid
 		return(-1);
 	}
 
@@ -138,9 +207,25 @@
 // Called to  show or hide a console
 //
 //////
-	s32 console_show(s32 tnHandle, bool tlVisible)
+	s32 console_show(uptr tnHandle, bool tlVisible)
 	{
-		return(-1);
+		SConsole* console;
+
+
+		// Make sure our environment is sane
+		if ((console = iConsole_find_byHandle(tnHandle)))
+		{
+			// If it's changed, set it
+			if (console->visible != tlVisible)
+				console_os_toggle_visible(console);
+
+			// We're good
+			return(_CONSOLE_ERROR__NO_ERROR);
+
+		} else {
+			// Failure
+			return(_CONSOLE_ERROR__HANDLE_NOT_FOUND);
+		}
 	}
 
 
@@ -151,9 +236,24 @@
 // Called to release a previously allocated console
 //
 //////
-	s32 console_release(s32 tnHandle)
+	s32 console_release(uptr tnHandle)
 	{
-		return(-1);
+		SConsole* console;
+
+
+		// Make sure our environment is sane
+		if ((console = iConsole_find_byHandle(tnHandle)))
+		{
+			// If it's changed, set it
+			console_os_release(console);
+
+			// We're good
+			return(_CONSOLE_ERROR__NO_ERROR);
+
+		} else {
+			// Failure
+			return(_CONSOLE_ERROR__HANDLE_NOT_FOUND);
+		}
 	}
 
 
@@ -164,7 +264,64 @@
 // Called to set an option or options for a console
 //
 //////
-	s32 console_set_options(s32 tnHandle, SDatum* options)
+	s32 console_setOptions(uptr tnHandle, SDatum* options)
+	{
+		SConsole*			console;
+		SDatumCallback		cb;
+
+
+		// Make sure our environment is sane
+		if ((console = iConsole_find_byHandle(tnHandle)))
+		{
+			// Iterate through all of the options one-by-one
+			memset(&cb, 0, sizeof(cb));
+			cb._propAndValue_func = (uptr)&iiConsole_setOptions_callback;
+			return(iProperty_iterate(options, &cb));
+		}
+
+		// If we get here, error
+		return(_CONSOLE_ERROR__HANDLE_NOT_FOUND);
+	}
+
+	// Callback iterated through every option from iProperty_iterate() in console_setOptions()
+	bool iiConsole_setOptions_callback(SDatumCallback* cb)
+	{
+		SConsole* console;
+
+
+		// Make sure our environment is sane
+		console = (SConsole*)cb->extra1;
+
+		// See what option they checked
+		     if (console_check_prop(left))			{	console->left			= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(top))			{	console->height			= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(width))			{	console->width			= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(height))		{	console->height			= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(charwidth))		{	console->char_width		= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(charheight))	{	console->char_height	= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(title))			{	iDatum_duplicate(&console->title, &cb->value);					cb->flag1 = true;	}
+		else if (console_check_prop(visible))
+		{												/*Visible accepts Yes, yes, True, true, .T., .t., 1*/
+														console->visible		= (console_check_value(yes) || console_check_value(true) || console_check_value(dot_t_dot) || iDatum_getAs_s32(&cb->value) != 0);
+														cb->flag1				= true;
+		} else {
+			// Unknown, so just ignore it
+			iConsole_silentError_passThru();
+		}
+		
+		// Indicate more properties should be sent
+		return(true);
+	}
+
+
+
+
+//////////
+//
+// Called to set the font to use from this point forward (until changed in the future)
+//
+//////
+	s32 console_setFont(uptr tnHandle, s32 tnX, s32 tnY, SDatum* fontName, s32 tnPointSize, bool tlBold, bool tlItalic, bool tlUnderline)
 	{
 		return(-1);
 	}
@@ -177,20 +334,7 @@
 // Called to set the font to use from this point forward (until changed in the future)
 //
 //////
-	s32 console_set_font(s32 tnHandle, s32 tnX, s32 tnY, SDatum* fontName, s32 tnPointSize, bool tlBold, bool tlItalic, bool tlUnderline)
-	{
-		return(-1);
-	}
-
-
-
-
-//////////
-//
-// Called to set the font to use from this point forward (until changed in the future)
-//
-//////
-	s32 console_set_font(s32 tnHandle, s32 tnX, s32 tnY, SDatum* fontData)
+	s32 console_setFont(uptr tnHandle, s32 tnX, s32 tnY, SDatum* fontData)
 	{
 		return(-1);
 	}
@@ -203,7 +347,7 @@
 // Called to get the current font
 //
 //////
-	s32 console_get_font(s32 tnHandle, s32 tnX, s32 tnY, SDatum* fontName, s32* tnPointSize, bool* tlBold, bool* tlItalic, bool* tlUnderline)
+	s32 console_getFont(uptr tnHandle, s32 tnX, s32 tnY, SDatum* fontName, s32* tnPointSize, bool* tlBold, bool* tlItalic, bool* tlUnderline)
 	{
 		return(-1);
 	}
@@ -216,7 +360,7 @@
 // Called to get the current font
 //
 //////
-	s32 console_get_font(s32 tnHandle, s32 tnX, s32 tnY, SDatum* fontData)
+	s32 console_getFont(uptr tnHandle, s32 tnX, s32 tnY, SDatum* fontData)
 	{
 		return(-1);
 	}
@@ -229,7 +373,7 @@
 // Called to write some text to the console
 //
 //////
-	s32 console_pushN(s32 tnHandle, s32 tnX, s32 tnY, s32 tnCount, SBgra color, SDatum* text, bool tlWrap)
+	s32 console_push(uptr tnHandle, s32 tnX, s32 tnY, s32 tnCount, SBgra color, SDatum* text, bool tlWrap)
 	{
 		return(-1);
 	}
@@ -242,7 +386,7 @@
 // Called to read some text from the console
 //
 //////
-	s32 console_pullN(s32 tnHandle, s32 tnX, s32 tnY, s32 tnCount, SDatum* textOut)
+	s32 console_pullN(uptr tnHandle, s32 tnX, s32 tnY, s32 tnCount, SDatum* textOut)
 	{
 		return(-1);
 	}
@@ -255,7 +399,78 @@
 // Called to get the attributes of a specific character
 //
 //////
-	s32 console_pull1(s32 tnHandle, s32 tnX, s32 tnY, u8* c, SBgra* color, bool* tlBold, bool* tlItalic, bool* tlUnderline)
+	s32 console_pull1(uptr tnHandle, s32 tnX, s32 tnY, u8* c, SBgra* color, bool* tlBold, bool* tlItalic, bool* tlUnderline)
 	{
 		return(-1);
+	}
+
+
+
+
+//////////
+//
+// Validate that we have gsRootConsole allocated,
+// and any OS-specific initialization completed
+//
+//////
+	bool iConsole_validateInitialization(void)
+	{
+		bool llResult;
+
+
+		// Make sure we have a root console buffer
+		if (!gsConsoleRoot)
+		{
+			// Allocate
+			iBuilder_createAndInitialize(&gsConsoleRoot, sizeof(SConsole) * 40);
+			llResult = (gsConsoleRoot != NULL);
+
+		} else {
+			// We're good
+			llResult = true;
+		}
+
+		// Conclude with any OS initialization
+		return(llResult |= console_os_validate_initialization());
+	}
+
+
+
+
+//////////
+//
+// Searches for the indicated console
+//
+//////
+	SConsole* iConsole_find_byHandle(uptr tnHandle)
+	{
+		SConsole* console;
+
+
+		// See if we're good
+		if ((SConsole*)iBuilder_isPointer(gsConsoleRoot, tnHandle, (void**)&console))
+		{
+			// It's a valid pointer
+			return(console);
+
+		} else {
+			// Invalid
+			return(NULL);
+		}
+	}
+
+
+
+
+//////////
+//
+// Called various places where something unexpected happened.
+// Used during development only, intended to help find bugs.
+//
+//////
+	void iConsole_silentError_passThru(void)
+	{
+		// Does nothing except trap the condition
+		// Un-comment this code to put a breakpoint here
+		// _asm nop;
 	}

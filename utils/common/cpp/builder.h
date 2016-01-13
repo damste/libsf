@@ -108,7 +108,7 @@ struct SDatum;
 //////
 	void		iBuilder_verifySizeForNewBytes				(SBuilder* buffRoot, u32 tnDataLength);
 	void		iBuilder_createAndInitialize				(SBuilder** buffRoot, u32 tnAllocationBlockSize);
-	bool		iBuilder_isPointer							(SBuilder* buffRoot, uptr testptr);
+	bool		iBuilder_isPointer							(SBuilder* buffRoot, uptr testptr, void** outPtr = NULL);
 	cs8*		iBuilder_appendData							(SBuilder* buffRoot, SDatum* data);
 	cs8*		iBuilder_appendData							(SBuilder* buffRoot, cs8* tcData, u32 tnDataLength);
 	cu8*		iBuilder_appendData							(SBuilder* buffRoot, cu8* tcData, u32 tnDataLength);

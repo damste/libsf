@@ -2,6 +2,17 @@ Ideas for debugger enhancements
 by Rick C. Hodgin
 -------------------------------
 
+Jan.13.2016 -- Two options:
+
+#1 An option to allow a "Continue Until Another Breakpoint Is Hit" to
+prevent the current breakpoint from being hit on every iteration of a
+loop, for example.
+
+#2 An augment to the Jan.08.2016 idea of playing a sound, an option
+to display an image near the breakpoint line so that it can be parsed
+rather than reading the source line.
+
+-----
 Jan.12.2016 -- An option to perform a simulated call on a function, which
 has its return values and parameters updated by manual settings, with the
 ability to maintain a history of values used.  A new Sim-Step ability,

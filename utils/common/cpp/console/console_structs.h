@@ -188,7 +188,6 @@ struct SConsole
 {
 	SConCallback	cb;					// Callback info
 
-
 	// Position and size
 	s32				left;				// Upper-left X coordinate of window
 	s32				top;				// Upper-left Y coordinate of window
@@ -207,4 +206,7 @@ struct SConsole
 	bool			visible;			// Display
 	bool			allow_input;		// Should input be returned?
 	bool			allow_output;		// Should output be returned?
+
+	// OS specific info
+	console_os_struct_variables
 };

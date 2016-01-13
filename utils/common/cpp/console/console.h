@@ -90,16 +90,44 @@
 
 
 
-#if defined(_WINDOWS)
-	#include "win\console_win.h"
-#elif defined(_LINUX)
-	#include "linux\console_linux.h"
-#elif defined(_SOLARIS)
-	#include "solaris\console_solaris.h"
-#endif
+//////////
+// OS-specific header files
+//////
+	#if defined(_WINDOWS)
+		#include "win\console_win.h"
+	#elif defined(_LINUX)
+		#include "linux\console_linux.h"
+	#elif defined(_SOLARIS)
+		#include "solaris\console_solaris.h"
+	#endif
 
-#include "..\datum.h"
 
-#include "console_structs.h"
-#include "console_defs.h"
-#include "console_const.h"
+//////////
+// Console-specific header files
+//////
+	#include "..\builder.h"
+	#include "..\datum.h"
+
+	#include "console_structs.h"
+	#include "console_defs.h"
+	#include "console_const.h"
+	#include "console_globals.h"
+
+
+//////////
+// Console-specific code
+//////
+	#include "..\builder.cpp"
+	#include "..\datum.cpp"
+
+
+//////////
+// OS-specific code
+//////
+	#if defined(_WINDOWS)
+		#include "win\console_win.cpp"
+	#elif defined(_LINUX)
+		#include "linux\console_linux.cpp"
+	#elif defined(_SOLARIS)
+		#include "solaris\console_solaris.cpp"
+	#endif

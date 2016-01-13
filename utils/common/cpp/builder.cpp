@@ -188,15 +188,28 @@
 //		true	-- buffRoot is valid, and the testptr is in range
 //		false	-- Either buffRoot is invalid, or testptr is not in range
 //////
-	bool iBuilder_isPointer(SBuilder* buffRoot, uptr testptr)
+	bool iBuilder_isPointer(SBuilder* buffRoot, uptr testptr, void** outPtr)
 	{
 		if (buffRoot)
 		{
 			// It must fall in [range) to be considered valid
 			if (testptr >= buffRoot->_data && testptr < (buffRoot->_data + buffRoot->populatedLength))
+			{
+				// Set the pointer if specified
+				if (outPtr)
+					*outPtr = (void*)testptr;
+
+				// Indicate success
 				return(true);
+			}
 		}
 		// If we get here, not a pointer of this buffRoot
+
+		// Clear the pointer
+		if (outPtr)
+			*outPtr = NULL;
+
+		// Indicate failure
 		return(false);
 	}
 

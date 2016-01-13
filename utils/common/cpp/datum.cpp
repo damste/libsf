@@ -227,6 +227,16 @@
 		}
 	}
 
+	SDatum* iDatum_duplicate(SDatum* datum)
+	{
+		// Duplicate if possible
+		if (datum && datum->_data && datum->length > 0)
+			return(iDatum_allocate(datum->data, datum->length));
+
+		// If we get here, invalid
+		return(NULL);
+	}
+
 #ifdef _SCOMP_DEFINED
 	void iDatum_duplicate_fromComp(SDatum* datum, SComp* comp)
 	{
@@ -253,6 +263,16 @@
 		return(datum);
 	}
 #endif
+
+	s32 iDatum_getAs_s32(SDatum* datum)
+	{
+		return(((datum && datum->_data && datum->length > 1) ? atoi(datum->data) : 0));
+	}
+
+	s64 iDatum_getAs_s64(SDatum* datum)
+	{
+		return(((datum && datum->_data && datum->length > 1) ? _atoi64(datum->data) : 0));
+	}
 
 	bool iDatum_resize(SDatum* datum, s32 newDataLength)
 	{
@@ -404,8 +424,8 @@
 // Combined properties
 //
 //////
-#ifdef _SCOMP_DEFINED
 #ifdef _SPROPERTY_DEFINED
+#ifdef _SCOMP_DEFINED
 	SProperty* iProperty_allocateAs_character_fromComp(SComp* name, SComp* value, s32 tnOverrideNameLength, s32 tnOverrideValueLength)
 	{
 		s32 lnNameLength, lnValueLength;
@@ -426,11 +446,15 @@
 			return(NULL);
 		}
 	}
+#endif
 
 	SProperty* iProperty_allocateAs_character(cu8* tcName, s32 tnNameLength, cu8* tcValue, s32 tnValueLength)
 	{
 		SDatum*		name;
+#ifdef _SCOMP_DEFINED
 		SVariable*	value;
+#endif
+		SDatum*		value_datum;
 		SProperty*	p;
 
 
@@ -443,6 +467,8 @@
 			if (name)
 			{
 				// Allocate the value
+#ifdef _SCOMP_DEFINED
+				// Allocate as a variable
 				value = iVariable_createAndPopulate_byText(iiVariable_getType_character(), tcValue, tnValueLength, false);
 				if (value)
 				{
@@ -458,6 +484,24 @@
 						// Failure on creating the property
 						iDatum_delete(&name);
 						iVariable_delete(&value);
+					}
+				}
+#endif
+				// Allocate as a datum
+				value_datum = iDatum_allocate(tcValue, tnValueLength);
+				if (value_datum)
+				{
+					// Allocate a property
+					p = iiProperty_allocate(name, NULL, value_datum);
+					if (p)
+					{
+						// Both were allocated
+						p->name_allocated = true;
+
+					} else {
+						// Failure on creating the property
+						iDatum_delete(&name);
+						iDatum_delete(&value_datum);
 					}
 
 				} else {
@@ -499,14 +543,28 @@
 	SProperty* iProperty_allocateAs_s32(SDatum* name, s32 tnValue)
 	{
 		SProperty*	p;
+#ifdef _SCOMP_DEFINED
 		SVariable*	value;
+#endif
+		SDatum*		value_datum;
+		s8			buffer[32];
 
 
 		// Make sure our environment is sane
 		p = NULL;
 		if (name)
 		{
+			// Store the value
+			sprintf(buffer, "%d", tnValue);
+			value_datum	= iDatum_allocate(buffer);
+			if (value_datum)
+			{
+				// Create the property
+				p = iiProperty_allocate(name, NULL, value_datum);
+			}
+
 			// Create a variable
+#ifdef _SCOMP_DEFINED
 			value = iVariable_createAndPopulate_byText(iiVariable_getType_s32(), (cs8*)&tnValue, 4, false);
 			if (value)
 			{
@@ -516,13 +574,14 @@
 					p->value_allocated = true;
 
 			}
+#endif
 		}
 
 		// Indicate our property
 		return(p);
 	}
 
-	SProperty* iiProperty_allocate(SDatum* name, SVariable* value)
+	SProperty* iiProperty_allocate(SDatum* name, SVariable* value, SDatum* value_datum)
 	{
 		SProperty*	p;
 
@@ -532,8 +591,9 @@
 		if (p)
 		{
 			// Pass-thru whatever they send, NULL or otherwise
-			p->name		= name;
-			p->value	= value;
+			p->name			= name;
+			p->value		= value;
+			p->value_datum	= value_datum;
 		}
 
 		// Indicate our new property
@@ -560,8 +620,23 @@
 		if (p)
 		{
 			// Clean up the name and value
-			if (p->name  && p->name_allocated)		iDatum_delete(&p->name);
-			if (p->value && p->value_allocated)		iVariable_delete(&p->value);
+			if (p->name  && p->name_allocated)
+				iDatum_delete(&p->name);
+
+			// If it's a datum, delete it
+			if (p->value_datum)
+			{
+				// value_datum's are always allocated
+				iDatum_delete(&p->value_datum);
+			}
+
+#ifdef _SCOMP_DEFINED
+			if (p->value && p->value_allocated)
+			{
+				// Delete the variable
+				iVariable_delete(&p->value);
+			}
+#endif
 
 			// Delete self
 			if (tlDeleteSelf)
@@ -571,5 +646,41 @@
 		// Pass-thru
 		return(p);
 	}
-#endif
+
+	// Called to iterate through every property and return its value, from a list like this:
+	//		propName1 = value1			// Sends [propName1] and [value1] to cb->propAndValue_func()
+	//		prop2 = "text2"				// Sends [prop2] and ["text2"] to cb->propAndValue_func()
+	//		property3 = val3			// Sends [property3] and [val3] to cb->propAndValue_func()
+	//
+	// Returns the number of properties dispatched into cb->propAndValue_func()
+	s32 iProperty_iterate(SDatum* properties, SDatumCallback* cb)
+	{
+		s32 lnI;
+
+
+		// Make sure our environment is sane
+		if (properties && properties->_data && properties->length > 0 && cb)
+		{
+			// Iterate through line after line looking for:
+			//
+			//		[x][=]["]...["]
+			//		[x][=][y]
+			//
+			// (1) Sets prop to [x], and value to ["..."] or [y]
+			// (2) Whitespaces before and after [x] are ignored
+			// (3) Whitespaces after [=] are ignored
+			// (4) Everything after ["..."] or [y] is ignored to CR/LF
+			for (lnI = 0; lnI < properties->length; )
+			{
+// TODO:  working here
+// 				cb->prop.data		= ;
+// 				cb->prop.length		= ;
+// 				cb->value.data		= ;
+// 				cb->value.length	= ;
+			}
+		}
+
+		// If we get here, invalid
+		return(0);
+	}
 #endif

@@ -96,14 +96,20 @@
 
 #include "..\common_types.h"
 
+struct SConsole;
 
 
 
 //////////
 // Startup code
 //////
-	#define main_function int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
-	#define unit_tests console_win_unit_test(hInstance, hPrevInstance, lpCmdLine, nCmdShow)
+	#define console_main_function					int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+	#define console_unit_tests						console_win_unit_test(hInstance, hPrevInstance, lpCmdLine, nCmdShow)
+	#define console_os_validate_initialization		console_win_validateInitialization
+	#define console_os_toggle_visible				console_win_toggle_visible
+	#define console_os_release						console_win_release
+	#define console_os_struct_variables				HWND hwnd;	\
+													RECT rc;
 
 
 
@@ -120,100 +126,10 @@
 //////////
 // Forward declarations
 //////
-	int			console_win_unit_test(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);
+	int			console_win_unit_test				(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);
+	bool		console_win_validateInitialization	(void);
+	void		console_win_toggle_visible			(SConsole* console);
+	void		console_win_release					(SConsole* console);
 // 	ATOM		MyRegisterClass(void)
 // 	BOOL		InitInstance(void)
 // 	LRESULT		CALLBACK console_wndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-
-
-
-
-//////////
-//
-// Called for unit testing
-//
-//////
-	int console_win_unit_test(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
-	{
-		MSG msg;
-
-
-		// Initialize
-		ghInstance = hInstance;
-// 		MyRegisterClass(hInstance);
-// 		if (!InitInstance(hInstance, nCmdShow))
-// 			return FALSE;
-
-		// Main message loop:
-		while (GetMessage(&msg, NULL, 0, 0))
-			DispatchMessage(&msg);
-
-		return (int) msg.wParam;
-	}
-
-
-
-
-// ATOM MyRegisterClass(void)
-// {
-// 	WNDCLASSEX wcex;
-// 
-// 	wcex.cbSize			= sizeof(WNDCLASSEX);
-// 	wcex.style			= CS_HREDRAW | CS_VREDRAW;
-// 	wcex.lpfnWndProc	= console_wndProc;
-// 	wcex.cbClsExtra		= 0;
-// 	wcex.cbWndExtra		= 0;
-// 	wcex.hInstance		= ghInstance;
-// 	wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
-// 	wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+1);
-// 	wcex.lpszClassName	= cgc_consoleClass;
-// 
-// 	return RegisterClassEx(&wcex);
-// }
-// 
-// HWND InitInstance(SConsole* console)
-// {
-// 	HWND lhWnd;
-// 
-// 	// Create
-// 	if (!(lhWnd = CreateWindow(cgc_consoleClass, console->title, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, ghInstance, NULL)))
-// 		return FALSE;
-// 
-// 	// Display if need be
-// 	if (console->visible)
-// 	{
-// 		ShowWindow(lhWnd, SW_SHOW);
-// 		UpdateWindow(lhWnd);
-// 	}
-// 
-// 	return(lhWnd);
-// }
-// 
-// LRESULT CALLBACK console_wndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-// {
-// 	int				wmId, wmEvent;
-// 	PAINTSTRUCT		ps;
-// 	HDC				hdc;
-// 
-// 	switch (message)
-// 	{
-// 		case WM_COMMAND:
-// 			wmId    = LOWORD(wParam);
-// 			wmEvent = HIWORD(wParam);
-// 			break;
-// 
-// 		case WM_PAINT:
-// 			hdc = BeginPaint(hWnd, &ps);
-// 			// TODO: Add any drawing code here...
-// 			EndPaint(hWnd, &ps);
-// 			break;
-// 
-// 		case WM_DESTROY:
-// 			PostQuitMessage(0);
-// 			break;
-// 
-// 		default:
-// 			return DefWindowProc(hWnd, message, wParam, lParam);
-// 	}
-// 	return 0;
-// }

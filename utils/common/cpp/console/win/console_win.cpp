@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/utils/common/cpp/console/console_const.h
+// /libsf/utils/common/cpp/console/win/console_win.cpp
 //
 //////
 //    _     _ _     _____ _____
@@ -22,10 +22,10 @@
 // Copyright (c) 2016 by Rick C. Hodgin
 //////
 // Last update:
-//     Jan.12.2016
+//     Jan.13.2016
 //////
 // Change log:
-//     Jan.12.2016 - Initial creation
+//     Jan.13.2016 - Initial creation
 //////
 //
 // This document is released as Liberty Software under a Repeat License, as governed
@@ -90,30 +90,147 @@
 
 
 
-//////////
-// Returned error codes
-//////
-	cs32		_CONSOLE_ERROR__NO_ERROR				= 0;
-	cs32		_CONSOLE_ERROR__HANDLE_NOT_FOUND		= -1;
-
 
 //////////
-// Properties
+//
+// Called for unit testing
+//
 //////
-	cs8			cgc_left[]								= "left";
-	cs8			cgc_top[]								= "top";
-	cs8			cgc_width[]								= "width";
-	cs8			cgc_height[]							= "height";
-	cs8			cgc_charwidth[]							= "charwidth";
-	cs8			cgc_charheight[]						= "charheight";
-	cs8			cgc_title[]								= "title";
-	cs8			cgc_visible[]							= "visible";
-	cs8			cgc_yes[]								= "yes";
-	cs8			cgc_true[]								= "true";
-	cs8			cgc_dot_t_dot[]							= ".t.";
+	int console_win_unit_test(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+	{
+		MSG msg;
 
-	// Helper macro to make searching for properties easier
-	// Use as:  if (console_check_prop(width))
-	//			if (console_check_value(yes))
-	#define console_check_prop(x)	(cb->prop.length  == sizeof(cgc_##x) - 1 && _memicmp(cb->prop.data_cs8,  cgc_##x, cb->prop.length)  == 0)
-	#define console_check_value(x)	(cb->value.length == sizeof(cgc_##x) - 1 && _memicmp(cb->value.data_cs8, cgc_##x, cb->value.length) == 0)
+
+		// Initialize
+		ghInstance = hInstance;
+// 		MyRegisterClass(hInstance);
+// 		if (!InitInstance(hInstance, nCmdShow))
+// 			return FALSE;
+
+		// Main message loop:
+		while (GetMessage(&msg, NULL, 0, 0))
+			DispatchMessage(&msg);
+
+		return (int) msg.wParam;
+	}
+
+
+
+
+//////////
+//
+// Called to make sure our Windows prerequisites have been setup
+//
+//////
+	bool console_win_validateInitialization(void)
+	{
+		return(false);
+	}
+
+
+
+
+/////////
+//
+// Called to toggle the visible state, which either shows or hides
+//
+//////
+	void console_win_toggle_visible(SConsole* console)
+	{
+		if (console->hwnd && IsWindow(console->hwnd))
+		{
+			// Toggle
+			console->visible = !console->visible;
+
+			// Show or hide the window
+			ShowWindow(console->hwnd, ((console->visible) ? SW_SHOW : SW_HIDE));
+
+			// Redraw everything
+			InvalidateRect(console->hwnd, NULL, false);
+		}
+	}
+
+
+
+
+//////////
+//
+// 
+//
+//////
+	void console_win_release(SConsole* console)
+	{
+		if (console->hwnd && IsWindow(console->hwnd))
+		{
+			// Release the window
+			DestroyWindow(console->hwnd);
+			console->hwnd = NULL;
+		}
+	}
+
+
+
+
+// ATOM MyRegisterClass(void)
+// {
+// 	WNDCLASSEX wcex;
+// 
+// 	wcex.cbSize			= sizeof(WNDCLASSEX);
+// 	wcex.style			= CS_HREDRAW | CS_VREDRAW;
+// 	wcex.lpfnWndProc	= console_wndProc;
+// 	wcex.cbClsExtra		= 0;
+// 	wcex.cbWndExtra		= 0;
+// 	wcex.hInstance		= ghInstance;
+// 	wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
+// 	wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+1);
+// 	wcex.lpszClassName	= cgc_consoleClass;
+// 
+// 	return RegisterClassEx(&wcex);
+// }
+// 
+// HWND InitInstance(SConsole* console)
+// {
+// 	HWND lhWnd;
+// 
+// 	// Create
+// 	if (!(lhWnd = CreateWindow(cgc_consoleClass, console->title, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, ghInstance, NULL)))
+// 		return FALSE;
+// 
+// 	// Display if need be
+// 	if (console->visible)
+// 	{
+// 		ShowWindow(lhWnd, SW_SHOW);
+// 		UpdateWindow(lhWnd);
+// 	}
+// 
+// 	return(lhWnd);
+// }
+// 
+// LRESULT CALLBACK console_wndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+// {
+// 	int				wmId, wmEvent;
+// 	PAINTSTRUCT		ps;
+// 	HDC				hdc;
+// 
+// 	switch (message)
+// 	{
+// 		case WM_COMMAND:
+// 			wmId    = LOWORD(wParam);
+// 			wmEvent = HIWORD(wParam);
+// 			break;
+// 
+// 		case WM_PAINT:
+// 			hdc = BeginPaint(hWnd, &ps);
+// 			// TODO: Add any drawing code here...
+// 			EndPaint(hWnd, &ps);
+// 			break;
+// 
+// 		case WM_DESTROY:
+// 			PostQuitMessage(0);
+// 			break;
+// 
+// 		default:
+// 			return DefWindowProc(hWnd, message, wParam, lParam);
+// 	}
+// 	return 0;
+// }

@@ -93,18 +93,27 @@
 //////////
 // console.cpp
 //////
-	s32				console_allocate					(SDatum* title, s32 tnWidth, s32 tnHeight, s32 tnCharWidth, s32 tnCharHeight, SConCallback* cb);
-	s32				console_allocate					(SDatum* settings, SConCallback* cb);
-	s32				console_show						(s32 tnHandle, bool tlVisible);
-	s32				console_release						(s32 tnHandle);
+	uptr			console_allocate					(SDatum* title, s32 tnLeft, s32 tnTop, s32 tnWidth, s32 tnHeight, s32 tnCharWidth, s32 tnCharHeight, SConCallback* cb);
+	uptr			console_allocate					(SDatum* settings, SConCallback* cb);
+	s32				console_show						(uptr tnHandle, bool tlVisible);
+	s32				console_release						(uptr tnHandle);
 
-	s32				console_set_options					(s32 tnHandle, SDatum* options);
+	// Sets title, width, height, charwidth, charheight, and visible
+	s32				console_setOptions					(uptr tnHandle, SDatum* options);
+	bool			iiConsole_setOptions_callback		(SDatumCallback* cb);
 
-	s32				console_set_font					(s32 tnHandle, s32 tnX, s32 tnY, SDatum* fontName, s32 tnPointSize, bool tlBold, bool tlItalic, bool tlUnderline);
-	s32				console_set_font					(s32 tnHandle, s32 tnX, s32 tnY, SDatum* fontData);
-	s32				console_get_font					(s32 tnHandle, s32 tnX, s32 tnY, SDatum* fontName, s32* tnPointSize, bool* tlBold, bool* tlItalic, bool* tlUnderline);
-	s32				console_get_font					(s32 tnHandle, s32 tnX, s32 tnY, SDatum* fontData);
+	// Set the active font (to use for the console_push() operations until changed again)
+	s32				console_setFont						(uptr tnHandle, s32 tnX, s32 tnY, SDatum* fontName, s32 tnPointSize, bool tlBold, bool tlItalic, bool tlUnderline);
+	s32				console_setFont						(uptr tnHandle, s32 tnX, s32 tnY, SDatum* fontData);
+	s32				console_getFont						(uptr tnHandle, s32 tnX, s32 tnY, SDatum* fontName, s32* tnPointSize, bool* tlBold, bool* tlItalic, bool* tlUnderline);
+	s32				console_getFont						(uptr tnHandle, s32 tnX, s32 tnY, SDatum* fontData);
 
-	s32				console_pushN						(s32 tnHandle, s32 tnX, s32 tnY, s32 tnCount, SBgra color, SDatum* text, bool tlWrap);
-	s32				console_pullN						(s32 tnHandle, s32 tnX, s32 tnY, s32 tnCount, SDatum* textOut);
-	s32				console_pull1						(s32 tnHandle, s32 tnX, s32 tnY, u8* c, SBgra* color, bool* tlBold, bool* tlItalic, bool* tlUnderline);
+	// Push content to the screen, pull content from the screen
+	s32				console_push						(uptr tnHandle, s32 tnX, s32 tnY, s32 tnCount, SBgra color, SDatum* text, bool tlWrap);
+	s32				console_pullN						(uptr tnHandle, s32 tnX, s32 tnY, s32 tnCount, SDatum* textOut);
+	s32				console_pull1						(uptr tnHandle, s32 tnX, s32 tnY, u8* c, SBgra* color, bool* tlBold, bool* tlItalic, bool* tlUnderline);
+
+	// Internal functions
+	bool			iConsole_validateInitialization		(void);
+	SConsole*		iConsole_find_byHandle				(uptr tnHandle);
+	void			iConsole_silentError_passThru		(void);

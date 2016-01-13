@@ -92,9 +92,11 @@
 #else
 	// Used for pointer sizes that mate up with pointers, but are actually integers
 	#if !defined(__64_BIT_COMPILER__)
+		// 32-bit compiler
 		#define uptr unsigned int
 		#define sptr int
 	#else
+		// 64-bit compiler
 		#define uptr unsigned __int64
 		#define sptr __int64
 	#endif

@@ -143,6 +143,25 @@ struct SVariable;
 		s32				length;					// Content length
 	};
 
+	struct SDatumCallback
+	{
+		// When propAndVAlue_func() is called, these will be populated, access with cb->prop and cb->value
+		SDatum		prop;
+		SDatum		value;
+
+		// General purpose values available
+		void*		extra1;
+		void*		extra2;
+		bool		flag1;
+		bool		flag2;
+
+		// Callback, returns true if it should continue iterating
+		union {
+			uptr	_propAndValue_func;
+			bool	(*propAndValue_func)		(SDatumCallback* cb);
+		};
+	};
+
 	#define _SPROPERTY_DEFINED 1
 	struct SProperty
 	{
@@ -150,7 +169,10 @@ struct SVariable;
 		bool		value_allocated;			// Was the value datum allocated?
 
 		SDatum*		name;						// Name for this property
+
+		bool		isValueDatum;				// If the value is stored as a datum
 		SVariable*	value;						// Value for this name
+		SDatum*		value_datum;				// Value for this name
 	};
 
 
@@ -160,15 +182,19 @@ struct SVariable;
 	SDatum*					iDatum_allocate							(cu8* data,			s32 dataLength = -1);
 	SDatum*					iDatum_allocate							( u8* data,			s32 dataLength = -1);
 
-	void					iDatum_duplicate						(SDatum* datum,  u8* data, s32 dataLength);
-	void					iDatum_duplicate						(SDatum* datum,  s8* data, s32 dataLength);
-	void					iDatum_duplicate						(SDatum* datum, cu8* data, s32 dataLength);
-	void					iDatum_duplicate						(SDatum* datum, cs8* data, s32 dataLength);
+	void					iDatum_duplicate						(SDatum* datum,  u8* data, s32 dataLength = -1);
+	void					iDatum_duplicate						(SDatum* datum,  s8* data, s32 dataLength = -1);
+	void					iDatum_duplicate						(SDatum* datum, cu8* data, s32 dataLength = -1);
+	void					iDatum_duplicate						(SDatum* datum, cs8* data, s32 dataLength = -1);
 	void					iDatum_duplicate						(SDatum* datumDst, SDatum* datumSrc);
 	void					iDatum_duplicate_byRef					(SDatum* datumDst, SDatum* datumSrc);
+	SDatum*					iDatum_duplicate						(SDatum* datum);
 	void					iDatum_duplicate_fromComp				(SDatum* datum, SComp* comp);
 	void					iiDatum_duplicate_fromComp				(SDatum* datum, SComp* comp);
 	SDatum*					iDatum_populate_fromComp				(SDatum* datum, SComp* comp);
+
+	s32						iDatum_getAs_s32						(SDatum* datum);
+	s64						iDatum_getAs_s64						(SDatum* datum);
 
 	bool					iDatum_resize							(SDatum* datum, s32 newDataLength);
 	s32						iDatum_compare							(SDatum* datumLeft, SDatum* datumRight);
@@ -184,8 +210,9 @@ struct SVariable;
 	SProperty*				iProperty_allocateAs_character			(cu8* tcName, s32 tnNameLength, cu8* tcValue, s32 tnValueLength);
 	SProperty*				iProperty_allocateAs_s32				(cu8* tcName, s32 tnNameLength, s32 tnValue);
 	SProperty*				iProperty_allocateAs_s32				(SDatum* name, s32 tnValue);
-	SProperty*				iiProperty_allocate						(SDatum* name, SVariable* value);
+	SProperty*				iiProperty_allocate						(SDatum* name, SVariable* value, SDatum* value_datum = NULL);
 	void					iProperty_delete						(SProperty** p);
 	SProperty*				iProperty_delete						(SProperty* p, bool tlDeleteSelf);
+	s32						iProperty_iterate						(SDatum* properties, SDatumCallback* cb);
 
 #endif
