@@ -95,6 +95,8 @@
 //////
 	cs32		_CONSOLE_ERROR__NO_ERROR				= 0;
 	cs32		_CONSOLE_ERROR__HANDLE_NOT_FOUND		= -1;
+	cs32		_CONSOLE_ERROR__CANNOT_ALLOCATE_BUFFER	= -2;
+	cs32		_CONSOLE_ERROR__INVALID_PARAMETERS		= -3;
 
 
 //////////
@@ -106,6 +108,7 @@
 	cs8			cgc_height[]							= "height";
 	cs8			cgc_charwidth[]							= "charwidth";
 	cs8			cgc_charheight[]						= "charheight";
+	cs8			cgc_scrollrows[]						= "scrollrows";
 	cs8			cgc_title[]								= "title";
 	cs8			cgc_visible[]							= "visible";
 	cs8			cgc_yes[]								= "yes";

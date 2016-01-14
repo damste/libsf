@@ -108,12 +108,19 @@
 	s32				console_getFont						(uptr tnHandle, s32 tnX, s32 tnY, SDatum* fontName, s32* tnPointSize, bool* tlBold, bool* tlItalic, bool* tlUnderline);
 	s32				console_getFont						(uptr tnHandle, s32 tnX, s32 tnY, SDatum* fontData);
 
-	// Push content to the screen, pull content from the screen
+	// General write algorithm, processes CR/LF, and auto-scrolls
+	s32				console_print						(uptr tnHandle, SDatum* textOut);
+	s32				console_scroll						(uptr tnHandle, s32 tnRows, bool tlMoveCursor = true);
+
+	// Explicitly push content to the screen, pull content from the screen
 	s32				console_push						(uptr tnHandle, s32 tnX, s32 tnY, s32 tnCount, SBgra color, SDatum* text, bool tlWrap);
 	s32				console_pullN						(uptr tnHandle, s32 tnX, s32 tnY, s32 tnCount, SDatum* textOut);
 	s32				console_pull1						(uptr tnHandle, s32 tnX, s32 tnY, u8* c, SBgra* color, bool* tlBold, bool* tlItalic, bool* tlUnderline);
 
 	// Internal functions
 	bool			iConsole_validateInitialization		(void);
+	bool			iConsole_validateScrollBuffer		(SConsole* console);
 	SConsole*		iConsole_find_byHandle				(uptr tnHandle);
 	void			iConsole_silentError_passThru		(void);
+	void			iiConsole_moveToNextRow				(SConsole* console);
+	void			iiConsole_storeCharacter			(SConsole* console, char c);

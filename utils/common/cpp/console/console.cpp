@@ -299,11 +299,14 @@
 		else if (console_check_prop(height))		{	console->height			= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
 		else if (console_check_prop(charwidth))		{	console->char_width		= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
 		else if (console_check_prop(charheight))	{	console->char_height	= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(scrollcount))	{	console->scrollCount	= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
 		else if (console_check_prop(title))			{	iDatum_duplicate(&console->title, &cb->value);					cb->flag1 = true;	}
 		else if (console_check_prop(visible))
-		{												/*Visible accepts Yes, yes, True, true, .T., .t., 1*/
-														console->visible		= (console_check_value(yes) || console_check_value(true) || console_check_value(dot_t_dot) || iDatum_getAs_s32(&cb->value) != 0);
-														cb->flag1				= true;
+		{
+			// Visible accepts Yes, yes, True, true, .T., .t., 1
+			console->visible		= (console_check_value(yes) || console_check_value(true) || console_check_value(dot_t_dot) || iDatum_getAs_s32(&cb->value) != 0);
+			cb->flag1				= true;
+
 		} else {
 			// Unknown, so just ignore it
 			iConsole_silentError_passThru();
@@ -363,6 +366,86 @@
 	s32 console_getFont(uptr tnHandle, s32 tnX, s32 tnY, SDatum* fontData)
 	{
 		return(-1);
+	}
+
+
+
+
+//////////
+//
+// Called to output text to the console window, only processes CR/LF and TAB characters,
+// the rest are pass-thru displayed.
+//
+//////
+	s32 console_print(uptr tnHandle, SDatum* textOut)
+	{
+		s32			lnI, lnJ;
+		char		c;
+		SConsole*	console;
+
+
+		// See if we have a console
+		if ((console = iConsole_find_byHandle(tnHandle)))
+		{
+			// Make sure we have a scroll buffer
+			if (iConsole_validateScrollBuffer(console))
+			{
+				// Make sure they're printing something valid
+				if (textOut && textOut->_data)
+				{
+					// Begin processing
+					for (lnI = 0; lnI < textOut->length; lnI++)
+					{
+						// Parse out the character
+						c = textOut->data_cs8[lnI];
+						if (c == 13)
+						{
+							// Carriage return
+							console->char_x = 0;
+
+						} else (c == 10) {
+							// Line feed
+							iiConsole_moveToNextRow(console);
+
+						} else (c == 9) {
+							// Tab
+							for (lnJ = console->char_x + 1; lnJ % 4 != 0; )
+								lnJ++;
+
+							// Make sure it's in range
+							console->char_x = min(console->char_x, console->width);
+
+						} else {
+							// Display the output
+							iiConsole_storeCharacter(console, c);
+						}
+					}
+
+				} else {
+					// Something's awry
+					return(_CONSOLE_ERROR__INVALID_PARAMETERS);
+				}
+
+			} else {
+				// Something's awry
+				return(_CONSOLE_ERROR__CANNOT_ALLOCATE_BUFFER);
+			}
+		}
+
+		// Failure
+		return(_CONSOLE_ERROR__HANDLE_NOT_FOUND)
+	}
+
+
+
+
+//////////
+//
+// Called to scroll the console window up or down N-rows
+//
+//////
+	s32 console_scroll(uptr tnHandle, s32 tnRows, bool tlMoveCursor = true)
+	{
 	}
 
 
@@ -439,6 +522,35 @@
 
 //////////
 //
+// Called to make sure the scroll buffer has been allocated,
+// and to allocate it if not.
+//
+//////
+	bool iConsole_validateScrollBuffer(SConsole* console)
+	{
+		// Make sure our environment is sane
+		if (console)
+		{
+			// Do we already have a buffer?
+			if (console->scrollBuffer)
+				return(true);
+
+			// Try to create one
+			iBuilder_createAndInitialize(&console->scrollBuffer, sizeof(SConRow) * max(1000, console->scrollCount));
+
+			// Indicate success or failure
+			return((console->scrollBuffer != NULL));
+		}
+
+		// If we get here, invalid
+		return(false);
+	}
+
+
+
+
+//////////
+//
 // Searches for the indicated console
 //
 //////
@@ -473,4 +585,61 @@
 		// Does nothing except trap the condition
 		// Un-comment this code to put a breakpoint here
 		// _asm nop;
+	}
+
+
+
+
+//////////
+//
+// Move to the next row, which may signal a scroll
+//
+//////
+	void iiConsole_moveToNextRow(SConsole* console)
+	{
+		s32			lnX;
+		SConRow*	conrow;
+
+
+		// If we're keeping an unlimited buffer, we can always append even if we're at the end
+		if (console->scrollCount == -1)
+		{
+			// Move down to the next row
+			if ((console->topRow + console->char_y + 1) * sizeof(SConRow) < console->scrollBuffer->populatedLength)
+			{
+				// There's room to move down one
+				++console->char_y;
+
+			} else {
+				// We need to add a new line
+				conrow = (SConRow*)iBuilder_allocateBytes(console->scrollBuffer, sizeof(SConRow));
+				if (conrow)
+				{
+					// Iterate through 
+					for (lnX = 0; lnX < console->width; lnX++)
+					{
+// TODO:  working here
+					}
+				}
+			}
+
+		} else if (console->char_y < console->height) {
+			// There's room to move down one
+
+		} else {
+			// Everything must scroll up once
+			++console->topRow;
+		}
+	}
+
+
+
+
+//////////
+//
+// Store a character, which may require scrolling to the next line
+//
+//////
+	void iiConsole_storeCharacter(SConsole* console, char c)
+	{
 	}

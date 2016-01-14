@@ -183,6 +183,12 @@ struct SConChar
 	s32			font;					// The font set to use
 };
 
+struct SConRow
+{
+	s32			width;
+	SConChar*	data;
+};
+
 // Main consoles
 struct SConsole
 {
@@ -193,14 +199,22 @@ struct SConsole
 	s32				top;				// Upper-left Y coordinate of window
 	s32				width;				// Width of window in characters (multiply by char_width to get pixel width)
 	s32				height;				// Height of window in characters (multiply by char_height to get pixel height)
+	s32				scrollCount;		// Number of rows to keep in the scroll buffer, -1 means unlimited
 
 	// Window title
 	SDatum			title;				// Title of the console window
 
 	// Character settings
+	s32				char_x;				// Current X location in the buffer
+	s32				char_y;				// Current Y location in the buffer
 	s32				char_width;			// Width of character
 	s32				char_height;		// Height of character
-	SConChar*		char_buffer;		// Array of characters to display
+	SBgra			char_color;			// Color to output in
+	s32				char_font;			// Font handle to use in gsConsoleFontRoot
+
+	// Row buffer
+	SBuilder*		scrollBuffer;		// Holds one SConRow record per row, including scrolled data
+	s32				topRow;				// The row to display at the top of the buffer
 
 	// Display, input, and output
 	bool			visible;			// Display

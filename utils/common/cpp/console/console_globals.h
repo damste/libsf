@@ -94,3 +94,4 @@
 // Global variables
 //////
 	SBuilder*			gsConsoleRoot						= NULL;
+	SBuilder*			gsConsoleFontRoot					= NULL;
