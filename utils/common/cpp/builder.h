@@ -85,16 +85,38 @@ struct SDatum;
 	{
 		union {
 			s8*		data;
-			s8*		data_s8;												// Pointer to a buffer allocated in blocks
+			s8*		data_s8;								// Pointer to a buffer allocated in blocks
 			u8*		data_u8;
 			s8*		buffer;
 			uptr	_data;
 		};
-		u32			allocatedLength;									// How much of space has been allocated for the buffer
-		u32			populatedLength;									// How much of the allocated buffer is actually populated with data
+		u32			allocatedLength;						// How much of space has been allocated for the buffer
+		u32			populatedLength;						// How much of the allocated buffer is actually populated with data
 		union {
-			u32		allocateBlockSize;									// Typically 16KB, the larger the size the fewer reallocs() are required
+			u32		allocateBlockSize;						// Typically 16KB, the larger the size the fewer reallocs() are required
 			u32		totSize;
+		};
+	};
+
+	struct SBuilderCallback
+	{
+		SBuilder*	b;										// The builder being iterated through
+		u32			stepSize;								// Step size for each element in b->buffer (must be an even multiple of b->populatedLength to be valid)
+		u32			offset;									// Offset into b->buffer
+
+		// For each iteration:
+		void*		buffer_ptr;								// Cast as (target*) to get this iteration's pointer in the data type
+
+		// Available for user general purpose use
+		void*		extra1;
+		void*		extra2;
+		bool		flag1;
+		bool		flag2;
+
+		// Iterate function (return true to continue iteration, false to stop)
+		union {
+			sptr	_iterateFunc;
+			bool	(*iterateFunc)		(SBuilderCallback* bcb);
 		};
 	};
 
@@ -106,33 +128,34 @@ struct SDatum;
 // Forward declarations
 //
 //////
-	void		iBuilder_verifySizeForNewBytes				(SBuilder* buffRoot, u32 tnDataLength);
-	void		iBuilder_createAndInitialize				(SBuilder** buffRoot, u32 tnAllocationBlockSize);
-	bool		iBuilder_isPointer							(SBuilder* buffRoot, uptr testptr, void** outPtr = NULL);
-	cs8*		iBuilder_appendData							(SBuilder* buffRoot, SDatum* data);
-	cs8*		iBuilder_appendData							(SBuilder* buffRoot, cs8* tcData, u32 tnDataLength);
-	cu8*		iBuilder_appendData							(SBuilder* buffRoot, cu8* tcData, u32 tnDataLength);
-	u8*			iBuilder_append_uptr						(SBuilder* buffRoot, uptr tnValue);
-	u8*			iBuilder_appendCrLf							(SBuilder* buffRoot);
-	void		iBuilder_delete								(SBuilder* buffRoot, u32 tnStartOffset, u32 tnDeleteLength);
-	void		iBuilder_reset								(SBuilder* buffRoot);
-	void		iBuilder_rewind								(SBuilder* buffRoot);
-	s8*			iBuilder_allocateBytes						(SBuilder* buffRoot, u32 tnDataLength);
-	void		iBuilder_backoffTrailingWhitespaces			(SBuilder* buffRoot);
-	void		iBuilder_setSize							(SBuilder* buffRoot, u32 tnBufferLength);
-	void		iBuilder_freeAndRelease						(SBuilder** buffRoot);
-	u32			iBuilder_asciiWriteOutFile					(SBuilder* buffRoot, cu8* tcPathname, bool tlAppend = false);
-	bool		iBuilder_asciiReadFromFile					(SBuilder** buffRoot, cu8* tcPathname);
-	void		iBuilder_compactData						(SBuilder* buffRoot, u32 tnStart, u32 tnStride, u32 tnCompactCallbackFunction);
-	s8*			iBuilder_insertBytes						(SBuilder* buffRoot, u32 tnStart, u32 tnLength);
-	u32			iBuilder_binarySearch						(SBuilder* haystack, s8* tcNeedle, u32 tnNeedleLength, bool* tlFound, bool tlInsertIfNotFound);
+	void		iBuilder_verifySizeForNewBytes				(SBuilder* builder, u32 tnDataLength);
+	void		iBuilder_createAndInitialize				(SBuilder** builder, u32 tnAllocationBlockSize);
+	bool		iBuilder_isPointer							(SBuilder* builder, uptr testptr, void** outPtr = NULL);
+	cs8*		iBuilder_appendData							(SBuilder* builder, SDatum* data);
+	cs8*		iBuilder_appendData							(SBuilder* builder, cs8* tcData, u32 tnDataLength);
+	cu8*		iBuilder_appendData							(SBuilder* builder, cu8* tcData, u32 tnDataLength);
+	u8*			iBuilder_append_uptr						(SBuilder* builder, uptr tnValue);
+	u8*			iBuilder_appendCrLf							(SBuilder* builder);
+	void		iBuilder_delete								(SBuilder* builder, u32 tnStartOffset, u32 tnDeleteLength);
+	void		iBuilder_reset								(SBuilder* builder);
+	void		iBuilder_rewind								(SBuilder* builder);
+	s8*			iBuilder_allocateBytes						(SBuilder* builder, u32 tnDataLength);
+	void		iBuilder_backoffTrailingWhitespaces			(SBuilder* builder);
+	void		iBuilder_setSize							(SBuilder* builder, u32 tnBufferLength);
+	void		iBuilder_freeAndRelease						(SBuilder** builder);
+	u32			iBuilder_asciiWriteOutFile					(SBuilder* builder, cu8* tcPathname, bool tlAppend = false);
+	bool		iBuilder_asciiReadFromFile					(SBuilder** builder, cu8* tcPathname);
+	void		iBuilder_compactData						(SBuilder* builder, u32 tnStart, u32 tnStride, u32 tnCompactCallbackFunction);
+	s8*			iBuilder_insertBytes						(SBuilder* builder, u32 tnStart, u32 tnLength);
+	u32			iBuilder_binarySearch						(SBuilder* builderHaystack, s8* textNeedle, u32 needleLength, bool* tlFound, bool tlInsertIfNotFound);
+	s32			iBuilder_iterate							(SBuilder* builder, s32 tnStepSize, SBuilderCallback* cb);
 
 	// Added to append "name = something" strings with a terminating CR/LF
-	s32			iBuilder_append_label_uptr					(SBuilder* buffRoot, s8* tcLabelText, uptr udata);
-	s32			iBuilder_append_label_sptr					(SBuilder* buffRoot, s8* tcLabelText, sptr sdata);
-	s32			iBuilder_append_label_text					(SBuilder* buffRoot, s8* tcLabelText, s8* tcText);
-	s32			iBuilder_append_label_datum					(SBuilder* buffRoot, s8* tcLabelText, SDatum* datum);
-	s32			iBuilder_append_label_logical				(SBuilder* buffRoot, s8* tcLabelText, bool tlValue);
+	s32			iBuilder_append_label_uptr					(SBuilder* builder, s8* tcLabelText, uptr udata);
+	s32			iBuilder_append_label_sptr					(SBuilder* builder, s8* tcLabelText, sptr sdata);
+	s32			iBuilder_append_label_text					(SBuilder* builder, s8* tcLabelText, s8* tcText);
+	s32			iBuilder_append_label_datum					(SBuilder* builder, s8* tcLabelText, SDatum* datum);
+	s32			iBuilder_append_label_logical				(SBuilder* builder, s8* tcLabelText, bool tlValue);
 
 
 

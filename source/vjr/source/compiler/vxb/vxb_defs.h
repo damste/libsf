@@ -363,11 +363,11 @@ struct SVxbContext;
 	// Big floating point
 	s32						iiBfp_calc_significantDigits_bySize			(SVariable* varVal);
 	void					iiBfp_convertForDisplay						(SVariable* varDisp,	SVariable* varVal);
-	void					iiBfp_convertFrom_scientificNotation		(SDatum* datum,		SVariable* varVal);
+	void					iiBfp_convertFrom_scientificNotation		(SDatum* datum,			SVariable* varVal);
 	// Big integer
 	s32						iiBi_calc_significantDigits_bySize			(SVariable* varVal);
 	void					iiBi_convertForDisplay						(SVariable* varDisp,	SVariable* varVal);
-	void					iiBi_convertFrom_scientificNotation			(SDatum* datum,		SVariable* varVal);
+	void					iiBi_convertFrom_scientificNotation			(SDatum* datum,			SVariable* varVal);
 
 
 	// Op functions

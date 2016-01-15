@@ -98,26 +98,26 @@
 // issue.  If not, reallocates the buffer.
 //
 //////
-	void iBuilder_verifySizeForNewBytes(SBuilder* buffRoot, u32 tnDataLength)
+	void iBuilder_verifySizeForNewBytes(SBuilder* builder, u32 tnDataLength)
 	{
 		// Make sure our environment is sane
-		if (buffRoot && tnDataLength != 0)
+		if (builder && tnDataLength != 0)
 		{
 			// Repeatedly allocate our allocation size until we get big enough
-			while (buffRoot->data_s8)
+			while (builder->data_s8)
 			{
 				// Are we there yet?
-				if (buffRoot->populatedLength + tnDataLength <= buffRoot->allocatedLength)
+				if (builder->populatedLength + tnDataLength <= builder->allocatedLength)
 					return;		// We're good
 
 				// If we get here, we need to allocate more space
 				// Reallocate and continue
-				buffRoot->data_s8			= (s8*)realloc(buffRoot->data_s8, buffRoot->allocatedLength + buffRoot->allocateBlockSize);
-				buffRoot->allocatedLength	+= buffRoot->allocateBlockSize;
+				builder->data_s8			= (s8*)realloc(builder->data_s8, builder->allocatedLength + builder->allocateBlockSize);
+				builder->allocatedLength	+= builder->allocateBlockSize;
 
 				// Initialize the added block
-				if (buffRoot->data_s8)
-					memset(buffRoot->data_s8 + buffRoot->allocatedLength - buffRoot->allocateBlockSize, 0, buffRoot->allocateBlockSize);
+				if (builder->data_s8)
+					memset(builder->data_s8 + builder->allocatedLength - builder->allocateBlockSize, 0, builder->allocateBlockSize);
 			}
 		}
 		// If we get here, there's been an error
@@ -134,7 +134,7 @@
 // Returns:
 //		Pointer to the point in the buffer where the
 //////
-	void iBuilder_createAndInitialize(SBuilder** buffRoot, u32 tnAllocationBlockSize)
+	void iBuilder_createAndInitialize(SBuilder** builder, u32 tnAllocationBlockSize)
 	{
 		SBuilder*	buffNew;
 
@@ -144,7 +144,7 @@
 			tnAllocationBlockSize = 16384;		// Default to a 16KB allocation size
 
 		// Make sure our environment is sane
-		if (buffRoot && tnAllocationBlockSize != 0)
+		if (builder && tnAllocationBlockSize != 0)
 		{
 			buffNew = (SBuilder*)malloc(sizeof(SBuilder));
 			if (buffNew)
@@ -153,7 +153,7 @@
 				memset(buffNew, 0, sizeof(SBuilder));
 
 				// Store the pointer
-				*buffRoot = buffNew;
+				*builder = buffNew;
 
 				// Make sure our allocation block size is at least 4KB
 				tnAllocationBlockSize		= max(4096, tnAllocationBlockSize);
@@ -188,12 +188,12 @@
 //		true	-- buffRoot is valid, and the testptr is in range
 //		false	-- Either buffRoot is invalid, or testptr is not in range
 //////
-	bool iBuilder_isPointer(SBuilder* buffRoot, uptr testptr, void** outPtr)
+	bool iBuilder_isPointer(SBuilder* builder, uptr testptr, void** outPtr)
 	{
-		if (buffRoot)
+		if (builder)
 		{
 			// It must fall in [range) to be considered valid
-			if (testptr >= buffRoot->_data && testptr < (buffRoot->_data + buffRoot->populatedLength))
+			if (testptr >= builder->_data && testptr < (builder->_data + builder->populatedLength))
 			{
 				// Set the pointer if specified
 				if (outPtr)
@@ -226,25 +226,25 @@
 //		Pointer to the point in the buffer where the text was inserted, can be used
 //		for a furthering or continuance of this function embedded in a higher call.
 //////
-	cs8* iBuilder_appendData(SBuilder* buffRoot, SDatum* data)
+	cs8* iBuilder_appendData(SBuilder* builder, SDatum* data)
 	{
 		// Make sure there's something to update
-		if (buffRoot && data && data->data && data->length > 0)
-			return((cs8*)iBuilder_appendData(buffRoot, data->data_cu8, data->length));
+		if (builder && data && data->data && data->length > 0)
+			return((cs8*)iBuilder_appendData(builder, data->data_cu8, data->length));
 
 		// Return our original input
 		return(NULL);
 	}
 
-	cs8* iBuilder_appendData(SBuilder* buffRoot, cs8* tcData, u32 tnDataLength)
+	cs8* iBuilder_appendData(SBuilder* builder, cs8* tcData, u32 tnDataLength)
 	{
-		return((cs8*)iBuilder_appendData(buffRoot, (cu8*)tcData, tnDataLength));
+		return((cs8*)iBuilder_appendData(builder, (cu8*)tcData, tnDataLength));
 	}
 
-	cu8* iBuilder_appendData(SBuilder* buffRoot, cu8* tcData, u32 tnDataLength)
+	cu8* iBuilder_appendData(SBuilder* builder, cu8* tcData, u32 tnDataLength)
 	{
 		// Make sure our environment is sane
-		if (buffRoot)
+		if (builder)
 		{
 			// If they want us to populate the length, do so
 			if (tnDataLength == (u32)-1)
@@ -254,21 +254,21 @@
 			if (tnDataLength != 0)
 			{
 				// Make sure this much data will fit there in the buffer
-				iBuilder_verifySizeForNewBytes(buffRoot, tnDataLength);
+				iBuilder_verifySizeForNewBytes(builder, tnDataLength);
 
 				// If we're still valid, proceed with the copy
-				if (buffRoot->data_s8)
+				if (builder->data_s8)
 				{
 					// Copy the original content
-					if (tcData)			memcpy(buffRoot->data_s8 + buffRoot->populatedLength, (s8*)tcData, tnDataLength);
-					else				memset(buffRoot->data_s8 + buffRoot->populatedLength, 0, tnDataLength);
+					if (tcData)			memcpy(builder->data_s8 + builder->populatedLength, (s8*)tcData, tnDataLength);
+					else				memset(builder->data_s8 + builder->populatedLength, 0, tnDataLength);
 
 					// Increase the size
-					buffRoot->populatedLength += tnDataLength;
+					builder->populatedLength += tnDataLength;
 				}
 			}
 			// Indicate where the start of that buffer is
-			return(buffRoot->data_u8 + buffRoot->populatedLength - tnDataLength);
+			return(builder->data_u8 + builder->populatedLength - tnDataLength);
 		}
 		// If we get here, things are bad
 		return(NULL);
@@ -282,23 +282,23 @@
 // Appends the indicated 32-bit value.
 //
 //////
-	u8* iBuilder_append_uptr(SBuilder* buffRoot, uptr tnValue)
+	u8* iBuilder_append_uptr(SBuilder* builder, uptr tnValue)
 	{
 		// Make sure our environment is sane
-		if (buffRoot)
+		if (builder)
 		{
 			// Make sure this much data will fit there in the buffer
-			iBuilder_verifySizeForNewBytes(buffRoot, sizeof(uptr));
+			iBuilder_verifySizeForNewBytes(builder, sizeof(uptr));
 
 			// Copy the data
-			if (buffRoot->data_s8)
+			if (builder->data_s8)
 			{
-				*(uptr*)(buffRoot->data_s8 + buffRoot->populatedLength) = tnValue;
-				buffRoot->populatedLength += sizeof(uptr);
+				*(uptr*)(builder->data_s8 + builder->populatedLength) = tnValue;
+				builder->populatedLength += sizeof(uptr);
 			}
 
 			// Indicate where the start of that buffer is
-			return(buffRoot->data_u8 + buffRoot->populatedLength - sizeof(uptr));
+			return(builder->data_u8 + builder->populatedLength - sizeof(uptr));
 		}
 		// If we get here, things are bad
 		return(NULL);
@@ -312,9 +312,9 @@
 // Called to append a CR+LF to the builder
 //
 //////
-	u8* iBuilder_appendCrLf(SBuilder* buffRoot)
+	u8* iBuilder_appendCrLf(SBuilder* builder)
 	{
-		return((u8*)iBuilder_appendData(buffRoot, (cu8*)"\r\n", 2));
+		return((u8*)iBuilder_appendData(builder, (cu8*)"\r\n", 2));
 	}
 
 
@@ -325,20 +325,20 @@
 // Called to delete the indicated bytes
 //
 //////
-	void iBuilder_delete(SBuilder* buffRoot, u32 tnStartOffset, u32 tnDeleteLength)
+	void iBuilder_delete(SBuilder* builder, u32 tnStartOffset, u32 tnDeleteLength)
 	{
-		if (buffRoot && tnStartOffset <= buffRoot->populatedLength)
+		if (builder && tnStartOffset <= builder->populatedLength)
 		{
 			// Move any data that was after the deleted block forward in the block
-			if (tnStartOffset + tnDeleteLength < buffRoot->populatedLength)
+			if (tnStartOffset + tnDeleteLength < builder->populatedLength)
 			{
-				memmove(buffRoot->buffer + tnStartOffset,
-						buffRoot->buffer + tnStartOffset + tnDeleteLength,
-						buffRoot->populatedLength - tnStartOffset - tnDeleteLength);
+				memmove(builder->buffer + tnStartOffset,
+						builder->buffer + tnStartOffset + tnDeleteLength,
+						builder->populatedLength - tnStartOffset - tnDeleteLength);
 			}
 
 			// Indicate the new size
-			buffRoot->populatedLength -= tnDeleteLength;
+			builder->populatedLength -= tnDeleteLength;
 		}
 	}
 
@@ -350,12 +350,12 @@
 // Called to reset the buffer to 0 bytes
 //
 //////
-	void iBuilder_reset(SBuilder* buffRoot)
+	void iBuilder_reset(SBuilder* builder)
 	{
-		if (buffRoot && buffRoot->populatedLength != 0)
+		if (builder && builder->populatedLength != 0)
 		{
-			memset(buffRoot->buffer, 0, buffRoot->totSize);
-			buffRoot->populatedLength = 0;
+			memset(builder->buffer, 0, builder->totSize);
+			builder->populatedLength = 0;
 		}
 	}
 
@@ -367,10 +367,10 @@
 // Called to reset the buffer to 0 bytes
 //
 //////
-	void iBuilder_rewind(SBuilder* buffRoot)
+	void iBuilder_rewind(SBuilder* builder)
 	{
-		if (buffRoot)
-			buffRoot->populatedLength = 0;
+		if (builder)
+			builder->populatedLength = 0;
 	}
 
 
@@ -383,20 +383,20 @@
 // to something, or to all 0s, then use iBuilder_appendData().
 //
 //////
-	s8* iBuilder_allocateBytes(SBuilder* buffRoot, u32 tnDataLength)
+	s8* iBuilder_allocateBytes(SBuilder* builder, u32 tnDataLength)
 	{
 		// Make sure our environment is sane
-		if (buffRoot)
+		if (builder)
 		{
 			// Make sure this much data will fit there in the buffer
 			if (tnDataLength != 0)
 			{
-				iBuilder_verifySizeForNewBytes(buffRoot, tnDataLength);
-				buffRoot->populatedLength += tnDataLength;
+				iBuilder_verifySizeForNewBytes(builder, tnDataLength);
+				builder->populatedLength += tnDataLength;
 			}
 
 			// Indicate where the start of that buffer is
-			return(buffRoot->data_s8 + buffRoot->populatedLength - tnDataLength);
+			return(builder->data_s8 + builder->populatedLength - tnDataLength);
 		}
 		// If we get here, things are bad
 		return(NULL);
@@ -411,18 +411,18 @@
 // that the last data is not a whitespace.
 //
 //////
-	void iBuilder_backoffTrailingWhitespaces(SBuilder* buffRoot)
+	void iBuilder_backoffTrailingWhitespaces(SBuilder* builder)
 	{
-		if (buffRoot && buffRoot->data_s8)
+		if (builder && builder->data_s8)
 		{
 			// Back off so long as there are whitespaces
-			while ((s32)buffRoot->populatedLength > 0 && (buffRoot->data_s8[buffRoot->populatedLength - 1] == 32 || buffRoot->data_s8[buffRoot->populatedLength - 1] == 9))
+			while ((s32)builder->populatedLength > 0 && (builder->data_s8[builder->populatedLength - 1] == 32 || builder->data_s8[builder->populatedLength - 1] == 9))
 			{
 				// Reset the data there to the expected NULLs
-				buffRoot->data_s8[buffRoot->populatedLength - 1] = 0;
+				builder->data_s8[builder->populatedLength - 1] = 0;
 
 				// Backup one
-				--buffRoot->populatedLength;
+				--builder->populatedLength;
 			}
 		}
 	}
@@ -439,19 +439,19 @@
 // per the allocated block size.
 //
 //////
-	void iBuilder_setSize(SBuilder* buffRoot, u32 tnBufferLength)
+	void iBuilder_setSize(SBuilder* builder, u32 tnBufferLength)
 	{
 		s8* lcNew;
 
 
 		// Make sure our environment is sane
-		if (buffRoot)
+		if (builder)
 		{
 			//////////
 			// See if they want to make it whatever the populated size is
 			//////
 				if (tnBufferLength == (u32)-1)
-					tnBufferLength = buffRoot->populatedLength;
+					tnBufferLength = builder->populatedLength;
 
 
 			//////////
@@ -462,31 +462,31 @@
 					//////////
 					// They are freeing everything
 					//////
-						free(buffRoot->data_s8);
-						buffRoot->data_s8			= NULL;
-						buffRoot->populatedLength	= 0;
-						buffRoot->allocatedLength	= 0;
+						free(builder->data_s8);
+						builder->data_s8			= NULL;
+						builder->populatedLength	= 0;
+						builder->allocatedLength	= 0;
 
 
-				} else if (tnBufferLength != buffRoot->allocatedLength) {
+				} else if (tnBufferLength != builder->allocatedLength) {
 					//////////
 					// They are resizing
 					//////
-						lcNew = (s8*)realloc(buffRoot->data_s8, tnBufferLength);
+						lcNew = (s8*)realloc(builder->data_s8, tnBufferLength);
 						if (lcNew)
 						{
 							//////////
 							// Set the allocated length
 							//////
-								buffRoot->data_s8			= lcNew;
-								buffRoot->allocatedLength	= tnBufferLength;
+								builder->data_s8			= lcNew;
+								builder->allocatedLength	= tnBufferLength;
 
 
 							//////////
 							// If our populated length no longer fits into the new allocated space, then adjust it down
 							//////
-								if (buffRoot->populatedLength > buffRoot->allocatedLength)
-									buffRoot->populatedLength = buffRoot->allocatedLength;		// Bring the populated area down to the new size
+								if (builder->populatedLength > builder->allocatedLength)
+									builder->populatedLength = builder->allocatedLength;		// Bring the populated area down to the new size
 
 						} else {
 							// Failure on resize -- should not happen
@@ -506,17 +506,17 @@
 // Releases the buffer allocated for the SBuilder structure
 //
 //////
-	void iBuilder_freeAndRelease(SBuilder** buffRoot)
+	void iBuilder_freeAndRelease(SBuilder** builder)
 	{
 		SBuilder* buffDelete;
 
 
 		// Make sure our environment is sane
-		if (buffRoot && *buffRoot)
+		if (builder && *builder)
 		{
 			// Copy our *buffRoot pointer to local space so we can "appear" to kill it before it's actually killed
-			buffDelete	= *buffRoot;
-			*buffRoot	= NULL;
+			buffDelete	= *builder;
+			*builder	= NULL;
 
 			// Release the data buffer
 			if (buffDelete->data_s8)
@@ -545,24 +545,24 @@
 // Called to write out the indicated builder file as an 8-bit ASCII file
 //
 //////
-	u32 iBuilder_asciiWriteOutFile(SBuilder* buffRoot, cu8* tcPathname, bool tlAppend)
+	u32 iBuilder_asciiWriteOutFile(SBuilder* builder, cu8* tcPathname, bool tlAppend)
 	{
 		FILE* lfh;
 
 
 		// Make sure there's something to write
-		if (buffRoot && tcPathname)
+		if (builder && tcPathname)
 		{
 			// Try to create the file
 			lfh = fopen((s8*)tcPathname, ((tlAppend) ? "ab+" : "wb+"));
 			if (lfh)
 			{
 				// Write out the data if need be
-				if (buffRoot->data_s8 && buffRoot->populatedLength != 0)
+				if (builder->data_s8 && builder->populatedLength != 0)
 				{
-					fwrite(buffRoot->data_s8, 1, buffRoot->populatedLength, lfh);
+					fwrite(builder->data_s8, 1, builder->populatedLength, lfh);
 					fclose(lfh);
-					return(buffRoot->populatedLength);
+					return(builder->populatedLength);
 				}
 				// If we get here, nothing to write
 				fclose(lfh);
@@ -581,20 +581,20 @@
 // Called to load a file into the indicated buffer.
 //
 //////
-	bool iBuilder_asciiReadFromFile(SBuilder** buffRoot, cu8* tcPathname)
+	bool iBuilder_asciiReadFromFile(SBuilder** builder, cu8* tcPathname)
 	{
 		u32		lnSize, lnNumread;
 		FILE*	lfh;
 
 
 		// Make sure our environment is sane
-		if (buffRoot && tcPathname)
+		if (builder && tcPathname)
 		{
 			//////////
 			// If we don't have a buffer, create one
 			//////
-				if (!*buffRoot)
-					iBuilder_createAndInitialize(buffRoot, -1);
+				if (!*builder)
+					iBuilder_createAndInitialize(builder, -1);
 
 
 			// Try to open the indicated file
@@ -612,14 +612,14 @@
 				//////////
 				// Allocate that buffer
 				//////
-					iBuilder_verifySizeForNewBytes(*buffRoot, lnSize);
+					iBuilder_verifySizeForNewBytes(*builder, lnSize);
 
 
 				//////////
 				// Read in the content
 				//////
-					lnNumread						= (u32)fread((*buffRoot)->data_s8 + (*buffRoot)->populatedLength, 1, lnSize, lfh);
-					(*buffRoot)->populatedLength	+= min(lnNumread, lnSize);
+					lnNumread						= (u32)fread((*builder)->data_s8 + (*builder)->populatedLength, 1, lnSize, lfh);
+					(*builder)->populatedLength	+= min(lnNumread, lnSize);
 
 
 				//////////
@@ -651,7 +651,7 @@
 // Called to compact data
 //
 //////
-	void iBuilder_compactData(SBuilder* buffRoot, u32 tnStart, u32 tnStride, u32 tnCompactCallbackFunction)
+	void iBuilder_compactData(SBuilder* builder, u32 tnStart, u32 tnStride, u32 tnCompactCallbackFunction)
 	{
 		u32 lnI, lnCopyTo;
 		union
@@ -663,28 +663,28 @@
 
 
 		// Make sure our environment is sane
-		if (buffRoot && buffRoot->data_s8 && buffRoot->populatedLength >= tnStart)
+		if (builder && builder->data_s8 && builder->populatedLength >= tnStart)
 		{
 			// Setup our callback function
 			_compactCallbackFunction = tnCompactCallbackFunction;
 
 			// Iterate through each pointer
 			lnCopyTo = tnStart;
-			for (lnI = tnStart; lnI < buffRoot->populatedLength; lnI += tnStride)
+			for (lnI = tnStart; lnI < builder->populatedLength; lnI += tnStride)
 			{
-				if (!compactCallbackFunction(buffRoot->data_s8 + lnI))
+				if (!compactCallbackFunction(builder->data_s8 + lnI))
 				{
 					// We are keeping this one
 					if (lnCopyTo != lnI)
-						memcpy(buffRoot->data_s8 + lnCopyTo, buffRoot->data_s8 + lnI, tnStride);
+						memcpy(builder->data_s8 + lnCopyTo, builder->data_s8 + lnI, tnStride);
 
 					// Move to next one
 					lnCopyTo += tnStride;
 				}
 			}
 			// When we get here, everything's been compacted
-			if (lnCopyTo < buffRoot->populatedLength)
-				iBuilder_setSize(buffRoot, lnCopyTo);
+			if (lnCopyTo < builder->populatedLength)
+				iBuilder_setSize(builder, lnCopyTo);
 		}
 	}
 
@@ -696,7 +696,7 @@
 // Called to insert bytes at the indicated location.
 //
 //////
-	s8* iBuilder_insertBytes(SBuilder* buffRoot, u32 tnStart, u32 tnLength)
+	s8* iBuilder_insertBytes(SBuilder* builder, u32 tnStart, u32 tnLength)
 	{
 		u32		lnI, lnStop;
 		s8*		buffNew;
@@ -708,28 +708,28 @@
 		// Make sure our environment is sane
 		//////
 			buffNew = NULL;
-			if (buffRoot && buffRoot->data_s8)
+			if (builder && builder->data_s8)
 			{
 				//////////
 				// Are we adding to the end?
 				//////
-					if (buffRoot->populatedLength == tnStart)
-						return(iBuilder_allocateBytes(buffRoot, tnLength));		// We're appending to the end
+					if (builder->populatedLength == tnStart)
+						return(iBuilder_allocateBytes(builder, tnLength));		// We're appending to the end
 
 
 				//////////
 				// If we get here, we're inserting in the middle
 				// We go ahead and allocate the new bytes
 				//////
-					buffNew = iBuilder_allocateBytes(buffRoot, tnLength);
+					buffNew = iBuilder_allocateBytes(builder, tnLength);
 					if (buffNew)
 					{
 						//////////
 						// Now, we have to copy everything backwards so we don't propagate a portion repeatedly
 						//////
-							lcSrc	= buffRoot->data_s8 + buffRoot->populatedLength - tnLength - 1;
-							lcDst	= buffRoot->data_s8 + buffRoot->populatedLength - 1;
-							lnStop	= buffRoot->populatedLength - tnStart - tnLength;
+							lcSrc	= builder->data_s8 + builder->populatedLength - tnLength - 1;
+							lcDst	= builder->data_s8 + builder->populatedLength - 1;
+							lnStop	= builder->populatedLength - tnStart - tnLength;
 
 
 						//////////
@@ -742,7 +742,7 @@
 						//////////
 						// Indicate where our new record is
 						//////
-							buffNew = buffRoot->data_s8 + tnStart;
+							buffNew = builder->data_s8 + tnStart;
 					}
 			}
 			// Indicate our status
@@ -760,7 +760,7 @@
 //
 //////
 // TODO:  A speedup for this algorithm would be to test tnDataLength and if it's 32-bit or 64-bit, then do integer searches rather than string compare searches
-	u32 iBuilder_binarySearch(SBuilder* haystack, s8* tcNeedle, u32 tnNeedleLength, bool* tlFound, bool tlInsertIfNotFound)
+	u32 iBuilder_binarySearch(SBuilder* builderHaystack, s8* textNeedle, u32 needleLength, bool* tlFound, bool tlInsertIfNotFound)
 	{
 		s32		lnResult;
 		s32		lnTop, lnMid, lnBot;
@@ -774,13 +774,13 @@
 		//////////
 		// Make sure our environment is sane
 		//////
-			if (haystack && haystack->data_s8 && haystack->populatedLength % tnNeedleLength == 0)
+			if (builderHaystack && builderHaystack->data_s8 && builderHaystack->populatedLength % needleLength == 0)
 			{
 				//////////
 				// Perform a binary search
 				//////
 					lnTop = 0;
-					lnBot = (haystack->populatedLength / tnNeedleLength) - 1;
+					lnBot = (builderHaystack->populatedLength / needleLength) - 1;
 					lnMid = max((lnTop + lnBot) / 2, lnTop);
 					while (lnTop <= lnBot)
 					{
@@ -788,7 +788,7 @@
 						lnMid = (lnTop + lnBot) / 2;
 
 						// See if it's above or below this position
-						lnResult = memcmp(haystack->data_s8 + (lnMid * tnNeedleLength), tcNeedle, tnNeedleLength);
+						lnResult = memcmp(builderHaystack->data_s8 + (lnMid * needleLength), textNeedle, needleLength);
 						if (lnResult == 0)
 						{
 							// Found, but this may not be the first one, we need to creep backwards to find the first
@@ -799,7 +799,7 @@
 									*tlFound = true;
 
 								// Indicate our entry
-								return(lnMid * tnNeedleLength);
+								return(lnMid * needleLength);
 							}
 							// Continue looking in the top half
 							lnBot = lnMid;
@@ -824,14 +824,14 @@
 					if (tlInsertIfNotFound)
 					{
 						// We will insert it where lnMid is
-						buffNew = iBuilder_insertBytes(haystack, lnMid * tnNeedleLength, tnNeedleLength);
+						buffNew = iBuilder_insertBytes(builderHaystack, lnMid * needleLength, needleLength);
 						if (buffNew)
 						{
 							// We can copy over and insert it
-							memcpy(buffNew, tcNeedle, tnNeedleLength);
+							memcpy(buffNew, textNeedle, needleLength);
 
 							// Indicate where it exists in the list
-							return(lnMid * tnNeedleLength);
+							return(lnMid * needleLength);
 
 						} else {
 							// Failure adding
@@ -857,37 +857,73 @@
 
 //////////
 //
+// Called to iterate through a builder
+//
+//////
+	s32 iBuilder_iterate(SBuilder* builder, s32 tnStepSize, SBuilderCallback* cb)
+	{
+		s32 lnCount;
+
+
+		// Make sure our environment is sane
+		lnCount = 0;
+		if (builder && builder->populatedLength % tnStepSize == 0 && cb && cb->_iterateFunc)
+		{
+			// Setup
+			cb->b			= builder;
+			cb->stepSize	= tnStepSize;
+
+			// Iterate through
+			// Note:  The values of cb->offset, cb->stepSize, and cb->_iterateFunc can be updated live as it's being iterated through
+			for (cb->offset = 0; cb->offset < builder->populatedLength; cb->offset += cb->stepSize, ++lnCount)
+			{
+				// Setup for the iteration
+				cb->buffer_ptr	= builder->buffer + cb->offset;
+				if (!cb->iterateFunc(cb))
+					break;
+			}
+		}
+
+		// Indicate failure
+		return(lnCount);
+	}
+
+
+
+
+//////////
+//
 // Called to append a label and an unsigned value, followed by CR/LF
 // "name = 12345[cr/lf]"
 //
 //////
-	s32 iBuilder_append_label_uptr(SBuilder* buffRoot, s8* tcLabelText, uptr udata)
+	s32 iBuilder_append_label_uptr(SBuilder* builder, s8* tcLabelText, uptr udata)
 	{
 		s32	lnStart;
 		s8	buffer[32];
 
 
 		// Make sure our environment's sane
-		if (buffRoot && tcLabelText)
+		if (builder && tcLabelText)
 		{
 			// Note our size at the stat
-			lnStart = buffRoot->populatedLength;
+			lnStart = builder->populatedLength;
 
 			// Label
-			iBuilder_appendData(buffRoot, tcLabelText, (s32)strlen(tcLabelText));
+			iBuilder_appendData(builder, tcLabelText, (s32)strlen(tcLabelText));
 
 			// Equals
-			iBuilder_appendData(buffRoot, " = ", 3);
+			iBuilder_appendData(builder, " = ", 3);
 
 			// Value
 			sprintf(buffer, "%u\0", udata);
-			iBuilder_appendData(buffRoot, buffer, (s32)strlen(buffer));
+			iBuilder_appendData(builder, buffer, (s32)strlen(buffer));
 
 			// CR/LF
-			iBuilder_appendCrLf(buffRoot);
+			iBuilder_appendCrLf(builder);
 
 			// Indicate how many bytes were written
-			return(buffRoot->populatedLength - lnStart);
+			return(builder->populatedLength - lnStart);
 
 		} else {
 			// Failure
@@ -904,33 +940,33 @@
 // "name = 12345[cr/lf]"
 //
 //////
-	s32 iBuilder_append_label_sptr(SBuilder* buffRoot, s8* tcLabelText, sptr sdata)
+	s32 iBuilder_append_label_sptr(SBuilder* builder, s8* tcLabelText, sptr sdata)
 	{
 		s32	lnStart;
 		s8	buffer[32];
 
 
 		// Make sure our environment's sane
-		if (buffRoot && tcLabelText)
+		if (builder && tcLabelText)
 		{
 			// Note our size at the stat
-			lnStart = buffRoot->populatedLength;
+			lnStart = builder->populatedLength;
 
 			// Label
-			iBuilder_appendData(buffRoot, tcLabelText, (s32)strlen(tcLabelText));
+			iBuilder_appendData(builder, tcLabelText, (s32)strlen(tcLabelText));
 
 			// Equals
-			iBuilder_appendData(buffRoot, " = ", 3);
+			iBuilder_appendData(builder, " = ", 3);
 
 			// Value
 			sprintf(buffer, "%d\0", sdata);
-			iBuilder_appendData(buffRoot, buffer, (s32)strlen(buffer));
+			iBuilder_appendData(builder, buffer, (s32)strlen(buffer));
 
 			// CR/LF
-			iBuilder_appendCrLf(buffRoot);
+			iBuilder_appendCrLf(builder);
 
 			// Indicate how many bytes were written
-			return(buffRoot->populatedLength - lnStart);
+			return(builder->populatedLength - lnStart);
 
 		} else {
 			// Failure
@@ -947,31 +983,31 @@
 // "name = text[cr/lf]"
 //
 //////
-	s32 iBuilder_append_label_text(SBuilder* buffRoot, s8* tcLabelText, s8* tcText)
+	s32 iBuilder_append_label_text(SBuilder* builder, s8* tcLabelText, s8* tcText)
 	{
 		s32	lnStart;
 
 
 		// Make sure our environment's sane
-		if (buffRoot && tcLabelText)
+		if (builder && tcLabelText)
 		{
 			// Note our size at the stat
-			lnStart = buffRoot->populatedLength;
+			lnStart = builder->populatedLength;
 
 			// Label
-			iBuilder_appendData(buffRoot, tcLabelText, (s32)strlen(tcLabelText));
+			iBuilder_appendData(builder, tcLabelText, (s32)strlen(tcLabelText));
 
 			// Equals
-			iBuilder_appendData(buffRoot, " = ", 3);
+			iBuilder_appendData(builder, " = ", 3);
 
 			// Text
-			iBuilder_appendData(buffRoot, tcText, (s32)strlen(tcText));
+			iBuilder_appendData(builder, tcText, (s32)strlen(tcText));
 
 			// CR/LF
-			iBuilder_appendCrLf(buffRoot);
+			iBuilder_appendCrLf(builder);
 
 			// Indicate how many bytes were written
-			return(buffRoot->populatedLength - lnStart);
+			return(builder->populatedLength - lnStart);
 
 		} else {
 			// Failure
@@ -987,31 +1023,31 @@
 // Called to append the datum
 //
 //////
-	s32 iBuilder_append_label_datum(SBuilder* buffRoot, s8* tcLabelText, SDatum* datum)
+	s32 iBuilder_append_label_datum(SBuilder* builder, s8* tcLabelText, SDatum* datum)
 	{
 		s32	lnStart;
 
 
 		// Make sure our environment's sane
-		if (buffRoot && tcLabelText && datum && datum->data && datum->length > 0)
+		if (builder && tcLabelText && datum && datum->data && datum->length > 0)
 		{
 			// Note our size at the stat
-			lnStart = buffRoot->populatedLength;
+			lnStart = builder->populatedLength;
 
 			// Label
-			iBuilder_appendData(buffRoot, tcLabelText, (s32)strlen(tcLabelText));
+			iBuilder_appendData(builder, tcLabelText, (s32)strlen(tcLabelText));
 
 			// Equals
-			iBuilder_appendData(buffRoot, " = ", 3);
+			iBuilder_appendData(builder, " = ", 3);
 
 			// Text
-			iBuilder_appendData(buffRoot, datum->data, datum->length);
+			iBuilder_appendData(builder, datum->data, datum->length);
 
 			// CR/LF
-			iBuilder_appendCrLf(buffRoot);
+			iBuilder_appendCrLf(builder);
 
 			// Indicate how many bytes were written
-			return(buffRoot->populatedLength - lnStart);
+			return(builder->populatedLength - lnStart);
 
 		} else {
 			// Failure
@@ -1028,31 +1064,31 @@
 // "name = true[cr/lf]"
 //
 //////
-	s32 iBuilder_append_label_logical(SBuilder* buffRoot, s8* tcLabelText, bool tlValue)
+	s32 iBuilder_append_label_logical(SBuilder* builder, s8* tcLabelText, bool tlValue)
 	{
 		s32	lnStart;
 
 
 		// Make sure our environment's sane
-		if (buffRoot && tcLabelText)
+		if (builder && tcLabelText)
 		{
 			// Note our size at the stat
-			lnStart = buffRoot->populatedLength;
+			lnStart = builder->populatedLength;
 
 			// Label
-			iBuilder_appendData(buffRoot, tcLabelText, (s32)strlen(tcLabelText));
+			iBuilder_appendData(builder, tcLabelText, (s32)strlen(tcLabelText));
 
 			// Equals
-			iBuilder_appendData(buffRoot, " = ", 3);
+			iBuilder_appendData(builder, " = ", 3);
 
 			// True/false
-			iBuilder_appendData(buffRoot, ((tlValue) ? "true" : "false"), ((tlValue) ? 4 : 5));
+			iBuilder_appendData(builder, ((tlValue) ? "true" : "false"), ((tlValue) ? 4 : 5));
 
 			// CR/LF
-			iBuilder_appendCrLf(buffRoot);
+			iBuilder_appendCrLf(builder);
 
 			// Indicate how many bytes were written
-			return(buffRoot->populatedLength - lnStart);
+			return(builder->populatedLength - lnStart);
 
 		} else {
 			// Failure
