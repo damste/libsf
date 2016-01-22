@@ -115,7 +115,7 @@
 #if !defined(size_t)
 	#define size_t sptr
 #endif
-
+	
 // Floating point
 #define f32 float
 #define f64 double
@@ -135,6 +135,16 @@
 // Constant floating point
 #define cf32 const f32
 #define cf64 const f64
+
+// Shortcuts for non-NULL data arrays by arbitrary string
+#define data_s8(a,b)	s8	a[sizeof(b) - 1]	= { (s8*)b }
+#define data_cs8(a,b)	cs8	a[sizeof(b) - 1]	= { (cs8*)b }
+#define data_u8(a,b)	u8	a[sizeof(b) - 1]	= { (u8*)b }
+#define data_cu8(a,b)	cu8	a[sizeof(b) - 1]	= { (cu8*)b }
+// Usages:	s8_data(name, "xyz");		// Creates s8 name[] = "xyz";
+//			cs8_data(name, "xyz");		// Creates cs8 name[] = "xyz";
+//			u8_data(name, "xyz");		// Creates u8 name[] = "xyz";
+//			cu8_data(name, "xyz");		// Creates cu8 name[] = "xyz";
 
 #ifndef _UPTR_ERROR
 	#if defined(__64_BIT_COMPILER__)
