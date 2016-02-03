@@ -1,0 +1,62 @@
+File: game.txt
+
+Chess36 Overview
+
+December 14, 2011
+Rick C. Hodgin
+
+A 6x6 chess game consisting of the following default board:
+
+	---------------------------------------
+	|Black|Black |Black|Black|Black |Black|
+6	|Rook |Bishop|King |Queen|Knight|Rook |
+	---------------------------------------
+	|Black|Black |Black|Black|Black |Black|
+5	|Pawn |Pawn  |Pawn |Pawn |Pawn  |Pawn |
+	---------------------------------------
+	|     |      |     |     |      |     |
+4	|     |      |     |     |      |     |
+	---------------------------------------
+	|     |      |     |     |      |     |
+3	|     |      |     |     |      |     |
+	---------------------------------------
+	|White|White |White|White|White |White|
+2	|Pawn |Pawn  |Pawn |Pawn |Pawn  |Pawn |
+	---------------------------------------
+	|White|White |White|White|White |White|
+1	|Rook |Knight|Queen|King |Bishop|Rook |
+	---------------------------------------
+	  a     b      c     d     e      f
+
+Rules:
+
+Pawn moves traditionally, except no double advance on first move.
+Bishop moves traditionally, but since there is only one, it can also move up/down/right/left one square on a move.
+Knight moves traditionally IF a piece is immediately adjacent (one of the 8 surrounding squares), otherwise can only move one square (like a king, one square in any direction).
+Rook movess traditionally.
+Queen moves traditionally.
+King moves traditionally.
+
+Pawns:
+Opening move, only one square.
+Moving forward to advance, one square.
+Can only attack on a diagonal, one square.
+Pawns reaching the other side are promoted to one of Queen, Bishop, Knight or Rook.
+
+Bishop:
+Moves traditionally.
+Can sacrifice a traditional move on a turn to move one square up/down/right/left (to change square color).
+
+Knight:
+Moves traditionally.
+Can sacrifice a traditional move on a turn to move one square up/down/right/left.
+
+Rook:
+Moves traditionally, up/down/right/left any number of squares.
+
+Queen:
+Moves traditionally, up/down/right/left/diagonal any number of squares.
+
+King:
+Moves traditionally, one square in any direction.
+Kings reaching the opponent's side will not move into that square, but will allow a piece to be brought back on the board as Queen, Bishop, Knight or Rook, but only when the king moves straight (same column) to the other side's last row, and only when king is not in check.

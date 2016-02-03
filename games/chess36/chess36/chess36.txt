@@ -1,0 +1,1 @@
+./Debug/chess36.o ./Debug/x11.o
