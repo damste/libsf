@@ -1,0 +1,40 @@
+Feb.08.2016
+-------------
+
+A qsort() algorithm that allows for function calls to handle, in
+addition to the comparison algorithm, the "step" algorithm to move
+from one element to another, and the "swap" algorithm.
+
+	function step
+	| returns any* record
+	| params any* start, s32 record, any* extra
+	{
+		// Code here
+	}
+	
+	function swap
+	| params any* left, any* right, any* extra
+	{
+		// Code here
+	}
+	
+	function compare
+	| returns s32 relationship		// -1=l<r, 0=l=r, 1=l>r
+	| params any* left, any* right, any* extra
+	{
+		// Code here
+	}
+	
+	
+	function qsort
+	| returns s32 numberSorted
+	| params any* start, s32 count, any* extra
+	| params func step			// record = step(start, record, extra);
+	| params function swap		// swap(left, right, extra);
+	| params function compare	// relationship = compare(left, right);
+	{
+		// Code here
+	}
+
+Best regards,
+Rick C. Hodgin

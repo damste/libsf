@@ -136,15 +136,26 @@
 #define cf32 const f32
 #define cf64 const f64
 
+// Constant pointers
+#define cvp const void*
+#define cs8p cs8*
+#define cs16p cs16*
+#define cs32p cs32*
+#define cs64p cs64*
+#define cu8p cu8*
+#define cu16p cu16*
+#define cu32p cu32*
+#define cu64p cu64*
+
 // Shortcuts for non-NULL data arrays by arbitrary string
 #define data_s8(a,b)	s8	a[sizeof(b) - 1]	= { (s8*)b }
 #define data_cs8(a,b)	cs8	a[sizeof(b) - 1]	= { (cs8*)b }
 #define data_u8(a,b)	u8	a[sizeof(b) - 1]	= { (u8*)b }
 #define data_cu8(a,b)	cu8	a[sizeof(b) - 1]	= { (cu8*)b }
-// Usages:	s8_data(name, "xyz");		// Creates s8 name[] = "xyz";
-//			cs8_data(name, "xyz");		// Creates cs8 name[] = "xyz";
-//			u8_data(name, "xyz");		// Creates u8 name[] = "xyz";
-//			cu8_data(name, "xyz");		// Creates cu8 name[] = "xyz";
+// Usages:	s8_data(name, "xyz");		// Creates s8 name[3] = "xyz";
+//			cs8_data(name, "xyz");		// Creates cs8 name[3] = "xyz";
+//			u8_data(name, "xyz");		// Creates u8 name[3] = "xyz";
+//			cu8_data(name, "xyz");		// Creates cu8 name[3] = "xyz";
 
 #ifndef _UPTR_ERROR
 	#if defined(__64_BIT_COMPILER__)
