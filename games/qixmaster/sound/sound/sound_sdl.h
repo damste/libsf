@@ -5,6 +5,7 @@ void my_audio_callback(void* userdata, Uint8* stream, int len);
 
 const double	M_PI			= 3.1415926535897923;
 const int		FREQUENCY		= 44100;
+const int		CHANNELS		= 2;
 
 // For C-based para-diddle LRLL RLRR
 int		_CL				= 37 - 1;
@@ -14,7 +15,9 @@ int		sbOffset		= 0;
 int		sbMax			= 0;
 Sint16*	songBuffer		= NULL;
 
-double	amp				= 0.5;
+double	amp				= 1.0;
+double	lfTheta			= 0.0;
+double	lfThetaInc		= 6.28 / (6 * (double)FREQUENCY * CHANNELS);
 
 SDL_AudioSpec desired;
 SDL_AudioSpec obtained;
@@ -169,8 +172,8 @@ void sound_init(void)
 	//////
 		desired.freq		= FREQUENCY;			// 44.1 kHz
 		desired.format		= AUDIO_S16SYS;			// 16-bit signed audio
-		desired.channels	= 1;					// Stereo
-		desired.samples		= FREQUENCY / 20;		// Audio buffer (larger buffers reduces risk of dropouts but increases response time)
+		desired.channels	= CHANNELS;				// Stereo
+		desired.samples		= FREQUENCY / 10;		// Audio buffer (larger buffers reduces risk of dropouts but increases response time)
 		desired.callback	= my_audio_callback;	// Our callback function
 		desired.userdata	= NULL;
 
@@ -275,17 +278,30 @@ void sound_init(void)
 
 void my_audio_callback(void* userdata, Uint8* stream, int len)
 {
-	int i;
-	Sint16* stream16;
+	int			i, j;
+	double		lfSin1, lfSin2;
+	Sint16*		stream16;
 
-
-	stream16	= (Sint16*)stream;
-	for (i = 0; i < len / 2; i++)
+	// Generate the stream
+	stream16 = (Sint16*)stream;
+	for (i = 0; i < len / 2; )
 	{
-		//////////
-		// Pull from the song buffer, amplify by current volume level
-		//////
-			stream16[i] = (Sint16)(amp * (double)songBuffer[sbOffset++]);
-			sbOffset	= sbOffset % (sbMax / sizeof(Sint16));
+		// Add the channels
+		for (j = 0; j < obtained.channels; j++)
+		{
+			// Compute the sin for this iteration
+			lfSin1	= sin(lfTheta);
+			lfSin2	= sin(lfTheta + (M_PI / 2.0));
+
+			// Add this channel
+			if (j == 0)		stream16[i++] = (Sint16)(amp * lfSin1  * (double)songBuffer[sbOffset]);
+			else			stream16[i++] = (Sint16)(amp * lfSin2 * (double)songBuffer[sbOffset]);
+
+			// Iterate for the next go
+			lfTheta	+= lfThetaInc;
+		}
+
+		// Increase our offset
+		sbOffset = ++sbOffset % (sbMax / sizeof(Sint16));
 	}
 }
