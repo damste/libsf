@@ -99,7 +99,7 @@
 	s32				console_release						(uptr tnHandle);
 
 	// Sets title, width, height, charwidth, charheight, and visible
-	s32				console_setOptions					(uptr tnHandle, SDatum* options);
+	s32				console_setProperties				(uptr tnHandle, SDatum* properties);
 	bool			iiConsole_setOptions_callback		(SDatumCallback* cb);
 
 	// Set the active font (to use for the console_push() operations until changed again)
@@ -112,10 +112,13 @@
 	s32				console_print						(uptr tnHandle, SDatum* textOut);
 	s32				console_scroll						(uptr tnHandle, s32 tnRows, bool tlMoveCursor = true);
 
-	// Explicitly push content to the screen, pull content from the screen
-	s32				console_push						(uptr tnHandle, s32 tnX, s32 tnY, s32 tnCount, SBgra color, SDatum* text, bool tlWrap);
-	s32				console_pullN						(uptr tnHandle, s32 tnX, s32 tnY, s32 tnCount, SDatum* textOut);
-	s32				console_pull1						(uptr tnHandle, s32 tnX, s32 tnY, u8* c, SBgra* color, bool* tlBold, bool* tlItalic, bool* tlUnderline);
+	// Explicitly push raw content to the screen, or pull raw content from the screen
+	s32				console_raw_push					(uptr tnHandle, s32 tnX, s32 tnY, SBgra color, SDatum* textIn, bool tlWrap);
+	s32				console_raw_pullN					(uptr tnHandle, s32 tnX, s32 tnY, s32 tnCount, SDatum* textOut);
+	s32				console_raw_pull1					(uptr tnHandle, s32 tnX, s32 tnY, u8* c, SBgra* color, bool* tlBold, bool* tlItalic, bool* tlUnderline);
+
+	// Explicitly push embedded/formatted content to the screen
+	s32				console_vt100_push					(uptr tnHandle, SDatum* vt100Text);
 
 	// Internal functions
 	bool			iConsole_validateInitialization		(void);

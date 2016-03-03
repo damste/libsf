@@ -103,9 +103,7 @@
 
 		// Initialize
 		ghInstance = hInstance;
-// 		MyRegisterClass(hInstance);
-// 		if (!InitInstance(hInstance, nCmdShow))
-// 			return FALSE;
+		MyRegisterClass();
 
 		// Main message loop:
 		while (GetMessage(&msg, NULL, 0, 0))
@@ -130,23 +128,103 @@
 
 
 
+//////////
+//
+// Called to create a window
+//
+//////
+	s32 console_win_create_window(SConsole* console)
+	{
+		s32		lnLength;
+		s8		buffer[_MAX_FNAME];
+
+
+		//////////
+		// If there's already a window, delete the current window before creating the new one
+		//////
+			if (console->hwnd)
+			{
+				// If it's valid, destroy it
+				if (IsWindow(console->hwnd))
+					DestroyWindow(console->hwnd);
+
+				// Reset
+				console->hwnd = NULL;
+			}
+
+
+		//////////
+		// Prepare a window
+		//////
+			console->width	= max(320, console->width);
+			console->height	= max(200, console->height);
+
+			// Assemble the title
+			lnLength = min(_MAX_FNAME - 1, console->title.length);
+			memcpy(buffer, console->title.data_cs8, lnLength);
+			buffer[lnLength] = 0;
+
+			// Create the window
+			console->hwnd = CreateWindow(cgc_consoleClass,	console->title, WS_OVERLAPPEDWINDOW, 
+															console->left, console->top, 
+															console->width, console->height, 
+															NULL, NULL, ghInstance, NULL);
+
+		// If it failed, we're done
+		if (!console->hwnd)
+			return(_CONSOLE_ERROR__CANNOT_CREATE_WINDOW);
+
+		// Display if need be
+		if (console->visible)
+		{
+			ShowWindow(console->hwnd, SW_SHOW);
+			UpdateWindow(console->hwnd);
+		}
+
+		// Indicate success
+		return(_CONSOLE_ERROR__NO_ERROR);
+	}
+
+
+
+
 /////////
 //
 // Called to toggle the visible state, which either shows or hides
 //
 //////
-	void console_win_toggle_visible(SConsole* console)
+	s32 console_win_toggle_visible(SConsole* console)
 	{
-		if (console->hwnd && IsWindow(console->hwnd))
+		// Make sure the 
+		if (console)
 		{
 			// Toggle
 			console->visible = !console->visible;
 
-			// Show or hide the window
-			ShowWindow(console->hwnd, ((console->visible) ? SW_SHOW : SW_HIDE));
+			// If it's visible, make sure it exists
+			if (console->visible && (!console->hwnd || !IsWindow(console->hwnd)))
+				console_win_create_window(console);
 
-			// Redraw everything
-			InvalidateRect(console->hwnd, NULL, false);
+			// If there's a window, adjust it
+			if (console->hwnd && IsWindow(console->hwnd))
+			{
+				// Show or hide the window
+				ShowWindow(console->hwnd, ((console->visible) ? SW_SHOW : SW_HIDE));
+
+				// Redraw everything
+				InvalidateRect(console->hwnd, NULL, false);
+
+				// We're good
+				return(_CONSOLE_ERROR__NO_ERROR);
+
+			} else {
+				// Invalid window
+				return(_CONSOLE_ERROR__INVALID_WINDOW);
+			}
+
+		} else {
+			// Invalid console
+			return(_CONSOLE_ERROR__HANDLE_NOT_FOUND);
 		}
 	}
 
@@ -155,82 +233,166 @@
 
 //////////
 //
-// 
+// Called to release a console, and its associated window
 //
 //////
-	void console_win_release(SConsole* console)
+	s32 console_win_release(SConsole* console)
 	{
-		if (console->hwnd && IsWindow(console->hwnd))
+		// Make sure the environment is sane
+		if (console)
 		{
-			// Release the window
-			DestroyWindow(console->hwnd);
-			console->hwnd = NULL;
+			// Is it a valid window?
+			if (console->hwnd && IsWindow(console->hwnd))
+			{
+				// Release the window
+				DestroyWindow(console->hwnd);
+
+				// Reset the handle
+				console->hwnd = NULL;
+
+				// Success
+				return(_CONSOLE_ERROR__NO_ERROR);
+
+			} else {
+				// Invalid window
+				return(_CONSOLE_ERROR__INVALID_WINDOW);
+			}
+
+		} else {
+			// Invalid handle
+			return(_CONSOLE_ERROR__HANDLE_NOT_FOUND);
 		}
 	}
 
 
 
 
-// ATOM MyRegisterClass(void)
-// {
-// 	WNDCLASSEX wcex;
-// 
-// 	wcex.cbSize			= sizeof(WNDCLASSEX);
-// 	wcex.style			= CS_HREDRAW | CS_VREDRAW;
-// 	wcex.lpfnWndProc	= console_wndProc;
-// 	wcex.cbClsExtra		= 0;
-// 	wcex.cbWndExtra		= 0;
-// 	wcex.hInstance		= ghInstance;
-// 	wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
-// 	wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+1);
-// 	wcex.lpszClassName	= cgc_consoleClass;
-// 
-// 	return RegisterClassEx(&wcex);
-// }
-// 
-// HWND InitInstance(SConsole* console)
-// {
-// 	HWND lhWnd;
-// 
-// 	// Create
-// 	if (!(lhWnd = CreateWindow(cgc_consoleClass, console->title, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, ghInstance, NULL)))
-// 		return FALSE;
-// 
-// 	// Display if need be
-// 	if (console->visible)
-// 	{
-// 		ShowWindow(lhWnd, SW_SHOW);
-// 		UpdateWindow(lhWnd);
-// 	}
-// 
-// 	return(lhWnd);
-// }
-// 
-// LRESULT CALLBACK console_wndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-// {
-// 	int				wmId, wmEvent;
-// 	PAINTSTRUCT		ps;
-// 	HDC				hdc;
-// 
-// 	switch (message)
-// 	{
-// 		case WM_COMMAND:
-// 			wmId    = LOWORD(wParam);
-// 			wmEvent = HIWORD(wParam);
-// 			break;
-// 
-// 		case WM_PAINT:
-// 			hdc = BeginPaint(hWnd, &ps);
-// 			// TODO: Add any drawing code here...
-// 			EndPaint(hWnd, &ps);
-// 			break;
-// 
-// 		case WM_DESTROY:
-// 			PostQuitMessage(0);
-// 			break;
-// 
-// 		default:
-// 			return DefWindowProc(hWnd, message, wParam, lParam);
-// 	}
-// 	return 0;
-// }
+//////////
+//
+// Receives errors related to the console
+//
+//////
+	s32 console_win_error(SConsole* console, s32 tnErrorNum)
+	{
+		// Just pass-thru unless a breakpoint is set here
+		_asm nop;
+	}
+
+
+
+
+//////////
+//
+// Register the console window class with Windows
+//
+//////
+	ATOM MyRegisterClass(void)
+	{
+		WNDCLASSEX wcex;
+
+		wcex.cbSize			= sizeof(WNDCLASSEX);
+		wcex.style			= CS_HREDRAW | CS_VREDRAW;
+		wcex.lpfnWndProc	= console_wndProc;
+		wcex.cbClsExtra		= 0;
+		wcex.cbWndExtra		= 0;
+		wcex.hInstance		= ghInstance;
+		wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
+		wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+1);
+		wcex.lpszClassName	= cgc_consoleClass;
+
+		return RegisterClassEx(&wcex);
+	}
+
+
+
+
+//////////
+//
+// Windows callback, delivering messages
+//
+//////
+	LRESULT CALLBACK console_wndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+	{
+		int				wmId, wmEvent;
+		PAINTSTRUCT		ps;
+		HDC				hdc;
+		SConsole*		console;
+
+
+		// Locate the associated console
+		if ((console = iConsole_win_find_byHwnd(hwnd)))
+		{
+			// Based on the message
+			switch (message)
+			{
+				case WM_COMMAND:
+					wmId    = LOWORD(wParam);
+					wmEvent = HIWORD(wParam);
+					break;
+
+				case WM_PAINT:
+					hdc = BeginPaint(hWnd, &ps);
+					// TODO: Add any drawing code here...
+					EndPaint(hWnd, &ps);
+					break;
+
+				case WM_DESTROY:
+					PostQuitMessage(0);
+					break;
+
+				default:
+					return DefWindowProc(hWnd, message, wParam, lParam);
+			}
+		}
+
+		// Indicate the message was not processed
+		return 0;
+	}
+
+
+
+
+//////////
+//
+// Searches for the indicated console
+//
+//////
+	SConsole* iConsole_win_find_byHwnd(HWND hwnd)
+	{
+		SBuilderCallback	cb;
+		SConsole*			console;
+
+
+		// Prepare for iterative callback
+		memset(&cb, 0, sizeof(cb));
+		cb._iterateFunc	= &iConsole_win_find_byHwnd__callback;
+		cb.extra1 = hwnd;
+
+		// find it
+		iBuilder_iterate(gsConsoleRoot, sizeof(SConsole), &cb);
+		if (cb.extra2)
+			return((SConsole*)cb.extra2);	// It's a valid pointer
+
+		// Invalid
+		return(NULL);
+	}
+
+	bool iConsole_win_find_byHwnd__callback(SBuilderCallback* cb)
+	{
+		SConsole* console;
+
+
+		// Test the value
+		console = (SConsole*)cb->extra1;
+		if (console->hwnd == (HWND)cb->extra1)
+		{
+			// Store the console
+			cb->extra2 = console;
+
+			// Indicate we've found it
+			return(false);
+		}
+
+		// Continue sending more to test
+		return(true);
+	}

@@ -103,13 +103,15 @@ struct SConsole;
 //////////
 // Startup code
 //////
-	#define console_main_function					int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
-	#define console_unit_tests						console_win_unit_test(hInstance, hPrevInstance, lpCmdLine, nCmdShow)
-	#define console_os_validate_initialization		console_win_validateInitialization
-	#define console_os_toggle_visible				console_win_toggle_visible
-	#define console_os_release						console_win_release
-	#define console_os_struct_variables				HWND hwnd;	\
-													RECT rc;
+	#define console_main_function									int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+	#define console_unit_tests										console_win_unit_test(hInstance, hPrevInstance, lpCmdLine, nCmdShow)
+	#define console_os_validate_initialization						console_win_validateInitialization
+	#define console_os_toggle_visible								console_win_toggle_visible
+	#define console_os_release										console_win_release
+	#define console_os_error										console_win_error
+
+	#define console_os_struct_variables								HWND hwnd;	\
+																	RECT rc;
 
 
 
@@ -117,8 +119,8 @@ struct SConsole;
 //////////
 // Global variables
 //////
-	HINSTANCE		ghInstance;
-	cs8				cgc_consoleClass[]					= "LibSF.Console.Class";
+	HINSTANCE			ghInstance;
+	cs8					cgc_consoleClass[]							= "LibSF.Console.Class";
 
 
 
@@ -126,10 +128,13 @@ struct SConsole;
 //////////
 // Forward declarations
 //////
-	int			console_win_unit_test				(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);
-	bool		console_win_validateInitialization	(void);
-	void		console_win_toggle_visible			(SConsole* console);
-	void		console_win_release					(SConsole* console);
-// 	ATOM		MyRegisterClass(void)
-// 	BOOL		InitInstance(void)
-// 	LRESULT		CALLBACK console_wndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+	int					console_win_unit_test						(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);
+	bool				console_win_validateInitialization			(void);
+	s32					console_win_create_window					(SConsole* console);
+	s32					console_win_toggle_visible					(SConsole* console);
+	s32					console_win_release							(SConsole* console);
+	s32					console_win_error							(SConsole* console, s32 tnErrorNum);
+	ATOM				MyRegisterClass								(void);
+	LRESULT CALLBACK	console_wndProc								(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+	SConsole*			iConsole_win_find_byHwnd					(HWND hwnd);
+	bool				iConsole_win_find_byHwnd__callback			(SBuilderCallback* cb);

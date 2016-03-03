@@ -143,7 +143,7 @@
 		}
 
 		// If we get here, invalid
-		return(-1);
+		return(_CONSOLE_ERROR__FATAL_ERROR);
 	}
 
 
@@ -175,7 +175,7 @@
 			console_cb.height		= 25;
 			console_cb.char_width	= 8;
 			console_cb.char_height	= 16;
-			iDatum_duplicate(&console_cb.title, "Console Window");
+			iDatum_duplicate(&console_cb.title, "LibSF Console Window");
 
 			// Perform the processing
 			dcb.extra1 = &console_cb;
@@ -196,7 +196,7 @@
 		}
 
 		// If we get here, invalid
-		return(-1);
+		return(_CONSOLE_ERROR__FATAL_ERROR);
 	}
 
 
@@ -209,7 +209,8 @@
 //////
 	s32 console_show(uptr tnHandle, bool tlVisible)
 	{
-		SConsole* console;
+		s32			lnResult;
+		SConsole*	console;
 
 
 		// Make sure our environment is sane
@@ -217,7 +218,14 @@
 		{
 			// If it's changed, set it
 			if (console->visible != tlVisible)
-				console_os_toggle_visible(console);
+			{
+				// Try to toggle the visible status
+				if ((lnResult = console_os_toggle_visible(console)) != _CONSOLE_ERROR__NO_ERROR)
+					console_os_error(console, lnResult);
+
+				// Indicate success
+				return(lnResult)
+			}
 
 			// We're good
 			return(_CONSOLE_ERROR__NO_ERROR);
@@ -238,17 +246,19 @@
 //////
 	s32 console_release(uptr tnHandle)
 	{
-		SConsole* console;
+		s32			lnResult;
+		SConsole*	console;
 
 
 		// Make sure our environment is sane
 		if ((console = iConsole_find_byHandle(tnHandle)))
 		{
 			// If it's changed, set it
-			console_os_release(console);
+			if ((lnResult = console_os_release(console)) != _CONSOLE_ERROR__NO_ERROR)
+				console_os_error(console, lnResult);
 
 			// We're good
-			return(_CONSOLE_ERROR__NO_ERROR);
+			return(lnResult);
 
 		} else {
 			// Failure
@@ -264,7 +274,7 @@
 // Called to set an option or options for a console
 //
 //////
-	s32 console_setOptions(uptr tnHandle, SDatum* options)
+	s32 console_setProperties(uptr tnHandle, SDatum* properties)
 	{
 		SConsole*			console;
 		SDatumCallback		cb;
@@ -273,10 +283,10 @@
 		// Make sure our environment is sane
 		if ((console = iConsole_find_byHandle(tnHandle)))
 		{
-			// Iterate through all of the options one-by-one
+			// Iterate through all of the properties one-by-one
 			memset(&cb, 0, sizeof(cb));
 			cb._propAndValue_func = (uptr)&iiConsole_setOptions_callback;
-			return(iProperty_iterate(options, &cb));
+			return(iProperty_iterate(&cb, properties));
 		}
 
 		// If we get here, error
@@ -297,9 +307,9 @@
 		else if (console_check_prop(top))			{	console->height			= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
 		else if (console_check_prop(width))			{	console->width			= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
 		else if (console_check_prop(height))		{	console->height			= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
-		else if (console_check_prop(charwidth))		{	console->char_width		= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
-		else if (console_check_prop(charheight))	{	console->char_height	= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
-		else if (console_check_prop(scrollcount))	{	console->scrollCount	= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(charWidth))		{	console->char_width		= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(charHeight))	{	console->char_height	= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(scrollRows))	{	console->scrollRows		= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
 		else if (console_check_prop(title))			{	iDatum_duplicate(&console->title, &cb->value);					cb->flag1 = true;	}
 		else if (console_check_prop(visible))
 		{
@@ -379,8 +389,8 @@
 //////
 	s32 console_print(uptr tnHandle, SDatum* textOut)
 	{
+		s8			c;
 		s32			lnI, lnJ;
-		char		c;
 		SConsole*	console;
 
 
@@ -397,20 +407,19 @@
 					for (lnI = 0; lnI < textOut->length; lnI++)
 					{
 						// Parse out the character
-						c = textOut->data_cs8[lnI];
-						if (c == 13)
+						if ((c = textOut->data_cs8[lnI]) == 13)
 						{
 							// Carriage return
 							console->char_x = 0;
-
-						} else (c == 10) {
+						
+						} else if (c == 10) {
 							// Line feed
 							iiConsole_moveToNextRow(console);
 
-						} else (c == 9) {
+						} else if (c == 9) {
 							// Tab
 							for (lnJ = console->char_x + 1; lnJ % 4 != 0; )
-								lnJ++;
+								++lnJ;
 
 							// Make sure it's in range
 							console->char_x = min(console->char_x, console->width);
@@ -433,7 +442,7 @@
 		}
 
 		// Failure
-		return(_CONSOLE_ERROR__HANDLE_NOT_FOUND)
+		return(_CONSOLE_ERROR__HANDLE_NOT_FOUND);
 	}
 
 
@@ -444,8 +453,9 @@
 // Called to scroll the console window up or down N-rows
 //
 //////
-	s32 console_scroll(uptr tnHandle, s32 tnRows, bool tlMoveCursor = true)
+	s32 console_scroll(uptr tnHandle, s32 tnRows, bool tlMoveCursor)
 	{
+		return(0);
 	}
 
 
@@ -456,7 +466,7 @@
 // Called to write some text to the console
 //
 //////
-	s32 console_push(uptr tnHandle, s32 tnX, s32 tnY, s32 tnCount, SBgra color, SDatum* text, bool tlWrap)
+	s32 console_raw_push(uptr tnHandle, s32 tnX, s32 tnY, SBgra color, SDatum* textIn, bool tlWrap)
 	{
 		return(-1);
 	}
@@ -469,7 +479,7 @@
 // Called to read some text from the console
 //
 //////
-	s32 console_pullN(uptr tnHandle, s32 tnX, s32 tnY, s32 tnCount, SDatum* textOut)
+	s32 console_raw_pullN(uptr tnHandle, s32 tnX, s32 tnY, s32 tnCount, SDatum* textOut)
 	{
 		return(-1);
 	}
@@ -482,7 +492,20 @@
 // Called to get the attributes of a specific character
 //
 //////
-	s32 console_pull1(uptr tnHandle, s32 tnX, s32 tnY, u8* c, SBgra* color, bool* tlBold, bool* tlItalic, bool* tlUnderline)
+	s32 console_raw_pull1(uptr tnHandle, s32 tnX, s32 tnY, u8* c, SBgra* color, bool* tlBold, bool* tlItalic, bool* tlUnderline)
+	{
+		return(-1);
+	}
+
+
+
+
+//////////
+//
+// Called to write some VT100 text to the console
+//
+//////
+	s32 console_vt100_push(uptr tnHandle, SDatum* vt100Text)
 	{
 		return(-1);
 	}
@@ -536,7 +559,7 @@
 				return(true);
 
 			// Try to create one
-			iBuilder_createAndInitialize(&console->scrollBuffer, sizeof(SConRow) * max(1000, console->scrollCount));
+			iBuilder_createAndInitialize(&console->scrollBuffer, sizeof(SConRow) * max(1000, console->scrollRows));
 
 			// Indicate success or failure
 			return((console->scrollBuffer != NULL));
@@ -602,7 +625,7 @@
 
 
 		// If we're keeping an unlimited buffer, we can always append even if we're at the end
-		if (console->scrollCount == -1)
+		if (console->scrollRows == -1)
 		{
 			// Move down to the next row
 			if ((console->topRow + console->char_y + 1) * sizeof(SConRow) < console->scrollBuffer->populatedLength)

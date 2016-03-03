@@ -213,6 +213,6 @@ struct SVariable;
 	SProperty*				iiProperty_allocate						(SDatum* name, SVariable* value, SDatum* value_datum = NULL);
 	void					iProperty_delete						(SProperty** p);
 	SProperty*				iProperty_delete						(SProperty* p, bool tlDeleteSelf);
-	s32						iProperty_iterate						(SDatum* properties, SDatumCallback* cb);
+	s32						iProperty_iterate						(SDatumCallback* cb, SDatum* properties);
 
 #endif

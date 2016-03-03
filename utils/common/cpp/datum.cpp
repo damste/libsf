@@ -653,7 +653,7 @@
 	//		property3 = val3			// Sends [property3] and [val3] to cb->propAndValue_func()
 	//
 	// Returns the number of properties dispatched into cb->propAndValue_func()
-	s32 iProperty_iterate(SDatum* properties, SDatumCallback* cb)
+	s32 iProperty_iterate(SDatumCallback* cb, SDatum* properties)
 	{
 		s32 lnI;
 
@@ -680,7 +680,7 @@
 			}
 		}
 
-		// If we get here, invalid
-		return(0);
+		// If we get here, invalid params
+		return(_CONSOLE_ERROR__INVALID_PARAMETERS);
 	}
 #endif

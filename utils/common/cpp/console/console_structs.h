@@ -199,7 +199,7 @@ struct SConsole
 	s32				top;				// Upper-left Y coordinate of window
 	s32				width;				// Width of window in characters (multiply by char_width to get pixel width)
 	s32				height;				// Height of window in characters (multiply by char_height to get pixel height)
-	s32				scrollCount;		// Number of rows to keep in the scroll buffer, -1 means unlimited
+	s32				scrollRows;			// Number of rows to keep in the scroll buffer, -1 means unlimited
 
 	// Window title
 	SDatum			title;				// Title of the console window
@@ -221,6 +221,6 @@ struct SConsole
 	bool			allow_input;		// Should input be returned?
 	bool			allow_output;		// Should output be returned?
 
-	// OS specific info
-	console_os_struct_variables
+	// OS-specific info
+	console_os_struct_variables;		// Extra structure members specific to the OS's needs
 };
