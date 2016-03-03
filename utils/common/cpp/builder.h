@@ -115,7 +115,7 @@ struct SDatum;
 
 		// Iterate function (return true to continue iteration, false to stop)
 		union {
-			sptr	_iterateFunc;
+			uptr	_iterateFunc;
 			bool	(*iterateFunc)		(SBuilderCallback* bcb);
 		};
 	};

@@ -180,7 +180,7 @@
 			// Perform the processing
 			dcb.extra1 = &console_cb;
 			dcb._propAndValue_func = (uptr)&iiConsole_setOptions_callback;
-			iProperty_iterate(settings, &dcb);
+			iProperty_iterate(&dcb, settings);
 
 			// Actually create the console
 			console = (SConsole*)iBuilder_allocateBytes(gsConsoleRoot, sizeof(SConsole));
@@ -224,7 +224,7 @@
 					console_os_error(console, lnResult);
 
 				// Indicate success
-				return(lnResult)
+				return(lnResult);
 			}
 
 			// We're good

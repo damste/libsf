@@ -165,7 +165,7 @@
 			buffer[lnLength] = 0;
 
 			// Create the window
-			console->hwnd = CreateWindow(cgc_consoleClass,	console->title, WS_OVERLAPPEDWINDOW, 
+			console->hwnd = CreateWindow(cgc_consoleClass,	buffer, WS_OVERLAPPEDWINDOW, 
 															console->left, console->top, 
 															console->width, console->height, 
 															NULL, NULL, ghInstance, NULL);
@@ -311,7 +311,7 @@
 // Windows callback, delivering messages
 //
 //////
-	LRESULT CALLBACK console_wndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+	LRESULT CALLBACK console_wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		int				wmId, wmEvent;
 		PAINTSTRUCT		ps;
@@ -331,9 +331,9 @@
 					break;
 
 				case WM_PAINT:
-					hdc = BeginPaint(hWnd, &ps);
+					hdc = BeginPaint(hwnd, &ps);
 					// TODO: Add any drawing code here...
-					EndPaint(hWnd, &ps);
+					EndPaint(hwnd, &ps);
 					break;
 
 				case WM_DESTROY:
@@ -341,7 +341,7 @@
 					break;
 
 				default:
-					return DefWindowProc(hWnd, message, wParam, lParam);
+					return DefWindowProc(hwnd, message, wParam, lParam);
 			}
 		}
 
@@ -359,13 +359,12 @@
 //////
 	SConsole* iConsole_win_find_byHwnd(HWND hwnd)
 	{
-		SBuilderCallback	cb;
-		SConsole*			console;
+		SBuilderCallback cb;
 
 
 		// Prepare for iterative callback
 		memset(&cb, 0, sizeof(cb));
-		cb._iterateFunc	= &iConsole_win_find_byHwnd__callback;
+		cb._iterateFunc	= (uptr)&iConsole_win_find_byHwnd__callback;
 		cb.extra1 = hwnd;
 
 		// find it
@@ -383,7 +382,7 @@
 
 
 		// Test the value
-		console = (SConsole*)cb->extra1;
+		console = (SConsole*)cb->buffer_ptr;
 		if (console->hwnd == (HWND)cb->extra1)
 		{
 			// Store the console

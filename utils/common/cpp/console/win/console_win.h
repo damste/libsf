@@ -97,6 +97,7 @@
 #include "..\common_types.h"
 
 struct SConsole;
+struct SBuilderCallback;
 
 
 
