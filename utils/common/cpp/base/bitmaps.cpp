@@ -811,7 +811,12 @@
 
 			// Release the font
 			if (tlDeleteFont && bmp->font)
+			{
+#ifdef iFont_delete
 				iFont_delete(&bmp->font, true);
+#endif
+				bmp->font = NULL;
+			}
 
 			// Do we need to free the internals?
 			if (tlFreeBits)
@@ -887,10 +892,12 @@
 // Draw the indicated object
 //
 //////
+#ifdef SObject
 	void iBmp_bitBltObject(SBitmap* bmpDst, SObject* objSrc, SBitmap* bmpSrc)
 	{
 		iBmp_bitBlt(bmpDst, &objSrc->rc, bmpSrc);
 	}
+#endif
 
 
 
@@ -900,10 +907,12 @@
 // Draws all except bits with the mask color rgb(222,22,222)
 //
 //////
+#ifdef SObject
 	void iBmp_bitBltObjectMask(SBitmap* bmpDst, SObject* obj, SBitmap* bmpSrc)
 	{
 		iBmp_bitBltMask(bmpDst, &obj->rc, bmpSrc);
 	}
+#endif
 
 
 
@@ -2920,6 +2929,7 @@
 // Called to create a cask bitmap scaled to the indicated width and height
 //
 //////
+#if !defined(_EXCLUDE_iBmp_cask_createAndPopulate)
 	SBitmap* iBmp_cask_createAndPopulate(s32 iCode, s32 tnWidth, s32 tnHeight, s32* tnSkipChars, u32 tnTextLength, SBgra* caskColor, SBgra textColor, SBgra backgroundColor, bool tlOverrideColors)
 	{
 		s32			lnI, lnWidth, lnStop, lnLeft;
@@ -3206,6 +3216,7 @@
 		// If we get here, invalid
 		return(NULL);
 	}
+#endif
 
 
 
@@ -3217,6 +3228,7 @@
 // so as to indicate the scope of the nbsp name.
 //
 //////
+#if !defined(_EXCLUDE_iBmp_nbsp_createAndPopulate)
 	SBitmap* iBmp_nbsp_createAndPopulate(SComp* comp, SFont* font, f32 tfMinColor, f32 tfMaxColor, s32 tnWidth, s32 tnHeight, SBgra backgroundColor, SBgra textColor)
 	{
 		s32			lnI, lnCount, lnDrawCount;
@@ -3292,6 +3304,7 @@
 		// Indicate our status
 		return(bmpNbsp);
 	}
+#endif
 
 
 
@@ -3301,6 +3314,7 @@
 // Called to build a common tooltip background
 //
 //////
+#if !defined(_EXCLUDE_iBmp_colorizeAsCommonTooltipBackground)
 	void iBmp_colorizeAsCommonTooltipBackground(SBitmap* bmp)
 	{
 		RECT lrc;
@@ -3315,6 +3329,7 @@
 			iBmp_frameRect(bmp, &lrc, tooltipForecolor, tooltipForecolor, tooltipForecolor, tooltipForecolor, false, NULL, false);
 		}
 	}
+#endif
 
 
 
@@ -3451,7 +3466,9 @@ return;
 
 				} else {
 					// Unknown format
+#ifdef iError_signal
 					iError_signal(_ERROR_INTERNAL_ERROR, NULL, false, (s8*)"dapple bitcount", false);
+#endif
 					return;
 				}
 
@@ -4731,7 +4748,7 @@ return;
 // Called to render the node to a bitmap
 //
 //////
-	// 
+#ifdef SComp
 	void iBmp_node_renderComp(SNode* node, s32 tnMaxTokenLength, s32 tnMaxOverallLength, bool tlIncludeExtraInfo, SNodeProps props[], s32 tnPropsCount, u32 tnIter_uid)
 	{
 		s32			lnI, lnStart, lnEnd, lnWidth, lnHeight;
@@ -4928,6 +4945,7 @@ return;
 //////
 		}
 	}
+#endif
 
 
 

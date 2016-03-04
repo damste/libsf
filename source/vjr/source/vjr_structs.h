@@ -108,35 +108,6 @@ struct SDate
 	u8		dd[2];							// 2-digit day
 };
 
-struct SFont
-{
-	bool		isUsed;						// Is this font slot used?
-	HDC			hdc;						// Device context used for its creation
-
-	// Current font instance flags
-	SDatum		name;						// Name of this font
-	s32			charset;					// Font charset
-	bool		isBold;						// Is the font bold? (Note: This is independent of the font name itself having bold in it, such as "Ubuntu Bold"
-	bool		isItalic;					// Is the font italic?
-	bool		isUnderline;				// Is the font underline?
-	bool		isStrikethrough;			// Is the font strikethrough?
-	bool		isCondensed;				// Is the font condensed?
-	bool		isExtended;					// Is the font extended?
-	bool		isOutline;					// Is the font outlined?
-	bool		isShadow;					// Is the font shadowed?
-
-	// OS font handle
-	HFONT		hfont;
-
-	// Internal Windows settings
-	s32			_sizeUsedForCreateFont;		// Computed value based on passed font size
-	u32			_size;						// Actual point size
-	u32			_weight;					// Actual weight
-	u32			_italics;					// Actual italics setting
-	u32			_underline;					// Actual underline setting
-	TEXTMETRIC	tm;							// Text metrics computed at the time of creation
-};
-
 struct SHover
 {
 	HWND		hwnd;						// Window for the hover

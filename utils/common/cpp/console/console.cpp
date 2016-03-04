@@ -787,3 +787,17 @@
 			SelectObject(console->hdc, font->hfont);
 		}
 	}
+
+
+
+
+//////////
+//
+// Provides a system-wide unique id
+//
+//////
+	u32 iGetNextUid(void)
+	{
+		// Simply return the next value
+		return(gnNextUid++);
+	}

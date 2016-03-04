@@ -95,3 +95,4 @@
 //////
 	SBuilder*			gsConsoleRoot						= NULL;
 	SBuilder*			gsConsoleFontRoot					= NULL;
+	u32					gnNextUid							= 0;

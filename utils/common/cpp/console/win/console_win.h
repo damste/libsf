@@ -91,11 +91,6 @@
 
 
 #include <windows.h>
-#include <stdlib.h>
-#include <stdio.h>
-
-// Standard types
-#include "\libsf\utils\common\cpp\include\common_types.h"
 
 
 //////////

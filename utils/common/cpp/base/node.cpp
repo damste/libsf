@@ -335,6 +335,7 @@
 			//////////
 			// Delete the op if need be
 			//////
+#ifdef iOp_politelyDelete
 				if (node->opData)
 				{
 					// Delete op chain
@@ -344,6 +345,7 @@
 					if (node->opData->firstVariable)
 						iVariable_politelyDelete_chain(&node->opData->firstVariable, true);
 				}
+#endif
 
 
 			//////////
@@ -499,7 +501,9 @@
 				props[0].rodColor			= charcoalColor;
 				props[0].colorize			= true;
 				props[0].colorizeColor		= pastelBlueColor;
+#ifdef iFont_create
 				props[0].font				= iFont_create(cgcFontName_defaultFixed);
+#endif
 
 				// Render out in all directions from this point
 				iiNode_renderBitmap(node, node, NULL, tnMaxTokenLength, tnMaxOverallLength, props, 1, lnIter_uid, tlIncludeExtraInfo, tlGoDeeper, nodeFlags, tlDeeperNodesExtendInAllDirections);
@@ -561,7 +565,9 @@
 			//////////
 			// Render node
 			//////
+#ifdef SComp
 				iBmp_node_renderComp(node, tnMaxTokenLength, tnMaxOverallLength, tlIncludeExtraInfo, props, tnPropsCount, tnIter_uid);
+#endif
 
 
 			//////////

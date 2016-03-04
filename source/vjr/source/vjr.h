@@ -155,6 +155,7 @@
 	#include "\libsf\utils\common\cpp\include\xml.h"
 	#include "\libsf\utils\common\cpp\include\threadpool.h"
 	#include "\libsf\utils\common\cpp\include\fifo.h"
+	#include "\libsf\utils\common\cpp\include\bitmaps.h"
 
 	#include "vjr_structs0.h"
 
@@ -203,7 +204,6 @@
 
 	#include "\libsf\source\vjr\source\debugger\jdebic\jdebic.h"
 	#include "fonts.h"
-	#include "\libsf\source\vjr\source\bitmaps\bitmaps.h"
 
 	#include "\libsf\source\vjr\source\commands\command_defs.h"
 	#include "sound\sound.h"
@@ -241,7 +241,7 @@
 		#include "\libsf\source\vjr\source\objects\events.cpp"
 		#include "\libsf\source\vjr\source\objects\render.cpp"
 		#include "\libsf\source\vjr\source\objects\reset.cpp"
-		#include "\libsf\source\vjr\source\bitmaps\bitmaps.cpp"
+		#include "\libsf\utils\common\cpp\base\bitmaps.cpp"
 		#include "\libsf\source\vjr\source\compiler\vxb\vxb_compiler.cpp"
 		#include "\libsf\source\vjr\source\compiler\vxb\vxb_dictionary.cpp"
 		#include "\libsf\exodus\tools\rdc\rdc_compiler.cpp"
@@ -379,7 +379,7 @@
 
 	#include "/libsf/source/vjr/source/debugger/jdebic/jdebic.h"
 	#include "fonts.h"
-	#include "/libsf/source/vjr/source/bitmaps/bitmaps.h"
+	#include "/libsf/utils/common/cpp/include/bitmaps.h"
 
 	#include "/libsf/source/vjr/source/commands/command_defs.h"
 	#include "/libsf/source/vjr/source/sound/sound.h"
@@ -417,7 +417,7 @@
 		#include "/libsf/source/vjr/source/objects/events.cpp"
 		#include "/libsf/source/vjr/source/objects/render.cpp"
 		#include "/libsf/source/vjr/source/objects/reset.cpp"
-		#include "/libsf/source/vjr/source/bitmaps/bitmaps.cpp"
+		#include "/libsf/utils/common/cpp/base/bitmaps.cpp"
 		#include "/libsf/source/vjr/source/compiler/vxb/vxb_compiler.cpp"
 		#include "/libsf/source/vjr/source/compiler/vxb/vxb_dictionary.cpp"
 		#include "/libsf/exodus/tools/rdc/rdc_compiler.cpp"
@@ -545,7 +545,7 @@
 
 	#include "/libsf/source/vjr/source/debugger/jdebic/jdebic.h"
 	#include "fonts.h"
-	#include "/libsf/source/vjr/source/bitmaps/bitmaps.h"
+	#include "/libsf/utils/common/cpp/include/bitmaps.h"
 
 	#include "/libsf/source/vjr/source/commands/command_defs.h"
 	#include "/libsf/source/vjr/source/sound/sound.h"
@@ -583,7 +583,7 @@
 		#include "/libsf/source/vjr/source/objects/events.cpp"
 		#include "/libsf/source/vjr/source/objects/render.cpp"
 		#include "/libsf/source/vjr/source/objects/reset.cpp"
-		#include "/libsf/source/vjr/source/bitmaps/bitmaps.cpp"
+		#include "/libsf/utils/common/cpp/base/bitmaps.cpp"
 		#include "/libsf/source/vjr/source/compiler/vxb/vxb_compiler.cpp"
 		#include "/libsf/source/vjr/source/compiler/vxb/vxb_dictionary.cpp"
 		#include "/libsf/exodus/tools/rdc/rdc_compiler.cpp"

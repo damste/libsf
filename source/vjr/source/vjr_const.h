@@ -120,7 +120,6 @@ typedef SEM**		SEMpp;
 //////
 	// abc = newAlloc(SAbc, gsAbcRoot);
 	#define newAlloc(str, var)							(str*)iLl_appendNew__llAtEnd((SLL**)&var, sizeof(str))
-	#define between(value, lo, hi)						(value >= lo && value <= hi)
 
 
 //////////
@@ -304,43 +303,10 @@ typedef SEM**		SEMpp;
 
 
 //////////
-// Red,Grn,Blu,Alp color maker
+// Colors
 //////
-	#define rgba(r,g,b,a)					((a & 0xff) << 24) + \
-											((r & 0xff) << 16) + \
-											((g & 0xff) <<  8) + \
-											((b & 0xff))
-
-	#define rgb(r,g,b)						(0xff       << 24) + \
-											((r & 0xff) << 16) + \
-											((g & 0xff) <<  8) + \
-											((b & 0xff))
-
-	#define bgra(b,g,r,a)					((a & 0xff) << 24) + \
-											((b & 0xff) << 16) + \
-											((g & 0xff) <<  8) + \
-											((r & 0xff))
-
-	#define bgr(b,g,r)						(0xff       << 24) + \
-											((b & 0xff) << 16) + \
-											((g & 0xff) <<  8) + \
-											((r & 0xff))
-
-	#define alp(rgbaColor)					((rgbaColor >> 24) & 0xff)
-	#define red(rgbaColor)					((rgbaColor >> 16) & 0xff)
-	#define grn(rgbaColor)					((rgbaColor >> 8)  & 0xff)
-	#define blu(rgbaColor)					( rgbaColor        & 0xff)
-
 	#define _disabledBackColor				rgba(255, 255, 255, 255)
 	#define _disabledForeColor				rgba(192, 192, 230, 255)
-	#define _whiteColor						rgba(255, 255, 255, 255)
-	#define _silverColor					rgba(225, 225, 225, 255)
-	#define _grayColor						rgba(192, 192, 192, 255)
-	#define _darkGrayColor					rgba(128, 128, 128, 255)
-	#define _charcoalColor					rgba(64, 64, 64, 255)
-	#define _blackColor						rgba(0, 0, 0, 255)
-	#define _selectedBackColor				rgba(220, 235, 255, 255)
-	#define _selectedForeColor				rgba(0, 0, 164, 255)
 
 	#define _focusObjColor_readWrite_container	rgba(97,31,128, 255)
 	#define _focusObjColor_readWrite_obj		rgba(112,164,255, 255)
@@ -1408,29 +1374,6 @@ typedef SEM**		SEMpp;
 	const s8			cgcTag_toolbars[]					= "toolbars";
 	const s8			cgcTag_toolbar[]					= "toolbar";
 	const s8			cgcTag_separator[]					= "separator";
-	// Attribute tag names
-	const s8			cgcTag_vertical[]					= "vertical";
-	const s8			cgcTag_horizontal[]					= "horizontal";
-	const s8			cgcTag_layout[]						= "layout";
-	const s8			cgcTag_name[]						= "name";
-	const s8			cgcTag_value[]						= "val";
-	const s8			cgcTag_typeDetail[]					= "td";
-	const s8			cgcTag_object[]						= "obj";
-	const s8			cgcTag_baseclass[]					= "bc";
-	const s8			cgcTag_class[]						= "c";
-	const s8			cgcTag_classLibrary[]				= "cl";
-	const s8			cgcTag_p[]							= "p";			// Fixed properties
-	const s8			cgcTag_props[]						= "props";		// Class properties container
-	const s8			cgcTag_prop[]						= "prop";		// Class property
-	const s8			cgcTag_h[]							= "h";			// Height
-	const s8			cgcTag_x[]							= "x";			// X
-	const s8			cgcTag_y[]							= "y";			// Y
-	const s8			cgcTag_w[]							= "w";			// Width
-	const s8			cgcTag_width[]						= "width";
-	const s8			cgcTag_height[]						= "height";
-	const s8			cgcTag_iconWidth[]					= "iconwidth";
-	const s8			cgcTag_iconHeight[]					= "iconheight";
-	const s8			cgcTag_visible[]					= "visible";
 
 
 //////////

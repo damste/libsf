@@ -129,3 +129,4 @@
 	void			iiConsole_moveToNextRow				(SConsole* console);
 	void			iiConsole_storeCharacter			(SConsole* console, char c);
 	void			iiConsole_selectFont				(SConsole* console, s32 fontIndex);
+	u32				iGetNextUid							(void);

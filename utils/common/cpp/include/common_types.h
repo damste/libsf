@@ -147,6 +147,39 @@
 #define cu32p cu32*
 #define cu64p cu64*
 
+// Standard forms
+#define between(value, lo, hi)	(value >= lo && value <= hi)
+
+
+//////////
+// Color macros
+//////
+	#define rgba(r,g,b,a)					((a & 0xff) << 24) + \
+											((r & 0xff) << 16) + \
+											((g & 0xff) <<  8) + \
+											((b & 0xff))
+
+	#define rgb(r,g,b)						(0xff       << 24) + \
+											((r & 0xff) << 16) + \
+											((g & 0xff) <<  8) + \
+											((b & 0xff))
+
+	#define bgra(b,g,r,a)					((a & 0xff) << 24) + \
+											((b & 0xff) << 16) + \
+											((g & 0xff) <<  8) + \
+											((r & 0xff))
+
+	#define bgr(b,g,r)						(0xff       << 24) + \
+											((b & 0xff) << 16) + \
+											((g & 0xff) <<  8) + \
+											((r & 0xff))
+
+	#define alp(rgbaColor)					((rgbaColor >> 24) & 0xff)
+	#define red(rgbaColor)					((rgbaColor >> 16) & 0xff)
+	#define grn(rgbaColor)					((rgbaColor >> 8)  & 0xff)
+	#define blu(rgbaColor)					( rgbaColor        & 0xff)
+
+
 // Shortcuts for non-NULL data arrays by arbitrary string
 #define data_s8(a,b)	s8	a[sizeof(b) - 1]	= { (s8*)b }
 #define data_cs8(a,b)	cs8	a[sizeof(b) - 1]	= { (cs8*)b }

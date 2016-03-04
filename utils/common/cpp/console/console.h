@@ -90,6 +90,24 @@
 
 
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
+#include <io.h>
+#include <sys/locking.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <share.h>
+#include <errno.h>
+
+// Standard types
+#include "\libsf\utils\common\cpp\include\common_types.h"
+#define _EXCLUDE_iBmp_colorizeAsCommonTooltipBackground		1
+#define _EXCLUDE_iBmp_cask_createAndPopulate				1
+#define _EXCLUDE_iBmp_nbsp_createAndPopulate				1
+
+
 //////////
 // OS-specific header files
 //////
@@ -105,20 +123,29 @@
 //////////
 // Console-specific header files
 //////
+	#include "\libsf\utils\common\cpp\include\ll.h"
 	#include "\libsf\utils\common\cpp\include\builder.h"
 	#include "\libsf\utils\common\cpp\include\datum.h"
+	#include "\libsf\utils\common\cpp\include\xml.h"
 
 	#include "console_structs.h"
 	#include "console_defs.h"
 	#include "console_const.h"
 	#include "console_globals.h"
 
+	#include "\libsf\utils\common\cpp\include\bitmaps.h"
+	#include "\libsf\utils\common\cpp\include\node.h"
+
 
 //////////
 // Console-specific code
 //////
+	#include "\libsf\utils\common\cpp\base\ll.cpp"
+	#include "\libsf\utils\common\cpp\base\node.cpp"
 	#include "\libsf\utils\common\cpp\base\builder.cpp"
 	#include "\libsf\utils\common\cpp\base\datum.cpp"
+	#include "\libsf\utils\common\cpp\base\xml.cpp"
+	#include "\libsf\utils\common\cpp\base\bitmaps.cpp"
 
 
 //////////

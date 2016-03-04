@@ -82,14 +82,202 @@
 
 
 class CXml;
+struct SNode;
+struct SNodeProps;
 
 
 //////////
 // Constants
 //////
-	#define					_FILL_RECT_OP_AND						1
-	#define					_FILL_RECT_OP_OR						2
-	#define					_FILL_RECT_OP_XOR						3
+	#define	_FILL_RECT_OP_AND										1
+	#define	_FILL_RECT_OP_OR										2
+	#define	_FILL_RECT_OP_XOR										3
+
+	// Global definitions for general use
+	#define	_whiteColor												rgba(255, 255, 255, 255)
+	#define _silverColor											rgba(225, 225, 225, 255)
+	#define _grayColor												rgba(192, 192, 192, 255)
+	#define _darkGrayColor											rgba(128, 128, 128, 255)
+	#define _charcoalColor											rgba(64, 64, 64, 255)
+	#define _blackColor												rgba(0, 0, 0, 255)
+	#define _selectedBackColor										rgba(220, 235, 255, 255)
+	#define _selectedForeColor										rgba(0, 0, 164, 255)
+
+	// Colors
+	const SBgra				whiteColor								= { _whiteColor };
+	const SBgra				silverColor								= { _silverColor };
+	const SBgra				grayColor								= { _grayColor };
+	const SBgra				blackColor								= { _blackColor };
+	const SBgra				darkGrayColor							= { _darkGrayColor };
+	const SBgra				charcoalColor							= { _charcoalColor };
+	const SBgra				yellowColor								= { rgba(255, 255, 0, 255) };
+	const SBgra				redColor								= { rgba(255, 0, 0, 255) };
+	const SBgra				greenColor								= { rgba(0, 255, 0, 255) };
+	const SBgra				blueColor								= { rgba(0, 0, 255, 255) };
+	const SBgra				cyanColor								= { rgba(0, 255, 255, 255) };
+	const SBgra				orangeColor								= { rgba(255, 200, 64, 255) };
+	const SBgra				fuchsiaColor							= { rgba(255, 255, 0, 255) };
+	const SBgra				darkRedColor							= { rgba(80, 0, 0, 255) };
+	const SBgra				darkOrangeColor							= { rgba(128, 64, 0, 255) };
+	const SBgra				darkGreenColor							= { rgba(0, 80, 0, 255) };
+	const SBgra				darkBlueColor							= { rgba(0, 0, 80, 255) };
+	const SBgra				pastelYellowColor						= { rgba(255, 255, 128, 255) };
+	const SBgra				pastelRedColor							= { rgba(255, 200, 200, 255) };
+	const SBgra				pastelOrangeColor						= { rgba(255, 205, 155, 255) };
+	const SBgra				pastelGreenColor						= { rgba(200, 255, 200, 255) };
+	const SBgra				pastelBlueColor							= { rgba(215, 215, 255, 255) };
+	const SBgra				maskColor								= { rgba(222, 22, 222, 255) };			// Fuscia
+
+	// Attribute tag names
+	const s8				cgcTag_vertical[]						= "vertical";
+	const s8				cgcTag_horizontal[]						= "horizontal";
+	const s8				cgcTag_layout[]							= "layout";
+	const s8				cgcTag_name[]							= "name";
+	const s8				cgcTag_value[]							= "val";
+	const s8				cgcTag_typeDetail[]						= "td";
+	const s8				cgcTag_object[]							= "obj";
+	const s8				cgcTag_baseclass[]						= "bc";
+	const s8				cgcTag_class[]							= "c";
+	const s8				cgcTag_classLibrary[]					= "cl";
+	const s8				cgcTag_p[]								= "p";			// Fixed properties
+	const s8				cgcTag_props[]							= "props";		// Class properties container
+	const s8				cgcTag_prop[]							= "prop";		// Class property
+	const s8				cgcTag_h[]								= "h";			// Height
+	const s8				cgcTag_x[]								= "x";			// X
+	const s8				cgcTag_y[]								= "y";			// Y
+	const s8				cgcTag_w[]								= "w";			// Width
+	const s8				cgcTag_width[]							= "width";
+	const s8				cgcTag_height[]							= "height";
+	const s8				cgcTag_iconWidth[]						= "iconwidth";
+	const s8				cgcTag_iconHeight[]						= "iconheight";
+	const s8				cgcTag_visible[]						= "visible";
+
+
+//////////
+// Structures
+//////
+	struct SFont
+	{
+		HDC			hdc;						// Device context used for its creation
+		bool		isUsed;						// Is this font slot used?
+
+		// Current font instance flags
+		SDatum		name;						// Name of this font
+		s32			charset;					// Font charset
+		bool		isBold;						// Is the font bold? (Note: This is independent of the font name itself having bold in it, such as "Ubuntu Bold"
+		bool		isItalic;					// Is the font italic?
+		bool		isUnderline;				// Is the font underline?
+		bool		isStrikethrough;			// Is the font strikethrough?
+		bool		isCondensed;				// Is the font condensed?
+		bool		isExtended;					// Is the font extended?
+		bool		isOutline;					// Is the font outlined?
+		bool		isShadow;					// Is the font shadowed?
+
+		// OS font handle
+		HFONT		hfont;
+
+		// Internal Windows settings
+		s32			_sizeUsedForCreateFont;		// Computed value based on passed font size
+		u32			_size;						// Actual point size
+		u32			_weight;					// Actual weight
+		u32			_italics;					// Actual italics setting
+		u32			_underline;					// Actual underline setting
+		TEXTMETRIC	tm;							// Text metrics computed at the time of creation
+	};
+
+	struct SBitmap
+	{
+		// Device context and bitmap handle to this data
+		HDC					hdc;
+		HBITMAP				hbmp;
+		RECT				rc;
+		u32					iter;					// For graphics ops, holds a rendering iteration count
+		SFont*				font;					// If a font is associated with this context, it is set here
+
+		// Raw bitmap data (suitable for writing to disk)
+		BITMAPFILEHEADER	bh;
+		BITMAPINFOHEADER	bi;
+		s8*					bd;
+		u32					rowWidth;				// See: iBmp_computeRowWidth()
+	};
+
+	struct SBmpCache
+	{
+		SBitmap*		bmpCached;
+
+		u32				data1;
+		u32				data2;
+		u32				data3;
+		u32				data4;
+		u32				data5;
+		u32				data6;
+		u32				data7;
+		u32				data8;
+		u32				data9;
+		u32				data10;
+		u32				data11;
+		u32				data12;
+		u32				data13;
+		u32				data14;
+	};
+
+
+	// For processing the scaling of bitmaps
+	struct SBitmapProcess
+	{
+		// Holds the source canvas
+		SBitmap*			src;
+
+		// Holds storage data for single spanned pixels
+		u32					red;
+		u32					grn;
+		u32					blu;
+		u32					alp;
+
+		// tpoints is a buffer created to store the conversion pixel data during accumulation.
+		// Use formula:
+		//		tpoints	= (SRGBAF*)malloc(		((u32)(1.0/ratioV) + 3)   *
+		//										((u32)(1.0/ratioH) + 3))
+		//
+		f32					ratioV;				// (f32)bio->biHeight	/ (f32)bii->biHeight;
+		f32					ratioH;				// (f32)bio->biWidth	/ (f32)bii->biWidth;
+		u32					count;				// Number of valid points in tpoints
+		SBgraf*				pixels;				// Accumulation buffer for point data needed to feed into destination
+
+		// Temporary variables used for processing
+		union {
+			SBgra*			optra;				// (For 32-bit bitmaps) Output pointer to the upper-left pixel for this x,y
+			SBgr*			optr;				// (For 24-bit bitmaps) Output pointer to the upper-left pixel for this x,y
+		};
+		union {
+			SBgra*			iptrAnchora;		// (For 32-bit bitmaps) Input pointer to the left-most pixel of the first row (the anchor)
+			SBgr*			iptrAnchor;			// (For 24-bit bitmaps) Input pointer to the left-most pixel of the first row (the anchor)
+		};
+		union {
+			SBgra*			iptra;				// (For 32-bit bitmaps) Input pointer to the left-most pixel for this y row
+			SBgr*			iptr;				// (For 24-bit bitmaps) Input pointer to the left-most pixel for this y row
+		};
+		f32					ulx;				// Upper-left X
+		f32					uly;				// Upper-left Y
+		f32					lrx;				// Lower-right X
+		f32					lry;				// Lower-right Y
+		f32					widthLeft;			// Width for each left-most pixel
+		f32					widthRight;			// Width for each right-most pixel
+		f32					height;				// Height for a particular pixel portion (upper, lower)
+		f32					area;				// Temporary computed area for various pixels
+		s32					left;				// Left-side pixel offset into line
+		s32					right;				// Number of pixels to reach the right-most pixel
+		s32					middleStartH;		// Starting pixel offset for middle span
+		s32					middleFinishH;		// Ending pixel offset for middle span
+		s32					middleStartV;		// Middle starting pixel
+		s32					middleFinishV;		// Middle ending pixel
+
+		// Indicates the span from upper-left corner
+		bool				spans2H;			// Spans at least 2 pixels horizontally, meaning it begins somewhere in 1.x, for example, and ends somewhere beyond 2.x
+		bool				spans3H;			// Spans at least 3 pixels horizontally, meaning it begins somewhere in 1.x, for example, and ends somewhere beyond 3.x
+		bool				spans2V;			// Spans at least 2 pixels vertically, meaning it begins somewhere in 1.x, for example, and ends somewhere beyond 2.x
+		bool				spans3V;			// Spans at least 3 pixels vertically, meaning it begins somewhere in 1.x, for example, and ends somewhere beyond 3.x
+	};
 
 
 //////////
