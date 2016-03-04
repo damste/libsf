@@ -142,19 +142,19 @@
 	#include <stdlib.h>
 
 	#include "vjr_const.h"
-	#include "\libsf\utils\common\cpp\ll.h"
+	#include "\libsf\utils\common\cpp\include\ll.h"
 	#include "vjr_structs00.h"
-	#include "\libsf\utils\common\cpp\node.h"
+	#include "\libsf\utils\common\cpp\include\node.h"
 	#include "vjr_defs0.h"
 
-	#include "\libsf\utils\common\cpp\datum.h"
-	#include "\libsf\utils\common\cpp\builder.h"
-	#include "\libsf\utils\common\cpp\ll.cpp"
-	#include "\libsf\utils\common\cpp\time.h"
-	#include "\libsf\utils\common\cpp\disk.h"
-	#include "\libsf\utils\common\cpp\xml\xml.h"
-	#include "\libsf\utils\common\cpp\threadpool.h"
-	#include "\libsf\utils\common\cpp\fifo.h"
+	#include "\libsf\utils\common\cpp\include\datum.h"
+	#include "\libsf\utils\common\cpp\include\builder.h"
+	#include "\libsf\utils\common\cpp\base\ll.cpp"
+	#include "\libsf\utils\common\cpp\include\time.h"
+	#include "\libsf\utils\common\cpp\include\disk.h"
+	#include "\libsf\utils\common\cpp\include\xml.h"
+	#include "\libsf\utils\common\cpp\include\threadpool.h"
+	#include "\libsf\utils\common\cpp\include\fifo.h"
 
 	#include "vjr_structs0.h"
 
@@ -162,13 +162,13 @@
 	#include "\libsf\source\vjr\source\sourcelight\sourcelight_globals.h"
 	#include "\libsf\source\vjr\source\sourcelight\sourcelight_defs.h"
 
-	#include "\libsf\utils\common\cpp\datum.cpp"
-	#include "\libsf\utils\common\cpp\builder.cpp"
-	#include "\libsf\utils\common\cpp\time.cpp"
-	#include "\libsf\utils\common\cpp\disk.cpp"
-	#include "\libsf\utils\common\cpp\xml\xml.cpp"
-	#include "\libsf\utils\common\cpp\threadpool.cpp"
-	#include "\libsf\utils\common\cpp\fifo.cpp"
+	#include "\libsf\utils\common\cpp\base\datum.cpp"
+	#include "\libsf\utils\common\cpp\base\builder.cpp"
+	#include "\libsf\utils\common\cpp\base\time.cpp"
+	#include "\libsf\utils\common\cpp\base\disk.cpp"
+	#include "\libsf\utils\common\cpp\base\xml.cpp"
+	#include "\libsf\utils\common\cpp\base\threadpool.cpp"
+	#include "\libsf\utils\common\cpp\base\fifo.cpp"
 
 	#include "\libsf\source\vjr\source\compiler\common\compiler_common.h"
 
@@ -213,7 +213,7 @@
 	#include "\libsf\source\vjr\source\bmps\graphics\bitmaps.h"
 	#include "\libsf\source\vjr\source\settings\settings.h"
 
-	#include "\libsf\utils\common\cpp\node.cpp"
+	#include "\libsf\utils\common\cpp\base\node.cpp"
 	#include "\libsf\utils\sha1\sha1.h"
 	#include "\libsf\utils\sha1\sha1.cpp"
 
@@ -313,9 +313,9 @@
 	#endif
 
 	#include "vjr_const.h"
-	#include "/libsf/utils/common/cpp/ll.h"
+	#include "/libsf/utils/common/cpp/include/ll.h"
 	#include "vjr_structs00.h"
-	#include "/libsf/utils/common/cpp/node.h"
+	#include "/libsf/utils/common/cpp/include/node.h"
 	#include "vjr_defs0.h"
 
 	#if defined(__linux__)
@@ -323,13 +323,13 @@
 		#include "/libsf/utils/common/cpp/linux/hwndx.h"
 	#endif
 
-	#include "/libsf/utils/common/cpp/datum.h"
-	#include "/libsf/utils/common/cpp/builder.h"
-	#include "/libsf/utils/common/cpp/time.h"
-	#include "/libsf/utils/common/cpp/disk.h"
-	#include "/libsf/utils/common/cpp/xml/xml.h"
-	#include "/libsf/utils/common/cpp/threadpool.h"
-	#include "/libsf/utils/common/cpp/fifo.h"
+	#include "/libsf/utils/common/cpp/include/datum.h"
+	#include "/libsf/utils/common/cpp/include/builder.h"
+	#include "/libsf/utils/common/cpp/include/time.h"
+	#include "/libsf/utils/common/cpp/include/disk.h"
+	#include "/libsf/utils/common/cpp/include/xml/xml.h"
+	#include "/libsf/utils/common/cpp/include/threadpool.h"
+	#include "/libsf/utils/common/cpp/include/fifo.h"
 
 	#include "vjr_structs0.h"
 
@@ -337,14 +337,14 @@
 	#include "/libsf/source/vjr/source/sourcelight/sourcelight_globals.h"
 	#include "/libsf/source/vjr/source/sourcelight/sourcelight_defs.h"
 
-	#include "/libsf/utils/common/cpp/datum.cpp"
-	#include "/libsf/utils/common/cpp/builder.cpp"
-	#include "/libsf/utils/common/cpp/ll.cpp"
-	#include "/libsf/utils/common/cpp/time.cpp"
-	#include "/libsf/utils/common/cpp/disk.cpp"
-	#include "/libsf/utils/common/cpp/xml/xml.cpp"
-	#include "/libsf/utils/common/cpp/threadpool.cpp"
-	#include "/libsf/utils/common/cpp/fifo.cpp"
+	#include "/libsf/utils/common/cpp/base/datum.cpp"
+	#include "/libsf/utils/common/cpp/base/builder.cpp"
+	#include "/libsf/utils/common/cpp/base/ll.cpp"
+	#include "/libsf/utils/common/cpp/base/time.cpp"
+	#include "/libsf/utils/common/cpp/base/disk.cpp"
+	#include "/libsf/utils/common/cpp/base/xml/xml.cpp"
+	#include "/libsf/utils/common/cpp/base/threadpool.cpp"
+	#include "/libsf/utils/common/cpp/base/fifo.cpp"
 
 	#include "/libsf/source/vjr/source/compiler/common/compiler_common.h"
 
@@ -389,7 +389,7 @@
 	#include "/libsf/source/vjr/source/bmps/graphics/bitmaps.h"
 	#include "/libsf/source/vjr/source/settings/settings.h"
 
-	#include "/libsf/utils/common/cpp/node.cpp"
+	#include "/libsf/utils/common/cpp/base/node.cpp"
 	#include "/libsf/utils/sha1/sha1.h"
 	#include "/libsf/utils/sha1/sha1.cpp"
 
@@ -481,21 +481,21 @@
     #include <SDL/SDL_audio.h>
 
 	#include "vjr_const.h"
-	#include "/libsf/utils/common/cpp/ll.h"
+	#include "/libsf/utils/common/cpp/include/ll.h"
 	#include "vjr_structs00.h"
-	#include "/libsf/utils/common/cpp/node.h"
+	#include "/libsf/utils/common/cpp/include/node.h"
 	#include "vjr_defs0.h"
 
     #include "/libsf/utils/common/cpp/linux/windows.h"
     #include "/libsf/utils/common/cpp/linux/hwndx.h"
 
-	#include "/libsf/utils/common/cpp/datum.h"
-	#include "/libsf/utils/common/cpp/builder.h"
-	#include "/libsf/utils/common/cpp/time.h"
-	#include "/libsf/utils/common/cpp/disk.h"
-	#include "/libsf/utils/common/cpp/xml/xml.h"
-	#include "/libsf/utils/common/cpp/threadpool.h"
-	#include "/libsf/utils/common/cpp/fifo.h"
+	#include "/libsf/utils/common/cpp/include/datum.h"
+	#include "/libsf/utils/common/cpp/include/builder.h"
+	#include "/libsf/utils/common/cpp/include/time.h"
+	#include "/libsf/utils/common/cpp/include/disk.h"
+	#include "/libsf/utils/common/cpp/include/xml/xml.h"
+	#include "/libsf/utils/common/cpp/include/threadpool.h"
+	#include "/libsf/utils/common/cpp/include/fifo.h"
 
 	#include "vjr_structs0.h"
 
@@ -503,14 +503,14 @@
 	#include "/libsf/source/vjr/source/sourcelight/sourcelight_globals.h"
 	#include "/libsf/source/vjr/source/sourcelight/sourcelight_defs.h"
 
-	#include "/libsf/utils/common/cpp/datum.cpp"
-	#include "/libsf/utils/common/cpp/builder.cpp"
-	#include "/libsf/utils/common/cpp/ll.cpp"
-	#include "/libsf/utils/common/cpp/time.cpp"
-	#include "/libsf/utils/common/cpp/disk.cpp"
-	#include "/libsf/utils/common/cpp/xml/xml.cpp"
-	#include "/libsf/utils/common/cpp/threadpool.cpp"
-	#include "/libsf/utils/common/cpp/fifo.cpp"
+	#include "/libsf/utils/common/cpp/base/datum.cpp"
+	#include "/libsf/utils/common/cpp/base/builder.cpp"
+	#include "/libsf/utils/common/cpp/base/ll.cpp"
+	#include "/libsf/utils/common/cpp/base/time.cpp"
+	#include "/libsf/utils/common/cpp/base/disk.cpp"
+	#include "/libsf/utils/common/cpp/base/xml/xml.cpp"
+	#include "/libsf/utils/common/cpp/base/threadpool.cpp"
+	#include "/libsf/utils/common/cpp/base/fifo.cpp"
 
 	#include "/libsf/source/vjr/source/compiler/common/compiler_common.h"
 
@@ -555,7 +555,7 @@
 	#include "/libsf/source/vjr/source/bmps/graphics/bitmaps.h"
 	#include "/libsf/source/vjr/source/settings/settings.h"
 
-	#include "/libsf/utils/common/cpp/node.cpp"
+	#include "/libsf/utils/common/cpp/base/node.cpp"
 	#include "/libsf/utils/sha1/sha1.h"
 	#include "/libsf/utils/sha1/sha1.cpp"
 

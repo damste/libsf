@@ -681,6 +681,6 @@
 		}
 
 		// If we get here, invalid params
-		return(_CONSOLE_ERROR__INVALID_PARAMETERS);
+		return(-1);
 	}
 #endif

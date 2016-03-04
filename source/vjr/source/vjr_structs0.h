@@ -284,9 +284,9 @@ struct SXYS32
 
 
 #if defined(_MSC_VER)
-	#include "\libsf\utils\common\cpp\datum.h"
+	#include "\libsf\utils\common\cpp\include\datum.h"
 #elif defined(__GNUC__) || defined(__solaris__)
-	#include "/libsf/utils/common/cpp/datum.h"
+	#include "/libsf/utils/common/cpp/include/datum.h"
 #else
 	#error Unknown target for compilation (must be Windows, Linux, or Solaris (OpenIndiana))
 #endif

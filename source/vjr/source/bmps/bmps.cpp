@@ -81,7 +81,7 @@
 
 
 #if defined(_MSC_VER)
-	#include "\libsf\utils\common\cpp\common_types.h"
+	#include "\libsf\utils\common\cpp\include\common_types.h"
 
 	// Force the bitmaps to be for definition
 	#define _BMP_LOCALITY 1
