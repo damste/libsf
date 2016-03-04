@@ -635,14 +635,108 @@
 //		(5)  
 //
 //////
-	void iConsole_win_fontSetup_scalePhysically(SConFont_fixed* fontFixed)
+	void iConsole_win_fontSetup_scalePhysically(SConFont_fixed* font_fixed)
 	{
-//		s32 lnWidth, lnHeight;
+		u8			lcThisCharacter, lnCharBits, lcMask;
+		s32			lnI, lnX, lnY, lnRow, lnWidthIn, lnHeightIn, lnWidthOut, lnHeightOut, lnCharacterOffset;
+		SBitmap*	bmpIn;
+		SBitmap*	bmpOut;
+		RECT		lrc;
+		SBgr*		lrgb;
 
 
 		// Create the basic bitmap
-// TODO:  Working here, need to refactor VJr to extract its bitmap components to the cpp\common\bitmap\ and cpp\common\include\ directories
+		lnWidthIn	= (font_fixed->nCharWidth	* 18);
+		lnHeightIn	= (font_fixed->nCharHeight	* 18);
+		lnWidthOut	= (font_fixed->nFontX		* 18);
+		lnHeightOut	= (font_fixed->nFontY		* 18);
 
+		// Bitmap
+		bmpIn	= iBmp_allocate();
+		bmpOut	= iBmp_allocate();
+		if (bmpIn && bmpOut)
+		{
+			//////////
+			// Initialize it to white
+			//////
+				iBmp_createBySize(bmpIn,	lnWidthIn,		lnHeightIn,		24);
+				iBmp_createBySize(bmpOut,	lnWidthOut,		lnHeightOut,	24);
+				SetRect(&lrc, 0, 0, lnWidthIn, lnHeightIn);
+				iBmp_fillRect(bmpIn, &lrc, whiteColor);
+
+
+			//////////
+			// Redraw all 256 characters (0x00 .. 0xff)
+			//////
+				for (lnI = 0, lnRow = lnHeightIn, lcThisCharacter = 0; lnI < 256; lnI++, lcThisCharacter++, lnRow = lnHeightIn + (lnI % 16))
+				{
+					// Offset for this character into font_fixed->fontBase_original[]
+					lnCharacterOffset = lnI * font_fixed->nFontY;
+
+					// Draw the character
+					for (lnY = 0; lnY < font_fixed->nFontY; lnY++, lnCharacterOffset++)
+					{
+						// Prepare for drawing bits across this row
+						lrgb = (SBgr*)(bmpIn->bd + ((bmpIn->bi.biHeight - lnRow - lnY) * bmpIn->rowWidth) + (8 * 3));
+
+						// Grab the bits pattern for this row of the character
+						lnCharBits = font_fixed->fontBase_original[lnCharacterOffset];
+
+						// Iterate through all of the bits
+						for (lnX = 0, lcMask = 0x80; lnX < font_fixed->nFontX; lnX++, lrgb++, lcMask >>= 1)
+						{
+							// If it's on, set the pixel
+							if ((lnCharBits & lcMask) != 0)
+							{
+								// Foreground bits are black
+								lrgb->red = blackColor.red;
+								lrgb->grn = blackColor.grn;
+								lrgb->blu = blackColor.blu;
+							}
+						}
+					}
+				}
+
+
+			//////////
+			// Scale the bitmap to its new size
+			//////
+_asm int 3;
+iBmp_saveToDisk(bmpIn,  "c:\\temp\\in.bmp");
+				iBmp_scale(bmpOut, bmpIn);
+iBmp_saveToDisk(bmpOut, "c:\\temp\\out.bmp");
+
+				// Delete the input
+				iBmp_delete(&bmpIn,  true, true);
+
+
+			//////////
+			// Extract the scaled bits character-by-character
+			//////
+				for (lnI = 0; lnI < 256; lnI++)
+				{
+					// Iterate for every vertical pixel
+					for (lnY = 0; lnY < font_fixed->nCharHeight; lnY++)
+					{
+						// Extract every pixel into the output buffer
+						for (lnX = 0; lnX < font_fixed->nCharWidth; lnX++)
+						{
+// TODO:  working here, extracting the bits for each pixel
+						}
+					}
+				}
+
+		}
+
+		// If we get here, failure
+		if (bmpIn)		iBmp_delete(&bmpIn,  true, true);
+		if (bmpOut)		iBmp_delete(&bmpOut, true, true);
+
+		// Set it to the original and update the values
+		font_fixed->fontBase		= font_fixed->fontBase_original;
+		font_fixed->lCustomScaled	= false;
+		font_fixed->nCharWidth		= font_fixed->nFontX;
+		font_fixed->nCharHeight		= font_fixed->nFontY;
 	}
 
 

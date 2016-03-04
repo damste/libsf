@@ -197,7 +197,14 @@ struct SNodeProps;
 		// Raw bitmap data (suitable for writing to disk)
 		BITMAPFILEHEADER	bh;
 		BITMAPINFOHEADER	bi;
-		s8*					bd;
+
+		union {
+			s8*				bd;						// Legacy access
+			s8*				bds;					// Signed char access
+			u8*				bdu;					// Unsigned char access
+			SBgr*			bdrgb;					// Access as 24-bit rgb
+			SBgra*			bdrgba;					// Access as 32-bit rgba
+		};
 		u32					rowWidth;				// See: iBmp_computeRowWidth()
 	};
 
