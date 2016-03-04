@@ -95,6 +95,7 @@
 //////
 	uptr			console_allocate					(SDatum* title, s32 tnLeft, s32 tnTop, s32 tnWidth, s32 tnHeight, s32 tnCharWidth, s32 tnCharHeight, SConCallback* cb);
 	uptr			console_allocate					(SDatum* settings, SConCallback* cb);
+	uptr			console_reregister					(uptr tnHandle, SConCallback* cb);
 	s32				console_show						(uptr tnHandle, bool tlVisible);
 	s32				console_release						(uptr tnHandle);
 
@@ -103,8 +104,8 @@
 	bool			iiConsole_setOptions_callback		(SDatumCallback* cb);
 
 	// Set the active font (to use for the console_push() operations until changed again)
-	s32				console_setFont						(uptr tnHandle, s32 tnX, s32 tnY, SDatum* fontName, s32 tnPointSize, bool tlBold, bool tlItalic, bool tlUnderline);
-	s32				console_setFont						(uptr tnHandle, s32 tnX, s32 tnY, SDatum* fontData);
+	s32				console_setFont						(uptr tnHandle, SDatum* fontName, s32 tnPointSize, bool tlBold, bool tlItalic, bool tlUnderline);
+	s32				console_setFont						(uptr tnHandle, SDatum* fontData);
 	s32				console_getFont						(uptr tnHandle, s32 tnX, s32 tnY, SDatum* fontName, s32* tnPointSize, bool* tlBold, bool* tlItalic, bool* tlUnderline);
 	s32				console_getFont						(uptr tnHandle, s32 tnX, s32 tnY, SDatum* fontData);
 
@@ -127,3 +128,4 @@
 	void			iConsole_silentError_passThru		(void);
 	void			iiConsole_moveToNextRow				(SConsole* console);
 	void			iiConsole_storeCharacter			(SConsole* console, char c);
+	void			iiConsole_selectFont				(SConsole* console, s32 fontIndex);

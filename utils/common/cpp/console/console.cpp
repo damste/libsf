@@ -126,12 +126,12 @@
 			{
 				// Initialize and copy
 				memset(console, 0, sizeof(*console));
-				console->left			= tnLeft;
-				console->top			= tnTop;
-				console->width			= tnWidth;
-				console->height			= tnHeight;
-				console->char_width		= tnCharWidth;
-				console->char_height	= tnCharHeight;
+				console->nLeft			= tnLeft;
+				console->nTop			= tnTop;
+				console->nWidth			= tnWidth;
+				console->nHeight			= tnHeight;
+				console->nCharWidth		= tnCharWidth;
+				console->nCharHeight	= tnCharHeight;
 				iDatum_duplicate(&console->title, title);
 
 				// Copy over the callback data
@@ -169,12 +169,12 @@
 			memset(&console_cb,	0, sizeof(console_cb));
 
 			// Some values that need to be set
-			console_cb.left			= 0;
-			console_cb.top			= 0;
-			console_cb.width		= 80;
-			console_cb.height		= 25;
-			console_cb.char_width	= 8;
-			console_cb.char_height	= 16;
+			console_cb.nLeft			= 0;
+			console_cb.nTop			= 0;
+			console_cb.nWidth		= 80;
+			console_cb.nHeight		= 25;
+			console_cb.nCharWidth	= 8;
+			console_cb.nCharHeight	= 16;
 			iDatum_duplicate(&console_cb.title, "LibSF Console Window");
 
 			// Perform the processing
@@ -204,6 +204,33 @@
 
 //////////
 //
+// Called to re-register a previously registered callback
+//
+//////
+	uptr console_reregister(uptr tnHandle, SConCallback* cb)
+	{
+		SConsole* console;
+
+
+		// Make sure our environment is sane
+		if (cb && (console = iConsole_find_byHandle(tnHandle)))
+		{
+			// Copy the new information over
+			memcpy(&console->cb, cb, sizeof(console->cb));
+
+			// Indicate success
+			return(_CONSOLE_ERROR__NO_ERROR);
+		}
+
+		// Indicate failure
+		return(_CONSOLE_ERROR__HANDLE_NOT_FOUND);
+	}
+
+
+
+
+//////////
+//
 // Called to  show or hide a console
 //
 //////
@@ -217,7 +244,7 @@
 		if ((console = iConsole_find_byHandle(tnHandle)))
 		{
 			// If it's changed, set it
-			if (console->visible != tlVisible)
+			if (console->lVisible != tlVisible)
 			{
 				// Try to toggle the visible status
 				if ((lnResult = console_os_toggle_visible(console)) != _CONSOLE_ERROR__NO_ERROR)
@@ -303,19 +330,21 @@
 		console = (SConsole*)cb->extra1;
 
 		// See what option they checked
-		     if (console_check_prop(left))			{	console->left			= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
-		else if (console_check_prop(top))			{	console->height			= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
-		else if (console_check_prop(width))			{	console->width			= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
-		else if (console_check_prop(height))		{	console->height			= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
-		else if (console_check_prop(charWidth))		{	console->char_width		= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
-		else if (console_check_prop(charHeight))	{	console->char_height	= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
-		else if (console_check_prop(scrollRows))	{	console->scrollRows		= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
-		else if (console_check_prop(title))			{	iDatum_duplicate(&console->title, &cb->value);					cb->flag1 = true;	}
+		     if (console_check_prop(x))				{	console->nX					= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(y))				{	console->nY					= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(left))			{	console->nLeft				= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(top))			{	console->nHeight			= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(width))			{	console->nWidth				= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(height))		{	console->nHeight			= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(charWidth))		{	console->nCharWidth			= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(charHeight))	{	console->nCharHeight		= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(scrollRows))	{	console->nScrollRowsToKeep	= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(title))			{	iDatum_duplicate(&console->title, &cb->value);						cb->flag1 = true;	}
 		else if (console_check_prop(visible))
 		{
 			// Visible accepts Yes, yes, True, true, .T., .t., 1
-			console->visible		= (console_check_value(yes) || console_check_value(true) || console_check_value(dot_t_dot) || iDatum_getAs_s32(&cb->value) != 0);
-			cb->flag1				= true;
+			console->lVisible	= (console_check_value(yes) || console_check_value(true) || console_check_value(dot_t_dot) || iDatum_getAs_s32(&cb->value) != 0);
+			cb->flag1			= true;
 
 		} else {
 			// Unknown, so just ignore it
@@ -334,9 +363,60 @@
 // Called to set the font to use from this point forward (until changed in the future)
 //
 //////
-	s32 console_setFont(uptr tnHandle, s32 tnX, s32 tnY, SDatum* fontName, s32 tnPointSize, bool tlBold, bool tlItalic, bool tlUnderline)
+	s32 console_setFont(uptr tnHandle, SDatum* tcFontName, s32 tnPointSize, bool tlBold, bool tlItalic, bool tlUnderline)
 	{
-		return(-1);
+		s32			lnI;
+		SConsole*	console;
+		SConFont*	font;
+
+
+		// See if we have a console
+		if ((console = iConsole_find_byHandle(tnHandle)))
+		{
+			// Make sure we have a font builder
+			if (!gsConsoleFontRoot)
+				iBuilder_createAndInitialize(&gsConsoleFontRoot, 64 * sizeof(SConFont));
+
+			// Search for a matching font
+			for (lnI = 0; lnI < (s32)gsConsoleFontRoot->populatedLength; lnI += sizeof(SConFont))
+			{
+				// Grab the font
+				font = (SConFont*)(gsConsoleFontRoot->buffer + lnI);
+
+				// Check each thing
+				if (font->nPointSize == tnPointSize && font->lBold == tlBold && font->lItalic == tlItalic && font->lUnderline == tlUnderline)
+				{
+					// They're the same size, bold, italic, and underline
+					if (font->cFontName.length == tcFontName->length && iDatum_compare(tcFontName, &font->cFontName) == 0)
+						return(lnI / sizeof(SConFont));		// Same font
+				}
+			}
+			// If we get here, not found
+
+			// Add new
+			font = (SConFont*)iBuilder_allocateBytes(gsConsoleFontRoot, sizeof(SConFont));
+			if (font)
+			{
+				// Copy the info
+				iDatum_duplicate(&font->cFontName, tcFontName);
+				font->nPointSize	= tnPointSize;
+				font->lBold			= tlBold;
+				font->lItalic		= tlItalic;
+				font->lUnderline	= tlUnderline;
+
+				// Call OS-specific code
+				console_os_font_setup(console, font);
+
+				// Indicate success
+				return((gsConsoleFontRoot->populatedLength - sizeof(SConFont)) / sizeof(SConFont));
+			}
+
+			// Indicate failure
+			return(_CONSOLE_ERROR__FONT_ALLOCATION_ERROR);
+		}
+
+		// Indicate failure
+		return(_CONSOLE_ERROR__HANDLE_NOT_FOUND);
 	}
 
 
@@ -347,7 +427,7 @@
 // Called to set the font to use from this point forward (until changed in the future)
 //
 //////
-	s32 console_setFont(uptr tnHandle, s32 tnX, s32 tnY, SDatum* fontData)
+	s32 console_setFont(uptr tnHandle, SDatum* fontData)
 	{
 		return(-1);
 	}
@@ -410,7 +490,7 @@
 						if ((c = textOut->data_cs8[lnI]) == 13)
 						{
 							// Carriage return
-							console->char_x = 0;
+							console->nX = 0;
 						
 						} else if (c == 10) {
 							// Line feed
@@ -418,11 +498,11 @@
 
 						} else if (c == 9) {
 							// Tab
-							for (lnJ = console->char_x + 1; lnJ % 4 != 0; )
+							for (lnJ = console->nX + 1; lnJ % 4 != 0; )
 								++lnJ;
 
 							// Make sure it's in range
-							console->char_x = min(console->char_x, console->width);
+							console->nX = min(console->nX, console->nWidth);
 
 						} else {
 							// Display the output
@@ -559,7 +639,7 @@
 				return(true);
 
 			// Try to create one
-			iBuilder_createAndInitialize(&console->scrollBuffer, sizeof(SConRow) * max(1000, console->scrollRows));
+			iBuilder_createAndInitialize(&console->scrollBuffer, sizeof(SConRow) * max(1000, console->nScrollRowsToKeep));
 
 			// Indicate success or failure
 			return((console->scrollBuffer != NULL));
@@ -625,13 +705,13 @@
 
 
 		// If we're keeping an unlimited buffer, we can always append even if we're at the end
-		if (console->scrollRows == -1)
+		if (console->nScrollRowsToKeep == -1)
 		{
 			// Move down to the next row
-			if ((console->topRow + console->char_y + 1) * sizeof(SConRow) < console->scrollBuffer->populatedLength)
+			if ((console->nTopRow + console->nY + 1) * sizeof(SConRow) < console->scrollBuffer->populatedLength)
 			{
 				// There's room to move down one
-				++console->char_y;
+				++console->nY;
 
 			} else {
 				// We need to add a new line
@@ -639,19 +719,19 @@
 				if (conrow)
 				{
 					// Iterate through 
-					for (lnX = 0; lnX < console->width; lnX++)
+					for (lnX = 0; lnX < console->nWidth; lnX++)
 					{
 // TODO:  working here
 					}
 				}
 			}
 
-		} else if (console->char_y < console->height) {
+		} else if (console->nY < console->nHeight) {
 			// There's room to move down one
 
 		} else {
 			// Everything must scroll up once
-			++console->topRow;
+			++console->nTopRow;
 		}
 	}
 
@@ -665,4 +745,26 @@
 //////
 	void iiConsole_storeCharacter(SConsole* console, char c)
 	{
+	}
+
+
+
+
+//////////
+//
+// Selects the indicated font into the console's dc
+//
+//////
+	void iiConsole_selectFont(SConsole* console, s32 fontIndex)
+	{
+		SConFont* font;
+
+
+		// Make sure the font's in range
+		if (fontIndex < (s32)(gsConsoleFontRoot->populatedLength / sizeof(SConFont)))
+		{
+			// We're in range
+			font = (SConFont*)gsConsoleFontRoot->buffer + (fontIndex * sizeof(SConFont));
+			SelectObject(console->hdc, font->hfont);
+		}
 	}

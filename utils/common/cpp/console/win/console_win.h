@@ -98,6 +98,8 @@
 
 struct SConsole;
 struct SBuilderCallback;
+struct SConFont;
+struct SConRow;
 
 
 
@@ -110,9 +112,19 @@ struct SBuilderCallback;
 	#define console_os_toggle_visible								console_win_toggle_visible
 	#define console_os_release										console_win_release
 	#define console_os_error										console_win_error
+	#define console_os_font_setup									console_win_fontSetup
 
-	#define console_os_struct_variables								HWND hwnd;	\
-																	RECT rc;
+	#define SConsole_os_struct_variables							HWND	hwnd;	\
+																	RECT	rc; \
+																	HBRUSH	hbrBackground; \
+																	HDC		hdc;
+
+	#define SConFont_os_struct_variables							HFONT		hfont; \
+																	TEXTMETRIC	tm; \
+																	s32			_sizeUsedForCreateFont; \
+																	HDC			hdc;
+
+	#define SConChar_os_struct_variables							/* No special SConChar variables are defined in Windows */
 
 
 
@@ -135,7 +147,10 @@ struct SBuilderCallback;
 	s32					console_win_toggle_visible					(SConsole* console);
 	s32					console_win_release							(SConsole* console);
 	s32					console_win_error							(SConsole* console, s32 tnErrorNum);
+	void				console_win_fontSetup						(SConsole* console, SConFont* font);
 	ATOM				MyRegisterClass								(void);
+	void				iConsole_win_render							(SConsole* console);
+	void				iConsole_win_render_singleRow				(SConsole* console, RECT* rc, SConRow* row);
 	LRESULT CALLBACK	console_wndProc								(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	SConsole*			iConsole_win_find_byHwnd					(HWND hwnd);
 	bool				iConsole_win_find_byHwnd__callback			(SBuilderCallback* cb);

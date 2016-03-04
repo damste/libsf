@@ -100,11 +100,14 @@
 	cs32		_CONSOLE_ERROR__INVALID_WINDOW			= -4;
 	cs32		_CONSOLE_ERROR__CANNOT_CREATE_WINDOW	= -5;
 	cs32		_CONSOLE_ERROR__FATAL_ERROR				= -6;
+	cs32		_CONSOLE_ERROR__FONT_ALLOCATION_ERROR	= -7;
 
 
 //////////
 // Properties
 //////
+	cs8			cgc_x[]									= "x";
+	cs8			cgc_y[]									= "y";
 	cs8			cgc_left[]								= "left";
 	cs8			cgc_top[]								= "top";
 	cs8			cgc_width[]								= "width";

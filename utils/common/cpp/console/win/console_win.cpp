@@ -156,8 +156,8 @@
 		//////////
 		// Prepare a window
 		//////
-			console->width	= max(320, console->width);
-			console->height	= max(200, console->height);
+			console->nWidth	= max(320, console->nWidth);
+			console->nHeight	= max(200, console->nHeight);
 
 			// Assemble the title
 			lnLength = min(_MAX_FNAME - 1, console->title.length);
@@ -166,8 +166,8 @@
 
 			// Create the window
 			console->hwnd = CreateWindow(cgc_consoleClass,	buffer, WS_OVERLAPPEDWINDOW, 
-															console->left, console->top, 
-															console->width, console->height, 
+															console->nLeft, console->nTop, 
+															console->nWidth, console->nHeight, 
 															NULL, NULL, ghInstance, NULL);
 
 		// If it failed, we're done
@@ -175,7 +175,7 @@
 			return(_CONSOLE_ERROR__CANNOT_CREATE_WINDOW);
 
 		// Display if need be
-		if (console->visible)
+		if (console->lVisible)
 		{
 			ShowWindow(console->hwnd, SW_SHOW);
 			UpdateWindow(console->hwnd);
@@ -199,17 +199,17 @@
 		if (console)
 		{
 			// Toggle
-			console->visible = !console->visible;
+			console->lVisible = !console->lVisible;
 
 			// If it's visible, make sure it exists
-			if (console->visible && (!console->hwnd || !IsWindow(console->hwnd)))
+			if (console->lVisible && (!console->hwnd || !IsWindow(console->hwnd)))
 				console_win_create_window(console);
 
 			// If there's a window, adjust it
 			if (console->hwnd && IsWindow(console->hwnd))
 			{
 				// Show or hide the window
-				ShowWindow(console->hwnd, ((console->visible) ? SW_SHOW : SW_HIDE));
+				ShowWindow(console->hwnd, ((console->lVisible) ? SW_SHOW : SW_HIDE));
 
 				// Redraw everything
 				InvalidateRect(console->hwnd, NULL, false);
@@ -283,6 +283,30 @@
 
 //////////
 //
+// Called to handle Windows-specific font setup
+//
+//////
+	void console_win_fontSetup(SConsole* console, SConFont* font)
+	{
+		// Create a DC for the font
+		font->hdc = CreateCompatibleDC(GetDC(GetDesktopWindow()));
+
+		// Create the font
+		font->_sizeUsedForCreateFont	= -MulDiv(font->nPointSize, GetDeviceCaps(font->hdc, LOGPIXELSY), 72);
+		font->hfont						= CreateFont(font->_sizeUsedForCreateFont, 0, 0, 0, ((font->lBold) ? FW_BOLD : FW_NORMAL), ((font->lItalic) ? 1 : 0), ((font->lUnderline) ? 1 : 0), false, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_NATURAL_QUALITY, FF_DONTCARE, font->cFontName.data);
+
+		// Select into the dc
+		SelectObject(font->hdc, font->hfont);
+
+		// Find out the text metrics
+		GetTextMetricsA(font->hdc, &font->tm);
+	}
+
+
+
+
+//////////
+//
 // Register the console window class with Windows
 //
 //////
@@ -301,6 +325,112 @@
 		wcex.lpszClassName	= cgc_consoleClass;
 
 		return RegisterClassEx(&wcex);
+	}
+
+
+
+
+//////////
+//
+// Render the console
+//
+//////
+	void iConsole_win_render(SConsole* console)
+	{
+		s32			lnI, lnRow;
+		SConRow*	row;
+		RECT		lrc;
+
+
+		// Create the background brush if need be
+		if (!console->hbrBackground)
+			console->hbrBackground = CreateSolidBrush(RGB(console->backColor.red, console->backColor.grn, console->backColor.blu));
+
+		// Full color background
+		FillRect(console->hdc, &console->rc, console->hbrBackground);
+
+		// Redraw any lines which are visible
+		SetRect(&lrc, 0, 0, console->rc.right, console->nCharHeight);
+		for (lnI = console->nTopRow, lnRow = 0; lnRow < console->nHeight && lnI < (s32)console->scrollBuffer->populatedLength; lnI += sizeof(SConRow), lnRow++)
+		{
+			// Grab the row data
+			row = (SConRow*)console->scrollBuffer->buffer + (lnI * sizeof(SConRow));
+
+			// Draw the row
+			iConsole_win_render_singleRow(console, &lrc, row);
+		}
+
+
+		// All done
+		InvalidateRect(console->hwnd, NULL, false);
+	}
+
+
+
+
+//////////
+//
+// Called to render a single row onto the console->hdc at the indicated rect
+//
+//////
+	void iConsole_win_render_singleRow(SConsole* console, RECT* rc, SConRow* row)
+	{
+		s32			lnCol, lnLastFont;
+		SConChar*	thisChar;
+		SBgra		lastBackColor, lastForeColor;
+		RECT		lrc;
+
+
+		// Note:  These are set on the first iteration, but are also set here to remove compiler warning
+		lastBackColor.color = 0;
+		lastForeColor.color = 0;
+
+		// Iterate drawing it character-by-character
+		CopyRect(&lrc, rc);
+		for (lnCol = 0, lnLastFont = 0; lnCol < console->nWidth; lnCol++, OffsetRect(&lrc, console->nCharWidth, 0), thisChar++)
+		{
+
+			//////////
+			// Grab this character
+			//////
+				thisChar = (SConChar*)row->chars->buffer + (lnCol * sizeof(SConChar));
+
+
+			//////////
+			// Update font
+			//////
+				if (lnLastFont != thisChar->nFont)
+				{
+					// Set the font
+					lnLastFont = thisChar->nFont;
+					iiConsole_selectFont(console, thisChar->nFont);
+				}
+
+
+			//////////
+			// Update colors
+			//////
+				if (lastBackColor.color != thisChar->backColor.color || lnCol == 0)
+				{
+					// Background color
+					SetBkColor(console->hdc, RGB(thisChar->backColor.red, thisChar->backColor.grn, thisChar->backColor.blu));
+					lastBackColor.color = thisChar->backColor.color;
+				}
+
+				if (lastForeColor.color != thisChar->foreColor.color || lnCol == 0)
+				{
+					// Text color
+					SetTextColor(console->hdc, RGB(thisChar->foreColor.red, thisChar->foreColor.grn, thisChar->foreColor.blu));
+					lastForeColor.color = thisChar->foreColor.color;
+				}
+
+
+			//////////
+			// Draw this character
+			//////
+				DrawText(console->hdc, (s8*)&thisChar->c, 1, &lrc, DT_LEFT | DT_SINGLELINE);
+
+		}
 	}
 
 
@@ -330,9 +460,20 @@
 					wmEvent = HIWORD(wParam);
 					break;
 
+				case WM_ERASEBKGND:
+					// Ignore it
+					return 1;
+					break;
+
 				case WM_PAINT:
 					hdc = BeginPaint(hwnd, &ps);
-					// TODO: Add any drawing code here...
+
+					// Internally we maintain the drawn state of the window in a separate buffer, and simply BitBlt it back out to the main window as is needed by the OS
+					BitBlt(	hdc, 0, 0,	console->rc.right - console->rc.left,	/* width */
+										console->rc.bottom - console->rc.top,	/* height */
+							console->hdc, 0, 0,
+							SRCCOPY	);
+
 					EndPaint(hwnd, &ps);
 					break;
 
@@ -367,7 +508,7 @@
 		cb._iterateFunc	= (uptr)&iConsole_win_find_byHwnd__callback;
 		cb.extra1 = hwnd;
 
-		// find it
+		// Find it
 		iBuilder_iterate(gsConsoleRoot, sizeof(SConsole), &cb);
 		if (cb.extra2)
 			return((SConsole*)cb.extra2);	// It's a valid pointer

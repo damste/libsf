@@ -107,7 +107,7 @@ struct SConCallback
 
 
 	//////////
-	// Key data
+	// Keystroke data
 	//////
 		u8*				cChar;			// ASCII code
 		u32				nOsKey;			// OS keycode
@@ -175,18 +175,35 @@ struct SConCallback
 
 };
 
+// Font data
+struct SConFont
+{
+	s32				nPointSize;			// Font point size
+	bool			lBold;				// Is it bold?
+	bool			lItalic;			// Italics?
+	bool			lUnderline;			// Underline?
+	SDatum			cFontName;			// Font name
+
+	// OS-specific info
+	SConFont_os_struct_variables;		// Extra structure members specific to the OS's needs
+};
+
 // Console characters
 struct SConChar
 {
-	u8			c;						// Character to display there
-	SBgra		color;					// Color
-	s32			font;					// The font set to use
+	u8				c;					// Character to display there
+	SBgra			backColor;			// Background color
+	SBgra			foreColor;			// Foreground color (text color)
+	s32				nFont;				// The font set to use
+
+	// OS-specific info
+	SConChar_os_struct_variables;		// Extra structure members specific to the OS's needs
 };
 
 struct SConRow
 {
-	s32			width;
-	SConChar*	data;
+	s32				nWidth;				// Number of characters stored in this row (can be longer than the display allows)
+	SBuilder*		chars;				// SConChar one for each character for nWidth
 };
 
 // Main consoles
@@ -195,32 +212,34 @@ struct SConsole
 	SConCallback	cb;					// Callback info
 
 	// Position and size
-	s32				left;				// Upper-left X coordinate of window
-	s32				top;				// Upper-left Y coordinate of window
-	s32				width;				// Width of window in characters (multiply by char_width to get pixel width)
-	s32				height;				// Height of window in characters (multiply by char_height to get pixel height)
-	s32				scrollRows;			// Number of rows to keep in the scroll buffer, -1 means unlimited
+	s32				nLeft;				// Upper-left X coordinate of window
+	s32				nTop;				// Upper-left Y coordinate of window
+	s32				nWidth;				// Width of window in characters (multiply by char_width to get pixel width)
+	s32				nHeight;			// Height of window in characters (multiply by char_height to get pixel height)
+	s32				nCharWidth;			// Width of character
+	s32				nCharHeight;		// Height of character
 
 	// Window title
 	SDatum			title;				// Title of the console window
 
 	// Character settings
-	s32				char_x;				// Current X location in the buffer
-	s32				char_y;				// Current Y location in the buffer
-	s32				char_width;			// Width of character
-	s32				char_height;		// Height of character
-	SBgra			char_color;			// Color to output in
-	s32				char_font;			// Font handle to use in gsConsoleFontRoot
+	s32				nX;					// Current X location in the buffer
+	s32				nY;					// Current Y location in the buffer
+	SBgra			charColor;			// Color to output in
+	s32				nCharFont;			// Font handle to use in gsConsoleFontRoot
+	bool			lWordWrap;			// If word wrap is on, then only as many characters as will fit horizontally are stored, then it moves to the next row, otherwise the row can contain more data than will fit in the current window
 
 	// Row buffer
 	SBuilder*		scrollBuffer;		// Holds one SConRow record per row, including scrolled data
-	s32				topRow;				// The row to display at the top of the buffer
+	s32				nTopRow;			// The row to display at the top of the scroll buffer
+	s32				nScrollRowsToKeep;	// Number of rows to keep in the scroll buffer, negative=unlimited
 
 	// Display, input, and output
-	bool			visible;			// Display
-	bool			allow_input;		// Should input be returned?
-	bool			allow_output;		// Should output be returned?
+	SBgra			backColor;			// General color of the background
+	bool			lVisible;			// Display
+	bool			lAllowInput;		// Should input be returned?
+	bool			lAllowOutput;		// Should output be returned?
 
 	// OS-specific info
-	console_os_struct_variables;		// Extra structure members specific to the OS's needs
+	SConsole_os_struct_variables;		// Extra structure members specific to the OS's needs
 };
