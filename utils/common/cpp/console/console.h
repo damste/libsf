@@ -105,8 +105,8 @@
 //////////
 // Console-specific header files
 //////
-	#include "..\builder.h"
-	#include "..\datum.h"
+	#include "\libsf\utils\common\cpp\include\builder.h"
+	#include "\libsf\utils\common\cpp\include\datum.h"
 
 	#include "console_structs.h"
 	#include "console_defs.h"
@@ -117,8 +117,8 @@
 //////////
 // Console-specific code
 //////
-	#include "..\builder.cpp"
-	#include "..\datum.cpp"
+	#include "\libsf\utils\common\cpp\base\builder.cpp"
+	#include "\libsf\utils\common\cpp\base\datum.cpp"
 
 
 //////////

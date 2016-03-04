@@ -286,20 +286,363 @@
 // Called to handle Windows-specific font setup
 //
 //////
-	void console_win_fontSetup(SConsole* console, SConFont* font)
+	bool console_win_fontSetup(SConsole* console, SConFont* font)
 	{
-		// Create a DC for the font
-		font->hdc = CreateCompatibleDC(GetDC(GetDesktopWindow()));
+		// Font creation for either fixed-point or system fonts
+		if (font->lFixed)
+		{
+			// Internal fixed-point font
+			iConsole_win_fontSetup_scaleAsNeeded(console, font);
 
-		// Create the font
-		font->_sizeUsedForCreateFont	= -MulDiv(font->nPointSize, GetDeviceCaps(font->hdc, LOGPIXELSY), 72);
-		font->hfont						= CreateFont(font->_sizeUsedForCreateFont, 0, 0, 0, ((font->lBold) ? FW_BOLD : FW_NORMAL), ((font->lItalic) ? 1 : 0), ((font->lUnderline) ? 1 : 0), false, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_NATURAL_QUALITY, FF_DONTCARE, font->cFontName.data);
+		} else {
+			// System font
+			// Create a DC for the font
+			font->hdc = CreateCompatibleDC(GetDC(GetDesktopWindow()));
 
-		// Select into the dc
-		SelectObject(font->hdc, font->hfont);
+			// Create the font
+			font->_sizeUsedForCreateFont	= -MulDiv(font->nPointSize, GetDeviceCaps(font->hdc, LOGPIXELSY), 72);
+			font->hfont						= CreateFont(font->_sizeUsedForCreateFont, 0, 0, 0, ((font->lBold) ? FW_BOLD : FW_NORMAL), ((font->lItalic) ? 1 : 0), ((font->lUnderline) ? 1 : 0), false, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_NATURAL_QUALITY, FF_DONTCARE, font->cFontName.data);
 
-		// Find out the text metrics
-		GetTextMetricsA(font->hdc, &font->tm);
+			// Select into the dc
+			SelectObject(font->hdc, font->hfont);
+
+			// Find out the text metrics
+			GetTextMetricsA(font->hdc, &font->tm);
+		}
+
+		// If we get here, we're good
+		return(true);
+	}
+
+	void iConsole_win_fontSetup_scaleAsNeeded(SConsole* console, SConFont* font)
+	{
+		s32					lnX, lnY;
+		bool				llFontChosen;
+		u8*					fontBase;
+		SConFont_fixed*		font_fixed;
+
+
+		//////////
+		// Determine which font is needed
+		//////
+			llFontChosen = false;
+			if (font->nActualX == 8)
+			{
+				// 8-pixels wide
+				lnX = 8;
+
+				// See how high
+				switch (font->nActualY)
+				{
+					case 6:
+						// 8x6 font
+						lnY				= 6;
+						fontBase		= &gxFontBase_8x6[0];
+						llFontChosen	= true;
+						break;
+
+					case 8:
+						// 8x8 font
+						lnY				= 8;
+						fontBase		= &gxFontBase_8x8[0];
+						llFontChosen	= true;
+						break;
+
+					case 14:
+						// 8x14 font
+						lnY				= 14;
+						fontBase		= &gxFontBase_8x14[0];
+						llFontChosen	= true;
+						break;
+
+					case 16:
+						// 8x16 font
+						lnY				= 16;
+						fontBase		= &gxFontBase_8x16[0];
+						llFontChosen	= true;
+						break;
+				}
+			}
+
+
+		//////////
+		// If it's not a standard size, then we are into assumption and/or scaling
+		//////
+			if (!llFontChosen)
+			{
+				// No matching font, we'll need to assume one
+				if (console->nCharWidth == 8)
+				{
+					// 8-pixels wide
+					lnX	= 8;
+
+					// See how high
+					switch (console->nCharHeight)
+					{
+						case 6:
+							// 8x6 font
+							lnY				= 6;
+							fontBase		= &gxFontBase_8x6[0];
+							llFontChosen	= true;
+							break;
+
+						case 8:
+							// 8x8 font
+							lnY				= 8;
+							fontBase		= &gxFontBase_8x8[0];
+							llFontChosen	= true;
+							break;
+
+						case 14:
+							// 8x14 font
+							lnY				= 14;
+							fontBase		= &gxFontBase_8x14[0];
+							llFontChosen	= true;
+							break;
+
+						default:
+						case 16:
+							// 8x16 font
+							lnY				= 16;
+							fontBase		= &gxFontBase_8x16[0];
+							llFontChosen	= true;
+							break;
+					}
+
+				} else {
+					// Assume 8x16 and then scale up to what's needed
+					lnX				= 8;
+					lnY				= 16;
+					fontBase		= &gxFontBase_8x16[0];
+					llFontChosen	= true;
+				}
+			}
+
+
+		//////////
+		// Determine what size it should be
+		//////
+			if (lnX != console->nCharWidth || lnY != console->nCharHeight)
+			{
+				// It needs to be scaled
+				font_fixed = iConsole_win_fontSetup_searchOrCreate(console->nWidth, console->nHeight, lnX, lnY, true);
+
+			} else {
+				// It's the correct width
+				font_fixed = iConsole_win_fontSetup_searchOrCreate(console->nWidth, console->nHeight, lnX, lnY, false);
+			}
+
+	}
+
+
+
+
+//////////
+//
+// Searches for the exact match, and creates a scaled font if need be
+//
+//////
+	SConFont_fixed* iConsole_win_fontSetup_searchOrCreate(s32 tnCharWidth, s32 tnCharHeight, s32 tnFontX, s32 tnFontY, bool tlCreateIfNotFound)
+	{
+		s32					lnI;
+		SConFont_fixed*		font_fixed;
+
+
+		//////////
+		// Make sure we have a font root
+		//////
+			if (!gsFontFixedRoot)
+			{
+				//////////
+				// Initialize the block
+				//////
+					iBuilder_createAndInitialize(&gsFontFixedRoot, sizeof(SConFont_fixed) * 16);
+					if (!gsFontFixedRoot)
+						return(NULL);		// Should never happen
+
+
+				//////////
+				// Create the fixed entries
+				//////
+					font_fixed = (SConFont_fixed*)iBuilder_allocateBytes(gsFontFixedRoot, sizeof(SConFont_fixed) * 4);
+					if (!font_fixed)
+						return(NULL);		// Should never happen
+
+
+				//////////
+				// 8x6
+				//////
+					font_fixed->fontBase			= &gxFontBase_8x6[0];
+					font_fixed->fontBase_original	= font_fixed->fontBase;
+					font_fixed->lCustomScaled		= false;
+					font_fixed->nCharWidth			= 8;			font_fixed->nCharHeight	= 6;
+					font_fixed->nFontX				= 8;			font_fixed->nFontY		= 6;
+					iConsole_win_fontSetup_scalePhysically(font_fixed);
+
+
+				//////////
+				// 8x8
+				//////
+					++font_fixed;
+					font_fixed->fontBase			= &gxFontBase_8x8[0];
+					font_fixed->fontBase_original	= font_fixed->fontBase;
+					font_fixed->lCustomScaled		= false;
+					font_fixed->nCharWidth			= 8;			font_fixed->nCharHeight	= 8;
+					font_fixed->nFontX				= 8;			font_fixed->nFontY		= 8;
+					iConsole_win_fontSetup_scalePhysically(font_fixed);
+
+
+				//////////
+				// 8x14
+				//////
+					++font_fixed;
+					font_fixed->fontBase			= &gxFontBase_8x14[0];
+					font_fixed->fontBase_original	= font_fixed->fontBase;
+					font_fixed->lCustomScaled		= false;
+					font_fixed->nCharWidth			= 8;			font_fixed->nCharHeight	= 14;
+					font_fixed->nFontX				= 8;			font_fixed->nFontY		= 14;
+					iConsole_win_fontSetup_scalePhysically(font_fixed);
+
+
+				//////////
+				// 8x16
+				//////
+					++font_fixed;
+					font_fixed->fontBase			= &gxFontBase_8x16[0];
+					font_fixed->fontBase_original	= font_fixed->fontBase;
+					font_fixed->lCustomScaled		= false;
+					font_fixed->nCharWidth			= 8;			font_fixed->nCharHeight	= 16;
+					font_fixed->nFontX				= 8;			font_fixed->nFontY		= 16;
+					iConsole_win_fontSetup_scalePhysically(font_fixed);
+
+			}
+
+
+		//////////
+		// Make sure our font selection is sane
+		//////
+			// X must be 8
+			if (tnFontX != 8)
+				tnFontX = 8;
+
+			// Y must be 6,8,14,16
+			switch (tnFontY)
+			{
+				case 6:
+				case 8:
+				case 14:
+				case 16:
+					// These are all good
+					break;
+
+				default:
+					// Out of bounds, find to the closest
+					     if (tnCharHeight <= 6)		tnFontY = 6;
+					else if (tnCharHeight <= 8)		tnFontY = 8;
+					else if (tnCharHeight <= 14)	tnFontY = 14;
+					else							tnFontY = 16;
+			}
+			// Right now, X is 8, and Y is one of 6,8,14,16
+
+
+		//////////
+		// Search for the font
+		//////
+			for (lnI = 0; lnI < (s32)gsFontFixedRoot->populatedLength; lnI += sizeof(SConFont_fixed))
+			{
+				// Grab this font
+				font_fixed = (SConFont_fixed*)(gsFontFixedRoot->buffer + lnI);
+
+				// Does it match?
+				if (font_fixed->nCharWidth == tnCharWidth && font_fixed->nCharHeight == tnCharHeight && font_fixed->nFontX == tnFontX && font_fixed->nFontY == tnFontY)
+					return(font_fixed);		// We found a match to this existing font
+			}
+
+
+		//////////
+		// If we get here, not found
+		//////
+			if (tlCreateIfNotFound)
+			{
+				// Go ahead and create it
+				font_fixed = (SConFont_fixed*)iBuilder_allocateBytes(gsFontFixedRoot, sizeof(SConFont_fixed));
+				if (font_fixed)
+				{
+
+					//////////
+					// Create the base entry
+					//////
+						font_fixed->lCustomScaled	= false;
+						font_fixed->nCharWidth		= tnCharWidth;
+						font_fixed->nCharHeight		= tnCharHeight;
+						font_fixed->nFontX			= tnFontX;
+						font_fixed->nFontY			= tnFontY;
+
+
+					//////////
+					// Perform the physical scaling for the font characters
+					//////
+						font_fixed->fontBase = NULL;
+						switch (tnFontY)
+						{
+							case 6:
+								font_fixed->fontBase_original	= &gxFontBase_8x6[0];
+								break;
+
+							case 8:
+								font_fixed->fontBase_original	= &gxFontBase_8x8[0];
+								break;
+
+							case 14:
+								font_fixed->fontBase_original	= &gxFontBase_8x14[0];
+								break;
+
+							case 16:
+								font_fixed->fontBase_original	= &gxFontBase_8x16[0];
+								break;
+						}
+
+						// Physically scale
+						iConsole_win_fontSetup_scalePhysically(font_fixed);
+
+				}
+
+			} else {
+				// We're done, not found
+				font_fixed = NULL;
+			}
+
+
+		//////////
+		// Indicate our status
+		//////
+			return(font_fixed);
+
+	}
+
+
+
+
+//////////
+//
+// Called to scale the font set to the indicated size.
+// It does this by:
+//
+//		(1)  Creating an 18x18 character array
+//		(2)  Populating it with the base font
+//		(3)  Scaling it to the appropriate size
+//		(4)  Allocating the pixel buffer for the scaled fonts
+//		(5)  
+//
+//////
+	void iConsole_win_fontSetup_scalePhysically(SConFont_fixed* fontFixed)
+	{
+//		s32 lnWidth, lnHeight;
+
+
+		// Create the basic bitmap
+// TODO:  Working here, need to refactor VJr to extract its bitmap components to the cpp\common\bitmap\ and cpp\common\include\ directories
+
 	}
 
 

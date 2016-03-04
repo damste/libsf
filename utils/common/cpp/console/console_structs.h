@@ -178,6 +178,14 @@ struct SConCallback
 // Font data
 struct SConFont
 {
+	// For internal fixed-point fonts
+	bool			lFixed;				// Uses the internal fixed point font
+	s32				nUseX;				// Width in pixels of the fixed point font to use
+	s32				nUseY;				// Height in pixels of the fixed point font to use
+	s32				nActualX;			// The actual width of the fixed point font when created (may have been scaled)
+	s32				nActualY;			// The actual height of the fixed point font when created (may have been scaled)
+
+	// For system-wide fonts
 	s32				nPointSize;			// Font point size
 	bool			lBold;				// Is it bold?
 	bool			lItalic;			// Italics?

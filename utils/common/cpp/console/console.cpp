@@ -241,7 +241,7 @@
 
 
 		// Make sure our environment is sane
-		if ((console = iConsole_find_byHandle(tnHandle)))
+		if (iConsole_validateInitialization() && (console = iConsole_find_byHandle(tnHandle)))
 		{
 			// If it's changed, set it
 			if (console->lVisible != tlVisible)
@@ -278,7 +278,7 @@
 
 
 		// Make sure our environment is sane
-		if ((console = iConsole_find_byHandle(tnHandle)))
+		if (iConsole_validateInitialization() && (console = iConsole_find_byHandle(tnHandle)))
 		{
 			// If it's changed, set it
 			if ((lnResult = console_os_release(console)) != _CONSOLE_ERROR__NO_ERROR)
@@ -308,7 +308,7 @@
 
 
 		// Make sure our environment is sane
-		if ((console = iConsole_find_byHandle(tnHandle)))
+		if (iConsole_validateInitialization() && (console = iConsole_find_byHandle(tnHandle)))
 		{
 			// Iterate through all of the properties one-by-one
 			memset(&cb, 0, sizeof(cb));
@@ -371,7 +371,7 @@
 
 
 		// See if we have a console
-		if ((console = iConsole_find_byHandle(tnHandle)))
+		if (iConsole_validateInitialization() && (console = iConsole_find_byHandle(tnHandle)))
 		{
 			// Make sure we have a font builder
 			if (!gsConsoleFontRoot)
@@ -398,14 +398,33 @@
 			if (font)
 			{
 				// Copy the info
-				iDatum_duplicate(&font->cFontName, tcFontName);
+				if (tcFontName)			iDatum_duplicate(&font->cFontName, tcFontName);
+				else					font->lFixed = true;
+
+				// Copy font size info
 				font->nPointSize	= tnPointSize;
 				font->lBold			= tlBold;
 				font->lItalic		= tlItalic;
 				font->lUnderline	= tlUnderline;
 
+				// If they specify "$fixed" for the font name, then we use 
+				if (!tcFontName || iDatum_compare(tcFontName, cgc_internal_fontName, -1) == 0)
+				{
+					// Extract out X,Y font sizes in pixels (lower two bytes in 32-bit tnPointSize)
+					font->nUseX		= max(((u32)tnPointSize & 0xff00) >> 8, 8);
+					font->nUseY		= max((u32)tnPointSize & 0xff, 6);
+					font->nActualX	= font->nUseX;
+					font->nActualY	= font->nUseY;
+					// Note:  The OS will choose from its own internal list of fixed point fonts which one to scale into the targeted console's current character size (width,height)
+					// Note:  Later on the character size can be changed, at which case the fonts in use will be re-scaled
+				}
+
 				// Call OS-specific code
-				console_os_font_setup(console, font);
+				if (!console_os_font_setup(console, font))
+				{
+					// The OS does not support the font request
+					return(_CONSOLE_ERROR__FONT_NOT_SUPPORTED_ERROR);
+				}
 
 				// Indicate success
 				return((gsConsoleFontRoot->populatedLength - sizeof(SConFont)) / sizeof(SConFont));

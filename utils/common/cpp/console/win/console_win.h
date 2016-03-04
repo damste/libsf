@@ -94,13 +94,47 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "..\common_types.h"
+// Standard types
+#include "\libsf\utils\common\cpp\include\common_types.h"
 
-struct SConsole;
-struct SBuilderCallback;
-struct SConFont;
-struct SConRow;
 
+//////////
+// Fixed point fonts
+//////
+	#include "\libsf\utils\common\cpp\include\fonts\font8x6.h"
+	#include "\libsf\utils\common\cpp\include\fonts\font8x8.h"
+	#include "\libsf\utils\common\cpp\include\fonts\font8x14.h"
+	#include "\libsf\utils\common\cpp\include\fonts\font8x16.h"
+
+
+//////////
+// Required forward declarations (oh C, oh C ... may you soon be replaced with CAlive)
+//////
+	struct SConsole;
+	struct SBuilder;
+	struct SBuilderCallback;
+	struct SConFont;
+	struct SConRow;
+
+
+//////////
+// Windows-related structures used for SConFont data
+//////
+	struct SConFont_fixed
+	{
+		// ASCII-0 begins at offset 0, ASCII-N begins at (N * nHeight * nWidth), up through ASCII-255
+		u8*			fontBase;				// Either (1) one of gxFontBase_* from the font*.h files in console_win.h, or (2) a custom scaled font which needs free()'d when completed
+		bool		lCustomScaled;			// Indicates if fontBase is a custom scaled font or not
+
+		// Per character for rendering
+		s32			nCharWidth;				// Number of pixels columns per character
+		s32			nCharHeight;			// Number of pixels rows per character
+
+		// Original source size
+		u8*			fontBase_original;		// Always one of gxFontBase_* from the font*.h files in console_win.h
+		s32			nFontX;					// Width of original font that was used
+		s32			nFontY;					// Height of original font that was used
+	};
 
 
 //////////
@@ -119,7 +153,10 @@ struct SConRow;
 																	HBRUSH	hbrBackground; \
 																	HDC		hdc;
 
-	#define SConFont_os_struct_variables							HFONT		hfont; \
+	#define SConFont_os_struct_variables							/* For fixed-point internal fonts: */ \
+																	SConFont_fixed* fontBase_fixed; \
+																	/* For system fonts: */ \
+																	HFONT		hfont; \
 																	TEXTMETRIC	tm; \
 																	s32			_sizeUsedForCreateFont; \
 																	HDC			hdc;
@@ -134,6 +171,7 @@ struct SConRow;
 //////
 	HINSTANCE			ghInstance;
 	cs8					cgc_consoleClass[]							= "LibSF.Console.Class";
+	SBuilder*			gsFontFixedRoot								= NULL;			// SConFont_fixed holds every scaled font structure in use
 
 
 
@@ -147,7 +185,10 @@ struct SConRow;
 	s32					console_win_toggle_visible					(SConsole* console);
 	s32					console_win_release							(SConsole* console);
 	s32					console_win_error							(SConsole* console, s32 tnErrorNum);
-	void				console_win_fontSetup						(SConsole* console, SConFont* font);
+	bool				console_win_fontSetup						(SConsole* console, SConFont* font);
+	void				iConsole_win_fontSetup_scaleAsNeeded		(SConsole* console, SConFont* font);
+	SConFont_fixed*		iConsole_win_fontSetup_searchOrCreate		(s32 tnCharWidth, s32 tnCharHeight, s32 tnFontX, s32 tnFontY, bool tlCreateIfNotFound);
+	void				iConsole_win_fontSetup_scalePhysically		(SConFont_fixed* fontFixed);
 	ATOM				MyRegisterClass								(void);
 	void				iConsole_win_render							(SConsole* console);
 	void				iConsole_win_render_singleRow				(SConsole* console, RECT* rc, SConRow* row);

@@ -91,16 +91,26 @@
 
 
 //////////
+// Helper macro to make searching for properties easier
+// Use as:  if (console_check_prop(width))
+//			if (console_check_value(yes))
+//////
+	#define console_check_prop(x)	(cb->prop.length  == sizeof(cgc_##x) - 1 && _memicmp(cb->prop.data_cs8,  cgc_##x, cb->prop.length)  == 0)
+	#define console_check_value(x)	(cb->value.length == sizeof(cgc_##x) - 1 && _memicmp(cb->value.data_cs8, cgc_##x, cb->value.length) == 0)
+
+
+//////////
 // Returned error codes
 //////
-	cs32		_CONSOLE_ERROR__NO_ERROR				= 0;
-	cs32		_CONSOLE_ERROR__HANDLE_NOT_FOUND		= -1;
-	cs32		_CONSOLE_ERROR__CANNOT_ALLOCATE_BUFFER	= -2;
-	cs32		_CONSOLE_ERROR__INVALID_PARAMETERS		= -3;
-	cs32		_CONSOLE_ERROR__INVALID_WINDOW			= -4;
-	cs32		_CONSOLE_ERROR__CANNOT_CREATE_WINDOW	= -5;
-	cs32		_CONSOLE_ERROR__FATAL_ERROR				= -6;
-	cs32		_CONSOLE_ERROR__FONT_ALLOCATION_ERROR	= -7;
+	cs32		_CONSOLE_ERROR__NO_ERROR					= 0;
+	cs32		_CONSOLE_ERROR__HANDLE_NOT_FOUND			= -1;
+	cs32		_CONSOLE_ERROR__CANNOT_ALLOCATE_BUFFER		= -2;
+	cs32		_CONSOLE_ERROR__INVALID_PARAMETERS			= -3;
+	cs32		_CONSOLE_ERROR__INVALID_WINDOW				= -4;
+	cs32		_CONSOLE_ERROR__CANNOT_CREATE_WINDOW		= -5;
+	cs32		_CONSOLE_ERROR__FATAL_ERROR					= -6;
+	cs32		_CONSOLE_ERROR__FONT_ALLOCATION_ERROR		= -7;
+	cs32		_CONSOLE_ERROR__FONT_NOT_SUPPORTED_ERROR	= -8;
 
 
 //////////
@@ -121,8 +131,8 @@
 	cs8			cgc_true[]								= "true";
 	cs8			cgc_dot_t_dot[]							= ".t.";
 
-	// Helper macro to make searching for properties easier
-	// Use as:  if (console_check_prop(width))
-	//			if (console_check_value(yes))
-	#define console_check_prop(x)	(cb->prop.length  == sizeof(cgc_##x) - 1 && _memicmp(cb->prop.data_cs8,  cgc_##x, cb->prop.length)  == 0)
-	#define console_check_value(x)	(cb->value.length == sizeof(cgc_##x) - 1 && _memicmp(cb->value.data_cs8, cgc_##x, cb->value.length) == 0)
+
+//////////
+// Internal constants
+//////
+	cs8			cgc_internal_fontName[]					= "$fixed";
