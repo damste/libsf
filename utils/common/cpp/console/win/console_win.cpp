@@ -101,6 +101,7 @@
 		uptr			lnCon1;
 		SDatum			title;
 		SConCallback	ccb;
+		MSG				msg;
 
 
 		//////////
@@ -122,6 +123,16 @@
 		// Draw some text
 		//////
 // TODO:  working here
+
+
+		//////////
+		// Read messages
+		//////
+			while (GetMessage(&msg, NULL, NULL, NULL))
+			{
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+			}
 
 
 		//////////
@@ -162,6 +173,7 @@
 	s32 console_win_create_window(SConsole* console)
 	{
 		s32		lnLength;
+		DWORD	err;
 		RECT	lrc;
 		s8		buffer[_MAX_FNAME];
 
@@ -202,20 +214,14 @@
 
 			// Create the window
 			console->hwnd = CreateWindow(cgc_consoleClass,	buffer, WS_OVERLAPPEDWINDOW, 
-															console->nLeft, console->nTop, 
-															console->nWidth, console->nHeight, 
+															console->nLeft, console->nTop,
+															console->nWidth, console->nHeight,
 															NULL, NULL, ghInstance, NULL);
 
 		// If it failed, we're done
+		err = GetLastError();
 		if (!console->hwnd)
 			return(_CONSOLE_ERROR__CANNOT_CREATE_WINDOW);
-
-		// Display if need be
-		if (console->lVisible)
-		{
-			ShowWindow(console->hwnd, SW_SHOW);
-			UpdateWindow(console->hwnd);
-		}
 
 		// Indicate success
 		return(_CONSOLE_ERROR__NO_ERROR);
@@ -418,7 +424,7 @@
 			//////////
 			// Create the fixed entries
 			//////
-				font_fixed = (SConFont_fixed*)iBuilder_allocateBytes(gsFontFixedRoot, sizeof(SConFont_fixed) * 4);
+				font_fixed = (SConFont_fixed*)iBuilder_allocateBytes(gsFontFixedRoot, sizeof(SConFont_fixed) * (_CONSOLE_FONT_16x32 + 1));
 				if (!font_fixed)
 					return;		// Should never happen
 
@@ -466,6 +472,18 @@
 				font_fixed->fontBase_original	= font_fixed->fontBase;
 				font_fixed->lCustomScaled		= false;
 				font_fixed->nCharWidth			= 8;			font_fixed->nCharHeight	= 16;
+				font_fixed->nFontX				= 8;			font_fixed->nFontY		= 16;
+				iConsole_win_fontSetup_scalePhysically(font_fixed);
+
+
+			//////////
+			// 16x32
+			//////
+				++font_fixed;
+				font_fixed->fontBase			= &gxFontBase_8x16[0];
+				font_fixed->fontBase_original	= font_fixed->fontBase;
+				font_fixed->lCustomScaled		= false;
+				font_fixed->nCharWidth			= 16;			font_fixed->nCharHeight	= 32;
 				font_fixed->nFontX				= 8;			font_fixed->nFontY		= 16;
 				iConsole_win_fontSetup_scalePhysically(font_fixed);
 
@@ -748,17 +766,17 @@
 		font_fixed->nCharHeight	= max(3, font_fixed->nCharHeight);
 
 		// Create the basic bitmap
-		lnWidthIn	= (font_fixed->nCharWidth	* 18);
-		lnHeightIn	= (font_fixed->nCharHeight	* 18);
-		lnWidthOut	= (font_fixed->nFontX		* 18);
-		lnHeightOut	= (font_fixed->nFontY		* 18);
+		lnWidthIn	= (font_fixed->nFontX		* 18);
+		lnHeightIn	= (font_fixed->nFontY		* 18);
+		lnWidthOut	= (font_fixed->nCharWidth	* 18);
+		lnHeightOut	= (font_fixed->nCharHeight	* 18);
 
 		// Allocate bitmaps
 		bmpIn	= iBmp_allocate();
 		bmpOut	= iBmp_allocate();
 
 		// Allocate enough space for every ASCII pixel
-		font_fixed->fontBase = (u8*)malloc(256 * font_fixed->nCharWidth * font_fixed->nCharHeight * 4/*sizeof(f32)*/);
+		font_fixed->fontBase = (u8*)malloc(256 * font_fixed->nCharWidth * font_fixed->nCharHeight);
 
 		// Was everything allocated correctly?
 		if (bmpIn && bmpOut && font_fixed->fontBase)
@@ -776,12 +794,13 @@
 			//////
 				SetRect(&lrc, 0, 0, lnWidthIn, lnHeightIn);
 				iBmp_fillRect(bmpIn, &lrc, whiteColor);
+//iBmp_saveToDisk(bmpIn,  "c:\\temp\\in_before.bmp");
 
 
 			//////////
 			// Redraw all 256 characters (0x00 .. 0xff)
 			//////
-				for (lnI = 0, lnRow = lnHeightIn, lcThisCharacter = 0; lnI < 256; lnI++, lcThisCharacter++, lnRow = lnHeightIn + (lnI % 16))
+				for (lnI = 0, lnRow = font_fixed->nFontY, lcThisCharacter = 0; lnI < 256; lnI++, lcThisCharacter++, lnRow = (((lnI / 16) + 1) * font_fixed->nFontY))
 				{
 					// Offset for this character into font_fixed->fontBase_original[]
 					lnCharacterOffset = lnI * font_fixed->nFontY;
@@ -790,7 +809,7 @@
 					for (lnY = 0; lnY < font_fixed->nFontY; lnY++, lnCharacterOffset++)
 					{
 						// Prepare for drawing bits across this row
-						lrgb = (SBgr*)(bmpIn->bd + ((bmpIn->bi.biHeight - lnRow - lnY) * bmpIn->rowWidth) + (8 * 3));
+						lrgb = (SBgr*)(bmpIn->bd + ((bmpIn->bi.biHeight - lnRow - lnY) * bmpIn->rowWidth) + (((lnI % 16) + 1) * font_fixed->nFontX * 3));
 
 						// Grab the bits pattern for this row of the character
 						lnCharBits = font_fixed->fontBase_original[lnCharacterOffset];
@@ -814,10 +833,9 @@
 			//////////
 			// Scale the bitmap to its new size
 			//////
-_asm int 3;
-iBmp_saveToDisk(bmpIn,  "c:\\temp\\in.bmp");
+//iBmp_saveToDisk(bmpIn,  "c:\\temp\\in.bmp");
 				iBmp_scale(bmpOut, bmpIn);
-iBmp_saveToDisk(bmpOut, "c:\\temp\\out.bmp");
+//iBmp_saveToDisk(bmpOut, "c:\\temp\\out.bmp");
 
 				// Delete the input
 				iBmp_delete(&bmpIn, true, true);
@@ -830,15 +848,23 @@ iBmp_saveToDisk(bmpOut, "c:\\temp\\out.bmp");
 				for (lnI = 0, lnCharacterOffset = 0; lnI < 256; lnI++)
 				{
 					// Iterate for every vertical pixel
-					for (lnY = 0, lnRow = (lnI / 16), lnCol = (lnI % 16); lnY < font_fixed->nCharHeight; lnY++)
+					for (lnY = 0, lnRow = ((lnI / 16) + 1) * font_fixed->nCharHeight, lnCol = (lnI % 16); lnY < font_fixed->nCharHeight; lnY++)
 					{
 						// Grab pointer to the start of this row
-						lrgb = (SBgr*)(bmpOut->bd + ((bmpOut->bi.biHeight - lnRow - lnY) * bmpOut->rowWidth) + ((font_fixed->nCharWidth + lnCol) * 3));
+						lrgb = (SBgr*)(bmpOut->bd + ((bmpOut->bi.biHeight - lnRow - lnY) * bmpOut->rowWidth) + ((lnCol + 1) * font_fixed->nCharWidth * 3));
 
 						// Extract each pixel into the output buffer
 						for (lnX = 0; lnX < font_fixed->nCharWidth; lnX++, lnCharacterOffset++, lrgb++)
-							font_fixed->fontBase[lnCharacterOffset] = lrgb->red;
+						{
+							font_fixed->fontBase[lnCharacterOffset] = 255 - lrgb->red;
+// Invert this section (for debugging purposes)
+// lrgb->red = 255 - lrgb->red;
+// lrgb->grn = 128;
+// lrgb->blu = 128;
+						}
 					}
+// Output after each character to make sure it's "swiping" the correct 
+// iBmp_saveToDisk(bmpOut, "c:\\temp\\out2.bmp");
 				}
 				// When we get here, we have our scaled fonts
 				iBmp_delete(&bmpOut, true, true);
@@ -877,11 +903,10 @@ iBmp_saveToDisk(bmpOut, "c:\\temp\\out.bmp");
 		if (!GetClassInfoExA(ghInstance, (cs8*)cgc_consoleClass, &wcex))
 		{
 			// Not yet
+			memset(&wcex, 0, sizeof(wcex));
 			wcex.cbSize			= sizeof(WNDCLASSEX);
 			wcex.style			= CS_HREDRAW | CS_VREDRAW;
 			wcex.lpfnWndProc	= console_wndProc;
-			wcex.cbClsExtra		= 0;
-			wcex.cbWndExtra		= 0;
 			wcex.hInstance		= ghInstance;
 			wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
 			wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+1);
@@ -1050,7 +1075,7 @@ iBmp_saveToDisk(bmpOut, "c:\\temp\\out.bmp");
 		}
 
 		// Indicate the message was not processed
-		return 0;
+		return DefWindowProc(hwnd, message, wParam, lParam);
 	}
 
 
