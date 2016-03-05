@@ -655,7 +655,8 @@
 	// Returns the number of properties dispatched into cb->propAndValue_func()
 	s32 iProperty_iterate(SDatumCallback* cb, SDatum* properties)
 	{
-		s32 lnI;
+		s8		c;
+		s32		lnI, lnLength, lnProperties;
 
 
 		// Make sure our environment is sane
@@ -670,14 +671,149 @@
 			// (2) Whitespaces before and after [x] are ignored
 			// (3) Whitespaces after [=] are ignored
 			// (4) Everything after ["..."] or [y] is ignored to CR/LF
-			for (lnI = 0; lnI < properties->length; )
+			for (lnI = 0, lnProperties = 0; lnI < properties->length; )
 			{
-// TODO:  working here
-// 				cb->prop.data		= ;
-// 				cb->prop.length		= ;
-// 				cb->value.data		= ;
-// 				cb->value.length	= ;
+				//////////
+				// Prop
+				//////
+					//////////
+					// Locate the property (first non-whitespace character)
+					//////
+						// Skip past whitespaces
+						while (((c = properties->data[lnI]) == 32 || c == 9) && lnI < properties->length)
+							++lnI;
+
+						// Did we go too far?
+						if (lnI >= properties->length)
+							return(lnProperties);		// Yes
+
+						// Are we at the end of the line?
+						if (c == 13 || c == 10)
+							goto skip_to_next_line;
+
+						// Mark the start
+						cb->prop.data = properties->data + lnI;
+
+
+					//////////
+					// Find out how long the prop is
+					//////
+						for (lnLength = 0; lnI + lnLength < properties->length; lnLength++)
+						{
+							// Continue until we reach the equal sign
+							if ((c = properties->data[lnI + lnLength]) == '=')
+								break;	// We're done
+
+							// Have we reached the end of line?
+							if (c == 13 || c == 10)
+							{
+								// This was an invalid line
+								lnI += lnLength;
+								goto skip_to_next_line;
+							}
+						}
+
+						// Did we go too far?
+						if (lnI >= properties->length)
+							return(lnProperties);		// Yes
+
+						// Store the length
+						cb->prop.length = lnLength;
+
+						// Move past it
+						lnI += lnLength;
+
+
+				//////////
+				// Equal sign
+				//////
+					// Skip forward until we hit =, or CR/LF
+					while ((c = properties->data[lnI]) != 13 && c != 10 && c != '=' && lnI < properties->length)
+						++lnI;
+
+					// Did we go too far?
+					if (lnI >= properties->length)
+						return(lnProperties);		// Yes
+
+					// Are we at the end of the line?
+					if (c == 13 || c == 10)
+						goto skip_to_next_line;
+
+					// Skip past it
+					++lnI;
+
+
+				//////////
+				// Value
+				//////
+					//////////
+					// Find out where it starts
+					//////
+						// Skip past whitespaces
+						while (((c = properties->data[lnI]) == 32 || c == 9) && lnI < properties->length)
+							++lnI;
+
+						// Did we go too far?
+						if (lnI >= properties->length)
+							return(lnProperties);		// Yes
+
+						// Are we at the end of the line?
+						if (c == 13 || c == 10)
+							goto skip_to_next_line;
+
+						// Mark the start
+						cb->value.data = properties->data + lnI;
+
+
+					//////////
+					// Find out how long the value is
+					//////
+						for (lnLength = 0; lnI + lnLength < properties->length; lnLength++)
+						{
+							// Continue until we reach CR or LF
+							if ((c = properties->data[lnI + lnLength]) == 13 || c == 10)
+								break;	// We're done
+						}
+
+						// Did we go too far?
+						if (lnI >= properties->length)
+							return(lnProperties);		// Yes
+
+						// Store the length
+						cb->value.length = lnLength;
+
+						// Move past it
+						lnI += lnLength;
+
+
+					//////////
+					// Dispatch the property
+					//////
+						++lnProperties;
+						if (!cb->propAndValue_func(cb))
+							return(lnProperties);		// They've completed processing
+
+
+skip_to_next_line:
+				//////////
+				// Skip forward to the CR/LF characters
+				//////
+					while ((c = properties->data[lnI]) != 13 && c != 10 && lnI < properties->length)
+						++lnI;
+
+					// Did we go too far?
+					if (lnI >= properties->length)
+						return(lnProperties);		// Yes
+
+					// Skip past all CR/LF characters
+					while ((c = properties->data[lnI]) == 13 || c == 10)
+						++lnI;
+
 			}
+
+			// All properties are exhausted
+			// Indicate how many properties we've processed
+			return(lnProperties);
 		}
 
 		// If we get here, invalid params

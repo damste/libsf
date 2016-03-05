@@ -94,7 +94,7 @@
 // console.cpp
 //////
 	CONAPI uptr		console_initialize					(void);
-	CONAPI uptr		console_allocate					(SDatum* title, s32 tnLeft, s32 tnTop, s32 tnWidth, s32 tnHeight, SConCallback* cb);
+	CONAPI uptr		console_allocate					(SDatum* title, s32 tnLeft, s32 tnTop, s32 tnCols, s32 tnRows, SConCallback* cb);
 	CONAPI uptr		console_allocate					(SDatum* settings, SConCallback* cb);
 	CONAPI uptr		console_reregister					(uptr tnHandle, SConCallback* cb);
 	CONAPI s32		console_show						(uptr tnHandle, bool tlVisible);
@@ -130,4 +130,6 @@
 	void			iiConsole_moveToNextRow				(SConsole* console);
 	void			iiConsole_storeCharacter			(SConsole* console, char c);
 	void			iiConsole_selectFont				(SConsole* console, s32 fontIndex);
+	bool			iConsole_anyValidConsoles			(void);
+	bool			iConsole_anyValidConsoles__callback	(SBuilderCallback* bcb);
 	u32				iGetNextUid							(void);

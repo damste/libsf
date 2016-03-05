@@ -110,6 +110,7 @@
 	struct SBuilderCallback;
 	struct SConFont;
 	struct SConRow;
+	struct SBitmap;
 
 
 //////////
@@ -160,10 +161,11 @@
 																			break; \
 																	}
 
-	#define SConsole_os_struct_variables							HWND	hwnd;	\
-																	RECT	rc; \
-																	HBRUSH	hbrBackground; \
-																	HDC		hdc;
+	#define SConsole_os_struct_variables							HWND		hwnd;					/* Window handle */	\
+																	RECT		rc;						/* Client rect */ \
+																	SBitmap*	bmp;					/* Bitmap to render off-screen for BitBlt() */ \
+																	s32			cursorTimerId;			/* The id for the cursor WM_TIMER message */ \
+																	bool		lCursorOn;				/* When the cursor is to be rendered (on a timer) */ \
 
 	#define SConFont_os_struct_variables							/* For fixed-point internal fonts: */ \
 																	SConFont_fixed*		fontBase_fixed; \
@@ -183,6 +185,7 @@
 // Global variables
 //////
 	HINSTANCE			ghInstance;
+	u32					gnNextWmAppNum								= WM_APP;
 	cs8					cgc_consoleClass[]							= "libsf.console.class";
 	SBuilder*			gsFontFixedRoot								= NULL;			// SConFont_fixed holds every scaled font structure in use
 
@@ -210,6 +213,7 @@
 	void				iConsole_win_registerWndClass				(void);
 	void				iConsole_win_render							(SConsole* console);
 	void				iConsole_win_render_singleRow				(SConsole* console, RECT* rc, SConRow* row);
-	LRESULT CALLBACK	console_wndProc								(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	SConsole*			iConsole_win_find_byHwnd					(HWND hwnd);
 	bool				iConsole_win_find_byHwnd__callback			(SBuilderCallback* cb);
+	u32					iGetNextWmApp								(void);
+	LRESULT CALLBACK	iConsole_wndProc							(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

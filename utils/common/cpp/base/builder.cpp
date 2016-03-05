@@ -878,7 +878,7 @@
 			for (cb->offset = 0; cb->offset < builder->populatedLength; cb->offset += cb->stepSize, ++lnCount)
 			{
 				// Setup for the iteration
-				cb->buffer_ptr	= builder->buffer + cb->offset;
+				cb->iter_ptr = builder->buffer + cb->offset;
 				if (!cb->iterateFunc(cb))
 					break;
 			}

@@ -111,6 +111,13 @@
 	cs32		_CONSOLE_ERROR__FATAL_ERROR					= -6;
 	cs32		_CONSOLE_ERROR__FONT_ALLOCATION_ERROR		= -7;
 	cs32		_CONSOLE_ERROR__FONT_NOT_SUPPORTED_ERROR	= -8;
+	cs32		_CONSOLE_ERROR__WINDOW_SETUP_NOT_COMPLETED	= -9;
+
+
+//////////
+// Miscellaneous constants
+//////
+	cs32		_CONSOLE_CURSOR_TIMER						= 0x12345678;
 
 
 //////////
@@ -135,6 +142,9 @@
 	cs8			cgc_charWidth[]							= "charwidth";
 	cs8			cgc_charHeight[]						= "charheight";
 	cs8			cgc_scrollRows[]						= "scrollrows";
+	cs8			cgc_backColor[]							= "backcolor";
+	cs8			cgc_foreColor[]							= "forecolor";
+	cs8			cgc_charColor[]							= "charcolor";
 	cs8			cgc_title[]								= "title";
 	cs8			cgc_visible[]							= "visible";
 	cs8			cgc_yes[]								= "yes";

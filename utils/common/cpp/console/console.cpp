@@ -135,7 +135,7 @@
 //
 //////
 	// Note:  Console is not displayed until console_show(..., true) is first called
-	uptr console_allocate(SDatum* title, s32 tnLeft, s32 tnTop, s32 tnWidth, s32 tnHeight, SConCallback* cb)
+	uptr console_allocate(SDatum* title, s32 tnLeft, s32 tnTop, s32 tnCols, s32 tnRows, SConCallback* cb)
 	{
 		SConsole* console;
 
@@ -154,11 +154,11 @@
 				iDatum_duplicate(&console->title, title);
 				console->nLeft			= tnLeft;
 				console->nTop			= tnTop;
-				console->nWidth			= tnWidth;
-				console->nHeight		= tnHeight;
+				console->nWidth			= tnCols * 8;
+				console->nHeight		= tnRows * 14;
 				console->nCharWidth		= 8;
-				console->nCharHeight	= 16;
-				console->nCharFont		= _CONSOLE_FONT_8x16;		// Default to 8x16 font until they specify otherwise
+				console->nCharHeight	= 14;
+				console->nCharFont		= _CONSOLE_FONT_8x14;		// Default to this font until they specify otherwise
 
 				// Copy over the callback data
 				memcpy(&console->cb, cb, sizeof(console->cb));
@@ -339,7 +339,8 @@
 		{
 			// Iterate through all of the properties one-by-one
 			memset(&cb, 0, sizeof(cb));
-			cb._propAndValue_func = (uptr)&iiConsole_setOptions_callback;
+			cb.extra1				= console;
+			cb._propAndValue_func	= (uptr)&iiConsole_setOptions_callback;
 			return(iProperty_iterate(&cb, properties));
 		}
 
@@ -637,6 +638,9 @@
 		else if (console_check_prop(charWidth))		{	console->nCharWidth			= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
 		else if (console_check_prop(charHeight))	{	console->nCharHeight		= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
 		else if (console_check_prop(scrollRows))	{	console->nScrollRowsToKeep	= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(backColor))		{	console->backColor.color	= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(foreColor))		{	console->charColor.color	= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(charColor))		{	console->charColor.color	= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
 		else if (console_check_prop(title))			{	iDatum_duplicate(&console->title, &cb->value);						cb->flag1 = true;	}
 		else if (console_check_prop(visible))
 		{
@@ -835,8 +839,50 @@
 		{
 			// We're in range
 			font = (SConFont*)gsConsoleFontRoot->buffer + (fontIndex * sizeof(SConFont));
-			SelectObject(console->hdc, font->hfont);
+			SelectObject(console->bmp->hdc, font->hfont);
 		}
+	}
+
+
+
+
+//////////
+//
+// Called to see if there are any active console windows
+//
+//////
+	bool iConsole_anyValidConsoles(void)
+	{
+		SBuilderCallback bcb;
+
+
+		// See if there are any
+		memset(&bcb, 0, sizeof(bcb));
+		bcb._iterateFunc = (uptr)&iConsole_anyValidConsoles__callback;
+		iBuilder_iterate(gsConsoleRoot, sizeof(SConsole), &bcb);
+
+		// Indicate our status
+		return(bcb.flag1);
+	}
+
+	bool iConsole_anyValidConsoles__callback(SBuilderCallback* bcb)
+	{
+		SConsole* console;
+
+
+		// Grab the console
+		console = (SConsole*)bcb->iter_ptr;
+		if (console->hwnd && IsWindow(console->hwnd))
+		{
+			// We found one
+			bcb->flag1 = true;
+
+			// Stop iterating
+			return(false);
+		}
+
+		// Continue iterating
+		return(true);
 	}
 
 

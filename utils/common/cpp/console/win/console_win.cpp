@@ -98,10 +98,12 @@
 //////
 	int console_win_unit_test(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 	{
-		uptr			lnCon1;
+		uptr			lnCon1, lnCon2, lnCon3;
 		SDatum			title;
 		SConCallback	ccb;
 		MSG				msg;
+		SDatum			props;
+		s8				buffer[_MAX_FNAME];
 
 
 		//////////
@@ -111,12 +113,28 @@
 
 
 		//////////
-		// Allocate a console
+		// Allocate three consoles
 		//////
-			title.data_cs8	= "Console 1";
+			title.data_cs8	= "Console 80x43";
 			title.length	= strlen(title.data_cs8);
-			lnCon1 = console_allocate(&title, -1, -1, 640, 480, &ccb);
+			sprintf(buffer, "backColor=%d\nforeColor=0", whiteColor.color);
+			props.data_cs8	= &buffer[0];
+			props.length	= strlen(buffer);
+			lnCon1 = console_allocate(&title, -1, -1, 80, 43, &ccb);
+			console_setProperties(lnCon1, &props);
 			console_show(lnCon1, true);
+
+			title.data_cs8	= "Console 132x60";
+			title.length	= strlen(title.data_cs8);
+			lnCon2 = console_allocate(&title, -1, -1, 132, 60, &ccb);
+			console_setProperties(lnCon2, &props);
+			console_show(lnCon2, true);
+
+			title.data_cs8	= "Console 100x50";
+			title.length	= strlen(title.data_cs8);
+			lnCon3 = console_allocate(&title, -1, -1, 100, 50, &ccb);
+			console_setProperties(lnCon3, &props);
+			console_show(lnCon3, true);
 
 
 		//////////
@@ -128,10 +146,19 @@
 		//////////
 		// Read messages
 		//////
-			while (GetMessage(&msg, NULL, NULL, NULL))
+			while (iConsole_anyValidConsoles())
 			{
-				TranslateMessage(&msg);
-				DispatchMessage(&msg);
+				// Process messages
+				while (GetMessage(&msg, NULL, NULL, NULL))
+				{
+					// Trap the quit message
+					if (msg.message == WM_QUIT)
+						_asm nop;
+
+					TranslateMessage(&msg);
+					DispatchMessage(&msg);
+				}
+				// When a window closes, it exits the loop
 			}
 
 
@@ -203,8 +230,8 @@
 		// Center the window if need be
 		//////
 			GetWindowRect(GetDesktopWindow(), &lrc);
-			if (console->nLeft < 0)		console->nLeft	= ((lrc.right - lrc.left) - console->nWidth)	/ 2;
-			if (console->nTop < 0)		console->nTop	= ((lrc.bottom - lrc.top) - console->nHeight)	/ 2;
+			if (console->nLeft < 0)			console->nLeft	= ((lrc.right - lrc.left) - console->nWidth)	/ 2;
+			if (console->nTop  < 0)			console->nTop	= ((lrc.bottom - lrc.top) - console->nHeight)	/ 2;
 
 
 			// Assemble the title
@@ -218,13 +245,39 @@
 															console->nWidth, console->nHeight,
 															NULL, NULL, ghInstance, NULL);
 
-		// If it failed, we're done
-		err = GetLastError();
-		if (!console->hwnd)
-			return(_CONSOLE_ERROR__CANNOT_CREATE_WINDOW);
+			// If it failed, we're done
+			err = GetLastError();
+			if (!console->hwnd)
+				return(_CONSOLE_ERROR__CANNOT_CREATE_WINDOW);
 
+
+		//////////
+		// Create the background bitmap for off-screen rendering
+		//////
+			console->bmp = iBmp_allocate();
+			if (!console->bmp)
+				return(_CONSOLE_ERROR__WINDOW_SETUP_NOT_COMPLETED);
+
+			// Size it
+			iBmp_createBySize(console->bmp, console->nWidth, console->nHeight, 24);
+			SetRect(&lrc, 0, 0, console->nWidth, console->nHeight);
+
+			// Initially set the background color
+			iBmp_fillRect(console->bmp, &lrc, console->backColor);
+
+
+		//////////
+		// Create a timer for the cursor
+		//////
+			console->cursorTimerId = iGetNextWmApp();
+			SetTimer(console->hwnd, console->cursorTimerId, 333, NULL);
+
+
+		//////////
 		// Indicate success
-		return(_CONSOLE_ERROR__NO_ERROR);
+		//////
+			return(_CONSOLE_ERROR__NO_ERROR);
+
 	}
 
 
@@ -906,7 +959,7 @@
 			memset(&wcex, 0, sizeof(wcex));
 			wcex.cbSize			= sizeof(WNDCLASSEX);
 			wcex.style			= CS_HREDRAW | CS_VREDRAW;
-			wcex.lpfnWndProc	= console_wndProc;
+			wcex.lpfnWndProc	= iConsole_wndProc;
 			wcex.hInstance		= ghInstance;
 			wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
 			wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+1);
@@ -930,12 +983,8 @@
 		RECT		lrc;
 
 
-		// Create the background brush if need be
-		if (!console->hbrBackground)
-			console->hbrBackground = CreateSolidBrush(RGB(console->backColor.red, console->backColor.grn, console->backColor.blu));
-
 		// Full color background
-		FillRect(console->hdc, &console->rc, console->hbrBackground);
+		iBmp_fillRect(console->bmp, &console->rc, console->backColor);
 
 		// Redraw any lines which are visible
 		SetRect(&lrc, 0, 0, console->rc.right, console->nCharHeight);
@@ -1001,14 +1050,14 @@
 				if (lastBackColor.color != thisChar->backColor.color || lnCol == 0)
 				{
 					// Background color
-					SetBkColor(console->hdc, RGB(thisChar->backColor.red, thisChar->backColor.grn, thisChar->backColor.blu));
+					SetBkColor(console->bmp->hdc, RGB(thisChar->backColor.red, thisChar->backColor.grn, thisChar->backColor.blu));
 					lastBackColor.color = thisChar->backColor.color;
 				}
 
 				if (lastForeColor.color != thisChar->foreColor.color || lnCol == 0)
 				{
 					// Text color
-					SetTextColor(console->hdc, RGB(thisChar->foreColor.red, thisChar->foreColor.grn, thisChar->foreColor.blu));
+					SetTextColor(console->bmp->hdc, RGB(thisChar->foreColor.red, thisChar->foreColor.grn, thisChar->foreColor.blu));
 					lastForeColor.color = thisChar->foreColor.color;
 				}
 
@@ -1016,66 +1065,9 @@
 			//////////
 			// Draw this character
 			//////
-				DrawText(console->hdc, (s8*)&thisChar->c, 1, &lrc, DT_LEFT | DT_SINGLELINE);
+				DrawText(console->bmp->hdc, (s8*)&thisChar->c, 1, &lrc, DT_LEFT | DT_SINGLELINE);
 
 		}
-	}
-
-
-
-
-//////////
-//
-// Windows callback, delivering messages
-//
-//////
-	LRESULT CALLBACK console_wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
-	{
-		int				wmId, wmEvent;
-		PAINTSTRUCT		ps;
-		HDC				hdc;
-		SConsole*		console;
-
-
-		// Locate the associated console
-		if ((console = iConsole_win_find_byHwnd(hwnd)))
-		{
-			// Based on the message
-			switch (message)
-			{
-				case WM_COMMAND:
-					wmId    = LOWORD(wParam);
-					wmEvent = HIWORD(wParam);
-					break;
-
-				case WM_ERASEBKGND:
-					// Ignore it
-					return 1;
-					break;
-
-				case WM_PAINT:
-					hdc = BeginPaint(hwnd, &ps);
-
-					// Internally we maintain the drawn state of the window in a separate buffer, and simply BitBlt it back out to the main window as is needed by the OS
-					BitBlt(	hdc, 0, 0,	console->rc.right - console->rc.left,	/* width */
-										console->rc.bottom - console->rc.top,	/* height */
-							console->hdc, 0, 0,
-							SRCCOPY	);
-
-					EndPaint(hwnd, &ps);
-					break;
-
-				case WM_DESTROY:
-					PostQuitMessage(0);
-					break;
-
-				default:
-					return DefWindowProc(hwnd, message, wParam, lParam);
-			}
-		}
-
-		// Indicate the message was not processed
-		return DefWindowProc(hwnd, message, wParam, lParam);
 	}
 
 
@@ -1111,16 +1103,103 @@
 
 
 		// Test the value
-		console = (SConsole*)cb->buffer_ptr;
+		console = (SConsole*)cb->iter_ptr;
 		if (console->hwnd == (HWND)cb->extra1)
 		{
 			// Store the console
 			cb->extra2 = console;
-
-			// Indicate we've found it
-			return(false);
+			return(false);		// Stop iterating
 		}
 
-		// Continue sending more to test
+		// Continue iterating
 		return(true);
+	}
+
+
+
+
+//////////
+//
+// Distributes unique WM_APP ids for various internal uses
+//
+//////
+	u32 iGetNextWmApp(void)
+	{
+		return(gnNextWmAppNum++);
+	}
+
+
+
+//////////
+//
+// Windows callback, delivering messages
+//
+//////
+	LRESULT CALLBACK iConsole_wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+	{
+		PAINTSTRUCT		ps;
+		HDC				hdc;
+		RECT			lrc;
+		SConsole*		console;
+
+
+		// Locate the associated console
+		if ((console = iConsole_win_find_byHwnd(hwnd)))
+		{
+			// Based on the message
+			switch (message)
+			{
+				case WM_TIMER:
+					// Toggle 
+					if (wParam == console->cursorTimerId)
+					{
+						console->lCursorOn = !console->lCursorOn;
+
+						// Repaint the cursor area
+						SetRect(&lrc,	console->nX * console->nCharWidth,
+										console->nY * console->nCharHeight,
+										((console->nX + 1) * console->nCharWidth)  - 1,
+										((console->nY + 1) * console->nCharHeight) - 1);
+
+						// Invalidate that rectangle to update the cursor
+						InvalidateRect(hwnd, &lrc, false);
+						break;
+					}
+					break;
+
+				case WM_ERASEBKGND:
+					// Ignore it
+					return 1;
+					break;
+
+				case WM_PAINT:
+					// Internally we maintain the drawn state of the window in a separate buffer,
+					// and simply BitBlt it back out to the main window as is needed by the OS
+					hdc = BeginPaint(hwnd, &ps);
+					BitBlt(hdc, 0, 0, console->nWidth, console->nHeight, console->bmp->hdc, 0, 0,SRCCOPY);
+					if (glCursorOn && GetForegroundWindow() == hwnd && console->lCursorOn)
+					{
+						// Highlight the cursor
+						SetRect(&lrc,	console->nX * console->nCharWidth,
+										console->nY * console->nCharHeight,
+										((console->nX + 1) * console->nCharWidth)  - 1,
+										((console->nY + 1) * console->nCharHeight) - 1);
+
+						// Just draw a cursor there
+						InvertRect(hdc, &lrc);
+					}
+					EndPaint(hwnd, &ps);
+					break;
+
+				case WM_DESTROY:
+					PostQuitMessage(0);
+					break;
+
+				default:
+					return DefWindowProc(hwnd, message, wParam, lParam);
+			}
+		}
+
+		// Indicate the message was not processed
+		return DefWindowProc(hwnd, message, wParam, lParam);
 	}

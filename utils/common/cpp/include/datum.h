@@ -155,7 +155,7 @@ struct SVariable;
 		bool		flag1;
 		bool		flag2;
 
-		// Callback, returns true if it should continue iterating
+		// Callback, return true if it should continue iterating through more properties
 		union {
 			uptr	_propAndValue_func;
 			bool	(*propAndValue_func)		(SDatumCallback* cb);

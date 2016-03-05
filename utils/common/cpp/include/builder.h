@@ -105,7 +105,7 @@ struct SDatum;
 		u32			offset;									// Offset into b->buffer
 
 		// For each iteration:
-		void*		buffer_ptr;								// Cast as (target*) to get this iteration's pointer in the data type
+		void*		iter_ptr;								// Cast as (target*) to get this iteration's pointer in the data type
 
 		// Available for user general purpose use
 		void*		extra1;
