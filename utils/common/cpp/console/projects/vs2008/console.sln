@@ -5,14 +5,20 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "console", "console.vcproj",
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Win32 = Debug|Win32
-		Release|Win32 = Release|Win32
+		Debug_DLL|Win32 = Debug_DLL|Win32
+		Debug_UT|Win32 = Debug_UT|Win32
+		Release_DLL|Win32 = Release_DLL|Win32
+		Release_UT|Win32 = Release_UT|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1936AA03-344D-4B06-B032-73D7F2CAC84C}.Debug|Win32.ActiveCfg = Debug|Win32
-		{1936AA03-344D-4B06-B032-73D7F2CAC84C}.Debug|Win32.Build.0 = Debug|Win32
-		{1936AA03-344D-4B06-B032-73D7F2CAC84C}.Release|Win32.ActiveCfg = Release|Win32
-		{1936AA03-344D-4B06-B032-73D7F2CAC84C}.Release|Win32.Build.0 = Release|Win32
+		{1936AA03-344D-4B06-B032-73D7F2CAC84C}.Debug_DLL|Win32.ActiveCfg = Debug_DLL|Win32
+		{1936AA03-344D-4B06-B032-73D7F2CAC84C}.Debug_DLL|Win32.Build.0 = Debug_DLL|Win32
+		{1936AA03-344D-4B06-B032-73D7F2CAC84C}.Debug_UT|Win32.ActiveCfg = Debug|Win32
+		{1936AA03-344D-4B06-B032-73D7F2CAC84C}.Debug_UT|Win32.Build.0 = Debug|Win32
+		{1936AA03-344D-4B06-B032-73D7F2CAC84C}.Release_DLL|Win32.ActiveCfg = Release_DLL|Win32
+		{1936AA03-344D-4B06-B032-73D7F2CAC84C}.Release_DLL|Win32.Build.0 = Release_DLL|Win32
+		{1936AA03-344D-4B06-B032-73D7F2CAC84C}.Release_UT|Win32.ActiveCfg = Release|Win32
+		{1936AA03-344D-4B06-B032-73D7F2CAC84C}.Release_UT|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

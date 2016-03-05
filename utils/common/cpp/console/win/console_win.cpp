@@ -98,18 +98,37 @@
 //////
 	int console_win_unit_test(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 	{
-		MSG msg;
+		uptr			lnCon1;
+		SDatum			title;
+		SConCallback	ccb;
 
 
-		// Initialize
-		ghInstance = hInstance;
-		MyRegisterClass();
+		//////////
+		// Store instance
+		//////
+			ghInstance = hInstance;
 
-		// Main message loop:
-		while (GetMessage(&msg, NULL, 0, 0))
-			DispatchMessage(&msg);
 
-		return (int) msg.wParam;
+		//////////
+		// Allocate a console
+		//////
+			title.data_cs8	= "Console 1";
+			title.length	= strlen(title.data_cs8);
+			lnCon1 = console_allocate(&title, -1, -1, 640, 480, &ccb);
+			console_show(lnCon1, true);
+
+
+		//////////
+		// Draw some text
+		//////
+// TODO:  working here
+
+
+		//////////
+		// Indicate success
+		//////
+			return(_CONSOLE_ERROR__NO_ERROR);
+
 	}
 
 
@@ -122,7 +141,14 @@
 //////
 	bool console_win_validateInitialization(void)
 	{
-		return(false);
+		// Register our class
+		iConsole_win_registerWndClass();
+
+		// Make sure we have at least one font
+		iConsole_win_fontSetup_init();
+
+		// Success
+		return(true);
 	}
 
 
@@ -136,6 +162,7 @@
 	s32 console_win_create_window(SConsole* console)
 	{
 		s32		lnLength;
+		RECT	lrc;
 		s8		buffer[_MAX_FNAME];
 
 
@@ -156,8 +183,17 @@
 		//////////
 		// Prepare a window
 		//////
-			console->nWidth	= max(320, console->nWidth);
+			console->nWidth		= max(320, console->nWidth);
 			console->nHeight	= max(200, console->nHeight);
+
+
+		//////////
+		// Center the window if need be
+		//////
+			GetWindowRect(GetDesktopWindow(), &lrc);
+			if (console->nLeft < 0)		console->nLeft	= ((lrc.right - lrc.left) - console->nWidth)	/ 2;
+			if (console->nTop < 0)		console->nTop	= ((lrc.bottom - lrc.top) - console->nHeight)	/ 2;
+
 
 			// Assemble the title
 			lnLength = min(_MAX_FNAME - 1, console->title.length);
@@ -314,6 +350,136 @@
 		return(true);
 	}
 
+
+
+
+//////////
+//
+// Called to handle Windows-specific initialization
+//
+//////
+	uptr console_win_initialize(void)
+	{
+		// Nothing to do
+		// Initialization is handled automatically on every function
+		// Indicate success
+		return(_CONSOLE_ERROR__NO_ERROR);
+	}
+
+
+
+
+//////////
+//
+// Called when the screen needs repainted
+//
+//////
+	void console_win_xy_needs_repainted(SConsole* console)
+	{
+		RECT lrc;
+
+
+		// Repaint the current character
+		SetRect(&lrc,	console->nX * console->nCharWidth,
+						console->nY * console->nCharHeight,
+						((console->nX + 1) * console->nCharWidth)  - 1,
+						((console->nY + 1) * console->nCharHeight) - 1);
+		
+		// Signal the rectangle needs redrawn
+		InvalidateRect(console->hwnd, &lrc, false);
+	}
+
+
+
+
+//////////
+//
+// Support functions
+//
+//////
+	// Called to setup the font by setting up the first four fixed point fonts
+	void iConsole_win_fontSetup_init(void)
+	{
+		SConFont_fixed* font_fixed;
+
+
+		// If we haven't yet setup our fonts, do so now
+		if (!gsFontFixedRoot)
+		{
+
+			//////////
+			// Initialize the block
+			//////
+				iBuilder_createAndInitialize(&gsFontFixedRoot, sizeof(SConFont_fixed) * 16);
+				if (!gsFontFixedRoot)
+					return;		// Should never happen
+
+
+			//////////
+			// Create the fixed entries
+			//////
+				font_fixed = (SConFont_fixed*)iBuilder_allocateBytes(gsFontFixedRoot, sizeof(SConFont_fixed) * 4);
+				if (!font_fixed)
+					return;		// Should never happen
+
+
+			//////////
+			// 8x6
+			//////
+				font_fixed->fontBase			= &gxFontBase_8x6[0];
+				font_fixed->fontBase_original	= font_fixed->fontBase;
+				font_fixed->lCustomScaled		= false;
+				font_fixed->nCharWidth			= 8;			font_fixed->nCharHeight	= 6;
+				font_fixed->nFontX				= 8;			font_fixed->nFontY		= 6;
+				iConsole_win_fontSetup_scalePhysically(font_fixed);
+
+
+			//////////
+			// 8x8
+			//////
+				++font_fixed;
+				font_fixed->fontBase			= &gxFontBase_8x8[0];
+				font_fixed->fontBase_original	= font_fixed->fontBase;
+				font_fixed->lCustomScaled		= false;
+				font_fixed->nCharWidth			= 8;			font_fixed->nCharHeight	= 8;
+				font_fixed->nFontX				= 8;			font_fixed->nFontY		= 8;
+				iConsole_win_fontSetup_scalePhysically(font_fixed);
+
+
+			//////////
+			// 8x14
+			//////
+				++font_fixed;
+				font_fixed->fontBase			= &gxFontBase_8x14[0];
+				font_fixed->fontBase_original	= font_fixed->fontBase;
+				font_fixed->lCustomScaled		= false;
+				font_fixed->nCharWidth			= 8;			font_fixed->nCharHeight	= 14;
+				font_fixed->nFontX				= 8;			font_fixed->nFontY		= 14;
+				iConsole_win_fontSetup_scalePhysically(font_fixed);
+
+
+			//////////
+			// 8x16
+			//////
+				++font_fixed;
+				font_fixed->fontBase			= &gxFontBase_8x16[0];
+				font_fixed->fontBase_original	= font_fixed->fontBase;
+				font_fixed->lCustomScaled		= false;
+				font_fixed->nCharWidth			= 8;			font_fixed->nCharHeight	= 16;
+				font_fixed->nFontX				= 8;			font_fixed->nFontY		= 16;
+				iConsole_win_fontSetup_scalePhysically(font_fixed);
+
+		}
+	}
+
+
+
+
+//////////
+//
+// Called to scale the font, or look for one that's already been scaled
+//
+//////
 	void iConsole_win_fontSetup_scaleAsNeeded(SConsole* console, SConFont* font)
 	{
 		s32					lnX, lnY;
@@ -449,76 +615,6 @@
 
 
 		//////////
-		// Make sure we have a font root
-		//////
-			if (!gsFontFixedRoot)
-			{
-				//////////
-				// Initialize the block
-				//////
-					iBuilder_createAndInitialize(&gsFontFixedRoot, sizeof(SConFont_fixed) * 16);
-					if (!gsFontFixedRoot)
-						return(NULL);		// Should never happen
-
-
-				//////////
-				// Create the fixed entries
-				//////
-					font_fixed = (SConFont_fixed*)iBuilder_allocateBytes(gsFontFixedRoot, sizeof(SConFont_fixed) * 4);
-					if (!font_fixed)
-						return(NULL);		// Should never happen
-
-
-				//////////
-				// 8x6
-				//////
-					font_fixed->fontBase			= &gxFontBase_8x6[0];
-					font_fixed->fontBase_original	= font_fixed->fontBase;
-					font_fixed->lCustomScaled		= false;
-					font_fixed->nCharWidth			= 8;			font_fixed->nCharHeight	= 6;
-					font_fixed->nFontX				= 8;			font_fixed->nFontY		= 6;
-					iConsole_win_fontSetup_scalePhysically(font_fixed);
-
-
-				//////////
-				// 8x8
-				//////
-					++font_fixed;
-					font_fixed->fontBase			= &gxFontBase_8x8[0];
-					font_fixed->fontBase_original	= font_fixed->fontBase;
-					font_fixed->lCustomScaled		= false;
-					font_fixed->nCharWidth			= 8;			font_fixed->nCharHeight	= 8;
-					font_fixed->nFontX				= 8;			font_fixed->nFontY		= 8;
-					iConsole_win_fontSetup_scalePhysically(font_fixed);
-
-
-				//////////
-				// 8x14
-				//////
-					++font_fixed;
-					font_fixed->fontBase			= &gxFontBase_8x14[0];
-					font_fixed->fontBase_original	= font_fixed->fontBase;
-					font_fixed->lCustomScaled		= false;
-					font_fixed->nCharWidth			= 8;			font_fixed->nCharHeight	= 14;
-					font_fixed->nFontX				= 8;			font_fixed->nFontY		= 14;
-					iConsole_win_fontSetup_scalePhysically(font_fixed);
-
-
-				//////////
-				// 8x16
-				//////
-					++font_fixed;
-					font_fixed->fontBase			= &gxFontBase_8x16[0];
-					font_fixed->fontBase_original	= font_fixed->fontBase;
-					font_fixed->lCustomScaled		= false;
-					font_fixed->nCharWidth			= 8;			font_fixed->nCharHeight	= 16;
-					font_fixed->nFontX				= 8;			font_fixed->nFontY		= 16;
-					iConsole_win_fontSetup_scalePhysically(font_fixed);
-
-			}
-
-
-		//////////
 		// Make sure our font selection is sane
 		//////
 			// X must be 8
@@ -629,21 +725,27 @@
 // It does this by:
 //
 //		(1)  Creating an 18x18 character array
-//		(2)  Populating it with the base font
+//		(2)  Populating it with the base font in black text on white background
 //		(3)  Scaling it to the appropriate size
-//		(4)  Allocating the pixel buffer for the scaled fonts
-//		(5)  
+//		(4)  Allocating the output byte-level pixel buffer for the scaled fonts (holding 256 shades of gray for each pixel)
 //
 //////
+	// Smallest output font allowed is 3x3
 	void iConsole_win_fontSetup_scalePhysically(SConFont_fixed* font_fixed)
 	{
 		u8			lcThisCharacter, lnCharBits, lcMask;
-		s32			lnI, lnX, lnY, lnRow, lnWidthIn, lnHeightIn, lnWidthOut, lnHeightOut, lnCharacterOffset;
+		s32			lnI, lnX, lnY, lnRow, lnCol, lnWidthIn, lnHeightIn, lnWidthOut, lnHeightOut, lnCharacterOffset;
 		SBitmap*	bmpIn;
 		SBitmap*	bmpOut;
 		RECT		lrc;
 		SBgr*		lrgb;
 
+
+		// Make sure our parameters are in a sane range
+		font_fixed->nFontX		= 8;
+		font_fixed->nFontY		= ((font_fixed->nFontY == 6 || font_fixed->nFontY == 8 || font_fixed->nFontY == 14 || font_fixed->nFontY == 16) ? font_fixed->nFontY : 16);
+		font_fixed->nCharWidth	= max(3, font_fixed->nCharWidth);
+		font_fixed->nCharHeight	= max(3, font_fixed->nCharHeight);
 
 		// Create the basic bitmap
 		lnWidthIn	= (font_fixed->nCharWidth	* 18);
@@ -651,16 +753,27 @@
 		lnWidthOut	= (font_fixed->nFontX		* 18);
 		lnHeightOut	= (font_fixed->nFontY		* 18);
 
-		// Bitmap
+		// Allocate bitmaps
 		bmpIn	= iBmp_allocate();
 		bmpOut	= iBmp_allocate();
-		if (bmpIn && bmpOut)
+
+		// Allocate enough space for every ASCII pixel
+		font_fixed->fontBase = (u8*)malloc(256 * font_fixed->nCharWidth * font_fixed->nCharHeight * 4/*sizeof(f32)*/);
+
+		// Was everything allocated correctly?
+		if (bmpIn && bmpOut && font_fixed->fontBase)
 		{
+
+			//////////
+			// Create input and output bitmaps
+			///////
+				iBmp_createBySize(bmpIn,	lnWidthIn,		lnHeightIn,		24);
+				iBmp_createBySize(bmpOut,	lnWidthOut,		lnHeightOut,	24);
+
+
 			//////////
 			// Initialize it to white
 			//////
-				iBmp_createBySize(bmpIn,	lnWidthIn,		lnHeightIn,		24);
-				iBmp_createBySize(bmpOut,	lnWidthOut,		lnHeightOut,	24);
 				SetRect(&lrc, 0, 0, lnWidthIn, lnHeightIn);
 				iBmp_fillRect(bmpIn, &lrc, whiteColor);
 
@@ -682,7 +795,7 @@
 						// Grab the bits pattern for this row of the character
 						lnCharBits = font_fixed->fontBase_original[lnCharacterOffset];
 
-						// Iterate through all of the bits
+						// Iterate through all of the bits setting pixels for bits which are 1
 						for (lnX = 0, lcMask = 0x80; lnX < font_fixed->nFontX; lnX++, lrgb++, lcMask >>= 1)
 						{
 							// If it's on, set the pixel
@@ -707,36 +820,44 @@ iBmp_saveToDisk(bmpIn,  "c:\\temp\\in.bmp");
 iBmp_saveToDisk(bmpOut, "c:\\temp\\out.bmp");
 
 				// Delete the input
-				iBmp_delete(&bmpIn,  true, true);
+				iBmp_delete(&bmpIn, true, true);
 
 
 			//////////
-			// Extract the scaled bits character-by-character
+			// Extract the scaled bits back out
 			//////
-				for (lnI = 0; lnI < 256; lnI++)
+				// Iterate character-by-character
+				for (lnI = 0, lnCharacterOffset = 0; lnI < 256; lnI++)
 				{
 					// Iterate for every vertical pixel
-					for (lnY = 0; lnY < font_fixed->nCharHeight; lnY++)
+					for (lnY = 0, lnRow = (lnI / 16), lnCol = (lnI % 16); lnY < font_fixed->nCharHeight; lnY++)
 					{
-						// Extract every pixel into the output buffer
-						for (lnX = 0; lnX < font_fixed->nCharWidth; lnX++)
-						{
-// TODO:  working here, extracting the bits for each pixel
-						}
+						// Grab pointer to the start of this row
+						lrgb = (SBgr*)(bmpOut->bd + ((bmpOut->bi.biHeight - lnRow - lnY) * bmpOut->rowWidth) + ((font_fixed->nCharWidth + lnCol) * 3));
+
+						// Extract each pixel into the output buffer
+						for (lnX = 0; lnX < font_fixed->nCharWidth; lnX++, lnCharacterOffset++, lrgb++)
+							font_fixed->fontBase[lnCharacterOffset] = lrgb->red;
 					}
 				}
+				// When we get here, we have our scaled fonts
+				iBmp_delete(&bmpOut, true, true);
 
+				// We're good, font was custom scaled
+				font_fixed->lCustomScaled = true;
+
+		} else {
+			// If we get here, failure allocating something
+			if (font_fixed->fontBase)		free(font_fixed->fontBase);
+			if (bmpIn)						iBmp_delete(&bmpIn,  true, true);
+			if (bmpOut)						iBmp_delete(&bmpOut, true, true);
+
+			// Set it to the original and update the values
+			font_fixed->fontBase		= font_fixed->fontBase_original;
+			font_fixed->lCustomScaled	= false;
+			font_fixed->nCharWidth		= font_fixed->nFontX;
+			font_fixed->nCharHeight		= font_fixed->nFontY;
 		}
-
-		// If we get here, failure
-		if (bmpIn)		iBmp_delete(&bmpIn,  true, true);
-		if (bmpOut)		iBmp_delete(&bmpOut, true, true);
-
-		// Set it to the original and update the values
-		font_fixed->fontBase		= font_fixed->fontBase_original;
-		font_fixed->lCustomScaled	= false;
-		font_fixed->nCharWidth		= font_fixed->nFontX;
-		font_fixed->nCharHeight		= font_fixed->nFontY;
 	}
 
 
@@ -747,21 +868,26 @@ iBmp_saveToDisk(bmpOut, "c:\\temp\\out.bmp");
 // Register the console window class with Windows
 //
 //////
-	ATOM MyRegisterClass(void)
+	void iConsole_win_registerWndClass(void)
 	{
 		WNDCLASSEX wcex;
 
-		wcex.cbSize			= sizeof(WNDCLASSEX);
-		wcex.style			= CS_HREDRAW | CS_VREDRAW;
-		wcex.lpfnWndProc	= console_wndProc;
-		wcex.cbClsExtra		= 0;
-		wcex.cbWndExtra		= 0;
-		wcex.hInstance		= ghInstance;
-		wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
-		wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+1);
-		wcex.lpszClassName	= cgc_consoleClass;
 
-		return RegisterClassEx(&wcex);
+		// See if it's already been registered
+		if (!GetClassInfoExA(ghInstance, (cs8*)cgc_consoleClass, &wcex))
+		{
+			// Not yet
+			wcex.cbSize			= sizeof(WNDCLASSEX);
+			wcex.style			= CS_HREDRAW | CS_VREDRAW;
+			wcex.lpfnWndProc	= console_wndProc;
+			wcex.cbClsExtra		= 0;
+			wcex.cbWndExtra		= 0;
+			wcex.hInstance		= ghInstance;
+			wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
+			wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+1);
+			wcex.lpszClassName	= cgc_consoleClass;
+			RegisterClassEx(&wcex);
+		}
 	}
 
 

@@ -135,13 +135,30 @@
 //////////
 // Startup code
 //////
+	#define CONAPI													__declspec(dllexport)
 	#define console_main_function									int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 	#define console_unit_tests										console_win_unit_test(hInstance, hPrevInstance, lpCmdLine, nCmdShow)
-	#define console_os_validate_initialization						console_win_validateInitialization
-	#define console_os_toggle_visible								console_win_toggle_visible
-	#define console_os_release										console_win_release
-	#define console_os_error										console_win_error
-	#define console_os_font_setup									console_win_fontSetup
+	#define console_dll_function									BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD reason, LPVOID reserved)
+	#define console_os_validate_initialization						console_win_validateInitialization()
+	#define console_os_toggle_visible								console_win_toggle_visible(console)
+	#define console_os_release										console_win_release(console)
+	#define console_os_error										console_win_error(console, lnResult)
+	#define console_os_font_setup									console_win_fontSetup(console, font)
+	#define console_os_initialize									console_win_initialize()
+	#define console_os_xy_needs_repainted							console_win_xy_needs_repainted(console)
+
+	#define console_dll_code										ghInstance = hInstance; \
+																	switch (reason) \
+																	{ \
+																		case DLL_PROCESS_ATTACH: \
+																			console_initialize(); \
+																			break; \
+																			\
+																		case DLL_PROCESS_DETACH: \
+																		case DLL_THREAD_ATTACH: \
+																		case DLL_THREAD_DETACH: \
+																			break; \
+																	}
 
 	#define SConsole_os_struct_variables							HWND	hwnd;	\
 																	RECT	rc; \
@@ -149,12 +166,13 @@
 																	HDC		hdc;
 
 	#define SConFont_os_struct_variables							/* For fixed-point internal fonts: */ \
-																	SConFont_fixed* fontBase_fixed; \
+																	SConFont_fixed*		fontBase_fixed; \
+																	\
 																	/* For system fonts: */ \
-																	HFONT		hfont; \
-																	TEXTMETRIC	tm; \
-																	s32			_sizeUsedForCreateFont; \
-																	HDC			hdc;
+																	HFONT				hfont; \
+																	TEXTMETRIC			tm; \
+																	s32					_sizeUsedForCreateFont; \
+																	HDC					hdc;
 
 	#define SConChar_os_struct_variables							/* No special SConChar variables are defined in Windows */
 
@@ -165,7 +183,7 @@
 // Global variables
 //////
 	HINSTANCE			ghInstance;
-	cs8					cgc_consoleClass[]							= "LibSF.Console.Class";
+	cs8					cgc_consoleClass[]							= "libsf.console.class";
 	SBuilder*			gsFontFixedRoot								= NULL;			// SConFont_fixed holds every scaled font structure in use
 
 
@@ -181,10 +199,15 @@
 	s32					console_win_release							(SConsole* console);
 	s32					console_win_error							(SConsole* console, s32 tnErrorNum);
 	bool				console_win_fontSetup						(SConsole* console, SConFont* font);
+	uptr				console_win_initialize						(void);
+	void				console_win_xy_needs_repainted				(SConsole* console);
+
+	// Internal functions
+	void				iConsole_win_fontSetup_init					(void);
 	void				iConsole_win_fontSetup_scaleAsNeeded		(SConsole* console, SConFont* font);
 	SConFont_fixed*		iConsole_win_fontSetup_searchOrCreate		(s32 tnCharWidth, s32 tnCharHeight, s32 tnFontX, s32 tnFontY, bool tlCreateIfNotFound);
 	void				iConsole_win_fontSetup_scalePhysically		(SConFont_fixed* fontFixed);
-	ATOM				MyRegisterClass								(void);
+	void				iConsole_win_registerWndClass				(void);
 	void				iConsole_win_render							(SConsole* console);
 	void				iConsole_win_render_singleRow				(SConsole* console, RECT* rc, SConRow* row);
 	LRESULT CALLBACK	console_wndProc								(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

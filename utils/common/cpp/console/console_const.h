@@ -114,6 +114,15 @@
 
 
 //////////
+// Fixed point font indices (always the first four, every other custom-allocated font is after that)
+//////
+	cs32		_CONSOLE_FONT_8x6							= 0;
+	cs32		_CONSOLE_FONT_8x8							= 1;
+	cs32		_CONSOLE_FONT_8x14							= 2;
+	cs32		_CONSOLE_FONT_8x16							= 3;
+
+
+//////////
 // Properties
 //////
 	cs8			cgc_x[]									= "x";

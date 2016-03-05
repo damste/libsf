@@ -93,35 +93,36 @@
 //////////
 // console.cpp
 //////
-	uptr			console_allocate					(SDatum* title, s32 tnLeft, s32 tnTop, s32 tnWidth, s32 tnHeight, s32 tnCharWidth, s32 tnCharHeight, SConCallback* cb);
-	uptr			console_allocate					(SDatum* settings, SConCallback* cb);
-	uptr			console_reregister					(uptr tnHandle, SConCallback* cb);
-	s32				console_show						(uptr tnHandle, bool tlVisible);
-	s32				console_release						(uptr tnHandle);
+	CONAPI uptr		console_initialize					(void);
+	CONAPI uptr		console_allocate					(SDatum* title, s32 tnLeft, s32 tnTop, s32 tnWidth, s32 tnHeight, SConCallback* cb);
+	CONAPI uptr		console_allocate					(SDatum* settings, SConCallback* cb);
+	CONAPI uptr		console_reregister					(uptr tnHandle, SConCallback* cb);
+	CONAPI s32		console_show						(uptr tnHandle, bool tlVisible);
+	CONAPI s32		console_release						(uptr tnHandle);
 
-	// Sets title, width, height, charwidth, charheight, and visible
-	s32				console_setProperties				(uptr tnHandle, SDatum* properties);
-	bool			iiConsole_setOptions_callback		(SDatumCallback* cb);
+	// Sets title, width, height, charWidth, charHeight, and visible
+	CONAPI s32		console_setProperties				(uptr tnHandle, SDatum* properties);
 
 	// Set the active font (to use for the console_push() operations until changed again)
-	s32				console_setFont						(uptr tnHandle, SDatum* fontName, s32 tnPointSize, bool tlBold, bool tlItalic, bool tlUnderline);
-	s32				console_setFont						(uptr tnHandle, SDatum* fontData);
-	s32				console_getFont						(uptr tnHandle, s32 tnX, s32 tnY, SDatum* fontName, s32* tnPointSize, bool* tlBold, bool* tlItalic, bool* tlUnderline);
-	s32				console_getFont						(uptr tnHandle, s32 tnX, s32 tnY, SDatum* fontData);
+	CONAPI s32		console_setFont						(uptr tnHandle, SDatum* fontName, s32 tnPointSize, bool tlBold, bool tlItalic, bool tlUnderline);
+	CONAPI s32		console_setFont						(uptr tnHandle, SDatum* fontData);
+	CONAPI s32		console_getFont						(uptr tnHandle, s32 tnX, s32 tnY, SDatum* fontName, s32* tnPointSize, bool* tlBold, bool* tlItalic, bool* tlUnderline);
+	CONAPI s32		console_getFont						(uptr tnHandle, s32 tnX, s32 tnY, SDatum* fontData);
 
 	// General write algorithm, processes CR/LF, and auto-scrolls
-	s32				console_print						(uptr tnHandle, SDatum* textOut);
-	s32				console_scroll						(uptr tnHandle, s32 tnRows, bool tlMoveCursor = true);
+	CONAPI s32		console_print						(uptr tnHandle, SDatum* textOut);
+	CONAPI s32		console_scroll						(uptr tnHandle, s32 tnRows, bool tlMoveCursor = true);
 
 	// Explicitly push raw content to the screen, or pull raw content from the screen
-	s32				console_raw_push					(uptr tnHandle, s32 tnX, s32 tnY, SBgra color, SDatum* textIn, bool tlWrap);
-	s32				console_raw_pullN					(uptr tnHandle, s32 tnX, s32 tnY, s32 tnCount, SDatum* textOut);
-	s32				console_raw_pull1					(uptr tnHandle, s32 tnX, s32 tnY, u8* c, SBgra* color, bool* tlBold, bool* tlItalic, bool* tlUnderline);
+	CONAPI s32		console_raw_push					(uptr tnHandle, s32 tnX, s32 tnY, SBgra color, SDatum* textIn, bool tlWrap);
+	CONAPI s32		console_raw_pullN					(uptr tnHandle, s32 tnX, s32 tnY, s32 tnCount, SDatum* textOut);
+	CONAPI s32		console_raw_pull1					(uptr tnHandle, s32 tnX, s32 tnY, u8* c, SBgra* color, bool* tlBold, bool* tlItalic, bool* tlUnderline);
 
 	// Explicitly push embedded/formatted content to the screen
-	s32				console_vt100_push					(uptr tnHandle, SDatum* vt100Text);
+	CONAPI s32		console_vt100_push					(uptr tnHandle, SDatum* vt100Text);
 
 	// Internal functions
+	bool			iiConsole_setOptions_callback		(SDatumCallback* cb);
 	bool			iConsole_validateInitialization		(void);
 	bool			iConsole_validateScrollBuffer		(SConsole* console);
 	SConsole*		iConsole_find_byHandle				(uptr tnHandle);

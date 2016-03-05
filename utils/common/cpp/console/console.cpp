@@ -93,16 +93,38 @@
 #include "console.h"
 
 
-// The _UNIT_TEST setting is determined by a compiler-defined flag
-#ifdef _UNIT_TEST
+// OS-specific code for these is found in xyz\console_xyz.h (win\console_win.h)
+// _UNIT_TEST and _DLL_GENERATION are compiler-defined flags, auto-set in Debug/Release_UT and Debug/Release_DLL
+#if defined(_UNIT_TEST)
 	// This code is declared if we're compiling for unit tests
-	// This command-line startup function is defined in xyz\console_xyz.h
 	console_main_function
 	{
 		// The unit tests are defined in xyz\console_xyz.h
 		console_unit_tests;
 	}
+
+#elif defined(_DLL_GENERATION)
+	// This code is for generating an output DLL
+	console_dll_function
+	{
+		// The unit tests are defined in xyz\console_xyz.h
+		console_dll_code;
+	}
 #endif
+
+
+
+
+//////////
+//
+// Called to initialize the console engine
+//
+//////
+	CONAPI uptr console_initialize(void)
+	{
+		// No console-specific initialization, only os-specific
+		return(console_os_initialize);
+	}
 
 
 
@@ -112,7 +134,8 @@
 // Called to allocate a new console
 //
 //////
-	uptr console_allocate(SDatum* title, s32 tnLeft, s32 tnTop, s32 tnWidth, s32 tnHeight, s32 tnCharWidth, s32 tnCharHeight, SConCallback* cb)
+	// Note:  Console is not displayed until console_show(..., true) is first called
+	uptr console_allocate(SDatum* title, s32 tnLeft, s32 tnTop, s32 tnWidth, s32 tnHeight, SConCallback* cb)
 	{
 		SConsole* console;
 
@@ -126,13 +149,16 @@
 			{
 				// Initialize and copy
 				memset(console, 0, sizeof(*console));
+
+				// Copy params
+				iDatum_duplicate(&console->title, title);
 				console->nLeft			= tnLeft;
 				console->nTop			= tnTop;
 				console->nWidth			= tnWidth;
-				console->nHeight			= tnHeight;
-				console->nCharWidth		= tnCharWidth;
-				console->nCharHeight	= tnCharHeight;
-				iDatum_duplicate(&console->title, title);
+				console->nHeight		= tnHeight;
+				console->nCharWidth		= 8;
+				console->nCharHeight	= 16;
+				console->nCharFont		= _CONSOLE_FONT_8x16;		// Default to 8x16 font until they specify otherwise
 
 				// Copy over the callback data
 				memcpy(&console->cb, cb, sizeof(console->cb));
@@ -154,6 +180,7 @@
 // Called to allocate a new console
 //
 //////
+	// Note:  Even if a visible property is specified, console is not displayed until console_show(..., true) is first called
 	uptr console_allocate(SDatum* settings, SConCallback* cb)
 	{
 		SConsole		console_cb;
@@ -169,7 +196,7 @@
 			memset(&console_cb,	0, sizeof(console_cb));
 
 			// Some values that need to be set
-			console_cb.nLeft			= 0;
+			console_cb.nLeft		= 0;
 			console_cb.nTop			= 0;
 			console_cb.nWidth		= 80;
 			console_cb.nHeight		= 25;
@@ -213,7 +240,7 @@
 
 
 		// Make sure our environment is sane
-		if (cb && (console = iConsole_find_byHandle(tnHandle)))
+		if (cb && iConsole_validateInitialization() && (console = iConsole_find_byHandle(tnHandle)))
 		{
 			// Copy the new information over
 			memcpy(&console->cb, cb, sizeof(console->cb));
@@ -247,8 +274,8 @@
 			if (console->lVisible != tlVisible)
 			{
 				// Try to toggle the visible status
-				if ((lnResult = console_os_toggle_visible(console)) != _CONSOLE_ERROR__NO_ERROR)
-					console_os_error(console, lnResult);
+				if ((lnResult = console_os_toggle_visible) != _CONSOLE_ERROR__NO_ERROR)
+					console_os_error;
 
 				// Indicate success
 				return(lnResult);
@@ -281,8 +308,8 @@
 		if (iConsole_validateInitialization() && (console = iConsole_find_byHandle(tnHandle)))
 		{
 			// If it's changed, set it
-			if ((lnResult = console_os_release(console)) != _CONSOLE_ERROR__NO_ERROR)
-				console_os_error(console, lnResult);
+			if ((lnResult = console_os_release) != _CONSOLE_ERROR__NO_ERROR)
+				console_os_error;
 
 			// We're good
 			return(lnResult);
@@ -318,41 +345,6 @@
 
 		// If we get here, error
 		return(_CONSOLE_ERROR__HANDLE_NOT_FOUND);
-	}
-
-	// Callback iterated through every option from iProperty_iterate() in console_setOptions()
-	bool iiConsole_setOptions_callback(SDatumCallback* cb)
-	{
-		SConsole* console;
-
-
-		// Make sure our environment is sane
-		console = (SConsole*)cb->extra1;
-
-		// See what option they checked
-		     if (console_check_prop(x))				{	console->nX					= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
-		else if (console_check_prop(y))				{	console->nY					= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
-		else if (console_check_prop(left))			{	console->nLeft				= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
-		else if (console_check_prop(top))			{	console->nHeight			= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
-		else if (console_check_prop(width))			{	console->nWidth				= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
-		else if (console_check_prop(height))		{	console->nHeight			= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
-		else if (console_check_prop(charWidth))		{	console->nCharWidth			= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
-		else if (console_check_prop(charHeight))	{	console->nCharHeight		= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
-		else if (console_check_prop(scrollRows))	{	console->nScrollRowsToKeep	= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
-		else if (console_check_prop(title))			{	iDatum_duplicate(&console->title, &cb->value);						cb->flag1 = true;	}
-		else if (console_check_prop(visible))
-		{
-			// Visible accepts Yes, yes, True, true, .T., .t., 1
-			console->lVisible	= (console_check_value(yes) || console_check_value(true) || console_check_value(dot_t_dot) || iDatum_getAs_s32(&cb->value) != 0);
-			cb->flag1			= true;
-
-		} else {
-			// Unknown, so just ignore it
-			iConsole_silentError_passThru();
-		}
-		
-		// Indicate more properties should be sent
-		return(true);
 	}
 
 
@@ -420,7 +412,7 @@
 				}
 
 				// Call OS-specific code
-				if (!console_os_font_setup(console, font))
+				if (!console_os_font_setup)
 				{
 					// The OS does not support the font request
 					return(_CONSOLE_ERROR__FONT_NOT_SUPPORTED_ERROR);
@@ -494,7 +486,7 @@
 
 
 		// See if we have a console
-		if ((console = iConsole_find_byHandle(tnHandle)))
+		if (iConsole_validateInitialization() && (console = iConsole_find_byHandle(tnHandle)))
 		{
 			// Make sure we have a scroll buffer
 			if (iConsole_validateScrollBuffer(console))
@@ -506,11 +498,11 @@
 					for (lnI = 0; lnI < textOut->length; lnI++)
 					{
 						// Parse out the character
-						if ((c = textOut->data_cs8[lnI]) == 13)
+					    if ((c = textOut->data_cs8[lnI]) == 13)
 						{
 							// Carriage return
-							console->nX = 0;
-						
+							 console->nX = 0;
+
 						} else if (c == 10) {
 							// Line feed
 							iiConsole_moveToNextRow(console);
@@ -524,10 +516,11 @@
 							console->nX = min(console->nX, console->nWidth);
 
 						} else {
-							// Display the output
+							// Store it
 							iiConsole_storeCharacter(console, c);
 						}
 					}
+					// When we get here, the data was pushed
 
 				} else {
 					// Something's awry
@@ -567,7 +560,16 @@
 //////
 	s32 console_raw_push(uptr tnHandle, s32 tnX, s32 tnY, SBgra color, SDatum* textIn, bool tlWrap)
 	{
-		return(-1);
+		SConsole*	console;
+
+
+		// See if we have a console
+		if ((console = iConsole_find_byHandle(tnHandle)))
+		{
+		}
+
+		// Failure
+		return(_CONSOLE_ERROR__HANDLE_NOT_FOUND);
 	}
 
 
@@ -614,6 +616,48 @@
 
 //////////
 //
+// Callback, iterated through every option from iProperty_iterate() in console_setOptions()
+//
+//////
+	bool iiConsole_setOptions_callback(SDatumCallback* cb)
+	{
+		SConsole* console;
+
+
+		// Make sure our environment is sane
+		console = (SConsole*)cb->extra1;
+
+		// See what option they checked
+		     if (console_check_prop(x))				{	console->nX					= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(y))				{	console->nY					= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(left))			{	console->nLeft				= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(top))			{	console->nHeight			= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(width))			{	console->nWidth				= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(height))		{	console->nHeight			= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(charWidth))		{	console->nCharWidth			= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(charHeight))	{	console->nCharHeight		= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(scrollRows))	{	console->nScrollRowsToKeep	= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(title))			{	iDatum_duplicate(&console->title, &cb->value);						cb->flag1 = true;	}
+		else if (console_check_prop(visible))
+		{
+			// Visible accepts Yes, yes, True, true, .T., .t., 1
+			console->lVisible	= (console_check_value(yes) || console_check_value(true) || console_check_value(dot_t_dot) || iDatum_getAs_s32(&cb->value) != 0);
+			cb->flag1			= true;
+
+		} else {
+			// Unknown, so just ignore it
+			iConsole_silentError_passThru();
+		}
+		
+		// Indicate more properties should be sent
+		return(true);
+	}
+
+
+
+
+//////////
+//
 // Validate that we have gsRootConsole allocated,
 // and any OS-specific initialization completed
 //
@@ -636,7 +680,7 @@
 		}
 
 		// Conclude with any OS initialization
-		return(llResult |= console_os_validate_initialization());
+		return(llResult |= console_os_validate_initialization);
 	}
 
 
@@ -729,7 +773,7 @@
 			// Move down to the next row
 			if ((console->nTopRow + console->nY + 1) * sizeof(SConRow) < console->scrollBuffer->populatedLength)
 			{
-				// There's room to move down one
+				// There's room to move down on the screen
 				++console->nY;
 
 			} else {
@@ -764,6 +808,13 @@
 //////
 	void iiConsole_storeCharacter(SConsole* console, char c)
 	{
+		// Store the character into the buffer
+// TODO:  working here
+
+		// Redraw that character on the HDC
+
+		// Indicate the current X,Y needs to be repainted
+		console_os_xy_needs_repainted;
 	}
 
 
@@ -771,7 +822,7 @@
 
 //////////
 //
-// Selects the indicated font into the console's dc
+// Selects the indicated font into the console's DC
 //
 //////
 	void iiConsole_selectFont(SConsole* console, s32 fontIndex)
