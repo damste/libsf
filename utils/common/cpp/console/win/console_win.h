@@ -119,7 +119,10 @@
 	struct SConFont_fixed
 	{
 		// ASCII-0 begins at offset 0, ASCII-N begins at (N * nHeight * nWidth), up through ASCII-255
-		u8*			fontBase;				// Either (1) one of gxFontBase_* from the font*.h files in console_win.h, or (2) a custom scaled font which needs free()'d when completed
+		union {
+			u8*		fontBase;				// Either (1) one of gxFontBase_* from the font*.h files in console_win.h, or (2) a custom scaled font which needs free()'d when completed
+			f32*	fontBase_f32;			// Used when lCustomScaled is true, for faster floating point color calculations
+		};
 		bool		lCustomScaled;			// Indicates if fontBase is a custom scaled font or not
 
 		// Per character for rendering
@@ -146,6 +149,8 @@
 	#define console_os_error										console_win_error(console, lnResult)
 	#define console_os_font_setup									console_win_fontSetup(console, font)
 	#define console_os_initialize									console_win_initialize()
+	#define console_os_store_character								console_win_store_character(console, c)
+	#define console_os_render_character								console_win_render_character(console, conChar)
 	#define console_os_xy_needs_repainted							console_win_xy_needs_repainted(console)
 
 	#define console_dll_code										ghInstance = hInstance; \
@@ -176,6 +181,7 @@
 																	s32					_sizeUsedForCreateFont; \
 																	HDC					hdc;
 
+	#define SConRow_os_struct_variables								/* No special SConRow variables are defined in Windows */
 	#define SConChar_os_struct_variables							/* No special SConChar variables are defined in Windows */
 
 
@@ -204,16 +210,21 @@
 	bool				console_win_fontSetup						(SConsole* console, SConFont* font);
 	uptr				console_win_initialize						(void);
 	void				console_win_xy_needs_repainted				(SConsole* console);
+	void	 			console_win_store_character					(SConsole* console, char c);
 
 	// Internal functions
+	bool				iConsole_win_create_window__callbackRow		(SBuilderCallback* bcb);
+	bool				iConsole_win_create_window__callbackCol		(SBuilderCallback* bcb);
 	void				iConsole_win_fontSetup_init					(void);
 	void				iConsole_win_fontSetup_scaleAsNeeded		(SConsole* console, SConFont* font);
 	SConFont_fixed*		iConsole_win_fontSetup_searchOrCreate		(s32 tnCharWidth, s32 tnCharHeight, s32 tnFontX, s32 tnFontY, bool tlCreateIfNotFound);
 	void				iConsole_win_fontSetup_scalePhysically		(SConFont_fixed* fontFixed);
 	void				iConsole_win_registerWndClass				(void);
 	void				iConsole_win_render							(SConsole* console);
-	void				iConsole_win_render_singleRow				(SConsole* console, RECT* rc, SConRow* row);
+	bool				iConsole_win_render__callbackRow			(SBuilderCallback* bcb);
+	bool				iConsole_win_render__callbackCol			(SBuilderCallback* bcb);
 	SConsole*			iConsole_win_find_byHwnd					(HWND hwnd);
 	bool				iConsole_win_find_byHwnd__callback			(SBuilderCallback* cb);
 	u32					iGetNextWmApp								(void);
+	void				iConsole_win_readMessages					(void);
 	LRESULT CALLBACK	iConsole_wndProc							(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

@@ -128,6 +128,7 @@
 	cs32		_CONSOLE_FONT_8x14							= 2;
 	cs32		_CONSOLE_FONT_8x16							= 3;
 	cs32		_CONSOLE_FONT_16x32							= 4;
+	cs32		_CONSOLE_FONT__MAX_FIXED				= 4;
 
 
 //////////

@@ -98,11 +98,11 @@
 //////
 	int console_win_unit_test(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 	{
-		uptr			lnCon1, lnCon2, lnCon3;
+		s32				lnI, lnJ, lnAscii;
+		uptr			lnCon1;
 		SDatum			title;
 		SConCallback	ccb;
-		MSG				msg;
-		SDatum			props;
+		SDatum			props, test;
 		s8				buffer[_MAX_FNAME];
 
 
@@ -117,56 +117,39 @@
 		//////
 			title.data_cs8	= "Console 80x43";
 			title.length	= strlen(title.data_cs8);
-			sprintf(buffer, "backColor=%d\nforeColor=0", whiteColor.color);
+			sprintf(buffer, "backColor=0\nforeColor=%d", rgb(0,255,0));
 			props.data_cs8	= &buffer[0];
 			props.length	= strlen(buffer);
-			lnCon1 = console_allocate(&title, -1, -1, 80, 43, &ccb);
+			lnCon1 = console_allocate(&title, -1, -1, 20, 20, &ccb);
 			console_setProperties(lnCon1, &props);
 			console_show(lnCon1, true);
-
-			title.data_cs8	= "Console 132x60";
-			title.length	= strlen(title.data_cs8);
-			lnCon2 = console_allocate(&title, -1, -1, 132, 60, &ccb);
-			console_setProperties(lnCon2, &props);
-			console_show(lnCon2, true);
-
-			title.data_cs8	= "Console 100x50";
-			title.length	= strlen(title.data_cs8);
-			lnCon3 = console_allocate(&title, -1, -1, 100, 50, &ccb);
-			console_setProperties(lnCon3, &props);
-			console_show(lnCon3, true);
 
 
 		//////////
 		// Draw some text
 		//////
-// TODO:  working here
+			sprintf(buffer, "backColor=%d\nforeColor=%d", rgb(0,255,0), rgb(0,0,0));
+			props.length	= strlen(buffer);
+			console_setProperties(lnCon1, &props);
+			test.data_cs8	= "Test1";
+			test.length		= strlen(test.data_cs8);
+			console_goto_xy(lnCon1, 2, 5);
+			console_print(lnCon1, &test);
+
+			sprintf(buffer, "backColor=%d\nforeColor=%d", rgb(255,255,255), rgb(0,0,0));
+			props.length	= strlen(buffer);
+			console_setProperties(lnCon1, &props);
+			test.data_cs8	= "Test2";
+			test.length		= strlen(test.data_cs8);
+			console_goto_xy(lnCon1, 2, 10);
+			console_print(lnCon1, &test);
 
 
-		//////////
 		// Read messages
-		//////
-			while (iConsole_anyValidConsoles())
-			{
-				// Process messages
-				while (GetMessage(&msg, NULL, NULL, NULL))
-				{
-					// Trap the quit message
-					if (msg.message == WM_QUIT)
-						_asm nop;
+		iConsole_win_readMessages();
 
-					TranslateMessage(&msg);
-					DispatchMessage(&msg);
-				}
-				// When a window closes, it exits the loop
-			}
-
-
-		//////////
 		// Indicate success
-		//////
-			return(_CONSOLE_ERROR__NO_ERROR);
-
+		return(_CONSOLE_ERROR__NO_ERROR);
 	}
 
 
@@ -199,10 +182,11 @@
 //////
 	s32 console_win_create_window(SConsole* console)
 	{
-		s32		lnLength;
-		DWORD	err;
-		RECT	lrc;
-		s8		buffer[_MAX_FNAME];
+		s32					lnLength, lnSize;
+		DWORD				err;
+		RECT				lrc;
+		SBuilderCallback	bcb;
+		s8					buffer[_MAX_FNAME];
 
 
 		//////////
@@ -220,10 +204,10 @@
 
 
 		//////////
-		// Prepare a window
+		// Prepare a window of at least 1x1
 		//////
-			console->nWidth		= max(320, console->nWidth);
-			console->nHeight	= max(200, console->nHeight);
+			console->nWidth		= max(console->nCharWidth,  console->nWidth);
+			console->nHeight	= max(console->nCharHeight, console->nHeight);
 
 
 		//////////
@@ -240,9 +224,13 @@
 			buffer[lnLength] = 0;
 
 			// Create the window
+			SetRect(&lrc, console->nLeft, console->nTop, console->nLeft + console->nWidth, console->nTop + console->nHeight);
+			AdjustWindowRect(&lrc, WS_OVERLAPPEDWINDOW, FALSE);
 			console->hwnd = CreateWindow(cgc_consoleClass,	buffer, WS_OVERLAPPEDWINDOW, 
-															console->nLeft, console->nTop,
-															console->nWidth, console->nHeight,
+															lrc.left,
+															lrc.top,
+															lrc.right  - lrc.left,
+															lrc.bottom - lrc.top,
 															NULL, NULL, ghInstance, NULL);
 
 			// If it failed, we're done
@@ -271,6 +259,31 @@
 		//////
 			console->cursorTimerId = iGetNextWmApp();
 			SetTimer(console->hwnd, console->cursorTimerId, 333, NULL);
+
+
+		//////////
+		// Determine row buffer geometry
+		//////
+			console->nCols		= (console->nWidth  / console->nCharWidth);			// Columns
+			console->nRows		= (console->nHeight / console->nCharHeight);		// Rows
+			console->nTopRow	= 0;												// Top row at the start of the buffer
+			console->nX			= 0;												// Cursor position @ col = 0
+			console->nY			= 0;												// Cursor position @ row = 0
+
+
+		//////////
+		// Create the console's character buffer
+		//////
+			lnSize = sizeof(SConRow) * console->nRows;
+			iBuilder_createAndInitialize(&console->scrollBuffer, lnSize);
+			if (!console->scrollBuffer)
+				return(_CONSOLE_ERROR__WINDOW_SETUP_NOT_COMPLETED);
+
+			// Initialize every row
+			iBuilder_allocateBytes(console->scrollBuffer, lnSize);
+			memset(&bcb, 0, sizeof(bcb));
+			bcb.extra1 = console;
+			iBuilder_iterate(console->scrollBuffer, sizeof(SConRow), &bcb, (uptr)&iConsole_win_create_window__callbackRow);
 
 
 		//////////
@@ -453,10 +466,119 @@
 
 //////////
 //
+// Called to store the indicated character into the console buffer
+//
+//////
+	void console_win_store_character(SConsole* console, char c)
+	{
+		SConRow*			conRow;
+		SConChar*			conChar;
+		SBuilderCallback	bcb;
+
+
+		// Grab the row
+		conChar	= NULL;
+		conRow	= (SConRow*)iBuilder_retrieveRecord(console->scrollBuffer, sizeof(SConRow), console->nY);
+		if (conRow)
+		{
+			// Grab the character
+			conChar = (SConChar*)iBuilder_retrieveRecord(conRow->chars, sizeof(SConChar), console->nX);
+			if (conChar)
+			{
+
+				//////////
+				// Store character and attributes
+				//////
+					conChar->c					= c;
+					conChar->backColor.color	= console->backColor.color;
+					conChar->charColor.color	= console->charColor.color;
+					conChar->nFont				= console->nCharFont;
+
+
+				//////////
+				// Redraw
+				//////
+					// Create a simulated builder callback
+					memset(&bcb, 0, sizeof(bcb));
+					bcb.extra1		= console;
+					bcb.iter_ptr	= conChar;
+
+					// Render the one character
+					iConsole_win_render__callbackCol(&bcb);
+
+			}
+		}
+	}
+
+
+
+
+//////////
+//
 // Support functions
 //
 //////
-	// Called to setup the font by setting up the first four fixed point fonts
+	// Initialize SConRows one by one
+	bool iConsole_win_create_window__callbackRow(SBuilderCallback* bcb)
+	{
+		s32					lnSize;
+		SConsole*			console;
+		SConRow*			conRow;
+		SBuilderCallback	bcb2;
+
+
+		// Grab our pointers
+		console	= (SConsole*)bcb->extra1;
+		conRow	= (SConRow*)bcb->iter_ptr;
+
+		// Prepare the characters
+		conRow->nWidth	= console->nCols;
+		lnSize			= sizeof(SConChar) * conRow->nWidth;
+		iBuilder_createAndInitialize(&conRow->chars, lnSize);
+		if (conRow->chars)
+		{
+			// Allocate the characters
+			iBuilder_allocateBytes(conRow->chars, lnSize);
+
+			// Initialize every character to its default value
+			memset(&bcb2, 0, sizeof(bcb2));
+			bcb2.extra1 = console;
+			iBuilder_iterate(conRow->chars, sizeof(SConRow), &bcb2, (uptr)&iConsole_win_create_window__callbackCol);
+		}
+
+		// Continue iterating
+		return(true);
+	}
+
+	// Initialize SConChars one by one
+	bool iConsole_win_create_window__callbackCol(SBuilderCallback* bcb)
+	{
+		SConsole*	console;
+		SConChar*	conChar;
+
+
+		// Grab our pointers
+		console	= (SConsole*)bcb->extra1;
+		conChar	= (SConChar*)bcb->iter_ptr;
+
+		// Populate
+		conChar->c					= 32;		// Space
+		conChar->nFont				= console->nCharFont;
+		conChar->backColor.color	= console->backColor.color;
+		conChar->charColor.color	= console->charColor.color;
+
+		// Continue iterating
+		return(true);
+	}
+
+
+
+
+//////////
+//
+// Called to setup the font by setting up the first four fixed point fonts
+//
+//////
 	void iConsole_win_fontSetup_init(void)
 	{
 		SConFont_fixed* font_fixed;
@@ -805,7 +927,7 @@
 	void iConsole_win_fontSetup_scalePhysically(SConFont_fixed* font_fixed)
 	{
 		u8			lcThisCharacter, lnCharBits, lcMask;
-		s32			lnI, lnX, lnY, lnRow, lnCol, lnWidthIn, lnHeightIn, lnWidthOut, lnHeightOut, lnCharacterOffset;
+		s32			lnI, lnX, lnY, lnRow, lnCol, lnWidthIn, lnHeightIn, lnWidthOut, lnHeightOut, lnPixelNum;
 		SBitmap*	bmpIn;
 		SBitmap*	bmpOut;
 		RECT		lrc;
@@ -829,7 +951,7 @@
 		bmpOut	= iBmp_allocate();
 
 		// Allocate enough space for every ASCII pixel
-		font_fixed->fontBase = (u8*)malloc(256 * font_fixed->nCharWidth * font_fixed->nCharHeight);
+		font_fixed->fontBase = (u8*)malloc(256 * font_fixed->nCharWidth * font_fixed->nCharHeight * sizeof(f32));
 
 		// Was everything allocated correctly?
 		if (bmpIn && bmpOut && font_fixed->fontBase)
@@ -856,16 +978,16 @@
 				for (lnI = 0, lnRow = font_fixed->nFontY, lcThisCharacter = 0; lnI < 256; lnI++, lcThisCharacter++, lnRow = (((lnI / 16) + 1) * font_fixed->nFontY))
 				{
 					// Offset for this character into font_fixed->fontBase_original[]
-					lnCharacterOffset = lnI * font_fixed->nFontY;
+					lnPixelNum = lnI * font_fixed->nFontY;
 
 					// Draw the character
-					for (lnY = 0; lnY < font_fixed->nFontY; lnY++, lnCharacterOffset++)
+					for (lnY = 0; lnY < font_fixed->nFontY; lnY++, lnPixelNum++)
 					{
 						// Prepare for drawing bits across this row
 						lrgb = (SBgr*)(bmpIn->bd + ((bmpIn->bi.biHeight - lnRow - lnY) * bmpIn->rowWidth) + (((lnI % 16) + 1) * font_fixed->nFontX * 3));
 
 						// Grab the bits pattern for this row of the character
-						lnCharBits = font_fixed->fontBase_original[lnCharacterOffset];
+						lnCharBits = font_fixed->fontBase_original[lnPixelNum];
 
 						// Iterate through all of the bits setting pixels for bits which are 1
 						for (lnX = 0, lcMask = 0x80; lnX < font_fixed->nFontX; lnX++, lrgb++, lcMask >>= 1)
@@ -898,7 +1020,7 @@
 			// Extract the scaled bits back out
 			//////
 				// Iterate character-by-character
-				for (lnI = 0, lnCharacterOffset = 0; lnI < 256; lnI++)
+				for (lnI = 0, lnPixelNum = 0; lnI < 256; lnI++)
 				{
 					// Iterate for every vertical pixel
 					for (lnY = 0, lnRow = ((lnI / 16) + 1) * font_fixed->nCharHeight, lnCol = (lnI % 16); lnY < font_fixed->nCharHeight; lnY++)
@@ -907,9 +1029,9 @@
 						lrgb = (SBgr*)(bmpOut->bd + ((bmpOut->bi.biHeight - lnRow - lnY) * bmpOut->rowWidth) + ((lnCol + 1) * font_fixed->nCharWidth * 3));
 
 						// Extract each pixel into the output buffer
-						for (lnX = 0; lnX < font_fixed->nCharWidth; lnX++, lnCharacterOffset++, lrgb++)
+						for (lnX = 0; lnX < font_fixed->nCharWidth; lnX++, lnPixelNum++, lrgb++)
 						{
-							font_fixed->fontBase[lnCharacterOffset] = 255 - lrgb->red;
+							font_fixed->fontBase_f32[lnPixelNum] = (f32)(255 - lrgb->red) / 255.0f;
 // Invert this section (for debugging purposes)
 // lrgb->red = 255 - lrgb->red;
 // lrgb->grn = 128;
@@ -978,28 +1100,40 @@
 //////
 	void iConsole_win_render(SConsole* console)
 	{
-		s32			lnI, lnRow;
-		SConRow*	row;
-		RECT		lrc;
+		SBuilderCallback bcb;
 
 
 		// Full color background
 		iBmp_fillRect(console->bmp, &console->rc, console->backColor);
 
-		// Redraw any lines which are visible
-		SetRect(&lrc, 0, 0, console->rc.right, console->nCharHeight);
-		for (lnI = console->nTopRow, lnRow = 0; lnRow < console->nHeight && lnI < (s32)console->scrollBuffer->populatedLength; lnI += sizeof(SConRow), lnRow++)
-		{
-			// Grab the row data
-			row = (SConRow*)console->scrollBuffer->buffer + (lnI * sizeof(SConRow));
+		// Iterate through every row
+		memset(&bcb, 0, sizeof(bcb));
+		bcb.extra1 = console;
+		iBuilder_iterate_N_to_N(console->scrollBuffer, sizeof(SConRow), console->nTopRow, console->nTopRow + console->nRows, &bcb, (uptr)&iConsole_win_render__callbackRow);
 
-			// Draw the row
-			iConsole_win_render_singleRow(console, &lrc, row);
-		}
-
-
-		// All done
+		// All done, force a full repaint by Windows
 		InvalidateRect(console->hwnd, NULL, false);
+	}
+
+	bool iConsole_win_render__callbackRow(SBuilderCallback* bcb)
+	{
+		SConsole*			console;
+		SConRow*			conRow;
+		SBuilderCallback	bcb2;
+
+
+		// Grab our pointers
+		console	= (SConsole*)bcb->extra1;
+		conRow	= (SConRow*)bcb->iter_ptr;
+
+		// Iterate through every character
+		memset(&bcb2, 0, sizeof(bcb2));
+		bcb2.extra1 = console;
+		iBuilder_iterate_N_to_N(conRow->chars, sizeof(SConChar), 0, console->nCols, &bcb2, (uptr)&iConsole_win_render__callbackCol);
+		// Note:  If horizontal scrolling is ever added, the "0" and "console->nCols" can be adjusted here by console->nScrollX value
+
+		// Continue iterating for every row
+		return(true);
 	}
 
 
@@ -1010,64 +1144,84 @@
 // Called to render a single row onto the console->hdc at the indicated rect
 //
 //////
-	void iConsole_win_render_singleRow(SConsole* console, RECT* rc, SConRow* row)
+	bool iConsole_win_render__callbackCol(SBuilderCallback* bcb)
 	{
-		s32			lnCol, lnLastFont;
-		SConChar*	thisChar;
-		SBgra		lastBackColor, lastForeColor;
-		RECT		lrc;
+		s32					lnY, lnX, lnRow;
+		f32					lfAlp, lfMalp, lfRed, lfGrn, lfBlu, lfBRed, lfBGrn, lfBBlu, lfFRed, lfFGrn, lfFBlu;
+		f32*				pixelRow;
+		SConsole*			console;
+		SConChar*			conChar;
+		SBgr*				lbgr;
+		SConFont_fixed*		font_fixed;
+		RECT				lrc;
 
 
-		// Note:  These are set on the first iteration, but are also set here to remove compiler warning
-		lastBackColor.color = 0;
-		lastForeColor.color = 0;
+		// Grab the pointers
+		console	= (SConsole*)bcb->extra1;
+		conChar	= (SConChar*)bcb->iter_ptr;
 
-		// Iterate drawing it character-by-character
-		CopyRect(&lrc, rc);
-		for (lnCol = 0, lnLastFont = 0; lnCol < console->nWidth; lnCol++, OffsetRect(&lrc, console->nCharWidth, 0), thisChar++)
+		// Based on the font type, render appropriately
+		if (conChar->nFont <= _CONSOLE_FONT__MAX_FIXED)
 		{
+			// A fixed-point font, copied pixel by pixel
+			lfBRed	= (f32)conChar->backColor.red;
+			lfBGrn	= (f32)conChar->backColor.grn;
+			lfBBlu	= (f32)conChar->backColor.blu;
+			lfFRed	= (f32)conChar->charColor.red;
+			lfFGrn	= (f32)conChar->charColor.grn;
+			lfFBlu	= (f32)conChar->charColor.blu;
 
-			//////////
-			// Grab this character
-			//////
-				thisChar = (SConChar*)row->chars->buffer + (lnCol * sizeof(SConChar));
+			// Grab the font base
+			font_fixed = (SConFont_fixed*)iBuilder_retrieveRecord(gsFontFixedRoot, sizeof(SConFont_fixed), conChar->nFont);
 
+			// Iterate through every row of the character
+			pixelRow = &font_fixed->fontBase_f32[(s32)conChar->c * console->nCharHeight * console->nCharWidth];
+			for (lnY = 0, lnRow = (console->nY * console->nCharHeight); lnY < console->nCharHeight; lnY++, lnRow++)
+			{
+				// Compute the offset into the pixel buffers
+				lbgr = (SBgr*)(console->bmp->bd + ((console->bmp->bi.biHeight - lnRow - 1) * console->bmp->rowWidth) + (console->nX * console->nCharWidth * 3));
 
-			//////////
-			// Update font
-			//////
-				if (lnLastFont != thisChar->nFont)
+				// Iterate through every column
+				for (lnX = 0; lnX < console->nCharWidth; lnX++, pixelRow++, lbgr++)
 				{
-					// Set the font
-					lnLastFont = thisChar->nFont;
-					iiConsole_selectFont(console, thisChar->nFont);
+					// Compute the pixel
+					lfAlp	= *pixelRow;
+					lfMalp	= 1.0f - lfAlp;
+
+					// Compute the color mixture
+					lfRed	= (lfBRed * lfMalp) + (lfFRed * lfAlp);
+					lfGrn	= (lfBGrn * lfMalp) + (lfFGrn * lfAlp);
+					lfBlu	= (lfBBlu * lfMalp) + (lfFBlu * lfAlp);
+
+					// Store the pixel
+					// Range:       0  <=  color  <=   255
+					lbgr->red = max(0, min((u32)lfRed, 255));
+					lbgr->grn = max(0, min((u32)lfGrn, 255));
+					lbgr->blu = max(0, min((u32)lfBlu, 255));
 				}
+			}
 
+		} else {
+			// System font
+			iiConsole_selectFont(console, conChar->nFont);
 
-			//////////
-			// Update colors
-			//////
-				if (lastBackColor.color != thisChar->backColor.color || lnCol == 0)
-				{
-					// Background color
-					SetBkColor(console->bmp->hdc, RGB(thisChar->backColor.red, thisChar->backColor.grn, thisChar->backColor.blu));
-					lastBackColor.color = thisChar->backColor.color;
-				}
+			// Background color
+			SetBkColor(console->bmp->hdc,	RGB(conChar->backColor.red, conChar->backColor.grn, conChar->backColor.blu));
+			SetTextColor(console->bmp->hdc,	RGB(conChar->backColor.red, conChar->backColor.grn, conChar->backColor.blu));
+			SetBkMode(console->bmp->hdc, OPAQUE);
 
-				if (lastForeColor.color != thisChar->foreColor.color || lnCol == 0)
-				{
-					// Text color
-					SetTextColor(console->bmp->hdc, RGB(thisChar->foreColor.red, thisChar->foreColor.grn, thisChar->foreColor.blu));
-					lastForeColor.color = thisChar->foreColor.color;
-				}
+			// Construct the rect
+			SetRect(&lrc,	console->nX * console->nCharWidth,
+							console->nY * console->nCharHeight,
+							((console->nX + 1) * console->nCharWidth)  - 1,
+							((console->nY + 1) * console->nCharHeight) - 1);
 
-
-			//////////
 			// Draw this character
-			//////
-				DrawText(console->bmp->hdc, (s8*)&thisChar->c, 1, &lrc, DT_LEFT | DT_SINGLELINE);
-
+			DrawText(console->bmp->hdc, (s8*)&conChar->c, 1, &lrc, DT_LEFT | DT_SINGLELINE);
 		}
+
+		// Continue with the other characters
+		return(true);
 	}
 
 
@@ -1130,6 +1284,33 @@
 
 
 
+
+//////////
+//
+// Called to read messages
+//
+//////
+	void iConsole_win_readMessages(void)
+	{
+		MSG msg;
+
+
+		// Iterate until there aren't any more console windows
+		while (iConsole_anyValidConsoles())
+		{
+			// Process messages
+			while (GetMessage(&msg, NULL, NULL, NULL))
+			{
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+			}
+			// When a window closes, it exits the loop
+		}
+	}
+
+
+
+
 //////////
 //
 // Windows callback, delivering messages
@@ -1157,9 +1338,9 @@
 
 						// Repaint the cursor area
 						SetRect(&lrc,	console->nX * console->nCharWidth,
-										console->nY * console->nCharHeight,
-										((console->nX + 1) * console->nCharWidth)  - 1,
-										((console->nY + 1) * console->nCharHeight) - 1);
+										console->nY * console->nCharHeight - 2,
+										((console->nX + 1) * console->nCharWidth),
+										((console->nY + 1) * console->nCharHeight) + 2);
 
 						// Invalidate that rectangle to update the cursor
 						InvalidateRect(hwnd, &lrc, false);
@@ -1181,9 +1362,9 @@
 					{
 						// Highlight the cursor
 						SetRect(&lrc,	console->nX * console->nCharWidth,
-										console->nY * console->nCharHeight,
-										((console->nX + 1) * console->nCharWidth)  - 1,
-										((console->nY + 1) * console->nCharHeight) - 1);
+										console->nY * console->nCharHeight - 2,
+										((console->nX + 1) * console->nCharWidth),
+										((console->nY + 1) * console->nCharHeight) + 2);
 
 						// Just draw a cursor there
 						InvertRect(hdc, &lrc);

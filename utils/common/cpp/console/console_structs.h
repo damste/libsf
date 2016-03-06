@@ -201,7 +201,7 @@ struct SConChar
 {
 	u8				c;					// Character to display there
 	SBgra			backColor;			// Background color
-	SBgra			foreColor;			// Foreground color (text color)
+	SBgra			charColor;			// Foreground color (character color)
 	s32				nFont;				// The font set to use
 
 	// OS-specific info
@@ -212,6 +212,9 @@ struct SConRow
 {
 	s32				nWidth;				// Number of characters stored in this row (can be longer than the display allows)
 	SBuilder*		chars;				// SConChar one for each character for nWidth
+
+	// OS-specific info
+	SConRow_os_struct_variables;		// Extra structure members specific to the OS's needs
 };
 
 // Main consoles
@@ -220,6 +223,8 @@ struct SConsole
 	SConCallback	cb;					// Callback info
 
 	// Position and size
+	s32				nRows;				// Number of rows in the window based on the current font
+	s32				nCols;				// Number of cols in the window based on the current font
 	s32				nLeft;				// Upper-left X coordinate of window
 	s32				nTop;				// Upper-left Y coordinate of window
 	s32				nWidth;				// Width of window in characters (multiply by char_width to get pixel width)

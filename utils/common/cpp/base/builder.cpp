@@ -860,22 +860,32 @@
 // Called to iterate through a builder
 //
 //////
-	s32 iBuilder_iterate(SBuilder* builder, s32 tnStepSize, SBuilderCallback* cb)
+	s32 iBuilder_iterate(SBuilder* builder, u32 tnStepSize, SBuilderCallback* cb, uptr _iterateFunc)
+	{
+		// Iterate from 0 all the way through to the end
+		return(iBuilder_iterate_N_to_N(builder, tnStepSize, 0, builder->populatedLength / tnStepSize, cb, _iterateFunc));
+	}
+
+	s32 iBuilder_iterate_N_to_N(SBuilder* builder, u32 tnStepSize, u32 tnStartRecord, u32 tnStopRecord, SBuilderCallback* cb, uptr _iterateFunc)
 	{
 		s32 lnCount;
 
 
 		// Make sure our environment is sane
 		lnCount = 0;
-		if (builder && builder->populatedLength % tnStepSize == 0 && cb && cb->_iterateFunc)
+		if (builder && builder->populatedLength % tnStepSize == 0 && cb && (cb->_iterateFunc || _iterateFunc) && tnStopRecord >= tnStartRecord)
 		{
+			// Use the passed parameter if it was provided
+			if (_iterateFunc)
+				cb->_iterateFunc = _iterateFunc;
+
 			// Setup
 			cb->b			= builder;
 			cb->stepSize	= tnStepSize;
 
 			// Iterate through
 			// Note:  The values of cb->offset, cb->stepSize, and cb->_iterateFunc can be updated live as it's being iterated through
-			for (cb->offset = 0; cb->offset < builder->populatedLength; cb->offset += cb->stepSize, ++lnCount)
+			for (cb->offset = (tnStartRecord * tnStepSize); cb->offset < builder->populatedLength && cb->offset < (tnStopRecord * tnStepSize); cb->offset += cb->stepSize, ++lnCount)
 			{
 				// Setup for the iteration
 				cb->iter_ptr = builder->buffer + cb->offset;
@@ -886,6 +896,24 @@
 
 		// Indicate failure
 		return(lnCount);
+	}
+
+
+
+
+//////////
+//
+// Called to retrieve the indicated record
+//
+//////
+	s8* iBuilder_retrieveRecord(SBuilder* builder, u32 tnStepSize, u32 tnN)
+	{
+		// Make sure it ranges
+		if (builder && builder->buffer && (tnStepSize * tnN) <= (builder->populatedLength - tnStepSize))
+			return(builder->buffer + (tnStepSize * tnN));	// It does
+
+		// Not in range
+		return(NULL);
 	}
 
 

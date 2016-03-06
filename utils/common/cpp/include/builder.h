@@ -148,7 +148,9 @@ struct SDatum;
 	void		iBuilder_compactData						(SBuilder* builder, u32 tnStart, u32 tnStride, u32 tnCompactCallbackFunction);
 	s8*			iBuilder_insertBytes						(SBuilder* builder, u32 tnStart, u32 tnLength);
 	u32			iBuilder_binarySearch						(SBuilder* builderHaystack, s8* textNeedle, u32 needleLength, bool* tlFound, bool tlInsertIfNotFound);
-	s32			iBuilder_iterate							(SBuilder* builder, s32 tnStepSize, SBuilderCallback* cb);
+	s32			iBuilder_iterate							(SBuilder* builder, u32 tnStepSize, SBuilderCallback* cb, uptr _iterateFunc = NULL);
+	s32			iBuilder_iterate_N_to_N						(SBuilder* builder, u32 tnStepSize, u32 tnStartRecord, u32 tnStopRecord, SBuilderCallback* cb, uptr _iterateFunc = NULL);
+	s8*			iBuilder_retrieveRecord						(SBuilder* builder, u32 tnStepSize, u32 tnN);
 
 	// Added to append "name = something" strings with a terminating CR/LF
 	s32			iBuilder_append_label_uptr					(SBuilder* builder, s8* tcLabelText, uptr udata);

@@ -111,6 +111,7 @@
 
 	// General write algorithm, processes CR/LF, and auto-scrolls
 	CONAPI s32		console_print						(uptr tnHandle, SDatum* textOut);
+	CONAPI s32		console_goto_xy						(uptr tnHandle, s32 tnX, s32 tnY);
 	CONAPI s32		console_scroll						(uptr tnHandle, s32 tnRows, bool tlMoveCursor = true);
 
 	// Explicitly push raw content to the screen, or pull raw content from the screen
@@ -127,9 +128,11 @@
 	bool			iConsole_validateScrollBuffer		(SConsole* console);
 	SConsole*		iConsole_find_byHandle				(uptr tnHandle);
 	void			iConsole_silentError_passThru		(void);
-	void			iiConsole_moveToNextRow				(SConsole* console);
 	void			iiConsole_storeCharacter			(SConsole* console, char c);
+	void			iiConsole_validateXYRange			(SConsole* console);
 	void			iiConsole_selectFont				(SConsole* console, s32 fontIndex);
+	void			iiConsole_scroll					(SConsole* console);
+	bool			iConsole_scroll__callback			(SBuilderCallback* bcb);
 	bool			iConsole_anyValidConsoles			(void);
 	bool			iConsole_anyValidConsoles__callback	(SBuilderCallback* bcb);
 	u32				iGetNextUid							(void);

@@ -506,7 +506,18 @@
 
 						} else if (c == 10) {
 							// Line feed
-							iiConsole_moveToNextRow(console);
+							if (console->nY >= console->nRows)
+							{
+								// We need to scroll up one
+								iiConsole_scroll(console);
+								
+							} else {
+								// Enough room to move down one row
+								++console->nY;
+							}
+
+							// Move to the start
+							console->nX = 0;
 
 						} else if (c == 9) {
 							// Tab
@@ -518,10 +529,22 @@
 
 						} else {
 							// Store it
+							if (c == '\\')
+							{
+								// If we're at the end, we can't continue
+								if (lnI >= textOut->length - 1)
+									break;
+
+								// Grab the next character
+								c = textOut->data_cs8[++lnI];
+							}
+
+							// Store the character
 							iiConsole_storeCharacter(console, c);
 						}
 					}
 					// When we get here, the data was pushed
+					return(_CONSOLE_ERROR__NO_ERROR);
 
 				} else {
 					// Something's awry
@@ -532,6 +555,40 @@
 				// Something's awry
 				return(_CONSOLE_ERROR__CANNOT_ALLOCATE_BUFFER);
 			}
+		}
+
+		// Failure
+		return(_CONSOLE_ERROR__HANDLE_NOT_FOUND);
+	}
+
+
+
+
+//////////
+//
+// Called to position
+//
+//////
+	CONAPI s32 console_goto_xy(uptr tnHandle, s32 tnX, s32 tnY)
+	{
+		SConsole*	console;
+
+
+		// See if we have a console
+		if (iConsole_validateInitialization() && (console = iConsole_find_byHandle(tnHandle)))
+		{
+			// Un-paint the current position
+			console_os_xy_needs_repainted;
+
+			// Store the position
+			console->nX = max(0, min(tnX, console->nCols - 1));
+			console->nY = max(0, min(tnY, console->nRows - 1));
+
+			// Paint the new one
+			console_os_xy_needs_repainted;
+
+			// Indicate success
+			return(_CONSOLE_ERROR__NO_ERROR);
 		}
 
 		// Failure
@@ -762,44 +819,20 @@
 
 //////////
 //
-// Move to the next row, which may signal a scroll
+// Store a character, which may require scrolling to the next line
 //
 //////
-	void iiConsole_moveToNextRow(SConsole* console)
+	void iiConsole_storeCharacter(SConsole* console, char c)
 	{
-		s32			lnX;
-		SConRow*	conrow;
+		// Store the character into the buffer, and re-render if necessary
+		console_os_store_character;
 
+		// Indicate the current X,Y needs to be repainted
+		console_os_xy_needs_repainted;
 
-		// If we're keeping an unlimited buffer, we can always append even if we're at the end
-		if (console->nScrollRowsToKeep == -1)
-		{
-			// Move down to the next row
-			if ((console->nTopRow + console->nY + 1) * sizeof(SConRow) < console->scrollBuffer->populatedLength)
-			{
-				// There's room to move down on the screen
-				++console->nY;
-
-			} else {
-				// We need to add a new line
-				conrow = (SConRow*)iBuilder_allocateBytes(console->scrollBuffer, sizeof(SConRow));
-				if (conrow)
-				{
-					// Iterate through 
-					for (lnX = 0; lnX < console->nWidth; lnX++)
-					{
-// TODO:  working here
-					}
-				}
-			}
-
-		} else if (console->nY < console->nHeight) {
-			// There's room to move down one
-
-		} else {
-			// Everything must scroll up once
-			++console->nTopRow;
-		}
+		// Move to the next character
+		++console->nX;
+		iiConsole_validateXYRange(console);
 	}
 
 
@@ -807,18 +840,39 @@
 
 //////////
 //
-// Store a character, which may require scrolling to the next line
+// Called to validate the X,Y are in range
 //
 //////
-	void iiConsole_storeCharacter(SConsole* console, char c)
+	void iiConsole_validateXYRange(SConsole* console)
 	{
-		// Store the character into the buffer
-// TODO:  working here
+		//////////
+		// Y
+		//////
+			if (console->nY < 0)
+				console->nY = 0;
 
-		// Redraw that character on the HDC
+			if (console->nY > console->nRows)
+				console->nY = console->nRows;
 
-		// Indicate the current X,Y needs to be repainted
-		console_os_xy_needs_repainted;
+
+		//////////
+		// X
+		//////
+			if (console->nX >= console->nCols)
+			{
+				// Need to move to the next row
+				if (console->nY < console->nRows)
+				{
+					// Enough room to move down
+					console->nX = 0;
+					++console->nY;
+
+				} else {
+					// We need to scroll
+					console->nX = 0;
+					iiConsole_scroll(console);
+				}
+			}
 	}
 
 
@@ -841,6 +895,57 @@
 			font = (SConFont*)gsConsoleFontRoot->buffer + (fontIndex * sizeof(SConFont));
 			SelectObject(console->bmp->hdc, font->hfont);
 		}
+	}
+
+
+
+
+//////////
+//
+// Called to scroll the console up one row
+//
+//////
+	void iiConsole_scroll(SConsole* console)
+	{
+		SBuilderCallback bcb;
+
+
+		// Copy each row forward
+		memset(&bcb, 0, sizeof(bcb));
+		bcb.extra1 = console;
+		iBuilder_iterate(console->scrollBuffer, sizeof(SConRow), &bcb, (uptr)iConsole_scroll__callback);
+	}
+
+	// Uses bcb->extra1 for console, bcb->extra2 for the destination row, and bcb->iter_ptr for the source row
+	bool iConsole_scroll__callback(SBuilderCallback* bcb)
+	{
+		SConsole*	console;
+		SConRow*	rowDst;
+		SConRow*	rowSrc;
+
+		
+		// Grab the row
+		if (!bcb->extra2)
+		{
+			// First row
+			bcb->extra2 = bcb->iter_ptr;
+
+		} else {
+			// Grab the pointers
+			console	= (SConsole*)bcb->extra1;
+			rowDst	= (SConRow*)bcb->extra2;
+			rowSrc	= (SConRow*)bcb->iter_ptr;
+
+			// Copy the row
+			memcpy(rowDst->chars, rowSrc->chars, console->nCols * sizeof(SConChar));
+// TODO:  We should actually iterate through each char and add an OS callback to handle any special OS structures
+
+			// Prepare for the next iteration
+			bcb->extra2 = bcb->iter_ptr;
+		}
+
+		// Continue processing each row
+		return(true);
 	}
 
 
