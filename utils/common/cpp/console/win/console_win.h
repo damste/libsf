@@ -106,6 +106,7 @@
 // Required forward declarations (oh C, oh C ... may you soon be replaced with CAlive)
 //////
 	struct SConsole;
+	struct SConCallback;
 	struct SBuilder;
 	struct SBuilderCallback;
 	struct SConFont;
@@ -152,6 +153,7 @@
 	#define console_os_store_character								console_win_store_character(console, c)
 	#define console_os_render_character								console_win_render_character(console, conChar)
 	#define console_os_xy_needs_repainted							console_win_xy_needs_repainted(console)
+	#define console_os_set_border									console_win_set_border(console, tlShowBorder, color)
 
 	#define console_dll_code										ghInstance = hInstance; \
 																	switch (reason) \
@@ -202,6 +204,7 @@
 // Forward declarations
 //////
 	int					console_win_unit_test						(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);
+	s32					iiConsole_win_unit_test__callback_mouseDown	(SConCallback* ccb);
 	bool				console_win_validateInitialization			(void);
 	s32					console_win_create_window					(SConsole* console);
 	s32					console_win_toggle_visible					(SConsole* console);
@@ -210,6 +213,7 @@
 	bool				console_win_fontSetup						(SConsole* console, SConFont* font);
 	uptr				console_win_initialize						(void);
 	void				console_win_xy_needs_repainted				(SConsole* console);
+	s32					console_win_set_border						(SConsole* console, bool tlShowBorder, SBgra* color);
 	void	 			console_win_store_character					(SConsole* console, char c);
 
 	// Internal functions

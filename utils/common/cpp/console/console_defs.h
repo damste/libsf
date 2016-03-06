@@ -102,6 +102,7 @@
 
 	// Sets title, width, height, charWidth, charHeight, and visible
 	CONAPI s32		console_setProperties				(uptr tnHandle, SDatum* properties);
+	CONAPI s32		console_setBorder					(uptr tnHandle, bool tlShowBorder, SBgra* color);
 
 	// Set the active font (to use for the console_push() operations until changed again)
 	CONAPI s32		console_setFont						(uptr tnHandle, SDatum* fontName, s32 tnPointSize, bool tlBold, bool tlItalic, bool tlUnderline);

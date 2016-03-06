@@ -119,6 +119,8 @@
 			sprintf(buffer, "backColor=0\nforeColor=%d", rgb(0,255,0));
 			props.data_cs8	= &buffer[0];
 			props.length	= strlen(buffer);
+			memset(&ccb, 0, sizeof(ccb));
+			ccb._console_mouseDown = (uptr)&iiConsole_win_unit_test__callback_mouseDown;
 			lnCon1 = console_allocate(&title, -1, -1, 20, 20, &ccb);
 			console_setProperties(lnCon1, &props);
 			console_show(lnCon1, true);
@@ -143,12 +145,29 @@
 			console_goto_xy(lnCon1, 2, 10);
 			console_print(lnCon1, &test);
 
+			console_setBorder(lnCon1, true, (SBgra*)&redColor);
+
 
 		// Read messages
 		iConsole_win_readMessages();
 
 		// Indicate success
 		return(_CONSOLE_ERROR__NO_ERROR);
+	}
+
+	s32 iiConsole_win_unit_test__callback_mouseDown(SConCallback* ccb)
+	{
+		SBgra color;
+
+
+		// Shift the colors over one
+		color.red = ccb->console->borderColor.grn;
+		color.grn = ccb->console->borderColor.blu;
+		color.blu = ccb->console->borderColor.red;
+		console_setBorder(ccb->_console, true, &color);
+
+		// Indicate success
+		return(0);
 	}
 
 
@@ -458,6 +477,27 @@
 		
 		// Signal the rectangle needs redrawn
 		InvalidateRect(console->hwnd, &lrc, false);
+	}
+
+
+
+
+//////////
+//
+// Called to set the border color
+//
+//////
+	s32 console_win_set_border(SConsole* console, bool tlShowBorder, SBgra* color)
+	{
+		// Store the new values
+		console->lShowBorder		= tlShowBorder;
+		console->borderColor.color	= color->color;
+
+		// Signal the non-client repaint
+		SendMessage(console->hwnd, WM_NCPAINT, 0, 0);
+		
+		// Indicate success
+		return(_CONSOLE_ERROR__NO_ERROR);
 	}
 
 
@@ -1308,6 +1348,7 @@
 
 
 		// Set the parameters
+		console->cb.console = console;
 		iiConsole_win_getFlags_async(	&console->cb.lCtrl,			&console->cb.lAlt,				&console->cb.lShift,
 										&console->cb.lLeftButton,	&console->cb.lMiddleButton,		&console->cb.lRightButton,
 										&console->cb.lCaps,			&console->cb.lNum,				&console->cb.lScroll,
@@ -1330,6 +1371,7 @@
 	void iiConsole_get_keyboardSettings(SConsole* console, WPARAM wParam, LPARAM lParam)
 	{
 		// Set the parameters
+		console->cb.console = console;
 		iiConsole_win_getFlags_async(	&console->cb.lCtrl,			&console->cb.lAlt,				&console->cb.lShift,
 										&console->cb.lLeftButton,	&console->cb.lMiddleButton,		&console->cb.lRightButton,
 										&console->cb.lCaps,			&console->cb.lNum,				&console->cb.lScroll,
@@ -1451,11 +1493,13 @@
 //////
 	LRESULT CALLBACK iConsole_wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
+		s32					lnI, lnResult;
 		PAINTSTRUCT			ps;
 		union {
 			void*			_hdc;
 			HDC				hdc;
 		};
+		HBRUSH				hbr;
 		RECT				lrc;
 		SConsole*			console;
 		SBuilderCallback	bcb;
@@ -1515,6 +1559,28 @@
 					// Ignore it
 					return 1;
 					break;
+
+				case WM_NCPAINT:
+					// Draw normally
+					lnResult = DefWindowProc(hwnd, message, wParam, lParam);
+
+					// Overlay with a white border
+					if (console->lShowBorder)
+					{
+						hdc = GetWindowDC(hwnd);
+						GetWindowRect(hwnd, &lrc);
+						lrc.right	= (lrc.right - lrc.left);
+						lrc.bottom	= (lrc.bottom - lrc.top);
+						lrc.left	= 0;
+						lrc.top		= 0;
+						hbr			= CreateSolidBrush(RGB(console->borderColor.red, console->borderColor.grn, console->borderColor.blu));
+						for (lnI = 0; lnI < 4; lnI++, InflateRect(&lrc, -1, -1))
+							FrameRect(hdc, &lrc, hbr);
+
+						DeleteObject((HGDIOBJ)hbr);
+						ReleaseDC(hwnd, hdc);
+					}
+					return(lnResult);
 
 				case WM_PAINT:
 					// Internally we maintain the drawn state of the window in a separate buffer,

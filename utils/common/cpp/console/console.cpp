@@ -353,6 +353,27 @@
 
 //////////
 //
+// Called to set the border color
+//
+//////
+	CONAPI s32 console_setBorder(uptr tnHandle, bool tlShowBorder, SBgra* color)
+	{
+		SConsole* console;
+
+
+		// See if we have a console
+		if (iConsole_validateInitialization() && (console = iConsole_find_byHandle(tnHandle)))
+			return(console_os_set_border);		// Set the border color
+
+		// If we get here, error
+		return(_CONSOLE_ERROR__HANDLE_NOT_FOUND);
+	}
+
+
+
+
+//////////
+//
 // Called to set the font to use from this point forward (until changed in the future)
 //
 //////

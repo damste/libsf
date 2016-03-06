@@ -96,6 +96,12 @@
 	struct SConCallback
 	{
 		u32				uid;				// Unique ID for this instance
+		union {
+			uptr		_console;			// The handle (value of the pointer as a uptr)
+			SConsole*	console;			// Console it relates to
+		};
+
+		// Callback info (could be different than live console info)
 		s32				nX;					// Mouse X coordinate, or console X coordinate for keystroke input
 		s32				nY;					// Mouse Y coordinate, or console Y coordinate for keystroke input
 
@@ -129,43 +135,43 @@
 		//////
 			union {
 				// When the user creates a console
-				sptr		_console_create;
+				uptr		_console_create;
 				s32			(*console_create)		(uptr tnHandle, s32 tnWidth, s32 tnHeight);
 			};
 
 			union {
 				// When the user closes the console with the OS close button
-				sptr		_console_close;
+				uptr		_console_close;
 				s32			(*console_close)		(uptr tnHandle);
 			};
 
 			union {
 				// When a key is received (key could be being held down, and it will repeat here)
-				sptr		_console_keyDown;
+				uptr		_console_keyDown;
 				s32			(*console_keyDown)		(SConCallback* ccb);
 			};
 
 			union {
 				// When a key is received (key could be being held down, and it will repeat here)
-				sptr		_console_keyUp;
+				uptr		_console_keyUp;
 				s32			(*console_keyUp)		(SConCallback* ccb);
 			};
 
 			union {
 				// Mouse movement
-				sptr		_console_mouseMove;
+				uptr		_console_mouseMove;
 				s32			(*console_mouseMove)	(SConCallback* ccb);
 			};
 
 			union {
 				// Mouse down
-				sptr		_console_mouseDown;
+				uptr		_console_mouseDown;
 				s32			(*console_mouseDown)	(SConCallback* ccb);
 			};
 
 			union {
 				// Mouse up
-				sptr		_console_mouseUp;
+				uptr		_console_mouseUp;
 				s32			(*console_mouseUp)		(SConCallback* ccb);
 			};
 
@@ -255,6 +261,8 @@ struct SConsole
 	s32				nScrollRowsToKeep;	// Number of rows to keep in the scroll buffer, negative=unlimited
 
 	// Display, input, and output
+	bool			lShowBorder;		// Should the border highlight be shown?
+	SBgra			borderColor;		// Set a border color to highlight the window
 	SBgra			backColor;			// General color of the background
 	bool			lVisible;			// Display
 	bool			lAllowInput;		// Should input be returned?
