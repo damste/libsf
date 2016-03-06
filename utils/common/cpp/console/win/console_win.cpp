@@ -98,7 +98,6 @@
 //////
 	int console_win_unit_test(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 	{
-		s32				lnI, lnJ, lnAscii;
 		uptr			lnCon1;
 		SDatum			title;
 		SConCallback	ccb;
@@ -1268,6 +1267,140 @@
 		// Continue iterating
 		return(true);
 	}
+;
+
+
+
+
+//////////
+//
+// Called to obtain the status of the various keys
+//
+//////
+	void iiConsole_win_getFlags_async(bool* tlCtrl, bool* tlAlt, bool* tlShift, bool* tlLeft, bool* tlMiddle, bool* tlRight, bool* tlCaps, bool* tlNum, bool* tlScroll, bool* tlAnyButton)
+	{
+		//////////
+		// Grab each one asynchronously
+		//////
+			*tlCtrl			= ((GetAsyncKeyState(VK_CONTROL)	& 0x8000)	!= 0);
+			*tlAlt			= (GetKeyState(VK_MENU)							< 0);
+			*tlShift		= ((GetAsyncKeyState(VK_SHIFT)		& 0x8000)	!= 0);
+			*tlLeft			= ((GetAsyncKeyState(VK_LBUTTON)	& 0x8000)	!= 0);
+			*tlMiddle		= ((GetAsyncKeyState(VK_MBUTTON)	& 0x8000)	!= 0);
+			*tlRight		= ((GetAsyncKeyState(VK_RBUTTON)	& 0x8000)	!= 0);
+			*tlCaps			= (GetAsyncKeyState(VK_CAPITAL)		& 0x8000)	!= 0;
+			*tlNum			= (GetAsyncKeyState(VK_NUMLOCK)		& 0x8000)	!= 0;
+			*tlScroll		= (GetAsyncKeyState(VK_SCROLL)		& 0x8000)	!= 0;
+			*tlAnyButton	= (*tlLeft || *tlMiddle || *tlRight);
+	}
+
+
+
+
+//////////
+//
+// Called to get the mouse settings before a callback
+//
+//////
+	void iiConsole_get_mouseSettings(SConsole* console)
+	{
+		DWORD lnXY;
+
+
+		// Set the parameters
+		iiConsole_win_getFlags_async(	&console->cb.lCtrl,			&console->cb.lAlt,				&console->cb.lShift,
+										&console->cb.lLeftButton,	&console->cb.lMiddleButton,		&console->cb.lRightButton,
+										&console->cb.lCaps,			&console->cb.lNum,				&console->cb.lScroll,
+										&console->cb.lAnyButton);
+
+		// If we're moving or resizing, also read the screen coordinate mouse data, and then return
+		lnXY = GetMessagePos();
+		console->cb.nX = lnXY & 0xffff;		// Low-order word
+		console->cb.nY = lnXY >> 16;		// High-order word
+	}
+
+
+
+
+//////////
+//
+// Called to get the keyboard settings before a callback
+//
+//////
+	void iiConsole_get_keyboardSettings(SConsole* console, WPARAM wParam, LPARAM lParam)
+	{
+		// Set the parameters
+		iiConsole_win_getFlags_async(	&console->cb.lCtrl,			&console->cb.lAlt,				&console->cb.lShift,
+										&console->cb.lLeftButton,	&console->cb.lMiddleButton,		&console->cb.lRightButton,
+										&console->cb.lCaps,			&console->cb.lNum,				&console->cb.lScroll,
+										&console->cb.lAnyButton);
+
+		// If we're moving or resizing, also read the screen coordinate mouse data, and then return
+		console->cb.nX = console->nX;		// Current X position
+		console->cb.nY = console->nY;		// Current Y position
+
+		// Process the key
+		console->cb.cChar	= (u8)MapVirtualKey(wParam, MAPVK_VK_TO_CHAR);
+		console->cb.nOsKey	= wParam;
+	}
+
+
+
+
+//////////
+//
+// Called to handle GUI feedback
+//
+//////
+	void iConsole_win_buttonup(SConsole* console, WPARAM wParam, LPARAM lParam)
+	{
+		// Grab the mouse settings
+		iiConsole_get_mouseSettings(console);
+
+		// Signal the callback
+		if (console->cb._console_mouseUp)
+			console->cb.console_mouseUp(&console->cb);
+	}
+
+	void iConsole_win_buttondown(SConsole* console, WPARAM wParam, LPARAM lParam)
+	{
+		// Grab the mouse settings
+		iiConsole_get_mouseSettings(console);
+
+		// Signal the callback
+		if (console->cb._console_mouseDown)
+			console->cb.console_mouseDown(&console->cb);
+	}
+
+	void iConsole_win_mousemove(SConsole* console, WPARAM wParam, LPARAM lParam)
+	{
+		// Grab the mouse settings
+		iiConsole_get_mouseSettings(console);
+
+		// Signal the callback
+		if (console->cb._console_mouseMove)
+			console->cb.console_mouseMove(&console->cb);
+	}
+
+	void iConsole_win_keyup(SConsole* console, WPARAM wParam, LPARAM lParam)
+	{
+		// Grab the keyboard settings
+		iiConsole_get_keyboardSettings(console, wParam, lParam);
+
+		// Signal the callback
+		if (console->cb._console_keyUp)
+			console->cb.console_keyUp(&console->cb);
+	}
+
+	void iConsole_win_keydown(SConsole* console, WPARAM wParam, LPARAM lParam)
+	{
+		// Grab the keyboard settings
+		iiConsole_get_keyboardSettings(console, wParam, lParam);
+
+		// Signal the callback
+		if (console->cb._console_keyDown)
+			console->cb.console_keyDown(&console->cb);
+	}
 
 
 
@@ -1318,10 +1451,14 @@
 //////
 	LRESULT CALLBACK iConsole_wndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
-		PAINTSTRUCT		ps;
-		HDC				hdc;
-		RECT			lrc;
-		SConsole*		console;
+		PAINTSTRUCT			ps;
+		union {
+			void*			_hdc;
+			HDC				hdc;
+		};
+		RECT				lrc;
+		SConsole*			console;
+		SBuilderCallback	bcb;
 
 
 		// Locate the associated console
@@ -1334,6 +1471,7 @@
 					// Toggle 
 					if (wParam == console->cursorTimerId)
 					{
+						// Toggle the console's local cursor
 						console->lCursorOn = !console->lCursorOn;
 
 						// Repaint the cursor area
@@ -1348,6 +1486,31 @@
 					}
 					break;
 
+				case WM_LBUTTONDOWN:
+					// Left button down
+					iConsole_win_buttondown(console, wParam, lParam);
+					break;
+
+				case WM_LBUTTONUP:
+					// Left button up
+					iConsole_win_buttondown(console, wParam, lParam);
+					break;
+
+				case WM_MOUSEMOVE:
+					// Move
+					iConsole_win_mousemove(console, wParam, lParam);
+					break;
+
+				case WM_KEYDOWN:
+					// Key depressed
+					iConsole_win_keydown(console, wParam, lParam);
+					break;
+
+				case WM_KEYUP:
+					// Key released
+					iConsole_win_keyup(console, wParam, lParam);
+					break;
+
 				case WM_ERASEBKGND:
 					// Ignore it
 					return 1;
@@ -1357,7 +1520,20 @@
 					// Internally we maintain the drawn state of the window in a separate buffer,
 					// and simply BitBlt it back out to the main window as is needed by the OS
 					hdc = BeginPaint(hwnd, &ps);
+
+					// Copy over the base image
 					BitBlt(hdc, 0, 0, console->nWidth, console->nHeight, console->bmp->hdc, 0, 0,SRCCOPY);
+
+					// Highlight any input fields
+					if (gsInputRoot && gsInputRoot->buffer && gsInputRoot->populatedLength)
+					{
+						memset(&bcb, 0, sizeof(bcb));
+						bcb.extra1 = console;
+						bcb.extra2 = _hdc;
+						iBuilder_iterate(gsInputRoot, sizeof(SConInput), &bcb, (uptr)&iConsole_wndProc__renderInputBoxes);
+					}
+
+					// Overlay the cursor if need be
 					if (glCursorOn && GetForegroundWindow() == hwnd && console->lCursorOn)
 					{
 						// Highlight the cursor
@@ -1383,4 +1559,41 @@
 
 		// Indicate the message was not processed
 		return DefWindowProc(hwnd, message, wParam, lParam);
+	}
+
+	bool iConsole_wndProc__renderInputBoxes(SBuilderCallback* bcb)
+	{
+		s32				lnI;
+		RECT			lrc;
+		SBgra			color;
+		SConsole*		console;
+		SConInput*		conInput;
+		union {
+			void*		_hdc;
+			HDC			hdc;
+		};
+
+
+		// Grab our pointers
+		console		= (SConsole*)bcb->extra2;
+		_hdc		= bcb->extra2;
+		conInput	= (SConInput*)bcb->iter_ptr;
+
+		// Frame it if we're in the input area
+		if (console->nY == conInput->nY && between(console->nX, conInput->nX, conInput->nX + conInput->nLength - 1))
+		{
+			// Create a frame around the input area
+			SetRect(&lrc,	console->nX * console->nCharWidth  - 1,
+							console->nY * console->nCharHeight - 1,
+							(console->nX + 1) * console->nCharWidth  + 1,
+							(console->nY + 1) * console->nCharHeight + 1);
+
+			// Draw it 4 pixels wide
+			color.color = rgba(112, 164, 255, 255);
+			for (lnI = 0; lnI < 4; lnI++, InflateRect(&lrc, 1, 1))
+				iBmp_frameRect(console->bmp, &lrc, color);
+		}
+
+		// Continue iterating
+		return(true);
 	}

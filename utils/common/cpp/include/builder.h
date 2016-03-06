@@ -108,8 +108,14 @@ struct SDatum;
 		void*		iter_ptr;								// Cast as (target*) to get this iteration's pointer in the data type
 
 		// Available for user general purpose use
-		void*		extra1;
-		void*		extra2;
+		union {
+			uptr	_extra1;
+			void*	extra1;
+		};
+		union {
+			uptr	_extra2;
+			void*	extra2;
+		};
 		bool		flag1;
 		bool		flag2;
 

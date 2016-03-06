@@ -90,89 +90,96 @@
 
 
 
+//////////
 // Callback functions for console activity
-struct SConCallback
+//////
+	struct SConCallback
+	{
+		u32				uid;				// Unique ID for this instance
+		s32				nX;					// Mouse X coordinate, or console X coordinate for keystroke input
+		s32				nY;					// Mouse Y coordinate, or console Y coordinate for keystroke input
+
+
+		//////////
+		// Mouse position
+		//////
+			bool			lLeftButton;	// Left mouse button is down
+			bool			lMiddleButton;	// Middle mouse button is down
+			bool			lRightButton;	// Right mouse button is down
+			bool			lAnyButton;		// If any button is down
+
+
+		//////////
+		// Keystroke data
+		//////
+			u8				cChar;			// ASCII code
+			u32				nOsKey;			// OS keycode
+
+			// Special keys
+			bool			lShift;			// True if any shift key is down
+			bool			lCtrl;			// True if any ctrl key is down
+			bool			lAlt;			// True if any alt key is down
+			bool			lCaps;			// True if caps lock is on
+			bool			lNum;			// True if num lock is on
+			bool			lScroll;		// True if scroll lock is on
+
+
+		//////////
+		// Callbacks
+		//////
+			union {
+				// When the user creates a console
+				sptr		_console_create;
+				s32			(*console_create)		(uptr tnHandle, s32 tnWidth, s32 tnHeight);
+			};
+
+			union {
+				// When the user closes the console with the OS close button
+				sptr		_console_close;
+				s32			(*console_close)		(uptr tnHandle);
+			};
+
+			union {
+				// When a key is received (key could be being held down, and it will repeat here)
+				sptr		_console_keyDown;
+				s32			(*console_keyDown)		(SConCallback* ccb);
+			};
+
+			union {
+				// When a key is received (key could be being held down, and it will repeat here)
+				sptr		_console_keyUp;
+				s32			(*console_keyUp)		(SConCallback* ccb);
+			};
+
+			union {
+				// Mouse movement
+				sptr		_console_mouseMove;
+				s32			(*console_mouseMove)	(SConCallback* ccb);
+			};
+
+			union {
+				// Mouse down
+				sptr		_console_mouseDown;
+				s32			(*console_mouseDown)	(SConCallback* ccb);
+			};
+
+			union {
+				// Mouse up
+				sptr		_console_mouseUp;
+				s32			(*console_mouseUp)		(SConCallback* ccb);
+			};
+
+	};
+
+
+// Input fields
+struct SConInput
 {
-	u32				uid;				// Unique ID for this instance
-
-
-	//////////
-	// Mouse position
-	//////
-		s32				x;				// Mouse X coordinate
-		s32				y;				// Mouse Y coordinate
-		bool			lLeftButton;	// Left mouse button is down
-		bool			lMiddleButton;	// Middle mouse button is down
-		bool			lRightButton;	// Right mouse button is down
-
-
-	//////////
-	// Keystroke data
-	//////
-		u8*				cChar;			// ASCII code
-		u32				nOsKey;			// OS keycode
-
-		// Special keys
-		bool			lShift;			// True if any shift key is down
-		bool			lCtrl;			// True if any ctrl key is down
-		bool			lAlt;			// True if any alt key is down
-
-		// Left special keys
-		bool			lLeftShift;		// True if left shift key is down
-		bool			lLeftCtrl;		// True if left ctrl key is down
-		bool			lLeftAlt;		// True if left alt key is down
-
-		// Right special keys
-		bool			lRightShift;	// True if right shift key is down
-		bool			lRightCtrl;		// True if right ctrl key is down
-		bool			lRightAlt;		// True if right alt key is down
-
-
-	//////////
-	// Callbacks
-	//////
-		union {
-			// When the user closes the console with the OS close button
-			sptr		_console_close;
-			s32			(*console_close)		(void);
-		};
-
-		union {
-			// When a key is received (key could be being held down, and it will repeat here)
-			sptr		_console_keyInput;
-			s32			(*console_keyInput)		(void);
-		};
-
-		union {
-			// When a key is received (key could be being held down, and it will repeat here)
-			sptr		_console_keyDown;
-			s32			(*console_keyDown)		(void);
-		};
-
-		union {
-			// When a key is received (key could be being held down, and it will repeat here)
-			sptr		_console_keyUp;
-			s32			(*console_keyUp)		(void);
-		};
-
-		union {
-			// Mouse movement
-			sptr		_console_mouseMove;
-			s32			(*console_mouseMove)	(void);
-		};
-
-		union {
-			// Mouse down
-			sptr		_console_mouseDown;
-			s32			(*console_mouseDown)	(void);
-		};
-
-		union {
-			// Mouse up
-			sptr		_console_mouseUp;
-			s32			(*console_mouseUp)	(void);
-		};
-
+	bool		lValid;					// Is this entry valid?
+	s32			nX;						// X coordinate
+	s32			nY;						// Y coordinate
+	s32			nLength;				// Length of the input
+	SDatum*		liveValue;				// Where to store the live value based on input
 };
 
 // Font data

@@ -600,12 +600,142 @@
 
 //////////
 //
+// Called to get the current X,Y position on the console
+//
+//////
+	CONAPI s32 console_get_xy(uptr tnHandle, s32* tnX, s32* tnY)
+	{
+		SConsole*	console;
+
+
+		// See if we have a console
+		if (iConsole_validateInitialization() && (console = iConsole_find_byHandle(tnHandle)))
+		{
+			// Store the position
+			if (tnX)	*tnX = console->nX;
+			if (tnY)	*tnY = console->nY;
+
+			// Indicate success
+			return(_CONSOLE_ERROR__NO_ERROR);
+		}
+
+		// Failure
+		return(_CONSOLE_ERROR__HANDLE_NOT_FOUND);
+	}
+
+
+
+
+//////////
+//
 // Called to scroll the console window up or down N-rows
 //
 //////
 	s32 console_scroll(uptr tnHandle, s32 tnRows, bool tlMoveCursor)
 	{
 		return(0);
+	}
+
+
+
+
+//////////
+//
+// Reset all the input fields embedded within the console
+//
+//////
+	s32 console_input_fields_clear_all(uptr tnHandle)
+	{
+		SConsole*	console;
+
+
+		// See if we have a console
+		if (iConsole_validateInitialization() && (console = iConsole_find_byHandle(tnHandle)))
+		{
+			// Reset
+			gsInputRoot->populatedLength = 0;
+
+			// Redraw everything
+			InvalidateRect(console->hwnd, NULL, FALSE);
+
+			// Indicate success
+			return(_CONSOLE_ERROR__NO_ERROR);
+		}
+
+		// Failure
+		return(_CONSOLE_ERROR__HANDLE_NOT_FOUND);
+	}
+
+
+
+
+//////////
+//
+// Add a new input field to the console
+//
+//////
+	s32 console_input_field_add(uptr tnHandle, s32 tnX, s32 tnY, s32 tnLength, SBgra* backColor, SBgra* charColor, SDatum* liveValue)
+	{
+		SConsole*	console;
+		union {
+			s32			_conInput;
+			SConInput*	conInput;
+		};
+
+
+		// See if we have a console
+		if (iConsole_validateInitialization() && (console = iConsole_find_byHandle(tnHandle)))
+		{
+			// Get a new entry
+			conInput = iConsole_input_addNew();
+			if (conInput)
+			{
+				// Set the parameters
+				conInput->nX			= tnX;
+				conInput->nY			= tnY;
+				conInput->nLength		= tnLength;
+				conInput->liveValue		= liveValue;
+
+				// Indicate success
+				return(_CONSOLE_ERROR__NO_ERROR);
+			}
+		}
+
+		// Failure
+		return(_CONSOLE_ERROR__HANDLE_NOT_FOUND);
+	}
+
+
+
+
+//////////
+//
+// Delete an input field on the console
+//
+//////
+	s32 console_input_field_delete(uptr tnHandle, s32 tnInputFieldHandle)
+	{
+		SConsole*	console;
+		SConInput*	conInput;
+
+
+		// See if we have a console
+		if (iConsole_validateInitialization() && (console = iConsole_find_byHandle(tnHandle)))
+		{
+			// Get a new entry
+			conInput = iConsole_input_find_byHandle(tnInputFieldHandle);
+			if (conInput)
+			{
+				// Delete it
+				memset(conInput, 0, sizeof(*conInput));
+
+				// Indicate success
+				return(_CONSOLE_ERROR__NO_ERROR);
+			}
+		}
+
+		// Failure
+		return(_CONSOLE_ERROR__HANDLE_NOT_FOUND);
 	}
 
 
@@ -728,17 +858,28 @@
 		bool llResult;
 
 
+		//////////
 		// Make sure we have a root console buffer
-		if (!gsConsoleRoot)
-		{
-			// Allocate
-			iBuilder_createAndInitialize(&gsConsoleRoot, sizeof(SConsole) * 40);
-			llResult = (gsConsoleRoot != NULL);
-
-		} else {
-			// We're good
+		//////
 			llResult = true;
-		}
+			if (!gsConsoleRoot)
+			{
+				// Allocate
+				iBuilder_createAndInitialize(&gsConsoleRoot, sizeof(SConsole) * 40);
+				llResult &= (gsConsoleRoot != NULL);
+			}
+
+
+		//////////
+		// Make sure we have a root input buffer
+		//////
+			if (!gsInputRoot)
+			{
+				// Allocate
+				iBuilder_createAndInitialize(&gsInputRoot, sizeof(SConInput) * 40);
+				llResult &= (gsInputRoot != NULL);
+			}
+
 
 		// Conclude with any OS initialization
 		return(llResult |= console_os_validate_initialization);
@@ -1002,4 +1143,104 @@
 	{
 		// Simply return the next value
 		return(gnNextUid++);
+	}
+
+
+
+
+//////////
+//
+// Called to add a new SConInput
+//
+//////
+	SConInput* iConsole_input_addNew(void)
+	{
+		SConInput*			conInput;
+		SBuilderCallback	bcb;
+
+
+		// Iterate to find an empty slot
+		memset(&bcb, 0, sizeof(bcb));
+		iBuilder_iterate(gsInputRoot, sizeof(SConInput), &bcb, (uptr)&iConsole_input_addNew__callback);
+
+		// Was it found?
+		if (bcb.extra1)		conInput = (SConInput*)bcb.extra1;													// Found an empty slot
+		else				conInput = (SConInput*)iBuilder_allocateBytes(gsInputRoot, sizeof(SConInput));		// Add a new entry
+
+		// Reset and mark it valid
+		if (conInput)
+		{
+			memset(conInput, 0, sizeof(SConInput));
+			conInput->lValid = true;
+		}
+
+		// Indicate our success
+		return(conInput);
+	}
+
+	bool iConsole_input_addNew__callback(SBuilderCallback* bcb)
+	{
+		SConInput* conInput;
+
+
+		// Grab the pointer
+		conInput = (SConInput*)bcb->iter_ptr;
+		if (!conInput->lValid)
+		{
+			// We found an empty slot
+			bcb->extra1 = conInput;
+
+			// Stop iterating
+			return(false);
+		}
+
+		// Continue iterating
+		return(true);
+	}
+
+
+
+
+//////////
+//
+// Called to search for the input entry
+//
+//////
+	SConInput* iConsole_input_find_byHandle(uptr tnInputFieldHandle)
+	{
+		SBuilderCallback bcb;
+
+
+		// Iterate to find an empty slot
+		memset(&bcb, 0, sizeof(bcb));
+		bcb._extra1 = tnInputFieldHandle;
+		iBuilder_iterate(gsInputRoot, sizeof(SConInput), &bcb, (uptr)&iConsole_input_find_byHandle__callback);
+
+		// Was it found?
+		if (bcb.extra2)
+			return((SConInput*)bcb.extra2);		// Yes
+
+		// If we get here, wasn't found
+		return(NULL);
+	}
+
+	// Uses bcb->extra1 for the handle we're searching for, and bcb->extra2 for the found conInput
+	bool iConsole_input_find_byHandle__callback(SBuilderCallback* bcb)
+	{
+		SConInput* conInput;
+
+
+		// Grab the pointer
+		conInput = (SConInput*)bcb->iter_ptr;
+		if (conInput == (SConInput*)bcb->extra1)
+		{
+			// We found it
+			bcb->extra2 = conInput;
+
+			// Stop iterating
+			return(false);
+		}
+
+		// Continue iterating
+		return(true);
 	}

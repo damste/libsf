@@ -225,6 +225,15 @@
 	bool				iConsole_win_render__callbackCol			(SBuilderCallback* bcb);
 	SConsole*			iConsole_win_find_byHwnd					(HWND hwnd);
 	bool				iConsole_win_find_byHwnd__callback			(SBuilderCallback* cb);
+	void				iiConsole_win_getFlags_async				(bool* tlCtrl, bool* tlAlt, bool* tlShift, bool* tlLeft, bool* tlMiddle, bool* tlRight, bool* tlCaps, bool* tlNum, bool* tlScroll, bool* tlAnyButton);
+	void				iiConsole_get_mouseSettings					(SConsole* console);
+	void				iiConsole_get_keyboardSettings				(SConsole* console, WPARAM wParam, LPARAM lParam);
+	void				iConsole_win_buttonup						(SConsole* console, WPARAM wParam, LPARAM lParam);
+	void				iConsole_win_buttondown						(SConsole* console, WPARAM wParam, LPARAM lParam);
+	void				iConsole_win_mousemove						(SConsole* console, WPARAM wParam, LPARAM lParam);
+	void				iConsole_win_keyup							(SConsole* console, WPARAM wParam, LPARAM lParam);
+	void				iConsole_win_keydown						(SConsole* console, WPARAM wParam, LPARAM lParam);
 	u32					iGetNextWmApp								(void);
 	void				iConsole_win_readMessages					(void);
 	LRESULT CALLBACK	iConsole_wndProc							(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+	bool				iConsole_wndProc__renderInputBoxes			(SBuilderCallback* bcb);

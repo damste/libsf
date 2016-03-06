@@ -95,5 +95,6 @@
 //////
 	SBuilder*			gsConsoleRoot						= NULL;
 	SBuilder*			gsConsoleFontRoot					= NULL;
+	SBuilder*			gsInputRoot							= NULL;
 	u32					gnNextUid							= 0;
 	bool				glCursorOn							= true;

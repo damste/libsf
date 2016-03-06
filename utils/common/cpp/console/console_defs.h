@@ -112,7 +112,13 @@
 	// General write algorithm, processes CR/LF, and auto-scrolls
 	CONAPI s32		console_print						(uptr tnHandle, SDatum* textOut);
 	CONAPI s32		console_goto_xy						(uptr tnHandle, s32 tnX, s32 tnY);
+	CONAPI s32		console_get_xy						(uptr tnHandle, s32* tnX, s32* tnY);
 	CONAPI s32		console_scroll						(uptr tnHandle, s32 tnRows, bool tlMoveCursor = true);
+
+	// For input blocks
+	CONAPI s32		console_input_fields_clear_all		(uptr tnHandle);
+	CONAPI s32		console_input_field_add				(uptr tnHandle, s32 tnX, s32 tnY, s32 tnLength, SBgra* backColor, SBgra* charColor, SDatum* liveValue);
+	CONAPI s32		console_input_field_delete			(uptr tnHandle, s32 tnInputFieldHandle);
 
 	// Explicitly push raw content to the screen, or pull raw content from the screen
 	CONAPI s32		console_raw_push					(uptr tnHandle, s32 tnX, s32 tnY, SBgra color, SDatum* textIn, bool tlWrap);
@@ -136,3 +142,7 @@
 	bool			iConsole_anyValidConsoles			(void);
 	bool			iConsole_anyValidConsoles__callback	(SBuilderCallback* bcb);
 	u32				iGetNextUid							(void);
+	SConInput*		iConsole_input_addNew				(void);
+	bool			iConsole_input_addNew__callback		(SBuilderCallback* bcb);
+	SConInput*		iConsole_input_find_byHandle		(uptr tnInputFieldHandle);
+	bool			iConsole_input_find_byHandle__callback(SBuilderCallback* bcb);
