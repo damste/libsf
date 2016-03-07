@@ -247,5 +247,14 @@
 	SConInput*			iConsole_find_conInput_byCursorXY			(SConsole* console);
 	bool				iConsole_find_conInput_byCursorXY__callback	(SBuilderCallback* bcb);
 	bool				iConsole_find_conChar_byXY					(SConsole* console, s32 tnX, s32 tnY, SConRow** tsConRow, SConChar** tsConChar);
+
+	bool				iConsole_win_input_home						(SConsole* console, SConInput* conInput);
+	bool				iConsole_win_input_end						(SConsole* console, SConInput* conInput);
+	bool				iConsole_win_input_backspace				(SConsole* console, SConInput* conInput);
+	bool				iConsole_win_input_backspaceToStart			(SConsole* console, SConInput* conInput);
+	bool				iConsole_win_input_delete					(SConsole* console, SConInput* conInput);
+	bool				iConsole_win_input_deleteToEnd				(SConsole* console, SConInput* conInput);
+	bool				iConsole_win_input_render					(SConsole* console, HDC hdcBorder, SConInput* conInput, bool tlDrawBorder);
+
 	LRESULT CALLBACK	iConsole_wndProc							(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	bool				iConsole_wndProc__inputBoxes__callback		(SBuilderCallback* bcb);

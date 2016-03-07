@@ -590,7 +590,7 @@
 // Called to position
 //
 //////
-	CONAPI s32 console_goto_xy(uptr tnHandle, s32 tnX, s32 tnY)
+	CONAPI s32 console_gotoXY(uptr tnHandle, s32 tnX, s32 tnY)
 	{
 		SConsole*	console;
 
@@ -624,7 +624,7 @@
 // Called to get the current X,Y position on the console
 //
 //////
-	CONAPI s32 console_get_xy(uptr tnHandle, s32* tnX, s32* tnY)
+	CONAPI s32 console_getXY(uptr tnHandle, s32* tnX, s32* tnY)
 	{
 		SConsole*	console;
 

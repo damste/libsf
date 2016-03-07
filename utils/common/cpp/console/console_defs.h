@@ -112,8 +112,8 @@
 
 	// General write algorithm, processes CR/LF, and auto-scrolls
 	CONAPI s32		console_print						(uptr tnHandle, SDatum* textOut);
-	CONAPI s32		console_goto_xy						(uptr tnHandle, s32 tnX, s32 tnY);
-	CONAPI s32		console_get_xy						(uptr tnHandle, s32* tnX, s32* tnY);
+	CONAPI s32		console_gotoXY						(uptr tnHandle, s32 tnX, s32 tnY);
+	CONAPI s32		console_getXY						(uptr tnHandle, s32* tnX, s32* tnY);
 	CONAPI s32		console_scroll						(uptr tnHandle, s32 tnRows, bool tlMoveCursor = true);
 
 	// For input blocks
@@ -121,15 +121,20 @@
 	CONAPI s32		console_input_field_add				(uptr tnHandle, s32 tnX, s32 tnY, s32 tnLength, SBgra* backColor, SBgra* charColor, SDatum* liveValue);
 	CONAPI s32		console_input_field_delete			(uptr tnHandle, s32 tnInputFieldHandle);
 
-	// Explicitly push raw content to the screen, or pull raw content from the screen
+	// Explicitly push large quantities of raw content to the screen, or pull raw content from the screen
 	CONAPI s32		console_raw_push					(uptr tnHandle, s32 tnX, s32 tnY, SBgra color, SDatum* textIn, bool tlWrap);
 	CONAPI s32		console_raw_pullN					(uptr tnHandle, s32 tnX, s32 tnY, s32 tnCount, SDatum* textOut);
+
+	// Obtain more information about each character
 	CONAPI s32		console_raw_pull1					(uptr tnHandle, s32 tnX, s32 tnY, u8* c, SBgra* color, bool* tlBold, bool* tlItalic, bool* tlUnderline);
 
 	// Explicitly push embedded/formatted content to the screen
 	CONAPI s32		console_vt100_push					(uptr tnHandle, SDatum* vt100Text);
 
-	// Internal functions
+
+//////////
+// Internal functions
+//////
 	bool			iiConsole_setOptions_callback		(SDatumCallback* cb);
 	bool			iConsole_validateInitialization		(void);
 	bool			iConsole_validateScrollBuffer		(SConsole* console);

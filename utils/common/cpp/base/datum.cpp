@@ -274,6 +274,19 @@
 		return(((datum && datum->_data && datum->length > 1) ? _atoi64(datum->data) : 0));
 	}
 
+	// Set everything to the indicated character
+	s32 iDatum_setAll(SDatum* datum, u8 c)
+	{
+		if (datum && datum->_data && datum->length > 0)
+		{
+			memset(datum->data, c, datum->length);
+			return(datum->length);
+		}
+
+		// If we get here, invalid
+		return(0);
+	}
+
 	bool iDatum_resize(SDatum* datum, s32 newDataLength)
 	{
 		s8* ptr;
