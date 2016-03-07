@@ -107,6 +107,9 @@
 //////
 	struct SConsole;
 	struct SConCallback;
+	struct SConInput;
+	struct SConRow;
+	struct SConChar;
 	struct SBuilder;
 	struct SBuilderCallback;
 	struct SConFont;
@@ -150,7 +153,7 @@
 	#define console_os_error										console_win_error(console, lnResult)
 	#define console_os_font_setup									console_win_fontSetup(console, font)
 	#define console_os_initialize									console_win_initialize()
-	#define console_os_store_character								console_win_store_character(console, c)
+	#define console_os_store_character								console_win_store_character(console, c, tlAtCursorXY)
 	#define console_os_render_character								console_win_render_character(console, conChar)
 	#define console_os_xy_needs_repainted							console_win_xy_needs_repainted(console)
 	#define console_os_set_border									console_win_set_border(console, tlShowBorder, color)
@@ -204,6 +207,7 @@
 // Forward declarations
 //////
 	int					console_win_unit_test						(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);
+	s32					iiConsole_win_unit_test__callback_keyDown	(SConCallback* ccb);
 	s32					iiConsole_win_unit_test__callback_mouseDown	(SConCallback* ccb);
 	bool				console_win_validateInitialization			(void);
 	s32					console_win_create_window					(SConsole* console);
@@ -214,7 +218,7 @@
 	uptr				console_win_initialize						(void);
 	void				console_win_xy_needs_repainted				(SConsole* console);
 	s32					console_win_set_border						(SConsole* console, bool tlShowBorder, SBgra* color);
-	void	 			console_win_store_character					(SConsole* console, char c);
+	void	 			console_win_store_character					(SConsole* console, char c, bool tlAtCursorXY);
 
 	// Internal functions
 	bool				iConsole_win_create_window__callbackRow		(SBuilderCallback* bcb);
@@ -227,6 +231,7 @@
 	void				iConsole_win_render							(SConsole* console);
 	bool				iConsole_win_render__callbackRow			(SBuilderCallback* bcb);
 	bool				iConsole_win_render__callbackCol			(SBuilderCallback* bcb);
+	void				iConsole_win_renderSingleChar				(SConsole* console, s32 tnX, s32 tnY, SConChar* conChar);
 	SConsole*			iConsole_win_find_byHwnd					(HWND hwnd);
 	bool				iConsole_win_find_byHwnd__callback			(SBuilderCallback* cb);
 	void				iiConsole_win_getFlags_async				(bool* tlCtrl, bool* tlAlt, bool* tlShift, bool* tlLeft, bool* tlMiddle, bool* tlRight, bool* tlCaps, bool* tlNum, bool* tlScroll, bool* tlAnyButton);
@@ -239,5 +244,8 @@
 	void				iConsole_win_keydown						(SConsole* console, WPARAM wParam, LPARAM lParam);
 	u32					iGetNextWmApp								(void);
 	void				iConsole_win_readMessages					(void);
+	SConInput*			iConsole_find_conInput_byCursorXY			(SConsole* console);
+	bool				iConsole_find_conInput_byCursorXY__callback	(SBuilderCallback* bcb);
+	bool				iConsole_find_conChar_byXY					(SConsole* console, s32 tnX, s32 tnY, SConRow** tsConRow, SConChar** tsConChar);
 	LRESULT CALLBACK	iConsole_wndProc							(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-	bool				iConsole_wndProc__renderInputBoxes			(SBuilderCallback* bcb);
+	bool				iConsole_wndProc__inputBoxes__callback		(SBuilderCallback* bcb);

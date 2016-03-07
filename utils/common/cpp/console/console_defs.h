@@ -135,7 +135,7 @@
 	bool			iConsole_validateScrollBuffer		(SConsole* console);
 	SConsole*		iConsole_find_byHandle				(uptr tnHandle);
 	void			iConsole_silentError_passThru		(void);
-	void			iiConsole_storeCharacter			(SConsole* console, char c);
+	void			iiConsole_storeCharacter			(SConsole* console, char c, bool tlAtCursorXY = false);
 	void			iiConsole_validateXYRange			(SConsole* console);
 	void			iiConsole_selectFont				(SConsole* console, s32 fontIndex);
 	void			iiConsole_scroll					(SConsole* console);

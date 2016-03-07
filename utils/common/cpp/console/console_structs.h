@@ -185,6 +185,11 @@ struct SConInput
 	s32			nX;						// X coordinate
 	s32			nY;						// Y coordinate
 	s32			nLength;				// Length of the input
+
+	s32			nFont;					// Font at time of creation
+	SBgra		charColor;				// Text color at time of creation
+	SBgra		backColor;				// Background color at time of creation
+
 	SDatum*		liveValue;				// Where to store the live value based on input
 };
 
@@ -249,8 +254,10 @@ struct SConsole
 	SDatum			title;				// Title of the console window
 
 	// Character settings
-	s32				nX;					// Current X location in the buffer
-	s32				nY;					// Current Y location in the buffer
+	s32				nXText;					// Current X location in the buffer
+	s32				nYText;					// Current Y location in the buffer
+	s32				nXCursor;			// X coordinate for the cursor (negative if not in use (they haven't used the arrows to navigate around))
+	s32				nYCursor;			// Y coordinate for the cursor (negative if not in use (they haven't used the arrows to navigate around))
 	SBgra			charColor;			// Color to output in
 	s32				nCharFont;			// Font handle to use in gsConsoleFontRoot
 	bool			lWordWrap;			// If word wrap is on, then only as many characters as will fit horizontally are stored, then it moves to the next row, otherwise the row can contain more data than will fit in the current window

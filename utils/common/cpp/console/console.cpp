@@ -523,30 +523,30 @@
 					    if ((c = textOut->data_cs8[lnI]) == 13)
 						{
 							// Carriage return
-							 console->nX = 0;
+							 console->nXText = 0;
 
 						} else if (c == 10) {
 							// Line feed
-							if (console->nY >= console->nRows)
+							if (console->nYText >= console->nRows)
 							{
 								// We need to scroll up one
 								iiConsole_scroll(console);
 								
 							} else {
 								// Enough room to move down one row
-								++console->nY;
+								++console->nYText;
 							}
 
 							// Move to the start
-							console->nX = 0;
+							console->nXText = 0;
 
 						} else if (c == 9) {
 							// Tab
-							for (lnJ = console->nX + 1; lnJ % 4 != 0; )
+							for (lnJ = console->nXText + 1; lnJ % 4 != 0; )
 								++lnJ;
 
 							// Make sure it's in range
-							console->nX = min(console->nX, console->nWidth);
+							console->nXText = min(console->nXText, console->nWidth);
 
 						} else {
 							// Store it
@@ -602,8 +602,8 @@
 			console_os_xy_needs_repainted;
 
 			// Store the position
-			console->nX = max(0, min(tnX, console->nCols - 1));
-			console->nY = max(0, min(tnY, console->nRows - 1));
+			console->nXText = max(0, min(tnX, console->nCols - 1));
+			console->nYText = max(0, min(tnY, console->nRows - 1));
 
 			// Paint the new one
 			console_os_xy_needs_repainted;
@@ -633,8 +633,8 @@
 		if (iConsole_validateInitialization() && (console = iConsole_find_byHandle(tnHandle)))
 		{
 			// Store the position
-			if (tnX)	*tnX = console->nX;
-			if (tnY)	*tnY = console->nY;
+			if (tnX)	*tnX = console->nXText;
+			if (tnY)	*tnY = console->nYText;
 
 			// Indicate success
 			return(_CONSOLE_ERROR__NO_ERROR);
@@ -712,10 +712,17 @@
 			if (conInput)
 			{
 				// Set the parameters
-				conInput->nX			= tnX;
-				conInput->nY			= tnY;
-				conInput->nLength		= tnLength;
-				conInput->liveValue		= liveValue;
+				conInput->nX				= tnX;
+				conInput->nY				= tnY;
+				conInput->nLength			= tnLength;
+
+				// Store live value (may be invalid)
+				conInput->liveValue			= liveValue;
+
+				// Store info at creation time
+				conInput->nFont				= console->nCharFont;
+				conInput->charColor.color	= charColor->color;
+				conInput->backColor.color	= backColor->color;
 
 				// Indicate success
 				return(_CONSOLE_ERROR__NO_ERROR);
@@ -837,8 +844,8 @@
 		console = (SConsole*)cb->extra1;
 
 		// See what option they checked
-		     if (console_check_prop(x))				{	console->nX					= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
-		else if (console_check_prop(y))				{	console->nY					= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		     if (console_check_prop(x))				{	console->nXText					= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(y))				{	console->nYText					= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
 		else if (console_check_prop(left))			{	console->nLeft				= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
 		else if (console_check_prop(top))			{	console->nHeight			= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
 		else if (console_check_prop(width))			{	console->nWidth				= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
@@ -984,7 +991,7 @@
 // Store a character, which may require scrolling to the next line
 //
 //////
-	void iiConsole_storeCharacter(SConsole* console, char c)
+	void iiConsole_storeCharacter(SConsole* console, char c, bool tlAtCursorXY)
 	{
 		// Store the character into the buffer, and re-render if necessary
 		console_os_store_character;
@@ -993,7 +1000,7 @@
 		console_os_xy_needs_repainted;
 
 		// Move to the next character
-		++console->nX;
+		++console->nXText;
 		iiConsole_validateXYRange(console);
 	}
 
@@ -1010,28 +1017,28 @@
 		//////////
 		// Y
 		//////
-			if (console->nY < 0)
-				console->nY = 0;
+			if (console->nYText < 0)
+				console->nYText = 0;
 
-			if (console->nY > console->nRows)
-				console->nY = console->nRows;
+			if (console->nYText > console->nRows)
+				console->nYText = console->nRows;
 
 
 		//////////
 		// X
 		//////
-			if (console->nX >= console->nCols)
+			if (console->nXText >= console->nCols)
 			{
 				// Need to move to the next row
-				if (console->nY < console->nRows)
+				if (console->nYText < console->nRows)
 				{
 					// Enough room to move down
-					console->nX = 0;
-					++console->nY;
+					console->nXText = 0;
+					++console->nYText;
 
 				} else {
 					// We need to scroll
-					console->nX = 0;
+					console->nXText = 0;
 					iiConsole_scroll(console);
 				}
 			}

@@ -101,8 +101,10 @@
 		uptr			lnCon1;
 		SDatum			title;
 		SConCallback	ccb;
-		SDatum			props, test;
+		SDatum			props, test, num1, num2;
 		s8				buffer[_MAX_FNAME];
+		s8				bufferNum1[8];
+		s8				bufferNum2[8];
 
 
 		//////////
@@ -116,11 +118,12 @@
 		//////
 			title.data_cs8	= "Console 80x43";
 			title.length	= strlen(title.data_cs8);
-			sprintf(buffer, "backColor=0\nforeColor=%d", rgb(0,255,0));
+			sprintf(buffer, "backColor=%d\nforeColor=0", rgb(255,255,255));
 			props.data_cs8	= &buffer[0];
 			props.length	= strlen(buffer);
 			memset(&ccb, 0, sizeof(ccb));
-			ccb._console_mouseDown = (uptr)&iiConsole_win_unit_test__callback_mouseDown;
+			ccb._console_keyDown	= (uptr)&iiConsole_win_unit_test__callback_keyDown;
+			ccb._console_mouseDown	= (uptr)&iiConsole_win_unit_test__callback_mouseDown;
 			lnCon1 = console_allocate(&title, -1, -1, 20, 20, &ccb);
 			console_setProperties(lnCon1, &props);
 			console_show(lnCon1, true);
@@ -137,7 +140,7 @@
 			console_goto_xy(lnCon1, 2, 5);
 			console_print(lnCon1, &test);
 
-			sprintf(buffer, "backColor=%d\nforeColor=%d", rgb(255,255,255), rgb(0,0,0));
+			sprintf(buffer, "backColor=%d\nforeColor=%d", rgb(0,0,255), rgb(255,255,255));
 			props.length	= strlen(buffer);
 			console_setProperties(lnCon1, &props);
 			test.data_cs8	= "Test2";
@@ -145,14 +148,46 @@
 			console_goto_xy(lnCon1, 2, 10);
 			console_print(lnCon1, &test);
 
-			console_setBorder(lnCon1, true, (SBgra*)&redColor);
+
+		//////////
+		// Set the border color
+		//////
+			console_setBorder(lnCon1, true, (SBgra*)&greenColor);
 
 
+		//////////
+		// Set some input areas
+		//////
+			num1.data	= &bufferNum1[0];
+			num1.length	= 5;
+			memset(&bufferNum1, 32, sizeof(bufferNum1));
+			sprintf(bufferNum1, "01234");
+			console_input_field_add(lnCon1, 10, 5, 5, (SBgra*)&whiteColor, (SBgra*)&blackColor, &num1);
+
+			num2.data	= &bufferNum2[0];
+			num2.length	= 5;
+			memset(&bufferNum2, 32, sizeof(bufferNum2));
+			sprintf(bufferNum2, "ABCDE");
+			console_input_field_add(lnCon1, 10, 10, 5, (SBgra*)&whiteColor, (SBgra*)&blackColor, &num2);
+
+
+		//////////
 		// Read messages
-		iConsole_win_readMessages();
+		//////
+			iConsole_win_readMessages();
 
+
+		//////////
 		// Indicate success
-		return(_CONSOLE_ERROR__NO_ERROR);
+		//////
+			return(_CONSOLE_ERROR__NO_ERROR);
+
+	}
+
+	s32 iiConsole_win_unit_test__callback_keyDown(SConCallback* ccb)
+	{
+		// Indicate success
+		return(0);
 	}
 
 	s32 iiConsole_win_unit_test__callback_mouseDown(SConCallback* ccb)
@@ -285,8 +320,10 @@
 			console->nCols		= (console->nWidth  / console->nCharWidth);			// Columns
 			console->nRows		= (console->nHeight / console->nCharHeight);		// Rows
 			console->nTopRow	= 0;												// Top row at the start of the buffer
-			console->nX			= 0;												// Cursor position @ col = 0
-			console->nY			= 0;												// Cursor position @ row = 0
+			console->nXText		= 0;												// Text cursor position @ col = 0
+			console->nYText		= 0;												// Text cursor position @ row = 0
+			console->nXCursor	= -1;												// Keyboard cursor position not in use
+			console->nYCursor	= -1;												// Keyboard cursor position not in use
 
 
 		//////////
@@ -470,10 +507,10 @@
 
 
 		// Repaint the current character
-		SetRect(&lrc,	console->nX * console->nCharWidth,
-						console->nY * console->nCharHeight,
-						((console->nX + 1) * console->nCharWidth)  - 1,
-						((console->nY + 1) * console->nCharHeight) - 1);
+		SetRect(&lrc,	console->nXText * console->nCharWidth,
+						console->nYText * console->nCharHeight,
+						((console->nXText + 1) * console->nCharWidth)  - 1,
+						((console->nYText + 1) * console->nCharHeight) - 1);
 		
 		// Signal the rectangle needs redrawn
 		InvalidateRect(console->hwnd, &lrc, false);
@@ -508,21 +545,18 @@
 // Called to store the indicated character into the console buffer
 //
 //////
-	void console_win_store_character(SConsole* console, char c)
+	void console_win_store_character(SConsole* console, char c, bool tlAtCursorXY)
 	{
 		SConRow*			conRow;
 		SConChar*			conChar;
 		SBuilderCallback	bcb;
 
 
-		// Grab the row
+		// Make sure the environment is sane
 		conChar	= NULL;
-		conRow	= (SConRow*)iBuilder_retrieveRecord(console->scrollBuffer, sizeof(SConRow), console->nY);
-		if (conRow)
+		if (!tlAtCursorXY || console->nXCursor >= 0)
 		{
-			// Grab the character
-			conChar = (SConChar*)iBuilder_retrieveRecord(conRow->chars, sizeof(SConChar), console->nX);
-			if (conChar)
+			if (iConsole_find_conChar_byXY(console, ((tlAtCursorXY) ? console->nXCursor : console->nXText), ((tlAtCursorXY) ? console->nYCursor : console->nYText), &conRow, &conChar))
 			{
 
 				//////////
@@ -1185,19 +1219,38 @@
 //////
 	bool iConsole_win_render__callbackCol(SBuilderCallback* bcb)
 	{
-		s32					lnY, lnX, lnRow;
-		f32					lfAlp, lfMalp, lfRed, lfGrn, lfBlu, lfBRed, lfBGrn, lfBBlu, lfFRed, lfFGrn, lfFBlu;
-		f32*				pixelRow;
-		SConsole*			console;
-		SConChar*			conChar;
-		SBgr*				lbgr;
-		SConFont_fixed*		font_fixed;
-		RECT				lrc;
+		SConsole*	console;
+		SConChar*	conChar;
 
 
 		// Grab the pointers
 		console	= (SConsole*)bcb->extra1;
 		conChar	= (SConChar*)bcb->iter_ptr;
+
+		// Redraw the indicated character
+		iConsole_win_renderSingleChar(console, console->nXText, console->nYText, conChar);
+
+		// Continue iterating
+		return(true);
+	}
+
+
+
+
+//////////
+//
+// Called to render a single character at the indicated coordinates
+//
+//////
+	void iConsole_win_renderSingleChar(SConsole* console, s32 tnX, s32 tnY, SConChar* conChar)
+	{
+		s32					lnY, lnX, lnRow;
+		f32					lfAlp, lfMalp, lfRed, lfGrn, lfBlu, lfBRed, lfBGrn, lfBBlu, lfFRed, lfFGrn, lfFBlu;
+		f32*				pixelRow;
+		SBgr*				lbgr;
+		SConFont_fixed*		font_fixed;
+		RECT				lrc;
+
 
 		// Based on the font type, render appropriately
 		if (conChar->nFont <= _CONSOLE_FONT__MAX_FIXED)
@@ -1215,10 +1268,10 @@
 
 			// Iterate through every row of the character
 			pixelRow = &font_fixed->fontBase_f32[(s32)conChar->c * console->nCharHeight * console->nCharWidth];
-			for (lnY = 0, lnRow = (console->nY * console->nCharHeight); lnY < console->nCharHeight; lnY++, lnRow++)
+			for (lnY = 0, lnRow = (tnY * console->nCharHeight); lnY < console->nCharHeight; lnY++, lnRow++)
 			{
 				// Compute the offset into the pixel buffers
-				lbgr = (SBgr*)(console->bmp->bd + ((console->bmp->bi.biHeight - lnRow - 1) * console->bmp->rowWidth) + (console->nX * console->nCharWidth * 3));
+				lbgr = (SBgr*)(console->bmp->bd + ((console->bmp->bi.biHeight - lnRow - 1) * console->bmp->rowWidth) + (tnX * console->nCharWidth * 3));
 
 				// Iterate through every column
 				for (lnX = 0; lnX < console->nCharWidth; lnX++, pixelRow++, lbgr++)
@@ -1250,17 +1303,14 @@
 			SetBkMode(console->bmp->hdc, OPAQUE);
 
 			// Construct the rect
-			SetRect(&lrc,	console->nX * console->nCharWidth,
-							console->nY * console->nCharHeight,
-							((console->nX + 1) * console->nCharWidth)  - 1,
-							((console->nY + 1) * console->nCharHeight) - 1);
+			SetRect(&lrc,	tnX * console->nCharWidth,
+							tnY * console->nCharHeight,
+							((tnX + 1) * console->nCharWidth)  - 1,
+							((tnY + 1) * console->nCharHeight) - 1);
 
 			// Draw this character
 			DrawText(console->bmp->hdc, (s8*)&conChar->c, 1, &lrc, DT_LEFT | DT_SINGLELINE);
 		}
-
-		// Continue with the other characters
-		return(true);
 	}
 
 
@@ -1378,8 +1428,8 @@
 										&console->cb.lAnyButton);
 
 		// If we're moving or resizing, also read the screen coordinate mouse data, and then return
-		console->cb.nX = console->nX;		// Current X position
-		console->cb.nY = console->nY;		// Current Y position
+		console->cb.nX = console->nXText;		// Current X position
+		console->cb.nY = console->nYText;		// Current Y position
 
 		// Process the key
 		console->cb.cChar	= (u8)MapVirtualKey(wParam, MAPVK_VK_TO_CHAR);
@@ -1436,12 +1486,116 @@
 
 	void iConsole_win_keydown(SConsole* console, WPARAM wParam, LPARAM lParam)
 	{
+		s8			c;
+		s32			lnOffset;
+		bool		llNavigateKey;
+		SConInput*	conInput;
+
+
 		// Grab the keyboard settings
 		iiConsole_get_keyboardSettings(console, wParam, lParam);
 
 		// Signal the callback
 		if (console->cb._console_keyDown)
 			console->cb.console_keyDown(&console->cb);
+
+		// Adjust the cursor position
+		llNavigateKey = false;
+		switch (wParam)
+		{
+			case VK_UP:
+			case VK_DOWN:
+			case VK_RIGHT:
+			case VK_LEFT:
+			case VK_HOME:
+			case VK_END:
+			case VK_PRIOR:
+			case VK_NEXT:
+				llNavigateKey = true;
+				break;
+
+			case VK_BACK:	// Shift-tab
+			case VK_TAB:
+				// These are navigate keys if there's some input field to navigate to
+				llNavigateKey = true;
+				break;
+		}
+
+		// If we have a navigate key, continue
+		if (llNavigateKey)
+		{
+			// Position the cursor where the text cursor is if need be
+			// Make Y valid
+			if (console->nYCursor < 0)
+				console->nYCursor = console->nYText;
+
+			// Make X valid
+			if (console->nXCursor < 0)
+				console->nXCursor = console->nXText;
+
+			// Move based on the keystroke
+			switch (wParam)
+			{
+				case VK_UP:
+					if (console->nYCursor > 0)							--console->nYCursor;
+					else												console->nYCursor = console->nRows - 1;
+					break;
+				case VK_DOWN:
+					if (console->nYCursor < console->nRows - 1)			++console->nYCursor;
+					else												console->nYCursor = 0;
+					break;
+				case VK_RIGHT:
+					if (console->nXCursor < console->nCols - 1)			++console->nXCursor;
+					else												console->nXCursor = 0;
+					break;
+				case VK_LEFT:
+					if (console->nXCursor > 0)							--console->nXCursor;
+					else												console->nXCursor = console->nCols - 1;
+					break;
+				case VK_HOME:
+					console->nXCursor = 0;
+					break;
+				case VK_END:
+					console->nXCursor = console->nCols - 1;
+					break;
+				case VK_PRIOR:
+					console->nYCursor = 0;
+					break;
+				case VK_NEXT:
+					console->nYCursor = console->nRows - 1;
+					break;
+				case VK_BACK:
+					// Shift-tab prev field
+					break;
+				case VK_TAB:
+					// Next field
+					break;
+			}
+
+			// Turn the cursor on for the movement
+			console->lCursorOn = true;
+			InvalidateRect(console->hwnd, NULL, FALSE);
+
+
+		} else if ((c = (s8)MapVirtualKey(wParam, MAPVK_VK_TO_CHAR)) != 0) {
+			// If they're in input mode, and they're in an input area, receive the keystroke
+			if (console->nXCursor >= 0)
+			{
+				// If we have inputs and we're in an input area
+				if ((conInput = iConsole_find_conInput_byCursorXY(console)))
+				{
+					// We're on an input, determine where we are in it
+					lnOffset = console->nXCursor - conInput->nX;
+
+					// If there's a live value to update, update it
+					if (conInput->liveValue && conInput->liveValue->_data)
+						conInput->liveValue->data_s8[lnOffset] = c;
+				}
+
+				// Simulate a right keystroke
+				iConsole_win_keydown(console, VK_RIGHT, lParam);
+			}
+		}
 	}
 
 
@@ -1488,6 +1642,86 @@
 
 //////////
 //
+// Searches for the closest console input based on the current nXcursor and nYCursor
+//
+//////
+	SConInput* iConsole_find_conInput_byCursorXY(SConsole* console)
+	{
+		SBuilderCallback bcb;
+
+
+		// Iterate through to find one
+		memset(&bcb, 0, sizeof(bcb));
+		bcb.extra1 = console;
+		if (console->nXCursor >= 0)
+			iBuilder_iterate(gsInputRoot, sizeof(SConInput), &bcb, (uptr)&iConsole_find_conInput_byCursorXY__callback);
+
+		// Indicate success or failure
+		return((SConInput*)bcb.extra2);
+	}
+
+	bool iConsole_find_conInput_byCursorXY__callback(SBuilderCallback* bcb)
+	{
+		SConsole*	console;
+		SConInput*	conInput;
+
+
+		// Grab our pointers
+		console		= (SConsole*)bcb->extra1;
+		conInput	= (SConInput*)bcb->iter_ptr;
+
+		// See if we're in range
+		if (console->nYCursor == conInput->nY && console->nXCursor >= conInput->nX && console->nXCursor <= conInput->nX + conInput->nLength)
+		{
+			// Found it
+			bcb->extra2 = conInput;
+			return(false);		// No more iterating
+		}
+
+		// Continue iterating
+		return(true);
+	}
+
+
+
+
+//////////
+//
+// Called to retrieve the row and char for the indicated X,Y coordinate
+//
+//////
+	bool iConsole_find_conChar_byXY(SConsole* console, s32 tnX, s32 tnY, SConRow** tsConRow, SConChar** tsConChar)
+	{
+		SConRow*	lsConRow;
+		SConChar*	lsConChar;
+
+
+		// Grab the row
+		lsConRow = (SConRow*)iBuilder_retrieveRecord(console->scrollBuffer, sizeof(SConRow), tnY);
+		if (lsConRow)
+		{
+			// Grab the character
+			lsConChar = (SConChar*)iBuilder_retrieveRecord(lsConRow->chars, sizeof(SConChar), tnX);
+			if (lsConChar)
+			{
+				// We have both
+				if (tsConRow)		*tsConRow	= lsConRow;
+				if (tsConChar)		*tsConChar	= lsConChar;
+
+				// Success
+				return(true);
+			}
+		}
+
+		// If we get here, not found
+		return(false);
+	}
+
+
+
+
+//////////
+//
 // Windows callback, delivering messages
 //
 //////
@@ -1519,13 +1753,33 @@
 						console->lCursorOn = !console->lCursorOn;
 
 						// Repaint the cursor area
-						SetRect(&lrc,	console->nX * console->nCharWidth,
-										console->nY * console->nCharHeight - 2,
-										((console->nX + 1) * console->nCharWidth),
-										((console->nY + 1) * console->nCharHeight) + 2);
+						if (console->nXCursor >= 0)
+						{
+							// Use the cursor X,Y
+							SetRect(&lrc,	console->nXCursor * console->nCharWidth,
+											console->nYCursor * console->nCharHeight,
+											((console->nXCursor + 1) * console->nCharWidth),
+											((console->nYCursor + 1) * console->nCharHeight));
+
+						} else {
+							// Use the text X,Y
+							SetRect(&lrc,	console->nXText * console->nCharWidth,
+											console->nYText * console->nCharHeight,
+											((console->nXText + 1) * console->nCharWidth),
+											((console->nYText + 1) * console->nCharHeight));
+						}
 
 						// Invalidate that rectangle to update the cursor
 						InvalidateRect(hwnd, &lrc, false);
+
+						// Invalidate any input fields
+						if (gsInputRoot && gsInputRoot->buffer && gsInputRoot->populatedLength)
+						{
+							memset(&bcb, 0, sizeof(bcb));
+							bcb.extra1	= console;
+							bcb.flag1	= true;		// Invalidate only
+							iBuilder_iterate(gsInputRoot, sizeof(SConInput), &bcb, (uptr)&iConsole_wndProc__inputBoxes__callback);
+						}
 						break;
 					}
 					break;
@@ -1537,7 +1791,7 @@
 
 				case WM_LBUTTONUP:
 					// Left button up
-					iConsole_win_buttondown(console, wParam, lParam);
+					iConsole_win_buttonup(console, wParam, lParam);
 					break;
 
 				case WM_MOUSEMOVE:
@@ -1596,17 +1850,28 @@
 						memset(&bcb, 0, sizeof(bcb));
 						bcb.extra1 = console;
 						bcb.extra2 = _hdc;
-						iBuilder_iterate(gsInputRoot, sizeof(SConInput), &bcb, (uptr)&iConsole_wndProc__renderInputBoxes);
+						iBuilder_iterate(gsInputRoot, sizeof(SConInput), &bcb, (uptr)&iConsole_wndProc__inputBoxes__callback);
 					}
 
 					// Overlay the cursor if need be
 					if (glCursorOn && GetForegroundWindow() == hwnd && console->lCursorOn)
 					{
 						// Highlight the cursor
-						SetRect(&lrc,	console->nX * console->nCharWidth,
-										console->nY * console->nCharHeight - 2,
-										((console->nX + 1) * console->nCharWidth),
-										((console->nY + 1) * console->nCharHeight) + 2);
+						if (console->nXCursor >= 0)
+						{
+							// Use the cursor X,Y
+							SetRect(&lrc,	console->nXCursor * console->nCharWidth,
+											console->nYCursor * console->nCharHeight,
+											((console->nXCursor + 1) * console->nCharWidth),
+											((console->nYCursor + 1) * console->nCharHeight));
+
+						} else {
+							// Use the text X,Y
+							SetRect(&lrc,	console->nXText * console->nCharWidth,
+											console->nYText * console->nCharHeight,
+											((console->nXText + 1) * console->nCharWidth),
+											((console->nYText + 1) * console->nCharHeight));
+						}
 
 						// Just draw a cursor there
 						InvertRect(hdc, &lrc);
@@ -1627,38 +1892,85 @@
 		return DefWindowProc(hwnd, message, wParam, lParam);
 	}
 
-	bool iConsole_wndProc__renderInputBoxes(SBuilderCallback* bcb)
+	bool iConsole_wndProc__inputBoxes__callback(SBuilderCallback* bcb)
 	{
-		s32				lnI;
-		RECT			lrc;
-		SBgra			color;
-		SConsole*		console;
-		SConInput*		conInput;
+		s32					lnI;
+		bool				llHighlighted;
+		RECT				lrc;
+		SConsole*			console;
+		SConInput*			conInput;
+		SConRow*			conRow;
+		SConChar*			conChar;
+		HBRUSH				hbrBackColor, hbrTextColor, hbrBrightBlue;
 		union {
-			void*		_hdc;
-			HDC			hdc;
+			void*			_hdc;
+			HDC				hdc;
 		};
 
 
 		// Grab our pointers
-		console		= (SConsole*)bcb->extra2;
+		console		= (SConsole*)bcb->extra1;
 		_hdc		= bcb->extra2;
 		conInput	= (SConInput*)bcb->iter_ptr;
 
-		// Frame it if we're in the input area
-		if (console->nY == conInput->nY && between(console->nX, conInput->nX, conInput->nX + conInput->nLength - 1))
-		{
-			// Create a frame around the input area
-			SetRect(&lrc,	console->nX * console->nCharWidth  - 1,
-							console->nY * console->nCharHeight - 1,
-							(console->nX + 1) * console->nCharWidth  + 1,
-							(console->nY + 1) * console->nCharHeight + 1);
+		// Rectangle area
+		SetRect(&lrc,	conInput->nX * console->nCharWidth  - 1,
+						conInput->nY * console->nCharHeight - 1,
+						(conInput->nX + conInput->nLength)	* console->nCharWidth  + 1,
+						(conInput->nY + 1)					* console->nCharHeight + 1);
 
-			// Draw it 4 pixels wide
-			color.color = rgba(112, 164, 255, 255);
-			for (lnI = 0; lnI < 4; lnI++, InflateRect(&lrc, 1, 1))
-				iBmp_frameRect(console->bmp, &lrc, color);
+		// Frame it if we're in the input area
+		llHighlighted = (console->nYCursor == conInput->nY && between(console->nXCursor, conInput->nX, conInput->nX + conInput->nLength - 1));
+
+		// Draw a border around the input
+		if (!bcb->flag1)
+		{
+			// Redraw everything
+			hbrBackColor	= CreateSolidBrush(RGB(conInput->backColor.red, conInput->backColor.grn, conInput->backColor.blu));
+			hbrTextColor	= CreateSolidBrush(RGB(conInput->charColor.red, conInput->charColor.grn, conInput->charColor.blu));
+			hbrBrightBlue	= CreateSolidBrush(RGB(112,164,255));
+
+			// Single in the back color
+			FrameRect(hdc, &lrc, hbrBackColor);
+
+			// Single in the text color
+			InflateRect(&lrc, 1, 1);
+			FrameRect(hdc, &lrc, hbrTextColor);
+
+			// If they're on this field, continue another three in brighter blue
+			if (llHighlighted)
+			{
+				InflateRect(&lrc, 1, 1);
+				for (lnI = 0; lnI < 3; lnI++, InflateRect(&lrc, 1, 1))
+					FrameRect(hdc, &lrc, hbrBrightBlue);
+			}
+
+			// Clean house
+			DeleteObject((HGDIOBJ)hbrTextColor);
 		}
+
+		// Make sure the colors are correct
+		for (lnI = 0; lnI < conInput->nLength; lnI++)
+		{
+			// Store the character from the liveValue (if present) and the background color info
+			if (iConsole_find_conChar_byXY(console, conInput->nX + lnI, conInput->nY, &conRow, &conChar))
+			{
+				// Store the character
+				if (conInput->liveValue && conInput->liveValue->_data)
+					conChar->c = conInput->liveValue->data[lnI];
+
+				// Store the coloring
+				conChar->nFont				= conInput->nFont;
+				conChar->charColor.color	= conInput->charColor.color;
+				conChar->backColor.color	= conInput->backColor.color;
+
+				// Redraw the character
+				iConsole_win_renderSingleChar(console, conInput->nX + lnI, conInput->nY, conChar);
+			}
+		}
+
+		// Invalidate
+		InvalidateRect(console->hwnd, &lrc, FALSE);
 
 		// Continue iterating
 		return(true);
