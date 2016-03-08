@@ -155,6 +155,7 @@
 	#define console_os_initialize									console_win_initialize()
 	#define console_os_store_character								console_win_store_character(console, c, tlAtCursorXY)
 	#define console_os_render_character								console_win_render_character(console, conChar)
+	#define console_os_render										iConsole_win_render(console)
 	#define console_os_xy_needs_repainted							console_win_xy_needs_repainted(console)
 	#define console_os_set_border									console_win_set_border(console, tlShowBorder, color)
 
@@ -233,7 +234,7 @@
 	SConFont_fixed*		iConsole_win_fontSetup_searchOrCreate		(s32 tnCharWidth, s32 tnCharHeight, s32 tnFontX, s32 tnFontY, bool tlCreateIfNotFound);
 	void				iConsole_win_fontSetup_scalePhysically		(SConFont_fixed* fontFixed);
 	void				iConsole_win_registerWndClass				(void);
-	void				iConsole_win_render							(SConsole* console);
+	s32					iConsole_win_render							(SConsole* console);
 	bool				iConsole_win_render__callbackRow			(SBuilderCallback* bcb);
 	bool				iConsole_win_render__callbackCol			(SBuilderCallback* bcb);
 	void				iConsole_win_renderSingleChar				(SConsole* console, s32 tnX, s32 tnY, SConChar* conChar);

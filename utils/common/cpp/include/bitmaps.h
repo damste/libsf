@@ -95,6 +95,7 @@ struct SNodeProps;
 
 	// Global definitions for general use
 	#define	_whiteColor												rgba(255, 255, 255, 255)
+	#define _eggshellColor											rgba(250, 245, 240, 255)
 	#define _silverColor											rgba(225, 225, 225, 255)
 	#define _grayColor												rgba(192, 192, 192, 255)
 	#define _darkGrayColor											rgba(128, 128, 128, 255)
@@ -105,6 +106,7 @@ struct SNodeProps;
 
 	// Colors
 	const SBgra				whiteColor								= { _whiteColor };
+	const SBgra				eggshellColor							= { _eggshellColor };
 	const SBgra				silverColor								= { _silverColor };
 	const SBgra				grayColor								= { _grayColor };
 	const SBgra				blackColor								= { _blackColor };
@@ -114,6 +116,7 @@ struct SNodeProps;
 	const SBgra				redColor								= { rgba(255, 0, 0, 255) };
 	const SBgra				greenColor								= { rgba(0, 255, 0, 255) };
 	const SBgra				blueColor								= { rgba(0, 0, 255, 255) };
+	const SBgra				purpleColor								= { rgba(92, 48, 112, 255) };
 	const SBgra				cyanColor								= { rgba(0, 255, 255, 255) };
 	const SBgra				orangeColor								= { rgba(255, 200, 64, 255) };
 	const SBgra				fuchsiaColor							= { rgba(255, 255, 0, 255) };
@@ -126,6 +129,7 @@ struct SNodeProps;
 	const SBgra				pastelOrangeColor						= { rgba(255, 205, 155, 255) };
 	const SBgra				pastelGreenColor						= { rgba(200, 255, 200, 255) };
 	const SBgra				pastelBlueColor							= { rgba(215, 215, 255, 255) };
+	const SBgra				pastelLavender							= { rgba(235, 235, 250, 255) };
 	const SBgra				maskColor								= { rgba(222, 22, 222, 255) };			// Fuscia
 
 	// Attribute tag names

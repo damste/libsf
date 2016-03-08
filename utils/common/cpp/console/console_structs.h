@@ -182,8 +182,18 @@
 struct SConInputCallback
 {
 	// If true, then no local processing takes place
-	bool		lOnlySignalKeystrokes;
-	bool		lSuppressBorder;
+	bool		lOnlySignalKeystrokes;		// Signals keystrokes only
+	bool		lSuppressBorder;			// Suppress the standard border
+
+	// An inner border
+	bool		lInnerBorder;				// Renders an inner-border (regardless of lSuppressBorder setting)
+	SBgra		innerBorderColor;			// Color to render
+
+	// Visual changes
+	bool		lChanged;					// Has the data changed?
+	bool		lVisualize_onChange;		// Should the change be visualized with the backColor_changed, charcolor_changed colors
+	SBgra		backColor_changed;
+	SBgra		charColor_changed;
 
 	// Callback on each change to the field
 	union {

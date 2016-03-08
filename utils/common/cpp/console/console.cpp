@@ -694,6 +694,87 @@
 
 //////////
 //
+// Called to repaint everything
+//
+//////
+	CONAPI s32 console_repaint(uptr tnHandle)
+	{
+		SConsole* console;
+
+
+		// See if we have a console
+		if (iConsole_validateInitialization() && (console = iConsole_find_byHandle(tnHandle)))
+			return(console_os_render);
+
+		// Invalid handle
+		return(_CONSOLE_ERROR__HANDLE_NOT_FOUND);
+	}
+
+
+
+
+//////////
+//
+// Called to draw a box of the indicated type around the indicated coordinates
+//
+//////
+	CONAPI s32 console_box_single(uptr tnHandle, s32 tnXul, s32 tnYul, s32 tnXlr, s32 tnYlr, SBgra* backColor, SBgra* charColor)
+	{
+		return(console_box_custom(tnHandle, tnXul, tnYul, tnXlr, tnYlr, backColor, charColor, 0xda, 0xc4, 0xbf, 0xb3, 0xd9, 0xc3, 0xc0, 0xb3));
+	}
+
+	CONAPI s32 console_box_double(uptr tnHandle, s32 tnXul, s32 tnYul, s32 tnXlr, s32 tnYlr, SBgra* backColor, SBgra* charColor)
+	{
+		return(console_box_custom(tnHandle, tnXul, tnYul, tnXlr, tnYlr, backColor, charColor, 0xc9, 0xcd, 0xbb, 0xba, 0xbc, 0xcd, 0xc8, 0xba));
+	}
+
+	CONAPI s32 console_box_custom(uptr tnHandle, s32 tnXul, s32 tnYul, s32 tnXlr, s32 tnYlr, SBgra* backColor, SBgra* charColor, u8 ul, u8 top, u8 ur, u8 r, u8 lr, u8 b, u8 ll, u8 l)
+	{
+		s32 lnX, lnY;
+
+
+// TODO: working here, adding code for the boxes
+		// Iterate for every row
+		for (lnY = tnYul; lnY <= tnYlr; lnY++)
+		{
+			// Which row are we on?
+			if (lnY == tnYul)
+			{
+				// Top
+				// Draw Left-character
+
+				// Draw middle characters
+				for (lnX = tnXul; lnX <= tnXlr; lnX++)
+				{
+				}
+
+				// Draw right-character
+
+			} else if (lnY == tnYlr) {
+				// Bottom
+				// Draw Left-character
+
+				// Draw middle characters
+				for (lnX = tnXul; lnX <= tnXlr; lnX++)
+				{
+				}
+
+				// Draw right-character
+
+			} else {
+				// Middle
+				// Draw Left-character
+				// Draw right-character
+			}
+		}
+		return(0);
+	}
+
+
+
+
+//////////
+//
 // Reset all the input fields embedded within the console
 //
 //////
