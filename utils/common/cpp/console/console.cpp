@@ -527,7 +527,7 @@
 
 						} else if (c == 10) {
 							// Line feed
-							if (console->nYText >= console->nRows)
+							if (console->nYText >= console->nRows - 1)
 							{
 								// We need to scroll up one
 								iiConsole_scroll(console);
@@ -580,6 +580,38 @@
 
 		// Failure
 		return(_CONSOLE_ERROR__HANDLE_NOT_FOUND);
+	}
+
+	CONAPI s32 console_print(uptr tnHandle, s8* text, s32 tnTextLength)
+	{
+		SDatum textOut;
+
+
+		// Convert for SDatum print
+		textOut.data	= text;
+		textOut.length	= ((tnTextLength < 0) ? strlen(text) : tnTextLength);
+		return(console_print(tnHandle, &textOut));
+	}
+
+
+
+
+//////////
+//
+// Positions the cursor on the next line at x=0, scrolling if need be
+//
+//////
+	CONAPI s32 console_print_crlf(uptr tnHandle)
+	{
+		s8		buffer[16];
+		SDatum	data;
+
+
+		// Display a CR/LF
+		sprintf(buffer, "\n\r");
+		data.data_s8	= &buffer[0];
+		data.length		= strlen(buffer);
+		return(console_print(tnHandle, &data));
 	}
 
 
@@ -695,7 +727,7 @@
 // Add a new input field to the console
 //
 //////
-	s32 console_input_field_add(uptr tnHandle, s32 tnX, s32 tnY, s32 tnLength, SBgra* backColor, SBgra* charColor, SDatum* liveValue)
+	uptr console_input_field_add(uptr tnHandle, s32 tnX, s32 tnY, s32 tnLength, SBgra* backColor, SBgra* charColor, SDatum* liveValue, SConInputCallback* cicb)
 	{
 		SConsole*	console;
 		union {
@@ -724,6 +756,9 @@
 				conInput->charColor.color	= charColor->color;
 				conInput->backColor.color	= backColor->color;
 
+				// Copy the callback info
+				memcpy(&conInput->cicb, cicb, sizeof(SConInputCallback));
+
 				// Indicate success
 				return(_CONSOLE_ERROR__NO_ERROR);
 			}
@@ -741,7 +776,7 @@
 // Delete an input field on the console
 //
 //////
-	s32 console_input_field_delete(uptr tnHandle, s32 tnInputFieldHandle)
+	s32 console_input_field_delete(uptr tnHandle, uptr tnInputFieldHandle)
 	{
 		SConsole*	console;
 		SConInput*	conInput;
@@ -1106,6 +1141,7 @@
 			rowSrc	= (SConRow*)bcb->iter_ptr;
 
 			// Copy the row
+// TODO:  working here, scroll feature not working
 			memcpy(rowDst->chars, rowSrc->chars, console->nCols * sizeof(SConChar));
 // TODO:  We should actually iterate through each char and add an OS callback to handle any special OS structures
 

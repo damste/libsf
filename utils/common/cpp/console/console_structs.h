@@ -178,19 +178,53 @@
 	};
 
 
+// Callbacks on input
+struct SConInputCallback
+{
+	// If true, then no local processing takes place
+	bool		lOnlySignalKeystrokes;
+	bool		lSuppressBorder;
+
+	// Callback on each change to the field
+	union {
+		uptr	_onChanged;
+		void	(*onChanged)	(uptr tnConsoleHandle, uptr tnInputFieldHandle);
+	};
+
+	// Callback on every keystroke after it's been processed locally
+	union {
+		uptr	_onKeystroke;
+		void	(*onKeystroke)	(uptr tnConsoleHandle, uptr tnInputFieldHandle, s32 tnRawKey, bool tlCtrl, bool tlAlt, bool tlShift, bool tlLeft, bool tlMiddle, bool tlRight, bool tlCaps, bool tlNum, bool tlScroll, bool tlAnyButton);
+	};
+
+	// LostFocus
+	union {
+		uptr	_onLostFocus;
+		void	(*onLostFocus)	(uptr tnConsoleHandle, uptr tnInputFieldHandle);
+	};
+
+	// GotFocus
+	union {
+		uptr	_onGotFocus;
+		void	(*onGotFocus)	(uptr tnConsoleHandle, uptr tnInputFieldHandle);
+	};
+};
+
 // Input fields
 struct SConInput
 {
-	bool		lValid;					// Is this entry valid?
-	s32			nX;						// X coordinate
-	s32			nY;						// Y coordinate
-	s32			nLength;				// Length of the input
+	bool				lValid;			// Is this entry valid?
+	s32					nX;				// X coordinate
+	s32					nY;				// Y coordinate
+	s32					nLength;		// Length of the input
 
-	s32			nFont;					// Font at time of creation
-	SBgra		charColor;				// Text color at time of creation
-	SBgra		backColor;				// Background color at time of creation
+	s32					nFont;			// Font at time of creation
+	SBgra				charColor;		// Text color at time of creation
+	SBgra				backColor;		// Background color at time of creation
 
-	SDatum*		liveValue;				// Where to store the live value based on input
+	SConInputCallback	cicb;			// An optional callback on keystrokes
+
+	SDatum*				liveValue;		// Where to store the live value based on input
 };
 
 // Font data

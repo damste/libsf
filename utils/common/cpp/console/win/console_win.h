@@ -207,8 +207,13 @@
 // Forward declarations
 //////
 	int					console_win_unit_test						(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);
+	void				iiConsole_win_unit_test__onChanged			(u32 tnConsoleHandle, u32 tnConInputHandle);
+	void				iiConsole_win_unit_test__onKeystroke		(u32 tnConsoleHandle, u32 tnConInputHandle, s32 tnRawKey, bool tlCtrl, bool tlAlt, bool tlShift, bool tlLeft, bool tlMiddle, bool tlRight, bool tlCaps, bool tlNum, bool tlScroll, bool tlAnyButton);
+	void				iiConsole_win_unit_test__onLostFocus		(u32 tnConsoleHandle, u32 tnConInputHandle);
+	void				iiConsole_win_unit_test__onGotFocus			(u32 tnConsoleHandle, u32 tnConInputHandle);
 	s32					iiConsole_win_unit_test__callback_keyDown	(SConCallback* ccb);
 	s32					iiConsole_win_unit_test__callback_mouseDown	(SConCallback* ccb);
+
 	bool				console_win_validateInitialization			(void);
 	s32					console_win_create_window					(SConsole* console);
 	s32					console_win_toggle_visible					(SConsole* console);

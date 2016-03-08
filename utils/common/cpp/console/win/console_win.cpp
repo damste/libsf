@@ -98,13 +98,14 @@
 //////
 	int console_win_unit_test(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 	{
-		uptr			lnCon1;
-		SDatum			title;
-		SConCallback	ccb;
-		SDatum			props, test, num1, num2;
-		s8				buffer[_MAX_FNAME];
-		s8				bufferNum1[8];
-		s8				bufferNum2[8];
+		uptr				lnCon1;
+		SDatum				title;
+		SConCallback		ccb;
+		SConInputCallback	cibc;
+		SDatum				props, test, num1, num2;
+		s8					buffer[_MAX_FNAME];
+		s8					bufferNum1[8];
+		s8					bufferNum2[8];
 
 
 		//////////
@@ -148,6 +149,10 @@
 			console_gotoXY(lnCon1, 2, 10);
 			console_print(lnCon1, &test);
 
+			console_print_crlf(lnCon1);
+			sprintf(buffer, "backColor=%d\nforeColor=%d", rgb(255,255,255), rgb(192,192,192));
+			console_setProperties(lnCon1, &props);
+
 
 		//////////
 		// Set the border color
@@ -160,15 +165,21 @@
 		//////
 			num1.data	= &bufferNum1[0];
 			num1.length	= 5;
+			memset(&cibc, 0, sizeof(cibc));
+			cibc._onChanged		= (uptr)&iiConsole_win_unit_test__onChanged;
+			cibc._onKeystroke	= (uptr)&iiConsole_win_unit_test__onKeystroke;
+			cibc._onLostFocus	= (uptr)&iiConsole_win_unit_test__onLostFocus;
+			cibc._onGotFocus	= (uptr)&iiConsole_win_unit_test__onGotFocus;
 			memset(&bufferNum1, 32, sizeof(bufferNum1));
 			sprintf(bufferNum1, "01234");
-			console_input_field_add(lnCon1, 10, 5, 5, (SBgra*)&whiteColor, (SBgra*)&blackColor, NULL/*&num1*/);
+			console_input_field_add(lnCon1, 10, 5, 5, (SBgra*)&pastelBlueColor, (SBgra*)&blackColor, NULL/*&num1*/, &cibc);
 
 			num2.data	= &bufferNum2[0];
 			num2.length	= 5;
 			memset(&bufferNum2, 32, sizeof(bufferNum2));
 			sprintf(bufferNum2, "ABCDE");
-			console_input_field_add(lnCon1, 10, 10, 5, (SBgra*)&whiteColor, (SBgra*)&blackColor, NULL/*&num2*/);
+			cibc.lSuppressBorder = true;
+			console_input_field_add(lnCon1, 10, 10, 5, (SBgra*)&pastelBlueColor, (SBgra*)&blackColor, NULL/*&num2*/, &cibc);
 
 
 		//////////
@@ -182,6 +193,26 @@
 		//////
 			return(_CONSOLE_ERROR__NO_ERROR);
 
+	}
+
+	void iiConsole_win_unit_test__onChanged(uptr tnConsoleHandle, uptr tnConInputHandle)
+	{
+		console_print(tnConsoleHandle, "[c]");
+	}
+
+	void iiConsole_win_unit_test__onKeystroke(uptr tnConsoleHandle, uptr tnConInputHandle, s32 tnRawKey, bool tlCtrl, bool tlAlt, bool tlShift, bool tlLeft, bool tlMiddle, bool tlRight, bool tlCaps, bool tlNum, bool tlScroll, bool tlAnyButton)
+	{
+		console_print(tnConsoleHandle, "[k]");
+	}
+
+	void iiConsole_win_unit_test__onLostFocus(uptr tnConsoleHandle, uptr tnConInputHandle)
+	{
+		console_print(tnConsoleHandle, "[lt]");
+	}
+
+	void iiConsole_win_unit_test__onGotFocus(uptr tnConsoleHandle, uptr tnConInputHandle)
+	{
+		console_print(tnConsoleHandle, "[g]");
 	}
 
 	s32 iiConsole_win_unit_test__callback_keyDown(SConCallback* ccb)
@@ -509,8 +540,8 @@
 		// Repaint the current character
 		SetRect(&lrc,	console->nXText * console->nCharWidth,
 						console->nYText * console->nCharHeight,
-						((console->nXText + 1) * console->nCharWidth)  - 1,
-						((console->nYText + 1) * console->nCharHeight) - 1);
+						((console->nXText + 1) * console->nCharWidth),
+						((console->nYText + 1) * console->nCharHeight));
 		
 		// Signal the rectangle needs redrawn
 		InvalidateRect(console->hwnd, &lrc, false);
@@ -1504,6 +1535,18 @@
 		if (console->cb._console_keyDown)
 			console->cb.console_keyDown(&console->cb);
 
+		// Try and get the input
+		conInput = iConsole_find_conInput_byCursorXY(console);
+		if (conInput)
+		{
+			// Signal keystroke
+			conInput->cicb.onKeystroke((uptr)console, (uptr)conInput, wParam, llCtrl, llAlt, llShift, llLeft, llMiddle, llRight, llCaps, llNum, llScroll, llAnyButton);
+
+			// If that's all they want, we're done
+			if (conInput->cicb.lOnlySignalKeystrokes)
+				return;
+		}
+
 		// Adjust the cursor position
 		llNavigateKey = false;
 		switch (wParam)
@@ -1526,10 +1569,6 @@
 				llNavigateKey = true;
 				break;
 		}
-
-		// Try and get the input
-		conInput = iConsole_find_conInput_byCursorXY(console);
-
 		// If we have a navigate key, continue
 		if (llNavigateKey)
 		{
@@ -1622,7 +1661,8 @@
 						conInput->liveValue->data_s8[lnI] = conInput->liveValue->data_s8[lnI - 1];
 					
 					// Store the new character
-					conInput->liveValue->data_s8[lnCol] = c;
+					if (lnCol < conInput->nLength)
+						conInput->liveValue->data_s8[lnCol] = c;
 
 				} else {
 					// Update the screen only
@@ -1641,8 +1681,13 @@
 					}
 
 					// Store the final character
-					conChar->c = c;
+					if (conChar)
+						conChar->c = c;
 				}
+
+				// Signal the change
+				if (conInput && conInput->cicb._onChanged)
+					conInput->cicb.onChanged((uptr)console, (uptr)conInput);
 
 				// Simulate a right keystroke
 				iConsole_win_keydown(console, VK_RIGHT, lParam);
@@ -1947,6 +1992,10 @@
 				}
 			}
 
+			// Signal the change
+			if (conInput && conInput->cicb._onChanged)
+				conInput->cicb.onChanged((uptr)console, (uptr)conInput);
+
 			// Move left one unless we're at the beginning of the input
 			if (console->nXCursor > 0 && console->nXCursor > conInput->nX)
 				iConsole_win_keydown(console, VK_LEFT, 0);
@@ -1998,6 +2047,10 @@
 
 			// Backup to the beginning
 			console->nXCursor = conInput->nX;
+
+			// Signal the change
+			if (conInput && conInput->cicb._onChanged)
+				conInput->cicb.onChanged((uptr)console, (uptr)conInput);
 
 			// If we get here, we had an input at this point
 			return(true);
@@ -2060,6 +2113,10 @@
 					conChar->c = 32;
 			}
 
+			// Signal the change
+			if (conInput && conInput->cicb._onChanged)
+				conInput->cicb.onChanged((uptr)console, (uptr)conInput);
+
 			// If we get here, we had an input at this point
 			return(true);
 
@@ -2111,6 +2168,10 @@
 				if (iConsole_find_conChar_byXY(console, conInput->nX + conInput->nLength - 1, conInput->nY, NULL, &conChar))
 					conChar->c = 32;
 			}
+
+			// Signal the change
+			if (conInput && conInput->cicb._onChanged)
+				conInput->cicb.onChanged((uptr)console, (uptr)conInput);
 
 			// If we get here, we had an input at this point
 			return(true);
@@ -2170,6 +2231,14 @@
 							// We found it
 							console->nXCursor	= conInputCandidate->nX;
 							console->nYCursor	= conInputCandidate->nY;
+
+							// Signal the onLostFocus
+							if (conInput && conInput->cicb._onLostFocus)
+								conInput->cicb.onLostFocus((uptr)console, (uptr)conInput);
+
+							// Signal the onGotFocus
+							if (conInputCandidate->cicb._onGotFocus)
+								conInputCandidate->cicb.onGotFocus((uptr)console, (uptr)conInputCandidate);
 
 							// Go ahead and keyboard an end key as well
 							iConsole_win_keydown(console, VK_END, NULL);
@@ -2248,6 +2317,14 @@
 							console->nXCursor	= conInputCandidate->nX;
 							console->nYCursor	= conInputCandidate->nY;
 
+							// Signal the onLostFocus
+							if (conInput && conInput->cicb._onLostFocus)
+								conInput->cicb.onLostFocus((uptr)console, (uptr)conInput);
+
+							// Signal the onGotFocus
+							if (conInputCandidate->cicb._onGotFocus)
+								conInputCandidate->cicb.onGotFocus((uptr)console, (uptr)conInputCandidate);
+
 							// Go ahead and keyboard an end key as well
 							iConsole_win_keydown(console, VK_END, NULL);
 
@@ -2314,7 +2391,7 @@
 		llHighlighted = (console->nYCursor == conInput->nY && between(console->nXCursor, conInput->nX, conInput->nX + conInput->nLength - 1));
 
 		// bcb->flag1 is set if they only want to invalidate the rect, otherwise it redraws everything
-		if (tlDrawBorder)
+		if (tlDrawBorder && !conInput->cicb.lSuppressBorder)
 		{
 			// Redraw everything
 			hbrBackColor	= CreateSolidBrush(RGB(conInput->backColor.red, conInput->backColor.grn, conInput->backColor.blu));

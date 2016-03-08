@@ -112,14 +112,16 @@
 
 	// General write algorithm, processes CR/LF, and auto-scrolls
 	CONAPI s32		console_print						(uptr tnHandle, SDatum* textOut);
+	CONAPI s32		console_print						(uptr tnHandle, s8* text, s32 tnTextLength = -1);
+	CONAPI s32		console_print_crlf					(uptr tnHandle);
 	CONAPI s32		console_gotoXY						(uptr tnHandle, s32 tnX, s32 tnY);
 	CONAPI s32		console_getXY						(uptr tnHandle, s32* tnX, s32* tnY);
 	CONAPI s32		console_scroll						(uptr tnHandle, s32 tnRows, bool tlMoveCursor = true);
 
 	// For input blocks
 	CONAPI s32		console_input_fields_clear_all		(uptr tnHandle);
-	CONAPI s32		console_input_field_add				(uptr tnHandle, s32 tnX, s32 tnY, s32 tnLength, SBgra* backColor, SBgra* charColor, SDatum* liveValue);
-	CONAPI s32		console_input_field_delete			(uptr tnHandle, s32 tnInputFieldHandle);
+	CONAPI uptr		console_input_field_add				(uptr tnHandle, s32 tnX, s32 tnY, s32 tnLength, SBgra* backColor, SBgra* charColor, SDatum* liveValue, SConInputCallback* cicb = NULL);
+	CONAPI s32		console_input_field_delete			(uptr tnHandle, uptr tnInputFieldHandle);
 
 	// Explicitly push large quantities of raw content to the screen, or pull raw content from the screen
 	CONAPI s32		console_raw_push					(uptr tnHandle, s32 tnX, s32 tnY, SBgra color, SDatum* textIn, bool tlWrap);
