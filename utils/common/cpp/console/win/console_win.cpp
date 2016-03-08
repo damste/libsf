@@ -162,13 +162,13 @@
 			num1.length	= 5;
 			memset(&bufferNum1, 32, sizeof(bufferNum1));
 			sprintf(bufferNum1, "01234");
-			console_input_field_add(lnCon1, 10, 5, 5, (SBgra*)&whiteColor, (SBgra*)&blackColor, /*NULL*/&num1);
+			console_input_field_add(lnCon1, 10, 5, 5, (SBgra*)&whiteColor, (SBgra*)&blackColor, NULL/*&num1*/);
 
 			num2.data	= &bufferNum2[0];
 			num2.length	= 5;
 			memset(&bufferNum2, 32, sizeof(bufferNum2));
 			sprintf(bufferNum2, "ABCDE");
-			console_input_field_add(lnCon1, 10, 10, 5, (SBgra*)&whiteColor, (SBgra*)&blackColor, /*NULL*/&num2);
+			console_input_field_add(lnCon1, 10, 10, 5, (SBgra*)&whiteColor, (SBgra*)&blackColor, NULL/*&num2*/);
 
 
 		//////////
@@ -1487,9 +1487,10 @@
 	void iConsole_win_keydown(SConsole* console, WPARAM wParam, LPARAM lParam)
 	{
 		s8			c;
-		s32			lnOffset;
+		s32			lnI, lnCol;
 		bool		llCtrl, llAlt, llShift, llLeft, llMiddle, llRight, llCaps, llNum, llScroll, llAnyButton, llNavigateKey;
 		SConChar*	conChar;
+		SConChar*	conCharLast;
 		SConInput*	conInput;
 
 
@@ -1590,13 +1591,8 @@
 					break;
 
 				case VK_TAB:
-					if (llShift)
-					{
-						// Shift+tab (previous field)
-
-					} else {
-						// Tab (next field)
-					}
+					if (llShift)		iConsole_win_input_prevField(console, conInput);		// Shift+tab (previous field)
+					else				iConsole_win_input_nextField(console, conInput);		// Tab (next field)
 					break;
 			}
 
@@ -1616,18 +1612,36 @@
 			if (console->nXCursor >= 0 && conInput)
 			{
 				// We're on an input, determine where we are in it
-				lnOffset = console->nXCursor - conInput->nX;
+				lnCol = console->nXCursor - conInput->nX;
 
 				// Update it
 				if (conInput->liveValue && conInput->liveValue->_data)
 				{
 					// Update the liveValue
-					conInput->liveValue->data_s8[lnOffset] = c;
+					for (lnI = conInput->nLength - 1; lnI > lnCol; lnI--)
+						conInput->liveValue->data_s8[lnI] = conInput->liveValue->data_s8[lnI - 1];
+					
+					// Store the new character
+					conInput->liveValue->data_s8[lnCol] = c;
 
 				} else {
 					// Update the screen only
-					if (iConsole_find_conChar_byXY(console, console->nXCursor, console->nYCursor, NULL, &conChar))
-						conChar->c = c;
+					for (lnI = conInput->nLength - 1, conCharLast = NULL, conChar = NULL; lnI >= lnCol; lnI--)
+					{
+						// If we get it, continue
+						if (iConsole_find_conChar_byXY(console, conInput->nX + lnI, conInput->nY, NULL, &conChar))
+						{
+							// Copy over
+							if (conCharLast)
+								conCharLast->c	= conChar->c;
+
+							// Prepare for next iteration
+							conCharLast = conChar;
+						}
+					}
+
+					// Store the final character
+					conChar->c = c;
 				}
 
 				// Simulate a right keystroke
@@ -1779,6 +1793,14 @@
 		return(false);
 	}
 
+
+
+
+//////////
+//
+// Moves to the end of the input
+//
+//////
 	bool iConsole_win_input_end(SConsole* console, SConInput* conInput)
 	{
 		s32			lnI;
@@ -1792,7 +1814,7 @@
 			if (conInput->liveValue && conInput->liveValue->_data)
 			{
 				// There's a datum, scan it
-				for (lnI = conInput->liveValue->length - 1; lnI > 0; lnI--)
+				for (lnI = conInput->liveValue->length - 1; lnI >= 0; lnI--)
 				{
 					// Is this a non-space?
 					if (conInput->liveValue->data[lnI] != 32)
@@ -1807,7 +1829,7 @@
 				}
 
 				// If we get here, we're all the way at the beginning
-				if (lnI == 0)
+				if (lnI < 0)
 					console->nXCursor = conInput->nX;
 
 			} else {
@@ -1830,8 +1852,12 @@
 				}
 
 				// If we get here, we're all the way at the beginning
-				if (lnI == 0)
-					console->nXCursor = conInput->nX;
+				if (lnI < 0)
+				{
+					// Grab the character
+					if (conChar->c != 32)		console->nXCursor = conInput->nX;
+					else						console->nXCursor = conInput->nX + 1;
+				}
 
 			}
 
@@ -1843,6 +1869,14 @@
 		return(false);
 	}
 
+
+
+
+//////////
+//
+// Backspace once on the input
+//
+//////
 	bool iConsole_win_input_backspace(SConsole* console, SConInput* conInput)
 	{
 		s32			lnCol;
@@ -1909,6 +1943,14 @@
 		return(false);
 	}
 
+
+
+
+//////////
+//
+// Backspaces to the beginning of the field
+//
+//////
 	bool iConsole_win_input_backspaceToStart(SConsole* console, SConInput* conInput)
 	{
 		s32			lnCol;
@@ -1944,6 +1986,14 @@
 		return(false);
 	}
 
+
+
+
+//////////
+//
+// Deletes the character at the cursor
+//
+//////
 	bool iConsole_win_input_delete(SConsole* console, SConInput* conInput)
 	{
 		s32			lnCol;
@@ -2002,7 +2052,72 @@
 		return(false);
 	}
 
+
+
+
+//////////
+//
+// Delete everything to the end of the line
+//
+//////
 	bool iConsole_win_input_deleteToEnd(SConsole* console, SConInput* conInput)
+	{
+		s32			lnCol;
+		SConChar*	conChar;
+
+
+		// See if we're on an input
+		if (conInput)
+		{
+			// We're on an input
+			lnCol = console->nXCursor - conInput->nX;
+			if (conInput->liveValue && conInput->liveValue->_data)
+			{
+				// They have a datum to update
+				for ( ; lnCol < conInput->nLength; lnCol++)
+					conInput->liveValue->data[lnCol] = 32;
+
+			} else if (lnCol < conInput->nLength) {
+				// Just update the screen
+				for ( ; lnCol < conInput->nLength; lnCol++)
+				{
+					// If we get it, continue
+					if (iConsole_find_conChar_byXY(console, conInput->nX + lnCol, conInput->nY, NULL, &conChar))
+						conChar->c = 32;	// Set
+				}
+
+			} else {
+				// We're on the last character
+				if (iConsole_find_conChar_byXY(console, conInput->nX + conInput->nLength - 1, conInput->nY, NULL, &conChar))
+					conChar->c = 32;
+			}
+
+			// If we get here, we had an input at this point
+			return(true);
+
+		} else {
+			// They're outside of an input
+			iConsole_win_keydown(console, VK_LEFT, 0);
+		}
+
+		// If we get here, not on an input
+		return(false);
+	}
+
+
+
+
+//////////
+//
+// Called to 
+//
+//////
+	bool iConsole_win_input_prevField(SConsole* console, SConInput* conInput)
+	{
+		return(false);
+	}
+
+	bool iConsole_win_input_nextField(SConsole* console, SConInput* conInput)
 	{
 		return(false);
 	}

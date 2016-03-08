@@ -254,6 +254,8 @@
 	bool				iConsole_win_input_backspaceToStart			(SConsole* console, SConInput* conInput);
 	bool				iConsole_win_input_delete					(SConsole* console, SConInput* conInput);
 	bool				iConsole_win_input_deleteToEnd				(SConsole* console, SConInput* conInput);
+	bool				iConsole_win_input_prevField				(SConsole* console, SConInput* conInput);
+	bool				iConsole_win_input_nextField				(SConsole* console, SConInput* conInput);
 	bool				iConsole_win_input_render					(SConsole* console, HDC hdcBorder, SConInput* conInput, bool tlDrawBorder);
 
 	LRESULT CALLBACK	iConsole_wndProc							(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
