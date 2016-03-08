@@ -118,6 +118,8 @@ struct SDatum;
 		};
 		bool		flag1;
 		bool		flag2;
+		s32			value1;
+		s32			value2;
 
 		// Iterate function (return true to continue iteration, false to stop)
 		union {

@@ -1705,14 +1705,34 @@
 		// Iterate through to find one
 		memset(&bcb, 0, sizeof(bcb));
 		bcb.extra1 = console;
+		bcb.value1	= console->nXCursor;
+		bcb.value2	= console->nYCursor;
 		if (console->nXCursor >= 0)
-			iBuilder_iterate(gsInputRoot, sizeof(SConInput), &bcb, (uptr)&iConsole_find_conInput_byCursorXY__callback);
+			iBuilder_iterate(gsInputRoot, sizeof(SConInput), &bcb, (uptr)&iConsole_find_conInput_byXY__callback);
 
 		// Indicate success or failure
 		return((SConInput*)bcb.extra2);
 	}
 
-	bool iConsole_find_conInput_byCursorXY__callback(SBuilderCallback* bcb)
+	SConInput* iConsole_find_conInput_byXY(SConsole* console, s32 tnX, s32 tnY)
+	{
+		SBuilderCallback bcb;
+
+
+		// Iterate through to find one
+		memset(&bcb, 0, sizeof(bcb));
+		bcb.extra1 = console;
+		bcb.value1	= tnX;
+		bcb.value2	= tnY;
+		if (console->nXCursor >= 0)
+			iBuilder_iterate(gsInputRoot, sizeof(SConInput), &bcb, (uptr)&iConsole_find_conInput_byXY__callback);
+
+		// Indicate success or failure
+		return((SConInput*)bcb.extra2);
+	}
+
+	// Uses bcb.value1=X, bcb.value2=Y
+	bool iConsole_find_conInput_byXY__callback(SBuilderCallback* bcb)
 	{
 		SConsole*	console;
 		SConInput*	conInput;
@@ -1723,7 +1743,7 @@
 		conInput	= (SConInput*)bcb->iter_ptr;
 
 		// See if we're in range
-		if (console->nYCursor == conInput->nY && console->nXCursor >= conInput->nX && console->nXCursor <= conInput->nX + conInput->nLength)
+		if (bcb->value2 == conInput->nY && bcb->value1 >= conInput->nX && bcb->value1 <= conInput->nX + conInput->nLength)
 		{
 			// Found it
 			bcb->extra2 = conInput;
@@ -2114,11 +2134,155 @@
 //////
 	bool iConsole_win_input_prevField(SConsole* console, SConInput* conInput)
 	{
+		s32			lnY, lnX, lnYStart, lnXStart, lnYStop, lnPass;
+		SConInput*	conInputCandidate;
+
+
+		// Iterate from where we are down, and then begin again at the top if need be
+		if (conInput)
+		{
+			lnYStart	= conInput->nY;
+			lnYStop		= 0;
+			lnXStart	= conInput->nX;
+
+		} else {
+			// Not on a field, so we're searching for the first one
+			lnYStart	= console->nYCursor;
+			lnYStop		= 0;
+			lnXStart	= console->nXCursor;
+		}
+
+		// Iterate down
+		for (lnPass = 0; lnPass < 2; lnPass++)
+		{
+			//////////
+			// Search every row down
+			//////
+				for (lnY = lnYStart; lnY > lnYStop; lnY--, lnXStart = console->nCols - 1)
+				{
+					// Iterate across every row
+					for (lnX = lnXStart; lnX > 0; lnX--)
+					{
+						// Search for an input at these coordinates
+						conInputCandidate = iConsole_find_conInput_byXY(console, lnX, lnY);
+						if (conInputCandidate && conInputCandidate != conInput)
+						{
+							// We found it
+							console->nXCursor	= conInputCandidate->nX;
+							console->nYCursor	= conInputCandidate->nY;
+
+							// Go ahead and keyboard an end key as well
+							iConsole_win_keydown(console, VK_END, NULL);
+
+							// Indicate success
+							return(true);
+						}
+					}
+				}
+
+
+			//////////
+			// If we didn't find it on this pass
+			//////
+				if (lnPass == 0)
+				{
+					// We didn't find it from where we were to the end of the screen, so start over at the top
+					lnYStart = console->nRows - 1;
+					if (conInput)		lnYStop = conInput->nY - 1;
+					else				lnYStop = console->nYCursor - 1;
+
+				} else {
+					// It wasn't found anywhere, so just move to the start of the original input
+					if (conInput)
+					{
+						console->nXCursor	= conInput->nX;
+						console->nYCursor	= conInput->nY;
+
+						// Indicate success
+						return(true);
+					}
+				}
+
+		}
+
+		// If we get here, nothing found
 		return(false);
 	}
 
 	bool iConsole_win_input_nextField(SConsole* console, SConInput* conInput)
 	{
+		s32			lnY, lnX, lnYStart, lnXStart, lnYStop, lnPass;
+		SConInput*	conInputCandidate;
+
+
+		// Iterate from where we are down, and then begin again at the top if need be
+		if (conInput)
+		{
+			lnYStart	= conInput->nY;
+			lnYStop		= console->nRows;
+			lnXStart	= conInput->nX + conInput->nLength;
+
+		} else {
+			// Not on a field, so we're searching for the first one
+			lnYStart	= console->nYCursor;
+			lnYStop		= console->nRows;
+			lnXStart	= console->nXCursor;
+		}
+
+		// Iterate down
+		for (lnPass = 0; lnPass < 2; lnPass++)
+		{
+			//////////
+			// Search every row down
+			//////
+				for (lnY = lnYStart; lnY < lnYStop; lnY++, lnXStart = 0)
+				{
+					// Iterate across every row
+					for (lnX = lnXStart; lnX < console->nCols; lnX++)
+					{
+						// Search for an input at these coordinates
+						conInputCandidate = iConsole_find_conInput_byXY(console, lnX, lnY);
+						if (conInputCandidate && conInputCandidate != conInput)
+						{
+							// We found it
+							console->nXCursor	= conInputCandidate->nX;
+							console->nYCursor	= conInputCandidate->nY;
+
+							// Go ahead and keyboard an end key as well
+							iConsole_win_keydown(console, VK_END, NULL);
+
+							// Indicate success
+							return(true);
+						}
+					}
+				}
+
+
+			//////////
+			// If we didn't find it on this pass
+			//////
+				if (lnPass == 0)
+				{
+					// We didn't find it from where we were to the end of the screen, so start over at the top
+					lnYStart = 0;
+					if (conInput)		lnYStop = conInput->nY + 1;
+					else				lnYStop = console->nYCursor + 1;
+
+				} else {
+					// It wasn't found anywhere, so just move to the start of the original input
+					if (conInput)
+					{
+						console->nXCursor	= conInput->nX;
+						console->nYCursor	= conInput->nY;
+
+						// Indicate success
+						return(true);
+					}
+				}
+
+		}
+
+		// If we get here, nothing found
 		return(false);
 	}
 

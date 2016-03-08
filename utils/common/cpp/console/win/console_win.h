@@ -245,7 +245,8 @@
 	u32					iGetNextWmApp								(void);
 	void				iConsole_win_readMessages					(void);
 	SConInput*			iConsole_find_conInput_byCursorXY			(SConsole* console);
-	bool				iConsole_find_conInput_byCursorXY__callback	(SBuilderCallback* bcb);
+	SConInput*			iConsole_find_conInput_byXY					(SConsole* console, s32 tnX, s32 tnY);
+	bool				iConsole_find_conInput_byXY__callback		(SBuilderCallback* bcb);
 	bool				iConsole_find_conChar_byXY					(SConsole* console, s32 tnX, s32 tnY, SConRow** tsConRow, SConChar** tsConChar);
 
 	bool				iConsole_win_input_home						(SConsole* console, SConInput* conInput);
