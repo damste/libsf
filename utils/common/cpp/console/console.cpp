@@ -160,7 +160,7 @@
 				console->nHeight		= tnRows * 16;
 				console->nCharWidth		= 8;
 				console->nCharHeight	= 16;
-				console->nCharFont		= _CONSOLE_FONT_8x16_8;		// Default to this font until they specify otherwise
+				console->nCharFont		= _CONSOLE_FONT_8x16;		// Default to this font until they specify otherwise
 
 				// Copy over the callback data
 				memcpy(&console->cb, cb, sizeof(console->cb));
@@ -422,90 +422,14 @@
 // the rest are pass-thru displayed.
 //
 //////
-	CONAPI s32 console_print(uptr tnHandle, s8* text, s32 tnTextLength)
+	CONAPI s32 console_print(uptr tnHandle, u8* text, s32 tnTextLength)
 	{
-		s8			c;
-		s32			lnI, lnJ;
-		SConsole*	console;
+		return(iConsole_print_common(tnHandle, text, tnTextLength, false));
+	}
 
-
-		// See if we have a console
-		if (iConsole_validateInitialization() && (console = iConsole_find_byHandle(tnHandle)))
-		{
-			// Make sure we have a scroll buffer
-			if (iConsole_validateScrollBuffer(console))
-			{
-				// Make sure they're printing something valid
-				if (text)
-				{
-					// Update the length if need be
-					tnTextLength = ((tnTextLength < 0) ? strlen(text) : tnTextLength);
-
-					// Begin processing
-					for (lnI = 0; lnI < tnTextLength; lnI++)
-					{
-						// Parse out the character
-					    if ((c = text[lnI]) == 13)
-						{
-							// Carriage return
-							 console->nXText = 0;
-
-						} else if (c == 10) {
-							// Line feed
-							if (console->nYText >= console->nRows - 1)
-							{
-								// We need to scroll up one
-								iiConsole_scroll(console);
-								
-							} else {
-								// Enough room to move down one row
-								++console->nYText;
-							}
-
-							// Move to the start
-							console->nXText = 0;
-
-						} else if (c == 9) {
-							// Tab
-							for (lnJ = console->nXText + 1; lnJ % 4 != 0; )
-								++lnJ;
-
-							// Make sure it's in range
-							console->nXText = min(console->nXText, console->nWidth);
-
-						} else {
-							// Store it
-							if (c == '\\')
-							{
-								// If we're at the end, we can't continue
-								if (lnI >= tnTextLength - 1)
-									break;
-
-								// Grab the next character
-								c = text[++lnI];
-							}
-
-							// Store the character
-							iiConsole_storeCharacter(console, c, false, &console->backColor, &console->charColor);
-						}
-					}
-					// When we get here, the data was pushed
-					return(_CONSOLE_ERROR__NO_ERROR);
-
-				} else {
-					// Something's awry
-					return(_CONSOLE_ERROR__INVALID_PARAMETERS);
-				}
-
-			} else {
-				// Something's awry
-				return(_CONSOLE_ERROR__CANNOT_ALLOCATE_BUFFER);
-			}
-		}
-
-		// Failure
-		return(_CONSOLE_ERROR__HANDLE_NOT_FOUND);
-
+	CONAPI s32 console_print_with_colors(uptr tnHandle, u8* text, s32 tnTextLength)
+	{
+		return(iConsole_print_common(tnHandle, text, tnTextLength, true));
 	}
 
 
@@ -519,7 +443,7 @@
 	CONAPI s32 console_print_crlf(uptr tnHandle)
 	{
 		// Display a CR/LF
-		return(console_print(tnHandle, "\n\r"));
+		return(console_print_with_colors(tnHandle, (u8*)"\n\r"));
 	}
 
 
@@ -850,6 +774,137 @@
 
 //////////
 //
+// Common print algorithm
+//
+//////
+	s32 iConsole_print_common(uptr tnHandle, u8* text, s32 tnTextLength, bool tlWithColors)
+	{
+		u8			c;
+		s32			lnI, lnJ;
+		SBgra		backColor, charColor;
+		SConsole*	console;
+
+
+		// See if we have a console
+		if (iConsole_validateInitialization() && (console = iConsole_find_byHandle(tnHandle)))
+		{
+			// Make sure we have a scroll buffer
+			if (iConsole_validateScrollBuffer(console))
+			{
+				// Make sure they're printing something valid
+				if (text)
+				{
+					// Update the length if need be
+					tnTextLength = ((tnTextLength < 0) ? iConsole_strlen(text) : tnTextLength);
+
+					// Begin processing
+					for (lnI = 0; lnI < tnTextLength; lnI++)
+					{
+						// Parse out the character
+					    if ((c = text[lnI]) == 13)
+						{
+							// Carriage return
+							 console->nXText = 0;
+
+						} else if (c == 10) {
+							// Line feed
+							if (console->nYText >= console->nRows - 1)
+							{
+								// We need to scroll up one
+								iiConsole_scroll(console);
+								
+							} else {
+								// Enough room to move down one row
+								++console->nYText;
+							}
+
+							// Move to the start
+							console->nXText = 0;
+
+						} else if (c == 9) {
+							// Tab
+							for (lnJ = console->nXText + 1; lnJ % 4 != 0; )
+								++lnJ;
+
+							// Make sure it's in range
+							console->nXText = min(console->nXText, console->nWidth);
+
+						} else if (c == 255) {
+							// Single-color code
+							if (tlWithColors)
+							{
+								// Translate the colors
+								iConsole_translate_8bit_color(c, &backColor, &charColor);
+
+								// Set the colors
+								console->backColor.color = backColor.color;
+								console->charColor.color = charColor.color;
+							}
+
+							// Skip past the code
+							++lnI;
+
+						} else if (c == 254) {
+							// Six-color code, in the form RGB,RGB for backColor,CharColor
+							if (tlWithColors)
+							{
+								// Grab the colors
+								backColor.red = text[lnI + 1];
+								backColor.grn = text[lnI + 2];
+								backColor.blu = text[lnI + 3];
+								charColor.red = text[lnI + 4];
+								charColor.grn = text[lnI + 5];
+								charColor.blu = text[lnI + 6];
+
+								// Set the colors
+								console->backColor.color = backColor.color;
+								console->charColor.color = charColor.color;
+							}
+
+							// Skip past the codes
+							lnI += 6;
+
+						} else {
+							// Store it
+							if (c == '\\')
+							{
+								// If we're at the end, we can't continue
+								if (lnI >= tnTextLength - 1)
+									break;
+
+								// Grab the next character
+								c = text[++lnI];
+							}
+
+							// Store the character
+							if (tlWithColors)		iiConsole_storeCharacter_withColors(console, c, false, &console->backColor, &console->charColor);
+							else					iiConsole_storeCharacter(console, c, false);
+						}
+					}
+					// When we get here, the data was pushed
+					return(_CONSOLE_ERROR__NO_ERROR);
+
+				} else {
+					// Something's awry
+					return(_CONSOLE_ERROR__INVALID_PARAMETERS);
+				}
+
+			} else {
+				// Something's awry
+				return(_CONSOLE_ERROR__CANNOT_ALLOCATE_BUFFER);
+			}
+		}
+
+		// Failure
+		return(_CONSOLE_ERROR__HANDLE_NOT_FOUND);
+
+	}
+
+
+
+
+//////////
+//
 // Callback, iterated through every option from iProperty_iterate() in console_setOptions()
 //
 //////
@@ -1009,10 +1064,23 @@
 // Store a character, which may require scrolling to the next line
 //
 //////
-	void iiConsole_storeCharacter(SConsole* console, char c, bool tlAtCursorXY, SBgra* backColor, SBgra* charColor)
+	void iiConsole_storeCharacter(SConsole* console, char c, bool tlAtCursorXY)
 	{
 		// Store the character into the buffer, and re-render if necessary
 		console_os_store_character;
+
+		// Indicate the current X,Y needs to be repainted
+		console_os_xy_needs_repainted;
+
+		// Move to the next character
+		++console->nXText;
+		iiConsole_validateXYRange(console);
+	}
+
+	void iiConsole_storeCharacter_withColors(SConsole* console, char c, bool tlAtCursorXY, SBgra* backColor, SBgra* charColor)
+	{
+		// Store the character into the buffer, and re-render if necessary
+		console_os_store_character_with_colors;
 
 		// Indicate the current X,Y needs to be repainted
 		console_os_xy_needs_repainted;
@@ -1030,10 +1098,19 @@
 // Store a character at the indicated X,Y coordinate, but does not move the cursor
 //
 //////
-	void iiConsole_storeCharacter_atXY(SConsole* console, char c, s32 tnX, s32 tnY, SBgra* backColor, SBgra* charColor)
+	void iiConsole_storeCharacterAtXY(SConsole* console, char c, s32 tnX, s32 tnY)
 	{
 		// Store the character into the buffer, and re-render if necessary
 		console_os_store_character_atxy(tnX, tnY);
+
+		// Indicate the current X,Y needs to be repainted
+		console_os_xy_needs_repainted_atxy(tnX, tnY);
+	}
+
+	void iiConsole_storeCharacterAtXY_withColors(SConsole* console, char c, s32 tnX, s32 tnY, SBgra* backColor, SBgra* charColor)
+	{
+		// Store the character into the buffer, and re-render if necessary
+		console_os_store_character_atxy_with_colors(tnX, tnY);
 
 		// Indicate the current X,Y needs to be repainted
 		console_os_xy_needs_repainted_atxy(tnX, tnY);
@@ -1327,14 +1404,14 @@
 		{
 			// Iterate for every character within
 			for (lnX = tnX + 1, lnXStop = tnX + tnWidth - 1; lnX <= lnXStop; lnX++)
-				iiConsole_storeCharacter_atXY(console, mid, lnX, tnY, backColor, charColor);
+				iiConsole_storeCharacterAtXY_withColors(console, mid, lnX, tnY, backColor, charColor);
 		}
 
 		// Draw Left-character
-		iiConsole_storeCharacter_atXY(console, left, tnX, tnY, backColor, charColor);
+		iiConsole_storeCharacterAtXY_withColors(console, left, tnX, tnY, backColor, charColor);
 
 		// Draw right-character
-		iiConsole_storeCharacter_atXY(console, right, tnX + tnWidth - 1, tnY, backColor, charColor);
+		iiConsole_storeCharacterAtXY_withColors(console, right, tnX + tnWidth - 1, tnY, backColor, charColor);
 	}
 
 
@@ -1435,4 +1512,51 @@
 
 		// If we get here, not found
 		return(false);
+	}
+
+
+
+
+//////////
+//
+// Called to determine the length of a string that may have escaped color codes contained within
+//
+//////
+	s32 iConsole_strlen(u8* text)
+	{
+		u8		c;
+		s32		lnLength;
+
+
+		// Iterate until we reach the end
+		for (lnLength = 0; text[lnLength] != 0; lnLength++)
+		{
+			// If it's a color code, skip past the colors contained within
+			if ((c = text[lnLength]) == 255)
+			{
+				// Single-color code
+				++lnLength;
+
+			} else if (c == 254) {
+				// Six-color code with RGB,RGB backColor,charColor format
+				lnLength += 6;
+			}
+		}
+
+		// Indicate the length
+		return(lnLength);
+	}
+
+
+
+
+//////////
+//
+// Color translation using the 8-bit format common on VGAs
+//
+//////
+	void iConsole_translate_8bit_color(u8 c, SBgra* backColor, SBgra* charColor)
+	{
+		if (backColor)		backColor->color = colors_vga[c >>  4].color;
+		if (charColor)		charColor->color = colors_vga[c & 0xf].color;
 	}

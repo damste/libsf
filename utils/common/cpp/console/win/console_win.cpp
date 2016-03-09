@@ -151,7 +151,7 @@
 			console_setProperties(lnCon1, &props);
 #if !defined(_ASCII_CHART)
 			console_gotoXY(lnCon1, 0, 1);
-			console_print(lnCon1, " eax\263\n\r ebx\263\n\r ecx\263\n\r edx\263\n\r esi\263\n\r edi\263\n\r ebp\263\n\r esp\263\n\r  cs\263\n\r  ds\263\n\r  es\263\n\r  fs\263\n\r  gs\263");
+			console_print_with_colors(lnCon1, (u8*)" eax\263\n\r ebx\263\n\r ecx\263\n\r edx\263\n\r esi\263\n\r edi\263\n\r ebp\263\n\r esp\263\n\r  cs\263\n\r  ds\263\n\r  es\263\n\r  fs\263\n\r  gs\263");
 #endif
 
 
@@ -181,7 +181,7 @@
 				buffer[lnI++] = '\r';
 			}
 			sprintf(buffer + lnI - 1, "0123456789abcdef");
-			console_print(lnCon1, buffer, lnI + 15);
+			console_print_with_colors(lnCon1, buffer, lnI + 15);
 #endif
 
 
@@ -676,19 +676,41 @@
 // Called to set the border color
 //
 //////
+	struct SDwmLoad
+	{
+		union {
+			FARPROC		_dwmSetWindowAttributeFunc;
+			HRESULT		(*dwmSetWindowAttributeFunc)		(HWND hwnd, u32 dwAttribute, LPVOID pvAttribute, u32 cbAttribute);
+		};
+	};
 	s32 console_win_set_border(SConsole* console, bool tlShowBorder, SBgra* color)
 	{
-		DWMNCRENDERINGPOLICY policy;
+		DWMNCRENDERINGPOLICY	policy;
+		static HMODULE			hmod_dwm = NULL;
+		static SDwmLoad			dwm = { NULL };
 
 
 		// Store the new values
 		console->lShowBorder		= tlShowBorder;
 		console->borderColor.color	= color->color;
 
-		// Turn off aero glass so the border renders properly
-		if (tlShowBorder)		policy = DWMNCRP_DISABLED;
-		else					policy = DWMNCRP_ENABLED;
-		DwmSetWindowAttribute(console->hwnd, DWMWA_NCRENDERING_POLICY, (void*)&policy, sizeof(policy));
+
+		//////////
+		// Turn off aero glass on Vista or later (so the border renders properly)
+		//////
+			// Open the DLL
+			if (hmod_dwm != NULL || (hmod_dwm = LoadLibrary("dwmapi.dll")) != INVALID_HANDLE_VALUE)
+			{
+				// Grab the procedure address
+				if (dwm._dwmSetWindowAttributeFunc || (dwm._dwmSetWindowAttributeFunc = GetProcAddress(hmod_dwm, "")))
+				{
+					// Dispatch
+					if (tlShowBorder)		policy = DWMNCRP_DISABLED;
+					else					policy = DWMNCRP_ENABLED;
+					dwm.dwmSetWindowAttributeFunc(console->hwnd, DWMWA_NCRENDERING_POLICY, (void*)&policy, sizeof(policy));
+				}
+			}
+
 
 		// Signal the non-client repaint
 		SendMessage(console->hwnd, WM_NCPAINT, 0, 0);
@@ -705,15 +727,37 @@
 // Called to store the indicated character into the console buffer
 //
 //////
-	void console_win_store_character(SConsole* console, u8 c, bool tlAtCursorXY, SBgra* backColor, SBgra* charColor)
+	void console_win_store_character(SConsole* console, u8 c, bool tlAtCursorXY)
 	{
 		// Pass-thru to the common function
 		console_win_store_character_atxy(	console, c,		((tlAtCursorXY) ? console->nXCursor : console->nXText),
-															((tlAtCursorXY) ? console->nYCursor : console->nYText),
-											backColor, charColor);
+															((tlAtCursorXY) ? console->nYCursor : console->nYText));
 	}
 
-	void console_win_store_character_atxy(SConsole* console, u8 c, s32 tnX, s32 tnY, SBgra* backColor, SBgra* charColor)
+	void console_win_store_character_with_colors(SConsole* console, u8 c, bool tlAtCursorXY, SBgra* backColor, SBgra* charColor)
+	{
+		// Pass-thru to the common function
+		console_win_store_character_atxy_with_colors(	console, c,		((tlAtCursorXY) ? console->nXCursor : console->nXText),
+																		((tlAtCursorXY) ? console->nYCursor : console->nYText),
+																		backColor, charColor);
+	}
+
+	void console_win_store_character_atxy(SConsole* console, u8 c, s32 tnX, s32 tnY)
+	{
+		SConChar* conChar;
+
+
+		// Make sure the environment is sane
+		if (iConsole_find_conChar_byXY(console, tnX, tnY, NULL, &conChar))
+		{
+			conChar->c = c;		// Store character
+
+			// Redraw the one character
+			iConsole_win_renderSingleChar(console, tnX, tnY, conChar);
+		}
+	}
+
+	void console_win_store_character_atxy_with_colors(SConsole* console, u8 c, s32 tnX, s32 tnY, SBgra* backColor, SBgra* charColor)
 	{
 		SConChar* conChar;
 

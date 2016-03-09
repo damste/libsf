@@ -155,8 +155,10 @@
 	#define console_os_error										console_win_error(console, lnResult)
 	#define console_os_font_setup									console_win_fontSetup(console, font)
 	#define console_os_initialize									console_win_initialize()
-	#define console_os_store_character								console_win_store_character(console, c, tlAtCursorXY, backColor, charColor)
-	#define console_os_store_character_atxy(x,y)					console_win_store_character_atxy(console, c, x, y, backColor, charColor)
+	#define console_os_store_character								console_win_store_character(console, c, tlAtCursorXY)
+	#define console_os_store_character_atxy(x,y)					console_win_store_character_atxy(console, c, x, y)
+	#define console_os_store_character_with_colors					console_win_store_character_with_colors(console, c, tlAtCursorXY, backColor, charColor)
+	#define console_os_store_character_atxy_with_colors(x,y)		console_win_store_character_atxy_with_colors(console, c, x, y, backColor, charColor)
 	#define console_os_render										iConsole_win_render(console)
 	#define console_os_xy_needs_repainted							console_win_xy_needs_repainted(console)
 	#define console_os_xy_needs_repainted_atxy(x,y)					console_win_xy_needs_repainted_atxy(console, x, y)
@@ -228,8 +230,10 @@
 	void				console_win_xy_needs_repainted				(SConsole* console);
 	void				console_win_xy_needs_repainted_atxy			(SConsole* console, s32 tnX, s32 tnY);
 	s32					console_win_set_border						(SConsole* console, bool tlShowBorder, SBgra* color);
-	void	 			console_win_store_character					(SConsole* console, u8 c, bool tlAtCursorXY, SBgra* backColor, SBgra* charColor);
-	void				console_win_store_character_atxy			(SConsole* console, u8 c, s32 tnX, s32 tnY, SBgra* backColor, SBgra* charColor);
+	void	 			console_win_store_character					(SConsole* console, u8 c, bool tlAtCursorXY);
+	void				console_win_store_character_atxy			(SConsole* console, u8 c, s32 tnX, s32 tnY);
+	void	 			console_win_store_character_with_colors		(SConsole* console, u8 c, bool tlAtCursorXY, SBgra* backColor, SBgra* charColor);
+	void				console_win_store_character_atxy_with_colors(SConsole* console, u8 c, s32 tnX, s32 tnY, SBgra* backColor, SBgra* charColor);
 
 	// Internal functions
 	bool				iConsole_win_create_window__callbackRow		(SBuilderCallback* bcb);

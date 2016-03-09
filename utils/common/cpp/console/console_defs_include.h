@@ -107,7 +107,8 @@
 	CONAPI s32		console_getFont						(uptr tnHandle, s32 tnX, s32 tnY, SDatum* fontName, s32* tnPointSize, bool* tlBold, bool* tlItalic, bool* tlUnderline);
 
 	// General write algorithm, processes CR/LF, and auto-scrolls
-	CONAPI s32		console_print						(uptr tnHandle, s8* text, s32 tnTextLength = -1);
+	CONAPI s32		console_print						(uptr tnHandle, u8* text, s32 tnTextLength = -1);
+	CONAPI s32		console_print_with_colors			(uptr tnHandle, u8* text, s32 tnTextLength = -1);
 	CONAPI s32		console_print_crlf					(uptr tnHandle);
 	CONAPI s32		console_gotoXY						(uptr tnHandle, s32 tnX, s32 tnY);
 	CONAPI s32		console_getXY						(uptr tnHandle, s32* tnX, s32* tnY);

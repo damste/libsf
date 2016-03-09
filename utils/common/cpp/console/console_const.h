@@ -192,6 +192,30 @@
 
 
 //////////
+// 8-bit color patterns seen on the VGA (with some modern adjustments)
+//////
+	const SBgra colors_vga[] =
+	{
+		{	bgra(0, 0, 0, 255)			},		// 0	- black
+		{	bgra(192, 0, 0, 255)		},		// 1	- blue
+		{	bgra(0, 192, 0, 255)		},		// 2	- green
+		{	bgra(192, 192, 0, 255)		},		// 3	- cyan
+		{	bgra(0, 0, 192, 255)		},		// 4	- red
+		{	bgra(164, 64, 164, 255)		},		// 5	- purple
+		{	bgra(64, 192, 192, 255)		},		// 6	- tan
+		{	bgra(164, 164, 164, 255)	},		// 7	- gray
+		{	bgra(64, 64, 64, 255)		},		// 8	- charcoal
+		{	bgra(255, 32, 32, 255)		},		// 9	- bright blue
+		{	bgra(32, 255, 32, 255)		},		// 10	- bright green
+		{	bgra(255, 255, 32, 255)		},		// 11	- bright cyan
+		{	bgra(32, 32, 255, 255)		},		// 12	- bright red
+		{	bgra(255, 92, 255, 255)		},		// 13	- bright purple
+		{	bgra(255, 255, 164, 255)	},		// 14	- bright yellow
+		{	bgra(255, 255, 255, 255)	}		// 15	- bright white
+	};
+
+
+//////////
 // Internal constants
 //////
 	cs8			cgc_internal_fontName[]					= "$fixed";
