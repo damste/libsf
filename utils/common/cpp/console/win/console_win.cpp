@@ -138,7 +138,7 @@
 			ccb._console_keyDown	= (uptr)&iiConsole_win_unit_test__callback_keyDown;
 			ccb._console_mouseDown	= (uptr)&iiConsole_win_unit_test__callback_mouseDown;
 // 			lnCon1 = console_allocate(&title, -1, -1, 14, 15, &ccb);
-			lnCon1 = console_allocate(&title, -1, -1, 20, 20, &ccb);
+			lnCon1 = console_allocate(&title, -1, -1, 20, 10/*20*/, &ccb);
 			console_setProperties(lnCon1, &props);
 			console_show(lnCon1, true);
 
@@ -194,93 +194,93 @@
 		//////////
 		// Some input areas
 		//////
-#if !defined(_ASCII_CHART)
-			memset(&cibc, 0, sizeof(cibc));
-			cibc.lSuppressBorder			= true;
-			cibc.lInnerBorder				= true;
-			cibc.innerBorderColor.color		= blackColor.color;
-			cibc.lVisualize_onChange		= true;
-			cibc.backColor_changed.color	= yellowColor.color;
-			cibc.charColor_changed.color	= blackColor.color;
-			cibc._onChanged		= (uptr)&iiConsole_win_unit_test__onChanged;
-			cibc._onKeystroke	= (uptr)&iiConsole_win_unit_test__onKeystroke;
-			cibc._onLostFocus	= (uptr)&iiConsole_win_unit_test__onLostFocus;
-			cibc._onGotFocus	= (uptr)&iiConsole_win_unit_test__onGotFocus;
-
-			datum_eax.data		= &buf_eax[0];
-			datum_eax.length	= 8;
-			memset(&buf_eax, 32, sizeof(buf_eax));
-			console_input_field_add(lnCon1, 5, 1, datum_eax.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_eax, &cibc);
-
-			datum_ebx.data		= &buf_ebx[0];
-			datum_ebx.length	= 8;
-			memset(&buf_ebx, 32, sizeof(buf_ebx));
-			console_input_field_add(lnCon1, 5, 2, datum_ebx.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_ebx, &cibc);
-
-			datum_ecx.data		= &buf_ecx[0];
-			datum_ecx.length	= 8;
-			memset(&buf_ecx, 32, sizeof(buf_ecx));
-			console_input_field_add(lnCon1, 5, 3, datum_ecx.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_ecx, &cibc);
-
-			datum_edx.data		= &buf_edx[0];
-			datum_edx.length	= 8;
-			memset(&buf_edx, 32, sizeof(buf_edx));
-			console_input_field_add(lnCon1, 5, 4, datum_edx.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_edx, &cibc);
-
-			datum_esi.data		= &buf_esi[0];
-			datum_esi.length	= 8;
-			memset(&buf_esi, 32, sizeof(buf_esi));
-			console_input_field_add(lnCon1, 5, 5, datum_esi.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_esi, &cibc);
-
-			datum_edi.data		= &buf_edi[0];
-			datum_edi.length	= 8;
-			memset(&buf_edi, 32, sizeof(buf_edi));
-			console_input_field_add(lnCon1, 5, 6, datum_edi.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_edi, &cibc);
-
-			datum_ebp.data		= &buf_ebp[0];
-			datum_ebp.length	= 8;
-			memset(&buf_ebp, 32, sizeof(buf_ebp));
-			console_input_field_add(lnCon1, 5, 7, datum_ebp.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_ebp, &cibc);
-
-			datum_esp.data		= &buf_esp[0];
-			datum_esp.length	= 8;
-			memset(&buf_esp, 32, sizeof(buf_esp));
-			console_input_field_add(lnCon1, 5, 8, datum_esp.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_esp, &cibc);
-
-			datum_cs.data	= &buf_cs[0];
-			datum_cs.length	= 4;
-			memset(&buf_cs, 32, sizeof(buf_cs));
-			console_input_field_add(lnCon1, 5, 9, datum_cs.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_cs, &cibc);
-
-			datum_ds.data	= &buf_ds[0];
-			datum_ds.length	= 4;
-			memset(&buf_ds, 32, sizeof(buf_ds));
-			console_input_field_add(lnCon1, 5, 10, datum_ds.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_ds, &cibc);
-
-			datum_es.data	= &buf_es[0];
-			datum_es.length	= 4;
-			memset(&buf_es, 32, sizeof(buf_es));
-			console_input_field_add(lnCon1, 5, 11, datum_es.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_es, &cibc);
-
-			datum_fs.data	= &buf_fs[0];
-			datum_fs.length	= 4;
-			memset(&buf_fs, 32, sizeof(buf_fs));
-			console_input_field_add(lnCon1, 5, 12, datum_fs.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_fs, &cibc);
-
-			datum_gs.data	= &buf_gs[0];
-			datum_gs.length	= 4;
-			memset(&buf_gs, 32, sizeof(buf_gs));
-			console_input_field_add(lnCon1, 5, 13, datum_gs.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_gs, &cibc);
-#endif
-
-
-		//////////
-		// Draw a box around it
-		//////
-#if !defined(_ASCII_CHART)
-// 			console_box_single(lnCon1, 0, 0, 14, 14, (SBgra*)&blackColor, (SBgra*)&greenColor);
-			console_box_double(lnCon1, 0, 0, 14, 14, (SBgra*)&blackColor, (SBgra*)&greenColor);
-#endif
+// #if !defined(_ASCII_CHART)
+// 			memset(&cibc, 0, sizeof(cibc));
+// 			cibc.lSuppressBorder			= true;
+// 			cibc.lInnerBorder				= true;
+// 			cibc.innerBorderColor.color		= blackColor.color;
+// 			cibc.lVisualize_onChange		= true;
+// 			cibc.backColor_changed.color	= yellowColor.color;
+// 			cibc.charColor_changed.color	= blackColor.color;
+// 			cibc._onChanged		= (uptr)&iiConsole_win_unit_test__onChanged;
+// 			cibc._onKeystroke	= (uptr)&iiConsole_win_unit_test__onKeystroke;
+// 			cibc._onLostFocus	= (uptr)&iiConsole_win_unit_test__onLostFocus;
+// 			cibc._onGotFocus	= (uptr)&iiConsole_win_unit_test__onGotFocus;
+// 
+// 			datum_eax.data		= &buf_eax[0];
+// 			datum_eax.length	= 8;
+// 			memset(&buf_eax, 32, sizeof(buf_eax));
+// 			console_input_field_add(lnCon1, 5, 1, datum_eax.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_eax, &cibc);
+// 
+// 			datum_ebx.data		= &buf_ebx[0];
+// 			datum_ebx.length	= 8;
+// 			memset(&buf_ebx, 32, sizeof(buf_ebx));
+// 			console_input_field_add(lnCon1, 5, 2, datum_ebx.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_ebx, &cibc);
+// 
+// 			datum_ecx.data		= &buf_ecx[0];
+// 			datum_ecx.length	= 8;
+// 			memset(&buf_ecx, 32, sizeof(buf_ecx));
+// 			console_input_field_add(lnCon1, 5, 3, datum_ecx.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_ecx, &cibc);
+// 
+// 			datum_edx.data		= &buf_edx[0];
+// 			datum_edx.length	= 8;
+// 			memset(&buf_edx, 32, sizeof(buf_edx));
+// 			console_input_field_add(lnCon1, 5, 4, datum_edx.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_edx, &cibc);
+// 
+// 			datum_esi.data		= &buf_esi[0];
+// 			datum_esi.length	= 8;
+// 			memset(&buf_esi, 32, sizeof(buf_esi));
+// 			console_input_field_add(lnCon1, 5, 5, datum_esi.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_esi, &cibc);
+// 
+// 			datum_edi.data		= &buf_edi[0];
+// 			datum_edi.length	= 8;
+// 			memset(&buf_edi, 32, sizeof(buf_edi));
+// 			console_input_field_add(lnCon1, 5, 6, datum_edi.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_edi, &cibc);
+// 
+// 			datum_ebp.data		= &buf_ebp[0];
+// 			datum_ebp.length	= 8;
+// 			memset(&buf_ebp, 32, sizeof(buf_ebp));
+// 			console_input_field_add(lnCon1, 5, 7, datum_ebp.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_ebp, &cibc);
+// 
+// 			datum_esp.data		= &buf_esp[0];
+// 			datum_esp.length	= 8;
+// 			memset(&buf_esp, 32, sizeof(buf_esp));
+// 			console_input_field_add(lnCon1, 5, 8, datum_esp.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_esp, &cibc);
+// 
+// 			datum_cs.data	= &buf_cs[0];
+// 			datum_cs.length	= 4;
+// 			memset(&buf_cs, 32, sizeof(buf_cs));
+// 			console_input_field_add(lnCon1, 5, 9, datum_cs.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_cs, &cibc);
+// 
+// 			datum_ds.data	= &buf_ds[0];
+// 			datum_ds.length	= 4;
+// 			memset(&buf_ds, 32, sizeof(buf_ds));
+// 			console_input_field_add(lnCon1, 5, 10, datum_ds.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_ds, &cibc);
+// 
+// 			datum_es.data	= &buf_es[0];
+// 			datum_es.length	= 4;
+// 			memset(&buf_es, 32, sizeof(buf_es));
+// 			console_input_field_add(lnCon1, 5, 11, datum_es.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_es, &cibc);
+// 
+// 			datum_fs.data	= &buf_fs[0];
+// 			datum_fs.length	= 4;
+// 			memset(&buf_fs, 32, sizeof(buf_fs));
+// 			console_input_field_add(lnCon1, 5, 12, datum_fs.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_fs, &cibc);
+// 
+// 			datum_gs.data	= &buf_gs[0];
+// 			datum_gs.length	= 4;
+// 			memset(&buf_gs, 32, sizeof(buf_gs));
+// 			console_input_field_add(lnCon1, 5, 13, datum_gs.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_gs, &cibc);
+// #endif
+// 
+// 
+// 		//////////
+// 		// Draw a box around it
+// 		//////
+// #if !defined(_ASCII_CHART)
+// // 			console_box_single(lnCon1, 0, 0, 14, 14, (SBgra*)&blackColor, (SBgra*)&greenColor);
+// 			console_box_double(lnCon1, 0, 0, 14, 14, (SBgra*)&blackColor, (SBgra*)&greenColor);
+// #endif
 
 
 		//////////
@@ -781,6 +781,34 @@
 
 //////////
 //
+// Called to scroll the contents of a window up or down
+//
+//////
+	s32 console_win_scroll_window(SConsole* console, s32 tnXul, s32 tnYul, s32 tnXlr, s32 tnYlr, s32 tnRows, bool tlMoveCursor)
+	{
+		// Make sure our environment is sane
+		if (tnRows == 0)
+			return(0);
+
+// TODO:  working here
+		// Up or down?
+		if (tnRows > 0)
+		{
+			// Scroll everything up
+
+		} else {
+			// Scroll everything down
+		}
+
+		// Indicate failure (for now)
+		return(-1);
+	}
+
+
+
+
+//////////
+//
 // Support functions
 //
 //////
@@ -829,9 +857,9 @@
 
 		// Populate
 		conChar->c					= 32;		// Space
-		conChar->nFont				= console->nCharFont;
 		conChar->backColor.color	= console->backColor.color;
 		conChar->charColor.color	= console->charColor.color;
+		conChar->nFont				= console->nCharFont;
 
 		// Continue iterating
 		return(true);

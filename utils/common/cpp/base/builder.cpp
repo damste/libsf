@@ -863,9 +863,10 @@
 	s32 iBuilder_iterate(SBuilder* builder, u32 tnStepSize, SBuilderCallback* cb, uptr _iterateFunc)
 	{
 		// Iterate from 0 all the way through to the end
-		return(iBuilder_iterate_N_to_N(builder, tnStepSize, 0, builder->populatedLength / tnStepSize, cb, _iterateFunc));
+		return(iBuilder_iterate_N_to_N(builder, tnStepSize, 0, (builder->populatedLength / tnStepSize) - 1, cb, _iterateFunc));
 	}
 
+	// Note:  Stop record is inclusive
 	s32 iBuilder_iterate_N_to_N(SBuilder* builder, u32 tnStepSize, u32 tnStartRecord, u32 tnStopRecord, SBuilderCallback* cb, uptr _iterateFunc)
 	{
 		s32 lnCount;
@@ -885,12 +886,69 @@
 
 			// Iterate through
 			// Note:  The values of cb->offset, cb->stepSize, and cb->_iterateFunc can be updated live as it's being iterated through
-			for (cb->offset = (tnStartRecord * tnStepSize), cb->iter_count = 0; cb->offset < builder->populatedLength && cb->offset < (tnStopRecord * tnStepSize); cb->offset += cb->stepSize, ++lnCount, ++cb->iter_count)
+			for (cb->offset = (tnStartRecord * tnStepSize), cb->iter_count = 0; cb->offset < builder->populatedLength && cb->offset <= (tnStopRecord * tnStepSize); cb->offset += cb->stepSize, ++lnCount, ++cb->iter_count)
 			{
 				// Setup for the iteration
 				cb->iter_ptr = builder->buffer + cb->offset;
 				if (!cb->iterateFunc(cb))
 					break;
+			}
+		}
+
+		// Indicate failure
+		return(lnCount);
+	}
+
+
+
+
+//////////
+//
+// Called to iterate through two builders in parallel
+//
+//////
+	s32 iBuilder_iterate2(SBuilder* builder1, SBuilder* builder2, u32 tnStepSize1, u32 tnStepSize2, SBuilderCallback2* cb2, uptr _iterate2Func)
+	{
+		// Iterate from 0 all the way through to the end of whichever one is shorter
+		return(iBuilder_iterate2_N_to_N(builder1, builder2, tnStepSize1, tnStepSize2, 0, min((builder1->populatedLength / tnStepSize1) - 1, (builder2->populatedLength / tnStepSize2) - 1), cb2, _iterate2Func));
+	}
+
+	// TODO:  It might be worthwhile here to continue on so long as either of the two builders are still within range, and pass NULL for the other parameter
+	// Note:  Stop record is inclusive
+	s32 iBuilder_iterate2_N_to_N(SBuilder* builder1, SBuilder* builder2, u32 tnStepSize1, u32 tnStepSize2, u32 tnStartRecord, u32 tnStopRecord, SBuilderCallback2* cb2, uptr _iterate2Func)
+	{
+		s32 lnCount;
+
+
+		// Make sure our environment is sane
+		lnCount = 0;
+		if (builder1 && builder1->populatedLength % tnStepSize1 == 0 && builder2 && builder2->populatedLength % tnStepSize2 == 0 && cb2 && (cb2->_iterate2Func || _iterate2Func) && tnStopRecord >= tnStartRecord)
+		{
+			// Use the passed parameter if it was provided
+			if (_iterate2Func)
+				cb2->_iterate2Func = _iterate2Func;
+
+			// Setup
+			cb2->b1			= builder1;
+			cb2->stepSize1	= tnStepSize1;
+			cb2->b2			= builder2;
+			cb2->stepSize2	= tnStepSize2;
+
+			// Iterate through
+			// Note:  The values of cb->offset, cb->stepSize, and cb->_iterateFunc can be updated live as it's being iterated through
+			cb2->offset1	= (tnStartRecord * tnStepSize1);
+			cb2->offset2	= (tnStartRecord * tnStepSize2);
+			for (cb2->iter_count = 0; cb2->offset1 < builder1->populatedLength && cb2->offset2 < builder2->populatedLength && cb2->offset1 <= (tnStopRecord * tnStepSize1) && cb2->offset2 <= (tnStopRecord * tnStepSize2); ++cb2->iter_count, ++lnCount)
+			{
+				// Setup for the iteration
+				cb2->iter1_ptr = builder1->buffer + cb2->offset1;
+				cb2->iter2_ptr = builder2->buffer + cb2->offset2;
+				if (!cb2->iterate2Func(cb2))
+					break;
+
+				// Continue for next loop
+				cb2->offset1 += cb2->stepSize1;
+				cb2->offset2 += cb2->stepSize2;
 			}
 		}
 

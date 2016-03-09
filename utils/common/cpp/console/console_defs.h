@@ -112,7 +112,8 @@
 	void				iiConsole_validateXYRange				(SConsole* console);
 	void				iiConsole_selectFont					(SConsole* console, s32 fontIndex);
 	void				iiConsole_scroll						(SConsole* console);
-	bool				iConsole_scroll__callback				(SBuilderCallback* bcb);
+	bool				iiConsole_scroll__callbackRow			(SBuilderCallback* bcb);
+	bool				iiConsole_scroll__callbackChar			(SBuilderCallback2* bcb2);
 	bool				iConsole_anyValidConsoles				(void);
 	bool				iConsole_anyValidConsoles__callback		(SBuilderCallback* bcb);
 	u32					iGetNextUid								(void);

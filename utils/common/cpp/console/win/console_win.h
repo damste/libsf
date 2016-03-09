@@ -163,6 +163,7 @@
 	#define console_os_xy_needs_repainted							console_win_xy_needs_repainted(console)
 	#define console_os_xy_needs_repainted_atxy(x,y)					console_win_xy_needs_repainted_atxy(console, x, y)
 	#define console_os_set_border									console_win_set_border(console, tlShowBorder, color)
+	#define	console_os_scroll_window								console_win_scroll_window(console, tnXul, tnYul, tnXlr, tnYlr, tnRows, tlMoveCursor)
 
 	#define console_dll_code										ghInstance = hInstance; \
 																	switch (reason) \
@@ -234,6 +235,7 @@
 	void				console_win_store_character_atxy			(SConsole* console, u8 c, s32 tnX, s32 tnY);
 	void	 			console_win_store_character_with_colors		(SConsole* console, u8 c, bool tlAtCursorXY, SBgra* backColor, SBgra* charColor);
 	void				console_win_store_character_atxy_with_colors(SConsole* console, u8 c, s32 tnX, s32 tnY, SBgra* backColor, SBgra* charColor);
+	s32					console_win_scroll_window					(SConsole* console, s32 tnXul, s32 tnYul, s32 tnXlr, s32 tnYlr, s32 tnRows, bool tlMoveCursor);
 
 	// Internal functions
 	bool				iConsole_win_create_window__callbackRow		(SBuilderCallback* bcb);

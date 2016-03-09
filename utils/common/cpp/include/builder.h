@@ -129,6 +129,41 @@ struct SDatum;
 		};
 	};
 
+	struct SBuilderCallback2
+	{
+		SBuilder*	b1;										// The builder being iterated through
+		SBuilder*	b2;										// The builder being iterated through
+		u32			stepSize1;								// Step size for each element in b1->buffer (must be an even multiple of b1->populatedLength to be valid)
+		u32			offset1;								// Offset into b1->buffer
+		u32			stepSize2;								// Step size for each element in b2->buffer (must be an even multiple of b2->populatedLength to be valid)
+		u32			offset2;								// Offset into b2->buffer
+
+		// For each iteration:
+		void*		iter1_ptr;								// Cast as (target*) to get this iteration's pointer in the data type
+		void*		iter2_ptr;								// Cast as (target*) to get this iteration's pointer in the data type
+		s32			iter_count;								// Increments each time (starts at 0)
+
+		// Available for user general purpose use
+		union {
+			uptr	_extra1;
+			void*	extra1;
+		};
+		union {
+			uptr	_extra2;
+			void*	extra2;
+		};
+		bool		flag1;
+		bool		flag2;
+		s32			value1;
+		s32			value2;
+
+		// Iterate function (return true to continue iteration, false to stop)
+		union {
+			uptr	_iterate2Func;
+			bool	(*iterate2Func)		(SBuilderCallback2* bcb2);
+		};
+	};
+
 
 
 
@@ -159,6 +194,8 @@ struct SDatum;
 	u32			iBuilder_binarySearch						(SBuilder* builderHaystack, s8* textNeedle, u32 needleLength, bool* tlFound, bool tlInsertIfNotFound);
 	s32			iBuilder_iterate							(SBuilder* builder, u32 tnStepSize, SBuilderCallback* cb, uptr _iterateFunc = NULL);
 	s32			iBuilder_iterate_N_to_N						(SBuilder* builder, u32 tnStepSize, u32 tnStartRecord, u32 tnStopRecord, SBuilderCallback* cb, uptr _iterateFunc = NULL);
+	s32			iBuilder_iterate2							(SBuilder* builder1, SBuilder* builder2, u32 tnStepSize1, u32 tnStepSize2, SBuilderCallback2* cb2, uptr _iterate2Func = NULL);
+	s32			iBuilder_iterate2_N_to_N					(SBuilder* builder1, SBuilder* builder2, u32 tnStepSize1, u32 tnStepSize2, u32 tnStartRecord, u32 tnStopRecord, SBuilderCallback2* cb2, uptr _iterate2Func = NULL);
 	s8*			iBuilder_retrieveRecord						(SBuilder* builder, u32 tnStepSize, u32 tnN);
 
 	// Added to append "name = something" strings with a terminating CR/LF

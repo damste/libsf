@@ -518,7 +518,43 @@
 //////
 	s32 console_scroll(uptr tnHandle, s32 tnRows, bool tlMoveCursor)
 	{
-		return(0);
+		SConsole* console;
+
+
+		// See if we have a console
+		if (iConsole_validateInitialization() && (console = iConsole_find_byHandle(tnHandle)))
+			return(console_scroll_window(tnHandle, 0, 0, console->nCols - 1, console->nRows - 1, tnRows, tlMoveCursor));
+
+		// Invalid handle
+		return(_CONSOLE_ERROR__HANDLE_NOT_FOUND);
+	}
+
+
+
+
+//////////
+//
+// Called to scroll a window up or down
+//
+//////
+	CONAPI s32 console_scroll_window(uptr tnHandle, s32 tnXul, s32 tnYul, s32 tnXlr, s32 tnYlr, s32 tnRows, bool tlMoveCursor)
+	{
+		SConsole* console;
+
+
+		// See if we have a console
+		if (iConsole_validateInitialization() && (console = iConsole_find_byHandle(tnHandle)))
+		{
+			// Make sure our parameters are sane
+			if (tnXlr > tnXul && tnYlr > tnYul && tnRows != 0)
+				return(console_os_scroll_window);
+
+			// Invalid parameters
+			return(_CONSOLE_ERROR__INVALID_PARAMETERS);
+		}
+
+		// Invalid handle
+		return(_CONSOLE_ERROR__HANDLE_NOT_FOUND);
 	}
 
 
@@ -646,29 +682,39 @@
 		// See if we have a console
 		if (iConsole_validateInitialization() && (console = iConsole_find_byHandle(tnHandle)))
 		{
-			// Get a new entry
-			conInput = iConsole_input_addNew();
-			if (conInput)
+			// Make sure it's physically on the screen
+			if (tnX >= 0 && tnY >= 0 && tnY < console->nRows && tnX < console->nCols)
 			{
-				// Set the parameters
-				conInput->nX				= tnX;
-				conInput->nY				= tnY;
-				conInput->nLength			= tnLength;
+				// Truncate the length if need be
+				if (tnX + tnLength >= console->nCols - 1)
+					tnLength = console->nCols - 1 - tnX;
 
-				// Store live value (may be invalid)
-				conInput->liveValue			= liveValue;
+				// Get a new entry
+				conInput = iConsole_input_addNew();
+				if (conInput)
+				{
+					// Set the parameters
+					conInput->nX				= tnX;
+					conInput->nY				= tnY;
+					conInput->nLength			= tnLength;
 
-				// Store info at creation time
-				conInput->nFont				= console->nCharFont;
-				conInput->charColor.color	= charColor->color;
-				conInput->backColor.color	= backColor->color;
+					// Store live value (may be invalid)
+					conInput->liveValue			= liveValue;
 
-				// Copy the callback info
-				memcpy(&conInput->cicb, cicb, sizeof(SConInputCallback));
+					// Store info at creation time
+					conInput->nFont				= console->nCharFont;
+					conInput->charColor.color	= charColor->color;
+					conInput->backColor.color	= backColor->color;
 
-				// Indicate success
-				return(_CONSOLE_ERROR__NO_ERROR);
+					// Copy the callback info
+					memcpy(&conInput->cicb, cicb, sizeof(SConInputCallback));
+
+					// Indicate success
+					return(_CONSOLE_ERROR__NO_ERROR);
+				}
 			}
+			// Invalid parameters
+			return(_CONSOLE_ERROR__INVALID_PARAMETERS);
 		}
 
 		// Failure
@@ -781,6 +827,7 @@
 	{
 		u8			c;
 		s32			lnI, lnJ;
+		bool		llRepaintScreen;
 		SBgra		backColor, charColor;
 		SConsole*	console;
 
@@ -798,7 +845,7 @@
 					tnTextLength = ((tnTextLength < 0) ? iConsole_strlen(text) : tnTextLength);
 
 					// Begin processing
-					for (lnI = 0; lnI < tnTextLength; lnI++)
+					for (lnI = 0, llRepaintScreen = false; lnI < tnTextLength; lnI++)
 					{
 						// Parse out the character
 					    if ((c = text[lnI]) == 13)
@@ -811,6 +858,7 @@
 							if (console->nYText >= console->nRows - 1)
 							{
 								// We need to scroll up one
+								llRepaintScreen = true;
 								iiConsole_scroll(console);
 								
 							} else {
@@ -882,6 +930,12 @@
 						}
 					}
 					// When we get here, the data was pushed
+
+					// Repaint if need be
+					if (llRepaintScreen)
+						console_repaint(tnHandle);
+
+					// Indicate success
 					return(_CONSOLE_ERROR__NO_ERROR);
 
 				} else {
@@ -1132,8 +1186,8 @@
 			if (console->nYText < 0)
 				console->nYText = 0;
 
-			if (console->nYText > console->nRows)
-				console->nYText = console->nRows;
+			if (console->nYText >= console->nRows)
+				console->nYText = console->nRows - 1;
 
 
 		//////////
@@ -1142,7 +1196,7 @@
 			if (console->nXText >= console->nCols)
 			{
 				// Need to move to the next row
-				if (console->nYText < console->nRows)
+				if (console->nYText < console->nRows - 1)
 				{
 					// Enough room to move down
 					console->nXText = 0;
@@ -1152,6 +1206,7 @@
 					// We need to scroll
 					console->nXText = 0;
 					iiConsole_scroll(console);
+					console->nYText = console->nRows - 1;
 				}
 			}
 	}
@@ -1194,15 +1249,16 @@
 		// Copy each row forward
 		memset(&bcb, 0, sizeof(bcb));
 		bcb.extra1 = console;
-		iBuilder_iterate(console->scrollBuffer, sizeof(SConRow), &bcb, (uptr)iConsole_scroll__callback);
+		iBuilder_iterate_N_to_N(console->scrollBuffer, sizeof(SConRow), 0, console->nRows, &bcb, (uptr)iiConsole_scroll__callbackRow);
 	}
 
 	// Uses bcb->extra1 for console, bcb->extra2 for the destination row, and bcb->iter_ptr for the source row
-	bool iConsole_scroll__callback(SBuilderCallback* bcb)
+	bool iiConsole_scroll__callbackRow(SBuilderCallback* bcb)
 	{
-		SConsole*	console;
-		SConRow*	rowDst;
-		SConRow*	rowSrc;
+		SConsole*			console;
+		SConRow*			rowDst;
+		SConRow*			rowSrc;
+		SBuilderCallback2	bcb2;
 
 		
 		// Grab the row
@@ -1210,23 +1266,58 @@
 		{
 			// First row
 			bcb->extra2 = bcb->iter_ptr;
+// TODO:  This first row should be copied to the scroll buffer
 
 		} else {
 			// Grab the pointers
 			console	= (SConsole*)bcb->extra1;
-			rowDst	= (SConRow*)bcb->extra2;
 			rowSrc	= (SConRow*)bcb->iter_ptr;
+			rowDst	= (SConRow*)bcb->extra2;
 
-			// Copy the row
-// TODO:  working here, scroll feature not working
-			memcpy(rowDst->chars, rowSrc->chars, console->nCols * sizeof(SConChar));
-// TODO:  We should actually iterate through each char and add an OS callback to handle any special OS structures
+			// Copy the characters on the row
+			memset(&bcb2, 0, sizeof(bcb2));
+			bcb2.extra1 = console;
+			bcb2.value1	= bcb->iter_count;
+			iBuilder_iterate2_N_to_N(rowDst->chars, rowSrc->chars, sizeof(SConChar), sizeof(SConChar), 0, console->nCols, &bcb2, (uptr)&iiConsole_scroll__callbackChar);
 
 			// Prepare for the next iteration
-			bcb->extra2 = bcb->iter_ptr;
+			bcb->extra2 = rowSrc;
 		}
 
 		// Continue processing each row
+		return(true);
+	}
+
+	bool iiConsole_scroll__callbackChar(SBuilderCallback2* bcb2)
+	{
+		SConChar*	charDst;
+		SConChar*	charSrc;
+		SConsole*	console;
+
+
+		// Grab our pointers
+		charDst = (SConChar*)bcb2->iter1_ptr;
+		charSrc = (SConChar*)bcb2->iter2_ptr;
+		console	= (SConsole*)bcb2->extra1;
+
+		// Copy the content
+		if (bcb2->value1 == console->nRows)
+		{
+			// Last row, make it all spaces and console attributes
+			charDst->c					= 32;
+			charDst->backColor.color	= console->backColor.color;
+			charDst->charColor.color	= console->charColor.color;
+			charDst->nFont				= console->nCharFont;
+
+		} else {
+			// Continue copying
+			charDst->c = charSrc->c;
+			charDst->backColor.color	= charSrc->backColor.color;
+			charDst->charColor.color	= charSrc->charColor.color;
+			charDst->nFont				= charSrc->nFont;
+		}
+
+		// Continue iterating
 		return(true);
 	}
 

@@ -112,7 +112,8 @@
 	CONAPI s32		console_print_crlf					(uptr tnHandle);
 	CONAPI s32		console_gotoXY						(uptr tnHandle, s32 tnX, s32 tnY);
 	CONAPI s32		console_getXY						(uptr tnHandle, s32* tnX, s32* tnY);
-	CONAPI s32		console_scroll						(uptr tnHandle, s32 tnRows, bool tlMoveCursor = true);
+	CONAPI s32		console_scroll						(uptr tnHandle, s32 tnRows, bool tlMoveCursor);
+	CONAPI s32		console_scroll_window				(uptr tnHandle, s32 tnXul, s32 tnYul, s32 tnXlr, s32 tnYlr, s32 tnRows, bool tlMoveCursor);
 	CONAPI s32		console_repaint						(uptr tnHandle);
 	CONAPI s32		console_box_single					(uptr tnHandle, s32 tnXul, s32 tnYul, s32 tnXlr, s32 tnYlr, SBgra* backColor, SBgra* charColor);
 	CONAPI s32		console_box_double					(uptr tnHandle, s32 tnXul, s32 tnYul, s32 tnXlr, s32 tnYlr, SBgra* backColor, SBgra* charColor);
