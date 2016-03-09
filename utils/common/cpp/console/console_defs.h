@@ -93,49 +93,7 @@
 //////////
 // console.cpp
 //////
-	CONAPI uptr		console_initialize					(void);
-	CONAPI uptr		console_allocate					(SDatum* title, s32 tnLeft, s32 tnTop, s32 tnCols, s32 tnRows, SConCallback* cb);
-	CONAPI uptr		console_allocate					(SDatum* settings, SConCallback* cb);
-	CONAPI uptr		console_reregister					(uptr tnHandle, SConCallback* cb);
-	CONAPI s32		console_show						(uptr tnHandle, bool tlVisible);
-	CONAPI s32		console_release						(uptr tnHandle);
-
-	// Sets title, width, height, charWidth, charHeight, and visible
-	CONAPI s32		console_setProperties				(uptr tnHandle, SDatum* properties);
-	CONAPI s32		console_setBorder					(uptr tnHandle, bool tlShowBorder, SBgra* color);
-
-	// Set the active font (to use for the console_push() operations until changed again)
-	CONAPI s32		console_setFont						(uptr tnHandle, SDatum* fontName, s32 tnPointSize, bool tlBold, bool tlItalic, bool tlUnderline);
-	CONAPI s32		console_setFont						(uptr tnHandle, SDatum* fontData);
-	CONAPI s32		console_getFont						(uptr tnHandle, s32 tnX, s32 tnY, SDatum* fontName, s32* tnPointSize, bool* tlBold, bool* tlItalic, bool* tlUnderline);
-	CONAPI s32		console_getFont						(uptr tnHandle, s32 tnX, s32 tnY, SDatum* fontData);
-
-	// General write algorithm, processes CR/LF, and auto-scrolls
-	CONAPI s32		console_print						(uptr tnHandle, SDatum* textOut);
-	CONAPI s32		console_print						(uptr tnHandle, s8* text, s32 tnTextLength = -1);
-	CONAPI s32		console_print_crlf					(uptr tnHandle);
-	CONAPI s32		console_gotoXY						(uptr tnHandle, s32 tnX, s32 tnY);
-	CONAPI s32		console_getXY						(uptr tnHandle, s32* tnX, s32* tnY);
-	CONAPI s32		console_scroll						(uptr tnHandle, s32 tnRows, bool tlMoveCursor = true);
-	CONAPI s32		console_repaint						(uptr tnHandle);
-	CONAPI s32		console_box_single					(uptr tnHandle, s32 tnXul, s32 tnYul, s32 tnXlr, s32 tnYlr, SBgra* backColor, SBgra* charColor);
-	CONAPI s32		console_box_double					(uptr tnHandle, s32 tnXul, s32 tnYul, s32 tnXlr, s32 tnYlr, SBgra* backColor, SBgra* charColor);
-	CONAPI s32		console_box_custom					(uptr tnHandle, s32 tnXul, s32 tnYul, s32 tnXlr, s32 tnYlr, SBgra* backColor, SBgra* charColor, u8 ul, u8 top, u8 ur, u8 r, u8 lr, u8 b, u8 ll, u8 l);
-
-	// For input blocks
-	CONAPI s32		console_input_fields_clear_all		(uptr tnHandle);
-	CONAPI uptr		console_input_field_add				(uptr tnHandle, s32 tnX, s32 tnY, s32 tnLength, SBgra* backColor, SBgra* charColor, SDatum* liveValue, SConInputCallback* cicb = NULL);
-	CONAPI s32		console_input_field_delete			(uptr tnHandle, uptr tnInputFieldHandle);
-
-	// Explicitly push large quantities of raw content to the screen, or pull raw content from the screen
-	CONAPI s32		console_raw_push					(uptr tnHandle, s32 tnX, s32 tnY, SBgra color, SDatum* textIn, bool tlWrap);
-	CONAPI s32		console_raw_pullN					(uptr tnHandle, s32 tnX, s32 tnY, s32 tnCount, SDatum* textOut);
-
-	// Obtain more information about each character
-	CONAPI s32		console_raw_pull1					(uptr tnHandle, s32 tnX, s32 tnY, u8* c, SBgra* color, bool* tlBold, bool* tlItalic, bool* tlUnderline);
-
-	// Explicitly push embedded/formatted content to the screen
-	CONAPI s32		console_vt100_push					(uptr tnHandle, SDatum* vt100Text);
+	#include "console_defs_include.h"
 
 
 //////////
@@ -146,7 +104,8 @@
 	bool			iConsole_validateScrollBuffer		(SConsole* console);
 	SConsole*		iConsole_find_byHandle				(uptr tnHandle);
 	void			iConsole_silentError_passThru		(void);
-	void			iiConsole_storeCharacter			(SConsole* console, char c, bool tlAtCursorXY = false);
+	void			iiConsole_storeCharacter			(SConsole* console, char c, bool tlAtCursorXY, SBgra* backColor, SBgra* charColor);
+	void			iiConsole_storeCharacter_atXY		(SConsole* console, char c, s32 tnX, s32 tnY, SBgra* backColor, SBgra* charColor);
 	void			iiConsole_validateXYRange			(SConsole* console);
 	void			iiConsole_selectFont				(SConsole* console, s32 fontIndex);
 	void			iiConsole_scroll					(SConsole* console);
@@ -158,3 +117,8 @@
 	bool			iConsole_input_addNew__callback		(SBuilderCallback* bcb);
 	SConInput*		iConsole_input_find_byHandle		(uptr tnInputFieldHandle);
 	bool			iConsole_input_find_byHandle__callback(SBuilderCallback* bcb);
+	void			iiConsole_box_custom__common		(SConsole* console, s32 tnX, s32 tnY, s32 tnWidth, u8 left, u8 mid, u8 right, bool tlUseMid, SBgra* backColor, SBgra* charColor);
+	SConInput*		iConsole_find_conInput_byCursorXY	(SConsole* console);
+	SConInput*		iConsole_find_conInput_byXY			(SConsole* console, s32 tnX, s32 tnY);
+	bool			iConsole_find_conInput_byXY__callback(SBuilderCallback* bcb);
+	bool			iConsole_find_conChar_byXY			(SConsole* console, s32 tnX, s32 tnY, SConRow** tsConRow, SConChar** tsConChar);

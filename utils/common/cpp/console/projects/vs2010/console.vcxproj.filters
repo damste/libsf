@@ -46,5 +46,13 @@
     <ClInclude Include="..\..\win\console_win.h">
       <Filter>os_specific</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\console_defs_include.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="console.def">
+      <Filter>source</Filter>
+    </None>
   </ItemGroup>
 </Project>

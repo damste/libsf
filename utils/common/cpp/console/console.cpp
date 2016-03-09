@@ -90,6 +90,8 @@
 
 
 
+#define _CONSOLE_APP 1
+
 #include "console.h"
 
 
@@ -155,67 +157,13 @@
 				console->nLeft			= tnLeft;
 				console->nTop			= tnTop;
 				console->nWidth			= tnCols * 8;
-				console->nHeight		= tnRows * 14;
+				console->nHeight		= tnRows * 16;
 				console->nCharWidth		= 8;
-				console->nCharHeight	= 14;
-				console->nCharFont		= _CONSOLE_FONT_8x14;		// Default to this font until they specify otherwise
+				console->nCharHeight	= 16;
+				console->nCharFont		= _CONSOLE_FONT_8x16_8;		// Default to this font until they specify otherwise
 
 				// Copy over the callback data
 				memcpy(&console->cb, cb, sizeof(console->cb));
-			}
-
-			// Indicate our handle
-			return((uptr)console);
-		}
-
-		// If we get here, invalid
-		return(_CONSOLE_ERROR__FATAL_ERROR);
-	}
-
-
-
-
-//////////
-//
-// Called to allocate a new console
-//
-//////
-	// Note:  Even if a visible property is specified, console is not displayed until console_show(..., true) is first called
-	uptr console_allocate(SDatum* settings, SConCallback* cb)
-	{
-		SConsole		console_cb;
-		SConsole*		console;
-		SDatumCallback	dcb;
-
-
-		// Make sure our environment is sane
-		if (settings && cb && iConsole_validateInitialization())
-		{
-			// Iterate through properties
-			memset(&dcb,		0, sizeof(dcb));
-			memset(&console_cb,	0, sizeof(console_cb));
-
-			// Some values that need to be set
-			console_cb.nLeft		= 0;
-			console_cb.nTop			= 0;
-			console_cb.nWidth		= 80;
-			console_cb.nHeight		= 25;
-			console_cb.nCharWidth	= 8;
-			console_cb.nCharHeight	= 16;
-			iDatum_duplicate(&console_cb.title, "LibSF Console Window");
-
-			// Perform the processing
-			dcb.extra1 = &console_cb;
-			dcb._propAndValue_func = (uptr)&iiConsole_setOptions_callback;
-			iProperty_iterate(&dcb, settings);
-
-			// Actually create the console
-			console = (SConsole*)iBuilder_allocateBytes(gsConsoleRoot, sizeof(SConsole));
-			if (console)
-			{
-				// Copy
-				memcpy(console, &console_cb, sizeof(*console));		// Copy what we already setup
-				memcpy(&console->cb, cb, sizeof(console->cb));		// Copy over the callback data
 			}
 
 			// Indicate our handle
@@ -457,19 +405,6 @@
 
 //////////
 //
-// Called to set the font to use from this point forward (until changed in the future)
-//
-//////
-	s32 console_setFont(uptr tnHandle, SDatum* fontData)
-	{
-		return(-1);
-	}
-
-
-
-
-//////////
-//
 // Called to get the current font
 //
 //////
@@ -483,24 +418,11 @@
 
 //////////
 //
-// Called to get the current font
-//
-//////
-	s32 console_getFont(uptr tnHandle, s32 tnX, s32 tnY, SDatum* fontData)
-	{
-		return(-1);
-	}
-
-
-
-
-//////////
-//
 // Called to output text to the console window, only processes CR/LF and TAB characters,
 // the rest are pass-thru displayed.
 //
 //////
-	s32 console_print(uptr tnHandle, SDatum* textOut)
+	CONAPI s32 console_print(uptr tnHandle, s8* text, s32 tnTextLength)
 	{
 		s8			c;
 		s32			lnI, lnJ;
@@ -514,13 +436,16 @@
 			if (iConsole_validateScrollBuffer(console))
 			{
 				// Make sure they're printing something valid
-				if (textOut && textOut->_data)
+				if (text)
 				{
+					// Update the length if need be
+					tnTextLength = ((tnTextLength < 0) ? strlen(text) : tnTextLength);
+
 					// Begin processing
-					for (lnI = 0; lnI < textOut->length; lnI++)
+					for (lnI = 0; lnI < tnTextLength; lnI++)
 					{
 						// Parse out the character
-					    if ((c = textOut->data_cs8[lnI]) == 13)
+					    if ((c = text[lnI]) == 13)
 						{
 							// Carriage return
 							 console->nXText = 0;
@@ -553,15 +478,15 @@
 							if (c == '\\')
 							{
 								// If we're at the end, we can't continue
-								if (lnI >= textOut->length - 1)
+								if (lnI >= tnTextLength - 1)
 									break;
 
 								// Grab the next character
-								c = textOut->data_cs8[++lnI];
+								c = text[++lnI];
 							}
 
 							// Store the character
-							iiConsole_storeCharacter(console, c);
+							iiConsole_storeCharacter(console, c, false, &console->backColor, &console->charColor);
 						}
 					}
 					// When we get here, the data was pushed
@@ -580,17 +505,7 @@
 
 		// Failure
 		return(_CONSOLE_ERROR__HANDLE_NOT_FOUND);
-	}
 
-	CONAPI s32 console_print(uptr tnHandle, s8* text, s32 tnTextLength)
-	{
-		SDatum textOut;
-
-
-		// Convert for SDatum print
-		textOut.data	= text;
-		textOut.length	= ((tnTextLength < 0) ? strlen(text) : tnTextLength);
-		return(console_print(tnHandle, &textOut));
 	}
 
 
@@ -603,15 +518,8 @@
 //////
 	CONAPI s32 console_print_crlf(uptr tnHandle)
 	{
-		s8		buffer[16];
-		SDatum	data;
-
-
 		// Display a CR/LF
-		sprintf(buffer, "\n\r");
-		data.data_s8	= &buffer[0];
-		data.length		= strlen(buffer);
-		return(console_print(tnHandle, &data));
+		return(console_print(tnHandle, "\n\r"));
 	}
 
 
@@ -720,54 +628,48 @@
 //////
 	CONAPI s32 console_box_single(uptr tnHandle, s32 tnXul, s32 tnYul, s32 tnXlr, s32 tnYlr, SBgra* backColor, SBgra* charColor)
 	{
-		return(console_box_custom(tnHandle, tnXul, tnYul, tnXlr, tnYlr, backColor, charColor, 0xda, 0xc4, 0xbf, 0xb3, 0xd9, 0xc3, 0xc0, 0xb3));
+		// Makes a single-line wall/box around the rectangle using ASCII characters
+		return(console_box_custom(tnHandle, tnXul, tnYul, tnXlr, tnYlr, backColor, charColor, 0xda, 0xc4, 0xbf, 0xb3, 0xd9, 0xc3, 0xc0, 0xb4));
 	}
 
 	CONAPI s32 console_box_double(uptr tnHandle, s32 tnXul, s32 tnYul, s32 tnXlr, s32 tnYlr, SBgra* backColor, SBgra* charColor)
 	{
+		// Makes a double-line wall/box around the rectangle using ASCII characters
 		return(console_box_custom(tnHandle, tnXul, tnYul, tnXlr, tnYlr, backColor, charColor, 0xc9, 0xcd, 0xbb, 0xba, 0xbc, 0xcd, 0xc8, 0xba));
 	}
 
-	CONAPI s32 console_box_custom(uptr tnHandle, s32 tnXul, s32 tnYul, s32 tnXlr, s32 tnYlr, SBgra* backColor, SBgra* charColor, u8 ul, u8 top, u8 ur, u8 r, u8 lr, u8 b, u8 ll, u8 l)
+	CONAPI s32 console_box_custom(uptr tnHandle, s32 tnXul, s32 tnYul, s32 tnXlr, s32 tnYlr, SBgra* backColor, SBgra* charColor, u8 ul, u8 top, u8 ur, u8 r, u8 lr, u8 bot, u8 ll, u8 l)
 	{
-		s32 lnX, lnY;
+		s32			lnY;
+		SConsole*	console;
 
 
-// TODO: working here, adding code for the boxes
-		// Iterate for every row
-		for (lnY = tnYul; lnY <= tnYlr; lnY++)
+		// Make sure our environment is sane (box must be at least 2x2
+		if (tnXul < tnXlr && tnYul < tnYlr)
 		{
-			// Which row are we on?
-			if (lnY == tnYul)
+			// Make sure our console is valid
+			if (iConsole_validateInitialization() && (console = iConsole_find_byHandle(tnHandle)))
 			{
 				// Top
-				// Draw Left-character
+				iiConsole_box_custom__common(console, tnXul, tnYul, tnXlr - tnXul, ul, top, ur, true, backColor, charColor);
 
-				// Draw middle characters
-				for (lnX = tnXul; lnX <= tnXlr; lnX++)
-				{
-				}
-
-				// Draw right-character
-
-			} else if (lnY == tnYlr) {
 				// Bottom
-				// Draw Left-character
+				iiConsole_box_custom__common(console, tnXul, tnYlr, tnXlr - tnXul, ll, bot, lr, true, backColor, charColor);
 
-				// Draw middle characters
-				for (lnX = tnXul; lnX <= tnXlr; lnX++)
-				{
-				}
+				// Middle -- iterate through every row
+				for (lnY = tnYul + 1; lnY <= tnYlr - 1; lnY++)
+					iiConsole_box_custom__common(console, tnXul, lnY, tnXlr - tnXul, l, 0, r, false, backColor, charColor);
 
-				// Draw right-character
-
-			} else {
-				// Middle
-				// Draw Left-character
-				// Draw right-character
+				// Indicate success (number of characters actually rendered)
+				return((2 * ((tnYlr - tnYul) + (tnXlr - tnXul))) - 4);
 			}
+
+			// Handle not found
+			return(_CONSOLE_ERROR__HANDLE_NOT_FOUND);
 		}
-		return(0);
+
+		// Invalid parameters
+		return(_CONSOLE_ERROR__INVALID_PARAMETERS);
 	}
 
 
@@ -960,23 +862,23 @@
 		console = (SConsole*)cb->extra1;
 
 		// See what option they checked
-		     if (console_check_prop(x))				{	console->nXText					= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
-		else if (console_check_prop(y))				{	console->nYText					= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
-		else if (console_check_prop(left))			{	console->nLeft				= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
-		else if (console_check_prop(top))			{	console->nHeight			= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
-		else if (console_check_prop(width))			{	console->nWidth				= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
-		else if (console_check_prop(height))		{	console->nHeight			= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
-		else if (console_check_prop(charWidth))		{	console->nCharWidth			= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
-		else if (console_check_prop(charHeight))	{	console->nCharHeight		= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
-		else if (console_check_prop(scrollRows))	{	console->nScrollRowsToKeep	= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
-		else if (console_check_prop(backColor))		{	console->backColor.color	= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
-		else if (console_check_prop(foreColor))		{	console->charColor.color	= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
-		else if (console_check_prop(charColor))		{	console->charColor.color	= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
-		else if (console_check_prop(title))			{	iDatum_duplicate(&console->title, &cb->value);						cb->flag1 = true;	}
-		else if (console_check_prop(visible))
+		     if (console_check_prop(console_x))				{	console->nXText				= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(console_y))				{	console->nYText				= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(console_left))			{	console->nLeft				= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(console_top))			{	console->nHeight			= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(console_width))			{	console->nWidth				= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(console_height))		{	console->nHeight			= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(console_charWidth))		{	console->nCharWidth			= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(console_charHeight))	{	console->nCharHeight		= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(console_scrollRows))	{	console->nScrollRowsToKeep	= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(console_backColor))		{	console->backColor.color	= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(console_foreColor))		{	console->charColor.color	= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(console_charColor))		{	console->charColor.color	= iDatum_getAs_s32(&cb->value);			cb->flag1 = true;	}
+		else if (console_check_prop(console_title))			{	iDatum_duplicate(&console->title, &cb->value);						cb->flag1 = true;	}
+		else if (console_check_prop(console_visible))
 		{
 			// Visible accepts Yes, yes, True, true, .T., .t., 1
-			console->lVisible	= (console_check_value(yes) || console_check_value(true) || console_check_value(dot_t_dot) || iDatum_getAs_s32(&cb->value) != 0);
+			console->lVisible	= (console_check_value(console_yes) || console_check_value(console_true) || console_check_value(console_dot_t_dot) || iDatum_getAs_s32(&cb->value) != 0);
 			cb->flag1			= true;
 
 		} else {
@@ -1107,7 +1009,7 @@
 // Store a character, which may require scrolling to the next line
 //
 //////
-	void iiConsole_storeCharacter(SConsole* console, char c, bool tlAtCursorXY)
+	void iiConsole_storeCharacter(SConsole* console, char c, bool tlAtCursorXY, SBgra* backColor, SBgra* charColor)
 	{
 		// Store the character into the buffer, and re-render if necessary
 		console_os_store_character;
@@ -1118,6 +1020,23 @@
 		// Move to the next character
 		++console->nXText;
 		iiConsole_validateXYRange(console);
+	}
+
+
+
+
+//////////
+//
+// Store a character at the indicated X,Y coordinate, but does not move the cursor
+//
+//////
+	void iiConsole_storeCharacter_atXY(SConsole* console, char c, s32 tnX, s32 tnY, SBgra* backColor, SBgra* charColor)
+	{
+		// Store the character into the buffer, and re-render if necessary
+		console_os_store_character_atxy(tnX, tnY);
+
+		// Indicate the current X,Y needs to be repainted
+		console_os_xy_needs_repainted_atxy(tnX, tnY);
 	}
 
 
@@ -1388,4 +1307,132 @@
 
 		// Continue iterating
 		return(true);
+	}
+
+
+
+
+//////////
+//
+// Called to draw a custom section
+//
+//////
+	void iiConsole_box_custom__common(SConsole* console, s32 tnX, s32 tnY, s32 tnWidth, u8 left, u8 mid, u8 right, bool tlUseMid, SBgra* backColor, SBgra* charColor)
+	{
+		s32 lnX, lnXStop;
+
+
+		// Draw middle characters (if need be)
+		if (tlUseMid)
+		{
+			// Iterate for every character within
+			for (lnX = tnX + 1, lnXStop = tnX + tnWidth - 1; lnX <= lnXStop; lnX++)
+				iiConsole_storeCharacter_atXY(console, mid, lnX, tnY, backColor, charColor);
+		}
+
+		// Draw Left-character
+		iiConsole_storeCharacter_atXY(console, left, tnX, tnY, backColor, charColor);
+
+		// Draw right-character
+		iiConsole_storeCharacter_atXY(console, right, tnX + tnWidth - 1, tnY, backColor, charColor);
+	}
+
+
+
+
+//////////
+//
+// Searches for the closest console input based on the current nXcursor and nYCursor
+//
+//////
+	SConInput* iConsole_find_conInput_byCursorXY(SConsole* console)
+	{
+		SBuilderCallback bcb;
+
+
+		// Iterate through to find one
+		memset(&bcb, 0, sizeof(bcb));
+		bcb.extra1 = console;
+		bcb.value1	= console->nXCursor;
+		bcb.value2	= console->nYCursor;
+		if (console->nXCursor >= 0)
+			iBuilder_iterate(gsInputRoot, sizeof(SConInput), &bcb, (uptr)&iConsole_find_conInput_byXY__callback);
+
+		// Indicate success or failure
+		return((SConInput*)bcb.extra2);
+	}
+
+	SConInput* iConsole_find_conInput_byXY(SConsole* console, s32 tnX, s32 tnY)
+	{
+		SBuilderCallback bcb;
+
+
+		// Iterate through to find one
+		memset(&bcb, 0, sizeof(bcb));
+		bcb.extra1 = console;
+		bcb.value1	= tnX;
+		bcb.value2	= tnY;
+		if (console->nXCursor >= 0)
+			iBuilder_iterate(gsInputRoot, sizeof(SConInput), &bcb, (uptr)&iConsole_find_conInput_byXY__callback);
+
+		// Indicate success or failure
+		return((SConInput*)bcb.extra2);
+	}
+
+	// Uses bcb.value1=X, bcb.value2=Y
+	bool iConsole_find_conInput_byXY__callback(SBuilderCallback* bcb)
+	{
+		SConsole*	console;
+		SConInput*	conInput;
+
+
+		// Grab our pointers
+		console		= (SConsole*)bcb->extra1;
+		conInput	= (SConInput*)bcb->iter_ptr;
+
+		// See if we're in range
+		if (bcb->value2 == conInput->nY && bcb->value1 >= conInput->nX && bcb->value1 <= conInput->nX + conInput->nLength)
+		{
+			// Found it
+			bcb->extra2 = conInput;
+			return(false);		// No more iterating
+		}
+
+		// Continue iterating
+		return(true);
+	}
+
+
+
+
+//////////
+//
+// Called to retrieve the row and char for the indicated X,Y coordinate
+//
+//////
+	bool iConsole_find_conChar_byXY(SConsole* console, s32 tnX, s32 tnY, SConRow** tsConRow, SConChar** tsConChar)
+	{
+		SConRow*	lsConRow;
+		SConChar*	lsConChar;
+
+
+		// Grab the row
+		lsConRow = (SConRow*)iBuilder_retrieveRecord(console->scrollBuffer, sizeof(SConRow), tnY);
+		if (lsConRow)
+		{
+			// Grab the character
+			lsConChar = (SConChar*)iBuilder_retrieveRecord(lsConRow->chars, sizeof(SConChar), tnX);
+			if (lsConChar)
+			{
+				// We have both
+				if (tsConRow)		*tsConRow	= lsConRow;
+				if (tsConChar)		*tsConChar	= lsConChar;
+
+				// Success
+				return(true);
+			}
+		}
+
+		// If we get here, not found
+		return(false);
 	}

@@ -885,7 +885,7 @@
 
 			// Iterate through
 			// Note:  The values of cb->offset, cb->stepSize, and cb->_iterateFunc can be updated live as it's being iterated through
-			for (cb->offset = (tnStartRecord * tnStepSize); cb->offset < builder->populatedLength && cb->offset < (tnStopRecord * tnStepSize); cb->offset += cb->stepSize, ++lnCount)
+			for (cb->offset = (tnStartRecord * tnStepSize), cb->iter_count = 0; cb->offset < builder->populatedLength && cb->offset < (tnStopRecord * tnStepSize); cb->offset += cb->stepSize, ++lnCount, ++cb->iter_count)
 			{
 				// Setup for the iteration
 				cb->iter_ptr = builder->buffer + cb->offset;

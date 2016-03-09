@@ -89,6 +89,9 @@
 
 
 
+struct SConsole;
+struct SConFont_fixed;
+
 
 //////////
 // Callback functions for console activity

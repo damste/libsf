@@ -90,6 +90,7 @@
 
 
 
+#ifdef _CONSOLE_APP
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
@@ -100,9 +101,11 @@
 #include <sys/stat.h>
 #include <share.h>
 #include <errno.h>
+#include <dwmapi.h>
 
 // Standard types
 #include "\libsf\utils\common\cpp\include\common_types.h"
+#endif
 #define _EXCLUDE_iBmp_colorizeAsCommonTooltipBackground		1
 #define _EXCLUDE_iBmp_cask_createAndPopulate				1
 #define _EXCLUDE_iBmp_nbsp_createAndPopulate				1
@@ -128,7 +131,8 @@
 	#include "\libsf\utils\common\cpp\include\datum.h"
 	#include "\libsf\utils\common\cpp\include\xml.h"
 
-	#include "console_structs.h"
+// Note:  console_structs is included in an include file in console_defs.h called console_defs_include.h, so it can be used by other apps as a DLL
+//	#include "console_structs.h"
 	#include "console_defs.h"
 	#include "console_const.h"
 	#include "console_globals.h"

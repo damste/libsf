@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/utils/common/cpp/console/console_const.h
+// /libsf/utils/common/cpp/console/console_defs_include.h
 //
 //////
 //    _     _ _     _____ _____
@@ -22,10 +22,10 @@
 // Copyright (c) 2016 by Rick C. Hodgin
 //////
 // Last update:
-//     Jan.12.2016
+//     Mar.08.2016
 //////
 // Change log:
-//     Jan.12.2016 - Initial creation
+//     Mar.08.2016 - Initial creation
 //////
 //
 // This document is released as Liberty Software under a Repeat License, as governed
@@ -90,108 +90,44 @@
 
 
 
-//////////
-// Helper macro to make searching for properties easier
-// Use as:  if (console_check_prop(width))
-//			if (console_check_value(yes))
-//////
-	#define console_check_prop(x)		(cb->prop.length  == sizeof(cgc_##x) - 1 && _memicmp(cb->prop.data_cs8,  cgc_##x, cb->prop.length)  == 0)
-	#define console_check_value(x)		(cb->value.length == sizeof(cgc_##x) - 1 && _memicmp(cb->value.data_cs8, cgc_##x, cb->value.length) == 0)
+	#include "console_structs.h"
 
-	#define _ROUND_CASK_LEFT_SOLID		"\120"
-	#define _ROUND_CASK_LEFT_UP			"\121"
-	#define _ROUND_CASK_LEFT_DOWN		"\122"
-	#define _ROUND_CASK_LEFT_BOTH		"\123"
-	#define _ROUND_CASK_RIGHT_SOLID		"\124"
-	#define _ROUND_CASK_RIGHT_UP		"\125"
-	#define _ROUND_CASK_RIGHT_DOWN		"\126"
-	#define _ROUND_CASK_RIGHT_BOTH		"\127"
+	CONAPI uptr		console_initialize					(void);
+	CONAPI uptr		console_allocate					(SDatum* title, s32 tnLeft, s32 tnTop, s32 tnCols, s32 tnRows, SConCallback* cb);
+	CONAPI uptr		console_reregister					(uptr tnHandle, SConCallback* cb);
+	CONAPI s32		console_show						(uptr tnHandle, bool tlVisible);
+	CONAPI s32		console_release						(uptr tnHandle);
 
-	#define _TRIANGLE_CASK_LEFT_SOLID	"\130"
-	#define _TRIANGLE_CASK_LEFT_UP		"\131"
-	#define _TRIANGLE_CASK_LEFT_DOWN	"\132"
-	#define _TRIANGLE_CASK_LEFT_BOTH	"\133"
-	#define _TRIANGLE_CASK_RIGHT_SOLID	"\134"
-	#define _TRIANGLE_CASK_RIGHT_UP		"\135"
-	#define _TRIANGLE_CASK_RIGHT_DOWN	"\136"
-	#define _TRIANGLE_CASK_RIGHT_BOTH	"\137"
+	// Sets title, width, height, charWidth, charHeight, and visible
+	CONAPI s32		console_setProperties				(uptr tnHandle, SDatum* properties);
+	CONAPI s32		console_setBorder					(uptr tnHandle, bool tlShowBorder, SBgra* color);
 
-	#define _SQUARE_CASK_LEFT_SOLID		"\140"
-	#define _SQUARE_CASK_LEFT_UP		"\141"
-	#define _SQUARE_CASK_LEFT_DOWN		"\142"
-	#define _SQUARE_CASK_LEFT_BOTH		"\143"
-	#define _SQUARE_CASK_RIGHT_SOLID	"\144"
-	#define _SQUARE_CASK_RIGHT_UP		"\145"
-	#define _SQUARE_CASK_RIGHT_DOWN		"\146"
-	#define _SQUARE_CASK_RIGHT_BOTH		"\147"
+	// Set the active font (to use for the console_push() operations until changed again)
+	CONAPI s32		console_setFont						(uptr tnHandle, SDatum* fontName, s32 tnPointSize, bool tlBold, bool tlItalic, bool tlUnderline);
+	CONAPI s32		console_getFont						(uptr tnHandle, s32 tnX, s32 tnY, SDatum* fontName, s32* tnPointSize, bool* tlBold, bool* tlItalic, bool* tlUnderline);
 
-	#define _UTILITY_CASK_LEFT_SOLID	"\150"
-	#define _UTILITY_CASK_LEFT_UP		"\151"
-	#define _UTILITY_CASK_LEFT_DOWN		"\152"
-	#define _UTILITY_CASK_LEFT_BOTH		"\153"
-	#define _UTILITY_CASK_RIGHT_SOLID	"\154"
-	#define _UTILITY_CASK_RIGHT_UP		"\155"
-	#define _UTILITY_CASK_RIGHT_DOWN	"\156"
-	#define _UTILITY_CASK_RIGHT_BOTH	"\157"
+	// General write algorithm, processes CR/LF, and auto-scrolls
+	CONAPI s32		console_print						(uptr tnHandle, s8* text, s32 tnTextLength = -1);
+	CONAPI s32		console_print_crlf					(uptr tnHandle);
+	CONAPI s32		console_gotoXY						(uptr tnHandle, s32 tnX, s32 tnY);
+	CONAPI s32		console_getXY						(uptr tnHandle, s32* tnX, s32* tnY);
+	CONAPI s32		console_scroll						(uptr tnHandle, s32 tnRows, bool tlMoveCursor = true);
+	CONAPI s32		console_repaint						(uptr tnHandle);
+	CONAPI s32		console_box_single					(uptr tnHandle, s32 tnXul, s32 tnYul, s32 tnXlr, s32 tnYlr, SBgra* backColor, SBgra* charColor);
+	CONAPI s32		console_box_double					(uptr tnHandle, s32 tnXul, s32 tnYul, s32 tnXlr, s32 tnYlr, SBgra* backColor, SBgra* charColor);
+	CONAPI s32		console_box_custom					(uptr tnHandle, s32 tnXul, s32 tnYul, s32 tnXlr, s32 tnYlr, SBgra* backColor, SBgra* charColor, u8 ul, u8 top, u8 ur, u8 r, u8 lr, u8 bot, u8 ll, u8 l);
 
+	// For input blocks
+	CONAPI s32		console_input_fields_clear_all		(uptr tnHandle);
+	CONAPI uptr		console_input_field_add				(uptr tnHandle, s32 tnX, s32 tnY, s32 tnLength, SBgra* backColor, SBgra* charColor, SDatum* liveValue, SConInputCallback* cicb = NULL);
+	CONAPI s32		console_input_field_delete			(uptr tnHandle, uptr tnInputFieldHandle);
 
-//////////
-// Returned error codes
-//////
-	cs32		_CONSOLE_ERROR__NO_ERROR					= 0;
-	cs32		_CONSOLE_ERROR__HANDLE_NOT_FOUND			= -1;
-	cs32		_CONSOLE_ERROR__CANNOT_ALLOCATE_BUFFER		= -2;
-	cs32		_CONSOLE_ERROR__INVALID_PARAMETERS			= -3;
-	cs32		_CONSOLE_ERROR__INVALID_WINDOW				= -4;
-	cs32		_CONSOLE_ERROR__CANNOT_CREATE_WINDOW		= -5;
-	cs32		_CONSOLE_ERROR__FATAL_ERROR					= -6;
-	cs32		_CONSOLE_ERROR__FONT_ALLOCATION_ERROR		= -7;
-	cs32		_CONSOLE_ERROR__FONT_NOT_SUPPORTED_ERROR	= -8;
-	cs32		_CONSOLE_ERROR__WINDOW_SETUP_NOT_COMPLETED	= -9;
+	// Explicitly push large quantities of raw content to the screen, or pull raw content from the screen
+	CONAPI s32		console_raw_push					(uptr tnHandle, s32 tnX, s32 tnY, SBgra color, SDatum* textIn, bool tlWrap);
+	CONAPI s32		console_raw_pullN					(uptr tnHandle, s32 tnX, s32 tnY, s32 tnCount, SDatum* textOut);
 
+	// Obtain more information about each character
+	CONAPI s32		console_raw_pull1					(uptr tnHandle, s32 tnX, s32 tnY, u8* c, SBgra* color, bool* tlBold, bool* tlItalic, bool* tlUnderline);
 
-//////////
-// Miscellaneous constants
-//////
-	cs32		_CONSOLE_CURSOR_TIMER						= 0x12345678;
-
-
-//////////
-// Fixed point font indices (always the first four, every other custom-allocated font is after that)
-//////
-	cs32		_CONSOLE_FONT_8x6							= 0;
-	cs32		_CONSOLE_FONT_8x8							= 1;
-	cs32		_CONSOLE_FONT_8x14							= 2;
-	cs32		_CONSOLE_FONT_8x16							= 3;
-	cs32		_CONSOLE_FONT_16x32							= 4;
-	cs32		_CONSOLE_FONT_8x12							= 5;
-	cs32		_CONSOLE_FONT_8x16_8						= 6;	// 8x16 font, using 8x8 font doubled
-	cs32		_CONSOLE_FONT__MAX_FIXED				= 6;
-
-
-//////////
-// Properties
-//////
-	cs8			cgc_console_x[]								= "x";
-	cs8			cgc_console_y[]								= "y";
-	cs8			cgc_console_left[]							= "left";
-	cs8			cgc_console_top[]							= "top";
-	cs8			cgc_console_width[]							= "width";
-	cs8			cgc_console_height[]						= "height";
-	cs8			cgc_console_charWidth[]						= "charwidth";
-	cs8			cgc_console_charHeight[]					= "charheight";
-	cs8			cgc_console_scrollRows[]					= "scrollrows";
-	cs8			cgc_console_backColor[]						= "backcolor";
-	cs8			cgc_console_foreColor[]						= "forecolor";
-	cs8			cgc_console_charColor[]						= "charcolor";
-	cs8			cgc_console_title[]							= "title";
-	cs8			cgc_console_visible[]						= "visible";
-	cs8			cgc_console_yes[]							= "yes";
-	cs8			cgc_console_true[]							= "true";
-	cs8			cgc_console_dot_t_dot[]						= ".t.";
-
-
-//////////
-// Internal constants
-//////
-	cs8			cgc_internal_fontName[]					= "$fixed";
+	// Explicitly push embedded/formatted content to the screen
+	CONAPI s32		console_vt100_push					(uptr tnHandle, SDatum* vt100Text);

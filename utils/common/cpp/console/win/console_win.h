@@ -137,6 +137,8 @@
 		u8*			fontBase_original;		// Always one of gxFontBase_* from the font*.h files in console_win.h
 		s32			nFontX;					// Width of original font that was used
 		s32			nFontY;					// Height of original font that was used
+		s32			nAdjustmentX;			// If scaled, the X adjustment for scaling to obtain the best font image
+		s32			nAdjustmentY;			// If scaled, the Y adjustment for scaling to obtain the best font image
 	};
 
 
@@ -153,10 +155,11 @@
 	#define console_os_error										console_win_error(console, lnResult)
 	#define console_os_font_setup									console_win_fontSetup(console, font)
 	#define console_os_initialize									console_win_initialize()
-	#define console_os_store_character								console_win_store_character(console, c, tlAtCursorXY)
-	#define console_os_render_character								console_win_render_character(console, conChar)
+	#define console_os_store_character								console_win_store_character(console, c, tlAtCursorXY, backColor, charColor)
+	#define console_os_store_character_atxy(x,y)					console_win_store_character_atxy(console, c, x, y, backColor, charColor)
 	#define console_os_render										iConsole_win_render(console)
 	#define console_os_xy_needs_repainted							console_win_xy_needs_repainted(console)
+	#define console_os_xy_needs_repainted_atxy(x,y)					console_win_xy_needs_repainted_atxy(console, x, y)
 	#define console_os_set_border									console_win_set_border(console, tlShowBorder, color)
 
 	#define console_dll_code										ghInstance = hInstance; \
@@ -223,8 +226,10 @@
 	bool				console_win_fontSetup						(SConsole* console, SConFont* font);
 	uptr				console_win_initialize						(void);
 	void				console_win_xy_needs_repainted				(SConsole* console);
+	void				console_win_xy_needs_repainted_atxy			(SConsole* console, s32 tnX, s32 tnY);
 	s32					console_win_set_border						(SConsole* console, bool tlShowBorder, SBgra* color);
-	void	 			console_win_store_character					(SConsole* console, char c, bool tlAtCursorXY);
+	void	 			console_win_store_character					(SConsole* console, u8 c, bool tlAtCursorXY, SBgra* backColor, SBgra* charColor);
+	void				console_win_store_character_atxy			(SConsole* console, u8 c, s32 tnX, s32 tnY, SBgra* backColor, SBgra* charColor);
 
 	// Internal functions
 	bool				iConsole_win_create_window__callbackRow		(SBuilderCallback* bcb);
@@ -250,10 +255,6 @@
 	void				iConsole_win_keydown						(SConsole* console, WPARAM wParam, LPARAM lParam);
 	u32					iGetNextWmApp								(void);
 	void				iConsole_win_readMessages					(void);
-	SConInput*			iConsole_find_conInput_byCursorXY			(SConsole* console);
-	SConInput*			iConsole_find_conInput_byXY					(SConsole* console, s32 tnX, s32 tnY);
-	bool				iConsole_find_conInput_byXY__callback		(SBuilderCallback* bcb);
-	bool				iConsole_find_conChar_byXY					(SConsole* console, s32 tnX, s32 tnY, SConRow** tsConRow, SConChar** tsConChar);
 
 	bool				iConsole_win_input_home						(SConsole* console, SConInput* conInput);
 	bool				iConsole_win_input_end						(SConsole* console, SConInput* conInput);

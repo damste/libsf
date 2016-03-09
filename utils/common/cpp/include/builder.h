@@ -106,6 +106,7 @@ struct SDatum;
 
 		// For each iteration:
 		void*		iter_ptr;								// Cast as (target*) to get this iteration's pointer in the data type
+		s32			iter_count;								// Increments each time (starts at 0)
 
 		// Available for user general purpose use
 		union {

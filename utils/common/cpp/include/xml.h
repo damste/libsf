@@ -82,7 +82,6 @@
 
 
 
-
 class XmlNode;		// Holds code to access parts of an XML structure, as in "/root/tag1(N)/tag2(N).attrib(name).value"
 class XmlData;		// Holds a string item, which contains ASCII text and a length
 class CXml;			// Holds a fully-qualified root XML object (every xml can be a root, or a child/sibling/parent, each is fully featured)

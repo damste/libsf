@@ -96,10 +96,9 @@
 // Called for unit testing
 //
 //////
+// #define _ASCII_CHART 0
 	int console_win_unit_test(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 	{
-		u8					lnC;
-		s32					lnI, lnX, lnY;
 		uptr				lnCon1;
 		SDatum				title;
 		SConCallback		ccb;
@@ -150,9 +149,18 @@
 			sprintf(buffer, "foreColor=%d\nbackColor=%d", rgb(0,255,0), rgb(0,0,0));
 			props.length	= strlen(buffer);
 			console_setProperties(lnCon1, &props);
-// 			console_gotoXY(lnCon1, 0, 1);
-// 			console_print(lnCon1, " eax\263\n\r ebx\263\n\r ecx\263\n\r edx\263\n\r esi\263\n\r edi\263\n\r ebp\263\n\r esp\263\n\r  cs\263\n\r  ds\263\n\r  es\263\n\r  fs\263\n\r  gs\263");
+#if !defined(_ASCII_CHART)
+			console_gotoXY(lnCon1, 0, 1);
+			console_print(lnCon1, " eax\263\n\r ebx\263\n\r ecx\263\n\r edx\263\n\r esi\263\n\r edi\263\n\r ebp\263\n\r esp\263\n\r  cs\263\n\r  ds\263\n\r  es\263\n\r  fs\263\n\r  gs\263");
+#endif
 
+
+		//////////
+		// Draw an ASCII chart
+		//////
+#if defined(_ASCII_CHART)
+			u8					lnC;
+			s32					lnI, lnX, lnY;
 			memset(buffer, 0, sizeof(buffer));
 			for (lnI = 0, lnC = 0, lnY = 0; lnY < 16; lnY++)
 			{
@@ -174,6 +182,7 @@
 			}
 			sprintf(buffer + lnI - 1, "0123456789abcdef");
 			console_print(lnCon1, buffer, lnI + 15);
+#endif
 
 
 		//////////
@@ -185,82 +194,93 @@
 		//////////
 		// Some input areas
 		//////
-// 			memset(&cibc, 0, sizeof(cibc));
-// 			cibc.lSuppressBorder			= true;
-// 			cibc.lInnerBorder				= true;
-// 			cibc.innerBorderColor.color		= blackColor.color;
-// 			cibc.lVisualize_onChange		= true;
-// 			cibc.backColor_changed.color	= yellowColor.color;
-// 			cibc.charColor_changed.color	= blackColor.color;
-// 			cibc._onChanged		= (uptr)&iiConsole_win_unit_test__onChanged;
-// 			cibc._onKeystroke	= (uptr)&iiConsole_win_unit_test__onKeystroke;
-// 			cibc._onLostFocus	= (uptr)&iiConsole_win_unit_test__onLostFocus;
-// 			cibc._onGotFocus	= (uptr)&iiConsole_win_unit_test__onGotFocus;
-// 
-// 			datum_eax.data		= &buf_eax[0];
-// 			datum_eax.length	= 8;
-// 			memset(&buf_eax, 32, sizeof(buf_eax));
-// 			console_input_field_add(lnCon1, 5, 1, datum_eax.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_eax, &cibc);
-// 
-// 			datum_ebx.data		= &buf_ebx[0];
-// 			datum_ebx.length	= 8;
-// 			memset(&buf_ebx, 32, sizeof(buf_ebx));
-// 			console_input_field_add(lnCon1, 5, 2, datum_ebx.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_ebx, &cibc);
-// 
-// 			datum_ecx.data		= &buf_ecx[0];
-// 			datum_ecx.length	= 8;
-// 			memset(&buf_ecx, 32, sizeof(buf_ecx));
-// 			console_input_field_add(lnCon1, 5, 3, datum_ecx.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_ecx, &cibc);
-// 
-// 			datum_edx.data		= &buf_edx[0];
-// 			datum_edx.length	= 8;
-// 			memset(&buf_edx, 32, sizeof(buf_edx));
-// 			console_input_field_add(lnCon1, 5, 4, datum_edx.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_edx, &cibc);
-// 
-// 			datum_esi.data		= &buf_esi[0];
-// 			datum_esi.length	= 8;
-// 			memset(&buf_esi, 32, sizeof(buf_esi));
-// 			console_input_field_add(lnCon1, 5, 5, datum_esi.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_esi, &cibc);
-// 
-// 			datum_edi.data		= &buf_edi[0];
-// 			datum_edi.length	= 8;
-// 			memset(&buf_edi, 32, sizeof(buf_edi));
-// 			console_input_field_add(lnCon1, 5, 6, datum_edi.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_edi, &cibc);
-// 
-// 			datum_ebp.data		= &buf_ebp[0];
-// 			datum_ebp.length	= 8;
-// 			memset(&buf_ebp, 32, sizeof(buf_ebp));
-// 			console_input_field_add(lnCon1, 5, 7, datum_ebp.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_ebp, &cibc);
-// 
-// 			datum_esp.data		= &buf_esp[0];
-// 			datum_esp.length	= 8;
-// 			memset(&buf_esp, 32, sizeof(buf_esp));
-// 			console_input_field_add(lnCon1, 5, 8, datum_esp.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_esp, &cibc);
-// 
-// 			datum_cs.data	= &buf_cs[0];
-// 			datum_cs.length	= 4;
-// 			memset(&buf_cs, 32, sizeof(buf_cs));
-// 			console_input_field_add(lnCon1, 5, 9, datum_cs.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_cs, &cibc);
-// 
-// 			datum_ds.data	= &buf_ds[0];
-// 			datum_ds.length	= 4;
-// 			memset(&buf_ds, 32, sizeof(buf_ds));
-// 			console_input_field_add(lnCon1, 5, 10, datum_ds.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_ds, &cibc);
-// 
-// 			datum_es.data	= &buf_es[0];
-// 			datum_es.length	= 4;
-// 			memset(&buf_es, 32, sizeof(buf_es));
-// 			console_input_field_add(lnCon1, 5, 11, datum_es.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_es, &cibc);
-// 
-// 			datum_fs.data	= &buf_fs[0];
-// 			datum_fs.length	= 4;
-// 			memset(&buf_fs, 32, sizeof(buf_fs));
-// 			console_input_field_add(lnCon1, 5, 12, datum_fs.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_fs, &cibc);
-// 
-// 			datum_gs.data	= &buf_gs[0];
-// 			datum_gs.length	= 4;
-// 			memset(&buf_gs, 32, sizeof(buf_gs));
-// 			console_input_field_add(lnCon1, 5, 13, datum_gs.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_gs, &cibc);
+#if !defined(_ASCII_CHART)
+			memset(&cibc, 0, sizeof(cibc));
+			cibc.lSuppressBorder			= true;
+			cibc.lInnerBorder				= true;
+			cibc.innerBorderColor.color		= blackColor.color;
+			cibc.lVisualize_onChange		= true;
+			cibc.backColor_changed.color	= yellowColor.color;
+			cibc.charColor_changed.color	= blackColor.color;
+			cibc._onChanged		= (uptr)&iiConsole_win_unit_test__onChanged;
+			cibc._onKeystroke	= (uptr)&iiConsole_win_unit_test__onKeystroke;
+			cibc._onLostFocus	= (uptr)&iiConsole_win_unit_test__onLostFocus;
+			cibc._onGotFocus	= (uptr)&iiConsole_win_unit_test__onGotFocus;
+
+			datum_eax.data		= &buf_eax[0];
+			datum_eax.length	= 8;
+			memset(&buf_eax, 32, sizeof(buf_eax));
+			console_input_field_add(lnCon1, 5, 1, datum_eax.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_eax, &cibc);
+
+			datum_ebx.data		= &buf_ebx[0];
+			datum_ebx.length	= 8;
+			memset(&buf_ebx, 32, sizeof(buf_ebx));
+			console_input_field_add(lnCon1, 5, 2, datum_ebx.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_ebx, &cibc);
+
+			datum_ecx.data		= &buf_ecx[0];
+			datum_ecx.length	= 8;
+			memset(&buf_ecx, 32, sizeof(buf_ecx));
+			console_input_field_add(lnCon1, 5, 3, datum_ecx.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_ecx, &cibc);
+
+			datum_edx.data		= &buf_edx[0];
+			datum_edx.length	= 8;
+			memset(&buf_edx, 32, sizeof(buf_edx));
+			console_input_field_add(lnCon1, 5, 4, datum_edx.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_edx, &cibc);
+
+			datum_esi.data		= &buf_esi[0];
+			datum_esi.length	= 8;
+			memset(&buf_esi, 32, sizeof(buf_esi));
+			console_input_field_add(lnCon1, 5, 5, datum_esi.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_esi, &cibc);
+
+			datum_edi.data		= &buf_edi[0];
+			datum_edi.length	= 8;
+			memset(&buf_edi, 32, sizeof(buf_edi));
+			console_input_field_add(lnCon1, 5, 6, datum_edi.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_edi, &cibc);
+
+			datum_ebp.data		= &buf_ebp[0];
+			datum_ebp.length	= 8;
+			memset(&buf_ebp, 32, sizeof(buf_ebp));
+			console_input_field_add(lnCon1, 5, 7, datum_ebp.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_ebp, &cibc);
+
+			datum_esp.data		= &buf_esp[0];
+			datum_esp.length	= 8;
+			memset(&buf_esp, 32, sizeof(buf_esp));
+			console_input_field_add(lnCon1, 5, 8, datum_esp.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_esp, &cibc);
+
+			datum_cs.data	= &buf_cs[0];
+			datum_cs.length	= 4;
+			memset(&buf_cs, 32, sizeof(buf_cs));
+			console_input_field_add(lnCon1, 5, 9, datum_cs.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_cs, &cibc);
+
+			datum_ds.data	= &buf_ds[0];
+			datum_ds.length	= 4;
+			memset(&buf_ds, 32, sizeof(buf_ds));
+			console_input_field_add(lnCon1, 5, 10, datum_ds.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_ds, &cibc);
+
+			datum_es.data	= &buf_es[0];
+			datum_es.length	= 4;
+			memset(&buf_es, 32, sizeof(buf_es));
+			console_input_field_add(lnCon1, 5, 11, datum_es.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_es, &cibc);
+
+			datum_fs.data	= &buf_fs[0];
+			datum_fs.length	= 4;
+			memset(&buf_fs, 32, sizeof(buf_fs));
+			console_input_field_add(lnCon1, 5, 12, datum_fs.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_fs, &cibc);
+
+			datum_gs.data	= &buf_gs[0];
+			datum_gs.length	= 4;
+			memset(&buf_gs, 32, sizeof(buf_gs));
+			console_input_field_add(lnCon1, 5, 13, datum_gs.length, (SBgra*)&greenColor, (SBgra*)&blackColor, &datum_gs, &cibc);
+#endif
+
+
+		//////////
+		// Draw a box around it
+		//////
+#if !defined(_ASCII_CHART)
+// 			console_box_single(lnCon1, 0, 0, 14, 14, (SBgra*)&blackColor, (SBgra*)&greenColor);
+			console_box_double(lnCon1, 0, 0, 14, 14, (SBgra*)&blackColor, (SBgra*)&greenColor);
+#endif
 
 
 		//////////
@@ -630,14 +650,45 @@
 
 //////////
 //
+// Called when a character needs repainted
+//
+//////
+	void console_win_xy_needs_repainted_atxy(SConsole* console, s32 tnX, s32 tnY)
+	{
+		RECT lrc;
+
+
+		// Repaint the current character (and the border around it up to four pixels out)
+		SetRect(&lrc,	(tnX * console->nCharWidth)  - 4,
+						(tnY * console->nCharHeight) - 4,
+						((tnX + 1) * console->nCharWidth) + 4,
+						((tnY + 1) * console->nCharHeight) + 4);
+		
+		// Signal the rectangle needs redrawn
+		InvalidateRect(console->hwnd, &lrc, false);
+	}
+
+
+
+
+//////////
+//
 // Called to set the border color
 //
 //////
 	s32 console_win_set_border(SConsole* console, bool tlShowBorder, SBgra* color)
 	{
+		DWMNCRENDERINGPOLICY policy;
+
+
 		// Store the new values
 		console->lShowBorder		= tlShowBorder;
 		console->borderColor.color	= color->color;
+
+		// Turn off aero glass so the border renders properly
+		if (tlShowBorder)		policy = DWMNCRP_DISABLED;
+		else					policy = DWMNCRP_ENABLED;
+		DwmSetWindowAttribute(console->hwnd, DWMWA_NCRENDERING_POLICY, (void*)&policy, sizeof(policy));
 
 		// Signal the non-client repaint
 		SendMessage(console->hwnd, WM_NCPAINT, 0, 0);
@@ -654,41 +705,30 @@
 // Called to store the indicated character into the console buffer
 //
 //////
-	void console_win_store_character(SConsole* console, char c, bool tlAtCursorXY)
+	void console_win_store_character(SConsole* console, u8 c, bool tlAtCursorXY, SBgra* backColor, SBgra* charColor)
 	{
-		SConRow*			conRow;
-		SConChar*			conChar;
-		SBuilderCallback	bcb;
+		// Pass-thru to the common function
+		console_win_store_character_atxy(	console, c,		((tlAtCursorXY) ? console->nXCursor : console->nXText),
+															((tlAtCursorXY) ? console->nYCursor : console->nYText),
+											backColor, charColor);
+	}
+
+	void console_win_store_character_atxy(SConsole* console, u8 c, s32 tnX, s32 tnY, SBgra* backColor, SBgra* charColor)
+	{
+		SConChar* conChar;
 
 
 		// Make sure the environment is sane
-		conChar	= NULL;
-		if (!tlAtCursorXY || console->nXCursor >= 0)
+		if (iConsole_find_conChar_byXY(console, tnX, tnY, NULL, &conChar))
 		{
-			if (iConsole_find_conChar_byXY(console, ((tlAtCursorXY) ? console->nXCursor : console->nXText), ((tlAtCursorXY) ? console->nYCursor : console->nYText), &conRow, &conChar))
-			{
+			// Store character and attributes
+			conChar->c					= c;
+			conChar->backColor.color	= backColor->color;
+			conChar->charColor.color	= charColor->color;
+			conChar->nFont				= console->nCharFont;
 
-				//////////
-				// Store character and attributes
-				//////
-					conChar->c					= c;
-					conChar->backColor.color	= console->backColor.color;
-					conChar->charColor.color	= console->charColor.color;
-					conChar->nFont				= console->nCharFont;
-
-
-				//////////
-				// Redraw
-				//////
-					// Create a simulated builder callback
-					memset(&bcb, 0, sizeof(bcb));
-					bcb.extra1		= console;
-					bcb.iter_ptr	= conChar;
-
-					// Render the one character
-					iConsole_win_render__callbackCol(&bcb);
-
-			}
+			// Redraw the one character
+			iConsole_win_renderSingleChar(console, tnX, tnY, conChar);
 		}
 	}
 
@@ -781,7 +821,7 @@
 			//////////
 			// Create the fixed entries
 			//////
-				font_fixed = (SConFont_fixed*)iBuilder_allocateBytes(gsFontFixedRoot, sizeof(SConFont_fixed) * (_CONSOLE_FONT_16x32 + 1));
+				font_fixed = (SConFont_fixed*)iBuilder_allocateBytes(gsFontFixedRoot, sizeof(SConFont_fixed) * (_CONSOLE_FONT__MAX_FIXED + 1));
 				if (!font_fixed)
 					return;		// Should never happen
 
@@ -842,6 +882,32 @@
 				font_fixed->lCustomScaled		= false;
 				font_fixed->nCharWidth			= 16;			font_fixed->nCharHeight	= 32;
 				font_fixed->nFontX				= 8;			font_fixed->nFontY		= 16;
+				iConsole_win_fontSetup_scalePhysically(font_fixed);
+
+
+			//////////
+			// 8x12
+			//////
+				++font_fixed;
+				font_fixed->fontBase			= &gxFontBase_8x6[0];
+				font_fixed->fontBase_original	= font_fixed->fontBase;
+				font_fixed->lCustomScaled		= false;
+				font_fixed->nCharWidth			= 8;			font_fixed->nCharHeight	= 12;
+				font_fixed->nFontX				= 8;			font_fixed->nFontY		= 6;
+				font_fixed->nAdjustmentY		= -1;
+				iConsole_win_fontSetup_scalePhysically(font_fixed);
+
+
+			//////////
+			// 8x16 using 8x8 font
+			//////
+				++font_fixed;
+				font_fixed->fontBase			= &gxFontBase_8x8[0];
+				font_fixed->fontBase_original	= font_fixed->fontBase;
+				font_fixed->lCustomScaled		= false;
+				font_fixed->nCharWidth			= 8;			font_fixed->nCharHeight	= 16;
+				font_fixed->nFontX				= 8;			font_fixed->nFontY		= 8;
+				font_fixed->nAdjustmentY		= -1;
 				iConsole_win_fontSetup_scalePhysically(font_fixed);
 
 		}
@@ -1109,7 +1175,7 @@
 	void iConsole_win_fontSetup_scalePhysically(SConFont_fixed* font_fixed)
 	{
 		u8			lcThisCharacter, lnCharBits, lcMask;
-		s32			lnI, lnX, lnY, lnRow, lnCol, lnWidthIn, lnHeightIn, lnWidthOut, lnHeightOut, lnPixelNum;
+		s32			lnC, lnX, lnY, lnRow, lnCol, lnWidthIn, lnHeightIn, lnWidthOut, lnHeightOut, lnPixelNum;
 		SBitmap*	bmpIn;
 		SBitmap*	bmpOut;
 		RECT		lrc;
@@ -1117,8 +1183,6 @@
 
 
 		// Make sure our parameters are in a sane range
-		font_fixed->nFontX		= 8;
-		font_fixed->nFontY		= ((font_fixed->nFontY == 6 || font_fixed->nFontY == 8 || font_fixed->nFontY == 14 || font_fixed->nFontY == 16) ? font_fixed->nFontY : 16);
 		font_fixed->nCharWidth	= max(3, font_fixed->nCharWidth);
 		font_fixed->nCharHeight	= max(3, font_fixed->nCharHeight);
 
@@ -1157,16 +1221,16 @@
 			//////////
 			// Redraw all 256 characters (0x00 .. 0xff)
 			//////
-				for (lnI = 0, lnRow = font_fixed->nFontY, lcThisCharacter = 0; lnI < 256; lnI++, lcThisCharacter++, lnRow = (((lnI / 16) + 1) * font_fixed->nFontY))
+				for (lnC = 0, lnRow = font_fixed->nFontY, lcThisCharacter = 0; lnC < 256; lnC++, lcThisCharacter++, lnRow = ((s32)((lnC / 16) + 1) * font_fixed->nFontY))
 				{
 					// Offset for this character into font_fixed->fontBase_original[]
-					lnPixelNum = lnI * font_fixed->nFontY;
+					lnPixelNum = lnC * font_fixed->nFontY;
 
 					// Draw the character
 					for (lnY = 0; lnY < font_fixed->nFontY; lnY++, lnPixelNum++)
 					{
 						// Prepare for drawing bits across this row
-						lrgb = (SBgr*)(bmpIn->bd + ((bmpIn->bi.biHeight - lnRow - lnY) * bmpIn->rowWidth) + (((lnI % 16) + 1) * font_fixed->nFontX * 3));
+						lrgb = (SBgr*)(bmpIn->bd + ((bmpIn->bi.biHeight - lnRow - lnY) * bmpIn->rowWidth) + ((s32)((lnC % 16) + 1) * font_fixed->nFontX * 3));
 
 						// Grab the bits pattern for this row of the character
 						lnCharBits = font_fixed->fontBase_original[lnPixelNum];
@@ -1190,9 +1254,9 @@
 			//////////
 			// Scale the bitmap to its new size
 			//////
-//iBmp_saveToDisk(bmpIn,  "c:\\temp\\in.bmp");
+// iBmp_saveToDisk(bmpIn,  "c:\\temp\\in.bmp");
 				iBmp_scale(bmpOut, bmpIn);
-//iBmp_saveToDisk(bmpOut, "c:\\temp\\out.bmp");
+// iBmp_saveToDisk(bmpOut, "c:\\temp\\out.bmp");
 
 				// Delete the input
 				iBmp_delete(&bmpIn, true, true);
@@ -1202,13 +1266,13 @@
 			// Extract the scaled bits back out
 			//////
 				// Iterate character-by-character
-				for (lnI = 0, lnPixelNum = 0; lnI < 256; lnI++)
+				for (lnC = 0, lnPixelNum = 0; lnC < 256; lnC++)
 				{
 					// Iterate for every vertical pixel
-					for (lnY = 0, lnRow = ((lnI / 16) + 1) * font_fixed->nCharHeight, lnCol = (lnI % 16); lnY < font_fixed->nCharHeight; lnY++)
+					for (lnY = 0, lnRow = (s32)((lnC / 16) + 1) * font_fixed->nCharHeight, lnCol = (s32)(lnC % 16); lnY < font_fixed->nCharHeight; lnY++)
 					{
 						// Grab pointer to the start of this row
-						lrgb = (SBgr*)(bmpOut->bd + ((bmpOut->bi.biHeight - lnRow - lnY) * bmpOut->rowWidth) + ((lnCol + 1) * font_fixed->nCharWidth * 3));
+						lrgb = (SBgr*)(bmpOut->bd + ((bmpOut->bi.biHeight - lnRow - lnY - font_fixed->nAdjustmentY) * bmpOut->rowWidth) + ((((s32)(lnCol + 1) * font_fixed->nCharWidth) + font_fixed->nAdjustmentX) * 3));
 
 						// Extract each pixel into the output buffer
 						for (lnX = 0; lnX < font_fixed->nCharWidth; lnX++, lnPixelNum++, lrgb++)
@@ -1222,6 +1286,8 @@
 					}
 // Output after each character to make sure it's "swiping" the correct 
 // iBmp_saveToDisk(bmpOut, "c:\\temp\\out2.bmp");
+// if (font_fixed->nCharHeight == 12)
+// 	_asm nop;
 				}
 				// When we get here, we have our scaled fonts
 				iBmp_delete(&bmpOut, true, true);
@@ -1290,7 +1356,7 @@
 
 		// Iterate through every row
 		memset(&bcb, 0, sizeof(bcb));
-		bcb.extra1 = console;
+		bcb.extra1	= console;
 		iBuilder_iterate_N_to_N(console->scrollBuffer, sizeof(SConRow), console->nTopRow, console->nTopRow + console->nRows, &bcb, (uptr)&iConsole_win_render__callbackRow);
 
 		// All done, force a full repaint by Windows
@@ -1300,6 +1366,7 @@
 		return(console->nRows);
 	}
 
+	// Uses bcb->extra1 for console, bcb->iter_ptr as conRow
 	bool iConsole_win_render__callbackRow(SBuilderCallback* bcb)
 	{
 		SConsole*			console;
@@ -1314,6 +1381,8 @@
 		// Iterate through every character
 		memset(&bcb2, 0, sizeof(bcb2));
 		bcb2.extra1 = console;
+		bcb2.value1	= bcb->value1;
+		bcb2.value2	= bcb->value2 + bcb->iter_count;
 		iBuilder_iterate_N_to_N(conRow->chars, sizeof(SConChar), 0, console->nCols, &bcb2, (uptr)&iConsole_win_render__callbackCol);
 		// Note:  If horizontal scrolling is ever added, the "0" and "console->nCols" can be adjusted here by console->nScrollX value
 
@@ -1329,6 +1398,7 @@
 // Called to render a single row onto the console->hdc at the indicated rect
 //
 //////
+	// Uses bcb->extra1 for console, bcb->iter_ptr for conChar, bcb->value1 for x, bcb->value2 for y, and iterates using bcb->iter_count
 	bool iConsole_win_render__callbackCol(SBuilderCallback* bcb)
 	{
 		SConsole*	console;
@@ -1340,7 +1410,8 @@
 		conChar	= (SConChar*)bcb->iter_ptr;
 
 		// Redraw the indicated character
-		iConsole_win_renderSingleChar(console, console->nXText, console->nYText, conChar);
+		iConsole_win_renderSingleChar(console, bcb->value1 + bcb->iter_count, bcb->value2, conChar);
+		console_os_xy_needs_repainted_atxy(console->nXText, console->nYText);
 
 		// Continue iterating
 		return(true);
@@ -1606,6 +1677,13 @@
 		SConInput*	conInput;
 
 
+		// If there is no cursor position yet, use the text position
+		if (console->nXCursor < 0)
+		{
+			console->nXCursor = console->nXText;
+			console->nYCursor = console->nYText;
+		}
+
 		// Grab the keyboard settings
 		iiConsole_get_keyboardSettings(console, wParam, lParam);
 
@@ -1723,10 +1801,6 @@
 			if (conInput)
 				iConsole_win_input_render(console, NULL, conInput, false);
 
-			// Redraw the screen
-			InvalidateRect(console->hwnd, NULL, FALSE);
-
-
 		} else if ((c = (s8)MapVirtualKey(wParam, MAPVK_VK_TO_CHAR)) != 0) {
 			// If they're in input mode, and they're in an input area, receive the keystroke
 			if (console->nXCursor >= 0 && conInput && console->nXCursor < conInput->nX + conInput->nLength)
@@ -1775,6 +1849,9 @@
 				iConsole_win_keydown(console, VK_RIGHT, lParam);
 			}
 		}
+
+		// Redraw the screen
+		InvalidateRect(console->hwnd, NULL, FALSE);
 	}
 
 
@@ -1814,106 +1891,6 @@
 			}
 			// When a window closes, it exits the loop
 		}
-	}
-
-
-
-
-//////////
-//
-// Searches for the closest console input based on the current nXcursor and nYCursor
-//
-//////
-	SConInput* iConsole_find_conInput_byCursorXY(SConsole* console)
-	{
-		SBuilderCallback bcb;
-
-
-		// Iterate through to find one
-		memset(&bcb, 0, sizeof(bcb));
-		bcb.extra1 = console;
-		bcb.value1	= console->nXCursor;
-		bcb.value2	= console->nYCursor;
-		if (console->nXCursor >= 0)
-			iBuilder_iterate(gsInputRoot, sizeof(SConInput), &bcb, (uptr)&iConsole_find_conInput_byXY__callback);
-
-		// Indicate success or failure
-		return((SConInput*)bcb.extra2);
-	}
-
-	SConInput* iConsole_find_conInput_byXY(SConsole* console, s32 tnX, s32 tnY)
-	{
-		SBuilderCallback bcb;
-
-
-		// Iterate through to find one
-		memset(&bcb, 0, sizeof(bcb));
-		bcb.extra1 = console;
-		bcb.value1	= tnX;
-		bcb.value2	= tnY;
-		if (console->nXCursor >= 0)
-			iBuilder_iterate(gsInputRoot, sizeof(SConInput), &bcb, (uptr)&iConsole_find_conInput_byXY__callback);
-
-		// Indicate success or failure
-		return((SConInput*)bcb.extra2);
-	}
-
-	// Uses bcb.value1=X, bcb.value2=Y
-	bool iConsole_find_conInput_byXY__callback(SBuilderCallback* bcb)
-	{
-		SConsole*	console;
-		SConInput*	conInput;
-
-
-		// Grab our pointers
-		console		= (SConsole*)bcb->extra1;
-		conInput	= (SConInput*)bcb->iter_ptr;
-
-		// See if we're in range
-		if (bcb->value2 == conInput->nY && bcb->value1 >= conInput->nX && bcb->value1 <= conInput->nX + conInput->nLength)
-		{
-			// Found it
-			bcb->extra2 = conInput;
-			return(false);		// No more iterating
-		}
-
-		// Continue iterating
-		return(true);
-	}
-
-
-
-
-//////////
-//
-// Called to retrieve the row and char for the indicated X,Y coordinate
-//
-//////
-	bool iConsole_find_conChar_byXY(SConsole* console, s32 tnX, s32 tnY, SConRow** tsConRow, SConChar** tsConChar)
-	{
-		SConRow*	lsConRow;
-		SConChar*	lsConChar;
-
-
-		// Grab the row
-		lsConRow = (SConRow*)iBuilder_retrieveRecord(console->scrollBuffer, sizeof(SConRow), tnY);
-		if (lsConRow)
-		{
-			// Grab the character
-			lsConChar = (SConChar*)iBuilder_retrieveRecord(lsConRow->chars, sizeof(SConChar), tnX);
-			if (lsConChar)
-			{
-				// We have both
-				if (tsConRow)		*tsConRow	= lsConRow;
-				if (tsConChar)		*tsConChar	= lsConChar;
-
-				// Success
-				return(true);
-			}
-		}
-
-		// If we get here, not found
-		return(false);
 	}
 
 
@@ -2661,8 +2638,8 @@
 					{
 						hdc = GetWindowDC(hwnd);
 						GetWindowRect(hwnd, &lrc);
-						lrc.right	= (lrc.right - lrc.left);
-						lrc.bottom	= (lrc.bottom - lrc.top);
+						lrc.right	-= lrc.left;
+						lrc.bottom	-= lrc.top;
 						lrc.left	= 0;
 						lrc.top		= 0;
 						hbr			= CreateSolidBrush(RGB(console->borderColor.red, console->borderColor.grn, console->borderColor.blu));
