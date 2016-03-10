@@ -301,8 +301,8 @@ struct SConsole
 	SDatum			title;				// Title of the console window
 
 	// Character settings
-	s32				nXText;					// Current X location in the buffer
-	s32				nYText;					// Current Y location in the buffer
+	s32				nXText;				// Current X location in the buffer
+	s32				nYText;				// Current Y location in the buffer
 	s32				nXCursor;			// X coordinate for the cursor (negative if not in use (they haven't used the arrows to navigate around))
 	s32				nYCursor;			// Y coordinate for the cursor (negative if not in use (they haven't used the arrows to navigate around))
 	SBgra			charColor;			// Color to output in
@@ -310,6 +310,7 @@ struct SConsole
 	bool			lWordWrap;			// If word wrap is on, then only as many characters as will fit horizontally are stored, then it moves to the next row, otherwise the row can contain more data than will fit in the current window
 
 	// Row buffer
+	bool			lInhibitScroll;		// Should scrolling be inhibited?
 	SBuilder*		scrollBuffer;		// Holds one SConRow record per row, including scrolled data
 	s32				nTopRow;			// The row to display at the top of the scroll buffer
 	s32				nScrollRowsToKeep;	// Number of rows to keep in the scroll buffer, negative=unlimited

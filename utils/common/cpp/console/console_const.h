@@ -168,6 +168,11 @@
 	cs32		_CONSOLE_FONT_8x16_8						= 6;	// 8x16 font, using 8x8 font doubled
 	cs32		_CONSOLE_FONT__MAX_FIXED				= 6;
 
+	// Default to 8x14 font
+	cs32		_CONSOLE_DEFAULT_FONT						= 2;
+	cs32		_CONSOLE_DEFAULT_FONT_X						= 8;
+	cs32		_CONSOLE_DEFAULT_FONT_Y						= 14;
+
 
 //////////
 // Properties

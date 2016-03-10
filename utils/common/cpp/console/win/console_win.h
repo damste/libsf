@@ -248,7 +248,7 @@
 	s32					iConsole_win_render							(SConsole* console);
 	bool				iConsole_win_render__callbackRow			(SBuilderCallback* bcb);
 	bool				iConsole_win_render__callbackCol			(SBuilderCallback* bcb);
-	void				iConsole_win_renderSingleChar				(SConsole* console, s32 tnX, s32 tnY, SConChar* conChar);
+	void				iConsole_win_render_singleChar				(SConsole* console, s32 tnX, s32 tnY, SConChar* conChar);
 	SConsole*			iConsole_win_find_byHwnd					(HWND hwnd);
 	bool				iConsole_win_find_byHwnd__callback			(SBuilderCallback* cb);
 	void				iiConsole_win_getFlags_async				(bool* tlCtrl, bool* tlAlt, bool* tlShift, bool* tlLeft, bool* tlMiddle, bool* tlRight, bool* tlCaps, bool* tlNum, bool* tlScroll, bool* tlAnyButton);

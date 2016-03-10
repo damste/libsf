@@ -453,6 +453,7 @@
 			console->nYText		= 0;												// Text cursor position @ row = 0
 			console->nXCursor	= -1;												// Keyboard cursor position not in use
 			console->nYCursor	= -1;												// Keyboard cursor position not in use
+			console->nCharFont	= _CONSOLE_DEFAULT_FONT;							// The default font
 
 
 		//////////
@@ -753,7 +754,7 @@
 			conChar->c = c;		// Store character
 
 			// Redraw the one character
-			iConsole_win_renderSingleChar(console, tnX, tnY, conChar);
+			iConsole_win_render_singleChar(console, tnX, tnY, conChar);
 		}
 	}
 
@@ -772,7 +773,7 @@
 			conChar->nFont				= console->nCharFont;
 
 			// Redraw the one character
-			iConsole_win_renderSingleChar(console, tnX, tnY, conChar);
+			iConsole_win_render_singleChar(console, tnX, tnY, conChar);
 		}
 	}
 
@@ -837,7 +838,7 @@
 			// Initialize every character to its default value
 			memset(&bcb2, 0, sizeof(bcb2));
 			bcb2.extra1 = console;
-			iBuilder_iterate(conRow->chars, sizeof(SConRow), &bcb2, (uptr)&iConsole_win_create_window__callbackCol);
+			iBuilder_iterate(conRow->chars, sizeof(SConChar), &bcb2, (uptr)&iConsole_win_create_window__callbackCol);
 		}
 
 		// Continue iterating
@@ -1247,7 +1248,7 @@
 	void iConsole_win_fontSetup_scalePhysically(SConFont_fixed* font_fixed)
 	{
 		u8			lcThisCharacter, lnCharBits, lcMask;
-		s32			lnC, lnX, lnY, lnRow, lnCol, lnWidthIn, lnHeightIn, lnWidthOut, lnHeightOut, lnPixelNum;
+		s32			lnC, lnX, lnY, lnRow, lnCol, lnWidthIn, lnHeightIn, lnWidthOut, lnHeightOut, lnPixel, lnLength;
 		SBitmap*	bmpIn;
 		SBitmap*	bmpOut;
 		RECT		lrc;
@@ -1269,7 +1270,8 @@
 		bmpOut	= iBmp_allocate();
 
 		// Allocate enough space for every ASCII pixel
-		font_fixed->fontBase = (u8*)malloc(256 * font_fixed->nCharWidth * font_fixed->nCharHeight * sizeof(f32));
+		lnLength = (font_fixed->nCharWidth * font_fixed->nCharHeight * 256) * sizeof(f32);
+		font_fixed->fontBase = (u8*)malloc(lnLength);
 
 		// Was everything allocated correctly?
 		if (bmpIn && bmpOut && font_fixed->fontBase)
@@ -1296,16 +1298,16 @@
 				for (lnC = 0, lnRow = font_fixed->nFontY, lcThisCharacter = 0; lnC < 256; lnC++, lcThisCharacter++, lnRow = ((s32)((lnC / 16) + 1) * font_fixed->nFontY))
 				{
 					// Offset for this character into font_fixed->fontBase_original[]
-					lnPixelNum = lnC * font_fixed->nFontY;
+					lnPixel = lnC * font_fixed->nFontY;
 
 					// Draw the character
-					for (lnY = 0; lnY < font_fixed->nFontY; lnY++, lnPixelNum++)
+					for (lnY = 0; lnY < font_fixed->nFontY; lnY++, lnPixel++)
 					{
 						// Prepare for drawing bits across this row
 						lrgb = (SBgr*)(bmpIn->bd + ((bmpIn->bi.biHeight - lnRow - lnY) * bmpIn->rowWidth) + ((s32)((lnC % 16) + 1) * font_fixed->nFontX * 3));
 
 						// Grab the bits pattern for this row of the character
-						lnCharBits = font_fixed->fontBase_original[lnPixelNum];
+						lnCharBits = font_fixed->fontBase_original[lnPixel];
 
 						// Iterate through all of the bits setting pixels for bits which are 1
 						for (lnX = 0, lcMask = 0x80; lnX < font_fixed->nFontX; lnX++, lrgb++, lcMask >>= 1)
@@ -1329,7 +1331,8 @@
 // iBmp_saveToDisk(bmpIn,  "c:\\temp\\in.bmp");
 				iBmp_scale(bmpOut, bmpIn);
 // iBmp_saveToDisk(bmpOut, "c:\\temp\\out.bmp");
-
+// if (font_fixed->nCharHeight == 14)
+// 	_asm nop;
 				// Delete the input
 				iBmp_delete(&bmpIn, true, true);
 
@@ -1338,7 +1341,7 @@
 			// Extract the scaled bits back out
 			//////
 				// Iterate character-by-character
-				for (lnC = 0, lnPixelNum = 0; lnC < 256; lnC++)
+				for (lnC = 0, lnPixel = 0; lnC < 256; lnC++)
 				{
 					// Iterate for every vertical pixel
 					for (lnY = 0, lnRow = (s32)((lnC / 16) + 1) * font_fixed->nCharHeight, lnCol = (s32)(lnC % 16); lnY < font_fixed->nCharHeight; lnY++)
@@ -1347,9 +1350,9 @@
 						lrgb = (SBgr*)(bmpOut->bd + ((bmpOut->bi.biHeight - lnRow - lnY - font_fixed->nAdjustmentY) * bmpOut->rowWidth) + ((((s32)(lnCol + 1) * font_fixed->nCharWidth) + font_fixed->nAdjustmentX) * 3));
 
 						// Extract each pixel into the output buffer
-						for (lnX = 0; lnX < font_fixed->nCharWidth; lnX++, lnPixelNum++, lrgb++)
+						for (lnX = 0; lnX < font_fixed->nCharWidth; lnX++, lnPixel++, lrgb++)
 						{
-							font_fixed->fontBase_f32[lnPixelNum] = (f32)(255 - lrgb->red) / 255.0f;
+							font_fixed->fontBase_f32[lnPixel] = (f32)(255 - lrgb->red) / 255.0f;
 // Invert this section (for debugging purposes)
 // lrgb->red = 255 - lrgb->red;
 // lrgb->grn = 128;
@@ -1482,7 +1485,7 @@
 		conChar	= (SConChar*)bcb->iter_ptr;
 
 		// Redraw the indicated character
-		iConsole_win_renderSingleChar(console, bcb->value1 + bcb->iter_count, bcb->value2, conChar);
+		iConsole_win_render_singleChar(console, bcb->value1 + bcb->iter_count, bcb->value2, conChar);
 		console_os_xy_needs_repainted_atxy(console->nXText, console->nYText);
 
 		// Continue iterating
@@ -1497,11 +1500,11 @@
 // Called to render a single character at the indicated coordinates
 //
 //////
-	void iConsole_win_renderSingleChar(SConsole* console, s32 tnX, s32 tnY, SConChar* conChar)
+	void iConsole_win_render_singleChar(SConsole* console, s32 tnX, s32 tnY, SConChar* conChar)
 	{
 		s32					lnY, lnX, lnRow;
 		f32					lfAlp, lfMalp, lfRed, lfGrn, lfBlu, lfBRed, lfBGrn, lfBBlu, lfFRed, lfFGrn, lfFBlu;
-		f32*				pixelRow;
+		f32*				pixel;
 		SBgr*				lbgr;
 		SConFont_fixed*		font_fixed;
 		RECT				lrc;
@@ -1521,18 +1524,23 @@
 			// Grab the font base
 			font_fixed = (SConFont_fixed*)iBuilder_retrieveRecord(gsFontFixedRoot, sizeof(SConFont_fixed), conChar->nFont);
 
+			// Grab the start of the pixel data
+// if (conChar->c < ' ' || conChar->c > 'z')
+// 	_asm nop;
+			pixel = &font_fixed->fontBase_f32[(s32)conChar->c * console->nCharHeight * console->nCharWidth];
+
 			// Iterate through every row of the character
-			pixelRow = &font_fixed->fontBase_f32[(s32)conChar->c * console->nCharHeight * console->nCharWidth];
-			for (lnY = 0, lnRow = (tnY * console->nCharHeight); lnY < console->nCharHeight; lnY++, lnRow++)
+			lnRow = (tnY * console->nCharHeight);
+			for (lnY = 0; lnY < console->nCharHeight; lnY++, lnRow++)
 			{
 				// Compute the offset into the pixel buffers
 				lbgr = (SBgr*)(console->bmp->bd + ((console->bmp->bi.biHeight - lnRow - 1) * console->bmp->rowWidth) + (tnX * console->nCharWidth * 3));
 
 				// Iterate through every column
-				for (lnX = 0; lnX < console->nCharWidth; lnX++, pixelRow++, lbgr++)
+				for (lnX = 0; lnX < console->nCharWidth; lnX++, pixel++, lbgr++)
 				{
 					// Compute the pixel
-					lfAlp	= *pixelRow;
+					lfAlp	= *pixel;
 					lfMalp	= 1.0f - lfAlp;
 
 					// Compute the color mixture
@@ -2593,7 +2601,7 @@
 				}
 
 				// Redraw the character
-				iConsole_win_renderSingleChar(console, conInput->nX + lnI, conInput->nY, conChar);
+				iConsole_win_render_singleChar(console, conInput->nX + lnI, conInput->nY, conChar);
 			}
 		}
 

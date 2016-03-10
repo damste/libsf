@@ -156,11 +156,11 @@
 				iDatum_duplicate(&console->title, title);
 				console->nLeft			= tnLeft;
 				console->nTop			= tnTop;
-				console->nWidth			= tnCols * 8;
-				console->nHeight		= tnRows * 16;
-				console->nCharWidth		= 8;
-				console->nCharHeight	= 16;
-				console->nCharFont		= _CONSOLE_FONT_8x16;		// Default to this font until they specify otherwise
+				console->nWidth			= tnCols * _CONSOLE_DEFAULT_FONT_X;
+				console->nHeight		= tnRows * _CONSOLE_DEFAULT_FONT_Y;
+				console->nCharWidth		= _CONSOLE_DEFAULT_FONT_X;
+				console->nCharHeight	= _CONSOLE_DEFAULT_FONT_Y;
+				console->nCharFont		= _CONSOLE_DEFAULT_FONT;	// Default to this font until they specify otherwise
 
 				// Copy over the callback data
 				memcpy(&console->cb, cb, sizeof(console->cb));
@@ -860,6 +860,9 @@
 								// We need to scroll up one
 								llRepaintScreen = true;
 								iiConsole_scroll(console);
+
+								// Make sure we're on-screen
+								console->nYText = console->nRows - 1;
 								
 							} else {
 								// Enough room to move down one row
@@ -1246,10 +1249,14 @@
 		SBuilderCallback bcb;
 
 
-		// Copy each row forward
-		memset(&bcb, 0, sizeof(bcb));
-		bcb.extra1 = console;
-		iBuilder_iterate_N_to_N(console->scrollBuffer, sizeof(SConRow), 0, console->nRows, &bcb, (uptr)iiConsole_scroll__callbackRow);
+		// Is scrolling allowed?
+		if (!console->lInhibitScroll)
+		{
+			// Copy each row forward
+			memset(&bcb, 0, sizeof(bcb));
+			bcb.extra1 = console;
+			iBuilder_iterate_N_to_N(console->scrollBuffer, sizeof(SConRow), 0, console->nRows, &bcb, (uptr)iiConsole_scroll__callbackRow);
+		}
 	}
 
 	// Uses bcb->extra1 for console, bcb->extra2 for the destination row, and bcb->iter_ptr for the source row
