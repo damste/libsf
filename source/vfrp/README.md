@@ -1,3 +1,10 @@
+Mar.11.2016
+-----------
+
+&nbsp;&nbsp;&nbsp;&nbsp;This folder was previously \libsf\vvm\.  It contains the development efforts for the full version of Visual FreePro, and the Visual FreePro Virtual Machine.  It is incomplete, and not even to a usable state despite a very large amount of development being completed on it.  Currently, Visual FreePro, Jr. is receiving development.  See \libsf\source\vjr\ for the Visual FreePro, Jr. project.
+
+
+
 Nov.16.2015
 -----------
 
@@ -5,3 +12,5 @@ Nov.16.2015
 
 &nbsp;&nbsp;&nbsp;&nbsp;Development is currently suspended pending completion of [Visual FreePro, Jr.](https://github.com/RickCHodgin/libsf/tree/master/source/vjr/projects) and [source code](https://github.com/RickCHodgin/libsf/tree/master/source/vjr/source).
 
+Best regards,
+Rick C. Hodgin

@@ -1,0 +1,45 @@
+TEXT TO lcT NOSHOW
+//////////
+// AAlive Mnemonic tokens
+//////
+
+ENDTEXT
+
+TEXT TO lcTz NOSHOW
+STokenizer gsAalive[] =
+{
+ENDTEXT
+
+DIMENSION laOut[1]
+
+ALINES(laLines, FILETOSTR("sourcelight.txt"))
+FOR lnI = 1 TO ALEN(laLines, 1)
+	IF NOT EMPTY(laLines[lnI])
+		* Grab the cgc_varname part, and the "keyword" part
+		lcCgc	= GETWORDNUM(laLines[lnI], 1)
+		lcQuote	= GETWORDNUM(laLines[lnI], 2)
+
+		* Append tokens
+		lcT		= lcT + TEXTMERGE("	u8		<<lcCgc>>[]			= <<lcQuote>>;") + CHR(13)
+		
+		* Append tokenizer
+		lcTz	= lcTz + TEXTMERGE("{	<<lcCgc>>,		sizeof(<<lcCgc>>) - 1,		false,	true,	_ICODE_<<STRTRAN(STRTRAN(STRTRAN(UPPER(SUBSTR(lcCgc, 5)), '_INSTRUCTION', ''), '_PTR', ''), '_REG', '')>>,	_ICAT<<UPPER(SUBSTR(lcCgc, RAT('_', lcCgc)))>>,	colorSynHi_,	false,	null0 },") + CHR(13)
+		
+*		// keyword		length	repeats?	code			first on line?	category		syntax highlight color	syntax highlight bold	onCandidateMatch()	onFind()
+*		{ cgc_asterisk,			1,	true,	_ICODE_COMMENT,			true,	_ICAT_GENERIC,	&colorSynHi_comment1,	false,					null0,				null0 },
+*		{ cgc_ampersandComment,	2,	false,	_ICODE_LINE_COMMENT,	false,	_ICAT_GENERIC,	&colorSynHi_comment2,	false,					null0,				null0 },
+		
+	ELSE
+		* Just add a blank line to maintain spacing
+		lcT		= lcT  + CHR(13)
+		lcTz	= lcTz + CHR(13)
+	ENDIF
+NEXT
+
+lcTz = LEFT(lcTz, LEN(lcTz) - 2) + CHR(13) + "};"
+
+* Write our output files
+SET SAFETY OFF
+STRTOFILE(lcT, "tokens.h")
+STRTOFILE(lcTz, "tokenizer.h")
+SET SAFETY ON

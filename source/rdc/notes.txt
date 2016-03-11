@@ -1,0 +1,82 @@
+//////////
+// Tokenizer
+//////
+	// Character sequence to identify
+	cu8*		keyword;					// The character sequence
+	s32			length;						// Length of the keyword (negative for case sensitive, positive case insensitive, 0 for termination entry)
+	
+	// Flags for how this sequence exists
+	bool		firstOnLine;				// Is this item valid only when it's the first on a line?
+	bool		repeats;					// Can this item repeat?
+	
+	// Codes assigned to this sequence
+	s32			iCode;						// Code to assign
+	s32			iCode2;						// Sub-code
+	s32			iCat;						// Category to assign
+	s32			iCat2;						// Sub-category
+	s32			iCustom;					// Custom code
+	s32			iCustom2;					// Sub-custom
+
+	// For syntax highlighting
+	SBgra*		syntaxHighlightColor;		// Color to display this component in
+	bool		useBoldFont;				// Should this be bolded?
+
+	// An optional extra callback to consider further if a candidate match is a valid match before committing
+	union {
+		uptr	_onCandidateMatch;
+		bool	(*onCandidateMatch)(STokenizer* tz, u8* start, s32 length);
+	};
+
+	// An optional extra callback to parse when matched
+	union {
+		uptr	_onMatch;
+		void	(*onMatch)(STokenizer* tz, SComp* comp);
+	};
+
+
+//////////
+// Aggregator
+//////
+	s32			iCode1;
+	s32			iCode2;
+	s32			iCat1;
+	s32			iCat2;
+	s32			iCustom1;
+	s32			iCustom2;
+
+	// A callback to consider further if the indicated candidate match is a valid match before committing
+	union {
+		uptr	_onAggregateCandidate;
+		bool	(*onAggregateCandidate)(SAggregatorCallback* acb);
+	};
+
+
+//////////
+// Aggregator callback
+//////
+	STokenizer*	tz;				// The original tokenizer which found this sequence
+	SComp*		comp;			// The original component as parsed
+	
+	// Features available based on an examination of the code
+	// Note:  In addition to these, any manual update is allowed so long as it maintains valid structures
+	union {
+		uptr	_cmd_comps_create;
+		// Note:  A fabricated STokenizer entry is used to create the component
+		SComp*	(*cmd_comps_create)(STokenizer* tz, SDatum* reason);
+	};
+	union {
+		uptr	_cmd_comps_insert;
+		SComp*	(*cmd_comps_merge)(SComp* compRef, SComp* new, bool tlInsertBefore, SDatum* reason);
+	};
+	union {
+		uptr	_cmd_comps_combine;
+		bool	(*cmd_comps_combine)(SComp* compLeftmost, s32 count, s32 iCode1_new, s32 iCode2_new, s32 iCat1_new, s32 iCat2_new, s32 iCustom1_new, s32 iCustom2_new, SDatum* reason);
+	};
+	union {
+		uptr	_cmd_comps_duplicate;
+		SComp*	(*cmd_comps_duplicate)(SComp* compRef, s32 count, SDatum* reason);
+	};
+	union {
+		uptr	_cmd_comps_delete;
+		bool	(*cmd_comps_delete)(SComp* compRoot, s32 count, SDatum* reason);
+	};

@@ -1,0 +1,26 @@
+**********
+* Scope, first letter
+*****
+    g_Name -- Global
+    l_Name -- Local
+    t_Name -- Parameter
+    r_Name -- Return value
+    s_Name -- Scoped
+
+
+**********
+* Type, second letter
+*****
+    _c  -- Character
+    _n  -- Numeric, used for numbers that are defined n(length,decimals)
+    _i  -- Integer, specifically used for iid, or to indicate 4-byte integers
+    _f  -- Float
+    _j  -- Big integer
+    _g  -- Big floating point
+    _l  -- Logical
+    _d  -- Date
+    _t  -- Datetime
+    _a  -- Array, each element can be its own type
+    _u  -- Unicode (only supported in VXB++)
+    _x  -- Varies, can change, multiple types are allowed, etc.
+    _s  -- Second-level forms (structs, classes, or angels)
