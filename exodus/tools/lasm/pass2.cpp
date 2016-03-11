@@ -107,11 +107,7 @@
 		SComp*			compFile;
 		SLasmFile*		fileInclude;
 		SLasmBlock*		func;
-		SLasmBlock*		flowof;
-		SLasmBlock*		adhoc;
-		SLasmClass*		lclass;
 		SLasmStruct*	lstruct;
-		SLasmEnum*		lenum;
 
 
 		// Iterate through the entire file
@@ -131,50 +127,7 @@
 					{
 					}
 
-					// Process any inner classes
 					// Process any inner structs
-					// Process any inner enums
-					// Process any inner adhocs
-
-
-//////////
-// adhoc
-//////
-				} else if (comp->iCode == _ICODE_LASM_ADHOC) {
-					// Process the function parameters, and mark off its extents
-					if (!(func = ilasm_pass2_function(file, &line, comp)))
-					{
-					}
-
-					// Process any inner classes
-					// Process any inner structs
-					// Process any inner enums
-					// Process any inner adhocs
-
-
-//////////
-// flowof
-//////
-				} else if (comp->iCode == _ICODE_LASM_FLOWOF) {
-					// Process the flowof parameters, and mark off its extents
-					if (!(flowof = ilasm_pass2_flowof(file, &line, comp)))
-					{
-					}
-
-					// Process any inner classes
-					// Process any inner structs
-					// Process any inner enums
-					// Process any inner adhocs
-
-
-//////////
-// class
-//////
-				} else if (comp->iCode == _ICODE_LASM_CLASS) {
-					// Process the class
-					if (!(lclass = ilasm_pass2_class(file, &line, comp)))
-					{
-					}
 
 
 //////////
@@ -188,33 +141,10 @@
 
 
 //////////
-// enum
-//////
-				} else if (comp->iCode == _ICODE_LASM_ENUM) {
-					// Process the enum
-					if (!(lenum = ilasm_pass2_enum(file, &line, comp)))
-					{
-					}
-
-
-//////////
 // Label
 //////
 				} else if (ilasm_pass2_label(file, &line, comp)) {
 					// Found a label
-
-
-//////////
-// Function prototypes can also take on the old C-style form:  void name(...) { ... }
-// However, because RDC allows for non-forward declarations, this may take more than one pass to identify
-//////
-				} else if (!(func = ilasm_pass2_function_c_style(file, &line, comp))) {
-					// Found a function
-
-					// Process any inner classes
-					// Process any inner structs
-					// Process any inner enums
-					// Process any inner adhocs
 
 
 				} else {
@@ -233,21 +163,6 @@
 //
 //////
 	SLasmBlock*	ilasm_pass2_function(SLasmFile* file, SLine** lineProcessing, SComp* comp)
-	{
-		return(NULL);
-	}
-
-
-
-
-//////////
-//
-// Process the C-style function header, the form like:
-//
-//		void function(void) { ... }
-//
-//////
-	SLasmBlock* ilasm_pass2_function_c_style(SLasmFile* file, SLine** lineProcessing, SComp* comp)
 	{
 		return(NULL);
 	}

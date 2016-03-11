@@ -254,7 +254,7 @@
 					// Identify the file on the first pass
 					//////
 						if (lnPass == 0)
-							printf("Assembling %s\n", file->fileName.data_s8);
+							printf("Assembling %s\n", file->fileName.data._s8);
 
 
 					//////////
@@ -336,7 +336,7 @@
 				{
 
 					// Append our entry onto the chain
-					fNew = (SLasmFile*)iLl_appendNewNodeAtEnd((SLL**)&gsFirstFile, sizeof(f));
+					fNew = (SLasmFile*)iLl_appendNew__llAtEnd((SLL**)&gsFirstFile, sizeof(f));
 					if (fNew)
 					{
 						// Copy over
