@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/localization/vvmmcenu/vvmmces.cpp
+// /libsf/source/vfrp/localization/vvmmcenu/vvmmces.cpp
 //
 //////
 // Version 0.50

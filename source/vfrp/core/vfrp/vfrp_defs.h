@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/core/vfrp/vfrp_defs.h
+// /libsf/source/vfrp/core/vfrp/vfrp_defs.h
 //
 //////
 // Version 0.70

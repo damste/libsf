@@ -1555,7 +1555,7 @@
 
 						} else {
 							// Use the indicated name
-							memcpy(buffer, var->value.data,	min(var->value.length, (s32)sizeof(buffer) - 1));
+							memcpy(buffer, var->value.data._s8,	min(var->value.length, (s32)sizeof(buffer) - 1));
 						}
 
 						// Build it
@@ -2903,18 +2903,18 @@
 		//////
 			llResult		= false;
 			llStoreValue	= false;
-			if (d && d->data && d->length > 0)
+			if (d && d->data._data && d->length > 0)
 			{
 				// Could be 0 or 1
 				if (d->length == 1)
 				{
-					if (*d->data_s8 == '0')
+					if (*d->data._s8 == '0')
 					{
 						// It's false
 						llResult		= true;
 						llStoreValue	= false;
 
-					} else if (*d->data_s8 == '1') {
+					} else if (*d->data._s8 == '1') {
 						// It's true
 						llResult		= true;
 						llStoreValue	= false;
@@ -4700,6 +4700,6 @@ JDebiC_debug(win, obj);
 	void iDatum_duplicate(SDatum* datumDst, SVariable* varSrc)
 	{
 		// Make sure our environment is sane
-		if (datumDst && varSrc && varSrc->varType == _VAR_TYPE_CHARACTER && varSrc->value.data_u8 && varSrc->value.length > 0)
-			iDatum_duplicate(datumDst, varSrc->value.data_u8, varSrc->value.length);
+		if (datumDst && varSrc && varSrc->varType == _VAR_TYPE_CHARACTER && varSrc->value.data._u8 && varSrc->value.length > 0)
+			iDatum_duplicate(datumDst, varSrc->value.data._u8, varSrc->value.length);
 	}

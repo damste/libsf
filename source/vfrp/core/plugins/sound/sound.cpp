@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/core/plugins/sound.cpp
+// /libsf/source/vfrp/core/plugins/sound.cpp
 //
 //////
 //    _     _ _     _____ _____ 
@@ -66,9 +66,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <windows.h>
-#include "\libsf\vvm\core\common\common.h"
-#include "\libsf\vvm\core\common\common_vvm.h"
-#include "\libsf\vvm\core\common\common_oss.h"
+#include "\libsf\source\vfrp\core\common\common.h"
+#include "\libsf\source\vfrp\core\common\common_vvm.h"
+#include "\libsf\source\vfrp\core\common\common_oss.h"
 #include <sdl/SDL.h>
 #include <sdl/SDL_audio.h>
 #include <queue>

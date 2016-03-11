@@ -18,7 +18,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="\libsf\vvm\dev"
+			OutputDirectory="\libsf\source\vfrp\dev"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="0"
@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="\libsf\vvm\dev\vdebug.exe"
+				OutputFile="\libsf\source\vfrp\dev\vdebug.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(TargetDir)pdbs\$(TargetName).pdb"
@@ -92,7 +92,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="\libsf\vvm\dev"
+			OutputDirectory="\libsf\source\vfrp\dev"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="0"
@@ -136,7 +136,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="\libsf\vvm\dev\vdebug.exe"
+				OutputFile="\libsf\source\vfrp\dev\vdebug.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(TargetDir)pdbs\$(TargetName).pdb"

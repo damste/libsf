@@ -146,8 +146,8 @@
 		//////
 			for (lnI = 0; lnI < result->value.length; lnI++)
 			{
-				if (result->value.data[lnI] >= 'a' && result->value.data[lnI] <= 'z')
-					result->value.data[lnI] -= 0x20;
+				if (result->value.data._s8[lnI] >= 'a' && result->value.data._s8[lnI] <= 'z')
+					result->value.data._s8[lnI] -= 0x20;
 			}
 
 

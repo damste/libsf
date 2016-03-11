@@ -188,7 +188,7 @@ EXPORTS
 	vvm_ll_appendNode
 	vvm_ll_createNode
 	vvm_ll_deleteNode
-	vvm_ll_deleteNodeWithCallback
+	vvm_ll_deleteNodesWithCallback
 	vvm_ll_insertNode
 	vvm_ll_orphanizeNode
 	vvm_ll_deleteNodeChain

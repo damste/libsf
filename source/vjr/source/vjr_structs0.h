@@ -287,13 +287,17 @@ struct SVariable
 	// Variable content based on type
 	u32			varType;												// Variable type (see _VAR_TYPE_* constants)
 	bool		isVarTypeFixed;											// If true, the variable type is  fixed and cannot be altered, only populated into (used for dbf fields)
-	bool		isValueAllocated;										// If true, the data pointed to by this->value.data, or this->obj, or this->bmp, or this->thisCode was allocated
+	bool		isValueAllocated;										// If true, the data pointed to by this->value.data._s8, or this->obj, or this->bmp, or this->thisCode was allocated
 	union {
 		SObject*		obj;											// The object this item relates to.  If isValueAllocated is set, this variable owns the object.
 		SFunction*		thisCode;										// Pointer to the code block this relates to
 		SBitmap*		bmp;											// The bitmap this item points to
 		SField*			field;											// Pointer to a table/cursor field
-		SDatum			value;											// The actual value
+		union {
+			// The actual value
+			SDatum		value;
+			SDatum		current;
+		};
 		// Note:  If it's an array, then this->value is populated with a repeating structure of SVariable pointers, one for every array element (arrayRows * arrayCols)
 		// Note:  If it's a vector, then this->value is populated with a repeating structure of SVariable pointers, one for every vector element (vectorCols)
 	};

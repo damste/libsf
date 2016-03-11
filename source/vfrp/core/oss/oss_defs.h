@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/vvmoss/vo_defs.h
+// /libsf/source/vfrp/vvmoss/vo_defs.h
 //
 //////
 //    _     _ _     _____ _____ 
@@ -193,6 +193,7 @@
 		u32 CALLTYPE			oss_combineAllBetweenSOssComps				(SOssLine* line, u32 tniCodeNeedle,                                          u32 tniCodeCombined);
 		u32 CALLTYPE			oss_combineAllAfterSOssComp					(SOssLine* line, u32 tniCodeNeedle);
 		u32 CALLTYPE			oss_combineAllCasks							(SOssComp* firstComp, bool* tlNestingError, SOssComp** compError);
+		_iSCaskNesting*			iioss_combineAllCasks_moveToChild			(_iSCaskNesting* nest, SOssComp* comp);
 		u32 CALLTYPE			oss_removeExtraneousWhitespaceSOssComps		(SOssLine* line, u32 tniCodeWhitespace);
 
 

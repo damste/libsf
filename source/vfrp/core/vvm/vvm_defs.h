@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/vvm/vmm_defs.h
+// /libsf/source/vfrp/vvm/vmm_defs.h
 //
 //////
 // Version 0.70

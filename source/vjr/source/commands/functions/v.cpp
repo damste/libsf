@@ -239,7 +239,7 @@
 					if (result)
 					{
 						// Populate the s32
-						*result->value.data_s32 = iiVariable_getAs_s32(varExpr, true, &error, &errorNum);
+						*result->value.data._s32 = iiVariable_getAs_s32(varExpr, true, &error, &errorNum);
 						if (error)
 							iError_report_byNumber(errorNum, iVariable_get_relatedComp(varExpr), false);
 					}
@@ -253,7 +253,7 @@
 					if (result)
 					{
 						// Populate the s64
-						*result->value.data_s64 = iiVariable_getAs_s64(varExpr, true, &error, &errorNum);
+						*result->value.data._s64 = iiVariable_getAs_s64(varExpr, true, &error, &errorNum);
 						if (error)
 							iError_report_byNumber(errorNum, iVariable_get_relatedComp(varExpr), false);
 					}
@@ -291,9 +291,9 @@
 					//////////
 					// Create single characters
 					//////
-						cCurrency	= varCurrency->value.data_s8[0];
-						cPoint		= varPoint->value.data_s8[0];
-						cSeparator	= varSeparator->value.data_s8[0];
+						cCurrency	= varCurrency->value.data._s8[0];
+						cPoint		= varPoint->value.data._s8[0];
+						cSeparator	= varSeparator->value.data._s8[0];
 
 
 					//////////
@@ -305,7 +305,7 @@
 							//////////
 							// Grab this character
 							//////
-								c = varExpr->value.data[lnI];
+								c = varExpr->value.data._s8[lnI];
 
 
 							//////////
@@ -332,7 +332,7 @@
 										for (lnJ = 0, llStillGoing = false; lnJ < varIgnoreChars->value.length; lnJ++)
 										{
 											// Is this one of our skip characters?
-											if (c == varIgnoreChars->value.data_s8[lnJ])
+											if (c == varIgnoreChars->value.data._s8[lnJ])
 											{
 												llStillGoing = true;
 												break;
@@ -866,15 +866,15 @@
 				if (index == 2)
 				{
 					// 0=runtime, 1=standard, 2=professional
-					*(s32*)result->value.data = gnVersion2;	// Oh yeah!
+					*(s32*)result->value.data._s8 = gnVersion2;	// Oh yeah!
 
 				} else if (index == 3) {
 					// Localized version
-					*(s32*)result->value.data = gnVersion3;	// English
+					*(s32*)result->value.data._s8 = gnVersion3;	// English
 
 				} else {
 					// Version in a form like Major.Minor as M.mm, or 123 for version 1.23
-					*(s32*)result->value.data = gnVersion5;
+					*(s32*)result->value.data._s8 = gnVersion5;
 				}
 			}
 			if (!result)

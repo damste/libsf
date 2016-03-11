@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/vvmmc/mc_const.h
+// /libsf/source/vfrp/vvmmc/mc_const.h
 //
 //////
 //    _     _ _     _____ _____ 

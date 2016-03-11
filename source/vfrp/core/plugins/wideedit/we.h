@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/core/plugins/wideedit/wideedit.h
+// /libsf/source/vfrp/core/plugins/wideedit/wideedit.h
 //
 //////
 //    _     _ _     _____ _____ 

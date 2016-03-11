@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/vvmoss/vo_Bxml.h
+// /libsf/source/vfrp/vvmoss/vo_Bxml.h
 //
 //////
 // Version 0.70

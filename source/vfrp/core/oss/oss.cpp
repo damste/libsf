@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/vvmoss/vo.cpp
+// /libsf/source/vfrp/vvmoss/vo.cpp
 //
 //////
 //    _     _ _     _____ _____ 
@@ -75,22 +75,23 @@
 
 #define _OSS_COMPILING
 
-#include "\libsf\vvm\core\common\common.h"
-#include "\libsf\vvm\core\common\common_vvm.h"
-#include "\libsf\vvm\core\common\common_oss.h"
-#include "\libsf\vvm\core\common\common_oss_plugins.h"
-#include "\libsf\vvm\core\common\common_oss_const.h"
-#include "\libsf\vvm\core\common\common_mc.h"
-#include "\libsf\vvm\core\localization\vvmenu\resource.h"					// Resource constants
+#include "\libsf\source\vfrp\core\common\common.h"
+#include "\libsf\source\vfrp\core\common\common_vvm.h"
+#include "\libsf\source\vfrp\core\common\common_oss.h"
+#include "\libsf\source\vfrp\core\common\common_oss_plugins.h"
+#include "\libsf\source\vfrp\core\common\common_oss_const.h"
+#include "\libsf\source\vfrp\core\common\common_mc.h"
+#include "\libsf\source\vfrp\core\localization\vvmenu\resource.h"					// Resource constants
 #include "oss_const.h"
 #include "oss_structs.h"
 #include "oss_istructs.h"
-#include "\libsf\vvm\core\vvm\vvm_structs.h"
+#include "\libsf\source\vfrp\core\vvm\vvm_structs.h"
 #include "oss_plugins.h"
 #include "oss_defs.h"
 #include "oss_glob.h"
 #include "oss_class.h"
-#include "\libsf\vvm\core\common\vvm_key_const.h"
+#include "\libsf\source\vfrp\core\common\vvm_key_const.h"
+#include "\libsf\source\vfrp\core\mc\mc_const.h"
 
 
 
@@ -194,7 +195,7 @@
 		// See:
 		//		vo_plugins.h
 		//		vo_plugins.cpp
-		//		(as well as the source files in the \libsf\vvm\core\plugins\ directories)
+		//		(as well as the source files in the \libsf\source\vfrp\core\plugins\ directories)
 		//
 		//////
 			ioss_loadPlugins();
@@ -2907,13 +2908,13 @@ storeFirstOne:
 					case _MC_ICODE_CASK_TRIANGLE_OPEN:
 					case _MC_ICODE_CASK_TILDE_OPEN:
 						// Deeper nesting
-						thisNest = (_iSCaskNesting*)vvm_ll_appendNode(&nestRoot, thisNest, NULL, thisNest, vvm_getNextUniqueId(), sizeof(_iSCaskNesting) - sizeof(SLL));
+						thisNest = (_iSCaskNesting*)vvm_ll_appendNode((SLL**)&nestRoot, (SLL*)thisNest, (SLL*)NULL, (SLL*)thisNest, vvm_getNextUniqueId(), sizeof(_iSCaskNesting) - sizeof(SLL));
 						if (!thisNest)
 						{
 							// Error allocating, which is odd, but we'll report the nesting error anyway
 							*tlNestingError	= true;
 							*compError		= comp;
-							vvm_ll_deleteNodeChain(&nestRoot);
+							vvm_ll_deleteNodeChain((SLL**)&nestRoot);
 							return(lnCount);
 						}
 
@@ -2931,7 +2932,7 @@ storeFirstOne:
 							// Mismatched nesting
 							*tlNestingError	= true;
 							*compError		= comp;
-							vvm_ll_deleteNodeChain(&nestRoot);
+							vvm_ll_deleteNodeChain((SLL**)&nestRoot);
 							return(lnCount);
 						}
 						// Move the cask down to the child as its own new component
@@ -2945,7 +2946,7 @@ storeFirstOne:
 							// Mismatched nesting
 							*tlNestingError	= true;
 							*compError		= comp;
-							vvm_ll_deleteNodeChain(&nestRoot);
+							vvm_ll_deleteNodeChain((SLL**)&nestRoot);
 							return(lnCount);
 						}
 						// Move the cask down to the child as its own new component
@@ -2959,7 +2960,7 @@ storeFirstOne:
 							// Mismatched nesting
 							*tlNestingError	= true;
 							*compError		= comp;
-							vvm_ll_deleteNodeChain(&nestRoot);
+							vvm_ll_deleteNodeChain((SLL**)&nestRoot);
 							return(lnCount);
 						}
 						// Move the cask down to the child as its own new component
@@ -2973,7 +2974,7 @@ storeFirstOne:
 							// Mismatched nesting
 							*tlNestingError	= true;
 							*compError		= comp;
-							vvm_ll_deleteNodeChain(&nestRoot);
+							vvm_ll_deleteNodeChain((SLL**)&nestRoot);
 							return(lnCount);
 						}
 						// Move the cask down to the child as its own new component
@@ -3025,9 +3026,9 @@ storeFirstOne:
 // Called to copy all of the components between this
 //
 //////
-	void iioss_combineAllCasks_moveToChild(_iSCaskNesting* nest, SOssComp* comp)
+	_iSCaskNesting* iioss_combineAllCasks_moveToChild(_iSCaskNesting* nest, SOssComp* comp)
 	{
-		SOssComp* compNew;
+//		SOssComp* compNew;
 		SOssComp* compNext;
 
 
@@ -3035,10 +3036,11 @@ storeFirstOne:
 		compNext = (SOssComp*)comp->ll.prev;
 
 		// Create the new component
-		compNew = 
+// TODO:  Working here
+//		compNew = 
 
 		// Indicate the next component
-		return();
+		return(nest);
 	}
 
 

@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/vvm/vvm_const.h
+// /libsf/source/vfrp/vvm/vvm_const.h
 //
 //////
 // Version 0.70

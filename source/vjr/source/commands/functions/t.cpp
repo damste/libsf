@@ -266,12 +266,12 @@
 				}
 
 				// Store the delimiter
-				leftDelim.data_cs8	= varLeftDelim->value.data_cs8;
+				leftDelim.data._cs8	= varLeftDelim->value.data._cs8;
 				leftDelim.length	= varLeftDelim->value.length;
 
 			} else {
 				// Use the default format
-				leftDelim.data_cs8	= &cgc_textmerge_leftDelim[0];
+				leftDelim.data._cs8	= &cgc_textmerge_leftDelim[0];
 				leftDelim.length	= sizeof(cgc_textmerge_leftDelim) - 1;
 			}
 
@@ -285,13 +285,13 @@
 				}
 
 				// Store the delimiter
-				rightDelim.data_cs8	= varRightDelim->value.data_cs8;
-				rightDelim.length	= varRightDelim->value.length;
+				rightDelim.data._cs8	= varRightDelim->value.data._cs8;
+				rightDelim.length		= varRightDelim->value.length;
 
 			} else {
 				// Use the default format
-				rightDelim.data_cs8	= &cgc_textmerge_rightDelim[0];
-				rightDelim.length	= sizeof(cgc_textmerge_rightDelim) - 1;
+				rightDelim.data._cs8	= &cgc_textmerge_rightDelim[0];
+				rightDelim.length		= sizeof(cgc_textmerge_rightDelim) - 1;
 			}
 
 
@@ -318,7 +318,7 @@ debug_break;
 				}
 
 				// Perform this iteration
-				lnResultLength	= ifunction_dtransform_textmerge_common(rpar, &lcResult, varFormatRecursion->value.data_cs8, varFormatRecursion->value.length, &leftDelim, &rightDelim, &rpar->ip[1], false, true);
+				lnResultLength	= ifunction_dtransform_textmerge_common(rpar, &lcResult, varFormatRecursion->value.data._cs8, varFormatRecursion->value.length, &leftDelim, &rightDelim, &rpar->ip[1], false, true);
 
 			} while (llRecursive && lnResultLengthLast != lnResultLength);
 
@@ -555,7 +555,7 @@ debug_break;
 		//////
 			if (llExtractDatetime)
 			{
-				iiDateMath_get_SYSTEMTIME_from_SECONDS(&lst, varP1->value.data_dt->seconds);
+				iiDateMath_get_SYSTEMTIME_from_SECONDS(&lst, varP1->value.data._dt->seconds);
 				if (tlIsTimeX)
 					lnMicrosecond = (s32)lst.wMilliseconds * 1000;
 			}
@@ -566,7 +566,7 @@ debug_break;
 		//////
 			if (llExtractDatetimeX)
 			{
-				iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds(varP1->value.data_dtx->jseconds, NULL, &lnYear, &lnMonth, &lnDay, &lnHour, &lnMinute, &lnSecond, &lnMillisecond, &lnMicrosecond);
+				iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds(varP1->value.data._dtx->jseconds, NULL, &lnYear, &lnMonth, &lnDay, &lnHour, &lnMinute, &lnSecond, &lnMillisecond, &lnMicrosecond);
 
 				lst.wHour	= lnHour;
 				lst.wMinute	= lnMinute;
@@ -697,11 +697,11 @@ debug_break;
 
 							} else if (iVariable_isTypeDatetime(varP2)) {
 								// Extract the seconds
-								iiDateMath_get_HhMmSsMss_from_seconds(varP2->value.data_dt->seconds, &adt.nHour, &adt.nMinute, &adt.nSecond, &adt.nMillisecond);
+								iiDateMath_get_HhMmSsMss_from_seconds(varP2->value.data._dt->seconds, &adt.nHour, &adt.nMinute, &adt.nSecond, &adt.nMillisecond);
 
 							} else if (iVariable_isTypeDatetimeX(varP2)) {
 								// Extract the seconds
-								iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds(varP2->value.data_dtx->jseconds, NULL, NULL, NULL, NULL, &adt.nHour, &adt.nMinute, &adt.nSecond, &adt.nMillisecond, &adt.nMicrosecond);
+								iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds(varP2->value.data._dtx->jseconds, NULL, NULL, NULL, NULL, &adt.nHour, &adt.nMinute, &adt.nSecond, &adt.nMillisecond, &adt.nMicrosecond);
 
 							} else {
 								// Invalid
@@ -718,16 +718,16 @@ debug_break;
 							if (iVariable_isTypeDate(varP2))
 							{
 								// Date
-								iiDateMath_get_YyyyMmDd_from_YYYYMMDD(varP2->value.data_u8, &adt.nYear, &adt.nMonth, &adt.nDay);
+								iiDateMath_get_YyyyMmDd_from_YYYYMMDD(varP2->value.data._u8, &adt.nYear, &adt.nMonth, &adt.nDay);
 
 							} else if (iVariable_isTypeDatetime(varP2)) {
 								// Datetime
-								iiDateMath_get_YyyyMmDd_from_julian(varP2->value.data_dt->julian, &adt.nYear, &adt.nMonth, &adt.nDay);
+								iiDateMath_get_YyyyMmDd_from_julian(varP2->value.data._dt->julian, &adt.nYear, &adt.nMonth, &adt.nDay);
 								// Note:  The SECONDS() comes from the time, timex, seconds, or secondsx
 
 							} else if (iVariable_isTypeDatetimeX(varP2)) {
 								// DatetimeX
-								iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds(varP2->value.data_dtx->jseconds, NULL, &adt.nYear, &adt.nMonth, &adt.nDay, NULL, NULL, NULL, NULL, NULL);
+								iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds(varP2->value.data._dtx->jseconds, NULL, &adt.nYear, &adt.nMonth, &adt.nDay, NULL, NULL, NULL, NULL, NULL);
 
 							} else {
 								// Invalid
@@ -763,17 +763,17 @@ debug_break;
 			{
 				case _CONVERSION_FUNCTION_TIME:
 					// Hh:Mm:Ss[.Mss]
-					if (!iVariable_isTypeCharacter(varP1) || varP1->value.length < 8 || varP1->value.data[2] != ':' || varP1->value.data[5] != ':')
+					if (!iVariable_isTypeCharacter(varP1) || varP1->value.length < 8 || varP1->value.data._s8[2] != ':' || varP1->value.data._s8[5] != ':')
 					{
 						iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varP1), false);
 						return;
 					}
 
-					adt.nHour	= atoi(varP1->value.data_s8);
-					adt.nMinute	= atoi(varP1->value.data_s8 + 3);
-					adt.nSecond	= atoi(varP1->value.data_s8 + 6);
-					if (varP1->value.data[8] == '.')
-						adt.nMillisecond = atoi(varP1->value.data_s8 + 9);
+					adt.nHour	= atoi(varP1->value.data._s8);
+					adt.nMinute	= atoi(varP1->value.data._s8 + 3);
+					adt.nSecond	= atoi(varP1->value.data._s8 + 6);
+					if (varP1->value.data._s8[8] == '.')
+						adt.nMillisecond = atoi(varP1->value.data._s8 + 9);
 
 					break;
 
@@ -781,29 +781,29 @@ debug_break;
 					// Hh:Mm:Ss[.Mss]
 					// Hh:Mm:Ss[.Micsss]
 					// Hh:Mm:Ss[.Nanosssss]
-					if (!iVariable_isTypeCharacter(varP1) || varP1->value.length < 12 || varP1->value.data[2] != ':' || varP1->value.data[5] != ':')
+					if (!iVariable_isTypeCharacter(varP1) || varP1->value.length < 12 || varP1->value.data._s8[2] != ':' || varP1->value.data._s8[5] != ':')
 					{
 						iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varP1), false);
 						return;
 					}
-					adt.nHour	= atoi(varP1->value.data_s8);
-					adt.nMinute	= atoi(varP1->value.data_s8 + 3);
-					adt.nSecond	= atoi(varP1->value.data_s8 + 6);
-					if (varP1->value.data[8] == '.')
+					adt.nHour	= atoi(varP1->value.data._s8);
+					adt.nMinute	= atoi(varP1->value.data._s8 + 3);
+					adt.nSecond	= atoi(varP1->value.data._s8 + 6);
+					if (varP1->value.data._s8[8] == '.')
 					{
 						if (varP1->value.length == 12)
 						{
 							// Hh:Mm:Ss.Mss
-							adt.nMillisecond = atoi(varP1->value.data_s8 + 9);
+							adt.nMillisecond = atoi(varP1->value.data._s8 + 9);
 
 						} else if (varP1->value.length == 15) {
 							// Hh:Mm:Ss.Micsss
-							adt.nMicrosecond = atoi(varP1->value.data_s8 + 9);
+							adt.nMicrosecond = atoi(varP1->value.data._s8 + 9);
 							adt.nMillisecond	= (adt.nMicrosecond + 500) / 1000;
 
 						} else if (varP1->value.length == 18) {
 							// Hh:Mm:Ss.Nanosssss
-							adt.nNanosecond		= atoi(varP1->value.data_s8 + 9);
+							adt.nNanosecond		= atoi(varP1->value.data._s8 + 9);
 							adt.nMicrosecond	= (adt.nNanosecond  + 500) / 1000;
 							adt.nMillisecond	= (adt.nMicrosecond + 500) / 1000;
 						}
@@ -844,7 +844,7 @@ debug_break;
 						iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varP1), false);
 						return;
 					}
-					iiDateMath_get_YyyyMmDd_from_YYYYMMDD(varP1->value.data_u8, &adt.nYear, &adt.nMonth, &adt.nDay);
+					iiDateMath_get_YyyyMmDd_from_YYYYMMDD(varP1->value.data._u8, &adt.nYear, &adt.nMonth, &adt.nDay);
 					break;
 
 				case _CONVERSION_FUNCTION_DATETIME:
@@ -853,8 +853,8 @@ debug_break;
 						iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varP1), false);
 						return;
 					}
-					iiDateMath_get_YyyyMmDd_from_julian(varP1->value.data_dt->julian, &adt.nYear, &adt.nMonth, &adt.nDay);
-					iiDateMath_get_HhMmSsMss_from_seconds(varP1->value.data_dt->seconds, &adt.nHour, &adt.nMinute, &adt.nSecond, &adt.nMillisecond);
+					iiDateMath_get_YyyyMmDd_from_julian(varP1->value.data._dt->julian, &adt.nYear, &adt.nMonth, &adt.nDay);
+					iiDateMath_get_HhMmSsMss_from_seconds(varP1->value.data._dt->seconds, &adt.nHour, &adt.nMinute, &adt.nSecond, &adt.nMillisecond);
 					adt.lMillisecondValid = true;
 					break;
 
@@ -864,7 +864,7 @@ debug_break;
 						iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varP1), false);
 						return;
 					}
-					iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds(varP1->value.data_dtx->jseconds, NULL, &adt.nYear, &adt.nMonth, &adt.nDay, &adt.nHour, &adt.nMinute, &adt.nSecond, &adt.nMillisecond, &adt.nMicrosecond);
+					iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds(varP1->value.data._dtx->jseconds, NULL, &adt.nYear, &adt.nMonth, &adt.nDay, &adt.nHour, &adt.nMinute, &adt.nSecond, &adt.nMillisecond, &adt.nMicrosecond);
 					adt.lMillisecondValid = true;
 					adt.lMicrosecondValid = true;
 					break;
@@ -942,7 +942,7 @@ debug_break;
 				case _CONVERSION_FUNCTION_DATE:
 					result = iVariable_create(_VAR_TYPE_DATE, NULL, true);
 					if (result)
-						iiDateMath_get_YYYYMMDD_from_YyyyMmDd(result->value.data_s8, adt.nYear, adt.nMonth, adt.nDay);
+						iiDateMath_get_YYYYMMDD_from_YyyyMmDd(result->value.data._s8, adt.nYear, adt.nMonth, adt.nDay);
 
 					break;
 
@@ -958,8 +958,8 @@ debug_break;
 								break;
 						}
 
-						result->value.data_dt->julian	= iiDateMath_get_julian_from_YyyyMmDd(NULL, adt.nYear, adt.nMonth, adt.nDay);
-						result->value.data_dt->seconds	= iiDateMath_get_seconds_from_HhMmSsMss(adt.nHour, adt.nMinute, adt.nSecond, adt.nMillisecond);
+						result->value.data._dt->julian	= iiDateMath_get_julian_from_YyyyMmDd(NULL, adt.nYear, adt.nMonth, adt.nDay);
+						result->value.data._dt->seconds	= iiDateMath_get_seconds_from_HhMmSsMss(adt.nHour, adt.nMinute, adt.nSecond, adt.nMillisecond);
 					}
 					break;
 
@@ -975,7 +975,7 @@ debug_break;
 								break;
 						}
 
-						result->value.data_dtx->jseconds = iiDateMath_get_jseconds_from_YyyyMmDdHhMmSsMssMics(NULL, adt.nYear, adt.nMonth, adt.nDay, adt.nHour, adt.nMinute, adt.nSecond, adt.nMillisecond, adt.nMicrosecond);
+						result->value.data._dtx->jseconds = iiDateMath_get_jseconds_from_YyyyMmDdHhMmSsMssMics(NULL, adt.nYear, adt.nMonth, adt.nDay, adt.nHour, adt.nMinute, adt.nSecond, adt.nMillisecond, adt.nMicrosecond);
 					}
 					break;
 
@@ -1455,12 +1455,12 @@ debug_break;
 					if (iVariable_isTypeDatetime(varParam))
 					{
 						// Datetime
-						iiDateMath_get_YyyyMmDd_from_julian(varParam->value.data_dt->julian, &lnYear, &lnMonth, &lnDay);
-						iiDateMath_get_HhMmSsMss_from_seconds(varParam->value.data_dt->seconds, &lnHour, &lnMinute, &lnSecond, &lnMillisecond);
+						iiDateMath_get_YyyyMmDd_from_julian(varParam->value.data._dt->julian, &lnYear, &lnMonth, &lnDay);
+						iiDateMath_get_HhMmSsMss_from_seconds(varParam->value.data._dt->seconds, &lnHour, &lnMinute, &lnSecond, &lnMillisecond);
 
 					} else if (iVariable_isTypeDatetimeX(varParam)) {
 						// DatetimeX
-						iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds(varParam->value.data_dtx->jseconds, NULL, &lnYear, &lnMonth, &lnDay, &lnHour, &lnMinute, &lnSecond, &lnMillisecond, NULL);
+						iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds(varParam->value.data._dtx->jseconds, NULL, &lnYear, &lnMonth, &lnDay, &lnHour, &lnMinute, &lnSecond, &lnMillisecond, NULL);
 					}
 
 
@@ -1909,7 +1909,7 @@ debug_break;
 
 			} else {
 				// Standard
-				if ((!var->value.data || var->value.length == 0) && tlIsVartype)
+				if ((!var->value.data._data || var->value.length == 0) && tlIsVartype)
 				{
 					// NULL
 					c = 'X';
@@ -2006,7 +2006,7 @@ debug_break;
 		//////////
 		// For vartype(), if nulls are to return x then we need to possibly adjust it
 		//////
-			if (tlIsVartype && !tlNullIsType && (var->varType == _VAR_TYPE_NULL || !var->value.data || var->value.length == 0))
+			if (tlIsVartype && !tlNullIsType && (var->varType == _VAR_TYPE_NULL || !var->value.data._data || var->value.length == 0))
 				c = 'X';	// It is NULL
 
 

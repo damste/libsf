@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/vvm/vvm_sup.cpp
+// /libsf/source/vfrp/vvm/vvm_sup.cpp
 //
 //////
 // Version 0.70
@@ -202,9 +202,9 @@
 					if (lv)
 					{
 						// Indicate no variables initially exist here, and that this is an empty slot
-						lv->current.type	= _VVM_VARIABLE_TYPE_UNUSED;		// Initialize the slot to unused
-						lv->prior.type		= _VVM_VARIABLE_TYPE_UNUSED;		// No prior variable type
-						lv->_default.type	= _VVM_VARIABLE_TYPE_UNUSED;		// No default value
+						lv->current.type	= _VVM_VAR_TYPE_UNUSED;		// Initialize the slot to unused
+						lv->prior.type		= _VVM_VAR_TYPE_UNUSED;		// No prior variable type
+						lv->_default.type	= _VVM_VAR_TYPE_UNUSED;		// No default value
 
 					} else {
 						// Well, we had at least one error
@@ -405,9 +405,9 @@
 					if (lv)
 					{
 						// Indicate no variables initially exist here, and that this is an empty slot
-						lv->current.type	= _VVM_VARIABLE_TYPE_UNUSED;		// Initialize the slot to unused
-						lv->prior.type		= _VVM_VARIABLE_TYPE_UNUSED;		// No prior variable type
-						lv->_default.type	= _VVM_VARIABLE_TYPE_UNUSED;		// No default value
+						lv->current.type	= _VVM_VAR_TYPE_UNUSED;		// Initialize the slot to unused
+						lv->prior.type		= _VVM_VAR_TYPE_UNUSED;		// No prior variable type
+						lv->_default.type	= _VVM_VAR_TYPE_UNUSED;		// No default value
 
 					} else {
 						// Well, we had at least one error

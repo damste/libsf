@@ -136,10 +136,10 @@
 			if (varString->value.length >= 2)
 			{
 				// If it is of the form "x:"... then we return the left two-most characters
-				if (varString->value.data_s8[1] == ':')
+				if (varString->value.data._s8[1] == ':')
 				{
 					// We have a drive
-					ptr = varString->value.data_u8;
+					ptr = varString->value.data._u8;
 				}
 
 			} else {
@@ -214,10 +214,10 @@
 				// If no period is found, use a blank string
 				for (lnI = varString->value.length - 1, lnLength = 0; lnI > 0; lnI--, lnLength++)
 				{
-					if (varString->value.data_u8[lnI] == '.')
+					if (varString->value.data._u8[lnI] == '.')
 					{
 						// We found a period
-						ptr = varString->value.data_u8 + lnI + 1;
+						ptr = varString->value.data._u8 + lnI + 1;
 						break;
 					}
 				}
@@ -302,7 +302,7 @@
 				// If no period is found, use a blank string
 				for (lnI = varString->value.length - 1, lnLength = 0; lnI > 0; lnI--, lnLength++)
 				{
-					if (varString->value.data_u8[lnI] == '\\')
+					if (varString->value.data._u8[lnI] == '\\')
 					{
 						// We found a backslash
 						break;
@@ -310,7 +310,7 @@
 				}
 
 				// Set our pointer to the filename
-				ptr			= varString->value.data_u8 + lnI + ((lnI > 0) ? 1 : 0);
+				ptr			= varString->value.data._u8 + lnI + ((lnI > 0) ? 1 : 0);
 				lnLength	+= ((lnI > 0) ? 0 : 1);
 			}
 
@@ -395,10 +395,10 @@
 				// If no period is found, use a blank string
 				for (lnLength = varString->value.length - 1; lnLength >= 0; lnLength--)
 				{
-					if (varString->value.data_u8[lnLength] == '\\')
+					if (varString->value.data._u8[lnLength] == '\\')
 					{
 						// We found a backslash
-						ptr = varString->value.data_u8;
+						ptr = varString->value.data._u8;
 						if (lnLength == 0)
 							++lnLength;
 						break;
@@ -516,7 +516,7 @@
 				// If no period is found, use a blank string
 				for (lnI = varString->value.length - 1, lnLength = 0; lnI > 0; lnI--)
 				{
-					if (varString->value.data_u8[lnI] == '\\')
+					if (varString->value.data._u8[lnI] == '\\')
 					{
 						// We found a period
 						break;
@@ -524,7 +524,7 @@
 				}
 
 				// Set our pointer to the filename
-				ptr = varString->value.data_u8 + lnI + ((lnI > 0) ? 1 : 0);
+				ptr = varString->value.data._u8 + lnI + ((lnI > 0) ? 1 : 0);
 			}
 
 
@@ -536,20 +536,20 @@
 				// Search forward until we find a period, or the end
 				for (lnLength = ((lnI == 0) ? 0 : -1); lnI < varString->value.length; lnI++, lnLength++)
 				{
-					if (varString->value.data_u8[lnI] == '.')
+					if (varString->value.data._u8[lnI] == '.')
 						break;
 				}
 
 				// Copy the stem portion
 				iDatum_allocateSpace(&result->value, lnLength + lnPostfixWidth);
-				if (result->value.data && result->value.length == lnLength + lnPostfixWidth)
+				if (result->value.data._data && result->value.length == lnLength + lnPostfixWidth)
 				{
 					// Copy the ptr content
-					memcpy(result->value.data_s8, ptr, lnLength);
+					memcpy(result->value.data._s8, ptr, lnLength);
 
 					// Postfix width is populated with spaces
 					if (lnPostfixWidth != 0)
-						memset(result->value.data_s8 + lnLength, 32, lnPostfixWidth);
+						memset(result->value.data._s8 + lnLength, 32, lnPostfixWidth);
 				}
 			}
 

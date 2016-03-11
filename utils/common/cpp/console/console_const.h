@@ -95,8 +95,8 @@
 // Use as:  if (console_check_prop(width))
 //			if (console_check_value(yes))
 //////
-	#define console_check_prop(x)		(cb->prop.length  == sizeof(cgc_##x) - 1 && _memicmp(cb->prop.data_cs8,  cgc_##x, cb->prop.length)  == 0)
-	#define console_check_value(x)		(cb->value.length == sizeof(cgc_##x) - 1 && _memicmp(cb->value.data_cs8, cgc_##x, cb->value.length) == 0)
+	#define console_check_prop(x)		(cb->prop.length  == sizeof(cgc_##x) - 1 && _memicmp(cb->prop.data._cs8,  cgc_##x, cb->prop.length)  == 0)
+	#define console_check_value(x)		(cb->value.length == sizeof(cgc_##x) - 1 && _memicmp(cb->value.data._cs8, cgc_##x, cb->value.length) == 0)
 
 	#define _ROUND_CASK_LEFT_SOLID		"\120"
 	#define _ROUND_CASK_LEFT_UP			"\121"

@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/vvm/devhelp.txt
+// /libsf/source/vfrp/vvm/devhelp.txt
 //
 //////
 // Version 0.70

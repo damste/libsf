@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/core/vfrp/vfrp.cpp
+// /libsf/source/vfrp/core/vfrp/vfrp.cpp
 //
 //////
 // Version 0.70
@@ -46,22 +46,22 @@
 #include <tchar.h>
 #include <math.h>
 
-#include "\libsf\vvm\core\common\common.h"
+#include "\libsf\source\vfrp\core\common\common.h"
 #include "\libsf\utils\sha1\sha1.h"											// SHA-1 hashing algorithm
-#include "\libsf\vvm\core\localization\vvmenu\resource.h"					// Resource constants
+#include "\libsf\source\vfrp\core\localization\vvmenu\resource.h"					// Resource constants
 #include "vfrp_const.h"
-#include "\libsf\vvm\core\oss\oss_class.h"
-#include "\libsf\vvm\core\oss\oss_structs.h"
-#include "\libsf\vvm\core\mc\mc_structs.h"
-#include "\libsf\vvm\core\common\fonts\font8x6.h"
-#include "\libsf\vvm\core\common\fonts\font8x8.h"
-#include "\libsf\vvm\core\common\fonts\font8x14.h"
-#include "\libsf\vvm\core\common\fonts\font8x16.h"
+#include "\libsf\source\vfrp\core\oss\oss_class.h"
+#include "\libsf\source\vfrp\core\oss\oss_structs.h"
+#include "\libsf\source\vfrp\core\mc\mc_structs.h"
+#include "\libsf\utils\common\cpp\include\fonts\font8x6.h"
+#include "\libsf\utils\common\cpp\include\fonts\font8x8.h"
+#include "\libsf\utils\common\cpp\include\fonts\font8x14.h"
+#include "\libsf\utils\common\cpp\include\fonts\font8x16.h"
 #include "vfrp_structs.h"
 #include "vfrp_defs.h"
-#include "\libsf\vvm\core\common\common_vvm.h"
-#include "\libsf\vvm\core\common\common_oss.h"
-#include "\libsf\vvm\core\common\common_mc.h"
+#include "\libsf\source\vfrp\core\common\common_vvm.h"
+#include "\libsf\source\vfrp\core\common\common_oss.h"
+#include "\libsf\source\vfrp\core\common\common_mc.h"
 #include "vfrp_glob.h"
 
 

@@ -129,10 +129,10 @@
 		//////////
 		// Allocate three consoles
 		//////
-			title.data_cs8	= "Regs";
-			title.length	= strlen(title.data_cs8);
+			title.data._cs8	= "Regs";
+			title.length	= strlen(title.data._cs8);
 			sprintf(buffer, "backColor=0\nforeColor=%d", rgb(0,255,0));
-			props.data_cs8	= &buffer[0];
+			props.data._cs8	= &buffer[0];
 			props.length	= strlen(buffer);
 			memset(&ccb, 0, sizeof(ccb));
 			ccb._console_keyDown	= (uptr)&iiConsole_win_unit_test__callback_keyDown;
@@ -402,7 +402,7 @@
 
 			// Assemble the title
 			lnLength = min(_MAX_FNAME - 1, console->title.length);
-			memcpy(buffer, console->title.data_cs8, lnLength);
+			memcpy(buffer, console->title.data._cs8, lnLength);
 			buffer[lnLength] = 0;
 
 			// Create the window
@@ -594,7 +594,7 @@
 
 			// Create the font
 			font->_sizeUsedForCreateFont	= -MulDiv(font->nPointSize, GetDeviceCaps(font->hdc, LOGPIXELSY), 72);
-			font->hfont						= CreateFont(font->_sizeUsedForCreateFont, 0, 0, 0, ((font->lBold) ? FW_BOLD : FW_NORMAL), ((font->lItalic) ? 1 : 0), ((font->lUnderline) ? 1 : 0), false, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_NATURAL_QUALITY, FF_DONTCARE, font->cFontName.data);
+			font->hfont						= CreateFont(font->_sizeUsedForCreateFont, 0, 0, 0, ((font->lBold) ? FW_BOLD : FW_NORMAL), ((font->lItalic) ? 1 : 0), ((font->lUnderline) ? 1 : 0), false, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_NATURAL_QUALITY, FF_DONTCARE, font->cFontName.data._s8);
 
 			// Select into the dc
 			SelectObject(font->hdc, font->hfont);
@@ -1889,15 +1889,15 @@
 				lnCol = console->nXCursor - conInput->nX;
 
 				// Update it
-				if (conInput->liveValue && conInput->liveValue->_data)
+				if (conInput->liveValue && conInput->liveValue->data._data)
 				{
 					// Update the liveValue
 					for (lnI = conInput->nLength - 1; lnI > lnCol; lnI--)
-						conInput->liveValue->data_s8[lnI] = conInput->liveValue->data_s8[lnI - 1];
+						conInput->liveValue->data._s8[lnI] = conInput->liveValue->data._s8[lnI - 1];
 					
 					// Store the new character
 					if (lnCol < conInput->nLength)
-						conInput->liveValue->data_s8[lnCol] = c;
+						conInput->liveValue->data._s8[lnCol] = c;
 
 				} else {
 					// Update the screen only
@@ -2015,13 +2015,13 @@
 		if (conInput)
 		{
 			// Move to the last populated value in the input
-			if (conInput->liveValue && conInput->liveValue->_data)
+			if (conInput->liveValue && conInput->liveValue->data._data)
 			{
 				// There's a datum, scan it
 				for (lnI = conInput->liveValue->length - 1; lnI >= 0; lnI--)
 				{
 					// Is this a non-space?
-					if (conInput->liveValue->data[lnI] != 32)
+					if (conInput->liveValue->data._s8[lnI] != 32)
 					{
 						// We've found the first non-space
 						console->nXCursor = min(conInput->nX + lnI + 1, console->nCols - 1);
@@ -2096,14 +2096,14 @@
 			if (lnCol > 0)
 			{
 				// We have room to backspace
-				if (conInput->liveValue && conInput->liveValue->_data)
+				if (conInput->liveValue && conInput->liveValue->data._data)
 				{
 					// They have a datum to update
 					for ( ; lnCol < conInput->nLength; lnCol++)
-						conInput->liveValue->data[lnCol - 1] = conInput->liveValue->data[lnCol];
+						conInput->liveValue->data._s8[lnCol - 1] = conInput->liveValue->data._s8[lnCol];
 
 					// Insert a space at the end
-					conInput->liveValue->data[lnCol - 1] = 32;
+					conInput->liveValue->data._s8[lnCol - 1] = 32;
 
 				} else if (lnCol > 0 && lnCol < conInput->nLength) {
 					// Just update the screen
@@ -2170,7 +2170,7 @@
 		if (conInput)
 		{
 			// We're on an input
-			if (conInput->liveValue && conInput->liveValue->_data)
+			if (conInput->liveValue && conInput->liveValue->data._data)
 			{
 				// They have a datum to update
 				iDatum_setAll(conInput->liveValue, 32);
@@ -2220,14 +2220,14 @@
 		{
 			// We're on an input
 			lnCol = console->nXCursor - conInput->nX;
-			if (conInput->liveValue && conInput->liveValue->_data)
+			if (conInput->liveValue && conInput->liveValue->data._data)
 			{
 				// They have a datum to update
 				for ( ; lnCol < conInput->nLength - 1; lnCol++)
-					conInput->liveValue->data[lnCol] = conInput->liveValue->data[lnCol + 1];
+					conInput->liveValue->data._s8[lnCol] = conInput->liveValue->data._s8[lnCol + 1];
 
 				// Insert a space at the end
-				conInput->liveValue->data[lnCol] = 32;
+				conInput->liveValue->data._s8[lnCol] = 32;
 
 			} else if (lnCol < conInput->nLength) {
 				// Just update the screen
@@ -2290,11 +2290,11 @@
 		{
 			// We're on an input
 			lnCol = console->nXCursor - conInput->nX;
-			if (conInput->liveValue && conInput->liveValue->_data)
+			if (conInput->liveValue && conInput->liveValue->data._data)
 			{
 				// They have a datum to update
 				for ( ; lnCol < conInput->nLength; lnCol++)
-					conInput->liveValue->data[lnCol] = 32;
+					conInput->liveValue->data._s8[lnCol] = 32;
 
 			} else if (lnCol < conInput->nLength) {
 				// Just update the screen
@@ -2583,8 +2583,8 @@
 			if (iConsole_find_conChar_byXY(console, conInput->nX + lnI, conInput->nY, &conRow, &conChar))
 			{
 				// Store the character
-				if (conInput->liveValue && conInput->liveValue->_data)
-					conChar->c = conInput->liveValue->data[lnI];
+				if (conInput->liveValue && conInput->liveValue->data._data)
+					conChar->c = conInput->liveValue->data._s8[lnI];
 
 				// Store the coloring
 				conChar->nFont				= conInput->nFont;

@@ -3270,7 +3270,7 @@
 			for (lnI = 0, lnCount = 0; lnI < comp->length; lnI++)
 			{
 				// Have we reached the non-breaking-space yet?
-				if (comp->line->sourceCode->data_u8[comp->start + lnI] == 255 || (lnI + 1) == comp->length)
+				if (comp->line->sourceCode->data._u8[comp->start + lnI] == 255 || (lnI + 1) == comp->length)
 				{
 					// Adjust if we're the last character
 					lnDrawCount = lnCount + (((lnI + 1) == comp->length) ? 1 : 0);
@@ -3280,7 +3280,7 @@
 
 					// This is a non-breaking-space character, we need to draw what we have, and move over a half space
 					if (lnCount != 0)
-						DrawText(bmpNbsp->hdc, comp->line->sourceCode->data + comp->start + lnI - lnCount, lnDrawCount, &lrc, DT_VCENTER | DT_LEFT | DT_SINGLELINE | DT_NOPREFIX);
+						DrawText(bmpNbsp->hdc, comp->line->sourceCode->data._s8 + comp->start + lnI - lnCount, lnDrawCount, &lrc, DT_VCENTER | DT_LEFT | DT_SINGLELINE | DT_NOPREFIX);
 
 					// Update our rectangle
 					lrc.left += (lnCount + 1) * font->tm.tmAveCharWidth;
@@ -4819,7 +4819,7 @@ return;
 					sprintf(buffer, "[");
 
 				// Copy the contents of the physical token
-				memcpy(buffer + strlen(buffer), node->comp->line->sourceCode->data_s8 + node->comp->start, min(node->comp->length, (s32)sizeof(buffer) - 20));
+				memcpy(buffer + strlen(buffer), node->comp->line->sourceCode->data._s8 + node->comp->start, min(node->comp->length, (s32)sizeof(buffer) - 20));
 
 				// Include the iCode, start and length of the token on the line
 				if (tlIncludeExtraInfo)
@@ -4939,7 +4939,7 @@ return;
 // Added for debugging:
 // s8 buffer2[32];
 // memset(buffer2, 0, sizeof(buffer2));
-// memcpy(buffer2, node->comp->line->sourceCode->data_s8 + node->comp->start, min(node->comp->length, 16));
+// memcpy(buffer2, node->comp->line->sourceCode->data._s8 + node->comp->start, min(node->comp->length, 16));
 // sprintf(buffer, "c:\\temp\\node_render__%s.bmp", buffer2);
 // iBmp_saveToDisk(node->render.bmp, buffer);
 //////

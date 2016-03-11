@@ -541,10 +541,10 @@
 	u64 sha1_computeAs_u64(SDatum* datum)
 	{
 		// Make sure our environment is sane
-		if (datum && datum->data && datum->length >= 1)
+		if (datum && datum->data._u8 && datum->length >= 1)
 		{
 			// Compute the value
-			return(sha1_computeAs_u64(datum->data_u8, datum->length));
+			return(sha1_computeAs_u64(datum->data._u8, (u32)datum->length));
 
 		} else {
 			// Invalid, so just return 0
@@ -552,18 +552,33 @@
 		}
 	}
 
+#if defined(_VVM_COMPILING)
 	u64 sha1_computeAs_u64(SVariable* var)
 	{
-		if (var && var->value.data && var->value.length >= 1)
+		if (var && var->current._value.data._u8 && var->current._value.length >= 1)
 		{
 			// Compute the value
-			return(sha1_computeAs_u64(var->value.data_u8, var->value.length));
+			return(sha1_computeAs_u64(var->current._value.data._u8, (u32)var->current._value.length));
 
 		} else {
 			// Invalid, so just return 0
 			return(0);
 		}
 	}
+#else
+	u64 sha1_computeAs_u64(SVariable* var)
+	{
+		if (var && var->value.data._u8 && var->value.length >= 1)
+		{
+			// Compute the value
+			return(sha1_computeAs_u64(var->value.data._u8, (u32)var->value.length));
+
+		} else {
+			// Invalid, so just return 0
+			return(0);
+		}
+	}
+#endif
 
 	u32 sha1_computeAs_u32(const u8* tcData, u32 tnLength)
 	{
@@ -583,10 +598,10 @@
 	u32 sha1_computeAs_u32(SDatum* datum)
 	{
 		// Make sure our environment is sane
-		if (datum && datum->data && datum->length >= 1)
+		if (datum && datum->data._u8 && datum->length >= 1)
 		{
 			// Compute the value
-			return(sha1_computeAs_u32(datum->data_u8, datum->length));
+			return(sha1_computeAs_u32(datum->data._u8, (u32)datum->length));
 
 		} else {
 			// Invalid, so just return 0
@@ -594,18 +609,33 @@
 		}
 	}
 
+#if defined(_VVM_COMPILING)
 	u32 sha1_computeAs_u32(SVariable* var)
 	{
-		if (var && var->value.data && var->value.length >= 1)
+		if (var && var->current._value.data._u8 && var->current._value.length >= 1)
 		{
 			// Compute the value
-			return(sha1_computeAs_u32(var->value.data_u8, var->value.length));
+			return(sha1_computeAs_u32(var->current._value.data._u8, (u32)var->current._value.length));
 
 		} else {
 			// Invalid, so just return 0
 			return(0);
 		}
 	}
+#else
+	u32 sha1_computeAs_u32(SVariable* var)
+	{
+		if (var && var->value.data._u8 && var->value.length >= 1)
+		{
+			// Compute the value
+			return(sha1_computeAs_u32(var->value.data._u8, (u32)var->value.length));
+
+		} else {
+			// Invalid, so just return 0
+			return(0);
+		}
+	}
+#endif
 
 
 

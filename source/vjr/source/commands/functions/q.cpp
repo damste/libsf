@@ -136,9 +136,9 @@
 				//////////
 				// Grab year, month, day from datetime or date
 				//////
-					     if (iVariable_isTypeDatetime(varParam))		iiDateMath_get_YyyyMmDd_from_julian					(varParam->value.data_dt->julian,			&lnYear, &lnMonth, &lnDay);
-					else if (iVariable_isTypeDatetimeX(varParam))		iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds	(varParam->value.data_dtx->jseconds, NULL,	&lnYear, &lnMonth, &lnDay, NULL, NULL, NULL, NULL, NULL);
-					else /* date */										iiDateMath_get_YyyyMmDd_from_YYYYMMDD				(varParam->value.data_u8,					&lnYear, &lnMonth, &lnDay);
+					     if (iVariable_isTypeDatetime(varParam))		iiDateMath_get_YyyyMmDd_from_julian					(varParam->value.data._dt->julian,			&lnYear, &lnMonth, &lnDay);
+					else if (iVariable_isTypeDatetimeX(varParam))		iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds	(varParam->value.data._dtx->jseconds, NULL,	&lnYear, &lnMonth, &lnDay, NULL, NULL, NULL, NULL, NULL);
+					else /* date */										iiDateMath_get_YyyyMmDd_from_YYYYMMDD				(varParam->value.data._u8,					&lnYear, &lnMonth, &lnDay);
 
 
 			} else {

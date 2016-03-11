@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/core/plugins/wideedit/wideedit.cpp
+// /libsf/source/vfrp/core/plugins/wideedit/wideedit.cpp
 //
 //////
 //    _     _ _     _____ _____ 
@@ -65,8 +65,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <windows.h>
-#include "\libsf\vvm\core\common\common.h"
-#include "\libsf\vvm\core\common\common_oss.h"
+#include "\libsf\source\vfrp\core\common\common.h"
+#include "\libsf\source\vfrp\core\common\common_oss.h"
 #include "we_const.h"
 #include "we.h"
 

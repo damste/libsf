@@ -126,7 +126,7 @@ typedef SEM**		SEMpp;
 // Macro helpers
 //////
 	// Note:  A variable can still have its original type and be NULL, so you must also test var->value members:
-	#define iVariable_isNull(var)						(var->varType == _VAR_TYPE_NULL || !var->value.data || (var->varType != _VAR_TYPE_CHARACTER && var->value.length == 0))
+	#define iVariable_isNull(var)						(var->varType == _VAR_TYPE_NULL || !var->value.data._data || (var->varType != _VAR_TYPE_CHARACTER && var->value.length == 0))
 	#define iVariable_getType(var)						var->varType
 	#define iVariable_isFundamentalTypeLogical(var)		(var->varType == _VAR_TYPE_LOGICAL || (iVariable_areTypesCompatible(var, varDefault_logical)))
 	#define iVariable_isNumeric64Bit(var)				(var->varType == _VAR_TYPE_S64 || var->varType == _VAR_TYPE_U64 || var->varType == _VAR_TYPE_CURRENCY || var->varType == _VAR_TYPE_DATETIMEX)
@@ -146,9 +146,9 @@ typedef SEM**		SEMpp;
 	#define iVariable_isTypeNumeric(var)				(var->varType >= _VAR_TYPE_NUMERIC_START && var->varType <= _VAR_TYPE_NUMERIC_END)
 	#define iVariable_isTypeObject(var)					(var->varType == _VAR_TYPE_OBJECT)
 	#define iVariable_isTypethisCode(var)				(var->varType == _VAR_TYPE_THISCODE)
-	#define iVariable_isValid(var)						(var && var->varType >= _VAR_TYPE_START && var->varType <= _VAR_TYPE_END && var->value.data && (var->varType == _VAR_TYPE_CHARACTER || var->value.length > 0))
+	#define iVariable_isValid(var)						(var && var->varType >= _VAR_TYPE_START && var->varType <= _VAR_TYPE_END && var->value.data._data && (var->varType == _VAR_TYPE_CHARACTER || var->value.length > 0))
 	#define iVariable_isValidType(var)					(var && var->varType >= _VAR_TYPE_START && var->varType <= _VAR_TYPE_END)
-	#define iVariable_isEmpty(var)						(!var->value.data || var->value.length <= 0)
+	#define iVariable_isEmpty(var)						(!var->value.data._data || var->value.length <= 0)
 	#define iVariable_populate_byBool(testVar)			((cs8*)((testVar) ? &_LOGICAL_FALSE : &_LOGICAL_TRUE))
 
 	#define validateVariable(var, error)				if (!iVariable_isValid(var)) \
@@ -186,7 +186,7 @@ typedef SEM**		SEMpp;
 	#define propIsEnabled(obj)							(iObjProp_get_logical_fromLogicalConstants(obj, _INDEX_ENABLED)		!= _LOGICAL_FALSE)
 	#define propIsFalse(obj, index)						(iObjProp_get_logical_fromLogicalConstants(obj, index)				== _LOGICAL_FALSE)
 	#define propIsName_byText(obj, t)					(iObjProp_compare_character		(obj, _INDEX_NAME,		(s8*)t,		sizeof(t) - 1) == 0)
-	#define propIsName_byDatum(obj, d)					(iObjProp_compare_character		(obj, _INDEX_NAME,		d->data_s8, d->length) == 0)
+	#define propIsName_byDatum(obj, d)					(iObjProp_compare_character		(obj, _INDEX_NAME,		d->data._s8, d->length) == 0)
 	#define propIsReadonly(obj)							(iObjProp_get_logical_fromLogicalConstants(obj, _INDEX_READONLY)		!= _LOGICAL_FALSE)
 	#define propIsTrue(obj, index)						(iObjProp_get_logical_fromLogicalConstants(obj, index)				!= _LOGICAL_FALSE)
 	#define propIsVisible(obj)							(iObjProp_get_logical_fromLogicalConstants(obj, _INDEX_VISIBLE)		!= _LOGICAL_FALSE)

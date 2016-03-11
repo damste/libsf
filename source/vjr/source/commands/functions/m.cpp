@@ -200,8 +200,8 @@
 				//////////
 				// Populate our result
 				//////
-					if (llAsInteger)		*result->value.data_u32 = lnColor;
-					else					*result->value.data_f32 = lfMalp;
+					if (llAsInteger)		*result->value.data._u32 = lnColor;
+					else					*result->value.data._f32 = lfMalp;
 			}
 
 
@@ -300,7 +300,7 @@
 
 					} else {
 						// They both have a non-zero length
-						switch (_memicmp(varLeft->value.data, varRight->value.data, min(varLeft->value.length, varRight->value.length)))
+						switch (_memicmp(varLeft->value.data._s8, varRight->value.data._s8, min(varLeft->value.length, varRight->value.length)))
 						{
 							case -1:
 							case 0:
@@ -317,8 +317,8 @@
 
 				// Note: _VAR_TYPE_DATETIMEX is handled below as a 64-bit number
 				case _VAR_TYPE_DATETIME:
-					dtLeft	= varLeft->value.data_dt;
-					dtRight	= varRight->value.data_dt;
+					dtLeft	= varLeft->value.data._dt;
+					dtRight	= varRight->value.data._dt;
 					if (dtLeft->julian < dtRight->julian)
 					{
 						// Left is less
@@ -610,7 +610,7 @@
 
 					} else {
 						// They both have a non-zero length
-						switch (_memicmp(varLeft->value.data, varRight->value.data, min(varLeft->value.length, varRight->value.length)))
+						switch (_memicmp(varLeft->value.data._s8, varRight->value.data._s8, min(varLeft->value.length, varRight->value.length)))
 						{
 							case -1:
 							case 0:
@@ -627,8 +627,8 @@
 
 				// Note: _VAR_TYPE_DATETIMEX is handled below as a 64-bit number
 				case _VAR_TYPE_DATETIME:
-					dtLeft	= (SDateTime*)varLeft->value.data;
-					dtRight	= (SDateTime*)varRight->value.data;
+					dtLeft	= (SDateTime*)varLeft->value.data._s8;
+					dtRight	= (SDateTime*)varRight->value.data._s8;
 					if (dtLeft->julian < dtRight->julian)
 					{
 						// Left is less

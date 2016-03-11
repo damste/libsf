@@ -313,11 +313,11 @@
 				if (iVariable_isTypeCharacter(varP1))
 				{
 					// Initializing from the string
-					m_apm_set_string(result->value.data_big, varP1->value.data_s8);
+					m_apm_set_string(result->value.data._big, varP1->value.data._s8);
 
 				} else if (iVariable_isTypeBig(varP1)) {
 					// bfp or bi
-					m_apm_copy(result->value.data_big, varP1->value.data_big);
+					m_apm_copy(result->value.data._big, varP1->value.data._big);
 
 				} else if (iVariable_isTypeInteger(varP1)) {
 					// Integer
@@ -332,12 +332,12 @@
 						if (lnVal64 >= (s64)_s32_min && lnVal64 <= (s64)_s32_max)
 						{
 							// We can set it directly as a long
-							m_apm_set_long(result->value.data_big, (s32)lnVal64);
+							m_apm_set_long(result->value.data._big, (s32)lnVal64);
 
 						} else {
 							// Convert it to a string first, then set it
 							sprintf((s8*)buffer, "%I64d\0", lnVal64);
-							m_apm_set_string(result->value.data_big, buffer);
+							m_apm_set_string(result->value.data._big, buffer);
 						}
 					}
 
@@ -351,7 +351,7 @@
 
 					} else {
 						// We're good
-						m_apm_set_double(result->value.data_big, lfVal64);
+						m_apm_set_double(result->value.data._big, lfVal64);
 					}
 				}
 			}
@@ -477,11 +477,11 @@
 				if (iVariable_isTypeCharacter(varP1))
 				{
 					// Initializing from the string
-					m_apm_set_string(result->value.data_big, varP1->value.data_s8);
+					m_apm_set_string(result->value.data._big, varP1->value.data._s8);
 
 				} else if (iVariable_isTypeBig(varP1)) {
 					// bfp or bi
-					m_apm_copy(result->value.data_big, varP1->value.data_big);
+					m_apm_copy(result->value.data._big, varP1->value.data._big);
 
 				} else if (iVariable_isTypeInteger(varP1)) {
 					// Integer
@@ -496,12 +496,12 @@
 						if (lnVal64 >= (s64)_s32_min && lnVal64 <= (s64)_s32_max)
 						{
 							// We can set it directly as a long
-							m_apm_set_long(result->value.data_big, (s32)lnVal64);
+							m_apm_set_long(result->value.data._big, (s32)lnVal64);
 
 						} else {
 							// Convert it to a string first, then set it
 							sprintf((s8*)buffer, "%I64d\0", lnVal64);
-							m_apm_set_string(result->value.data_big, buffer);
+							m_apm_set_string(result->value.data._big, buffer);
 						}
 					}
 
@@ -515,7 +515,7 @@
 
 					} else {
 						// We're good
-						m_apm_set_double(result->value.data_big, lfVal64);
+						m_apm_set_double(result->value.data._big, lfVal64);
 					}
 				}
 			}
@@ -627,7 +627,7 @@
 			for (lnBit = 0; lnBit < varBits->value.length; lnBit++)
 			{
 				// Grab the character
-				c = varBits->value.data_s8[lnBit];
+				c = varBits->value.data._s8[lnBit];
 
 				// Is it anything other than binary digits
 				if (c != '0' && c != '1')
@@ -697,7 +697,7 @@
 					//////////
 					// Grab our OR value
 					//////
-						lnOrValue = varBits->value.data_u8[lnBit] - (u8)'0';
+						lnOrValue = varBits->value.data._u8[lnBit] - (u8)'0';
 
 
 					//////////
@@ -706,23 +706,23 @@
 						switch (result->varType)
 						{
 							case _VAR_TYPE_U8:
-								result->value.data_u8[0] <<= 1;
-								result->value.data_u8[0] |= lnOrValue;
+								result->value.data._u8[0] <<= 1;
+								result->value.data._u8[0] |= lnOrValue;
 								break;
 
 							case _VAR_TYPE_U16:
-								result->value.data_u16[0] <<= 1;
-								result->value.data_u16[0] |= lnOrValue;
+								result->value.data._u16[0] <<= 1;
+								result->value.data._u16[0] |= lnOrValue;
 								break;
 
 							case _VAR_TYPE_U32:
-								result->value.data_u32[0] <<= 1;
-								result->value.data_u32[0] |= lnOrValue;
+								result->value.data._u32[0] <<= 1;
+								result->value.data._u32[0] |= lnOrValue;
 								break;
 
 							case _VAR_TYPE_U64:
-								result->value.data_u64[0] <<= 1;
-								result->value.data_u64[0] |= lnOrValue;
+								result->value.data._u64[0] <<= 1;
+								result->value.data._u64[0] |= lnOrValue;
 								break;
 						}
 

@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/core/vvmtests/vvmt_core/vvmt_BXML_test.cpp
+// /libsf/source/vfrp/core/vvmtests/vvmt_core/vvmt_BXML_test.cpp
 //
 //////
 //    _     _ _     _____ _____ 

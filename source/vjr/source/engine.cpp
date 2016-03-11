@@ -183,7 +183,7 @@
 
 
 		// Make sure our environment is sane
-		if (line && line->sourceCode && line->sourceCode->data && line->sourceCode_populatedLength > 0)
+		if (line && line->sourceCode && line->sourceCode->data._data && line->sourceCode_populatedLength > 0)
 		{
 			//////////
 			// Parse it out (if need be)
@@ -242,7 +242,7 @@
 
 						} else {
 							// It's a number, display it
-							if ((dfunc = iDllFunc_find_byName(compNext->line->sourceCode->data_s8 + compNext->start, compNext->length)))
+							if ((dfunc = iDllFunc_find_byName(compNext->line->sourceCode->data._s8 + compNext->start, compNext->length)))
 							{
 								// It is a DLL function
 								if (dfunc->rp.type == _DLL_TYPE_VOID)
@@ -297,7 +297,7 @@
 							varText = iVariable_convertForDisplay(var);
 
 							// Add its contents to _screen
-							iSEM_appendLine(screenData, varText->value.data_u8, varText->value.length, false);
+							iSEM_appendLine(screenData, varText->value.data._u8, varText->value.length, false);
 							iSEM_navigateToEndLine(screenData, _screen);
 							_screen_editbox->isDirtyRender = true;
 							iWindow_render(gWinJDebi, false);
@@ -360,7 +360,7 @@
 								}
 
 							} else {
-								varExisting = iVariable_searchForName(comp->line->sourceCode->data + comp->start, comp->length, comp, true);
+								varExisting = iVariable_searchForName(comp->line->sourceCode->data._s8 + comp->start, comp->length, comp, true);
 								if (varExisting)
 								{
 									// We are updating the value
@@ -369,14 +369,14 @@
 
 								} else {
 									// We are creating a new variable
-									iDatum_duplicate(&var->name, comp->line->sourceCode->data_u8 + comp->start, comp->length);
+									iDatum_duplicate(&var->name, comp->line->sourceCode->data._u8 + comp->start, comp->length);
 									iLl_appendExisting__llAtBeginning((SLL**)&varGlobals, (SLL*)var);
 								}
 							}
 
 						} else {
 							// It may be a DLL
-							if ((dfunc = iDllFunc_find_byName(comp->line->sourceCode->data_s8 + comp->start, comp->length)))
+							if ((dfunc = iDllFunc_find_byName(comp->line->sourceCode->data._s8 + comp->start, comp->length)))
 							{
 								// It is a DLL function
 								memset(&lrpar, 0, sizeof(lrpar));
@@ -547,8 +547,8 @@
 			//////////
 			// Setup
 			//////
-				sourceCode.data_cs8	= tcPrg;
-				sourceCode.length	= tnPrgLength;
+				sourceCode.data._cs8	= tcPrg;
+				sourceCode.length		= tnPrgLength;
 				sem = iSEM_allocate(true);
 
 
@@ -624,7 +624,7 @@
 		//////////
 		// Copy the source code line
 		//////
-			iDatum_duplicate(line->compilerInfo->sourceCode, line->sourceCode->data_s8, line->sourceCode_populatedLength);
+			iDatum_duplicate(line->compilerInfo->sourceCode, line->sourceCode->data._s8, line->sourceCode_populatedLength);
 
 
 		//////////
@@ -903,12 +903,12 @@
 										{
 											// Yes
 											// So, we need to create an implicit natural function with either the program's name or a sys(2015) name
-											if (!name || !name->_data || name->length <= 0)
+											if (!name || !name->data._data || name->length <= 0)
 											{
 												// Create a unique name
 												llDeleteVarSys2015	= true;
 												varSys2015			= iFunction_sys2015(0, 0);
-												name->data_cs8		= varSys2015->value.data_cs8;
+												name->data._cs8		= varSys2015->value.data._cs8;
 												name->length		= varSys2015->value.length;
 											}
 
@@ -985,7 +985,7 @@
 					// See if it has a dot/period in it
 					for (lnI = 0, llDot = false; lnI < comp->length; lnI++)
 					{
-						if (comp->line->sourceCode->data[comp->start + lnI] == '.')
+						if (comp->line->sourceCode->data._s8[comp->start + lnI] == '.')
 						{
 							llDot = true;
 							break;
@@ -1008,13 +1008,13 @@
 								// Store as 32-bits
 								var = iVariable_create(_VAR_TYPE_S32, NULL, true);
 								if (var)
-									*var->value.data_s32 = (s32)lnValue;
+									*var->value.data._s32 = (s32)lnValue;
 
 							} else {
 								// Store as 64-bits
 								var = iVariable_create(_VAR_TYPE_S64, NULL, true);
 								if (var)
-									*var->value.data_s64 = lnValue;
+									*var->value.data._s64 = lnValue;
 							}
 
 					} else {
@@ -1031,13 +1031,13 @@
 								// Store as 32-bits
 								var = iVariable_create(_VAR_TYPE_F32, NULL, true);
 								if (var)
-									*var->value.data_f32 = (f32)lfValue;
+									*var->value.data._f32 = (f32)lfValue;
 
 							} else {
 								// Store as 64-bits
 								var = iVariable_create(_VAR_TYPE_F64, NULL, true);
 								if (var)
-									*var->value.data_f64 = lfValue;
+									*var->value.data._f64 = lfValue;
 							}
 					}
 
@@ -1063,7 +1063,7 @@
 					if (var)
 					{
 						*tlManufactured		= true;
-						var->value.data[0]	= _LOGICAL_TRUE;
+						var->value.data._s8[0]	= _LOGICAL_TRUE;
 						var->compRelated	= comp;
 					}
 					return(var);
@@ -1077,7 +1077,7 @@
 					if (var)
 					{
 						*tlManufactured		= true;
-						var->value.data[0]	= _LOGICAL_FALSE;
+						var->value.data._s8[0]	= _LOGICAL_FALSE;
 						var->compRelated	= comp;
 					}
 					return(var);
@@ -1089,7 +1089,7 @@
 					if (var)
 					{
 						*tlManufactured		= true;
-						var->value.data[0]	= _LOGICALX_EXTRA;
+						var->value.data._s8[0]	= _LOGICALX_EXTRA;
 						var->compRelated	= comp;
 					}
 					return(var);
@@ -1101,7 +1101,7 @@
 					if (var)
 					{
 						*tlManufactured		= true;
-						var->value.data[0]	= _LOGICALX_YET_ANOTHER;
+						var->value.data._s8[0]	= _LOGICALX_YET_ANOTHER;
 						var->compRelated	= comp;
 					}
 					return(var);
@@ -1113,7 +1113,7 @@
 					if (var)
 					{
 						*tlManufactured		= true;
-						var->value.data[0]	= _LOGICALX_ZATS_ALL_FOLKS;
+						var->value.data._s8[0]	= _LOGICALX_ZATS_ALL_FOLKS;
 						var->compRelated	= comp;
 					}
 					return(var);
@@ -1122,7 +1122,7 @@
 				case _ICODE_ALPHANUMERIC:
 				case _ICODE_ALPHA:
 					// It's some kind of text, could be a field or variable
-					return(iEngine_get_variableName_fromText(comp->line->sourceCode->data_cs8 + comp->start, comp->length, comp, tlManufactured, tlByRef));
+					return(iEngine_get_variableName_fromText(comp->line->sourceCode->data._cs8 + comp->start, comp->length, comp, tlManufactured, tlByRef));
 
 
 				case _ICODE_SINGLE_QUOTED_TEXT:
@@ -1134,7 +1134,7 @@
 						*tlManufactured	= true;
 						var = iVariable_create(_VAR_TYPE_CHARACTER, NULL, true);
 						if (var)
-							iDatum_duplicate(&var->value, comp->line->sourceCode->data_u8 + comp->start + 1, comp->length - 2);
+							iDatum_duplicate(&var->value, comp->line->sourceCode->data._u8 + comp->start + 1, comp->length - 2);
 
 
 					//////////
@@ -1178,14 +1178,14 @@
 					// It was found in the global variables
 
 /* We do not have work areas setup yet, so we cannot search them. :-)
-				} else if (var = iWorkarea_searchFieldName(comp->line->sourceCode->data + comp->start, comp->length)) {
+				} else if (var = iWorkarea_searchFieldName(comp->line->sourceCode->data._s8 + comp->start, comp->length)) {
 					// It was found in a table field
 					return(var);*/
 				}
 
 			} else {
 				// Search field names first, variables last.
-/*				if (var = iWorkarea_searchFieldName(comp->line->sourceCode->data + comp->start, comp->length))
+/*				if (var = iWorkarea_searchFieldName(comp->line->sourceCode->data._s8 + comp->start, comp->length))
 				{
 					// It was found in a table field
 					return(var);
@@ -1245,7 +1245,7 @@
 
 		// Make sure our environment is sane
 		varPathname = NULL;
-		if (comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data)
+		if (comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data._data)
 		{
 			// Find out what the component is
 			switch (comp->iCode)
@@ -1253,12 +1253,12 @@
 				case _ICODE_DOUBLE_QUOTED_TEXT:
 				case _ICODE_SINGLE_QUOTED_TEXT:
 					// By definition, quoted content is its own independent thing
-					varPathname = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, comp->line->sourceCode->data_u8 + comp->start, comp->length, true);
+					varPathname = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, comp->line->sourceCode->data._u8 + comp->start, comp->length, true);
 					break;
 
 				default:
 					// Get every contiguous component
-					varPathname	= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, comp->line->sourceCode->data_u8 + comp->start, iComps_getContiguousLength(comp, valid_iCodeArray, tnValid_iCodeArrayCount, NULL), true);
+					varPathname	= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, comp->line->sourceCode->data._u8 + comp->start, iComps_getContiguousLength(comp, valid_iCodeArray, tnValid_iCodeArrayCount, NULL), true);
 					break;
 			}
 		}
@@ -1394,13 +1394,13 @@
 
 		// Make sure our environment is sane
 		llResult = false;
-		if (comp && p && tnType && comp->line && comp->line->sourceCode && comp->line->sourceCode->data_cs8)
+		if (comp && p && tnType && comp->line && comp->line->sourceCode && comp->line->sourceCode->data._cs8)
 		{
 
 			//////////
 			// Get the variable name we're searching for
 			//////
-				lcVarName		= comp->line->sourceCode->data_cs8 + comp->start;
+				lcVarName		= comp->line->sourceCode->data._cs8 + comp->start;
 				lnVarNameLength	= (u32)comp->length;
 
 
@@ -1652,7 +1652,7 @@
 					if (!adhoc->isPrivate && adhoc->name.length == (s32)lnVarNameLength)
 					{
 						// Is it the same name?
-						if (_memicmp(adhoc->name.data_cs8, lcVarName, lnVarNameLength) == 0)
+						if (_memicmp(adhoc->name.data._cs8, lcVarName, lnVarNameLength) == 0)
 						{
 							// We found it
 							*tnType	= _SOURCE_TYPE_ADHOC;
@@ -1673,7 +1673,7 @@
 				if (func->name.length == (s32)lnVarNameLength)
 				{
 					// Is it the same name?
-					if (_memicmp(func->name.data_cs8, lcVarName, lnVarNameLength) == 0)
+					if (_memicmp(func->name.data._cs8, lcVarName, lnVarNameLength) == 0)
 					{
 						// We found it
 						*tnType	= _SOURCE_TYPE_FUNCTION;
@@ -1693,7 +1693,7 @@
 				if (dllfunc->name.length == (s32)lnVarNameLength)
 				{
 					// Is it the same name?
-					if (_memicmp(dllfunc->name.data_cs8, lcVarName, lnVarNameLength) == 0)
+					if (_memicmp(dllfunc->name.data._cs8, lcVarName, lnVarNameLength) == 0)
 					{
 						// We found it
 						*tnType	= _SOURCE_TYPE_DLLFUNC;
@@ -2030,8 +2030,8 @@
 
 
 		// Grab the old value and update
-		lnOldValue					= *varTally->value.data_s64;
-		*varTally->value.data_s64	= tnValue;
+		lnOldValue					= *varTally->value.data._s64;
+		*varTally->value.data._s64	= tnValue;
 		return(lnOldValue);
 	}
 
@@ -2049,8 +2049,8 @@
 
 
 		// Grab the old value and update
-		lnOldValue					= *varMeta1->value.data_s64;
-		*varMeta1->value.data_s64	= tnValue;
+		lnOldValue					= *varMeta1->value.data._s64;
+		*varMeta1->value.data._s64	= tnValue;
 		return(lnOldValue);
 	}
 
@@ -2060,8 +2060,8 @@
 
 
 		// Grab the old value and update
-		lnOldValue					= *varMeta2->value.data_s64;
-		*varMeta2->value.data_s64	= tnValue;
+		lnOldValue					= *varMeta2->value.data._s64;
+		*varMeta2->value.data._s64	= tnValue;
 		return(lnOldValue);
 	}
 
@@ -2071,8 +2071,8 @@
 
 
 		// Grab the old value and update
-		lnOldValue					= *varMeta3->value.data_s64;
-		*varMeta3->value.data_s64	= tnValue;
+		lnOldValue					= *varMeta3->value.data._s64;
+		*varMeta3->value.data._s64	= tnValue;
 		return(lnOldValue);
 	}
 
@@ -2082,8 +2082,8 @@
 
 
 		// Grab the old value and update
-		lnOldValue					= *varMeta4->value.data_s64;
-		*varMeta4->value.data_s64	= tnValue;
+		lnOldValue					= *varMeta4->value.data._s64;
+		*varMeta4->value.data._s64	= tnValue;
 		return(lnOldValue);
 	}
 

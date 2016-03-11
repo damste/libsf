@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/core/vvmtests/vvmt_core/vvmt_sll_test.cpp
+// /libsf/source/vfrp/core/vvmtests/vvmt_core/vvmt_sll_test.cpp
 //
 //////
 //    _     _ _     _____ _____ 
@@ -93,7 +93,7 @@
 		//////////
 		// Clean house
 		//////
-			vvm_ll_deleteChain(&root);
+			vvm_ll_deleteNodeChain(&root);
 
 
 		// When we get here, success
@@ -197,7 +197,7 @@
 		//////////
 		// Insert the node after
 		//////
-			vvm_ll_insert(nodeNext, *root, true);
+			vvm_ll_insertNode(nodeNext, *root, true);
 
 
 		//////////
@@ -223,7 +223,7 @@
 		//////////
 		// Insert the node before
 		//////
-			vvm_ll_insert(nodePrev, *root, false);
+			vvm_ll_insertNode(nodePrev, *root, false);
 
 
 		//////////
@@ -340,7 +340,7 @@
 		//////////
 		// Insert the node after
 		//////
-			vvm_ll_insert(nodeNext, root, true);
+			vvm_ll_insertNode(nodeNext, root, true);
 
 
 		//////////
@@ -366,7 +366,7 @@
 		//////////
 		// Insert the node before
 		//////
-			vvm_ll_insert(nodePrev, root, false);
+			vvm_ll_insertNode(nodePrev, root, false);
 
 
 		//////////
@@ -447,7 +447,7 @@
 		//////////
 		// Delete the first node
 		//////
-			vvm_ll_delete((*root)->prev->prev);
+			vvm_ll_deleteNode((*root)->prev->prev);
 
 
 		//////////
@@ -473,7 +473,7 @@
 		//////////
 		// Delete the last node
 		//////
-			vvm_ll_delete((*root)->next->next);
+			vvm_ll_deleteNode((*root)->next->next);
 
 
 		//////////
@@ -504,7 +504,7 @@
 			nodePrev = (*root)->prev;
 
 			// Delete the middle node
-			vvm_ll_delete(*root);
+			vvm_ll_deleteNode(*root);
 
 			// Store the new root
 			*root = nodePrev;
@@ -571,7 +571,7 @@
 		//////////
 		// Create the SLL
 		//////
-			ll = vvm_ll_create(NULL, NULL, vvm_getNextUniqueId(), tnSize);
+			ll = vvm_ll_createNode(NULL, NULL, vvm_getNextUniqueId(), tnSize);
 
 
 		//////////

@@ -301,14 +301,14 @@
 					if (iVariable_isTypeDatetimeX(varP1))
 					{
 						// DatetimeX
-						iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds(varP1->value.data_dtx->jseconds, NULL, &lnYear, &lnMonth, &lnDay, NULL, NULL, NULL, NULL, NULL);
+						iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds(varP1->value.data._dtx->jseconds, NULL, &lnYear, &lnMonth, &lnDay, NULL, NULL, NULL, NULL, NULL);
 						lst.wYear	= (u16)lnYear;
 						lst.wMonth	= (u16)lnMonth;
 						lst.wDay	= (u16)lnDay;
 
 					} else if (iVariable_isTypeDatetime(varP1)) {
 						// Datetime
-						iiDateMath_get_YyyyMmDd_from_julian(varP1->value.data_dt->julian, &lnYear, &lnMonth, &lnDay);
+						iiDateMath_get_YyyyMmDd_from_julian(varP1->value.data._dt->julian, &lnYear, &lnMonth, &lnDay);
 						lst.wYear	= (u16)lnYear;
 						lst.wMonth	= (u16)lnMonth;
 						lst.wDay	= (u16)lnDay;
@@ -428,7 +428,7 @@
 		// Terminate any indirect variable to its source for the update
 		//////
 			varResult = iiVariable_terminateIndirect(varR1);
-			if (!varResult->value.data || varResult->value.length == 0)
+			if (!varResult->value.data._s8 || varResult->value.length == 0)
 			{
 				iError_report_byNumber(_ERROR_INTERNAL_ERROR, iVariable_get_relatedComp(varR1), false);
 				return;
@@ -438,7 +438,7 @@
 		//////////
 		// Set the date as indicated
 		//////
-			iiDateMath_get_YYYYMMDD_from_YyyyMmDd(varResult->value.data_s8, (u32)lst.wYear, (u32)lst.wMonth, (u32)lst.wDay);
+			iiDateMath_get_YYYYMMDD_from_YyyyMmDd(varResult->value.data._s8, (u32)lst.wYear, (u32)lst.wMonth, (u32)lst.wDay);
 
 
 		//////////

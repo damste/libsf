@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/core/vdebug/vdeb_const.h
+// /libsf/source/vfrp/core/vdebug/vdeb_const.h
 //
 //////
 //    _     _ _     _____ _____ 

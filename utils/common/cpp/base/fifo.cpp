@@ -74,7 +74,7 @@
 
 		// Make sure our environment is sane
 		fifo = NULL;
-		if (datum && datum->data && datum->length > 0)
+		if (datum && datum->data._data && datum->length > 0)
 		{
 			// Make sure we have a root
 			if (!gsRootFifo)

@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/vvm/vvm_res.cpp
+// /libsf/source/vfrp/vvm/vvm_res.cpp
 //
 //////
 // Version 0.70

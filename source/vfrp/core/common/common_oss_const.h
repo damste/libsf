@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/core/common/common_vvmoss_const.h
+// /libsf/source/vfrp/core/common/common_vvmoss_const.h
 //
 //////
 //    _     _ _     _____ _____ 

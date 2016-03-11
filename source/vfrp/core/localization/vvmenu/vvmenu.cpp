@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/localization/vvmenu/vvmenu.cpp
+// /libsf/source/vfrp/localization/vvmenu/vvmenu.cpp
 //
 //////
 // Version 0.50

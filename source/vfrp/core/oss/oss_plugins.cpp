@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/vvmoss/vo_plugins.cpp
+// /libsf/source/vfrp/vvmoss/vo_plugins.cpp
 //
 //////
 //    _     _ _     _____ _____ 

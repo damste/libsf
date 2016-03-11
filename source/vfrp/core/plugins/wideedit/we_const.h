@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/core/plugins/wideedit/wideedit_const.h
+// /libsf/source/vfrp/core/plugins/wideedit/wideedit_const.h
 //
 //////
 //    _     _ _     _____ _____ 

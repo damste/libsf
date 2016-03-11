@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/core/vasm/vasm_defs.h
+// /libsf/source/vfrp/core/vasm/vasm_defs.h
 //
 //////
 //    _     _ _     _____ _____ 

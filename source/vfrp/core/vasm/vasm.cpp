@@ -62,14 +62,14 @@
 #include <stdio.h>
 #include <windows.h>
 
-#include "\libsf\vvm\core\common\common.h"
-#include "\libsf\vvm\core\oss\oss_structs.h"
-#include "\libsf\vvm\core\vvm\vvm_structs.h"
-#include "\libsf\vvm\core\mc\mc_structs.h"
-#include "\libsf\vvm\core\common\common_vvm.h"
-#include "\libsf\vvm\core\common\common_mc.h"
-#include "\libsf\vvm\core\common\common_oss.h"
-#include "\libsf\vvm\core\localization\vvmmcenu\resource.h"
+#include "\libsf\source\vfrp\core\common\common.h"
+#include "\libsf\source\vfrp\core\oss\oss_structs.h"
+#include "\libsf\source\vfrp\core\vvm\vvm_structs.h"
+#include "\libsf\source\vfrp\core\mc\mc_structs.h"
+#include "\libsf\source\vfrp\core\common\common_vvm.h"
+#include "\libsf\source\vfrp\core\common\common_mc.h"
+#include "\libsf\source\vfrp\core\common\common_oss.h"
+#include "\libsf\source\vfrp\core\localization\vvmmcenu\resource.h"
 #include "vasm_defs.h"
 
 

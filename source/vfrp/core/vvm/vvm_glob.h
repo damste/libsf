@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/vvm/vvm_globals.h
+// /libsf/source/vfrp/vvm/vvm_globals.h
 //
 //////
 // Version 0.70

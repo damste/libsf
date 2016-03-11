@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/vvmoss/vo_const.h
+// /libsf/source/vfrp/vvmoss/vo_const.h
 //
 //////
 //    _     _ _     _____ _____ 

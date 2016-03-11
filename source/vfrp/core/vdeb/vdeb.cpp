@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/core/vdebug/vdebug.cpp
+// /libsf/source/vfrp/core/vdebug/vdebug.cpp
 //
 //////
 //    _     _ _     _____ _____ 
@@ -60,18 +60,18 @@
 
 #include "windows.h"
 #include "stdio.h"
-#include "\libsf\vvm\core\common\common.h"
-#include "\libsf\vvm\core\common\vvm_key_const.h"
-#include "\libsf\vvm\core\vvm\vvm_structs.h"
-#include "\libsf\vvm\core\oss\oss_class.h"
-#include "\libsf\vvm\core\oss\oss_structs.h"
+#include "\libsf\source\vfrp\core\common\common.h"
+#include "\libsf\source\vfrp\core\common\vvm_key_const.h"
+#include "\libsf\source\vfrp\core\vvm\vvm_structs.h"
+#include "\libsf\source\vfrp\core\oss\oss_class.h"
+#include "\libsf\source\vfrp\core\oss\oss_structs.h"
 #include "vdeb_const.h"
 #include "vdeb_defs.h"
 #include "vdeb_glob.h"
 #include "vdeb_structs.h"
-#include "\libsf\vvm\core\common\common_vvm.h"
-#include "\libsf\vvm\core\common\common_oss.h"
-#include "\libsf\vvm\core\common\common_mc.h"
+#include "\libsf\source\vfrp\core\common\common_vvm.h"
+#include "\libsf\source\vfrp\core\common\common_oss.h"
+#include "\libsf\source\vfrp\core\common\common_mc.h"
 #include "vdeb_screens.h"
 
 

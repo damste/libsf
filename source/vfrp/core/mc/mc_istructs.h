@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/vvmmc/mc_istructs.h
+// /libsf/source/vfrp/vvmmc/mc_istructs.h
 //
 //////
 //    _     _ _     _____ _____ 

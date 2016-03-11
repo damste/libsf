@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/core/vfrp/vfrp_structs.h
+// /libsf/source/vfrp/core/vfrp/vfrp_structs.h
 //
 //////
 // Version 0.70

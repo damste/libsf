@@ -1,5 +1,5 @@
 // Include file
-(|include|[|pathname|c:\libsf\vvm\vasm\test\testout.vasm||]||)
+(|include|[|pathname|c:\libsf\source\vfrp\vasm\test\testout.vasm||]||)
 
 
 // Macros
@@ -68,7 +68,7 @@
 
 //////////
 //
-// /libsf/vvm/vasm/test/test.vasm
+// /libsf/source/vfrp/vasm/test/test.vasm
 //
 //////
 // Version 0.70

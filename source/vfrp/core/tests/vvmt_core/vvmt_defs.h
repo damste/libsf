@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/core/vvmtests/vvmt_core/vvmt_defs.h
+// /libsf/source/vfrp/core/vvmtests/vvmt_core/vvmt_defs.h
 //
 //////
 //    _     _ _     _____ _____ 

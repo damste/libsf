@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="\libsf\vvm\dev\plugins\wideedit.dll"
+				OutputFile="\libsf\source\vfrp\dev\plugins\wideedit.dll"
 				LinkIncremental="2"
 				ModuleDefinitionFile="we.def"
 				GenerateDebugInformation="true"
@@ -139,7 +139,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="\libsf\vvm\dev\plugins\wideedit.dll"
+				OutputFile="\libsf\source\vfrp\dev\plugins\wideedit.dll"
 				LinkIncremental="1"
 				ModuleDefinitionFile="we.def"
 				GenerateDebugInformation="true"

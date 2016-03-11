@@ -576,7 +576,7 @@
 			for (lnIndex = _INDEX_SET_FIRST_ITEM; gsProps_master[lnIndex].index != 0; lnIndex++)
 			{
 				// Does this setting name match?
-				if ((s32)gsProps_master[lnIndex].propNameLength == varIdentifier->value.length && _memicmp(gsProps_master[lnIndex].propName_s8, varIdentifier->value.data_s8, varIdentifier->value.length) == 0)
+				if ((s32)gsProps_master[lnIndex].propNameLength == varIdentifier->value.length && _memicmp(gsProps_master[lnIndex].propName_s8, varIdentifier->value.data._s8, varIdentifier->value.length) == 0)
 				{
 
 					//////////
@@ -977,7 +977,7 @@
 		// First letter is first char
 		//////
 			if (varStr->value.length > 0)
-				lcResult[0] = UPPER(varStr->value.data_cs8[0]);
+				lcResult[0] = UPPER(varStr->value.data._cs8[0]);
 			else
 				lcResult[0] = '0';
 
@@ -985,12 +985,12 @@
 		//////////
 		// Iterate through our string
 		//////
-			for (lnI = 1, lcLast = '?', lcResult[4] = 0, lnJ = 1; varStr->value.data_cs8[lnI] && lnI < varStr->value.length && lnJ < 4; lnI++)
+			for (lnI = 1, lcLast = '?', lcResult[4] = 0, lnJ = 1; varStr->value.data._cs8[lnI] && lnI < varStr->value.length && lnJ < 4; lnI++)
 			{
 				//////////
 				// Grab char
 				//////
-					c = UPPER(varStr->value.data_cs8[lnI]);
+					c = UPPER(varStr->value.data._cs8[lnI]);
 
 
 				//////////
@@ -1116,7 +1116,7 @@
         // Create the source string and initialize to spaces
 		//////
 	        iDatum_allocateSpace(&result->value, lnLength);
-			memset(result->value.data, 32, lnLength);
+			memset(result->value.data._s8, 32, lnLength);
 
 
 		//////////
@@ -1356,7 +1356,7 @@
 			if (varSearch->value.length == 0 || varSearch->value.length > varString->value.length)
 			{
 				// Allocate a full copy of the original string
-				rpar->rp[0] = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, varString->value.data_u8, varString->value.length, false);
+				rpar->rp[0] = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, varString->value.data._u8, varString->value.length, false);
 				return;
 			}
 
@@ -1373,7 +1373,7 @@
 					if (tlCaseSensitive)
 					{
 						// Case-sensitive compare
-						if (memcmp(result->value.data + lnI, varSearch->value.data, varSearch->value.length) == 0)
+						if (memcmp(result->value.data._s8 + lnI, varSearch->value.data._s8, varSearch->value.length) == 0)
 						{
 							// We found a match
 							++lnFoundCount;
@@ -1386,7 +1386,7 @@
 
 					} else {
 						// Case-insensitive compare
-						if (_memicmp(result->value.data + lnI, varSearch->value.data, varSearch->value.length) == 0)
+						if (_memicmp(result->value.data._s8 + lnI, varSearch->value.data._s8, varSearch->value.length) == 0)
 						{
 							// We found a match
 							++lnFoundCount;
@@ -1404,7 +1404,7 @@
 				{
 					// If we haven't made an official copy yet, we need to do so now
 					if (result == varString)
-						result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, varString->value.data_u8, varString->value.length, false);
+						result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, varString->value.data._u8, varString->value.length, false);
 
 					// Return our result
 					rpar->rp[0] = result;
@@ -1425,32 +1425,32 @@
 					if (tlCaseSensitive)
 					{
 						// Case-sensitive compare
-						if (memcmp(result->value.data + lnSrc, varSearch->value.data, varSearch->value.length) == 0)
+						if (memcmp(result->value.data._s8 + lnSrc, varSearch->value.data._s8, varSearch->value.length) == 0)
 						{
 							// We found a match
-							memcpy(resultNew->value.data + lnDst, varReplace->value.data, varReplace->value.length);
+							memcpy(resultNew->value.data._s8 + lnDst, varReplace->value.data._s8, varReplace->value.length);
 							lnSrc += varSearch->value.length;
 							lnDst += varReplace->value.length;
 
 						} else {
 							// Skip to the next character
-							resultNew->value.data[lnDst] = result->value.data[lnSrc];
+							resultNew->value.data._s8[lnDst] = result->value.data._s8[lnSrc];
 							++lnDst;
 							++lnSrc;
 						}
 
 					} else {
 						// Case-insensitive compare
-						if (_memicmp(result->value.data + lnSrc, varSearch->value.data, varSearch->value.length) == 0)
+						if (_memicmp(result->value.data._s8 + lnSrc, varSearch->value.data._s8, varSearch->value.length) == 0)
 						{
 							// We found a match
-							memcpy(resultNew->value.data + lnDst, varReplace->value.data, varReplace->value.length);
+							memcpy(resultNew->value.data._s8 + lnDst, varReplace->value.data._s8, varReplace->value.length);
 							lnSrc += varSearch->value.length;
 							lnDst += varReplace->value.length;
 
 						} else {
 							// Skip to the next character
-							resultNew->value.data[lnDst] = result->value.data[lnSrc];
+							resultNew->value.data._s8[lnDst] = result->value.data._s8[lnSrc];
 							++lnDst;
 							++lnSrc;
 						}
@@ -1598,15 +1598,15 @@
 
 			// We only copy the first part if there is something to copy
 			if (lnStartPosition > 0)
-				memcpy((s8*)lcBuffer, varOriginalString->value.data, lnStartPosition);
+				memcpy((s8*)lcBuffer, varOriginalString->value.data._s8, lnStartPosition);
 
 			// We only insert our stuff string if there is something to put there
 			if (varStuffString->value.length > 0)
-				memcpy((s8*)lcBuffer + lnStartPosition, varStuffString->value.data, varStuffString->value.length);
+				memcpy((s8*)lcBuffer + lnStartPosition, varStuffString->value.data._s8, varStuffString->value.length);
 
 			// We only copy over the last part if there's something there
 			if (varOriginalString->value.length - lnStartPosition - lnRemoveCount > 0)
-				memcpy((s8*)lcBuffer + lnStartPosition + varStuffString->value.length, varOriginalString->value.data + lnStartPosition + lnRemoveCount, varOriginalString->value.length - lnStartPosition - lnRemoveCount);
+				memcpy((s8*)lcBuffer + lnStartPosition + varStuffString->value.length, varOriginalString->value.data._s8 + lnStartPosition + lnRemoveCount, varOriginalString->value.length - lnStartPosition - lnRemoveCount);
 
 
 		//////////
@@ -1756,7 +1756,7 @@
 							if (result->varType == _VAR_TYPE_F64)
 							{
 								// Convert f64 to s64
-								*result->value.data_s64	= (s64)*result->value.data_f64;
+								*result->value.data._s64	= (s64)*result->value.data._f64;
 								result->varType			= _VAR_TYPE_S64;
 
 								// Report any errors
@@ -1818,7 +1818,7 @@
 							// For these values, return a blank date
 							result = iVariable_create(_VAR_TYPE_DATE, NULL, true);
 							if (result)
-								memset(result->value.data, 32, result->value.length);	// Make it all spaces
+								memset(result->value.data._s8, 32, result->value.length);	// Make it all spaces
 
 							// Check our result
 							goto clean_exit;
@@ -1909,9 +1909,9 @@
 					// Convert to julian
 					//////
 						// Break out
-						if (iVariable_isTypeDatetime(varTemp))			iiDateMath_get_YyyyMmDd_from_julian					(varTemp->value.data_dt->julian,			&lnYear, &lnMonth, &lnDay);
-						else if (iVariable_isTypeDatetimeX(varTemp))	iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds	(varTemp->value.data_dtx->jseconds, NULL,	&lnYear, &lnMonth, &lnDay, NULL, NULL, NULL, NULL, NULL);
-						else /* Date */									iiDateMath_get_YyyyMmDd_from_YYYYMMDD				(varTemp->value.data_u8,					&lnYear, &lnMonth, &lnDay);
+						if (iVariable_isTypeDatetime(varTemp))			iiDateMath_get_YyyyMmDd_from_julian					(varTemp->value.data._dt->julian,			&lnYear, &lnMonth, &lnDay);
+						else if (iVariable_isTypeDatetimeX(varTemp))	iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds	(varTemp->value.data._dtx->jseconds, NULL,	&lnYear, &lnMonth, &lnDay, NULL, NULL, NULL, NULL, NULL);
+						else /* Date */									iiDateMath_get_YyyyMmDd_from_YYYYMMDD				(varTemp->value.data._u8,					&lnYear, &lnMonth, &lnDay);
 
 						// Get julian
 						iiDateMath_get_julian_from_YyyyMmDd(&lfJulian, lnYear, lnMonth, lnDay);
@@ -2023,7 +2023,7 @@
 
 					// Prefix with an underscore
 					if (result)
-						result->value.data_u8[lnExtraPrefixWidth] = '_';
+						result->value.data._u8[lnExtraPrefixWidth] = '_';
 
 					// Right now, the variable looks something like:  _19B2L483
 					break;
@@ -2180,172 +2180,172 @@ clean_exit:
 			{
 				case 1:
 					// Screen width
-					*(s32*)result->value.data = (lrc.right - lrc.left);
+					*(s32*)result->value.data._s8 = (lrc.right - lrc.left);
 					break;
 
 				case 2:
 					// Screen height
-					*(s32*)result->value.data = (lrc.bottom - lrc.top);
+					*(s32*)result->value.data._s8 = (lrc.bottom - lrc.top);
 					break;
 
 				case 3:
 					// Width of a sizable window frame
-					*(s32*)result->value.data = bmpVjrIcon->bi.biWidth;
+					*(s32*)result->value.data._s8 = bmpVjrIcon->bi.biWidth;
 					break;
 
 				case 4:
 					// Height of a sizable window frame
-					*(s32*)result->value.data = bmpVjrIcon->bi.biHeight;
+					*(s32*)result->value.data._s8 = bmpVjrIcon->bi.biHeight;
 					break;
 
 				case 5:
 					// Width of scroll arrows on a vertical scroll bar
-					*(s32*)result->value.data = 0;
+					*(s32*)result->value.data._s8 = 0;
 					break;
 
 				case 6:
 					// Height of scroll arrows on a vertical scroll bar
-					*(s32*)result->value.data = 0;
+					*(s32*)result->value.data._s8 = 0;
 					break;
 
 				case 7:
 					// Width of scroll arrows on a horizontal scroll bar
-					*(s32*)result->value.data = 0;
+					*(s32*)result->value.data._s8 = 0;
 					break;
 
 				case 8:
 					// Height of scroll arrows on a horizontal scroll bar
-					*(s32*)result->value.data = 0;
+					*(s32*)result->value.data._s8 = 0;
 					break;
 
 				case 9:
 					// Height of form caption
-					*(s32*)result->value.data = bmpVjrIcon->bi.biHeight;
+					*(s32*)result->value.data._s8 = bmpVjrIcon->bi.biHeight;
 					break;
 
 				case 10:
 					// Width of non-sizable window frame
-					*(s32*)result->value.data = bmpVjrIcon->bi.biWidth;
+					*(s32*)result->value.data._s8 = bmpVjrIcon->bi.biWidth;
 					break;
 
 				case 11:
 					// Height of a non-sizable window frame
-					*(s32*)result->value.data = bmpVjrIcon->bi.biHeight;
+					*(s32*)result->value.data._s8 = bmpVjrIcon->bi.biHeight;
 					break;
 
 				case 12:
 					// Width of a double or panel window frame
-					*(s32*)result->value.data = bmpVjrIcon->bi.biWidth;
+					*(s32*)result->value.data._s8 = bmpVjrIcon->bi.biWidth;
 					break;
 
 				case 13:
 					// Height of a double or panel window frame
-					*(s32*)result->value.data = bmpVjrIcon->bi.biHeight;
+					*(s32*)result->value.data._s8 = bmpVjrIcon->bi.biHeight;
 					break;
 
 				case 14:
 					// Scroll box width on horizontal scroll bars in text editing windows
-					*(s32*)result->value.data = 0;
+					*(s32*)result->value.data._s8 = 0;
 					break;
 
 				case 15:
 					// Scroll box height on horizontal scroll bars in text editing windows
-					*(s32*)result->value.data = 0;
+					*(s32*)result->value.data._s8 = 0;
 					break;
 
 				case 16:
 					// Minimized window icon width
-					*(s32*)result->value.data = bmpVjrIcon->bi.biWidth;
+					*(s32*)result->value.data._s8 = bmpVjrIcon->bi.biWidth;
 					break;
 
 				case 17:
 					// Minimized window icon height
-					*(s32*)result->value.data = bmpVjrIcon->bi.biHeight;
+					*(s32*)result->value.data._s8 = bmpVjrIcon->bi.biHeight;
 					break;
 
 				case 18:
 					// Maximum insertion point width
-					*(s32*)result->value.data = 0;
+					*(s32*)result->value.data._s8 = 0;
 					break;
 
 				case 19:
 					// Maximum insertion point height
-					*(s32*)result->value.data = 0;
+					*(s32*)result->value.data._s8 = 0;
 					break;
 
 				case 20:
 					// Single-line menu bar height
-					*(s32*)result->value.data = _MENU_BAR_HEIGHT;
+					*(s32*)result->value.data._s8 = _MENU_BAR_HEIGHT;
 					break;
 
 				case 21:
 					// Maximized window width
-					*(s32*)result->value.data = (lrc.right - lrc.left);
+					*(s32*)result->value.data._s8 = (lrc.right - lrc.left);
 					break;
 
 				case 22:
 					// Maximized window height
-					*(s32*)result->value.data = (lrc.bottom - lrc.top);
+					*(s32*)result->value.data._s8 = (lrc.bottom - lrc.top);
 					break;
 
 				case 23:
 					// Kanji window height
-					*(s32*)result->value.data = ((GetSystemMetrics(SM_CYKANJIWINDOW) != 0) ? 1 : 0);
+					*(s32*)result->value.data._s8 = ((GetSystemMetrics(SM_CYKANJIWINDOW) != 0) ? 1 : 0);
 					break;
 
 				case 24:
 					// Minimum sizable window width
-					*(s32*)result->value.data = 2 * bmpVjrIcon->bi.biWidth;
+					*(s32*)result->value.data._s8 = 2 * bmpVjrIcon->bi.biWidth;
 					break;
 
 				case 25:
 					// Minimum sizable window height
-					*(s32*)result->value.data = 2 * bmpVjrIcon->bi.biHeight;
+					*(s32*)result->value.data._s8 = 2 * bmpVjrIcon->bi.biHeight;
 					break;
 
 				case 26:
 					// Minimum window width
-					*(s32*)result->value.data = 2 * bmpVjrIcon->bi.biWidth;
+					*(s32*)result->value.data._s8 = 2 * bmpVjrIcon->bi.biWidth;
 					break;
 
 				case 27:
 					// Minimum window height
-					*(s32*)result->value.data = 2 * bmpVjrIcon->bi.biHeight;
+					*(s32*)result->value.data._s8 = 2 * bmpVjrIcon->bi.biHeight;
 					break;
 
 				case 28:
 					// Window controls width
-					*(s32*)result->value.data = 2 * bmpClose->bi.biWidth;
+					*(s32*)result->value.data._s8 = 2 * bmpClose->bi.biWidth;
 					break;
 
 				case 29:
 					// Window controls height
-					*(s32*)result->value.data = 2 * bmpClose->bi.biHeight;
+					*(s32*)result->value.data._s8 = 2 * bmpClose->bi.biHeight;
 					break;
 
 				case 30:
 					// 1 if mouse hardware present, 0 otherwise
-					*(s32*)result->value.data = ((GetSystemMetrics(SM_MOUSEPRESENT) != 0) ? 1 : 0);
+					*(s32*)result->value.data._s8 = ((GetSystemMetrics(SM_MOUSEPRESENT) != 0) ? 1 : 0);
 					break;
 
 				case 31:
 					// 1 for Microsoft Windows debugging version, 0 otherwise
-					*(s32*)result->value.data = ((GetSystemMetrics(SM_DEBUG) != 0) ? 1 : 0);
+					*(s32*)result->value.data._s8 = ((GetSystemMetrics(SM_DEBUG) != 0) ? 1 : 0);
 					break;
 
 				case 32:
 					// 1 if mouse buttons are swapped, 0 otherwise
-					*(s32*)result->value.data = ((GetSystemMetrics(SM_SWAPBUTTON) != 0) ? 1 : 0);
+					*(s32*)result->value.data._s8 = ((GetSystemMetrics(SM_SWAPBUTTON) != 0) ? 1 : 0);
 					break;
 
 				case 33:
 					// width of a button in a half-height title bar
-					*(s32*)result->value.data = bmpClose->bi.biWidth;
+					*(s32*)result->value.data._s8 = bmpClose->bi.biWidth;
 					break;
 
 				case 34:
 					// Height of half-height caption area
-					*(s32*)result->value.data = bmpClose->bi.biHeight;
+					*(s32*)result->value.data._s8 = bmpClose->bi.biHeight;
 					break;
 
 			}

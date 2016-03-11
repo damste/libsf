@@ -112,7 +112,7 @@ return;
 			// Initialize
 			//////
 				iBuilder_createAndInitialize(&builder, -1);
-				data.data = builder->buffer;
+				data.data._s8 = builder->buffer;
 
 
 			//////////
@@ -169,8 +169,8 @@ return;
 		SDatum data;
 
 
-		data.data	= tcText;
-		data.length	= (s32)strlen(tcText);
+		data.data._s8	= tcText;
+		data.length		= (s32)strlen(tcText);
 		iJDebiC_transmit_viaPipe(&data, NULL, _WMJDEBIC_DATA_TYPE_TEXT);
 	}
 
@@ -187,8 +187,8 @@ return;
 		SDatum data;
 
 
-		data.data	= tcData;
-		data.length	= tnDataLength;
+		data.data._s8	= tcData;
+		data.length		= tnDataLength;
 		iJDebiC_transmit_viaPipe(&data, NULL, _WMJDEBIC_DATA_TYPE_DATA);
 	}
 
@@ -221,7 +221,7 @@ return;
 		//////////
 		// Header
 		//////
-			data.data_vp	= &bmp->bh;
+			data.data._vp	= &bmp->bh;
 			data.length		= sizeof(bmp->bh);
 			iJDebiC_transmit_viaPipe(&data, NULL, _WMJDEBIC_DATA_TYPE_BITMAP_BH);
 
@@ -229,7 +229,7 @@ return;
 		//////////
 		// Info
 		//////
-			data.data_vp	= &bmp->bi;
+			data.data._vp	= &bmp->bi;
 			data.length		= sizeof(bmp->bi);
 			iJDebiC_transmit_viaPipe(&data, NULL, _WMJDEBIC_DATA_TYPE_BITMAP_BI);
 
@@ -237,7 +237,7 @@ return;
 		//////////
 		// Data
 		//////
-			data.data_vp	= &bmp->bd;
+			data.data._vp	= &bmp->bd;
 			data.length		= (bmp->bi.biHeight * bmp->bi.biWidth * bmp->rowWidth);
 			iJDebiC_transmit_viaPipe(&data, NULL, _WMJDEBIC_DATA_TYPE_BITMAP_BD);
 
@@ -273,8 +273,8 @@ return;
 		SDatum data;
 
 
-		data.data	= tcData;
-		data.length	= tnDataLength;
+		data.data._s8	= tcData;
+		data.length		= tnDataLength;
 		iJDebiC_transmit_viaPipe(&data, NULL, _WMJDEBIC_DATA_TYPE_HEXDUMP);
 	}
 
@@ -438,8 +438,8 @@ return;
 				if (!between(tnDataType, _WMJDEBIC_ID_TAG__MIN, _WMJDEBIC_ID_TAG__MAX))
 				{
 					// Transmit and signal the transmission
-					if (data1)		WriteFile((HANDLE)handleJDebiCOut, data1->data, data1->length, &lnNumwritten1, NULL);
-					if (data2)		WriteFile((HANDLE)handleJDebiCOut, data2->data, data2->length, &lnNumwritten2, NULL);
+					if (data1)		WriteFile((HANDLE)handleJDebiCOut, data1->data._s8, data1->length, &lnNumwritten1, NULL);
+					if (data2)		WriteFile((HANDLE)handleJDebiCOut, data2->data._s8, data2->length, &lnNumwritten2, NULL);
 
 				} else {
 					// Simulate successful writes
@@ -607,7 +607,7 @@ return;
 				iBuilder_appendData(data, buffer, -1);
 
 				if (func->ll.nextFunc)			iBuilder_append_label_uptr(data,	(s8*)"firstFunction",	(uptr)func->ll.nextFunc);
-				if (func->name.data)			iBuilder_append_label_datum(data,	(s8*)"name",			&func->name);
+				if (func->name.data._data)		iBuilder_append_label_datum(data,	(s8*)"name",			&func->name);
 
 				if (func->params)				iBuilder_append_label_uptr(data,	(s8*)"params",			(uptr)func->params);
 				if (func->locals)				iBuilder_append_label_uptr(data,	(s8*)"locals",			(uptr)func->locals);
@@ -669,7 +669,7 @@ return;
 				sprintf(buffer, "id = %08x, \0", (u32)(uptr)var);
 				iBuilder_appendData(data, buffer, -1);
 
-				if (var->name.data)				iBuilder_append_label_datum(data,	(s8*)"name",			&var->name);
+				if (var->name.data._data)		iBuilder_append_label_datum(data,	(s8*)"name",			&var->name);
 				if (var->ll.prev)				iBuilder_append_label_uptr(data,	(s8*)"prev",			(uptr)var->ll.prev);
 				if (var->ll.next)				iBuilder_append_label_uptr(data,	(s8*)"next",			(uptr)var->ll.next);
 				if (var->firstAccess)			iBuilder_append_label_uptr(data,	(s8*)"firstAccess",		(uptr)var->firstAccess);
@@ -714,7 +714,7 @@ return;
 //
 // 		// Variable content based on type
 // 		u32			varType;												// Variable type (see _VAR_TYPE_* constants)
-// 		bool		isValueAllocated;										// If true, the data pointed to by this->value.data, or this->obj, or this->bmp, or this->thisCode was allocated
+// 		bool		isValueAllocated;										// If true, the data pointed to by this->value.data._s8, or this->obj, or this->bmp, or this->thisCode was allocated
 // 		union {
 // 			SObject*		obj;											// The object this item relates to.  If isValueAllocated is set, this variable owns the object.
 // 			SFunction*		thisCode;										// Pointer to the code block this relates to

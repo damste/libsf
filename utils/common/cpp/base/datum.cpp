@@ -101,24 +101,24 @@
 		// Make sure our environment is sane
 		if (datum)
 		{
-			if (datum->data && datum->length != dataLength)
+			if (datum->data._s8 && datum->length != dataLength)
 			{
 				// Release anything that's already there
 				iiDatum_delete(datum);
 			}
 
 			// Allocate the space
-			datum->data = (s8*)malloc(max(dataLength, 1) + 1);
+			datum->data._s8 = (s8*)malloc(max(dataLength, 1) + 1);
 
 			// Set the length
 			datum->length = dataLength;
 
 			// Initialize
-			if (datum->data && dataLength)
-				memset(datum->data, 0, dataLength);
+			if (datum->data._s8 && dataLength)
+				memset(datum->data._s8, 0, dataLength);
 
 			// NULL-terminate
-			datum->data_s8[max(dataLength, 1)] = 0;
+			datum->data._s8[max(dataLength, 1)] = 0;
 		}
 	}
 
@@ -182,15 +182,15 @@
 
 			// Store the new data
 			// Allocate one extra byte for a trailing NULL
-			datum->data = (s8*)malloc(max(dataLength, 1) + 1);
+			datum->data._s8 = (s8*)malloc(max(dataLength, 1) + 1);
 
 			// Copy over if we were successful
-			if (datum->data && dataLength > 0)
-				memcpy(datum->data, data, dataLength);
+			if (datum->data._s8 && dataLength > 0)
+				memcpy(datum->data._s8, data, dataLength);
 
 			// Store the new length
 			datum->length = dataLength;
-			datum->data[max(dataLength, 1)] = 0;
+			datum->data._s8[max(dataLength, 1)] = 0;
 		}
 	}
 
@@ -212,8 +212,8 @@
 	void iDatum_duplicate(SDatum* datumDst, SDatum* datumSrc)
 	{
 		// Make sure our environment is sane
-		if (datumDst && datumSrc && datumSrc->data)
-			iDatum_duplicate(datumDst, datumSrc->data_u8, datumSrc->length);
+		if (datumDst && datumSrc && datumSrc->data._u8)
+			iDatum_duplicate(datumDst, datumSrc->data._u8, datumSrc->length);
 	}
 
 	void iDatum_duplicate_byRef(SDatum* datumDst, SDatum* datumSrc)
@@ -222,16 +222,16 @@
 		if (datumDst && datumSrc)
 		{
 			// Copy the content as a reference
-			datumDst->_data		= datumSrc->_data;
-			datumDst->length	= datumSrc->length;
+			datumDst->data._data	= datumSrc->data._data;
+			datumDst->length		= datumSrc->length;
 		}
 	}
 
 	SDatum* iDatum_duplicate(SDatum* datum)
 	{
 		// Duplicate if possible
-		if (datum && datum->_data && datum->length > 0)
-			return(iDatum_allocate(datum->data, datum->length));
+		if (datum && datum->data._data && datum->length > 0)
+			return(iDatum_allocate(datum->data._s8, datum->length));
 
 		// If we get here, invalid
 		return(NULL);
@@ -241,21 +241,21 @@
 	void iDatum_duplicate_fromComp(SDatum* datum, SComp* comp)
 	{
 		// Make sure our environment is sane
-		if (datum && comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data_cs8 && comp->length != 0)
-			iDatum_duplicate(datum, comp->line->sourceCode->data_cs8 + comp->start, comp->length);
+		if (datum && comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data._cs8 && comp->length != 0)
+			iDatum_duplicate(datum, comp->line->sourceCode->data._cs8 + comp->start, comp->length);
 	}
 
 	void iiDatum_duplicate_fromComp(SDatum* datum, SComp* comp)
 	{
-		iDatum_duplicate(datum, comp->line->sourceCode->data_cs8 + comp->start, comp->length);
+		iDatum_duplicate(datum, comp->line->sourceCode->data._cs8 + comp->start, comp->length);
 	}
 
 	SDatum* iDatum_populate_fromComp(SDatum* datum, SComp* comp)
 	{
 		// Make sure the datum and component are valid
-		if (datum && comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data_s8 && comp->line->sourceCode->length >= comp->start + comp->length)
+		if (datum && comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data._s8 && comp->line->sourceCode->length >= comp->start + comp->length)
 		{
-			datum->data_s8	= comp->line->sourceCode->data_s8 + comp->start;
+			datum->data._s8	= comp->line->sourceCode->data._s8 + comp->start;
 			datum->length	= comp->length;
 		}
 
@@ -266,20 +266,20 @@
 
 	s32 iDatum_getAs_s32(SDatum* datum)
 	{
-		return(((datum && datum->_data && datum->length > 1) ? atoi(datum->data) : 0));
+		return(((datum && datum->data._data && datum->length > 1) ? atoi(datum->data._s8) : 0));
 	}
 
 	s64 iDatum_getAs_s64(SDatum* datum)
 	{
-		return(((datum && datum->_data && datum->length > 1) ? _atoi64(datum->data) : 0));
+		return(((datum && datum->data._data && datum->length > 1) ? _atoi64(datum->data._s8) : 0));
 	}
 
 	// Set everything to the indicated character
 	s32 iDatum_setAll(SDatum* datum, u8 c)
 	{
-		if (datum && datum->_data && datum->length > 0)
+		if (datum && datum->data._data && datum->length > 0)
 		{
-			memset(datum->data, c, datum->length);
+			memset(datum->data._s8, c, datum->length);
 			return(datum->length);
 		}
 
@@ -303,7 +303,7 @@
 			if (ptr)
 			{
 				// Copy everything that will fit
-				memcpy(ptr, datum->data, min(newDataLength, datum->length));
+				memcpy(ptr, datum->data._s8, min(newDataLength, datum->length));
 
 				// Fill the remainder with NULLs if any
 				if (newDataLength > datum->length)
@@ -313,11 +313,11 @@
 				ptr[newDataLength] = 0;
 
 				// Delete the old data
-				if (datum->data)
-					free(datum->data);
+				if (datum->data._s8)
+					free(datum->data._s8);
 
 				// And populate with the new data
-				datum->data		= ptr;
+				datum->data._s8	= ptr;
 				datum->length	= newDataLength;
 
 				// All done
@@ -344,10 +344,10 @@
 		lnResult = -2;
 
 		// Make sure our environment is sane
-		if (datumLeft && datumLeft->data && datumLeft->length != 0 && datumRight && datumRight->data && datumRight->length > 0)
+		if (datumLeft && datumLeft->data._data && datumLeft->length != 0 && datumRight && datumRight->data._data && datumRight->length > 0)
 		{
 			// Do a standard compare
-			lnResult = _memicmp(datumLeft->data, datumRight->data, min(datumLeft->length, datumRight->length));
+			lnResult = _memicmp(datumLeft->data._s8, datumRight->data._s8, min(datumLeft->length, datumRight->length));
 		}
 
 		// Indicate our result
@@ -363,14 +363,14 @@
 		lnResult = -2;
 
 		// Make sure our environment is sane
-		if (datumLeft && datumLeft->data && datumLeft->length != 0 && data)
+		if (datumLeft && datumLeft->data._data && datumLeft->length != 0 && data)
 		{
 			// Make sure our length is set
 			if (dataLength < 0)
 				dataLength = (s32)strlen(data);
 
 			// Do a standard compare
-			lnResult = _memicmp(datumLeft->data, data, min(datumLeft->length, dataLength));
+			lnResult = _memicmp(datumLeft->data._s8, data, min(datumLeft->length, dataLength));
 		}
 
 		// Indicate our result
@@ -419,10 +419,10 @@
 	void iiDatum_delete(SDatum* datum)
 	{
 		// Make sure our environment is sane
-		if (datum->data)
+		if (datum->data._s8)
 		{
-			free(datum->data);
-			datum->data = NULL;
+			free(datum->data._s8);
+			datum->data._s8 = NULL;
 		}
 
 		// Reset the length to zero
@@ -445,14 +445,14 @@
 
 
 		// Make sure our environment is sane
-		if (name && value && name->line && name->line->sourceCode && name->line->sourceCode->_data && value->line && value->line->sourceCode && value->line->sourceCode->_data)
+		if (name && value && name->line && name->line->sourceCode && name->line->sourceCode->data._data && value->line && value->line->sourceCode && value->line->sourceCode->data._data)
 		{
 			// Get the names
 			lnNameLength	= ((tnOverrideNameLength > 0)	? tnOverrideNameLength	: name->length);
 			lnValueLength	= ((tnOverrideValueLength > 0)	? tnOverrideValueLength	: value->length);
 
 			// Create the property
-			return(iProperty_allocateAs_character(name->line->sourceCode->data_cu8, lnNameLength, value->line->sourceCode->data_cu8, lnValueLength));
+			return(iProperty_allocateAs_character(name->line->sourceCode->data._cu8, lnNameLength, value->line->sourceCode->data._cu8, lnValueLength));
 
 		} else {
 			// Failure
@@ -673,7 +673,7 @@
 
 
 		// Make sure our environment is sane
-		if (properties && properties->_data && properties->length > 0 && cb)
+		if (properties && properties->data._data && properties->length > 0 && cb)
 		{
 			// Iterate through line after line looking for:
 			//
@@ -693,7 +693,7 @@
 					// Locate the property (first non-whitespace character)
 					//////
 						// Skip past whitespaces
-						while (((c = properties->data[lnI]) == 32 || c == 9) && lnI < properties->length)
+						while (((c = properties->data._s8[lnI]) == 32 || c == 9) && lnI < properties->length)
 							++lnI;
 
 						// Did we go too far?
@@ -705,7 +705,7 @@
 							goto skip_to_next_line;
 
 						// Mark the start
-						cb->prop.data = properties->data + lnI;
+						cb->prop.data._s8 = properties->data._s8 + lnI;
 
 
 					//////////
@@ -714,7 +714,7 @@
 						for (lnLength = 0; lnI + lnLength < properties->length; lnLength++)
 						{
 							// Continue until we reach the equal sign
-							if ((c = properties->data[lnI + lnLength]) == '=')
+							if ((c = properties->data._s8[lnI + lnLength]) == '=')
 								break;	// We're done
 
 							// Have we reached the end of line?
@@ -741,7 +741,7 @@
 				// Equal sign
 				//////
 					// Skip forward until we hit =, or CR/LF
-					while ((c = properties->data[lnI]) != 13 && c != 10 && c != '=' && lnI < properties->length)
+					while ((c = properties->data._s8[lnI]) != 13 && c != 10 && c != '=' && lnI < properties->length)
 						++lnI;
 
 					// Did we go too far?
@@ -763,7 +763,7 @@
 					// Find out where it starts
 					//////
 						// Skip past whitespaces
-						while (((c = properties->data[lnI]) == 32 || c == 9) && lnI < properties->length)
+						while (((c = properties->data._s8[lnI]) == 32 || c == 9) && lnI < properties->length)
 							++lnI;
 
 						// Did we go too far?
@@ -775,7 +775,7 @@
 							goto skip_to_next_line;
 
 						// Mark the start
-						cb->value.data = properties->data + lnI;
+						cb->value.data._s8 = properties->data._s8 + lnI;
 
 
 					//////////
@@ -784,7 +784,7 @@
 						for (lnLength = 0; lnI + lnLength < properties->length; lnLength++)
 						{
 							// Continue until we reach CR or LF
-							if ((c = properties->data[lnI + lnLength]) == 13 || c == 10)
+							if ((c = properties->data._s8[lnI + lnLength]) == 13 || c == 10)
 								break;	// We're done
 						}
 
@@ -811,7 +811,7 @@ skip_to_next_line:
 				//////////
 				// Skip forward to the CR/LF characters
 				//////
-					while ((c = properties->data[lnI]) != 13 && c != 10 && lnI < properties->length)
+					while ((c = properties->data._s8[lnI]) != 13 && c != 10 && lnI < properties->length)
 						++lnI;
 
 					// Did we go too far?
@@ -819,7 +819,7 @@ skip_to_next_line:
 						return(lnProperties);		// Yes
 
 					// Skip past all CR/LF characters
-					while ((c = properties->data[lnI]) == 13 || c == 10)
+					while ((c = properties->data._s8[lnI]) == 13 || c == 10)
 						++lnI;
 
 			}

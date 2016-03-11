@@ -327,7 +327,7 @@
 
 
 		// Make sure our environment is sane
-		if (table && alias && table->value.data && alias->value.data && table->value.length >= 1 && alias->value.length >= 1)
+		if (table && alias && table->value.data._data && alias->value.data._data && table->value.length >= 1 && alias->value.length >= 1)
 		{
 			//////////
 			// Initialize
@@ -337,8 +337,8 @@
 				memset(aliasBuffer, 0, sizeof(aliasBuffer));
 
 				// Copy
-				memcpy(tableBuffer, table->value.data_s8, min(_MAX_PATH, table->value.length));
-				memcpy(aliasBuffer, alias->value.data_s8, min(_MAX_PATH, alias->value.length));
+				memcpy(tableBuffer, table->value.data._s8, min(_MAX_PATH, table->value.length));
+				memcpy(aliasBuffer, alias->value.data._s8, min(_MAX_PATH, alias->value.length));
 
 
 			//////////
@@ -848,7 +848,7 @@
 		// Active data changed per current row
 		//////
 			iDatum_allocateSpace(&wa->row, wa->header.recordLength);
-			if (!wa->row.data)
+			if (!wa->row.data._s8)
 			{
 				iDisk_close(wa->fhDbf);
 				return(_DBF_ERROR_MEMORY_ROW);
@@ -860,7 +860,7 @@
 		// Original data
 		//////
 			iDatum_allocateSpace(&wa->orow, wa->header.recordLength);
-			if (wa->orow.data == NULL)
+			if (wa->orow.data._s8 == NULL)
 			{
 				iDisk_close(wa->fhDbf);
 				iDatum_delete(&wa->row, false);
@@ -873,7 +873,7 @@
 		// Index data (for the creation of index keys, population of a data source for key generation, without affecting the current row's record data)
 		//////
 			iDatum_allocateSpace(&wa->irow, wa->header.recordLength);
-			if (wa->irow.data == NULL)
+			if (wa->irow.data._s8 == NULL)
 			{
 				iDisk_close(wa->fhDbf);
 				iDatum_delete(&wa->row, false);
@@ -1354,10 +1354,10 @@
 
 
 		// It must be character, length=1, and A..J
-		if (var && var->varType == _VAR_TYPE_CHARACTER && var->value.data_s8 && var->value.length == 1)
+		if (var && var->varType == _VAR_TYPE_CHARACTER && var->value.data._s8 && var->value.length == 1)
 		{
 			// Indicate if it is A..J
-			c = iUpperCase(var->value.data_s8[0]);
+			c = iUpperCase(var->value.data._s8[0]);
 			return(c >= 'A' && c <= 'J');
 		}
 
@@ -1670,7 +1670,7 @@
 
 
 		// Make sure our environment is sane
-		if (varTablePathname && varTablePathname->varType == _VAR_TYPE_CHARACTER && varTablePathname->value.data_s8 && varTablePathname->value.length >= 1 && varTablePathname->value.length < (s32)sizeof(gsWorkArea[0].tablePathname))
+		if (varTablePathname && varTablePathname->varType == _VAR_TYPE_CHARACTER && varTablePathname->value.data._s8 && varTablePathname->value.length >= 1 && varTablePathname->value.length < (s32)sizeof(gsWorkArea[0].tablePathname))
 		{
 			// See what they're searching for
 			if (!tcSpecialKeyName || tcSpecialKeyName == cgcDbfKeyName)
@@ -1708,7 +1708,7 @@
 			// Initialize and copy the pathname
 			//////
 				memset(table, 0, sizeof(table));
-				memcpy(table, varTablePathname->value.data_s8, varTablePathname->value.length);
+				memcpy(table, varTablePathname->value.data._s8, varTablePathname->value.length);
 
 
 			//////////
@@ -1815,8 +1815,8 @@
 	sptr iDbf_get_workArea_byAlias_byVar(SVariable* var, cu8* tcSpecialKeyName, SWorkArea** waBase)
 	{
 		// Make sure the variable is valid
-		if (var && var->varType == _VAR_TYPE_CHARACTER && var->value.data_s8 && var->value.length >= 1)
-			return(iDbf_get_workArea_byAlias_byName(var->value.data_s8, var->value.length, tcSpecialKeyName, waBase));
+		if (var && var->varType == _VAR_TYPE_CHARACTER && var->value.data._s8 && var->value.length >= 1)
+			return(iDbf_get_workArea_byAlias_byName(var->value.data._s8, var->value.length, tcSpecialKeyName, waBase));
 
 		// Indicate failure
 		return(-1);
@@ -1825,8 +1825,8 @@
 	sptr iDbf_get_workArea_byAlias_byComp(SComp* comp, cu8* tcSpecialKeyName, SWorkArea** waBase)
 	{
 		// Make sure the component is valid
-		if (comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data_s8 && comp->length >= 1 && comp->start + comp->length <= comp->line->sourceCode->length)
-			return(iDbf_get_workArea_byAlias_byName(comp->line->sourceCode->data_s8 + comp->start, comp->length, tcSpecialKeyName, waBase));
+		if (comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data._s8 && comp->length >= 1 && comp->start + comp->length <= comp->line->sourceCode->length)
+			return(iDbf_get_workArea_byAlias_byName(comp->line->sourceCode->data._s8 + comp->start, comp->length, tcSpecialKeyName, waBase));
 
 		// Indicate failure
 		return(-1);
@@ -1994,7 +1994,7 @@
 					}
 
 					// Store the current iteration of the appended value
-					sprintf(varAlias->value.data_s8 + varAlias->value.length - 6, "_%05u", lnAppendValue++);
+					sprintf(varAlias->value.data._s8 + varAlias->value.length - 6, "_%05u", lnAppendValue++);
 				}
 
 			} else {
@@ -2059,7 +2059,7 @@
 				if (wa->isCached)
 				{
 					// We have the table cached, so just change .data to point to the right place
-					wa->row.data = wa->cachedTable + ((recordNumber - 1) * wa->header.recordLength);
+					wa->row.data._s8 = wa->cachedTable + ((recordNumber - 1) * wa->header.recordLength);
 
 				} else {
 
@@ -2086,7 +2086,7 @@
 					// Read
 					// Note:  memo field content is not loaded at this time, but only upon direct request
 					//////
-						lnNumread = iDisk_read(wa->fhDbf, -1, wa->row.data, wa->header.recordLength, &error, &errorNum);
+						lnNumread = iDisk_read(wa->fhDbf, -1, wa->row.data._s8, wa->header.recordLength, &error, &errorNum);
 						if (error || lnNumread != wa->header.recordLength)
 							return(-1);
 
@@ -2103,7 +2103,7 @@
 				wa->isDirty			= false;
 
 				// Copy to the original record
-				memcpy(wa->orow.data, wa->row.data, wa->header.recordLength);
+				memcpy(wa->orow.data._s8, wa->row.data._s8, wa->header.recordLength);
 
 
 				//////////
@@ -2212,7 +2212,7 @@
 				//////////
 				// Write
 				//////
-					lnNumread = iDisk_write(wa->fhDbf, -1, wa->row.data, wa->header.recordLength, &error, &errorNum);
+					lnNumread = iDisk_write(wa->fhDbf, -1, wa->row.data._s8, wa->header.recordLength, &error, &errorNum);
 					if (lnNumread != wa->header.recordLength)
 						return(_DBF_ERROR_WRITING);
 
@@ -2228,7 +2228,7 @@
 				// Lower the dirty flag, and copy to the original data
 				//////
 					wa->isDirty = false;
-					memcpy(wa->orow.data, wa->row.data, wa->header.recordLength);
+					memcpy(wa->orow.data._s8, wa->row.data._s8, wa->header.recordLength);
 			}
 
 			// If we get here, nothing to do
@@ -2261,7 +2261,7 @@ debug_break;
 				// 4-byte form
 				//////
 					llFourByte = true;
-					if (*(u32*)(wa->row.data + fr2Ptr->offset) != 0)
+					if (*(u32*)(wa->row.data._s8 + fr2Ptr->offset) != 0)
 					{
 						// There was something there previously
 						llAppend	= (fr2Ptr->mdataLength > fr2Ptr->omdataLength);
@@ -2814,7 +2814,7 @@ debug_break;
 				if (iDbf_getNull_offsetAndMask(wa, fieldNumber, &lnOffset, &lnBitMask))
 				{
 					// See if this field is actually null
-					if ((wa->row.data[lnOffset] & lnBitMask) != 0)
+					if ((wa->row.data._s8[lnOffset] & lnBitMask) != 0)
 					{
 						// It's .NULL.
 						lnNull = 1;
@@ -3010,7 +3010,7 @@ debug_break;
 			if (dest)
 			{
 				// Copy the data
-				memcpy(dest, wa->row.data + lfrp->offset, min(lfrp->length, destLength));
+				memcpy(dest, wa->row.data._s8 + lfrp->offset, min(lfrp->length, destLength));
 
 				// Return the length
 				_value = min(lfrp->length, destLength);
@@ -3018,7 +3018,7 @@ debug_break;
 
 			} else {
 				// Return the offset to the actual data
-				return(wa->row.data_s8 + lfrp->offset);
+				return(wa->row.data._s8 + lfrp->offset);
 			}
 		}
 		// If we get here, failure
@@ -3065,7 +3065,7 @@ debug_break;
 
 				// Copy the data
 				lnLength += min(lfrp->length, destLength);
-				memcpy(dest, wa->row.data + lfrp->offset, lnLength);
+				memcpy(dest, wa->row.data._s8 + lfrp->offset, lnLength);
 
 				// Fixup if need be
 				if (tlRetrieveAsIndexKey && lfrp->indexFixup != 0)
@@ -3191,7 +3191,7 @@ debug_break;
 
 			} else {
 				// Return the offset to the actual data
-				return(wa->row.data_s8 + lfrp->offset);
+				return(wa->row.data._s8 + lfrp->offset);
 			}
 		}
 		// If we get here, failure
@@ -3296,9 +3296,9 @@ debug_break;
 					{
 						// idata
 						wa->isDirty = true;
-						memcpy(wa->irow.data + lfrp->offset, src, min(lfrp->length, srcLength));
+						memcpy(wa->irow.data._s8 + lfrp->offset, src, min(lfrp->length, srcLength));
 						if (lfrp->length > srcLength)
-							memset(wa->irow.data + lfrp->offset + srcLength, lfrp->fillChar, lfrp->length - srcLength);
+							memset(wa->irow.data._s8 + lfrp->offset + srcLength, lfrp->fillChar, lfrp->length - srcLength);
 
 					} else {
 						// data
@@ -3316,9 +3316,9 @@ debug_break;
 						// Do the physical update
 						//////
 							wa->isDirty = true;
-							memcpy(wa->row.data + lfrp->offset, src, min(lfrp->length, srcLength));
+							memcpy(wa->row.data._s8 + lfrp->offset, src, min(lfrp->length, srcLength));
 							if (lfrp->length > srcLength)
-								memset(wa->row.data + lfrp->offset + srcLength, lfrp->fillChar, lfrp->length - srcLength);
+								memset(wa->row.data._s8 + lfrp->offset + srcLength, lfrp->fillChar, lfrp->length - srcLength);
 
 
 						//////////
@@ -3429,7 +3429,7 @@ debug_break;
 				for (lnErrors = 0, lnI = lfrp->offset; lnI < lfrp->offset + lfrp->length; lnI++)
 				{
 					// Grab the character
-					c = wa->row.data[lnI];
+					c = wa->row.data._s8[lnI];
 
 					// Are all ASCII characters allowed
 					if (llAllowAllStd)
@@ -3647,7 +3647,7 @@ debug_break;
 						switch (lfr2Ptr->type)
 						{
 							case 'N':	// Numeric
-								var = iVariable_createAndPopulate_byText(_VAR_TYPE_NUMERIC, wa->row.data + lfr2Ptr->offset, fieldNameLength, tlCreateAsReference);
+								var = iVariable_createAndPopulate_byText(_VAR_TYPE_NUMERIC, wa->row.data._s8 + lfr2Ptr->offset, fieldNameLength, tlCreateAsReference);
 								break;
 
 							case 'M':	// Memo
@@ -3656,35 +3656,35 @@ debug_break;
 								break;
 
 							case 'C':	// Character
-								var = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER,	wa->row.data + lfr2Ptr->offset, fieldNameLength, tlCreateAsReference);
+								var = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER,	wa->row.data._s8 + lfr2Ptr->offset, fieldNameLength, tlCreateAsReference);
 								break;
 
 							case 'I':	// Integer
-								var = iVariable_createAndPopulate_byText(_VAR_TYPE_S32,			wa->row.data + lfr2Ptr->offset, fieldNameLength, tlCreateAsReference);
+								var = iVariable_createAndPopulate_byText(_VAR_TYPE_S32,			wa->row.data._s8 + lfr2Ptr->offset, fieldNameLength, tlCreateAsReference);
 								break;
 
 							case 'F':	// Float
-								var = iVariable_createAndPopulate_byText(_VAR_TYPE_NUMERIC,		wa->row.data + lfr2Ptr->offset, fieldNameLength, tlCreateAsReference);
+								var = iVariable_createAndPopulate_byText(_VAR_TYPE_NUMERIC,		wa->row.data._s8 + lfr2Ptr->offset, fieldNameLength, tlCreateAsReference);
 								break;
 
 							case 'B':	// Double
-								var = iVariable_createAndPopulate_byText(_VAR_TYPE_F64,			wa->row.data + lfr2Ptr->offset, fieldNameLength, tlCreateAsReference);
+								var = iVariable_createAndPopulate_byText(_VAR_TYPE_F64,			wa->row.data._s8 + lfr2Ptr->offset, fieldNameLength, tlCreateAsReference);
 								break;
 
 							case 'L':	// Logical
-								var = iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL,		wa->row.data + lfr2Ptr->offset, fieldNameLength, tlCreateAsReference);
+								var = iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL,		wa->row.data._s8 + lfr2Ptr->offset, fieldNameLength, tlCreateAsReference);
 								break;
 
 							case 'D':	// Date
-								var = iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL,		wa->row.data + lfr2Ptr->offset, fieldNameLength, tlCreateAsReference);
+								var = iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL,		wa->row.data._s8 + lfr2Ptr->offset, fieldNameLength, tlCreateAsReference);
 								break;
 
 							case 'T':	// DateTime
-								var = iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL,		wa->row.data + lfr2Ptr->offset, fieldNameLength, tlCreateAsReference);
+								var = iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL,		wa->row.data._s8 + lfr2Ptr->offset, fieldNameLength, tlCreateAsReference);
 								break;
 
 							case 'Y':	// Currency
-								var = iVariable_createAndPopulate_byText(_VAR_TYPE_CURRENCY,		wa->row.data + lfr2Ptr->offset, fieldNameLength, tlCreateAsReference);
+								var = iVariable_createAndPopulate_byText(_VAR_TYPE_CURRENCY,	wa->row.data._s8 + lfr2Ptr->offset, fieldNameLength, tlCreateAsReference);
 								break;
 //							case 'G':	// General
 // 							case 'P':	// Picture
@@ -3961,7 +3961,7 @@ debug_break;
 					iDbf_gotoRecord(wa->dbc, lnRecno);
 
 					// Is it deleted?
-					if (wa->dbc->row.data[0] == 32)
+					if (wa->dbc->row.data._s8[0] == 32)
 					{
 						// Not deleted
 						if (llSearchingForTable)
@@ -4010,7 +4010,7 @@ debug_break;
 						iDbf_gotoRecord(wa->dbc, lnRecno);
 
 						// Is it deleted?
-						if (gsWorkArea[lnDbcHandle].orow.data[0] == 32)
+						if (gsWorkArea[lnDbcHandle].orow.data._s8[0] == 32)
 						{
 							// Not deleted
 							// Looking for "Field" entries
@@ -4228,73 +4228,73 @@ debug_break;
 				{
 					case _FOR_CLAUSE_OPS_EQUAL_ROW_DATA:
 						// It's equal to something
-						if (memcmp(wa->row.data + lfo->offsetL, wa->row.data + lfo->offsetR, lfo->lengthL) != 0)
+						if (memcmp(wa->row.data._s8 + lfo->offsetL, wa->row.data._s8 + lfo->offsetR, lfo->lengthL) != 0)
 							return(false);		// Is not equal
 						break;
 
 					case _FOR_CLAUSE_OPS_NOT | _FOR_CLAUSE_OPS_EQUAL_ROW_DATA:
 						// It's not equal to something
-						if (memcmp(wa->row.data + lfo->offsetL, wa->row.data + lfo->offsetR, lfo->lengthL) == 0)
+						if (memcmp(wa->row.data._s8 + lfo->offsetL, wa->row.data._s8 + lfo->offsetR, lfo->lengthL) == 0)
 							return(false);		// Is equal
 						break;
 
 					case _FOR_CLAUSE_OPS_LESS_THAN_ROW_DATA:
 						// It's less than row data
-						if (memcmp(wa->row.data + lfo->offsetL, wa->row.data + lfo->offsetR, lfo->lengthL) >= 0)
+						if (memcmp(wa->row.data._s8 + lfo->offsetL, wa->row.data._s8 + lfo->offsetR, lfo->lengthL) >= 0)
 							return(false);		// Is greater than or equal to
 						break;
 
 					case _FOR_CLAUSE_OPS_NOT | _FOR_CLAUSE_OPS_LESS_THAN_ROW_DATA:
 						// It's not less than row data
-						if (memcmp(wa->row.data + lfo->offsetL, wa->row.data + lfo->offsetR, lfo->lengthL) < 0)
+						if (memcmp(wa->row.data._s8 + lfo->offsetL, wa->row.data._s8 + lfo->offsetR, lfo->lengthL) < 0)
 							return(false);		// Is less than
 						break;
 
 					case _FOR_CLAUSE_OPS_GREATER_THAN_ROW_DATA:
 						// It's greater than row data
-						if (memcmp(wa->row.data + lfo->offsetL, wa->row.data + lfo->offsetR, lfo->lengthL) <= 0)
+						if (memcmp(wa->row.data._s8 + lfo->offsetL, wa->row.data._s8 + lfo->offsetR, lfo->lengthL) <= 0)
 							return(false);		// Is less than or equal to
 						break;
 
 					case _FOR_CLAUSE_OPS_NOT | _FOR_CLAUSE_OPS_GREATER_THAN_ROW_DATA:
 						// It's not greater than row data
-						if (memcmp(wa->row.data + lfo->offsetL, wa->row.data + lfo->offsetR, lfo->lengthL) > 0)
+						if (memcmp(wa->row.data._s8 + lfo->offsetL, wa->row.data._s8 + lfo->offsetR, lfo->lengthL) > 0)
 							return(false);		// Is greater than
 						break;
 
 					case _FOR_CLAUSE_OPS_EQUAL_TEMPORARY:
 						// It's equal to a temporary
-						if (memcmp(wa->row.data + lfo->offsetL, lftr->data, min(lfo->lengthL, lftr->length)) != 0)
+						if (memcmp(wa->row.data._s8 + lfo->offsetL, lftr->data, min(lfo->lengthL, lftr->length)) != 0)
 							return(false);		// Is not equal
 						break;
 
 					case _FOR_CLAUSE_OPS_NOT | _FOR_CLAUSE_OPS_EQUAL_TEMPORARY:
 						// It's not equal to a temporary
-						if (memcmp(wa->row.data + lfo->offsetL, lftr->data, min(lfo->lengthL, lftr->length)) == 0)
+						if (memcmp(wa->row.data._s8 + lfo->offsetL, lftr->data, min(lfo->lengthL, lftr->length)) == 0)
 							return(false);		// Is equal
 						break;
 
 					case _FOR_CLAUSE_OPS_LESS_THAN_TEMPORARY:
 						// It's less than a temporary
-						if (memcmp(wa->row.data + lfo->offsetL, lftr->data, min(lfo->lengthL, lftr->length)) >= 0)
+						if (memcmp(wa->row.data._s8 + lfo->offsetL, lftr->data, min(lfo->lengthL, lftr->length)) >= 0)
 							return(false);		// Is greater than or equal to
 						break;
 
 					case _FOR_CLAUSE_OPS_NOT | _FOR_CLAUSE_OPS_LESS_THAN_TEMPORARY:
 						// It's not less than a temporary
-						if (memcmp(wa->row.data + lfo->offsetL, lftr->data, min(lfo->lengthL, lftr->length)) < 0)
+						if (memcmp(wa->row.data._s8 + lfo->offsetL, lftr->data, min(lfo->lengthL, lftr->length)) < 0)
 							return(false);		// Is less than
 						break;
 
 					case _FOR_CLAUSE_OPS_GREATER_THAN_TEMPORARY:
 						// It's greater than a temporary
-						if (memcmp(wa->row.data + lfo->offsetL, lftr->data, min(lfo->lengthL, lftr->length)) >= 0)
+						if (memcmp(wa->row.data._s8 + lfo->offsetL, lftr->data, min(lfo->lengthL, lftr->length)) >= 0)
 							return(false);		// Is greater than or equal to
 						break;
 
 					case _FOR_CLAUSE_OPS_NOT | _FOR_CLAUSE_OPS_GREATER_THAN_TEMPORARY:
 						// It's not greater than a temporary
-						if (memcmp(wa->row.data + lfo->offsetL, lftr->data, min(lfo->lengthL, lftr->length)) > 0)
+						if (memcmp(wa->row.data._s8 + lfo->offsetL, lftr->data, min(lfo->lengthL, lftr->length)) > 0)
 							return(false);		// Is greater than
 						break;
 

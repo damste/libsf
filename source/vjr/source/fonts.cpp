@@ -97,7 +97,7 @@
 		if (fontSource)
 		{
 			// Allocate a copy
-			return(iFont_create(fontSource->name.data_cu8, fontSource->_size, fontSource->_weight, ((fontSource->isItalic) ? 1 : 0), ((fontSource->isUnderline) ? 1 : 0)));
+			return(iFont_create(fontSource->name.data._cu8, fontSource->_size, fontSource->_weight, ((fontSource->isItalic) ? 1 : 0), ((fontSource->isUnderline) ? 1 : 0)));
 		}
 
 		// Indicate our success or failure
@@ -132,7 +132,7 @@
 
 				// cgcFontName_windowTitleBar, 10, FW_BOLD, false, false);
 				return(iFont_create(
-										((varName) ? varName->value.data_cu8 : cgcFontName_default),
+										((varName) ? varName->value.data._cu8 : cgcFontName_default),
 										iiVariable_getAs_u32(varPointSize),
 										((llBold)		? FW_BOLD	: FW_NORMAL),
 										((llItalic)		? 1			: 0),
@@ -229,7 +229,7 @@
 		{
 			// Create the larger font
 			fontNew = font;
-			fontNew = iFont_create(fontNew->name.data_cu8, fontNew->_size + 1, fontNew->_weight, ((fontNew->isItalic) ? 1 : 0), ((fontNew->isUnderline) ? 1 : 0));
+			fontNew = iFont_create(fontNew->name.data._cu8, fontNew->_size + 1, fontNew->_weight, ((fontNew->isItalic) ? 1 : 0), ((fontNew->isUnderline) ? 1 : 0));
 			if (!fontNew)
 				return(font);
 
@@ -254,7 +254,7 @@
 		{
 			// Create the larger font
 			fontNew = font;
-			fontNew = iFont_create(fontNew->name.data_cu8, fontNew->_size - 1, fontNew->_weight, ((fontNew->isItalic) ? 1 : 0), ((fontNew->isUnderline) ? 1 : 0));
+			fontNew = iFont_create(fontNew->name.data._cu8, fontNew->_size - 1, fontNew->_weight, ((fontNew->isItalic) ? 1 : 0), ((fontNew->isUnderline) ? 1 : 0));
 			if (!fontNew)
 				return(font);
 
@@ -284,7 +284,7 @@
 		// Create the font
 		//////
 			font->_sizeUsedForCreateFont	= -MulDiv(font->_size, GetDeviceCaps(GetDC(GetDesktopWindow()), LOGPIXELSY), 72);
-			font->hfont						= CreateFont(font->_sizeUsedForCreateFont, 0, 0, 0, font->_weight, (font->isItalic ? 1 : 0), (font->isUnderline ? 1 : 0), false, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_NATURAL_QUALITY, FF_DONTCARE, font->name.data);
+			font->hfont						= CreateFont(font->_sizeUsedForCreateFont, 0, 0, 0, font->_weight, (font->isItalic ? 1 : 0), (font->isUnderline ? 1 : 0), false, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_NATURAL_QUALITY, FF_DONTCARE, font->name.data._s8);
 
 			// Find out the text metrics
 			GetTextMetricsA(font->hdc, &font->tm);

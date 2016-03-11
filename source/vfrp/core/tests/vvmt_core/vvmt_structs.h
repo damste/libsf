@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/core/vvmtests/vvmt_core/vvmt_structs.h
+// /libsf/source/vfrp/core/vvmtests/vvmt_core/vvmt_structs.h
 //
 //////
 //    _     _ _     _____ _____ 

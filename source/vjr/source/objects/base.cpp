@@ -2179,7 +2179,7 @@
 			//	<object name="whatever">
 			//////
 				varData		= propName(obj);
-				bxmlObj	= bxml->append_child(new CXml((s8*)cgcTag_object, -1, NULL, 0, (s8*)cgcTag_name, varData->value.data, varData->value.length));
+				bxmlObj	= bxml->append_child(new CXml((s8*)cgcTag_object, -1, NULL, 0, (s8*)cgcTag_name, varData->value.data._s8, varData->value.length));
 
 
 			//////////
@@ -2204,15 +2204,15 @@
 
 				// Class
 				varData = propClass(obj);
-				bxmlP->append_attribute(new CXml((s8*)cgcTag_class, -1, varData->value.data, varData->value.length, NULL, NULL, 0));
+				bxmlP->append_attribute(new CXml((s8*)cgcTag_class, -1, varData->value.data._s8, varData->value.length, NULL, NULL, 0));
 
 				// Baseclass
 				varData = propBaseclass(obj);
-				bxmlP->append_attribute(new CXml((s8*)cgcTag_baseclass, -1, varData->value.data, varData->value.length, NULL, NULL, 0));
+				bxmlP->append_attribute(new CXml((s8*)cgcTag_baseclass, -1, varData->value.data._s8, varData->value.length, NULL, NULL, 0));
 
 				// ClassLibrary
 				varData = propClassLibrary(obj);
-				bxmlP->append_attribute(new CXml((s8*)cgcTag_classLibrary, -1, varData->value.data, varData->value.length, NULL, NULL, 0));
+				bxmlP->append_attribute(new CXml((s8*)cgcTag_classLibrary, -1, varData->value.data._s8, varData->value.length, NULL, NULL, 0));
 
 
 			//////////
@@ -2266,8 +2266,8 @@
 									//	<prop name="..." td="..." val="..."/>
 									//////
 										bxmlProp->append_attribute((s8*)cgcTag_name,			sizeof(cgcTag_name) - 1,			(s8*)basePropMap->propName_s8,		basePropMap->propNameLength);
-										bxmlProp->append_attribute((s8*)cgcTag_typeDetail,		sizeof(cgcTag_typeDetail) - 1,		varTypeDetail->value.data,			varTypeDetail->value.length);
-										bxmlProp->append_attribute((s8*)cgcTag_value,			sizeof(cgcTag_value) - 1,			varData->value.data,				varData->value.length);
+										bxmlProp->append_attribute((s8*)cgcTag_typeDetail,		sizeof(cgcTag_typeDetail) - 1,		varTypeDetail->value.data._s8,		varTypeDetail->value.length);
+										bxmlProp->append_attribute((s8*)cgcTag_value,			sizeof(cgcTag_value) - 1,			varData->value.data._s8,			varData->value.length);
 
 
 									//////////
@@ -2808,8 +2808,8 @@ debug_break;
 				//////
 					if (propIsName_byText(obj, cgcName_screen))
 					{
-						*varAsciiRows->value.data_s32	= (obj->rcClient.bottom - obj->rcClient.top) / obj->p.font->tm.tmHeight;
-						*varAsciiCols->value.data_s32	= (obj->rcClient.right - obj->rcClient.left) / obj->p.font->tm.tmAveCharWidth;
+						*varAsciiRows->value.data._s32	= (obj->rcClient.bottom - obj->rcClient.top) / obj->p.font->tm.tmHeight;
+						*varAsciiCols->value.data._s32	= (obj->rcClient.right - obj->rcClient.left) / obj->p.font->tm.tmAveCharWidth;
 					}
 
 

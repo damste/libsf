@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/core/vdebug/vdeb_structs.h
+// /libsf/source/vfrp/core/vdebug/vdeb_structs.h
 //
 //////
 //    _     _ _     _____ _____ 

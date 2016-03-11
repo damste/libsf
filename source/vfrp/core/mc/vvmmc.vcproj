@@ -18,7 +18,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="\libsf\vvm\dev"
+			OutputDirectory="\libsf\source\vfrp\dev"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="1"
@@ -62,7 +62,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="\libsf\vvm\dev\$(ProjectName).dll"
+				OutputFile="\libsf\source\vfrp\dev\$(ProjectName).dll"
 				LinkIncremental="2"
 				ManifestFile="$(TargetDir)int\$(TargetFileName).intermediate.manifest"
 				ModuleDefinitionFile="mc.def"
@@ -96,7 +96,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="\libsf\vvm\dev"
+			OutputDirectory="\libsf\source\vfrp\dev"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="1"
@@ -141,7 +141,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="\libsf\vvm\dev\$(ProjectName).dll"
+				OutputFile="\libsf\source\vfrp\dev\$(ProjectName).dll"
 				LinkIncremental="1"
 				ManifestFile="$(TargetDir)int\$(TargetFileName).intermediate.manifest"
 				ModuleDefinitionFile="mc.def"
@@ -177,7 +177,7 @@
 		</Configuration>
 		<Configuration
 			Name="debug_vasm|Win32"
-			OutputDirectory="\libsf\vvm\dev"
+			OutputDirectory="\libsf\source\vfrp\dev"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="1"
@@ -221,7 +221,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="\libsf\vvm\dev\$(ProjectName).dll"
+				OutputFile="\libsf\source\vfrp\dev\$(ProjectName).dll"
 				LinkIncremental="2"
 				ManifestFile="$(TargetDir)int\$(TargetFileName).intermediate.manifest"
 				ModuleDefinitionFile="vvmmc.def"

@@ -275,7 +275,7 @@
 				for (lnI = 0; lnI < lnPadLeftStopper; lnI += varPadCharacter->value.length)
 				{
 					// Copy this string, or as much of it will fit
-					memcpy(result->value.data + lnI, varPadCharacter->value.data, min(lnPadLeftStopper - lnI, varPadCharacter->value.length));
+					memcpy(result->value.data._s8 + lnI, varPadCharacter->value.data._s8, min(lnPadLeftStopper - lnI, varPadCharacter->value.length));
 				}
 			}
 
@@ -289,7 +289,7 @@
 				for (lnI = lnPadRightStart; lnI < lnPadRightStopper; lnI += varPadCharacter->value.length)
 				{
 					// Copy this string, or as much of it will fit
-					memcpy(result->value.data + lnI, varPadCharacter->value.data, min(lnPadRightStopper - lnI, varPadCharacter->value.length));
+					memcpy(result->value.data._s8 + lnI, varPadCharacter->value.data._s8, min(lnPadRightStopper - lnI, varPadCharacter->value.length));
 				}
 			}
 
@@ -298,7 +298,7 @@
 		// Copy the source string and delete the source string variable
 		//////
 			// Copy the string
-			memcpy(result->value.data + lnCopyStart, tempVar->value.data, tempVar->value.length);
+			memcpy(result->value.data._s8 + lnCopyStart, tempVar->value.data._s8, tempVar->value.length);
 
 
 		//////////
@@ -647,7 +647,7 @@
 			for (lnI = 0; lnI < result->value.length; lnI++)
 			{
 				// Spaces are treated differently
-				if (result->value.data[lnI] == 32)
+				if (result->value.data._s8[lnI] == 32)
 				{
 					// We've found a space, the next one will be upper-case
 					llUpperNext = true;
@@ -658,13 +658,13 @@
 					{
 						// Make this one uppercase if it's lower
 						llUpperNext = false;
-						if (result->value.data[lnI] >= 'a' && result->value.data[lnI] <= 'z')
-							result->value.data[lnI] -= 0x20;
+						if (result->value.data._s8[lnI] >= 'a' && result->value.data._s8[lnI] <= 'z')
+							result->value.data._s8[lnI] -= 0x20;
 
 					} else {
 						// Make this one lowercase if it's upper
-						if (result->value.data[lnI] >= 'A' && result->value.data[lnI] <= 'Z')
-							result->value.data[lnI] += 0x20;
+						if (result->value.data._s8[lnI] >= 'A' && result->value.data._s8[lnI] <= 'Z')
+							result->value.data._s8[lnI] += 0x20;
 					}
 				}
 			}

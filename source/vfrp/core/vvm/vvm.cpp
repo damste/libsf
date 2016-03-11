@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/vvm/vvm.cpp
+// /libsf/source/vfrp/vvm/vvm.cpp
 //
 //////
 // Version 0.70
@@ -51,23 +51,23 @@
 
 #define _VVM_COMPILING
 
-#include "\libsf\vvm\core\common\common.h"
+#include "\libsf\source\vfrp\core\common\common.h"
 #include "\libsf\utils\sha1\sha1.h"											// SHA-1 hashing algorithm
-#include "\libsf\vvm\core\localization\vvmenu\resource.h"					// Resource constants
+#include "\libsf\source\vfrp\core\localization\vvmenu\resource.h"					// Resource constants
 #include "vvm_const.h"
-#include "\libsf\vvm\core\oss\oss_class.h"
-#include "\libsf\vvm\core\oss\oss_structs.h"
-#include "\libsf\vvm\core\mc\mc_structs.h"
-#include "\libsf\vvm\core\common\fonts\font8x6.h"
-#include "\libsf\vvm\core\common\fonts\font8x8.h"
-#include "\libsf\vvm\core\common\fonts\font8x14.h"
-#include "\libsf\vvm\core\common\fonts\font8x16.h"
+#include "\libsf\source\vfrp\core\oss\oss_class.h"
+#include "\libsf\source\vfrp\core\oss\oss_structs.h"
+#include "\libsf\source\vfrp\core\mc\mc_structs.h"
+#include "\libsf\utils\common\cpp\include\fonts\font8x6.h"
+#include "\libsf\utils\common\cpp\include\fonts\font8x8.h"
+#include "\libsf\utils\common\cpp\include\fonts\font8x14.h"
+#include "\libsf\utils\common\cpp\include\fonts\font8x16.h"
 #include "vvm_structs.h"
 #include "vvm_istructs.h"
 #include "vvm_defs.h"
-#include "\libsf\vvm\core\common\common_vvm.h"
-#include "\libsf\vvm\core\common\common_oss.h"
-#include "\libsf\vvm\core\common\common_mc.h"
+#include "\libsf\source\vfrp\core\common\common_vvm.h"
+#include "\libsf\source\vfrp\core\common\common_oss.h"
+#include "\libsf\source\vfrp\core\common\common_mc.h"
 #include "vvm_glob.h"
 #include "vvm_bxml.h"
 

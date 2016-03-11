@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/core/plugins/sound/sound.h
+// /libsf/source/vfrp/core/plugins/sound/sound.h
 //
 //////
 //    _     _ _     _____ _____ 

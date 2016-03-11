@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/core/vdebug/vdebug/vdeb_screens.h
+// /libsf/source/vfrp/core/vdebug/vdebug/vdeb_screens.h
 //
 //////
 //    _     _ _     _____ _____ 

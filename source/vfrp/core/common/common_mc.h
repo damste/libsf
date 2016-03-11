@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/vvm/common/common_mc.h
+// /libsf/source/vfrp/common/common_mc.h
 //
 //////
 //    _     _ _     _____ _____ 

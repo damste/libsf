@@ -122,7 +122,7 @@
 		if (result)
 		{
 			// Update the return variable
-			*(s32*)result->value.data_s32 = lnFoundCount;
+			*(s32*)result->value.data._s32 = lnFoundCount;
 		}
 	}
 
@@ -140,7 +140,7 @@
 		if (result)
 		{
 			// Update the return variable
-			*(s32*)result->value.data_s32 = lnFoundCount;
+			*(s32*)result->value.data._s32 = lnFoundCount;
 		}
 	}
 
@@ -186,5 +186,5 @@
 		// OUTSIDE() is reverse of BETWEEN()
 		//////
 			if (result)
-				result->value.data_u8[0] = ((result->value.data_u8[0] == _LOGICAL_FALSE) ? _LOGICAL_TRUE : _LOGICAL_FALSE);
+				result->value.data._u8[0] = ((result->value.data._u8[0] == _LOGICAL_FALSE) ? _LOGICAL_TRUE : _LOGICAL_FALSE);
 	}

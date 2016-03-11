@@ -259,7 +259,7 @@ class CXml;			// Holds a fully-qualified root XML object (every xml can be a roo
 		{
 			if (d)
 			{
-				d->data_s8	= m_data;
+				d->data._s8	= m_data;
 				d->length	= m_length;
 			}
 			return(d);

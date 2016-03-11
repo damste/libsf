@@ -206,18 +206,18 @@
 				{
 					// Fill with spaces
 					for (lnI = line->sourceCode_populatedLength; lnI < sem->columnEdit; lnI++)
-						line->sourceCode->data[lnI] = ' ';
+						line->sourceCode->data._s8[lnI] = ' ';
 				}
 
 				// Move everything from the end of the line to where we are right one character
 				for (lnI = line->sourceCode_populatedLength + 1; lnI > sem->columnEdit && lnI > 0; lnI--)
-					line->sourceCode->data[lnI] = line->sourceCode->data[lnI - 1];
+					line->sourceCode->data._s8[lnI] = line->sourceCode->data._s8[lnI - 1];
 
 				// Signal the update
 				iExtraInfo_update(sem, sem->line_cursor);
 
 				// Insert the character
-				line->sourceCode->data[sem->columnEdit] = asciiChar;
+				line->sourceCode->data._s8[sem->columnEdit] = asciiChar;
 
 				// Move to the next column
 				++sem->columnEdit;
@@ -272,14 +272,14 @@
 					{
 						// Fill with spaces
 						for (lnI = line->sourceCode_populatedLength; lnI < sem->columnEdit; lnI++)
-							line->sourceCode->data[lnI] = ' ';
+							line->sourceCode->data._s8[lnI] = ' ';
 					}
 
 					// Signal the update
 					iExtraInfo_update(sem, sem->line_cursor);
 
 					// Overwrite the character
-					line->sourceCode->data[sem->columnEdit] = asciiChar;
+					line->sourceCode->data._s8[sem->columnEdit] = asciiChar;
 
 					// Move to the next column
 					++sem->columnEdit;
@@ -324,7 +324,7 @@
 			{
 				// Move everything left one character
 				for (lnI = sem->columnEdit; lnI < line->sourceCode_populatedLength; lnI++)
-					line->sourceCode->data[lnI] = line->sourceCode->data[lnI + 1];
+					line->sourceCode->data._s8[lnI] = line->sourceCode->data._s8[lnI + 1];
 
 				// Signal the update
 				iExtraInfo_update(sem, sem->line_cursor);
@@ -333,7 +333,7 @@
 				--line->sourceCode_populatedLength;
 
 				// Put a space there
-				line->sourceCode->data[line->sourceCode_populatedLength] = 32;
+				line->sourceCode->data._s8[line->sourceCode_populatedLength] = 32;
 
 				// Indicate success
 				return(true);
@@ -398,7 +398,7 @@
 				return(true);		// They are different lengths
 
 			// Test content
-			if (memcmp(ec->sourceCode->data, ec->sourceCodeOriginal->data, ec->sourceCode_populatedLength) != 0)
+			if (memcmp(ec->sourceCode->data._s8, ec->sourceCodeOriginal->data._s8, ec->sourceCode_populatedLength) != 0)
 				return(true);		// The content is different
 		}
 		// If we get here, not changed
