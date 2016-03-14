@@ -86,56 +86,26 @@
 
 
 
-
-//////////
-// Uses Visual FreePro, Jr's existing facilities to simplify our processing
-//////
-	#define _NONVJR_COMPILE		// Turns off some features in VJr that fail on compilation from here
-	#define _BMP_LOCALITY 1		// Force definitions to be local
-	const char cgc_appName[] = "lcc";
-	#include "\libsf\source\vjr\source\vjr.h"
-	#include "lcc.h"
-	#undef main
-
-
-//////////
-// Global variables
-//////
-	// None yet defined
-
-
-//////////
-// Forward declarations
-//////
-	// None yet defined
-
-
-//////////
-// other.cpp
-//////
-	//#include "other.cpp"
+// lcc (LibSF low-level C Compiler)
+#include "lcc.h"
+#undef main
 
 
 
 
 //////////
 //
-// Main program entry point
+// Main program entry point.
+//
+// Note:  This program takes C source code, and converts
+//        it to assembly source code for compilation in lasm.
 //
 //////
 	int main(int argc, char* argv[])
 	{
-
-		//////////
 		// Initialize
-		//////
-			// Initialize main engine
-			iVjr_init(NULL);
+		iVjr_init(NULL);
 
-
-		//////////
 		// Return our exit code
-		//////
-			return(0);
-
+		return(0);
 	}

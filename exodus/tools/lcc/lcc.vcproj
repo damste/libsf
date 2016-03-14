@@ -188,6 +188,22 @@
 				RelativePath=".\lcc.h"
 				>
 			</File>
+			<File
+				RelativePath=".\lcc_const.h"
+				>
+			</File>
+			<File
+				RelativePath=".\lcc_defs.h"
+				>
+			</File>
+			<File
+				RelativePath=".\lcc_globals.h"
+				>
+			</File>
+			<File
+				RelativePath=".\lcc_structs.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
