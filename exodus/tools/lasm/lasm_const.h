@@ -81,9 +81,17 @@
 
 
 
-const s32		_MAX_LASM_DEFINE_PARAMS				= 26;					// Up to 26 #define macro(a,b,c,...,z)
-const s32		_MAX_LASM_RETURN_PARAMS				= 10;					// Up to 10 return parameters are allowed
-const s32		_MAX_LASM_INPUT_PARAMS				= 26;					// Up to 26 input parameters are allowed
+//////////
+// Macros
+//////
+	#define lasm_isOption(a)						lnLength == sizeof(a) - 1 && _memicmp(argv[lnI], a, sizeof(a) - 1)
+
+
+// Constants
+const s32		_LASM_MAX_INCLUDE_FILES				= 1024;					// Up to 1024 include files can be included
+const s32		_LASM_MAX_DEFINE_PARAMS				= 26;					// Up to 26 #define macro(a,b,c,...,z)
+const s32		_LASM_MAX_RETURN_PARAMS				= 10;					// Up to 10 return parameters are allowed
+const s32		_LASM_MAX_INPUT_PARAMS				= 26;					// Up to 26 input parameters are allowed
 
 const s32		_LASM_BLOCK_TYPE_ADHOC				= 1;
 const s32		_LASM_BLOCK_TYPE_FUNCTION			= 2;
@@ -518,3 +526,50 @@ const s32		_ICODE_LASM_INCLUDE					= 3000001;
 const s32		_ICODE_LASM_DEFINE					= 3000002;
 const s32		_ICODE_LASM_FUNCTION				= 3000003;
 const s32		_ICODE_LASM_STRUCT					= 3000004;
+
+
+//////////
+// Command line options
+//////
+	cs8			cgc_w[]								= "-W";
+	cs8			cgc_wno[]							= "-Wno-";
+	cs8			cgc_wmissing_type_ptr[]				= "missing-type-ptr";
+	cs8			cgc_wall[]							= "all";
+	cs8			cgc_wfatal_errors[]					= "fatal-errors";
+	cs8			cgc_werror[]						= "error";
+	cs8			cgc_fsyntax_only[]					= "-fsyntax-only";
+	cs8			cgc_verbose[]						= "-verbose";
+
+
+//////////
+// Pointer types
+//////
+	u8			cgc_ptr_tbyte[]						= "tbyte";
+	u8			cgc_ptr_dqword[]					= "dqword";
+	u8			cgc_ptr_qword[]						= "qword";
+	u8			cgc_ptr_dword[]						= "dword";
+	u8			cgc_ptr_word[]						= "word";
+	u8			cgc_ptr_byte[]						= "byte";
+	u8			cgc_ptr_m16_16[]					= "m16_16";
+	u8			cgc_ptr_m16_32[]					= "m16_32";
+	u8			cgc_ptr_f32[]						= "f32";
+	u8			cgc_ptr_f64[]						= "f64";
+	u8			cgc_ptr_f80[]						= "f80";
+	u8			cgc_ptr_s16[]						= "s16";
+	u8			cgc_ptr_s32[]						= "s32";
+	u8			cgc_ptr_s64[]						= "s64";
+	u8			cgc_ptr_m80[]						= "m80";
+	u8			cgc_ptr_mmx[]						= "mmx";
+	u8			cgc_ptr_xmmx[]						= "xmmx";
+	u8			cgc_ptr_fpu[]						= "fpu";
+	u8			cgc_ptr_6byte[]						= "m6byte";
+	u8			cgc_ptr_10byte[]					= "m10byte";
+	u8			cgc_ptr_14byte[]					= "m14byte";
+	u8			cgc_ptr_28byte[]					= "m28byte";
+	u8			cgc_ptr_94byte[]					= "m94byte";
+	u8			cgc_ptr_108byte[]					= "m108byte";
+
+	u8			cgc_lasm_include[]					= "include";
+	u8			cgc_lasm_define[]					= "define";
+	u8			cgc_lasm_function[]					= "function";
+	u8			cgc_lasm_struct[]					= "struct";

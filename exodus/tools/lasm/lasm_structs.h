@@ -97,6 +97,7 @@
 	{
 		SWarnings	w;									// Which warnings are enabled?
 
+		bool		lVerbose;							// -verbose				-- Are we in verbose mode?
 		bool		Wall;								// -Wall				-- Show all warnings
 		bool		Wfatal_errors;						// -Wfatal-errors		-- Should compilation stop immediately on first error?
 		bool		WError;								// -WError				-- Should warnings be treated as errors?
@@ -113,12 +114,21 @@
 		bool		isCompleted	: 1;					// Is the assemble process completed on this line?
 	};
 
+	// #include files
+	struct SLasmInclude
+	{
+		s8			fileName[_MAX_PATH];				// The full pathname
+		s32			fileNameLength;						// Length of the filename
+		s8*			fileNamePortion;					// Where the actual filename portion begins
+	};
+
 	// Linked list of files to be assembled
 	struct SLasmFile
 	{
 		SLL					ll;							// Link list through multiple files
 
 		// File and status
+		SLasmInclude*		include;					// #include file level as of the time of this file's creation
 		SDatum				fileName;					// Source file
 		SLasmFileStatus		status;						// Processing through the assemble process
 
@@ -137,12 +147,12 @@
 		SLL					ll;							// Link list through multiple defines
 
 		// Required parameters
-		SDatum				name;						// The "xyz" in #define xyz
-		SLine*				firstLine;					// Potentially multiple lines
+		SComp*				compName;					// The component which defined the name
+		SLine*				firstLine;					// Potentially multiple lines of source code
 
 		// Optional parameters (the a, b,..., z in #define xyz(a,b,...,z))
 		s32					paramCount;								// Actual parameter count
-		SDatum				params[_MAX_LASM_DEFINE_PARAMS];		// Parameter names and lengths
+		SDatum				params[_LASM_MAX_DEFINE_PARAMS];		// Parameter names and lengths
 	};
 
 
@@ -190,8 +200,8 @@
 		//////////
 		// Params
 		//////
-			SLine			rp[_MAX_LASM_RETURN_PARAMS];	// Return
-			SLine			ip[_MAX_LASM_INPUT_PARAMS];		// Input
+			SLine			rp[_LASM_MAX_RETURN_PARAMS];	// Return
+			SLine			ip[_LASM_MAX_INPUT_PARAMS];		// Input
 
 			// Counts
 			s32				rpCount;					// Return parameters

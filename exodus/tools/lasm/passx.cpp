@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/exodus/tools/lasm/pass1.cpp
+// /libsf/exodus/tools/lasm/passx.cpp
 //
 //////
 //    _     _ _     _____ _____ 
@@ -19,13 +19,13 @@
 //
 //////
 // Version 0.01
-// Copyright (c) 2015 by Rick C. Hodgin
+// Copyright (c) 2016 by Rick C. Hodgin
 //////
 // Last update:
-//     Sep.17.2015
+//     Mar.14.2016
 //////
 // Change log:
-//     Sep.17.2015 - Initial creation
+//     Mar.14.2016 - Initial creation
 //////
 //
 // This document and all documents contained within are released as Liberty Software
@@ -89,29 +89,9 @@
 
 //////////
 //
-// Pass-1 -- Macro expansion
+// Pass-X -- Opcode (binary) generation
 //
 //////
-	void ilasm_pass1(SLasmCmdLine* cmdLine, SLasmFile* file)
+	void ilasm_passX(SLasmCmdLine* cmdLine, SLasmFile* file)
 	{
-		SLine*			line;
-		SComp*			comp;
-// 		SComp*			compNext;
-// 		SComp*			compFile;
-// 		SLasmFile*		fileInclude;
-// 		s8				fileName[_MAX_PATH];
-
-
-		// Iterate through the entire file
-		for (line = file->firstLine; line; line = line->ll.nextLine)
-		{
-			// All lines should have compiler info, but just to be sure...
-			if (!line->status.isCompleted && line->compilerInfo)
-			{
-				// Grab the comp
-				comp = line->compilerInfo->firstComp;
-// TODO: Working here, iterate through each component and replace those which are part of #define macros
-//		 Oct.16.2015 -- for now, macros simply won't be supported. :-)
-			}
-		}
 	}

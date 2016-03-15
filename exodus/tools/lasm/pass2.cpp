@@ -93,19 +93,17 @@
 //
 //		functions
 //		adhocs
-//		flowofs
-//		classes
 //		structs
 //		enums
 //		labels
 //
 //////
-	void ilasm_pass2(SLasmFile* file)
+	void ilasm_pass2(SLasmCmdLine* cmdLine, SLasmFile* file)
 	{
 		SLine*			line;
 		SComp*			comp;
-		SComp*			compFile;
-		SLasmFile*		fileInclude;
+// 		SComp*			compFile;
+// 		SLasmFile*		fileInclude;
 		SLasmBlock*		func;
 		SLasmStruct*	lstruct;
 
@@ -123,7 +121,7 @@
 				if (comp->iCode == _ICODE_LASM_FUNCTION)
 				{
 					// Process the function parameters, and mark off its extents
-					if (!(func = ilasm_pass2_function(file, &line, comp)))
+					if (!(func = ilasm_pass2_function(cmdLine, file, &line)))
 					{
 					}
 
@@ -135,7 +133,7 @@
 //////
 				} else if (comp->iCode == _ICODE_LASM_STRUCT) {
 					// Process the struct
-					if (!(lstruct = ilasm_pass2_struct(file, &line, comp)))
+					if (!(lstruct = ilasm_pass2_struct(cmdLine, file, &line)))
 					{
 					}
 
@@ -143,7 +141,7 @@
 //////////
 // Label
 //////
-				} else if (ilasm_pass2_label(file, &line, comp)) {
+				} else if (ilasm_pass2_label(cmdLine, file, &line)) {
 					// Found a label
 
 
@@ -162,7 +160,7 @@
 // Process the function header
 //
 //////
-	SLasmBlock*	ilasm_pass2_function(SLasmFile* file, SLine** lineProcessing, SComp* comp)
+	SLasmBlock*	ilasm_pass2_function(SLasmCmdLine* cmdLine, SLasmFile* file, SLine** lineProcessing)
 	{
 		return(NULL);
 	}
@@ -175,33 +173,7 @@
 // Process the adhoc header
 //
 //////
-	SLasmBlock*	ilasm_pass2_adhoc(SLasmFile* file, SLine** lineProcessing, SComp* comp)
-	{
-		return(NULL);
-	}
-
-
-
-
-//////////
-//
-// Process the flowof header
-//
-//////
-	SLasmBlock*	ilasm_pass2_flowof(SLasmFile* file, SLine** lineProcessing, SComp* comp)
-	{
-		return(NULL);
-	}
-
-
-
-
-//////////
-//
-// Process the class
-//
-//////
-	SLasmClass* ilasm_pass2_class(SLasmFile* file, SLine** lineProcessing, SComp* comp)
+	SLasmBlock*	ilasm_pass2_adhoc(SLasmCmdLine* cmdLine, SLasmFile* file, SLine** lineProcessing)
 	{
 		return(NULL);
 	}
@@ -214,7 +186,7 @@
 // Process the struct
 //
 //////
-	SLasmStruct* ilasm_pass2_struct(SLasmFile* file, SLine** lineProcessing, SComp* comp)
+	SLasmStruct* ilasm_pass2_struct(SLasmCmdLine* cmdLine, SLasmFile* file, SLine** lineProcessing)
 	{
 		return(NULL);
 	}
@@ -227,7 +199,7 @@
 // Process the enum
 //
 //////
-	SLasmEnum* ilasm_pass2_enum(SLasmFile* file, SLine** lineProcessing, SComp* comp)
+	SLasmEnum* ilasm_pass2_enum(SLasmCmdLine* cmdLine, SLasmFile* file, SLine** lineProcessing)
 	{
 		return(NULL);
 	}
@@ -240,7 +212,7 @@
 // Process the label
 //
 //////
-	bool ilasm_pass2_label(SLasmFile* file, SLine** lineProcessing, SComp* comp)
+	bool ilasm_pass2_label(SLasmCmdLine* cmdLine, SLasmFile* file, SLine** lineProcessing)
 	{
 		return(false);
 	}

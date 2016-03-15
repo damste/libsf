@@ -134,10 +134,14 @@
 	s32 main(s32 argc, s8* argv[])
 	{
 		s32				lnI, lnLength, lnPass;
-		bool			llSetValue;
+		u32				lnPathnameLength;
+		bool			llSetToValue;
 		s8*				lcOption;
+// 		SLine*			line;
 		SLasmFile*		file;
+		SLasmInclude*	include;
 		SLasmCmdLine	cmdLine;
+		s8				fileName[_MAX_PATH];
 
 
 		//////////
@@ -150,14 +154,22 @@
 		//////////
 		// Initialize our engine
 		//////
-			memset(&cmdLine,	0, sizeof(cmdLine));		// Initialize all options off
-			memset(&cmdLine.w,	1, sizeof(cmdLine.w));		// Initialize all warnings on
+			memset(&cmdLine,		0, sizeof(cmdLine));		// Initialize all options off
+			memset(&cmdLine.w,		1, sizeof(cmdLine.w));		// Initialize all warnings on
+			memset(&includeFiles,	0, sizeof(includeFiles));	// Initialize the include file
+
+			// Grab the current directory as our starting point
+			memset(&fileName[0], 0, sizeof(fileName));
+			lnPathnameLength	= GetCurrentDirectory(sizeof(fileName) - 1, fileName);
+			include				= ilasm_includeFile_append(&fileName[0], lnPathnameLength);
+			include->fileName[include->fileNameLength] = 0;
+			ilasm_ensure_trailingBackspace(&include[0]);
 
 
 		//////////
 		// Identify self
 		//////
-			printf("LibSF Assembler for Exodus v0.01\n");
+			printf("LASM -- LibSF Assembler -- for Exodus v0.01\n");
 
 
 		//////////
@@ -174,52 +186,56 @@
 
 
 					//////////
-					// See if it's a -Wno- option
+					// See if it's a -W- or -Wno- option
 					//////
 						lcOption = argv[lnI];
 						if (lnLength > sizeof(cgc_wno) - 1 && _memicmp(argv[lnI], cgc_wno, sizeof(cgc_wno) - 1) == 0)
 						{
-							// It's -Wno-, so the set value will be false
-							llSetValue = false;
+							// It's -Wno-, the value will be set to false
+							llSetToValue = false;
 							argv[lnI] += sizeof(cgc_wno) - 1;
 
 						} else {
-							// The value to set will be true
-							llSetValue = true;
+							// The value will be set to true
+							llSetToValue = true;
 
-							// Skip past -W if need be
-							if (lnLength > sizeof(cgc_wno) - 1 && _memicmp(argv[lnI], cgc_wno, 2) == 0)
-								argv[lnI] += 2;
+							// Skip past -W (if need be)
+							if (lnLength > sizeof(cgc_w) - 1 && _memicmp(argv[lnI], cgc_w, sizeof(cgc_w) - 1) == 0)
+								argv[lnI] += sizeof(cgc_w) - 1;
 						}
 
 
 					//////////
 					// Find out which option
 					//////
-						if (lnLength == sizeof(cgc_wmissing_type_ptr) - 1 && _memicmp(argv[lnI], cgc_wmissing_type_ptr, sizeof(cgc_wmissing_type_ptr) - 1) == 0)
+						if (lasm_isOption(cgc_wmissing_type_ptr))
 						{
 							// -Wmissing-type-ptr
 							// -Wno-missing-type-ptr
-							cmdLine.w.missing_type_ptr = llSetValue;
+							cmdLine.w.missing_type_ptr = llSetToValue;
 
-						} else if (lnLength == sizeof(cgc_wall) - 1 && _memicmp(argv[lnI], cgc_wall, sizeof(cgc_wall) - 1) == 0) {
+						} else if (lasm_isOption(cgc_wall)) {
 							// -Wall				-- Show all warnings
 							// -Wno-all
-							cmdLine.Wall = llSetValue;
+							cmdLine.Wall = llSetToValue;
 
-						} else if (lnLength == sizeof(cgc_wfatal_errors) - 1 && _memicmp(argv[lnI], cgc_wfatal_errors, sizeof(cgc_wfatal_errors) - 1) == 0) {
+						} else if (lasm_isOption(cgc_wfatal_errors)) {
 							// -Wfatal-errors		-- Should compilation stop immediately on first error?
 							// -Wno-fatal-errors
-							cmdLine.Wfatal_errors = llSetValue;
+							cmdLine.Wfatal_errors = llSetToValue;
 
-						} else if (lnLength == sizeof(cgc_werror) - 1 && _memicmp(argv[lnI], cgc_werror, sizeof(cgc_werror) - 1) == 0) {
+						} else if (lasm_isOption(cgc_werror)) {
 							// -Werror				-- Should warnings be treated as errors?
 							// -Wno-error
-							cmdLine.WError = llSetValue;
+							cmdLine.WError = llSetToValue;
 
-						} else if (lnLength == sizeof(cgc_fsyntax_only) - 1 && _memicmp(argv[lnI], cgc_fsyntax_only, sizeof(cgc_fsyntax_only) - 1) == 0) {
+						} else if (lasm_isOption(cgc_fsyntax_only)) {
 							// -fsyntax-only		-- Syntax check only
-							cmdLine.fsyntax_only = llSetValue;
+							cmdLine.fsyntax_only = llSetToValue;
+
+						} else if (lasm_isOption(cgc_verbose)) {
+							// -verbose
+							cmdLine.lVerbose = llSetToValue;
 
 						} else {
 							// Unrecognized option
@@ -229,7 +245,6 @@
 
 				} else {
 					// It can only be a file to assemble
-
 					// Try to load it
 					if (!ilasm_appendFile(argv[lnI], NULL))
 					{
@@ -245,7 +260,6 @@
 		//////
 			for (file = gsFirstFile; file; file = (SLasmFile*)file->ll.next)
 			{
-
 				// Begin passes through each file
 				for (lnPass = 0; lnPass < 26 && !file->status.isCompleted; lnPass++)
 				{
@@ -254,7 +268,7 @@
 					// Identify the file on the first pass
 					//////
 						if (lnPass == 0)
-							printf("Assembling %s\n", file->fileName.data._s8);
+							printf("--Assembling %s\n", file->fileName.data._s8);
 
 
 					//////////
@@ -264,37 +278,41 @@
 						{
 							case 0:
 								// Pass-0
-								ilasm_pass0(file);
+								ilasm_pass0(&cmdLine, file);
 								break;
 
 							case 1:
 								// Pass-1
-								ilasm_pass1(file);
+								ilasm_pass1(&cmdLine, file);
+								break;
+
+							case 2:
+								// Pass-2
+								ilasm_pass2(&cmdLine, file);
+								break;
+
+							case 3:
+								// Pass-3
+								ilasm_pass2(&cmdLine, file);
 								break;
 
 							case 24:
 								// Pass-X 
-								ilasm_passX(file);
+								ilasm_passX(&cmdLine, file);
 								break;
 
 							case 25:
 								// Pass-Y
-								ilasm_passY(file);
+								ilasm_passY(&cmdLine, file);
 								break;
 
 							case 26:
 								// Pass-Z
-								ilasm_passZ(file);
-								break;
-
-							default:
-								// Pass-N
-								ilasm_passN(file);
+								ilasm_passZ(&cmdLine, file);
 								break;
 						}
 
 				}
-
 			}
 
 
@@ -315,8 +333,12 @@
 //////
 	bool ilasm_appendFile(s8* tcPathname, SLasmFile** file)
 	{
-		SLasmFile	f;
-		SLasmFile*	fNew;
+		s32				lnI;
+		SLasmFile		f;
+		SLasmFile*		fNew;
+		SLasmInclude*	include;
+		s8				fileName[_MAX_PATH * 2];
+// 		s8				fullFileName[_MAX_PATH];
 
 
 		//////////
@@ -326,26 +348,54 @@
 
 
 		//////////
-		// Try to read the file
+		// Try to locate the #include file
 		//////
-			if (iFile_readContents(tcPathname, &f.fh, &f.raw, &f.rawLength))
+			if (tcPathname[0] == '.')
 			{
+				// It is a relative path
+				for (lnI = gnMaxIncludePaths - 1; lnI >= 0; lnI--)
+				{
+					// Grab the include directory reference
+					include = &includeFiles[lnI];
 
+					// Store the root path
+
+					// Append the relative filename
+					memset(fileName, 0, sizeof(fileName));
+					memcpy(fileName, tcPathname, min(_MAX_PATH - 1, strlen(tcPathname)));
+
+					// Try to read the file contents
+					if (iFile_readContents(tcPathname, &f.fh, &f.raw, &f.rawLength))
+						break;
+				}
+
+			} else {
+				// It is a hard path, use it as is
+			}
+
+
+		//////////
+		// Was it loaded?
+		//////
+			if (lnI >= 0)
+			{
 				// Parse into lines
 				if (iFile_parseIntoLines(&f.firstLine, f.raw, f.rawLength) > 0)
 				{
-
 					// Append our entry onto the chain
 					fNew = (SLasmFile*)iLl_appendNew__llAtEnd((SLL**)&gsFirstFile, sizeof(f));
 					if (fNew)
 					{
 						// Copy over
-						fNew->firstLine		= f.firstLine;
-						fNew->fh			= f.fh;
-						fNew->raw			= f.raw;
-						fNew->rawLength		= f.rawLength;
-						fNew->fileName		= f.fileName;
+						fNew->firstLine	= f.firstLine;
+						fNew->fh		= f.fh;
+						fNew->raw		= f.raw;
+						fNew->rawLength	= f.rawLength;
+						fNew->fileName	= f.fileName;
 						iDatum_duplicate(&f.fileName, tcPathname, -1);
+
+						// Setup the #include file level
+						fNew->include	= &includeFiles[gnMaxIncludePaths - 1];
 
 						// Update the pointer if need be
 						if (file)
@@ -370,11 +420,40 @@
 
 //////////
 //
-// Pass-N -- General expansion and parsing
+// Store the include file to a list of directories for later traversal should we
 //
 //////
-	void ilasm_passN(SLasmFile* file)
+	SLasmInclude* ilasm_includeFile_append(s8* tcPathname, s32 tnPathnameLength)
 	{
+		SLasmInclude* include;
+
+
+		// Get the appropriate entry
+		if (gnMaxIncludePaths < _LASM_MAX_INCLUDE_FILES)
+		{
+			// Grab the slot
+			include = &includeFiles[gnMaxIncludePaths++];
+
+			// Expand to its full form
+			GetFullPathName(tcPathname, tnPathnameLength, &include->fileName[0], &include->fileNamePortion);
+
+			// NULL-terminate
+			*include->fileNamePortion = 0;
+
+			// Validate that it ends in a backslash
+			ilasm_ensure_trailingBackspace(include);
+
+			// Store the new length
+			include->fileNameLength	 = strlen(include->fileName);
+
+		} else {
+			// We're reached our limit
+			printf("--Error: too many #include files (%d)\n", _LASM_MAX_INCLUDE_FILES + 1);
+			exit(-1);
+		}
+
+		// Indicate our result
+		return(include);
 	}
 
 
@@ -382,11 +461,23 @@
 
 //////////
 //
-// Pass-X -- Binary code generation
+// For include files, makes sure that they have the trailing backspace
 //
 //////
-	void ilasm_passX(SLasmFile* file)
+	SLasmInclude* ilasm_ensure_trailingBackspace(SLasmInclude* include)
 	{
+		// Make sure the last character's a backspace
+		if (include->fileName[include->fileNameLength - 1] != '\\')
+		{
+			// Make it a backslash
+			include->fileName[include->fileNameLength] = '\\';
+
+			// Increase its length
+			++include->fileNameLength;
+		}
+
+		// Pass-thru our parameter
+		return(include);
 	}
 
 
@@ -394,21 +485,19 @@
 
 //////////
 //
-// Pass-Y -- Linking
+// Called to adjust the slashes
 //
 //////
-	void ilasm_passY(SLasmFile* file)
+	void ilasm_fixupDirectories(s8* tcPathname, s32 tnPathnameLength)
 	{
-	}
+		s32 lnI;
 
 
-
-
-//////////
-//
-// Pass-Z -- Writing output
-//
-//////
-	void ilasm_passZ(SLasmFile* file)
-	{
+		// Iterate through the pathname and switch all '/' to '\' characters
+		for (lnI = 0; lnI < tnPathnameLength; lnI++)
+		{
+			// If it's a slash, change it to a backslash
+			if (tcPathname[lnI] == '/')
+				tcPathname[lnI] = '\\';
+		}
 	}

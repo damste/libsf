@@ -82,64 +82,66 @@
 
 
 
-struct SlasmFile;
+struct SLasmFile;
+struct SLasmInclude;
 
 
 //////////
 // lasm.cpp
 //////
 	bool			ilasm_appendFile					(s8* tcPathname, SLasmFile** file);
+	SLasmInclude*	ilasm_includeFile_append			(s8* tcPathname, s32 tnPathnameLength);
+	SLasmInclude*	ilasm_ensure_trailingBackspace		(SLasmInclude* include);
+	void			ilasm_fixupDirectories				(s8* tcPathname, s32 tnPathnameLength);
 
 
 //////////
-// pass0.cpp -- #pragmas
+// pass0.cpp -- #include files, #define statements
 //////
-	void			ilasm_pass0							(SLasmFile* file);
-	SComp*			ilasm_pass0_parse					(SLine* line);
-
-	bool			ilasm_pass0_define					(SLasmFile* file, SLine** lineProcessing, SComp* compDefine, SComp* compName);
+	void			ilasm_pass0							(SLasmCmdLine* cmdLine, SLasmFile* file);
+	SComp*			ilasm_pass0_parse					(SLasmCmdLine* cmdLine, SLine** lineProcessing);
+	bool			iilasm_pass0_define					(SLasmCmdLine* cmdLine, SLasmFile* file, SLine** lineProcessing, SComp* compDefine, SComp* compName);
 	bool			iilasm_pass0_define__callback_bypassEscapedBraces(SCallback* cb);
-	bool			iilasm_pass0_define__getParameters	(SLasmFile* file, SLasmDefine* define, SLine** lineProcessing, SComp** compProcessing);
+	bool			iilasm_pass0_define__getParameters	(SLasmCmdLine* cmdLine, SLasmFile* file, SLasmDefine* define, SLine** lineProcessing, SComp** compProcessing);
+	SLasmDefine*	iilasm_pass0_lookup_define_byName	(SComp* compName, SLasmDefine* defineRoot);
 
 
 //////////
 // pass1.cpp -- Macro expansion
 //////
-	void			ilasm_pass1							(SLasmFile* file);
+	void			ilasm_pass1							(SLasmCmdLine* cmdLine, SLasmFile* file);
 
 
 //////////
-// pass2.cpp -- function, adhoc, flowof, class, struct, enum markers
+// pass2.cpp -- function, adhoc, struct, enum markers
 //////
-	void			ilasm_pass2							(SLasmFile* file);
-	SLasmBlock*		ilasm_pass2_function				(SLasmFile* file, SLine** lineProcessing, SComp* comp);
-	SLasmBlock*		ilasm_pass2_adhoc					(SLasmFile* file, SLine** lineProcessing, SComp* comp);
-	SLasmBlock*		ilasm_pass2_flowof					(SLasmFile* file, SLine** lineProcessing, SComp* comp);
-	SLasmClass*		ilasm_pass2_class					(SLasmFile* file, SLine** lineProcessing, SComp* comp);
-	SLasmStruct*	ilasm_pass2_struct					(SLasmFile* file, SLine** lineProcessing, SComp* comp);
-	SLasmEnum*		ilasm_pass2_enum					(SLasmFile* file, SLine** lineProcessing, SComp* comp);
-	bool			ilasm_pass2_label					(SLasmFile* file, SLine** lineProcessing, SComp* comp);
+	void			ilasm_pass2							(SLasmCmdLine* cmdLine, SLasmFile* file);
+	SLasmBlock*		ilasm_pass2_function				(SLasmCmdLine* cmdLine, SLasmFile* file, SLine** lineProcessing);
+	SLasmBlock*		ilasm_pass2_adhoc					(SLasmCmdLine* cmdLine, SLasmFile* file, SLine** lineProcessing);
+	SLasmStruct*	ilasm_pass2_struct					(SLasmCmdLine* cmdLine, SLasmFile* file, SLine** lineProcessing);
+	SLasmEnum*		ilasm_pass2_enum					(SLasmCmdLine* cmdLine, SLasmFile* file, SLine** lineProcessing);
+	bool			ilasm_pass2_label					(SLasmCmdLine* cmdLine, SLasmFile* file, SLine** lineProcessing);
 
 
 //////////
-// passN.cpp -- Token parsing
+// pass3.cpp -- Token parsing
 //////
-	void			ilasm_passN							(SLasmFile* file);
+	void			ilasm_pass3							(SLasmCmdLine* cmdLine, SLasmFile* file);
 
 
 //////////
 // passX.cpp -- Opcode generation
 //////
-	void			ilasm_passX							(SLasmFile* file);
+	void			ilasm_passX							(SLasmCmdLine* cmdLine, SLasmFile* file);
 
 
 //////////
 // passY.cpp -- Linking
 //////
-	void			ilasm_passY							(SLasmFile* file);
+	void			ilasm_passY							(SLasmCmdLine* cmdLine, SLasmFile* file);
 
 
 //////////
 // passZ.cpp -- Output file
 //////
-	void			ilasm_passZ							(SLasmFile* file);
+	void			ilasm_passZ							(SLasmCmdLine* cmdLine, SLasmFile* file);

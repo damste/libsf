@@ -85,59 +85,21 @@
 //////////
 // Processing data
 //////
-	SLasmFile*		gsFirstFile							= NULL;					// First file that's being assembled
-	SLasmDefine*	gsLasmDefines						= NULL;					// List of #defines found, in the order found
-	SLasmBlock*		firstAdhoc							= NULL;					// All adhoc definitions are scoped within functions or flowofs, but are part of a single list
-	SLasmBlock*		firstFunction						= NULL;					// All function definitions
-	SLasmBlock*		firstFlowof							= NULL;					// All flowof definitions
-	SLasmClass*		firstClass							= NULL;					// All class definitions
-	SLasmStruct*	firstStruct							= NULL;					// All struct definitions
-	SLasmEnum*		firstEnum							= NULL;					// All enum definitions
+	SLasmFile*		gsFirstFile						= NULL;				// First file that's being assembled
+	SLasmDefine*	gsLasmDefines					= NULL;				// List of #defines found, in the order found
+	SLasmBlock*		firstAdhoc						= NULL;				// All adhoc definitions are scoped within functions or flowofs, but are part of a single list
+	SLasmBlock*		firstFunction					= NULL;				// All function definitions
+	SLasmBlock*		firstFlowof						= NULL;				// All flowof definitions
+	SLasmClass*		firstClass						= NULL;				// All class definitions
+	SLasmStruct*	firstStruct						= NULL;				// All struct definitions
+	SLasmEnum*		firstEnum						= NULL;				// All enum definitions
 
 
 //////////
-// Command line options
+// #include files
 //////
-	cs8			cgc_wno[]							= "-Wno-";
-	cs8			cgc_wmissing_type_ptr[]				= "missing-type-ptr";
-	cs8			cgc_wall[]							= "all";
-	cs8			cgc_wfatal_errors[]					= "fatal-errors";
-	cs8			cgc_werror[]						= "error";
-	cs8			cgc_fsyntax_only[]					= "-fsyntax-only";
-
-
-//////////
-// Pointer types
-//////
-	u8			cgc_ptr_tbyte[]						= "tbyte";
-	u8			cgc_ptr_dqword[]					= "dqword";
-	u8			cgc_ptr_qword[]						= "qword";
-	u8			cgc_ptr_dword[]						= "dword";
-	u8			cgc_ptr_word[]						= "word";
-	u8			cgc_ptr_byte[]						= "byte";
-	u8			cgc_ptr_m16_16[]					= "m16_16";
-	u8			cgc_ptr_m16_32[]					= "m16_32";
-	u8			cgc_ptr_f32[]						= "f32";
-	u8			cgc_ptr_f64[]						= "f64";
-	u8			cgc_ptr_f80[]						= "f80";
-	u8			cgc_ptr_s16[]						= "s16";
-	u8			cgc_ptr_s32[]						= "s32";
-	u8			cgc_ptr_s64[]						= "s64";
-	u8			cgc_ptr_m80[]						= "m80";
-	u8			cgc_ptr_mmx[]						= "mmx";
-	u8			cgc_ptr_xmmx[]						= "xmmx";
-	u8			cgc_ptr_fpu[]						= "fpu";
-	u8			cgc_ptr_6byte[]						= "m6byte";
-	u8			cgc_ptr_10byte[]					= "m10byte";
-	u8			cgc_ptr_14byte[]					= "m14byte";
-	u8			cgc_ptr_28byte[]					= "m28byte";
-	u8			cgc_ptr_94byte[]					= "m94byte";
-	u8			cgc_ptr_108byte[]					= "m108byte";
-
-	u8			cgc_lasm_include[]					= "include";
-	u8			cgc_lasm_define[]					= "define";
-	u8			cgc_lasm_function[]					= "function";
-	u8			cgc_lasm_struct[]					= "struct";
+	SLasmInclude	includeFiles[_LASM_MAX_INCLUDE_FILES];				// The maximum number of include files
+	s32				gnMaxIncludePaths				= 0;				// Maximum separate #include files loaded thus far
 
 
 
