@@ -84,7 +84,7 @@
 //////////
 // Macros
 //////
-	#define lasm_isOption(a)						lnLength == sizeof(a) - 1 && _memicmp(argv[lnI], a, sizeof(a) - 1)
+	#define lasm_is_cmdLineOption(a)				lnLength == sizeof(a) - 1 && _memicmp(argv[lnI], a, sizeof(a) - 1)
 
 
 // Constants

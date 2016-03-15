@@ -133,194 +133,169 @@
 
 	s32 main(s32 argc, s8* argv[])
 	{
-		s32				lnI, lnLength, lnPass;
 		u32				lnPathnameLength;
-		bool			llSetToValue;
-		s8*				lcOption;
-// 		SLine*			line;
-		SLasmFile*		file;
 		SLasmInclude*	include;
 		SLasmCmdLine	cmdLine;
 		s8				fileName[_MAX_PATH];
 
 
-		//////////
 		// Initialize
-		//////
-			// Initialize main engine
-			iVjr_init(NULL);
+		iVjr_init(NULL);
 
-
-		//////////
 		// Initialize our engine
-		//////
-			memset(&cmdLine,		0, sizeof(cmdLine));		// Initialize all options off
-			memset(&cmdLine.w,		1, sizeof(cmdLine.w));		// Initialize all warnings on
-			memset(&includeFiles,	0, sizeof(includeFiles));	// Initialize the include file
+		memset(&cmdLine,		0, sizeof(cmdLine));		// Initialize all options off
+		memset(&cmdLine.w,		1, sizeof(cmdLine.w));		// Initialize all warnings on
+		memset(&includeFiles,	0, sizeof(includeFiles));	// Initialize the include file
 
-			// Grab the current directory as our starting point
-			memset(&fileName[0], 0, sizeof(fileName));
-			lnPathnameLength	= GetCurrentDirectory(sizeof(fileName) - 1, fileName);
-			include				= ilasm_includeFile_append(&fileName[0], lnPathnameLength);
-			include->fileName[include->fileNameLength] = 0;
-			ilasm_ensure_trailingBackspace(&include[0]);
+		// Grab the current directory as our starting point
+		memset(&fileName[0], 0, sizeof(fileName));
+		lnPathnameLength	= GetCurrentDirectory(sizeof(fileName) - 1, fileName);
+		include				= ilasm_includeFile_append(&fileName[0], lnPathnameLength);
+		include->fileName[include->fileNameLength] = 0;
+		ilasm_ensure_trailingBackspace(&include[0]);
+
+		// Compile
+		printf("LASM v0.01 -- LibSF Assembler -- for ExoduS/2\n");
+		ilasm_parse_commandLine(&cmdLine, argc, argv);
+		ilasm_compile(&cmdLine);
+
+		// If we get here, success
+		return(0);
+	}
 
 
-		//////////
-		// Identify self
-		//////
-			printf("LASM -- LibSF Assembler -- for Exodus v0.01\n");
 
 
-		//////////
-		// Process command line parameters
-		//////
-			for (lnI = 1; lnI < argc; lnI++)
+//////////
+//
+// Called to parse the command line and load its various parameters
+//
+//////
+	void ilasm_parse_commandLine(SLasmCmdLine* cmdLine, s32 argc, s8* argv[])
+	{
+		s32		lnI, lnLength;
+		bool	llSetToValue;
+		s8*		lcOption;
+
+
+		// Iterate through every parameter
+		for (lnI = 1; lnI < argc; lnI++)
+		{
+			// Is it an option?
+			if (argv[lnI][0] == '-')
 			{
-
-				// Is it an option or a file?
-				if (argv[lnI][0] == '-')
-				{
-					// It's an option
-					lnLength = strlen(argv[lnI]);
+				// Yes
+				lnLength = strlen(argv[lnI]);
 
 
-					//////////
-					// See if it's a -W- or -Wno- option
-					//////
-						lcOption = argv[lnI];
-						if (lnLength > sizeof(cgc_wno) - 1 && _memicmp(argv[lnI], cgc_wno, sizeof(cgc_wno) - 1) == 0)
-						{
-							// It's -Wno-, the value will be set to false
-							llSetToValue = false;
-							argv[lnI] += sizeof(cgc_wno) - 1;
-
-						} else {
-							// The value will be set to true
-							llSetToValue = true;
-
-							// Skip past -W (if need be)
-							if (lnLength > sizeof(cgc_w) - 1 && _memicmp(argv[lnI], cgc_w, sizeof(cgc_w) - 1) == 0)
-								argv[lnI] += sizeof(cgc_w) - 1;
-						}
-
-
-					//////////
-					// Find out which option
-					//////
-						if (lasm_isOption(cgc_wmissing_type_ptr))
-						{
-							// -Wmissing-type-ptr
-							// -Wno-missing-type-ptr
-							cmdLine.w.missing_type_ptr = llSetToValue;
-
-						} else if (lasm_isOption(cgc_wall)) {
-							// -Wall				-- Show all warnings
-							// -Wno-all
-							cmdLine.Wall = llSetToValue;
-
-						} else if (lasm_isOption(cgc_wfatal_errors)) {
-							// -Wfatal-errors		-- Should compilation stop immediately on first error?
-							// -Wno-fatal-errors
-							cmdLine.Wfatal_errors = llSetToValue;
-
-						} else if (lasm_isOption(cgc_werror)) {
-							// -Werror				-- Should warnings be treated as errors?
-							// -Wno-error
-							cmdLine.WError = llSetToValue;
-
-						} else if (lasm_isOption(cgc_fsyntax_only)) {
-							// -fsyntax-only		-- Syntax check only
-							cmdLine.fsyntax_only = llSetToValue;
-
-						} else if (lasm_isOption(cgc_verbose)) {
-							// -verbose
-							cmdLine.lVerbose = llSetToValue;
-
-						} else {
-							// Unrecognized option
-							printf("--Error: unrecognized command line option: %s", lcOption);
-							return(-1);
-						}
-
-				} else {
-					// It can only be a file to assemble
-					// Try to load it
-					if (!ilasm_appendFile(argv[lnI], NULL))
+				//////////
+				// -Wno-?
+				//////
+					lcOption = argv[lnI];
+					if (lnLength > sizeof(cgc_wno) - 1 && _memicmp(argv[lnI], cgc_wno, sizeof(cgc_wno) - 1) == 0)
 					{
-						printf("--Error: unable to open file: %s\n", argv[lnI]);
-						return(-2);
+						// Yes, which means the option will be turned off
+						llSetToValue	= false;
+						argv[lnI]		+= sizeof(cgc_wno) - 1;
+
+					} else {
+						// The option will be turned on
+						llSetToValue = true;
+
+						// Skip past the leading -W (if need be)
+						if (lnLength > sizeof(cgc_w) - 1 && _memicmp(argv[lnI], cgc_w, sizeof(cgc_w) - 1) == 0)
+							argv[lnI] += sizeof(cgc_w) - 1;
 					}
-				}
-			}
 
 
-		//////////
-		// Iterate through each file on this pass
-		//////
-			for (file = gsFirstFile; file; file = (SLasmFile*)file->ll.next)
-			{
-				// Begin passes through each file
-				for (lnPass = 0; lnPass < 26 && !file->status.isCompleted; lnPass++)
+				//////////
+				// Which option?
+				//////
+					if (lasm_is_cmdLineOption(cgc_wmissing_type_ptr))
+					{
+						// -Wmissing-type-ptr		-- Using "mov eax,[esi]" rather than "mov eax,dword ptr [esi]"
+						// -Wno-missing-type-ptr
+						cmdLine->w.missing_type_ptr = llSetToValue;
+
+					} else if (lasm_is_cmdLineOption(cgc_wall)) {
+						// -Wall					-- Show all warnings
+						// -Wno-all
+						cmdLine->Wall = llSetToValue;
+
+					} else if (lasm_is_cmdLineOption(cgc_wfatal_errors)) {
+						// -Wfatal-errors			-- Should compilation stop immediately on first error?
+						// -Wno-fatal-errors
+						cmdLine->Wfatal_errors = llSetToValue;
+
+					} else if (lasm_is_cmdLineOption(cgc_werror)) {
+						// -Werror					-- Should warnings be treated as errors?
+						// -Wno-error
+						cmdLine->WError = llSetToValue;
+
+					} else if (lasm_is_cmdLineOption(cgc_fsyntax_only)) {
+						// -fsyntax-only			-- Syntax check only
+						cmdLine->fsyntax_only = llSetToValue;
+
+					} else if (lasm_is_cmdLineOption(cgc_verbose)) {
+						// -verbose					-- Show extra compilation information
+						cmdLine->lVerbose = llSetToValue;
+
+					} else {
+						// Unrecognized option
+						printf("--Error: unrecognized command line option: %s", lcOption);
+						exit(-1);
+					}
+
+
+			} else {
+				// Based on our command line options, it can only be a file to assemble
+				// Try to load it
+				if (!ilasm_appendFile(argv[lnI], NULL))
 				{
-
-					//////////
-					// Identify the file on the first pass
-					//////
-						if (lnPass == 0)
-							printf("--Assembling %s\n", file->fileName.data._s8);
-
-
-					//////////
-					// Dispatch the pass
-					//////
-						switch (lnPass)
-						{
-							case 0:
-								// Pass-0
-								ilasm_pass0(&cmdLine, file);
-								break;
-
-							case 1:
-								// Pass-1
-								ilasm_pass1(&cmdLine, file);
-								break;
-
-							case 2:
-								// Pass-2
-								ilasm_pass2(&cmdLine, file);
-								break;
-
-							case 3:
-								// Pass-3
-								ilasm_pass2(&cmdLine, file);
-								break;
-
-							case 24:
-								// Pass-X 
-								ilasm_passX(&cmdLine, file);
-								break;
-
-							case 25:
-								// Pass-Y
-								ilasm_passY(&cmdLine, file);
-								break;
-
-							case 26:
-								// Pass-Z
-								ilasm_passZ(&cmdLine, file);
-								break;
-						}
-
+					printf("--Error: unable to open file: %s\n", argv[lnI]);
+					exit(-2);
 				}
 			}
+		}
+	}
 
 
-		//////////
-		// Return our exit code
-		//////
-			return(0);
 
+
+//////////
+//
+// Compile through the multiple passes
+//
+//////
+	void ilasm_compile(SLasmCmdLine* cmdLine)
+	{
+		s32			lnPass;
+		SLasmFile*	file;
+
+
+		// Iterate through every file, through every pass
+		for (file = gsFirstFile; file; file = (SLasmFile*)file->ll.next)
+		{
+			// Begin passes through each file
+			for (lnPass = 0; lnPass < 6 && !file->status.isCompleted; lnPass++)
+			{
+				// Identify the file on the first pass
+				if (lnPass == 0)
+					printf("--Assembling %s\n", file->fileName.data._s8);
+
+				// Dispatch the pass on this file
+				switch (lnPass)
+				{
+					case 0:		{	ilasm_pass0(cmdLine, file);		break;	}
+					case 1:		{	ilasm_pass1(cmdLine, file);		break;	}
+					case 2:		{	ilasm_pass2(cmdLine, file);		break;	}
+					case 3:		{	ilasm_pass2(cmdLine, file);		break;	}
+					case 4:		{	ilasm_passX(cmdLine, file);		break;	}
+					case 5:		{	ilasm_passY(cmdLine, file);		break;	}
+					case 6:		{	ilasm_passZ(cmdLine, file);		break;	}
+				}
+			}
+		}
 	}
 
 

@@ -89,6 +89,8 @@ struct SLasmInclude;
 //////////
 // lasm.cpp
 //////
+	void			ilasm_parse_commandLine				(SLasmCmdLine* cmdLine, s32 argc, s8* argv[]);
+	void			ilasm_compile						(SLasmCmdLine* cmdLine);
 	bool			ilasm_appendFile					(s8* tcPathname, SLasmFile** file);
 	SLasmInclude*	ilasm_includeFile_append			(s8* tcPathname, s32 tnPathnameLength);
 	SLasmInclude*	ilasm_ensure_trailingBackspace		(SLasmInclude* include);
@@ -99,10 +101,10 @@ struct SLasmInclude;
 // pass0.cpp -- #include files, #define statements
 //////
 	void			ilasm_pass0							(SLasmCmdLine* cmdLine, SLasmFile* file);
-	SComp*			ilasm_pass0_parse					(SLasmCmdLine* cmdLine, SLine** lineProcessing);
-	bool			iilasm_pass0_define					(SLasmCmdLine* cmdLine, SLasmFile* file, SLine** lineProcessing, SComp* compDefine, SComp* compName);
+	void			ilasm_pass0_parse					(SLasmPass0* p0);
+	bool			iilasm_pass0_define					(SLasmPass0* p0);// SLasmCmdLine* cmdLine, SLasmFile* file, SLine** lineProcessing, SComp* compDefine, SComp* compName);
 	bool			iilasm_pass0_define__callback_bypassEscapedBraces(SCallback* cb);
-	bool			iilasm_pass0_define__getParameters	(SLasmCmdLine* cmdLine, SLasmFile* file, SLasmDefine* define, SLine** lineProcessing, SComp** compProcessing);
+	bool			iilasm_pass0_define__getParameters	(SLasmPass0* p0);
 	SLasmDefine*	iilasm_pass0_lookup_define_byName	(SComp* compName, SLasmDefine* defineRoot);
 
 

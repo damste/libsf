@@ -225,3 +225,18 @@
 	{
 		SLL					ll;							// Link list through multiple enums
 	};
+
+	// Pass-0 compilation local variables
+	struct SLasmPass0
+	{
+		SLasmCmdLine*	cmdLine;
+		SLasmFile*		file;
+
+		SLine*			line;
+		SComp*			comp;
+		SComp*			compNext;
+		SComp*			compFile;
+		SLasmDefine*	define;
+		SLasmFile*		fileInclude;
+		s8				fileName[_MAX_PATH];
+	};
