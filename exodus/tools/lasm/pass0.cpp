@@ -107,10 +107,10 @@
 		// Iterate through the entire file
 		p0.cmdLine	= cmdLine;
 		p0.file		= file;
-		for (p0.line = p0.file->firstLine; p0.line; p0.line = p0.line->ll.nextLine)
+		for (p0.comp = iComps_Nth_fromLine(p0.file->firstLine, 1); p0.comp; p0.comp = iComps_Nth(p0.comp))
 		{
 			// See what was parsed
-			if (!(p0.comp = ilasm_pass0_parse(p0.cmdLine, &p0.line)) || p0.comp->iCode == _ICODE_COMMENT)
+			if (p0.comp->iCode == _ICODE_COMMENT || !(p0.comp = ilasm_pass0_parse(p0.cmdLine, &p0.line)))
 			{
 				// Blank line or comment line
 				p0.line->status.isCompleted = true;

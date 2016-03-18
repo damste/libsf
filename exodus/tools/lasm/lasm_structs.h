@@ -232,7 +232,6 @@
 		SLasmCmdLine*	cmdLine;
 		SLasmFile*		file;
 
-		SLine*			line;
 		SComp*			comp;
 		SComp*			compNext;
 		SComp*			compFile;
