@@ -363,43 +363,6 @@ struct SExtraInfo;
 		};
 	};
 
-	// Holds compiler data
-	struct SCompiler
-	{
-		// EC was designed with source code in mind, and that means a tight compiler relationship
-		SLine*			parent;								// SEMLine this compiler data belongs to (parent->compilerInfo points back to here)
-
-		// The last source code line
-		SDatum*			sourceCode;							// Copy at last compile of LEFT(parent->sourceCode.data, parent->sourceCodePopulated)
-		// Note:  If the source code line ended in a semicolon, the following sourceCode line(s) will be appended here on top of the semicolon until there are no more semicolon lines
-
-		// Components compiled in prior compiler passes
-		SComp*			firstComp;							// Pointer to the first component identified on this line
-
-		// Results of compilation
-		SNoteLog*		firstInquiry;						// Noted inquiry(s) on this source code line
-		SNoteLog*		firstWarning;						// Noted warning(s) on this source code line
-		SNoteLog*		firstNote;							// Noted note(s) on this source code line
-
-		// Extra information
-		SExtraInfo*		first_extraInfo;					// Specific to the application, also may contain triggers on errors, warnings, and notes
-
-
-	//////////
-	// During compilation, three steps:
-	//		(1) parse		-- Parse out the components into sequenced steps
-	//		(2) optimize	-- Optimize
-	//		(3) generate	-- Write the sequenced engagement code for the target
-	//////
-		SNode*			first_nodeParse;					// (1)  Component sequencing prior to optimization
-		SNode*			first_nodeOptimize;					// (2)  Component sequencing after optimization
-		SNode*			first_nodeEngage;					// (3)  Final generation of engagement code steps
-
-		u32				count_nodeParse;					// (1)  How many nodes after parsing
-		u32				count_nodeOptimize;					// (2)  How many nodes after optimization
-		u32				count_nodeArray;					// (3)  How many nodes in engagement code
-	};
-
 	struct SPragma
 	{
 		SLL				ll;									// Link list

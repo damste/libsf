@@ -156,35 +156,36 @@ struct SReturnsParams
 		//////
 			//
 // TODO:  These should be moved to a shared file for use with iJDebiC_thisCode()
-			struct SSourceCode
-			{
-				SFunction*		func;					// Function source code
-				SFunction*		firstAdhoc;				// First adhoc in this block
-
-				// The first class object defined in this source code (only present in thisCode->def, never copied into thisCode->live)
-				SClassObj*		firstClassObj;			// Also SET LOCALCLASSLIB definitions
-
-				// Related to this function
-				SVariable*		returns;				// The first return variable declared
-				SVariable*		params;					// The function parameters
-				SVariable*		privates;				// The first private variable declared
-				SVariable*		locals;					// The first local variable declared
-				SVariable*		scoped;					// The first scoped/temporary variable used by the function
-
-				// Counts for populated values as this structure is fixed and reused on the stack, and to save speed it does not delete variables, but only large allocations upon exit
-				s32				returnsCount;			// Number of valid returns in returns
-				s32				paramsCount;			// Number of valid parameters in params
-				s32				privatesCount;			// Number of valid private variables in privates
-				s32				localsCount;			// Number of valid locals in locals
-				s32				scopedCount;			// Number of valid scoped variables in scoped
-
-				// Temporary returns/params level for nested functions in flight
-				SReturnsParams	rp[_MAX_NESTED_FUNCTION_CALLS];
-				// Note:  rp[0].rp[N] contains the return values for this function
-
-				// Contextual references
-				SObject*		_this;					// Current object
-			};
+// Mar.17.2016 -- Moved to compiler_common.h
+// 			struct SSourceCode
+// 			{
+// 				SFunction*		func;					// Function source code
+// 				SFunction*		firstAdhoc;				// First adhoc in this block
+// 
+// 				// The first class object defined in this source code (only present in thisCode->def, never copied into thisCode->live)
+// 				SClassObj*		firstClassObj;			// Also SET LOCALCLASSLIB definitions
+// 
+// 				// Related to this function
+// 				SVariable*		returns;				// The first return variable declared
+// 				SVariable*		params;					// The function parameters
+// 				SVariable*		privates;				// The first private variable declared
+// 				SVariable*		locals;					// The first local variable declared
+// 				SVariable*		scoped;					// The first scoped/temporary variable used by the function
+// 
+// 				// Counts for populated values as this structure is fixed and reused on the stack, and to save speed it does not delete variables, but only large allocations upon exit
+// 				s32				returnsCount;			// Number of valid returns in returns
+// 				s32				paramsCount;			// Number of valid parameters in params
+// 				s32				privatesCount;			// Number of valid private variables in privates
+// 				s32				localsCount;			// Number of valid locals in locals
+// 				s32				scopedCount;			// Number of valid scoped variables in scoped
+// 
+// 				// Temporary returns/params level for nested functions in flight
+// 				SReturnsParams	rp[_MAX_NESTED_FUNCTION_CALLS];
+// 				// Note:  rp[0].rp[N] contains the return values for this function
+// 
+// 				// Contextual references
+// 				SObject*		_this;					// Current object
+// 			};
 
 			struct SThisCode
 			{

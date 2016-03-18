@@ -222,7 +222,6 @@ struct SVxbContext;
 
 	u32						iBreakoutAsciiTextDataIntoLines_ScanLine	(s8* tcData, u32 tnMaxLength, u32* tnLength, u32* tnWhitespaces);
 	bool					iFindFirstOccurrenceOfAsciiCharacter		(s8* tcHaystack, u32 tnHaystackLength, s8 tcNeedle, u32* tnPosition);
-	u32						iGetNextUid									();
 
 	// Start end chains
 	void*					iSEChain_prepend							(SStartEnd* ptrSE, u32 tnUniqueId, u32 tnUniqueIdExtra, u32 tnSize, u32 tnBlockSizeIfNewBlockNeeded, bool* tlResult);
@@ -412,3 +411,29 @@ struct SVxbContext;
 	SNoteLog*				iNoteLog_create								(SNoteLog** noteRoot, SComp* comp, u32 tnNumber, cu8* tcMessage);
 	SNoteLog*				iNoteLog_create_byErrorNumber				(SNoteLog** noteRoot, SComp* comp, u32 tnErrorNumber);
 	void					iNoteLog_removeAll							(SNoteLog** noteRoot);
+
+
+
+
+//////////
+//
+// Get the next Unique ID
+//
+//////
+	u32 iGetNextUid()
+	{
+		u32 lnValue;
+
+
+		// Synchronized access
+		EnterCriticalSection(&cs_uniqueIdAccess);
+
+		// Get our value and increment
+		lnValue = gnNextUniqueId++;
+
+		// All done
+		LeaveCriticalSection(&cs_uniqueIdAccess);
+
+		// Return that value
+		return(lnValue);
+	}

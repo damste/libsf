@@ -464,7 +464,7 @@
 	SProperty* iProperty_allocateAs_character(cu8* tcName, s32 tnNameLength, cu8* tcValue, s32 tnValueLength)
 	{
 		SDatum*		name;
-#ifdef _SCOMP_DEFINED
+#ifdef _SVARIABLE_DEFINED
 		SVariable*	value;
 #endif
 		SDatum*		value_datum;
@@ -480,7 +480,7 @@
 			if (name)
 			{
 				// Allocate the value
-#ifdef _SCOMP_DEFINED
+#ifdef _SVARIABLE_DEFINED
 				// Allocate as a variable
 				value = iVariable_createAndPopulate_byText(iiVariable_getType_character(), tcValue, tnValueLength, false);
 				if (value)
@@ -556,7 +556,7 @@
 	SProperty* iProperty_allocateAs_s32(SDatum* name, s32 tnValue)
 	{
 		SProperty*	p;
-#ifdef _SCOMP_DEFINED
+#ifdef _SVARIABLE_DEFINED
 		SVariable*	value;
 #endif
 		SDatum*		value_datum;
@@ -577,7 +577,7 @@
 			}
 
 			// Create a variable
-#ifdef _SCOMP_DEFINED
+#ifdef _SVARIABLE_DEFINED
 			value = iVariable_createAndPopulate_byText(iiVariable_getType_s32(), (cs8*)&tnValue, 4, false);
 			if (value)
 			{
@@ -643,7 +643,7 @@
 				iDatum_delete(&p->value_datum);
 			}
 
-#ifdef _SCOMP_DEFINED
+#ifdef _SVARIABLE_DEFINED
 			if (p->value && p->value_allocated)
 			{
 				// Delete the variable

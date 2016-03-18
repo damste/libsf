@@ -4290,43 +4290,6 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 		return(lnLength);
 	}
 
-
-
-
-//////////
-//
-// Get the next Unique ID
-//
-//////
-	u32 iGetNextUid()
-	{
-		u32 lnValue;
-
-
-		//////////
-		// Synchronized access
-		//////
-			EnterCriticalSection(&cs_uniqueIdAccess);
-
-
-		//////////
-		// Get our value and increment
-		//////
-			lnValue = gnNextUniqueId++;
-
-
-		//////////
-		// All done
-		//////
-			LeaveCriticalSection(&cs_uniqueIdAccess);
-
-
-		// Return that value
-		return(lnValue);
-	}
-
-
-
 	void* iSEChain_prepend(SStartEnd* ptrSE, u32 tnUniqueId, u32 tnUniqueIdExtra, u32 tnSize, u32 tnBlockSizeIfNewBlockNeeded, bool* tlResult)
 	{
 		return(iSEChain_appendOrPrepend(ptrSE, tnUniqueId, tnUniqueIdExtra, tnSize, tnBlockSizeIfNewBlockNeeded, true, tlResult));

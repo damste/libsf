@@ -80,6 +80,21 @@
 //
 
 
+struct SEM;
+struct SBreakpoint;
+struct SLine;
+struct SFont;
+struct SFunction;
+struct SVariable;
+struct SSourceCode;
+struct SExtraInfo;
+struct SWindow;
+struct SObject;
+struct SVariable;
+
+
+#include "sem_extra_info.h"
+#include "sem_line.h"
 
 
 //////////
@@ -91,24 +106,11 @@
 //////////
 // Structs
 //////
-	struct SFont;
-	struct SFunction;
-	struct SVariable;
-	struct SSourceCode;
-
 	// When line-selecting, indicates the type
 	const u32		_SEM_SELECT_MODE_NONE						= 0;
 	const u32		_SEM_SELECT_MODE_LINE						= 1;
 	const u32		_SEM_SELECT_MODE_COLUMN						= 2;
 	const u32		_SEM_SELECT_MODE_ANCHOR						= 3;
-
-	// Breakpoint types
-	const u32		_BREAKPOINT_NONE							= 0;	// No breakpoint
-	const u32		_BREAKPOINT_ALWAYS							= 1;	// Always stops
-	const u32		_BREAKPOINT_CONDITIONAL_TRUE				= 2;	// Breaks when the condition is true
-	const u32		_BREAKPOINT_CONDITIONAL_FALSE				= 3;	// Breaks when the condition is false
-	const u32		_BREAKPOINT_CONDITIONAL_TRUE_COUNTDOWN		= 4;	// Breaks when the condition is true, and the countdown reaches zero
-	const u32		_BREAKPOINT_CONDITIONAL_FALSE_COUNTDOWN		= 5;	// Breaks when the condition is false, and the countdown reaches zero
 
 	struct SUndo
 	{
@@ -118,24 +120,6 @@
 		SLine*	first;													// The first SEditChain that would've gone between them
 		// If multiple lines were deleted, the chain is moved here.
 		// If the line was changed, the old value is here
-	};
-
-	struct SBreakpoint
-	{
-		// See _BREAKPOINT_* constants
-		u32				type;
-		bool			isUsed;											// Allocated in gBreakpoints as a bulk structure
-
-		// If there's a countdown
-		u32				countdownResetValue;							// The value the countdown will reset to once it fires, if 0 always fires
-		u32				countdown;										// Countdown to 0 when it fires
-
-		// A test condition
-		SSourceCode*	conditionalCode;								// What is the conditional test expression for this breakpoint firing?
-
-		// Code to execute when the conditionalCode returns true
-		SSourceCode*	executeCode;									// Arbitrary code to execute when the breakpoint fires
-																		// Explicitly:  breakpoint_always(), breakpoint_true(), breakpoint_false()
 	};
 
 	struct SEMPoint
@@ -225,7 +209,7 @@
 		//////////
 		// For compiled programs
 		//////
-			SFunction	firstFunction;									// By default, we always create a function head for any code blocks that don't have an explicit "FUNCTION" at the top.
+			SFunction*	firstFunction;									// By default, we always create a function head for any code blocks that don't have an explicit "FUNCTION" at the top.
 			SNoteLog*	firstNote;										// Notes during load or parsing
 
 
@@ -284,13 +268,15 @@
 	void					iSEM_deleteLine						(SEM* sem);
 	SFont*					iSEM_getRectAndFont					(SEM* sem, SObject* obj, RECT* rc);
 	void					iSEM_getColors						(SEM* sem, SObject* obj, SBgra& backColor, SBgra& foreColor);
-	u32						iSEM_render							(SEM* sem, SObject* obj, bool tlRenderCursorline);
-	void					iSEM_render_highlightSelectedComps	(SEM* sem, SComp* firstComp);
-	bool					iSEM_verifyCursorIsVisible			(SEM* sem, SObject* obj);
-	bool					iSEM_onKeyDown_sourceCode			(SWindow* win, SObject* obj, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varCaps, SVariable* varAscii, SVariable* varVKey, SVariable* varIsCAS, SVariable* varIsAscii);
-	bool					iSEM_onKeyDown						(SWindow* win, SObject* obj, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varCaps, SVariable* varAscii, SVariable* varVKey, SVariable* varIsCAS, SVariable* varIsAscii);
+#ifdef _VJR_COMPILE
 	void*					iSEM_findMate						(SEM* sem, SLine* lineStart, SComp* comp);
 	void					iSEM_addTooltipHighlight			(SEM* sem, SLine* line, SObject* obj, s8* tcText, s32 tnTextLength, bool tlShowAbove);
+	u32						iSEM_render							(SEM* sem, SObject* obj, bool tlRenderCursorline);
+	void					iSEM_render_highlightSelectedComps	(SEM* sem, SComp* firstComp);
+	bool					iSEM_onKeyDown_sourceCode			(SWindow* win, SObject* obj, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varCaps, SVariable* varAscii, SVariable* varVKey, SVariable* varIsCAS, SVariable* varIsAscii);
+	bool					iSEM_onKeyDown						(SWindow* win, SObject* obj, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varCaps, SVariable* varAscii, SVariable* varVKey, SVariable* varIsCAS, SVariable* varIsAscii);
+#endif
+	bool					iSEM_verifyCursorIsVisible			(SEM* sem, SObject* obj);
 
 
 	// Editor movements

@@ -92,44 +92,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\lasm.cpp" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm5sin.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_add.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_cpi.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_div.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_exp.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_fam.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_fft.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_flr.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_fpf.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_gcd.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_lg2.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_lg3.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_lg4.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_log.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_mul.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_pow.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_rcp.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_rnd.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_set.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapm_sin.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmasin.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmasn0.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmcbrt.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmcnst.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmfact.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmfmul.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmgues.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmhasn.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmhsin.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmipwr.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmistr.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmpwr2.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmrsin.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmsqrt.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmstck.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmutil.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmutl1.c" />
-    <ClCompile Include="..\..\..\..\source\vjr\source\3rd_party\mapm\mapmutl2.c" />
     <ClCompile Include="..\pass0.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -142,6 +104,22 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\pass3.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\passx.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\passy.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\passz.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\lasm.h" />
@@ -149,8 +127,6 @@
     <ClInclude Include="..\lasm_defs.h" />
     <ClInclude Include="..\lasm_globals.h" />
     <ClInclude Include="..\lasm_structs.h" />
-    <ClInclude Include="..\..\..\..\source\vjr\source\3rd_party\mapm\m_apm.h" />
-    <ClInclude Include="..\..\..\..\source\vjr\source\3rd_party\mapm\m_apm_lc.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

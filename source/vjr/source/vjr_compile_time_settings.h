@@ -148,19 +148,6 @@
 
 
 //////////
-// Aug.11.2014 -- Added to track down functions that were slowing down the system.
-//                Note:  This should be normally OFF as it is resource intensive.
-//                Note:  It could also be refactored into a function to examine variables.
-//#define _VJR_LOG_ALL
-//////
-	#ifdef _VJR_LOG_ALL
-		#define logfunc(x)		iVjr_appendSystemLog((s8*)x)
-	#else
-		#define logfunc(x)
-	#endif
-
-
-//////////
 // Added to track down silent errors, ones that don't really affect anything, but still shouldn't exist
 //////
 	#define error_silent		iError_silent((char*)__FUNCTION__)

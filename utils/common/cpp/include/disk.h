@@ -95,6 +95,11 @@
 #define __DISK_H__
 
 
+// Constants
+const u32			_ERROR_OKAY								= 0;
+const u32			_ERROR_UNABLE_TO_LOCK_FOR_WRITE			= 100;
+const u32			_ERROR_UNABLE_TO_LOCK_FOR_READ			= 101;
+
 
 
 //////////
@@ -189,5 +194,10 @@
 // END
 //////////
 
+
+	// File functions
+	bool			iFile_readContents						(s8* tcFilename, FILE** tfh, s8** data, u32* dataLength);
+	bool			iFile_get_justfname						(s8* tcPathname, s32 tnFilenameLength, s8** tcFname, s32* tnFnameLength);
+	s32				iFile_parseIntoLines					(SLine** firstLine, s8* data, u32 dataLength);
 
 #endif	// __DISK_H__

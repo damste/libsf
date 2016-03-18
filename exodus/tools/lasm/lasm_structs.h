@@ -155,6 +155,18 @@
 		SDatum				params[_LASM_MAX_DEFINE_PARAMS];		// Parameter names and lengths
 	};
 
+	struct SLasmParam
+	{
+		SComp*		type;
+		SComp*		name;
+		SComp*		count;
+
+		// Computed values based on the above
+		s32			size;								// Total size of the memory block
+		s32			_ebp_offset;						// Offset into the [ebp] block
+		u32			iAccess;							// Machine access to this parameter 
+	};
+
 
 //////////
 //
@@ -200,8 +212,8 @@
 		//////////
 		// Params
 		//////
-			SLine			rp[_LASM_MAX_RETURN_PARAMS];	// Return
-			SLine			ip[_LASM_MAX_INPUT_PARAMS];		// Input
+			SLasmParam		rp[_LASM_MAX_RETURN_PARAMS];	// Return
+			SLasmParam		ip[_LASM_MAX_INPUT_PARAMS];		// Input
 
 			// Counts
 			s32				rpCount;					// Return parameters

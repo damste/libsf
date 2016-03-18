@@ -69,6 +69,10 @@
 	#define s16 int16_t
 	#define s8 char
 
+	// Breakpoints
+	#define debug_break asm("int 3");
+	#define debug_nop asm("nop");
+
 #elif defined(__solaris__)
 	// solaris compiler
 	// Used for pointer sizes that mate up with pointers, but are actually integers
@@ -88,6 +92,10 @@
 	#define s32 int32_t
 	#define s16 int16_t
 	#define s8 char
+
+	// Breakpoints
+	#define debug_break asm("int 3");
+	#define debug_nop asm("nop");
 
 #else
 	// Used for pointer sizes that mate up with pointers, but are actually integers
@@ -110,12 +118,16 @@
 	#define s32 int
 	#define s16 short
 	#define s8 char
+
+	// Breakpoints
+	#define debug_break _asm int 3;
+	#define debug_nop _asm nop;
 #endif
 
 #if !defined(size_t)
 	#define size_t sptr
 #endif
-	
+
 // Floating point
 #define f32 float
 #define f64 double
@@ -147,8 +159,60 @@
 #define cu32p cu32*
 #define cu64p cu64*
 
+// Constants for iAccess codes
+cu32	_8BIT				= 1 << 0;
+cu32	_16BIT				= 1 << 1;
+cu32	_32BIT				= 1 << 2;
+cu32	_64BIT				= 1 << 3;
+cu32	_POINTER			= 1 << 27;
+cu32	_POINTER_POINTER	= 1 << 28;
+cu32	_FLOATING_POINT		= 1 << 29;
+cu32	_UNSIGNED			= 1 << 30;
+cu32	_CONSTANT			= 1 << 31;
+
+// Base types
+cu32	_S8					= _8BIT;
+cu32	_U8					= _8BIT | _UNSIGNED;
+cu32	_S16				= _16BIT;
+cu32	_U16				= _16BIT | _UNSIGNED;
+cu32	_S32				= _32BIT;
+cu32	_U32				= _32BIT | _UNSIGNED;
+cu32	_S64				= _64BIT;
+cu32	_U64				= _64BIT | _UNSIGNED;
+cu32	_F32				= _32BIT | _FLOATING_POINT;
+cu32	_F64				= _64BIT | _FLOATING_POINT;
+
+// Pointers
+cu32	_S8P				= _8BIT | _POINTER;
+cu32	_U8P				= _8BIT | _POINTER | _UNSIGNED;
+cu32	_S16P				= _16BIT | _POINTER;
+cu32	_U16P				= _16BIT | _POINTER | _UNSIGNED;
+cu32	_S32P				= _32BIT | _POINTER;
+cu32	_U32P				= _32BIT | _POINTER | _UNSIGNED;
+cu32	_S64P				= _64BIT | _POINTER;
+cu32	_U64P				= _64BIT | _POINTER | _UNSIGNED;
+cu32	_F32P				= _32BIT | _POINTER | _FLOATING_POINT;
+cu32	_F64P				= _64BIT | _POINTER | _FLOATING_POINT;
+
+// Pointer to pointers
+cu32	_S8PP				= _8BIT | _POINTER_POINTER;
+cu32	_U8PP				= _8BIT | _POINTER_POINTER | _UNSIGNED;
+cu32	_S16PP				= _16BIT | _POINTER_POINTER;
+cu32	_U16PP				= _16BIT | _POINTER_POINTER | _UNSIGNED;
+cu32	_S32PP				= _32BIT | _POINTER_POINTER;
+cu32	_U32PP				= _32BIT | _POINTER_POINTER | _UNSIGNED;
+cu32	_S64PP				= _64BIT | _POINTER_POINTER;
+cu32	_U64PP				= _64BIT | _POINTER_POINTER | _UNSIGNED;
+cu32	_F32PP				= _32BIT | _POINTER_POINTER | _FLOATING_POINT;
+cu32	_F64PP				= _64BIT | _POINTER_POINTER | _FLOATING_POINT;
+
 // Standard forms
 #define between(value, lo, hi)	(value >= lo && value <= hi)
+
+// Logging
+#ifndef logfunc
+	#define logfunc(x)
+#endif
 
 
 //////////

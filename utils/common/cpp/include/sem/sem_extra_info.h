@@ -83,49 +83,6 @@
 
 
 //////////
-// Extra info contains information about a line of source code
-//////
-	struct SExtraInfo
-	{
-		SLL			ll;
-
-		u32			identifier;						// A registered identifier with the system for this extra info block
-		u32			identifier_type;				// Application defined type, identifies what's stored in this.info.data
-		SDatum		info;							// The extra info block stored for this entry
-
-
-		//////////
-		// Functions to called when the associated line is processed in some way
-		//////
-		union {
-			sptr	_onAccess;					// When the line is accessed
-			void	(*onAccess)					(SEM* sem, SLine* line, SExtraInfo* extra_info);
-		};
-
-		union {
-			sptr	_onArrival;					// When the target implementation is sitting on this line
-			void	(*onArrival)				(SEM* sem, SLine* line, SExtraInfo* extra_info);
-		};
-
-		union {
-			sptr	_onUpdate;					// When the line is updated
-			void	(*onUpdate)					(SEM* sem, SLine* line, SExtraInfo* extra_info);
-		};
-
-
-		//////////
-		// Function to call before freeing an entry
-		//////
-		union {
-			sptr		_freeInternal;			// Called to free any data in this.info
-			SExtraInfo*	(*freeInternal)			(SEM* sem, SLine* line, SExtraInfo* extra_info);
-		};
-	};
-
-
-
-
-//////////
 // Extra info callback codes for callbackCommon
 //////
 	const s32		_EXTRA_INFO_ON_ACCESS					= 1;

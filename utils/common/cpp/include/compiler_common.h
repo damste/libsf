@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/source/vjr/source/compiler/common/compiler_common.h
+// /libsf/util/common/cpp/include/compiler_common.h
 //
 //////
 //    _     _ _     _____ _____ 
@@ -22,9 +22,10 @@
 // Copyright (c) 2014-2015 by Rick C. Hodgin
 //////
 // Last update:
-//     Nov.02.2014
+//     Mar.17.2016
 //////
 // Change log:
+//     Mar.17.2016 - Refactoring into common area
 //     Nov.02.2014 - Initial creation
 //////
 //
@@ -80,6 +81,12 @@
 //
 
 
+
+
+//////////
+// Breakpoints
+//////
+	SBuilder*		gBreakpoints									= NULL;
 
 
 //////////
@@ -279,6 +286,19 @@
 
 
 //////////
+// Structures
+//////
+	struct SSourceCode
+	{
+		// Counts for populated values as this structure is fixed and reused on the stack, and to save speed it does not delete variables, but only large allocations upon exit
+		s32				rpCount;				// Number of valid returns in returns
+		s32				ipCount;				// Number of valid parameters in params
+	};
+
+
+
+
+//////////
 // Added to identify any tokens in alpha blocks which may have non-breaking-space characters
 // The comp->nbspCount allows them to be rendered properly in displayed form
 //////
@@ -296,6 +316,148 @@
 				if (comp->line->sourceCode->data._u8[comp->start + lnI] == 255)
 					++comp->nbspCount;
 			}
+	}
+
+
+
+
+//////////
+//
+// Called to delete the source code item
+//
+//////
+	void iSourceCode_delete(SSourceCode** sourceCode)
+	{
+		SSourceCode* sc;
+
+
+		// Make sure our environment is sane
+		if (sourceCode && *sourceCode)
+		{
+			// Get a copy of the pointer
+			sc = *sourceCode;
+
+			// Clear the pointer
+			*sourceCode = NULL;
+		}
+	}
+
+
+
+
+//////////
+//
+// Called to delete the indicated breakpoint
+//
+//////
+	void iBreakpoint_delete(SBreakpoint** breakpoint)
+	{
+		SBreakpoint* bp;
+
+
+		// Make sure our environment is sane
+		if (breakpoint && *breakpoint && (*breakpoint)->isUsed &&
+			(uptr)*breakpoint >= gBreakpoints->_data &&
+			(uptr)*breakpoint <= gBreakpoints->_data + gBreakpoints->populatedLength - sizeof(SBreakpoint))
+		{
+			// Get a local copy of our pointer
+			bp = *breakpoint;
+
+			// Reset the remote
+			*breakpoint = NULL;
+
+			// Delete the items as they are
+			bp->isUsed = true;
+
+			// Delete any source code for this breakpoint
+			if (bp->executeCode)
+				iSourceCode_delete(&bp->executeCode);
+		}
+	}
+
+
+
+
+//////////
+//
+// Called to add a new breakpoint.  It only creates the entry and populates the type.
+// For conditional breakpoints, or breakpoints with code they will need to be created
+// and added manually by the code in the calling algorithm.
+//
+//////
+	SBreakpoint* iBreakpoint_add(SBreakpoint** breakpoint, u32 tnType)
+	{
+		u32				lnI;
+		SBreakpoint*	bp;
+
+
+		// Make sure our environment is sane
+		if (breakpoint)
+		{
+			//////////
+			// Validate it's a known type
+			//////
+				switch (tnType)
+				{
+					case _BREAKPOINT_ALWAYS:
+					case _BREAKPOINT_CONDITIONAL_TRUE:
+					case _BREAKPOINT_CONDITIONAL_FALSE:
+					case _BREAKPOINT_CONDITIONAL_TRUE_COUNTDOWN:
+					case _BREAKPOINT_CONDITIONAL_FALSE_COUNTDOWN:
+						break;
+
+					default:
+						// We don't know what to do here... silently fail
+						return(NULL);
+				}
+				// If we get here, we're valid
+
+
+			//////////
+			// Make sure we've initialized our breakpoint structure
+			//////
+				if (!gBreakpoints)
+					iBuilder_createAndInitialize(&gBreakpoints, -1);
+
+
+			//////////
+			// Try to find an empty slot
+			//////
+				for (lnI = 0; lnI < gBreakpoints->populatedLength; lnI += sizeof(SBreakpoint))
+				{
+					// Grab this pointer
+					bp = (SBreakpoint*)(gBreakpoints->data_u8 + lnI);
+
+					// Is this an empty slot?
+					if (!bp->isUsed)
+						break;	// Yes, we can reuse it
+				}
+
+
+			//////////
+			// Allocate if we didn't find an empty slot
+			//////
+				if (lnI >= gBreakpoints->populatedLength)
+					bp = (SBreakpoint*)iBuilder_allocateBytes(gBreakpoints, sizeof(SBreakpoint));
+
+
+			//////////
+			// Populate it with the basic info
+			//////
+				if (bp)
+				{
+					bp->isUsed	= true;
+					bp->type	= tnType;
+				}
+
+
+			// Indicate our success or failure
+			*breakpoint	= bp;
+			return(bp);
+		}
+
+		// If we get here, failure
+		return(NULL);
 	}
 
 
