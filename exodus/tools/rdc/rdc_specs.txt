@@ -130,7 +130,10 @@ RDC Specifications Document
 
 	xs8,xu8				-- Extended auto-converting signed and unsigned 64-bit quantity, loaded and stored as an 8-bit quantity with signed/unsigned saturation
 	xs16,xu16			-- Extended auto-converting signed and unsigned 64-bit quantity, loaded and stored as a 16-bit quantity with signed/unsigned saturation
+	xs24,xu24			-- Extended auto-converting signed and unsigned 64-bit quantity, loaded and stored as a 24-bit quantity with signed/unsigned saturation
 	xs32,xu32			-- Extended auto-converting signed and unsigned 64-bit quantity, loaded and stored as a 32-bit quantity with signed/unsigned saturation
+	xs40,xu40			-- Extended auto-converting signed and unsigned 64-bit quantity, loaded and stored as a 40-bit quantity with signed/unsigned saturation
+	xs48,xu48			-- Extended auto-converting signed and unsigned 64-bit quantity, loaded and stored as a 48-bit quantity with signed/unsigned saturation
 	xs56,xu56			-- Extended auto-converting signed and unsigned 64-bit quantity, loaded and stored as a 56-bit quantity with signed/unsigned saturation
 	// Note:  Each of the above can be made into a pointer using a trailing * on the form, or on the variable.
 	// Note:  Each of the above can be prefixed with a "c" indicating they are constant.
@@ -143,13 +146,14 @@ RDC Specifications Document
 	static				-- Augments a definition to make it a singleton
 	extern				-- Augments a type to indicate its body is populated elsewhere
 	hide				-- Augments a type to indicate it should not be visible in SourceLight
+	range				-- Specifies a range the type will hold in the form range(lo,hi), used to prevent auto-promotion in compilation
 
 	sizeof				-- Returns the size of a type
 	countof				-- Returns the count of a type in its immediately more fundamental form
 	offsetof			-- Returns the offset of a type
 	addressof			-- Returns the address of a type
 
-	// Used in { ... } blocks
+	// Used in {{ ... }} blocks
 	successive			-- Variables put into the successive block are always expressed exactly that way in memory (no reordering)
 	literal				-- Specifies the data form is to be used literally as is, and remain unchanged changed even during optimization
 
