@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
+    <Filter Include="comps">
+      <UniqueIdentifier>{8dbb6951-bedb-45e4-9f40-678c95059d12}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\lasm.cpp">
@@ -39,6 +42,9 @@
     <ClCompile Include="..\passz.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\utils\common\cpp\base\comps.cpp">
+      <Filter>comps</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\lasm.h">
@@ -55,6 +61,9 @@
     </ClInclude>
     <ClInclude Include="..\lasm_structs.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\utils\common\cpp\include\comps.h">
+      <Filter>comps</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

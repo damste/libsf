@@ -3226,16 +3226,18 @@ renderAsOnlyText:
 // Called to process the ASCII character into the input buffer.
 //
 //////
-	bool iSEM_keystroke(SEM* sem, SObject* obj, u8 asciiChar)
+	bool iSEM_keystroke(SEM* sem, SObject* obj, u8 asciiChar, uptr _postParseFunc_ifNeeded)
 	{
-		bool	llChanged;
+		bool					llChanged;
+		SEM_postParseCallback	ppcb;
 
 
 		logfunc(__FUNCTION__);
 		//////////
 		// Indicate initially that no changes were made that require a re-render
 		//////
-			llChanged = false;
+			ppcb._postParseFunc	= _postParseFunc_ifNeeded;
+			llChanged			= false;
 
 
 		// Make sure our environment is sane
@@ -3295,7 +3297,8 @@ renderAsOnlyText:
 #endif
 
 			// Reprocess the source code on the line
-			iEngine_parse_sourceCode_line(sem->line_cursor);
+			if (ppcb._postParseFunc)
+				ppcb.postParseFunc(sem->line_cursor);
 
 			// Verify our cursor is visible
 			iSEM_verifyCursorIsVisible(sem, obj);
@@ -4700,10 +4703,11 @@ renderAsOnlyText:
 // Called to delete one character left (backspace)
 //
 //////
-	bool iSEM_deleteLeft(SEM* sem, SObject* obj)
+	bool iSEM_deleteLeft(SEM* sem, SObject* obj, uptr _postParseFunc_ifNeeded)
 	{
-		SLine*	line;
-		SLine*	lineLast;
+		SLine*					line;
+		SLine*					lineLast;
+		SEM_postParseCallback	ppcb;
 
 
 		logfunc(__FUNCTION__);
@@ -4712,6 +4716,9 @@ renderAsOnlyText:
 		//////
 			if (sem && !sem->isReadOnly && sem->line_cursor)
 			{
+				// Store the function
+				ppcb._postParseFunc	= _postParseFunc_ifNeeded;
+
 				// Grab the line
 				line		= sem->line_cursor;
 				lineLast	= sem->lastLine;
@@ -4774,7 +4781,8 @@ renderAsOnlyText:
 				}
 
 				// Reprocess the source code on the line
-				iEngine_parse_sourceCode_line(sem->line_cursor);
+				if (ppcb._postParseFunc)
+					ppcb.postParseFunc(sem->line_cursor);
 
 
 				//////////
@@ -4800,14 +4808,19 @@ renderAsOnlyText:
 // Called to select one character right (delete key)
 //
 //////
-	bool iSEM_deleteRight(SEM* sem, SObject* obj)
+	bool iSEM_deleteRight(SEM* sem, SObject* obj, uptr _postParseFunc_ifNeeded)
 	{
+		SEM_postParseCallback	ppcb;
+
+
 		logfunc(__FUNCTION__);
 		//////////
 		// Make sure we're valid
 		//////
 			if (sem && !sem->isReadOnly && sem->line_cursor)
 			{
+				// Store the post parsing function
+				ppcb._postParseFunc	= _postParseFunc_ifNeeded;
 				if (sem->line_cursor->sourceCode_populatedLength == 0)
 				{
 					// There's no data on this line, if we're in insert mode delete the line
@@ -4820,7 +4833,8 @@ renderAsOnlyText:
 				}
 
 				// Reprocess the source code on the line
-				iEngine_parse_sourceCode_line(sem->line_cursor);
+				if (ppcb._postParseFunc)
+					ppcb.postParseFunc(sem->line_cursor);
 
 
 				//////////
@@ -4846,10 +4860,11 @@ renderAsOnlyText:
 // Called to delete one word left (ctrl+backspace)
 //
 //////
-	bool iSEM_deleteWordLeft(SEM* sem, SObject* obj)
+	bool iSEM_deleteWordLeft(SEM* sem, SObject* obj, uptr _postParseFunc_ifNeeded)
 	{
-		s32		lnI, lnColumnStart, lnColumnEnd;
-		SLine*	line;
+		s32						lnI, lnColumnStart, lnColumnEnd;
+		SLine*					line;
+		SEM_postParseCallback	ppcb;
 
 
 		logfunc(__FUNCTION__);
@@ -4858,6 +4873,9 @@ renderAsOnlyText:
 		//////
 			if (sem && !sem->isReadOnly && sem->line_cursor)
 			{
+				// Store the post parsing function
+				ppcb._postParseFunc	= _postParseFunc_ifNeeded;
+
 				// Store where we are now
 				lnColumnStart	= sem->columnEdit;
 				line			= sem->line_cursor;
@@ -4885,8 +4903,8 @@ renderAsOnlyText:
 					}
 
 					// Reprocess the source code on the line if need be
-					if (sem->isSourceCode)
-						iEngine_parse_sourceCode_line(sem->line_cursor);
+					if (sem->isSourceCode && ppcb._postParseFunc)
+						ppcb.postParseFunc(sem->line_cursor);
 
 					// Indicate success
 					return(true);
@@ -4906,10 +4924,11 @@ renderAsOnlyText:
 // Called to delete one word right (ctrl+delete)
 //
 //////
-	bool iSEM_deleteWordRight(SEM* sem, SObject* obj)
+	bool iSEM_deleteWordRight(SEM* sem, SObject* obj, uptr _postParseFunc_ifNeeded)
 	{
-		s32		lnI, lnColumnStart, lnColumnEnd;
-		SLine*	line;
+		s32						lnI, lnColumnStart, lnColumnEnd;
+		SLine*					line;
+		SEM_postParseCallback	ppcb;
 
 
 		logfunc(__FUNCTION__);
@@ -4918,6 +4937,9 @@ renderAsOnlyText:
 		//////
 			if (sem && !sem->isReadOnly && sem->line_cursor)
 			{
+				// Store the post parsing function
+				ppcb._postParseFunc = _postParseFunc_ifNeeded;
+
 				// Store where we are now
 				lnColumnStart	= sem->columnEdit;
 				line			= sem->line_cursor;
@@ -4941,7 +4963,7 @@ renderAsOnlyText:
 							// Delete sem->column - columnStart from where we were
 							lnColumnEnd			= sem->columnEdit;
 							sem->line_cursor	= line;
-							sem->columnEdit			= lnColumnStart;
+							sem->columnEdit		= lnColumnStart;
 
 							// Delete the indicated number of characters
 							lnColumnEnd = lnColumnEnd - lnColumnStart;
@@ -4949,8 +4971,8 @@ renderAsOnlyText:
 								iSEMLine_characterDelete(sem);
 
 							// Reprocess the source code on the line if need be
-							if (sem->isSourceCode)
-								iEngine_parse_sourceCode_line(sem->line_cursor);
+							if (sem->isSourceCode && ppcb._postParseFunc)
+								ppcb.postParseFunc(sem->line_cursor);
 
 							// Indicate success
 							return(true);
@@ -4966,8 +4988,8 @@ renderAsOnlyText:
 								iSEMLine_characterDelete(sem);
 
 							// Reprocess the source code on the line if need be
-							if (sem->isSourceCode)
-								iEngine_parse_sourceCode_line(sem->line_cursor);
+							if (sem->isSourceCode && ppcb._postParseFunc)
+								ppcb.postParseFunc(sem->line_cursor);
 
 							// Indicate success
 							return(true);

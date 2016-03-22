@@ -175,6 +175,10 @@
 	cs32			_ICODE_CASK_AUTO								= 1000112;
 	cs32						_ICODE_CASK_MAXIMUM					= 1000112;
 
+	// Combined items
+	cs32			_ICODE_SINGLE_QUOTED_TEXT						= 2000001;
+	cs32			_ICODE_DOUBLE_QUOTED_TEXT						= 2000002;
+
 	// Standard types
 	cs32			_ICODE_UNKNOWN									= -1;
 	cs32			_ICODE_ALPHA									= 1;

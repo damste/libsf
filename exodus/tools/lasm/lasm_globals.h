@@ -107,7 +107,7 @@
 //////////
 // Colors
 //////
-	SBgra		colorDefault						= { rgba(0, 0, 0, 255) };		// Black
+	SBgra			colorDefault					= { rgba(0, 0, 0, 255) };		// Black
 
 
 

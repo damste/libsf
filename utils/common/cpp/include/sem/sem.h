@@ -245,6 +245,14 @@ struct SVariable;
 
 	};
 
+	struct SEM_postParseCallback
+	{
+		union {
+			uptr	_postParseFunc;
+			void	(*postParseFunc)	(SLine* line);
+		};
+	};
+
 
 //////////
 // Forward declarations
@@ -280,7 +288,7 @@ struct SVariable;
 
 
 	// Editor movements
-	bool					iSEM_keystroke						(SEM* sem, SObject* obj, u8 asciiChar);
+	bool					iSEM_keystroke						(SEM* sem, SObject* obj, u8 asciiChar, uptr _postParseFunc_ifNeeded);
 	bool					iSEM_scroll							(SEM* sem, SObject* obj, s32 deltaY, s32 deltaX);
 	bool					iSEM_navigate						(SEM* sem, SObject* obj, s32 deltaY, s32 deltaX);
 	bool					iSEM_navigatePages					(SEM* sem, SObject* obj, s32 deltaY);
@@ -317,10 +325,10 @@ struct SVariable;
 	bool					iSEM_selectWordRight				(SEM* sem, SObject* obj);
 	bool					iSEM_selectToTopLine				(SEM* sem, SObject* obj);
 	bool					iSEM_selectToEndLine				(SEM* sem, SObject* obj);
-	bool					iSEM_deleteLeft						(SEM* sem, SObject* obj);
-	bool					iSEM_deleteRight					(SEM* sem, SObject* obj);
-	bool					iSEM_deleteWordLeft					(SEM* sem, SObject* obj);
-	bool					iSEM_deleteWordRight				(SEM* sem, SObject* obj);
+	bool					iSEM_deleteLeft						(SEM* sem, SObject* obj, uptr _postParseFunc_ifNeeded);
+	bool					iSEM_deleteRight					(SEM* sem, SObject* obj, uptr _postParseFunc_ifNeeded);
+	bool					iSEM_deleteWordLeft					(SEM* sem, SObject* obj, uptr _postParseFunc_ifNeeded);
+	bool					iSEM_deleteWordRight				(SEM* sem, SObject* obj, uptr _postParseFunc_ifNeeded);
 	bool					iSEM_navigateTo_pixelXY				(SEM* sem, SObject* obj, s32 x, s32 y);
 	bool					iiSEM_isBreakingCharacter			(SEM* sem, SLine* line, s32 tnDeltaTest);
 	void					iSEM_selectStart					(SEM* sem, u32 tnSelectMode);

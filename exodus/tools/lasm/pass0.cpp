@@ -323,7 +323,7 @@
 		//////////
 		// Validate that it's alphanumeric
 		//////
-			if (!iiComps_isAlphanumeric(compName))
+			if (!iiComps_isAlphanumeric_by_iCode(compName))
 			{
 				++p0->line->status.errors;
 				printf("--Error(%d,%d): alphanumeric was expected in %s\n", p0->line->lineNumber, compName->start, p0->file->fileName.data._s8);
@@ -526,7 +526,7 @@ politely_fail:
 				//////////
 				// Validate it's a token
 				//////
-					if (!llSkipTest && !iiComps_isAlphanumeric(comp))
+					if (!llSkipTest && !iiComps_isAlphanumeric_by_iCode(comp))
 					{
 						++p0->line->status.errors;
 						printf("--Error(%d,%d): expected token in %s\n", p0->line->lineNumber, comp->start, p0->file->fileName.data._s8);
@@ -573,7 +573,7 @@ politely_fail:
 						//////////
 						// Next component must be right parenthesis or alphanumeric
 						//////
-							if (comp->iCode != _ICODE_PARENTHESIS_RIGHT && !iiComps_isAlphanumeric(comp))
+							if (comp->iCode != _ICODE_PARENTHESIS_RIGHT && !iiComps_isAlphanumeric_by_iCode(comp))
 							{
 								++p0->line->status.errors;
 								printf("--Error(%d,%d): expected token or right parenthesis in %s\n", p0->line->lineNumber, comp->start, p0->file->fileName.data._s8);

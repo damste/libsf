@@ -103,7 +103,7 @@
 #include "/libsf/utils/common/cpp/include/node.h"
 #include "/libsf/utils/common/cpp/include/callbacks.h"
 #include "/libsf/utils/common/cpp/include/colors.h"
-#include "/libsf/exodus/tools/common/debi_globals.h"
+#include "/libsf/exodus/tools/common/include/debi_globals.h"
 #include "/libsf/utils/common/cpp/include/builder.h"
 #include "/libsf/utils/common/cpp/include/datum.h"
 #include "/libsf/utils/common/cpp/include/disk.h"
@@ -113,6 +113,8 @@
 #include "/libsf/utils/common/cpp/include/compsearcher.h"
 #include "/libsf/utils/common/cpp/include/compiler_common.h"
 #include "/libsf/utils/common/cpp/include/xml.h"
+#include "/libsf/utils/common/cpp/include/comps.h"
+
 
 #include "/libsf/utils/common/cpp/base/ll.cpp"
 #include "/libsf/utils/common/cpp/base/node.cpp"
@@ -123,12 +125,14 @@
 #include "/libsf/utils/common/cpp/base/sem/sem.cpp"
 #include "/libsf/utils/common/cpp/base/bitmaps.cpp"
 #include "/libsf/utils/common/cpp/base/xml.cpp"
+#include "/libsf/utils/common/cpp/base/comps.cpp"
 
 #include "lasm_const.h"
 #include "lasm_structs.h"
 #include "lasm_defs.h"
 #include "lasm_globals.h"
 
+// Mar.21.2016 -- RCH -- The following contain code that used the older model, which has now been changed.  It requires much editing.
 // #include "pass0.cpp"
 // #include "pass1.cpp"
 // #include "pass2.cpp"

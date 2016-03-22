@@ -207,7 +207,11 @@ cu32	_F32PP				= _32BIT | _POINTER_POINTER | _FLOATING_POINT;
 cu32	_F64PP				= _64BIT | _POINTER_POINTER | _FLOATING_POINT;
 
 // Standard forms
-#define between(value, lo, hi)	(value >= lo && value <= hi)
+#define between(value, lo, hi)		(value >= lo && value <= hi)
+#define _union(x, y, z)				union { x z; y _ ## z; };
+
+// Usage:  abc = newAlloc(SAbc, gsAbcRoot);
+#define newAlloc(str, var)			(str*)iLl_appendNew__llAtEnd((SLL**)&var, sizeof(str))
 
 // Logging
 #ifndef logfunc
@@ -353,3 +357,27 @@ struct SXy_s32
 	s32	xi;
 	s32	yi;
 };
+
+// Tests az_AZ__
+bool isAlpha(s8 c)
+{
+	// Alpha?
+	if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_')		return(true);
+	else																	return(false);
+}
+
+// Tests 0123456789-+
+bool isNumeric(s8 c)
+{
+	// Numeric?
+	if ((c >= '0' && c <= '9') || c == '-' || c == '+')						return(true);
+	else																	return(false);
+}
+
+// Tests 0123456789.-+
+bool isFloatingPoint(s8 c)
+{
+	// Numeric?
+	if ((c >= '0' && c <= '9') || c == '.' || c == '-' || c == '+')			return(true);
+	else																	return(false);
+}
