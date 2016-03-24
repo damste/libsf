@@ -279,11 +279,15 @@
 				if (iFile_get_justfname((s8*)tcPathname, lnPathnameLength, &lcFname, &lnFnameLength))
 				{
 					// Set it to the extracted portion
+#ifdef _VJR_COMPILE
 					propSetRiderTab(objParent, lcFname, lnFnameLength);
+#endif
 
 				} else {
 					// Fall back on "rider" text
+#ifdef _VJR_COMPILE
 					propSetRiderTab(objParent, cgcName_rider, sizeof(cgcName_rider) - 1);
+#endif
 				}
 			}
 
@@ -304,7 +308,7 @@
 				{
 					// Log it
 					sprintf((s8*)buffer, "Load %s\0", tcPathname);
-					iVjr_appendSystemLog(buffer);
+					logfunc(buffer);
 				}
 
 				// Indicate our result
@@ -313,7 +317,7 @@
 			} else if (tlLogIt) {
 				// Log it
 				sprintf((s8*)buffer, "Load inquiry %s\0", tcPathname);
-				iVjr_appendSystemLog(buffer);
+				logfunc(buffer);
 			}
 		}
 		// If we get here, failure
@@ -392,9 +396,11 @@
 		//////
 			if (isSourceCode)
 			{
+#ifdef _VJR_COMPILE
 				// Parse from start to end
 				for ( ; start && start->ll.prevLine != end; start = start->ll.nextLine)
 					iEngine_parse_sourceCode_line(start);
+#endif
 			}
 
 
@@ -405,7 +411,7 @@
 			{
 				// Log it
 				sprintf((s8*)buffer, "Loaded %d from memory\0", datum->length);
-				iVjr_appendSystemLog(buffer);
+				logfunc(buffer);
 			}
 
 
@@ -874,6 +880,7 @@ debug_break;
 			if (sem->lastLine)
 			{
 				// Append after the last line
+#ifdef _VJR_COMPILE
 				if (sem == screenData && sem->lastLine == sem->firstLine && sem->line_cursor->sourceCode_populatedLength == 0)
 				{
 					// A special case for the command window, where the top line persists after a CLEAR, and must be populated before continuing
@@ -881,8 +888,11 @@ debug_break;
 					line = sem->line_cursor;
 
 				} else {
+#endif
 					line = (SLine*)iLl_appendNew__llAtEnd((SLL**)&sem->lastLine, sizeof(SLine));
+#ifdef _VJR_COMPILE
 				}
+#endif
 
 			} else {
 				// This is the first line, add it and set the last line to the same
@@ -905,7 +915,7 @@ debug_break;
 				// Make sure the length is valid
 				if (tnTextLength == -1)
 				{
-					if (tcText)		tnTextLength = (s32)strlen(tcText);
+					if (tcText)		tnTextLength = (s32)strlen((cs8*)tcText);
 					else			tnTextLength = 0;
 				}
 
@@ -1153,6 +1163,7 @@ debug_break;
 	{
 		logfunc(__FUNCTION__);
 		// Make sure our environment is sane
+#ifdef _VJR_COMPILE
 		if (sem && obj)
 		{
 			// What is the object?
@@ -1161,9 +1172,12 @@ debug_break;
 
 		} else {
 			// It's insane, so we set our colors to default
+#endif
 			backColor	= whiteColor;
 			foreColor	= blackColor;
+#ifdef _VJR_COMPILE
 		}
+#endif
 	}
 
 
@@ -1183,6 +1197,9 @@ debug_break;
 
 		logfunc(__FUNCTION__);
 		// Make sure our environment is sane
+#ifndef _VJR_COMPILE
+		font = NULL;
+#else
 		font = gsFontDefault;
 		if (sem && obj)
 		{
@@ -1192,10 +1209,13 @@ debug_break;
 			else				font = obj->p.font;
 
 		} else {
+#endif
 			// It's insane, so we set our rc to something that will prevent processing
 			SetRect(rc, 0, 0, 0, 0);
+#ifdef _VJR_COMPILE
 			font = gsFontDefault;
 		}
+#endif
 
 		// Return the font
 		return(font);
@@ -1206,688 +1226,10 @@ debug_break;
 
 //////////
 //
-// Called when a keypress is made in a source code window, or when a prior keypress
-// is now signaling repated keystrokes.
-//
-//////
-	bool iSEM_onKeyDown_sourceCode(SWindow* win, SObject* obj, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varCaps, SVariable* varAscii, SVariable* varVKey, SVariable* varIsCAS, SVariable* varIsAscii)
-	{
-		s32				lnMateDirection;
-		SEM*			sem;
-		SObject*		subform;
-		SLine*			line;
-		SLine*			lineMate;
-		SComp*			comp;
-		bool			llCtrl, llAlt, llShift, llCaps, llIsCAS, llIsAscii;
-		s16				lcAscii;
-		u16				lnVKey;
-
-
-		// Make sure our environment is sane
-		logfunc(__FUNCTION__);
-		if (!iiDefaultCallback_processKeyVariables(varCtrl, varAlt, varShift, varCaps, varAscii, varVKey, varIsCAS, varIsAscii, &llCtrl, &llAlt, &llShift, &llCaps, &llIsCAS, &llIsAscii, &lcAscii, &lnVKey))
-			return(false);
-
-		// Kick off a sourceLight thread
-		CreateThread(NULL, 0, &iSourceLight_update, (void*)obj, 0, 0);
-
-		// Make sure our environment is sane
-		sem = NULL;
-		if (obj && obj->objType == _OBJ_TYPE_EDITBOX)
-		{
-			// Grab the EM for this
-			sem = obj->p.sem;
-
-			// Send it its key
-			if (!llCtrl && !llShift && !llAlt)
-			{
-				// Regular key without special flags
-				switch (lnVKey)
-				{
-					case VK_F9:
-						// Breakpoint toggle
-						if (sem && sem->line_cursor)
-						{
-							// Toggle it
-							iSEMLine_toggleBreakpoint(sem);
-
-							// Force the redraw
-							iObj_setDirtyRender_ascent(obj, true);
-
-							// Re-render the window
-							iWindow_render(win, false);
-						}
-						break;
-
-					case VK_F6:
-					case VK_F8:
-						// They want to execute the cursor line of code
-						if (sem && sem->line_cursor && sem->line_cursor->sourceCode_populatedLength > 0)
-						{
-							// Execute the command
-							iEngine_engage_oneCommand(sem->line_cursor);
-
-							// If we're still going, then update the screen
-							if (!glShuttingDown)
-							{
-								// Move to next line and redraw
-								iSEM_navigate(sem, obj, 1, 0);
-								iWindow_render(win, false);
-							}
-							return(true);
-						}
-						break;
-
-					case VK_F10:
-					case VK_F11:
-						// They want to execute the next line where the debugger's stopped
-						break;
-
-					case VK_RETURN:
-						// Are we on the last line in the command window?
-						if (sem && sem->line_cursor && !sem->line_cursor->ll.next && sem->line_cursor->sourceCode_populatedLength > 0)
-						{
-							subform = iObj_find_thisSubform(obj);
-							if (subform && iObj_isCommandWindow(subform))
-							{
-								// Execute the command
-								iEngine_engage_oneCommand(sem->line_cursor);
-
-								// If we're not shutting down, update the screen
-								if (!glShuttingDown)
-								{
-									// Draw it like normal
-									iSEM_returnKey(sem, obj);
-									iWindow_render(win, false);
-								}
-								return(true);
-							}
-							// If we get here, we pass the return key through for editing
-						}
-						break;
-				}
-
-			} else if (llCtrl && !llShift && !llAlt) {
-				// CTRL+
-
-			} else if (!llCtrl && llShift && !llAlt) {
-				// SHIFT+
-
-			} else if (!llCtrl && !llShift && llAlt) {
-				// ALT+
-
-			} else if (llCtrl && llShift && !llAlt) {
-				// CTRL+SHIFT+
-
-			} else if (llCtrl && !llShift && llAlt) {
-				// CTRL+ALT+
-
-			} else if (!llCtrl && llShift && llAlt) {
-				// SHIFT+ALT
-
-			} else if (llCtrl && llShift && llAlt) {
-				// CTRL+ALT+SHIFT
-				switch (lnVKey)
-				{
-					case 'M':
-						// Mate, they're searching for this component's mate
-						// If they're on the cursor line, on a flow control directive, and holding down Ctrl+Alt+Shift, then we want to show that directive's mate on the line above
-						line = sem->line_cursor;
-						comp = iComps_activeComp_inSEM(sem);
-						if (iCat(comp->iCat) == _ICAT_FLOW && iComps_get_mateDirection(comp, &lnMateDirection))
-						{
-							// Search for the mated line
-							lineMate = (SLine*)iSEM_findMate(sem, line, comp);
-
-							// Was it found?
-							if (lineMate)
-							{
-								// Display it
-								if (lnMateDirection == -1)		sem->line_highlightBefore	= lineMate;
-								else							sem->line_highlightAfter	= lineMate;
-
-							} else {
-								// Display mate not found
-								if (lnMateDirection == -1)		iSEM_addTooltipHighlight(sem, line, obj, (s8*)cgc_noMateFound, -1, true);	// Show above
-								else							iSEM_addTooltipHighlight(sem, line, obj, (s8*)cgc_noMateFound, -1, false);	// Show below
-							}
-						}
-
-						// Redraw the window
-						iObj_setDirtyRender_ascent(obj, true);
-						iWindow_render(win, false);
-						return(true);
-				}
-			}
-		}
-
-		// When ctrl+alt+shift changes, remove the highlighted
-		if (sem && !(llCtrl && llShift && llAlt) && (sem->line_highlightBefore || sem->line_highlightAfter))
-		{
-			// We're done displaying the highlight
-			sem->line_highlightBefore	= NULL;
-			sem->line_highlightAfter	= NULL;
-
-			// Redraw
-			iObj_setDirtyRender_ascent(obj, true);
-			iWindow_render(win, false);
-		}
-
-		// Indicate additional events should be processed
-		return(iSEM_onKeyDown(win, obj, varCtrl, varAlt, varShift, varCaps, varAscii, varVKey, varIsCAS, varIsAscii));
-	}
-
-
-
-
-//////////
-//
-// Called when a keypress is made, or when a prior keypress is now signaling repated keystrokes.
-//
-//////
-	bool iSEM_onKeyDown(SWindow* win, SObject* obj, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varCaps, SVariable* varAscii, SVariable* varVKey, SVariable* varIsCAS, SVariable* varIsAscii)
-	{
-		s32		lnDeltaX;
-		bool	llProcessed;
-		SEM*	sem;
-		bool	llCtrl, llAlt, llShift, llCaps, llIsCAS, llIsAscii;
-		s16		lcAscii;
-		u16		lnVKey;
-
-
-		// Make sure our environment is sane
-		if (!iiDefaultCallback_processKeyVariables(varCtrl, varAlt, varShift, varCaps, varAscii, varVKey, varIsCAS, varIsAscii, &llCtrl, &llAlt, &llShift, &llCaps, &llIsCAS, &llIsAscii, &lcAscii, &lnVKey))
-			return(false);
-
-
-		logfunc(__FUNCTION__);
-		// Make sure our environment is sane
-		llProcessed = false;
-		if (obj && obj->objType == _OBJ_TYPE_EDITBOX && obj->p.sem)
-		{
-			// Grab the EM for this
-			sem = obj->p.sem;
-
-			// Send it its key
-			if (!llCtrl && !llShift && !llAlt)
-			{
-				// Regular key without special flags
-				switch (lnVKey)
-				{
-					case VK_UP:
-						if (iSEM_isSelecting(sem))
-						{
-							// They want to navigate from the selection, so we go to the top
-							iSEM_navigateToSelectStart(sem, obj, false);
-							iSEM_selectStop(sem);
-						}
-
-						// Navigate up one
-						iSEM_navigate(sem, obj, -1, 0);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_DOWN:
-						if (iSEM_isSelecting(sem))
-						{
-							// They want to navigate from the selection, so we go to the top
-							iSEM_navigateToSelectEnd(sem, obj, false);
-							iSEM_selectStop(sem);
-						}
-
-						// Navigate down one
-						iSEM_navigate(sem, obj, 1, 0);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_PRIOR:		// Page up
-						iSEM_selectStop(sem);
-						iSEM_navigatePages(sem, obj, -1);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_NEXT:		// Page down
-						iSEM_selectStop(sem);
-						iSEM_navigatePages(sem, obj, 1);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_ESCAPE:		// They hit escape, and are cancelling the input
-						iSEM_clearLine(sem, obj);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_TAB:
-						iSEM_tabIn(sem, obj);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_RETURN:
-						// Draw it like normal
-						iSEM_returnKey(sem, obj);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_LEFT:
-						if (iSEM_isSelecting(sem))
-						{
-							// They want to navigate from the selection, so we go to the top
-							iSEM_navigateToSelectStart(sem, obj, false);
-							iSEM_selectStop(sem);
-						}
-
-						// Navigate left one
-						iSEM_navigate(sem, obj, 0, -1);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_RIGHT:
-						if (iSEM_isSelecting(sem))
-						{
-							// They want to navigate from the selection, so we go to the top
-							iSEM_navigateToSelectEnd(sem, obj, false);
-							iSEM_selectStop(sem);
-						}
-
-						// Navigate right one
-						iSEM_navigate(sem, obj, 0, 1);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_HOME:
-						if (iSEM_isSelecting(sem))
-						{
-							// They want to navigate from the selection, so we go to the top
-							iSEM_navigateToSelectStart(sem, obj, false);
-							iSEM_selectStop(sem);
-						}
-
-						// Navigate to the start of the line
-						// If there are components, we will first try to navigate to the start of the first non-whitespace component
-						if (sem->line_cursor && sem->line_cursor->compilerInfo && sem->line_cursor->compilerInfo->firstComp)
-						{
-							// Are we already on the first non-whitespace character?
-							if (sem->columnEdit == sem->line_cursor->compilerInfo->firstComp->start)
-							{
-								// Yes, so navigate to the start of the line
-								lnDeltaX = -(sem->columnEdit);
-
-							} else {
-								// Navigate to the start of the line
-								if (sem->columnEdit == 0)
-								{
-									// Navigate to the first non-whitespace component
-									lnDeltaX = sem->line_cursor->compilerInfo->firstComp->start;
-
-								} else {
-									// Navigate from where we are to the position of the first non-whitespace component
-									lnDeltaX = sem->columnEdit - sem->line_cursor->compilerInfo->firstComp->start;
-									if (sem->columnEdit >= sem->line_cursor->compilerInfo->firstComp->start)
-										lnDeltaX *= -1;
-								}
-							}
-
-						} else {
-							// Navigate to the start of the line
-							lnDeltaX = -(sem->columnEdit);
-						}
-
-						// Navigate
-						if (lnDeltaX != 0)
-							iSEM_navigate(sem, obj, 0, lnDeltaX);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_END:
-						if (iSEM_isSelecting(sem))
-						{
-							// They want to navigate from the selection, so we go to the top
-							iSEM_navigateToSelectEnd(sem, obj, false);
-							iSEM_selectStop(sem);
-						}
-
-						// Navigate to the end of the line
-						if (sem->columnEdit != sem->line_cursor->sourceCode_populatedLength)
-							iSEM_navigate(sem, obj, 0, sem->line_cursor->sourceCode_populatedLength - sem->columnEdit);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_INSERT:
-						iSEM_toggleInsert(sem, obj);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_BACK:
-						iSEM_deleteLeft(sem, obj);
-						iSEM_selectStop(sem);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_DELETE:
-						iSEM_deleteRight(sem, obj);
-						iSEM_selectStop(sem);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_CLEAR:
-						iSEM_centerCursorLine(sem, obj);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-				}
-
-			} else if (llCtrl && !llShift && !llAlt) {
-				// CTRL+
-				switch (lnVKey)
-				{
-					case VK_ADD:
-						if (sem->font)			sem->font = iFont_bigger(sem->font,		true);
-						else					sem->font = iFont_bigger(obj->p.font,	false);
-						iSEM_verifyCursorIsVisible(sem, obj);
-						iObj_setDirtyRender_ascent(obj, true);
-						llProcessed = true;
-						break;
-
-					case VK_SUBTRACT:
-						if (sem->font)			sem->font = iFont_smaller(sem->font,		true);
-						else					sem->font = iFont_smaller(obj->p.font,	false);
-						iSEM_verifyCursorIsVisible(sem, obj);
-						iObj_setDirtyRender_ascent(obj, true);
-						llProcessed = true;
-						break;
-
-					case 'A':		// Select all
-						iSEM_selectAll(sem, obj);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case 'X':		// Cut
-						iSEM_cut(sem, obj);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case 'C':		// Copy
-						iSEM_copy(sem, obj);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case 'V':		// Paste
-						iSEM_paste(sem, obj);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case 'W':		// Save and close
-						break;
-
-					case 'Q':		// Quit
-						break;
-
-					case VK_UP:		// Up
-						iSEM_rollUp(sem, obj);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_DOWN:	// Down
-						iSEM_rollDown(sem, obj);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_LEFT:	// Word left
-						iSEM_navigateWordLeft(sem, obj, true);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_RIGHT:	// Word right
-						iSEM_navigateWordRight(sem, obj, true);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_HOME:	// Home (go to top of content)
-						iSEM_navigateToTopLine(sem, obj);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_END:	// Page down (go to end of content)
-						iSEM_navigateToEndLine(sem, obj);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_BACK:
-						iSEM_deleteWordLeft(sem, obj);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_DELETE:
-						iSEM_deleteWordRight(sem, obj);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-				}
-
-			} else if (!llCtrl && llShift && !llAlt) {
-				// SHIFT+
-				switch (lnVKey)
-				{
-					case VK_LEFT:	// Select left
-						iSEM_selectLeft(sem, obj);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_RIGHT:	// Select right
-						iSEM_selectRight(sem, obj);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_UP:		// Select line up
-						iSEM_selectLineUp(sem, obj);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_DOWN:	// Select line down
-						iSEM_selectLineDown(sem, obj);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_END:	// Select to end
-						iSEM_selectToEndOfLine(sem, obj);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_HOME:	// Select to start
-						iSEM_selectToBeginOfLine(sem, obj);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_TAB:	// Shift tab
-						iSEM_tabOut(sem, obj);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_PRIOR:		// Page up
-						iSEM_navigatePages(sem, obj, -1);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_NEXT:		// Page down
-						iSEM_navigatePages(sem, obj, 1);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_SPACE:		// Shift+space is a way to input a space into a token name
-						lcAscii		= 255;
-						llIsAscii	= true;
-						break;
-				}
-
-			} else if (!llCtrl && !llShift && llAlt) {
-				// ALT+
-				switch (lnVKey)
-				{
-					case 'K':		// Select column mode
-						iSEM_selectColumnToggle(sem, obj);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case 'L':		// Select full line mode
-						iSEM_selectLineToggle(sem, obj);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-				}
-
-			} else if (llCtrl && llShift && !llAlt) {
-				// CTRL+SHIFT+
-				switch (lnVKey)
-				{
-					case VK_END:	// Select to end
-						iSEM_selectToEndLine(sem, obj);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_HOME:	// Select to start
-						iSEM_selectToTopLine(sem, obj);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_UP:		// Select line up
-						iSEM_selectStart(sem, _SEM_SELECT_MODE_ANCHOR);
-						iSEM_rollUp(sem, obj);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_DOWN:	// Select line down
-						iSEM_selectStart(sem, _SEM_SELECT_MODE_ANCHOR);
-						iSEM_rollDown(sem, obj);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_LEFT:	// Select word left
-						iSEM_selectWordLeft(sem, obj);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-
-					case VK_RIGHT:	// Select word right
-						iSEM_selectWordRight(sem, obj);
-
-						// Indicate our key was processed
-						llProcessed = true;
-						break;
-				}
-
-			} else if (llCtrl && !llShift && llAlt) {
-				// CTRL+ALT+
-
-			} else if (!llCtrl && llShift && llAlt) {
-				// SHIFT+ALT
-
-			} else if (llCtrl && llShift && llAlt) {
-				// CTRL+ALT+SHIFT+
-
-			}
-
-			// If we get here, it wasn't processed above.  Try to stick it in the buffer
-			if (!llProcessed && llIsAscii)
-				iSEM_keystroke(sem, obj, (u8)lcAscii);		// It's a regular input key
-		}
-
-		// Re-render the window if need be
-		iWindow_render(win, false);
-
-		// Indicate additional events should be processed
-		return(true);
-	}
-
-
-
-
-//////////
-//
 // Moves through source code to find the mated component to the line indicated
 //
 //////
+#ifdef _VJR_COMPILE
 	void* iSEM_findMate(SEM* sem, SLine* line, SComp* comp)
 	{
 		s32		lnMateDirection, lnLevel;
@@ -3033,11 +2375,696 @@ renderAsOnlyText:
 
 //////////
 //
+// Called when a keypress is made in a source code window, or when a prior keypress
+// is now signaling repeated keystrokes.
+//
+//////
+	bool iSEM_onKeyDown_sourceCode(SWindow* win, SObject* obj, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varCaps, SVariable* varAscii, SVariable* varVKey, SVariable* varIsCAS, SVariable* varIsAscii)
+	{
+		s32				lnMateDirection;
+		SEM*			sem;
+		SObject*		subform;
+		SLine*			line;
+		SLine*			lineMate;
+		SComp*			comp;
+		bool			llCtrl, llAlt, llShift, llCaps, llIsCAS, llIsAscii;
+		s16				lcAscii;
+		u16				lnVKey;
+
+
+		// Make sure our environment is sane
+		logfunc(__FUNCTION__);
+		if (!iiDefaultCallback_processKeyVariables(varCtrl, varAlt, varShift, varCaps, varAscii, varVKey, varIsCAS, varIsAscii, &llCtrl, &llAlt, &llShift, &llCaps, &llIsCAS, &llIsAscii, &lcAscii, &lnVKey))
+			return(false);
+
+		// Kick off a sourceLight thread
+		CreateThread(NULL, 0, &iSourceLight_update, (void*)obj, 0, 0);
+
+		// Make sure our environment is sane
+		sem = NULL;
+		if (obj && obj->objType == _OBJ_TYPE_EDITBOX)
+		{
+			// Grab the EM for this
+			sem = obj->p.sem;
+
+			// Send it its key
+			if (!llCtrl && !llShift && !llAlt)
+			{
+				// Regular key without special flags
+				switch (lnVKey)
+				{
+					case VK_F9:
+						// Breakpoint toggle
+						if (sem && sem->line_cursor)
+						{
+							// Toggle it
+							iSEMLine_toggleBreakpoint(sem);
+
+							// Force the redraw
+							iObj_setDirtyRender_ascent(obj, true);
+
+							// Re-render the window
+							iWindow_render(win, false);
+						}
+						break;
+
+					case VK_F6:
+					case VK_F8:
+						// They want to execute the cursor line of code
+						if (sem && sem->line_cursor && sem->line_cursor->sourceCode_populatedLength > 0)
+						{
+							// Execute the command
+							iEngine_engage_oneCommand(sem->line_cursor);
+
+							// If we're still going, then update the screen
+							if (!glShuttingDown)
+							{
+								// Move to next line and redraw
+								iSEM_navigate(sem, obj, 1, 0);
+								iWindow_render(win, false);
+							}
+							return(true);
+						}
+						break;
+
+					case VK_F10:
+					case VK_F11:
+						// They want to execute the next line where the debugger's stopped
+						break;
+
+					case VK_RETURN:
+						// Are we on the last line in the command window?
+						if (sem && sem->line_cursor && !sem->line_cursor->ll.next && sem->line_cursor->sourceCode_populatedLength > 0)
+						{
+							subform = iObj_find_thisSubform(obj);
+							if (subform && iObj_isCommandWindow(subform))
+							{
+								// Execute the command
+								iEngine_engage_oneCommand(sem->line_cursor);
+
+								// If we're not shutting down, update the screen
+								if (!glShuttingDown)
+								{
+									// Draw it like normal
+									iSEM_returnKey(sem, obj);
+									iWindow_render(win, false);
+								}
+								return(true);
+							}
+							// If we get here, we pass the return key through for editing
+						}
+						break;
+				}
+
+			} else if (llCtrl && !llShift && !llAlt) {
+				// CTRL+
+
+			} else if (!llCtrl && llShift && !llAlt) {
+				// SHIFT+
+
+			} else if (!llCtrl && !llShift && llAlt) {
+				// ALT+
+
+			} else if (llCtrl && llShift && !llAlt) {
+				// CTRL+SHIFT+
+
+			} else if (llCtrl && !llShift && llAlt) {
+				// CTRL+ALT+
+
+			} else if (!llCtrl && llShift && llAlt) {
+				// SHIFT+ALT
+
+			} else if (llCtrl && llShift && llAlt) {
+				// CTRL+ALT+SHIFT
+				switch (lnVKey)
+				{
+					case 'M':
+						// Mate, they're searching for this component's mate
+						// If they're on the cursor line, on a flow control directive, and holding down Ctrl+Alt+Shift, then we want to show that directive's mate on the line above
+						line = sem->line_cursor;
+						comp = iComps_activeComp_inSEM(sem);
+						if (iCat(comp->iCat) == _ICAT_FLOW && iComps_get_mateDirection(comp, &lnMateDirection))
+						{
+							// Search for the mated line
+							lineMate = (SLine*)iSEM_findMate(sem, line, comp);
+
+							// Was it found?
+							if (lineMate)
+							{
+								// Display it
+								if (lnMateDirection == -1)		sem->line_highlightBefore	= lineMate;
+								else							sem->line_highlightAfter	= lineMate;
+
+							} else {
+								// Display mate not found
+								if (lnMateDirection == -1)		iSEM_addTooltipHighlight(sem, line, obj, (s8*)cgc_noMateFound, -1, true);	// Show above
+								else							iSEM_addTooltipHighlight(sem, line, obj, (s8*)cgc_noMateFound, -1, false);	// Show below
+							}
+						}
+
+						// Redraw the window
+						iObj_setDirtyRender_ascent(obj, true);
+						iWindow_render(win, false);
+						return(true);
+				}
+			}
+		}
+
+		// When ctrl+alt+shift changes, remove the highlighted
+		if (sem && !(llCtrl && llShift && llAlt) && (sem->line_highlightBefore || sem->line_highlightAfter))
+		{
+			// We're done displaying the highlight
+			sem->line_highlightBefore	= NULL;
+			sem->line_highlightAfter	= NULL;
+
+			// Redraw
+			iObj_setDirtyRender_ascent(obj, true);
+			iWindow_render(win, false);
+		}
+
+		// Indicate additional events should be processed
+		return(iSEM_onKeyDown(win, obj, varCtrl, varAlt, varShift, varCaps, varAscii, varVKey, varIsCAS, varIsAscii));
+	}
+
+
+
+
+//////////
+//
+// Called when a keypress is made, or when a prior keypress is now signaling repated keystrokes.
+//
+//////
+	bool iSEM_onKeyDown(SWindow* win, SObject* obj, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varCaps, SVariable* varAscii, SVariable* varVKey, SVariable* varIsCAS, SVariable* varIsAscii)
+	{
+		s32		lnDeltaX;
+		bool	llProcessed;
+		SEM*	sem;
+		bool	llCtrl, llAlt, llShift, llCaps, llIsCAS, llIsAscii;
+		s16		lcAscii;
+		u16		lnVKey;
+
+
+		// Make sure our environment is sane
+		if (!iiDefaultCallback_processKeyVariables(varCtrl, varAlt, varShift, varCaps, varAscii, varVKey, varIsCAS, varIsAscii, &llCtrl, &llAlt, &llShift, &llCaps, &llIsCAS, &llIsAscii, &lcAscii, &lnVKey))
+			return(false);
+
+
+		logfunc(__FUNCTION__);
+		// Make sure our environment is sane
+		llProcessed = false;
+		if (obj && obj->objType == _OBJ_TYPE_EDITBOX && obj->p.sem)
+		{
+			// Grab the EM for this
+			sem = obj->p.sem;
+
+			// Send it its key
+			if (!llCtrl && !llShift && !llAlt)
+			{
+				// Regular key without special flags
+				switch (lnVKey)
+				{
+					case VK_UP:
+						if (iSEM_isSelecting(sem))
+						{
+							// They want to navigate from the selection, so we go to the top
+							iSEM_navigateToSelectStart(sem, obj, false);
+							iSEM_selectStop(sem);
+						}
+
+						// Navigate up one
+						iSEM_navigate(sem, obj, -1, 0);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_DOWN:
+						if (iSEM_isSelecting(sem))
+						{
+							// They want to navigate from the selection, so we go to the top
+							iSEM_navigateToSelectEnd(sem, obj, false);
+							iSEM_selectStop(sem);
+						}
+
+						// Navigate down one
+						iSEM_navigate(sem, obj, 1, 0);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_PRIOR:		// Page up
+						iSEM_selectStop(sem);
+						iSEM_navigatePages(sem, obj, -1);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_NEXT:		// Page down
+						iSEM_selectStop(sem);
+						iSEM_navigatePages(sem, obj, 1);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_ESCAPE:		// They hit escape, and are cancelling the input
+						iSEM_clearLine(sem, obj);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_TAB:
+						iSEM_tabIn(sem, obj);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_RETURN:
+						// Draw it like normal
+						iSEM_returnKey(sem, obj);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_LEFT:
+						if (iSEM_isSelecting(sem))
+						{
+							// They want to navigate from the selection, so we go to the top
+							iSEM_navigateToSelectStart(sem, obj, false);
+							iSEM_selectStop(sem);
+						}
+
+						// Navigate left one
+						iSEM_navigate(sem, obj, 0, -1);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_RIGHT:
+						if (iSEM_isSelecting(sem))
+						{
+							// They want to navigate from the selection, so we go to the top
+							iSEM_navigateToSelectEnd(sem, obj, false);
+							iSEM_selectStop(sem);
+						}
+
+						// Navigate right one
+						iSEM_navigate(sem, obj, 0, 1);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_HOME:
+						if (iSEM_isSelecting(sem))
+						{
+							// They want to navigate from the selection, so we go to the top
+							iSEM_navigateToSelectStart(sem, obj, false);
+							iSEM_selectStop(sem);
+						}
+
+						// Navigate to the start of the line
+						// If there are components, we will first try to navigate to the start of the first non-whitespace component
+						if (sem->line_cursor && sem->line_cursor->compilerInfo && sem->line_cursor->compilerInfo->firstComp)
+						{
+							// Are we already on the first non-whitespace character?
+							if (sem->columnEdit == sem->line_cursor->compilerInfo->firstComp->start)
+							{
+								// Yes, so navigate to the start of the line
+								lnDeltaX = -(sem->columnEdit);
+
+							} else {
+								// Navigate to the start of the line
+								if (sem->columnEdit == 0)
+								{
+									// Navigate to the first non-whitespace component
+									lnDeltaX = sem->line_cursor->compilerInfo->firstComp->start;
+
+								} else {
+									// Navigate from where we are to the position of the first non-whitespace component
+									lnDeltaX = sem->columnEdit - sem->line_cursor->compilerInfo->firstComp->start;
+									if (sem->columnEdit >= sem->line_cursor->compilerInfo->firstComp->start)
+										lnDeltaX *= -1;
+								}
+							}
+
+						} else {
+							// Navigate to the start of the line
+							lnDeltaX = -(sem->columnEdit);
+						}
+
+						// Navigate
+						if (lnDeltaX != 0)
+							iSEM_navigate(sem, obj, 0, lnDeltaX);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_END:
+						if (iSEM_isSelecting(sem))
+						{
+							// They want to navigate from the selection, so we go to the top
+							iSEM_navigateToSelectEnd(sem, obj, false);
+							iSEM_selectStop(sem);
+						}
+
+						// Navigate to the end of the line
+						if (sem->columnEdit != sem->line_cursor->sourceCode_populatedLength)
+							iSEM_navigate(sem, obj, 0, sem->line_cursor->sourceCode_populatedLength - sem->columnEdit);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_INSERT:
+						iSEM_toggleInsert(sem, obj);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_BACK:
+						iSEM_deleteLeft(sem, obj);
+						iSEM_selectStop(sem);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_DELETE:
+						iSEM_deleteRight(sem, obj);
+						iSEM_selectStop(sem);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_CLEAR:
+						iSEM_centerCursorLine(sem, obj);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+				}
+
+			} else if (llCtrl && !llShift && !llAlt) {
+				// CTRL+
+				switch (lnVKey)
+				{
+					case VK_ADD:
+						if (sem->font)			sem->font = iFont_bigger(sem->font,		true);
+						else					sem->font = iFont_bigger(obj->p.font,	false);
+						iSEM_verifyCursorIsVisible(sem, obj);
+						iObj_setDirtyRender_ascent(obj, true);
+						llProcessed = true;
+						break;
+
+					case VK_SUBTRACT:
+						if (sem->font)			sem->font = iFont_smaller(sem->font,		true);
+						else					sem->font = iFont_smaller(obj->p.font,	false);
+						iSEM_verifyCursorIsVisible(sem, obj);
+						iObj_setDirtyRender_ascent(obj, true);
+						llProcessed = true;
+						break;
+
+					case 'A':		// Select all
+						iSEM_selectAll(sem, obj);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case 'X':		// Cut
+						iSEM_cut(sem, obj);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case 'C':		// Copy
+						iSEM_copy(sem, obj);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case 'V':		// Paste
+						iSEM_paste(sem, obj);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case 'W':		// Save and close
+						break;
+
+					case 'Q':		// Quit
+						break;
+
+					case VK_UP:		// Up
+						iSEM_rollUp(sem, obj);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_DOWN:	// Down
+						iSEM_rollDown(sem, obj);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_LEFT:	// Word left
+						iSEM_navigateWordLeft(sem, obj, true);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_RIGHT:	// Word right
+						iSEM_navigateWordRight(sem, obj, true);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_HOME:	// Home (go to top of content)
+						iSEM_navigateToTopLine(sem, obj);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_END:	// Page down (go to end of content)
+						iSEM_navigateToEndLine(sem, obj);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_BACK:
+						iSEM_deleteWordLeft(sem, obj);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_DELETE:
+						iSEM_deleteWordRight(sem, obj);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+				}
+
+			} else if (!llCtrl && llShift && !llAlt) {
+				// SHIFT+
+				switch (lnVKey)
+				{
+					case VK_LEFT:	// Select left
+						iSEM_selectLeft(sem, obj);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_RIGHT:	// Select right
+						iSEM_selectRight(sem, obj);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_UP:		// Select line up
+						iSEM_selectLineUp(sem, obj);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_DOWN:	// Select line down
+						iSEM_selectLineDown(sem, obj);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_END:	// Select to end
+						iSEM_selectToEndOfLine(sem, obj);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_HOME:	// Select to start
+						iSEM_selectToBeginOfLine(sem, obj);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_TAB:	// Shift tab
+						iSEM_tabOut(sem, obj);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_PRIOR:		// Page up
+						iSEM_navigatePages(sem, obj, -1);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_NEXT:		// Page down
+						iSEM_navigatePages(sem, obj, 1);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_SPACE:		// Shift+space is a way to input a space into a token name
+						lcAscii		= 255;
+						llIsAscii	= true;
+						break;
+				}
+
+			} else if (!llCtrl && !llShift && llAlt) {
+				// ALT+
+				switch (lnVKey)
+				{
+					case 'K':		// Select column mode
+						iSEM_selectColumnToggle(sem, obj);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case 'L':		// Select full line mode
+						iSEM_selectLineToggle(sem, obj);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+				}
+
+			} else if (llCtrl && llShift && !llAlt) {
+				// CTRL+SHIFT+
+				switch (lnVKey)
+				{
+					case VK_END:	// Select to end
+						iSEM_selectToEndLine(sem, obj);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_HOME:	// Select to start
+						iSEM_selectToTopLine(sem, obj);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_UP:		// Select line up
+						iSEM_selectStart(sem, _SEM_SELECT_MODE_ANCHOR);
+						iSEM_rollUp(sem, obj);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_DOWN:	// Select line down
+						iSEM_selectStart(sem, _SEM_SELECT_MODE_ANCHOR);
+						iSEM_rollDown(sem, obj);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_LEFT:	// Select word left
+						iSEM_selectWordLeft(sem, obj);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+
+					case VK_RIGHT:	// Select word right
+						iSEM_selectWordRight(sem, obj);
+
+						// Indicate our key was processed
+						llProcessed = true;
+						break;
+				}
+
+			} else if (llCtrl && !llShift && llAlt) {
+				// CTRL+ALT+
+
+			} else if (!llCtrl && llShift && llAlt) {
+				// SHIFT+ALT
+
+			} else if (llCtrl && llShift && llAlt) {
+				// CTRL+ALT+SHIFT+
+
+			}
+
+			// If we get here, it wasn't processed above.  Try to stick it in the buffer
+			if (!llProcessed && llIsAscii)
+				iSEM_keystroke(sem, obj, (u8)lcAscii);		// It's a regular input key
+		}
+
+		// Re-render the window if need be
+		iWindow_render(win, false);
+
+		// Indicate additional events should be processed
+		return(true);
+	}
+#endif
+
+
+
+
+//////////
+//
 // Called to verify the cursor is visible by adjusting sem->leftColumn
 //
 //////
 	bool iSEM_verifyCursorIsVisible(SEM* sem, SObject* obj)
 	{
+#ifndef _VJR_COMPILE
+		// No other support at present
+		debug_break;
+		return(false);	// Signal no changes
+#else
 		s32		lnI, lnUp, lnDn, lnNewLeftColumn, lnCols, lnRows, lnWidth, lnHeight, lnExtra;
 		bool	llChanged;
 		SLine*	lineUp;
@@ -3188,6 +3215,7 @@ renderAsOnlyText:
 
 		// Indicate our status
 		return(llChanged);
+#endif
 	}
 
 
@@ -3198,16 +3226,18 @@ renderAsOnlyText:
 // Called to process the ASCII character into the input buffer.
 //
 //////
-	bool iSEM_keystroke(SEM* sem, SObject* obj, u8 asciiChar)
+	bool iSEM_keystroke(SEM* sem, SObject* obj, u8 asciiChar, uptr _postParseFunc_ifNeeded)
 	{
-		bool	llChanged;
+		bool					llChanged;
+		SEM_postParseCallback	ppcb;
 
 
 		logfunc(__FUNCTION__);
 		//////////
 		// Indicate initially that no changes were made that require a re-render
 		//////
-			llChanged = false;
+			ppcb._postParseFunc	= _postParseFunc_ifNeeded;
+			llChanged			= false;
 
 
 		// Make sure our environment is sane
@@ -3261,11 +3291,14 @@ renderAsOnlyText:
 		// If we updated something, mark the object dirty
 		if (llChanged)
 		{
+#ifdef _VJR_COMPILE
 			// Indicate the object needs re-rendered
 			iObj_setDirtyRender_ascent(obj, true);
+#endif
 
 			// Reprocess the source code on the line
-			iEngine_parse_sourceCode_line(sem->line_cursor);
+			if (ppcb._postParseFunc)
+				ppcb.postParseFunc(sem->line_cursor);
 
 			// Verify our cursor is visible
 			iSEM_verifyCursorIsVisible(sem, obj);
@@ -3695,7 +3728,7 @@ renderAsOnlyText:
 // Called to toggle insert mode
 //
 //////
-	bool iSEM_toggleInsert(SEM* sem, SObject* obj)
+	bool iSEM_toggleInsert(SEM* sem)
 	{
 		logfunc(__FUNCTION__);
 		if (sem)
@@ -3703,8 +3736,10 @@ renderAsOnlyText:
 			// Toggle the flag
 			sem->isOverwrite = !sem->isOverwrite;
 
+#ifdef _VJR_COMPILE
 			// Something has changed, we need to re-render
 			iObj_setDirtyRender_ascent(obj, true);
+#endif
 
 			// Toggling insert changes the shape of the cursor, so we always redraw
 			return(true);
@@ -4668,10 +4703,11 @@ renderAsOnlyText:
 // Called to delete one character left (backspace)
 //
 //////
-	bool iSEM_deleteLeft(SEM* sem, SObject* obj)
+	bool iSEM_deleteLeft(SEM* sem, SObject* obj, uptr _postParseFunc_ifNeeded)
 	{
-		SLine*	line;
-		SLine*	lineLast;
+		SLine*					line;
+		SLine*					lineLast;
+		SEM_postParseCallback	ppcb;
 
 
 		logfunc(__FUNCTION__);
@@ -4680,6 +4716,9 @@ renderAsOnlyText:
 		//////
 			if (sem && !sem->isReadOnly && sem->line_cursor)
 			{
+				// Store the function
+				ppcb._postParseFunc	= _postParseFunc_ifNeeded;
+
 				// Grab the line
 				line		= sem->line_cursor;
 				lineLast	= sem->lastLine;
@@ -4742,7 +4781,8 @@ renderAsOnlyText:
 				}
 
 				// Reprocess the source code on the line
-				iEngine_parse_sourceCode_line(sem->line_cursor);
+				if (ppcb._postParseFunc)
+					ppcb.postParseFunc(sem->line_cursor);
 
 
 				//////////
@@ -4768,14 +4808,19 @@ renderAsOnlyText:
 // Called to select one character right (delete key)
 //
 //////
-	bool iSEM_deleteRight(SEM* sem, SObject* obj)
+	bool iSEM_deleteRight(SEM* sem, SObject* obj, uptr _postParseFunc_ifNeeded)
 	{
+		SEM_postParseCallback	ppcb;
+
+
 		logfunc(__FUNCTION__);
 		//////////
 		// Make sure we're valid
 		//////
 			if (sem && !sem->isReadOnly && sem->line_cursor)
 			{
+				// Store the post parsing function
+				ppcb._postParseFunc	= _postParseFunc_ifNeeded;
 				if (sem->line_cursor->sourceCode_populatedLength == 0)
 				{
 					// There's no data on this line, if we're in insert mode delete the line
@@ -4788,7 +4833,8 @@ renderAsOnlyText:
 				}
 
 				// Reprocess the source code on the line
-				iEngine_parse_sourceCode_line(sem->line_cursor);
+				if (ppcb._postParseFunc)
+					ppcb.postParseFunc(sem->line_cursor);
 
 
 				//////////
@@ -4814,10 +4860,11 @@ renderAsOnlyText:
 // Called to delete one word left (ctrl+backspace)
 //
 //////
-	bool iSEM_deleteWordLeft(SEM* sem, SObject* obj)
+	bool iSEM_deleteWordLeft(SEM* sem, SObject* obj, uptr _postParseFunc_ifNeeded)
 	{
-		s32		lnI, lnColumnStart, lnColumnEnd;
-		SLine*	line;
+		s32						lnI, lnColumnStart, lnColumnEnd;
+		SLine*					line;
+		SEM_postParseCallback	ppcb;
 
 
 		logfunc(__FUNCTION__);
@@ -4826,6 +4873,9 @@ renderAsOnlyText:
 		//////
 			if (sem && !sem->isReadOnly && sem->line_cursor)
 			{
+				// Store the post parsing function
+				ppcb._postParseFunc	= _postParseFunc_ifNeeded;
+
 				// Store where we are now
 				lnColumnStart	= sem->columnEdit;
 				line			= sem->line_cursor;
@@ -4853,8 +4903,8 @@ renderAsOnlyText:
 					}
 
 					// Reprocess the source code on the line if need be
-					if (sem->isSourceCode)
-						iEngine_parse_sourceCode_line(sem->line_cursor);
+					if (sem->isSourceCode && ppcb._postParseFunc)
+						ppcb.postParseFunc(sem->line_cursor);
 
 					// Indicate success
 					return(true);
@@ -4874,10 +4924,11 @@ renderAsOnlyText:
 // Called to delete one word right (ctrl+delete)
 //
 //////
-	bool iSEM_deleteWordRight(SEM* sem, SObject* obj)
+	bool iSEM_deleteWordRight(SEM* sem, SObject* obj, uptr _postParseFunc_ifNeeded)
 	{
-		s32		lnI, lnColumnStart, lnColumnEnd;
-		SLine*	line;
+		s32						lnI, lnColumnStart, lnColumnEnd;
+		SLine*					line;
+		SEM_postParseCallback	ppcb;
 
 
 		logfunc(__FUNCTION__);
@@ -4886,6 +4937,9 @@ renderAsOnlyText:
 		//////
 			if (sem && !sem->isReadOnly && sem->line_cursor)
 			{
+				// Store the post parsing function
+				ppcb._postParseFunc = _postParseFunc_ifNeeded;
+
 				// Store where we are now
 				lnColumnStart	= sem->columnEdit;
 				line			= sem->line_cursor;
@@ -4909,7 +4963,7 @@ renderAsOnlyText:
 							// Delete sem->column - columnStart from where we were
 							lnColumnEnd			= sem->columnEdit;
 							sem->line_cursor	= line;
-							sem->columnEdit			= lnColumnStart;
+							sem->columnEdit		= lnColumnStart;
 
 							// Delete the indicated number of characters
 							lnColumnEnd = lnColumnEnd - lnColumnStart;
@@ -4917,8 +4971,8 @@ renderAsOnlyText:
 								iSEMLine_characterDelete(sem);
 
 							// Reprocess the source code on the line if need be
-							if (sem->isSourceCode)
-								iEngine_parse_sourceCode_line(sem->line_cursor);
+							if (sem->isSourceCode && ppcb._postParseFunc)
+								ppcb.postParseFunc(sem->line_cursor);
 
 							// Indicate success
 							return(true);
@@ -4934,8 +4988,8 @@ renderAsOnlyText:
 								iSEMLine_characterDelete(sem);
 
 							// Reprocess the source code on the line if need be
-							if (sem->isSourceCode)
-								iEngine_parse_sourceCode_line(sem->line_cursor);
+							if (sem->isSourceCode && ppcb._postParseFunc)
+								ppcb.postParseFunc(sem->line_cursor);
 
 							// Indicate success
 							return(true);
@@ -5158,3 +5212,12 @@ renderAsOnlyText:
 			sem->selectEnd.line			= sem->line_cursor;
 		}
 	}
+
+	
+
+
+//////////
+// Additional support
+//////
+	#include "sem_extra_info.cpp"
+	#include "sem_line.cpp"

@@ -82,17 +82,61 @@
 
 
 
+// Compiling directly on Windows
+#include <stdio.h>
+#include <stdlib.h>
+#include <io.h>
+#include <sys/locking.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <share.h>
+#include <errno.h>
+#include <shlObj.h>
+#include <math.h>
+
+#define _EXCLUDE_iBmp_cask_createAndPopulate				1
+#define _EXCLUDE_iBmp_colorizeAsCommonTooltipBackground		1
+
+#include "/libsf/utils/common/cpp/include/common_types.h"
+#include "/libsf/utils/common/cpp/include/ll.h"
+#include "/libsf/utils/common/cpp/include/node.h"
+#include "/libsf/utils/common/cpp/include/callbacks.h"
+#include "/libsf/utils/common/cpp/include/colors.h"
+#include "/libsf/exodus/tools/common/include/debi_globals.h"
+#include "/libsf/utils/common/cpp/include/builder.h"
+#include "/libsf/utils/common/cpp/include/datum.h"
+#include "/libsf/utils/common/cpp/include/disk.h"
+#include "/libsf/utils/common/cpp/include/time.h"
+#include "/libsf/utils/common/cpp/include/sem/sem.h"
+#include "/libsf/utils/common/cpp/include/bitmaps.h"
+#include "/libsf/utils/common/cpp/include/compsearcher.h"
+#include "/libsf/utils/common/cpp/include/compiler_common.h"
+#include "/libsf/utils/common/cpp/include/xml.h"
+#include "/libsf/utils/common/cpp/include/comps.h"
+
+
+#include "/libsf/utils/common/cpp/base/ll.cpp"
+#include "/libsf/utils/common/cpp/base/node.cpp"
+#include "/libsf/utils/common/cpp/base/builder.cpp"
+#include "/libsf/utils/common/cpp/base/datum.cpp"
+#include "/libsf/utils/common/cpp/base/disk.cpp"
+#include "/libsf/utils/common/cpp/base/time.cpp"
+#include "/libsf/utils/common/cpp/base/sem/sem.cpp"
+#include "/libsf/utils/common/cpp/base/bitmaps.cpp"
+#include "/libsf/utils/common/cpp/base/xml.cpp"
+#include "/libsf/utils/common/cpp/base/comps.cpp"
+
 #include "lasm_const.h"
 #include "lasm_structs.h"
 #include "lasm_defs.h"
-#include "/libsf/exodus/tools/debi/debi_typedefs.h"
-#include "/libsf/exodus/tools/debi/debi_globals.h"
 #include "lasm_globals.h"
 
-#include "pass0.cpp"
-#include "pass1.cpp"
-#include "pass2.cpp"
-#include "pass3.cpp"
-#include "passX.cpp"
-#include "passY.cpp"
-#include "passZ.cpp"
+// Mar.21.2016 -- RCH -- The following contain code that used the older model, which has now been changed.  It requires much editing.
+// #include "pass0.cpp"
+// #include "pass1.cpp"
+// #include "pass2.cpp"
+// #include "pass3.cpp"
+// #include "passX.cpp"
+// #include "passY.cpp"
+// #include "passZ.cpp"

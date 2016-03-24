@@ -118,7 +118,6 @@
 //////////
 // Include VJr stuff, then lasm stuff
 //////
-	#include "\libsf\source\vjr\source\vjr.h"
 	#include "lasm.h"
 
 
@@ -138,9 +137,6 @@
 		SLasmCmdLine	cmdLine;
 		s8				fileName[_MAX_PATH];
 
-
-		// Initialize
-		iVjr_init(NULL);
 
 		// Initialize our engine
 		memset(&cmdLine,		0, sizeof(cmdLine));		// Initialize all options off

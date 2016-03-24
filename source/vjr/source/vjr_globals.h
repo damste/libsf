@@ -169,7 +169,6 @@
 //////
 	SBuilder*			gWindows							= NULL;
 	SBuilder*			gFonts								= NULL;
-	SBuilder*			gBreakpoints						= NULL;
 //////
 // END
 //////////
@@ -177,7 +176,6 @@
 	HWND				ghwndMsg							= null0;
 	CRITICAL_SECTION	cs_uniqueIdAccess;
 	CRITICAL_SECTION	cs_logData;
-	u32					gnNextUniqueId						= 0;
 	s64					systemStartedMs						= 0;
 	u32					systemStartedTickCount				= 0;
 
@@ -590,84 +588,8 @@
 		SFont*			gsWindowTitleBarFontSubform			= NULL;									// Default Condensed Bold 10 pt
 		SFont*			gsFontDefaultTooltip				= NULL;									// Default Condensed Bold 9 pt
 		SFont*			gsFontCask							= NULL;									// Cask font, Default Bold 30 pt
-		// Global colors
 
-		const SBgra		nwColor_form						= { _nwColor_form };
-		const SBgra		neColor_form						= { _neColor_form };
-		const SBgra		seColor_form						= { _seColor_form };
-		const SBgra		swColor_form						= { _swColor_form };
-
-		const SBgra		nwColor_subform						= { _nwColor_subform };
-		const SBgra		neColor_subform						= { _neColor_subform };
-		const SBgra		seColor_subform						= { _seColor_subform };
-		const SBgra		swColor_subform						= { _swColor_subform };
-
-		SBgra			tooltipNwBackColor					= { rgba(255, 254, 230, 255) };			// Pastel yellow
-		SBgra			tooltipNeBackColor					= { rgba(252, 242, 192, 25) };			// Less pastel yellow, somewhat pale
-		SBgra			tooltipSwBackColor					= { rgba(249, 222, 133, 255) };			// Orange/golden yellow
-		SBgra			tooltipSeBackColor					= { rgba(247, 210, 96, 255) };			// More orange/golden yellow
-		SBgra			tooltipForecolor					= { rgba(84, 56, 12, 255) };			// Dark chocolate brown
-		SBgra			lineNumberFillColor					= { rgba(225, 245, 240, 255) };
-		SBgra			lineNumberBackColor					= { rgba(215, 235, 230, 255) };
-		SBgra			lineNumberForeColor					= { rgba(191, 208, 191, 255) };
-		SBgra			breadcrumbBackColor					= { rgba(180, 220, 240, 255) };			// Cyanish
-		SBgra			breadcrumbForeColor					= { rgba(0, 0, 164, 255) };				// Semidark blue
-		SBgra			breakpointBackColor					= { rgba(180, 140, 220, 255) };			// Purplish
-		SBgra			breakpointForeColor					= { rgba(64, 32, 92, 255) };			// Dark purple
-		SBgra			currentStatementBackColor			= { rgba(225, 255, 192, 255) };			// Pastel lime greenish
-		SBgra			currentStatementForeColor			= { rgba(0, 64, 0, 255) };				// Dark green
-		SBgra			overrideMatchingBackColor			= { rgba(0, 255, 0, 255) };				// Green
-		SBgra			overrideMatchingForeColor			= { rgba(0, 0, 0, 255) };				// Black
-		SBgra			overrideMatchingBackColorMultiple	= { rgba(0, 255, 0, 255) };				// Green
-		SBgra			overrideMatchingForeColorMultiple	= { rgba(0, 0, 0, 255) };				// Black
-		SBgra			selectedBackColor					= { _selectedBackColor };				// Pastel turquoise
-		SBgra			selectedForeColor					= { _selectedForeColor };				// Darkish blue
-		SBgra			disabledBackColor					= { _disabledBackColor };
-		SBgra			disabledForeColor					= { _disabledForeColor };
-		SBgra			disabledItemBackColor				= { _disabledBackColor };
-		SBgra			disabledItemForeColor				= { _disabledForeColor };
-		SBgra			highlightSymbolBackColor			= { rgba(235, 220, 255, 255) };			// Very pastel purple
-		SBgra			colorTracking						= { rgba(0, 0, 255, 255) };				// Blue
-		f32				trackingRatio						= 0.025f;
-		SBgra			colorMouseOver						= { rgba(255, 255, 0, 255) };			// Yellow
-		SBgra			colorMouseDown						= { rgba(0, 255, 0, 255) };				// Green
-		SBgra			editNewColor						= { rgba(64, 200, 64, 255) };			// Greenish
-		SBgra			editChangedColor					= { rgba(255, 200, 64, 255) };			// Amberish
-		SBgra			carouselFrameColor					= { rgba(94, 94, 128, 255) };			// Dark purleish-gray
-		SBgra			carouselFrameInactiveColor			= { rgba(132, 132, 192, 255) };			// Lighter purpleish-gray
-		SBgra			carouselBackColor					= { rgba(255, 255, 255, 255) };			// White
-		SBgra			carouselTabBackColor				= { rgba(255, 255, 255, 255) };			// White
-		SBgra			carouselTabForeColor				= { rgba(64, 64, 88, 255) };			// Darker purpleish-gray
-		SBgra			carouselTabForeColorHighlight		= { rgba(32, 32, 44, 255) };			// Darkest purpleish-gray
-		SBgra			toolbarBackColor					= { _nwColor_subform };
-
-
-		// Forms four-corner window color schemes (eventually these will be loaded from themes.dbf)
-// Orange theme:
-		const SBgra		nwColor_focus						= { _nwColor_focus };
-		const SBgra		neColor_focus						= { _neColor_focus };
-		const SBgra		swColor_focus						= { _swColor_focus };
-		const SBgra		seColor_focus						= { _seColor_focus };
-
-		const SBgra		nwColor_nonfocus					= { _nwColor_form };
-		const SBgra		neColor_nonfocus					= { _neColor_form };
-		const SBgra		swColor_nonfocus					= { _swColor_form };
-		const SBgra		seColor_nonfocus					= { _seColor_form };
-
-		// Colors for checkbox corners
-		const SBgra		nwColor_checkboxOn					= { rgba(24, 153, 2, 255) };			// Green
-		const SBgra		neColor_checkboxOn					= { rgba(37, 163, 3, 255) };
-		const SBgra		swColor_checkboxOn					= { rgba(5, 140, 0, 255) };
-		const SBgra		seColor_checkboxOn					= { rgba(131, 220, 11, 255) };
-		const SBgra		nwColor_checkboxOff					= { rgba(193, 34, 34, 255) };			// Red
-		const SBgra		neColor_checkboxOff					= { rgba(181, 64, 64, 255) };
-		const SBgra		swColor_checkboxOff					= { rgba(171, 92, 94, 255) };
-		const SBgra		seColor_checkboxOff					= { rgba(212, 128, 131, 255) };
-
-		// Colors for the focus window (highlights controls)
-		SBgra			focusObjColor_readWrite_container	= { _focusObjColor_readWrite_container };
-		SBgra			focusObjColor_readWrite_obj			= { _focusObjColor_readWrite_obj };
-		SBgra			focusObjColor_readOnly				= { _focusObjColor_readOnly };
+		#include "/libsf/utils/common/cpp/include/colors.h"
 
 
 	//////////

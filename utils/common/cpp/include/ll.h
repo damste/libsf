@@ -76,6 +76,21 @@ struct SNoteLog;
 
 //////////
 //
+// Get the next Unique ID
+//
+//////
+	u32 gnNextUniqueId = 0;
+
+	u32 iGetNextUid()
+	{
+		return(gnNextUniqueId++);
+	}
+
+
+
+
+//////////
+//
 // Callback structure for SLL iteration
 //
 //////

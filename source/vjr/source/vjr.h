@@ -109,6 +109,7 @@
 #endif
 
 #define _BXML_SETTINGS_LOCALITY 1
+#define logfunc(x) iVjr_appendSystemLog((s8*)x)
 
 #include "vjr_compile_time_settings.h"
 

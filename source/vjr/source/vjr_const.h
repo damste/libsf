@@ -109,13 +109,6 @@ typedef SEM**		SEMpp;
 
 
 //////////
-// For the lower 64K values of flag-mapped comp->iCat codes
-//////
-	#define iCat(x)										(x & 0xffff)
-	#define iCatBits(x)									(x & _ICAT_MASK);
-
-
-//////////
 // Macros
 //////
 	// abc = newAlloc(SAbc, gsAbcRoot);
@@ -302,40 +295,6 @@ typedef SEM**		SEMpp;
 	#define propGet_settings_VecSeparator(obj)						iObjProp_get_character			(obj, _INDEX_SET_VECSEPARATOR)
 
 
-//////////
-// Colors
-//////
-	#define _disabledBackColor				rgba(255, 255, 255, 255)
-	#define _disabledForeColor				rgba(192, 192, 230, 255)
-
-	#define _focusObjColor_readWrite_container	rgba(97,31,128, 255)
-	#define _focusObjColor_readWrite_obj		rgba(112,164,255, 255)
-	#define _focusObjColor_readOnly				rgba(255, 112, 112, 255)
-
-
-	// Color theme per Stefano D'Amico, suggested Mar.25.2015
-	#define _nwColor_form					rgba(35,101,178,255)
-	#define _neColor_form					rgba(37,108,192,255)
-	#define _swColor_form					rgba(37,108,192,255)
-	#define _seColor_form					rgba(40,116,204,255)
-
-	#define _nwColor_subform				rgba(164,192,255,255)
-	#define _neColor_subform				rgba(133,185,245,255)
-	#define _seColor_subform				rgba(133,185,245,255)
-	#define _swColor_subform				rgba(164,192,255,255)
-
-	// Golden orange theme:
-// 	#define	_nwColor_focus					rgba(245, 225, 175, 255)
-// 	#define	_neColor_focus					rgba(252, 242, 192, 25)
-// 	#define	_swColor_focus					rgba(249, 222, 133, 255)
-// 	#define	_seColor_focus					rgba(247, 210, 96, 255)
-
-	// Purple theme
-	#define	_nwColor_focus					rgba(205, 172, 255, 255)
-	#define	_neColor_focus					rgba(192, 164, 235, 255)/*rgba(233, 219, 255, 255)*/
-	#define	_swColor_focus					rgba(192, 164, 235, 255)
-	#define	_seColor_focus					rgba(182, 153, 226, 255)
-
 
 //////////
 // min and max
@@ -399,7 +358,6 @@ typedef SEM**		SEMpp;
 //////////
 // Errors
 //////
-	const u32			_ERROR_OKAY								= 0;
 	const u32			_ERROR_OUT_OF_MEMORY					= 1;
 	const u32			_ERROR_UNEXPECTED_COMMAND				= 2;
 	const u32			_ERROR_CONTEXT_HAS_CHANGED				= 3;
@@ -472,8 +430,6 @@ typedef SEM**		SEMpp;
 	const u32			_ERROR_INVALID_PARAMETERS				= 97;
 	const u32			_ERROR_PARAMETER_MUST_BE_1				= 98;
 	const u32			_ERROR_INVALID_CORRUPT_NEEDS_REBUILT	= 99;
-	const u32			_ERROR_UNABLE_TO_LOCK_FOR_WRITE			= 100;
-	const u32			_ERROR_UNABLE_TO_LOCK_FOR_READ			= 101;
 	const u32			_ERROR_UNABLE_TO_INITIALIZE				= 102;
 	const u32			_ERROR_UNKNOWN_FUNCTION					= 103;
 	const u32			_ERROR_DLL_NOT_FOUND					= 104;
