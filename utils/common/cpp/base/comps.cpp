@@ -1307,20 +1307,69 @@
 
 //////////
 //
-// Returns the Nth component beyond the current one
+// Returns the Nth component beyond the current one, but only on the current line
 //
 //////
-	SComp* iComps_Nth_fromLine(SComp* comp, s32 tnCount)
+	SComp* iComps_Nth_lineOnly(SComp* comp, s32 tnCount)
 	{
-		s32 lnI;
+		return(iComps_Nth(comp,  tnCount, false));
+	}
 
 
-		// Iterate until we find it
-		for (lnI = 0; comp && lnI < tnCount; lnI++)
-			comp = comp->ll.nextComp;
 
-		// Indicate success or failure
-		return(comp);
+
+//////////
+//
+// Scans forward to find the matching component
+//
+//////
+	// cb->flag is returned
+	bool iComps_scanForward_withCallback(SComp* comp, SCallback* cb, bool tlSkipFirst, bool tlMoveBeyondLineIfNeeded, uptr _func)
+	{
+		// We need a callback
+		if (cb)
+		{
+			// Make sure our environment is sane
+			if (comp && (cb->_func || _func))
+			{
+				// Update the function if need be
+				if (_func)
+					cb->_func = _func;
+
+				// Skip to next component if need be
+				if (tlSkipFirst)
+					cb->comp = iComps_Nth(cb->comp);
+
+
+				//////////
+				// Iterate until found
+				//////
+					cb->comp	= comp;
+					cb->flag	= false;
+					cb->invalid	= true;
+					while (cb->comp)
+					{
+						// Callback returns true if we should continue searching
+						if (!cb->func(cb))
+							break;
+
+						// Next component
+						cb->comp = iComps_Nth(cb->comp, 1, tlMoveBeyondLineIfNeeded);
+					}
+
+
+			} else {
+				// Something's invalid in our parameters
+				cb->comp	= NULL;
+				cb->flag	= false;
+				cb->invalid	= true;
+			}
+
+			// Indicate our flag status
+			return(cb->flag);
+		}
+		// If we get here, failure
+		return(false);
 	}
 
 
@@ -1948,6 +1997,78 @@
 		return((SComp*)iLl_migrate__llToOther((SLL**)compSource, (SLL**)compDestination, (SLL*)compToMove, true));
 	}
 
+
+
+
+//////////
+//
+// Called to copy everything from the starting component on the starting line, to the ending component on the ending line.
+// Note:  It will left-justify the starting component if specified, otherwise it will prefix with spaces
+//
+//////
+	SLine* iComps_copyComps_toNewLines(SComp* compStart, SComp* compEnd, bool tlLeftJustifyStart, bool tlSkipBlankLines, SLine** lineLast)
+	{
+		SLine*	lineNew;
+		SLine*	lineNewFirst;
+		SLine*	lineCopy;
+
+
+		// Make sure our environment is sane
+		if (compStart && compEnd)
+		{
+			// First line
+			if (!(lineNew = iLine_createNew(true)))
+				return(NULL);
+
+			// Copy
+			lineNewFirst = lineNew;
+			iComps_copyToLine_untilEndOfLine(lineNew, compStart, compEnd, false);
+			if (compStart->line == compEnd->line)
+				return(lineNew);	// All done
+
+			// Middle lines
+			for (lineCopy = compStart->line->ll.nextLine; lineCopy; lineCopy = lineCopy->ll.nextLine)
+			{
+				// Skip blank lines if need be
+				if (!tlSkipBlankLines || !lineCopy->compilerInfo->firstComp)
+				{
+					// New line
+					if (!(lineNew = iLine_appendNew(lineNew, true)))
+						return(lineNewFirst);
+
+					// Copy all line components up to the end
+					iComps_copyToLine_untilEndOfLine(lineNew, lineCopy->compilerInfo->firstComp, compEnd, false);
+				}
+
+				// Are we done?
+				if (lineCopy == compEnd->line)
+					break;
+			}
+
+		} else {
+			// Invalid content, just create a blank line
+			lineNew			= iLine_createNew(true);
+			lineNewFirst	= lineNew;
+			// Note: We don't reposition the component here because nothing moved
+		}
+
+
+		// Update our ending
+		if (lineLast)
+			*lineLast = lineNew;
+
+		// Note:  Right now the next component should be the next one from lineEnd and compEnd
+		return(lineNewFirst);
+	}
+
+
+
+
+//////////
+//
+// Remove the leading whitespaces
+//
+//////
 	u32 iComps_remove_leadingWhitespaces(SLine* line)
 	{
 		u32		lnRemoved;
@@ -2227,12 +2348,14 @@
 				if (comp->iCode == tniCodeEscape)
 				{
 					// Is there a component after?
-					if ((compNext = iComps_getNth(comp, 1)))
+					if ((compNext = iComps_Nth(comp, 1)))
 					{
 						// Is it iCode1, iCode2, or iCode3
-						if ((compNext->iCode == tniCode1 || compNext->iCode == tniCode2 || compNext->iCode == tniCode3))
+						if ((	(tniCode1 >= 0 && compNext->iCode == tniCode1)
+							||	(tniCode2 >= 0 && compNext->iCode == tniCode2)
+							||	(tniCode3 >= 0 && compNext->iCode == tniCode3)	))
 						{
-							// Are they directly adjacent?
+							// And are they directly adjacent?
 							if (iiComps_areCompsAdjacent(comp, compNext))
 							{
 								// Remove the escape
@@ -2259,7 +2382,7 @@
 //
 //////
 	// If tlMakeReferences, content is not physically copied to lineNew->sourceCode, but only references to the compStart->line->sourceCode content are made
-	s32 iComps_copyTo(SLine* line, SComp* compStart, SComp* compEnd, bool tlMakeReferences)
+	s32 iComps_copyToLine_untilEndOfLine(SLine* line, SComp* compStart, SComp* compEnd, bool tlMakeReferences)
 	{
 		s32		lnPass, lnCount, lnStart, lnEnd, lnLength;
 		SComp*	comp;
@@ -3745,79 +3868,29 @@ debug_break;
 
 //////////
 //
-// Called to copy everything from the starting component on the starting line, to the ending component on the ending line.
-// Note:  It will left-justify the starting component if specified, otherwise it will prefix with spaces
+// Called to obtain the Nth parameter from the start of the line, or from a line that follows if allowed
 //
 //////
-	SLine* iLine_copyComps_toNewLines(SLine* lineStart, SComp* compStart, SLine* lineEnd, SComp* compEnd, bool tlLeftJustifyStart, bool tlSkipBlankLines)
+	SComp* iLine_Nth_comp(SLine* line, s32 tnCount, bool tlMoveBeyondLineIfNeeded)
 	{
-		SLine*	lineNew;
-		SLine*	lineCopy;
-
-
 		// Make sure our environment is sane
-		if (lineStart && compStart && lineEnd && compEnd && !(lineStart == lineEnd && compStart == compEnd))
+		if (line)
 		{
+			// Locate the line that has compiler info
+			if (tlMoveBeyondLineIfNeeded)
+			{
+				// Iterate until we find a line with a first component
+				for ( ; line && (!line->compilerInfo || !line->compilerInfo->firstComp); )
+					line = line->ll.nextLine;
+			}
 
-			//////////
-			// First line
-			//////
-				// New line
-				if (!(lineNew = iLine_createNew(true)))
-					return(NULL);
-
-				// Copy components
-				iComps_copyTo(lineNew, compStart, compEnd, false);
-
-				// If we're only doing one line, we're done
-				if (lineStart == lineEnd)
-					return(lineNew);
-
-
-			//////////
-			// Middle lines
-			//////
-				for (lineCopy = lineStart->ll.nextLine; lineCopy && lineCopy != lineEnd; lineCopy = lineCopy->ll.nextLine)
-				{
-					// Skip blank lines if need be
-					if (!tlSkipBlankLines || !lineCopy->compilerInfo->firstComp)
-					{
-						// New line
-						lineNew = iLine_appendNew(lineNew, true);
-
-						// Copy all line components up to the end
-						iComps_copyTo(lineNew, lineCopy->compilerInfo->firstComp, compEnd, false);
-					}
-				}
-
-
-			//////////
-			// Last line
-			//////
-				// Create the new last line
-				if (lineCopy != lineEnd)
-				{
-					// New line
-					lineNew = iLine_appendNew(lineNew, true);
-
-					// Copy all line components up to the end
-					iComps_copyTo(lineNew, lineCopy->compilerInfo->firstComp, compEnd, false);
-				}
-				
-
-		} else {
-			// Invalid content, just create a blank line
-			lineNew = iLine_createNew(true);
-			// Note: We don't reposition the component here because nothing moved
+			// If we're on a line with compiler info and a first comp, locate it
+			if (line->compilerInfo && line->compilerInfo->firstComp)
+				return(iComps_Nth(line->compilerInfo->firstComp, tnCount, tlMoveBeyondLineIfNeeded));
 		}
 
-
-		//////////
-		// Indicate our status
-		//////
-			// Note:  Right now the next component should be the next one from lineEnd and compEnd
-			return(lineNew);
-
+		// If we get here, failure
+		return(NULL);
 	}
 
 

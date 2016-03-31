@@ -68,6 +68,9 @@ struct SComp;
 // Generic callback support
 struct SCallback
 {
+	// Set by the callback if there is something invalid in passed parameters
+	bool		invalid;
+
 
 	//////////
 	// Callback function
@@ -83,22 +86,29 @@ struct SCallback
 	//////
 		union {
 			SLine*	line;
-			SComp*	comp;
-			void*	data1;
 			SLine*	line1;
+		};
+
+		union {
+			SComp*	comp;
 			SComp*	comp1;
 		};
 
 		union {
-			void*	data2;
-			SLine*	line2;
-			SComp*	comp2;
+			void*	data;
+			void*	data1;
 		};
+
+		SLine*		line2;
+		SComp*		comp2;
+		void*		data2;
 
 
 	//////////
 	// Extra information
 	//////
+		s32			value;
+		s32			iCode;
 		bool		flag;
 		void*		x;
 

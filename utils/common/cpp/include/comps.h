@@ -237,8 +237,9 @@ struct SNoteLog;
 	SComp*					iComps_skipPast_iCode						(SComp* comp, s32 tniCode);
 	SComp*					iComps_skipTo_iCode							(SComp* comp, s32 tniCode);
 	SComp*					iComps_getNext_afterDot						(SComp* comp);
-	SComp*					iComps_Nth									(SComp* comp, s32 tnCount);
-	SComp*					iComps_Nth_fromLine							(SComp* comp, s32 tnCount);
+	SComp*					iComps_Nth									(SComp* comp, s32 tnCount = 1, bool tlMoveBeyondLineIfNeeded = true);
+	SComp*					iComps_Nth_lineOnly							(SComp* comp, s32 tnCount = 1);
+	bool					iComps_scanForward_withCallback				(SComp* comp, SCallback* cb, bool tlSkipFirst = false, bool tlMoveBeyondLineIfNeeded = true, uptr _func = NULL);
 	u32						iComps_combineN								(SComp* comp, u32 tnCount, s32 tnNew_iCode, u32 tnNew_iCat, SBgra* newColor, SComp** compMigrateRefs = NULL);
 	u32						iComps_combine_adjacent						(SComp* compLeftmost, s32 tniCode, u32 tniCat, SBgra* tnColor, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount);
 	u32						iComps_combine_adjacentAlphanumeric			(SLine* line);
@@ -249,6 +250,7 @@ struct SNoteLog;
 	u32						iComps_combineAll_after						(SLine* line, s32 tniCodeNeedle);
 	u32						iComps_deleteAll_after						(SLine* line, s32 tniCodeNeedle);
 	SComp*					iComps_migrate								(SComp** compSource, SComp** compDestination, SComp* compToMove);
+	SLine*					iComps_copyComps_toNewLines					(SComp* compStart, SComp* compEnd, bool tlLeftJustifyStart, bool tlSkipBlankLines, SLine** lineLast);
 	u32						iComps_remove_leadingWhitespaces			(SLine* line);
 	u32						iComps_remove_whitespaces					(SLine* line);
 	void					iComps_remove_startEndComments				(SLine* line);
@@ -256,7 +258,7 @@ struct SNoteLog;
 	void					iComps_combine_casks						(SLine* line);
 	void					iComps_fixup_naturalGroupings				(SLine* line);
 	s32						iComps_unescape_iCodes						(SComp* compStart, s32 tniCode1, s32 tniCode2, s32 tniCode3, s32 tniCodeEscape = _ICODE_BACKSLASH);
-	s32						iComps_copyTo								(SLine* line, SComp* compStart, SComp* compEnd, bool tlMakeReferences);
+	s32						iComps_copyToLine_untilEndOfLine			(SLine* line, SComp* compStart, SComp* compEnd, bool tlMakeReferences);
 	s32						iComps_copyTo_withCallback					(SLine* line, SComp* compStart, SCallback* cb, bool tlMakeReferences);
 	bool					iiComps_areCompsAdjacent					(SComp* compLeft, SComp* compRight);
 	s32						iiComps_get_charactersBetween				(SComp* compLeft, SComp* compRight);
@@ -305,7 +307,8 @@ struct SNoteLog;
 	s32						iLines_unescape_iCodes						(SLine* lineStart, s32 tniCode1, s32 tniCode2, s32 tniCode3, s32 tniCodeEscape = _ICODE_BACKSLASH);
 
 	s32						iLine_migrateLines							(SLine** linesFrom, SLine* lineTarget);
-	SLine*					iLine_copyComps_toNewLines					(SLine* lineStart, SComp* compStart, SLine* lineEnd, SComp* compEnd, bool tlLeftJustifyStart, bool tlSkipBlankLines);
+
+	SComp*					iLine_Nth_comp								(SLine* line, s32 tnCount = 1, bool tlMoveBeyondLineIfNeeded = true);
 	//
 	SLine*					iLine_copyComps_toNewLines_untilTerminating					(SLine* lineStart, SComp* compStart, s32 tniCodeContinuation, bool tlLeftJustifyStart, bool tlSkipBlankLines, SCallback* cb);
 	bool					iiLine_copyComps_toNewLines_untilTerminating__callback		(SCallback* cb);

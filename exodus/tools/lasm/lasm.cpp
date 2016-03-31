@@ -211,7 +211,7 @@
 					{
 						// -Wmissing-type-ptr		-- Using "mov eax,[esi]" rather than "mov eax,dword ptr [esi]"
 						// -Wno-missing-type-ptr
-						cmdLine->w.w.Wmissing_type_ptr = llSetToValue;
+						cmdLine->w.Wmissing_type_ptr = llSetToValue;
 
 					} else if (lasm_is_cmdLineOption(cgc_wall)) {
 						// -Wall					-- Show all warnings

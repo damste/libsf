@@ -107,13 +107,13 @@
 		// Iterate through the entire file
 		p0.cmdLine	= cmdLine;
 		p0.file		= file;
-		for (p0.comp = iComps_Nth_fromLine(p0.file->firstLine, 1); p0.comp; p0.comp = iComps_Nth(p0.comp))
+		for (p0.comp = iLine_Nth_comp(p0.file->firstLine); p0.comp; p0.comp = iComps_Nth(p0.comp))
 		{
 
 			//////////
 			// See what was parsed
 			//////
-				if (p0.comp->iCode == _ICODE_COMMENT || !(p0.comp = ilasm_pass0_parse(&p0)))
+				if (p0.comp->iCode == _ICODE_COMMENT || !(iilasm_pass0_parse(&p0), p0.comp))
 				{
 					// Blank line or comment line
 					continue;
@@ -122,10 +122,10 @@
 					// It's not a pragma
 					continue;
 
-				} else if (!(p0.compNext = iComps_getNth(p0.comp, 1))) {
+				} else if (!(p0.compNext = iComps_Nth(p0.comp))) {
 					// Syntax error
-					++p0.line->status.errors;
-					printf("--Error(%d,%d): Missing identifier after #\n", p0.line->lineNumber, p0.compNext->start);
+					++p0.comp->line->status.errors;
+					printf("--Error(%d,%d): Missing identifier after #\n", p0.comp->line->lineNumber, p0.compNext->start);
 				}
 
 
@@ -135,7 +135,7 @@
 				if (p0.compNext->iCode == _ICODE_LASM_INCLUDE)
 				{
 					// #include
-					ilasm_pass0_include(&p0);
+					iilasm_pass0_include(&p0);
 
 				} else if (p0.compNext->iCode == _ICODE_LASM_DEFINE) {
 					// #define
@@ -147,51 +147,53 @@
 					}
 
 					// This line is completed, but the file itself is not
-					p0.line->status.isCompleted = true;
+					p0.comp->line->status.isCompleted = true;
 				}
 
 		}
 	}
 
-	void ilasm_pass0_include(SLasmPass0* p0)
+	// p0->comp		-- #include
+	// p0->compNext	-- Pointing to the thing after the #include statement
+	void iilasm_pass0_include(SLasmPass0* p0)
 	{
 		// The next component needs to be the filename
-		if ((p0.compFile = iComps_getNth(p0.compNext, 1)) && (p0.compFile->iCode == _ICODE_DOUBLE_QUOTED_TEXT || p0.compFile->iCode == _ICODE_SINGLE_QUOTED_TEXT))
+		if ((p0->compFile = iComps_Nth(p0->compNext)) && (p0->compFile->iCode == _ICODE_DOUBLE_QUOTED_TEXT || p0->compFile->iCode == _ICODE_SINGLE_QUOTED_TEXT))
 		{
 			// Copy the filename to a local buffer
-			memcpy(p0.fileName, p0.line->sourceCode->data._s8 + p0.compFile->start + 1, p0.compFile->length - 2);
-			p0.fileName[p0.compFile->length - 2] = 0;
+			memcpy(p0->fileName, p0->compFile->line->sourceCode->data._s8 + p0->compFile->start + 1, p0->compFile->length - 2);
+			p0->fileName[p0->compFile->length - 2] = 0;
 
 			// Correct the directory dividers to the standard OS form
-			ilasm_fixupDirectories(p0.fileName, p0.compFile->length - 2);
+			ilasm_fixupDirectories(p0->fileName, p0->compFile->length - 2);
 
 			// Try to open it
-			if (!ilasm_appendFile(p0.fileName, &p0.fileInclude))
+			if (!ilasm_appendFile(p0->fileName, &p0->fileInclude))
 			{
 				// Error opening the file
-				++p0.line->status.errors;
-				printf("--Error(%d,%d): error opening [#include \"%s\"\n", p0.line->lineNumber, p0.compNext->start, p0.fileName);
+				++p0->compFile->line->status.errors;
+				printf("--Error(%d,%d): error opening [#include \"%s\"\n", p0->compFile->line->lineNumber, p0->compNext->start, p0->fileName);
 				return;
 			}
 			// File's loaded
 
 			// If we're in verbose mode, display the loaded file
-			if (p0.cmdLine->lVerbose)
-				printf("--#include \"%s\"\n", p0.fileName);
+			if (p0->cmdLine->o.lVerbose)
+				printf("--#include \"%s\"\n", p0->fileName);
 
 			// Insert its lines after this #include line
-			iLine_migrateLines(&p0.file->firstLine, p0.line);
+			iLine_migrateLines(&p0->file->firstLine, p0->compNext->line);
 
 			// We're done with the #include line
-			p0.fileInclude->status.isCompleted	= true;
-			p0.line->status.isCompleted			= true;
+			p0->fileInclude->status.isCompleted		= true;
+			p0->compFile->line->status.isCompleted	= true;
 			// Note:  line->ll.nextLine is now pointing to the #include file source code
 
 
 		} else {
 			// Syntax error
-			++p0.line->status.errors;
-			printf("--Error(%d,%d): expected [#include \"relative\\path\\to\\file.ext\"] syntax in %s\n", p0.line->lineNumber, p0.compNext->start, p0.file->fileName.data._s8);
+			++p0->compNext->line->status.errors;
+			printf("--Error(%d,%d): expected [#include \"relative\\path\\to\\file.ext\"] syntax in %s\n", p0->compNext->line->lineNumber, p0->compNext->start, p0->file->fileName.data._s8);
 			return;
 		}
 	}
@@ -204,12 +206,15 @@
 // Parses out the raw source code bytes into SComp items with an iCode
 //
 //////
-	void ilasm_pass0_parse(SLasmPass0* p0)
+	void iilasm_pass0_parse(SLasmPass0* p0)
 	{
+		SLine* line;
+
+
 		//////////
 		// If we have existing compiler data, get rid of it
 		//////
-			line = *lineProcessing;
+			line = p0->comp->line;
 			if (line->compilerInfo)		iCompiler_delete(&line->compilerInfo, false);
 			else						line->compilerInfo = iCompiler_allocate(line);		// Allocate a new one
 
@@ -313,7 +318,6 @@
 	// Note:  It is known that when this function is called, the first component is _ICODE_LASM_DEFINE
 	bool iilasm_pass0_define(SLasmPass0* p0)
 	{
-		SComp*			compNext;
 		SComp*			compDefine;
 		SComp*			compName;
 		SCallback		cb;
@@ -325,12 +329,12 @@
 		// Is there a valid component?
 		//////
 			compDefine	= p0->compNext;
-			compName	= iComps_getNth(compDefine, 1);
+			compName	= iComps_Nth(compDefine);
 			if (!compName)
 			{
 				// It's a #define but nothing comes after
-				++p0->line->status.errors;
-				printf("--Error(%d,%d): token was expected in %s\n", p0->line->lineNumber, compDefine->start + compDefine->length, p0->file->fileName.data._s8);
+				++compDefine->line->status.errors;
+				printf("--Error(%d,%d): token was expected in %s\n", compDefine->line->lineNumber, compDefine->start + compDefine->length, p0->file->fileName.data._s8);
 				goto politely_fail;
 			}
 
@@ -338,10 +342,10 @@
 		//////////
 		// Validate that it's alphanumeric
 		//////
-			if (!iiComps_isAlphanumeric_by_iCode(compName))
+			if (!iiComps_isAlphanumeric_byContent(compName))
 			{
-				++p0->line->status.errors;
-				printf("--Error(%d,%d): alphanumeric was expected in %s\n", p0->line->lineNumber, compName->start, p0->file->fileName.data._s8);
+				++compName->line->status.errors;
+				printf("--Error(%d,%d): alphanumeric was expected in %s\n", compName->line->lineNumber, compName->start, p0->file->fileName.data._s8);
 				goto politely_fail;
 			}
 
@@ -356,7 +360,7 @@
 				memcpy(buffer2, p0->file->fileName.data._s8, p0->file->fileName.length);
 				buffer1[p0->define->compName->length]	= 0;
 				buffer2[p0->file->fileName.length]	= 0;
-				printf("--Error(%d,%d): token '%s' already defined in %s on (%d,%d)\n", p0->line->lineNumber, compName->start, buffer1, buffer2, define->compName->line->lineNumber, p0->define->compName->start);
+				printf("--Error(%d,%d): token '%s' already defined in %s on (%d,%d)\n", compName->line->lineNumber, compName->start, buffer1, buffer2, p0->define->compName->line->lineNumber, p0->define->compName->start);
 			}
 
 
@@ -367,8 +371,8 @@
 			if (!p0->define)
 			{
 				// Internal error
-				++p0->line->status.errors;
-				printf("--Error(%d): an unexpected internal error occurred processing a #define in %s\n", p0->line->lineNumber, p0->file->fileName.data._s8);
+				++compName->line->status.errors;
+				printf("--Error(%d): an unexpected internal error occurred processing a #define in %s\n", compName->line->lineNumber, p0->file->fileName.data._s8);
 				goto politely_fail;
 			}
 
@@ -379,75 +383,60 @@
 		//////////
 		// Load any optional parameters
 		//////
-			compNext = iComps_getNth(compName, 1);
-			if (compNext->iCode == _ICODE_PARENTHESIS_LEFT)
+			if ((p0->compNext = iComps_Nth(compName, 1, false)))
 			{
-				// It begins with an open parenthesis
-				if (!iilasm_pass0_define__getParameters(p0, &compNext))
+				// Does it have parameters?
+				if (p0->compNext->iCode == _ICODE_PARENTHESIS_LEFT)
 				{
-					++line->status.errors;
-					printf("--Error(%d,%d): unable to parse parameters in %s\n", p0->line->lineNumber, compNext->start, p0->file->fileName.data._s8);
-					goto politely_fail;
-				}
-				// When we get here, line and compNext are pointing to the closing )
-
-				// Skip past the closing )
-				if (!iiLine_skipTo_nextComp(&p0->line, &compNext))
-				{
-					++p0->line->status.errors;
-					printf("--Error: unexpected end of file in %s\n", p0->file->fileName.data._s8);
-					goto politely_fail;
-				}
-				// When we get here, we're on the first component after
-			}
-
-
-		//////////
-		// Is it brace content
-		//////
-			if (compNext->iCode == _ICODE_BRACE_LEFT)
-			{
-
-				//////////
-				// Begins with {
-				//////
-					// Find closing }
-					memset(&cb, 0, sizeof(cb));
-					cb._func = (sptr)&iilasm_pass0_define__callback_bypassEscapedBraces;
-					if (!iLine_scanComps_forward_withCallback(p0->line, compNext, &cb, true))
+					// It begins with an open parenthesis
+					if (!iilasm_pass0_define__getParameters(p0))
 					{
-						// Not found
-						++p0->line->status.errors;
-						printf("--Error(%d,%d): unable to locate matching } %s\n", p0->line->lineNumber, compNext->start + compNext->length, p0->file->fileName.data._s8);
+						++p0->compNext->line->status.errors;
+						printf("--Error(%d,%d): unable to parse parameters in %s\n", p0->compNext->line->lineNumber, p0->compNext->start, p0->file->fileName.data._s8);
 						goto politely_fail;
 					}
-					// Found closing }
+					// When we get here, line and compNext are pointing to the closing )
 
+					// Skip past the closing )
+					if (!(p0->compNext = iComps_Nth(p0->compNext)))
+					{
+						++p0->comp->line->status.errors;
+						printf("--Error: unexpected end of file in %s\n", p0->file->fileName.data._s8);
+						goto politely_fail;
+					}
+					// When we get here, we're on the first component after
+				}
 
-				///////////
-				// Move to post-{ and pre-}
-				//////
-					iiLine_skipTo_nextComp(&p0->line,	&compNext);
-					iiLine_skipTo_prevComp(&cb.line,	&cb.comp);
+				// Is it brace content
+				if (p0->compNext->iCode == _ICODE_BRACE_LEFT || p0->compNext->iCode == _ICODE_DOUBLE_BRACE_LEFT)
+				{
+					// Begins with {/{{, we need to find the closing }}/}
+					memset(&cb, 0, sizeof(cb));
+					if (!iComps_scanForward_withCallback(p0->compNext, &cb, true, (uptr)&iilasm_pass0_define__callback_bypassEscapedBraces))
+					{
+						// Not found
+						++p0->compNext->line->status.errors;
+						printf("--Error(%d,%d): unable to locate matching } %s\n", p0->compNext->line->lineNumber, p0->compNext->start + compNext->length, p0->file->fileName.data._s8);
+						goto politely_fail;
+					}
 
+					// Move to post-{/{{ and pre-}/}}
+					p0->comp	= iComps_Nth(p0->comp);
+					cb.comp		= iComps_Nth(cb.comp, -1);
 
-				//////////
-				// Copy inner content (between the { and }, and excluding those two characters)
-				//////
-					p0->define->firstLine = iLine_copyComps_toNewLines(p0->line, compNext, cb.line, cb.comp, true, true);
+					// Copy inner content (between the { and }, and excluding those two characters)
+					p0->define->firstLine = iComps_copyComps_toNewLines(p0->comp, cb.comp, true, true);
 
+				} else {
+					// Copy everything, including multiple lines ending in '\'
+					p0->define->firstLine = iLine_copyComps_toNewLines_untilTerminating(p0->line, compNext, _ICODE_BACKSLASH, true, true, &cb);
+				}
+				// If we get here, success
 
-			} else {
-				// Copy everything, including multiple lines ending in '\'
-				p0->define->firstLine = iLine_copyComps_toNewLines_untilTerminating(p0->line, compNext, _ICODE_BACKSLASH, true, true, &cb);
+				// Unescape \{, \}, \{{, \}}, and \\ within the block
+				iLines_unescape_iCodes(p0->define->firstLine,	_ICODE_BRACE_LEFT,			_ICODE_BRACE_RIGHT,			_ICODE_BACKSLASH);
+				iLines_unescape_iCodes(p0->define->firstLine,	_ICODE_DOUBLE_BRACE_LEFT,	_ICODE_DOUBLE_BRACE_RIGHT,	-1);
 			}
-			// If we get here, success
-
-
-		//////////
-		// Unescape \{, \}, and \\ within the block
-		//////
-			iLines_unescape_iCodes(p0->define->firstLine, _ICODE_BRACE_LEFT,	_ICODE_BRACE_RIGHT, _ICODE_BACKSLASH);
 
 
 		//////////
@@ -462,6 +451,7 @@ politely_fail:
 		return(false);
 	}
 
+	// Uses cb->value for iCode
 	bool iilasm_pass0_define__callback_bypassEscapedBraces(SCallback* cb)
 	{
 		SComp* compNext;
@@ -476,7 +466,7 @@ politely_fail:
 				compNext = cb->comp->ll.nextComp;
 
 				// Is it { or } ?
-				if (compNext && (compNext->iCode == _ICODE_BRACE_LEFT || compNext->iCode == _ICODE_BRACE_RIGHT))
+				if (compNext && (compNext->iCode == _ICODE_BRACE_LEFT || compNext->iCode == _ICODE_DOUBLE_BRACE_LEFT || compNext->iCode == _ICODE_BRACE_RIGHT || compNext->iCode == _ICODE_DOUBLE_BRACE_RIGHT))
 				{
 					// Yes, but are they directly adjacent?
 					if (iiComps_areCompsAdjacent(cb->comp, compNext))
@@ -494,8 +484,11 @@ politely_fail:
 		//////////
 		// Is it our target }?
 		//////
-			if (cb->comp->iCode == _ICODE_BRACE_RIGHT)
-				return(false);	// Yes, so indicate there should be no more searching
+			if (cb->comp->iCode == cb->iCode)
+			{
+				cb->flag = true;	// Found it
+				return(false);		// Yes, so indicate there should be no more searching
+			}
 
 
 		//////////

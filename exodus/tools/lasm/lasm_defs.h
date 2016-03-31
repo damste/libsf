@@ -101,7 +101,8 @@ struct SLasmInclude;
 // pass0.cpp -- #include files, #define statements
 //////
 	void				ilasm_pass0										(SLasmCmdLine* cmdLine, SLasmFile* file);
-	void				ilasm_pass0_parse								(SLasmPass0* p0);
+	void				iilasm_pass0_include							(SLasmPass0* p0);
+	void				iilasm_pass0_parse								(SLasmPass0* p0);
 	bool				iilasm_pass0_define								(SLasmPass0* p0);// SLasmCmdLine* cmdLine, SLasmFile* file, SLine** lineProcessing, SComp* compDefine, SComp* compName);
 	bool				iilasm_pass0_define__callback_bypassEscapedBraces(SCallback* cb);
 	bool				iilasm_pass0_define__getParameters				(SLasmPass0* p0);
