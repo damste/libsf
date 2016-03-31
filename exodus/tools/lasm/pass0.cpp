@@ -109,75 +109,90 @@
 		p0.file		= file;
 		for (p0.comp = iComps_Nth_fromLine(p0.file->firstLine, 1); p0.comp; p0.comp = iComps_Nth(p0.comp))
 		{
+
+			//////////
 			// See what was parsed
-			if (p0.comp->iCode == _ICODE_COMMENT || !(p0.comp = ilasm_pass0_parse(p0.cmdLine, &p0.line)))
-			{
-				// Blank line or comment line
-				p0.line->status.isCompleted = true;
-				continue;
-
-			} else if (p0.comp->iCode != _ICODE_POUND_SIGN) {
-				// It's not a pragma
-				continue;
-
-			} else if (!(p0.compNext = iComps_getNth(p0.comp, 1))) {
-				// Syntax error
-				++p0.line->status.errors;
-				printf("--Error(%d,%d): Unrecognized pragma\n", p0.line->lineNumber, p0.compNext->start);
-			}
-
-
-			// Based on what it is
-			if (p0.compNext->iCode == _ICODE_LASM_INCLUDE)
-			{
-				// The next component needs to be the filename
-				if ((p0.compFile = iComps_getNth(p0.compNext, 1)) && (p0.compFile->iCode == _ICODE_DOUBLE_QUOTED_TEXT || p0.compFile->iCode == _ICODE_SINGLE_QUOTED_TEXT))
+			//////
+				if (p0.comp->iCode == _ICODE_COMMENT || !(p0.comp = ilasm_pass0_parse(&p0)))
 				{
-					// Copy the filename to a local buffer
-					memcpy(p0.fileName, p0.line->sourceCode->data._s8 + p0.compFile->start + 1, p0.compFile->length - 2);
-					p0.fileName[p0.compFile->length - 2] = 0;
+					// Blank line or comment line
+					continue;
 
-					// Correct the directory dividers to the standard OS form
-					ilasm_fixupDirectories(p0.fileName, p0.compFile->length - 2);
+				} else if (p0.comp->iCode != _ICODE_POUND_SIGN) {
+					// It's not a pragma
+					continue;
 
-					// Try to open it
-					if (!ilasm_appendFile(p0.fileName, &p0.fileInclude))
-					{
-						// Error opening the file
-						++p0.line->status.errors;
-						printf("--Error(%d,%d): error opening [#include \"%s\"\n", p0.line->lineNumber, p0.compNext->start, p0.fileName);
-						return;
-					}
-					// File's loaded
-
-					// If we're in verbose mode, display the loaded file
-					if (p0.cmdLine->lVerbose)
-						printf("--#include \"%s\"\n", p0.fileName);
-
-					// Insert its lines after this #include line
-					iLine_migrateLines(&p0.file->firstLine, p0.line);
-
-					// We're done with the #include line
-					p0.fileInclude->status.isCompleted	= true;
-					p0.line->status.isCompleted			= true;
-					// Note:  line->ll.nextLine is now pointing to the #include file source code
-
-
-				} else {
+				} else if (!(p0.compNext = iComps_getNth(p0.comp, 1))) {
 					// Syntax error
 					++p0.line->status.errors;
-					printf("--Error(%d,%d): expected [#include \"relative\\path\\to\\file.ext\"] syntax in %s\n", p0.line->lineNumber, p0.compNext->start, p0.file->fileName.data._s8);
-					return;
+					printf("--Error(%d,%d): Missing identifier after #\n", p0.line->lineNumber, p0.compNext->start);
 				}
 
 
-			} else if (p0.compNext->iCode == _ICODE_LASM_DEFINE) {
-				if (!iilasm_pass0_define(&p0))
-					return;		// Error is displayed by the called function
+			///////////
+			// Pass-0 only supports #include, #define
+			//////
+				if (p0.compNext->iCode == _ICODE_LASM_INCLUDE)
+				{
+					// #include
+					ilasm_pass0_include(&p0);
 
-				// This line is completed, but the file itself is not
-				p0.line->status.isCompleted = true;
+				} else if (p0.compNext->iCode == _ICODE_LASM_DEFINE) {
+					// #define
+					if (!iilasm_pass0_define(&p0))
+					{
+						// If we need to terminate on errors
+						if (p0.cmdLine->w.Wfatal_errors)
+							return;		// Error was displayed by the called function
+					}
+
+					// This line is completed, but the file itself is not
+					p0.line->status.isCompleted = true;
+				}
+
+		}
+	}
+
+	void ilasm_pass0_include(SLasmPass0* p0)
+	{
+		// The next component needs to be the filename
+		if ((p0.compFile = iComps_getNth(p0.compNext, 1)) && (p0.compFile->iCode == _ICODE_DOUBLE_QUOTED_TEXT || p0.compFile->iCode == _ICODE_SINGLE_QUOTED_TEXT))
+		{
+			// Copy the filename to a local buffer
+			memcpy(p0.fileName, p0.line->sourceCode->data._s8 + p0.compFile->start + 1, p0.compFile->length - 2);
+			p0.fileName[p0.compFile->length - 2] = 0;
+
+			// Correct the directory dividers to the standard OS form
+			ilasm_fixupDirectories(p0.fileName, p0.compFile->length - 2);
+
+			// Try to open it
+			if (!ilasm_appendFile(p0.fileName, &p0.fileInclude))
+			{
+				// Error opening the file
+				++p0.line->status.errors;
+				printf("--Error(%d,%d): error opening [#include \"%s\"\n", p0.line->lineNumber, p0.compNext->start, p0.fileName);
+				return;
 			}
+			// File's loaded
+
+			// If we're in verbose mode, display the loaded file
+			if (p0.cmdLine->lVerbose)
+				printf("--#include \"%s\"\n", p0.fileName);
+
+			// Insert its lines after this #include line
+			iLine_migrateLines(&p0.file->firstLine, p0.line);
+
+			// We're done with the #include line
+			p0.fileInclude->status.isCompleted	= true;
+			p0.line->status.isCompleted			= true;
+			// Note:  line->ll.nextLine is now pointing to the #include file source code
+
+
+		} else {
+			// Syntax error
+			++p0.line->status.errors;
+			printf("--Error(%d,%d): expected [#include \"relative\\path\\to\\file.ext\"] syntax in %s\n", p0.line->lineNumber, p0.compNext->start, p0.file->fileName.data._s8);
+			return;
 		}
 	}
 

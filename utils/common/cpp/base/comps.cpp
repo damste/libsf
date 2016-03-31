@@ -1195,6 +1195,113 @@
 		return(NULL);
 	}
 
+	// A newer version which goes to the next line if need be
+	SComp* iComps_prev(SComp* comp, bool tlMoveBeyondLineIfNeeded)
+	{
+		return(iComps_Nth(comp, -1, tlMoveBeyondLineIfNeeded));
+	}
+
+	// A newer version which goes to the next line if need be
+	SComp* iComps_next(SComp* comp, bool tlMoveBeyondLineIfNeeded)
+	{
+		return(iComps_Nth(comp, 1, tlMoveBeyondLineIfNeeded));
+	}
+
+	// A newer version which goes to the next line if need be
+	SComp* iComps_Nth(SComp* comp, s32 tnCount, bool tlMoveBeyondLineIfNeeded)
+	{
+		s32		lnI;
+		SLine*	line;
+
+
+		// Based on direction
+		if (comp)
+		{
+			if (tnCount > 0)
+			{
+				// Going forward
+				for (lnI = 0; comp && lnI < tnCount; lnI++)
+				{
+					// Is there room on the line?
+					if (comp->ll.nextComp)
+					{
+						// Move to next component
+						comp = comp->ll.nextComp;
+
+					} else {
+						// No more components on this line, switch to next line
+						if (tlMoveBeyondLineIfNeeded && comp->line && (line = comp->line->ll.nextLine))
+						{
+							// Room to move forward
+							while (line && (!line->compilerInfo || !line->compilerInfo->firstComp) && line->ll.nextLine)
+								line = line->ll.nextLine;
+
+							// Store the component
+							if (line->compilerInfo && line->compilerInfo->firstComp)
+							{
+								// Use this component for the next one
+								comp = line->compilerInfo->firstComp;
+
+							} else {
+								// We're done
+								comp = NULL;
+							}
+
+						} else {
+							// We're done
+							comp = NULL;
+						}
+					}
+				}
+
+			} else if (tnCount < 0) {
+				// Going backwards
+				for (lnI = 0; comp && lnI < tnCount; lnI++)
+				{
+					// Is there room on the line?
+					if (comp->ll.prevComp)
+					{
+						// Move to next component
+						comp = comp->ll.prevComp;
+
+					} else {
+						// No more components on this line, switch to next line
+						if (tlMoveBeyondLineIfNeeded && comp->line && (line = comp->line->ll.prevLine))
+						{
+							// Room to move forward
+							while (line && (!line->compilerInfo || !line->compilerInfo->firstComp) && line->ll.prevLine)
+								line = line->ll.prevLine;
+
+							// Store the last component on the line
+							if (line->compilerInfo && line->compilerInfo->firstComp)
+							{
+								// Use this component
+								comp = line->compilerInfo->firstComp;
+
+								// Move to the last one of the line
+								while (comp->ll.nextComp)
+									comp = comp->ll.nextComp;
+
+								// When we get here, we're on the last component on the line
+
+							} else {
+								// We're done
+								comp = NULL;
+							}
+
+						} else {
+							// We're done
+							comp = NULL;
+						}
+					}
+				}
+			}
+		}
+
+		// Indicate success or failure
+		return(comp);
+	}
+
 
 
 
@@ -1203,7 +1310,7 @@
 // Returns the Nth component beyond the current one
 //
 //////
-	SComp* iComps_getNth(SComp* comp, s32 tnCount)
+	SComp* iComps_Nth_fromLine(SComp* comp, s32 tnCount)
 	{
 		s32 lnI;
 

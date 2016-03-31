@@ -205,36 +205,42 @@
 
 
 				//////////
-				// Which option?
+				// Which warnings?
 				//////
 					if (lasm_is_cmdLineOption(cgc_wmissing_type_ptr))
 					{
 						// -Wmissing-type-ptr		-- Using "mov eax,[esi]" rather than "mov eax,dword ptr [esi]"
 						// -Wno-missing-type-ptr
-						cmdLine->w.missing_type_ptr = llSetToValue;
+						cmdLine->w.w.Wmissing_type_ptr = llSetToValue;
 
 					} else if (lasm_is_cmdLineOption(cgc_wall)) {
 						// -Wall					-- Show all warnings
 						// -Wno-all
-						cmdLine->Wall = llSetToValue;
+						cmdLine->w.Wall = llSetToValue;
 
 					} else if (lasm_is_cmdLineOption(cgc_wfatal_errors)) {
 						// -Wfatal-errors			-- Should compilation stop immediately on first error?
 						// -Wno-fatal-errors
-						cmdLine->Wfatal_errors = llSetToValue;
+						cmdLine->w.Wfatal_errors = llSetToValue;
 
 					} else if (lasm_is_cmdLineOption(cgc_werror)) {
 						// -Werror					-- Should warnings be treated as errors?
 						// -Wno-error
-						cmdLine->WError = llSetToValue;
-
-					} else if (lasm_is_cmdLineOption(cgc_fsyntax_only)) {
+						cmdLine->w.Werror = llSetToValue;
+					}
+				
+				
+				//////////
+				// Which options?
+				//////
+					if (lasm_is_cmdLineOption(cgc_syntax_only))
+					{
 						// -fsyntax-only			-- Syntax check only
-						cmdLine->fsyntax_only = llSetToValue;
+						cmdLine->o.lSyntax_only = llSetToValue;
 
 					} else if (lasm_is_cmdLineOption(cgc_verbose)) {
 						// -verbose					-- Show extra compilation information
-						cmdLine->lVerbose = llSetToValue;
+						cmdLine->o.lVerbose = llSetToValue;
 
 					} else {
 						// Unrecognized option

@@ -89,19 +89,23 @@
 	// Assembler warnings, all enabled by default
 	struct SWarnings
 	{
-		bool		missing_type_ptr;					// -Wmissing-type-ptr	-- Uses "mov [ebp-4],eax" rather than "mov dword ptr [ebp-4],eax", missing type ptr "dword ptr"
+		bool		Wall;								// -Wall				-- Show all warnings
+		bool		Wfatal_errors;						// -Wfatal-errors		-- Should compilation stop immediately on first error?
+		bool		Werror;								// -Werror				-- Should warnings be treated as errors?
+		bool		Wmissing_type_ptr;					// -Wmissing-type-ptr	-- Uses "mov [ebp-4],eax" rather than "mov dword ptr [ebp-4],eax", missing type ptr "dword ptr"
+	};
+
+	struct SOptions
+	{
+		bool		lVerbose;							// -verbose				-- Are we in verbose mode?
+		bool		lSyntax_only;						// -syntax-only			-- Syntax check only
 	};
 
 	// Options specified on the command line
 	struct SLasmCmdLine
 	{
 		SWarnings	w;									// Which warnings are enabled?
-
-		bool		lVerbose;							// -verbose				-- Are we in verbose mode?
-		bool		Wall;								// -Wall				-- Show all warnings
-		bool		Wfatal_errors;						// -Wfatal-errors		-- Should compilation stop immediately on first error?
-		bool		WError;								// -WError				-- Should warnings be treated as errors?
-		bool		fsyntax_only;						// -fsyntax-only		-- Syntax check only
+		SOptions	o;									// Which options are enabled?
 	};
 
 	// File-level assemble status
