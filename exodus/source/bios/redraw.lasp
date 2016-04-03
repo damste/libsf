@@ -1,0 +1,955 @@
+// redraw.asp
+//
+// Exodus BIOS Object Handler - Object redraw algorithms
+//
+//
+
+
+
+
+
+    function iOBJECT_redraw_task
+    {
+    // This routine is called when the entire task's objects need to be redrawn
+    //
+    // Upon entry:   gs:[edi] - far ptr to this task's structure
+    //
+    // Upon exit:    All objects for this task are re-drawn
+    //
+        pushad
+        push    ds
+
+        mov     ds,<u32> gs:[edi+_TASK_ENTRY_SELECTOR_OBJECTS]
+        mov     esi,<u32> ds:[_OBJECT_HEADER_FIRST_BASE_OBJECT]
+        while (esi != -1)
+        {
+          // Display this base object
+            invOBJECT_redraw_base_object()
+            if (!carry?)
+            {
+              // Now, draw any objects on it
+                push    esi
+                push    edi
+
+                mov     edi,esi
+                mov     esi,<u32> ds:[esi+_OBJECT_FIRST_OBJECT]
+                while (esi != -1)
+                {
+                    invOBJECT_redraw_object()
+                    mov     esi,<u32> ds:[esi+_OBJECT_NEXT_OBJECT]
+                }
+
+                pop     edi
+                pop     esi
+            }
+
+          // Move to the next base object
+            mov     esi,<u32> ds:[esi+_OBJECT_NEXT_BASE_OBJECT]
+        }
+      // Right now, all base objects and objects have been redrawn (everything's been brought to the front)
+
+       // Now, redraw the base object and objects that currently have focus (to bring them to the very front
+
+        pop     ds
+        popad
+        retf
+    }
+
+
+
+
+    function invOBJECT_redraw_base_object
+    {
+    // This routine is used to redraw a base object.  When it is called it is known that the entire object should be redrawn
+    // completely overlaying whatever is underneath the area it will inhabit on the screen.
+    //
+    // Upon entry:   ds:[esi] - far ptr to base object
+    //
+    // Upon exit:    The base object is redrawn (if it has visual components)
+    //
+        mov     al,<u8>  ds:[esi+_BASE_OBJECT_TYPE]
+        if (al == _DESKTOP)
+        {
+          // It's a desktop item
+            invOBJECT_redraw_desktop()
+        
+        } else if (al == _WINDOW) {
+          // It's a window item
+            invOBJECT_redraw_window()
+        
+        } else if (al == _CONSOLE) {
+          // It's a console item
+            invOBJECT_redraw_console()
+        
+        } else if (al == _MONO_DESKTOP) {
+          // It's a desktop item (on the mono monitor)
+            invOBJECT_redraw_mono_desktop()
+        
+        } else if (al == _MONO_WINDOW) {
+          // It's a window item (on the mono monitor)
+            invOBJECT_redraw_mono_window()
+        
+        } else if (al == _MONO_CONSOLE) {
+          // It's a console item (on the mono monitor)
+            invOBJECT_redraw_mono_console()
+        }
+        ret
+    }
+
+
+
+
+    function invOBJECT_redraw_desktop
+    {
+    // This routine is called to redraw a desktop object
+    //
+    // Upon entry:   ds:[esi] - far ptr to desktop object
+    //
+    // Upon exit:    The object is redrawn
+    //               carry? - Object is not currently visible
+    //
+        if (dword ptr ds:[esi+_BO_D_VISIBLE] != 0)
+        {
+            if (dword ptr ds:[esi+_BO_D_WALLPAPER] == -1)
+            {
+              // No wallpaper, just a color
+                pushfd
+                push    <u32> ds:[esi+_BO_D_TOP]
+                push    <u32> ds:[esi+_BO_D_LEFT]
+                push    <u32> ds:[esi+_BO_D_WIDTH]
+                push    <u32> ds:[esi+_BO_D_HEIGHT]
+                mov     ebx,_BO_D_BACKGROUND
+                call    <u48> cs:_VID_g_derive_color
+                push    eax
+                cli
+                call    <u48> cs:_VID_g_fill_rectangle
+                popfd
+                clc
+            
+            } else {
+              // Wallpaper
+                int  3
+                u8   'Wallpaper algorithm for desktop'
+            }
+        
+        } else {
+            stc
+        }
+        ret
+    }
+
+
+
+
+    function invOBJECT_redraw_window
+    {
+    // This routine is called to redraw a window object
+    //
+    // Upon entry:   ds:[esi] - far ptr to window object
+    //
+    // Upon exit:    The object is redrawn
+    //               carry? - Object is not currently visible
+    //
+        ret
+    }
+
+
+
+
+    function invOBJECT_redraw_console
+    {
+    // This routine is called to redraw a console object
+    //
+    // Upon entry:   ds:[esi] - far ptr to console object
+    //
+    // Upon exit:    The object is redrawn
+    //               carry? - Object is not currently visible
+    //
+        ret
+    }
+
+
+
+
+    function invOBJECT_redraw_mono_desktop
+    {
+    // This routine is called to redraw a mono desktop object
+    //
+    // Upon entry:   ds:[esi] - far ptr to mono desktop object
+    //
+    // Upon exit:    The object is redrawn
+    //               carry? - Object is not currently visible
+    //
+        ret
+    }
+
+
+
+
+    function invOBJECT_redraw_mono_window
+    {
+    // This routine is called to redraw a mono window object
+    //
+    // Upon entry:   ds:[esi] - far ptr to mono window object
+    //
+    // Upon exit:    The object is redrawn
+    //               carry? - Object is not currently visible
+    //
+        ret
+    }
+
+
+
+
+    function invOBJECT_redraw_mono_console
+    {
+    // This routine is called to redraw a mono console object
+    //
+    // Upon entry:   ds:[esi] - far ptr to mono console object
+    //
+    // Upon exit:    The object is redrawn
+    //               carry? - Object is not currently visible
+    //
+        ret
+    }
+
+
+
+
+    function invOBJECT_redraw_object
+    {
+    // This routine is used
+    //
+    // Upon entry:   ds:[esi] - far ptr to object
+    //
+    // Upon exit:    The object is redrawn (if it has visual components)
+    //
+        mov     al,<u8>  ds:[esi+_OBJECT_TYPE]
+        if (al == _INPUT_FIELD)
+        {
+          // It's a input field
+            invOBJECT_redraw_input_field()
+        
+        } else if (al == _TEXT_FIELD) {
+          // It's a text field
+            invOBJECT_redraw_text_field()
+        
+        } else if (al == _BUTTON) {
+          // It's a button
+            invOBJECT_redraw_button()
+        
+        } else if (al == _MENU_BAR) {
+          // It's a menu bar
+            invOBJECT_redraw_menu_bar()
+        
+        } else if (al == _MENU_POPUP) {
+          // It's a menu popup
+            invOBJECT_redraw_popup()
+        
+        } else if (al == _RADIO_DIAL) {
+          // It's a radio dail
+            invOBJECT_redraw_radio_dial()
+        
+        } else if (al == _CHECK_BOX) {
+          // It's a check box
+            invOBJECT_redraw_check_box()
+        
+        } else if (al == _CIRCLE_BOX) {
+          // It's a circle box
+            invOBJECT_redraw_circle_box()
+        
+        } else if (al == _PULLDOWN) {
+          // It's a pulldown
+            invOBJECT_redraw_pulldown()
+        
+        } else if (al == _SLIDE_BAR) {
+          // It's a slide bar
+            invOBJECT_redraw_slide_bar()
+        
+        } else if (al == _PERCENT_BAR) {
+          // It's a percent bar
+            invOBJECT_redraw_percent_bar()
+        
+        } else if (al == _TRAY) {
+          // It's a tray
+            invOBJECT_redraw_tray()
+        
+        } else if (al == _ICON) {
+          // It's an icon
+            invOBJECT_redraw_icon()
+        
+        } else if (al == _BITMAP) {
+          // It's a bitmap
+            invOBJECT_redraw_bitmap()
+        
+        } else if (al == _HLINE) {
+          // It's a horizontal line
+            invOBJECT_redraw_horizontal_line()
+        
+        } else if (al == _VLINE) {
+          // It's a vertical line
+            invOBJECT_redraw_vertical_line()
+        
+        } else if (al == _LINE) {
+          // It's a diagonal line
+            invOBJECT_redraw_line()
+        
+        } else if (al == _OVAL) {
+          // It's a oval
+            invOBJECT_redraw_oval()
+        
+        } else if (al == _RECTANGLE) {
+          // It's a rectangle
+            invOBJECT_redraw_rectangle()
+        
+        } else if (al == _SCROLL_BAR_HORIZONTAL) {
+          // It's a horizontal scroll bar
+            invOBJECT_redraw_horizontal_scroll_bar()
+        
+        } else if (al == _SCROLL_BAR_VERTICAL) {
+          // It's a vertical scroll bar
+            invOBJECT_redraw_vertical_scroll_bar()
+        
+        } else if (al == _CASK) {
+          // It's a cask
+            invOBJECT_redraw_cask()
+        
+        } else if (al == _CFSCA_WINDOW) {
+          // It's a cfsca window
+            invOBJECT_redraw_cfsca_window()
+        
+        } else if (al == _NUMBERS_WINDOW) {
+          // It's a numbers window
+            invOBJECT_redraw_numbers_window()
+        
+        } else if (al == _TYPESET_WINDOW) {
+          // It's a typeset window
+            invOBJECT_redraw_typeset_window()
+        
+        } else if (al == _BORDER_BOX) {
+          // It's a border box
+            invOBJECT_redraw_border_box()
+        }
+        ret
+    }
+
+
+
+
+    function invOBJECT_redraw_input_field
+    {
+    // This routine is called to redraw an input field object
+    //
+    // Upon entry:   ds:[esi] - far ptr to input field object
+    //               ds:[edi] - far ptr to base object
+    //
+    // Upon exit:    The object is redrawn
+    //               carry? - Object is not currently visible
+    //
+        ret
+    }
+
+
+
+
+    function invOBJECT_redraw_text_field
+    {
+    // This routine is called to redraw a text field object
+    //
+    // Upon entry:   ds:[esi] - far ptr to text field object
+    //               ds:[edi] - far ptr to base object
+    //
+    // Upon exit:    The object is redrawn
+    //               carry? - Object is not currently visible
+    //
+        if (byte ptr ds:[esi+_O_TF_VISIBLE] != 0)
+        {
+          // Draw the rectangle around the text
+            pushfd
+            mov     ebx,<u32> ds:[esi+_O_TF_TOP]
+            add     ebx,<u32> ds:[edi+_BO_TOP]
+            push    ebx
+            mov     ebx,<u32> ds:[esi+_O_TF_LEFT]
+            add     ebx,<u32> ds:[edi+_BO_LEFT]
+            push    ebx
+            push    <u32> ds:[esi+_O_TF_WIDTH]
+            push    <u32> ds:[esi+_O_TF_HEIGHT]
+            if (byte ptr ds:[esi+_O_TF_FONT_TYPEFACE_REVERSE] != 0)
+            {
+                mov     ebx,_O_TF_FOREGROUND
+            
+            } else {
+                mov     ebx,_O_TF_BACKGROUND
+            }
+            call    <u48> cs:_VID_g_derive_color
+            push    eax
+            cli
+            call    <u48> cs:_VID_g_fill_rectangle
+            popfd
+
+          // Draw the text
+            pushfd
+            mov     ebx,<u32> ds:[esi+_O_TF_TOP]
+            add     ebx,<u32> ds:[edi+_BO_TOP]
+            push    ebx
+            mov     ebx,<u32> ds:[esi+_O_TF_LEFT]
+            add     ebx,<u32> ds:[edi+_BO_LEFT]
+            push    ebx
+            push    <u32> ds:[esi+_O_TF_WIDTH]
+            push    <u32> ds:[esi+_O_TF_HEIGHT]
+
+            mov     ebx,_O_TF_BACKGROUND
+            call    <u48> cs:_VID_g_derive_color
+            push    eax
+
+            mov     ebx,_O_TF_FOREGROUND
+            call    <u48> cs:_VID_g_derive_color
+            push    eax
+
+            movzx   ebx,<u16> ds:[esi+_O_TF_MARGIN_LEFT]
+            push    ebx
+
+            movzx   ebx,<u16> ds:[esi+_O_TF_MARGIN_TOP]
+            push    ebx
+
+            push    <u32> ds:[esi+_O_TF_FONT_NAME_ID]
+            push    <u32> ds:[esi+_O_TF_SOURCE_PTR_SEGMENT]
+            push    <u32> ds:[esi+_O_TF_SOURCE_PTR_OFFSET]
+
+            xor     eax,eax
+            mov     al,<u8>  ds:[esi+_O_TF_FONT_TYPEFACE_BOLD]
+            shl     eax,8
+            mov     al,<u8>  ds:[esi+_O_TF_FONT_TYPEFACE_DITHER]
+            push    eax
+
+            xor     eax,eax
+            mov     al,<u8>  ds:[esi+_O_TF_FONT_TYPEFACE_ITALICS]
+            shl     eax,8
+            mov     al,<u8>  ds:[esi+_O_TF_FONT_TYPEFACE_REVERSE]
+            shl     eax,8
+            mov     al,<u8>  ds:[esi+_O_TF_FONT_TYPEFACE_STRIKETHROUGH]
+            shl     eax,8
+            mov     al,<u8>  ds:[esi+_O_TF_FONT_TYPEFACE_UNDERLINE]
+            push    eax
+            cli
+            call    <u48> cs:_VID_g_draw_text
+            popfd
+            clc
+        
+        } else {
+            stc
+        }
+        ret
+    }
+
+
+
+
+    function invOBJECT_redraw_button
+    {
+    // This routine is called to redraw a button object
+    //
+    // Upon entry:   ds:[esi] - far ptr to button object
+    //               ds:[edi] - far ptr to base object
+    //
+    // Upon exit:    The object is redrawn
+    //               carry? - Object is not currently visible
+    //
+        ret
+    }
+
+
+
+
+    function invOBJECT_redraw_menu_bar
+    {
+    // This routine is called to redraw a menu bar object
+    //
+    // Upon entry:   ds:[esi] - far ptr to menu bar object
+    //               ds:[edi] - far ptr to base object
+    //
+    // Upon exit:    The object is redrawn
+    //               carry? - Object is not currently visible
+    //
+        ret
+    }
+
+
+
+
+    function invOBJECT_redraw_popup
+    {
+    // This routine is called to redraw a popup object
+    //
+    // Upon entry:   ds:[esi] - far ptr to popup object
+    //               ds:[edi] - far ptr to base object
+    //
+    // Upon exit:    The object is redrawn
+    //               carry? - Object is not currently visible
+    //
+        ret
+    }
+
+
+
+
+    function invOBJECT_redraw_radio_dial
+    {
+    // This routine is called to redraw a radio dial object
+    //
+    // Upon entry:   ds:[esi] - far ptr to radio dial object
+    //               ds:[edi] - far ptr to base object
+    //
+    // Upon exit:    The object is redrawn
+    //               carry? - Object is not currently visible
+    //
+        ret
+    }
+
+
+
+
+    function invOBJECT_redraw_check_box
+    {
+    // This routine is called to redraw a check box object
+    //
+    // Upon entry:   ds:[esi] - far ptr to check box object
+    //               ds:[edi] - far ptr to base object
+    //
+    // Upon exit:    The object is redrawn
+    //               carry? - Object is not currently visible
+    //
+        ret
+    }
+
+
+
+
+    function invOBJECT_redraw_circle_box
+    {
+    // This routine is called to redraw a circle box object
+    //
+    // Upon entry:   ds:[esi] - far ptr to circle box object
+    //               ds:[edi] - far ptr to base object
+    //
+    // Upon exit:    The object is redrawn
+    //               carry? - Object is not currently visible
+    //
+        ret
+    }
+
+
+
+
+    function invOBJECT_redraw_pulldown
+    {
+    // This routine is called to redraw a pulldown object
+    //
+    // Upon entry:   ds:[esi] - far ptr to pulldown object
+    //               ds:[edi] - far ptr to base object
+    //
+    // Upon exit:    The object is redrawn
+    //               carry? - Object is not currently visible
+    //
+        ret
+    }
+
+
+
+
+    function invOBJECT_redraw_slide_bar
+    {
+    // This routine is called to redraw a slide bar object
+    //
+    // Upon entry:   ds:[esi] - far ptr to slide bar object
+    //               ds:[edi] - far ptr to base object
+    //
+    // Upon exit:    The object is redrawn
+    //               carry? - Object is not currently visible
+    //
+        ret
+    }
+
+
+
+
+    function invOBJECT_redraw_percent_bar
+    {
+    // This routine is called to redraw a percent bar object
+    //
+    // Upon entry:   ds:[esi] - far ptr to percent bar object
+    //               ds:[edi] - far ptr to base object
+    //
+    // Upon exit:    The object is redrawn
+    //               carry? - Object is not currently visible
+    //
+        ret
+    }
+
+
+
+
+    function invOBJECT_redraw_tray
+    {
+    // This routine is called to redraw a tray object
+    //
+    // Upon entry:   ds:[esi] - far ptr to tray object
+    //               ds:[edi] - far ptr to base object
+    //
+    // Upon exit:    The object is redrawn
+    //               carry? - Object is not currently visible
+    //
+        ret
+    }
+
+
+
+
+    function invOBJECT_redraw_icon
+    {
+    // This routine is called to redraw a icon object
+    //
+    // Upon entry:   ds:[esi] - far ptr to icon object
+    //               ds:[edi] - far ptr to base object
+    //
+    // Upon exit:    The object is redrawn
+    //               carry? - Object is not currently visible
+    //
+        ret
+    }
+
+
+
+
+    function invOBJECT_redraw_bitmap
+    {
+    // This routine is called to redraw a bitmap object
+    //
+    // Upon entry:   ds:[esi] - far ptr to bitmap object
+    //               ds:[edi] - far ptr to base object
+    //
+    // Upon exit:    The object is redrawn
+    //               carry? - Object is not currently visible
+    //
+        ret
+    }
+
+
+
+
+    function invOBJECT_redraw_horizontal_line
+    {
+    // This routine is called to redraw a horizontal line object
+    //
+    // Upon entry:   ds:[esi] - far ptr to horizontal line object
+    //               ds:[edi] - far ptr to base object
+    //
+    // Upon exit:    The object is redrawn
+    //               carry? - Object is not currently visible
+    //
+        if (byte ptr ds:[esi+_O_HL_VISIBLE] != 0)
+        {
+            pushfd
+            mov     ebx,<u32> ds:[esi+_O_HL_TOP]
+            add     ebx,<u32> ds:[edi+_BO_TOP]
+            push    ebx
+            mov     ebx,<u32> ds:[esi+_O_HL_LEFT]
+            add     ebx,<u32> ds:[edi+_BO_LEFT]
+            push    ebx
+            push    <u32> ds:[esi+_O_HL_WIDTH]
+            push    1
+            mov     ebx,_O_HL_BACKGROUND
+            call    <u48> cs:_VID_g_derive_color
+            push    eax
+            cli
+            call    <u48> cs:_VID_g_fill_rectangle
+            popfd
+            clc
+        
+        } else {
+            stc
+        }
+        ret
+    }
+
+
+
+
+    function invOBJECT_redraw_vertical_line
+    {
+    // This routine is called to redraw a vertical line object
+    //
+    // Upon entry:   ds:[esi] - far ptr to vertical line object
+    //               ds:[edi] - far ptr to base object
+    //
+    // Upon exit:    The object is redrawn
+    //               carry? - Object is not currently visible
+    //
+        ret
+    }
+
+
+
+
+    function invOBJECT_redraw_line
+    {
+    // This routine is called to redraw a line object
+    //
+    // Upon entry:   ds:[esi] - far ptr to line object
+    //               ds:[edi] - far ptr to base object
+    //
+    // Upon exit:    The object is redrawn
+    //               carry? - Object is not currently visible
+    //
+        ret
+    }
+
+
+
+
+    function invOBJECT_redraw_oval
+    {
+    // This routine is called to redraw a oval object
+    //
+    // Upon entry:   ds:[esi] - far ptr to oval object
+    //               ds:[edi] - far ptr to base object
+    //
+    // Upon exit:    The object is redrawn
+    //               carry? - Object is not currently visible
+    //
+        ret
+    }
+
+
+
+
+    function invOBJECT_redraw_rectangle
+    {
+    // This routine is called to redraw a rectangle object
+    //
+    // Upon entry:   ds:[esi] - far ptr to rectangle object
+    //               ds:[edi] - far ptr to base object
+    //
+    // Upon exit:    The object is redrawn
+    //               carry? - Object is not currently visible
+    //
+        if (byte ptr ds:[esi+_O_R_VISIBLE] != 0)
+        {
+            pushfd
+            mov     ebx,<u32> ds:[esi+_O_R_TOP]
+            add     ebx,<u32> ds:[edi+_BO_TOP]
+            push    ebx
+            mov     ebx,<u32> ds:[esi+_O_R_LEFT]
+            add     ebx,<u32> ds:[edi+_BO_LEFT]
+            push    ebx
+            push    <u32> ds:[esi+_O_R_WIDTH]
+            push    <u32> ds:[esi+_O_R_HEIGHT]
+            mov     ebx,_O_R_BACKGROUND
+            call    <u48> cs:_VID_g_derive_color
+            push    eax
+            cli
+            call    <u48> cs:_VID_g_fill_rectangle
+            popfd
+            clc
+        
+        } else {
+            stc
+        }
+        ret
+    }
+
+
+
+
+    function invOBJECT_redraw_horizontal_scroll_bar
+    {
+    // This routine is called to redraw a horizontal scroll bar object
+    //
+    // Upon entry:   ds:[esi] - far ptr to horizontal scroll bar object
+    //               ds:[edi] - far ptr to base object
+    //
+    // Upon exit:    The object is redrawn
+    //               carry? - Object is not currently visible
+    //
+        ret
+    }
+
+
+
+
+    function invOBJECT_redraw_vertical_scroll_bar
+    {
+    // This routine is called to redraw a vertical scroll bar object
+    //
+    // Upon entry:   ds:[esi] - far ptr to vertical scroll bar object
+    //               ds:[edi] - far ptr to base object
+    //
+    // Upon exit:    The object is redrawn
+    //               carry? - Object is not currently visible
+    //
+        ret
+    }
+
+
+
+
+    function invOBJECT_redraw_cask
+    {
+    // This routine is called to redraw a cask object
+    //
+    // Upon entry:   ds:[esi] - far ptr to cask object
+    //               ds:[edi] - far ptr to base object
+    //
+    // Upon exit:    The object is redrawn
+    //               carry? - Object is not currently visible
+    //
+        ret
+    }
+
+
+
+
+    function invOBJECT_redraw_cfsca_window
+    {
+    // This routine is called to redraw a cfsca window object
+    //
+    // Upon entry:   ds:[esi] - far ptr to cfsca window object
+    //               ds:[edi] - far ptr to base object
+    //
+    // Upon exit:    The object is redrawn
+    //               carry? - Object is not currently visible
+    //
+        ret
+    }
+
+
+
+
+    function invOBJECT_redraw_numbers_window
+    {
+    // This routine is called to redraw a numbers window object
+    //
+    // Upon entry:   ds:[esi] - far ptr to numbers window object
+    //               ds:[edi] - far ptr to base object
+    //
+    // Upon exit:    The object is redrawn
+    //               carry? - Object is not currently visible
+    //
+        ret
+    }
+
+
+
+
+    function invOBJECT_redraw_typeset_window
+    {
+    // This routine is called to redraw a typeset window object
+    //
+    // Upon entry:   ds:[esi] - far ptr to typeset window object
+    //               ds:[edi] - far ptr to base object
+    //
+    // Upon exit:    The object is redrawn
+    //               carry? - Object is not currently visible
+    //
+        ret
+    }
+
+
+
+
+    function invOBJECT_redraw_border_box
+    {
+    // This routine is called to redraw a border box object
+    //
+    // Upon entry:   ds:[esi] - far ptr to border box object
+    //               ds:[edi] - far ptr to base object
+    //
+    // Upon exit:    The object is redrawn
+    //               carry? - Object is not currently visible
+    //
+        if (byte ptr ds:[esi+_O_BB_VISIBLE] != 0)
+        {
+           // Draw the rectangle
+            pushfd
+            mov     ebx,<u32> ds:[esi+_O_BB_TOP]
+            add     ebx,<u32> ds:[edi+_BO_TOP]
+            push    ebx
+            mov     ebx,<u32> ds:[esi+_O_BB_LEFT]
+            add     ebx,<u32> ds:[edi+_BO_LEFT]
+            push    ebx
+            push    <u32> ds:[esi+_O_BB_WIDTH]
+            push    <u32> ds:[esi+_O_BB_HEIGHT]
+            mov     ebx,_O_BB_BACKGROUND
+            call    <u48> cs:_VID_g_derive_color
+            push    eax
+            cli
+            call    <u48> cs:_VID_g_fill_rectangle
+
+           // Draw the bottom
+            mov     ebx,<u32> ds:[esi+_O_BB_TOP]
+            add     ebx,<u32> ds:[esi+_O_BB_HEIGHT]
+            add     ebx,<u32> ds:[edi+_BO_TOP]
+            push    ebx
+            mov     ebx,<u32> ds:[esi+_O_BB_LEFT]
+            add     ebx,<u32> ds:[edi+_BO_LEFT]
+            push    ebx
+            push    <u32> ds:[esi+_O_BB_WIDTH]
+            push    1
+            mov     ebx,_O_BB_SHADOW_BORDER
+            call    <u48> cs:_VID_g_derive_color
+            push    eax
+            call    <u48> cs:_VID_g_fill_rectangle
+
+           // Draw the right-side
+            mov     ebx,<u32> ds:[esi+_O_BB_TOP]
+            add     ebx,<u32> ds:[edi+_BO_TOP]
+            push    ebx
+            mov     ebx,<u32> ds:[esi+_O_BB_LEFT]
+            add     ebx,<u32> ds:[esi+_O_BB_WIDTH]
+            dec     ebx
+            add     ebx,<u32> ds:[edi+_BO_LEFT]
+            push    ebx
+            push    1
+            push    <u32> ds:[esi+_O_BB_HEIGHT]
+            inc     <u32> [esp+00]
+            mov     ebx,_O_BB_SHADOW_BORDER
+            call    <u48> cs:_VID_g_derive_color
+            push    eax
+            call    <u48> cs:_VID_g_fill_rectangle
+
+           // Draw the top
+            mov     ebx,<u32> ds:[esi+_O_BB_TOP]
+            add     ebx,<u32> ds:[edi+_BO_TOP]
+            push    ebx
+            mov     ebx,<u32> ds:[esi+_O_BB_LEFT]
+            add     ebx,<u32> ds:[edi+_BO_LEFT]
+            push    ebx
+            push    <u32> ds:[esi+_O_BB_WIDTH]
+            push    1
+            mov     ebx,_O_BB_LIGHT_BORDER
+            call    <u48> cs:_VID_g_derive_color
+            push    eax
+            call    <u48> cs:_VID_g_fill_rectangle
+
+           // Draw the left-side
+            mov     ebx,<u32> ds:[esi+_O_BB_TOP]
+            add     ebx,<u32> ds:[edi+_BO_TOP]
+            push    ebx
+            mov     ebx,<u32> ds:[esi+_O_BB_LEFT]
+            add     ebx,<u32> ds:[edi+_BO_LEFT]
+            push    ebx
+            push    1
+            push    <u32> ds:[esi+_O_BB_HEIGHT]
+            inc     <u32> [esp+00]
+            mov     ebx,_O_BB_LIGHT_BORDER
+            call    <u48> cs:_VID_g_derive_color
+            push    eax
+            call    <u48> cs:_VID_g_fill_rectangle
+            popfd
+            clc
+        
+        } else {
+            stc
+        }
+        ret
+    }

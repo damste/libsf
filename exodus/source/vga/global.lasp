@@ -1,0 +1,1099 @@
+// global.asp
+//
+// Exodus VGA driver global algorithms
+//
+//
+
+
+
+
+    function _position_cursor
+    {
+    // Calculate the offset into the screen, then output the values to monochrome ports
+    //   dh == Row (up/down)
+    //   dl == Column (left/right)
+        pushad
+        push    ds
+
+        xor     eax,eax                                             // Clear out ax and bx
+        xor     ebx,ebx
+        mov     al,dh                                               // Copy the row there
+        mov     bl,dh
+        shl     eax,6                                               // Multiply by 64
+        shl     ebx,4                                               // Multiply by 16
+        add     ebx,eax                                             // 64 + 16 = 80
+        and     edx,0ffh
+        add     ebx,edx
+      // BX is the offset
+        mov     ds,cs:data_segment
+        mov     esi,ds:storage_ptr                                  // Store current offset into video memory
+        mov     edx,ebx
+        shl     edx,1                                               // Video memory has two bytes for every one on-screen
+        mov     <u16> ds:[esi],dx
+      // bh == high bits, reg1 for index 0xE, reg2 for data
+      // bl == low bits, reg1 for index 0xF, reg2 for data
+        _position_cursor_raw_data()
+
+        pop     ds
+        popad
+        ret
+    }
+
+    function _position_cursor_raw_data
+    {
+    // bx - offset to write
+    // regs1 - index register
+    // regs2 - data register
+      // Send high 8 bits
+        mov     dx,cs:reg1
+        mov     al,0eh
+        out     dx,al
+        invWait_a_bit()
+        mov     dx,cs:reg2
+        mov     al,bh
+        out     dx,al
+        invWait_a_bit()
+
+      // Send low 8 bits
+        mov     dx,cs:reg1
+        mov     al,0fh
+        out     dx,al
+        invWait_a_bit()
+        mov     dx,cs:reg2
+        mov     al,bl
+        out     dx,al
+        invWait_a_bit()
+        ret
+    }
+
+    function _generate_radix_string
+    {
+        mov     <u8>  [ebp+12],0                                 // NULL terminate the string we're building
+        mov     esi,ebp
+        add     esi,11
+        mov     eax,edx
+        and     ebx,0ffffh
+        if (ebx <= 1)
+        {
+          // They've forgotten to set the value, so we correct their little blunder
+            mov     ebx,16
+        }
+      @@:
+        xor     edx,edx
+        div     ebx
+        if (dl > 9)
+        {
+            add     dl,'a'-10                                       // Make it a letter if it's above 9 (10+ cannot be represented in 1 digit)
+        
+        } else {
+            add     dl,'0'                                          // Make it a number
+        }
+        mov     <u8>  ss:[esi],dl
+        dec     esi                                                 // Decrement (move to next position to store data)
+        cmp     esi,ebp
+        jz      @F
+        cmp     eax,0
+        jnz     @B
+      @@:
+        push    ss
+        pop     ds
+        inc     esi                                                 // Add back for the one we decremented above
+      // Right now, ds:[esi] - pointer to the value to display
+        ret
+    }
+
+    function _generate_radix_string_ecx
+    {
+    // Note that the space on the stack for this string must be at least 40 characters
+        mov     esi,ebp
+        add     esi,35
+        mov     eax,edx
+        and     ebx,0ffffh
+        if (ebx <= 1 || ebx > 26)
+        {
+          // They've forgotten to set the value, so we correct their little blunder
+            mov     ebx,16
+        }
+        if (ecx > 7fffffffh)
+        {
+          // It's negative
+            mov     <u8>  [ebp+36],'ú'
+            neg     ecx
+        
+        } else {
+            mov     <u8>  [ebp+36],'0'
+        }
+        if (ecx > 32)
+        {
+            mov     ecx,32
+        }
+      @@:
+        xor     edx,edx
+        div     ebx
+        if (dl > 9)
+        {
+            add     dl,'a'-10                                       // Make it a letter if it's above 9 (10+ cannot be represented in 1 digit)
+        
+        } else {
+            add     dl,'0'                                          // Make it a number
+        }
+        mov     <u8>  ss:[esi],dl
+        dec     esi                                                 // Decrement (move to next position to store data)
+        cmp     esi,ebp
+        jz      @F
+        if (eax == 0 && <u8>  ss:[esi+1] == '0')
+        {
+          // These are all leading 0's.  But, the user might've wanted leading ú's instead, so we do that here
+            push    ebx
+            mov     bl,<u8>  [ebp+36]
+            mov     <u8>  ss:[esi+1],bl
+            pop     ebx
+        }
+        loop    @B
+      @@:
+        mov     <u8>  [ebp+36],0                                 // NULL terminate the string we're building
+        push    ss
+        pop     ds
+        inc     esi                                                 // Add back for the one we decremented above
+      // Right now, ds:[esi] - pointer to the value to display
+        ret
+    }
+
+    function hex_adjust_al_dl
+    {
+        shr     dl,4
+        if (dl <= 9)
+        {
+            add     dl,'0'
+        
+        } else {
+            add     dl,'a'-10
+        }
+        and     al,0fh
+        if (al <= 9)
+        {
+            add     al,'0'
+        
+        } else {
+            add     al,'a'-10
+        }
+        ret
+    }
+
+    function hex_adjust_al
+    {
+        if (al <= 9)
+        {
+            add     al,'0'
+        
+        } else {
+            add     al,'a'-10
+        }
+        ret
+    }
+
+
+
+
+    function VID_position_cursor_both
+    {
+        VID_position_cursor_vga()
+        VID_position_cursor_mono()
+        retf
+    }
+
+
+
+
+    function VID_display_string_both
+    {
+        VID_display_string_vga()
+        if (cs:mono_video == MONO_TEXT)
+        {
+            VID_display_string_mono()
+        
+        } else {
+            invVID_g_display_string_mono()
+        }
+        retf
+    }
+
+
+
+
+    function VID_display_string_ecx_both
+    {
+        VID_display_string_ecx_vga()
+        VID_display_string_ecx_mono()
+        retf
+    }
+
+
+
+
+    function VID_display_string_ecx_nr_both
+    {
+        VID_display_string_ecx_nr_vga()
+        VID_display_string_ecx_nr_mono()
+        retf
+    }
+
+
+
+
+    function VID_display_hex_string_ecx_both
+    {
+        VID_display_hex_string_ecx_vga()
+        VID_display_hex_string_ecx_mono()
+        retf
+    }
+
+
+
+
+    function VID_display_string_nr_both
+    {
+        VID_display_string_nr_vga()
+        VID_display_string_nr_mono()
+        retf
+    }
+
+
+
+
+    function VID_display_hex_string_ecx_nr_both
+    {
+        VID_display_hex_string_ecx_nr_vga()
+        VID_display_hex_string_ecx_nr_mono()
+        retf
+    }
+
+
+
+
+    function VID_display_decimal_in_edx_both
+    {
+        VID_display_decimal_in_edx_vga()
+        VID_display_decimal_in_edx_mono()
+        retf
+    }
+
+
+
+
+    function VID_display_decimal_in_edx_nr_both
+    {
+        VID_display_decimal_in_edx_nr_vga()
+        VID_display_decimal_in_edx_nr_mono()
+        retf
+    }
+
+
+
+
+    function VID_display_hexidecimal_in_edx_both
+    {
+        VID_display_hexidecimal_in_edx_vga()
+        VID_display_hexidecimal_in_edx_mono()
+        retf
+    }
+
+
+
+
+    function VID_display_hexidecimal_in_edx_nr_both
+    {
+        VID_display_hexidecimal_in_edx_nr_vga()
+        VID_display_hexidecimal_in_edx_nr_mono()
+        retf
+    }
+
+
+
+
+    function VID_set_attribute_both
+    {
+        VID_set_attribute_vga()
+        VID_set_attribute_mono()
+        retf
+    }
+
+
+
+
+    function VID_clear_screen_both
+    {
+        VID_clear_screen_vga()
+        VID_clear_screen_mono()
+        retf
+    }
+
+
+
+
+    function VID_freeze_frame_both
+    {
+        VID_freeze_frame_vga()
+        VID_freeze_frame_mono()
+        retf
+    }
+
+
+
+
+    function VID_display_hex_string_ecx_ro_both
+    {
+        VID_display_hex_string_ecx_ro_vga()
+        VID_display_hex_string_ecx_ro_mono()
+        ret
+    }
+
+
+
+
+    function VID_display_radix_in_edx_nr_both
+    {
+        VID_display_radix_in_edx_nr_vga()
+        VID_display_radix_in_edx_nr_mono()
+        ret
+    }
+
+
+
+
+    function VID_move_to_next_line_both
+    {
+        VID_move_to_next_line_vga()
+        VID_move_to_next_line_mono()
+        ret
+    }
+
+
+
+
+    function VID_g_set_font_8x6
+    {
+        if (cs:VID_g_owner != 0ffffffffh)
+        {
+            push    ds
+            mov     ds,cs:data_segment
+            mov     ds:current_font,offset font_8x6_name
+            pop     ds
+        }
+        retf
+    }
+
+
+
+
+    function VID_g_set_font_8x8
+    {
+        if (cs:VID_g_owner != 0ffffffffh)
+        {
+            push    ds
+            mov     ds,cs:data_segment
+            mov     ds:current_font,offset font_8x8_name
+            pop     ds
+        }
+        retf
+    }
+
+
+
+
+    function VID_g_set_font_8x14
+    {
+        if (cs:VID_g_owner != 0ffffffffh)
+        {
+            push    ds
+            mov     ds,cs:data_segment
+            mov     ds:current_font,offset font_8x14_name
+            pop     ds
+        }
+        retf
+    }
+
+
+
+
+    function VID_g_set_font_16x16
+    {
+        if (cs:VID_g_owner != 0ffffffffh)
+        {
+            push    ds
+            mov     ds,cs:data_segment
+            mov     ds:current_font,offset font_16x16_name
+            pop     ds
+        }
+        retf
+    }
+
+
+
+
+    function invVID_entering_graphics_mode
+    {
+    // This function is used to save the current text mode (if we're in text mode)
+    //
+    // Upon entry:   Nothing
+    //
+    // Upon exit:    If we're currently in a text mode then _sVGA's base is changed to _sVGA_BACKUP_base
+    //               Otherwise, nothing
+    //
+        if (cs:current_mode == 1)
+        {
+          // We're currently in a text mode, we have to update our backup information
+          // This is done so writes to the VGA text screen are still valid even though the graphics screen is being displayed
+            pushad
+            pushfd
+            push    ds
+            push    es
+
+          // Copy the current screen to the save buffer
+            mov     ax,_sVGA
+            mov     ds,ax
+            mov     ax,_sVGA_BACKUP
+            mov     es,ax
+            xor     esi,esi
+            xor     edi,edi
+            mov     ecx,32768 / 4
+            cld
+            rep     movsd
+
+          // Change the base
+            mov     eax,'altr'
+            mov     ebx,'gdt '
+            mov     edx,_sVGA / 8
+            mov     esi,_sVGA_BACKUP_base
+            mov     edi,_sVGA_BACKUP_limit
+            call    <u48> cs:_EXODUS_requestor
+
+          // Raise the flag
+            mov     ds,cs:data_segment
+            mov     ds:vga_backup_mode,1
+
+            pop     es
+            pop     ds
+            popfd
+            popad
+        }
+        ret
+    }
+
+
+
+
+    function invVID_restore_text_mode
+    {
+    // This function is used to save the current text mode (if we're in text mode)
+    //
+    // Upon entry:   Nothing
+    //
+    // Upon exit:    If we're currently in a text mode then _sVGA's base is changed to _sVGA_BACKUP_base
+    //               Otherwise, nothing
+    //
+        if (cs:vga_backup_mode != 0)
+        {
+          // We're currently in a backup mode
+            pushad
+            pushfd
+            push    ds
+            push    es
+
+          // Change the base
+            mov     eax,'altr'
+            mov     ebx,'gdt '
+            mov     edx,_sVGA / 8
+            mov     esi,_sVGA_base
+            mov     edi,_sVGA_limit
+            call    <u48> cs:_EXODUS_requestor
+
+          // Copy the save buffer to the current screen
+            mov     ax,_sVGA_BACKUP
+            mov     ds,ax
+            mov     ax,_sVGA
+            mov     es,ax
+            xor     esi,esi
+            xor     edi,edi
+            mov     ecx,32768 / 4
+            cld
+            rep     movsd
+
+          // Lower the flag
+            mov     ds,cs:data_segment
+            mov     ds:vga_backup_mode,0
+
+            pop     es
+            pop     ds
+            popfd
+            popad
+        }
+        ret
+    }
+
+
+
+
+    function invVID_write_registers
+    {
+    // This routine is used to write values specific to a video mode to the vga controller
+    //
+    // Upon entry:   Stack is arranged as outlined below
+    //
+    // Upon exit:    Values are written
+    //
+      // [esp+28] - MISC structure
+      // [esp+24] - SEQ structure
+      // [esp+20] - CRTC structure
+      // [esp+16] - GRAPH structure
+      // [esp+12] - ATTRIB structure
+      // [esp+08] - RAMDAC structure
+      // [esp+04] - RAMDAC count
+      // [esp+00] - eip
+
+       // MISC registers
+        mov     esi,<u32> [esp+28]
+        xor     ebx,ebx
+        while (word ptr cs:[esi+ebx*4] != 0ffffh)
+        {
+            mov     dx,<u16> cs:[esi+ebx*4]                      // port
+            mov     ax,<u16> cs:[esi+ebx*4+2]                    // data
+            out     dx,al
+            invWait_a_bit()
+
+            inc     ebx
+        }
+
+       // CRTC registers
+        mov     esi,<u32> [esp+20]
+        xor     ebx,ebx
+        mov     ecx,32
+        repeat
+        {
+            mov     edx,CRTC_INDEX
+            mov     al,bl
+            out     dx,al
+            invWait_a_bit()
+
+            mov     edx,CRTC_DATA
+            mov     al,<u8>  cs:[esi]
+            out     dx,al
+            invWait_a_bit()
+
+            inc     esi
+            inc     ebx
+        } untilcxz
+
+       // SEQ registers
+        mov     esi,<u32> [esp+24]
+        xor     ebx,ebx
+        mov     ecx,5
+        repeat
+        {
+            mov     edx,SEQ_INDEX
+            mov     al,bl
+            out     dx,al
+            invWait_a_bit()
+
+            mov     edx,SEQ_DATA
+            mov     al,<u8>  cs:[esi]
+            out     dx,al
+            invWait_a_bit()
+
+            inc     esi
+            inc     ebx
+        } untilcxz
+
+       // GRAPH registers
+        mov     esi,<u32> [esp+16]
+        xor     ebx,ebx
+        mov     ecx,9
+        repeat
+        {
+            mov     edx,GRAPH_INDEX
+            mov     al,bl
+            out     dx,al
+            invWait_a_bit()
+
+            mov     edx,GRAPH_DATA
+            mov     al,<u8>  cs:[esi]
+            out     dx,al
+            invWait_a_bit()
+
+            inc     esi
+            inc     ebx
+        } untilcxz
+
+       // ATTRIB registers
+        mov     esi,<u32> [esp+12]
+        xor     ebx,ebx
+        mov     ecx,21
+        repeat
+        {
+            mov     edx,STATUS_REG1                                 // clear the flip-flop
+            in      al,dx
+            invWait_a_bit()
+
+            mov     edx,ATTRIB_INDEX
+            mov     al,bl
+            out     dx,al
+            invWait_a_bit()
+
+            mov     edx,ATTRIB_DATA_WRITE
+            mov     al,<u8>  cs:[esi]
+            out     dx,al
+            invWait_a_bit()
+
+            inc     esi
+            inc     ebx
+        } untilcxz
+        mov     edx,STATUS_REG1                                     // clear the flip-flop
+        in      al,dx
+        invWait_a_bit()
+
+        mov     edx,ATTRIB_INDEX                                    // enable palettes
+        mov     al,20h
+        out     dx,al
+        invWait_a_bit()
+
+       // RAMDAC registers
+        mov     ecx,<u32> [esp+04]
+        mov     esi,<u32> [esp+08]
+        mov     edx,RAMDAC_PIXEL_MASK
+        mov     al,0ffh
+        out     dx,al
+        invWait_a_bit()
+        repeat
+        {
+            mov     edx,RAMDAC_INDEX_WRITE
+            mov     al,<u8>  cs:[esi]
+            inc     esi
+            out     dx,al
+            invWait_a_bit()
+
+            mov     edx,RAMDAC_DATA
+            mov     al,<u8>  cs:[esi]                            // red
+            inc     esi
+            out     dx,al
+            invWait_a_bit()
+
+            mov     al,<u8>  cs:[esi]                            // green
+            inc     esi
+            out     dx,al
+            invWait_a_bit()
+
+            mov     al,<u8>  cs:[esi]                            // blue
+            inc     esi
+            out     dx,al
+            invWait_a_bit()
+        } untilcxz
+
+        ret 28
+    }
+
+
+
+
+    function invVID_VGA_set_interactive_palette
+    {
+    // This routine is used to set a single palette after it has interactively been set
+    //
+    // Upon entry:   ds:[ebx] - far ptr to <palette register|R|G|B>
+    //
+    // Upon exit:    The particular palette register is set
+    //
+        push    edx
+        push    eax
+        pushfd
+        cli
+        mov     edx,RAMDAC_PIXEL_MASK
+        mov     al,0ffh
+        out     dx,al
+        mov     edx,RAMDAC_INDEX_WRITE
+        mov     al,<u8>  ds:[ebx]
+        out     dx,al
+        jmp     $+2
+
+        if (cs:bits_per_pixel == 8)
+        {
+            mov     edx,RAMDAC_DATA
+            mov     al,<u8>  ds:[ebx+1]                          // red
+            shr     al,2                                            // divide by 4 (only 64 values per register in 8bpp mode)
+            out     dx,al
+            jmp     $+2
+
+            mov     al,<u8>  ds:[ebx+2]                          // green
+            shr     al,2
+            out     dx,al
+            jmp     $+2
+
+            mov     al,<u8>  ds:[ebx+3]                          // blue
+            shr     al,2
+            out     dx,al
+            jmp     $+2
+        
+        } else {
+            mov     edx,RAMDAC_DATA
+            mov     al,<u8>  ds:[ebx+1]                          // red
+            out     dx,al
+            jmp     $+2
+
+            mov     al,<u8>  ds:[ebx+2]                          // green
+            out     dx,al
+            jmp     $+2
+
+            mov     al,<u8>  ds:[ebx+3]                          // blue
+            out     dx,al
+            jmp     $+2
+        }
+        popfd
+        pop     eax
+        pop     edx
+        ret
+    }
+
+
+
+
+    function invVID_VGA_initialize_interactive_palette
+    {
+    // This routine is used to reset all interactive palette colors to 0
+    // It's used when a full redraw is issued (it gets rid of colors no-longer used)
+    //
+    // Upon entry:   Nothing
+    //
+    // Upon exit:    The palette is reset
+    //
+        push    ds
+        pushfd
+        pushad
+
+        mov     esi,offset ramdac_256_standard_start
+        mov     edi,offset exodus_interactive_256_start
+        mov     ecx,16
+        cld
+        rep     movsd
+        mov     eax,00000010h
+        mov     ecx,256 - 16
+      @@:
+        stosd
+        inc     eax
+        dec     ecx
+        jnz     @B
+
+        popad
+        popfd
+        pop     ds
+        ret
+    }
+
+
+
+
+    function invVID_vga_set_font
+    {
+    // This routine is used to set the font
+    //
+    // Upon entry:   The stack is arranged as below
+    //
+    // Upon exit:    The font is setup
+    //
+      // [ebp+12] - Bytes per character (maximum of 32)
+      // [ebp+08] - Offset to font table
+      // [ebp+04] - eip
+      // [ebp+00] - ebp
+        enter   0,0
+        pushad
+        pushfd
+        push    es
+
+        invVID_vga_prepare_for_font()
+      //-----------
+        mov     esi,<u32> [ebp+08]
+        mov     ebx,<u32> [ebp+12]
+        mov     ax,_sGRAPHICS
+        mov     es,eax
+        xor     edi,edi
+        mov     eax,32
+        sub     eax,ebx
+      // Right now, es:[edi] - far ptr to start of video memory
+      //            ds:[esi] - far ptr to font table
+      //                edx - count
+      //                eax - extras bytes to add per character
+        cld
+      loop_top:
+        mov     ecx,ebx
+        rep     movsb
+        add     edi,eax
+        dec     dx
+        jnz     loop_top
+      //-----------
+        invVID_vga_reset_after_font()
+
+        pop     es
+        popfd
+        popad
+        leave
+        ret 8
+    }
+
+
+
+
+    function invVID_vga_prepare_for_font
+    {
+    // This routine is used to prepare for the upcoming font setup
+    //
+    // Upon entry:   Nothing
+    //
+    // Upon exit:    The regs are stored to memory variables
+    //
+        push    edx
+        push    eax
+        push    ds
+
+        mov     ds,cs:data_segment
+        mov     dx,SEQ_INDEX
+        mov     ax,402h         // Send 4 to index-2
+        out     dx,ax
+
+        mov     ax,704h         // Send 7 to index-4
+        out     dx,ax
+
+        mov     dx,GRAPH_INDEX
+        mov     ax,204h         // Send 2 to index-4
+        out     dx,ax
+
+        mov     ax,5            // Send 0 to index-5
+        out     dx,ax
+
+        mov     ax,406h         // Send 4 to index-6
+        out     dx,ax
+
+        pop     ds
+        pop     eax
+        pop     edx
+        ret
+    }
+
+
+
+
+    function invVID_vga_reset_after_font
+    {
+    // This routine is used to reset the regs after a font setup
+    //
+    // Upon entry:   Nothing
+    //
+    // Upon exit:    The regs are reset from memory variables
+    //
+        push    edx
+        push    eax
+        push    ds
+
+        mov     ds,cs:data_segment
+        mov     dx,SEQ_INDEX
+        mov     ax,302h
+        out     dx,ax
+
+        mov     ax,304h
+        out     dx,ax
+
+        mov     dx,GRAPH_INDEX
+        mov     ax,4
+        out     dx,ax
+
+        mov     ax,1005h
+        out     dx,ax
+
+        mov     ax,0e06h
+        out     dx,ax
+
+        pop     ds
+        pop     eax
+        pop     edx
+        ret
+    }
+
+
+
+
+    function VID_draw_exodus_boot_screen
+    {
+    // This routine draws the main boot screen on the vga
+    // Note, this algorithm uses the lower 20h palette registers for the boot screen.  It sets the palette registers from 21h
+    //       to 2fh to the standard 0-fh colors.
+    //
+    // Upon entry:   It is known the video mode is 320x200
+    //               ds:[esi] - far ptr to boot screen
+    //                    ecx - length of boot screen
+    //
+    // Upon exit:    The screen is updated
+    //
+      // Note, EXODUS_requestor is the only algorithm that calls this function.  It saves/restore all registers.
+        mov     edx,ecx
+        mov     fs,cs:data_segment
+        mov     edi,esi
+      // The palette is first (this boot screen must use less than or equal to the first 1fh color registers)
+        xor     eax,eax                                             // The first byte says how many palette entries there are
+        inc     esi
+        mov     ecx,1
+        push    edx
+        while (al < <u8>  ds:[edi])
+        {
+            mov     ebx,eax
+
+            mov     edx,RAMDAC_INDEX_WRITE
+            out     dx,al
+            invWait_a_bit()
+            mov     edx,RAMDAC_DATA
+            mov     al,<u8>  ds:[esi]                            // Red
+            out     dx,al
+            invWait_a_bit()
+            mov     al,<u8>  ds:[esi+1]                          // Green
+            out     dx,al
+            invWait_a_bit()
+            mov     al,<u8>  ds:[esi+2]                          // Blue
+            out     dx,al
+            add     esi,3
+
+            mov     eax,ebx
+            add     ecx,3
+            inc     eax
+        }
+        pop     edx
+        sub     edx,ecx
+
+      // Then the physical boot screen
+        mov     eax,_sGRAPHICS
+        mov     es,eax
+        xor     edi,edi
+        while (edx > 0)
+        {
+            sub     edx,2
+            movzx   ecx,<u8>  ds:[esi]
+            mov     al,<u8>  ds:[esi+1]
+            rep     stosb
+            add     esi,2
+        }
+
+      // Now, set the fixed palette (for any subsequent 18x16 logos that will be displayed)
+        mov     fs:logo_x,0
+        mov     fs:logo_y,0
+        mov     esi,offset ramdac_256_standard_start
+        mov     ecx,20h
+        while (ecx < 30h)
+        {
+            mov     al,cl
+            mov     edx,RAMDAC_INDEX_WRITE
+            out     dx,al
+            invWait_a_bit()
+
+            mov     edx,RAMDAC_DATA
+            mov     al,<u8>  fs:[esi+1]                          // red
+            out     dx,al
+            invWait_a_bit()
+
+            mov     al,<u8>  fs:[esi+2]                          // green
+            out     dx,al
+            invWait_a_bit()
+
+            mov     al,<u8>  fs:[esi+3]                          // blue
+            out     dx,al
+            invWait_a_bit()
+
+            add     esi,4
+            inc     cx
+        }
+        retf
+    }
+
+
+
+
+    function invWait_a_bit
+    {
+        push    edx
+        pushf
+
+        mov     edx,0fh
+      @@:                                                           // compensate for a hardware limitation somewhere
+        sub     edx,1
+        jnc     @B
+
+        popf
+        pop     edx
+        ret
+    }
+
+
+
+
+    function VID_g_claim_ownership
+    {
+    // This routine is called when ownership of the VID_g_routines() algorithm is desired
+    //
+    // Upon entry:   The stack has CS on it, that is the program desiring access
+    //
+    // Upon exit:    carry? - SET if error, CLEAR if ok
+    //
+        if (cs:VID_g_owner == 0ffffffffh)
+        {
+          // It's not currently owned
+          // [ebp+08] - cs
+          // [ebp+04] - eip
+          // [ebp+00] - ebp
+            enter   0,0
+            push    ds
+            push    eax
+
+            mov     ds,cs:data_segment
+            mov     eax,<u32> [ebp+08]
+            mov     ds:VID_g_owner,eax
+
+            pop     eax
+            pop     ds
+            leave
+            clc
+        
+        } else {
+            stc
+        }
+        retf
+    }
+
+
+
+
+    function VID_g_release_ownership
+    {
+    // This routine is called when ownership of the VID_g_routines() algorithm is desired
+    //
+    // Upon entry:   The stack has CS on it, that is the program desiring access
+    //
+    // Upon exit:    carry? - SET if error, CLEAR if ok
+    //
+      // [ebp+08] - cs
+      // [ebp+04] - eip
+      // [ebp+00] - ebp
+        enter   0,0
+        push    eax
+
+        mov     eax,<u32> [ebp+08]
+        if (cs:VID_g_owner == eax)
+        {
+          // This is actually the owner, and they're releasing it
+            push    ds
+            mov     ds,cs:data_segment
+            mov     ds:VID_g_owner,0ffffffffh
+            pop     ds
+            clc
+        
+        } else {
+            stc
+        }
+
+        pop     eax
+        leave
+        retf
+    }

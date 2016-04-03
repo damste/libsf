@@ -1,0 +1,311 @@
+// exodus.asm
+//
+// +--------------------------+
+// | Exodus Top-Level Program |
+// +--------------------------+
+//
+// Exodus Top-Level Program.  From here all things are done
+//
+//
+
+// Exodus
+
+    
+    
+#include "\exodus\source\common\equates.asp"
+#include "\exodus\source\common\objects.asp"
+#include "ex_eq.asp"
+
+code text32
+| at offset 0
+{
+    // These are required to be the first 2 dwords in the file
+dd  offset main
+dd  offset requestor
+
+
+
+
+    function main
+    {
+    // This routine is called once by Exodus once initialization is complete (all calls to requestor() are finished)
+    // It is used by Exodus to allow this driver to properly initialize itself.
+    // When this function is called multi-tasking is not installed.  This is a linear function.
+    //
+    // Upon entry:   Nothing
+    //
+    // Upon exit:    A "continued status of execution" is expected by Exodus.  This indicates whether or not everything
+    //               initialized ok or is available.  If everything is OK the carry? flag is CLEAR.  If there is an error
+    //               and this driver cannot continue then the carry? should be SET.
+    //               carry? - CLEAR=Ok to continue
+    //                          SET=Error initializing
+    //
+        mov     ds,cs:data_segment
+        mov     ds:bootup,0
+        clc
+        retf
+    }
+
+
+
+
+    function requestor
+    {
+    // This routine is called by Exodus.  When this function is called multi-tasking is not installed.  This is a linear function.
+    //
+    // Upon entry:   eax - requested function
+    //                ds - temporary ORG 0h data segment for use with these requestor() functions
+    //
+    // Upon exit:    results vary based on value of eax
+    //
+        if (eax == 'info')
+        {
+          // Program information
+            mov     eax,'nati'                              // Identifying this program as a native primative
+            mov     ecx,offset end_of_required_data         // The maximum number of bytes to retain after loading
+
+            mov     esi,offset driver_primatives            // Offset to the native primatives structure
+            mov     edi,offset driver_name
+            mov     ebx,offset version
+            mov     edx,offset copyright
+            mov     ebp,offset author
+            clc
+        
+        } else if (eax == 'prim') {
+          // Native primatives this program will use
+            mov     ds:data_segment,ds
+            mov     esi,offset required_primatives          // This primative requires these external influence
+            mov     edi,offset primative_call_gates
+            clc
+        
+        } else if (eax == 'id  ') {
+          // Display this program's ID on the VGA monitor
+            mov     esi,offset driver_name
+            call    <u48> cs:_VID_display_string_nr_vga
+            clc
+        
+        } else if (eax == 'note') {
+          // Exodus has a note for us
+            mov     eax,'stop'
+            mov     ebx,'load'
+            mov     esi,offset driver_name
+            call    <u48> cs:_EXODUS_requestor
+        
+        } else {
+            stc
+        }
+        retf
+    }
+
+
+
+    function EXODUS_dot_com
+    {
+    // This routine is the first program called after the initial bootup is completed
+       // Indicate system status
+        mov     ds,cs:data_segment
+        mov     ds:booting_up,1
+        mov     ds:shutdown,0
+
+       // Clear the VGA screen
+        push    0                                                   // upper-left
+        push    0                                                   // lower-right
+        mov     eax,_sSYSTEM
+        mov     ds,eax
+        movzx   eax,<u16> ds:[_SYSTEM_VGA_HORIZONTAL]            // width
+        movzx   ebx,<u16> ds:[_SYSTEM_VGA_VERTICAL]              // height
+        mov     ds,cs:data_segment
+        mov     ds:desktop_width,eax
+        mov     ds:desktop_height,ebx
+        push    eax
+        push    ebx
+        push    0                                                   // color
+        call    <u48> ds:_VID_g_fill_rectangle
+
+       // Create the main window
+        invEXODUS_create_desktop()
+
+       // Set focus on the main Exodus program
+        mov     ax,1                                                // This task's handle
+        call    <u48> ds:_TASK_set_focus
+
+
+//        call    <u48> ds:_VID_test_routine
+
+;;
+;;
+;; Wait for events!
+;;
+;;
+;; Note, this bit of code does two things.
+;;
+;;   #1 it sets up Exodus to wait for events so the system can act on them when they occur
+;;   #2 it receives control from the tasking system when it is is in an idle state an no tasks are using idle cpu time
+;;      When #2 occurs this task simply waits for an interrupt and then returns
+;;
+        mov     ds,cs:data_segment
+        mov     ds:booting_up,0
+        call    <u48> ds:_TASK_read_events
+        while (cs:shutdown != 10101010b)
+        {
+            call    <u48> cs:_Exodus_TASK_release_timeslice
+        }
+
+;;
+;; When control reaches this point we're shutting down Exodus
+;;
+      @@:
+//int 3
+        hlt
+        jmp @B
+    }
+
+
+
+
+    function invEXODUS_create_desktop
+    {
+    // This routine creates the main desktop window based on the current screen resolution
+    //
+    // Upon entry:   Nothing
+    //
+    // Upon exit:    The VGA screen is displayed with the standard Exodus Screen
+    //
+        push    eax
+        push    esi
+
+       // Set some required variables based on the current video mode
+      // Exodus bar rectangle records
+        mov     edx,ds:desktop_height
+        sub     edx,29
+        mov     ds:ebr_top,edx
+        mov     ecx,ds:desktop_width
+        mov     ds:ebr_width,ecx
+      // Exodus bar line
+        mov     edx,ds:desktop_height
+        sub     edx,30
+        mov     ds:ebl_top,edx
+        mov     ecx,ds:desktop_width
+        mov     ds:ebl_width,ecx
+      // The Exodus button
+        mov     edx,ds:desktop_height
+        sub     edx,27
+        mov     ds:ebb_top,edx
+      // The "Exodus" text on the button
+        mov     edx,ds:desktop_height
+        sub     edx,22
+        mov     ds:ebt_top,edx
+        mov     ds:ebt_segment,ds
+      // The Exodus button rectangle (where the spinning logo will be displayed)
+        mov     edx,ds:desktop_height
+        sub     edx,25
+        mov     ds:eblr_top,edx
+
+       // Create the desktop
+        mov     eax,1                                               // This task's handle
+        mov     esi,offset exodus_desktop
+        call    <u48> ds:_OBJECT_create_base_object
+
+       // Add items to the desktop
+        xor     ebx,ebx
+        mov     esi,offset exodus_bar_rectangle                     // Rectangle beneath the Exodus button
+        call    <u48> ds:_OBJECT_create_object
+
+        mov     esi,offset exodus_bar_line                          // Line above the rectangle
+        call    <u48> ds:_OBJECT_create_object
+
+        mov     esi,offset exodus_button_border                     // Box around the Exodus button
+        call    <u48> ds:_OBJECT_create_object
+
+        mov     esi,offset exodus_button_text                       // The "Exodus" text
+        call    <u48> ds:_OBJECT_create_object
+
+        mov     esi,offset exodus_button_logo_rectangle             // The Exodus button logo rectangle
+        call    <u48> ds:_OBJECT_create_object
+
+        pop     esi
+        pop     eax
+        ret
+    }
+
+
+
+
+    function invEXODUS_write_screen
+    {
+        pushad
+        push    es
+        mov     ax,_sMONO
+        mov     es,ax
+        repeat
+        {
+            mov     al,<u8>  cs:[esi]
+            inc     esi
+            stosb
+            mov     al,7
+            stosb
+        } untilcxz
+        pop     es
+        popad
+        ret
+    }
+
+
+
+
+
+
+
+// DATA relating to Exodus objects
+    #include "ex_data.asp"
+
+
+// DATA
+    driver_name                             u8   "Exodus Operating System",0
+    version                                 u8   "10.10.2010 BETA",0
+    copyright                               u8   "(c) Copyright Beatleworks, Inc.",0
+    author                                  u8   "Rick C. Hodgin",0
+    bootup                                  u8   1                   // Changed to 0 after initial bootup is complete
+
+    exodus_button                           u8   "Exodus",0
+
+    booting_up                              u32  1                   // Changed to 0 after Exodus.com has fully initialized itself
+    shutdown                                u32  0
+    data_segment                            u16  0
+
+
+    _EXODUS_requestor                       u16  0
+  primative_call_gates:
+    _TASK_set_focus                         u16  0
+    _VID_display_string_nr_vga              u16  _sEXODUS_REQUESTOR
+    _VID_g_fill_rectangle                   u16  0f000h
+    _OBJECT_create_base_object              u16  0f000h
+    _OBJECT_create_object                   u16  0f000h
+    _VID_g_derive_color                     u16  0f000h
+    _TASK_read_events                       u16  0f000h
+    _Exodus_TASK_release_timeslice          u16  0f000h
+                                            u16  0f000h
+                                            u16  0f000h
+
+    required_primatives                     u8   14, "TASK_set_focus"
+                                            u8   25, "VID_display_string_nr_vga"
+                                            u8   20, "VID_g_fill_rectangle"
+                                            u8   25, "OBJECT_create_base_object"
+                                            u8   20, "OBJECT_create_object"
+                                            u8   18, "VID_g_derive_color"
+                                            u8   16, "TASK_read_events"
+                                            u8   29, "Exodus_TASK_release_timeslice"
+                                            u8   0ffh
+
+ end_of_required_data:
+    driver_primatives:
+                                            u8   14, "EXODUS_dot_com"
+                                            u32  offset EXODUS_dot_com
+                                            u16  0
+
+                                            u16  0ffffh              // Teriminator
+
+}
+// text32
+
+END

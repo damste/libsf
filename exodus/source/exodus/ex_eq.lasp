@@ -1,0 +1,10 @@
+// ex_eq.asp
+//
+// Exodus constants
+//
+
+
+
+_CREATE               = 0
+_PROPERTY             = 1
+_EVENT                = 2

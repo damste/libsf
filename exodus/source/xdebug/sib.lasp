@@ -1,0 +1,62 @@
+            if (ah == 10b)
+            {
+                // It's an indirect memory operand with a 16/32-bit displacement
+                add     bx,5
+                mov     dl,<u8>  [si+bx-5]
+                mov     CS:sib_byte,dl
+                mov     edx,<u32> [si+bx-4]
+                mov     <u32> CS:temp_buffer[0],edx
+                display_instruction()
+                display_segment_override()
+                display_open_bracket()
+                mov     ah,al
+                and     al,0111b
+                display_register_name_indirect_sib()
+                display_plus_sign()
+                mov     edx,<u32> CS:temp_buffer[0]
+                show_register_adr_size_override_no_color()
+                display_close_bracket()
+                display_comma()
+                mov     al,ah
+                shr     al,3
+                and     al,0111b
+                display_register_name_op_size_override()
+            
+            } else if (ah == 01b) {
+              // It's an indirect memory operand with an 8-bit displacement
+                inc     bx
+                mov     dl,<u8>  [si+bx-1]
+                mov     <u8>  CS:temp_buffer[0],dl
+                display_instruction()
+                display_segment_override()
+                display_open_bracket()
+                mov     ah,al
+                and     al,0111b
+                display_register_name_indirect_sib()
+                display_plus_sign()
+                mov     edx,<u32> CS:temp_buffer[0]
+                show_register_adr_size_override_no_color()
+                display_close_bracket()
+                display_comma()
+                mov     al,ah
+                shr     al,3
+                and     al,0111b
+                display_register_name_op_size_override()
+            
+            } else {
+              // It is 00b, which means it's either direct memory operand or a based, indexed or based & indexed operand
+                mov     ah,al
+                and     ah,0111b
+                if (ah == 110b)
+                {
+                  // It's a direct memory operand
+                    add     bl,2
+                    display_instruction()
+                    display_segment_override()
+                
+                } else {
+                  // It's a based, indexed or based & indexed operand
+                    display_instruction()
+                    display_segment_override()
+                }
+            }

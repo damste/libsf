@@ -1,0 +1,121 @@
+// asm_data.asp
+//
+// Data for the Debi Debugger disassembly/assembly algorithms
+//
+
+
+
+    CONST_AL                  = 000b
+    CONST_AX                  = 000b
+    CONST_EAX                 = 000b
+    CONST_ES                  = 000b
+
+    CONST_CL                  = 001b
+    CONST_CX                  = 001b
+    CONST_ECX                 = 001b
+    CONST_CS                  = 001b
+
+    CONST_DL                  = 010b
+    CONST_DX                  = 010b
+    CONST_EDX                 = 010b
+    CONST_SS                  = 010b
+
+    CONST_BL                  = 011b
+    CONST_BX                  = 011b
+    CONST_EBX                 = 011b
+    CONST_DS                  = 011b
+
+    CONST_AH                  = 100b
+    CONST_SP                  = 100b
+    CONST_ESP                 = 100b
+    CONST_FS                  = 100b
+
+    CONST_CH                  = 101b
+    CONST_BP                  = 101b
+    CONST_EBP                 = 101b
+    CONST_GS                  = 101b
+
+    CONST_DH                  = 110b
+    CONST_SI                  = 110b
+    CONST_ESI                 = 110b
+
+    CONST_BH                  = 111b
+    CONST_DI                  = 111b
+    CONST_EDI                 = 111b
+
+    ebx_esi_register        u8   "ebx+esi"
+    ebx_edi_register        u8   "ebx+edi"
+    ebp_esi_register        u8   "ebp+esi"
+    ebp_edi_register        u8   "ebp+edi"
+    bx_si_register          u8   "bx+si"
+    bx_di_register          u8   "bx+di"
+    bp_si_register          u8   "bp+si"
+    bp_di_register          u8   "bp+di"
+    cs_register             u8   "cs"
+    ds_register             u8   "ds"
+    es_register             u8   "es"
+    fs_register             u8   "fs"
+    gs_register             u8   "gs"
+    ss_register             u8   "ss"
+    eax_register            u8   "e"
+    ax_register             u8   "ax"
+    ebx_register            u8   "e"
+    bx_register             u8   "bx"
+    ecx_register            u8   "e"
+    cx_register             u8   "cx"
+    edx_register            u8   "e"
+    dx_register             u8   "dx"
+    esi_register            u8   "e"
+    si_register             u8   "si"
+    edi_register            u8   "e"
+    di_register             u8   "di"
+    ebp_register            u8   "e"
+    bp_register             u8   "bp"
+    ah_register             u8   "ah"
+    al_register             u8   "al"
+    bh_register             u8   "bh"
+    bl_register             u8   "bl"
+    ch_register             u8   "ch"
+    cl_register             u8   "cl"
+    dh_register             u8   "dh"
+    dl_register             u8   "dl"
+    ip_register             u8   "ip"
+    esp_register            u8   "e"
+    sp_register             u8   "sp"
+    st0_register            u8   "st0"
+    st1_register            u8   "st1"
+    st2_register            u8   "st2"
+    st3_register            u8   "st3"
+    st4_register            u8   "st4"
+    st5_register            u8   "st5"
+    st6_register            u8   "st6"
+    st7_register            u8   "st7"
+    cr0_register            u8   "cr0"
+    cr1_register            u8   "cr1"
+    cr2_register            u8   "cr2"
+    cr3_register            u8   "cr3"
+    cr4_register            u8   "cr4"
+    cr5_register            u8   "cr5"
+    cr6_register            u8   "cr6"
+    cr7_register            u8   "cr7"
+    dr0_register            u8   "dr0"
+    dr1_register            u8   "dr1"
+    dr2_register            u8   "dr2"
+    dr3_register            u8   "dr3"
+    dr4_register            u8   "dr4"
+    dr5_register            u8   "dr5"
+    dr6_register            u8   "dr6"
+    dr7_register            u8   "dr7"
+    tr0_register            u8   "tr0"
+    tr1_register            u8   "tr1"
+    tr2_register            u8   "tr2"
+    tr3_register            u8   "tr3"
+    tr4_register            u8   "tr4"
+    tr5_register            u8   "tr5"
+    tr6_register            u8   "tr6"
+    tr7_register            u8   "tr7"
+    flags_register          u8   "flags"
+    zero_ffff               u8   "0ffffh"
+
+    temp_buffer             u8   100 dup(0)
+    temp_buffer2            u8   100 dup(0)

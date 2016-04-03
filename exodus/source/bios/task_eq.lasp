@@ -1,0 +1,64 @@
+// task_eq.asp
+//
+// Exodus Task System constant equates
+//
+//
+
+// Task header constants
+_TASK_SYSTEM_NEXT_OFFSET              = 0                           // dword, The next offset within the _sTASK_SYSTEM selector
+_TASK_SYSTEM_NEXT_HANDLE              = 4                           // word,  Next handle to use (incremented each task)
+_TASK_SYSTEM_CURRENT_TASK_TSS         = 6                           // word,  Currently executing TSS
+_TASK_SYSTEM_CURRENT_TASK_OFFSET      = 8                           // dword, Currently executing task offset (in _sTASK_SYSTEM)
+_TASK_SYSTEM_TOTAL_ENTRIES_BASE_0     = 12                          // dword, stored as base-0 (so 0 actually means 1)
+_TASK_SYSTEM_FOCUS_TASK_OFFSET        = 16                          // dword, task that has focus
+
+
+
+_FIRST_TASK_ENTRY                     = 64                          // Offset where the first task record is
+// Task structure constants
+_TASK_ENTRY_HANDLE                    = 0
+_TASK_ENTRY_GDT_TSS                   = 2
+_TASK_ENTRY_GDT_LDT                   = 4
+_TASK_ENTRY_SELECTOR_OBJECTS          = 6
+_TASK_ENTRY_FOCUS_BO                  = 8
+_TASK_ENTRY_FOCUS_O                   = 12
+_TASK_ENTRY_TICKS                     = 16
+_TASK_ENTRY_MODE                      = 17
+_TASK_ENTRY_USES_FPU                  = 18
+_TASK_ENTRY_TSS_LINEAR_OFFSET         = 20
+_TASK_ENTRY_TICKS_LEFT                = 24
+
+;;----------
+;; * NOTE *
+;;
+_TASK_ENTRY_LENGTH                    = 64
+;; * NOTE *  If this value changes, the algorithm in invTASK_switch_task() [bios\tasks.asp] must be changed as well.
+;;           Presently it uses a SHR x,6 to divide by 64.  If the number changes it must be put into a DIV instruction
+;;----------
+
+
+
+// Constants used for set-bit meanings
+// Refer to INF\TASK.INF for more information
+_SUSPENDED                            = 10000000b
+_IDLE                                 =  1000000b
+_READ_EVENTS                          =   100000b
+_SLAVE                                =       10b
+_LINEAR                               =        1b
+
+
+// Constants used for mouse events and task scheduling
+_LEFT_SINGLE_CLICK            = 0
+_LEFT_DOUBLE_CLICK            = 1
+_LEFT_DRAG_START              = 2
+_LEFT_DRAG_STOP               = 3
+_RIGHT_SINGLE_CLICK           = 4
+_RIGHT_DOUBLE_CLICK           = 5
+_RIGHT_DRAG_START             = 6
+_RIGHT_DRAG_STOP              = 7
+_BOTH_SINGLE_CLICK            = 8
+_BOTH_DOUBLE_CLICK            = 9
+_HOVER                        = 10
+_ABANDON_IF_NOT               = 11
+_ANY_CLICK                    = 12
+_IMMEDIATE                    = 13

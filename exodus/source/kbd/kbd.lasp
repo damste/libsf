@@ -1,0 +1,648 @@
+// keyboard.asp
+//
+// Exodus 104-keyboard driver
+//
+
+    r_ctrl_status       u8   0
+    r_shift_status      u8   0
+    r_alt_status        u8   0
+    l_ctrl_status       u8   0
+    l_shift_status      u8   0
+    l_alt_status        u8   0
+    caps_status         u8   0
+    num_status          u8   0
+    scroll_status       u8   0
+    l_win_status        u8   0
+    r_win_status        u8   0
+    win_menu_status     u8   0
+
+// These keys change some internal flags when they're depressed
+  depress_keys:
+                        u8   036h
+                        u32  offset r_shift_status
+                        u8   05ch
+                        u32  offset r_alt_status
+                        u8   01dh
+                        u32  offset l_ctrl_status
+                        u8   02ah
+                        u32  offset l_shift_status
+                        u8   038h
+                        u32  offset l_alt_status
+                        u8   054h
+                        u32  offset l_win_status
+                        u8   055h
+                        u32  offset r_win_status
+                        u8   056h
+                        u32  offset win_menu_status
+                        u8   03ah
+                        u32  offset caps_status + 80000000h
+                        u8   045h
+                        u32  offset num_status + 80000000h
+                        u8   046h
+                        u32  offset scroll_status + 80000000h
+                        u16  0ffffffffh
+
+// These keys change some internal flags when they're released
+  release_keys:
+                        u8   05ah
+                        u32  offset r_ctrl_status
+                        u8   036h
+                        u32  offset r_shift_status
+                        u8   05ch
+                        u32  offset r_alt_status
+                        u8   01dh
+                        u32  offset l_ctrl_status
+                        u8   02ah
+                        u32  offset l_shift_status
+                        u8   038h
+                        u32  offset l_alt_status
+                        u8   054h
+                        u32  offset l_win_status
+                        u8   055h
+                        u32  offset r_win_status
+                        u8   056h
+                        u32  offset win_menu_status
+                        u16  0ffffffffh
+
+// These keys are part of extended two-byte keystroke codes
+    extended_keys       u8   01ch                    // enter
+                        u32  0ffffffffh
+                        u8   01dh                    // right_ctrl
+                        u32  offset r_ctrl_status
+                        u8   035h                    // gray_slash
+                        u32  0ffffffffh
+                        u8   038h                    // right_alt
+                        u32  offset r_alt_status
+                        u8   047h                    // home
+                        u32  0ffffffffh
+                        u8   048h                    // up
+                        u32  0ffffffffh
+                        u8   049h                    // pgup
+                        u32  0ffffffffh
+                        u8   04bh                    // left
+                        u32  0ffffffffh
+                        u8   04dh                    // right
+                        u32  0ffffffffh
+                        u8   04fh                    // end
+                        u32  0ffffffffh
+                        u8   050h                    // down
+                        u32  0ffffffffh
+                        u8   051h                    // pgdn
+                        u32  0ffffffffh
+                        u8   052h                    // ins
+                        u32  0ffffffffh
+                        u8   053h                    // del
+                        u32  0ffffffffh
+                        u16  0ffffh
+
+                        // ASCII in SCAN order
+    raw_key_set         u16  00000h      // 00, null
+                        u16  0001Bh      // 01, Escape
+                        u16  00031h      // 02, 1
+                        u16  00032h      // 03, 2
+                        u16  00033h      // 04, 3
+                        u16  00034h      // 05, 4
+                        u16  00035h      // 06, 5
+                        u16  00036h      // 07, 6
+                        u16  00037h      // 08, 7
+                        u16  00038h      // 09, 8
+                        u16  00039h      // 0a, 9
+                        u16  00030h      // 0b, 0
+                        u16  0002dh      // 0c, -
+                        u16  0003dh      // 0d, =
+                        u16  00e08h      // 0e, bksp
+                        u16  00f09h      // 0f, tab
+                        u16  00071h      // 10, q
+                        u16  00077h      // 11, w
+                        u16  00065h      // 12, e
+                        u16  00072h      // 13, r
+                        u16  00074h      // 14, t
+                        u16  00079h      // 15, y
+                        u16  00075h      // 16, u
+                        u16  00069h      // 17, i
+                        u16  0006Fh      // 18, o
+                        u16  00070h      // 19, p
+                        u16  0005bh      // 1a, [
+                        u16  0005dh      // 1b, ]
+                        u16  01c0dh      // 1c, enter
+                        u16  0f000h      // 1d, ctrl
+                        u16  00061h      // 1e, a
+                        u16  00073h      // 1f, s
+                        u16  00064h      // 20, d
+                        u16  00066h      // 21, f
+                        u16  00067h      // 22, g
+                        u16  00068h      // 23, h
+                        u16  0006ah      // 24, j
+                        u16  0006bh      // 25, k
+                        u16  0006ch      // 26, l
+                        u16  0003bh      // 27, //
+                        u16  00027h      // 28, '
+                        u16  00060h      // 29, `
+                        u16  0f000h      // 2a, l_shift
+                        u16  0005ch      // 2b, \
+                        u16  0007ah      // 2c, z
+                        u16  00078h      // 2d, x
+                        u16  00063h      // 2e, c
+                        u16  00076h      // 2f, v
+                        u16  00062h      // 30, b
+                        u16  0006eh      // 31, n
+                        u16  0006dh      // 32, m
+                        u16  0002ch      // 33, ,
+                        u16  0002eh      // 34, .
+                        u16  0002fh      // 35, /
+                        u16  0f000h      // 36, r_shift
+                        u16  0002ah      // 37, prtsc
+                        u16  0f000h      // 38, alt
+                        u16  00020h      // 39, spc
+                        u16  0f000h      // 3a, caps
+                        u16  03b00h      // 3b, f1
+                        u16  03c00h      // 3c, f2
+                        u16  03d00h      // 3d, f3
+                        u16  03e00h      // 3e, f4
+                        u16  03f00h      // 3f, f5
+                        u16  04000h      // 40, f6
+                        u16  04100h      // 41, f7
+                        u16  04200h      // 42, f8
+                        u16  04300h      // 43, f9
+                        u16  04400h      // 44, f10
+                        u16  0f000h      // 45, numlck
+                        u16  0f000h      // 46, scrlock
+                        u16  04700h      // 47, home
+                        u16  04800h      // 48, up
+                        u16  04900h      // 49, pgup
+                        u16  04a2dh      // 4a, gray-
+                        u16  04b00h      // 4b, left
+                        u16  04c00h      // 4c, center
+                        u16  04d00h      // 4d, right
+                        u16  04e2bh      // 4e, gray+
+                        u16  04f00h      // 4f, end
+                        u16  05000h      // 50, down
+                        u16  05100h      // 51, pgdn
+                        u16  05200h      // 52, ins
+                        u16  05300h      // 53, del
+                        u16  0f000h      // 54, nothing
+                        u16  0f000h      // 55, nothing
+                        u16  0f000h      // 56, nothing
+                        u16  08500h      // 57, f11
+                        u16  08600h      // 58, f12
+                        u16  0ffffh
+
+                        // ASCII in SCAN order
+    caps_raw_key_set    u16  00000h      // 00, null
+                        u16  0001Bh      // 01, Escape
+                        u16  00031h      // 02, 1
+                        u16  00032h      // 03, 2
+                        u16  00033h      // 04, 3
+                        u16  00034h      // 05, 4
+                        u16  00035h      // 06, 5
+                        u16  00036h      // 07, 6
+                        u16  00037h      // 08, 7
+                        u16  00038h      // 09, 8
+                        u16  00039h      // 0a, 9
+                        u16  00030h      // 0b, 0
+                        u16  0002dh      // 0c, -
+                        u16  0003dh      // 0d, =
+                        u16  00e08h      // 0e, bksp
+                        u16  00f09h      // 0f, tab
+                        u16  00051h      // 10, Q
+                        u16  00057h      // 11, W
+                        u16  00045h      // 12, E
+                        u16  00052h      // 13, R
+                        u16  00054h      // 14, T
+                        u16  00059h      // 15, Y
+                        u16  00055h      // 16, U
+                        u16  00049h      // 17, I
+                        u16  0004Fh      // 18, O
+                        u16  00050h      // 19, P
+                        u16  0005bh      // 1a, [
+                        u16  0005dh      // 1b, ]
+                        u16  01c0dh      // 1c, enter
+                        u16  0f000h      // 1d, ctrl
+                        u16  00041h      // 1e, A
+                        u16  00053h      // 1f, S
+                        u16  00044h      // 20, D
+                        u16  00046h      // 21, F
+                        u16  00047h      // 22, G
+                        u16  00048h      // 23, H
+                        u16  0004ah      // 24, J
+                        u16  0004bh      // 25, K
+                        u16  0004ch      // 26, L
+                        u16  0003bh      // 27, //
+                        u16  00027h      // 28, '
+                        u16  00060h      // 29, `
+                        u16  0f000h      // 2a, l_shift
+                        u16  0005ch      // 2b, \
+                        u16  0005ah      // 2c, Z
+                        u16  00058h      // 2d, X
+                        u16  00043h      // 2e, C
+                        u16  00056h      // 2f, V
+                        u16  00042h      // 30, B
+                        u16  0004eh      // 31, N
+                        u16  0004dh      // 32, M
+                        u16  0002ch      // 33, ,
+                        u16  0002eh      // 34, .
+                        u16  0002fh      // 35, /
+                        u16  0f000h      // 36, r_shift
+                        u16  0002ah      // 37, prtsc
+                        u16  0f000h      // 38, alt
+                        u16  00020h      // 39, spc
+                        u16  0f000h      // 3a, caps
+                        u16  03b00h      // 3b, f1
+                        u16  03c00h      // 3c, f2
+                        u16  03d00h      // 3d, f3
+                        u16  03e00h      // 3e, f4
+                        u16  03f00h      // 3f, f5
+                        u16  04000h      // 40, f6
+                        u16  04100h      // 41, f7
+                        u16  04200h      // 42, f8
+                        u16  04300h      // 43, f9
+                        u16  04400h      // 44, f10
+                        u16  0f000h      // 45, numlck
+                        u16  0f000h      // 46, scrlock
+                        u16  04700h      // 47, home
+                        u16  04800h      // 48, up
+                        u16  04900h      // 49, pgup
+                        u16  04a2dh      // 4a, gray-
+                        u16  04b00h      // 4b, left
+                        u16  04c00h      // 4c, center
+                        u16  04d00h      // 4d, right
+                        u16  04e2bh      // 4e, gray+
+                        u16  04f00h      // 4f, end
+                        u16  05000h      // 50, down
+                        u16  05100h      // 51, pgdn
+                        u16  05200h      // 52, ins
+                        u16  05300h      // 53, del
+                        u16  00000h      // 54, nothing
+                        u16  00000h      // 55, nothing
+                        u16  00000h      // 56, nothing
+                        u16  08500h      // 57, f11
+                        u16  08600h      // 58, f12
+                        u16  0ffffh
+
+                        // SHIFT+Keystroke SCAN/ASCII Conversion
+    shift_key_set       u16  00000h      // 00, null
+                        u16  0001Bh      // 01, esc
+                        u16  00021h      // 02, !
+                        u16  00040h      // 03, @
+                        u16  00023h      // 04, #
+                        u16  00024h      // 05, $
+                        u16  00025h      // 06, %
+                        u16  0005eh      // 07, ^
+                        u16  00026h      // 08, &
+                        u16  0002ah      // 09, *
+                        u16  00028h      // 0a, (
+                        u16  00029h      // 0b, )
+                        u16  0005fh      // 0c, _
+                        u16  0002bh      // 0d, +
+                        u16  00e08h      // 0e, bksp
+                        u16  00f09h      // 0f, baktab
+                        u16  00051h      // 10, Q
+                        u16  00057h      // 11, W
+                        u16  00045h      // 12, E
+                        u16  00052h      // 13, R
+                        u16  00054h      // 14, T
+                        u16  00059h      // 15, Y
+                        u16  00055h      // 16, U
+                        u16  00049h      // 17, I
+                        u16  0004Fh      // 18, O
+                        u16  00050h      // 19, P
+                        u16  0007bh      // 1a, {
+                        u16  0007dh      // 1b, }
+                        u16  01c0dh      // 1c, enter
+                        u16  001f0h      // 1d, ctrl
+                        u16  00041h      // 1e, A
+                        u16  00053h      // 1f, S
+                        u16  00044h      // 20, D
+                        u16  00046h      // 21, F
+                        u16  00047h      // 22, G
+                        u16  00048h      // 23, H
+                        u16  0004ah      // 24, J
+                        u16  0004bh      // 25, K
+                        u16  0004ch      // 26, L
+                        u16  0003ah      // 27, :
+                        u16  00022h      // 28, "
+                        u16  0007eh      // 29, ~
+                        u16  003f0h      // 2a, l_shift
+                        u16  0007ch      // 2b, |
+                        u16  0005ah      // 2c, Z
+                        u16  00058h      // 2d, X
+                        u16  00043h      // 2e, C
+                        u16  00056h      // 2f, V
+                        u16  00042h      // 30, B
+                        u16  0004eh      // 31, N
+                        u16  0004dh      // 32, M
+                        u16  0003ch      // 33, <
+                        u16  0003eh      // 34, >
+                        u16  0003fh      // 35, ?
+                        u16  004f0h      // 36, r_shift
+                        u16  0002ah      // 37, prtsc
+                        u16  005f0h      // 38, alt
+                        u16  00020h      // 39, spc
+                        u16  007f0h      // 3a, caps
+                        u16  05400h      // 3b, f1
+                        u16  05500h      // 3c, f2
+                        u16  05600h      // 3d, f3
+                        u16  05700h      // 3e, f4
+                        u16  05800h      // 3f, f5
+                        u16  05900h      // 40, f6
+                        u16  05a00h      // 41, f7
+                        u16  05b00h      // 42, f8
+                        u16  05c00h      // 43, f9
+                        u16  05d00h      // 44, f10
+                        u16  008f0h      // 45, numlck
+                        u16  009f0h      // 46, scrlock
+                        u16  00037h      // 47, 7
+                        u16  00038h      // 48, 8
+                        u16  00039h      // 49, 9
+                        u16  0002dh      // 4a, -
+                        u16  00034h      // 4b, 4
+                        u16  00035h      // 4c, 5
+                        u16  00036h      // 4d, 6
+                        u16  0002bh      // 4e, +
+                        u16  00031h      // 4f, 1
+                        u16  00032h      // 50, 2
+                        u16  00033h      // 51, 3
+                        u16  00030h      // 52, 0
+                        u16  0002eh      // 53, .
+                        u16  00000h      // 54, nothing
+                        u16  00000h      // 55, nothing
+                        u16  00000h      // 56, nothing
+                        u16  08700h      // 57, f11
+                        u16  08800h      // 58, f12
+                        u32  0ffffh
+
+                        // SHIFT+Keystroke SCAN/ASCII Conversion
+    caps_shift_key_set  u16  00000h      // 00, null
+                        u16  0001Bh      // 01, esc
+                        u16  00021h      // 02, !
+                        u16  00040h      // 03, @
+                        u16  00023h      // 04, #
+                        u16  00024h      // 05, $
+                        u16  00025h      // 06, %
+                        u16  0005eh      // 07, ^
+                        u16  00026h      // 08, &
+                        u16  0002ah      // 09, *
+                        u16  00028h      // 0a, (
+                        u16  00029h      // 0b, )
+                        u16  0005fh      // 0c, _
+                        u16  0002bh      // 0d, +
+                        u16  00e08h      // 0e, bksp
+                        u16  00f09h      // 0f, baktab
+                        u16  00071h      // 10, q
+                        u16  00077h      // 11, w
+                        u16  00065h      // 12, e
+                        u16  00072h      // 13, r
+                        u16  00074h      // 14, t
+                        u16  00079h      // 15, y
+                        u16  00075h      // 16, u
+                        u16  00069h      // 17, i
+                        u16  0006Fh      // 18, o
+                        u16  00070h      // 19, p
+                        u16  0007bh      // 1a, {
+                        u16  0007dh      // 1b, }
+                        u16  01c0dh      // 1c, enter
+                        u16  001f0h      // 1d, ctrl
+                        u16  00061h      // 1e, a
+                        u16  00073h      // 1f, s
+                        u16  00064h      // 20, d
+                        u16  00066h      // 21, f
+                        u16  00067h      // 22, g
+                        u16  00068h      // 23, h
+                        u16  0006ah      // 24, j
+                        u16  0006bh      // 25, k
+                        u16  0006ch      // 26, l
+                        u16  0003ah      // 27, :
+                        u16  00022h      // 28, "
+                        u16  0007eh      // 29, ~
+                        u16  003f0h      // 2a, l_shift
+                        u16  0007ch      // 2b, |
+                        u16  0007ah      // 2c, z
+                        u16  00078h      // 2d, x
+                        u16  00063h      // 2e, c
+                        u16  00076h      // 2f, v
+                        u16  00062h      // 30, b
+                        u16  0006eh      // 31, n
+                        u16  0006dh      // 32, m
+                        u16  0003ch      // 33, <
+                        u16  0003eh      // 34, >
+                        u16  0003fh      // 35, ?
+                        u16  004f0h      // 36, r_shift
+                        u16  0002ah      // 37, prtsc
+                        u16  005f0h      // 38, alt
+                        u16  00020h      // 39, spc
+                        u16  007f0h      // 3a, caps
+                        u16  05400h      // 3b, f1
+                        u16  05500h      // 3c, f2
+                        u16  05600h      // 3d, f3
+                        u16  05700h      // 3e, f4
+                        u16  05800h      // 3f, f5
+                        u16  05900h      // 40, f6
+                        u16  05a00h      // 41, f7
+                        u16  05b00h      // 42, f8
+                        u16  05c00h      // 43, f9
+                        u16  05d00h      // 44, f10
+                        u16  008f0h      // 45, numlck
+                        u16  009f0h      // 46, scrlock
+                        u16  00037h      // 47, 7
+                        u16  00038h      // 48, 8
+                        u16  00039h      // 49, 9
+                        u16  0002dh      // 4a, -
+                        u16  00034h      // 4b, 4
+                        u16  00035h      // 4c, 5
+                        u16  00036h      // 4d, 6
+                        u16  0002bh      // 4e, +
+                        u16  00031h      // 4f, 1
+                        u16  00032h      // 50, 2
+                        u16  00033h      // 51, 3
+                        u16  00030h      // 52, 0
+                        u16  0002eh      // 53, .
+                        u16  00000h      // 54, nothing
+                        u16  00000h      // 55, nothing
+                        u16  00000h      // 56, nothing
+                        u16  08700h      // 57, f11
+                        u16  08800h      // 58, f12
+                        u32  0ffffh
+
+                        // ALT+Keystroke SCAN/ASCII Conversion
+    alt_keys            u16  00100h      // 00, null
+                        u16  07800h      // 01, esc
+                        u16  07900h      // 02, !
+                        u16  07a00h      // 03, @
+                        u16  07b00h      // 04, #
+                        u16  07c00h      // 05, $
+                        u16  07d00h      // 06, %
+                        u16  07e00h      // 07, ^
+                        u16  07f00h      // 08, &
+                        u16  08000h      // 09, *
+                        u16  08100h      // 0a, (
+                        u16  08200h      // 0b, )
+                        u16  08300h      // 0c, _
+                        u16  00e00h      // 0d, +
+                        u16  00e00h      // 0e, bksp
+                        u16  0a500h      // 0f, baktab
+                        u16  01100h      // 10, q
+                        u16  01200h      // 11, w
+                        u16  01300h      // 12, e
+                        u16  01400h      // 13, r
+                        u16  01500h      // 14, t
+                        u16  01600h      // 15, y
+                        u16  01700h      // 16, u
+                        u16  01800h      // 17, i
+                        u16  01900h      // 18, o
+                        u16  01a00h      // 19, p
+                        u16  01b00h      // 1a, {
+                        u16  01c00h      // 1b, }
+                        u16  01c00h      // 1c, enter
+                        u16  0f000h      // 1d, ctrl
+                        u16  01e00h      // 1e, a
+                        u16  01f00h      // 1f, s
+                        u16  02000h      // 20, d
+                        u16  02100h      // 21, f
+                        u16  02200h      // 22, g
+                        u16  02300h      // 23, h
+                        u16  02400h      // 24, j
+                        u16  02500h      // 25, k
+                        u16  02600h      // 26, l
+                        u16  02700h      // 27, :
+                        u16  02800h      // 28, "
+                        u16  02900h      // 29, ~
+                        u16  0f000h      // 2a, l_shift
+                        u16  00000h      // 2b, |
+                        u16  02c00h      // 2c, z
+                        u16  02d00h      // 2d, x
+                        u16  02e00h      // 2e, c
+                        u16  02f00h      // 2f, v
+                        u16  03000h      // 30, b
+                        u16  03100h      // 31, n
+                        u16  03200h      // 32, m
+                        u16  03300h      // 33, <
+                        u16  03400h      // 34, >
+                        u16  03400h      // 35, ?
+                        u16  0f000h      // 36, r_shift
+                        u16  00000h      // 37, prtsc
+                        u16  0f000h      // 38, alt
+                        u16  02000h      // 39, spc
+                        u16  0f000h      // 3a, caps
+                        u16  06800h      // 3b, f1
+                        u16  06900h      // 3c, f2
+                        u16  06a00h      // 3d, f3
+                        u16  06b00h      // 3e, f4
+                        u16  06c00h      // 3f, f5
+                        u16  06d00h      // 40, f6
+                        u16  06e00h      // 41, f7
+                        u16  06f00h      // 42, f8
+                        u16  07000h      // 43, f9
+                        u16  07100h      // 44, f10
+                        u16  0f000h      // 45, numlck
+                        u16  0f000h      // 46, scrlock
+                        u16  09700h      // 47, home
+                        u16  09800h      // 48, up
+                        u16  09900h      // 49, pgup
+                        u16  00af0h      // 4a, gray-
+                        u16  09b00h      // 4b, left
+                        u16  00000h      // 4c, center
+                        u16  09d00h      // 4d, right
+                        u16  00bf0h      // 4e, gray+
+                        u16  09f00h      // 4f, end
+                        u16  0a000h      // 50, down
+                        u16  0a100h      // 51, pgdn
+                        u16  0a200h      // 52, ins
+                        u16  0a300h      // 53, del
+                        u16  00000h      // 54, nothing
+                        u16  00000h      // 55, nothing
+                        u16  00000h      // 56, nothing
+                        u16  08b00h      // 57, f11
+                        u16  08c00h      // 58, f12
+                        u16  0ffffh
+
+                        // CTRL+Keystroke SCAN/ASCII Conversion
+    ctrl_keys           u16  00000h      // 00, null
+                        u16  0001Bh      // 01, esc
+                        u16  00000h      // 02, 1
+                        u16  00300h      // 03, 2
+                        u16  00000h      // 04, 3
+                        u16  00000h      // 05, 4
+                        u16  00000h      // 06, 5
+                        u16  0001eh      // 07, 6
+                        u16  00000h      // 08, 7
+                        u16  00000h      // 09, 8
+                        u16  00000h      // 0a, 9
+                        u16  00000h      // 0b, 0
+                        u16  0001fh      // 0c, -
+                        u16  00000h      // 0d, =
+                        u16  0007fh      // 0e, bksp
+                        u16  09400h      // 0f, tab
+                        u16  00011h      // 10, q
+                        u16  00017h      // 11, w
+                        u16  00005h      // 12, e
+                        u16  00012h      // 13, r
+                        u16  00014h      // 14, t
+                        u16  00019h      // 15, y
+                        u16  00015h      // 16, u
+                        u16  00009h      // 17, i
+                        u16  0000fh      // 18, o
+                        u16  00010h      // 19, p
+                        u16  0001bh      // 1a, [
+                        u16  0001ch      // 1b, ]
+                        u16  0000ah      // 1c, enter
+                        u16  001f0h      // 1d, ctrl
+                        u16  00001h      // 1e, a
+                        u16  00013h      // 1f, s
+                        u16  00004h      // 20, d
+                        u16  00006h      // 21, f
+                        u16  00007h      // 22, g
+                        u16  00008h      // 23, h
+                        u16  0000ah      // 24, j
+                        u16  0000bh      // 25, k
+                        u16  0000ch      // 26, l
+                        u16  00000h      // 27, //
+                        u16  00000h      // 28, '
+                        u16  00000h      // 29, `
+                        u16  003f0h      // 2a, l_shift
+                        u16  0001ch      // 2b, \
+                        u16  0001ah      // 2c, z
+                        u16  00018h      // 2d, x
+                        u16  00003h      // 2e, c
+                        u16  00016h      // 2f, v
+                        u16  00002h      // 30, b
+                        u16  0000eh      // 31, n
+                        u16  0000dh      // 32, m
+                        u16  00000h      // 33, ,
+                        u16  00000h      // 34, .
+                        u16  00000h      // 35, /
+                        u16  004f0h      // 36, r_shift
+                        u16  00010h      // 37, prtsc
+                        u16  005f0h      // 38, alt
+                        u16  00020h      // 39, spc
+                        u16  007f0h      // 3a, caps
+                        u16  05e00h      // 3b, f1
+                        u16  05f00h      // 3c, f2
+                        u16  06000h      // 3d, f3
+                        u16  06100h      // 3e, f4
+                        u16  06200h      // 3f, f5
+                        u16  06300h      // 40, f6
+                        u16  06400h      // 41, f7
+                        u16  06500h      // 42, f8
+                        u16  06600h      // 43, f9
+                        u16  06700h      // 44, f10
+                        u16  008f0h      // 45, numlck
+                        u16  009f0h      // 46, scrlock
+                        u16  07700h      // 47, home
+                        u16  08d00h      // 48, up
+                        u16  08400h      // 49, pgup
+                        u16  00af0h      // 4a, gray-
+                        u16  07300h      // 4b, left
+                        u16  00000h      // 4c, center
+                        u16  07400h      // 4d, right
+                        u16  00bf0h      // 4e, gray+
+                        u16  07500h      // 4f, end
+                        u16  09100h      // 50, down
+                        u16  07600h      // 51, pgdn
+                        u16  09200h      // 52, ins
+                        u16  09300h      // 53, del
+                        u16  00000h      // 54, nothing
+                        u16  00000h      // 55, nothing
+                        u16  00000h      // 56, nothing
+                        u16  08900h      // 57, f11
+                        u16  08a00h      // 58, f12
+                        u16  0ffffh

@@ -1,0 +1,540 @@
+// obj_eq.asp
+//
+// Exodus Object System constant equates
+//
+//  +---------------------+
+//  |-=-=-=- NOTE! -=-=-=-|
+//  +---------------------+
+//   Any changes made to this program need to be applied to COMMON\OBJ_MAC.ASP
+//
+// Base Objects:
+//   _DESKTOP
+//
+// Objects:
+//   _TEXT_FIELD
+//   _HLINE
+//   _RECTANGLE
+//   _BORDER_BOX
+//
+
+
+
+// Object header constants
+_OBJECT_HEADER_NEXT_OBJECT            = 0
+_OBJECT_HEADER_FIRST_BASE_OBJECT      = 4
+_OBJECT_HEADER_FIRST_OBJECT           = 8
+_FIRST_OBJECT                         = 16                          // Offset where the first object records are
+
+
+
+// Object structure constants (offsets to obtain these variablse within the structures)
+// Common to all:
+_OBJECT_NEXT_BASE_OBJECT          = 0
+_BASE_OBJECT_TYPE                 = 4                               // These two are the same thing, just different names for
+_OBJECT_TYPE                      = 4                               //  whatever use they're associated with
+_OBJECT_FIRST_OBJECT              = 8                               // Used on base objects for first object
+_OBJECT_NEXT_OBJECT               = 8                               // Used on objects to point to the next object
+_OBJECT_FIXED_LENGTH              = 12
+
+_BO_TOP                           = 12
+_BO_LEFT                          = 16
+_BO_LENGTH                        = 256
+_O_LENGTH                         = 256
+
+// _GROUPING
+_BO_G_                          EQU
+
+
+// _DESKTOP
+// This structure represents how this object is stored within this task's OBJECT structure area
+// Properties
+_BO_D_TOP                         = 12
+_BO_D_LEFT                        = 16
+_BO_D_WIDTH                       = 20
+_BO_D_HEIGHT                      = 24
+_BO_D_ENABLED                     = 28
+_BO_D_VISIBLE                     = 29
+_BO_D_BACKGROUND                  = 30
+_BO_D_ICON_HORIZONTAL             = 33
+_BO_D_ICON_VERTICAL               = 34
+_BO_D_MENU_POSITION               = 35
+_BO_D_MENU_HEIGHT                 = 36
+_BO_D_WALLPAPER                   = 38
+_BO_D_MISC_1                      = 40
+_BO_D_MISC_2                      = 44
+_BO_D_MISC_3                      = 48
+_BO_D_MISC_4                      = 52
+_BO_D_MISC_FLAG_1                 = 56
+_BO_D_MISC_FLAG_2                 = 57
+_BO_D_MISC_FLAG_3                 = 58
+_BO_D_MENU_AUTOHIDE               = 59
+// Events
+_BO_D_ACTIVATE                    = 128
+_BO_D_CLICK_BOTH_SINGLE           = 132
+_BO_D_CLICK_BOTH_DOUBLE           = 136
+_BO_D_CLICK_LEFT_SINGLE           = 140
+_BO_D_CLICK_LEFT_DOUBLE           = 144
+_BO_D_CLICK_LEFT_DOWN             = 148
+_BO_D_CLICK_LEFT_UP               = 152
+_BO_D_CLICK_RIGHT_SINGLE          = 156
+_BO_D_CLICK_RIGHT_DOUBLE          = 160
+_BO_D_CLICK_RIGHT_DOWN            = 164
+_BO_D_CLICK_RIGHT_UP              = 168
+_BO_D_DROPPED_INTO_LEFT           = 172
+_BO_D_DROPPED_INTO_RIGHT          = 176
+_BO_D_DRAG_LEFT_START             = 180
+_BO_D_DRAG_LEFT_STOP              = 184
+_BO_D_DRAG_RIGHT_START            = 188
+_BO_D_DRAG_RIGHT_STOP             = 192
+_BO_D_FOCUS_GOT                   = 196
+_BO_D_FOCUS_LOST                  = 200
+_BO_D_FOCUS_SET                   = 204
+_BO_D_HOVER                       = 208
+_BO_D_KEYSTROKE                   = 212
+_BO_D_WHEN_CREATED                = 216
+_BO_D_WHEN_DESTROYED              = 220
+_BO_D_REQUESTOR                   = 224
+_BO_D_REFRESH                     = 228
+// Input data structures
+_BO_LD_TYPE                       = 0
+_BO_LD_TOP                        = 1
+_BO_LD_LEFT                       = 5
+_BO_LD_WIDTH                      = 9
+_BO_LD_HEIGHT                     = 13
+_BO_LD_LENGTH                     = 17
+// Properties
+_BO_LD_ENABLED                    = 1
+_BO_LD_VISIBLE                    = 1
+_BO_LD_BACKGROUND_RED             = 1
+_BO_LD_BACKGROUND_GREEN           = 2
+_BO_LD_BACKGROUND_BLUE            = 3
+_BO_LD_ICON_HORIZONTAL            = 1
+_BO_LD_ICON_VERTICAL              = 1
+_BO_LD_MENU_POSITION              = 1
+_BO_LD_MENU_HEIGHT                = 1
+_BO_LD_MENU_AUTOHIDE              = 1
+_BO_LD_MISC_1                     = 1
+_BO_LD_MISC_2                     = 1
+_BO_LD_MISC_3                     = 1
+_BO_LD_MISC_4                     = 1
+_BO_LD_MISC_FLAG_1                = 1
+_BO_LD_MISC_FLAG_2                = 1
+_BO_LD_MISC_FLAG_3                = 1
+_BO_LD_WALLPAPER                  = 1
+// Sizes
+_BO_LD_ENABLED_SIZE               = 2
+_BO_LD_VISIBLE_SIZE               = 2
+_BO_LD_BACKGROUND_SIZE            = 4
+_BO_LD_ICON_HORIZONTAL_SIZE       = 2
+_BO_LD_ICON_VERTICAL_SIZE         = 2
+_BO_LD_MENU_POSITION_SIZE         = 2
+_BO_LD_MENU_HEIGHT_SIZE           = 2
+_BO_LD_MENU_AUTOHIDE_SIZE         = 2
+_BO_LD_MISC_1_SIZE                = 5
+_BO_LD_MISC_2_SIZE                = 5
+_BO_LD_MISC_3_SIZE                = 5
+_BO_LD_MISC_4_SIZE                = 5
+_BO_LD_MISC_FLAG_1_SIZE           = 2
+_BO_LD_MISC_FLAG_2_SIZE           = 2
+_BO_LD_MISC_FLAG_3_SIZE           = 2
+_BO_LD_WALLPAPER_SIZE             = 5
+
+
+// _WINDOW
+_BO_W_                          EQU
+
+
+// _CONSOLE
+_BO_C_                          EQU
+
+
+// _TEXT_MODE
+_BO_T_                          EQU
+
+
+// _MONO_DESKTOP
+_BO_MD_                         EQU
+
+
+// _MONO_WINDOW
+_BO_MW_                         EQU
+
+
+// _MONO_CONSOLE
+_BO_MC_                         EQU
+
+
+// _MONO_TEXT_MODE
+_BO_MT_                         EQU
+
+
+
+//----------------------------------------
+// Objects
+//----------------------------------------
+
+// _TEXT_FIELD
+// Properties
+_O_TF_TOP                         = 12
+_O_TF_LEFT                        = 16
+_O_TF_WIDTH                       = 20
+_O_TF_HEIGHT                      = 24
+_O_TF_BORDER                      = 28
+_O_TF_ALIGNMENT                   = 29
+_O_TF_AUTO_SIZE                   = 30
+_O_TF_BACKGROUND                  = 31
+_O_TF_FOREGROUND                  = 34
+_O_TF_COLOR_SELECTED_BACKGROUND EQU
+_O_TF_COLOR_SELECTED_FOREGROUND EQU
+_O_TF_ENABLED                     = 37
+_O_TF_SOURCE_PTR_SEGMENT          = 40
+_O_TF_SOURCE_PTR_OFFSET           = 44
+_O_TF_FONT_NAME                   = 48
+_O_TF_FONT_SIZE                   = 52
+_O_TF_FONT_TYPEFACE_BOLD          = 53
+_O_TF_FONT_TYPEFACE_DITHER        = 54
+_O_TF_FONT_TYPEFACE_ITALICS       = 55
+_O_TF_FONT_TYPEFACE_REVERSE       = 56
+_O_TF_FONT_TYPEFACE_STRIKETHROUGH   = 57
+_O_TF_FONT_TYPEFACE_UNDERLINE     = 58
+_O_TF_VISIBLE                     = 59
+_O_TF_FONT_NAME_ID                = 60
+_O_TF_MARGIN_LEFT                 = 64
+_O_TF_MARGIN_TOP                  = 66
+_O_TF_SELECTED_TEXT_START       EQU
+_O_TF_SELECTED_TEXT_END         EQU
+_O_TF_MISC_1                      = 68
+_O_TF_MISC_2                      = 72
+_O_TF_MISC_3                      = 76
+_O_TF_MISC_4                      = 80
+_O_TF_MISC_FLAG_1                 = 84
+_O_TF_MISC_FLAG_2                 = 85
+_O_TF_MISC_FLAG_3                 = 86
+// Events
+_O_TF_ACTIVATE                    = 128
+_O_TF_CLICK_BOTH_SINGLE           = 132
+_O_TF_CLICK_BOTH_DOUBLE           = 136
+_O_TF_CLICK_LEFT_SINGLE           = 140
+_O_TF_CLICK_LEFT_DOUBLE           = 144
+_O_TF_CLICK_LEFT_DOWN             = 148
+_O_TF_CLICK_LEFT_UP               = 152
+_O_TF_CLICK_RIGHT_SINGLE          = 156
+_O_TF_CLICK_RIGHT_DOUBLE          = 160
+_O_TF_CLICK_RIGHT_DOWN            = 164
+_O_TF_CLICK_RIGHT_UP              = 168
+_O_TF_DROPPED_INTO_LEFT           = 172
+_O_TF_DROPPED_INTO_RIGHT          = 176
+_O_TF_DRAG_LEFT_START             = 180
+_O_TF_DRAG_LEFT_STOP              = 184
+_O_TF_DRAG_RIGHT_START            = 188
+_O_TF_DRAG_RIGHT_STOP             = 192
+_O_TF_FOCUS_GOT                   = 196
+_O_TF_FOCUS_LOST                  = 200
+_O_TF_FOCUS_SET                   = 204
+_O_TF_HOVER                       = 208
+_O_TF_KEYSTROKE                   = 212
+_O_TF_WHEN_CREATED                = 216
+_O_TF_WHEN_DESTROYED              = 220
+_O_TF_REQUESTOR                   = 224
+_O_TF_REFRESH                     = 228
+// Input data structures
+_O_LTF_TYPE                       = 0
+_O_LTF_TOP                        = 1
+_O_LTF_LEFT                       = 5
+_O_LTF_WIDTH                      = 9
+_O_LTF_HEIGHT                     = 13
+_O_LTF_LENGTH                     = 17
+// Properties
+_O_LTF_ENABLED                    = 1
+_O_LTF_VISIBLE                    = 1
+_O_LTF_BORDER                     = 1
+_O_LTF_ALIGNMENT                  = 1
+_O_LTF_AUTO_SIZE                  = 1
+_O_LTF_BACKGROUND_RED             = 1
+_O_LTF_BACKGROUND_GREEN           = 2
+_O_LTF_BACKGROUND_BLUE            = 3
+_O_LTF_FOREGROUND_RED             = 1
+_O_LTF_FOREGROUND_GREEN           = 2
+_O_LTF_FOREGROUND_BLUE            = 3
+_O_LTF_SOURCE_PTR_SEGMENT         = 1
+_O_LTF_SOURCE_PTR_OFFSET          = 3
+_O_LTF_FONT_NAME                  = 1
+_O_LTF_FONT_SIZE                  = 1
+_O_LTF_FONT_TYPEFACE_BOLD         = 1
+_O_LTF_FONT_TYPEFACE_DITHER       = 1
+_O_LTF_FONT_TYPEFACE_ITALICS      = 1
+_O_LTF_FONT_TYPEFACE_REVERSE      = 1
+_O_LTF_FONT_TYPEFACE_STRIKETHROUGH   = 1
+_O_LTF_FONT_TYPEFACE_UNDERLINE    = 1
+_O_LTF_FONT_NAME_ID               = 1
+_O_LTF_MARGIN_LEFT                = 1
+_O_LTF_MARGIN_TOP                 = 1
+_O_LTF_MISC_1                     = 1
+_O_LTF_MISC_2                     = 1
+_O_LTF_MISC_3                     = 1
+_O_LTF_MISC_4                     = 1
+_O_LTF_MISC_FLAG_1                = 1
+_O_LTF_MISC_FLAG_2                = 1
+_O_LTF_MISC_FLAG_3                = 1
+// Sizes
+_O_LTF_ENABLED_SIZE               = 2
+_O_LTF_VISIBLE_SIZE               = 2
+_O_LTF_BORDER_SIZE                = 2
+_O_LTF_ALIGNMENT_SIZE             = 2
+_O_LTF_AUTO_SIZE_SIZE             = 2
+_O_LTF_BACKGROUND_SIZE            = 4
+_O_LTF_FOREGROUND_SIZE            = 4
+_O_LTF_SOURCE_PTR_SIZE            = 7
+_O_LTF_FONT_NAME_SIZE             = 5
+_O_LTF_FONT_SIZE_SIZE             = 2
+_O_LTF_FONT_TYPEFACE_BOLD_SIZE    = 2
+_O_LTF_FONT_TYPEFACE_DITHER_SIZE   = 2
+_O_LTF_FONT_TYPEFACE_ITALICS_SIZE   = 2
+_O_LTF_FONT_TYPEFACE_REVERSE_SIZE   = 2
+_O_LTF_FONT_TYPEFACE_STRIKETHROUGH_SIZE   = 2
+_O_LTF_FONT_TYPEFACE_UNDERLINE_SIZE   = 2
+_O_LTF_FONT_NAME_ID_SIZE          = 5
+_O_LTF_MARGIN_LEFT_SIZE           = 3
+_O_LTF_MARGIN_TOP_SIZE            = 3
+_O_LTF_MISC_1_SIZE                = 5
+_O_LTF_MISC_2_SIZE                = 5
+_O_LTF_MISC_3_SIZE                = 5
+_O_LTF_MISC_4_SIZE                = 5
+_O_LTF_MISC_FLAG_1_SIZE           = 2
+_O_LTF_MISC_FLAG_2_SIZE           = 2
+_O_LTF_MISC_FLAG_3_SIZE           = 2
+
+// _HLINE
+// Properties
+_O_HL_TOP                         = 12
+_O_HL_LEFT                        = 16
+_O_HL_WIDTH                       = 20
+_O_HL_BACKGROUND                  = 24
+_O_HL_ENABLED                     = 27
+_O_HL_MISC_1                      = 28
+_O_HL_MISC_2                      = 32
+_O_HL_MISC_3                      = 36
+_O_HL_MISC_4                      = 40
+_O_HL_MISC_FLAG_1                 = 44
+_O_HL_MISC_FLAG_2                 = 45
+_O_HL_MISC_FLAG_3                 = 46
+_O_HL_VISIBLE                     = 47
+// Events
+_O_HL_ACTIVATE                    = 128
+_O_HL_CLICK_BOTH_SINGLE           = 132
+_O_HL_CLICK_BOTH_DOUBLE           = 136
+_O_HL_CLICK_LEFT_SINGLE           = 140
+_O_HL_CLICK_LEFT_DOUBLE           = 144
+_O_HL_CLICK_LEFT_DOWN             = 148
+_O_HL_CLICK_LEFT_UP               = 152
+_O_HL_CLICK_RIGHT_SINGLE          = 156
+_O_HL_CLICK_RIGHT_DOUBLE          = 160
+_O_HL_CLICK_RIGHT_DOWN            = 164
+_O_HL_CLICK_RIGHT_UP              = 168
+_O_HL_DROPPED_INTO_LEFT           = 172
+_O_HL_DROPPED_INTO_RIGHT          = 176
+_O_HL_DRAG_LEFT_START             = 180
+_O_HL_DRAG_LEFT_STOP              = 184
+_O_HL_DRAG_RIGHT_START            = 188
+_O_HL_DRAG_RIGHT_STOP             = 192
+_O_HL_FOCUS_GOT                   = 196
+_O_HL_FOCUS_LOST                  = 200
+_O_HL_FOCUS_SET                   = 204
+_O_HL_HOVER                       = 208
+_O_HL_KEYSTROKE                   = 212
+_O_HL_WHEN_CREATED                = 216
+_O_HL_WHEN_DESTROYED              = 220
+_O_HL_REQUESTOR                   = 224
+_O_HL_REFRESH                     = 228
+// Input data structures
+_O_LHL_TYPE                       = 0
+_O_LHL_TOP                        = 1
+_O_LHL_LEFT                       = 5
+_O_LHL_WIDTH                      = 9
+_O_LHL_LENGTH                     = 13
+// Properties
+_O_LHL_ENABLED                    = 1
+_O_LHL_VISIBLE                    = 1
+_O_LHL_BACKGROUND_RED             = 1
+_O_LHL_BACKGROUND_GREEN           = 2
+_O_LHL_BACKGROUND_BLUE            = 3
+_O_LHL_MISC_1                     = 1
+_O_LHL_MISC_2                     = 1
+_O_LHL_MISC_3                     = 1
+_O_LHL_MISC_4                     = 1
+_O_LHL_MISC_FLAG_1                = 1
+_O_LHL_MISC_FLAG_2                = 1
+_O_LHL_MISC_FLAG_3                = 1
+// Sizes
+_O_LHL_ENABLED_SIZE               = 2
+_O_LHL_VISIBLE_SIZE               = 2
+_O_LHL_BACKGROUND_SIZE            = 4
+_O_LHL_MISC_1_SIZE                = 5
+_O_LHL_MISC_2_SIZE                = 5
+_O_LHL_MISC_3_SIZE                = 5
+_O_LHL_MISC_4_SIZE                = 5
+_O_LHL_MISC_FLAG_1_SIZE           = 2
+_O_LHL_MISC_FLAG_2_SIZE           = 2
+_O_LHL_MISC_FLAG_3_SIZE           = 2
+
+
+// _RECTANGLE
+// Properties
+_O_R_TOP                          = 12
+_O_R_LEFT                         = 16
+_O_R_WIDTH                        = 20
+_O_R_HEIGHT                       = 24
+_O_R_BACKGROUND                   = 28
+_O_R_ENABLED                      = 31
+_O_R_MISC_1                       = 32
+_O_R_MISC_2                       = 36
+_O_R_MISC_3                       = 40
+_O_R_MISC_4                       = 44
+_O_R_MISC_FLAG_1                  = 48
+_O_R_MISC_FLAG_2                  = 49
+_O_R_MISC_FLAG_3                  = 50
+_O_R_VISIBLE                      = 51
+// Events
+_O_R_ACTIVATE                     = 128
+_O_R_CLICK_BOTH_SINGLE            = 132
+_O_R_CLICK_BOTH_DOUBLE            = 136
+_O_R_CLICK_LEFT_SINGLE            = 140
+_O_R_CLICK_LEFT_DOUBLE            = 144
+_O_R_CLICK_LEFT_DOWN              = 148
+_O_R_CLICK_LEFT_UP                = 152
+_O_R_CLICK_RIGHT_SINGLE           = 156
+_O_R_CLICK_RIGHT_DOUBLE           = 160
+_O_R_CLICK_RIGHT_DOWN             = 164
+_O_R_CLICK_RIGHT_UP               = 168
+_O_R_DROPPED_INTO_LEFT            = 172
+_O_R_DROPPED_INTO_RIGHT           = 176
+_O_R_DRAG_LEFT_START              = 180
+_O_R_DRAG_LEFT_STOP               = 184
+_O_R_DRAG_RIGHT_START             = 188
+_O_R_DRAG_RIGHT_STOP              = 192
+_O_R_FOCUS_GOT                    = 196
+_O_R_FOCUS_LOST                   = 200
+_O_R_FOCUS_SET                    = 204
+_O_R_HOVER                        = 208
+_O_R_KEYSTROKE                    = 212
+_O_R_WHEN_CREATED                 = 216
+_O_R_WHEN_DESTROYED               = 220
+_O_R_REQUESTOR                    = 224
+_O_R_REFRESH                      = 228
+// Input data structures
+_O_LR_TYPE                        = 0
+_O_LR_TOP                         = 1
+_O_LR_LEFT                        = 5
+_O_LR_WIDTH                       = 9
+_O_LR_HEIGHT                      = 13
+_O_LR_LENGTH                      = 17
+// Properties
+_O_LR_ENABLED                     = 1
+_O_LR_VISIBLE                     = 1
+_O_LR_BACKGROUND_RED              = 1
+_O_LR_BACKGROUND_GREEN            = 2
+_O_LR_BACKGROUND_BLUE             = 3
+_O_LR_MISC_1                      = 1
+_O_LR_MISC_2                      = 1
+_O_LR_MISC_3                      = 1
+_O_LR_MISC_4                      = 1
+_O_LR_MISC_FLAG_1                 = 1
+_O_LR_MISC_FLAG_2                 = 1
+_O_LR_MISC_FLAG_3                 = 1
+// Sizes
+_O_LR_ENABLED_SIZE                = 2
+_O_LR_VISIBLE_SIZE                = 2
+_O_LR_BACKGROUND_SIZE             = 4
+_O_LR_MISC_1_SIZE                 = 5
+_O_LR_MISC_2_SIZE                 = 5
+_O_LR_MISC_3_SIZE                 = 5
+_O_LR_MISC_4_SIZE                 = 5
+_O_LR_MISC_FLAG_1_SIZE            = 2
+_O_LR_MISC_FLAG_2_SIZE            = 2
+_O_LR_MISC_FLAG_3_SIZE            = 2
+
+
+// _BORDER_BOX
+// Properties
+_O_BB_TOP                         = 12
+_O_BB_LEFT                        = 16
+_O_BB_WIDTH                       = 20
+_O_BB_HEIGHT                      = 24
+_O_BB_BACKGROUND                  = 28
+_O_BB_LIGHT_BORDER                = 31
+_O_BB_SHADOW_BORDER               = 34
+_O_BB_ENABLED                     = 37
+_O_BB_VISIBLE                     = 39
+_O_BB_MISC_1                      = 40
+_O_BB_MISC_2                      = 44
+_O_BB_MISC_3                      = 48
+_O_BB_MISC_4                      = 52
+_O_BB_MISC_FLAG_1                 = 56
+_O_BB_MISC_FLAG_2                 = 57
+_O_BB_MISC_FLAG_3                 = 58
+// Events
+_O_BB_ACTIVATE                    = 128
+_O_BB_CLICK_BOTH_SINGLE           = 132
+_O_BB_CLICK_BOTH_DOUBLE           = 136
+_O_BB_CLICK_LEFT_SINGLE           = 140
+_O_BB_CLICK_LEFT_DOUBLE           = 144
+_O_BB_CLICK_LEFT_DOWN             = 148
+_O_BB_CLICK_LEFT_UP               = 152
+_O_BB_CLICK_RIGHT_SINGLE          = 156
+_O_BB_CLICK_RIGHT_DOUBLE          = 160
+_O_BB_CLICK_RIGHT_DOWN            = 164
+_O_BB_CLICK_RIGHT_UP              = 168
+_O_BB_DROPPED_INTO_LEFT           = 172
+_O_BB_DROPPED_INTO_RIGHT          = 176
+_O_BB_DRAG_LEFT_START             = 180
+_O_BB_DRAG_LEFT_STOP              = 184
+_O_BB_DRAG_RIGHT_START            = 188
+_O_BB_DRAG_RIGHT_STOP             = 192
+_O_BB_FOCUS_GOT                   = 196
+_O_BB_FOCUS_LOST                  = 200
+_O_BB_FOCUS_SET                   = 204
+_O_BB_HOVER                       = 208
+_O_BB_KEYSTROKE                   = 212
+_O_BB_WHEN_CREATED                = 216
+_O_BB_WHEN_DESTROYED              = 220
+_O_BB_REQUESTOR                   = 224
+_O_BB_REFRESH                     = 228
+// Input data structures
+_O_LBB_TYPE                       = 0
+_O_LBB_TOP                        = 1
+_O_LBB_LEFT                       = 5
+_O_LBB_WIDTH                      = 9
+_O_LBB_HEIGHT                     = 13
+_O_LBB_LENGTH                     = 17
+// Properties
+_O_LBB_ENABLED                    = 1
+_O_LBB_VISIBLE                    = 1
+_O_LBB_BACKGROUND_RED             = 1
+_O_LBB_BACKGROUND_GREEN           = 2
+_O_LBB_BACKGROUND_BLUE            = 3
+_O_LBB_LIGHT_BORDER_RED           = 1
+_O_LBB_LIGHT_BORDER_GREEN         = 2
+_O_LBB_LIGHT_BORDER_BLUE          = 3
+_O_LBB_SHADOW_BORDER_RED          = 1
+_O_LBB_SHADOW_BORDER_GREEN        = 2
+_O_LBB_SHADOW_BORDER_BLUE         = 3
+_O_LBB_MISC_1                     = 1
+_O_LBB_MISC_2                     = 1
+_O_LBB_MISC_3                     = 1
+_O_LBB_MISC_4                     = 1
+_O_LBB_MISC_FLAG_1                = 1
+_O_LBB_MISC_FLAG_2                = 1
+_O_LBB_MISC_FLAG_3                = 1
+// Sizes
+_O_LBB_ENABLED_SIZE               = 2
+_O_LBB_VISIBLE_SIZE               = 2
+_O_LBB_BACKGROUND_SIZE            = 4
+_O_LBB_LIGHT_BORDER_SIZE          = 4
+_O_LBB_SHADOW_BORDER_SIZE         = 4
+_O_LBB_MISC_1_SIZE                = 5
+_O_LBB_MISC_2_SIZE                = 5
+_O_LBB_MISC_3_SIZE                = 5
+_O_LBB_MISC_4_SIZE                = 5
+_O_LBB_MISC_FLAG_1_SIZE           = 2
+_O_LBB_MISC_FLAG_2_SIZE           = 2
+_O_LBB_MISC_FLAG_3_SIZE           = 2

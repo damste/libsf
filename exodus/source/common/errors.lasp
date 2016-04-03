@@ -1,0 +1,32 @@
+// errors.asp
+
+// FDC error codes
+_FDC_INVALID_PARAMETERS           = 1
+_FDC_SEEK_FAILED                  = 2
+_FDC_TIMEOUT                      = 3
+_FDC_INVALID_DRIVE                = 4
+_FDC_UNKNOWN_DRIVE_TYPE           = 5
+_FDC_INVALID_MEDIA                = 6
+_FDC_SECTOR_NOT_FOUND             = 7
+
+
+// DISK error codes
+_DISK_INVALID_DRIVE               = 1
+_DISK_INVALID_REQUEST             = 2
+_DISK_INVALID_PARAMETERS          = 3
+
+
+// Requestor error codes, general
+_RQ_UNKNOWN_REQUEST               = 1
+
+
+// Requestor error codes, specific
+_RQ_iDISK_DRIVE_NOT_FOUND         = 1000
+
+
+// OBJECT system error codes
+_TASK_NOT_FOUND                   = 0
+_OBJECT_NOT_FOUND                 = 1
+_UNKNOWN_OBJECT_TYPE              = 2
+_UNKNOWN_OBJECT_PROPERTY          = 3
+_UNKNOWN_OBJECT_EVENT             = 4

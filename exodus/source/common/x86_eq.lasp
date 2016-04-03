@@ -1,0 +1,100 @@
+// x86_eq.asp
+//
+// Constants specific to the Intel architecture
+//
+
+
+
+_TSS_BACK_LINK                = 0
+_TSS_ESP0                     = 4
+_TSS_SS0                      = 8
+_TSS_ESP1                     = 12
+_TSS_SS1                      = 16
+_TSS_ESP2                     = 20
+_TSS_SS2                      = 24
+_TSS_CR3                      = 28
+_TSS_EIP                      = 32
+_TSS_EFLAGS                   = 36
+_TSS_EAX                      = 40
+_TSS_ECX                      = 44
+_TSS_EDX                      = 48
+_TSS_EBX                      = 52
+_TSS_ESP                      = 56
+_TSS_EBP                      = 60
+_TSS_ESI                      = 64
+_TSS_EDI                      = 68
+_TSS_ES                       = 72
+_TSS_CS                       = 76
+_TSS_SS                       = 80
+_TSS_DS                       = 84
+_TSS_FS                       = 88
+_TSS_GS                       = 92
+_TSS_LDT                      = 96
+_TSS_TRAP_BIT                 = 100
+_TSS_TRAP_BIT_MASK            = 1b
+_TSS_IO_MAP                   = 102
+// The following area is used by Exodus.  It appears immediate after the TSS in memory
+_TSS_FPU_SAVE_AREA            = 104
+
+
+// EFLAGS register constants to access individual flags
+_EFLAGS_CF                    = 0
+_EFLAGS_PF                    = 2
+_EFLAGS_ACF                   = 4
+_EFLAGS_ZF                    = 6
+_EFLAGS_SF                    = 7
+_EFLAGS_TF                    = 8
+_EFLAGS_IF                    = 9
+_EFLAGS_DF                    = 10
+_EFLAGS_OF                    = 11
+_EFLAGS_IOPL                  = 12
+_EFLAGS_NT                    = 14
+_EFLAGS_RF                    = 16
+_EFLAGS_VM                    = 17
+// Masks to access specific bits
+_EFLAGS_CF_MASK               =  1b SHL _EFLAGS_CF
+_EFLAGS_PF_MASK               =  1b SHL _EFLAGS_PF
+_EFLAGS_ACF_MASK              =  1b SHL _EFLAGS_ACF
+_EFLAGS_ZF_MASK               =  1b SHL _EFLAGS_ZF
+_EFLAGS_SF_MASK               =  1b SHL _EFLAGS_SF
+_EFLAGS_TF_MASK               =  1b SHL _EFLAGS_TF
+_EFLAGS_IF_MASK               =  1b SHL _EFLAGS_IF
+_EFLAGS_DF_MASK               =  1b SHL _EFLAGS_DF
+_EFLAGS_OF_MASK               =  1b SHL _EFLAGS_OF
+_EFLAGS_IOPL_MASK             = 11b SHL _EFLAGS_IOPL
+_EFLAGS_NT_MASK               =  1b SHL _EFLAGS_NT
+_EFLAGS_RF_MASK               =  1b SHL _EFLAGS_RF
+_EFLAGS_VM_MASK               =  1b SHL _EFLAGS_VM
+
+_CW_INFINITY                  = 1000000000000b
+_CW_ROUNDING                  =  110000000000b
+_CW_ROUNDING_00               =  000000000000b
+_CW_ROUNDING_01               =  010000000000b
+_CW_ROUNDING_10               =  100000000000b
+_CW_ROUNDING_11               =  110000000000b
+_CW_PRECISION                 =    1100000000b
+_CW_PRECISION_00              =    0000000000b
+_CW_PRECISION_01              =    0100000000b
+_CW_PRECISION_10              =    1000000000b
+_CW_PRECISION_11              =    1100000000b
+_CW_PM                        =        100000b
+_CW_UM                        =         10000b
+_CW_OM                        =          1000b
+_CW_ZM                        =           100b
+_CW_DM                        =            10b
+_CW_IM                        =             1b
+
+_SW_BUSY                      = 1000000000000000b
+_SW_C3                        =  100000000000000b
+_SW_TOS                       =   11100000000000b
+_SW_C2                        =      10000000000b
+_SW_C1                        =       1000000000b
+_SW_C0                        =        100000000b
+_SW_ERROR_SUMMARY             =         10000000b
+_SW_STACK_FAULT               =          1000000b
+_SW_PE                        =           100000b
+_SW_UE                        =            10000b
+_SW_OE                        =             1000b
+_SW_ZE                        =              100b
+_SW_DE                        =               10b
+_SW_IE                        =                1b

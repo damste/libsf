@@ -1,0 +1,177 @@
+// cv.asm
+//
+// +-----------------+
+// | CodeView Reader |
+// +-----------------+
+//
+// Exodus native primative
+//
+
+
+// CodeView_Reader
+
+    
+    
+#include "\exodus\source\common\keylist.asp"
+#include "\exodus\source\common\equates.asp"
+#include "\exodus\source\common\macros.asp"
+
+
+code text32
+| at offset 0
+{
+    ORG 0h
+    // These are required to be the first 2 dwords in the file
+dd  offset main
+dd  offset requestor
+
+
+
+
+    function requestor
+    {
+    // This routine is called by Exodus.  When this function is called multi-tasking is not installed.  This is a linear function.
+    //
+    // Upon entry:   eax - requested function
+    //                ds - temporary ORG 0h data segment for use with these requestor() functions
+    //
+    // Upon exit:    results vary based on value of eax
+    //
+        if (eax == 'info')
+        {
+          // Program information
+            mov     eax,'nati'                              // Identifying this program as a native primative
+            mov     ecx,offset end_of_required_data         // The maximum number of bytes to retain after loading
+
+            mov     esi,offset driver_primatives            // Offset to the native primatives structure
+            mov     edi,offset driver_name
+            mov     ebx,offset version
+            mov     edx,offset copyright
+            mov     ebp,offset author
+            clc
+        
+        } else if (eax == 'prim') {
+          // Native primatives this program will use
+            mov     ds:data_segment,ds
+            mov     esi,offset required_primatives
+            mov     edi,offset primative_call_gates
+            clc
+        
+        } else if (eax == 'id  ') {
+          // Display this program's ID on the VGA monitor
+             mov     esi,offset driver_name
+            call    <u48> cs:_VID_display_string_nr_vga
+            clc
+        
+        } else if (eax == 'note') {
+            mov     eax,'stop'
+            mov     ebx,'load'
+            mov     esi,offset driver_name
+            call    <u48> cs:_EXODUS_requestor
+        
+        } else {
+            stc
+        }
+        retf
+    }
+
+
+
+
+    function main
+    {
+    // This routine is called once by Exodus once initialization is complete (all calls to requestor() are finished)
+    // It is used by Exodus to allow this driver to properly initialize itself.
+    // When this function is called multi-tasking is not installed.  This is a linear function.
+    //
+    // Upon entry:   Nothing
+    //
+    // Upon exit:    A "continued status of execution" is expected by Exodus.  This indicates whether or not everything
+    //               initialized ok or is available.  If everything is OK the carry? flag is CLEAR.  If there is an error
+    //               and this driver cannot continue then the carry? should be SET.
+    //               carry? - CLEAR=Ok to continue
+    //                          SET=Error initializing
+    //
+        initialize_driver()
+      // Right now, carry? is SET or CLEAR indicating status of driver
+        retf
+    }
+
+
+
+    function initialize_driver
+    {
+    // This routine is used to initialize the driver
+    // But, there is no initialization in this system
+        mov     esi,offset cv_boot_logo
+        call    <u48> cs:_VID_draw_logo
+        clc
+        ret
+    }
+
+
+
+    function cv_parse
+    {
+    // Main algorithm for parsing a CV debug output block of memory
+        retf
+    }
+
+
+
+
+// DATA
+// This header is part of a continuous NULL-terminated structure
+    driver_name                             u8   "Low-Level CodeView Reader",0
+    version                                 u8   "10.10.2010 BETA",0
+    copyright                               u8   "(c) Copyright Beatleworks, Inc.",0
+    author                                  u8   "Rick C. Hodgin",0
+    cv_reader_text                          u8   "CodeView Reader",0
+    beatleworks_text                        u8   "(c) Beatleworks, Inc.",0
+
+    data_segment                            u16  0
+
+    _EXODUS_requestor                       u16  0
+  primative_call_gates:
+    _VID_draw_logo                          u16  0
+    _VID_display_string_nr_vga              u16  _sEXODUS_REQUESTOR
+    _VID_display_string_mono                u16  0f000h
+                                            u16  0f000h
+                                            u16  0f000h
+
+    required_primatives                     u8   13, "VID_draw_logo"
+                                            u8   25, "VID_display_string_nr_vga"
+                                            u8   23, "VID_display_string_mono"
+                                            u8   0ffh
+
+    // This logo consists of a one-wide image
+    cv_boot_logo                            u8   88h         // * Refer to VGA\INF\VGA.INF for information on this byte's format
+                                            u8   10h,10h,10h,10h,10h,10h,09h,09h,09h,09h,09h,09h,09h,10h,10h,10h,10h,10h
+                                            u8   10h,10h,10h,10h,09h,0eh,01h,0eh,01h,01h,01h,01h,01h,09h,09h,10h,10h,10h
+                                            u8   10h,10h,0fh,0fh,01h,04h,0ch,0ch,04h,01h,0fh,0fh,0fh,01h,01h,09h,10h,10h
+                                            u8   10h,0fh,09h,01h,0fh,04h,0ch,0ch,04h,0fh,09h,09h,01h,0fh,01h,01h,09h,10h
+                                            u8   10h,09h,01h,01h,01h,0ch,0ch,0ch,0ch,10h,10h,10h,09h,01h,01h,01h,09h,10h
+                                            u8   10h,09h,01h,0fh,0fh,0ch,0ch,0ch,0ch,0fh,0fh,10h,10h,09h,09h,09h,10h,10h
+                                            u8   10h,09h,0fh,01h,01h,04h,0ch,0ch,04h,10h,10h,0fh,0fh,10h,10h,10h,10h,10h
+                                            u8   10h,0fh,01h,01h,01h,0fh,0ch,0ch,0fh,10h,10h,10h,10h,0fh,10h,10h,10h,10h
+                                            u8   10h,09h,01h,01h,0fh,01h,09h,10h,10h,0fh,10h,10h,10h,10h,10h,10h,10h,10h
+                                            u8   10h,09h,01h,01h,0fh,01h,09h,10h,10h,10h,0fh,10h,10h,10h,10h,10h,10h,10h
+                                            u8   10h,09h,01h,0fh,01h,01h,09h,10h,10h,10h,0fh,10h,10h,09h,09h,09h,10h,10h
+                                            u8   10h,09h,01h,0fh,01h,01h,01h,09h,10h,10h,10h,0fh,09h,01h,01h,01h,09h,10h
+                                            u8   10h,10h,09h,01h,01h,01h,01h,01h,09h,09h,09h,09h,01h,01h,01h,01h,09h,10h
+                                            u8   10h,10h,10h,09h,01h,01h,01h,01h,01h,01h,01h,01h,01h,01h,01h,09h,10h,10h
+                                            u8   10h,10h,10h,10h,09h,09h,01h,01h,01h,01h,01h,01h,01h,09h,09h,10h,10h,10h
+                                            u8   10h,10h,10h,10h,10h,10h,09h,09h,09h,09h,09h,09h,09h,10h,10h,10h,10h,10h
+                                            u8   0,0,15h     // A dark shade of blue for the background
+
+ end_of_required_data:
+    driver_primatives                       u8   8, "cv_parse"
+                                            u32  offset cv_parse
+                                            u16  0
+
+                                            u16  0ffffh              // Teriminator
+
+}
+// text32
+
+END

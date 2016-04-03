@@ -1,0 +1,7 @@
+// equates.asp
+//
+// Exodus equates used by BOOTUP
+//
+
+_NO                       = 0
+_YES                      = 1

@@ -1,0 +1,324 @@
+// equates.asp
+//
+// Exodus constants.  These are used at various places.
+// This file provides a common area to modify constant values, rather than sifting through programs, etc.
+//
+
+
+
+#include "x86_eq.asp"
+
+
+// -š-„-„-„-„-„-„-„-„-„-„-„-„-„Â+
+// Â| GDT ENTRIES Â|
+// -€-„-„-„-„-„-„-„-„-„-„-„-„-„-™
+    _sIDT                         = 1 * 8       // IDT
+    _sGDT                         = 2 * 8       // GDT
+    _sSTACK                       = 3 * 8       // STACK
+    _sCODE                        = 4 * 8       // kernel CODE for kernel code
+    _sDATA                        = 9 * 8       // kernel DATA selector for kernel data
+    _sGRAPHICS                    = 5 * 8       // Graphics video (0a0000h)
+    _sMONO                        = 6 * 8       // Mono video (0b0000h)
+    _sVGA                         = 7 * 8       // VGA video (0b8000h)
+    _sALL_MEM                     = 8 * 8       // All memory (for debugging)
+    // 9 is above, _sDATA
+    _sEXODUS_MEM                  = 10 * 8      // Exodus assigned memory
+    _sEXODUS_PORTS                = 11 * 8      // Exodus assigned ports
+    _sEXODUS_INTS                 = 12 * 8      // Exodus assigned ints
+    //_sNOT_USED                                 // available
+    _sEXODUS_TSS                  = 14 * 8      // Exodus TSS
+    _sEXODUS_TASK_GATE            = 15 * 8      // Exodus kernel task gate (points to _sEXODUS_TSS)
+    _sEXODUS_SLAVE_TSS            = 16 * 8      // Exodus Slave TSS
+    _sEXODUS_SLAVE_TASK_GATE      = 17 * 8      // Exodus kernel slave task gate (points to _sEXODUS_SLAVE_TSS)
+    //_sNOT USED
+    _sPRIMATIVES                  = 19 * 8      // Primative structure for natives
+    _sPRIMATIVE_LOAD_INFO         = 20 * 8      // Primative load information (for reporting on each driver)
+    _sSYSTEM                      = 21 * 8      // Exodus system memory
+    _sEXODUS_REQUESTOR            = 22 * 8      // Call gate to Exodus's requestor() function
+    _sSYSTEM_RING1                = 23 * 8      // Exodus system memory for ring-1 apps
+    _sSYSTEM_RING2                = 24 * 8      // Exodus system memory for ring-2 apps
+    _sSYSTEM_RING3                = 25 * 8      // Exodus system memory for ring-3 apps
+    _sDEBI_screen                 = 26 * 8      // low-level DEBI debugger's save screen buffer
+    _sDEBI_memory                 = 27 * 8      // low-level DEBI debugger's memory
+    _sFLOPPY_TRACK                = 28 * 8      // Floppy disk data I/O for one full track
+    _sVGA_BACKUP                  = 29 * 8      // VGA video (060000h, used when in a graphics mode so writes
+                                                //  to the text screen are still valid)
+    _sDEBI_screen2                = 30 * 8      // low-level DEBI debugger's save screen buffer2 (for popups and menus)
+    _sDEBI_temp                   = 31 * 8      // low-level DEBI debugger's temporary selector (used for various things)
+    _sEXODUS_OBJECTS              = 32 * 8      // Exodus objects
+    _sTASK_SWITCH_TSS             = 33 * 8      // Task Manager's switch_task() function
+    _sTASK_SWITCH_TASK_GATE       = 34 * 8      // Task Manager's task gate (points to _sTASK_SWITCH_TSS)
+    _sTASK_STACK                  = 35 * 8      // Task Manger task's stack
+    _sSTACK0                      = 36 * 8      // Exodus Stack 0
+    _sSTACK1                      = 37 * 8      // Exodus Stack 1
+    _sSTACK2                      = 38 * 8      // Exodus Stack 2
+    _sDEBI_dt                     = 39 * 8      // low-level DEBI debugger's DT storage
+    _sDEBI_np                     = 40 * 8      // low-level DEBI debugger's NP storage
+    _sDEBI_rp                     = 41 * 8      // low-level DEBI debugger's RP storage
+
+  // Variable base/limit GDT slots setup in INIT32.ASP
+    _sEXODUS_INI                  = 50 * 8      // Holds the parsed EXODUS.INI sructure
+    _sEXODUS_INI_ERRORS           = 51 * 8      // Holds any errors found while parsing EXODUS.INI
+    _sTASK_SYSTEM                 = 52 * 8      // Holds all tasks
+
+    _cgTEMP_PRIMATIVE_MAIN        = 2996 * 8
+    _cgTEMP_PRIMATIVE_REQUESTOR   = 2997 * 8
+    _csTEMP_PRIMATIVE             = 2998 * 8
+    _dsTEMP_PRIMATIVE             = 2999 * 8
+
+
+
+// -š-„-„-„-„-„-„-„-„-„-„-„Â+
+// Â| CONSTANTS Â|
+// -€-„-„-„-„-„-„-„-„-„-„-„-™
+    _MIN_PRIMATIVE                = 200                             // Start of the primatives
+    _MAX_PRIMATIVE                = 2995                            // End of the primatives
+    _lastGDT                      = 4095                            // Last valid GDT in the GDT
+    _firstASSIGNMENT              = 50                              // The first Exodus assigned GDT entry for various items
+    _lastASSIGNMENT               = 199                             // The last Exodus assigned GDT entry for various items
+    _firstUSER_ASSIGNMENT         = 3000
+    _lastUSER_ASSIGNMENT          = 4095
+    _sGDT_init                    = 199                             // Only initialize the first 199 GDT entries
+
+
+  // Required memory structures for Exodus
+  // Refer to Bootup(internal) document for definitive memory locations
+    _sIDT_base                    = 8a000h
+    _sIDT_limit                   = 800h
+    _sGDT_base                    = 0800h
+    _sGDT_limit                   = 8000h
+    _sSTACK_base                  = 98000h
+    _sSTACK_limit                 = 8000h
+    _sCODE_base                   = 10000h
+    _sCODE_limit                  = 40000h
+    _sDATA_base                   = 10000h
+    _sDATA_limit                  = 30000h
+    _sGRAPHICS_base               = 0a0000h
+    _sGRAPHICS_limit              = 10000h
+    _sMONO_base                   = 0b0000h
+    _sMONO_limit                  = 8000h
+    _sVGA_base                    = 0b8000h     // Also, see _sVGA_BACKUP_ below
+    _sVGA_limit                   = 8000h
+    _sALL_MEM_base                = 0
+    _sALL_MEM_limit               = 0ffffffffh
+    _sEXODUS_MEM_base             = 70c00h
+    _sEXODUS_MEM_limit            = 4000h
+    _sEXODUS_PORTS_base           = 6cc00h
+    _sEXODUS_PORTS_limit          = 4000h
+    _sEXODUS_INTS_base            = 97e00h
+    _sEXODUS_INTS_limit           = 200h
+    _sEXODUS_TSS_base             = 68100h
+    _sEXODUS_TSS_limit            = 100h        // 256 bytes
+   //_sEXODUS_TASK_GATE            = task gate pointing to _sEXODUS_TSS
+    _sEXODUS_SLAVE_TSS_base       = 68200h
+    _sEXODUS_SLAVE_TSS_limit      = 100h        // 256 bytes
+    _sPRIMATIVES_base             = 8d380h
+    _sPRIMATIVES_limit            = 4000h       // 16k
+    _sPRIMATIVE_LOAD_INFO_base    = 8c380h
+    _sPRIMATIVE_LOAD_INFO_limit   = 1000h       // 4k
+    _sSYSTEM_base                 = 89400h
+    _sSYSTEM_limit                = 0c00h       // 3k
+    _sSYSTEM_USER_limit           = 0800h       // 2k
+    _sDEBI_screen_base            = 281400h                         // // // // // Added 2 MB, 02/26/2009 - RCH
+    _sDEBI_screen_limit           = 8000h       // 32k
+    _sDEBI_memory_base            = 279400h                         // // // // // Added 2 MB, 02/26/2009 - RCH
+    _sDEBI_memory_limit           = 8000h       // 32k
+    _sFLOPPY_TRACK_base           = 74c00h
+    _sFLOPPY_TRACK_limit          = 4800h       // 512 bytes per sector * 18 sectors * 2 sides = 18k
+    _sVGA_BACKUP_base             = 60000h      // Note, the backup area is used when in graphics modes that use a0000h
+    _sVGA_BACKUP_limit            = 8000h       // so all video writes to the text window are still saved
+    _sDEBI_screen2_base           = 258000h
+    _sDEBI_screen2_limit          = 28000h       // 32k
+    _sTASK_SWITCH_TSS_base        = 68000h
+    _sTASK_SWITCH_TSS_limit       = 100h        // 256 bytes
+    _sTASK_STACK_base             = 220000h                         // // // // // Added 1 MB, 03/01/2009 - RCH
+    _sTASK_STACK_limit            = 8000h       // 32k
+    _sSTACK0_base                 = 95380h
+    _sSTACK0_limit                = 2000h       // 8k
+    _sSTACK1_base                 = 93380h
+    _sSTACK1_limit                = 2000h       // 8k
+    _sSTACK2_base                 = 91380h
+    _sSTACK2_limit                = 2000h       // 8k
+    _sDEBI_dt_base                = 240000h                         // // // // // Added 1 MB, 03/01/2009 - RCH
+    _sDEBI_dt_limit               = 8000h       // 32k
+    _sDEBI_np_base                = 248000h                         // // // // // Added 1 MB, 03/01/2009 - RCH
+    _sDEBI_np_limit               = 8000h       // 32k
+    _sDEBI_rp_base                = 250000h                         // // // // // Added 1 MB, 03/01/2009 - RCH
+    _sDEBI_rp_limit               = 8000h       // 32k
+
+    _sEXODUS_OBJECTS_base         = 50000h
+    _sEXODUS_OBJECTS_limit        = 8000h       // 32k
+    _sEXODUS_INI_base             = 200000h     // 1MB               // // // // // Added 1 MB, 03/01/2009 - RCH
+    _sEXODUS_INI_limit            = 10000h      // 64k
+    _sEXODUS_INI_ERRORS_base      = 210000h     // 1MB + 64k         // // // // // Added 1 MB, 03/01/2009 - RCH
+    _sEXODUS_INI_ERRORS_limit     = 4000h       // 16k
+    _sTASK_SYSTEM_base            = 210000h     // 1MB + 64k         // // // // // Added 1 MB, 03/01/2009 - RCH
+    _sTASK_SYSTEM_limit           = 010000h     // 64k
+
+
+// -š-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„Â+
+// Â| BOOT DT STRUCTURE Â|
+// -€-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-™
+    _BOOT_DT_object_type          = 0
+    _BOOT_DT_days                 = 1
+    _BOOT_DT_seconds              = 5
+    _BOOT_DT_rp_offset            = 8
+    _BOOT_DT_entry_type           = 10
+    _BOOT_DT_np_offset            = 11
+
+
+// -š-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„Â+
+// Â| BOOT RP STRUCTURE Â|
+// -€-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-™
+    _BOOT_RP_length               = 0
+    _BOOT_RP_requestor            = 4
+    _BOOT_RP_main                 = 8
+;; For original version using head/track/sector
+    _BOOT_RP_start_head           = 12
+    _BOOT_RP_start_track          = 13
+    _BOOT_RP_start_sector         = 14
+    _BOOT_RP_end_head             = 16
+    _BOOT_RP_end_track            = 17
+    _BOOT_RP_end_sector           = 18
+;; For new version using linear disk offsets
+    _BOOT_RP_disk_offset          = 12
+    _BOOT_RP_nuserved             = 16 
+
+
+
+// -š-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„Â+
+// Â| BOOT PARAMETER BLOCK STRUCTURE Â|
+// -€-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-™
+    _BOOT_PB_size                 = 0
+    _BOOT_PB_main                 = 4
+    _BOOT_PB_requestor            = 8
+    _BOOT_PB_start_head           = 12
+    _BOOT_PB_start_track          = 13
+    _BOOT_PB_start_sector         = 14
+    _BOOT_PB_end_head             = 16
+    _BOOT_PB_end_track            = 17
+    _BOOT_PB_end_sector           = 18
+    _BOOT_PB_entry_type           = 20
+    _BOOT_PB_linear_offset        = 22
+    _BOOT_PB_dt_offset            = 26
+    _BOOT_PB_crc16                = 28
+    _BOOT_PB_structure_size       = 32
+
+
+
+
+// -š-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„Â+
+// Â| EXODUS.INI STRUCTURES Â|
+// -€-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-™
+    _EXODUS_INI_FIRST_BRACKET         = 0
+    _EXODUS_INI_TOTAL_BYTES           = 4
+    _EXODUS_INI_TOTAL_BRACKET_GROUPS   = 8
+    _EXODUS_INI_TOTAL_PAREN_CASKS     = 12
+    _EXODUS_INI_HEADER_LENGTH         = 16
+
+    _EXODUS_BRACKET_NEXT              = 0
+    _EXODUS_BRACKET_PAREN_CASKS       = 4
+    _EXODUS_BRACKET_TOTAL_PARENS      = 8
+    _EXODUS_BRACKET_NAME              = 12
+    _EXODUS_BRACKET_HANDLE            = 16
+    _EXODUS_BRACKET_REQUESTOR         = 20
+    _EXODUS_BRACKET_REQUESTOR_FUNC    = 22
+    _EXODUS_BRACKET_SCRATCH_AREA      = 26
+    _EXODUS_BRACKET_LENGTH            = 30
+
+    _EXODUS_PAREN_NEXT                = 0
+    _EXODUS_PAREN_NEXT_SAME_LINE      = 4
+    _EXODUS_PAREN_DATA_ITEMS          = 8
+    _EXODUS_PAREN_TOTAL_DATA_ITEMS    = 12
+    _EXODUS_PAREN_SOURCE_LINE         = 16
+    _EXODUS_PAREN_SOURCE_LINE_LENGTH   = 20
+    _EXODUS_PAREN_HANDLE              = 24
+    _EXODUS_PAREN_REQUESTOR           = 26
+    _EXODUS_PAREN_REQUESTOR_FUNC      = 30
+    _EXODUS_PAREN_SCRATCH_AREA        = 34
+    _EXODUS_PAREN_LENGTH              = 38
+
+    _EXODUS_DATA_NEXT                 = 0
+    _EXODUS_DATA_DATA_ITEM_SOURCE     = 4
+    _EXODUS_DATA_DATA_ITEM_LENGTH     = 8
+    _EXODUS_DATA_LENGTH               = 12
+
+
+
+
+// -š-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„Â+
+// Â| EXODUS xxx STRUCTURES Â|
+// -€-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-™
+    _EXODUS_MEM_type                  = 0
+    _EXODUS_MEM_base                  = 4
+    _EXODUS_MEM_limit                 = 8
+    _EXODUS_MEM_gdt                   = 12
+    _EXODUS_MEM_ldt                   = 14
+    _EXODUS_MEM_size                  = 16
+
+    _EXODUS_PORTS_size                = 16
+
+    _EXODUS_INTS_size                 = 2
+
+
+
+
+// -š-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„Â+
+// Â| EXODUS SYSTEM MEMORY Â|
+// -€-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-™
+// Note, when updates are made here they need to be reflected in INF\SYSTEM.INF
+// Note, when updates are made here and INF\SYSTEM.INF, the "Exodus Quick Reference" manual needs to be updated
+    _SYSTEM_SECONDS_SINCE_BOOTUP      = 0                           // dword
+    _SYSTEM_SECONDS_SINCE_MIDNIGHT    = 4                           // dword
+    _SYSTEM_HOURS                     = 8                           // byte
+    _SYSTEM_MINUTES                   = 9                           // byte
+    _SYSTEM_SECONDS                   = 10                          // byte
+    _SYSTEM_182S_OF_A_SECOND          = 11                          // byte
+    _SYSTEM_DAY                       = 12                          // byte
+    _SYSTEM_MONTH                     = 13                          // byte
+    _SYSTEM_YEAR                      = 14                          // word
+    _SYSTEM_DAY_OF_YEAR               = 16                          // word
+    _SYSTEM_BUILD                     = 18                          // 10-byte string in the format: "mm.dd.yyyy"
+    _SYSTEM_TOTAL_MEMORY              = 28                          // dword, total ram in bytes
+    _SYSTEM_VGA_HORIZONTAL            = 32                          // word (pixels-graphics, or columns-text)
+    _SYSTEM_VGA_VERTICAL              = 34                          // word (pixels-graphics, or rows-text)
+    _SYSTEM_VGA_VIDEO_MODE            = 36                          // byte (0-graphics, 1-text)
+    _SYSTEM_MONO_VIDEO_MODE           = 37                          // byte (0-graphics, 1-text, 0ffh-Unknown)
+
+  // Non-user accessible system memory areas (Exodus internal, hence the use of the _i_)
+    _SYSTEM_i_FATAL                   = 2048                        // dword
+    _SYSTEM_i_TASKS_CREATED           = 2052                        // dword
+    _SYSTEM_i_TASKS_BY_USER           = 2056                        // dword
+    _SYSTEM_i_TASKS_BY_ERROR          = 2060                        // dword
+    _SYSTEM_i_IRQ6_INDICATOR          = 2064                        // byte, IRQ6 indicator (changes each time an IRQ6 is signaled)
+    _SYSTEM_i_IRQ6_INDICATOR_LAST     = 2065                        // byte, IRQ6 indicator previous, used to see when an IRQ6 is signaled
+    _SYSTEM_i_BASE                    = 2066                        // dword
+    _SYSTEM_i_LIMIT                   = 2070                        // dword
+    _SYSTEM_i_DWORD_TO_COPY           = 2074                        // word
+    _SYSTEM_i_LAST_GDT_REFERENCED     = 2076                        // qword
+    _SYSTEM_i_CODE_GDT_OFFSET         = 2084                        // dword (used temporarily during native primative install)
+    _SYSTEM_i_DATA_GDT_OFFSET         = 2088                        // dword (used temporarily during native primative install)
+    _SYSTEM_i_MAIN_GDT_OFFSET         = 2092                        // dword (used temporarily during native primative install)
+    _SYSTEM_i_REQUESTOR_GDT_OFFSET    = 2096                        // dword (used temporarily during native primative install)
+    _SYSTEM_i_GDT_TO_ASSIGN           = 2100                        // word (used various places to assign GDT entries)
+    _SYSTEM_i_USER_GDT_TO_ASSIGN      = 2102                        // word (used various places to assign USER Program GDTs)
+  // Next offset is 2104
+
+
+  // These scratch items exist from end of memory down
+    _SYSTEM_i_SCRATCH_DWORD2          = 3064                        // dword (used various places as a scratch buffer)
+    _SYSTEM_i_SCRATCH_DWORD1          = 3068                        // dword (used various places as a scratch buffer)
+
+
+
+
+// -š-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„Â+
+// Â| BOCHS SUPPORT Â|
+// -€-„-„-„-„-„-„-„-„-„-„-„-„-„-„-„-™
+// These equates are used to communicate via INT 0FFh
+// Values here are in ecx, with edx being used for data information.
+// Values in eax must be
+    _BOCHS1                           = 12345678h
+    _BOCHS2                           = 87654321h
+    _BOCHS_GET_MONO_MOUSE_XY          = 0
+    _BOCHS_GET_MONO_CURSOR            = 1

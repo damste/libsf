@@ -1,0 +1,572 @@
+// ini.asp
+//
+// Exodus parse EXODUS.INI routines
+//
+//  Functions:
+//     - invParse_Exodus_ini                             // Locate the Exodus.INI table
+//     - invParse_Exodus_ini_build_structure             // Physically build the bootup structure
+//     + invDetermine_Exodus_ini_ownership               // Calls the requestor('ini ') functions of all native primatives to
+//                                                       //  find out who the owner of each item is
+//
+
+
+
+function invFind_Exodus_ini    NEAR
+{
+// This routine is used to parse the EXODUS.INI
+//
+// Upon entry:   Nothing
+//
+// Upon exit:    The EXODUS.INI text file has been converted
+//
+    enter   84,0
+  //------------
+  // These two variables are defined in this procedure
+  // [ebp-04] - dword, length of exodus.ini
+  // [ebp-08] - dword, linear offset in memory to start of exodus.ini
+  // [ebp-12] - dword, count (number of exodus.ini's found)
+  //------------
+  // The rest of this local variable space is defined and used in invParse_Exodus_ini()
+  // Please look there for their definitions
+  //
+    pushad
+    push    ds
+    push    es
+    push    fs
+    push    gs
+
+    mov     <u32> [ebp-04],0ffffffffh                        // length
+    mov     <u32> [ebp-08],0ffffffffh                        // linear offset
+    mov     <u32> [ebp-12],0                                 // count
+
+    mov     ax,_sALL_MEM
+    mov     ds,eax
+    mov     edi,cs:boot_parameter_block
+    inc     edi                                                     // Skip past the "drive booted from" byte
+  // Right now, ds:[edi] - far ptr to the boot parameter block
+    while (byte ptr ds:[edi] != 0ffh)
+    {
+        mov     al,<u8>  ds:[edi+_BOOT_PB_entry_type]
+        and     al,1111b
+        if (al == 0001b)
+        {
+          // It's EXODUS.INI (refer to INF\FILE_SYS.INF for information on these bits)
+            mov     edx,<u32> ds:[edi+_BOOT_PB_size]
+            mov     <u32> [ebp-04],edx
+            mov     edx,<u32> ds:[edi+_BOOT_PB_linear_offset]
+            mov     <u32> [ebp-08],edx
+            inc     <u32> [ebp-12]
+        }
+
+        add     edi,_BOOT_PB_structure_size
+    }
+    if (dword ptr [ebp-12] == 1)
+    {
+      // Only one EXODUS.INI was found, so we're in business
+        invParse_Exodus_ini()
+        if (carry?)
+        {
+          // Some error occurred during the parse
+            mov     <u32> [ebp-12],0ffffffffh
+            jmp     @F
+        }
+    
+    } else {
+      // More than one EXODUS.INI was found, or there were errors from processing invParse_Exodus_ini() above
+      @@:
+       // Set the VGA video mode to 80x25 text and the color to red
+        mov     ax,_sDATA
+        mov     ds,eax
+        invSet_80x25_text_mode()
+        mov     al,12
+        call    <u48> cs:_VID_set_attribute_vga
+        call    <u48> cs:_VID_move_to_next_line_vga
+        if (dword ptr [ebp-12] == 0ffffffffh)
+        {
+          // Error occurred during processing
+            mov     esi,offset error_loading_exodus_ini_1
+        
+        } else if (dword ptr [ebp-12] == 0) {
+          // No EXODUS.INI was found
+            mov     esi,offset error_loading_exodus_ini_2
+        
+        } else {
+          // Multiple EXODUS.INI's were found
+            mov     esi,offset error_loading_exodus_ini_3
+        }
+        call    <u48> cs:_VID_display_string_nr_vga
+
+      // These messages are in BOOTUP\DATA32.ASP
+        mov     esi,offset error_loading_exodus_ini_4
+        call    <u48> cs:_VID_display_string_nr_vga
+
+        mov     esi,offset system_halted
+        call    <u48> cs:_VID_display_string_nr_vga
+      @@:
+        hlt
+        jmp @B
+    }
+
+
+  finished:
+    pop     gs
+    pop     fs
+    pop     es
+    pop     ds
+    popad
+    leave
+    ret
+}
+
+
+
+
+
+function invParse_Exodus_ini
+{
+// This routine is used to parse the Exodus.INI file and build an internal structure that's suitable for parsing.
+//
+// Upon entry:   [ebp-04] - length of file
+//               [ebp-08] - offset to start of EXODUS.INI
+//                     ds - _sALL_MEM (used for Exodus.ini and the output structure)
+//               * Note also that this algorithm uses the stack frame/local variables created in invFind_Exodus_ini
+//               * Refer to that algorithm for local variables
+//
+// Upon exit:    The structure is updated
+//               edx - !zero if any errors encountered
+//
+//
+  // The variables above are defined in the invFind_Exodus_ini() algorithm above.
+  // They already exist when this procedure gets control.
+  // [ebp-04] - dword, length of exodus.ini
+  // [ebp-08] - dword, linear offset in memory to start of exodus.ini
+  // [ebp-12] - Note, this value is reused as its significance is no longer significant. :)
+  //----------
+  // These slots are all defined here and are used here and in invParse_Exodus_ini_store_error()
+  // [ebp-12] - dword, line number of exodus.ini
+  // [ebp-16] - dword, are we in a bracket grouping?  0-no, 1-yes
+  // [ebp-20] - dword, are we in a paren grouping?  0-no, 1-yes
+  // [ebp-24] - dword, source line offset (start of)
+  // [ebp-28] - dword, store line to error area?  0-no, 1-yes
+  // [ebp-32] - dword, header offset
+  // [ebp-36] - dword, current bracket group structure item
+  // [ebp-40] - dword, currently processing a bracket group? 0-no, 1-yes
+  // [ebp-44] - dword, currently processing a paren cask? 0-no, 1-yes
+  // [ebp-48] - dword, total # of paren casks
+  // [ebp-52] - dword, count of bytes left in exodus.ini
+  // [ebp-56] - dword, souce line offset (first non-whitespace)
+  // [ebp-60] - dword, current paren cask structure
+  // [ebp-64] - dword, number of chars to backup (due to ¯'s being found)
+  // [ebp-68] - dword, current paren cask structure (if more than one per line)
+  // [ebp-70] - word,  --Nuserved
+  // [ebp-80] - tbyte, miscellaneous BCD values used to report error line numbers, etc
+  // [ebp-84] - dword, last data item
+int 3
+    ret
+    mov     <u32> [ebp-12],1                                 // starting line number (base-1)
+    mov     <u32> [ebp-16],0                                 // bracket grouping?  0-no
+    mov     <u32> [ebp-20],0                                 // paren grouping?  0-no
+
+  // Load the EXODUS.INI variables
+    mov     ecx,<u32> [ebp-04]
+    mov     esi,<u32> [ebp-08]
+    mov     <u32> [ebp-52],ecx
+
+    mov     edx,_sEXODUS_INI
+    mov     es,edx
+    mov     edx,_sEXODUS_INI_ERRORS
+    mov     fs,edx
+    xor     edi,edi
+    xor     edx,edx
+  // Right now,   ecx - count
+  //         ds:[esi] - far ptr to start of exodus.ini
+  //         es:[edi] - where we'll store our converted structure
+  //         fs:[edx] - where we'll store error text
+
+  // Initialize our EXODUS.INI structure
+    mov     <u32> es:[edi+_EXODUS_INI_FIRST_BRACKET],0ffffffffh
+    mov     <u32> es:[edi+_EXODUS_INI_TOTAL_BYTES],0
+    mov     <u32> es:[edi+_EXODUS_INI_TOTAL_BRACKET_GROUPS],0
+    mov     <u32> es:[edi+_EXODUS_INI_TOTAL_PAREN_CASKS],0
+
+  // Initalize our starting variables
+    mov     <u32> [ebp-32],edi                               // Start of header
+    add     edi,_EXODUS_INI_HEADER_LENGTH
+    mov     <u32> [ebp-36],edi                               // Start of data
+
+    mov     <u32> [ebp-40],0                                 // No bracket group
+    mov     <u32> [ebp-44],0                                 // No paren cask
+
+  // Right now, es:[edi] - ready for starting structure
+    while (dword ptr [ebp-52] > 0)
+    {
+      // Skip passed any leading spaces or tabs
+        mov     <u32> [ebp-28],0                             // store line to error area?  0-no
+        mov     <u32> [ebp-24],esi                           // start of line
+        while (byte ptr ds:[esi] == 32 || <u8>  ds:[esi] == 9 && <u32> [ebp-52] > 0)
+        {
+            inc     esi
+            dec     <u32> [ebp-52]
+        }
+        cmp     <u32> [ebp-52],0
+        jz      finished
+
+      // Right now we're passed the white spaces
+        mov     eax,<u32> ds:[esi]
+        if (al == ';' || ax == 0d0ah || ax == 0a0dh)
+        {
+          // This is a comment line, we skip it
+            jmp     next_line
+        }
+
+      // Store first non-whitespace offset
+        mov     <u32> [ebp-56],esi
+
+      // Right now we're at the start of something
+        if (al == '[')
+        {
+          // It's the start of a bracket grouping
+            if (dword ptr [ebp-40] != 0)
+            {
+              // We're already processing a bracket group, we have to close this one out
+                mov     ebx,<u32> [ebp-36]
+              // Right now, es:[ebx] - far ptr to previous bracket group structure
+                mov     <u32> es:[ebx+_EXODUS_BRACKET_NEXT],edi
+            
+            } else {
+              // We're starting anew
+              // Update header (if necessary)
+                 mov     ebx,<u32> [ebp-32]
+                if (dword ptr es:[ebx+_EXODUS_INI_FIRST_BRACKET] == 0ffffffffh)
+                {
+                    mov     eax,<u32> [ebp-36]
+                    mov     <u32> es:[ebx+_EXODUS_INI_FIRST_BRACKET],eax
+                }
+            }
+          // Get the name into eax
+            xor     eax,eax
+            xor     ecx,ecx
+            inc     esi
+            dec     <u32> [ebp-52]
+            while (dword ptr [ebp-52] > 0 && ecx < 4 && <u8>  ds:[esi] != ']')
+            {
+                shl     eax,8
+                mov     al,<u8>  ds:[esi]
+                inc     esi
+                dec     <u32> [ebp-52]
+                inc     ecx
+            }
+            if (ecx == 4)
+            {
+              // The bracket group's name is too long
+                mov     ebx,offset parse_bracket_group_name_too_long
+                invParse_Exodus_ini_store_error()
+                mov     <u32> [ebp-28],1
+                jmp     next_line
+            }
+            if (byte ptr ds:[esi] != ']')
+            {
+              // We hit the end of file before we loaded everything
+                mov     ebx,offset parse_unexpected_end_of_file
+                invParse_Exodus_ini_store_error()
+                mov     <u32> [ebp-28],1
+                jmp     next_line
+            }
+
+          // Everything is good
+          // Pad any names less than 4 characters with spaces
+            while (ecx < 4)
+            {
+                shl     eax,8
+                mov     al,32
+                inc     ecx
+            }
+
+          // Right now, eax contains the name to use
+          // Initialize this item's structure
+            mov     <u32> es:[edi+_EXODUS_BRACKET_NEXT],0ffffffffh
+            mov     <u32> es:[edi+_EXODUS_BRACKET_PAREN_CASKS],0ffffffffh
+            mov     <u32> es:[edi+_EXODUS_BRACKET_TOTAL_PARENS],0
+            mov     <u32> es:[edi+_EXODUS_BRACKET_NAME],eax
+            mov     <u32> es:[edi+_EXODUS_BRACKET_HANDLE],0ffffffffh
+            mov     <u16> es:[edi+_EXODUS_BRACKET_REQUESTOR],0ffffh
+            mov     <u32> es:[edi+_EXODUS_BRACKET_REQUESTOR_FUNC],0ffffffffh
+            mov     <u32> es:[edi+_EXODUS_BRACKET_SCRATCH_AREA],0ffffffffh
+
+          // Raise/lower the flags
+            mov     <u32> [ebp-40],1                     // Bracket group flag
+            mov     <u32> [ebp-44],0                     // Paren cask flag
+
+          // Store the current bracket group pointer
+            mov     <u32> [ebp-36],edi
+
+          // Move past this structure (for future data)
+            add     edi,_EXODUS_BRACKET_LENGTH
+
+        
+        } else if (al == '(') {
+          // It's the start of a paren cask
+int 3
+            if (dword ptr [ebp-44] != 0)
+            {
+              // We're already processing a cask, we have to close this one out
+                mov     ebx,<u32> [ebp-60]
+              // Right now, es:[ebx] - far ptr to previous bracket group structure
+                mov     <u32> es:[ebx+_EXODUS_PAREN_NEXT],edi
+            
+            } else {
+              // We're starting anew
+              // Update bracket group item (if necessary)
+                mov     ebx,<u32> [ebp-36]
+                mov     <u32> es:[ebx+_EXODUS_BRACKET_PAREN_CASKS],eax
+            }
+
+          // Lower flag for more than one cask per line
+            mov     <u32> [ebp-68],0ffffffffh
+
+          // Initialize this item's structure
+          do_next_cask:
+            mov     <u32> es:[edi+_EXODUS_PAREN_NEXT],0ffffffffh
+            mov     <u32> es:[edi+_EXODUS_PAREN_NEXT_SAME_LINE],0ffffffffh
+            mov     <u32> es:[edi+_EXODUS_PAREN_DATA_ITEMS],0ffffffffh
+            mov     <u32> es:[edi+_EXODUS_PAREN_TOTAL_DATA_ITEMS],0
+            mov     <u32> es:[edi+_EXODUS_PAREN_SOURCE_LINE],esi
+            mov     <u32> es:[edi+_EXODUS_PAREN_SOURCE_LINE_LENGTH],0
+            mov     <u32> es:[edi+_EXODUS_PAREN_HANDLE],0ffffffffh
+            mov     <u16> es:[edi+_EXODUS_PAREN_REQUESTOR],0ffffh
+            mov     <u32> es:[edi+_EXODUS_PAREN_REQUESTOR_FUNC],0ffffffffh
+            mov     <u32> es:[edi+_EXODUS_PAREN_SCRATCH_AREA],0ffffffffh
+
+          // Raise/lower the flags
+            mov     <u32> [ebp-44],1                         // Raise the "processing paren cask" flag
+            mov     <u32> [ebp-64],0                         // Back off for ¯ chars
+
+          // Copy current structure pointer to ebx
+            mov     ebx,edi
+          // And move to next structure pointer in edi
+            add     edi,_EXODUS_PAREN_LENGTH
+
+          // Now, process the cask to load all of its data items
+          // Right now, ebx - used as the pointer to the current structure
+            inc     esi
+            dec     <u32> [ebp-52]
+            inc     <u32> es:[ebx+_EXODUS_PAREN_SOURCE_LINE_LENGTH]
+
+          // Create the data item structure
+            mov     <u32> [ebp-84],0ffffffffh                // Lower the "last data item" flag
+          do_next_data_item:
+            mov     <u32> es:[edi+_EXODUS_DATA_NEXT],0ffffffffh
+            mov     <u32> es:[edi+_EXODUS_DATA_DATA_ITEM_SOURCE],esi
+            mov     <u32> es:[edi+_EXODUS_DATA_DATA_ITEM_LENGTH],0
+            while (byte ptr ds:[esi] != ')' && <u32> [ebp-52] > 0 && <u16> ds:[esi] != 0d0ah && <u16> ds:[esi] != 0a0dh)
+            {
+                if (byte ptr ds:[esi] == '¯')
+                {
+                  // We skip past this character and assume that the next one is the real one
+                  // This character means "whatever is next is to be used literally", thereby giving a way for () and | chars to
+                  // be used as data within a cask (also, if the ¯ character needs to appear it has to be represented by ¯¯)
+                    inc     <u32> [ebp-64]
+                
+                } else {
+                    if (byte ptr ds:[esi] == '|' || <u8>  ds:[esi] == ')')
+                    {
+                      // This is a data item separator or a cask closer
+                        mov     edx,esi
+                        sub     edx,<u32> es:[edi+_EXODUS_DATA_DATA_ITEM_SOURCE]
+                        mov     <u32> es:[edi+_EXODUS_DATA_DATA_ITEM_LENGTH],edx
+                        if (dword ptr [ebp-84] == 0ffffffffh)
+                        {
+                          // This is the first data item
+                            mov     <u32> [ebp-84],edi
+                            mov     <u32> es:[ebx+_EXODUS_PAREN_DATA_ITEMS],edi
+                        
+                        } else {
+                            mov     edx,<u32> [ebp-84]
+                            mov     <u32> es:[edx+_EXODUS_DATA_NEXT],edi
+                        }
+                        inc     <u32> es:[ebx+_EXODUS_PAREN_TOTAL_DATA_ITEMS]
+                        add     edi,_EXODUS_DATA_LENGTH
+                        jmp     do_next_data_item
+                    }
+                }
+                if (dword ptr [ebp-52] > 0)
+                {
+                    inc     esi
+                    dec     <u32> [ebp-52]
+                    inc     <u32> es:[ebx+_EXODUS_PAREN_SOURCE_LINE_LENGTH]
+                }
+            }
+            if (dword ptr [ebp-52] == 0 || <u16> ds:[esi] != 0d0ah || <u16> ds:[esi] != 0a0dh)
+            {
+              // We have unexpectedly hit the end of file
+                mov     ebx,offset parse_unexpected_end_of_file
+                invParse_Exodus_ini_store_error()
+                mov     <u32> [ebp-28],1
+                jmp     next_line
+            }
+
+          cask_finished:
+          // We're past this cask, see if there are any more on the same line
+            while (byte ptr ds:[esi] == 32 || <u8>  ds:[esi] == 9 && <u32> [ebp-52] > 0)
+            {
+                inc     esi
+                dec     <u32> [ebp-52]
+            }
+            if (dword ptr [ebp-52] == 0 || <u8>  ds:[esi] != '(')
+            {
+                jmp     next_line
+            }
+
+            if (byte ptr ds:[esi] == '(')
+            {
+              // There is another cask, we need to process this one
+                mov     <u32> es:[ebx+_EXODUS_PAREN_NEXT_SAME_LINE],edi
+                mov     <u32> [ebp-68],edi
+                jmp     do_next_cask
+            
+            } else {
+                mov     ebx,offset parse_expected_paren
+                invParse_Exodus_ini_store_error()
+                mov     <u32> [ebp-28],1
+            }
+
+        
+        } else {
+          // This is an error.  Lines cannot stand by themselves with data on it
+            mov     ebx,offset parse_expected_bracket_paren
+            invParse_Exodus_ini_store_error()
+            mov     <u32> [ebp-28],1
+        }
+
+      next_line:
+      // Skip until we reach the end of the line
+        if (dword ptr [ebp-28] != 0)
+        {
+          // We have to copy this line to the error output
+            mov     esi,<u32> [ebp-24]
+        }
+        while (word ptr ds:[esi] != 0d0ah && <u16> ds:[esi] != 0a0dh && <u32> [ebp-52] > 0)
+        {
+            if (dword ptr [ebp-28] != 0)
+            {
+              // We need to copy this line to the error area
+                mov     al,<u8>  ds:[esi]
+                mov     <u8>  fs:[edx],al
+                inc     edx
+            }
+            inc     esi
+            dec     <u32> [ebp-52]
+        }
+        if (dword ptr [ebp-28] != 0)
+        {
+          // Store CR/LF to the error line
+            mov     <u16> fs:[edx],0a0dh
+            add     edx,2
+        }
+        if ((word ptr ds:[esi] == 0d0ah || <u16> ds:[esi] == 0a0dh) && <u32> [ebp-52] >= 2)
+        {
+            add     esi,2
+            sub     <u32> [ebp-52],2
+        }
+        inc     <u32> [ebp-12]                               // increase line number
+    }
+
+  finished:
+    ret
+}
+
+
+
+
+function invParse_Exodus_ini_store_error
+{
+// This routine is used to copy the line number and an error message from cs:[ebx] to fs:[edx]
+//
+// Upon entry:   cs:[ebx] - far ptr to null-terminated message to store
+//               fs:[edx] - far ptr to where to store
+//
+// Upon exit:    It's stored
+//               edx - where the next message will be stored
+//
+    push    ebx
+
+//-------
+    push    esi
+    push    ecx
+    push    ebx
+    push    es
+
+  // Store the line number
+    mov     eax,_sDATA
+    mov     es,eax
+    finit
+    fild    <u32> [ebp-12]
+    fbstp   tbyte ptr [ebp-80]
+    mov     eax,<u32> [ebp-80]
+    mov     esi,offset line_text + 5
+  // Right now, eax contains the BCD nibbles of the current line number
+    mov     ecx,8                                                   // This lowers the flag in ch and stores 8 to cl
+  @@:
+    rol     eax,4
+    mov     bl,al
+    and     bl,0fh
+    if (bl != 0 || (bl == 0 && ch != 0))
+    {
+      // We're storing this value
+        add     bl,'0'
+        mov     <u8>  es:[esi],bl
+        inc     esi
+        mov     ch,1                                                // raise the flag to copy bytes
+    }
+    dec     cl
+    jnz     @B
+    mov     <u32> es:[esi+0],00202d20h                          // this is "<null>_-_"
+
+  // Store the line number
+    mov     esi,offset line_text
+    while (byte ptr es:[esi] != 0)
+    {
+        mov     al,<u8>  es:[esi]
+        inc     esi
+        mov     <u8>  fs:[edx],al
+        inc     edx
+    }
+
+    pop     es
+    pop     ebx
+    pop     ecx
+    pop     esi
+//-------
+
+  // Store the error message
+    while (byte ptr cs:[ebx] != 0)
+    {
+        mov     al,<u8>  cs:[ebx]
+        inc     ebx
+        mov     <u8>  fs:[edx],al
+        inc     edx
+    }
+
+  // Store the trailing CR/LF
+    mov     <u16> fs:[edx],0a0dh
+    add     edx,2
+
+    pop     ebx
+    ret
+}
+
+
+
+function invDetermine_Exodus_ini_ownership    NEAR
+{
+// This routine is used to call all of the Requestor('ini ') routines for all the native primatives.  It allows them to decide
+// what items in the exodus.ini file they have ownership of
+//
+// Upon entry:   Nothing
+//
+// Upon exit:    Nothing
+//
+
+    ret
+
+}

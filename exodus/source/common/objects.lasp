@@ -1,0 +1,428 @@
+// objects.asp
+//
+// Exodus Object Types and Parameters
+//
+
+
+
+
+
+// +-------------+
+// | BASE OBJECT |
+// +-------------+
+_GROUPING                             = 0
+_DESKTOP                              = 1
+_WINDOW                               = 2
+_CONSOLE                              = 3
+_TEXT_MODE                            = 4
+_MONO_DESKTOP                         = 5
+_MONO_WINDOW                          = 6
+_MONO_CONSOLE                         = 7
+_MONO_TEXT_MODE                       = 8
+_PROPERTY_START                       = -3
+_EVENT_START                          = -2
+_OBJECT_END                           = -1
+
+_OBJECT_RED                           = 0
+_OBJECT_GREEN                         = 1
+_OBJECT_BLUE                          = 2
+
+//-----------------------------------------
+// +---------+
+// | OBJECTS |
+// +---------+
+_INPUT_FIELD                          = 0
+_TEXT_FIELD                           = 1
+_BUTTON                               = 2
+_MENU_BAR                             = 3
+_MENU_POPUP                           = 4
+_RADIO_DIAL                           = 5
+_CHECK_BOX                            = 6
+_CIRCLE_BOX                           = 7
+_PULLDOWN                             = 8
+_SLIDE_BAR                            = 9
+_PERCENT_BAR                          = 10
+_TRAY                                 = 11
+_ICON                                 = 12
+_BITMAP                               = 13
+_HLINE                                = 14
+_VLINE                                = 15
+_LINE                                 = 16
+_OVAL                                 = 17
+_RECTANGLE                            = 18
+_SCROLL_BAR_HORIZONTAL                = 19
+_SCROLL_BAR_VERTICAL                  = 20
+_CASK                                 = 21
+_CFSCA_WINDOW                         = 22
+_NUMBERS_WINDOW                       = 23
+_TYPESET_WINDOW                       = 24
+_BORDER_BOX                           = 25
+
+//-----------------------------------------
+// +------------------+
+// | FONT_NAME ID #'S |
+// +------------------+                  // Note, Refer to INF\VGA.INF for information on this ID # structure
+_BITMAP_8x6                           = 80000806h
+_BITMAP_8x8                           = 80000808h
+_BITMAP_8x14                          = 8000080eh
+_BITMAP_8x16                          = 80000810h
+_BITMAP_16x16                         = 80001010h
+
+
+
+// +----------------------+
+// | _GROUPING PARAMETERS |
+// +----------------------+
+_GP_ENABLED                         EQU
+_GP_MISC_1                          EQU
+_GP_MISC_2                          EQU
+_GP_MISC_3                          EQU
+_GP_MISC_4                          EQU
+_GP_MISC_FLAG_1                     EQU
+_GP_MISC_FLAG_2                     EQU
+_GP_MISC_FLAG_3                     EQU
+
+_GE_FOCUS_GOT                       EQU
+_GE_FOCUS_LOST                      EQU
+_GE_FOCUS_SET                       EQU
+_GE_WHEN_CREATED                    EQU
+_GE_WHEN_DESTROYED                  EQU
+_GE_REQUESTOR                       EQU
+
+// +---------------------+
+// | _DESKTOP PARAMETERS |
+// +---------------------+
+_DP_ENABLED                           = 0
+_DP_VISIBLE                           = 1
+_DP_BACKGROUND                        = 2
+_DP_ICON_HORIZONTAL                   = 3
+_DP_ICON_VERTICAL                     = 4
+_DP_MENU_POSITION                     = 5
+_DP_MENU_HEIGHT                       = 6
+_DP_MENU_AUTOHIDE                     = 7
+_DP_MISC_1                            = 8
+_DP_MISC_2                            = 9
+_DP_MISC_3                            = 10
+_DP_MISC_4                            = 11
+_DP_MISC_FLAG_1                       = 12
+_DP_MISC_FLAG_2                       = 13
+_DP_MISC_FLAG_3                       = 14
+_DP_WALLPAPER                         = 15
+//
+_DE_ACTIVATE                          = 0
+_DE_CLICK_BOTH_SINGLE                 = 1
+_DE_CLICK_BOTH_DOUBLE                 = 2
+_DE_CLICK_LEFT_SINGLE                 = 3
+_DE_CLICK_LEFT_DOUBLE                 = 4
+_DE_CLICK_LEFT_DOWN                   = 5
+_DE_CLICK_LEFT_UP                     = 6
+_DE_CLICK_RIGHT_SINGLE                = 7
+_DE_CLICK_RIGHT_DOUBLE                = 8
+_DE_CLICK_RIGHT_DOWN                  = 9
+_DE_CLICK_RIGHT_UP                    = 10
+_DE_DROPPED_INTO_LEFT                 = 11
+_DE_DROPPED_INTO_RIGHT                = 12
+_DE_DRAG_LEFT_START                   = 13
+_DE_DRAG_LEFT_STOP                    = 14
+_DE_DRAG_RIGHT_START                  = 15
+_DE_DRAG_RIGHT_STOP                   = 16
+_DE_FOCUS_GOT                         = 17
+_DE_FOCUS_LOST                        = 18
+_DE_FOCUS_SET                         = 19
+_DE_HOVER                             = 20
+_DE_KEYSTROKE                         = 21
+_DE_WHEN_CREATED                      = 22
+_DE_WHEN_DESTROYED                    = 23
+_DE_REQUESTOR                         = 24
+_DE_REFRESH                           = 25
+
+// +--------------------+
+// | _WINDOW PARAMETERS |
+// +--------------------+
+_WP_ENABLED                         EQU
+_WP_VISIBLE                         EQU
+_WP_BORDER                          EQU
+_WP_COLOR_DISABLEP_BACKGROUND       EQU
+_WP_COLOR_DISABLEP_FOREGROUND       EQU
+_WP_COLOR_DISABLEP_STYLE            EQU
+_WP_COLOR_ENABLEP_BACKGROUND        EQU
+_WP_COLOR_ENABLEP_FOREGROUND        EQU
+_WP_COLOR_ENABLEP_STYLE             EQU
+_WP_COLOR_HEADER_SELECTED_FOREGROUND EQU
+_WP_COLOR_HEADER_SELECTED_BACKGROUND EQU
+_WP_COLOR_HEADER_DESELECTED_BACKGROUND EQU
+_WP_COLOR_HEADER_DESELECTED_FOREGROUND EQU
+_WP_FONT_NAME                       EQU
+_WP_FONT_SIZE                       EQU
+_WP_FONT_TYPEFACE_BOLD              EQU
+_WP_FONT_TYPEFACE_DITHER            EQU
+_WP_FONT_TYPEFACE_ITALICS           EQU
+_WP_FONT_TYPEFACE_REVERSE           EQU
+_WP_FONT_TYPEFACE_STRIKETHROUGH     EQU
+_WP_FONT_TYPEFACE_UNDERLINE         EQU
+_WP_FONT_NAME_ID                    EQU
+_WP_MARGIN_LEFT                     EQU
+_WP_MARGIN_RIGHT                    EQU
+_WP_MARGIN_TOP                      EQU
+_WP_MARGIN_BOTTOM                   EQU
+_WP_MISC_1                          EQU
+_WP_MISC_2                          EQU
+_WP_MISC_3                          EQU
+_WP_MISC_4                          EQU
+_WP_MOUSE_POINTER                   EQU
+_WP_POSITION_HEIGHT                 EQU
+_WP_POSITION_LEFT                   EQU
+_WP_POSITION_TOP                    EQU
+_WP_POSITION_WIDTH                  EQU
+_WP_MISC_FLAG_1                     EQU
+_WP_MISC_FLAG_2                     EQU
+_WP_MISC_FLAG_3                     EQU
+_WP_SIZEABLE                        EQU
+_WP_WRAP_TEXT                       EQU
+
+// +---------------------+
+// | _CONSOLE PARAMETERS |
+// +---------------------+
+_CP_ENABLED                         EQU
+_CP_VISIBLE                         EQU
+_CP_BORDER                          EQU
+_CP_COLOR_DISABLEP_BACKGROUND       EQU
+_CP_COLOR_DISABLEP_FOREGROUND       EQU
+_CP_COLOR_ENABLEP_BACKGROUND        EQU
+_CP_COLOR_ENABLEP_FOREGROUND        EQU
+_CP_COLOR_HEADER_SELECTED_FOREGROUND EQU
+_CP_COLOR_HEADER_SELECTED_BACKGROUND EQU
+_CP_COLOR_HEADER_DESELECTED_BACKGROUND EQU
+_CP_COLOR_HEADER_DESELECTED_FOREGROUND EQU
+_CP_FONT_NAME                       EQU
+_CP_FONT_SIZE                       EQU
+_CP_FONT_NAME_ID                    EQU
+_CP_MISC_1                          EQU
+_CP_MISC_2                          EQU
+_CP_MISC_3                          EQU
+_CP_MISC_4                          EQU
+_CP_POSITION_LEFT                   EQU
+_CP_POSITION_TOP                    EQU
+_CP_WINDOW_HEIGHT                   EQU
+_CP_WINDOW_WIDTH                    EQU
+_CP_MISC_FLAG_1                     EQU
+_CP_MISC_FLAG_2                     EQU
+_CP_MISC_FLAG_3                     EQU
+_CP_SIZEABLE                        EQU
+
+// +-----------------------+
+// | _TEXT_MODE PARAMETERS |
+// +-----------------------+
+_TP_ENABLED                         EQU
+_TP_MISC_1                          EQU
+_TP_MISC_2                          EQU
+_TP_MISC_3                          EQU
+_TP_MISC_4                          EQU
+_TP_HEIGHT                          EQU
+_TP_WIDTH                           EQU
+_TP_MISC_FLAG_1                     EQU
+_TP_MISC_FLAG_2                     EQU
+_TP_MISC_FLAG_3                     EQU
+
+
+
+//-----------------------------------------
+//
+// +-------------------+
+// | _HLINE PARAMETERS |
+// +-------------------+
+// Properties
+_HLP_ENABLED                          = 0
+_HLP_VISIBLE                          = 1
+_HLP_BACKGROUND                       = 2
+_HLP_MISC_1                           = 3
+_HLP_MISC_2                           = 4
+_HLP_MISC_3                           = 5
+_HLP_MISC_4                           = 6
+_HLP_MISC_FLAG_1                      = 7
+_HLP_MISC_FLAG_2                      = 8
+_HLP_MISC_FLAG_3                      = 9
+// Events
+_HLE_ACTIVATE                         = 0
+_HLE_CLICK_BOTH_SINGLE                = 1
+_HLE_CLICK_BOTH_DOUBLE                = 2
+_HLE_CLICK_LEFT_SINGLE                = 3
+_HLE_CLICK_LEFT_DOUBLE                = 4
+_HLE_CLICK_LEFT_DOWN                  = 5
+_HLE_CLICK_LEFT_UP                    = 6
+_HLE_CLICK_RIGHT_SINGLE               = 7
+_HLE_CLICK_RIGHT_DOUBLE               = 8
+_HLE_CLICK_RIGHT_DOWN                 = 9
+_HLE_CLICK_RIGHT_UP                   = 10
+_HLE_DROPPED_INTO_LEFT                = 11
+_HLE_DROPPED_INTO_RIGHT               = 12
+_HLE_DRAG_LEFT_START                  = 13
+_HLE_DRAG_LEFT_STOP                   = 14
+_HLE_DRAG_RIGHT_START                 = 15
+_HLE_DRAG_RIGHT_STOP                  = 16
+_HLE_FOCUS_GOT                        = 17
+_HLE_FOCUS_LOST                       = 18
+_HLE_FOCUS_SET                        = 19
+_HLE_HOVER                            = 20
+_HLE_KEYSTROKE                        = 21
+_HLE_WHEN_CREATED                     = 22
+_HLE_WHEN_DESTROYED                   = 23
+_HLE_REQUESTOR                        = 24
+_HLE_REFRESH                          = 25
+
+
+//-----------------------------------------
+//
+// +-----------------------+
+// | _RECTANGLE PARAMETERS |
+// +-----------------------+
+// Properties
+_RP_ENABLED                           = 0
+_RP_VISIBLE                           = 1
+_RP_BACKGROUND                        = 2
+_RP_MISC_1                            = 3
+_RP_MISC_2                            = 4
+_RP_MISC_3                            = 5
+_RP_MISC_4                            = 6
+_RP_MISC_FLAG_1                       = 7
+_RP_MISC_FLAG_2                       = 8
+_RP_MISC_FLAG_3                       = 9
+// Events
+_RE_ACTIVATE                          = 0
+_RE_CLICK_BOTH_SINGLE                 = 1
+_RE_CLICK_BOTH_DOUBLE                 = 2
+_RE_CLICK_LEFT_SINGLE                 = 3
+_RE_CLICK_LEFT_DOUBLE                 = 4
+_RE_CLICK_LEFT_DOWN                   = 5
+_RE_CLICK_LEFT_UP                     = 6
+_RE_CLICK_RIGHT_SINGLE                = 7
+_RE_CLICK_RIGHT_DOUBLE                = 8
+_RE_CLICK_RIGHT_DOWN                  = 9
+_RE_CLICK_RIGHT_UP                    = 10
+_RE_DROPPED_INTO_LEFT                 = 11
+_RE_DROPPED_INTO_RIGHT                = 12
+_RE_DRAG_LEFT_START                   = 13
+_RE_DRAG_LEFT_STOP                    = 14
+_RE_DRAG_RIGHT_START                  = 15
+_RE_DRAG_RIGHT_STOP                   = 16
+_RE_FOCUS_GOT                         = 17
+_RE_FOCUS_LOST                        = 18
+_RE_FOCUS_SET                         = 19
+_RE_HOVER                             = 20
+_RE_KEYSTROKE                         = 21
+_RE_WHEN_CREATED                      = 22
+_RE_WHEN_DESTROYED                    = 23
+_RE_REQUESTOR                         = 24
+_RE_REFRESH                           = 25
+
+
+//-----------------------------------------
+//
+// +------------------------+
+// | _BORDER_BOX PARAMETERS |
+// +------------------------+
+// Properties
+_BBP_ENABLED                          = 0
+_BBP_VISIBLE                          = 1
+_BBP_BACKGROUND                       = 2
+_BBP_LIGHT_BORDER                     = 3
+_BBP_SHADOW_BORDER                    = 4
+_BBP_MISC_1                           = 5
+_BBP_MISC_2                           = 6
+_BBP_MISC_3                           = 7
+_BBP_MISC_4                           = 8
+_BBP_MISC_FLAG_1                      = 9
+_BBP_MISC_FLAG_2                      = 10
+_BBP_MISC_FLAG_3                      = 11
+// Events
+_BBE_ACTIVATE                         = 0
+_BBE_CLICK_BOTH_SINGLE                = 1
+_BBE_CLICK_BOTH_DOUBLE                = 2
+_BBE_CLICK_LEFT_SINGLE                = 3
+_BBE_CLICK_LEFT_DOUBLE                = 4
+_BBE_CLICK_LEFT_DOWN                  = 5
+_BBE_CLICK_LEFT_UP                    = 6
+_BBE_CLICK_RIGHT_SINGLE               = 7
+_BBE_CLICK_RIGHT_DOUBLE               = 8
+_BBE_CLICK_RIGHT_DOWN                 = 9
+_BBE_CLICK_RIGHT_UP                   = 10
+_BBE_DROPPED_INTO_LEFT                = 11
+_BBE_DROPPED_INTO_RIGHT               = 12
+_BBE_DRAG_LEFT_START                  = 13
+_BBE_DRAG_LEFT_STOP                   = 14
+_BBE_DRAG_RIGHT_START                 = 15
+_BBE_DRAG_RIGHT_STOP                  = 16
+_BBE_FOCUS_GOT                        = 17
+_BBE_FOCUS_LOST                       = 18
+_BBE_FOCUS_SET                        = 19
+_BBE_HOVER                            = 20
+_BBE_KEYSTROKE                        = 21
+_BBE_WHEN_CREATED                     = 22
+_BBE_WHEN_DESTROYED                   = 23
+_BBE_REQUESTOR                        = 24
+_BBE_REFRESH                          = 25
+
+
+//-----------------------------------------
+//
+// +------------------------+
+// | _TEXT_FIELD PARAMETERS |
+// +------------------------+
+// Properties
+_TFP_ENABLED                          = 0
+_TFP_VISIBLE                          = 1
+_TFP_BORDER                           = 2
+_TFP_ALIGNMENT                        = 3
+_TFP_AUTO_SIZE                        = 4
+_TFP_COLOR_BACKGROUND                 = 5
+_TFP_COLOR_FOREGROUND                 = 6
+_TFP_COLOR_SELECTED_BACKGROUND        = 7
+_TFP_COLOR_SELECTED_FOREGROUND        = 8
+_TFP_SOURCE_PTR                       = 9
+_TFP_FONT_NAME                        = 10
+_TFP_FONT_SIZE                        = 11
+_TFP_FONT_TYPEFACE_BOLD               = 12
+_TFP_FONT_TYPEFACE_DITHER             = 13
+_TFP_FONT_TYPEFACE_ITALICS            = 14
+_TFP_FONT_TYPEFACE_REVERSE            = 15
+_TFP_FONT_TYPEFACE_STRIKETHROUGH      = 16
+_TFP_FONT_TYPEFACE_UNDERLINE          = 17
+_TFP_FONT_NAME_ID                     = 18
+_TFP_MARGIN_LEFT                      = 19
+_TFP_MARGIN_TOP                       = 20
+_TFP_SELECTED_TEXT_START              = 21
+_TFP_SELECTED_TEXT_END                = 22
+_TFP_MISC_1                           = 23
+_TFP_MISC_2                           = 24
+_TFP_MISC_3                           = 25
+_TFP_MISC_4                           = 26
+_TFP_MISC_FLAG_1                      = 27
+_TFP_MISC_FLAG_2                      = 28
+_TFP_MISC_FLAG_3                      = 29
+// Events
+_TFE_ACTIVATE                         = 0
+_TFE_CLICK_BOTH_SINGLE                = 1
+_TFE_CLICK_BOTH_DOUBLE                = 2
+_TFE_CLICK_LEFT_SINGLE                = 3
+_TFE_CLICK_LEFT_DOUBLE                = 4
+_TFE_CLICK_LEFT_DOWN                  = 5
+_TFE_CLICK_LEFT_UP                    = 6
+_TFE_CLICK_RIGHT_SINGLE               = 7
+_TFE_CLICK_RIGHT_DOUBLE               = 8
+_TFE_CLICK_RIGHT_DOWN                 = 9
+_TFE_CLICK_RIGHT_UP                   = 10
+_TFE_DROPPED_INTO_LEFT                = 11
+_TFE_DROPPED_INTO_RIGHT               = 12
+_TFE_DRAG_LEFT_START                  = 13
+_TFE_DRAG_LEFT_STOP                   = 14
+_TFE_DRAG_RIGHT_START                 = 15
+_TFE_DRAG_RIGHT_STOP                  = 16
+_TFE_FOCUS_GOT                        = 17
+_TFE_FOCUS_LOST                       = 18
+_TFE_FOCUS_SET                        = 19
+_TFE_HOVER                            = 20
+_TFE_KEYSTROKE                        = 21
+_TFE_WHEN_CREATED                     = 22
+_TFE_WHEN_DESTROYED                   = 23
+_TFE_REQUESTOR                        = 24
+_TFE_REFRESH                          = 25
