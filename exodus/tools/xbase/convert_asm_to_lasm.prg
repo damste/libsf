@@ -76,13 +76,14 @@ SET STEP ON
 			DO CASE
 				CASE LEFT(laLines[lnI], 1) = ";" AND NOT LEFT(laLines[lnI], 2) = ";;"
 					* It's a comment, translate to "//" and copy
+					* Note:  We leave the double-;; because it looks nicer than // :-)
 					lcAsm = lcAsm + "//" + SUBSTR(laLines[lnI], 2)
 
-				CASE UPPER(laLines[lnI]) = "TITLE"
+				CASE UPPER(GETWORDNUM(laLines[lnI], 1)) == "TITLE"
 					* Alter this line
 					lcAsm = lcAsm + "// " + ALLTRIM(SUBSTR(laLines[lnI], 6))
 
-				CASE UPPER(laLines[lnI]) = "INCLUDE"
+				CASE UPPER(GETWORDNUM(laLines[lnI],1)) == "INCLUDE"
 					* Change to just "while "
 					lcAsm = lcAsm + "#include " + CHR(34) + ALLTRIM(SUBSTR(laLines[lnI], 8)) + CHR(34)
 
@@ -110,32 +111,32 @@ SET STEP ON
 					* Change to just "} untilcxz"
 					lcAsm = lcAsm + "} untilcxz" + ALLTRIM(SUBSTR(laLines[lnI], 10))
 
-				CASE INLIST(ALLTRIM(laLines[lnI]), ".ENDIF", ".ENDW")
+				CASE INLIST(UPPER(GETWORDNUM(ALLTRIM(laLines[lnI]), 1)), ".ENDIF", ".ENDW")
 					* Change to just "}"
 					lcAsm = lcAsm + "}"
 				
-				CASE laLines[lnI] = "." OR UPPER(GETWORDNUM(laLines[lnI], 1)) = "ASSUME"
+				CASE laLines[lnI] = "." OR UPPER(GETWORDNUM(laLines[lnI], 1)) == "ASSUME"
 					* Ignore it
 					llSkipCrLf = .t.
 				
-				CASE UPPER(GETWORDNUM(laLines[lnI], 2)) = "SEGMENT"
+				CASE UPPER(GETWORDNUM(laLines[lnI], 2)) == "SEGMENT"
 					* Change the line to "abc" + chr(13) + "| at offset 0" + chr(13) + "{"
 					lcAsm = ALLTRIM(lcAsm)
 					lcAsm = lcAsm + LOWER(GETWORDNUM(laLines[lnI], 2, "'")) + " " + STRTRAN(LOWER(GETWORDNUM(laLines[lnI], 1)), "_", SPACE(0)) + CHR(13) + CHR(10)
 					lcAsm = lcAsm + "| at offset 0" + CHR(13) + CHR(10)
 					lcAsm = lcAsm + "{"
 				
-				CASE UPPER(GETWORDNUM(laLines[lnI], 2)) = "ENDS"
+				CASE UPPER(GETWORDNUM(laLines[lnI], 2)) == "ENDS"
 					* Change the line to "}"
 					lcAsm = ALLTRIM(lcAsm)
 					lcAsm = lcAsm + "}" + CHR(13) + CHR(10) + "// " + STRTRAN(LOWER(GETWORDNUM(laLines[lnI], 1)), "_", SPACE(0))
 				
-				CASE UPPER(GETWORDNUM(laLines[lnI], 2)) = "PROC"
+				CASE UPPER(GETWORDNUM(laLines[lnI], 2)) == "PROC"
 					* Change to "function name {"
 					lcAsm = lcAsm + "function " + GETWORDNUM(laLines[lnI], 1) + SUBSTR(laLines[lnI], AT("PROC", UPPER(laLines[lnI])) + 4)
 					lcAsm = lcAsm + CHR(13) + CHR(10) + SPACE(MAX(lnWhitespaces, 0)) + "{"
 				
-				CASE UPPER(GETWORDNUM(laLines[lnI], 2)) = "ENDP"
+				CASE UPPER(GETWORDNUM(laLines[lnI], 2)) == "ENDP"
 					* Change to "} // function name"
 					lcAsm = lcAsm + "}" + SUBSTR(laLines[lnI], AT("ENDP", UPPER(laLines[lnI])) + 4)
 				

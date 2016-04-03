@@ -2260,8 +2260,7 @@ dd  offset requestor
        // Update the coordinates based on the signed displacement information sent to us from the mouse driver
         invDEBI_update_mouse_coordinates()
 
-      function  //ess the mouse
-      {
+       // Process the mouse
         if (ds:mouse_processing == 0)
         {
           // No button status, just moving the mouse around. :)
@@ -9570,20 +9569,17 @@ dd  offset requestor
                 } else if (ax == 'x0') {
                   // It's a hexadecimal constant
                     invDEBI_parse_hexadecimal_constant()
-                    function jmpess_operator
-                    {
+                    jmp     process_operator
                 
                 } else if (ax == 'y0') {
                   // It's a binary constant
                     invDEBI_parse_binary_constant()
-                    function jmpess_operator
-                    {
+                    jmp     process_operator
                 
                 } else if (ax == 'd0') {
                   // It's a decimal constant
                     invDEBI_parse_decimal_constant()
-                    function jmpess_operator
-                    {
+                    jmp     process_operator
                 
                 } else if (ax == 'o0') {
                   // It's an octal constant
@@ -9627,11 +9623,9 @@ dd  offset requestor
                 } else {
                   // It must be a keyword
                     invDEBI_search_regs()
-                    function jnzess_operator                        // Branch if found
-                    {
+                    jnz     process_operator                        // Branch if found
                     invDEBI_search_keywords()
-                    function jnzess_operator                        // Branch if found
-                    {
+                    jnz     process_operator                        // Branch if found
                     stc
                     jmp     quit_in_error
                 }

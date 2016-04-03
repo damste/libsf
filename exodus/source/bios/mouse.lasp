@@ -113,8 +113,7 @@ screen_saver_count_start        u32  18200
         invTASK_adjust_mouse_coordinates()
 
 
-      function  //ess the data
-      {
+       // Process the data
         if (ds:mouse_processing == 0)
         {
             mov     ds:mouse_processing,1

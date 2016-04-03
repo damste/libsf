@@ -143,13 +143,15 @@ show_register_fpu:
     
     } else {
         jmp     @f
-        while (byte ptr [si] != 0)
+    }
+    while (byte ptr [si] != 0)
     {
         lodsb
         stosb
         mov     al,112
         stosb
-        fistp   <u32> temp_buffer[0]
+    }
+    fistp   <u32> temp_buffer[0]
     ret
 
   @@:
@@ -275,7 +277,8 @@ signed_convert_word_to_decimal:
     {
       // it's a negative
         neg     dx
-    
+    }
+
     mov     si,offset temp_buffer+4
     mov     eax,"0000"
     mov     <u32> [si-4],eax

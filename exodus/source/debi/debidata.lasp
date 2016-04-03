@@ -10,15 +10,15 @@
 //   x,y
 //  +---Â---Â---Â---Â---Â---+    The DEBI_screen_table relates its structure to this logical arrangement of the screen.
 //  |0,0|1,0|2,0|3,0|4,0|5,0|    Each square represents a starting point for something to be displayed.  Internal logic
-//  ----Å---Å---Å---Å---Å---|    during this setup ensures that things only fit where they're supposed to.
+//  ----+---+---+---+---+---|    during this setup ensures that things only fit where they're supposed to.
 //  |0,1|1,1|2,1|3,1|4,1|5,1|
-//  ----Å---Å---Å---Å---Å---|    The letter identifies which part of the screen it is (as identified by its label)
+//  ----+---+---+---+---+---|    The letter identifies which part of the screen it is (as identified by its label)
 //  |0,2|1,2|2,2|3,2|4,2|5,2|
-//  ----Å---Å---Å---Å---Å---|    Each cell is x=15
+//  ----+---+---+---+---+---|    Each cell is x=15
 //  |0,3|1,3|2,3|3,3|4,3|5,3|                 y=9
-//  ----Å---Å---Å---Å---Å---|
+//  ----+---+---+---+---+---|
 //  |0,4|1,4|2,4|3,4|4,4|5,4|
-//  ----Å---Å---Å---Å---Å---|
+//  ----+---+---+---+---+---|
 //  |0,5|1,5|2,5|3,5|4,5|5,5|
 //  +---Á---Á---Á---Á---Á---+
 //

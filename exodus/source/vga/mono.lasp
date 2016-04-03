@@ -981,7 +981,8 @@
                     
                     } else {
                         inc     edi
-                                    }
+                    }
+                }
 
                 if (byte ptr [ebp-05] != 0)
                 {

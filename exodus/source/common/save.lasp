@@ -1791,9 +1791,7 @@ interrupt_10_handler:
 interrupt_11_handler:
     push    eax
     mov     eax,11
- call
-| at offset 0
-{
+segment_not_present_handler()
     pop     eax
     iretd
 interrupt_12_handler:

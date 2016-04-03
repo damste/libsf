@@ -109,44 +109,37 @@ x86_disassemble:
   _adr_size_override:
   // 32/16-bit memory override
     inc     fs:adr_size_override
-    function jmpess_override_byte
-    {
+    jmp     process_override_byte
 
   _cs_override:
   // cs segment override
     mov     fs:seg_override,1
-    function jmpess_override_byte
-    {
+    jmp     process_override_byte
 
   _ds_override:
   // ds segment override
     mov     fs:seg_override,2
-    function jmpess_override_byte
-    {
+    jmp     process_override_byte
 
   _es_override:
   // es segment override
     mov     fs:seg_override,3
-    function jmpess_override_byte
-    {
+    jmp     process_override_byte
 
   _ss_override:
   // SS segment override
     mov     fs:seg_override,4
-    function jmpess_override_byte
-    {
+    jmp     process_override_byte
 
   _fs_override:
   // FS segment override
     mov     fs:seg_override,5
-    function jmpess_override_byte
-    {
+    jmp     process_override_byte
 
   _gs_override:
   // GS segment override
     mov     fs:seg_override,6
-    function jmpess_override_byte
-    {
+    jmp     process_override_byte
 
 
 
