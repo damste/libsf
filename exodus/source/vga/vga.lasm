@@ -159,9 +159,9 @@ dd offset requestor
 
 
 
-    #include "vga.asp                                                 // VGA algorithms"
-    #include "mono.asp                                                // Monochrome algorithms"
-    #include "global.asp                                              // Global algorithms"
+    #include "vga.asp"                                                 // VGA algorithms
+    #include "mono.asp"                                                // Monochrome algorithms
+    #include "global.asp"                                              // Global algorithms
 
 
 

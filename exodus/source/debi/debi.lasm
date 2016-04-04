@@ -28,8 +28,8 @@
 #include "\exodus\source\common\keylist.asp"
 #include "\exodus\source\common\equates.asp"
 #include "\exodus\source\common\macros.asp"
-#include "debi_mac.asp                                                // Macros used for DEBI"
-#include "debi_eq.asp                                                 // Equates used for DEBI"
+#include "debi_mac.asp"                                                // Macros used for DEBI
+#include "debi_eq.asp"                                                 // Equates used for DEBI
 
     
 code text32

@@ -65,7 +65,7 @@ SET STEP ON
 			laLines[lnI] = removeTabs(laLines[lnI])
 		
 			* Put any whitespaces up front
-			lnWhitespaces = consecutive(laLines[lnI], CHR(32) + CHR(9))
+			lnWhitespaces = consecutiveDups(laLines[lnI])
 			IF NOT INLIST(UPPER(GETWORDNUM(laLines[lnI], 2)), "SEGMENT", "ENDS")
 				lcAsm = lcAsm + SPACE(lnWhitespaces)
 			ENDIF
@@ -85,7 +85,8 @@ SET STEP ON
 
 				CASE UPPER(GETWORDNUM(laLines[lnI],1)) == "INCLUDE"
 					* Change to just "while "
-					lcAsm = lcAsm + "#include " + CHR(34) + ALLTRIM(SUBSTR(laLines[lnI], 8)) + CHR(34)
+					lcAfter	= ALLTRIM(SUBSTR(laLines[lnI], 8))
+					lcAsm	= lcAsm + "#include " + CHR(34) + textConsecutive(lcAfter) + CHR(34) + textAfterConsecutive(lcAfter)
 
 				CASE UPPER(laLines[lnI]) = ".IF"
 					* Change to just "if "
@@ -237,9 +238,15 @@ LOCAL lnI, lnOffset, lcText
 
 
 
-FUNCTION consecutive
+* Returns the count of how often the characters are repeated
+FUNCTION consecutiveDups
 LPARAMETERS tcText, tcChar
 LOCAL lnI, lnCount
+	* Default to whitespaces
+	IF TYPE("tcChar") != "C"
+		tcChar = CHR(32) + CHR(9)
+	ENDIF
+	
 	* So long as it repeats... count it
 	lnCount = 0
     FOR lnI = 1 TO LEN(tcText)
@@ -251,3 +258,28 @@ LOCAL lnI, lnCount
     
 	* Indicate our count
 	RETURN lnCount
+
+
+
+
+* Retrieves the text until a whitespace is found
+FUNCTION textConsecutive
+LPARAMETERS tcText
+LOCAL lnI, lcText
+	lcText = SPACE(0)
+    FOR lnI = 1 TO LEN(tcText)
+    	IF SUBSTR(tcText, lnI, 1) $ CHR(32) + CHR(9)
+    		EXIT
+    	ENDIF
+    	lcText = lcText + SUBSTR(tcText, lnI, 1)
+    NEXT
+	RETURN lcText
+
+
+
+
+FUNCTION textAfterConsecutive
+LPARAMETERS tcText
+LOCAL lcText
+	lcText = textConsecutive(tcText)
+	RETURN SUBSTR(tcText, LEN(lcText) + 1)

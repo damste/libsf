@@ -711,11 +711,11 @@ debug_mono:
     popad
     ret
 
-    #include "pic.asp                                                 // Programmable interrupt controller (APIC controller)"
-    #include "dma.asp                                                 // Direct memory access"
-    #include "video.asp                                               // Graphics and text"
+    #include "pic.asp"                                                 // Programmable interrupt controller (APIC controller)
+    #include "dma.asp"                                                 // Direct memory access
+    #include "video.asp"                                               // Graphics and text
 
-    #include "debi.asp                                                // Debugger! :)"
+    #include "debi.asp"                                                // Debugger! :)
 
 
 //Û
