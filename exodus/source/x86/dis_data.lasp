@@ -7,19 +7,25 @@
 
 
 ;; Macros
-@instr_bytes    MACRO   bytes:REQ
+macro @instr_bytes
+|| bytes
+{{
     mov     fs:instruction_bytes,bytes
     IF bytes EQ 1
         inc     esi
-    ELSE
+    
+    } #else {
         add     esi,bytes
-    ENDIF
-ENDM
+    }
+}}
 
-@instr_text     MACRO   instr:REQ, len:REQ
+macro @instr_text
+|| instr
+|| len
+{{
     mov     fs:instruction_text_offset,offset instr
     mov     fs:instruction_text_length,len
-ENDM
+}}
 
 _NO_SPECIAL       = 0
 _CONTROL_REGS     = 1

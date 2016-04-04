@@ -3650,7 +3650,7 @@ IFNDEF _DEBI
     {
         ret
     }
-ENDIF
+}
 
 
 
@@ -4902,7 +4902,8 @@ skip_halt:
 
 
 // LOAD_XDEBUG()
-IFDEF _XDEBUG
+#ifdef _XDEBUG
+{
     mov     ax,0200h + 14                                           // Read 14 debug program sectors
     mov     bx,7000h                                                // Store at 7000:0000h, or 7000h
     mov     es,bx
@@ -4935,7 +4936,7 @@ IFDEF _XDEBUG
     mov     eax,70000000h                                           // Segment (7000h), Offset (0h), linear = 70000h
     mov     <u32> FS:[1*4],eax                                  // INT1, single-step
     mov     <u32> FS:[3*4],eax                                  // INT3, software breakpoint
-ENDIF; Turn off the floppy drive motor
+}; Turn off the floppy drive motor
     mov     al,001100b
     mov     edx,03f2h
     out     dx,al

@@ -5,46 +5,56 @@
 
 
 
-MACRO()   _seg:REQ, _offset:REQ
+macro callfp
+|| _seg
+|| _offset
+{{
 // This macro:   callfp  _code_seg, _offset
 //
     u8   9ah
     u32  _offset
     u16  _seg
-ENDM
+}}
 
 
 
 
-MACRO()   _seg:REQ
+macro callg
+|| _seg
+{{
 // This macro:   callg   _call_gate
     u8   9ah
     u32  0
     u16  _seg
-ENDM
+}}
 
 
 
 
-jmpg       MACRO   _seg:REQ
+macro jmpg
+|| _seg
+{{
 // This macro:   jmpg    _call_gate
     u8   0eah
     u32  0
     u16  _seg
-ENDM
+}}
 
 
 
 
-MACRO()   _func:REQ
+macro callf
+|| _func
+{{
 // This macro:   callf   function_name
     push    cs
     _func()
-ENDM
+}}
 
 
 
 
-@IO_pause   MACRO
+macro @IO_pause
+{{
     jmp     $+2
-ENDM
+}}

@@ -134,13 +134,54 @@ SET STEP ON
 				
 				CASE UPPER(GETWORDNUM(laLines[lnI], 2)) == "PROC"
 					* Change to "function name {"
-					lcAsm = lcAsm + "function " + GETWORDNUM(laLines[lnI], 1) + SUBSTR(laLines[lnI], AT("PROC", UPPER(laLines[lnI])) + 4)
-					lcAsm = lcAsm + CHR(13) + CHR(10) + SPACE(MAX(lnWhitespaces, 0)) + "{"
+					lcAsm = lcAsm + "function " + GETWORDNUM(laLines[lnI], 1) + SUBSTR(laLines[lnI], AT("PROC", UPPER(laLines[lnI])) + 4) + CHR(13) + CHR(10)
+					lcAsm = lcAsm + SPACE(MAX(lnWhitespaces, 0)) + "{"
 				
 				CASE UPPER(GETWORDNUM(laLines[lnI], 2)) == "ENDP"
 					* Change to "} // function name"
 					lcAsm = lcAsm + "}" + SUBSTR(laLines[lnI], AT("ENDP", UPPER(laLines[lnI])) + 4)
 				
+				CASE UPPER(GETWORDNUM(laLines[lnI], 2)) == "MACRO"
+					* Change to "macro name {"
+					lcAsm		= lcAsm + "macro " + GETWORDNUM(laLines[lnI], 1) + CHR(13) + CHR(10)
+					lcParams	= SUBSTR(laLines[lnI], AT("MACRO", UPPER(laLines[lnI])) + 5)
+					IF NOT EMPTY(lcParams)
+						* Break out the params vertically
+						FOR lnJ = 1 TO GETWORDCOUNT(lcParams)
+							lcThisParam	= STRTRAN(GETWORDNUM(lcParams, lnJ), ",", SPACE(0))
+							lcThisParam = IIF(":REQ" $ UPPER(lcThisParam), ;
+												LEFT(lcThisParam, LEN(lcThisParam) - 4), ;
+												"optional " + lcThisParam)
+							lcAsm = lcAsm + "|| " + lcThisParam + CHR(13) + CHR(10)
+						NEXT
+					ENDIF
+					
+					* Add the beginning block
+					lcAsm = lcAsm + SPACE(MAX(lnWhitespaces, 0)) + "{{"
+
+				CASE INLIST(UPPER(GETWORDNUM(ALLTRIM(laLines[lnI]), 1)) + SPACE(1), "ENDM ")
+					* Change to just "}}"
+					lcAsm = lcAsm + "}}"
+
+				CASE UPPER(laLines[lnI]) = "IFDEF"
+					* Change to just "#ifdef "
+					lcAsm = lcAsm + "#ifdef " + CHRTRAN(ALLTRIM(SUBSTR(laLines[lnI], 6)) + CHR(13) + CHR(10), "<>", SPACE(0))
+					lcAsm = lcAsm + SPACE(lnWhiteSpaces) + "{"
+
+				CASE UPPER(laLines[lnI]) = "IFNB"
+					* Change to just "#ifdef "
+					lcAsm = lcAsm + "#ifdef " + CHRTRAN(ALLTRIM(SUBSTR(laLines[lnI], 5)) + CHR(13) + CHR(10), "<>", SPACE(0))
+					lcAsm = lcAsm + SPACE(lnWhiteSpaces) + "{"
+
+				CASE UPPER(laLines[lnI]) = "ELSE"
+					* Change to just "} #else {"
+					lcAsm = lcAsm + CHR(13) + CHR(10)
+					lcAsm = lcAsm + SPACE(lnWhitespaces) + "} #else {" + ALLTRIM(SUBSTR(laLines[lnI], 5))
+
+				CASE UPPER(laLines[lnI]) = "ENDIF"
+					* Change to just "}"
+					lcAsm = lcAsm + "}" + ALLTRIM(SUBSTR(laLines[lnI], 6))
+
 				CASE UPPER(GETWORDNUM(laLines[lnI], 1)) = "CALL" AND NOT "word ptr" $ LOWER(laLines[lnI])
 					* Change to "name()"
 					lcName	= GETWORDNUM(laLines[lnI], 2)

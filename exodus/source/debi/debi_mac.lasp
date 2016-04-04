@@ -12,15 +12,17 @@
 
 
 ;; Macros common to all items
-@Start      MACRO
+macro @Start
+{{
     u8   _START
   // Total = 1
-ENDM
+}}
 
-@End    MACRO
+macro @End
+{{
     u8   _END
   // Total = 1
-ENDM
+}}
 
 
 
@@ -32,34 +34,43 @@ ENDM
 ;;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 // * Note:  The constants are defined in debi_eq.asp
-@DrawWindow     MACRO   name:req
+macro @DrawWindow
+|| name
+{{
 // Draws the window for whatever item is specified
     u8   _DRAW_WINDOW
     u32  offset name
   // Total = 5
-ENDM
+}}
 
-@AlwaysDrawWindow     MACRO   name:req
+macro @AlwaysDrawWindow
+|| name
+{{
 // Always draws the window for whatever item is specified
     u8   _DRAW_WINDOW_ALWAYS
     u32  offset name
   // Total = 5
-ENDM
+}}
 
-@DrawDebiLogo_at_pixel      MACRO   x:req, y:req
+macro @DrawDebiLogo_at_pixel
+|| x
+|| y
+{{
 // Indicates how big this item's block of memory is in the _sDEBI_objects memory area
     u8   _DRAW_DEBI_LOGO
     u32  x
     u32  y
   // Total = 9
-ENDM
+}}
 
-@ObjectMemSize  MACRO   size:req
+macro @ObjectMemSize
+|| size
+{{
 // Indicates how big this item's block of memory is in the _sDEBI_objects memory area
     u8   _OBJECT_MEM_SIZE
     u8   size
   // Total = 2
-ENDM
+}}
 
 //@ObjectMemDefault   MACRO   type:req, parm1:REQ, parm2
 ;; Indicates a default condition
@@ -74,7 +85,10 @@ ENDM
 //  // Total = 10
 //ENDM
 
-@LoadTemp   MACRO   type:REQ, loffset:REQ
+macro @LoadTemp
+|| type
+|| loffset
+{{
 // Loads a temporary value from this item's portion of _sDEBI_objects memory
 //
 //       TYPE - indicates what type of temporary variable is being loaded
@@ -84,9 +98,15 @@ ENDM
     u8   type
     u32  loffset
   // Total = 6
-ENDM
+}}
 
-@DisplayTemp_relative     MACRO   type:REQ, tempoffset:REQ, loffset:REQ, x:REQ, y:REQ
+macro @DisplayTemp_relative
+|| type
+|| tempoffset
+|| loffset
+|| x
+|| y
+{{
 // Used to display some data from a temporary value.  Prior to use an @LoadTemp must've been issued to setup the far pointer to
 // access the memory.
 //
@@ -105,9 +125,15 @@ ENDM
     u32  y * FONT_Y
     u16  0               // Nuserved
   // Total = 16
-ENDM
+}}
 
-@DisplayEBP_relative    MACRO   type:REQ, ebpoffset:REQ, loffset:REQ, x:REQ, y:REQ
+macro @DisplayEBP_relative
+|| type
+|| ebpoffset
+|| loffset
+|| x
+|| y
+{{
 // Used to dipslay a dword value.  Note that the type argument specifies what kind of EBP relative item it is.
 //
 //      TYPE - indicates what type of variable is being displayed
@@ -125,9 +151,15 @@ ENDM
     u32  y * FONT_Y          // +10
     u16  0                   // +14, Nuserved
   // Total = 16
-ENDM
+}}
 
-@DisplayEBP_through_EBP_relative    MACRO   type:REQ, ebpoffset:REQ, loffset:REQ, x:REQ, y:REQ
+macro @DisplayEBP_through_EBP_relative
+|| type
+|| ebpoffset
+|| loffset
+|| x
+|| y
+{{
 // Used to dipslay a dword value.  Note that the type argument specifies what kind of EBP relative item it is.
 //
 //      TYPE - indicates what type of variable is being displayed
@@ -145,9 +177,15 @@ ENDM
     u32  y * FONT_Y
     u16  0               // Nuserved
   // Total = 16
-ENDM
+}}
 
-@DisplayESP_through_EBP_relative    MACRO   type:REQ, ebpoffset:REQ, loffset:REQ, x:REQ, y:REQ
+macro @DisplayESP_through_EBP_relative
+|| type
+|| ebpoffset
+|| loffset
+|| x
+|| y
+{{
 // Used to dipslay a dword value.  Note that the type argument specifies what kind of EBP relative item it is.
 //
 //      TYPE - indicates what type of variable is being displayed
@@ -165,9 +203,16 @@ ENDM
     u32  y * FONT_Y
     u16  0               // Nuserved
   // Total = 16
-ENDM
+}}
 
-@DisplayEBP_flag    MACRO   ebpoffset:REQ, loffset:REQ, use_bit:REQ, x:REQ, y:REQ, string:REQ
+macro @DisplayEBP_flag
+|| ebpoffset
+|| loffset
+|| use_bit
+|| x
+|| y
+|| string
+{{
 // Used to display a flag.  Note that the EBP reference is an offset on the stack, the use_bit represents the bit pattern for the flag
 //
 //      TYPE - indicates what type of variable is being displayed
@@ -189,9 +234,14 @@ ENDM
     u8   string
     u8   0                       // Null terminate the string (for display purposes)
   // Total = <varies per item>
-ENDM
+}}
 
-@ObjectPostDisplay      MACRO   type:REQ, x:REQ, y:REQ, string:REQ
+macro @ObjectPostDisplay
+|| type
+|| x
+|| y
+|| string
+{{
 // Used to display an object after all of the objects have been displayed.  This is done because this object references something
 // that is calculated in another window.  The data item is identified by name (string) and may or may not be displayed once the
 // entire processing has been completed.
@@ -208,13 +258,15 @@ ENDM
     u8   @SizeStr(string) - 2    // The -2 is for the quotes, @SizeStr("test") returns 6
     u8   string
   // Total = <varies per item>
-ENDM
+}}
 
-@FunctionHandlesObject      MACRO   func:REQ
+macro @FunctionHandlesObject
+|| func
+{{
     u8   _FUNCTION
     u32  offset func
   // Total = 5
-ENDM
+}}
 
 
 
@@ -224,7 +276,15 @@ ENDM
 ;; Mouse Object Macros
 ;;
 ;;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-@Immediate  MACRO   type:REQ, x1:REQ, y1:REQ, x2:REQ, y2:REQ, func:REQ, datum
+macro @Immediate
+|| type
+|| x1
+|| y1
+|| x2
+|| y2
+|| func
+|| optional datum
+{{
 // Used when any click is recognized on these coordinates
 //
 //       X1 - X coordinate (in characters relative to upper-left corner of window) of the upper-left object
@@ -240,17 +300,28 @@ ENDM
     u32  (y2 * FONT_Y) + FONT_Y - 1  // +13
     u32  func                        // +17
     u16  0ffffh                      // +21
-    IFNB <datum>
+    #ifdef datum
+    {
         u16  datum                   // +23
         u8   2 dup(0ffh)             // +25
-    ELSE
+    
+    } #else {
         u8   4 dup(0ffh)             // +23
-    ENDIF
+    }
     u8   type                        // +27
   // Total = 28
-ENDM
+}}
 
-@Any_click      MACRO   x1:REQ, y1:REQ, x2:REQ, y2:REQ, func:REQ, data1, data2, data3
+macro @Any_click
+|| x1
+|| y1
+|| x2
+|| y2
+|| func
+|| optional data1
+|| optional data2
+|| optional data3
+{{
 // Used when any click is recognized on these coordinates
 //
 //       X1 - X coordinate (in characters relative to upper-left corner of window) of the upper-left object
@@ -265,25 +336,40 @@ ENDM
     u32  (x2 * FONT_X) + FONT_X - 1  // +9
     u32  (y2 * FONT_Y) + FONT_Y - 1  // +13
     u32  func                        // +17
-    IFNB <data1>
+    #ifdef data1
+    {
         u32  data1                   // +21
-    ELSE
+    
+    } #else {
         u32  0ffffffffh
-    ENDIF
-    IFNB <data2>
+    }
+    #ifdef data2
+    {
         u16  data2                   // +25
-    ELSE
+    
+    } #else {
         u16  0ffffh
-    ENDIF
-    IFNB <data3>
+    }
+    #ifdef data3
+    {
         u8   data3                   // +27
-    ELSE
+    
+    } #else {
         u8   0ffh
-    ENDIF
+    }
   // Total = 28
-ENDM
+}}
 
-@Left_single_click  MACRO   x1:REQ, y1:REQ, x2:REQ, y2:REQ, func:REQ, data1, data2, data3
+macro @Left_single_click
+|| x1
+|| y1
+|| x2
+|| y2
+|| func
+|| optional data1
+|| optional data2
+|| optional data3
+{{
 // Used when a left single-click is recognized on these coordinates
     u8   _LEFT_SINGLE_CLICK          // +0
     u32  x1 * FONT_X                 // +1
@@ -291,25 +377,40 @@ ENDM
     u32  (x2 * FONT_X) + FONT_X - 1  // +9
     u32  (y2 * FONT_Y) + FONT_Y - 1  // +13
     u32  func                        // +17
-    IFNB <data1>
+    #ifdef data1
+    {
         u32  data1                   // +21
-    ELSE
+    
+    } #else {
         u32  0ffffffffh
-    ENDIF
-    IFNB <data2>
+    }
+    #ifdef data2
+    {
         u16  data2                   // +25
-    ELSE
+    
+    } #else {
         u16  0ffffh
-    ENDIF
-    IFNB <data3>
+    }
+    #ifdef data3
+    {
         u8   data3                   // +27
-    ELSE
+    
+    } #else {
         u8   0ffh
-    ENDIF
+    }
   // Total = 28
-ENDM
+}}
 
-@Left_double_click  MACRO   x1:REQ, y1:REQ, x2:REQ, y2:REQ, func:REQ, data1, data2, data3
+macro @Left_double_click
+|| x1
+|| y1
+|| x2
+|| y2
+|| func
+|| optional data1
+|| optional data2
+|| optional data3
+{{
 // Used when a left double-click is recognized on these coordinates
     u8   _LEFT_DOUBLE_CLICK          // +0
     u32  x1 * FONT_X                 // +1
@@ -317,25 +418,40 @@ ENDM
     u32  (x2 * FONT_X) + FONT_X - 1  // +9
     u32  (y2 * FONT_Y) + FONT_Y - 1  // +13
     u32  func                        // +17
-    IFNB <data1>
+    #ifdef data1
+    {
         u32  data1                   // +21
-    ELSE
+    
+    } #else {
         u32  0ffffffffh
-    ENDIF
-    IFNB <data2>
+    }
+    #ifdef data2
+    {
         u16  data2                   // +25
-    ELSE
+    
+    } #else {
         u16  0ffffh
-    ENDIF
-    IFNB <data3>
+    }
+    #ifdef data3
+    {
         u8   data3                   // +27
-    ELSE
+    
+    } #else {
         u8   0ffh
-    ENDIF
+    }
   // Total = 28
-ENDM
+}}
 
-@Right_single_click  MACRO   x1:REQ, y1:REQ, x2:REQ, y2:REQ, func:REQ, data1, data2, data3
+macro @Right_single_click
+|| x1
+|| y1
+|| x2
+|| y2
+|| func
+|| optional data1
+|| optional data2
+|| optional data3
+{{
 // Used when a right single-click is recognized on these coordinates
     u8   _RIGHT_SINGLE_CLICK         // +0
     u32  x1 * FONT_X                 // +1
@@ -343,25 +459,40 @@ ENDM
     u32  (x2 * FONT_X) + FONT_X - 1  // +9
     u32  (y2 * FONT_Y) + FONT_Y - 1  // +13
     u32  func                        // +17
-    IFNB <data1>
+    #ifdef data1
+    {
         u32  data1                   // +21
-    ELSE
+    
+    } #else {
         u32  0ffffffffh
-    ENDIF
-    IFNB <data2>
+    }
+    #ifdef data2
+    {
         u16  data2                   // +25
-    ELSE
+    
+    } #else {
         u16  0ffffh
-    ENDIF
-    IFNB <data3>
+    }
+    #ifdef data3
+    {
         u8   data3                   // +27
-    ELSE
+    
+    } #else {
         u8   0ffh
-    ENDIF
+    }
   // Total = 28
-ENDM
+}}
 
-@Right_double_click  MACRO   x1:REQ, y1:REQ, x2:REQ, y2:REQ, func:REQ, data1, data2, data3
+macro @Right_double_click
+|| x1
+|| y1
+|| x2
+|| y2
+|| func
+|| optional data1
+|| optional data2
+|| optional data3
+{{
 // Used when a right double-click is recognized on these coordinates
     u8   _RIGHT_DOUBLE_CLICK         // +0
     u32  x1 * FONT_X                 // +1
@@ -369,25 +500,40 @@ ENDM
     u32  (x2 * FONT_X) + FONT_X - 1  // +9
     u32  (y2 * FONT_Y) + FONT_Y - 1  // +13
     u32  func                        // +17
-    IFNB <data1>
+    #ifdef data1
+    {
         u32  data1                   // +21
-    ELSE
+    
+    } #else {
         u32  0ffffffffh
-    ENDIF
-    IFNB <data2>
+    }
+    #ifdef data2
+    {
         u16  data2                   // +25
-    ELSE
+    
+    } #else {
         u16  0ffffh
-    ENDIF
-    IFNB <data3>
+    }
+    #ifdef data3
+    {
         u8   data3                   // +27
-    ELSE
+    
+    } #else {
         u8   0ffh
-    ENDIF
+    }
   // Total = 28
-ENDM
+}}
 
-@Both_single_click  MACRO   x1:REQ, y1:REQ, x2:REQ, y2:REQ, func:REQ, data1, data2, data3
+macro @Both_single_click
+|| x1
+|| y1
+|| x2
+|| y2
+|| func
+|| optional data1
+|| optional data2
+|| optional data3
+{{
 // Used when a both single-click is recognized on these coordinates
     u8   _BOTH_SINGLE_CLICK          // +0
     u32  x1 * FONT_X                 // +1
@@ -395,25 +541,40 @@ ENDM
     u32  (x2 * FONT_X) + FONT_X - 1  // +9
     u32  (y2 * FONT_Y) + FONT_Y - 1  // +13
     u32  func                        // +17
-    IFNB <data1>
+    #ifdef data1
+    {
         u32  data1                   // +21
-    ELSE
+    
+    } #else {
         u32  0ffffffffh
-    ENDIF
-    IFNB <data2>
+    }
+    #ifdef data2
+    {
         u16  data2                   // +25
-    ELSE
+    
+    } #else {
         u16  0ffffh
-    ENDIF
-    IFNB <data3>
+    }
+    #ifdef data3
+    {
         u8   data3                   // +27
-    ELSE
+    
+    } #else {
         u8   0ffh
-    ENDIF
+    }
   // Total = 28
-ENDM
+}}
 
-@Both_double_click  MACRO   x1:REQ, y1:REQ, x2:REQ, y2:REQ, func:REQ, data1, data2, data3
+macro @Both_double_click
+|| x1
+|| y1
+|| x2
+|| y2
+|| func
+|| optional data1
+|| optional data2
+|| optional data3
+{{
 // Used when a both double-click is recognized on these coordinates
     u8   _BOTH_DOUBLE_CLICK          // +0
     u32  x1 * FONT_X                 // +1
@@ -421,25 +582,40 @@ ENDM
     u32  (x2 * FONT_X) + FONT_X - 1  // +9
     u32  (y2 * FONT_Y) + FONT_Y - 1  // +13
     u32  func                        // +17
-    IFNB <data1>
+    #ifdef data1
+    {
         u32  data1                   // +21
-    ELSE
+    
+    } #else {
         u32  0ffffffffh
-    ENDIF
-    IFNB <data2>
+    }
+    #ifdef data2
+    {
         u16  data2                   // +25
-    ELSE
+    
+    } #else {
         u16  0ffffh
-    ENDIF
-    IFNB <data3>
+    }
+    #ifdef data3
+    {
         u8   data3                   // +27
-    ELSE
+    
+    } #else {
         u8   0ffh
-    ENDIF
+    }
   // Total = 28
-ENDM
+}}
 
-@Left_drag_start    MACRO   x1:REQ, y1:REQ, x2:REQ, y2:REQ, func:REQ, data1, data2, data3
+macro @Left_drag_start
+|| x1
+|| y1
+|| x2
+|| y2
+|| func
+|| optional data1
+|| optional data2
+|| optional data3
+{{
 // Used when a left-drag is started in these coordinates
     u8   _LEFT_DRAG_START            // +0
     u32  x1 * FONT_X                 // +1
@@ -447,25 +623,40 @@ ENDM
     u32  (x2 * FONT_X) + FONT_X - 1  // +9
     u32  (y2 * FONT_Y) + FONT_Y - 1  // +13
     u32  func                        // +17
-    IFNB <data1>
+    #ifdef data1
+    {
         u32  data1                   // +21
-    ELSE
+    
+    } #else {
         u32  0ffffffffh
-    ENDIF
-    IFNB <data2>
+    }
+    #ifdef data2
+    {
         u16  data2                   // +25
-    ELSE
+    
+    } #else {
         u16  0ffffh
-    ENDIF
-    IFNB <data3>
+    }
+    #ifdef data3
+    {
         u8   data3                   // +27
-    ELSE
+    
+    } #else {
         u8   0ffh
-    ENDIF
+    }
   // Total = 28
-ENDM
+}}
 
-@Right_drag_start    MACRO   x1:REQ, y1:REQ, x2:REQ, y2:REQ, func:REQ, data1, data2, data3
+macro @Right_drag_start
+|| x1
+|| y1
+|| x2
+|| y2
+|| func
+|| optional data1
+|| optional data2
+|| optional data3
+{{
 // Used when a right-drag is started in these coordinates
     u8   _RIGHT_DRAG_START           // +0
     u32  x1 * FONT_X                 // +1
@@ -473,25 +664,40 @@ ENDM
     u32  (x2 * FONT_X) + FONT_X - 1  // +9
     u32  (y2 * FONT_Y) + FONT_Y - 1  // +13
     u32  func                        // +17
-    IFNB <data1>
+    #ifdef data1
+    {
         u32  data1                   // +21
-    ELSE
+    
+    } #else {
         u32  0ffffffffh
-    ENDIF
-    IFNB <data2>
+    }
+    #ifdef data2
+    {
         u16  data2                   // +25
-    ELSE
+    
+    } #else {
         u16  0ffffh
-    ENDIF
-    IFNB <data3>
+    }
+    #ifdef data3
+    {
         u8   data3                   // +27
-    ELSE
+    
+    } #else {
         u8   0ffh
-    ENDIF
+    }
   // Total = 28
-ENDM
+}}
 
-@Left_drag_stop     MACRO   x1:REQ, y1:REQ, x2:REQ, y2:REQ, func:REQ, data1, data2, data3
+macro @Left_drag_stop
+|| x1
+|| y1
+|| x2
+|| y2
+|| func
+|| optional data1
+|| optional data2
+|| optional data3
+{{
 // Used when a left-drag is stopped if it started in these coordinates
     u8   _LEFT_DRAG_STOP             // +0
     u32  x1 * FONT_X                 // +1
@@ -499,25 +705,40 @@ ENDM
     u32  (x2 * FONT_X) + FONT_X - 1  // +9
     u32  (y2 * FONT_Y) + FONT_Y - 1  // +13
     u32  func                        // +17
-    IFNB <data1>
+    #ifdef data1
+    {
         u32  data1                   // +21
-    ELSE
+    
+    } #else {
         u32  0ffffffffh
-    ENDIF
-    IFNB <data2>
+    }
+    #ifdef data2
+    {
         u16  data2                   // +25
-    ELSE
+    
+    } #else {
         u16  0ffffh
-    ENDIF
-    IFNB <data3>
+    }
+    #ifdef data3
+    {
         u8   data3                   // +27
-    ELSE
+    
+    } #else {
         u8   0ffh
-    ENDIF
+    }
   // Total = 28
-ENDM
+}}
 
-@Right_drag_stop    MACRO   x1:REQ, y1:REQ, x2:REQ, y2:REQ, func:REQ, data1, data2, data3
+macro @Right_drag_stop
+|| x1
+|| y1
+|| x2
+|| y2
+|| func
+|| optional data1
+|| optional data2
+|| optional data3
+{{
 // Used when a right-drag is stopped if it was started in these coordinates
     u8   _RIGHT_DRAG_STOP            // +0
     u32  x1 * FONT_X                 // +1
@@ -525,25 +746,39 @@ ENDM
     u32  (x2 * FONT_X) + FONT_X - 1  // +9
     u32  (y2 * FONT_Y) + FONT_Y - 1  // +13
     u32  func                        // +17
-    IFNB <data1>
+    #ifdef data1
+    {
         u32  data1                   // +21
-    ELSE
+    
+    } #else {
         u32  0ffffffffh
-    ENDIF
-    IFNB <data2>
+    }
+    #ifdef data2
+    {
         u16  data2                   // +25
-    ELSE
+    
+    } #else {
         u16  0ffffh
-    ENDIF
-    IFNB <data3>
+    }
+    #ifdef data3
+    {
         u8   data3                   // +27
-    ELSE
+    
+    } #else {
         u8   0ffh
-    ENDIF
+    }
   // Total = 28
-ENDM
+}}
 
-@Hover          MACRO   x1:REQ, y1:REQ, x2:REQ, y2:REQ, loffset:REQ, func:REQ, datum
+macro @Hover
+|| x1
+|| y1
+|| x2
+|| y2
+|| loffset
+|| func
+|| optional datum
+{{
 // Used when the mouse is hovering over these coordinates
     u8   _HOVER                      // +0
     u32  x1 * FONT_X                 // +1
@@ -552,16 +787,26 @@ ENDM
     u32  (y2 * FONT_Y) + FONT_Y - 1  // +13
     u32  func                        // +17
     u16  lowword(offset loffset)     // +21
-    IFNB <datum>
+    #ifdef datum
+    {
         u16  datum                   // +23
         u8   3 dup(0ffh)             // +25
-    ELSE
+    
+    } #else {
         u8   5 dup(0ffh)             // +23
-    ENDIF
+    }
   // Total = 28
-ENDM
+}}
 
-@Edit           MACRO   x1:REQ, y1:REQ, x2:REQ, y2:REQ, loffset:REQ, type:REQ, datum
+macro @Edit
+|| x1
+|| y1
+|| x2
+|| y2
+|| loffset
+|| type
+|| optional datum
+{{
 // Used when a left-click is recognized on an item that can be edited
     u8   _EDIT                       // +0
     u32  x1 * FONT_X                 // +1
@@ -570,16 +815,23 @@ ENDM
     u32  (y2 * FONT_Y) + FONT_Y - 1  // +13
     u32  type                        // +17
     u16  lowword(offset loffset)     // +21
-    IFNB <datum>
+    #ifdef datum
+    {
         u16  datum                   // +23
         u8   3 dup(0ffh)             // +25
-    ELSE
+    
+    } #else {
         u8   5 dup(0ffh)             // +23
-    ENDIF
+    }
   // Total = 28
-ENDM
+}}
 
-@Abandon_if_not     MACRO   x1:REQ, y1:REQ, x2:REQ, y2:REQ
+macro @Abandon_if_not
+|| x1
+|| y1
+|| x2
+|| y2
+{{
 // Used in a lengthy list.  If the coordinates are not within this range then the rest of the lengthy list is not checked
     u8   _ABANDON_IF_NOT             // +0
     u32  x1 * FONT_X                 // +1
@@ -588,7 +840,7 @@ ENDM
     u32  (y2 * FONT_Y) + FONT_Y - 1  // +13
     u8   11 dup(0ffh)                // +17
   // Total = 28
-ENDM
+}}
 
 
 
@@ -600,21 +852,27 @@ ENDM
 ;;
 ;;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-@MenuItem       MACRO   text:REQ
+macro @MenuItem
+|| text
+{{
     u8   _MENU_ITEM
     u8   @SizeStr(text) - 2      // The -2 is for the quotes, @SizeStr("test") returns 6
     u8   text
-ENDM
+}}
 
-@MenuItemEvent      MACRO   type:REQ, var:REQ
+macro @MenuItemEvent
+|| type
+|| var
+{{
     u8   _MENU_ITEM_EVENT
     u8   type
     u32  offset var
-ENDM
+}}
 
-@MenuBar        MACRO
+macro @MenuBar
+{{
     u8   _MENU_BAR
-ENDM
+}}
 
 
 
@@ -627,7 +885,12 @@ ENDM
 ;;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 // Offsets for these items are in called _DEBI_* and are in DEBI_MAC.ASP
-@DEBI_textbox       MACRO   x:REQ, y:REQ, len:REQ, var:REQ
+macro @DEBI_textbox
+|| x
+|| y
+|| len
+|| var
+{{
     u8   _KO_TEXTBOX             // +0
     u32  x * FONT_X              // +1
     u32  y * FONT_Y              // +5
@@ -635,9 +898,15 @@ ENDM
     u32  offset var              // +13
     u8   7 dup(0ffh)             // +21
   // Total = 24
-ENDM
+}}
 
-@DEBI_checkbox      MACRO   x:REQ, y:REQ, len:REQ, var:REQ, x_offset:REQ
+macro @DEBI_checkbox
+|| x
+|| y
+|| len
+|| var
+|| x_offset
+{{
     u8   _KO_CHECKBOX            // +0
     u32  x * FONT_X              // +1
     u32  y * FONT_Y              // +5
@@ -646,9 +915,15 @@ ENDM
     u8   x_offset                // +17
     u8   6 dup(0ffh)             // +18
   // Total = 24
-ENDM
+}}
 
-@DEBI_button        MACRO   x:REQ, y:REQ, len:REQ, func:REQ, x_offset:REQ
+macro @DEBI_button
+|| x
+|| y
+|| len
+|| func
+|| x_offset
+{{
     u8   _KO_BUTTON              // +0
     u32  x * FONT_X              // +1
     u32  y * FONT_Y              // +5
@@ -657,9 +932,16 @@ ENDM
     u8   x_offset                // +17
     u8   6 dup(0ffh)             // +18
   // Total = 24
-ENDM
+}}
 
-@DEBI_function      MACRO   x:REQ, y:REQ, func_mouse:REQ, func_kbd:REQ, func_refresh:REQ, func_activate:REQ
+macro @DEBI_function
+|| x
+|| y
+|| func_mouse
+|| func_kbd
+|| func_refresh
+|| func_activate
+{{
     u8   _KO_FUNCTION            // +0
     u16  x * FONT_X              // +1
     u16  y * FONT_Y              // +3
@@ -669,4 +951,4 @@ ENDM
     u32  offset func_activate    // +17, * Note:  This function is entirely custom and is called for all screen updating
     u8   3 dup(0ffh)             // +21
   // Total = 24
-ENDM
+}}
