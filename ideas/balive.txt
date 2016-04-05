@@ -3,7 +3,9 @@ by Rick C. Hodgin
 ----------------------------
 
 Jan.22.2016 -- I've had the idea to create an intermediate language which
-possesses limited typing abilities, expressly limited to:
+possesses limited typing abilities, expressly limited to these, and their
+pointers (add a trailing p for a pointer), or their pointer-to-pointers
+(add a trailing pp for a pointer-to-pointer):
 
     s8/u8    -- signed, unsigned 8-bit
     s16/u16  -- signed, unsigned 16-bit
@@ -20,39 +22,57 @@ function, or global variables, simply declared outside a function):
     {
         s8   single_character;
         s8   fixed_size_array[10];
-        s8   pointer_to_allocated_block[];
+        s8   pointer_to_allocated_block_of_s8[];
+        s8p  pointer_to_allocated_block_of_s8p[];
+        s8p  another_pointer_to_allocated_block_of_s8;
+        s8pp another_pointer_to_allocated_block_of_s8p;
     }
 
 -----
 Functions are declared similarly to those in CAlive, but there is no explicit
-returns clause, and a new attribute is added to each parameter allowing it to
-be flagged as an input-only value (the function will not alter its contents),
-an output-only value (the function will replace its contents), or an input-
-and-output value (the function will read the input, and may at any time
-replace its contents):
+returns clause.  Instead, a new attribute is added to each parameter allowing
+it to be flagged as input-only (the function will not alter its contents), an
+output-only value (the function may replace its contents), or an input-and-
+output value (the function may read the input, and may replace its contents):
+
+Parameters can be given on one line:
 
     function name
-    | params in  s32 a     // Input parameter, unchanged
-    | params out s32 b     // Output parameter, overwrites whatever's there
-    | params     s32 c     // Input+output parameter, use and overwrite
+    | in s32 a, out s32 b, inout s32 c
+    {
+        // Code goes here
+    }
+
+Or on multiple lines:
+
+    function name
+    | in  s32 a     // Input parameter, unchanged
+    | out s32 b     // Output parameter, overwrites whatever's there
+    |     s32 c     // Input+output parameter, keyword "inout" not required
     {
         // Code goes here
     }
 
 The parameter a is declared as input-only.  Parameter b is declared as
 output-only.  And parameter c is declared as input-and-output, and therefore
-does not have or need an explicit declaration as this is the default type.
-By this form, parameters are either passed by-reference or by-value.
+does not have or need an explicit "inout" declaration as this is the default
+type, though it can have that form for clearer documentation.
+
+By this form, the compiler knows that parameters are passed either
+by-reference or by-value.
 
 -----
 BAlive will impose no forward declaration requirements.  It will look to
 the entire compilation to determine what is in-scope and out-of-scope.
+As such, BAlive is free to analyze anything it sees and optimize the code,
+provided the generated output matches the behavior described by the source
+code.
 
-BAlive is free to analyze anything it sees and optimize the code, provided
-the generated output mimics the behavior of the source code.  Source code
-can be flagged in keep {{ }} blocks (which need not be nested properly), to
-indicate to the compiler that certain parts are to be literal and cannot
-be swapped out with optimized code.  For example:
+Source code can be flagged in keep {{ }} blocks (which need not be nested
+properly), to indicate to the compiler that certain parts are to be literal
+and cannot be swapped out with optimized code.
+
+For example:
 
     keep {{
         function main
@@ -68,27 +88,65 @@ In this example, the parameters that are passed will be kept as they are,
 and will not be changed.
 
 -----
-BAlive will be a singe-expression language.  It will only allow one operation
-to take place per line.  You cannot do this in BAlive:
+BAlive will be a single-expression language.  It will only allow one operation
+to take place per line.
+
+You cannot do this in BAlive:
 
     y = a + b + c;
     x = f(g(y));
 
 Instead, you must do this:
 
-    y = a + b;  // Only a single operation per line (result = a op b)
-    y += c;     // Conventional operators are allowed
-    g(t, y);    // t is output, y is input
-    f(x, t);    // x is output, t is input
+    y = a + b;     // Only a single operation per line (result = a op b)
+    y += c;        // Conventional operators are allowed
+    g(t, y);       // t is output, y is input
+    f(x, t);       // x is output, t is input
 
-It is more verbose, but it is the intention to keep it very close to an
-assembly language.  As such, these are keywords and syntaxes:
+-----
+BAlive will use this syntax for setting values:
+
+    s8p p1;
+    s8p p2;
+
+    // To set the value of p1 to that of p2 (the address it is using
+    // for the data it is pointing to):
+    @p1 = @p2;
+    // This is the same as in C/C++ as "p1 = p2;"
+
+    // To pass data between the two:
+    p1 = p2;
+    // This is the same as in C/C++ as "*p1 = *p2;"
+
+BAlive looks at the fundamental type as its thing and conveys what is
+there by default.  If you are using a pointer in its raw form, it refers
+to the thing it is pointing to.  In order to access the address it relates
+to, the @ (at/location) operator must be used.
+
+Similarly, to gain the address of a location use the @ operator, as in:
+
+    s8p p;
+    s8 data[5];
+
+    @p = @data[2];
+    // The pointer p is updated to the location of data[2] in memory.
+
+-----
+It is more verbose, but it is the intention to keep it very close to a type
+of assembly language.  As such, there will be lots of these types of
+constructions:
+
+    if (a >= b)
+        goto label_name;
+
+...which are given a shorthand predicate-like form in BAlive:
 
     (a >= b) goto label_name;
 
-In this case, the test acts like a predicate.  If a is greater-than-or-equal-
-t b, then it will branch to the label called "label_name".  If not, it will
-continue on to the next line of code.  This translates to the following:
+In this case, the test (a >= b) acts like a predicate.  If a is greater-
+than-or-equal-to b, then it will branch to the label called "label_name".
+If not, it will continue on to the next line of code.  This translates to
+the following:
 
 In CAlive:
     if (a >= b)    printf("greater than or equal to\n");
@@ -103,9 +161,9 @@ In CAlive:
         printf("less than\n");
     :continue_on
 
-...and it is the intention to ultimately create an AAlive language, which
-is an assembly language format which follow a similar progression, allowing
-the above, for example, to be translated into these i386 equivalents:
+It is the intention to ultimately create an AAlive language, which is an
+assembly language format which follow a similar progression, allowing the
+above, for example, to be translated into these i386 equivalents:
 
         predicate   instruction   parameters
         ---------   -----------   -------------------
@@ -114,9 +172,9 @@ the above, for example, to be translated into these i386 equivalents:
           (!>=)     jmp           compare_was_false
                     push          "greater than or equal to\n\0"
                     jmp           common_function_call
-        :compare_was_false
+                :compare_was_false
                     push          "less than\n\0"
-        :common_function_call
+                :common_function_call
                     call          printf
 
 ...which is then assembled down into machine code:
@@ -146,4 +204,3 @@ code, and assembly, through this intermediate lens.
 
 Best regards,
 Rick C. Hodgin
-
