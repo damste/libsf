@@ -1,0 +1,456 @@
+LASM -- Intel 80386 Instructions
+================================
+
+
+-----
+	2E			CS: override prefix
+	36			SS: override prefix
+	3E			DS: override prefix
+	26			ES: override prefix
+	64			FS: override prefix
+	65			GS: override prefix
+	66			Operand size override prefix
+	67			Address size override prefix
+
+-----
+	F0			LOCK prefix
+	F2			REPne/z prefix
+	F3			REP/e/z prefix
+
+-----
+	+cc =	0	O
+			1	NO
+			2	B,NAE
+			3	AE,NB
+			4	Z,E
+			5	NZ,NE
+			6	NA,BE
+			7	A,NBE
+			8	S
+			9	NS
+			a	P,PE
+			b	NP,PO
+			c	L,NGE
+			d	GE,NL
+			e	LE,NG
+			f	G,NLE
+
+-----
+	37			AAA					-- ASCII adjust al after addition
+	D5,0A		AAD					-- ASCII adjust ax before division
+	D5,0A		AAD					-- ASCII adjust eax before division
+	D5,ib		AAD2				-- ASCII adjust ax before division to base imm8
+	D5,ib		AAD2				-- ASCII adjust eax before division to base imm8
+	D4,0A		AAM					-- ASCII adjust ax after multiply
+	D4,0A		AAM					-- ASCII adjust eax after multiply
+	D5,ib		AAM2				-- ASCII adjust ax after multiply to base imm8
+	D5,ib		AAM2				-- ASCII adjust eax after multiply to base imm8
+	3F			AAS					-- ASCII adjust al after subtraction
+	
+	14,ib		ADC al,imm8			-- Add with carry imm8 to al
+	15,iw		ADC ax,imm16		-- Add with carry imm16 to ax
+	15,id		ADC eax,imm32		-- Add with carry imm32 to eax
+	80/2,ib		ADC r/m8,imm8		-- Add with carry imm8 to r/m8
+	81/2,iw		ADC r/m16,imm16		-- Add with carry imm16 to r/m16
+	81/2,iw		ADC r/m32,imm32		-- Add with carry imm32 to r/m32
+	83/2,ib		ADC r/m16,imm8		-- Add with carry sign-extended imm8 to r/m16
+	83/2,ib		ADC r/m32,imm8		-- Add with carry sign-extended imm8 to r/m32
+	10/r		ADC r/m8,r8			-- Add with carry r8 to r/m8
+	11/r		ADC r/m16,r16		-- Add with carry r16 to r/m16
+	11/r		ADC r/m32,r32		-- Add with carry r32 to r/m32
+	12/r		ADC r16,r/m16		-- Add with carry r/m16 to r16
+	12/r		ADC r32,r/m32		-- Add with carry r/m32 to r32
+	13/r		ADC r16,r/m16		-- Add with carry r/m16 to r16
+	13/r		ADC r32,r/m32		-- Add with carry r/m32 to r32
+	
+	04,ib		ADD al,imm8			-- Add imm8 to al
+	05,iw		ADD ax,imm16		-- Add imm16 to ax
+	05,id		ADD eax,imm32		-- Add imm32 to eax
+	80/0,ib		ADD r/m8,imm8		-- Add imm8 to r/m8
+	81/0,iw		ADD r/m16,imm16		-- Add imm16 to r/m16
+	81/0,iw		ADD r/m32,imm32		-- Add imm32 to r/m32
+	83/0,ib		ADD r/m16,imm8		-- Add sign-extended imm8 to r/m16
+	83/0,ib		ADD r/m32,imm8		-- Add sign-extended imm8 to r/m32
+	00/r		ADD r/m8,r8			-- Add r8 to r/m8
+	01/r		ADD r/m16,r16		-- Add r16 to r/m16
+	01/r		ADD r/m32,r32		-- Add r32 to r/m32
+	02/r		ADD r16,r/m16		-- Add r/m16 to r16
+	02/r		ADD r32,r/m32		-- Add r/m32 to r32
+	03/r		ADD r16,r/m16		-- Add r/m16 to r16
+	03/r		ADD r32,r/m32		-- Add r/m32 to r32
+	
+	24,ib		AND al,imm8			-- imm8  al
+	25,iw		AND ax,imm16		-- imm16 to ax
+	25,id		AND eax,imm32		-- imm32 to eax
+	80/4,ib		AND r/m8,imm8		-- imm8 to r/m8
+	81/4,iw		AND r/m16,imm16		-- imm16 to r/m16
+	81/4,iw		AND r/m32,imm32		-- imm32 to r/m32
+	83/4,ib		AND r/m16,imm8		-- sign-extended imm8 to r/m16
+	83/4,ib		AND r/m32,imm8		-- sign-extended imm8 to r/m32
+	20/r		AND r/m8,r8			-- r8 to r/m8
+	21/r		AND r/m16,r16		-- r16 to r/m16
+	21/r		AND r/m32,r32		-- r32 to r/m32
+	22/r		AND r16,r/m16		-- r/m16 to r16
+	22/r		AND r32,r/m32		-- r/m32 to r32
+	23/r		AND r16,r/m16		-- r/m16 to r16
+	23/r		AND r32,r/m32		-- r/m32 to r32
+
+	63/r		APRL r/m16,r16		-- Adjust RPL of r/m16 to not less than RPL of r16
+
+	62/r		BOUND r16,m16&16	-- Check if r16 (array index) is within bounds specified by m16&16
+	62/r		BOUND r32,m32&32	-- Check if r32 (array index) is within bounds specified by m32&32
+
+	0F,BC		BSF r16,r/m16		-- Bit scan forward on r/m16
+	0F,BC		BSF r32,r/m32		-- Bit scan forward on r/m32
+
+	0F,BD		BSR r16,r/m16		-- Bit scan reverse on r/m16
+	0F,BD		BSR r32,r/m32		-- Bit scan reverse on r/m32
+
+	0F,C8+r		BSWAP r32			-- Swap endian on 32-bit register
+
+	0F,A3		BT r/m16,r16		-- Store selected bit in carry
+	0F,A3		BT r/m32,r32		-- Store selected bit in carry
+	0F,BA/4,ib	BT r/m16,imm8		-- Store selected bit in carry
+	0F,BA/4,ib	BT r/m32,imm8		-- Store selected bit in carry
+
+	0F,BB		BTC r/m16,r16		-- Store selected bit in carry, and complement
+	0F,BB		BTC r/m32,r32		-- Store selected bit in carry, and complement
+	0F,BA/7,ib	BTC r/m16,imm8		-- Store selected bit in carry, and complement
+	0F,BA/7,ib	BTC r/m32,imm8		-- Store selected bit in carry, and complement
+
+	0F,B3		BTR r/m16,r16		-- Store selected bit in carry, and clear
+	0F,B3		BTR r/m32,r32		-- Store selected bit in carry, and clear
+	0F,BA/6,ib	BTR r/m16,imm8		-- Store selected bit in carry, and clear
+	0F,BA/6,ib	BTR r/m32,imm8		-- Store selected bit in carry, and clear
+
+	0F,AB		BTS r/m16,r16		-- Store selected bit in carry, and set
+	0F,AB		BTS r/m32,r32		-- Store selected bit in carry, and set
+	0F,BA/5,ib	BTS r/m16,imm8		-- Store selected bit in carry, and set
+	0F,BA/5,ib	BTS r/m32,imm8		-- Store selected bit in carry, and set
+
+	E8,imm16	CALL rel16			-- Call near, relative to start of next instruction
+	E8,imm32	CALL rel32			-- Call near, relative to start of next instruction
+	FF/2		CALL r16			-- Call near, absolute address in r16
+	FF/2		CALL r32			-- Call near, absolute address in r32
+	9A,imm32	CALL ptr16:16		-- Call far, absolute address in imm32
+	9A,imm48	CALL ptr16:32		-- Call far, absolute address in imm48
+	FF/3		CALL m16:16			-- Call far, absolute indirect address in m16:16
+	FF/3		CALL m16:32			-- Call far, absolute indirect address in m16:32
+
+	98			CBW					-- Sign-extend al to ax
+	98			CWDE				-- Sign-extend ax to eax
+
+	F8			CLC					-- Clear carry
+	FC			CLD					-- Clear direction
+	FA			CLI					-- Clear interrupt
+	0F,06		CLTS				-- Clear task-switched flag in CR0
+
+	0F,40+cc/r	CMOVcc r16,rm16		-- Move if cc flag condition is true
+	0F,40+cc/r	CMOVcc r32,rm32		-- Move if cc flag condition is true
+	
+	3C,ib		CMP al,imm8			-- imm8  al
+	3D,iw		CMP ax,imm16		-- imm16 to ax
+	3D,id		CMP eax,imm32		-- imm32 to eax
+	80/7,ib		CMP r/m8,imm8		-- imm8 to r/m8
+	81/7,iw		CMP r/m16,imm16		-- imm16 to r/m16
+	81/7,iw		CMP r/m32,imm32		-- imm32 to r/m32
+	83/7,ib		CMP r/m16,imm8		-- sign-extended imm8 to r/m16
+	83/7,ib		CMP r/m32,imm8		-- sign-extended imm8 to r/m32
+	38/r		CMP r/m8,r8			-- r8 to r/m8
+	39/r		CMP r/m16,r16		-- r16 to r/m16
+	39/r		CMP r/m32,r32		-- r32 to r/m32
+	3A/r		CMP r8,r/m8			-- r/m8 to r8
+	3B/r		CMP r16,r/m16		-- r/m16 to r16
+	3B/r		CMP r32,r/m32		-- r/m32 to r32
+
+	A6			CMPSB				-- Compare byte in ds:[esi] to es:[edi]
+	A7			CMPSW				-- Compare word in ds:[esi] to es:[edi]
+	A7			CMPSD				-- Compare dword in ds:[esi] to es:[edi]
+
+	0F,B0/r		CMPXCHG r/m8,r8		-- Compare al with r/m8, if equal set zero and load r8 into r/m8, if not equal clear zero and load r/m8 into al
+	0F,B1/r		CMPXCHG r/m16,r16	-- Compare ax with r/m16, if equal set zero and load r16 into r/m16, if not equal clear zero and load r/m16 into ax
+	0F,B1/r		CMPXCHG r/m32,r32	-- Compare eax with r/m16, if equal set zero and load r32 into r/m32, if not equal clear zero and load r/m32 into eax
+
+	OF,C7/1		CMPXCHG8B m64		-- Compare edx:eax with m64, if equal set zero and load ECX:EBX into m64, if not equal clear zero and load m64 into edx:eax
+
+	0F,A2		CPUID				-- Based on EAX, load processor information into registers
+
+	99			CDW					-- Sign-extend ax into dx:ax
+	99			CDQ					-- Sign-extend eax into edx:eax
+
+	27			DAA					-- Decimal adjust al after addition
+	2F			DAS					-- Decimal adjust al after subtraction
+
+	FE/1		DEC r/m8			-- Decrement r/m8 by 1
+	FF/1		DEC r/m16			-- Decrement r/m16 by 1
+	FF/1		DEC r/m32			-- Decrement r/m32 by 1
+	48+r		DEC r16				-- Decrement r16 by 1
+	48+r		DEC r32				-- Decrement r32 by 1
+
+	F6/7		DIV r/m8			-- Unsigned divide ax by r/m8, quotient in al, remainder in ah
+	F7/6		DIV r/m16			-- Unsigned divide dx:ax by r/m16, quotient in ax, remainder in dx
+	F7/6		DIV r/m32			-- Unsigned divide edx:eax by r/m32, quotient in eax, remainder in edx
+
+	0F,77		EMMS				-- Empty the MMX state
+
+	C8,iw,ib	ENTER imm16,imm8	-- Create a stack frame, or nested stack frame
+
+	D9,F0		F2XM1				-- st0 = 2^(st0 - 1) into st0
+	D9,E1		FABS				-- st0 = fabs(st0)
+	D8/0		FADD f32			-- st0 = st0 + f32
+	DC/0		FADD f64			-- st0 = st0 + f64
+	D8,C0+r		FADD st0,stN		-- st0 = st0 + stN
+	DC,C0+r		FADD stN,st0		-- stN = stN + st0
+	DE,C0+r		FADDP stN,st0		-- stN = stN + st0, then pop
+	DA/0		FIADD s32			-- st0 = st0 + s32
+	DE/0		FIADD s16			-- st0 = st0 + s16
+	DF/4		FBLD m80			-- push m80 loaded as binary coded decimal into st0
+	DF/6		FBSTP m80			-- Store st0 as binary coded decimal into m80, then pop
+	D9,E0		FCHS				-- Complement st0's sign
+	9B,DB,E2	FCLEX				-- Clear floating point exceptions after checking for pending unmasked exceptions
+	DB,E2		FNCLEX				-- No-wait version of FCLEX
+	DA,C0+r		FCMOVB st0,stN		-- Move if carry
+	DA,C8+r		FCMOVE st0,stN		-- Move if zero
+	DA,D0+r		FCMOVBE st0,stN		-- Move if carry or zero
+	DA,D8+r		FCMOVU st0,stN		-- Move if parity
+	DB,C0+r		FCMOVNB st0,stN		-- Move if not carry
+	DB,C8+r		FCMOVNE st0,stN		-- Move if not zero
+	DB,D0+r		FCMOVNBE st0,stN	-- Move if not carry and not zero
+	DB,D8+r		FCMOVNU st0,stN		-- Move if not parity
+	D8/2		FCOM f32			-- Compare st0 with f32
+	DC/2		FCOM f64			-- Compare st0 with f64
+	D8,D0+r		FCOM stN			-- Compare st0 with stN
+	D8/3		FCOMP f32			-- Compare st0 with f32, then pop
+	DC/3		FCOMP f64			-- Compare st0 with f64, then pop
+	D8,D8+r		FCOMP stN			-- Compare st0 with stN, then pop
+	DE,D9		FCOMPP				-- Compare st0 with st1, then pop, then pop again
+	DB,F0+r		FCOMI stN			-- Compare st0 with stN, and set eflags
+	DF,F0+r		FCOMIP stN			-- Compare st0 with stN, and set eflags, then pop
+	DB,E8+r		FUCOMI stN			-- Compare st0 with stN, check for ordered values, and set eflags
+	DF,E8+r		FUCOMIP stN			-- Compare st0 with stN, check for ordered values, and set eflags, then pop
+	D9,FF		FCOS				-- st0 = cos(st0)
+	D9,F6		FDECSTP				-- Decrement the TOP field in the FPU status word
+	D8/6		FDIV f32			-- st0 = st0 / f32
+	DC/6		FDIV f64			-- st0 = st0 / f64
+	D8,F0+r		FDIV stN			-- st0 = st0 / stN
+	DC,F8+r		FDIV stN,st0		-- stN = stN / st0
+	DE,F8+r		FDIVP stN,st0		-- stN = stN / st0, then pop
+	DA/6		FIDIV s32			-- st0 = st0 / s32
+	DE/6		FIDIV s16			-- st0 = st0 / s16
+	D8/7		FDIVR f32			-- st0 = f32 / st0
+	DC/7		FDIVR f64			-- st0 = f64 / st0
+	D8,F8+r		FDIVR stN			-- st0 = stN / st0
+	DC,F0+r		FDIVR stN,st0		-- stN = st0 / stN
+	DE,F0+r		FDIVRP stN,st0		-- stN = st0 / stN, then pop
+	DA/7		FIDIVR s32			-- st0 = s32 / st0
+	DE/7		FIDIVR s16			-- st0 = s16 / st0
+	DD,C0+r		FFREE stN			-- Set the tag for stN to empty
+	DE/2		FICOM s16			-- Compare st0 to s16
+	DA/2		FICOM s32			-- Compare st0 to s32
+	DE/3		FICOMP s16			-- Compare st0 to s16, then pop
+	DA/3		FICOMP s32			-- Compare st0 to s32, then pop
+	DF/0		FILD s16			-- Push s16 into st0
+	DB/0		FILD s32			-- Push s32 into st0
+	DF/5		FILD s64			-- Push s64 into st0
+	D9,F7		FINCSTP				-- Increment the TOP field in the FPU status word
+	9B,DB,E3	FINIT				-- Initialize the FPU
+	DF/2		FIST m16int			-- Store st0 to memory as s16
+	DB/2		FIST m32int			-- Store st0 to memory as s32
+	DF/3		FISTP m16int		-- Store st0 to memory as s16, then pop
+	DB/3		FISTP m32int		-- Store st0 to memory as s32, then pop
+	DF/7		FISTP m64int		-- Store st0 to memory as s64, then pop
+	D9/0		FLD f32				-- Push f32 into st0
+	DD/0		FLD f64				-- Push f64 into st0
+	DB/5		FLD f80				-- Push f80 into st0
+	D9,C0+r		FLD stN				-- Push stN into st0
+	D9,E8		FLD1				-- Push +1.0 into st0
+	D9,E9		FLDL2T				-- Push log2(10) into st0
+	D9,EA		FLDL2E				-- Push log2(e) into st0
+	D9,EB		FLDPI				-- Push pi into st0
+	D9,EC		FLDLG2				-- Push log10(2) into st0
+	D9,ED		FLDLN2				-- Push loge(2) into st0
+	D9,EE		FLDZ				-- Push +0.0 into st0
+	D9/5		FLDCW u16			-- Load u16 into FPU control word
+	D9/4		FLDENV m14/m28		-- Load 14-byte or 28-byte into environment
+	D8/1		FMUL f32			-- st0 = st0 * f32
+	DC/1		FMUL f64			-- st0 = st0 * f64
+	D8,C8+r		FMUL stN			-- st0 = st0 * stN
+	DC,C8+r		FMUL stN,st0		-- stN = stN * st0
+	DE,C8+r		FMULP stN,st0		-- stN = stN * st0, then pop
+	DA/1		FIMUL m32int		-- st0 = st0 * s32
+	DE/1		FIMUL m16int		-- st0 = st0 * s16
+	D9,D0		FNOP				-- No operation
+	D9,F3		FPATAN				-- st1 = arctan(st1 / st0), then pop
+	D9,F8		FPREM				-- st0 = st0 % st1
+	D9,F5		FPREM1				-- st0 = IEEE st0 % st1
+	D9,F2		FPTAN				-- st0 = tan(st0), then push 1 into st0
+	D9,FC		FRNDINT				-- st0 = int(st0)
+	DD/4		FRSTOR m94/m108		-- Load FPU state from a 94 or 108 byte block
+	9B,DD/6		FSAVE m94/m108		-- Store the FPU state to a 94 or 108 byte block
+	D9,FD		FSCALE				-- st0 = 2^stN
+	D9,FE		FSIN				-- st0 = sin(st0)
+	D9,FB		FSINCOS				-- t = cos(st0), st0 = sin(st0), then push t into st0
+	D9,FA		FSQRT				-- st0 = sqrt(st0)
+	D9/2		FST f32				-- Copy st0 to f32
+	DD/2		FST f64				-- Copy st0 to f64
+	DD,D0+r		FST stN				-- Copy st0 to stN
+	D9/3		FST f32				-- Copy st0 to f32, then pop
+	DD/3		FST f64				-- Copy st0 to f64, then pop
+	DB/7		FST f80				-- Copy st0 to f80, then pop
+	DD,D8+r		FST stN				-- Copy st0 to stN, then pop
+	9B,D9/7		FSTCW m16			-- Copy FPU status word to m16
+	9B,D9/6		FSTENV m14/m28		-- Copy FPU environment to 14-byte or 28-byte block
+	9B,DD/7		FSTSW m16			-- Copy FPU status word to m16
+	9B,DF,E0	FSTSW ax			-- Copy FPU status word to ax
+	D8/4		FSUB f32			-- st0 = st0 - f32
+	DC/4		FSBU f64			-- st0 = st0 - f64
+	D8,E0+r		FSUB stN			-- st0 = st0 - stN
+	DC,E8+r		FSUB stN,st0		-- stN = stN - st0
+	DE,E8+r		FSUBP stN,st0		-- stN = stN - st0, then pop
+	DA/4		FISUB s32			-- st0 = st0 - s32
+	DE/4		FISUB s16			-- st0 = st0 - s16
+	D8/5		FUSBR f32			-- st0 = f32 - st0
+	DC/5		FSUBR f64			-- st0 = f64 - st0
+	D8,E8+r		FSUBR st0,stN		-- st0 = stN - st0
+	DC,E0+r		FSUBR stN,st0		-- stN = st0 - stN
+	DE,E0+r		FSUBRP stN,st0		-- stN = st0 - stN, then pop
+	DA/5		FISUBR s32			-- st0 = s32 - st0
+	DE/5		FISUBR s16			-- st0 = s16 - st0
+	D9,E4		FTST				-- Compare st0 to +0.0
+	DD,E0+r		FUCOM stN			-- Compare st0 to stN
+	DD,E8+i		FUCOMP stN			-- Compare st0 to stN, then pop
+	DA,E9		FUCOMPP				-- Compare st0 to st1, then pop
+	D9,E5		FXAM				-- Classify st0
+	D9,C8+r		FXCH stN			-- Exchange st0 and stN
+	D9,F4		FXTRACT				-- t = st0's exponent, st0 = st0's significand, then push t into st0
+	D9,F1		FYL2X				-- st1 = st1 * log2(st0), then pop
+	D9,F9		FYL2XP1				-- st1 = st1 * log2(st0 + 1.0), then pop
+	
+	F4			HLT					-- Halt until interrupt
+
+	F6/7		IDIV r/m8			-- Integer divide ax, al=quotient, ah=remainder
+	F7/7		IDIV r/m16			-- Integer divide dx:ax, ax=quotient, dx=remainder
+	F7/7		IDIV r/m32			-- Integer divide edx:eax, eax=quotient, edx=remainder
+
+	F6/5		IMUL r/m8			-- ax = al * r/m8
+	F7/5		IMUL r/m16			-- dx:ax = ax * r/m16
+	F7/5		IMUL r/m16			-- edx:eax = eax * r/m32
+	0F,AF/r		IMUL r16,r/m16		-- r16 = r16 * r/m16
+	0F,AF/r		IMUL r32,r/m32		-- r32 = r32 * r/m32
+	6B/r,ib		IMUL r16,r/m16,imm8	-- r16 = r16 * r/m16 * sign_extend(imm8)
+	6B/r,ib		IMUL r32,r/m32,imm8	-- r32 = r32 * r/m32 * sign_extend(imm8)
+	69/r,iw		IMUL r16,r/m16,imm16-- r16 = r16 * r/m16 * imm16
+	69/r,id		IMUL r32,r/m32,imm32-- r32 = r32 * r/m32 * imm32
+
+	E4,ib		IN al,imm8			-- Read byte from I/O port imm8
+	E5,ib		IN ax,imm8			-- Read word from I/O port imm8
+	E5,ib		IN eax,imm8			-- Read dword from I/O port imm8
+	EC			IN al,dx			-- Read byte from I/o port in dx
+	ED			IN ax,dx			-- Read word from I/o port in dx
+	ED			IN eax,dx			-- Read dword from I/o port in dx
+
+	FE/0		INC r/m8			-- Increment r/m8 by 1
+	FF/0		INC r/m16			-- Increment r/m16 by 1
+	FF/0		INC r/m32			-- Increment r/m32 by 1
+	40+r		INC r16				-- Increment r16 by 1
+	40+r		INC r32				-- Increment r32 by 1
+
+	6C			INS m8,dx			-- Input a byte from I/O port in dx, store to es:[e/di]
+	6D			INS m16,dx			-- Input a word from I/O port in dx, store to es:[e/di]
+	6D			INS m32,dx			-- Input a dword from I/O port in dx, store to es:[e/di]
+	6C			INSB				-- Shorthand for INS m8,dx
+	6D			INSW				-- Shorthand for INS m16,dx
+	6D			INSD				-- Shorthand for INS m32,dx
+
+	CC			INT3				-- Trap to debugger, one byte
+	CD,ib		INT imm8			-- Interrupt vector imm8
+	CE			INTO				-- Interrupt on overflow
+
+	0F,08		INVD				-- Invalidate internal caches
+	0F,01/7		INVLPG m			-- Invalidate TLB entry for page that contains m
+
+	CF			IRET				-- Interrupt return 16-bit
+	CF			IRETD				-- Interrupt return 32-bit
+
+	70+cc,ib	Jcc imm8			-- Conditional jump relative by imm8 offset
+	0F,80+cc,iw	Jcc imm16			-- Conditional jump relative by imm16 offset
+	0F,80+cc,id	Jcc imm32			-- Conditional jump relative by imm32 offset
+
+	EB,ib		JMP imm8			-- Jump short, imm8 relative to start of next instruction
+	E9,iw		JMP imm16			-- Jump near, imm16 relative to start of next instruction
+	E9,id		JMP imm32			-- Jump near, imm32 relative to start of next instruction
+	FF/4		JMP r/m16			-- Jump near absolute indirect, address in r/m16
+	FF/4		JMP r/m32			-- Jump near absolute indirect, address in r/m32
+	EA,u32		JMP ptr16:16		-- Jump far, absolute, ptr16:16 in instruction
+	EA,u48		JMP ptr16:32		-- Jump far, absolute, ptr16:32 in instruction
+	FF/5		JMP m16:16			-- Jump far, absolute indirect, address in m16:16
+	FF/5		JMP m16:32			-- Jump far, absolute indirect, address in m16:32
+
+	9F			LAHF				-- ah = eflags.sf:zf:0:af:0:pf:1:cf
+
+	0F,02/r		LAR r16,r/m16		-- r16 = r/m16 &    0ff00h
+	0F,02/r		LAR r32,r/m32		-- r32 = r/m32 & 00fxff00h
+
+	C5/r		LDS r16,m16:16		-- Load DS:r16 indirect from far pointer
+	C5/r		LDS r32,m16:32		-- Load DS:r32 indirect from far pointer
+	0F,B2/r		LSS r16,m16:16		-- Load SS:r16 indirect from far pointer
+	0F,B2/r		LSS r32,m16:32		-- Load SS:r32 indirect from far pointer
+	C4/r		LES r16,m16:16		-- Load ES:r16 indirect from far pointer
+	C4/r		LES r32,m16:32		-- Load ES:r32 indirect from far pointer
+	0F,B4/r		LFS r16,m16:16		-- Load FS:r16 indirect from far pointer
+	0F,B4/r		LFS r32,m16:32		-- Load FS:r32 indirect from far pointer
+	0F,B5/r		LGS r16,m16:16		-- Load GS:r16 indirect from far pointer
+	0F,B5/r		LGS r32,m16:32		-- Load GS:r32 indirect from far pointer
+
+	8D/r		LEA r16,m			-- Store effective address for m in r16
+	8D/r		LEA r32,m			-- Store effective address for m in r32
+
+	C9			LEAVE				-- sp = bp, then pop bp
+	C9			LEAVE				-- esp = ebp, then pop ebp
+
+	0F,01/2		LGDT m16&32			-- Load m into GDTR
+	0F,01/3		LIDT m16&32			-- Load m into IDTR
+	0F,00/2		LLDT r/m16			-- Load selector into LDTR
+
+	0F,01/6		LMSW r/m16			-- Loads r/m16 into bits cr0
+
+	F0			LOCK				-- Prefix for other instructions, locks system bus
+
+	AC			LODS m8				-- Load byte from ds:[e/si] into al
+	AD			LODS m16			-- Load word from ds:[e/si] into ax
+	AD			LODS m32			-- Load dword from ds:[e/si] into eax
+	AC			LODSB				-- Shorthand for LODS m8
+	AD			LODSW				-- Shorthand for LODS m16
+	AD			LODSD				-- Shorthand for LODS m32
+
+	E2,ib		LOOP imm8			-- Decrement count, jump short if count != 0
+	E1,ib		LOOPE imm8			-- Decrement count, jump short if count != 0 and zero
+	E1,ib		LOOPZ imm8			-- Synonym for LOOPE
+	E0,ib		LOOPNE imm8			-- Decrement count, jump short if count != 0 and !zero
+	E0,ib		LOOPNZ imm8			-- Synonym for LOOPNE
+
+	0F,03/r		LSL r16,r/m16		-- r16 = segment_limit(r/m16)
+	0F,03/r		LSL r32,r/m32		-- r32 = segment_limit(r/m32)
+
+	0F,00/3		LTR r/m16			-- Load r/m16 into TR
+
+; TODO:  Stopped at page 442, MOV instruction
+	
+
+	
+	24,ib		AND al,imm8			-- imm8  al
+	25,iw		AND AX,imm16		-- imm16 to ax
+	25,id		AND EAX,imm32		-- imm32 to eax
+	80/4,ib		AND r/m8,imm8		-- imm8 to r/m8
+	81/4,iw		AND r/m16,imm16		-- imm16 to r/m16
+	81/4,iw		AND r/m32,imm32		-- imm32 to r/m32
+	83/4,ib		AND r/m16,imm8		-- sign-extended imm8 to r/m16
+	83/4,ib		AND r/m32,imm8		-- sign-extended imm8 to r/m32
+	20/r		AND r/m8,r8			-- r8 to r/m8
+	21/r		AND r/m16,r16		-- r16 to r/m16
+	21/r		AND r/m32,r32		-- r32 to r/m32
+	22/r		AND r16,r/m16		-- r/m16 to r16
+	22/r		AND r32,r/m32		-- r/m32 to r32
+	23/r		AND r16,r/m16		-- r/m16 to r16
+	23/r		AND r32,r/m32		-- r/m32 to r32
+
