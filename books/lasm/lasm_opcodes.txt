@@ -434,23 +434,337 @@ LASM -- Intel 80386 Instructions
 
 	0F,00/3		LTR r/m16			-- Load r/m16 into TR
 
-; TODO:  Stopped at page 442, MOV instruction
-	
+	88/r		MOV r/m8,r8			-- Move r8 to r/m8
+	89/r		MOV r/m16,r16		-- Move r16 to r/m16
+	89/r		MOV r/m32,r32		-- Move r32 to r/m32
+	8A/r		MOV r8,r/m8			-- Move r/m8 to r8
+	8B/r		MOV r16,r/m16		-- Move r/m16 to r16
+	8B/r		MOV r32,r/m32		-- Move r/m32 to r32
+	8C/r		MOV r/m16,sreg		-- Move segment register to r/m16
+	8E/r		MOV sreg,r/m16		-- Move r/m16 to segment register
+	A0			MOV al,offset		-- Move byte at Seg:[offset] to al
+	A1			MOV ax,offset		-- Move word at Seg:[offset] to ax
+	A1			MOV eax,offset		-- Move dword at Seg:[offset] to eax
+	A2			MOV offset,al		-- Move al to byte at Seg:[offset]
+	A3			MOV offset,ax		-- Move ax to word at Seg:[offset]
+	A3			MOV offset,eax		-- Move eax to dword at Seg:[offset]
+	B0+r		MOV r8,imm8			-- Move imm8 to r8
+	B8+r		MOV r16,imm16		-- Move imm16 to r16
+	B8+r		MOV r32,imm32		-- Move imm32 to r32
+	C6/0		MOV r/m8,imm8		-- Move imm8 to r/m8
+	C7/0		MOV r/m16,imm16		-- Move imm16 to r/m16
+	C7/0		MOV r/m32,imm32		-- Move imm32 to r/m32
 
+	0F,22/r		MOV crN,r32			-- Move r32 to crN
+	0F,20/r		MOV r32,crN			-- Move crN to r32
+
+	0F,21/r		MOV r32,drN			-- Move drN to r32
+	0F,23/r		MOV drN,r32			-- Move r32 to drN
+
+	0F,63/r		MOV mmN,r/m32		-- Move r/m32 to mmN
+	0F,7E/r		MOV r/m32,mmN		-- Move mmN to r/m32
+	0F,6F/r		MOV mmN,mmN/m64		-- Move mmN/m64 to mmN
+	0F,7F/r		MOV mm/m64,mmN		-- Move mmN to mmN/m64
 	
-	24,ib		AND al,imm8			-- imm8  al
-	25,iw		AND AX,imm16		-- imm16 to ax
-	25,id		AND EAX,imm32		-- imm32 to eax
-	80/4,ib		AND r/m8,imm8		-- imm8 to r/m8
-	81/4,iw		AND r/m16,imm16		-- imm16 to r/m16
-	81/4,iw		AND r/m32,imm32		-- imm32 to r/m32
-	83/4,ib		AND r/m16,imm8		-- sign-extended imm8 to r/m16
-	83/4,ib		AND r/m32,imm8		-- sign-extended imm8 to r/m32
-	20/r		AND r/m8,r8			-- r8 to r/m8
-	21/r		AND r/m16,r16		-- r16 to r/m16
-	21/r		AND r/m32,r32		-- r32 to r/m32
-	22/r		AND r16,r/m16		-- r/m16 to r16
-	22/r		AND r32,r/m32		-- r/m32 to r32
-	23/r		AND r16,r/m16		-- r/m16 to r16
-	23/r		AND r32,r/m32		-- r/m32 to r32
+	A4			MOVS m8,m8			-- Move byte from ds:[e/si] to es:[e/di]
+	A5			MOVS m16,m16		-- Move word from ds:[e/si] to es:[e/di] 
+	A5			MOVS m32,m32		-- Move dword from ds:[e/si] to es:[e/di] 
+	A4			MOVSB				-- Shorthand for MOVS m8,m8
+	A5			MOVSW				-- Shorthand for MOVS m16,m16
+	A5			MOVSD				-- Shorthand for MOVS m32,m32
+
+	0F,BE/r		MOVSX r16,r/m8		-- Sign-extend byte to word
+	0F,BE/r		MOVSX r32,r/m8		-- Sign-extend byte to dword
+	0F,BF/r		MOVSX r32,r/m16		-- Sign-extend word to dword
+
+	0F,B6/r		MOVZX r16,r/m8		-- Zero-extend byte to word
+	0F,B6/r		MOVZX r32,r/m8		-- Zero-extend byte to dword
+	0F,B7/r		MOVZX r32,r/m16		-- Zero-extend word to dword
+
+	F6/4		MUL r/m8			-- ax = al * r/m8
+	F7/4		MUL r/m16			-- dx:ax = ax * r/m16
+	F7/4		MUL r/m32			-- edx:eax = eax * r/m32
+
+	F6/3		NEG r/m8			-- Two's complement r/m8
+	F7/3		NEG r/m16			-- Two's complement r/m16
+	F7/3		NEG r/m32			-- Two's complement r/m32
+
+	90			NOP					-- No operation
+
+	F6/2		NOT r/m8			-- Logical NOT of r/m8
+	F7/2		NOT r/m16			-- Logical NOT of r/m16
+	F7/2		NOT r/m32			-- Logical NOT of r/m32
+
+	0C,ib		OR al,imm8			-- imm8 to al
+	0D,iw		OR AX,imm16			-- imm16 to ax
+	0D,id		OR EAX,imm32		-- imm32 to eax
+	80/1,ib		OR r/m8,imm8		-- imm8 to r/m8
+	81/1,iw		OR r/m16,imm16		-- imm16 to r/m16
+	81/1,iw		OR r/m32,imm32		-- imm32 to r/m32
+	83/1,ib		OR r/m16,imm8		-- sign-extended imm8 to r/m16
+	83/1,ib		OR r/m32,imm8		-- sign-extended imm8 to r/m32
+	08/r		OR r/m8,r8			-- r8 to r/m8
+	09/r		OR r/m16,r16		-- r16 to r/m16
+	09/r		OR r/m32,r32		-- r32 to r/m32
+	0A/r		OR r8,r/m8			-- r/m8 to r8
+	0B/r		OR r16,r/m16		-- r/m16 to r16
+	0B/r		OR r32,r/m32		-- r/m32 to r32
+
+	E6,ib		OUT imm8,al			-- Output al to I/O port imm8
+	E7,ib		OUT imm8,ax			-- Output ax to I/O port imm8
+	E7,ib		OUT imm8,eax		-- Output eax to I/O port imm8
+	EE			OUT dx,al			-- Output al to I/O port dx
+	EF			OUT dx,ax			-- Output ax to I/O port dx
+	EF			OUT dx,eax			-- Output eax to I/O port dx
+
+	6E			OUTS dx,m8			-- Output byte at ds:[e/si] to I/O port dx
+	6F			OUTS dx,m16			-- Output word at ds:[e/si] to I/O port dx
+	6F			OUTS dx,m32			-- Output dword at ds:[e/si] to I/O port dx
+	6E			OUTSB				-- Shorthand for OUTS dx,m8
+	6F			OUTSW				-- Shorthand for OUTS dx,m16
+	6F			OUTSD				-- Shorthand for OUTS dx,m32
+
+	8F/0		POP m16				-- Pop stack into m16
+	8F/0		POP m32				-- Pop stack into m32
+	58+r		POP r16				-- Pop stack into r32
+	58+r		POP r32				-- Pop stack into r32
+	1F			POP DS				-- Pop stack into DS
+	07			POP ES				-- Pop stack into ES
+	17			POP SS				-- Pop stack into SS
+	0F,A1		POP FS				-- Pop stack into FS
+	0F,A9		POP GS				-- Pop stack into GS
+
+	61			POPA				-- Pop all r16 registers
+	61			POPAD				-- Pop all r32 registers
+
+	9D			POPF				-- Pop 16-bit flags
+	9D			POPFD				-- Pop 32-bit eflags
+
+	0F,18/1		PREFETCHT0 m8		-- Prefetch block around m8 into all caches
+	0F,18/1		PREFETCHT1 m8		-- Prefetch block around m8 into l1 and above
+	0F,18/1		PREFETCHT2 m8		-- Prefetch block around m8 into l2 and above
+	0F,18/1		PREFETCHNTA m8		-- Prefetch block around m8 into non-temporal caches
+
+	FF/6		PUSH r/m16			-- Push r/m16
+	FF/6		PUSH r/m32			-- Push r/m32
+	50+R		PUSH r16			-- Push r16
+	50+R		PUSH r32			-- Push r32
+	6A,ib		PUSH imm8			-- Push imm8
+	68,iw		PUSH imm16			-- Push imm16
+	68,id		PUSH imm32			-- Push imm32
+	0E			PUSH cs				-- Push CS
+	16			PUSH ss				-- Push SS
+	1E			PUSH ds				-- Push DS
+	06			PUSH es				-- Push ES
+	0F,A0		PUSH fs				-- Push FS
+	0F,A8		PUSH gs				-- Push GS
+
+	60			PUSHA				-- Push all 16-bit registers
+	60			PUSHAD				-- Push all 32-bit registers
+
+	9C			PUSHF				-- Push 16-bit flags
+	9C			PUSHFD				-- Push 32-bit eflags
+
+	D0/2		RCL r/m8			-- Rotate r/m8 through carry by one bit left
+	D2/2		RCL r/m8,cl			-- Rotate r/m8 through carry by cl bits left
+	C0/2,ib		RCL r/m8,imm8		-- Rotate r/m8 through carry by imm8 bits left
+	D1/2		RCL r/m16			-- Rotate r/m16 through carry by one bit left
+	D3/2		RCL r/m16,cl		-- Rotate r/m16 through carry by cl bits left
+	C1/2,ib		RCL r/m16,imm8		-- Rotate r/m16 through carry by imm8 bits left
+	D1/2		RCL r/m32			-- Rotate r/m32 through carry by one bit left
+	D3/2		RCL r/m32,cl		-- Rotate r/m32 through carry by cl bits left
+	C1/2,ib		RCL r/m32,imm8		-- Rotate r/m32 through carry by imm8 bits left
+
+	D0/3		RCR r/m8			-- Rotate r/m8 through carry by one bit right
+	D2/3		RCR r/m8,cl			-- Rotate r/m8 through carry by cl bits right
+	C0/3,ib		RCR r/m8,imm8		-- Rotate r/m8 through carry by imm8 bits right
+	D1/3		RCR r/m16			-- Rotate r/m16 through carry by one bit right
+	D3/3		RCR r/m16,cl		-- Rotate r/m16 through carry by cl bits right
+	C1/3,ib		RCR r/m16,imm8		-- Rotate r/m16 through carry by imm8 bits right
+	D1/3		RCR r/m32			-- Rotate r/m32 through carry by one bit right
+	D3/3		RCR r/m32,cl		-- Rotate r/m32 through carry by cl bits right
+	C1/3,ib		RCR r/m32,imm8		-- Rotate r/m32 through carry by imm8 bits right
+
+	D0/0		ROL r/m8			-- Rotate r/m8 by one bit left
+	D2/0		ROL r/m8,cl			-- Rotate r/m8 by cl bits left
+	C0/0,ib		ROL r/m8,imm8		-- Rotate r/m8 by imm8 bits left
+	D1/0		ROL r/m16			-- Rotate r/m16 by one bit left
+	D3/0		ROC r/m16,cl		-- Rotate r/m16 by cl bits left
+	C1/0,ib		ROL r/m16,imm8		-- Rotate r/m16 by imm8 bits left
+	D1/0		ROL r/m32			-- Rotate r/m32 by one bit left
+	D3/0		ROL r/m32,cl		-- Rotate r/m32 by cl bits left
+	C1/0,ib		ROL r/m32,imm8		-- Rotate r/m32 by imm8 bits left
+
+	D0/1		ROR r/m8			-- Rotate r/m8 by one bit right
+	D2/1		ROR r/m8,cl			-- Rotate r/m8 by cl bits right
+	C0/1,ib		ROR r/m8,imm8		-- Rotate r/m8 by imm8 bits right
+	D1/1		ROR r/m16			-- Rotate r/m16 by one bit right
+	D3/1		ROR r/m16,cl		-- Rotate r/m16 by cl bits right
+	C1/1,ib		ROR r/m16,imm8		-- Rotate r/m16 by imm8 bits right
+	D1/1		ROR r/m32			-- Rotate r/m32 by one bit right
+	D3/1		ROR r/m32,cl		-- Rotate r/m32 by cl bits right
+	C1/1,ib		ROR r/m32,imm8		-- Rotate r/m32 by imm8 bits right
+
+	0F,32		RDMSR				-- Load MSR specified by ecx into edx:eax
+	0F,33		RDPMC				-- Read performance monitoring counter specified by ecx into edx:eax
+	0F,31		RDTSC				-- Read time-stamp counter into edx:eax
+
+	C3			RET					-- Near return
+	CB			RET					-- Far return
+	C2,iw		RET imm16			-- Near return, and pop imm16 bytes from stack
+	CA,iw		RET imm16			-- Far return, and pop imm16 bytes from stack
+
+	9E			SAHF				-- Store ah into flags
+
+	D0/3		SAR r/m8			-- Signed divide r/m8 by two once
+	D2/3		SAR r/m8,cl			-- Signed divide r/m8 by two cl times
+	C0/3,ib		SAR r/m8,imm8		-- Signed divide r/m8 by imm8 times
+	D1/3		SAR r/m16			-- Signed divide r/m16 by two once
+	D3/3		SAR r/m16,cl		-- Signed divide r/m16 by two cl times
+	C1/3,ib		SAR r/m16,imm8		-- Signed divide r/m16 by imm8 times
+	D1/3		SAR r/m32			-- Signed divide r/m32 by two once
+	D3/3		SAR r/m32,cl		-- Signed divide r/m32 by two cl times
+	C1/3,ib		SAR r/m32,imm8		-- Signed divide r/m32 by imm8 times
+
+	D0/0		SHL r/m8			-- Shift left r/m8 once
+	D2/0		SHL r/m8,cl			-- Shift left r/m8 cl times
+	C0/0,ib		SHL r/m8,imm8		-- Shift left r/m8 imm8 times
+	D1/0		SHL r/m16			-- Shift left r/m16 once
+	D3/0		SHC r/m16,cl		-- Shift left r/m16 cl times
+	C1/0,ib		SHL r/m16,imm8		-- Shift left r/m16 imm8 times
+	D1/0		SHL r/m32			-- Shift left r/m32 once
+	D3/0		SHL r/m32,cl		-- Shift left r/m32 cl times
+	C1/0,ib		SHL r/m32,imm8		-- Shift left r/m32 imm8 times
+
+	D0/1		SHR r/m8			-- Shift right r/m8 once
+	D2/1		SHR r/m8,cl			-- Shift right r/m8 cl times
+	C0/1,ib		SHR r/m8,imm8		-- Shift right r/m8 imm8 times
+	D1/1		SHR r/m16			-- Shift right r/m16 once
+	D3/1		SHR r/m16,cl		-- Shift right r/m16 cl times
+	C1/1,ib		SHR r/m16,imm8		-- Shift right r/m16 imm8 times
+	D1/1		SHR r/m32			-- Shift right r/m32 once
+	D3/1		SHR r/m32,cl		-- Shift right r/m32 cl times
+	C1/1,ib		SHR r/m32,imm8		-- Shift right r/m32 imm8 times
+
+	1C,ib		SBB al,imm8			-- imm8 from al
+	1D,iw		SBB AX,imm16		-- imm16 from ax
+	1D,id		SBB EAX,imm32		-- imm32 from eax
+	80/3,ib		SBB r/m8,imm8		-- imm8 from r/m8
+	81/3,iw		SBB r/m16,imm16		-- imm16 from r/m16
+	81/3,iw		SBB r/m32,imm32		-- imm32 from r/m32
+	83/3,ib		SBB r/m16,imm8		-- sign-extended imm8 from r/m16
+	83/3,ib		SBB r/m32,imm8		-- sign-extended imm8 from r/m32
+	18/r		SBB r/m8,r8			-- r8 from r/m8
+	19/r		SBB r/m16,r16		-- r16 from r/m16
+	19/r		SBB r/m32,r32		-- r32 from r/m32
+	1A/r		SBB r8,r/m8			-- r/m8 from r8
+	1B/r		SBB r16,r/m16		-- r/m16 from r16
+	1B/r		SBB r32,r/m32		-- r/m32 from r32
+
+	AE			SCAS m8				-- Compare al with byte in es:[e/di]
+	AF			SCAS m16			-- Compare ax with word in es:[e/di]
+	AF			SCAS m32			-- Compare eax with dword in es:[e/di]
+	AE			SCASB				-- Shorthand for SCAS m8
+	AF			SCASW				-- Shorthand for SCAS m16
+	AF			SCASD				-- Shorthand for SCAS m32
+
+	0F,90+cc	SETcc r/m8			-- Set byte if cc condition is met
+
+	0F,01/0		SGDT m48			-- Store GDTR to m48
+	0F,01/1		SIDT m48			-- Store IDTR to m48
+	0F,00/0		SLDT r/m16			-- Store LDTR to r/m16
+	0F,00/0		SLDT r/m32			-- Store LDTR to r/m32
+
+	0F,A4		SHLD r/m16,r16,imm8	-- Shift r/m16 left imm8 places, shifting in bits from r16
+	0F,A5		SHLD r/m16,r16,cl	-- Shift r/m16 left cl places, shiting in bits from r16
+	0F,A4		SHLD r/m32,r32,imm8	-- Shift r/m32 left imm8 places, shifting in bits from r32
+	0F,A5		SHLD r/m32,r32,cl	-- Shift r/m32 left cl places, shiting in bits from r32
+
+	0F,AC		SHRD r/m16,r16,imm8	-- Shift r/m16 right imm8 places, shifting in bits from r16
+	0F,AD		SHRD r/m16,r16,cl	-- Shift r/m16 right cl places, shiting in bits from r16
+	0F,AC		SHRD r/m32,r32,imm8	-- Shift r/m32 right imm8 places, shifting in bits from r32
+	0F,AD		SHRD r/m32,r32,cl	-- Shift r/m32 right cl places, shiting in bits from r32
+
+	0F,01/4		SMSW r/m16			-- Store machine status word to r/m16
+	0F,01/4		SMSW r32/m16		-- Store machine status word to r32/m16
+
+	F9			STC					-- Set carry
+	FD			STD					-- Set direction
+	FB			STI					-- Set interrupt
+
+	AA			STOS m8				-- Store al into es:[e/di]
+	AB			STOS m16			-- Store ax into es:[e/di]
+	AB			STOS m32			-- Store eax into es:[e/di]
+	AA			STOSB				-- Shorthand for STOS m8
+	AB			STOSW				-- Shorthand for STOS m16
+	AB			STOSD				-- Shorthand for STOS m32
+
+	0F,00/1		STR r/m16			-- Stores segment selector from TR in r/m16
+
+	2C,ib		SUB al,imm8			-- imm8 from al
+	2D,iw		SUB AX,imm16		-- imm16 from ax
+	2D,id		SUB EAX,imm32		-- imm32 from eax
+	80/5,ib		SUB r/m8,imm8		-- imm8 from r/m8
+	81/5,iw		SUB r/m16,imm16		-- imm16 from r/m16
+	81/5,iw		SUB r/m32,imm32		-- imm32 from r/m32
+	83/5,ib		SUB r/m16,imm8		-- sign-extended imm8 from r/m16
+	83/5,ib		SUB r/m32,imm8		-- sign-extended imm8 from r/m32
+	28/r		SUB r/m8,r8			-- r8 from r/m8
+	29/r		SUB r/m16,r16		-- r16 from r/m16
+	29/r		SUB r/m32,r32		-- r32 from r/m32
+	2A/r		SUB r8,r/m8			-- r/m8 from r8
+	2B/r		SUB r16,r/m16		-- r/m16 from r16
+	2B/r		SUB r32,r/m32		-- r/m32 from r32
+
+	0F,34		SYSENTER			-- Fast system entry
+	0F,35		SYSEXIT				-- Fast system exit
+
+	A8,ib		TEST al,imm8		-- imm8 and al
+	A9,iw		TEST AX,imm16		-- imm16 and ax
+	A9,id		TEST EAX,imm32		-- imm32 and eax
+	F6/0,ib		TEST r/m8,imm8		-- imm8 and r/m8
+	F7/0,iw		TEST r/m16,imm16	-- imm16 and r/m16
+	F7/0,iw		TEST r/m32,imm32	-- imm32 and r/m32
+	84/r		TEST r/m8,r8		-- r8 and r/m8
+	85/r		TEST r/m16,r16		-- r16 and r/m16
+	85/r		TEST r/m32,r32		-- r32 and r/m32
+
+	0F,0B		UD2					-- Raises invalid opcode exception
+
+	0F,00/4		VERR r/m16			-- Verify segment r/m16 can be read
+	0F,00/5		VERW r/m16			-- Verify segment r/m16 can be written to
+
+	9B			FWAIT				-- Check pending unmasked floating-point exceptions
+
+	0F,09		WBINVD				-- Write back and flush internal caches
+
+	0F,30		WRMSR				-- Write the value in edx:eax to MSR specified by ecx
+
+	0F,C0/r		XADD r/m8,r8		-- Exchange r8 and r/m8, and load sum into r/m8
+	0F,C1/r		XADD r/m16,r16		-- Exchange r16 and r/m16, and load sum into r/m16
+	0F,C1/r		XADD r/m32,r32		-- Exchange r32 and r/m32, and load sum into r/m32
+
+	90+r		XCHG ax,r16			-- Exchange r16 and ax
+	90+r		XCHG eax,r32		-- Exchange r32 and eax
+	86/r		XCHG r/m8,r8		-- Exchange r8 and r/m8
+	87/r		XCHG r/m16,r16		-- Exchange r16 and r/m16
+	87/r		XCHG r/m32,r32		-- Exchange r32 and r/m32
+
+	D7			XLAT m8				-- Set al to ds:[e/bx + al]
+	D7			XLATB				-- Shorthand for XLAT m8
+
+	34,ib		XOR al,imm8			-- imm8 and al
+	35,iw		XOR AX,imm16		-- imm16 and ax
+	35,id		XOR EAX,imm32		-- imm32 and eax
+	80/6,ib		XOR r/m8,imm8		-- imm8 and r/m8
+	81/6,iw		XOR r/m16,imm16		-- imm16 and r/m16
+	81/6,iw		XOR r/m32,imm32		-- imm32 and r/m32
+	83/6,ib		XOR r/m16,imm8		-- sign-extended imm8 and r/m16
+	83/6,ib		XOR r/m32,imm8		-- sign-extended imm8 and r/m32
+	30/r		XOR r/m8,r8			-- r8 and r/m8
+	31/r		XOR r/m16,r16		-- r16 and r/m16
+	31/r		XOR r/m32,r32		-- r32 and r/m32
+	32/r		XOR r8,r/m8			-- r/m8 and r8
+	33/r		XOR r16,r/m16		-- r/m16 and r16
+	33/r		XOR r32,r/m32		-- r/m32 and r32
 
