@@ -120,8 +120,8 @@
 	76	mov eax,eflags
 	77	mov eflags,eax
 	78	
-	79	
-	7a	
+	79	integrity	// Enter integrity mode
+	7a	normal		// Return to normal mode
 	7b	rights
 	7c	syscall
 	7d	sysret
