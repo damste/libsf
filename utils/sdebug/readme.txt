@@ -10,7 +10,8 @@ work with less, but I'm keeping it at 16 since it's a paragraph-
 aligned value on x86.
 
 To help track down the cause of the buffer overrun, I want to
-write this sanitizing debugger which is planned to:
+write this sanitizing debugger which is planned to connect to a
+32-bit Windows application, and perform the following:
 
 	(1)  Single-step execute a program, allowing for setup
 		 to control which IP address ranges are stepped through
