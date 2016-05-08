@@ -1899,17 +1899,11 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 //////
 	SComp* iComps_skipPast_iCode(SComp* comp, s32 tniCode)
 	{
-		// Only looking on current line
-		return(iComps_past_iCode(comp, tniCode, false));
-	}
-
-	// A newer function which allows traversal beyond the current line
-	SComp* iComps_past_iCode(SComp* comp, s32 tniCode, bool tlMoveBeyondLineIfNeeded)
-	{
-		// Iterate forward until we find it
 		while (comp && comp->iCode == tniCode)
-			comp = iComps_Nth(comp, 1, tlMoveBeyondLineIfNeeded);
-
+		{
+			// Move to next component
+			comp = comp->ll.nextComp;
+		}
 		// When we get here, we're sitting on either no valid component, or the one which does not match the specified type
 		return(comp);
 	}
@@ -1924,24 +1918,16 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 //////
 	SComp* iComps_skipTo_iCode(SComp* comp, s32 tniCode)
 	{
-		// Only looking on current line
-		return(iComps_to_iCode(comp, tniCode, false));
-	}
-
-	// A newer function which allows traversal beyond the current line
-	SComp* iComps_to_iCode(SComp* comp, s32 tniCode, bool tlMoveBeyondLineIfNeeded)
-	{
-		// Skip past the first component
-		comp = iComps_Nth(comp, 1, tlMoveBeyondLineIfNeeded);
+		// Skip to next comp
+		comp = comp->ll.nextComp;
 
 		// Repeat until we find our match
 		while (comp && comp->iCode != tniCode)
-			comp = iComps_Nth(comp, 1, tlMoveBeyondLineIfNeeded);
+			comp = comp->ll.nextComp;	// Move to next component
 
 		// When we get here, we're sitting on the iCode, or we've exhausted our comps and it's NULL
 		return(comp);
 	}
-
 
 
 
@@ -1982,186 +1968,14 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 //////
 	SComp* iComps_getNth(SComp* comp, s32 tnCount)
 	{
-		return(iComps_Nth(comp, tnCount, false));
-	}
-
-	SComp* iComps_getPrev(SComp* comp)
-	{
-		return(iComps_Nth(comp, -1, false));
-	}
-
-	SComp* iComps_getNext(SComp* comp)
-	{
-		return(iComps_Nth(comp, 1, false));
-	}
-
-	// A newer version which goes to the next line if need be
-	SComp* iComps_prev(SComp* comp, bool tlMoveBeyondLineIfNeeded)
-	{
-		return(iComps_Nth(comp, -1, tlMoveBeyondLineIfNeeded));
-	}
-
-	// A newer version which goes to the next line if need be
-	SComp* iComps_next(SComp* comp, bool tlMoveBeyondLineIfNeeded)
-	{
-		return(iComps_Nth(comp, 1, tlMoveBeyondLineIfNeeded));
-	}
-
-	// A newer version which goes to the next line if need be
-	SComp* iComps_Nth(SComp* comp, s32 tnCount, bool tlMoveBeyondLineIfNeeded)
-	{
-		s32		lnI;
-		SLine*	line;
+		s32 lnI;
 
 
-		// Based on direction
-		if (comp)
-		{
-			if (tnCount > 0)
-			{
-				// Going forward
-				for (lnI = 0; comp && lnI < tnCount; lnI++)
-				{
-					// Is there room on the line?
-					if (comp->ll.nextComp)
-					{
-						// Move to next component
-						comp = comp->ll.nextComp;
-
-					} else {
-						// No more components on this line, switch to next line
-						if (tlMoveBeyondLineIfNeeded && comp->line && (line = comp->line->ll.nextLine))
-						{
-							// Room to move forward
-							while (line && (!line->compilerInfo || !line->compilerInfo->firstComp) && line->ll.nextLine)
-								line = line->ll.nextLine;
-
-							// Store the component
-							if (line->compilerInfo && line->compilerInfo->firstComp)
-							{
-								// Use this component for the next one
-								comp = line->compilerInfo->firstComp;
-
-							} else {
-								// We're done
-								comp = NULL;
-							}
-
-						} else {
-							// We're done
-							comp = NULL;
-						}
-					}
-				}
-
-			} else if (tnCount < 0) {
-				// Going backwards
-				for (lnI = 0; comp && lnI < tnCount; lnI++)
-				{
-					// Is there room on the line?
-					if (comp->ll.prevComp)
-					{
-						// Move to next component
-						comp = comp->ll.prevComp;
-
-					} else {
-						// No more components on this line, switch to next line
-						if (tlMoveBeyondLineIfNeeded && comp->line && (line = comp->line->ll.prevLine))
-						{
-							// Room to move forward
-							while (line && (!line->compilerInfo || !line->compilerInfo->firstComp) && line->ll.prevLine)
-								line = line->ll.prevLine;
-
-							// Store the last component on the line
-							if (line->compilerInfo && line->compilerInfo->firstComp)
-							{
-								// Use this component
-								comp = line->compilerInfo->firstComp;
-
-								// Move to the last one of the line
-								while (comp->ll.nextComp)
-									comp = comp->ll.nextComp;
-
-								// When we get here, we're on the last component on the line
-
-							} else {
-								// We're done
-								comp = NULL;
-							}
-
-						} else {
-							// We're done
-							comp = NULL;
-						}
-					}
-				}
-			}
-		}
+		// Iterate until we find it
+		for (lnI = 0; comp && lnI < tnCount; lnI++)
+			comp = comp->ll.nextComp;
 
 		// Indicate success or failure
-		return(comp);
-	}
-
-
-
-
-//////////
-//
-// Called to obtain the first component on the indicated line, which could
-// include moving to another line to find that component.
-//
-//////
-	SComp* iComps_Nth_fromLine(SLine* line, s32 tnCount, bool tlMoveBeyondLineIfNeeded)
-	{
-		SComp* comp;
-
-
-		// Make sure our environment is sane
-		comp = NULL;
-		if (line)
-		{
-			if (tnCount > 0)
-			{
-				// Going forward
-				// Skip forward to the first line that has compiler info
-				while ((!line->compilerInfo || !line->compilerInfo->firstComp) && line->ll.nextLine)
-					line = line->ll.nextLine;
-
-				// Do we have a component?
-				if (line->compilerInfo)
-				{
-					// Use whatever there
-					comp = line->compilerInfo->firstComp;
-
-				} else {
-					// Nope
-					comp = NULL;
-				}
-
-			} else if (tnCount < 0) {
-				// Going backward
-				// Skip backward to the first line that has compiler info
-				while ((!line->compilerInfo || !line->compilerInfo->firstComp) && line->ll.prevLine)
-					line = line->ll.prevLine;
-
-				// Do we have a componesnt?
-				if (line->compilerInfo && line->compilerInfo->firstComp)
-				{
-					// Start at that component
-					comp = line->compilerInfo->firstComp;
-
-					// And move to the last component on the line
-					while (comp->ll.nextComp)
-						comp = comp->ll.nextComp;
-
-				} else {
-					// Nope
-					comp = NULL;
-				}
-			}
-		}
-
-		// Indicate the component
 		return(comp);
 	}
 

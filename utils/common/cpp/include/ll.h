@@ -74,18 +74,18 @@ struct SNoteLog;
 
 
 
+/* If the iGetNextUid() function is missing, use this one:
 //////////
 //
 // Get the next Unique ID
 //
 //////
 	u32 gnNextUniqueId = 0;
-
 	u32 iGetNextUid()
 	{
 		return(gnNextUniqueId++);
 	}
-
+*/
 
 
 

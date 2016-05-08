@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/source/vjr/source/vjr_compile_time_settings.h
+// /libsf/source/vjr/source/sem/sem_extra_info.h
 //
 //////
 //    _     _ _     _____ _____ 
@@ -19,13 +19,13 @@
 //
 //////
 // Version 0.58
-// Copyright (c) 2014-2015 by Rick C. Hodgin
+// Copyright (c) 2015 by Rick C. Hodgin
 //////
 // Last update:
-//     Nov.05.2014
+//     Jan.11.2014
 //////
 // Change log:
-//     Nov.05.2014 - Initial creation
+//     Jan.11.2014 - Initial creation
 //////
 //
 // This document is released as Liberty Software under a Repeat License, as governed
@@ -80,111 +80,65 @@
 //
 
 
-//////////
-// For debugging, the splash screen gets in the way if you're doing debugging
-// on a single monitor machine (like a notebook) during the initial startup.
-// You can set this property to false and prevent the splash screen from appearing.
-// Also the focus border can sometimes be annoying if it's not rendered in blue
-// and is merely a defined window consuming screen real-estate, but not re-rendering
-// itself because the process is suspended in the debugger.  Oh, the humanity! :-)
-//////
-
-	//////////
-	// Splash
-	//////
- 		bool glShowSplashScreen = true;
- 		//bool glShowSplashScreen = false;
-
-
-	//////////
-	// Focus object border
-	//////
-		bool glShowFocusObjBorder = true;
-		//bool glShowFocusObjBorder = false;
 
 
 //////////
-// Compiler-specific settings
+// Extra info contains information about a line of source code
 //////
-	#ifdef __GNUC__
-		// gcc
-		#ifndef __amd64
-			#define __32_BIT_COMPILER__
-		#else
-			#define __64_BIT_COMPILER__
-		#endif
+	struct SExtraInfo
+	{
+		SLL			ll;
 
-	#elif defined(__unix)
-        // Solaris compiler
-        #ifndef __solaris
-            #define __solaris__
-        #endif
-        #ifdef __i386
-            #define __32_BIT_COMPILER__
-        #else
-			#define __64_BIT_COMPILER__
-        #endif
+		u32			identifier;						// A registered identifier with the system for this extra info block
+		u32			identifier_type;				// Application defined type, identifies what's stored in this.info.data
+		SDatum		info;							// The extra info block stored for this entry
 
-	#else
-		// visual studio
-		#ifndef _M_X64
-			// 32-bit
-			#define __32_BIT_COMPILER__
-		#else
-			// 64-bit
-			#define __64_BIT_COMPILER__
-		#endif
-	#endif
+
+		//////////
+		// Functions to called when the associated line is processed in some way
+		//////
+		union {
+			sptr	_onAccess;					// When the line is accessed
+			void	(*onAccess)					(SEM* sem, SLine* line, SExtraInfo* extra_info);
+		};
+
+		union {
+			sptr	_onArrival;					// When the target implementation is sitting on this line
+			void	(*onArrival)				(SEM* sem, SLine* line, SExtraInfo* extra_info);
+		};
+
+		union {
+			sptr	_onUpdate;					// When the line is updated
+			void	(*onUpdate)					(SEM* sem, SLine* line, SExtraInfo* extra_info);
+		};
+
+
+		//////////
+		// Function to call before freeing an entry
+		//////
+		union {
+			sptr		_freeInternal;			// Called to free any data in this.info
+			SExtraInfo*	(*freeInternal)			(SEM* sem, SLine* line, SExtraInfo* extra_info);
+		};
+	};
+
+
 
 
 //////////
-// Aug.11.2014 -- Added to track down functions that were slowing down the system.
-//                Note:  This should be normally OFF as it is resource intensive.
-//                Note:  It could also be refactored into a function to examine variables.
-//#define _VJR_LOG_ALL
+// Extra info callback codes for callbackCommon
 //////
-	#ifdef _VJR_LOG_ALL
-		#define logfunc(x)		iVjr_appendSystemLog((s8*)x)
-	#else
-		#define logfunc(x)
-	#endif
+	const s32		_EXTRA_INFO_ON_ACCESS					= 1;
+	const s32		_EXTRA_INFO_ON_ARRIVAL					= 2;
+	const s32		_EXTRA_INFO_ON_UPDATE					= 3;
 
 
 //////////
-// Added to track down silent errors, ones that don't really affect anything, but still shouldn't exist
+// ExtraInfo
 //////
-	#define error_silent		iError_silent((char*)__FUNCTION__)
-
-
-//////////
-// Force the bitmaps to be declared external for assignment through linking the bmps project
-//////
-	#ifndef _BMP_LOCALITY
-		#define _BMP_LOCALITY 0
-	#endif
-	#ifndef _BXML_LOCALITY
-		#define _BXML_LOCALITY 0
-	#endif
-
-
-///////////
-// Should extra debugging information be included?
-//////
-	#define _EXTRA_DEBUGGING_DATA 1
-
-
-//////////
-// Should Grace 3D support be instantiated at startup?
-//////
-// 	#define _GRACE_COMPILE
-
-
-//////////
-// The language to compile for:
-//		EN - English
-//		IT - Italian
-//		ES - Spanish
-//////
-	#define _LANG_EN
-// 	#define _LANG_IT
-// 	#define _LANG_ES
+	SExtraInfo*		iExtraInfo_allocate						(SEM* sem, SLine* line, SExtraInfo** root);
+	void			iExtraInfo_removeAll					(SEM* sem, SLine* line, SExtraInfo** root, bool tlDeleteSelf);
+	void			iExtraInfo_access						(SEM* sem, SLine* line);
+	void			iExtraInfo_arrival						(SEM* sem, SLine* line);
+	void			iExtraInfo_update						(SEM* sem, SLine* line);
+	void			iiExtraInfo_callbackCommon				(SEM* sem, SLine* line, s32 tnCallbackType);

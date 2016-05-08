@@ -5298,24 +5298,8 @@ debug_break;
 
 
 //////////
-//
-// Character test helpers
-//
+// Test helpers
 //////
-	bool isAlpha(s8 c)
-	{
-		// Alpha?
-		if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_')		return(true);
-		else																	return(false);
-	}
-
-	bool isNumeric(s8 c)
-	{
-		// Numeric?
-		if ((c >= '0' && c <= '9') || c == '-' || c == '+')						return(true);
-		else																	return(false);
-	}
-
 	bool isDotExpression(s8 c)
 	{
 		// A dot-expression?

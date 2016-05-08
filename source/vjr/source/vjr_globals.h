@@ -169,12 +169,12 @@
 //////
 	SBuilder*			gWindows							= NULL;
 	SBuilder*			gFonts								= NULL;
+	SBuilder*			gBreakpoints						= NULL;
 //////
 // END
 //////////
 
 	HWND				ghwndMsg							= null0;
-	CRITICAL_SECTION	cs_uniqueIdAccess;
 	CRITICAL_SECTION	cs_logData;
 	s64					systemStartedMs						= 0;
 	u32					systemStartedTickCount				= 0;
@@ -588,8 +588,6 @@
 		SFont*			gsWindowTitleBarFontSubform			= NULL;									// Default Condensed Bold 10 pt
 		SFont*			gsFontDefaultTooltip				= NULL;									// Default Condensed Bold 9 pt
 		SFont*			gsFontCask							= NULL;									// Cask font, Default Bold 30 pt
-
-		#include "/libsf/utils/common/cpp/include/colors.h"
 
 
 	//////////

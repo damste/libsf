@@ -120,8 +120,8 @@
 		iVjr_init_createConstants();
 		iNode_init();
 
-		// Initialize our critical sections
-		InitializeCriticalSection(&cs_uniqueIdAccess);
+		// Initialize our critical section
+		initializeUid();
 		InitializeCriticalSection(&cs_logData);
 
 		// These arrows are used as a standard throughout the system for the size of an icon.

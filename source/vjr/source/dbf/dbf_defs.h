@@ -281,8 +281,6 @@ struct SFieldRecord2;
 	void				iiHhMmSsMss_fromf32								(f32 tfSeconds, u32* hour, u32* minute, u32* second, u32* millisecond);
 
 	// Character tests
-	bool				isAlpha											(s8 c);
-	bool				isNumeric										(s8 c);
 	bool				isDotExpression									(s8 c);
 	bool				isComparator									(s8 c);
 	bool				isQuote											(s8 c);

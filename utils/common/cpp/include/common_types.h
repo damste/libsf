@@ -357,27 +357,3 @@ struct SXy_s32
 	s32	xi;
 	s32	yi;
 };
-
-// Tests az_AZ__
-bool isAlpha(s8 c)
-{
-	// Alpha?
-	if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_')		return(true);
-	else																	return(false);
-}
-
-// Tests 0123456789-+
-bool isNumeric(s8 c)
-{
-	// Numeric?
-	if ((c >= '0' && c <= '9') || c == '-' || c == '+')						return(true);
-	else																	return(false);
-}
-
-// Tests 0123456789.-+
-bool isFloatingPoint(s8 c)
-{
-	// Numeric?
-	if ((c >= '0' && c <= '9') || c == '.' || c == '-' || c == '+')			return(true);
-	else																	return(false);
-}

@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/source/vjr/source/vjr_compile_time_settings.h
+// /libsf/source/vjr/source/sem/sem_line.h
 //
 //////
 //    _     _ _     _____ _____ 
@@ -22,10 +22,10 @@
 // Copyright (c) 2014-2015 by Rick C. Hodgin
 //////
 // Last update:
-//     Nov.05.2014
+//     Jul.06.2014
 //////
 // Change log:
-//     Nov.05.2014 - Initial creation
+//     Jul.06.2014 - Initial creation
 //////
 //
 // This document is released as Liberty Software under a Repeat License, as governed
@@ -80,111 +80,19 @@
 //
 
 
-//////////
-// For debugging, the splash screen gets in the way if you're doing debugging
-// on a single monitor machine (like a notebook) during the initial startup.
-// You can set this property to false and prevent the splash screen from appearing.
-// Also the focus border can sometimes be annoying if it's not rendered in blue
-// and is merely a defined window consuming screen real-estate, but not re-rendering
-// itself because the process is suspended in the debugger.  Oh, the humanity! :-)
-//////
-
-	//////////
-	// Splash
-	//////
- 		bool glShowSplashScreen = true;
- 		//bool glShowSplashScreen = false;
-
-
-	//////////
-	// Focus object border
-	//////
-		bool glShowFocusObjBorder = true;
-		//bool glShowFocusObjBorder = false;
 
 
 //////////
-// Compiler-specific settings
+// Forward declarations
 //////
-	#ifdef __GNUC__
-		// gcc
-		#ifndef __amd64
-			#define __32_BIT_COMPILER__
-		#else
-			#define __64_BIT_COMPILER__
-		#endif
+	void					iSEMLine_free								(SLine** root, bool tlDeleteSelf);
+	void					iSEMLine_ensureLineLength					(SLine* em, s32 newLineLength);
 
-	#elif defined(__unix)
-        // Solaris compiler
-        #ifndef __solaris
-            #define __solaris__
-        #endif
-        #ifdef __i386
-            #define __32_BIT_COMPILER__
-        #else
-			#define __64_BIT_COMPILER__
-        #endif
+	// For editing
+	bool					iSEMLine_characterInsert					(SEM* sem, u8 asciiChar);
+	bool					iSEMLine_characterOverwrite					(SEM* sem, u8 asciiChar);
+	bool					iSEMLine_characterDelete					(SEM* sem);
+	SBreakpoint*			iSEMLine_toggleBreakpoint					(SEM* sem);
 
-	#else
-		// visual studio
-		#ifndef _M_X64
-			// 32-bit
-			#define __32_BIT_COMPILER__
-		#else
-			// 64-bit
-			#define __64_BIT_COMPILER__
-		#endif
-	#endif
-
-
-//////////
-// Aug.11.2014 -- Added to track down functions that were slowing down the system.
-//                Note:  This should be normally OFF as it is resource intensive.
-//                Note:  It could also be refactored into a function to examine variables.
-//#define _VJR_LOG_ALL
-//////
-	#ifdef _VJR_LOG_ALL
-		#define logfunc(x)		iVjr_appendSystemLog((s8*)x)
-	#else
-		#define logfunc(x)
-	#endif
-
-
-//////////
-// Added to track down silent errors, ones that don't really affect anything, but still shouldn't exist
-//////
-	#define error_silent		iError_silent((char*)__FUNCTION__)
-
-
-//////////
-// Force the bitmaps to be declared external for assignment through linking the bmps project
-//////
-	#ifndef _BMP_LOCALITY
-		#define _BMP_LOCALITY 0
-	#endif
-	#ifndef _BXML_LOCALITY
-		#define _BXML_LOCALITY 0
-	#endif
-
-
-///////////
-// Should extra debugging information be included?
-//////
-	#define _EXTRA_DEBUGGING_DATA 1
-
-
-//////////
-// Should Grace 3D support be instantiated at startup?
-//////
-// 	#define _GRACE_COMPILE
-
-
-//////////
-// The language to compile for:
-//		EN - English
-//		IT - Italian
-//		ES - Spanish
-//////
-	#define _LANG_EN
-// 	#define _LANG_IT
-// 	#define _LANG_ES
+	// For reporting on a line's state
+	bool					iSEMLine_hasChanged							(SLine* ec);

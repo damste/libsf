@@ -158,16 +158,8 @@ struct SVxbContext;
 	bool					iComps_isMateOf								(SComp* compTest, s32 tniCodeMate);
 	SComp*					iComps_skipPast_iCode						(SComp* comp, s32 tniCode);
 	SComp*					iComps_skipTo_iCode							(SComp* comp, s32 tniCode);
-	SComp*					iComps_past_iCode							(SComp* comp, s32 tniCode, bool tlMoveBeyondLineIfNeeded = true);
-	SComp*					iComps_to_iCode								(SComp* comp, s32 tniCode, bool tlMoveBeyondLineIfNeeded = true);
 	SComp*					iComps_getNext_afterDot						(SComp* comp);
 	SComp*					iComps_getNth								(SComp* comp, s32 tnCount);
-	SComp*					iComps_getPrev								(SComp* comp);
-	SComp*					iComps_getNext								(SComp* comp);
-	SComp*					iComps_prev									(SComp* comp, bool tlMoveBeyondLineIfNeeded = true);
-	SComp*					iComps_next									(SComp* comp, bool tlMoveBeyondLineIfNeeded = true);
-	SComp*					iComps_Nth									(SComp* comp, s32 tnCount, bool tlMoveBeyondLineIfNeeded = true);
-	SComp*					iComps_Nth_fromLine							(SLine* line, s32 tnCount, bool tlMoveBeyondLineIfNeeded = true);
 	u32						iComps_combineN								(SComp* comp, u32 tnCount, s32 tnNew_iCode, u32 tnNew_iCat, SBgra* newColor, SComp** compMigrateRefs = NULL);
 	u32						iComps_combine_adjacent						(SComp* compLeftmost, s32 tniCode, u32 tniCat, SBgra* tnColor, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount);
 	u32						iComps_combine_adjacentAlphanumeric			(SLine* line);
@@ -230,6 +222,7 @@ struct SVxbContext;
 
 	u32						iBreakoutAsciiTextDataIntoLines_ScanLine	(s8* tcData, u32 tnMaxLength, u32* tnLength, u32* tnWhitespaces);
 	bool					iFindFirstOccurrenceOfAsciiCharacter		(s8* tcHaystack, u32 tnHaystackLength, s8 tcNeedle, u32* tnPosition);
+	u32						iGetNextUid									();
 
 	// Start end chains
 	void*					iSEChain_prepend							(SStartEnd* ptrSE, u32 tnUniqueId, u32 tnUniqueIdExtra, u32 tnSize, u32 tnBlockSizeIfNewBlockNeeded, bool* tlResult);
@@ -419,29 +412,3 @@ struct SVxbContext;
 	SNoteLog*				iNoteLog_create								(SNoteLog** noteRoot, SComp* comp, u32 tnNumber, cu8* tcMessage);
 	SNoteLog*				iNoteLog_create_byErrorNumber				(SNoteLog** noteRoot, SComp* comp, u32 tnErrorNumber);
 	void					iNoteLog_removeAll							(SNoteLog** noteRoot);
-
-
-
-
-//////////
-//
-// Get the next Unique ID
-//
-//////
-	u32 iGetNextUid()
-	{
-		u32 lnValue;
-
-
-		// Synchronized access
-		EnterCriticalSection(&cs_uniqueIdAccess);
-
-		// Get our value and increment
-		lnValue = gnNextUniqueId++;
-
-		// All done
-		LeaveCriticalSection(&cs_uniqueIdAccess);
-
-		// Return that value
-		return(lnValue);
-	}

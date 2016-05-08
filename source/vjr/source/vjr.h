@@ -109,7 +109,6 @@
 #endif
 
 #define _BXML_SETTINGS_LOCALITY 1
-#define logfunc(x) iVjr_appendSystemLog((s8*)x)
 
 #include "vjr_compile_time_settings.h"
 
@@ -148,6 +147,8 @@
 	#include "\libsf\utils\common\cpp\include\node.h"
 	#include "vjr_defs0.h"
 
+	#include "\libsf\utils\common\cpp\include\chartests.h"
+	#include "\libsf\utils\common\cpp\include\errors.h"
 	#include "\libsf\utils\common\cpp\include\datum.h"
 	#include "\libsf\utils\common\cpp\include\builder.h"
 	#include "\libsf\utils\common\cpp\base\ll.cpp"

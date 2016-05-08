@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/source/vjr/source/vjr_compile_time_settings.h
+// /libsf/source/vjr/source/sem/sem_extra_info.cpp
 //
 //////
 //    _     _ _     _____ _____ 
@@ -19,13 +19,13 @@
 //
 //////
 // Version 0.58
-// Copyright (c) 2014-2015 by Rick C. Hodgin
+// Copyright (c) 2015 by Rick C. Hodgin
 //////
 // Last update:
-//     Nov.05.2014
+//     Jan.11.2014
 //////
 // Change log:
-//     Nov.05.2014 - Initial creation
+//     Jan.11.2014 - Initial creation
 //////
 //
 // This document is released as Liberty Software under a Repeat License, as governed
@@ -80,111 +80,139 @@
 //
 
 
-//////////
-// For debugging, the splash screen gets in the way if you're doing debugging
-// on a single monitor machine (like a notebook) during the initial startup.
-// You can set this property to false and prevent the splash screen from appearing.
-// Also the focus border can sometimes be annoying if it's not rendered in blue
-// and is merely a defined window consuming screen real-estate, but not re-rendering
-// itself because the process is suspended in the debugger.  Oh, the humanity! :-)
-//////
-
-	//////////
-	// Splash
-	//////
- 		bool glShowSplashScreen = true;
- 		//bool glShowSplashScreen = false;
-
-
-	//////////
-	// Focus object border
-	//////
-		bool glShowFocusObjBorder = true;
-		//bool glShowFocusObjBorder = false;
 
 
 //////////
-// Compiler-specific settings
+//
+// Called to allocate a new extra info and append it from the chain
+//
 //////
-	#ifdef __GNUC__
-		// gcc
-		#ifndef __amd64
-			#define __32_BIT_COMPILER__
-		#else
-			#define __64_BIT_COMPILER__
-		#endif
+	SExtraInfo* iExtraInfo_allocate(SEM* sem, SLine* line, SExtraInfo** root)
+	{
+		SExtraInfo* ei;
 
-	#elif defined(__unix)
-        // Solaris compiler
-        #ifndef __solaris
-            #define __solaris__
-        #endif
-        #ifdef __i386
-            #define __32_BIT_COMPILER__
-        #else
-			#define __64_BIT_COMPILER__
-        #endif
+		
+		// Make sure our environment is sane
+		ei = NULL;
+		if (sem && line && root)
+		{
+			// Allocate a new one
+			ei = (SExtraInfo*)iLl_appendNew__llAtEnd((SLL**)root, sizeof(SExtraInfo));
+		}
 
-	#else
-		// visual studio
-		#ifndef _M_X64
-			// 32-bit
-			#define __32_BIT_COMPILER__
-		#else
-			// 64-bit
-			#define __64_BIT_COMPILER__
-		#endif
-	#endif
+		// Indicate our status
+		return(ei);
+	}
+
+
 
 
 //////////
-// Aug.11.2014 -- Added to track down functions that were slowing down the system.
-//                Note:  This should be normally OFF as it is resource intensive.
-//                Note:  It could also be refactored into a function to examine variables.
-//#define _VJR_LOG_ALL
+//
+// Called to free the extra info associated with this entry
+//
 //////
-	#ifdef _VJR_LOG_ALL
-		#define logfunc(x)		iVjr_appendSystemLog((s8*)x)
-	#else
-		#define logfunc(x)
-	#endif
+	void iExtraInfo_removeAll(SEM* sem, SLine* line, SExtraInfo** root, bool tlDeleteSelf)
+	{
+		SExtraInfo*		ei;
+		SExtraInfo*		eiNext;
+
+
+		// Make sure our environment is sane
+		if (root && *root)
+		{
+// TODO:  COMPLETELY UNTESTED.  BREAKPOINT AND EXAMINE.
+debug_break;
+			// Iterate through all entries in the chain
+			ei = *root;
+			while (ei)
+			{
+				// Note the next entry
+				eiNext = ei->ll.nextExtraInfo;
+
+
+				//////////
+				// Call any freeInternal() functions to the data contained within and manually delete the extra info block
+				//////
+					if (ei->_freeInternal!= 0)
+						ei->freeInternal(NULL, line, ei);
+
+					// Now, manually free the actual info block itself
+					iDatum_delete(&ei->info, false);
+
+
+				// Free self if need be
+				if (tlDeleteSelf)
+					free(ei);
+
+				// Move to next entry
+				ei = eiNext;
+			}
+
+			// Reset the root pointer
+			*root = NULL;
+		}
+	}
+
+
 
 
 //////////
-// Added to track down silent errors, ones that don't really affect anything, but still shouldn't exist
+//
+// Called to process the extra info block's callbacks (if any)
+//
 //////
-	#define error_silent		iError_silent((char*)__FUNCTION__)
+	void iExtraInfo_access(SEM* sem, SLine* line)
+	{
+		// If there's a callback, call it
+		if (sem && line && line->extra_info)
+			iiExtraInfo_callbackCommon(sem, line, _EXTRA_INFO_ON_ACCESS);
+	}
+
+	void iExtraInfo_arrival(SEM* sem, SLine* line)
+	{
+		// If there's a callback, call it
+		if (sem && line && line->extra_info)
+			iiExtraInfo_callbackCommon(sem, line, _EXTRA_INFO_ON_ARRIVAL);
+	}
+
+	void iExtraInfo_update(SEM* sem, SLine* line)
+	{
+		// If there's a callback, call it
+		if (sem && line && line->extra_info)
+			iiExtraInfo_callbackCommon(sem, line, _EXTRA_INFO_ON_UPDATE);
+	}
+
+	void iiExtraInfo_callbackCommon(SEM* sem, SLine* line, s32 tnCallbackType)
+	{
+		SExtraInfo* ei;
 
 
-//////////
-// Force the bitmaps to be declared external for assignment through linking the bmps project
-//////
-	#ifndef _BMP_LOCALITY
-		#define _BMP_LOCALITY 0
-	#endif
-	#ifndef _BXML_LOCALITY
-		#define _BXML_LOCALITY 0
-	#endif
+// TODO:  COMPLETELY UNTESTED.  BREAKPOINT AND EXAMINE.
+debug_break;
+		// Iterate through each one and call its host
+		ei = line->extra_info;
+		while (ei)
+		{
+			switch (tnCallbackType)
+			{
+				case _EXTRA_INFO_ON_ACCESS:
+					// Call this one if it has an onAccess member
+					if (ei->_onAccess)		ei->onAccess(sem, line, ei);
+					break;
 
+				case _EXTRA_INFO_ON_ARRIVAL:
+					// Call this one if it has an onArrival member
+					if (ei->_onArrival)		ei->onArrival(sem, line, ei);
+					break;
 
-///////////
-// Should extra debugging information be included?
-//////
-	#define _EXTRA_DEBUGGING_DATA 1
+				case _EXTRA_INFO_ON_UPDATE:
+					// Call this one if it has an onUpdate member
+					if (ei->_onUpdate)		ei->onUpdate(sem, line, ei);
+					break;
+			}
 
-
-//////////
-// Should Grace 3D support be instantiated at startup?
-//////
-// 	#define _GRACE_COMPILE
-
-
-//////////
-// The language to compile for:
-//		EN - English
-//		IT - Italian
-//		ES - Spanish
-//////
-	#define _LANG_EN
-// 	#define _LANG_IT
-// 	#define _LANG_ES
+			// Move to next one
+			ei = ei->ll.nextExtraInfo;
+		}
+	}

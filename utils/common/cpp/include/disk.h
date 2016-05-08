@@ -95,12 +95,6 @@
 #define __DISK_H__
 
 
-// Constants
-const u32			_ERROR_OKAY								= 0;
-const u32			_ERROR_UNABLE_TO_LOCK_FOR_WRITE			= 100;
-const u32			_ERROR_UNABLE_TO_LOCK_FOR_READ			= 101;
-
-
 
 //////////
 // The SDisk structure.

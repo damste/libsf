@@ -265,10 +265,10 @@
 						if (llIsFocusSubform)
 						{
 							// This subform has focus
-							nwRgba = nwColor_focus;
-							neRgba = neColor_focus;
-							swRgba = swColor_focus;
-							seRgba = seColor_focus;
+							nwRgba.color = nwColor_focus.color;
+							neRgba.color = neColor_focus.color;
+							swRgba.color = swColor_focus.color;
+							seRgba.color = seColor_focus.color;
 						}
 
 
