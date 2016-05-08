@@ -252,6 +252,7 @@
 			rpar->rp[0] = NULL;
 			switch (rpar->ipCount)
 			{
+				default:
 				case 0:
 					lnBits = propGet_settings_PrecisionBFP(_settings);
 					break;
@@ -416,6 +417,7 @@
 			rpar->rp[0] = NULL;
 			switch (rpar->ipCount)
 			{
+				default:
 				case 0:
 					lnBits = propGet_settings_PrecisionBI(_settings);
 					break;

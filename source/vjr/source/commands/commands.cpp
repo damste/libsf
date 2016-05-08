@@ -284,6 +284,10 @@
 		bool lError, lSignal;
 
 
+		// Make sure our environment is sane
+		if (!ei)
+			return(value);	// Can't signal
+
 		// Based on type, signal range
 		lError	= false;
 		lSignal	= false;
@@ -400,6 +404,10 @@
 	{
 		bool lError, lSignal;
 
+
+		// Make sure our environment is sane
+		if (!ei)
+			return(value);	// Can't signal
 
 		// Based on type, signal range
 		lError	= false;
@@ -519,6 +527,10 @@
 		bool lError, lSignal;
 
 
+		// Make sure our environment is sane
+		if (!ei)
+			return(value);	// Can't signal
+
 		// Based on type, signal range
 		lError	= false;
 		lSignal	= false;
@@ -573,6 +585,10 @@
 	{
 		bool lError, lSignal;
 
+
+		// Make sure our environment is sane
+		if (!ei)
+			return(value);	// Can't signal
 
 		// Based on type, signal range
 		lError	= false;
@@ -637,6 +653,10 @@
 	{
 		bool lError, lSignal;
 
+
+		// Make sure our environment is sane
+		if (!ei)
+			return(value);	// Can't signal
 
 		// Based on type, signal range
 		lError	= false;
@@ -710,6 +730,10 @@
 	{
 		bool lError, lSignal;
 
+
+		// Make sure our environment is sane
+		if (!ei)
+			return(value);	// Can't signal
 
 		// Based on type, signal range
 		lError	= false;
@@ -793,6 +817,10 @@
 		bool lError, lSignal;
 
 
+		// Make sure our environment is sane
+		if (!ei)
+			return(value);	// Can't signal
+
 		// Based on type, signal range
 		lError	= false;
 		lSignal	= false;
@@ -874,6 +902,10 @@
 	{
 		bool lError, lSignal;
 
+
+		// Make sure our environment is sane
+		if (!ei)
+			return(value);	// Can't signal
 
 		// Based on type, signal range
 		lError	= false;
@@ -974,6 +1006,10 @@
 	{
 		bool lError, lSignal;
 
+
+		// Make sure our environment is sane
+		if (!ei)
+			return(value);	// Can't signal
 
 		// Based on type, signal range
 		lError	= false;
@@ -1089,6 +1125,7 @@
 		// Based on the test type, make sure it's in range
 		lError	= false;
 		lSignal	= false;
+		lfValue = 0.0f;
 		if (value && value->length >= 1 && (u32)value->length <= sizeof(buffer) - 1)
 		{
 			// Copy text to null-terminate
@@ -1097,6 +1134,10 @@
 
 			// Convert to f64
 			lfValue = atof(value->data._s8);
+
+			// Make sure our environment is sane
+			if (!ei)
+				return(lfValue);	// Can't signal
 
 			// Based on the type, check its range
 			switch (tnVarType)
@@ -3024,22 +3065,22 @@
 			SComp*	compAgain				= iComps_findNextBy_iCode(compUse, _ICODE_AGAIN,				NULL);
 //			SComp*	compNoRequery			= iComps_findNextBy_iCode(compUse, _ICODE_NOREQUERY,			NULL);
 //			SComp*	compNoData				= iComps_findNextBy_iCode(compUse, _ICODE_NODATA,				NULL);
-//			SComp*	compNoUpdate			= iComps_findNextBy_iCode(compUse, _ICODE_NOUPDATE,			NULL);
+//			SComp*	compNoUpdate			= iComps_findNextBy_iCode(compUse, _ICODE_NOUPDATE,				NULL);
 //			SComp*	compExclamationPoint	= iComps_findNextBy_iCode(compUse, _ICODE_EXCLAMATION_POINT,	NULL);
 			SComp*	compIn					= iComps_findNextBy_iCode(compUse, _ICODE_IN,					NULL);
 //			SComp*	compIndex				= iComps_findNextBy_iCode(compUse, _ICODE_INDEX,				NULL);
 //			SComp*	compOrder				= iComps_findNextBy_iCode(compUse, _ICODE_ORDER,				NULL);
-//			SComp*	compTag					= iComps_findNextBy_iCode(compUse, _ICODE_TAG,				NULL);
+//			SComp*	compTag					= iComps_findNextBy_iCode(compUse, _ICODE_TAG,					NULL);
 			SComp*	compAscending			= iComps_findNextBy_iCode(compUse, _ICODE_ASCENDING,			NULL);
 			SComp*	compDescending			= iComps_findNextBy_iCode(compUse, _ICODE_DESCENDING,			NULL);
 			SComp*	compAlias				= iComps_findNextBy_iCode(compUse, _ICODE_ALIAS,				NULL);
 			SComp*	compExclusive			= iComps_findNextBy_iCode(compUse, _ICODE_EXCLUSIVE,			NULL);
 			SComp*	compShared				= iComps_findNextBy_iCode(compUse, _ICODE_SHARED,				NULL);
-			SComp*	compNoUpdate			= iComps_findNextBy_iCode(compUse, _ICODE_NOUPDATE,			NULL);
+			SComp*	compNoUpdate			= iComps_findNextBy_iCode(compUse, _ICODE_NOUPDATE,				NULL);
 //			SComp*	compConnString			= iComps_findNextBy_iCode(compUse, _ICODE_CONNSTRING,			NULL);
-			SComp*	compValidate			= iComps_findNextBy_iCode(compUse, _ICODE_VALIDATE,			NULL);
+			SComp*	compValidate			= iComps_findNextBy_iCode(compUse, _ICODE_VALIDATE,				NULL);
 			SComp*	compVisualize			= iComps_findNextBy_iCode(compUse, _ICODE_VISUALIZE,			NULL);		// USE fred.dbf VISUALIZE	&& Creates disk-defrag-like display of table and index
-			SComp*	compJournal				= iComps_findNextBy_iCode(compUse, _ICODE_JOURNAL,			NULL);		// USE fred.dbf JOURNAL		&& Creates fred.jrn with every write change made to table or index
+			SComp*	compJournal				= iComps_findNextBy_iCode(compUse, _ICODE_JOURNAL,				NULL);		// USE fred.dbf JOURNAL		&& Creates fred.jrn with every write change made to table or index
 
 
 		//////////

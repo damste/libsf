@@ -222,30 +222,30 @@ cu32	_F64PP				= _64BIT | _POINTER_POINTER | _FLOATING_POINT;
 //////////
 // Color macros
 //////
-	#define rgba(r,g,b,a)					((a & 0xff) << 24) + \
+	#define rgba(r,g,b,a)				(u32)(((a & 0xff) << 24) + \
 											((r & 0xff) << 16) + \
 											((g & 0xff) <<  8) + \
-											((b & 0xff))
+											((b & 0xff)))
 
-	#define rgb(r,g,b)						(0xff       << 24) + \
+	#define rgb(r,g,b)					(u32)((0xff       << 24) + \
 											((r & 0xff) << 16) + \
 											((g & 0xff) <<  8) + \
-											((b & 0xff))
+											((b & 0xff)))
 
-	#define bgra(b,g,r,a)					((a & 0xff) << 24) + \
+	#define bgra(b,g,r,a)				(u32)(((a & 0xff) << 24) + \
 											((b & 0xff) << 16) + \
 											((g & 0xff) <<  8) + \
-											((r & 0xff))
+											((r & 0xff)))
 
-	#define bgr(b,g,r)						(0xff       << 24) + \
+	#define bgr(b,g,r)					(u32)((0xff       << 24) + \
 											((b & 0xff) << 16) + \
 											((g & 0xff) <<  8) + \
-											((r & 0xff))
+											((r & 0xff)))
 
-	#define alp(rgbaColor)					((rgbaColor >> 24) & 0xff)
-	#define red(rgbaColor)					((rgbaColor >> 16) & 0xff)
-	#define grn(rgbaColor)					((rgbaColor >> 8)  & 0xff)
-	#define blu(rgbaColor)					( rgbaColor        & 0xff)
+	#define alp(rgbaColor)					(u8)((rgbaColor >> 24) & 0xff)
+	#define red(rgbaColor)					(u8)((rgbaColor >> 16) & 0xff)
+	#define grn(rgbaColor)					(u8)((rgbaColor >> 8)  & 0xff)
+	#define blu(rgbaColor)					(u8)( rgbaColor        & 0xff)
 
 
 // Shortcuts for non-NULL data arrays by arbitrary string

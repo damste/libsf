@@ -1,0 +1,441 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="dbf">
+      <UniqueIdentifier>{8096e791-49ed-4742-81ed-32feab4a45c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine">
+      <UniqueIdentifier>{1ee7e15b-89ee-431b-a4f7-7a6ae0e3aa1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Header Files\vjr">
+      <UniqueIdentifier>{b950e008-0e45-4d40-a983-1e2f3dc14120}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sem">
+      <UniqueIdentifier>{a5ad27b1-b3b2-4b12-a703-957eab95183b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dbf\cdx">
+      <UniqueIdentifier>{1ee009ce-42d7-4440-8e8a-52e19f16f7a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dbf\dbf">
+      <UniqueIdentifier>{4719f0a6-f0f5-417a-a49f-3a8461a2d83b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dbf\dbc">
+      <UniqueIdentifier>{f4368dd5-e11c-4a5b-ac7f-b8634567cb75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="commands">
+      <UniqueIdentifier>{ee52b45e-4a6e-4f60-b9a2-5f0423973412}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="compiler">
+      <UniqueIdentifier>{4a03024c-b097-4596-8453-f604db6ceb2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="compiler\vxb">
+      <UniqueIdentifier>{14fafdac-e9d6-46b1-8e73-0226b02bc6a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="objects">
+      <UniqueIdentifier>{19fb788a-5076-4cf9-9b1f-dd5439a6b957}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="compiler\rdc">
+      <UniqueIdentifier>{40d552a6-9f8e-4f3d-a67d-aab5d5fc4b7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="compiler\sourcelight">
+      <UniqueIdentifier>{c29e1094-51b9-450a-9fe6-edff8902f2ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{b805109b-559d-4fc9-84be-09da420c3ce7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="compiler\licoa_assembler">
+      <UniqueIdentifier>{b6632999-217b-4158-b23e-266666a11af6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="debugger">
+      <UniqueIdentifier>{24488a06-c8c0-48f2-b1c0-a78cba850d03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="debugger\jdebic">
+      <UniqueIdentifier>{7a3a50a4-3dc8-4b46-976d-84a3500048ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="commands\functions">
+      <UniqueIdentifier>{18cca64d-61b0-46f1-9850-3d1745737c93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dllfuncs">
+      <UniqueIdentifier>{9bb536c0-4f14-4328-9969-70f9519db298}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="small.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="vjr.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\source\dllfuncs\dll_dispatch_32.asm">
+      <Filter>dllfuncs</Filter>
+    </None>
+    <None Include="..\..\..\..\exodus\tools\rdc\livecode_specs__preliminary.txt">
+      <Filter>compiler\rdc</Filter>
+    </None>
+    <None Include="..\..\..\..\exodus\tools\rdc\rdc_specs.txt">
+      <Filter>compiler\rdc</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="vjr.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\source\vjr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\vjr_sup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\engine.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\dbf\cdx.cpp">
+      <Filter>dbf\cdx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\dbf\dbf.cpp">
+      <Filter>dbf\dbf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\dbf\dbc.cpp">
+      <Filter>dbf\dbc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\commands\commands.cpp">
+      <Filter>commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\compiler\vxb\vxb_compiler.cpp">
+      <Filter>compiler\vxb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\objects\accessors.cpp">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\objects\base.cpp">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\objects\callbacks.cpp">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\objects\copy.cpp">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\objects\create.cpp">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\objects\delete.cpp">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\objects\events.cpp">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\objects\render.cpp">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\objects\reset.cpp">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\sem\sem.cpp">
+      <Filter>sem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\sem\sem_extra_info.cpp">
+      <Filter>sem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\sem\sem_line.cpp">
+      <Filter>sem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\compiler\vxb\vxb_dictionary.cpp">
+      <Filter>compiler\vxb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\test\test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\utils\common\cpp\disk.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\utils\common\cpp\builder.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\utils\common\cpp\ll.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\utils\common\cpp\datum.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\utils\common\cpp\time.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\compiler\licoa\licoa_compiler.cpp">
+      <Filter>compiler\licoa_assembler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\utils\common\cpp\xml\xml.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\debugger\jdebic\jdebic.cpp">
+      <Filter>debugger\jdebic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\commands\functions\z.cpp">
+      <Filter>commands\functions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\commands\functions\a.cpp">
+      <Filter>commands\functions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\commands\functions\b.cpp">
+      <Filter>commands\functions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\commands\functions\c.cpp">
+      <Filter>commands\functions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\commands\functions\d.cpp">
+      <Filter>commands\functions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\commands\functions\e.cpp">
+      <Filter>commands\functions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\commands\functions\f.cpp">
+      <Filter>commands\functions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\commands\functions\g.cpp">
+      <Filter>commands\functions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\commands\functions\h.cpp">
+      <Filter>commands\functions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\commands\functions\i.cpp">
+      <Filter>commands\functions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\commands\functions\j.cpp">
+      <Filter>commands\functions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\commands\functions\k.cpp">
+      <Filter>commands\functions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\commands\functions\l.cpp">
+      <Filter>commands\functions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\commands\functions\m.cpp">
+      <Filter>commands\functions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\commands\functions\n.cpp">
+      <Filter>commands\functions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\commands\functions\o.cpp">
+      <Filter>commands\functions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\commands\functions\p.cpp">
+      <Filter>commands\functions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\commands\functions\q.cpp">
+      <Filter>commands\functions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\commands\functions\r.cpp">
+      <Filter>commands\functions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\commands\functions\s.cpp">
+      <Filter>commands\functions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\commands\functions\t.cpp">
+      <Filter>commands\functions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\commands\functions\u.cpp">
+      <Filter>commands\functions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\commands\functions\v.cpp">
+      <Filter>commands\functions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\commands\functions\w.cpp">
+      <Filter>commands\functions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\commands\functions\x.cpp">
+      <Filter>commands\functions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\commands\functions\y.cpp">
+      <Filter>commands\functions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\commands\functions\rick_in_progress.cpp">
+      <Filter>commands\functions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\dllfuncs\dllfuncs.cpp">
+      <Filter>dllfuncs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\exodus\tools\rdc\rdc_compiler.cpp">
+      <Filter>compiler\rdc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\utils\common\cpp\node.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\test\vjr_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\utils\common\cpp\fifo.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\utils\common\cpp\common_types.h">
+      <Filter>Source Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\fonts.h">
+      <Filter>Source Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\grace.h">
+      <Filter>Source Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\resource.h">
+      <Filter>Source Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\targetver.h">
+      <Filter>Source Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\vjr.h">
+      <Filter>Source Files\Header Files\vjr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\vjr_structs0.h">
+      <Filter>Source Files\Header Files\vjr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\vjr_compile_time_settings.h">
+      <Filter>Source Files\Header Files\vjr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\vjr_const.h">
+      <Filter>Source Files\Header Files\vjr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\vjr_defs.h">
+      <Filter>Source Files\Header Files\vjr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\vjr_globals.h">
+      <Filter>Source Files\Header Files\vjr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\vjr_structs.h">
+      <Filter>Source Files\Header Files\vjr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\engine.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\dbf\cdx_structs.h">
+      <Filter>dbf\cdx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\dbf\cdx_defs.h">
+      <Filter>dbf\cdx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\dbf\dbf_structs.h">
+      <Filter>dbf\dbf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\dbf\dbf.h">
+      <Filter>dbf\dbf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\dbf\dbf_const.h">
+      <Filter>dbf\dbf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\dbf\dbf_defs.h">
+      <Filter>dbf\dbf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\dbf\dbf_globals.h">
+      <Filter>dbf\dbf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\commands\command_defs.h">
+      <Filter>commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\commands\command_sourcelight.h">
+      <Filter>commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\dbf\cdx_const.h">
+      <Filter>dbf\cdx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\objects\accessors.h">
+      <Filter>objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\compiler\vxb\vxb_structs.h">
+      <Filter>compiler\vxb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\compiler\vxb\vxb_globals.h">
+      <Filter>compiler\vxb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\compiler\vxb\vxb_defs.h">
+      <Filter>compiler\vxb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\compiler\vxb\vxb_const.h">
+      <Filter>compiler\vxb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\sem\sem.h">
+      <Filter>sem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\sem\sem_extra_info.h">
+      <Filter>sem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\sem\sem_line.h">
+      <Filter>sem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\compiler\vxb\vxb_dictionary.h">
+      <Filter>compiler\vxb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\compiler\sourcelight\sourcelight_globals.h">
+      <Filter>compiler\sourcelight</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\utils\common\cpp\disk.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\utils\common\cpp\builder.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\utils\common\cpp\ll.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\utils\common\cpp\datum.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\utils\common\cpp\time.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\compiler\licoa\licoa_structs.h">
+      <Filter>compiler\licoa_assembler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\compiler\licoa\licoa_const.h">
+      <Filter>compiler\licoa_assembler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\compiler\licoa\licoa_defs.h">
+      <Filter>compiler\licoa_assembler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\compiler\licoa\licoa_globals.h">
+      <Filter>compiler\licoa_assembler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\utils\common\cpp\xml\xml.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\debugger\jdebic\jdebic.h">
+      <Filter>debugger\jdebic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\exodus\tools\rdc\rdc_const.h">
+      <Filter>compiler\rdc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\exodus\tools\rdc\rdc_defs.h">
+      <Filter>compiler\rdc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\exodus\tools\rdc\rdc_globals.h">
+      <Filter>compiler\rdc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\exodus\tools\rdc\rdc_structs.h">
+      <Filter>compiler\rdc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\utils\common\cpp\node.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\utils\common\cpp\fifo.h">
+      <Filter>common</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <MASM Include="..\..\source\dllfuncs\dll_dispatch_64.asm">
+      <Filter>dllfuncs</Filter>
+    </MASM>
+  </ItemGroup>
+</Project>

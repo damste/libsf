@@ -531,6 +531,7 @@
 		//////////
 		// Based on its type, process it accordingly
 		//////
+			lnLength = 0;
 			if (ifunction_pathname_common(rpar, varPathname, &lnFNameOffset, &lnExtOffset))
 			{
 
@@ -606,7 +607,7 @@
 		//////////
 		// Are we good?
 		//////
-			if (!result->value.data._s8 || result->value.length != lnLength)
+			if (!result->value.data._s8 || result->value.length != lnLength || lnLength == 0)
 			{
 				// Unable to allocate our variable's contents
 				iVariable_delete(result, true);
@@ -683,6 +684,7 @@
 		//////////
 		// Based on its type, process it accordingly
 		//////
+			lnLength = 0;
 			if (ifunction_pathname_common(rpar, varPathname, &lnFNameOffset, &lnExtOffset))
 			{
 

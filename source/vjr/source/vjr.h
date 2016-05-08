@@ -131,7 +131,7 @@
 #endif
 
 	#define _USE_MATH_DEFINES
-	#include <math.h>
+	#include <cmath>
 
 	#include "\libsf\source\vjr\source\3rd_party\mapm\m_apm.h"
 

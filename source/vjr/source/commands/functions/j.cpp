@@ -140,6 +140,10 @@
 				{
 					// We have a drive
 					ptr = varString->value.data._u8;
+
+				} else {
+					// No drive
+					ptr = NULL;
 				}
 
 			} else {

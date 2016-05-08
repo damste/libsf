@@ -780,7 +780,7 @@
 		//////////
 		// Create output variable
 		//////
-			if (tlSameInputType)	result = iVariable_create(varNumber1->varType, NULL, true);
+			if (tlSameInputType)	result = iVariable_create(((varNumber1) ? varNumber1->varType : tnResultType), NULL, true);
 			else					result = iVariable_create(tnResultType, NULL, true);
 
 			if (!result)
@@ -794,7 +794,7 @@
 		// Set the value
 		//////
 			if (!iVariable_setNumeric_toNumericType(result, NULL, &lfResult, NULL, NULL, NULL, NULL))
-				iError_report_byNumber(errorNum, iVariable_get_relatedComp(varNumber1), false);
+				iError_report_byNumber(_ERROR_OUT_OF_MEMORY, iVariable_get_relatedComp(varNumber1), false);
 
 
 		//////////

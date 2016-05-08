@@ -149,7 +149,7 @@ struct SReturnsParams;
 //////
 	struct SSourceLightData
 	{
-		u32			key;									// Refer to _SOURCELIGHT_* constants
+		cu32		key;									// Refer to _SOURCELIGHT_* constants
 
 		// Data, varies based on _SOURCELIGHT_* constants
 		uptr		data1;
