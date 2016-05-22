@@ -139,21 +139,20 @@
 
 	s64 iTime_computeMilliseconds(SYSTEMTIME* time)
 	{
-		s64 lnMs;
+		union
+		{
+			ULARGE_INTEGER	li;
+			FILETIME		lnFt;
+		};
 
 
-		// Compute the milliseconds
-		lnMs	=		(time->wMilliseconds)
-					+	(time->wSecond			* 1000)
-					+	(time->wMinute			* 1000 * 60)
-					+	(time->wHour			* 1000 * 60 * 60)
-					+	(time->wDay				* 1000 * 60 * 60 * 24)
-					+	(time->wMonth			* 1000 * 60 * 60 * 24 * 31)
-					+	(time->wYear			* 1000 * 60 * 60 * 24 * 31 * 366);
-// TODO:  366, Rick?  Really. :-)
+		// Convert to file time
+		SystemTimeToFileTime(time, &lnFt);
+		// Time is now in 100ns ticks since Jan.01.1601
+		// To convert to milliseconds since that time, divide by 10,000:
 
 		// Indicate milliseconds
-		return(lnMs);
+		return((s64)(li.QuadPart / 10000));
 	}
 
 	s64 iTime_getSystemMs(void)
