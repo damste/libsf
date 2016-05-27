@@ -358,20 +358,26 @@
 		POINT		pt;
 		SVariable*	valueMin;
 		SObject*	objRoot;
+		SObject*	objRider;
 
 
 		// Make sure our environment is sane
 		if (!iiDefaultCallback_processMouseVariables(varX, varY, varCtrl, varAlt, varShift, varClick, &lnX, &lnY, &llCtrl, &llAlt, &llShift, &lnClick))
 			return(false);	// Do not continue consuming
 
-
 		// Set the flags
 		llMouseDown = true;
 		llResult	= true;
 
+		// Create a point
+		pt.x = lnX;
+		pt.y = lnY;
+
 		// If focus isn't already set on this control, set focus on this control
+		llFocusChanged = false;
 		if (!obj->p.hasFocus)
 		{
+			// We're changing focus
 			objRoot = iObj_find_rootmostObject(obj);
 			if (objRoot)
 				iObj_clearFocus(win, objRoot, true, true);
@@ -379,9 +385,15 @@
 			iObj_setFocus(win, obj, true);
 			iObj_setDirtyRender_ascent(obj, true, true);
 			llFocusChanged = true;
+		}
 
-		} else {
-			llFocusChanged = false;
+		// Determine if this is an object directly inside a rider
+		objRider = iObj_find_rootmostRider(obj);
+		if (objRider)
+		{
+			// Are they mouse-downing on a control point?
+			obj->firstControlPoint;
+// TODO:  Working here ... need to determine control points for the first child object in a rider, which for subforms are the edges and titlebar, and for other things are controlPoint objects
 		}
 
 		// For forms, they can be clicking down on special things for various operations
@@ -453,10 +465,6 @@
 			llResult = false;
 
 		} else if (obj->objType == _OBJ_TYPE_CAROUSEL) {
-			// Create a point
-			pt.x = lnX;
-			pt.y = lnY;
-
 			// They are they outside of the client area?
 			if (!PtInRect(&obj->rcClient, pt))
 				return(iEvents_carouselMouseDown(win, obj, lnX, lnY, llCtrl, llAlt, llShift, lnClick));

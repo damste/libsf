@@ -664,12 +664,125 @@
 // Finds the root parent and returns that value
 //
 //////
-	SObject* iObj_find_rootmostObject(SObject* obj)
+	SObject* iObj_find_rootmostObject(SObject* obj, bool tlStopAtRiders, bool tlStopAtSubforms, bool tlStopBeforeForm)
 	{
 		// If there's a parent, continue up the chain
 		logfunc(__FUNCTION__);
-		if (obj->parent)		return(iObj_find_rootmostObject(obj->parent));
-		else					return(obj);		// This is the parent-most object
+		if (obj->parent)
+		{
+			// Are we stopping at riders?
+			if (tlStopAtRiders && obj->objType == _OBJ_TYPE_RIDER)
+				return(obj);	// Yes
+
+			// Are we stopping at subforms?
+			if (tlStopAtSubforms && obj->objType == _OBJ_TYPE_SUBFORM)
+				return(obj);	// Yes
+
+			// Are we stopping before the form?
+			if (tlStopBeforeForm && obj->parent->objType == _OBJ_TYPE_FORM)
+				return(obj);	// Yes
+
+			// Continue looking
+			return(iObj_find_rootmostObject(obj->parent, tlStopAtRiders));
+
+		} else {
+			// We're on the match
+			return(obj);		// This is the parent-most object, or it's the first rider we've countered
+		}
+	}
+
+
+
+
+//////////
+//
+// Searching for the rootmost rider, or possibly the most immediate parent rider
+//
+//////
+	SObject* iObj_find_rootmostRider(SObject*  obj, bool tlStopAtFirst)
+	{
+		SObject* objRiderCandidate;
+
+
+		// If there's a parent, continue up the chain
+// Untested function, breakpoint and examine
+_asm int 3;
+		logfunc(__FUNCTION__);
+		if (obj)
+		{
+			// Are we stopping at riders?
+			if (obj->objType == _OBJ_TYPE_RIDER)
+			{
+				// Are we stopping when we first find one?
+				if (tlStopAtFirst)
+					return(obj);	// Yes
+
+				// Search up further for additional candidates
+				objRiderCandidate = iObj_find_rootmostRider(obj->parent, tlStopAtFirst);
+
+				// Did we find one?
+				if (objRiderCandidate)		return(objRiderCandidate);		// Yes, return the higher level
+				else						return(obj);					// No, this is the highest level
+
+			} else {
+				// Continue looking
+				return(iObj_find_rootmostRider(obj->parent, tlStopAtFirst));
+			}
+
+		}
+
+		// If we get here, not found
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Returns all parent riders from the indicated object
+//
+//////
+	s32 iObj_enum_parentRiders(SObject*  obj, SObject** riderListArray, s32 tnRiderListCount)
+	{
+		s32 lnIndex;
+
+
+		// Make sure our environment is sane
+		if (obj && riderListArray && tnRiderListCount >= 1)
+		{
+			lnIndex = 0;
+			return(iiObj_enum_parentRiders(obj, riderListArray, tnRiderListCount, lnIndex));
+		}
+
+		// Something's invalid
+		return(-1);
+	}
+
+	// Typically, don't call this function, but only call iObj_enum_parentRiders()
+	s32 iiObj_enum_parentRiders(SObject*  obj, SObject** riderListArray, s32 tnRiderListCount, s32& tnIndex)
+	{
+		// Enter a loop for flow control
+		do {
+			// Is this a rider?
+			if (obj->objType == _OBJ_TYPE_RIDER)
+			{
+				// Store this entry
+				riderListArray[tnIndex++] = obj;
+
+				// Are we done?
+				if (tnIndex == tnRiderListCount)
+					break;
+			}
+
+			// Can we go shallower?
+			if (obj->parent)
+				return(iiObj_enum_parentRiders(obj, riderListArray, tnRiderListCount, tnIndex));
+
+		} while (0);
+
+		// if we get here, we're done
+		return(tnIndex);
 	}
 
 

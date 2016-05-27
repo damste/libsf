@@ -444,6 +444,7 @@ struct SField
 			SLL			ll;													// Linked list
 			SObject*	parent;												// Pointer to parent object for this instance
 			SObject*	firstChild;											// Pointer to child objects (all objects are containers)
+			SObject*	firstControlPoint;									// Added for riders and carousels, indicates points within which allow rider movement and navigation
 
 #ifdef _EXTRA_DEBUGGING_DATA
 			SDatum		dbgBaseclass;
