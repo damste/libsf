@@ -1090,3 +1090,27 @@
 			if (tlDeleteSelf)
 				free(settings);
 	}
+
+
+
+
+//////////
+//
+// Called to delete the control point.
+//
+//////
+	void iSubobj_deleteControlPoint(SObject* controlPoint, bool tlDeleteSelf)
+	{
+		logfunc(__FUNCTION__);
+		//////////
+		// Free common components
+		//////
+			iObj_deleteCommon(controlPoint);
+
+
+		//////////
+		// Free self
+		//////
+			if (tlDeleteSelf)
+				free(controlPoint);
+	}

@@ -1159,7 +1159,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 		if (tsComps && line)
 		{
 			// Scan starting at the beginning of the line
-			lcData = line->sourceCode->data._u8;
+			lcData = line->sourceCode->data_u8;
 
 			// Iterate through every byte identifying every component we can
 			compLast	= line->compilerInfo->firstComp;
@@ -1315,7 +1315,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 						if (!tacs->firstOnLine || !comp->ll.prev || iComps_areAllPrecedingCompsWhitespaces(comp))
 						{
 							// Physically conduct the exact comparison
-							if (iComps_translateToOthers_testIfMatch(tacs->keyword_cu8, comp->line->sourceCode->data._cu8 + comp->start, tacs->length) == 0)
+							if (iComps_translateToOthers_testIfMatch(tacs->keyword_cu8, comp->line->sourceCode->data_cu8 + comp->start, tacs->length) == 0)
 							{
 								// This is a match
 								llResult			= true;
@@ -2304,7 +2304,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 						{
 							case 1:
 								// Could be .t., .f., .o., .p., .x., .y., .z.
-								c = compThisPlus1->line->sourceCode->data._s8[compThisPlus1->start];
+								c = compThisPlus1->line->sourceCode->data_s8[compThisPlus1->start];
 
 								// Which one is it?
 									 if (c == 't' || c == 'T')		{ iComps_combineN(compThisPlus0, 3, _ICODE_TRUE,				compThisPlus1->iCat, compThisPlus1->color);		lnCombined += 3;	llProcessed = true; }
@@ -2318,7 +2318,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 
 							case 2:
 								// Could be .or.
-								if (_memicmp(compThisPlus1->line->sourceCode->data._s8 + compThisPlus2->start, "or", 2) == 0)
+								if (_memicmp(compThisPlus1->line->sourceCode->data_s8 + compThisPlus2->start, "or", 2) == 0)
 								{
 									iComps_combineN(compThisPlus0, 3, _ICODE_OR, compThisPlus1->iCat, compThisPlus1->color);
 									lnCombined	+= 3;
@@ -2328,14 +2328,14 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 
 							case 3:
 								// Could be .and., .not.
-								if (_memicmp(compThisPlus1->line->sourceCode->data._s8 + compThisPlus2->start, "and", 3) == 0)
+								if (_memicmp(compThisPlus1->line->sourceCode->data_s8 + compThisPlus2->start, "and", 3) == 0)
 								{
 									// AND
 									iComps_combineN(compThisPlus0, 3, _ICODE_AND, compThisPlus1->iCat, compThisPlus1->color);
 									lnCombined	+= 3;
 									llProcessed	= true;
 
-								} else if (_memicmp(compThisPlus1->line->sourceCode->data._s8 + compThisPlus2->start, "not", 3) == 0) {
+								} else if (_memicmp(compThisPlus1->line->sourceCode->data_s8 + compThisPlus2->start, "not", 3) == 0) {
 									// NOT
 									iComps_combineN(compThisPlus0, 3, _ICODE_NOT, compThisPlus1->iCat, compThisPlus1->color);
 									lnCombined	+= 3;
@@ -2345,7 +2345,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 
 							case 4:
 								// Could be .null.
-								if (_memicmp(compThisPlus1->line->sourceCode->data._s8 + compThisPlus2->start, "null", 4) == 0)
+								if (_memicmp(compThisPlus1->line->sourceCode->data_s8 + compThisPlus2->start, "null", 4) == 0)
 								{
 									// NULL
 									iComps_combineN(compThisPlus0, 3, _ICODE_NULL, compThisPlus1->iCat, compThisPlus1->color);
@@ -3140,7 +3140,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 							// Length and allocation
 							lnLength = lnEnd - lnStart;
 							iDatum_allocateSpace(line->sourceCode, lnLength + 1);
-							memset(line->sourceCode->data._s8, 32, lnLength);
+							memset(line->sourceCode->data_s8, 32, lnLength);
 						}
 
 
@@ -3157,7 +3157,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 							// Copy if need be
 							//////
 								if (!tlMakeReferences)
-									memcpy(line->sourceCode->data._s8 + comp->start - lnStart, comp->line->sourceCode->data._cs8 + comp->start, comp->length);
+									memcpy(line->sourceCode->data_s8 + comp->start - lnStart, comp->line->sourceCode->data_cs8 + comp->start, comp->length);
 
 
 							//////////
@@ -3255,7 +3255,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 							// Length and allocation
 							lnLength = lnEnd - lnStart;
 							iDatum_allocateSpace(line->sourceCode, lnLength + 1);
-							memset(line->sourceCode->data._s8, 32, lnLength);
+							memset(line->sourceCode->data_s8, 32, lnLength);
 						}
 
 
@@ -3279,7 +3279,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 							// Copy if need be
 							//////
 								if (!tlMakeReferences)
-									memcpy(line->sourceCode->data._s8 + comp->start - lnStart, comp->line->sourceCode->data._cs8 + comp->start, comp->length);
+									memcpy(line->sourceCode->data_s8 + comp->start - lnStart, comp->line->sourceCode->data_cs8 + comp->start, comp->length);
 
 
 							//////////
@@ -3356,10 +3356,10 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 		s8 buffer[32];
 
 
-		if (comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data._s8 && comp->line->sourceCode_populatedLength > 0)
+		if (comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data_s8 && comp->line->sourceCode_populatedLength > 0)
 		{
 			// Copy to a buffer
-			memcpy(buffer, comp->line->sourceCode->data._s8 + comp->start, min(comp->length, (s32)sizeof(buffer) - 1));
+			memcpy(buffer, comp->line->sourceCode->data_s8 + comp->start, min(comp->length, (s32)sizeof(buffer) - 1));
 			buffer[comp->length] = 0;
 			return(atoi(buffer));
 		}
@@ -3373,10 +3373,10 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 		s8 buffer[32];
 
 
-		if (comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data._s8 && comp->line->sourceCode_populatedLength > 0)
+		if (comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data_s8 && comp->line->sourceCode_populatedLength > 0)
 		{
 			// Copy to a buffer
-			memcpy(buffer, comp->line->sourceCode->data._s8 + comp->start, min(comp->length, (s32)sizeof(buffer) - 1));
+			memcpy(buffer, comp->line->sourceCode->data_s8 + comp->start, min(comp->length, (s32)sizeof(buffer) - 1));
 			buffer[comp->length] = 0;
 			return(_atoi64(buffer));
 		}
@@ -3390,10 +3390,10 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 		s8 buffer[32];
 
 
-		if (comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data._s8 && comp->line->sourceCode_populatedLength > 0)
+		if (comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data_s8 && comp->line->sourceCode_populatedLength > 0)
 		{
 			// Copy to a buffer
-			memcpy(buffer, comp->line->sourceCode->data._s8 + comp->start, min(comp->length, (s32)sizeof(buffer) - 1));
+			memcpy(buffer, comp->line->sourceCode->data_s8 + comp->start, min(comp->length, (s32)sizeof(buffer) - 1));
 			buffer[comp->length] = 0;
 			return(atof(buffer));
 		}
@@ -3419,7 +3419,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 	{
 		s8 buffer[32];
 
-		memcpy(buffer, comp->line->sourceCode->data._s8 + comp->start, min(comp->length, (s32)sizeof(buffer) - 1));
+		memcpy(buffer, comp->line->sourceCode->data_s8 + comp->start, min(comp->length, (s32)sizeof(buffer) - 1));
 		buffer[comp->length] = 0;
 		return(atoi(buffer));
 	}
@@ -3428,7 +3428,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 	{
 		s8 buffer[32];
 
-		memcpy(buffer, comp->line->sourceCode->data._s8 + comp->start, min(comp->length, (s32)sizeof(buffer) - 1));
+		memcpy(buffer, comp->line->sourceCode->data_s8 + comp->start, min(comp->length, (s32)sizeof(buffer) - 1));
 		buffer[comp->length] = 0;
 		return(_atoi64(buffer));
 	}
@@ -3437,7 +3437,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 	{
 		s8 buffer[32];
 
-		memcpy(buffer, comp->line->sourceCode->data._s8 + comp->start, min(comp->length, (s32)sizeof(buffer) - 1));
+		memcpy(buffer, comp->line->sourceCode->data_s8 + comp->start, min(comp->length, (s32)sizeof(buffer) - 1));
 		buffer[comp->length] = 0;
 		return(atof(buffer));
 	}
@@ -3453,13 +3453,13 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 			if (comp && comp->line && comp->line->sourceCode)
 			{
 				// Store the component's name
-				datum->data._cs8	= comp->line->sourceCode->data._cs8 + comp->start;
+				datum->data_cs8	= comp->line->sourceCode->data_cs8 + comp->start;
 				datum->length		= comp->length;
 
 			} else if (varSys2015) {
 				// Create a unique name
 				*varSys2015			= iFunction_sys2015(0, 0);
-				datum->data._cs8	= (*varSys2015)->value.data._cs8;
+				datum->data_cs8	= (*varSys2015)->value.data_cs8;
 				datum->length		= (*varSys2015)->value.length;
 			}
 		}
@@ -3626,12 +3626,12 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 
 
 		// First character must be alpha
-		if (isAlpha(comp->line->sourceCode->data._s8[comp->start]))
+		if (isAlpha(comp->line->sourceCode->data_s8[comp->start]))
 		{
 			for (lnI = 1; lnI < comp->length; lnI++)
 			{
 				// Test this character
-				c = comp->line->sourceCode->data._s8[comp->start + lnI];
+				c = comp->line->sourceCode->data_s8[comp->start + lnI];
 				if (!isAlpha(c) && !isNumeric(c))
 					return(false);
 			}
@@ -3782,7 +3782,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 										// This is a match, visualize it as:  [text]
 										memset(accumBuffer, 0, sizeof(accumBuffer));
 										sprintf(accumBuffer, "[");
-										memcpy(accumBuffer + strlen(accumBuffer), comp->line->sourceCode->data._s8 + comp->start, min(comp->length, (s32)sizeof(accumBuffer) - 20));
+										memcpy(accumBuffer + strlen(accumBuffer), comp->line->sourceCode->data_s8 + comp->start, min(comp->length, (s32)sizeof(accumBuffer) - 20));
 
 										if ((lciCodeName = iiComps_visualize_lookup_iCode(comp->iCode)))	sprintf(accumBuffer + strlen(accumBuffer), " %s,", lciCodeName);
 										else																sprintf(accumBuffer + strlen(accumBuffer), " %d,", comp->iCode);
@@ -3822,7 +3822,7 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 								// Visualize the raw text as an unknown form
 								memset(accumBuffer, 0, sizeof(accumBuffer));
 								sprintf(accumBuffer, "[");
-								memcpy(accumBuffer+ strlen(accumBuffer), comp->line->sourceCode->data._s8 + comp->start, min(comp->length, (s32)sizeof(accumBuffer) - 20));
+								memcpy(accumBuffer+ strlen(accumBuffer), comp->line->sourceCode->data_s8 + comp->start, min(comp->length, (s32)sizeof(accumBuffer) - 20));
 
 								if ((lciCodeName = iiComps_visualize_lookup_iCode(comp->iCode)))	sprintf(accumBuffer + strlen(accumBuffer), " %s,", lciCodeName);
 								else																sprintf(accumBuffer + strlen(accumBuffer), " %d,", comp->iCode);
@@ -4954,7 +4954,7 @@ debug_break;
 					{
 						// Physically conduct the exact comparison
 						if (iComps_xlatToComps_withTest(lacs->keyword_cu8,
-														comp->line->sourceCode->data._u8 + comp->start,
+														comp->line->sourceCode->data_u8 + comp->start,
 														lacs->length) == 0)
 						{
 							// This is a match
@@ -5204,7 +5204,7 @@ debug_break;
 			funcNew->ll.uniqueId = iGetNextUid();
 
 			// Store name if provided
-			if (compName && compName->line && compName->line->sourceCode && compName->line->sourceCode->data._data)
+			if (compName && compName->line && compName->line->sourceCode && compName->line->sourceCode->_data)
 			{
 				// There is a component, a line, and source code exists
 				// Does the component exist properly?
@@ -5212,7 +5212,7 @@ debug_break;
 				{
 					// Yes, store the name
 					iDatum_duplicate(	&funcNew->name,
-										compName->line->sourceCode->data._u8 + compName->start,
+										compName->line->sourceCode->data_u8 + compName->start,
 										compName->length);
 				}
 			}
@@ -5532,11 +5532,11 @@ debug_break;
 							// Allocate 8 bytes
 							varNew->isValueAllocated = true;
 							iDatum_allocateSpace(&varNew->value, 8);
-							if (varNew->value.data._data && tnVarType == _VAR_TYPE_DATETIME)
+							if (varNew->value._data && tnVarType == _VAR_TYPE_DATETIME)
 							{
 								// Datetime
-								varNew->value.data._dt->julian	= _DATETIME_BLANK_DATETIME_JULIAN;
-								varNew->value.data._dt->seconds	= _DATETIME_BLANK_DATETIME_SECONDS;
+								varNew->value.data_dt->julian	= _DATETIME_BLANK_DATETIME_JULIAN;
+								varNew->value.data_dt->seconds	= _DATETIME_BLANK_DATETIME_SECONDS;
 							}
 							break;
 
@@ -5567,7 +5567,7 @@ debug_break;
 						case _VAR_TYPE_BI:
 						case _VAR_TYPE_BFP:
 							tnBitsFor_bfp_bi		= max(tnBitsFor_bfp_bi, 128);
-							varNew->value.data._big	= m_apm_init();
+							varNew->value.data_big	= m_apm_init();
 							varNew->value.length	= tnBitsFor_bfp_bi;
 
 							// Store the bits for this creation in
@@ -5609,7 +5609,7 @@ debug_break;
 //////
 	SVariable* iVariable_createAndPopulate_byDatum(s32 tnVarType, SDatum* datum, bool tlCreateReference)
 	{
-		if (datum)		return(iVariable_createAndPopulate_byText(tnVarType, datum->data._u8, datum->length, tlCreateReference));
+		if (datum)		return(iVariable_createAndPopulate_byText(tnVarType, datum->data_u8, datum->length, tlCreateReference));
 		else			return(NULL);
 	}
 
@@ -5636,7 +5636,7 @@ debug_break;
 					if (tlCreateReference)
 					{
 						// Reference
-						var->value.data._u8	= tcData;
+						var->value.data_u8	= tcData;
 						var->value.length	= tnDataLength;
 
 					} else {
@@ -5752,11 +5752,11 @@ debug_break;
 					if (result)
 					{
 						// Reset everything
-						memset(result->value.data._s8, 32, result->value.length);
+						memset(result->value.data_s8, 32, result->value.length);
 
 						// Copy the radix content (in reverse order) to its proper location in the prefix and postfix areas
 						for (lnI = 0; lnI < lnLength; lnI++)
-							result->value.data._s8[tnPrefixChars + lnLength - lnI - 1] = buffer[lnI];
+							result->value.data_s8[tnPrefixChars + lnLength - lnI - 1] = buffer[lnI];
 					}
 
 
@@ -6307,7 +6307,7 @@ debug_break;
 			if (comp)
 			{
 				// Use the component
-				lcVarName		= comp->line->sourceCode->data._cs8 + comp->start;
+				lcVarName		= comp->line->sourceCode->data_cs8 + comp->start;
 				lnVarNameLength	= (u32)comp->length;
 
 			} else {
@@ -6450,7 +6450,7 @@ debug_break;
 			for (var = varRoot, lnDepth = 0; var && lnDepth < tnMaxVarDepth; var = var->ll.nextVar, lnDepth++)
 			{
 				// Is the name the same length?  And if so, does it match?
-				if (var->name.length == (s32)tnVarNameLength && _memicmp(tcVarName, var->name.data._s8, tnVarNameLength) == 0)
+				if (var->name.length == (s32)tnVarNameLength && _memicmp(tcVarName, var->name.data_s8, tnVarNameLength) == 0)
 				{
 					// This is the name, but for certain types we can reference sub-properties below
 					switch (var->varType)
@@ -6460,7 +6460,7 @@ debug_break;
 							if ((compNext1 = comp->ll.nextComp) && compNext1->iCode == _ICODE_DOT && (compNext2 = compNext1->ll.nextComp) && (compNext2->iCode == _ICODE_ALPHA || compNext2->iCode == _ICODE_ALPHANUMERIC))
 							{
 								// We've found something like "lo." where lo is an object, and there is a name reference after it
-								var = iObj_getPropertyAsVariable(var->obj, compNext2->line->sourceCode->data._s8 + compNext2->start, compNext2->length, compNext2, tlCreateAsReference);
+								var = iObj_getPropertyAsVariable(var->obj, compNext2->line->sourceCode->data_s8 + compNext2->start, compNext2->length, compNext2, tlCreateAsReference);
 							}
 							// If we get here, then they did not have a "." after the the object reference, and are referencing the object directly
 							break;
@@ -6651,34 +6651,34 @@ debug_break;
 				switch (gsProps_master[lnI].varType)
 				{
 					case _VAR_TYPE_S8:
-						*gsProps_master[lnI].varInit->value.data._s8 = gsProps_master[lnI]._s8;
+						*gsProps_master[lnI].varInit->value.data_s8 = gsProps_master[lnI]._s8;
 						break;
 					case _VAR_TYPE_S16:
-						*gsProps_master[lnI].varInit->value.data._s16 = gsProps_master[lnI]._s16;
+						*gsProps_master[lnI].varInit->value.data_s16 = gsProps_master[lnI]._s16;
 						break;
 					case _VAR_TYPE_S32:
-						*gsProps_master[lnI].varInit->value.data._s32 = gsProps_master[lnI]._s32;
+						*gsProps_master[lnI].varInit->value.data_s32 = gsProps_master[lnI]._s32;
 						break;
 					case _VAR_TYPE_S64:
-						*gsProps_master[lnI].varInit->value.data._s64 = gsProps_master[lnI]._s64;
+						*gsProps_master[lnI].varInit->value.data_s64 = gsProps_master[lnI]._s64;
 						break;
 					case _VAR_TYPE_U8:
-						*gsProps_master[lnI].varInit->value.data._u8 = gsProps_master[lnI]._u8;
+						*gsProps_master[lnI].varInit->value.data_u8 = gsProps_master[lnI]._u8;
 						break;
 					case _VAR_TYPE_U16:
-						*gsProps_master[lnI].varInit->value.data._u16 = gsProps_master[lnI]._u16;
+						*gsProps_master[lnI].varInit->value.data_u16 = gsProps_master[lnI]._u16;
 						break;
 					case _VAR_TYPE_U32:
-						*gsProps_master[lnI].varInit->value.data._u32 = gsProps_master[lnI]._u32;
+						*gsProps_master[lnI].varInit->value.data_u32 = gsProps_master[lnI]._u32;
 						break;
 					case _VAR_TYPE_U64:
-						*gsProps_master[lnI].varInit->value.data._u64 = gsProps_master[lnI]._u64;
+						*gsProps_master[lnI].varInit->value.data_u64 = gsProps_master[lnI]._u64;
 						break;
 					case _VAR_TYPE_F32:
-						*gsProps_master[lnI].varInit->value.data._f32 = gsProps_master[lnI]._f32;
+						*gsProps_master[lnI].varInit->value.data_f32 = gsProps_master[lnI]._f32;
 						break;
 					case _VAR_TYPE_F64:
-						*gsProps_master[lnI].varInit->value.data._f64 = gsProps_master[lnI]._f64;
+						*gsProps_master[lnI].varInit->value.data_f64 = gsProps_master[lnI]._f64;
 						break;
 
 					case _VAR_TYPE_NULL:
@@ -6695,7 +6695,7 @@ debug_break;
 						break;
 
 					case _VAR_TYPE_LOGICAL:
-						*gsProps_master[lnI].varInit->value.data._s8 = gsProps_master[lnI]._s8;
+						*gsProps_master[lnI].varInit->value.data_s8 = gsProps_master[lnI]._s8;
 						break;
 
 					case _VAR_TYPE_OBJECT:
@@ -6986,8 +6986,8 @@ if (!gsProps_master[lnI].varInit)
 
 							case _VAR_TYPE_BFP:
 							case _VAR_TYPE_BI:
-								varDst->value.data._big = m_apm_init();
-								m_apm_copy(varDst->value.data._big, varSrc->value.data._big);
+								varDst->value.data_big = m_apm_init();
+								m_apm_copy(varDst->value.data_big, varSrc->value.data_big);
 								break;
 
 							default:
@@ -7060,7 +7060,7 @@ if (!gsProps_master[lnI].varInit)
 
 		// Are we still valid?
 // TODO:  Need to check the variable type before performing the varDst->value test
-		if (varDst && varSrc && varDst->value.data._data && varSrc->value.data._data && varDst->varType != _VAR_TYPE_NULL && varSrc->varType != _VAR_TYPE_NULL)
+		if (varDst && varSrc && varDst->value._data && varSrc->value._data && varDst->varType != _VAR_TYPE_NULL && varSrc->varType != _VAR_TYPE_NULL)
 		{
 			// See if they're the same type
 			if (varDst->varType == varSrc->varType && varDst->value.length == varSrc->value.length)
@@ -7069,19 +7069,19 @@ if (!gsProps_master[lnI].varInit)
 				switch (varDst->value.length)
 				{
 					case 1:		// Do a fast copy
-						*varDst->value.data._u8 = *varSrc->value.data._u8;
+						*varDst->value.data_u8 = *varSrc->value.data_u8;
 						break;
 
 					case 2:		// Do a fast copy
-						*varDst->value.data._u16 = *varSrc->value.data._u16;
+						*varDst->value.data_u16 = *varSrc->value.data_u16;
 						break;
 
 					case 4:		// Do a fast copy
-						*varDst->value.data._u32 = *varSrc->value.data._u32;
+						*varDst->value.data_u32 = *varSrc->value.data_u32;
 						break;
 
 					default:	// Do a full copy
-						memcpy(varDst->value.data._s8, varSrc->value.data._s8, varDst->value.length);
+						memcpy(varDst->value.data_s8, varSrc->value.data_s8, varDst->value.length);
 						break;
 				}
 
@@ -7164,7 +7164,7 @@ if (!gsProps_master[lnI].varInit)
 
 
 		// Make sure our environment is sane
-		if (varDst && varDst->value.data._data && varDst->value.length > 0)
+		if (varDst && varDst->value._data && varDst->value.length > 0)
 		{
 			//////////
 			// Process the ones that can handle a direct conversion
@@ -7173,12 +7173,12 @@ if (!gsProps_master[lnI].varInit)
 				{
 					case _VAR_TYPE_F32:
 						// For any type that can be converted, convert it
-						     if (val_f32)		*varDst->value.data._f32 = (f32)*val_f32;
-						else if (val_f64)		*varDst->value.data._f32 = (f32)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_F32, NULL, false, NULL);
-						else if (val_s32)		*varDst->value.data._f32 = (f32)iErrorCandidate_signalOutOfRange_s32(NULL, *val_s32, _VAR_TYPE_F32, NULL, false, NULL);
-						else if (val_u32)		*varDst->value.data._f32 = (f32)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_F32, NULL, false, NULL);
-						else if (val_s64)		*varDst->value.data._f32 = (f32)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_F32, NULL, false, NULL);
-						else if (val_u64)		*varDst->value.data._f32 = (f32)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_F32, NULL, false, NULL);
+						     if (val_f32)		*varDst->value.data_f32 = (f32)*val_f32;
+						else if (val_f64)		*varDst->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_F32, NULL, false, NULL);
+						else if (val_s32)		*varDst->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_s32(NULL, *val_s32, _VAR_TYPE_F32, NULL, false, NULL);
+						else if (val_u32)		*varDst->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_F32, NULL, false, NULL);
+						else if (val_s64)		*varDst->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_F32, NULL, false, NULL);
+						else if (val_u64)		*varDst->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_F32, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7188,12 +7188,12 @@ if (!gsProps_master[lnI].varInit)
 
 					case _VAR_TYPE_F64:
 						// For any type that can be converted, convert it
-						     if (val_f32)		*varDst->value.data._f64 = (f64)*val_f32;
-						else if (val_f64)		*varDst->value.data._f64 = (f64)*val_f64;
-						else if (val_s32)		*varDst->value.data._f64 = (f64)*val_s32;
-						else if (val_u32)		*varDst->value.data._f64 = (f64)*val_u32;
-						else if (val_s64)		*varDst->value.data._f64 = (f64)*val_s64;
-						else if (val_u64)		*varDst->value.data._f64 = (f64)*val_u64;
+						     if (val_f32)		*varDst->value.data_f64 = (f64)*val_f32;
+						else if (val_f64)		*varDst->value.data_f64 = (f64)*val_f64;
+						else if (val_s32)		*varDst->value.data_f64 = (f64)*val_s32;
+						else if (val_u32)		*varDst->value.data_f64 = (f64)*val_u32;
+						else if (val_s64)		*varDst->value.data_f64 = (f64)*val_s64;
+						else if (val_u64)		*varDst->value.data_f64 = (f64)*val_u64;
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7203,12 +7203,12 @@ if (!gsProps_master[lnI].varInit)
 
 					case _VAR_TYPE_S32:
 						// For any type that can be converted, convert it
-						     if (val_f32)		*varDst->value.data._s32 = (s32)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_S32, NULL, false, NULL);
-						else if (val_f64)		*varDst->value.data._s32 = (s32)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_S32, NULL, false, NULL);
-						else if (val_s32)		*varDst->value.data._s32 = (s32)*val_s32;
-						else if (val_u32)		*varDst->value.data._s32 = (s32)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_S32, NULL, false, NULL);
-						else if (val_s64)		*varDst->value.data._s32 = (s32)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_S32, NULL, false, NULL);
-						else if (val_u64)		*varDst->value.data._s32 = (s32)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_S32, NULL, false, NULL);
+						     if (val_f32)		*varDst->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_S32, NULL, false, NULL);
+						else if (val_f64)		*varDst->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_S32, NULL, false, NULL);
+						else if (val_s32)		*varDst->value.data_s32 = (s32)*val_s32;
+						else if (val_u32)		*varDst->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_S32, NULL, false, NULL);
+						else if (val_s64)		*varDst->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_S32, NULL, false, NULL);
+						else if (val_u64)		*varDst->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_S32, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7218,12 +7218,12 @@ if (!gsProps_master[lnI].varInit)
 
 					case _VAR_TYPE_U32:
 						// For any type that can be converted, convert it
-						     if (val_f32)		*varDst->value.data._u32 = (u32)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_U32, NULL, false, NULL);
-						else if (val_f64)		*varDst->value.data._u32 = (u32)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_U32, NULL, false, NULL);
-						else if (val_s32)		*varDst->value.data._u32 = (u32)*val_s32;
-						else if (val_u32)		*varDst->value.data._u32 = (u32)*val_u32;
-						else if (val_s64)		*varDst->value.data._u32 = (u32)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_U32, NULL, false, NULL);
-						else if (val_u64)		*varDst->value.data._u32 = (u32)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_U32, NULL, false, NULL);
+						     if (val_f32)		*varDst->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_U32, NULL, false, NULL);
+						else if (val_f64)		*varDst->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_U32, NULL, false, NULL);
+						else if (val_s32)		*varDst->value.data_u32 = (u32)*val_s32;
+						else if (val_u32)		*varDst->value.data_u32 = (u32)*val_u32;
+						else if (val_s64)		*varDst->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_U32, NULL, false, NULL);
+						else if (val_u64)		*varDst->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_U32, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7234,12 +7234,12 @@ if (!gsProps_master[lnI].varInit)
 					case _VAR_TYPE_CURRENCY:
 					case _VAR_TYPE_S64:
 						// For any type that can be converted, convert it
-						     if (val_f32)		*varDst->value.data._s64 = (s64)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_S64, NULL, false, NULL);
-						else if (val_f64)		*varDst->value.data._s64 = (s64)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_S64, NULL, false, NULL);
-						else if (val_s32)		*varDst->value.data._s64 = (s64)*val_s32;
-						else if (val_u32)		*varDst->value.data._s64 = (s64)*val_u32;
-						else if (val_s64)		*varDst->value.data._s64 = (s64)*val_s64;
-						else if (val_u64)		*varDst->value.data._s64 = (s64)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_S64, NULL, false, NULL);
+						     if (val_f32)		*varDst->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_S64, NULL, false, NULL);
+						else if (val_f64)		*varDst->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_S64, NULL, false, NULL);
+						else if (val_s32)		*varDst->value.data_s64 = (s64)*val_s32;
+						else if (val_u32)		*varDst->value.data_s64 = (s64)*val_u32;
+						else if (val_s64)		*varDst->value.data_s64 = (s64)*val_s64;
+						else if (val_u64)		*varDst->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_S64, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7249,12 +7249,12 @@ if (!gsProps_master[lnI].varInit)
 
 					case _VAR_TYPE_U64:
 						// For any type that can be converted, convert it
-						     if (val_f32)		*varDst->value.data._u64 = (u64)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_U64, NULL, false, NULL);
-						else if (val_f64)		*varDst->value.data._u64 = (u64)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_U64, NULL, false, NULL);
-						else if (val_s32)		*varDst->value.data._u64 = (u64)*val_s32;
-						else if (val_u32)		*varDst->value.data._u64 = (u64)*val_u32;
-						else if (val_s64)		*varDst->value.data._u64 = (u64)*val_s64;
-						else if (val_u64)		*varDst->value.data._u64 = (u64)*val_u64;
+						     if (val_f32)		*varDst->value.data_u64 = (u64)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_U64, NULL, false, NULL);
+						else if (val_f64)		*varDst->value.data_u64 = (u64)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_U64, NULL, false, NULL);
+						else if (val_s32)		*varDst->value.data_u64 = (u64)*val_s32;
+						else if (val_u32)		*varDst->value.data_u64 = (u64)*val_u32;
+						else if (val_s64)		*varDst->value.data_u64 = (u64)*val_s64;
+						else if (val_u64)		*varDst->value.data_u64 = (u64)*val_u64;
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7264,12 +7264,12 @@ if (!gsProps_master[lnI].varInit)
 
 					case _VAR_TYPE_S8:
 						// For any type that can be converted, convert it
-						     if (val_f32)		*varDst->value.data._s8 = (s8)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_S8, NULL, false, NULL);
-						else if (val_f64)		*varDst->value.data._s8 = (s8)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_S8, NULL, false, NULL);
-						else if (val_s32)		*varDst->value.data._s8 = (s8)iErrorCandidate_signalOutOfRange_s32(NULL, *val_s32, _VAR_TYPE_S8, NULL, false, NULL);
-						else if (val_u32)		*varDst->value.data._s8 = (s8)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_S8, NULL, false, NULL);
-						else if (val_s64)		*varDst->value.data._s8 = (s8)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_S8, NULL, false, NULL);
-						else if (val_u64)		*varDst->value.data._s8 = (s8)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_S8, NULL, false, NULL);
+						     if (val_f32)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_S8, NULL, false, NULL);
+						else if (val_f64)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_S8, NULL, false, NULL);
+						else if (val_s32)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_s32(NULL, *val_s32, _VAR_TYPE_S8, NULL, false, NULL);
+						else if (val_u32)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_S8, NULL, false, NULL);
+						else if (val_s64)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_S8, NULL, false, NULL);
+						else if (val_u64)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_S8, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7279,12 +7279,12 @@ if (!gsProps_master[lnI].varInit)
 
 					case _VAR_TYPE_U8:
 						// For any type that can be converted, convert it
-						     if (val_f32)		*varDst->value.data._u8 = (u8)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_U8, NULL, false, NULL);
-						else if (val_f64)		*varDst->value.data._u8 = (u8)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_U8, NULL, false, NULL);
-						else if (val_s32)		*varDst->value.data._u8 = (u8)iErrorCandidate_signalOutOfRange_s32(NULL, *val_s32, _VAR_TYPE_U8, NULL, false, NULL);
-						else if (val_u32)		*varDst->value.data._u8 = (u8)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_U8, NULL, false, NULL);
-						else if (val_s64)		*varDst->value.data._u8 = (u8)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_U8, NULL, false, NULL);
-						else if (val_u64)		*varDst->value.data._u8 = (u8)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_U8, NULL, false, NULL);
+						     if (val_f32)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_U8, NULL, false, NULL);
+						else if (val_f64)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_U8, NULL, false, NULL);
+						else if (val_s32)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_s32(NULL, *val_s32, _VAR_TYPE_U8, NULL, false, NULL);
+						else if (val_u32)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_U8, NULL, false, NULL);
+						else if (val_s64)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_U8, NULL, false, NULL);
+						else if (val_u64)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_U8, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7294,12 +7294,12 @@ if (!gsProps_master[lnI].varInit)
 
 					case _VAR_TYPE_S16:
 						// For any type that can be converted, convert it
-						     if (val_f32)		*varDst->value.data._s16 = (s16)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_S16, NULL, false, NULL);
-						else if (val_f64)		*varDst->value.data._s16 = (s16)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_S16, NULL, false, NULL);
-						else if (val_s32)		*varDst->value.data._s16 = (s16)iErrorCandidate_signalOutOfRange_s32(NULL, *val_s32, _VAR_TYPE_S16, NULL, false, NULL);
-						else if (val_u32)		*varDst->value.data._s16 = (s16)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_S16, NULL, false, NULL);
-						else if (val_s64)		*varDst->value.data._s16 = (s16)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_S16, NULL, false, NULL);
-						else if (val_u64)		*varDst->value.data._s16 = (s16)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_S16, NULL, false, NULL);
+						     if (val_f32)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_S16, NULL, false, NULL);
+						else if (val_f64)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_S16, NULL, false, NULL);
+						else if (val_s32)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_s32(NULL, *val_s32, _VAR_TYPE_S16, NULL, false, NULL);
+						else if (val_u32)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_S16, NULL, false, NULL);
+						else if (val_s64)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_S16, NULL, false, NULL);
+						else if (val_u64)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_S16, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7309,12 +7309,12 @@ if (!gsProps_master[lnI].varInit)
 
 					case _VAR_TYPE_U16:
 						// For any type that can be converted, convert it
-						     if (val_f32)		*varDst->value.data._u16 = (u16)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_U16, NULL, false, NULL);
-						else if (val_f64)		*varDst->value.data._u16 = (u16)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_U16, NULL, false, NULL);
-						else if (val_s32)		*varDst->value.data._u16 = (u16)iErrorCandidate_signalOutOfRange_s32(NULL, *val_s32, _VAR_TYPE_U16, NULL, false, NULL);
-						else if (val_u32)		*varDst->value.data._u16 = (u16)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_U16, NULL, false, NULL);
-						else if (val_s64)		*varDst->value.data._u16 = (u16)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_U16, NULL, false, NULL);
-						else if (val_u64)		*varDst->value.data._u16 = (u16)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_U16, NULL, false, NULL);
+						     if (val_f32)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_U16, NULL, false, NULL);
+						else if (val_f64)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_U16, NULL, false, NULL);
+						else if (val_s32)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_s32(NULL, *val_s32, _VAR_TYPE_U16, NULL, false, NULL);
+						else if (val_u32)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_U16, NULL, false, NULL);
+						else if (val_s64)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_U16, NULL, false, NULL);
+						else if (val_u64)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_U16, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7371,12 +7371,12 @@ do_as_numeric:
 
 								case _VAR_TYPE_LOGICAL:
 									// .F. if 0, otherwise set to .T.
-										 if (val_f32)		*varDst->value.data._u8 = (((u8)*val_f32 == 0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
-									else if (val_f64)		*varDst->value.data._u8 = (((u8)*val_f64 == 0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
-									else if (val_s32)		*varDst->value.data._u8 = (((u8)*val_s32 == 0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
-									else if (val_u32)		*varDst->value.data._u8 = (((u8)*val_u32 == 0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
-									else if (val_s64)		*varDst->value.data._u8 = (((u8)*val_s64 == 0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
-									else if (val_u64)		*varDst->value.data._u8 = (((u8)*val_u64 == 0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
+										 if (val_f32)		*varDst->value.data_u8 = (((u8)*val_f32 == 0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
+									else if (val_f64)		*varDst->value.data_u8 = (((u8)*val_f64 == 0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
+									else if (val_s32)		*varDst->value.data_u8 = (((u8)*val_s32 == 0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
+									else if (val_u32)		*varDst->value.data_u8 = (((u8)*val_u32 == 0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
+									else if (val_s64)		*varDst->value.data_u8 = (((u8)*val_s64 == 0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
+									else if (val_u64)		*varDst->value.data_u8 = (((u8)*val_u64 == 0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
 									else {
 										// Every parameter they passed was NULL
 										debug_break;
@@ -7430,10 +7430,10 @@ do_as_numeric:
 		varSrc = iiVariable_terminateIndirect(varSrc);
 
 		// Make sure our environment is sane
-		if (varDst && varDst->value.data._data && varDst->value.length > 0 && varSrc && varSrc->value.data._data && varSrc->value.length > 0)
+		if (varDst && varDst->value._data && varDst->value.length > 0 && varSrc && varSrc->value._data && varSrc->value.length > 0)
 		{
 			// Copy our value for shorthand references
-			data_s8 = varSrc->value.data._s8;
+			data_s8 = varSrc->value.data_s8;
 
 			//////////
 			// Process the ones that can handle a direct conversion
@@ -7442,17 +7442,17 @@ do_as_numeric:
 				{
 					case _VAR_TYPE_F32:
 						// For any type that can be converted, convert it
-						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data._f32 = (f32)*val_f32;
-						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data._f32 = (f32)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_F32, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data._f32 = (f32)iErrorCandidate_signalOutOfRange_s32(NULL, *val_s32, _VAR_TYPE_F32, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data._f32 = (f32)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_F32, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data._f32 = (f32)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_F32, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data._f32 = (f32)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_F32, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S8)		*varDst->value.data._f32 = (f32)*val_s8;
-						else if (varSrc->varType == _VAR_TYPE_U8)		*varDst->value.data._f32 = (f32)*val_u8;
-						else if (varSrc->varType == _VAR_TYPE_S16)		*varDst->value.data._f32 = (f32)*val_s16;
-						else if (varSrc->varType == _VAR_TYPE_U16)		*varDst->value.data._f32 = (f32)*val_u16;
-						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data._f32 = (f32)iErrorCandidate_signalOutOfRange_numeric(NULL, &varSrc->value, _VAR_TYPE_F32, NULL, false, NULL);
+						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data_f32 = (f32)*val_f32;
+						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_F32, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_s32(NULL, *val_s32, _VAR_TYPE_F32, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_F32, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_F32, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_F32, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S8)		*varDst->value.data_f32 = (f32)*val_s8;
+						else if (varSrc->varType == _VAR_TYPE_U8)		*varDst->value.data_f32 = (f32)*val_u8;
+						else if (varSrc->varType == _VAR_TYPE_S16)		*varDst->value.data_f32 = (f32)*val_s16;
+						else if (varSrc->varType == _VAR_TYPE_U16)		*varDst->value.data_f32 = (f32)*val_u16;
+						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_numeric(NULL, &varSrc->value, _VAR_TYPE_F32, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7462,17 +7462,17 @@ do_as_numeric:
 
 					case _VAR_TYPE_F64:
 						// For any type that can be converted, convert it
-						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data._f64 = (f64)*val_f32;
-						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data._f64 = (f64)*val_f64;
-						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data._f64 = (f64)*val_s32;
-						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data._f64 = (f64)*val_u32;
-						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data._f64 = (f64)*val_s64;
-						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data._f64 = (f64)*val_u64;
-						else if (varSrc->varType == _VAR_TYPE_S8)		*varDst->value.data._f64 = (f64)*val_s8;
-						else if (varSrc->varType == _VAR_TYPE_U8)		*varDst->value.data._f64 = (f64)*val_u8;
-						else if (varSrc->varType == _VAR_TYPE_S16)		*varDst->value.data._f64 = (f64)*val_s16;
-						else if (varSrc->varType == _VAR_TYPE_U16)		*varDst->value.data._f64 = (f64)*val_u16;
-						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data._f64 = (f64)iErrorCandidate_signalOutOfRange_numeric(NULL, &varSrc->value, _VAR_TYPE_F64, NULL, false, NULL);
+						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data_f64 = (f64)*val_f32;
+						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data_f64 = (f64)*val_f64;
+						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data_f64 = (f64)*val_s32;
+						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data_f64 = (f64)*val_u32;
+						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data_f64 = (f64)*val_s64;
+						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data_f64 = (f64)*val_u64;
+						else if (varSrc->varType == _VAR_TYPE_S8)		*varDst->value.data_f64 = (f64)*val_s8;
+						else if (varSrc->varType == _VAR_TYPE_U8)		*varDst->value.data_f64 = (f64)*val_u8;
+						else if (varSrc->varType == _VAR_TYPE_S16)		*varDst->value.data_f64 = (f64)*val_s16;
+						else if (varSrc->varType == _VAR_TYPE_U16)		*varDst->value.data_f64 = (f64)*val_u16;
+						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data_f64 = (f64)iErrorCandidate_signalOutOfRange_numeric(NULL, &varSrc->value, _VAR_TYPE_F64, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7482,17 +7482,17 @@ do_as_numeric:
 
 					case _VAR_TYPE_S32:
 						// For any type that can be converted, convert it
-						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data._s32 = (s32)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_S32, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data._s32 = (s32)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_S32, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data._s32 = (s32)*val_s32;
-						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data._s32 = (s32)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_S32, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data._s32 = (s32)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_S32, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data._s32 = (s32)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_S32, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S8)		*varDst->value.data._s32 = (s32)*val_s8;
-						else if (varSrc->varType == _VAR_TYPE_U8)		*varDst->value.data._s32 = (s32)*val_u8;
-						else if (varSrc->varType == _VAR_TYPE_S16)		*varDst->value.data._s32 = (s32)*val_s16;
-						else if (varSrc->varType == _VAR_TYPE_U16)		*varDst->value.data._s32 = (s32)*val_u16;
-						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data._s32 = (s32)iErrorCandidate_signalOutOfRange_numeric(NULL, &varSrc->value, _VAR_TYPE_S32, NULL, false, NULL);
+						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_S32, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_S32, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data_s32 = (s32)*val_s32;
+						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_S32, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_S32, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_S32, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S8)		*varDst->value.data_s32 = (s32)*val_s8;
+						else if (varSrc->varType == _VAR_TYPE_U8)		*varDst->value.data_s32 = (s32)*val_u8;
+						else if (varSrc->varType == _VAR_TYPE_S16)		*varDst->value.data_s32 = (s32)*val_s16;
+						else if (varSrc->varType == _VAR_TYPE_U16)		*varDst->value.data_s32 = (s32)*val_u16;
+						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_numeric(NULL, &varSrc->value, _VAR_TYPE_S32, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7502,17 +7502,17 @@ do_as_numeric:
 
 					case _VAR_TYPE_U32:
 						// For any type that can be converted, convert it
-						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data._u32 = (u32)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_U32, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data._u32 = (u32)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_U32, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data._u32 = (u32)*val_s32;
-						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data._u32 = (u32)*val_u32;
-						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data._u32 = (u32)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_U32, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data._u32 = (u32)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_U32, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S8)		*varDst->value.data._u32 = (u32)*val_s8;
-						else if (varSrc->varType == _VAR_TYPE_U8)		*varDst->value.data._u32 = (u32)*val_u8;
-						else if (varSrc->varType == _VAR_TYPE_S16)		*varDst->value.data._u32 = (u32)*val_s16;
-						else if (varSrc->varType == _VAR_TYPE_U16)		*varDst->value.data._u32 = (u32)*val_u16;
-						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data._u32 = (u32)iErrorCandidate_signalOutOfRange_numeric(NULL, &varSrc->value, _VAR_TYPE_U32, NULL, false, NULL);
+						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_U32, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_U32, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data_u32 = (u32)*val_s32;
+						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data_u32 = (u32)*val_u32;
+						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_U32, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_U32, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S8)		*varDst->value.data_u32 = (u32)*val_s8;
+						else if (varSrc->varType == _VAR_TYPE_U8)		*varDst->value.data_u32 = (u32)*val_u8;
+						else if (varSrc->varType == _VAR_TYPE_S16)		*varDst->value.data_u32 = (u32)*val_s16;
+						else if (varSrc->varType == _VAR_TYPE_U16)		*varDst->value.data_u32 = (u32)*val_u16;
+						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_numeric(NULL, &varSrc->value, _VAR_TYPE_U32, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7523,17 +7523,17 @@ do_as_numeric:
 					case _VAR_TYPE_CURRENCY:
 					case _VAR_TYPE_S64:
 						// For any type that can be converted, convert it
-						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data._s64 = (s64)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_S64, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data._s64 = (s64)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_S64, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data._s64 = (s64)*val_s32;
-						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data._s64 = (s64)*val_u32;
-						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data._s64 = (s64)*val_s64;
-						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data._s64 = (s64)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_S64, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S8)		*varDst->value.data._s64 = (s64)*val_s8;
-						else if (varSrc->varType == _VAR_TYPE_U8)		*varDst->value.data._s64 = (s64)*val_u8;
-						else if (varSrc->varType == _VAR_TYPE_S16)		*varDst->value.data._s64 = (s64)*val_s16;
-						else if (varSrc->varType == _VAR_TYPE_U16)		*varDst->value.data._s64 = (s64)*val_u16;
-						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data._s64 = (s64)iErrorCandidate_signalOutOfRange_numeric(NULL, &varSrc->value, _VAR_TYPE_S64, NULL, false, NULL);
+						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_S64, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_S64, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data_s64 = (s64)*val_s32;
+						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data_s64 = (s64)*val_u32;
+						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data_s64 = (s64)*val_s64;
+						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_S64, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S8)		*varDst->value.data_s64 = (s64)*val_s8;
+						else if (varSrc->varType == _VAR_TYPE_U8)		*varDst->value.data_s64 = (s64)*val_u8;
+						else if (varSrc->varType == _VAR_TYPE_S16)		*varDst->value.data_s64 = (s64)*val_s16;
+						else if (varSrc->varType == _VAR_TYPE_U16)		*varDst->value.data_s64 = (s64)*val_u16;
+						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_numeric(NULL, &varSrc->value, _VAR_TYPE_S64, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7543,17 +7543,17 @@ do_as_numeric:
 
 					case _VAR_TYPE_U64:
 						// For any type that can be converted, convert it
-						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data._u64 = (u64)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_U64, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data._u64 = (u64)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_U64, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data._u64 = (u64)*val_s32;
-						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data._u64 = (u64)*val_u32;
-						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data._u64 = (u64)*val_s64;
-						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data._u64 = (u64)*val_u64;
-						else if (varSrc->varType == _VAR_TYPE_S8)		*varDst->value.data._u64 = (u64)*val_s8;
-						else if (varSrc->varType == _VAR_TYPE_U8)		*varDst->value.data._u64 = (u64)*val_u8;
-						else if (varSrc->varType == _VAR_TYPE_S16)		*varDst->value.data._u64 = (u64)*val_s16;
-						else if (varSrc->varType == _VAR_TYPE_U16)		*varDst->value.data._u64 = (u64)*val_u16;
-						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data._u64 = (u64)iErrorCandidate_signalOutOfRange_numeric(NULL, &varSrc->value, _VAR_TYPE_U64, NULL, false, NULL);
+						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data_u64 = (u64)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_U64, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data_u64 = (u64)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_U64, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data_u64 = (u64)*val_s32;
+						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data_u64 = (u64)*val_u32;
+						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data_u64 = (u64)*val_s64;
+						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data_u64 = (u64)*val_u64;
+						else if (varSrc->varType == _VAR_TYPE_S8)		*varDst->value.data_u64 = (u64)*val_s8;
+						else if (varSrc->varType == _VAR_TYPE_U8)		*varDst->value.data_u64 = (u64)*val_u8;
+						else if (varSrc->varType == _VAR_TYPE_S16)		*varDst->value.data_u64 = (u64)*val_s16;
+						else if (varSrc->varType == _VAR_TYPE_U16)		*varDst->value.data_u64 = (u64)*val_u16;
+						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data_u64 = (u64)iErrorCandidate_signalOutOfRange_numeric(NULL, &varSrc->value, _VAR_TYPE_U64, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7563,17 +7563,17 @@ do_as_numeric:
 
 					case _VAR_TYPE_S8:
 						// For any type that can be converted, convert it
-						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data._s8 = (s8)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_S8, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data._s8 = (s8)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_S8, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data._s8 = (s8)iErrorCandidate_signalOutOfRange_s32(NULL, *val_s32, _VAR_TYPE_S8, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data._s8 = (s8)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_S8, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data._s8 = (s8)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_S8, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data._s8 = (s8)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_S8, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S8)		*varDst->value.data._s8 = (s8)*val_s8;
-						else if (varSrc->varType == _VAR_TYPE_U8)		*varDst->value.data._s8 = (s8)iErrorCandidate_signalOutOfRange_u8 (NULL, *val_u8,  _VAR_TYPE_S8, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S16)		*varDst->value.data._s8 = (s8)iErrorCandidate_signalOutOfRange_s16(NULL, *val_s16, _VAR_TYPE_S8, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_U16)		*varDst->value.data._s8 = (s8)iErrorCandidate_signalOutOfRange_u16(NULL, *val_u16, _VAR_TYPE_S8, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data._s8 = (s8)iErrorCandidate_signalOutOfRange_numeric(NULL, &varSrc->value, _VAR_TYPE_S8, NULL, false, NULL);
+						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_S8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_S8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_s32(NULL, *val_s32, _VAR_TYPE_S8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_S8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_S8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_S8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S8)		*varDst->value.data_s8 = (s8)*val_s8;
+						else if (varSrc->varType == _VAR_TYPE_U8)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_u8 (NULL, *val_u8,  _VAR_TYPE_S8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S16)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_s16(NULL, *val_s16, _VAR_TYPE_S8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_U16)		*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_u16(NULL, *val_u16, _VAR_TYPE_S8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_numeric(NULL, &varSrc->value, _VAR_TYPE_S8, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7583,17 +7583,17 @@ do_as_numeric:
 
 					case _VAR_TYPE_U8:
 						// For any type that can be converted, convert it
-						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data._u8 = (u8)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_U8, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data._u8 = (u8)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_U8, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data._u8 = (u8)iErrorCandidate_signalOutOfRange_s32(NULL, *val_s32, _VAR_TYPE_U8, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data._u8 = (u8)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_U8, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data._u8 = (u8)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_U8, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data._u8 = (u8)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_U8, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S8)		*varDst->value.data._u8 = (u8)*val_s8;
-						else if (varSrc->varType == _VAR_TYPE_U8)		*varDst->value.data._u8 = (u8)*val_u8;
-						else if (varSrc->varType == _VAR_TYPE_S16)		*varDst->value.data._u8 = (u8)iErrorCandidate_signalOutOfRange_u64(NULL, *val_s16, _VAR_TYPE_U8, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_U16)		*varDst->value.data._u8 = (u8)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u16, _VAR_TYPE_U8, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data._u8 = (u8)iErrorCandidate_signalOutOfRange_numeric(NULL, &varSrc->value, _VAR_TYPE_U8, NULL, false, NULL);
+						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_U8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_U8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_s32(NULL, *val_s32, _VAR_TYPE_U8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_U8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_U8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_U8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S8)		*varDst->value.data_u8 = (u8)*val_s8;
+						else if (varSrc->varType == _VAR_TYPE_U8)		*varDst->value.data_u8 = (u8)*val_u8;
+						else if (varSrc->varType == _VAR_TYPE_S16)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_u64(NULL, *val_s16, _VAR_TYPE_U8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_U16)		*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u16, _VAR_TYPE_U8, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_numeric(NULL, &varSrc->value, _VAR_TYPE_U8, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7603,17 +7603,17 @@ do_as_numeric:
 
 					case _VAR_TYPE_S16:
 						// For any type that can be converted, convert it
-						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data._s16 = (s16)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_S16, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data._s16 = (s16)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_S16, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data._s16 = (s16)iErrorCandidate_signalOutOfRange_s32(NULL, *val_s32, _VAR_TYPE_S16, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data._s16 = (s16)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_S16, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data._s16 = (s16)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_S16, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data._s16 = (s16)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_S16, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S8)		*varDst->value.data._s16 = (s16)*val_s8;
-						else if (varSrc->varType == _VAR_TYPE_U8)		*varDst->value.data._s16 = (s16)*val_u8;
-						else if (varSrc->varType == _VAR_TYPE_S16)		*varDst->value.data._s16 = (s16)*val_s16;
-						else if (varSrc->varType == _VAR_TYPE_U16)		*varDst->value.data._s16 = (s16)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u16, _VAR_TYPE_S16, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data._s16 = (s16)iErrorCandidate_signalOutOfRange_numeric(NULL, &varSrc->value, _VAR_TYPE_S16, NULL, false, NULL);
+						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_S16, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_S16, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_s32(NULL, *val_s32, _VAR_TYPE_S16, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_S16, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_S16, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_S16, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S8)		*varDst->value.data_s16 = (s16)*val_s8;
+						else if (varSrc->varType == _VAR_TYPE_U8)		*varDst->value.data_s16 = (s16)*val_u8;
+						else if (varSrc->varType == _VAR_TYPE_S16)		*varDst->value.data_s16 = (s16)*val_s16;
+						else if (varSrc->varType == _VAR_TYPE_U16)		*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u16, _VAR_TYPE_S16, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_numeric(NULL, &varSrc->value, _VAR_TYPE_S16, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7623,17 +7623,17 @@ do_as_numeric:
 
 					case _VAR_TYPE_U16:
 						// For any type that can be converted, convert it
-						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data._u16 = (u16)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_U16, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data._u16 = (u16)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_U16, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data._u16 = (u16)iErrorCandidate_signalOutOfRange_s32(NULL, *val_s32, _VAR_TYPE_U16, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data._u16 = (u16)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_U16, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data._u16 = (u16)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_U16, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data._u16 = (u16)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_U16, NULL, false, NULL);
-						else if (varSrc->varType == _VAR_TYPE_S8)		*varDst->value.data._u16 = (u16)*val_s8;
-						else if (varSrc->varType == _VAR_TYPE_U8)		*varDst->value.data._u16 = (u16)*val_u8;
-						else if (varSrc->varType == _VAR_TYPE_S16)		*varDst->value.data._u16 = (u16)*val_s16;
-						else if (varSrc->varType == _VAR_TYPE_U16)		*varDst->value.data._u16 = (u16)*val_u16;
-						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data._u16 = (u16)iErrorCandidate_signalOutOfRange_numeric(NULL, &varSrc->value, _VAR_TYPE_U16, NULL, false, NULL);
+						     if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_f32(NULL, *val_f32, _VAR_TYPE_U16, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_f64(NULL, *val_f64, _VAR_TYPE_U16, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_s32(NULL, *val_s32, _VAR_TYPE_U16, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_u32(NULL, *val_u32, _VAR_TYPE_U16, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_s64(NULL, *val_s64, _VAR_TYPE_U16, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_u64(NULL, *val_u64, _VAR_TYPE_U16, NULL, false, NULL);
+						else if (varSrc->varType == _VAR_TYPE_S8)		*varDst->value.data_u16 = (u16)*val_s8;
+						else if (varSrc->varType == _VAR_TYPE_U8)		*varDst->value.data_u16 = (u16)*val_u8;
+						else if (varSrc->varType == _VAR_TYPE_S16)		*varDst->value.data_u16 = (u16)*val_s16;
+						else if (varSrc->varType == _VAR_TYPE_U16)		*varDst->value.data_u16 = (u16)*val_u16;
+						else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_numeric(NULL, &varSrc->value, _VAR_TYPE_U16, NULL, false, NULL);
 						else {
 							// Every parameter they passed was NULL
 							debug_break;
@@ -7700,13 +7700,13 @@ do_as_numeric:
 
 								case _VAR_TYPE_LOGICAL:
 									// .F. if 0, otherwise set to .T.
-										 if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data._u8 = (((u8)*val_f32 == 0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
-									else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data._u8 = (((u8)*val_f64 == 0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
-									else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data._u8 = (((u8)*val_s32 == 0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
-									else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data._u8 = (((u8)*val_u32 == 0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
-									else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data._u8 = (((u8)*val_s64 == 0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
-									else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data._u8 = (((u8)*val_u64 == 0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
-									else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data._u8 = (((u8)iErrorCandidate_signalOutOfRange_numeric(NULL, &varSrc->value, _VAR_TYPE_S32, NULL, false, NULL) == 0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
+										 if (varSrc->varType == _VAR_TYPE_F32)		*varDst->value.data_u8 = (((u8)*val_f32 == 0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
+									else if (varSrc->varType == _VAR_TYPE_F64)		*varDst->value.data_u8 = (((u8)*val_f64 == 0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
+									else if (varSrc->varType == _VAR_TYPE_S32)		*varDst->value.data_u8 = (((u8)*val_s32 == 0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
+									else if (varSrc->varType == _VAR_TYPE_U32)		*varDst->value.data_u8 = (((u8)*val_u32 == 0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
+									else if (varSrc->varType == _VAR_TYPE_S64)		*varDst->value.data_u8 = (((u8)*val_s64 == 0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
+									else if (varSrc->varType == _VAR_TYPE_U64)		*varDst->value.data_u8 = (((u8)*val_u64 == 0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
+									else if (varSrc->varType == _VAR_TYPE_NUMERIC)	*varDst->value.data_u8 = (((u8)iErrorCandidate_signalOutOfRange_numeric(NULL, &varSrc->value, _VAR_TYPE_S32, NULL, false, NULL) == 0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
 									else {
 										// Every parameter they passed was NULL
 										debug_break;
@@ -7750,7 +7750,7 @@ do_as_numeric:
 			ei->error = false;
 
 		// Make sure our environment is sane
-		if (var && var->value.data._data && var->value.length > 0)
+		if (var && var->value._data && var->value.length > 0)
 		{
 
 			//////////
@@ -7759,44 +7759,44 @@ do_as_numeric:
 				switch (var->varType)
 				{
 					case _VAR_TYPE_F32:
-						 *var->value.data._f32 = (f32)iErrorCandidate_signalOutOfRange_s32(ei, value, _VAR_TYPE_F32, NULL, false, NULL);
+						 *var->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_s32(ei, value, _VAR_TYPE_F32, NULL, false, NULL);
 						 return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_F64:
-						*var->value.data._f64 = value;
+						*var->value.data_f64 = value;
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S32:
-						*var->value.data._s32 = (s32)iErrorCandidate_signalOutOfRange_s32(ei, value, _VAR_TYPE_S32, NULL, false, NULL);
+						*var->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_s32(ei, value, _VAR_TYPE_S32, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U32:
-						*var->value.data._u32 = (u32)iErrorCandidate_signalOutOfRange_s32(ei, value, _VAR_TYPE_U32, NULL, false, NULL);
+						*var->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_s32(ei, value, _VAR_TYPE_U32, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_CURRENCY:
 					case _VAR_TYPE_S64:
-						*var->value.data._s64 = (s64)iErrorCandidate_signalOutOfRange_s32(ei, value, _VAR_TYPE_S64, NULL, false, NULL);
+						*var->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_s32(ei, value, _VAR_TYPE_S64, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U64:
-						*var->value.data._u64 = (u64)iErrorCandidate_signalOutOfRange_s32(ei, value, _VAR_TYPE_U64, NULL, false, NULL);
+						*var->value.data_u64 = (u64)iErrorCandidate_signalOutOfRange_s32(ei, value, _VAR_TYPE_U64, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S8:
-						*var->value.data._s8 = (s8)iErrorCandidate_signalOutOfRange_s32(ei, value, _VAR_TYPE_S8, NULL, false, NULL);
+						*var->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_s32(ei, value, _VAR_TYPE_S8, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U8:
-						*var->value.data._u8 = (u8)iErrorCandidate_signalOutOfRange_s32(ei, value, _VAR_TYPE_U8, NULL, false, NULL);
+						*var->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_s32(ei, value, _VAR_TYPE_U8, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S16:
-						*var->value.data._s16 = (s16)iErrorCandidate_signalOutOfRange_s32(ei, value, _VAR_TYPE_S16, NULL, false, NULL);
+						*var->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_s32(ei, value, _VAR_TYPE_S16, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U16:
-						*var->value.data._u16 = (u16)iErrorCandidate_signalOutOfRange_s32(ei, value, _VAR_TYPE_U16, NULL, false, NULL);
+						*var->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_s32(ei, value, _VAR_TYPE_U16, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_NUMERIC:
@@ -7847,7 +7847,7 @@ MessageBox(GetDesktopWindow(), "There is BI and BFP code which needs completed i
 
 								case _VAR_TYPE_LOGICAL:
 									// .F. if 0, otherwise set to .T.
-									*var->value.data._u8 = ((value == 0.0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
+									*var->value.data_u8 = ((value == 0.0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
 									break;
 							}
 
@@ -7895,7 +7895,7 @@ MessageBox(GetDesktopWindow(), "There is BI and BFP code which needs completed i
 			ei->error = false;
 
 		// Make sure our environment is sane
-		if (var && var->value.data._data && var->value.length > 0)
+		if (var && var->value._data && var->value.length > 0)
 		{
 			//////////
 			// Process the ones that can handle a direct conversion
@@ -7903,44 +7903,44 @@ MessageBox(GetDesktopWindow(), "There is BI and BFP code which needs completed i
 				switch (var->varType)
 				{
 					case _VAR_TYPE_F32:
-						 *var->value.data._f32 = (f32)iErrorCandidate_signalOutOfRange_s64(ei, value, _VAR_TYPE_F32, NULL, false, NULL);
+						 *var->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_s64(ei, value, _VAR_TYPE_F32, NULL, false, NULL);
 						 return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_F64:
-						*var->value.data._f64 = (f64)value;
+						*var->value.data_f64 = (f64)value;
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S32:
-						*var->value.data._s32 = (s32)iErrorCandidate_signalOutOfRange_s64(ei, value, _VAR_TYPE_S32, NULL, false, NULL);
+						*var->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_s64(ei, value, _VAR_TYPE_S32, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U32:
-						*var->value.data._u32 = (u32)iErrorCandidate_signalOutOfRange_s64(ei, value, _VAR_TYPE_U32, NULL, false, NULL);
+						*var->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_s64(ei, value, _VAR_TYPE_U32, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_CURRENCY:
 					case _VAR_TYPE_S64:
-						*var->value.data._s64 = (s64)iErrorCandidate_signalOutOfRange_s64(ei, value, _VAR_TYPE_S64, NULL, false, NULL);
+						*var->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_s64(ei, value, _VAR_TYPE_S64, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U64:
-						*var->value.data._u64 = (u64)iErrorCandidate_signalOutOfRange_s64(ei, value, _VAR_TYPE_U64, NULL, false, NULL);
+						*var->value.data_u64 = (u64)iErrorCandidate_signalOutOfRange_s64(ei, value, _VAR_TYPE_U64, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S8:
-						*var->value.data._s8 = (s8)iErrorCandidate_signalOutOfRange_s64(ei, value, _VAR_TYPE_S8, NULL, false, NULL);
+						*var->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_s64(ei, value, _VAR_TYPE_S8, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U8:
-						*var->value.data._u8 = (u8)iErrorCandidate_signalOutOfRange_s64(ei, value, _VAR_TYPE_U8, NULL, false, NULL);
+						*var->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_s64(ei, value, _VAR_TYPE_U8, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S16:
-						*var->value.data._s16 = (s16)iErrorCandidate_signalOutOfRange_s64(ei, value, _VAR_TYPE_S16, NULL, false, NULL);
+						*var->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_s64(ei, value, _VAR_TYPE_S16, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U16:
-						*var->value.data._u16 = (u16)iErrorCandidate_signalOutOfRange_s64(ei, value, _VAR_TYPE_U16, NULL, false, NULL);
+						*var->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_s64(ei, value, _VAR_TYPE_U16, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_NUMERIC:
@@ -7980,7 +7980,7 @@ do_as_numeric:
 
 								case _VAR_TYPE_LOGICAL:
 									// .F. if 0, otherwise set to .T.
-									*var->value.data._u8 = ((value == 0.0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
+									*var->value.data_u8 = ((value == 0.0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
 									break;
 							}
 
@@ -8028,7 +8028,7 @@ do_as_numeric:
 			ei->error = false;
 
 		// Make sure our environment is sane
-		if (var && var->value.data._data && var->value.length > 0)
+		if (var && var->value._data && var->value.length > 0)
 		{
 			//////////
 			// Process the ones that can handle a direct conversion
@@ -8037,53 +8037,53 @@ do_as_numeric:
 				{
 					case _VAR_TYPE_F32:
 						// For any type that can be converted, convert it
-						 *var->value.data._f32 = (f32)iErrorCandidate_signalOutOfRange_f32(ei, value, _VAR_TYPE_F32, NULL, false, NULL);
+						 *var->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_f32(ei, value, _VAR_TYPE_F32, NULL, false, NULL);
 						 return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_F64:
 						// For any type that can be converted, convert it
-						*var->value.data._f64 = value;
+						*var->value.data_f64 = value;
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S32:
 						// For any type that can be converted, convert it
-						*var->value.data._s32 = (s32)iErrorCandidate_signalOutOfRange_f32(ei, value, _VAR_TYPE_S32, NULL, false, NULL);
+						*var->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_f32(ei, value, _VAR_TYPE_S32, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U32:
 						// For any type that can be converted, convert it
-						*var->value.data._u32 = (u32)iErrorCandidate_signalOutOfRange_f32(ei, value, _VAR_TYPE_U32, NULL, false, NULL);
+						*var->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_f32(ei, value, _VAR_TYPE_U32, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_CURRENCY:
 					case _VAR_TYPE_S64:
 						// For any type that can be converted, convert it
-						*var->value.data._s64 = (s64)iErrorCandidate_signalOutOfRange_f32(ei, value, _VAR_TYPE_S64, NULL, false, NULL);
+						*var->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_f32(ei, value, _VAR_TYPE_S64, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U64:
 						// For any type that can be converted, convert it
-						*var->value.data._u64 = (u64)iErrorCandidate_signalOutOfRange_f32(ei, value, _VAR_TYPE_U64, NULL, false, NULL);
+						*var->value.data_u64 = (u64)iErrorCandidate_signalOutOfRange_f32(ei, value, _VAR_TYPE_U64, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S8:
 						// For any type that can be converted, convert it
-						*var->value.data._s8 = (s8)iErrorCandidate_signalOutOfRange_f32(ei, value, _VAR_TYPE_S8, NULL, false, NULL);
+						*var->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_f32(ei, value, _VAR_TYPE_S8, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U8:
 						// For any type that can be converted, convert it
-						*var->value.data._u8 = (u8)iErrorCandidate_signalOutOfRange_f32(ei, value, _VAR_TYPE_U8, NULL, false, NULL);
+						*var->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_f32(ei, value, _VAR_TYPE_U8, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S16:
 						// For any type that can be converted, convert it
-						*var->value.data._s16 = (s16)iErrorCandidate_signalOutOfRange_f32(ei, value, _VAR_TYPE_S16, NULL, false, NULL);
+						*var->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_f32(ei, value, _VAR_TYPE_S16, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U16:
 						// For any type that can be converted, convert it
-						*var->value.data._u16 = (u16)iErrorCandidate_signalOutOfRange_f32(ei, value, _VAR_TYPE_U16, NULL, false, NULL);
+						*var->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_f32(ei, value, _VAR_TYPE_U16, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_NUMERIC:
@@ -8123,7 +8123,7 @@ do_as_numeric:
 
 								case _VAR_TYPE_LOGICAL:
 									// .F. if 0, otherwise set to .T.
-									*var->value.data._u8 = ((value == 0.0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
+									*var->value.data_u8 = ((value == 0.0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
 									break;
 							}
 
@@ -8171,7 +8171,7 @@ do_as_numeric:
 			ei->error = false;
 
 		// Make sure our environment is sane
-		if (var && var->value.data._data && var->value.length > 0)
+		if (var && var->value._data && var->value.length > 0)
 		{
 			//////////
 			// Process the ones that can handle a direct conversion
@@ -8180,53 +8180,53 @@ do_as_numeric:
 				{
 					case _VAR_TYPE_F32:
 						// For any type that can be converted, convert it
-						 *var->value.data._f32 = (f32)iErrorCandidate_signalOutOfRange_f64(ei, value, _VAR_TYPE_F32, NULL, false, NULL);
+						 *var->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_f64(ei, value, _VAR_TYPE_F32, NULL, false, NULL);
 						 return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_F64:
 						// For any type that can be converted, convert it
-						*var->value.data._f64 = value;
+						*var->value.data_f64 = value;
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S32:
 						// For any type that can be converted, convert it
-						*var->value.data._s32 = (s32)iErrorCandidate_signalOutOfRange_f64(ei, value, _VAR_TYPE_S32, NULL, false, NULL);
+						*var->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_f64(ei, value, _VAR_TYPE_S32, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U32:
 						// For any type that can be converted, convert it
-						*var->value.data._u32 = (u32)iErrorCandidate_signalOutOfRange_f64(ei, value, _VAR_TYPE_U32, NULL, false, NULL);
+						*var->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_f64(ei, value, _VAR_TYPE_U32, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_CURRENCY:
 					case _VAR_TYPE_S64:
 						// For any type that can be converted, convert it
-						*var->value.data._s64 = (s64)iErrorCandidate_signalOutOfRange_f64(ei, value, _VAR_TYPE_S64, NULL, false, NULL);
+						*var->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_f64(ei, value, _VAR_TYPE_S64, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U64:
 						// For any type that can be converted, convert it
-						*var->value.data._u64 = (u64)iErrorCandidate_signalOutOfRange_f64(ei, value, _VAR_TYPE_U64, NULL, false, NULL);
+						*var->value.data_u64 = (u64)iErrorCandidate_signalOutOfRange_f64(ei, value, _VAR_TYPE_U64, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S8:
 						// For any type that can be converted, convert it
-						*var->value.data._s8 = (s8)iErrorCandidate_signalOutOfRange_f64(ei, value, _VAR_TYPE_S8, NULL, false, NULL);
+						*var->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_f64(ei, value, _VAR_TYPE_S8, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U8:
 						// For any type that can be converted, convert it
-						*var->value.data._u8 = (u8)iErrorCandidate_signalOutOfRange_f64(ei, value, _VAR_TYPE_U8, NULL, false, NULL);
+						*var->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_f64(ei, value, _VAR_TYPE_U8, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S16:
 						// For any type that can be converted, convert it
-						*var->value.data._s16 = (s16)iErrorCandidate_signalOutOfRange_f64(ei, value, _VAR_TYPE_S16, NULL, false, NULL);
+						*var->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_f64(ei, value, _VAR_TYPE_S16, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U16:
 						// For any type that can be converted, convert it
-						*var->value.data._u16 = (u16)iErrorCandidate_signalOutOfRange_f64(ei, value, _VAR_TYPE_U16, NULL, false, NULL);
+						*var->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_f64(ei, value, _VAR_TYPE_U16, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_NUMERIC:
@@ -8266,7 +8266,7 @@ do_as_numeric:
 
 								case _VAR_TYPE_LOGICAL:
 									// .F. if 0, otherwise set to .T.
-									*var->value.data._u8 = ((value == 0.0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
+									*var->value.data_u8 = ((value == 0.0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
 									break;
 							}
 
@@ -8314,7 +8314,7 @@ do_as_numeric:
 			ei->error = false;
 
 		// Make sure our environment is sane
-		if (var && var->value.data._data && var->value.length > 0)
+		if (var && var->value._data && var->value.length > 0)
 		{
 			//////////
 			// Process the ones that can handle a direct conversion
@@ -8322,44 +8322,44 @@ do_as_numeric:
 				switch (var->varType)
 				{
 					case _VAR_TYPE_F32:
-						*var->value.data._f32 = (f32)iErrorCandidate_signalOutOfRange_u32(ei, value, _VAR_TYPE_F32, NULL, false, NULL);
+						*var->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_u32(ei, value, _VAR_TYPE_F32, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_F64:
-						*var->value.data._f64 = value;
+						*var->value.data_f64 = value;
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S32:
-						*var->value.data._s32 = (s32)iErrorCandidate_signalOutOfRange_u32(ei, value, _VAR_TYPE_S32, NULL, false, NULL);
+						*var->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_u32(ei, value, _VAR_TYPE_S32, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U32:
-						*var->value.data._u32 = (u32)iErrorCandidate_signalOutOfRange_u32(ei, value, _VAR_TYPE_U32, NULL, false, NULL);
+						*var->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_u32(ei, value, _VAR_TYPE_U32, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_CURRENCY:
 					case _VAR_TYPE_S64:
-						*var->value.data._s64 = (s64)iErrorCandidate_signalOutOfRange_u32(ei, value, _VAR_TYPE_S64, NULL, false, NULL);
+						*var->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_u32(ei, value, _VAR_TYPE_S64, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U64:
-						*var->value.data._u64 = (u64)iErrorCandidate_signalOutOfRange_u32(ei, value, _VAR_TYPE_U64, NULL, false, NULL);
+						*var->value.data_u64 = (u64)iErrorCandidate_signalOutOfRange_u32(ei, value, _VAR_TYPE_U64, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S8:
-						*var->value.data._s8 = (s8)iErrorCandidate_signalOutOfRange_u32(ei, value, _VAR_TYPE_S8, NULL, false, NULL);
+						*var->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_u32(ei, value, _VAR_TYPE_S8, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U8:
-						*var->value.data._u8 = (u8)iErrorCandidate_signalOutOfRange_u32(ei, value, _VAR_TYPE_U8, NULL, false, NULL);
+						*var->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_u32(ei, value, _VAR_TYPE_U8, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S16:
-						*var->value.data._s16 = (s16)iErrorCandidate_signalOutOfRange_u32(ei, value, _VAR_TYPE_S16, NULL, false, NULL);
+						*var->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_u32(ei, value, _VAR_TYPE_S16, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U16:
-						*var->value.data._u16 = (u16)iErrorCandidate_signalOutOfRange_u32(ei, value, _VAR_TYPE_U16, NULL, false, NULL);
+						*var->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_u32(ei, value, _VAR_TYPE_U16, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_NUMERIC:
@@ -8399,7 +8399,7 @@ do_as_numeric:
 
 								case _VAR_TYPE_LOGICAL:
 									// .F. if 0, otherwise set to .T.
-									*var->value.data._u8 = ((value == 0.0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
+									*var->value.data_u8 = ((value == 0.0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
 									break;
 							}
 
@@ -8453,7 +8453,7 @@ do_as_numeric:
 			ei->error = false;
 
 		// Make sure our environment is sane
-		if (var && var->value.data._data && var->value.length > 0)
+		if (var && var->value._data && var->value.length > 0)
 		{
 			//////////
 			// Process the ones that can handle a direct conversion
@@ -8461,44 +8461,44 @@ do_as_numeric:
 				switch (var->varType)
 				{
 					case _VAR_TYPE_F32:
-						 *var->value.data._f32 = (f32)iErrorCandidate_signalOutOfRange_u64(ei, value, _VAR_TYPE_F32, NULL, false, NULL);
+						 *var->value.data_f32 = (f32)iErrorCandidate_signalOutOfRange_u64(ei, value, _VAR_TYPE_F32, NULL, false, NULL);
 						 return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_F64:
-						*var->value.data._f64 = (f64)value;
+						*var->value.data_f64 = (f64)value;
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S32:
-						*var->value.data._s32 = (s32)iErrorCandidate_signalOutOfRange_u64(ei, value, _VAR_TYPE_S32, NULL, false, NULL);
+						*var->value.data_s32 = (s32)iErrorCandidate_signalOutOfRange_u64(ei, value, _VAR_TYPE_S32, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U32:
-						*var->value.data._u32 = (u32)iErrorCandidate_signalOutOfRange_u64(ei, value, _VAR_TYPE_U32, NULL, false, NULL);
+						*var->value.data_u32 = (u32)iErrorCandidate_signalOutOfRange_u64(ei, value, _VAR_TYPE_U32, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_CURRENCY:
 					case _VAR_TYPE_S64:
-						*var->value.data._s64 = (s64)iErrorCandidate_signalOutOfRange_u64(ei, value, _VAR_TYPE_S64, NULL, false, NULL);
+						*var->value.data_s64 = (s64)iErrorCandidate_signalOutOfRange_u64(ei, value, _VAR_TYPE_S64, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U64:
-						*var->value.data._u64 = (u64)iErrorCandidate_signalOutOfRange_u64(ei, value, _VAR_TYPE_U64, NULL, false, NULL);
+						*var->value.data_u64 = (u64)iErrorCandidate_signalOutOfRange_u64(ei, value, _VAR_TYPE_U64, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S8:
-						*var->value.data._s8 = (s8)iErrorCandidate_signalOutOfRange_u64(ei, value, _VAR_TYPE_S8, NULL, false, NULL);
+						*var->value.data_s8 = (s8)iErrorCandidate_signalOutOfRange_u64(ei, value, _VAR_TYPE_S8, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U8:
-						*var->value.data._u8 = (u8)iErrorCandidate_signalOutOfRange_u64(ei, value, _VAR_TYPE_U8, NULL, false, NULL);
+						*var->value.data_u8 = (u8)iErrorCandidate_signalOutOfRange_u64(ei, value, _VAR_TYPE_U8, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_S16:
-						*var->value.data._s16 = (s16)iErrorCandidate_signalOutOfRange_u64(ei, value, _VAR_TYPE_S16, NULL, false, NULL);
+						*var->value.data_s16 = (s16)iErrorCandidate_signalOutOfRange_u64(ei, value, _VAR_TYPE_S16, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_U16:
-						*var->value.data._u16 = (u16)iErrorCandidate_signalOutOfRange_u64(ei, value, _VAR_TYPE_U16, NULL, false, NULL);
+						*var->value.data_u16 = (u16)iErrorCandidate_signalOutOfRange_u64(ei, value, _VAR_TYPE_U16, NULL, false, NULL);
 						return(((ei) ? !ei->error : true));
 
 					case _VAR_TYPE_NUMERIC:
@@ -8538,7 +8538,7 @@ do_as_numeric:
 
 								case _VAR_TYPE_LOGICAL:
 									// .F. if 0, otherwise set to .T.
-									*var->value.data._u8 = ((value == 0.0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
+									*var->value.data_u8 = ((value == 0.0) ? _LOGICAL_FALSE : _LOGICAL_TRUE);
 									break;
 							}
 
@@ -8610,10 +8610,10 @@ do_as_numeric:
 		var = iiVariable_terminateIndirect(var);
 
 		// Are we still valid?
-		if (var && var->varType == _VAR_TYPE_S16 && var->value.data._s16)
+		if (var && var->varType == _VAR_TYPE_S16 && var->value.data_s16)
 		{
 			// Set it
-			*var->value.data._s16 = value;
+			*var->value.data_s16 = value;
 
 			// Success
 			return(true);
@@ -8638,10 +8638,10 @@ do_as_numeric:
 		var = iiVariable_terminateIndirect(var);
 
 		// Are we still valid?
-		if (var && var->varType == _VAR_TYPE_S32 && var->value.data._s32)
+		if (var && var->varType == _VAR_TYPE_S32 && var->value.data_s32)
 		{
 			// Set it
-			*var->value.data._s32 = value;
+			*var->value.data_s32 = value;
 
 			// Success
 			return(true);
@@ -8666,10 +8666,10 @@ do_as_numeric:
 		var = iiVariable_terminateIndirect(var);
 
 		// Are we still valid?
-		if (var && var->varType == _VAR_TYPE_U16 && var->value.data._u16)
+		if (var && var->varType == _VAR_TYPE_U16 && var->value.data_u16)
 		{
 			// Set it
-			*var->value.data._u16 = value;
+			*var->value.data_u16 = value;
 
 			// Success
 			return(true);
@@ -8694,10 +8694,10 @@ do_as_numeric:
 		var = iiVariable_terminateIndirect(var);
 
 		// Are we still valid?
-		if (var && var->varType == _VAR_TYPE_U32 && var->value.data._u32)
+		if (var && var->varType == _VAR_TYPE_U32 && var->value.data_u32)
 		{
 			// Set it
-			*var->value.data._u32 = value;
+			*var->value.data_u32 = value;
 
 			// Success
 			return(true);
@@ -8722,10 +8722,10 @@ do_as_numeric:
 		var = iiVariable_terminateIndirect(var);
 
 		// Are we still valid?
-		if (var && var->varType == _VAR_TYPE_F32 && var->value.data._f32)
+		if (var && var->varType == _VAR_TYPE_F32 && var->value.data_f32)
 		{
 			// Set it
-			*var->value.data._f32 = value;
+			*var->value.data_f32 = value;
 
 			// Success
 			return(true);
@@ -8750,10 +8750,10 @@ do_as_numeric:
 		var = iiVariable_terminateIndirect(var);
 
 		// Are we still valid?
-		if (var && var->varType == _VAR_TYPE_F64 && var->value.data._f64)
+		if (var && var->varType == _VAR_TYPE_F64 && var->value.data_f64)
 		{
 			// Set it
-			*var->value.data._f64 = value;
+			*var->value.data_f64 = value;
 
 			// Success
 			return(true);
@@ -8784,10 +8784,10 @@ do_as_numeric:
 		var = iiVariable_terminateIndirect(var);
 
 		// Are we still valid?
-		if (var && var->varType == _VAR_TYPE_LOGICAL && var->value.data._s8)
+		if (var && var->varType == _VAR_TYPE_LOGICAL && var->value.data_s8)
 		{
 			// Set it
-			*var->value.data._s8 = (s8)value;
+			*var->value.data_s8 = (s8)value;
 
 			// Success
 			return(true);
@@ -8934,7 +8934,7 @@ debug_break;
 			if (var->isValueAllocated)
 			{
 				var->isValueAllocated = false;
-				if (var->value.data._data)
+				if (var->value._data)
 					iDatum_delete(&var->value, false);
 			}
 
@@ -8955,7 +8955,7 @@ debug_break;
 						var->isValueAllocated = false;
 						iDatum_allocateSpace(&var->value, 1);
 
-						if (var->value.data._data)
+						if (var->value._data)
 							var->value.length = 0;
 
 						break;
@@ -8964,8 +8964,8 @@ debug_break;
 						var->isValueAllocated = true;
 						iDatum_allocateSpace(&var->value, 1);
 
-						if (var->value.data._data)
-							var->value.data._s8[0] = _LOGICAL_FALSE;
+						if (var->value._data)
+							var->value.data_s8[0] = _LOGICAL_FALSE;
 
 						break;
 
@@ -8974,8 +8974,8 @@ debug_break;
 						var->isValueAllocated = true;
 						iDatum_allocateSpace(&var->value, 1);
 
-						if (var->value.data._data)
-							var->value.data._s8[0] = 0;
+						if (var->value._data)
+							var->value.data_s8[0] = 0;
 
 						break;
 
@@ -8984,8 +8984,8 @@ debug_break;
 						var->isValueAllocated = true;
 						iDatum_allocateSpace(&var->value, 2);
 
-						if (var->value.data._data)
-							*(u16*)var->value.data._s8 = 0;
+						if (var->value._data)
+							*(u16*)var->value.data_s8 = 0;
 
 						break;
 
@@ -8995,8 +8995,8 @@ debug_break;
 						var->isValueAllocated = true;
 						iDatum_allocateSpace(&var->value, 4);
 
-						if (var->value.data._data)
-							*(u32*)var->value.data._s8 = (u32)0;
+						if (var->value._data)
+							*(u32*)var->value.data_s8 = (u32)0;
 
 						break;
 
@@ -9007,8 +9007,8 @@ debug_break;
 						var->isValueAllocated = true;
 						iDatum_allocateSpace(&var->value, 8);
 
-						if (var->value.data._data)
-							*(u64*)var->value.data._s8 = (u64)0;
+						if (var->value._data)
+							*(u64*)var->value.data_s8 = (u64)0;
 
 						break;
 
@@ -9021,10 +9021,10 @@ debug_break;
 						var->isValueAllocated = true;
 						iDatum_allocateSpace(&var->value, 8);
 
-						if (var->value.data._data)
+						if (var->value._data)
 						{
-							var->value.data._dt->julian	= _DATETIME_BLANK_DATETIME_JULIAN;
-							var->value.data._dt->seconds	= _DATETIME_BLANK_DATETIME_SECONDS;
+							var->value.data_dt->julian	= _DATETIME_BLANK_DATETIME_JULIAN;
+							var->value.data_dt->seconds	= _DATETIME_BLANK_DATETIME_SECONDS;
 						}
 						break;
 
@@ -9032,20 +9032,20 @@ debug_break;
 						var->isValueAllocated = true;
 						iDatum_allocateSpace(&var->value, 8);
 
-						if (var->value.data._data)
-							var->value.data._dtx->jseconds = 0;
+						if (var->value._data)
+							var->value.data_dtx->jseconds = 0;
 
 						break;
 
 					case _VAR_TYPE_BFP:
 						var->isValueAllocated = true;
-						var->value.data._big	= m_apm_init();
+						var->value.data_big	= m_apm_init();
 						var->value.length	= propGet_settings_PrecisionBFP(_settings);
 						break;
 
 					case _VAR_TYPE_BI:
 						var->isValueAllocated = true;
-						var->value.data._big	= m_apm_init();
+						var->value.data_big	= m_apm_init();
 						var->value.length	= propGet_settings_PrecisionBFP(_settings);
 						break;
 
@@ -9102,7 +9102,7 @@ debug_break;
 			memset(buffer, 0, sizeof(buffer));
 
 			// Is it null?
-			if (!var->value.data._data || (!iVariable_isTypeCharacter(var) && var->value.length == 0))
+			if (!var->value._data || (!iVariable_isTypeCharacter(var) && var->value.length == 0))
 			{
 				varDisp->isValueAllocated = true;
 				iDatum_duplicate(&varDisp->value, cgcNullText, sizeof(cgcNullText) - 1);
@@ -9125,56 +9125,56 @@ debug_break;
 
 					case _VAR_TYPE_S32:
 						// Convert to integer form, then store text
-						sprintf((s8*)buffer, "%d\0", *(s32*)var->value.data._data);
+						sprintf((s8*)buffer, "%d\0", *(s32*)var->value._data);
 						varDisp->isValueAllocated = true;
 						iDatum_duplicate(&varDisp->value, buffer, -1);
 						break;
 
 					case _VAR_TYPE_U32:
 						// Convert to unsigned integer form, then store text
-						sprintf((s8*)buffer, "%u\0", *(u32*)var->value.data._data);
+						sprintf((s8*)buffer, "%u\0", *(u32*)var->value._data);
 						varDisp->isValueAllocated = true;
 						iDatum_duplicate(&varDisp->value, buffer, -1);
 						break;
 
 					case _VAR_TYPE_U64:
 						// Convert to unsigned integer form, then store text
-						sprintf((s8*)buffer, "%I64u\0", *(u64*)var->value.data._data);
+						sprintf((s8*)buffer, "%I64u\0", *(u64*)var->value._data);
 						varDisp->isValueAllocated = true;
 						iDatum_duplicate(&varDisp->value, buffer, -1);
 						break;
 
 					case _VAR_TYPE_S64:
 						// Convert to unsigned integer form, then store text
-						sprintf((s8*)buffer, "%I64d\0", *(s64*)var->value.data._data);
+						sprintf((s8*)buffer, "%I64d\0", *(s64*)var->value._data);
 						varDisp->isValueAllocated = true;
 						iDatum_duplicate(&varDisp->value, buffer, -1);
 						break;
 
 					case _VAR_TYPE_S16:
 						// Convert to integer form, then store text
-						sprintf((s8*)buffer, "%d\0", (s32)*(s16*)var->value.data._data);
+						sprintf((s8*)buffer, "%d\0", (s32)*(s16*)var->value._data);
 						varDisp->isValueAllocated = true;
 						iDatum_duplicate(&varDisp->value, buffer, -1);
 						break;
 
 					case _VAR_TYPE_S8:
 						// Convert to integer form, then store text
-						sprintf((s8*)buffer, "%d\0", (s32)*(s8*)var->value.data._data);
+						sprintf((s8*)buffer, "%d\0", (s32)*(s8*)var->value._data);
 						varDisp->isValueAllocated = true;
 						iDatum_duplicate(&varDisp->value, buffer, -1);
 						break;
 
 					case _VAR_TYPE_U16:
 						// Convert to unsigned integer form, then store text
-						sprintf((s8*)buffer, "%u\0", (u32)*(u16*)var->value.data._data);
+						sprintf((s8*)buffer, "%u\0", (u32)*(u16*)var->value._data);
 						varDisp->isValueAllocated = true;
 						iDatum_duplicate(&varDisp->value, buffer, -1);
 						break;
 
 					case _VAR_TYPE_U8:
 						// Convert to unsigned integer form, then store text
-						sprintf((s8*)buffer, "%u\0", (u32)*(u8*)var->value.data._data);
+						sprintf((s8*)buffer, "%u\0", (u32)*(u8*)var->value._data);
 						varDisp->isValueAllocated = true;
 						iDatum_duplicate(&varDisp->value, buffer, -1);
 						break;
@@ -9182,7 +9182,7 @@ debug_break;
 					case _VAR_TYPE_F32:
 						// Convert to floating point form, then store text after leading zeros
 						sprintf(formatter, "%%020.%df\0", propGet_settings_Decimals(_settings));
-						sprintf((s8*)buffer, formatter, *(f32*)var->value.data._data);
+						sprintf((s8*)buffer, formatter, *(f32*)var->value._data);
 
 						// Skip past leading zeros
 						for (lnI = 0; buffer[lnI] == '0'; )
@@ -9196,7 +9196,7 @@ debug_break;
 					case _VAR_TYPE_F64:
 						// Convert to floating point form, then store text after leading zeros
 						sprintf(formatter, "%%020.%dlf\0", propGet_settings_Decimals(_settings));
-						sprintf((s8*)buffer, formatter, *(f64*)var->value.data._data);
+						sprintf((s8*)buffer, formatter, *(f64*)var->value._data);
 
 						// Skip past leading zeros
 						for (lnI = 0; buffer[lnI] == '0'; )
@@ -9229,55 +9229,55 @@ debug_break;
 						{
 							case _SET_DATE_MDY:
 							case _SET_DATE_AMERICAN:		// mm/dd/yy
-								memcpy(buffer + 0, var->value.data._s8 + 4, 2);
+								memcpy(buffer + 0, var->value.data_s8 + 4, 2);
 								buffer[2] = '/';
-								memcpy(buffer + 3, var->value.data._s8 + 6, 2);
+								memcpy(buffer + 3, var->value.data_s8 + 6, 2);
 								buffer[5] = '/';
-								memcpy(buffer + 6, var->value.data._s8 + lnYearOffset, 4 - lnYearOffset);
+								memcpy(buffer + 6, var->value.data_s8 + lnYearOffset, 4 - lnYearOffset);
 								break;
 
 							case _SET_DATE_ANSI:			// yy.mm.dd
-								memcpy(buffer + 0, var->value.data._s8 + 4, 2);
+								memcpy(buffer + 0, var->value.data_s8 + 4, 2);
 								buffer[2] = '.';
-								memcpy(buffer + 3, var->value.data._s8 + 6, 2);
+								memcpy(buffer + 3, var->value.data_s8 + 6, 2);
 								buffer[5] = '.';
-								memcpy(buffer + 6, var->value.data._s8 + lnYearOffset, 4 - lnYearOffset);
+								memcpy(buffer + 6, var->value.data_s8 + lnYearOffset, 4 - lnYearOffset);
 								break;
 
 							case _SET_DATE_BRITISH:			// dd/mm/yy
 							case _SET_DATE_FRENCH:			// dd/mm/yy
 							case _SET_DATE_DMY:				// dd/mm/yy
-								memcpy(buffer + 0, var->value.data._s8 + 6, 2);
+								memcpy(buffer + 0, var->value.data_s8 + 6, 2);
 								buffer[2] = '/';
-								memcpy(buffer + 3, var->value.data._s8 + 4, 2);
+								memcpy(buffer + 3, var->value.data_s8 + 4, 2);
 								buffer[5] = '/';
-								memcpy(buffer + 6, var->value.data._s8 + lnYearOffset, 4 - lnYearOffset);
+								memcpy(buffer + 6, var->value.data_s8 + lnYearOffset, 4 - lnYearOffset);
 								break;
 
 							case _SET_DATE_GERMAN:			// dd.mm.yy
-								memcpy(buffer + 0, var->value.data._s8 + 6, 2);
+								memcpy(buffer + 0, var->value.data_s8 + 6, 2);
 								buffer[2] = '.';
-								memcpy(buffer + 3, var->value.data._s8 + 4, 2);
+								memcpy(buffer + 3, var->value.data_s8 + 4, 2);
 								buffer[5] = '.';
-								memcpy(buffer + 6, var->value.data._s8 + lnYearOffset, 4 - lnYearOffset);
+								memcpy(buffer + 6, var->value.data_s8 + lnYearOffset, 4 - lnYearOffset);
 								break;
 
 							case _SET_DATE_ITALIAN:			// dd-mm-yy
-								memcpy(buffer + 0, var->value.data._s8 + 6, 2);
+								memcpy(buffer + 0, var->value.data_s8 + 6, 2);
 								buffer[2] = '-';
-								memcpy(buffer + 3, var->value.data._s8 + 4, 2);
+								memcpy(buffer + 3, var->value.data_s8 + 4, 2);
 								buffer[5] = '-';
-								memcpy(buffer + 6, var->value.data._s8 + lnYearOffset, 4 - lnYearOffset);
+								memcpy(buffer + 6, var->value.data_s8 + lnYearOffset, 4 - lnYearOffset);
 								break;
 
 							case _SET_DATE_TAIWAN:			// yy/mm/dd
 							case _SET_DATE_YMD:				// yy/mm/dd
 							case _SET_DATE_JAPAN:			// yy/mm/dd
-								memcpy(buffer + 0, var->value.data._s8 + lnYearOffset, 4 - lnYearOffset);
+								memcpy(buffer + 0, var->value.data_s8 + lnYearOffset, 4 - lnYearOffset);
 								buffer[4 - lnYearOffset] = '-';
-								memcpy(buffer + 5 - lnYearOffset, var->value.data._s8 + 4, 2);
+								memcpy(buffer + 5 - lnYearOffset, var->value.data_s8 + 4, 2);
 								buffer[7 - lnYearOffset] = '-';
-								memcpy(buffer + 8 - lnYearOffset, var->value.data._s8 + 6, 2);
+								memcpy(buffer + 8 - lnYearOffset, var->value.data_s8 + 6, 2);
 								break;
 
 							case _SET_DATE_LONG:			// Dayofweek, Month dd, yyyy
@@ -9285,25 +9285,25 @@ debug_break;
 								break;
 
 							case _SET_DATE_SHORT:			// m/d/yy
-								if (var->value.data._s8[4] == '0')		memcpy(buffer + strlen(buffer), var->value.data._s8 + 5, 1);
-								else								memcpy(buffer + strlen(buffer), var->value.data._s8 + 4, 2);
+								if (var->value.data_s8[4] == '0')		memcpy(buffer + strlen(buffer), var->value.data_s8 + 5, 1);
+								else								memcpy(buffer + strlen(buffer), var->value.data_s8 + 4, 2);
 
 								buffer[strlen(buffer)] = '/';
 
-								if (var->value.data._s8[6] == '0')		memcpy(buffer + strlen(buffer), var->value.data._s8 + 7, 1);
-								else								memcpy(buffer + strlen(buffer), var->value.data._s8 + 6, 2);
+								if (var->value.data_s8[6] == '0')		memcpy(buffer + strlen(buffer), var->value.data_s8 + 7, 1);
+								else								memcpy(buffer + strlen(buffer), var->value.data_s8 + 6, 2);
 
 								buffer[strlen(buffer)] = '/';
 
-								memcpy(buffer + strlen(buffer), var->value.data._s8 + lnYearOffset, 4 - lnYearOffset);
+								memcpy(buffer + strlen(buffer), var->value.data_s8 + lnYearOffset, 4 - lnYearOffset);
 								break;
 
 							case _SET_DATE_USA:				// mm-dd-yy
-								memcpy(buffer + 0, var->value.data._s8 + 4, 2);
+								memcpy(buffer + 0, var->value.data_s8 + 4, 2);
 								buffer[2] = '-';
-								memcpy(buffer + 3, var->value.data._s8 + 6, 2);
+								memcpy(buffer + 3, var->value.data_s8 + 6, 2);
 								buffer[5] = '-';
-								memcpy(buffer + 6, var->value.data._s8 + lnYearOffset, 4 - lnYearOffset);
+								memcpy(buffer + 6, var->value.data_s8 + lnYearOffset, 4 - lnYearOffset);
 								break;
 						}
 						iDatum_duplicate(&varDisp->value, buffer, -1);
@@ -9316,26 +9316,26 @@ debug_break;
 						{
 							// True/False
 							varDisp->isValueAllocated = true;
-							if (var->value.data._s8[0] == _LOGICAL_FALSE)		iDatum_duplicate(&varDisp->value, cgc_f_dots, -1);
+							if (var->value.data_s8[0] == _LOGICAL_FALSE)		iDatum_duplicate(&varDisp->value, cgc_f_dots, -1);
 							else											iDatum_duplicate(&varDisp->value, cgc_t_dots, -1);
 
 						} else if (lnSetLogical == _LOGICAL_YN) {
 							// Yes/No
 							varDisp->isValueAllocated = true;
-							if (var->value.data._s8[0] == _LOGICAL_FALSE)		iDatum_duplicate(&varDisp->value, cgc_no_dots, -1);
+							if (var->value.data_s8[0] == _LOGICAL_FALSE)		iDatum_duplicate(&varDisp->value, cgc_no_dots, -1);
 							else											iDatum_duplicate(&varDisp->value, cgc_yes_dots, -1);
 
 						} else {
 							// Up/Down
 							var->isValueAllocated = true;
-							if (var->value.data._s8[0] == _LOGICAL_FALSE)		iDatum_duplicate(&varDisp->value, cgc_down_dots, -1);
+							if (var->value.data_s8[0] == _LOGICAL_FALSE)		iDatum_duplicate(&varDisp->value, cgc_down_dots, -1);
 							else											iDatum_duplicate(&varDisp->value, cgc_up_dots, -1);
 						}
 						break;
 
 					case _VAR_TYPE_DATETIME:
 						// Translate from encoded form to components, then assemble as MM/DD/YYYY HH:MM:SS AM/PM
-						dt = var->value.data._dt;
+						dt = var->value.data_dt;
 						if (dt->julian == _DATETIME_BLANK_DATETIME_JULIAN && dt->seconds == _DATETIME_BLANK_DATETIME_SECONDS)
 						{
 							// It's a blank date and time
@@ -9393,7 +9393,7 @@ debug_break;
 
 					case _VAR_TYPE_DATETIMEX:
 						// Translate from encoded form to components, then assemble as MM/DD/YYYY HH:MM:SS.Nssssssss
-						dtx = var->value.data._dtx;
+						dtx = var->value.data_dtx;
 						if (dtx->jseconds == 0)
 						{
 							// It's a blank date and time
@@ -9422,7 +9422,7 @@ debug_break;
 
 					case _VAR_TYPE_CURRENCY:
 						// Translate to f64, then use fixed 4 decimals
-						lfValue64 = ((f64)*(s64*)var->value.data._s8 / 10000.0);
+						lfValue64 = ((f64)*(s64*)var->value.data_s8 / 10000.0);
 						sprintf((s8*)buffer, "%020.4lf\0", lfValue64);
 
 						// Skip past leading zeros
@@ -9527,7 +9527,7 @@ debug_break;
 			//////////
 			// Delete the name (if populated)
 			//////
-				if (tlDeleteSelf && var->name.data._s8)
+				if (tlDeleteSelf && var->name.data_s8)
 					iDatum_delete(&var->name, false);
 
 
@@ -9553,8 +9553,8 @@ debug_break;
 
 						case _VAR_TYPE_BI:
 						case _VAR_TYPE_BFP:
-							m_apm_free(var->value.data._big);
-							var->value.data._big = NULL;
+							m_apm_free(var->value.data_big);
+							var->value.data_big = NULL;
 							var->value.length	= 0;
 							break;
 
@@ -9672,8 +9672,8 @@ debug_break;
 					}
 
 					// Convert the date to a julian day number
-					iiDateMath_get_YyyyMmDd_from_YYYYMMDD(var->value.data._u8, &year, &month, &day);
-					result->value.data._dt->julian = iiDateMath_get_julian_from_YyyyMmDd(NULL, year, month, day);
+					iiDateMath_get_YyyyMmDd_from_YYYYMMDD(var->value.data_u8, &year, &month, &day);
+					result->value.data_dt->julian = iiDateMath_get_julian_from_YyyyMmDd(NULL, year, month, day);
 
 					// Indicate success
 					*tlError	= false;
@@ -9705,9 +9705,9 @@ debug_break;
 					}
 
 					// Convert the date to a julian day number
-					iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds(var->value.data._dtx->jseconds, NULL, &year, &month, &day, &hour, &minute, &second, &millisecond, &nanosecond);
-					result->value.data._dt->julian	= iiDateMath_get_julian_from_YyyyMmDd(NULL, year, month, day);
-					result->value.data._dt->seconds	= iiDateMath_get_seconds_from_HhMmSsMss(hour, minute, second, millisecond);
+					iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds(var->value.data_dtx->jseconds, NULL, &year, &month, &day, &hour, &minute, &second, &millisecond, &nanosecond);
+					result->value.data_dt->julian	= iiDateMath_get_julian_from_YyyyMmDd(NULL, year, month, day);
+					result->value.data_dt->seconds	= iiDateMath_get_seconds_from_HhMmSsMss(hour, minute, second, millisecond);
 
 					// Indicate success
 					*tlError	= false;
@@ -9789,22 +9789,22 @@ debug_break;
 		switch (var->varType)
 		{
 			// See iVariable_areTypesCompatible()
-			case _VAR_TYPE_LOGICAL:		return(!(var->value.data._s8[0]			== _LOGICAL_FALSE));
-			case _VAR_TYPE_NUMERIC:		return(!(_atoi64(var->value.data._s8)	== 0));
-			case _VAR_TYPE_S32:			return(!(*(u32*)var->value.data._s8		== 0));
-			case _VAR_TYPE_U32:			return(!(*(u32*)var->value.data._s8		== 0));
-			case _VAR_TYPE_U64:			return(!(*(u64*)var->value.data._s8		== 0));
+			case _VAR_TYPE_LOGICAL:		return(!(var->value.data_s8[0]			== _LOGICAL_FALSE));
+			case _VAR_TYPE_NUMERIC:		return(!(_atoi64(var->value.data_s8)	== 0));
+			case _VAR_TYPE_S32:			return(!(*(u32*)var->value.data_s8		== 0));
+			case _VAR_TYPE_U32:			return(!(*(u32*)var->value.data_s8		== 0));
+			case _VAR_TYPE_U64:			return(!(*(u64*)var->value.data_s8		== 0));
 			case _VAR_TYPE_CURRENCY:	// Currency is an s64 * 10000, but we are still testing for 0 or not-zero, falls through to s64
-			case _VAR_TYPE_S64:			return(!(*(s64*)var->value.data._s8		== 0));
-			case _VAR_TYPE_DATETIMEX:	return(!(*(s64*)var->value.data._s8		== 0));
-			case _VAR_TYPE_S16:			return(!(*(s16*)var->value.data._s8		== 0));
-			case _VAR_TYPE_S8:			return(!(*(s8*)var->value.data._s8		== 0));
-			case _VAR_TYPE_U16:			return(!(*(u16*)var->value.data._s8		== 0));
-			case _VAR_TYPE_U8:			return(!(*(u8*)var->value.data._s8		== 0));
-			case _VAR_TYPE_F32:			return(!(*(f32*)var->value.data._s8		== 0.0f));
-			case _VAR_TYPE_F64:			return(!(*(f64*)var->value.data._s8		== 0.0));
-			case _VAR_TYPE_BI:			return(!(m_apm_compare(var->value.data._big, ljMinAs_bool) > 0) && (m_apm_compare(var->value.data._big, ljMaxAs_bool) < 0));
-			case _VAR_TYPE_BFP:			return(!(m_apm_compare(var->value.data._big, ljMinAs_bool) > 0) && (m_apm_compare(var->value.data._big, ljMaxAs_bool) < 0));
+			case _VAR_TYPE_S64:			return(!(*(s64*)var->value.data_s8		== 0));
+			case _VAR_TYPE_DATETIMEX:	return(!(*(s64*)var->value.data_s8		== 0));
+			case _VAR_TYPE_S16:			return(!(*(s16*)var->value.data_s8		== 0));
+			case _VAR_TYPE_S8:			return(!(*(s8*)var->value.data_s8		== 0));
+			case _VAR_TYPE_U16:			return(!(*(u16*)var->value.data_s8		== 0));
+			case _VAR_TYPE_U8:			return(!(*(u8*)var->value.data_s8		== 0));
+			case _VAR_TYPE_F32:			return(!(*(f32*)var->value.data_s8		== 0.0f));
+			case _VAR_TYPE_F64:			return(!(*(f64*)var->value.data_s8		== 0.0));
+			case _VAR_TYPE_BI:			return(!(m_apm_compare(var->value.data_big, ljMinAs_bool) > 0) && (m_apm_compare(var->value.data_big, ljMaxAs_bool) < 0));
+			case _VAR_TYPE_BFP:			return(!(m_apm_compare(var->value.data_big, ljMinAs_bool) > 0) && (m_apm_compare(var->value.data_big, ljMaxAs_bool) < 0));
 
 			case _VAR_TYPE_CHARACTER:
 				// We can convert it to bool if auto-convert is on, or if it has been force converted
@@ -9820,9 +9820,9 @@ debug_break;
 						// It is one byte long, so we will test for Y,N,T,F
 						switch (iObjProp_get_s32_direct(_settings, _INDEX_SET_LOGICAL))
 						{
-							case _LOGICAL_TF:		return(iiLowerCase_char(var->value.data._u8[0]) == 't');
-							case _LOGICAL_YN:		return(iiLowerCase_char(var->value.data._u8[0]) == 'y');
-							case _LOGICAL_UD:		return(iiLowerCase_char(var->value.data._u8[0]) == 'u');
+							case _LOGICAL_TF:		return(iiLowerCase_char(var->value.data_u8[0]) == 't');
+							case _LOGICAL_YN:		return(iiLowerCase_char(var->value.data_u8[0]) == 'y');
+							case _LOGICAL_UD:		return(iiLowerCase_char(var->value.data_u8[0]) == 'u');
 							default:
 								// Internal system error
 								break;
@@ -9910,7 +9910,7 @@ debug_break;
 				//////////
 				// We can directly return the value
 				//////
-					lnValue_s32 = *(s32*)var->value.data._data;
+					lnValue_s32 = *(s32*)var->value._data;
 					if (lnValue_s32 >= _s8_min && lnValue_s32 <= _s8_max)
 						return((s8)lnValue_u32);
 
@@ -9927,7 +9927,7 @@ debug_break;
 				//////////
 				// We can return the value after verifying it is not out of range for a 32-bit signed integer
 				//////
-					lnValue_u32 = *(u32*)var->value.data._data;
+					lnValue_u32 = *(u32*)var->value._data;
 					if (lnValue_u32 <= (u32)_s8_max)
 						return((s8)lnValue_u32);
 
@@ -9944,7 +9944,7 @@ debug_break;
 				//////////
 				// We can convert this from its text form into numeric, and if it's in the range of an s32 then we're good to go
 				//////
-					lnValue_s64 = _atoi64(var->value.data._s8);
+					lnValue_s64 = _atoi64(var->value.data_s8);
 					if (lnValue_s64 > (s64)_s8_min && lnValue_s64 < (s64)_s8_max)
 						return((s8)lnValue_s64);
 
@@ -9961,7 +9961,7 @@ debug_break;
 				//////////
 				// We can return the value after verifying it is not out of range for a 32-bit signed integer
 				//////
-					lnValue_u64 = *(u64*)var->value.data._data;
+					lnValue_u64 = *(u64*)var->value._data;
 					if (lnValue_u64 <= (u64)_s8_max)
 						return((s8)lnValue_u64);
 
@@ -9979,7 +9979,7 @@ debug_break;
 				//////////
 				// We can return the value after verifying it is not out of range for a 32-bit signed integer
 				//////
-					lnValue_s64 = *(s64*)var->value.data._data;
+					lnValue_s64 = *(s64*)var->value._data;
 					if (lnValue_s64 >= (s64)_s8_min && lnValue_s64 <= (s64)_s8_max)
 						return((s8)lnValue_s64);
 
@@ -9996,7 +9996,7 @@ debug_break;
 				//////////
 				// We can return the value after verifying it is not out of range for a 32-bit signed integer
 				//////
-					lnValue_s16 = *(s16*)var->value.data._data;
+					lnValue_s16 = *(s16*)var->value._data;
 					if (lnValue_s16 >= (s16)_s8_min && lnValue_s16 <= (s16)_s16_max)
 						return((s8)lnValue_s16);
 
@@ -10013,14 +10013,14 @@ debug_break;
 				//////////
 				// We can directly return the value after upsizing to 32-bits
 				//////
-					return((s16)*(s8*)var->value.data._data);
+					return((s16)*(s8*)var->value._data);
 
 
 			case _VAR_TYPE_U16:
 				//////////
 				// We can return the value after verifying it is not out of range for a 32-bit signed integer
 				//////
-					lnValue_u16 = *(u16*)var->value.data._data;
+					lnValue_u16 = *(u16*)var->value._data;
 					if (lnValue_u16 <= (u16)_s8_max)
 						return((s8)lnValue_u16);
 
@@ -10037,7 +10037,7 @@ debug_break;
 				//////////
 				// We can return the value after verifying it is not out of range for a 32-bit signed integer
 				//////
-					lnValue_u8 = *(u8*)var->value.data._data;
+					lnValue_u8 = *(u8*)var->value._data;
 					if (lnValue_u8 <= (u8)_s8_max)
 						return((s8)lnValue_u8);
 
@@ -10054,7 +10054,7 @@ debug_break;
 				//////////
 				// We can return the value after verifying it is not out of range for a 32-bit signed integer
 				//////
-					lnValue_f32 = *(f32*)var->value.data._data;
+					lnValue_f32 = *(f32*)var->value._data;
 					if (lnValue_f32 >= (f32)_s8_min || lnValue_f32 <= (f32)_s8_max)
 						return((s8)lnValue_f32);
 
@@ -10071,7 +10071,7 @@ debug_break;
 				//////////
 				// We can return the value after verifying it is not out of range for a 32-bit signed integer
 				//////
-					lnValue_f64 = *(f64*)var->value.data._data;
+					lnValue_f64 = *(f64*)var->value._data;
 					if (lnValue_f64 >= (f64)_s8_min && lnValue_f64 <= (f64)_s8_max)
 						return((s8)lnValue_f64);
 
@@ -10086,10 +10086,10 @@ debug_break;
 
 			case _VAR_TYPE_BI:
 				// Make sure it's in range
-				if (m_apm_compare(var->value.data._big, ljMinAs_s8) >= 0 || m_apm_compare(var->value.data._big, ljMaxAs_s8) <= 0)
+				if (m_apm_compare(var->value.data_big, ljMinAs_s8) >= 0 || m_apm_compare(var->value.data_big, ljMaxAs_s8) <= 0)
 				{
 					// In range
-					m_apm_to_integer_string(buffer, var->value.data._big);
+					m_apm_to_integer_string(buffer, var->value.data_big);
 
 					// Get the value
 					return(atoi(buffer));
@@ -10105,10 +10105,10 @@ debug_break;
 
 			case _VAR_TYPE_BFP:
 				// Make sure it's in range
-				if (m_apm_compare(var->value.data._big, ljMinAs_s8) >= 0 || m_apm_compare(var->value.data._big, ljMaxAs_s8) <= 0)
+				if (m_apm_compare(var->value.data_big, ljMinAs_s8) >= 0 || m_apm_compare(var->value.data_big, ljMaxAs_s8) <= 0)
 				{
 					// In range
-					m_apm_to_integer_string(buffer, var->value.data._big);
+					m_apm_to_integer_string(buffer, var->value.data_big);
 
 					// Get the value
 					return(atoi(buffer));
@@ -10129,7 +10129,7 @@ debug_break;
 					//////////
 					// We can convert this from its text form into numeric, and if it's in the range of an s32 then we're good to go
 					//////
-						lnValue_s64 = _atoi64(var->value.data._s8);
+						lnValue_s64 = _atoi64(var->value.data_s8);
 						if (lnValue_s64 >= (s64)_s8_min && lnValue_s64 <= (s64)_s8_max)
 							return((s8)lnValue_s64);
 
@@ -10154,7 +10154,7 @@ debug_break;
 					// Based only on DD.
 					//////
 						buffer[2] = 0;
-						memcpy(buffer, var->value.data._s8 + 6, 2);
+						memcpy(buffer, var->value.data_s8 + 6, 2);
 						lnValue_s64 = _atoi64(buffer);
 						return((s8)lnValue_s64);
 				}
@@ -10164,7 +10164,7 @@ debug_break;
 				//////////
 				// Convert this from its logical form into numeric
 				//////
-					if (var->value.data._s8[0] == _LOGICAL_FALSE)	return(_LOGICAL_FALSE);
+					if (var->value.data_s8[0] == _LOGICAL_FALSE)	return(_LOGICAL_FALSE);
 					else										return(_LOGICAL_TRUE);
 				// If we get here, an invalid variable type was encountered
 
@@ -10176,7 +10176,7 @@ debug_break;
 					//////////
 					// We can return the value after verifying it is not out of range for a 32-bit signed integer
 					//////
-						lnValue_s64 = (*(s64*)var->value.data._s8 / 10000);
+						lnValue_s64 = (*(s64*)var->value.data_s8 / 10000);
 						if (lnValue_s64 >= (s64)_s8_min && lnValue_s64 <= (s64)_s8_max)
 							return((s8)lnValue_s64);
 
@@ -10270,7 +10270,7 @@ debug_break;
 				//////////
 				// We can directly return the value
 				//////
-					lnValue_s32 = *(s32*)var->value.data._data;
+					lnValue_s32 = *(s32*)var->value._data;
 					if (lnValue_s32 >= _s16_min && lnValue_s32 <= _s16_max)
 						return((s16)lnValue_u32);
 
@@ -10287,7 +10287,7 @@ debug_break;
 				//////////
 				// We can return the value after verifying it is not out of range for a 32-bit signed integer
 				//////
-					lnValue_u32 = *(u32*)var->value.data._data;
+					lnValue_u32 = *(u32*)var->value._data;
 					if (lnValue_u32 <= (u32)_s16_max)
 						return((s16)lnValue_u32);
 
@@ -10304,7 +10304,7 @@ debug_break;
 				//////////
 				// We can convert this from its text form into numeric, and if it's in the range of an s32 then we're good to go
 				//////
-					lnValue_s64 = _atoi64(var->value.data._s8);
+					lnValue_s64 = _atoi64(var->value.data_s8);
 					if (lnValue_s64 > (s64)_s16_min && lnValue_s64 < (s64)_s16_max)
 						return((s16)lnValue_s64);
 
@@ -10321,7 +10321,7 @@ debug_break;
 				//////////
 				// We can return the value after verifying it is not out of range for a 32-bit signed integer
 				//////
-					lnValue_u64 = *(u64*)var->value.data._data;
+					lnValue_u64 = *(u64*)var->value._data;
 					if (lnValue_u64 <= (u64)_s16_max)
 						return((s16)lnValue_u64);
 
@@ -10339,7 +10339,7 @@ debug_break;
 				//////////
 				// We can return the value after verifying it is not out of range for a 32-bit signed integer
 				//////
-					lnValue_s64 = *(s64*)var->value.data._data;
+					lnValue_s64 = *(s64*)var->value._data;
 					if (lnValue_s64 >= (s64)_s16_min && lnValue_s64 <= (s64)_s16_max)
 						return((s16)lnValue_s64);
 
@@ -10356,21 +10356,21 @@ debug_break;
 				//////////
 				// We can directly return the value after upsizing to 32-bits
 				//////
-					return(*(s16*)var->value.data._data);
+					return(*(s16*)var->value._data);
 
 
 			case _VAR_TYPE_S8:
 				//////////
 				// We can directly return the value after upsizing to 32-bits
 				//////
-					return((s16)*(s8*)var->value.data._data);
+					return((s16)*(s8*)var->value._data);
 
 
 			case _VAR_TYPE_U16:
 				//////////
 				// We can return the value after verifying it is not out of range for a 32-bit signed integer
 				//////
-					lnValue_u16 = *(u16*)var->value.data._data;
+					lnValue_u16 = *(u16*)var->value._data;
 					if (lnValue_u16 <= (u16)_s16_max)
 						return((s16)lnValue_u16);
 
@@ -10387,14 +10387,14 @@ debug_break;
 				//////////
 				// We can directly return the value after upsizing to 32-bits
 				//////
-					return((s16)*(u8*)var->value.data._data);
+					return((s16)*(u8*)var->value._data);
 
 
 			case _VAR_TYPE_F32:
 				//////////
 				// We can return the value after verifying it is not out of range for a 32-bit signed integer
 				//////
-					lnValue_f32 = *(f32*)var->value.data._data;
+					lnValue_f32 = *(f32*)var->value._data;
 					if (lnValue_f32 >= (f32)_s16_min || lnValue_f32 <= (f32)_s16_max)
 						return((s16)lnValue_f32);
 
@@ -10411,7 +10411,7 @@ debug_break;
 				//////////
 				// We can return the value after verifying it is not out of range for a 32-bit signed integer
 				//////
-					lnValue_f64 = *(f64*)var->value.data._data;
+					lnValue_f64 = *(f64*)var->value._data;
 					if (lnValue_f64 >= (f64)_s16_min && lnValue_f64 <= (f64)_s16_max)
 						return((s16)lnValue_f64);
 
@@ -10426,10 +10426,10 @@ debug_break;
 
 			case _VAR_TYPE_BI:
 				// Make sure it's in range
-				if (m_apm_compare(var->value.data._big, ljMinAs_s16) >= 0 || m_apm_compare(var->value.data._big, ljMaxAs_s16) <= 0)
+				if (m_apm_compare(var->value.data_big, ljMinAs_s16) >= 0 || m_apm_compare(var->value.data_big, ljMaxAs_s16) <= 0)
 				{
 					// In range
-					m_apm_to_integer_string(buffer, var->value.data._big);
+					m_apm_to_integer_string(buffer, var->value.data_big);
 
 					// Get the value
 					return(atoi(buffer));
@@ -10445,10 +10445,10 @@ debug_break;
 
 			case _VAR_TYPE_BFP:
 				// Make sure it's in range
-				if (m_apm_compare(var->value.data._big, ljMinAs_s16) >= 0 || m_apm_compare(var->value.data._big, ljMaxAs_s16) <= 0)
+				if (m_apm_compare(var->value.data_big, ljMinAs_s16) >= 0 || m_apm_compare(var->value.data_big, ljMaxAs_s16) <= 0)
 				{
 					// In range
-					m_apm_to_integer_string(buffer, var->value.data._big);
+					m_apm_to_integer_string(buffer, var->value.data_big);
 
 					// Get the value
 					return(atoi(buffer));
@@ -10469,7 +10469,7 @@ debug_break;
 					//////////
 					// We can convert this from its text form into numeric, and if it's in the range of an s32 then we're good to go
 					//////
-						lnValue_s64 = _atoi64(var->value.data._s8);
+						lnValue_s64 = _atoi64(var->value.data_s8);
 						if (lnValue_s64 >= (s64)_s16_min && lnValue_s64 <= (s64)_s16_max)
 							return((s16)lnValue_s64);
 
@@ -10494,7 +10494,7 @@ debug_break;
 					// Based only on MMDD.
 					//////
 						buffer[4] = 0;
-						memcpy(buffer, var->value.data._s8 + 4, 4);
+						memcpy(buffer, var->value.data_s8 + 4, 4);
 						lnValue_s64 = _atoi64(buffer);
 						return((s16)lnValue_s64);
 				}
@@ -10504,7 +10504,7 @@ debug_break;
 				//////////
 				// Convert this from its logical form into numeric
 				//////
-					if (var->value.data._s8[0] == _LOGICAL_FALSE)	return(_LOGICAL_FALSE);
+					if (var->value.data_s8[0] == _LOGICAL_FALSE)	return(_LOGICAL_FALSE);
 					else										return(_LOGICAL_TRUE);
 				// If we get here, an invalid variable type was encountered
 
@@ -10537,7 +10537,7 @@ debug_break;
 					//////////
 					// We can return the value after verifying it is not out of range for a 32-bit signed integer
 					//////
-						lnValue_s64 = (*(s64*)var->value.data._s8 / 10000);
+						lnValue_s64 = (*(s64*)var->value.data_s8 / 10000);
 						if (lnValue_s64 >= (s64)_s16_min && lnValue_s64 <= (s64)_s16_max)
 							return((s16)lnValue_s64);
 
@@ -10630,14 +10630,14 @@ debug_break;
 				//////////
 				// We can directly return the value
 				//////
-					return(*(s32*)var->value.data._data);
+					return(*(s32*)var->value._data);
 
 
 			case _VAR_TYPE_U32:
 				//////////
 				// We can return the value after verifying it is not out of range for a 32-bit signed integer
 				//////
-					lnValue_u32 = *(u32*)var->value.data._data;
+					lnValue_u32 = *(u32*)var->value._data;
 					if (lnValue_u32 <= (u32)_s32_max)
 						return((s32)lnValue_u32);
 
@@ -10654,7 +10654,7 @@ debug_break;
 				//////////
 				// We can convert this from its text form into numeric, and if it's in the range of an s32 then we're good to go
 				//////
-					lnValue_s64 = _atoi64(var->value.data._s8);
+					lnValue_s64 = _atoi64(var->value.data_s8);
 					if (lnValue_s64 > (s64)_s32_min && lnValue_s64 < (s64)_s32_max)
 						return((s32)lnValue_s64);
 
@@ -10671,7 +10671,7 @@ debug_break;
 				//////////
 				// We can return the value after verifying it is not out of range for a 32-bit signed integer
 				//////
-					lnValue_u64 = *(u64*)var->value.data._data;
+					lnValue_u64 = *(u64*)var->value._data;
 					if (lnValue_u64 > (u64)_s32_max)
 						return((s32)lnValue_u64);
 
@@ -10689,7 +10689,7 @@ debug_break;
 				//////////
 				// We can return the value after verifying it is not out of range for a 32-bit signed integer
 				//////
-					lnValue_s64 = *(s64*)var->value.data._data;
+					lnValue_s64 = *(s64*)var->value._data;
 					if (lnValue_s64 >= (s64)_s32_min && lnValue_s64 <= (s64)_s32_max)
 						return((s32)lnValue_s64);
 
@@ -10706,35 +10706,35 @@ debug_break;
 				//////////
 				// We can directly return the value after upsizing to 32-bits
 				//////
-					return((s32)*(s16*)var->value.data._data);
+					return((s32)*(s16*)var->value._data);
 
 
 			case _VAR_TYPE_S8:
 				//////////
 				// We can directly return the value after upsizing to 32-bits
 				//////
-					return((s32)*(s8*)var->value.data._data);
+					return((s32)*(s8*)var->value._data);
 
 
 			case _VAR_TYPE_U16:
 				//////////
 				// We can directly return the value after upsizing to 32-bits
 				//////
-					return((s32)*(u16*)var->value.data._data);
+					return((s32)*(u16*)var->value._data);
 
 
 			case _VAR_TYPE_U8:
 				//////////
 				// We can directly return the value after upsizing to 32-bits
 				//////
-					return((s32)*(u8*)var->value.data._data);
+					return((s32)*(u8*)var->value._data);
 
 
 			case _VAR_TYPE_F32:
 				//////////
 				// We can return the value after verifying it is not out of range for a 32-bit signed integer
 				//////
-					lnValue_f32 = *(f32*)var->value.data._data;
+					lnValue_f32 = *(f32*)var->value._data;
 					if (lnValue_f32 < (f32)_s32_min || lnValue_f32 > (f32)_s32_max)
 						return((s32)lnValue_f32);
 
@@ -10751,7 +10751,7 @@ debug_break;
 				//////////
 				// We can return the value after verifying it is not out of range for a 32-bit signed integer
 				//////
-					lnValue_f64 = *(f64*)var->value.data._data;
+					lnValue_f64 = *(f64*)var->value._data;
 					if (lnValue_f64 < (f64)_s32_min || lnValue_f64 > (f64)_s32_max)
 						return((s32)lnValue_f64);
 
@@ -10766,10 +10766,10 @@ debug_break;
 
 			case _VAR_TYPE_BI:
 				// Make sure it's in range
-				if (m_apm_compare(var->value.data._big, ljMinAs_s32) >= 0 || m_apm_compare(var->value.data._big, ljMaxAs_s32) <= 0)
+				if (m_apm_compare(var->value.data_big, ljMinAs_s32) >= 0 || m_apm_compare(var->value.data_big, ljMaxAs_s32) <= 0)
 				{
 					// In range
-					m_apm_to_integer_string(buffer, var->value.data._big);
+					m_apm_to_integer_string(buffer, var->value.data_big);
 
 					// Get the value
 					return(atoi(buffer));
@@ -10785,10 +10785,10 @@ debug_break;
 
 			case _VAR_TYPE_BFP:
 				// Make sure it's in range
-				if (m_apm_compare(var->value.data._big, ljMinAs_s32) >= 0 || m_apm_compare(var->value.data._big, ljMaxAs_s32) <= 0)
+				if (m_apm_compare(var->value.data_big, ljMinAs_s32) >= 0 || m_apm_compare(var->value.data_big, ljMaxAs_s32) <= 0)
 				{
 					// In range
-					m_apm_to_integer_string(buffer, var->value.data._big);
+					m_apm_to_integer_string(buffer, var->value.data_big);
 
 					// Get the value
 					return(atoi(buffer));
@@ -10809,7 +10809,7 @@ debug_break;
 					//////////
 					// We can convert this from its text form into numeric, and if it's in the range of an s32 then we're good to go
 					//////
-						lnValue_s64 = _atoi64(var->value.data._s8);
+						lnValue_s64 = _atoi64(var->value.data_s8);
 						if (lnValue_s64 > (s64)_s32_min && lnValue_s64 < (s64)_s32_max)
 							return((s32)lnValue_s64);
 
@@ -10833,7 +10833,7 @@ debug_break;
 					// This will produce an integer suitable for sorting, comparing, etc.
 					//////
 						buffer[8] = 0;
-						memcpy(buffer, var->value.data._s8, 8);
+						memcpy(buffer, var->value.data_s8, 8);
 						lnValue_s64 = _atoi64(buffer);
 						return((s32)lnValue_s64);
 				}
@@ -10846,12 +10846,12 @@ debug_break;
 					if (tlForceConvert)
 					{
 						// Return as an integer, 0 or 1
-						if (var->value.data._s8[0] == _LOGICAL_FALSE)	return(0);
+						if (var->value.data_s8[0] == _LOGICAL_FALSE)	return(0);
 						else										return(1);
 
 					} else {
 						// Returns the actual value internally associated with logical .F. and .T.
-						if (var->value.data._s8[0] == _LOGICAL_FALSE)	return(_LOGICAL_FALSE);
+						if (var->value.data_s8[0] == _LOGICAL_FALSE)	return(_LOGICAL_FALSE);
 						else										return(_LOGICAL_TRUE);
 					}
 				// If we get here, an invalid variable type was encountered
@@ -10885,7 +10885,7 @@ debug_break;
 					//////////
 					// We can return the value after verifying it is not out of range for a 32-bit signed integer
 					//////
-						lnValue_s64 = (*(s64*)var->value.data._s8 / 10000);
+						lnValue_s64 = (*(s64*)var->value.data_s8 / 10000);
 						if (lnValue_s64 < (s64)_s32_min || lnValue_s64 > (s64)_s32_max)
 							return((s32)lnValue_s64);
 
@@ -10977,14 +10977,14 @@ debug_break;
 		{
 			case _VAR_TYPE_U32:
 			case _VAR_TYPE_S32:
-					return(*var->value.data._u32);
+					return(*var->value.data_u32);
 
 
 			case _VAR_TYPE_NUMERIC:
 				//////////
 				// We can convert this from its text form into numeric, and if it's in the range of a u32 then we're good to go
 				//////
-					lnValue_s64 = _atoi64(var->value.data._s8);
+					lnValue_s64 = _atoi64(var->value.data_s8);
 					if (lnValue_s64 <= (s64)_u16_max)
 						return((u16)lnValue_s64);
 
@@ -11001,7 +11001,7 @@ debug_break;
 				//////////
 				// We can return the value after verifying it is not out of range for a 32-bit signed integer
 				//////
-					lnValue_u64 = *(u64*)var->value.data._data;
+					lnValue_u64 = *(u64*)var->value._data;
 					if (lnValue_u64 <= (u64)_u16_max)
 						return((u16)lnValue_u64);
 
@@ -11019,7 +11019,7 @@ debug_break;
 				//////////
 				// We can return the value after verifying it is not out of range for a 32-bit signed integer
 				//////
-					lnValue_s64 = *(s64*)var->value.data._data;
+					lnValue_s64 = *(s64*)var->value._data;
 					if (lnValue_s64 >= 0 && lnValue_s64 <= (s64)_u16_max)
 						return((u16)lnValue_s64);
 
@@ -11036,35 +11036,35 @@ debug_break;
 				//////////
 				// We can directly return the value after upsizing to 32-bits
 				//////
-					return(*(u16*)var->value.data._data);
+					return(*(u16*)var->value._data);
 
 
 			case _VAR_TYPE_S8:
 				//////////
 				// We can directly return the value after upsizing to 32-bits
 				//////
-					return((u16)*(s8*)var->value.data._data);
+					return((u16)*(s8*)var->value._data);
 
 
 			case _VAR_TYPE_U16:
 				//////////
 				// We can directly return the value after upsizing to 32-bits
 				//////
-					return(*(u16*)var->value.data._data);
+					return(*(u16*)var->value._data);
 
 
 			case _VAR_TYPE_U8:
 				//////////
 				// We can directly return the value after upsizing to 32-bits
 				//////
-					return((u16)*(u8*)var->value.data._data);
+					return((u16)*(u8*)var->value._data);
 
 
 			case _VAR_TYPE_F32:
 				//////////
 				// We can return the value after verifying it is not out of range for a 32-bit signed integer
 				//////
-					lnValue_f32 = *(f32*)var->value.data._data;
+					lnValue_f32 = *(f32*)var->value._data;
 					if (lnValue_f32 >= 0.0f && lnValue_f32 <= (f32)_u16_max)
 						return((u16)lnValue_f32);
 
@@ -11081,7 +11081,7 @@ debug_break;
 				//////////
 				// We can return the value after verifying it is not out of range for a 32-bit signed integer
 				//////
-					lnValue_f64 = *(f64*)var->value.data._data;
+					lnValue_f64 = *(f64*)var->value._data;
 					if (lnValue_f64 >= 0.0 && lnValue_f64 <= (f64)_u16_max)
 						return((u16)lnValue_f64);
 
@@ -11096,10 +11096,10 @@ debug_break;
 
 			case _VAR_TYPE_BI:
 				// Make sure it's in range
-				if (m_apm_compare(var->value.data._big, ljMinAs_u16) >= 0 || m_apm_compare(var->value.data._big, ljMaxAs_u16) <= 0)
+				if (m_apm_compare(var->value.data_big, ljMinAs_u16) >= 0 || m_apm_compare(var->value.data_big, ljMaxAs_u16) <= 0)
 				{
 					// In range
-					m_apm_to_integer_string(buffer, var->value.data._big);
+					m_apm_to_integer_string(buffer, var->value.data_big);
 
 					// Get the value
 					return(atoi(buffer));
@@ -11115,10 +11115,10 @@ debug_break;
 
 			case _VAR_TYPE_BFP:
 				// Make sure it's in range
-				if (m_apm_compare(var->value.data._big, ljMinAs_u16) >= 0 || m_apm_compare(var->value.data._big, ljMaxAs_u16) <= 0)
+				if (m_apm_compare(var->value.data_big, ljMinAs_u16) >= 0 || m_apm_compare(var->value.data_big, ljMaxAs_u16) <= 0)
 				{
 					// In range
-					m_apm_to_integer_string(buffer, var->value.data._big);
+					m_apm_to_integer_string(buffer, var->value.data_big);
 
 					// Get the value
 					return(atoi(buffer));
@@ -11139,7 +11139,7 @@ debug_break;
 					//////////
 					// We can convert this from its text form into numeric, and if it's in the range of an s32 then we're good to go
 					//////
-						lnValue_s64 = _atoi64(var->value.data._s8);
+						lnValue_s64 = _atoi64(var->value.data_s8);
 						if (lnValue_s64 >= 0 && lnValue_s64 <= (s64)_u16_max)
 							return((u16)lnValue_s64);
 
@@ -11163,7 +11163,7 @@ debug_break;
 					// This will produce an integer suitable for sorting, comparing, etc.
 					//////
 						buffer[4] = 0;
-						memcpy(buffer, var->value.data._s8 + 4, 4);
+						memcpy(buffer, var->value.data_s8 + 4, 4);
 						lnValue_s64 = _atoi64(buffer);
 						return((u16)lnValue_s64);
 				}
@@ -11173,7 +11173,7 @@ debug_break;
 				//////////
 				// Convert this from its logical form into numeric
 				//////
-					if (var->value.data._s8[0] == _LOGICAL_FALSE)	return(_LOGICAL_FALSE);
+					if (var->value.data_s8[0] == _LOGICAL_FALSE)	return(_LOGICAL_FALSE);
 					else										return(_LOGICAL_TRUE);
 				// If we get here, an invalid variable type was encountered
 
@@ -11206,7 +11206,7 @@ debug_break;
 					//////////
 					// We can return the value after verifying it is not out of range for a 32-bit signed integer
 					//////
-						lnValue_s64 = (*(s64*)var->value.data._s8 / 10000);
+						lnValue_s64 = (*(s64*)var->value.data_s8 / 10000);
 						if (lnValue_s64 >= 0 && lnValue_s64 <= (s64)_u16_max)
 							return((u16)lnValue_s64);
 
@@ -11297,14 +11297,14 @@ debug_break;
 		{
 			case _VAR_TYPE_U32:
 			case _VAR_TYPE_S32:
-					return(*var->value.data._u32);
+					return(*var->value.data_u32);
 
 
 			case _VAR_TYPE_NUMERIC:
 				//////////
 				// We can convert this from its text form into numeric, and if it's in the range of a u32 then we're good to go
 				//////
-					lnValue_s64 = _atoi64(var->value.data._s8);
+					lnValue_s64 = _atoi64(var->value.data_s8);
 					if (lnValue_s64 < (s64)_u32_max)
 						return((u32)lnValue_s64);
 
@@ -11321,7 +11321,7 @@ debug_break;
 				//////////
 				// We can return the value after verifying it is not out of range for a 32-bit signed integer
 				//////
-					lnValue_u64 = *(u64*)var->value.data._data;
+					lnValue_u64 = *(u64*)var->value._data;
 					if (lnValue_u64 > (u64)_u32_max)
 						return((u32)lnValue_u64);
 
@@ -11339,7 +11339,7 @@ debug_break;
 				//////////
 				// We can return the value after verifying it is not out of range for a 32-bit signed integer
 				//////
-					lnValue_s64 = *(s64*)var->value.data._data;
+					lnValue_s64 = *(s64*)var->value._data;
 					if (lnValue_s64 >= 0 && lnValue_s64 <= (s64)_u32_max)
 						return((u32)lnValue_s64);
 
@@ -11356,35 +11356,35 @@ debug_break;
 				//////////
 				// We can directly return the value after upsizing to 32-bits
 				//////
-					return((u32)*(s16*)var->value.data._data);
+					return((u32)*(s16*)var->value._data);
 
 
 			case _VAR_TYPE_S8:
 				//////////
 				// We can directly return the value after upsizing to 32-bits
 				//////
-					return((u32)*(s8*)var->value.data._data);
+					return((u32)*(s8*)var->value._data);
 
 
 			case _VAR_TYPE_U16:
 				//////////
 				// We can directly return the value after upsizing to 32-bits
 				//////
-					return((u32)*(u16*)var->value.data._data);
+					return((u32)*(u16*)var->value._data);
 
 
 			case _VAR_TYPE_U8:
 				//////////
 				// We can directly return the value after upsizing to 32-bits
 				//////
-					return((u32)*(u8*)var->value.data._data);
+					return((u32)*(u8*)var->value._data);
 
 
 			case _VAR_TYPE_F32:
 				//////////
 				// We can return the value after verifying it is not out of range for a 32-bit signed integer
 				//////
-					lnValue_f32 = *(f32*)var->value.data._data;
+					lnValue_f32 = *(f32*)var->value._data;
 					if (lnValue_f32 >= 0.0f && lnValue_f32 <= (f32)_u32_max)
 						return((u32)lnValue_f32);
 
@@ -11401,7 +11401,7 @@ debug_break;
 				//////////
 				// We can return the value after verifying it is not out of range for a 32-bit signed integer
 				//////
-					lnValue_f64 = *(f64*)var->value.data._data;
+					lnValue_f64 = *(f64*)var->value._data;
 					if (lnValue_f64 >= 0.0 && lnValue_f64 <= (f64)_u32_max)
 						return((u32)lnValue_f64);
 
@@ -11416,10 +11416,10 @@ debug_break;
 
 			case _VAR_TYPE_BI:
 				// Make sure it's in range
-				if (m_apm_compare(var->value.data._big, ljMinAs_u32) >= 0 || m_apm_compare(var->value.data._big, ljMaxAs_u32) <= 0)
+				if (m_apm_compare(var->value.data_big, ljMinAs_u32) >= 0 || m_apm_compare(var->value.data_big, ljMaxAs_u32) <= 0)
 				{
 					// In range
-					m_apm_to_integer_string(buffer, var->value.data._big);
+					m_apm_to_integer_string(buffer, var->value.data_big);
 
 					// Get the value
 					return(atoi(buffer));
@@ -11435,10 +11435,10 @@ debug_break;
 
 			case _VAR_TYPE_BFP:
 				// Make sure it's in range
-				if (m_apm_compare(var->value.data._big, ljMinAs_u32) >= 0 || m_apm_compare(var->value.data._big, ljMaxAs_u32) <= 0)
+				if (m_apm_compare(var->value.data_big, ljMinAs_u32) >= 0 || m_apm_compare(var->value.data_big, ljMaxAs_u32) <= 0)
 				{
 					// In range
-					m_apm_to_integer_string(buffer, var->value.data._big);
+					m_apm_to_integer_string(buffer, var->value.data_big);
 
 					// Get the value
 					return(atoi(buffer));
@@ -11459,7 +11459,7 @@ debug_break;
 					//////////
 					// We can convert this from its text form into numeric, and if it's in the range of an s32 then we're good to go
 					//////
-						lnValue_s64 = _atoi64(var->value.data._s8);
+						lnValue_s64 = _atoi64(var->value.data_s8);
 						if (lnValue_s64 >= 0 && lnValue_s64 <= (s64)_u32_max)
 							return((u32)lnValue_s64);
 
@@ -11483,7 +11483,7 @@ debug_break;
 					// This will produce an integer suitable for sorting, comparing, etc.
 					//////
 						buffer[8] = 0;
-						memcpy(buffer, var->value.data._s8, 8);
+						memcpy(buffer, var->value.data_s8, 8);
 						lnValue_s64 = _atoi64(buffer);
 						return((u32)lnValue_s64);
 				}
@@ -11493,7 +11493,7 @@ debug_break;
 				//////////
 				// Convert this from its logical form into numeric
 				//////
-					if (var->value.data._s8[0] == _LOGICAL_FALSE)	return(_LOGICAL_FALSE);
+					if (var->value.data_s8[0] == _LOGICAL_FALSE)	return(_LOGICAL_FALSE);
 					else										return(_LOGICAL_TRUE);
 				// If we get here, an invalid variable type was encountered
 
@@ -11526,7 +11526,7 @@ debug_break;
 					//////////
 					// We can return the value after verifying it is not out of range for a 32-bit signed integer
 					//////
-						lnValue_s64 = (*(s64*)var->value.data._s8 / 10000);
+						lnValue_s64 = (*(s64*)var->value.data_s8 / 10000);
 						if (lnValue_s64 >= 0 && lnValue_s64 <= (s64)_u32_max)
 							return((u32)lnValue_s64);
 
@@ -11617,22 +11617,22 @@ debug_break;
 		// Based on the type of variable it is, return the value
 		switch (var->varType)
 		{
-			case _VAR_TYPE_NUMERIC:			return(_atoi64(var->value.data._s8));
-			case _VAR_TYPE_S32:				return((s64)*var->value.data._u32);
-			case _VAR_TYPE_U32:				return((s64)*var->value.data._u32);
-			case _VAR_TYPE_S64:				return(*var->value.data._s64);
-			case _VAR_TYPE_DATETIMEX:		return(*var->value.data._s64);
-			case _VAR_TYPE_S16:				return((s64)*var->value.data._s16);
-			case _VAR_TYPE_S8:				return((s64)*var->value.data._s8);
-			case _VAR_TYPE_U16:				return((s64)*var->value.data._u16);
-			case _VAR_TYPE_U8:				return((s64)*var->value.data._u8);
-			case _VAR_TYPE_CURRENCY:		return(((*var->value.data._s64 + 5000) / 10000));
+			case _VAR_TYPE_NUMERIC:			return(_atoi64(var->value.data_s8));
+			case _VAR_TYPE_S32:				return((s64)*var->value.data_u32);
+			case _VAR_TYPE_U32:				return((s64)*var->value.data_u32);
+			case _VAR_TYPE_S64:				return(*var->value.data_s64);
+			case _VAR_TYPE_DATETIMEX:		return(*var->value.data_s64);
+			case _VAR_TYPE_S16:				return((s64)*var->value.data_s16);
+			case _VAR_TYPE_S8:				return((s64)*var->value.data_s8);
+			case _VAR_TYPE_U16:				return((s64)*var->value.data_u16);
+			case _VAR_TYPE_U8:				return((s64)*var->value.data_u8);
+			case _VAR_TYPE_CURRENCY:		return(((*var->value.data_s64 + 5000) / 10000));
 
 			case _VAR_TYPE_U64:
 				//////////
 				// We can return the value after verifying it is not out of range for a 32-bit signed integer
 				//////
-					lnValue_u64 = *(u64*)var->value.data._data;
+					lnValue_u64 = *(u64*)var->value._data;
 					if (lnValue_u64 <= (u64)_s64_max)
 						return((s64)lnValue_u64);
 
@@ -11649,7 +11649,7 @@ debug_break;
 				//////////
 				// We can return the value after verifying it is not out of range for a 32-bit signed integer
 				//////
-					lnValue_f32 = *(f32*)var->value.data._data;
+					lnValue_f32 = *(f32*)var->value._data;
 					if (lnValue_f32 < (f32)_s64_min || lnValue_f32 > (f32)_s64_max)
 						return((s64)lnValue_f32);
 
@@ -11666,7 +11666,7 @@ debug_break;
 				//////////
 				// We can return the value after verifying it is not out of range for a 32-bit signed integer
 				//////
-					lnValue_f64 = *(f64*)var->value.data._data;
+					lnValue_f64 = *(f64*)var->value._data;
 					if (lnValue_f64 < (f64)_s64_min || lnValue_f64 > (f64)_s64_max)
 						return((s64)lnValue_f64);
 
@@ -11681,10 +11681,10 @@ debug_break;
 
 			case _VAR_TYPE_BI:
 				// Make sure it's in range
-				if (m_apm_compare(var->value.data._big, ljMinAs_s64) >= 0 || m_apm_compare(var->value.data._big, ljMaxAs_s64) <= 0)
+				if (m_apm_compare(var->value.data_big, ljMinAs_s64) >= 0 || m_apm_compare(var->value.data_big, ljMaxAs_s64) <= 0)
 				{
 					// In range
-					m_apm_to_integer_string(buffer, var->value.data._big);
+					m_apm_to_integer_string(buffer, var->value.data_big);
 
 					// Get the value
 					return(atoi(buffer));
@@ -11700,10 +11700,10 @@ debug_break;
 
 			case _VAR_TYPE_BFP:
 				// Make sure it's in range
-				if (m_apm_compare(var->value.data._big, ljMinAs_s64) >= 0 || m_apm_compare(var->value.data._big, ljMaxAs_s64) <= 0)
+				if (m_apm_compare(var->value.data_big, ljMinAs_s64) >= 0 || m_apm_compare(var->value.data_big, ljMaxAs_s64) <= 0)
 				{
 					// In range
-					m_apm_to_integer_string(buffer, var->value.data._big);
+					m_apm_to_integer_string(buffer, var->value.data_big);
 
 					// Get the value
 					return(atoi(buffer));
@@ -11724,7 +11724,7 @@ debug_break;
 					//////////
 					// We can convert this from its text form into numeric
 					//////
-						return(_atoi64(var->value.data._s8));
+						return(_atoi64(var->value.data_s8));
 				}
 				// If we get here, an invalid variable type was encountered
 				break;
@@ -11738,7 +11738,7 @@ debug_break;
 					// This will produce an integer suitable for sorting, comparing, etc.
 					//////
 						buffer[8] = 0;
-						memcpy(buffer, var->value.data._s8, 8);
+						memcpy(buffer, var->value.data_s8, 8);
 						return(_atoi64(buffer));
 				}
 
@@ -11750,7 +11750,7 @@ debug_break;
 					//////////
 					// We can convert this from its text form into numeric, and if it's in the range of an s32 then we're good to go
 					//////
-						if (var->value.data._s8[0] == 0)	return(0);
+						if (var->value.data_s8[0] == 0)	return(0);
 						else							return(1);
 				}
 				// If we get here, an invalid variable type was encountered
@@ -11763,8 +11763,8 @@ debug_break;
 					//////////
 					// We can convert this from its text form into numeric
 					//////
-						iiDateMath_get_YyyyMmDd_from_julian(var->value.data._dt->julian, &lnYear, &lnMonth, &lnDay);
-						iiDateMath_get_HhMmSsMss_from_seconds(var->value.data._dt->seconds, &lnHour, &lnMinute, &lnSecond, &lnMillisecond);
+						iiDateMath_get_YyyyMmDd_from_julian(var->value.data_dt->julian, &lnYear, &lnMonth, &lnDay);
+						iiDateMath_get_HhMmSsMss_from_seconds(var->value.data_dt->seconds, &lnHour, &lnMinute, &lnSecond, &lnMillisecond);
 
 						// Convert to a 64-bit numeric value
 						lnDtx = iiDateMath_get_jseconds_from_YyyyMmDdHhMmSsMssMics(NULL, lnYear, lnMonth, lnDay, lnHour, lnMinute, lnSecond, lnMillisecond, 0);
@@ -11847,29 +11847,29 @@ debug_break;
 		// Based on the type of variable it is, return the value
 		switch (var->varType)
 		{
-			case _VAR_TYPE_S32:				return((u64)var->value.data._s32[0]);
-			case _VAR_TYPE_U32:				return((u64)var->value.data._u32[0]);
-			case _VAR_TYPE_S64:				return((u64)var->value.data._s64[0]);
-			case _VAR_TYPE_DATETIMEX:		return((u64)var->value.data._s64[0]);
-			case _VAR_TYPE_S16:				return((u64)var->value.data._s16[0]);
-			case _VAR_TYPE_S8:				return((u64)var->value.data._s8[0]);
-			case _VAR_TYPE_U16:				return((u64)var->value.data._u16[0]);
-			case _VAR_TYPE_U8:				return((u64)var->value.data._u8[0]);
-			case _VAR_TYPE_CURRENCY:		return((var->value.data._s64[0] / 10000));
-			case _VAR_TYPE_U64:				return(var->value.data._u64[0]);
+			case _VAR_TYPE_S32:				return((u64)var->value.data_s32[0]);
+			case _VAR_TYPE_U32:				return((u64)var->value.data_u32[0]);
+			case _VAR_TYPE_S64:				return((u64)var->value.data_s64[0]);
+			case _VAR_TYPE_DATETIMEX:		return((u64)var->value.data_s64[0]);
+			case _VAR_TYPE_S16:				return((u64)var->value.data_s16[0]);
+			case _VAR_TYPE_S8:				return((u64)var->value.data_s8[0]);
+			case _VAR_TYPE_U16:				return((u64)var->value.data_u16[0]);
+			case _VAR_TYPE_U8:				return((u64)var->value.data_u8[0]);
+			case _VAR_TYPE_CURRENCY:		return((var->value.data_s64[0] / 10000));
+			case _VAR_TYPE_U64:				return(var->value.data_u64[0]);
 
 			case _VAR_TYPE_NUMERIC:
 #if defined(__GNUC__) || defined(__solaris__)
-				return(strtoull(var->value.data._s8, NULL, 10));
+				return(strtoull(var->value.data_s8, NULL, 10));
 #else
-				return(_strtoui64((s8*)var->value.data._s8, NULL, 10));
+				return(_strtoui64((s8*)var->value.data_s8, NULL, 10));
 #endif
 
 			case _VAR_TYPE_F32:
 				//////////
 				// We can return the value after verifying it is not out of range for a 32-bit signed integer
 				//////
-					lnValue_f32 = *(f32*)var->value.data._data;
+					lnValue_f32 = *(f32*)var->value._data;
 					if (lnValue_f32 < (f32)_u64_max)
 						return((u64)lnValue_f32);
 
@@ -11886,7 +11886,7 @@ debug_break;
 				//////////
 				// We can return the value after verifying it is not out of range for a 32-bit signed integer
 				//////
-					lnValue_f64 = *(f64*)var->value.data._data;
+					lnValue_f64 = *(f64*)var->value._data;
 					if (lnValue_f64 < (f64)_u64_max)
 						return((u64)lnValue_f64);
 
@@ -11901,10 +11901,10 @@ debug_break;
 
 			case _VAR_TYPE_BI:
 				// Make sure it's in range
-				if (m_apm_compare(var->value.data._big, ljMinAs_u64) >= 0 || m_apm_compare(var->value.data._big, ljMaxAs_u64) <= 0)
+				if (m_apm_compare(var->value.data_big, ljMinAs_u64) >= 0 || m_apm_compare(var->value.data_big, ljMaxAs_u64) <= 0)
 				{
 					// In range
-					m_apm_to_integer_string(buffer, var->value.data._big);
+					m_apm_to_integer_string(buffer, var->value.data_big);
 
 					// Get the value
 					return(atoi(buffer));
@@ -11920,10 +11920,10 @@ debug_break;
 
 			case _VAR_TYPE_BFP:
 				// Make sure it's in range
-				if (m_apm_compare(var->value.data._big, ljMinAs_u64) >= 0 || m_apm_compare(var->value.data._big, ljMaxAs_u64) <= 0)
+				if (m_apm_compare(var->value.data_big, ljMinAs_u64) >= 0 || m_apm_compare(var->value.data_big, ljMaxAs_u64) <= 0)
 				{
 					// In range
-					m_apm_to_integer_string(buffer, var->value.data._big);
+					m_apm_to_integer_string(buffer, var->value.data_big);
 
 					// Get the value
 					return(atoi(buffer));
@@ -11945,9 +11945,9 @@ debug_break;
 					// We can convert this from its text form into numeric
 					//////
 #if defined(__GNUC__) || defined(__solaris__)
-						return(strtoull(var->value.data._s8, NULL, 10));
+						return(strtoull(var->value.data_s8, NULL, 10));
 #else
-						return(_strtoui64((s8*)var->value.data._s8, NULL, 10));
+						return(_strtoui64((s8*)var->value.data_s8, NULL, 10));
 #endif
 				}
 				// If we get here, an invalid variable type was encountered
@@ -11962,7 +11962,7 @@ debug_break;
 					// This will produce an integer suitable for sorting, comparing, etc.
 					//////
 						buffer[8] = 0;
-						memcpy(buffer, var->value.data._s8, 8);
+						memcpy(buffer, var->value.data_s8, 8);
 #if defined(__GNUC__) || defined(__solaris__)
 						return(strtoull(buffer, NULL, 10));
 #else
@@ -11978,7 +11978,7 @@ debug_break;
 					//////////
 					// We can convert this from its text form into numeric, and if it's in the range of an s32 then we're good to go
 					//////
-						if (var->value.data._s8[0] == 0)	return(0);
+						if (var->value.data_s8[0] == 0)	return(0);
 						else							return(1);
 				}
 				// If we get here, an invalid variable type was encountered
@@ -11991,8 +11991,8 @@ debug_break;
 					//////////
 					// We can convert this from its text form into numeric
 					//////
-						iiDateMath_get_YyyyMmDd_from_julian(var->value.data._dt->julian, &lnYear, &lnMonth, &lnDay);
-						iiDateMath_get_HhMmSsMss_from_seconds(var->value.data._dt->seconds, &lnHour, &lnMinute, &lnSecond, &lnMillisecond);
+						iiDateMath_get_YyyyMmDd_from_julian(var->value.data_dt->julian, &lnYear, &lnMonth, &lnDay);
+						iiDateMath_get_HhMmSsMss_from_seconds(var->value.data_dt->seconds, &lnHour, &lnMinute, &lnSecond, &lnMillisecond);
 
 						// Convert to a 64-bit numeric value
 						lnDtx = iiDateMath_get_jseconds_from_YyyyMmDdHhMmSsMssMics(NULL, lnYear, lnMonth, lnDay, lnHour, lnMinute, lnSecond, lnMillisecond, 0);
@@ -12080,24 +12080,24 @@ debug_break;
 		// Based on the type of variable it is, return the value
 		switch (var->varType)
 		{
-			case _VAR_TYPE_NUMERIC:			return((f32)_atoi64(var->value.data._s8));
-			case _VAR_TYPE_S32:				return((f32)*var->value.data._s32);
-			case _VAR_TYPE_U32:				return((f32)*var->value.data._u32);
-			case _VAR_TYPE_U64:				return((f32)*var->value.data._s64);
-			case _VAR_TYPE_S64:				return((f32)*var->value.data._s64);
-			case _VAR_TYPE_DATETIMEX:		return((f32)*var->value.data._s64);
-			case _VAR_TYPE_S16:				return((f32)*var->value.data._s16);
-			case _VAR_TYPE_S8:				return((f32)*var->value.data._s8);
-			case _VAR_TYPE_U16:				return((f32)*var->value.data._u16);
-			case _VAR_TYPE_U8:				return((f32)*var->value.data._u8);
-			case _VAR_TYPE_F32:				return(*var->value.data._f32);
-			case _VAR_TYPE_CURRENCY:		return((f32)(*(s64*)var->value.data._s8 / 10000));
+			case _VAR_TYPE_NUMERIC:			return((f32)_atoi64(var->value.data_s8));
+			case _VAR_TYPE_S32:				return((f32)*var->value.data_s32);
+			case _VAR_TYPE_U32:				return((f32)*var->value.data_u32);
+			case _VAR_TYPE_U64:				return((f32)*var->value.data_s64);
+			case _VAR_TYPE_S64:				return((f32)*var->value.data_s64);
+			case _VAR_TYPE_DATETIMEX:		return((f32)*var->value.data_s64);
+			case _VAR_TYPE_S16:				return((f32)*var->value.data_s16);
+			case _VAR_TYPE_S8:				return((f32)*var->value.data_s8);
+			case _VAR_TYPE_U16:				return((f32)*var->value.data_u16);
+			case _VAR_TYPE_U8:				return((f32)*var->value.data_u8);
+			case _VAR_TYPE_F32:				return(*var->value.data_f32);
+			case _VAR_TYPE_CURRENCY:		return((f32)(*(s64*)var->value.data_s8 / 10000));
 
 			case _VAR_TYPE_F64:
 				//////////
 				// We can return the value after verifying it is not out of range for a 32-bit signed integer
 				//////
-					lnValue_f64 = *(f64*)var->value.data._data;
+					lnValue_f64 = *(f64*)var->value._data;
 					if (lnValue_f64 >= (f64)_f32_min && lnValue_f64 <= (f64)_f32_max)
 						return((f32)lnValue_f64);
 
@@ -12112,16 +12112,16 @@ debug_break;
 
 			case _VAR_TYPE_BI:
 				// Make sure it's in range
-				if (m_apm_compare(var->value.data._big, ljMinAs_f32) >= 0 || m_apm_compare(var->value.data._big, ljMaxAs_f32) <= 0)
+				if (m_apm_compare(var->value.data_big, ljMinAs_f32) >= 0 || m_apm_compare(var->value.data_big, ljMaxAs_f32) <= 0)
 				{
 					// In range
-					bufferBig.data._data	= 0;
+					bufferBig._data	= 0;
 					bufferBig.length		= 0;
 					iDatum_allocateSpace(&bufferBig, iiBi_calc_significantDigits_bySize(var) * 2);
-					m_apm_to_integer_string(bufferBig.data._s8, var->value.data._big);
+					m_apm_to_integer_string(bufferBig.data_s8, var->value.data_big);
 
 					// Get the value
-					lfVal32 = (f32)atof(bufferBig.data._s8);
+					lfVal32 = (f32)atof(bufferBig.data_s8);
 
 					// Clean house
 					iDatum_delete(&bufferBig, false);
@@ -12140,17 +12140,17 @@ debug_break;
 
 			case _VAR_TYPE_BFP:
 				// Make sure it's in range
-				if (m_apm_compare(var->value.data._big, ljMinAs_f32) >= 0 || m_apm_compare(var->value.data._big, ljMaxAs_f32) <= 0)
+				if (m_apm_compare(var->value.data_big, ljMinAs_f32) >= 0 || m_apm_compare(var->value.data_big, ljMaxAs_f32) <= 0)
 				{
 					// In range
-					bufferBig.data._data	= 0;
+					bufferBig._data	= 0;
 					bufferBig.length		= 0;
 					iDatum_allocateSpace(&bufferBig, iiBfp_calc_significantDigits_bySize(var) * 2);
-					m_apm_to_string(bufferBig.data._s8, bufferBig.length / 2, var->value.data._big);
+					m_apm_to_string(bufferBig.data_s8, bufferBig.length / 2, var->value.data_big);
 					iiBfp_convertFrom_scientificNotation(&bufferBig, var);
 
 					// Get the value
-					lfVal32 = (f32)atof(bufferBig.data._s8);
+					lfVal32 = (f32)atof(bufferBig.data_s8);
 
 					// Clean house
 					iDatum_delete(&bufferBig, false);
@@ -12174,7 +12174,7 @@ debug_break;
 					//////////
 					// We can convert this from its text form into numeric
 					//////
-						return((f32)_atoi64(var->value.data._s8));
+						return((f32)_atoi64(var->value.data_s8));
 				}
 				// If we get here, an invalid variable type was encountered
 				break;
@@ -12188,7 +12188,7 @@ debug_break;
 					// This will produce an integer suitable for sorting, comparing, etc.
 					//////
 						buffer[8] = 0;
-						memcpy(buffer, var->value.data._s8, 8);
+						memcpy(buffer, var->value.data_s8, 8);
 						return((f32)_atoi64(buffer));
 				}
 
@@ -12200,7 +12200,7 @@ debug_break;
 					//////////
 					// We can convert this from its text form into numeric, and if it's in the range of an s32 then we're good to go
 					//////
-						if (var->value.data._s8[0] == 0)	return(0.0f);
+						if (var->value.data_s8[0] == 0)	return(0.0f);
 						else							return(1.0f);
 				}
 				// If we get here, an invalid variable type was encountered
@@ -12213,8 +12213,8 @@ debug_break;
 					//////////
 					// We can convert this from its text form into numeric
 					//////
-						iiDateMath_get_YyyyMmDd_from_julian(var->value.data._dt->julian, &lnYear, &lnMonth, &lnDay);
-						iiDateMath_get_HhMmSsMss_from_seconds(var->value.data._dt->seconds, &lnHour, &lnMinute, &lnSecond, &lnMillisecond);
+						iiDateMath_get_YyyyMmDd_from_julian(var->value.data_dt->julian, &lnYear, &lnMonth, &lnDay);
+						iiDateMath_get_HhMmSsMss_from_seconds(var->value.data_dt->seconds, &lnHour, &lnMinute, &lnSecond, &lnMillisecond);
 
 						// Convert to a 64-bit numeric value
 						lnDtx = iiDateMath_get_jseconds_from_YyyyMmDdHhMmSsMssMics(NULL, lnYear, lnMonth, lnDay, lnHour, lnMinute, lnSecond, lnMillisecond, 0);
@@ -12302,33 +12302,33 @@ debug_break;
 		// Based on the type of variable it is, return the value
 		switch (var->varType)
 		{
-			case _VAR_TYPE_NUMERIC:			return((f64)_atoi64(var->value.data._s8));
-			case _VAR_TYPE_S32:				return((f64)*var->value.data._s32);
-			case _VAR_TYPE_U32:				return((f64)*var->value.data._u32);
-			case _VAR_TYPE_S64:				return((f64)*var->value.data._s64);
-			case _VAR_TYPE_DATETIMEX:		return((f64)*var->value.data._s64);
-			case _VAR_TYPE_S16:				return((f64)*var->value.data._s16);
-			case _VAR_TYPE_S8:				return((f64)*var->value.data._s8);
-			case _VAR_TYPE_U16:				return((f64)*var->value.data._u16);
-			case _VAR_TYPE_U8:				return((f64)*var->value.data._u8);
-			case _VAR_TYPE_F32:				return((f64)*var->value.data._f32);
-			case _VAR_TYPE_F64:				return(*var->value.data._f64);
-			case _VAR_TYPE_U64:				return((f64)*var->value.data._s64);
-			case _VAR_TYPE_CURRENCY:		return((f64)(*(s64*)var->value.data._s8 / 10000));
+			case _VAR_TYPE_NUMERIC:			return((f64)_atoi64(var->value.data_s8));
+			case _VAR_TYPE_S32:				return((f64)*var->value.data_s32);
+			case _VAR_TYPE_U32:				return((f64)*var->value.data_u32);
+			case _VAR_TYPE_S64:				return((f64)*var->value.data_s64);
+			case _VAR_TYPE_DATETIMEX:		return((f64)*var->value.data_s64);
+			case _VAR_TYPE_S16:				return((f64)*var->value.data_s16);
+			case _VAR_TYPE_S8:				return((f64)*var->value.data_s8);
+			case _VAR_TYPE_U16:				return((f64)*var->value.data_u16);
+			case _VAR_TYPE_U8:				return((f64)*var->value.data_u8);
+			case _VAR_TYPE_F32:				return((f64)*var->value.data_f32);
+			case _VAR_TYPE_F64:				return(*var->value.data_f64);
+			case _VAR_TYPE_U64:				return((f64)*var->value.data_s64);
+			case _VAR_TYPE_CURRENCY:		return((f64)(*(s64*)var->value.data_s8 / 10000));
 
 
 			case _VAR_TYPE_BI:
 				// Make sure it's in range
-				if (m_apm_compare(var->value.data._big, ljMinAs_f64) >= 0 || m_apm_compare(var->value.data._big, ljMaxAs_f64) <= 0)
+				if (m_apm_compare(var->value.data_big, ljMinAs_f64) >= 0 || m_apm_compare(var->value.data_big, ljMaxAs_f64) <= 0)
 				{
 					// In range
-					bufferBig.data._data	= 0;
+					bufferBig._data	= 0;
 					bufferBig.length		= 0;
 					iDatum_allocateSpace(&bufferBig, iiBi_calc_significantDigits_bySize(var) * 2);
-					m_apm_to_integer_string(bufferBig.data._s8, var->value.data._big);
+					m_apm_to_integer_string(bufferBig.data_s8, var->value.data_big);
 
 					// Get the value
-					lfVal64 = atof(bufferBig.data._s8);
+					lfVal64 = atof(bufferBig.data_s8);
 
 					// Clean house
 					iDatum_delete(&bufferBig, false);
@@ -12347,17 +12347,17 @@ debug_break;
 
 			case _VAR_TYPE_BFP:
 				// Make sure it's in range
-				if (m_apm_compare(var->value.data._big, ljMinAs_f64) >= 0 || m_apm_compare(var->value.data._big, ljMaxAs_f64) <= 0)
+				if (m_apm_compare(var->value.data_big, ljMinAs_f64) >= 0 || m_apm_compare(var->value.data_big, ljMaxAs_f64) <= 0)
 				{
 					// In range
-					bufferBig.data._data	= 0;
+					bufferBig._data	= 0;
 					bufferBig.length		= 0;
 					iDatum_allocateSpace(&bufferBig, iiBfp_calc_significantDigits_bySize(var) * 2);
-					m_apm_to_string(bufferBig.data._s8, bufferBig.length / 2, var->value.data._big);
+					m_apm_to_string(bufferBig.data_s8, bufferBig.length / 2, var->value.data_big);
 					iiBfp_convertFrom_scientificNotation(&bufferBig, var);
 
 					// Get the value
-					lfVal64 = atof(bufferBig.data._s8);
+					lfVal64 = atof(bufferBig.data_s8);
 
 					// Clean house
 					iDatum_delete(&bufferBig, false);
@@ -12381,7 +12381,7 @@ debug_break;
 					//////////
 					// We can convert this from its text form into numeric
 					//////
-						return((f64)_atoi64(var->value.data._s8));
+						return((f64)_atoi64(var->value.data_s8));
 				}
 				// If we get here, an invalid variable type was encountered
 				break;
@@ -12395,7 +12395,7 @@ debug_break;
 					// This will produce an integer suitable for sorting, comparing, etc.
 					//////
 						buffer[8] = 0;
-						memcpy(buffer, var->value.data._s8, 8);
+						memcpy(buffer, var->value.data_s8, 8);
 						return((f64)_atoi64(buffer));
 				}
 
@@ -12407,7 +12407,7 @@ debug_break;
 					//////////
 					// We can convert this from its text form into numeric, and if it's in the range of an s32 then we're good to go
 					//////
-						if (var->value.data._s8[0] == 0)	return(0.0);
+						if (var->value.data_s8[0] == 0)	return(0.0);
 						else							return(1.0);
 				}
 				// If we get here, an invalid variable type was encountered
@@ -12420,8 +12420,8 @@ debug_break;
 					//////////
 					// We can convert this from its text form into numeric
 					//////
-						iiDateMath_get_YyyyMmDd_from_julian(var->value.data._dt->julian, &lnYear, &lnMonth, &lnDay);
-						iiDateMath_get_HhMmSsMss_from_seconds(var->value.data._dt->seconds, &lnHour, &lnMinute, &lnSecond, &lnMillisecond);
+						iiDateMath_get_YyyyMmDd_from_julian(var->value.data_dt->julian, &lnYear, &lnMonth, &lnDay);
+						iiDateMath_get_HhMmSsMss_from_seconds(var->value.data_dt->seconds, &lnHour, &lnMinute, &lnSecond, &lnMillisecond);
 
 						// Convert to a 64-bit numeric value
 						lnDtx = iiDateMath_get_jseconds_from_YyyyMmDdHhMmSsMssMics(NULL, lnYear, lnMonth, lnDay, lnHour, lnMinute, lnSecond, lnMillisecond, 0);
@@ -12534,59 +12534,59 @@ debug_break;
 					{
 						case _VAR_TYPE_DATETIME:
 							// Grab related information from the datetime
-							iiDateMath_get_YyyyMmDd_from_julian(varLeft->value.data._dt->julian, &lnYear, &lnMonth, &lnDay);
+							iiDateMath_get_YyyyMmDd_from_julian(varLeft->value.data_dt->julian, &lnYear, &lnMonth, &lnDay);
 							iiDateMath_get_YYYYMMDD_from_YyyyMmDd(buffer, lnYear, lnMonth, lnDay);
 
 							// Indicate our result
-							return(memcmp(varLeft->value.data._s8, buffer, varRight->value.length));
+							return(memcmp(varLeft->value.data_s8, buffer, varRight->value.length));
 
 						case _VAR_TYPE_DATETIMEX:
 							// Grab related information from the datetimex
-							iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds(varLeft->value.data._dtx->jseconds, NULL, &lnYear, &lnMonth, &lnDay, NULL, NULL, NULL, NULL, NULL);
+							iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds(varLeft->value.data_dtx->jseconds, NULL, &lnYear, &lnMonth, &lnDay, NULL, NULL, NULL, NULL, NULL);
 							iiDateMath_get_YYYYMMDD_from_YyyyMmDd(buffer, lnYear, lnMonth, lnDay);
 
 							// Indicate our result
-							return(memcmp(varLeft->value.data._s8, buffer, varRight->value.length));
+							return(memcmp(varLeft->value.data_s8, buffer, varRight->value.length));
 
 						case _VAR_TYPE_CHARACTER:
-							return(memcmp(varLeft->value.data._s8, varRight->value.data._s8, min(varLeft->value.length, varRight->value.length)));
+							return(memcmp(varLeft->value.data_s8, varRight->value.data_s8, min(varLeft->value.length, varRight->value.length)));
 					}
 
 					// Compute the value of the date
-					memcpy(buffer, varLeft->value.data._s8, varLeft->value.length);
+					memcpy(buffer, varLeft->value.data_s8, varLeft->value.length);
 					buffer[varLeft->value.length] = 0;
 					lnDate = atoi(buffer);
 
 					switch (varRight->varType)
 					{
 						case _VAR_TYPE_S32:
-								 if ((s32)lnDate == varRight->value.data._s32[0])		return(0);			// Equal
-							else if ((s32)lnDate <  varRight->value.data._s32[0])		return(-1);			// Less than
+								 if ((s32)lnDate == varRight->value.data_s32[0])		return(0);			// Equal
+							else if ((s32)lnDate <  varRight->value.data_s32[0])		return(-1);			// Less than
 							else														return(1);			// Greater than
 
 						case _VAR_TYPE_U32:
-								 if ((u32)lnDate == varRight->value.data._u32[0])		return(0);			// Equal
-							else if ((u32)lnDate <  varRight->value.data._u32[0])		return(-1);			// Less than
+								 if ((u32)lnDate == varRight->value.data_u32[0])		return(0);			// Equal
+							else if ((u32)lnDate <  varRight->value.data_u32[0])		return(-1);			// Less than
 							else														return(1);			// Greater than
 
 						case _VAR_TYPE_S64:
-								 if ((s64)lnDate == varRight->value.data._s64[0])		return(0);			// Equal
-							else if ((s64)lnDate <  varRight->value.data._s64[0])		return(-1);			// Less than
+								 if ((s64)lnDate == varRight->value.data_s64[0])		return(0);			// Equal
+							else if ((s64)lnDate <  varRight->value.data_s64[0])		return(-1);			// Less than
 							else														return(1);			// Greater than
 
 						case _VAR_TYPE_U64:
-								 if ((u64)lnDate == varRight->value.data._u64[0])		return(0);			// Equal
-							else if ((u64)lnDate <  varRight->value.data._u64[0])		return(-1);			// Less than
+								 if ((u64)lnDate == varRight->value.data_u64[0])		return(0);			// Equal
+							else if ((u64)lnDate <  varRight->value.data_u64[0])		return(-1);			// Less than
 							else														return(1);			// Greater than
 
 						case _VAR_TYPE_F32:
-								 if ((f32)lnDate == varRight->value.data._f32[0])		return(0);			// Equal
-							else if ((f32)lnDate <  varRight->value.data._f32[0])		return(-1);			// Less than
+								 if ((f32)lnDate == varRight->value.data_f32[0])		return(0);			// Equal
+							else if ((f32)lnDate <  varRight->value.data_f32[0])		return(-1);			// Less than
 							else														return(1);			// Greater than
 
 						case _VAR_TYPE_F64:
-								 if ((f64)lnDate == varRight->value.data._f64[0])		return(0);			// Equal
-							else if ((f64)lnDate <  varRight->value.data._f64[0])		return(-1);			// Less than
+								 if ((f64)lnDate == varRight->value.data_f64[0])		return(0);			// Equal
+							else if ((f64)lnDate <  varRight->value.data_f64[0])		return(-1);			// Less than
 							else														return(1);			// Greater than
 
 // 						case _VAR_TYPE_BI:
@@ -12598,13 +12598,13 @@ debug_break;
 
 				} else if (varLeft->varType == _VAR_TYPE_DATETIME) {
 					// Datetimes can be compared to 64-bit numeric values
-					iiDateMath_get_YyyyMmDd_from_julian(varLeft->value.data._dt->julian, &lnYear, &lnMonth, &lnDay);
-					iiDateMath_get_HhMmSsMss_from_seconds(varLeft->value.data._dt->seconds, &lnHour, &lnMinute, &lnSecond, &lnMillisecond);
+					iiDateMath_get_YyyyMmDd_from_julian(varLeft->value.data_dt->julian, &lnYear, &lnMonth, &lnDay);
+					iiDateMath_get_HhMmSsMss_from_seconds(varLeft->value.data_dt->seconds, &lnHour, &lnMinute, &lnSecond, &lnMillisecond);
 
 					if (varRight->varType == _VAR_TYPE_DATETIMEX)
 					{
 						// Datetimes can be compared to datetimex down to the seconds (and possibly the milliseconds, but we cannot guarantee that because it's possible this data came from a table source which may not have had millisecond encoding)
-						iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds(varRight->value.data._dtx->jseconds, NULL, &lnYear2, &lnMonth2, &lnDay2, &lnHour2, &lnMinute2, &lnSecond2, NULL, NULL);
+						iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds(varRight->value.data_dtx->jseconds, NULL, &lnYear2, &lnMonth2, &lnDay2, &lnHour2, &lnMinute2, &lnSecond2, NULL, NULL);
 						lnDatetime	= iiDateMath_get_jseconds_from_YyyyMmDdHhMmSsMssMics(NULL, lnYear,  lnMonth,  lnDay,  lnHour,  lnMinute,  lnSecond,  0, 0);
 						lnDatetime2	= iiDateMath_get_jseconds_from_YyyyMmDdHhMmSsMssMics(NULL, lnYear2, lnMonth2, lnDay2, lnHour2, lnMinute2, lnSecond2, 0, 0);
 
@@ -12620,10 +12620,10 @@ debug_break;
 						switch (varRight->varType)
 						{
 							case _VAR_TYPE_DATE:
-								return(memcmp(buffer, varRight->value.data._s8, varRight->value.length));
+								return(memcmp(buffer, varRight->value.data_s8, varRight->value.length));
 
 							case _VAR_TYPE_CHARACTER:
-								return(memcmp(buffer, varRight->value.data._s8, min(varRight->value.length, strlen(buffer))));
+								return(memcmp(buffer, varRight->value.data_s8, min(varRight->value.length, strlen(buffer))));
 						}
 
 						// Grab the value
@@ -12636,26 +12636,26 @@ debug_break;
 						{
 							case _VAR_TYPE_S64:
 								// Grab the value as an unsigned value
-								lnDatetime2 = (u64)varRight->value.data._s64[0];
+								lnDatetime2 = (u64)varRight->value.data_s64[0];
 
-								     if (varRight->value.data._s64[0] < 0)						return(1);			// Greater than
+								     if (varRight->value.data_s64[0] < 0)						return(1);			// Greater than
 								else if (lnDatetime == lnDatetime2)								return(0);			// Equal
 								else if (lnDatetime <  lnDatetime2)								return(-1);			// Less than
 								else															return(1);			// Greater than
 
 							case _VAR_TYPE_U64:
-									 if ((u64)lnDatetime == varRight->value.data._u64[0])		return(0);			// Equal
-								else if ((u64)lnDatetime <  varRight->value.data._u64[0])		return(-1);			// Less than
+									 if ((u64)lnDatetime == varRight->value.data_u64[0])		return(0);			// Equal
+								else if ((u64)lnDatetime <  varRight->value.data_u64[0])		return(-1);			// Less than
 								else															return(1);			// Greater than
 
 							case _VAR_TYPE_F32:
-									 if ((f32)lnDatetime == varRight->value.data._f32[0])		return(0);			// Equal
-								else if ((f32)lnDatetime <  varRight->value.data._f32[0])		return(-1);			// Less than
+									 if ((f32)lnDatetime == varRight->value.data_f32[0])		return(0);			// Equal
+								else if ((f32)lnDatetime <  varRight->value.data_f32[0])		return(-1);			// Less than
 								else															return(1);			// Greater than
 
 							case _VAR_TYPE_F64:
-									 if ((f64)lnDatetime == varRight->value.data._f64[0])		return(0);			// Equal
-								else if ((f64)lnDatetime <  varRight->value.data._f64[0])		return(-1);			// Less than
+									 if ((f64)lnDatetime == varRight->value.data_f64[0])		return(0);			// Equal
+								else if ((f64)lnDatetime <  varRight->value.data_f64[0])		return(-1);			// Less than
 								else															return(1);			// Greater than
 
 							case _VAR_TYPE_BI:
@@ -12667,7 +12667,7 @@ debug_break;
 
 				} else if (varLeft->varType == _VAR_TYPE_DATETIMEX) {
 					// DatetimeX values can be compared to datetimeX values, or 64-bit numeric values
-					iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds(varLeft->value.data._dtx->jseconds, NULL, &lnYear, &lnMonth, &lnDay, &lnHour, &lnMinute, &lnSecond, &lnMillisecond, &lnMicrosecond);
+					iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds(varLeft->value.data_dtx->jseconds, NULL, &lnYear, &lnMonth, &lnDay, &lnHour, &lnMinute, &lnSecond, &lnMillisecond, &lnMicrosecond);
 					lnDatetime = iiDateMath_get_jseconds_from_YyyyMmDdHhMmSsMssMics(NULL, lnYear, lnMonth, lnDay, lnHour, lnMinute, lnSecond, lnMillisecond, lnMicrosecond);
 
 
@@ -12679,43 +12679,43 @@ debug_break;
 						{
 							case _VAR_TYPE_DATETIMEX:
 								// Extract the right-side
-								lnDatetime	= varLeft->value.data._dtx->jseconds;
-								lnDatetime2	= varRight->value.data._dtx->jseconds;
+								lnDatetime	= varLeft->value.data_dtx->jseconds;
+								lnDatetime2	= varRight->value.data_dtx->jseconds;
 								break;
 
 							case _VAR_TYPE_DATETIME:
 								// Comparing to a datetime (down to seconds only)
-								iiDateMath_get_YyyyMmDd_from_julian(varRight->value.data._dt->julian, &lnYear2, &lnMonth2, &lnDay2);
-								iiDateMath_get_HhMmSsMss_from_seconds(varRight->value.data._dt->seconds, &lnHour2, &lnMinute2, &lnSecond2, &lnMillisecond2);
+								iiDateMath_get_YyyyMmDd_from_julian(varRight->value.data_dt->julian, &lnYear2, &lnMonth2, &lnDay2);
+								iiDateMath_get_HhMmSsMss_from_seconds(varRight->value.data_dt->seconds, &lnHour2, &lnMinute2, &lnSecond2, &lnMillisecond2);
 								lnDatetime	= iiDateMath_get_jseconds_from_YyyyMmDdHhMmSsMssMics(NULL, lnYear,  lnMonth,  lnDay,  lnHour,  lnMinute,  lnSecond,  0, 0);
 								lnDatetime2	= iiDateMath_get_jseconds_from_YyyyMmDdHhMmSsMssMics(NULL, lnYear2, lnMonth2, lnDay2, lnHour2, lnMinute2, lnSecond2, 0, 0);
 								break;
 
 							case _VAR_TYPE_DATE:
 								// Comparing to a date (down to day only)
-								iiDateMath_get_YyyyMmDd_from_YYYYMMDD(varRight->value.data._u8, &lnYear2, &lnMonth2, &lnDay2);
+								iiDateMath_get_YyyyMmDd_from_YYYYMMDD(varRight->value.data_u8, &lnYear2, &lnMonth2, &lnDay2);
 								lnDatetime	= iiDateMath_get_jseconds_from_YyyyMmDdHhMmSsMssMics(NULL, lnYear,  lnMonth,  lnDay,  0, 0, 0, 0, 0);
 								lnDatetime2	= iiDateMath_get_jseconds_from_YyyyMmDdHhMmSsMssMics(NULL, lnYear2, lnMonth2, lnDay2, 0, 0, 0, 0, 0);
 								break;
 
 							case _VAR_TYPE_S64:
-								lnDatetime	= varLeft->value.data._dtx->jseconds;
-								lnDatetime2	= ((varRight->value.data._s64[0] > 0) ? varRight->value.data._s64[0] : 0);
+								lnDatetime	= varLeft->value.data_dtx->jseconds;
+								lnDatetime2	= ((varRight->value.data_s64[0] > 0) ? varRight->value.data_s64[0] : 0);
 								break;
 
 							case _VAR_TYPE_U64:
-								lnDatetime	= varLeft->value.data._dtx->jseconds;
-								lnDatetime2	= varRight->value.data._u64[0];
+								lnDatetime	= varLeft->value.data_dtx->jseconds;
+								lnDatetime2	= varRight->value.data_u64[0];
 								break;
 
 							case _VAR_TYPE_F32:
-									 if ((f32)varLeft->value.data._dtx->jseconds == varRight->value.data._f32[0])		return(0);			// Equal
-								else if ((f32)varLeft->value.data._dtx->jseconds <  varRight->value.data._f32[0])		return(-1);			// Less than
+									 if ((f32)varLeft->value.data_dtx->jseconds == varRight->value.data_f32[0])		return(0);			// Equal
+								else if ((f32)varLeft->value.data_dtx->jseconds <  varRight->value.data_f32[0])		return(-1);			// Less than
 								else																				return(1);			// Greater than
 
 							case _VAR_TYPE_F64:
-									 if ((f64)varLeft->value.data._dtx->jseconds == varRight->value.data._f64[0])		return(0);			// Equal
-								else if ((f64)varLeft->value.data._dtx->jseconds <  varRight->value.data._f64[0])		return(-1);			// Less than
+									 if ((f64)varLeft->value.data_dtx->jseconds == varRight->value.data_f64[0])		return(0);			// Equal
+								else if ((f64)varLeft->value.data_dtx->jseconds <  varRight->value.data_f64[0])		return(-1);			// Less than
 								else																				return(1);			// Greater than
 
 							case _VAR_TYPE_BI:
@@ -12867,65 +12867,65 @@ debug_break;
 			switch (varLeft->varType)
 			{
 				case _VAR_TYPE_S8:
-						 if (*varLeft->value.data._s8 == *varRight->value.data._s8)		return(0);		// Equals
-					else if (*varLeft->value.data._s8 < *varRight->value.data._s8)		return(-1);		// Less than
+						 if (*varLeft->value.data_s8 == *varRight->value.data_s8)		return(0);		// Equals
+					else if (*varLeft->value.data_s8 < *varRight->value.data_s8)		return(-1);		// Less than
 					else																return(1);		// Greater than
 
 
 				case _VAR_TYPE_U8:
-						 if (*varLeft->value.data._u8 == *varRight->value.data._u8)		return(0);		// Equals
-					else if (*varLeft->value.data._u8 < *varRight->value.data._u8)		return(-1);		// Less than
+						 if (*varLeft->value.data_u8 == *varRight->value.data_u8)		return(0);		// Equals
+					else if (*varLeft->value.data_u8 < *varRight->value.data_u8)		return(-1);		// Less than
 					else																return(1);		// Greater than
 
 
 				case _VAR_TYPE_S16:
-						 if (*varLeft->value.data._s16 == *varRight->value.data._s16)		return(0);		// Equals
-					else if (*varLeft->value.data._s16 < *varRight->value.data._s16)		return(-1);		// Less than
+						 if (*varLeft->value.data_s16 == *varRight->value.data_s16)		return(0);		// Equals
+					else if (*varLeft->value.data_s16 < *varRight->value.data_s16)		return(-1);		// Less than
 					else																return(1);		// Greater than
 
 
 				case _VAR_TYPE_U16:
-						 if (*varLeft->value.data._u16 == *varRight->value.data._u16)		return(0);		// Equals
-					else if (*varLeft->value.data._u16 < *varRight->value.data._u16)		return(-1);		// Less than
+						 if (*varLeft->value.data_u16 == *varRight->value.data_u16)		return(0);		// Equals
+					else if (*varLeft->value.data_u16 < *varRight->value.data_u16)		return(-1);		// Less than
 					else																return(1);		// Greater than
 
 
 				case _VAR_TYPE_S32:
-						 if (*varLeft->value.data._s32 == *varRight->value.data._s32)		return(0);		// Equals
-					else if (*varLeft->value.data._s32 < *varRight->value.data._s32)		return(-1);		// Less than
+						 if (*varLeft->value.data_s32 == *varRight->value.data_s32)		return(0);		// Equals
+					else if (*varLeft->value.data_s32 < *varRight->value.data_s32)		return(-1);		// Less than
 					else																return(1);		// Greater than
 
 
 				case _VAR_TYPE_U32:
-						 if (*varLeft->value.data._u32 == *varRight->value.data._u32)		return(0);		// Equals
-					else if (*varLeft->value.data._u32 < *varRight->value.data._u32)		return(-1);		// Less than
+						 if (*varLeft->value.data_u32 == *varRight->value.data_u32)		return(0);		// Equals
+					else if (*varLeft->value.data_u32 < *varRight->value.data_u32)		return(-1);		// Less than
 					else																return(1);		// Greater than
 
 
 				case _VAR_TYPE_CURRENCY:
 				case _VAR_TYPE_S64:
-						 if (*varLeft->value.data._s64 == *varRight->value.data._s64)		return(0);		// Equals
-					else if (*varLeft->value.data._s64 < *varRight->value.data._s64)		return(-1);		// Less than
+						 if (*varLeft->value.data_s64 == *varRight->value.data_s64)		return(0);		// Equals
+					else if (*varLeft->value.data_s64 < *varRight->value.data_s64)		return(-1);		// Less than
 					else																return(1);		// Greater than
 
 
 				case _VAR_TYPE_U64:
-						 if (*varLeft->value.data._u64 == *varRight->value.data._u64)		return(0);		// Equals
-					else if (*varLeft->value.data._u64 < *varRight->value.data._u64)		return(-1);		// Less than
+						 if (*varLeft->value.data_u64 == *varRight->value.data_u64)		return(0);		// Equals
+					else if (*varLeft->value.data_u64 < *varRight->value.data_u64)		return(-1);		// Less than
 					else																return(1);		// Greater than
 
 
 				case _VAR_TYPE_F32:
 					// Compare directly
-						 if (*varLeft->value.data._f32 == *varRight->value.data._f32)		return(0);		// Equals
-					else if (*varLeft->value.data._f32 < *varRight->value.data._f32)		return(-1);		// Less than
+						 if (*varLeft->value.data_f32 == *varRight->value.data_f32)		return(0);		// Equals
+					else if (*varLeft->value.data_f32 < *varRight->value.data_f32)		return(-1);		// Less than
 					else																return(1);		// Greater than
 
 
 				case _VAR_TYPE_F64:
 					// Compare directly
-						 if (*varLeft->value.data._f64 == *varRight->value.data._f64)		return(0);		// Equals
-					else if (*varLeft->value.data._f64 < *varRight->value.data._f64)		return(-1);		// Less than
+						 if (*varLeft->value.data_f64 == *varRight->value.data_f64)		return(0);		// Equals
+					else if (*varLeft->value.data_f64 < *varRight->value.data_f64)		return(-1);		// Less than
 					else																return(1);		// Greater than
 
 
@@ -12956,13 +12956,13 @@ debug_break;
 					// Can they be compared exactly?
 					//////
 						if (varLeft->value.length == varRight->value.length)
-							return(memcmp(varLeft->value.data._s8, varRight->value.data._s8, varLeft->value.length));
+							return(memcmp(varLeft->value.data_s8, varRight->value.data_s8, varLeft->value.length));
 
 
 					//////////
 					// They must be compared, and if equal, the one that is shorter is less than
 					//////
-						lnResult = memcmp(varLeft->value.data._s8, varRight->value.data._s8, varLeft->value.length);
+						lnResult = memcmp(varLeft->value.data_s8, varRight->value.data_s8, varLeft->value.length);
 						if (lnResult != 0)
 							return(lnResult);													// Less than or greater than
 
@@ -13013,8 +13013,8 @@ debug_break;
 		//////////
 		// Setup the pointers
 		//////
-			dt1 = dtVar1->value.data._dt;
-			dt2 = dtVar2->value.data._dt;
+			dt1 = dtVar1->value.data_dt;
+			dt2 = dtVar2->value.data_dt;
 
 
 		//////////
@@ -13789,7 +13789,7 @@ debug_break;
 
 
 		// Calculate the maximum number of significant digits, and then round down 10% in support of the minimum number of significant digits
-		lfVal32 = 0.9f * (1.0f + ((f32)((var->value.length - max(var->value.data._big->m_apm_exponent, 16)) * 0.3010299957f/*Log10(2)*/)));
+		lfVal32 = 0.9f * (1.0f + ((f32)((var->value.length - max(var->value.data_big->m_apm_exponent, 16)) * 0.3010299957f/*Log10(2)*/)));
 		return((s32)lfVal32);
 	}
 
@@ -13803,7 +13803,7 @@ debug_break;
 		//////
 			lnLength = iiBfp_calc_significantDigits_bySize(varVal);
 			iDatum_allocateSpace(&varDisp->value, lnLength * 2);
-			m_apm_to_string(varDisp->value.data._s8, lnLength, varVal->value.data._big);
+			m_apm_to_string(varDisp->value.data_s8, lnLength, varVal->value.data_big);
 
 
 		//////////
@@ -13823,21 +13823,21 @@ debug_break;
 		// Move the decimal point over as indicated
 		//////
 			lnSigDigs = iiBfp_calc_significantDigits_bySize(varVal);
-			for (lnI = 1; lnI < lnSigDigs && lnI < varVal->value.data._big->m_apm_exponent; lnI++)
+			for (lnI = 1; lnI < lnSigDigs && lnI < varVal->value.data_big->m_apm_exponent; lnI++)
 			{
 				// Copy the digit over
-				datum->data._s8[lnI] = datum->data._s8[lnI + 1];
+				datum->data_s8[lnI] = datum->data_s8[lnI + 1];
 			}
 
 			// Add the period back in
-			datum->data._s8[lnI] = '.';
+			datum->data_s8[lnI] = '.';
 
 
 		//////////
 		// Based on the decimals setting, terminate after that decimal
 		//////
 			datum->length					= min(lnI + propGet_settings_Decimals(_settings) + 1, datum->length);
-			datum->data._s8[datum->length]	= 0;
+			datum->data_s8[datum->length]	= 0;
 
 	}
 
@@ -13862,7 +13862,7 @@ debug_break;
 		//////////
 		// Round to integer at the current number of decimals
 		//////
-			m_apm_round(varVal->value.data._big, varVal->value.data._big->m_apm_exponent - 1, varVal->value.data._big);
+			m_apm_round(varVal->value.data_big, varVal->value.data_big->m_apm_exponent - 1, varVal->value.data_big);
 
 
 		//////////
@@ -13870,7 +13870,7 @@ debug_break;
 		//////
 			lnLength = iiBi_calc_significantDigits_bySize(varVal);
 			iDatum_allocateSpace(&varDisp->value, lnLength * 2);
-			m_apm_to_fixpt_string(varDisp->value.data._s8, lnLength, varVal->value.data._big);
+			m_apm_to_fixpt_string(varDisp->value.data_s8, lnLength, varVal->value.data_big);
 
 
 		//////////
@@ -13890,8 +13890,8 @@ debug_break;
 		// Size and null-terminate
 		//////
 			lnSigDigs						= iiBi_calc_significantDigits_bySize(varVal);
-			datum->length					= min(min(lnSigDigs, varVal->value.data._big->m_apm_exponent), datum->length);
-			datum->data._s8[datum->length]	= 0;
+			datum->length					= min(min(lnSigDigs, varVal->value.data_big->m_apm_exponent), datum->length);
+			datum->data_s8[datum->length]	= 0;
 
 	}
 

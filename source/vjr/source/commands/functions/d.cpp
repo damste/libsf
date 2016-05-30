@@ -524,12 +524,12 @@
 			if (tlIsDatetimeX)
 			{
 				// DatetimeX
-				result->value.data._dtx->jseconds = iiDateMath_get_jseconds_from_YyyyMmDdHhMmSsMssMics(NULL, lst.wYear, lst.wMonth, lst.wDay, lst.wHour, lst.wMinute, lst.wSecond, lst.wMilliseconds, lnMicrosecond);
+				result->value.data_dtx->jseconds = iiDateMath_get_jseconds_from_YyyyMmDdHhMmSsMssMics(NULL, lst.wYear, lst.wMonth, lst.wDay, lst.wHour, lst.wMinute, lst.wSecond, lst.wMilliseconds, lnMicrosecond);
 
 			} else {
 				// Datetime
-				result->value.data._dt->julian	= iiDateMath_get_julian_from_YyyyMmDd(&lfJulian, lst.wYear, lst.wMonth, lst.wDay);
-				result->value.data._dt->seconds	= iiDateMath_get_seconds_from_HhMmSsMss(lst.wHour, lst.wMinute, lst.wSecond, lst.wMilliseconds);
+				result->value.data_dt->julian	= iiDateMath_get_julian_from_YyyyMmDd(&lfJulian, lst.wYear, lst.wMonth, lst.wDay);
+				result->value.data_dt->seconds	= iiDateMath_get_seconds_from_HhMmSsMss(lst.wHour, lst.wMinute, lst.wSecond, lst.wMilliseconds);
 			}
 
 
@@ -601,9 +601,9 @@
 				//////////
 				// Grab year, month, day from datetime or date
 				//////
-					     if (iVariable_isTypeDatetime(varParam))		iiDateMath_get_YyyyMmDd_from_julian					(varParam->value.data._dt->julian,			&lnYear, &lnMonth, &lnDay);
-					else if (iVariable_isTypeDatetimeX(varParam))		iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds	(varParam->value.data._dtx->jseconds, NULL,	&lnYear, &lnMonth, &lnDay, NULL, NULL, NULL, NULL, NULL);
-					else /* date */										iiDateMath_get_YyyyMmDd_from_YYYYMMDD				(varParam->value.data._u8,					&lnYear, &lnMonth, &lnDay);
+					     if (iVariable_isTypeDatetime(varParam))		iiDateMath_get_YyyyMmDd_from_julian					(varParam->value.data_dt->julian,			&lnYear, &lnMonth, &lnDay);
+					else if (iVariable_isTypeDatetimeX(varParam))		iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds	(varParam->value.data_dtx->jseconds, NULL,	&lnYear, &lnMonth, &lnDay, NULL, NULL, NULL, NULL, NULL);
+					else /* date */										iiDateMath_get_YyyyMmDd_from_YYYYMMDD				(varParam->value.data_u8,					&lnYear, &lnMonth, &lnDay);
 
 
 			} else {
@@ -725,9 +725,9 @@
 		//////////
 		// Match string
 		//////
-			for (lnI = 0, lnMatch = 0; SoundexVarStr1->value.data._cs8[lnI] && lnI < SoundexVarStr1->value.length; lnI++)
+			for (lnI = 0, lnMatch = 0; SoundexVarStr1->value.data_cs8[lnI] && lnI < SoundexVarStr1->value.length; lnI++)
 			{
-				if (SoundexVarStr1->value.data._cs8[lnI] == SoundexVarStr2->value.data._cs8[lnI])
+				if (SoundexVarStr1->value.data_cs8[lnI] == SoundexVarStr2->value.data_cs8[lnI])
 				{
 					lnMatch++;
 				}
@@ -813,9 +813,9 @@
 				//////////
 				// Grab year, month, day from datetime or date
 				//////
-					     if (iVariable_isTypeDatetime(varParam))		iiDateMath_get_YyyyMmDd_from_julian					(varParam->value.data._dt->julian,			&lnYear, &lnMonth, &lnDay);
-					else if (iVariable_isTypeDatetimeX(varParam))		iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds	(varParam->value.data._dtx->jseconds, NULL,	&lnYear, &lnMonth, &lnDay, NULL, NULL, NULL, NULL, NULL);
-					else /* date */										iiDateMath_get_YyyyMmDd_from_YYYYMMDD				(varParam->value.data._u8,					&lnYear, &lnMonth, &lnDay);
+					     if (iVariable_isTypeDatetime(varParam))		iiDateMath_get_YyyyMmDd_from_julian					(varParam->value.data_dt->julian,			&lnYear, &lnMonth, &lnDay);
+					else if (iVariable_isTypeDatetimeX(varParam))		iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds	(varParam->value.data_dtx->jseconds, NULL,	&lnYear, &lnMonth, &lnDay, NULL, NULL, NULL, NULL, NULL);
+					else /* date */										iiDateMath_get_YyyyMmDd_from_YYYYMMDD				(varParam->value.data_u8,					&lnYear, &lnMonth, &lnDay);
 
 
 			} else {
@@ -934,9 +934,9 @@
 			//////////
 			// Grab year, month, day from datetime or date
 			//////
-				     if iVariable_isTypeDatetime(varDateOrDatetime)			iiDateMath_get_YyyyMmDd_from_julian					(varDateOrDatetime->value.data._dt->julian,			&lnYear, &lnMonth, &lnDay);
-				else if (iVariable_isTypeDatetimeX(varDateOrDatetime))		iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds	(varDateOrDatetime->value.data._dtx->jseconds, NULL,	&lnYear, &lnMonth, &lnDay, NULL, NULL, NULL, NULL, NULL);
-				else /* date */												iiDateMath_get_YyyyMmDd_from_YYYYMMDD				(varDateOrDatetime->value.data._u8,					&lnYear, &lnMonth, &lnDay);
+				     if iVariable_isTypeDatetime(varDateOrDatetime)			iiDateMath_get_YyyyMmDd_from_julian					(varDateOrDatetime->value.data_dt->julian,			&lnYear, &lnMonth, &lnDay);
+				else if (iVariable_isTypeDatetimeX(varDateOrDatetime))		iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds	(varDateOrDatetime->value.data_dtx->jseconds, NULL,	&lnYear, &lnMonth, &lnDay, NULL, NULL, NULL, NULL, NULL);
+				else /* date */												iiDateMath_get_YyyyMmDd_from_YYYYMMDD				(varDateOrDatetime->value.data_u8,					&lnYear, &lnMonth, &lnDay);
 
 			} else {
 				// Use the current date
@@ -1129,7 +1129,7 @@
 				//////////
 				// Grab year, month, day from datetime
 				//////
-					iiDateMath_get_YyyyMmDd_from_julian (varParam->value.data._dt->julian,	&lnYear, &lnMonth, &lnDay);
+					iiDateMath_get_YyyyMmDd_from_julian (varParam->value.data_dt->julian,	&lnYear, &lnMonth, &lnDay);
 
 
 			} else {
@@ -1417,7 +1417,7 @@
 		// Call the common function
 		//////
 			lcResult		= NULL;
-			lnResultLength	= ifunction_dtransform_textmerge_common(rpar, &lcResult, varFormatStr->value.data._cs8, varFormatStr->value.length, NULL, NULL, &rpar->ip[1], true, true);
+			lnResultLength	= ifunction_dtransform_textmerge_common(rpar, &lcResult, varFormatStr->value.data_cs8, varFormatStr->value.length, NULL, NULL, &rpar->ip[1], true, true);
 
 
 		//////////
@@ -1525,19 +1525,19 @@
 
 						} else if (iVariable_isTypeDatetime(var)) {
 							// Datetime
-							iiDateMath_get_YyyyMmDd_from_julian	(var->value.data._dt->julian,	&lnYear, &lnMonth,  &lnDay);
-							iiDateMath_get_HhMmSsMss_from_seconds(var->value.data._dt->seconds,  &lnHour, &lnMinute, &lnSecond, &lnMillisecond);
+							iiDateMath_get_YyyyMmDd_from_julian	(var->value.data_dt->julian,	&lnYear, &lnMonth,  &lnDay);
+							iiDateMath_get_HhMmSsMss_from_seconds(var->value.data_dt->seconds,  &lnHour, &lnMinute, &lnSecond, &lnMillisecond);
 
 						} else if (iVariable_isTypeDatetimeX(var)) {
 							// Date
-							iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds(var->value.data._dtx->jseconds, NULL, &lnYear, &lnMonth, &lnDay, &lnHour, &lnMinute, &lnSecond, &lnMillisecond, &lnNanosecond);
+							iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds(var->value.data_dtx->jseconds, NULL, &lnYear, &lnMonth, &lnDay, &lnHour, &lnMinute, &lnSecond, &lnMillisecond, &lnNanosecond);
 
 							// 00:00:00.000
 							lnHour = lnMinute = lnSecond = lnMillisecond = 0;
 
 						} else if (iVariable_isTypeDate(var)) {
 							// Date
-							iiDateMath_get_YyyyMmDd_from_YYYYMMDD (var->value.data._u8, &lnYear, &lnMonth, &lnDay);
+							iiDateMath_get_YyyyMmDd_from_YYYYMMDD (var->value.data_u8, &lnYear, &lnMonth, &lnDay);
 
 							// 00:00:00.000
 							lnHour = lnMinute = lnSecond = lnMillisecond = 0;
@@ -1582,14 +1582,14 @@
 		//////
 			if (!leftTextmergeDelim)
 			{
-				leftDelim.data._cs8		= &cgc_textmerge_leftDelim[0];
+				leftDelim.data_cs8		= &cgc_textmerge_leftDelim[0];
 				leftDelim.length		= sizeof(cgc_textmerge_leftDelim) - 1;
 				leftTextmergeDelim		= &leftDelim;
 			}
 
 			if (!rightTextmergeDelim)
 			{
-				rightDelim.data._cs8	= &cgc_textmerge_rightDelim[0];
+				rightDelim.data_cs8	= &cgc_textmerge_rightDelim[0];
 				rightDelim.length		= sizeof(cgc_textmerge_rightDelim) - 1;
 				rightTextmergeDelim		= &rightDelim;
 			}
@@ -1600,7 +1600,7 @@
 		//////
 			// Note:  varMark is a reference to the actual _settings.mark value
 			varMark = propGet_settings_Mark(_settings);
-			if (!varMark || !iVariable_isTypeCharacter(varMark) || !varMark->value.data._s8 || varMark->value.length <= 0)
+			if (!varMark || !iVariable_isTypeCharacter(varMark) || !varMark->value.data_s8 || varMark->value.length <= 0)
 			{
 				// Fall back on current date type
 				switch (propGet_settings_Date(_settings))
@@ -1633,7 +1633,7 @@
 
 		} else {
 			// Grab the character they've set
-			cMark = varMark->value.data._s8[0];
+			cMark = varMark->value.data_s8[0];
 		}
 
 
@@ -2031,7 +2031,7 @@
 
 										} else {
 											// Store
-											lnOffset += iifunction_append_text(lcResult + lnOffset, varDisplay->value.data._s8, varDisplay->value.length);
+											lnOffset += iifunction_append_text(lcResult + lnOffset, varDisplay->value.data_s8, varDisplay->value.length);
 										}
 
 										// Delete the variable

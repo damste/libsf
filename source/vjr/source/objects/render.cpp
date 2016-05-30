@@ -411,7 +411,7 @@
 						for (objRider = obj->firstChild, lnWidth = 0, lnCount = 0, objRider_visible = NULL; objRider; objRider = objRider->ll.nextObj)
 						{
 							// Is it a rider?
-							if (objRider->objType == _OBJ_TYPE_RIDER && propIsEnabled(objRider) && (varTabText = propRiderTab(objRider)) && varTabText->value.data._data && varTabText->value.length >= 1)
+							if (objRider->objType == _OBJ_TYPE_RIDER && propIsEnabled(objRider) && (varTabText = propRiderTab(objRider)) && varTabText->value._data && varTabText->value.length >= 1)
 							{
 								//////////
 								// Increase our count
@@ -423,7 +423,7 @@
 								// Determine the raw text size
 								//////
 									SetRect(&lrc3, 0, 0, 0, 0);
-									DrawText(obj->bmp->hdc, varTabText->value.data._s8, varTabText->value.length, &lrc3, DT_CALCRECT);
+									DrawText(obj->bmp->hdc, varTabText->value.data_s8, varTabText->value.length, &lrc3, DT_CALCRECT);
 
 
 								//////////
@@ -465,7 +465,7 @@
 					// Determine if a control on this carousel has focus
 					//////
 // TODO:  We need a way to determine if the focus of a sub-tab has changed... it should be by building a string expression, processing a SHA1 on it, and then using that as well
-						if (true/*Force a render every time for now ... !obj->bc || !iBmp_isValidCache(&obj->bc, nwRgba.color, neRgba.color, swRgba.color, seRgba.color, obj->rc.right - obj->rc.left, obj->rc.bottom - obj->rc.top, obj->bmp->bi.biWidth, obj->bmp->bi.biHeight, (u32)objRider_visible, (u32)varTabText_riderActive, varTabText_riderActive->value.data._data, varTabText_riderActive->value.length, lnSha1, 0)*/)
+						if (true/*Force a render every time for now ... !obj->bc || !iBmp_isValidCache(&obj->bc, nwRgba.color, neRgba.color, swRgba.color, seRgba.color, obj->rc.right - obj->rc.left, obj->rc.bottom - obj->rc.top, obj->bmp->bi.biWidth, obj->bmp->bi.biHeight, (u32)objRider_visible, (u32)varTabText_riderActive, varTabText_riderActive->value._data, varTabText_riderActive->value.length, lnSha1, 0)*/)
 						{
 
 							// The bitmap cache is no longer valid
@@ -560,14 +560,14 @@
 										for (lnI = 0, objRider = obj->firstChild, lnLeft = 0; objRider; lnI++, objRider = objRider->ll.nextObj)
 										{
 											// Is it a rider?
-											if (objRider->objType == _OBJ_TYPE_RIDER && propIsEnabled(objRider) && (varTabText = propRiderTab(objRider)) && varTabText->value.data._data && varTabText->value.length >= 1)
+											if (objRider->objType == _OBJ_TYPE_RIDER && propIsEnabled(objRider) && (varTabText = propRiderTab(objRider)) && varTabText->value._data && varTabText->value.length >= 1)
 											{
 
 												//////////
 												// Determine the raw text size
 												//////
 													SetRect(&lrc3, 0, 0, 0, 0);
-													DrawText(obj->p.bmpTabs->hdc, varTabText->value.data._s8, varTabText->value.length, &lrc3, DT_CALCRECT);
+													DrawText(obj->p.bmpTabs->hdc, varTabText->value.data_s8, varTabText->value.length, &lrc3, DT_CALCRECT);
 
 
 												//////////
@@ -645,7 +645,7 @@
 													SetTextColor(obj->p.bmpTabs->hdc, RGB(carouselTabForeColor.red, carouselTabForeColor.grn, carouselTabForeColor.blu));
 													SetBkMode(obj->p.bmpTabs->hdc, TRANSPARENT);
 													lrc4.right -= 4;		// Margin between right border and text
-													DrawText(obj->p.bmpTabs->hdc, varTabText->value.data._s8, varTabText->value.length, &lrc4, DT_RIGHT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS);
+													DrawText(obj->p.bmpTabs->hdc, varTabText->value.data_s8, varTabText->value.length, &lrc4, DT_RIGHT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS);
 
 
 												//////////
@@ -714,7 +714,7 @@
 							//////////
 							// Save the cache
 							//////
-								iBmp_createCache(&obj->bc, obj->bmp, nwRgba.color, neRgba.color, swRgba.color, seRgba.color, obj->rc.right - obj->rc.left, obj->rc.bottom - obj->rc.top, obj->bmp->bi.biWidth, obj->bmp->bi.biHeight, (u32)objRider_visible, (u32)varTabText_riderActive, (u32)varTabText_riderActive->value.data._data, varTabText_riderActive->value.length, lnSha1, 0, true);
+								iBmp_createCache(&obj->bc, obj->bmp, nwRgba.color, neRgba.color, swRgba.color, seRgba.color, obj->rc.right - obj->rc.left, obj->rc.bottom - obj->rc.top, obj->bmp->bi.biWidth, obj->bmp->bi.biHeight, (u32)objRider_visible, (u32)varTabText_riderActive, (u32)varTabText_riderActive->value._data, varTabText_riderActive->value.length, lnSha1, 0, true);
 
 						} else {
 							// Copy everything over from the cache
@@ -911,7 +911,7 @@
 
 				// Draw the text
 				caption = iObjProp_get_var_byIndex(obj, _INDEX_CAPTION);
-				DrawText(obj->bmp->hdc, caption->value.data._s8, caption->value.length, &lrc, lnFormat | DT_END_ELLIPSIS | DT_SINGLELINE);
+				DrawText(obj->bmp->hdc, caption->value.data_s8, caption->value.length, &lrc, lnFormat | DT_END_ELLIPSIS | DT_SINGLELINE);
 
 				// And adjust back if need be
 				if (obj->parent && obj->parent->objType == _OBJ_TYPE_CHECKBOX)
@@ -1050,7 +1050,7 @@
 
 				// Draw the text
 				value = iObjProp_get_var_byIndex(obj, _INDEX_VALUE);
-				DrawText(obj->bmp->hdc, value->value.data._s8, value->value.length, &lrc2, lnFormat | DT_VCENTER | DT_END_ELLIPSIS);
+				DrawText(obj->bmp->hdc, value->value.data_s8, value->value.length, &lrc2, lnFormat | DT_VCENTER | DT_END_ELLIPSIS);
 
 				// Frame rectangle
 				if (propBorderStyle(obj) != _BORDER_STYLE_NONE)
@@ -1158,7 +1158,7 @@
 
 				// Draw the text
 				caption = iObjProp_get_var_byIndex(obj, _INDEX_CAPTION);
-				DrawText(obj->bmp->hdc, caption->value.data._s8, caption->value.length, &lrc2, lnFormat | DT_VCENTER | DT_END_ELLIPSIS);
+				DrawText(obj->bmp->hdc, caption->value.data_s8, caption->value.length, &lrc2, lnFormat | DT_VCENTER | DT_END_ELLIPSIS);
 
 				// Frame rectangle
 				if (propBorderStyle(obj) != _BORDER_STYLE_NONE)
@@ -2884,6 +2884,57 @@
 //
 //////
 	u32 iSubobj_renderSettings(SObject* obj)
+	{
+		u32		lnPixelsRendered;
+		RECT	lrc;
+
+
+		// Make sure our environment is sane
+		logfunc(__FUNCTION__);
+		lnPixelsRendered = 0;
+		if (obj && obj->isRendered)
+		{
+			// Compute our rectangle for drawing
+			SetRect(&lrc, 0, 0, obj->bmp->bi.biWidth, obj->bmp->bi.biHeight);
+			if (obj->isDirtyRender)
+			{
+				// Render a white box as a placeholder
+				iBmp_fillRect(obj->bmp, &lrc, whiteColor, whiteColor, whiteColor, whiteColor, false, NULL, false);
+
+
+				//////////
+				// Copy to prior rendered bitmap
+				//////
+					// Make sure our bmpPriorRendered exists
+					obj->bmpPriorRendered = iBmp_verifyCopyIsSameSize(obj->bmpPriorRendered, obj->bmp);
+
+					// Copy to the prior rendered version
+					memcpy(obj->bmpPriorRendered->bd, obj->bmp->bd, obj->bmpPriorRendered->bi.biSizeImage);
+					// Right now, we can use the bmpPriorRendered for a fast copy rather than 
+
+			} else {
+				// Render from its prior rendered version
+				lnPixelsRendered += iBmp_bitBlt(obj->bmp, &lrc, obj->bmpPriorRendered);
+			}
+
+			// Indicate we're no longer dirty, that we have everything rendered, but it needs publishing
+			obj->isDirtyRender = false;
+			obj->isDirtyPublish	= true;
+		}
+
+		// Indicate status
+		return(lnPixelsRendered);
+	}
+
+
+
+
+//////////
+//
+// Renders the control point.
+//
+//////
+	u32 iSubobj_renderControlPoint(SObject* obj)
 	{
 		u32		lnPixelsRendered;
 		RECT	lrc;

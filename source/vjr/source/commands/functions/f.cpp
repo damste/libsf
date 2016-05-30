@@ -191,7 +191,7 @@
 				// Initialize our target filename
 				//////
 					memset(newFilename, 0, sizeof(newFilename));
-					memcpy(newFilename, varPathname->value.data._s8, lnExtOffset);
+					memcpy(newFilename, varPathname->value.data_s8, lnExtOffset);
 
 
 				//////////
@@ -200,7 +200,7 @@
 					if (varNewExtension->value.length >= 1)
 					{
 						// Does it already have a point?
-						if (varNewExtension->value.data._s8[0] == '.')
+						if (varNewExtension->value.data_s8[0] == '.')
 						{
 							// Will the new filename be too big?
 							lnLength = lnExtOffset + varNewExtension->value.length;			// pathname up to extension + new extension (which already has a period)
@@ -212,7 +212,7 @@
 							}
 
 							// Copy new extension (which already has a period)
-							memcpy(newFilename + lnExtOffset, varNewExtension->value.data._s8, varNewExtension->value.length);
+							memcpy(newFilename + lnExtOffset, varNewExtension->value.data_s8, varNewExtension->value.length);
 
 						} else {
 							// Will the new filename be too big?
@@ -226,7 +226,7 @@
 
 							// Copy new period, and new extension (without period)
 							newFilename[lnExtOffset] = '.';
-							memcpy(newFilename + lnExtOffset + 1, varNewExtension->value.data._s8, varNewExtension->value.length);
+							memcpy(newFilename + lnExtOffset + 1, varNewExtension->value.data_s8, varNewExtension->value.length);
 						}
 
 					} else {
@@ -251,7 +251,7 @@
 		//////////
 		// Are we good?
 		//////
-			if (!result->value.data._s8 || result->value.length != lnLength)
+			if (!result->value.data_s8 || result->value.length != lnLength)
 			{
 				// Unable to allocate our variable's contents
 				iVariable_delete(result, true);
@@ -305,7 +305,7 @@
 						//////////
 						// Grab the character
 						//////
-							lc = varPathname->value.data._u8[lnI];
+							lc = varPathname->value.data_u8[lnI];
 
 
 						//////////
@@ -412,7 +412,7 @@
 				// Initialize our target filename
 				//////
 					memset(newFilename, 0, sizeof(newFilename));
-					memcpy(newFilename, varPathname->value.data._s8, lnFNameOffset);
+					memcpy(newFilename, varPathname->value.data_s8, lnFNameOffset);
 
 
 				//////////
@@ -430,7 +430,7 @@
 						}
 
 						// Copy new filename
-						memcpy(newFilename + lnFNameOffset, varNewFilename->value.data._s8, varNewFilename->value.length);
+						memcpy(newFilename + lnFNameOffset, varNewFilename->value.data_s8, varNewFilename->value.length);
 
 					} else {
 						// If varNewFilename is empty, we remove filename
@@ -454,7 +454,7 @@
 		//////////
 		// Are we good?
 		//////
-			if (!result->value.data._s8 || result->value.length != lnLength)
+			if (!result->value.data_s8 || result->value.length != lnLength)
 			{
 				// Unable to allocate our variable's contents
 				iVariable_delete(result, true);
@@ -553,7 +553,7 @@
 					if (varNewPathname->value.length >= 1)
 					{
 						// Do we need to add a backslash?
-						if (varNewPathname->value.data._s8[varNewPathname->value.length - 1] != '\\')
+						if (varNewPathname->value.data_s8[varNewPathname->value.length - 1] != '\\')
 						{
 							// Will the new filename be too big?
 							lnLength = varNewPathname->value.length + 1 + lnFNameLength;
@@ -565,9 +565,9 @@
 							}
 
 							// Copy new path, plus trailing backslash, plus whatever was there before
-							memcpy(newFilename, varNewPathname->value.data._s8, varNewPathname->value.length);
+							memcpy(newFilename, varNewPathname->value.data_s8, varNewPathname->value.length);
 							newFilename[varNewPathname->value.length] = '\\';
-							memcpy(newFilename + varNewPathname->value.length + 1, varPathname->value.data._s8 + lnFNameOffset, lnFNameLength);
+							memcpy(newFilename + varNewPathname->value.length + 1, varPathname->value.data_s8 + lnFNameOffset, lnFNameLength);
 
 						} else {
 							// Will the new filename be too big?
@@ -580,14 +580,14 @@
 							}
 
 							// Copy new path, plus whatever was there before
-							memcpy(newFilename, varNewPathname->value.data._s8, varNewPathname->value.length);
-							memcpy(newFilename + varNewPathname->value.length, varPathname->value.data._s8 + lnFNameOffset, lnFNameLength);
+							memcpy(newFilename, varNewPathname->value.data_s8, varNewPathname->value.length);
+							memcpy(newFilename + varNewPathname->value.length, varPathname->value.data_s8 + lnFNameOffset, lnFNameLength);
 						}
 
 					} else {
 						// Remove path
 						lnLength = lnFNameLength;
-						memcpy(newFilename, varPathname->value.data._s8 + lnFNameOffset, lnFNameLength);
+						memcpy(newFilename, varPathname->value.data_s8 + lnFNameOffset, lnFNameLength);
 					}
 
 
@@ -607,7 +607,7 @@
 		//////////
 		// Are we good?
 		//////
-			if (!result->value.data._s8 || result->value.length != lnLength || lnLength == 0)
+			if (!result->value.data_s8 || result->value.length != lnLength || lnLength == 0)
 			{
 				// Unable to allocate our variable's contents
 				iVariable_delete(result, true);
@@ -716,15 +716,15 @@
 						}
 
 						// Copy path, plus new stem, plus original extension
-						memcpy(newFilename, varPathname->value.data._s8, lnFNameOffset);
-						memcpy(newFilename + lnFNameOffset, varNewStem->value.data._s8, varNewStem->value.length);
-						memcpy(newFilename + lnFNameOffset + varNewStem->value.length, varPathname->value.data._s8 + lnExtOffset, lnLengthExt);
+						memcpy(newFilename, varPathname->value.data_s8, lnFNameOffset);
+						memcpy(newFilename + lnFNameOffset, varNewStem->value.data_s8, varNewStem->value.length);
+						memcpy(newFilename + lnFNameOffset + varNewStem->value.length, varPathname->value.data_s8 + lnExtOffset, lnLengthExt);
 
 					} else {
 						// Copy original path, plus original extension
 						lnLength = lnFNameOffset + lnLengthExt;
-						memcpy(newFilename, varPathname->value.data._s8, lnFNameOffset);
-						memcpy(newFilename + lnFNameOffset, varPathname->value.data._s8 + lnExtOffset, lnLengthExt);
+						memcpy(newFilename, varPathname->value.data_s8, lnFNameOffset);
+						memcpy(newFilename + lnFNameOffset, varPathname->value.data_s8 + lnExtOffset, lnLengthExt);
 					}
 
 
@@ -743,7 +743,7 @@
 		//////////
 		// Are we good?
 		//////
-			if (!result->value.data._s8 || result->value.length != lnLength)
+			if (!result->value.data_s8 || result->value.length != lnLength)
 			{
 				// Unable to allocate our variable's contents
 				iVariable_delete(result, true);

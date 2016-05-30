@@ -224,7 +224,7 @@ extern "C"
 								{
 									// We can directly pass a pointer to it
 									gnDll_types[lnI]		= _DLL_TYPE_VP;
-									gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data._s16;
+									gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_s16;
 
 								} else {
 									// We must translate it, then store it back afterward
@@ -249,7 +249,7 @@ extern "C"
 								{
 									// We can directly pass a pointer to it
 									gnDll_types[lnI]		= _DLL_TYPE_VP;
-									gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data._u16;
+									gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_u16;
 
 								} else {
 									// We must translate it, then store it back afterward
@@ -274,7 +274,7 @@ extern "C"
 								{
 									// We can directly pass a pointer to it
 									gnDll_types[lnI]		= _DLL_TYPE_VP;
-									gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data._s32;
+									gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_s32;
 
 								} else {
 									// We must translate it, then store it back afterward
@@ -299,7 +299,7 @@ extern "C"
 								{
 									// We can directly pass a pointer to it
 									gnDll_types[lnI]		= _DLL_TYPE_VP;
-									gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data._u32;
+									gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_u32;
 
 								} else {
 									// We must translate it, then store it back afterward
@@ -328,7 +328,7 @@ extern "C"
 									{
 										// We can directly pass a pointer to it
 										gnDll_types[lnI]		= _DLL_TYPE_VP;
-										gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data._f64;
+										gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_f64;
 
 									} else {
 										// We must translate it, then store it back afterward
@@ -352,7 +352,7 @@ extern "C"
 									{
 										// We can directly pass a pointer to it
 										gnDll_types[lnI]		= _DLL_TYPE_VP;
-										gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data._f32;
+										gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_f32;
 
 									} else {
 										// We must translate it, then store it back afterward
@@ -380,7 +380,7 @@ extern "C"
 								{
 									// We can directly pass a pointer to it
 									gnDll_types[lnI]		= _DLL_TYPE_VP;
-									gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data._f64;
+									gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_f64;
 
 								} else {
 									// We must translate it, then store it back afterward
@@ -405,7 +405,7 @@ extern "C"
 								{
 									// We can directly pass a pointer to it
 									gnDll_types[lnI]		= _DLL_TYPE_VP;
-									gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data._s64;
+									gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_s64;
 
 								} else {
 									// We must translate it, then store it back afterward
@@ -430,7 +430,7 @@ extern "C"
 								{
 									// We can directly pass a pointer to it
 									gnDll_types[lnI]		= _DLL_TYPE_VP;
-									gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data._u64;
+									gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_u64;
 
 								} else {
 									// We must translate it, then store it back afterward
@@ -451,13 +451,13 @@ extern "C"
 							{
 								// Passed by reference (directly updateable)
 								gnDll_types[lnI]		= _DLL_TYPE_VP;
-								gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data._s8;
+								gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_s8;
 
 							} else {
 								// By value
 								// Make a copy of the data, and then pass it
 								iDatum_duplicate(&gnDll_values[lnI]._datum, &rpar->ip[lnI]->value);
-								gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data._s8;
+								gnDll_pointers[lnI]		= (void*)&rpar->ip[lnI]->value.data_s8;
 							}
 							break;
 
@@ -472,7 +472,7 @@ extern "C"
 							}
 
 							// Store the IDispatch pointer
-							gnDll_values[lnI]._idispatch	= rpar->ip[lnI]->value.data._idispatch;
+							gnDll_values[lnI]._idispatch	= rpar->ip[lnI]->value.data_idispatch;
 							gnDll_pointers[lnI]				= (void*)&gnDll_values[lnI]._idispatch;
 							break;
 
@@ -533,33 +533,33 @@ extern "C"
 				case _DLL_TYPE_S16:
 				case _DLL_TYPE_S32:
 					iVariable_setVarType(rpar->rp[0], _VAR_TYPE_S32);
-					*rpar->rp[0]->value.data._s32 = gnDll_values[0]._s32;
+					*rpar->rp[0]->value.data_s32 = gnDll_values[0]._s32;
 					break;
 
 				case _DLL_TYPE_U16:
 				case _DLL_TYPE_U32:
 					iVariable_setVarType(rpar->rp[0], _VAR_TYPE_U32);
-					*rpar->rp[0]->value.data._u32 = gnDll_values[0]._u32;
+					*rpar->rp[0]->value.data_u32 = gnDll_values[0]._u32;
 					break;
 
 				case _DLL_TYPE_F32:
 					iVariable_setVarType(rpar->rp[0], _VAR_TYPE_F32);
-					*rpar->rp[0]->value.data._f32 = gnDll_values[0]._f32;
+					*rpar->rp[0]->value.data_f32 = gnDll_values[0]._f32;
 					break;
 
 				case _DLL_TYPE_F64:
 					iVariable_setVarType(rpar->rp[0], _VAR_TYPE_F64);
-					*rpar->rp[0]->value.data._f64 = gnDll_values[0]._f64;
+					*rpar->rp[0]->value.data_f64 = gnDll_values[0]._f64;
 					break;
 
 				case _DLL_TYPE_S64:
 					iVariable_setVarType(rpar->rp[0], _VAR_TYPE_S64);
-					*rpar->rp[0]->value.data._s64 = gnDll_values[0]._s64;
+					*rpar->rp[0]->value.data_s64 = gnDll_values[0]._s64;
 					break;
 
 				case _DLL_TYPE_U64:
 					iVariable_setVarType(rpar->rp[0], _VAR_TYPE_U64);
-					*rpar->rp[0]->value.data._u64 = gnDll_values[0]._u64;
+					*rpar->rp[0]->value.data_u64 = gnDll_values[0]._u64;
 					break;
 
 				case _DLL_TYPE_STRING:
@@ -624,7 +624,7 @@ extern "C"
 							case _DLL_TYPE_STRING:
 								// Delete the existing string, and replace with the new version
 								iDatum_delete(&rpar->ip[lnI]->value, false);
-								rpar->ip[lnI]->value.data._vp	= gnDll_values[lnI]._datum.data._vp;
+								rpar->ip[lnI]->value.data_vp	= gnDll_values[lnI]._datum.data_vp;
 								rpar->ip[lnI]->value.length		= gnDll_values[lnI]._datum.length;
 								break;
 						}
@@ -674,7 +674,7 @@ extern "C"
 			// Try to access the function
 			//////
 				lnFuncNameLength = min(compFunctionName->length, sizeof(funcName) - 1);
-				memcpy(funcName, compFunctionName->line->sourceCode->data._cs8 + compFunctionName->start, lnFuncNameLength);
+				memcpy(funcName, compFunctionName->line->sourceCode->data_cs8 + compFunctionName->start, lnFuncNameLength);
 				funcName[lnFuncNameLength] = 0;
 
 				// Iterate through twice trying to find it.  Why?
@@ -730,7 +730,7 @@ extern "C"
 
 					// Update the alias if need be
 					if (compAliasName)
-						iDatum_duplicate(&dfunc->alias, compAliasName->line->sourceCode->data._cs8 + compAliasName->start, compAliasName->length);
+						iDatum_duplicate(&dfunc->alias, compAliasName->line->sourceCode->data_cs8 + compAliasName->start, compAliasName->length);
 
 					// Store the onAccess() and onAssign() functions (if any)
 					dfunc->onAccess	= onAccess;
@@ -826,7 +826,7 @@ extern "C"
 		// Initialize
 		//////
 			lnLength = min(compDllName->length, sizeof(dllName) - 1);
-			memcpy(dllName, compDllName->line->sourceCode->data._cs8 + compDllName->start, lnLength);
+			memcpy(dllName, compDllName->line->sourceCode->data_cs8 + compDllName->start, lnLength);
 			dllName[lnLength] = 0;
 
 
@@ -944,7 +944,7 @@ extern "C"
 
 					// Initialize the rest
 					dlib->refCount = 1;
-					iDatum_duplicate(&dlib->dllName, compDllName->line->sourceCode->data._cs8 + compDllName->start, compDllName->length);
+					iDatum_duplicate(&dlib->dllName, compDllName->line->sourceCode->data_cs8 + compDllName->start, compDllName->length);
 
 			}
 #endif

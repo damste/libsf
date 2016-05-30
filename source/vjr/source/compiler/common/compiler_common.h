@@ -293,7 +293,7 @@
 			for (lnI = 0; lnI < comp->length; lnI++)
 			{
 				// If it's a nbsp, increase the count
-				if (comp->line->sourceCode->data._u8[comp->start + lnI] == 255)
+				if (comp->line->sourceCode->data_u8[comp->start + lnI] == 255)
 					++comp->nbspCount;
 			}
 	}

@@ -92,7 +92,7 @@ void iVjr_test_nodes(void);
 		lnId = iGetNextUid();
 
 		// Populate the program
-		prog.data._s8	= sample;
+		prog.data_s8	= sample;
 		prog.length		= sizeof(sample) - 1;
 
 		// Parse it into tokens

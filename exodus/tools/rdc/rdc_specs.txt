@@ -662,7 +662,7 @@ RDC Specifications Document
 	using the direct form, as in "data_s8" shown here:
 	
 		var fred = "Hi, mom.";
-		sprintf(fred->value.data._s8);
+		sprintf(fred->value.data_s8);
 	
 	These types are provided:
 	

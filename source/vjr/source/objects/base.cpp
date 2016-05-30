@@ -215,6 +215,9 @@
 			case _OBJ_TYPE_SETTINGS:	// Settings
 				return(iSubobj_createSettings(NULL, objParent));
 
+			case _OBJ_TYPE_CONTROLPOINT:	// Control point
+				return(iSubobj_createControlPoint(NULL, objParent));
+
 			default:
 // TODO:  We should never get here.  If we do it's a developer error.  Check the call stack and determine the cause.
 				return(NULL);
@@ -555,6 +558,9 @@
 					case _OBJ_TYPE_SETTINGS:
 						iSubobj_deleteSettings(obj, true);
 						break;
+					case _OBJ_TYPE_CONTROLPOINT:
+						iSubobj_deleteControlPoint(obj, true);
+						break;
 				}
 		}
 	}
@@ -777,7 +783,7 @@ _asm int 3;
 
 			// Can we go shallower?
 			if (obj->parent)
-				return(iiObj_enum_parentRiders(obj, riderListArray, tnRiderListCount, tnIndex));
+				return(iiObj_enum_parentRiders(obj->parent, riderListArray, tnRiderListCount, tnIndex));
 
 		} while (0);
 
@@ -1170,6 +1176,39 @@ _asm int 3;
 	{
 		logfunc(__FUNCTION__);
 		return(obj == _cmd);
+	}
+
+
+
+
+//////////
+//
+// Called to find out if the indicated window-relative coordinate point is within the indicated object, based on its parental hierarchy
+//
+//////
+	bool iObj_isPointWithin(SObject* obj, POINT pt, RECT* rc)
+	{
+		RECT lrc;
+
+
+		// Make sure our environment is sane
+		if (obj)
+		{
+			// Grab the window-based rect for this object
+			iiObj_getWindowRect(obj, &lrc);
+			if (PtInRect(&lrc, pt))
+			{
+				// It's on the inside
+				if (rc)
+					CopyRect(rc, &lrc);
+
+				// Indicate it's within
+				return(true);
+			}
+		}
+
+		// If we get here, failure
+		return(false);
 	}
 
 
@@ -1796,6 +1835,13 @@ _asm int 3;
 						case _OBJ_TYPE_SETTINGS:
 							lnPixelsRendered += iSubobj_renderSettings(obj);
 							break;
+//////////
+// Note:  Control points are not rendered as normal objects.  They exist in obj->firstControlPoint rather than obj->firstChild.
+// Note:  They should only be rendered by special handlers, like the carousel and rider handlers during move/drag/drop operations.
+// 						case _OBJ_TYPE_CONTROLPOINT:
+// 							lnPixelsRendered += iSubobj_renderControlPoint(obj);
+// 							break;
+//////
 
 						default:
 // TODO:  We should never get here... we should fire off an internal consistency error ... or a signal flare.  Something to draw attention.
@@ -2292,7 +2338,7 @@ _asm int 3;
 			//	<object name="whatever">
 			//////
 				varData		= propName(obj);
-				bxmlObj	= bxml->append_child(new CXml((s8*)cgcTag_object, -1, NULL, 0, (s8*)cgcTag_name, varData->value.data._s8, varData->value.length));
+				bxmlObj	= bxml->append_child(new CXml((s8*)cgcTag_object, -1, NULL, 0, (s8*)cgcTag_name, varData->value.data_s8, varData->value.length));
 
 
 			//////////
@@ -2317,15 +2363,15 @@ _asm int 3;
 
 				// Class
 				varData = propClass(obj);
-				bxmlP->append_attribute(new CXml((s8*)cgcTag_class, -1, varData->value.data._s8, varData->value.length, NULL, NULL, 0));
+				bxmlP->append_attribute(new CXml((s8*)cgcTag_class, -1, varData->value.data_s8, varData->value.length, NULL, NULL, 0));
 
 				// Baseclass
 				varData = propBaseclass(obj);
-				bxmlP->append_attribute(new CXml((s8*)cgcTag_baseclass, -1, varData->value.data._s8, varData->value.length, NULL, NULL, 0));
+				bxmlP->append_attribute(new CXml((s8*)cgcTag_baseclass, -1, varData->value.data_s8, varData->value.length, NULL, NULL, 0));
 
 				// ClassLibrary
 				varData = propClassLibrary(obj);
-				bxmlP->append_attribute(new CXml((s8*)cgcTag_classLibrary, -1, varData->value.data._s8, varData->value.length, NULL, NULL, 0));
+				bxmlP->append_attribute(new CXml((s8*)cgcTag_classLibrary, -1, varData->value.data_s8, varData->value.length, NULL, NULL, 0));
 
 
 			//////////
@@ -2379,8 +2425,8 @@ _asm int 3;
 									//	<prop name="..." td="..." val="..."/>
 									//////
 										bxmlProp->append_attribute((s8*)cgcTag_name,			sizeof(cgcTag_name) - 1,			(s8*)basePropMap->propName_s8,		basePropMap->propNameLength);
-										bxmlProp->append_attribute((s8*)cgcTag_typeDetail,		sizeof(cgcTag_typeDetail) - 1,		varTypeDetail->value.data._s8,		varTypeDetail->value.length);
-										bxmlProp->append_attribute((s8*)cgcTag_value,			sizeof(cgcTag_value) - 1,			varData->value.data._s8,			varData->value.length);
+										bxmlProp->append_attribute((s8*)cgcTag_typeDetail,		sizeof(cgcTag_typeDetail) - 1,		varTypeDetail->value.data_s8,		varTypeDetail->value.length);
+										bxmlProp->append_attribute((s8*)cgcTag_value,			sizeof(cgcTag_value) - 1,			varData->value.data_s8,			varData->value.length);
 
 
 									//////////
@@ -2600,7 +2646,12 @@ debug_break;
 					case _OBJ_TYPE_SETTINGS:
 						objCopy = iSubobj_createSettings(objChild, objDst);
 						break;
-
+//////////
+// Note:  controlPoint are special classes and do not exist as children to parent objects through obj->firstChild, but rather obj->firstControlPoint
+// 					case _OBJ_TYPE_CONTROLPOINT:
+// 						objCopy = iSubobj_createControlPoint(objChild, objDst);
+// 						break;
+//////
 					default:
 						objCopy = NULL;
 						break;
@@ -2921,8 +2972,8 @@ debug_break;
 				//////
 					if (propIsName_byText(obj, cgcName_screen))
 					{
-						*varAsciiRows->value.data._s32	= (obj->rcClient.bottom - obj->rcClient.top) / obj->p.font->tm.tmHeight;
-						*varAsciiCols->value.data._s32	= (obj->rcClient.right - obj->rcClient.left) / obj->p.font->tm.tmAveCharWidth;
+						*varAsciiRows->value.data_s32	= (obj->rcClient.bottom - obj->rcClient.top) / obj->p.font->tm.tmHeight;
+						*varAsciiCols->value.data_s32	= (obj->rcClient.right - obj->rcClient.left) / obj->p.font->tm.tmAveCharWidth;
 					}
 
 
@@ -3647,6 +3698,10 @@ debug_break;
 					iiSubobj_resetToDefaultSettings(obj, tlResetProperties, tlResetMethods, &gsProps_settings[0], gnProps_settingsSize, &gsEvents_settings[0], gnEvents_settingsSize);
 					break;
 
+				case _OBJ_TYPE_CONTROLPOINT:	// Control point
+					iiSubobj_resetToDefaultSettings(obj, tlResetProperties, tlResetMethods, &gsProps_controlpoint[0], gnProps_controlpointSize, &gsEvents_controlpoint[0], gnEvents_controlpointSize);
+					break;
+
 				default:
 // TODO:  We should never get here... we should fire off an internal consistency error
 					break;
@@ -3894,6 +3949,9 @@ if (!obj->props[lnI])
 				case _OBJ_TYPE_SETTINGS:
 					obj->ev.renderFunc = &iSubobj_renderSettings;
 					break;
+				case _OBJ_TYPE_CONTROLPOINT:
+					obj->ev.renderFunc = &iSubobj_renderControlPoint;
+					break;
 				default:
 // TODO:  We should never get here... we should fire off an internal consistency error ... or a signal flare.  Something to draw attention.
 					obj->ev._renderFunc = 0;
@@ -3982,4 +4040,45 @@ if (!obj->props[lnI])
 
 		// If we get here, invalid
 		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Obtains the object's position within the window's rect
+//
+//////
+	void iiObj_getWindowRect(SObject* obj, RECT* rc)
+	{
+		RECT		lrc;
+		SWindow*	win;
+
+
+		// If we're going up, then continue on up and adjust what our parent gives us
+		if (obj->parent)
+		{
+			// There's another parent, so process up
+			iiObj_getWindowRect(obj->parent, &lrc);
+
+			// Offset it by this object's coordinates
+			rc->left	+= iObjProp_get_s32_direct(obj, _INDEX_LEFT);
+			rc->top		+= iObjProp_get_s32_direct(obj, _INDEX_TOP);
+			rc->right	= min(rc->right,	rc->left	+ iObjProp_get_s32_direct(obj, _INDEX_WIDTH));
+			rc->bottom	= min(rc->bottom,	rc->top		+ iObjProp_get_s32_direct(obj, _INDEX_HEIGHT));
+			return;
+		}
+
+		// This is the top-level object, find its window coordinate
+		win = iWindow_findByObj(obj);
+		if (win)
+		{
+			// Store the window rect
+			GetWindowRect(win->hwnd, rc);
+
+		} else {
+			// No parent window, so just use the default values
+			SetRect(rc, 0, 0, iObjProp_get_s32_direct(obj, _INDEX_WIDTH), iObjProp_get_s32_direct(obj, _INDEX_HEIGHT));
+		}
 	}

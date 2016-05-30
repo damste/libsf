@@ -352,13 +352,19 @@
 	{
 		bool		llMouseDown, llResult, llFocusChanged;
 		f64			lfPercent, lfX, lfY, lfWidth, lfHeight, lfValue;
-		s32			lnX, lnY;
+		s32			lnI, lnX, lnY, lnRiders;
 		u32			lnClick;
 		bool		llCtrl, llAlt, llShift;
 		POINT		pt;
+		RECT		lrc, lrc2;
+		SDatum		downTime;
 		SVariable*	valueMin;
 		SObject*	objRoot;
 		SObject*	objRider;
+		SObject*	objControlPoint;
+		SObject*	riders[20];
+		s8			buffer[32];
+		SYSTEMTIME	lst;
 
 
 		// Make sure our environment is sane
@@ -387,13 +393,40 @@
 			llFocusChanged = true;
 		}
 
-		// Determine if this is an object directly inside a rider
-		objRider = iObj_find_rootmostRider(obj);
-		if (objRider)
+		// Determine if they are clicking is an rider's control point
+		lnRiders = iObj_enum_parentRiders(obj, &riders[0], sizeof(riders) / sizeof(riders[0]));
+		if (lnRiders >= 1)
 		{
-			// Are they mouse-downing on a control point?
-			obj->firstControlPoint;
-// TODO:  Working here ... need to determine control points for the first child object in a rider, which for subforms are the edges and titlebar, and for other things are controlPoint objects
+			// Are they mouse-downing on any control point?
+			for (lnI = 0; lnI < lnRiders; lnI++)
+			{
+				// Iterate through each rider
+				objRider = riders[lnI];
+				if (iObj_isPointWithin(objRider, pt, &lrc))
+				{
+					// They're within this one
+					// Are they on any control point?
+					for (objControlPoint = objRider->firstControlPoint; objControlPoint; obj->ll.nextObj)
+					{
+						// Are we within this one?
+						if (iObj_isPointWithin(objControlPoint, pt, &lrc2))
+						{
+							// We are within this one, note the time
+							GetLocalTime(&lst);
+
+						} else {
+							// Not within this one, clear the time
+							memset(&lst, 0, sizeof(lst));
+						}
+
+						// Store that time
+						sprintf(buffer, "%04u%02u%02u%02u%02u%02u%03u", lst.wYear, lst.wMonth, lst.wDay, lst.wHour, lst.wMinute, lst.wSecond, lst.wMilliseconds);
+						downTime.data	= buffer;
+						downTime.length	= 17;
+						iObjProp_set_character_direct(objControlPoint, _INDEX_MOUSEDOWNTIME, &downTime);
+					}
+				}
+			}
 		}
 
 		// For forms, they can be clicking down on special things for various operations
@@ -880,6 +913,24 @@
 	}
 
 	bool iDefaultCallback_onTabMouseLeave(SWindow* win, SObject* obj, bool tlOnClose)
+	{
+		// Do not continue to propagate this message to other objects
+		return(false);
+	}
+
+	bool iDefaultCallback_onControlPointEnter(SWindow* win, SObject* obj)
+	{
+		// Do not continue to propagate this message to other objects
+		return(false);
+	}
+
+	bool iDefaultCallback_onControlPointLeave(SWindow* win, SObject* obj)
+	{
+		// Do not continue to propagate this message to other objects
+		return(false);
+	}
+
+	bool iDefaultCallback_onControlPointDrop(SWindow* win, SObject* obj)
 	{
 		// Do not continue to propagate this message to other objects
 		return(false);

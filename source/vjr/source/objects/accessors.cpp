@@ -122,7 +122,7 @@
 		if (nameToUpdate && tnIndex <= gnProps_masterSize)
 		{
 			// Store the raw property entries (if requested)
-			(*nameToUpdate)->data._cs8	= gsProps_master[tnIndex - 1].propName_s8;
+			(*nameToUpdate)->data_cs8	= gsProps_master[tnIndex - 1].propName_s8;
 			(*nameToUpdate)->length		= gsProps_master[tnIndex - 1].propNameLength;
 		}
 
@@ -1117,7 +1117,7 @@ debug_break;
 							case _ICODE_DOUBLE_QUOTED_TEXT:
 								// It's quoted text, meaning a filename
 								llIsValid = true;
-								memcpy(buffer, compFilename->line->sourceCode->data._cs8 + compFilename->start, compFilename->length);
+								memcpy(buffer, compFilename->line->sourceCode->data_cs8 + compFilename->start, compFilename->length);
 								break;
 
 							default:
@@ -1130,14 +1130,14 @@ debug_break;
 									// It's not a known variable, so it must be just something they want to use as a filename
 									llIsValid	= true;
 									lnLength	= iComps_getContiguousLength(compFilename, NULL, 0, NULL);
-									memcpy(buffer, compFilename->line->sourceCode->data._cs8 + compFilename->start, lnLength);
+									memcpy(buffer, compFilename->line->sourceCode->data_cs8 + compFilename->start, lnLength);
 
 								} else {
 									// Based on the variable type, try to open it
 									if (varLookup->varType == _VAR_TYPE_CHARACTER)
 									{
 										llIsValid = true;
-										memcpy(buffer, varLookup->value.data._cs8, varLookup->value.length);
+										memcpy(buffer, varLookup->value.data_cs8, varLookup->value.length);
 									}
 								}
 
@@ -1555,7 +1555,7 @@ debug_break;
 						// Is it seconds or attempts?
 						//////
 							if (!compSeconds)
-								*varNew->value.data._s32 *= -1;		// It is ATTEMPTS, make negative
+								*varNew->value.data_s32 *= -1;		// It is ATTEMPTS, make negative
 
 
 						//////////
@@ -1746,7 +1746,7 @@ debug_break;
 			if (iVariable_isTypeCharacter(varNew) && varNew->value.length >= 1)
 			{
 				// Set the value
-				iDatum_duplicate(&varSet->value, varNew->value.data._cs8, 1);
+				iDatum_duplicate(&varSet->value, varNew->value.data_cs8, 1);
 
 				// Indicate success
 				llResult = true;
@@ -2464,10 +2464,10 @@ debug_break;
 	SVariable* iObjProp_get_var_byComp(SObject* obj, SComp* comp, bool tlSearchDefaultProps, bool tlSearchUserProps, u32* tnIndex, s32* tnType)
 	{
 		// Make sure our environment is sane
-		if (comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data._s8 && comp->start + comp->length <= comp->line->sourceCode->length)
+		if (comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data_s8 && comp->start + comp->length <= comp->line->sourceCode->length)
 		{
 			// We're good
-			return(iObjProp_get_var_byName(obj, comp->line->sourceCode->data._u8 + comp->start, comp->length, tlSearchDefaultProps, tlSearchUserProps, tnIndex, tnType));
+			return(iObjProp_get_var_byName(obj, comp->line->sourceCode->data_u8 + comp->start, comp->length, tlSearchDefaultProps, tlSearchUserProps, tnIndex, tnType));
 
 		} else {
 			// Something's invalid
@@ -2541,7 +2541,7 @@ debug_break;
 					{
 						// Does this one match?
 						if (iTestExactlyEqual(	tcName,				tnNameLength,
-												var->name.data._u8,	(u32)var->name.length	))
+												var->name.data_u8,	(u32)var->name.length	))
 						{
 							// Indicate it's a custom property
 							if (tnType)
@@ -3028,7 +3028,7 @@ debug_break;
 
 					// Determine the required width and height
 					SetRect(&lrc, 0, 0, 0, 0);
-					DrawText(obj->p.font->hdc, varCaption->value.data._cs8, varCaption->value.length, &lrc, DT_CALCRECT);
+					DrawText(obj->p.font->hdc, varCaption->value.data_cs8, varCaption->value.length, &lrc, DT_CALCRECT);
 					lnWidth		= lrc.right - lrc.left;
 					lnHeight	= lrc.bottom - lrc.top;
 
@@ -3153,51 +3153,51 @@ debug_break;
 			switch (tnIndex)
 			{
 				case _INDEX_READONLY:
-					obj->p.sem->isReadOnly				= (varNewValue->value.data._s8[0] != _LOGICAL_FALSE);
+					obj->p.sem->isReadOnly				= (varNewValue->value.data_s8[0] != _LOGICAL_FALSE);
 					break;
 
 				case _INDEX_EDITBOX_OVERWRITE:
-					obj->p.sem->isOverwrite				= (varNewValue->value.data._s8[0] != _LOGICAL_FALSE);
+					obj->p.sem->isOverwrite				= (varNewValue->value.data_s8[0] != _LOGICAL_FALSE);
 					break;
 
 				case _INDEX_EDITBOX_SHOW_LINE_NUMBERS:
-					obj->p.sem->showLineNumbers			= (varNewValue->value.data._s8[0] != _LOGICAL_FALSE);
+					obj->p.sem->showLineNumbers			= (varNewValue->value.data_s8[0] != _LOGICAL_FALSE);
 					break;
 
 				case _INDEX_EDITBOX_SHOW_CURSOR_LINE:
-					obj->p.sem->showCursorLine			= (varNewValue->value.data._s8[0] != _LOGICAL_FALSE);
+					obj->p.sem->showCursorLine			= (varNewValue->value.data_s8[0] != _LOGICAL_FALSE);
 					break;
 
 				case _INDEX_EDITBOX_SHOW_END_LINE:
-					obj->p.sem->showEndLine				= (varNewValue->value.data._s8[0] != _LOGICAL_FALSE);
+					obj->p.sem->showEndLine				= (varNewValue->value.data_s8[0] != _LOGICAL_FALSE);
 					break;
 
 				case _INDEX_EDITBOX_IS_HEAVY_PROCESSING:
-					obj->p.sem->isHeavyProcessing		= (varNewValue->value.data._s8[0] != _LOGICAL_FALSE);
+					obj->p.sem->isHeavyProcessing		= (varNewValue->value.data_s8[0] != _LOGICAL_FALSE);
 					break;
 
 				case _INDEX_EDITBOX_IS_SOURCE_CODE:
-					obj->p.sem->isSourceCode				= (varNewValue->value.data._s8[0] != _LOGICAL_FALSE);
+					obj->p.sem->isSourceCode				= (varNewValue->value.data_s8[0] != _LOGICAL_FALSE);
 					break;
 
 				case _INDEX_EDITBOX_ALLOW_MOVE_BEYOND_END_OF_LINE:
-					obj->p.sem->allowMoveBeyondEndOfLine	= (varNewValue->value.data._s8[0] != _LOGICAL_FALSE);
+					obj->p.sem->allowMoveBeyondEndOfLine	= (varNewValue->value.data_s8[0] != _LOGICAL_FALSE);
 					break;
 
 				case _INDEX_EDITBOX_COLUMN:
-					obj->p.sem->columnEdit					= *varNewValue->value.data._s32;
+					obj->p.sem->columnEdit					= *varNewValue->value.data_s32;
 					break;
 
 				case _INDEX_EDITBOX_LEFT_COLUMN:
-					obj->p.sem->columnLeft				= *varNewValue->value.data._s32;
+					obj->p.sem->columnLeft				= *varNewValue->value.data_s32;
 					break;
 
 				case _INDEX_EDITBOX_TAB_WIDTH:
-					obj->p.sem->tabWidth					= *varNewValue->value.data._s32;
+					obj->p.sem->tabWidth					= *varNewValue->value.data_s32;
 					break;
 
 				case _INDEX_EDITBOX_TABS_ENFORCED:
-					obj->p.sem->areTabsEnforced				= (varNewValue->value.data._s8[0] != _LOGICAL_FALSE);
+					obj->p.sem->areTabsEnforced				= (varNewValue->value.data_s8[0] != _LOGICAL_FALSE);
 					break;
 
 				case _INDEX_FONTBOLD:
@@ -3326,23 +3326,23 @@ debug_break;
 					switch (tnIndex)
 					{
 						case _INDEX_FONTBOLD:
-							obj->p.font->isBold = (varNewValue->value.data._s8[0] != _LOGICAL_FALSE);
+							obj->p.font->isBold = (varNewValue->value.data_s8[0] != _LOGICAL_FALSE);
 							break;
 
 						case _INDEX_FONTCHARSET:
-							obj->p.font->charset = *varNewValue->value.data._s32;
+							obj->p.font->charset = *varNewValue->value.data_s32;
 							break;
 
 						case _INDEX_FONTCONDENSE:
-							obj->p.font->isCondensed = (varNewValue->value.data._s8[0] != _LOGICAL_FALSE);
+							obj->p.font->isCondensed = (varNewValue->value.data_s8[0] != _LOGICAL_FALSE);
 							break;
 
 						case _INDEX_FONTEXTEND:
-							obj->p.font->isExtended = (varNewValue->value.data._s8[0] != _LOGICAL_FALSE);
+							obj->p.font->isExtended = (varNewValue->value.data_s8[0] != _LOGICAL_FALSE);
 							break;
 
 						case _INDEX_FONTITALIC:
-							obj->p.font->isItalic = (varNewValue->value.data._s8[0] != _LOGICAL_FALSE);
+							obj->p.font->isItalic = (varNewValue->value.data_s8[0] != _LOGICAL_FALSE);
 							break;
 
 						case _INDEX_FONTNAME:
@@ -3352,23 +3352,23 @@ debug_break;
 							break;
 
 						case _INDEX_FONTOUTLINE:
-							obj->p.font->isOutline = (varNewValue->value.data._s8[0] != _LOGICAL_FALSE);
+							obj->p.font->isOutline = (varNewValue->value.data_s8[0] != _LOGICAL_FALSE);
 							break;
 
 						case _INDEX_FONTSHADOW:
-							obj->p.font->isShadow = (varNewValue->value.data._s8[0] != _LOGICAL_FALSE);
+							obj->p.font->isShadow = (varNewValue->value.data_s8[0] != _LOGICAL_FALSE);
 							break;
 
 						case _INDEX_FONTSIZE:
-							obj->p.font->_size = *varNewValue->value.data._s32;
+							obj->p.font->_size = *varNewValue->value.data_s32;
 							break;
 
 						case _INDEX_FONTSTRIKETHRU:
-							obj->p.font->isStrikethrough = (varNewValue->value.data._s8[0] != _LOGICAL_FALSE);
+							obj->p.font->isStrikethrough = (varNewValue->value.data_s8[0] != _LOGICAL_FALSE);
 							break;
 
 						case _INDEX_FONTUNDERLINE:
-							obj->p.font->isUnderline = (varNewValue->value.data._s8[0] != _LOGICAL_FALSE);
+							obj->p.font->isUnderline = (varNewValue->value.data_s8[0] != _LOGICAL_FALSE);
 							break;
 
 						default:
@@ -3411,7 +3411,7 @@ debug_break;
 //
 // Called to change the source code associated with this method at runtime.
 // It can either replace the function, or clear it out by passing an empty
-// newSourceCode member (by either a NULL parameter, NULL newsourceCode->data._s8
+// newSourceCode member (by either a NULL parameter, NULL newsourceCode->data_s8
 // member, or newSourceCode->length <= 0).
 //
 //////
@@ -3449,7 +3449,7 @@ debug_break;
 			//////////
 			// Are they setting source code, or clearing it out?
 			//////
-				if (newSourceCode && newSourceCode->data._s8 && newSourceCode->length >= 1)
+				if (newSourceCode && newSourceCode->data_s8 && newSourceCode->length >= 1)
 				{
 					// Populate the program into it
 					llResult = iSEM_load_fromMemory(obj, func->sem, newSourceCode, true, false);
@@ -3497,7 +3497,7 @@ debug_break;
 		if (nameToUpdate && tnIndex <= gnEvents_masterSize)
 		{
 			// Store the raw property entries (if requested)
-			nameToUpdate->data._cs8		= gsEvents_master[tnIndex - 1].eventName_s8;
+			nameToUpdate->data_cs8		= gsEvents_master[tnIndex - 1].eventName_s8;
 			nameToUpdate->length		= gsEvents_master[tnIndex - 1].eventNameLength;
 		}
 
@@ -3526,7 +3526,7 @@ debug_break;
 		if (obj && comp)
 		{
 			// Grab the name start
-			lcData			= comp->line->sourceCode->data._s8 + comp->start;
+			lcData			= comp->line->sourceCode->data_s8 + comp->start;
 			lnDataLength	= comp->length;
 
 
@@ -3549,7 +3549,7 @@ debug_break;
 								for (func = e->userEventCode; func; func = func->ll.nextFunc)
 								{
 									// Is it a match?
-									if (func->name.length == lnDataLength && _memicmp(func->name.data._s8, lcData, lnDataLength) == 0)
+									if (func->name.length == lnDataLength && _memicmp(func->name.data_s8, lcData, lnDataLength) == 0)
 									{
 										// Yes
 										if (tnIndex)		*tnIndex	= lnI;
@@ -3623,7 +3623,7 @@ debug_break;
 							for (func = *funcRoot; func; func = func->ll.nextFunc)
 							{
 								// Is this it?
-								if (func->name.length == lnDataLength && _memicmp(func->name.data._s8, lcData, lnDataLength) == 0)
+								if (func->name.length == lnDataLength && _memicmp(func->name.data_s8, lcData, lnDataLength) == 0)
 								{
 									// Store the function pointer
 									if (*tsFuncRoot)		*tsFuncRoot = *funcRoot;

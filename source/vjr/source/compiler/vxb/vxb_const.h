@@ -2548,7 +2548,7 @@
 	// Note:  These need to be in sync with gsVarTypeXlat[] below, and command_sourcelight.h
 	const u32		_VAR_TYPE_NONE									= -1;	// Used for DECLARE DLL when nothing is defined, such as DECLARE Sleep() IN WIN32API INTEGER nMilliseconds, which has no return value
 	const u32						_VAR_TYPE_START					= 0;
-	const u32		_VAR_TYPE_NULL									= 0;	// Note:  This is an explicit .NULL. variable type.  However, other types can also be .NULL. and retain their type.  As such, var->varType cannot be the ONLY test used.  Also check var->value.data._s8, and var->value.length. If those are NULL or 0, then it is also .NULL.
+	const u32		_VAR_TYPE_NULL									= 0;	// Note:  This is an explicit .NULL. variable type.  However, other types can also be .NULL. and retain their type.  As such, var->varType cannot be the ONLY test used.  Also check var->value.data_s8, and var->value.length. If those are NULL or 0, then it is also .NULL.
 
 	// Signed
 	const u32						_VAR_TYPE_FUNDAMENTAL_START		= 1;
