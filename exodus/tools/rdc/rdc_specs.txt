@@ -111,6 +111,9 @@ RDC Specifications Document
 	[|cask|]			-- Definition cask
 	<|cask|>			-- Logic cask
 	~|cask|~			-- Utility cask
+	\|cask|/			-- Side coding
+	/|cask|\			-- Auto-injected content
+	*|cask|*			-- Anchor cask
 	
 	||||				-- If four or more pipe signs leading on a source code line, line comment
 	|||					-- If three pipe signs leading on a source code line, whitespace
