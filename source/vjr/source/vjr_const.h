@@ -678,6 +678,24 @@ typedef SEM**		SEMpp;
 
 
 //////////
+// Carousel types
+//////
+	const u32			_CAROUSELTYPE_MENUS					= 1;						// For dockable menus
+	const u32			_CAROUSELTYPE_PANELS				= 2;						// For dockable panels (forms, subforms, other carousels, and riders)
+	const u32			_CAROUSELTYPE_COLLAPSED				= 3;						// For collapsed panels which have icon+text only (uses the graphics in _INDEX_RIDERTABCOLLAPSED)
+
+
+//////////
+// Rider types
+//////
+	const u32			_RIDERTYPE__IMMUTABLE				= 1 << 31;					// Rider is immutable (cannot be moved or deleted)
+	const u32			_RIDERTYPE__IMMOVABLE				= 1 << 30;					// Rider is immovable (cannot be moved)
+	const u32			_RIDERTYPE_MENU						= 1;						// A menu rider
+	const u32			_RIDERTYPE_PANEL					= 2;						// A panel rider
+	const u32			_RIDERTYPE_CUSTOM					= 3;						// A custom rider
+
+
+//////////
 // Control point types
 //////
 	const u32			_CONTROLPOINTTYPE_DRAGBAR			= 1;						// Typically the caption area of a form or subform

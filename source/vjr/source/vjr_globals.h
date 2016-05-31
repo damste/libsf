@@ -135,6 +135,7 @@
 //////
 	HINSTANCE			ghInstance							= null0;
 	bool				glShuttingDown						= false;
+	bool				glDefaultObjectsHaveBeenCreated		= false;
 //	ITaskbarList*		giTaskbar							= NULL;
 
 

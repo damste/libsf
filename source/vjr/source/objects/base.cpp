@@ -92,8 +92,11 @@
 // Creates the object structure
 //
 //////
-	SObject* iObj_create(s32 objType, SObject* objParent)
+	SObject* iObj_create(s32 objType, SObject* objParent, SCallback* cb_controlPointSetup, uptr _func_cb_controlPointSetup)
 	{
+		SObject* obj;
+
+
 		// We need to create it
 		logfunc(__FUNCTION__);
 		switch (objType)
@@ -106,12 +109,6 @@
 
 			case _OBJ_TYPE_SUBFORM:		// A new class which has its own drawing content and can be moved about using UI features
 				return(iSubobj_create_markInitializationComplete(iSubobj_createSubform(NULL, objParent)));
-
-			case _OBJ_TYPE_CAROUSEL:	// A new class which is its a holder for riders, allowing multiple classes to be docked and interacted with/upon as a group
-				return(iSubobj_create_markInitializationComplete(iSubobj_createCarousel(NULL, objParent)));
-
-			case _OBJ_TYPE_RIDER:		// A new class which wraps around a form or subform allowing it to be presented inside a carousel
-				return(iSubobj_create_markInitializationComplete(iSubobj_createRider(NULL, objParent)));
 
 			case _OBJ_TYPE_LABEL:		// A label
 				return(iSubobj_create_markInitializationComplete(iSubobj_createLabel(NULL, objParent)));
@@ -215,13 +212,46 @@
 			case _OBJ_TYPE_SETTINGS:	// Settings
 				return(iSubobj_create_markInitializationComplete(iSubobj_createSettings(NULL, objParent)));
 
-			case _OBJ_TYPE_CONTROLPOINT:	// Control point
-				return(iSubobj_create_markInitializationComplete(iSubobj_createControlPoint(NULL, objParent)));
-
 			default:
-// TODO:  We should never get here.  If we do it's a developer error.  Check the call stack and determine the cause.
+				// TODO:  We should never get here.  If we do it's a developer error.  Check the call stack and determine the cause.
 				return(NULL);
+
+
+//////////
+// Used for programmable and UI interactive docking within a window
+// BEGIN
+//////
+			// A class which serves as a holder for riders, allowing multiple classes to be docked and interacted with/upon as a group
+			case _OBJ_TYPE_CAROUSEL:
+				obj = iSubobj_create_markInitializationComplete(iSubobj_createCarousel(NULL, objParent));
+				break;
+
+			// A class which wraps a carousel, rider, form, or subform, allowing them to be presented inside a parent carousel
+			case _OBJ_TYPE_RIDER:
+				obj = iSubobj_create_markInitializationComplete(iSubobj_createRider(NULL, objParent));
+				break;
+
+			// A class which does not relate to traditional parent/child relationships, but is added to the obj->firstControlPoint entries of riders and carousels
+			// Typically, the cb_controlPointSetup->func() callback below will be used to create these for each rider and carousel
+			case _OBJ_TYPE_CONTROLPOINT:
+				return(iSubobj_create_markInitializationComplete(iSubobj_createControlPoint(NULL, objParent)));
 		}
+
+		// Call the setup function if need be
+		if (obj && cb_controlPointSetup && (cb_controlPointSetup->_func || (cb_controlPointSetup->_func = _func_cb_controlPointSetup)))
+		{
+			// Store the object
+			cb_controlPointSetup->obj1 = obj;
+
+			// Call the callback
+			cb_controlPointSetup->func(cb_controlPointSetup);
+		}
+
+		// Indicate the new object
+		return(obj);
+//////
+// END
+//////////
 	}
 
 

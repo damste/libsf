@@ -871,6 +871,9 @@
 			// Forms and subforms are created last because they have internal child objects references to classes which must be created before
 			gobj_defaultForm		= iObj_create(_OBJ_TYPE_FORM,		NULL);
 			gobj_defaultSubform		= iObj_create(_OBJ_TYPE_SUBFORM,	NULL);
+
+			// Indicate that all of the default objects have been created
+			glDefaultObjectsHaveBeenCreated	= true;
 	}
 
 

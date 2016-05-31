@@ -117,7 +117,7 @@ struct SObjEventMap;
 // objects/base.cpp
 // Note:  Property accessors are in the object_accessors.h and object_accessors.cpp source files
 //////
-	SObject*				iObj_create								(s32 objType, SObject* objParent);
+	SObject*				iObj_create								(s32 objType, SObject* objParent, SCallback* cb_controlPointSetup = NULL, uptr _func_cb_controlPointSetup = 0);
 	SObject*				iObj_addChild							(s32 objType, SObject* objParent);
 	SObject*				iObj_copy								(SObject*  template_obj, SObject* prevObj, SObject* nextObj, SObject* parent, bool tlCopyChildren, bool tlCopySiblings, bool tlCreateSeparateBitmapBuffers);
 	void					iObj_delete								(SObject** obj, bool tlDeleteSelf, bool tlDeleteChildren, bool tlDeleteSiblings);

@@ -482,17 +482,19 @@ struct SCallback
 	// Various data items available
 	//////
 		union {
-			void*	data1;
-			SLine*	line;
-			SLine*	line1;
-			SComp*	comp;
-			SComp*	comp1;
+			void*		data1;
+			SLine*		line;
+			SLine*		line1;
+			SComp*		comp;
+			SComp*		comp1;
+			SObject*	obj1;
 		};
 
 		union {
-			void*	data2;
-			SLine*	line2;
-			SComp*	comp2;
+			void*		data2;
+			SLine*		line2;
+			SComp*		comp2;
+			SObject*	obj2;
 		};
 
 

@@ -103,11 +103,15 @@
 			// Raise the flag
 			obj->p.initializationComplete = true;
 
-			// Complete the storage of initialized-only settings
-			if ((var = iObjProp_hasProperty(obj, _INDEX_LEFT)))			iVariable_set_s32(var, obj->rc.left);
-			if ((var = iObjProp_hasProperty(obj, _INDEX_TOP)))			iVariable_set_s32(var, obj->rc.top);
-			if ((var = iObjProp_hasProperty(obj, _INDEX_WIDTH)))		iVariable_set_s32(var, obj->rc.right - obj->rc.left);
-			if ((var = iObjProp_hasProperty(obj, _INDEX_HEIGHT)))		iVariable_set_s32(var, obj->rc.bottom - obj->rc.top);
+			// Populate everything after the default objects
+			if (glDefaultObjectsHaveBeenCreated)
+			{
+				// Complete the storage of initialized-only settings
+				if ((var = iObjProp_hasProperty(obj, _INDEX_LEFT)))			iVariable_set_s32(var, obj->rc.left);
+				if ((var = iObjProp_hasProperty(obj, _INDEX_TOP)))			iVariable_set_s32(var, obj->rc.top);
+				if ((var = iObjProp_hasProperty(obj, _INDEX_WIDTH)))		iVariable_set_s32(var, obj->rc.right - obj->rc.left);
+				if ((var = iObjProp_hasProperty(obj, _INDEX_HEIGHT)))		iVariable_set_s32(var, obj->rc.bottom - obj->rc.top);
+			}
 		}
 
 		// Pass-through the input
