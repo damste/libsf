@@ -169,13 +169,14 @@ struct SObjEventMap;
 	s32						iiObj_getBaseclassType_byName			(s8* tcTextname, s32 tnTextnameLength);
 	SBaseClassMap*			iiObj_getBaseclass_byName				(s8* tcTextname, s32 tnTextnameLength);
 	SBaseClassMap*			iiObj_getBaseclass_byType				(s32 tnObjType);
-	void					iiObj_getWindowRect						(SObject* obj, RECT* rc);
+	void					iiObj_getRect_inWindow					(SObject* obj, RECT* rc);
 
 
 //////////
 // objects/create.cpp
 //////
 	// Creation of individual sub-objects
+	SObject*				iSubobj_create_markInitializationComplete		(SObject*	obj);
 	SObject*				iSubobj_createEmpty						(SObject*	template_empty,			SObject* parent);
 	SObject*				iSubobj_createForm						(SObject*	template_form,			SObject* parent);
 	SObject*				iSubobj_createSubform					(SObject*	template_subform,		SObject* parent);
@@ -479,6 +480,12 @@ struct SObjEventMap;
 	bool					iEvents_carousel_dragStart_tab			(SWindow* win, SObject* obj, SBitmap* bmp);
 	bool					iEvents_carousel_dragStart_titlebar		(SWindow* win, SObject* obj, SBitmap* bmp);
 	u32						iiEvents_carousel_findTarget			(SWindow* win, SObject* obj, s32 tnX, s32 tnY, SObjCarouselTabData** toctd, bool* tlHighlightChanged);
+
+
+//////////
+// objects/rider.cpp
+//////
+	void					iRider_trackMotion_mouseDown			(SObject* obj, s32 lnX, s32 lnY);
 
 
 //////////

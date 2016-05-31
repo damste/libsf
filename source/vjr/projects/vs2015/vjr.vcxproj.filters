@@ -280,6 +280,9 @@
     <ClCompile Include="..\..\..\..\utils\common\cpp\fifo.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\objects\rider.cpp">
+      <Filter>objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\utils\common\cpp\common_types.h">

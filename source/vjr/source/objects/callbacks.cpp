@@ -352,19 +352,12 @@
 	{
 		bool		llMouseDown, llResult, llFocusChanged;
 		f64			lfPercent, lfX, lfY, lfWidth, lfHeight, lfValue;
-		s32			lnI, lnX, lnY, lnRiders;
+		s32			lnX, lnY;
 		u32			lnClick;
 		bool		llCtrl, llAlt, llShift;
 		POINT		pt;
-		RECT		lrc, lrc2;
-		SDatum		downTime;
 		SVariable*	valueMin;
 		SObject*	objRoot;
-		SObject*	objRider;
-		SObject*	objControlPoint;
-		SObject*	riders[20];
-		s8			buffer[32];
-		SYSTEMTIME	lst;
 
 
 		// Make sure our environment is sane
@@ -393,41 +386,9 @@
 			llFocusChanged = true;
 		}
 
-		// Determine if they are clicking is an rider's control point
-		lnRiders = iObj_enum_parentRiders(obj, &riders[0], sizeof(riders) / sizeof(riders[0]));
-		if (lnRiders >= 1)
-		{
-			// Are they mouse-downing on any control point?
-			for (lnI = 0; lnI < lnRiders; lnI++)
-			{
-				// Iterate through each rider
-				objRider = riders[lnI];
-				if (iObj_isPointWithin(objRider, pt, &lrc))
-				{
-					// They're within this one
-					// Are they on any control point?
-					for (objControlPoint = objRider->firstControlPoint; objControlPoint; obj->ll.nextObj)
-					{
-						// Are we within this one?
-						if (iObj_isPointWithin(objControlPoint, pt, &lrc2))
-						{
-							// We are within this one, note the time
-							GetLocalTime(&lst);
-
-						} else {
-							// Not within this one, clear the time
-							memset(&lst, 0, sizeof(lst));
-						}
-
-						// Store that time
-						sprintf(buffer, "%04u%02u%02u%02u%02u%02u%03u", lst.wYear, lst.wMonth, lst.wDay, lst.wHour, lst.wMinute, lst.wSecond, lst.wMilliseconds);
-						downTime.data	= buffer;
-						downTime.length	= 17;
-						iObjProp_set_character_direct(objControlPoint, _INDEX_MOUSEDOWNTIME, &downTime);
-					}
-				}
-			}
-		}
+		// Is it possible they're clicking on a rider's control point?
+		if (iObj_find_thisRider(obj))
+			iRider_trackMotion_mouseDown(obj, lnX, lnY);
 
 		// For forms, they can be clicking down on special things for various operations
 		if (obj->parent && obj->parent->objType == _OBJ_TYPE_FORM && win->obj == obj->parent)

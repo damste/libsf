@@ -99,124 +99,124 @@
 		switch (objType)
 		{
 			case _OBJ_TYPE_EMPTY:		// Empty, used as a placeholder object that is not drawn
-				return(iSubobj_createEmpty(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createEmpty(NULL, objParent)));
 
 			case _OBJ_TYPE_FORM:			// Form class, the main outer window the OS sees
-				return(iSubobj_createForm(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createForm(NULL, objParent)));
 
 			case _OBJ_TYPE_SUBFORM:		// A new class which has its own drawing content and can be moved about using UI features
-				return(iSubobj_createSubform(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createSubform(NULL, objParent)));
 
 			case _OBJ_TYPE_CAROUSEL:	// A new class which is its a holder for riders, allowing multiple classes to be docked and interacted with/upon as a group
-				return(iSubobj_createCarousel(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createCarousel(NULL, objParent)));
 
 			case _OBJ_TYPE_RIDER:		// A new class which wraps around a form or subform allowing it to be presented inside a carousel
-				return(iSubobj_createRider(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createRider(NULL, objParent)));
 
 			case _OBJ_TYPE_LABEL:		// A label
-				return(iSubobj_createLabel(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createLabel(NULL, objParent)));
 
 			case _OBJ_TYPE_TEXTBOX:		// An input textbox
-				return(iSubobj_createTextbox(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createTextbox(NULL, objParent)));
 
 			case _OBJ_TYPE_BUTTON:		// A push button
-				return(iSubobj_createButton(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createButton(NULL, objParent)));
 
 			case _OBJ_TYPE_EDITBOX:		// An input multi-line editbox
-				return(iSubobj_createEditbox(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createEditbox(NULL, objParent)));
 
 			case _OBJ_TYPE_IMAGE:		// A graphical image
-				return(iSubobj_createImage(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createImage(NULL, objParent)));
 
 			case _OBJ_TYPE_CHECKBOX:		// A checkbox
-				return(iSubobj_createCheckbox(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createCheckbox(NULL, objParent)));
 
 			case _OBJ_TYPE_OPTION:		// A combination selection
-				return(iSubobj_createOption(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createOption(NULL, objParent)));
 
 			case _OBJ_TYPE_RADIO:		// A radio dial, which can also present as a slider or spinner
-				return(iSubobj_createRadio(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createRadio(NULL, objParent)));
 
 			case _OBJ_TYPE_CMDGROUP:	// A command button group
-				return(iSubobj_createCmdGroup(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createCmdGroup(NULL, objParent)));
 
 			case _OBJ_TYPE_OPTGROUP:	// An option group
-				return(iSubobj_createOptGroup(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createOptGroup(NULL, objParent)));
 
 			case _OBJ_TYPE_LISTBOX:		// A listbox
-				return(iSubobj_createListbox(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createListbox(NULL, objParent)));
 
 			case _OBJ_TYPE_COMBOBOX:	// A combobox
-				return(iSubobj_createCombobox(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createCombobox(NULL, objParent)));
 
 			case _OBJ_TYPE_FORMSET:		// A formset
-				return(iSubobj_createFormset(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createFormset(NULL, objParent)));
 
 			case _OBJ_TYPE_TOOLBAR:		// A toolbar
-				return(iSubobj_createToolbar(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createToolbar(NULL, objParent)));
 
 			case _OBJ_TYPE_SEPARATOR:	// A separator
-				return(iSubobj_createSeparator(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createSeparator(NULL, objParent)));
 
 			case _OBJ_TYPE_LINE:		// A line
-				return(iSubobj_createLine(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createLine(NULL, objParent)));
 
 			case _OBJ_TYPE_SHAPE:		// A shape
-				return(iSubobj_createShape(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createShape(NULL, objParent)));
 
 			case _OBJ_TYPE_CONTAINER:	// A container
-				return(iSubobj_createContainer(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createContainer(NULL, objParent)));
 
 			case _OBJ_TYPE_CONTROL:		// A blocking container
-				return(iSubobj_createControl(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createControl(NULL, objParent)));
 
 			case _OBJ_TYPE_GRID:		// A grid
-				return(iSubobj_createGrid(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createGrid(NULL, objParent)));
 
 			case _OBJ_TYPE_COLUMN:		// A grid's column object
-				return(iSubobj_createColumn(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createColumn(NULL, objParent)));
 
 			case _OBJ_TYPE_HEADER:		// A grid's header object
-				return(iSubobj_createHeader(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createHeader(NULL, objParent)));
 
 			case _OBJ_TYPE_OLEBOUND:	// A bound OLE object
-				return(iSubobj_createOleBound(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createOleBound(NULL, objParent)));
 
 			case _OBJ_TYPE_OLECONTAIN:	// An OLE container control object
-				return(iSubobj_createOleContain(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createOleContain(NULL, objParent)));
 
 			case _OBJ_TYPE_SPINNER:		// A spinner
-				return(iSubobj_createSpinner(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createSpinner(NULL, objParent)));
 
 			case _OBJ_TYPE_TIMER:		// A timer
-				return(iSubobj_createTimer(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createTimer(NULL, objParent)));
 
 			case _OBJ_TYPE_HYPERLINK:	// A hyperlink
-				return(iSubobj_createHyperlink(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createHyperlink(NULL, objParent)));
 
 			case _OBJ_TYPE_COLLECTION:	// A collection
-				return(iSubobj_createCollection(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createCollection(NULL, objParent)));
 
 			case _OBJ_TYPE_PAGE:		// A page within a pageframe
-				return(iSubobj_createPage(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createPage(NULL, objParent)));
 
 			case _OBJ_TYPE_PAGEFRAME:	// A pageframe
-				return(iSubobj_createPageFrame(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createPageFrame(NULL, objParent)));
 
 			case _OBJ_TYPE_SESSION:		// A session
-				return(iSubobj_createSession(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createSession(NULL, objParent)));
 
 			case _OBJ_TYPE_CUSTOM:		// A custom class
-				return(iSubobj_createCustom(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createCustom(NULL, objParent)));
 
 			case _OBJ_TYPE_EXCEPTION:	// An exception
-				return(iSubobj_createException(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createException(NULL, objParent)));
 
 			case _OBJ_TYPE_SETTINGS:	// Settings
-				return(iSubobj_createSettings(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createSettings(NULL, objParent)));
 
 			case _OBJ_TYPE_CONTROLPOINT:	// Control point
-				return(iSubobj_createControlPoint(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createControlPoint(NULL, objParent)));
 
 			default:
 // TODO:  We should never get here.  If we do it's a developer error.  Check the call stack and determine the cause.
@@ -1195,7 +1195,7 @@ _asm int 3;
 		if (obj)
 		{
 			// Grab the window-based rect for this object
-			iiObj_getWindowRect(obj, &lrc);
+			iiObj_getRect_inWindow(obj, &lrc);
 			if (PtInRect(&lrc, pt))
 			{
 				// It's on the inside
@@ -2728,6 +2728,7 @@ debug_break;
 		bool		llTitleBar, llBorder;
 		SObject*	objChild;
 		SBitmap*	bmp;
+		SVariable*	var;
 		RECT		lrc, lrco, lrcDeltas;
 
 
@@ -2754,6 +2755,16 @@ debug_break;
 		// Position and size its rectangle
 		SetRect(&obj->rc,			tnLeft, tnTop, tnLeft + tnWidth, tnTop + tnHeight);
 		CopyRect(&obj->rcClient,	&obj->rc);
+
+		// If it's an initialized object...
+		if (obj->p.initializationComplete)
+		{
+			// Set these properties if they exist
+			if ((var = iObjProp_hasProperty(obj, _INDEX_LEFT)))			iVariable_set_s32(var, tnLeft);
+			if ((var = iObjProp_hasProperty(obj, _INDEX_TOP)))			iVariable_set_s32(var, tnTop);
+			if ((var = iObjProp_hasProperty(obj, _INDEX_WIDTH)))		iVariable_set_s32(var, tnWidth);
+			if ((var = iObjProp_hasProperty(obj, _INDEX_HEIGHT)))		iVariable_set_s32(var, tnHeight);
+		}
 
 		// Update the client area
 		switch (obj->objType)
@@ -4050,7 +4061,7 @@ if (!obj->props[lnI])
 // Obtains the object's position within the window's rect
 //
 //////
-	void iiObj_getWindowRect(SObject* obj, RECT* rc)
+	void iiObj_getRect_inWindow(SObject* obj, RECT* rc)
 	{
 		RECT		lrc;
 		SWindow*	win;
@@ -4060,13 +4071,13 @@ if (!obj->props[lnI])
 		if (obj->parent)
 		{
 			// There's another parent, so process up
-			iiObj_getWindowRect(obj->parent, &lrc);
+			iiObj_getRect_inWindow(obj->parent, &lrc);
 
 			// Offset it by this object's coordinates
-			rc->left	+= iObjProp_get_s32_direct(obj, _INDEX_LEFT);
-			rc->top		+= iObjProp_get_s32_direct(obj, _INDEX_TOP);
-			rc->right	= min(rc->right,	rc->left	+ iObjProp_get_s32_direct(obj, _INDEX_WIDTH));
-			rc->bottom	= min(rc->bottom,	rc->top		+ iObjProp_get_s32_direct(obj, _INDEX_HEIGHT));
+			rc->left	= lrc.left + iObjProp_get_s32_direct(obj, _INDEX_LEFT);
+			rc->top		= lrc.top  + iObjProp_get_s32_direct(obj, _INDEX_TOP);
+			rc->right	= min(lrc.right,	rc->left	+ iObjProp_get_s32_direct(obj, _INDEX_WIDTH));
+			rc->bottom	= min(lrc.bottom,	rc->top		+ iObjProp_get_s32_direct(obj, _INDEX_HEIGHT));
 			return;
 		}
 

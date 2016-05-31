@@ -375,6 +375,7 @@ struct SProperties
 	// For form/subform object processing
 	bool		hasFocus;											// Does this object have focus?
  	bool		processKeyPreviewEvents;							// Do keystrokes for controls on the form go through the form's Key* events as well?
+	bool		initializationComplete;								// Set only after the object has been initially set
 
 	// For any SEM related to this control (typically only used on editbox classes)
 	SEM*		sem;												// (SEM)		-- The content being edited

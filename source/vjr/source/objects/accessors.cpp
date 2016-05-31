@@ -135,6 +135,25 @@
 
 //////////
 //
+// Called to see if the indicated property exists by doing a lookup
+//
+//////
+	SVariable* iObjProp_hasProperty(SObject* obj, s32 tnIndex)
+	{
+		SBasePropMap*	baseProp;
+		SObjPropMap*	objProp;
+
+
+		// Try to access it
+		if (obj)		return(iObjProp_get_var_byIndex(obj, tnIndex, &baseProp, &objProp, false));
+		else			return(NULL);
+	}
+
+
+
+
+//////////
+//
 // Called to set the f64 variable to the indicated input
 //
 // Note:  For nested sets, such as something already calling setterObject_set(), which then calls here,

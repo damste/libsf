@@ -89,6 +89,36 @@
 
 //////////
 //
+// Called to set the initialization complete flag set to true
+//
+//////
+	SObject* iSubobj_create_markInitializationComplete(SObject* obj)
+	{
+		SVariable* var;
+
+
+		// If there's an object, set its size
+		if (obj)
+		{
+			// Raise the flag
+			obj->p.initializationComplete = true;
+
+			// Complete the storage of initialized-only settings
+			if ((var = iObjProp_hasProperty(obj, _INDEX_LEFT)))			iVariable_set_s32(var, obj->rc.left);
+			if ((var = iObjProp_hasProperty(obj, _INDEX_TOP)))			iVariable_set_s32(var, obj->rc.top);
+			if ((var = iObjProp_hasProperty(obj, _INDEX_WIDTH)))		iVariable_set_s32(var, obj->rc.right - obj->rc.left);
+			if ((var = iObjProp_hasProperty(obj, _INDEX_HEIGHT)))		iVariable_set_s32(var, obj->rc.bottom - obj->rc.top);
+		}
+
+		// Pass-through the input
+		return(obj);
+	}
+
+
+
+
+//////////
+//
 // Creates the empty object structure
 //
 //////
