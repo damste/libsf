@@ -97,6 +97,22 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\utils\common\cpp\base\compsearcher.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\utils\common\cpp\base\sem\sem.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\utils\common\cpp\base\sem\sem_extra_info.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\utils\common\cpp\base\sem\sem_line.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\lasm.cpp" />
     <ClCompile Include="..\pass0.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -129,6 +145,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\utils\common\cpp\include\comps.h" />
+    <ClInclude Include="..\..\..\..\utils\common\cpp\include\compsearcher.h" />
+    <ClInclude Include="..\..\..\..\utils\common\cpp\include\debug.h" />
+    <ClInclude Include="..\..\..\..\utils\common\cpp\include\files.h" />
+    <ClInclude Include="..\..\..\..\utils\common\cpp\include\sem\sem.h" />
+    <ClInclude Include="..\..\..\..\utils\common\cpp\include\sem\sem_extra_info.h" />
+    <ClInclude Include="..\..\..\..\utils\common\cpp\include\sem\sem_line.h" />
     <ClInclude Include="..\lasm.h" />
     <ClInclude Include="..\lasm_const.h" />
     <ClInclude Include="..\lasm_defs.h" />

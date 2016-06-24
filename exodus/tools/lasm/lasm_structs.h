@@ -85,7 +85,6 @@
 //////////
 // lasm structs
 //////
-
 	// Assembler warnings, all enabled by default
 	struct SWarnings
 	{
