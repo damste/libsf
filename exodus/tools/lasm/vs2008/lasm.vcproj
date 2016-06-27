@@ -318,30 +318,66 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<Filter
+				Name="Header Files"
+				Filter="h;hpp;hxx;hm;inl;inc;xsd"
+				UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
+				>
+				<File
+					RelativePath="..\lasm.h"
+					>
+				</File>
+				<File
+					RelativePath="..\lasm_const.h"
+					>
+				</File>
+				<File
+					RelativePath="..\lasm_defs.h"
+					>
+				</File>
+				<File
+					RelativePath="..\lasm_globals.h"
+					>
+				</File>
+				<File
+					RelativePath="..\lasm_structs.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
-			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl;inc;xsd"
-			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
+			Name="comps"
 			>
 			<File
-				RelativePath="..\lasm.h"
+				RelativePath="..\..\..\..\utils\common\cpp\include\compiler_common.h"
 				>
 			</File>
 			<File
-				RelativePath="..\lasm_const.h"
+				RelativePath="..\..\..\..\utils\common\cpp\base\comps.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\utils\common\cpp\include\comps.h"
 				>
 			</File>
 			<File
-				RelativePath="..\lasm_defs.h"
-				>
-			</File>
-			<File
-				RelativePath="..\lasm_globals.h"
-				>
-			</File>
-			<File
-				RelativePath="..\lasm_structs.h"
+				RelativePath="..\..\..\..\utils\common\cpp\include\compsearcher.h"
 				>
 			</File>
 		</Filter>

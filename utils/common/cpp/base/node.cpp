@@ -125,6 +125,25 @@
 		return(nodeNew);
 	}
 
+	// Get the next comps Unique ID
+	u32 iiNode_getNextUid()
+	{
+		u32 lnValue;
+
+
+		// Synchronized access
+		EnterCriticalSection(&cs_nodeUniqueIdAccess);
+
+		// Get our value and increment
+		lnValue = gnNode_nextUniqueId++;
+
+		// All done
+		LeaveCriticalSection(&cs_nodeUniqueIdAccess);
+
+		// Return that value
+		return(lnValue);
+	}
+
 
 
 
@@ -489,7 +508,8 @@
 			// (Re-)Render everything
 			//////
 				// Grab a uid for render
-				lnIter_uid = iGetNextUid();
+				iiComps_getNextUid();
+				lnIter_uid = iiNode_getNextUid();
 
 				// Setup the render prop
 				props[0].backColor			= whiteColor;
@@ -513,7 +533,7 @@
 			// Determine extents
 			//////
 				// Grab a uid for get extents
-				lnIter_uid = iGetNextUid();
+				lnIter_uid = iiNode_getNextUid();
 
 				// Get our starting point
 				SetRect(&lrc, 0, 0, 0, 0);
@@ -538,7 +558,7 @@
 					iBmp_createBySize(bmp, lnWidth, lnHeight, 24);
 
 					// Grab a uid for get extents
-					lnIter_uid = iGetNextUid();
+					lnIter_uid = iiNode_getNextUid();
 
 					// Get our starting point
 					p.x			= (s16)-lrc.left;

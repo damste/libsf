@@ -318,136 +318,136 @@
 	// Note:  It is known that when this function is called, the first component is _ICODE_LASM_DEFINE
 	bool iilasm_pass0_define(SLasmPass0* p0)
 	{
-		SComp*			compDefine;
-		SComp*			compName;
-		SCallback		cb;
-		s8				buffer1[_MAX_FNAME];
-		s8				buffer2[_MAX_FNAME];
-		
-		
-		//////////
-		// Is there a valid component?
-		//////
-			compDefine	= p0->compNext;
-			compName	= iComps_Nth(compDefine);
-			if (!compName)
-			{
-				// It's a #define but nothing comes after
-				++compDefine->line->status.errors;
-				printf("--Error(%d,%d): token was expected in %s\n", compDefine->line->lineNumber, compDefine->start + compDefine->length, p0->file->fileName.data._s8);
-				goto politely_fail;
-			}
-
-
-		//////////
-		// Validate that it's alphanumeric
-		//////
-			if (!iiComps_isAlphanumeric_byContent(compName))
-			{
-				++compName->line->status.errors;
-				printf("--Error(%d,%d): alphanumeric was expected in %s\n", compName->line->lineNumber, compName->start, p0->file->fileName.data._s8);
-				goto politely_fail;
-			}
-
-
-		//////////
-		// Validate it's a unique symbol
-		//////
-			if ((p0->define = iilasm_pass0_lookup_define_byName(compName, gsLasmDefines)))
-			{
-				// It was already found
-				memcpy(buffer1, p0->define->compName->line->sourceCode->data._s8 + p0->define->compName->start, p0->define->compName->length);
-				memcpy(buffer2, p0->file->fileName.data._s8, p0->file->fileName.length);
-				buffer1[p0->define->compName->length]	= 0;
-				buffer2[p0->file->fileName.length]	= 0;
-				printf("--Error(%d,%d): token '%s' already defined in %s on (%d,%d)\n", compName->line->lineNumber, compName->start, buffer1, buffer2, p0->define->compName->line->lineNumber, p0->define->compName->start);
-			}
-
-
-		//////////
-		// Grab it
-		//////
-			p0->define = newAlloc(SLasmDefine, gsLasmDefines);
-			if (!p0->define)
-			{
-				// Internal error
-				++compName->line->status.errors;
-				printf("--Error(%d): an unexpected internal error occurred processing a #define in %s\n", compName->line->lineNumber, p0->file->fileName.data._s8);
-				goto politely_fail;
-			}
-
-			// Copy the name
-			p0->define->compName = compName;
-
-
-		//////////
-		// Load any optional parameters
-		//////
-			if ((p0->compNext = iComps_Nth(compName, 1, false)))
-			{
-				// Does it have parameters?
-				if (p0->compNext->iCode == _ICODE_PARENTHESIS_LEFT)
-				{
-					// It begins with an open parenthesis
-					if (!iilasm_pass0_define__getParameters(p0))
-					{
-						++p0->compNext->line->status.errors;
-						printf("--Error(%d,%d): unable to parse parameters in %s\n", p0->compNext->line->lineNumber, p0->compNext->start, p0->file->fileName.data._s8);
-						goto politely_fail;
-					}
-					// When we get here, line and compNext are pointing to the closing )
-
-					// Skip past the closing )
-					if (!(p0->compNext = iComps_Nth(p0->compNext)))
-					{
-						++p0->comp->line->status.errors;
-						printf("--Error: unexpected end of file in %s\n", p0->file->fileName.data._s8);
-						goto politely_fail;
-					}
-					// When we get here, we're on the first component after
-				}
-
-				// Is it brace content
-				if (p0->compNext->iCode == _ICODE_BRACE_LEFT || p0->compNext->iCode == _ICODE_DOUBLE_BRACE_LEFT)
-				{
-					// Begins with {/{{, we need to find the closing }}/}
-					memset(&cb, 0, sizeof(cb));
-					if (!iComps_scanForward_withCallback(p0->compNext, &cb, true, (uptr)&iilasm_pass0_define__callback_bypassEscapedBraces))
-					{
-						// Not found
-						++p0->compNext->line->status.errors;
-						printf("--Error(%d,%d): unable to locate matching } %s\n", p0->compNext->line->lineNumber, p0->compNext->start + compNext->length, p0->file->fileName.data._s8);
-						goto politely_fail;
-					}
-
-					// Move to post-{/{{ and pre-}/}}
-					p0->comp	= iComps_Nth(p0->comp);
-					cb.comp		= iComps_Nth(cb.comp, -1);
-
-					// Copy inner content (between the { and }, and excluding those two characters)
-					p0->define->firstLine = iComps_copyComps_toNewLines(p0->comp, cb.comp, true, true);
-
-				} else {
-					// Copy everything, including multiple lines ending in '\'
-					p0->define->firstLine = iLine_copyComps_toNewLines_untilTerminating(p0->line, compNext, _ICODE_BACKSLASH, true, true, &cb);
-				}
-				// If we get here, success
-
-				// Unescape \{, \}, \{{, \}}, and \\ within the block
-				iLines_unescape_iCodes(p0->define->firstLine,	_ICODE_BRACE_LEFT,			_ICODE_BRACE_RIGHT,			_ICODE_BACKSLASH);
-				iLines_unescape_iCodes(p0->define->firstLine,	_ICODE_DOUBLE_BRACE_LEFT,	_ICODE_DOUBLE_BRACE_RIGHT,	-1);
-			}
-
-
-		//////////
-		// Position our line to the last location, which completes the #define
-		//////
-			p0->line = cb.line;
-
-
-
-politely_fail:
-		// If we get here, error
+// 		SComp*			compDefine;
+// 		SComp*			compName;
+// 		SCallback		cb;
+// 		s8				buffer1[_MAX_FNAME];
+// 		s8				buffer2[_MAX_FNAME];
+// 		
+// 		
+// 		//////////
+// 		// Is there a valid component?
+// 		//////
+// 			compDefine	= p0->compNext;
+// 			compName	= iComps_Nth(compDefine);
+// 			if (!compName)
+// 			{
+// 				// It's a #define but nothing comes after
+// 				++compDefine->line->status.errors;
+// 				printf("--Error(%d,%d): token was expected in %s\n", compDefine->line->lineNumber, compDefine->start + compDefine->length, p0->file->fileName.data._s8);
+// 				goto politely_fail;
+// 			}
+// 
+// 
+// 		//////////
+// 		// Validate that it's alphanumeric
+// 		//////
+// 			if (!iiComps_isAlphanumeric_byContent(compName))
+// 			{
+// 				++compName->line->status.errors;
+// 				printf("--Error(%d,%d): alphanumeric was expected in %s\n", compName->line->lineNumber, compName->start, p0->file->fileName.data._s8);
+// 				goto politely_fail;
+// 			}
+// 
+// 
+// 		//////////
+// 		// Validate it's a unique symbol
+// 		//////
+// 			if ((p0->define = iilasm_pass0_lookup_define_byName(compName, gsLasmDefines)))
+// 			{
+// 				// It was already found
+// 				memcpy(buffer1, p0->define->compName->line->sourceCode->data._s8 + p0->define->compName->start, p0->define->compName->length);
+// 				memcpy(buffer2, p0->file->fileName.data._s8, p0->file->fileName.length);
+// 				buffer1[p0->define->compName->length]	= 0;
+// 				buffer2[p0->file->fileName.length]	= 0;
+// 				printf("--Error(%d,%d): token '%s' already defined in %s on (%d,%d)\n", compName->line->lineNumber, compName->start, buffer1, buffer2, p0->define->compName->line->lineNumber, p0->define->compName->start);
+// 			}
+// 
+// 
+// 		//////////
+// 		// Grab it
+// 		//////
+// 			p0->define = newAlloc(SLasmDefine, gsLasmDefines);
+// 			if (!p0->define)
+// 			{
+// 				// Internal error
+// 				++compName->line->status.errors;
+// 				printf("--Error(%d): an unexpected internal error occurred processing a #define in %s\n", compName->line->lineNumber, p0->file->fileName.data._s8);
+// 				goto politely_fail;
+// 			}
+// 
+// 			// Copy the name
+// 			p0->define->compName = compName;
+// 
+// 
+// 		//////////
+// 		// Load any optional parameters
+// 		//////
+// 			if ((p0->compNext = iComps_Nth(compName, 1, false)))
+// 			{
+// 				// Does it have parameters?
+// 				if (p0->compNext->iCode == _ICODE_PARENTHESIS_LEFT)
+// 				{
+// 					// It begins with an open parenthesis
+// 					if (!iilasm_pass0_define__getParameters(p0))
+// 					{
+// 						++p0->compNext->line->status.errors;
+// 						printf("--Error(%d,%d): unable to parse parameters in %s\n", p0->compNext->line->lineNumber, p0->compNext->start, p0->file->fileName.data._s8);
+// 						goto politely_fail;
+// 					}
+// 					// When we get here, line and compNext are pointing to the closing )
+// 
+// 					// Skip past the closing )
+// 					if (!(p0->compNext = iComps_Nth(p0->compNext)))
+// 					{
+// 						++p0->comp->line->status.errors;
+// 						printf("--Error: unexpected end of file in %s\n", p0->file->fileName.data._s8);
+// 						goto politely_fail;
+// 					}
+// 					// When we get here, we're on the first component after
+// 				}
+// 
+// 				// Is it brace content
+// 				if (p0->compNext->iCode == _ICODE_BRACE_LEFT || p0->compNext->iCode == _ICODE_DOUBLE_BRACE_LEFT)
+// 				{
+// 					// Begins with {/{{, we need to find the closing }}/}
+// 					memset(&cb, 0, sizeof(cb));
+// 					if (!iComps_scanForward_withCallback(p0->compNext, &cb, true, (uptr)&iilasm_pass0_define__callback_bypassEscapedBraces))
+// 					{
+// 						// Not found
+// 						++p0->compNext->line->status.errors;
+// 						printf("--Error(%d,%d): unable to locate matching } %s\n", p0->compNext->line->lineNumber, p0->compNext->start + p0->compNext->length, p0->file->fileName.data._s8);
+// 						goto politely_fail;
+// 					}
+// 
+// 					// Move to post-{/{{ and pre-}/}}
+// 					p0->comp	= iComps_Nth(p0->comp);
+// 					cb.comp		= iComps_Nth(cb.comp, -1);
+// 
+// 					// Copy inner content (between the { and }, and excluding those two characters)
+// 					p0->define->firstLine = iComps_copyComps_toNewLines(p0->comp, cb.comp, true, true);
+// 
+// 				} else {
+// 					// Copy everything, including multiple lines ending in '\'
+// 					p0->define->firstLine = iLine_copyComps_toNewLines_untilTerminating(p0->line, compNext, _ICODE_BACKSLASH, true, true, &cb);
+// 				}
+// 				// If we get here, success
+// 
+// 				// Unescape \{, \}, \{{, \}}, and \\ within the block
+// 				iLines_unescape_iCodes(p0->define->firstLine,	_ICODE_BRACE_LEFT,			_ICODE_BRACE_RIGHT,			_ICODE_BACKSLASH);
+// 				iLines_unescape_iCodes(p0->define->firstLine,	_ICODE_DOUBLE_BRACE_LEFT,	_ICODE_DOUBLE_BRACE_RIGHT,	-1);
+// 			}
+// 
+// 
+// 		//////////
+// 		// Position our line to the last location, which completes the #define
+// 		//////
+// 			p0->line = cb.line;
+// 
+// 
+// 
+// politely_fail:
+// 		// If we get here, error
 		return(false);
 	}
 
@@ -509,107 +509,107 @@ politely_fail:
 //////
 	bool iilasm_pass0_define__getParameters(SLasmPass0* p0)
 	{
-		s32		lnI;
-		bool	llSkipTest;
-		SComp*	comp;
-
-
-		//////////
-		// Should be on opening parenthesis
-		//////
-			if (comp->iCode != _ICODE_PARENTHESIS_LEFT)
-			{
-				++p0->line->status.errors;
-				printf("--Error(%d,%d): unexpected internal error processing #define parameters %s\n", p0->line->lineNumber, comp->start, p0->file->fileName.data._s8);
-				return(false);
-			}
-
-
-		//////////
-		// Iterate loading each one
-		//////
-			for (lnI = 0, llSkipTest = false; lnI < _LASM_MAX_DEFINE_PARAMS && comp->iCode != _ICODE_PARENTHESIS_RIGHT; lnI++)
-			{
-
-				//////////
-				// Validate it's a token
-				//////
-					if (!llSkipTest && !iiComps_isAlphanumeric_by_iCode(comp))
-					{
-						++p0->line->status.errors;
-						printf("--Error(%d,%d): expected token in %s\n", p0->line->lineNumber, comp->start, p0->file->fileName.data._s8);
-						goto politely_fail;
-					}
-					llSkipTest = false;
-
-
-				//////////
-				// Increase count, grab the name
-				//////
-					++p0->define->paramCount;
-					iiDatum_duplicate_fromComp(&p0->define->params[lnI], comp);
-
-
-				//////////
-				// Skip to next parameter
-				//////
-					if (iiLine_skipTo_nextComp(&p0->line, &comp) < 0)
-					{
-						// Unexpected end of file
-						printf("--Error: unexpected end of file in %s\n", p0->file->fileName.data._s8);
-						goto politely_fail;
-					}
-
-
-				//////////
-				// Skip past comma
-				//////
-					if (comp->iCode == _ICODE_COMMA)
-					{
-
-						//////////
-						// Skip past it
-						//////
-							if (iiLine_skipTo_nextComp(&p0->line, &comp) < 0)
-							{
-								// Unexpected end of file
-								printf("--Error: unexpected end of file in %s\n", p0->file->fileName.data._s8);
-								goto politely_fail;
-							}
-
-
-						//////////
-						// Next component must be right parenthesis or alphanumeric
-						//////
-							if (comp->iCode != _ICODE_PARENTHESIS_RIGHT && !iiComps_isAlphanumeric_by_iCode(comp))
-							{
-								++p0->line->status.errors;
-								printf("--Error(%d,%d): expected token or right parenthesis in %s\n", p0->line->lineNumber, comp->start, p0->file->fileName.data._s8);
-								goto politely_fail;
-							}
-
-							// We don't need to double-check alphanumeric above
-							llSkipTest = true;
-
-					}
-					// When we get here, we're on either ) or the next token name
-
-			}
-			// When we get here, comp is sitting on )
-
-
-		//////////
-		// Success!
-		//////
-			*compProcessing = comp;
-			return(true);
-
-
-politely_fail:
-		//////////
-		// Set current parameters, and then return false
-		//////
-			*compProcessing = comp;
+// 		s32		lnI;
+// 		bool	llSkipTest;
+// 		SComp*	comp;
+// 
+// 
+// 		//////////
+// 		// Should be on opening parenthesis
+// 		//////
+// 			if (comp->iCode != _ICODE_PARENTHESIS_LEFT)
+// 			{
+// 				++p0->line->status.errors;
+// 				printf("--Error(%d,%d): unexpected internal error processing #define parameters %s\n", p0->line->lineNumber, comp->start, p0->file->fileName.data._s8);
+// 				return(false);
+// 			}
+// 
+// 
+// 		//////////
+// 		// Iterate loading each one
+// 		//////
+// 			for (lnI = 0, llSkipTest = false; lnI < _LASM_MAX_DEFINE_PARAMS && comp->iCode != _ICODE_PARENTHESIS_RIGHT; lnI++)
+// 			{
+// 
+// 				//////////
+// 				// Validate it's a token
+// 				//////
+// 					if (!llSkipTest && !iiComps_isAlphanumeric_by_iCode(comp))
+// 					{
+// 						++p0->line->status.errors;
+// 						printf("--Error(%d,%d): expected token in %s\n", p0->line->lineNumber, comp->start, p0->file->fileName.data._s8);
+// 						goto politely_fail;
+// 					}
+// 					llSkipTest = false;
+// 
+// 
+// 				//////////
+// 				// Increase count, grab the name
+// 				//////
+// 					++p0->define->paramCount;
+// 					iiDatum_duplicate_fromComp(&p0->define->params[lnI], comp);
+// 
+// 
+// 				//////////
+// 				// Skip to next parameter
+// 				//////
+// 					if (iiLine_skipTo_nextComp(&p0->line, &comp) < 0)
+// 					{
+// 						// Unexpected end of file
+// 						printf("--Error: unexpected end of file in %s\n", p0->file->fileName.data._s8);
+// 						goto politely_fail;
+// 					}
+// 
+// 
+// 				//////////
+// 				// Skip past comma
+// 				//////
+// 					if (comp->iCode == _ICODE_COMMA)
+// 					{
+// 
+// 						//////////
+// 						// Skip past it
+// 						//////
+// 							if (iiLine_skipTo_nextComp(&p0->line, &comp) < 0)
+// 							{
+// 								// Unexpected end of file
+// 								printf("--Error: unexpected end of file in %s\n", p0->file->fileName.data._s8);
+// 								goto politely_fail;
+// 							}
+// 
+// 
+// 						//////////
+// 						// Next component must be right parenthesis or alphanumeric
+// 						//////
+// 							if (comp->iCode != _ICODE_PARENTHESIS_RIGHT && !iiComps_isAlphanumeric_by_iCode(comp))
+// 							{
+// 								++p0->line->status.errors;
+// 								printf("--Error(%d,%d): expected token or right parenthesis in %s\n", p0->line->lineNumber, comp->start, p0->file->fileName.data._s8);
+// 								goto politely_fail;
+// 							}
+// 
+// 							// We don't need to double-check alphanumeric above
+// 							llSkipTest = true;
+// 
+// 					}
+// 					// When we get here, we're on either ) or the next token name
+// 
+// 			}
+// 			// When we get here, comp is sitting on )
+// 
+// 
+// 		//////////
+// 		// Success!
+// 		//////
+// 			*compProcessing = comp;
+// 			return(true);
+// 
+// 
+// politely_fail:
+// 		//////////
+// 		// Set current parameters, and then return false
+// 		//////
+// 			*compProcessing = comp;
 			return(false);
 	}
 

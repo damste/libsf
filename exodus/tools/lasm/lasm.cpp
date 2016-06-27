@@ -289,12 +289,12 @@
 				switch (lnPass)
 				{
 					case 0:		{	ilasm_pass0(cmdLine, file);		break;	}
-					case 1:		{	ilasm_pass1(cmdLine, file);		break;	}
-					case 2:		{	ilasm_pass2(cmdLine, file);		break;	}
-					case 3:		{	ilasm_pass2(cmdLine, file);		break;	}
-					case 4:		{	ilasm_passX(cmdLine, file);		break;	}
-					case 5:		{	ilasm_passY(cmdLine, file);		break;	}
-					case 6:		{	ilasm_passZ(cmdLine, file);		break;	}
+// 					case 1:		{	ilasm_pass1(cmdLine, file);		break;	}
+// 					case 2:		{	ilasm_pass2(cmdLine, file);		break;	}
+// 					case 3:		{	ilasm_pass2(cmdLine, file);		break;	}
+// 					case 4:		{	ilasm_passX(cmdLine, file);		break;	}
+// 					case 5:		{	ilasm_passY(cmdLine, file);		break;	}
+// 					case 6:		{	ilasm_passZ(cmdLine, file);		break;	}
 				}
 			}
 		}

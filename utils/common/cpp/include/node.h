@@ -425,6 +425,8 @@ struct SGraceLine;
 // Global variables for nodes
 //////
 	bool				glNode_initialized						= false;
+	u32					gnNode_nextUniqueId						= 0;
+	CRITICAL_SECTION	cs_nodeUniqueIdAccess;
 
 
 
@@ -434,6 +436,7 @@ struct SGraceLine;
 //////
 	void					iNode_init									(void);
 	SNode*					iNode_create								(SNode** root, SComp* comp = NULL, SNode* n_defaults[_NODE_COUNT] = NULL);
+	u32						iiNode_getNextUid							(void);
 	SNode*					iNode_extrude								(SNode** root, s32 tnExtrudeDirection);
 	SNode*					iNode_bump									(SNode** root, s32 tnBump/*BumpDirection*/, s32 tnAnchor/*AnchorDirection*/);
 	SNode*					iNode_insert								(SNode** root, s32 tnDirection);

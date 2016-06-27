@@ -99,7 +99,9 @@
 #define _EXCLUDE_iBmp_colorizeAsCommonTooltipBackground		1
 
 #include "/libsf/utils/common/cpp/include/common_types.h"
+#include "/libsf/utils/common/cpp/include/errors.h"
 #include "/libsf/utils/common/cpp/include/ll.h"
+#include "/libsf/utils/common/cpp/include/chartests.h"
 #include "/libsf/utils/common/cpp/include/node.h"
 #include "/libsf/utils/common/cpp/include/callbacks.h"
 #include "/libsf/utils/common/cpp/include/colors.h"
@@ -112,8 +114,8 @@
 #include "/libsf/utils/common/cpp/include/bitmaps.h"
 #include "/libsf/utils/common/cpp/include/compsearcher.h"
 #include "/libsf/utils/common/cpp/include/compiler_common.h"
-#include "/libsf/utils/common/cpp/include/xml.h"
 #include "/libsf/utils/common/cpp/include/comps.h"
+#include "/libsf/utils/common/cpp/include/xml.h"
 
 
 #include "/libsf/utils/common/cpp/base/ll.cpp"

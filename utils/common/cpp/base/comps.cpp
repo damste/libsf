@@ -195,7 +195,7 @@
 
 
 		// Append the new component
-		compNew = (SComp*)iLl_appendNew__ll((SLL**)compRoot, (SLL*)compHint, (SLL*)compNext, (SLL*)compPrev, iGetNextUid(), sizeof(SComp));
+		compNew = (SComp*)iLl_appendNew__ll((SLL**)compRoot, (SLL*)compHint, (SLL*)compNext, (SLL*)compPrev, iiComps_getNextUid(), sizeof(SComp));
 
 		// If it was created properly, append a node
 		if (compNew)
