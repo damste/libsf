@@ -345,7 +345,7 @@
 				// Convert to S64
 				result = iVariable_create(_VAR_TYPE_S64, NULL, true);
 				if (result)
-					*(s64*)result->value.data._s8 = (s64)fValue;
+					*(s64*)result->value.data_s8 = (s64)fValue;
 
 			} else {
 				// Copy whatever it already is
@@ -478,7 +478,7 @@
 					for (lnI = 0; llResult && lnI < lnMaxLength; lnI++)
 					{
 						// Grab and test each character
-						c			= varStr->value.data._cs8[lnI];
+						c			= varStr->value.data_cs8[lnI];
 						llResult	= ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'));
 					}
 					break;
@@ -487,7 +487,7 @@
 					for (lnI = 0; llResult && lnI < lnMaxLength; lnI++)
 					{
 						// Grab and test each character
-						c			= varStr->value.data._cs8[lnI];
+						c			= varStr->value.data_cs8[lnI];
 						llResult	= (c >= '0' && c <= '9');
 					}
 					break;
@@ -496,7 +496,7 @@
 					for (lnI = 0; llResult && lnI < lnMaxLength; lnI++)
 					{
 						// Grab and test each character
-						c			= varStr->value.data._cs8[lnI];
+						c			= varStr->value.data_cs8[lnI];
 						llResult	= (c >= 'a' && c <= 'z');
 					}
 					break;
@@ -505,7 +505,7 @@
 					for (lnI = 0; llResult && lnI < lnMaxLength; lnI++)
 					{
 						// Grab and test each character
-						c			= varStr->value.data._cs8[lnI];
+						c			= varStr->value.data_cs8[lnI];
 						llResult	= (c >= 'A' && c <= 'Z');
 					}
 					break;

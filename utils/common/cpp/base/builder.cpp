@@ -229,8 +229,8 @@
 	cs8* iBuilder_appendData(SBuilder* builder, SDatum* data)
 	{
 		// Make sure there's something to update
-		if (builder && data && data->data._data && data->length > 0)
-			return((cs8*)iBuilder_appendData(builder, data->data._cu8, data->length));
+		if (builder && data && data->_data && data->length > 0)
+			return((cs8*)iBuilder_appendData(builder, data->data_cu8, data->length));
 
 		// Return our original input
 		return(NULL);
@@ -1115,7 +1115,7 @@
 
 
 		// Make sure our environment's sane
-		if (builder && tcLabelText && datum && datum->data._data && datum->length > 0)
+		if (builder && tcLabelText && datum && datum->_data && datum->length > 0)
 		{
 			// Note our size at the stat
 			lnStart = builder->populatedLength;
@@ -1127,7 +1127,7 @@
 			iBuilder_appendData(builder, " = ", 3);
 
 			// Text
-			iBuilder_appendData(builder, datum->data._s8, datum->length);
+			iBuilder_appendData(builder, datum->data_s8, datum->length);
 
 			// CR/LF
 			iBuilder_appendCrLf(builder);

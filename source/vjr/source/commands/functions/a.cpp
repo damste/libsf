@@ -206,12 +206,12 @@
 			if (varString->value.length >= 1)
 			{
 				// If the last character is not a backslash, add one
-				if (varString->value.data._u8[varString->value.length - 1] != '\\')
+				if (varString->value.data_u8[varString->value.length - 1] != '\\')
 				{
 					// We need to append the string plus a backslash
 					iDatum_allocateSpace(&result->value, varString->value.length + 1);
-					memcpy(result->value.data._s8, varString->value.data._s8, varString->value.length);
-					result->value.data._u8[result->value.length - 1] = '\\';
+					memcpy(result->value.data_s8, varString->value.data_s8, varString->value.length);
+					result->value.data_u8[result->value.length - 1] = '\\';
 
 				} else {
 					// We can copy the string as is
@@ -330,18 +330,18 @@
 				} else if (iVariable_isTypeNumeric(varCaseInsensitive)) {
 					// They are indicating case sensitivity by an integer, should be 1 for case-insensitive, otherwise case-sensitive
 					// If 1, case-insensitive
-					if (*(s32*)varCaseInsensitive->value.data._s8 == 1)
+					if (*(s32*)varCaseInsensitive->value.data_s8 == 1)
 						llCaseInsensitive = true;
 
 				} else if (iVariable_isTypeLogical(varCaseInsensitive)) {
 					// They are indicating case sensitivity by a logical flag, should be .t. for case-insensitive, otherwise case-sensitive
-					if (varCaseInsensitive->value.data._s8[0] != 0)
+					if (varCaseInsensitive->value.data_s8[0] != 0)
 						llCaseInsensitive = true;
 
 				} else if (iVariable_isTypeCharacter(varCaseInsensitive)) {
 					// They're using the syntax form:
 					//		ALLTRIM(cString[, cTrimString])
-					trim1ptr		= varCaseInsensitive->value.data._s8;
+					trim1ptr		= varCaseInsensitive->value.data_s8;
 					trim1Length		= varCaseInsensitive->value.length;
 					trim2ptr		= NULL;
 					trim2Length		= 0;
@@ -367,7 +367,7 @@
 
 				} else if (iVariable_isTypeCharacter(varTrimChars1)) {
 					// They specified characters to scan
-					trim1ptr	= varTrimChars1->value.data._s8;
+					trim1ptr	= varTrimChars1->value.data_s8;
 					trim1Length	= varTrimChars1->value.length;
 
 				} else {
@@ -385,7 +385,7 @@
 				if (iVariable_isTypeCharacter(varTrimChars2))
 				{
 					// They specified characters to scan
-					trim2ptr	= varTrimChars2->value.data._s8;
+					trim2ptr	= varTrimChars2->value.data_s8;
 					trim2Length	= varTrimChars2->value.length;
 					if (trim1ptr == (s8*)cgc_spaceText)
 					{
@@ -430,7 +430,7 @@
 							for ( ; lnClipStartPos < varString->value.length; ++lnClipStartPos)
 							{
 								// Grab the character
-								lc = varString->value.data._s8[lnClipStartPos];
+								lc = varString->value.data_s8[lnClipStartPos];
 
 								// Scan the trim1 characters
 								// If we're not on a character that we know, we're done
@@ -475,7 +475,7 @@
 							for ( ; lnClipStartPos < varString->value.length; ++lnClipStartPos)
 							{
 								// Grab the character
-								lc = iLowerCase(varString->value.data._s8[lnClipStartPos]);
+								lc = iLowerCase(varString->value.data_s8[lnClipStartPos]);
 
 								// Scan the trim1 characters
 								// If we're not on a character that we know, we're done
@@ -538,7 +538,7 @@
 							for ( ; lnClipEndPos > 0; lnClipEndPos--)
 							{
 								// Grab the character
-								lc = varString->value.data._s8[lnClipEndPos];
+								lc = varString->value.data_s8[lnClipEndPos];
 
 								// Scan the trim1 characters
 								// If we're not on a character that we know, we're done
@@ -583,7 +583,7 @@
 							for ( ; lnClipEndPos > 0; lnClipEndPos--)
 							{
 								// Grab the character
-								lc = iLowerCase(varString->value.data._s8[lnClipEndPos]);
+								lc = iLowerCase(varString->value.data_s8[lnClipEndPos]);
 
 								// Scan the trim1 characters
 								// If we're not on a character that we know, we're done
@@ -628,7 +628,7 @@
 				//////////
 				// Copy the portion of the string
 				//////
-					iDatum_duplicate(&result->value, varString->value.data._u8 + lnClipStartPos, lnClipEndPos - lnClipStartPos + 1);
+					iDatum_duplicate(&result->value, varString->value.data_u8 + lnClipStartPos, lnClipEndPos - lnClipStartPos + 1);
 			}
 
 
@@ -721,7 +721,7 @@
 		//////////
 		// Extract the first character, and convert it to a number
 		//////
-			value = varString->value.data._u8[0];
+			value = varString->value.data_u8[0];
 
 
 		//////////
@@ -738,7 +738,7 @@
 		//////////
         // Populate the result as an ASCII character
 		//////
-	        *result->value.data._s32 = (s32)value;
+	        *result->value.data_s32 = (s32)value;
 
 
 		//////////
@@ -1010,12 +1010,12 @@
 					if (tlCaseSensitive)
 					{
 						// Case-sensitive
-						if (memcmp(varNeedle->value.data._s8, varHaystack->value.data._s8 + lnI, varNeedle->value.length) == 0)
+						if (memcmp(varNeedle->value.data_s8, varHaystack->value.data_s8 + lnI, varNeedle->value.length) == 0)
 							++lnFoundCount;		// Here's a match
 
 					} else {
 						// Case-insensitive
-						if (_memicmp(varNeedle->value.data._s8, varHaystack->value.data._s8 + lnI, varNeedle->value.length) == 0)
+						if (_memicmp(varNeedle->value.data_s8, varHaystack->value.data_s8 + lnI, varNeedle->value.length) == 0)
 							++lnFoundCount;		// Here's a match
 					}
 
@@ -1026,7 +1026,7 @@
 					if (lnFoundCount == lnOccurrence)
 					{
 						// Store the found location
-						*(s32*)result->value.data._s32 = lnI + 1;
+						*(s32*)result->value.data_s32 = lnI + 1;
 
 						// We're done, exit
 						break;

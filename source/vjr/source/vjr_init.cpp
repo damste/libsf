@@ -626,7 +626,7 @@
 
 		// 2000 blank spaces
 		iDatum_allocateSpace(&cvarSpace2000->value, 2000);
-		memset(cvarSpace2000->value.data._s8, 32, 2000);
+		memset(cvarSpace2000->value.data_s8, 32, 2000);
 
 		// Datetime constants for parsing
 		cvarSetDateAmerican	= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, "11/22/3333 12:34:56.000 AP", -1, true);
@@ -871,6 +871,9 @@
 			// Forms and subforms are created last because they have internal child objects references to classes which must be created before
 			gobj_defaultForm		= iObj_create(_OBJ_TYPE_FORM,		NULL);
 			gobj_defaultSubform		= iObj_create(_OBJ_TYPE_SUBFORM,	NULL);
+
+			// Indicate that all of the default objects have been created
+			glDefaultObjectsHaveBeenCreated	= true;
 	}
 
 

@@ -144,7 +144,7 @@
 		iError_report(iError_getText_byNumber(tnErrorNum), tlInvasive);
 
 		// Flag the component
-		if (comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data._data && comp->line->sourceCode_populatedLength != 0)
+		if (comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->_data && comp->line->sourceCode_populatedLength != 0)
 		{
 			// Flag it for error
 			comp->isError = true;
@@ -1129,11 +1129,11 @@
 		if (value && value->length >= 1 && (u32)value->length <= sizeof(buffer) - 1)
 		{
 			// Copy text to null-terminate
-			memcpy(buffer, value->data._s8, value->length);
+			memcpy(buffer, value->data_s8, value->length);
 			buffer[value->length] = 0;
 
 			// Convert to f64
-			lfValue = atof(value->data._s8);
+			lfValue = atof(value->data_s8);
 
 			// Make sure our environment is sane
 			if (!ei)
@@ -1393,8 +1393,8 @@
 			iDatum_allocateSpace(&result->value, varString1->value.length + varString2->value.length);
 
 			// Create the concatenated string
-			memcpy(result->value.data._s8,								varString1->value.data._s8,		varString1->value.length);
-			memcpy(result->value.data._s8 + varString1->value.length,	varString2->value.data._s8,		varString2->value.length);
+			memcpy(result->value.data_s8,								varString1->value.data_s8,		varString1->value.length);
+			memcpy(result->value.data_s8 + varString1->value.length,	varString2->value.data_s8,		varString2->value.length);
 
 
 		//////////
@@ -1491,7 +1491,7 @@
 						}
 
 						// Store the result
-						*(f64*)result->value.data._s8 = lfValue1 + lfValue2;
+						*(f64*)result->value.data_s8 = lfValue1 + lfValue2;
 
 					} else  {
 						// p2 is not floating point, so we'll get it as an integer
@@ -1503,7 +1503,7 @@
 						}
 
 						// Store the result
-						*(f64*)result->value.data._s8 = lfValue1 + (f64)lnValue2;
+						*(f64*)result->value.data_s8 = lfValue1 + (f64)lnValue2;
 					}
 				}
 
@@ -1530,7 +1530,7 @@
 					// Create our floating point result
 					result = iVariable_create(_VAR_TYPE_F64, NULL, true);
 					if (result)
-						*(f64*)result->value.data._s8 = (f64)lnValue1 + lfValue2;
+						*(f64*)result->value.data_s8 = (f64)lnValue1 + lfValue2;
 
 				} else  {
 					// p2 is not floating point, so we'll get it as an integer
@@ -1544,7 +1544,7 @@
 					// Create our floating point result
 					result = iVariable_create(_VAR_TYPE_S64, NULL, true);
 					if (result)
-						*(s64*)result->value.data._s8 = lnValue1 + lnValue2;
+						*(s64*)result->value.data_s8 = lnValue1 + lnValue2;
 				}
 			}
 
@@ -1650,7 +1650,7 @@
 						}
 
 						// Store the result
-						*(f64*)result->value.data._s8 = lfValue1 - lfValue2;
+						*(f64*)result->value.data_s8 = lfValue1 - lfValue2;
 
 					} else  {
 						// p2 is not floating point, so we'll get it as an integer
@@ -1662,7 +1662,7 @@
 						}
 
 						// Store the result
-						*(f64*)result->value.data._s8 = lfValue1 - (f64)lnValue2;
+						*(f64*)result->value.data_s8 = lfValue1 - (f64)lnValue2;
 					}
 				}
 
@@ -1689,7 +1689,7 @@
 					// Create our floating point result
 					result = iVariable_create(_VAR_TYPE_F64, NULL, true);
 					if (result)
-						*(f64*)result->value.data._s8 = (f64)lnValue1 - lfValue2;
+						*(f64*)result->value.data_s8 = (f64)lnValue1 - lfValue2;
 
 				} else  {
 					// p2 is not floating point, so we'll get it as an integer
@@ -1703,7 +1703,7 @@
 					// Create our floating point result
 					result = iVariable_create(_VAR_TYPE_S64, NULL, true);
 					if (result)
-						*(s64*)result->value.data._s8 = lnValue1 - lnValue2;
+						*(s64*)result->value.data_s8 = lnValue1 - lnValue2;
 				}
 			}
 
@@ -1809,7 +1809,7 @@
 						}
 
 						// Store the result
-						*(f64*)result->value.data._s8 = lfValue1 * lfValue2;
+						*(f64*)result->value.data_s8 = lfValue1 * lfValue2;
 
 					} else  {
 						// p2 is not floating point, so we'll get it as an integer
@@ -1821,7 +1821,7 @@
 						}
 
 						// Store the result
-						*(f64*)result->value.data._s8 = lfValue1 * (f64)lnValue2;
+						*(f64*)result->value.data_s8 = lfValue1 * (f64)lnValue2;
 					}
 				}
 
@@ -1848,7 +1848,7 @@
 					// Create our floating point result
 					result = iVariable_create(_VAR_TYPE_F64, NULL, true);
 					if (result)
-						*(f64*)result->value.data._s8 = (f64)lnValue1 * lfValue2;
+						*(f64*)result->value.data_s8 = (f64)lnValue1 * lfValue2;
 
 				} else  {
 					// p2 is not floating point, so we'll get it as an integer
@@ -1862,7 +1862,7 @@
 					// Create our floating point result
 					result = iVariable_create(_VAR_TYPE_S64, NULL, true);
 					if (result)
-						*(s64*)result->value.data._s8 = lnValue1 * lnValue2;
+						*(s64*)result->value.data_s8 = lnValue1 * lnValue2;
 				}
 			}
 
@@ -1979,7 +1979,7 @@
 						}
 
 						// Store the result
-						*(f64*)result->value.data._s8 = lfValue1 / lfValue2;
+						*(f64*)result->value.data_s8 = lfValue1 / lfValue2;
 
 					} else  {
 						// p2 is not floating point, so we'll get it as an integer
@@ -1991,7 +1991,7 @@
 						}
 
 						// Store the result
-						*(f64*)result->value.data._s8 = lfValue1 / (f64)lnValue2;
+						*(f64*)result->value.data_s8 = lfValue1 / (f64)lnValue2;
 					}
 				}
 
@@ -2020,7 +2020,7 @@
 						}
 
 						// Store the result
-						*(f64*)result->value.data._s8 = (f64)lnValue1 / lfValue2;
+						*(f64*)result->value.data_s8 = (f64)lnValue1 / lfValue2;
 
 					} else  {
 						// p2 is not floating point, so we'll get it as an integer
@@ -2032,7 +2032,7 @@
 						}
 
 						// Store the result
-						*(f64*)result->value.data._s8 = (f64)lnValue1 / (f64)lnValue2;
+						*(f64*)result->value.data_s8 = (f64)lnValue1 / (f64)lnValue2;
 					}
 				}
 			}
@@ -2621,7 +2621,7 @@
 		// Copy the name if present (for debugging reference)
 		//////
 			// Use the name as given
-			iDatum_duplicate(&dp->name, comp->line->sourceCode->data._cs8 + comp->start, comp->length);
+			iDatum_duplicate(&dp->name, comp->line->sourceCode->data_cs8 + comp->start, comp->length);
 			comp = iComps_getNth(comp, 1);
 
 
@@ -2833,7 +2833,7 @@
 				return;
 			}
 			memset(dbcNameBuffer, 0, sizeof(dbcNameBuffer));
-			memcpy(dbcNameBuffer, compPathname->line->sourceCode->data._s8 + compPathname->start, lnLength);
+			memcpy(dbcNameBuffer, compPathname->line->sourceCode->data_s8 + compPathname->start, lnLength);
 
 
 		//////////
@@ -3251,7 +3251,7 @@
 						if (iDbf_isWorkAreaLetter(varInWorkArea))
 						{
 							// Work area letter
-							lnWorkArea = iUpperCase(varInWorkArea->value.data._s8[0]) - (s32)'A' + 1;
+							lnWorkArea = iUpperCase(varInWorkArea->value.data_s8[0]) - (s32)'A' + 1;
 
 						} else {
 							// Alias name

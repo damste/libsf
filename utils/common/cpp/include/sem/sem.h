@@ -82,7 +82,7 @@
 
 struct SEM;
 struct SBreakpoint;
-struct SLine;
+struct SComp;
 struct SFont;
 struct SFunction;
 struct SVariable;
@@ -100,7 +100,7 @@ struct SVariable;
 //////////
 // Constants
 //////
-	const u32				_ECM_MINIMUM_LINE_ALLOCATION_LENGTH		= 96;		// Allocate data in 96 byte blocks
+	const u32		_SEM_MINIMUM_LINE_ALLOCATION_LENGTH			= 96;		// Allocate data in 96 byte blocks
 
 
 //////////

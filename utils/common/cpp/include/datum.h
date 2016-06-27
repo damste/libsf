@@ -114,31 +114,32 @@ struct SVariable;
 	{
 		union {
 			uptr		_data;				// Address of content
-			s8*			_s8;				// To access the data as s8
-			u8*			_u8;				// To access the data as u8
-			u64*		_u64;				// To access the data as u64
-			s64*		_s64;				// To access the data as s64
-			u32*		_u32;				// To access the data as u32
-			s32*		_s32;				// To access the data as s32
-			u16*		_u16;				// To access the data as u16
-			s16*		_s16;				// To access the data as s16
-			f32*		_f32;				// To access the data as f32
-			f64*		_f64;				// To access the data as f64
-			cs8*		_cs8;				// To access the data as cs8
-			cu8*		_cu8;				// To access the data as cu8
-			void*		_vp;				// To access the data as a void pointer
-			IDispatch*	_idispatch;			// To access the data as an IDispatch pointer
+			s8*			data;
+			s8*			data_s8;			// To access the data as s8
+			u8*			data_u8;			// To access the data as u8
+			u64*		data_u64;			// To access the data as u64
+			s64*		data_s64;			// To access the data as s64
+			u32*		data_u32;			// To access the data as u32
+			s32*		data_s32;			// To access the data as s32
+			u16*		data_u16;			// To access the data as u16
+			s16*		data_s16;			// To access the data as s16
+			f32*		data_f32;			// To access the data as f32
+			f64*		data_f64;			// To access the data as f64
+			cs8*		data_cs8;			// To access the data as cs8
+			cu8*		data_cu8;			// To access the data as cu8
+			void*		data_vp;			// To access the data as a void pointer
+			IDispatch*	data_idispatch;		// To access the data as an IDispatch pointer
 
 			// Common structures (used for displaying content during debugging)
-			SDateTime*	_dt;				// To access the data as a datetime
-			SDateTimeX*	_dtx;				// To access the data as a datetimex
-			SDate*		_date;				// To access the data as a date in the text-form YYYYMMDD
-			SBgra*		_bgra;				// To access the data as SBgra
-			SBgr*		_bgr;				// To access the data as SBgr
+			SDateTime*	data_dt;			// To access the data as a datetime
+			SDateTimeX*	data_dtx;			// To access the data as a datetimex
+			SDate*		data_date;			// To access the data as a date in the text-form YYYYMMDD
+			SBgra*		data_bgra;			// To access the data as SBgra
+			SBgr*		data_bgr;			// To access the data as SBgr
 #ifdef M__APM__INCLUDED
-			SMapm*		_big;				// To access the data as an arbitrary precision structure wrapped around SMapm (see 3rd_party\mapm\m_apm.h)
+			SMapm*		data_big;			// To access the data as an arbitrary precision structure wrapped around SMapm (see 3rd_party\mapm\m_apm.h)
 #endif
-		} data, current;
+		};
 		s32				length;					// Content length
 	};
 

@@ -177,7 +177,7 @@
 						for (lnI = 0; lnI < (u32)varExpr->value.length; lnI++)
 						{
 							// If we encounter anything other than spaces, not empty
-							if (varExpr->value.data._s8[lnI] != 32)
+							if (varExpr->value.data_s8[lnI] != 32)
 							{
 								llEmpty = false;
 								break;
@@ -195,7 +195,7 @@
 						if ((varPoint = propGet_settings_Point(_settings)))
 						{
 							// Extract it
-							cPointChar	= varPoint->value.data._s8[0];
+							cPointChar	= varPoint->value.data_s8[0];
 							iVariable_delete(varPoint, true);
 
 						} else {
@@ -210,7 +210,7 @@
 						for (lnI = 0; lnI < (u32)varExpr->value.length; lnI++)
 						{
 							// If we encounter a non-space, non-zero, or a non-point character, it's then not empty
-							c = varExpr->value.data._s8[lnI];
+							c = varExpr->value.data_s8[lnI];
 							if (c != 32 && c != '0' && c != cPointChar)
 							{
 								llEmpty = false;
@@ -221,44 +221,44 @@
 
 
 				case _VAR_TYPE_DATETIMEX:
-					llEmpty = (varExpr->value.data._dtx->jseconds < 0);
+					llEmpty = (varExpr->value.data_dtx->jseconds < 0);
 					break;
 
 				case _VAR_TYPE_DATETIME:
-					llEmpty = ((varExpr->value.data._dt->julian == _DATETIME_BLANK_DATETIME_JULIAN) && (varExpr->value.data._dt->seconds == _DATETIME_BLANK_DATETIME_SECONDS));
+					llEmpty = ((varExpr->value.data_dt->julian == _DATETIME_BLANK_DATETIME_JULIAN) && (varExpr->value.data_dt->seconds == _DATETIME_BLANK_DATETIME_SECONDS));
 					break;
 
 				case _VAR_TYPE_LOGICAL:
-					llEmpty = !(varExpr->value.data._s8[0] == _LOGICAL_TRUE);
+					llEmpty = !(varExpr->value.data_s8[0] == _LOGICAL_TRUE);
 					break;
 
 				case _VAR_TYPE_S8:
 				case _VAR_TYPE_U8:
-					llEmpty = (*varExpr->value.data._u8 == 0);
+					llEmpty = (*varExpr->value.data_u8 == 0);
 					break;
 
 				case _VAR_TYPE_S16:
 				case _VAR_TYPE_U16:
-					llEmpty = (*varExpr->value.data._u16 == 0);
+					llEmpty = (*varExpr->value.data_u16 == 0);
 					break;
 
 				case _VAR_TYPE_S32:
 				case _VAR_TYPE_U32:
-					llEmpty = (*varExpr->value.data._u32 == 0);
+					llEmpty = (*varExpr->value.data_u32 == 0);
 					break;
 
 				case _VAR_TYPE_S64:
 				case _VAR_TYPE_U64:
 				case _VAR_TYPE_CURRENCY:
-					llEmpty = (*varExpr->value.data._u64 == 0);
+					llEmpty = (*varExpr->value.data_u64 == 0);
 					break;
 
 				case _VAR_TYPE_F32:
-					llEmpty = (*varExpr->value.data._f32 == 0.0f);
+					llEmpty = (*varExpr->value.data_f32 == 0.0f);
 					break;
 
 				case _VAR_TYPE_F64:
-					llEmpty = (*varExpr->value.data._f64 == 0.0);
+					llEmpty = (*varExpr->value.data_f64 == 0.0);
 					break;
 
 //				case _VAR_TYPE_BI:

@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="comps">
+      <UniqueIdentifier>{8dbb6951-bedb-45e4-9f40-678c95059d12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header2">
+      <UniqueIdentifier>{be29b9d1-fab0-4257-965d-922b24c70519}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sem">
+      <UniqueIdentifier>{d3c5bf7c-b0e3-4781-a24a-01e580b247cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sem\include">
+      <UniqueIdentifier>{eb1e9ac3-af5d-4eae-97c9-ef97e6507b0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sem\source">
+      <UniqueIdentifier>{b95e40a3-0180-4831-b7ca-0243cc885d10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\lasm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pass0.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pass1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pass2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pass3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\passx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\passy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\passz.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\utils\common\cpp\base\comps.cpp">
+      <Filter>comps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\utils\common\cpp\base\sem\sem.cpp">
+      <Filter>sem\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\utils\common\cpp\base\sem\sem_extra_info.cpp">
+      <Filter>sem\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\utils\common\cpp\base\sem\sem_line.cpp">
+      <Filter>sem\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\utils\common\cpp\base\compsearcher.cpp">
+      <Filter>comps</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\lasm.h">
+      <Filter>Source Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\lasm_const.h">
+      <Filter>Source Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\lasm_defs.h">
+      <Filter>Source Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\lasm_globals.h">
+      <Filter>Source Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\lasm_structs.h">
+      <Filter>Source Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\utils\common\cpp\include\comps.h">
+      <Filter>comps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\utils\common\cpp\include\compsearcher.h">
+      <Filter>comps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\utils\common\cpp\include\debug.h">
+      <Filter>Header2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\utils\common\cpp\include\sem\sem.h">
+      <Filter>sem\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\utils\common\cpp\include\sem\sem_extra_info.h">
+      <Filter>sem\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\utils\common\cpp\include\sem\sem_line.h">
+      <Filter>sem\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\utils\common\cpp\include\files.h">
+      <Filter>Header2</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

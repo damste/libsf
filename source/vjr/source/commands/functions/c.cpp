@@ -137,8 +137,8 @@
 			//////////
 			// Grab year, month, day from datetime or date
 			//////
-				if (iVariable_isTypeDatetime(varParam))			iiDateMath_get_YyyyMmDd_from_julian		(varParam->value.data._dt->julian,	&lnYear, &lnMonth, &lnDay);
-				else /* date */									iiDateMath_get_YyyyMmDd_from_YYYYMMDD	(varParam->value.data._u8,			&lnYear, &lnMonth, &lnDay);
+				if (iVariable_isTypeDatetime(varParam))			iiDateMath_get_YyyyMmDd_from_julian		(varParam->value.data_dt->julian,	&lnYear, &lnMonth, &lnDay);
+				else /* date */									iiDateMath_get_YyyyMmDd_from_YYYYMMDD	(varParam->value.data_u8,			&lnYear, &lnMonth, &lnDay);
 
 			} else {
 				// Use the current date
@@ -421,7 +421,7 @@
 		//////////
 		// Allocate a copy of the original string
 		//////
-			result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, varString->value.data._u8, varString->value.length, false);
+			result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, varString->value.data_u8, varString->value.length, false);
 
 			// If the original string is empty, or the characters to search for are empty, then we don't need to do anything
 			if (varString->value.length == 0 || varSearch->value.length == 0)
@@ -437,7 +437,7 @@
 			for (lnSrc = 0, lnDst = 0; lnSrc < result->value.length; lnSrc++)
 			{
 				// Grab this character
-				c1 = result->value.data._s8[lnSrc];
+				c1 = result->value.data_s8[lnSrc];
 
 				// Adjust the case if need be
 				if (!tlCaseSensitive)
@@ -451,7 +451,7 @@
 				for (lnSearch = 0; lnSearch < varSearch->value.length; lnSearch++)
 				{
 					// Grab this character
-					c2 = varSearch->value.data._s8[lnSearch];
+					c2 = varSearch->value.data_s8[lnSearch];
 
 					// Adjust the case if necessary
 					if (!tlCaseSensitive)
@@ -471,7 +471,7 @@
 						if (lnSearch < varReplace->value.length)
 						{
 							// We replace it with the character that's there
-							result->value.data._s8[lnDst] = varReplace->value.data._s8[lnSearch];
+							result->value.data_s8[lnDst] = varReplace->value.data_s8[lnSearch];
 
 						} else {
 							// There is no translation character, so we just delete this character
@@ -488,7 +488,7 @@
 				if (!llFound && lnSrc != lnDst)
 				{
 					// We need to copy this character over
-					result->value.data._s8[lnDst] = result->value.data._s8[lnSrc];
+					result->value.data_s8[lnDst] = result->value.data_s8[lnSrc];
 				}
 
 				// Move our destination forward
@@ -563,8 +563,8 @@
 				//////////
 				// Grab year, month, day from datetime or date
 				//////
-					if (iVariable_isTypeDatetime(varParam))			iiDateMath_get_YyyyMmDd_from_julian		(varParam->value.data._dt->julian,	&lnYear, &lnMonth, &lnDay);
-					else /* date */									iiDateMath_get_YyyyMmDd_from_YYYYMMDD	(varParam->value.data._u8,			&lnYear, &lnMonth, &lnDay);
+					if (iVariable_isTypeDatetime(varParam))			iiDateMath_get_YyyyMmDd_from_julian		(varParam->value.data_dt->julian,	&lnYear, &lnMonth, &lnDay);
+					else /* date */									iiDateMath_get_YyyyMmDd_from_YYYYMMDD	(varParam->value.data_u8,			&lnYear, &lnMonth, &lnDay);
 
 
 			} else {
@@ -784,7 +784,7 @@
 
 			} else {
 				// Populate
-				*result->value.data._u32 = lnColorNew;
+				*result->value.data_u32 = lnColorNew;
 			}
 
 
@@ -884,7 +884,7 @@
 		//////////
 		// See if we know the class
 		//////
-			lnObjType = iiObj_getBaseclassType_byName(varClass->value.data._s8, varClass->value.length);
+			lnObjType = iiObj_getBaseclassType_byName(varClass->value.data_s8, varClass->value.length);
 			if (lnObjType <= 0)
 			{
 				iError_report((cu8*)"Unknown class", false);
@@ -1000,7 +1000,7 @@ debug_break;
 		// Get the expected general date format
 		//////
 			lnDate	= propGet_settings_Date(_settings);
-			data	= varCtoxString->value.data._s8;
+			data	= varCtoxString->value.data_s8;
 			if (data[1] == '^')
 			{
 				// Can be:
@@ -1030,7 +1030,7 @@ debug_break;
 		//////
 			// Note:  varMark is a reference to the actual _settings.mark value
 			varMark = propGet_settings_Mark(_settings);
-			if (!varMark || !iVariable_isTypeCharacter(varMark) || !varMark->value.data._s8 || varMark->value.length <= 0)
+			if (!varMark || !iVariable_isTypeCharacter(varMark) || !varMark->value.data_s8 || varMark->value.length <= 0)
 			{
 				// Fall back on current date type
 				switch (lnDate)
@@ -1061,7 +1061,7 @@ debug_break;
 
 			} else {
 				// Grab the character they've set
-				cMark = varMark->value.data._s8[0];
+				cMark = varMark->value.data_s8[0];
 			}
 
 
@@ -1073,19 +1073,19 @@ debug_break;
 //				llYear		= false;
 				llValidate	= true;
 				lnSkip		= 2;
-				c1			= varDate->value.data._s8[lnI + 0];
-				c2			= varDate->value.data._s8[lnI + 1];
+				c1			= varDate->value.data_s8[lnI + 0];
+				c2			= varDate->value.data_s8[lnI + 1];
 				switch (c1)
 				{
 					case '1':
 						// Either 11 or 12, for MM or Hh
-						if (c2 == '1')		/* Is MM */		lcMM = varCtoxString->value.data._s8 + lnI;
-						else				/* Is Hh */		lcHh = varCtoxString->value.data._s8 + lnI;
+						if (c2 == '1')		/* Is MM */		lcMM = varCtoxString->value.data_s8 + lnI;
+						else				/* Is Hh */		lcHh = varCtoxString->value.data_s8 + lnI;
 						break;
 
 					case '2':
 						// Dd
-						lcDD = varCtoxString->value.data._s8 + lnI;
+						lcDD = varCtoxString->value.data_s8 + lnI;
 						break;
 
 					case '3':
@@ -1094,21 +1094,21 @@ debug_break;
 						{
 							// YY/YYYY
 //							llYear	= true;
-							lcYYYY	= varCtoxString->value.data._s8 + lnI;
+							lcYYYY	= varCtoxString->value.data_s8 + lnI;
 
 							if (propGet_settings_Century(_settings))
 								lnSkip = 4;
 
 						} else {
 							// Mm
-							lcMm = varCtoxString->value.data._s8 + lnI;
+							lcMm = varCtoxString->value.data_s8 + lnI;
 						}
 						break;
 
 					default:
 						lnSkip		= 1;
 						llValidate	= false;
-						cx			= varCtoxString->value.data._s8[lnI];
+						cx			= varCtoxString->value.data_s8[lnI];
 						if (cx == '/' || cx == '-' || cx == '.' || cx == cMark)
 						{
 							// Input syntax formatting error, and we know the offset where it occurred
@@ -1131,7 +1131,7 @@ debug_break;
 // TODO:  Parsing here needs developed
 					for (lnStop = lnI + lnSkip; lnI < lnStop; lnI++)
 					{
-						if (varCtoxString->value.data._s8[lnI] < '0' || varCtoxString->value.data._s8[lnI] > '9')
+						if (varCtoxString->value.data_s8[lnI] < '0' || varCtoxString->value.data_s8[lnI] > '9')
 						{
 							// Input syntax formatting error, and we know the offset where it occurred
 						}
@@ -1188,20 +1188,20 @@ debug_break;
 				if (!llTimeValid || lnYYYY < 1600 || lnYYYY > 9999 || lnMM < 1 || lnMM > 12 || !iiDateMath_isValidDate(lnYYYY, lnMM, lnDD))
 				{
 					// Invalid, so make it blank
-					result->value.data._dt->julian	= _DATETIME_BLANK_DATETIME_JULIAN;
-					result->value.data._dt->seconds	= _DATETIME_BLANK_DATETIME_SECONDS;
+					result->value.data_dt->julian	= _DATETIME_BLANK_DATETIME_JULIAN;
+					result->value.data_dt->seconds	= _DATETIME_BLANK_DATETIME_SECONDS;
 
 				} else {
 					// It's valid, populate it
 					if (tlIncludeTime)
 					{
 						// Datetime
-						result->value.data._dt->julian	= iiDateMath_get_julian_from_YyyyMmDd(NULL, lnYYYY, lnMM, lnDD);
-						result->value.data._dt->seconds	= iiDateMath_get_seconds_from_HhMmSsMss(lnHh, lnMm, lnSs, lnMss);
+						result->value.data_dt->julian	= iiDateMath_get_julian_from_YyyyMmDd(NULL, lnYYYY, lnMM, lnDD);
+						result->value.data_dt->seconds	= iiDateMath_get_seconds_from_HhMmSsMss(lnHh, lnMm, lnSs, lnMss);
 
 					} else {
 						// Just a date
-						iiDateMath_get_YYYYMMDD_from_YyyyMmDd(result->value.data._s8, lnYYYY, lnMM, lnDD);
+						iiDateMath_get_YYYYMMDD_from_YyyyMmDd(result->value.data_s8, lnYYYY, lnMM, lnDD);
 					}
 				}
 

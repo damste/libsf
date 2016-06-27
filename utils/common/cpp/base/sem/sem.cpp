@@ -687,7 +687,7 @@ debug_break;
 					//////////
 					// Free content
 					//////
-						iSEMLine_free(&sem->firstLine, true);
+						iLine_free(&sem->firstLine, true);
 				}
 
 
@@ -2055,7 +2055,7 @@ renderAsOnlyText:
 						SetRect(&lrc3, sem->rcLineNumberLastRender.right - 4, lrc2.top, sem->rcLineNumberLastRender.right - 1, lrc2.bottom);
 						if (!sem->hideEditCues)
 						{
-							if (iSEMLine_hasChanged(line))
+							if (iLine_hasChanged(line))
 							{
 								// The content has changed
 								iBmp_fillRect(bmp, &lrc3, sem->changedColor, sem->changedColor, sem->changedColor, sem->changedColor, false, NULL, false);
@@ -2418,7 +2418,7 @@ renderAsOnlyText:
 						if (sem && sem->line_cursor)
 						{
 							// Toggle it
-							iSEMLine_toggleBreakpoint(sem);
+							iLine_toggleBreakpoint(sem);
 
 							// Force the redraw
 							iObj_setDirtyRender_ascent(obj, true);
@@ -3271,7 +3271,7 @@ renderAsOnlyText:
 
 					} else {
 						// We are just overwriting whatever's there
-						llChanged = iSEMLine_characterInsert(sem, asciiChar);
+						llChanged = iLine_characterInsert(sem, asciiChar);
 					}
 
 				} else {
@@ -3283,7 +3283,7 @@ renderAsOnlyText:
 
 					} else {
 						// We are just overwriting whatever's there
-						llChanged = iSEMLine_characterOverwrite(sem, asciiChar);
+						llChanged = iLine_characterOverwrite(sem, asciiChar);
 					}
 				}
 		}
@@ -4768,11 +4768,11 @@ renderAsOnlyText:
 						if (!sem->isOverwrite)
 						{
 							// We're in insert mode, so we drag everything with us
-							iSEMLine_characterDelete(sem);
+							iLine_characterDelete(sem);
 
 						} else {
 							// We're in overwrite mode, so we just insert a space
-							iSEMLine_characterOverwrite(sem, ' ');
+							iLine_characterOverwrite(sem, ' ');
 
 							// The overwrite moves us back right again, so we reduce our column position
 							--sem->columnEdit;
@@ -4829,7 +4829,7 @@ renderAsOnlyText:
 
 				} else {
 					// Delete everything to the right
-					iSEMLine_characterDelete(sem);
+					iLine_characterDelete(sem);
 				}
 
 				// Reprocess the source code on the line
@@ -4889,13 +4889,13 @@ renderAsOnlyText:
 						// Delete the indicated number of characters
 						lnColumnEnd = lnColumnStart - sem->columnEdit;
 						for (lnI = 0; lnI < lnColumnEnd; lnI++)
-							iSEMLine_characterDelete(sem);
+							iLine_characterDelete(sem);
 
 					} else if (sem->line_cursor == line && sem->columnEdit == 0 && line->sourceCode_populatedLength > 0) {
 						// Delete to the start of line
 						lnColumnEnd = line->sourceCode_populatedLength;
 						for (lnI = 0; lnI < lnColumnEnd; lnI++)
-							iSEMLine_characterDelete(sem);
+							iLine_characterDelete(sem);
 
 					} else if (sem->line_cursor != line && sem->columnEdit < sem->line_cursor->sourceCode_populatedLength) {
 						// Navigate to the end so the next delete will work
@@ -4968,7 +4968,7 @@ renderAsOnlyText:
 							// Delete the indicated number of characters
 							lnColumnEnd = lnColumnEnd - lnColumnStart;
 							for (lnI = 0; lnI < lnColumnEnd; lnI++)
-								iSEMLine_characterDelete(sem);
+								iLine_characterDelete(sem);
 
 							// Reprocess the source code on the line if need be
 							if (sem->isSourceCode && ppcb._postParseFunc)
@@ -4985,7 +4985,7 @@ renderAsOnlyText:
 							// Delete to the end of line
 							lnColumnEnd = line->sourceCode_populatedLength - sem->columnEdit;
 							for (lnI = 0; lnI < lnColumnEnd; lnI++)
-								iSEMLine_characterDelete(sem);
+								iLine_characterDelete(sem);
 
 							// Reprocess the source code on the line if need be
 							if (sem->isSourceCode && ppcb._postParseFunc)

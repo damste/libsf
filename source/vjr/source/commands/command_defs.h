@@ -96,19 +96,19 @@ struct SVariable;
 struct SThisCode;
 struct SReturnsParams;
 
-#define get_s64(a)		(*(a)->value.data._s64)
-#define get_u64(a)		(*(a)->value.data._u64)
-#define get_s32(a)		(*(a)->value.data._s32)
-#define get_u32(a)		(*(a)->value.data._u32)
-#define get_s16(a)		(*(a)->value.data._s16)
-#define get_u16(a)		(*(a)->value.data._u16)
-#define get_s8(a)		(*(a)->value.data._s8)
-#define get_u8(a)		(*(a)->value.data._u8)
-#define get_f32(a)		(*(a)->value.data._f32)
-#define get_f64(a)		(*(a)->value.data._f64)
-#define get_bool(a)		(*(a)->value.data._u8 != _LOGICAL_FALSE)
-#define get_bgra(a)		(*(a)->value.data._bgra)
-#define get_bgr(a)		(*(a)->value.data._bgr)
+#define get_s64(a)		(*(a)->value.data_s64)
+#define get_u64(a)		(*(a)->value.data_u64)
+#define get_s32(a)		(*(a)->value.data_s32)
+#define get_u32(a)		(*(a)->value.data_u32)
+#define get_s16(a)		(*(a)->value.data_s16)
+#define get_u16(a)		(*(a)->value.data_u16)
+#define get_s8(a)		(*(a)->value.data_s8)
+#define get_u8(a)		(*(a)->value.data_u8)
+#define get_f32(a)		(*(a)->value.data_f32)
+#define get_f64(a)		(*(a)->value.data_f64)
+#define get_bool(a)		(*(a)->value.data_u8 != _LOGICAL_FALSE)
+#define get_bgra(a)		(*(a)->value.data_bgra)
+#define get_bgr(a)		(*(a)->value.data_bgr)
 
 
 

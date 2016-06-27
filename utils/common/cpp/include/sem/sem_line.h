@@ -82,17 +82,64 @@
 
 
 
+
+//////////
+// SEM lines
+//////
+	struct SLine
+	{
+		SLL				ll;												// 2-way link list
+		u32				uid;											// Unique id for this line, used for undos and identifying individual lines which may move about (note this value must be isolated and separate from ll.uniqueId)
+		union
+		{
+			void*		parent;											// A parent this relates to, which could be a controlling structure (like an SEM*)
+			SEM*		sem;											// Parent SEM this belongs to
+		};
+
+		// Line information
+		u32				lineNumber;										// This line's number
+		s32				lineStatus;										// See _LINESTATUS_* constants
+		SDatum			sourceCodeOriginal;								// The original sourceCode when the line was first created, or last saved (note the length here is the total length as this value does not change, but is setup exactly when it is updated)
+		SDatum			sourceCode;										// The text on this line is LEFT(sourceCode.data, sourceCodePopulated)
+		s32				populatedLength;								// The actual populated length of sourceCode, which may differ from sourceCode.length (which is the allocated length of sourceCode.data)
+
+																		// Optional related components associated with this line
+		SComp*			firstComp;
+
+		// Information related to this line
+		SBuilder*		extra_info;										// (SExtraInfo) extra information about this line
+
+																		// Each render, these are updated
+		u32				renderId;										// Each time it's rendered, this value is set
+		RECT			rcLastRender;									// The rectangle within the parent of the last render
+	};
+
+
 //////////
 // Forward declarations
 //////
-	void					iSEMLine_free								(SLine** root, bool tlDeleteSelf);
-	void					iSEMLine_ensureLineLength					(SLine* em, s32 newLineLength);
+	// Line functions
+	void					iLine_ensureLineLength						(SLine* em, s32 newLineLength);
+	void					iLine_free									(SLine** root, bool tlDeleteSelf);
+	SLine*					iLine_createNew								(bool tlAllocCompilerInfo);
+	SLine*					iLine_appendNew								(SLine* line, bool tlAllocCompilerInfo);
+	SLine*					iLine_insertNew								(SLine* lineRef, bool tlAllocCompilerInfo, bool tlAfter);
+	void					iLine_appendError							(SLine* line, u32 tnErrorNum,   cu8* tcMessage, u32 tnStartColumn, u32 tnLength);
+	void					iLine_appendWarning							(SLine* line, u32 tnWarningNum, cu8* tcMessage, u32 tnStartColumn, u32 tnLength);
+	bool					iLine_scanComps_forward_withCallback		(SLine* line, SComp* comp, SCallback* cb, bool tlSkipFirst);
+	s32						iLines_unescape_iCodes						(SLine* lineStart, s32 tniCode1, s32 tniCode2, s32 tniCode3, s32 tniCodeEscape = _ICODE_BACKSLASH);
+	s32						iLine_migrateLines							(SLine** linesFrom, SLine* lineTarget);
+	SComp*					iLine_Nth_comp								(SLine* line, s32 tnCount = 1, bool tlMoveBeyondLineIfNeeded = true);
+	SLine*					iLine_copyComps_toNewLines_untilTerminating				(SLine* lineStart, SComp* compStart, s32 tniCodeContinuation, bool tlLeftJustifyStart, bool tlSkipBlankLines, SCallback* cb);
+	bool					iiLine_copyComps_toNewLines_untilTerminating__callback	(SCallback* cb);
+	s32						iiLine_skipTo_nextComp						(SLine** lineProcessing, SComp** compProcessing);
+	s32						iiLine_skipTo_prevComp						(SLine** lineProcessing, SComp** compProcessing);
 
 	// For editing
-	bool					iSEMLine_characterInsert					(SEM* sem, u8 asciiChar);
-	bool					iSEMLine_characterOverwrite					(SEM* sem, u8 asciiChar);
-	bool					iSEMLine_characterDelete					(SEM* sem);
-	SBreakpoint*			iSEMLine_toggleBreakpoint					(SEM* sem);
+	bool					iLine_characterInsert						(SEM* sem, u8 asciiChar);
+	bool					iLine_characterOverwrite					(SEM* sem, u8 asciiChar);
+	bool					iLine_characterDelete						(SEM* sem);
+	SBreakpoint*			iLine_toggleBreakpoint						(SEM* sem);
 
 	// For reporting on a line's state
-	bool					iSEMLine_hasChanged							(SLine* ec);
+	bool					iLine_hasChanged							(SLine* ec);

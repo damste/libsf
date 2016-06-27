@@ -164,7 +164,7 @@
         // Copy as much of the source string as will fit
 		//////
 			if (lnLength > 0)
-				iDatum_duplicate(&result->value, varString->value.data._u8, min(varString->value.length, lnLength));
+				iDatum_duplicate(&result->value, varString->value.data_u8, min(varString->value.length, lnLength));
 
 
 		//////////
@@ -228,7 +228,7 @@
 		//////////
 		// Populate based on the length
 		//////
-			*(s32*)result->value.data._s8 = varString->value.length;
+			*(s32*)result->value.data_s8 = varString->value.length;
 
 
 		//////////
@@ -298,8 +298,8 @@
 			for (lnI = 0, lnJ = 0, lnStar = -1, lnMark = -1, llResult = false, llLastStar = true; lnI < varString->value.length;)
 			{
 				// Grab the character
-				p = varPattern->value.data._cs8[lnJ];
-				s = varString->value.data._cs8[lnI];
+				p = varPattern->value.data_cs8[lnJ];
+				s = varString->value.data_cs8[lnI];
 
 				if (lnJ < varPattern->value.length && (p == '?' || p == s))
 				{
@@ -328,7 +328,7 @@
 		//////
 			if(llLastStar)
 			{
-				for (; lnJ < varPattern->value.length && varPattern->value.data._cs8[lnJ] == '*';)
+				for (; lnJ < varPattern->value.length && varPattern->value.data_cs8[lnJ] == '*';)
 				{
 					lnJ++;
 				}
@@ -479,8 +479,8 @@
 		//////
 			for (lnI = 0; lnI < result->value.length; lnI++)
 			{
-				if (result->value.data._s8[lnI] >= 'A' && result->value.data._s8[lnI] <= 'Z')
-					result->value.data._s8[lnI] += 0x20;
+				if (result->value.data_s8[lnI] >= 'A' && result->value.data_s8[lnI] <= 'Z')
+					result->value.data_s8[lnI] += 0x20;
 			}
 
 

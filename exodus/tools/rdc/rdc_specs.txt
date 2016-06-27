@@ -111,6 +111,9 @@ RDC Specifications Document
 	[|cask|]			-- Definition cask
 	<|cask|>			-- Logic cask
 	~|cask|~			-- Utility cask
+	\|cask|/			-- Side coding
+	/|cask|\			-- Auto-injected content
+	*|cask|*			-- Anchor cask
 	
 	||||				-- If four or more pipe signs leading on a source code line, line comment
 	|||					-- If three pipe signs leading on a source code line, whitespace
@@ -662,7 +665,7 @@ RDC Specifications Document
 	using the direct form, as in "data_s8" shown here:
 	
 		var fred = "Hi, mom.";
-		sprintf(fred->value.data._s8);
+		sprintf(fred->value.data_s8);
 	
 	These types are provided:
 	

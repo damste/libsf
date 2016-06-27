@@ -287,7 +287,7 @@ struct SVariable
 	// Variable content based on type
 	u32			varType;												// Variable type (see _VAR_TYPE_* constants)
 	bool		isVarTypeFixed;											// If true, the variable type is  fixed and cannot be altered, only populated into (used for dbf fields)
-	bool		isValueAllocated;										// If true, the data pointed to by this->value.data._s8, or this->obj, or this->bmp, or this->thisCode was allocated
+	bool		isValueAllocated;										// If true, the data pointed to by this->value.data_s8, or this->obj, or this->bmp, or this->thisCode was allocated
 	union {
 		SObject*		obj;											// The object this item relates to.  If isValueAllocated is set, this variable owns the object.
 		SFunction*		thisCode;										// Pointer to the code block this relates to
@@ -482,17 +482,19 @@ struct SCallback
 	// Various data items available
 	//////
 		union {
-			void*	data1;
-			SLine*	line;
-			SLine*	line1;
-			SComp*	comp;
-			SComp*	comp1;
+			void*		data1;
+			SLine*		line;
+			SLine*		line1;
+			SComp*		comp;
+			SComp*		comp1;
+			SObject*	obj1;
 		};
 
 		union {
-			void*	data2;
-			SLine*	line2;
-			SComp*	comp2;
+			void*		data2;
+			SLine*		line2;
+			SComp*		comp2;
+			SObject*	obj2;
 		};
 
 

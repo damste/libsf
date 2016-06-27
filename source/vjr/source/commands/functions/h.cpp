@@ -137,12 +137,12 @@
 
 				} else if (!iVariable_isTypeDatetime(varParam)) {
 					// Grab hour, minute, second, millisecond from datetime
-					iiDateMath_get_HhMmSsMss_from_seconds(varParam->value.data._dt->seconds, &lnHour, &lnMinute, &lnSecond, &lnMillisecond);
+					iiDateMath_get_HhMmSsMss_from_seconds(varParam->value.data_dt->seconds, &lnHour, &lnMinute, &lnSecond, &lnMillisecond);
 					lnMicrosecond = lnMillisecond * 1000;
 
 				} else if (!iVariable_isTypeDatetimeX(varParam)) {
 					// Grab hour, minute, second, millisecond from datetime
-					iiDateMath_get_julian_and_YyyyMmDdHhMmSsMssNss_from_jseconds(varParam->value.data._dtx->jseconds, NULL, NULL, NULL, NULL, NULL, &lnHour, &lnMinute, &lnSecond, &lnMillisecond, &lnMicrosecond);
+					iiDateMath_get_julian_and_YyyyMmDdHhMmSsMssNss_from_jseconds(varParam->value.data_dtx->jseconds, NULL, NULL, NULL, NULL, NULL, &lnHour, &lnMinute, &lnSecond, &lnMillisecond, &lnMicrosecond);
 
 				} else {
 					iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varParam), false);

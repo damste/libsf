@@ -13,9 +13,11 @@ del /s *.plg
 del /s *.ncb
 del /s *.sdf
 del /s vjr.aps
+del /s *.filters
+del /s UpgradeLog.htm
 
 echo Removing compiler folders
-for /d /r . %%d in (Debug Release .clang .codelite ipch x64) do @if exist "%%d" echo "%%d" && rd /s/q "%%d"
+for /d /r . %%d in (Debug Release .clang .codelite ipch x64 .vs) do @if exist "%%d" echo "%%d" && rd /s/q "%%d"
 REM All done
 
 pause

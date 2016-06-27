@@ -375,6 +375,7 @@ struct SProperties
 	// For form/subform object processing
 	bool		hasFocus;											// Does this object have focus?
  	bool		processKeyPreviewEvents;							// Do keystrokes for controls on the form go through the form's Key* events as well?
+	bool		initializationComplete;								// Set only after the object has been initially set
 
 	// For any SEM related to this control (typically only used on editbox classes)
 	SEM*		sem;												// (SEM)		-- The content being edited
@@ -444,6 +445,7 @@ struct SField
 			SLL			ll;													// Linked list
 			SObject*	parent;												// Pointer to parent object for this instance
 			SObject*	firstChild;											// Pointer to child objects (all objects are containers)
+			SObject*	firstControlPoint;									// Added for riders and carousels, indicates points within which allow rider movement and navigation
 
 #ifdef _EXTRA_DEBUGGING_DATA
 			SDatum		dbgBaseclass;

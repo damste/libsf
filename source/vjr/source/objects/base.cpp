@@ -92,133 +92,166 @@
 // Creates the object structure
 //
 //////
-	SObject* iObj_create(s32 objType, SObject* objParent)
+	SObject* iObj_create(s32 objType, SObject* objParent, SCallback* cb_controlPointSetup, uptr _func_cb_controlPointSetup)
 	{
+		SObject* obj;
+
+
 		// We need to create it
 		logfunc(__FUNCTION__);
 		switch (objType)
 		{
 			case _OBJ_TYPE_EMPTY:		// Empty, used as a placeholder object that is not drawn
-				return(iSubobj_createEmpty(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createEmpty(NULL, objParent)));
 
 			case _OBJ_TYPE_FORM:			// Form class, the main outer window the OS sees
-				return(iSubobj_createForm(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createForm(NULL, objParent)));
 
 			case _OBJ_TYPE_SUBFORM:		// A new class which has its own drawing content and can be moved about using UI features
-				return(iSubobj_createSubform(NULL, objParent));
-
-			case _OBJ_TYPE_CAROUSEL:	// A new class which is its a holder for riders, allowing multiple classes to be docked and interacted with/upon as a group
-				return(iSubobj_createCarousel(NULL, objParent));
-
-			case _OBJ_TYPE_RIDER:		// A new class which wraps around a form or subform allowing it to be presented inside a carousel
-				return(iSubobj_createRider(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createSubform(NULL, objParent)));
 
 			case _OBJ_TYPE_LABEL:		// A label
-				return(iSubobj_createLabel(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createLabel(NULL, objParent)));
 
 			case _OBJ_TYPE_TEXTBOX:		// An input textbox
-				return(iSubobj_createTextbox(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createTextbox(NULL, objParent)));
 
 			case _OBJ_TYPE_BUTTON:		// A push button
-				return(iSubobj_createButton(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createButton(NULL, objParent)));
 
 			case _OBJ_TYPE_EDITBOX:		// An input multi-line editbox
-				return(iSubobj_createEditbox(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createEditbox(NULL, objParent)));
 
 			case _OBJ_TYPE_IMAGE:		// A graphical image
-				return(iSubobj_createImage(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createImage(NULL, objParent)));
 
 			case _OBJ_TYPE_CHECKBOX:		// A checkbox
-				return(iSubobj_createCheckbox(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createCheckbox(NULL, objParent)));
 
 			case _OBJ_TYPE_OPTION:		// A combination selection
-				return(iSubobj_createOption(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createOption(NULL, objParent)));
 
 			case _OBJ_TYPE_RADIO:		// A radio dial, which can also present as a slider or spinner
-				return(iSubobj_createRadio(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createRadio(NULL, objParent)));
 
 			case _OBJ_TYPE_CMDGROUP:	// A command button group
-				return(iSubobj_createCmdGroup(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createCmdGroup(NULL, objParent)));
 
 			case _OBJ_TYPE_OPTGROUP:	// An option group
-				return(iSubobj_createOptGroup(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createOptGroup(NULL, objParent)));
 
 			case _OBJ_TYPE_LISTBOX:		// A listbox
-				return(iSubobj_createListbox(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createListbox(NULL, objParent)));
 
 			case _OBJ_TYPE_COMBOBOX:	// A combobox
-				return(iSubobj_createCombobox(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createCombobox(NULL, objParent)));
 
 			case _OBJ_TYPE_FORMSET:		// A formset
-				return(iSubobj_createFormset(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createFormset(NULL, objParent)));
 
 			case _OBJ_TYPE_TOOLBAR:		// A toolbar
-				return(iSubobj_createToolbar(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createToolbar(NULL, objParent)));
 
 			case _OBJ_TYPE_SEPARATOR:	// A separator
-				return(iSubobj_createSeparator(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createSeparator(NULL, objParent)));
 
 			case _OBJ_TYPE_LINE:		// A line
-				return(iSubobj_createLine(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createLine(NULL, objParent)));
 
 			case _OBJ_TYPE_SHAPE:		// A shape
-				return(iSubobj_createShape(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createShape(NULL, objParent)));
 
 			case _OBJ_TYPE_CONTAINER:	// A container
-				return(iSubobj_createContainer(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createContainer(NULL, objParent)));
 
 			case _OBJ_TYPE_CONTROL:		// A blocking container
-				return(iSubobj_createControl(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createControl(NULL, objParent)));
 
 			case _OBJ_TYPE_GRID:		// A grid
-				return(iSubobj_createGrid(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createGrid(NULL, objParent)));
 
 			case _OBJ_TYPE_COLUMN:		// A grid's column object
-				return(iSubobj_createColumn(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createColumn(NULL, objParent)));
 
 			case _OBJ_TYPE_HEADER:		// A grid's header object
-				return(iSubobj_createHeader(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createHeader(NULL, objParent)));
 
 			case _OBJ_TYPE_OLEBOUND:	// A bound OLE object
-				return(iSubobj_createOleBound(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createOleBound(NULL, objParent)));
 
 			case _OBJ_TYPE_OLECONTAIN:	// An OLE container control object
-				return(iSubobj_createOleContain(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createOleContain(NULL, objParent)));
 
 			case _OBJ_TYPE_SPINNER:		// A spinner
-				return(iSubobj_createSpinner(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createSpinner(NULL, objParent)));
 
 			case _OBJ_TYPE_TIMER:		// A timer
-				return(iSubobj_createTimer(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createTimer(NULL, objParent)));
 
 			case _OBJ_TYPE_HYPERLINK:	// A hyperlink
-				return(iSubobj_createHyperlink(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createHyperlink(NULL, objParent)));
 
 			case _OBJ_TYPE_COLLECTION:	// A collection
-				return(iSubobj_createCollection(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createCollection(NULL, objParent)));
 
 			case _OBJ_TYPE_PAGE:		// A page within a pageframe
-				return(iSubobj_createPage(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createPage(NULL, objParent)));
 
 			case _OBJ_TYPE_PAGEFRAME:	// A pageframe
-				return(iSubobj_createPageFrame(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createPageFrame(NULL, objParent)));
 
 			case _OBJ_TYPE_SESSION:		// A session
-				return(iSubobj_createSession(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createSession(NULL, objParent)));
 
 			case _OBJ_TYPE_CUSTOM:		// A custom class
-				return(iSubobj_createCustom(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createCustom(NULL, objParent)));
 
 			case _OBJ_TYPE_EXCEPTION:	// An exception
-				return(iSubobj_createException(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createException(NULL, objParent)));
 
 			case _OBJ_TYPE_SETTINGS:	// Settings
-				return(iSubobj_createSettings(NULL, objParent));
+				return(iSubobj_create_markInitializationComplete(iSubobj_createSettings(NULL, objParent)));
 
 			default:
-// TODO:  We should never get here.  If we do it's a developer error.  Check the call stack and determine the cause.
+				// TODO:  We should never get here.  If we do it's a developer error.  Check the call stack and determine the cause.
 				return(NULL);
+
+
+//////////
+// Used for programmable and UI interactive docking within a window
+// BEGIN
+//////
+			// A class which serves as a holder for riders, allowing multiple classes to be docked and interacted with/upon as a group
+			case _OBJ_TYPE_CAROUSEL:
+				obj = iSubobj_create_markInitializationComplete(iSubobj_createCarousel(NULL, objParent));
+				break;
+
+			// A class which wraps a carousel, rider, form, or subform, allowing them to be presented inside a parent carousel
+			case _OBJ_TYPE_RIDER:
+				obj = iSubobj_create_markInitializationComplete(iSubobj_createRider(NULL, objParent));
+				break;
+
+			// A class which does not relate to traditional parent/child relationships, but is added to the obj->firstControlPoint entries of riders and carousels
+			// Typically, the cb_controlPointSetup->func() callback below will be used to create these for each rider and carousel
+			case _OBJ_TYPE_CONTROLPOINT:
+				return(iSubobj_create_markInitializationComplete(iSubobj_createControlPoint(NULL, objParent)));
 		}
+
+		// Call the setup function if need be
+		if (obj && cb_controlPointSetup && (cb_controlPointSetup->_func || (cb_controlPointSetup->_func = _func_cb_controlPointSetup)))
+		{
+			// Store the object
+			cb_controlPointSetup->obj1 = obj;
+
+			// Call the callback
+			cb_controlPointSetup->func(cb_controlPointSetup);
+		}
+
+		// Indicate the new object
+		return(obj);
+//////
+// END
+//////////
 	}
 
 
@@ -555,6 +588,9 @@
 					case _OBJ_TYPE_SETTINGS:
 						iSubobj_deleteSettings(obj, true);
 						break;
+					case _OBJ_TYPE_CONTROLPOINT:
+						iSubobj_deleteControlPoint(obj, true);
+						break;
 				}
 		}
 	}
@@ -664,12 +700,125 @@
 // Finds the root parent and returns that value
 //
 //////
-	SObject* iObj_find_rootmostObject(SObject* obj)
+	SObject* iObj_find_rootmostObject(SObject* obj, bool tlStopAtRiders, bool tlStopAtSubforms, bool tlStopBeforeForm)
 	{
 		// If there's a parent, continue up the chain
 		logfunc(__FUNCTION__);
-		if (obj->parent)		return(iObj_find_rootmostObject(obj->parent));
-		else					return(obj);		// This is the parent-most object
+		if (obj->parent)
+		{
+			// Are we stopping at riders?
+			if (tlStopAtRiders && obj->objType == _OBJ_TYPE_RIDER)
+				return(obj);	// Yes
+
+			// Are we stopping at subforms?
+			if (tlStopAtSubforms && obj->objType == _OBJ_TYPE_SUBFORM)
+				return(obj);	// Yes
+
+			// Are we stopping before the form?
+			if (tlStopBeforeForm && obj->parent->objType == _OBJ_TYPE_FORM)
+				return(obj);	// Yes
+
+			// Continue looking
+			return(iObj_find_rootmostObject(obj->parent, tlStopAtRiders));
+
+		} else {
+			// We're on the match
+			return(obj);		// This is the parent-most object, or it's the first rider we've countered
+		}
+	}
+
+
+
+
+//////////
+//
+// Searching for the rootmost rider, or possibly the most immediate parent rider
+//
+//////
+	SObject* iObj_find_rootmostRider(SObject*  obj, bool tlStopAtFirst)
+	{
+		SObject* objRiderCandidate;
+
+
+		// If there's a parent, continue up the chain
+// Untested function, breakpoint and examine
+_asm int 3;
+		logfunc(__FUNCTION__);
+		if (obj)
+		{
+			// Are we stopping at riders?
+			if (obj->objType == _OBJ_TYPE_RIDER)
+			{
+				// Are we stopping when we first find one?
+				if (tlStopAtFirst)
+					return(obj);	// Yes
+
+				// Search up further for additional candidates
+				objRiderCandidate = iObj_find_rootmostRider(obj->parent, tlStopAtFirst);
+
+				// Did we find one?
+				if (objRiderCandidate)		return(objRiderCandidate);		// Yes, return the higher level
+				else						return(obj);					// No, this is the highest level
+
+			} else {
+				// Continue looking
+				return(iObj_find_rootmostRider(obj->parent, tlStopAtFirst));
+			}
+
+		}
+
+		// If we get here, not found
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Returns all parent riders from the indicated object
+//
+//////
+	s32 iObj_enum_parentRiders(SObject*  obj, SObject** riderListArray, s32 tnRiderListCount)
+	{
+		s32 lnIndex;
+
+
+		// Make sure our environment is sane
+		if (obj && riderListArray && tnRiderListCount >= 1)
+		{
+			lnIndex = 0;
+			return(iiObj_enum_parentRiders(obj, riderListArray, tnRiderListCount, lnIndex));
+		}
+
+		// Something's invalid
+		return(-1);
+	}
+
+	// Typically, don't call this function, but only call iObj_enum_parentRiders()
+	s32 iiObj_enum_parentRiders(SObject*  obj, SObject** riderListArray, s32 tnRiderListCount, s32& tnIndex)
+	{
+		// Enter a loop for flow control
+		do {
+			// Is this a rider?
+			if (obj->objType == _OBJ_TYPE_RIDER)
+			{
+				// Store this entry
+				riderListArray[tnIndex++] = obj;
+
+				// Are we done?
+				if (tnIndex == tnRiderListCount)
+					break;
+			}
+
+			// Can we go shallower?
+			if (obj->parent)
+				return(iiObj_enum_parentRiders(obj->parent, riderListArray, tnRiderListCount, tnIndex));
+
+		} while (0);
+
+		// if we get here, we're done
+		return(tnIndex);
 	}
 
 
@@ -1057,6 +1206,39 @@
 	{
 		logfunc(__FUNCTION__);
 		return(obj == _cmd);
+	}
+
+
+
+
+//////////
+//
+// Called to find out if the indicated window-relative coordinate point is within the indicated object, based on its parental hierarchy
+//
+//////
+	bool iObj_isPointWithin(SObject* obj, POINT pt, RECT* rc)
+	{
+		RECT lrc;
+
+
+		// Make sure our environment is sane
+		if (obj)
+		{
+			// Grab the window-based rect for this object
+			iiObj_getRect_inWindow(obj, &lrc);
+			if (PtInRect(&lrc, pt))
+			{
+				// It's on the inside
+				if (rc)
+					CopyRect(rc, &lrc);
+
+				// Indicate it's within
+				return(true);
+			}
+		}
+
+		// If we get here, failure
+		return(false);
 	}
 
 
@@ -1683,6 +1865,13 @@
 						case _OBJ_TYPE_SETTINGS:
 							lnPixelsRendered += iSubobj_renderSettings(obj);
 							break;
+//////////
+// Note:  Control points are not rendered as normal objects.  They exist in obj->firstControlPoint rather than obj->firstChild.
+// Note:  They should only be rendered by special handlers, like the carousel and rider handlers during move/drag/drop operations.
+// 						case _OBJ_TYPE_CONTROLPOINT:
+// 							lnPixelsRendered += iSubobj_renderControlPoint(obj);
+// 							break;
+//////
 
 						default:
 // TODO:  We should never get here... we should fire off an internal consistency error ... or a signal flare.  Something to draw attention.
@@ -2179,7 +2368,7 @@
 			//	<object name="whatever">
 			//////
 				varData		= propName(obj);
-				bxmlObj	= bxml->append_child(new CXml((s8*)cgcTag_object, -1, NULL, 0, (s8*)cgcTag_name, varData->value.data._s8, varData->value.length));
+				bxmlObj	= bxml->append_child(new CXml((s8*)cgcTag_object, -1, NULL, 0, (s8*)cgcTag_name, varData->value.data_s8, varData->value.length));
 
 
 			//////////
@@ -2204,15 +2393,15 @@
 
 				// Class
 				varData = propClass(obj);
-				bxmlP->append_attribute(new CXml((s8*)cgcTag_class, -1, varData->value.data._s8, varData->value.length, NULL, NULL, 0));
+				bxmlP->append_attribute(new CXml((s8*)cgcTag_class, -1, varData->value.data_s8, varData->value.length, NULL, NULL, 0));
 
 				// Baseclass
 				varData = propBaseclass(obj);
-				bxmlP->append_attribute(new CXml((s8*)cgcTag_baseclass, -1, varData->value.data._s8, varData->value.length, NULL, NULL, 0));
+				bxmlP->append_attribute(new CXml((s8*)cgcTag_baseclass, -1, varData->value.data_s8, varData->value.length, NULL, NULL, 0));
 
 				// ClassLibrary
 				varData = propClassLibrary(obj);
-				bxmlP->append_attribute(new CXml((s8*)cgcTag_classLibrary, -1, varData->value.data._s8, varData->value.length, NULL, NULL, 0));
+				bxmlP->append_attribute(new CXml((s8*)cgcTag_classLibrary, -1, varData->value.data_s8, varData->value.length, NULL, NULL, 0));
 
 
 			//////////
@@ -2266,8 +2455,8 @@
 									//	<prop name="..." td="..." val="..."/>
 									//////
 										bxmlProp->append_attribute((s8*)cgcTag_name,			sizeof(cgcTag_name) - 1,			(s8*)basePropMap->propName_s8,		basePropMap->propNameLength);
-										bxmlProp->append_attribute((s8*)cgcTag_typeDetail,		sizeof(cgcTag_typeDetail) - 1,		varTypeDetail->value.data._s8,		varTypeDetail->value.length);
-										bxmlProp->append_attribute((s8*)cgcTag_value,			sizeof(cgcTag_value) - 1,			varData->value.data._s8,			varData->value.length);
+										bxmlProp->append_attribute((s8*)cgcTag_typeDetail,		sizeof(cgcTag_typeDetail) - 1,		varTypeDetail->value.data_s8,		varTypeDetail->value.length);
+										bxmlProp->append_attribute((s8*)cgcTag_value,			sizeof(cgcTag_value) - 1,			varData->value.data_s8,			varData->value.length);
 
 
 									//////////
@@ -2487,7 +2676,12 @@ debug_break;
 					case _OBJ_TYPE_SETTINGS:
 						objCopy = iSubobj_createSettings(objChild, objDst);
 						break;
-
+//////////
+// Note:  controlPoint are special classes and do not exist as children to parent objects through obj->firstChild, but rather obj->firstControlPoint
+// 					case _OBJ_TYPE_CONTROLPOINT:
+// 						objCopy = iSubobj_createControlPoint(objChild, objDst);
+// 						break;
+//////
 					default:
 						objCopy = NULL;
 						break;
@@ -2564,6 +2758,7 @@ debug_break;
 		bool		llTitleBar, llBorder;
 		SObject*	objChild;
 		SBitmap*	bmp;
+		SVariable*	var;
 		RECT		lrc, lrco, lrcDeltas;
 
 
@@ -2590,6 +2785,16 @@ debug_break;
 		// Position and size its rectangle
 		SetRect(&obj->rc,			tnLeft, tnTop, tnLeft + tnWidth, tnTop + tnHeight);
 		CopyRect(&obj->rcClient,	&obj->rc);
+
+		// If it's an initialized object...
+		if (obj->p.initializationComplete)
+		{
+			// Set these properties if they exist
+			if ((var = iObjProp_hasProperty(obj, _INDEX_LEFT)))			iVariable_set_s32(var, tnLeft);
+			if ((var = iObjProp_hasProperty(obj, _INDEX_TOP)))			iVariable_set_s32(var, tnTop);
+			if ((var = iObjProp_hasProperty(obj, _INDEX_WIDTH)))		iVariable_set_s32(var, tnWidth);
+			if ((var = iObjProp_hasProperty(obj, _INDEX_HEIGHT)))		iVariable_set_s32(var, tnHeight);
+		}
 
 		// Update the client area
 		switch (obj->objType)
@@ -2808,8 +3013,8 @@ debug_break;
 				//////
 					if (propIsName_byText(obj, cgcName_screen))
 					{
-						*varAsciiRows->value.data._s32	= (obj->rcClient.bottom - obj->rcClient.top) / obj->p.font->tm.tmHeight;
-						*varAsciiCols->value.data._s32	= (obj->rcClient.right - obj->rcClient.left) / obj->p.font->tm.tmAveCharWidth;
+						*varAsciiRows->value.data_s32	= (obj->rcClient.bottom - obj->rcClient.top) / obj->p.font->tm.tmHeight;
+						*varAsciiCols->value.data_s32	= (obj->rcClient.right - obj->rcClient.left) / obj->p.font->tm.tmAveCharWidth;
 					}
 
 
@@ -3534,6 +3739,10 @@ debug_break;
 					iiSubobj_resetToDefaultSettings(obj, tlResetProperties, tlResetMethods, &gsProps_settings[0], gnProps_settingsSize, &gsEvents_settings[0], gnEvents_settingsSize);
 					break;
 
+				case _OBJ_TYPE_CONTROLPOINT:	// Control point
+					iiSubobj_resetToDefaultSettings(obj, tlResetProperties, tlResetMethods, &gsProps_controlpoint[0], gnProps_controlpointSize, &gsEvents_controlpoint[0], gnEvents_controlpointSize);
+					break;
+
 				default:
 // TODO:  We should never get here... we should fire off an internal consistency error
 					break;
@@ -3781,6 +3990,9 @@ if (!obj->props[lnI])
 				case _OBJ_TYPE_SETTINGS:
 					obj->ev.renderFunc = &iSubobj_renderSettings;
 					break;
+				case _OBJ_TYPE_CONTROLPOINT:
+					obj->ev.renderFunc = &iSubobj_renderControlPoint;
+					break;
 				default:
 // TODO:  We should never get here... we should fire off an internal consistency error ... or a signal flare.  Something to draw attention.
 					obj->ev._renderFunc = 0;
@@ -3869,4 +4081,45 @@ if (!obj->props[lnI])
 
 		// If we get here, invalid
 		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Obtains the object's position within the window's rect
+//
+//////
+	void iiObj_getRect_inWindow(SObject* obj, RECT* rc)
+	{
+		RECT		lrc;
+		SWindow*	win;
+
+
+		// If we're going up, then continue on up and adjust what our parent gives us
+		if (obj->parent)
+		{
+			// There's another parent, so process up
+			iiObj_getRect_inWindow(obj->parent, &lrc);
+
+			// Offset it by this object's coordinates
+			rc->left	= lrc.left + iObjProp_get_s32_direct(obj, _INDEX_LEFT);
+			rc->top		= lrc.top  + iObjProp_get_s32_direct(obj, _INDEX_TOP);
+			rc->right	= min(lrc.right,	rc->left	+ iObjProp_get_s32_direct(obj, _INDEX_WIDTH));
+			rc->bottom	= min(lrc.bottom,	rc->top		+ iObjProp_get_s32_direct(obj, _INDEX_HEIGHT));
+			return;
+		}
+
+		// This is the top-level object, find its window coordinate
+		win = iWindow_findByObj(obj);
+		if (win)
+		{
+			// Store the window rect
+			GetWindowRect(win->hwnd, rc);
+
+		} else {
+			// No parent window, so just use the default values
+			SetRect(rc, 0, 0, iObjProp_get_s32_direct(obj, _INDEX_WIDTH), iObjProp_get_s32_direct(obj, _INDEX_HEIGHT));
+		}
 	}

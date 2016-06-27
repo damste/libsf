@@ -141,12 +141,12 @@
 				}
 
 				// Store the delimiters
-				delimiters.data._cs8	= varDelimiters->value.data._cs8;
+				delimiters.data_cs8	= varDelimiters->value.data_cs8;
 				delimiters.length		= varDelimiters->value.length;
 
 			} else {
 				// Use the default delimiters
-				delimiters.data._cs8	= (cs8*)&cgc_getwordDelim[0];
+				delimiters.data_cs8	= (cs8*)&cgc_getwordDelim[0];
 				delimiters.length		= sizeof(cgc_getwordDelim) - 1;
 			}
 
@@ -200,21 +200,21 @@
 				//////////
 				// Iterate through our string
 				//////
-					for (lnI = 0, llIsPriorLastDelimiter = true, lnCount = 0; varStr->value.data._cs8[lnI] && lnI < varStr->value.length; lnI++)
+					for (lnI = 0, llIsPriorLastDelimiter = true, lnCount = 0; varStr->value.data_cs8[lnI] && lnI < varStr->value.length; lnI++)
 					{
 
 						//////////
 						// Grab char
 						//////
-							c = varStr->value.data._cs8[lnI];
+							c = varStr->value.data_cs8[lnI];
 
 
 						//////////
 						// Iterate through our delimiters
 						//////
-							for (lnJ = 0, llFoundDelimiter = false; delimiters.data._cs8[lnJ] && lnJ < delimiters.length; lnJ++)
+							for (lnJ = 0, llFoundDelimiter = false; delimiters.data_cs8[lnJ] && lnJ < delimiters.length; lnJ++)
 							{
-								if (c == delimiters.data._cs8[lnJ])
+								if (c == delimiters.data_cs8[lnJ])
 								{
 									llFoundDelimiter = true;
 									break;
@@ -352,12 +352,12 @@
 				}
 
 				// Store the delimiters
-				delimiters.data._cs8	= varDelimiters->value.data._cs8;
+				delimiters.data_cs8	= varDelimiters->value.data_cs8;
 				delimiters.length		= varDelimiters->value.length;
 
 			} else {
 				// Use the default delimiters
-				delimiters.data._cs8	= (cs8*)&cgc_getwordDelim[0];
+				delimiters.data_cs8	= (cs8*)&cgc_getwordDelim[0];
 				delimiters.length		= sizeof(cgc_getwordDelim) - 1;
 			}
 
@@ -431,9 +431,9 @@
 		//////////
 		// Grab year, month, day from datetime or date
 		//////
-			     if (iVariable_isTypeDatetime(varParam))		iiDateMath_get_YyyyMmDd_from_julian					(varParam->value.data._dt->julian,			(u32*)&lnYear, (u32*)&lnMonth, &lnDay);
-			else if (iVariable_isTypeDatetimeX(varParam))		iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds	(varParam->value.data._dtx->jseconds, NULL,	(u32*)&lnYear, (u32*)&lnMonth, &lnDay, NULL, NULL, NULL, NULL, NULL);
-			else /* date */										iiDateMath_get_YyyyMmDd_from_YYYYMMDD				(varParam->value.data._u8,					(u32*)&lnYear, (u32*)&lnMonth, &lnDay);
+			     if (iVariable_isTypeDatetime(varParam))		iiDateMath_get_YyyyMmDd_from_julian					(varParam->value.data_dt->julian,			(u32*)&lnYear, (u32*)&lnMonth, &lnDay);
+			else if (iVariable_isTypeDatetimeX(varParam))		iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds	(varParam->value.data_dtx->jseconds, NULL,	(u32*)&lnYear, (u32*)&lnMonth, &lnDay, NULL, NULL, NULL, NULL, NULL);
+			else /* date */										iiDateMath_get_YyyyMmDd_from_YYYYMMDD				(varParam->value.data_u8,					(u32*)&lnYear, (u32*)&lnMonth, &lnDay);
 
 
 
@@ -527,8 +527,8 @@
 						if (result)
 						{
 							// Date is stored as julian day number
-							result->value.data._dt->julian	= iiDateMath_get_julian_from_YyyyMmDd(&lfJulian, lnYear, (u32)lnMonth, lnDay);
-							result->value.data._dt->seconds = varParam->value.data._dt->seconds;
+							result->value.data_dt->julian	= iiDateMath_get_julian_from_YyyyMmDd(&lfJulian, lnYear, (u32)lnMonth, lnDay);
+							result->value.data_dt->seconds = varParam->value.data_dt->seconds;
 						}
 
 					} else if (iVariable_isTypeDatetimeX(varParam)) {
@@ -537,8 +537,8 @@
 						if (result)
 						{
 							// Date is stored as julian day number
-							iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds(varParam->value.data._dtx->jseconds, NULL, NULL, NULL, NULL, &lnHour, &lnMinute, &lnSecond, &lnMillisecond, &lnNanosecond);
-							varParam->value.data._dtx->jseconds = iiDateMath_get_jseconds_from_YyyyMmDdHhMmSsMssMics(NULL, (u32)lnYear, (u32)lnMonth, lnDay, lnHour, lnMinute, lnSecond, lnMillisecond, lnNanosecond);
+							iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds(varParam->value.data_dtx->jseconds, NULL, NULL, NULL, NULL, &lnHour, &lnMinute, &lnSecond, &lnMillisecond, &lnNanosecond);
+							varParam->value.data_dtx->jseconds = iiDateMath_get_jseconds_from_YyyyMmDdHhMmSsMssMics(NULL, (u32)lnYear, (u32)lnMonth, lnDay, lnHour, lnMinute, lnSecond, lnMillisecond, lnNanosecond);
 						}
 
 					} else {

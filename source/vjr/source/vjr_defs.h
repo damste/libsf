@@ -117,13 +117,16 @@ struct SObjEventMap;
 // objects/base.cpp
 // Note:  Property accessors are in the object_accessors.h and object_accessors.cpp source files
 //////
-	SObject*				iObj_create								(s32 objType, SObject* objParent);
+	SObject*				iObj_create								(s32 objType, SObject* objParent, SCallback* cb_controlPointSetup = NULL, uptr _func_cb_controlPointSetup = 0);
 	SObject*				iObj_addChild							(s32 objType, SObject* objParent);
 	SObject*				iObj_copy								(SObject*  template_obj, SObject* prevObj, SObject* nextObj, SObject* parent, bool tlCopyChildren, bool tlCopySiblings, bool tlCreateSeparateBitmapBuffers);
 	void					iObj_delete								(SObject** obj, bool tlDeleteSelf, bool tlDeleteChildren, bool tlDeleteSiblings);
 	bool					iObj_setFocus							(SWindow*  win, SObject* obj, bool tlClearOtherControlsWithFocus);
 	void					iObj_clearFocus							(SWindow*  win, SObject* obj, bool tlClearChildren, bool tlClearSiblings);
-	SObject*				iObj_find_rootmostObject				(SObject*  obj);
+	SObject*				iObj_find_rootmostObject				(SObject*  obj, bool tlStopAtRiders = false, bool tlStopAtSubforms = false, bool tlStopBeforeForm = false);
+	SObject*				iObj_find_rootmostRider					(SObject*  obj, bool tlStopAtFirst = false);
+	s32						iObj_enum_parentRiders					(SObject*  obj, SObject** riderListArray, s32 tnRiderListCount);
+	s32						iiObj_enum_parentRiders					(SObject*  obj, SObject** riderListArray, s32 tnRiderListCount, s32& tnIndex);
 	bool					iObj_find_screenRect					(SObject*  obj, RECT* rc);
 	bool					iObj_find_relativeRect					(SObject*  objThis, SObject* objTarget, s32 x, s32 y, RECT* rc, bool tlProcessChildren, bool tlProcessSiblings);
 	SWindow*				iObj_find_thisForm_window				(SObject*  obj);
@@ -134,6 +137,7 @@ struct SObjEventMap;
 	SObject*				iiObj_findChildObject_byType			(SObject*  objStart, s32 objType,  bool tlSearchSelf = false, bool tlSearchChildren = true, bool tlSearchSiblings = false);
 	SObject*				iiObj_findChildObject_byName			(SObject*  objStart, SDatum* name, bool tlSearchSelf = false, bool tlSearchChildren = true, bool tlSearchSiblings = false);
 	bool					iObj_isCommandWindow					(SObject*  obj);
+	bool					iObj_isPointWithin						(SObject*  obj, POINT pt, RECT* rc);
 	void					iObj_setFocusHighlights					(SWindow*  win, SObject* obj, s32 x, s32 y, bool tlProcessChildren, bool tlProcessSiblings);
 	void					iObj_findFocusControls					(SObject*  obj, SBuilder* objFocusControls, bool tlProcessSiblings);
 	bool					iObj_setFocusObjectPrev					(SWindow*  win, SObject* obj);
@@ -165,12 +169,14 @@ struct SObjEventMap;
 	s32						iiObj_getBaseclassType_byName			(s8* tcTextname, s32 tnTextnameLength);
 	SBaseClassMap*			iiObj_getBaseclass_byName				(s8* tcTextname, s32 tnTextnameLength);
 	SBaseClassMap*			iiObj_getBaseclass_byType				(s32 tnObjType);
+	void					iiObj_getRect_inWindow					(SObject* obj, RECT* rc);
 
 
 //////////
 // objects/create.cpp
 //////
 	// Creation of individual sub-objects
+	SObject*				iSubobj_create_markInitializationComplete		(SObject*	obj);
 	SObject*				iSubobj_createEmpty						(SObject*	template_empty,			SObject* parent);
 	SObject*				iSubobj_createForm						(SObject*	template_form,			SObject* parent);
 	SObject*				iSubobj_createSubform					(SObject*	template_subform,		SObject* parent);
@@ -210,6 +216,7 @@ struct SObjEventMap;
 	SObject*				iSubobj_createCustom					(SObject*	template_Custom,		SObject* parent);
 	SObject*				iSubobj_createException					(SObject*	template_Exception,		SObject* parent);
 	SObject*				iSubobj_createSettings					(SObject*	template_Settings,		SObject* parent);
+	SObject*				iSubobj_createControlPoint				(SObject*	template_ControlPoint,	SObject* parent);
 
 
 //////////
@@ -345,6 +352,7 @@ struct SObjEventMap;
 	void					iSubobj_deleteCustom					(SObject*	custom,		bool tlDeleteSelf);
 	void					iSubobj_deleteException					(SObject*	exception,	bool tlDeleteSelf);
 	void					iSubobj_deleteSettings					(SObject*	settings,	bool tlDeleteSelf);
+	void					iSubobj_deleteControlPoint				(SObject*	controlpoint, bool tlDeleteSelf);
 
 
 //////////
@@ -390,6 +398,7 @@ struct SObjEventMap;
 	u32						iSubobj_renderCustom					(SObject* custom);
 	u32						iSubobj_renderException					(SObject* exception);
 	u32						iSubobj_renderSettings					(SObject* settings);
+	u32						iSubobj_renderControlPoint				(SObject* controlPoint);
 
 
 //////////
@@ -444,6 +453,11 @@ struct SObjEventMap;
 	bool					iDefaultCallback_onTabMouseEnter		(SWindow* win, SObject* obj, bool tlOnClose);
 	bool					iDefaultCallback_onTabMouseLeave		(SWindow* win, SObject* obj, bool tlOnClose);
 
+	// Carousel / rider control point specific
+	bool					iDefaultCallback_onControlPointEnter	(SWindow* win, SObject* obj);
+	bool					iDefaultCallback_onControlPointLeave	(SWindow* win, SObject* obj);
+	bool					iDefaultCallback_onControlPointDrop		(SWindow* win, SObject* obj);
+
 
 //////////
 // objects/events.cpp
@@ -466,6 +480,12 @@ struct SObjEventMap;
 	bool					iEvents_carousel_dragStart_tab			(SWindow* win, SObject* obj, SBitmap* bmp);
 	bool					iEvents_carousel_dragStart_titlebar		(SWindow* win, SObject* obj, SBitmap* bmp);
 	u32						iiEvents_carousel_findTarget			(SWindow* win, SObject* obj, s32 tnX, s32 tnY, SObjCarouselTabData** toctd, bool* tlHighlightChanged);
+
+
+//////////
+// objects/rider.cpp
+//////
+	void					iRider_trackMotion_mouseDown			(SObject* obj, s32 lnX, s32 lnY);
 
 
 //////////

@@ -2170,7 +2170,7 @@ close_and_quit:
 				for (lnI = 0; lnI < (u32)nodeKeys->keyDecodedAllocated; lnI++)
 				{
 					// Free the key
-					if (nodeKeys->keyDecodedBuffer[lnI]->key.data._s8)
+					if (nodeKeys->keyDecodedBuffer[lnI]->key.data_s8)
 						iDatum_delete(&nodeKeys->keyDecodedBuffer[lnI]->key, false);
 				}
 
@@ -2475,7 +2475,7 @@ failed_parsing:
 
 
 		// Grab our data source
-		dataSource = ((tlBuildFromIndexData) ? wa->irow.data._s8 : wa->row.data._s8);
+		dataSource = ((tlBuildFromIndexData) ? wa->irow.data_s8 : wa->row.data_s8);
 
 		// Iterate through each op at warp speed
 		for (lnI = 0, cko = &keyOps[0]; lnI < tnKeyOpCount; lnI++, cko++)
@@ -2669,7 +2669,7 @@ failed_parsing:
 		//////////
 		// Copy the entire numeric field contents
 		//////
-			memcpy(numericBuffer, wa->row.data._s8 + lko->offsetRow, lko->fieldLength);
+			memcpy(numericBuffer, wa->row.data_s8 + lko->offsetRow, lko->fieldLength);
 			numericBuffer[lko->fieldLength] = 0;
 
 

@@ -89,6 +89,40 @@
 
 //////////
 //
+// Called to set the initialization complete flag set to true
+//
+//////
+	SObject* iSubobj_create_markInitializationComplete(SObject* obj)
+	{
+		SVariable* var;
+
+
+		// If there's an object, set its size
+		if (obj)
+		{
+			// Raise the flag
+			obj->p.initializationComplete = true;
+
+			// Populate everything after the default objects
+			if (glDefaultObjectsHaveBeenCreated)
+			{
+				// Complete the storage of initialized-only settings
+				if ((var = iObjProp_hasProperty(obj, _INDEX_LEFT)))			iVariable_set_s32(var, obj->rc.left);
+				if ((var = iObjProp_hasProperty(obj, _INDEX_TOP)))			iVariable_set_s32(var, obj->rc.top);
+				if ((var = iObjProp_hasProperty(obj, _INDEX_WIDTH)))		iVariable_set_s32(var, obj->rc.right - obj->rc.left);
+				if ((var = iObjProp_hasProperty(obj, _INDEX_HEIGHT)))		iVariable_set_s32(var, obj->rc.bottom - obj->rc.top);
+			}
+		}
+
+		// Pass-through the input
+		return(obj);
+	}
+
+
+
+
+//////////
+//
 // Creates the empty object structure
 //
 //////
@@ -2349,4 +2383,59 @@
 		// Indicate our success or failure
 		//////
 			return(settingsNew);
+	}
+
+
+
+
+//////////
+//
+// Create the control point structure.
+// Note:  control points are not normal classes, and are not added to obj->firstChild.
+// Note:  control points are added to obj->firstControlPoint, and were originallyc reated only for carousels and riders
+//
+//////
+	SObject* iSubobj_createControlPoint(SObject* template_ControlPoint, SObject* parent)
+	{
+		SObject*	controlPointNew;
+
+
+		logfunc(__FUNCTION__);
+		//////////
+		// Create the indicated item
+		//////
+			controlPointNew = (SObject*)malloc(sizeof(SObject));
+
+
+		//////////
+		// If successful, initialize it
+		//////
+			if (controlPointNew)
+			{
+				// Initialize
+				memset(controlPointNew, 0, sizeof(SObject));
+
+				// Initialize properties to VJr defaults
+				controlPointNew->objType	= _OBJ_TYPE_CONTROLPOINT;
+				controlPointNew->parent		= parent;
+				iiSubobj_resetToDefaultSettings(controlPointNew, true, true, &gsProps_controlpoint[0], gnProps_controlpointSize, &gsEvents_controlpoint[0], gnEvents_controlpointSize);
+
+				// Initially populate
+				controlPointNew->isRendered		= false;
+				controlPointNew->isPublished	= false;
+				propSetName(controlPointNew,			cgcName_controlpoint, sizeof(cgcName_controlpoint) - 1);
+				propSetClass(controlPointNew,			cgcName_controlpoint, sizeof(cgcName_controlpoint) - 1);
+				propSetBaseClass(controlPointNew,		cgcName_controlpoint, sizeof(cgcName_controlpoint) - 1);
+				iEvents_resetToDefault(controlPointNew, &gsEvents_controlpoint[0], gnEvents_controlpointSize);
+
+				// Initialize based on template
+				if (template_ControlPoint)
+					iiSubobj_copyException(controlPointNew, template_ControlPoint);		// Copy from indicated template
+			}
+
+
+		//////////
+		// Indicate our success or failure
+		//////
+			return(controlPointNew);
 	}

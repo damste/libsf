@@ -132,7 +132,7 @@ typedef SEM**		SEMpp;
 // Macro helpers
 //////
 	// Note:  A variable can still have its original type and be NULL, so you must also test var->value members:
-	#define iVariable_isNull(var)						(var->varType == _VAR_TYPE_NULL || !var->value.data._data || (var->varType != _VAR_TYPE_CHARACTER && var->value.length == 0))
+	#define iVariable_isNull(var)						(var->varType == _VAR_TYPE_NULL || !var->value._data || (var->varType != _VAR_TYPE_CHARACTER && var->value.length == 0))
 	#define iVariable_getType(var)						var->varType
 	#define iVariable_isFundamentalTypeLogical(var)		(var->varType == _VAR_TYPE_LOGICAL || (iVariable_areTypesCompatible(var, varDefault_logical)))
 	#define iVariable_isNumeric64Bit(var)				(var->varType == _VAR_TYPE_S64 || var->varType == _VAR_TYPE_U64 || var->varType == _VAR_TYPE_CURRENCY || var->varType == _VAR_TYPE_DATETIMEX)
@@ -152,9 +152,9 @@ typedef SEM**		SEMpp;
 	#define iVariable_isTypeNumeric(var)				(var->varType >= _VAR_TYPE_NUMERIC_START && var->varType <= _VAR_TYPE_NUMERIC_END)
 	#define iVariable_isTypeObject(var)					(var->varType == _VAR_TYPE_OBJECT)
 	#define iVariable_isTypethisCode(var)				(var->varType == _VAR_TYPE_THISCODE)
-	#define iVariable_isValid(var)						(var && var->varType >= _VAR_TYPE_START && var->varType <= _VAR_TYPE_END && var->value.data._data && (var->varType == _VAR_TYPE_CHARACTER || var->value.length > 0))
+	#define iVariable_isValid(var)						(var && var->varType >= _VAR_TYPE_START && var->varType <= _VAR_TYPE_END && var->value._data && (var->varType == _VAR_TYPE_CHARACTER || var->value.length > 0))
 	#define iVariable_isValidType(var)					(var && var->varType >= _VAR_TYPE_START && var->varType <= _VAR_TYPE_END)
-	#define iVariable_isEmpty(var)						(!var->value.data._data || var->value.length <= 0)
+	#define iVariable_isEmpty(var)						(!var->value._data || var->value.length <= 0)
 	#define iVariable_populate_byBool(testVar)			((cs8*)((testVar) ? &_LOGICAL_FALSE : &_LOGICAL_TRUE))
 
 	#define validateVariable(var, error)				if (!iVariable_isValid(var)) \
@@ -192,7 +192,7 @@ typedef SEM**		SEMpp;
 	#define propIsEnabled(obj)							(iObjProp_get_logical_fromLogicalConstants(obj, _INDEX_ENABLED)		!= _LOGICAL_FALSE)
 	#define propIsFalse(obj, index)						(iObjProp_get_logical_fromLogicalConstants(obj, index)				== _LOGICAL_FALSE)
 	#define propIsName_byText(obj, t)					(iObjProp_compare_character		(obj, _INDEX_NAME,		(s8*)t,		sizeof(t) - 1) == 0)
-	#define propIsName_byDatum(obj, d)					(iObjProp_compare_character		(obj, _INDEX_NAME,		d->data._s8, d->length) == 0)
+	#define propIsName_byDatum(obj, d)					(iObjProp_compare_character		(obj, _INDEX_NAME,		d->data_s8, d->length) == 0)
 	#define propIsReadonly(obj)							(iObjProp_get_logical_fromLogicalConstants(obj, _INDEX_READONLY)		!= _LOGICAL_FALSE)
 	#define propIsTrue(obj, index)						(iObjProp_get_logical_fromLogicalConstants(obj, index)				!= _LOGICAL_FALSE)
 	#define propIsVisible(obj)							(iObjProp_get_logical_fromLogicalConstants(obj, _INDEX_VISIBLE)		!= _LOGICAL_FALSE)
@@ -507,6 +507,7 @@ typedef SEM**		SEMpp;
 	const u32			_OBJ_TYPE_CUSTOM					= 37;						// A custom class
 	const u32			_OBJ_TYPE_EXCEPTION					= 38;						// An exception
 	const u32			_OBJ_TYPE_SETTINGS					= 39;						// Settings (SET TALK ON, etc.)
+	const u32			_OBJ_TYPE_CONTROLPOINT				= 40;						// Control points on carousels / riders, which indicate drop targets and drop target types
 
 
 //////////
@@ -596,7 +597,12 @@ typedef SEM**		SEMpp;
 	const u32			_EVENT_CAROUSEL_ONTABMOUSEENTER		= 42;
 	const u32			_EVENT_CAROUSEL_ONTABMOUSELEAVE		= 43;
 
-	const u32			_EVENT_MAX_COUNT					= 43;
+	// Carousel / rider events
+	const u32			_EVENT_CONTROLPOINT_ONENTER			= 44;
+	const u32			_EVENT_CONTROLPOINT_ONLEAVE			= 45;
+	const u32			_EVENT_CONTROLPOINT_ONDROP			= 46;
+
+	const u32			_EVENT_MAX_COUNT					= 46;
 
 
 //////////
@@ -669,6 +675,39 @@ typedef SEM**		SEMpp;
 //////
 	const u32			_BACK_STYLE_TRANSPARENT				= 0;						// Transparent styles
 	const u32			_BACK_STYLE_OPAQUE					= 1;						// Opaque styles
+
+
+//////////
+// Carousel types
+//////
+	const u32			_CAROUSELTYPE_MENUS					= 1;						// For dockable menus
+	const u32			_CAROUSELTYPE_PANELS				= 2;						// For dockable panels (forms, subforms, other carousels, and riders)
+	const u32			_CAROUSELTYPE_COLLAPSED				= 3;						// For collapsed panels which have icon+text only (uses the graphics in _INDEX_RIDERTABCOLLAPSED)
+
+
+//////////
+// Rider types
+//////
+	const u32			_RIDERTYPE__IMMUTABLE				= 1 << 31;					// Rider is immutable (cannot be moved or deleted)
+	const u32			_RIDERTYPE__IMMOVABLE				= 1 << 30;					// Rider is immovable (cannot be moved)
+	const u32			_RIDERTYPE_MENU						= 1;						// A menu rider
+	const u32			_RIDERTYPE_PANEL					= 2;						// A panel rider
+	const u32			_RIDERTYPE_CUSTOM					= 3;						// A custom rider
+
+
+//////////
+// Control point types
+//////
+	const u32			_CONTROLPOINTTYPE_DRAGBAR			= 1;						// Typically the caption area of a form or subform
+	const u32			_CONTROLPOINTTYPE_NEW_LEFT			= 2;						// To move the rider to a new carousel on the left of the current carousel
+	const u32			_CONTROLPOINTTYPE_NEW_TOP			= 3;						// To move the rider to a new carousel on the top of the current carousel
+	const u32			_CONTROLPOINTTYPE_NEW_RIGHT			= 4;						// To move the rider to a new carousel on the right of the current carousel
+	const u32			_CONTROLPOINTTYPE_NEW_BOTTOM		= 5;						// To move the rider to a new carousel on the bottom of the current carousel
+	const u32			_CONTROLPOINTTYPE_NEW_TAB			= 6;						// To move the rider into a tab on the current carousel
+	const u32			_CONTROLPOINTTYPE_NEW_FRAME_LEFT	= 7;						// To move the rider to a new carousel on the frame's left-most edge
+	const u32			_CONTROLPOINTTYPE_NEW_FRAME_TOP		= 8;						// To move the rider to a new carousel on the frame's top-most edge
+	const u32			_CONTROLPOINTTYPE_NEW_FRAME_RIGHT	= 9;						// To move the rider to a new carousel on the frame's right-most edge
+	const u32			_CONTROLPOINTTYPE_NEW_FRAME_BOTTOM	= 10;						// To move the rider to a new carousel on the frame's bottom-most edge
 
 
 //////////
@@ -1235,6 +1274,7 @@ typedef SEM**		SEMpp;
 	const u8			cgcName_custom[]					= "custom";
 	const u8			cgcName_exception[]					= "exception";
 	const u8			cgcName_settings[]					= "_settings";
+	const u8			cgcName_controlpoint[]				= "controlpoint";
 
 	// Various captions
 	const u8			cgcName_formCaption[]				= "VJr Form";

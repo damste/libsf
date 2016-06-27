@@ -378,7 +378,7 @@
 				// Repeat the string as many as are indicated
 				iDatum_allocateSpace(&result->value, lnCopies * varString->value.length);
 				for (lnI = 0; lnI < lnCopies; lnI++)
-					memcpy(result->value.data._s8 + (lnI * varString->value.length), varString->value.data._s8, varString->value.length);
+					memcpy(result->value.data_s8 + (lnI * varString->value.length), varString->value.data_s8, varString->value.length);
 			}
 
 
@@ -618,7 +618,7 @@
 		//////////
         // Populate the return value
 		//////
-			*(u32*)result->value.data._s8 = bgra((u32)lnBlu, (u32)lnGrn, (u32)lnRed, (u32)lnAlp);
+			*(u32*)result->value.data_s8 = bgra((u32)lnBlu, (u32)lnGrn, (u32)lnRed, (u32)lnAlp);
 
 
 		//////////
@@ -750,7 +750,7 @@
 		//////////
 		// Populate and return our result
 		//////
-			*result->value.data._u32 = lnColor;
+			*result->value.data_u32 = lnColor;
 			rpar->rp[0] = result;
 	}
 
@@ -842,7 +842,7 @@
 			} else if (lnLength > 0) {
 				// We can do an extraction
 				lnStart = varString->value.length - lnLength;
-				iDatum_duplicate(&result->value, varString->value.data._u8 + lnStart, lnLength);
+				iDatum_duplicate(&result->value, varString->value.data_u8 + lnStart, lnLength);
 			}
 
 

@@ -364,14 +364,19 @@
 		if (!iiDefaultCallback_processMouseVariables(varX, varY, varCtrl, varAlt, varShift, varClick, &lnX, &lnY, &llCtrl, &llAlt, &llShift, &lnClick))
 			return(false);	// Do not continue consuming
 
-
 		// Set the flags
 		llMouseDown = true;
 		llResult	= true;
 
+		// Create a point
+		pt.x = lnX;
+		pt.y = lnY;
+
 		// If focus isn't already set on this control, set focus on this control
+		llFocusChanged = false;
 		if (!obj->p.hasFocus)
 		{
+			// We're changing focus
 			objRoot = iObj_find_rootmostObject(obj);
 			if (objRoot)
 				iObj_clearFocus(win, objRoot, true, true);
@@ -379,10 +384,11 @@
 			iObj_setFocus(win, obj, true);
 			iObj_setDirtyRender_ascent(obj, true, true);
 			llFocusChanged = true;
-
-		} else {
-			llFocusChanged = false;
 		}
+
+		// Is it possible they're clicking on a rider's control point?
+		if (iObj_find_thisRider(obj))
+			iRider_trackMotion_mouseDown(obj, lnX, lnY);
 
 		// For forms, they can be clicking down on special things for various operations
 		if (obj->parent && obj->parent->objType == _OBJ_TYPE_FORM && win->obj == obj->parent)
@@ -453,10 +459,6 @@
 			llResult = false;
 
 		} else if (obj->objType == _OBJ_TYPE_CAROUSEL) {
-			// Create a point
-			pt.x = lnX;
-			pt.y = lnY;
-
 			// They are they outside of the client area?
 			if (!PtInRect(&obj->rcClient, pt))
 				return(iEvents_carouselMouseDown(win, obj, lnX, lnY, llCtrl, llAlt, llShift, lnClick));
@@ -872,6 +874,24 @@
 	}
 
 	bool iDefaultCallback_onTabMouseLeave(SWindow* win, SObject* obj, bool tlOnClose)
+	{
+		// Do not continue to propagate this message to other objects
+		return(false);
+	}
+
+	bool iDefaultCallback_onControlPointEnter(SWindow* win, SObject* obj)
+	{
+		// Do not continue to propagate this message to other objects
+		return(false);
+	}
+
+	bool iDefaultCallback_onControlPointLeave(SWindow* win, SObject* obj)
+	{
+		// Do not continue to propagate this message to other objects
+		return(false);
+	}
+
+	bool iDefaultCallback_onControlPointDrop(SWindow* win, SObject* obj)
 	{
 		// Do not continue to propagate this message to other objects
 		return(false);

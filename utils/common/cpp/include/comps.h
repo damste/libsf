@@ -115,6 +115,38 @@ struct SNoteLog;
 //////////
 // Structures
 //////
+	// Components parsed on a line
+	struct SComp
+	{
+		SLL				ll;							// 2-way link list
+		bool			lCompAllocated;				// When deleted, should it be free'd?
+
+		// Information about the component
+		s32				iCode;						// Refer to _ICODE_* constants
+		u32				iCat;						// Refer to _ICAT_* constants, and use iCat() macro for accessing the lower portion without bit flags influencing its value
+
+		// Storage data
+		bool			lTextAllocated;				// When deleted, should the text be free'd?
+		SDatum			text;						// The text this component relates to
+
+		// References to other related items
+		SLine*			line;						// Source line
+		SNode*			node;						// The node this component relates to
+		SBuilder*		extra_info;					// (SExtraInfo) extra information about this component
+
+		// For rendering and syntax highlighting
+		s32				nbspCount;					// Number of non-breaking-spaces in this component (ASCII-255)
+		SBmpCache*		bc;							// For faster rendering of drawn things (casks, for example) in SEM windows
+		SBgra*			color;						// Syntax highlight color
+		bool			useBoldFont;				// Syntax highlight font should be bold?
+		// For selected components
+		SBgra*			overrideSelectionBackColor;
+		SBgra*			overrideSelectionForeColor;
+		// For matches (the closest parenthesis, bracket, brace, etc)
+		SBgra*			overrideMatchingForeColor;
+		SBgra*			overrideMatchingBackColor;
+	};
+
 	struct SCompCallback
 	{
 		union {
@@ -191,20 +223,6 @@ struct SNoteLog;
 			};
 			void*		ex2Ptr;
 		};
-	};
-
-	// For warnings, errors, and notes
-	struct SNoteLog
-	{
-		SLL				ll;
-		SYSTEMTIME		time;											// When did the note get logged?
-
-		SLine*			line;											// Associated line (if not already on a line)
-		u32				start;											// Column the note begins on
-		u32				end;											// Column the note ends on
-
-		u32				number;											// A related number
-		SDatum*			note;											// The message
 	};
 
 
@@ -296,31 +314,3 @@ struct SNoteLog;
 	void					iComp_appendError							(SComp* comp, u32 tnErrorNum,   cu8* tcMessage);
 	void					iComp_appendWarning							(SComp* comp, u32 tnWarningNum, cu8* tcMessage);
 	void					iComp_reportWarningsOnRemainder				(SComp* comp, u32 tnWarningNum, cu8* tcMessage);
-
-	// Line functions
-	SLine*					iLine_createNew								(bool tlAllocCompilerInfo);
-	SLine*					iLine_appendNew								(SLine* line, bool tlAllocCompilerInfo);
-	SLine*					iLine_insertNew								(SLine* lineRef, bool tlAllocCompilerInfo, bool tlAfter);
-	void					iLine_appendError							(SLine* line, u32 tnErrorNum,   cu8* tcMessage, u32 tnStartColumn, u32 tnLength);
-	void					iLine_appendWarning							(SLine* line, u32 tnWarningNum, cu8* tcMessage, u32 tnStartColumn, u32 tnLength);
-	bool					iLine_scanComps_forward_withCallback		(SLine* line, SComp* comp, SCallback* cb, bool tlSkipFirst);
-	s32						iLines_unescape_iCodes						(SLine* lineStart, s32 tniCode1, s32 tniCode2, s32 tniCode3, s32 tniCodeEscape = _ICODE_BACKSLASH);
-
-	s32						iLine_migrateLines							(SLine** linesFrom, SLine* lineTarget);
-
-	SComp*					iLine_Nth_comp								(SLine* line, s32 tnCount = 1, bool tlMoveBeyondLineIfNeeded = true);
-	//
-	SLine*					iLine_copyComps_toNewLines_untilTerminating					(SLine* lineStart, SComp* compStart, s32 tniCodeContinuation, bool tlLeftJustifyStart, bool tlSkipBlankLines, SCallback* cb);
-	bool					iiLine_copyComps_toNewLines_untilTerminating__callback		(SCallback* cb);
-	//
-	s32						iiLine_skipTo_nextComp						(SLine** lineProcessing, SComp** compProcessing);
-	s32						iiLine_skipTo_prevComp						(SLine** lineProcessing, SComp** compProcessing);
-
-	// Compiler functions
-	SCompiler*				iCompiler_allocate							(SLine* parent);
-	void					iCompiler_delete							(SCompiler** compilerInfoRoot, bool tlDeleteSelf);
-
-	// Compile note functions
-	SNoteLog*				iNoteLog_create								(SNoteLog** noteRoot, SLine* line, u32 tnStart,	u32 tnEnd,	u32 tnNumber, cu8* tcMessage);
-	SNoteLog*				iNoteLog_create								(SNoteLog** noteRoot, SComp* comp, u32 tnNumber, cu8* tcMessage);
-	void					iNoteLog_removeAll							(SNoteLog** noteRoot);
