@@ -148,6 +148,7 @@
     <ClInclude Include="..\..\..\..\utils\common\cpp\include\compsearcher.h" />
     <ClInclude Include="..\..\..\..\utils\common\cpp\include\debug.h" />
     <ClInclude Include="..\..\..\..\utils\common\cpp\include\files.h" />
+    <ClInclude Include="..\..\..\..\utils\common\cpp\include\libsf.h" />
     <ClInclude Include="..\..\..\..\utils\common\cpp\include\sem\sem.h" />
     <ClInclude Include="..\..\..\..\utils\common\cpp\include\sem\sem_extra_info.h" />
     <ClInclude Include="..\..\..\..\utils\common\cpp\include\sem\sem_line.h" />

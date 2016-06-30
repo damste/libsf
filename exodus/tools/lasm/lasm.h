@@ -99,6 +99,7 @@
 #define _EXCLUDE_iBmp_colorizeAsCommonTooltipBackground		1
 
 #include "/libsf/utils/common/cpp/include/common_types.h"
+#include "/libsf/utils/common/cpp/include/libsf.h"
 #include "/libsf/utils/common/cpp/include/errors.h"
 #include "/libsf/utils/common/cpp/include/ll.h"
 #include "/libsf/utils/common/cpp/include/chartests.h"
@@ -110,12 +111,12 @@
 #include "/libsf/utils/common/cpp/include/datum.h"
 #include "/libsf/utils/common/cpp/include/disk.h"
 #include "/libsf/utils/common/cpp/include/time.h"
-#include "/libsf/utils/common/cpp/include/sem/sem.h"
 #include "/libsf/utils/common/cpp/include/bitmaps.h"
 #include "/libsf/utils/common/cpp/include/compsearcher.h"
 #include "/libsf/utils/common/cpp/include/compiler_common.h"
 #include "/libsf/utils/common/cpp/include/comps.h"
 #include "/libsf/utils/common/cpp/include/xml.h"
+#include "/libsf/utils/common/cpp/include/sem/sem.h"
 
 
 #include "/libsf/utils/common/cpp/base/ll.cpp"
@@ -124,10 +125,10 @@
 #include "/libsf/utils/common/cpp/base/datum.cpp"
 #include "/libsf/utils/common/cpp/base/disk.cpp"
 #include "/libsf/utils/common/cpp/base/time.cpp"
-#include "/libsf/utils/common/cpp/base/sem/sem.cpp"
 #include "/libsf/utils/common/cpp/base/bitmaps.cpp"
-#include "/libsf/utils/common/cpp/base/xml.cpp"
 #include "/libsf/utils/common/cpp/base/comps.cpp"
+#include "/libsf/utils/common/cpp/base/xml.cpp"
+#include "/libsf/utils/common/cpp/base/sem/sem.cpp"
 
 #include "lasm_const.h"
 #include "lasm_structs.h"

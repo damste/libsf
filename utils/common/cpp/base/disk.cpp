@@ -943,7 +943,9 @@
 					//////////
 					// Indicate content
 					//////
+#ifdef _SHOW_REFACTOR_ERRORS
 						line->sourceCode	= iDatum_allocate((u8*)data + lnLast, (s32)(lnI - lnJ - lnLast));
+#endif
 						line->lineNumber	= lnLineNumber;
 
 

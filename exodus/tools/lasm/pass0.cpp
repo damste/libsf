@@ -161,7 +161,7 @@
 		if ((p0->compFile = iComps_Nth(p0->compNext)) && (p0->compFile->iCode == _ICODE_DOUBLE_QUOTED_TEXT || p0->compFile->iCode == _ICODE_SINGLE_QUOTED_TEXT))
 		{
 			// Copy the filename to a local buffer
-			memcpy(p0->fileName, p0->compFile->line->sourceCode->data._s8 + p0->compFile->start + 1, p0->compFile->length - 2);
+			memcpy(p0->fileName, p0->compFile->line->sourceCode.data_s8 + p0->compFile->start + 1, p0->compFile->length - 2);
 			p0->fileName[p0->compFile->length - 2] = 0;
 
 			// Correct the directory dividers to the standard OS form
@@ -193,7 +193,7 @@
 		} else {
 			// Syntax error
 			++p0->compNext->line->status.errors;
-			printf("--Error(%d,%d): expected [#include \"relative\\path\\to\\file.ext\"] syntax in %s\n", p0->compNext->line->lineNumber, p0->compNext->start, p0->file->fileName.data._s8);
+			printf("--Error(%d,%d): expected [#include \"relative\\path\\to\\file.ext\"] syntax in %s\n", p0->compNext->line->lineNumber, p0->compNext->start, p0->file->fileName.data_s8);
 			return;
 		}
 	}
@@ -334,7 +334,7 @@
 // 			{
 // 				// It's a #define but nothing comes after
 // 				++compDefine->line->status.errors;
-// 				printf("--Error(%d,%d): token was expected in %s\n", compDefine->line->lineNumber, compDefine->start + compDefine->length, p0->file->fileName.data._s8);
+// 				printf("--Error(%d,%d): token was expected in %s\n", compDefine->line->lineNumber, compDefine->start + compDefine->length, p0->file->fileName.data_s8);
 // 				goto politely_fail;
 // 			}
 // 
@@ -345,7 +345,7 @@
 // 			if (!iiComps_isAlphanumeric_byContent(compName))
 // 			{
 // 				++compName->line->status.errors;
-// 				printf("--Error(%d,%d): alphanumeric was expected in %s\n", compName->line->lineNumber, compName->start, p0->file->fileName.data._s8);
+// 				printf("--Error(%d,%d): alphanumeric was expected in %s\n", compName->line->lineNumber, compName->start, p0->file->fileName.data_s8);
 // 				goto politely_fail;
 // 			}
 // 
@@ -356,8 +356,8 @@
 // 			if ((p0->define = iilasm_pass0_lookup_define_byName(compName, gsLasmDefines)))
 // 			{
 // 				// It was already found
-// 				memcpy(buffer1, p0->define->compName->line->sourceCode->data._s8 + p0->define->compName->start, p0->define->compName->length);
-// 				memcpy(buffer2, p0->file->fileName.data._s8, p0->file->fileName.length);
+// 				memcpy(buffer1, p0->define->compName->line->sourceCode.data_s8 + p0->define->compName->start, p0->define->compName->length);
+// 				memcpy(buffer2, p0->file->fileName.data_s8, p0->file->fileName.length);
 // 				buffer1[p0->define->compName->length]	= 0;
 // 				buffer2[p0->file->fileName.length]	= 0;
 // 				printf("--Error(%d,%d): token '%s' already defined in %s on (%d,%d)\n", compName->line->lineNumber, compName->start, buffer1, buffer2, p0->define->compName->line->lineNumber, p0->define->compName->start);
@@ -372,7 +372,7 @@
 // 			{
 // 				// Internal error
 // 				++compName->line->status.errors;
-// 				printf("--Error(%d): an unexpected internal error occurred processing a #define in %s\n", compName->line->lineNumber, p0->file->fileName.data._s8);
+// 				printf("--Error(%d): an unexpected internal error occurred processing a #define in %s\n", compName->line->lineNumber, p0->file->fileName.data_s8);
 // 				goto politely_fail;
 // 			}
 // 
@@ -392,7 +392,7 @@
 // 					if (!iilasm_pass0_define__getParameters(p0))
 // 					{
 // 						++p0->compNext->line->status.errors;
-// 						printf("--Error(%d,%d): unable to parse parameters in %s\n", p0->compNext->line->lineNumber, p0->compNext->start, p0->file->fileName.data._s8);
+// 						printf("--Error(%d,%d): unable to parse parameters in %s\n", p0->compNext->line->lineNumber, p0->compNext->start, p0->file->fileName.data_s8);
 // 						goto politely_fail;
 // 					}
 // 					// When we get here, line and compNext are pointing to the closing )
@@ -401,7 +401,7 @@
 // 					if (!(p0->compNext = iComps_Nth(p0->compNext)))
 // 					{
 // 						++p0->comp->line->status.errors;
-// 						printf("--Error: unexpected end of file in %s\n", p0->file->fileName.data._s8);
+// 						printf("--Error: unexpected end of file in %s\n", p0->file->fileName.data_s8);
 // 						goto politely_fail;
 // 					}
 // 					// When we get here, we're on the first component after
@@ -416,7 +416,7 @@
 // 					{
 // 						// Not found
 // 						++p0->compNext->line->status.errors;
-// 						printf("--Error(%d,%d): unable to locate matching } %s\n", p0->compNext->line->lineNumber, p0->compNext->start + p0->compNext->length, p0->file->fileName.data._s8);
+// 						printf("--Error(%d,%d): unable to locate matching } %s\n", p0->compNext->line->lineNumber, p0->compNext->start + p0->compNext->length, p0->file->fileName.data_s8);
 // 						goto politely_fail;
 // 					}
 // 
@@ -520,7 +520,7 @@
 // 			if (comp->iCode != _ICODE_PARENTHESIS_LEFT)
 // 			{
 // 				++p0->line->status.errors;
-// 				printf("--Error(%d,%d): unexpected internal error processing #define parameters %s\n", p0->line->lineNumber, comp->start, p0->file->fileName.data._s8);
+// 				printf("--Error(%d,%d): unexpected internal error processing #define parameters %s\n", p0->line->lineNumber, comp->start, p0->file->fileName.data_s8);
 // 				return(false);
 // 			}
 // 
@@ -537,7 +537,7 @@
 // 					if (!llSkipTest && !iiComps_isAlphanumeric_by_iCode(comp))
 // 					{
 // 						++p0->line->status.errors;
-// 						printf("--Error(%d,%d): expected token in %s\n", p0->line->lineNumber, comp->start, p0->file->fileName.data._s8);
+// 						printf("--Error(%d,%d): expected token in %s\n", p0->line->lineNumber, comp->start, p0->file->fileName.data_s8);
 // 						goto politely_fail;
 // 					}
 // 					llSkipTest = false;
@@ -556,7 +556,7 @@
 // 					if (iiLine_skipTo_nextComp(&p0->line, &comp) < 0)
 // 					{
 // 						// Unexpected end of file
-// 						printf("--Error: unexpected end of file in %s\n", p0->file->fileName.data._s8);
+// 						printf("--Error: unexpected end of file in %s\n", p0->file->fileName.data_s8);
 // 						goto politely_fail;
 // 					}
 // 
@@ -573,7 +573,7 @@
 // 							if (iiLine_skipTo_nextComp(&p0->line, &comp) < 0)
 // 							{
 // 								// Unexpected end of file
-// 								printf("--Error: unexpected end of file in %s\n", p0->file->fileName.data._s8);
+// 								printf("--Error: unexpected end of file in %s\n", p0->file->fileName.data_s8);
 // 								goto politely_fail;
 // 							}
 // 
@@ -584,7 +584,7 @@
 // 							if (comp->iCode != _ICODE_PARENTHESIS_RIGHT && !iiComps_isAlphanumeric_by_iCode(comp))
 // 							{
 // 								++p0->line->status.errors;
-// 								printf("--Error(%d,%d): expected token or right parenthesis in %s\n", p0->line->lineNumber, comp->start, p0->file->fileName.data._s8);
+// 								printf("--Error(%d,%d): expected token or right parenthesis in %s\n", p0->line->lineNumber, comp->start, p0->file->fileName.data_s8);
 // 								goto politely_fail;
 // 							}
 // 
@@ -633,8 +633,8 @@
 			if (define->compName->length == compName->length)
 			{
 				// Is it the same name?
-				if (_memicmp(	define->compName->line->sourceCode->data._s8 +  define->compName->start,
-										compName->line->sourceCode->data._s8 +			compName->start,
+				if (_memicmp(	define->compName->line->sourceCode.data_s8 +  define->compName->start,
+										compName->line->sourceCode.data_s8 +			compName->start,
 										compName->length)
 						== 0)
 				{

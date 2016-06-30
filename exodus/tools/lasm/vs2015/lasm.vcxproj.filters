@@ -107,5 +107,8 @@
     <ClInclude Include="..\..\..\..\utils\common\cpp\include\files.h">
       <Filter>Header2</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\utils\common\cpp\include\libsf.h">
+      <Filter>Header2</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

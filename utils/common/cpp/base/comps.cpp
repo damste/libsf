@@ -92,11 +92,13 @@
 //////
 	void iComps_lex_and_parse(SLine* line, SAsciiCompSearcher* acs0, SAsciiCompSearcher* acs1, SAsciiCompSearcher* acs2, SAsciiCompSearcher* acs3)
 	{
+#ifdef _SHOW_REFACTOR_ERRORS
 		if (line->compilerInfo)
 			iiVxb_free_liveCode(line->compilerInfo);
 
 		if (!line->compilerInfo)
 			line->compilerInfo = iCompiler_allocate(line);
+#endif
 
 		// Convert raw source code to known character sequences
 		iComps_translate_sourceLineTo(acs0, line);
@@ -106,10 +108,12 @@
 		iComps_fixup_naturalGroupings(line);			// Fixup natural groupings [_][aaa][999] becomes [_aaa999], [999][.][99] becomes [999.99], etc.
 		iComps_remove_whitespaces(line);				// Remove whitespaces [xyz][whitespace][fred] becomes [xyz][fred]
 
+#ifdef _SHOW_REFACTOR_ERRORS
 		// Further translation
 		if (acs1)		iComps_translate_toOthers(acs1, line->compilerInfo->firstComp, true);
 		if (acs2)		iComps_translate_toOthers(acs2, line->compilerInfo->firstComp, true);
 		if (acs3)		iComps_translate_toOthers(acs3, line->compilerInfo->firstComp, true);
+#endif
 
 		// Generate warnings for ignored components if any appear after
 // 		iComp_appendError(comp, tnErrorNum, tcMessage);
@@ -138,32 +142,7 @@
 		//////////
 		// Free the components
 		//////
-			iComps_deleteAll(&compiler->firstComp);
-
-
-		//////////
-		// Free the previous parse, optimize, and engage nodes
-		//////
-			if (compiler->first_nodeParse)
-			{
-				// Release the array
-				free(compiler->first_nodeParse);
-				compiler->count_nodeParse = 0;
-			}
-
-			if (compiler->first_nodeOptimize)
-			{
-				// Release the array
-				free(compiler->first_nodeOptimize);
-				compiler->count_nodeOptimize = 0;
-			}
-
-			if (compiler->first_nodeEngage)
-			{
-				// Release the array
-				free(compiler->first_nodeEngage);
-				compiler->count_nodeArray = 0;
-			}
+			iComps_deleteAll(&compiler->line->firstComp);
 
 
 		//////////
@@ -177,7 +156,7 @@
 		//////////
 		// Delete any extra info that's stored
 		//////
-			iExtraInfo_removeAll(NULL, NULL, &compiler->first_extraInfo, true);
+			iExtraInfo_removeAll(NULL, NULL, &compiler->extra_info);
 
 	}
 
@@ -278,6 +257,7 @@
 	void iComps_deleteAll_byLine(SLine* line)
 	{
 		// Make sure our environment is sane
+#ifdef _SHOW_REFACTOR_ERRORS
 		if (line && line->compilerInfo)
 		{
 			// Delete all components
@@ -286,6 +266,7 @@
 			// Clear the compilerInfo
 			iCompiler_delete(&line->compilerInfo, true);
 		}
+#endif
 	}
 
 
@@ -386,9 +367,11 @@
 			iBmp_deleteCache(&comp->bc);
 
 		// If it has combined comps, delete them
+#ifdef _SHOW_REFACTOR_ERRORS
 		if (comp->firstCombined)		iComps_delete(&comp->firstCombined);
 		if (comp->firstWhitespace)		iComps_delete(&comp->firstWhitespace);
 		if (comp->firstComment)			iComps_delete(&comp->firstComment);
+#endif
 
 		// If it has a node, delete it
 		if (comp->node)
@@ -467,11 +450,13 @@
 			memcpy(&compTo->ll, &compFrom->ll, sizeof(compFrom->ll));
 
 		// Copy the component's attributes
-		compTo->llAllocated						= tlAllocated;
+		compTo->isAllocated						= tlAllocated;
 
 		compTo->line							= compFrom->line;
+#ifdef _SHOW_REFACTOR_ERRORS
 		compTo->start							= compFrom->start - tnBackoff;
 		compTo->length							= compFrom->length;
+#endif
 
 		compTo->isError							= compFrom->isError;
 		compTo->isWarning						= compFrom->isWarning;
@@ -519,11 +504,13 @@
 		if (tsComps && line)
 		{
 			// Scan starting at the beginning of the line
-			lcData = line->sourceCode->data._u8;
+			lcData = line->sourceCode.data_u8;
 
 			// Iterate through every byte identifying every component we can
+#ifdef _SHOW_REFACTOR_ERRORS
 			compLast	= line->compilerInfo->firstComp;
-			lnMaxLength	= line->sourceCode_populatedLength;
+			lnMaxLength	= line->populatedLength;
+#endif
 			for (lnI = 0; lnI < lnMaxLength; )
 			{
 				// Search through the tsComps list one by one
@@ -564,7 +551,9 @@
 							//////////
 							// Allocate this entry
 							///////
+#ifdef _SHOW_REFACTOR_ERRORS
 								comp = iComps_new(&line->compilerInfo->firstComp, compLast, NULL, compLast);
+#endif
 
 
 							//////////
@@ -583,8 +572,10 @@
 
 										// Update the component's information
 										comp->line			= line;
+#ifdef _SHOW_REFACTOR_ERRORS
 										comp->start			= lnStart;
-										comp->length		= lnLength;
+										comp->text.length	= lnLength;
+#endif
 										comp->iCode			= lacs->iCode;
 										comp->iCat			= lacs->iCat;
 										comp->color			= lacs->syntaxHighlightColor;
@@ -651,14 +642,16 @@
 
 		// Make sure the environment is sane
 		llResult = false;
-		if (tacsRoot && comp && comp->line && comp->line->sourceCode)
+		if (tacsRoot && comp && comp->line && comp->line->sourceCode._data && comp->line->sourceCode.length != 0)
 		{
 			// Grab our pointers into recognizable thingamajigs
 			while (comp)
 			{
+#ifdef _SHOW_REFACTOR_ERRORS
 				// Parse those things which were combined if need be
 				if (tlDescendIntoFirstCombineds && comp->firstCombined)
 					iComps_translate_toOthers(tacsRoot, comp->firstCombined, true);
+#endif
 
 				// Iterate through this item to see if any match
 				tacs = tacsRoot;
@@ -668,14 +661,14 @@
 					lnTacsLength = abs(tacs->length);
 
 					// We only test if they're the same length
-					if (lnTacsLength == comp->length || (tacs->repeats && lnTacsLength <= comp->length))
+					if (lnTacsLength == comp->text.length || (tacs->repeats && lnTacsLength <= comp->text.length))
 					{
 						// We only test if this item is not the first item on line, or if must be the first
 						// item on the line, then this component must be the first component on the line.  Simple, yes? :-)
 						if (!tacs->firstOnLine || !comp->ll.prev || iComps_areAllPrecedingCompsWhitespaces(comp))
 						{
 							// Physically conduct the exact comparison
-							if (iComps_translateToOthers_testIfMatch(tacs->keyword_cu8, comp->line->sourceCode->data._cu8 + comp->start, tacs->length) == 0)
+							if (iComps_translateToOthers_testIfMatch(tacs->keyword_cu8, comp->text.data_u8, tacs->length) == 0)
 							{
 								// This is a match
 								llResult			= true;
@@ -845,6 +838,7 @@
 //////
 	SComp* iComps_activeComp_inSEM(SEM* sem)
 	{
+#ifdef _SHOW_REFACTOR_ERRORS
 		SComp* comp;
 
 
@@ -856,13 +850,14 @@
 			while (comp)
 			{
 				// Is this the active component?
-				if (sem->columnEdit >= comp->start && sem->columnEdit <= comp->start + comp->length)
+				if (sem->columnEdit >= comp->start && sem->columnEdit <= comp->start + comp->text.length)
 					return(comp);
 
 				// Move to next component
 				comp = comp->ll.nextComp;
 			}
 		}
+#endif
 
 		// If we get here, invalid or not found
 		return(NULL);
@@ -1014,8 +1009,10 @@
 									return(false);
 
 								// If the left component begins before our reference component we're good, otherwise we're still looking
+#ifdef _SHOW_REFACTOR_ERRORS
 								if ((*compPBBLeft)->start < compRelative->start)
 									return(true);
+#endif
 
 								// If we get here, still looking
 								break;
@@ -1233,6 +1230,7 @@
 						if (tlMoveBeyondLineIfNeeded && comp->line && (line = comp->line->ll.nextLine))
 						{
 							// Room to move forward
+#ifdef _SHOW_REFACTOR_ERRORS
 							while (line && (!line->compilerInfo || !line->compilerInfo->firstComp) && line->ll.nextLine)
 								line = line->ll.nextLine;
 
@@ -1246,6 +1244,7 @@
 								// We're done
 								comp = NULL;
 							}
+#endif
 
 						} else {
 							// We're done
@@ -1269,6 +1268,7 @@
 						if (tlMoveBeyondLineIfNeeded && comp->line && (line = comp->line->ll.prevLine))
 						{
 							// Room to move forward
+#ifdef _SHOW_REFACTOR_ERRORS
 							while (line && (!line->compilerInfo || !line->compilerInfo->firstComp) && line->ll.prevLine)
 								line = line->ll.prevLine;
 
@@ -1288,6 +1288,7 @@
 								// We're done
 								comp = NULL;
 							}
+#endif
 
 						} else {
 							// We're done
@@ -1408,8 +1409,9 @@
 						if (lnCount == 1 && compMigrateRefs)
 							iLl_appendExisting__llAtEnd((SLL**)compMigrateRefs, (SLL*)iComps_duplicate(comp));
 
+#ifdef _SHOW_REFACTOR_ERRORS
 						// Add in the length of the next component, plus any spaces between them
-						comp->length	+= (compNext->length + iiComps_get_charactersBetween(comp, compNext));
+						comp->text.length	+= (compNext->length + iiComps_get_charactersBetween(comp, compNext));
 						comp->nbspCount	+= compNext->nbspCount;
 
 						// Migrate or delete the next component
@@ -1423,6 +1425,7 @@
 							// Delete it
 							iLl_delete__ll((SLL*)compNext, true);
 						}
+#endif
 
 					} else {
 						// We're done, perhaps prematurely, but there are no more components
@@ -1510,12 +1513,13 @@
 	u32 iComps_combine_adjacentAlphanumeric(SLine* line)
 	{
 		u32		lnCombined;
-		SComp*	comp;
-		SComp*	compNext;
+// 		SComp*	comp;
+// 		SComp*	compNext;
 
 
 		// Make sure our environment is sane
 		lnCombined = 0;
+#ifdef _SHOW_REFACTOR_ERRORS
 		if (line && line->compilerInfo)
 		{
 			// Begin at the beginning and check across all components
@@ -1551,6 +1555,7 @@
 				comp = comp->ll.nextComp;
 			}
 		}
+#endif
 
 		// Indicate how many we combined
 		return(lnCombined);
@@ -1569,14 +1574,15 @@
 	u32 iComps_combine_adjacentNumeric(SLine* line)
 	{
 		u32		lnCombined;
-		SComp*	comp;
-		SComp*	compNext1;
-		SComp*	compNext2;
-		SComp*	compNext3;
+// 		SComp*	comp;
+// 		SComp*	compNext1;
+// 		SComp*	compNext2;
+// 		SComp*	compNext3;
 
 
 		// Make sure our environment is sane
 		lnCombined = 0;
+#ifdef _SHOW_REFACTOR_ERRORS
 		if (line && line->compilerInfo)
 		{
 			// Begin at the beginning and check across all components
@@ -1636,6 +1642,7 @@
 				comp = comp->ll.nextComp;
 			}
 		}
+#endif
 
 		// Indicate how many we combined
 		return(lnCombined);
@@ -1652,15 +1659,16 @@
 //////
 	u32 iComps_combine_adjacentLeadingPipesigns(SLine* line)
 	{
-		s32		lniCat, lniCode;
+// 		s32		lniCat, lniCode;
 		u32		lnCombined;
-		SComp*	comp;
-		SComp*	compPipesign2;
-		SComp*	compPipesign3;
+// 		SComp*	comp;
+// 		SComp*	compPipesign2;
+// 		SComp*	compPipesign3;
 
 
 		// Make sure our environment is sane
 		lnCombined = 0;
+#ifdef _SHOW_REFACTOR_ERRORS
 		if (line && line->compilerInfo && (comp = line->compilerInfo->firstComp) && comp->iCode == _ICODE_PIPE_SIGN)
 		{
 			// Is it followed by a pipe sign?
@@ -1696,6 +1704,7 @@
 
 			}
 		}
+#endif
 
 		// Indicate how many we combined
 		return(lnCombined);
@@ -1717,13 +1726,14 @@
 	u32 iComps_combineAll_between(SLine* line, s32 tniCodeNeedle, s32 tniCodeCombined, SBgra* syntaxHighlightColor)
 	{
 		u32		lnCount;
-		SComp*	compNext;
-		SComp*	comp;
-		SComp*	compSearcher;
+// 		SComp*	compNext;
+// 		SComp*	comp;
+// 		SComp*	compSearcher;
 
 
 		// Make sure our environment is sane
 		lnCount = 0;
+#ifdef _SHOW_REFACTOR_ERRORS
 		if (line && line->compilerInfo && line->compilerInfo->firstComp)
 		{
 			// Grab the first component
@@ -1749,7 +1759,7 @@
 						if (compSearcher->iCode == tniCodeNeedle)
 						{
 							// This is the match, combine everything between
-							comp->length	= (compSearcher->start + compSearcher->length) - comp->start;
+							comp->text.length	= (compSearcher->start + compSearcher->length) - comp->start;
 							comp->iCode		= tniCodeCombined;
 							comp->color		= syntaxHighlightColor;
 							comp->nbspCount	+= compSearcher->nbspCount;
@@ -1760,7 +1770,7 @@
 								// Increase our count
 								++lnCount;
 
-								// Migrate this one to the combined node (as it was technically merged above with the comp->length = line)
+								// Migrate this one to the combined node (as it was technically merged above with the comp->text.length = line)
 								iLl_migrate__llToOther((SLL**)&line->compilerInfo->firstComp, (SLL**)&comp->firstCombined, (SLL*)compNext, true);
 
 								// See if we're done
@@ -1788,6 +1798,8 @@
 			}
 			// When we get here, we're good
 		}
+#endif
+
 		// Indicate the success rate at which we operated hitherto
 		return(lnCount);
 	}
@@ -1803,13 +1815,14 @@
 	u32 iComps_combineAll_betweenTwo(SLine* line, s32 tniCodeNeedleLeft, s32 tniCodeNeedleRight, s32 tniCodeCombined, u32 tniCat, SBgra* syntaxHighlightColor, bool tlUseBoldFont)
 	{
 		u32		lnCount;
-		SComp*	compNext;
-		SComp*	comp;
-		SComp*	compSearcher;
+// 		SComp*	compNext;
+// 		SComp*	comp;
+// 		SComp*	compSearcher;
 
 
 		// Make sure our environment is sane
 		lnCount = 0;
+#ifdef _SHOW_REFACTOR_ERRORS
 		if (line && line->compilerInfo && line->compilerInfo->firstComp)
 		{
 			// Grab the first component
@@ -1835,7 +1848,7 @@
 						if (compSearcher->iCode == tniCodeNeedleRight)
 						{
 							// This is the match, combine everything between
-							comp->length		= (compSearcher->start + compSearcher->length) - comp->start;
+							comp->text.length		= (compSearcher->start + compSearcher->length) - comp->start;
 							comp->iCode			= tniCodeCombined;
 							comp->iCat			= tniCat;
 							comp->color			= syntaxHighlightColor;
@@ -1850,7 +1863,7 @@
 								// Add in our count
 								comp->nbspCount += compNext->nbspCount;
 
-								// Migrate this one to the combined node (as it was technically merged above with the comp->length = line)
+								// Migrate this one to the combined node (as it was technically merged above with the comp->text.length = line)
 								iLl_migrate__llToOther((SLL**)&line->compilerInfo->firstComp, (SLL**)&comp->firstCombined, (SLL*)compNext, true);
 
 								// See if we're done
@@ -1878,6 +1891,8 @@
 			}
 			// When we get here, we're good
 		}
+#endif
+
 		// Indicate the success rate at which we operated hitherto
 		return(lnCount);
 	}
@@ -1893,11 +1908,12 @@
 	u32 iComps_combineAll_after(SLine* line, s32 tniCodeNeedle)
 	{
 		u32		lnCombined;
-		SComp*	comp;
+// 		SComp*	comp;
 
 
 		// Make sure our environment is sane
 		lnCombined = 0;
+#ifdef _SHOW_REFACTOR_ERRORS
 		if (line && line->compilerInfo && line->compilerInfo->firstComp)
 		{
 			// Grab the first component
@@ -1925,6 +1941,8 @@
 			}
 			// When we get here, we're good
 		}
+#endif
+
 		// Indicate the success rate at which we operated hitherto
 		return(lnCombined);
 	}
@@ -1940,12 +1958,13 @@
 	u32 iComps_deleteAll_after(SLine* line, s32 tniCodeNeedle)
 	{
 		u32		lnDeleted;
-		SComp*	comp;
-		SComp**	compLast;
+// 		SComp*	comp;
+// 		SComp**	compLast;
 
 
 		// Make sure our environment is sane
 		lnDeleted = 0;
+#ifdef _SHOW_REFACTOR_ERRORS
 		if (line && line->compilerInfo && line->compilerInfo->firstComp)
 		{
 			// Grab the first component
@@ -1979,6 +1998,8 @@
 			}
 			// When we get here, we're good
 		}
+#endif
+
 		// Indicate the success rate at which we operated hitherto
 		return(lnDeleted);
 	}
@@ -2010,7 +2031,7 @@
 	{
 		SLine*	lineNew;
 		SLine*	lineNewFirst;
-		SLine*	lineCopy;
+// 		SLine*	lineCopy;
 
 
 		// Make sure our environment is sane
@@ -2026,6 +2047,7 @@
 			if (compStart->line == compEnd->line)
 				return(lineNew);	// All done
 
+#ifdef _SHOW_REFACTOR_ERRORS
 			// Middle lines
 			for (lineCopy = compStart->line->ll.nextLine; lineCopy; lineCopy = lineCopy->ll.nextLine)
 			{
@@ -2044,6 +2066,7 @@
 				if (lineCopy == compEnd->line)
 					break;
 			}
+#endif
 
 		} else {
 			// Invalid content, just create a blank line
@@ -2072,11 +2095,12 @@
 	u32 iComps_remove_leadingWhitespaces(SLine* line)
 	{
 		u32		lnRemoved;
-		SComp*	comp;
+// 		SComp*	comp;
 
 
 		// Make sure our environment is sane
 		lnRemoved = 0;
+#ifdef _SHOW_REFACTOR_ERRORS
 		if (line && line->compilerInfo)
 		{
 			// Iterate through all looking for _ICODE_COMMENT_START
@@ -2091,6 +2115,7 @@
 				line->compilerInfo->firstComp = comp;
 			}
 		}
+#endif
 
 		// Indicate how many we removed
 		return(lnRemoved);
@@ -2109,11 +2134,12 @@
 	u32 iComps_remove_whitespaces(SLine* line)
 	{
 		u32		lnRemoved;
-		SComp*	comp;
+// 		SComp*	comp;
 
 
 		// Make sure our environment is sane
 		lnRemoved = 0;
+#ifdef _SHOW_REFACTOR_ERRORS
 		if (line && line->compilerInfo)
 		{
 			// Iterate through all looking for _ICODE_COMMENT_START
@@ -2144,6 +2170,7 @@
 						comp = comp->ll.nextComp;
 			}
 		}
+#endif
 
 		// Indicate how many we removed
 		return(lnRemoved);
@@ -2159,11 +2186,12 @@
 //////
 	void iComps_remove_startEndComments(SLine* line)
 	{
-		SComp*	comp;
-		SComp*	compNext;
+// 		SComp*	comp;
+// 		SComp*	compNext;
 
 
 		// Make sure our environment is sane
+#ifdef _SHOW_REFACTOR_ERRORS
 		if (line && line->compilerInfo)
 		{
 			// Iterate through all looking for _ICODE_COMMENT_START
@@ -2198,6 +2226,7 @@
 						comp = comp->ll.nextComp;
 			}
 		}
+#endif
 	}
 
 
@@ -2211,11 +2240,12 @@
 	s32 iComps_truncate_atComments(SLine* line)
 	{
 		u32		lnMigrated;
-		SComp*	comp;
+// 		SComp*	comp;
 
 
 		// Make sure our environment is sane
 		lnMigrated = 0;
+#ifdef _SHOW_REFACTOR_ERRORS
 		if (line && line->compilerInfo)
 		{
 			// Iterate through all looking for _ICODE_COMMENT
@@ -2242,6 +2272,7 @@
 				}
 			}
 		}
+#endif
 
 		// Indicate how many we migrated
 		return(lnMigrated);
@@ -2257,9 +2288,10 @@
 //////
 	void iComps_combine_casks(SLine* line)
 	{
-		SComp* comp;
+// 		SComp* comp;
 
 
+#ifdef _SHOW_REFACTOR_ERRORS
 		// Make sure our environment is sane
 		if (line && line->compilerInfo && line->compilerInfo->firstComp)
 		{
@@ -2290,6 +2322,7 @@
 				}
 			}
 		}
+#endif
 	}
 
 
@@ -2302,6 +2335,7 @@
 //////
 	void iComps_fixup_naturalGroupings(SLine* line)
 	{
+#ifdef _SHOW_REFACTOR_ERRORS
 		if (line && line->compilerInfo && line->compilerInfo->firstComp)
 		{
 			//////////
@@ -2320,6 +2354,7 @@
 				iComps_combine_adjacentAlphanumeric(line);
 				iComps_combine_adjacentNumeric(line);
 		}
+#endif
 	}
 
 
@@ -2391,7 +2426,7 @@
 
 		// Make sure our environment is sane
 		lnCount = 0;
-		if (compStart->line && compStart->line->sourceCode)
+		if (compStart->line && compStart->line->sourceCode._data && compStart->line->sourceCode.length)
 		{
 			// Pass 1 -- Count line length
 			// Pass 2 -- Copy
@@ -2404,18 +2439,20 @@
 					//////////
 					// Compute extents
 					//////
+#ifdef _SHOW_REFACTOR_ERRORS
 						for (comp = compStart, lnStart = comp->line->sourceCode->length, lnEnd = 0; comp; comp = comp->ll.nextComp, ++lnCount)
 						{
 
 							// Update
 							lnStart	= min(lnStart, comp->start);
-							lnEnd	= max(lnEnd, comp->start + comp->length);
+							lnEnd	= max(lnEnd, comp->start + comp->text.length);
 
 							// Are we done?
 							if (compEnd && comp == compEnd)
 								break;	// Yup
 
 						}
+#endif
 
 
 					//////////
@@ -2425,8 +2462,10 @@
 						{
 							// Length and allocation
 							lnLength = lnEnd - lnStart;
+#ifdef _SHOW_REFACTOR_ERRORS
 							iDatum_allocateSpace(line->sourceCode, lnLength + 1);
-							memset(line->sourceCode->data._s8, 32, lnLength);
+							memset(line->sourceCode.data_s8, 32, lnLength);
+#endif
 						}
 
 
@@ -2439,17 +2478,19 @@
 						for (comp = compStart; comp; comp = comp->ll.nextComp, lnCount++)
 						{
 
+#ifdef _SHOW_REFACTOR_ERRORS
 							//////////
 							// Copy if need be
 							//////
 								if (!tlMakeReferences)
-									memcpy(line->sourceCode->data._s8 + comp->start - lnStart, comp->line->sourceCode->data._cs8 + comp->start, comp->length);
+									memcpy(line->sourceCode.data_s8 + comp->start - lnStart, comp->line->sourceCode.data_cs8 + comp->start, comp->text.length);
 
 
 							//////////
 							// Append the component
 							//////
 								compNew = newAlloc(SComp, line->compilerInfo->firstComp);
+#endif
 
 							
 							//////////
@@ -2514,7 +2555,7 @@
 					//////////
 					// Compute extents
 					//////
-						lnStart		= compStart->line->sourceCode->length;
+						lnStart		= compStart->line->sourceCode.length;
 						lnEnd		= 0;
 						cb->line	= line;
 						for (comp = compStart, llContinue = true; llContinue && comp; comp= comp->ll.nextComp)
@@ -2530,8 +2571,10 @@
 							//////////
 							// Update extents for this component
 							//////
+#ifdef _SHOW_REFACTOR_ERRORS
 								lnStart	= min(lnStart, comp->start);
-								lnEnd	= max(lnEnd, comp->start + comp->length);
+								lnEnd	= max(lnEnd, comp->start + comp->text.length);
+#endif
 
 						}
 
@@ -2540,8 +2583,10 @@
 						{
 							// Length and allocation
 							lnLength = lnEnd - lnStart;
+#ifdef _SHOW_REFACTOR_ERRORS
 							iDatum_allocateSpace(line->sourceCode, lnLength + 1);
-							memset(line->sourceCode->data._s8, 32, lnLength);
+							memset(line->sourceCode.data_s8, 32, lnLength);
+#endif
 						}
 
 
@@ -2561,17 +2606,19 @@
 								llContinue	= cb->func(cb);
 
 
+#ifdef _SHOW_REFACTOR_ERRORS
 							//////////
 							// Copy if need be
 							//////
 								if (!tlMakeReferences)
-									memcpy(line->sourceCode->data._s8 + comp->start - lnStart, comp->line->sourceCode->data._cs8 + comp->start, comp->length);
+									memcpy(line->sourceCode.data_s8 + comp->start - lnStart, comp->line->sourceCode.data_cs8 + comp->start, comp->text.length);
 
 
 							//////////
 							// Append the component
 							//////
 								compNew = newAlloc(SComp, line->compilerInfo->firstComp);
+#endif
 
 							
 							//////////
@@ -2612,7 +2659,9 @@
 	bool iiComps_areCompsAdjacent(SComp* compLeft, SComp* compRight)
 	{
 		// If [start+length] equals [start] of the next, they're adjacent
+#ifdef _SHOW_REFACTOR_ERRORS
 		return(compLeft->start + compLeft->length == compRight->start);
+#endif
 	}
 
 
@@ -2626,7 +2675,9 @@
 	s32 iiComps_get_charactersBetween(SComp* compLeft, SComp* compRight)
 	{
 		// Start of right component and end of left component
+#ifdef _SHOW_REFACTOR_ERRORS
 		return(compRight->start - (compLeft->start + compLeft->length));
+#endif
 	}
 
 
@@ -2642,11 +2693,11 @@
 		s8 buffer[32];
 
 
-		if (comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data._s8 && comp->line->sourceCode_populatedLength > 0)
+		if (comp && comp->line && comp->line->sourceCode._data && comp->line->sourceCode.length > 0)
 		{
 			// Copy to a buffer
-			memcpy(buffer, comp->line->sourceCode->data._s8 + comp->start, min(comp->length, (s32)sizeof(buffer) - 1));
-			buffer[comp->length] = 0;
+			memcpy(buffer, comp->text.data_s8, min(comp->text.length, (s32)sizeof(buffer) - 1));
+			buffer[comp->text.length] = 0;
 			return(atoi(buffer));
 		}
 		
@@ -2659,11 +2710,11 @@
 		s8 buffer[32];
 
 
-		if (comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data._s8 && comp->line->sourceCode_populatedLength > 0)
+		if (comp && comp->line && comp->line->sourceCode._data && comp->line->sourceCode.length > 0)
 		{
 			// Copy to a buffer
-			memcpy(buffer, comp->line->sourceCode->data._s8 + comp->start, min(comp->length, (s32)sizeof(buffer) - 1));
-			buffer[comp->length] = 0;
+			memcpy(buffer, comp->text.data_s8, min(comp->text.length, (s32)sizeof(buffer) - 1));
+			buffer[comp->text.length] = 0;
 			return(_atoi64(buffer));
 		}
 
@@ -2676,11 +2727,11 @@
 		s8 buffer[32];
 
 
-		if (comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data._s8 && comp->line->sourceCode_populatedLength > 0)
+		if (comp && comp->line && comp->line->sourceCode._data && comp->line->sourceCode.length > 0)
 		{
 			// Copy to a buffer
-			memcpy(buffer, comp->line->sourceCode->data._s8 + comp->start, min(comp->length, (s32)sizeof(buffer) - 1));
-			buffer[comp->length] = 0;
+			memcpy(buffer, comp->text.data_s8, min(comp->text.length, (s32)sizeof(buffer) - 1));
+			buffer[comp->text.length] = 0;
 			return(atof(buffer));
 		}
 
@@ -2705,8 +2756,8 @@
 	{
 		s8 buffer[32];
 
-		memcpy(buffer, comp->line->sourceCode->data._s8 + comp->start, min(comp->length, (s32)sizeof(buffer) - 1));
-		buffer[comp->length] = 0;
+		memcpy(buffer, comp->text.data_s8, min(comp->text.length, (s32)sizeof(buffer) - 1));
+		buffer[comp->text.length] = 0;
 		return(atoi(buffer));
 	}
 
@@ -2714,8 +2765,8 @@
 	{
 		s8 buffer[32];
 
-		memcpy(buffer, comp->line->sourceCode->data._s8 + comp->start, min(comp->length, (s32)sizeof(buffer) - 1));
-		buffer[comp->length] = 0;
+		memcpy(buffer, comp->text.data_s8, min(comp->text.length, (s32)sizeof(buffer) - 1));
+		buffer[comp->text.length] = 0;
 		return(_atoi64(buffer));
 	}
 
@@ -2723,8 +2774,8 @@
 	{
 		s8 buffer[32];
 
-		memcpy(buffer, comp->line->sourceCode->data._s8 + comp->start, min(comp->length, (s32)sizeof(buffer) - 1));
-		buffer[comp->length] = 0;
+		memcpy(buffer, comp->text.data_s8, min(comp->text.length, (s32)sizeof(buffer) - 1));
+		buffer[comp->text.length] = 0;
 		return(atof(buffer));
 	}
 
@@ -2733,11 +2784,11 @@
 	SDatum* iiComps_populateAs_datum(SDatum* datum, SComp* comp)
 	{
 		// Populate if possible
-		if (datum && comp && comp->line && comp->line->sourceCode)
+		if (datum && comp && comp->line && comp->line->sourceCode._data && comp->line->sourceCode.length > 0)
 		{
 			// Store the component's name
-			datum->data._cs8	= comp->line->sourceCode->data._cs8 + comp->start;
-			datum->length		= comp->length;
+			datum->data_cs8		= comp->text.data_cs8;
+			datum->length		= comp->text.length;
 		}
 
 		// Pass-thru
@@ -2796,7 +2847,7 @@
 					//////////
 					// Increase our length
 					//////
-						lnLength += comp->length;
+						lnLength += comp->text.length;
 
 
 					//////////
@@ -2824,13 +2875,13 @@
 						// If it's valid, add it
 						if (iiComps_validate(comp, valid_iCodeArray, tnValid_iCodeArrayCount))
 						{
-							lnLength += comp->length;	// It's valid
+							lnLength += comp->text.length;	// It's valid
 							++lnCount;
 						}
 
 					} else {
 						// No validation, just add it in
-						lnLength += comp->length;
+						lnLength += comp->text.length;
 						++lnCount;
 					}
 				}
@@ -2902,12 +2953,12 @@
 
 
 		// First character must be alpha
-		if (isAlpha(comp->line->sourceCode->data._s8[comp->start]))
+		if (isAlpha(comp->text.data_s8[0]))
 		{
-			for (lnI = 1; lnI < comp->length; lnI++)
+			for (lnI = 1; lnI < comp->text.length; lnI++)
 			{
 				// Test this character
-				c = comp->line->sourceCode->data._s8[comp->start + lnI];
+				c = comp->text.data_s8[lnI];
 				if (!isAlpha(c) && !isNumeric(c))
 					return(false);
 			}
@@ -2929,7 +2980,7 @@
 //////
 	s8* iComps_visualize(SComp* comp, s32 tnCount, s8* outputBuffer, s32 tnBufferLength, bool tlUseDefaultCompSearcher, SAsciiCompSearcher* tsComps1, SAsciiCompSearcher* tsComps2)
 	{
-		s32						lnI, lnJ, lnLength, lnOffset;
+		s32						lnI, lnJ/*, lnLength*/, lnOffset;
 		bool					llFound;
 		SAsciiCompSearcher*		lacs;
 		s8*						lciCodeName;
@@ -2982,12 +3033,13 @@
 										// This is a match, visualize it as:  [text]
 										memset(accumBuffer, 0, sizeof(accumBuffer));
 										sprintf(accumBuffer, "[");
-										memcpy(accumBuffer + strlen(accumBuffer), comp->line->sourceCode->data._s8 + comp->start, min(comp->length, (s32)sizeof(accumBuffer) - 20));
+										memcpy(accumBuffer + strlen(accumBuffer), comp->text.data_s8, min(comp->text.length, (s32)sizeof(accumBuffer) - 20));
 
 										if ((lciCodeName = iiComps_visualize_lookup_iCode(comp->iCode)))	sprintf(accumBuffer + strlen(accumBuffer), " %s,", lciCodeName);
 										else																sprintf(accumBuffer + strlen(accumBuffer), " %d,", comp->iCode);
 
-										sprintf(accumBuffer + strlen(accumBuffer), "%u,%u]", comp->start, comp->length);
+#ifdef _SHOW_REFACTOR_ERRORS
+										sprintf(accumBuffer + strlen(accumBuffer), "%u,%u]", comp->start, comp->text.length);
 
 										// Copy to our output
 										lnLength = min(tnBufferLength - lnOffset, (s32)strlen(accumBuffer));
@@ -3004,6 +3056,7 @@
 											sprintf(outputBuffer + lnOffset, "-->");
 											lnOffset += 3;
 										}
+#endif
 
 										// All done
 										llFound = true;
@@ -3022,12 +3075,13 @@
 								// Visualize the raw text as an unknown form
 								memset(accumBuffer, 0, sizeof(accumBuffer));
 								sprintf(accumBuffer, "[");
-								memcpy(accumBuffer+ strlen(accumBuffer), comp->line->sourceCode->data._s8 + comp->start, min(comp->length, (s32)sizeof(accumBuffer) - 20));
+								memcpy(accumBuffer+ strlen(accumBuffer), comp->text.data_s8, min(comp->text.length, (s32)sizeof(accumBuffer) - 20));
 
 								if ((lciCodeName = iiComps_visualize_lookup_iCode(comp->iCode)))	sprintf(accumBuffer + strlen(accumBuffer), " %s,", lciCodeName);
 								else																sprintf(accumBuffer + strlen(accumBuffer), " %d,", comp->iCode);
 
-								sprintf(accumBuffer + strlen(accumBuffer), "%u,%u]", comp->start, comp->length);
+#ifdef _SHOW_REFACTOR_ERRORS
+								sprintf(accumBuffer + strlen(accumBuffer), "%u,%u]", comp->start, comp->text.length);
 
 								// Copy to our output
 								lnLength = min(tnBufferLength - lnOffset, (s32)strlen(accumBuffer));
@@ -3044,6 +3098,7 @@
 									sprintf(outputBuffer + lnOffset, "-->");
 									lnOffset += 3;
 								}
+#endif
 							}
 
 				}
@@ -3326,7 +3381,7 @@
 				lnLacsLength = abs(lacs->length);
 
 				// We only test if they're the same length
-				if (lnLacsLength == comp->length || (lacs->repeats && lnLacsLength <= comp->length))
+				if (lnLacsLength == comp->text.length || (lacs->repeats && lnLacsLength <= comp->text.length))
 				{
 					// We only test if this item is not the first item on line, or if must be the first
 					// item on the line, then this component must be the first component on the line.  Simple, yes? :-)
@@ -3334,7 +3389,7 @@
 					{
 						// Physically conduct the exact comparison
 						if (iComps_xlatToComps_withTest(lacs->keyword_cu8,
-														comp->line->sourceCode->data._u8 + comp->start,
+														comp->text.data_cu8,
 														lacs->length) == 0)
 						{
 							// This is a match
@@ -3402,13 +3457,14 @@ debug_break;
 //////
 	void iiComps_xlatToOthers_callback__insertCompByParamsCallback(SComp* compRef, SLine* line, u32 tniCode, u32 tnStart, s32 tnLength, bool tlInsertAfter)
 	{
-		SComp* compNew;
-		SComp* compRoot;
+// 		SComp* compNew;
+// 		SComp* compRoot;
 
 
 // TODO:  untested code, breakpoint and examine
 debug_break;
 		// Make sure our environment is sane
+#ifdef _SHOW_REFACTOR_ERRORS
 		if (compRef && line && line->compilerInfo)
 		{
 			// Create a copy
@@ -3429,6 +3485,7 @@ debug_break;
 				iiComps_xlatToOthers_callback__insertCompByCompCallback(compRef, compNew, tlInsertAfter);
 			}
 		}
+#endif
 	}
 
 
@@ -3483,13 +3540,14 @@ debug_break;
 	SComp* iiComps_xlatToOthers_callback__cloneCompsCallback(SComp* comp, SLine* line)
 	{
 		SComp* compNew;
-		SComp* compRoot;
+// 		SComp* compRoot;
 
 
 // TODO:  untested code, breakpoint and examine
 debug_break;
 		// Make sure our environment is sane
 		compNew = NULL;
+#ifdef _SHOW_REFACTOR_ERRORS
 		if (comp)
 		{
 			// Are we adding to to a line?
@@ -3511,10 +3569,11 @@ debug_break;
 				compNew->line		= line;
 				compNew->iCode		= comp->iCode;
 				compNew->start		= comp->start;
-				compNew->length		= comp->length;
+				compNew->length		= comp->text.length;
 				// All done!
 			}
 		}
+#endif
 
 		// Return our new one, no matter if it was a success or not
 		return(compNew);
@@ -3549,7 +3608,7 @@ debug_break;
 			for (lnI = 1, compThis = comp->ll.nextComp; compThis && lnI < tnCount; lnI++, compThis = comp->ll.nextComp)
 			{
 				// Absorb compThis's length into comp's "collective"
-				comp->length += compThis->length;
+				comp->text.length += compThis->text.length;
 
 				// Delete this component
 				iiComps_xlatToOthers_callback__deleteCompsCallback(compThis, comp->line);
@@ -3572,8 +3631,10 @@ debug_break;
 //////
 	void iComp_appendError(SComp* comp, u32 tnErrorNum, cu8* tcMessage)
 	{
+#ifdef _SHOW_REFACTOR_ERRORS
 		if (comp && comp->line)
-			iLine_appendError(comp->line, tnErrorNum, tcMessage, comp->start, comp->length);
+			iLine_appendError(comp->line, tnErrorNum, tcMessage, comp->start, comp->text.length);
+#endif
 	}
 
 
@@ -3586,8 +3647,10 @@ debug_break;
 //////
 	void iComp_appendWarning(SComp* comp, u32 tnWarningNum, cu8* tcMessage)
 	{
+#ifdef _SHOW_REFACTOR_ERRORS
 		if (comp && comp->line)
-			iLine_appendWarning(comp->line, tnWarningNum, tcMessage, comp->start, comp->length);
+			iLine_appendWarning(comp->line, tnWarningNum, tcMessage, comp->start, comp->text.length);
+#endif
 	}
 
 

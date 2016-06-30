@@ -102,7 +102,7 @@
 			{
 				// We need to allocate the initial data block
 				iDatum_allocateSpace(line->sourceCode, max((s32)_SEM_MINIMUM_LINE_ALLOCATION_LENGTH, newLineLength));
-				line->sourceCode_populatedLength = 0;
+				line->populatedLength = 0;
 			}
 
 			// Is there room from where we are to the new line length?
@@ -783,35 +783,35 @@ goto_next_component:
 		{
 			// Make sure there's room enough for the keystroke
 			line = sem->line_cursor;
-			if (iLine_ensureLineLength(sem, sem->line_cursor->sourceCode_populatedLength + 1))
+			if (iLine_ensureLineLength(sem, sem->line_cursor->populatedLength + 1))
 			{
 				// They could've been beyond the end of line, and if so then we need to insert spaces between the end and here
-				if (sem->columnEdit > line->sourceCode_populatedLength)
+				if (sem->columnEdit > line->populatedLength)
 				{
 					// Fill with spaces
-					for (lnI = line->sourceCode_populatedLength; lnI < sem->columnEdit; lnI++)
-						line->sourceCode->data._s8[lnI] = ' ';
+					for (lnI = line->populatedLength; lnI < sem->columnEdit; lnI++)
+						line->sourceCode.data_s8[lnI] = ' ';
 				}
 
 				// Move everything from the end of the line to where we are right one character
-				for (lnI = line->sourceCode_populatedLength + 1; lnI > sem->columnEdit && lnI > 0; lnI--)
-					line->sourceCode->data._s8[lnI] = line->sourceCode->data._s8[lnI - 1];
+				for (lnI = line->populatedLength + 1; lnI > sem->columnEdit && lnI > 0; lnI--)
+					line->sourceCode.data_s8[lnI] = line->sourceCode.data_s8[lnI - 1];
 
 				// Signal the update
 				iExtraInfo_update(sem, sem->line_cursor);
 
 				// Insert the character
-				line->sourceCode->data._s8[sem->columnEdit] = asciiChar;
+				line->sourceCode.data_s8[sem->columnEdit] = asciiChar;
 
 				// Move to the next column
 				++sem->columnEdit;
 
 				// Increase the populated length
-				++line->sourceCode_populatedLength;
+				++line->populatedLength;
 
 				// If we're past the end, we need to indicate our populated line length
-				if (sem->columnEdit > line->sourceCode_populatedLength)
-					line->sourceCode_populatedLength = sem->columnEdit;
+				if (sem->columnEdit > line->populatedLength)
+					line->populatedLength = sem->columnEdit;
 
 				// Indicate success
 				return(true);
@@ -841,9 +841,9 @@ goto_next_component:
 		{
 			// Is there room to inject it?
 			line = sem->line_cursor;
-			if (iLine_ensureLineLength(sem, sem->line_cursor->sourceCode_populatedLength + 1))
+			if (iLine_ensureLineLength(sem, sem->line_cursor->populatedLength + 1))
 			{
-				if (sem->columnEdit > line->sourceCode_populatedLength)
+				if (sem->columnEdit > line->populatedLength)
 				{
 					// We need to insert it because we're at the end of the populated length
 					return(iLine_characterInsert(sem, asciiChar));
@@ -852,25 +852,25 @@ goto_next_component:
 					// We can overwrite it
 
 					// They could've been beyond the end of line, and if so then we need to insert spaces between the end and here
-					if (sem->columnEdit > line->sourceCode_populatedLength)
+					if (sem->columnEdit > line->populatedLength)
 					{
 						// Fill with spaces
-						for (lnI = line->sourceCode_populatedLength; lnI < sem->columnEdit; lnI++)
-							line->sourceCode->data._s8[lnI] = ' ';
+						for (lnI = line->populatedLength; lnI < sem->columnEdit; lnI++)
+							line->sourceCode.data_s8[lnI] = ' ';
 					}
 
 					// Signal the update
 					iExtraInfo_update(sem, sem->line_cursor);
 
 					// Overwrite the character
-					line->sourceCode->data._s8[sem->columnEdit] = asciiChar;
+					line->sourceCode.data_s8[sem->columnEdit] = asciiChar;
 
 					// Move to the next column
 					++sem->columnEdit;
 
 					// If we're past the end, we need to indicate our populated line length
-					if (sem->columnEdit > line->sourceCode_populatedLength)
-						line->sourceCode_populatedLength = sem->columnEdit;
+					if (sem->columnEdit > line->populatedLength)
+						line->populatedLength = sem->columnEdit;
 
 					// Indicate success
 					return(true);
@@ -904,20 +904,20 @@ goto_next_component:
 			line = sem->line_cursor;
 
 			// If we're in the populated area
-			if (sem->columnEdit < line->sourceCode_populatedLength)
+			if (sem->columnEdit < line->populatedLength)
 			{
 				// Move everything left one character
-				for (lnI = sem->columnEdit; lnI < line->sourceCode_populatedLength; lnI++)
-					line->sourceCode->data._s8[lnI] = line->sourceCode->data._s8[lnI + 1];
+				for (lnI = sem->columnEdit; lnI < line->populatedLength; lnI++)
+					line->sourceCode.data_s8[lnI] = line->sourceCode.data_s8[lnI + 1];
 
 				// Signal the update
 				iExtraInfo_update(sem, sem->line_cursor);
 
 				// Reduce the length of the populated portion of the line by one
-				--line->sourceCode_populatedLength;
+				--line->populatedLength;
 
 				// Put a space there
-				line->sourceCode->data._s8[line->sourceCode_populatedLength] = 32;
+				line->sourceCode.data_s8[line->populatedLength] = 32;
 
 				// Indicate success
 				return(true);
@@ -978,11 +978,11 @@ goto_next_component:
 		if (ec && ec->sourceCode && ec->sourceCodeOriginal)
 		{
 			// Test lengths
-			if (ec->sourceCode_populatedLength != ec->sourceCodeOriginal->length)
+			if (ec->populatedLength != ec->sourceCodeOriginal->length)
 				return(true);		// They are different lengths
 
 			// Test content
-			if (memcmp(ec->sourceCode->data._s8, ec->sourceCodeOriginal->data._s8, ec->sourceCode_populatedLength) != 0)
+			if (memcmp(ec->sourceCode->data_s8, ec->sourceCodeOriginal->data_s8, ec->populatedLength) != 0)
 				return(true);		// The content is different
 		}
 		// If we get here, not changed

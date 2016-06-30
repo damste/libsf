@@ -85,40 +85,9 @@
 
 //////////
 // SEM lines
+// Line functions
 //////
-	struct SLine
-	{
-		SLL				ll;												// 2-way link list
-		u32				uid;											// Unique id for this line, used for undos and identifying individual lines which may move about (note this value must be isolated and separate from ll.uniqueId)
-		union
-		{
-			void*		parent;											// A parent this relates to, which could be a controlling structure (like an SEM*)
-			SEM*		sem;											// Parent SEM this belongs to
-		};
-
-		// Line information
-		u32				lineNumber;										// This line's number
-		s32				lineStatus;										// See _LINESTATUS_* constants
-		SDatum			sourceCodeOriginal;								// The original sourceCode when the line was first created, or last saved (note the length here is the total length as this value does not change, but is setup exactly when it is updated)
-		SDatum			sourceCode;										// The text on this line is LEFT(sourceCode.data, sourceCodePopulated)
-		s32				populatedLength;								// The actual populated length of sourceCode, which may differ from sourceCode.length (which is the allocated length of sourceCode.data)
-
-																		// Optional related components associated with this line
-		SComp*			firstComp;
-
-		// Information related to this line
-		SBuilder*		extra_info;										// (SExtraInfo) extra information about this line
-
-																		// Each render, these are updated
-		u32				renderId;										// Each time it's rendered, this value is set
-		RECT			rcLastRender;									// The rectangle within the parent of the last render
-	};
-
-
-//////////
-// Forward declarations
-//////
-	// Line functions
+	// Forward declarations
 	void					iLine_ensureLineLength						(SLine* em, s32 newLineLength);
 	void					iLine_free									(SLine** root, bool tlDeleteSelf);
 	SLine*					iLine_createNew								(bool tlAllocCompilerInfo);

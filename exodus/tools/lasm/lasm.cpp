@@ -136,6 +136,7 @@
 		SLasmInclude*	include;
 		SLasmCmdLine	cmdLine;
 		s8				fileName[_MAX_PATH];
+		SBuilder*		builder;
 
 
 		// Initialize our engine
@@ -283,7 +284,7 @@
 			{
 				// Identify the file on the first pass
 				if (lnPass == 0)
-					printf("--Assembling %s\n", file->fileName.data._s8);
+					printf("--Assembling %s\n", file->fileName.data_s8);
 
 				// Dispatch the pass on this file
 				switch (lnPass)

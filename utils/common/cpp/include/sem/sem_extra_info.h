@@ -93,8 +93,8 @@
 //////////
 // ExtraInfo
 //////
-	SExtraInfo*		iExtraInfo_allocate						(SEM* sem, SLine* line, SExtraInfo** root);
-	void			iExtraInfo_removeAll					(SEM* sem, SLine* line, SExtraInfo** root, bool tlDeleteSelf);
+	SExtraInfo*		iExtraInfo_allocate						(SEM* sem, SLine* line, SBuilder** root);
+	void			iExtraInfo_removeAll					(SEM* sem, SLine* line, SBuilder** root);
 	void			iExtraInfo_access						(SEM* sem, SLine* line);
 	void			iExtraInfo_arrival						(SEM* sem, SLine* line);
 	void			iExtraInfo_update						(SEM* sem, SLine* line);

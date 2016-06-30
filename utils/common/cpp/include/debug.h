@@ -83,30 +83,3 @@
 
 
 
-// Breakpoints during execution
-#define _SBREAKPOINT_DEFINED 1
-// Breakpoint types
-cu32	_BREAKPOINT_NONE								= 0;	// No breakpoint
-cu32	_BREAKPOINT_ALWAYS								= 1;	// Always stops
-cu32	_BREAKPOINT_CONDITIONAL_TRUE					= 2;	// Breaks when the condition is true
-cu32	_BREAKPOINT_CONDITIONAL_FALSE					= 3;	// Breaks when the condition is false
-cu32	_BREAKPOINT_CONDITIONAL_TRUE_COUNTDOWN			= 4;	// Breaks when the condition is true, and the countdown reaches zero
-cu32	_BREAKPOINT_CONDITIONAL_FALSE_COUNTDOWN			= 5;	// Breaks when the condition is false, and the countdown reaches zero
-cu32	_BREAKPOINT_CODEPOINT							= 6;	// Executes code when encountered
-cu32	_BREAKPOINT_SOUND_ON_BREAK						= 7;	// Plays a sound when the break is encountered
-struct SBreakpoint
-{
-	// See _BREAKPOINT_* constants
-	u32				type;
-	bool			isUsed;								// Allocated in gBreakpoints as a bulk structure
-	s32				soundChannel;						// Sound channel to engage when the breakpoint is encountered
-	SBitmap*		bmpImage;							// Image to display when encountered
-	u32				osKey;								// Keystroke to use to continue (allows certain breakpoints to not continue on normal RESUME command)
-
-	// If there's a countdown
-	u32				countdownResetValue;				// The value the countdown will reset to once it fires, if 0 always fires
-	u32				countdown;							// Countdown to 0 when it fires
-
-	// Information related to this breakpoint
-	SBuilder*		extra_info;							// (SExtraInfo) extra information about this breakpoint
-};

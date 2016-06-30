@@ -173,8 +173,8 @@
 							//////////
 							// If populated, append its content
 							//////
-								if (line->sourceCode && line->sourceCode_populatedLength > 0)
-									iBuilder_appendData(b, line->sourceCode->data._u8, line->sourceCode_populatedLength);
+								if (line->sourceCode._data && line->populatedLength > 0)
+									iBuilder_appendData(b, line->sourceCode.data_u8, line->populatedLength);
 
 
 							//////////
@@ -296,7 +296,7 @@
 			if (iBuilder_asciiReadFromFile(&content, tcPathname))
 			{
 				// Load it
-				datum.data._s8	= content->data_s8;
+				datum.data_s8	= content->data_s8;
 				datum.length	= content->populatedLength;
 				llResult		= iSEM_load_fromMemory(objParent, sem, &datum, isSourceCode, false);
 
@@ -350,7 +350,7 @@
 			for (lnI = 0, lnLast = 0; lnI <= datum->length; )
 			{
 				// Are we on a CR/LF combination?
-				for (lnJ = 0; lnI < datum->length && (datum->data._u8[lnI] == 13 || datum->data._u8[lnI] == 10) && lnJ < 2; lnJ++)
+				for (lnJ = 0; lnI < datum->length && (datum->data_u8[lnI] == 13 || datum->data_u8[lnI] == 10) && lnJ < 2; lnJ++)
 					++lnI;	// Increase also past this CR/LF character
 
 				// If we found a CR/LF combination
@@ -360,11 +360,11 @@
 					if (!llOtherCharacters)
 					{
 						// We only had CR+LF characters, no data
-						end = iSEM_appendLine(sem, datum->data._u8 + lnLast, 0, false);
+						end = iSEM_appendLine(sem, datum->data_u8 + lnLast, 0, false);
 
 					} else {
 						// We had at least some data
-						end = iSEM_appendLine(sem, datum->data._u8 + lnLast, lnI - lnJ - lnLast, false);
+						end = iSEM_appendLine(sem, datum->data_u8 + lnLast, lnI - lnJ - lnLast, false);
 					}
 					if (!start)
 						start = end;
@@ -860,7 +860,7 @@ debug_break;
 //////
 	SLine* iSEM_appendLine(SEM* sem, SLine* line, bool tlSetNewLineFlag)
 	{
-		return(iSEM_appendLine(sem, line->sourceCode->data._u8, line->sourceCode_populatedLength, tlSetNewLineFlag));
+		return(iSEM_appendLine(sem, line->sourceCode.data_u8, line->populatedLength, tlSetNewLineFlag));
 	}
 
 	SLine* iSEM_appendLine(SEM* sem, u8* tcText, s32 tnTextLength, bool tlSetNewLineFlag)
@@ -881,7 +881,7 @@ debug_break;
 			{
 				// Append after the last line
 #ifdef _VJR_COMPILE
-				if (sem == screenData && sem->lastLine == sem->firstLine && sem->line_cursor->sourceCode_populatedLength == 0)
+				if (sem == screenData && sem->lastLine == sem->firstLine && sem->line_cursor->populatedLength == 0)
 				{
 					// A special case for the command window, where the top line persists after a CLEAR, and must be populated before continuing
 					// So, we don't do anything here ... just leave re-use the existing line
@@ -939,7 +939,7 @@ debug_break;
 							{
 								// Expand the difference with spaces
 								for (lnJ = 0; lnJ < lnCount; lnJ++)
-									line->sourceCode->data._s8[lnTextLength + lnJ] = 32;		// Fill with spaces
+									line->sourceCode.data_s8[lnTextLength + lnJ] = 32;		// Fill with spaces
 							}
 
 							// Skip past our added space
@@ -948,7 +948,7 @@ debug_break;
 						} else {
 							// Copy one character on pass 1
 							if (lnPass == 1)
-								line->sourceCode->data._s8[lnTextLength] = tcText[lnI];
+								line->sourceCode.data_s8[lnTextLength] = tcText[lnI];
 
 							// Increase by one
 							++lnTextLength;
@@ -959,14 +959,18 @@ debug_break;
 					if (lnPass == 0)
 					{
 						// Allocate the datum
+#ifdef _SHOW_REFACTOR_ERRORS
 						line->sourceCode = iDatum_allocate((u8*)NULL, 0);
+#endif
 
 						// Allocate space for the copy if there's any data
+#ifdef _SHOW_REFACTOR_ERRORS
 						if (lnTextLength != 0)
 							iDatum_allocateSpace(line->sourceCode, lnTextLength);
+#endif
 
 						// Set the populated length
-						line->sourceCode_populatedLength	= lnTextLength;
+						line->populatedLength	= lnTextLength;
 					}
 				}
 
@@ -974,8 +978,10 @@ debug_break;
 				//////////
 				// Copy the content to the original content
 				//////
-					line->isNewLine	= tlSetNewLineFlag;
-					line->sourceCodeOriginal = iDatum_allocate(line->sourceCode->data._u8, line->sourceCode_populatedLength);
+#ifdef _SHOW_REFACTOR_ERRORS
+					(line->lineStatus == _LINESTATUS_NEW) = tlSetNewLineFlag;
+					line->sourceCodeOriginal = iDatum_allocate(line->sourceCode.data_u8, line->populatedLength);
+#endif
 
 
 				//////////
@@ -1018,7 +1024,9 @@ debug_break;
 				memset(ec, 0, sizeof(SLine));
 
 				// Append a blank line
+#ifdef _SHOW_REFACTOR_ERRORS
 				ec->sourceCode = iDatum_allocate(tcText, tnTextLength);
+#endif
 
 				// Insert before or after the indicated line
 				if (tlInsertAfter)
@@ -1082,7 +1090,9 @@ debug_break;
 				}
 
 				// Set the new line flag
-				ec->isNewLine = tlSetNewLineFlag;
+#ifdef _SHOW_REFACTOR_ERRORS
+				ec->lineStatus = ((tlSetNewLineFlag) ? _LINESTATUS_NEW : 0);
+#endif
 
 				// Renumber if need be
 				if (sem->showLineNumbers)
@@ -1130,7 +1140,7 @@ debug_break;
 				lineNewCursorLine = sem->line_top;
 
 				// GitHub:4 -- And set the populated length to 0
-				sem->line_top->sourceCode_populatedLength = 0;
+				sem->line_top->populatedLength = 0;
 			}
 
 			// Update anything that may have changed as a result
@@ -1320,7 +1330,7 @@ debug_break;
 
 		logfunc(__FUNCTION__);
 		// Make sure our environment is sane
-		if (sem && line && line->sourceCode && line->sourceCode->data._data && line->sourceCode_populatedLength > 0 && obj && tcText && sem->renderId == line->renderId)
+		if (sem && line && line->sourceCode && line->sourceCode.data._data && line->populatedLength > 0 && obj && tcText && sem->renderId == line->renderId)
 		{
 			// Make sure our length is valid
 			if (tnTextLength < 0)
@@ -1442,7 +1452,7 @@ debug_break;
 			// Determine what component they're currently on, and highlight any same-named references on-screen
 			//////
 				compHighlight = iComps_activeComp_inSEM(sem);
-				if (compHighlight && (!compHighlight->line || !compHighlight->line->sourceCode || !compHighlight->line->sourceCode->data._data))
+				if (compHighlight && (!compHighlight->line || !compHighlight->line->sourceCode || !compHighlight->line->sourceCode.data._data))
 					compHighlight = NULL;	// Invalid, ignore it
 
 
@@ -1554,7 +1564,7 @@ debug_break;
 				// Determine the position
 				//////
 					SetRect(&lrc2, rc.left, rc.top + lnTop, rc.right, rc.top + lnTop + (font->tm.tmHeight * 2));
-					DrawText(bmp->hdc, cvarSpace2000->value.data._s8, 1, &lrc2, DT_CALCRECT);
+					DrawText(bmp->hdc, cvarSpace2000->value.data_s8, 1, &lrc2, DT_CALCRECT);
 					SetRect(&lrc, rc.left, rc.top + lnTop, rc.right, rc.top + lnTop + (lrc2.bottom - lrc2.top));
 					if (lrc.bottom > rc.bottom)
 						lrc.bottom = rc.bottom;
@@ -1594,10 +1604,10 @@ debug_break;
 					CopyRect(&line->rcLastRender, &lrc);	// Store the rect for highlight messages
 
 					// Will we fit?
-					if (line->sourceCode->data._data && line->sourceCode_populatedLength > 0 && sem->columnLeft < line->sourceCode_populatedLength)
+					if (line->sourceCode.data._data && line->populatedLength > 0 && sem->columnLeft < line->populatedLength)
 					{
 						// Draw the portion that will fit
-						DrawText(bmp->hdc, line->sourceCode->data._s8 + sem->columnLeft, line->sourceCode_populatedLength - sem->columnLeft, &lrc2, DT_VCENTER | DT_LEFT | DT_SINGLELINE | DT_NOPREFIX | DT_CALCRECT);
+						DrawText(bmp->hdc, line->sourceCode.data_s8 + sem->columnLeft, line->populatedLength - sem->columnLeft, &lrc2, DT_VCENTER | DT_LEFT | DT_SINGLELINE | DT_NOPREFIX | DT_CALCRECT);
 						lrc2.right	= min(rc.right,  lrc2.right);
 						lrc2.bottom	= min(rc.bottom, lrc2.bottom);
 						// Set the clear border
@@ -1617,10 +1627,10 @@ debug_break;
 
 
 					// Do we need to draw anything?
-					if (line->sourceCode->data._data && line->sourceCode_populatedLength != 0 && line->sourceCode_populatedLength >= sem->columnLeft)
+					if (line->sourceCode.data._data && line->populatedLength != 0 && line->populatedLength >= sem->columnLeft)
 					{
 						// Draw the text
-						DrawText(bmp->hdc, line->sourceCode->data._s8 + sem->columnLeft, line->sourceCode_populatedLength - sem->columnLeft, &lrc2, DT_VCENTER | DT_LEFT | DT_SINGLELINE | DT_NOPREFIX);
+						DrawText(bmp->hdc, line->sourceCode.data_s8 + sem->columnLeft, line->populatedLength - sem->columnLeft, &lrc2, DT_VCENTER | DT_LEFT | DT_SINGLELINE | DT_NOPREFIX);
 
 						// If they're selecting, highlight the selected portion
 						if (line->compilerInfo && line->compilerInfo->firstComp)
@@ -1632,7 +1642,7 @@ debug_break;
 
 
 						// For source code, we perform syntax highlighting
-						if (sem->isSourceCode && line->compilerInfo && line->compilerInfo->firstComp && sem->columnLeft < line->sourceCode_populatedLength)
+						if (sem->isSourceCode && line->compilerInfo && line->compilerInfo->firstComp && sem->columnLeft < line->populatedLength)
 						{
 							// Source code, syntax highlight
 							if (sem->isSourceCode && line->compilerInfo && line->compilerInfo->firstComp)
@@ -1654,7 +1664,7 @@ debug_break;
 											{
 												// Copy to a temporary buffer
 												lnBufferLength = min(comp->length, (s32)sizeof(buffer));
-												memcpy(buffer, comp->line->sourceCode->data._s8 + comp->start, lnBufferLength);
+												memcpy(buffer, comp->line->sourceCode.data_s8 + comp->start, lnBufferLength);
 
 												// Remove nbsp characters
 												for (lnJ = 0; lnJ < lnBufferLength; lnJ++)
@@ -1669,7 +1679,7 @@ debug_break;
 
 											} else {
 												// No nbsp characters, so just draw whatever's there
-												textptr = comp->line->sourceCode->data._s8 + comp->start;
+												textptr = comp->line->sourceCode.data_s8 + comp->start;
 											}
 
 										// Fore color
@@ -1716,12 +1726,12 @@ debug_break;
 
 										// Find out where it starts
 										SetRect(&lrcCompCalcStart, 0, 0, 200000, lrc.bottom);
-										if (comp->start != 0)		DrawText(bmp->hdc, cvarSpace2000->value.data._s8, comp->start, &lrcCompCalcStart, DT_VCENTER | DT_LEFT | DT_SINGLELINE | DT_NOPREFIX | DT_CALCRECT);
+										if (comp->start != 0)		DrawText(bmp->hdc, cvarSpace2000->value.data_s8, comp->start, &lrcCompCalcStart, DT_VCENTER | DT_LEFT | DT_SINGLELINE | DT_NOPREFIX | DT_CALCRECT);
 										else						SetRect(&lrcCompCalcStart, 0, 0, 0, lrc.bottom);
 
 										// Find out how long it dwells
 										SetRect(&lrcCompCalcDwell, lrcCompCalcStart.right, 0, 200000, lrc.bottom);
-										DrawText(bmp->hdc, cvarSpace2000->value.data._s8, comp->length, &lrcCompCalcDwell, DT_VCENTER | DT_LEFT | DT_SINGLELINE | DT_NOPREFIX | DT_CALCRECT);
+										DrawText(bmp->hdc, cvarSpace2000->value.data_s8, comp->length, &lrcCompCalcDwell, DT_VCENTER | DT_LEFT | DT_SINGLELINE | DT_NOPREFIX | DT_CALCRECT);
 										SetRect(&lrcComp, rc.left + lrcCompCalcDwell.left, lrc2.top, rc.left + lrcCompCalcDwell.right, lrc2.bottom);
 
 										// Do we need to adjust it back for scrolling?
@@ -1734,7 +1744,7 @@ debug_break;
 										}
 
 										// Is this a component that should be highlighted?
-										if (compHighlight && comp != compHighlight && comp->length == compHighlight->length && _memicmp(comp->line->sourceCode->data._s8 + comp->start, compHighlight->line->sourceCode->data._s8 + compHighlight->start, comp->length) == 0)
+										if (compHighlight && comp != compHighlight && comp->length == compHighlight->length && _memicmp(comp->line->sourceCode.data_s8 + comp->start, compHighlight->line->sourceCode.data_s8 + compHighlight->start, comp->length) == 0)
 										{
 											SetBkMode(bmp->hdc, OPAQUE);
 											SetBkColor(bmp->hdc, RGB(highlightSymbolBackColor.red, highlightSymbolBackColor.grn, highlightSymbolBackColor.blu));
@@ -1828,7 +1838,7 @@ renderAsText:
 														nbspBackColor = *comp->overrideMatchingBackColor;
 
 													// Is this a component that should be highlighted?
-													if (compHighlight && comp != compHighlight && comp->length == compHighlight->length && _memicmp(comp->line->sourceCode->data._s8 + comp->start, compHighlight->line->sourceCode->data._s8 + compHighlight->start, comp->length) == 0)
+													if (compHighlight && comp != compHighlight && comp->length == compHighlight->length && _memicmp(comp->line->sourceCode.data_s8 + comp->start, compHighlight->line->sourceCode.data_s8 + compHighlight->start, comp->length) == 0)
 														nbspBackColor = highlightSymbolBackColor;
 
 													// Build it
@@ -1864,7 +1874,7 @@ renderAsOnlyText:
 													SetBkColor(bmp->hdc, RGB(comp->overrideMatchingBackColor->red, comp->overrideMatchingBackColor->grn, comp->overrideMatchingBackColor->blu));
 
 												// Is this a component that should be highlighted?
-												if (compHighlight && comp != compHighlight && comp->length == compHighlight->length && _memicmp(comp->line->sourceCode->data._s8 + comp->start, compHighlight->line->sourceCode->data._s8 + compHighlight->start, comp->length) == 0)
+												if (compHighlight && comp != compHighlight && comp->length == compHighlight->length && _memicmp(comp->line->sourceCode.data_s8 + comp->start, compHighlight->line->sourceCode.data_s8 + compHighlight->start, comp->length) == 0)
 													SetBkColor(bmp->hdc, RGB(highlightSymbolBackColor.red, highlightSymbolBackColor.grn, highlightSymbolBackColor.blu));
 
 												// Draw this component
@@ -1893,7 +1903,7 @@ renderAsOnlyText:
 												// If it's a comp that we're highlighting, highlight it
 //////////
 // Aug.16.2014 -- This is an optional way to highlight the component.  It draws a gradient over the component to signal its being highlighted.  Far too overt in my opinion.
-//												if (compHighlight && comp != compHighlight && comp->length == compHighlight->length && _memicmp(comp->line->sourceCode->data._s8 + comp->start, compHighlight->line->sourceCode->data._s8 + compHighlight->start, comp->length) == 0)
+//												if (compHighlight && comp != compHighlight && comp->length == compHighlight->length && _memicmp(comp->line->sourceCode.data_s8 + comp->start, compHighlight->line->sourceCode.data_s8 + compHighlight->start, comp->length) == 0)
 // 													iBmp_colorizeHighlightGradient(bmp, &lrcComp, overrideMatchingBackColor, 0.5f, 0.25f);
 //////
 											}
@@ -1936,14 +1946,14 @@ renderAsOnlyText:
 						if (sem->columnEdit != 0)
 						{
 							// It's somewhere on the line
-							DrawText(bmp->hdc, cvarSpace2000->value.data._s8, sem->columnEdit - sem->columnLeft, &lrcCompCalcStart, DT_VCENTER | DT_LEFT | DT_SINGLELINE | DT_NOPREFIX | DT_CALCRECT);
+							DrawText(bmp->hdc, cvarSpace2000->value.data_s8, sem->columnEdit - sem->columnLeft, &lrcCompCalcStart, DT_VCENTER | DT_LEFT | DT_SINGLELINE | DT_NOPREFIX | DT_CALCRECT);
 							SetRect(&lrcCompCalcDwell, lrcCompCalcStart.right, 0, lrc.right, lrc.bottom);
-							DrawText(bmp->hdc, cvarSpace2000->value.data._s8, 1, &lrcCompCalcDwell, DT_VCENTER | DT_LEFT | DT_SINGLELINE | DT_NOPREFIX | DT_CALCRECT);
+							DrawText(bmp->hdc, cvarSpace2000->value.data_s8, 1, &lrcCompCalcDwell, DT_VCENTER | DT_LEFT | DT_SINGLELINE | DT_NOPREFIX | DT_CALCRECT);
 							SetRect(&lrcComp, rc.left + lrcCompCalcDwell.left, lrc2.top, rc.left + lrcCompCalcDwell.right, lrc2.bottom);
 
 						} else {
 							// It's all the way to the left
-							DrawText(bmp->hdc, cvarSpace2000->value.data._s8, 1, &lrcCompCalcStart, DT_VCENTER | DT_LEFT | DT_SINGLELINE | DT_NOPREFIX | DT_CALCRECT);
+							DrawText(bmp->hdc, cvarSpace2000->value.data_s8, 1, &lrcCompCalcStart, DT_VCENTER | DT_LEFT | DT_SINGLELINE | DT_NOPREFIX | DT_CALCRECT);
 							SetRect(&lrcComp, rc.left + ((sem->isOverwrite) ? 0 : 1), lrc.top, rc.left + lrcCompCalcStart.right, lrc.bottom);
 						}
 
@@ -2113,16 +2123,16 @@ renderAsOnlyText:
 						iBmp_frameRect(bmp, &lrc3, tooltipForecolor, tooltipForecolor, tooltipForecolor, tooltipForecolor, false, NULL, false);
 
 						// Overlay the text
-						if (line->sourceCode->data._data && line->sourceCode_populatedLength != 0 && line->sourceCode_populatedLength >= sem->columnLeft)
+						if (line->sourceCode.data._data && line->populatedLength != 0 && line->populatedLength >= sem->columnLeft)
 						{
 							//////////
 							// Remove any nbsp characters
 							//////
-								if (iIsCharacterInHaystack(line->sourceCode->data._s8, line->sourceCode_populatedLength, -1, NULL))
+								if (iIsCharacterInHaystack(line->sourceCode.data_s8, line->populatedLength, -1, NULL))
 								{
 									// Copy to a temporary buffer
-									lnBufferLength = min(line->sourceCode_populatedLength - sem->columnLeft, (s32)sizeof(buffer));
-									memcpy(buffer, line->sourceCode->data._s8 + sem->columnLeft, lnBufferLength);
+									lnBufferLength = min(line->populatedLength - sem->columnLeft, (s32)sizeof(buffer));
+									memcpy(buffer, line->sourceCode.data_s8 + sem->columnLeft, lnBufferLength);
 
 									// Remove nbsp characters
 									for (lnJ = 0; lnJ <= lnBufferLength; lnJ++)
@@ -2137,8 +2147,8 @@ renderAsOnlyText:
 
 								} else {
 									// No nbsp characters, so just draw whatever's there
-									textptr			= line->sourceCode->data._s8 + sem->columnLeft;
-									lnBufferLength	= line->sourceCode_populatedLength - sem->columnLeft;
+									textptr			= line->sourceCode.data_s8 + sem->columnLeft;
+									lnBufferLength	= line->populatedLength - sem->columnLeft;
 								}
 
 
@@ -2182,10 +2192,10 @@ renderAsOnlyText:
 						iBmp_frameRect(bmp, &lrc3, tooltipForecolor, tooltipForecolor, tooltipForecolor, tooltipForecolor, false, NULL, false);
 
 						// Overlay the text
-						if (line->sourceCode->data._data && line->sourceCode_populatedLength != 0 && line->sourceCode_populatedLength >= sem->columnLeft)
+						if (line->sourceCode.data._data && line->populatedLength != 0 && line->populatedLength >= sem->columnLeft)
 						{
 							SetTextColor(bmp->hdc, RGB(tooltipForecolor.red, tooltipForecolor.grn, tooltipForecolor.blu));
-							DrawText(bmp->hdc, line->sourceCode->data._s8 + sem->columnLeft, line->sourceCode_populatedLength - sem->columnLeft, &lrc3, DT_VCENTER | DT_LEFT | DT_SINGLELINE | DT_NOPREFIX);
+							DrawText(bmp->hdc, line->sourceCode.data_s8 + sem->columnLeft, line->populatedLength - sem->columnLeft, &lrc3, DT_VCENTER | DT_LEFT | DT_SINGLELINE | DT_NOPREFIX);
 
 							// Add in the line numbers
 							if (sem->showLineNumbers)
@@ -2431,7 +2441,7 @@ renderAsOnlyText:
 					case VK_F6:
 					case VK_F8:
 						// They want to execute the cursor line of code
-						if (sem && sem->line_cursor && sem->line_cursor->sourceCode_populatedLength > 0)
+						if (sem && sem->line_cursor && sem->line_cursor->populatedLength > 0)
 						{
 							// Execute the command
 							iEngine_engage_oneCommand(sem->line_cursor);
@@ -2454,7 +2464,7 @@ renderAsOnlyText:
 
 					case VK_RETURN:
 						// Are we on the last line in the command window?
-						if (sem && sem->line_cursor && !sem->line_cursor->ll.next && sem->line_cursor->sourceCode_populatedLength > 0)
+						if (sem && sem->line_cursor && !sem->line_cursor->ll.next && sem->line_cursor->populatedLength > 0)
 						{
 							subform = iObj_find_thisSubform(obj);
 							if (subform && iObj_isCommandWindow(subform))
@@ -2736,8 +2746,8 @@ renderAsOnlyText:
 						}
 
 						// Navigate to the end of the line
-						if (sem->columnEdit != sem->line_cursor->sourceCode_populatedLength)
-							iSEM_navigate(sem, obj, 0, sem->line_cursor->sourceCode_populatedLength - sem->columnEdit);
+						if (sem->columnEdit != sem->line_cursor->populatedLength)
+							iSEM_navigate(sem, obj, 0, sem->line_cursor->populatedLength - sem->columnEdit);
 
 						// Indicate our key was processed
 						llProcessed = true;
@@ -3109,8 +3119,8 @@ renderAsOnlyText:
 					//////////
 					// Make sure we're not beyond the end of the line when we're not allowed to
 					//////
-						if (!sem->allowMoveBeyondEndOfLine && sem->columnEdit > sem->line_cursor->sourceCode_populatedLength)
-							sem->columnEdit = sem->line_cursor->sourceCode_populatedLength;
+						if (!sem->allowMoveBeyondEndOfLine && sem->columnEdit > sem->line_cursor->populatedLength)
+							sem->columnEdit = sem->line_cursor->populatedLength;
 
 
 					//////////
@@ -3500,7 +3510,7 @@ renderAsOnlyText:
 								lineTest = sem->line_cursor;
 								iSEM_navigate(sem, obj, -1, 0);
 								if (sem->line_cursor != lineTest)
-									return(iSEM_navigate(sem, obj, 0, sem->line_cursor->sourceCode_populatedLength));
+									return(iSEM_navigate(sem, obj, 0, sem->line_cursor->populatedLength));
 
 							} else {
 								// Just moving over
@@ -3509,7 +3519,7 @@ renderAsOnlyText:
 
 						} else {
 							// Moving right
-							if (sem->columnEdit < sem->line_cursor->sourceCode_populatedLength || sem->allowMoveBeyondEndOfLine)
+							if (sem->columnEdit < sem->line_cursor->populatedLength || sem->allowMoveBeyondEndOfLine)
 							{
 								// We allow them to move out as far right as they want
 								sem->columnEdit += deltaX;
@@ -3657,7 +3667,7 @@ renderAsOnlyText:
 		if (sem && !sem->isReadOnly && sem->line_cursor && obj)
 		{
 			// Clear off everything on the line
-			sem->line_cursor->sourceCode_populatedLength = 0;
+			sem->line_cursor->populatedLength = 0;
 
 			// Indicate success
 			return(true);
@@ -3681,8 +3691,8 @@ renderAsOnlyText:
 		if (sem && !sem->isReadOnly && sem->line_cursor && obj)
 		{
 			// Clear off everything on the line
-			if (sem->line_cursor->sourceCode_populatedLength > sem->columnEdit)
-				sem->line_cursor->sourceCode_populatedLength = sem->columnEdit;
+			if (sem->line_cursor->populatedLength > sem->columnEdit)
+				sem->line_cursor->populatedLength = sem->columnEdit;
 
 			// Indicate success
 			return(true);
@@ -3708,11 +3718,11 @@ renderAsOnlyText:
 		logfunc(__FUNCTION__);
 		if (sem && !sem->isReadOnly && sem->line_cursor && obj)
 		{
-			for (lnI = 0; lnI < sem->columnEdit && lnI < sem->line_cursor->sourceCode_populatedLength; lnI++)
+			for (lnI = 0; lnI < sem->columnEdit && lnI < sem->line_cursor->populatedLength; lnI++)
 			{
 				// If it's not already a whitespace, replace it
-				if (!(sem->line_cursor->sourceCode->data._s8[lnI] == 32 || sem->line_cursor->sourceCode->data._s8[lnI] == 9))
-					sem->line_cursor->sourceCode->data._s8[lnI] = 32;
+				if (!(sem->line_cursor->sourceCode->data_s8[lnI] == 32 || sem->line_cursor->sourceCode->data_s8[lnI] == 9))
+					sem->line_cursor->sourceCode->data_s8[lnI] = 32;
 			}
 		}
 
@@ -3900,7 +3910,7 @@ renderAsOnlyText:
 				//////////
 				// Iterate until we find a space
 				//////
-					if (sem->columnEdit == 0 || line->sourceCode_populatedLength == 0)
+					if (sem->columnEdit == 0 || line->populatedLength == 0)
 					{
 						// We have to go to the previous line (if we can)
 						if (sem->firstLine != line)
@@ -3909,15 +3919,15 @@ renderAsOnlyText:
 							iSEM_navigate(sem, obj, -1, 0);
 
 							// Go to the end of this line
-							iSEM_navigate(sem, obj, 0, sem->line_cursor->sourceCode_populatedLength);
+							iSEM_navigate(sem, obj, 0, sem->line_cursor->populatedLength);
 
 							// Continue looking word left on this line
 							return(iSEM_navigateWordLeft(sem, obj, true));
 						}
 
-					} else if (line->sourceCode_populatedLength < sem->columnEdit) {
+					} else if (line->populatedLength < sem->columnEdit) {
 						// We're beyond end of line, move to the end of line
-						iSEM_navigate(sem, obj, 0, sem->line_cursor->sourceCode_populatedLength - sem->columnEdit);
+						iSEM_navigate(sem, obj, 0, sem->line_cursor->populatedLength - sem->columnEdit);
 
 						// Then continue looking word left on this line
 						return(iSEM_navigateWordLeft(sem, obj, true));
@@ -3997,7 +4007,7 @@ renderAsOnlyText:
 				//////////
 				// Iterate until we find a space
 				//////
-					if (sem->columnEdit >= line->sourceCode_populatedLength)
+					if (sem->columnEdit >= line->populatedLength)
 					{
 						// We have to go to the next line (if we can)
 						if (sem->lastLine != line)
@@ -4018,7 +4028,7 @@ renderAsOnlyText:
 						// We're somewhere on the line, move one column right first
 						//////
 							++sem->columnEdit;
-							if (sem->columnEdit == 1 && line->sourceCode_populatedLength == 1)
+							if (sem->columnEdit == 1 && line->populatedLength == 1)
 								return(true);
 
 
@@ -4028,14 +4038,14 @@ renderAsOnlyText:
 							if (!iiSEM_isBreakingCharacter(sem, line, 0))
 							{
 								// Continue until we find a whitespace
-								for ( ; sem->columnEdit < line->sourceCode_populatedLength && !iiSEM_isBreakingCharacter(sem, line, 0); )
+								for ( ; sem->columnEdit < line->populatedLength && !iiSEM_isBreakingCharacter(sem, line, 0); )
 									++sem->columnEdit;
 							}
 
 							if (iiSEM_isBreakingCharacter(sem, line, 0))
 							{
 								// When we get to the first non-whitespace, we break
-								for ( ; sem->columnEdit < line->sourceCode_populatedLength && iiSEM_isBreakingCharacter(sem, line, 0); )
+								for ( ; sem->columnEdit < line->populatedLength && iiSEM_isBreakingCharacter(sem, line, 0); )
 									++sem->columnEdit;
 							}
 
@@ -4043,7 +4053,7 @@ renderAsOnlyText:
 						//////////
 						// If we're not at the end of the line, then we look for the first whitespace character
 						//////
-							if (sem->columnEdit >= line->sourceCode_populatedLength)
+							if (sem->columnEdit >= line->populatedLength)
 							{
 								// We have to go to the next line (if we can)
 								if (sem->lastLine != line)
@@ -4525,16 +4535,16 @@ renderAsOnlyText:
 
 
 		logfunc(__FUNCTION__);
-		if (sem->columnEdit >= sem->line_cursor->sourceCode_populatedLength)
+		if (sem->columnEdit >= sem->line_cursor->populatedLength)
 		{
 			// We're past the end of the line
-			llResult = iSEM_navigate(sem, obj, 0, -(sem->columnEdit - sem->line_cursor->sourceCode_populatedLength));
+			llResult = iSEM_navigate(sem, obj, 0, -(sem->columnEdit - sem->line_cursor->populatedLength));
 			iSEM_selectStart(sem, _SEM_SELECT_MODE_ANCHOR);
 
 		} else {
 			// We're before the end of the line
 			iSEM_selectStart(sem, _SEM_SELECT_MODE_ANCHOR);
-			llResult = iSEM_navigate(sem, obj, 0, sem->line_cursor->sourceCode_populatedLength - sem->columnEdit);
+			llResult = iSEM_navigate(sem, obj, 0, sem->line_cursor->populatedLength - sem->columnEdit);
 		}
 
 		// Indicate our result
@@ -4724,7 +4734,7 @@ renderAsOnlyText:
 				lineLast	= sem->lastLine;
 
 				// If there's nothing on this line, delete it
-				if (sem->line_cursor->sourceCode_populatedLength == 0)
+				if (sem->line_cursor->populatedLength == 0)
 				{
 					if (sem->firstLine != sem->lastLine)
 					{
@@ -4738,7 +4748,7 @@ renderAsOnlyText:
 						}
 
 						// Navigate to the end of the current line
-						iSEM_navigate(sem, obj, 0, sem->line_cursor->sourceCode_populatedLength - sem->columnEdit);
+						iSEM_navigate(sem, obj, 0, sem->line_cursor->populatedLength - sem->columnEdit);
 					}
 
 				} else {
@@ -4757,10 +4767,10 @@ renderAsOnlyText:
 							}
 
 							// Navigate to the end of the current line
-							iSEM_navigate(sem, obj, 0, sem->line_cursor->sourceCode_populatedLength - sem->columnEdit);
+							iSEM_navigate(sem, obj, 0, sem->line_cursor->populatedLength - sem->columnEdit);
 						}
 
-					} else if (sem->columnEdit > 0 && sem->columnEdit <= line->sourceCode_populatedLength) {
+					} else if (sem->columnEdit > 0 && sem->columnEdit <= line->populatedLength) {
 						// Reduce our column position
 						--sem->columnEdit;
 
@@ -4821,7 +4831,7 @@ renderAsOnlyText:
 			{
 				// Store the post parsing function
 				ppcb._postParseFunc	= _postParseFunc_ifNeeded;
-				if (sem->line_cursor->sourceCode_populatedLength == 0)
+				if (sem->line_cursor->populatedLength == 0)
 				{
 					// There's no data on this line, if we're in insert mode delete the line
 					if (!sem->isOverwrite && sem->firstLine != sem->lastLine)
@@ -4891,15 +4901,15 @@ renderAsOnlyText:
 						for (lnI = 0; lnI < lnColumnEnd; lnI++)
 							iLine_characterDelete(sem);
 
-					} else if (sem->line_cursor == line && sem->columnEdit == 0 && line->sourceCode_populatedLength > 0) {
+					} else if (sem->line_cursor == line && sem->columnEdit == 0 && line->populatedLength > 0) {
 						// Delete to the start of line
-						lnColumnEnd = line->sourceCode_populatedLength;
+						lnColumnEnd = line->populatedLength;
 						for (lnI = 0; lnI < lnColumnEnd; lnI++)
 							iLine_characterDelete(sem);
 
-					} else if (sem->line_cursor != line && sem->columnEdit < sem->line_cursor->sourceCode_populatedLength) {
+					} else if (sem->line_cursor != line && sem->columnEdit < sem->line_cursor->populatedLength) {
 						// Navigate to the end so the next delete will work
-						iSEM_navigate(sem, obj, 0, sem->line_cursor->sourceCode_populatedLength - sem->columnEdit);
+						iSEM_navigate(sem, obj, 0, sem->line_cursor->populatedLength - sem->columnEdit);
 					}
 
 					// Reprocess the source code on the line if need be
@@ -4948,10 +4958,10 @@ renderAsOnlyText:
 				if (iSEM_navigateWordRight(sem, obj, false))
 				{
 					// Are we still on the same line?
-					if (sem->line_cursor == line || line->sourceCode_populatedLength > lnColumnStart)
+					if (sem->line_cursor == line || line->populatedLength > lnColumnStart)
 					{
 						// We weren't done with the line yet
-						if (sem->line_cursor != line && line->sourceCode_populatedLength > lnColumnStart)
+						if (sem->line_cursor != line && line->populatedLength > lnColumnStart)
 						{
 							sem->line_cursor	= line;
 							sem->columnEdit			= lnColumnStart;
@@ -4977,13 +4987,13 @@ renderAsOnlyText:
 							// Indicate success
 							return(true);
 
-						} else if (sem->columnEdit != 0 && sem->columnEdit < line->sourceCode_populatedLength) {
+						} else if (sem->columnEdit != 0 && sem->columnEdit < line->populatedLength) {
 							// Delete sem->column - columnStart from where we were
 							sem->line_cursor	= line;
 							sem->columnEdit			= lnColumnStart;
 
 							// Delete to the end of line
-							lnColumnEnd = line->sourceCode_populatedLength - sem->columnEdit;
+							lnColumnEnd = line->populatedLength - sem->columnEdit;
 							for (lnI = 0; lnI < lnColumnEnd; lnI++)
 								iLine_characterDelete(sem);
 
@@ -5063,8 +5073,8 @@ renderAsOnlyText:
 			//////////
 			// Validate that this column is allowable
 			//////
-				if (!sem->allowMoveBeyondEndOfLine && sem->columnEdit > line->sourceCode_populatedLength)
-					sem->columnEdit = line->sourceCode_populatedLength;
+				if (!sem->allowMoveBeyondEndOfLine && sem->columnEdit > line->populatedLength)
+					sem->columnEdit = line->populatedLength;
 
 
 			///////////
@@ -5102,16 +5112,16 @@ renderAsOnlyText:
 
 
 		// Testing if we have data
-		if (line->sourceCode && line->sourceCode->data._data)
+		if (line->sourceCode && line->sourceCode.data._data)
 		{
 // TODO:  Need to add code here to test a new member sem->isBreakOnCamelCase, and a new parameter indicating movement direction
 
 			// If we're at the beginning of the line, or beyond the end, we're at a breaking character
-			if (sem->columnEdit + tnDeltaTest <= 0 || sem->columnEdit + tnDeltaTest >= line->sourceCode_populatedLength)
+			if (sem->columnEdit + tnDeltaTest <= 0 || sem->columnEdit + tnDeltaTest >= line->populatedLength)
 				return(true);
 
 			// If this is a breaking character, return true
-			c = line->sourceCode->data._u8[sem->columnEdit + tnDeltaTest];
+			c = line->sourceCode.data_u8[sem->columnEdit + tnDeltaTest];
 			switch (c)
 			{
 				case 32:	// Space

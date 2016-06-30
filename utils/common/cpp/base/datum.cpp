@@ -241,21 +241,21 @@
 	void iDatum_duplicate_fromComp(SDatum* datum, SComp* comp)
 	{
 		// Make sure our environment is sane
-		if (datum && comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data_cs8 && comp->length != 0)
-			iDatum_duplicate(datum, comp->line->sourceCode->data_cs8 + comp->start, comp->length);
+		if (datum && comp && comp->line && comp->line->sourceCode && comp->line->sourceCode.data_cs8 && comp->length != 0)
+			iDatum_duplicate(datum, comp->line->sourceCode.data_cs8 + comp->start, comp->length);
 	}
 
 	void iiDatum_duplicate_fromComp(SDatum* datum, SComp* comp)
 	{
-		iDatum_duplicate(datum, comp->line->sourceCode->data_cs8 + comp->start, comp->length);
+		iDatum_duplicate(datum, comp->line->sourceCode.data_cs8 + comp->start, comp->length);
 	}
 
 	SDatum* iDatum_populate_fromComp(SDatum* datum, SComp* comp)
 	{
 		// Make sure the datum and component are valid
-		if (datum && comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data_s8 && comp->line->sourceCode->length >= comp->start + comp->length)
+		if (datum && comp && comp->line && comp->line->sourceCode && comp->line->sourceCode.data_s8 && comp->line->sourceCode->length >= comp->start + comp->length)
 		{
-			datum->data_s8	= comp->line->sourceCode->data_s8 + comp->start;
+			datum->data_s8	= comp->line->sourceCode.data_s8 + comp->start;
 			datum->length	= comp->length;
 		}
 
@@ -452,7 +452,7 @@
 			lnValueLength	= ((tnOverrideValueLength > 0)	? tnOverrideValueLength	: value->length);
 
 			// Create the property
-			return(iProperty_allocateAs_character(name->line->sourceCode->data_cu8, lnNameLength, value->line->sourceCode->data_cu8, lnValueLength));
+			return(iProperty_allocateAs_character(name->line->sourceCode.data_cu8, lnNameLength, value->line->sourceCode.data_cu8, lnValueLength));
 
 		} else {
 			// Failure

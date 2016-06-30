@@ -87,7 +87,7 @@
 // Called to allocate a new extra info and append it from the chain
 //
 //////
-	SExtraInfo* iExtraInfo_allocate(SEM* sem, SLine* line, SExtraInfo** root)
+	SExtraInfo* iExtraInfo_allocate(SEM* sem, SLine* line, SBuilder** root)
 	{
 		SExtraInfo* ei;
 
@@ -96,8 +96,13 @@
 		ei = NULL;
 		if (sem && line && root)
 		{
+			// Make sure we have a builder
+			if (!*root)
+				iBuilder_createAndInitialize(root);
+
 			// Allocate a new one
-			ei = (SExtraInfo*)iLl_appendNew__llAtEnd((SLL**)root, sizeof(SExtraInfo));
+			if (*root)
+				ei = (SExtraInfo*)iBuilder_allocateBytes(*root, sizeof(SExtraInfo));
 		}
 
 		// Indicate our status
@@ -112,8 +117,10 @@
 // Called to free the extra info associated with this entry
 //
 //////
-	void iExtraInfo_removeAll(SEM* sem, SLine* line, SExtraInfo** root, bool tlDeleteSelf)
+	void iExtraInfo_removeAll(SEM* sem, SLine* line, SBuilder** root)
 	{
+		u32				lnI;
+		SBuilder*		b;
 		SExtraInfo*		ei;
 		SExtraInfo*		eiNext;
 
@@ -124,33 +131,21 @@
 // TODO:  COMPLETELY UNTESTED.  BREAKPOINT AND EXAMINE.
 debug_break;
 			// Iterate through all entries in the chain
-			ei = *root;
-			while (ei)
+			for (lnI = 0, b = *root; lnI < b->populatedLength; lnI += sizeof(SExtraInfo))
 			{
-				// Note the next entry
-				eiNext = ei->ll.nextExtraInfo;
+				// Grab the pointer
+				ei = (SExtraInfo*)(b->buffer + lnI);
 
-
-				//////////
 				// Call any freeInternal() functions to the data contained within and manually delete the extra info block
-				//////
-					if (ei->_freeInternal!= 0)
-						ei->freeInternal(NULL, line, ei);
+				if (ei->_freeInternal!= 0)
+					ei->freeInternal(NULL, line, ei);
 
-					// Now, manually free the actual info block itself
-					iDatum_delete(&ei->info, false);
-
-
-				// Free self if need be
-				if (tlDeleteSelf)
-					free(ei);
-
-				// Move to next entry
-				ei = eiNext;
+				// Now, manually free the actual info block itself
+				iDatum_delete(&ei->info, false);
 			}
 
 			// Reset the root pointer
-			*root = NULL;
+			iBuilder_freeAndRelease(root);
 		}
 	}
 

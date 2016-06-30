@@ -314,10 +314,10 @@
 		//////////
 		// Iterate through every character counting the nbsp
 		//////
-			for (lnI = 0; lnI < comp->length; lnI++)
+			for (lnI = 0; lnI < comp->text.length; lnI++)
 			{
 				// If it's a nbsp, increase the count
-				if (comp->line->sourceCode->data._u8[comp->start + lnI] == 255)
+				if (comp->line->sourceCode.data_u8[lnI] == 255)
 					++comp->nbspCount;
 			}
 	}
@@ -372,10 +372,6 @@
 
 			// Delete the items as they are
 			bp->isUsed = true;
-
-			// Delete any source code for this breakpoint
-			if (bp->executeCode)
-				iSourceCode_delete(&bp->executeCode);
 		}
 	}
 
