@@ -148,9 +148,11 @@
 		//////////
 		// Delete any errors, warnings, or notes
 		//////
+#ifdef _SHOW_REFACTOR_ERRORS
 			iNoteLog_removeAll(&compiler->firstInquiry);
 			iNoteLog_removeAll(&compiler->firstWarning);
 			iNoteLog_removeAll(&compiler->firstNote);
+#endif
 
 
 		//////////
@@ -2662,6 +2664,7 @@
 #ifdef _SHOW_REFACTOR_ERRORS
 		return(compLeft->start + compLeft->length == compRight->start);
 #endif
+		return(false);
 	}
 
 
@@ -2678,6 +2681,7 @@
 #ifdef _SHOW_REFACTOR_ERRORS
 		return(compRight->start - (compLeft->start + compLeft->length));
 #endif
+		return(false);
 	}
 
 

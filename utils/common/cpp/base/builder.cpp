@@ -141,7 +141,7 @@
 
 		// See if they want to use the default size
 		if (tnAllocationBlockSize == (u32)-1)
-			tnAllocationBlockSize = 16384;		// Default to a 16KB allocation size
+			tnAllocationBlockSize = 4096;		// Default to a 4KB allocation size
 
 		// Make sure our environment is sane
 		if (builder && tnAllocationBlockSize != 0)

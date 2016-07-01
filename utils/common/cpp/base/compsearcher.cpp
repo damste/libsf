@@ -99,10 +99,12 @@
 			// Delete the source code
 			iDatum_delete(&compilerInfo->sourceCode);
 
+#ifdef _SHOW_REFACTOR_ERRORS
 			// Delete the items here
 			iNoteLog_removeAll(&compilerInfo->firstWarning);
 			iNoteLog_removeAll(&compilerInfo->firstInquiry);
 			iNoteLog_removeAll(&compilerInfo->firstNote);
+#endif
 
 			// Delete regular components
 			iComps_deleteAll_byFirstComp(&compilerInfo->firstComp);

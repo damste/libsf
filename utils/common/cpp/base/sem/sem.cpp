@@ -1123,8 +1123,8 @@ debug_break;
 		if (sem && !sem->isReadOnly && sem->line_cursor)
 		{
 			// Delete any content on this line
-			if (sem->line_cursor->sourceCode && sem->firstLine != sem->lastLine)
-				iDatum_delete(sem->line_cursor->sourceCode, true);
+			if (sem->line_cursor->sourceCode._data && sem->line_cursor->sourceCode.length > 0 && sem->firstLine != sem->lastLine)
+				iDatum_delete(&sem->line_cursor->sourceCode, false);
 
 // TODO:  delete compiler info, and extra info
 
@@ -3336,7 +3336,7 @@ renderAsOnlyText:
 		//////////
 		// Make sure we're valid
 		//////
-			if (sem && sem->line_cursor && sem->line_cursor->sourceCode)
+			if (sem && sem->line_cursor)
 			{
 				//////////
 				// Scroll by count
@@ -3426,7 +3426,7 @@ renderAsOnlyText:
 		//////////
 		// Make sure we're valid
 		//////
-			if (sem && sem->line_cursor && sem->line_cursor->sourceCode)
+			if (sem && sem->line_cursor)
 			{
 				//////////
 				// Grab the line and form
@@ -3574,7 +3574,7 @@ renderAsOnlyText:
 		//////////
 		// Make sure we're valid
 		//////
-			if (sem && sem->line_cursor && sem->line_cursor->sourceCode && deltaY != 0)
+			if (sem && sem->line_cursor)
 			{
 				//////////
 				// Determine how many visible lines there are and move that far
@@ -3721,8 +3721,8 @@ renderAsOnlyText:
 			for (lnI = 0; lnI < sem->columnEdit && lnI < sem->line_cursor->populatedLength; lnI++)
 			{
 				// If it's not already a whitespace, replace it
-				if (!(sem->line_cursor->sourceCode->data_s8[lnI] == 32 || sem->line_cursor->sourceCode->data_s8[lnI] == 9))
-					sem->line_cursor->sourceCode->data_s8[lnI] = 32;
+				if (!(sem->line_cursor->sourceCode.data_s8[lnI] == 32 || sem->line_cursor->sourceCode.data_s8[lnI] == 9))
+					sem->line_cursor->sourceCode.data_s8[lnI] = 32;
 			}
 		}
 
@@ -3899,7 +3899,7 @@ renderAsOnlyText:
 		//////////
 		// Make sure we're valid
 		//////
-			if (sem && sem->line_cursor && sem->line_cursor->sourceCode)
+			if (sem && sem->line_cursor)
 			{
 				//////////
 				// Grab the line and form
@@ -3996,7 +3996,7 @@ renderAsOnlyText:
 		//////////
 		// Make sure we're valid
 		//////
-			if (sem && sem->line_cursor && sem->line_cursor->sourceCode)
+			if (sem && sem->line_cursor)
 			{
 				//////////
 				// Grab the line and form
@@ -5112,7 +5112,7 @@ renderAsOnlyText:
 
 
 		// Testing if we have data
-		if (line->sourceCode && line->sourceCode.data._data)
+		if (line->sourceCode._data)
 		{
 // TODO:  Need to add code here to test a new member sem->isBreakOnCamelCase, and a new parameter indicating movement direction
 

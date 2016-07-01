@@ -122,7 +122,6 @@
 		u32				lnI;
 		SBuilder*		b;
 		SExtraInfo*		ei;
-		SExtraInfo*		eiNext;
 
 
 		// Make sure our environment is sane
@@ -180,6 +179,7 @@ debug_break;
 
 	void iiExtraInfo_callbackCommon(SEM* sem, SLine* line, s32 tnCallbackType)
 	{
+#ifdef _SHOW_REFACTOR_ERRORS
 		SExtraInfo* ei;
 
 
@@ -210,4 +210,5 @@ debug_break;
 			// Move to next one
 			ei = ei->ll.nextExtraInfo;
 		}
+#endif
 	}

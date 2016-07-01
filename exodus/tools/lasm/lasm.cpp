@@ -136,7 +136,6 @@
 		SLasmInclude*	include;
 		SLasmCmdLine	cmdLine;
 		s8				fileName[_MAX_PATH];
-		SBuilder*		builder;
 
 
 		// Initialize our engine

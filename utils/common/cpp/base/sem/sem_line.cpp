@@ -98,19 +98,19 @@
 		{
 			// Has this line had its data allocated?
 			line = sem->line_cursor;
-			if (!line->sourceCode)
+			if (!line->sourceCode._data)
 			{
 				// We need to allocate the initial data block
-				iDatum_allocateSpace(line->sourceCode, max((s32)_SEM_MINIMUM_LINE_ALLOCATION_LENGTH, newLineLength));
+				iDatum_allocateSpace(&line->sourceCode, max((s32)_SEM_MINIMUM_LINE_ALLOCATION_LENGTH, newLineLength));
 				line->populatedLength = 0;
 			}
 
 			// Is there room from where we are to the new line length?
-			if (line->sourceCode->length > newLineLength)
+			if (line->sourceCode.length > newLineLength)
 				return(true);		// We're good
 
 			// If we get here, we need to reallocate
-			return(iDatum_resize(line->sourceCode, newLineLength + _SEM_MINIMUM_LINE_ALLOCATION_LENGTH));
+			return(iDatum_resize(&line->sourceCode, newLineLength + _SEM_MINIMUM_LINE_ALLOCATION_LENGTH));
 		}
 		// If we get here, failure
 		return(false);
@@ -148,14 +148,14 @@
 					//////////
 					// Delete any extra information associated with this chain entry
 					//////
-						iExtraInfo_removeAll(NULL, line, &line->extra_info, true);
+						iExtraInfo_removeAll(NULL, line, &line->extra_info);
 
 
 					//////////
 					// Delete this item's components and source code references
 					//////
 						iComps_deleteAll_byLine(line);
-						iDatum_delete(line->sourceCode, true);
+						iDatum_delete(&line->sourceCode, false);
 
 
 					//////////
@@ -202,9 +202,10 @@
 			memset(line, 0, sizeof(SLine));
 
 			// Add SCompiler if need be
+#ifdef _SHOW_REFACTOR_ERRORS
 			if (tlAllocCompilerInfo)
 				line->compilerInfo = iCompiler_allocate(line);
-
+#endif
 		}
 
 		// Indicate our status
@@ -260,8 +261,10 @@
 	//////
 	void iLine_appendError(SLine* line, u32 tnErrorNum, cu8* tcMessage, u32 tnStartColumn, u32 tnLength)
 	{
+#ifdef _SHOW_REFACTOR_ERRORS
 		if (line && line->compilerInfo)
 			iNoteLog_create(&line->compilerInfo->firstInquiry, line, tnStartColumn, tnStartColumn + tnLength, tnErrorNum, tcMessage);
+#endif
 	}
 
 
@@ -274,8 +277,10 @@
 	//////
 	void iLine_appendWarning(SLine* line, u32 tnWarningNum, cu8* tcMessage, u32 tnStartColumn, u32 tnLength)
 	{
+#ifdef _SHOW_REFACTOR_ERRORS
 		if (line && line->compilerInfo)
 			iNoteLog_create(&line->compilerInfo->firstInquiry, line, tnStartColumn, tnStartColumn + tnLength, tnWarningNum, tcMessage);
+#endif
 	}
 
 
@@ -298,46 +303,51 @@
 			//////////
 			// Skip to next component if need be
 			//////
-			if (tlSkipFirst)
-				goto goto_next_component;
+				if (tlSkipFirst)
+					goto goto_next_component;
 
 
 			//////////
 			// Iterate until found
 			//////
-			cb->line	= line;
-			cb->comp	= comp;
-			cb->flag	= false;
-			while (cb->line && cb->comp)
-			{
-
-				//////////
-				// Callback returns true if we should continue searching
-				//////
-				if ((cb->flag = !cb->func(cb)))
-					break;
-
-
-				//////////
-				// Skip to next component, which could move us on to the next line
-				//////
-goto_next_component:
-				if (!cb->comp->ll.nextComp)
+				cb->line	= line;
+				cb->comp	= comp;
+				cb->flag	= false;
+				while (cb->line && cb->comp)
 				{
-					// Move to next line
-					if (!cb->line->ll.nextLine || !cb->line->ll.nextLine->compilerInfo)
-						break;	// We've reached the end
 
-								// Next line
-					cb->line = cb->line->ll.nextLine;
-					cb->comp = cb->line->compilerInfo->firstComp;
+					//////////
+					// Callback returns true if we should continue searching
+					//////
+						if ((cb->flag = !cb->func(cb)))
+							break;
 
-				} else {
-					// Move to the next component
-					cb->comp = cb->comp->ll.nextComp;
+
+					//////////
+					// Skip to next component, which could move us on to the next line
+					//////
+goto_next_component:
+						if (!cb->comp->ll.nextComp)
+						{
+							// Move to next line
+#ifdef _SHOW_REFACTOR_ERRORS
+							if (!cb->line->ll.nextLine || !cb->line->ll.nextLine->compilerInfo)
+								break;	// We've reached the end
+#endif
+
+							// Next line
+							cb->line = cb->line->ll.nextLine;
+#ifdef _SHOW_REFACTOR_ERRORS
+							cb->comp = cb->line->compilerInfo->firstComp;
+#endif
+
+						} else {
+							// Move to the next component
+							cb->comp = cb->comp->ll.nextComp;
+						}
+
 				}
 
-			}
 
 		} else {
 			// Something's invalid in our parameters
@@ -371,8 +381,10 @@ goto_next_component:
 		for (line = lineStart, lnUnescapeCount = 0; line; line = line->ll.nextLine)
 		{
 			// Remove escapes from this line
+#ifdef _SHOW_REFACTOR_ERRORS
 			if (line->compilerInfo && line->compilerInfo->firstComp)
 				lnUnescapeCount += iComps_unescape_iCodes(line->compilerInfo->firstComp, tniCode1, tniCode2, tniCode3);
+#endif
 		}
 
 		// Indicate how many were unescaped
@@ -398,34 +410,35 @@ goto_next_component:
 		lnLineCount	= 0;
 		if (linesFrom && *linesFrom && lineTarget)
 		{
-			// TODO:  Untested.  Breakpoint and examine.
-			debug_break;
+// TODO:  Untested.  Breakpoint and examine.
+debug_break;
+
 			//////////
 			// Point lineTarget to the start of the line block
 			//////
-			temp						= lineTarget->ll.nextLine;
-			lineTarget->ll.nextLine		= *linesFrom;
-			(*linesFrom)->ll.prevLine	= lineTarget;
+				temp						= lineTarget->ll.nextLine;
+				lineTarget->ll.nextLine		= *linesFrom;
+				(*linesFrom)->ll.prevLine	= lineTarget;
 
 
 			//////////
 			// Point the last line of the *linesFrom chain to the temp
 			//////
-			line		= *linesFrom;
-			lnLineCount	= 1;
+				line		= *linesFrom;
+				lnLineCount	= 1;
 
-			// Iterate through until we reach the last line
-			while (line->ll.nextLine)
-			{
-				// Increase our line count
-				++lnLineCount;
+				// Iterate through until we reach the last line
+				while (line->ll.nextLine)
+				{
+					// Increase our line count
+					++lnLineCount;
 
-				// Move to the next line
-				line = line->ll.nextLine;
-			}
+					// Move to the next line
+					line = line->ll.nextLine;
+				}
 
-			line->ll.nextLine	= temp;		// Last line points to the original line after where we inserted
-			temp->ll.prevLine	= line;		// The original line after where we inserted points back to the new line
+				line->ll.nextLine	= temp;		// Last line points to the original line after where we inserted
+				temp->ll.prevLine	= line;		// The original line after where we inserted points back to the new line
 
 		}
 
@@ -446,6 +459,7 @@ goto_next_component:
 		// Make sure our environment is sane
 		if (line)
 		{
+#ifdef _SHOW_REFACTOR_ERRORS
 			// Locate the line that has compiler info
 			if (tlMoveBeyondLineIfNeeded)
 			{
@@ -457,6 +471,7 @@ goto_next_component:
 			// If we're on a line with compiler info and a first comp, locate it
 			if (line->compilerInfo && line->compilerInfo->firstComp)
 				return(iComps_Nth(line->compilerInfo->firstComp, tnCount, tlMoveBeyondLineIfNeeded));
+#endif
 		}
 
 		// If we get here, failure
@@ -466,11 +481,11 @@ goto_next_component:
 
 
 
-	//////////
-	//
-	// Called to copy lines until the continuation character is no longer found
-	//
-	//////
+//////////
+//
+// Called to copy lines until the continuation character is no longer found
+//
+//////
 	struct S_iLine_copyComps_toNewLines_untilTerminating
 	{
 		bool	lContinuationFound;
@@ -490,37 +505,39 @@ goto_next_component:
 			//////////
 			// First line
 			//////
-			// New line
-			if (!(lineNew = iLine_createNew(true)))
-				return(NULL);
+				// New line
+				if (!(lineNew = iLine_createNew(true)))
+					return(NULL);
 
-			// Copy components smartly
-			memset(cb, 0, sizeof(*cb));
-			memset(&x, 0, sizeof(x));
-			cb->_func	= (sptr)&iiLine_copyComps_toNewLines_untilTerminating__callback;
-			cb->x		= (void*)&x;
-			iComps_copyTo_withCallback(lineNew, compStart, cb, false);
+				// Copy components smartly
+				memset(cb, 0, sizeof(*cb));
+				memset(&x, 0, sizeof(x));
+				cb->_func	= (sptr)&iiLine_copyComps_toNewLines_untilTerminating__callback;
+				cb->x		= (void*)&x;
+				iComps_copyTo_withCallback(lineNew, compStart, cb, false);
 
-			// If the last component was not a continuation character, we're done
-			if (!x.lContinuationFound)
-				return(lineNew);
+				// If the last component was not a continuation character, we're done
+				if (!x.lContinuationFound)
+					return(lineNew);
 
 
 			//////////
 			// Following lines
 			//////
-			for (lineCopy = lineStart->ll.nextLine; x.lContinuationFound && lineCopy; lineCopy = lineCopy->ll.nextLine)
-			{
-				// Skip blank lines if need be
-				if (!tlSkipBlankLines || lineCopy->compilerInfo->firstComp->iCode != _ICODE_BACKSLASH)
+				for (lineCopy = lineStart->ll.nextLine; x.lContinuationFound && lineCopy; lineCopy = lineCopy->ll.nextLine)
 				{
-					// New line
-					lineNew = iLine_appendNew(lineNew, true);
+					// Skip blank lines if need be
+#ifdef _SHOW_REFACTOR_ERRORS
+					if (!tlSkipBlankLines || lineCopy->compilerInfo->firstComp->iCode != _ICODE_BACKSLASH)
+					{
+						// New line
+						lineNew = iLine_appendNew(lineNew, true);
 
-					// Copy all line components up to the end
-					iComps_copyTo_withCallback(lineNew, lineCopy->compilerInfo->firstComp, cb, false);
+						// Copy all line components up to the end
+						iComps_copyTo_withCallback(lineNew, lineCopy->compilerInfo->firstComp, cb, false);
+					}
+#endif
 				}
-			}
 
 
 		} else {
@@ -533,8 +550,8 @@ goto_next_component:
 		//////////
 		// Indicate our status
 		//////
-		// Note:  Right now the next component should be the next one from lineEnd and compEnd
-		return(lineNew);
+			// Note:  Right now the next component should be the next one from lineEnd and compEnd
+			return(lineNew);
 
 	}
 
@@ -548,44 +565,44 @@ goto_next_component:
 		//////////
 		// Get our x and next component
 		//////
-		x			= (S_iLine_copyComps_toNewLines_untilTerminating*)cb->x;
-		compNext	= cb->comp->ll.nextComp;
+			x			= (S_iLine_copyComps_toNewLines_untilTerminating*)cb->x;
+			compNext	= cb->comp->ll.nextComp;
 
 
 		//////////
 		// Get the components
 		//////
-		if (!compNext)
-		{
-			// No continuation was found
-			x->lContinuationFound = false;
+			if (!compNext)
+			{
+				// No continuation was found
+				x->lContinuationFound = false;
 
-			// And we're stopping after this component
-			return(false);
-		}
+				// And we're stopping after this component
+				return(false);
+			}
 
 
 		//////////
 		// If it's a backslash, and the component after doesn't exist, then it's a continuation character
 		//////
-		x->lContinuationFound = (compNext->iCode == _ICODE_BACKSLASH && !compNext->ll.nextComp);
+			x->lContinuationFound = (compNext->iCode == _ICODE_BACKSLASH && !compNext->ll.nextComp);
 
 
 		//////////
 		// We continue so long as there are more components to copy (until we reach the continuation character \)
 		//////
-		return(!x->lContinuationFound);
+			return(!x->lContinuationFound);
 
 	}
 
 
 
 
-	//////////
-	//
-	// Called to skip to the next component
-	//
-	//////
+//////////
+//
+// Called to skip to the next component
+//
+//////
 	s32 iiLine_skipTo_nextComp(SLine** lineProcessing, SComp** compProcessing)
 	{
 		s32		lnCount;
@@ -596,73 +613,75 @@ goto_next_component:
 		//////////
 		// Grab our real parameters
 		//////
-		comp = *compProcessing;
-		line = *lineProcessing;
+			comp = *compProcessing;
+			line = *lineProcessing;
 
 
 		//////////
 		// Is there another component
 		//////
-		if (comp->ll.nextComp)
-		{
-			// Another component on the line
-			*compProcessing = comp->ll.nextComp;
-			return(1);
-		}
+			if (comp->ll.nextComp)
+			{
+				// Another component on the line
+				*compProcessing = comp->ll.nextComp;
+				return(1);
+			}
 
 
 		//////////
 		// Need to move to next line
 		//////
-		if (!line->ll.nextLine)
-			return(-1);	// Nowhere to move
+			if (!line->ll.nextLine)
+				return(-1);	// Nowhere to move
 
 
-						//////////
-						// Iterate down and right until we find another component
-						//////
-		lnCount = 0;
-		while (line && line->ll.nextLine)
-		{
-
-			//////////
-			// Increase our movement count
-			//////
-			++lnCount;
-
-
-			//////////
-			// Move to the next line
-			//////
-			line			= line->ll.nextLine;
-			*lineProcessing	= line;
-
-
-			//////////
-			// Is there a component here?
-			//////
-			if (line->compilerInfo && line->compilerInfo->firstComp)
+		//////////
+		// Iterate down and right until we find another component
+		//////
+			lnCount = 0;
+			while (line && line->ll.nextLine)
 			{
-				// Set the component
-				*compProcessing = line->compilerInfo->firstComp;
 
-				// Indicate how far we traversed
-				return(lnCount);
+				//////////
+				// Increase our movement count
+				//////
+					++lnCount;
+
+
+				//////////
+				// Move to the next line
+				//////
+					line			= line->ll.nextLine;
+					*lineProcessing	= line;
+
+
+				//////////
+				// Is there a component here?
+				//////
+#ifdef _SHOW_REFACTOR_ERRORS
+					if (line->compilerInfo && line->compilerInfo->firstComp)
+					{
+						// Set the component
+						*compProcessing = line->compilerInfo->firstComp;
+
+						// Indicate how far we traversed
+						return(lnCount);
+					}
+#endif
+
+
+				//////////
+				// No component yet
+				//////
+					*compProcessing	= NULL;
+
 			}
-
-
-			//////////
-			// No component yet
-			//////
-			*compProcessing	= NULL;
-
-		}
 
 
 		//////////
 		// If we get here, end of file, line is pointing to the last line
 		//////
-		return(-1);
+			return(-1);
 
 	}
 
@@ -684,83 +703,85 @@ goto_next_component:
 		//////////
 		// Grab our real parameters
 		//////
-		comp = *compProcessing;
-		line = *lineProcessing;
+			comp = *compProcessing;
+			line = *lineProcessing;
 
 
 		//////////
 		// Is there another component
 		//////
-		if (comp->ll.prevComp)
-		{
-			// Is there a previous component on the line
-			*compProcessing = comp->ll.prevComp;
-			return(1);
-		}
+			if (comp->ll.prevComp)
+			{
+				// Is there a previous component on the line
+				*compProcessing = comp->ll.prevComp;
+				return(1);
+			}
 
 
 		//////////
 		// Need to move to previous line
 		//////
-		if (!line->ll.prevLine)
-			return(-1);	// Nowhere to move
+			if (!line->ll.prevLine)
+				return(-1);	// Nowhere to move
 
 
-						//////////
-						// Iterate down and right until we find another component
-						//////
-		lnCount = 0;
-		while (line && line->ll.prevLine)
-		{
-
-			//////////
-			// Increase our movement count
-			//////
-			++lnCount;
-
-
-			//////////
-			// Move to the previous line
-			//////
-			line			= line->ll.prevLine;
-			*lineProcessing	= line;
-
-
-			//////////
-			// Is there a component here?
-			//////
-			if (line->compilerInfo && line->compilerInfo->firstComp)
+		//////////
+		// Iterate down and right until we find another component
+		//////
+			lnCount = 0;
+			while (line && line->ll.prevLine)
 			{
 
 				//////////
-				// Move to the last component on the line
+				// Increase our movement count
 				//////
-				comp = line->compilerInfo->firstComp;
-				while (comp->ll.nextComp)
-					comp = comp->ll.nextComp;
+					++lnCount;
 
 
 				//////////
-				// Set the component and indicate how far we traversed
+				// Move to the previous line
 				//////
-				*compProcessing = comp;
-				return(lnCount);
+					line			= line->ll.prevLine;
+					*lineProcessing	= line;
+
+
+				//////////
+				// Is there a component here?
+				//////
+#ifdef _SHOW_REFACTOR_ERRORS
+					if (line->compilerInfo && line->compilerInfo->firstComp)
+					{
+
+						//////////
+						// Move to the last component on the line
+						//////
+							comp = line->compilerInfo->firstComp;
+							while (comp->ll.nextComp)
+								comp = comp->ll.nextComp;
+
+
+						//////////
+						// Set the component and indicate how far we traversed
+						//////
+							*compProcessing = comp;
+							return(lnCount);
+
+					}
+#endif
+
+
+				//////////
+				// No component yet
+				//////
+					*compProcessing	= NULL;
 
 			}
-
-
-			//////////
-			// No component yet
-			//////
-			*compProcessing	= NULL;
-
-		}
 
 
 		//////////
 		// If we get here, beginning of file, line is pointing to the first line
 		//////
-		return(-1);
+			return(-1);
 
 	}
 
@@ -779,7 +800,7 @@ goto_next_component:
 
 
 		// Make sure our environment is sane
-		if (sem && !sem->isReadOnly && sem->line_cursor && sem->line_cursor->sourceCode)
+		if (sem && !sem->isReadOnly && sem->line_cursor)
 		{
 			// Make sure there's room enough for the keystroke
 			line = sem->line_cursor;
@@ -837,7 +858,7 @@ goto_next_component:
 
 
 		// Make sure our environment is sane
-		if (sem && !sem->isReadOnly && sem->line_cursor && sem->line_cursor->sourceCode)
+		if (sem && !sem->isReadOnly && sem->line_cursor)
 		{
 			// Is there room to inject it?
 			line = sem->line_cursor;
@@ -898,7 +919,7 @@ goto_next_component:
 
 
 		// Make sure our environment is sane
-		if (sem && !sem->isReadOnly && sem->line_cursor && sem->line_cursor->sourceCode)
+		if (sem && !sem->isReadOnly && sem->line_cursor)
 		{
 			// Grab the line
 			line = sem->line_cursor;
@@ -945,6 +966,7 @@ goto_next_component:
 		if (sem && sem->line_cursor)
 		{
 			// Grab the line
+#ifdef _SHOW_REFACTOR_ERRORS
 			if (sem->line_cursor->breakpoint)
 			{
 				// Delete the existing breakpoint
@@ -955,6 +977,7 @@ goto_next_component:
 				// Adding a new always-stop breakpoint
 				bp = iBreakpoint_add(&sem->line_cursor->breakpoint, _BREAKPOINT_ALWAYS);
 			}
+#endif
 
 			// Indicate our status
 			return(bp);
@@ -975,14 +998,14 @@ goto_next_component:
 	bool iLine_hasChanged(SLine* ec)
 	{
 		// Make sure our environment is sane
-		if (ec && ec->sourceCode && ec->sourceCodeOriginal)
+		if (ec)
 		{
 			// Test lengths
-			if (ec->populatedLength != ec->sourceCodeOriginal->length)
+			if (ec->populatedLength != ec->sourceCodeOriginal.length)
 				return(true);		// They are different lengths
 
 			// Test content
-			if (memcmp(ec->sourceCode->data_s8, ec->sourceCodeOriginal->data_s8, ec->populatedLength) != 0)
+			if (memcmp(ec->sourceCode.data_s8, ec->sourceCodeOriginal.data_s8, ec->populatedLength) != 0)
 				return(true);		// The content is different
 		}
 		// If we get here, not changed

@@ -124,8 +124,10 @@
 
 				} else if (!(p0.compNext = iComps_Nth(p0.comp))) {
 					// Syntax error
+#ifdef _SHOW_REFACTOR_ERRORS
 					++p0.comp->line->status.errors;
 					printf("--Error(%d,%d): Missing identifier after #\n", p0.comp->line->lineNumber, p0.compNext->start);
+#endif
 				}
 
 
@@ -147,7 +149,9 @@
 					}
 
 					// This line is completed, but the file itself is not
+#ifdef _SHOW_REFACTOR_ERRORS
 					p0.comp->line->status.isCompleted = true;
+#endif
 				}
 
 		}
@@ -161,18 +165,20 @@
 		if ((p0->compFile = iComps_Nth(p0->compNext)) && (p0->compFile->iCode == _ICODE_DOUBLE_QUOTED_TEXT || p0->compFile->iCode == _ICODE_SINGLE_QUOTED_TEXT))
 		{
 			// Copy the filename to a local buffer
-			memcpy(p0->fileName, p0->compFile->line->sourceCode.data_s8 + p0->compFile->start + 1, p0->compFile->length - 2);
-			p0->fileName[p0->compFile->length - 2] = 0;
+			memcpy(p0->fileName, p0->compFile->text.data_s8 + 1, p0->compFile->text.length - 2);
+			p0->fileName[p0->compFile->text.length - 2] = 0;
 
 			// Correct the directory dividers to the standard OS form
-			ilasm_fixupDirectories(p0->fileName, p0->compFile->length - 2);
+			ilasm_fixupDirectories(p0->fileName, p0->compFile->text.length - 2);
 
 			// Try to open it
 			if (!ilasm_appendFile(p0->fileName, &p0->fileInclude))
 			{
 				// Error opening the file
+#ifdef _SHOW_REFACTOR_ERRORS
 				++p0->compFile->line->status.errors;
 				printf("--Error(%d,%d): error opening [#include \"%s\"\n", p0->compFile->line->lineNumber, p0->compNext->start, p0->fileName);
+#endif
 				return;
 			}
 			// File's loaded
@@ -186,14 +192,18 @@
 
 			// We're done with the #include line
 			p0->fileInclude->status.isCompleted		= true;
+#ifdef _SHOW_REFACTOR_ERRORS
 			p0->compFile->line->status.isCompleted	= true;
+#endif
 			// Note:  line->ll.nextLine is now pointing to the #include file source code
 
 
 		} else {
 			// Syntax error
+#ifdef _SHOW_REFACTOR_ERRORS
 			++p0->compNext->line->status.errors;
 			printf("--Error(%d,%d): expected [#include \"relative\\path\\to\\file.ext\"] syntax in %s\n", p0->compNext->line->lineNumber, p0->compNext->start, p0->file->fileName.data_s8);
+#endif
 			return;
 		}
 	}
@@ -215,8 +225,10 @@
 		// If we have existing compiler data, get rid of it
 		//////
 			line = p0->comp->line;
+#ifdef _SHOW_REFACTOR_ERRORS
 			if (line->compilerInfo)		iCompiler_delete(&line->compilerInfo, false);
 			else						line->compilerInfo = iCompiler_allocate(line);		// Allocate a new one
+#endif
 
 
 		// Loop added only for structured exit
@@ -224,37 +236,46 @@
 
 			// Parse out the line fundamentally
 			iComps_translate_sourceLineTo(&cgcFundamentalSymbols[0], line);
+#ifdef _SHOW_REFACTOR_ERRORS
 			if (!line->compilerInfo->firstComp)
 				break;		// Nothing to compile on this line
+#endif
 
 
 			// If it's a line comment, we don't need to process it
 			iComps_remove_leadingWhitespaces(line);
 			iComps_remove_startEndComments(line);					// Removes /*comments*/ and /+comments+/
+#ifdef _SHOW_REFACTOR_ERRORS
 			if (!line->compilerInfo->firstComp)
 				break;
+#endif
 
 
 			// If it's a line comment, we're done
+#ifdef _SHOW_REFACTOR_ERRORS
 			if (line->compilerInfo->firstComp->iCode == _ICODE_COMMENT || line->compilerInfo->firstComp->iCode == _ICODE_LINE_COMMENT)
 			{
 				// Combine every item after this to a single comment
 				iComps_combineN(line->compilerInfo->firstComp, 99999, _ICODE_COMMENT, line->compilerInfo->firstComp->iCat, line->compilerInfo->firstComp->color);
 				break;
 			}
+#endif
 
 
 			// Perform natural source code fixups
 			iComps_fixup_naturalGroupings(line);				// Fixup natural groupings [_][aaa][999] becomes [_aaa999], [999][.][99] becomes [999.99], etc.
 			iComps_remove_whitespaces(line);					// Remove all whitespaces after everything else was parsed [use][whitespace][foo] becomes [use][foo]
+#ifdef _SHOW_REFACTOR_ERRORS
 			if (!line->compilerInfo->firstComp)
 				break;
+#endif
 
 
 			// Remove or replace ||| and |||| portions
 			iComps_combine_adjacentLeadingPipesigns(line);		// Combines each leading ||| to whitespace, and |||| (or longer) to a line comment
 
 			// We may have re-introduced a || whitespace, which would've been removed above
+#ifdef _SHOW_REFACTOR_ERRORS
 			if (line->compilerInfo->firstComp->iCode == _ICODE_WHITESPACE)
 			{
 				iComps_remove_whitespaces(line);
@@ -273,6 +294,7 @@
 
 			// Translate remaining sequences to known lasm keywords
 			iComps_translate_toOthers((SAsciiCompSearcher*)&cgcKeywordsLasm[0], line->compilerInfo->firstComp);
+#endif
 
 		} while (0);
 	}
@@ -630,13 +652,10 @@
 		for (define = defineRoot; define; define = (SLasmDefine*)define->ll.next)
 		{
 			// Is it the same length?
-			if (define->compName->length == compName->length)
+			if (define->compName->text.length == compName->text.length)
 			{
 				// Is it the same name?
-				if (_memicmp(	define->compName->line->sourceCode.data_s8 +  define->compName->start,
-										compName->line->sourceCode.data_s8 +			compName->start,
-										compName->length)
-						== 0)
+				if (_memicmp(define->compName->text.data_s8, compName->text.data_s8, compName->text.length) == 0)
 				{
 					// Yes, this is the symbol
 					return(define);
