@@ -62,14 +62,14 @@ dd  offset requestor
         
         } else if (eax == 'id  ') {
             mov     esi,offset driver_name
-            call    <u48> cs:_VID_display_string_nr_vga
+            call    u48 ptr cs:_VID_display_string_nr_vga
             clc
         
         } else if (eax == 'note') {
             mov     eax,'stop'
             mov     ebx,'load'
             mov     esi,offset driver_name
-            call    <u48> cs:_EXODUS_requestor
+            call    u48 ptr cs:_EXODUS_requestor
         
         } else {
             stc
@@ -118,7 +118,7 @@ dd  offset requestor
 
        // Display the BIOS logo
         mov     esi,offset bios_logo
-        call    <u48> cs:_VID_draw_logo
+        call    u48 ptr cs:_VID_draw_logo
 
         clc
         ret
@@ -197,7 +197,7 @@ dd  offset requestor
         mov     bl,70h                                              // INT 70h
         mov     ecx,1
         mov     edx,offset TIMER_handler
-        call    <u48> ds:_EXODUS_requestor
+        call    u48 ptr ds:_EXODUS_requestor
 
         popad
         ret
@@ -594,174 +594,174 @@ dd  offset requestor
 
 
 // DATA
-    driver_name                             u8   "Motherboard BIOS Driver",0
-    version                                 u8   "10.10.2010",0
-    copyright                               u8   "(c) Copyright Beatleworks, Inc.",0
-    author                                  u8   "Rick C. Hodgin",0
-    bootup                                  u8   1                   // Indicates bootup status, changes to 0 after initialization
-    data_segment                            u16  0
+    driver_name                             u8  "Motherboard BIOS Driver",0
+    version                                 u8  "10.10.2010",0
+    copyright                               u8  "(c) Copyright Beatleworks, Inc.",0
+    author                                  u8  "Rick C. Hodgin",0
+    bootup                                  u8  1                   // Indicates bootup status, changes to 0 after initialization
+    data_segment                            u16 0
 
 // CALL GATES
-    _EXODUS_requestor                       u16  0
+    _EXODUS_requestor                       u16 0
   primative_call_gates:
-    _VID_draw_logo                          u16  0
-    _VID_display_string_nr_vga              u16  _sEXODUS_REQUESTOR
-    _iDEBI_timer_interface                  u16  0f000h
-    _VID_g_derive_color                     u16  0f000h
-    _VID_g_fill_rectangle                   u16  0f000h
-    _VID_g_draw_text                        u16  0f000h
-    _VID_g_display_radix_in_edx_mono        u16  0f000h
-    _VID_g_mouse_pointer                    u16  0f000h
-                                            u16  0f000h
-                                            u16  0f000h
+    _VID_draw_logo                          u16 0
+    _VID_display_string_nr_vga              u16 _sEXODUS_REQUESTOR
+    _iDEBI_timer_interface                  u16 0f000h
+    _VID_g_derive_color                     u16 0f000h
+    _VID_g_fill_rectangle                   u16 0f000h
+    _VID_g_draw_text                        u16 0f000h
+    _VID_g_display_radix_in_edx_mono        u16 0f000h
+    _VID_g_mouse_pointer                    u16 0f000h
+                                            u16 0f000h
+                                            u16 0f000h
 
 // DATA only used at load time (released thereafter)
-    required_primatives                     u8   13, "VID_draw_logo"
-                                            u8   25, "VID_display_string_nr_vga"
-                                            u8   21, "iDEBI_timer_interface"
-                                            u8   18, "VID_g_derive_color"
-                                            u8   20, "VID_g_fill_rectangle"
-                                            u8   15, "VID_g_draw_text"
-                                            u8   31, "VID_g_display_radix_in_edx_mono"
-                                            u8   19, "VID_g_mouse_pointer"
-                                            u8   0ffh
+    required_primatives                     u8  13, "VID_draw_logo"
+                                            u8  25, "VID_display_string_nr_vga"
+                                            u8  21, "iDEBI_timer_interface"
+                                            u8  18, "VID_g_derive_color"
+                                            u8  20, "VID_g_fill_rectangle"
+                                            u8  15, "VID_g_draw_text"
+                                            u8  31, "VID_g_display_radix_in_edx_mono"
+                                            u8  19, "VID_g_mouse_pointer"
+                                            u8  0ffh
 
-    bios_logo                               u8   1       // how many extra 18x16 pictures wide?
-                                            u8   00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   07h,07h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   00h,07h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   00h,07h,07h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,00h
-                                            u8   00h,07h,07h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,0ah,0ah,0ah,0ah,0ah,0ah,0ah,0ah,0ah,0ah,02h,02h,02h,02h,07h,07h,07h,07h,02h,00h
-                                            u8   00h,07h,00h,02h,02h,07h,07h,07h,07h,07h,07h,07h,02h,02h,07h,07h,07h,07h,07h,07h,07h,07h,02h,02h,02h,02h,02h,0ah,0ah,0ah,0ah,0ah,07h,08h,08h,07h,02h,00h
-                                            u8   00h,07h,00h,02h,02h,07h,00h,00h,00h,00h,00h,07h,0ah,0ah,07h,00h,00h,00h,00h,00h,00h,07h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,07h,07h,07h,07h,02h,00h
-                                            u8   00h,07h,00h,02h,02h,07h,00h,08h,08h,08h,00h,07h,02h,02h,07h,00h,08h,08h,08h,08h,00h,07h,02h,02h,02h,02h,07h,07h,07h,07h,07h,02h,02h,02h,0ah,02h,02h,00h
-                                            u8   00h,07h,00h,02h,02h,07h,00h,08h,08h,08h,00h,07h,0ah,0ah,07h,00h,08h,08h,08h,08h,00h,07h,0ah,0ah,0ah,0ah,07h,08h,08h,00h,07h,0ah,0ah,0ah,0ah,02h,02h,00h
-                                            u8   00h,07h,00h,02h,02h,07h,00h,00h,00h,00h,00h,07h,02h,02h,07h,00h,08h,08h,08h,08h,00h,07h,02h,02h,02h,02h,07h,00h,08h,08h,07h,02h,02h,02h,02h,02h,02h,00h
-                                            u8   00h,07h,00h,02h,02h,07h,07h,07h,07h,07h,07h,07h,02h,02h,07h,07h,07h,07h,07h,07h,07h,07h,0ah,0ah,0ah,0ah,07h,07h,07h,07h,07h,02h,02h,02h,02h,02h,02h,00h
-                                            u8   00h,07h,00h,02h,02h,02h,0ah,02h,02h,02h,02h,0ah,02h,02h,02h,02h,0ah,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,00h
-                                            u8   00h,07h,07h,02h,02h,02h,0ah,02h,02h,02h,02h,02h,0ah,02h,02h,02h,02h,0ah,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,00h
-                                            u8   00h,07h,07h,02h,0eh,02h,0eh,02h,0eh,02h,0eh,02h,0eh,02h,0eh,02h,0eh,02h,02h,0eh,02h,0eh,02h,0eh,02h,0eh,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,00h
-                                            u8   00h,07h,00h,02h,0eh,06h,0eh,06h,0eh,06h,0eh,06h,0eh,06h,0eh,06h,0eh,02h,02h,0eh,06h,0eh,06h,0eh,06h,0eh,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,00h
-                                            u8   00h,07h,00h,00h,0eh,06h,0eh,06h,0eh,06h,0eh,06h,0eh,06h,0eh,06h,0eh,00h,00h,0eh,06h,0eh,06h,0eh,06h,0eh,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+    bios_logo                               u8  1       // how many extra 18x16 pictures wide?
+                                            u8  00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  07h,07h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  00h,07h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  00h,07h,07h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,00h
+                                            u8  00h,07h,07h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,0ah,0ah,0ah,0ah,0ah,0ah,0ah,0ah,0ah,0ah,02h,02h,02h,02h,07h,07h,07h,07h,02h,00h
+                                            u8  00h,07h,00h,02h,02h,07h,07h,07h,07h,07h,07h,07h,02h,02h,07h,07h,07h,07h,07h,07h,07h,07h,02h,02h,02h,02h,02h,0ah,0ah,0ah,0ah,0ah,07h,08h,08h,07h,02h,00h
+                                            u8  00h,07h,00h,02h,02h,07h,00h,00h,00h,00h,00h,07h,0ah,0ah,07h,00h,00h,00h,00h,00h,00h,07h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,07h,07h,07h,07h,02h,00h
+                                            u8  00h,07h,00h,02h,02h,07h,00h,08h,08h,08h,00h,07h,02h,02h,07h,00h,08h,08h,08h,08h,00h,07h,02h,02h,02h,02h,07h,07h,07h,07h,07h,02h,02h,02h,0ah,02h,02h,00h
+                                            u8  00h,07h,00h,02h,02h,07h,00h,08h,08h,08h,00h,07h,0ah,0ah,07h,00h,08h,08h,08h,08h,00h,07h,0ah,0ah,0ah,0ah,07h,08h,08h,00h,07h,0ah,0ah,0ah,0ah,02h,02h,00h
+                                            u8  00h,07h,00h,02h,02h,07h,00h,00h,00h,00h,00h,07h,02h,02h,07h,00h,08h,08h,08h,08h,00h,07h,02h,02h,02h,02h,07h,00h,08h,08h,07h,02h,02h,02h,02h,02h,02h,00h
+                                            u8  00h,07h,00h,02h,02h,07h,07h,07h,07h,07h,07h,07h,02h,02h,07h,07h,07h,07h,07h,07h,07h,07h,0ah,0ah,0ah,0ah,07h,07h,07h,07h,07h,02h,02h,02h,02h,02h,02h,00h
+                                            u8  00h,07h,00h,02h,02h,02h,0ah,02h,02h,02h,02h,0ah,02h,02h,02h,02h,0ah,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,00h
+                                            u8  00h,07h,07h,02h,02h,02h,0ah,02h,02h,02h,02h,02h,0ah,02h,02h,02h,02h,0ah,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,00h
+                                            u8  00h,07h,07h,02h,0eh,02h,0eh,02h,0eh,02h,0eh,02h,0eh,02h,0eh,02h,0eh,02h,02h,0eh,02h,0eh,02h,0eh,02h,0eh,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,00h
+                                            u8  00h,07h,00h,02h,0eh,06h,0eh,06h,0eh,06h,0eh,06h,0eh,06h,0eh,06h,0eh,02h,02h,0eh,06h,0eh,06h,0eh,06h,0eh,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,02h,00h
+                                            u8  00h,07h,00h,00h,0eh,06h,0eh,06h,0eh,06h,0eh,06h,0eh,06h,0eh,06h,0eh,00h,00h,0eh,06h,0eh,06h,0eh,06h,0eh,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
 
  end_of_required_data:
-    this_drivers_primatives                 u8   14, "BIOS_requestor"
-                                            u32  offset BIOS_requestor
-                                            u16  0
+    this_drivers_primatives                 u8  14, "BIOS_requestor"
+                                            u32 offset BIOS_requestor
+                                            u16 0
 
-                                            u8   22, "BIOS_iPIC_redirect_irq"
-                                            u32  offset BIOS_iPIC_redirect_irq
-                                            u16  0
+                                            u8  22, "BIOS_iPIC_redirect_irq"
+                                            u32 offset BIOS_iPIC_redirect_irq
+                                            u16 0
 
-                                            u8   18, "BIOS_iPIC_mask_irq"
-                                            u32  offset BIOS_iPIC_mask_irq
-                                            u16  0
+                                            u8  18, "BIOS_iPIC_mask_irq"
+                                            u32 offset BIOS_iPIC_mask_irq
+                                            u16 0
 
-                                            u8   20, "BIOS_iPIC_unmask_irq"
-                                            u32  offset BIOS_iPIC_unmask_irq
-                                            u16  0
+                                            u8  20, "BIOS_iPIC_unmask_irq"
+                                            u32 offset BIOS_iPIC_unmask_irq
+                                            u16 0
 
-                                            u8   23, "BIOS_iPIC_mask_all_irqs"
-                                            u32  offset BIOS_iPIC_mask_all_irqs
-                                            u16  0
+                                            u8  23, "BIOS_iPIC_mask_all_irqs"
+                                            u32 offset BIOS_iPIC_mask_all_irqs
+                                            u16 0
 
-                                            u8   25, "BIOS_iPIC_unmask_all_irqs"
-                                            u32  offset BIOS_iPIC_unmask_all_irqs
-                                            u16  0
+                                            u8  25, "BIOS_iPIC_unmask_all_irqs"
+                                            u32 offset BIOS_iPIC_unmask_all_irqs
+                                            u16 0
 
-                                            u8   19, "iBIOS_read_8042_64h"
-                                            u32  offset iBIOS_read_8042_64h
-                                            u16  0
+                                            u8  19, "iBIOS_read_8042_64h"
+                                            u32 offset iBIOS_read_8042_64h
+                                            u16 0
 
-                                            u8   19, "iBIOS_read_8042_60h"
-                                            u32  offset iBIOS_read_8042_60h
-                                            u16  0
+                                            u8  19, "iBIOS_read_8042_60h"
+                                            u32 offset iBIOS_read_8042_60h
+                                            u16 0
 
-                                            u8   20, "iBIOS_write_8042_64h"
-                                            u32  offset iBIOS_write_8042_64h
-                                            u16  0
+                                            u8  20, "iBIOS_write_8042_64h"
+                                            u32 offset iBIOS_write_8042_64h
+                                            u16 0
 
-                                            u8   20, "iBIOS_write_8042_60h"
-                                            u32  offset iBIOS_write_8042_60h
-                                            u16  0
+                                            u8  20, "iBIOS_write_8042_60h"
+                                            u32 offset iBIOS_write_8042_60h
+                                            u16 0
 
-                                            u8   24, "iBIOS_read_8042_64h_fast"
-                                            u32  offset iBIOS_read_8042_64h_fast
-                                            u16  0
+                                            u8  24, "iBIOS_read_8042_64h_fast"
+                                            u32 offset iBIOS_read_8042_64h_fast
+                                            u16 0
 
-                                            u8   24, "iBIOS_read_8042_60h_fast"
-                                            u32  offset iBIOS_read_8042_60h_fast
-                                            u16  0
+                                            u8  24, "iBIOS_read_8042_60h_fast"
+                                            u32 offset iBIOS_read_8042_60h_fast
+                                            u16 0
 
-                                            u8   25, "iBIOS_write_8042_64h_fast"
-                                            u32  offset iBIOS_write_8042_64h_fast
-                                            u16  0
+                                            u8  25, "iBIOS_write_8042_64h_fast"
+                                            u32 offset iBIOS_write_8042_64h_fast
+                                            u16 0
 
-                                            u8   25, "iBIOS_write_8042_60h_fast"
-                                            u32  offset iBIOS_write_8042_60h_fast
-                                            u16  0
+                                            u8  25, "iBIOS_write_8042_60h_fast"
+                                            u32 offset iBIOS_write_8042_60h_fast
+                                            u16 0
 
-                                            u8   20, "TIMER_wait_next_tick"
-                                            u32  offset TIMER_wait_next_tick
-                                            u16  0
+                                            u8  20, "TIMER_wait_next_tick"
+                                            u32 offset TIMER_wait_next_tick
+                                            u16 0
 
-                                            u8   20, "TIMER_wait_full_tick"
-                                            u32  offset TIMER_wait_full_tick
-                                            u16  0
+                                            u8  20, "TIMER_wait_full_tick"
+                                            u32 offset TIMER_wait_full_tick
+                                            u16 0
 
-                                            u8   18, "TIMER_wait_x_ticks"
-                                            u32  offset TIMER_wait_x_ticks
-                                            u16  0
+                                            u8  18, "TIMER_wait_x_ticks"
+                                            u32 offset TIMER_wait_x_ticks
+                                            u16 0
 
-                                            u8   31, "iTIMER_activate_debi_timer_feed"
-                                            u32  offset iTIMER_activate_debi_timer_feed
-                                            u16  0
+                                            u8  31, "iTIMER_activate_debi_timer_feed"
+                                            u32 offset iTIMER_activate_debi_timer_feed
+                                            u16 0
 
-                                            u8   33, "iTIMER_deactivate_debi_timer_feed"
-                                            u32  offset iTIMER_deactivate_debi_timer_feed
-                                            u16  0
+                                            u8  33, "iTIMER_deactivate_debi_timer_feed"
+                                            u32 offset iTIMER_deactivate_debi_timer_feed
+                                            u16 0
 
-                                            u8   14, "TASK_set_focus"
-                                            u32  offset TASK_set_focus
-                                            u16  0
+                                            u8  14, "TASK_set_focus"
+                                            u32 offset TASK_set_focus
+                                            u16 0
 
-                                            u8   16, "TASK_read_events"
-                                            u32  offset TASK_read_events
-                                            u16  0
+                                            u8  16, "TASK_read_events"
+                                            u32 offset TASK_read_events
+                                            u16 0
 
-                                            u8   22, "TASK_release_timeslice"
-                                            u32  offset TASK_release_timeslice
-                                            u16  0
+                                            u8  22, "TASK_release_timeslice"
+                                            u32 offset TASK_release_timeslice
+                                            u16 0
 
-                                            u8   19, "iTASK_kbd_interface"
-                                            u32  offset iTASK_kbd_interface
-                                            u16  0
+                                            u8  19, "iTASK_kbd_interface"
+                                            u32 offset iTASK_kbd_interface
+                                            u16 0
 
-                                            u8   25, "OBJECT_create_base_object"
-                                            u32  offset OBJECT_create_base_object
-                                            u16  0
+                                            u8  25, "OBJECT_create_base_object"
+                                            u32 offset OBJECT_create_base_object
+                                            u16 0
 
-                                            u8   20, "OBJECT_create_object"
-                                            u32  offset OBJECT_create_object
-                                            u16  0
+                                            u8  20, "OBJECT_create_object"
+                                            u32 offset OBJECT_create_object
+                                            u16 0
 
-                                            u8   29, "Exodus_TASK_release_timeslice"
-                                            u32  offset Exodus_TASK_release_timeslice
-                                            u16  0
+                                            u8  29, "Exodus_TASK_release_timeslice"
+                                            u32 offset Exodus_TASK_release_timeslice
+                                            u16 0
 
-                                            u8   25, "iTASK_prevent_task_switch"
-                                            u32  offset iTASK_prevent_task_switch
-                                            u16  0
+                                            u8  25, "iTASK_prevent_task_switch"
+                                            u32 offset iTASK_prevent_task_switch
+                                            u16 0
 
-                                            u8   23, "iTASK_allow_task_switch"
-                                            u32  offset iTASK_allow_task_switch
-                                            u16  0
+                                            u8  23, "iTASK_allow_task_switch"
+                                            u32 offset iTASK_allow_task_switch
+                                            u16 0
 
-                                            u8   21, "iTASK_mouse_interface"
-                                            u32  offset iTASK_mouse_interface
-                                            u16  0
+                                            u8  21, "iTASK_mouse_interface"
+                                            u32 offset iTASK_mouse_interface
+                                            u16 0
 
-                                            u16  0ffffh              // Teriminator
+                                            u16 0ffffh              // Teriminator
 
 }
 // text32

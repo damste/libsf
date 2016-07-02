@@ -86,11 +86,11 @@ show_mem1:
       show_mem_inner_loop:
         push    cx
         push    bx
-        mov     bl,<u8>  fs:[bx]                                 // Previous character
-        mov     dl,<u8>  [si]                                    // Current character
+        mov     bl,u8 ptr fs:[bx]                                 // Previous character
+        mov     dl,u8 ptr [si]                                    // Current character
         show_register_8()                                     // Display it in hexidecimal
-        mov     <u8>  es:[bp],dl                                 // Display it in ASCII
-        mov     <u8>  es:[bp+1],ah                               // Store the color from show_register_8
+        mov     u8 ptr es:[bp],dl                                 // Display it in ASCII
+        mov     u8 ptr es:[bp+1],ah                               // Store the color from show_register_8
         add     di,4                                                // Move to the next hexidecimal location
         add     bp,2                                                // Move to the next ASCII location
         inc     si                                                  // Move to the next data byte
@@ -116,13 +116,13 @@ get_register:
     {
       // cs
         mov     bx,current_sp
-        mov     dx,<u16> SS:[bx+2]
+        mov     dx,u16 ptr SS:[bx+2]
         mov     bx,offset cs_register
     
     } else if (al == 1) {
       // ip
         mov     bx,current_sp
-        mov     dx,<u16> SS:[bx+0]
+        mov     dx,u16 ptr SS:[bx+0]
         mov     bx,offset ip_register
     
     } else if (al == 2) {
@@ -199,7 +199,7 @@ get_register:
     } else if (al == 15) {
       // flags
         mov     bx,current_sp
-        mov     dx,<u16> SS:[bx+4]
+        mov     dx,u16 ptr SS:[bx+4]
         mov     bx,offset flags_register
         mov     cx,5
     
@@ -279,7 +279,7 @@ get_register:
         mov     bx,offset zero_ffff
         mov     cx,6
     }
-    mov     <u16> [esi],dx
+    mov     u16 ptr [esi],dx
     ret
 
 

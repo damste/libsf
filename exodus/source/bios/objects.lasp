@@ -19,9 +19,9 @@
         push    ds
 
         mov     ds,eax
-        mov     <u32> dword ptr ds:[_OBJECT_HEADER_NEXT_OBJECT],_FIRST_OBJECT
-        mov     <u32> dword ptr ds:[_OBJECT_HEADER_FIRST_BASE_OBJECT],-1
-        mov     <u32> dword ptr ds:[_OBJECT_HEADER_FIRST_OBJECT],-1
+        mov     u32 ptr dword ptr ds:[_OBJECT_HEADER_NEXT_OBJECT],_FIRST_OBJECT
+        mov     u32 ptr dword ptr ds:[_OBJECT_HEADER_FIRST_BASE_OBJECT],-1
+        mov     u32 ptr dword ptr ds:[_OBJECT_HEADER_FIRST_OBJECT],-1
 
         pop     ds
         retf
@@ -43,7 +43,7 @@
         push    edx
         push    eax
 
-        mov     edx,<u32> es:[_OBJECT_HEADER_FIRST_BASE_OBJECT]
+        mov     edx,u32 ptr es:[_OBJECT_HEADER_FIRST_BASE_OBJECT]
         xor     eax,eax
         while (edx != -1)
         {
@@ -54,7 +54,7 @@
                 clc
                 jmp     quit
             }
-            mov     edx,<u32> es:[edx+_OBJECT_NEXT_BASE_OBJECT]
+            mov     edx,u32 ptr es:[edx+_OBJECT_NEXT_BASE_OBJECT]
             inc     eax
         }
       // It wasn't found

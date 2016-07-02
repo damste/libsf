@@ -24,41 +24,41 @@
        // Initialize header
         mov     eax,_sTASK_SYSTEM
         mov     ds,eax
-        mov     <u32> ds:[_TASK_SYSTEM_NEXT_OFFSET],_TASK_ENTRY_LENGTH + (_FIRST_TASK_ENTRY*2)
-        mov     <u16> ds:[_TASK_SYSTEM_NEXT_HANDLE],100
-        mov     <u16> ds:[_TASK_SYSTEM_CURRENT_TASK_TSS],_sEXODUS_TSS
-        mov     <u32> ds:[_TASK_SYSTEM_CURRENT_TASK_OFFSET],_FIRST_TASK_ENTRY
-        mov     <u32> ds:[_TASK_SYSTEM_TOTAL_ENTRIES_BASE_0],1
+        mov     u32 ptr ds:[_TASK_SYSTEM_NEXT_OFFSET],_TASK_ENTRY_LENGTH + (_FIRST_TASK_ENTRY*2)
+        mov     u16 ptr  ds:[_TASK_SYSTEM_NEXT_HANDLE],100
+        mov     u16 ptr  ds:[_TASK_SYSTEM_CURRENT_TASK_TSS],_sEXODUS_TSS
+        mov     u32 ptr ds:[_TASK_SYSTEM_CURRENT_TASK_OFFSET],_FIRST_TASK_ENTRY
+        mov     u32 ptr ds:[_TASK_SYSTEM_TOTAL_ENTRIES_BASE_0],1
 
 
        // Initialize the structure for the currently executing task (created at bootup)
         mov     edi,_FIRST_TASK_ENTRY
-        mov     <u16> ds:[edi+_TASK_ENTRY_HANDLE],1
-        mov     <u16> ds:[edi+_TASK_ENTRY_GDT_TSS],_sEXODUS_TSS
-        mov     <u16> ds:[edi+_TASK_ENTRY_GDT_LDT],0ffffh
-        mov     <u16> ds:[edi+_TASK_ENTRY_SELECTOR_OBJECTS],_sEXODUS_OBJECTS
-        mov     <u16> ds:[edi+_TASK_ENTRY_FOCUS_BO],-1
-        mov     <u16> ds:[edi+_TASK_ENTRY_FOCUS_O],-1
-        mov     <u8>  ds:[edi+_TASK_ENTRY_TICKS],1
-        mov     <u8>  ds:[edi+_TASK_ENTRY_MODE],_LINEAR
-        mov     <u16> ds:[edi+_TASK_ENTRY_USES_FPU],1
-        mov     <u32> ds:[edi+_TASK_ENTRY_TSS_LINEAR_OFFSET],_sEXODUS_TSS_base
-        mov     <u8>  ds:[edi+_TASK_ENTRY_TICKS_LEFT],1
+        mov     u16 ptr  ds:[edi+_TASK_ENTRY_HANDLE],1
+        mov     u16 ptr  ds:[edi+_TASK_ENTRY_GDT_TSS],_sEXODUS_TSS
+        mov     u16 ptr  ds:[edi+_TASK_ENTRY_GDT_LDT],0ffffh
+        mov     u16 ptr  ds:[edi+_TASK_ENTRY_SELECTOR_OBJECTS],_sEXODUS_OBJECTS
+        mov     u16 ptr  ds:[edi+_TASK_ENTRY_FOCUS_BO],-1
+        mov     u16 ptr  ds:[edi+_TASK_ENTRY_FOCUS_O],-1
+        mov     u8 ptr  ds:[edi+_TASK_ENTRY_TICKS],1
+        mov     u8 ptr  ds:[edi+_TASK_ENTRY_MODE],_LINEAR
+        mov     u16 ptr  ds:[edi+_TASK_ENTRY_USES_FPU],1
+        mov     u32 ptr ds:[edi+_TASK_ENTRY_TSS_LINEAR_OFFSET],_sEXODUS_TSS_base
+        mov     u8 ptr  ds:[edi+_TASK_ENTRY_TICKS_LEFT],1
 
 
        // Initialize the entry for the Exodus slave task
         add     edi,_FIRST_TASK_ENTRY
-        mov     <u16> ds:[edi+_TASK_ENTRY_HANDLE],2
-        mov     <u16> ds:[edi+_TASK_ENTRY_GDT_TSS],_sEXODUS_SLAVE_TSS
-        mov     <u16> ds:[edi+_TASK_ENTRY_GDT_LDT],0ffffh
-        mov     <u16> ds:[edi+_TASK_ENTRY_SELECTOR_OBJECTS],-1
-        mov     <u16> ds:[edi+_TASK_ENTRY_FOCUS_BO],-1
-        mov     <u16> ds:[edi+_TASK_ENTRY_FOCUS_O],-1
-        mov     <u8>  ds:[edi+_TASK_ENTRY_TICKS],1
-        mov     <u8>  ds:[edi+_TASK_ENTRY_MODE],_SUSPENDED OR _SLAVE
-        mov     <u16> ds:[edi+_TASK_ENTRY_USES_FPU],1
-        mov     <u32> ds:[edi+_TASK_ENTRY_TSS_LINEAR_OFFSET],_sEXODUS_SLAVE_TSS_base
-        mov     <u8>  ds:[edi+_TASK_ENTRY_TICKS_LEFT],1
+        mov     u16 ptr  ds:[edi+_TASK_ENTRY_HANDLE],2
+        mov     u16 ptr  ds:[edi+_TASK_ENTRY_GDT_TSS],_sEXODUS_SLAVE_TSS
+        mov     u16 ptr  ds:[edi+_TASK_ENTRY_GDT_LDT],0ffffh
+        mov     u16 ptr  ds:[edi+_TASK_ENTRY_SELECTOR_OBJECTS],-1
+        mov     u16 ptr  ds:[edi+_TASK_ENTRY_FOCUS_BO],-1
+        mov     u16 ptr  ds:[edi+_TASK_ENTRY_FOCUS_O],-1
+        mov     u8 ptr  ds:[edi+_TASK_ENTRY_TICKS],1
+        mov     u8 ptr  ds:[edi+_TASK_ENTRY_MODE],_SUSPENDED OR _SLAVE
+        mov     u16 ptr  ds:[edi+_TASK_ENTRY_USES_FPU],1
+        mov     u32 ptr ds:[edi+_TASK_ENTRY_TSS_LINEAR_OFFSET],_sEXODUS_SLAVE_TSS_base
+        mov     u8 ptr  ds:[edi+_TASK_ENTRY_TICKS_LEFT],1
 
 
        // Initialize the object space for this task
@@ -73,21 +73,21 @@
       // Right now, ds:[esi] - far ptr to TSS base
 // Segment registers
         mov     ebx,_sTASK_SYSTEM
-        mov     <u32> ds:[esi+_TSS_DS],ebx
-        mov     <u32> ds:[esi+_TSS_ES],ebx
+        mov     u32 ptr ds:[esi+_TSS_DS],ebx
+        mov     u32 ptr ds:[esi+_TSS_ES],ebx
         movzx   ebx,cs:data_segment
-        mov     <u32> ds:[esi+_TSS_FS],ebx
+        mov     u32 ptr ds:[esi+_TSS_FS],ebx
         mov     ebx,_sALL_MEM
-        mov     <u32> ds:[esi+_TSS_GS],ebx
+        mov     u32 ptr ds:[esi+_TSS_GS],ebx
       // Where cs:eip starts
         mov     ebx,cs
-        mov     <u32> ds:[esi+_TSS_CS],ebx
+        mov     u32 ptr ds:[esi+_TSS_CS],ebx
         mov     ebx,offset invTASK_switch_task
-        mov     <u32> ds:[esi+_TSS_EIP],ebx
+        mov     u32 ptr ds:[esi+_TSS_EIP],ebx
       // Stack
         mov     ebx,_sTASK_STACK
-        mov     <u32> ds:[esi+_TSS_SS],ebx
-        mov     <u32> ds:[esi+_TSS_ESP],_sTASK_STACK_limit
+        mov     u32 ptr ds:[esi+_TSS_SS],ebx
+        mov     u32 ptr ds:[esi+_TSS_ESP],_sTASK_STACK_limit
 
         pop     ds
         popad
@@ -154,7 +154,7 @@
        // Update the task structure
         mov     ebx,_sTASK_SYSTEM
         mov     ds,ebx
-        mov     <u32> ds:[_TASK_SYSTEM_FOCUS_TASK_OFFSET],edi
+        mov     u32 ptr ds:[_TASK_SYSTEM_FOCUS_TASK_OFFSET],edi
 
        // Redraw the object's on this task
         iOBJECT_redraw_task()
@@ -180,12 +180,12 @@
     //
         mov     ebx,_sTASK_SYSTEM
         mov     ds,ebx
-        mov     ebx,<u32> ds:[_TASK_SYSTEM_CURRENT_TASK_OFFSET]
-        mov     al,<u8>  ds:[ebx+_TASK_ENTRY_MODE]
+        mov     ebx,u32 ptr ds:[_TASK_SYSTEM_CURRENT_TASK_OFFSET]
+        mov     al,u8 ptr ds:[ebx+_TASK_ENTRY_MODE]
         if (al == _LINEAR)
         {
           // They're currently in linear mode, so we can begin read events
-            mov     <u8>  ds:[ebx+_TASK_ENTRY_MODE],_READ_EVENTS
+            mov     u8 ptr ds:[ebx+_TASK_ENTRY_MODE],_READ_EVENTS
         }
         jmp     TASK_release_timeslice
 
@@ -280,12 +280,12 @@
         mov     ebx,_sTASK_SYSTEM
         mov     gs,ebx
         mov     edi,_FIRST_TASK_ENTRY
-        while (edi < <u32> gs:[_TASK_SYSTEM_NEXT_OFFSET])
+        while (edi < u32 ptr gs:[_TASK_SYSTEM_NEXT_OFFSET])
         {
             if (word ptr gs:[edi] == ax)
             {
               // This is it
-                mov     <u32> [esp+00],edi
+                mov     u32 ptr [esp+00],edi
                 clc
                 jmp     quit
             }
@@ -326,8 +326,8 @@
        //
        //
     task_switch_start:
-        mov     ecx,<u32> ds:[_TASK_SYSTEM_TOTAL_ENTRIES_BASE_0]
-        mov     esi,<u32> ds:[_TASK_SYSTEM_CURRENT_TASK_OFFSET]
+        mov     ecx,u32 ptr ds:[_TASK_SYSTEM_TOTAL_ENTRIES_BASE_0]
+        mov     esi,u32 ptr ds:[_TASK_SYSTEM_CURRENT_TASK_OFFSET]
       linear_top:
         add     esi,_TASK_ENTRY_LENGTH                              // Move to next task
         if (esi >= ds:[_TASK_SYSTEM_NEXT_OFFSET])
@@ -336,17 +336,17 @@
         }
 
       // See if this one meets our criteria
-        cmp     <u16> ds:[esi+_TASK_ENTRY_HANDLE],-1             // Handle has to be valid
+        cmp     u16 ptr ds:[esi+_TASK_ENTRY_HANDLE],-1             // Handle has to be valid
         jz      next_one
-        cmp     <u8>  ds:[esi+_TASK_ENTRY_MODE],_LINEAR          // And it must be a linear mode task to get a timeslice
+        cmp     u8 ptr ds:[esi+_TASK_ENTRY_MODE],_LINEAR          // And it must be a linear mode task to get a timeslice
         jz      found_match
-        cmp     <u8>  ds:[esi+_TASK_ENTRY_MODE],_SLAVE + _LINEAR
+        cmp     u8 ptr ds:[esi+_TASK_ENTRY_MODE],_SLAVE + _LINEAR
         jnz     next_one
 
       found_match:
       // We found our task
-        mov     bl,<u8>  ds:[esi+_TASK_ENTRY_TICKS]              // If here, then this is the next task
-        mov     <u8>  ds:[esi+_TASK_ENTRY_TICKS_LEFT],bl
+        mov     bl,u8 ptr ds:[esi+_TASK_ENTRY_TICKS]              // If here, then this is the next task
+        mov     u8 ptr ds:[esi+_TASK_ENTRY_TICKS_LEFT],bl
         jmp     exec_task_switch
       // If we're here, then no tasks are needing cpu time (they're all waiting for input or suspended)
       // This is idle time, so let's check if any tasks use idle processing
@@ -366,8 +366,8 @@
        //                   currently in idle mode. :)
        //
        //
-        mov     ecx,<u32> ds:[_TASK_SYSTEM_TOTAL_ENTRIES_BASE_0]
-        mov     esi,<u32> ds:[_TASK_SYSTEM_CURRENT_TASK_OFFSET]
+        mov     ecx,u32 ptr ds:[_TASK_SYSTEM_TOTAL_ENTRIES_BASE_0]
+        mov     esi,u32 ptr ds:[_TASK_SYSTEM_CURRENT_TASK_OFFSET]
       idle_top:
         add     esi,_TASK_ENTRY_LENGTH
         if (esi >= ds:[_TASK_SYSTEM_NEXT_OFFSET])
@@ -377,15 +377,15 @@
         }
 
       // See if this one meets our criteria
-        cmp     <u16> ds:[esi+_TASK_ENTRY_HANDLE],-1
+        cmp     u16 ptr ds:[esi+_TASK_ENTRY_HANDLE],-1
         jz      next_one2
-        cmp     <u8>  ds:[esi+_TASK_ENTRY_MODE],_IDLE
+        cmp     u8 ptr ds:[esi+_TASK_ENTRY_MODE],_IDLE
         jnz     next_one2
 
       found_match2:
       // We found our task
-        mov     bl,<u8>  ds:[esi+_TASK_ENTRY_TICKS]
-        mov     <u8>  ds:[esi+_TASK_ENTRY_TICKS_LEFT],bl
+        mov     bl,u8 ptr ds:[esi+_TASK_ENTRY_TICKS]
+        mov     u8 ptr ds:[esi+_TASK_ENTRY_TICKS_LEFT],bl
         jmp     exec_task_switch
 
       next_one2:
@@ -408,30 +408,30 @@
        //
     exec_task_switch:
        // Modify the back-link to point to the correct task
-        mov     bx,<u16> ds:[esi+_TASK_ENTRY_GDT_TSS]
-        mov     dx,<u16> ds:[_TASK_SYSTEM_CURRENT_TASK_TSS]
+        mov     bx,u16 ptr ds:[esi+_TASK_ENTRY_GDT_TSS]
+        mov     dx,u16 ptr ds:[_TASK_SYSTEM_CURRENT_TASK_TSS]
         if (dx != bx)
         {
           // We're going to a separate task
 
           // Save the current FPU (if it needs saving)
-            mov     edi,<u32> ds:[_TASK_SYSTEM_CURRENT_TASK_OFFSET]
+            mov     edi,u32 ptr ds:[_TASK_SYSTEM_CURRENT_TASK_OFFSET]
             if (byte ptr ds:[edi+_TASK_ENTRY_USES_FPU] != 0)
             {
               // This task uses the FPU
-                mov     ebx,<u32> ds:[edi+_TASK_ENTRY_TSS_LINEAR_OFFSET]
+                mov     ebx,u32 ptr ds:[edi+_TASK_ENTRY_TSS_LINEAR_OFFSET]
                 fsave   gs:[ebx+_TSS_FPU_SAVE_AREA]
             }
 
           // Update the header info
-            mov     <u16> ds:[_TASK_SYSTEM_CURRENT_TASK_TSS],bx
-            mov     <u16> gs:[_sTASK_SWITCH_TSS+_TSS_BACK_LINK],bx
-            mov     <u32> ds:[_TASK_SYSTEM_CURRENT_TASK_OFFSET],esi
+            mov     u16 ptr ds:[_TASK_SYSTEM_CURRENT_TASK_TSS],bx
+            mov     u16 ptr gs:[_sTASK_SWITCH_TSS+_TSS_BACK_LINK],bx
+            mov     u32 ptr ds:[_TASK_SYSTEM_CURRENT_TASK_OFFSET],esi
 
           // Restore the new FPU (if it needs restoring)
             if (byte ptr ds:[esi+_TASK_ENTRY_USES_FPU] != 0)
             {
-                mov     ebx,<u32> ds:[esi+_TASK_ENTRY_TSS_LINEAR_OFFSET]
+                mov     ebx,u32 ptr ds:[esi+_TASK_ENTRY_TSS_LINEAR_OFFSET]
                 frstor  gs:[ebx+_TSS_FPU_SAVE_AREA]
             }
         }

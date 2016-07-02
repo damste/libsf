@@ -29,7 +29,7 @@
         mov     esi,ds:storage_ptr                                  // Store current offset into video memory
         mov     edx,ebx
         shl     edx,1                                               // Video memory has two bytes for every one on-screen
-        mov     <u16> ds:[esi],dx
+        mov     u16 ptr ds:[esi],dx
       // bh == high bits, reg1 for index 0xE, reg2 for data
       // bl == low bits, reg1 for index 0xF, reg2 for data
         _position_cursor_raw_data()
@@ -68,7 +68,7 @@
 
     function _generate_radix_string
     {
-        mov     <u8>  [ebp+12],0                                 // NULL terminate the string we're building
+        mov     u8 ptr [ebp+12],0                                 // NULL terminate the string we're building
         mov     esi,ebp
         add     esi,11
         mov     eax,edx
@@ -88,7 +88,7 @@
         } else {
             add     dl,'0'                                          // Make it a number
         }
-        mov     <u8>  ss:[esi],dl
+        mov     u8 ptr ss:[esi],dl
         dec     esi                                                 // Decrement (move to next position to store data)
         cmp     esi,ebp
         jz      @F
@@ -117,11 +117,11 @@
         if (ecx > 7fffffffh)
         {
           // It's negative
-            mov     <u8>  [ebp+36],'ú'
+            mov     u8 ptr [ebp+36],'ú'
             neg     ecx
         
         } else {
-            mov     <u8>  [ebp+36],'0'
+            mov     u8 ptr [ebp+36],'0'
         }
         if (ecx > 32)
         {
@@ -137,21 +137,21 @@
         } else {
             add     dl,'0'                                          // Make it a number
         }
-        mov     <u8>  ss:[esi],dl
+        mov     u8 ptr ss:[esi],dl
         dec     esi                                                 // Decrement (move to next position to store data)
         cmp     esi,ebp
         jz      @F
-        if (eax == 0 && <u8>  ss:[esi+1] == '0')
+        if (eax == 0 && u8 ptr ss:[esi+1] == '0')
         {
           // These are all leading 0's.  But, the user might've wanted leading ú's instead, so we do that here
             push    ebx
-            mov     bl,<u8>  [ebp+36]
-            mov     <u8>  ss:[esi+1],bl
+            mov     bl,u8 ptr [ebp+36]
+            mov     u8 ptr ss:[esi+1],bl
             pop     ebx
         }
         loop    @B
       @@:
-        mov     <u8>  [ebp+36],0                                 // NULL terminate the string we're building
+        mov     u8 ptr [ebp+36],0                                 // NULL terminate the string we're building
         push    ss
         pop     ds
         inc     esi                                                 // Add back for the one we decremented above
@@ -466,7 +466,7 @@
             mov     edx,_sVGA / 8
             mov     esi,_sVGA_BACKUP_base
             mov     edi,_sVGA_BACKUP_limit
-            call    <u48> cs:_EXODUS_requestor
+            call    u48 ptr cs:_EXODUS_requestor
 
           // Raise the flag
             mov     ds,cs:data_segment
@@ -506,7 +506,7 @@
             mov     edx,_sVGA / 8
             mov     esi,_sVGA_base
             mov     edi,_sVGA_limit
-            call    <u48> cs:_EXODUS_requestor
+            call    u48 ptr cs:_EXODUS_requestor
 
           // Copy the save buffer to the current screen
             mov     ax,_sVGA_BACKUP
@@ -552,12 +552,12 @@
       // [esp+00] - eip
 
        // MISC registers
-        mov     esi,<u32> [esp+28]
+        mov     esi,u32 ptr [esp+28]
         xor     ebx,ebx
         while (word ptr cs:[esi+ebx*4] != 0ffffh)
         {
-            mov     dx,<u16> cs:[esi+ebx*4]                      // port
-            mov     ax,<u16> cs:[esi+ebx*4+2]                    // data
+            mov     dx,u16 ptr cs:[esi+ebx*4]                      // port
+            mov     ax,u16 ptr cs:[esi+ebx*4+2]                    // data
             out     dx,al
             invWait_a_bit()
 
@@ -565,7 +565,7 @@
         }
 
        // CRTC registers
-        mov     esi,<u32> [esp+20]
+        mov     esi,u32 ptr [esp+20]
         xor     ebx,ebx
         mov     ecx,32
         repeat
@@ -576,7 +576,7 @@
             invWait_a_bit()
 
             mov     edx,CRTC_DATA
-            mov     al,<u8>  cs:[esi]
+            mov     al,u8 ptr cs:[esi]
             out     dx,al
             invWait_a_bit()
 
@@ -585,7 +585,7 @@
         } untilcxz
 
        // SEQ registers
-        mov     esi,<u32> [esp+24]
+        mov     esi,u32 ptr [esp+24]
         xor     ebx,ebx
         mov     ecx,5
         repeat
@@ -596,7 +596,7 @@
             invWait_a_bit()
 
             mov     edx,SEQ_DATA
-            mov     al,<u8>  cs:[esi]
+            mov     al,u8 ptr cs:[esi]
             out     dx,al
             invWait_a_bit()
 
@@ -605,7 +605,7 @@
         } untilcxz
 
        // GRAPH registers
-        mov     esi,<u32> [esp+16]
+        mov     esi,u32 ptr [esp+16]
         xor     ebx,ebx
         mov     ecx,9
         repeat
@@ -616,7 +616,7 @@
             invWait_a_bit()
 
             mov     edx,GRAPH_DATA
-            mov     al,<u8>  cs:[esi]
+            mov     al,u8 ptr cs:[esi]
             out     dx,al
             invWait_a_bit()
 
@@ -625,7 +625,7 @@
         } untilcxz
 
        // ATTRIB registers
-        mov     esi,<u32> [esp+12]
+        mov     esi,u32 ptr [esp+12]
         xor     ebx,ebx
         mov     ecx,21
         repeat
@@ -640,7 +640,7 @@
             invWait_a_bit()
 
             mov     edx,ATTRIB_DATA_WRITE
-            mov     al,<u8>  cs:[esi]
+            mov     al,u8 ptr cs:[esi]
             out     dx,al
             invWait_a_bit()
 
@@ -657,8 +657,8 @@
         invWait_a_bit()
 
        // RAMDAC registers
-        mov     ecx,<u32> [esp+04]
-        mov     esi,<u32> [esp+08]
+        mov     ecx,u32 ptr [esp+04]
+        mov     esi,u32 ptr [esp+08]
         mov     edx,RAMDAC_PIXEL_MASK
         mov     al,0ffh
         out     dx,al
@@ -666,23 +666,23 @@
         repeat
         {
             mov     edx,RAMDAC_INDEX_WRITE
-            mov     al,<u8>  cs:[esi]
+            mov     al,u8 ptr cs:[esi]
             inc     esi
             out     dx,al
             invWait_a_bit()
 
             mov     edx,RAMDAC_DATA
-            mov     al,<u8>  cs:[esi]                            // red
+            mov     al,u8 ptr cs:[esi]                            // red
             inc     esi
             out     dx,al
             invWait_a_bit()
 
-            mov     al,<u8>  cs:[esi]                            // green
+            mov     al,u8 ptr cs:[esi]                            // green
             inc     esi
             out     dx,al
             invWait_a_bit()
 
-            mov     al,<u8>  cs:[esi]                            // blue
+            mov     al,u8 ptr cs:[esi]                            // blue
             inc     esi
             out     dx,al
             invWait_a_bit()
@@ -710,39 +710,39 @@
         mov     al,0ffh
         out     dx,al
         mov     edx,RAMDAC_INDEX_WRITE
-        mov     al,<u8>  ds:[ebx]
+        mov     al,u8 ptr ds:[ebx]
         out     dx,al
         jmp     $+2
 
         if (cs:bits_per_pixel == 8)
         {
             mov     edx,RAMDAC_DATA
-            mov     al,<u8>  ds:[ebx+1]                          // red
+            mov     al,u8 ptr ds:[ebx+1]                          // red
             shr     al,2                                            // divide by 4 (only 64 values per register in 8bpp mode)
             out     dx,al
             jmp     $+2
 
-            mov     al,<u8>  ds:[ebx+2]                          // green
+            mov     al,u8 ptr ds:[ebx+2]                          // green
             shr     al,2
             out     dx,al
             jmp     $+2
 
-            mov     al,<u8>  ds:[ebx+3]                          // blue
+            mov     al,u8 ptr ds:[ebx+3]                          // blue
             shr     al,2
             out     dx,al
             jmp     $+2
         
         } else {
             mov     edx,RAMDAC_DATA
-            mov     al,<u8>  ds:[ebx+1]                          // red
+            mov     al,u8 ptr ds:[ebx+1]                          // red
             out     dx,al
             jmp     $+2
 
-            mov     al,<u8>  ds:[ebx+2]                          // green
+            mov     al,u8 ptr ds:[ebx+2]                          // green
             out     dx,al
             jmp     $+2
 
-            mov     al,<u8>  ds:[ebx+3]                          // blue
+            mov     al,u8 ptr ds:[ebx+3]                          // blue
             out     dx,al
             jmp     $+2
         }
@@ -809,8 +809,8 @@
 
         invVID_vga_prepare_for_font()
       //-----------
-        mov     esi,<u32> [ebp+08]
-        mov     ebx,<u32> [ebp+12]
+        mov     esi,u32 ptr [ebp+08]
+        mov     ebx,u32 ptr [ebp+12]
         mov     ax,_sGRAPHICS
         mov     es,eax
         xor     edi,edi
@@ -939,7 +939,7 @@
         inc     esi
         mov     ecx,1
         push    edx
-        while (al < <u8>  ds:[edi])
+        while (al < u8 ptr ds:[edi])
         {
             mov     ebx,eax
 
@@ -947,13 +947,13 @@
             out     dx,al
             invWait_a_bit()
             mov     edx,RAMDAC_DATA
-            mov     al,<u8>  ds:[esi]                            // Red
+            mov     al,u8 ptr ds:[esi]                            // Red
             out     dx,al
             invWait_a_bit()
-            mov     al,<u8>  ds:[esi+1]                          // Green
+            mov     al,u8 ptr ds:[esi+1]                          // Green
             out     dx,al
             invWait_a_bit()
-            mov     al,<u8>  ds:[esi+2]                          // Blue
+            mov     al,u8 ptr ds:[esi+2]                          // Blue
             out     dx,al
             add     esi,3
 
@@ -971,8 +971,8 @@
         while (edx > 0)
         {
             sub     edx,2
-            movzx   ecx,<u8>  ds:[esi]
-            mov     al,<u8>  ds:[esi+1]
+            movzx   ecx,u8 ptr ds:[esi]
+            mov     al,u8 ptr ds:[esi+1]
             rep     stosb
             add     esi,2
         }
@@ -990,15 +990,15 @@
             invWait_a_bit()
 
             mov     edx,RAMDAC_DATA
-            mov     al,<u8>  fs:[esi+1]                          // red
+            mov     al,u8 ptr fs:[esi+1]                          // red
             out     dx,al
             invWait_a_bit()
 
-            mov     al,<u8>  fs:[esi+2]                          // green
+            mov     al,u8 ptr fs:[esi+2]                          // green
             out     dx,al
             invWait_a_bit()
 
-            mov     al,<u8>  fs:[esi+3]                          // blue
+            mov     al,u8 ptr fs:[esi+3]                          // blue
             out     dx,al
             invWait_a_bit()
 
@@ -1048,7 +1048,7 @@
             push    eax
 
             mov     ds,cs:data_segment
-            mov     eax,<u32> [ebp+08]
+            mov     eax,u32 ptr [ebp+08]
             mov     ds:VID_g_owner,eax
 
             pop     eax
@@ -1079,7 +1079,7 @@
         enter   0,0
         push    eax
 
-        mov     eax,<u32> [ebp+08]
+        mov     eax,u32 ptr [ebp+08]
         if (cs:VID_g_owner == eax)
         {
           // This is actually the owner, and they're releasing it

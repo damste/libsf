@@ -15,7 +15,7 @@
 //      // [ebp+00] - ebp
 //        enter   0,0
 //        push    ebx
-//        mov     ebx,<u32> [ebp+08]
+//        mov     ebx,u32 ptr [ebp+08]
 //        .IF (ebx == offset VID_g_mono_cursor_offset)
 //          // It's a queue to the cursor algorithm
 //          // [ebp+28] - dword, horizontal

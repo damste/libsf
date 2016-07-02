@@ -300,11 +300,11 @@ show_register_adr_size_override_no_color:
     xor     ax,ax
     mov     fs,ax
     mov     eax,08600000h                                           // Segment (860h), Offset (0h), linear = 8600h
-    mov     <u32> FS:[0*4],eax                                  // INT0, divide by zero or divide is too big for dest
-    mov     <u32> FS:[1*4],eax                                  // INT1, single-step
-    mov     <u32> FS:[3*4],eax                                  // INT3, software breakpoint
-    mov     <u32> FS:[4*4],eax                                  // INT4, overflow
-    mov     <u32> FS:[6*4],eax                                  // INT6, invalid opcode
+    mov     u32 ptr FS:[0*4],eax                                  // INT0, divide by zero or divide is too big for dest
+    mov     u32 ptr FS:[1*4],eax                                  // INT1, single-step
+    mov     u32 ptr FS:[3*4],eax                                  // INT3, software breakpoint
+    mov     u32 ptr FS:[4*4],eax                                  // INT4, overflow
+    mov     u32 ptr FS:[6*4],eax                                  // INT6, invalid opcode
 
 
 // From BOOTUP.COM, initialize_kbd code
@@ -329,10 +329,10 @@ show_register_adr_size_override_no_color:
             mov     si,offset initialized_error
         }
 
-//    mov     edx,<u32> [eax*4]
+//    mov     edx,u32 ptr [eax*4]
 //    and     edx,0400h
 //    .IF (!zero?)
-//        mov     <u32> [eax*4],0
+//        mov     u32 ptr [eax*4],0
 //        in      al,060h
 //    .ENDIF
 
@@ -372,15 +372,15 @@ function find_high_memory_blocks
         mov     bx,0
         jmp     find_high_memory_end_of_memory
     }
-    mov     al,<u8>  [esi]                                       // Read the byte there
+    mov     al,u8 ptr [esi]                                       // Read the byte there
     not     al                                                      // Reverse all bits
-    mov     <u8>  [esi],al                                       // Write it back
+    mov     u8 ptr [esi],al                                       // Write it back
     if (byte ptr [esi] == al)                                      // See if we can read what we just wrote
     {
       // We can write here, it's the start of a block
         not     al                                                  // Put back whatever byte was there originally
-        mov     <u8>  [esi],al
-        mov     <u32> es:[edi],esi                              // Store the start of this block
+        mov     u8 ptr [esi],al
+        mov     u32 ptr es:[edi],esi                              // Store the start of this block
         add     edi,4
 
         push    ds
@@ -408,14 +408,14 @@ function find_high_memory_blocks
             mov     bx,1
             jmp     find_high_memory_end_of_memory
         }
-        mov     al,<u8>  [esi]                                   // Read the byte there
+        mov     al,u8 ptr [esi]                                   // Read the byte there
         not     al                                                  // Reverse all bits
-        mov     <u8>  [esi],al                                   // Write it back
+        mov     u8 ptr [esi],al                                   // Write it back
         if (byte ptr [esi] != al)                                  // See if we can read what we just wrote
         {
           // We can't write here, it's the end of a block
             dec     esi                                             // The previous byte was the last writeable byte
-            mov     <u32> es:[edi],esi                          // Store it
+            mov     u32 ptr es:[edi],esi                          // Store it
             add     edi,4                                           // Move to our next area in the structure
             mov     edx,esi
             inc     esi                                             // Go back to the first byte that failed
@@ -437,7 +437,7 @@ function find_high_memory_blocks
             jmp     find_high_memory_next_block
         }
         not     al                                                  // Restore the byte that was there
-        mov     <u8>  [esi],al
+        mov     u8 ptr [esi],al
         inc     esi                                                 // Move to the next byte to try
         jmp     @B
     }
@@ -447,7 +447,7 @@ function find_high_memory_blocks
 
   find_high_memory_end_of_memory:
   // We're at the end of memory
-    mov     <u32> es:[edi],0ffffffffh                           // Terminate the listing
+    mov     u32 ptr es:[edi],0ffffffffh                           // Terminate the listing
     mov     ax,_sDATA
     mov     ds,ax
     mov     es,ax
@@ -496,23 +496,23 @@ _sFLOPPY1_BUFFER_WRITE        = 122 * 8
 _sFLOPPY1_RESERVED            = 123 * 8
       // Try to determine what media is in the drive
         mov     al,"A"                                              // Drive letter
-        call    <u48> cs:_iFDC_initialize_drive
+        call    u48 ptr cs:_iFDC_initialize_drive
         if (!carry?)
         {
           // There is media in the drive, so we know what capacity this diskette currently is
             mov     edx,eax
             mov     al,"A"
-            call    <u48> cs:_iDISK_update_media
+            call    u48 ptr cs:_iDISK_update_media
         }
       // Try to determine what media is in the drive
         mov     al,"B"                                              // Drive letter
-        call    <u48> cs:_iFDC_initialize_drive
+        call    u48 ptr cs:_iFDC_initialize_drive
         if (!carry?)
         {
           // There is media in the drive, so we know what capacity this diskette currently is
             mov     edx,eax
             mov     al,"B"
-            call    <u48> cs:_iDISK_update_media
+            call    u48 ptr cs:_iDISK_update_media
         }
     pushad                                                           //
     mov     edx,eax                                                  //
@@ -577,37 +577,37 @@ _sFLOPPY1_RESERVED            = 123 * 8
     mov     es,ax  // Display the hours
     mov     ds:offset_mono,0
     xor     edx,edx
-    mov     dl,<u8>  es:[_SYSTEM_HOURS]
+    mov     dl,u8 ptr es:[_SYSTEM_HOURS]
     iVT_display_decimal_in_edx_nr_mono()
 
   // Display the minutes
     xor     edx,edx
-    mov     dl,<u8>  es:[_SYSTEM_MINUTES]
+    mov     dl,u8 ptr es:[_SYSTEM_MINUTES]
     iVT_display_decimal_in_edx_nr_mono()
 
   // Display the seconds
     xor     edx,edx
-    mov     dl,<u8>  es:[_SYSTEM_SECONDS]
+    mov     dl,u8 ptr es:[_SYSTEM_SECONDS]
     iVT_display_decimal_in_edx_nr_mono()
 
   // Display the 1/182 of a seconds
     xor     edx,edx
-    mov     dl,<u8>  es:[_SYSTEM_182S_OF_A_SECOND]
+    mov     dl,u8 ptr es:[_SYSTEM_182S_OF_A_SECOND]
     iVT_display_decimal_in_edx_nr_mono()
 
   // Display the month
     xor     edx,edx
-    mov     dl,<u8>  es:[_SYSTEM_MONTH]
+    mov     dl,u8 ptr es:[_SYSTEM_MONTH]
     iVT_display_decimal_in_edx_nr_mono()
 
   // Display the day
     xor     edx,edx
-    mov     dl,<u8>  es:[_SYSTEM_DAY]
+    mov     dl,u8 ptr es:[_SYSTEM_DAY]
     iVT_display_decimal_in_edx_nr_mono()
 
   // Display the year
     xor     edx,edx
-    mov     dx,<u16> es:[_SYSTEM_YEAR]
+    mov     dx,u16 ptr es:[_SYSTEM_YEAR]
     iVT_display_decimal_in_edx_nr_mono()
 
   // Display the keyboard port data
@@ -631,7 +631,7 @@ _sFLOPPY1_RESERVED            = 123 * 8
     xor     eax,eax
     while (eax < 256)
     {
-        mov     edx,<u32> [eax*4]
+        mov     edx,u32 ptr [eax*4]
         push    eax
         if (edx != 0)
         {
@@ -701,7 +701,7 @@ debug_mono:
     {
         mov     eax,ds:debug_pause_time
         push    eax
-        call    <u48> cs:_xTIMER_wait_x_ticks
+        call    u48 ptr cs:_xTIMER_wait_x_ticks
     }
 
     pop     ds
@@ -860,29 +860,29 @@ function create_ldt_descriptor
 //                  ebx - base
 //                  edx - limit
 //
-    mov     <u16> [esi+eax*8+2],bx                           // base 0:15
+    mov     u16 ptr [esi+eax*8+2],bx                           // base 0:15
     shr     ebx,16
-    mov     <u8>  [esi+eax*8+4],bl                           // base 16:23
+    mov     u8 ptr [esi+eax*8+4],bl                           // base 16:23
     shr     ebx,8
-    mov     <u8>  [esi+eax*8+5],10000010b                    // Not accessed, writeable, expand=0, DPL=00
+    mov     u8 ptr [esi+eax*8+5],10000010b                    // Not accessed, writeable, expand=0, DPL=00
     if (edx > 0fffffh)
     {
       // This is a BIG data descriptor (so, we have to change the granularity to 1)
       // Also, setting the granularity bit makes the limit value be the number of 4k segments
         shr     edx,12                                          // Divide by 4096
-        mov     <u16> [esi+eax*8+0],dx                       // Store the new limit 0:15
+        mov     u16 ptr [esi+eax*8+0],dx                       // Store the new limit 0:15
         shr     edx,16                                          // Move over to store the next part of the limit
         and     dl,0fh                                          // Mask off the top nibble (the limit is only 20 bits)
         or      dl,11000000b                                    // make granularity=1, big=1 (high bits in dl)
     
     } else {
       // It's a small data descriptor (leave the granularity at 0)
-        mov     <u16> [esi+eax*8+0],dx                       // limit 0:15
+        mov     u16 ptr [esi+eax*8+0],dx                       // limit 0:15
         shr     edx,16
         and     dl,0fh
     }
-    mov     <u8>  [esi+eax*8+6],dl                           // limit 16:19, Granularity=0/1, big=0/1 (depends on size)
-    mov     <u8>  [esi+eax*8+7],bl                           // base 24:31
+    mov     u8 ptr [esi+eax*8+6],dl                           // limit 16:19, Granularity=0/1, big=0/1 (depends on size)
+    mov     u8 ptr [esi+eax*8+7],bl                           // base 24:31
     ret
     ret
 }
@@ -895,19 +895,19 @@ function create_data_descriptor_read_only_dpl    NEAR
 //                  ebx - base
 //                  edx - limit
 //                   cl - DPL
-    mov     <u16> [esi+eax*8+0],dx                           // limit 0:15
-    mov     <u16> [esi+eax*8+2],bx                           // base 0:15
+    mov     u16 ptr [esi+eax*8+0],dx                           // limit 0:15
+    mov     u16 ptr [esi+eax*8+2],bx                           // base 0:15
     shr     ebx,16
-    mov     <u8>  [esi+eax*8+4],bl                           // base 16:23
+    mov     u8 ptr [esi+eax*8+4],bl                           // base 16:23
     shr     ebx,8
     shl     cl,5                                                // Move DPL over to bits 6,5
     or      cl,10010000b                                        // Not accessed, read-only, expand=0, DPL=00
-    mov     <u8>  [esi+eax*8+5],cl
+    mov     u8 ptr [esi+eax*8+5],cl
     if (edx > 0fffffh)
     {
       // This is a BIG data descriptor (so, we have to change the granularity to 1)
         shr     edx,12                                          // Divide by 4096
-        mov     <u16> [esi+eax*8+0],dx                       // Store the new limit 0:15
+        mov     u16 ptr [esi+eax*8+0],dx                       // Store the new limit 0:15
         shr     edx,16                                          // Move over to store the next part of the limit
         and     dl,0fh                                          // Mask off the top nibble (the limit is only 20 bits)
         or      dl,11000000b                                    // make granularity=1, big=1 (high bits in dl)
@@ -917,8 +917,8 @@ function create_data_descriptor_read_only_dpl    NEAR
         shr     edx,16
         and     dl,0fh
     }
-    mov     <u8>  [esi+eax*8+6],dl                           // limit 16:19, Granularity=0/1, big=0/1 (0/1 depends on size)
-    mov     <u8>  [esi+eax*8+7],bl                           // base 24:31
+    mov     u8 ptr [esi+eax*8+6],dl                           // limit 16:19, Granularity=0/1, big=0/1 (0/1 depends on size)
+    mov     u8 ptr [esi+eax*8+7],bl                           // base 24:31
     ret
 }
 
@@ -930,16 +930,16 @@ function create_data_descriptor_expand_down    NEAR
 //                  ebx - base
 //                  edx - limit
     neg     edx
-    mov     <u16> [esi+eax*8+0],dx                           // limit 0:15
+    mov     u16 ptr [esi+eax*8+0],dx                           // limit 0:15
     shr     edx,16
-    mov     <u16> [esi+eax*8+2],bx                           // base 0:15
+    mov     u16 ptr [esi+eax*8+2],bx                           // base 0:15
     shr     ebx,16
-    mov     <u8>  [esi+eax*8+4],bl                           // base 16:23
+    mov     u8 ptr [esi+eax*8+4],bl                           // base 16:23
     shr     ebx,8
-    mov     <u8>  [esi+eax*8+5],10010110b                    // Not accessed, writeable, expand=1, DPL=00
+    mov     u8 ptr [esi+eax*8+5],10010110b                    // Not accessed, writeable, expand=1, DPL=00
     and     dl,0fh
-    mov     <u8>  [esi+eax*8+6],dl                           // limit 16:19, Granularity=0, big=0
-    mov     <u8>  [esi+eax*8+7],bl                           // base 24:31
+    mov     u8 ptr [esi+eax*8+6],dl                           // limit 16:19, Granularity=0, big=0
+    mov     u8 ptr [esi+eax*8+7],bl                           // base 24:31
     ret
 }
 
@@ -961,8 +961,8 @@ function create_interrupt_descriptor_16_bit    NEAR
     mov     dx,bx                                               // Segment selector
     ror     edx,16                                              // Ok, put it back the way it was
 
-    mov     <u32> [esi+eax*8+0],edx                         // Store the IDT descriptor
-    mov     <u32> [esi+eax*8+4],ecx
+    mov     u32 ptr [esi+eax*8+0],edx                         // Store the IDT descriptor
+    mov     u32 ptr [esi+eax*8+4],ecx
 
     pop     edx
     pop     ecx
@@ -982,16 +982,16 @@ function create_exodus_tss_descriptor
     mov     edi,ebx
 
   // Create the TSS descriptor
-    mov     <u16> [esi+eax*8+0],dx                           // limit 0:15
-    mov     <u16> [esi+eax*8+2],bx                           // base 0:15
+    mov     u16 ptr [esi+eax*8+0],dx                           // limit 0:15
+    mov     u16 ptr [esi+eax*8+2],bx                           // base 0:15
     shr     ebx,16
-    mov     <u8>  [esi+eax*8+4],bl                           // base 16:23
+    mov     u8 ptr [esi+eax*8+4],bl                           // base 16:23
     shr     ebx,8
-    mov     <u8>  [esi+eax*8+5],10001001b                    // present=1:dpl=00:010:busy=1:1
+    mov     u8 ptr [esi+eax*8+5],10001001b                    // present=1:dpl=00:010:busy=1:1
     shr     edx,16
     and     dl,0fh                                              // make the top nibble be all 0s
-    mov     <u8>  [esi+eax*8+6],dl                           // Granularity=0:0:0:Available=0:limit 16:19
-    mov     <u8>  [esi+eax*8+7],bl                           // base 24:31
+    mov     u8 ptr [esi+eax*8+6],dl                           // Granularity=0:0:0:Available=0:limit 16:19
+    mov     u8 ptr [esi+eax*8+7],bl                           // base 24:31
 
   // Write the Exodus variables there
     mov     ebx,edi
@@ -1001,52 +1001,52 @@ function create_exodus_tss_descriptor
   // Right now, es:[edi] - far ptr the memory location for Exodus
   // Code segment register
     mov     eax,_sCODE
-    mov     <u32> es:[edi+76],eax                           // cs
+    mov     u32 ptr es:[edi+76],eax                           // cs
   // Instruction Pointer
-    mov     <u32> es:[edi+32],ecx                           // eip
+    mov     u32 ptr es:[edi+32],ecx                           // eip
   // Data segment registers
     mov     eax,_sDATA
-    mov     <u32> es:[edi+84],eax                           // ds
-    mov     <u32> es:[edi+72],eax                           // es
+    mov     u32 ptr es:[edi+84],eax                           // ds
+    mov     u32 ptr es:[edi+72],eax                           // es
   // Extra segment registers
     mov     eax,_sVGA
-    mov     <u32> es:[edi+88],eax                           // fs
+    mov     u32 ptr es:[edi+88],eax                           // fs
     mov     eax,_sMONO
-    mov     <u32> es:[edi+92],eax                           // gs
+    mov     u32 ptr es:[edi+92],eax                           // gs
   // Stack
     mov     eax,_sSTACK
-    mov     <u32> es:[edi+80],eax                           // ss
-    mov     <u32> es:[edi+56],077fch                        // esp
+    mov     u32 ptr es:[edi+80],eax                           // ss
+    mov     u32 ptr es:[edi+56],077fch                        // esp
   // Stack 2
     mov     eax,_sSTACK2
-    mov     <u32> es:[edi+24],eax                           // ss2
-    mov     <u32> es:[edi+20],077fch                        // esp2
+    mov     u32 ptr es:[edi+24],eax                           // ss2
+    mov     u32 ptr es:[edi+20],077fch                        // esp2
   // Stack 1
     mov     eax,_sSTACK1
-    mov     <u32> es:[edi+16],eax                           // ss1
-    mov     <u32> es:[edi+12],077fch                        // esp1
+    mov     u32 ptr es:[edi+16],eax                           // ss1
+    mov     u32 ptr es:[edi+12],077fch                        // esp1
   // Stack 0
     mov     eax,_sSTACK0
-    mov     <u32> es:[edi+8],eax                            // ss0
-    mov     <u32> es:[edi+4],077fch                         // esp0
+    mov     u32 ptr es:[edi+8],eax                            // ss0
+    mov     u32 ptr es:[edi+4],077fch                         // esp0
   // General purpose registers
     xor     eax,eax
-    mov     <u32> es:[edi+40],eax                           // eax
-    mov     <u32> es:[edi+44],eax                           // ecx
-    mov     <u32> es:[edi+48],eax                           // edx
-    mov     <u32> es:[edi+52],eax                           // ebx
-    mov     <u32> es:[edi+60],eax                           // ebp
-    mov     <u32> es:[edi+64],eax                           // esi
-    mov     <u32> es:[edi+68],eax                           // edi
-    mov     <u32> es:[edi+28],eax                           // CR3, paging (not used in Exodus)
-    mov     <u32> es:[edi+100],eax                          // IO Map Base Address, Trap bit
-    mov     <u32> es:[edi+0],eax                            // Previous task link
+    mov     u32 ptr es:[edi+40],eax                           // eax
+    mov     u32 ptr es:[edi+44],eax                           // ecx
+    mov     u32 ptr es:[edi+48],eax                           // edx
+    mov     u32 ptr es:[edi+52],eax                           // ebx
+    mov     u32 ptr es:[edi+60],eax                           // ebp
+    mov     u32 ptr es:[edi+64],eax                           // esi
+    mov     u32 ptr es:[edi+68],eax                           // edi
+    mov     u32 ptr es:[edi+28],eax                           // CR3, paging (not used in Exodus)
+    mov     u32 ptr es:[edi+100],eax                          // IO Map Base Address, Trap bit
+    mov     u32 ptr es:[edi+0],eax                            // Previous task link
     mov     eax,_sNULL_LDT
-    mov     <u32> es:[edi+96],eax                           // LDT segment selector
+    mov     u32 ptr es:[edi+96],eax                           // LDT segment selector
   // EFLAGS
     pushfd
     pop     eax
-    mov     <u32> es:[edi+36],eax
+    mov     u32 ptr es:[edi+36],eax
 
   // Finished
     pop     edi
@@ -1061,10 +1061,10 @@ function create_task_gate_descriptor
 //                  eax - slot # to insert
 //                  bx - GDT slot for TSS
     shl     ebx,16                                              // Move bx(TSS selector) to high-order word in ebx
-    mov     <u32> [esi+eax*8+0],ebx
+    mov     u32 ptr [esi+eax*8+0],ebx
     xor     ebx,ebx
     mov     bh,10000101b                                        // present=1:dpl=00:00101
-    mov     <u32> [esi+eax*8+4],ebx
+    mov     u32 ptr [esi+eax*8+4],ebx
     ret
 }
 
@@ -1465,267 +1465,267 @@ _STOPPER_WORD     = 0ffffh
 _STOPPER_DWORD    = 0ffffffffh
 
 
-    finding_high_memory     u8   "‏ Memory blocks between 768k and 1MB",0
-    total_memory            u8   "‏ Total memory: ",0
-    initializing_pic        u8   "‏ PIC",0
-    initializing_timer      u8   "‏ PIT",0
-    initializing_pci        u8   "‏ PCI bus",0
-    initializing_kbd        u8   "‏ Keyboard, ",0
-    initializing_mouse      u8   "‏ Mouse, ",0
-    initializing_serial     u8   "‏ Serial",0
-    initializing_parallel   u8   "‏ Parallel",0
-    initializing_floppy     u8   "‏ Floppy",0
-    initializing_ide        u8   "‏ IDE",0
-    initializing_scsi       u8   "‏ SCSI",0
-    initializing_sound_card u8   "‏ Audio",0
-    initializing_network    u8   "‏ Network",0
+    finding_high_memory     u8  "‏ Memory blocks between 768k and 1MB",0
+    total_memory            u8  "‏ Total memory: ",0
+    initializing_pic        u8  "‏ PIC",0
+    initializing_timer      u8  "‏ PIT",0
+    initializing_pci        u8  "‏ PCI bus",0
+    initializing_kbd        u8  "‏ Keyboard, ",0
+    initializing_mouse      u8  "‏ Mouse, ",0
+    initializing_serial     u8  "‏ Serial",0
+    initializing_parallel   u8  "‏ Parallel",0
+    initializing_floppy     u8  "‏ Floppy",0
+    initializing_ide        u8  "‏ IDE",0
+    initializing_scsi       u8  "‏ SCSI",0
+    initializing_sound_card u8  "‏ Audio",0
+    initializing_network    u8  "‏ Network",0
 
 
-    kbd_101_key             u8   "101/104-key",0
-    mouse_serial            u8   "Serial",0
-    mouse_ps2               u8   "PS/2",0
-    drive_letter            u8   "drive ?:, ",0                      // Floppy drives A:, B:
-    floppy_288              u8   "3«",34,", 2.88m",0
-    floppy_144              u8   "3«",34,", 1.44m",0
-    floppy_12               u8   "5¬",34,", 1.2m",0
-    floppy_720              u8   "3«",34,", 720k",0
-    floppy_360              u8   "3«",34,", 360k",0
-    disk_number             u8   "disk ??, ",0                       // Disk drives 00 through ??
-    unknown                 u8   "unknown",0
-    memory_mb               u8   " MB",0
+    kbd_101_key             u8  "101/104-key",0
+    mouse_serial            u8  "Serial",0
+    mouse_ps2               u8  "PS/2",0
+    drive_letter            u8  "drive ?:, ",0                      // Floppy drives A:, B:
+    floppy_288              u8  "3«",34,", 2.88m",0
+    floppy_144              u8  "3«",34,", 1.44m",0
+    floppy_12               u8  "5¬",34,", 1.2m",0
+    floppy_720              u8  "3«",34,", 720k",0
+    floppy_360              u8  "3«",34,", 360k",0
+    disk_number             u8  "disk ??, ",0                       // Disk drives 00 through ??
+    unknown                 u8  "unknown",0
+    memory_mb               u8  " MB",0
 
-    colon                   u8   ":",0
-    comma                   u8   ",",0
-    comma_space             u8   ", ",0
-    open_parenthesis        u8   "(",0
-    close_parenthesis       u8   ")",0
-    hyphen                  u8   " - ",0
-    option_blank            u8   "  - ",0
-    option_last             u8   "  + ",0
-    option_last_ok          u8   "  + ok",0
-    option_last_error       u8   "  + error",0
-    sub_option_last_ok      u8   "    + ok"
-    sub_option_last_error   u8   "    + error"
-    option_port_blank       u8   "  - com1 - ",0
-    option_port_last        u8   "  + com1 - ",0
-    initialized_ok          u8   ", ok",0
-    initialized_error       u8   ", error",0
-    not_available           u8   ", not available",0
-
-
+    colon                   u8  ":",0
+    comma                   u8  ",",0
+    comma_space             u8  ", ",0
+    open_parenthesis        u8  "(",0
+    close_parenthesis       u8  ")",0
+    hyphen                  u8  " - ",0
+    option_blank            u8  "  - ",0
+    option_last             u8  "  + ",0
+    option_last_ok          u8  "  + ok",0
+    option_last_error       u8  "  + error",0
+    sub_option_last_ok      u8  "    + ok"
+    sub_option_last_error   u8  "    + error"
+    option_port_blank       u8  "  - com1 - ",0
+    option_port_last        u8  "  + com1 - ",0
+    initialized_ok          u8  ", ok",0
+    initialized_error       u8  ", error",0
+    not_available           u8  ", not available",0
 
 
-    divide_by_zero_text     u8   "#0 - Divide by zero",0
-    single_step_text        u8   "#1 - Single Step",0
-    breakpoint_text         u8   "#3 - INT3 Breakpoint",0
-    overflow_text           u8   "#4 - Overflow",0
-    bound_exception_text    u8   "#5 - Bound",0
-    invalid_opcode          u8   "#6 - Invalid opcode",0
-    device_na_text          u8   "#7 - Device not available",0
-    double_fault            u8   "#8 - Double fault - Haulted",0
-    coprocessor_text        u8   "#9 - Coprocessor Segment Overrun",0
-    invalid_tss             u8   "#10 - Invalid TSS",0
-    not_present_text        u8   "#11 - Segment Not Present",0
-    stack_fault_text        u8   "#12 - Stack fault",0
-    gp_fault_text           u8   "#13 - GP fault",0
-    page_fault_text         u8   "#14 - Page fault",0
-    floating_point_text     u8   "#16 - Floating-Point",0
-    alignment_check_text    u8   "#17 - Alignment",0
-    machine_check_text      u8   "#18 - Machine-check - Haulted",0
 
-    class_codes             u8   00h, 28, "unavailable (PCI spec < 2.0)",0
-                            u8   01h, 12, "mass storage",0
-                            u8   02h,  7, "network",0
-                            u8   03h,  7, "display",0
-                            u8   04h, 10, "multimedia",0
-                            u8   05h,  6, "memory",0
-                            u8   06h,  6, "bridge",0
-                            u8   07h, 21, "simple communications",0
-                            u8   08h, 22, "base system peripheral",0
-                            u8   09h,  5, "input",0
-                            u8   0ah, 15, "docking station",0
-                            u8   0bh,  9, "processor",0
-                            u8   0ch, 10, "serial bus",0
-                            u8   0dh,  8, "wireless",0
-                            u8   0eh, 15, "intelligent i/o",0
-                            u8   0fh, 24, "satellite communications",0
-                            u8   10h, 21, "encryption/decryption",0
-                            u8   11h, 38, "data acquisition and signal processing",0
+
+    divide_by_zero_text     u8  "#0 - Divide by zero",0
+    single_step_text        u8  "#1 - Single Step",0
+    breakpoint_text         u8  "#3 - INT3 Breakpoint",0
+    overflow_text           u8  "#4 - Overflow",0
+    bound_exception_text    u8  "#5 - Bound",0
+    invalid_opcode          u8  "#6 - Invalid opcode",0
+    device_na_text          u8  "#7 - Device not available",0
+    double_fault            u8  "#8 - Double fault - Haulted",0
+    coprocessor_text        u8  "#9 - Coprocessor Segment Overrun",0
+    invalid_tss             u8  "#10 - Invalid TSS",0
+    not_present_text        u8  "#11 - Segment Not Present",0
+    stack_fault_text        u8  "#12 - Stack fault",0
+    gp_fault_text           u8  "#13 - GP fault",0
+    page_fault_text         u8  "#14 - Page fault",0
+    floating_point_text     u8  "#16 - Floating-Point",0
+    alignment_check_text    u8  "#17 - Alignment",0
+    machine_check_text      u8  "#18 - Machine-check - Haulted",0
+
+    class_codes             u8  00h, 28, "unavailable (PCI spec < 2.0)",0
+                            u8  01h, 12, "mass storage",0
+                            u8  02h,  7, "network",0
+                            u8  03h,  7, "display",0
+                            u8  04h, 10, "multimedia",0
+                            u8  05h,  6, "memory",0
+                            u8  06h,  6, "bridge",0
+                            u8  07h, 21, "simple communications",0
+                            u8  08h, 22, "base system peripheral",0
+                            u8  09h,  5, "input",0
+                            u8  0ah, 15, "docking station",0
+                            u8  0bh,  9, "processor",0
+                            u8  0ch, 10, "serial bus",0
+                            u8  0dh,  8, "wireless",0
+                            u8  0eh, 15, "intelligent i/o",0
+                            u8  0fh, 24, "satellite communications",0
+                            u8  10h, 21, "encryption/decryption",0
+                            u8  11h, 38, "data acquisition and signal processing",0
     class_stopper           u8  0ffh, 12, "undetermined",0
 
-    sub_class_codes         u8   00h, 00h, 00h,  7, "Non-VGA",0
-                            u8   00h, 01h, 00h,  3, "VGA",0
-                            u8   01h, 00h, 00h,  4, "SCSI",0
-                            u8   01h, 01h, 00h,  3, "IDE",0
-                            u8   01h, 02h, 00h,  6, "floppy",0
-                            u8   01h, 03h, 00h,  3, "IPI",0
-                            u8   01h, 04h, 00h,  4, "RAID",0
-                            u8   02h, 00h, 00h,  8, "ethernet",0
-                            u8   02h, 01h, 00h, 10, "token ring",0
-                            u8   02h, 02h, 00h,  4, "FDDI",0
-                            u8   02h, 03h, 00h,  3, "ATM",0
-                            u8   02h, 04h, 00h,  4, "ISDN",0
-                            u8   03h, 00h, 00h,  3, "VGA",0
-                            u8   03h, 00h, 01h,  4, "8514",0
-                            u8   03h, 01h, 00h,  3, "XGA",0
-                            u8   03h, 02h, 00h,  2, "3D",0
-                            u8   04h, 00h, 00h,  5, "video",0
-                            u8   04h, 01h, 00h,  5, "audio",0
-                            u8   04h, 02h, 00h, 18, "computer telephony",0
-                            u8   05h, 00h, 00h,  3, "RAM",0
-                            u8   05h, 01h, 00h,  5, "flash",0
-                            u8   06h, 00h, 00h,  8, "host/PCI",0
-                            u8   06h, 01h, 00h,  7, "PIC/ISA",0
-                            u8   06h, 02h, 00h,  8, "PCI/EISA",0
-                            u8   06h, 03h, 00h,  7, "PCI/MCA",0
-                            u8   06h, 04h, 00h,  7, "PCI/PCI",0
-                            u8   06h, 04h, 01h, 10, "PCI/PCI SD",0
-                            u8   06h, 05h, 00h, 10, "PCI/PCMCIA",0
-                            u8   06h, 06h, 00h,  9, "PCI/NuBus",0
-                            u8   06h, 07h, 00h, 11, "PCI/CardBus",0
-                            u8   06h, 08h, 00h,  7, "RACEway",0
-                            u8   07h, 00h, 00h, 13, "XT-compatible",0
-                            u8   07h, 00h, 01h,  5, "16450",0
-                            u8   07h, 00h, 02h,  5, "16550",0
-                            u8   07h, 00h, 03h,  5, "16650",0
-                            u8   07h, 00h, 04h,  5, "16750",0
-                            u8   07h, 00h, 05h,  5, "16850",0
-                            u8   07h, 00h, 06h,  5, "16950",0
-                            u8   07h, 01h, 00h,  3, "std",0
-                            u8   07h, 01h, 01h,  2, "bi",0
-                            u8   07h, 01h, 02h,  7, "ECP 1.x",0
-                            u8   07h, 01h, 03h, 20, "IEEE 1284 controller",0
-                            u8   07h, 01h,0feh, 16, "IEEE 1284 device",0
-                            u8   07h, 02h, 00h,  9, "multiport",0
-                            u8   07h, 03h, 00h,  5, "modem",0
-                            u8   07h, 03h, 01h, 11, "16450 modem",0
-                            u8   07h, 03h, 02h, 11, "16550 modem",0
-                            u8   07h, 03h, 03h, 11, "16650 modem",0
-                            u8   07h, 03h, 04h, 11, "16750 modem",0
-                            u8   08h, 00h, 00h,  8, "8259 PIC",0
-                            u8   08h, 00h, 01h,  7, "ISA PIC",0
-                            u8   08h, 00h, 02h,  8, "EISA PIC",0
-                            u8   08h, 00h, 10h,  7, "IO APIC",0
-                            u8   08h, 00h, 20h, 10, "IO(x) APIC",0
-                            u8   08h, 01h, 00h,  8, "8237 DMA",0
-                            u8   08h, 01h, 01h,  7, "ISA DMA",0
-                            u8   08h, 01h, 02h,  8, "EISA DMA",0
-                            u8   08h, 02h, 00h,  8, "8254 PIT",0
-                            u8   08h, 02h, 01h,  9, "ISA timer",0
-                            u8   08h, 02h, 02h, 10, "EISA timer",0
-                            u8   08h, 03h, 00h, 15, "real-time clock",0
-                            u8   08h, 03h, 01h, 19, "ISA real-time clock",0
-                            u8   08h, 04h, 00h, 23, "PCI hot-plug controller",0
-                            u8   09h, 00h, 00h,  8, "keyboard",0
-                            u8   09h, 01h, 00h, 15, "digitizer (pen)",0
-                            u8   09h, 02h, 00h,  5, "mouse",0
-                            u8   09h, 03h, 00h,  7, "scanner",0
-                            u8   09h, 04h, 00h,  8, "gameport",0
-                            u8   0ah, 00h, 00h,  7, "generic",0
-                            u8   0bh, 00h, 00h,  3, "386",0
-                            u8   0bh, 01h, 00h,  3, "486",0
-                            u8   0bh, 02h, 00h,  7, "pentium",0
-                            u8   0bh, 03h, 00h,  5, "alpha",0
-                            u8   0bh, 04h, 00h,  7, "powerpc",0
-                            u8   0bh, 05h, 00h,  4, "mips",0
-                            u8   0bh, 06h, 00h, 12, "co-processor",0
-                            u8   0ch, 00h, 00h,  9, "IEEE 1394",0
-                            u8   0ch, 00h, 01h, 17, "IEEE 1394 OpenHCI",0
-                            u8   0ch, 01h, 00h, 10, "ACCESS.bus",0
-                            u8   0ch, 02h, 00h,  3, "SSA",0
-                            u8   0ch, 03h, 01h,  3, "USB",0
-                            u8   0ch, 03h, 10h, 12, "USB OpenHost",0
-                            u8   0ch, 03h, 80h, 28, "USB no programming interface",0
-                            u8   0ch, 03h,0feh, 10, "USB device",0
-                            u8   0ch, 04h, 00h,  5, "fibre",0
-                            u8   0ch, 05h, 00h, 21, "system management bus",0
-                            u8   0dh, 00h, 00h, 15, "iRDA controller",0
-                            u8   0dh, 01h, 00h, 11, "consumer IR",0
-                            u8   0dh, 10h, 00h, 13, "RF controller",0
-                            u8   0eh, 00h, 00h,  4, "FIFO",0
-                            u8   0eh,0ffh, 00h,  3, "I2O",0
-                            u8   0fh, 01h, 00h,  2, "TV",0
-                            u8   0fh, 02h, 00h,  5, "audio",0
-                            u8   0fh, 03h, 00h,  5, "voice",0
-                            u8   0fh, 04h, 00h,  4, "data",0
-                            u8   10h, 00h, 00h, 17, "network/computing",0
-                            u8   10h, 10h, 00h, 13, "entertainment",0
-                            u8   11h, 00h, 00h,  4, "DPIO",0
+    sub_class_codes         u8  00h, 00h, 00h,  7, "Non-VGA",0
+                            u8  00h, 01h, 00h,  3, "VGA",0
+                            u8  01h, 00h, 00h,  4, "SCSI",0
+                            u8  01h, 01h, 00h,  3, "IDE",0
+                            u8  01h, 02h, 00h,  6, "floppy",0
+                            u8  01h, 03h, 00h,  3, "IPI",0
+                            u8  01h, 04h, 00h,  4, "RAID",0
+                            u8  02h, 00h, 00h,  8, "ethernet",0
+                            u8  02h, 01h, 00h, 10, "token ring",0
+                            u8  02h, 02h, 00h,  4, "FDDI",0
+                            u8  02h, 03h, 00h,  3, "ATM",0
+                            u8  02h, 04h, 00h,  4, "ISDN",0
+                            u8  03h, 00h, 00h,  3, "VGA",0
+                            u8  03h, 00h, 01h,  4, "8514",0
+                            u8  03h, 01h, 00h,  3, "XGA",0
+                            u8  03h, 02h, 00h,  2, "3D",0
+                            u8  04h, 00h, 00h,  5, "video",0
+                            u8  04h, 01h, 00h,  5, "audio",0
+                            u8  04h, 02h, 00h, 18, "computer telephony",0
+                            u8  05h, 00h, 00h,  3, "RAM",0
+                            u8  05h, 01h, 00h,  5, "flash",0
+                            u8  06h, 00h, 00h,  8, "host/PCI",0
+                            u8  06h, 01h, 00h,  7, "PIC/ISA",0
+                            u8  06h, 02h, 00h,  8, "PCI/EISA",0
+                            u8  06h, 03h, 00h,  7, "PCI/MCA",0
+                            u8  06h, 04h, 00h,  7, "PCI/PCI",0
+                            u8  06h, 04h, 01h, 10, "PCI/PCI SD",0
+                            u8  06h, 05h, 00h, 10, "PCI/PCMCIA",0
+                            u8  06h, 06h, 00h,  9, "PCI/NuBus",0
+                            u8  06h, 07h, 00h, 11, "PCI/CardBus",0
+                            u8  06h, 08h, 00h,  7, "RACEway",0
+                            u8  07h, 00h, 00h, 13, "XT-compatible",0
+                            u8  07h, 00h, 01h,  5, "16450",0
+                            u8  07h, 00h, 02h,  5, "16550",0
+                            u8  07h, 00h, 03h,  5, "16650",0
+                            u8  07h, 00h, 04h,  5, "16750",0
+                            u8  07h, 00h, 05h,  5, "16850",0
+                            u8  07h, 00h, 06h,  5, "16950",0
+                            u8  07h, 01h, 00h,  3, "std",0
+                            u8  07h, 01h, 01h,  2, "bi",0
+                            u8  07h, 01h, 02h,  7, "ECP 1.x",0
+                            u8  07h, 01h, 03h, 20, "IEEE 1284 controller",0
+                            u8  07h, 01h,0feh, 16, "IEEE 1284 device",0
+                            u8  07h, 02h, 00h,  9, "multiport",0
+                            u8  07h, 03h, 00h,  5, "modem",0
+                            u8  07h, 03h, 01h, 11, "16450 modem",0
+                            u8  07h, 03h, 02h, 11, "16550 modem",0
+                            u8  07h, 03h, 03h, 11, "16650 modem",0
+                            u8  07h, 03h, 04h, 11, "16750 modem",0
+                            u8  08h, 00h, 00h,  8, "8259 PIC",0
+                            u8  08h, 00h, 01h,  7, "ISA PIC",0
+                            u8  08h, 00h, 02h,  8, "EISA PIC",0
+                            u8  08h, 00h, 10h,  7, "IO APIC",0
+                            u8  08h, 00h, 20h, 10, "IO(x) APIC",0
+                            u8  08h, 01h, 00h,  8, "8237 DMA",0
+                            u8  08h, 01h, 01h,  7, "ISA DMA",0
+                            u8  08h, 01h, 02h,  8, "EISA DMA",0
+                            u8  08h, 02h, 00h,  8, "8254 PIT",0
+                            u8  08h, 02h, 01h,  9, "ISA timer",0
+                            u8  08h, 02h, 02h, 10, "EISA timer",0
+                            u8  08h, 03h, 00h, 15, "real-time clock",0
+                            u8  08h, 03h, 01h, 19, "ISA real-time clock",0
+                            u8  08h, 04h, 00h, 23, "PCI hot-plug controller",0
+                            u8  09h, 00h, 00h,  8, "keyboard",0
+                            u8  09h, 01h, 00h, 15, "digitizer (pen)",0
+                            u8  09h, 02h, 00h,  5, "mouse",0
+                            u8  09h, 03h, 00h,  7, "scanner",0
+                            u8  09h, 04h, 00h,  8, "gameport",0
+                            u8  0ah, 00h, 00h,  7, "generic",0
+                            u8  0bh, 00h, 00h,  3, "386",0
+                            u8  0bh, 01h, 00h,  3, "486",0
+                            u8  0bh, 02h, 00h,  7, "pentium",0
+                            u8  0bh, 03h, 00h,  5, "alpha",0
+                            u8  0bh, 04h, 00h,  7, "powerpc",0
+                            u8  0bh, 05h, 00h,  4, "mips",0
+                            u8  0bh, 06h, 00h, 12, "co-processor",0
+                            u8  0ch, 00h, 00h,  9, "IEEE 1394",0
+                            u8  0ch, 00h, 01h, 17, "IEEE 1394 OpenHCI",0
+                            u8  0ch, 01h, 00h, 10, "ACCESS.bus",0
+                            u8  0ch, 02h, 00h,  3, "SSA",0
+                            u8  0ch, 03h, 01h,  3, "USB",0
+                            u8  0ch, 03h, 10h, 12, "USB OpenHost",0
+                            u8  0ch, 03h, 80h, 28, "USB no programming interface",0
+                            u8  0ch, 03h,0feh, 10, "USB device",0
+                            u8  0ch, 04h, 00h,  5, "fibre",0
+                            u8  0ch, 05h, 00h, 21, "system management bus",0
+                            u8  0dh, 00h, 00h, 15, "iRDA controller",0
+                            u8  0dh, 01h, 00h, 11, "consumer IR",0
+                            u8  0dh, 10h, 00h, 13, "RF controller",0
+                            u8  0eh, 00h, 00h,  4, "FIFO",0
+                            u8  0eh,0ffh, 00h,  3, "I2O",0
+                            u8  0fh, 01h, 00h,  2, "TV",0
+                            u8  0fh, 02h, 00h,  5, "audio",0
+                            u8  0fh, 03h, 00h,  5, "voice",0
+                            u8  0fh, 04h, 00h,  4, "data",0
+                            u8  10h, 00h, 00h, 17, "network/computing",0
+                            u8  10h, 10h, 00h, 13, "entertainment",0
+                            u8  11h, 00h, 00h,  4, "DPIO",0
     sub_class_other         u8  0ffh, 00h, 00h,  5, "other",0
 
 ;; DEBUG codes
-    debug1_text             u8   " DEBUG1 ",0
-    debug2_text             u8   " DEBUG2 ",0
-    debug3_text             u8   " DEBUG3 ",0
-    debug4_text             u8   " DEBUG4 ",0
-    clear_debug_text        u8   "ÛÛÛÛÛÛÛÛ",0
+    debug1_text             u8  " DEBUG1 ",0
+    debug2_text             u8  " DEBUG2 ",0
+    debug3_text             u8  " DEBUG3 ",0
+    debug4_text             u8  " DEBUG4 ",0
+    clear_debug_text        u8  "ÛÛÛÛÛÛÛÛ",0
 
-    debug_text              u8   "‏ Debug trap",0
-    debug_pause_time        u32  182 * 10        // Default to 10 seconds between items
+    debug_text              u8  "‏ Debug trap",0
+    debug_pause_time        u32 182 * 10        // Default to 10 seconds between items
 
-    cmos_conversion_table   u8   _CMOS_SECONDS, _BCD_CONVERT, _SYSTEM_SECONDS      // This table is used to take data from CMOS and store it in
-                            u8   _CMOS_MINUTES, _BCD_CONVERT, _SYSTEM_MINUTES      // our SYSTEM memory area.  This is done during the
-                            u8   _CMOS_HOURS, _BCD_CONVERT, _SYSTEM_HOURS          // initialize_timer() routine because the timer is responsible
-                            u8   _CMOS_DAY, _BCD_CONVERT, _SYSTEM_DAY              // for updating these values.  Refer to SOURCE\INIT.ASP
-                            u8   _CMOS_MONTH, _BCD_CONVERT, _SYSTEM_MONTH
-                            u8   _CMOS_YEAR, _BCD_CONVERT, _SYSTEM_YEAR
-                            u8   _CMOS_DISKETTE_TYPE, _NO_CONVERT, _SYSTEM_FLOPPY_DRIVE_TYPE
-                            u8   _CMOS_HARD_DISK_TYPE, _NO_CONVERT, _SYSTEM_HARD_DRIVE_TYPE
-                            u8   _CMOS_HARD_DISK0_EXTENDED_TYPE, _NO_CONVERT, _SYSTEM_HARD_DRIVE0_EXTENDED
-                            u8   _CMOS_HARD_DISK1_EXTENDED_TYPE, _NO_CONVERT, _SYSTEM_HARD_DRIVE1_EXTENDED
-                            u8   0ffh
+    cmos_conversion_table   u8  _CMOS_SECONDS, _BCD_CONVERT, _SYSTEM_SECONDS      // This table is used to take data from CMOS and store it in
+                            u8  _CMOS_MINUTES, _BCD_CONVERT, _SYSTEM_MINUTES      // our SYSTEM memory area.  This is done during the
+                            u8  _CMOS_HOURS, _BCD_CONVERT, _SYSTEM_HOURS          // initialize_timer() routine because the timer is responsible
+                            u8  _CMOS_DAY, _BCD_CONVERT, _SYSTEM_DAY              // for updating these values.  Refer to SOURCE\INIT.ASP
+                            u8  _CMOS_MONTH, _BCD_CONVERT, _SYSTEM_MONTH
+                            u8  _CMOS_YEAR, _BCD_CONVERT, _SYSTEM_YEAR
+                            u8  _CMOS_DISKETTE_TYPE, _NO_CONVERT, _SYSTEM_FLOPPY_DRIVE_TYPE
+                            u8  _CMOS_HARD_DISK_TYPE, _NO_CONVERT, _SYSTEM_HARD_DRIVE_TYPE
+                            u8  _CMOS_HARD_DISK0_EXTENDED_TYPE, _NO_CONVERT, _SYSTEM_HARD_DRIVE0_EXTENDED
+                            u8  _CMOS_HARD_DISK1_EXTENDED_TYPE, _NO_CONVERT, _SYSTEM_HARD_DRIVE1_EXTENDED
+                            u8  0ffh
 
-    timer_max_hz            u32  0
-    timer_max_value         u64  0
+    timer_max_hz            u32 0
+    timer_max_value         u64 0
 
-    installed_memory        u32  0           // Number of bytes found
+    installed_memory        u32 0           // Number of bytes found
 
 
 
 ;; Exodus public functions that are called by Exodus BOOTUP.COM
 ;; * Note:  The CALL GATE reference requires a value for the EIP, but it doesn't matter what it is.  For that reason all of
 ;;          the memory variables below are shifted down 4 bytes, this allows the bogus EIP to be there before the valid CALL GATE
-    _xTIMER_wait_full_tick              u16  0                       // Bogus EIP DWORD
-    _xTIMER_wait_next_tick              u16  0
-    _xTIMER_wait_x_ticks                u16  _cgxTIMER_wait_full_tick
-    _xTIMER_evaluate_interval           u16  _cgxTIMER_wait_next_tick
-    _iTIMER_set_interrupt_interval      u16  _cgxTIMER_wait_x_ticks
-    _iFDC_initialize_drive              u16  _cgxTIMER_evaluate_interval
-    _iFDC_determine_media               u16  _cgiTIMER_set_interrupt_interval
-    _iFDC_send_byte                     u16  _cgiFDC_initialize_drive
-    _iFDC_read_byte                     u16  _cgiFDC_determine_media
-    _iFDC_motor_on                      u16  _cgiFDC_send_byte
-    _iFDC_motor_off                     u16  _cgiFDC_read_byte
-    _iFDC_clear_fdc_output              u16  _cgiFDC_motor_on
-    _xTASK_release_timeslice            u16  _cgiFDC_motor_off
-    _iKBD_ll_wait_key                   u16  _cgiFDC_clear_fdc_output
-    _iFDC_clear_fdc_input               u16  _tgxTASK_release_timeslice
-    _iTASK_irq6_prep_wait               u16  _cgiKBD_ll_wait_key
-    _iTASK_irq6_wait_for_signal         u16  _cgiFDC_clear_fdc_input
-    _iFDC_read_sector                   u16  _cgiTASK_irq6_prep_wait
-    _iFDC_read_track                    u16  _cgiTASK_irq6_wait_for_signal
-    _iFDC_write_sector                  u16  _cgiFDC_read_sector
-    _iFDC_write_track                   u16  _cgiFDC_read_track
-    _iFDC_format_track                  u16  _cgiFDC_write_sector
-    _iFDC_seek_track                    u16  _cgiFDC_write_track
-    _iFDC_seek_relative                 u16  _cgiFDC_format_track
-    _iFDC_sense_interrupt               u16  _cgiFDC_seek_track
-    _iDISK_requestor                    u16  _cgiFDC_seek_relative
-    _iDISK_update_media                 u16  _cgiFDC_sense_interrupt
-    _iDMA_setup                         u16  _cgiDISK_requestor
-                                        u16  _cgiDISK_update_media
-                                        u16  _cgiDMA_setup
+    _xTIMER_wait_full_tick              u16 0                       // Bogus EIP DWORD
+    _xTIMER_wait_next_tick              u16 0
+    _xTIMER_wait_x_ticks                u16 _cgxTIMER_wait_full_tick
+    _xTIMER_evaluate_interval           u16 _cgxTIMER_wait_next_tick
+    _iTIMER_set_interrupt_interval      u16 _cgxTIMER_wait_x_ticks
+    _iFDC_initialize_drive              u16 _cgxTIMER_evaluate_interval
+    _iFDC_determine_media               u16 _cgiTIMER_set_interrupt_interval
+    _iFDC_send_byte                     u16 _cgiFDC_initialize_drive
+    _iFDC_read_byte                     u16 _cgiFDC_determine_media
+    _iFDC_motor_on                      u16 _cgiFDC_send_byte
+    _iFDC_motor_off                     u16 _cgiFDC_read_byte
+    _iFDC_clear_fdc_output              u16 _cgiFDC_motor_on
+    _xTASK_release_timeslice            u16 _cgiFDC_motor_off
+    _iKBD_ll_wait_key                   u16 _cgiFDC_clear_fdc_output
+    _iFDC_clear_fdc_input               u16 _tgxTASK_release_timeslice
+    _iTASK_irq6_prep_wait               u16 _cgiKBD_ll_wait_key
+    _iTASK_irq6_wait_for_signal         u16 _cgiFDC_clear_fdc_input
+    _iFDC_read_sector                   u16 _cgiTASK_irq6_prep_wait
+    _iFDC_read_track                    u16 _cgiTASK_irq6_wait_for_signal
+    _iFDC_write_sector                  u16 _cgiFDC_read_sector
+    _iFDC_write_track                   u16 _cgiFDC_read_track
+    _iFDC_format_track                  u16 _cgiFDC_write_sector
+    _iFDC_seek_track                    u16 _cgiFDC_write_track
+    _iFDC_seek_relative                 u16 _cgiFDC_format_track
+    _iFDC_sense_interrupt               u16 _cgiFDC_seek_track
+    _iDISK_requestor                    u16 _cgiFDC_seek_relative
+    _iDISK_update_media                 u16 _cgiFDC_sense_interrupt
+    _iDMA_setup                         u16 _cgiDISK_requestor
+                                        u16 _cgiDISK_update_media
+                                        u16 _cgiDMA_setup
 
 
-    reg1                    u16  03d4h
-    reg2                    u16  03d5h
-    offset_vga              u16  0
-    offset_mono             u16  0
-    attribute_vga           u8   7
-    attribute_mono          u8   7
-    freeze_vga              u8   0
-    freeze_mono             u8   0
-    storage_ptr             u32  offset offset_vga                         // pointer to either offset_vga or offset_mono
+    reg1                    u16 03d4h
+    reg2                    u16 03d5h
+    offset_vga              u16 0
+    offset_mono             u16 0
+    attribute_vga           u8  7
+    attribute_mono          u8  7
+    freeze_vga              u8  0
+    freeze_mono             u8  0
+    storage_ptr             u32 offset offset_vga                         // pointer to either offset_vga or offset_mono
 
 
 interrupt_1_handler:
@@ -3269,7 +3269,7 @@ function irq6_handler
 
     mov     si,_sSYSTEM
     mov     ds,si
-    inc     <u8>  ds:[_SYSTEM_i_IRQ6_INDICATOR]                  // Raise the flag indicating this one is completed
+    inc     u8 ptr ds:[_SYSTEM_i_IRQ6_INDICATOR]                  // Raise the flag indicating this one is completed
 
     pop     ds
     pop     esi
@@ -3528,19 +3528,19 @@ function exception_handler_fake_error_code
 //             [esp+0] - eax value saved here
 
 ;; Move the return address to calling procedure down the stack
-    mov     eax,<u32> [esp+8]
-    mov     <u32> [esp+4],eax
+    mov     eax,u32 ptr [esp+8]
+    mov     u32 ptr [esp+4],eax
 
 ;; Move the return address to the original fault/trap/interrupt handler routine
-    mov     eax,<u32> [esp+12]
-    mov     <u32> [esp+8],eax
+    mov     eax,u32 ptr [esp+12]
+    mov     u32 ptr [esp+8],eax
 
 ;; Move the original eax value
-    mov     eax,<u32> [esp+16]
-    mov     <u32> [esp+12],eax
+    mov     eax,u32 ptr [esp+16]
+    mov     u32 ptr [esp+12],eax
 
 ;; Stick a value of 0 in where the error # would normally go
-    mov     <u32> [esp+16],0
+    mov     u32 ptr [esp+16],0
 //
 // And now:  [esp+28] - eflags - code that caused the fault
 //           [esp+24] -  cs - code that cause the fault
@@ -3575,20 +3575,20 @@ function exception_handler_remove_error_code
 //             [esp+0]  - eax value saved here
 
 ;; Move the original eax value up one notch on the stack ladder of success
-    mov     eax,<u32> [esp+12]
-    mov     <u32> [esp+16],eax
+    mov     eax,u32 ptr [esp+12]
+    mov     u32 ptr [esp+16],eax
 
 ;; Move the return address to original f/t/i handler up one
-    mov     eax,<u32> [esp+8]
-    mov     <u32> [esp+12],eax
+    mov     eax,u32 ptr [esp+8]
+    mov     u32 ptr [esp+12],eax
 
 ;; Move the return address to calling procedure up one
-    mov     eax,<u32> [esp+4]
-    mov     <u32> [esp+8],eax
+    mov     eax,u32 ptr [esp+4]
+    mov     u32 ptr [esp+8],eax
 
 ;; Move the saved eax value here
-    mov     eax,<u32> [esp+0]
-    mov     <u32> [esp+4],eax
+    mov     eax,u32 ptr [esp+0]
+    mov     u32 ptr [esp+4],eax
     add     esp,4
 //
 // And now:  [esp+24] - eflags - code that caused the fault
@@ -3634,7 +3634,7 @@ function count_interrupt_handler
     mov     dx,_sISR_COUNT
     mov     ds,dx
     and     eax,0ffh
-    inc     <u32> [eax*4]                                       // We're updating the dword, so multiply by 4
+    inc     u32 ptr [eax*4]                                       // We're updating the dword, so multiply by 4
 
     pop     eax
     pop     edx
@@ -3664,7 +3664,7 @@ function initialize_isr_counts
     mov     ds,ax
     mov     ecx,256                                                 // Do it for all 256 interrupt vectors
   @@:
-    mov     <u32> ds:[ecx*4-4],0                                // ecx*4 = 256*4 = 1024, but we're writing 4 bytes there, so -4
+    mov     u32 ptr ds:[ecx*4-4],0                                // ecx*4 = 256*4 = 1024, but we're writing 4 bytes there, so -4
     loope   @B
 
     pop     ecx
@@ -3674,32 +3674,32 @@ function initialize_isr_counts
 
 
 
-tss32_offset0           u8   "L16 | +000 |  link:",0
-tss32_offset4           u8   " 32 | +004 |  esp0:",0
-tss32_offset8           u8   "L16 | +008 |   ss0:",0
-tss32_offset12          u8   " 32 | +012 |  esp1:",0
-tss32_offset16          u8   "L16 | +016 |   ss1:",0
-tss32_offset20          u8   " 32 | +020 |  esp2:",0
-tss32_offset24          u8   "L16 | +024 |   ss2:",0
-tss32_offset28          u8   " 32 | +028 |   cr3:",0
-tss32_offset32          u8   " 32 | +032 |   eip:",0
-tss32_offset36          u8   " 32 | +036 |eflags:",0
-tss32_offset40          u8   " 32 | +040 |   eax:",0
-tss32_offset44          u8   " 32 | +044 |   ecx:",0
-tss32_offset48          u8   " 32 | +048 |   edx:",0
-tss32_offset52          u8   " 32 | +052 |   ebx:",0
-tss32_offset56          u8   " 32 | +056 |   esp:",0
-tss32_offset60          u8   " 32 | +060 |   ebp:",0
-tss32_offset64          u8   " 32 | +064 |   esi:",0
-tss32_offset68          u8   " 32 | +068 |   edi:",0
-tss32_offset72          u8   "L16 | +072 |    es:",0
-tss32_offset76          u8   "L16 | +076 |    cs:",0
-tss32_offset80          u8   "L16 | +080 |    ss:",0
-tss32_offset84          u8   "L16 | +084 |    ds:",0
-tss32_offset88          u8   "L16 | +088 |    fs:",0
-tss32_offset92          u8   "L16 | +092 |    gs:",0
-tss32_offset96          u8   "L16 | +096 |   ldt:",0
-tss32_offset100         u8   "H16 | +100 |   i/o:",0
+tss32_offset0           u8  "L16 | +000 |  link:",0
+tss32_offset4           u8  " 32 | +004 |  esp0:",0
+tss32_offset8           u8  "L16 | +008 |   ss0:",0
+tss32_offset12          u8  " 32 | +012 |  esp1:",0
+tss32_offset16          u8  "L16 | +016 |   ss1:",0
+tss32_offset20          u8  " 32 | +020 |  esp2:",0
+tss32_offset24          u8  "L16 | +024 |   ss2:",0
+tss32_offset28          u8  " 32 | +028 |   cr3:",0
+tss32_offset32          u8  " 32 | +032 |   eip:",0
+tss32_offset36          u8  " 32 | +036 |eflags:",0
+tss32_offset40          u8  " 32 | +040 |   eax:",0
+tss32_offset44          u8  " 32 | +044 |   ecx:",0
+tss32_offset48          u8  " 32 | +048 |   edx:",0
+tss32_offset52          u8  " 32 | +052 |   ebx:",0
+tss32_offset56          u8  " 32 | +056 |   esp:",0
+tss32_offset60          u8  " 32 | +060 |   ebp:",0
+tss32_offset64          u8  " 32 | +064 |   esi:",0
+tss32_offset68          u8  " 32 | +068 |   edi:",0
+tss32_offset72          u8  "L16 | +072 |    es:",0
+tss32_offset76          u8  "L16 | +076 |    cs:",0
+tss32_offset80          u8  "L16 | +080 |    ss:",0
+tss32_offset84          u8  "L16 | +084 |    ds:",0
+tss32_offset88          u8  "L16 | +088 |    fs:",0
+tss32_offset92          u8  "L16 | +092 |    gs:",0
+tss32_offset96          u8  "L16 | +096 |   ldt:",0
+tss32_offset100         u8  "H16 | +100 |   i/o:",0
 
 function iVT_display_tss32_mono
 {
@@ -3827,8 +3827,8 @@ function iVT_display_tss32_mono
 }
 
     xor     esi,esi
-    mov     <u32> fs:[esi],'OY'
-    mov     <u32> gs:[esi],'OY'
+    mov     u32 ptr fs:[esi],'OY'
+    mov     u32 ptr gs:[esi],'OY'
 @@:
 jmp     @B
 //pushad
@@ -3855,7 +3855,7 @@ jmp     @B
 ;;;pop ds
 ;;;popad
 ;;;
-;;;mov edx,<u32> ds:[esi+_BOOT_PB_size]
+;;;mov edx,u32 ptr ds:[esi+_BOOT_PB_size]
 ;;;mov ebx,16
 ;;;mov edi,80*2
 ;;;call VID_display_radix_in_edx_mono
@@ -3900,7 +3900,7 @@ jmp @B
     {
     // This routine reads one byte from port 60h into al
         in      al,064h
-        call    <u48> cs:_xTIMER_wait_full_tick
+        call    u48 ptr cs:_xTIMER_wait_full_tick
         ret
     }
 
@@ -3918,7 +3918,7 @@ jmp @B
         jc      @F
         loope   @B
       @@:
-        call    <u48> cs:_xTIMER_wait_full_tick
+        call    u48 ptr cs:_xTIMER_wait_full_tick
         in      al,060h
         pop     ecx
         ret
@@ -3930,7 +3930,7 @@ jmp @B
     function write_8042_64h
     {
     // This routine writes a byte to port 64h
-        call    <u48> cs:_xTIMER_wait_full_tick
+        call    u48 ptr cs:_xTIMER_wait_full_tick
         mov     al,ah
         out     064h,al
         ret
@@ -3950,10 +3950,10 @@ jmp @B
         jnc     @F
         loope   @B
       @@:
-        call    <u48> cs:_xTIMER_wait_full_tick
+        call    u48 ptr cs:_xTIMER_wait_full_tick
         mov     al,ah                                               // Write it
         out     060h,al
-        call    <u48> cs:_xTIMER_wait_full_tick
+        call    u48 ptr cs:_xTIMER_wait_full_tick
         pop     ecx
         ret
     }
@@ -4032,7 +4032,7 @@ jmp @B
         push    eax
         mov     ah,0adh                                             // Disable keyboard command
         write_8042_64h()
-        call    <u48> cs:_xTIMER_wait_full_tick
+        call    u48 ptr cs:_xTIMER_wait_full_tick
         pop     eax
         ret
     }
@@ -4046,7 +4046,7 @@ jmp @B
         push    eax
         mov     ah,0aeh                                             // Enable keyboard command
         write_8042_64h()
-        call    <u48> cs:_xTIMER_wait_full_tick
+        call    u48 ptr cs:_xTIMER_wait_full_tick
         pop     eax
         ret
     }
@@ -4055,8 +4055,8 @@ jmp @B
 //pushad
 //mov edx,ebp
 //mov ebx,16
-//add <u32> gs:[_SYSTEM_i_SCRATCH_DWORD1],80
-//mov edi,<u32> gs:[_SYSTEM_i_SCRATCH_DWORD1]
+//add u32 ptr gs:[_SYSTEM_i_SCRATCH_DWORD1],80
+//mov edi,u32 ptr gs:[_SYSTEM_i_SCRATCH_DWORD1]
 //call VID_display_radix_in_edx_mono
 //popad
 
@@ -4079,7 +4079,7 @@ jmp @B
 //mov ecx,1
 //mov edi,80*2*2
 //call VID_display_hex_string_ecx_mono
-//mov cl,<u8>  [esi]
+//mov cl,u8 ptr [esi]
 //inc esi
 //call VID_display_hex_string_ecx_mono
 //add esi,ecx
@@ -4087,7 +4087,7 @@ jmp @B
 //mov ecx,1
 //mov edi,80*2*3
 //call VID_display_hex_string_ecx_mono
-//mov cl,<u8>  [esi]
+//mov cl,u8 ptr [esi]
 //inc esi
 //call VID_display_hex_string_ecx_mono
 //add esi,ecx
@@ -4095,7 +4095,7 @@ jmp @B
 //mov ecx,1
 //mov edi,80*2*4
 //call VID_display_hex_string_ecx_mono
-//mov cl,<u8>  [esi]
+//mov cl,u8 ptr [esi]
 //inc esi
 //call VID_display_hex_string_ecx_mono
 //add esi,ecx
@@ -4103,7 +4103,7 @@ jmp @B
 //mov ecx,1
 //mov edi,80*2*5
 //call VID_display_hex_string_ecx_mono
-//mov cl,<u8>  [esi]
+//mov cl,u8 ptr [esi]
 //inc esi
 //call VID_display_hex_string_ecx_mono
 //add esi,ecx
@@ -4227,355 +4227,355 @@ jmp @B
 
 
 
-    keyboard_logo                           u8   00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh
-                                            u8   0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh
-                                            u8   0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh
-                                            u8   0fh,0fh,0fh,07h,07h,10h,0fh,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h
-                                            u8   0fh,0fh,0fh,07h,07h,10h,0fh,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h
-                                            u8   0fh,0fh,0fh,10h,10h,10h,0fh,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h
-                                            u8   0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh
-                                            u8   0fh,0fh,0fh,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h,10h
-                                            u8   0fh,0fh,0fh,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h,10h
-                                            u8   0fh,0fh,0fh,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h
-                                            u8   0fh,0fh,0fh,07h,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h
-                                            u8   0fh,0fh,0fh,07h,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h
-                                            u8   0fh,0fh,0fh,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h
-                                            u8   0fh,0fh,0fh,07h,07h,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h
-                                            u8   20h,20h,20h
+    keyboard_logo                           u8  00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh
+                                            u8  0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh
+                                            u8  0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh
+                                            u8  0fh,0fh,0fh,07h,07h,10h,0fh,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h
+                                            u8  0fh,0fh,0fh,07h,07h,10h,0fh,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h
+                                            u8  0fh,0fh,0fh,10h,10h,10h,0fh,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h
+                                            u8  0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh
+                                            u8  0fh,0fh,0fh,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h,10h
+                                            u8  0fh,0fh,0fh,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h,10h
+                                            u8  0fh,0fh,0fh,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h
+                                            u8  0fh,0fh,0fh,07h,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h
+                                            u8  0fh,0fh,0fh,07h,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h
+                                            u8  0fh,0fh,0fh,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h
+                                            u8  0fh,0fh,0fh,07h,07h,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h
+                                            u8  20h,20h,20h
 
-    mouse_logo                              u8   00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,07h,07h,07h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,00h,00h,00h,00h,07h,07h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,00h,00h,00h,07h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,00h,00h,00h,07h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,00h,0fh,0fh,0fh,00h,0fh,0fh,0fh,00h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,0fh,10h,10h,10h,00h,10h,10h,10h,0fh,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,0fh,10h,10h,10h,00h,10h,10h,10h,0fh,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,0fh,10h,10h,10h,00h,10h,10h,10h,0fh,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,0fh,00h,00h,00h,00h,00h,00h,00h,0fh,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,11h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,11h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,08h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,08h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,00h,07h,0fh,0fh,0fh,0fh,0fh,07h,00h,00h,00h,00h,00h,00h
-                                            u8   35h,35h,35h
-                                            u8   30h,30h,30h
+    mouse_logo                              u8  00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,07h,07h,07h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,00h,00h,00h,00h,07h,07h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,00h,00h,00h,07h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,00h,00h,00h,07h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,00h,0fh,0fh,0fh,00h,0fh,0fh,0fh,00h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,0fh,10h,10h,10h,00h,10h,10h,10h,0fh,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,0fh,10h,10h,10h,00h,10h,10h,10h,0fh,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,0fh,10h,10h,10h,00h,10h,10h,10h,0fh,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,0fh,00h,00h,00h,00h,00h,00h,00h,0fh,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,11h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,11h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,08h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,08h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,00h,07h,0fh,0fh,0fh,0fh,0fh,07h,00h,00h,00h,00h,00h,00h
+                                            u8  35h,35h,35h
+                                            u8  30h,30h,30h
 
-    chip_logo                               u8   00h,00h,00h,00h,00h,00h,00h,00h,0fh,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,00h,00h,00h,00h,0fh,00h,00h,00h,0fh,00h,00h,00h,00h,00h
-                                            u8   0ch,0ch,00h,00h,00h,0fh,0fh,00h,0fh,0fh,00h,00h,00h,00h,0fh,0fh,00h,00h
-                                            u8   0ch,0ch,00h,00h,0fh,00h,00h,00h,0fh,00h,0fh,00h,0fh,00h,0fh,00h,0fh,00h
-                                            u8   0ch,0ch,00h,00h,0fh,00h,00h,00h,0fh,00h,0fh,00h,0fh,00h,0fh,00h,0fh,00h
-                                            u8   0ch,0ch,00h,00h,00h,0fh,0fh,00h,0fh,00h,0fh,00h,0fh,00h,0fh,0fh,00h,00h
-                                            u8   00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,0fh,00h,00h,00h
-                                            u8   00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,0fh,00h,00h,00h
-                                            u8   10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h
-                                            u8   10h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h
-                                            u8   10h,11h,07h,07h,07h,11h,07h,07h,07h,11h,07h,07h,07h,11h,07h,07h,07h,11h
-                                            u8   10h,11h,07h,07h,07h,11h,07h,07h,07h,11h,07h,07h,07h,11h,07h,07h,07h,11h
-                                            u8   10h,11h,11h,07h,11h,11h,11h,07h,11h,11h,11h,07h,11h,11h,11h,07h,11h,11h
-                                            u8   10h,10h,10h,07h,10h,10h,10h,07h,10h,10h,10h,07h,10h,10h,10h,07h,10h,10h
-                                            u8   00h,00h,00h,07h,00h,00h,00h,07h,00h,00h,00h,07h,00h,00h,00h,07h,00h,00h
-                                            u8   00h,00h,00h,07h,00h,00h,00h,07h,00h,00h,00h,07h,00h,00h,00h,07h,00h,00h
-                                            u8   15,15,15
-                                            u8   20,20,20
+    chip_logo                               u8  00h,00h,00h,00h,00h,00h,00h,00h,0fh,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,00h,00h,00h,00h,0fh,00h,00h,00h,0fh,00h,00h,00h,00h,00h
+                                            u8  0ch,0ch,00h,00h,00h,0fh,0fh,00h,0fh,0fh,00h,00h,00h,00h,0fh,0fh,00h,00h
+                                            u8  0ch,0ch,00h,00h,0fh,00h,00h,00h,0fh,00h,0fh,00h,0fh,00h,0fh,00h,0fh,00h
+                                            u8  0ch,0ch,00h,00h,0fh,00h,00h,00h,0fh,00h,0fh,00h,0fh,00h,0fh,00h,0fh,00h
+                                            u8  0ch,0ch,00h,00h,00h,0fh,0fh,00h,0fh,00h,0fh,00h,0fh,00h,0fh,0fh,00h,00h
+                                            u8  00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,0fh,00h,00h,00h
+                                            u8  00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,0fh,00h,00h,00h
+                                            u8  10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h
+                                            u8  10h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h
+                                            u8  10h,11h,07h,07h,07h,11h,07h,07h,07h,11h,07h,07h,07h,11h,07h,07h,07h,11h
+                                            u8  10h,11h,07h,07h,07h,11h,07h,07h,07h,11h,07h,07h,07h,11h,07h,07h,07h,11h
+                                            u8  10h,11h,11h,07h,11h,11h,11h,07h,11h,11h,11h,07h,11h,11h,11h,07h,11h,11h
+                                            u8  10h,10h,10h,07h,10h,10h,10h,07h,10h,10h,10h,07h,10h,10h,10h,07h,10h,10h
+                                            u8  00h,00h,00h,07h,00h,00h,00h,07h,00h,00h,00h,07h,00h,00h,00h,07h,00h,00h
+                                            u8  00h,00h,00h,07h,00h,00h,00h,07h,00h,00h,00h,07h,00h,00h,00h,07h,00h,00h
+                                            u8  15,15,15
+                                            u8  20,20,20
 
-    card_logo                               u8   00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   00h,07h,07h,07h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,07h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,07h,0ah,0ah,0ah,0ah,0ah,0ah,0ah,0ah,0ah,0ah,0ah,0ah,0ah,00h
-                                            u8   00h,00h,00h,07h,0ah,0ah,0ah,11h,11h,11h,11h,11h,0ah,0ah,0ah,0ah,0ah,00h
-                                            u8   00h,00h,00h,07h,0ah,0ah,11h,0ch,0ch,0ch,0ch,0ch,11h,0ah,0ah,0ah,0ah,00h
-                                            u8   00h,00h,00h,07h,0ah,0ah,11h,0ch,0ch,0ch,0ch,0ch,11h,0ah,0ah,0ah,0ah,00h
-                                            u8   00h,00h,00h,07h,0ah,0ah,11h,0ch,0ch,0ch,0ch,0ch,11h,0ah,0ah,0ah,0ah,00h
-                                            u8   00h,00h,00h,07h,0ah,0ah,11h,0ch,0ch,0ch,0ch,0ch,11h,0ah,0ah,0ah,0ah,00h
-                                            u8   00h,00h,00h,07h,0ah,0ah,0ah,11h,11h,11h,11h,11h,0ah,0ah,0ah,0ah,0ah,00h
-                                            u8   00h,00h,00h,07h,0ah,0ah,0ah,0ah,0ah,0ah,0ah,0ah,0ah,0ah,0ah,0ah,00h,00h
-                                            u8   00h,00h,00h,07h,00h,0eh,10h,0eh,10h,0eh,10h,0eh,10h,0eh,00h,00h,00h,00h
-                                            u8   00h,00h,00h,07h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   037h,037h,010h
-                                            u8   000h,032h,000h
+    card_logo                               u8  00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  00h,07h,07h,07h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,07h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,07h,0ah,0ah,0ah,0ah,0ah,0ah,0ah,0ah,0ah,0ah,0ah,0ah,0ah,00h
+                                            u8  00h,00h,00h,07h,0ah,0ah,0ah,11h,11h,11h,11h,11h,0ah,0ah,0ah,0ah,0ah,00h
+                                            u8  00h,00h,00h,07h,0ah,0ah,11h,0ch,0ch,0ch,0ch,0ch,11h,0ah,0ah,0ah,0ah,00h
+                                            u8  00h,00h,00h,07h,0ah,0ah,11h,0ch,0ch,0ch,0ch,0ch,11h,0ah,0ah,0ah,0ah,00h
+                                            u8  00h,00h,00h,07h,0ah,0ah,11h,0ch,0ch,0ch,0ch,0ch,11h,0ah,0ah,0ah,0ah,00h
+                                            u8  00h,00h,00h,07h,0ah,0ah,11h,0ch,0ch,0ch,0ch,0ch,11h,0ah,0ah,0ah,0ah,00h
+                                            u8  00h,00h,00h,07h,0ah,0ah,0ah,11h,11h,11h,11h,11h,0ah,0ah,0ah,0ah,0ah,00h
+                                            u8  00h,00h,00h,07h,0ah,0ah,0ah,0ah,0ah,0ah,0ah,0ah,0ah,0ah,0ah,0ah,00h,00h
+                                            u8  00h,00h,00h,07h,00h,0eh,10h,0eh,10h,0eh,10h,0eh,10h,0eh,00h,00h,00h,00h
+                                            u8  00h,00h,00h,07h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  037h,037h,010h
+                                            u8  000h,032h,000h
 
-    com_logo                                u8   0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh
-                                            u8   0eh,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,0eh
-                                            u8   0eh,00h,00h,00h,00h,00h,11h,11h,11h,11h,11h,11h,00h,00h,00h,00h,00h,0eh
-                                            u8   0eh,00h,00h,00h,00h,10h,12h,12h,12h,12h,12h,12h,10h,00h,00h,00h,00h,0eh
-                                            u8   0eh,00h,00h,00h,00h,10h,12h,12h,12h,12h,12h,12h,10h,00h,00h,00h,00h,0eh
-                                            u8   0eh,00h,00h,00h,00h,10h,12h,12h,12h,12h,12h,12h,10h,00h,00h,00h,00h,0eh
-                                            u8   0eh,00h,00h,00h,00h,10h,10h,10h,12h,12h,10h,10h,10h,00h,00h,00h,00h,0eh
-                                            u8   0eh,00h,00h,00h,00h,00h,00h,10h,10h,10h,10h,00h,00h,00h,00h,00h,00h,0eh
-                                            u8   0eh,00h,00h,00h,00h,00h,00h,10h,10h,10h,10h,00h,00h,00h,00h,00h,00h,0eh
-                                            u8   0eh,00h,00h,00h,00h,00h,00h,00h,10h,10h,00h,00h,00h,00h,00h,00h,00h,0eh
-                                            u8   0eh,00h,00h,00h,00h,00h,00h,00h,10h,10h,00h,00h,00h,00h,00h,00h,00h,0eh
-                                            u8   0eh,00h,00h,00h,00h,00h,00h,00h,10h,10h,00h,00h,00h,00h,00h,00h,00h,0eh
-                                            u8   0eh,00h,00h,00h,00h,00h,00h,00h,10h,10h,00h,00h,00h,00h,00h,00h,00h,0eh
-                                            u8   0eh,00h,00h,00h,00h,00h,00h,00h,10h,10h,00h,00h,00h,00h,00h,00h,00h,0eh
-                                            u8   0eh,00h,00h,00h,00h,00h,00h,00h,10h,10h,00h,00h,00h,00h,00h,00h,00h,0eh
-                                            u8   0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,10h,10h,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh
-                                            u8   22h,22h,22h
-                                            u8   34h,34h,34h
-                                            u8   27h,27h,27h
+    com_logo                                u8  0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh
+                                            u8  0eh,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,0eh
+                                            u8  0eh,00h,00h,00h,00h,00h,11h,11h,11h,11h,11h,11h,00h,00h,00h,00h,00h,0eh
+                                            u8  0eh,00h,00h,00h,00h,10h,12h,12h,12h,12h,12h,12h,10h,00h,00h,00h,00h,0eh
+                                            u8  0eh,00h,00h,00h,00h,10h,12h,12h,12h,12h,12h,12h,10h,00h,00h,00h,00h,0eh
+                                            u8  0eh,00h,00h,00h,00h,10h,12h,12h,12h,12h,12h,12h,10h,00h,00h,00h,00h,0eh
+                                            u8  0eh,00h,00h,00h,00h,10h,10h,10h,12h,12h,10h,10h,10h,00h,00h,00h,00h,0eh
+                                            u8  0eh,00h,00h,00h,00h,00h,00h,10h,10h,10h,10h,00h,00h,00h,00h,00h,00h,0eh
+                                            u8  0eh,00h,00h,00h,00h,00h,00h,10h,10h,10h,10h,00h,00h,00h,00h,00h,00h,0eh
+                                            u8  0eh,00h,00h,00h,00h,00h,00h,00h,10h,10h,00h,00h,00h,00h,00h,00h,00h,0eh
+                                            u8  0eh,00h,00h,00h,00h,00h,00h,00h,10h,10h,00h,00h,00h,00h,00h,00h,00h,0eh
+                                            u8  0eh,00h,00h,00h,00h,00h,00h,00h,10h,10h,00h,00h,00h,00h,00h,00h,00h,0eh
+                                            u8  0eh,00h,00h,00h,00h,00h,00h,00h,10h,10h,00h,00h,00h,00h,00h,00h,00h,0eh
+                                            u8  0eh,00h,00h,00h,00h,00h,00h,00h,10h,10h,00h,00h,00h,00h,00h,00h,00h,0eh
+                                            u8  0eh,00h,00h,00h,00h,00h,00h,00h,10h,10h,00h,00h,00h,00h,00h,00h,00h,0eh
+                                            u8  0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,10h,10h,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh
+                                            u8  22h,22h,22h
+                                            u8  34h,34h,34h
+                                            u8  27h,27h,27h
 
-    lpt_logo                                u8   0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh
-                                            u8   0eh,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,0eh
-                                            u8   0eh,00h,00h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,00h,00h,0eh
-                                            u8   0eh,00h,00h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,00h,00h,0eh
-                                            u8   0eh,00h,10h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,10h,00h,0eh
-                                            u8   0eh,00h,10h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,10h,00h,0eh
-                                            u8   0eh,00h,10h,10h,10h,12h,12h,12h,12h,12h,12h,12h,12h,10h,10h,10h,00h,0eh
-                                            u8   0eh,00h,00h,00h,10h,10h,10h,12h,12h,12h,12h,10h,10h,10h,00h,00h,00h,0eh
-                                            u8   0eh,00h,00h,00h,00h,00h,10h,10h,10h,10h,10h,10h,00h,00h,00h,00h,00h,0eh
-                                            u8   0eh,00h,00h,00h,00h,00h,00h,10h,10h,10h,10h,00h,00h,00h,00h,00h,00h,0eh
-                                            u8   0eh,00h,00h,00h,00h,00h,00h,00h,10h,10h,00h,00h,00h,00h,00h,00h,00h,0eh
-                                            u8   0eh,00h,00h,00h,00h,00h,00h,00h,10h,10h,00h,00h,00h,00h,00h,00h,00h,0eh
-                                            u8   0eh,00h,00h,00h,00h,00h,00h,00h,10h,10h,00h,00h,00h,00h,00h,00h,00h,0eh
-                                            u8   0eh,00h,00h,00h,00h,00h,00h,00h,10h,10h,00h,00h,00h,00h,00h,00h,00h,0eh
-                                            u8   0eh,00h,00h,00h,00h,00h,00h,00h,10h,10h,00h,00h,00h,00h,00h,00h,00h,0eh
-                                            u8   0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,10h,10h,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh
-                                            u8   22h,22h,22h
-                                            u8   34h,34h,34h
-                                            u8   27h,27h,27h
+    lpt_logo                                u8  0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh
+                                            u8  0eh,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,0eh
+                                            u8  0eh,00h,00h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,00h,00h,0eh
+                                            u8  0eh,00h,00h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,00h,00h,0eh
+                                            u8  0eh,00h,10h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,10h,00h,0eh
+                                            u8  0eh,00h,10h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,10h,00h,0eh
+                                            u8  0eh,00h,10h,10h,10h,12h,12h,12h,12h,12h,12h,12h,12h,10h,10h,10h,00h,0eh
+                                            u8  0eh,00h,00h,00h,10h,10h,10h,12h,12h,12h,12h,10h,10h,10h,00h,00h,00h,0eh
+                                            u8  0eh,00h,00h,00h,00h,00h,10h,10h,10h,10h,10h,10h,00h,00h,00h,00h,00h,0eh
+                                            u8  0eh,00h,00h,00h,00h,00h,00h,10h,10h,10h,10h,00h,00h,00h,00h,00h,00h,0eh
+                                            u8  0eh,00h,00h,00h,00h,00h,00h,00h,10h,10h,00h,00h,00h,00h,00h,00h,00h,0eh
+                                            u8  0eh,00h,00h,00h,00h,00h,00h,00h,10h,10h,00h,00h,00h,00h,00h,00h,00h,0eh
+                                            u8  0eh,00h,00h,00h,00h,00h,00h,00h,10h,10h,00h,00h,00h,00h,00h,00h,00h,0eh
+                                            u8  0eh,00h,00h,00h,00h,00h,00h,00h,10h,10h,00h,00h,00h,00h,00h,00h,00h,0eh
+                                            u8  0eh,00h,00h,00h,00h,00h,00h,00h,10h,10h,00h,00h,00h,00h,00h,00h,00h,0eh
+                                            u8  0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh,10h,10h,0eh,0eh,0eh,0eh,0eh,0eh,0eh,0eh
+                                            u8  22h,22h,22h
+                                            u8  34h,34h,34h
+                                            u8  27h,27h,27h
 
-    debi_logo                               u8   09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,00h,00h,00h,00h
-                                            u8   09h,01h,01h,01h,01h,01h,01h,01h,01h,01h,01h,01h,01h,09h,09h,00h,00h,00h
-                                            u8   09h,09h,09h,01h,01h,01h,01h,09h,09h,09h,09h,01h,01h,01h,01h,09h,00h,00h
-                                            u8   00h,00h,09h,01h,01h,01h,01h,09h,00h,00h,00h,09h,09h,01h,01h,01h,09h,00h
-                                            u8   00h,00h,09h,01h,01h,01h,0eh,09h,0eh,00h,00h,00h,09h,01h,01h,01h,01h,09h
-                                            u8   00h,00h,09h,0fh,0fh,01h,04h,0ch,0ch,04h,00h,0fh,0fh,0fh,01h,01h,01h,09h
-                                            u8   00h,00h,0fh,01h,01h,0fh,04h,0ch,0ch,04h,0fh,00h,00h,09h,0fh,01h,01h,09h
-                                            u8   00h,00h,09h,01h,01h,01h,0ch,0ch,0ch,0ch,00h,00h,00h,09h,01h,01h,01h,09h
-                                            u8   00h,00h,09h,01h,0fh,0fh,0ch,0ch,0ch,0ch,0fh,0fh,00h,09h,01h,01h,01h,09h
-                                            u8   00h,00h,09h,0fh,01h,01h,04h,0ch,0ch,04h,00h,00h,0fh,0fh,01h,01h,01h,09h
-                                            u8   00h,00h,0fh,01h,01h,01h,0fh,0ch,0ch,0fh,00h,00h,09h,01h,0fh,01h,01h,09h
-                                            u8   00h,00h,09h,01h,01h,0fh,01h,09h,00h,00h,0fh,00h,09h,01h,01h,01h,01h,09h
-                                            u8   00h,00h,09h,01h,01h,0fh,01h,09h,00h,00h,00h,0fh,09h,01h,01h,01h,09h,00h
-                                            u8   09h,09h,09h,01h,0fh,01h,01h,09h,09h,09h,09h,0fh,01h,01h,01h,09h,00h,00h
-                                            u8   09h,01h,01h,01h,0fh,01h,01h,01h,01h,01h,01h,01h,0fh,09h,09h,00h,00h,00h
-                                            u8   09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,00h,00h,00h,00h,00h
+    debi_logo                               u8  09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,00h,00h,00h,00h
+                                            u8  09h,01h,01h,01h,01h,01h,01h,01h,01h,01h,01h,01h,01h,09h,09h,00h,00h,00h
+                                            u8  09h,09h,09h,01h,01h,01h,01h,09h,09h,09h,09h,01h,01h,01h,01h,09h,00h,00h
+                                            u8  00h,00h,09h,01h,01h,01h,01h,09h,00h,00h,00h,09h,09h,01h,01h,01h,09h,00h
+                                            u8  00h,00h,09h,01h,01h,01h,0eh,09h,0eh,00h,00h,00h,09h,01h,01h,01h,01h,09h
+                                            u8  00h,00h,09h,0fh,0fh,01h,04h,0ch,0ch,04h,00h,0fh,0fh,0fh,01h,01h,01h,09h
+                                            u8  00h,00h,0fh,01h,01h,0fh,04h,0ch,0ch,04h,0fh,00h,00h,09h,0fh,01h,01h,09h
+                                            u8  00h,00h,09h,01h,01h,01h,0ch,0ch,0ch,0ch,00h,00h,00h,09h,01h,01h,01h,09h
+                                            u8  00h,00h,09h,01h,0fh,0fh,0ch,0ch,0ch,0ch,0fh,0fh,00h,09h,01h,01h,01h,09h
+                                            u8  00h,00h,09h,0fh,01h,01h,04h,0ch,0ch,04h,00h,00h,0fh,0fh,01h,01h,01h,09h
+                                            u8  00h,00h,0fh,01h,01h,01h,0fh,0ch,0ch,0fh,00h,00h,09h,01h,0fh,01h,01h,09h
+                                            u8  00h,00h,09h,01h,01h,0fh,01h,09h,00h,00h,0fh,00h,09h,01h,01h,01h,01h,09h
+                                            u8  00h,00h,09h,01h,01h,0fh,01h,09h,00h,00h,00h,0fh,09h,01h,01h,01h,09h,00h
+                                            u8  09h,09h,09h,01h,0fh,01h,01h,09h,09h,09h,09h,0fh,01h,01h,01h,09h,00h,00h
+                                            u8  09h,01h,01h,01h,0fh,01h,01h,01h,01h,01h,01h,01h,0fh,09h,09h,00h,00h,00h
+                                            u8  09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,00h,00h,00h,00h,00h
 
-    floppy_35_logo                          u8   00h,11h,10h,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,10h,11h,00h
-                                            u8   00h,11h,10h,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,10h,11h,00h
-                                            u8   00h,11h,00h,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,10h,11h,00h
-                                            u8   00h,11h,10h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,10h,11h,00h
-                                            u8   00h,11h,10h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,10h,11h,00h
-                                            u8   00h,11h,10h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,10h,11h,00h
-                                            u8   00h,11h,10h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,10h,11h,00h
-                                            u8   00h,11h,10h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,10h,11h,00h
-                                            u8   00h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,00h
-                                            u8   00h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,00h
-                                            u8   00h,11h,11h,11h,11h,0ch,0ch,0ch,0ch,0ch,0ch,10h,10h,10h,11h,11h,11h,00h
-                                            u8   00h,11h,11h,11h,11h,0ch,10h,10h,0ch,0ch,0ch,10h,10h,10h,11h,11h,11h,00h
-                                            u8   00h,11h,11h,11h,11h,0ch,10h,10h,0ch,0ch,0ch,10h,10h,10h,11h,11h,11h,00h
-                                            u8   00h,11h,11h,11h,11h,0ch,10h,10h,0ch,0ch,0ch,10h,10h,10h,11h,11h,11h,00h
-                                            u8   00h,00h,11h,11h,11h,0ch,10h,10h,0ch,0ch,0ch,10h,10h,10h,11h,11h,11h,00h
-                                            u8   00h,00h,00h,11h,11h,0ch,0ch,0ch,0ch,0ch,0ch,11h,11h,11h,11h,11h,11h,00h
-                                            u8   19h,19h,19h
-                                            u8   1fh,1fh,1fh
+    floppy_35_logo                          u8  00h,11h,10h,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,10h,11h,00h
+                                            u8  00h,11h,10h,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,10h,11h,00h
+                                            u8  00h,11h,00h,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,10h,11h,00h
+                                            u8  00h,11h,10h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,10h,11h,00h
+                                            u8  00h,11h,10h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,10h,11h,00h
+                                            u8  00h,11h,10h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,10h,11h,00h
+                                            u8  00h,11h,10h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,10h,11h,00h
+                                            u8  00h,11h,10h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,10h,11h,00h
+                                            u8  00h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,00h
+                                            u8  00h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,00h
+                                            u8  00h,11h,11h,11h,11h,0ch,0ch,0ch,0ch,0ch,0ch,10h,10h,10h,11h,11h,11h,00h
+                                            u8  00h,11h,11h,11h,11h,0ch,10h,10h,0ch,0ch,0ch,10h,10h,10h,11h,11h,11h,00h
+                                            u8  00h,11h,11h,11h,11h,0ch,10h,10h,0ch,0ch,0ch,10h,10h,10h,11h,11h,11h,00h
+                                            u8  00h,11h,11h,11h,11h,0ch,10h,10h,0ch,0ch,0ch,10h,10h,10h,11h,11h,11h,00h
+                                            u8  00h,00h,11h,11h,11h,0ch,10h,10h,0ch,0ch,0ch,10h,10h,10h,11h,11h,11h,00h
+                                            u8  00h,00h,00h,11h,11h,0ch,0ch,0ch,0ch,0ch,0ch,11h,11h,11h,11h,11h,11h,00h
+                                            u8  19h,19h,19h
+                                            u8  1fh,1fh,1fh
 
-    floppy_525_logo                         u8   08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h
-                                            u8   08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h
-                                            u8   08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h
-                                            u8   08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,00h
-                                            u8   08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h
-                                            u8   08h,08h,08h,08h,08h,08h,08h,08h,00h,00h,08h,08h,08h,08h,08h,08h,08h,08h
-                                            u8   08h,08h,08h,08h,08h,08h,08h,00h,00h,00h,00h,08h,08h,08h,08h,08h,08h,08h
-                                            u8   08h,08h,08h,08h,08h,08h,00h,00h,00h,00h,00h,00h,08h,08h,08h,08h,08h,08h
-                                            u8   08h,08h,08h,08h,08h,08h,08h,00h,00h,00h,00h,08h,08h,08h,08h,08h,08h,08h
-                                            u8   08h,08h,08h,08h,08h,08h,08h,08h,00h,00h,08h,08h,07h,08h,08h,08h,08h,08h
-                                            u8   08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h
-                                            u8   08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h
-                                            u8   08h,08h,08h,08h,08h,08h,08h,08h,07h,07h,08h,08h,08h,08h,08h,08h,08h,08h
-                                            u8   08h,08h,08h,08h,08h,08h,08h,08h,07h,07h,08h,08h,08h,08h,08h,08h,08h,08h
-                                            u8   08h,08h,08h,08h,08h,08h,08h,08h,07h,07h,08h,08h,08h,08h,08h,08h,08h,08h
-                                            u8   08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h
+    floppy_525_logo                         u8  08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h
+                                            u8  08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h
+                                            u8  08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h
+                                            u8  08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,00h
+                                            u8  08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h
+                                            u8  08h,08h,08h,08h,08h,08h,08h,08h,00h,00h,08h,08h,08h,08h,08h,08h,08h,08h
+                                            u8  08h,08h,08h,08h,08h,08h,08h,00h,00h,00h,00h,08h,08h,08h,08h,08h,08h,08h
+                                            u8  08h,08h,08h,08h,08h,08h,00h,00h,00h,00h,00h,00h,08h,08h,08h,08h,08h,08h
+                                            u8  08h,08h,08h,08h,08h,08h,08h,00h,00h,00h,00h,08h,08h,08h,08h,08h,08h,08h
+                                            u8  08h,08h,08h,08h,08h,08h,08h,08h,00h,00h,08h,08h,07h,08h,08h,08h,08h,08h
+                                            u8  08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h
+                                            u8  08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h
+                                            u8  08h,08h,08h,08h,08h,08h,08h,08h,07h,07h,08h,08h,08h,08h,08h,08h,08h,08h
+                                            u8  08h,08h,08h,08h,08h,08h,08h,08h,07h,07h,08h,08h,08h,08h,08h,08h,08h,08h
+                                            u8  08h,08h,08h,08h,08h,08h,08h,08h,07h,07h,08h,08h,08h,08h,08h,08h,08h,08h
+                                            u8  08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h
 
-    hard_drive_logo                         u8   00h,0ch,00h,10h,10h,11h,11h,11h,11h,11h,11h,11h,10h,10h,10h,10h,10h,00h
-                                            u8   00h,00h,00h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,10h,10h,00h
-                                            u8   00h,10h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,10h,00h
-                                            u8   00h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,00h
-                                            u8   00h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,00h
-                                            u8   00h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,00h
-                                            u8   00h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,00h
-                                            u8   00h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,00h
-                                            u8   00h,10h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,10h,00h
-                                            u8   00h,10h,10h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,10h,10h,00h
-                                            u8   00h,10h,10h,10h,10h,11h,11h,11h,11h,11h,11h,11h,10h,10h,10h,10h,10h,00h
-                                            u8   00h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,00h
-                                            u8   00h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,10h,0fh,0fh,0fh,0fh,10h,00h
-                                            u8   00h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,10h,0fh,0fh,0fh,0fh,10h,00h
-                                            u8   00h,04h,07h,07h,07h,07h,07h,07h,07h,07h,07h,00h,0fh,0fh,0fh,0fh,00h,00h
-                                            u8   00h,04h,07h,07h,07h,07h,07h,07h,07h,07h,07h,00h,0ch,08h,12h,0eh,00h,00h
-                                            u8   18h,18h,18h
-                                            u8   14h,14h,14h
-                                            u8   1ah,1ah,1ah
+    hard_drive_logo                         u8  00h,0ch,00h,10h,10h,11h,11h,11h,11h,11h,11h,11h,10h,10h,10h,10h,10h,00h
+                                            u8  00h,00h,00h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,10h,10h,00h
+                                            u8  00h,10h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,10h,00h
+                                            u8  00h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,00h
+                                            u8  00h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,00h
+                                            u8  00h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,00h
+                                            u8  00h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,00h
+                                            u8  00h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,00h
+                                            u8  00h,10h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,10h,00h
+                                            u8  00h,10h,10h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,10h,10h,00h
+                                            u8  00h,10h,10h,10h,10h,11h,11h,11h,11h,11h,11h,11h,10h,10h,10h,10h,10h,00h
+                                            u8  00h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,00h
+                                            u8  00h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,10h,0fh,0fh,0fh,0fh,10h,00h
+                                            u8  00h,08h,08h,08h,08h,08h,08h,08h,08h,08h,08h,10h,0fh,0fh,0fh,0fh,10h,00h
+                                            u8  00h,04h,07h,07h,07h,07h,07h,07h,07h,07h,07h,00h,0fh,0fh,0fh,0fh,00h,00h
+                                            u8  00h,04h,07h,07h,07h,07h,07h,07h,07h,07h,07h,00h,0ch,08h,12h,0eh,00h,00h
+                                            u8  18h,18h,18h
+                                            u8  14h,14h,14h
+                                            u8  1ah,1ah,1ah
 
-    sound_logo                              u8   00h,00h,00h,00h,00h,00h,12h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,00h,07h,11h,11h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,07h,12h,11h,11h,00h,00h,00h,00h,00h,00h,07h,00h,00h,00h
-                                            u8   00h,00h,00h,08h,13h,12h,11h,10h,0eh,00h,00h,00h,00h,07h,00h,00h,00h,00h
-                                            u8   00h,00h,08h,0eh,13h,12h,11h,10h,0eh,00h,00h,00h,07h,00h,00h,00h,00h,00h
-                                            u8   00h,08h,0eh,0eh,13h,12h,11h,10h,0eh,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   08h,0eh,0eh,0eh,08h,08h,11h,10h,0eh,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   08h,0eh,0eh,0eh,08h,0eh,08h,10h,0eh,00h,00h,00h,07h,07h,07h,07h,07h,00h
-                                            u8   08h,0eh,0eh,0eh,08h,0eh,08h,10h,0eh,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   08h,10h,0eh,0eh,08h,08h,11h,10h,0eh,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   00h,08h,10h,0eh,13h,12h,11h,10h,0eh,00h,00h,00h,07h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,08h,10h,13h,12h,11h,10h,0eh,00h,00h,00h,00h,07h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,08h,13h,12h,11h,10h,0eh,00h,00h,00h,00h,00h,07h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,07h,12h,11h,11h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,00h,07h,11h,11h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,00h,00h,12h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   38h,38h,12h
-                                            u8   30h,30h,10h
-                                            u8   2bh,2bh,08h
-                                            u8   24h,24h,07h
+    sound_logo                              u8  00h,00h,00h,00h,00h,00h,12h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,00h,07h,11h,11h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,07h,12h,11h,11h,00h,00h,00h,00h,00h,00h,07h,00h,00h,00h
+                                            u8  00h,00h,00h,08h,13h,12h,11h,10h,0eh,00h,00h,00h,00h,07h,00h,00h,00h,00h
+                                            u8  00h,00h,08h,0eh,13h,12h,11h,10h,0eh,00h,00h,00h,07h,00h,00h,00h,00h,00h
+                                            u8  00h,08h,0eh,0eh,13h,12h,11h,10h,0eh,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  08h,0eh,0eh,0eh,08h,08h,11h,10h,0eh,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  08h,0eh,0eh,0eh,08h,0eh,08h,10h,0eh,00h,00h,00h,07h,07h,07h,07h,07h,00h
+                                            u8  08h,0eh,0eh,0eh,08h,0eh,08h,10h,0eh,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  08h,10h,0eh,0eh,08h,08h,11h,10h,0eh,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  00h,08h,10h,0eh,13h,12h,11h,10h,0eh,00h,00h,00h,07h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,08h,10h,13h,12h,11h,10h,0eh,00h,00h,00h,00h,07h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,08h,13h,12h,11h,10h,0eh,00h,00h,00h,00h,00h,07h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,07h,12h,11h,11h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,00h,07h,11h,11h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,00h,00h,12h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  38h,38h,12h
+                                            u8  30h,30h,10h
+                                            u8  2bh,2bh,08h
+                                            u8  24h,24h,07h
 
-    dtnprp_logo                             u8   00h,00h,00h,00h,00h,0fh,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,00h,0fh,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,0fh,0fh,0fh,00h,0fh,0fh,0fh,00h,00h,0fh,0fh,0fh,00h,00h,00h
-                                            u8   00h,00h,0fh,00h,00h,0fh,00h,0fh,00h,00h,0fh,00h,0fh,00h,00h,0fh,00h,00h
-                                            u8   00h,00h,0fh,00h,00h,0fh,00h,0fh,00h,00h,0fh,00h,0fh,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,0fh,0fh,0fh,00h,0fh,00h,00h,0fh,00h,0fh,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,00h,00h,0fh,0fh,0fh,0fh,0fh,0fh,00h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,09h,09h,09h,0fh,0fh,0fh,0fh,0fh,0fh,09h,09h,09h,00h,00h,00h
-                                            u8   00h,00h,00h,09h,00h,00h,0fh,0fh,0fh,0fh,0fh,0fh,00h,00h,09h,00h,00h,00h
-                                            u8   00h,00h,00h,09h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,09h,00h,00h,00h
-                                            u8   00h,00h,00h,09h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,09h,00h,00h,00h
-                                            u8   00h,0ch,0ch,0ch,0ch,0ch,00h,00h,00h,00h,00h,00h,0ah,0ah,0ah,0ah,0ah,00h
-                                            u8   00h,0ch,0ch,0ch,0ch,0ch,00h,00h,00h,00h,00h,00h,0ah,0ah,0ah,0ah,0ah,00h
-                                            u8   00h,0ch,0ch,0ch,0ch,0ch,00h,00h,00h,00h,00h,00h,0ah,0ah,0ah,0ah,0ah,00h
+    dtnprp_logo                             u8  00h,00h,00h,00h,00h,0fh,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,00h,0fh,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,0fh,0fh,0fh,00h,0fh,0fh,0fh,00h,00h,0fh,0fh,0fh,00h,00h,00h
+                                            u8  00h,00h,0fh,00h,00h,0fh,00h,0fh,00h,00h,0fh,00h,0fh,00h,00h,0fh,00h,00h
+                                            u8  00h,00h,0fh,00h,00h,0fh,00h,0fh,00h,00h,0fh,00h,0fh,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,0fh,0fh,0fh,00h,0fh,00h,00h,0fh,00h,0fh,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,00h,00h,0fh,0fh,0fh,0fh,0fh,0fh,00h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,09h,09h,09h,0fh,0fh,0fh,0fh,0fh,0fh,09h,09h,09h,00h,00h,00h
+                                            u8  00h,00h,00h,09h,00h,00h,0fh,0fh,0fh,0fh,0fh,0fh,00h,00h,09h,00h,00h,00h
+                                            u8  00h,00h,00h,09h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,09h,00h,00h,00h
+                                            u8  00h,00h,00h,09h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,09h,00h,00h,00h
+                                            u8  00h,0ch,0ch,0ch,0ch,0ch,00h,00h,00h,00h,00h,00h,0ah,0ah,0ah,0ah,0ah,00h
+                                            u8  00h,0ch,0ch,0ch,0ch,0ch,00h,00h,00h,00h,00h,00h,0ah,0ah,0ah,0ah,0ah,00h
+                                            u8  00h,0ch,0ch,0ch,0ch,0ch,00h,00h,00h,00h,00h,00h,0ah,0ah,0ah,0ah,0ah,00h
 
-    fat_logo                                u8   00h,00h,00h,00h,00h,0fh,0fh,00h,00h,00h,00h,00h,00h,0fh,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,0fh,00h,00h,00h,0fh,0fh,00h,00h,0fh,0fh,0fh,00h,00h,00h
-                                            u8   00h,00h,00h,0fh,0fh,0fh,00h,00h,00h,00h,0fh,00h,00h,0fh,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,0fh,00h,00h,00h,0fh,0fh,0fh,00h,00h,0fh,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,0fh,00h,00h,0fh,00h,00h,0fh,00h,00h,0fh,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,0fh,00h,00h,00h,0fh,0fh,0fh,00h,00h,00h,0fh,00h,00h,00h
-                                            u8   00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   0fh,0fh,0fh,0fh,0fh,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   0fh,0fh,0fh,0fh,0fh,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,00h,00h,00h
-                                            u8   0fh,0fh,0fh,0fh,0fh,00h,00h,00h,09h,00h,00h,00h,00h,00h,09h,00h,00h,00h
-                                            u8   00h,00h,09h,00h,00h,00h,00h,00h,09h,00h,00h,00h,00h,00h,09h,00h,00h,00h
-                                            u8   00h,00h,09h,00h,00h,00h,00h,00h,09h,00h,00h,00h,00h,00h,09h,00h,00h,00h
-                                            u8   00h,0ch,0ch,0ch,0ch,00h,00h,0ah,0ah,0ah,0ah,00h,00h,0eh,0eh,0eh,0eh,00h
-                                            u8   00h,0ch,0ch,0ch,0ch,00h,00h,0ah,0ah,0ah,0ah,00h,00h,0eh,0eh,0eh,0eh,00h
-                                            u8   00h,0ch,0ch,0ch,0ch,00h,00h,0ah,0ah,0ah,0ah,00h,00h,0eh,0eh,0eh,0eh,00h
+    fat_logo                                u8  00h,00h,00h,00h,00h,0fh,0fh,00h,00h,00h,00h,00h,00h,0fh,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,0fh,00h,00h,00h,0fh,0fh,00h,00h,0fh,0fh,0fh,00h,00h,00h
+                                            u8  00h,00h,00h,0fh,0fh,0fh,00h,00h,00h,00h,0fh,00h,00h,0fh,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,0fh,00h,00h,00h,0fh,0fh,0fh,00h,00h,0fh,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,0fh,00h,00h,0fh,00h,00h,0fh,00h,00h,0fh,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,0fh,00h,00h,00h,0fh,0fh,0fh,00h,00h,00h,0fh,00h,00h,00h
+                                            u8  00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  0fh,0fh,0fh,0fh,0fh,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  0fh,0fh,0fh,0fh,0fh,09h,09h,09h,09h,09h,09h,09h,09h,09h,09h,00h,00h,00h
+                                            u8  0fh,0fh,0fh,0fh,0fh,00h,00h,00h,09h,00h,00h,00h,00h,00h,09h,00h,00h,00h
+                                            u8  00h,00h,09h,00h,00h,00h,00h,00h,09h,00h,00h,00h,00h,00h,09h,00h,00h,00h
+                                            u8  00h,00h,09h,00h,00h,00h,00h,00h,09h,00h,00h,00h,00h,00h,09h,00h,00h,00h
+                                            u8  00h,0ch,0ch,0ch,0ch,00h,00h,0ah,0ah,0ah,0ah,00h,00h,0eh,0eh,0eh,0eh,00h
+                                            u8  00h,0ch,0ch,0ch,0ch,00h,00h,0ah,0ah,0ah,0ah,00h,00h,0eh,0eh,0eh,0eh,00h
+                                            u8  00h,0ch,0ch,0ch,0ch,00h,00h,0ah,0ah,0ah,0ah,00h,00h,0eh,0eh,0eh,0eh,00h
 
-    network_logo                            u8   00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,0fh,00h,00h,00h
-                                            u8   00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,0fh,0fh,0fh,00h,00h
-                                            u8   00h,00h,00h,0fh,0fh,0fh,00h,00h,00h,0fh,0fh,00h,00h,00h,0fh,00h,00h,00h
-                                            u8   00h,00h,00h,0fh,00h,00h,0fh,00h,0fh,00h,0fh,0fh,00h,00h,0fh,00h,00h,00h
-                                            u8   00h,00h,00h,0fh,00h,00h,0fh,00h,0fh,0fh,00h,00h,00h,00h,0fh,00h,00h,00h
-                                            u8   00h,00h,00h,0fh,00h,00h,0fh,00h,00h,0fh,0fh,0fh,00h,00h,00h,0fh,00h,00h
-                                            u8   00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,00h,00h,00h,0fh,0fh,0fh,0fh,0fh,00h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,00h,00h,00h,0fh,0fh,0fh,0fh,0fh,00h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,00h,00h,00h,00h,00h,10h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   00h,0fh,0fh,0fh,00h,00h,00h,00h,00h,02h,00h,00h,00h,00h,00h,0fh,0fh,0fh
-                                            u8   00h,0fh,0fh,0fh,02h,02h,02h,02h,02h,00h,02h,02h,02h,02h,02h,0fh,0fh,0fh
-                                            u8   00h,0fh,0fh,0fh,00h,00h,00h,00h,00h,02h,00h,00h,00h,00h,00h,0fh,0fh,0fh
-                                            u8   00h,00h,00h,00h,00h,00h,00h,00h,00h,02h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,00h,00h,00h,0fh,0fh,0fh,0fh,0fh,00h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,00h,00h,00h,0fh,0fh,0fh,0fh,0fh,00h,00h,00h,00h,00h,00h
-                                            u8   00h,26h,00
+    network_logo                            u8  00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,0fh,00h,00h,00h
+                                            u8  00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,0fh,0fh,0fh,00h,00h
+                                            u8  00h,00h,00h,0fh,0fh,0fh,00h,00h,00h,0fh,0fh,00h,00h,00h,0fh,00h,00h,00h
+                                            u8  00h,00h,00h,0fh,00h,00h,0fh,00h,0fh,00h,0fh,0fh,00h,00h,0fh,00h,00h,00h
+                                            u8  00h,00h,00h,0fh,00h,00h,0fh,00h,0fh,0fh,00h,00h,00h,00h,0fh,00h,00h,00h
+                                            u8  00h,00h,00h,0fh,00h,00h,0fh,00h,00h,0fh,0fh,0fh,00h,00h,00h,0fh,00h,00h
+                                            u8  00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,00h,00h,00h,0fh,0fh,0fh,0fh,0fh,00h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,00h,00h,00h,0fh,0fh,0fh,0fh,0fh,00h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,00h,00h,00h,00h,00h,10h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  00h,0fh,0fh,0fh,00h,00h,00h,00h,00h,02h,00h,00h,00h,00h,00h,0fh,0fh,0fh
+                                            u8  00h,0fh,0fh,0fh,02h,02h,02h,02h,02h,00h,02h,02h,02h,02h,02h,0fh,0fh,0fh
+                                            u8  00h,0fh,0fh,0fh,00h,00h,00h,00h,00h,02h,00h,00h,00h,00h,00h,0fh,0fh,0fh
+                                            u8  00h,00h,00h,00h,00h,00h,00h,00h,00h,02h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,00h,00h,00h,0fh,0fh,0fh,0fh,0fh,00h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,00h,00h,00h,0fh,0fh,0fh,0fh,0fh,00h,00h,00h,00h,00h,00h
+                                            u8  00h,26h,00
 
-//   grace_logo                              u8   תתתתתתתתתתתתתתתתתת
-//                                           u8   תתתתתתתתתתתתתתתתתת
-//                                           u8   תתתתתתתתתתתתתתתתתת
-//                                           u8   תתתתתתתתתתתתתתתתתת
-//                                           u8   תתתתתתתתתתתתתתתתתת
-//                                           u8   תתתתתתתתתתתתתתתתתת
-//                                           u8   תתתתתתתתתתתתתתתתתת
-//                                           u8   תתתתתתתתתתתתתתתתתת
-//                                           u8   תתתתתתתתתתתתתתתתתת
-//                                           u8   תתתתתתתתתתתתתתתתתת
-//                                           u8   תתתתתתתתתתתתתתתתתת
-//                                           u8   תתתתתתתתתתתתתתתתתת
-//                                           u8   תתתתתתתתתתתתתתתתתת
-//                                           u8   תתתתתתתתתתתתתתתתתת
-//                                           u8   תתתתתתתתתתתתתתתתתת
-//                                           u8   תתתתתתתתתתתתתתתתתת
+//   grace_logo                              u8  תתתתתתתתתתתתתתתתתת
+//                                           u8  תתתתתתתתתתתתתתתתתת
+//                                           u8  תתתתתתתתתתתתתתתתתת
+//                                           u8  תתתתתתתתתתתתתתתתתת
+//                                           u8  תתתתתתתתתתתתתתתתתת
+//                                           u8  תתתתתתתתתתתתתתתתתת
+//                                           u8  תתתתתתתתתתתתתתתתתת
+//                                           u8  תתתתתתתתתתתתתתתתתת
+//                                           u8  תתתתתתתתתתתתתתתתתת
+//                                           u8  תתתתתתתתתתתתתתתתתת
+//                                           u8  תתתתתתתתתתתתתתתתתת
+//                                           u8  תתתתתתתתתתתתתתתתתת
+//                                           u8  תתתתתתתתתתתתתתתתתת
+//                                           u8  תתתתתתתתתתתתתתתתתת
+//                                           u8  תתתתתתתתתתתתתתתתתת
+//                                           u8  תתתתתתתתתתתתתתתתתת
 //
-//   elegance_logo                           u8   תתתתתתתתתתתתתתתתתת
-//                                           u8   תתתתתתתתתתתתתתתתתת
-//                                           u8   תתתתתתתתתתתתתתתתתת
-//                                           u8   תתתתתתתתתתתתתתתתתת
-//                                           u8   תתתתתתתתתתתתתתתתתת
-//                                           u8   תתתתתתתתתתתתתתתתתת
-//                                           u8   תתתתתתתתתתתתתתתתתת
-//                                           u8   תתתתתתתתתתתתתתתתתת
-//                                           u8   תתתתתתתתתתתתתתתתתת
-//                                           u8   תתתתתתתתתתתתתתתתתת
-//                                           u8   תתתתתתתתתתתתתתתתתת
-//                                           u8   תתתתתתתתתתתתתתתתתת
-//                                           u8   תתתתתתתתתתתתתתתתתת
-//                                           u8   תתתתתתתתתתתתתתתתתת
-//                                           u8   תתתתתתתתתתתתתתתתתת
-//                                           u8   תתתתתתתתתתתתתתתתתת
+//   elegance_logo                           u8  תתתתתתתתתתתתתתתתתת
+//                                           u8  תתתתתתתתתתתתתתתתתת
+//                                           u8  תתתתתתתתתתתתתתתתתת
+//                                           u8  תתתתתתתתתתתתתתתתתת
+//                                           u8  תתתתתתתתתתתתתתתתתת
+//                                           u8  תתתתתתתתתתתתתתתתתת
+//                                           u8  תתתתתתתתתתתתתתתתתת
+//                                           u8  תתתתתתתתתתתתתתתתתת
+//                                           u8  תתתתתתתתתתתתתתתתתת
+//                                           u8  תתתתתתתתתתתתתתתתתת
+//                                           u8  תתתתתתתתתתתתתתתתתת
+//                                           u8  תתתתתתתתתתתתתתתתתת
+//                                           u8  תתתתתתתתתתתתתתתתתת
+//                                           u8  תתתתתתתתתתתתתתתתתת
+//                                           u8  תתתתתתתתתתתתתתתתתת
+//                                           u8  תתתתתתתתתתתתתתתתתת
 
-    typeset_logo                            u8   12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,0fh
-                                            u8   12h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,0fh
-                                            u8   12h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,0fh
-                                            u8   12h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,0fh
-                                            u8   12h,12h,12h,12h,12h,12h,11h,11h,11h,11h,11h,12h,12h,12h,12h,12h,12h,0fh
-                                            u8   12h,10h,10h,10h,10h,10h,11h,11h,11h,11h,11h,10h,10h,10h,10h,10h,12h,0fh
-                                            u8   12h,12h,12h,12h,12h,12h,11h,11h,11h,11h,11h,12h,12h,12h,12h,12h,12h,0fh
-                                            u8   12h,10h,10h,10h,10h,10h,11h,11h,11h,11h,11h,10h,10h,10h,10h,12h,12h,0fh
-                                            u8   12h,12h,12h,12h,12h,12h,11h,11h,11h,11h,11h,12h,12h,12h,12h,12h,12h,0fh
-                                            u8   12h,10h,10h,10h,10h,10h,11h,11h,11h,11h,11h,10h,10h,10h,10h,10h,10h,0fh
-                                            u8   12h,12h,12h,12h,12h,12h,11h,11h,11h,11h,11h,12h,12h,12h,12h,12h,12h,0fh
-                                            u8   12h,10h,10h,10h,10h,12h,11h,11h,11h,11h,11h,12h,12h,12h,12h,12h,12h,0fh
-                                            u8   12h,12h,12h,12h,12h,12h,11h,11h,11h,11h,11h,12h,12h,12h,12h,12h,12h,0fh
-                                            u8   12h,12h,12h,12h,12h,12h,11h,11h,11h,11h,11h,12h,12h,12h,12h,12h,12h,0fh
-                                            u8   12h,10h,10h,10h,10h,12h,11h,11h,11h,11h,11h,12h,12h,12h,12h,12h,12h,0fh
-                                            u8   12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,0fh
-                                            u8   2dh,2dh,2dh
-                                            u8   33h,00h,33h
-                                            u8   3ah,3ah,3ah
+    typeset_logo                            u8  12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,0fh
+                                            u8  12h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,0fh
+                                            u8  12h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,0fh
+                                            u8  12h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,0fh
+                                            u8  12h,12h,12h,12h,12h,12h,11h,11h,11h,11h,11h,12h,12h,12h,12h,12h,12h,0fh
+                                            u8  12h,10h,10h,10h,10h,10h,11h,11h,11h,11h,11h,10h,10h,10h,10h,10h,12h,0fh
+                                            u8  12h,12h,12h,12h,12h,12h,11h,11h,11h,11h,11h,12h,12h,12h,12h,12h,12h,0fh
+                                            u8  12h,10h,10h,10h,10h,10h,11h,11h,11h,11h,11h,10h,10h,10h,10h,12h,12h,0fh
+                                            u8  12h,12h,12h,12h,12h,12h,11h,11h,11h,11h,11h,12h,12h,12h,12h,12h,12h,0fh
+                                            u8  12h,10h,10h,10h,10h,10h,11h,11h,11h,11h,11h,10h,10h,10h,10h,10h,10h,0fh
+                                            u8  12h,12h,12h,12h,12h,12h,11h,11h,11h,11h,11h,12h,12h,12h,12h,12h,12h,0fh
+                                            u8  12h,10h,10h,10h,10h,12h,11h,11h,11h,11h,11h,12h,12h,12h,12h,12h,12h,0fh
+                                            u8  12h,12h,12h,12h,12h,12h,11h,11h,11h,11h,11h,12h,12h,12h,12h,12h,12h,0fh
+                                            u8  12h,12h,12h,12h,12h,12h,11h,11h,11h,11h,11h,12h,12h,12h,12h,12h,12h,0fh
+                                            u8  12h,10h,10h,10h,10h,12h,11h,11h,11h,11h,11h,12h,12h,12h,12h,12h,12h,0fh
+                                            u8  12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,12h,0fh
+                                            u8  2dh,2dh,2dh
+                                            u8  33h,00h,33h
+                                            u8  3ah,3ah,3ah
 
-    numbers_logo                            u8   10h,10h,10h,10h,12h,10h,10h,10h,10h,12h,10h,10h,10h,10h,12h,10h,10h,10h
-                                            u8   10h,10h,11h,11h,11h,11h,10h,10h,10h,12h,10h,10h,11h,11h,11h,11h,10h,10h
-                                            u8   12h,12h,11h,11h,11h,11h,11h,12h,12h,12h,12h,12h,11h,11h,11h,11h,12h,0fh
-                                            u8   10h,10h,11h,11h,11h,11h,11h,11h,10h,12h,10h,10h,11h,11h,11h,11h,10h,10h
-                                            u8   10h,10h,11h,11h,11h,11h,11h,11h,11h,12h,10h,10h,11h,11h,11h,11h,10h,10h
-                                            u8   12h,12h,11h,11h,11h,11h,11h,11h,11h,11h,12h,12h,11h,11h,11h,11h,12h,0fh
-                                            u8   10h,10h,11h,11h,11h,11h,11h,11h,11h,11h,11h,12h,11h,11h,11h,11h,10h,10h
-                                            u8   10h,10h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,10h,10h
-                                            u8   12h,12h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,12h,0fh
-                                            u8   10h,10h,11h,11h,11h,11h,12h,11h,11h,11h,11h,11h,11h,11h,11h,11h,10h,10h
-                                            u8   10h,10h,11h,11h,11h,11h,12h,12h,11h,11h,11h,11h,11h,11h,11h,11h,10h,10h
-                                            u8   12h,12h,11h,11h,11h,11h,10h,10h,10h,11h,11h,11h,11h,11h,11h,11h,12h,0fh
-                                            u8   10h,10h,11h,11h,11h,11h,10h,10h,10h,12h,11h,11h,11h,11h,11h,11h,10h,10h
-                                            u8   10h,10h,11h,11h,11h,11h,12h,12h,12h,12h,12h,11h,11h,11h,11h,11h,10h,10h
-                                            u8   12h,12h,11h,11h,11h,11h,10h,10h,10h,12h,10h,10h,11h,11h,11h,11h,12h,0fh
-                                            u8   10h,10h,10h,10h,12h,10h,10h,10h,10h,12h,10h,10h,10h,10h,12h,10h,10h,10h
-                                            u8   2dh,2dh,2dh
-                                            u8   33h,00h,33h
-                                            u8   3ah,3ah,3ah       // Initialize internal constants
+    numbers_logo                            u8  10h,10h,10h,10h,12h,10h,10h,10h,10h,12h,10h,10h,10h,10h,12h,10h,10h,10h
+                                            u8  10h,10h,11h,11h,11h,11h,10h,10h,10h,12h,10h,10h,11h,11h,11h,11h,10h,10h
+                                            u8  12h,12h,11h,11h,11h,11h,11h,12h,12h,12h,12h,12h,11h,11h,11h,11h,12h,0fh
+                                            u8  10h,10h,11h,11h,11h,11h,11h,11h,10h,12h,10h,10h,11h,11h,11h,11h,10h,10h
+                                            u8  10h,10h,11h,11h,11h,11h,11h,11h,11h,12h,10h,10h,11h,11h,11h,11h,10h,10h
+                                            u8  12h,12h,11h,11h,11h,11h,11h,11h,11h,11h,12h,12h,11h,11h,11h,11h,12h,0fh
+                                            u8  10h,10h,11h,11h,11h,11h,11h,11h,11h,11h,11h,12h,11h,11h,11h,11h,10h,10h
+                                            u8  10h,10h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,10h,10h
+                                            u8  12h,12h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,12h,0fh
+                                            u8  10h,10h,11h,11h,11h,11h,12h,11h,11h,11h,11h,11h,11h,11h,11h,11h,10h,10h
+                                            u8  10h,10h,11h,11h,11h,11h,12h,12h,11h,11h,11h,11h,11h,11h,11h,11h,10h,10h
+                                            u8  12h,12h,11h,11h,11h,11h,10h,10h,10h,11h,11h,11h,11h,11h,11h,11h,12h,0fh
+                                            u8  10h,10h,11h,11h,11h,11h,10h,10h,10h,12h,11h,11h,11h,11h,11h,11h,10h,10h
+                                            u8  10h,10h,11h,11h,11h,11h,12h,12h,12h,12h,12h,11h,11h,11h,11h,11h,10h,10h
+                                            u8  12h,12h,11h,11h,11h,11h,10h,10h,10h,12h,10h,10h,11h,11h,11h,11h,12h,0fh
+                                            u8  10h,10h,10h,10h,12h,10h,10h,10h,10h,12h,10h,10h,10h,10h,12h,10h,10h,10h
+                                            u8  2dh,2dh,2dh
+                                            u8  33h,00h,33h
+                                            u8  3ah,3ah,3ah       // Initialize internal constants
         mov     ds:timer_max_hz,182                                 // timer_max_hz = 182
-        mov     <u32> ds:timer_max_value[0],0c7e9b820h          // timer_max_value = 119318100000 = 1bc7e9b820h
-        mov     <u32> ds:timer_max_value[4],01bh
+        mov     u32 ptr ds:timer_max_value[0],0c7e9b820h          // timer_max_value = 119318100000 = 1bc7e9b820h
+        mov     u32 ptr ds:timer_max_value[4],01bh
 
         mov     esi,offset timer_area
-        mov     <u16> [esi+_TIMER_GDT],0ffffh                    // GDT entry (0ffffh means it's the system time-of-day event)
-        mov     <u16> [esi+_TIMER_LDT],0                         // LDT (it's the _sTIMER descriptor)
-        mov     <u32> [esi+_TIMER_INC_VALUE],0c75ed2bah         // We have set the timer to interrupt ~182 times/second.  See
-        mov     <u32> [esi+_TIMER_INC_VALUE+4],01bh             // the note above about this value.
-        mov     <u32> [esi+_TIMER_CURRENT_VALUE],0
-        mov     <u32> [esi+_TIMER_CURRENT_VALUE+4],0
-        mov     <u32> [esi+_TIMER_ORIGINAL_FREQ],433610A2h      // * Note:  433610A2h = f32 182.064971924 in dword format
-      // Terminate the listings entry                                //          MASM won't recognize "mov <f32> [si+20],182.0"
+        mov     u16 ptr [esi+_TIMER_GDT],0ffffh                    // GDT entry (0ffffh means it's the system time-of-day event)
+        mov     u16 ptr [esi+_TIMER_LDT],0                         // LDT (it's the _sTIMER descriptor)
+        mov     u32 ptr [esi+_TIMER_INC_VALUE],0c75ed2bah         // We have set the timer to interrupt ~182 times/second.  See
+        mov     u32 ptr [esi+_TIMER_INC_VALUE+4],01bh             // the note above about this value.
+        mov     u32 ptr [esi+_TIMER_CURRENT_VALUE],0
+        mov     u32 ptr [esi+_TIMER_CURRENT_VALUE+4],0
+        mov     u32 ptr [esi+_TIMER_ORIGINAL_FREQ],433610A2h      // * Note:  433610A2h = f32 182.064971924 in dword format
+      // Terminate the listings entry                                //          MASM won't recognize "mov f32 ptr [si+20],182.0"
         add     esi,_TIMER_STRUCT_LENGTH                            //          even though it's only a 4-byte move.  Oh well!
-        mov     <u32> [esi],0ffffffffh
+        mov     u32 ptr [esi],0ffffffffh
 
        // Wait for CMOS to be ready for us to read
         mov     al,_CMOS_STATUS_REGISTER_A                          // Tell CMOS we want to read the status register A
@@ -4597,8 +4597,8 @@ jmp @B
        // Initialize constants
         mov     ax,_sSYSTEM_AREA                                    // We're going to be storing time and date information
         mov     ds,ax
-        mov     <u8>  ds:[_SYSTEM_SECONDS_SINCE_BOOTUP],0        // Initialize the one's that aren't calculation dependent
-        mov     <u8>  ds:[_SYSTEM_182S_OF_A_SECOND],0
+        mov     u8 ptr ds:[_SYSTEM_SECONDS_SINCE_BOOTUP],0        // Initialize the one's that aren't calculation dependent
+        mov     u8 ptr ds:[_SYSTEM_182S_OF_A_SECOND],0
 
        // Read CMOS and store the converted BCD data as integers
         fninit                                                      // Initialize the fpu (we'll be using it shortly)
@@ -4607,32 +4607,32 @@ jmp @B
         mov     edi,offset cmos_conversion_table                    // * Note:  Refer to bootup.com for information
         while (byte ptr cs:[edi] != 0ffh)
         {
-            mov     al,<u8>  cs:[edi]                            // Read the CMOS register to read in
+            mov     al,u8 ptr cs:[edi]                            // Read the CMOS register to read in
             inc     di
             out     _CMOS_70h,al                                    // Tell CMOS what we'll be reading
             @IO_pause
             in      al,_CMOS_71h                                    // Read it
 
-            mov     ah,<u8>  cs:[edi]
+            mov     ah,u8 ptr cs:[edi]
             inc     di
             if (ah == _BCD_CONVERT)
             {
-                push    <u32> 0                                 // Stick 6 extra bytes on the stack (fbld loads tbyte ptr)
-                push    <u16> 0
+                push    u32 ptr 0                                 // Stick 6 extra bytes on the stack (fbld loads tbyte ptr)
+                push    u16 ptr 0
                 and     eax,0ffh
                 push    eax                                         // Stick it on the stack (remember eax's other bits are clear)
                 mov     ebp,esp
                 fbld    tbyte ptr [ebp]                             // Load it as a BCD
-                fistp   <u32> [ebp]                             // Store it as an integer
+                fistp   u32 ptr [ebp]                             // Store it as an integer
                 pop     eax                                         // And load it back into eax as an integer
                 add     esp,6                                       // Clear the 6 bytes back off the stack
             }
 
-            mov     bl,<u8>  cs:[edi]                            // Populate bx with the offset in _sSYSTEM_AREA to store this byte
+            mov     bl,u8 ptr cs:[edi]                            // Populate bx with the offset in _sSYSTEM_AREA to store this byte
             inc     edi
-            mov     <u8>  [ebx],al                               // And store the integer version of the BCD data
+            mov     u8 ptr [ebx],al                               // And store the integer version of the BCD data
         }
-        add     <u16> ds:[_SYSTEM_YEAR],2000                     // Adjust the century (CMOS stores xx=00-99, we assume 2000+xx)
+        add     u16 ptr ds:[_SYSTEM_YEAR],2000                     // Adjust the century (CMOS stores xx=00-99, we assume 2000+xx)
         mov     ds,cs:data_segment
        // Setup the TSS in the GDT
         mov     eax,_sTASK_MGR_TSS / 8
@@ -4654,8 +4654,8 @@ jmp @B
         pop     ds
 
 
-        mov     ebx,<u32> ds:timer_max_value[0]
-        mov     ecx,<u32> ds:timer_max_value[4]
+        mov     ebx,u32 ptr ds:timer_max_value[0]
+        mov     ecx,u32 ptr ds:timer_max_value[4]
 
      // Increment all of the timer event counters
         mov     esi,offset timer_area
@@ -4667,23 +4667,23 @@ jmp @B
             {
               // This is 64-bit math.  Rather than use the FPU we do it in integers because it's faster
               // This routine is called a minimum of 182 times per second, and possible one hell of a lot more!
-                mov     eax,<u32> ds:[esi+_TIMER_INC_VALUE]                 // Load increment value into edx:eax
-                mov     edx,<u32> ds:[esi+_TIMER_INC_VALUE+4]
-                add     <u32> ds:[esi+_TIMER_CURRENT_VALUE],eax             // Increment the current value
-                adc     <u32> ds:[esi+_TIMER_CURRENT_VALUE+4],edx
+                mov     eax,u32 ptr ds:[esi+_TIMER_INC_VALUE]                 // Load increment value into edx:eax
+                mov     edx,u32 ptr ds:[esi+_TIMER_INC_VALUE+4]
+                add     u32 ptr ds:[esi+_TIMER_CURRENT_VALUE],eax             // Increment the current value
+                adc     u32 ptr ds:[esi+_TIMER_CURRENT_VALUE+4],edx
 
-                cmp     <u32> ds:[esi+_TIMER_CURRENT_VALUE+4],ecx           // Are we beyond the maximum count value in the high dword?
+                cmp     u32 ptr ds:[esi+_TIMER_CURRENT_VALUE+4],ecx           // Are we beyond the maximum count value in the high dword?
                 ja      timer_adjust_counter                                    // Yes if branch, this means we're definately over
                 jnz     timer_next_slot                                         // If branch, then it's less than the high dword (not yet)
 
-                cmp     <u32> ds:[esi+_TIMER_CURRENT_VALUE],ebx             // Is the low dword >= ebx?
+                cmp     u32 ptr ds:[esi+_TIMER_CURRENT_VALUE],ebx             // Is the low dword >= ebx?
                 jb      timer_next_slot                                         // No if branch
 
               timer_adjust_counter:                                             // Yes, it is!  Process it!
-                sub     <u32> ds:[esi+_TIMER_CURRENT_VALUE],ebx             // Reset the counter value down (keeping the overflow)
-                sbb     <u32> ds:[esi+_TIMER_CURRENT_VALUE+4],ecx
+                sub     u32 ptr ds:[esi+_TIMER_CURRENT_VALUE],ebx             // Reset the counter value down (keeping the overflow)
+                sbb     u32 ptr ds:[esi+_TIMER_CURRENT_VALUE+4],ecx
               timer_execute_task:
-                cmp     <u16> ds:[esi+_TIMER_GDT],0ffffh
+                cmp     u16 ptr ds:[esi+_TIMER_GDT],0ffffh
                 jnz     timer_application_event                jmp     timer_next_slot
 
 
@@ -4698,24 +4698,24 @@ jmp @B
 
 
 //        dec     esi
-//        inc     <u8>  ds:[esi]
-//        cmp     <u8>  ds:[esi],60
+//        inc     u8 ptr ds:[esi]
+//        cmp     u8 ptr ds:[esi],60
 //        jb      timer_system_event_done
-//        mov     <u8>  ds:[esi],al
+//        mov     u8 ptr ds:[esi],al
 //
 //     // Increment the minutes
 //        dec     esi
-//        inc     <u8>  ds:[esi]
-//        cmp     <u8>  ds:[esi],59
+//        inc     u8 ptr ds:[esi]
+//        cmp     u8 ptr ds:[esi],59
 //        jb      timer_system_event_done
-//        mov     <u8>  ds:[esi],al
+//        mov     u8 ptr ds:[esi],al
 //
 //     // Increment the hours
 //        dec     esi
-//        inc     <u8>  ds:[esi]
-//        cmp     <u8>  ds:[esi],24
+//        inc     u8 ptr ds:[esi]
+//        cmp     u8 ptr ds:[esi],24
 //        jb      timer_system_event_done
-//        mov     <u8>  ds:[esi],0
+//        mov     u8 ptr ds:[esi],0
 //
 //     // Increment the date (we're into the next day here)
 //        call    invTIMER_system_event_next_date
@@ -4729,10 +4729,10 @@ jmp @B
         push    dx
 
        // Increment the day of the month
-        inc     <u8>  ds:[_SYSTEM_DAY]
+        inc     u8 ptr ds:[_SYSTEM_DAY]
 
        // See if we're into the next month
-        mov     dl,<u8>  ds:[_SYSTEM_MONTH]
+        mov     dl,u8 ptr ds:[_SYSTEM_MONTH]
         if (dl == 1 || dl == 3 || dl == 5 || dl == 7 || dl == 8 || dl == 10 || dl == 12)
         {
           // We're in months with 31 days, Jan, Mar, May, Jul, Aug, Oct, Dec
@@ -4743,7 +4743,7 @@ jmp @B
         
         } else if (dl == 2) {
           // We're in February, we need to see if it's a leap year
-            mov     ax,<u16> ds:[_SYSTEM_YEAR]
+            mov     ax,u16 ptr ds:[_SYSTEM_YEAR]
             shr     ax,1
             if (carry?)
             {
@@ -4773,18 +4773,18 @@ jmp @B
             if (byte ptr ds:[_SYSTEM_DAY] > 30)
             {
               goto_next_month:
-                mov     <u8>  ds:[_SYSTEM_DAY],1
-                inc     <u8>  ds:[_SYSTEM_MONTH]
+                mov     u8 ptr ds:[_SYSTEM_DAY],1
+                inc     u8 ptr ds:[_SYSTEM_MONTH]
                 if (byte ptr ds:[_SYSTEM_MONTH] > 12)
                 {
-                    mov     <u8>  ds:[_SYSTEM_MONTH],1
-                    inc     <u16> ds:[_SYSTEM_YEAR]
+                    mov     u8 ptr ds:[_SYSTEM_MONTH],1
+                    inc     u16 ptr ds:[_SYSTEM_YEAR]
                 }
             }
         }
 
        // Reset the seconds since midnight
-        mov     <u32> ds:[_SYSTEM_SECONDS_SINCE_MIDNIGHT],0
+        mov     u32 ptr ds:[_SYSTEM_SECONDS_SINCE_MIDNIGHT],0
 
         pop     dx
         pop     ax
@@ -4793,89 +4793,89 @@ jmp @B
 
                         
                         } else if (al == _16_8_8) {
-                            mov     <u32> [ebp-092],edx
+                            mov     u32 ptr [ebp-092],edx
                           // Do the upper 16-bits
                             shr     edx,16
                           // Right now, edx - lower word contains the upper 16-bits of the value specified
                           //            ebx - 16 (base-16 number, it will be displayed in hexidecimal)
-                            mov     eax,<u32> ds:[edi+5]        // x
-                            add     eax,<u32> ds:[esi+_ST_OBJECT_UL_HORIZONTAL]
+                            mov     eax,u32 ptr ds:[edi+5]        // x
+                            add     eax,u32 ptr ds:[esi+_ST_OBJECT_UL_HORIZONTAL]
                             push    eax
-                            mov     eax,<u32> ds:[edi+9]        // y
-                            add     eax,<u32> ds:[esi+_ST_OBJECT_UL_VERTICAL]
+                            mov     eax,u32 ptr ds:[edi+9]        // y
+                            add     eax,u32 ptr ds:[esi+_ST_OBJECT_UL_VERTICAL]
                             push    eax
                             mov     ecx,4                           // number of digits to display
                             invDEBI_add_radix_object()
-                            call    <u48> ds:_VID_g_display_radix_in_edx_mono
+                            call    u48 ptr ds:_VID_g_display_radix_in_edx_mono
 
                           // Do the xh byte (bits 8-15)
-                            mov     edx,<u32> [ebp-092]
+                            mov     edx,u32 ptr [ebp-092]
                             shr     edx,8
                             and     edx,0ffh
                           // Right now, edx - lower byte contains the bits 8-15
                           //            ebx - 16 (base-16number, it will be displayed in hexidecimal)
-                            mov     eax,<u32> ds:[edi+5]        // x
-                            add     eax,<u32> ds:[esi+_ST_OBJECT_UL_HORIZONTAL]
+                            mov     eax,u32 ptr ds:[edi+5]        // x
+                            add     eax,u32 ptr ds:[esi+_ST_OBJECT_UL_HORIZONTAL]
                             add     eax,5*8
                             push    eax
-                            mov     eax,<u32> ds:[edi+9]        // y
-                            add     eax,<u32> ds:[esi+_ST_OBJECT_UL_VERTICAL]
+                            mov     eax,u32 ptr ds:[edi+9]        // y
+                            add     eax,u32 ptr ds:[esi+_ST_OBJECT_UL_VERTICAL]
                             push    eax
                             mov     ecx,2                           // number of digits to display
                             invDEBI_add_radix_object()
-                            call    <u48> ds:_VID_g_display_radix_in_edx_mono
+                            call    u48 ptr ds:_VID_g_display_radix_in_edx_mono
 
                           // Do the xl byte (bits 0-7)
-                            mov     edx,<u32> [ebp-092]
+                            mov     edx,u32 ptr [ebp-092]
                             and     edx,0ffh
                           // Right now, edx - lower byte contains the bits 0-7
                           //            ebx - 16 (base-16 number, it will be displayed in hexidecimal)
-                            mov     eax,<u32> ds:[edi+5]        // x
-                            add     eax,<u32> ds:[esi+_ST_OBJECT_UL_HORIZONTAL]
+                            mov     eax,u32 ptr ds:[edi+5]        // x
+                            add     eax,u32 ptr ds:[esi+_ST_OBJECT_UL_HORIZONTAL]
                             add     eax,8*8
                             push    eax
-                            mov     eax,<u32> ds:[edi+9]        // y
-                            add     eax,<u32> ds:[esi+_ST_OBJECT_UL_VERTICAL]
+                            mov     eax,u32 ptr ds:[edi+9]        // y
+                            add     eax,u32 ptr ds:[esi+_ST_OBJECT_UL_VERTICAL]
                             push    eax
                             mov     ecx,2                           // number of digits to display
                             invDEBI_add_radix_object()
-                            call    <u48> ds:_VID_g_display_radix_in_edx_mono
+                            call    u48 ptr ds:_VID_g_display_radix_in_edx_mono
                         
                         } else if (al == _16_16) {
-                            mov     <u32> [ebp-092],edx
+                            mov     u32 ptr [ebp-092],edx
                           // Do the upper 16-bits
                             shr     edx,16
                           // Right now, edx - lower word contains the upper 16-bits of the value specified
                           //            ebx - 16 (base-16 number, it will be displayed in hexidecimal)
-                            mov     eax,<u32> ds:[edi+5]        // x
-                            add     eax,<u32> ds:[esi+_ST_OBJECT_UL_HORIZONTAL]
+                            mov     eax,u32 ptr ds:[edi+5]        // x
+                            add     eax,u32 ptr ds:[esi+_ST_OBJECT_UL_HORIZONTAL]
                             push    eax
-                            mov     eax,<u32> ds:[edi+9]        // y
-                            add     eax,<u32> ds:[esi+_ST_OBJECT_UL_VERTICAL]
+                            mov     eax,u32 ptr ds:[edi+9]        // y
+                            add     eax,u32 ptr ds:[esi+_ST_OBJECT_UL_VERTICAL]
                             push    eax
                             mov     ecx,4                           // number of digits to display
                             invDEBI_add_radix_object()
-                            call    <u48> ds:_VID_g_display_radix_in_edx_mono
+                            call    u48 ptr ds:_VID_g_display_radix_in_edx_mono
 
                           // Do the lower 16-bits
-                            mov     edx,<u32> [ebp-092]
+                            mov     edx,u32 ptr [ebp-092]
                             and     edx,0ffffh
                           // Right now, edx - lower word of the value specified
                           //            ebx - 16 (base-16 number, it will be displayed in hexidecimal)
-                            mov     eax,<u32> ds:[edi+5]        // x
-                            add     eax,<u32> ds:[esi+_ST_OBJECT_UL_HORIZONTAL]
+                            mov     eax,u32 ptr ds:[edi+5]        // x
+                            add     eax,u32 ptr ds:[esi+_ST_OBJECT_UL_HORIZONTAL]
                             add     eax,5*8
                             push    eax
-                            mov     eax,<u32> ds:[edi+9]        // y
-                            add     eax,<u32> ds:[esi+_ST_OBJECT_UL_VERTICAL]
+                            mov     eax,u32 ptr ds:[edi+9]        // y
+                            add     eax,u32 ptr ds:[esi+_ST_OBJECT_UL_VERTICAL]
                             push    eax
                             mov     ecx,4                           // number of digits to display
                             invDEBI_add_radix_object()
-                            call    <u48> ds:_VID_g_display_radix_in_edx_mono
+                            call    u48 ptr ds:_VID_g_display_radix_in_edx_mono
 
 //--------------------------
-inc     <u32> [esp+64]
-cmp     <u32> [esp+64],6
+inc     u32 ptr [esp+64]
+cmp     u32 ptr [esp+64],6
 jnz     skip_halt
    mov edx,[esp+68]
    mov edi,(80*2)*0
@@ -4934,8 +4934,8 @@ skip_halt:
     xor     ax,ax
     mov     fs,ax
     mov     eax,70000000h                                           // Segment (7000h), Offset (0h), linear = 70000h
-    mov     <u32> FS:[1*4],eax                                  // INT1, single-step
-    mov     <u32> FS:[3*4],eax                                  // INT3, software breakpoint
+    mov     u32 ptr FS:[1*4],eax                                  // INT1, single-step
+    mov     u32 ptr FS:[3*4],eax                                  // INT3, software breakpoint
 }; Turn off the floppy drive motor
     mov     al,001100b
     mov     edx,03f2h
@@ -5033,13 +5033,13 @@ _TFE_UNDO_BEFORE                    EQU
 _TFE_UNDO_AFTER                     EQU
 pushad
 xor     eax,eax
-mov     edx,<u32> ds:[_TASK_SYSTEM_CURRENT_TASK_OFFSET]
+mov     edx,u32 ptr ds:[_TASK_SYSTEM_CURRENT_TASK_OFFSET]
 if (edx != _FIRST_TASK_ENTRY)
 {
     mov     ebx,16
     mov     ecx,8
     push    0
     push    0
-    call    <u48> cs:_VID_g_display_radix_in_edx_mono
+    call    u48 ptr cs:_VID_g_display_radix_in_edx_mono
 }
 popad

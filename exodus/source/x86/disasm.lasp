@@ -85,15 +85,15 @@ x86_disassemble:
 
   next_byte:
     mov     fs:instruction_offset,esi
-    mov     eax,<u32> ds:[esi]
+    mov     eax,u32 ptr ds:[esi]
     movzx   ecx,al
-    movzx   ebx,<u16> fs:[ecx*2 + offset opcode_map]
+    movzx   ebx,u16 ptr fs:[ecx*2 + offset opcode_map]
     jmp     ebx
 
   _two_byte_instruction:
-    mov     eax,<u32> ds:[esi+1]
+    mov     eax,u32 ptr ds:[esi+1]
     movzx   ecx,al
-    movzx   ebx,<u16> fs:[ecx*2 + offset two_byte_opcode_map]
+    movzx   ebx,u16 ptr fs:[ecx*2 + offset two_byte_opcode_map]
     jmp     ebx
 
 
@@ -333,7 +333,7 @@ x86_disassemble:
   _bswap_edx:
   _bswap_esi:
   _bswap_esp:
-    mov     bl,<u8>  ds:[esi]
+    mov     bl,u8 ptr ds:[esi]
     @instr_bytes    2
     @instr_text     bswap_text, 5
     start_offsets()
@@ -726,7 +726,7 @@ x86_disassemble:
     jmp     store_instruction
 
   _fpu_d8:
-    mov     al,<u8>  ds:[esi+1]
+    mov     al,u8 ptr ds:[esi+1]
     if (al >= 0c0h && al <= 0c7h)
     {
       // It's FADD st(0),st(i)
@@ -859,7 +859,7 @@ x86_disassemble:
     jmp     _fpu_unused
 
   _fpu_d9:
-    mov     al,<u8>  ds:[esi+1]
+    mov     al,u8 ptr ds:[esi+1]
     if (al >= 0c0h && al <= 0c7h)
     {
       // It's FLD st(i)
@@ -1115,7 +1115,7 @@ x86_disassemble:
     jmp     _fpu_unused
 
   _fpu_da:
-    mov     al,<u8>  ds:[esi+1]
+    mov     al,u8 ptr ds:[esi+1]
     if (al >= 0c0h && al <= 0c7h)
     {
       // It's FCMOVB st0,sti
@@ -1217,7 +1217,7 @@ x86_disassemble:
     jmp     _fpu_unused
 
   _fpu_db:
-    mov     al,<u8>  ds:[esi+1]
+    mov     al,u8 ptr ds:[esi+1]
     if (al >= 0c0h && al <= 0c7h)
     {
       // It's FCMOVNB st0,sti
@@ -1313,7 +1313,7 @@ x86_disassemble:
     jmp     _fpu_unused
 
   _fpu_dc:
-    mov     al,<u8>  ds:[esi+1]
+    mov     al,u8 ptr ds:[esi+1]
     if (al >= 0c0h && al <= 0c7h)
     {
       // It's FADD st(i),st(0)
@@ -1432,7 +1432,7 @@ x86_disassemble:
     jmp     _fpu_unused
 
   _fpu_dd:
-    mov     al,<u8>  ds:[esi+1]
+    mov     al,u8 ptr ds:[esi+1]
     if (al >= 0c0h && al <= 0c7h)
     {
       // It's FFREE st(i)
@@ -1543,7 +1543,7 @@ x86_disassemble:
     jmp     _fpu_unused
 
   _fpu_de:
-    mov     al,<u8>  ds:[esi+1]
+    mov     al,u8 ptr ds:[esi+1]
     if (al >= 0c0h && al <= 0c7h)
     {
       // It's FADDP st(i),st(0)
@@ -1657,7 +1657,7 @@ x86_disassemble:
     jmp     _fpu_unused
 
   _fpu_df:
-    mov     al,<u8>  ds:[esi+1]
+    mov     al,u8 ptr ds:[esi+1]
     if (al == 0e0h)
     {
       // It's FNSTSW ax
@@ -3121,18 +3121,18 @@ x86_disassemble:
     @instr_bytes    1
     @instr_text     push_text, 4
     start_offsets()
-    mov     al,<u8>  ds:[esi]
+    mov     al,u8 ptr ds:[esi]
     convert_al_to_hex()
-    mov     <u16> fs:[edi],ax
+    mov     u16 ptr fs:[edi],ax
     add     edi,2
     inc     esi
     inc     fs:instruction_bytes
     if ((fs:cpu_mode == 0 && fs:op_size_override != 0) || (fs:cpu_mode != 0 && fs:op_size_override == 0))
     {
-        push    <u32> offset sx_to_word_text
+        push    u32 ptr offset sx_to_word_text
     
     } else {
-        push    <u32> offset sx_to_dword_text
+        push    u32 ptr offset sx_to_dword_text
     }
     store_string()
     end_offsets()
@@ -3432,107 +3432,107 @@ x86_disassemble:
     jmp     store_instruction
 
   _sbb_rm_reg8:
-    mov     <u32> fs:xxx_text,' bbs'
+    mov     u32 ptr fs:xxx_text,' bbs'
     jmp     _xxx_rm_reg8
 
   _sbb_rm_reg16_32:
-    mov     <u32> fs:xxx_text,' bbs'
+    mov     u32 ptr fs:xxx_text,' bbs'
     jmp     _xxx_rm_reg16_32
 
   _sbb_reg8_rm:
-    mov     <u32> fs:xxx_text,' bbs'
+    mov     u32 ptr fs:xxx_text,' bbs'
     jmp     _xxx_reg8_rm
 
   _sbb_reg16_32_rm:
-    mov     <u32> fs:xxx_text,' bbs'
+    mov     u32 ptr fs:xxx_text,' bbs'
     jmp     _xxx_reg16_32_rm
 
   _sbb_accum_immed8:
-    mov     <u32> fs:xxx_text,' bbs'
+    mov     u32 ptr fs:xxx_text,' bbs'
     jmp     _xxx_accum_immed8
 
   _sbb_accum_immed16_32:
-    mov     <u32> fs:xxx_text,' bbs'
+    mov     u32 ptr fs:xxx_text,' bbs'
     jmp     _xxx_accum_immed16_32
 
   _sbb_rm8_immed8:
-    mov     <u32> fs:xxx_text,' bbs'
+    mov     u32 ptr fs:xxx_text,' bbs'
     jmp     _xxx_rm8_immed8
 
   _sbb_rm_immed:
-    mov     <u32> fs:xxx_text,' bbs'
+    mov     u32 ptr fs:xxx_text,' bbs'
     jmp     _xxx_rm_immed
 
   _sbb_rm16_32_immed8:
-    mov     <u32> fs:xxx_text,' bbs'
+    mov     u32 ptr fs:xxx_text,' bbs'
     jmp     _xxx_rm16_32_immed8
 
   _sub_rm_reg8:
-    mov     <u32> fs:xxx_text,' bus'
+    mov     u32 ptr fs:xxx_text,' bus'
     jmp     _xxx_rm_reg8
 
   _sub_rm_reg16_32:
-    mov     <u32> fs:xxx_text,' bus'
+    mov     u32 ptr fs:xxx_text,' bus'
     jmp     _xxx_rm_reg16_32
 
   _sub_reg8_rm:
-    mov     <u32> fs:xxx_text,' bus'
+    mov     u32 ptr fs:xxx_text,' bus'
     jmp     _xxx_reg8_rm
 
   _sub_reg16_32_rm:
-    mov     <u32> fs:xxx_text,' bus'
+    mov     u32 ptr fs:xxx_text,' bus'
     jmp     _xxx_reg16_32_rm
 
   _sub_accum_immed8:
-    mov     <u32> fs:xxx_text,' bus'
+    mov     u32 ptr fs:xxx_text,' bus'
     jmp     _xxx_accum_immed8
 
   _sub_accum_immed16_32:
-    mov     <u32> fs:xxx_text,' bus'
+    mov     u32 ptr fs:xxx_text,' bus'
     jmp     _xxx_accum_immed16_32
 
   _sub_rm8_immed8:
-    mov     <u32> fs:xxx_text,' bus'
+    mov     u32 ptr fs:xxx_text,' bus'
     jmp     _xxx_rm8_immed8
 
   _sub_rm_immed:
-    mov     <u32> fs:xxx_text,' bus'
+    mov     u32 ptr fs:xxx_text,' bus'
     jmp     _xxx_rm_immed
 
   _xor_rm_reg8:
-    mov     <u32> fs:xxx_text,' rox'
+    mov     u32 ptr fs:xxx_text,' rox'
     jmp     _xxx_rm_reg8
 
   _xor_rm_reg16_32:
-    mov     <u32> fs:xxx_text,' rox'
+    mov     u32 ptr fs:xxx_text,' rox'
     jmp     _xxx_rm_reg16_32
 
   _xor_reg8_rm:
-    mov     <u32> fs:xxx_text,' rox'
+    mov     u32 ptr fs:xxx_text,' rox'
     jmp     _xxx_reg8_rm
 
   _xor_reg16_32_rm:
-    mov     <u32> fs:xxx_text,' rox'
+    mov     u32 ptr fs:xxx_text,' rox'
     jmp     _xxx_reg16_32_rm
 
   _xor_accum_immed8:
-    mov     <u32> fs:xxx_text,' rox'
+    mov     u32 ptr fs:xxx_text,' rox'
     jmp     _xxx_accum_immed8
 
   _xor_accum_immed16_32:
-    mov     <u32> fs:xxx_text,' rox'
+    mov     u32 ptr fs:xxx_text,' rox'
     jmp     _xxx_accum_immed16_32
 
   _xor_rm8_immed8:
-    mov     <u32> fs:xxx_text,' rox'
+    mov     u32 ptr fs:xxx_text,' rox'
     jmp     _xxx_rm8_immed8
 
   _xor_rm_immed:
-    mov     <u32> fs:xxx_text,' rox'
+    mov     u32 ptr fs:xxx_text,' rox'
     jmp     _xxx_rm_immed
 
   _sub_rm16_32_immed8:
-    mov     <u32> fs:xxx_text,' bus'
+    mov     u32 ptr fs:xxx_text,' bus'
     jmp     _xxx_rm16_32_immed8
 
   _xxx_rm_reg8:
@@ -4088,7 +4088,7 @@ x86_disassemble:
 
   _check_reg_80:
   // Check the REG portion of the Mod/Reg/RM byte
-    movzx   eax,<u8>  ds:[esi+1]
+    movzx   eax,u8 ptr ds:[esi+1]
     shr     eax,3
     and     eax,111b
     if (al == 000b)
@@ -4106,7 +4106,7 @@ x86_disassemble:
     
     } else if (al == 011b) {
       // It's SBB r/m8,imm8
-        mov     <u32> fs:xxx_text,' bbs'
+        mov     u32 ptr fs:xxx_text,' bbs'
         jmp     _xxx_rm8_immed8
     
     } else if (al == 100b) {
@@ -4115,12 +4115,12 @@ x86_disassemble:
     
     } else if (al == 101b) {
       // It's SUB r/m8,imm8
-        mov     <u32> fs:xxx_text,' bus'
+        mov     u32 ptr fs:xxx_text,' bus'
         jmp     _xxx_rm8_immed8
     
     } else if (al == 110b) {
       // It's XOR r/m8,imm8
-        mov     <u32> fs:xxx_text,' rox'
+        mov     u32 ptr fs:xxx_text,' rox'
         jmp     _xxx_rm8_immed8
     
     } else if (al == 111b) {
@@ -4131,7 +4131,7 @@ x86_disassemble:
 
   _check_reg_81:
   // Check the REG portion of the Mod/Reg/RM byte
-    movzx   eax,<u8>  ds:[esi+1]
+    movzx   eax,u8 ptr ds:[esi+1]
     shr     eax,3
     and     eax,111b
     if (al == 000b)
@@ -4153,7 +4153,7 @@ x86_disassemble:
     } else if (al == 011b) {
       // It's SBB r/m16,imm16
       // or   SBB r/m32,imm32
-        mov     <u32> fs:xxx_text,' bbs'
+        mov     u32 ptr fs:xxx_text,' bbs'
         jmp     _xxx_rm_immed
     
     } else if (al == 100b) {
@@ -4164,13 +4164,13 @@ x86_disassemble:
     } else if (al == 101b) {
       // It's SUB r/m16,imm16
       // or   SUB r/m32,imm32
-        mov     <u32> fs:xxx_text,' bus'
+        mov     u32 ptr fs:xxx_text,' bus'
         jmp     _xxx_rm_immed
     
     } else if (al == 110b) {
       // It's XOR r/m16,imm16
       // or   XOR r/m32,imm32
-        mov     <u32> fs:xxx_text,' rox'
+        mov     u32 ptr fs:xxx_text,' rox'
         jmp     _xxx_rm_immed
     
     } else if (al == 111b) {
@@ -4182,7 +4182,7 @@ x86_disassemble:
 
   _check_reg_82:
   // Check the REG portion of the Mod/Reg/RM byte
-    movzx   eax,<u8>  ds:[esi+1]
+    movzx   eax,u8 ptr ds:[esi+1]
     shr     eax,3
     and     eax,111b
 //    .IF (eax == 010b)
@@ -4191,7 +4191,7 @@ x86_disassemble:
 
   _check_reg_83:
   // Check the REG portion of the Mod/Reg/RM byte
-    movzx   eax,<u8>  ds:[esi+1]
+    movzx   eax,u8 ptr ds:[esi+1]
     shr     eax,3
     and     eax,111b
     if (al == 000b)
@@ -4213,7 +4213,7 @@ x86_disassemble:
     } else if (al == 011b) {
       // It's SBB r/m16,immed8
       // or   SBB r/m32,immed8
-        mov     <u32> fs:xxx_text,' bbs'
+        mov     u32 ptr fs:xxx_text,' bbs'
         jmp     _xxx_rm16_32_immed8
     
     } else if (al == 100b) {
@@ -4224,13 +4224,13 @@ x86_disassemble:
     } else if (al == 101b) {
       // It's SUB r/m16,immed8
       // or   SUB r/m32,immed8
-        mov     <u32> fs:xxx_text,' bus'
+        mov     u32 ptr fs:xxx_text,' bus'
         jmp     _xxx_rm16_32_immed8
     
     } else if (al == 110b) {
       // It's XOR r/m16,immed8
       // or   XOR r/m32,immed8
-        mov     <u32> fs:xxx_text,' rox'
+        mov     u32 ptr fs:xxx_text,' rox'
         jmp     _xxx_rm16_32_immed8
     
     } else {
@@ -4241,7 +4241,7 @@ x86_disassemble:
 
   _check_reg_8f:
   // Check the REG portion of the Mod/Reg/RM byte
-    movzx   eax,<u8>  ds:[esi+1]
+    movzx   eax,u8 ptr ds:[esi+1]
     shr     eax,3
     and     eax,111b
     if (al == 000b)
@@ -4253,7 +4253,7 @@ x86_disassemble:
 
   _check_reg_c0:
   // Check the REG portion of the Mod/Reg/RM byte
-    movzx   eax,<u8>  ds:[esi+1]
+    movzx   eax,u8 ptr ds:[esi+1]
     shr     eax,3
     and     eax,111b
     if (al == 000b)
@@ -4289,7 +4289,7 @@ x86_disassemble:
 
   _check_reg_c1:
   // Check the REG portion of the Mod/Reg/RM byte
-    movzx   eax,<u8>  ds:[esi+1]
+    movzx   eax,u8 ptr ds:[esi+1]
     shr     eax,3
     and     eax,111b
     if (al == 000b)
@@ -4332,7 +4332,7 @@ x86_disassemble:
 
   _check_reg_c6:
   // Check the REG portion of the Mod/Reg/RM byte
-    movzx   eax,<u8>  ds:[esi+1]
+    movzx   eax,u8 ptr ds:[esi+1]
     shr     eax,3
     and     eax,111b
     if (al == 000b)
@@ -4344,7 +4344,7 @@ x86_disassemble:
 
   _check_reg_c7:
   // Check the REG portion of the Mod/Reg/RM byte
-    movzx   eax,<u8>  ds:[esi+1]
+    movzx   eax,u8 ptr ds:[esi+1]
     shr     eax,3
     and     eax,111b
     if (al == 000b)
@@ -4356,7 +4356,7 @@ x86_disassemble:
 
   _check_reg_d0:
   // Check the REG portion of the Mod/Reg/RM byte
-    movzx   eax,<u8>  ds:[esi+1]
+    movzx   eax,u8 ptr ds:[esi+1]
     shr     eax,3
     and     eax,111b
     if (al == 000b)
@@ -4392,7 +4392,7 @@ x86_disassemble:
 
   _check_reg_d1:
   // Check the REG portion of the Mod/Reg/RM byte
-    movzx   eax,<u8>  ds:[esi+1]
+    movzx   eax,u8 ptr ds:[esi+1]
     shr     eax,3
     and     eax,111b
     if (al == 000b)
@@ -4435,7 +4435,7 @@ x86_disassemble:
 
   _check_reg_d2:
   // Check the REG portion of the Mod/Reg/RM byte
-    movzx   eax,<u8>  ds:[esi+1]
+    movzx   eax,u8 ptr ds:[esi+1]
     shr     eax,3
     and     eax,111b
     if (al == 000b)
@@ -4471,7 +4471,7 @@ x86_disassemble:
 
   _check_reg_d3:
   // Check the REG portion of the Mod/Reg/RM byte
-    movzx   eax,<u8>  ds:[esi+1]
+    movzx   eax,u8 ptr ds:[esi+1]
     shr     eax,3
     and     eax,111b
     if (al == 000b)
@@ -4514,7 +4514,7 @@ x86_disassemble:
 
   _check_reg_f6:
   // Check the REG portion of the Mod/Reg/RM byte
-    movzx   eax,<u8>  ds:[esi+1]
+    movzx   eax,u8 ptr ds:[esi+1]
     shr     eax,3
     and     eax,111b
     if (al == 000b)
@@ -4550,7 +4550,7 @@ x86_disassemble:
 
   _check_reg_f7:
   // Check the REG portion of the Mod/Reg/RM byte
-    movzx   eax,<u8>  ds:[esi+1]
+    movzx   eax,u8 ptr ds:[esi+1]
     shr     eax,3
     and     eax,111b
     if (al == 000b)
@@ -4593,7 +4593,7 @@ x86_disassemble:
 
   _check_reg_fe:
   // Check the REG portion of the Mod/Reg/RM byte
-    movzx   eax,<u8>  ds:[esi+1]
+    movzx   eax,u8 ptr ds:[esi+1]
     shr     eax,3
     and     eax,111b
     if (al== 000b)
@@ -4609,7 +4609,7 @@ x86_disassemble:
 
   _check_reg_ff:
   // Check the REG portion of the Mod/Reg/RM byte
-    movzx   eax,<u8>  ds:[esi+1]
+    movzx   eax,u8 ptr ds:[esi+1]
     shr     eax,3
     and     eax,111b
     if (al == 000b)
@@ -4651,7 +4651,7 @@ x86_disassemble:
     jmp    _unused
 
   _check_reg_0f00:
-    movzx   eax,<u8>  ds:[esi+2]
+    movzx   eax,u8 ptr ds:[esi+2]
     shr     eax,3
     and     eax,111b
     if (al == 000b)
@@ -4682,7 +4682,7 @@ x86_disassemble:
     jmp     _unused
 
   _check_reg_0f01:
-    movzx   eax,<u8>  ds:[esi+2]
+    movzx   eax,u8 ptr ds:[esi+2]
     shr     eax,3
     and     eax,111b
     if (al == 000b)
@@ -4719,7 +4719,7 @@ x86_disassemble:
 
   _check_reg_0fba:
   // Check the REG portion of the Mod/Reg/RM byte
-    movzx   eax,<u8>  ds:[esi+2]
+    movzx   eax,u8 ptr ds:[esi+2]
     shr     eax,3
     and     eax,111b
     if (al == 100b)
@@ -4747,7 +4747,7 @@ x86_disassemble:
 
   _check_reg_0f71:
   // Check the REG portion of the Mod/Reg/RM byte
-    movzx   eax,<u8>  ds:[esi+2]
+    movzx   eax,u8 ptr ds:[esi+2]
     shr     eax,3
     and     eax,111b
     if (al == 100b)
@@ -4759,7 +4759,7 @@ x86_disassemble:
 
   _check_reg_0f72:
   // Check the REG portion of the Mod/Reg/RM byte
-    movzx   eax,<u8>  ds:[esi+2]
+    movzx   eax,u8 ptr ds:[esi+2]
     shr     eax,3
     and     eax,111b
     if (al == 100b)
@@ -4771,7 +4771,7 @@ x86_disassemble:
 
   _check_reg_0fc7:
   // Check the REG portion of the Mod/Reg/RM byte
-    movzx   eax,<u8>  ds:[esi+2]
+    movzx   eax,u8 ptr ds:[esi+2]
     shr     eax,3
     and     eax,111b
     if (al == 001b)
@@ -4788,30 +4788,30 @@ x86_disassemble:
 
   _unused:
     @instr_bytes    1
-    mov     al,<u8>  ds:[esi]
+    mov     al,u8 ptr ds:[esi]
     convert_al_to_hex()
     mov     ebx,sizeof unknown_opcode - 2
-    mov     <u16> fs:unknown_opcode[ebx],ax
+    mov     u16 ptr fs:unknown_opcode[ebx],ax
     @instr_text     unknown_opcode, sizeof unknown_opcode
     jmp     store_instruction
 
   _fpu_unused:
     @instr_bytes    2
-    mov     al,<u8>  ds:[esi]
+    mov     al,u8 ptr ds:[esi]
     convert_al_to_hex()
     mov     ebx,sizeof fpu_unknown_opcode -5
-    mov     <u16> fs:fpu_unknown_opcode[ebx],ax
-    mov     al,<u8>  ds:[esi+1]
+    mov     u16 ptr fs:fpu_unknown_opcode[ebx],ax
+    mov     al,u8 ptr ds:[esi+1]
     convert_al_to_hex()
     mov     ebx,sizeof fpu_unknown_opcode -2
-    mov     <u16> fs:fpu_unknown_opcode[ebx],ax
+    mov     u16 ptr fs:fpu_unknown_opcode[ebx],ax
     @instr_text     fpu_unknown_opcode, sizeof fpu_unknown_opcode
     jmp     store_instruction
 
 
 ;; STORE_THE_INSTRUCTION
   store_instruction:
-    mov     edi,<u32> [ebp+12]
+    mov     edi,u32 ptr [ebp+12]
 ;; Opening parenthesis
     mov     al,'('
     stosb
@@ -4847,12 +4847,12 @@ x86_disassemble:
     if (fs:prefix_bytes != 0)
     {
         mov     ecx,fs:prefix_bytes
-        mov     ebx,<u32> [ebp+16]                           // Get esi from the stack
+        mov     ebx,u32 ptr [ebp+16]                           // Get esi from the stack
       // Right now, ds:[ebx] - far ptr to start of code instruction
       //                 ecx - number of bytes
-        add     <u32> [ebp+36],ecx
+        add     u32 ptr [ebp+36],ecx
       @@:
-        mov     al,<u8>  ds:[ebx]
+        mov     al,u8 ptr ds:[ebx]
         convert_al_to_hex()
         stosw
         inc     ebx
@@ -4865,9 +4865,9 @@ x86_disassemble:
     mov     ecx,fs:instruction_bytes
     mov     ebx,fs:instruction_offset
   // Right now, ds:[ebx] - far ptr to start of actual instruction (after prefix bytes)
-    add     <u32> [ebp+36],ecx
+    add     u32 ptr [ebp+36],ecx
   @@:
-    mov     al,<u8>  ds:[ebx]
+    mov     al,u8 ptr ds:[ebx]
     convert_al_to_hex()
     stosw
     inc     ebx
@@ -4883,7 +4883,7 @@ x86_disassemble:
       // Right now, ds:[ebx] - far ptr to start of code instruction
       //                 ecx - number of bytes
       @@:
-        mov     al,<u8>  ds:[ebx]
+        mov     al,u8 ptr ds:[ebx]
         convert_al_to_hex()
         stosw
         inc     ebx
@@ -4900,7 +4900,7 @@ x86_disassemble:
       // Right now, ds:[ebx] - far ptr to start of code instruction
       //                 ecx - number of bytes
       @@:
-        mov     al,<u8>  ds:[ebx]
+        mov     al,u8 ptr ds:[ebx]
         convert_al_to_hex()
         stosw
         inc     ebx
@@ -4917,7 +4917,7 @@ x86_disassemble:
       // Right now, fs:[ebx] - far ptr to start of displacement text in expression
       //                 ecx - number of bytes
       @@:
-        mov     al,<u8>  fs:[ebx]
+        mov     al,u8 ptr fs:[ebx]
         stosb
         inc     ebx
         loop    @B
@@ -4928,7 +4928,7 @@ x86_disassemble:
 ;; Immediate in instruction
     if (fs:immediate_bytes != 0)
     {
-        mov     eax,<u32> fs:immediate_data
+        mov     eax,u32 ptr fs:immediate_data
         convert_and_store_eax_to_hex()
     }
     mov     al,'|'
@@ -4947,7 +4947,7 @@ x86_disassemble:
   // Right now, fs:[ebx] - far ptr to the instruction text
   //                 ecx - number of characters in
   @@:
-    mov     al,<u8>  fs:[ebx]
+    mov     al,u8 ptr fs:[ebx]
     stosb
     inc     ebx
     loop    @B
@@ -4962,7 +4962,7 @@ x86_disassemble:
       // Right now, fs:[ebx] - far ptr to the instruction parameters text
       //                 ecx - number of characters in
       @@:
-        mov     al,<u8>  fs:[ebx]
+        mov     al,u8 ptr fs:[ebx]
         stosb
         inc     ebx
         loop    @B
@@ -5232,7 +5232,7 @@ function extract_mod_reg_rm    NEAR
     mov     edi,fs:parameters_text_offset
     add     edi,fs:parameters_text_length
 
-    mov     al,<u8>  ds:[esi]
+    mov     al,u8 ptr ds:[esi]
     inc     esi
     inc     fs:instruction_bytes
 
@@ -5429,7 +5429,7 @@ function extract_mod_rm    NEAR
     mov     edi,fs:parameters_text_offset
     add     edi,fs:parameters_text_length
 
-    mov     al,<u8>  ds:[esi]
+    mov     al,u8 ptr ds:[esi]
     inc     esi
     inc     fs:instruction_bytes
 
@@ -5696,7 +5696,7 @@ function store_gp_register    NEAR
               // It's bh
                 mov     ax,'hb'
             }
-            mov     <u16> fs:[edi],ax
+            mov     u16 ptr fs:[edi],ax
             add     fs:parameters_text_length,2
             add     edi,2
         
@@ -5740,7 +5740,7 @@ function store_gp_register    NEAR
               // It's bh
                 mov     ax,'id'
             }
-            mov     <u16> fs:[edi],ax
+            mov     u16 ptr fs:[edi],ax
             add     fs:parameters_text_length,2
             add     edi,2
         
@@ -5779,9 +5779,9 @@ function store_gp_register    NEAR
               // It's bh
                 mov     eax,'id?'
             }
-            mov     <u16> fs:[edi],ax
+            mov     u16 ptr fs:[edi],ax
             shr     eax,16
-            mov     <u8>  fs:[edi+2],al
+            mov     u8 ptr fs:[edi+2],al
             add     fs:parameters_text_length,3
             add     edi,3
         
@@ -5825,9 +5825,9 @@ function store_gp_register    NEAR
               // It's bh
                 mov     eax,'ide'
             }
-            mov     <u16> fs:[edi],ax
+            mov     u16 ptr fs:[edi],ax
             shr     eax,16
-            mov     <u8>  fs:[edi+2],al
+            mov     u8 ptr fs:[edi+2],al
             add     fs:parameters_text_length,3
             add     edi,3
         }
@@ -5862,7 +5862,7 @@ function store_gp_register    NEAR
           // ?s
             mov     ax,'s?'
         }
-        mov     <u16> fs:[edi],ax
+        mov     u16 ptr fs:[edi],ax
         add     edi,2
         add     fs:parameters_text_length,2
     
@@ -5871,31 +5871,31 @@ function store_gp_register    NEAR
         if (eax == _CONTROL_REGS)
         {
           // CR0-7
-            mov     <u16> fs:[edi],'rc'
+            mov     u16 ptr fs:[edi],'rc'
         
         } else if (eax == _DEBUG_REGS) {
           // DR0-7
-            mov     <u16> fs:[edi],'rd'
+            mov     u16 ptr fs:[edi],'rd'
         
         } else if (eax == _TEST_REGS) {
           // TR0-7
-            mov     <u16> fs:[edi],'rt'
+            mov     u16 ptr fs:[edi],'rt'
         
         } else if (eax == _STx_REGS) {
-            mov     <u16> fs:[edi],'ts'
+            mov     u16 ptr fs:[edi],'ts'
         
         } else if (eax == _MMX_REGS) {
-            mov     <u16> fs:[edi],'mm'
+            mov     u16 ptr fs:[edi],'mm'
         
         } else if (eax == _XMM_REGS) {
-            mov     <u16> fs:[edi],'mx'
+            mov     u16 ptr fs:[edi],'mx'
         
         } else {
           // Who knows ... something else
-            mov     <u16> fs:[edi],'??'
+            mov     u16 ptr fs:[edi],'??'
         }
         add     bl,'0'
-        mov     <u8>  fs:[edi+2],bl
+        mov     u8 ptr fs:[edi+2],bl
         add     fs:parameters_text_length,3
         add     edi,3
     }
@@ -5926,25 +5926,25 @@ function store_displacement_registers    NEAR
         if (bl == 000b)
         {
           // It's eax
-            mov     <u32> fs:[edi+0],'xae'
+            mov     u32 ptr fs:[edi+0],'xae'
             add     fs:parameters_text_length,3
             add     edi,3
         
         } else if (bl == 001b) {
           // It's ecx
-            mov     <u32> fs:[edi+0],'xce'
+            mov     u32 ptr fs:[edi+0],'xce'
             add     fs:parameters_text_length,3
             add     edi,3
         
         } else if (bl == 010b) {
           // It's edx
-            mov     <u32> fs:[edi+0],'xde'
+            mov     u32 ptr fs:[edi+0],'xde'
             add     fs:parameters_text_length,3
             add     edi,3
         
         } else if (bl == 011b) {
           // It's ebx
-            mov     <u32> fs:[edi+0],'xbe'
+            mov     u32 ptr fs:[edi+0],'xbe'
             add     fs:parameters_text_length,3
             add     edi,3
         
@@ -5965,13 +5965,13 @@ function store_displacement_registers    NEAR
         
         } else if (bl == 110b) {
           // It's esi
-            mov     <u32> fs:[edi],'ise'
+            mov     u32 ptr fs:[edi],'ise'
             add     fs:parameters_text_length,3
             add     edi,3
         
         } else {
           // It's edi
-            mov     <u32> fs:[edi],'ide'
+            mov     u32 ptr fs:[edi],'ide'
             add     fs:parameters_text_length,3
             add     edi,3
         }
@@ -5995,53 +5995,53 @@ function store_16_bit_displacement_registers    NEAR
     if (bl == 000b)
     {
       // It's si+bx
-        mov     <u32> fs:[edi],'b+is'
-        mov     <u8>  fs:[edi+4],'x'
+        mov     u32 ptr fs:[edi],'b+is'
+        mov     u8 ptr fs:[edi+4],'x'
         add     fs:parameters_text_length,5
         add     edi,5
     
     } else if (bl == 001b) {
       // It's di+bx
-        mov     <u32> fs:[edi],'b+id'
-        mov     <u8>  fs:[edi+4],'x'
+        mov     u32 ptr fs:[edi],'b+id'
+        mov     u8 ptr fs:[edi+4],'x'
         add     fs:parameters_text_length,5
         add     edi,5
     
     } else if (bl == 010b) {
       // It's si+bp
-        mov     <u32> fs:[edi],'b+is'
-        mov     <u8>  fs:[edi+4],'p'
+        mov     u32 ptr fs:[edi],'b+is'
+        mov     u8 ptr fs:[edi+4],'p'
         add     fs:parameters_text_length,5
         add     edi,5
     
     } else if (bl == 011b) {
       // It's di+bp
-        mov     <u32> fs:[edi],'b+id'
-        mov     <u8>  fs:[edi+4],'p'
+        mov     u32 ptr fs:[edi],'b+id'
+        mov     u8 ptr fs:[edi+4],'p'
         add     fs:parameters_text_length,5
         add     edi,5
     
     } else if (bl == 100b) {
       // It's si
-        mov     <u16> fs:[edi],'is'
+        mov     u16 ptr fs:[edi],'is'
         add     fs:parameters_text_length,2
         add     edi,2
     
     } else if (bl == 101b) {
       // It's di
-        mov     <u16> fs:[edi],'id'
+        mov     u16 ptr fs:[edi],'id'
         add     fs:parameters_text_length,2
         add     edi,2
     
     } else if (bl == 110b) {
       // It's bp
-        mov     <u16> fs:[edi],'pb'
+        mov     u16 ptr fs:[edi],'pb'
         add     fs:parameters_text_length,2
         add     edi,2
     
     } else {
       // It's bx
-        mov     <u16> fs:[edi],'xb'
+        mov     u16 ptr fs:[edi],'xb'
         add     fs:parameters_text_length,2
         add     edi,2
     }
@@ -6071,25 +6071,25 @@ function store_disp_displacement_registers    NEAR
         if (bl == 000b)
         {
           // It's eax
-            mov     <u32> fs:[edi+0],'xae'
+            mov     u32 ptr fs:[edi+0],'xae'
             add     fs:parameters_text_length,3
             add     edi,3
         
         } else if (bl == 001b) {
           // It's ecx
-            mov     <u32> fs:[edi+0],'xce'
+            mov     u32 ptr fs:[edi+0],'xce'
             add     fs:parameters_text_length,3
             add     edi,3
         
         } else if (bl == 010b) {
           // It's edx
-            mov     <u32> fs:[edi+0],'xde'
+            mov     u32 ptr fs:[edi+0],'xde'
             add     fs:parameters_text_length,3
             add     edi,3
         
         } else if (bl == 011b) {
           // It's ebx
-            mov     <u32> fs:[edi+0],'xbe'
+            mov     u32 ptr fs:[edi+0],'xbe'
             add     fs:parameters_text_length,3
             add     edi,3
         
@@ -6106,19 +6106,19 @@ function store_disp_displacement_registers    NEAR
         
         } else if (bl == 101b) {
           // It's ebp
-            mov     <u32> fs:[edi],'pbe'
+            mov     u32 ptr fs:[edi],'pbe'
             add     fs:parameters_text_length,3
             add     edi,3
         
         } else if (bl == 110b) {
           // It's esi
-            mov     <u32> fs:[edi],'ise'
+            mov     u32 ptr fs:[edi],'ise'
             add     fs:parameters_text_length,3
             add     edi,3
         
         } else {
           // It's edi
-            mov     <u32> fs:[edi],'ide'
+            mov     u32 ptr fs:[edi],'ide'
             add     fs:parameters_text_length,3
             add     edi,3
         }
@@ -6156,23 +6156,23 @@ function store_displacement_registers_sib    NEAR
     if (dl == 000b)
     {
       // It's eax+(scale*index)
-        mov     <u32> fs:[edi],'+xae'
+        mov     u32 ptr fs:[edi],'+xae'
     
     } else if (dl == 001b) {
       // It's ecx+(scale*index)
-        mov     <u32> fs:[edi],'+xce'
+        mov     u32 ptr fs:[edi],'+xce'
     
     } else if (dl == 010b) {
       // It's edx+(scale*index)
-        mov     <u32> fs:[edi],'+xde'
+        mov     u32 ptr fs:[edi],'+xde'
     
     } else if (dl == 011b) {
       // It's ebx+(scale*index)
-        mov     <u32> fs:[edi],'+xbe'
+        mov     u32 ptr fs:[edi],'+xbe'
     
     } else if (dl == 100b) {
       // It's esp+(scale*index)
-        mov     <u32> fs:[edi],'+pse'
+        mov     u32 ptr fs:[edi],'+pse'
     
     } else if (dl == 101b) {
       // It's (scale*index)+disp32
@@ -6180,11 +6180,11 @@ function store_displacement_registers_sib    NEAR
     
     } else if (dl == 110b) {
       // It's esi+(scale*index)
-        mov     <u32> fs:[edi],'+ise'
+        mov     u32 ptr fs:[edi],'+ise'
     
     } else {
       // It's edi+(scale*index)
-        mov     <u32> fs:[edi],'+ide'
+        mov     u32 ptr fs:[edi],'+ide'
     }
     add     edi,4
     add     fs:parameters_text_length,4
@@ -6194,19 +6194,19 @@ function store_displacement_registers_sib    NEAR
     if (dh == 000b)
     {
       // eax
-        mov     <u32> fs:[edi],'xae'
+        mov     u32 ptr fs:[edi],'xae'
     
     } else if (dh == 001b) {
       // ecx
-        mov     <u32> fs:[edi],'xce'
+        mov     u32 ptr fs:[edi],'xce'
     
     } else if (dh == 010b) {
       // edx
-        mov     <u32> fs:[edi],'xde'
+        mov     u32 ptr fs:[edi],'xde'
     
     } else if (dh == 011b) {
       // ebx
-        mov     <u32> fs:[edi],'xbe'
+        mov     u32 ptr fs:[edi],'xbe'
     
     } else if (dh == 100b) {
       // no index
@@ -6216,15 +6216,15 @@ function store_displacement_registers_sib    NEAR
     
     } else if (dh == 101b) {
       // ebp
-        mov     <u32> fs:[edi],'pbe'
+        mov     u32 ptr fs:[edi],'pbe'
     
     } else if (dh == 110b) {
       // esi
-        mov     <u32> fs:[edi],'ise'
+        mov     u32 ptr fs:[edi],'ise'
     
     } else {
       // edi
-        mov     <u32> fs:[edi],'ide'
+        mov     u32 ptr fs:[edi],'ide'
     }
     add     fs:parameters_text_length,3
     add     edi,3
@@ -6235,15 +6235,15 @@ function store_displacement_registers_sib    NEAR
         if (bl == 01b)
         {
           // It's *2
-            mov     <u16> fs:[edi],'2*'
+            mov     u16 ptr fs:[edi],'2*'
         
         } else if (bl == 10b) {
           // It's *4
-            mov     <u16> fs:[edi],'4*'
+            mov     u16 ptr fs:[edi],'4*'
         
         } else {
           // It's *8
-            mov     <u16> fs:[edi],'8*'
+            mov     u16 ptr fs:[edi],'8*'
         }
         add     fs:parameters_text_length,2
         add     edi,2
@@ -6292,35 +6292,35 @@ function store_disp_displacement_registers_sib    NEAR
     if (dl == 000b)
     {
       // It's eax+(scale*index)
-        mov     <u32> fs:[edi],'+xae'
+        mov     u32 ptr fs:[edi],'+xae'
     
     } else if (dl == 001b) {
       // It's ecx+(scale*index)
-        mov     <u32> fs:[edi],'+xce'
+        mov     u32 ptr fs:[edi],'+xce'
     
     } else if (dl == 010b) {
       // It's edx+(scale*index)
-        mov     <u32> fs:[edi],'+xde'
+        mov     u32 ptr fs:[edi],'+xde'
     
     } else if (dl == 011b) {
       // It's ebx+(scale*index)
-        mov     <u32> fs:[edi],'+xbe'
+        mov     u32 ptr fs:[edi],'+xbe'
     
     } else if (dl == 100b) {
       // It's esp+(scale*index)
-        mov     <u32> fs:[edi],'+pse'
+        mov     u32 ptr fs:[edi],'+pse'
     
     } else if (dl == 101b) {
       // It's ebp+(scale*index)
-        mov     <u32> fs:[edi],'+pbe'
+        mov     u32 ptr fs:[edi],'+pbe'
     
     } else if (dl == 110b) {
       // It's esi+(scale*index)
-        mov     <u32> fs:[edi],'+ise'
+        mov     u32 ptr fs:[edi],'+ise'
     
     } else {
       // It's edi+(scale*index)
-        mov     <u32> fs:[edi],'+ide'
+        mov     u32 ptr fs:[edi],'+ide'
     }
     add     edi,4
     add     fs:parameters_text_length,4
@@ -6329,19 +6329,19 @@ function store_disp_displacement_registers_sib    NEAR
     if (dh == 000b)
     {
       // eax
-        mov     <u32> fs:[edi],'xae'
+        mov     u32 ptr fs:[edi],'xae'
     
     } else if (dh == 001b) {
       // ecx
-        mov     <u32> fs:[edi],'xce'
+        mov     u32 ptr fs:[edi],'xce'
     
     } else if (dh == 010b) {
       // edx
-        mov     <u32> fs:[edi],'xde'
+        mov     u32 ptr fs:[edi],'xde'
     
     } else if (dh == 011b) {
       // ebx
-        mov     <u32> fs:[edi],'xbe'
+        mov     u32 ptr fs:[edi],'xbe'
     
     } else if (dh == 100b) {
       // no index
@@ -6351,15 +6351,15 @@ function store_disp_displacement_registers_sib    NEAR
     
     } else if (dh == 101b) {
       // ebp
-        mov     <u32> fs:[edi],'pbe'
+        mov     u32 ptr fs:[edi],'pbe'
     
     } else if (dh == 110b) {
       // esi
-        mov     <u32> fs:[edi],'ise'
+        mov     u32 ptr fs:[edi],'ise'
     
     } else {
       // edi
-        mov     <u32> fs:[edi],'ide'
+        mov     u32 ptr fs:[edi],'ide'
     }
     add     fs:parameters_text_length,3
     add     edi,3
@@ -6370,15 +6370,15 @@ function store_disp_displacement_registers_sib    NEAR
         if (bl == 01b)
         {
           // It's *2
-            mov     <u16> fs:[edi],'2*'
+            mov     u16 ptr fs:[edi],'2*'
         
         } else if (bl == 10b) {
           // It's *4
-            mov     <u16> fs:[edi],'4*'
+            mov     u16 ptr fs:[edi],'4*'
         
         } else {
           // It's *8
-            mov     <u16> fs:[edi],'8*'
+            mov     u16 ptr fs:[edi],'8*'
         }
         add     fs:parameters_text_length,2
         add     edi,2
@@ -6540,7 +6540,7 @@ function store_segment_override    NEAR
           // GS:
             mov     ax,'sg'
         }
-        mov     <u16> fs:[edi],ax
+        mov     u16 ptr fs:[edi],ax
         add     fs:parameters_text_length,2
         add     edi,2
         store_colon()
@@ -6562,22 +6562,22 @@ function store_32_bit_value    NEAR
 // Upon exit:    fs:[edi] - is updated
 //
     push    eax
-    mov     al,<u8>  ds:[esi+3]
+    mov     al,u8 ptr ds:[esi+3]
     convert_al_to_hex()
-    mov     <u16> fs:[edi+0],ax
-    mov     al,<u8>  ds:[esi+2]
+    mov     u16 ptr fs:[edi+0],ax
+    mov     al,u8 ptr ds:[esi+2]
     convert_al_to_hex()
-    mov     <u16> fs:[edi+2],ax
-    mov     al,<u8>  ds:[esi+1]
+    mov     u16 ptr fs:[edi+2],ax
+    mov     al,u8 ptr ds:[esi+1]
     convert_al_to_hex()
-    mov     <u16> fs:[edi+4],ax
-    mov     al,<u8>  ds:[esi+0]
+    mov     u16 ptr fs:[edi+4],ax
+    mov     al,u8 ptr ds:[esi+0]
     convert_al_to_hex()
-    mov     <u16> fs:[edi+6],ax
+    mov     u16 ptr fs:[edi+6],ax
     add     edi,8
     add     fs:parameters_text_length,8
-    mov     eax,<u32> ds:[esi]
-    mov     <u32> fs:displacement_data,eax
+    mov     eax,u32 ptr ds:[esi]
+    mov     u32 ptr fs:displacement_data,eax
     add     esi,4
     add     fs:instruction_bytes,4
     pop     eax
@@ -6597,16 +6597,16 @@ function store_16_bit_value    NEAR
 // Upon exit:    fs:[edi] - is updated
 //
     push    eax
-    mov     al,<u8>  ds:[esi+1]
+    mov     al,u8 ptr ds:[esi+1]
     convert_al_to_hex()
-    mov     <u16> fs:[edi+0],ax
-    mov     al,<u8>  ds:[esi+0]
+    mov     u16 ptr fs:[edi+0],ax
+    mov     al,u8 ptr ds:[esi+0]
     convert_al_to_hex()
-    mov     <u16> fs:[edi+2],ax
+    mov     u16 ptr fs:[edi+2],ax
     add     edi,4
     add     fs:parameters_text_length,4
-    movzx   eax,<u16> ds:[esi]
-    mov     <u32> fs:displacement_data,eax
+    movzx   eax,u16 ptr ds:[esi]
+    mov     u32 ptr fs:displacement_data,eax
     add     esi,2
     add     fs:instruction_bytes,2
     pop     eax
@@ -6626,13 +6626,13 @@ function store_8_bit_value    NEAR
 // Upon exit:    fs:[edi] - is updated
 //
     push    eax
-    mov     al,<u8>  ds:[esi]
+    mov     al,u8 ptr ds:[esi]
     convert_al_to_hex()
-    mov     <u16> fs:[edi+0],ax
+    mov     u16 ptr fs:[edi+0],ax
     add     edi,2
     add     fs:parameters_text_length,2
-    movzx   eax,<u8>  ds:[esi]
-    mov     <u32> fs:displacement_data,eax
+    movzx   eax,u8 ptr ds:[esi]
+    mov     u32 ptr fs:displacement_data,eax
     inc     esi
     inc     fs:instruction_bytes
     pop     eax
@@ -6676,7 +6676,7 @@ function store_32_bit_signed_value    NEAR
 // Upon exit:    fs:[edi] - is updated
 //
     push    eax
-    mov     eax,<u32> ds:[esi]
+    mov     eax,u32 ptr ds:[esi]
     if (eax >= 80000000h || eax == 0)
     {
       // It's negative
@@ -6684,42 +6684,42 @@ function store_32_bit_signed_value    NEAR
         mov     ebx,eax
         neg     ebx
         rol     ebx,8
-        mov     <u8>  fs:[edi+0],'-'
+        mov     u8 ptr fs:[edi+0],'-'
         mov     al,bl
         convert_al_to_hex()
-        mov     <u16> fs:[edi+1],ax
+        mov     u16 ptr fs:[edi+1],ax
         rol     ebx,8
         mov     al,bl
         convert_al_to_hex()
-        mov     <u16> fs:[edi+3],ax
+        mov     u16 ptr fs:[edi+3],ax
         rol     ebx,8
         mov     al,bl
         convert_al_to_hex()
-        mov     <u16> fs:[edi+5],ax
+        mov     u16 ptr fs:[edi+5],ax
         rol     ebx,8
         mov     al,bl
         pop     ebx
     
     } else {
       // It's positive
-        mov     <u8>  fs:[edi+0],'+'
-        mov     al,<u8>  ds:[esi+3]
+        mov     u8 ptr fs:[edi+0],'+'
+        mov     al,u8 ptr ds:[esi+3]
         convert_al_to_hex()
-        mov     <u16> fs:[edi+1],ax
-        mov     al,<u8>  ds:[esi+2]
+        mov     u16 ptr fs:[edi+1],ax
+        mov     al,u8 ptr ds:[esi+2]
         convert_al_to_hex()
-        mov     <u16> fs:[edi+3],ax
-        mov     al,<u8>  ds:[esi+1]
+        mov     u16 ptr fs:[edi+3],ax
+        mov     al,u8 ptr ds:[esi+1]
         convert_al_to_hex()
-        mov     <u16> fs:[edi+5],ax
-        mov     al,<u8>  ds:[esi+0]
+        mov     u16 ptr fs:[edi+5],ax
+        mov     al,u8 ptr ds:[esi+0]
     }
     convert_al_to_hex()
-    mov     <u16> fs:[edi+7],ax
+    mov     u16 ptr fs:[edi+7],ax
     add     edi,9
     add     fs:parameters_text_length,9
-    mov     eax,<u32> ds:[esi]
-    mov     <u32> fs:displacement_data,eax
+    mov     eax,u32 ptr ds:[esi]
+    mov     u32 ptr fs:displacement_data,eax
     add     esi,4
     add     fs:instruction_bytes,4
     pop     eax
@@ -6747,40 +6747,40 @@ function store_signed_dword_in_eax    NEAR
         push    ebx
         mov     ebx,eax
         neg     ebx
-        mov     <u8>  fs:[edi+0],'-'
+        mov     u8 ptr fs:[edi+0],'-'
         rol     ebx,8
         mov     al,bl
         convert_al_to_hex()
-        mov     <u16> fs:[edi+1],ax
+        mov     u16 ptr fs:[edi+1],ax
         rol     ebx,8
         mov     al,bl
         convert_al_to_hex()
-        mov     <u16> fs:[edi+3],ax
+        mov     u16 ptr fs:[edi+3],ax
         rol     ebx,8
         mov     al,bl
         convert_al_to_hex()
-        mov     <u16> fs:[edi+5],ax
+        mov     u16 ptr fs:[edi+5],ax
         pop     ebx
-        neg     <u32> [esp]
+        neg     u32 ptr [esp]
     
     } else {
       // It's positive
-        mov     <u8>  fs:[edi+0],'+'
-        mov     al,<u8>  [esp+3]
+        mov     u8 ptr fs:[edi+0],'+'
+        mov     al,u8 ptr [esp+3]
         convert_al_to_hex()
-        mov     <u16> fs:[edi+1],ax
-        mov     al,<u8>  [esp+2]
+        mov     u16 ptr fs:[edi+1],ax
+        mov     al,u8 ptr [esp+2]
         mov     al,ah
         convert_al_to_hex()
-        mov     <u16> fs:[edi+3],ax
-        mov     al,<u8>  [esp+1]
+        mov     u16 ptr fs:[edi+3],ax
+        mov     al,u8 ptr [esp+1]
         mov     al,ah
         convert_al_to_hex()
-        mov     <u16> fs:[edi+5],ax
+        mov     u16 ptr fs:[edi+5],ax
     }
     pop     eax
     convert_al_to_hex()
-    mov     <u16> fs:[edi+7],ax
+    mov     u16 ptr fs:[edi+7],ax
     add     edi,9
     ret
 }
@@ -6799,7 +6799,7 @@ function store_16_bit_signed_value    NEAR
 //
     push    eax
 
-    mov     ax,<u16> ds:[esi]
+    mov     ax,u16 ptr ds:[esi]
     if (ax >= 8000h || ax == 0)
     {
       // It's negative
@@ -6807,29 +6807,29 @@ function store_16_bit_signed_value    NEAR
         mov     ebx,eax
         shl     ebx,16
         neg     ebx
-        mov     <u8>  fs:[edi+0],'-'
+        mov     u8 ptr fs:[edi+0],'-'
         rol     ebx,8
         mov     al,bl
         convert_al_to_hex()
-        mov     <u16> fs:[edi+1],ax
+        mov     u16 ptr fs:[edi+1],ax
         rol     ebx,8
         mov     al,bl
         pop     ebx
     
     } else {
       // It's positive
-        mov     <u8>  fs:[edi+0],'+'
-        mov     al,<u8>  ds:[esi+1]
+        mov     u8 ptr fs:[edi+0],'+'
+        mov     al,u8 ptr ds:[esi+1]
         convert_al_to_hex()
-        mov     <u16> fs:[edi+1],ax
-        mov     al,<u8>  ds:[esi+0]
+        mov     u16 ptr fs:[edi+1],ax
+        mov     al,u8 ptr ds:[esi+0]
     }
     convert_al_to_hex()
-    mov     <u16> fs:[edi+3],ax
+    mov     u16 ptr fs:[edi+3],ax
     add     edi,5
     add     fs:parameters_text_length,5
-    movzx   eax,<u16> ds:[esi]
-    mov     <u32> fs:displacement_data,eax
+    movzx   eax,u16 ptr ds:[esi]
+    mov     u32 ptr fs:displacement_data,eax
     add     esi,2
     add     fs:instruction_bytes,2
 
@@ -6853,10 +6853,10 @@ function store_signed_word_in_ax    NEAR
     {
       // It's negative
         push    eax
-        mov     <u8>  fs:[edi+0],'-'
+        mov     u8 ptr fs:[edi+0],'-'
         neg     al
         convert_al_to_hex()
-        mov     <u16> fs:[edi+1],ax
+        mov     u16 ptr fs:[edi+1],ax
         pop     eax
         mov     al,ah
         neg     al
@@ -6864,15 +6864,15 @@ function store_signed_word_in_ax    NEAR
     } else {
       // It's positive
         push    eax
-        mov     <u8>  fs:[edi+0],'+'
-        mov     al,<u8>  ds:[esi+1]
+        mov     u8 ptr fs:[edi+0],'+'
+        mov     al,u8 ptr ds:[esi+1]
         convert_al_to_hex()
-        mov     <u16> fs:[edi+1],ax
+        mov     u16 ptr fs:[edi+1],ax
         pop     eax
         mov     al,ah
     }
     convert_al_to_hex()
-    mov     <u16> fs:[edi+3],ax
+    mov     u16 ptr fs:[edi+3],ax
     add     edi,5
 
     pop     eax
@@ -6894,7 +6894,7 @@ function store_8_bit_signed_value    NEAR
     push    eax
     push    ebx
 
-    mov     al,<u8>  ds:[esi]
+    mov     al,u8 ptr ds:[esi]
     if (al >= 80h || al == 0)
     {
       // It's negative
@@ -6906,11 +6906,11 @@ function store_8_bit_signed_value    NEAR
         mov     bl,'+'
     }
     convert_al_to_hex()
-    mov     <u8>  fs:[edi+0],bl
-    mov     <u16> fs:[edi+1],ax
+    mov     u8 ptr fs:[edi+0],bl
+    mov     u16 ptr fs:[edi+1],ax
     add     edi,3
     add     fs:parameters_text_length,3
-    movzx   eax,<u8>  ds:[esi]
+    movzx   eax,u8 ptr ds:[esi]
     mov     fs:displacement_data,eax
     inc     esi
     inc     fs:instruction_bytes
@@ -6961,15 +6961,15 @@ function store_string    NEAR
   // [esp+08] - offset to string
   // [esp+04] - calling ip
   // [esp+00] - eax
-    xchg    esi,<u32> [esp+8]
+    xchg    esi,u32 ptr [esp+8]
     while (byte ptr fs:[esi] != 0)
     {
-        mov     al,<u8>  fs:[esi]
-        mov     <u8>  fs:[edi],al
+        mov     al,u8 ptr fs:[esi]
+        mov     u8 ptr fs:[edi],al
         inc     edi
         inc     esi
     }
-    xchg    <u32> [esp+8],esi
+    xchg    u32 ptr [esp+8],esi
 
     pop     eax
     ret 4
@@ -6986,7 +6986,7 @@ function store_comma    NEAR
 //
 // Upon exit:    It's stored
 //
-    mov     <u8>  fs:[edi],','
+    mov     u8 ptr fs:[edi],','
     inc     edi
     inc     fs:parameters_text_length
     ret
@@ -7003,7 +7003,7 @@ function store_comma_one    NEAR
 //
 // Upon exit:    It's stored
 //
-    mov     <u16> fs:[edi],'1,'
+    mov     u16 ptr fs:[edi],'1,'
     add     edi,2
     add     fs:parameters_text_length,2
     ret
@@ -7020,8 +7020,8 @@ function store_comma_cl    NEAR
 //
 // Upon exit:    It's stored
 //
-    mov     <u16> fs:[edi],'c,'
-    mov     <u8>  fs:[edi+2],'l'
+    mov     u16 ptr fs:[edi],'c,'
+    mov     u8 ptr fs:[edi+2],'l'
     add     edi,3
     add     fs:parameters_text_length,3
     ret
@@ -7038,7 +7038,7 @@ function store_colon    NEAR
 //
 // Upon exit:    It's stored
 //
-    mov     <u8>  fs:[edi],':'
+    mov     u8 ptr fs:[edi],':'
     inc     edi
     inc     fs:parameters_text_length
     ret
@@ -7055,7 +7055,7 @@ function store_open_bracket    NEAR
 //
 // Upon exit:    It's stored
 //
-    mov     <u8>  fs:[edi],'['
+    mov     u8 ptr fs:[edi],'['
     inc     edi
     inc     fs:parameters_text_length
     ret
@@ -7072,7 +7072,7 @@ function store_close_bracket    NEAR
 //
 // Upon exit:    It's stored
 //
-    mov     <u8>  fs:[edi],']'
+    mov     u8 ptr fs:[edi],']'
     inc     edi
     inc     fs:parameters_text_length
     ret
@@ -7159,7 +7159,7 @@ function x86_simplify_disassembly
         if (edx == 16)
         {
           // It seems to be in the right format, begin copying
-            mov     ebx,<u32> [esp+16]
+            mov     ebx,u32 ptr [esp+16]
             if (eax == 0)
             {
               // They don't want prefix bytes, so we just copy the instruction
@@ -7173,8 +7173,8 @@ function x86_simplify_disassembly
             }
             while (eax > 0 && ecx > 0)
             {
-                mov     dl,<u8>  es:[edi+esi]
-                mov     <u8>  fs:[ebx],dl
+                mov     dl,u8 ptr es:[edi+esi]
+                mov     u8 ptr fs:[ebx],dl
                 inc     ebx
                 inc     esi
                 dec     eax
@@ -7182,7 +7182,7 @@ function x86_simplify_disassembly
                 if (esi == gs:prefix_bytes_end)
                 {
                   // We're switching over to instruction bytes
-                    mov     <u8>  fs:[ebx],':'
+                    mov     u8 ptr fs:[ebx],':'
                     inc     ebx
                     dec     eax
                     dec     ecx
@@ -7203,10 +7203,10 @@ function x86_simplify_disassembly
               // There's enough room for us to add ".." or ">"
                 if (dword ptr [esp+28] >= 2)
                 {
-                    mov     <u16> fs:[ebx-2],'..'
+                    mov     u16 ptr fs:[ebx-2],'..'
                 
                 } else {
-                    mov     <u8>  fs:[ebx-1],'>'
+                    mov     u8 ptr fs:[ebx-1],'>'
                 }
                 jmp     prefix_instruction_with_pad_space
             }
@@ -7215,7 +7215,7 @@ function x86_simplify_disassembly
           // Now we have to stick spaces between the end of the bytes and where the instruction will go
             while (eax > 0 && ecx > 0)
             {
-                mov     <u8>  fs:[ebx],' '
+                mov     u8 ptr fs:[ebx],' '
                 inc     ebx
                 dec     eax
                 dec     ecx
@@ -7226,7 +7226,7 @@ function x86_simplify_disassembly
             if (dword ptr [esp+28] != 0 && ecx >= 1)
             {
               // There were opcodes, we need to add a space
-                mov     <u8>  fs:[ebx],' '
+                mov     u8 ptr fs:[ebx],' '
                 inc     ebx
                 dec     ecx
             }
@@ -7237,8 +7237,8 @@ function x86_simplify_disassembly
             xor     edx,edx
             while (ecx > 0 && esi < gs:instruction_text_end)
             {
-                mov     al,<u8>  es:[edi+esi]
-                mov     <u8>  fs:[ebx],al
+                mov     al,u8 ptr es:[edi+esi]
+                mov     u8 ptr fs:[ebx],al
                 inc     ebx
                 inc     esi
                 inc     edx
@@ -7248,7 +7248,7 @@ function x86_simplify_disassembly
             if (edx >= 7 && ecx > 0)
             {
               // The instruction is the maximum length (like cmpxchg)
-                mov     <u8>  fs:[ebx],' '
+                mov     u8 ptr fs:[ebx],' '
                 inc     edx
                 inc     ebx
                 dec     ecx
@@ -7257,7 +7257,7 @@ function x86_simplify_disassembly
           // Now, put spaces out to the 8th position from the start of the instruction
             while (ecx > 0 && edx < 7)
             {
-                mov     <u8>  fs:[ebx],' '
+                mov     u8 ptr fs:[ebx],' '
                 inc     ebx
                 dec     ecx
                 inc     edx
@@ -7267,8 +7267,8 @@ function x86_simplify_disassembly
             mov     esi,gs:parameters_text_start
             while (ecx > 0 && esi < gs:parameters_text_end)
             {
-                mov     dl,<u8>  es:[edi+esi]
-                mov     <u8>  fs:[ebx],dl
+                mov     dl,u8 ptr es:[edi+esi]
+                mov     u8 ptr fs:[ebx],dl
                 inc     ebx
                 inc     esi
                 dec     ecx
@@ -7277,13 +7277,13 @@ function x86_simplify_disassembly
           // Now, put spaces out to the end of whatever string length they specified
             while (ecx > 0)
             {
-                mov     <u8>  fs:[ebx],' '
+                mov     u8 ptr fs:[ebx],' '
                 inc     ebx
                 dec     ecx
             }
 
           // NULL terminate it
-            mov     <u8>  fs:[ebx],0
+            mov     u8 ptr fs:[ebx],0
 
             clc
         
@@ -8036,32 +8036,32 @@ function X86_fpu_opcode
     mov     ebx,offset temp_buffer
     while (ecx > 0)
     {
-        mov     al,<u8>  ds:[esi]
-        mov     <u8>  ds:[ebx],al
+        mov     al,u8 ptr ds:[esi]
+        mov     u8 ptr ds:[ebx],al
         inc     esi
         inc     ebx
         dec     ecx
     }
-    mov     <u8>  ds:[ebx],32
+    mov     u8 ptr ds:[ebx],32
     inc     ebx
 
   // Now, copy the trailing information
     while (byte ptr ds:[edi] != 0)
     {
-        mov     al,<u8>  ds:[edi]
-        mov     <u8>  ds:[ebx],al
+        mov     al,u8 ptr ds:[edi]
+        mov     u8 ptr ds:[ebx],al
         inc     edi
         inc     ebx
     }
-    mov     <u8>  ds:[ebx],0                                     // NULL-terminate (just in case)
+    mov     u8 ptr ds:[ebx],0                                     // NULL-terminate (just in case)
 
   // Now, determine the length
     mov     esi,offset temp_buffer
     sub     ebx,esi
     mov     ecx,ebx
 
-    mov     <u32> [esp+24],ecx
-    mov     <u32> [esp+04],esi
+    mov     u32 ptr [esp+24],ecx
+    mov     u32 ptr [esp+04],esi
     popad
     retf
 }

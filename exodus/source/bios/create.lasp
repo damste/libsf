@@ -33,52 +33,52 @@
         iTASK_locate_handle()                                 // Returns, carry?, gs:[edi] - far ptr to TASK data structure
         if (carry?)
         {
-            mov     <u32> [esp+28],_TASK_NOT_FOUND
+            mov     u32 ptr [esp+28],_TASK_NOT_FOUND
             jmp     quit
         }
 
 
        // Get the pointer to this task's object structure
-        mov     es,<u16> gs:[edi+_TASK_ENTRY_SELECTOR_OBJECTS]
+        mov     es,u16 ptr gs:[edi+_TASK_ENTRY_SELECTOR_OBJECTS]
         xor     edi,edi
       // Right now, es:[edi] - far ptr to the base of this task's object
       //            ds:[esi] - far ptr to the user's object definition area
-        mov     <u32> [ebp-04],-1
-        mov     <u32> [ebp-08],-1
-        mov     <u32> [ebp-12],-1
+        mov     u32 ptr [ebp-04],-1
+        mov     u32 ptr [ebp-08],-1
+        mov     u32 ptr [ebp-12],-1
 
 
        // Find out where we're adding this base object
-        mov     edx,<u32> es:[edi+_OBJECT_HEADER_FIRST_BASE_OBJECT]
-        mov     ebx,<u32> es:[edi+_OBJECT_HEADER_NEXT_OBJECT]
+        mov     edx,u32 ptr es:[edi+_OBJECT_HEADER_FIRST_BASE_OBJECT]
+        mov     ebx,u32 ptr es:[edi+_OBJECT_HEADER_NEXT_OBJECT]
         if (edx == -1)
         {
           // There isn't currently a base object for this task
           // So, we raise the flag indicating we need to set one (if creation is successful)
-            mov     <u32> [ebp-04],ebx
+            mov     u32 ptr [ebp-04],ebx
         
         } else {
           // We have to traverse the base objects that already exist to find the last one
-            mov     edx,<u32> es:[edi+_OBJECT_HEADER_FIRST_BASE_OBJECT]
+            mov     edx,u32 ptr es:[edi+_OBJECT_HEADER_FIRST_BASE_OBJECT]
             while (dword ptr es:[edx+_OBJECT_NEXT_BASE_OBJECT] != -1)
             {
                 mov     edx,es:[edx+_OBJECT_NEXT_BASE_OBJECT]
             }
           // Right now, es:[edx] - far ptr to the last base object
-            mov     <u32> [ebp-08],ebx
-            mov     <u32> [ebp-12],edx
+            mov     u32 ptr [ebp-08],ebx
+            mov     u32 ptr [ebp-12],edx
         }
         mov     edx,ebx
       // Right now, es:[edx] - far ptr to the slot for this base object
 
 
        // Initialize common header fields
-        mov     <u32> es:[edx+_OBJECT_NEXT_BASE_OBJECT],-1
-        mov     <u32> es:[edx+_OBJECT_FIRST_OBJECT],-1
+        mov     u32 ptr es:[edx+_OBJECT_NEXT_BASE_OBJECT],-1
+        mov     u32 ptr es:[edx+_OBJECT_FIRST_OBJECT],-1
 
 
        // Call appropriate base object initialization routine
-        mov     al,<u8>  ds:[esi]
+        mov     al,u8 ptr ds:[esi]
         if (al == _GROUPING)
         {
             invOBJECT_create_base_object_grouping()
@@ -109,7 +109,7 @@
         
         } else {
           // It's an unknown object type
-            mov     <u32> [esp+28],_UNKNOWN_OBJECT_TYPE
+            mov     u32 ptr [esp+28],_UNKNOWN_OBJECT_TYPE
             stc
         }
         jc      quit
@@ -119,17 +119,17 @@
         if (dword ptr [ebp-4] != -1)
         {
           // Set the first base object pointer
-            mov     ebx,<u32> [ebp-4]
-            mov     <u32> es:[_OBJECT_HEADER_FIRST_BASE_OBJECT],ebx
+            mov     ebx,u32 ptr [ebp-4]
+            mov     u32 ptr es:[_OBJECT_HEADER_FIRST_BASE_OBJECT],ebx
         }
         if (dword ptr [ebp-12] != -1)
         {
           // Set the first base object pointer
-            mov     ebx,<u32> [ebp-8]
-            mov     edx,<u32> [ebp-12]
-            mov     <u32> es:[edx+_OBJECT_NEXT_BASE_OBJECT],ebx
+            mov     ebx,u32 ptr [ebp-8]
+            mov     edx,u32 ptr [ebp-12]
+            mov     u32 ptr es:[edx+_OBJECT_NEXT_BASE_OBJECT],ebx
         }
-        add     <u32> es:[_OBJECT_HEADER_NEXT_OBJECT],_BO_LENGTH
+        add     u32 ptr es:[_OBJECT_HEADER_NEXT_OBJECT],_BO_LENGTH
         clc
 
 
@@ -172,66 +172,66 @@
     // Upon exit:    carry? - SET if error
     //                        CLEAR - the object was created
     //
-        mov     <u8>  es:[edx+_BASE_OBJECT_TYPE],_DESKTOP
+        mov     u8 ptr es:[edx+_BASE_OBJECT_TYPE],_DESKTOP
 
       // Headers unique to _DESKTOP items
       // Required headers
-        mov     ebx,<u32> ds:[esi+_BO_LD_TOP]
-        mov     <u32> es:[edx+_BO_D_TOP],ebx
-        mov     ebx,<u32> ds:[esi+_BO_LD_LEFT]
-        mov     <u32> es:[edx+_BO_D_LEFT],ebx
-        mov     ebx,<u32> ds:[esi+_BO_LD_WIDTH]
-        mov     <u32> es:[edx+_BO_D_WIDTH],ebx
-        mov     ebx,<u32> ds:[esi+_BO_LD_HEIGHT]
-        mov     <u32> es:[edx+_BO_D_HEIGHT],ebx
+        mov     ebx,u32 ptr ds:[esi+_BO_LD_TOP]
+        mov     u32 ptr es:[edx+_BO_D_TOP],ebx
+        mov     ebx,u32 ptr ds:[esi+_BO_LD_LEFT]
+        mov     u32 ptr es:[edx+_BO_D_LEFT],ebx
+        mov     ebx,u32 ptr ds:[esi+_BO_LD_WIDTH]
+        mov     u32 ptr es:[edx+_BO_D_WIDTH],ebx
+        mov     ebx,u32 ptr ds:[esi+_BO_LD_HEIGHT]
+        mov     u32 ptr es:[edx+_BO_D_HEIGHT],ebx
 
       // Default initialization
         mov     eax,-1
         xor     ecx,ecx
-        mov     <u8>  es:[edx+_BO_D_ENABLED],1
-        mov     <u8>  es:[edx+_BO_D_VISIBLE],cl
-        mov     <u8>  es:[edx+_BO_D_BACKGROUND+_OBJECT_RED],cl
-        mov     <u8>  es:[edx+_BO_D_BACKGROUND+_OBJECT_GREEN],cl
-        mov     <u8>  es:[edx+_BO_D_BACKGROUND+_OBJECT_BLUE],cl
-        mov     <u8>  es:[edx+_BO_D_ICON_HORIZONTAL],20
-        mov     <u8>  es:[edx+_BO_D_ICON_VERTICAL],20
-        mov     <u8>  es:[edx+_BO_D_MENU_POSITION],6
-        mov     <u16> es:[edx+_BO_D_MENU_HEIGHT],30
-        mov     <u32> es:[edx+_BO_D_WALLPAPER],eax
-        mov     <u32> es:[edx+_BO_D_MISC_1],eax
-        mov     <u32> es:[edx+_BO_D_MISC_2],eax
-        mov     <u32> es:[edx+_BO_D_MISC_3],eax
-        mov     <u32> es:[edx+_BO_D_MISC_4],eax
-        mov     <u8>  es:[edx+_BO_D_MISC_FLAG_1],al
-        mov     <u8>  es:[edx+_BO_D_MISC_FLAG_2],al
-        mov     <u8>  es:[edx+_BO_D_MISC_FLAG_3],al
+        mov     u8 ptr es:[edx+_BO_D_ENABLED],1
+        mov     u8 ptr es:[edx+_BO_D_VISIBLE],cl
+        mov     u8 ptr es:[edx+_BO_D_BACKGROUND+_OBJECT_RED],cl
+        mov     u8 ptr es:[edx+_BO_D_BACKGROUND+_OBJECT_GREEN],cl
+        mov     u8 ptr es:[edx+_BO_D_BACKGROUND+_OBJECT_BLUE],cl
+        mov     u8 ptr es:[edx+_BO_D_ICON_HORIZONTAL],20
+        mov     u8 ptr es:[edx+_BO_D_ICON_VERTICAL],20
+        mov     u8 ptr es:[edx+_BO_D_MENU_POSITION],6
+        mov     u16 ptr es:[edx+_BO_D_MENU_HEIGHT],30
+        mov     u32 ptr es:[edx+_BO_D_WALLPAPER],eax
+        mov     u32 ptr es:[edx+_BO_D_MISC_1],eax
+        mov     u32 ptr es:[edx+_BO_D_MISC_2],eax
+        mov     u32 ptr es:[edx+_BO_D_MISC_3],eax
+        mov     u32 ptr es:[edx+_BO_D_MISC_4],eax
+        mov     u8 ptr es:[edx+_BO_D_MISC_FLAG_1],al
+        mov     u8 ptr es:[edx+_BO_D_MISC_FLAG_2],al
+        mov     u8 ptr es:[edx+_BO_D_MISC_FLAG_3],al
         add     edx,_BO_D_ACTIVATE
-        mov     <u32> es:[edx-_BO_D_ACTIVATE+_BO_D_ACTIVATE],eax
-        mov     <u32> es:[edx-_BO_D_ACTIVATE+_BO_D_CLICK_BOTH_SINGLE],eax
-        mov     <u32> es:[edx-_BO_D_ACTIVATE+_BO_D_CLICK_BOTH_DOUBLE],eax
-        mov     <u32> es:[edx-_BO_D_ACTIVATE+_BO_D_CLICK_LEFT_SINGLE],eax
-        mov     <u32> es:[edx-_BO_D_ACTIVATE+_BO_D_CLICK_LEFT_DOUBLE],eax
-        mov     <u32> es:[edx-_BO_D_ACTIVATE+_BO_D_CLICK_LEFT_DOWN],eax
-        mov     <u32> es:[edx-_BO_D_ACTIVATE+_BO_D_CLICK_LEFT_UP],eax
-        mov     <u32> es:[edx-_BO_D_ACTIVATE+_BO_D_CLICK_RIGHT_SINGLE],eax
-        mov     <u32> es:[edx-_BO_D_ACTIVATE+_BO_D_CLICK_RIGHT_DOUBLE],eax
-        mov     <u32> es:[edx-_BO_D_ACTIVATE+_BO_D_CLICK_RIGHT_DOWN],eax
-        mov     <u32> es:[edx-_BO_D_ACTIVATE+_BO_D_CLICK_RIGHT_UP],eax
-        mov     <u32> es:[edx-_BO_D_ACTIVATE+_BO_D_DROPPED_INTO_LEFT],eax
-        mov     <u32> es:[edx-_BO_D_ACTIVATE+_BO_D_DROPPED_INTO_RIGHT],eax
-        mov     <u32> es:[edx-_BO_D_ACTIVATE+_BO_D_DRAG_LEFT_START],eax
-        mov     <u32> es:[edx-_BO_D_ACTIVATE+_BO_D_DRAG_LEFT_STOP],eax
-        mov     <u32> es:[edx-_BO_D_ACTIVATE+_BO_D_DRAG_RIGHT_START],eax
-        mov     <u32> es:[edx-_BO_D_ACTIVATE+_BO_D_DRAG_RIGHT_STOP],eax
-        mov     <u32> es:[edx-_BO_D_ACTIVATE+_BO_D_FOCUS_GOT],eax
-        mov     <u32> es:[edx-_BO_D_ACTIVATE+_BO_D_FOCUS_LOST],eax
-        mov     <u32> es:[edx-_BO_D_ACTIVATE+_BO_D_FOCUS_SET],eax
-        mov     <u32> es:[edx-_BO_D_ACTIVATE+_BO_D_HOVER],eax
-        mov     <u32> es:[edx-_BO_D_ACTIVATE+_BO_D_KEYSTROKE],eax
-        mov     <u32> es:[edx-_BO_D_ACTIVATE+_BO_D_WHEN_CREATED],eax
-        mov     <u32> es:[edx-_BO_D_ACTIVATE+_BO_D_WHEN_DESTROYED],eax
-        mov     <u32> es:[edx-_BO_D_ACTIVATE+_BO_D_REQUESTOR],eax
-        mov     <u32> es:[edx-_BO_D_ACTIVATE+_BO_D_REFRESH],eax
+        mov     u32 ptr es:[edx-_BO_D_ACTIVATE+_BO_D_ACTIVATE],eax
+        mov     u32 ptr es:[edx-_BO_D_ACTIVATE+_BO_D_CLICK_BOTH_SINGLE],eax
+        mov     u32 ptr es:[edx-_BO_D_ACTIVATE+_BO_D_CLICK_BOTH_DOUBLE],eax
+        mov     u32 ptr es:[edx-_BO_D_ACTIVATE+_BO_D_CLICK_LEFT_SINGLE],eax
+        mov     u32 ptr es:[edx-_BO_D_ACTIVATE+_BO_D_CLICK_LEFT_DOUBLE],eax
+        mov     u32 ptr es:[edx-_BO_D_ACTIVATE+_BO_D_CLICK_LEFT_DOWN],eax
+        mov     u32 ptr es:[edx-_BO_D_ACTIVATE+_BO_D_CLICK_LEFT_UP],eax
+        mov     u32 ptr es:[edx-_BO_D_ACTIVATE+_BO_D_CLICK_RIGHT_SINGLE],eax
+        mov     u32 ptr es:[edx-_BO_D_ACTIVATE+_BO_D_CLICK_RIGHT_DOUBLE],eax
+        mov     u32 ptr es:[edx-_BO_D_ACTIVATE+_BO_D_CLICK_RIGHT_DOWN],eax
+        mov     u32 ptr es:[edx-_BO_D_ACTIVATE+_BO_D_CLICK_RIGHT_UP],eax
+        mov     u32 ptr es:[edx-_BO_D_ACTIVATE+_BO_D_DROPPED_INTO_LEFT],eax
+        mov     u32 ptr es:[edx-_BO_D_ACTIVATE+_BO_D_DROPPED_INTO_RIGHT],eax
+        mov     u32 ptr es:[edx-_BO_D_ACTIVATE+_BO_D_DRAG_LEFT_START],eax
+        mov     u32 ptr es:[edx-_BO_D_ACTIVATE+_BO_D_DRAG_LEFT_STOP],eax
+        mov     u32 ptr es:[edx-_BO_D_ACTIVATE+_BO_D_DRAG_RIGHT_START],eax
+        mov     u32 ptr es:[edx-_BO_D_ACTIVATE+_BO_D_DRAG_RIGHT_STOP],eax
+        mov     u32 ptr es:[edx-_BO_D_ACTIVATE+_BO_D_FOCUS_GOT],eax
+        mov     u32 ptr es:[edx-_BO_D_ACTIVATE+_BO_D_FOCUS_LOST],eax
+        mov     u32 ptr es:[edx-_BO_D_ACTIVATE+_BO_D_FOCUS_SET],eax
+        mov     u32 ptr es:[edx-_BO_D_ACTIVATE+_BO_D_HOVER],eax
+        mov     u32 ptr es:[edx-_BO_D_ACTIVATE+_BO_D_KEYSTROKE],eax
+        mov     u32 ptr es:[edx-_BO_D_ACTIVATE+_BO_D_WHEN_CREATED],eax
+        mov     u32 ptr es:[edx-_BO_D_ACTIVATE+_BO_D_WHEN_DESTROYED],eax
+        mov     u32 ptr es:[edx-_BO_D_ACTIVATE+_BO_D_REQUESTOR],eax
+        mov     u32 ptr es:[edx-_BO_D_ACTIVATE+_BO_D_REFRESH],eax
         sub     edx,_BO_D_ACTIVATE
         add     esi,_BO_LD_LENGTH
 
@@ -239,7 +239,7 @@
         mov     bl,_PROPERTY_START
         while (byte ptr ds:[esi] != _OBJECT_END)
         {
-            mov     al,<u8>  ds:[esi]
+            mov     al,u8 ptr ds:[esi]
             if (al == _PROPERTY_START || al == _EVENT_START)
             {
                 mov     bl,al
@@ -250,181 +250,181 @@
                   // They're setting a property, which one?
                     if (al == _DP_ENABLED)
                     {
-                        mov     al,<u8>  ds:[esi+_BO_LD_ENABLED]
-                        mov     <u8>  es:[edx+_BO_D_ENABLED],al
+                        mov     al,u8 ptr ds:[esi+_BO_LD_ENABLED]
+                        mov     u8 ptr es:[edx+_BO_D_ENABLED],al
                         add     esi,_BO_LD_ENABLED_SIZE
                     
                     } else if (al == _DP_VISIBLE) {
-                        mov     al,<u8>  ds:[esi+_BO_LD_VISIBLE]
-                        mov     <u8>  es:[edx+_BO_D_VISIBLE],al
+                        mov     al,u8 ptr ds:[esi+_BO_LD_VISIBLE]
+                        mov     u8 ptr es:[edx+_BO_D_VISIBLE],al
                         add     esi,_BO_LD_VISIBLE_SIZE
                     
                     } else if (al == _DP_BACKGROUND) {
-                        mov     al,<u8>  ds:[esi+_BO_LD_BACKGROUND_RED]
-                        mov     <u8>  es:[edx+_BO_D_BACKGROUND+_OBJECT_RED],al
-                        mov     al,<u8>  ds:[esi+_BO_LD_BACKGROUND_GREEN]
-                        mov     <u8>  es:[edx+_BO_D_BACKGROUND+_OBJECT_GREEN],al
-                        mov     al,<u8>  ds:[esi+_BO_LD_BACKGROUND_BLUE]
-                        mov     <u8>  es:[edx+_BO_D_BACKGROUND+_OBJECT_BLUE],al
+                        mov     al,u8 ptr ds:[esi+_BO_LD_BACKGROUND_RED]
+                        mov     u8 ptr es:[edx+_BO_D_BACKGROUND+_OBJECT_RED],al
+                        mov     al,u8 ptr ds:[esi+_BO_LD_BACKGROUND_GREEN]
+                        mov     u8 ptr es:[edx+_BO_D_BACKGROUND+_OBJECT_GREEN],al
+                        mov     al,u8 ptr ds:[esi+_BO_LD_BACKGROUND_BLUE]
+                        mov     u8 ptr es:[edx+_BO_D_BACKGROUND+_OBJECT_BLUE],al
                         add     esi,_BO_LD_BACKGROUND_SIZE
                     
                     } else if (al == _DP_ICON_HORIZONTAL) {
-                        mov     al,<u8>  ds:[esi+_BO_LD_ICON_HORIZONTAL]
-                        mov     <u8>  es:[edx+_BO_D_ICON_HORIZONTAL],al
+                        mov     al,u8 ptr ds:[esi+_BO_LD_ICON_HORIZONTAL]
+                        mov     u8 ptr es:[edx+_BO_D_ICON_HORIZONTAL],al
                         add     esi,_BO_LD_ICON_HORIZONTAL_SIZE
                     
                     } else if (al == _DP_ICON_VERTICAL) {
-                        mov     al,<u8>  ds:[esi+_BO_LD_ICON_VERTICAL]
-                        mov     <u8>  es:[edx+_BO_D_ICON_VERTICAL],al
+                        mov     al,u8 ptr ds:[esi+_BO_LD_ICON_VERTICAL]
+                        mov     u8 ptr es:[edx+_BO_D_ICON_VERTICAL],al
                         add     esi,_BO_LD_ICON_VERTICAL_SIZE
                     
                     } else if (al == _DP_MENU_POSITION) {
-                        mov     al,<u8>  ds:[esi+_BO_LD_MENU_POSITION]
-                        mov     <u8>  es:[edx+_BO_D_MENU_POSITION],al
+                        mov     al,u8 ptr ds:[esi+_BO_LD_MENU_POSITION]
+                        mov     u8 ptr es:[edx+_BO_D_MENU_POSITION],al
                         add     esi,_BO_LD_MENU_POSITION_SIZE
                     
                     } else if (al == _DP_MENU_HEIGHT) {
-                        mov     al,<u8>  ds:[esi+_BO_LD_MENU_HEIGHT]
-                        mov     <u8>  es:[edx+_BO_D_MENU_HEIGHT],al
+                        mov     al,u8 ptr ds:[esi+_BO_LD_MENU_HEIGHT]
+                        mov     u8 ptr es:[edx+_BO_D_MENU_HEIGHT],al
                         add     esi,_BO_LD_MENU_HEIGHT_SIZE
                     
                     } else if (al == _DP_MENU_AUTOHIDE) {
-                        mov     al,<u8>  ds:[esi+_BO_LD_MENU_AUTOHIDE]
-                        mov     <u8>  es:[edx+_BO_D_MENU_AUTOHIDE],al
+                        mov     al,u8 ptr ds:[esi+_BO_LD_MENU_AUTOHIDE]
+                        mov     u8 ptr es:[edx+_BO_D_MENU_AUTOHIDE],al
                         add     esi,_BO_LD_MENU_AUTOHIDE_SIZE
                     
                     } else if (al == _DP_MISC_1) {
-                        mov     al,<u8>  ds:[esi+_BO_LD_MISC_1]
-                        mov     <u8>  es:[edx+_BO_D_MISC_1],al
+                        mov     al,u8 ptr ds:[esi+_BO_LD_MISC_1]
+                        mov     u8 ptr es:[edx+_BO_D_MISC_1],al
                         add     esi,_BO_LD_MISC_1_SIZE
                     
                     } else if (al == _DP_MISC_2) {
-                        mov     al,<u8>  ds:[esi+_BO_LD_MISC_2]
-                        mov     <u8>  es:[edx+_BO_D_MISC_2],al
+                        mov     al,u8 ptr ds:[esi+_BO_LD_MISC_2]
+                        mov     u8 ptr es:[edx+_BO_D_MISC_2],al
                         add     esi,_BO_LD_MISC_2_SIZE
                     
                     } else if (al == _DP_MISC_3) {
-                        mov     al,<u8>  ds:[esi+_BO_LD_MISC_3]
-                        mov     <u8>  es:[edx+_BO_D_MISC_3],al
+                        mov     al,u8 ptr ds:[esi+_BO_LD_MISC_3]
+                        mov     u8 ptr es:[edx+_BO_D_MISC_3],al
                         add     esi,_BO_LD_MISC_3_SIZE
                     
                     } else if (al == _DP_MISC_4) {
-                        mov     al,<u8>  ds:[esi+_BO_LD_MISC_4]
-                        mov     <u8>  es:[edx+_BO_D_MISC_4],al
+                        mov     al,u8 ptr ds:[esi+_BO_LD_MISC_4]
+                        mov     u8 ptr es:[edx+_BO_D_MISC_4],al
                         add     esi,_BO_LD_MISC_4_SIZE
                     
                     } else if (al == _DP_MISC_FLAG_1) {
-                        mov     al,<u8>  ds:[esi+_BO_LD_MISC_FLAG_1]
-                        mov     <u8>  es:[edx+_BO_D_MISC_FLAG_1],al
+                        mov     al,u8 ptr ds:[esi+_BO_LD_MISC_FLAG_1]
+                        mov     u8 ptr es:[edx+_BO_D_MISC_FLAG_1],al
                         add     esi,_BO_LD_MISC_FLAG_1_SIZE
                     
                     } else if (al == _DP_MISC_FLAG_2) {
-                        mov     al,<u8>  ds:[esi+_BO_LD_MISC_FLAG_2]
-                        mov     <u8>  es:[edx+_BO_D_MISC_FLAG_2],al
+                        mov     al,u8 ptr ds:[esi+_BO_LD_MISC_FLAG_2]
+                        mov     u8 ptr es:[edx+_BO_D_MISC_FLAG_2],al
                         add     esi,_BO_LD_MISC_FLAG_2_SIZE
                     
                     } else if (al == _DP_MISC_FLAG_3) {
-                        mov     al,<u8>  ds:[esi+_BO_LD_MISC_FLAG_3]
-                        mov     <u8>  es:[edx+_BO_D_MISC_FLAG_3],al
+                        mov     al,u8 ptr ds:[esi+_BO_LD_MISC_FLAG_3]
+                        mov     u8 ptr es:[edx+_BO_D_MISC_FLAG_3],al
                         add     esi,_BO_LD_MISC_FLAG_3_SIZE
                     
                     } else if (al == _DP_WALLPAPER) {
-                        mov     al,<u8>  ds:[esi+_BO_LD_WALLPAPER]
-                        mov     <u8>  es:[edx+_BO_D_WALLPAPER],al
+                        mov     al,u8 ptr ds:[esi+_BO_LD_WALLPAPER]
+                        mov     u8 ptr es:[edx+_BO_D_WALLPAPER],al
                         add     esi,_BO_LD_WALLPAPER_SIZE
                     
                     } else {
                       // Unknown property, abort
-                        mov     <u32> [esp+28],_UNKNOWN_OBJECT_PROPERTY
+                        mov     u32 ptr [esp+28],_UNKNOWN_OBJECT_PROPERTY
                         stc
                         jmp     quit
                     }
                 
                 } else {
                   // They're setting an event, which one?
-                    mov     ecx,<u32> ds:[esi+1]
+                    mov     ecx,u32 ptr ds:[esi+1]
                     if (al == _DE_ACTIVATE)
                     {
-                        mov     <u32> es:[edx+_BO_D_ACTIVATE],ecx
+                        mov     u32 ptr es:[edx+_BO_D_ACTIVATE],ecx
                     
                     } else if (al == _DE_CLICK_BOTH_SINGLE) {
-                        mov     <u32> es:[edx+_BO_D_CLICK_BOTH_SINGLE],ecx
+                        mov     u32 ptr es:[edx+_BO_D_CLICK_BOTH_SINGLE],ecx
                     
                     } else if (al == _DE_CLICK_BOTH_DOUBLE) {
-                        mov     <u32> es:[edx+_BO_D_CLICK_BOTH_DOUBLE],ecx
+                        mov     u32 ptr es:[edx+_BO_D_CLICK_BOTH_DOUBLE],ecx
                     
                     } else if (al == _DE_CLICK_LEFT_SINGLE) {
-                        mov     <u32> es:[edx+_BO_D_CLICK_LEFT_SINGLE],ecx
+                        mov     u32 ptr es:[edx+_BO_D_CLICK_LEFT_SINGLE],ecx
                     
                     } else if (al == _DE_CLICK_LEFT_DOUBLE) {
-                        mov     <u32> es:[edx+_BO_D_CLICK_LEFT_DOUBLE],ecx
+                        mov     u32 ptr es:[edx+_BO_D_CLICK_LEFT_DOUBLE],ecx
                     
                     } else if (al == _DE_CLICK_LEFT_DOWN) {
-                        mov     <u32> es:[edx+_BO_D_CLICK_LEFT_DOWN],ecx
+                        mov     u32 ptr es:[edx+_BO_D_CLICK_LEFT_DOWN],ecx
                     
                     } else if (al == _DE_CLICK_LEFT_UP) {
-                        mov     <u32> es:[edx+_BO_D_CLICK_LEFT_UP],ecx
+                        mov     u32 ptr es:[edx+_BO_D_CLICK_LEFT_UP],ecx
                     
                     } else if (al == _DE_CLICK_RIGHT_SINGLE) {
-                        mov     <u32> es:[edx+_BO_D_CLICK_RIGHT_SINGLE],ecx
+                        mov     u32 ptr es:[edx+_BO_D_CLICK_RIGHT_SINGLE],ecx
                     
                     } else if (al == _DE_CLICK_RIGHT_DOUBLE) {
-                        mov     <u32> es:[edx+_BO_D_CLICK_RIGHT_DOUBLE],ecx
+                        mov     u32 ptr es:[edx+_BO_D_CLICK_RIGHT_DOUBLE],ecx
                     
                     } else if (al == _DE_CLICK_RIGHT_DOWN) {
-                        mov     <u32> es:[edx+_BO_D_CLICK_RIGHT_DOWN],ecx
+                        mov     u32 ptr es:[edx+_BO_D_CLICK_RIGHT_DOWN],ecx
                     
                     } else if (al == _DE_CLICK_RIGHT_UP) {
-                        mov     <u32> es:[edx+_BO_D_CLICK_RIGHT_UP],ecx
+                        mov     u32 ptr es:[edx+_BO_D_CLICK_RIGHT_UP],ecx
                     
                     } else if (al == _DE_DROPPED_INTO_LEFT) {
-                        mov     <u32> es:[edx+_BO_D_DROPPED_INTO_LEFT],ecx
+                        mov     u32 ptr es:[edx+_BO_D_DROPPED_INTO_LEFT],ecx
                     
                     } else if (al == _DE_DROPPED_INTO_RIGHT) {
-                        mov     <u32> es:[edx+_BO_D_DROPPED_INTO_RIGHT],ecx
+                        mov     u32 ptr es:[edx+_BO_D_DROPPED_INTO_RIGHT],ecx
                     
                     } else if (al == _DE_DRAG_LEFT_START) {
-                        mov     <u32> es:[edx+_BO_D_DRAG_LEFT_START],ecx
+                        mov     u32 ptr es:[edx+_BO_D_DRAG_LEFT_START],ecx
                     
                     } else if (al == _DE_DRAG_LEFT_STOP) {
-                        mov     <u32> es:[edx+_BO_D_DRAG_LEFT_STOP],ecx
+                        mov     u32 ptr es:[edx+_BO_D_DRAG_LEFT_STOP],ecx
                     
                     } else if (al == _DE_DRAG_RIGHT_START) {
-                        mov     <u32> es:[edx+_BO_D_DRAG_RIGHT_START],ecx
+                        mov     u32 ptr es:[edx+_BO_D_DRAG_RIGHT_START],ecx
                     
                     } else if (al == _DE_DRAG_RIGHT_STOP) {
-                        mov     <u32> es:[edx+_BO_D_DRAG_RIGHT_STOP],ecx
+                        mov     u32 ptr es:[edx+_BO_D_DRAG_RIGHT_STOP],ecx
                     
                     } else if (al == _DE_FOCUS_GOT) {
-                        mov     <u32> es:[edx+_BO_D_FOCUS_GOT],ecx
+                        mov     u32 ptr es:[edx+_BO_D_FOCUS_GOT],ecx
                     
                     } else if (al == _DE_FOCUS_LOST) {
-                        mov     <u32> es:[edx+_BO_D_FOCUS_LOST],ecx
+                        mov     u32 ptr es:[edx+_BO_D_FOCUS_LOST],ecx
                     
                     } else if (al == _DE_FOCUS_SET) {
-                        mov     <u32> es:[edx+_BO_D_FOCUS_SET],ecx
+                        mov     u32 ptr es:[edx+_BO_D_FOCUS_SET],ecx
                     
                     } else if (al == _DE_HOVER) {
-                        mov     <u32> es:[edx+_BO_D_HOVER],ecx
+                        mov     u32 ptr es:[edx+_BO_D_HOVER],ecx
                     
                     } else if (al == _DE_KEYSTROKE) {
-                        mov     <u32> es:[edx+_BO_D_KEYSTROKE],ecx
+                        mov     u32 ptr es:[edx+_BO_D_KEYSTROKE],ecx
                     
                     } else if (al == _DE_WHEN_CREATED) {
-                        mov     <u32> es:[edx+_BO_D_WHEN_CREATED],ecx
+                        mov     u32 ptr es:[edx+_BO_D_WHEN_CREATED],ecx
                     
                     } else if (al == _DE_WHEN_DESTROYED) {
-                        mov     <u32> es:[edx+_BO_D_WHEN_DESTROYED],ecx
+                        mov     u32 ptr es:[edx+_BO_D_WHEN_DESTROYED],ecx
                     
                     } else if (al == _DE_REQUESTOR) {
-                        mov     <u32> es:[edx+_BO_D_REQUESTOR],ecx
+                        mov     u32 ptr es:[edx+_BO_D_REQUESTOR],ecx
                     
                     } else if (al == _DE_REFRESH) {
-                        mov     <u32> es:[edx+_BO_D_REFRESH],ecx
+                        mov     u32 ptr es:[edx+_BO_D_REFRESH],ecx
                     
                     } else {
                       // Unknown property, abort
-                        mov     <u32> [esp+28],_UNKNOWN_OBJECT_EVENT
+                        mov     u32 ptr [esp+28],_UNKNOWN_OBJECT_EVENT
                         stc
                         jmp     quit
                     }
@@ -596,10 +596,10 @@
         iTASK_locate_handle()                                 // Returns, carry?, gs:[edi] - far ptr to TASK data structure
         if (carry?)
         {
-            mov     <u32> [esp+28],_TASK_NOT_FOUND
+            mov     u32 ptr [esp+28],_TASK_NOT_FOUND
             jmp     quit
         }
-        mov     es,<u16> gs:[edi+_TASK_ENTRY_SELECTOR_OBJECTS]
+        mov     es,u16 ptr gs:[edi+_TASK_ENTRY_SELECTOR_OBJECTS]
         xor     edi,edi
       // Right now, es:[edi] - far ptr to the base of this task's object
       //            ds:[esi] - far ptr to the user's object definition area
@@ -609,7 +609,7 @@
         iOBJECT_locate_task_object()
         if (carry?)
         {
-            mov     <u32> [esp+28],_OBJECT_NOT_FOUND
+            mov     u32 ptr [esp+28],_OBJECT_NOT_FOUND
             jmp     quit
         }
       // Right now, es:[ebx] - far ptr to base object
@@ -618,14 +618,14 @@
 
 
        // Skip to the last object for this base object
-        mov     edx,<u32> es:[ebx+_OBJECT_FIRST_OBJECT]
+        mov     edx,u32 ptr es:[ebx+_OBJECT_FIRST_OBJECT]
         mov     ecx,edx
         while (edx != -1)
         {
             mov     ecx,edx
-            mov     edx,<u32> es:[edx+_OBJECT_NEXT_OBJECT]
+            mov     edx,u32 ptr es:[edx+_OBJECT_NEXT_OBJECT]
         }
-        mov     edi,<u32> es:[_OBJECT_HEADER_NEXT_OBJECT]
+        mov     edi,u32 ptr es:[_OBJECT_HEADER_NEXT_OBJECT]
       // Right now, es:[ebx] - far ptr to base object to add to to
       //            es:[edx] - last object in base-object's chain
       //            es:[edi] - where object will be added
@@ -633,17 +633,17 @@
 
 
        // Determine where we'll be adding
-        mov     <u32> [ebp-4],ecx
-        mov     <u32> [ebp-8],edi
+        mov     u32 ptr [ebp-4],ecx
+        mov     u32 ptr [ebp-8],edi
 
 
        // Add common fields
-        mov     <u32> es:[edi+_OBJECT_NEXT_BASE_OBJECT],-1
-        mov     <u32> es:[edi+_OBJECT_NEXT_OBJECT],-1
+        mov     u32 ptr es:[edi+_OBJECT_NEXT_BASE_OBJECT],-1
+        mov     u32 ptr es:[edi+_OBJECT_NEXT_OBJECT],-1
 
 
        // Add the object
-        mov     al,<u8>  ds:[esi]
+        mov     al,u8 ptr ds:[esi]
         if (al == _INPUT_FIELD)
         {
           // It's an input field
@@ -729,18 +729,18 @@
         
         } else {
             mov     eax,_UNKNOWN_OBJECT_TYPE
-            mov     <u32> [esp+28],eax
+            mov     u32 ptr [esp+28],eax
             jmp     quit
         }
         jc      quit
 
 
        // Update pointers after a successful creation
-        mov     edi,<u32> [ebp-8]
+        mov     edi,u32 ptr [ebp-8]
         if (dword ptr [ebp-4] != -1)
         {
           // We are adding one more object into the chain
-            mov     edx,<u32> [ebp-4]
+            mov     edx,u32 ptr [ebp-4]
             add     edx,_OBJECT_NEXT_OBJECT
         
         } else {
@@ -748,8 +748,8 @@
             mov     edx,ebx
             add     edx,_OBJECT_FIRST_OBJECT
         }
-        mov     <u32> es:[edx],edi
-        add     <u32> es:[_OBJECT_HEADER_NEXT_OBJECT],_O_LENGTH
+        mov     u32 ptr es:[edx],edi
+        add     u32 ptr es:[_OBJECT_HEADER_NEXT_OBJECT],_O_LENGTH
         clc
 
 
@@ -776,77 +776,77 @@
     //
         pushad
       // Headers unique to _TEXT_FIELD items
-        mov     <u8>  es:[edi+_OBJECT_TYPE],_TEXT_FIELD
+        mov     u8 ptr es:[edi+_OBJECT_TYPE],_TEXT_FIELD
       // Required headers
-        mov     ebx,<u32> ds:[esi+_O_LTF_TOP]
-        mov     <u32> es:[edi+_O_TF_TOP],ebx
-        mov     ebx,<u32> ds:[esi+_O_LTF_LEFT]
-        mov     <u32> es:[edi+_O_TF_LEFT],ebx
-        mov     ebx,<u32> ds:[esi+_O_LTF_WIDTH]
-        mov     <u32> es:[edi+_O_TF_WIDTH],ebx
-        mov     ebx,<u32> ds:[esi+_O_LTF_HEIGHT]
-        mov     <u32> es:[edi+_O_TF_HEIGHT],ebx
+        mov     ebx,u32 ptr ds:[esi+_O_LTF_TOP]
+        mov     u32 ptr es:[edi+_O_TF_TOP],ebx
+        mov     ebx,u32 ptr ds:[esi+_O_LTF_LEFT]
+        mov     u32 ptr es:[edi+_O_TF_LEFT],ebx
+        mov     ebx,u32 ptr ds:[esi+_O_LTF_WIDTH]
+        mov     u32 ptr es:[edi+_O_TF_WIDTH],ebx
+        mov     ebx,u32 ptr ds:[esi+_O_LTF_HEIGHT]
+        mov     u32 ptr es:[edi+_O_TF_HEIGHT],ebx
       // Default initialization
         mov     eax,-1
         xor     ecx,ecx
-        mov     <u8>  es:[edi+_O_TF_ENABLED],1
-        mov     <u8>  es:[edi+_O_TF_VISIBLE],cl
-        mov     <u8>  es:[edi+_O_TF_BORDER],cl
-        mov     <u8>  es:[edi+_O_TF_ALIGNMENT],cl
-        mov     <u8>  es:[edi+_O_TF_AUTO_SIZE],cl
-        mov     <u8>  es:[edi+_O_TF_BACKGROUND+_OBJECT_RED],cl
-        mov     <u8>  es:[edi+_O_TF_BACKGROUND+_OBJECT_GREEN],cl
-        mov     <u8>  es:[edi+_O_TF_BACKGROUND+_OBJECT_BLUE],cl
-        mov     <u8>  es:[edi+_O_TF_FOREGROUND+_OBJECT_RED],cl
-        mov     <u8>  es:[edi+_O_TF_FOREGROUND+_OBJECT_GREEN],cl
-        mov     <u8>  es:[edi+_O_TF_FOREGROUND+_OBJECT_BLUE],cl
-        mov     <u32> es:[edi+_O_TF_SOURCE_PTR_SEGMENT],eax
-        mov     <u32> es:[edi+_O_TF_SOURCE_PTR_OFFSET],eax
-        mov     <u32> es:[edi+_O_TF_FONT_NAME],eax
-        mov     <u8>  es:[edi+_O_TF_FONT_SIZE],al
-        mov     <u8>  es:[edi+_O_TF_FONT_TYPEFACE_BOLD],cl
-        mov     <u8>  es:[edi+_O_TF_FONT_TYPEFACE_DITHER],cl
-        mov     <u8>  es:[edi+_O_TF_FONT_TYPEFACE_ITALICS],cl
-        mov     <u8>  es:[edi+_O_TF_FONT_TYPEFACE_REVERSE],cl
-        mov     <u8>  es:[edi+_O_TF_FONT_TYPEFACE_STRIKETHROUGH],cl
-        mov     <u8>  es:[edi+_O_TF_FONT_TYPEFACE_UNDERLINE],cl
-        mov     <u32> es:[edi+_O_TF_FONT_NAME_ID],eax
-        mov     <u16> es:[edi+_O_TF_MARGIN_LEFT],cx
-        mov     <u16> es:[edi+_O_TF_MARGIN_TOP],cx
-        mov     <u32> es:[edi+_O_TF_MISC_1],eax
-        mov     <u32> es:[edi+_O_TF_MISC_2],eax
-        mov     <u32> es:[edi+_O_TF_MISC_3],eax
-        mov     <u32> es:[edi+_O_TF_MISC_4],eax
-        mov     <u8>  es:[edi+_O_TF_MISC_FLAG_1],al
-        mov     <u8>  es:[edi+_O_TF_MISC_FLAG_2],al
-        mov     <u8>  es:[edi+_O_TF_MISC_FLAG_3],al
+        mov     u8 ptr es:[edi+_O_TF_ENABLED],1
+        mov     u8 ptr es:[edi+_O_TF_VISIBLE],cl
+        mov     u8 ptr es:[edi+_O_TF_BORDER],cl
+        mov     u8 ptr es:[edi+_O_TF_ALIGNMENT],cl
+        mov     u8 ptr es:[edi+_O_TF_AUTO_SIZE],cl
+        mov     u8 ptr es:[edi+_O_TF_BACKGROUND+_OBJECT_RED],cl
+        mov     u8 ptr es:[edi+_O_TF_BACKGROUND+_OBJECT_GREEN],cl
+        mov     u8 ptr es:[edi+_O_TF_BACKGROUND+_OBJECT_BLUE],cl
+        mov     u8 ptr es:[edi+_O_TF_FOREGROUND+_OBJECT_RED],cl
+        mov     u8 ptr es:[edi+_O_TF_FOREGROUND+_OBJECT_GREEN],cl
+        mov     u8 ptr es:[edi+_O_TF_FOREGROUND+_OBJECT_BLUE],cl
+        mov     u32 ptr es:[edi+_O_TF_SOURCE_PTR_SEGMENT],eax
+        mov     u32 ptr es:[edi+_O_TF_SOURCE_PTR_OFFSET],eax
+        mov     u32 ptr es:[edi+_O_TF_FONT_NAME],eax
+        mov     u8 ptr es:[edi+_O_TF_FONT_SIZE],al
+        mov     u8 ptr es:[edi+_O_TF_FONT_TYPEFACE_BOLD],cl
+        mov     u8 ptr es:[edi+_O_TF_FONT_TYPEFACE_DITHER],cl
+        mov     u8 ptr es:[edi+_O_TF_FONT_TYPEFACE_ITALICS],cl
+        mov     u8 ptr es:[edi+_O_TF_FONT_TYPEFACE_REVERSE],cl
+        mov     u8 ptr es:[edi+_O_TF_FONT_TYPEFACE_STRIKETHROUGH],cl
+        mov     u8 ptr es:[edi+_O_TF_FONT_TYPEFACE_UNDERLINE],cl
+        mov     u32 ptr es:[edi+_O_TF_FONT_NAME_ID],eax
+        mov     u16 ptr es:[edi+_O_TF_MARGIN_LEFT],cx
+        mov     u16 ptr es:[edi+_O_TF_MARGIN_TOP],cx
+        mov     u32 ptr es:[edi+_O_TF_MISC_1],eax
+        mov     u32 ptr es:[edi+_O_TF_MISC_2],eax
+        mov     u32 ptr es:[edi+_O_TF_MISC_3],eax
+        mov     u32 ptr es:[edi+_O_TF_MISC_4],eax
+        mov     u8 ptr es:[edi+_O_TF_MISC_FLAG_1],al
+        mov     u8 ptr es:[edi+_O_TF_MISC_FLAG_2],al
+        mov     u8 ptr es:[edi+_O_TF_MISC_FLAG_3],al
         add     edi,_O_TF_ACTIVATE
-        mov     <u32> es:[edi-_O_TF_ACTIVATE+_O_TF_ACTIVATE],eax
-        mov     <u32> es:[edi-_O_TF_ACTIVATE+_O_TF_CLICK_BOTH_SINGLE],eax
-        mov     <u32> es:[edi-_O_TF_ACTIVATE+_O_TF_CLICK_BOTH_DOUBLE],eax
-        mov     <u32> es:[edi-_O_TF_ACTIVATE+_O_TF_CLICK_LEFT_SINGLE],eax
-        mov     <u32> es:[edi-_O_TF_ACTIVATE+_O_TF_CLICK_LEFT_DOUBLE],eax
-        mov     <u32> es:[edi-_O_TF_ACTIVATE+_O_TF_CLICK_LEFT_DOWN],eax
-        mov     <u32> es:[edi-_O_TF_ACTIVATE+_O_TF_CLICK_LEFT_UP],eax
-        mov     <u32> es:[edi-_O_TF_ACTIVATE+_O_TF_CLICK_RIGHT_SINGLE],eax
-        mov     <u32> es:[edi-_O_TF_ACTIVATE+_O_TF_CLICK_RIGHT_DOUBLE],eax
-        mov     <u32> es:[edi-_O_TF_ACTIVATE+_O_TF_CLICK_RIGHT_DOWN],eax
-        mov     <u32> es:[edi-_O_TF_ACTIVATE+_O_TF_CLICK_RIGHT_UP],eax
-        mov     <u32> es:[edi-_O_TF_ACTIVATE+_O_TF_DROPPED_INTO_LEFT],eax
-        mov     <u32> es:[edi-_O_TF_ACTIVATE+_O_TF_DROPPED_INTO_RIGHT],eax
-        mov     <u32> es:[edi-_O_TF_ACTIVATE+_O_TF_DRAG_LEFT_START],eax
-        mov     <u32> es:[edi-_O_TF_ACTIVATE+_O_TF_DRAG_LEFT_STOP],eax
-        mov     <u32> es:[edi-_O_TF_ACTIVATE+_O_TF_DRAG_RIGHT_START],eax
-        mov     <u32> es:[edi-_O_TF_ACTIVATE+_O_TF_DRAG_RIGHT_STOP],eax
-        mov     <u32> es:[edi-_O_TF_ACTIVATE+_O_TF_FOCUS_GOT],eax
-        mov     <u32> es:[edi-_O_TF_ACTIVATE+_O_TF_FOCUS_LOST],eax
-        mov     <u32> es:[edi-_O_TF_ACTIVATE+_O_TF_FOCUS_SET],eax
-        mov     <u32> es:[edi-_O_TF_ACTIVATE+_O_TF_HOVER],eax
-        mov     <u32> es:[edi-_O_TF_ACTIVATE+_O_TF_KEYSTROKE],eax
-        mov     <u32> es:[edi-_O_TF_ACTIVATE+_O_TF_WHEN_CREATED],eax
-        mov     <u32> es:[edi-_O_TF_ACTIVATE+_O_TF_WHEN_DESTROYED],eax
-        mov     <u32> es:[edi-_O_TF_ACTIVATE+_O_TF_REQUESTOR],eax
-        mov     <u32> es:[edi-_O_TF_ACTIVATE+_O_TF_REFRESH],eax
+        mov     u32 ptr es:[edi-_O_TF_ACTIVATE+_O_TF_ACTIVATE],eax
+        mov     u32 ptr es:[edi-_O_TF_ACTIVATE+_O_TF_CLICK_BOTH_SINGLE],eax
+        mov     u32 ptr es:[edi-_O_TF_ACTIVATE+_O_TF_CLICK_BOTH_DOUBLE],eax
+        mov     u32 ptr es:[edi-_O_TF_ACTIVATE+_O_TF_CLICK_LEFT_SINGLE],eax
+        mov     u32 ptr es:[edi-_O_TF_ACTIVATE+_O_TF_CLICK_LEFT_DOUBLE],eax
+        mov     u32 ptr es:[edi-_O_TF_ACTIVATE+_O_TF_CLICK_LEFT_DOWN],eax
+        mov     u32 ptr es:[edi-_O_TF_ACTIVATE+_O_TF_CLICK_LEFT_UP],eax
+        mov     u32 ptr es:[edi-_O_TF_ACTIVATE+_O_TF_CLICK_RIGHT_SINGLE],eax
+        mov     u32 ptr es:[edi-_O_TF_ACTIVATE+_O_TF_CLICK_RIGHT_DOUBLE],eax
+        mov     u32 ptr es:[edi-_O_TF_ACTIVATE+_O_TF_CLICK_RIGHT_DOWN],eax
+        mov     u32 ptr es:[edi-_O_TF_ACTIVATE+_O_TF_CLICK_RIGHT_UP],eax
+        mov     u32 ptr es:[edi-_O_TF_ACTIVATE+_O_TF_DROPPED_INTO_LEFT],eax
+        mov     u32 ptr es:[edi-_O_TF_ACTIVATE+_O_TF_DROPPED_INTO_RIGHT],eax
+        mov     u32 ptr es:[edi-_O_TF_ACTIVATE+_O_TF_DRAG_LEFT_START],eax
+        mov     u32 ptr es:[edi-_O_TF_ACTIVATE+_O_TF_DRAG_LEFT_STOP],eax
+        mov     u32 ptr es:[edi-_O_TF_ACTIVATE+_O_TF_DRAG_RIGHT_START],eax
+        mov     u32 ptr es:[edi-_O_TF_ACTIVATE+_O_TF_DRAG_RIGHT_STOP],eax
+        mov     u32 ptr es:[edi-_O_TF_ACTIVATE+_O_TF_FOCUS_GOT],eax
+        mov     u32 ptr es:[edi-_O_TF_ACTIVATE+_O_TF_FOCUS_LOST],eax
+        mov     u32 ptr es:[edi-_O_TF_ACTIVATE+_O_TF_FOCUS_SET],eax
+        mov     u32 ptr es:[edi-_O_TF_ACTIVATE+_O_TF_HOVER],eax
+        mov     u32 ptr es:[edi-_O_TF_ACTIVATE+_O_TF_KEYSTROKE],eax
+        mov     u32 ptr es:[edi-_O_TF_ACTIVATE+_O_TF_WHEN_CREATED],eax
+        mov     u32 ptr es:[edi-_O_TF_ACTIVATE+_O_TF_WHEN_DESTROYED],eax
+        mov     u32 ptr es:[edi-_O_TF_ACTIVATE+_O_TF_REQUESTOR],eax
+        mov     u32 ptr es:[edi-_O_TF_ACTIVATE+_O_TF_REFRESH],eax
         sub     edi,_O_TF_ACTIVATE
         add     esi,_O_LTF_LENGTH
 
@@ -854,7 +854,7 @@
         mov     bl,_PROPERTY_START
         while (byte ptr ds:[esi] != _OBJECT_END)
         {
-            mov     al,<u8>  ds:[esi]
+            mov     al,u8 ptr ds:[esi]
             if (al == _PROPERTY_START || al == _EVENT_START)
             {
                 mov     bl,al
@@ -865,237 +865,237 @@
                   // They're setting a property, which one?
                     if (al == _TFP_ENABLED)
                     {
-                        mov     al,<u8>  ds:[esi+_O_LTF_ENABLED]
-                        mov     <u8>  es:[edi+_O_TF_ENABLED],al
+                        mov     al,u8 ptr ds:[esi+_O_LTF_ENABLED]
+                        mov     u8 ptr es:[edi+_O_TF_ENABLED],al
                         add     esi,_O_LTF_ENABLED_SIZE
                     
                     } else if (al == _TFP_VISIBLE) {
-                        mov     al,<u8>  ds:[esi+_O_LTF_VISIBLE]
-                        mov     <u8>  es:[edi+_O_TF_VISIBLE],al
+                        mov     al,u8 ptr ds:[esi+_O_LTF_VISIBLE]
+                        mov     u8 ptr es:[edi+_O_TF_VISIBLE],al
                         add     esi,_O_LTF_VISIBLE_SIZE
                     
                     } else if (al == _TFP_BORDER) {
-                        mov     al,<u8>  ds:[esi+_O_LTF_BORDER]
-                        mov     <u8>  es:[edi+_O_TF_BORDER],al
+                        mov     al,u8 ptr ds:[esi+_O_LTF_BORDER]
+                        mov     u8 ptr es:[edi+_O_TF_BORDER],al
                         add     esi,_O_LTF_BORDER_SIZE
                     
                     } else if (al == _TFP_ALIGNMENT) {
-                        mov     al,<u8>  ds:[esi+_O_LTF_ALIGNMENT]
-                        mov     <u8>  es:[edi+_O_TF_ALIGNMENT],al
+                        mov     al,u8 ptr ds:[esi+_O_LTF_ALIGNMENT]
+                        mov     u8 ptr es:[edi+_O_TF_ALIGNMENT],al
                         add     esi,_O_LTF_ALIGNMENT_SIZE
                     
                     } else if (al == _TFP_AUTO_SIZE) {
-                        mov     al,<u8>  ds:[esi+_O_LTF_AUTO_SIZE]
-                        mov     <u8>  es:[edi+_O_TF_AUTO_SIZE],al
+                        mov     al,u8 ptr ds:[esi+_O_LTF_AUTO_SIZE]
+                        mov     u8 ptr es:[edi+_O_TF_AUTO_SIZE],al
                         add     esi,_O_LTF_AUTO_SIZE_SIZE
                     
                     } else if (al == _TFP_COLOR_FOREGROUND) {
-                        mov     al,<u8>  ds:[esi+_O_LTF_FOREGROUND_RED]
-                        mov     <u8>  es:[edi+_O_TF_FOREGROUND+_OBJECT_RED],al
-                        mov     al,<u8>  ds:[esi+_O_LTF_FOREGROUND_GREEN]
-                        mov     <u8>  es:[edi+_O_TF_FOREGROUND+_OBJECT_GREEN],al
-                        mov     al,<u8>  ds:[esi+_O_LTF_FOREGROUND_BLUE]
-                        mov     <u8>  es:[edi+_O_TF_FOREGROUND+_OBJECT_BLUE],al
+                        mov     al,u8 ptr ds:[esi+_O_LTF_FOREGROUND_RED]
+                        mov     u8 ptr es:[edi+_O_TF_FOREGROUND+_OBJECT_RED],al
+                        mov     al,u8 ptr ds:[esi+_O_LTF_FOREGROUND_GREEN]
+                        mov     u8 ptr es:[edi+_O_TF_FOREGROUND+_OBJECT_GREEN],al
+                        mov     al,u8 ptr ds:[esi+_O_LTF_FOREGROUND_BLUE]
+                        mov     u8 ptr es:[edi+_O_TF_FOREGROUND+_OBJECT_BLUE],al
                         add     esi,_O_LTF_BACKGROUND_SIZE
                     
                     } else if (al == _TFP_COLOR_BACKGROUND) {
-                        mov     al,<u8>  ds:[esi+_O_LTF_BACKGROUND_RED]
-                        mov     <u8>  es:[edi+_O_TF_BACKGROUND+_OBJECT_RED],al
-                        mov     al,<u8>  ds:[esi+_O_LTF_BACKGROUND_GREEN]
-                        mov     <u8>  es:[edi+_O_TF_BACKGROUND+_OBJECT_GREEN],al
-                        mov     al,<u8>  ds:[esi+_O_LTF_BACKGROUND_BLUE]
-                        mov     <u8>  es:[edi+_O_TF_BACKGROUND+_OBJECT_BLUE],al
+                        mov     al,u8 ptr ds:[esi+_O_LTF_BACKGROUND_RED]
+                        mov     u8 ptr es:[edi+_O_TF_BACKGROUND+_OBJECT_RED],al
+                        mov     al,u8 ptr ds:[esi+_O_LTF_BACKGROUND_GREEN]
+                        mov     u8 ptr es:[edi+_O_TF_BACKGROUND+_OBJECT_GREEN],al
+                        mov     al,u8 ptr ds:[esi+_O_LTF_BACKGROUND_BLUE]
+                        mov     u8 ptr es:[edi+_O_TF_BACKGROUND+_OBJECT_BLUE],al
                         add     esi,_O_LTF_BACKGROUND_SIZE
                     
                     } else if (al == _TFP_SOURCE_PTR) {
-                        movzx   eax,<u16> ds:[esi+_O_LTF_SOURCE_PTR_SEGMENT]
-                        mov     <u32> es:[edi+_O_TF_SOURCE_PTR_SEGMENT],eax
-                        mov     eax,<u32> ds:[esi+_O_LTF_SOURCE_PTR_OFFSET]
-                        mov     <u32> es:[edi+_O_TF_SOURCE_PTR_OFFSET],eax
+                        movzx   eax,u16 ptr ds:[esi+_O_LTF_SOURCE_PTR_SEGMENT]
+                        mov     u32 ptr es:[edi+_O_TF_SOURCE_PTR_SEGMENT],eax
+                        mov     eax,u32 ptr ds:[esi+_O_LTF_SOURCE_PTR_OFFSET]
+                        mov     u32 ptr es:[edi+_O_TF_SOURCE_PTR_OFFSET],eax
                         add     esi,_O_LTF_SOURCE_PTR_SIZE
                     
                     } else if (al == _TFP_FONT_NAME) {
-                        mov     eax,<u32> ds:[esi+_O_LTF_FONT_NAME]
-                        mov     <u32> es:[edi+_O_TF_FONT_NAME],eax
+                        mov     eax,u32 ptr ds:[esi+_O_LTF_FONT_NAME]
+                        mov     u32 ptr es:[edi+_O_TF_FONT_NAME],eax
                         add     esi,_O_LTF_FONT_NAME_SIZE
                     
                     } else if (al == _TFP_FONT_SIZE) {
-                        mov     al,<u8>  ds:[esi+_O_LTF_FONT_SIZE]
-                        mov     <u8>  es:[edi+_O_TF_FONT_SIZE],al
+                        mov     al,u8 ptr ds:[esi+_O_LTF_FONT_SIZE]
+                        mov     u8 ptr es:[edi+_O_TF_FONT_SIZE],al
                         add     esi,_O_LTF_FONT_SIZE_SIZE
                     
                     } else if (al == _TFP_FONT_TYPEFACE_BOLD) {
-                        mov     al,<u8>  ds:[esi+_O_LTF_FONT_TYPEFACE_BOLD]
-                        mov     <u8>  es:[edi+_O_TF_FONT_TYPEFACE_BOLD],al
+                        mov     al,u8 ptr ds:[esi+_O_LTF_FONT_TYPEFACE_BOLD]
+                        mov     u8 ptr es:[edi+_O_TF_FONT_TYPEFACE_BOLD],al
                         add     esi,_O_LTF_FONT_TYPEFACE_BOLD_SIZE
                     
                     } else if (al == _TFP_FONT_TYPEFACE_DITHER) {
-                        mov     al,<u8>  ds:[esi+_O_LTF_FONT_TYPEFACE_DITHER]
-                        mov     <u8>  es:[edi+_O_TF_FONT_TYPEFACE_DITHER],al
+                        mov     al,u8 ptr ds:[esi+_O_LTF_FONT_TYPEFACE_DITHER]
+                        mov     u8 ptr es:[edi+_O_TF_FONT_TYPEFACE_DITHER],al
                         add     esi,_O_LTF_FONT_TYPEFACE_DITHER_SIZE
                     
                     } else if (al == _TFP_FONT_TYPEFACE_ITALICS) {
-                        mov     al,<u8>  ds:[esi+_O_LTF_FONT_TYPEFACE_ITALICS]
-                        mov     <u8>  es:[edi+_O_TF_FONT_TYPEFACE_ITALICS],al
+                        mov     al,u8 ptr ds:[esi+_O_LTF_FONT_TYPEFACE_ITALICS]
+                        mov     u8 ptr es:[edi+_O_TF_FONT_TYPEFACE_ITALICS],al
                         add     esi,_O_LTF_FONT_TYPEFACE_ITALICS_SIZE
                     
                     } else if (al == _TFP_FONT_TYPEFACE_REVERSE) {
-                        mov     al,<u8>  ds:[esi+_O_LTF_FONT_TYPEFACE_REVERSE]
-                        mov     <u8>  es:[edi+_O_TF_FONT_TYPEFACE_REVERSE],al
+                        mov     al,u8 ptr ds:[esi+_O_LTF_FONT_TYPEFACE_REVERSE]
+                        mov     u8 ptr es:[edi+_O_TF_FONT_TYPEFACE_REVERSE],al
                         add     esi,_O_LTF_FONT_TYPEFACE_REVERSE_SIZE
                     
                     } else if (al == _TFP_FONT_TYPEFACE_STRIKETHROUGH) {
-                        mov     al,<u8>  ds:[esi+_O_LTF_FONT_TYPEFACE_STRIKETHROUGH]
-                        mov     <u8>  es:[edi+_O_TF_FONT_TYPEFACE_STRIKETHROUGH],al
+                        mov     al,u8 ptr ds:[esi+_O_LTF_FONT_TYPEFACE_STRIKETHROUGH]
+                        mov     u8 ptr es:[edi+_O_TF_FONT_TYPEFACE_STRIKETHROUGH],al
                         add     esi,_O_LTF_FONT_TYPEFACE_STRIKETHROUGH_SIZE
                     
                     } else if (al == _TFP_FONT_TYPEFACE_UNDERLINE) {
-                        mov     al,<u8>  ds:[esi+_O_LTF_FONT_TYPEFACE_UNDERLINE]
-                        mov     <u8>  es:[edi+_O_TF_FONT_TYPEFACE_UNDERLINE],al
+                        mov     al,u8 ptr ds:[esi+_O_LTF_FONT_TYPEFACE_UNDERLINE]
+                        mov     u8 ptr es:[edi+_O_TF_FONT_TYPEFACE_UNDERLINE],al
                         add     esi,_O_LTF_FONT_TYPEFACE_UNDERLINE_SIZE
                     
                     } else if (al == _TFP_FONT_NAME_ID) {
-                        mov     eax,<u32> ds:[esi+_O_LTF_FONT_NAME_ID]
-                        mov     <u32> es:[edi+_O_TF_FONT_NAME_ID],eax
+                        mov     eax,u32 ptr ds:[esi+_O_LTF_FONT_NAME_ID]
+                        mov     u32 ptr es:[edi+_O_TF_FONT_NAME_ID],eax
                         add     esi,_O_LTF_FONT_NAME_ID_SIZE
                     
                     } else if (al == _TFP_MARGIN_LEFT) {
-                        mov     ax,<u16> ds:[esi+_O_LTF_MARGIN_LEFT]
-                        mov     <u16> es:[edi+_O_TF_MARGIN_LEFT],ax
+                        mov     ax,u16 ptr ds:[esi+_O_LTF_MARGIN_LEFT]
+                        mov     u16 ptr es:[edi+_O_TF_MARGIN_LEFT],ax
                         add     esi,_O_LTF_MARGIN_LEFT_SIZE
                     
                     } else if (al == _TFP_MARGIN_TOP) {
-                        mov     ax,<u16> ds:[esi+_O_LTF_MARGIN_TOP]
-                        mov     <u16> es:[edi+_O_TF_MARGIN_TOP],ax
+                        mov     ax,u16 ptr ds:[esi+_O_LTF_MARGIN_TOP]
+                        mov     u16 ptr es:[edi+_O_TF_MARGIN_TOP],ax
                         add     esi,_O_LTF_MARGIN_TOP_SIZE
                     
                     } else if (al == _TFP_MISC_1) {
-                        mov     eax,<u32> ds:[esi+_O_LTF_MISC_1]
-                        mov     <u32> es:[edi+_O_TF_MISC_1],eax
+                        mov     eax,u32 ptr ds:[esi+_O_LTF_MISC_1]
+                        mov     u32 ptr es:[edi+_O_TF_MISC_1],eax
                         add     esi,_O_LTF_MISC_1_SIZE
                     
                     } else if (al == _TFP_MISC_2) {
-                        mov     eax,<u32> ds:[esi+_O_LTF_MISC_2]
-                        mov     <u32> es:[edi+_O_TF_MISC_2],eax
+                        mov     eax,u32 ptr ds:[esi+_O_LTF_MISC_2]
+                        mov     u32 ptr es:[edi+_O_TF_MISC_2],eax
                         add     esi,_O_LTF_MISC_2_SIZE
                     
                     } else if (al == _TFP_MISC_3) {
-                        mov     eax,<u32> ds:[esi+_O_LTF_MISC_3]
-                        mov     <u32> es:[edi+_O_TF_MISC_3],eax
+                        mov     eax,u32 ptr ds:[esi+_O_LTF_MISC_3]
+                        mov     u32 ptr es:[edi+_O_TF_MISC_3],eax
                         add     esi,_O_LTF_MISC_3_SIZE
                     
                     } else if (al == _TFP_MISC_4) {
-                        mov     eax,<u32> ds:[esi+_O_LTF_MISC_4]
-                        mov     <u32> es:[edi+_O_TF_MISC_4],eax
+                        mov     eax,u32 ptr ds:[esi+_O_LTF_MISC_4]
+                        mov     u32 ptr es:[edi+_O_TF_MISC_4],eax
                         add     esi,_O_LTF_MISC_4_SIZE
                     
                     } else if (al == _TFP_MISC_FLAG_1) {
-                        mov     al,<u8>  ds:[esi+_O_LTF_MISC_FLAG_1]
-                        mov     <u8>  es:[edi+_O_TF_MISC_FLAG_1],al
+                        mov     al,u8 ptr ds:[esi+_O_LTF_MISC_FLAG_1]
+                        mov     u8 ptr es:[edi+_O_TF_MISC_FLAG_1],al
                         add     esi,_O_LTF_MISC_FLAG_1_SIZE
                     
                     } else if (al == _TFP_MISC_FLAG_2) {
-                        mov     al,<u8>  ds:[esi+_O_LTF_MISC_FLAG_2]
-                        mov     <u8>  es:[edi+_O_TF_MISC_FLAG_2],al
+                        mov     al,u8 ptr ds:[esi+_O_LTF_MISC_FLAG_2]
+                        mov     u8 ptr es:[edi+_O_TF_MISC_FLAG_2],al
                         add     esi,_O_LTF_MISC_FLAG_2_SIZE
                     
                     } else if (al == _TFP_MISC_FLAG_3) {
-                        mov     al,<u8>  ds:[esi+_O_LTF_MISC_FLAG_3]
-                        mov     <u8>  es:[edi+_O_TF_MISC_FLAG_3],al
+                        mov     al,u8 ptr ds:[esi+_O_LTF_MISC_FLAG_3]
+                        mov     u8 ptr es:[edi+_O_TF_MISC_FLAG_3],al
                         add     esi,_O_LTF_MISC_FLAG_3_SIZE
                     
                     } else {
                       // Unknown property, abort
-                        mov     <u32> [esp+28],_UNKNOWN_OBJECT_PROPERTY
+                        mov     u32 ptr [esp+28],_UNKNOWN_OBJECT_PROPERTY
                         stc
                         jmp     quit
                     }
                 
                 } else {
                   // They're setting an event, which one?
-                    mov     ecx,<u32> ds:[esi+1]
+                    mov     ecx,u32 ptr ds:[esi+1]
                     if (al == _TFE_ACTIVATE)
                     {
-                        mov     <u32> es:[edx+_O_TF_ACTIVATE],ecx
+                        mov     u32 ptr es:[edx+_O_TF_ACTIVATE],ecx
                     
                     } else if (al == _TFE_CLICK_BOTH_SINGLE) {
-                        mov     <u32> es:[edx+_O_TF_CLICK_BOTH_SINGLE],ecx
+                        mov     u32 ptr es:[edx+_O_TF_CLICK_BOTH_SINGLE],ecx
                     
                     } else if (al == _TFE_CLICK_BOTH_DOUBLE) {
-                        mov     <u32> es:[edx+_O_TF_CLICK_BOTH_DOUBLE],ecx
+                        mov     u32 ptr es:[edx+_O_TF_CLICK_BOTH_DOUBLE],ecx
                     
                     } else if (al == _TFE_CLICK_LEFT_SINGLE) {
-                        mov     <u32> es:[edx+_O_TF_CLICK_LEFT_SINGLE],ecx
+                        mov     u32 ptr es:[edx+_O_TF_CLICK_LEFT_SINGLE],ecx
                     
                     } else if (al == _TFE_CLICK_LEFT_DOUBLE) {
-                        mov     <u32> es:[edx+_O_TF_CLICK_LEFT_DOUBLE],ecx
+                        mov     u32 ptr es:[edx+_O_TF_CLICK_LEFT_DOUBLE],ecx
                     
                     } else if (al == _TFE_CLICK_LEFT_DOWN) {
-                        mov     <u32> es:[edx+_O_TF_CLICK_LEFT_DOWN],ecx
+                        mov     u32 ptr es:[edx+_O_TF_CLICK_LEFT_DOWN],ecx
                     
                     } else if (al == _TFE_CLICK_LEFT_UP) {
-                        mov     <u32> es:[edx+_O_TF_CLICK_LEFT_UP],ecx
+                        mov     u32 ptr es:[edx+_O_TF_CLICK_LEFT_UP],ecx
                     
                     } else if (al == _TFE_CLICK_RIGHT_SINGLE) {
-                        mov     <u32> es:[edx+_O_TF_CLICK_RIGHT_SINGLE],ecx
+                        mov     u32 ptr es:[edx+_O_TF_CLICK_RIGHT_SINGLE],ecx
                     
                     } else if (al == _TFE_CLICK_RIGHT_DOUBLE) {
-                        mov     <u32> es:[edx+_O_TF_CLICK_RIGHT_DOUBLE],ecx
+                        mov     u32 ptr es:[edx+_O_TF_CLICK_RIGHT_DOUBLE],ecx
                     
                     } else if (al == _TFE_CLICK_RIGHT_DOWN) {
-                        mov     <u32> es:[edx+_O_TF_CLICK_RIGHT_DOWN],ecx
+                        mov     u32 ptr es:[edx+_O_TF_CLICK_RIGHT_DOWN],ecx
                     
                     } else if (al == _TFE_CLICK_RIGHT_UP) {
-                        mov     <u32> es:[edx+_O_TF_CLICK_RIGHT_UP],ecx
+                        mov     u32 ptr es:[edx+_O_TF_CLICK_RIGHT_UP],ecx
                     
                     } else if (al == _TFE_DROPPED_INTO_LEFT) {
-                        mov     <u32> es:[edx+_O_TF_DROPPED_INTO_LEFT],ecx
+                        mov     u32 ptr es:[edx+_O_TF_DROPPED_INTO_LEFT],ecx
                     
                     } else if (al == _TFE_DROPPED_INTO_RIGHT) {
-                        mov     <u32> es:[edx+_O_TF_DROPPED_INTO_RIGHT],ecx
+                        mov     u32 ptr es:[edx+_O_TF_DROPPED_INTO_RIGHT],ecx
                     
                     } else if (al == _TFE_DRAG_LEFT_START) {
-                        mov     <u32> es:[edx+_O_TF_DRAG_LEFT_START],ecx
+                        mov     u32 ptr es:[edx+_O_TF_DRAG_LEFT_START],ecx
                     
                     } else if (al == _TFE_DRAG_LEFT_STOP) {
-                        mov     <u32> es:[edx+_O_TF_DRAG_LEFT_STOP],ecx
+                        mov     u32 ptr es:[edx+_O_TF_DRAG_LEFT_STOP],ecx
                     
                     } else if (al == _TFE_DRAG_RIGHT_START) {
-                        mov     <u32> es:[edx+_O_TF_DRAG_RIGHT_START],ecx
+                        mov     u32 ptr es:[edx+_O_TF_DRAG_RIGHT_START],ecx
                     
                     } else if (al == _TFE_DRAG_RIGHT_STOP) {
-                        mov     <u32> es:[edx+_O_TF_DRAG_RIGHT_STOP],ecx
+                        mov     u32 ptr es:[edx+_O_TF_DRAG_RIGHT_STOP],ecx
                     
                     } else if (al == _TFE_FOCUS_GOT) {
-                        mov     <u32> es:[edx+_O_TF_FOCUS_GOT],ecx
+                        mov     u32 ptr es:[edx+_O_TF_FOCUS_GOT],ecx
                     
                     } else if (al == _TFE_FOCUS_LOST) {
-                        mov     <u32> es:[edx+_O_TF_FOCUS_LOST],ecx
+                        mov     u32 ptr es:[edx+_O_TF_FOCUS_LOST],ecx
                     
                     } else if (al == _TFE_FOCUS_SET) {
-                        mov     <u32> es:[edx+_O_TF_FOCUS_SET],ecx
+                        mov     u32 ptr es:[edx+_O_TF_FOCUS_SET],ecx
                     
                     } else if (al == _TFE_HOVER) {
-                        mov     <u32> es:[edx+_O_TF_HOVER],ecx
+                        mov     u32 ptr es:[edx+_O_TF_HOVER],ecx
                     
                     } else if (al == _TFE_KEYSTROKE) {
-                        mov     <u32> es:[edx+_O_TF_KEYSTROKE],ecx
+                        mov     u32 ptr es:[edx+_O_TF_KEYSTROKE],ecx
                     
                     } else if (al == _TFE_WHEN_CREATED) {
-                        mov     <u32> es:[edx+_O_TF_WHEN_CREATED],ecx
+                        mov     u32 ptr es:[edx+_O_TF_WHEN_CREATED],ecx
                     
                     } else if (al == _TFE_WHEN_DESTROYED) {
-                        mov     <u32> es:[edx+_O_TF_WHEN_DESTROYED],ecx
+                        mov     u32 ptr es:[edx+_O_TF_WHEN_DESTROYED],ecx
                     
                     } else if (al == _TFE_REQUESTOR) {
-                        mov     <u32> es:[edx+_O_TF_REQUESTOR],ecx
+                        mov     u32 ptr es:[edx+_O_TF_REQUESTOR],ecx
                     
                     } else if (al == _TFE_REFRESH) {
-                        mov     <u32> es:[edx+_O_TF_REFRESH],ecx
+                        mov     u32 ptr es:[edx+_O_TF_REFRESH],ecx
                     
                     } else {
                       // Unknown property, abort
-                        mov     <u32> [esp+28],_UNKNOWN_OBJECT_EVENT
+                        mov     u32 ptr [esp+28],_UNKNOWN_OBJECT_EVENT
                         stc
                         jmp     quit
                     }
@@ -1125,57 +1125,57 @@
     //
         pushad
       // Headers unique to _HLINE items
-        mov     <u8>  es:[edi+_OBJECT_TYPE],_HLINE
+        mov     u8 ptr es:[edi+_OBJECT_TYPE],_HLINE
       // Required headers
-        mov     ebx,<u32> ds:[esi+_O_LHL_TOP]
-        mov     <u32> es:[edi+_O_HL_TOP],ebx
-        mov     ebx,<u32> ds:[esi+_O_LHL_LEFT]
-        mov     <u32> es:[edi+_O_HL_LEFT],ebx
-        mov     ebx,<u32> ds:[esi+_O_LHL_WIDTH]
-        mov     <u32> es:[edi+_O_HL_WIDTH],ebx
+        mov     ebx,u32 ptr ds:[esi+_O_LHL_TOP]
+        mov     u32 ptr es:[edi+_O_HL_TOP],ebx
+        mov     ebx,u32 ptr ds:[esi+_O_LHL_LEFT]
+        mov     u32 ptr es:[edi+_O_HL_LEFT],ebx
+        mov     ebx,u32 ptr ds:[esi+_O_LHL_WIDTH]
+        mov     u32 ptr es:[edi+_O_HL_WIDTH],ebx
 
       // Default initialization
         mov     eax,-1
         xor     ecx,ecx
-        mov     <u8>  es:[edi+_O_HL_ENABLED],1
-        mov     <u8>  es:[edi+_O_HL_VISIBLE],cl
-        mov     <u8>  es:[edi+_O_HL_BACKGROUND+_OBJECT_RED],cl
-        mov     <u8>  es:[edi+_O_HL_BACKGROUND+_OBJECT_GREEN],cl
-        mov     <u8>  es:[edi+_O_HL_BACKGROUND+_OBJECT_BLUE],cl
-        mov     <u32> es:[edi+_O_HL_MISC_1],eax
-        mov     <u32> es:[edi+_O_HL_MISC_2],eax
-        mov     <u32> es:[edi+_O_HL_MISC_3],eax
-        mov     <u32> es:[edi+_O_HL_MISC_4],eax
-        mov     <u8>  es:[edi+_O_HL_MISC_FLAG_1],al
-        mov     <u8>  es:[edi+_O_HL_MISC_FLAG_2],al
-        mov     <u8>  es:[edi+_O_HL_MISC_FLAG_3],al
+        mov     u8 ptr es:[edi+_O_HL_ENABLED],1
+        mov     u8 ptr es:[edi+_O_HL_VISIBLE],cl
+        mov     u8 ptr es:[edi+_O_HL_BACKGROUND+_OBJECT_RED],cl
+        mov     u8 ptr es:[edi+_O_HL_BACKGROUND+_OBJECT_GREEN],cl
+        mov     u8 ptr es:[edi+_O_HL_BACKGROUND+_OBJECT_BLUE],cl
+        mov     u32 ptr es:[edi+_O_HL_MISC_1],eax
+        mov     u32 ptr es:[edi+_O_HL_MISC_2],eax
+        mov     u32 ptr es:[edi+_O_HL_MISC_3],eax
+        mov     u32 ptr es:[edi+_O_HL_MISC_4],eax
+        mov     u8 ptr es:[edi+_O_HL_MISC_FLAG_1],al
+        mov     u8 ptr es:[edi+_O_HL_MISC_FLAG_2],al
+        mov     u8 ptr es:[edi+_O_HL_MISC_FLAG_3],al
         add     edi,_O_HL_ACTIVATE
-        mov     <u32> es:[edi-_O_HL_ACTIVATE+_O_HL_ACTIVATE],eax
-        mov     <u32> es:[edi-_O_HL_ACTIVATE+_O_HL_CLICK_BOTH_SINGLE],eax
-        mov     <u32> es:[edi-_O_HL_ACTIVATE+_O_HL_CLICK_BOTH_DOUBLE],eax
-        mov     <u32> es:[edi-_O_HL_ACTIVATE+_O_HL_CLICK_LEFT_SINGLE],eax
-        mov     <u32> es:[edi-_O_HL_ACTIVATE+_O_HL_CLICK_LEFT_DOUBLE],eax
-        mov     <u32> es:[edi-_O_HL_ACTIVATE+_O_HL_CLICK_LEFT_DOWN],eax
-        mov     <u32> es:[edi-_O_HL_ACTIVATE+_O_HL_CLICK_LEFT_UP],eax
-        mov     <u32> es:[edi-_O_HL_ACTIVATE+_O_HL_CLICK_RIGHT_SINGLE],eax
-        mov     <u32> es:[edi-_O_HL_ACTIVATE+_O_HL_CLICK_RIGHT_DOUBLE],eax
-        mov     <u32> es:[edi-_O_HL_ACTIVATE+_O_HL_CLICK_RIGHT_DOWN],eax
-        mov     <u32> es:[edi-_O_HL_ACTIVATE+_O_HL_CLICK_RIGHT_UP],eax
-        mov     <u32> es:[edi-_O_HL_ACTIVATE+_O_HL_DROPPED_INTO_LEFT],eax
-        mov     <u32> es:[edi-_O_HL_ACTIVATE+_O_HL_DROPPED_INTO_RIGHT],eax
-        mov     <u32> es:[edi-_O_HL_ACTIVATE+_O_HL_DRAG_LEFT_START],eax
-        mov     <u32> es:[edi-_O_HL_ACTIVATE+_O_HL_DRAG_LEFT_STOP],eax
-        mov     <u32> es:[edi-_O_HL_ACTIVATE+_O_HL_DRAG_RIGHT_START],eax
-        mov     <u32> es:[edi-_O_HL_ACTIVATE+_O_HL_DRAG_RIGHT_STOP],eax
-        mov     <u32> es:[edi-_O_HL_ACTIVATE+_O_HL_FOCUS_GOT],eax
-        mov     <u32> es:[edi-_O_HL_ACTIVATE+_O_HL_FOCUS_LOST],eax
-        mov     <u32> es:[edi-_O_HL_ACTIVATE+_O_HL_FOCUS_SET],eax
-        mov     <u32> es:[edi-_O_HL_ACTIVATE+_O_HL_HOVER],eax
-        mov     <u32> es:[edi-_O_HL_ACTIVATE+_O_HL_KEYSTROKE],eax
-        mov     <u32> es:[edi-_O_HL_ACTIVATE+_O_HL_WHEN_CREATED],eax
-        mov     <u32> es:[edi-_O_HL_ACTIVATE+_O_HL_WHEN_DESTROYED],eax
-        mov     <u32> es:[edi-_O_HL_ACTIVATE+_O_HL_REQUESTOR],eax
-        mov     <u32> es:[edi-_O_HL_ACTIVATE+_O_HL_REFRESH],eax
+        mov     u32 ptr es:[edi-_O_HL_ACTIVATE+_O_HL_ACTIVATE],eax
+        mov     u32 ptr es:[edi-_O_HL_ACTIVATE+_O_HL_CLICK_BOTH_SINGLE],eax
+        mov     u32 ptr es:[edi-_O_HL_ACTIVATE+_O_HL_CLICK_BOTH_DOUBLE],eax
+        mov     u32 ptr es:[edi-_O_HL_ACTIVATE+_O_HL_CLICK_LEFT_SINGLE],eax
+        mov     u32 ptr es:[edi-_O_HL_ACTIVATE+_O_HL_CLICK_LEFT_DOUBLE],eax
+        mov     u32 ptr es:[edi-_O_HL_ACTIVATE+_O_HL_CLICK_LEFT_DOWN],eax
+        mov     u32 ptr es:[edi-_O_HL_ACTIVATE+_O_HL_CLICK_LEFT_UP],eax
+        mov     u32 ptr es:[edi-_O_HL_ACTIVATE+_O_HL_CLICK_RIGHT_SINGLE],eax
+        mov     u32 ptr es:[edi-_O_HL_ACTIVATE+_O_HL_CLICK_RIGHT_DOUBLE],eax
+        mov     u32 ptr es:[edi-_O_HL_ACTIVATE+_O_HL_CLICK_RIGHT_DOWN],eax
+        mov     u32 ptr es:[edi-_O_HL_ACTIVATE+_O_HL_CLICK_RIGHT_UP],eax
+        mov     u32 ptr es:[edi-_O_HL_ACTIVATE+_O_HL_DROPPED_INTO_LEFT],eax
+        mov     u32 ptr es:[edi-_O_HL_ACTIVATE+_O_HL_DROPPED_INTO_RIGHT],eax
+        mov     u32 ptr es:[edi-_O_HL_ACTIVATE+_O_HL_DRAG_LEFT_START],eax
+        mov     u32 ptr es:[edi-_O_HL_ACTIVATE+_O_HL_DRAG_LEFT_STOP],eax
+        mov     u32 ptr es:[edi-_O_HL_ACTIVATE+_O_HL_DRAG_RIGHT_START],eax
+        mov     u32 ptr es:[edi-_O_HL_ACTIVATE+_O_HL_DRAG_RIGHT_STOP],eax
+        mov     u32 ptr es:[edi-_O_HL_ACTIVATE+_O_HL_FOCUS_GOT],eax
+        mov     u32 ptr es:[edi-_O_HL_ACTIVATE+_O_HL_FOCUS_LOST],eax
+        mov     u32 ptr es:[edi-_O_HL_ACTIVATE+_O_HL_FOCUS_SET],eax
+        mov     u32 ptr es:[edi-_O_HL_ACTIVATE+_O_HL_HOVER],eax
+        mov     u32 ptr es:[edi-_O_HL_ACTIVATE+_O_HL_KEYSTROKE],eax
+        mov     u32 ptr es:[edi-_O_HL_ACTIVATE+_O_HL_WHEN_CREATED],eax
+        mov     u32 ptr es:[edi-_O_HL_ACTIVATE+_O_HL_WHEN_DESTROYED],eax
+        mov     u32 ptr es:[edi-_O_HL_ACTIVATE+_O_HL_REQUESTOR],eax
+        mov     u32 ptr es:[edi-_O_HL_ACTIVATE+_O_HL_REFRESH],eax
         sub     edi,_O_HL_ACTIVATE
         add     esi,_O_LHL_LENGTH
 
@@ -1183,7 +1183,7 @@
         mov     bl,_PROPERTY_START
         while (byte ptr ds:[esi] != _OBJECT_END)
         {
-            mov     al,<u8>  ds:[esi]
+            mov     al,u8 ptr ds:[esi]
             if (al == _PROPERTY_START || al == _EVENT_START)
             {
                 mov     bl,al
@@ -1194,151 +1194,151 @@
                   // They're setting a property, which one?
                     if (al == _RP_ENABLED)
                     {
-                        mov     al,<u8>  ds:[esi+_O_LHL_ENABLED]
-                        mov     <u8>  es:[edi+_O_HL_ENABLED],al
+                        mov     al,u8 ptr ds:[esi+_O_LHL_ENABLED]
+                        mov     u8 ptr es:[edi+_O_HL_ENABLED],al
                         add     esi,_O_LHL_ENABLED_SIZE
                     
                     } else if (al == _RP_VISIBLE) {
-                        mov     al,<u8>  ds:[esi+_O_LHL_VISIBLE]
-                        mov     <u8>  es:[edi+_O_HL_VISIBLE],al
+                        mov     al,u8 ptr ds:[esi+_O_LHL_VISIBLE]
+                        mov     u8 ptr es:[edi+_O_HL_VISIBLE],al
                         add     esi,_O_LHL_VISIBLE_SIZE
                     
                     } else if (al == _RP_BACKGROUND) {
-                        mov     al,<u8>  ds:[esi+_O_LHL_BACKGROUND_RED]
-                        mov     <u8>  es:[edi+_O_HL_BACKGROUND+_OBJECT_RED],al
-                        mov     al,<u8>  ds:[esi+_O_LHL_BACKGROUND_GREEN]
-                        mov     <u8>  es:[edi+_O_HL_BACKGROUND+_OBJECT_GREEN],al
-                        mov     al,<u8>  ds:[esi+_O_LHL_BACKGROUND_BLUE]
-                        mov     <u8>  es:[edi+_O_HL_BACKGROUND+_OBJECT_BLUE],al
+                        mov     al,u8 ptr ds:[esi+_O_LHL_BACKGROUND_RED]
+                        mov     u8 ptr es:[edi+_O_HL_BACKGROUND+_OBJECT_RED],al
+                        mov     al,u8 ptr ds:[esi+_O_LHL_BACKGROUND_GREEN]
+                        mov     u8 ptr es:[edi+_O_HL_BACKGROUND+_OBJECT_GREEN],al
+                        mov     al,u8 ptr ds:[esi+_O_LHL_BACKGROUND_BLUE]
+                        mov     u8 ptr es:[edi+_O_HL_BACKGROUND+_OBJECT_BLUE],al
                         add     esi,_O_LHL_BACKGROUND_SIZE
                     
                     } else if (al == _RP_MISC_1) {
-                        mov     eax,<u32> ds:[esi+_O_LHL_MISC_1]
-                        mov     <u32> es:[edi+_O_HL_MISC_1],eax
+                        mov     eax,u32 ptr ds:[esi+_O_LHL_MISC_1]
+                        mov     u32 ptr es:[edi+_O_HL_MISC_1],eax
                         add     esi,_O_LHL_MISC_1_SIZE
                     
                     } else if (al == _RP_MISC_2) {
-                        mov     eax,<u32> ds:[esi+_O_LHL_MISC_2]
-                        mov     <u32> es:[edi+_O_HL_MISC_2],eax
+                        mov     eax,u32 ptr ds:[esi+_O_LHL_MISC_2]
+                        mov     u32 ptr es:[edi+_O_HL_MISC_2],eax
                         add     esi,_O_LHL_MISC_2_SIZE
                     
                     } else if (al == _RP_MISC_3) {
-                        mov     eax,<u32> ds:[esi+_O_LHL_MISC_3]
-                        mov     <u32> es:[edi+_O_HL_MISC_3],eax
+                        mov     eax,u32 ptr ds:[esi+_O_LHL_MISC_3]
+                        mov     u32 ptr es:[edi+_O_HL_MISC_3],eax
                         add     esi,_O_LHL_MISC_3_SIZE
                     
                     } else if (al == _RP_MISC_4) {
-                        mov     eax,<u32> ds:[esi+_O_LHL_MISC_4]
-                        mov     <u32> es:[edi+_O_HL_MISC_4],eax
+                        mov     eax,u32 ptr ds:[esi+_O_LHL_MISC_4]
+                        mov     u32 ptr es:[edi+_O_HL_MISC_4],eax
                         add     esi,_O_LHL_MISC_4_SIZE
                     
                     } else if (al == _RP_MISC_FLAG_1) {
-                        mov     al,<u8>  ds:[esi+_O_LHL_MISC_FLAG_1]
-                        mov     <u8>  es:[edi+_O_HL_MISC_FLAG_1],al
+                        mov     al,u8 ptr ds:[esi+_O_LHL_MISC_FLAG_1]
+                        mov     u8 ptr es:[edi+_O_HL_MISC_FLAG_1],al
                         add     esi,_O_LHL_MISC_FLAG_1_SIZE
                     
                     } else if (al == _RP_MISC_FLAG_2) {
-                        mov     al,<u8>  ds:[esi+_O_LHL_MISC_FLAG_2]
-                        mov     <u8>  es:[edi+_O_HL_MISC_FLAG_2],al
+                        mov     al,u8 ptr ds:[esi+_O_LHL_MISC_FLAG_2]
+                        mov     u8 ptr es:[edi+_O_HL_MISC_FLAG_2],al
                         add     esi,_O_LHL_MISC_FLAG_2_SIZE
                     
                     } else if (al == _RP_MISC_FLAG_3) {
-                        mov     al,<u8>  ds:[esi+_O_LHL_MISC_FLAG_3]
-                        mov     <u8>  es:[edi+_O_HL_MISC_FLAG_3],al
+                        mov     al,u8 ptr ds:[esi+_O_LHL_MISC_FLAG_3]
+                        mov     u8 ptr es:[edi+_O_HL_MISC_FLAG_3],al
                         add     esi,_O_LHL_MISC_FLAG_3_SIZE
                     
                     } else {
                       // Unknown property, abort
-                        mov     <u32> [esp+28],_UNKNOWN_OBJECT_PROPERTY
+                        mov     u32 ptr [esp+28],_UNKNOWN_OBJECT_PROPERTY
                         stc
                         jmp     quit
                     }
                 
                 } else {
                   // They're setting an event, which one?
-                    mov     ecx,<u32> ds:[esi+1]
+                    mov     ecx,u32 ptr ds:[esi+1]
                     if (al == _RE_ACTIVATE)
                     {
-                        mov     <u32> es:[edx+_O_HL_ACTIVATE],ecx
+                        mov     u32 ptr es:[edx+_O_HL_ACTIVATE],ecx
                     
                     } else if (al == _RE_CLICK_BOTH_SINGLE) {
-                        mov     <u32> es:[edx+_O_HL_CLICK_BOTH_SINGLE],ecx
+                        mov     u32 ptr es:[edx+_O_HL_CLICK_BOTH_SINGLE],ecx
                     
                     } else if (al == _RE_CLICK_BOTH_DOUBLE) {
-                        mov     <u32> es:[edx+_O_HL_CLICK_BOTH_DOUBLE],ecx
+                        mov     u32 ptr es:[edx+_O_HL_CLICK_BOTH_DOUBLE],ecx
                     
                     } else if (al == _RE_CLICK_LEFT_SINGLE) {
-                        mov     <u32> es:[edx+_O_HL_CLICK_LEFT_SINGLE],ecx
+                        mov     u32 ptr es:[edx+_O_HL_CLICK_LEFT_SINGLE],ecx
                     
                     } else if (al == _RE_CLICK_LEFT_DOUBLE) {
-                        mov     <u32> es:[edx+_O_HL_CLICK_LEFT_DOUBLE],ecx
+                        mov     u32 ptr es:[edx+_O_HL_CLICK_LEFT_DOUBLE],ecx
                     
                     } else if (al == _RE_CLICK_LEFT_DOWN) {
-                        mov     <u32> es:[edx+_O_HL_CLICK_LEFT_DOWN],ecx
+                        mov     u32 ptr es:[edx+_O_HL_CLICK_LEFT_DOWN],ecx
                     
                     } else if (al == _RE_CLICK_LEFT_UP) {
-                        mov     <u32> es:[edx+_O_HL_CLICK_LEFT_UP],ecx
+                        mov     u32 ptr es:[edx+_O_HL_CLICK_LEFT_UP],ecx
                     
                     } else if (al == _RE_CLICK_RIGHT_SINGLE) {
-                        mov     <u32> es:[edx+_O_HL_CLICK_RIGHT_SINGLE],ecx
+                        mov     u32 ptr es:[edx+_O_HL_CLICK_RIGHT_SINGLE],ecx
                     
                     } else if (al == _RE_CLICK_RIGHT_DOUBLE) {
-                        mov     <u32> es:[edx+_O_HL_CLICK_RIGHT_DOUBLE],ecx
+                        mov     u32 ptr es:[edx+_O_HL_CLICK_RIGHT_DOUBLE],ecx
                     
                     } else if (al == _RE_CLICK_RIGHT_DOWN) {
-                        mov     <u32> es:[edx+_O_HL_CLICK_RIGHT_DOWN],ecx
+                        mov     u32 ptr es:[edx+_O_HL_CLICK_RIGHT_DOWN],ecx
                     
                     } else if (al == _RE_CLICK_RIGHT_UP) {
-                        mov     <u32> es:[edx+_O_HL_CLICK_RIGHT_UP],ecx
+                        mov     u32 ptr es:[edx+_O_HL_CLICK_RIGHT_UP],ecx
                     
                     } else if (al == _RE_DROPPED_INTO_LEFT) {
-                        mov     <u32> es:[edx+_O_HL_DROPPED_INTO_LEFT],ecx
+                        mov     u32 ptr es:[edx+_O_HL_DROPPED_INTO_LEFT],ecx
                     
                     } else if (al == _RE_DROPPED_INTO_RIGHT) {
-                        mov     <u32> es:[edx+_O_HL_DROPPED_INTO_RIGHT],ecx
+                        mov     u32 ptr es:[edx+_O_HL_DROPPED_INTO_RIGHT],ecx
                     
                     } else if (al == _RE_DRAG_LEFT_START) {
-                        mov     <u32> es:[edx+_O_HL_DRAG_LEFT_START],ecx
+                        mov     u32 ptr es:[edx+_O_HL_DRAG_LEFT_START],ecx
                     
                     } else if (al == _RE_DRAG_LEFT_STOP) {
-                        mov     <u32> es:[edx+_O_HL_DRAG_LEFT_STOP],ecx
+                        mov     u32 ptr es:[edx+_O_HL_DRAG_LEFT_STOP],ecx
                     
                     } else if (al == _RE_DRAG_RIGHT_START) {
-                        mov     <u32> es:[edx+_O_HL_DRAG_RIGHT_START],ecx
+                        mov     u32 ptr es:[edx+_O_HL_DRAG_RIGHT_START],ecx
                     
                     } else if (al == _RE_DRAG_RIGHT_STOP) {
-                        mov     <u32> es:[edx+_O_HL_DRAG_RIGHT_STOP],ecx
+                        mov     u32 ptr es:[edx+_O_HL_DRAG_RIGHT_STOP],ecx
                     
                     } else if (al == _RE_FOCUS_GOT) {
-                        mov     <u32> es:[edx+_O_HL_FOCUS_GOT],ecx
+                        mov     u32 ptr es:[edx+_O_HL_FOCUS_GOT],ecx
                     
                     } else if (al == _RE_FOCUS_LOST) {
-                        mov     <u32> es:[edx+_O_HL_FOCUS_LOST],ecx
+                        mov     u32 ptr es:[edx+_O_HL_FOCUS_LOST],ecx
                     
                     } else if (al == _RE_FOCUS_SET) {
-                        mov     <u32> es:[edx+_O_HL_FOCUS_SET],ecx
+                        mov     u32 ptr es:[edx+_O_HL_FOCUS_SET],ecx
                     
                     } else if (al == _RE_HOVER) {
-                        mov     <u32> es:[edx+_O_HL_HOVER],ecx
+                        mov     u32 ptr es:[edx+_O_HL_HOVER],ecx
                     
                     } else if (al == _RE_KEYSTROKE) {
-                        mov     <u32> es:[edx+_O_HL_KEYSTROKE],ecx
+                        mov     u32 ptr es:[edx+_O_HL_KEYSTROKE],ecx
                     
                     } else if (al == _RE_WHEN_CREATED) {
-                        mov     <u32> es:[edx+_O_HL_WHEN_CREATED],ecx
+                        mov     u32 ptr es:[edx+_O_HL_WHEN_CREATED],ecx
                     
                     } else if (al == _RE_WHEN_DESTROYED) {
-                        mov     <u32> es:[edx+_O_HL_WHEN_DESTROYED],ecx
+                        mov     u32 ptr es:[edx+_O_HL_WHEN_DESTROYED],ecx
                     
                     } else if (al == _RE_REQUESTOR) {
-                        mov     <u32> es:[edx+_O_HL_REQUESTOR],ecx
+                        mov     u32 ptr es:[edx+_O_HL_REQUESTOR],ecx
                     
                     } else if (al == _RE_REFRESH) {
-                        mov     <u32> es:[edx+_O_HL_REFRESH],ecx
+                        mov     u32 ptr es:[edx+_O_HL_REFRESH],ecx
                     
                     } else {
                       // Unknown property, abort
-                        mov     <u32> [esp+28],_UNKNOWN_OBJECT_EVENT
+                        mov     u32 ptr [esp+28],_UNKNOWN_OBJECT_EVENT
                         stc
                         jmp     quit
                     }
@@ -1368,59 +1368,59 @@
     //
         pushad
       // Headers unique to _RECTANGLE items
-        mov     <u8>  es:[edi+_OBJECT_TYPE],_RECTANGLE
+        mov     u8 ptr es:[edi+_OBJECT_TYPE],_RECTANGLE
       // Required headers
-        mov     ebx,<u32> ds:[esi+_O_LR_TOP]
-        mov     <u32> es:[edi+_O_R_TOP],ebx
-        mov     ebx,<u32> ds:[esi+_O_LR_LEFT]
-        mov     <u32> es:[edi+_O_R_LEFT],ebx
-        mov     ebx,<u32> ds:[esi+_O_LR_WIDTH]
-        mov     <u32> es:[edi+_O_R_WIDTH],ebx
-        mov     ebx,<u32> ds:[esi+_O_LR_HEIGHT]
-        mov     <u32> es:[edi+_O_R_HEIGHT],ebx
+        mov     ebx,u32 ptr ds:[esi+_O_LR_TOP]
+        mov     u32 ptr es:[edi+_O_R_TOP],ebx
+        mov     ebx,u32 ptr ds:[esi+_O_LR_LEFT]
+        mov     u32 ptr es:[edi+_O_R_LEFT],ebx
+        mov     ebx,u32 ptr ds:[esi+_O_LR_WIDTH]
+        mov     u32 ptr es:[edi+_O_R_WIDTH],ebx
+        mov     ebx,u32 ptr ds:[esi+_O_LR_HEIGHT]
+        mov     u32 ptr es:[edi+_O_R_HEIGHT],ebx
 
       // Default initialization
         mov     eax,-1
         xor     ecx,ecx
-        mov     <u8>  es:[edi+_O_R_ENABLED],1
-        mov     <u8>  es:[edi+_O_R_VISIBLE],cl
-        mov     <u8>  es:[edi+_O_R_BACKGROUND+_OBJECT_RED],cl
-        mov     <u8>  es:[edi+_O_R_BACKGROUND+_OBJECT_GREEN],cl
-        mov     <u8>  es:[edi+_O_R_BACKGROUND+_OBJECT_BLUE],cl
-        mov     <u32> es:[edi+_O_R_MISC_1],eax
-        mov     <u32> es:[edi+_O_R_MISC_2],eax
-        mov     <u32> es:[edi+_O_R_MISC_3],eax
-        mov     <u32> es:[edi+_O_R_MISC_4],eax
-        mov     <u8>  es:[edi+_O_R_MISC_FLAG_1],al
-        mov     <u8>  es:[edi+_O_R_MISC_FLAG_2],al
-        mov     <u8>  es:[edi+_O_R_MISC_FLAG_3],al
+        mov     u8 ptr es:[edi+_O_R_ENABLED],1
+        mov     u8 ptr es:[edi+_O_R_VISIBLE],cl
+        mov     u8 ptr es:[edi+_O_R_BACKGROUND+_OBJECT_RED],cl
+        mov     u8 ptr es:[edi+_O_R_BACKGROUND+_OBJECT_GREEN],cl
+        mov     u8 ptr es:[edi+_O_R_BACKGROUND+_OBJECT_BLUE],cl
+        mov     u32 ptr es:[edi+_O_R_MISC_1],eax
+        mov     u32 ptr es:[edi+_O_R_MISC_2],eax
+        mov     u32 ptr es:[edi+_O_R_MISC_3],eax
+        mov     u32 ptr es:[edi+_O_R_MISC_4],eax
+        mov     u8 ptr es:[edi+_O_R_MISC_FLAG_1],al
+        mov     u8 ptr es:[edi+_O_R_MISC_FLAG_2],al
+        mov     u8 ptr es:[edi+_O_R_MISC_FLAG_3],al
         add     edi,_O_R_ACTIVATE
-        mov     <u32> es:[edi-_O_R_ACTIVATE+_O_R_ACTIVATE],eax
-        mov     <u32> es:[edi-_O_R_ACTIVATE+_O_R_CLICK_BOTH_SINGLE],eax
-        mov     <u32> es:[edi-_O_R_ACTIVATE+_O_R_CLICK_BOTH_DOUBLE],eax
-        mov     <u32> es:[edi-_O_R_ACTIVATE+_O_R_CLICK_LEFT_SINGLE],eax
-        mov     <u32> es:[edi-_O_R_ACTIVATE+_O_R_CLICK_LEFT_DOUBLE],eax
-        mov     <u32> es:[edi-_O_R_ACTIVATE+_O_R_CLICK_LEFT_DOWN],eax
-        mov     <u32> es:[edi-_O_R_ACTIVATE+_O_R_CLICK_LEFT_UP],eax
-        mov     <u32> es:[edi-_O_R_ACTIVATE+_O_R_CLICK_RIGHT_SINGLE],eax
-        mov     <u32> es:[edi-_O_R_ACTIVATE+_O_R_CLICK_RIGHT_DOUBLE],eax
-        mov     <u32> es:[edi-_O_R_ACTIVATE+_O_R_CLICK_RIGHT_DOWN],eax
-        mov     <u32> es:[edi-_O_R_ACTIVATE+_O_R_CLICK_RIGHT_UP],eax
-        mov     <u32> es:[edi-_O_R_ACTIVATE+_O_R_DROPPED_INTO_LEFT],eax
-        mov     <u32> es:[edi-_O_R_ACTIVATE+_O_R_DROPPED_INTO_RIGHT],eax
-        mov     <u32> es:[edi-_O_R_ACTIVATE+_O_R_DRAG_LEFT_START],eax
-        mov     <u32> es:[edi-_O_R_ACTIVATE+_O_R_DRAG_LEFT_STOP],eax
-        mov     <u32> es:[edi-_O_R_ACTIVATE+_O_R_DRAG_RIGHT_START],eax
-        mov     <u32> es:[edi-_O_R_ACTIVATE+_O_R_DRAG_RIGHT_STOP],eax
-        mov     <u32> es:[edi-_O_R_ACTIVATE+_O_R_FOCUS_GOT],eax
-        mov     <u32> es:[edi-_O_R_ACTIVATE+_O_R_FOCUS_LOST],eax
-        mov     <u32> es:[edi-_O_R_ACTIVATE+_O_R_FOCUS_SET],eax
-        mov     <u32> es:[edi-_O_R_ACTIVATE+_O_R_HOVER],eax
-        mov     <u32> es:[edi-_O_R_ACTIVATE+_O_R_KEYSTROKE],eax
-        mov     <u32> es:[edi-_O_R_ACTIVATE+_O_R_WHEN_CREATED],eax
-        mov     <u32> es:[edi-_O_R_ACTIVATE+_O_R_WHEN_DESTROYED],eax
-        mov     <u32> es:[edi-_O_R_ACTIVATE+_O_R_REQUESTOR],eax
-        mov     <u32> es:[edi-_O_R_ACTIVATE+_O_R_REFRESH],eax
+        mov     u32 ptr es:[edi-_O_R_ACTIVATE+_O_R_ACTIVATE],eax
+        mov     u32 ptr es:[edi-_O_R_ACTIVATE+_O_R_CLICK_BOTH_SINGLE],eax
+        mov     u32 ptr es:[edi-_O_R_ACTIVATE+_O_R_CLICK_BOTH_DOUBLE],eax
+        mov     u32 ptr es:[edi-_O_R_ACTIVATE+_O_R_CLICK_LEFT_SINGLE],eax
+        mov     u32 ptr es:[edi-_O_R_ACTIVATE+_O_R_CLICK_LEFT_DOUBLE],eax
+        mov     u32 ptr es:[edi-_O_R_ACTIVATE+_O_R_CLICK_LEFT_DOWN],eax
+        mov     u32 ptr es:[edi-_O_R_ACTIVATE+_O_R_CLICK_LEFT_UP],eax
+        mov     u32 ptr es:[edi-_O_R_ACTIVATE+_O_R_CLICK_RIGHT_SINGLE],eax
+        mov     u32 ptr es:[edi-_O_R_ACTIVATE+_O_R_CLICK_RIGHT_DOUBLE],eax
+        mov     u32 ptr es:[edi-_O_R_ACTIVATE+_O_R_CLICK_RIGHT_DOWN],eax
+        mov     u32 ptr es:[edi-_O_R_ACTIVATE+_O_R_CLICK_RIGHT_UP],eax
+        mov     u32 ptr es:[edi-_O_R_ACTIVATE+_O_R_DROPPED_INTO_LEFT],eax
+        mov     u32 ptr es:[edi-_O_R_ACTIVATE+_O_R_DROPPED_INTO_RIGHT],eax
+        mov     u32 ptr es:[edi-_O_R_ACTIVATE+_O_R_DRAG_LEFT_START],eax
+        mov     u32 ptr es:[edi-_O_R_ACTIVATE+_O_R_DRAG_LEFT_STOP],eax
+        mov     u32 ptr es:[edi-_O_R_ACTIVATE+_O_R_DRAG_RIGHT_START],eax
+        mov     u32 ptr es:[edi-_O_R_ACTIVATE+_O_R_DRAG_RIGHT_STOP],eax
+        mov     u32 ptr es:[edi-_O_R_ACTIVATE+_O_R_FOCUS_GOT],eax
+        mov     u32 ptr es:[edi-_O_R_ACTIVATE+_O_R_FOCUS_LOST],eax
+        mov     u32 ptr es:[edi-_O_R_ACTIVATE+_O_R_FOCUS_SET],eax
+        mov     u32 ptr es:[edi-_O_R_ACTIVATE+_O_R_HOVER],eax
+        mov     u32 ptr es:[edi-_O_R_ACTIVATE+_O_R_KEYSTROKE],eax
+        mov     u32 ptr es:[edi-_O_R_ACTIVATE+_O_R_WHEN_CREATED],eax
+        mov     u32 ptr es:[edi-_O_R_ACTIVATE+_O_R_WHEN_DESTROYED],eax
+        mov     u32 ptr es:[edi-_O_R_ACTIVATE+_O_R_REQUESTOR],eax
+        mov     u32 ptr es:[edi-_O_R_ACTIVATE+_O_R_REFRESH],eax
         sub     edi,_O_R_ACTIVATE
         add     esi,_O_LR_LENGTH
 
@@ -1428,7 +1428,7 @@
         mov     bl,_PROPERTY_START
         while (byte ptr ds:[esi] != _OBJECT_END)
         {
-            mov     al,<u8>  ds:[esi]
+            mov     al,u8 ptr ds:[esi]
             if (al == _PROPERTY_START || al == _EVENT_START)
             {
                 mov     bl,al
@@ -1439,151 +1439,151 @@
                   // They're setting a property, which one?
                     if (al == _RP_ENABLED)
                     {
-                        mov     al,<u8>  ds:[esi+_O_LR_ENABLED]
-                        mov     <u8>  es:[edi+_O_R_ENABLED],al
+                        mov     al,u8 ptr ds:[esi+_O_LR_ENABLED]
+                        mov     u8 ptr es:[edi+_O_R_ENABLED],al
                         add     esi,_O_LR_ENABLED_SIZE
                     
                     } else if (al == _RP_VISIBLE) {
-                        mov     al,<u8>  ds:[esi+_O_LR_VISIBLE]
-                        mov     <u8>  es:[edi+_O_R_VISIBLE],al
+                        mov     al,u8 ptr ds:[esi+_O_LR_VISIBLE]
+                        mov     u8 ptr es:[edi+_O_R_VISIBLE],al
                         add     esi,_O_LR_VISIBLE_SIZE
                     
                     } else if (al == _RP_BACKGROUND) {
-                        mov     al,<u8>  ds:[esi+_O_LR_BACKGROUND_RED]
-                        mov     <u8>  es:[edi+_O_R_BACKGROUND+_OBJECT_RED],al
-                        mov     al,<u8>  ds:[esi+_O_LR_BACKGROUND_GREEN]
-                        mov     <u8>  es:[edi+_O_R_BACKGROUND+_OBJECT_GREEN],al
-                        mov     al,<u8>  ds:[esi+_O_LR_BACKGROUND_BLUE]
-                        mov     <u8>  es:[edi+_O_R_BACKGROUND+_OBJECT_BLUE],al
+                        mov     al,u8 ptr ds:[esi+_O_LR_BACKGROUND_RED]
+                        mov     u8 ptr es:[edi+_O_R_BACKGROUND+_OBJECT_RED],al
+                        mov     al,u8 ptr ds:[esi+_O_LR_BACKGROUND_GREEN]
+                        mov     u8 ptr es:[edi+_O_R_BACKGROUND+_OBJECT_GREEN],al
+                        mov     al,u8 ptr ds:[esi+_O_LR_BACKGROUND_BLUE]
+                        mov     u8 ptr es:[edi+_O_R_BACKGROUND+_OBJECT_BLUE],al
                         add     esi,_O_LR_BACKGROUND_SIZE
                     
                     } else if (al == _RP_MISC_1) {
-                        mov     eax,<u32> ds:[esi+_O_LR_MISC_1]
-                        mov     <u32> es:[edi+_O_R_MISC_1],eax
+                        mov     eax,u32 ptr ds:[esi+_O_LR_MISC_1]
+                        mov     u32 ptr es:[edi+_O_R_MISC_1],eax
                         add     esi,_O_LR_MISC_1_SIZE
                     
                     } else if (al == _RP_MISC_2) {
-                        mov     eax,<u32> ds:[esi+_O_LR_MISC_2]
-                        mov     <u32> es:[edi+_O_R_MISC_2],eax
+                        mov     eax,u32 ptr ds:[esi+_O_LR_MISC_2]
+                        mov     u32 ptr es:[edi+_O_R_MISC_2],eax
                         add     esi,_O_LR_MISC_2_SIZE
                     
                     } else if (al == _RP_MISC_3) {
-                        mov     eax,<u32> ds:[esi+_O_LR_MISC_3]
-                        mov     <u32> es:[edi+_O_R_MISC_3],eax
+                        mov     eax,u32 ptr ds:[esi+_O_LR_MISC_3]
+                        mov     u32 ptr es:[edi+_O_R_MISC_3],eax
                         add     esi,_O_LR_MISC_3_SIZE
                     
                     } else if (al == _RP_MISC_4) {
-                        mov     eax,<u32> ds:[esi+_O_LR_MISC_4]
-                        mov     <u32> es:[edi+_O_R_MISC_4],eax
+                        mov     eax,u32 ptr ds:[esi+_O_LR_MISC_4]
+                        mov     u32 ptr es:[edi+_O_R_MISC_4],eax
                         add     esi,_O_LR_MISC_4_SIZE
                     
                     } else if (al == _RP_MISC_FLAG_1) {
-                        mov     al,<u8>  ds:[esi+_O_LR_MISC_FLAG_1]
-                        mov     <u8>  es:[edi+_O_R_MISC_FLAG_1],al
+                        mov     al,u8 ptr ds:[esi+_O_LR_MISC_FLAG_1]
+                        mov     u8 ptr es:[edi+_O_R_MISC_FLAG_1],al
                         add     esi,_O_LR_MISC_FLAG_1_SIZE
                     
                     } else if (al == _RP_MISC_FLAG_2) {
-                        mov     al,<u8>  ds:[esi+_O_LR_MISC_FLAG_2]
-                        mov     <u8>  es:[edi+_O_R_MISC_FLAG_2],al
+                        mov     al,u8 ptr ds:[esi+_O_LR_MISC_FLAG_2]
+                        mov     u8 ptr es:[edi+_O_R_MISC_FLAG_2],al
                         add     esi,_O_LR_MISC_FLAG_2_SIZE
                     
                     } else if (al == _RP_MISC_FLAG_3) {
-                        mov     al,<u8>  ds:[esi+_O_LR_MISC_FLAG_3]
-                        mov     <u8>  es:[edi+_O_R_MISC_FLAG_3],al
+                        mov     al,u8 ptr ds:[esi+_O_LR_MISC_FLAG_3]
+                        mov     u8 ptr es:[edi+_O_R_MISC_FLAG_3],al
                         add     esi,_O_LR_MISC_FLAG_3_SIZE
                     
                     } else {
                       // Unknown property, abort
-                        mov     <u32> [esp+28],_UNKNOWN_OBJECT_PROPERTY
+                        mov     u32 ptr [esp+28],_UNKNOWN_OBJECT_PROPERTY
                         stc
                         jmp     quit
                     }
                 
                 } else {
                   // They're setting an event, which one?
-                    mov     ecx,<u32> ds:[esi+1]
+                    mov     ecx,u32 ptr ds:[esi+1]
                     if (al == _RE_ACTIVATE)
                     {
-                        mov     <u32> es:[edx+_O_R_ACTIVATE],ecx
+                        mov     u32 ptr es:[edx+_O_R_ACTIVATE],ecx
                     
                     } else if (al == _RE_CLICK_BOTH_SINGLE) {
-                        mov     <u32> es:[edx+_O_R_CLICK_BOTH_SINGLE],ecx
+                        mov     u32 ptr es:[edx+_O_R_CLICK_BOTH_SINGLE],ecx
                     
                     } else if (al == _RE_CLICK_BOTH_DOUBLE) {
-                        mov     <u32> es:[edx+_O_R_CLICK_BOTH_DOUBLE],ecx
+                        mov     u32 ptr es:[edx+_O_R_CLICK_BOTH_DOUBLE],ecx
                     
                     } else if (al == _RE_CLICK_LEFT_SINGLE) {
-                        mov     <u32> es:[edx+_O_R_CLICK_LEFT_SINGLE],ecx
+                        mov     u32 ptr es:[edx+_O_R_CLICK_LEFT_SINGLE],ecx
                     
                     } else if (al == _RE_CLICK_LEFT_DOUBLE) {
-                        mov     <u32> es:[edx+_O_R_CLICK_LEFT_DOUBLE],ecx
+                        mov     u32 ptr es:[edx+_O_R_CLICK_LEFT_DOUBLE],ecx
                     
                     } else if (al == _RE_CLICK_LEFT_DOWN) {
-                        mov     <u32> es:[edx+_O_R_CLICK_LEFT_DOWN],ecx
+                        mov     u32 ptr es:[edx+_O_R_CLICK_LEFT_DOWN],ecx
                     
                     } else if (al == _RE_CLICK_LEFT_UP) {
-                        mov     <u32> es:[edx+_O_R_CLICK_LEFT_UP],ecx
+                        mov     u32 ptr es:[edx+_O_R_CLICK_LEFT_UP],ecx
                     
                     } else if (al == _RE_CLICK_RIGHT_SINGLE) {
-                        mov     <u32> es:[edx+_O_R_CLICK_RIGHT_SINGLE],ecx
+                        mov     u32 ptr es:[edx+_O_R_CLICK_RIGHT_SINGLE],ecx
                     
                     } else if (al == _RE_CLICK_RIGHT_DOUBLE) {
-                        mov     <u32> es:[edx+_O_R_CLICK_RIGHT_DOUBLE],ecx
+                        mov     u32 ptr es:[edx+_O_R_CLICK_RIGHT_DOUBLE],ecx
                     
                     } else if (al == _RE_CLICK_RIGHT_DOWN) {
-                        mov     <u32> es:[edx+_O_R_CLICK_RIGHT_DOWN],ecx
+                        mov     u32 ptr es:[edx+_O_R_CLICK_RIGHT_DOWN],ecx
                     
                     } else if (al == _RE_CLICK_RIGHT_UP) {
-                        mov     <u32> es:[edx+_O_R_CLICK_RIGHT_UP],ecx
+                        mov     u32 ptr es:[edx+_O_R_CLICK_RIGHT_UP],ecx
                     
                     } else if (al == _RE_DROPPED_INTO_LEFT) {
-                        mov     <u32> es:[edx+_O_R_DROPPED_INTO_LEFT],ecx
+                        mov     u32 ptr es:[edx+_O_R_DROPPED_INTO_LEFT],ecx
                     
                     } else if (al == _RE_DROPPED_INTO_RIGHT) {
-                        mov     <u32> es:[edx+_O_R_DROPPED_INTO_RIGHT],ecx
+                        mov     u32 ptr es:[edx+_O_R_DROPPED_INTO_RIGHT],ecx
                     
                     } else if (al == _RE_DRAG_LEFT_START) {
-                        mov     <u32> es:[edx+_O_R_DRAG_LEFT_START],ecx
+                        mov     u32 ptr es:[edx+_O_R_DRAG_LEFT_START],ecx
                     
                     } else if (al == _RE_DRAG_LEFT_STOP) {
-                        mov     <u32> es:[edx+_O_R_DRAG_LEFT_STOP],ecx
+                        mov     u32 ptr es:[edx+_O_R_DRAG_LEFT_STOP],ecx
                     
                     } else if (al == _RE_DRAG_RIGHT_START) {
-                        mov     <u32> es:[edx+_O_R_DRAG_RIGHT_START],ecx
+                        mov     u32 ptr es:[edx+_O_R_DRAG_RIGHT_START],ecx
                     
                     } else if (al == _RE_DRAG_RIGHT_STOP) {
-                        mov     <u32> es:[edx+_O_R_DRAG_RIGHT_STOP],ecx
+                        mov     u32 ptr es:[edx+_O_R_DRAG_RIGHT_STOP],ecx
                     
                     } else if (al == _RE_FOCUS_GOT) {
-                        mov     <u32> es:[edx+_O_R_FOCUS_GOT],ecx
+                        mov     u32 ptr es:[edx+_O_R_FOCUS_GOT],ecx
                     
                     } else if (al == _RE_FOCUS_LOST) {
-                        mov     <u32> es:[edx+_O_R_FOCUS_LOST],ecx
+                        mov     u32 ptr es:[edx+_O_R_FOCUS_LOST],ecx
                     
                     } else if (al == _RE_FOCUS_SET) {
-                        mov     <u32> es:[edx+_O_R_FOCUS_SET],ecx
+                        mov     u32 ptr es:[edx+_O_R_FOCUS_SET],ecx
                     
                     } else if (al == _RE_HOVER) {
-                        mov     <u32> es:[edx+_O_R_HOVER],ecx
+                        mov     u32 ptr es:[edx+_O_R_HOVER],ecx
                     
                     } else if (al == _RE_KEYSTROKE) {
-                        mov     <u32> es:[edx+_O_R_KEYSTROKE],ecx
+                        mov     u32 ptr es:[edx+_O_R_KEYSTROKE],ecx
                     
                     } else if (al == _RE_WHEN_CREATED) {
-                        mov     <u32> es:[edx+_O_R_WHEN_CREATED],ecx
+                        mov     u32 ptr es:[edx+_O_R_WHEN_CREATED],ecx
                     
                     } else if (al == _RE_WHEN_DESTROYED) {
-                        mov     <u32> es:[edx+_O_R_WHEN_DESTROYED],ecx
+                        mov     u32 ptr es:[edx+_O_R_WHEN_DESTROYED],ecx
                     
                     } else if (al == _RE_REQUESTOR) {
-                        mov     <u32> es:[edx+_O_R_REQUESTOR],ecx
+                        mov     u32 ptr es:[edx+_O_R_REQUESTOR],ecx
                     
                     } else if (al == _RE_REFRESH) {
-                        mov     <u32> es:[edx+_O_R_REFRESH],ecx
+                        mov     u32 ptr es:[edx+_O_R_REFRESH],ecx
                     
                     } else {
                       // Unknown property, abort
-                        mov     <u32> [esp+28],_UNKNOWN_OBJECT_EVENT
+                        mov     u32 ptr [esp+28],_UNKNOWN_OBJECT_EVENT
                         stc
                         jmp     quit
                     }
@@ -1613,65 +1613,65 @@
     //
         pushad
       // Headers unique to _RECTANGLE items
-        mov     <u8>  es:[edi+_OBJECT_TYPE],_BORDER_BOX
+        mov     u8 ptr es:[edi+_OBJECT_TYPE],_BORDER_BOX
       // Required headers
-        mov     ebx,<u32> ds:[esi+_O_LBB_TOP]
-        mov     <u32> es:[edi+_O_BB_TOP],ebx
-        mov     ebx,<u32> ds:[esi+_O_LBB_LEFT]
-        mov     <u32> es:[edi+_O_BB_LEFT],ebx
-        mov     ebx,<u32> ds:[esi+_O_LBB_WIDTH]
-        mov     <u32> es:[edi+_O_BB_WIDTH],ebx
-        mov     ebx,<u32> ds:[esi+_O_LBB_HEIGHT]
-        mov     <u32> es:[edi+_O_BB_HEIGHT],ebx
+        mov     ebx,u32 ptr ds:[esi+_O_LBB_TOP]
+        mov     u32 ptr es:[edi+_O_BB_TOP],ebx
+        mov     ebx,u32 ptr ds:[esi+_O_LBB_LEFT]
+        mov     u32 ptr es:[edi+_O_BB_LEFT],ebx
+        mov     ebx,u32 ptr ds:[esi+_O_LBB_WIDTH]
+        mov     u32 ptr es:[edi+_O_BB_WIDTH],ebx
+        mov     ebx,u32 ptr ds:[esi+_O_LBB_HEIGHT]
+        mov     u32 ptr es:[edi+_O_BB_HEIGHT],ebx
 
       // Default initialization
         mov     eax,-1
         xor     ecx,ecx
-        mov     <u8>  es:[edi+_O_BB_ENABLED],1
-        mov     <u8>  es:[edi+_O_BB_VISIBLE],cl
-        mov     <u8>  es:[edi+_O_BB_BACKGROUND+_OBJECT_RED],cl
-        mov     <u8>  es:[edi+_O_BB_BACKGROUND+_OBJECT_GREEN],cl
-        mov     <u8>  es:[edi+_O_BB_BACKGROUND+_OBJECT_BLUE],cl
-        mov     <u8>  es:[edi+_O_BB_LIGHT_BORDER+_OBJECT_RED],cl
-        mov     <u8>  es:[edi+_O_BB_LIGHT_BORDER+_OBJECT_GREEN],cl
-        mov     <u8>  es:[edi+_O_BB_LIGHT_BORDER+_OBJECT_BLUE],cl
-        mov     <u8>  es:[edi+_O_BB_SHADOW_BORDER+_OBJECT_RED],cl
-        mov     <u8>  es:[edi+_O_BB_SHADOW_BORDER+_OBJECT_GREEN],cl
-        mov     <u8>  es:[edi+_O_BB_SHADOW_BORDER+_OBJECT_BLUE],cl
-        mov     <u32> es:[edi+_O_BB_MISC_1],eax
-        mov     <u32> es:[edi+_O_BB_MISC_2],eax
-        mov     <u32> es:[edi+_O_BB_MISC_3],eax
-        mov     <u32> es:[edi+_O_BB_MISC_4],eax
-        mov     <u8>  es:[edi+_O_BB_MISC_FLAG_1],al
-        mov     <u8>  es:[edi+_O_BB_MISC_FLAG_2],al
-        mov     <u8>  es:[edi+_O_BB_MISC_FLAG_3],al
+        mov     u8 ptr es:[edi+_O_BB_ENABLED],1
+        mov     u8 ptr es:[edi+_O_BB_VISIBLE],cl
+        mov     u8 ptr es:[edi+_O_BB_BACKGROUND+_OBJECT_RED],cl
+        mov     u8 ptr es:[edi+_O_BB_BACKGROUND+_OBJECT_GREEN],cl
+        mov     u8 ptr es:[edi+_O_BB_BACKGROUND+_OBJECT_BLUE],cl
+        mov     u8 ptr es:[edi+_O_BB_LIGHT_BORDER+_OBJECT_RED],cl
+        mov     u8 ptr es:[edi+_O_BB_LIGHT_BORDER+_OBJECT_GREEN],cl
+        mov     u8 ptr es:[edi+_O_BB_LIGHT_BORDER+_OBJECT_BLUE],cl
+        mov     u8 ptr es:[edi+_O_BB_SHADOW_BORDER+_OBJECT_RED],cl
+        mov     u8 ptr es:[edi+_O_BB_SHADOW_BORDER+_OBJECT_GREEN],cl
+        mov     u8 ptr es:[edi+_O_BB_SHADOW_BORDER+_OBJECT_BLUE],cl
+        mov     u32 ptr es:[edi+_O_BB_MISC_1],eax
+        mov     u32 ptr es:[edi+_O_BB_MISC_2],eax
+        mov     u32 ptr es:[edi+_O_BB_MISC_3],eax
+        mov     u32 ptr es:[edi+_O_BB_MISC_4],eax
+        mov     u8 ptr es:[edi+_O_BB_MISC_FLAG_1],al
+        mov     u8 ptr es:[edi+_O_BB_MISC_FLAG_2],al
+        mov     u8 ptr es:[edi+_O_BB_MISC_FLAG_3],al
         add     edi,_O_BB_ACTIVATE
-        mov     <u32> es:[edi-_O_BB_ACTIVATE+_O_BB_ACTIVATE],eax
-        mov     <u32> es:[edi-_O_BB_ACTIVATE+_O_BB_CLICK_BOTH_SINGLE],eax
-        mov     <u32> es:[edi-_O_BB_ACTIVATE+_O_BB_CLICK_BOTH_DOUBLE],eax
-        mov     <u32> es:[edi-_O_BB_ACTIVATE+_O_BB_CLICK_LEFT_SINGLE],eax
-        mov     <u32> es:[edi-_O_BB_ACTIVATE+_O_BB_CLICK_LEFT_DOUBLE],eax
-        mov     <u32> es:[edi-_O_BB_ACTIVATE+_O_BB_CLICK_LEFT_DOWN],eax
-        mov     <u32> es:[edi-_O_BB_ACTIVATE+_O_BB_CLICK_LEFT_UP],eax
-        mov     <u32> es:[edi-_O_BB_ACTIVATE+_O_BB_CLICK_RIGHT_SINGLE],eax
-        mov     <u32> es:[edi-_O_BB_ACTIVATE+_O_BB_CLICK_RIGHT_DOUBLE],eax
-        mov     <u32> es:[edi-_O_BB_ACTIVATE+_O_BB_CLICK_RIGHT_DOWN],eax
-        mov     <u32> es:[edi-_O_BB_ACTIVATE+_O_BB_CLICK_RIGHT_UP],eax
-        mov     <u32> es:[edi-_O_BB_ACTIVATE+_O_BB_DROPPED_INTO_LEFT],eax
-        mov     <u32> es:[edi-_O_BB_ACTIVATE+_O_BB_DROPPED_INTO_RIGHT],eax
-        mov     <u32> es:[edi-_O_BB_ACTIVATE+_O_BB_DRAG_LEFT_START],eax
-        mov     <u32> es:[edi-_O_BB_ACTIVATE+_O_BB_DRAG_LEFT_STOP],eax
-        mov     <u32> es:[edi-_O_BB_ACTIVATE+_O_BB_DRAG_RIGHT_START],eax
-        mov     <u32> es:[edi-_O_BB_ACTIVATE+_O_BB_DRAG_RIGHT_STOP],eax
-        mov     <u32> es:[edi-_O_BB_ACTIVATE+_O_BB_FOCUS_GOT],eax
-        mov     <u32> es:[edi-_O_BB_ACTIVATE+_O_BB_FOCUS_LOST],eax
-        mov     <u32> es:[edi-_O_BB_ACTIVATE+_O_BB_FOCUS_SET],eax
-        mov     <u32> es:[edi-_O_BB_ACTIVATE+_O_BB_HOVER],eax
-        mov     <u32> es:[edi-_O_BB_ACTIVATE+_O_BB_KEYSTROKE],eax
-        mov     <u32> es:[edi-_O_BB_ACTIVATE+_O_BB_WHEN_CREATED],eax
-        mov     <u32> es:[edi-_O_BB_ACTIVATE+_O_BB_WHEN_DESTROYED],eax
-        mov     <u32> es:[edi-_O_BB_ACTIVATE+_O_BB_REQUESTOR],eax
-        mov     <u32> es:[edi-_O_BB_ACTIVATE+_O_BB_REFRESH],eax
+        mov     u32 ptr es:[edi-_O_BB_ACTIVATE+_O_BB_ACTIVATE],eax
+        mov     u32 ptr es:[edi-_O_BB_ACTIVATE+_O_BB_CLICK_BOTH_SINGLE],eax
+        mov     u32 ptr es:[edi-_O_BB_ACTIVATE+_O_BB_CLICK_BOTH_DOUBLE],eax
+        mov     u32 ptr es:[edi-_O_BB_ACTIVATE+_O_BB_CLICK_LEFT_SINGLE],eax
+        mov     u32 ptr es:[edi-_O_BB_ACTIVATE+_O_BB_CLICK_LEFT_DOUBLE],eax
+        mov     u32 ptr es:[edi-_O_BB_ACTIVATE+_O_BB_CLICK_LEFT_DOWN],eax
+        mov     u32 ptr es:[edi-_O_BB_ACTIVATE+_O_BB_CLICK_LEFT_UP],eax
+        mov     u32 ptr es:[edi-_O_BB_ACTIVATE+_O_BB_CLICK_RIGHT_SINGLE],eax
+        mov     u32 ptr es:[edi-_O_BB_ACTIVATE+_O_BB_CLICK_RIGHT_DOUBLE],eax
+        mov     u32 ptr es:[edi-_O_BB_ACTIVATE+_O_BB_CLICK_RIGHT_DOWN],eax
+        mov     u32 ptr es:[edi-_O_BB_ACTIVATE+_O_BB_CLICK_RIGHT_UP],eax
+        mov     u32 ptr es:[edi-_O_BB_ACTIVATE+_O_BB_DROPPED_INTO_LEFT],eax
+        mov     u32 ptr es:[edi-_O_BB_ACTIVATE+_O_BB_DROPPED_INTO_RIGHT],eax
+        mov     u32 ptr es:[edi-_O_BB_ACTIVATE+_O_BB_DRAG_LEFT_START],eax
+        mov     u32 ptr es:[edi-_O_BB_ACTIVATE+_O_BB_DRAG_LEFT_STOP],eax
+        mov     u32 ptr es:[edi-_O_BB_ACTIVATE+_O_BB_DRAG_RIGHT_START],eax
+        mov     u32 ptr es:[edi-_O_BB_ACTIVATE+_O_BB_DRAG_RIGHT_STOP],eax
+        mov     u32 ptr es:[edi-_O_BB_ACTIVATE+_O_BB_FOCUS_GOT],eax
+        mov     u32 ptr es:[edi-_O_BB_ACTIVATE+_O_BB_FOCUS_LOST],eax
+        mov     u32 ptr es:[edi-_O_BB_ACTIVATE+_O_BB_FOCUS_SET],eax
+        mov     u32 ptr es:[edi-_O_BB_ACTIVATE+_O_BB_HOVER],eax
+        mov     u32 ptr es:[edi-_O_BB_ACTIVATE+_O_BB_KEYSTROKE],eax
+        mov     u32 ptr es:[edi-_O_BB_ACTIVATE+_O_BB_WHEN_CREATED],eax
+        mov     u32 ptr es:[edi-_O_BB_ACTIVATE+_O_BB_WHEN_DESTROYED],eax
+        mov     u32 ptr es:[edi-_O_BB_ACTIVATE+_O_BB_REQUESTOR],eax
+        mov     u32 ptr es:[edi-_O_BB_ACTIVATE+_O_BB_REFRESH],eax
         sub     edi,_O_BB_ACTIVATE
         add     esi,_O_LBB_LENGTH
 
@@ -1679,7 +1679,7 @@
         mov     bl,_PROPERTY_START
         while (byte ptr ds:[esi] != _OBJECT_END)
         {
-            mov     al,<u8>  ds:[esi]
+            mov     al,u8 ptr ds:[esi]
             if (al == _PROPERTY_START || al == _EVENT_START)
             {
                 mov     bl,al
@@ -1690,169 +1690,169 @@
                   // They're setting a property, which one?
                     if (al == _BBP_ENABLED)
                     {
-                        mov     al,<u8>  ds:[esi+_O_LBB_ENABLED]
-                        mov     <u8>  es:[edi+_O_BB_ENABLED],al
+                        mov     al,u8 ptr ds:[esi+_O_LBB_ENABLED]
+                        mov     u8 ptr es:[edi+_O_BB_ENABLED],al
                         add     esi,_O_LBB_ENABLED_SIZE
                     
                     } else if (al == _BBP_VISIBLE) {
-                        mov     al,<u8>  ds:[esi+_O_LBB_VISIBLE]
-                        mov     <u8>  es:[edi+_O_BB_VISIBLE],al
+                        mov     al,u8 ptr ds:[esi+_O_LBB_VISIBLE]
+                        mov     u8 ptr es:[edi+_O_BB_VISIBLE],al
                         add     esi,_O_LBB_VISIBLE_SIZE
                     
                     } else if (al == _BBP_BACKGROUND) {
-                        mov     al,<u8>  ds:[esi+_O_LBB_BACKGROUND_RED]
-                        mov     <u8>  es:[edi+_O_BB_BACKGROUND+_OBJECT_RED],al
-                        mov     al,<u8>  ds:[esi+_O_LBB_BACKGROUND_GREEN]
-                        mov     <u8>  es:[edi+_O_BB_BACKGROUND+_OBJECT_GREEN],al
-                        mov     al,<u8>  ds:[esi+_O_LBB_BACKGROUND_BLUE]
-                        mov     <u8>  es:[edi+_O_BB_BACKGROUND+_OBJECT_BLUE],al
+                        mov     al,u8 ptr ds:[esi+_O_LBB_BACKGROUND_RED]
+                        mov     u8 ptr es:[edi+_O_BB_BACKGROUND+_OBJECT_RED],al
+                        mov     al,u8 ptr ds:[esi+_O_LBB_BACKGROUND_GREEN]
+                        mov     u8 ptr es:[edi+_O_BB_BACKGROUND+_OBJECT_GREEN],al
+                        mov     al,u8 ptr ds:[esi+_O_LBB_BACKGROUND_BLUE]
+                        mov     u8 ptr es:[edi+_O_BB_BACKGROUND+_OBJECT_BLUE],al
                         add     esi,_O_LBB_BACKGROUND_SIZE
                     
                     } else if (al == _BBP_LIGHT_BORDER) {
-                        mov     al,<u8>  ds:[esi+_O_LBB_LIGHT_BORDER_RED]
-                        mov     <u8>  es:[edi+_O_BB_LIGHT_BORDER+_OBJECT_RED],al
-                        mov     al,<u8>  ds:[esi+_O_LBB_LIGHT_BORDER_GREEN]
-                        mov     <u8>  es:[edi+_O_BB_LIGHT_BORDER+_OBJECT_GREEN],al
-                        mov     al,<u8>  ds:[esi+_O_LBB_LIGHT_BORDER_BLUE]
-                        mov     <u8>  es:[edi+_O_BB_LIGHT_BORDER+_OBJECT_BLUE],al
+                        mov     al,u8 ptr ds:[esi+_O_LBB_LIGHT_BORDER_RED]
+                        mov     u8 ptr es:[edi+_O_BB_LIGHT_BORDER+_OBJECT_RED],al
+                        mov     al,u8 ptr ds:[esi+_O_LBB_LIGHT_BORDER_GREEN]
+                        mov     u8 ptr es:[edi+_O_BB_LIGHT_BORDER+_OBJECT_GREEN],al
+                        mov     al,u8 ptr ds:[esi+_O_LBB_LIGHT_BORDER_BLUE]
+                        mov     u8 ptr es:[edi+_O_BB_LIGHT_BORDER+_OBJECT_BLUE],al
                         add     esi,_O_LBB_LIGHT_BORDER_SIZE
                     
                     } else if (al == _BBP_SHADOW_BORDER) {
-                        mov     al,<u8>  ds:[esi+_O_LBB_SHADOW_BORDER_RED]
-                        mov     <u8>  es:[edi+_O_BB_SHADOW_BORDER+_OBJECT_RED],al
-                        mov     al,<u8>  ds:[esi+_O_LBB_SHADOW_BORDER_GREEN]
-                        mov     <u8>  es:[edi+_O_BB_SHADOW_BORDER+_OBJECT_GREEN],al
-                        mov     al,<u8>  ds:[esi+_O_LBB_SHADOW_BORDER_BLUE]
-                        mov     <u8>  es:[edi+_O_BB_SHADOW_BORDER+_OBJECT_BLUE],al
+                        mov     al,u8 ptr ds:[esi+_O_LBB_SHADOW_BORDER_RED]
+                        mov     u8 ptr es:[edi+_O_BB_SHADOW_BORDER+_OBJECT_RED],al
+                        mov     al,u8 ptr ds:[esi+_O_LBB_SHADOW_BORDER_GREEN]
+                        mov     u8 ptr es:[edi+_O_BB_SHADOW_BORDER+_OBJECT_GREEN],al
+                        mov     al,u8 ptr ds:[esi+_O_LBB_SHADOW_BORDER_BLUE]
+                        mov     u8 ptr es:[edi+_O_BB_SHADOW_BORDER+_OBJECT_BLUE],al
                         add     esi,_O_LBB_SHADOW_BORDER_SIZE
                     
                     } else if (al == _BBP_MISC_1) {
-                        mov     eax,<u32> ds:[esi+_O_LBB_MISC_1]
-                        mov     <u32> es:[edi+_O_BB_MISC_1],eax
+                        mov     eax,u32 ptr ds:[esi+_O_LBB_MISC_1]
+                        mov     u32 ptr es:[edi+_O_BB_MISC_1],eax
                         add     esi,_O_LBB_MISC_1_SIZE
                     
                     } else if (al == _BBP_MISC_2) {
-                        mov     eax,<u32> ds:[esi+_O_LBB_MISC_2]
-                        mov     <u32> es:[edi+_O_BB_MISC_2],eax
+                        mov     eax,u32 ptr ds:[esi+_O_LBB_MISC_2]
+                        mov     u32 ptr es:[edi+_O_BB_MISC_2],eax
                         add     esi,_O_LBB_MISC_2_SIZE
                     
                     } else if (al == _BBP_MISC_3) {
-                        mov     eax,<u32> ds:[esi+_O_LBB_MISC_3]
-                        mov     <u32> es:[edi+_O_BB_MISC_3],eax
+                        mov     eax,u32 ptr ds:[esi+_O_LBB_MISC_3]
+                        mov     u32 ptr es:[edi+_O_BB_MISC_3],eax
                         add     esi,_O_LBB_MISC_3_SIZE
                     
                     } else if (al == _BBP_MISC_4) {
-                        mov     eax,<u32> ds:[esi+_O_LBB_MISC_4]
-                        mov     <u32> es:[edi+_O_BB_MISC_4],eax
+                        mov     eax,u32 ptr ds:[esi+_O_LBB_MISC_4]
+                        mov     u32 ptr es:[edi+_O_BB_MISC_4],eax
                         add     esi,_O_LBB_MISC_4_SIZE
                     
                     } else if (al == _BBP_MISC_FLAG_1) {
-                        mov     al,<u8>  ds:[esi+_O_LBB_MISC_FLAG_1]
-                        mov     <u8>  es:[edi+_O_BB_MISC_FLAG_1],al
+                        mov     al,u8 ptr ds:[esi+_O_LBB_MISC_FLAG_1]
+                        mov     u8 ptr es:[edi+_O_BB_MISC_FLAG_1],al
                         add     esi,_O_LBB_MISC_FLAG_1_SIZE
                     
                     } else if (al == _BBP_MISC_FLAG_2) {
-                        mov     al,<u8>  ds:[esi+_O_LBB_MISC_FLAG_2]
-                        mov     <u8>  es:[edi+_O_BB_MISC_FLAG_2],al
+                        mov     al,u8 ptr ds:[esi+_O_LBB_MISC_FLAG_2]
+                        mov     u8 ptr es:[edi+_O_BB_MISC_FLAG_2],al
                         add     esi,_O_LBB_MISC_FLAG_2_SIZE
                     
                     } else if (al == _BBP_MISC_FLAG_3) {
-                        mov     al,<u8>  ds:[esi+_O_LBB_MISC_FLAG_3]
-                        mov     <u8>  es:[edi+_O_BB_MISC_FLAG_3],al
+                        mov     al,u8 ptr ds:[esi+_O_LBB_MISC_FLAG_3]
+                        mov     u8 ptr es:[edi+_O_BB_MISC_FLAG_3],al
                         add     esi,_O_LBB_MISC_FLAG_3_SIZE
                     
                     } else {
                       // Unknown property, abort
-                        mov     <u32> [esp+28],_UNKNOWN_OBJECT_PROPERTY
+                        mov     u32 ptr [esp+28],_UNKNOWN_OBJECT_PROPERTY
                         stc
                         jmp     quit
                     }
                 
                 } else {
                   // They're setting an event, which one?
-                    mov     ecx,<u32> ds:[esi+1]
+                    mov     ecx,u32 ptr ds:[esi+1]
                     if (al == _BBE_ACTIVATE)
                     {
-                        mov     <u32> es:[edx+_O_BB_ACTIVATE],ecx
+                        mov     u32 ptr es:[edx+_O_BB_ACTIVATE],ecx
                     
                     } else if (al == _BBE_CLICK_BOTH_SINGLE) {
-                        mov     <u32> es:[edx+_O_BB_CLICK_BOTH_SINGLE],ecx
+                        mov     u32 ptr es:[edx+_O_BB_CLICK_BOTH_SINGLE],ecx
                     
                     } else if (al == _BBE_CLICK_BOTH_DOUBLE) {
-                        mov     <u32> es:[edx+_O_BB_CLICK_BOTH_DOUBLE],ecx
+                        mov     u32 ptr es:[edx+_O_BB_CLICK_BOTH_DOUBLE],ecx
                     
                     } else if (al == _BBE_CLICK_LEFT_SINGLE) {
-                        mov     <u32> es:[edx+_O_BB_CLICK_LEFT_SINGLE],ecx
+                        mov     u32 ptr es:[edx+_O_BB_CLICK_LEFT_SINGLE],ecx
                     
                     } else if (al == _BBE_CLICK_LEFT_DOUBLE) {
-                        mov     <u32> es:[edx+_O_BB_CLICK_LEFT_DOUBLE],ecx
+                        mov     u32 ptr es:[edx+_O_BB_CLICK_LEFT_DOUBLE],ecx
                     
                     } else if (al == _BBE_CLICK_LEFT_DOWN) {
-                        mov     <u32> es:[edx+_O_BB_CLICK_LEFT_DOWN],ecx
+                        mov     u32 ptr es:[edx+_O_BB_CLICK_LEFT_DOWN],ecx
                     
                     } else if (al == _BBE_CLICK_LEFT_UP) {
-                        mov     <u32> es:[edx+_O_BB_CLICK_LEFT_UP],ecx
+                        mov     u32 ptr es:[edx+_O_BB_CLICK_LEFT_UP],ecx
                     
                     } else if (al == _BBE_CLICK_RIGHT_SINGLE) {
-                        mov     <u32> es:[edx+_O_BB_CLICK_RIGHT_SINGLE],ecx
+                        mov     u32 ptr es:[edx+_O_BB_CLICK_RIGHT_SINGLE],ecx
                     
                     } else if (al == _BBE_CLICK_RIGHT_DOUBLE) {
-                        mov     <u32> es:[edx+_O_BB_CLICK_RIGHT_DOUBLE],ecx
+                        mov     u32 ptr es:[edx+_O_BB_CLICK_RIGHT_DOUBLE],ecx
                     
                     } else if (al == _BBE_CLICK_RIGHT_DOWN) {
-                        mov     <u32> es:[edx+_O_BB_CLICK_RIGHT_DOWN],ecx
+                        mov     u32 ptr es:[edx+_O_BB_CLICK_RIGHT_DOWN],ecx
                     
                     } else if (al == _BBE_CLICK_RIGHT_UP) {
-                        mov     <u32> es:[edx+_O_BB_CLICK_RIGHT_UP],ecx
+                        mov     u32 ptr es:[edx+_O_BB_CLICK_RIGHT_UP],ecx
                     
                     } else if (al == _BBE_DROPPED_INTO_LEFT) {
-                        mov     <u32> es:[edx+_O_BB_DROPPED_INTO_LEFT],ecx
+                        mov     u32 ptr es:[edx+_O_BB_DROPPED_INTO_LEFT],ecx
                     
                     } else if (al == _BBE_DROPPED_INTO_RIGHT) {
-                        mov     <u32> es:[edx+_O_BB_DROPPED_INTO_RIGHT],ecx
+                        mov     u32 ptr es:[edx+_O_BB_DROPPED_INTO_RIGHT],ecx
                     
                     } else if (al == _BBE_DRAG_LEFT_START) {
-                        mov     <u32> es:[edx+_O_BB_DRAG_LEFT_START],ecx
+                        mov     u32 ptr es:[edx+_O_BB_DRAG_LEFT_START],ecx
                     
                     } else if (al == _BBE_DRAG_LEFT_STOP) {
-                        mov     <u32> es:[edx+_O_BB_DRAG_LEFT_STOP],ecx
+                        mov     u32 ptr es:[edx+_O_BB_DRAG_LEFT_STOP],ecx
                     
                     } else if (al == _BBE_DRAG_RIGHT_START) {
-                        mov     <u32> es:[edx+_O_BB_DRAG_RIGHT_START],ecx
+                        mov     u32 ptr es:[edx+_O_BB_DRAG_RIGHT_START],ecx
                     
                     } else if (al == _BBE_DRAG_RIGHT_STOP) {
-                        mov     <u32> es:[edx+_O_BB_DRAG_RIGHT_STOP],ecx
+                        mov     u32 ptr es:[edx+_O_BB_DRAG_RIGHT_STOP],ecx
                     
                     } else if (al == _BBE_FOCUS_GOT) {
-                        mov     <u32> es:[edx+_O_BB_FOCUS_GOT],ecx
+                        mov     u32 ptr es:[edx+_O_BB_FOCUS_GOT],ecx
                     
                     } else if (al == _BBE_FOCUS_LOST) {
-                        mov     <u32> es:[edx+_O_BB_FOCUS_LOST],ecx
+                        mov     u32 ptr es:[edx+_O_BB_FOCUS_LOST],ecx
                     
                     } else if (al == _BBE_FOCUS_SET) {
-                        mov     <u32> es:[edx+_O_BB_FOCUS_SET],ecx
+                        mov     u32 ptr es:[edx+_O_BB_FOCUS_SET],ecx
                     
                     } else if (al == _BBE_HOVER) {
-                        mov     <u32> es:[edx+_O_BB_HOVER],ecx
+                        mov     u32 ptr es:[edx+_O_BB_HOVER],ecx
                     
                     } else if (al == _BBE_KEYSTROKE) {
-                        mov     <u32> es:[edx+_O_BB_KEYSTROKE],ecx
+                        mov     u32 ptr es:[edx+_O_BB_KEYSTROKE],ecx
                     
                     } else if (al == _BBE_WHEN_CREATED) {
-                        mov     <u32> es:[edx+_O_BB_WHEN_CREATED],ecx
+                        mov     u32 ptr es:[edx+_O_BB_WHEN_CREATED],ecx
                     
                     } else if (al == _BBE_WHEN_DESTROYED) {
-                        mov     <u32> es:[edx+_O_BB_WHEN_DESTROYED],ecx
+                        mov     u32 ptr es:[edx+_O_BB_WHEN_DESTROYED],ecx
                     
                     } else if (al == _BBE_REQUESTOR) {
-                        mov     <u32> es:[edx+_O_BB_REQUESTOR],ecx
+                        mov     u32 ptr es:[edx+_O_BB_REQUESTOR],ecx
                     
                     } else if (al == _BBE_REFRESH) {
-                        mov     <u32> es:[edx+_O_BB_REFRESH],ecx
+                        mov     u32 ptr es:[edx+_O_BB_REFRESH],ecx
                     
                     } else {
                       // Unknown property, abort
-                        mov     <u32> [esp+28],_UNKNOWN_OBJECT_EVENT
+                        mov     u32 ptr [esp+28],_UNKNOWN_OBJECT_EVENT
                         stc
                         jmp     quit
                     }

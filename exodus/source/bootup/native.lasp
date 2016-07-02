@@ -76,8 +76,8 @@ function invSetup_native_primatives    NEAR
     mov     ecx,_sPRIMATIVES_limit
     mov     al,0ffh
     rep     stosb
-    mov     <u32> es:[0],8
-    mov     <u32> es:[4],_MIN_PRIMATIVE
+    mov     u32 ptr es:[0],8
+    mov     u32 ptr es:[4],_MIN_PRIMATIVE
 
     mov     eax,_sPRIMATIVE_LOAD_INFO
     mov     es,eax
@@ -85,7 +85,7 @@ function invSetup_native_primatives    NEAR
     mov     ecx,_sPRIMATIVE_LOAD_INFO_limit
     xor     al,al
     rep     stosb
-    mov     <u32> es:[0],4
+    mov     u32 ptr es:[0],4
 
    // Now, process all of the drivers that were loaded at bootup
     mov     eax,_sALL_MEM
@@ -94,61 +94,61 @@ function invSetup_native_primatives    NEAR
     inc     esi                                                     // Move passed the boot drive letter
     mov     ebx,cs:boot_dt_linear
     mov     ecx,cs:boot_np_linear
-    mov     <u32> [esp+36],ebx
-    mov     <u32> [esp+40],ecx
-    mov     <u32> [esp+64],0                                 // Used for debugging
+    mov     u32 ptr [esp+36],ebx
+    mov     u32 ptr [esp+40],ecx
+    mov     u32 ptr [esp+64],0                                 // Used for debugging
     while (byte ptr ds:[esi+_BOOT_PB_entry_type] != 0ffh)
     {
       // Let's see what this bad boy is
-        mov     al,<u8>  ds:[esi+_BOOT_PB_entry_type]
+        mov     al,u8 ptr ds:[esi+_BOOT_PB_entry_type]
         and     al,1111b
         if (al == 011b)
         {
           // It's a driver
           // Store driver name (linear offset to it)
-            mov     <u32> [esp+32],esi
-            mov     ebx,<u32> [esp+36]
-            mov     edx,<u32> [esp+40]
+            mov     u32 ptr [esp+32],esi
+            mov     ebx,u32 ptr [esp+36]
+            mov     edx,u32 ptr [esp+40]
 
             xor     eax,eax
-            mov     ax,<u16> ds:[esi+_BOOT_PB_dt_offset]
+            mov     ax,u16 ptr ds:[esi+_BOOT_PB_dt_offset]
             add     ebx,eax
             if (word ptr ds:[ebx+_BOOT_DT_np_offset] != 0ffffh)
             {
               // Name was specified
                 mov     edx,cs:boot_np_linear
                 xor     eax,eax
-                mov     ax,<u16> ds:[esi+_BOOT_DT_np_offset]
+                mov     ax,u16 ptr ds:[esi+_BOOT_DT_np_offset]
                 add     edx,eax
             
             } else {
                 mov     edx,0ffffffffh
             }
-            mov     <u32> [esp+00],edx
+            mov     u32 ptr [esp+00],edx
 
            // Build the temporary GDT entries for our initialization
 
           // Build the temporary code segment
             mov     eax,_csTEMP_PRIMATIVE / 8
-            mov     ebx,<u32> ds:[esi+_BOOT_PB_linear_offset]
-            mov     edx,<u32> ds:[esi+_BOOT_PB_size]
+            mov     ebx,u32 ptr ds:[esi+_BOOT_PB_linear_offset]
+            mov     edx,u32 ptr ds:[esi+_BOOT_PB_size]
             invCreate_code_descriptor32()
 
           // Build the temporary data segment
             mov     eax,_dsTEMP_PRIMATIVE / 8
-            mov     ebx,<u32> ds:[esi+_BOOT_PB_linear_offset]
-            mov     edx,<u32> ds:[esi+_BOOT_PB_size]
+            mov     ebx,u32 ptr ds:[esi+_BOOT_PB_linear_offset]
+            mov     edx,u32 ptr ds:[esi+_BOOT_PB_size]
             invCreate_data_descriptor32()
 
           // Build the temporary call gates
             mov     eax,_cgTEMP_PRIMATIVE_MAIN / 8
-            mov     ebx,<u32> ds:[esi+_BOOT_PB_main]
+            mov     ebx,u32 ptr ds:[esi+_BOOT_PB_main]
             xor     ecx,ecx
             mov     dx,_csTEMP_PRIMATIVE
             invCreate_call_gate_descriptor32()
 
             mov     eax,_cgTEMP_PRIMATIVE_REQUESTOR / 8
-            mov     ebx,<u32> ds:[esi+_BOOT_PB_requestor]
+            mov     ebx,u32 ptr ds:[esi+_BOOT_PB_requestor]
             xor     ecx,ecx
             mov     dx,_csTEMP_PRIMATIVE
             invCreate_call_gate_descriptor32()
@@ -171,11 +171,11 @@ function invSetup_native_primatives    NEAR
             }
           // It is a driver.  We should treat it as such. :)
           // Store the information it provided to us
-            mov     <u32> [esp+04],ecx
-            mov     <u32> [esp+12],esi
-            mov     <u32> [esp+16],edi
-            mov     <u32> [esp+20],ebx
-            mov     <u32> [esp+24],ebp
+            mov     u32 ptr [esp+04],ecx
+            mov     u32 ptr [esp+12],esi
+            mov     u32 ptr [esp+16],edi
+            mov     u32 ptr [esp+20],ebx
+            mov     u32 ptr [esp+24],ebp
 
           // Now, let's copy the relevent information
             mov     eax,_sPRIMATIVES
@@ -186,24 +186,24 @@ function invSetup_native_primatives    NEAR
             mov     gs,eax
 
           // Copy the this driver's code and data segment GDT entries from their temporary area to a permanent area
-            mov     eax,<u32> es:[4]
+            mov     eax,u32 ptr es:[4]
             shl     eax,3                                           // Multiply by 8
-            mov     esi,<u32> [esp+32]
+            mov     esi,u32 ptr [esp+32]
             invMove_temp_gdts_to_permanent()
             shr     eax,3                                           // Divide by 8
-            mov     <u32> es:[4],eax
+            mov     u32 ptr es:[4],eax
 
           // Get our starting offsets into the two memory areas
-            mov     edi,<u32> fs:[0]
-            mov     ebx,<u32> es:[0]
+            mov     edi,u32 ptr fs:[0]
+            mov     ebx,u32 ptr es:[0]
 
 
            // Do the load info structure
            // * Refer to inf\primload.inf for information on this structure
-            mov     <u16> fs:[edi],bx                            // store the offset in our load info structure
+            mov     u16 ptr fs:[edi],bx                            // store the offset in our load info structure
             mov     eax,edi
             add     eax,2
-            mov     <u32> [esp+28],eax                       // Now, store a ptr to the location where we'll eventually
+            mov     u32 ptr [esp+28],eax                       // Now, store a ptr to the location where we'll eventually
                                                                     //   store the length of the primative structure this driver
                                                                     //   has requested (the ptr is stored in temp variable space)
           // Move past those two word entries
@@ -211,72 +211,72 @@ function invSetup_native_primatives    NEAR
 
           // Store the driver's filename
           // A small degree of indirection here :)
-            mov     eax,<u32> [esp+32]                       // Get a pointer to this driver's boot_parameter_block entry
+            mov     eax,u32 ptr [esp+32]                       // Get a pointer to this driver's boot_parameter_block entry
             xor     ebx,ebx
-            mov     bx,<u16> gs:[eax+_BOOT_PB_dt_offset]         // Which tells us where our DT entry is
+            mov     bx,u16 ptr gs:[eax+_BOOT_PB_dt_offset]         // Which tells us where our DT entry is
             add     ebx,2                                           // Move past the sector indicator
-            add     ebx,<u32> [esp+36]
-            mov     bx,<u16> gs:[ebx+_BOOT_DT_np_offset]         // Which tells us where our NP entry is
+            add     ebx,u32 ptr [esp+36]
+            mov     bx,u16 ptr gs:[ebx+_BOOT_DT_np_offset]         // Which tells us where our NP entry is
             and     ebx,0ffffh
             add     ebx,2
-            add     ebx,<u32> [esp+40]
+            add     ebx,u32 ptr [esp+40]
             xor     ecx,ecx
-            mov     cl,<u8>  gs:[ebx]                            // Where we get our filename length
+            mov     cl,u8 ptr gs:[ebx]                            // Where we get our filename length
             inc     ecx
             repeat; And finally, where we copy the text from
             {
-                mov     al,<u8>  gs:[ebx]
-                mov     <u8>  fs:[edi],al
+                mov     al,u8 ptr gs:[ebx]
+                mov     u8 ptr fs:[edi],al
                 inc     ebx
                 inc     edi
             } untilcxz
 
           // Store the driver's self-assigned name (what it calls itself)
-            mov     ebx,<u32> [esp+16]
+            mov     ebx,u32 ptr [esp+16]
             invCopy_this_part()
 
           // Store the driver's version text
-            mov     ebx,<u32> [esp+20]
+            mov     ebx,u32 ptr [esp+20]
             invCopy_this_part()
 
           // Store the author's name text
-            mov     ebx,<u32> [esp+24]
+            mov     ebx,u32 ptr [esp+24]
             invCopy_this_part()
 
           // Store the GDT offsets for the main portions of this function
             push    gs
             mov     eax,_sSYSTEM
             mov     gs,eax
-            mov     eax,<u32> gs:[_SYSTEM_i_CODE_GDT_OFFSET]
-            mov     <u32> fs:[edi],eax
+            mov     eax,u32 ptr gs:[_SYSTEM_i_CODE_GDT_OFFSET]
+            mov     u32 ptr fs:[edi],eax
             mov     ebp,eax
             add     edi,4
-            mov     eax,<u32> gs:[_SYSTEM_i_DATA_GDT_OFFSET]
-            mov     <u32> fs:[edi],eax
+            mov     eax,u32 ptr gs:[_SYSTEM_i_DATA_GDT_OFFSET]
+            mov     u32 ptr fs:[edi],eax
             add     edi,4
-            mov     eax,<u32> gs:[_SYSTEM_i_MAIN_GDT_OFFSET]
-            mov     <u32> fs:[edi],eax
+            mov     eax,u32 ptr gs:[_SYSTEM_i_MAIN_GDT_OFFSET]
+            mov     u32 ptr fs:[edi],eax
             add     edi,4
-            mov     eax,<u32> gs:[_SYSTEM_i_REQUESTOR_GDT_OFFSET]
-            mov     <u32> fs:[edi],eax
+            mov     eax,u32 ptr gs:[_SYSTEM_i_REQUESTOR_GDT_OFFSET]
+            mov     u32 ptr fs:[edi],eax
             add     edi,4
             pop     gs
 
           // And, finally, update the next location pointer in this _sPRIMATIVE_LOAD_INFO structure
-            mov     <u32> fs:[0],edi
+            mov     u32 ptr fs:[0],edi
 
            // Parse their primatives structure
            // * Refer to inf\primload.inf for information on the structure this information is converted to in Exodus
            // * Refer to inf\requestr.inf for information on the structure the driver provides
-            mov     esi,<u32> [esp+12]
+            mov     esi,u32 ptr [esp+12]
             xor     ecx,ecx
             while (byte ptr [esi] != 0ffh)
             {
-                mov     cl,<u8>  [esi]
+                mov     cl,u8 ptr [esi]
                 inc     esi
-                mov     edx,<u32> [esi+ecx]                     // Offset to function
-                mov     bx,<u16> [esi+ecx+4]                     // Dwords to copy
-                mov     eax,<u32> es:[4]                        // Call gate for this primative
+                mov     edx,u32 ptr [esi+ecx]                     // Offset to function
+                mov     bx,u16 ptr [esi+ecx+4]                     // Dwords to copy
+                mov     eax,u32 ptr es:[4]                        // Call gate for this primative
                 shl     eax,3                                       // Multiply by 8 to get the call gate offset (rather than slot)
               // Right now,      ds:[esi] - far ptr to primative function name
               //                      ebp - code segment for this driver
@@ -287,7 +287,7 @@ function invSetup_native_primatives    NEAR
 
               // Let's add it
                 invAdd_primative()
-                inc     <u32> es:[4]                            // Move to the next primative SLOT
+                inc     u32 ptr es:[4]                            // Move to the next primative SLOT
 
                 add     esi,ecx                                     // Move past the function name
                 add     esi,6                                       // Move past the function offset (dword)
@@ -322,7 +322,7 @@ function invSetup_native_primatives    NEAR
           // Proceed along happily to the next driver :)
             mov     eax,_sALL_MEM
             mov     ds,eax
-            mov     esi,<u32> [esp+32]
+            mov     esi,u32 ptr [esp+32]
         }
 
       next_native_primative:
@@ -346,21 +346,21 @@ function invSetup_native_primatives    NEAR
     mov     ebx,_sPRIMATIVE_LOAD_INFO
     mov     fs,ebx
     mov     eax,4
-    while (eax < <u32> fs:[0])
+    while (eax < u32 ptr fs:[0])
     {
 
         xor     ecx,ecx
         add     eax,4
-        mov     cl,<u8>  fs:[eax]                                // Get the length of the driver file name
+        mov     cl,u8 ptr fs:[eax]                                // Get the length of the driver file name
         inc     eax
         add     eax,ecx
-        mov     cl,<u8>  fs:[eax]                                // Get the length of the driver's self-assigned name
+        mov     cl,u8 ptr fs:[eax]                                // Get the length of the driver's self-assigned name
         inc     eax
         add     eax,ecx
-        mov     cl,<u8>  fs:[eax]                                // Get the length of the version text
+        mov     cl,u8 ptr fs:[eax]                                // Get the length of the version text
         inc     eax
         add     eax,ecx
-        mov     cl,<u8>  fs:[eax]                                // Get the length of the author text
+        mov     cl,u8 ptr fs:[eax]                                // Get the length of the author text
         inc     eax
         add     eax,ecx
         mov     edi,eax
@@ -372,27 +372,27 @@ function invSetup_native_primatives    NEAR
       //                     ------  ------  --------------------    -------------------------------------
       //                        0      4     code segment            to access (word ptr fs:[eax+0])
       //                        4      4     data segment            to access (word ptr fs:[eax+4])
-      //                        8      4     main call gate          to access (call <u48> fs:[eax+4])
-      //                        12     4     requestor, call gate    to access (call <u48> fs:[eax+8])
+      //                        8      4     main call gate          to access (call u48 ptr fs:[eax+4])
+      //                        12     4     requestor, call gate    to access (call u48 ptr fs:[eax+8])
       //
 
       // Physically call the primative
         push    eax
 
         xor     ebx,ebx
-        mov     bx,<u16> fs:[eax+12]                             // Modify the selector for this primative
+        mov     bx,u16 ptr fs:[eax+12]                             // Modify the selector for this primative
         mov     esi,offset id_offset
-        mov     <u16> es:[esi],bx
+        mov     u16 ptr es:[esi],bx
         mov     esi,offset prim_offset
-        mov     <u16> es:[esi],bx
+        mov     u16 ptr es:[esi],bx
         mov     esi,offset note_offset
-        mov     <u16> es:[esi],bx
+        mov     u16 ptr es:[esi],bx
         jmp     $+2                                                 // Clear the prefetch cache (just in case)
 
         mov     eax,'prim'                                          // requested primative function
-        mov     ds,<u16> fs:[edi+4]                              // this primative's permanent data segment
-        mov     ebx,<u32> fs:[edi+8]                            // main() call gate
-        mov     ecx,<u32> fs:[edi+12]                           // requestor() call gate
+        mov     ds,u16 ptr fs:[edi+4]                              // this primative's permanent data segment
+        mov     ebx,u32 ptr fs:[edi+8]                            // main() call gate
+        mov     ecx,u32 ptr fs:[edi+12]                           // requestor() call gate
         xor     edx,edx
         xor     esi,esi
         xor     edi,edi
@@ -413,10 +413,10 @@ function invSetup_native_primatives    NEAR
       //             es - null
       //             fs - null
       //             gs - null
-        u8   9ah                     // Call immed16:32
-        u32  0                       // Offset (the value here doesn't matter because we're calling a call gate)
+        u8  9ah                     // Call immed16:32
+        u32 0                       // Offset (the value here doesn't matter because we're calling a call gate)
       prim_offset:
-        u16  0                       // Selector (this part changes for each primative, see the code above (before jmp $+2))
+        u16 0                       // Selector (this part changes for each primative, see the code above (before jmp $+2))
 
       // Right now, esi - offset to list of names to find
       //            edi - offset to corresponding call gate area
@@ -431,17 +431,17 @@ function invSetup_native_primatives    NEAR
                 mov     fs,eax
                 mov     eax,'note'
                 mov     ebx,'prim'
-                mov     ecx,<u32> fs:[_SYSTEM_i_SCRATCH_DWORD1]     // Total
-                mov     ebp,<u32> fs:[_SYSTEM_i_SCRATCH_DWORD2]     // Number that weren't found
+                mov     ecx,u32 ptr fs:[_SYSTEM_i_SCRATCH_DWORD1]     // Total
+                mov     ebp,u32 ptr fs:[_SYSTEM_i_SCRATCH_DWORD2]     // Number that weren't found
                 xor     edx,edx
                 xor     esi,esi
                 xor     edi,edi
                 mov     fs,edx
               // Now, call the 'note' requestor function
-                u8   9ah             // Call immed16:32
-                u32  0               // Offset (the value here doesn't matter because we're calling a call gate)
+                u8  9ah             // Call immed16:32
+                u32 0               // Offset (the value here doesn't matter because we're calling a call gate)
               note_offset:
-                u16  0               // Selector (this part changes for each primative, see the code above (before jmp $+2))
+                u16 0               // Selector (this part changes for each primative, see the code above (before jmp $+2))
 
                 if (carry?)
                 {
@@ -453,12 +453,12 @@ function invSetup_native_primatives    NEAR
           // Right now, everything's loaded OK.
             mov     ebx,_sPRIMATIVE_LOAD_INFO
             mov     fs,ebx
-            mov     eax,<u32> [esp]                          // Get our offset off the stack
+            mov     eax,u32 ptr [esp]                          // Get our offset off the stack
             add     eax,16                                          // And move to the next location to see WHERE IT'S AT! (Got 2 turn tables and a microphone...)
             push    ds
             pushad
             mov     esi,offset _VID_display_string_vga + 4
-            if (eax < <u32> fs:[0])
+            if (eax < u32 ptr fs:[0])
             {
                 mov     esi,offset next_item
             
@@ -472,18 +472,18 @@ function invSetup_native_primatives    NEAR
                 mov     ds:loading_primatives_displayed,_YES
                 pushad
                 mov     esi,offset loading_primatives
-                call    <u48> cs:_VID_display_string_nr_vga
+                call    u48 ptr cs:_VID_display_string_nr_vga
                 popad
             }
-            call    <u48> cs:_VID_display_string_vga
+            call    u48 ptr cs:_VID_display_string_vga
             popad
             pop     ds
           // Ask the driver to identify itself on the VGA display
             mov     eax,'id  '
-            u8   9ah                 // Call immed16:32
-            u32  0                   // Offset (the value here doesn't matter because we're calling a call gate)
+            u8  9ah                 // Call immed16:32
+            u32 0                   // Offset (the value here doesn't matter because we're calling a call gate)
           id_offset:
-            u16  0                   // Selector (this part changes for each primative, see the code above (before jmp $+2))
+            u16 0                   // Selector (this part changes for each primative, see the code above (before jmp $+2))
 
         }
 
@@ -503,60 +503,60 @@ function invSetup_native_primatives    NEAR
   // Before we do that we need to setup Exodus's requestor() memory blocks
     mov     eax,_sEXODUS_MEM
     mov     ds,eax
-    mov     <u32> ds:[0],4                                      // Starting location to write data for memory blocks
+    mov     u32 ptr ds:[0],4                                      // Starting location to write data for memory blocks
     mov     eax,_sEXODUS_PORTS
     mov     ds,eax
-    mov     <u32> ds:[0],4                                      // Starting location to write data for port requests
+    mov     u32 ptr ds:[0],4                                      // Starting location to write data for port requests
     mov     eax,_sEXODUS_INTS
     mov     ds,eax
-    mov     <u32> ds:[0],4                                      // Starting location to write data for interrupt requests
+    mov     u32 ptr ds:[0],4                                      // Starting location to write data for interrupt requests
 
   // Display the driver's name before we begin call main()
     mov     eax,_sDATA
     mov     ds,eax
     mov     esi,offset loading_drivers
-    call    <u48> cs:_VID_display_string_nr_vga
+    call    u48 ptr cs:_VID_display_string_nr_vga
 
     mov     ebx,_sPRIMATIVE_LOAD_INFO
     mov     ds,ebx
     mov     eax,4
     mov     ebp,esp
-    while (eax < <u32> ds:[0])
+    while (eax < u32 ptr ds:[0])
     {
         xor     ecx,ecx
         add     eax,4
-        mov     cl,<u8>  ds:[eax]                                // Get the length of the driver file name
+        mov     cl,u8 ptr ds:[eax]                                // Get the length of the driver file name
         inc     eax
         add     eax,ecx
-        mov     cl,<u8>  ds:[eax]                                // Get the length of the driver's self-assigned name
+        mov     cl,u8 ptr ds:[eax]                                // Get the length of the driver's self-assigned name
         inc     eax
-        mov     <u32> [ebp+48],eax                           // Save for later use (below)
-        mov     <u32> [ebp+52],ecx                           // Save for later use (below)
+        mov     u32 ptr [ebp+48],eax                           // Save for later use (below)
+        mov     u32 ptr [ebp+52],ecx                           // Save for later use (below)
         add     eax,ecx
-        mov     cl,<u8>  ds:[eax]                                // Get the length of the version text
+        mov     cl,u8 ptr ds:[eax]                                // Get the length of the version text
         inc     eax
-        mov     <u32> [ebp+56],eax                           // Save for later use (below)
-        mov     <u32> [ebp+60],ecx                           // Save for later use (below)
+        mov     u32 ptr [ebp+56],eax                           // Save for later use (below)
+        mov     u32 ptr [ebp+60],ecx                           // Save for later use (below)
         add     eax,ecx
-        mov     cl,<u8>  ds:[eax]                                // Get the length of the author text
+        mov     cl,u8 ptr ds:[eax]                                // Get the length of the author text
         inc     eax
         add     eax,ecx
         mov     edi,eax
         push    eax
 
         xor     ebx,ebx
-        mov     bx,<u16> fs:[eax+4]                              // Get the data segment for this primative
-        mov     <u32> [ebp+44],ebx
-        mov     bx,<u16> fs:[eax+8]                              // Get the main() selector for this primative
+        mov     bx,u16 ptr fs:[eax+4]                              // Get the data segment for this primative
+        mov     u32 ptr [ebp+44],ebx
+        mov     bx,u16 ptr fs:[eax+8]                              // Get the main() selector for this primative
         mov     esi,offset main_offset
-        mov     <u16> es:[esi],bx
+        mov     u16 ptr es:[esi],bx
       //
       // Right now,          ds - data segment for this primative's name in the _sPRIMATIVE_LOAD_INFO structure
       //            [ebp+48] - ptr to offset of driver's self-assigned name
       //            [ebp+52] - length of the name at that location
       //
         add     edi,16
-        if (edi < <u32> ds:[0])
+        if (edi < u32 ptr ds:[0])
         {
             mov     esi,offset next_item
         
@@ -567,12 +567,12 @@ function invSetup_native_primatives    NEAR
         push    ds
         mov     eax,_sDATA
         mov     ds,eax
-        call    <u48> cs:_VID_display_string_vga
+        call    u48 ptr cs:_VID_display_string_vga
         pop     ds
 
       // Display what the driver calls itself
-        mov     esi,<u32> [ebp+48]
-        mov     ecx,<u32> [ebp+52]
+        mov     esi,u32 ptr [ebp+48]
+        mov     ecx,u32 ptr [ebp+52]
       // This code removes anything that comes after the ASCII-255 (indicating not-displayed information)
         mov     eax,ecx
         while (eax > 0)
@@ -587,27 +587,27 @@ function invSetup_native_primatives    NEAR
         if (ecx != 0 && ecx < 7fffffffh)
         {
           // Display the name
-            call    <u48> cs:_VID_display_string_ecx_vga
+            call    u48 ptr cs:_VID_display_string_ecx_vga
 
             push    ds
             mov     eax,_sDATA
             mov     ds,eax
             mov     esi,offset comma_space
-            call    <u48> cs:_VID_display_string_vga
+            call    u48 ptr cs:_VID_display_string_vga
             pop     ds
         }
 
       // Display the version information
-        mov     esi,<u32> [ebp+56]
-        mov     ecx,<u32> [ebp+60]
-        call    <u48> cs:_VID_display_string_ecx_nr_vga
+        mov     esi,u32 ptr [ebp+56]
+        mov     ecx,u32 ptr [ebp+60]
+        call    u48 ptr cs:_VID_display_string_ecx_nr_vga
 
         pushad
         push    ds
         push    es
         push    fs
         push    gs
-        mov     ds,<u16> [ebp+44]
+        mov     ds,u16 ptr [ebp+44]
         xor     ebp,ebp
         xor     eax,eax
         xor     ebx,ebx
@@ -622,10 +622,10 @@ function invSetup_native_primatives    NEAR
       // Right now:  ds - The primative data segment
       //             everything else is NULL
       // Now, we let it initialize itself
-        u8   9ah                     // Call immed16:32
-        u32  0                       // Offset (the value here doesn't matter because we're calling a call gate)
+        u8  9ah                     // Call immed16:32
+        u32 0                       // Offset (the value here doesn't matter because we're calling a call gate)
       main_offset:
-        u16  0                       // Selector (this part changes for each primative, see the code near "offset main_offset")
+        u16 0                       // Selector (this part changes for each primative, see the code near "offset main_offset")
         pop     gs
         pop     fs
         pop     es
@@ -655,12 +655,12 @@ function default_primative_response    NEAR
 //   Any primative call gate that has not been used by a defined function points to this routine
 //   It returns the text "no support for primative" in the registers
 //
-    mov     eax,<u32> cs:no_support_for_primative[00]
-    mov     ebx,<u32> cs:no_support_for_primative[04]
-    mov     ecx,<u32> cs:no_support_for_primative[08]
-    mov     edx,<u32> cs:no_support_for_primative[12]
-    mov     esi,<u32> cs:no_support_for_primative[16]
-    mov     edi,<u32> cs:no_support_for_primative[20]
+    mov     eax,u32 ptr cs:no_support_for_primative[00]
+    mov     ebx,u32 ptr cs:no_support_for_primative[04]
+    mov     ecx,u32 ptr cs:no_support_for_primative[08]
+    mov     edx,u32 ptr cs:no_support_for_primative[12]
+    mov     esi,u32 ptr cs:no_support_for_primative[16]
+    mov     edi,u32 ptr cs:no_support_for_primative[20]
     stc
     retf
 }
@@ -687,13 +687,13 @@ function invCopy_this_part    NEAR
     xor     ecx,ecx
     while (byte ptr ds:[ebx] != 0)
     {
-        mov     al,<u8>  ds:[ebx]
-        mov     <u8>  fs:[edi],al
+        mov     al,u8 ptr ds:[ebx]
+        mov     u8 ptr fs:[edi],al
         inc     ebx
         inc     edi
         inc     ecx
     }
-    mov     <u8>  fs:[edx],cl
+    mov     u8 ptr fs:[edx],cl
 
     pop     eax
     pop     ebx
@@ -739,10 +739,10 @@ function invMove_temp_gdts_to_permanent    NEAR
 
   // Copy the code segment
     mov     edi,_csTEMP_PRIMATIVE
-    mov     ebx,<u32> [edi]
-    mov     <u32> [eax],ebx
-    mov     ebx,<u32> [edi+4]
-    mov     <u32> [eax+4],ebx
+    mov     ebx,u32 ptr [edi]
+    mov     u32 ptr [eax],ebx
+    mov     ebx,u32 ptr [edi+4]
+    mov     u32 ptr [eax+4],ebx
   // Derive the GDT information (to see if we need to adjust it)
     invExtract_code_descriptor32()
 //    .IF (ecx < edx)
@@ -753,15 +753,15 @@ function invMove_temp_gdts_to_permanent    NEAR
 //        call    invCreate_code_descriptor32
 //        pop     eax
 //    .ENDIF
-    mov     <u32> gs:[_SYSTEM_i_CODE_GDT_OFFSET],eax
+    mov     u32 ptr gs:[_SYSTEM_i_CODE_GDT_OFFSET],eax
     add     eax,8
 
   // Copy the data segment
     mov     edi,_dsTEMP_PRIMATIVE
-    mov     ebx,<u32> [edi]
-    mov     <u32> [eax],ebx
-    mov     ebx,<u32> [edi+4]
-    mov     <u32> [eax+4],ebx
+    mov     ebx,u32 ptr [edi]
+    mov     u32 ptr [eax],ebx
+    mov     ebx,u32 ptr [edi+4]
+    mov     u32 ptr [eax+4],ebx
     invExtract_data_descriptor32()
 //    .IF (ecx < edx)
 //      // We need to make the limit field shorter because they don't need all of the memory in the file
@@ -771,31 +771,31 @@ function invMove_temp_gdts_to_permanent    NEAR
 //        call    invCreate_data_descriptor32
 //        pop     eax
 //    .ENDIF
-    mov     <u32> gs:[_SYSTEM_i_DATA_GDT_OFFSET],eax
+    mov     u32 ptr gs:[_SYSTEM_i_DATA_GDT_OFFSET],eax
     add     eax,8
 
   // Copy the main call gate
     mov     edi,_cgTEMP_PRIMATIVE_MAIN
-    mov     ebx,<u32> [edi]
-    mov     <u32> [eax],ebx
-    mov     ebx,<u32> [edi+4]
-    mov     <u32> [eax+4],ebx
-    mov     <u32> gs:[_SYSTEM_i_MAIN_GDT_OFFSET],eax
+    mov     ebx,u32 ptr [edi]
+    mov     u32 ptr [eax],ebx
+    mov     ebx,u32 ptr [edi+4]
+    mov     u32 ptr [eax+4],ebx
+    mov     u32 ptr gs:[_SYSTEM_i_MAIN_GDT_OFFSET],eax
   // Now, update the code segment selector for this newly located code segment (see above)
-    mov     ebx,<u32> gs:[_SYSTEM_i_CODE_GDT_OFFSET]
-    mov     <u16> [eax+2],bx
+    mov     ebx,u32 ptr gs:[_SYSTEM_i_CODE_GDT_OFFSET]
+    mov     u16 ptr [eax+2],bx
     add     eax,8
 
   // Copy the requestor call gate
     mov     edi,_cgTEMP_PRIMATIVE_REQUESTOR
-    mov     ebx,<u32> [edi]
-    mov     <u32> [eax],ebx
-    mov     ebx,<u32> [edi+4]
-    mov     <u32> [eax+4],ebx
-    mov     <u32> gs:[_SYSTEM_i_REQUESTOR_GDT_OFFSET],eax
+    mov     ebx,u32 ptr [edi]
+    mov     u32 ptr [eax],ebx
+    mov     ebx,u32 ptr [edi+4]
+    mov     u32 ptr [eax+4],ebx
+    mov     u32 ptr gs:[_SYSTEM_i_REQUESTOR_GDT_OFFSET],eax
   // And, update this one's code selector also (see above)
-    mov     ebx,<u32> gs:[_SYSTEM_i_CODE_GDT_OFFSET]
-    mov     <u16> [eax+2],bx
+    mov     ebx,u32 ptr gs:[_SYSTEM_i_CODE_GDT_OFFSET]
+    mov     u16 ptr [eax+2],bx
     add     eax,8
 
     pop     gs
@@ -836,14 +836,14 @@ function invAdd_primative    NEAR
         mov     edi,_sPRIMATIVES
         mov     es,edi
 
-        mov     edi,<u32> es:[0]
-        mov     <u16> es:[edi],ax                                // store the call gate
+        mov     edi,u32 ptr es:[0]
+        mov     u16 ptr es:[edi],ax                                // store the call gate
         add     edi,2
 
-        mov     <u8>  es:[edi],1                                 // active? (0-No, 1-Yes)
+        mov     u8 ptr es:[edi],1                                 // active? (0-No, 1-Yes)
         inc     edi
 
-        mov     <u8>  es:[edi],cl                                // length of the function name
+        mov     u8 ptr es:[edi],cl                                // length of the function name
         inc     edi
 
       // Store the primative function name
@@ -853,19 +853,19 @@ function invAdd_primative    NEAR
         push    eax
         repeat
         {
-            mov     al,<u8>  [esi]
+            mov     al,u8 ptr [esi]
             if (al >= "A" && al <= "Z")
             {
                 or      al,20h                                      // force the name to lower-case
             }
             inc     esi
-            mov     <u8>  es:[edi],al
+            mov     u8 ptr es:[edi],al
             inc     edi
         } untilcxz
         pop     eax
 
       // Update for the next location
-        mov     <u32> es:[0],edi
+        mov     u32 ptr es:[0],edi
 
       // Now, physically create the call gate to this primative
         mov     ecx,ebx                                             // dwords to copy
@@ -909,29 +909,29 @@ function invUpdate_required_primatives    NEAR
     mov     eax,_sSYSTEM
     mov     fs,eax
 
-    mov     <u32> fs:[_SYSTEM_i_SCRATCH_DWORD1],0               // Holds total number of primative names found
-    mov     <u32> fs:[_SYSTEM_i_SCRATCH_DWORD2],0               // Holds total number not matched with installed primatives
+    mov     u32 ptr fs:[_SYSTEM_i_SCRATCH_DWORD1],0               // Holds total number of primative names found
+    mov     u32 ptr fs:[_SYSTEM_i_SCRATCH_DWORD2],0               // Holds total number not matched with installed primatives
 
     xor     ecx,ecx
     while (byte ptr ds:[esi] != 0ffh)
     {
-        mov     <u32> [ebp-16],esi
-        mov     cl,<u8>  ds:[esi]
-        mov     <u32> [ebp-20],ecx
-        inc     <u32> fs:[_SYSTEM_i_SCRATCH_DWORD1]
+        mov     u32 ptr [ebp-16],esi
+        mov     cl,u8 ptr ds:[esi]
+        mov     u32 ptr [ebp-20],ecx
+        inc     u32 ptr fs:[_SYSTEM_i_SCRATCH_DWORD1]
 
       // Start at the beginning of the _sPRIMATIVE structure for each pass
         mov     eax,8
       // Right now, es:[eax] - far ptr to start of primative's structure, refer to inf\primload.inf for information
-        while (eax < <u32> es:[0])
+        while (eax < u32 ptr es:[0])
         {
-            mov     cl,<u8>  es:[eax+3]
-            mov     <u32> [ebp-12],ecx
-            mov     esi,<u32> [ebp-16]
-            if (byte ptr es:[eax+2] == 1 && cl == <u8>  ds:[esi])
+            mov     cl,u8 ptr es:[eax+3]
+            mov     u32 ptr [ebp-12],ecx
+            mov     esi,u32 ptr [ebp-16]
+            if (byte ptr es:[eax+2] == 1 && cl == u8 ptr ds:[esi])
             {
-                mov     bx,<u16> es:[eax]                        // Get the call gate
-                mov     <u32> [ebp-08],eax
+                mov     bx,u16 ptr es:[eax]                        // Get the call gate
+                mov     u32 ptr [ebp-08],eax
                 add     eax,4
                 inc     esi
               // Right now, es:[eax] - far ptr to _sPRIMATIVE name
@@ -940,12 +940,12 @@ function invUpdate_required_primatives    NEAR
               //                  bx - call gate for this primative
                 repeat
                 {
-                    mov     dl,<u8>  ds:[esi]
+                    mov     dl,u8 ptr ds:[esi]
                     if (dl >= 'A' && dl <= 'Z')
                     {
                         add     dl,020h                             // force lowercase
                     }
-                    if (dl != <u8>  es:[eax])
+                    if (dl != u8 ptr es:[eax])
                     {
                       // It wasn't a match
                         jmp     @F
@@ -954,23 +954,23 @@ function invUpdate_required_primatives    NEAR
                     inc     esi
                 } untilcxz
               // If we're here, then this was a match
-                mov     <u16> ds:[edi+4],bx
+                mov     u16 ptr ds:[edi+4],bx
                 jmp     next_primative
 
               @@:
-                mov     ecx,<u32> [ebp-12]
-                mov     eax,<u32> [ebp-08]
+                mov     ecx,u32 ptr [ebp-12]
+                mov     eax,u32 ptr [ebp-08]
             }
             add     eax,ecx
             add     eax,4
         }
       // If we're here, then the item wasn't found
-        mov     <u16> ds:[edi+4],0ffffh                          // Set it so it will indicate it "wasn't found"
-        inc     <u32> fs:[_SYSTEM_i_SCRATCH_DWORD2]             // Increase the number of items not found
+        mov     u16 ptr ds:[edi+4],0ffffh                          // Set it so it will indicate it "wasn't found"
+        inc     u32 ptr fs:[_SYSTEM_i_SCRATCH_DWORD2]             // Increase the number of items not found
 
       next_primative:
-        mov     ecx,<u32> [ebp-20]
-        mov     esi,<u32> [ebp-16]
+        mov     ecx,u32 ptr [ebp-20]
+        mov     esi,u32 ptr [ebp-16]
         add     esi,ecx
         inc     esi
         add     edi,2
@@ -1049,7 +1049,7 @@ function VID_display_radix_in_edx_mono
 
 function iString_generate_radix_string
 {
-    mov     <u8>  [ebp+12],0                                 // NULL terminate the string we're building
+    mov     u8 ptr [ebp+12],0                                 // NULL terminate the string we're building
     mov     esi,ebp
     add     esi,11
     mov     eax,edx
@@ -1064,7 +1064,7 @@ function iString_generate_radix_string
     } else {
         add     dl,'0'                                          // Make it a number
     }
-    mov     <u8>  ss:[esi],dl
+    mov     u8 ptr ss:[esi],dl
     dec     esi                                                 // Decrement (move to next position to store data)
     cmp     esi,ebp
     jz      @F
@@ -1095,9 +1095,9 @@ function iString_generate_radix_string
 //    mov     ah,7
 //    .WHILE (byte ptr ds:[esi] != 0)                                 // Loop until the NULL terminated string is found
 //        lodsb
-//        mov     <u8>  fs:[edi],al                                // Write character
+//        mov     u8 ptr fs:[edi],al                                // Write character
 //        inc     di
-//        mov     <u8>  fs:[edi],ah                                // Write color
+//        mov     u8 ptr fs:[edi],ah                                // Write color
 //        inc     di
 //    .ENDW
 //
@@ -1126,9 +1126,9 @@ function VID_display_string_mono
     while (byte ptr ds:[esi] != 0)                                 // Loop until the NULL terminated string is found
     {
         lodsb
-        mov     <u8>  fs:[edi],al                                // Write character
+        mov     u8 ptr fs:[edi],al                                // Write character
         inc     di
-        mov     <u8>  fs:[edi],ah                                // Write color
+        mov     u8 ptr fs:[edi],ah                                // Write color
         inc     di
     }
 
@@ -1156,9 +1156,9 @@ function VID_display_string_mono
 //    mov     ah,7
 //    .REPEAT
 //        lodsb
-//        mov     <u8>  fs:[edi],al                                // Write character
+//        mov     u8 ptr fs:[edi],al                                // Write character
 //        inc     di
-//        mov     <u8>  fs:[edi],ah                                // Write color
+//        mov     u8 ptr fs:[edi],ah                                // Write color
 //        inc     di
 //    .UNTILCXZ
 //
@@ -1190,9 +1190,9 @@ function VID_display_string_ecx_mono
         repeat
         {
             lodsb
-            mov     <u8>  fs:[edi],al                                // Write character
+            mov     u8 ptr fs:[edi],al                                // Write character
             inc     di
-            mov     <u8>  fs:[edi],ah                                // Write color
+            mov     u8 ptr fs:[edi],ah                                // Write color
             inc     di
         } untilcxz
     }
@@ -1225,21 +1225,21 @@ function VID_display_hex_string_ecx_mono
             lodsb
             mov     dl,al
             hex_adjust_al_dl()
-            mov     <u8>  gs:[edi],32                                // Write a space before hexidecimal values
+            mov     u8 ptr gs:[edi],32                                // Write a space before hexidecimal values
             inc     di
-            mov     <u8>  gs:[edi],ah                                // Write color
+            mov     u8 ptr gs:[edi],ah                                // Write color
             inc     di
-            mov     <u8>  gs:[edi],dl                                // Write left 1/2 of hexidecimal values character
+            mov     u8 ptr gs:[edi],dl                                // Write left 1/2 of hexidecimal values character
             inc     di
-            mov     <u8>  gs:[edi],ah                                // Write color
+            mov     u8 ptr gs:[edi],ah                                // Write color
             inc     di
-            mov     <u8>  gs:[edi],al                                // Write right 1/2 of hexidecimal values character
+            mov     u8 ptr gs:[edi],al                                // Write right 1/2 of hexidecimal values character
             inc     di
-            mov     <u8>  gs:[edi],ah                                // Write color
+            mov     u8 ptr gs:[edi],ah                                // Write color
             inc     di
-            mov     <u8>  gs:[edi],32                                // Write a space after hexidecimal value
+            mov     u8 ptr gs:[edi],32                                // Write a space after hexidecimal value
             inc     di
-            mov     <u8>  gs:[edi],ah                                // Write color
+            mov     u8 ptr gs:[edi],ah                                // Write color
             inc     di
         } untilcxz
     }
@@ -1292,7 +1292,7 @@ function init_failed    NEAR
     mov     ah,7
     while (esi < offset failed_end)
     {
-        mov     al,<u8>  cs:[esi]
+        mov     al,u8 ptr cs:[esi]
         inc     esi
         if (al == 13)
         {
@@ -1326,8 +1326,8 @@ function init_failed    NEAR
             add     ah,128
         
         } else {
-            mov     <u16> fs:[edi],ax
-            mov     <u16> gs:[edi],ax
+            mov     u16 ptr fs:[edi],ax
+            mov     u16 ptr gs:[edi],ax
             add     edi,2
         }
     }

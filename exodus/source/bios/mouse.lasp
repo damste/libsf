@@ -11,66 +11,66 @@
 
 
 // Status
-mouse_status                    u32  0                               // Is mouse displayed?  1-Yes, 0-No
-mouse_pointer_type              u32  0                               // Refer to INF\MOUSE.INF or VGA\MOUSE.FNT
-mouse_processing                u32  0                               // Is this program processing?  1-Yes, 0-No
-dragging_something              u32  0                               // Dragging something?  1-Yes, 0-No
+mouse_status                    u32 0                               // Is mouse displayed?  1-Yes, 0-No
+mouse_pointer_type              u32 0                               // Refer to INF\MOUSE.INF or VGA\MOUSE.FNT
+mouse_processing                u32 0                               // Is this program processing?  1-Yes, 0-No
+dragging_something              u32 0                               // Dragging something?  1-Yes, 0-No
 
 // Mouse coordinates
-mouse_current_x                 u32  160
-mouse_current_y                 u32  100
-mouse_hovering_x                u32  0ffffffffh
-mouse_hovering_y                u32  0ffffffffh
-mouse_pointer_save_area         u8   16*20 dup(0)
+mouse_current_x                 u32 160
+mouse_current_y                 u32 100
+mouse_hovering_x                u32 0ffffffffh
+mouse_hovering_y                u32 0ffffffffh
+mouse_pointer_save_area         u8  16*20 dup(0)
 
 // Dragging activity
-dragging_x                      u32  0
-dragging_y                      u32  0
-dragging_height                 u32  0
-dragging_width                  u32  0
-dragging_offset_x               u32  0
-dragging_offset_y               u32  0
-dragging_snap_x                 u32  0
-dragging_snap_y                 u32  0
-dragging_last_x                 u32  0
-dragging_last_y                 u32  0
-dragging_skipped                u32  0
+dragging_x                      u32 0
+dragging_y                      u32 0
+dragging_height                 u32 0
+dragging_width                  u32 0
+dragging_offset_x               u32 0
+dragging_offset_y               u32 0
+dragging_snap_x                 u32 0
+dragging_snap_y                 u32 0
+dragging_last_x                 u32 0
+dragging_last_y                 u32 0
+dragging_skipped                u32 0
 
 // Counts used to activate various things
-mouse_hovering_count_start      u32  91
-mouse_hovering_count            u32  0ffffffffh
-mouse_clicking_count_start      u32  30
-mouse_clicking_count            u32  0ffffffffh
-mouse_immediate_count_start     u32  2
-mouse_immediate_count           u32  0ffffffffh
+mouse_hovering_count_start      u32 91
+mouse_hovering_count            u32 0ffffffffh
+mouse_clicking_count_start      u32 30
+mouse_clicking_count            u32 0ffffffffh
+mouse_immediate_count_start     u32 2
+mouse_immediate_count           u32 0ffffffffh
 
 // Relating to click activity
-mouse_last_event                u8   0                               // Relates to clicking or dragging
-mouse_right_click_x_start       u32  0
-mouse_right_click_y_start       u32  0
-mouse_left_click_x_start        u32  0
-mouse_left_click_y_start        u32  0
-mouse_right_click_x_stop        u32  0
-mouse_right_click_y_stop        u32  0
-mouse_left_click_x_stop         u32  0
-mouse_left_click_y_stop         u32  0
-mouse_right_click               u32  0
-mouse_left_click                u32  0
-mouse_both_click                u32  0
-mouse_left_dragging             u32  0
-mouse_right_dragging            u32  0
+mouse_last_event                u8  0                               // Relates to clicking or dragging
+mouse_right_click_x_start       u32 0
+mouse_right_click_y_start       u32 0
+mouse_left_click_x_start        u32 0
+mouse_left_click_y_start        u32 0
+mouse_right_click_x_stop        u32 0
+mouse_right_click_y_stop        u32 0
+mouse_left_click_x_stop         u32 0
+mouse_left_click_y_stop         u32 0
+mouse_right_click               u32 0
+mouse_left_click                u32 0
+mouse_both_click                u32 0
+mouse_left_dragging             u32 0
+mouse_right_dragging            u32 0
 
 // Relating to button activity
-mouse_last_buttons              u32  0                               // Button status from previous mouse packet
-mouse_last_button_left          u32  0
-mouse_last_button_right         u32  0
-mouse_button_left               u32  0
-mouse_button_right              u32  0
+mouse_last_buttons              u32 0                               // Button status from previous mouse packet
+mouse_last_button_left          u32 0
+mouse_last_button_right         u32 0
+mouse_button_left               u32 0
+mouse_button_right              u32 0
 
 // Relating to screen saver
-screen_saver_active             u32  0                               // 1-Yes, 0-No
-screen_saver_count              u32  18200                           // 100 seconds
-screen_saver_count_start        u32  18200
+screen_saver_active             u32 0                               // 1-Yes, 0-No
+screen_saver_count              u32 18200                           // 100 seconds
+screen_saver_count_start        u32 18200
 
 
 
@@ -171,9 +171,9 @@ screen_saver_count_start        u32  18200
         add     ds:mouse_current_y,edx
 
       // Find the maximum coordinates
-        movzx   eax,<u16> es:[_SYSTEM_VGA_HORIZONTAL]
+        movzx   eax,u16 ptr es:[_SYSTEM_VGA_HORIZONTAL]
         dec     eax                                                 // Change base-1 to base-0
-        movzx   edx,<u16> es:[_SYSTEM_VGA_VERTICAL]
+        movzx   edx,u16 ptr es:[_SYSTEM_VGA_VERTICAL]
         dec     edx                                                 // Change base-1 to base-0
       // Right now, eax - maximum horizontal
       //            edx - maximum vertical
@@ -277,13 +277,13 @@ screen_saver_count_start        u32  18200
     // Upon exit:    The mouse pointer is displayed
     //
         pushfd
-        push    <u32> ds:mouse_current_x
-        push    <u32> ds:mouse_current_y
+        push    u32 ptr ds:mouse_current_x
+        push    u32 ptr ds:mouse_current_y
         push    0                                                   // 0-hide, 1-show
-        push    <u32> ds:mouse_pointer_type                     // mouse pointer type
-        push    <u32> offset mouse_pointer_save_area
+        push    u32 ptr ds:mouse_pointer_type                     // mouse pointer type
+        push    u32 ptr offset mouse_pointer_save_area
         cli
-        call    <u48> ds:_VID_g_mouse_pointer
+        call    u48 ptr ds:_VID_g_mouse_pointer
         mov     ds:mouse_status,0
         popfd
         ret
@@ -305,13 +305,13 @@ if (ds:mouse_current_x > 320 || ds:mouse_current_y > 200)
     int 3
 }
         pushfd
-        push    <u32> ds:mouse_current_x
-        push    <u32> ds:mouse_current_y
+        push    u32 ptr ds:mouse_current_x
+        push    u32 ptr ds:mouse_current_y
         push    1
-        push    <u32> ds:mouse_pointer_type                     // mouse pointer type
-        push    <u32> offset mouse_pointer_save_area
+        push    u32 ptr ds:mouse_pointer_type                     // mouse pointer type
+        push    u32 ptr offset mouse_pointer_save_area
         cli
-        call    <u48> ds:_VID_g_mouse_pointer
+        call    u48 ptr ds:_VID_g_mouse_pointer
         mov     ds:mouse_status,1
         popfd
         ret

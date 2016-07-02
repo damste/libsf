@@ -68,12 +68,12 @@
         if (es:bootup == 1)
         {
           // During bootup, strings can be terminated with 255 as well as 0
-            while (byte ptr ds:[esi] != 0 && <u8>  ds:[esi] != 255)     // Loop until one of two chars is found
+            while (byte ptr ds:[esi] != 0 && u8 ptr ds:[esi] != 255)     // Loop until one of two chars is found
             {
                 lodsb
-                mov     <u8>  fs:[edi],al                        // Write character
+                mov     u8 ptr fs:[edi],al                        // Write character
                 inc     di
-                mov     <u8>  fs:[edi],ah                        // Write color
+                mov     u8 ptr fs:[edi],ah                        // Write color
                 inc     di
             }
         
@@ -81,9 +81,9 @@
             while (byte ptr ds:[esi] != 0)                         // Loop until the NULL terminated string is found
             {
                 lodsb
-                mov     <u8>  fs:[edi],al                        // Write character
+                mov     u8 ptr fs:[edi],al                        // Write character
                 inc     di
-                mov     <u8>  fs:[edi],ah                        // Write color
+                mov     u8 ptr fs:[edi],ah                        // Write color
                 inc     di
             }
         }
@@ -119,9 +119,9 @@
         repeat; Loop until the NULL terminated string is found
         {
             lodsb
-            mov     <u8>  fs:[edi],al                            // Write character
+            mov     u8 ptr fs:[edi],al                            // Write character
             inc     di
-            mov     <u8>  fs:[edi],ah                            // Write color
+            mov     u8 ptr fs:[edi],ah                            // Write color
             inc     di
         } untilcxz
         mov     bx,di                                               // Adjust the cursor position
@@ -158,21 +158,21 @@
             lodsb
             mov     dl,al
             hex_adjust_al_dl()
-            mov     <u8>  fs:[edi],32                            // Write a space before hexidecimal values
+            mov     u8 ptr fs:[edi],32                            // Write a space before hexidecimal values
             inc     di
-            mov     <u8>  fs:[edi],ah                            // Write color
+            mov     u8 ptr fs:[edi],ah                            // Write color
             inc     di
-            mov     <u8>  fs:[edi],dl                            // Write left 1/2 of hexidecimal values character
+            mov     u8 ptr fs:[edi],dl                            // Write left 1/2 of hexidecimal values character
             inc     di
-            mov     <u8>  fs:[edi],ah                            // Write color
+            mov     u8 ptr fs:[edi],ah                            // Write color
             inc     di
-            mov     <u8>  fs:[edi],al                            // Write right 1/2 of hexidecimal values character
+            mov     u8 ptr fs:[edi],al                            // Write right 1/2 of hexidecimal values character
             inc     di
-            mov     <u8>  fs:[edi],ah                            // Write color
+            mov     u8 ptr fs:[edi],ah                            // Write color
             inc     di
-            mov     <u8>  fs:[edi],32                            // Write a space after hexidecimal values
+            mov     u8 ptr fs:[edi],32                            // Write a space after hexidecimal values
             inc     di
-            mov     <u8>  fs:[edi],ah                            // Write color
+            mov     u8 ptr fs:[edi],ah                            // Write color
             inc     di
         } untilcxz
         mov     bx,di                                               // Adjust the cursor position
@@ -297,8 +297,8 @@
             }
             repeat
             {
-                mov     al,<u8>  fs:[esi]                        // Load a byte
-                mov     <u8>  fs:[edi],al                        // Store a byte
+                mov     al,u8 ptr fs:[esi]                        // Load a byte
+                mov     u8 ptr fs:[edi],al                        // Store a byte
                 inc     esi
                 inc     edi
             } untilcxz
@@ -307,9 +307,9 @@
             mov     ah,es:attribute_vga
             repeat
             {
-                mov     <u8>  fs:[edi]," "
+                mov     u8 ptr fs:[edi]," "
                 inc     edi
-                mov     <u8>  fs:[edi],ah
+                mov     u8 ptr fs:[edi],ah
                 inc     edi
             } untilcxz
         
@@ -398,7 +398,7 @@
         mov     ah,es:attribute_vga
         repeat
         {
-            mov     <u16> fs:[edi],ax
+            mov     u16 ptr fs:[edi],ax
             add     edi,2
         } untilcxz
         xor     dx,dx
@@ -461,7 +461,7 @@
         add     edi,641                                         // Always start two lines down and one pixel over
                                                                 //   (for a visual spacing, it looks nicer I think)
       // Adjust for a multi-picture image
-        mov     bl,<u8>  ds:[esi]
+        mov     bl,u8 ptr ds:[esi]
         and     bl,0111b
         if (bl == 1)
         {
@@ -473,7 +473,7 @@
             push    fs:logo_y
             invVID_draw_logo_next_slot()
             mov     eax,fs:logo_x
-            if (eax != <u32> [esp+4])
+            if (eax != u32 ptr [esp+4])
             {
               // It changed, we're now where we need to be, let's get our new offset
                 add     esp,8
@@ -515,7 +515,7 @@
         }
 
       // Do the border color
-        mov     bl,<u8>  ds:[esi]
+        mov     bl,u8 ptr ds:[esi]
         if (bl >= 80h)
         {
           // They want a dark grey box around drawn their logo
@@ -563,8 +563,8 @@
             push    ecx
             while (ecx > 0)
             {
-                mov     <u8>  es:[edi+ecx-1],bh
-                mov     <u8>  es:[edi+ecx+(19*320)-1],bh
+                mov     u8 ptr es:[edi+ecx-1],bh
+                mov     u8 ptr es:[edi+ecx+(19*320)-1],bh
                 dec     ecx
             }
             pop     ecx
@@ -574,8 +574,8 @@
             xor     eax,eax
             while (eax < 19)
             {
-                mov     <u8>  es:[edi],bh
-                mov     <u8>  es:[edi+ecx-1],bh
+                mov     u8 ptr es:[edi],bh
+                mov     u8 ptr es:[edi+ecx-1],bh
                 add     edi,320
                 inc     eax
             }
@@ -625,7 +625,7 @@
             }
             repeat
             {
-                mov     al,<u8>  ds:[esi]
+                mov     al,u8 ptr ds:[esi]
                 if (al >= 10h)
                 {
                     sub     al,10h
@@ -645,7 +645,7 @@
                 } else {
                     add     al,20h
                 }
-                mov     <u8>  es:[edi],al
+                mov     u8 ptr es:[edi],al
                 inc     esi
                 inc     edi
             } untilcxz
@@ -670,15 +670,15 @@
                 invWait_a_bit()
 
                 mov     edx,RAMDAC_DATA
-                mov     al,<u8>  ds:[esi]
+                mov     al,u8 ptr ds:[esi]
                 inc     esi
                 out     dx,al
                 invWait_a_bit()
-                mov     al,<u8>  ds:[esi]
+                mov     al,u8 ptr ds:[esi]
                 inc     esi
                 out     dx,al
                 invWait_a_bit()
-                mov     al,<u8>  ds:[esi]
+                mov     al,u8 ptr ds:[esi]
                 inc     esi
                 out     dx,al
                 invWait_a_bit()
@@ -748,8 +748,8 @@
                 mov     ecx,320*40 / 4
                 repeat
                 {
-                    mov     eax,<u32> es:[esi]
-                    mov     <u32> es:[edi],eax
+                    mov     eax,u32 ptr es:[esi]
+                    mov     u32 ptr es:[edi],eax
                     add     esi,4
                     add     edi,4
                 } untilcxz
@@ -759,7 +759,7 @@
                 mov     eax,20202020h
                 repeat
                 {
-                    mov     <u32> es:[edi],eax
+                    mov     u32 ptr es:[edi],eax
                     add     edi,4
                 } untilcxz
                 sub     fs:logo_y,320*20
@@ -795,7 +795,7 @@
         if (ds:horizontal_pixels == 320 && ds:vertical_pixels == 200)
         {
           // We're in 320x200 mode
-            if (dword ptr [ebp+28] < 320 && <u32> [ebp+20] != 0 && <u32> [ebp+24] < 200 && <u32> [ebp+16] != 0)
+            if (dword ptr [ebp+28] < 320 && u32 ptr [ebp+20] != 0 && u32 ptr [ebp+24] < 200 && u32 ptr [ebp+16] != 0)
             {
                 pushad
                 push    es
@@ -803,39 +803,39 @@
                 mov     es,ebx
 
                // Verify width
-                mov     eax,<u32> [ebp+24]
-                add     eax,<u32> [ebp+20]
+                mov     eax,u32 ptr [ebp+24]
+                add     eax,u32 ptr [ebp+20]
                 if (eax > 320)
                 {
                     sub     eax,320
-                    sub     <u32> [ebp+20],eax
+                    sub     u32 ptr [ebp+20],eax
                 }
 
                // Verify height
-                mov     ebx,<u32> [ebp+28]
-                add     ebx,<u32> [ebp+16]
+                mov     ebx,u32 ptr [ebp+28]
+                add     ebx,u32 ptr [ebp+16]
                 if (ebx > 200)
                 {
                     sub     ebx,200
-                    sub     <u32> [ebp+16],ebx
+                    sub     u32 ptr [ebp+16],ebx
                 }
               // Right now, we know the coordinates will fit on the screen
 
                // Determine the starting coordinate in memory
-                mov     eax,<u32> [ebp+28]                   // (top * 320) + left
+                mov     eax,u32 ptr [ebp+28]                   // (top * 320) + left
                 mov     ebx,320
                 mul     ebx
-                add     eax,<u32> [ebp+24]
+                add     eax,u32 ptr [ebp+24]
                 mov     edi,eax
               // Right now, es:[edi] - far ptr to starting point in memory
 
                // Draw the rectangle
-                mov     edx,<u32> [ebp+16]
-                mov     eax,<u32> [ebp+12]
+                mov     edx,u32 ptr [ebp+16]
+                mov     eax,u32 ptr [ebp+12]
                 mov     ebx,edi
               @@:
                 mov     edi,ebx
-                mov     ecx,<u32> [ebp+20]
+                mov     ecx,u32 ptr [ebp+20]
                 add     ebx,cs:horizontal_pixels
                 rep     stosb
                 dec     edx
@@ -871,11 +871,11 @@
         if (cs:bits_per_pixel == 16)
         {
           // 16 million color mode
-            movzx   eax,<u8>  ds:[esi+ebx+_OBJECT_RED]
+            movzx   eax,u8 ptr ds:[esi+ebx+_OBJECT_RED]
             shl     eax,8
-            mov     al,<u8>  ds:[esi+ebx+_OBJECT_GREEN]
+            mov     al,u8 ptr ds:[esi+ebx+_OBJECT_GREEN]
             shl     eax,8
-            mov     al,<u8>  ds:[esi+ebx+_OBJECT_BLUE]
+            mov     al,u8 ptr ds:[esi+ebx+_OBJECT_BLUE]
           // Right now, eax = <null|r|g|b>
 
         
@@ -886,20 +886,20 @@
             pushad
 
           // Load the user colors
-            mov     al,<u8>  ds:[esi+ebx+_OBJECT_RED]
-            mov     ah,<u8>  ds:[esi+ebx+_OBJECT_GREEN]
-            mov     dl,<u8>  ds:[esi+ebx+_OBJECT_BLUE]
+            mov     al,u8 ptr ds:[esi+ebx+_OBJECT_RED]
+            mov     ah,u8 ptr ds:[esi+ebx+_OBJECT_GREEN]
+            mov     dl,u8 ptr ds:[esi+ebx+_OBJECT_BLUE]
 
           // Begin the comparison
             mov     ds,cs:data_segment
             mov     ebx,offset exodus_interactive_256_start
             while (ebx < offset exodus_interactive_256_end)
             {
-                if (byte ptr ds:[ebx+1] == al && <u8>  ds:[ebx+2] == ah && <u8>  ds:[ebx+3] == dl)
+                if (byte ptr ds:[ebx+1] == al && u8 ptr ds:[ebx+2] == ah && u8 ptr ds:[ebx+3] == dl)
                 {
                   // This is it
-                    movzx   eax,<u8>  ds:[ebx]
-                    mov     <u32> [esp+28],eax
+                    movzx   eax,u8 ptr ds:[ebx]
+                    mov     u32 ptr [esp+28],eax
                     jmp     quit
                 }
                 add     ebx,4
@@ -910,15 +910,15 @@
             mov     ebx,offset exodus_interactive_256_variable_start
             while (ebx < offset exodus_interactive_256_end)
             {
-                if (word ptr ds:[ebx+1] == 0 && <u8>  ds:[ebx+3] == 0)
+                if (word ptr ds:[ebx+1] == 0 && u8 ptr ds:[ebx+3] == 0)
                 {
                   // This is it
-                    mov     <u8>  ds:[ebx+1],al
-                    mov     <u8>  ds:[ebx+2],ah
-                    mov     <u8>  ds:[ebx+3],dl
+                    mov     u8 ptr ds:[ebx+1],al
+                    mov     u8 ptr ds:[ebx+2],ah
+                    mov     u8 ptr ds:[ebx+3],dl
                     invVID_VGA_set_interactive_palette()
-                    movzx   eax,<u8>  ds:[ebx]
-                    mov     <u32> [esp+28],eax
+                    movzx   eax,u8 ptr ds:[ebx]
+                    mov     u32 ptr [esp+28],eax
                     jmp     quit
                 }
                 add     ebx,4
@@ -934,22 +934,22 @@ int  3
           // [ebp-12] - red value
           // [ebp-16] - green value
           // [ebp-20] - blue value
-            mov     <u32> [ebp-04],-1
-            mov     <u32> [ebp-08],-1
+            mov     u32 ptr [ebp-04],-1
+            mov     u32 ptr [ebp-08],-1
             movzx   ecx,al
-            mov     <u32> [ebp-12],ecx
+            mov     u32 ptr [ebp-12],ecx
             movzx   ecx,ah
-            mov     <u32> [ebp-16],ecx
+            mov     u32 ptr [ebp-16],ecx
             movzx   ecx,dl
-            mov     <u32> [ebp-20],ecx
+            mov     u32 ptr [ebp-20],ecx
 
             mov     esi,offset exodus_interactive_256_variable_start
             while (ebx < offset exodus_interactive_256_end)
             {
                 xor     edi,edi
               // Red
-                movzx   ebx,<u8>  ds:[esi+1]
-                sub     ebx,<u32> [ebp-12]
+                movzx   ebx,u8 ptr ds:[esi+1]
+                sub     ebx,u32 ptr [ebp-12]
                 if (carry?)
                 {
                     neg     ebx
@@ -957,8 +957,8 @@ int  3
                 add     edi,ebx
 
               // Green
-                movzx   ebx,<u8>  ds:[esi+2]
-                sub     ebx,<u32> [ebp-16]
+                movzx   ebx,u8 ptr ds:[esi+2]
+                sub     ebx,u32 ptr [ebp-16]
                 if (carry?)
                 {
                     neg     ebx
@@ -966,8 +966,8 @@ int  3
                 add     edi,ebx
 
               // Blue
-                movzx   ebx,<u8>  ds:[esi+3]
-                sub     ebx,<u32> [ebp-20]
+                movzx   ebx,u8 ptr ds:[esi+3]
+                sub     ebx,u32 ptr [ebp-20]
                 if (carry?)
                 {
                     neg     ebx
@@ -975,19 +975,19 @@ int  3
                 add     edi,ebx
 
               // See if it's closer
-                if (edi < <u32> [ebp-08])
+                if (edi < u32 ptr [ebp-08])
                 {
                   // This one's closer
-                    mov     <u32> [ebp-04],esi
+                    mov     u32 ptr [ebp-04],esi
                 }
 
               // Try next one
                 add     esi,4
             }
-            mov     esi,<u32> [ebp-04]
-            movzx   eax,<u8>  ds:[esi]
+            mov     esi,u32 ptr [ebp-04]
+            movzx   eax,u8 ptr ds:[esi]
             leave
-            mov     <u32> [esp+28],eax
+            mov     u32 ptr [esp+28],eax
           //---------------------------------
 
           quit:
@@ -1051,7 +1051,7 @@ int  3
 
         if (dword ptr [ebp+20] != -1)
         {
-            mov     eax,<u32> [ebp+28]
+            mov     eax,u32 ptr [ebp+28]
             test    eax,80000000h
             if (!zero?)
             {
@@ -1061,38 +1061,38 @@ int  3
                 {
                   // It's a scalable bitmap
                     int  3
-                    u8   'Scaling bitmap font'
+                    u8  'Scaling bitmap font'
                 
                 } else {
                   // It's a fixed bitmap
                     if (ax == 0806h)
                     {
                       // 8x6 font
-                        mov     <u32> [ebp-04],offset font_8x6_name
+                        mov     u32 ptr [ebp-04],offset font_8x6_name
                         mov     eax,2
                         mov     ebx,2
                     
                     } else if (ax == 0808h) {
                       // 8x8 font
-                        mov     <u32> [ebp-04],offset font_8x8_name
+                        mov     u32 ptr [ebp-04],offset font_8x8_name
                         mov     eax,3
                         mov     ebx,3
                     
                     } else if (ax == 080eh) {
                       // 8x14 font
-                        mov     <u32> [ebp-04],offset font_8x14_name
+                        mov     u32 ptr [ebp-04],offset font_8x14_name
                         mov     eax,3
                         mov     ebx,4
                     
                     } else if (ax == 0810h) {
                       // 8x16 font
-                        mov     <u32> [ebp-04],offset font_8x16_name
+                        mov     u32 ptr [ebp-04],offset font_8x16_name
                         mov     eax,3
                         mov     ebx,4
                     
                     } else if (ax == 1010h) {
                       // 16x16 font
-                        mov     <u32> [ebp-04],offset font_16x16_name
+                        mov     u32 ptr [ebp-04],offset font_16x16_name
                         mov     eax,3
                         mov     ebx,4
                     
@@ -1101,71 +1101,71 @@ int  3
                         stc
                         jmp     quit
                     }
-                    mov     <u32> [ebp-36],eax
-                    mov     <u32> [ebp-44],ebx
+                    mov     u32 ptr [ebp-36],eax
+                    mov     u32 ptr [ebp-44],ebx
 
                    // Verify width
-                    mov     eax,<u32> [ebp+56]               // left
-                    add     eax,<u32> [ebp+52]               // +width
-                    add     eax,<u32> [ebp+36]               // +left margin
+                    mov     eax,u32 ptr [ebp+56]               // left
+                    add     eax,u32 ptr [ebp+52]               // +width
+                    add     eax,u32 ptr [ebp+36]               // +left margin
                     if (eax > cs:horizontal_pixels)
                     {
                         sub     eax,cs:horizontal_pixels
-                        sub     <u32> [ebp+52],eax
+                        sub     u32 ptr [ebp+52],eax
                     }
 
 
                    // Verify height
-                    mov     ebx,<u32> [ebp+60]               // top
-                    add     ebx,<u32> [ebp+48]               // +height
-                    add     ebx,<u32> [ebp+32]               // +top margin
+                    mov     ebx,u32 ptr [ebp+60]               // top
+                    add     ebx,u32 ptr [ebp+48]               // +height
+                    add     ebx,u32 ptr [ebp+32]               // +top margin
                     if (ebx > cs:vertical_pixels)
                     {
                         sub     ebx,cs:vertical_pixels
-                        sub     <u32> [ebp+48],ebx
+                        sub     u32 ptr [ebp+48],ebx
                     }
 
 
                    // Apply left margin
-                    mov     edx,<u32> [ebp+36]
-                    add     <u32> [ebp+56],edx
-                    sub     <u32> [ebp+52],edx
+                    mov     edx,u32 ptr [ebp+36]
+                    add     u32 ptr [ebp+56],edx
+                    sub     u32 ptr [ebp+52],edx
 
 
                    // Apply top margin
-                    mov     edx,<u32> [ebp+32]
-                    add     <u32> [ebp+60],edx
-                    sub     <u32> [ebp+48],edx
+                    mov     edx,u32 ptr [ebp+32]
+                    add     u32 ptr [ebp+60],edx
+                    sub     u32 ptr [ebp+48],edx
 
                   // Right now, we know the coordinates will fit on the screen
                    // Calculate the starting offset
-                    mov     eax,<u32> [ebp+60]
+                    mov     eax,u32 ptr [ebp+60]
                     mov     ebx,cs:horizontal_pixels
                     mul     ebx
-                    add     eax,<u32> [ebp+56]
+                    add     eax,u32 ptr [ebp+56]
                     mov     edi,eax
 
 
                    // Calculate variables for the loop
-                    mov     esi,<u32> [ebp-04]               // Pointer to font information
-                    mov     ebx,<u32> cs:[esi+0]
-                    mov     <u32> [ebp-12],ebx               // Horizontal pixels per char
+                    mov     esi,u32 ptr [ebp-04]               // Pointer to font information
+                    mov     ebx,u32 ptr cs:[esi+0]
+                    mov     u32 ptr [ebp-12],ebx               // Horizontal pixels per char
                     shr     ebx,3                                   // Divide by 8
-                    mov     eax,<u32> cs:[esi+4]
-                    mov     <u32> [ebp-16],eax               // Vertical pixels
+                    mov     eax,u32 ptr cs:[esi+4]
+                    mov     u32 ptr [ebp-16],eax               // Vertical pixels
                     mul     ebx
-                    mov     <u32> [ebp-08],eax               // Total bytes per char
-                    mov     eax,<u32> [ebp-16]               // Vertical pixels
+                    mov     u32 ptr [ebp-08],eax               // Total bytes per char
+                    mov     eax,u32 ptr [ebp-16]               // Vertical pixels
                     shr     eax,1
-                    mov     <u32> [ebp-28],eax               // Middle of character
-                    mov     ebx,<u32> cs:[esi+8]                // Offset
-                    mov     <u32> [ebp-20],ebx
+                    mov     u32 ptr [ebp-28],eax               // Middle of character
+                    mov     ebx,u32 ptr cs:[esi+8]                // Offset
+                    mov     u32 ptr [ebp-20],ebx
 
                    // Verify font height (we're only displaying how ever many pixels there are for this character)
-                    mov     ebx,<u32> cs:[esi+4]
-                    if (ebx < <u32> [ebp+48])
+                    mov     ebx,u32 ptr cs:[esi+4]
+                    if (ebx < u32 ptr [ebp+48])
                     {
-                        mov     <u32> [ebp+48],ebx
+                        mov     u32 ptr [ebp+48],ebx
                     }
 
 
@@ -1173,25 +1173,25 @@ int  3
                     mov     eax,_sGRAPHICS
                     mov     es,eax
                     mov     fs,cs:data_segment
-                    mov     ds,<u32> [ebp+24]
-                    mov     esi,<u32> [ebp+20]
-                    mov     <u32> [ebp-32],1010101010101010b // Dither bitmap
+                    mov     ds,u32 ptr [ebp+24]
+                    mov     esi,u32 ptr [ebp+20]
+                    mov     u32 ptr [ebp-32],1010101010101010b // Dither bitmap
                   // Right now, ds:[esi] - far ptr to source string to display
                   //            es:[edi] - upper-left pixel to start at
                   //            [ebp+52] - maximum width
                   //            [ebp+48] - maximum height
 
                    // Display the text
-                    mov     <u32> [ebp-24],0
-                    while (byte ptr ds:[esi] != 0 && <u32> [ebp+52] > 0)
+                    mov     u32 ptr [ebp-24],0
+                    while (byte ptr ds:[esi] != 0 && u32 ptr [ebp+52] > 0)
                     {
-                        movzx   eax,<u8>  ds:[esi]
-                        mul     <u32> [ebp-08]
-                        add     eax,<u32> [ebp-20]
-                        mov     ebx,<u32> [ebp-36]           // Reinitialize our italics shift bits
-                        mov     <u32> [ebp-40],ebx
-                        mov     ebx,<u32> [ebp-44]           // Reinitialize our italics rollover count
-                        mov     <u32> [ebp-48],ebx
+                        movzx   eax,u8 ptr ds:[esi]
+                        mul     u32 ptr [ebp-08]
+                        add     eax,u32 ptr [ebp-20]
+                        mov     ebx,u32 ptr [ebp-36]           // Reinitialize our italics shift bits
+                        mov     u32 ptr [ebp-40],ebx
+                        mov     ebx,u32 ptr [ebp-44]           // Reinitialize our italics rollover count
+                        mov     u32 ptr [ebp-48],ebx
                       // Right now, fs:[eax] - far ptr to the data for this character
                         if (dword ptr [ebp-12] == 8)
                         {
@@ -1200,22 +1200,22 @@ int  3
                             {
                               // There's enough room for all of this character
                               display_8:
-                                mov     ebx,<u32> [ebp+48]
-                                mov     <u32> [ebp-24],ebx
-                                mov     bl,<u8>  [ebp+44]     // background color
-                                mov     bh,<u8>  [ebp+40]     // foreground color
+                                mov     ebx,u32 ptr [ebp+48]
+                                mov     u32 ptr [ebp-24],ebx
+                                mov     bl,u8 ptr [ebp+44]     // background color
+                                mov     bh,u8 ptr [ebp+40]     // foreground color
                                 push    edi
                                 while (dword ptr [ebp-24] > 0)
                                 {
-                                    mov     dl,<u8>  fs:[eax]
+                                    mov     dl,u8 ptr fs:[eax]
                                     inc     eax
-                                    mov     ecx,<u32> [ebp-24]
-                                    if (byte ptr [ebp+13] != 0 && ecx == <u32> [ebp-28])
+                                    mov     ecx,u32 ptr [ebp-24]
+                                    if (byte ptr [ebp+13] != 0 && ecx == u32 ptr [ebp-28])
                                     {
                                       // It's strikethrough
                                         mov     dl,0ffh
                                     }
-                                    if (ecx == 1 && <u8>  [ebp+12] != 0)
+                                    if (ecx == 1 && u8 ptr [ebp+12] != 0)
                                     {
                                       // It's underline
                                         mov     dl,0ffh
@@ -1228,39 +1228,39 @@ int  3
                                     if (byte ptr [ebp+16] != 0)
                                     {
                                       // It's dithered
-                                        and     dl,<u8>  [ebp-32]
+                                        and     dl,u8 ptr [ebp-32]
                                     }
                                     mov     ecx,8
                                     push    edi
-                                    if (byte ptr [ebp+15] != 0 && <u8>  ds:[esi] >= 32 && <u8>  ds:[esi] <= 122)
+                                    if (byte ptr [ebp+15] != 0 && u8 ptr ds:[esi] >= 32 && u8 ptr ds:[esi] <= 122)
                                     {
                                       // It's italics
-                                        add     edi,<u32> [ebp-40]               // Adjust the destination for italics shift
+                                        add     edi,u32 ptr [ebp-40]               // Adjust the destination for italics shift
                                       // See if this will go past the right-border of this character
                                         push    ecx
-                                        add     ecx,<u32> [ebp-40]
-                                        if (ecx >= <u32> [ebp+52])
+                                        add     ecx,u32 ptr [ebp-40]
+                                        if (ecx >= u32 ptr [ebp+52])
                                         {
                                           // We'll go outside of the defined box if we display all the bits
-                                            mov     ecx,<u32> [ebp+52]
-                                            sub     ecx,<u32> [ebp-40]
-                                            mov     <u32> [esp],ecx              // Adjust ecx on the stack to back off a few
+                                            mov     ecx,u32 ptr [ebp+52]
+                                            sub     ecx,u32 ptr [ebp-40]
+                                            mov     u32 ptr [esp],ecx              // Adjust ecx on the stack to back off a few
                                         }
-                                        dec     <u32> [ebp-48]
+                                        dec     u32 ptr [ebp-48]
                                         if (zero?)
                                         {
                                           // It's time to shift again
-                                            mov     ecx,<u32> [ebp-44]
-                                            dec     <u32> [ebp-40]
-                                            mov     <u32> [ebp-48],ecx
+                                            mov     ecx,u32 ptr [ebp-44]
+                                            dec     u32 ptr [ebp-40]
+                                            mov     u32 ptr [ebp-48],ecx
                                         }
                                         pop     ecx
                                     
                                     } else {
-                                        if (ecx >= <u32> [ebp+52])
+                                        if (ecx >= u32 ptr [ebp+52])
                                         {
                                           // We'll go outside of the defined box
-                                            mov     ecx,<u32> [ebp+52]
+                                            mov     ecx,u32 ptr [ebp+52]
                                         }
                                     }
                                     repeat
@@ -1269,11 +1269,11 @@ int  3
                                         if (carry?)
                                         {
                                           // This bit is set, store it as foreground color
-                                            mov     <u8>  es:[edi],bh
+                                            mov     u8 ptr es:[edi],bh
                                         
                                         } else {
                                           // This bit is clear, store it as background color
-                                            mov     <u8>  es:[edi],bl
+                                            mov     u8 ptr es:[edi],bl
                                         }
                                         inc     edi
                                     } untilcxz
@@ -1282,19 +1282,19 @@ int  3
                                     add     edi,cs:horizontal_pixels
 
                                   // Move to next line down in the character
-                                    dec     <u32> [ebp-24]
+                                    dec     u32 ptr [ebp-24]
 
                                   // Toggle the bits in our dither control byte
-                                    not     <u32> [ebp-32]
+                                    not     u32 ptr [ebp-32]
                                 }
                                 pop     edi
                                 add     edi,8                       // Move horizontally to next character
-                                sub     <u32> [ebp+52],8
+                                sub     u32 ptr [ebp+52],8
                             
                             } else {
                               // Only part of this character can be displayed
-                                mov     ecx,<u32> [ebp+52]
-                                mov     <u32> [ebp-12],ecx
+                                mov     ecx,u32 ptr [ebp+52]
+                                mov     u32 ptr [ebp-12],ecx
                                 jmp     display_8
                             }
                         
@@ -1304,22 +1304,22 @@ int  3
                             {
                               // There's enough room for all of this character
                               display_16:
-                                mov     ebx,<u32> [ebp+48]
-                                mov     <u32> [ebp-24],ebx
-                                mov     bl,<u8>  [ebp+44]     // background color
-                                mov     bh,<u8>  [ebp+40]     // foreground color
+                                mov     ebx,u32 ptr [ebp+48]
+                                mov     u32 ptr [ebp-24],ebx
+                                mov     bl,u8 ptr [ebp+44]     // background color
+                                mov     bh,u8 ptr [ebp+40]     // foreground color
                                 push    edi
                                 while (dword ptr [ebp-24] > 0)
                                 {
-                                    mov     dx,<u16> fs:[eax]
+                                    mov     dx,u16 ptr fs:[eax]
                                     add     eax,2
-                                    mov     ecx,<u32> [ebp-24]
-                                    if (byte ptr [ebp+13] != 0 && ecx == <u32> [ebp-28])
+                                    mov     ecx,u32 ptr [ebp-24]
+                                    if (byte ptr [ebp+13] != 0 && ecx == u32 ptr [ebp-28])
                                     {
                                       // It's strikethrough
                                         mov     dx,0ffffh
                                     }
-                                    if (ecx == 1 && <u8>  [ebp+12] != 0)
+                                    if (ecx == 1 && u8 ptr [ebp+12] != 0)
                                     {
                                       // It's underline
                                         mov     dx,0ffffh
@@ -1332,39 +1332,39 @@ int  3
                                     if (byte ptr [ebp+16] != 0)
                                     {
                                       // It's dithered
-                                        and     dx,<u16> [ebp-32]
+                                        and     dx,u16 ptr [ebp-32]
                                     }
                                     mov     ecx,16
                                     push    edi
-                                    if (byte ptr [ebp+15] != 0 && <u8>  ds:[esi] >= 32 && <u8>  ds:[esi] <= 122)
+                                    if (byte ptr [ebp+15] != 0 && u8 ptr ds:[esi] >= 32 && u8 ptr ds:[esi] <= 122)
                                     {
                                       // It's italics
-                                        add     edi,<u32> [ebp-40]               // Adjust the destination for italics shift
+                                        add     edi,u32 ptr [ebp-40]               // Adjust the destination for italics shift
                                       // See if this will go past the right-border of this character
                                         push    ecx
-                                        add     ecx,<u32> [ebp-40]
-                                        if (ecx >= <u32> [ebp+52])
+                                        add     ecx,u32 ptr [ebp-40]
+                                        if (ecx >= u32 ptr [ebp+52])
                                         {
                                           // We'll go outside of the defined box if we display all the bits with italics shifting
-                                            mov     ecx,<u32> [ebp+52]
-                                            sub     ecx,<u32> [ebp-40]
-                                            mov     <u32> [esp],ecx              // Adjust ecx on the stack to back off a few
+                                            mov     ecx,u32 ptr [ebp+52]
+                                            sub     ecx,u32 ptr [ebp-40]
+                                            mov     u32 ptr [esp],ecx              // Adjust ecx on the stack to back off a few
                                         }
-                                        dec     <u32> [ebp-48]
+                                        dec     u32 ptr [ebp-48]
                                         if (zero?)
                                         {
                                           // It's time to shift again
-                                            mov     ecx,<u32> [ebp-44]
-                                            dec     <u32> [ebp-40]
-                                            mov     <u32> [ebp-48],ecx
+                                            mov     ecx,u32 ptr [ebp-44]
+                                            dec     u32 ptr [ebp-40]
+                                            mov     u32 ptr [ebp-48],ecx
                                         }
                                         pop     ecx
                                     
                                     } else {
-                                        if (ecx >= <u32> [ebp+52])
+                                        if (ecx >= u32 ptr [ebp+52])
                                         {
                                           // We'll go outside of the defined box
-                                            mov     ecx,<u32> [ebp+52]
+                                            mov     ecx,u32 ptr [ebp+52]
                                         }
                                     }
                                     repeat
@@ -1373,11 +1373,11 @@ int  3
                                         if (carry?)
                                         {
                                           // This bit is set, store it as foreground color
-                                            mov     <u8>  es:[edi],bh
+                                            mov     u8 ptr es:[edi],bh
                                         
                                         } else {
                                           // This bit is clear, store it as background color
-                                            mov     <u8>  es:[edi],bl
+                                            mov     u8 ptr es:[edi],bl
                                         }
                                         inc     edi
                                     } untilcxz
@@ -1386,19 +1386,19 @@ int  3
                                     add     edi,cs:horizontal_pixels
 
                                   // Move to next line down in the character
-                                    dec     <u32> [ebp-24]
+                                    dec     u32 ptr [ebp-24]
 
                                   // Toggle the bits in our dither control byte
-                                    not     <u32> [ebp-32]
+                                    not     u32 ptr [ebp-32]
                                 }
                                 pop     edi
                                 add     edi,16                      // Move horizontally to next character
-                                sub     <u32> [ebp+52],16
+                                sub     u32 ptr [ebp+52],16
                             
                             } else {
                               // Only part of this character can be displayed
-                                mov     ecx,<u32> [ebp+52]
-                                mov     <u32> [ebp-12],ecx
+                                mov     ecx,u32 ptr [ebp+52]
+                                mov     u32 ptr [ebp-12],ecx
                                 jmp     display_16
                             }
                         }
@@ -1410,7 +1410,7 @@ int  3
             } else {
               // It's a variable pitch font
                 int  3
-                u8   'Variable pitch font'
+                u8  'Variable pitch font'
             }
         }
 
@@ -1457,30 +1457,30 @@ int  3
        // Make sure the hot-spot coordinates are within the screen
         mov     ebx,_sSYSTEM
         mov     gs,ebx
-        movzx   ecx,<u16> gs:[_SYSTEM_VGA_HORIZONTAL]
-        movzx   edx,<u16> gs:[_SYSTEM_VGA_VERTICAL]
+        movzx   ecx,u16 ptr gs:[_SYSTEM_VGA_HORIZONTAL]
+        movzx   edx,u16 ptr gs:[_SYSTEM_VGA_VERTICAL]
       // Horizontal
         if (dword ptr [ebp+28] > ecx)
         {
-            mov     <u32> [ebp+28],ecx
+            mov     u32 ptr [ebp+28],ecx
         }
       // Vertical
         if (dword ptr [ebp+24] > edx)
         {
-            mov     <u32> [ebp+24],edx
+            mov     u32 ptr [ebp+24],edx
         }
 
 
        // Make sure the mouse pointer they've specified is valid
         if (dword ptr [ebp+16] > _MAX_VGA_MOUSE_POINTERS)       // This constant is defined in MOUSE.FNT
         {
-            mov     <u32> [ebp+16],0
+            mov     u32 ptr [ebp+16],0
         }
 
 
        // Apply the current mouse pointer's hot-spot to the specified mouse coordinates to obtain the starting offset
         mov     fs,cs:data_segment
-        mov     eax,<u32> [ebp+16]                           // Mouse pointer type
+        mov     eax,u32 ptr [ebp+16]                           // Mouse pointer type
         mov     ecx,eax
         imul    eax,16*20
         shl     ecx,3                                               // Multiply by 8 (to get past extra header bytes (8 each))
@@ -1488,80 +1488,80 @@ int  3
         mov     ebx,eax
         add     ebx,offset vga_mouse_0
       // Right now, fs:[ebx] - far ptr to base of correct mouse pointer based on info specified
-        mov     eax,<u32> fs:[ebx+0]                            // Horizontal hot spot coords
-        mov     edx,<u32> fs:[ebx+4]                            // Vertical hot spot coords
+        mov     eax,u32 ptr fs:[ebx+0]                            // Horizontal hot spot coords
+        mov     edx,u32 ptr fs:[ebx+4]                            // Vertical hot spot coords
         add     ebx,8
-        sub     <u32> [ebp+28],eax
-        sub     <u32> [ebp+24],edx
+        sub     u32 ptr [ebp+28],eax
+        sub     u32 ptr [ebp+24],edx
       // Right now, the horizontal and vertical coordinates are adjusted
       //            fs:[ebx] - far ptr to mouse font
 
 
        // Verify mouse pointer is still fully on-screen after applying hot-spot coords
-        mov     <u32> [ebp-04],0
-        mov     <u32> [ebp-16],0
+        mov     u32 ptr [ebp-04],0
+        mov     u32 ptr [ebp-16],0
         if (dword ptr [ebp+28] > 7fffffffh)
         {
           // Horizontal is negative, we have to skip a few pixels (edx tells us how many)
-            mov     edx,<u32> [ebp+28]
+            mov     edx,u32 ptr [ebp+28]
             neg     edx
-            mov     <u32> [ebp-04],edx
-            mov     <u32> [ebp+28],0                         // And tell it to begin at visible
+            mov     u32 ptr [ebp-04],edx
+            mov     u32 ptr [ebp+28],0                         // And tell it to begin at visible
         }
-        mov     edx,<u32> [ebp+28]
+        mov     edx,u32 ptr [ebp+28]
         mov     eax,16
-        sub     eax,<u32> [ebp-04]
+        sub     eax,u32 ptr [ebp-04]
         add     edx,eax
-        movzx   ecx,<u16> gs:[_SYSTEM_VGA_HORIZONTAL]
+        movzx   ecx,u16 ptr gs:[_SYSTEM_VGA_HORIZONTAL]
         if (edx > ecx)
         {
           // We'll go off the right side of the screen
             sub     edx,ecx
-            mov     <u32> [ebp-16],edx
+            mov     u32 ptr [ebp-16],edx
         }
 
       // Verify vertical
-        mov     <u32> [ebp-08],0
-        mov     <u32> [ebp-12],0
-        mov     <u32> [ebp-20],0
+        mov     u32 ptr [ebp-08],0
+        mov     u32 ptr [ebp-12],0
+        mov     u32 ptr [ebp-20],0
         if (dword ptr [ebp+24] > 7fffffffh)
         {
           // Vertical is negative, we have to skip a few lines (edx tells us how many bytes to skip (16 bytse per line))
-            mov     edx,<u32> [ebp+24]
+            mov     edx,u32 ptr [ebp+24]
             neg     edx
-            mov     <u32> [ebp-12],edx                       // Store # of lines
+            mov     u32 ptr [ebp-12],edx                       // Store # of lines
             shl     edx,4                                           // Multiply by 16 (to get the number of bytes to skip)
-            mov     <u32> [ebp-08],edx
-            mov     <u32> [ebp+24],0                         // And tell it to begin at visible
+            mov     u32 ptr [ebp-08],edx
+            mov     u32 ptr [ebp+24],0                         // And tell it to begin at visible
         }
-        mov     edx,<u32> [ebp+24]
+        mov     edx,u32 ptr [ebp+24]
         mov     eax,20
-        sub     eax,<u32> [ebp-12]
+        sub     eax,u32 ptr [ebp-12]
         add     edx,eax
-        movzx   ecx,<u16> gs:[_SYSTEM_VGA_VERTICAL]
+        movzx   ecx,u16 ptr gs:[_SYSTEM_VGA_VERTICAL]
         if (edx > ecx)
         {
           // We'll go off the bottom of the screen
             sub     edx,ecx
-            mov     <u32> [ebp-20],edx
+            mov     u32 ptr [ebp-20],edx
         }
 
 
        // Compute the starting offset in memory
-        movzx   ecx,<u16> gs:[_SYSTEM_VGA_HORIZONTAL]
+        movzx   ecx,u16 ptr gs:[_SYSTEM_VGA_HORIZONTAL]
         mov     edx,_sGRAPHICS
         mov     es,edx
-        mov     eax,<u32> [ebp+24]
+        mov     eax,u32 ptr [ebp+24]
         mul     ecx
-        add     eax,<u32> [ebp+28]
+        add     eax,u32 ptr [ebp+28]
         mov     edi,eax
       // Right now, es:[edi] - far ptr to upper-left corner of mouse coordinate
-        mov     esi,<u32> [ebp+12]                           // Where to store/retrieve the bitmap
-        mov     edx,<u32> [ebp-04]                           // Apply pixels to skip each horizontal line
-        add     ebx,<u32> [ebp-08]
+        mov     esi,u32 ptr [ebp+12]                           // Where to store/retrieve the bitmap
+        mov     edx,u32 ptr [ebp-04]                           // Apply pixels to skip each horizontal line
+        add     ebx,u32 ptr [ebp-08]
         mov     ecx,20
-        sub     ecx,<u32> [ebp-12]
-        sub     ecx,<u32> [ebp-20]
+        sub     ecx,u32 ptr [ebp-12]
+        sub     ecx,u32 ptr [ebp-20]
         add     ebx,edx
         while (ecx > 0)
         {
@@ -1570,7 +1570,7 @@ int  3
 
             mov     ecx,16
             sub     ecx,edx                                         // number of pixels to display
-            sub     ecx,<u32> [ebp-16]
+            sub     ecx,u32 ptr [ebp-16]
             if (dword ptr [ebp+20] == 1)
             {
               // We're putting from the screen to the buffer and writing the mouse pointer
@@ -1578,12 +1578,12 @@ int  3
                 while (ecx > 0)
                 {
                   // Store the data that's currently on the screen to the buffer
-                    mov     al,<u8>  es:[edi]
-                    mov     <u8>  ds:[esi],al
+                    mov     al,u8 ptr es:[edi]
+                    mov     u8 ptr ds:[esi],al
                     inc     esi
 
                   // Write the mouse pixel
-                    mov     al,<u8>  fs:[ebx]
+                    mov     al,u8 ptr fs:[ebx]
                     if (al != 254)
                     {
                         stosb
@@ -1603,7 +1603,7 @@ int  3
                 rep     movsb                                       // Move from save buffer to screen
             }
 
-            movzx   eax,<u16> gs:[_SYSTEM_VGA_HORIZONTAL]
+            movzx   eax,u16 ptr gs:[_SYSTEM_VGA_HORIZONTAL]
             pop     edi
             pop     ecx
             add     edi,eax

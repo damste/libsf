@@ -31,141 +31,141 @@
 // Each of these items is 16-bytes in length.  One paragraph.  One happy paragraph. :)
 DEBI_screen_table:
 // CFSCA.2
-                            u8   _YES                                // +00 Alterable?
-                            u8   _YES                                // +01 Active?
-                            u16  0                                   // +02 +--Nuserved
-                            u32  0                                   // +04 +_ST_OBJECT_UL_HORIZONTAL
-                            u32  0                                   // +08 +_ST_OBJECT_UL_VERTICAL
-                            u32  0ffffffffh                          // +12 +_ST_MEMVAR_OFFSET
-                            u32  offset DEBI_c_keyboard_objects      // +16 +_ST_OBJECT_KBD_OFFSET
-                            u32  0ffffffffh                          // +20 +_ST_OBJECT_MEMORY_OFFSET
-                            u32  offset DEBI_c_mouse_objects         // +24 +_ST_OBJECT_MOUSE_OFFSET
-                            u32  offset DEBI_c_screen_objects        // +28 +_ST_OBJECT_SCREEN_OFFSET
+                            u8  _YES                                // +00 Alterable?
+                            u8  _YES                                // +01 Active?
+                            u16 0                                   // +02 +--Nuserved
+                            u32 0                                   // +04 +_ST_OBJECT_UL_HORIZONTAL
+                            u32 0                                   // +08 +_ST_OBJECT_UL_VERTICAL
+                            u32 0ffffffffh                          // +12 +_ST_MEMVAR_OFFSET
+                            u32 offset DEBI_c_keyboard_objects      // +16 +_ST_OBJECT_KBD_OFFSET
+                            u32 0ffffffffh                          // +20 +_ST_OBJECT_MEMORY_OFFSET
+                            u32 offset DEBI_c_mouse_objects         // +24 +_ST_OBJECT_MOUSE_OFFSET
+                            u32 offset DEBI_c_screen_objects        // +28 +_ST_OBJECT_SCREEN_OFFSET
 // regs.1
-                            u8   _YES                                // +00 Alterable?
-                            u8   _YES                                // +01 Active?
-                            u16  0                                   // +02 +--Nuserved
-                            u32  5*(15*8)                            // +04 +_ST_OBJECT_UL_HORIZONTAL
-                            u32  0                                   // +08 +_ST_OBJECT_UL_VERTICAL
-                            u32  0ffffffffh                          // +12 +_ST_MEMVAR_OFFSET
-                            u32  offset DEBI_keyboard_objects        // +16 +_ST_OBJECT_KBD_OFFSET
-                            u32  0ffffffffh                          // +20 +_ST_OBJECT_MEMORY_OFFSET
-                            u32  offset DEBI_p_mouse_objects         // +24 +_ST_OBJECT_MOUSE_OFFSET
-                            u32  offset DEBI_p_screen_objects        // +28 +_ST_OBJECT_SCREEN_OFFSET
+                            u8  _YES                                // +00 Alterable?
+                            u8  _YES                                // +01 Active?
+                            u16 0                                   // +02 +--Nuserved
+                            u32 5*(15*8)                            // +04 +_ST_OBJECT_UL_HORIZONTAL
+                            u32 0                                   // +08 +_ST_OBJECT_UL_VERTICAL
+                            u32 0ffffffffh                          // +12 +_ST_MEMVAR_OFFSET
+                            u32 offset DEBI_keyboard_objects        // +16 +_ST_OBJECT_KBD_OFFSET
+                            u32 0ffffffffh                          // +20 +_ST_OBJECT_MEMORY_OFFSET
+                            u32 offset DEBI_p_mouse_objects         // +24 +_ST_OBJECT_MOUSE_OFFSET
+                            u32 offset DEBI_p_screen_objects        // +28 +_ST_OBJECT_SCREEN_OFFSET
 // fpu.2
-                            u8   _YES                                // +00 Alterable?
-                            u8   _YES                                // +01 Active?
-                            u16  0                                   // +02 +--Nuserved
-                            u32  4*(15*8)                            // +04 +_ST_OBJECT_UL_HORIZONTAL
-                            u32  30*6                                // +08 +_ST_OBJECT_UL_VERTICAL
-                            u32  0ffffffffh                          // +12 +_ST_MEMVAR_OFFSET
-                            u32  offset DEBI_keyboard_objects        // +16 +_ST_OBJECT_KBD_OFFSET
-                            u32  0ffffffffh                          // +20 +_ST_OBJECT_MEMORY_OFFSET
-                            u32  offset DEBI_r_mouse_objects         // +24 +_ST_OBJECT_MOUSE_OFFSET
-                            u32  offset DEBI_r_screen_objects        // +28 +_ST_OBJECT_SCREEN_OFFSET
+                            u8  _YES                                // +00 Alterable?
+                            u8  _YES                                // +01 Active?
+                            u16 0                                   // +02 +--Nuserved
+                            u32 4*(15*8)                            // +04 +_ST_OBJECT_UL_HORIZONTAL
+                            u32 30*6                                // +08 +_ST_OBJECT_UL_VERTICAL
+                            u32 0ffffffffh                          // +12 +_ST_MEMVAR_OFFSET
+                            u32 offset DEBI_keyboard_objects        // +16 +_ST_OBJECT_KBD_OFFSET
+                            u32 0ffffffffh                          // +20 +_ST_OBJECT_MEMORY_OFFSET
+                            u32 offset DEBI_r_mouse_objects         // +24 +_ST_OBJECT_MOUSE_OFFSET
+                            u32 offset DEBI_r_screen_objects        // +28 +_ST_OBJECT_SCREEN_OFFSET
 // locals
-                            u8   _YES                                // +00 Alterable?
-                            u8   _YES                                // +01 Active?
-                            u16  0                                   // +02 +--Nuserved
-                            u32  4*(15*8)                            // +04 +_ST_OBJECT_UL_HORIZONTAL
-                            u32  0*(13*6)                            // +08 +_ST_OBJECT_UL_VERTICAL
-                            u32  0ffffffffh                          // +12 +_ST_MEMVAR_OFFSET
-                            u32  offset DEBI_keyboard_objects        // +16 +_ST_OBJECT_KBD_OFFSET
-                            u32  0ffffffffh                          // +20 +_ST_OBJECT_MEMORY_OFFSET
-                            u32  offset DEBI_l_mouse_objects         // +24 +_ST_OBJECT_MOUSE_OFFSET
-                            u32  offset DEBI_l_screen_objects        // +28 +_ST_OBJECT_SCREEN_OFFSET
+                            u8  _YES                                // +00 Alterable?
+                            u8  _YES                                // +01 Active?
+                            u16 0                                   // +02 +--Nuserved
+                            u32 4*(15*8)                            // +04 +_ST_OBJECT_UL_HORIZONTAL
+                            u32 0*(13*6)                            // +08 +_ST_OBJECT_UL_VERTICAL
+                            u32 0ffffffffh                          // +12 +_ST_MEMVAR_OFFSET
+                            u32 offset DEBI_keyboard_objects        // +16 +_ST_OBJECT_KBD_OFFSET
+                            u32 0ffffffffh                          // +20 +_ST_OBJECT_MEMORY_OFFSET
+                            u32 offset DEBI_l_mouse_objects         // +24 +_ST_OBJECT_MOUSE_OFFSET
+                            u32 offset DEBI_l_screen_objects        // +28 +_ST_OBJECT_SCREEN_OFFSET
 // stack
-                            u8   _YES                                // +00 Alterable?
-                            u8   _YES                                // +01 Active?
-                            u16  0                                   // +02 +--Nuserved
-                            u32  4*(15*8)                            // +04 +_ST_OBJECT_UL_HORIZONTAL
-                            u32  15*6                                // +08 +_ST_OBJECT_UL_VERTICAL
-                            u32  0ffffffffh                          // +12 +_ST_MEMVAR_OFFSET
-                            u32  offset DEBI_keyboard_objects        // +16 +_ST_OBJECT_KBD_OFFSET
-                            u32  0ffffffffh                          // +20 +_ST_OBJECT_MEMORY_OFFSET
-                            u32  offset DEBI_i_mouse_objects         // +24 +_ST_OBJECT_MOUSE_OFFSET
-                            u32  offset DEBI_i_screen_objects        // +28 +_ST_OBJECT_SCREEN_OFFSET
+                            u8  _YES                                // +00 Alterable?
+                            u8  _YES                                // +01 Active?
+                            u16 0                                   // +02 +--Nuserved
+                            u32 4*(15*8)                            // +04 +_ST_OBJECT_UL_HORIZONTAL
+                            u32 15*6                                // +08 +_ST_OBJECT_UL_VERTICAL
+                            u32 0ffffffffh                          // +12 +_ST_MEMVAR_OFFSET
+                            u32 offset DEBI_keyboard_objects        // +16 +_ST_OBJECT_KBD_OFFSET
+                            u32 0ffffffffh                          // +20 +_ST_OBJECT_MEMORY_OFFSET
+                            u32 offset DEBI_i_mouse_objects         // +24 +_ST_OBJECT_MOUSE_OFFSET
+                            u32 offset DEBI_i_screen_objects        // +28 +_ST_OBJECT_SCREEN_OFFSET
 // mem.3
-                            u8   _YES                                // +00 Alterable?
-                            u8   _YES                                // +01 Active?
-                            u16  0                                   // +02 +--Nuserved
-                            u32  0                                   // +04 +_ST_OBJECT_UL_HORIZONTAL
-                            u32  2*(13*6)                            // +08 +_ST_OBJECT_UL_VERTICAL
-                            u32  0ffffffffh                          // +12 +_ST_MEMVAR_OFFSET
-                            u32  offset DEBI_keyboard_objects        // +16 +_ST_OBJECT_KBD_OFFSET
-                            u32  0ffffffffh                          // +20 +_ST_OBJECT_MEMORY_OFFSET
-                            u32  offset DEBI_n_mouse_objects         // +24 +_ST_OBJECT_MOUSE_OFFSET
-                            u32  offset DEBI_n_screen_objects        // +28 +_ST_OBJECT_SCREEN_OFFSET
+                            u8  _YES                                // +00 Alterable?
+                            u8  _YES                                // +01 Active?
+                            u16 0                                   // +02 +--Nuserved
+                            u32 0                                   // +04 +_ST_OBJECT_UL_HORIZONTAL
+                            u32 2*(13*6)                            // +08 +_ST_OBJECT_UL_VERTICAL
+                            u32 0ffffffffh                          // +12 +_ST_MEMVAR_OFFSET
+                            u32 offset DEBI_keyboard_objects        // +16 +_ST_OBJECT_KBD_OFFSET
+                            u32 0ffffffffh                          // +20 +_ST_OBJECT_MEMORY_OFFSET
+                            u32 offset DEBI_n_mouse_objects         // +24 +_ST_OBJECT_MOUSE_OFFSET
+                            u32 offset DEBI_n_screen_objects        // +28 +_ST_OBJECT_SCREEN_OFFSET
 // mem.1
-                            u8   _YES                                // +00 Alterable?
-                            u8   _YES                                // +01 Active?
-                            u16  0                                   // +02 +--Nuserved
-                            u32  3*(15*8)                            // +04 +_ST_OBJECT_UL_HORIZONTAL
-                            u32  2*(13*6)                            // +08 +_ST_OBJECT_UL_VERTICAL
-                            u32  0ffffffffh                          // +12 +_ST_MEMVAR_OFFSET
-                            u32  offset DEBI_keyboard_objects        // +16 +_ST_OBJECT_KBD_OFFSET
-                            u32  0ffffffffh                          // +20 +_ST_OBJECT_MEMORY_OFFSET
-                            u32  offset DEBI_m_mouse_objects         // +24 +_ST_OBJECT_MOUSE_OFFSET
-                            u32  offset DEBI_m_screen_objects        // +28 +_ST_OBJECT_SCREEN_OFFSET
+                            u8  _YES                                // +00 Alterable?
+                            u8  _YES                                // +01 Active?
+                            u16 0                                   // +02 +--Nuserved
+                            u32 3*(15*8)                            // +04 +_ST_OBJECT_UL_HORIZONTAL
+                            u32 2*(13*6)                            // +08 +_ST_OBJECT_UL_VERTICAL
+                            u32 0ffffffffh                          // +12 +_ST_MEMVAR_OFFSET
+                            u32 offset DEBI_keyboard_objects        // +16 +_ST_OBJECT_KBD_OFFSET
+                            u32 0ffffffffh                          // +20 +_ST_OBJECT_MEMORY_OFFSET
+                            u32 offset DEBI_m_mouse_objects         // +24 +_ST_OBJECT_MOUSE_OFFSET
+                            u32 offset DEBI_m_screen_objects        // +28 +_ST_OBJECT_SCREEN_OFFSET
 // mem.2
-                            u8   _YES                                // +00 Alterable?
-                            u8   _YES                                // +01 Active?
-                            u16  0                                   // +02 +--Nuserved
-                            u32  0                                   // +04 +_ST_OBJECT_UL_HORIZONTAL
-                            u32  3*(13*6)                            // +08 +_ST_OBJECT_UL_VERTICAL
-                            u32  0ffffffffh                          // +12 +_ST_MEMVAR_OFFSET
-                            u32  offset DEBI_keyboard_objects        // +16 +_ST_OBJECT_KBD_OFFSET
-                            u32  0ffffffffh                          // +20 +_ST_OBJECT_MEMORY_OFFSET
-                            u32  offset DEBI_g_mouse_objects         // +24 +_ST_OBJECT_MOUSE_OFFSET
-                            u32  offset DEBI_g_screen_objects        // +28 +_ST_OBJECT_SCREEN_OFFSET
+                            u8  _YES                                // +00 Alterable?
+                            u8  _YES                                // +01 Active?
+                            u16 0                                   // +02 +--Nuserved
+                            u32 0                                   // +04 +_ST_OBJECT_UL_HORIZONTAL
+                            u32 3*(13*6)                            // +08 +_ST_OBJECT_UL_VERTICAL
+                            u32 0ffffffffh                          // +12 +_ST_MEMVAR_OFFSET
+                            u32 offset DEBI_keyboard_objects        // +16 +_ST_OBJECT_KBD_OFFSET
+                            u32 0ffffffffh                          // +20 +_ST_OBJECT_MEMORY_OFFSET
+                            u32 offset DEBI_g_mouse_objects         // +24 +_ST_OBJECT_MOUSE_OFFSET
+                            u32 offset DEBI_g_screen_objects        // +28 +_ST_OBJECT_SCREEN_OFFSET
 // mem.2
-                            u8   _YES                                // +00 Alterable?
-                            u8   _YES                                // +01 Active?
-                            u16  0                                   // +02 +--Nuserved
-                            u32  2*(15*8)                            // +04 +_ST_OBJECT_UL_HORIZONTAL
-                            u32  3*(13*6)                            // +08 +_ST_OBJECT_UL_VERTICAL
-                            u32  0ffffffffh                          // +12 +_ST_MEMVAR_OFFSET
-                            u32  offset DEBI_keyboard_objects        // +16 +_ST_OBJECT_KBD_OFFSET
-                            u32  0ffffffffh                          // +20 +_ST_OBJECT_MEMORY_OFFSET
-                            u32  offset DEBI_g_mouse_objects         // +24 +_ST_OBJECT_MOUSE_OFFSET
-                            u32  offset DEBI_g_screen_objects        // +28 +_ST_OBJECT_SCREEN_OFFSET
+                            u8  _YES                                // +00 Alterable?
+                            u8  _YES                                // +01 Active?
+                            u16 0                                   // +02 +--Nuserved
+                            u32 2*(15*8)                            // +04 +_ST_OBJECT_UL_HORIZONTAL
+                            u32 3*(13*6)                            // +08 +_ST_OBJECT_UL_VERTICAL
+                            u32 0ffffffffh                          // +12 +_ST_MEMVAR_OFFSET
+                            u32 offset DEBI_keyboard_objects        // +16 +_ST_OBJECT_KBD_OFFSET
+                            u32 0ffffffffh                          // +20 +_ST_OBJECT_MEMORY_OFFSET
+                            u32 offset DEBI_g_mouse_objects         // +24 +_ST_OBJECT_MOUSE_OFFSET
+                            u32 offset DEBI_g_screen_objects        // +28 +_ST_OBJECT_SCREEN_OFFSET
 
-                            u8   3*_ST_LENGTH dup(_NO)               // Allow space for the maximum of 15 windows on-screen
+                            u8  3*_ST_LENGTH dup(_NO)               // Allow space for the maximum of 15 windows on-screen
                                                                     // at any one time.  That's 9 above, 3 below, plus the
                                                                     // possibilty of 3 more = 15 items. :)
 
-quick_watch_screen_object   u8   _NO                                 // +00 Alterable?
-                            u8   _YES                                // +01 Active?
-                            u16  0                                   // +02 +--Nuserved
-                            u32  4*(15*8)                            // +04 +_ST_OBJECT_UL_HORIZONTAL
-                            u32  3*(13*6)                            // +08 +_ST_OBJECT_UL_VERTICAL
-                            u32  0ffffffffh                          // +12 +_ST_MEMVAR_OFFSET
-                            u32  offset DEBI_keyboard_objects        // +16 +_ST_OBJECT_KBD_OFFSET
-                            u32  0ffffffffh                          // +20 +_ST_OBJECT_MEMORY_OFFSET
-                            u32  offset DEBI_j_mouse_objects         // +24 +_ST_OBJECT_MOUSE_OFFSET
-                            u32  offset DEBI_j_screen_objects        // +28 +_ST_OBJECT_SCREEN_OFFSET
+quick_watch_screen_object   u8  _NO                                 // +00 Alterable?
+                            u8  _YES                                // +01 Active?
+                            u16 0                                   // +02 +--Nuserved
+                            u32 4*(15*8)                            // +04 +_ST_OBJECT_UL_HORIZONTAL
+                            u32 3*(13*6)                            // +08 +_ST_OBJECT_UL_VERTICAL
+                            u32 0ffffffffh                          // +12 +_ST_MEMVAR_OFFSET
+                            u32 offset DEBI_keyboard_objects        // +16 +_ST_OBJECT_KBD_OFFSET
+                            u32 0ffffffffh                          // +20 +_ST_OBJECT_MEMORY_OFFSET
+                            u32 offset DEBI_j_mouse_objects         // +24 +_ST_OBJECT_MOUSE_OFFSET
+                            u32 offset DEBI_j_screen_objects        // +28 +_ST_OBJECT_SCREEN_OFFSET
 
-query_screen_object         u8   _NO                                 // +00 Alterable?
-                            u8   _YES                                // +01 Active?
-                            u16  0                                   // +02 +--Nuserved
-                            u32  0                                   // +04 +_ST_OBJECT_UL_HORIZONTAL
-                            u32  312                                 // +08 +_ST_OBJECT_UL_VERTICAL
-                            u32  0ffffffffh                          // +12 +_ST_MEMVAR_OFFSET
-                            u32  offset DEBI_keyboard_objects        // +16 +_ST_OBJECT_KBD_OFFSET
-                            u32  0ffffffffh                          // +20 +_ST_OBJECT_MEMORY_OFFSET
-                            u32  offset DEBI_k_mouse_objects         // +24 +_ST_OBJECT_MOUSE_OFFSET
-                            u32  offset DEBI_k_screen_objects        // +28 +_ST_OBJECT_SCREEN_OFFSET
+query_screen_object         u8  _NO                                 // +00 Alterable?
+                            u8  _YES                                // +01 Active?
+                            u16 0                                   // +02 +--Nuserved
+                            u32 0                                   // +04 +_ST_OBJECT_UL_HORIZONTAL
+                            u32 312                                 // +08 +_ST_OBJECT_UL_VERTICAL
+                            u32 0ffffffffh                          // +12 +_ST_MEMVAR_OFFSET
+                            u32 offset DEBI_keyboard_objects        // +16 +_ST_OBJECT_KBD_OFFSET
+                            u32 0ffffffffh                          // +20 +_ST_OBJECT_MEMORY_OFFSET
+                            u32 offset DEBI_k_mouse_objects         // +24 +_ST_OBJECT_MOUSE_OFFSET
+                            u32 offset DEBI_k_screen_objects        // +28 +_ST_OBJECT_SCREEN_OFFSET
 
-menu_bar_screen_object      u8   _NO                                 // +00 Alterable?
-                            u8   _YES                                // +01 Active?
-                            u16  0                                   // +02 +--Nuserved
-                            u32  0                                   // +04 +_ST_OBJECT_UL_HORIZONTAL
-                            u32  342                                 // +08 +_ST_OBJECT_UL_VERTICAL
-                            u32  0ffffffffh                          // +12 +_ST_MEMVAR_OFFSET
-                            u32  offset DEBI_keyboard_objects        // +16 +_ST_OBJECT_KBD_OFFSET
-                            u32  0ffffffffh                          // +20 +_ST_OBJECT_MEMORY_OFFSET
-                            u32  offset DEBI_o_mouse_objects         // +24 +_ST_OBJECT_MOUSE_OFFSET
-                            u32  offset DEBI_o_screen_objects        // +28 +_ST_OBJECT_SCREEN_OFFSET
+menu_bar_screen_object      u8  _NO                                 // +00 Alterable?
+                            u8  _YES                                // +01 Active?
+                            u16 0                                   // +02 +--Nuserved
+                            u32 0                                   // +04 +_ST_OBJECT_UL_HORIZONTAL
+                            u32 342                                 // +08 +_ST_OBJECT_UL_VERTICAL
+                            u32 0ffffffffh                          // +12 +_ST_MEMVAR_OFFSET
+                            u32 offset DEBI_keyboard_objects        // +16 +_ST_OBJECT_KBD_OFFSET
+                            u32 0ffffffffh                          // +20 +_ST_OBJECT_MEMORY_OFFSET
+                            u32 offset DEBI_o_mouse_objects         // +24 +_ST_OBJECT_MOUSE_OFFSET
+                            u32 offset DEBI_o_screen_objects        // +28 +_ST_OBJECT_SCREEN_OFFSET
 DEBI_screen_table_end:
 
 
@@ -213,22 +213,22 @@ DEBI_general_menu:
 
                                 //          11111111112222222222333333333344444
                                 //012345678901234567890123456789012345678901234
-DEBI_a_window               u8   "ֹֽ Descriptor …ֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽ»",0
-                            u8   "                                            ÷",0
-                            u8   "     60  56    52  48    44  40    36  32   ÷",0
-                            u8   "   +ֲֲ++ֲֲ+  +ֲֲ++ֲֲ+  +ֲֲ++ֲֲ+  +ֲֲ++ֲֲ+   ÷",0
-                            u8   "   תתתתתתתת  תתתתתתתת  תתתתתתתת  תתתתתתתת   ÷",0
-                            u8   "   תתתתתתתת  תתתתתתתת  תתתתתתתת  תתתתתתתת   ÷",0
-                            u8   "   +ֱֱ++ֱֱ+  +ֱֱ++ֱֱ+  +ֱֱ++ֱֱ+  +ֱֱ++ֱֱ+   ÷",0
-                            u8   "     28  24    20  16    12   8     4   0   ÷",0
-                            u8   "                                            ÷",0
-                            u8   255
+DEBI_a_window               u8  "ֹֽ Descriptor …ֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽ»",0
+                            u8  "                                            ÷",0
+                            u8  "     60  56    52  48    44  40    36  32   ÷",0
+                            u8  "   +ֲֲ++ֲֲ+  +ֲֲ++ֲֲ+  +ֲֲ++ֲֲ+  +ֲֲ++ֲֲ+   ÷",0
+                            u8  "   תתתתתתתת  תתתתתתתת  תתתתתתתת  תתתתתתתת   ÷",0
+                            u8  "   תתתתתתתת  תתתתתתתת  תתתתתתתת  תתתתתתתת   ÷",0
+                            u8  "   +ֱֱ++ֱֱ+  +ֱֱ++ֱֱ+  +ֱֱ++ֱֱ+  +ֱֱ++ֱֱ+   ÷",0
+                            u8  "     28  24    20  16    12   8     4   0   ÷",0
+                            u8  "                                            ÷",0
+                            u8  255
 
 // * Note:  Refer to debi_mac.asp for information on these macros.  Basically they correctly arrange the variables in the required
 //          sizes (bytes, words, dwords) and expand the X & Y coordinates to x*8 and y*8.
 
-                            u16  45 * FONT_X
-                            u16  9  * FONT_Y - 1
+                            u16 45 * FONT_X
+                            u16 9  * FONT_Y - 1
 DEBI_a_screen_objects:
 //REMEMBER, objects may not line up with above (it's recently modified)
     @DrawWindow             DEBI_a_window
@@ -265,19 +265,19 @@ DEBI_a_mouse_objects:
 
                                 //          11111111112222222222333333333344444
                                 //012345678901234567890123456789012345678901234
-DEBI_b_window               u8   "ֹֽ Regs.3 …ֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽ»",0
-                            u8   "  eax תתתת.תת.תת   ds תתתת   ®error¯ תתתתתתתת ÷",0
-                            u8   "  ebx תתתת.תת.תת   es תתתת  eflags תתתתתתתת ÷",0
-                            u8   "  ecx תתתת.תת.תת   fs תתתת   - ntת ofת acfת ÷",0
-                            u8   "  edx תתתת.תת.תת   gs תתתת   - pfת sfת  ifת ÷",0
-                            u8   "  esi תתתת.תתתת              + dfת zfת  cfת ÷",0
-                            u8   "  edi תתתת.תתתת    ss תתתת                  ÷",0
-                            u8   " ®data¯ תתתתתתתת    esp תתתתתתתת   cs תתתת    ÷",0
-                            u8   "  ®imm¯ תתתתתתתת    ebp תתתתתתתת  eip תתתתתתתת÷",0
-                            u8   255
+DEBI_b_window               u8  "ֹֽ Regs.3 …ֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽ»",0
+                            u8  "  eax תתתת.תת.תת   ds תתתת   ®error¯ תתתתתתתת ÷",0
+                            u8  "  ebx תתתת.תת.תת   es תתתת  eflags תתתתתתתת ÷",0
+                            u8  "  ecx תתתת.תת.תת   fs תתתת   - ntת ofת acfת ÷",0
+                            u8  "  edx תתתת.תת.תת   gs תתתת   - pfת sfת  ifת ÷",0
+                            u8  "  esi תתתת.תתתת              + dfת zfת  cfת ÷",0
+                            u8  "  edi תתתת.תתתת    ss תתתת                  ÷",0
+                            u8  " ®data¯ תתתתתתתת    esp תתתתתתתת   cs תתתת    ÷",0
+                            u8  "  ®imm¯ תתתתתתתת    ebp תתתתתתתת  eip תתתתתתתת÷",0
+                            u8  255
 
-                            u16  45 * FONT_X
-                            u16  9  * FONT_Y - 1
+                            u16 45 * FONT_X
+                            u16 9  * FONT_Y - 1
 DEBI_b_screen_objects:
     @DrawWindow                   DEBI_b_window
     @ObjectMemSize       64
@@ -391,16 +391,16 @@ DEBI_b_mouse_objects:
                                 //   00000000-112233445566.. mov     dx,fs:[esi+ebx+00eeddcc]
                                 //          11111111112222222222333333333344444444445555555555
                                 //012345678901234567890123456789012345678901234567890123456789
-DEBI_c_window               u8   "ֹֽ CFSCA.2 …ֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽ»",0
-                            u8   "ּּּּ                                                       ÷",0
-                            u8   254,24
+DEBI_c_window               u8  "ֹֽ CFSCA.2 …ֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽ»",0
+                            u8  "ּּּּ                                                       ÷",0
+                            u8  254,24
 
 DEBI_c_keyboard_objects:
     @FunctionHandlesObject  invDEBI_CFSCA_kbd_handler
     @End
 
-                            u16  60 * FONT_X
-                            u16  26 * FONT_Y - 1
+                            u16 60 * FONT_X
+                            u16 26 * FONT_Y - 1
 DEBI_c_screen_objects:
     @DrawWindow             DEBI_c_window
     @ObjectMemSize          4
@@ -418,16 +418,16 @@ DEBI_c_mouse_objects:
                                 //   00000000-112233445566.. mov     dx,fs:[esi+ebx+00eeddcc]
                                 //          11111111112222222222333333333344444444445555555555
                                 //012345678901234567890123456789012345678901234567890123456789
-DEBI_d_window               u8   "ֹֽ CFSCA.3 …ֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽ»",0
-                            u8   "ּּּּ                                                       ÷",0
-                            u8   254, 37
+DEBI_d_window               u8  "ֹֽ CFSCA.3 …ֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽ»",0
+                            u8  "ּּּּ                                                       ÷",0
+                            u8  254, 37
 
 DEBI_d_keyboard_objects:
     @FunctionHandlesObject  invDEBI_CFSCA_kbd_handler
     @End
 
-                            u16  60 * FONT_X
-                            u16  39 * FONT_Y - 1
+                            u16 60 * FONT_X
+                            u16 39 * FONT_Y - 1
 DEBI_d_screen_objects:
     @DrawWindow             DEBI_d_window
     @ObjectMemSize          4
@@ -445,19 +445,19 @@ DEBI_d_mouse_objects:
 
                                 //          11111111112222222222333333333344444
                                 //012345678901234567890123456789012345678901234
-DEBI_e_window               u8   "ֹֽ FPU.Summary …ֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽ»",0
-                            u8   "st7 תתתתתתתתתתתתתתתתתתתתת|   cw תתתת.תתתת   ÷",0
-                            u8   "st6 תתתתתתתתתתתתתתתתתתתתת|   sw תתתת.תתתת   ÷",0
-                            u8   "st5 תתתתתתתתתתתתתתתתתתתתת|   tw תתתת.תתתת   ÷",0
-                            u8   "st4 תתתתתתתתתתתתתתתתתתתתת|  fcs תתתת.תתתת   ÷",0
-                            u8   "st3 תתתתתתתתתתתתתתתתתתתתת| feip תתתתתתתת    ÷",0
-                            u8   "st2 תתתתתתתתתתתתתתתתתתתתת|  fds תתתת.תתתת   ÷",0
-                            u8   "st1 תתתתתתתתתתתתתתתתתתתתת| fesi תתתתתתתת    ÷",0
-                            u8   "st0 תתתתתתתתתתתתתתתתתתתתת| ®11011¯תתת תתתתתתתת÷",0
-                            u8   255
+DEBI_e_window               u8  "ֹֽ FPU.Summary …ֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽ»",0
+                            u8  "st7 תתתתתתתתתתתתתתתתתתתתת|   cw תתתת.תתתת   ÷",0
+                            u8  "st6 תתתתתתתתתתתתתתתתתתתתת|   sw תתתת.תתתת   ÷",0
+                            u8  "st5 תתתתתתתתתתתתתתתתתתתתת|   tw תתתת.תתתת   ÷",0
+                            u8  "st4 תתתתתתתתתתתתתתתתתתתתת|  fcs תתתת.תתתת   ÷",0
+                            u8  "st3 תתתתתתתתתתתתתתתתתתתתת| feip תתתתתתתת    ÷",0
+                            u8  "st2 תתתתתתתתתתתתתתתתתתתתת|  fds תתתת.תתתת   ÷",0
+                            u8  "st1 תתתתתתתתתתתתתתתתתתתתת| fesi תתתתתתתת    ÷",0
+                            u8  "st0 תתתתתתתתתתתתתתתתתתתתת| ®11011¯תתת תתתתתתתת÷",0
+                            u8  255
 
-                            u16  45 * FONT_X
-                            u16  9  * FONT_Y - 1
+                            u16 45 * FONT_X
+                            u16 9  * FONT_Y - 1
 DEBI_e_screen_objects:
     @DrawWindow             DEBI_e_window
     @ObjectMemSize          108
@@ -562,27 +562,27 @@ DEBI_fpu_menu:
 
                                 //          11111111112222222222333333333344444
                                 //012345678901234567890123456789012345678901234
-DEBI_f_window               u8   "ֹֽ FPU.SaveState …ֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽ»",0
-                            u8   "+00|    null.cw תתתת.תתתת                   ÷",0
-                            u8   "+04|    null.sw תתתת.תתתת  Control Word (cw)÷",0
-                            u8   "+08|    null.tw תתתת.תתתת   ®xxxx¯RcPc®xx¯PUOZDI÷",0
-                            u8   "+0c|       feip תתתתתתתת    תתתתתתתתתתתתתתתת÷",0
-                            u8   "+10|null.op.fcs תתתת.תתתת                   ÷",0
-                            u8   "+14|       fesi תתתתתתתת    Status Word (sw)÷",0
-                            u8   "+18|   null.fds תתתת.תתתת   B3tos210ESPUOZDI÷",0
-                            u8   "   |                        תתתתתתתתתתתתתתתת÷",0
-                            u8   "+62|7 תתתתתתתתתתתתתתתתתתתת|                 ÷",0
-                            u8   "+58|6 תתתתתתתתתתתתתתתתתתתת|   Tag Word (tw) ÷",0
-                            u8   "+43|5 תתתתתתתתתתתתתתתתתתתת| 7766554433221100÷",0
-                            u8   "+44|4 תתתתתתתתתתתתתתתתתתתת| תתתתתתתתתתתתתתתת÷",0
-                            u8   "+3a|3 תתתתתתתתתתתתתתתתתתתת|                 ÷",0
-                            u8   "+30|2 תתתתתתתתתתתתתתתתתתתת|     Opcode (op) ÷",0
-                            u8   "+26|1 תתתתתתתתתתתתתתתתתתתת| ®11011¯תתתתתתתתתתת÷",0
-                            u8   "+1c|0 תתתתתתתתתתתתתתתתתתתת|                 ÷",0
-                            u8   255
+DEBI_f_window               u8  "ֹֽ FPU.SaveState …ֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽ»",0
+                            u8  "+00|    null.cw תתתת.תתתת                   ÷",0
+                            u8  "+04|    null.sw תתתת.תתתת  Control Word (cw)÷",0
+                            u8  "+08|    null.tw תתתת.תתתת   ®xxxx¯RcPc®xx¯PUOZDI÷",0
+                            u8  "+0c|       feip תתתתתתתת    תתתתתתתתתתתתתתתת÷",0
+                            u8  "+10|null.op.fcs תתתת.תתתת                   ÷",0
+                            u8  "+14|       fesi תתתתתתתת    Status Word (sw)÷",0
+                            u8  "+18|   null.fds תתתת.תתתת   B3tos210ESPUOZDI÷",0
+                            u8  "   |                        תתתתתתתתתתתתתתתת÷",0
+                            u8  "+62|7 תתתתתתתתתתתתתתתתתתתת|                 ÷",0
+                            u8  "+58|6 תתתתתתתתתתתתתתתתתתתת|   Tag Word (tw) ÷",0
+                            u8  "+43|5 תתתתתתתתתתתתתתתתתתתת| 7766554433221100÷",0
+                            u8  "+44|4 תתתתתתתתתתתתתתתתתתתת| תתתתתתתתתתתתתתתת÷",0
+                            u8  "+3a|3 תתתתתתתתתתתתתתתתתתתת|                 ÷",0
+                            u8  "+30|2 תתתתתתתתתתתתתתתתתתתת|     Opcode (op) ÷",0
+                            u8  "+26|1 תתתתתתתתתתתתתתתתתתתת| ®11011¯תתתתתתתתתתת÷",0
+                            u8  "+1c|0 תתתתתתתתתתתתתתתתתתתת|                 ÷",0
+                            u8  255
 
-                            u16  45 * FONT_X
-                            u16  18 * FONT_Y - 1
+                            u16 45 * FONT_X
+                            u16 18 * FONT_Y - 1
 DEBI_f_screen_objects:
     @DrawWindow             DEBI_f_window
     @ObjectMemSize          108
@@ -658,23 +658,23 @@ DEBI_f_mouse_objects:
 
                                 //          11111111112222222222
                                 //012345678901234567890123456789
-DEBI_g_window               u8   "ֹֽ Mem.2 …ֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽ»",0      // 0
-                            u8   "                             ÷",0      // 1
-                            u8   "                             ÷",0      // 2
-                            u8   "                             ÷",0      // 3
-                            u8   "                             ÷",0      // 4
-                            u8   "                             ÷",0      // 5
-                            u8   "                             ÷",0      // 6
-                            u8   "                             ÷",0      // 7
-                            u8   "                             ÷",0      // 8
-                            u8   "                             ÷",0      // 9
-                            u8   "                             ÷",0      // 10
-                            u8   "                             ÷",0      // 11
-                            u8   "                             ÷",0      // 12
-                            u8   255
+DEBI_g_window               u8  "ֹֽ Mem.2 …ֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽ»",0      // 0
+                            u8  "                             ÷",0      // 1
+                            u8  "                             ÷",0      // 2
+                            u8  "                             ÷",0      // 3
+                            u8  "                             ÷",0      // 4
+                            u8  "                             ÷",0      // 5
+                            u8  "                             ÷",0      // 6
+                            u8  "                             ÷",0      // 7
+                            u8  "                             ÷",0      // 8
+                            u8  "                             ÷",0      // 9
+                            u8  "                             ÷",0      // 10
+                            u8  "                             ÷",0      // 11
+                            u8  "                             ÷",0      // 12
+                            u8  255
                                                                     //                  the editable variable should be)
-                            u16  30 * FONT_X
-                            u16  13 * FONT_Y - 1
+                            u16 30 * FONT_X
+                            u16 13 * FONT_Y - 1
 DEBI_g_screen_objects:
     @DrawWindow             DEBI_g_window
     @ObjectMemSize          4+2+96              // +4 is for PTR, +2 is for offset, +96 is for data
@@ -719,23 +719,23 @@ DEBI_g_mouse_objects:
 
                                 //          11111111112222222222333333333344444444445555555555
                                 //012345678901234567890123456789012345678901234567890123456789
-DEBI_h_window               u8   "ֹֽ Mem.4 …ֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽ»",0        // 0
-                            u8   "                                                           ÷",0        // 1
-                            u8   "                                                           ÷",0        // 2
-                            u8   "                                                           ÷",0        // 3
-                            u8   "                                                           ÷",0        // 4
-                            u8   "                                                           ÷",0        // 5
-                            u8   "                                                           ÷",0        // 6
-                            u8   "                                                           ÷",0        // 7
-                            u8   "                                                           ÷",0        // 8
-                            u8   "                                                           ÷",0        // 9
-                            u8   "                                                           ÷",0        // 10
-                            u8   "                                                           ÷",0        // 11
-                            u8   "                                                           ÷",0        // 12
-                            u8   255
+DEBI_h_window               u8  "ֹֽ Mem.4 …ֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽ»",0        // 0
+                            u8  "                                                           ÷",0        // 1
+                            u8  "                                                           ÷",0        // 2
+                            u8  "                                                           ÷",0        // 3
+                            u8  "                                                           ÷",0        // 4
+                            u8  "                                                           ÷",0        // 5
+                            u8  "                                                           ÷",0        // 6
+                            u8  "                                                           ÷",0        // 7
+                            u8  "                                                           ÷",0        // 8
+                            u8  "                                                           ÷",0        // 9
+                            u8  "                                                           ÷",0        // 10
+                            u8  "                                                           ÷",0        // 11
+                            u8  "                                                           ÷",0        // 12
+                            u8  255
 
-                            u16  60 * FONT_X
-                            u16  13 * FONT_Y - 1
+                            u16 60 * FONT_X
+                            u16 13 * FONT_Y - 1
 DEBI_h_screen_objects:
     @DrawWindow             DEBI_h_window
     @ObjectMemSize          4+2+208             // +4 is for PTR, +2 is for offset, +208 is for data
@@ -755,25 +755,25 @@ DEBI_h_mouse_objects:
 
                                 //          11111
                                 //012345678901234
-DEBI_i_window               u8   "ֹֽ Stack …ֽֽ»",0
-                            u8   "+0034 תתתתתתתת÷",0
-                            u8   "+0030 תתתתתתתת÷",0
-                            u8   "+002c תתתתתתתת÷",0
-                            u8   "+0028 תתתתתתתת÷",0
-                            u8   "+0024 תתתתתתתת÷",0
-                            u8   "+0020 תתתתתתתת÷",0
-                            u8   "+001c תתתתתתתת÷",0
-                            u8   "+0018 תתתתתתתת÷",0
-                            u8   "+0014 תתתתתתתת÷",0
-                            u8   "+0010 תתתתתתתת÷",0
-                            u8   "+000c תתתתתתתת÷",0
-                            u8   "+0008 תתתתתתתת÷",0
-                            u8   "+0004 תתתתתתתת÷",0
-                            u8   "+0000 תתתתתתתת÷",0
-                            u8   255
+DEBI_i_window               u8  "ֹֽ Stack …ֽֽ»",0
+                            u8  "+0034 תתתתתתתת÷",0
+                            u8  "+0030 תתתתתתתת÷",0
+                            u8  "+002c תתתתתתתת÷",0
+                            u8  "+0028 תתתתתתתת÷",0
+                            u8  "+0024 תתתתתתתת÷",0
+                            u8  "+0020 תתתתתתתת÷",0
+                            u8  "+001c תתתתתתתת÷",0
+                            u8  "+0018 תתתתתתתת÷",0
+                            u8  "+0014 תתתתתתתת÷",0
+                            u8  "+0010 תתתתתתתת÷",0
+                            u8  "+000c תתתתתתתת÷",0
+                            u8  "+0008 תתתתתתתת÷",0
+                            u8  "+0004 תתתתתתתת÷",0
+                            u8  "+0000 תתתתתתתת÷",0
+                            u8  255
 
-                            u16  15 * FONT_X
-                            u16  15 * FONT_Y - 1
+                            u16 15 * FONT_X
+                            u16 15 * FONT_Y - 1
 DEBI_i_screen_objects:
     @DrawWindow             DEBI_i_window
     @ObjectMemSize          32
@@ -819,24 +819,24 @@ DEBI_i_mouse_objects:
 
                                 //          11111111112222222222
                                 //012345678901234567890123456789
-t_and_s_displayed           u8   0
-DEBI_j_window               u8   "ֹֽ€ Quick watch „ֽֽֽֽֽֽֽֽֽֽֽֽ»",0
-quick_12                    u8   "                             ÷",0
-quick_11                    u8   "                             ÷",0
-quick_10                    u8   "                             ÷",0
-quick_9                     u8   "                             ÷",0
-quick_8                     u8   "                             ÷",0
-quick_7                     u8   "                             ÷",0
-quick_6                     u8   "                             ÷",0
-quick_5                     u8   "                             ÷",0
-quick_4                     u8   "                             ÷",0
-quick_3                     u8   "                             ÷",0
-quick_2                     u8   "                             ÷",0
-quick_1                     u8   "                             ÷",0
-                            u8   255
+t_and_s_displayed           u8  0
+DEBI_j_window               u8  "ֹֽ€ Quick watch „ֽֽֽֽֽֽֽֽֽֽֽֽ»",0
+quick_12                    u8  "                             ÷",0
+quick_11                    u8  "                             ÷",0
+quick_10                    u8  "                             ÷",0
+quick_9                     u8  "                             ÷",0
+quick_8                     u8  "                             ÷",0
+quick_7                     u8  "                             ÷",0
+quick_6                     u8  "                             ÷",0
+quick_5                     u8  "                             ÷",0
+quick_4                     u8  "                             ÷",0
+quick_3                     u8  "                             ÷",0
+quick_2                     u8  "                             ÷",0
+quick_1                     u8  "                             ÷",0
+                            u8  255
 
-                            u16  30 * FONT_X
-                            u16  13 * FONT_Y - 1
+                            u16 30 * FONT_X
+                            u16 13 * FONT_Y - 1
 DEBI_j_screen_objects:
     @AlwaysDrawWindow       DEBI_j_window
     @ObjectMemSize          0
@@ -853,15 +853,15 @@ DEBI_j_mouse_objects:
 
                                 //          11111111112222222222333333333344444444445555555555666666666677777777778888888888
                                 //012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789
-DEBI_k_window               u8   "ֹֽ€ Query „ֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽ»",0
-query_3                     u8   "                                                                                         ÷",0
-query_2                     u8   "Low-Level Debi(tm) Debugger for the Exodus Operating System                              ÷",0
-query_1                     u8   "(c) Beatleworks, Inc. 10.10.2010                                                         ÷",0
-                            u8   "ÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊ¼",0
-                            u8   255
+DEBI_k_window               u8  "ֹֽ€ Query „ֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽ»",0
+query_3                     u8  "                                                                                         ÷",0
+query_2                     u8  "Low-Level Debi(tm) Debugger for the Exodus Operating System                              ÷",0
+query_1                     u8  "(c) Beatleworks, Inc. 10.10.2010                                                         ÷",0
+                            u8  "ÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊ¼",0
+                            u8  255
 
-                            u16  90 * FONT_X
-                            u16  5  * FONT_Y - 1
+                            u16 90 * FONT_X
+                            u16 5  * FONT_Y - 1
 DEBI_k_screen_objects:
     @AlwaysDrawWindow       DEBI_k_window
     @ObjectMemSize          0
@@ -877,25 +877,25 @@ DEBI_k_mouse_objects:
 
                                 //          11111
                                 //012345678901234
-DEBI_l_window               u8   "ֹֽ Locals …ֽ»",0
-                            u8   " -004 תתתתתתתת÷",0
-                            u8   " -008 תתתתתתתת÷",0
-                            u8   " -00c תתתתתתתת÷",0
-                            u8   " -010 תתתתתתתת÷",0
-                            u8   " -014 תתתתתתתת÷",0
-                            u8   " -018 תתתתתתתת÷",0
-                            u8   " -01c תתתתתתתת÷",0
-                            u8   " -020 תתתתתתתת÷",0
-                            u8   " -024 תתתתתתתת÷",0
-                            u8   " -028 תתתתתתתת÷",0
-                            u8   " -02c תתתתתתתת÷",0
-                            u8   " -030 תתתתתתתת÷",0
-                            u8   " -034 תתתתתתתת÷",0
-                            u8   " -038 תתתתתתתת÷",0
-                            u8   255
+DEBI_l_window               u8  "ֹֽ Locals …ֽ»",0
+                            u8  " -004 תתתתתתתת÷",0
+                            u8  " -008 תתתתתתתת÷",0
+                            u8  " -00c תתתתתתתת÷",0
+                            u8  " -010 תתתתתתתת÷",0
+                            u8  " -014 תתתתתתתת÷",0
+                            u8  " -018 תתתתתתתת÷",0
+                            u8  " -01c תתתתתתתת÷",0
+                            u8  " -020 תתתתתתתת÷",0
+                            u8  " -024 תתתתתתתת÷",0
+                            u8  " -028 תתתתתתתת÷",0
+                            u8  " -02c תתתתתתתת÷",0
+                            u8  " -030 תתתתתתתת÷",0
+                            u8  " -034 תתתתתתתת÷",0
+                            u8  " -038 תתתתתתתת÷",0
+                            u8  255
 
-                            u16  15 * FONT_X
-                            u16  15 * FONT_Y - 1
+                            u16 15 * FONT_X
+                            u16 15 * FONT_Y - 1
 DEBI_l_screen_objects:
     @DrawWindow             DEBI_l_window
     @ObjectMemSize          32
@@ -941,23 +941,23 @@ DEBI_l_mouse_objects:
 
                                 //          11111
                                 //012345678901234
-DEBI_m_window               u8   "ֹֽ Mem.1 …ֽֽ»",0     // 0
-                            u8   "              ÷",0     // 1
-                            u8   "              ÷",0     // 2
-                            u8   "              ÷",0     // 3
-                            u8   "              ÷",0     // 4
-                            u8   "              ÷",0     // 5
-                            u8   "              ÷",0     // 6
-                            u8   "              ÷",0     // 7
-                            u8   "              ÷",0     // 8
-                            u8   "              ÷",0     // 9
-                            u8   "              ÷",0     // 10
-                            u8   "              ÷",0     // 11
-                            u8   "              ÷",0     // 12
-                            u8   255
+DEBI_m_window               u8  "ֹֽ Mem.1 …ֽֽ»",0     // 0
+                            u8  "              ÷",0     // 1
+                            u8  "              ÷",0     // 2
+                            u8  "              ÷",0     // 3
+                            u8  "              ÷",0     // 4
+                            u8  "              ÷",0     // 5
+                            u8  "              ÷",0     // 6
+                            u8  "              ÷",0     // 7
+                            u8  "              ÷",0     // 8
+                            u8  "              ÷",0     // 9
+                            u8  "              ÷",0     // 10
+                            u8  "              ÷",0     // 11
+                            u8  "              ÷",0     // 12
+                            u8  255
 
-                            u16  15 * FONT_X
-                            u16  13 * FONT_Y - 1
+                            u16 15 * FONT_X
+                            u16 13 * FONT_Y - 1
 DEBI_m_screen_objects:
     @DrawWindow             DEBI_m_window
     @ObjectMemSize          4+2+48              // +4 is for PTR, +2 is for offset, +48 is for data
@@ -985,23 +985,23 @@ DEBI_m_mouse_objects:
 
                                 //          11111111112222222222333333333344444
                                 //012345678901234567890123456789012345678901234
-DEBI_n_window               u8   "ֹֽ Mem.3 …ֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽ»",0       // 0
-                            u8   "                                            ÷",0       // 1
-                            u8   "                                            ÷",0       // 2
-                            u8   "                                            ÷",0       // 3
-                            u8   "                                            ÷",0       // 4
-                            u8   "                                            ÷",0       // 5
-                            u8   "                                            ÷",0       // 6
-                            u8   "                                            ÷",0       // 7
-                            u8   "                                            ÷",0       // 8
-                            u8   "                                            ÷",0       // 9
-                            u8   "                                            ÷",0       // 10
-                            u8   "                                            ÷",0       // 11
-                            u8   "                                            ÷",0       // 12
-                            u8   255
+DEBI_n_window               u8  "ֹֽ Mem.3 …ֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽ»",0       // 0
+                            u8  "                                            ÷",0       // 1
+                            u8  "                                            ÷",0       // 2
+                            u8  "                                            ÷",0       // 3
+                            u8  "                                            ÷",0       // 4
+                            u8  "                                            ÷",0       // 5
+                            u8  "                                            ÷",0       // 6
+                            u8  "                                            ÷",0       // 7
+                            u8  "                                            ÷",0       // 8
+                            u8  "                                            ÷",0       // 9
+                            u8  "                                            ÷",0       // 10
+                            u8  "                                            ÷",0       // 11
+                            u8  "                                            ÷",0       // 12
+                            u8  255
 
-                            u16  45 * FONT_X
-                            u16  13 * FONT_Y - 1
+                            u16 45 * FONT_X
+                            u16 13 * FONT_Y - 1
 DEBI_n_screen_objects:
     @DrawWindow             DEBI_n_window
     @ObjectMemSize          4+2+144             // +4 is for PTR, +2 is for offset, +144 is for data
@@ -1045,11 +1045,11 @@ DEBI_n_mouse_objects:
 
                                 //          11111111112222222222333333333344444444445555555555666666666677777777778888888888
                                 //012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789
-DEBI_o_window               u8   " € redraw „                                   € continue „  € break „  € over „  € step „ ",0
-                            u8   255
+DEBI_o_window               u8  " € redraw „                                   € continue „  € break „  € over „  € step „ ",0
+                            u8  255
 
-                            u16  90 * FONT_X
-                            u16  1  * FONT_Y - 1
+                            u16 90 * FONT_X
+                            u16 1  * FONT_Y - 1
 DEBI_o_screen_objects:
     @AlwaysDrawWindow       DEBI_o_window
     @ObjectMemSize  0
@@ -1067,40 +1067,40 @@ DEBI_o_mouse_objects:
 
                                 //          11111
                                 //012345678901234
-DEBI_p_window               u8   "ֹֽ Regs.1 …ֽ»",0
-                            u8   "  cs תתתת     ÷",0
-                            u8   " eip תתתתתתתת ÷",0
-                            u8   "--------------÷",0
-                            u8   " eax תתתתתתתת ÷",0
-                            u8   " ebx תתתתתתתת ÷",0
-                            u8   " ecx תתתתתתתת ÷",0
-                            u8   " edx תתתתתתתת ÷",0
-                            u8   " esi תתתתתתתת ÷",0
-                            u8   " edi תתתתתתתת ÷",0
-                            u8   "--------------÷",0
-                            u8   "  ds תתתת     ÷",0
-                            u8   "  es תתתת     ÷",0
-                            u8   "  fs תתתת     ÷",0
-                            u8   "  gs תתתת     ÷",0
-                            u8   "  ss תתתת     ÷",0
-                            u8   " esp תתתתתתתת ÷",0
-                            u8   " ebp תתתתתתתת ÷",0
-                            u8   "--------------÷",0
-                            u8   " eflags       ÷",0
-                            u8   "   תתתתתתתת   ÷",0
-                            u8   "--------------÷",0
-                            u8   " ntת ofת acfת ÷",0
-                            u8   " pfת sfת  ifת ÷",0
-                            u8   " dfת zfת  cfת ÷",0
-                            u8   "--------------÷",0
-                            u8   " ®err¯ תתתתתתתת ÷",0
-                            u8   "®data¯ תתתתתתתת ÷",0
-                            u8   " ®imm¯ תתתתתתתת ÷",0
-                            u8   "              ÷",0
-                            u8   255
+DEBI_p_window               u8  "ֹֽ Regs.1 …ֽ»",0
+                            u8  "  cs תתתת     ÷",0
+                            u8  " eip תתתתתתתת ÷",0
+                            u8  "--------------÷",0
+                            u8  " eax תתתתתתתת ÷",0
+                            u8  " ebx תתתתתתתת ÷",0
+                            u8  " ecx תתתתתתתת ÷",0
+                            u8  " edx תתתתתתתת ÷",0
+                            u8  " esi תתתתתתתת ÷",0
+                            u8  " edi תתתתתתתת ÷",0
+                            u8  "--------------÷",0
+                            u8  "  ds תתתת     ÷",0
+                            u8  "  es תתתת     ÷",0
+                            u8  "  fs תתתת     ÷",0
+                            u8  "  gs תתתת     ÷",0
+                            u8  "  ss תתתת     ÷",0
+                            u8  " esp תתתתתתתת ÷",0
+                            u8  " ebp תתתתתתתת ÷",0
+                            u8  "--------------÷",0
+                            u8  " eflags       ÷",0
+                            u8  "   תתתתתתתת   ÷",0
+                            u8  "--------------÷",0
+                            u8  " ntת ofת acfת ÷",0
+                            u8  " pfת sfת  ifת ÷",0
+                            u8  " dfת zfת  cfת ÷",0
+                            u8  "--------------÷",0
+                            u8  " ®err¯ תתתתתתתת ÷",0
+                            u8  "®data¯ תתתתתתתת ÷",0
+                            u8  " ®imm¯ תתתתתתתת ÷",0
+                            u8  "              ÷",0
+                            u8  255
 
-                            u16  15 * FONT_X
-                            u16  30 * FONT_Y - 1
+                            u16 15 * FONT_X
+                            u16 30 * FONT_Y - 1
 DEBI_p_screen_objects:
     @DrawWindow             DEBI_p_window
     @ObjectMemSize      64
@@ -1171,19 +1171,19 @@ DEBI_p_mouse_objects:
 
                                 //          11111
                                 //012345678901234
-DEBI_q_window               u8   "ֹֽ FPU.1 …ֽֽ»",0
-                            u8   "תתתתתתתתתתתתתת÷",0                                                         // st0
-                            u8   "תתתתתתתתתתתתתת÷",0                                                         // st1
-                            u8   "תתתתתתתתתתתתתת÷",0                                                         // st2
-                            u8   "תתתתתתתתתתתתתת÷",0                                                         // st3
-                            u8   "תתתתתתתתתתתתתת÷",0                                                         // st4
-                            u8   "תתתתתתתתתתתתתת÷",0                                                         // st5
-                            u8   "תתתתתתתתתתתתתת÷",0                                                         // st6
-                            u8   "תתתתתתתתתתתתתת÷",0                                                         // st7
-                            u8   255
+DEBI_q_window               u8  "ֹֽ FPU.1 …ֽֽ»",0
+                            u8  "תתתתתתתתתתתתתת÷",0                                                         // st0
+                            u8  "תתתתתתתתתתתתתת÷",0                                                         // st1
+                            u8  "תתתתתתתתתתתתתת÷",0                                                         // st2
+                            u8  "תתתתתתתתתתתתתת÷",0                                                         // st3
+                            u8  "תתתתתתתתתתתתתת÷",0                                                         // st4
+                            u8  "תתתתתתתתתתתתתת÷",0                                                         // st5
+                            u8  "תתתתתתתתתתתתתת÷",0                                                         // st6
+                            u8  "תתתתתתתתתתתתתת÷",0                                                         // st7
+                            u8  255
 
-                            u16  15 * FONT_X
-                            u16  9  * FONT_Y - 1
+                            u16 15 * FONT_X
+                            u16 9  * FONT_Y - 1
 DEBI_q_screen_objects:
     @DrawWindow             DEBI_q_window
     @ObjectMemSize          108
@@ -1221,19 +1221,19 @@ DEBI_q_mouse_objects:
 
                                 //          11111111112222222222
                                 //012345678901234567890123456789
-DEBI_r_window               u8   "ֹֽ FPU.2 …ֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽ»",0
-                            u8   "st7|תתתתתתתתתתתתתתתתתתתת|פtag ץ÷",0                                        // st7
-                            u8   "st6|תתתתתתתתתתתתתתתתתתתת|תתתת÷",0                                          // st6
-                            u8   "st5|תתתתתתתתתתתתתתתתתתתת|פctrlץ÷",0                                        // st5
-                            u8   "st4|תתתתתתתתתתתתתתתתתתתת|תתתת÷",0                                          // st4
-                            u8   "st3|תתתתתתתתתתתתתתתתתתתת|פstatץ÷",0                                        // st3
-                            u8   "st2|תתתתתתתתתתתתתתתתתתתת|תתתת÷",0                                          // st2
-                            u8   "st1|תתתתתתתתתתתתתתתתתתתת|פ op ץ÷",0                                        // st1
-                            u8   "st0|תתתתתתתתתתתתתתתתתתתת|תתתת÷",0                                          // st0
-                            u8   255
+DEBI_r_window               u8  "ֹֽ FPU.2 …ֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽ»",0
+                            u8  "st7|תתתתתתתתתתתתתתתתתתתת|פtag ץ÷",0                                        // st7
+                            u8  "st6|תתתתתתתתתתתתתתתתתתתת|תתתת÷",0                                          // st6
+                            u8  "st5|תתתתתתתתתתתתתתתתתתתת|פctrlץ÷",0                                        // st5
+                            u8  "st4|תתתתתתתתתתתתתתתתתתתת|תתתת÷",0                                          // st4
+                            u8  "st3|תתתתתתתתתתתתתתתתתתתת|פstatץ÷",0                                        // st3
+                            u8  "st2|תתתתתתתתתתתתתתתתתתתת|תתתת÷",0                                          // st2
+                            u8  "st1|תתתתתתתתתתתתתתתתתתתת|פ op ץ÷",0                                        // st1
+                            u8  "st0|תתתתתתתתתתתתתתתתתתתת|תתתת÷",0                                          // st0
+                            u8  255
 
-                            u16  30 * FONT_X
-                            u16  9  * FONT_Y - 1
+                            u16 30 * FONT_X
+                            u16 9  * FONT_Y - 1
 DEBI_r_screen_objects:
     @DrawWindow             DEBI_r_window
     @ObjectMemSize          108
@@ -1370,19 +1370,19 @@ DEBI_mmx_menu:
 
                                 //          11111111112222222222
                                 //012345678901234567890123456789
-DEBI_s_window               u8   "ֹֽ MMX …ֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽ»",0
-                            u8   "   mm0 תתתת.תתתת.תתתת.תתתת   ÷",0
-                            u8   "   mm1 תתתת.תתתת.תתתת.תתתת   ÷",0
-                            u8   "   mm2 תתתת.תתתת.תתתת.תתתת   ÷",0
-                            u8   "   mm3 תתתת.תתתת.תתתת.תתתת   ÷",0
-                            u8   "   mm4 תתתת.תתתת.תתתת.תתתת   ÷",0
-                            u8   "   mm5 תתתת.תתתת.תתתת.תתתת   ÷",0
-                            u8   "   mm6 תתתת.תתתת.תתתת.תתתת   ÷",0
-                            u8   "   mm7 תתתת.תתתת.תתתת.תתתת   ÷",0
-                            u8   255
+DEBI_s_window               u8  "ֹֽ MMX …ֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽ»",0
+                            u8  "   mm0 תתתת.תתתת.תתתת.תתתת   ÷",0
+                            u8  "   mm1 תתתת.תתתת.תתתת.תתתת   ÷",0
+                            u8  "   mm2 תתתת.תתתת.תתתת.תתתת   ÷",0
+                            u8  "   mm3 תתתת.תתתת.תתתת.תתתת   ÷",0
+                            u8  "   mm4 תתתת.תתתת.תתתת.תתתת   ÷",0
+                            u8  "   mm5 תתתת.תתתת.תתתת.תתתת   ÷",0
+                            u8  "   mm6 תתתת.תתתת.תתתת.תתתת   ÷",0
+                            u8  "   mm7 תתתת.תתתת.תתתת.תתתת   ÷",0
+                            u8  255
 
-                            u16  30 * FONT_X
-                            u16  9  * FONT_Y - 1
+                            u16 30 * FONT_X
+                            u16 9  * FONT_Y - 1
 DEBI_s_screen_objects:
     @DrawWindow             DEBI_s_window
     @ObjectMemSize          108
@@ -1461,16 +1461,16 @@ DEBI_cfsca_menu:
                                 //   00000000-112233445566.. mov     dx,fs:[esi+ebx+00eeddcc]
                                 //          11111111112222222222333333333344444444445555555555
                                 //012345678901234567890123456789012345678901234567890123456789
-DEBI_t_window               u8   "ֹֽ cfsca.1 …ֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽ»",0
-                            u8   "ּּּּ                                                       ÷",0
-                            u8   254,11
+DEBI_t_window               u8  "ֹֽ cfsca.1 …ֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽֽ»",0
+                            u8  "ּּּּ                                                       ÷",0
+                            u8  254,11
 
 DEBI_t_keyboard_objects:
     @FunctionHandlesObject  invDEBI_CFSCA_kbd_handler
     @End
 
-                            u16  60 * FONT_X
-                            u16  13 * FONT_Y - 1
+                            u16 60 * FONT_X
+                            u16 13 * FONT_Y - 1
 DEBI_t_screen_objects:
     @DrawWindow             DEBI_t_window
     @ObjectMemSize          4
@@ -1485,14 +1485,14 @@ DEBI_t_mouse_objects:
     @End
 
                                 //
-DEBI_z_window               u8   "                              ",0
-                            u8   254,3
+DEBI_z_window               u8  "                              ",0
+                            u8  254,3
 
 DEBI_z_keyboard_objects:
     @End
 
-                            u16  30 * FONT_X
-                            u16  3  * FONT_Y - 1
+                            u16 30 * FONT_X
+                            u16 3  * FONT_Y - 1
 DEBI_z_screen_objects:
     @DrawWindow             DEBI_z_window
     @FunctionHandlesObject  invDEBI_logo_window
@@ -1503,107 +1503,107 @@ DEBI_z_mouse_objects:
 
 
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-exp_screen_object           u8   _NO                                 // +00 Alterable?
-                            u8   _YES                                // +01 Active?
-                            u16  0                                   // +02 +--Nuserved
-                            u32  0                                   // +04 +_ST_OBJECT_UL_HORIZONTAL (assigned internally)
-                            u32  0                                   // +08 +_ST_OBJECT_UL_VERTICAL (assigned internally)
-                            u32  0ffffffffh                          // +12 +_ST_MEMVAR_OFFSET
-                            u32  offset exp_screen_keyboard_objects  // +16 +_ST_OBJECT_KBD_OFFSET
-                            u32  0ffffffffh                          // +20 +_ST_OBJECT_MEMORY_OFFSET
-                            u32  offset exp_screen_mouse_objects     // +24 +_ST_OBJECT_MOUSE_OFFSET
-                            u32  offset exp_screen_screen_objects    // +28 +_ST_OBJECT_SCREEN_OFFSET
+exp_screen_object           u8  _NO                                 // +00 Alterable?
+                            u8  _YES                                // +01 Active?
+                            u16 0                                   // +02 +--Nuserved
+                            u32 0                                   // +04 +_ST_OBJECT_UL_HORIZONTAL (assigned internally)
+                            u32 0                                   // +08 +_ST_OBJECT_UL_VERTICAL (assigned internally)
+                            u32 0ffffffffh                          // +12 +_ST_MEMVAR_OFFSET
+                            u32 offset exp_screen_keyboard_objects  // +16 +_ST_OBJECT_KBD_OFFSET
+                            u32 0ffffffffh                          // +20 +_ST_OBJECT_MEMORY_OFFSET
+                            u32 offset exp_screen_mouse_objects     // +24 +_ST_OBJECT_MOUSE_OFFSET
+                            u32 offset exp_screen_screen_objects    // +28 +_ST_OBJECT_SCREEN_OFFSET
 
 // The following list is used to copy memory from a window's options to local memory variables for editing
-DEBI_exp_memvar_list        u32  offset text_22                      // Offset of the editable variable
-                            u32  sizeof text_22 - 1                  // Length
-                            u32  offset disp_22
-                            u32  sizeof disp_22 - 1
-                            u32  offset live
-                            u32  1
-                            u32  offset indirect
-                            u32  1
-                            u32  offset show_addresses
-                            u32  1
-                            u32  offset ascii_char
-                            u32  1
-                            u32  offset _byte
-                            u32  1
-                            u32  offset _word
-                            u32  1
-                            u32  offset _dword
-                            u32  1
-                            u32  offset _qword
-                            u32  1
-                            u32  offset float32
-                            u32  1
-                            u32  offset float64
-                            u32  1
-                            u32  offset float80
-                            u32  1
-                            u32  offset hexadecimal
-                            u32  1
-                            u32  offset decimal
-                            u32  1
-                            u32  offset octal
-                            u32  1
-                            u32  offset binary
-                            u32  1
-                            u32  -1                                  // List terminator (appears where the offset to
+DEBI_exp_memvar_list        u32 offset text_22                      // Offset of the editable variable
+                            u32 sizeof text_22 - 1                  // Length
+                            u32 offset disp_22
+                            u32 sizeof disp_22 - 1
+                            u32 offset live
+                            u32 1
+                            u32 offset indirect
+                            u32 1
+                            u32 offset show_addresses
+                            u32 1
+                            u32 offset ascii_char
+                            u32 1
+                            u32 offset _byte
+                            u32 1
+                            u32 offset _word
+                            u32 1
+                            u32 offset _dword
+                            u32 1
+                            u32 offset _qword
+                            u32 1
+                            u32 offset float32
+                            u32 1
+                            u32 offset float64
+                            u32 1
+                            u32 offset float80
+                            u32 1
+                            u32 offset hexadecimal
+                            u32 1
+                            u32 offset decimal
+                            u32 1
+                            u32 offset octal
+                            u32 1
+                            u32 offset binary
+                            u32 1
+                            u32 -1                                  // List terminator (appears where the offset to
 
                                 //          1111111111222222222233333333334
                                 //01234567890123456789012345678901234567890
-exp_screen_window           u8   "+---+פ Address Expression to Display ץ+---+",0   // 0
-                            u8   "|פ                                       ץ|",0   // 1
-                            u8   "|פ      Address: ץ                      פ ץ|",0   // 2
-                            u8   "|פ Displacement: ץ                      פ ץ|",0   // 3
-                            u8   "|פ               ("
-live                        u8   " ) Live?               ץ|",0   // 4
-                            u8   "|פ               ("
-indirect                    u8   " ) Indirect?           ץ|",0   // 5
-                            u8   "|פ               ("
-show_addresses              u8   " ) Show addresses?     ץ|",0   // 6
-                            u8   "|פ                                       ץ|",0   // 7
-                            u8   "|פ Window display:                       ץ|",0   // 8
-                            u8   "|פ   ("
-ascii_char                  u8   " ) ASCII char                      ץ|",0   // 9
-                            u8   "|פ   ("
-_byte                       u8   " ) Byte*                           ץ|",0   // 10
-                            u8   "|פ   ("
-_word                       u8   " ) Word*                           ץ|",0   // 11
-                            u8   "|פ   ("
-_dword                      u8   " ) Dword*                          ץ|",0   // 12
-                            u8   "|פ   ("
-_qword                      u8   " ) Qword*                          ץ|",0   // 13
-                            u8   "|פ   ("
-float32                     u8   " ) Float32                         ץ|",0   // 14
-                            u8   "|פ   ("
-float64                     u8   " ) Float64                         ץ|",0   // 15
-                            u8   "|פ   ("
-float80                     u8   " ) Float80                         ץ|",0   // 16
-                            u8   "|פ                                       ץ|",0   // 17
-                            u8   "|פ * Window type:  ("
-hexadecimal                 u8   " ) Hexadecimal       ץ|",0   // 18
-                            u8   "|פ                 ("
-decimal                     u8   " ) Decimal           ץ|",0   // 19
-                            u8   "|פ                 ("
-octal                       u8   " ) Octal             ץ|",0   // 20
-                            u8   "|פ                 ("
-binary                      u8   " ) Binary            ץ|",0   // 21
-                            u8   "|פ---------------------------------------ץ|",0   // 22
-                            u8   "|פ                                       ץ|",0   // 23
-                            u8   "|פ          ˆ OK      ˆ CANCEL         ץ|",0   // 24
-                            u8   "|פ                                       ץ|",0   // 25
-                            u8   "+---------------------------------------+",0   // 26
-                            u8   255
+exp_screen_window           u8  "+---+פ Address Expression to Display ץ+---+",0   // 0
+                            u8  "|פ                                       ץ|",0   // 1
+                            u8  "|פ      Address: ץ                      פ ץ|",0   // 2
+                            u8  "|פ Displacement: ץ                      פ ץ|",0   // 3
+                            u8  "|פ               ("
+live                        u8  " ) Live?               ץ|",0   // 4
+                            u8  "|פ               ("
+indirect                    u8  " ) Indirect?           ץ|",0   // 5
+                            u8  "|פ               ("
+show_addresses              u8  " ) Show addresses?     ץ|",0   // 6
+                            u8  "|פ                                       ץ|",0   // 7
+                            u8  "|פ Window display:                       ץ|",0   // 8
+                            u8  "|פ   ("
+ascii_char                  u8  " ) ASCII char                      ץ|",0   // 9
+                            u8  "|פ   ("
+_byte                       u8  " ) Byte*                           ץ|",0   // 10
+                            u8  "|פ   ("
+_word                       u8  " ) Word*                           ץ|",0   // 11
+                            u8  "|פ   ("
+_dword                      u8  " ) Dword*                          ץ|",0   // 12
+                            u8  "|פ   ("
+_qword                      u8  " ) Qword*                          ץ|",0   // 13
+                            u8  "|פ   ("
+float32                     u8  " ) Float32                         ץ|",0   // 14
+                            u8  "|פ   ("
+float64                     u8  " ) Float64                         ץ|",0   // 15
+                            u8  "|פ   ("
+float80                     u8  " ) Float80                         ץ|",0   // 16
+                            u8  "|פ                                       ץ|",0   // 17
+                            u8  "|פ * Window type:  ("
+hexadecimal                 u8  " ) Hexadecimal       ץ|",0   // 18
+                            u8  "|פ                 ("
+decimal                     u8  " ) Decimal           ץ|",0   // 19
+                            u8  "|פ                 ("
+octal                       u8  " ) Octal             ץ|",0   // 20
+                            u8  "|פ                 ("
+binary                      u8  " ) Binary            ץ|",0   // 21
+                            u8  "|פ---------------------------------------ץ|",0   // 22
+                            u8  "|פ                                       ץ|",0   // 23
+                            u8  "|פ          ˆ OK      ˆ CANCEL         ץ|",0   // 24
+                            u8  "|פ                                       ץ|",0   // 25
+                            u8  "+---------------------------------------+",0   // 26
+                            u8  255
 _EXP_SCREEN_WIDTH             = 40
 _EXP_SCREEN_HEIGHT            = 27
 
-text_22                     u8   22 dup(32),0                        // Default to an empty expression
-disp_22                     u8   22 dup(32),0                         // Default to an empty expression
+text_22                     u8  22 dup(32),0                        // Default to an empty expression
+disp_22                     u8  22 dup(32),0                         // Default to an empty expression
 
-                            u16  40 * FONT_X
-                            u16  27 * FONT_Y - 1
+                            u16 40 * FONT_X
+                            u16 27 * FONT_Y - 1
 exp_screen_screen_objects:
     @AlwaysDrawWindow       exp_screen_window
     @End

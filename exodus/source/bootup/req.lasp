@@ -70,14 +70,14 @@ function requestor    NEAR
         
         } else if (dl == 1) {
           // They want a hunk of our precious memory ... so, what the hell ... we'll oblige
-            while (esi < <u32> fs:[0])
+            while (esi < u32 ptr fs:[0])
             {
-                mov     al,<u8>  fs:[esi]
-                if (al == 0 && <u32> fs:[esi+_EXODUS_MEM_limit] >= ebx)
+                mov     al,u8 ptr fs:[esi]
+                if (al == 0 && u32 ptr fs:[esi+_EXODUS_MEM_limit] >= ebx)
                 {
                   // This block is free and it's big enough
                   // Update it with the new information
-                    mov     edx,<u32> [ebp+08]               // Get the calling code segment off the stack
+                    mov     edx,u32 ptr [ebp+08]               // Get the calling code segment off the stack
                     mov     ecx,edx                                 // Find out what PL it is
                     and     ecx,011b
                     if (dword ptr fs:[esi+_EXODUS_MEM_limit] == ebx)
@@ -86,24 +86,24 @@ function requestor    NEAR
                         if (dx == _sCODE)
                         {
                           // It's Exodus itself
-                            mov     <u8>  fs:[esi+_EXODUS_MEM_type],1
-                            mov     <u16> fs:[esi+_EXODUS_MEM_gdt],dx
+                            mov     u8 ptr fs:[esi+_EXODUS_MEM_type],1
+                            mov     u16 ptr fs:[esi+_EXODUS_MEM_gdt],dx
                             clc
                         
                         } else if (dx >= (_MIN_PRIMATIVE * 8) && dx <= (_MAX_PRIMATIVE * 8) && ecx == 0) {
                           // It's a native primative
-                            mov     <u16> fs:[esi+_EXODUS_MEM_gdt],dx
+                            mov     u16 ptr fs:[esi+_EXODUS_MEM_gdt],dx
                             push    ds
                             mov     cx,_sPRIMATIVES
                             mov     ds,cx
                             if (dword ptr ds:[4] < _MAX_PRIMATIVE)
                             {
                               // We have room to add this into their memory space
-                                mov     eax,<u32> ds:[4]
-                                inc     <u32> ds:[4]                            // Move to next call gate
-                                mov     <u8>  fs:[esi+_EXODUS_MEM_type],2        // This is a user application (primative)
-                                mov     <u16> fs:[esi+_EXODUS_MEM_gdt],dx        // Store their code segment
-                                mov     <u16> fs:[esi+_EXODUS_MEM_ldt],ax        // Store the GDT where this block will go
+                                mov     eax,u32 ptr ds:[4]
+                                inc     u32 ptr ds:[4]                            // Move to next call gate
+                                mov     u8 ptr fs:[esi+_EXODUS_MEM_type],2        // This is a user application (primative)
+                                mov     u16 ptr fs:[esi+_EXODUS_MEM_gdt],dx        // Store their code segment
+                                mov     u16 ptr fs:[esi+_EXODUS_MEM_ldt],ax        // Store the GDT where this block will go
                               // Right now, ebx - number of bytes requested
                               //             ax - GDT slot where it will go
                                 clc
@@ -116,7 +116,7 @@ function requestor    NEAR
                         
                         } else {
                           // It's a user application
-                            mov     <u16> fs:[esi+_EXODUS_MEM_gdt],dx
+                            mov     u16 ptr fs:[esi+_EXODUS_MEM_gdt],dx
                           // We have to add in the LDT of the calling program
 ;; REMEMBER
                         }
@@ -155,7 +155,7 @@ function requestor    NEAR
         mov     ax,_sEXODUS_PORTS
         mov     fs,ax
         mov     esi,4
-        while (esi < <u32> fs:[0])
+        while (esi < u32 ptr fs:[0])
         {
             add     esi,_EXODUS_PORTS_size
         }
@@ -177,9 +177,9 @@ function requestor    NEAR
         dec     bh
       // Right now, bl - starting interrupt
       //            bh - ending interrupt
-        while (esi < <u32> fs:[0])
+        while (esi < u32 ptr fs:[0])
         {
-            mov     ax,<u16> fs:[esi]
+            mov     ax,u16 ptr fs:[esi]
             mov     ch,ah
             dec     al
             add     ch,al
@@ -200,8 +200,8 @@ function requestor    NEAR
             jmp     requestor_quit
         }
       // If we're here, then it wasn't used.  We add it.
-        mov     <u8>  fs:[esi],cl
-        mov     <u8>  fs:[esi+1],bl
+        mov     u8 ptr fs:[esi],cl
+        mov     u8 ptr fs:[esi+1],bl
 
       // Now, create the IDT entry(s)
         and     ecx,0ffh
@@ -210,7 +210,7 @@ function requestor    NEAR
       //            edx - offset to ISR
         mov     al,bl
         and     eax,0ffh
-        mov     ebx,<u32> [ebp+08]
+        mov     ebx,u32 ptr [ebp+08]
         repeat
         {
           // Right now, eax - interrupt number to update
@@ -230,7 +230,7 @@ function requestor    NEAR
             mov     ds,eax
             mov     esi,offset bootscreen_start
             mov     ecx,offset bootscreen_end - bootscreen_start
-            call    <u48> cs:_VID_draw_exodus_boot_screen
+            call    u48 ptr cs:_VID_draw_exodus_boot_screen
 
             pop     ds
         }
@@ -255,11 +255,11 @@ function requestor    NEAR
       // [ebp-12] - dword, Last pointer to primative that was found
       // [ebp-16] - dword, Distance from primative offset to ebx at start (indicates how far away from start of function it is)
       // [ebp-20] - dword, ecx at start
-        mov     <u32> [ebp-04],edx
-        mov     <u32> [ebp-08],ebx
-        mov     <u32> [ebp-12],0ffffffffh
-        mov     <u32> [ebp-16],0ffffffffh
-        mov     <u32> [ebp-20],ecx
+        mov     u32 ptr [ebp-04],edx
+        mov     u32 ptr [ebp-08],ebx
+        mov     u32 ptr [ebp-12],0ffffffffh
+        mov     u32 ptr [ebp-16],0ffffffffh
+        mov     u32 ptr [ebp-20],ecx
 
         push    es
         mov     eax,_sDATA
@@ -281,41 +281,41 @@ function requestor    NEAR
                 mov     eax,_sPRIMATIVES
                 mov     fs,ax
                 mov     edi,8                                       // Start after this structure, see inf\primload.inf
-                while (edi < <u32> fs:[0])
+                while (edi < u32 ptr fs:[0])
                 {
                     if (byte ptr fs:[edi+2] == 1)
                     {
                       // This one is active, lookup the GDT entry to determine the code selector and offset
-                        movzx   eax,<u16> fs:[edi]               // Get the GDT entry for this primative
+                        movzx   eax,u16 ptr fs:[edi]               // Get the GDT entry for this primative
                         invExtract_call_gate_descriptor32()
-                        if (edx == <u32> [ebp-04])
+                        if (edx == u32 ptr [ebp-04])
                         {
                           // It's the right code segment, is it the right offset?
-                            if (ebx <= <u32> [ebp-08])
+                            if (ebx <= u32 ptr [ebp-08])
                             {
                               // It's before the current instruction pointer ... so it's a candidate
-                                mov     ecx,<u32> [ebp-08]
+                                mov     ecx,u32 ptr [ebp-08]
                                 sub     ecx,ebx
-                                if (ecx < <u32> [ebp-16])
+                                if (ecx < u32 ptr [ebp-16])
                                 {
                                   // We're closer than the previous one
-                                    mov     <u32> [ebp-12],edi
-                                    mov     <u32> [ebp-16],ecx
+                                    mov     u32 ptr [ebp-12],edi
+                                    mov     u32 ptr [ebp-16],ecx
                                 }
                             }
                         }
                     }
-                    movzx   eax,<u8>  fs:[edi+3]
+                    movzx   eax,u8 ptr fs:[edi+3]
                     add     edi,eax
                     add     edi,4
                 }
                 if (dword ptr [ebp-12] != 0ffffffffh)
                 {
                   // We found something
-                    mov     edi,<u32> [ebp-12]
-                    movzx   ecx,<u8>  fs:[edi+3]
+                    mov     edi,u32 ptr [ebp-12]
+                    movzx   ecx,u8 ptr fs:[edi+3]
                     add     edi,4
-                    mov     eax,<u32> [ebp-20]
+                    mov     eax,u32 ptr [ebp-20]
                   // Right now, fs:[edi] - far ptr to the name of this function
                   //                 ecx - length of the function name
                   //            ds:[esi] - far ptr to where we're supposed to store this name
@@ -323,21 +323,21 @@ function requestor    NEAR
                     if (eax > 4)
                     {
                       // Store the word " at "
-                        mov     <u32> ds:[esi],' ta '
+                        mov     u32 ptr ds:[esi],' ta '
                         add     esi,4
                         sub     eax,4
                     
                     } else if (eax > 1) {
                       // Not enough room for the phrase " at ", so we just add a space and copy what we can
-                        mov     <u8>  ds:[esi],32
+                        mov     u8 ptr ds:[esi],32
                         inc     esi
                         dec     eax
                     }
                   // Now, copy the function name
                     while (byte ptr fs:[edi] != 0 && ecx > 0 && eax > 0)
                     {
-                        mov     al,<u8>  fs:[edi]
-                        mov     <u8>  ds:[esi],al
+                        mov     al,u8 ptr fs:[edi]
+                        mov     u8 ptr ds:[esi],al
                         inc     esi
                         inc     edi
                         dec     ecx
@@ -347,20 +347,20 @@ function requestor    NEAR
                     if (eax > 2)
                     {
                       // Store the () part of a function()
-                        mov     <u16> ds:[esi],')('
+                        mov     u16 ptr ds:[esi],')('
                         sub     eax,2
                         add     esi,2
                     }
                     if (eax > 0)
                     {
                       // We need to try to copy the offset
-                        mov     <u8>  ds:[esi],"+"
+                        mov     u8 ptr ds:[esi],"+"
                         inc     esi
                         dec     eax
                         if (eax > 0)
                         {
                           // Now, copy the offset text to the string
-                            mov     edx,<u32> [ebp-16]
+                            mov     edx,u32 ptr [ebp-16]
                             mov     ecx,8
                           // Skip past any leading 0s
                           @@:
@@ -388,7 +388,7 @@ function requestor    NEAR
                             } else {
                                 add     bl,'a'-10
                             }
-                            mov     <u8>  ds:[esi],bl
+                            mov     u8 ptr ds:[esi],bl
                             inc     esi
                             dec     eax
                             if (eax == 0)
@@ -418,8 +418,8 @@ function requestor    NEAR
                 pushfd
                 while (byte ptr es:[edi] != 0 && ecx > 0)
                 {
-                    mov     al,<u8>  es:[edi]
-                    mov     <u8>  ds:[esi],al
+                    mov     al,u8 ptr es:[edi]
+                    mov     u8 ptr ds:[esi],al
                     inc     esi
                     inc     edi
                     dec     ecx
@@ -478,15 +478,15 @@ function requestor    NEAR
           //             ebx - base
           //             edx - limit
           //
-            test    <u32> [ebp+08],111b
+            test    u32 ptr [ebp+08],111b
             if (zero?)
             {
               // This function is only available to PL=00 tasks
                 mov     eax,edx
                 shl     eax,3
                 invExtract_data_descriptor32()
-                mov     <u32> [ebp-40],ebx
-                mov     <u32> [ebp-36],edx
+                mov     u32 ptr [ebp-40],ebx
+                mov     u32 ptr [ebp-36],edx
                 clc
             
             } else {
@@ -503,15 +503,15 @@ function requestor    NEAR
           //             ebx - base
           //             edx - limit
           //
-            test    <u32> [ebp+08],111b
+            test    u32 ptr [ebp+08],111b
             if (zero?)
             {
               // This function is only available to PL=00 tasks
                 mov     eax,edx
                 shl     eax,3
                 invExtract_code_descriptor32()
-                mov     <u32> [ebp-40],ebx
-                mov     <u32> [ebp-36],edx
+                mov     u32 ptr [ebp-40],ebx
+                mov     u32 ptr [ebp-36],edx
                 clc
             
             } else {
@@ -524,16 +524,16 @@ function requestor    NEAR
           //
           // Upon entry: edx - GDT slot
           //
-            test    <u32> [ebp+08],111b
+            test    u32 ptr [ebp+08],111b
             if (zero?)
             {
                 push    ds
                 mov     eax,_sGDT
                 mov     ds,eax
-                mov     ebx,<u32> ds:[edx*8+4]
-                mov     edx,<u32> ds:[edx*8+0]
-                mov     <u32> [ebp-40],ebx
-                mov     <u32> [ebp-36],edx
+                mov     ebx,u32 ptr ds:[edx*8+4]
+                mov     edx,u32 ptr ds:[edx*8+0]
+                mov     u32 ptr [ebp-40],ebx
+                mov     u32 ptr [ebp-36],edx
                 pop     ds
                 clc
             
@@ -547,7 +547,7 @@ function requestor    NEAR
           //
           // Upon entry: edx - call gate GDT slot
           //
-            test    <u32> [ebp+08],111b
+            test    u32 ptr [ebp+08],111b
             if (zero?)
             {
                 mov     eax,edx
@@ -555,7 +555,7 @@ function requestor    NEAR
                 invExtract_call_gate_descriptor32()
                 mov     eax,edx
                 invExtract_data_descriptor32()
-                mov     <u32> [ebp-40],ebx
+                mov     u32 ptr [ebp-40],ebx
                 clc
             
             } else {
@@ -571,16 +571,16 @@ function requestor    NEAR
           // Upon exit:  carry? - clear if found, set if not
           //                ecx - base if found
           //
-            test <u32> [ebp+08],111b
+            test u32 ptr [ebp+08],111b
             if (zero?)
             {
-                test <u32> [ebp-36],111b                     // Check edx
+                test u32 ptr [ebp-36],111b                     // Check edx
                 if (zero?)
                 {
                   // It's a PL=00 descriptor
                     mov     eax,edx
                     invExtract_data_descriptor32()
-                    mov     <u32> [ebp-32],ebx               // Store base in ecx
+                    mov     u32 ptr [ebp-32],ebx               // Store base in ecx
                     clc
                 
                 } else {
@@ -600,16 +600,16 @@ function requestor    NEAR
           // Upon exit:  carry? - clear if found, set if not
           //                ecx - limit if found
           //
-            test <u32> [ebp+08],111b
+            test u32 ptr [ebp+08],111b
             if (zero?)
             {
-                test <u32> [ebp-36],111b                     // Check edx
+                test u32 ptr [ebp-36],111b                     // Check edx
                 if (zero?)
                 {
                   // It's a PL=00 descriptor
                     mov     eax,edx
                     invExtract_data_descriptor32()
-                    mov     <u32> [ebp-32],edx               // Store limit in ecx
+                    mov     u32 ptr [ebp-32],edx               // Store limit in ecx
                     clc
                 
                 } else {
@@ -638,7 +638,7 @@ function requestor    NEAR
           //
           // Upon exit:  carry? - clear if acceptable
           //
-            test    <u32> [ebp+08],111b
+            test    u32 ptr [ebp+08],111b
             if (zero?)
             {
               // This function is only available to PL=00 tasks
@@ -665,7 +665,7 @@ function requestor    NEAR
           //
           // Upon exit:  carry? - clear if acceptable
           //
-            test    <u32> [ebp+08],111b
+            test    u32 ptr [ebp+08],111b
             if (zero?)
             {
               // This function is only available to PL=00 tasks
@@ -720,7 +720,7 @@ function requestor    NEAR
             xor     edi,edi
             repeat
             {
-                mov     al,<u8>  ds:[esi]
+                mov     al,u8 ptr ds:[esi]
                 if (al != 0 && ecx != 80)
                 {
                     inc     esi
@@ -728,12 +728,12 @@ function requestor    NEAR
                 } else {
                     mov     al,32
                 }
-                mov     <u8>  es:[edi],al                        // VGA
-                mov     <u8>  fs:[edi],al                        // Mono
+                mov     u8 ptr es:[edi],al                        // VGA
+                mov     u8 ptr fs:[edi],al                        // Mono
                 inc     edi
                 mov     al,112
-                mov     <u8>  es:[edi],al
-                mov     <u8>  fs:[edi],al
+                mov     u8 ptr es:[edi],al
+                mov     u8 ptr fs:[edi],al
                 inc     edi
             } untilcxz
 
@@ -742,7 +742,7 @@ function requestor    NEAR
             mov     edi,80*2*5
             while (esi < offset failed_end)
             {
-                mov     al,<u8>  cs:[esi]
+                mov     al,u8 ptr cs:[esi]
                 inc     esi
                 if (al == 13)
                 {
@@ -759,12 +759,12 @@ function requestor    NEAR
                     add     edi,80*2
                 
                 } else {
-                    mov     <u8>  es:[edi],al
-                    mov     <u8>  fs:[edi],al
+                    mov     u8 ptr es:[edi],al
+                    mov     u8 ptr fs:[edi],al
                     inc     edi
                     mov     al,7
-                    mov     <u8>  es:[edi],al
-                    mov     <u8>  fs:[edi],al
+                    mov     u8 ptr es:[edi],al
+                    mov     u8 ptr fs:[edi],al
                     inc     edi
                 }
             }

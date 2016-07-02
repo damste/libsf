@@ -41,116 +41,116 @@ int 3
 
     cli
 
-    mov     ecx,<u32> [ebp+28]
-    if (ecx > 7 || <u32> [ebp+16] > 16*(1024*1000))         // The page address must be in the lower 16MB
+    mov     ecx,u32 ptr [ebp+28]
+    if (ecx > 7 || u32 ptr [ebp+16] > 16*(1024*1000))         // The page address must be in the lower 16MB
     {
         stc
         jmp     iDMA_quit
     
     } else if (ecx <= 3) {
       // It's on DMA channel 1
-        mov     <u16> [ebp-06],_DMA1_port_mode_register
-        mov     <u16> [ebp-08],_DMA1_port_mask_register
-        mov     <u16> [ebp-10],_DMA1_port_clear_register
-        mov     <u8>  [ebp-11],cl
+        mov     u16 ptr [ebp-06],_DMA1_port_mode_register
+        mov     u16 ptr [ebp-08],_DMA1_port_mask_register
+        mov     u16 ptr [ebp-10],_DMA1_port_clear_register
+        mov     u8 ptr [ebp-11],cl
         if (ecx == 0)
         {
           // Channel 0, DMA1
-            mov     <u16> [ebp-02],_DMA1_port_bca_channel_0
-            mov     <u16> [ebp-04],_DMA1_port_bcc_channel_0
-            mov     <u16> [ebp-14],_DMA1_port_pr_channel_0
+            mov     u16 ptr [ebp-02],_DMA1_port_bca_channel_0
+            mov     u16 ptr [ebp-04],_DMA1_port_bcc_channel_0
+            mov     u16 ptr [ebp-14],_DMA1_port_pr_channel_0
         
         } else if (ecx == 1) {
           // Channel 1, DMA1
-            mov     <u16> [ebp-02],_DMA1_port_bca_channel_1
-            mov     <u16> [ebp-04],_DMA1_port_bcc_channel_1
-            mov     <u16> [ebp-14],_DMA1_port_pr_channel_1
+            mov     u16 ptr [ebp-02],_DMA1_port_bca_channel_1
+            mov     u16 ptr [ebp-04],_DMA1_port_bcc_channel_1
+            mov     u16 ptr [ebp-14],_DMA1_port_pr_channel_1
         
         } else if (ecx == 2) {
           // Channel 2, DMA1
-            mov     <u16> [ebp-02],_DMA1_port_bca_channel_2
-            mov     <u16> [ebp-04],_DMA1_port_bcc_channel_2
-            mov     <u16> [ebp-14],_DMA1_port_pr_channel_2
+            mov     u16 ptr [ebp-02],_DMA1_port_bca_channel_2
+            mov     u16 ptr [ebp-04],_DMA1_port_bcc_channel_2
+            mov     u16 ptr [ebp-14],_DMA1_port_pr_channel_2
         
         } else {
           // Channel 3, DMA1
-            mov     <u16> [ebp-02],_DMA1_port_bca_channel_3
-            mov     <u16> [ebp-04],_DMA1_port_bcc_channel_3
-            mov     <u16> [ebp-14],_DMA1_port_pr_channel_3
+            mov     u16 ptr [ebp-02],_DMA1_port_bca_channel_3
+            mov     u16 ptr [ebp-04],_DMA1_port_bcc_channel_3
+            mov     u16 ptr [ebp-14],_DMA1_port_pr_channel_3
         }
     
     } else {
       // It's on DMA channel 2
-        mov     <u16> [ebp-06],_DMA2_port_mode_register
-        mov     <u16> [ebp-08],_DMA2_port_mask_register
-        mov     <u16> [ebp-10],_DMA2_port_clear_register
-        mov     <u8>  [ebp-11],cl
-        sub     <u8>  [ebp-11],4
+        mov     u16 ptr [ebp-06],_DMA2_port_mode_register
+        mov     u16 ptr [ebp-08],_DMA2_port_mask_register
+        mov     u16 ptr [ebp-10],_DMA2_port_clear_register
+        mov     u8 ptr [ebp-11],cl
+        sub     u8 ptr [ebp-11],4
         if (ecx == 4)
         {
           // Channel 4, DMA2
-            mov     <u16> [ebp-02],_DMA2_port_bca_channel_4
-            mov     <u16> [ebp-04],_DMA2_port_bcc_channel_4
-            mov     <u16> [ebp-14],_DMA2_port_pr_channel_4
+            mov     u16 ptr [ebp-02],_DMA2_port_bca_channel_4
+            mov     u16 ptr [ebp-04],_DMA2_port_bcc_channel_4
+            mov     u16 ptr [ebp-14],_DMA2_port_pr_channel_4
         
         } else if (ecx == 5) {
           // Channel 5, DMA2
-            mov     <u16> [ebp-02],_DMA2_port_bca_channel_5
-            mov     <u16> [ebp-04],_DMA2_port_bcc_channel_5
-            mov     <u16> [ebp-14],_DMA2_port_pr_channel_5
+            mov     u16 ptr [ebp-02],_DMA2_port_bca_channel_5
+            mov     u16 ptr [ebp-04],_DMA2_port_bcc_channel_5
+            mov     u16 ptr [ebp-14],_DMA2_port_pr_channel_5
         
         } else if (ecx == 6) {
           // Channel 6, DMA2
-            mov     <u16> [ebp-02],_DMA2_port_bca_channel_6
-            mov     <u16> [ebp-04],_DMA2_port_bcc_channel_6
-            mov     <u16> [ebp-14],_DMA2_port_pr_channel_6
+            mov     u16 ptr [ebp-02],_DMA2_port_bca_channel_6
+            mov     u16 ptr [ebp-04],_DMA2_port_bcc_channel_6
+            mov     u16 ptr [ebp-14],_DMA2_port_pr_channel_6
         
         } else {
           // Channel 7, DMA2
-            mov     <u16> [ebp-02],_DMA2_port_bca_channel_7
-            mov     <u16> [ebp-04],_DMA2_port_bcc_channel_7
-            mov     <u16> [ebp-14],_DMA2_port_pr_channel_7
+            mov     u16 ptr [ebp-02],_DMA2_port_bca_channel_7
+            mov     u16 ptr [ebp-04],_DMA2_port_bcc_channel_7
+            mov     u16 ptr [ebp-14],_DMA2_port_pr_channel_7
         }
     }
    // Tell the DMA controller which channel to write
     mov     al,cl
-    mov     dx,<u16> [ebp-08]                                 // Mask register
+    mov     dx,u16 ptr [ebp-08]                                 // Mask register
     out     dx,al
     jmp     $+2
 
    // Send the flip-flop byte (clears out the internal register)
-    mov     dx,<u16> [ebp-10]                                 // Clear register
+    mov     dx,u16 ptr [ebp-10]                                 // Clear register
     out     dx,al
     jmp     $+2
 
    // Specify the mode to use for this DMA read/write
-    mov     al,<u8>  [ebp-11]                                 // BITS0-1 - channel
-    mov     dx,<u16> [ebp+14]                                 // BITS2-3 - transfer type
+    mov     al,u8 ptr [ebp-11]                                 // BITS0-1 - channel
+    mov     dx,u16 ptr [ebp+14]                                 // BITS2-3 - transfer type
     and     dl,11b
     shl     edx,2
     or      al,dl
     // BIT 4                                                         // BIT4 is autoinitialization enable, 0-disable is the default
-    mov     edx,<u32> [ebp+20]                               // BIT5 - direction
+    mov     edx,u32 ptr [ebp+20]                               // BIT5 - direction
     and     dl,1
     shl     edx,5
     or      al,dl
-    mov     edx,<u32> [ebp+24]                               // BIT6-7 - Mode type
+    mov     edx,u32 ptr [ebp+24]                               // BIT6-7 - Mode type
     and     dl,11b
     shl     edx,6
     or      al,dl
-    mov     dx,<u16> [ebp-06]                                 // Mode register
+    mov     dx,u16 ptr [ebp-06]                                 // Mode register
     out     dx,al
     jmp     $+2
 
    // Specify the paging address
-    mov     ecx,<u32> [ebp+16]                               // send bits 16-19
+    mov     ecx,u32 ptr [ebp+16]                               // send bits 16-19
     mov     eax,ecx
     shr     eax,16
-    mov     dx,<u16> [ebp-14]
+    mov     dx,u16 ptr [ebp-14]
     out     dx,al
     jmp     $+2
     mov     al,ch                                                   // send bits 8-15
-    mov     dx,<u16> [ebp-02]
+    mov     dx,u16 ptr [ebp-02]
     out     dx,al
     jmp     $+2
     mov     al,cl                                                   // send bits 0-7
@@ -158,9 +158,9 @@ int 3
     jmp     $+2
 
    // Send the count
-    mov     ax,<u16> [ebp+12]
+    mov     ax,u16 ptr [ebp+12]
     dec     ax
-    mov     dx,<u16> [ebp-04]
+    mov     dx,u16 ptr [ebp-04]
     out     dx,al                                                   // send bits 0-7
     jmp     $+2
     xchg    ah,al

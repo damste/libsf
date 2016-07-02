@@ -56,7 +56,7 @@ dd  offset requestor
         } else if (eax == 'id  ') {
           // Display this program's ID on the VGA monitor
             mov     esi,offset driver_name
-            call    <u48> cs:_VID_display_string_nr_vga
+            call    u48 ptr cs:_VID_display_string_nr_vga
             clc
         
         } else if (eax == 'note') {
@@ -64,7 +64,7 @@ dd  offset requestor
             mov     eax,'stop'
             mov     ebx,'load'
             mov     esi,offset driver_name
-            call    <u48> cs:_EXODUS_requestor
+            call    u48 ptr cs:_EXODUS_requestor
         
         } else {
             stc
@@ -112,9 +112,9 @@ dd  offset requestor
         mov     bl,71h
         mov     ecx,1
         mov     edx,offset KBD_handler                              // Offset to the keyboard ISR
-        call    <u48> ds:_EXODUS_requestor
+        call    u48 ptr ds:_EXODUS_requestor
 
-        call    <u48> ds:_iBIOS_read_8042_64h                   // See if the keyboard is active
+        call    u48 ptr ds:_iBIOS_read_8042_64h                   // See if the keyboard is active
         test    al,10000b
         if (!zero?)
         {
@@ -122,20 +122,20 @@ dd  offset requestor
             invDisable_keyboard()
            // Set the delay and repeat rate
             mov     ah,0f3h                                         // Typematic control (repeating character rate)
-            call    <u48> ds:_iBIOS_write_8042_60h
+            call    u48 ptr ds:_iBIOS_write_8042_60h
             xor     ah,ah                                           // Delay = 250ms, 30 cps (min delay, max speed)
-            call    <u48> ds:_iBIOS_write_8042_60h
+            call    u48 ptr ds:_iBIOS_write_8042_60h
 
            // Set the LEDs to all off
             mov     ah,0edh                                         // LED write
-            call    <u48> ds:_iBIOS_write_8042_60h
+            call    u48 ptr ds:_iBIOS_write_8042_60h
             xor     ah,ah                                           // 00000:x:x:x = CAPS:NUM:SCROLL; 1-on, 0-off
-            call    <u48> ds:_iBIOS_write_8042_60h
+            call    u48 ptr ds:_iBIOS_write_8042_60h
             invEnable_keyboard()
 
            // Display the keyboard logo
             mov     esi,offset keyboard_logo
-            call    <u48> ds:_VID_draw_logo
+            call    u48 ptr ds:_VID_draw_logo
 
            // Everything's fine
             clc
@@ -156,8 +156,8 @@ dd  offset requestor
     // Sends the disable keyboard command to port 64h
         push    eax
         mov     ah,0adh                                             // Disable keyboard command
-        call    <u48> ds:_iBIOS_write_8042_64h
-        call    <u48> ds:_TIMER_wait_full_tick
+        call    u48 ptr ds:_iBIOS_write_8042_64h
+        call    u48 ptr ds:_TIMER_wait_full_tick
         pop     eax
         ret
     }
@@ -170,8 +170,8 @@ dd  offset requestor
     // Sends the enable keyboard command to port 64h
         push    eax
         mov     ah,0aeh                                             // Enable keyboard command
-        call    <u48> ds:_iBIOS_write_8042_64h
-        call    <u48> ds:_TIMER_wait_full_tick
+        call    u48 ptr ds:_iBIOS_write_8042_64h
+        call    u48 ptr ds:_TIMER_wait_full_tick
         pop     eax
         ret
     }
@@ -195,7 +195,7 @@ dd  offset requestor
 //push ds:text_y
 //movzx edx,al
 //mov ebx,16
-//call <u48> ds:_VID_g_display_radix_in_edx_mono
+//call u48 ptr ds:_VID_g_display_radix_in_edx_mono
 //add ds:text_x,8*4
 //.IF (ds:text_x > 720-(8*4))
 //    mov ds:text_x,0
@@ -209,10 +209,10 @@ dd  offset requestor
           // Action is required (they've done something that might trigger something else)
             if (ds:debi_intercept == 1)
             {
-                call    <u48> ds:_iDEBI_kbd_interface
+                call    u48 ptr ds:_iDEBI_kbd_interface
             
             } else {
-                call    <u48> ds:_iTASK_kbd_interface
+                call    u48 ptr ds:_iTASK_kbd_interface
             }
         }
 
@@ -265,21 +265,21 @@ dd  offset requestor
                         if (dword ptr ds:[esi+1] != 0ffffffffh)
                         {
                           // The press of this key updates the status of an internal flag only, it doesn't cause any action
-                            mov     esi,<u32> ds:[esi+1]
+                            mov     esi,u32 ptr ds:[esi+1]
                             if (esi >= 80000000h)
                             {
                               // When the high bit is set it indicates this needs to be toggled
                                 and     esi,not 80000000h
                                 if (byte ptr ds:[esi] != 0)
                                 {
-                                    mov     <u8>  ds:[esi],0
+                                    mov     u8 ptr ds:[esi],0
                                 
                                 } else {
-                                    mov     <u8>  ds:[esi],1
+                                    mov     u8 ptr ds:[esi],1
                                 }
                             
                             } else {
-                                mov     <u8>  ds:[esi],0
+                                mov     u8 ptr ds:[esi],0
                             }
                             stc
                             jmp     quit
@@ -300,8 +300,8 @@ dd  offset requestor
                 {
                     if (byte ptr ds:[esi] == al)
                     {
-                        movzx   esi,<u16> ds:[esi+1]
-                        mov     <u8>  ds:[esi],0
+                        movzx   esi,u16 ptr ds:[esi+1]
+                        mov     u8 ptr ds:[esi],0
                         stc
                         jmp     quit
                     }
@@ -328,21 +328,21 @@ dd  offset requestor
                         if (dword ptr ds:[esi+1] != 0ffffffffh)
                         {
                           // The press of this key updates the status of an internal flag only, it doesn't cause any action
-                            mov     esi,<u32> ds:[esi+1]
+                            mov     esi,u32 ptr ds:[esi+1]
                             if (esi >= 80000000h)
                             {
                               // When the high bit is set it indicates this needs to be toggled
                                 and     esi,not 80000000h
                                 if (byte ptr ds:[esi] != 0)
                                 {
-                                    mov     <u8>  ds:[esi],0
+                                    mov     u8 ptr ds:[esi],0
                                 
                                 } else {
-                                    mov     <u8>  ds:[esi],1
+                                    mov     u8 ptr ds:[esi],1
                                 }
                             
                             } else {
-                                mov     <u8>  ds:[esi],1
+                                mov     u8 ptr ds:[esi],1
                             }
                             stc
                             jmp     quit
@@ -366,21 +366,21 @@ dd  offset requestor
                     if (byte ptr ds:[esi] == al)
                     {
                       // We've found our match, now act on what it says to do
-                        mov     esi,<u32> ds:[esi+1]
+                        mov     esi,u32 ptr ds:[esi+1]
                         if (esi >= 80000000h)
                         {
                           // When the high bit is set it indicates this needs to be toggled
                             and     esi,not 80000000h
                             if (byte ptr ds:[esi] != 0)
                             {
-                                mov     <u8>  ds:[esi],0
+                                mov     u8 ptr ds:[esi],0
                             
                             } else {
-                                mov     <u8>  ds:[esi],1
+                                mov     u8 ptr ds:[esi],1
                             }
                         
                         } else {
-                            mov     <u8>  ds:[esi],1
+                            mov     u8 ptr ds:[esi],1
                         }
                         stc
                         jmp     quit
@@ -415,7 +415,7 @@ dd  offset requestor
                         mov     esi,offset raw_key_set
                     }
                     shl     eax,1
-                    movzx   eax,<u16> ds:[esi+eax]
+                    movzx   eax,u16 ptr ds:[esi+eax]
                 
                 } else {
                     stc
@@ -487,79 +487,79 @@ dd  offset requestor
     #include "kbd.asp"
 
 // DATA
-    driver_name                             u8   "PS/2 Keyboard Driver",0
-    version                                 u8   "10.10.2010",0
-    copyright                               u8   "(c) Copyright Beatleworks, Inc.",0
-    author                                  u8   "Rick C. Hodgin",0
-    bootup                                  u8   1                   // Changed to 0 after bootup is complete
+    driver_name                             u8  "PS/2 Keyboard Driver",0
+    version                                 u8  "10.10.2010",0
+    copyright                               u8  "(c) Copyright Beatleworks, Inc.",0
+    author                                  u8  "Rick C. Hodgin",0
+    bootup                                  u8  1                   // Changed to 0 after bootup is complete
 
-    data_segment                            u16  0
-    debi_intercept                          u8   0
-    extended_data                           u8   0                   // Are we in extended data mode?
+    data_segment                            u16 0
+    debi_intercept                          u8  0
+    extended_data                           u8  0                   // Are we in extended data mode?
 
-    keyboard_logo                           u8   0       // how many extra 16x16 pictures wide?
-                                            u8   00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh
-                                            u8   0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh
-                                            u8   0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh
-                                            u8   0fh,0fh,0fh,07h,07h,10h,0fh,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h
-                                            u8   0fh,0fh,0fh,07h,07h,10h,0fh,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h
-                                            u8   0fh,0fh,0fh,10h,10h,10h,0fh,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h
-                                            u8   0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh
-                                            u8   0fh,0fh,0fh,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h,10h
-                                            u8   0fh,0fh,0fh,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h,10h
-                                            u8   0fh,0fh,0fh,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h
-                                            u8   0fh,0fh,0fh,07h,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h
-                                            u8   0fh,0fh,0fh,07h,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h
-                                            u8   0fh,0fh,0fh,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h
-                                            u8   0fh,0fh,0fh,07h,07h,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h
-                                            u8   20h,20h,20h
+    keyboard_logo                           u8  0       // how many extra 16x16 pictures wide?
+                                            u8  00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh
+                                            u8  0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh
+                                            u8  0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh
+                                            u8  0fh,0fh,0fh,07h,07h,10h,0fh,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h
+                                            u8  0fh,0fh,0fh,07h,07h,10h,0fh,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h
+                                            u8  0fh,0fh,0fh,10h,10h,10h,0fh,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h
+                                            u8  0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh
+                                            u8  0fh,0fh,0fh,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h,10h
+                                            u8  0fh,0fh,0fh,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h,10h
+                                            u8  0fh,0fh,0fh,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h
+                                            u8  0fh,0fh,0fh,07h,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h
+                                            u8  0fh,0fh,0fh,07h,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h
+                                            u8  0fh,0fh,0fh,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h
+                                            u8  0fh,0fh,0fh,07h,07h,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h,07h,10h,07h
+                                            u8  20h,20h,20h
 
-    text_x                                  u32  0
-    text_y                                  u32  0
+    text_x                                  u32 0
+    text_y                                  u32 0
 
-    _EXODUS_requestor                       u16  0
+    _EXODUS_requestor                       u16 0
   primative_call_gates:
-    _VID_draw_logo                          u16  0
-    _VID_display_string_nr_vga              u16  _sEXODUS_REQUESTOR
-    _iDEBI_kbd_interface                    u16  0f000h
-    _iTASK_kbd_interface                    u16  0f000h
-    _TIMER_wait_full_tick                   u16  0f000h
-    _iBIOS_read_8042_64h                    u16  0f000h
-    _iBIOS_read_8042_60h                    u16  0f000h
-    _iBIOS_write_8042_64h                   u16  0f000h
-    _iBIOS_write_8042_60h                   u16  0f000h
-    _VID_g_mono_display_text                u16  0f000h
-    _VID_g_display_radix_in_edx_mono        u16  0f000h
-                                            u16  0f000h
-                                            u16  0f000h
+    _VID_draw_logo                          u16 0
+    _VID_display_string_nr_vga              u16 _sEXODUS_REQUESTOR
+    _iDEBI_kbd_interface                    u16 0f000h
+    _iTASK_kbd_interface                    u16 0f000h
+    _TIMER_wait_full_tick                   u16 0f000h
+    _iBIOS_read_8042_64h                    u16 0f000h
+    _iBIOS_read_8042_60h                    u16 0f000h
+    _iBIOS_write_8042_64h                   u16 0f000h
+    _iBIOS_write_8042_60h                   u16 0f000h
+    _VID_g_mono_display_text                u16 0f000h
+    _VID_g_display_radix_in_edx_mono        u16 0f000h
+                                            u16 0f000h
+                                            u16 0f000h
 
-    required_primatives                     u8   13, "VID_draw_logo"
-                                            u8   25, "VID_display_string_nr_vga"
-                                            u8   19, "iDEBI_kbd_interface"
-                                            u8   19, "iTASK_kbd_interface"
-                                            u8   20, "TIMER_wait_full_tick"
-                                            u8   19, "iBIOS_read_8042_64h"
-                                            u8   19, "iBIOS_read_8042_60h"
-                                            u8   20, "iBIOS_write_8042_64h"
-                                            u8   20, "iBIOS_write_8042_60h"
-                                            u8   23, "VID_g_mono_display_text"
-                                            u8   31, "VID_g_display_radix_in_edx_mono"
-                                            u8   0ffh
+    required_primatives                     u8  13, "VID_draw_logo"
+                                            u8  25, "VID_display_string_nr_vga"
+                                            u8  19, "iDEBI_kbd_interface"
+                                            u8  19, "iTASK_kbd_interface"
+                                            u8  20, "TIMER_wait_full_tick"
+                                            u8  19, "iBIOS_read_8042_64h"
+                                            u8  19, "iBIOS_read_8042_60h"
+                                            u8  20, "iBIOS_write_8042_64h"
+                                            u8  20, "iBIOS_write_8042_60h"
+                                            u8  23, "VID_g_mono_display_text"
+                                            u8  31, "VID_g_display_radix_in_edx_mono"
+                                            u8  0ffh
 
  end_of_required_data:
 
     driver_primatives:
-                                            u8   28,"iKBD_activate_DEBI_intercept"
-                                            u32  offset iKBD_activate_DEBI_intercept
-                                            u16  0
+                                            u8  28,"iKBD_activate_DEBI_intercept"
+                                            u32 offset iKBD_activate_DEBI_intercept
+                                            u16 0
 
-                                            u8   30,"iKBD_deactivate_DEBI_intercept"
-                                            u32  offset iKBD_deactivate_DEBI_intercept
-                                            u16  0
+                                            u8  30,"iKBD_deactivate_DEBI_intercept"
+                                            u32 offset iKBD_deactivate_DEBI_intercept
+                                            u16 0
 
-                                            u16  0ffffh              // Teriminator
+                                            u16 0ffffh              // Teriminator
 
 }
 // text32

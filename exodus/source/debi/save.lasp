@@ -22,7 +22,7 @@
         fnsave  [ebp-108]
 
      // Clear the monochrome display
-        call    <u48> cs:_VID_clear_screen_mono
+        call    u48 ptr cs:_VID_clear_screen_mono
 
      // Display the text they want to show on the monochrome monitor, it goes on line 0
         mov     ax,_sMONO
@@ -52,13 +52,13 @@
         push    ebp
         sub     esp,48
         mov     ebp,esp
-        mov     <u32> [ebp+04],1*2                               // Starting location
-        mov     <u32> [ebp+08],38*2                              // Ending location on screen
-        mov     <u32> [ebp+12],_sDATA                            // Segment of text to display
-        mov     <u32> [ebp+16],offset DEBI_text_1                // Offset of text to display
-        mov     <u32> [ebp+20],sizeof DEBI_text_1                // Length of text to display
-        mov     <u8>  [ebp+24],0                                  // Number of items following this one?
-        mov     <u32> [ebp+00],05h                               // Type of item we're adding (general, 5-raw_string)
+        mov     u32 ptr [ebp+04],1*2                               // Starting location
+        mov     u32 ptr [ebp+08],38*2                              // Ending location on screen
+        mov     u32 ptr [ebp+12],_sDATA                            // Segment of text to display
+        mov     u32 ptr [ebp+16],offset DEBI_text_1                // Offset of text to display
+        mov     u32 ptr [ebp+20],sizeof DEBI_text_1                // Length of text to display
+        mov     u8 ptr [ebp+24],0                                  // Number of items following this one?
+        mov     u32 ptr [ebp+00],05h                               // Type of item we're adding (general, 5-raw_string)
         DEBI_object_stuff()
         pop     ebp
 
@@ -98,7 +98,7 @@
             } else {
                 stosb
             }
-            mov     <u8>  es:[edi],ah
+            mov     u8 ptr es:[edi],ah
             inc     edi
           @@:
         }
@@ -106,9 +106,9 @@
      // Now, populate the screen with fixed information
      // Instruction stream
         push    ds
-        mov     edx,<u32> [ebp+64]
+        mov     edx,u32 ptr [ebp+64]
         mov     ds,dx
-        mov     esi,<u32> [ebp+60]
+        mov     esi,u32 ptr [ebp+60]
       // Display the address
         mov     edi,(1*(80*2)) + (21*2)
         xor     ebx,ebx
@@ -134,11 +134,11 @@
         pop     ds
 
      // cs:eip, cr0 and cr4
-        mov     edx,<u32> [ebp+64]                               // cs
+        mov     edx,u32 ptr [ebp+64]                               // cs
         mov     edi,(2*(80*2)) + (62*2)
         xor     ebx,ebx
         DEBI_reg16()
-        mov     edx,<u32> [ebp+60]                               // eip
+        mov     edx,u32 ptr [ebp+60]                               // eip
         mov     edi,(3*(80*2)) + (58*2)
         xor     ebx,ebx
         DEBI_reg32()
@@ -148,7 +148,7 @@
         xor     ebx,ebx
         DEBI_reg32()
 
-        u8       0fh, 20h, 11100010b                                     // cr4, this is "mov edx,cr4", stupid MASM won't compile it
+        u8      0fh, 20h, 11100010b                                     // cr4, this is "mov edx,cr4", stupid MASM won't compile it
         mov     edi,(3*(80*2)) + (72*2)
         xor     ebx,ebx
         DEBI_reg32()
@@ -166,7 +166,7 @@
         shr     edx,_CR0_TS + 1
         DEBI_flag_up_down()
       // vme - Virtual mode extensions
-        u8       0fh, 20h, 11100000b                                     // cr4, this is "mov eax,cr4", stupid MASM won't compile it
+        u8      0fh, 20h, 11100000b                                     // cr4, this is "mov eax,cr4", stupid MASM won't compile it
         mov     ebx,(4*(80*2)) + (66*2)
         mov     edx,eax
         shr     edx,_CR4_VME + 1
@@ -186,7 +186,7 @@
             push    ecx
             push    esi
 
-            mov     al,<u8>  cs:[esi]                                // Get the type of window to display here
+            mov     al,u8 ptr cs:[esi]                                // Get the type of window to display here
             if (al == 1)
             {
               // GDT/IDT display
@@ -239,12 +239,12 @@
             if (cs:debi_single_step == 1)
             {
               // They've decided to continue via a single step, baby!
-    //            or      <u32> [ebp+68],1 shl (_EFLAGS_TF-1)      // Turn on the "trap flag"
-                or      <u32> [ebp+68],100000000b
+    //            or      u32 ptr [ebp+68],1 shl (_EFLAGS_TF-1)      // Turn on the "trap flag"
+                or      u32 ptr [ebp+68],100000000b
             
             } else if (cs:debi_resume == 1) {
               // They are continuing from here
-                or      <u32> [ebp+68],not 100000000b
+                or      u32 ptr [ebp+68],not 100000000b
             
             } else {
                 jmp     @B
@@ -257,7 +257,7 @@
         }
 
      // Clear the mono screen
-        call    <u48> cs:_VID_clear_screen_mono
+        call    u48 ptr cs:_VID_clear_screen_mono
 
      // Lower all the internal Debi flags
         mov     ax,_sDATA                                               // Input comes from the
@@ -297,7 +297,7 @@
         mov     si,_sDATA
         mov     ds,si
         mov     esi,offset DEBI_debug_gdt_idt
-        mov     <u8>  ds:[esi+2],"G"                                 // Default to GDT window
+        mov     u8 ptr ds:[esi+2],"G"                                 // Default to GDT window
         DEBI_draw_window()
 
      // Display the GDT value for the represented offset (default to 8)
@@ -309,11 +309,11 @@
         mov     si,_sGDT
         mov     ds,si
         mov     esi,8
-        mov     edx,<u32> ds:[esi]                                  // Get the lower 4 bytes of the GDT
+        mov     edx,u32 ptr ds:[esi]                                  // Get the lower 4 bytes of the GDT
         mov     ebx,(4*(80*2)) + (1*2)
         DEBI_binary32_expanded()
 
-        mov     edx,<u32> ds:[esi+4]                                // Get the upper 4 bytes of the GDT
+        mov     edx,u32 ptr ds:[esi+4]                                // Get the upper 4 bytes of the GDT
         mov     ebx,(3*(80*2)) + (1*2)
         DEBI_binary32_expanded()
 
@@ -344,11 +344,11 @@
         DEBI_draw_window()
 
      // Display the address
-        mov     edx,<u32> [ebp+64]
+        mov     edx,u32 ptr [ebp+64]
         mov     ebx,(14*2)
         DEBI_reg16()                                              // cs
 
-        mov     edx,<u32> [ebp+60]
+        mov     edx,u32 ptr [ebp+60]
         mov     ebx,(19*2)
         DEBI_reg32()                                              // eip
 
@@ -363,8 +363,8 @@
         mov     fs,di
 
         push    ds
-        mov     ds,<u16> [ebp+64]                                 // ds:[esi] = source of the cs:eip fault
-        mov     esi,<u32> [ebp+60]
+        mov     ds,u16 ptr [ebp+64]                                 // ds:[esi] = source of the cs:eip fault
+        mov     esi,u32 ptr [ebp+60]
         mov     ebx,(1*(80*2))                                          // Start at one line down, left-justified
         mov     ecx,6
         mov     ah,112                                                  // Color to use
@@ -431,7 +431,7 @@
             push    ecx
 
             push    ebx
-            mov     edx,<u32> [ebp+esi]
+            mov     edx,u32 ptr [ebp+esi]
             DEBI_reg32_expanded()
             add     esi,4                                               // Move to the next item on the stack
             pop     ebx
@@ -476,7 +476,7 @@
             push    ecx
 
             push    ebx
-            mov     edx,<u32> [ebp+esi]
+            mov     edx,u32 ptr [ebp+esi]
             DEBI_reg32_expanded()
             add     esi,4                                               // Move to the next item on the stack
             pop     ebx
@@ -507,7 +507,7 @@
             push    ecx
 
             push    ebx
-            mov     edx,<u32> fs:[esi]
+            mov     edx,u32 ptr fs:[esi]
             DEBI_reg32_expanded()
             add     esi,4                                               // Move to the next item on the stack
             pop     ebx
@@ -533,31 +533,31 @@
         DEBI_draw_window()
 
      // Display left-column (general purpose registers)
-        mov     edx,<u32> [ebp+52]                               // eax
+        mov     edx,u32 ptr [ebp+52]                               // eax
         mov     ebx,(1*(80*2)) + (5*2)
         DEBI_reg32()
-        mov     edx,<u32> [ebp+36]                               // ebx
+        mov     edx,u32 ptr [ebp+36]                               // ebx
         mov     ebx,(2*(80*2)) + (5*2)
         DEBI_reg32()
-        mov     edx,<u32> [ebp+32]                               // ecx
+        mov     edx,u32 ptr [ebp+32]                               // ecx
         mov     ebx,(3*(80*2)) + (5*2)
         DEBI_reg32()
-        mov     edx,<u32> [ebp+28]                               // edx
+        mov     edx,u32 ptr [ebp+28]                               // edx
         mov     ebx,(4*(80*2)) + (5*2)
         DEBI_reg32()
-        mov     edx,<u32> [ebp+44]                               // esi
+        mov     edx,u32 ptr [ebp+44]                               // esi
         mov     ebx,(5*(80*2)) + (5*2)
         DEBI_reg32()
-        mov     edx,<u32> [ebp+24]                               // edi
+        mov     edx,u32 ptr [ebp+24]                               // edi
         mov     ebx,(6*(80*2)) + (5*2)
         DEBI_reg32()
 
      // Display middle-column (flags and stack)
-        mov     edx,<u32> [ebp+68]                               // eflags
+        mov     edx,u32 ptr [ebp+68]                               // eflags
         mov     ebx,(1*(80*2)) + (31*2)
         DEBI_reg32()
       // Do the eflags that we're visually indicating
-        mov     eax,<u32> [ebp+68]
+        mov     eax,u32 ptr [ebp+68]
       // nt
         mov     ebx,(2*(80*2)) + (28*2)
         mov     edx,eax
@@ -605,16 +605,16 @@
         DEBI_flag_up_down()
 
      // Display right-column (segment registers)
-        mov     edx,<u32> [ebp+12]                               // ds
+        mov     edx,u32 ptr [ebp+12]                               // ds
         mov     ebx,(1*(80*2)) + (18*2)
         DEBI_reg16()
-        mov     edx,<u32> [ebp+8]                                // es
+        mov     edx,u32 ptr [ebp+8]                                // es
         mov     ebx,(2*(80*2)) + (18*2)
         DEBI_reg16()
-        mov     edx,<u32> [ebp+4]                                // fs
+        mov     edx,u32 ptr [ebp+4]                                // fs
         mov     ebx,(3*(80*2)) + (18*2)
         DEBI_reg16()
-        mov     edx,<u32> [ebp+0]                                // gs
+        mov     edx,u32 ptr [ebp+0]                                // gs
         mov     ebx,(4*(80*2)) + (18*2)
         DEBI_reg16()
 
@@ -623,7 +623,7 @@
         mov     dx,ss                                                   // ss
         mov     ebx,(6*(80*2)) + (18*2)
         DEBI_reg16()
-        mov     edx,<u32> [ebp+20]                               // ebp
+        mov     edx,u32 ptr [ebp+20]                               // ebp
         mov     ebx,(5*(80*2)) + (29*2)
         DEBI_reg32()
         mov     edx,ebp                                                 // esp
@@ -686,31 +686,31 @@
         DEBI_hex_string()
         pop     ds                                                      // Restore ds
 
-        mov     edx,<u32> [ebp-108+0]                            // Control word
+        mov     edx,u32 ptr [ebp-108+0]                            // Control word
         mov     ebx,(1*(80*2)) + (29*2)
         DEBI_reg32()
 
-        mov     edx,<u32> [ebp-108+4]                            // Status word
+        mov     edx,u32 ptr [ebp-108+4]                            // Status word
         mov     ebx,(2*(80*2)) + (29*2)
         DEBI_reg32()
 
-        mov     edx,<u32> [ebp-108+8]                            // Tag word
+        mov     edx,u32 ptr [ebp-108+8]                            // Tag word
         mov     ebx,(3*(80*2)) + (29*2)
         DEBI_reg32()
 
-        mov     edx,<u32> [ebp-108+16]                           // fcs
+        mov     edx,u32 ptr [ebp-108+16]                           // fcs
         mov     ebx,(5*(80*2)) + (30*2)
         DEBI_reg32()
 
-        mov     edx,<u32> [ebp-108+12]                           // feip
+        mov     edx,u32 ptr [ebp-108+12]                           // feip
         mov     ebx,(6*(80*2)) + (30*2)
         DEBI_reg32()
 
-        mov     edx,<u32> [ebp-108+24]                           // fds
+        mov     edx,u32 ptr [ebp-108+24]                           // fds
         mov     ebx,(7*(80*2)) + (30*2)
         DEBI_reg32()
 
-        mov     edx,<u32> [ebp-108+20]                           // fesi
+        mov     edx,u32 ptr [ebp-108+20]                           // fesi
         mov     ebx,(8*(80*2)) + (30*2)
         DEBI_reg32()
 
@@ -752,7 +752,7 @@
             } else {
               // Store it
                 stosb
-                mov     <u8>  es:[edi],ah
+                mov     u8 ptr es:[edi],ah
                 inc     edi
             }
         }
@@ -771,14 +771,14 @@
         push    ebp
         sub     esp,48
         mov     ebp,esp
-        mov     <u32> [ebp+04],edi                               // Starting location
-        add     <u32> [ebp+04],ebx
-        mov     <u32> [ebp+08],edi                               // Ending location on screen
-        add     <u32> [ebp+08],ebx
-        add     <u32> [ebp+08],3*2
-        mov     <u16> [ebp+12],dx                                 // Word value to store
-        mov     <u8>  [ebp+01],0                                  // Number of items following this one?
-        mov     <u32> [ebp+00],01h                               // Type of item we're adding (general, 1-word value)
+        mov     u32 ptr [ebp+04],edi                               // Starting location
+        add     u32 ptr [ebp+04],ebx
+        mov     u32 ptr [ebp+08],edi                               // Ending location on screen
+        add     u32 ptr [ebp+08],ebx
+        add     u32 ptr [ebp+08],3*2
+        mov     u16 ptr [ebp+12],dx                                 // Word value to store
+        mov     u8 ptr [ebp+01],0                                  // Number of items following this one?
+        mov     u32 ptr [ebp+00],01h                               // Type of item we're adding (general, 1-word value)
         DEBI_object_stuff()
         pop     ebp
 
@@ -788,9 +788,9 @@
         mov     al,dl
         and     al,0fh
         hex_adjust_al()
-        mov     <u8>  es:[edi+ebx],al
+        mov     u8 ptr es:[edi+ebx],al
         inc     ebx
-        mov     <u8>  es:[edi+ebx],15
+        mov     u8 ptr es:[edi+ebx],15
         inc     ebx
         loop    @B
         ret
@@ -805,14 +805,14 @@
         push    ebp
         sub     esp,48
         mov     ebp,esp
-        mov     <u32> [ebp+04],edi                               // Starting location
-        add     <u32> [ebp+04],ebx
-        mov     <u32> [ebp+08],edi                               // Ending location on screen
-        add     <u32> [ebp+08],ebx
-        add     <u32> [ebp+08],7*2
-        mov     <u32> [ebp+12],edx                               // Word value to store
-        mov     <u8>  [ebp+01],0                                  // Number of items following this one?
-        mov     <u32> [ebp+00],02h                               // Type of item we're adding (general, 1-word value)
+        mov     u32 ptr [ebp+04],edi                               // Starting location
+        add     u32 ptr [ebp+04],ebx
+        mov     u32 ptr [ebp+08],edi                               // Ending location on screen
+        add     u32 ptr [ebp+08],ebx
+        add     u32 ptr [ebp+08],7*2
+        mov     u32 ptr [ebp+12],edx                               // Word value to store
+        mov     u8 ptr [ebp+01],0                                  // Number of items following this one?
+        mov     u32 ptr [ebp+00],02h                               // Type of item we're adding (general, 1-word value)
         DEBI_object_stuff()
         pop     ebp
 
@@ -822,9 +822,9 @@
         mov     al,dl
         and     al,0fh
         hex_adjust_al()
-        mov     <u8>  es:[edi+ebx],al
+        mov     u8 ptr es:[edi+ebx],al
         inc     ebx
-        mov     <u8>  es:[edi+ebx],15
+        mov     u8 ptr es:[edi+ebx],15
         inc     ebx
         loop    @B
 
@@ -840,14 +840,14 @@
         push    ebp
         sub     esp,48
         mov     ebp,esp
-        mov     <u32> [ebp+04],edi                               // Starting location
-        add     <u32> [ebp+04],ebx
-        mov     <u32> [ebp+08],edi                               // Ending location on screen
-        add     <u32> [ebp+08],ebx
-        add     <u32> [ebp+08],10*2
-        mov     <u32> [ebp+12],edx                               // Word value to store
-        mov     <u8>  [ebp+01],0                                  // Number of items following this one?
-        mov     <u32> [ebp+00],11                                // Type of item we're adding (general, 11-reg32 expanded)
+        mov     u32 ptr [ebp+04],edi                               // Starting location
+        add     u32 ptr [ebp+04],ebx
+        mov     u32 ptr [ebp+08],edi                               // Ending location on screen
+        add     u32 ptr [ebp+08],ebx
+        add     u32 ptr [ebp+08],10*2
+        mov     u32 ptr [ebp+12],edx                               // Word value to store
+        mov     u8 ptr [ebp+01],0                                  // Number of items following this one?
+        mov     u32 ptr [ebp+00],11                                // Type of item we're adding (general, 11-reg32 expanded)
         DEBI_object_stuff()
         pop     ebp
 
@@ -857,18 +857,18 @@
         mov     al,dl                                                   // Print the nibble
         and     al,0fh
         hex_adjust_al()
-        mov     <u8>  es:[edi+ebx],al
+        mov     u8 ptr es:[edi+ebx],al
         inc     ebx
-        mov     <u8>  es:[edi+ebx],15
+        mov     u8 ptr es:[edi+ebx],15
         inc     ebx                                                     // Move to the next nibble
 
         mov     eax,ecx
         shr     eax,1
         if (carry?)
         {
-            mov     <u8>  es:[edi+ebx],32                            // Show a leading space every other nibble
+            mov     u8 ptr es:[edi+ebx],32                            // Show a leading space every other nibble
             inc     ebx
-            mov     <u8>  es:[edi+ebx],7
+            mov     u8 ptr es:[edi+ebx],7
             inc     ebx
         }
 
@@ -887,14 +887,14 @@
         push    ebp
         sub     esp,48
         mov     ebp,esp
-        mov     <u32> [ebp+04],edi                               // Starting location
-        add     <u32> [ebp+04],ebx
-        mov     <u32> [ebp+08],edi                               // Ending location on screen
-        add     <u32> [ebp+08],ebx
-        add     <u32> [ebp+08],34*2
-        mov     <u32> [ebp+12],edx                               // Word value to store
-        mov     <u8>  [ebp+01],0                                  // Number of items following this one?
-        mov     <u32> [ebp+00],07h                               // Type of item we're adding (general, 7-binary32 expanded)
+        mov     u32 ptr [ebp+04],edi                               // Starting location
+        add     u32 ptr [ebp+04],ebx
+        mov     u32 ptr [ebp+08],edi                               // Ending location on screen
+        add     u32 ptr [ebp+08],ebx
+        add     u32 ptr [ebp+08],34*2
+        mov     u32 ptr [ebp+12],edx                               // Word value to store
+        mov     u8 ptr [ebp+01],0                                  // Number of items following this one?
+        mov     u32 ptr [ebp+00],07h                               // Type of item we're adding (general, 7-binary32 expanded)
         DEBI_object_stuff()
         pop     ebp
 
@@ -911,16 +911,16 @@
             } else {
                 mov     al,'ú'
             }
-            mov     <u8>  es:[edi+ebx],al
+            mov     u8 ptr es:[edi+ebx],al
             inc     ebx
-            mov     <u8>  es:[edi+ebx],15
+            mov     u8 ptr es:[edi+ebx],15
             inc     ebx                                                 // Move to the next nibble
             loop    inner_loop
 
         pop     ecx
-        mov     <u8>  es:[edi+ebx],32                                // Show a trailing space every other byte (8 bits)
+        mov     u8 ptr es:[edi+ebx],32                                // Show a trailing space every other byte (8 bits)
         inc     ebx
-        mov     <u8>  es:[edi+ebx],7
+        mov     u8 ptr es:[edi+ebx],7
         inc     ebx
         loop    outer_loop
 
@@ -941,19 +941,19 @@
         push    ebp
         sub     esp,48
         mov     ebp,esp
-        mov     <u32> [ebp+04],edi                               // Starting location
-        add     <u32> [ebp+04],ebx
-        mov     <u32> [ebp+08],edi                               // Ending location on screen
-        add     <u32> [ebp+08],ebx
+        mov     u32 ptr [ebp+04],edi                               // Starting location
+        add     u32 ptr [ebp+04],ebx
+        mov     u32 ptr [ebp+08],edi                               // Ending location on screen
+        add     u32 ptr [ebp+08],ebx
         mov     edx,ecx
         shl     edx,2
         dec     edx                                                     // Change base-1 to base-0
-        add     <u32> [ebp+08],edx
-        mov     <u16> [ebp+12],ds
-        mov     <u32> [ebp+16],esi
-        mov     <u32> [ebp+20],ecx
-        mov     <u8>  [ebp+01],0                                  // Number of items following this one?
-        mov     <u32> [ebp+00],03h                               // Type of item we're adding (general, 3-hex_string)
+        add     u32 ptr [ebp+08],edx
+        mov     u16 ptr [ebp+12],ds
+        mov     u32 ptr [ebp+16],esi
+        mov     u32 ptr [ebp+20],ecx
+        mov     u8 ptr [ebp+01],0                                  // Number of items following this one?
+        mov     u32 ptr [ebp+00],03h                               // Type of item we're adding (general, 3-hex_string)
         DEBI_object_stuff()
         pop     ebp
         pop     edx
@@ -964,7 +964,7 @@
         dec     esi
       outer_loop:
         push    ecx
-        mov     al,<u8>  ds:[esi]
+        mov     al,u8 ptr ds:[esi]
         ror     al,4                                                    // Swap nibbles
         mov     ah,al                                                   // Save for later
 
@@ -972,9 +972,9 @@
           inner_loop:
             and     al,0fh                                              // Display this nibble
             hex_adjust_al()
-            mov     <u8>  es:[edi+ebx],al
+            mov     u8 ptr es:[edi+ebx],al
             inc     ebx
-            mov     <u8>  es:[edi+ebx],15
+            mov     u8 ptr es:[edi+ebx],15
             inc     ebx
             mov     al,ah                                               // Get the next nibble
             ror     al,4
@@ -1005,10 +1005,10 @@
 
         repeat
         {
-            mov     al,<u8>  es:[edi]                                // Read the byte and
-            mov     <u8>  es:[edi],' '                               //   clear the buffer simultaneously
+            mov     al,u8 ptr es:[edi]                                // Read the byte and
+            mov     u8 ptr es:[edi],' '                               //   clear the buffer simultaneously
             inc     edi                                                 // Move to the next location
-            mov     <u16> gs:[edx+ebx],ax
+            mov     u16 ptr gs:[edx+ebx],ax
             add     ebx,2
         } untilcxz
 
@@ -1032,21 +1032,21 @@
         push    ebp
         sub     esp,48
         mov     ebp,esp
-        mov     <u32> [ebp+04],edi                               // Starting location
-        add     <u32> [ebp+04],ebx
-        mov     <u32> [ebp+08],edi                               // Ending location on screen
-        add     <u32> [ebp+08],ebx
+        mov     u32 ptr [ebp+04],edi                               // Starting location
+        add     u32 ptr [ebp+04],ebx
+        mov     u32 ptr [ebp+08],edi                               // Ending location on screen
+        add     u32 ptr [ebp+08],ebx
         mov     edx,ecx
         dec     edx
         shl     edx,1
         add     edx,ecx
         shl     edx,1
-        add     <u32> [ebp+08],edx
-        mov     <u16> [ebp+12],ds
-        mov     <u32> [ebp+16],esi
-        mov     <u32> [ebp+20],ecx
-        mov     <u8>  [ebp+01],0                                  // Number of items following this one?
-        mov     <u32> [ebp+00],04h                               // Type of item we're adding (general, 3-hex_string expanded)
+        add     u32 ptr [ebp+08],edx
+        mov     u16 ptr [ebp+12],ds
+        mov     u32 ptr [ebp+16],esi
+        mov     u32 ptr [ebp+20],ecx
+        mov     u8 ptr [ebp+01],0                                  // Number of items following this one?
+        mov     u32 ptr [ebp+00],04h                               // Type of item we're adding (general, 3-hex_string expanded)
         DEBI_object_stuff()
         pop     ebp
         pop     edx
@@ -1054,7 +1054,7 @@
       // Note, string is displayed forward (LSB on left-side, MSB on right)
       outer_loop:
         push    ecx
-        mov     al,<u8>  ds:[esi]
+        mov     al,u8 ptr ds:[esi]
         ror     al,4                                                    // Swap nibbles
         mov     ah,al                                                   // Save for later
 
@@ -1062,15 +1062,15 @@
           inner_loop:
             and     al,0fh                                              // Display this nibble
             hex_adjust_al()
-            mov     <u8>  es:[edi+ebx],al
+            mov     u8 ptr es:[edi+ebx],al
             inc     ebx
-            mov     <u8>  es:[edi+ebx],15
+            mov     u8 ptr es:[edi+ebx],15
             inc     ebx
             mov     al,ah                                               // Get the next nibble
             ror     al,4
             loop    inner_loop
 
-        mov     <u16> es:[edi+ebx],0720h                             // Display a trailing space after each byte
+        mov     u16 ptr es:[edi+ebx],0720h                             // Display a trailing space after each byte
         add     ebx,2
         pop     ecx
         inc     esi
@@ -1093,14 +1093,14 @@
         push    ebp
         sub     esp,48
         mov     ebp,esp
-        mov     <u32> [ebp+04],edi                               // Starting location
-        add     <u32> [ebp+04],ebx
-        sub     <u32> [ebp+04],2*2
-        mov     <u32> [ebp+08],edi                               // Ending location on screen
-        add     <u32> [ebp+08],ebx
-        mov     <u8>  [ebp+12],ah                                 // Store the value of the FLAG
-        mov     <u8>  [ebp+01],0                                  // Number of items following this one?
-        mov     <u32> [ebp+00],06h                               // Type of item we're adding (general, 6-flag value)
+        mov     u32 ptr [ebp+04],edi                               // Starting location
+        add     u32 ptr [ebp+04],ebx
+        sub     u32 ptr [ebp+04],2*2
+        mov     u32 ptr [ebp+08],edi                               // Ending location on screen
+        add     u32 ptr [ebp+08],ebx
+        mov     u8 ptr [ebp+12],ah                                 // Store the value of the FLAG
+        mov     u8 ptr [ebp+01],0                                  // Number of items following this one?
+        mov     u32 ptr [ebp+00],06h                               // Type of item we're adding (general, 6-flag value)
         DEBI_object_stuff()
         pop     ebp
         popfd
@@ -1108,11 +1108,11 @@
         if (carry?)
         {
           // Up arrow
-            mov     <u16> es:[edi+ebx],0f18h
+            mov     u16 ptr es:[edi+ebx],0f18h
         
         } else {
           // Down arrow
-            mov     <u16> es:[edi+ebx],0719h
+            mov     u16 ptr es:[edi+ebx],0719h
         }
         pop     eax
         ret
@@ -1121,9 +1121,9 @@
 
 
 
-    mouse_offset            u32  0
-    mouse_bytes             u8   3 dup(0)
-    mouse_intercept_busy    u8   0
+    mouse_offset            u32 0
+    mouse_bytes             u8  3 dup(0)
+    mouse_intercept_busy    u8  0
 
     function DEBI_mouse_intercept
     {
@@ -1140,7 +1140,7 @@
         mov     ebx,ds:mouse_offset
 
      // Store the byte from the mouse
-        mov     <u8>  ds:mouse_bytes[ebx],al
+        mov     u8 ptr ds:mouse_bytes[ebx],al
         inc     ds:mouse_offset
         if (ds:mouse_offset >= 3)
         {
@@ -1152,14 +1152,14 @@
             {
                 mov     ds:mouse_intercept_busy,1                       // Mark it as busy
      // We've received a full packet.  It's time to decipher its meaning.
-                mov     al,<u8>  ds:mouse_bytes[0]
+                mov     al,u8 ptr ds:mouse_bytes[0]
                 mov     ah,al
                 shr     al,5                                            // al = X sign
                 shr     ah,6                                            // ah = Y sign
                 xor     ecx,ecx
                 xor     edx,edx
-                mov     cl,<u8>  ds:mouse_bytes[1]                   // X distance
-                mov     dl,<u8>  ds:mouse_bytes[2]                   // Y distance
+                mov     cl,u8 ptr ds:mouse_bytes[1]                   // X distance
+                mov     dl,u8 ptr ds:mouse_bytes[2]                   // Y distance
                 neg     dl
                 if (cl <= 07fh)
                 {
@@ -1288,7 +1288,7 @@
         add     eax,edx                                                 //
         mov     edi,eax                                                 //
         mov     al,ds:debi_color_last                                   //
-        mov     <u8>  es:[edi+1],al                                  //
+        mov     u8 ptr es:[edi+1],al                                  //
 
       // See if we're at a location where we need to update the display
         mov     ebx,ds:debi_udf_window_areas
@@ -1299,8 +1299,8 @@
         mov     edi,(22*(80*2)) + (38*2)
         while (esi < ebx)
         {
-            mov     ax,<u16> fs:[esi+1]
-            mov     cx,<u16> fs:[esi+3]
+            mov     ax,u16 ptr fs:[esi+1]
+            mov     cx,u16 ptr fs:[esi+3]
             if (dh >= ah && dh <= ch && dl >= al && dl <= cl)
             {
               // This is a match
@@ -1328,14 +1328,14 @@
         shl     edx,1                                                   //
         add     eax,edx                                                 // Add the new one
         mov     edi,eax                                                 //
-        mov     al,<u8>  es:[edi+1]                                  //
+        mov     al,u8 ptr es:[edi+1]                                  //
         mov     ds:debi_color_last,al                                   //
         if (al >= 112)                                                 //
         {
-            mov     <u8>  es:[edi+1],7                               //
+            mov     u8 ptr es:[edi+1],7                               //
         
         } else {;
-            mov     <u8>  es:[edi+1],112                             //
+            mov     u8 ptr es:[edi+1],112                             //
         }
 
         pop     fs
@@ -1376,33 +1376,33 @@
         shl     esi,4                                                   // Multiply by 16 to get offset
 
       // Starting offset into screen
-        mov     ebx,<u32> [ebp+04]
+        mov     ebx,u32 ptr [ebp+04]
         DEBI_calculate_x_y()
-        mov     <u16> es:[esi+01],bx
+        mov     u16 ptr es:[esi+01],bx
 
       // Ending offset into screen
-        mov     ebx,<u32> [ebp+08]
+        mov     ebx,u32 ptr [ebp+08]
         DEBI_calculate_x_y()
-        mov     <u16> es:[esi+03],bx
+        mov     u16 ptr es:[esi+03],bx
 
       // Number of items that follow
-        mov     bl,<u8>  [ebp+01]                                 // Additional information?
-        mov     <u8>  es:[esi+5],bl
+        mov     bl,u8 ptr [ebp+01]                                 // Additional information?
+        mov     u8 ptr es:[esi+5],bl
       // Store the object type and store relevant data
-        mov     dl,<u8>  [ebp+00]
-        mov     <u8>  es:[esi+00],dl
+        mov     dl,u8 ptr [ebp+00]
+        mov     u8 ptr es:[esi+00],dl
         if (dl == 0)
         {
           // BYTE (reg8)
           // [ebp+12] - byte value to display
-            mov     bl,<u8>  [ebp+12]                            // Word value
-            mov     <u8>  es:[esi+6],bl
+            mov     bl,u8 ptr [ebp+12]                            // Word value
+            mov     u8 ptr es:[esi+6],bl
         
         } else if (dl == 1) {
           // WORD (reg16)
           // [ebp+12] - word value to display
-            mov     bx,<u16> [ebp+12]                             // Word value
-            mov     <u16> es:[esi+6],bx
+            mov     bx,u16 ptr [ebp+12]                             // Word value
+            mov     u16 ptr es:[esi+6],bx
         
         } else if (dl == 2 || dl == 7 || dl == 8 || dl == 11) {
           // 02 = DWORD (reg32)
@@ -1410,8 +1410,8 @@
           // 08 = FLOAT32 (float32 value)
           // 0b = REG32 expanded (reg3_exp)
           // [ebp+12] - dword value to display
-            mov     ebx,<u32> [ebp+12]                           // Dword/float32 value
-            mov     <u32> es:[esi+6],ebx
+            mov     ebx,u32 ptr [ebp+12]                           // Dword/float32 value
+            mov     u32 ptr es:[esi+6],ebx
         
         } else if (dl == 3 || dl == 4 || dl == 5) {
           // 03 = STRING (hex_string)
@@ -1420,35 +1420,35 @@
           // [ebp+12] - segment of text to display
           // [ebp+16] - offset of text to display
           // [ebp+20] - length of text to display
-            mov     ebx,<u32> [ebp+12]                           // Text segment
-            mov     <u16> es:[esi+6],bx
-            mov     ebx,<u32> [ebp+16]                           // Text offset
-            mov     <u32> es:[esi+8],ebx
-            mov     ebx,<u32> [ebp+20]                           // Length offset
-            mov     <u16> es:[esi+12],bx
+            mov     ebx,u32 ptr [ebp+12]                           // Text segment
+            mov     u16 ptr es:[esi+6],bx
+            mov     ebx,u32 ptr [ebp+16]                           // Text offset
+            mov     u32 ptr es:[esi+8],ebx
+            mov     ebx,u32 ptr [ebp+20]                           // Length offset
+            mov     u16 ptr es:[esi+12],bx
         
         } else if (dl == 6) {
           // FLAG? (flag? value)
-            mov     bl,<u8>  [ebp+12]                             // FLAG value
-            mov     <u8>  es:[esi+6],bl
+            mov     bl,u8 ptr [ebp+12]                             // FLAG value
+            mov     u8 ptr es:[esi+6],bl
         
         } else if (dl == 9) {
           // FLOAT64 (float64 value)
           // [ebp+12] - qword value to display
-            mov     ebx,<u32> [ebp+12]                           // Low 32-bit dword of the 64-bit qword
-            mov     <u32> es:[esi+6],ebx
-            mov     ebx,<u32> [ebp+16]                           // High 32-bit dword
-            mov     <u32> es:[esi+10],ebx
+            mov     ebx,u32 ptr [ebp+12]                           // Low 32-bit dword of the 64-bit qword
+            mov     u32 ptr es:[esi+6],ebx
+            mov     ebx,u32 ptr [ebp+16]                           // High 32-bit dword
+            mov     u32 ptr es:[esi+10],ebx
         
         } else if (dl == 10) {
           // FLOAT80 (float80 value)
           // [ebp+12] - tbyte value to display
-            mov     ebx,<u32> [ebp+12]                           // Low 32-bit dword of the 80-bit tbyte
-            mov     <u32> es:[esi+6],ebx
-            mov     ebx,<u32> [ebp+16]                           // Middle 32-bit dword
-            mov     <u32> es:[esi+10],ebx
-            mov     bx,<u16> [ebp+20]                             // High 16-bit word
-            mov     <u16> es:[esi+14],bx
+            mov     ebx,u32 ptr [ebp+12]                           // Low 32-bit dword of the 80-bit tbyte
+            mov     u32 ptr es:[esi+6],ebx
+            mov     ebx,u32 ptr [ebp+16]                           // Middle 32-bit dword
+            mov     u32 ptr es:[esi+10],ebx
+            mov     bx,u16 ptr [ebp+20]                             // High 16-bit word
+            mov     u16 ptr es:[esi+14],bx
         
         } else {
           // Unknown option
@@ -1483,7 +1483,7 @@
         if (ax != 0)
         {
      // Update the window with the relavent information for this object type
-            mov     al,<u8>  fs:[esi]
+            mov     al,u8 ptr fs:[esi]
             if (al == 0)
             {
               // reg8
@@ -1619,7 +1619,7 @@
 
             mov     ecx,60                                              // 60 characters across the window
           inner_loop:
-            mov     al,<u8>  cs:[esi]
+            mov     al,u8 ptr cs:[esi]
             inc     esi
             or      al,al
             jz      done_inner_loop
@@ -1644,7 +1644,7 @@
                 mov     ah,15
                 jmp     inner_loop
             }
-            mov     <u16> es:[edi+ebx],ax
+            mov     u16 ptr es:[edi+ebx],ax
             add     ebx,2
           @@:
             loop    inner_loop
@@ -1659,7 +1659,7 @@
           clear_and_move_to_next_line:
             repeat
             {
-                mov     <u16> es:[edi+ebx],ax
+                mov     u16 ptr es:[edi+ebx],ax
                 add     ebx,2
             } untilcxz
             jmp     done_inner_loop
@@ -1771,9 +1771,9 @@
           insert_text_and_move_to_next_line:
             while (byte ptr cs:[esi] != 0 && ecx > 0)
             {
-                mov     al,<u8>  cs:[esi]
+                mov     al,u8 ptr cs:[esi]
                 inc     esi
-                mov     <u16> es:[edi+ebx],ax
+                mov     u16 ptr es:[edi+ebx],ax
                 add     ebx,2
                 dec     ecx
             }
@@ -1858,13 +1858,13 @@
         inc     ebx                                                     // Move to attribute
         while (ah <= ch)
         {
-            mov     al,<u8>  es:[ebx]
+            mov     al,u8 ptr es:[ebx]
             if (al >= 112)
             {
-                mov     <u8>  es:[ebx],15
+                mov     u8 ptr es:[ebx],15
             
             } else {
-                mov     <u8>  es:[ebx],112
+                mov     u8 ptr es:[ebx],112
             }
             inc     ah
             add     ebx,2
@@ -1905,10 +1905,10 @@
 
 
 
-    keyboard_byte       u8   0
-    intercept_key_alt   u8   0
-    intercept_key_ctrl  u8   0
-    intercept_key_shift u8   0
+    keyboard_byte       u8  0
+    intercept_key_alt   u8  0
+    intercept_key_ctrl  u8  0
+    intercept_key_shift u8  0
 
     function DEBI_keyboard_intercept
     {
@@ -2031,97 +2031,97 @@
 // updating algorithm or possibly when DEBI is exited (saving the current state prior to continuing).
 // Each of these items is 16-bytes in length.  One paragraph.  One happy paragraph. :)
 DEBI_screen_table:
-                            u32  offset DEBI_m_window        // +_ST_OBJECT_WINDOW,         Type
-                            u32  0                           // +_ST_OBJECT_UL_HORIZONTAL,  ul-Horizontal
-                            u32  0                           // +_ST_OBJECT_UL_VERTICAL,    ul-Vertical
-                            u32  15*8                        // +_ST_OBJECT_LR_HORIZONTAL,  lr-Horizontal
-                            u32  9*8                         // +_ST_OBJECT_LR_VERTICAL,    lr-Vertical
-                            u32  0ffffffffh                  // +_ST_OBJECT_MEMORY_OFFSET,  Starting offset in _sDEBI_objects memory
-                            u32  0                           // +--Nuserved
-                            u32  offset DEBI_m_objects       // +_ST_OBJECT_OFFSET,         Offset to this item's objects
+                            u32 offset DEBI_m_window        // +_ST_OBJECT_WINDOW,         Type
+                            u32 0                           // +_ST_OBJECT_UL_HORIZONTAL,  ul-Horizontal
+                            u32 0                           // +_ST_OBJECT_UL_VERTICAL,    ul-Vertical
+                            u32 15*8                        // +_ST_OBJECT_LR_HORIZONTAL,  lr-Horizontal
+                            u32 9*8                         // +_ST_OBJECT_LR_VERTICAL,    lr-Vertical
+                            u32 0ffffffffh                  // +_ST_OBJECT_MEMORY_OFFSET,  Starting offset in _sDEBI_objects memory
+                            u32 0                           // +--Nuserved
+                            u32 offset DEBI_m_objects       // +_ST_OBJECT_OFFSET,         Offset to this item's objects
 
-                            u32  offset DEBI_l_window        // Type
-                            u32  120                         // ul-Horizontal
-                            u32  0                           // ul-Vertical
-                            u32  120+(15*8)                  // lr-Horizontal
-                            u32  9*8                         // lr-Vertical
-                            u32  0ffffffffh                  // Starting offset
-                            u32  0                           // --Nuserved
-                            u32  offset DEBI_l_objects       // Offset to this item's objects
+                            u32 offset DEBI_l_window        // Type
+                            u32 120                         // ul-Horizontal
+                            u32 0                           // ul-Vertical
+                            u32 120+(15*8)                  // lr-Horizontal
+                            u32 9*8                         // lr-Vertical
+                            u32 0ffffffffh                  // Starting offset
+                            u32 0                           // --Nuserved
+                            u32 offset DEBI_l_objects       // Offset to this item's objects
 
-                            u32  offset DEBI_i_window        // Type
-                            u32  240                         // ul-Horizontal
-                            u32  0                           // ul-Vertical
-                            u32  240+(15*8)                  // lr-Horizontal
-                            u32  9*8                         // lr-Vertical
-                            u32  0ffffffffh                  // Starting offset
-                            u32  0                           // --Nuserved
-                            u32  offset DEBI_i_objects       // Offset to this item's objects
+                            u32 offset DEBI_i_window        // Type
+                            u32 240                         // ul-Horizontal
+                            u32 0                           // ul-Vertical
+                            u32 240+(15*8)                  // lr-Horizontal
+                            u32 9*8                         // lr-Vertical
+                            u32 0ffffffffh                  // Starting offset
+                            u32 0                           // --Nuserved
+                            u32 offset DEBI_i_objects       // Offset to this item's objects
 
-                            u32  offset DEBI_f_window        // Type
-                            u32  360                         // ul-Horizontal
-                            u32  0                           // ul-Vertical
-                            u32  360+(45*8)                  // lr-Horizontal
-                            u32  18*8                        // lr-Vertical
-                            u32  0ffffffffh                  // Starting offset
-                            u32  0                           // --Nuserved
-                            u32  offset DEBI_f_objects       // Offset to this item's objects
+                            u32 offset DEBI_f_window        // Type
+                            u32 360                         // ul-Horizontal
+                            u32 0                           // ul-Vertical
+                            u32 360+(45*8)                  // lr-Horizontal
+                            u32 18*8                        // lr-Vertical
+                            u32 0ffffffffh                  // Starting offset
+                            u32 0                           // --Nuserved
+                            u32 offset DEBI_f_objects       // Offset to this item's objects
 
-                            u32  offset DEBI_c_window        // Type
-                            u32  0                           // ul-Horizontal
-                            u32  72                          // ul-Vertical
-                            u32  45*8                        // lr-Horizontal
-                            u32  72+(18*8)                   // lr-Vertical
-                            u32  0ffffffffh                  // Starting offset
-                            u32  0                           // --Nuserved
-                            u32  offset DEBI_c_objects       // Offset to this item's objects
+                            u32 offset DEBI_c_window        // Type
+                            u32 0                           // ul-Horizontal
+                            u32 72                          // ul-Vertical
+                            u32 45*8                        // lr-Horizontal
+                            u32 72+(18*8)                   // lr-Vertical
+                            u32 0ffffffffh                  // Starting offset
+                            u32 0                           // --Nuserved
+                            u32 offset DEBI_c_objects       // Offset to this item's objects
 
-                            u32  offset DEBI_b_window        // Type
-                            u32  360                         // ul-Horizontal
-                            u32  144                         // ul-Vertical
-                            u32  360+(45*8)                  // lr-Horizontal
-                            u32  144+(9*8)                   // lr-Vertical
-                            u32  0ffffffffh                  // Starting offset
-                            u32  0                           // --Nuserved
-                            u32  offset DEBI_b_objects       // Offset to this item's objects
+                            u32 offset DEBI_b_window        // Type
+                            u32 360                         // ul-Horizontal
+                            u32 144                         // ul-Vertical
+                            u32 360+(45*8)                  // lr-Horizontal
+                            u32 144+(9*8)                   // lr-Vertical
+                            u32 0ffffffffh                  // Starting offset
+                            u32 0                           // --Nuserved
+                            u32 offset DEBI_b_objects       // Offset to this item's objects
 
-                            u32  offset DEBI_h_window        // Type
-                            u32  0                           // ul-Horizontal
-                            u32  216                         // ul-Vertical
-                            u32  60*8                        // lr-Horizontal
-                            u32  216+(9*8)                   // lr-Vertical
-                            u32  0ffffffffh                  // Starting offset
-                            u32  0                           // --Nuserved
-                            u32  offset DEBI_h_objects       // Offset to this item's objects
+                            u32 offset DEBI_h_window        // Type
+                            u32 0                           // ul-Horizontal
+                            u32 216                         // ul-Vertical
+                            u32 60*8                        // lr-Horizontal
+                            u32 216+(9*8)                   // lr-Vertical
+                            u32 0ffffffffh                  // Starting offset
+                            u32 0                           // --Nuserved
+                            u32 offset DEBI_h_objects       // Offset to this item's objects
 
-                            u32  offset DEBI_j_window        // Type
-                            u32  480                         // ul-Horizontal
-                            u32  216                         // ul-Vertical
-                            u32  480+(30*8)                  // lr-Horizontal
-                            u32  216+(9*8)                   // lr-Vertical
-                            u32  0ffffffffh                  // Starting offset
-                            u32  0                           // --Nuserved
-                            u32  offset DEBI_j_objects       // Offset to this item's objects
+                            u32 offset DEBI_j_window        // Type
+                            u32 480                         // ul-Horizontal
+                            u32 216                         // ul-Vertical
+                            u32 480+(30*8)                  // lr-Horizontal
+                            u32 216+(9*8)                   // lr-Vertical
+                            u32 0ffffffffh                  // Starting offset
+                            u32 0                           // --Nuserved
+                            u32 offset DEBI_j_objects       // Offset to this item's objects
 
-                            u32  offset DEBI_k_window        // Type
-                            u32  0                           // ul-Horizontal
-                            u32  288                         // ul-Vertical
-                            u32  90*8                        // lr-Horizontal
-                            u32  288+(9*8)                   // lr-Vertical
-                            u32  0ffffffffh                  // Starting offset
-                            u32  0                           // --Nuserved
-                            u32  offset DEBI_k_objects       // Offset to this item's objects
+                            u32 offset DEBI_k_window        // Type
+                            u32 0                           // ul-Horizontal
+                            u32 288                         // ul-Vertical
+                            u32 90*8                        // lr-Horizontal
+                            u32 288+(9*8)                   // lr-Vertical
+                            u32 0ffffffffh                  // Starting offset
+                            u32 0                           // --Nuserved
+                            u32 offset DEBI_k_objects       // Offset to this item's objects
 
-                            u32  offset DEBI_o_window        // Type
-                            u32  0                           // ul-Horizontal
-                            u32  340                         // ul-Vertical
-                            u32  90*8                        // lr-Horizontal
-                            u32  340+(1*8)                   // lr-Vertical
-                            u32  0ffffffffh                  // Starting offset
-                            u32  0                           // --Nuserved
-                            u32  offset DEBI_o_objects       // Offset to this item's objects
+                            u32 offset DEBI_o_window        // Type
+                            u32 0                           // ul-Horizontal
+                            u32 340                         // ul-Vertical
+                            u32 90*8                        // lr-Horizontal
+                            u32 340+(1*8)                   // lr-Vertical
+                            u32 0ffffffffh                  // Starting offset
+                            u32 0                           // --Nuserved
+                            u32 offset DEBI_o_objects       // Offset to this item's objects
 
-                            u8   5*_ST_LENGTH dup(0ffh)      // Allow space for the maximum of 15 windows on-screen
+                            u8  5*_ST_LENGTH dup(0ffh)      // Allow space for the maximum of 15 windows on-screen
                                                             // at any one time.  That's 10 items above, plus the
                                                             // possibilty of 5 more = 15 items. :)        .IF (al == 0fh)
           // We know it's at least a two-byte expression
@@ -2383,7 +2383,7 @@ DEBI_screen_table:
                     mov     ecx,2
                   try_again5_success:
 //                    call    display_instruction
-                    mov     dx,<u16> ds:[esi-2]
+                    mov     dx,u16 ptr ds:[esi-2]
 //                    call    show_register_16_signed
                     add     edi,6
 //                    call    show_new_cs_ip
@@ -2407,11 +2407,11 @@ DEBI_screen_table:
                     mov     fs:special_reg,0
                   try_again7_direction_1:
 //                    call    display_instruction
-                    mov     al,<u8>  ds:[esi-1]
+                    mov     al,u8 ptr ds:[esi-1]
                     and     al,111b
 //                    call    display_register_name_special_reg
 //                    call    display_comma
-                    mov     al,<u8>  ds:[esi-1]
+                    mov     al,u8 ptr ds:[esi-1]
                     shr     al,3
                     and     al,111b
 //                    call    display_register_name_32
@@ -2421,11 +2421,11 @@ DEBI_screen_table:
                     mov     fs:special_reg,0
                   try_again7_direction_0:
 //                    call    display_instruction
-                    mov     al,<u8>  ds:[esi-1]
+                    mov     al,u8 ptr ds:[esi-1]
                     and     al,111b
 //                    call    display_register_name_32
 //                    call    display_comma
-                    mov     al,<u8>  ds:[esi-1]
+                    mov     al,u8 ptr ds:[esi-1]
                     shr     al,3
                     and     al,111b
 //                    call    display_register_name_special_reg
@@ -2627,7 +2627,7 @@ DEBI_screen_table:
                 if (ah == 00000000b)
                 {
                   // It's sldt, str, lldg, ltr, verr or verw
-                    mov     dl,<u8>  ds:[esi+2]
+                    mov     dl,u8 ptr ds:[esi+2]
                     shr     dl,3
                     and     dl,111b
                     cmp     dl,000b
@@ -2692,7 +2692,7 @@ DEBI_screen_table:
                 {
                   // It's sgdt, sidt, lgdt, lidt, smsw, lmsw or invlpg
                     mov     ecx,4
-                    mov     dl,<u8>  ds:[esi+2]
+                    mov     dl,u8 ptr ds:[esi+2]
                     shr     dl,3
                     and     dl,111b
                     cmp     dl,000b
@@ -2834,7 +2834,7 @@ DEBI_screen_table:
                 } else if (ah == 10111010b) {
                   // It's bt/btc/btr/btc
                     mov     ecx,3
-                    mov     dl,<u8>  ds:[esi+2]
+                    mov     dl,u8 ptr ds:[esi+2]
                     shr     dl,3
                     and     dl,111b
                     cmp     dl,100b
@@ -2884,25 +2884,25 @@ DEBI_screen_table:
     jmp     next_byte
             mov     eax,_sDEBI_screen
             mov     ds,ax
-            push    <u32> 264
-            push    <u32> 0
-            push    <u32> 264+(15*8)
-            push    <u32> 9*8
-            push    <u32> 1
-            push    <u32> 0
-            call    <u48> cs:_VID_g_mono_window_function
+            push    u32 ptr 264
+            push    u32 ptr 0
+            push    u32 ptr 264+(15*8)
+            push    u32 ptr 9*8
+            push    u32 ptr 1
+            push    u32 ptr 0
+            call    u48 ptr cs:_VID_g_mono_window_function
 
-            push    <u32> cs:debi_mouse_current_x
-            push    <u32> cs:debi_mouse_current_y
+            push    u32 ptr cs:debi_mouse_current_x
+            push    u32 ptr cs:debi_mouse_current_y
             mov     edx,cs:debi_mouse_current_x
             add     edx,15*8
             push    edx
             mov     edx,cs:debi_mouse_current_y
             add     edx,9*8
             push    edx
-            push    <u32> 0
-            push    <u32> 0
-            call    <u48> cs:_VID_g_mono_window_function
+            push    u32 ptr 0
+            push    u32 ptr 0
+            call    u48 ptr cs:_VID_g_mono_window_function
 
               // They've either released one of the two previously clicked mouse buttons
               // Or they've clicked on another one

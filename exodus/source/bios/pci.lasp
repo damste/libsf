@@ -97,9 +97,9 @@ function iPCI_verbalize_device_type
     xor     ecx,ecx
     while (byte ptr [esi] != 0ffh)
     {
-        cmp     <u8>  [esi],ah
+        cmp     u8 ptr [esi],ah
         jz      @F
-        mov     cl,<u8>  [esi+1]
+        mov     cl,u8 ptr [esi+1]
         add     ecx,3
         add     esi,ecx
     }
@@ -111,14 +111,14 @@ function iPCI_verbalize_device_type
     xor     ecx,ecx
     while (byte ptr [edi] != 0ffh)
     {
-        cmp     <u8>  [edi],ah
+        cmp     u8 ptr [edi],ah
         jnz     skip_it
-        cmp     <u8>  [edi+1],al
+        cmp     u8 ptr [edi+1],al
         jnz     skip_it
-        cmp     <u8>  [edi+2],bl
+        cmp     u8 ptr [edi+2],bl
         jz      @F
       skip_it:
-        mov     cl,<u8>  [edi+3]
+        mov     cl,u8 ptr [edi+3]
         add     ecx,5
         add     edi,ecx
     }
@@ -255,11 +255,11 @@ function initialize_pci
 
 ;; Now, scan for PCI devices
     xor     eax,eax
-    mov     <u32> [ebp-04],eax
-    mov     <u32> [ebp-08],eax
+    mov     u32 ptr [ebp-04],eax
+    mov     u32 ptr [ebp-08],eax
   @@:
-    mov     dh,<u8>  [ebp-04]                                 // bus
-    mov     bh,<u8>  [ebp-02]                                 // device
+    mov     dh,u8 ptr [ebp-04]                                 // bus
+    mov     bh,u8 ptr [ebp-02]                                 // device
     xor     dl,dl                                                   // function
     xor     bl,bl                                                   // doubleword
     iPCI_read_dword()
@@ -267,9 +267,9 @@ function initialize_pci
     {
       // This is a valid item.  Let's determine what it is
       // Save the vendor id/device id
-        mov     esi,<u32> [ebp-08]
-        mov     <u32> fs:[esi],eax
-        add     <u32> [ebp-08],4
+        mov     esi,u32 ptr [ebp-08]
+        mov     u32 ptr fs:[esi],eax
+        add     u32 ptr [ebp-08],4
 
       // Now, get the classification information.. heh heh
         mov     bl,2
@@ -277,9 +277,9 @@ function initialize_pci
         shr     eax,8
 
       // Save the classification information
-        mov     esi,<u32> [ebp-08]
-        mov     <u32> fs:[esi],eax
-        add     <u32> [ebp-08],4
+        mov     esi,u32 ptr [ebp-08]
+        mov     u32 ptr fs:[esi],eax
+        add     u32 ptr [ebp-08],4
 
       // Right now, eax contains the class code data
         iPCI_verbalize_device_type()
@@ -298,15 +298,15 @@ function initialize_pci
 
         pop     esi
         iVT_display_string_nr_vga()
-        inc     <u8>  [ebp-03]
+        inc     u8 ptr [ebp-03]
     }
-    inc     <u8>  [ebp-02]
+    inc     u8 ptr [ebp-02]
     if (byte ptr [ebp-02] <= 31)
     {
         jmp     @B
     }
-    mov     <u8>  [ebp-02],0
-    inc     <u8>  [ebp-04]
+    mov     u8 ptr [ebp-02],0
+    inc     u8 ptr [ebp-04]
     if (byte ptr [ebp-04] <= 7)
     {
         jmp     @B
@@ -314,9 +314,9 @@ function initialize_pci
   // We've scanned all the PCI devices
 
 ;; Terminate our structure
-    mov     esi,<u32> [ebp-08]
-    mov     <u32> fs:[esi+00],0ffffffffh
-    mov     <u32> fs:[esi+04],0ffffffffh
+    mov     esi,u32 ptr [ebp-08]
+    mov     u32 ptr fs:[esi+00],0ffffffffh
+    mov     u32 ptr fs:[esi+04],0ffffffffh
 
 ;; Update the display
     if (byte ptr [ebp-03] != 0)

@@ -45,7 +45,7 @@ function debi_generate_disassembly
 
   next_byte:
     xor     ebx,ebx
-    mov     eax,<u32> ds:[esi]
+    mov     eax,u32 ptr ds:[esi]
     xor     edx,edx
     if (al == 066h)
     {
@@ -381,7 +381,7 @@ function debi_generate_disassembly
                 mov     ecx,2
               try_again5_success:
                 display_instruction()
-                mov     dx,<u16> ds:[esi-2]
+                mov     dx,u16 ptr ds:[esi-2]
                 show_register_16_signed()
                 add     edi,6
                 show_new_cs_ip()
@@ -408,11 +408,11 @@ function debi_generate_disassembly
                 mov     fs:special_reg,0
               try_again7_direction_1:
                 display_instruction()
-                mov     al,<u8>  ds:[esi-1]
+                mov     al,u8 ptr ds:[esi-1]
                 and     al,111b
                 display_register_name_special_reg()
                 display_comma()
-                mov     al,<u8>  ds:[esi-1]
+                mov     al,u8 ptr ds:[esi-1]
                 shr     al,3
                 and     al,111b
                 display_register_name_32()
@@ -422,11 +422,11 @@ function debi_generate_disassembly
                 mov     fs:special_reg,0
               try_again7_direction_0:
                 display_instruction()
-                mov     al,<u8>  ds:[esi-1]
+                mov     al,u8 ptr ds:[esi-1]
                 and     al,111b
                 display_register_name_32()
                 display_comma()
-                mov     al,<u8>  ds:[esi-1]
+                mov     al,u8 ptr ds:[esi-1]
                 shr     al,3
                 and     al,111b
                 display_register_name_special_reg()
@@ -646,7 +646,7 @@ function debi_generate_disassembly
             jmp     try_again14
           @@:
             // It's sldt, str, lldg, ltr, verr or verw
-                mov     dl,<u8>  ds:[esi+2]
+                mov     dl,u8 ptr ds:[esi+2]
                 shr     dl,3
                 and     dl,111b
                 cmp     dl,000b
@@ -716,7 +716,7 @@ function debi_generate_disassembly
           @@:
             // It's sgdt, sidt, lgdt, lidt, smsw, lmsw or invlpg
                 mov     ecx,4
-                mov     dl,<u8>  ds:[esi+2]
+                mov     dl,u8 ptr ds:[esi+2]
                 shr     dl,3
                 and     dl,111b
                 cmp     dl,000b
@@ -899,7 +899,7 @@ function debi_generate_disassembly
           @@:
             // It's bt/btc/btr/btc
                 mov     ecx,3
-                mov     dl,<u8>  ds:[esi+2]
+                mov     dl,u8 ptr ds:[esi+2]
                 shr     dl,3
                 and     dl,111b
                 cmp     dl,100b
@@ -1140,7 +1140,7 @@ function debi_generate_disassembly
         mov     edx,offset retf_text
         mov     ebx,3
         display_instruction()
-        mov     dx,<u16> ds:[esi-2]
+        mov     dx,u16 ptr ds:[esi-2]
         show_register_16()
         add     edi,5
         jmp     done_disasm
@@ -1195,14 +1195,14 @@ function debi_generate_disassembly
         display_instruction()
         if (fs:adr_size_override == 0)
         {
-            mov     dx,<u16> ds:[esi]
+            mov     dx,u16 ptr ds:[esi]
             add     esi,2
             show_register_16_signed()
             add     edi,6
             show_new_cs_ip()
         
         } else {
-            mov     edx,<u32> ds:[esi]
+            mov     edx,u32 ptr ds:[esi]
             add     esi,4
             show_register_32_signed()
             add     edi,9
@@ -1218,24 +1218,24 @@ function debi_generate_disassembly
         display_instruction()
         if (fs:adr_size_override == 0)
         {
-            mov     dx,<u16> ds:[esi]
+            mov     dx,u16 ptr ds:[esi]
             add     esi,2
             show_register_16()
             add     edi,4
             display_colon()
-            mov     dx,<u16> ds:[esi+2]
+            mov     dx,u16 ptr ds:[esi+2]
             show_register_16()
             add     edi,5
             show_new_cs_ip_far()
         
         } else {
             mov     ebx,7
-            mov     dx,<u16> ds:[esi]
+            mov     dx,u16 ptr ds:[esi]
             add     esi,4
             show_register_16()
             add     edi,4
             display_colon()
-            mov     edx,<u32> ds:[esi+2]
+            mov     edx,u32 ptr ds:[esi+2]
             show_register_32()
             add     edi,9
             show_new_cs_eip_far()
@@ -1301,11 +1301,11 @@ function debi_generate_disassembly
         mov     edx,offset enter_text
         mov     ecx,5
         display_instruction()
-        mov     dx,<u16> ds:[esi-3]
+        mov     dx,u16 ptr ds:[esi-3]
         show_register_16()
         add     edi,4
         display_comma()
-        mov     dl,<u8>  ds:[esi-1]
+        mov     dl,u8 ptr ds:[esi-1]
         show_register_8()
         add     edi,2
         jmp     done_disasm
@@ -1315,7 +1315,7 @@ function debi_generate_disassembly
         mov     ebx,2
         mov     edx,offset int_text
         display_instruction()
-        mov     dl,<u8>  ds:[esi-1]
+        mov     dl,u8 ptr ds:[esi-1]
         show_register_8()
         add     edi,2
         jmp     done_disasm
@@ -1337,7 +1337,7 @@ function debi_generate_disassembly
       show_new_disp1_address:
         display_instruction()
         xor     edx,edx
-        mov     dl,<u8>  ds:[esi-1]
+        mov     dl,u8 ptr ds:[esi-1]
         show_register_8_signed()
         add     edi,4
         show_new_cs_ip()
@@ -1358,14 +1358,14 @@ function debi_generate_disassembly
         {
             add     ebx,2
             display_instruction()
-            mov     edx,<u32> ds:[esi-4]
+            mov     edx,u32 ptr ds:[esi-4]
             show_register_32()
             add     edi,9
             show_new_cs_ip_far()
         
         } else {
             display_instruction()
-            mov     dx,<u16> ds:[esi-4]
+            mov     dx,u16 ptr ds:[esi-4]
             show_register_16()
             add     edi,5
             show_new_cs_ip()
@@ -1380,17 +1380,17 @@ function debi_generate_disassembly
         {
             add     ebx,2
             display_instruction()
-            mov     dx,<u16> ds:[esi-6]
+            mov     dx,u16 ptr ds:[esi-6]
             show_register_16()
             add     edi,4
             display_colon()
-            mov     edx,<u32> ds:[esi-4]
+            mov     edx,u32 ptr ds:[esi-4]
             show_register_32()
             add     edi,9
         
         } else {
             display_instruction()
-            mov     edx,<u32> ds:[esi-4]
+            mov     edx,u32 ptr ds:[esi-4]
             show_register_32()
             add     edi,9
             show_new_cs_ip_far()
@@ -1435,7 +1435,7 @@ function debi_generate_disassembly
             add     edi,1
         }
         xor     edx,edx
-        mov     dl,<u8>  ds:[esi-1]
+        mov     dl,u8 ptr ds:[esi-1]
         show_register_8_signed()
         add     edi,4
         show_new_cs_ip()
@@ -1458,7 +1458,7 @@ function debi_generate_disassembly
         mov     ebx,3
         mov     edx,offset ret_text
         display_instruction()
-        mov     dx,<u16> ds:[esi-2]
+        mov     dx,u16 ptr ds:[esi-2]
         show_register_16()
         add     edi,5
         jmp     done_disasm
@@ -1654,7 +1654,7 @@ function debi_generate_disassembly
             mov     al,CONST_AL
             display_register_name_8()
             display_comma()
-            mov     dl,<u8>  ds:[esi-1]
+            mov     dl,u8 ptr ds:[esi-1]
             show_register_8()
             add     edi,2
         
@@ -1667,7 +1667,7 @@ function debi_generate_disassembly
                 mov     al,CONST_EAX
                 display_register_name_32()
                 display_comma()
-                mov     edx,<u32> ds:[esi-4]
+                mov     edx,u32 ptr ds:[esi-4]
                 show_register_32()
                 add     edi,9
             
@@ -1678,7 +1678,7 @@ function debi_generate_disassembly
                 mov     al,CONST_AX
                 display_register_name_16()
                 display_comma()
-                mov     dx,<u16> ds:[esi-2]
+                mov     dx,u16 ptr ds:[esi-2]
                 show_register_16()
                 add     edi,5
             }
@@ -1776,7 +1776,7 @@ function debi_generate_disassembly
             }
         }
         display_comma()
-        mov     dl,<u8>  ds:[esi-1]
+        mov     dl,u8 ptr ds:[esi-1]
         show_register_8()
         add     edi,2
         jmp     done_disasm
@@ -1787,7 +1787,7 @@ function debi_generate_disassembly
         mov     edx,offset outsb_text
         mov     ecx,3
         display_instruction()
-        mov     dl,<u8>  ds:[esi-1]
+        mov     dl,u8 ptr ds:[esi-1]
         show_register_8()
         add     edi,2
         display_comma()
@@ -1931,7 +1931,7 @@ function debi_generate_disassembly
     jmp     show_instruction
 
   @@:
-    mov     ah,<u8>  ds:[esi+1]
+    mov     ah,u8 ptr ds:[esi+1]
     shr     ah,3
     and     ah,111b
     if (dl == 1111111b)
@@ -1972,7 +1972,7 @@ function debi_generate_disassembly
             mov     ecx,3
             display_instruction_with_mod_rm()
             display_comma()
-            mov     edx,<u32> ds:[esi]
+            mov     edx,u32 ptr ds:[esi]
             if (fs:byte_word_size == 0)
             {
               // 8-bits
@@ -2039,7 +2039,7 @@ function debi_generate_disassembly
             mov     edx,offset unknown_text
         }
         display_instruction_with_mod_rm()
-        mov     dl,<u8>  ds:[esi]
+        mov     dl,u8 ptr ds:[esi]
         mov     ecx,1
         display_instruction_additional_bytes()
         display_comma()
@@ -2215,7 +2215,7 @@ function debi_generate_disassembly
         and     dl,1b
         mov     fs:byte_word_size,dl
 
-        mov     ah,<u8>  ds:[esi+1]
+        mov     ah,u8 ptr ds:[esi+1]
         shr     ah,3
         and     ah,111b
         if (ah == 000b)
@@ -2255,7 +2255,7 @@ function debi_generate_disassembly
         mov     ebx,2
         display_instruction_with_mod_rm()
         display_comma()
-        mov     edx,<u32> ds:[esi]
+        mov     edx,u32 ptr ds:[esi]
         if (fs:byte_word_size == 0)
         {
           // 8-bits
@@ -2316,7 +2316,7 @@ function debi_generate_disassembly
         mov     ebx,1
         adjust_for_overrides()
         display_instruction()
-        mov     dx,<u16> ds:[esi]
+        mov     dx,u16 ptr ds:[esi]
         mov     ecx,2
         display_instruction_additional_bytes()
         if (fs:reverse_regs == 1)
@@ -2355,7 +2355,7 @@ mov_show_part:
         mov     ecx,3
         mov     ebx,1
         display_instruction()
-        mov     al,<u8>  ds:[esi-1]
+        mov     al,u8 ptr ds:[esi-1]
         and     al,111b
         if (fs:op_size_override == 0)
         {
@@ -2383,7 +2383,7 @@ mov_show_part:
         mov     ecx,4
       push_pop_locals:
         display_instruction()
-        mov     al,<u8>  ds:[esi-1]
+        mov     al,u8 ptr ds:[esi-1]
         and     al,0111b
         if (fs:op_size_override == 0)
         {
@@ -2414,14 +2414,14 @@ mov_show_part:
         {
             display_register_name_16()
             display_comma()
-            mov     al,<u8>  ds:[esi-1]
+            mov     al,u8 ptr ds:[esi-1]
             and     al,111b
             display_register_name_16()
         
         } else {
             display_register_name_32()
             display_comma()
-            mov     al,<u8>  ds:[esi-1]
+            mov     al,u8 ptr ds:[esi-1]
             and     al,111b
             display_register_name_32()
         }
@@ -2478,9 +2478,9 @@ mov_show_part:
         mov     edx,offset mov_text
         mov     ecx,3
         display_instruction()
-        mov     al,<u8>  ds:[esi-1]
+        mov     al,u8 ptr ds:[esi-1]
         and     al,111b
-        mov     edx,<u32> ds:[esi]
+        mov     edx,u32 ptr ds:[esi]
         if (fs:byte_word_size == 0)
         {
           // 8-bit
@@ -2593,7 +2593,7 @@ mov_show_part:
             mov     ecx,2
         }
         display_instruction()
-        movsx   edx,<u8>  ds:[esi-1]
+        movsx   edx,u8 ptr ds:[esi-1]
         show_register_8_signed()
         add     edi,4
         show_new_cs_ip()
@@ -2632,7 +2632,7 @@ mov_show_part:
 ;; Check the FPU instructions
   check_fpu_instructions:
     mov     ebx,2
-    mov     eax,<u32> ds:[esi]
+    mov     eax,u32 ptr ds:[esi]
     mov     ecx,4                                                   // Default to a 4-byte wide instruction name
     if (al == 0d8h)
     {
@@ -3317,7 +3317,7 @@ mov_show_part:
     display_instruction()
 
   done_disasm:
-    mov     <u8>  es:[edi],0                                     // Null terminate the generated disassembly
+    mov     u8 ptr es:[edi],0                                     // Null terminate the generated disassembly
     inc     edi
     mov     ecx,edi
     pop     es
@@ -3391,7 +3391,7 @@ function display_instruction_additional_bytes
 function write_screen_fs_edx
 {
   @@:
-    mov     al,<u8>  fs:[edx]
+    mov     al,u8 ptr fs:[edx]
     inc     edx
     stosb
     loop    @B
@@ -3996,7 +3996,7 @@ function display_instruction_with_mod_rm
     adjust_for_overrides()
 
   // Get the mod,reg,r/m byte
-    mov     al,<u8>  ds:[esi+ebx-1]
+    mov     al,u8 ptr ds:[esi+ebx-1]
     mov     ah,al
     shr     ah,6
     if (ah == 11b)
@@ -4015,7 +4015,7 @@ function display_instruction_with_mod_rm
         {
             mov     fs:mod_reg_rm_byte,al
             inc     ebx                                             // We have to use the SIB byte
-            mov     al,<u8>  ds:[esi+ebx-1]
+            mov     al,u8 ptr ds:[esi+ebx-1]
             mov     fs:sib_byte,al
             mov     ah,fs:mod_reg_rm_byte
             shr     ah,6
@@ -4123,7 +4123,7 @@ function display_instruction_with_mod_rm
 
 function display_instruction_with_mod_reg_rm_movxx
 {
-    mov     al,<u8>  ds:[esi+2]
+    mov     al,u8 ptr ds:[esi+2]
     shr     al,6
     if (al == 11b)
     {
@@ -4132,7 +4132,7 @@ function display_instruction_with_mod_reg_rm_movxx
         add     bx,fs:op_size_override
         display_instruction()
         display_segment_override()
-        mov     al,<u8>  ds:[esi-1]
+        mov     al,u8 ptr ds:[esi-1]
         mov     ah,al
         shr     al,3
         and     al,0111b
@@ -4164,7 +4164,7 @@ function display_instruction_with_mod_reg_rm
     adjust_for_overrides()
 
   // Get the mod,reg,r/m byte
-    mov     al,<u8>  ds:[esi+ebx-1]
+    mov     al,u8 ptr ds:[esi+ebx-1]
     mov     ah,al
     shr     ah,6
     if (ah == 11b)
@@ -4493,7 +4493,7 @@ function part1_1
 function part1_1_disp8
 {
     part1_1_base()
-    mov     dl,<u8>  ds:[esi-1]
+    mov     dl,u8 ptr ds:[esi-1]
     show_register_8_signed()
     add     edi,3
     display_close_bracket()
@@ -4503,7 +4503,7 @@ function part1_1_disp8
 function part1_1_disp32
 {
     part1_1_base()
-    mov     edx,<u32> ds:[esi-4]
+    mov     edx,u32 ptr ds:[esi-4]
     show_register_32_signed()
     add     edi,9
     display_close_bracket()
@@ -4600,7 +4600,7 @@ function part1_2
     and     al,0111b
     display_open_bracket()
     display_register_name_indirect_adr_size_override()
-    mov     edx,<u32> ds:[esi-4]
+    mov     edx,u32 ptr ds:[esi-4]
     show_register_32_signed()
     add     edi,9
     display_close_bracket()
@@ -4626,7 +4626,7 @@ function part1_3
     and     al,0111b
     display_open_bracket()
     display_register_name_indirect_adr_size_override()
-    mov     dl,<u8>  ds:[esi-1]
+    mov     dl,u8 ptr ds:[esi-1]
     show_register_8_signed()
     add     edi,3
     display_close_bracket()
@@ -4651,7 +4651,7 @@ function part1_4
 {
     and     al,0111b
     display_open_bracket()
-    mov     edx,<u32> ds:[esi-4]
+    mov     edx,u32 ptr ds:[esi-4]
     show_register_32()
     add     edi,8
     display_close_bracket()
@@ -4700,7 +4700,7 @@ function part1_6
     and     al,0111b
     display_open_bracket()
     display_register_name_indirect_adr_size_override()
-    mov     dx,<u16> ds:[esi-2]
+    mov     dx,u16 ptr ds:[esi-2]
     show_register_16_signed()
     add     edi,5
     display_close_bracket()
@@ -4726,7 +4726,7 @@ function part1_7
     and     al,0111b
     display_open_bracket()
     display_register_name_indirect_adr_size_override()
-    mov     dl,<u8>  ds:[esi-1]
+    mov     dl,u8 ptr ds:[esi-1]
     show_register_8_signed()
     add     edi,3
     display_close_bracket()
@@ -4751,7 +4751,7 @@ function part1_8
 {
     and     al,0111b
     display_open_bracket()
-    mov     dx,<u16> ds:[esi-2]
+    mov     dx,u16 ptr ds:[esi-2]
     show_register_16()
     add     edi,4
     display_close_bracket()

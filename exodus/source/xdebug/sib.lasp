@@ -2,10 +2,10 @@
             {
                 // It's an indirect memory operand with a 16/32-bit displacement
                 add     bx,5
-                mov     dl,<u8>  [si+bx-5]
+                mov     dl,u8 ptr [si+bx-5]
                 mov     CS:sib_byte,dl
-                mov     edx,<u32> [si+bx-4]
-                mov     <u32> CS:temp_buffer[0],edx
+                mov     edx,u32 ptr [si+bx-4]
+                mov     u32 ptr CS:temp_buffer[0],edx
                 display_instruction()
                 display_segment_override()
                 display_open_bracket()
@@ -13,7 +13,7 @@
                 and     al,0111b
                 display_register_name_indirect_sib()
                 display_plus_sign()
-                mov     edx,<u32> CS:temp_buffer[0]
+                mov     edx,u32 ptr CS:temp_buffer[0]
                 show_register_adr_size_override_no_color()
                 display_close_bracket()
                 display_comma()
@@ -25,8 +25,8 @@
             } else if (ah == 01b) {
               // It's an indirect memory operand with an 8-bit displacement
                 inc     bx
-                mov     dl,<u8>  [si+bx-1]
-                mov     <u8>  CS:temp_buffer[0],dl
+                mov     dl,u8 ptr [si+bx-1]
+                mov     u8 ptr CS:temp_buffer[0],dl
                 display_instruction()
                 display_segment_override()
                 display_open_bracket()
@@ -34,7 +34,7 @@
                 and     al,0111b
                 display_register_name_indirect_sib()
                 display_plus_sign()
-                mov     edx,<u32> CS:temp_buffer[0]
+                mov     edx,u32 ptr CS:temp_buffer[0]
                 show_register_adr_size_override_no_color()
                 display_close_bracket()
                 display_comma()

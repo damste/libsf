@@ -19,8 +19,8 @@
         pushad
         push    ds
 
-        mov     ds,<u32> gs:[edi+_TASK_ENTRY_SELECTOR_OBJECTS]
-        mov     esi,<u32> ds:[_OBJECT_HEADER_FIRST_BASE_OBJECT]
+        mov     ds,u32 ptr gs:[edi+_TASK_ENTRY_SELECTOR_OBJECTS]
+        mov     esi,u32 ptr ds:[_OBJECT_HEADER_FIRST_BASE_OBJECT]
         while (esi != -1)
         {
           // Display this base object
@@ -32,11 +32,11 @@
                 push    edi
 
                 mov     edi,esi
-                mov     esi,<u32> ds:[esi+_OBJECT_FIRST_OBJECT]
+                mov     esi,u32 ptr ds:[esi+_OBJECT_FIRST_OBJECT]
                 while (esi != -1)
                 {
                     invOBJECT_redraw_object()
-                    mov     esi,<u32> ds:[esi+_OBJECT_NEXT_OBJECT]
+                    mov     esi,u32 ptr ds:[esi+_OBJECT_NEXT_OBJECT]
                 }
 
                 pop     edi
@@ -44,7 +44,7 @@
             }
 
           // Move to the next base object
-            mov     esi,<u32> ds:[esi+_OBJECT_NEXT_BASE_OBJECT]
+            mov     esi,u32 ptr ds:[esi+_OBJECT_NEXT_BASE_OBJECT]
         }
       // Right now, all base objects and objects have been redrawn (everything's been brought to the front)
 
@@ -67,7 +67,7 @@
     //
     // Upon exit:    The base object is redrawn (if it has visual components)
     //
-        mov     al,<u8>  ds:[esi+_BASE_OBJECT_TYPE]
+        mov     al,u8 ptr ds:[esi+_BASE_OBJECT_TYPE]
         if (al == _DESKTOP)
         {
           // It's a desktop item
@@ -114,22 +114,22 @@
             {
               // No wallpaper, just a color
                 pushfd
-                push    <u32> ds:[esi+_BO_D_TOP]
-                push    <u32> ds:[esi+_BO_D_LEFT]
-                push    <u32> ds:[esi+_BO_D_WIDTH]
-                push    <u32> ds:[esi+_BO_D_HEIGHT]
+                push    u32 ptr ds:[esi+_BO_D_TOP]
+                push    u32 ptr ds:[esi+_BO_D_LEFT]
+                push    u32 ptr ds:[esi+_BO_D_WIDTH]
+                push    u32 ptr ds:[esi+_BO_D_HEIGHT]
                 mov     ebx,_BO_D_BACKGROUND
-                call    <u48> cs:_VID_g_derive_color
+                call    u48 ptr cs:_VID_g_derive_color
                 push    eax
                 cli
-                call    <u48> cs:_VID_g_fill_rectangle
+                call    u48 ptr cs:_VID_g_fill_rectangle
                 popfd
                 clc
             
             } else {
               // Wallpaper
                 int  3
-                u8   'Wallpaper algorithm for desktop'
+                u8  'Wallpaper algorithm for desktop'
             }
         
         } else {
@@ -224,7 +224,7 @@
     //
     // Upon exit:    The object is redrawn (if it has visual components)
     //
-        mov     al,<u8>  ds:[esi+_OBJECT_TYPE]
+        mov     al,u8 ptr ds:[esi+_OBJECT_TYPE]
         if (al == _INPUT_FIELD)
         {
           // It's a input field
@@ -366,14 +366,14 @@
         {
           // Draw the rectangle around the text
             pushfd
-            mov     ebx,<u32> ds:[esi+_O_TF_TOP]
-            add     ebx,<u32> ds:[edi+_BO_TOP]
+            mov     ebx,u32 ptr ds:[esi+_O_TF_TOP]
+            add     ebx,u32 ptr ds:[edi+_BO_TOP]
             push    ebx
-            mov     ebx,<u32> ds:[esi+_O_TF_LEFT]
-            add     ebx,<u32> ds:[edi+_BO_LEFT]
+            mov     ebx,u32 ptr ds:[esi+_O_TF_LEFT]
+            add     ebx,u32 ptr ds:[edi+_BO_LEFT]
             push    ebx
-            push    <u32> ds:[esi+_O_TF_WIDTH]
-            push    <u32> ds:[esi+_O_TF_HEIGHT]
+            push    u32 ptr ds:[esi+_O_TF_WIDTH]
+            push    u32 ptr ds:[esi+_O_TF_HEIGHT]
             if (byte ptr ds:[esi+_O_TF_FONT_TYPEFACE_REVERSE] != 0)
             {
                 mov     ebx,_O_TF_FOREGROUND
@@ -381,58 +381,58 @@
             } else {
                 mov     ebx,_O_TF_BACKGROUND
             }
-            call    <u48> cs:_VID_g_derive_color
+            call    u48 ptr cs:_VID_g_derive_color
             push    eax
             cli
-            call    <u48> cs:_VID_g_fill_rectangle
+            call    u48 ptr cs:_VID_g_fill_rectangle
             popfd
 
           // Draw the text
             pushfd
-            mov     ebx,<u32> ds:[esi+_O_TF_TOP]
-            add     ebx,<u32> ds:[edi+_BO_TOP]
+            mov     ebx,u32 ptr ds:[esi+_O_TF_TOP]
+            add     ebx,u32 ptr ds:[edi+_BO_TOP]
             push    ebx
-            mov     ebx,<u32> ds:[esi+_O_TF_LEFT]
-            add     ebx,<u32> ds:[edi+_BO_LEFT]
+            mov     ebx,u32 ptr ds:[esi+_O_TF_LEFT]
+            add     ebx,u32 ptr ds:[edi+_BO_LEFT]
             push    ebx
-            push    <u32> ds:[esi+_O_TF_WIDTH]
-            push    <u32> ds:[esi+_O_TF_HEIGHT]
+            push    u32 ptr ds:[esi+_O_TF_WIDTH]
+            push    u32 ptr ds:[esi+_O_TF_HEIGHT]
 
             mov     ebx,_O_TF_BACKGROUND
-            call    <u48> cs:_VID_g_derive_color
+            call    u48 ptr cs:_VID_g_derive_color
             push    eax
 
             mov     ebx,_O_TF_FOREGROUND
-            call    <u48> cs:_VID_g_derive_color
+            call    u48 ptr cs:_VID_g_derive_color
             push    eax
 
-            movzx   ebx,<u16> ds:[esi+_O_TF_MARGIN_LEFT]
+            movzx   ebx,u16 ptr ds:[esi+_O_TF_MARGIN_LEFT]
             push    ebx
 
-            movzx   ebx,<u16> ds:[esi+_O_TF_MARGIN_TOP]
+            movzx   ebx,u16 ptr ds:[esi+_O_TF_MARGIN_TOP]
             push    ebx
 
-            push    <u32> ds:[esi+_O_TF_FONT_NAME_ID]
-            push    <u32> ds:[esi+_O_TF_SOURCE_PTR_SEGMENT]
-            push    <u32> ds:[esi+_O_TF_SOURCE_PTR_OFFSET]
+            push    u32 ptr ds:[esi+_O_TF_FONT_NAME_ID]
+            push    u32 ptr ds:[esi+_O_TF_SOURCE_PTR_SEGMENT]
+            push    u32 ptr ds:[esi+_O_TF_SOURCE_PTR_OFFSET]
 
             xor     eax,eax
-            mov     al,<u8>  ds:[esi+_O_TF_FONT_TYPEFACE_BOLD]
+            mov     al,u8 ptr ds:[esi+_O_TF_FONT_TYPEFACE_BOLD]
             shl     eax,8
-            mov     al,<u8>  ds:[esi+_O_TF_FONT_TYPEFACE_DITHER]
+            mov     al,u8 ptr ds:[esi+_O_TF_FONT_TYPEFACE_DITHER]
             push    eax
 
             xor     eax,eax
-            mov     al,<u8>  ds:[esi+_O_TF_FONT_TYPEFACE_ITALICS]
+            mov     al,u8 ptr ds:[esi+_O_TF_FONT_TYPEFACE_ITALICS]
             shl     eax,8
-            mov     al,<u8>  ds:[esi+_O_TF_FONT_TYPEFACE_REVERSE]
+            mov     al,u8 ptr ds:[esi+_O_TF_FONT_TYPEFACE_REVERSE]
             shl     eax,8
-            mov     al,<u8>  ds:[esi+_O_TF_FONT_TYPEFACE_STRIKETHROUGH]
+            mov     al,u8 ptr ds:[esi+_O_TF_FONT_TYPEFACE_STRIKETHROUGH]
             shl     eax,8
-            mov     al,<u8>  ds:[esi+_O_TF_FONT_TYPEFACE_UNDERLINE]
+            mov     al,u8 ptr ds:[esi+_O_TF_FONT_TYPEFACE_UNDERLINE]
             push    eax
             cli
-            call    <u48> cs:_VID_g_draw_text
+            call    u48 ptr cs:_VID_g_draw_text
             popfd
             clc
         
@@ -650,19 +650,19 @@
         if (byte ptr ds:[esi+_O_HL_VISIBLE] != 0)
         {
             pushfd
-            mov     ebx,<u32> ds:[esi+_O_HL_TOP]
-            add     ebx,<u32> ds:[edi+_BO_TOP]
+            mov     ebx,u32 ptr ds:[esi+_O_HL_TOP]
+            add     ebx,u32 ptr ds:[edi+_BO_TOP]
             push    ebx
-            mov     ebx,<u32> ds:[esi+_O_HL_LEFT]
-            add     ebx,<u32> ds:[edi+_BO_LEFT]
+            mov     ebx,u32 ptr ds:[esi+_O_HL_LEFT]
+            add     ebx,u32 ptr ds:[edi+_BO_LEFT]
             push    ebx
-            push    <u32> ds:[esi+_O_HL_WIDTH]
+            push    u32 ptr ds:[esi+_O_HL_WIDTH]
             push    1
             mov     ebx,_O_HL_BACKGROUND
-            call    <u48> cs:_VID_g_derive_color
+            call    u48 ptr cs:_VID_g_derive_color
             push    eax
             cli
-            call    <u48> cs:_VID_g_fill_rectangle
+            call    u48 ptr cs:_VID_g_fill_rectangle
             popfd
             clc
         
@@ -736,19 +736,19 @@
         if (byte ptr ds:[esi+_O_R_VISIBLE] != 0)
         {
             pushfd
-            mov     ebx,<u32> ds:[esi+_O_R_TOP]
-            add     ebx,<u32> ds:[edi+_BO_TOP]
+            mov     ebx,u32 ptr ds:[esi+_O_R_TOP]
+            add     ebx,u32 ptr ds:[edi+_BO_TOP]
             push    ebx
-            mov     ebx,<u32> ds:[esi+_O_R_LEFT]
-            add     ebx,<u32> ds:[edi+_BO_LEFT]
+            mov     ebx,u32 ptr ds:[esi+_O_R_LEFT]
+            add     ebx,u32 ptr ds:[edi+_BO_LEFT]
             push    ebx
-            push    <u32> ds:[esi+_O_R_WIDTH]
-            push    <u32> ds:[esi+_O_R_HEIGHT]
+            push    u32 ptr ds:[esi+_O_R_WIDTH]
+            push    u32 ptr ds:[esi+_O_R_HEIGHT]
             mov     ebx,_O_R_BACKGROUND
-            call    <u48> cs:_VID_g_derive_color
+            call    u48 ptr cs:_VID_g_derive_color
             push    eax
             cli
-            call    <u48> cs:_VID_g_fill_rectangle
+            call    u48 ptr cs:_VID_g_fill_rectangle
             popfd
             clc
         
@@ -871,80 +871,80 @@
         {
            // Draw the rectangle
             pushfd
-            mov     ebx,<u32> ds:[esi+_O_BB_TOP]
-            add     ebx,<u32> ds:[edi+_BO_TOP]
+            mov     ebx,u32 ptr ds:[esi+_O_BB_TOP]
+            add     ebx,u32 ptr ds:[edi+_BO_TOP]
             push    ebx
-            mov     ebx,<u32> ds:[esi+_O_BB_LEFT]
-            add     ebx,<u32> ds:[edi+_BO_LEFT]
+            mov     ebx,u32 ptr ds:[esi+_O_BB_LEFT]
+            add     ebx,u32 ptr ds:[edi+_BO_LEFT]
             push    ebx
-            push    <u32> ds:[esi+_O_BB_WIDTH]
-            push    <u32> ds:[esi+_O_BB_HEIGHT]
+            push    u32 ptr ds:[esi+_O_BB_WIDTH]
+            push    u32 ptr ds:[esi+_O_BB_HEIGHT]
             mov     ebx,_O_BB_BACKGROUND
-            call    <u48> cs:_VID_g_derive_color
+            call    u48 ptr cs:_VID_g_derive_color
             push    eax
             cli
-            call    <u48> cs:_VID_g_fill_rectangle
+            call    u48 ptr cs:_VID_g_fill_rectangle
 
            // Draw the bottom
-            mov     ebx,<u32> ds:[esi+_O_BB_TOP]
-            add     ebx,<u32> ds:[esi+_O_BB_HEIGHT]
-            add     ebx,<u32> ds:[edi+_BO_TOP]
+            mov     ebx,u32 ptr ds:[esi+_O_BB_TOP]
+            add     ebx,u32 ptr ds:[esi+_O_BB_HEIGHT]
+            add     ebx,u32 ptr ds:[edi+_BO_TOP]
             push    ebx
-            mov     ebx,<u32> ds:[esi+_O_BB_LEFT]
-            add     ebx,<u32> ds:[edi+_BO_LEFT]
+            mov     ebx,u32 ptr ds:[esi+_O_BB_LEFT]
+            add     ebx,u32 ptr ds:[edi+_BO_LEFT]
             push    ebx
-            push    <u32> ds:[esi+_O_BB_WIDTH]
+            push    u32 ptr ds:[esi+_O_BB_WIDTH]
             push    1
             mov     ebx,_O_BB_SHADOW_BORDER
-            call    <u48> cs:_VID_g_derive_color
+            call    u48 ptr cs:_VID_g_derive_color
             push    eax
-            call    <u48> cs:_VID_g_fill_rectangle
+            call    u48 ptr cs:_VID_g_fill_rectangle
 
            // Draw the right-side
-            mov     ebx,<u32> ds:[esi+_O_BB_TOP]
-            add     ebx,<u32> ds:[edi+_BO_TOP]
+            mov     ebx,u32 ptr ds:[esi+_O_BB_TOP]
+            add     ebx,u32 ptr ds:[edi+_BO_TOP]
             push    ebx
-            mov     ebx,<u32> ds:[esi+_O_BB_LEFT]
-            add     ebx,<u32> ds:[esi+_O_BB_WIDTH]
+            mov     ebx,u32 ptr ds:[esi+_O_BB_LEFT]
+            add     ebx,u32 ptr ds:[esi+_O_BB_WIDTH]
             dec     ebx
-            add     ebx,<u32> ds:[edi+_BO_LEFT]
+            add     ebx,u32 ptr ds:[edi+_BO_LEFT]
             push    ebx
             push    1
-            push    <u32> ds:[esi+_O_BB_HEIGHT]
-            inc     <u32> [esp+00]
+            push    u32 ptr ds:[esi+_O_BB_HEIGHT]
+            inc     u32 ptr [esp+00]
             mov     ebx,_O_BB_SHADOW_BORDER
-            call    <u48> cs:_VID_g_derive_color
+            call    u48 ptr cs:_VID_g_derive_color
             push    eax
-            call    <u48> cs:_VID_g_fill_rectangle
+            call    u48 ptr cs:_VID_g_fill_rectangle
 
            // Draw the top
-            mov     ebx,<u32> ds:[esi+_O_BB_TOP]
-            add     ebx,<u32> ds:[edi+_BO_TOP]
+            mov     ebx,u32 ptr ds:[esi+_O_BB_TOP]
+            add     ebx,u32 ptr ds:[edi+_BO_TOP]
             push    ebx
-            mov     ebx,<u32> ds:[esi+_O_BB_LEFT]
-            add     ebx,<u32> ds:[edi+_BO_LEFT]
+            mov     ebx,u32 ptr ds:[esi+_O_BB_LEFT]
+            add     ebx,u32 ptr ds:[edi+_BO_LEFT]
             push    ebx
-            push    <u32> ds:[esi+_O_BB_WIDTH]
+            push    u32 ptr ds:[esi+_O_BB_WIDTH]
             push    1
             mov     ebx,_O_BB_LIGHT_BORDER
-            call    <u48> cs:_VID_g_derive_color
+            call    u48 ptr cs:_VID_g_derive_color
             push    eax
-            call    <u48> cs:_VID_g_fill_rectangle
+            call    u48 ptr cs:_VID_g_fill_rectangle
 
            // Draw the left-side
-            mov     ebx,<u32> ds:[esi+_O_BB_TOP]
-            add     ebx,<u32> ds:[edi+_BO_TOP]
+            mov     ebx,u32 ptr ds:[esi+_O_BB_TOP]
+            add     ebx,u32 ptr ds:[edi+_BO_TOP]
             push    ebx
-            mov     ebx,<u32> ds:[esi+_O_BB_LEFT]
-            add     ebx,<u32> ds:[edi+_BO_LEFT]
+            mov     ebx,u32 ptr ds:[esi+_O_BB_LEFT]
+            add     ebx,u32 ptr ds:[edi+_BO_LEFT]
             push    ebx
             push    1
-            push    <u32> ds:[esi+_O_BB_HEIGHT]
-            inc     <u32> [esp+00]
+            push    u32 ptr ds:[esi+_O_BB_HEIGHT]
+            inc     u32 ptr [esp+00]
             mov     ebx,_O_BB_LIGHT_BORDER
-            call    <u48> cs:_VID_g_derive_color
+            call    u48 ptr cs:_VID_g_derive_color
             push    eax
-            call    <u48> cs:_VID_g_fill_rectangle
+            call    u48 ptr cs:_VID_g_fill_rectangle
             popfd
             clc
         

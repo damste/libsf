@@ -11,38 +11,38 @@
 //
 // These variables are used in the invSetup_native_primative() function
 //
-no_support_for_primative                u8   "no support for primative"
-code_gdt_offset                         u32  0                       // used temporarily to hold permanent value of _csTEMP_PRIMATIVE
-data_gdt_offset                         u32  0                       // same, but for _dsTEMP_PRIMATIVE
-main_gdt_offset                         u32  0                       // same, but for _cgTEMP_PRIMATIVE_MAIN
-requestor_gdt_offset                    u32  0                       // same, but for _cgTEMP_PRIMATIVE_REQUESTOR
-vga_kbd_support                         u8   0                       // Indicates whether or not basic VGA/keyboard support
+no_support_for_primative                u8  "no support for primative"
+code_gdt_offset                         u32 0                       // used temporarily to hold permanent value of _csTEMP_PRIMATIVE
+data_gdt_offset                         u32 0                       // same, but for _dsTEMP_PRIMATIVE
+main_gdt_offset                         u32 0                       // same, but for _cgTEMP_PRIMATIVE_MAIN
+requestor_gdt_offset                    u32 0                       // same, but for _cgTEMP_PRIMATIVE_REQUESTOR
+vga_kbd_support                         u8  0                       // Indicates whether or not basic VGA/keyboard support
                                                                     // has been installed.  Will be set to 1 after both are
                                                                     // available.
 
-exodus_internal_text                    u8   " (Exodus Internal)",0
-unknown_function_text                   u8   " (unknown)",0
-unknown_user_function_text              u8   " (unknown user function)",0
-unknown_primative_text                  u8   " (unknown primative)",0
-error_loading_exodus_ini_1              u8   " ERROR - An error occurred while parsing EXODUS.INI.",0
-error_loading_exodus_ini_2              u8   " ERROR - Exodus cannot find a required boot file: EXODUS.INI",0
-error_loading_exodus_ini_3              u8   " ERROR - Exodus found multiple EXODUS.INI files on the boot drive.",0
-error_loading_exodus_ini_4              u8   "          Please correct this problem and try booting again.",0
-system_halted                           u8   " System is stopped.  Please press RESET or power down to restart.",0
-found_it_text                           u8   " (found it!)",0
+exodus_internal_text                    u8  " (Exodus Internal)",0
+unknown_function_text                   u8  " (unknown)",0
+unknown_user_function_text              u8  " (unknown user function)",0
+unknown_primative_text                  u8  " (unknown primative)",0
+error_loading_exodus_ini_1              u8  " ERROR - An error occurred while parsing EXODUS.INI.",0
+error_loading_exodus_ini_2              u8  " ERROR - Exodus cannot find a required boot file: EXODUS.INI",0
+error_loading_exodus_ini_3              u8  " ERROR - Exodus found multiple EXODUS.INI files on the boot drive.",0
+error_loading_exodus_ini_4              u8  "          Please correct this problem and try booting again.",0
+system_halted                           u8  " System is stopped.  Please press RESET or power down to restart.",0
+found_it_text                           u8  " (found it!)",0
 
-line_text                               u8   "Line xxxxxx"
-parse_expected_bracket_paren            u8   "Expected [ or (",0
-parse_expected_paren                    u8   "Expected (",0
-parse_unexpected_end_of_file            u8   "Unexpected end of file",0
-parse_bracket_group_name_too_long       u8   "[] name is too long, can only be 4 characters",0
+line_text                               u8  "Line xxxxxx"
+parse_expected_bracket_paren            u8  "Expected [ or (",0
+parse_expected_paren                    u8  "Expected (",0
+parse_unexpected_end_of_file            u8  "Unexpected end of file",0
+parse_bracket_group_name_too_long       u8  "[] name is too long, can only be 4 characters",0
 
-loading_primatives_displayed            u8   _NO
-loading_primatives                      u8   "þ Loading primatives",0
-loading_drivers                         u8   "þ Loading drivers",0
-next_item                               u8   "  - ",0
-last_item                               u8   "  + ",0
-comma_space                             u8   ", ",0
+loading_primatives_displayed            u8  _NO
+loading_primatives                      u8  "þ Loading primatives",0
+loading_drivers                         u8  "þ Loading drivers",0
+next_item                               u8  "  - ",0
+last_item                               u8  "  + ",0
+comma_space                             u8  ", ",0
 
 // Boot screen
 bootscreen_start:
@@ -53,112 +53,112 @@ bootscreen_end:
 
 // These functions are required during bootup
 //
-_EXODUS_requestor                       u16  0
-_VID_clear_screen_vga                   u16  0
-_VID_display_decimal_in_edx_nr_vga      u16  _sEXODUS_REQUESTOR
-_VID_display_string_ecx_nr_vga          u16  0f000h
-_VID_display_string_ecx_vga             u16  0f000h
-_VID_display_string_nr_vga              u16  0f000h
-_VID_display_string_vga                 u16  0f000h
-_VID_freeze_frame_vga                   u16  0f000h
-_VID_position_cursor_vga                u16  0f000h
-_VID_mono_enter_graphics_mode           u16  0f000h
-_VID_g_mono_display_text                u16  0f000h
-_VID_g_mono_display_text_mode           u16  0f000h
-_VID_g_mono_clear_screen                u16  0f000h
-_VID_g_set_font_8x8                     u16  0f000h
-_VID_g_set_font_8x14                    u16  0f000h
-_VID_g_set_font_16x16                   u16  0f000h
-_VID_draw_logo                          u16  0f000h
-_VID_requestor                          u16  0f000h
-_VID_g_display_radix_in_edx_mono        u16  0f000h
-_VID_freeze_frame_mono                  u16  0f000h
-_VID_move_to_next_line_vga              u16  0f000h
-_VID_set_attribute_vga                  u16  0f000h
-_EXODUS_dot_com                         u16  0f000h
-_VID_draw_exodus_boot_screen            u16  0f000h
-                                        u16  0f000h
-                                        u16  0f000h
+_EXODUS_requestor                       u16 0
+_VID_clear_screen_vga                   u16 0
+_VID_display_decimal_in_edx_nr_vga      u16 _sEXODUS_REQUESTOR
+_VID_display_string_ecx_nr_vga          u16 0f000h
+_VID_display_string_ecx_vga             u16 0f000h
+_VID_display_string_nr_vga              u16 0f000h
+_VID_display_string_vga                 u16 0f000h
+_VID_freeze_frame_vga                   u16 0f000h
+_VID_position_cursor_vga                u16 0f000h
+_VID_mono_enter_graphics_mode           u16 0f000h
+_VID_g_mono_display_text                u16 0f000h
+_VID_g_mono_display_text_mode           u16 0f000h
+_VID_g_mono_clear_screen                u16 0f000h
+_VID_g_set_font_8x8                     u16 0f000h
+_VID_g_set_font_8x14                    u16 0f000h
+_VID_g_set_font_16x16                   u16 0f000h
+_VID_draw_logo                          u16 0f000h
+_VID_requestor                          u16 0f000h
+_VID_g_display_radix_in_edx_mono        u16 0f000h
+_VID_freeze_frame_mono                  u16 0f000h
+_VID_move_to_next_line_vga              u16 0f000h
+_VID_set_attribute_vga                  u16 0f000h
+_EXODUS_dot_com                         u16 0f000h
+_VID_draw_exodus_boot_screen            u16 0f000h
+                                        u16 0f000h
+                                        u16 0f000h
 
 
 
-required_native_primatives              u8   20, "VID_clear_screen_vga"
-                                        u8   33, "VID_display_decimal_in_edx_nr_vga"
-                                        u8   29, "VID_display_string_ecx_nr_vga"
-                                        u8   26, "VID_display_string_ecx_vga"
-                                        u8   25, "VID_display_string_nr_vga"
-                                        u8   22, "VID_display_string_vga"
-                                        u8   20, "VID_freeze_frame_vga"
-                                        u8   23, "VID_position_cursor_vga"
-                                        u8   28, "VID_mono_enter_graphics_mode"
-                                        u8   23, "VID_g_mono_display_text"
-                                        u8   28, "VID_g_mono_display_text_mode"
-                                        u8   23, "VID_g_mono_clear_screen"
-                                        u8   18, "VID_g_set_font_8x8"
-                                        u8   19, "VID_g_set_font_8x14"
-                                        u8   20, "VID_g_set_font_16x16"
-                                        u8   13, "VID_draw_logo"
-                                        u8   13, "VID_requestor"
-                                        u8   31, "VID_g_display_radix_in_edx_mono"
-                                        u8   21, "VID_freeze_frame_mono"
-                                        u8   25, "VID_move_to_next_line_vga"
-                                        u8   21, "VID_set_attribute_vga"
-                                        u8   14, "EXODUS_dot_com"
-                                        u8   27, "VID_draw_exodus_boot_screen"
-                                        u8   0ffh
+required_native_primatives              u8  20, "VID_clear_screen_vga"
+                                        u8  33, "VID_display_decimal_in_edx_nr_vga"
+                                        u8  29, "VID_display_string_ecx_nr_vga"
+                                        u8  26, "VID_display_string_ecx_vga"
+                                        u8  25, "VID_display_string_nr_vga"
+                                        u8  22, "VID_display_string_vga"
+                                        u8  20, "VID_freeze_frame_vga"
+                                        u8  23, "VID_position_cursor_vga"
+                                        u8  28, "VID_mono_enter_graphics_mode"
+                                        u8  23, "VID_g_mono_display_text"
+                                        u8  28, "VID_g_mono_display_text_mode"
+                                        u8  23, "VID_g_mono_clear_screen"
+                                        u8  18, "VID_g_set_font_8x8"
+                                        u8  19, "VID_g_set_font_8x14"
+                                        u8  20, "VID_g_set_font_16x16"
+                                        u8  13, "VID_draw_logo"
+                                        u8  13, "VID_requestor"
+                                        u8  31, "VID_g_display_radix_in_edx_mono"
+                                        u8  21, "VID_freeze_frame_mono"
+                                        u8  25, "VID_move_to_next_line_vga"
+                                        u8  21, "VID_set_attribute_vga"
+                                        u8  14, "EXODUS_dot_com"
+                                        u8  27, "VID_draw_exodus_boot_screen"
+                                        u8  0ffh
 
 
 
-//_KBD_get_a_key                          u16  0f000h     //    u8   13, "KBD_get_a_key"
-//_VID_display_decimal_in_edx_vga         u16  0f000h     //    u8   30, "VID_display_decimal_in_edx_vga"
-//_VID_display_hex_string_ecx_nr_vga      u16  0f000h     //    u8   33, "VID_display_hex_string_ecx_nr_vga"
-//_VID_display_hex_string_ecx_ro_vga      u16  0f000h     //    u8   33, "VID_display_hex_string_ecx_ro_vga"
-//_VID_display_hex_string_ecx_vga         u16  0f000h     //    u8   30, "VID_display_hex_string_ecx_vga"
-//_VID_display_hexidecimal_in_edx_nr_vga  u16  0f000h     //    u8   37, "VID_display_hexidecimal_in_edx_nr_vga"
-//_VID_display_hexidecimal_in_edx_vga     u16  0f000h     //    u8   34, "VID_display_hexidecimal_in_edx_vga"
-//_VID_display_radix_in_edx_nr_vga        u16  0f000h     //    u8   31, "VID_display_radix_in_edx_nr_vga"
-//_VID_display_radix_in_edx_vga           u16  0f000h     //    u8   28, "VID_display_radix_in_edx_vga"
-//_VID_get_cursor_vga                     u16  0f000h     //    u8   18, "VID_get_cursor_vga"
-//_VID_move_to_next_line_vga              u16  0f000h     //    u8   25, "VID_move_to_next_line_vga"
-//_VID_set_attribute_vga                  u16  0f000h     //    u8   21, "VID_set_attribute_vga"
-//_VID_set_registers_for_vga              u16  0f000h     //    u8   25, "VID_set_registers_for_vga"
-//_VID_clear_screen_mono                  u16  0f000h     //    u8   21, "VID_clear_screen_mono"
-//_VID_display_decimal_in_edx_mono        u16  0f000h     //    u8   31, "VID_display_decimal_in_edx_mono"
-//_VID_display_decimal_in_edx_nr_mono     u16  0f000h     //    u8   34, "VID_display_decimal_in_edx_nr_mono"
-//_VID_display_hex_string_ecx_mono        u16  0f000h     //    u8   31, "VID_display_hex_string_ecx_mono"
-//_VID_display_hex_string_ecx_nr_mono     u16  0f000h     //    u8   34, "VID_display_hex_string_ecx_nr_mono"
-//_VID_display_hex_string_ecx_ro_mono     u16  0f000h     //    u8   34, "VID_display_hex_string_ecx_ro_mono"
-//_VID_display_hexidecimal_in_edx_mono    u16  0f000h     //    u8   35, "VID_display_hexidecimal_in_edx_mono"
-//_VID_display_hexidecimal_in_edx_nr_mono u16  0f000h     //    u8   38, "VID_display_hexidecimal_in_edx_nr_mono"
-//_VID_display_radix_in_edx_mono          u16  0f000h     //    u8   29, "VID_display_radix_in_edx_mono"
-//_VID_display_radix_in_edx_nr_mono       u16  0f000h     //    u8   32, "VID_display_radix_in_edx_nr_mono"
-//_VID_display_string_ecx_mono            u16  0f000h     //    u8   27, "VID_display_string_ecx_mono"
-//_VID_display_string_ecx_nr_mono         u16  0f000h     //    u8   30, "VID_display_string_ecx_nr_mono"
-//_VID_display_string_mono                u16  0f000h     //    u8   23, "VID_display_string_mono"
-//_VID_display_string_nr_mono             u16  0f000h     //    u8   26, "VID_display_string_nr_mono"
-//_VID_get_cursor_mono                    u16  0f000h     //    u8   19, "VID_get_cursor_mono"
-//_VID_move_to_next_line_mono             u16  0f000h     //    u8   26, "VID_move_to_next_line_mono"
-//_VID_position_cursor_mono               u16  0f000h     //    u8   24, "VID_position_cursor_mono"
-//_VID_set_attribute_mono                 u16  0f000h     //    u8   22, "VID_set_attribute_mono"
-//_VID_set_registers_for_mono             u16  0f000h     //    u8   26, "VID_set_registers_for_mono"
-//_VID_clear_screen_both                  u16  0f000h     //    u8   21, "VID_clear_screen_both"
-//_VID_display_decimal_in_edx_both        u16  0f000h     //    u8   31, "VID_display_decimal_in_edx_both"
-//_VID_display_decimal_in_edx_nr_both     u16  0f000h     //    u8   34, "VID_display_decimal_in_edx_nr_both"
-//_VID_display_hex_string_ecx_both        u16  0f000h     //    u8   31, "VID_display_hex_string_ecx_both"
-//_VID_display_hex_string_ecx_nr_both     u16  0f000h     //    u8   34, "VID_display_hex_string_ecx_nr_both"
-//_VID_display_hex_string_ecx_ro_both     u16  0f000h     //    u8   34, "VID_display_hex_string_ecx_ro_both"
-//_VID_display_hexidecimal_in_edx_both    u16  0f000h     //    u8   35, "VID_display_hexidecimal_in_edx_both"
-//_VID_display_hexidecimal_in_edx_nr_both u16  0f000h     //    u8   38, "VID_display_hexidecimal_in_edx_nr_both"
-//_VID_display_string_both                u16  0f000h     //    u8   23, "VID_display_string_both"
-//_VID_display_radix_in_edx_nr_both       u16  0f000h     //    u8   32, "VID_display_radix_in_edx_nr_both"
-//_VID_display_string_ecx_both            u16  0f000h     //    u8   27, "VID_display_string_ecx_both"
-//_VID_display_string_ecx_nr_both         u16  0f000h     //    u8   30, "VID_display_string_ecx_nr_both"
-//_VID_display_string_nr_both             u16  0f000h     //    u8   26, "VID_display_string_nr_both"
-//_VID_freeze_frame_both                  u16  0f000h     //    u8   21, "VID_freeze_frame_both"
-//_VID_move_to_next_line_both             u16  0f000h     //    u8   26, "VID_move_to_next_line_both"
-//_VID_position_cursor_both               u16  0f000h     //    u8   24, "VID_position_cursor_both"
-//_VID_set_attribute_both                 u16  0f000h     //    u8   22, "VID_set_attribute_both"
-//_VID_mono_enter_text_mode               u16  0f000h     //    u8   24, "VID_mono_enter_text_mode"
+//_KBD_get_a_key                          u16 0f000h     //    u8  13, "KBD_get_a_key"
+//_VID_display_decimal_in_edx_vga         u16 0f000h     //    u8  30, "VID_display_decimal_in_edx_vga"
+//_VID_display_hex_string_ecx_nr_vga      u16 0f000h     //    u8  33, "VID_display_hex_string_ecx_nr_vga"
+//_VID_display_hex_string_ecx_ro_vga      u16 0f000h     //    u8  33, "VID_display_hex_string_ecx_ro_vga"
+//_VID_display_hex_string_ecx_vga         u16 0f000h     //    u8  30, "VID_display_hex_string_ecx_vga"
+//_VID_display_hexidecimal_in_edx_nr_vga  u16 0f000h     //    u8  37, "VID_display_hexidecimal_in_edx_nr_vga"
+//_VID_display_hexidecimal_in_edx_vga     u16 0f000h     //    u8  34, "VID_display_hexidecimal_in_edx_vga"
+//_VID_display_radix_in_edx_nr_vga        u16 0f000h     //    u8  31, "VID_display_radix_in_edx_nr_vga"
+//_VID_display_radix_in_edx_vga           u16 0f000h     //    u8  28, "VID_display_radix_in_edx_vga"
+//_VID_get_cursor_vga                     u16 0f000h     //    u8  18, "VID_get_cursor_vga"
+//_VID_move_to_next_line_vga              u16 0f000h     //    u8  25, "VID_move_to_next_line_vga"
+//_VID_set_attribute_vga                  u16 0f000h     //    u8  21, "VID_set_attribute_vga"
+//_VID_set_registers_for_vga              u16 0f000h     //    u8  25, "VID_set_registers_for_vga"
+//_VID_clear_screen_mono                  u16 0f000h     //    u8  21, "VID_clear_screen_mono"
+//_VID_display_decimal_in_edx_mono        u16 0f000h     //    u8  31, "VID_display_decimal_in_edx_mono"
+//_VID_display_decimal_in_edx_nr_mono     u16 0f000h     //    u8  34, "VID_display_decimal_in_edx_nr_mono"
+//_VID_display_hex_string_ecx_mono        u16 0f000h     //    u8  31, "VID_display_hex_string_ecx_mono"
+//_VID_display_hex_string_ecx_nr_mono     u16 0f000h     //    u8  34, "VID_display_hex_string_ecx_nr_mono"
+//_VID_display_hex_string_ecx_ro_mono     u16 0f000h     //    u8  34, "VID_display_hex_string_ecx_ro_mono"
+//_VID_display_hexidecimal_in_edx_mono    u16 0f000h     //    u8  35, "VID_display_hexidecimal_in_edx_mono"
+//_VID_display_hexidecimal_in_edx_nr_mono u16 0f000h     //    u8  38, "VID_display_hexidecimal_in_edx_nr_mono"
+//_VID_display_radix_in_edx_mono          u16 0f000h     //    u8  29, "VID_display_radix_in_edx_mono"
+//_VID_display_radix_in_edx_nr_mono       u16 0f000h     //    u8  32, "VID_display_radix_in_edx_nr_mono"
+//_VID_display_string_ecx_mono            u16 0f000h     //    u8  27, "VID_display_string_ecx_mono"
+//_VID_display_string_ecx_nr_mono         u16 0f000h     //    u8  30, "VID_display_string_ecx_nr_mono"
+//_VID_display_string_mono                u16 0f000h     //    u8  23, "VID_display_string_mono"
+//_VID_display_string_nr_mono             u16 0f000h     //    u8  26, "VID_display_string_nr_mono"
+//_VID_get_cursor_mono                    u16 0f000h     //    u8  19, "VID_get_cursor_mono"
+//_VID_move_to_next_line_mono             u16 0f000h     //    u8  26, "VID_move_to_next_line_mono"
+//_VID_position_cursor_mono               u16 0f000h     //    u8  24, "VID_position_cursor_mono"
+//_VID_set_attribute_mono                 u16 0f000h     //    u8  22, "VID_set_attribute_mono"
+//_VID_set_registers_for_mono             u16 0f000h     //    u8  26, "VID_set_registers_for_mono"
+//_VID_clear_screen_both                  u16 0f000h     //    u8  21, "VID_clear_screen_both"
+//_VID_display_decimal_in_edx_both        u16 0f000h     //    u8  31, "VID_display_decimal_in_edx_both"
+//_VID_display_decimal_in_edx_nr_both     u16 0f000h     //    u8  34, "VID_display_decimal_in_edx_nr_both"
+//_VID_display_hex_string_ecx_both        u16 0f000h     //    u8  31, "VID_display_hex_string_ecx_both"
+//_VID_display_hex_string_ecx_nr_both     u16 0f000h     //    u8  34, "VID_display_hex_string_ecx_nr_both"
+//_VID_display_hex_string_ecx_ro_both     u16 0f000h     //    u8  34, "VID_display_hex_string_ecx_ro_both"
+//_VID_display_hexidecimal_in_edx_both    u16 0f000h     //    u8  35, "VID_display_hexidecimal_in_edx_both"
+//_VID_display_hexidecimal_in_edx_nr_both u16 0f000h     //    u8  38, "VID_display_hexidecimal_in_edx_nr_both"
+//_VID_display_string_both                u16 0f000h     //    u8  23, "VID_display_string_both"
+//_VID_display_radix_in_edx_nr_both       u16 0f000h     //    u8  32, "VID_display_radix_in_edx_nr_both"
+//_VID_display_string_ecx_both            u16 0f000h     //    u8  27, "VID_display_string_ecx_both"
+//_VID_display_string_ecx_nr_both         u16 0f000h     //    u8  30, "VID_display_string_ecx_nr_both"
+//_VID_display_string_nr_both             u16 0f000h     //    u8  26, "VID_display_string_nr_both"
+//_VID_freeze_frame_both                  u16 0f000h     //    u8  21, "VID_freeze_frame_both"
+//_VID_move_to_next_line_both             u16 0f000h     //    u8  26, "VID_move_to_next_line_both"
+//_VID_position_cursor_both               u16 0f000h     //    u8  24, "VID_position_cursor_both"
+//_VID_set_attribute_both                 u16 0f000h     //    u8  22, "VID_set_attribute_both"
+//_VID_mono_enter_text_mode               u16 0f000h     //    u8  24, "VID_mono_enter_text_mode"
 
 
 
@@ -167,21 +167,21 @@ required_native_primatives              u8   20, "VID_clear_screen_vga"
 // But, this is only displayed before VGA and KBD support is available.
 // After that the invSetup_native_primates() function takes control and allows selective non-install, etc.
 //
-failed                                  u8   "FAILED",13,10
-                                        u8   13,10
-                                        u8   " An Exodus Driver failed to initialize properly",13,10
-                                        u8   " This was before VGA and keyboard support was available (to allow user action)",13,10
-                                        u8   " For this reason Exodus cannot continue to boot",13,10
-                                        u8   13,10
-                                        u8   13,10
-                                        u8   13,10
-                                        u8   13,10
-                                        u8   13,10
-                                        u8   13,10
-                                        u8   "-----",13,10
-                                        u8   " Please attempt to correct this problem and try again",13,10
-                                        u8   13,10
-                                        u8   " If the problem persists, you can reach us online (use a friend's computer)",13,10
-                                        u8   "  - http://www.beatleworks.com/boot_trouble",13,10
-                                        u8   "  + boot_trouble@beatleworks.com",13,10
+failed                                  u8  "FAILED",13,10
+                                        u8  13,10
+                                        u8  " An Exodus Driver failed to initialize properly",13,10
+                                        u8  " This was before VGA and keyboard support was available (to allow user action)",13,10
+                                        u8  " For this reason Exodus cannot continue to boot",13,10
+                                        u8  13,10
+                                        u8  13,10
+                                        u8  13,10
+                                        u8  13,10
+                                        u8  13,10
+                                        u8  13,10
+                                        u8  "-----",13,10
+                                        u8  " Please attempt to correct this problem and try again",13,10
+                                        u8  13,10
+                                        u8  " If the problem persists, you can reach us online (use a friend's computer)",13,10
+                                        u8  "  - http://www.beatleworks.com/boot_trouble",13,10
+                                        u8  "  + boot_trouble@beatleworks.com",13,10
 failed_end:

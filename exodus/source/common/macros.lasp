@@ -11,9 +11,9 @@ macro callfp
 {{
 // This macro:   callfp  _code_seg, _offset
 //
-    u8   9ah
-    u32  _offset
-    u16  _seg
+    u8  9ah
+    u32 _offset
+    u16 _seg
 }}
 
 
@@ -23,9 +23,9 @@ macro callg
 || _seg
 {{
 // This macro:   callg   _call_gate
-    u8   9ah
-    u32  0
-    u16  _seg
+    u8  9ah
+    u32 0
+    u16 _seg
 }}
 
 
@@ -35,9 +35,9 @@ macro jmpg
 || _seg
 {{
 // This macro:   jmpg    _call_gate
-    u8   0eah
-    u32  0
-    u16  _seg
+    u8  0eah
+    u32 0
+    u16 _seg
 }}
 
 

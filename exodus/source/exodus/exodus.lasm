@@ -81,7 +81,7 @@ dd  offset requestor
         } else if (eax == 'id  ') {
           // Display this program's ID on the VGA monitor
             mov     esi,offset driver_name
-            call    <u48> cs:_VID_display_string_nr_vga
+            call    u48 ptr cs:_VID_display_string_nr_vga
             clc
         
         } else if (eax == 'note') {
@@ -89,7 +89,7 @@ dd  offset requestor
             mov     eax,'stop'
             mov     ebx,'load'
             mov     esi,offset driver_name
-            call    <u48> cs:_EXODUS_requestor
+            call    u48 ptr cs:_EXODUS_requestor
         
         } else {
             stc
@@ -112,25 +112,25 @@ dd  offset requestor
         push    0                                                   // lower-right
         mov     eax,_sSYSTEM
         mov     ds,eax
-        movzx   eax,<u16> ds:[_SYSTEM_VGA_HORIZONTAL]            // width
-        movzx   ebx,<u16> ds:[_SYSTEM_VGA_VERTICAL]              // height
+        movzx   eax,u16 ptr ds:[_SYSTEM_VGA_HORIZONTAL]            // width
+        movzx   ebx,u16 ptr ds:[_SYSTEM_VGA_VERTICAL]              // height
         mov     ds,cs:data_segment
         mov     ds:desktop_width,eax
         mov     ds:desktop_height,ebx
         push    eax
         push    ebx
         push    0                                                   // color
-        call    <u48> ds:_VID_g_fill_rectangle
+        call    u48 ptr ds:_VID_g_fill_rectangle
 
        // Create the main window
         invEXODUS_create_desktop()
 
        // Set focus on the main Exodus program
         mov     ax,1                                                // This task's handle
-        call    <u48> ds:_TASK_set_focus
+        call    u48 ptr ds:_TASK_set_focus
 
 
-//        call    <u48> ds:_VID_test_routine
+//        call    u48 ptr ds:_VID_test_routine
 
 ;;
 ;;
@@ -145,10 +145,10 @@ dd  offset requestor
 ;;
         mov     ds,cs:data_segment
         mov     ds:booting_up,0
-        call    <u48> ds:_TASK_read_events
+        call    u48 ptr ds:_TASK_read_events
         while (cs:shutdown != 10101010b)
         {
-            call    <u48> cs:_Exodus_TASK_release_timeslice
+            call    u48 ptr cs:_Exodus_TASK_release_timeslice
         }
 
 ;;
@@ -204,24 +204,24 @@ dd  offset requestor
        // Create the desktop
         mov     eax,1                                               // This task's handle
         mov     esi,offset exodus_desktop
-        call    <u48> ds:_OBJECT_create_base_object
+        call    u48 ptr ds:_OBJECT_create_base_object
 
        // Add items to the desktop
         xor     ebx,ebx
         mov     esi,offset exodus_bar_rectangle                     // Rectangle beneath the Exodus button
-        call    <u48> ds:_OBJECT_create_object
+        call    u48 ptr ds:_OBJECT_create_object
 
         mov     esi,offset exodus_bar_line                          // Line above the rectangle
-        call    <u48> ds:_OBJECT_create_object
+        call    u48 ptr ds:_OBJECT_create_object
 
         mov     esi,offset exodus_button_border                     // Box around the Exodus button
-        call    <u48> ds:_OBJECT_create_object
+        call    u48 ptr ds:_OBJECT_create_object
 
         mov     esi,offset exodus_button_text                       // The "Exodus" text
-        call    <u48> ds:_OBJECT_create_object
+        call    u48 ptr ds:_OBJECT_create_object
 
         mov     esi,offset exodus_button_logo_rectangle             // The Exodus button logo rectangle
-        call    <u48> ds:_OBJECT_create_object
+        call    u48 ptr ds:_OBJECT_create_object
 
         pop     esi
         pop     eax
@@ -239,7 +239,7 @@ dd  offset requestor
         mov     es,ax
         repeat
         {
-            mov     al,<u8>  cs:[esi]
+            mov     al,u8 ptr cs:[esi]
             inc     esi
             stosb
             mov     al,7
@@ -261,49 +261,49 @@ dd  offset requestor
 
 
 // DATA
-    driver_name                             u8   "Exodus Operating System",0
-    version                                 u8   "10.10.2010 BETA",0
-    copyright                               u8   "(c) Copyright Beatleworks, Inc.",0
-    author                                  u8   "Rick C. Hodgin",0
-    bootup                                  u8   1                   // Changed to 0 after initial bootup is complete
+    driver_name                             u8  "Exodus Operating System",0
+    version                                 u8  "10.10.2010 BETA",0
+    copyright                               u8  "(c) Copyright Beatleworks, Inc.",0
+    author                                  u8  "Rick C. Hodgin",0
+    bootup                                  u8  1                   // Changed to 0 after initial bootup is complete
 
-    exodus_button                           u8   "Exodus",0
+    exodus_button                           u8  "Exodus",0
 
-    booting_up                              u32  1                   // Changed to 0 after Exodus.com has fully initialized itself
-    shutdown                                u32  0
-    data_segment                            u16  0
+    booting_up                              u32 1                   // Changed to 0 after Exodus.com has fully initialized itself
+    shutdown                                u32 0
+    data_segment                            u16 0
 
 
-    _EXODUS_requestor                       u16  0
+    _EXODUS_requestor                       u16 0
   primative_call_gates:
-    _TASK_set_focus                         u16  0
-    _VID_display_string_nr_vga              u16  _sEXODUS_REQUESTOR
-    _VID_g_fill_rectangle                   u16  0f000h
-    _OBJECT_create_base_object              u16  0f000h
-    _OBJECT_create_object                   u16  0f000h
-    _VID_g_derive_color                     u16  0f000h
-    _TASK_read_events                       u16  0f000h
-    _Exodus_TASK_release_timeslice          u16  0f000h
-                                            u16  0f000h
-                                            u16  0f000h
+    _TASK_set_focus                         u16 0
+    _VID_display_string_nr_vga              u16 _sEXODUS_REQUESTOR
+    _VID_g_fill_rectangle                   u16 0f000h
+    _OBJECT_create_base_object              u16 0f000h
+    _OBJECT_create_object                   u16 0f000h
+    _VID_g_derive_color                     u16 0f000h
+    _TASK_read_events                       u16 0f000h
+    _Exodus_TASK_release_timeslice          u16 0f000h
+                                            u16 0f000h
+                                            u16 0f000h
 
-    required_primatives                     u8   14, "TASK_set_focus"
-                                            u8   25, "VID_display_string_nr_vga"
-                                            u8   20, "VID_g_fill_rectangle"
-                                            u8   25, "OBJECT_create_base_object"
-                                            u8   20, "OBJECT_create_object"
-                                            u8   18, "VID_g_derive_color"
-                                            u8   16, "TASK_read_events"
-                                            u8   29, "Exodus_TASK_release_timeslice"
-                                            u8   0ffh
+    required_primatives                     u8  14, "TASK_set_focus"
+                                            u8  25, "VID_display_string_nr_vga"
+                                            u8  20, "VID_g_fill_rectangle"
+                                            u8  25, "OBJECT_create_base_object"
+                                            u8  20, "OBJECT_create_object"
+                                            u8  18, "VID_g_derive_color"
+                                            u8  16, "TASK_read_events"
+                                            u8  29, "Exodus_TASK_release_timeslice"
+                                            u8  0ffh
 
  end_of_required_data:
     driver_primatives:
-                                            u8   14, "EXODUS_dot_com"
-                                            u32  offset EXODUS_dot_com
-                                            u16  0
+                                            u8  14, "EXODUS_dot_com"
+                                            u32 offset EXODUS_dot_com
+                                            u16 0
 
-                                            u16  0ffffh              // Teriminator
+                                            u16 0ffffh              // Teriminator
 
 }
 // text32

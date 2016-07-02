@@ -57,7 +57,7 @@ dd  offset requestor
         } else if (eax == 'id  ') {
           // Display this program's ID on the VGA monitor
             mov     esi,offset driver_name
-            call    <u48> cs:_VID_display_string_nr_vga
+            call    u48 ptr cs:_VID_display_string_nr_vga
             clc
         
         } else if (eax == 'note') {
@@ -65,7 +65,7 @@ dd  offset requestor
             mov     eax,'stop'
             mov     ebx,'load'
             mov     esi,offset driver_name
-            call    <u48> cs:_EXODUS_requestor
+            call    u48 ptr cs:_EXODUS_requestor
         
         } else {
             stc
@@ -105,34 +105,34 @@ dd  offset requestor
     // This routine initializes the keyboard to ensure it's setup correctly
        // Display the logo on the bootup screen
         mov     esi,offset mouse_logo
-        call    <u48> ds:_VID_draw_logo
+        call    u48 ptr ds:_VID_draw_logo
 
        // Point IRQ12 to the MOUSE ISR
         mov     eax,'bint'
         mov     bl,7ch                                              // IRQ 12
         mov     ecx,1
         mov     edx,offset MOUSE_handler                            // Offset to the mouse ISR
-        call    <u48> ds:_EXODUS_requestor
+        call    u48 ptr ds:_EXODUS_requestor
 
        // Disable IRQ12
         mov     ah,12
-        call    <u48> ds:_BIOS_iPIC_mask_irq
+        call    u48 ptr ds:_BIOS_iPIC_mask_irq
 
        // Tell the 8042 controller to issue IRQ12 each time the mouse input buffer has data
         mov     ah,060h
-        call    <u48> ds:_iBIOS_write_8042_64h
+        call    u48 ptr ds:_iBIOS_write_8042_64h
         mov     ah,01000111b
-        call    <u48> ds:_iBIOS_write_8042_60h
+        call    u48 ptr ds:_iBIOS_write_8042_60h
 
        // Enable the PS/2 mouse
         mov     ah,0d4h
-        call    <u48> ds:_iBIOS_write_8042_64h
+        call    u48 ptr ds:_iBIOS_write_8042_64h
         mov     ah,0f4h                                             // Enable the mouse
-        call    <u48> ds:_iBIOS_write_8042_60h
+        call    u48 ptr ds:_iBIOS_write_8042_60h
 
        // Enable IRQ12
         mov     ah,12
-        call    <u48> ds:_BIOS_iPIC_unmask_irq
+        call    u48 ptr ds:_BIOS_iPIC_unmask_irq
         mov     ds:packet_count,-1                                  // The mouse will send a one byte response
         clc
         ret
@@ -178,7 +178,7 @@ dd  offset requestor
            // Store the byte
             mov     esi,offset mouse_buffer
             mov     ebx,cs:packet_count
-            mov     <u8>  ds:[esi+ebx],al
+            mov     u8 ptr ds:[esi+ebx],al
             inc     ds:packet_count
             if (ebx >= 2)
             {
@@ -187,14 +187,14 @@ dd  offset requestor
                 mov     esi,offset mouse_buffer
 
                // Get the buttons and sign
-                movzx   ebx,<u8>  ds:[esi+0]
+                movzx   ebx,u8 ptr ds:[esi+0]
                 and     ebx,0111b                                   // ebx = button status
 
                // Get the delta-x
-                movsx   eax,<u8>  ds:[esi+1]
+                movsx   eax,u8 ptr ds:[esi+1]
 
                // Get the delta-y
-                movsx   edx,<u8>  ds:[esi+2]
+                movsx   edx,u8 ptr ds:[esi+2]
                 neg     edx                                         // The logical mouse system goes from 0 to max_y in a negative
                                                                     // direction (0 is top, max_y is bottom of screen).  For this
                                                                     // reason the sign of this delta-y value is reversed.
@@ -204,10 +204,10 @@ dd  offset requestor
               //             ebx = button status
                 if (ds:debi_intercept == 1)
                 {
-                    call    <u48> ds:_iDEBI_mouse_interface
+                    call    u48 ptr ds:_iDEBI_mouse_interface
                 
                 } else {
-                    call    <u48> ds:_iTASK_mouse_interface
+                    call    u48 ptr ds:_iTASK_mouse_interface
                 }
             }
         }
@@ -260,7 +260,7 @@ dd  offset requestor
             mov     ds:_mouseX,bx
 
             // Call DEBI's bochs mouse handler
-            call    <u48> ds:_iDEBI_bochs_mouse_interface
+            call    u48 ptr ds:_iDEBI_bochs_mouse_interface
         }
 
         popad
@@ -298,101 +298,101 @@ dd  offset requestor
 
 
 // DATA
-    driver_name                             u8   "PS/2 Mouse Driver",0
-    version                                 u8   "10.10.2010 BETA",0
-    copyright                               u8   "(c) Copyright Beatleworks, Inc.",0
-    author                                  u8   "Rick C. Hodgin",0
-    bootup                                  u8   1                   // Changed to 0 after bootup is complete
+    driver_name                             u8  "PS/2 Mouse Driver",0
+    version                                 u8  "10.10.2010 BETA",0
+    copyright                               u8  "(c) Copyright Beatleworks, Inc.",0
+    author                                  u8  "Rick C. Hodgin",0
+    bootup                                  u8  1                   // Changed to 0 after bootup is complete
 
-    data_segment                            u16  0
-    debi_intercept                          u8   0
-    packet_count                            u32  0
+    data_segment                            u16 0
+    debi_intercept                          u8  0
+    packet_count                            u32 0
 
-    _rightClick                             u8   0                                       // Right ctrl-key status
-    _leftClick                              u8   0
-    _middleClick                            u8   0
-    _mouseX                                 u16  0
-    _mouseY                                 u16  0
+    _rightClick                             u8  0                                       // Right ctrl-key status
+    _leftClick                              u8  0
+    _middleClick                            u8  0
+    _mouseX                                 u16 0
+    _mouseY                                 u16 0
 
-    mouse_buffer                            u8   3 dup(0)
+    mouse_buffer                            u8  3 dup(0)
 
-    mouse_logo                              u8   0           // * Refer to VGA\INF\VGA.INF for information on this byte's format
-                                            u8   00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,07h,07h,07h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,00h,00h,00h,00h,07h,07h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,00h,00h,00h,07h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,00h,00h,00h,07h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,00h,0fh,0fh,0fh,00h,0fh,0fh,0fh,00h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,0fh,10h,10h,10h,00h,10h,10h,10h,0fh,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,0fh,10h,10h,10h,00h,10h,10h,10h,0fh,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,0fh,10h,10h,10h,00h,10h,10h,10h,0fh,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,0fh,00h,00h,00h,00h,00h,00h,00h,0fh,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,11h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,11h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,08h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,08h,00h,00h,00h,00h,00h
-                                            u8   00h,00h,00h,00h,00h,07h,0fh,0fh,0fh,0fh,0fh,07h,00h,00h,00h,00h,00h,00h
-                                            u8   35h,35h,35h
-                                            u8   30h,30h,30h
+    mouse_logo                              u8  0           // * Refer to VGA\INF\VGA.INF for information on this byte's format
+                                            u8  00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,07h,07h,07h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,00h,00h,00h,00h,07h,07h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,00h,00h,00h,07h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,00h,00h,00h,07h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,00h,0fh,0fh,0fh,00h,0fh,0fh,0fh,00h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,0fh,10h,10h,10h,00h,10h,10h,10h,0fh,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,0fh,10h,10h,10h,00h,10h,10h,10h,0fh,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,0fh,10h,10h,10h,00h,10h,10h,10h,0fh,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,0fh,00h,00h,00h,00h,00h,00h,00h,0fh,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,11h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,11h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,08h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,08h,00h,00h,00h,00h,00h
+                                            u8  00h,00h,00h,00h,00h,07h,0fh,0fh,0fh,0fh,0fh,07h,00h,00h,00h,00h,00h,00h
+                                            u8  35h,35h,35h
+                                            u8  30h,30h,30h
 
 
-    _EXODUS_requestor                       u16  0
+    _EXODUS_requestor                       u16 0
   primative_call_gates:
-    _VID_draw_logo                          u16  0
-    _VID_display_string_nr_vga              u16  _sEXODUS_REQUESTOR
-    _iDEBI_mouse_interface                  u16  0f000h
-    _BIOS_iPIC_unmask_irq                   u16  0f000h
-    _BIOS_iPIC_mask_irq                     u16  0f000h
-    _iBIOS_write_8042_64h                   u16  0f000h
-    _iBIOS_write_8042_60h                   u16  0f000h
-    _iBIOS_read_8042_64h                    u16  0f000h
-    _iBIOS_read_8042_60h                    u16  0f000h
-    _iBIOS_read_8042_64h_fast               u16  0f000h
-    _iBIOS_read_8042_60h_fast               u16  0f000h
-    _iBIOS_write_8042_64h_fast              u16  0f000h
-    _iBIOS_write_8042_60h_fast              u16  0f000h
-    _TIMER_wait_full_tick                   u16  0f000h
-    _TIMER_wait_x_ticks                     u16  0f000h
-    _iTASK_mouse_interface                  u16  0f000h
-    _iDEBI_bochs_mouse_interface            u16  0f000h
-                                            u16  0f000h
-                                            u16  0f000h
+    _VID_draw_logo                          u16 0
+    _VID_display_string_nr_vga              u16 _sEXODUS_REQUESTOR
+    _iDEBI_mouse_interface                  u16 0f000h
+    _BIOS_iPIC_unmask_irq                   u16 0f000h
+    _BIOS_iPIC_mask_irq                     u16 0f000h
+    _iBIOS_write_8042_64h                   u16 0f000h
+    _iBIOS_write_8042_60h                   u16 0f000h
+    _iBIOS_read_8042_64h                    u16 0f000h
+    _iBIOS_read_8042_60h                    u16 0f000h
+    _iBIOS_read_8042_64h_fast               u16 0f000h
+    _iBIOS_read_8042_60h_fast               u16 0f000h
+    _iBIOS_write_8042_64h_fast              u16 0f000h
+    _iBIOS_write_8042_60h_fast              u16 0f000h
+    _TIMER_wait_full_tick                   u16 0f000h
+    _TIMER_wait_x_ticks                     u16 0f000h
+    _iTASK_mouse_interface                  u16 0f000h
+    _iDEBI_bochs_mouse_interface            u16 0f000h
+                                            u16 0f000h
+                                            u16 0f000h
 
-    required_primatives                     u8   13, "VID_draw_logo"
-                                            u8   25, "VID_display_string_nr_vga"
-                                            u8   21, "iDEBI_mouse_interface"
-                                            u8   20, "BIOS_iPIC_unmask_irq"
-                                            u8   18, "BIOS_iPIC_mask_irq"
-                                            u8   20, "iBIOS_write_8042_64h"
-                                            u8   20, "iBIOS_write_8042_60h"
-                                            u8   19, "iBIOS_read_8042_64h"
-                                            u8   19, "iBIOS_read_8042_60h"
-                                            u8   24, "iBIOS_read_8042_64h_fast"
-                                            u8   24, "iBIOS_read_8042_60h_fast"
-                                            u8   25, "iBIOS_write_8042_64h_fast"
-                                            u8   25, "iBIOS_write_8042_60h_fast"
-                                            u8   20, "TIMER_wait_full_tick"
-                                            u8   18, "TIMER_wait_x_ticks"
-                                            u8   21, "iTASK_mouse_interface"
-                                            u8   27, "iDEBI_bochs_mouse_interface"
-                                            u8   0ffh
+    required_primatives                     u8  13, "VID_draw_logo"
+                                            u8  25, "VID_display_string_nr_vga"
+                                            u8  21, "iDEBI_mouse_interface"
+                                            u8  20, "BIOS_iPIC_unmask_irq"
+                                            u8  18, "BIOS_iPIC_mask_irq"
+                                            u8  20, "iBIOS_write_8042_64h"
+                                            u8  20, "iBIOS_write_8042_60h"
+                                            u8  19, "iBIOS_read_8042_64h"
+                                            u8  19, "iBIOS_read_8042_60h"
+                                            u8  24, "iBIOS_read_8042_64h_fast"
+                                            u8  24, "iBIOS_read_8042_60h_fast"
+                                            u8  25, "iBIOS_write_8042_64h_fast"
+                                            u8  25, "iBIOS_write_8042_60h_fast"
+                                            u8  20, "TIMER_wait_full_tick"
+                                            u8  18, "TIMER_wait_x_ticks"
+                                            u8  21, "iTASK_mouse_interface"
+                                            u8  27, "iDEBI_bochs_mouse_interface"
+                                            u8  0ffh
 
  end_of_required_data:
 
-    driver_primatives                       u8   30, "iMOUSE_activate_DEBI_intercept"
-                                            u32  offset iMOUSE_activate_DEBI_intercept
-                                            u16  0
+    driver_primatives                       u8  30, "iMOUSE_activate_DEBI_intercept"
+                                            u32 offset iMOUSE_activate_DEBI_intercept
+                                            u16 0
 
-                                            u8   32, "iMOUSE_deactivate_DEBI_intercept"
-                                            u32  offset iMOUSE_deactivate_DEBI_intercept
-                                            u16  0
+                                            u8  32, "iMOUSE_deactivate_DEBI_intercept"
+                                            u32 offset iMOUSE_deactivate_DEBI_intercept
+                                            u16 0
 
-                                            u8   27, "iMOUSE_bochs_DEBI_intercept"
-                                            u32  offset iMOUSE_bochs_DEBI_intercept
-                                            u16  0
+                                            u8  27, "iMOUSE_bochs_DEBI_intercept"
+                                            u32 offset iMOUSE_bochs_DEBI_intercept
+                                            u16 0
 
-                                            u16  0ffffh              // Teriminator
+                                            u16 0ffffh              // Teriminator
 
 }
 // text32

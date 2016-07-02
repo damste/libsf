@@ -60,14 +60,14 @@ dd  offset requestor
         } else if (eax == 'id  ') {
           // Display this program's ID on the VGA monitor
             mov     esi,offset driver_name
-            call    <u48> cs:_VID_display_string_nr_vga
+            call    u48 ptr cs:_VID_display_string_nr_vga
             clc
         
         } else if (eax == 'note') {
             mov     eax,'stop'
             mov     ebx,'load'
             mov     esi,offset driver_name
-            call    <u48> cs:_EXODUS_requestor
+            call    u48 ptr cs:_EXODUS_requestor
         
         } else {
             stc
@@ -105,7 +105,7 @@ dd  offset requestor
     // This routine is used to initialize the driver
     // But, there is no initialization in this system
         mov     esi,offset x86_boot_logo
-        call    <u48> cs:_VID_draw_logo
+        call    u48 ptr cs:_VID_draw_logo
         clc
         ret
     }
@@ -124,67 +124,67 @@ dd  offset requestor
 
 
 // DATA
-    driver_name                             u8   "Low-Level x86 Disassember",0
-    version                                 u8   "10.10.2010 BETA",0
-    copyright                               u8   "(c) Copyright Beatleworks, Inc.",0
-    author                                  u8   "Rick C. Hodgin",0
-    x86_text                                u8   "x86 Disassembler",0
-    beatleworks_text                        u8   "(c) Beatleworks, Inc.",0
+    driver_name                             u8  "Low-Level x86 Disassember",0
+    version                                 u8  "10.10.2010 BETA",0
+    copyright                               u8  "(c) Copyright Beatleworks, Inc.",0
+    author                                  u8  "Rick C. Hodgin",0
+    x86_text                                u8  "x86 Disassembler",0
+    beatleworks_text                        u8  "(c) Beatleworks, Inc.",0
 
-    data_segment                            u16  0
+    data_segment                            u16 0
 
-    _EXODUS_requestor                       u16  0
+    _EXODUS_requestor                       u16 0
   primative_call_gates:
-    _VID_draw_logo                          u16  0
-    _VID_display_string_nr_vga              u16  _sEXODUS_REQUESTOR
-    _VID_display_string_mono                u16  0f000h
-                                            u16  0f000h
-                                            u16  0f000h
+    _VID_draw_logo                          u16 0
+    _VID_display_string_nr_vga              u16 _sEXODUS_REQUESTOR
+    _VID_display_string_mono                u16 0f000h
+                                            u16 0f000h
+                                            u16 0f000h
 
-    required_primatives                     u8   13, "VID_draw_logo"
-                                            u8   25, "VID_display_string_nr_vga"
-                                            u8   23, "VID_display_string_mono"
-                                            u8   0ffh
+    required_primatives                     u8  13, "VID_draw_logo"
+                                            u8  25, "VID_display_string_nr_vga"
+                                            u8  23, "VID_display_string_mono"
+                                            u8  0ffh
 
     // This logo consists of a one-wide image
-    x86_boot_logo                           u8   89h         // * Refer to VGA\INF\VGA.INF for information on this byte's format
-                                            u8   11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,09h,09h,09h,09h,09h,09h,09h,09h,11h,11h,11h,11h,09h,09h,09h,09h,09h,09h,09h,09h,11h,11h,11h
-                                            u8   11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,09h,10h,10h,01h,10h,10h,01h,10h,10h,09h,11h,11h,09h,10h,10h,01h,10h,10h,01h,10h,10h,09h,11h,11h
-                                            u8   11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,09h,10h,10h,01h,10h,10h,01h,10h,10h,09h,11h,11h,09h,10h,10h,01h,10h,10h,01h,10h,10h,09h,11h,11h
-                                            u8   11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,09h,01h,01h,09h,09h,09h,09h,01h,01h,09h,11h,11h,09h,01h,01h,09h,09h,09h,09h,09h,09h,09h,11h,11h
-                                            u8   11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,09h,10h,10h,09h,11h,11h,09h,10h,10h,09h,11h,11h,09h,10h,10h,09h,11h,11h,11h,11h,11h,11h,11h,11h
-                                            u8   11h,11h,11h,09h,09h,09h,11h,11h,11h,09h,09h,09h,11h,11h,09h,10h,10h,09h,11h,11h,09h,10h,10h,09h,11h,11h,09h,10h,10h,09h,11h,11h,11h,11h,11h,11h,11h,11h
-                                            u8   11h,11h,09h,01h,01h,01h,09h,11h,09h,01h,01h,01h,09h,11h,09h,01h,01h,09h,09h,09h,09h,01h,01h,09h,11h,11h,09h,01h,01h,09h,09h,09h,09h,09h,09h,11h,11h,11h
-                                            u8   11h,11h,09h,01h,01h,01h,09h,11h,09h,01h,01h,01h,09h,11h,09h,10h,10h,01h,10h,10h,01h,10h,10h,09h,11h,11h,09h,10h,10h,01h,10h,10h,01h,10h,10h,09h,11h,11h
-                                            u8   11h,11h,11h,09h,01h,01h,01h,09h,01h,01h,01h,09h,11h,11h,09h,10h,10h,01h,10h,10h,01h,10h,10h,09h,11h,11h,09h,10h,10h,01h,10h,10h,01h,10h,10h,09h,11h,11h
-                                            u8   11h,11h,11h,11h,09h,01h,01h,01h,01h,01h,09h,11h,11h,11h,09h,01h,01h,09h,09h,09h,09h,01h,01h,09h,11h,11h,09h,01h,01h,09h,09h,09h,09h,01h,01h,09h,11h,11h
-                                            u8   11h,11h,11h,11h,11h,09h,01h,01h,01h,09h,11h,11h,11h,11h,09h,10h,10h,09h,11h,11h,09h,10h,10h,09h,11h,11h,09h,10h,10h,09h,11h,11h,09h,10h,10h,09h,11h,11h
-                                            u8   11h,11h,11h,11h,09h,01h,01h,01h,01h,01h,09h,11h,11h,11h,09h,10h,10h,09h,11h,11h,09h,10h,10h,09h,11h,11h,09h,10h,10h,09h,11h,11h,09h,10h,10h,09h,11h,11h
-                                            u8   11h,11h,11h,09h,01h,01h,01h,09h,01h,01h,01h,09h,11h,11h,09h,01h,01h,09h,09h,09h,09h,01h,01h,09h,11h,11h,09h,01h,01h,09h,09h,09h,09h,01h,01h,09h,11h,11h
-                                            u8   11h,11h,09h,01h,01h,01h,09h,11h,09h,01h,01h,01h,09h,11h,09h,10h,10h,01h,10h,10h,01h,10h,10h,09h,11h,11h,09h,10h,10h,01h,10h,10h,01h,10h,10h,09h,11h,11h
-                                            u8   11h,11h,09h,01h,01h,01h,09h,11h,09h,01h,01h,01h,09h,11h,09h,10h,10h,01h,10h,10h,01h,10h,10h,09h,11h,11h,09h,10h,10h,01h,10h,10h,01h,10h,10h,09h,11h,11h
-                                            u8   11h,11h,11h,09h,09h,09h,11h,11h,11h,09h,09h,09h,11h,11h,11h,09h,09h,09h,09h,09h,09h,09h,09h,11h,11h,11h,11h,09h,09h,09h,09h,09h,09h,09h,09h,11h,11h,11h
-                                            u8   0,0,45      // Slightly brighter blue
-                                            u8   0,0,21      // Darker background blue
+    x86_boot_logo                           u8  89h         // * Refer to VGA\INF\VGA.INF for information on this byte's format
+                                            u8  11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,09h,09h,09h,09h,09h,09h,09h,09h,11h,11h,11h,11h,09h,09h,09h,09h,09h,09h,09h,09h,11h,11h,11h
+                                            u8  11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,09h,10h,10h,01h,10h,10h,01h,10h,10h,09h,11h,11h,09h,10h,10h,01h,10h,10h,01h,10h,10h,09h,11h,11h
+                                            u8  11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,09h,10h,10h,01h,10h,10h,01h,10h,10h,09h,11h,11h,09h,10h,10h,01h,10h,10h,01h,10h,10h,09h,11h,11h
+                                            u8  11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,09h,01h,01h,09h,09h,09h,09h,01h,01h,09h,11h,11h,09h,01h,01h,09h,09h,09h,09h,09h,09h,09h,11h,11h
+                                            u8  11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,11h,09h,10h,10h,09h,11h,11h,09h,10h,10h,09h,11h,11h,09h,10h,10h,09h,11h,11h,11h,11h,11h,11h,11h,11h
+                                            u8  11h,11h,11h,09h,09h,09h,11h,11h,11h,09h,09h,09h,11h,11h,09h,10h,10h,09h,11h,11h,09h,10h,10h,09h,11h,11h,09h,10h,10h,09h,11h,11h,11h,11h,11h,11h,11h,11h
+                                            u8  11h,11h,09h,01h,01h,01h,09h,11h,09h,01h,01h,01h,09h,11h,09h,01h,01h,09h,09h,09h,09h,01h,01h,09h,11h,11h,09h,01h,01h,09h,09h,09h,09h,09h,09h,11h,11h,11h
+                                            u8  11h,11h,09h,01h,01h,01h,09h,11h,09h,01h,01h,01h,09h,11h,09h,10h,10h,01h,10h,10h,01h,10h,10h,09h,11h,11h,09h,10h,10h,01h,10h,10h,01h,10h,10h,09h,11h,11h
+                                            u8  11h,11h,11h,09h,01h,01h,01h,09h,01h,01h,01h,09h,11h,11h,09h,10h,10h,01h,10h,10h,01h,10h,10h,09h,11h,11h,09h,10h,10h,01h,10h,10h,01h,10h,10h,09h,11h,11h
+                                            u8  11h,11h,11h,11h,09h,01h,01h,01h,01h,01h,09h,11h,11h,11h,09h,01h,01h,09h,09h,09h,09h,01h,01h,09h,11h,11h,09h,01h,01h,09h,09h,09h,09h,01h,01h,09h,11h,11h
+                                            u8  11h,11h,11h,11h,11h,09h,01h,01h,01h,09h,11h,11h,11h,11h,09h,10h,10h,09h,11h,11h,09h,10h,10h,09h,11h,11h,09h,10h,10h,09h,11h,11h,09h,10h,10h,09h,11h,11h
+                                            u8  11h,11h,11h,11h,09h,01h,01h,01h,01h,01h,09h,11h,11h,11h,09h,10h,10h,09h,11h,11h,09h,10h,10h,09h,11h,11h,09h,10h,10h,09h,11h,11h,09h,10h,10h,09h,11h,11h
+                                            u8  11h,11h,11h,09h,01h,01h,01h,09h,01h,01h,01h,09h,11h,11h,09h,01h,01h,09h,09h,09h,09h,01h,01h,09h,11h,11h,09h,01h,01h,09h,09h,09h,09h,01h,01h,09h,11h,11h
+                                            u8  11h,11h,09h,01h,01h,01h,09h,11h,09h,01h,01h,01h,09h,11h,09h,10h,10h,01h,10h,10h,01h,10h,10h,09h,11h,11h,09h,10h,10h,01h,10h,10h,01h,10h,10h,09h,11h,11h
+                                            u8  11h,11h,09h,01h,01h,01h,09h,11h,09h,01h,01h,01h,09h,11h,09h,10h,10h,01h,10h,10h,01h,10h,10h,09h,11h,11h,09h,10h,10h,01h,10h,10h,01h,10h,10h,09h,11h,11h
+                                            u8  11h,11h,11h,09h,09h,09h,11h,11h,11h,09h,09h,09h,11h,11h,11h,09h,09h,09h,09h,09h,09h,09h,09h,11h,11h,11h,11h,09h,09h,09h,09h,09h,09h,09h,09h,11h,11h,11h
+                                            u8  0,0,45      // Slightly brighter blue
+                                            u8  0,0,21      // Darker background blue
 
  end_of_required_data:
-    driver_primatives                       u8   15, "x86_disassemble"
-                                            u32  offset x86_disassemble
-                                            u16  0
+    driver_primatives                       u8  15, "x86_disassemble"
+                                            u32 offset x86_disassemble
+                                            u16 0
 
-                                            u8   24, "x86_simplify_disassembly"
-                                            u32  offset x86_simplify_disassembly
-                                            u16  0
+                                            u8  24, "x86_simplify_disassembly"
+                                            u32 offset x86_simplify_disassembly
+                                            u16 0
 
-                                            u8   12, "x86_assemble"
-                                            u32  offset x86_assemble
-                                            u16  0
+                                            u8  12, "x86_assemble"
+                                            u32 offset x86_assemble
+                                            u16 0
 
-                                            u8   14, "x86_fpu_opcode"
-                                            u32  offset x86_fpu_opcode
-                                            u16  0
+                                            u8  14, "x86_fpu_opcode"
+                                            u32 offset x86_fpu_opcode
+                                            u16 0
 
-                                            u16  0ffffh              // Teriminator
+                                            u16 0ffffh              // Teriminator
 
 }
 // text32

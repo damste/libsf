@@ -60,14 +60,14 @@ dd  offset requestor
         } else if (eax == 'id  ') {
           // Display this program's ID on the VGA monitor
              mov     esi,offset driver_name
-            call    <u48> cs:_VID_display_string_nr_vga
+            call    u48 ptr cs:_VID_display_string_nr_vga
             clc
         
         } else if (eax == 'note') {
             mov     eax,'stop'
             mov     ebx,'load'
             mov     esi,offset driver_name
-            call    <u48> cs:_EXODUS_requestor
+            call    u48 ptr cs:_EXODUS_requestor
         
         } else {
             stc
@@ -104,7 +104,7 @@ dd  offset requestor
     // This routine is used to initialize the driver
     // But, there is no initialization in this system
         mov     esi,offset cv_boot_logo
-        call    <u48> cs:_VID_draw_logo
+        call    u48 ptr cs:_VID_draw_logo
         clc
         ret
     }
@@ -122,54 +122,54 @@ dd  offset requestor
 
 // DATA
 // This header is part of a continuous NULL-terminated structure
-    driver_name                             u8   "Low-Level CodeView Reader",0
-    version                                 u8   "10.10.2010 BETA",0
-    copyright                               u8   "(c) Copyright Beatleworks, Inc.",0
-    author                                  u8   "Rick C. Hodgin",0
-    cv_reader_text                          u8   "CodeView Reader",0
-    beatleworks_text                        u8   "(c) Beatleworks, Inc.",0
+    driver_name                             u8  "Low-Level CodeView Reader",0
+    version                                 u8  "10.10.2010 BETA",0
+    copyright                               u8  "(c) Copyright Beatleworks, Inc.",0
+    author                                  u8  "Rick C. Hodgin",0
+    cv_reader_text                          u8  "CodeView Reader",0
+    beatleworks_text                        u8  "(c) Beatleworks, Inc.",0
 
-    data_segment                            u16  0
+    data_segment                            u16 0
 
-    _EXODUS_requestor                       u16  0
+    _EXODUS_requestor                       u16 0
   primative_call_gates:
-    _VID_draw_logo                          u16  0
-    _VID_display_string_nr_vga              u16  _sEXODUS_REQUESTOR
-    _VID_display_string_mono                u16  0f000h
-                                            u16  0f000h
-                                            u16  0f000h
+    _VID_draw_logo                          u16 0
+    _VID_display_string_nr_vga              u16 _sEXODUS_REQUESTOR
+    _VID_display_string_mono                u16 0f000h
+                                            u16 0f000h
+                                            u16 0f000h
 
-    required_primatives                     u8   13, "VID_draw_logo"
-                                            u8   25, "VID_display_string_nr_vga"
-                                            u8   23, "VID_display_string_mono"
-                                            u8   0ffh
+    required_primatives                     u8  13, "VID_draw_logo"
+                                            u8  25, "VID_display_string_nr_vga"
+                                            u8  23, "VID_display_string_mono"
+                                            u8  0ffh
 
     // This logo consists of a one-wide image
-    cv_boot_logo                            u8   88h         // * Refer to VGA\INF\VGA.INF for information on this byte's format
-                                            u8   10h,10h,10h,10h,10h,10h,09h,09h,09h,09h,09h,09h,09h,10h,10h,10h,10h,10h
-                                            u8   10h,10h,10h,10h,09h,0eh,01h,0eh,01h,01h,01h,01h,01h,09h,09h,10h,10h,10h
-                                            u8   10h,10h,0fh,0fh,01h,04h,0ch,0ch,04h,01h,0fh,0fh,0fh,01h,01h,09h,10h,10h
-                                            u8   10h,0fh,09h,01h,0fh,04h,0ch,0ch,04h,0fh,09h,09h,01h,0fh,01h,01h,09h,10h
-                                            u8   10h,09h,01h,01h,01h,0ch,0ch,0ch,0ch,10h,10h,10h,09h,01h,01h,01h,09h,10h
-                                            u8   10h,09h,01h,0fh,0fh,0ch,0ch,0ch,0ch,0fh,0fh,10h,10h,09h,09h,09h,10h,10h
-                                            u8   10h,09h,0fh,01h,01h,04h,0ch,0ch,04h,10h,10h,0fh,0fh,10h,10h,10h,10h,10h
-                                            u8   10h,0fh,01h,01h,01h,0fh,0ch,0ch,0fh,10h,10h,10h,10h,0fh,10h,10h,10h,10h
-                                            u8   10h,09h,01h,01h,0fh,01h,09h,10h,10h,0fh,10h,10h,10h,10h,10h,10h,10h,10h
-                                            u8   10h,09h,01h,01h,0fh,01h,09h,10h,10h,10h,0fh,10h,10h,10h,10h,10h,10h,10h
-                                            u8   10h,09h,01h,0fh,01h,01h,09h,10h,10h,10h,0fh,10h,10h,09h,09h,09h,10h,10h
-                                            u8   10h,09h,01h,0fh,01h,01h,01h,09h,10h,10h,10h,0fh,09h,01h,01h,01h,09h,10h
-                                            u8   10h,10h,09h,01h,01h,01h,01h,01h,09h,09h,09h,09h,01h,01h,01h,01h,09h,10h
-                                            u8   10h,10h,10h,09h,01h,01h,01h,01h,01h,01h,01h,01h,01h,01h,01h,09h,10h,10h
-                                            u8   10h,10h,10h,10h,09h,09h,01h,01h,01h,01h,01h,01h,01h,09h,09h,10h,10h,10h
-                                            u8   10h,10h,10h,10h,10h,10h,09h,09h,09h,09h,09h,09h,09h,10h,10h,10h,10h,10h
-                                            u8   0,0,15h     // A dark shade of blue for the background
+    cv_boot_logo                            u8  88h         // * Refer to VGA\INF\VGA.INF for information on this byte's format
+                                            u8  10h,10h,10h,10h,10h,10h,09h,09h,09h,09h,09h,09h,09h,10h,10h,10h,10h,10h
+                                            u8  10h,10h,10h,10h,09h,0eh,01h,0eh,01h,01h,01h,01h,01h,09h,09h,10h,10h,10h
+                                            u8  10h,10h,0fh,0fh,01h,04h,0ch,0ch,04h,01h,0fh,0fh,0fh,01h,01h,09h,10h,10h
+                                            u8  10h,0fh,09h,01h,0fh,04h,0ch,0ch,04h,0fh,09h,09h,01h,0fh,01h,01h,09h,10h
+                                            u8  10h,09h,01h,01h,01h,0ch,0ch,0ch,0ch,10h,10h,10h,09h,01h,01h,01h,09h,10h
+                                            u8  10h,09h,01h,0fh,0fh,0ch,0ch,0ch,0ch,0fh,0fh,10h,10h,09h,09h,09h,10h,10h
+                                            u8  10h,09h,0fh,01h,01h,04h,0ch,0ch,04h,10h,10h,0fh,0fh,10h,10h,10h,10h,10h
+                                            u8  10h,0fh,01h,01h,01h,0fh,0ch,0ch,0fh,10h,10h,10h,10h,0fh,10h,10h,10h,10h
+                                            u8  10h,09h,01h,01h,0fh,01h,09h,10h,10h,0fh,10h,10h,10h,10h,10h,10h,10h,10h
+                                            u8  10h,09h,01h,01h,0fh,01h,09h,10h,10h,10h,0fh,10h,10h,10h,10h,10h,10h,10h
+                                            u8  10h,09h,01h,0fh,01h,01h,09h,10h,10h,10h,0fh,10h,10h,09h,09h,09h,10h,10h
+                                            u8  10h,09h,01h,0fh,01h,01h,01h,09h,10h,10h,10h,0fh,09h,01h,01h,01h,09h,10h
+                                            u8  10h,10h,09h,01h,01h,01h,01h,01h,09h,09h,09h,09h,01h,01h,01h,01h,09h,10h
+                                            u8  10h,10h,10h,09h,01h,01h,01h,01h,01h,01h,01h,01h,01h,01h,01h,09h,10h,10h
+                                            u8  10h,10h,10h,10h,09h,09h,01h,01h,01h,01h,01h,01h,01h,09h,09h,10h,10h,10h
+                                            u8  10h,10h,10h,10h,10h,10h,09h,09h,09h,09h,09h,09h,09h,10h,10h,10h,10h,10h
+                                            u8  0,0,15h     // A dark shade of blue for the background
 
  end_of_required_data:
-    driver_primatives                       u8   8, "cv_parse"
-                                            u32  offset cv_parse
-                                            u16  0
+    driver_primatives                       u8  8, "cv_parse"
+                                            u32 offset cv_parse
+                                            u16 0
 
-                                            u16  0ffffh              // Teriminator
+                                            u16 0ffffh              // Teriminator
 
 }
 // text32

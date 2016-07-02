@@ -88,7 +88,7 @@ generate_disassembly:
 
   next_byte:
     xor     bx,bx
-    mov     ax,<u16> [si]
+    mov     ax,u16 ptr [si]
     xor     edx,edx
     cmp     al,066h
     jnz     @F
@@ -424,7 +424,7 @@ generate_disassembly:
                 mov     cx,2
               try_again5_success:
                 display_instruction()
-                mov     dx,<u16> [si-2]
+                mov     dx,u16 ptr [si-2]
                 show_register_16_no_color_signed()
                 add     di,6*2
                 show_new_cs_ip()
@@ -451,11 +451,11 @@ generate_disassembly:
                 mov     CS:special_reg,0
               try_again7_direction_1:
                 display_instruction()
-                mov     al,<u8>  [si-1]
+                mov     al,u8 ptr [si-1]
                 and     al,111b
                 display_register_name_special_reg()
                 display_comma()
-                mov     al,<u8>  [si-1]
+                mov     al,u8 ptr [si-1]
                 shr     al,3
                 and     al,111b
                 display_register_name_32()
@@ -465,11 +465,11 @@ generate_disassembly:
                 mov     CS:special_reg,0
               try_again7_direction_0:
                 display_instruction()
-                mov     al,<u8>  [si-1]
+                mov     al,u8 ptr [si-1]
                 and     al,111b
                 display_register_name_32()
                 display_comma()
-                mov     al,<u8>  [si-1]
+                mov     al,u8 ptr [si-1]
                 shr     al,3
                 and     al,111b
                 display_register_name_special_reg()
@@ -689,7 +689,7 @@ generate_disassembly:
             jmp     try_again14
           @@:
             // It's sldt, str, lldg, ltr, verr or verw
-                mov     dl,<u8>  [si+2]
+                mov     dl,u8 ptr [si+2]
                 shr     dl,3
                 and     dl,111b
                 cmp     dl,000b
@@ -759,7 +759,7 @@ generate_disassembly:
           @@:
             // It's sgdt, sidt, lgdt, lidt, smsw, lmsw or invlpg
                 mov     cx,4
-                mov     dl,<u8>  [si+2]
+                mov     dl,u8 ptr [si+2]
                 shr     dl,3
                 and     dl,111b
                 cmp     dl,000b
@@ -942,7 +942,7 @@ generate_disassembly:
           @@:
             // It's bt/btc/btr/btc
                 mov     cx,3
-                mov     dl,<u8>  [si+2]
+                mov     dl,u8 ptr [si+2]
                 shr     dl,3
                 and     dl,111b
                 cmp     dl,100b
@@ -1183,7 +1183,7 @@ generate_disassembly:
         mov     dx,offset retf_text
         mov     bl,3
         display_instruction()
-        mov     dx,<u16> [si-2]
+        mov     dx,u16 ptr [si-2]
         show_register_16_no_color()
         jmp     next_instruction
     
@@ -1252,7 +1252,7 @@ generate_disassembly:
         mov     dx,offset call_text
         mov     cx,4
         display_instruction()
-        mov     dx,<u16> [si-2]
+        mov     dx,u16 ptr [si-2]
         show_register_16_no_color_signed()
         add     di,6*2
         show_new_cs_ip()
@@ -1264,7 +1264,7 @@ generate_disassembly:
         mov     dx,offset call_text
         mov     cx,4
         display_instruction()
-        mov     edx,<u32> [si-4]
+        mov     edx,u32 ptr [si-4]
         show_register_32_no_color_signed()
         add     di,10*2
         show_new_cs_ip_far()
@@ -1336,11 +1336,11 @@ generate_disassembly:
         mov     dx,offset enter_text
         mov     cx,5
         display_instruction()
-        mov     dx,<u16> [si-3]
+        mov     dx,u16 ptr [si-3]
         show_register_16_no_color()
         add     di,4*2
         display_comma()
-        mov     dl,<u8>  [si-1]
+        mov     dl,u8 ptr [si-1]
         show_register_8_no_color()
         jmp     next_instruction
     
@@ -1349,7 +1349,7 @@ generate_disassembly:
         mov     bx,2
         mov     dx,offset int_text
         display_instruction()
-        mov     dl,<u8>  [si-1]
+        mov     dl,u8 ptr [si-1]
         show_register_8_no_color()
         jmp     next_instruction
     
@@ -1370,7 +1370,7 @@ generate_disassembly:
       show_new_disp1_address:
         display_instruction()
         xor     dx,dx
-        mov     dl,<u8>  [si-1]
+        mov     dl,u8 ptr [si-1]
         show_register_8_no_color_signed()
         add     di,4*2
         show_new_cs_ip()
@@ -1391,14 +1391,14 @@ generate_disassembly:
         {
             add     bx,2
             display_instruction()
-            mov     edx,<u32> [si-4]
+            mov     edx,u32 ptr [si-4]
             show_register_32_no_color()
             add     di,9*2
             show_new_cs_ip_far()
         
         } else {
             display_instruction()
-            mov     dx,<u16> [si-4]
+            mov     dx,u16 ptr [si-4]
             show_register_16_no_color()
             add     di,5*2
             show_new_cs_ip()
@@ -1413,16 +1413,16 @@ generate_disassembly:
         {
             add     bx,2
             display_instruction()
-            mov     dx,<u16> [si-6]
+            mov     dx,u16 ptr [si-6]
             show_register_16_no_color()
             add     di,4*2
             display_colon()
-            mov     edx,<u32> [si-4]
+            mov     edx,u32 ptr [si-4]
             show_register_32_no_color()
         
         } else {
             display_instruction()
-            mov     edx,<u32> [si-4]
+            mov     edx,u32 ptr [si-4]
             show_register_32_no_color()
             add     di,9*2
             show_new_cs_ip_far()
@@ -1467,7 +1467,7 @@ generate_disassembly:
             add     di,1*2
         }
         xor     dx,dx
-        mov     dl,<u8>  [si-1]
+        mov     dl,u8 ptr [si-1]
         show_register_8_no_color_signed()
         add     di,4*2
         show_new_cs_ip()
@@ -1490,7 +1490,7 @@ generate_disassembly:
         mov     bx,3
         mov     dx,offset ret_text
         display_instruction()
-        mov     dx,<u16> [si-2]
+        mov     dx,u16 ptr [si-2]
         show_register_16_no_color()
         jmp     next_instruction
     
@@ -1668,7 +1668,7 @@ generate_disassembly:
             mov     al,CONST_AL
             display_register_name_8()
             display_comma()
-            mov     dl,<u8>  [si-1]
+            mov     dl,u8 ptr [si-1]
             show_register_8_no_color()
         
         } else {
@@ -1680,7 +1680,7 @@ generate_disassembly:
                 mov     al,CONST_EAX
                 display_register_name_32()
                 display_comma()
-                mov     edx,<u32> [si-4]
+                mov     edx,u32 ptr [si-4]
                 show_register_32_no_color()
             
             } else {
@@ -1690,7 +1690,7 @@ generate_disassembly:
                 mov     al,CONST_AX
                 display_register_name_16()
                 display_comma()
-                mov     dx,<u16> [si-2]
+                mov     dx,u16 ptr [si-2]
                 show_register_16_no_color()
             }
         }
@@ -1787,7 +1787,7 @@ generate_disassembly:
             }
         }
         display_comma()
-        mov     dl,<u8>  [si-1]
+        mov     dl,u8 ptr [si-1]
         show_register_8_no_color()
         jmp     next_instruction
     
@@ -1797,7 +1797,7 @@ generate_disassembly:
         mov     dx,offset outsb_text
         mov     cx,3
         display_instruction()
-        mov     dl,<u8>  [si-1]
+        mov     dl,u8 ptr [si-1]
         show_register_8_no_color()
         add     di,2*2
         display_comma()
@@ -1940,7 +1940,7 @@ generate_disassembly:
     jmp     show_instruction
 
   @@:
-    mov     ah,<u8>  [si+1]
+    mov     ah,u8 ptr [si+1]
     shr     ah,3
     and     ah,111b
     if (dl == 1111111b)
@@ -1981,7 +1981,7 @@ generate_disassembly:
             mov     cx,3
             display_instruction_with_mod_rm()
             display_comma()
-            mov     edx,<u32> [si]
+            mov     edx,u32 ptr [si]
             if (CS:byte_word_size == 0)
             {
               // 8-bits
@@ -2045,7 +2045,7 @@ generate_disassembly:
             mov     dx,offset unknown_text
         }
         display_instruction_with_mod_rm()
-        mov     dl,<u8>  [si]
+        mov     dl,u8 ptr [si]
         mov     cx,1
         display_instruction_additional_bytes()
         display_comma()
@@ -2220,7 +2220,7 @@ generate_disassembly:
         and     dl,1b
         mov     CS:byte_word_size,dl
 
-        mov     ah,<u8>  [si+1]
+        mov     ah,u8 ptr [si+1]
         shr     ah,3
         and     ah,111b
         if (ah == 000b)
@@ -2260,7 +2260,7 @@ generate_disassembly:
         mov     bx,2
         display_instruction_with_mod_rm()
         display_comma()
-        mov     edx,<u32> [si]
+        mov     edx,u32 ptr [si]
         if (CS:byte_word_size == 0)
         {
           // 8-bits
@@ -2317,7 +2317,7 @@ generate_disassembly:
         mov     bx,1
         adjust_for_overrides()
         display_instruction()
-        mov     dx,<u16> [si]
+        mov     dx,u16 ptr [si]
         mov     cx,2
         display_instruction_additional_bytes()
         if (CS:reverse_regs == 1)
@@ -2356,7 +2356,7 @@ mov_show_part:
         mov     cx,3
         mov     bx,1
         display_instruction()
-        mov     al,<u8>  [si-1]
+        mov     al,u8 ptr [si-1]
         and     al,111b
         if (CS:op_size_override == 0)
         {
@@ -2384,7 +2384,7 @@ mov_show_part:
         mov     cx,4
       push_pop_locals:
         display_instruction()
-        mov     al,<u8>  [si-1]
+        mov     al,u8 ptr [si-1]
         and     al,0111b
         if (CS:op_size_override == 0)
         {
@@ -2415,14 +2415,14 @@ mov_show_part:
         {
             display_register_name_16()
             display_comma()
-            mov     al,<u8>  [si-1]
+            mov     al,u8 ptr [si-1]
             and     al,111b
             display_register_name_16()
         
         } else {
             display_register_name_32()
             display_comma()
-            mov     al,<u8>  [si-1]
+            mov     al,u8 ptr [si-1]
             and     al,111b
             display_register_name_32()
         }
@@ -2479,9 +2479,9 @@ mov_show_part:
         mov     dx,offset mov_text
         mov     cx,3
         display_instruction()
-        mov     al,<u8>  [si-1]
+        mov     al,u8 ptr [si-1]
         and     al,111b
-        mov     edx,<u32> [si]
+        mov     edx,u32 ptr [si]
         if (CS:byte_word_size == 0)
         {
           // 8-bit
@@ -2591,7 +2591,7 @@ mov_show_part:
             mov     cx,2
         }
         display_instruction()
-        movsx   dx,<u8>  [si-1]
+        movsx   dx,u8 ptr [si-1]
         show_register_8_no_color_signed()
         add     di,4*2
         show_new_cs_ip()
@@ -2630,7 +2630,7 @@ mov_show_part:
 // Check the FPU instructions
   check_fpu_instructions:
     // Check for FPU instructions
-    mov     ax,<u16> [si]
+    mov     ax,u16 ptr [si]
     mov     cx,4                                                    // Default to a 4-byte wide instruction name
     if (al == 0d8h)
     {
@@ -3362,43 +3362,43 @@ display_instruction_base:
     push    edx
 
     push    di                                                      // Save current screen pointer
-    mov     <u16> [bp-2],di
-    mov     <u32> [bp-6],0
-    mov     <u8>  [bp-6],al
-    mov     <u8>  [bp-6],ah
+    mov     u16 ptr [bp-2],di
+    mov     u32 ptr [bp-6],0
+    mov     u8 ptr [bp-6],al
+    mov     u8 ptr [bp-6],ah
 
     add     di,18 * 2
-    sub     di,<u16> [bp-4]
+    sub     di,u16 ptr [bp-4]
     write_screen_cs_edx_no_color()
 
     pop     di                                                      // Restore
   // Display the instruction byte(s)
     add     di,5 * 2                                                // Move over to display the instruction bytes
-    add     di,<u16> [bp-6]
+    add     di,u16 ptr [bp-6]
     push    di                                                      // Save the location of the start of the bytes
     xor     cx,cx
     mov     cl,bl
     cmp     cl,6
     jle     @F
-    mov     <u8>  es:[di+(10*2)],""                             // The max to display is 6, but if it's more than 6 we only
-    mov     <u8>  es:[di+(11*2)],""
+    mov     u8 ptr es:[di+(10*2)],""                             // The max to display is 6, but if it's more than 6 we only
+    mov     u8 ptr es:[di+(11*2)],""
     mov     cl,5                                                    // display 5 with an indicator that the instruction is longer
   @@:
     push    si
     display_instruction_bytes()
-    mov     <u16> [bp-8],di                                      // Store the ending location, in case they have additional bytes to print
+    mov     u16 ptr [bp-8],di                                      // Store the ending location, in case they have additional bytes to print
     pop     si
     add     si,bx
     pop     di                                                      // Restore the location of the start of the bytes
     add     di,21 * 2                                               // Point to the location for the parameters
-    sub     di,<u16> [bp-6]                                      // Take back the bytes we shifted over for the instruction bytes
+    sub     di,u16 ptr [bp-6]                                      // Take back the bytes we shifted over for the instruction bytes
 
     pop     edx
     pop     cx
     pop     ax
     if (ax != 0)
     {
-        mov     di,<u16> [bp-2]                                  // Something was shifted
+        mov     di,u16 ptr [bp-2]                                  // Something was shifted
     }
     ret
 
@@ -3421,34 +3421,34 @@ display_instruction_additional_bytes:
     pusha
 
     pusha
-    mov     ax,<u16> [bp-8]
+    mov     ax,u16 ptr [bp-8]
     xor     dx,dx
     mov     bx,80*2
     div     bx
     mov     ax,dx
     shr     ax,1
-    mov     <u16> [bp-10],ax
+    mov     u16 ptr [bp-10],ax
     popa
 
-    sub     <u16> [bp-10],22
-    neg     <u16> [bp-10]
+    sub     u16 ptr [bp-10],22
+    neg     u16 ptr [bp-10]
     shl     cx,1
     if (word ptr [bp-10] <= cx)
     {
       // We cannot display all the bytes
-        mov     cx,<u16> [bp-10]
+        mov     cx,u16 ptr [bp-10]
         dec     cx                                                  // Decrement for the 's
         shr     cx,1                                                // Two bytes are displayed for every each character
-        mov     di,<u16> [bp-2]
-        mov     <u8>  es:[di+(15*2)],""                         // The max to display is 6, but if it's more than 6 we only
-        mov     <u8>  es:[di+(16*2)],""
+        mov     di,u16 ptr [bp-2]
+        mov     u8 ptr es:[di+(15*2)],""                         // The max to display is 6, but if it's more than 6 we only
+        mov     u8 ptr es:[di+(16*2)],""
     
     } else {
         shr     cx,1
     }
     if (CX >= 1 && CX < 6)
     {
-        mov     di,<u16> [bp-8]
+        mov     di,u16 ptr [bp-8]
         display_instruction_bytes()
     }
     popa
@@ -4023,7 +4023,7 @@ display_instruction_with_mod_rm:
     adjust_for_overrides()
 
   // Get the mod,reg,r/m byte
-    mov     al,<u8>  [si+bx-1]
+    mov     al,u8 ptr [si+bx-1]
     mov     ah,al
     shr     ah,6
     if (ah == 11b)
@@ -4148,7 +4148,7 @@ display_instruction_with_mod_rm:
 
 
 display_instruction_with_mod_reg_rm_movxx:
-    mov     al,<u8>  [si+2]
+    mov     al,u8 ptr [si+2]
     shr     al,6
     if (al == 11b)
     {
@@ -4157,7 +4157,7 @@ display_instruction_with_mod_reg_rm_movxx:
         add     bx,CS:op_size_override
         display_instruction()
         display_segment_override()
-        mov     al,<u8>  [si-1]
+        mov     al,u8 ptr [si-1]
         mov     ah,al
         shr     al,3
         and     al,0111b
@@ -4187,7 +4187,7 @@ display_instruction_with_mod_reg_rm:
     adjust_for_overrides()
 
   // Get the mod,reg,r/m byte
-    mov     al,<u8>  [si+bx-1]
+    mov     al,u8 ptr [si+bx-1]
     mov     ah,al
     shr     ah,6
     if (ah == 11b)
@@ -4510,7 +4510,7 @@ part1_1:
 
 part1_1_disp8:
     part1_1_base()
-    mov     dl,<u8>  [si-1]
+    mov     dl,u8 ptr [si-1]
     show_register_8_no_color_signed()
     add     di,3*2
     display_close_bracket()
@@ -4518,7 +4518,7 @@ part1_1_disp8:
 
 part1_1_disp32:
     part1_1_base()
-    mov     edx,<u32> [si-4]
+    mov     edx,u32 ptr [si-4]
     show_register_32_no_color_signed()
     add     di,9*2
     display_close_bracket()
@@ -4609,7 +4609,7 @@ part1_2:
     and     al,0111b
     display_open_bracket()
     display_register_name_indirect_adr_size_override()
-    mov     edx,<u32> [si-4]
+    mov     edx,u32 ptr [si-4]
     show_register_32_no_color_signed()
     add     di,9*2
     display_close_bracket()
@@ -4631,7 +4631,7 @@ part1_3:
     and     al,0111b
     display_open_bracket()
     display_register_name_indirect_adr_size_override()
-    mov     dl,<u8>  [si-1]
+    mov     dl,u8 ptr [si-1]
     show_register_8_no_color_signed()
     add     di,3*2
     display_close_bracket()
@@ -4652,7 +4652,7 @@ part2_3:
 part1_4:
     and     al,0111b
     display_open_bracket()
-    mov     edx,<u32> [si-4]
+    mov     edx,u32 ptr [si-4]
     show_register_32_no_color()
     add     di,8*2
     display_close_bracket()
@@ -4693,7 +4693,7 @@ part1_6:
     and     al,0111b
     display_open_bracket()
     display_register_name_indirect_adr_size_override()
-    mov     dx,<u16> [si-2]
+    mov     dx,u16 ptr [si-2]
     show_register_16_no_color_signed()
     add     di,5*2
     display_close_bracket()
@@ -4715,7 +4715,7 @@ part1_7:
     and     al,0111b
     display_open_bracket()
     display_register_name_indirect_adr_size_override()
-    mov     dl,<u8>  [si-1]
+    mov     dl,u8 ptr [si-1]
     show_register_8_no_color_signed()
     add     di,3*2
     display_close_bracket()
@@ -4736,7 +4736,7 @@ part2_7:
 part1_8:
     and     al,0111b
     display_open_bracket()
-    mov     dx,<u16> [si-2]
+    mov     dx,u16 ptr [si-2]
     show_register_16_no_color()
     add     di,4*2
     display_close_bracket()

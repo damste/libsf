@@ -55,18 +55,18 @@ code xdebug
   // [bp-38], word, ss
 
 ;; Save all registers not already saved
-    mov     <u32> [bp-4],eax
-    mov     <u32> [bp-8],ebx
-    mov     <u32> [bp-12],ecx
-    mov     <u32> [bp-16],edx
-    mov     <u32> [bp-20],esi
-    mov     <u32> [bp-24],edi
-    mov     <u16> [bp-28],sp
-    mov     <u16> [bp-30],ds
-    mov     <u16> [bp-32],es
-    mov     <u16> [bp-34],fs
-    mov     <u16> [bp-36],gs
-    mov     <u16> [bp-38],ss
+    mov     u32 ptr [bp-4],eax
+    mov     u32 ptr [bp-8],ebx
+    mov     u32 ptr [bp-12],ecx
+    mov     u32 ptr [bp-16],edx
+    mov     u32 ptr [bp-20],esi
+    mov     u32 ptr [bp-24],edi
+    mov     u16 ptr [bp-28],sp
+    mov     u16 ptr [bp-30],ds
+    mov     u16 ptr [bp-32],es
+    mov     u16 ptr [bp-34],fs
+    mov     u16 ptr [bp-36],gs
+    mov     u16 ptr [bp-38],ss
     sti
 
   // Setup our expected segment references
@@ -98,10 +98,10 @@ code xdebug
     mov     bx,CS:current_sp
     if (AX == F8)
     {
-        or      <u16> SS:[bx+4],100000000b
+        or      u16 ptr SS:[bx+4],100000000b
     
     } else if (AX == F5 || AX == Escape) {
-        and     <u16> SS:[bx+4],not 100000000b
+        and     u16 ptr SS:[bx+4],not 100000000b
     
     } else {
         jmp     get_a_key
@@ -148,57 +148,57 @@ copy_debug_screen:
 display_registers:
   // eax
     mov     ebx,CS:last_eax
-    mov     edx,<u32> [bp-4]
+    mov     edx,u32 ptr [bp-4]
     mov     di,(1*80 + 72) * 2
     show_register_32()
   // ebx
     mov     ebx,CS:last_ebx
-    mov     edx,<u32> [bp-8]
+    mov     edx,u32 ptr [bp-8]
     mov     di,(2*80 + 72) * 2
     show_register_32()
   // ecx
     mov     ebx,CS:last_ecx
-    mov     edx,<u32> [bp-12]
+    mov     edx,u32 ptr [bp-12]
     mov     di,(3*80 + 72) * 2
     show_register_32()
   // edx
     mov     ebx,CS:last_edx
-    mov     edx,<u32> [bp-16]
+    mov     edx,u32 ptr [bp-16]
     mov     di,(4*80 + 72) * 2
     show_register_32()
   // esi
     mov     ebx,CS:last_esi
-    mov     edx,<u32> [bp-20]
+    mov     edx,u32 ptr [bp-20]
     mov     di,(5*80 + 72) * 2
     show_register_32()
   // edi
     mov     ebx,CS:last_edi
-    mov     edx,<u32> [bp-24]
+    mov     edx,u32 ptr [bp-24]
     mov     di,(6*80 + 72) * 2
     show_register_32()
   // ds
     mov     bx,CS:last_ds
-    mov     dx,<u16> [bp-30]
+    mov     dx,u16 ptr [bp-30]
     mov     di,(7*80 + 72) * 2
     show_register_16()
   // es
     mov     bx,CS:last_es
-    mov     dx,<u16> [bp-32]
+    mov     dx,u16 ptr [bp-32]
     mov     di,(8*80 + 72) * 2
     show_register_16()
   // fs
     mov     bx,CS:last_fs
-    mov     dx,<u16> [bp-34]
+    mov     dx,u16 ptr [bp-34]
     mov     di,(9*80 + 72) * 2
     show_register_16()
   // gs
     mov     bx,CS:last_gs
-    mov     dx,<u16> [bp-36]
+    mov     dx,u16 ptr [bp-36]
     mov     di,(10*80 + 72) * 2
     show_register_16()
   // ss
     mov     bx,CS:last_ss
-    mov     dx,<u16> [bp-38]
+    mov     dx,u16 ptr [bp-38]
     mov     di,(11*80 + 72) * 2
     show_register_16()
   // bp
@@ -213,19 +213,19 @@ display_registers:
     show_register_16()
   // cs
     mov     bx,CS:current_sp
-    mov     dx,<u16> SS:[bx+2]
+    mov     dx,u16 ptr SS:[bx+2]
     mov     bx,CS:last_cs
     mov     di,(14*80 + 72) * 2
     show_register_16()
   // ip
     mov     bx,CS:current_sp
-    mov     dx,<u16> SS:[bx+0]
+    mov     dx,u16 ptr SS:[bx+0]
     mov     bx,CS:last_ip
     mov     di,(15*80 + 75) * 2
     show_register_16()
   // flags
     mov     bx,CS:current_sp
-    mov     dx,<u16> SS:[bx+4]
+    mov     dx,u16 ptr SS:[bx+4]
     mov     bx,CS:last_flags
     mov     di,(16*80 + 75) * 2
     show_register_16()
@@ -576,7 +576,7 @@ show_register_32_no_color_signed:
 //-----------------------------------------------
 show_flags_status:
     mov     bx,CS:current_sp
-    mov     ax,<u16> SS:[bx+4]
+    mov     ax,u16 ptr SS:[bx+4]
   // Nested task
     mov     di,(17*80 + 70) * 2
     mov     bl,CS:last_nt_flag
@@ -634,7 +634,7 @@ show_flag:
     jz      flag_down
   flag_up:
   // The flag is up
-    mov     <u8>  CS:[si],1
+    mov     u8 ptr CS:[si],1
     if (bl == 0)
     {
       // It's changed, last time it was down
@@ -648,7 +648,7 @@ show_flag:
 
   flag_down:
   // The flag is down
-    mov     <u8>  CS:[si],0
+    mov     u8 ptr CS:[si],0
     if (bl == 1)
     {
       // It's changed, last time it was up
@@ -670,7 +670,7 @@ show_stack:
     add     si,6
     mov     di,(19*80 + 63) * 2                                     // Show the stack from line 19 up to
   show_stack_loop:
-    mov     bx,<u16> ss:[si]
+    mov     bx,u16 ptr ss:[si]
     mov     dx,bx
     show_register_16()
     add     si,2
@@ -683,8 +683,8 @@ show_stack:
 //-----------------------------------------------
 display_disassembly:
     mov     bx,CS:current_sp
-    mov     ds,<u16> SS:[bx+2]
-    mov     si,<u16> SS:[bx]
+    mov     ds,u16 ptr SS:[bx+2]
+    mov     si,u16 ptr SS:[bx]
     mov     di,0b000h
     mov     ES,di
     mov     di,1*80*2                                               // Start on the first line
@@ -711,45 +711,45 @@ copy_current_to_last:
     push    DS
     push    CS
     pop     DS
-    mov     eax,<u32> [bp-4]                                    // eax
+    mov     eax,u32 ptr [bp-4]                                    // eax
     mov     last_eax,eax
-    mov     eax,<u32> [bp-8]                                    // ebx
+    mov     eax,u32 ptr [bp-8]                                    // ebx
     mov     last_ebx,eax
-    mov     eax,<u32> [bp-12]                                   // ecx
+    mov     eax,u32 ptr [bp-12]                                   // ecx
     mov     last_ecx,eax
-    mov     eax,<u32> [bp-16]                                   // edx
+    mov     eax,u32 ptr [bp-16]                                   // edx
     mov     last_edx,eax
-    mov     eax,<u32> [bp-20]                                   // esi
+    mov     eax,u32 ptr [bp-20]                                   // esi
     mov     last_esi,eax
-    mov     eax,<u32> [bp-24]                                   // edi
+    mov     eax,u32 ptr [bp-24]                                   // edi
     mov     last_edi,eax
     mov     ax,CS:current_sp                                        // sp
     mov     last_sp,ax
-    mov     ax,<u16> [bp-30]                                     // ds
+    mov     ax,u16 ptr [bp-30]                                     // ds
     mov     last_ds,ax
-    mov     ax,<u16> [bp-32]                                     // es
+    mov     ax,u16 ptr [bp-32]                                     // es
     mov     last_es,ax
-    mov     ax,<u16> [bp-34]                                     // fs
+    mov     ax,u16 ptr [bp-34]                                     // fs
     mov     last_fs,ax
-    mov     ax,<u16> [bp-36]                                     // gs
+    mov     ax,u16 ptr [bp-36]                                     // gs
     mov     last_gs,ax
-    mov     ax,<u16> [bp-38]                                     // ss
+    mov     ax,u16 ptr [bp-38]                                     // ss
     mov     last_ss,ax
     mov     bx,current_sp                                           // cs
-    mov     ax,<u16> SS:[bx+2]
+    mov     ax,u16 ptr SS:[bx+2]
     mov     last_cs,ax
-    mov     ax,<u16> SS:[bx+0]                                   // ip
+    mov     ax,u16 ptr SS:[bx+0]                                   // ip
     mov     last_ip,ax
-    mov     ax,<u16> SS:[bx+4]                                   // flags
+    mov     ax,u16 ptr SS:[bx+4]                                   // flags
     mov     last_flags,ax
     mov     ax,current_bp                                           // bp
     mov     last_bp,ax
   // Update the FPU registers
-    mov     ax,<u16> save_fpu_state[0]                           // control word
+    mov     ax,u16 ptr save_fpu_state[0]                           // control word
     mov     last_cw,ax
-    mov     ax,<u16> save_fpu_state[2]                           // status word
+    mov     ax,u16 ptr save_fpu_state[2]                           // status word
     mov     last_sw,ax
-    mov     ax,<u16> save_fpu_state[4]                           // tag word
+    mov     ax,u16 ptr save_fpu_state[4]                           // tag word
     mov     last_tw,ax
     fld     tbyte ptr save_fpu_state[14]                            // st0
     fstp    tbyte ptr last_st0
@@ -777,47 +777,47 @@ copy_current_to_last:
 
 //=============================
 ;; Data used in this procedure
-    already_here    u8   0
-    already_here_2  u8   0
-    first_time      u8   0
+    already_here    u8  0
+    already_here_2  u8  0
+    first_time      u8  0
 
-    last_mem1_addr  u32  0ffffffffh
-    mem1_address    u32  0
-    mem1_seg        u8   10
-    mem1_offset     u8   24
+    last_mem1_addr  u32 0ffffffffh
+    mem1_address    u32 0
+    mem1_seg        u8  10
+    mem1_offset     u8  24
 
-    last_mem2_addr  u32  0ffffffffh
-    mem2_address    u32  0
-    mem2_seg        u8   0
-    mem2_offset     u8   1
+    last_mem2_addr  u32 0ffffffffh
+    mem2_address    u32 0
+    mem2_seg        u8  0
+    mem2_offset     u8  1
 
                                                             // Identified internally as:
-    last_cs         u16  0ffffh                              //  cs=0
-    last_ip         u16  0ffffh                              //  ip=1
-    last_bp         u16  0ffffh                              //  bp=2
-    last_eax        u32  0ffffffffh                          // eax=3, ax=20, ah=30, al=35
-    last_ebx        u32  0ffffffffh                          // ebx=4, bx=21, bh=31, bl=36
-    last_ecx        u32  0ffffffffh                          // ecx=5, cx=22, ch=32, cl=37
-    last_edx        u32  0ffffffffh                          // edx=6, dx=23, dh=33, dl=38
-    last_esi        u32  0ffffffffh                          // esi=7, si=24
-    last_edi        u32  0ffffffffh                          // edi=8, di=25
-    last_sp         u16  0ffffh                              //  sp=9
-    current_sp      u16  0
-    current_bp      u16  0
-    last_ds         u16  0ffffh                              // ds=10
-    last_es         u16  0ffffh                              // es=11
-    last_fs         u16  0ffffh                              // fs=12
-    last_gs         u16  0ffffh                              // gs=13
-    last_ss         u16  0ffffh                              // ss=14
-    last_flags      u16  0ffffh                              // flags=15
-    last_nt_flag    u8   0
-    last_of_flag    u8   0
-    last_df_flag    u8   0
-    last_pf_flag    u8   0
-    last_sf_flag    u8   0
-    last_zf_flag    u8   0
-    last_acf_flag   u8   0
-    last_cf_flag    u8   0
+    last_cs         u16 0ffffh                              //  cs=0
+    last_ip         u16 0ffffh                              //  ip=1
+    last_bp         u16 0ffffh                              //  bp=2
+    last_eax        u32 0ffffffffh                          // eax=3, ax=20, ah=30, al=35
+    last_ebx        u32 0ffffffffh                          // ebx=4, bx=21, bh=31, bl=36
+    last_ecx        u32 0ffffffffh                          // ecx=5, cx=22, ch=32, cl=37
+    last_edx        u32 0ffffffffh                          // edx=6, dx=23, dh=33, dl=38
+    last_esi        u32 0ffffffffh                          // esi=7, si=24
+    last_edi        u32 0ffffffffh                          // edi=8, di=25
+    last_sp         u16 0ffffh                              //  sp=9
+    current_sp      u16 0
+    current_bp      u16 0
+    last_ds         u16 0ffffh                              // ds=10
+    last_es         u16 0ffffh                              // es=11
+    last_fs         u16 0ffffh                              // fs=12
+    last_gs         u16 0ffffh                              // gs=13
+    last_ss         u16 0ffffh                              // ss=14
+    last_flags      u16 0ffffh                              // flags=15
+    last_nt_flag    u8  0
+    last_of_flag    u8  0
+    last_df_flag    u8  0
+    last_pf_flag    u8  0
+    last_sf_flag    u8  0
+    last_zf_flag    u8  0
+    last_acf_flag   u8  0
+    last_cf_flag    u8  0
     last_st0        REAL10 0.00                             // 50
     last_st1        REAL10 0.00                             // 51
     last_st2        REAL10 0.00                             // 52
@@ -826,306 +826,306 @@ copy_current_to_last:
     last_st5        REAL10 0.00                             // 55
     last_st6        REAL10 0.00                             // 56
     last_st7        REAL10 0.00                             // 57
-    last_cw         u16  0
-    last_sw         u16  0
-    last_tw         u16  0
+    last_cw         u16 0
+    last_sw         u16 0
+    last_tw         u16 0
 
-    save_fpu_state  u8   94 dup(0)
+    save_fpu_state  u8  94 dup(0)
 
-    sreg_override       u8   0
-    sign_extend         u8   0
-    movxx               u8   0
-    reverse_regs        u8   0
-    special_reg         u8   0
-    mod_reg_rm_byte     u8   0
-    sib_byte            u8   0
-    byte_word_size      u8   0
-    seg_override        u8   0
-    op_size_override    u16  0
-    adr_size_override   u16  0
+    sreg_override       u8  0
+    sign_extend         u8  0
+    movxx               u8  0
+    reverse_regs        u8  0
+    special_reg         u8  0
+    mod_reg_rm_byte     u8  0
+    sib_byte            u8  0
+    byte_word_size      u8  0
+    seg_override        u8  0
+    op_size_override    u16 0
+    adr_size_override   u16 0
 
-    int3_text       u8   "int3"
-    aaa_text        u8   "aaa"
-    xadd_text       u8   "x"
-    add_text        u8   "add"
-    aas_text        u8   "aas"
-    cbw_text        u8   "cbw"
+    int3_text       u8  "int3"
+    aaa_text        u8  "aaa"
+    xadd_text       u8  "x"
+    add_text        u8  "add"
+    aas_text        u8  "aas"
+    cbw_text        u8  "cbw"
   cwde_text:
-    cwd_text        u8   "cwd"
-                    u8   "e"
-    cdq_text        u8   "cdq"
-    clc_text        u8   "clc"
-    cld_text        u8   "cld"
-    cli_text        u8   "cli"
-    cmc_text        u8   "cmc"
-    daa_text        u8   "daa"
-    das_text        u8   "das"
-    hlt_text        u8   "hlt"
-    into_text       u8   "into"
+    cwd_text        u8  "cwd"
+                    u8  "e"
+    cdq_text        u8  "cdq"
+    clc_text        u8  "clc"
+    cld_text        u8  "cld"
+    cli_text        u8  "cli"
+    cmc_text        u8  "cmc"
+    daa_text        u8  "daa"
+    das_text        u8  "das"
+    hlt_text        u8  "hlt"
+    into_text       u8  "into"
   iretd_text:
-    iret_text       u8   "iret"
-                    u8   "d"
-    lahf_text       u8   "lahf"
-    leave_text      u8   "leave"
-    lock_text       u8   "lock"
-    nop_text        u8   "nop"
+    iret_text       u8  "iret"
+                    u8  "d"
+    lahf_text       u8  "lahf"
+    leave_text      u8  "leave"
+    lock_text       u8  "lock"
+    nop_text        u8  "nop"
   popad_text:
-    popa_text       u8   "popa"
-                    u8   "d"
+    popa_text       u8  "popa"
+                    u8  "d"
   popfd_text:
-    popf_text       u8   "popf"
-                    u8   "d"
+    popf_text       u8  "popf"
+                    u8  "d"
   pushad_text:
-    pusha_text      u8   "pusha"
-                    u8   "d"
+    pusha_text      u8  "pusha"
+                    u8  "d"
   pushfd_text:
-    pushf_text      u8   "pushf"
-                    u8   "d"
-    ret_text        u8   "ret"
-    retf_text       u8   "retf"
-    sahf_text       u8   "sahf"
-    stc_text        u8   "stc"
-    std_text        u8   "std"
-    sti_text        u8   "sti"
-    wait_text       u8   "wait"
-    xlat_text       u8   "xlat"
-    aad_text        u8   "aad"
-    aam_text        u8   "aam"
-    clts_text       u8   "clts"
-    wbinvd_text     u8   "wb"
-    invd_text       u8   "invd"
-    arpl_text       u8   "arpl"
-    bound_text      u8   "bound"
-    bswap_text      u8   "bswap"
+    pushf_text      u8  "pushf"
+                    u8  "d"
+    ret_text        u8  "ret"
+    retf_text       u8  "retf"
+    sahf_text       u8  "sahf"
+    stc_text        u8  "stc"
+    std_text        u8  "std"
+    sti_text        u8  "sti"
+    wait_text       u8  "wait"
+    xlat_text       u8  "xlat"
+    aad_text        u8  "aad"
+    aam_text        u8  "aam"
+    clts_text       u8  "clts"
+    wbinvd_text     u8  "wb"
+    invd_text       u8  "invd"
+    arpl_text       u8  "arpl"
+    bound_text      u8  "bound"
+    bswap_text      u8  "bswap"
   ()
     db()  "call"
-                    u8   "f"
-    cmpxchg_text    u8   "cmpxchg"
-    enter_text      u8   "enter"
-    int_text        u8   "int"
-    ja_text         u8   "ja.u"
-    jc_text         u8   "jc"
-    jnc_text        u8   "jnc"
-    jbe_text        u8   "jbe.u"
-    jz_text         u8   "jz"
-    jnz_text        u8   "jnz"
-    jl_text         u8   "jl.s"
-    jg_text         u8   "jg.s"
-    jle_text        u8   "jle.s"
-    jge_text        u8   "jge.s"
-    js_text         u8   "js"
-    jns_text        u8   "jns"
-    jp_text         u8   "jp"
-    jnp_text        u8   "jnp"
-    jo_text         u8   "jo"
-    jno_text        u8   "jno"
-    seta_text       u8   "seta.u"
-    setc_text       u8   "setc"
-    setnc_text      u8   "setnc"
-    setbe_text      u8   "setbe.u"
-    setz_text       u8   "setz"
-    setnz_text      u8   "setnz"
-    setl_text       u8   "setl.s"
-    setg_text       u8   "setg.s"
-    setle_text      u8   "setle.s"
-    setge_text      u8   "setge.s"
-    sets_text       u8   "sets"
-    setns_text      u8   "setns"
-    setp_text       u8   "setp"
-    setnp_text      u8   "setnp"
-    seto_text       u8   "seto"
-    setno_text      u8   "setno"
-    jcxz_text       u8   "jcxz"
-    jecxz_text      u8   "jecxz"
+                    u8  "f"
+    cmpxchg_text    u8  "cmpxchg"
+    enter_text      u8  "enter"
+    int_text        u8  "int"
+    ja_text         u8  "ja.u"
+    jc_text         u8  "jc"
+    jnc_text        u8  "jnc"
+    jbe_text        u8  "jbe.u"
+    jz_text         u8  "jz"
+    jnz_text        u8  "jnz"
+    jl_text         u8  "jl.s"
+    jg_text         u8  "jg.s"
+    jle_text        u8  "jle.s"
+    jge_text        u8  "jge.s"
+    js_text         u8  "js"
+    jns_text        u8  "jns"
+    jp_text         u8  "jp"
+    jnp_text        u8  "jnp"
+    jo_text         u8  "jo"
+    jno_text        u8  "jno"
+    seta_text       u8  "seta.u"
+    setc_text       u8  "setc"
+    setnc_text      u8  "setnc"
+    setbe_text      u8  "setbe.u"
+    setz_text       u8  "setz"
+    setnz_text      u8  "setnz"
+    setl_text       u8  "setl.s"
+    setg_text       u8  "setg.s"
+    setle_text      u8  "setle.s"
+    setge_text      u8  "setge.s"
+    sets_text       u8  "sets"
+    setns_text      u8  "setns"
+    setp_text       u8  "setp"
+    setnp_text      u8  "setnp"
+    seto_text       u8  "seto"
+    setno_text      u8  "setno"
+    jcxz_text       u8  "jcxz"
+    jecxz_text      u8  "jecxz"
   jmp_far_text:
-    jmp_text        u8   "jmp"
-                    u8   "f"
+    jmp_text        u8  "jmp"
+                    u8  "f"
   movsx_text:
-    mov_text        u8   "mov"
-                    u8   "sx"
-    movzx_text      u8   "movzx"
-    lds_text        u8   "lds"
-    les_text        u8   "les"
-    lea_text        u8   "lea"
+    mov_text        u8  "mov"
+                    u8  "sx"
+    movzx_text      u8  "movzx"
+    lds_text        u8  "lds"
+    les_text        u8  "les"
+    lea_text        u8  "lea"
   loopne_text:
-    loop_text       u8   "loop"
-                    u8   "ne"
+    loop_text       u8  "loop"
+                    u8  "ne"
   looped_text:
-    loope_text      u8   "loope"
-    pop_text        u8   "pop"
+    loope_text      u8  "loope"
+    pop_text        u8  "pop"
   pushd_text:
-    push_text       u8   "push"
-                    u8   "d"
+    push_text       u8  "push"
+                    u8  "d"
   repne_text:
-    rep_text        u8   "rep"
-                    u8   "ne"
-    repe_text       u8   "repe"
-    movsb_text      u8   "movsb"
-    movsw_text      u8   "movsw"
-    movsd_text      u8   "movsd"
-    stosb_text      u8   "stosb"
-    stosw_text      u8   "stosw"
-    stosd_text      u8   "stosd"
-    lodsb_text      u8   "lodsb"
-    lodsw_text      u8   "lodsw"
-    lodsd_text      u8   "lodsw"
-    insb_text       u8   "insb"
-    insw_text       u8   "insw"
-    insd_text       u8   "insd"
-    outsb_text      u8   "outs"
-    outsw_text      u8   "outsw"
-    outsd_text      u8   "outsd"
-    cmpsb_text      u8   "cmpsb"
-    cmpsw_text      u8   "cmpsw"
-    cmpsd_text      u8   "cmpsd"
-    scasb_text      u8   "scasb"
-    scasw_text      u8   "scasw"
-    scasd_text      u8   "scasd"
-    setccc_text     u8   "setccc"
-    bsf_text        u8   "bsf"
-    bsr_text        u8   "bsr"
+    rep_text        u8  "rep"
+                    u8  "ne"
+    repe_text       u8  "repe"
+    movsb_text      u8  "movsb"
+    movsw_text      u8  "movsw"
+    movsd_text      u8  "movsd"
+    stosb_text      u8  "stosb"
+    stosw_text      u8  "stosw"
+    stosd_text      u8  "stosd"
+    lodsb_text      u8  "lodsb"
+    lodsw_text      u8  "lodsw"
+    lodsd_text      u8  "lodsw"
+    insb_text       u8  "insb"
+    insw_text       u8  "insw"
+    insd_text       u8  "insd"
+    outsb_text      u8  "outs"
+    outsw_text      u8  "outsw"
+    outsd_text      u8  "outsd"
+    cmpsb_text      u8  "cmpsb"
+    cmpsw_text      u8  "cmpsw"
+    cmpsd_text      u8  "cmpsd"
+    scasb_text      u8  "scasb"
+    scasw_text      u8  "scasw"
+    scasd_text      u8  "scasd"
+    setccc_text     u8  "setccc"
+    bsf_text        u8  "bsf"
+    bsr_text        u8  "bsr"
   btc_text:
-    bt_text         u8   "bt"
-                    u8   "c"
-    bts_text        u8   "bts"
-    btr_text        u8   "btr"
-    invlpg_text     u8   "invlpg"
-    lar_text        u8   "lar"
-    lfs_text        u8   "lfs"
-    lgs_text        u8   "lgs"
-    lss_text        u8   "lss"
-    lgdt_text       u8   "lgdt"
-    lidt_text       u8   "lidt"
-    lldt_text       u8   "lldt"
-    lmsw_text       u8   "lmsw"
-    lsl_text        u8   "lsl"
-    ltr_text        u8   "ltr"
-    sldt_text       u8   "sldt"
-    str_text        u8   "str"
-    verr_text       u8   "verr"
-    verw_text       u8   "verw"
-    sgdt_text       u8   "sgdt"
-    sidt_text       u8   "sidt"
-    smsw_text       u8   "smsw"
+    bt_text         u8  "bt"
+                    u8  "c"
+    bts_text        u8  "bts"
+    btr_text        u8  "btr"
+    invlpg_text     u8  "invlpg"
+    lar_text        u8  "lar"
+    lfs_text        u8  "lfs"
+    lgs_text        u8  "lgs"
+    lss_text        u8  "lss"
+    lgdt_text       u8  "lgdt"
+    lidt_text       u8  "lidt"
+    lldt_text       u8  "lldt"
+    lmsw_text       u8  "lmsw"
+    lsl_text        u8  "lsl"
+    ltr_text        u8  "ltr"
+    sldt_text       u8  "sldt"
+    str_text        u8  "str"
+    verr_text       u8  "verr"
+    verw_text       u8  "verw"
+    sgdt_text       u8  "sgdt"
+    sidt_text       u8  "sidt"
+    smsw_text       u8  "smsw"
   shld_text:
-    shl_text        u8   "shl"
-                    u8   "d"
-    sal_text        u8   "sal"
+    shl_text        u8  "shl"
+                    u8  "d"
+    sal_text        u8  "sal"
   shrd_text:
-    shr_text        u8   "shr"
-                    u8   "d"
-    sar_text        u8   "sar"
-    imul_text       u8   "i"
-    mul_text        u8   "mul"
-    test_text       u8   "test"
-    not_text        u8   "not"
-    neg_text        u8   "neg"
-    idiv_text       u8   "i"
-    div_text        u8   "div"
+    shr_text        u8  "shr"
+                    u8  "d"
+    sar_text        u8  "sar"
+    imul_text       u8  "i"
+    mul_text        u8  "mul"
+    test_text       u8  "test"
+    not_text        u8  "not"
+    neg_text        u8  "neg"
+    idiv_text       u8  "i"
+    div_text        u8  "div"
   inc_text:
-    in_text         u8   "in"
-                    u8   "c"
-    dec_text        u8   "dec"
-    rol_text        u8   "rol"
-    rcl_text        u8   "rcl"
-    ror_text        u8   "ror"
-    rcr_text        u8   "rcr"
-    xchg_text       u8   "xchg"
-    or_text         u8   "or"
-    adc_text        u8   "adc"
-    sbb_text        u8   "sbb"
-    and_text        u8   "and"
-    sub_text        u8   "sub"
-    xor_text        u8   "xor"
-    cmp_text        u8   "cmp"
+    in_text         u8  "in"
+                    u8  "c"
+    dec_text        u8  "dec"
+    rol_text        u8  "rol"
+    rcl_text        u8  "rcl"
+    ror_text        u8  "ror"
+    rcr_text        u8  "rcr"
+    xchg_text       u8  "xchg"
+    or_text         u8  "or"
+    adc_text        u8  "adc"
+    sbb_text        u8  "sbb"
+    and_text        u8  "and"
+    sub_text        u8  "sub"
+    xor_text        u8  "xor"
+    cmp_text        u8  "cmp"
 
-    fadd_text       u8   "fadd"
+    fadd_text       u8  "fadd"
   fmulp_text:
-    fmul_text       u8   "fmul"
-                    u8   "p"
+    fmul_text       u8  "fmul"
+                    u8  "p"
   fcompp_text:
   fcomp_text:
-    fcom_text       u8   "fcom"
-                    u8   "p"
-                    u8   "p"
+    fcom_text       u8  "fcom"
+                    u8  "p"
+                    u8  "p"
   fsubrp_text:
   fsubr_text:
-    fsub_text       u8   "fsub"
-                    u8   "r"
-                    u8   "p"
+    fsub_text       u8  "fsub"
+                    u8  "r"
+                    u8  "p"
   fdivr_text:
-    fdiv_text       u8   "fdiv"
-                    u8   "r"
-    fdivp_text      u8   "fdivp"
+    fdiv_text       u8  "fdiv"
+                    u8  "r"
+    fdivp_text      u8  "fdivp"
   fldcw_text:
-    fld_text        u8   "fld"
-                    u8   "cw"
+    fld_text        u8  "fld"
+                    u8  "cw"
   fstp_text:
-    fst_text        u8   "fst"
-                    u8   "p"
-    fxch_text       u8   "fxch"
-    fnop_text       u8   "fnop"
-    fchs_text       u8   "fchs"
-    fabs_text       u8   "fabs"
-    ftst_text       u8   "ftst"
-    fxam_text       u8   "fxam"
-    fld1_text       u8   "fld1"
-    fldl2t_text     u8   "fldl2t"
-    fldl2e_text     u8   "fldl2e"
-    fldpi_text      u8   "fldpi"
-    fldg2_text      u8   "fldg2"
-    fldn2_text      u8   "fldn2"
-    fldz_text       u8   "fldz"
-    f2xm1_text      u8   "f2xm1"
-    fyl2x_text      u8   "fyl2x"
-    fptan_text      u8   "fptan"
-    fpatan_text     u8   "fpatan"
-    fxtract_text    u8   "fxtract"
+    fst_text        u8  "fst"
+                    u8  "p"
+    fxch_text       u8  "fxch"
+    fnop_text       u8  "fnop"
+    fchs_text       u8  "fchs"
+    fabs_text       u8  "fabs"
+    ftst_text       u8  "ftst"
+    fxam_text       u8  "fxam"
+    fld1_text       u8  "fld1"
+    fldl2t_text     u8  "fldl2t"
+    fldl2e_text     u8  "fldl2e"
+    fldpi_text      u8  "fldpi"
+    fldg2_text      u8  "fldg2"
+    fldn2_text      u8  "fldn2"
+    fldz_text       u8  "fldz"
+    f2xm1_text      u8  "f2xm1"
+    fyl2x_text      u8  "fyl2x"
+    fptan_text      u8  "fptan"
+    fpatan_text     u8  "fpatan"
+    fxtract_text    u8  "fxtract"
   fprem_text:
-    fprem1_text     u8   "fprem1"
-    fdecstp_text    u8   "fdecstp"
-    fincstp_text    u8   "fincstp"
-    fyl2xp1_text    u8   "fyl2xp1"
-    fsqrt_text      u8   "fsqrt"
-    fsincos_text    u8   "fsincos"
-    frndint_text    u8   "frndint"
-    fscale_text     u8   "fscale"
-    fsin_text       u8   "fsin"
-    fcos_text       u8   "fcos"
-    fldenv_text     u8   "fldenv"
-    fstenv_text     u8   "fstenv"
-    fstcw_text      u8   "fstcw"
-    fucompp_text    u8   "fucompp"
-    fiadd_text      u8   "fiadd"
-    fimul_text      u8   "fimul"
+    fprem1_text     u8  "fprem1"
+    fdecstp_text    u8  "fdecstp"
+    fincstp_text    u8  "fincstp"
+    fyl2xp1_text    u8  "fyl2xp1"
+    fsqrt_text      u8  "fsqrt"
+    fsincos_text    u8  "fsincos"
+    frndint_text    u8  "frndint"
+    fscale_text     u8  "fscale"
+    fsin_text       u8  "fsin"
+    fcos_text       u8  "fcos"
+    fldenv_text     u8  "fldenv"
+    fstenv_text     u8  "fstenv"
+    fstcw_text      u8  "fstcw"
+    fucompp_text    u8  "fucompp"
+    fiadd_text      u8  "fiadd"
+    fimul_text      u8  "fimul"
   ficomp_text:
-    ficom_text      u8   "ficom"
-                    u8   "p"
+    ficom_text      u8  "ficom"
+                    u8  "p"
   fisubr_text:
-    fisub_text      u8   "fisub"
-                    u8   "r"
+    fisub_text      u8  "fisub"
+                    u8  "r"
   fidivr_text:
-    fidiv_text      u8   "fidiv"
-                    u8   "r"
-    fclex_text      u8   "fclex"
-    finit_text      u8   "finit"
-    fild_text       u8   "fild"
+    fidiv_text      u8  "fidiv"
+                    u8  "r"
+    fclex_text      u8  "fclex"
+    finit_text      u8  "finit"
+    fild_text       u8  "fild"
   fistp_text:
-    fist_text       u8   "fist"
-                    u8   "p"
-    ffree_text      u8   "ffree"
+    fist_text       u8  "fist"
+                    u8  "p"
+    ffree_text      u8  "ffree"
   fucomp_text:
-    fucom_text      u8   "fucom"
-                    u8   "p"
-    frstor_text     u8   "frstor"
-    fstsw_text      u8   "fstsw"
-    fbld_text       u8   "fbld"
-    fbstp_text      u8   "fbstp"
-    fsave_text      u8   "fsave"
+    fucom_text      u8  "fucom"
+                    u8  "p"
+    frstor_text     u8  "frstor"
+    fstsw_text      u8  "fstsw"
+    fbld_text       u8  "fbld"
+    fbstp_text      u8  "fbstp"
+    fsave_text      u8  "fsave"
 
 
   illegal_register:
-    unknown_text    u8   "???"
+    unknown_text    u8  "???"
 
     CONST_AL      = 000b
     CONST_AX      = 000b
@@ -1165,133 +1165,133 @@ copy_current_to_last:
     CONST_DI      = 111b
     CONST_EDI     = 111b
 
-    ebx_esi_register    u8   "ebx+esi"
-    ebx_edi_register    u8   "ebx+edi"
-    ebp_esi_register    u8   "ebp+esi"
-    ebp_edi_register    u8   "ebp+edi"
-    bx_si_register  u8   "bx+si"
-    bx_di_register  u8   "bx+di"
-    bp_si_register  u8   "bp+si"
-    bp_di_register  u8   "bp+di"
-    cs_register     u8   "cs"
-    ds_register     u8   "ds"
-    es_register     u8   "es"
-    fs_register     u8   "fs"
-    gs_register     u8   "gs"
-    ss_register     u8   "ss"
-    eax_register    u8   "e"
-    ax_register     u8   "ax"
-    ebx_register    u8   "e"
-    bx_register     u8   "bx"
-    ecx_register    u8   "e"
-    cx_register     u8   "cx"
-    edx_register    u8   "e"
-    dx_register     u8   "dx"
-    esi_register    u8   "e"
-    si_register     u8   "si"
-    edi_register    u8   "e"
-    di_register     u8   "di"
-    ebp_register    u8   "e"
-    bp_register     u8   "bp"
-    ah_register     u8   "ah"
-    al_register     u8   "al"
-    bh_register     u8   "bh"
-    bl_register     u8   "bl"
-    ch_register     u8   "ch"
-    cl_register     u8   "cl"
-    dh_register     u8   "dh"
-    dl_register     u8   "dl"
-    ip_register     u8   "ip"
-    esp_register    u8   "e"
-    sp_register     u8   "sp"
-    st0_register    u8   "st0"
-    st1_register    u8   "st1"
-    st2_register    u8   "st2"
-    st3_register    u8   "st3"
-    st4_register    u8   "st4"
-    st5_register    u8   "st5"
-    st6_register    u8   "st6"
-    st7_register    u8   "st7"
-    cr0_register    u8   "cr0"
-    cr1_register    u8   "cr1"
-    cr2_register    u8   "cr2"
-    cr3_register    u8   "cr3"
-    cr4_register    u8   "cr4"
-    cr5_register    u8   "cr5"
-    cr6_register    u8   "cr6"
-    cr7_register    u8   "cr7"
-    dr0_register    u8   "dr0"
-    dr1_register    u8   "dr1"
-    dr2_register    u8   "dr2"
-    dr3_register    u8   "dr3"
-    dr4_register    u8   "dr4"
-    dr5_register    u8   "dr5"
-    dr6_register    u8   "dr6"
-    dr7_register    u8   "dr7"
-    tr0_register    u8   "tr0"
-    tr1_register    u8   "tr1"
-    tr2_register    u8   "tr2"
-    tr3_register    u8   "tr3"
-    tr4_register    u8   "tr4"
-    tr5_register    u8   "tr5"
-    tr6_register    u8   "tr6"
-    tr7_register    u8   "tr7"
-    flags_register  u8   "flags"
-    zero_ffff       u8   "0ffffh"
+    ebx_esi_register    u8  "ebx+esi"
+    ebx_edi_register    u8  "ebx+edi"
+    ebp_esi_register    u8  "ebp+esi"
+    ebp_edi_register    u8  "ebp+edi"
+    bx_si_register  u8  "bx+si"
+    bx_di_register  u8  "bx+di"
+    bp_si_register  u8  "bp+si"
+    bp_di_register  u8  "bp+di"
+    cs_register     u8  "cs"
+    ds_register     u8  "ds"
+    es_register     u8  "es"
+    fs_register     u8  "fs"
+    gs_register     u8  "gs"
+    ss_register     u8  "ss"
+    eax_register    u8  "e"
+    ax_register     u8  "ax"
+    ebx_register    u8  "e"
+    bx_register     u8  "bx"
+    ecx_register    u8  "e"
+    cx_register     u8  "cx"
+    edx_register    u8  "e"
+    dx_register     u8  "dx"
+    esi_register    u8  "e"
+    si_register     u8  "si"
+    edi_register    u8  "e"
+    di_register     u8  "di"
+    ebp_register    u8  "e"
+    bp_register     u8  "bp"
+    ah_register     u8  "ah"
+    al_register     u8  "al"
+    bh_register     u8  "bh"
+    bl_register     u8  "bl"
+    ch_register     u8  "ch"
+    cl_register     u8  "cl"
+    dh_register     u8  "dh"
+    dl_register     u8  "dl"
+    ip_register     u8  "ip"
+    esp_register    u8  "e"
+    sp_register     u8  "sp"
+    st0_register    u8  "st0"
+    st1_register    u8  "st1"
+    st2_register    u8  "st2"
+    st3_register    u8  "st3"
+    st4_register    u8  "st4"
+    st5_register    u8  "st5"
+    st6_register    u8  "st6"
+    st7_register    u8  "st7"
+    cr0_register    u8  "cr0"
+    cr1_register    u8  "cr1"
+    cr2_register    u8  "cr2"
+    cr3_register    u8  "cr3"
+    cr4_register    u8  "cr4"
+    cr5_register    u8  "cr5"
+    cr6_register    u8  "cr6"
+    cr7_register    u8  "cr7"
+    dr0_register    u8  "dr0"
+    dr1_register    u8  "dr1"
+    dr2_register    u8  "dr2"
+    dr3_register    u8  "dr3"
+    dr4_register    u8  "dr4"
+    dr5_register    u8  "dr5"
+    dr6_register    u8  "dr6"
+    dr7_register    u8  "dr7"
+    tr0_register    u8  "tr0"
+    tr1_register    u8  "tr1"
+    tr2_register    u8  "tr2"
+    tr3_register    u8  "tr3"
+    tr4_register    u8  "tr4"
+    tr5_register    u8  "tr5"
+    tr6_register    u8  "tr6"
+    tr7_register    u8  "tr7"
+    flags_register  u8  "flags"
+    zero_ffff       u8  "0ffffh"
 
 
-    badnumber0      u8   " +Unsupported               ",0
-    badnumber1      u8   " +NaN                       ",0
-    badnumber2      u8   " -Unsupported               ",0
-    badnumber3      u8   " -NaN                       ",0
-    badnumber4      u8   " +Normal                    ",0
-    badnumber5      u8   " +Infinity                  ",0
-    badnumber6      u8   " -Normal                    ",0
-    badnumber7      u8   " -Infinity                  ",0
-    badnumber8      u8   " 0.0000000000000000000+00000",0
-    badnumber9      u8   " +Empty                     ",0
-    badnumber10     u8   "-0.0000000000000000000+00000",0
-    badnumber11     u8   " -Empty                     ",0
-    badnumber12     u8   " +Denormals                 ",0
-    badnumber13     u8   " ?Unknown?                  ",0
-    badnumber14     u8   " -Denormals                 ",0
+    badnumber0      u8  " +Unsupported               ",0
+    badnumber1      u8  " +NaN                       ",0
+    badnumber2      u8  " -Unsupported               ",0
+    badnumber3      u8  " -NaN                       ",0
+    badnumber4      u8  " +Normal                    ",0
+    badnumber5      u8  " +Infinity                  ",0
+    badnumber6      u8  " -Normal                    ",0
+    badnumber7      u8  " -Infinity                  ",0
+    badnumber8      u8  " 0.0000000000000000000+00000",0
+    badnumber9      u8  " +Empty                     ",0
+    badnumber10     u8  "-0.0000000000000000000+00000",0
+    badnumber11     u8  " -Empty                     ",0
+    badnumber12     u8  " +Denormals                 ",0
+    badnumber13     u8  " ?Unknown?                  ",0
+    badnumber14     u8  " -Denormals                 ",0
 
-    fpu_stat        u16  ?
+    fpu_stat        u16 ?
     exponent        sword   0
-    number10        f32   10.0
-    point5          f32    0.5
-    digit           u16  ?
-    controlword     u16  ?
+    number10        f32  10.0
+    point5          f32   0.5
+    digit           u16 ?
+    controlword     u16 ?
 
-    temp_buffer     u8   40 dup(0)
+    temp_buffer     u8  40 dup(0)
 
   debug_screen:
-    u8   "פ תתתת:תתתת ת            ת       ת                            ץ פ+stack--registers-ץ"
+    u8  "פ תתתת:תתתת ת            ת       ת                            ץ פ+stack--registers-ץ"
   initialize_line:
-    u8   " תתתת:תתתת ת            ת       ת                             פ|תתתת|eax תתתתתתתתץ"
-    u8   " תתתת:תתתת ת            ת       ת                             פ|תתתת|ebx תתתתתתתתץ"
-    u8   " תתתת:תתתת ת            ת       ת                             פ|תתתת|ecx תתתתתתתתץ"
-    u8   " תתתת:תתתת ת            ת       ת                             פ|תתתת|edx תתתתתתתתץ"
-    u8   " תתתת:תתתת ת            ת       ת                             פ|תתתת|esi תתתתתתתתץ"
-    u8   " תתתת:תתתת ת            ת       ת                             פ|תתתת|edi תתתתתתתתץ"
-    u8   "פ-fpu----------------------------------------------------------|תתתת| ds תתתת    ץ"
-    u8   "פs0 ת.תתתתתתתתתתתתתתתתתתת+תתתתת  s4 ת.תתתתתתתתתתתתתתתתתתת+תתתתת|תתתת| es תתתת    ץ"
-    u8   "פs1 ת.תתתתתתתתתתתתתתתתתתת+תתתתת  s5 ת.תתתתתתתתתתתתתתתתתתת+תתתתת|תתתת| fs תתתת    ץ"
-    u8   "פs2 ת.תתתתתתתתתתתתתתתתתתת+תתתתת  s6 ת.תתתתתתתתתתתתתתתתתתת+תתתתת|תתתת| gs תתתת    ץ"
-    u8   "פs3 ת.תתתתתתתתתתתתתתתתתתת+תתתתת  s7 ת.תתתתתתתתתתתתתתתתתתת+תתתתת|תתתת| ss תתתת    ץ"
-    u8   "פ  C[תתתתתתתתתתתתתתתת] S[תתתתתתתתתתתתתתתת] T[תתתתתתתתתתתתתתתת] |תתתת|    bp תתתת ץ"
-    u8   "פ----watch---ֲ--------------------------------------------mem1-|תתתת|    sp תתתת ץ"
-    u8   "תת:תת     תתפ|תתתתתתתתתתתתתתתתתתתתתתתתתתתתתתתת תתתתתתתתתתתתתתתת|תתתת| cs תתתת    ץ"
-    u8   "תת:תת     תתפ|תתתתתתתתתתתתתתתתתתתתתתתתתתתתתתתת תתתתתתתתתתתתתתתת|תתתת|    ip תתתת ץ"
-    u8   "תת:תת   תתתתפ|תתתתתתתתתתתתתתתתתתתתתתתתתתתתתתתת תתתתתתתתתתתתתתתת|תתתת| flags תתתת ץ"
-    u8   "תת:תת   תתתתפ|תתתתתתתתתתתתתתתתתתתתתתתתתתתתתתתת תתתתתתתתתתתתתתתת|תתתת|NT  OF  DF  ץ"
-    u8   "תת:תת   תתתתפ---------------------------------------------mem2-|תתתת|PF  SF  ZF  ץ"
-    u8   "תת:תת       פ|תתתתתתתתתתתתתתתתתתתתתתתתתתתתתתתת תתתתתתתתתתתתתתתת|תתתת|   ACF  CF  ץ"
-    u8   "    תתתתתתתתפ|תתתתתתתתתתתתתתתתתתתתתתתתתתתתתתתת תתתתתתתתתתתתתתתת-----ֱ------------ץ"
-    u8   "תת:תתתת תתתתפ|תתתתתתתתתתתתתתתתתתתתתתתתתתתתתתתת תתתתתתתתתתתתתתתת|ץ   xDebug for    "
-    u8   "תתתתתתתתתתתתפ|תתתתתתתתתתתתתתתתתתתתתתתתתתתתתתתת תתתתתתתתתתתתתתתת|ץ    פ[ Exodus ]ץ   "
-    u8   "פ------------ֱ-------------------------------------------------|ץ     version 1.0 "
-    u8   "פF5ץ:go  פF8ץ:step                      פF1ץ:mem1  פF2ץ:mem2  פF3ץ:fpu  פ+-----------------ץ"
+    u8  " תתתת:תתתת ת            ת       ת                             פ|תתתת|eax תתתתתתתתץ"
+    u8  " תתתת:תתתת ת            ת       ת                             פ|תתתת|ebx תתתתתתתתץ"
+    u8  " תתתת:תתתת ת            ת       ת                             פ|תתתת|ecx תתתתתתתתץ"
+    u8  " תתתת:תתתת ת            ת       ת                             פ|תתתת|edx תתתתתתתתץ"
+    u8  " תתתת:תתתת ת            ת       ת                             פ|תתתת|esi תתתתתתתתץ"
+    u8  " תתתת:תתתת ת            ת       ת                             פ|תתתת|edi תתתתתתתתץ"
+    u8  "פ-fpu----------------------------------------------------------|תתתת| ds תתתת    ץ"
+    u8  "פs0 ת.תתתתתתתתתתתתתתתתתתת+תתתתת  s4 ת.תתתתתתתתתתתתתתתתתתת+תתתתת|תתתת| es תתתת    ץ"
+    u8  "פs1 ת.תתתתתתתתתתתתתתתתתתת+תתתתת  s5 ת.תתתתתתתתתתתתתתתתתתת+תתתתת|תתתת| fs תתתת    ץ"
+    u8  "פs2 ת.תתתתתתתתתתתתתתתתתתת+תתתתת  s6 ת.תתתתתתתתתתתתתתתתתתת+תתתתת|תתתת| gs תתתת    ץ"
+    u8  "פs3 ת.תתתתתתתתתתתתתתתתתתת+תתתתת  s7 ת.תתתתתתתתתתתתתתתתתתת+תתתתת|תתתת| ss תתתת    ץ"
+    u8  "פ  C[תתתתתתתתתתתתתתתת] S[תתתתתתתתתתתתתתתת] T[תתתתתתתתתתתתתתתת] |תתתת|    bp תתתת ץ"
+    u8  "פ----watch---ֲ--------------------------------------------mem1-|תתתת|    sp תתתת ץ"
+    u8  "תת:תת     תתפ|תתתתתתתתתתתתתתתתתתתתתתתתתתתתתתתת תתתתתתתתתתתתתתתת|תתתת| cs תתתת    ץ"
+    u8  "תת:תת     תתפ|תתתתתתתתתתתתתתתתתתתתתתתתתתתתתתתת תתתתתתתתתתתתתתתת|תתתת|    ip תתתת ץ"
+    u8  "תת:תת   תתתתפ|תתתתתתתתתתתתתתתתתתתתתתתתתתתתתתתת תתתתתתתתתתתתתתתת|תתתת| flags תתתת ץ"
+    u8  "תת:תת   תתתתפ|תתתתתתתתתתתתתתתתתתתתתתתתתתתתתתתת תתתתתתתתתתתתתתתת|תתתת|NT  OF  DF  ץ"
+    u8  "תת:תת   תתתתפ---------------------------------------------mem2-|תתתת|PF  SF  ZF  ץ"
+    u8  "תת:תת       פ|תתתתתתתתתתתתתתתתתתתתתתתתתתתתתתתת תתתתתתתתתתתתתתתת|תתתת|   ACF  CF  ץ"
+    u8  "    תתתתתתתתפ|תתתתתתתתתתתתתתתתתתתתתתתתתתתתתתתת תתתתתתתתתתתתתתתת-----ֱ------------ץ"
+    u8  "תת:תתתת תתתתפ|תתתתתתתתתתתתתתתתתתתתתתתתתתתתתתתת תתתתתתתתתתתתתתתת|ץ   xDebug for    "
+    u8  "תתתתתתתתתתתתפ|תתתתתתתתתתתתתתתתתתתתתתתתתתתתתתתת תתתתתתתתתתתתתתתת|ץ    פ[ Exodus ]ץ   "
+    u8  "פ------------ֱ-------------------------------------------------|ץ     version 1.0 "
+    u8  "פF5ץ:go  פF8ץ:step                      פF1ץ:mem1  פF2ץ:mem2  פF3ץ:fpu  פ+-----------------ץ"
 }
 // xdebug
 

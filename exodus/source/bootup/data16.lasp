@@ -4,34 +4,34 @@
 //
 
 // DATA
-    bootup_id1              u8   " Exodus(tm) Operating System                                    10.10.2010.beta "
-    bootup_id2              u8   " (c) Copyright Beatleworks, Inc.                                                "
+    bootup_id1              u8  " Exodus(tm) Operating System                                    10.10.2010.beta "
+    bootup_id2              u8  " (c) Copyright Beatleworks, Inc.                                                "
 
-    verifying_crc           u8   "þ Verifying CRC"
-    enabling_gate_a20       u8   "þ Enabling A20"
-    setup_pmode_vars        u8   "þ Setup IDT, GDT"
-    entering_pmode          u8   "þ Entering protected mode"
+    verifying_crc           u8  "þ Verifying CRC"
+    enabling_gate_a20       u8  "þ Enabling A20"
+    setup_pmode_vars        u8  "þ Setup IDT, GDT"
+    entering_pmode          u8  "þ Entering protected mode"
 
-    crc_comparitive         u8   13,10,"xxxx  xxxx"
-    crc_error_start         u8   "þ CRC error has been detected.",13,10
-    crc_error_code          u8   "þ (x) is the error code",13,10
-                            u8   13,10
-                            u8   "þ Exodus cannot boot up when CRC errors are found.",13,10
-                            u8   "þ Please correct this error and try again.  You may need",13,10
-                            u8   "  to copy system files from the master Exodus Boot Disk.",13,10
-                            u8   13,10
-                            u8   "þ System halted.  Please press RESET to reboot."
+    crc_comparitive         u8  13,10,"xxxx  xxxx"
+    crc_error_start         u8  "þ CRC error has been detected.",13,10
+    crc_error_code          u8  "þ (x) is the error code",13,10
+                            u8  13,10
+                            u8  "þ Exodus cannot boot up when CRC errors are found.",13,10
+                            u8  "þ Please correct this error and try again.  You may need",13,10
+                            u8  "  to copy system files from the master Exodus Boot Disk.",13,10
+                            u8  13,10
+                            u8  "þ System halted.  Please press RESET to reboot."
     crc_error_end:
 
-    boot_parameter_block    u32  0
-    boot_parameter_count    u16  0
-    next_linear_address     u32  0
-    boot_dt_linear          u32  0
-    boot_np_linear          u32  0
-    boot_rp_linear          u32  0
+    boot_parameter_block    u32 0
+    boot_parameter_count    u16 0
+    next_linear_address     u32 0
+    boot_dt_linear          u32 0
+    boot_np_linear          u32 0
+    boot_rp_linear          u32 0
 
-    IDT_ptr                 u16  _sIDT_limit     // 256 slots, 8 bytes each = 7ffh bytes
-                            u32  _sIDT_base      // Linear offset in memory
+    IDT_ptr                 u16 _sIDT_limit     // 256 slots, 8 bytes each = 7ffh bytes
+                            u32 _sIDT_base      // Linear offset in memory
 
-    GDT_ptr                 u16  _sGDT_limit     // 4096 GDT entries
-                            u32  _sGDT_base      // Linear offset
+    GDT_ptr                 u16 _sGDT_limit     // 4096 GDT entries
+                            u32 _sGDT_base      // Linear offset

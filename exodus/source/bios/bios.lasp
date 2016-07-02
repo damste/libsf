@@ -18,7 +18,7 @@ function find_above_1MB_memory
     mov     esi,0100000h                                            // Start scanning above 1MB
     while (esi < 0fffe0000h)                                       // Scan up through 4GB
     {
-        mov     <u8>  ds:[esi],'E'                               // Write an E
+        mov     u8 ptr ds:[esi],'E'                               // Write an E
         if (byte ptr ds:[esi] != 'E')                              // See if we can read back an E, will read back 0 if no memory
         {
           // No memory here
@@ -39,11 +39,11 @@ function find_above_1MB_memory
     xor     edi,edi
     while (byte ptr es:[edi] != _STOPPER)
     {
-        mov     al,<u8>  es:[edi]
-        if (al == _MEMORY_FREE && <u32> es:[edi+_MEMORY_FREE_LIMIT] == 0ffffffffh)
+        mov     al,u8 ptr es:[edi]
+        if (al == _MEMORY_FREE && u32 ptr es:[edi+_MEMORY_FREE_LIMIT] == 0ffffffffh)
         {
           // This is the one!
-            mov     <u32> es:[edi+_MEMORY_FREE_LIMIT],esi
+            mov     u32 ptr es:[edi+_MEMORY_FREE_LIMIT],esi
             jmp     @F
         }
         add     edi,_MEMORY_SUBSTRUCT_SIZE

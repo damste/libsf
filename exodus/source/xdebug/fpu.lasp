@@ -20,50 +20,50 @@ show_fpu:
     mov     es,ax
 
     finit
-    fld     <f80> save_fpu_state[14]
+    fld     f80 ptr save_fpu_state[14]
     mov     di,((80 * 8) + 2) * 2
     show_register_fpu()
 
-    fld     <f80> save_fpu_state[24]
+    fld     f80 ptr save_fpu_state[24]
     mov     di,((80 * 9) + 2) * 2
     show_register_fpu()
 
-    fld     <f80> save_fpu_state[34]
+    fld     f80 ptr save_fpu_state[34]
     mov     di,((80 * 10) + 2) * 2
     show_register_fpu()
 
-    fld     <f80> save_fpu_state[44]
+    fld     f80 ptr save_fpu_state[44]
     mov     di,((80 * 11) + 2) * 2
     show_register_fpu()
 
-    fld     <f80> save_fpu_state[54]
+    fld     f80 ptr save_fpu_state[54]
     mov     di,((80 * 8) + 34) * 2
     show_register_fpu()
 
-    fld     <f80> save_fpu_state[64]
+    fld     f80 ptr save_fpu_state[64]
     mov     di,((80 * 9) + 34) * 2
     show_register_fpu()
 
-    fld     <f80> save_fpu_state[74]
+    fld     f80 ptr save_fpu_state[74]
     mov     di,((80 * 10) + 34) * 2
     show_register_fpu()
 
-    fld     <f80> save_fpu_state[84]
+    fld     f80 ptr save_fpu_state[84]
     mov     di,((80 * 11) + 34) * 2
     show_register_fpu()
 
     mov     bx,last_cw
-    mov     dx,<u16> save_fpu_state[0]
+    mov     dx,u16 ptr save_fpu_state[0]
     mov     di,((80 * 12) + 4) * 2
     show_register_16_binary()
 
     mov     bx,last_sw
-    mov     dx,<u16> save_fpu_state[2]
+    mov     dx,u16 ptr save_fpu_state[2]
     mov     di,((80 * 12) + 24) * 2
     show_register_16_binary()
 
     mov     bx,last_tw
-    mov     dx,<u16> save_fpu_state[4]
+    mov     dx,u16 ptr save_fpu_state[4]
     mov     di,((80 * 12) + 44) * 2
     show_register_16_binary()
 
@@ -151,7 +151,7 @@ show_register_fpu:
         mov     al,112
         stosb
     }
-    fistp   <u32> temp_buffer[0]
+    fistp   u32 ptr temp_buffer[0]
     ret
 
   @@:
@@ -247,7 +247,7 @@ show_register_fpu:
 
     mov     DX,exponent
     signed_convert_word_to_decimal()
-    fistp   <u32> temp_buffer[0]
+    fistp   u32 ptr temp_buffer[0]
     ret
 
 fpu_round_chop:
@@ -281,9 +281,9 @@ signed_convert_word_to_decimal:
 
     mov     si,offset temp_buffer+4
     mov     eax,"0000"
-    mov     <u32> [si-4],eax
-    mov     <u32> [si],eax
-    mov     <u32> [si+4],eax
+    mov     u32 ptr [si-4],eax
+    mov     u32 ptr [si],eax
+    mov     u32 ptr [si+4],eax
     mov     bx,10
     mov     ax,dx
   @@:
@@ -291,7 +291,7 @@ signed_convert_word_to_decimal:
     div     bx
 
     add     dl,030h
-    mov     <u8>  [si],dl
+    mov     u8 ptr [si],dl
     inc     si
     cmp     ax,0
     jnz     @B
@@ -299,7 +299,7 @@ signed_convert_word_to_decimal:
     mov     cx,4
   @@:
     dec     si
-    mov     al,<u8>  [si]
+    mov     al,u8 ptr [si]
     stosb
     mov     al,112
     stosb

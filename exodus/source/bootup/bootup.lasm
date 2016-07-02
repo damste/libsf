@@ -53,11 +53,11 @@ code text
 ;; Save the parameter block information given by BOOT.COM
     mov     cs:boot_parameter_count,cx                              // Number of drivers loaded
     mov     cs:next_linear_address,edx                              // Next address of free memory in Exodus bootup area
-    mov     eax,<u32> ds:[si-12]
+    mov     eax,u32 ptr ds:[si-12]
     mov     cs:boot_dt_linear,eax                                   // 1st sector of DT
-    mov     eax,<u32> ds:[si-8]
+    mov     eax,u32 ptr ds:[si-8]
     mov     cs:boot_np_linear,eax                                   // 1st sector of NP
-    mov     eax,<u32> ds:[si-4]
+    mov     eax,u32 ptr ds:[si-4]
     mov     cs:boot_rp_linear,eax                                   // 1st sector of RP
     xor     eax,eax
     and     esi,0ffffh
@@ -140,8 +140,8 @@ code text
     mov     cr0,eax
 ;; Ok, we're in protected mode, still 16-bit code segment though
     jmp     $+2                                                     // Clear the cache
-    lidt    <u48> IDT_ptr                                       // Load IDT
-    lgdt    <u48> GDT_ptr                                       // Load GDT
+    lidt    u48 ptr IDT_ptr                                       // Load IDT
+    lgdt    u48 ptr GDT_ptr                                       // Load GDT
     xor     ax,ax
     lldt    ax                                                      // Load LDT with NULL
     mov     ax,_sEXODUS_TSS                                         // Load TR
@@ -162,8 +162,8 @@ code text
     sti
 
 ;; Load the 32-bit _sCODE selector for CS and enter 32-bit code
-    push    <u16> _sCODE                                         // Exodus CODE segment
-    push    <u16> offset end_of_16_bit_segment                   // EIP
+    push    u16 ptr _sCODE                                         // Exodus CODE segment
+    push    u16 ptr offset end_of_16_bit_segment                   // EIP
     retf                                                            // Execution continues below after "first_pmode_instruction"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -211,12 +211,12 @@ code text32
 
 first_pmode_instruction:                                            // Setup segment selectors so they are loaded correctly
 //   // Indicate that we entered protected mode OK
-//    mov     <u32> fs:[6*80*2 + (sizeof entering_pmode * 2)],'KO'      // Line 6, plus the offset of whatever text was shown
+//    mov     u32 ptr fs:[6*80*2 + (sizeof entering_pmode * 2)],'KO'      // Line 6, plus the offset of whatever text was shown
 
 
    // Turn off the nested-task flag
     pushfd
-    and     <u32> [esp],NOT _EFLAGS_NT_MASK
+    and     u32 ptr [esp],NOT _EFLAGS_NT_MASK
     popfd
 
 
@@ -244,16 +244,16 @@ first_pmode_instruction:                                            // Setup seg
     push    200                                                     // param: vertical pixels
     push    60                                                      // param: refresh rate
     mov     eax,1
-    call    <u48> cs:_VID_requestor
+    call    u48 ptr cs:_VID_requestor
     add     esp,20                                                  // get the return values off the stack (we know this works)
 
 
    // Turn off the floppy drive motor
 //    mov     al,'A'
-//    call    <u48> cs:_iFDC_motor_off
+//    call    u48 ptr cs:_iFDC_motor_off
 
    // Transfer control to EXODUS.COM
-    jmp     <u48> cs:_EXODUS_dot_com
+    jmp     u48 ptr cs:_EXODUS_dot_com
 ;;
 ;; END OF PROGRAM
 ;;

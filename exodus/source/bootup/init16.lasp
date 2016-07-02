@@ -41,18 +41,18 @@ function verify_crc16    NEAR
     mov     ds,dx
     and     esi,0fh
   // Right now, ds:[si] - far ptr to the boot parameter block
-    mov     <u16> [bp-2],0
+    mov     u16 ptr [bp-2],0
     while (byte ptr ds:[si+_BOOT_PB_entry_type] != 0ffh)
     {
-        mov     al,<u8>  ds:[si+_BOOT_PB_entry_type]
+        mov     al,u8 ptr ds:[si+_BOOT_PB_entry_type]
         shr     al,1
         and     al,111b
         if (al != 011b)
         {
           // It's not bootup.bin (this program is bootup.bin, and whenever memory variables change the CRC will change,
           //                      so we don't do any crc calculations on bootup.bin)
-            mov     ecx,<u32> ds:[si+_BOOT_PB_size]
-            mov     edi,<u32> ds:[si+_BOOT_PB_linear_offset]
+            mov     ecx,u32 ptr ds:[si+_BOOT_PB_size]
+            mov     edi,u32 ptr ds:[si+_BOOT_PB_linear_offset]
             mov     edx,edi
             shr     edx,4
             mov     es,dx
@@ -62,9 +62,9 @@ function verify_crc16    NEAR
           //                 bx - used for crc16 value
             xor     bx,bx
           @@:
-            push    <u16> 0a001h         // mask
+            push    u16 ptr 0a001h         // mask
             xor     ah,ah
-            mov     al,<u8>  es:[di]
+            mov     al,u8 ptr es:[di]
             push    ax                      // c
             push    bx                      // crc
 
@@ -75,7 +75,7 @@ function verify_crc16    NEAR
             inc     di
             loop    @B
           // Right now, bx is the crc16 value for this entry
-            cmp     <u16> ds:[si+_BOOT_PB_crc16],bx
+            cmp     u16 ptr ds:[si+_BOOT_PB_crc16],bx
             jz      next_one
 
           // This CRC value does not match the one on disk
@@ -84,7 +84,7 @@ function verify_crc16    NEAR
             mov     ds,bx
             mov     es,bx
 
-            mov     ax,<u16> [bp-2]
+            mov     ax,u16 ptr [bp-2]
             add     al,'A'
             mov     crc_error_code[3],al                        // Store the error code for display
             mov     bx,07
@@ -103,7 +103,7 @@ function verify_crc16    NEAR
         }
 
       next_one:
-        inc     <u16> [bp-2]
+        inc     u16 ptr [bp-2]
         add     si,_BOOT_PB_structure_size
     }
 
@@ -121,7 +121,7 @@ function display_crc_comparitive    NEAR
 {
     xor     bh,bh
     mov     bx,07
-    mov     dh,<u8>  [bp-2]
+    mov     dh,u8 ptr [bp-2]
     add     dh,5
     xor     dl,dl
     push    bp
@@ -151,25 +151,25 @@ function extract_word_to_ds_di    NEAR
     mov     al,dh
     shr     al,4
     adjust_al()
-    mov     <u8>  ds:[di],al
+    mov     u8 ptr ds:[di],al
     inc     di
 
     mov     al,dh
     and     al,0fh
     adjust_al()
-    mov     <u8>  ds:[di],al
+    mov     u8 ptr ds:[di],al
     inc     di
 
     mov     al,dl
     shr     al,4
     adjust_al()
-    mov     <u8>  ds:[di],al
+    mov     u8 ptr ds:[di],al
     inc     di
 
     mov     al,dl
     and     al,0fh
     adjust_al()
-    mov     <u8>  ds:[di],al
+    mov     u8 ptr ds:[di],al
     inc     di
 
     pop     ax
@@ -212,9 +212,9 @@ function update_crc16_value    NEAR
     push    si
     push    cx
 
-    mov     <u16> [bp-2],8   // i
-    mov     si,<u16> [bp+4]  // crc
-    mov     di,<u16> [bp+6]  // c
+    mov     u16 ptr [bp-2],8   // i
+    mov     si,u16 ptr [bp+4]  // crc
+    mov     di,u16 ptr [bp+6]  // c
   F515:
     mov     ax,si
     mov     cx,di
@@ -223,7 +223,7 @@ function update_crc16_value    NEAR
     je      I518
     mov     ax,si
     shr     ax,1
-    xor     ax,<u16> [bp+8]  // mask
+    xor     ax,u16 ptr [bp+8]  // mask
     mov     si,ax
     jmp     I519
 
@@ -232,7 +232,7 @@ function update_crc16_value    NEAR
 
   I519:
     shr     di,1
-    dec     <u16> [bp-2]     // i
+    dec     u16 ptr [bp-2]     // i
     jne     F515
     mov     ax,si
 
@@ -554,8 +554,8 @@ function setup_pmode_variables    NEAR
 function create_null_data_descriptor    NEAR
 {
 // Upon entry, ds:[esi] - far ptr to memory location for null data descriptor
-    mov     <u32> [esi+0],00000000000000000000000000000000b
-    mov     <u32> [esi+4],00000000000000001001000000000000b
+    mov     u32 ptr [esi+0],00000000000000000000000000000000b
+    mov     u32 ptr [esi+4],00000000000000001001000000000000b
     ret
 }
 
@@ -571,29 +571,29 @@ function create_data_descriptor    NEAR
 //
     pushad
 
-    mov     <u16> [esi+eax*8+2],bx                           // base 0:15
+    mov     u16 ptr [esi+eax*8+2],bx                           // base 0:15
     shr     ebx,16
-    mov     <u8>  [esi+eax*8+4],bl                           // base 16:23
+    mov     u8 ptr [esi+eax*8+4],bl                           // base 16:23
     shr     ebx,8
-    mov     <u8>  [esi+eax*8+5],10010010b                    // Not accessed, writeable, expand=0, DPL=00
+    mov     u8 ptr [esi+eax*8+5],10010010b                    // Not accessed, writeable, expand=0, DPL=00
     if (edx > 0fffffh)
     {
       // This is a BIG data descriptor (so, we have to change the granularity to 1)
       // Also, setting the granularity bit makes the limit value be the number of 4k segments
         shr     edx,12                                          // Divide by 4096
-        mov     <u16> [esi+eax*8+0],dx                       // Store the new limit 0:15
+        mov     u16 ptr [esi+eax*8+0],dx                       // Store the new limit 0:15
         shr     edx,16                                          // Move over to store the next part of the limit
         and     dl,0fh                                          // Mask off the top nibble (the limit is only 20 bits)
         or      dl,11000000b                                    // make granularity=1, big=1 (high bits in dl)
     
     } else {
       // It's a small data descriptor (leave the granularity at 0)
-        mov     <u16> [esi+eax*8+0],dx                       // limit 0:15
+        mov     u16 ptr [esi+eax*8+0],dx                       // limit 0:15
         shr     edx,16
         and     dl,0fh
     }
-    mov     <u8>  [esi+eax*8+6],dl                           // limit 16:19, Granularity=0/1, big=0/1 (depends on size)
-    mov     <u8>  [esi+eax*8+7],bl                           // base 24:31
+    mov     u8 ptr [esi+eax*8+6],dl                           // limit 16:19, Granularity=0/1, big=0/1 (depends on size)
+    mov     u8 ptr [esi+eax*8+7],bl                           // base 24:31
 
     popad
     ret
@@ -612,31 +612,31 @@ function create_data_descriptor_pl    NEAR
 //
     pushad
 
-    mov     <u16> [esi+eax*8+2],bx                           // base 0:15
+    mov     u16 ptr [esi+eax*8+2],bx                           // base 0:15
     shr     ebx,16
-    mov     <u8>  [esi+eax*8+4],bl                           // base 16:23
+    mov     u8 ptr [esi+eax*8+4],bl                           // base 16:23
     shr     ebx,8
     shl     cl,5
-    mov     <u8>  [esi+eax*8+5],10010010b                    // Not accessed, writeable, expand=0, (PL=00 for now)
-    or      <u8>  [esi+eax*8+5],cl                           // Apply the privledge level
+    mov     u8 ptr [esi+eax*8+5],10010010b                    // Not accessed, writeable, expand=0, (PL=00 for now)
+    or      u8 ptr [esi+eax*8+5],cl                           // Apply the privledge level
     if (edx > 0fffffh)
     {
       // This is a BIG data descriptor (so, we have to change the granularity to 1)
       // Also, setting the granularity bit makes the limit value be the number of 4k segments
         shr     edx,12                                          // Divide by 4096
-        mov     <u16> [esi+eax*8+0],dx                       // Store the new limit 0:15
+        mov     u16 ptr [esi+eax*8+0],dx                       // Store the new limit 0:15
         shr     edx,16                                          // Move over to store the next part of the limit
         and     dl,0fh                                          // Mask off the top nibble (the limit is only 20 bits)
         or      dl,11000000b                                    // make granularity=1, big=1 (high bits in dl)
     
     } else {
       // It's a small data descriptor (leave the granularity at 0)
-        mov     <u16> [esi+eax*8+0],dx                       // limit 0:15
+        mov     u16 ptr [esi+eax*8+0],dx                       // limit 0:15
         shr     edx,16
         and     dl,0fh
     }
-    mov     <u8>  [esi+eax*8+6],dl                           // limit 16:19, Granularity=0/1, big=0/1 (depends on size)
-    mov     <u8>  [esi+eax*8+7],bl                           // base 24:31
+    mov     u8 ptr [esi+eax*8+6],dl                           // limit 16:19, Granularity=0/1, big=0/1 (depends on size)
+    mov     u8 ptr [esi+eax*8+7],bl                           // base 24:31
 
     popad
     ret
@@ -654,29 +654,29 @@ function create_ldt_descriptor
 //
     pushad
 
-    mov     <u16> [esi+eax*8+2],bx                           // base 0:15
+    mov     u16 ptr [esi+eax*8+2],bx                           // base 0:15
     shr     ebx,16
-    mov     <u8>  [esi+eax*8+4],bl                           // base 16:23
+    mov     u8 ptr [esi+eax*8+4],bl                           // base 16:23
     shr     ebx,8
-    mov     <u8>  [esi+eax*8+5],10000010b                    // Not accessed, writeable, expand=0, DPL=00
+    mov     u8 ptr [esi+eax*8+5],10000010b                    // Not accessed, writeable, expand=0, DPL=00
     if (edx > 0fffffh)
     {
       // This is a BIG data descriptor (so, we have to change the granularity to 1)
       // Also, setting the granularity bit makes the limit value be the number of 4k segments
         shr     edx,12                                          // Divide by 4096
-        mov     <u16> [esi+eax*8+0],dx                       // Store the new limit 0:15
+        mov     u16 ptr [esi+eax*8+0],dx                       // Store the new limit 0:15
         shr     edx,16                                          // Move over to store the next part of the limit
         and     dl,0fh                                          // Mask off the top nibble (the limit is only 20 bits)
         or      dl,11000000b                                    // make granularity=1, big=1 (high bits in dl)
     
     } else {
       // It's a small data descriptor (leave the granularity at 0)
-        mov     <u16> [esi+eax*8+0],dx                       // limit 0:15
+        mov     u16 ptr [esi+eax*8+0],dx                       // limit 0:15
         shr     edx,16
         and     dl,0fh
     }
-    mov     <u8>  [esi+eax*8+6],dl                           // limit 16:19, Granularity=0/1, big=0/1 (depends on size)
-    mov     <u8>  [esi+eax*8+7],bl                           // base 24:31
+    mov     u8 ptr [esi+eax*8+6],dl                           // limit 16:19, Granularity=0/1, big=0/1 (depends on size)
+    mov     u8 ptr [esi+eax*8+7],bl                           // base 24:31
 
     popad
     ret
@@ -693,17 +693,17 @@ function create_code_descriptor    NEAR
 //                  edx - limit
     pushad
 
-    mov     <u16> [esi+eax*8+0],dx                           // limit 0:15
+    mov     u16 ptr [esi+eax*8+0],dx                           // limit 0:15
     shr     edx,16
-    mov     <u16> [esi+eax*8+2],bx                           // base 0:15
+    mov     u16 ptr [esi+eax*8+2],bx                           // base 0:15
     shr     ebx,16
-    mov     <u8>  [esi+eax*8+4],bl                           // base 16:23
+    mov     u8 ptr [esi+eax*8+4],bl                           // base 16:23
     shr     ebx,8
-    mov     <u8>  [esi+eax*8+5],10011010b                    // Not accessed, readable, conforming=0, DPL=00
+    mov     u8 ptr [esi+eax*8+5],10011010b                    // Not accessed, readable, conforming=0, DPL=00
     and     dl,0fh
     or      dl,01000000b
-    mov     <u8>  [esi+eax*8+6],dl                           // limit 16:19, Granularity=0, big=0
-    mov     <u8>  [esi+eax*8+7],bl                           // base 24:31
+    mov     u8 ptr [esi+eax*8+6],dl                           // limit 16:19, Granularity=0, big=0
+    mov     u8 ptr [esi+eax*8+7],bl                           // base 24:31
 
     popad
     ret
@@ -728,8 +728,8 @@ function create_interrupt_descriptor_32_bit    NEAR
     mov     dx,bx                                               // Segment selector
     ror     edx,16                                              // Ok, put it back the way it was
 
-    mov     <u32> [esi+eax*8+0],edx                         // Store the IDT descriptor
-    mov     <u32> [esi+eax*8+4],ecx
+    mov     u32 ptr [esi+eax*8+0],edx                         // Store the IDT descriptor
+    mov     u32 ptr [esi+eax*8+4],ecx
 
     popad
     ret
@@ -773,16 +773,16 @@ function create_exodus_tss_descriptor
     mov     edi,ebx
 
   // Create the TSS descriptor
-    mov     <u16> [esi+eax*8+0],dx                           // limit 0:15
-    mov     <u16> [esi+eax*8+2],bx                           // base 0:15
+    mov     u16 ptr [esi+eax*8+0],dx                           // limit 0:15
+    mov     u16 ptr [esi+eax*8+2],bx                           // base 0:15
     shr     ebx,16
-    mov     <u8>  [esi+eax*8+4],bl                           // base 16:23
+    mov     u8 ptr [esi+eax*8+4],bl                           // base 16:23
     shr     ebx,8
-    mov     <u8>  [esi+eax*8+5],10001001b                    // present=1:dpl=00:010:busy=1:1
+    mov     u8 ptr [esi+eax*8+5],10001001b                    // present=1:dpl=00:010:busy=1:1
     shr     edx,16
     and     dl,0fh                                              // make the top nibble be all 0s
-    mov     <u8>  [esi+eax*8+6],dl                           // Granularity=0:0:0:Available=0:limit 16:19
-    mov     <u8>  [esi+eax*8+7],bl                           // base 24:31
+    mov     u8 ptr [esi+eax*8+6],dl                           // Granularity=0:0:0:Available=0:limit 16:19
+    mov     u8 ptr [esi+eax*8+7],bl                           // base 24:31
 
   // Write the Exodus variables there
     mov     ebx,edi
@@ -792,52 +792,52 @@ function create_exodus_tss_descriptor
   // Right now, es:[edi] - far ptr the memory location for Exodus
   // Code segment register
     mov     eax,_sCODE
-    mov     <u32> es:[edi+_TSS_CS],eax                          // cs
+    mov     u32 ptr es:[edi+_TSS_CS],eax                          // cs
   // Instruction Pointer
-    mov     <u32> es:[edi+_TSS_EIP],ecx                         // eip
+    mov     u32 ptr es:[edi+_TSS_EIP],ecx                         // eip
   // Data segment registers
     mov     eax,_sDATA
-    mov     <u32> es:[edi+_TSS_DS],eax                          // ds
-    mov     <u32> es:[edi+_TSS_ES],eax                          // es
+    mov     u32 ptr es:[edi+_TSS_DS],eax                          // ds
+    mov     u32 ptr es:[edi+_TSS_ES],eax                          // es
   // Extra segment registers
     mov     eax,_sVGA
-    mov     <u32> es:[edi+_TSS_FS],eax                          // fs
+    mov     u32 ptr es:[edi+_TSS_FS],eax                          // fs
     mov     eax,_sMONO
-    mov     <u32> es:[edi+_TSS_GS],eax                          // gs
+    mov     u32 ptr es:[edi+_TSS_GS],eax                          // gs
   // Stack
     mov     eax,_sSTACK
-    mov     <u32> es:[edi+_TSS_SS],eax                          // ss
-    mov     <u32> es:[edi+_TSS_ESP],_sSTACK_limit               // esp
+    mov     u32 ptr es:[edi+_TSS_SS],eax                          // ss
+    mov     u32 ptr es:[edi+_TSS_ESP],_sSTACK_limit               // esp
   // Stack 2
     mov     eax,_sSTACK2
-    mov     <u32> es:[edi+_TSS_SS2],eax                         // ss2
-    mov     <u32> es:[edi+_TSS_ESP2],_sSTACK2_limit             // esp2
+    mov     u32 ptr es:[edi+_TSS_SS2],eax                         // ss2
+    mov     u32 ptr es:[edi+_TSS_ESP2],_sSTACK2_limit             // esp2
   // Stack 1
     mov     eax,_sSTACK1
-    mov     <u32> es:[edi+_TSS_SS1],eax                         // ss1
-    mov     <u32> es:[edi+_TSS_ESP1],_sSTACK1_limit             // esp1
+    mov     u32 ptr es:[edi+_TSS_SS1],eax                         // ss1
+    mov     u32 ptr es:[edi+_TSS_ESP1],_sSTACK1_limit             // esp1
   // Stack 0
     mov     eax,_sSTACK0
-    mov     <u32> es:[edi+_TSS_SS0],eax                         // ss0
-    mov     <u32> es:[edi+_TSS_ESP0],_sSTACK0_limit             // esp0
+    mov     u32 ptr es:[edi+_TSS_SS0],eax                         // ss0
+    mov     u32 ptr es:[edi+_TSS_ESP0],_sSTACK0_limit             // esp0
   // General purpose registers
     xor     eax,eax
-    mov     <u32> es:[edi+_TSS_EAX],eax                         // eax
-    mov     <u32> es:[edi+_TSS_ECX],eax                         // ecx
-    mov     <u32> es:[edi+_TSS_EDX],eax                         // edx
-    mov     <u32> es:[edi+_TSS_EBX],eax                         // ebx
-    mov     <u32> es:[edi+_TSS_EBP],eax                         // ebp
-    mov     <u32> es:[edi+_TSS_ESI],eax                         // esi
-    mov     <u32> es:[edi+_TSS_EDI],eax                         // edi
-    mov     <u32> es:[edi+_TSS_CR3],eax                         // CR3, paging (not used in Exodus)
-    mov     <u32> es:[edi+_TSS_IO_MAP],eax                      // IO Map Base Address, Trap bit
-    mov     <u32> es:[edi+_TSS_BACK_LINK],eax                   // Previous task link
+    mov     u32 ptr es:[edi+_TSS_EAX],eax                         // eax
+    mov     u32 ptr es:[edi+_TSS_ECX],eax                         // ecx
+    mov     u32 ptr es:[edi+_TSS_EDX],eax                         // edx
+    mov     u32 ptr es:[edi+_TSS_EBX],eax                         // ebx
+    mov     u32 ptr es:[edi+_TSS_EBP],eax                         // ebp
+    mov     u32 ptr es:[edi+_TSS_ESI],eax                         // esi
+    mov     u32 ptr es:[edi+_TSS_EDI],eax                         // edi
+    mov     u32 ptr es:[edi+_TSS_CR3],eax                         // CR3, paging (not used in Exodus)
+    mov     u32 ptr es:[edi+_TSS_IO_MAP],eax                      // IO Map Base Address, Trap bit
+    mov     u32 ptr es:[edi+_TSS_BACK_LINK],eax                   // Previous task link
     xor     eax,eax
-    mov     <u32> es:[edi+_TSS_LDT],eax                         // LDT segment selector
+    mov     u32 ptr es:[edi+_TSS_LDT],eax                         // LDT segment selector
   // EFLAGS
     pushfd
     pop     eax
-    mov     <u32> es:[edi+_TSS_EFLAGS],eax
+    mov     u32 ptr es:[edi+_TSS_EFLAGS],eax
 
   // Finished
     popad
@@ -860,13 +860,13 @@ function create_call_gate_descriptor
 //
     pushad
 
-    mov     <u16> [esi+eax*8+2],dx                               // code segment selector
+    mov     u16 ptr [esi+eax*8+2],dx                               // code segment selector
     and     cx,011111b                                              // Keep the lower 5 bits
     or      cx,1000110000000000b                                    // Put parameters in the upper 11 bits
-    mov     <u16> [esi+eax*8+4],cx                               // dword count + constants
-    mov     <u16> [esi+eax*8+0],bx                               // Lower 16-bits of 32-bit offset
+    mov     u16 ptr [esi+eax*8+4],cx                               // dword count + constants
+    mov     u16 ptr [esi+eax*8+0],bx                               // Lower 16-bits of 32-bit offset
     ror     ebx,16
-    mov     <u16> [esi+eax*8+6],bx                               // Upper 16-bits of 32-bit offset
+    mov     u16 ptr [esi+eax*8+6],bx                               // Upper 16-bits of 32-bit offset
 
     popad
     ret
@@ -884,10 +884,10 @@ function create_task_gate_descriptor
     pushad
 
     shl     ebx,16                                              // Move bx(TSS selector) to high-order word in ebx
-    mov     <u32> [esi+eax*8+0],ebx
+    mov     u32 ptr [esi+eax*8+0],ebx
     xor     ebx,ebx
     mov     bh,10000101b                                        // present=1:dpl=00:00101
-    mov     <u32> [esi+eax*8+4],ebx
+    mov     u32 ptr [esi+eax*8+4],ebx
 
     popad
     ret

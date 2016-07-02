@@ -160,7 +160,7 @@
     //
         if (byte ptr ds:[esi+_ST_OBJECT_ALTERABLE] == _YES)
         {
-            mov     <u8>  ds:[esi+_ST_OBJECT_ACTIVE],_NO
+            mov     u8 ptr ds:[esi+_ST_OBJECT_ACTIVE],_NO
             invDEBI_clear_screen_and_redraw_windows()
         }
         ret
@@ -280,7 +280,7 @@
           // It's negative
             xor     ecx,ecx
         }
-        mov     <u32> ds:[esi+_ST_OBJECT_UL_HORIZONTAL],ecx
+        mov     u32 ptr ds:[esi+_ST_OBJECT_UL_HORIZONTAL],ecx
 
       // Do Y
         mov     ecx,ds:mouse_current_y
@@ -291,7 +291,7 @@
           // It's negative
             xor     ecx,ecx
         }
-        mov     <u32> ds:[esi+_ST_OBJECT_UL_VERTICAL],ecx
+        mov     u32 ptr ds:[esi+_ST_OBJECT_UL_VERTICAL],ecx
 
         pop     edx
         pop     ecx
@@ -324,7 +324,7 @@
         {
           // No memory has yet been defined for this item, so we set it up here (only done once per mem.x window)
             mov     ebx,es:[0]
-            mov     <u32> ds:[esi+_ST_MEMVAR_OFFSET],ebx
+            mov     u32 ptr ds:[esi+_ST_MEMVAR_OFFSET],ebx
             mov     edi,offset DEBI_exp_memvar_list
             xor     ecx,ecx
           // Right now,      ebx - offset in _sDEBI_memory where these memory variables will go
@@ -334,23 +334,23 @@
           //              es:[0] - (ebx) current offset into _sDEBI_memory
             while (dword ptr ds:[edi+_MEMVAR_MEMORY_VARIABLE] != -1)
             {
-                add     ecx,<u32> ds:[edi+_MEMVAR_LENGTH]
+                add     ecx,u32 ptr ds:[edi+_MEMVAR_LENGTH]
                 mov     eax,ecx
               // Initialize as we go
                 while (eax > 0)
                 {
-                    mov     <u8>  es:[ebx],32
+                    mov     u8 ptr es:[ebx],32
                     inc     ebx
                     dec     eax
                 }
                 add     edi,_MEMVAR_STRUCT_LENGTH
             }
-            add     <u32> es:[0],ecx                            // Increase offset for next window
+            add     u32 ptr es:[0],ecx                            // Increase offset for next window
         }
 
       // Copy the string that's there to our temporary input variables
         pushfd
-        mov     esi,<u32> ds:[esi+_ST_MEMVAR_OFFSET]
+        mov     esi,u32 ptr ds:[esi+_ST_MEMVAR_OFFSET]
         mov     ebx,offset DEBI_exp_memvar_list
         invDEBI_from_object_memvar()
 
@@ -397,7 +397,7 @@
         push    ecx
         push    edx
 
-        mov     <u16> ds:[esi],'x0'
+        mov     u16 ptr ds:[esi],'x0'
         add     esi,2
         mov     ecx,8
       @@:
@@ -411,7 +411,7 @@
         } else {
             add     dl,'a'-10
         }
-        mov     <u8>  ds:[esi],dl
+        mov     u8 ptr ds:[esi],dl
         inc     esi
         loop    @B
 
@@ -442,7 +442,7 @@
         if (al != 32 || ebx != 0)
         {
             mov     ebx,1
-            mov     <u8>  ds:[esi],al
+            mov     u8 ptr ds:[esi],al
             inc     esi
         }
         loop    @B
@@ -512,8 +512,8 @@
           try_again:
             mov     ebx,ds:instruction_offset
             push    ds
-            mov     ds,<u32> [ebp+56]
-            mov     ax,<u16> ds:[ebx]
+            mov     ds,u32 ptr [ebp+56]
+            mov     ax,u16 ptr ds:[ebx]
             mov     dx,ax
             shr     ah,3
             and     ah,111b
@@ -549,9 +549,9 @@
               // Get the base/limit for this code segment
                 mov     eax,'get '
                 mov     ebx,'gdtc'
-                mov     edx,<u32> [ebp+56]
+                mov     edx,u32 ptr [ebp+56]
                 shr     edx,3
-                call    <u48> cs:_EXODUS_requestor
+                call    u48 ptr cs:_EXODUS_requestor
                 if (!carry?)
                 {
                   // Set a data segment that's the same base/limit as the code segment
@@ -560,7 +560,7 @@
                     mov     eax,'set '
                     mov     ebx,'gdtd'
                     mov     edx,_sDEBI_temp / 8
-                    call    <u48> cs:_EXODUS_requestor
+                    call    u48 ptr cs:_EXODUS_requestor
                     if (!carry?)
                     {
                       // Right now, _sDEBI_temp is a data segment to the code segment that's being debugged
@@ -568,8 +568,8 @@
                         push    fs
                         mov     eax,_sDEBI_temp
                         mov     fs,eax
-                        mov     al,<u8>  fs:[ebx]
-                        mov     <u8>  fs:[ebx],0cch
+                        mov     al,u8 ptr fs:[ebx]
+                        mov     u8 ptr fs:[ebx],0cch
                         mov     ds:step_replaced_byte,al
                         pop     fs
                         mov     ds:step_over,1

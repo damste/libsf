@@ -74,12 +74,12 @@
             if (es:bootup == 1)
             {
               // During bootup, strings can be terminated with 255 as well as 0
-                while (byte ptr ds:[esi] != 0 && <u8>  ds:[esi] != 255)     // Loop until one of two chars is found
+                while (byte ptr ds:[esi] != 0 && u8 ptr ds:[esi] != 255)     // Loop until one of two chars is found
                 {
                     lodsb
-                    mov     <u8>  gs:[edi],al                    // Write character
+                    mov     u8 ptr gs:[edi],al                    // Write character
                     inc     di
-                    mov     <u8>  gs:[edi],ah                    // Write color
+                    mov     u8 ptr gs:[edi],ah                    // Write color
                     inc     di
                 }
             
@@ -87,9 +87,9 @@
                 while (byte ptr ds:[esi] != 0)                     // Loop until the NULL terminated string is found
                 {
                     lodsb
-                    mov     <u8>  gs:[edi],al                    // Write character
+                    mov     u8 ptr gs:[edi],al                    // Write character
                     inc     edi
-                    mov     <u8>  gs:[edi],ah                    // Write color
+                    mov     u8 ptr gs:[edi],ah                    // Write color
                     inc     edi
                 }
             }
@@ -126,9 +126,9 @@
         repeat
         {
             lodsb
-            mov     <u8>  gs:[edi],al                            // Write character
+            mov     u8 ptr gs:[edi],al                            // Write character
             inc     edi
-            mov     <u8>  gs:[edi],ah                            // Write color
+            mov     u8 ptr gs:[edi],ah                            // Write color
             inc     edi
         } untilcxz
         mov     ebx,edi                                             // Adjust the cursor position
@@ -165,21 +165,21 @@
             lodsb
             mov     dl,al
             hex_adjust_al_dl()
-            mov     <u8>  gs:[edi],32                            // Write a space before hexidecimal values
+            mov     u8 ptr gs:[edi],32                            // Write a space before hexidecimal values
             inc     di
-            mov     <u8>  gs:[edi],ah                            // Write color
+            mov     u8 ptr gs:[edi],ah                            // Write color
             inc     di
-            mov     <u8>  gs:[edi],dl                            // Write left 1/2 of hexidecimal values character
+            mov     u8 ptr gs:[edi],dl                            // Write left 1/2 of hexidecimal values character
             inc     di
-            mov     <u8>  gs:[edi],ah                            // Write color
+            mov     u8 ptr gs:[edi],ah                            // Write color
             inc     di
-            mov     <u8>  gs:[edi],al                            // Write right 1/2 of hexidecimal values character
+            mov     u8 ptr gs:[edi],al                            // Write right 1/2 of hexidecimal values character
             inc     di
-            mov     <u8>  gs:[edi],ah                            // Write color
+            mov     u8 ptr gs:[edi],ah                            // Write color
             inc     di
-            mov     <u8>  gs:[edi],32                            // Write a space after hexidecimal value
+            mov     u8 ptr gs:[edi],32                            // Write a space after hexidecimal value
             inc     di
-            mov     <u8>  gs:[edi],ah                            // Write color
+            mov     u8 ptr gs:[edi],ah                            // Write color
             inc     di
         } untilcxz
         mov     ebx,edi                                             // Adjust the cursor position
@@ -310,8 +310,8 @@
             }
             repeat
             {
-                mov     al,<u8>  gs:[esi]                        // Load a byte
-                mov     <u8>  gs:[edi],al                        // Store a byte
+                mov     al,u8 ptr gs:[esi]                        // Load a byte
+                mov     u8 ptr gs:[edi],al                        // Store a byte
                 inc     esi
                 inc     edi
             } untilcxz
@@ -320,9 +320,9 @@
             mov     ah,es:attribute_mono
             repeat
             {
-                mov     <u8>  gs:[edi]," "
+                mov     u8 ptr gs:[edi]," "
                 inc     edi
-                mov     <u8>  gs:[edi],ah
+                mov     u8 ptr gs:[edi],ah
                 inc     edi
             } untilcxz
         
@@ -442,8 +442,8 @@
 
             _generate_radix_string_ecx()
           // Right now, ds:[esi] - far ptr to string to display
-            push    <u32> [ebp+92]
-            push    <u32> [ebp+88]
+            push    u32 ptr [ebp+92]
+            push    u32 ptr [ebp+88]
             push    esi
             VID_g_mono_display_text()
 
@@ -586,7 +586,7 @@
         mov     ah,es:attribute_mono
         repeat
         {
-            mov     <u16> gs:[edi],ax
+            mov     u16 ptr gs:[edi],ax
             add     edi,2
         } untilcxz
         xor     edx,edx
@@ -647,11 +647,11 @@
 
             mov     edx,cs:mono_write_mode
             push    edx
-            push    <u32> [ebp+24]
-            push    <u32> [ebp+20]
+            push    u32 ptr [ebp+24]
+            push    u32 ptr [ebp+20]
             mov     edx,cs:mono_display_mode
             push    edx
-            push    <u32> [ebp+16]
+            push    u32 ptr [ebp+16]
             VID_g_mono_display_text_mode()
 
             leave
@@ -707,24 +707,24 @@
             push    edi
             if (dword ptr [ebp+20] != 0)
             {
-                mov     <u32> [ebp+20],0ffffffffh
+                mov     u32 ptr [ebp+20],0ffffffffh
             }
            // Make sure the text coordinates are not off the screen
             if (dword ptr [ebp+28] > 718)
             {
-                mov     <u32> [ebp+28],718
+                mov     u32 ptr [ebp+28],718
             }
             if (dword ptr [ebp+24] > 346)
             {
-                mov     <u32> [ebp+24],346
+                mov     u32 ptr [ebp+24],346
             }
 
-            mov     <u8>  [ebp-06],0
-            mov     <u8>  [ebp-07],10101010b
+            mov     u8 ptr [ebp-06],0
+            mov     u8 ptr [ebp-07],10101010b
 
            // Calculate the starting offset into video memory
           // do vertical
-            mov     eax,<u32> [ebp+24]
+            mov     eax,u32 ptr [ebp+24]
             mov     ebx,4
             xor     edx,edx
             div     ebx
@@ -749,24 +749,24 @@
             mov     ebx,90
             mul     ebx
             add     eax,ecx
-            mov     <u32> [ebp-24],eax
+            mov     u32 ptr [ebp-24],eax
 
           // Right now, eax contains the starting offset into video memory (not including the X coordinate)
-            mov     eax,<u32> [ebp+28]
+            mov     eax,u32 ptr [ebp+28]
             mov     ebx,8
             xor     edx,edx
             div     ebx
           // Right now, eax - offset across the line for the first character
           //            edx - Number of bits to use for the first character
-            add     <u32> [ebp-24],eax
+            add     u32 ptr [ebp-24],eax
             if (edx == 0)
             {
               // They're on a solid boundary (no bit shifting)
-                mov     <u8>  [ebp-08],0
+                mov     u8 ptr [ebp-08],0
             
             } else {
               // They're going across multiple characters
-                mov     <u8>  [ebp-08],dl
+                mov     u8 ptr [ebp-08],dl
             }
           // Right now, [ebp-24] - starting offset into video memory
           //            [ebp-08] - number of bits to shift each character right
@@ -777,15 +777,15 @@
           // We use edx as our source value, we calculate the offsets each time
             mov     ebx,-28
             mov     edi,cs:current_font
-            mov     edx,<u32> cs:[edi+8]
-            mov     <u32> [ebp-04],edx                       // Base font offset
-            mov     ecx,<u32> cs:[edi+4]
+            mov     edx,u32 ptr cs:[edi+8]
+            mov     u32 ptr [ebp-04],edx                       // Base font offset
+            mov     ecx,u32 ptr cs:[edi+4]
             if (ecx > 16)
             {
               // Just to make sure our algorithm doesn't fail
                 mov     ecx,16
             }
-            mov     edx,<u32> [ebp-24]                       // prime our starting address
+            mov     edx,u32 ptr [ebp-24]                       // prime our starting address
             mov     eax,edx                                         // and copy to our "hold" value
             and     eax,1fffh
             repeat
@@ -803,22 +803,22 @@
                     mov     edx,eax
                     mov     ecx,0ffffffffh-6000h + 90 + 1
                 }
-                mov     <u32> [ebp+ebx],ecx
+                mov     u32 ptr [ebp+ebx],ecx
                 sub     ebx,4
                 pop     ecx
             } untilcxz
-            mov     <u32> [ebp+ebx],0ffffffffh
+            mov     u32 ptr [ebp+ebx],0ffffffffh
           // Right now, every value is setup for our write operation.
           // All we have to do to output our text is get the pointer to the appropriate character bitmap,
           // then start writing bytes at a time (accounting, of course, for the bit shifting and write masks)
 
-            mov     esi,<u32> [ebp+16]                       // Source
+            mov     esi,u32 ptr [ebp+16]                       // Source
           //
           // [ebp+28] - dword, bits wide for each character
           // [ebp+24] - dword, maximum offset to achieve (before text is ignored because it would go off the right side of the screen)
           // [ebp+16] - dword, multiplication factor for each character
-            mov     eax,<u32> cs:[edi]
-            mov     <u32> [ebp+28],eax                       // bits wide
+            mov     eax,u32 ptr cs:[edi]
+            mov     u32 ptr [ebp+28],eax                       // bits wide
             mov     ecx,eax
             xor     edx,edx
             repeat
@@ -826,91 +826,91 @@
                 stc
                 rcl     edx,1
             } untilcxz
-            mov     cl,<u8>  [ebp-08]
+            mov     cl,u8 ptr [ebp-08]
           // Adjust for multi-character fonts
             if (dword ptr [ebp+28] > 8)
             {
                 push    eax
-                mov     eax,<u32> [ebp+28]
+                mov     eax,u32 ptr [ebp+28]
                 sub     eax,8
                 add     cl,al
-                add     <u8>  [ebp-08],al
+                add     u8 ptr [ebp-08],al
                 pop     eax
             }
             ror     edx,cl
 
           // Right now, edx is a bitmap of this character's width
-            mov     <u32> [ebp-12],edx                       // base bitmap
-            mov     <u32> [ebp-16],edx                       // working bitmap
+            mov     u32 ptr [ebp-12],edx                       // base bitmap
+            mov     u32 ptr [ebp-16],edx                       // working bitmap
             shr     eax,3                                           // Divide by 8
-            mov     ebx,<u32> cs:[edi+4]                        // bytes high
+            mov     ebx,u32 ptr cs:[edi+4]                        // bytes high
             mul     ebx
-            mov     <u32> [ebp+16],eax                       // Multiplication factor
+            mov     u32 ptr [ebp+16],eax                       // Multiplication factor
 
            // Start drawing the characters
             mov     ax,_sMONO
             mov     es,ax
-            mov     edi,<u32> [ebp-24]                       // Destination starting address
-            mov     <u32> [ebp-20],1                         // Start the count at 1 (because the count includes the NULL)
-            mov     <u8>  [ebp-05],0                          // Indicate originally that nothing was here
+            mov     edi,u32 ptr [ebp-24]                       // Destination starting address
+            mov     u32 ptr [ebp-20],1                         // Start the count at 1 (because the count includes the NULL)
+            mov     u8 ptr [ebp-05],0                          // Indicate originally that nothing was here
             while (byte ptr ds:[esi] != 0)
             {
-                inc     <u32> [ebp-20]                       // increase the count
+                inc     u32 ptr [ebp-20]                       // increase the count
                 xor     eax,eax
-                mov     al,<u8>  ds:[esi]
+                mov     al,u8 ptr ds:[esi]
                 if (al == 'ô')
                 {
-                    mov     <u32> [ebp+20],0ffffffffh
+                    mov     u32 ptr [ebp+20],0ffffffffh
                 
                 } else if (al == 'õ') {
-                    mov     <u32> [ebp+20],0
+                    mov     u32 ptr [ebp+20],0
                 
                 } else if (al == 168) {
                   // This character signifies that the one to its right is one to display regardless
                     inc     esi
-                    mov     al,<u8>  ds:[esi]
+                    mov     al,u8 ptr ds:[esi]
                     jmp     display_this_one
                 
                 } else if (al >= 128 && al <= 151) {
                     if ((al >= 128 && al <= 131) || (al >= 136 && al <= 139) || (al >= 144 && al <= 147))
                     {
                       // It's a starting cask character
-                        mov     <u8>  [ebp-05],0ffh
+                        mov     u8 ptr [ebp-05],0ffh
                       // Note that we don't turn the reverse on until after this character is displayed.  The code that turns
                       // the reverse on is down below.  Look for [ebp-05] below followed by a modification to [ebp+20]
                     
                     } else {
                       // It's an ending cask character
-                        not     <u32> [ebp+20]
+                        not     u32 ptr [ebp+20]
                     }
                     jmp     display_this_one
                 
                 } else if (al == '®') {
-                    mov     <u8>  [ebp-06],1
+                    mov     u8 ptr [ebp-06],1
                 
                 } else if (al == '¯') {
-                    mov     <u8>  [ebp-06],0
+                    mov     u8 ptr [ebp-06],0
                 
                 } else {
                   display_this_one:
-                    mov     ebx,<u32> [ebp+16]
+                    mov     ebx,u32 ptr [ebp+16]
                     mul     ebx
-                    add     eax,<u32> [ebp-04]
+                    add     eax,u32 ptr [ebp-04]
 
                   // Right now, cs:[eax] - far ptr to the base of this character's font
                     mov     ebx,-28                                 // Starting offset into stack for add to offsets
                     push    edi
                     while (dword ptr [ebp+ebx] != 0ffffffffh)
                     {
-                        mov     edx,<u32> [ebp-12]           // Update our working bitmap
-                        mov     <u32> [ebp-16],edx
+                        mov     edx,u32 ptr [ebp-12]           // Update our working bitmap
+                        mov     u32 ptr [ebp-16],edx
 
-                        mov     edx,<u32> [ebp+28]
+                        mov     edx,u32 ptr [ebp+28]
                         if (edx == 16)
                         {
                           // We have to load 2 bytes
                             xor     edx,edx
-                            mov     dx,<u16> cs:[eax]
+                            mov     dx,u16 ptr cs:[eax]
                             add     eax,2
                             if (dword ptr [ebp+20] != 0)
                             {
@@ -920,7 +920,7 @@
                         } else {
                           // We load one byte
                             xor     edx,edx
-                            mov     dl,<u8>  cs:[eax]
+                            mov     dl,u8 ptr cs:[eax]
                             inc     eax
                             if (dword ptr [ebp+20] != 0)
                             {
@@ -928,38 +928,38 @@
                             }
                         }
                       // Right now, dl or dx is this line of the character
-                        mov     cl,<u8>  [ebp-08]
+                        mov     cl,u8 ptr [ebp-08]
                         ror     edx,cl
                         push    edi
                         while (dword ptr [ebp-16] != 0)
                         {
-                            mov     ecx,<u32> [ebp+32]
+                            mov     ecx,u32 ptr [ebp+32]
                             if (byte ptr [ebp-06] != 0)
                             {
-                                and     dl,<u8>  [ebp-07]
-                                not     <u8>  [ebp-07]
+                                and     dl,u8 ptr [ebp-07]
+                                not     u8 ptr [ebp-07]
                             }
                             if (ecx == 0)
                             {
                               // MOV the data here
                                 push    edx
-                                mov     edx,<u32> [ebp-16]
+                                mov     edx,u32 ptr [ebp-16]
                                 not     dl
-                                and     <u8>  es:[edi],dl
+                                and     u8 ptr es:[edi],dl
                                 pop     edx
-                                or      <u8>  es:[edi],dl
+                                or      u8 ptr es:[edi],dl
                             
                             } else if (ecx == 1) {
                               // OR the data here
-                                or      <u8>  es:[edi],al
+                                or      u8 ptr es:[edi],al
                             
                             } else if (ecx == 2) {
                               // AND the data here
-                                and     <u8>  es:[edi],al
+                                and     u8 ptr es:[edi],al
                             
                             } else if (ecx == 3) {
                               // XOR the data here
-                                xor     <u8>  es:[edi],al
+                                xor     u8 ptr es:[edi],al
                             }
                           // Move to the next byte
                             inc     edi
@@ -967,11 +967,11 @@
                           // Now, rotate the characters around for the next part
                             rol     edx,8
                             and     edx,0ffff00ffh                  // Get rid of the byte we just drew
-                            rol     <u32> [ebp-16],8
-                            and     <u32> [ebp-16],0ffff00ffh
+                            rol     u32 ptr [ebp-16],8
+                            and     u32 ptr [ebp-16],0ffff00ffh
                         }
                         pop     edi
-                        add     edi,<u32> [ebp+ebx]
+                        add     edi,u32 ptr [ebp+ebx]
                         sub     ebx,4
                     }
                     pop     edi
@@ -988,8 +988,8 @@
                 {
                   // We're currently working between two cask characters (this was added down here so the initial cask chracter won't
                   // be reversed.  The closing one is covered by the code above.
-                    not     <u32> [ebp+20]                   // Make everything reversed between the cask characters
-                    mov     <u8>  [ebp-05],0
+                    not     u32 ptr [ebp+20]                   // Make everything reversed between the cask characters
+                    mov     u8 ptr [ebp-05],0
                 }
                 inc     esi                                         // Move to next source character
             }
@@ -999,7 +999,7 @@
             pop     edx
             pop     ebx
             pop     eax
-            mov     ecx,<u32> [ebp-20]                       // Get the count into ecx
+            mov     ecx,u32 ptr [ebp-20]                       // Get the count into ecx
             leave
             pop     es
         }
@@ -1050,16 +1050,16 @@
            // Make sure the mouse coordinates are not off the screen
             if (dword ptr [ebp+28] > 718)
             {
-                mov     <u32> [ebp+28],718
+                mov     u32 ptr [ebp+28],718
             }
             if (dword ptr [ebp+24] > 346)
             {
-                mov     <u32> [ebp+24],346
+                mov     u32 ptr [ebp+24],346
             }
 
            // Calculate the starting offset into video memory
           // do vertical
-            mov     eax,<u32> [ebp+24]
+            mov     eax,u32 ptr [ebp+24]
             mov     ebx,4
             xor     edx,edx
             div     ebx
@@ -1084,17 +1084,17 @@
             mov     ebx,90
             mul     ebx
             add     eax,ecx
-            mov     <u32> [ebp-24],eax
+            mov     u32 ptr [ebp-24],eax
 
           // Right now, eax contains the starting offset into video memory (not including the X coordinate)
-            mov     eax,<u32> [ebp+28]
+            mov     eax,u32 ptr [ebp+28]
             mov     ebx,8
             xor     edx,edx
             div     ebx
           // Right now, eax - offset across the line for the first character
           //            edx - Number of bits to use for the first character
-            add     <u32> [ebp-24],eax
-            mov     <u8>  [ebp-08],dl
+            add     u32 ptr [ebp-24],eax
+            mov     u8 ptr [ebp-08],dl
           // Right now, [ebp-24] - starting offset into video memory
           //            [ebp-08] - number of bits to shift each character right
           // [ebp+28] - dword, --Nuserved        // These are freed up because they do not need to be used right now
@@ -1102,7 +1102,7 @@
 
           // Now, build the array indicating the offset increments per iteration
           // We use edx as our source value, we calculate the offsets each time
-            mov     edx,<u32> [ebp-24]                       // prime our starting address
+            mov     edx,u32 ptr [ebp-24]                       // prime our starting address
             mov     eax,edx                                         // and copy to our "hold" value
             and     eax,1fffh
             mov     ebx,-28
@@ -1122,19 +1122,19 @@
                     mov     edx,eax
                     mov     ecx,0ffffffffh-6000h + 90 + 1
                 }
-                mov     <u32> [ebp+ebx],ecx
+                mov     u32 ptr [ebp+ebx],ecx
                 sub     ebx,4
                 pop     ecx
             } untilcxz
           // Terminate the addresses with our stopper
-            mov     <u32> [ebp+ebx],0ffffffffh
+            mov     u32 ptr [ebp+ebx],0ffffffffh
           // Right now, every value is setup for our write operation.
           // All we have to do to output our text is get the pointer to the appropriate character bitmap,
           // then start writing bytes at a time (accounting, of course, for the bit shifting and write masks)
 
           // [ebp+28] - dword, bits wide for each character
           // [ebp+24] - dword, maximum offset to achieve (before text is ignored because it would go off the right side of the screen)
-            mov     <u32> [ebp+28],16                        // bits wide
+            mov     u32 ptr [ebp+28],16                        // bits wide
             mov     ecx,16
             xor     edx,edx
             repeat
@@ -1142,19 +1142,19 @@
                 stc
                 rcl     edx,1
             } untilcxz
-            mov     cl,<u8>  [ebp-08]
+            mov     cl,u8 ptr [ebp-08]
           // Adjust our bit rotation factor for the extra characters involved in multi-character fonts
             if (dword ptr [ebp+28] > 8)
             {
-                mov     eax,<u32> [ebp+28]
+                mov     eax,u32 ptr [ebp+28]
                 sub     eax,8
                 add     cl,al
-                add     <u8>  [ebp-08],al
+                add     u8 ptr [ebp-08],al
             }
             ror     edx,cl
 
           // Right now, edx is a bitmap of this character's width
-            mov     <u32> [ebp-12],edx                       // base bitmap (used for masking operations)
+            mov     u32 ptr [ebp-12],edx                       // base bitmap (used for masking operations)
 
 ;; Bochs intercept start
 //.IF (dword ptr [ebp+20] == 0)
@@ -1163,11 +1163,11 @@
 //    mov     ecx,0
 //    mov     esi,-28
 //    mov     edi,11223344h
-//    mov     esi,<u32> [ebp+16]
+//    mov     esi,u32 ptr [ebp+16]
 //    .WHILE (ecx < 16)
 //        mov     eax,_BOCHS1
 //        mov     ebx,_BOCHS2
-//        mov     edx,<u32> ds:[esi]
+//        mov     edx,u32 ptr ds:[esi]
 //        int     0ffh
 //        add     esi,4
 //        inc     ecx
@@ -1180,9 +1180,9 @@
            // Start drawing the characters
             mov     eax,_sMONO
             mov     es,ax
-            mov     edi,<u32> [ebp-24]                       // Destination starting address on screen
+            mov     edi,u32 ptr [ebp-24]                       // Destination starting address on screen
             mov     eax,offset mono_mouse_font_base
-            mov     esi,<u32> [ebp+16]                       // Where to store/retrieve the mouse data (depending on mode)
+            mov     esi,u32 ptr [ebp+16]                       // Where to store/retrieve the mouse data (depending on mode)
           // * Note:  If additional mouse pointers are to be added later, they can be incorporated right here:
           //          eax = eax + pointer_number * (2*16) => Offset to mouse pointer in mouse.fnt
           // Right now, cs:[eax] - far ptr to the base of this mouse pointer
@@ -1192,17 +1192,17 @@
                 if (dword ptr [ebp+20] == 0)
                 {
                   // We're hiding the existing mouse pointer, so we pull data from our previously saved area
-                    mov     edx,<u32> ds:[esi]                  // Load the background from our previously saved area
-                    mov     <u32> es:[edi],edx
+                    mov     edx,u32 ptr ds:[esi]                  // Load the background from our previously saved area
+                    mov     u32 ptr es:[edi],edx
                     add     esi,4
                 
                 } else {
                   // We're putting a mouse pointer onto the screen, so we get ready to write the data from the mouse pointer font
                   // We're displaying our mouse pointer, so we store what's here now, then write our pointer afterwards
-                    mov     edx,<u32> [ebp-12]               // Update our working bitmap (use this push/pop sequence)
-                    mov     <u32> [ebp-16],edx
-                    mov     edx,<u32> es:[edi]                  // Store the dword that's currently here
-                    mov     <u32> ds:[esi],edx
+                    mov     edx,u32 ptr [ebp-12]               // Update our working bitmap (use this push/pop sequence)
+                    mov     u32 ptr [ebp-16],edx
+                    mov     edx,u32 ptr es:[edi]                  // Store the dword that's currently here
+                    mov     u32 ptr ds:[esi],edx
                     add     esi,4
 
                   // Calculate the maximum byte that can be written to before the mouse wraps around to the other side of the screen
@@ -1230,27 +1230,27 @@
                         sub     ebx,edx                             // 90-edx
                         dec     ebx                                 // Decrement 1 (change base-1 to base-0)
                         add     ebx,edi                             // Add in our current pointer
-                        mov     <u32> [ebp-04],ebx           // And we have our ending bit
+                        mov     u32 ptr [ebp-04],ebx           // And we have our ending bit
                     
                     } else {
-                        mov     <u32> [ebp-04],07fffh        // Make it some outrageously high value (so it will always pass)
+                        mov     u32 ptr [ebp-04],07fffh        // Make it some outrageously high value (so it will always pass)
                     }
                     pop     edx
                     pop     ebx
                     pop     eax
 
                     xor     edx,edx
-                    mov     cl,<u8>  [ebp-08]                 // Load the number of bits to rotate
-                    mov     dx,<u16> cs:[eax]                    // Get the bit mask for this line of the mouse pointer
+                    mov     cl,u8 ptr [ebp-08]                 // Load the number of bits to rotate
+                    mov     dx,u16 ptr cs:[eax]                    // Get the bit mask for this line of the mouse pointer
                     not     edx                                     // Reverse it
                     ror     edx,cl                                  // Rotate it
-                    mov     <u32> [ebp-96],edx               // Store it
+                    mov     u32 ptr [ebp-96],edx               // Store it
 
                     xor     edx,edx
-                    mov     dx,<u16> cs:[eax+32]                 // Load the actual bitmap from our mouse pointer font
+                    mov     dx,u16 ptr cs:[eax+32]                 // Load the actual bitmap from our mouse pointer font
                     ror     edx,cl                                  // And rotate
                     push    edi
-                    while (dword ptr [ebp-16] != 0 && edi <= <u32> [ebp-04])
+                    while (dword ptr [ebp-16] != 0 && edi <= u32 ptr [ebp-04])
                     {
                       // Write the mouse pointer (or previous buffer, depending on what they're doing)
 
@@ -1259,12 +1259,12 @@
                       // Basically it adds a black outline around the mouse pointer by masking off a larger area first, then
                       // adding a smaller bitmap which represent the mouse pointer bits to keep on
                         push    edx
-                        mov     dl,<u8>  [ebp-96]
-                        and     <u8>  es:[edi],dl
+                        mov     dl,u8 ptr [ebp-96]
+                        and     u8 ptr es:[edi],dl
                         pop     edx
 
                       // Add the bitmap
-                        or      <u8>  es:[edi],dl
+                        or      u8 ptr es:[edi],dl
 
                       // Move to the next byte
                         inc     edi
@@ -1272,15 +1272,15 @@
                       // Now, rotate everything for the next part
                         rol     edx,8
                         and     edx,0ffff00ffh                      // Get rid of the byte we just drew
-                        rol     <u32> [ebp-96],8
-                        and     <u32> [ebp-96],0ffff00ffh
-                        rol     <u32> [ebp-16],8
-                        and     <u32> [ebp-16],0ffff00ffh
+                        rol     u32 ptr [ebp-96],8
+                        and     u32 ptr [ebp-96],0ffff00ffh
+                        rol     u32 ptr [ebp-16],8
+                        and     u32 ptr [ebp-16],0ffff00ffh
                     }
                   done_writing:
                     pop     edi
                 }
-                add     edi,<u32> [ebp+ebx]
+                add     edi,u32 ptr [ebp+ebx]
                 add     eax,2                                       // Move to the next mask from the mouse pointer font
                 sub     ebx,4
             }
@@ -1334,14 +1334,14 @@
             pushad
           // [esp+24] - dword, access to ecx (for request=3)     // * Note, this is part of the PUSHAD command.  Refer to IA-32 manuals.
 
-            if (dword ptr [ebp+20] > 3 && <u32> [ebp+20] != 11)
+            if (dword ptr [ebp+20] > 3 && u32 ptr [ebp+20] != 11)
             {
               // This is not a valid request, we ignore it.  YEAH BABY!
                 jmp     total_quit
             }
            // Calculate the starting offset into video memory
           // do vertical
-            mov     eax,<u32> [ebp+32]
+            mov     eax,u32 ptr [ebp+32]
             mov     ebx,4
             xor     edx,edx
             div     ebx
@@ -1366,16 +1366,16 @@
             mov     ebx,90
             mul     ebx
             add     eax,ecx
-            mov     <u32> [ebp-24],eax
+            mov     u32 ptr [ebp-24],eax
 
           // Right now, eax contains the starting offset into video memory (not including the X coordinate)
-            mov     eax,<u32> [ebp+36]
+            mov     eax,u32 ptr [ebp+36]
             mov     ebx,8
             xor     edx,edx
             div     ebx
-            add     <u32> [ebp-24],eax
+            add     u32 ptr [ebp-24],eax
 
-            mov     <u8>  [ebp-08],dl
+            mov     u8 ptr [ebp-08],dl
           // Right now, [ebp-24] - offset to start getting data from
           //            [ebp-08] - number of bits to shift each character right
             mov     cl,dl
@@ -1384,32 +1384,32 @@
             xchg    dh,dl
             not     edx
           // Right now, edx is a bitmap this byte's reverse image (used below for masking)
-            mov     <u32> [ebp-12],edx                       // base bitmap
+            mov     u32 ptr [ebp-12],edx                       // base bitmap
 
-            mov     edx,<u32> [ebp+28]
-            if (edx <= <u32> [ebp+36])
+            mov     edx,u32 ptr [ebp+28]
+            if (edx <= u32 ptr [ebp+36])
             {
               // They're doing it wrong, they have the values reversed.  We ignore this as it, too, is an error.
                 jmp     quit
             }
-            sub     edx,<u32> [ebp+36]
-            mov     <u32> [ebp-04],edx                       // Store the maximum # of bits to get
+            sub     edx,u32 ptr [ebp+36]
+            mov     u32 ptr [ebp-04],edx                       // Store the maximum # of bits to get
 
           // Now, we traverse memory at the offsets required to complete this iterate maneuver (whew!)
           // We use edi as our source value, calculating the new offset each time the vertical line changes
             mov     ax,_sMONO
             mov     es,ax
-            mov     edi,<u32> [ebp-24]                       // Our starting address in video memory
-            mov     esi,<u32> [ebp+16]                       // Where we're supposed to get/put data
+            mov     edi,u32 ptr [ebp-24]                       // Our starting address in video memory
+            mov     esi,u32 ptr [ebp+16]                       // Where we're supposed to get/put data
             mov     eax,edi                                         // Our iterate increase value for when we get above 6000h
             and     eax,1fffh
           vertical_loop:
             push    edi
             xor     ecx,ecx
-            while (ecx < <u32> [ebp-04])
+            while (ecx < u32 ptr [ebp-04])
             {
                 push    ecx
-                mov     edx,<u32> [ebp-12]                   // Update our working bitmap
+                mov     edx,u32 ptr [ebp-12]                   // Update our working bitmap
 
                 if (dword ptr [ebp+20] == 0)
                 {
@@ -1417,39 +1417,39 @@
                     if (byte ptr [ebp-08] == 0)
                     {
                       // We can write a byte at a time because we're byte-aligned.  We like this.  We really do. :)
-                        movzx   edx,<u8>  ds:[esi]
-                        mov     <u8>  es:[edi],dl
+                        movzx   edx,u8 ptr ds:[esi]
+                        mov     u8 ptr es:[edi],dl
                         jmp     next_part
                     
                     } else {
                       // We have to write across two bytes.  No biggie, just one of those things
                         xor     edx,edx
-                        mov     dh,<u8>  ds:[esi]
-                        mov     cl,<u8>  [ebp-08]
+                        mov     dh,u8 ptr ds:[esi]
+                        mov     cl,u8 ptr [ebp-08]
                       // Mask off the bits that are already there first
-                        mov     ebx,<u32> [ebp-12]
-                        and     <u16> es:[edi],bx
+                        mov     ebx,u32 ptr [ebp-12]
+                        and     u16 ptr es:[edi],bx
 
                       // Apply the part we're putting
                         shr     edx,cl
                         xchg    dh,dl
-                        or      <u16> es:[edi],dx
+                        or      u16 ptr es:[edi],dx
                         jmp     next_part
                     }
                 
-                } else if (dword ptr [ebp+20] == 1 || <u32> [ebp+20] == 11) {
+                } else if (dword ptr [ebp+20] == 1 || u32 ptr [ebp+20] == 11) {
                   // We're getting the data from the screen.  This is an important operation.  Please treat it as such.
                     xor     edx,edx
                     if (byte ptr [ebp-08] == 0)
                     {
                       // We're bit aligned
-                        mov     dl,<u8>  es:[edi]
+                        mov     dl,u8 ptr es:[edi]
                     
                     } else {
                       // We have to shift this data to get it
-                        mov     dx,<u16> es:[edi]                // Get the byte from the screen (and the one to its right)
+                        mov     dx,u16 ptr es:[edi]                // Get the byte from the screen (and the one to its right)
                         xchg    dh,dl
-                        mov     cl,<u8>  [ebp-08]
+                        mov     cl,u8 ptr [ebp-08]
                         shl     edx,cl
                         xchg    dl,dh
                     }
@@ -1457,12 +1457,12 @@
                     {
                         not     dl
                     }
-                    mov     <u8>  ds:[esi],dl
+                    mov     u8 ptr ds:[esi],dl
 
                 
                 } else if (dword ptr [ebp+20] == 2) {
                   // We're clearing
-                    mov     <u8>  es:[edi],0
+                    mov     u8 ptr es:[edi],0
 
                 //.ELSEIF (dword ptr [ebp+20] == 3)
                 //  // We're counting, but we don't really do anything
@@ -1477,7 +1477,7 @@
                 inc     edi
                 add     ecx,8
             }
-            if (ecx > <u32> [ebp-04] && <u32> [ebp+20] == 1)
+            if (ecx > u32 ptr [ebp-04] && u32 ptr [ebp+20] == 1)
             {
               // We obtained more bits than we were supposed to, we need to mask off part of the last one
               // Right now, ecx indicates how many bits we need to mask off
@@ -1488,7 +1488,7 @@
                     rcl     edx,1
                 } untilcxz
                 not     edx
-                and     <u8>  ds:[esi-1],dl                      // Mask off the extra bits
+                and     u8 ptr ds:[esi-1],dl                      // Mask off the extra bits
             }
 
             pop     edi
@@ -1503,9 +1503,9 @@
                 add     eax,90
                 mov     edi,eax
             }
-            inc     <u32> [ebp+32]                           // Update our line count
-            mov     edx,<u32> [ebp+32]
-            cmp     edx,<u32> [ebp+24]
+            inc     u32 ptr [ebp+32]                           // Update our line count
+            mov     edx,u32 ptr [ebp+32]
+            cmp     edx,u32 ptr [ebp+24]
           // If we branch, still some lines yet to do (Yes, I'll take something a cocaine addict might say for a thousand, Alex)
             jbe     vertical_loop
 
@@ -1514,10 +1514,10 @@
             if (dword ptr [ebp+20] == 3)
             {
               // They want to know how big it should be
-                sub     esi,<u32> [ebp+16]
+                sub     esi,u32 ptr [ebp+16]
               // Right now, esi is our length
                 inc     esi                                         // And add one for good measure
-                mov     <u32> [esp+24],esi                   // This accesses ecx from the PUSHAD above
+                mov     u32 ptr [esp+24],esi                   // This accesses ecx from the PUSHAD above
             }
           total_quit:
             popad
@@ -1603,16 +1603,16 @@
            // Make sure the mouse coordinates are not off the screen
             if (dword ptr [ebp+20] > 712)
             {
-                mov     <u32> [ebp+20],712
+                mov     u32 ptr [ebp+20],712
             }
             if (dword ptr [ebp+16] > 340)
             {
-                mov     <u32> [ebp+16],340
+                mov     u32 ptr [ebp+16],340
             }
 
            // Calculate the starting offset into video memory
           // do vertical
-            mov     eax,<u32> [ebp+16]
+            mov     eax,u32 ptr [ebp+16]
             mov     ebx,4
             xor     edx,edx
             div     ebx
@@ -1637,17 +1637,17 @@
             mov     ebx,90
             mul     ebx
             add     eax,ecx
-            mov     <u32> [ebp-24],eax
+            mov     u32 ptr [ebp-24],eax
 
           // Right now, eax contains the starting offset into video memory (not including the X coordinate)
-            mov     eax,<u32> [ebp+20]
+            mov     eax,u32 ptr [ebp+20]
             mov     ebx,8
             xor     edx,edx
             div     ebx
           // Right now, eax - offset across the line for the first character
           //             dl - Number of bits to use for the first character
-            add     <u32> [ebp-24],eax
-            mov     <u8>  [ebp-08],dl
+            add     u32 ptr [ebp-24],eax
+            mov     u8 ptr [ebp-08],dl
           // Right now, [ebp-24] - starting offset into video memory
           //            [ebp-08] - number of bits to shift each character right
           // [ebp+20] - dword, --Nuserved        // These are freed up because they do not need to be used right now
@@ -1655,12 +1655,12 @@
 
           // Now, build the array indicating the offset increments per iteration
           // We use edx as our source value, we calculate the offsets each time
-            mov     edx,<u32> [ebp-24]                       // prime our starting address
+            mov     edx,u32 ptr [ebp-24]                       // prime our starting address
             mov     eax,edx                                         // and copy to our "hold" value
             and     eax,1fffh
             mov     ebx,-28
             mov     edi,cs:current_font
-            mov     ecx,<u32> cs:[edi+4]
+            mov     ecx,u32 ptr cs:[edi+4]
             if (ecx > 16)
             {
               // Just to make sure our algorithm doesn't fail
@@ -1676,12 +1676,12 @@
                 adc     eax,0
                 neg     eax
                 add     eax,ecx
-                mov     <u32> [ebp-104],eax
+                mov     u32 ptr [ebp-104],eax
                 pop     eax
             
             } else {
               // We're in insert mode
-                mov     <u32> [ebp-104],0
+                mov     u32 ptr [ebp-104],0
             }
             repeat
             {
@@ -1698,24 +1698,24 @@
                     mov     edx,eax
                     mov     ecx,0ffffffffh-6000h + 90 + 1
                 }
-                mov     <u32> [ebp+ebx],ecx
+                mov     u32 ptr [ebp+ebx],ecx
                 sub     ebx,4
                 pop     ecx
             } untilcxz
-            mov     <u32> [ebp+ebx],0ffffffffh
+            mov     u32 ptr [ebp+ebx],0ffffffffh
           // Right now, every value is setup for our write operation.
           // [ebp+20] - dword, bits wide for each character
           // [ebp+16] - dword, maximum offset to achieve (before text is ignored because it would go off the right side of the screen)
 
-            mov     ecx,<u32> cs:[edi]
-            mov     <u32> [ebp+20],ecx                       // bits wide
+            mov     ecx,u32 ptr cs:[edi]
+            mov     u32 ptr [ebp+20],ecx                       // bits wide
             xor     edx,edx
             repeat
             {
                 stc
                 rcl     edx,1
             } untilcxz
-            movzx   ecx,<u8>  [ebp-08]
+            movzx   ecx,u8 ptr [ebp-08]
             if (ecx != 0)
             {
                 rol     edx,8
@@ -1726,7 +1726,7 @@
            // Start drawing the characters
             mov     eax,_sMONO
             mov     es,ax
-            mov     edi,<u32> [ebp-24]                       // Destination starting address on screen
+            mov     edi,u32 ptr [ebp-24]                       // Destination starting address on screen
           // * Note:  If additional mouse pointers are to be added later, they can be incorporated right here:
           //          eax = eax + pointer_number * (2*16) => Offset to mouse pointer in mouse.fnt
           // Right now, cs:[eax] - far ptr to the base of this mouse pointer
@@ -1735,7 +1735,7 @@
             xor     eax,eax                                         // Used as a count
             while (dword ptr [ebp+ebx] != 0ffffffffh)
             {
-                if (eax >= <u32> [ebp-104])
+                if (eax >= u32 ptr [ebp-104])
                 {
                   // We're OK to do this one (depending on what insert mode we're in, we may have to wait a few lines)
                     if (dword ptr [ebp+20] != 8)
@@ -1743,28 +1743,28 @@
                         if (ecx != 0)
                         {
                             ror     edx,16
-                            xor     <u8>  es:[edi],dl
+                            xor     u8 ptr es:[edi],dl
                             ror     edx,16
-                            xor     <u16> es:[edi+1],dx
+                            xor     u16 ptr es:[edi+1],dx
                         
                         } else {
-                            xor     <u16> es:[edi],dx
+                            xor     u16 ptr es:[edi],dx
                         }
                     
                     } else {
                         if (ecx != 0)
                         {
-                            xor     <u16> es:[edi],dx
+                            xor     u16 ptr es:[edi],dx
                         
                         } else {
-                            xor     <u8>  es:[edi],dh
+                            xor     u8 ptr es:[edi],dh
                         }
                     }
                 }
                 inc     eax                                         // Increase our count
 
               // Move to next line on screen
-                add     edi,<u32> [ebp+ebx]
+                add     edi,u32 ptr [ebp+ebx]
               // Go back up our list of "incremental values"
                 sub     ebx,4
             }
@@ -1803,7 +1803,7 @@
           // Update the system memory
             mov     eax,_sSYSTEM
             mov     ds,ax
-            mov     <u16> ds:[_SYSTEM_MONO_VIDEO_MODE],0
+            mov     u16 ptr ds:[_SYSTEM_MONO_VIDEO_MODE],0
 
             popad
             pop     ds
@@ -1860,7 +1860,7 @@
           // Update the system memory
             mov     eax,_sSYSTEM
             mov     ds,ax
-            mov     <u16> ds:[_SYSTEM_MONO_VIDEO_MODE],1
+            mov     u16 ptr ds:[_SYSTEM_MONO_VIDEO_MODE],1
 
             popad
             pop     ds
@@ -1896,7 +1896,7 @@
         inc     edx
 
       // Get the CRT value
-        mov     al,<u8>  cs:[esi]
+        mov     al,u8 ptr cs:[esi]
         inc     esi
 
       // Write the CRT value

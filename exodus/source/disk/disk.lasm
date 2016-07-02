@@ -59,14 +59,14 @@ dd  offset requestor
         } else if (eax == 'id  ') {
           // Display this program's ID on the VGA monitor
             mov     esi,offset driver_name
-            call    <u48> cs:_VID_display_string_nr_vga
+            call    u48 ptr cs:_VID_display_string_nr_vga
             clc
         
         } else if (eax == 'note') {
             mov     eax,'stop'
             mov     ebx,'load'
             mov     esi,offset driver_name
-            call    <u48> cs:_EXODUS_requestor
+            call    u48 ptr cs:_EXODUS_requestor
         
         } else {
             stc
@@ -192,37 +192,37 @@ dd  offset requestor
 //        .ENDW
 //        .IF (edi < 1024)
 //          // Type of controller
-//            mov     al,<u8>  [ebp+28]
-//            mov     <u8>  es:[edi+_DISK_CONTROLLER_OFFSET],al
+//            mov     al,u8 ptr [ebp+28]
+//            mov     u8 ptr es:[edi+_DISK_CONTROLLER_OFFSET],al
 //            .IF (al == _DISK_CONTROLLER_FLOPPY)
 //              // Drive type (drive is physically only a 360k, or a 1.2MB, or a 720k, or a 1.44MB or even a 2.88MB drive)
-//                mov     al,<u8>  [ebp+31]
-//                mov     <u8>  es:[edi+_DISK_FLOPPY_DRIVE_TYPE_OFFSET],al
+//                mov     al,u8 ptr [ebp+31]
+//                mov     u8 ptr es:[edi+_DISK_FLOPPY_DRIVE_TYPE_OFFSET],al
 //            .ENDIF
 //          // Type of device
-//            mov     al,<u8>  [ebp+29]
-//            mov     <u8>  es:[edi+_DISK_DEVICE_OFFSET],al
+//            mov     al,u8 ptr [ebp+29]
+//            mov     u8 ptr es:[edi+_DISK_DEVICE_OFFSET],al
 //          // Capacity
-//            mov     eax,<u32> [ebp+8]
-//            mov     <u32> es:[edi+_DISK_CAPACITY_OFFSET],eax
+//            mov     eax,u32 ptr [ebp+8]
+//            mov     u32 ptr es:[edi+_DISK_CAPACITY_OFFSET],eax
 //          // Number of heads
-//            mov     eax,<u32> [ebp+24]
-//            mov     <u32> es:[edi+_DISK_NUM_HEADS_OFFSET],eax
+//            mov     eax,u32 ptr [ebp+24]
+//            mov     u32 ptr es:[edi+_DISK_NUM_HEADS_OFFSET],eax
 //          // Number of tracks
-//            mov     eax,<u32> [ebp+12]
-//            mov     <u32> es:[edi+_DISK_NUM_TRACKS_OFFSET],eax
+//            mov     eax,u32 ptr [ebp+12]
+//            mov     u32 ptr es:[edi+_DISK_NUM_TRACKS_OFFSET],eax
 //          // Number of sectors
-//            mov     eax,<u32> [ebp+16]
-//            mov     <u32> es:[edi+_DISK_NUM_SECTORS_OFFSET],eax
+//            mov     eax,u32 ptr [ebp+16]
+//            mov     u32 ptr es:[edi+_DISK_NUM_SECTORS_OFFSET],eax
 //          // Device specs
-//            mov     al,<u8>  [ebp+30]
-//            mov     <u8>  es:[edi+_DISK_DEVICE_SPECS_OFFSET],al
+//            mov     al,u8 ptr [ebp+30]
+//            mov     u8 ptr es:[edi+_DISK_DEVICE_SPECS_OFFSET],al
 //          // Bytes per sector
-//            mov     eax,<u32> [ebp+20]
-//            mov     <u32> es:[edi+_DISK_BYTES_PER_SECTOR_OFFSET],eax
+//            mov     eax,u32 ptr [ebp+20]
+//            mov     u32 ptr es:[edi+_DISK_BYTES_PER_SECTOR_OFFSET],eax
 //          // Mark the next record as the last one
 //            add     di,_DISK_STRUCTURE_SIZE
-//            mov     <u8>  es:[edi+_DISK_CONTROLLER_OFFSET],_STOPPER
+//            mov     u8 ptr es:[edi+_DISK_CONTROLLER_OFFSET],_STOPPER
 //          // Get the disk number for this entry (returned in al)
 //            mov     al,cl
 //            clc
@@ -269,40 +269,40 @@ dd  offset requestor
 //        .ENDW
 //        .IF (edi < 4096)
 //          // Disk number
-//            mov     ax,<u16> [ebp+44]
-//            mov     <u8>  es:[edi+_PARTITION_DISK_NUMBER_OFFSET],al
+//            mov     ax,u16 ptr [ebp+44]
+//            mov     u8 ptr es:[edi+_PARTITION_DISK_NUMBER_OFFSET],al
 //          // File system type
-//            mov     <u8>  es:[edi+_PARTITION_FILE_SYSTEM_TYPE_OFFSET],ah
+//            mov     u8 ptr es:[edi+_PARTITION_FILE_SYSTEM_TYPE_OFFSET],ah
 //          // Starting head
-//            mov     eax,<u32> [ebp+40]
-//            mov     <u32> es:[edi+_PARTITION_STARTING_HEAD_OFFSET],eax
+//            mov     eax,u32 ptr [ebp+40]
+//            mov     u32 ptr es:[edi+_PARTITION_STARTING_HEAD_OFFSET],eax
 //          // Starting track
-//            mov     eax,<u32> [ebp+36]
-//            mov     <u32> es:[edi+_PARTITION_STARTING_TRACK_OFFSET],eax
+//            mov     eax,u32 ptr [ebp+36]
+//            mov     u32 ptr es:[edi+_PARTITION_STARTING_TRACK_OFFSET],eax
 //          // Starting sector
-//            mov     eax,<u32> [ebp+32]
-//            mov     <u32> es:[edi+_PARTITION_STARTING_SECTOR_OFFSET],eax
+//            mov     eax,u32 ptr [ebp+32]
+//            mov     u32 ptr es:[edi+_PARTITION_STARTING_SECTOR_OFFSET],eax
 //          // Ending head
-//            mov     eax,<u32> [ebp+28]
-//            mov     <u32> es:[edi+_PARTITION_ENDING_HEAD_OFFSET],eax
+//            mov     eax,u32 ptr [ebp+28]
+//            mov     u32 ptr es:[edi+_PARTITION_ENDING_HEAD_OFFSET],eax
 //          // Ending track
-//            mov     eax,<u32> [ebp+24]
-//            mov     <u32> es:[edi+_PARTITION_ENDING_TRACK_OFFSET],eax
+//            mov     eax,u32 ptr [ebp+24]
+//            mov     u32 ptr es:[edi+_PARTITION_ENDING_TRACK_OFFSET],eax
 //          // Ending sector
-//            mov     eax,<u32> [ebp+20]
-//            mov     <u32> es:[edi+_PARTITION_ENDING_SECTOR_OFFSET],eax
+//            mov     eax,u32 ptr [ebp+20]
+//            mov     u32 ptr es:[edi+_PARTITION_ENDING_SECTOR_OFFSET],eax
 //          // starting GDT
-//            mov     eax,<u32> [ebp+16]
-//            mov     <u16> es:[edi+_PARTITION_STARTING_GDT_OFFSET],ax
+//            mov     eax,u32 ptr [ebp+16]
+//            mov     u16 ptr es:[edi+_PARTITION_STARTING_GDT_OFFSET],ax
 //          // Access rights
-//            mov     eax,<u32> [ebp+12]
-//            mov     <u16> es:[edi+_PARTITION_ACCESS_WORD_OFFSET],ax
+//            mov     eax,u32 ptr [ebp+12]
+//            mov     u16 ptr es:[edi+_PARTITION_ACCESS_WORD_OFFSET],ax
 //          // Drive letter
-//            mov     eax,<u32> [ebp+08]
-//            mov     <u8>  es:[edi+_PARTITION_DRIVE_LETTER_OFFSET],al
+//            mov     eax,u32 ptr [ebp+08]
+//            mov     u8 ptr es:[edi+_PARTITION_DRIVE_LETTER_OFFSET],al
 //          // Mark the next record as the last one
 //            add     edi,_PARTITION_STRUCTURE_SIZE
-//            mov     <u8>  es:[edi+_PARTITION_DISK_NUMBER_OFFSET],_STOPPER
+//            mov     u8 ptr es:[edi+_PARTITION_DISK_NUMBER_OFFSET],_STOPPER
 //            clc
 //        .ELSE
 //            stc
@@ -345,41 +345,41 @@ dd  offset requestor
 //        .IF (!carry?)
 //          // Right now, ds:[esi] - far pointer to disk drive structure
 //          //            es:[edi] - far pointer to disk partition structure
-//            mov     al,<u8>  ds:[esi+_DISK_DEVICE_SPECS_OFFSET]
+//            mov     al,u8 ptr ds:[esi+_DISK_DEVICE_SPECS_OFFSET]
 //            and     al,_DISK_DEVICE_MEDIA_REMOVABLE
 //            .IF (al != 0)
 //              // This device is removable, so it's ok that they define it
-//                mov     ebx,<u32> [esp]
+//                mov     ebx,u32 ptr [esp]
 //                xor     ecx,ecx
 //                mov     cl,dh
 //                and     edx,0ffh
 //              // Check to see if these ending values are beyond the physical capabilities of the drive
-//                .IF (edx < <u32> es:[edi+_PARTITION_STARTING_TRACK_OFFSET])
+//                .IF (edx < u32 ptr es:[edi+_PARTITION_STARTING_TRACK_OFFSET])
 //                  // The ending track is less than the starting track
 //                  @@:
 //                    stc
 //                    mov     eax,_DISK_INVALID_PARAMETERS
-//                .ELSEIF (ecx < <u32> es:[edi+_PARTITION_STARTING_SECTOR_OFFSET])
+//                .ELSEIF (ecx < u32 ptr es:[edi+_PARTITION_STARTING_SECTOR_OFFSET])
 //                  // The ending sector is less than the starting sector
 //                    jmp     @B
-//                .ELSEIF (edx > <u32> ds:[esi+_DISK_NUM_TRACKS_OFFSET])
+//                .ELSEIF (edx > u32 ptr ds:[esi+_DISK_NUM_TRACKS_OFFSET])
 //                  // They've specified a track greater than the number physically available on the device
 //                    jmp     @B
-//                .ELSEIF (ecx > <u32> ds:[esi+_DISK_NUM_SECTORS_OFFSET])
+//                .ELSEIF (ecx > u32 ptr ds:[esi+_DISK_NUM_SECTORS_OFFSET])
 //                  // They've specified a sector greater than the number physically available on the device
 //                    jmp     @B
 //                .ELSE
 //                  // It's ok
-//                    mov     <u32> es:[edi+_PARTITION_ENDING_TRACK_OFFSET],edx
-//                    mov     <u32> es:[edi+_PARTITION_ENDING_SECTOR_OFFSET],ecx
+//                    mov     u32 ptr es:[edi+_PARTITION_ENDING_TRACK_OFFSET],edx
+//                    mov     u32 ptr es:[edi+_PARTITION_ENDING_SECTOR_OFFSET],ecx
 //                  // Turn off "accessed yet?" and "read/write pending" flags
-//                    and     <u16> es:[edi+_PARTITION_ACCESS_WORD_OFFSET],not 1000000010000000b
-//                    mov     <u32> es:[edi+_PARTITION_PARTITION_CAPACITY],ebx
-//                    mov     <u32> es:[edi+_PARTITION_PARTITION_CAPACITY+4],0
+//                    and     u16 ptr es:[edi+_PARTITION_ACCESS_WORD_OFFSET],not 1000000010000000b
+//                    mov     u32 ptr es:[edi+_PARTITION_PARTITION_CAPACITY],ebx
+//                    mov     u32 ptr es:[edi+_PARTITION_PARTITION_CAPACITY+4],0
 //                    .IF (byte ptr ds:[esi+_DISK_CONTROLLER_OFFSET] == _DISK_CONTROLLER_FLOPPY)
 //                      // It's a floppy disk, update the gap length
-//                        mov     ecx,<u32> [esp+04]
-//                        mov     <u8>  ds:[esi+_DISK_FLOPPY_GAP_LENGTH_OFFSET],cl
+//                        mov     ecx,u32 ptr [esp+04]
+//                        mov     u8 ptr ds:[esi+_DISK_FLOPPY_GAP_LENGTH_OFFSET],cl
 //                    .ENDIF
 //                  // Everything is updated
 //                    clc
@@ -427,7 +427,7 @@ dd  offset requestor
 //            call    invDISK_find_drive_by_letter
 //            .IF (!carry?)
 //                xor     eax,eax
-//                mov     al,<u8>  ds:[esi+_DISK_FLOPPY_DRIVE_TYPE_OFFSET]
+//                mov     al,u8 ptr ds:[esi+_DISK_FLOPPY_DRIVE_TYPE_OFFSET]
 //                clc
 //            .ELSE
 //                stc
@@ -440,7 +440,7 @@ dd  offset requestor
 //        .ENDIF
 //
 //      iDISK_requestor_done:
-//        mov     <u32> [esp+48],eax                               // Save eax's new value on the stack
+//        mov     u32 ptr [esp+48],eax                               // Save eax's new value on the stack
 //        leave
 //        pop     gs
 //        pop     fs
@@ -472,7 +472,7 @@ dd  offset requestor
 //            .IF (byte ptr es:[edi+_PARTITION_DRIVE_LETTER_OFFSET] == bl)
 //              // This is the drive letter, now we point ds:[esi] to the disk information
 //                xor     ecx,ecx
-//                mov     cl,<u8>  es:[edi+_PARTITION_DISK_NUMBER_OFFSET]
+//                mov     cl,u8 ptr es:[edi+_PARTITION_DISK_NUMBER_OFFSET]
 //                shl     ecx,5                                           // Multiply by 32
 //                mov     esi,ecx
 //              // Right now, ds:esi - pointer to the drive information
@@ -498,7 +498,7 @@ dd  offset requestor
     // This routine is used to initialize the driver
     // But, there is no initialization in this system
         mov     esi,offset DISK_boot_logo
-        call    <u48> cs:_VID_draw_logo
+        call    u48 ptr cs:_VID_draw_logo
         clc
         ret
     }
@@ -507,84 +507,84 @@ dd  offset requestor
 
 
 // DATA
-    driver_name                             u8   "Disk Driver",255,"(source:disk.dbg)",0
-    version                                 u8   "10.10.2010 BETA",0
-    copyright                               u8   "(c) Copyright Beatleworks, Inc.",0
-    author                                  u8   "Rick C. Hodgin",0
-    debi_text                               u8   "Disk Primative",0
-    beatleworks_text                        u8   "(c) Beatleworks, Inc.",0
-    bootup                                  u8   1                   // Changed to 0 after bootup is complete
-    data_segment                            u16  0
+    driver_name                             u8  "Disk Driver",255,"(source:disk.dbg)",0
+    version                                 u8  "10.10.2010 BETA",0
+    copyright                               u8  "(c) Copyright Beatleworks, Inc.",0
+    author                                  u8  "Rick C. Hodgin",0
+    debi_text                               u8  "Disk Primative",0
+    beatleworks_text                        u8  "(c) Beatleworks, Inc.",0
+    bootup                                  u8  1                   // Changed to 0 after bootup is complete
+    data_segment                            u16 0
 
-    _EXODUS_requestor                       u16  0
+    _EXODUS_requestor                       u16 0
   primative_call_gates:
-    _VID_draw_logo                          u16  0
-    _VID_display_string_nr_vga              u16  _sEXODUS_REQUESTOR
-                                            u16  0f000h
-                                            u16  0f000h
+    _VID_draw_logo                          u16 0
+    _VID_display_string_nr_vga              u16 _sEXODUS_REQUESTOR
+                                            u16 0f000h
+                                            u16 0f000h
 
-    required_primatives                     u8   13, "VID_draw_logo"
-                                            u8   25, "VID_display_string_nr_vga"
-                                            u8   0ffh
+    required_primatives                     u8  13, "VID_draw_logo"
+                                            u8  25, "VID_display_string_nr_vga"
+                                            u8  0ffh
 
 
     // This logo consists of a three-wide image (the +2 portion (the 2 stands for "an extra 2 18x16 images wide"))
     // It wants a box drawn around it (the +80h portion)
     // And the color we want to use is 8 (dark grey, the "+(8 SHL 3) portion)
     // * Refer to
-    DISK_boot_logo                          u8   0c9h     // * Refer to VGA\INF\VGA.INF for information on this byte's format
-                                            u8   0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh
-                                            u8   0fh,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,0fh
-                                            u8   0fh,07h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,07h,0fh
-                                            u8   0fh,07h,0fh,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,0fh,07h,0fh
-                                            u8   0fh,07h,0fh,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,0fh,07h,0fh
-                                            u8   0fh,07h,0fh,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,0fh,07h,0fh
-                                            u8   0fh,07h,0fh,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,0fh,07h,0fh
-                                            u8   0fh,07h,0fh,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,0fh,07h,0fh
-                                            u8   0fh,07h,0fh,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,0fh,07h,0fh
-                                            u8   0fh,07h,0fh,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,0fh,07h,0fh
-                                            u8   0fh,07h,0fh,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,0ah,0ah,07h,0fh,07h,0fh
-                                            u8   0fh,07h,0fh,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,0ah,0ah,07h,0fh,07h,0fh
-                                            u8   0fh,07h,0fh,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,0fh,07h,0fh
-                                            u8   0fh,07h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,07h,0fh
-                                            u8   0fh,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,0fh
-                                            u8   0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh
+    DISK_boot_logo                          u8  0c9h     // * Refer to VGA\INF\VGA.INF for information on this byte's format
+                                            u8  0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh
+                                            u8  0fh,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,0fh
+                                            u8  0fh,07h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,07h,0fh
+                                            u8  0fh,07h,0fh,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,0fh,07h,0fh
+                                            u8  0fh,07h,0fh,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,0fh,07h,0fh
+                                            u8  0fh,07h,0fh,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,0fh,07h,0fh
+                                            u8  0fh,07h,0fh,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,0fh,07h,0fh
+                                            u8  0fh,07h,0fh,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,0fh,07h,0fh
+                                            u8  0fh,07h,0fh,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,0fh,07h,0fh
+                                            u8  0fh,07h,0fh,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,0fh,07h,0fh
+                                            u8  0fh,07h,0fh,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,0ah,0ah,07h,0fh,07h,0fh
+                                            u8  0fh,07h,0fh,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,0ah,0ah,07h,0fh,07h,0fh
+                                            u8  0fh,07h,0fh,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,0fh,07h,0fh
+                                            u8  0fh,07h,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,07h,0fh
+                                            u8  0fh,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,07h,0fh
+                                            u8  0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh,0fh
 
 
  end_of_required_data:
-    driver_primatives                       u8   14, "DISK_open_file"
-                                            u32  offset DISK_open_file
-                                            u16  0
+    driver_primatives                       u8  14, "DISK_open_file"
+                                            u32 offset DISK_open_file
+                                            u16 0
 
-                                            u8   14, "DISK_read_file"
-                                            u32  offset DISK_read_file
-                                            u16  0
+                                            u8  14, "DISK_read_file"
+                                            u32 offset DISK_read_file
+                                            u16 0
 
-                                            u8   14, "DISK_seek_file"
-                                            u32  offset DISK_seek_file
-                                            u16  0
+                                            u8  14, "DISK_seek_file"
+                                            u32 offset DISK_seek_file
+                                            u16 0
 
-                                            u8   16, "DISK_insert_file"
-                                            u32  offset DISK_insert_file
-                                            u16  0
+                                            u8  16, "DISK_insert_file"
+                                            u32 offset DISK_insert_file
+                                            u16 0
 
-                                            u8   15, "DISK_write_file"
-                                            u32  offset DISK_write_file
-                                            u16  0
+                                            u8  15, "DISK_write_file"
+                                            u32 offset DISK_write_file
+                                            u16 0
 
-                                            u8   15, "DISK_close_file"
-                                            u32  offset DISK_close_file
-                                            u16  0
+                                            u8  15, "DISK_close_file"
+                                            u32 offset DISK_close_file
+                                            u16 0
 
-                                            u8   16, "DISK_delete_file"
-                                            u32  offset DISK_delete_file
-                                            u16  0
+                                            u8  16, "DISK_delete_file"
+                                            u32 offset DISK_delete_file
+                                            u16 0
 
-                                            u8   14, "DISK_requestor"
-                                            u32  offset DISK_requestor
-                                            u16  0
+                                            u8  14, "DISK_requestor"
+                                            u32 offset DISK_requestor
+                                            u16 0
 
-                                            u16  0ffffh              // Teriminator
+                                            u16 0ffffh              // Teriminator
 
 
 }

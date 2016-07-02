@@ -6,83 +6,83 @@
 
 // The desktop dimension itself is explicitly laid out so it can be modified during bootup
 exodus_desktop:
-        u8   _DESKTOP
-    desktop_top     u32  0
-    desktop_left    u32  0
-    desktop_width   u32  0
-    desktop_height  u32  0
-        u8   _DP_ENABLED, 1                                          // 1-yes, 0-no
-        u8   _DP_VISIBLE, 1
-        u8   _DP_BACKGROUND, 0,0,128                                 // RGB, R=0, G=0, B=40 (out of 255)
-        u8   _DP_MENU_POSITION, 6                                    // In the form of a clock; 12=top, 3=right, 6=bottom, 9=left
-        u8   _DP_MENU_HEIGHT
-        u16   30                                                     // 30 pixels (this is for the system tray
-        u8   _DP_MENU_AUTOHIDE, 0
-        u16  _OBJECT_END
+        u8  _DESKTOP
+    desktop_top     u32 0
+    desktop_left    u32 0
+    desktop_width   u32 0
+    desktop_height  u32 0
+        u8  _DP_ENABLED, 1                                          // 1-yes, 0-no
+        u8  _DP_VISIBLE, 1
+        u8  _DP_BACKGROUND, 0,0,128                                 // RGB, R=0, G=0, B=40 (out of 255)
+        u8  _DP_MENU_POSITION, 6                                    // In the form of a clock; 12=top, 3=right, 6=bottom, 9=left
+        u8  _DP_MENU_HEIGHT
+        u16  30                                                     // 30 pixels (this is for the system tray
+        u8  _DP_MENU_AUTOHIDE, 0
+        u16 _OBJECT_END
 
 
     exodus_bar_rectangle:
-        u8   _RECTANGLE
-    ebr_top             u32  0
-    ebr_left            u32  0
-    ebr_width           u32  0
-    ebr_height          u32  29
-        u8   _RP_BACKGROUND, 0, 255, 255                             // bright cyan
-        u8   _RP_ENABLED, 1
-        u8   _RP_VISIBLE, 1
-        u16  _OBJECT_END
+        u8  _RECTANGLE
+    ebr_top             u32 0
+    ebr_left            u32 0
+    ebr_width           u32 0
+    ebr_height          u32 29
+        u8  _RP_BACKGROUND, 0, 255, 255                             // bright cyan
+        u8  _RP_ENABLED, 1
+        u8  _RP_VISIBLE, 1
+        u16 _OBJECT_END
 
 
     exodus_bar_line:
-        u8   _HLINE
-    ebl_top             u32  0
-    ebl_left            u32  0
-    ebl_width           u32  0
-        u8   _HLP_BACKGROUND, 0, 0, 255                              // bright blue
-        u8   _HLP_ENABLED, 1
-        u8   _HLP_VISIBLE, 1
-        u16  _OBJECT_END
+        u8  _HLINE
+    ebl_top             u32 0
+    ebl_left            u32 0
+    ebl_width           u32 0
+        u8  _HLP_BACKGROUND, 0, 0, 255                              // bright blue
+        u8  _HLP_ENABLED, 1
+        u8  _HLP_VISIBLE, 1
+        u16 _OBJECT_END
 
 
     exodus_button_border:
-        u8   _BORDER_BOX
-    ebb_top             u32  0
-    ebb_left            u32  1
-    ebb_width           u32  125
-    ebb_height          u32  25
-        u8   _BBP_BACKGROUND, 0, 225, 225                            // bright cyan
-        u8   _BBP_LIGHT_BORDER, 255, 255, 255                        // bright white
-        u8   _BBP_SHADOW_BORDER, 128, 128, 128                       // grey
-        u8   _BBP_ENABLED, 1
-        u8   _BBP_VISIBLE, 1
-        u16  _OBJECT_END
+        u8  _BORDER_BOX
+    ebb_top             u32 0
+    ebb_left            u32 1
+    ebb_width           u32 125
+    ebb_height          u32 25
+        u8  _BBP_BACKGROUND, 0, 225, 225                            // bright cyan
+        u8  _BBP_LIGHT_BORDER, 255, 255, 255                        // bright white
+        u8  _BBP_SHADOW_BORDER, 128, 128, 128                       // grey
+        u8  _BBP_ENABLED, 1
+        u8  _BBP_VISIBLE, 1
+        u16 _OBJECT_END
 
 
     exodus_button_text:
-        u8   _TEXT_FIELD
-    ebt_top             u32  0
-    ebt_left            u32  28
-    ebt_width           u32  6*16
-    ebt_height          u32  16
-        u8   _TFP_COLOR_BACKGROUND, 0, 225, 225                      // bright cyan
-        u8   _TFP_COLOR_FOREGROUND, 0, 0, 128                        // dark blue
-        u8   _TFP_FONT_NAME_ID
-        u32      _BITMAP_16x16                                       // Bitmap 16x16 font
-        u8   _TFP_ENABLED, 0
-        u8   _TFP_VISIBLE, 1
-        u8   _TFP_SOURCE_PTR
-    ebt_segment         u16  -1
-        u32  offset exodus_button
-        u16  _OBJECT_END
+        u8  _TEXT_FIELD
+    ebt_top             u32 0
+    ebt_left            u32 28
+    ebt_width           u32 6*16
+    ebt_height          u32 16
+        u8  _TFP_COLOR_BACKGROUND, 0, 225, 225                      // bright cyan
+        u8  _TFP_COLOR_FOREGROUND, 0, 0, 128                        // dark blue
+        u8  _TFP_FONT_NAME_ID
+        u32     _BITMAP_16x16                                       // Bitmap 16x16 font
+        u8  _TFP_ENABLED, 0
+        u8  _TFP_VISIBLE, 1
+        u8  _TFP_SOURCE_PTR
+    ebt_segment         u16 -1
+        u32 offset exodus_button
+        u16 _OBJECT_END
 
 
     exodus_button_logo_rectangle:
-        u8   _RECTANGLE
-    eblr_top            u32  0
-    eblr_left           u32  3
-    eblr_width          u32  24
-    eblr_height         u32  22
-        u8   _RP_BACKGROUND, 0, 0, 0                                 // black
-        u8   _RP_ENABLED, 1
-        u8   _RP_VISIBLE, 1
-        u16  _OBJECT_END
+        u8  _RECTANGLE
+    eblr_top            u32 0
+    eblr_left           u32 3
+    eblr_width          u32 24
+    eblr_height         u32 22
+        u8  _RP_BACKGROUND, 0, 0, 0                                 // black
+        u8  _RP_ENABLED, 1
+        u8  _RP_VISIBLE, 1
+        u16 _OBJECT_END
