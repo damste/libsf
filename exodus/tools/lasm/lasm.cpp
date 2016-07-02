@@ -141,14 +141,13 @@
 		// Initialize our engine
 		memset(&cmdLine,		0, sizeof(cmdLine));		// Initialize all options off
 		memset(&cmdLine.w,		1, sizeof(cmdLine.w));		// Initialize all warnings on
-		memset(&includeFiles,	0, sizeof(includeFiles));	// Initialize the include file
+		iBuilder_createAndInitialize(&includePaths, sizeof(SLasmInclude) * 50);
 
 		// Grab the current directory as our starting point
 		memset(&fileName[0], 0, sizeof(fileName));
 		lnPathnameLength	= GetCurrentDirectory(sizeof(fileName) - 1, fileName);
-		include				= ilasm_includeFile_append(&fileName[0], lnPathnameLength);
-		include->fileName[include->fileNameLength] = 0;
-		ilasm_ensure_trailingBackspace(&include[0]);
+		include				= ilasm_includePath_append(&fileName[0], lnPathnameLength);
+		ilasm_validate_trailingBackspace(include);
 
 		// Compile
 		printf("LASM v0.01 -- LibSF Assembler -- for ExoduS/2\n");
@@ -311,17 +310,16 @@
 	bool ilasm_appendFile(s8* tcPathname, SLasmFile** file)
 	{
 		s32				lnI;
-		SLasmFile		f;
+		SLasmFile		fLoad;
 		SLasmFile*		fNew;
 		SLasmInclude*	include;
 		s8				fileName[_MAX_PATH * 2];
-// 		s8				fullFileName[_MAX_PATH];
 
 
 		//////////
 		// Initialize
 		//////
-			memset(&f, 0, sizeof(f));
+			memset(&fLoad, 0, sizeof(fLoad));
 
 
 		//////////
@@ -330,19 +328,21 @@
 			if (tcPathname[0] == '.')
 			{
 				// It is a relative path
-				for (lnI = gnMaxIncludePaths - 1; lnI >= 0; lnI--)
+				for (lnI = 0; lnI < includePaths->populatedLength; lnI += sizeof(SLasmInclude))
 				{
 					// Grab the include directory reference
-					include = &includeFiles[lnI];
+					include = (SLasmInclude*)(includePaths->buffer + lnI);
 
 					// Store the root path
+// Incomplete code, continue developing:
+_asm int 3;
 
 					// Append the relative filename
 					memset(fileName, 0, sizeof(fileName));
 					memcpy(fileName, tcPathname, min(_MAX_PATH - 1, strlen(tcPathname)));
 
 					// Try to read the file contents
-					if (iFile_readContents(tcPathname, &f.fh, &f.raw, &f.rawLength))
+					if (iFile_readContents(tcPathname, &fLoad.fh, &fLoad.raw, &fLoad.rawLength))
 						break;
 				}
 
@@ -357,22 +357,22 @@
 			if (lnI >= 0)
 			{
 				// Parse into lines
-				if (iFile_parseIntoLines(&f.firstLine, f.raw, f.rawLength) > 0)
+				if (iFile_parseIntoLines(&fLoad.firstLine, fLoad.raw, fLoad.rawLength) > 0)
 				{
 					// Append our entry onto the chain
-					fNew = (SLasmFile*)iLl_appendNew__llAtEnd((SLL**)&gsFirstFile, sizeof(f));
+					fNew = (SLasmFile*)iLl_appendNew__llAtEnd((SLL**)&gsFirstFile, sizeof(fLoad));
 					if (fNew)
 					{
 						// Copy over
-						fNew->firstLine	= f.firstLine;
-						fNew->fh		= f.fh;
-						fNew->raw		= f.raw;
-						fNew->rawLength	= f.rawLength;
-						fNew->fileName	= f.fileName;
-						iDatum_duplicate(&f.fileName, tcPathname, -1);
+						fNew->firstLine	= fLoad.firstLine;
+						fNew->fh		= fLoad.fh;
+						fNew->raw		= fLoad.raw;
+						fNew->rawLength	= fLoad.rawLength;
+						fNew->fileName	= fLoad.fileName;
+						iDatum_duplicate(&fLoad.fileName, tcPathname, -1);
 
 						// Setup the #include file level
-						fNew->include	= &includeFiles[gnMaxIncludePaths - 1];
+						fNew->include	= include;
 
 						// Update the pointer if need be
 						if (file)
@@ -400,33 +400,43 @@
 // Store the include file to a list of directories for later traversal should we
 //
 //////
-	SLasmInclude* ilasm_includeFile_append(s8* tcPathname, s32 tnPathnameLength)
+	SLasmInclude* ilasm_includePath_append(s8* tcPathname, s32 tnPathnameLength)
 	{
-		SLasmInclude* include;
+		u32				lnI;
+		SLasmInclude*	include;
+		s8*				fileNamePortion;
 
 
-		// Get the appropriate entry
-		if (gnMaxIncludePaths < _LASM_MAX_INCLUDE_FILES)
+		// See if it already exists
+		for (lnI = 0; lnI < includePaths->populatedLength; lnI += sizeof(SLasmInclude))
 		{
-			// Grab the slot
-			include = &includeFiles[gnMaxIncludePaths++];
+			// Grab our pointer
+			include = (SLasmInclude*)(includePaths->buffer + lnI);
+
+			// Is it our filename?
+			if (include->fileName.length == tnPathnameLength && iDatum_compare(&include->fileName, tcPathname, tnPathnameLength) == 0)
+				return(include);
+		}
+
+		// If we get here, not found
+		include = (SLasmInclude*)iBuilder_allocateBytes(includePaths, sizeof(SLasmInclude));
+		if (include)
+		{
+			// Allocate enough space
+			iDatum_allocateSpace(&include->fileName, _MAX_PATH + 32);
 
 			// Expand to its full form
-			GetFullPathName(tcPathname, tnPathnameLength, &include->fileName[0], &include->fileNamePortion);
+			GetFullPathName(tcPathname, tnPathnameLength, include->fileName.data_s8, &fileNamePortion);
 
 			// NULL-terminate
-			*include->fileNamePortion = 0;
+			include->fileNamePortion = (s32)((uptr)fileNamePortion - (uptr)include->fileName.data_s8);
+			*fileNamePortion = 0;
 
 			// Validate that it ends in a backslash
-			ilasm_ensure_trailingBackspace(include);
+			ilasm_validate_trailingBackspace(include);
 
 			// Store the new length
-			include->fileNameLength	 = strlen(include->fileName);
-
-		} else {
-			// We're reached our limit
-			printf("--Error: too many #include files (%d)\n", _LASM_MAX_INCLUDE_FILES + 1);
-			exit(-1);
+			include->fileName.length = strlen(include->fileName.data_s8);
 		}
 
 		// Indicate our result
@@ -441,16 +451,17 @@
 // For include files, makes sure that they have the trailing backspace
 //
 //////
-	SLasmInclude* ilasm_ensure_trailingBackspace(SLasmInclude* include)
+	// Note:  include files also always allocate _MAX_PATH + 32 bytes for their filename size, so there's always room for the extra backslash
+	SLasmInclude* ilasm_validate_trailingBackspace(SLasmInclude* include)
 	{
 		// Make sure the last character's a backspace
-		if (include->fileName[include->fileNameLength - 1] != '\\')
+		if (include->fileName.data_s8[include->fileName.length - 1] != '\\')
 		{
 			// Make it a backslash
-			include->fileName[include->fileNameLength] = '\\';
+			include->fileName.data_s8[include->fileName.length] = '\\';
 
 			// Increase its length
-			++include->fileNameLength;
+			++include->fileName.length;
 		}
 
 		// Pass-thru our parameter

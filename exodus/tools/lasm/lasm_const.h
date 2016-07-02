@@ -88,7 +88,6 @@
 
 
 // Constants
-const s32		_LASM_MAX_INCLUDE_FILES				= 1024;					// Up to 1024 include files can be included
 const s32		_LASM_MAX_DEFINE_PARAMS				= 26;					// Up to 26 #define macro(a,b,c,...,z)
 const s32		_LASM_MAX_RETURN_PARAMS				= 10;					// Up to 10 return parameters are allowed
 const s32		_LASM_MAX_INPUT_PARAMS				= 26;					// Up to 26 input parameters are allowed

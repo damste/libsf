@@ -120,9 +120,8 @@
 	// #include files
 	struct SLasmInclude
 	{
-		s8			fileName[_MAX_PATH];				// The full pathname
-		s32			fileNameLength;						// Length of the filename
-		s8*			fileNamePortion;					// Where the actual filename portion begins
+		SDatum		fileName;							// The full pathname
+		s32			fileNamePortion;					// Where the actual filename portion begins
 	};
 
 	// Linked list of files to be assembled

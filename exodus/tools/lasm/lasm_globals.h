@@ -98,8 +98,7 @@
 //////////
 // #include files
 //////
-	SLasmInclude	includeFiles[_LASM_MAX_INCLUDE_FILES];				// The maximum number of include files
-	s32				gnMaxIncludePaths				= 0;				// Maximum separate #include files loaded thus far
+	SBuilder*		includePaths					= NULL;				// (SLasmInclude) Include files
 
 
 

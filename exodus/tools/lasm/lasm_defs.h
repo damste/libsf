@@ -92,8 +92,8 @@ struct SLasmInclude;
 	void				ilasm_parse_commandLine							(SLasmCmdLine* cmdLine, s32 argc, s8* argv[]);
 	void				ilasm_compile									(SLasmCmdLine* cmdLine);
 	bool				ilasm_appendFile								(s8* tcPathname, SLasmFile** file);
-	SLasmInclude*		ilasm_includeFile_append						(s8* tcPathname, s32 tnPathnameLength);
-	SLasmInclude*		ilasm_ensure_trailingBackspace					(SLasmInclude* include);
+	SLasmInclude*		ilasm_includePath_append						(s8* tcPathname, s32 tnPathnameLength);
+	SLasmInclude*		ilasm_validate_trailingBackspace				(SLasmInclude* include);
 	void				ilasm_fixupDirectories							(s8* tcPathname, s32 tnPathnameLength);
 
 
