@@ -3307,6 +3307,16 @@ debug_break;
 					}
 					break;
 
+				case _INDEX_FONTWIDEN:
+					if (obj->p.sem->font)
+						obj->p.sem->font->widen = obj->p.font->widen;
+					break;
+
+				case _INDEX_FONTWIDENSPACES:
+					if (obj->p.sem->font)
+						obj->p.sem->font->widenSpaces = obj->p.font->widenSpaces;
+					break;
+
 				default:
 					// Set the property to whatever is indicated, even though there is no mirror value in the SEM
 					iVariable_copy(var, varNewValue);
