@@ -118,6 +118,12 @@
 #include "/libsf/utils/common/cpp/include/xml.h"
 #include "/libsf/utils/common/cpp/include/sem/sem.h"
 
+#define iterate(i, builder, p, structure)	for (i = 0; i < builder->populatedLength; i += sizeof(structure)) \
+											{ \
+												/* Grab the pointer */ \
+												p = (structure*)(builder->buffer + i);
+#define iterate_end }
+
 
 #include "/libsf/utils/common/cpp/base/ll.cpp"
 #include "/libsf/utils/common/cpp/base/node.cpp"

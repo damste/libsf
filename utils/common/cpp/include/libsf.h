@@ -688,6 +688,7 @@
 
 		// References to other related items
 		SLine*			line;						// Source line
+		s32				start;						// Offset into the line where it was found (used for warning/error reporting)
 		SNode*			node;						// The node this component relates to
 		SBuilder*		extra_info;					// (SExtraInfo) extra information about this component
 

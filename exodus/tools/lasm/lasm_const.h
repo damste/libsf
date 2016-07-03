@@ -572,3 +572,9 @@ const s32		_ICODE_LASM_STRUCT					= 3000004;
 	u8			cgc_lasm_define[]					= "define";
 	u8			cgc_lasm_function[]					= "function";
 	u8			cgc_lasm_struct[]					= "struct";
+
+
+//////////
+// Error messages
+//////
+	cs8			cgc_unable_to_open_file[]			= "--Error: unable to open file: %s\n";

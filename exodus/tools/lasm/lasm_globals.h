@@ -85,7 +85,8 @@
 //////////
 // Processing data
 //////
-	SLasmFile*		gsFirstFile						= NULL;				// First file that's being assembled
+	SBuilder*		includePaths					= NULL;				// (SLasmInclude) Include files
+	SBuilder*		includeFiles					= NULL;				// (SLasmFile) Files that are included in the assembly
 	SLasmDefine*	gsLasmDefines					= NULL;				// List of #defines found, in the order found
 	SLasmBlock*		firstAdhoc						= NULL;				// All adhoc definitions are scoped within functions or flowofs, but are part of a single list
 	SLasmBlock*		firstFunction					= NULL;				// All function definitions
@@ -96,19 +97,9 @@
 
 
 //////////
-// #include files
-//////
-	SBuilder*		includePaths					= NULL;				// (SLasmInclude) Include files
-
-
-
-
-//////////
 // Colors
 //////
 	SBgra			colorDefault					= { rgba(0, 0, 0, 255) };		// Black
-
-
 
 
 //////////

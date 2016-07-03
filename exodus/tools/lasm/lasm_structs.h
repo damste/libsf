@@ -108,7 +108,7 @@
 	};
 
 	// File-level assemble status
-	struct SLasmFileStatus
+	struct SLasmStatus
 	{
 		s32			errors		: 8;					// Up to 256 errors are allowed
 		s32			warnings	: 8;					// Up to 256 warnings are allowed
@@ -124,6 +124,15 @@
 		s32			fileNamePortion;					// Where the actual filename portion begins
 	};
 
+	// An augmented line for extra lasm information
+	struct SLasmLine
+	{
+		SLine			line;
+
+		// Holds a status for the line
+		SLasmStatus		status;
+	};
+
 	// Linked list of files to be assembled
 	struct SLasmFile
 	{
@@ -132,7 +141,7 @@
 		// File and status
 		SLasmInclude*		include;					// #include file level as of the time of this file's creation
 		SDatum				fileName;					// Source file
-		SLasmFileStatus		status;						// Processing through the assemble process
+		SLasmStatus			status;						// Processing through the assemble process
 
 		// Raw disk file contents
 		FILE*				fh;							// File handle
@@ -140,7 +149,10 @@
 		u32					rawLength;					// Raw data length
 
 		// Parsed into line structures
-		SLine*				firstLine;					// Source file content for this file (including any include files)
+		union {
+			SLine*			firstLine;					// Source file content for this file (including any include files)
+			SLasmLine*		firstLasmLine;				// To access with the extra fields
+		};
 	};
 
 	// #define statements

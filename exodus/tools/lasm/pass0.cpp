@@ -124,10 +124,8 @@
 
 				} else if (!(p0.compNext = iComps_Nth(p0.comp))) {
 					// Syntax error
-#ifdef _SHOW_REFACTOR_ERRORS
-					++p0.comp->line->status.errors;
+					++file->status.errors;
 					printf("--Error(%d,%d): Missing identifier after #\n", p0.comp->line->lineNumber, p0.compNext->start);
-#endif
 				}
 
 
@@ -149,9 +147,7 @@
 					}
 
 					// This line is completed, but the file itself is not
-#ifdef _SHOW_REFACTOR_ERRORS
-					p0.comp->line->status.isCompleted = true;
-#endif
+					((SLasmLine*)p0.comp->line)->status.isCompleted = true;
 				}
 
 		}

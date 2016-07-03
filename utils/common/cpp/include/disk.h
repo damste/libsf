@@ -192,6 +192,6 @@
 	// File functions
 	bool			iFile_readContents						(s8* tcFilename, FILE** tfh, s8** data, u32* dataLength);
 	bool			iFile_get_justfname						(s8* tcPathname, s32 tnFilenameLength, s8** tcFname, s32* tnFnameLength);
-	s32				iFile_parseIntoLines					(SLine** firstLine, s8* data, u32 dataLength);
+	s32				iFile_parseIntoLines					(SLine** firstLine, s8* data, u32 dataLength, u32 tnSLineSize = sizeof(SLine));
 
 #endif	// __DISK_H__

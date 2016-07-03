@@ -898,11 +898,21 @@
 
 //////////
 //
-// Called to parse a raw file into lines
+// Called to parse a raw file into lines.  The standard SLine structure can be augmented with
+// a creation like this:
+//
+//	struct SLinePlus
+//	{
+//		SLine;
+//
+//		// Other fields go here:
+//		s32		a;
+//		f32		f;
+//	};
 //
 //////
 	// Returns line count
-	s32 iFile_parseIntoLines(SLine** firstLine, s8* data, u32 dataLength)
+	s32 iFile_parseIntoLines(SLine** firstLine, s8* data, u32 dataLength, u32 tnSLineSize)
 	{
 		u32			lnI, lnJ, lnLast, lnLineNumber;
 		SLine*		line;
@@ -935,7 +945,7 @@
 					//////////
 					// We've entered into a CR/LF block, append a new line
 					//////
-						line = (SLine*)iLl_appendNew__llAtEnd((SLL**)lastLine, sizeof(SLine));
+						line = (SLine*)iLl_appendNew__llAtEnd((SLL**)lastLine, sizeof(tnSLineSize));
 						if (!line)
 							return(-1);		// Unexpected failure
 
@@ -943,10 +953,8 @@
 					//////////
 					// Indicate content
 					//////
-#ifdef _SHOW_REFACTOR_ERRORS
-						line->sourceCode	= iDatum_allocate((u8*)data + lnLast, (s32)(lnI - lnJ - lnLast));
-#endif
-						line->lineNumber	= lnLineNumber;
+						iDatum_duplicate(&line->sourceCode, (u8*)data + lnLast, (s32)(lnI - lnJ - lnLast));
+						line->lineNumber = lnLineNumber;
 
 
 					//////////
