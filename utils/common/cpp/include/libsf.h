@@ -502,8 +502,9 @@
 
 		// Information related to this line
 		SBuilder*		extra_info;										// (SExtraInfo) extra information about this line
+		SNoteLog*		firstNote;										// First note related to the line
 
-																		// Each render, these are updated
+		// Each render, these are updated
 		u32				renderId;										// Each time it's rendered, this value is set
 		RECT			rcLastRender;									// The rectangle within the parent of the last render
 	};
@@ -693,6 +694,7 @@
 		s32				start;						// Offset into the line where it was found (used for warning/error reporting)
 		SNode*			node;						// The node this component relates to
 		SBuilder*		extra_info;					// (SExtraInfo) extra information about this component
+		SNoteLog*		firstNote;					// First note related to the component
 
 		// For rendering and syntax highlighting
 		s32				nbspCount;					// Number of non-breaking-spaces in this component (ASCII-255)
@@ -1057,15 +1059,22 @@
 		// For warnings, errors, and notes
 		struct SNoteLog
 		{
-			SLL				ll;
+			SLL				ll;												// Linked list
 			SYSTEMTIME		time;											// When did the note get logged?
 
-			SLine*			line;											// Associated line (if not already on a line)
-			u32				start;											// Column the note begins on
-			u32				end;											// Column the note ends on
+			// General not information
+			u32				number;											// A related number that can be referenced internally
+			SDatum			note;											// The actual message
+			void*			data;											// Other data that can be stored or referenced
 
-			u32				number;											// A related number
-			SDatum*			note;											// The message
+			// If linked to a line or component
+			s32				relatedType;									// See _NOTELOG_TYPE_* constants
+			union {
+				SLine*			line;										// Associated line (if not already on a line)
+				SComp*			comp;										// Related component
+			};
+			s32				start;											// Relative column the note begins on
+			s32				end;											// Relative column the note ends on
 		};
 
 		#define _SLIVECODE_DEFINED 1
@@ -1309,8 +1318,9 @@
 	void					iLiveCode_delete							(SLiveCode* livecodeRoot);
 
 	// Compile note functions
-	SNoteLog*				iNoteLog_create								(SNoteLog** noteRoot, SLine* line, u32 tnStart, u32 tnEnd, u32 tnNumber, cu8* tcMessage);
-	SNoteLog*				iNoteLog_create								(SNoteLog** noteRoot, SComp* comp, u32 tnNumber, cu8* tcMessage);
+	SNoteLog*				iNoteLog_create								(SNoteLog** noteRoot, SLine* line, SComp* comp, cu8* tcMessage, u32 tnNumber = 0, s32 tnStart = 0, s32 tnEnd = 0);
+	SNoteLog*				iNoteLog_create_byLine						(SNoteLog** noteRoot, SLine* line, cu8* tcMessage, u32 tnNumber = 0, u32 tnStart = 0, u32 tnEnd = 0);
+	SNoteLog*				iNoteLog_create_byComp						(SNoteLog** noteRoot, SComp* comp, cu8* tcMessage, u32 tnNumber = 0, u32 tnStart = 0, u32 tnEnd = 0);
 	void					iNoteLog_removeAll							(SNoteLog** noteRoot);
 //////
 // END

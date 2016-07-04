@@ -117,20 +117,22 @@
 		bool		isCompleted	: 1;					// Is the assemble process completed on this line?
 	};
 
-	// #include files
+	// #include files, and also #includ paths
 	struct SLasmInclude
 	{
-		SDatum		fileName;							// The full pathname
-		s32			fileNamePortion;					// Where the actual filename portion begins
+		bool		lIsFilename;						// Is it a full filename (and not just a path)?
+		SDatum		filename;							// The full pathname
+		s32			filenamePortion;					// Where the actual filename portion begins
 	};
 
 	// An augmented line for extra lasm information
 	struct SLasmLine
 	{
+		// The standard line must always be first
 		SLine			line;
 
-		// Holds a status for the line
-		SLasmStatus		status;
+		// Extra information:
+		SLasmStatus		status;							// Holds a status for the line
 	};
 
 	// Linked list of files to be assembled

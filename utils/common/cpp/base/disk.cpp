@@ -914,7 +914,7 @@
 	// Returns line count
 	s32 iFile_parseIntoLines(SLine** firstLine, s8* data, u32 dataLength, u32 tnSLineSize)
 	{
-		u32			lnI, lnJ, lnLast, lnLineNumber;
+		u32			lnI, lnCrLfCount, lnLast, lnLineNumber;
 		SLine*		line;
 		SLine**		lastLine;
 
@@ -926,14 +926,14 @@
 			//////////
 			// Are we on a CR/LF combination?
 			//////
-				for (lnJ = 0; (data[lnI] == 13 || data[lnI] == 10) && lnJ < 2 && (u32)lnI < dataLength; lnJ++)
+				for (lnCrLfCount = 0; (data[lnI] == 13 || data[lnI] == 10) && lnCrLfCount < 2 && (u32)lnI < dataLength; lnCrLfCount++)
 					++lnI;	// Increase also past this CR/LF character
 
 
 			//////////
-			// If we found a CR/LF combination
+			// If we found a CR/LF combination...
 			//////
-				if (lnJ != 0 || lnI >= dataLength)
+				if (lnCrLfCount != 0 || lnI >= dataLength)
 				{
 
 					//////////
@@ -945,7 +945,7 @@
 					//////////
 					// We've entered into a CR/LF block, append a new line
 					//////
-						line = (SLine*)iLl_appendNew__llAtEnd((SLL**)lastLine, sizeof(tnSLineSize));
+						line = (SLine*)iLl_appendNew__llAtEnd((SLL**)lastLine, tnSLineSize, true);
 						if (!line)
 							return(-1);		// Unexpected failure
 
@@ -953,7 +953,7 @@
 					//////////
 					// Indicate content
 					//////
-						iDatum_duplicate(&line->sourceCode, (u8*)data + lnLast, (s32)(lnI - lnJ - lnLast));
+						iDatum_duplicate(&line->sourceCode, (u8*)data + lnLast, (s32)(lnI - lnCrLfCount - lnLast));
 						line->lineNumber = lnLineNumber;
 
 

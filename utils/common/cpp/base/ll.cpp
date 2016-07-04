@@ -152,7 +152,7 @@
 // Called to append the node at the end of the chain
 //
 //////
-	SLL* iLl_appendNew__llAtEnd(SLL** llRoot, u32 tnSize)
+	SLL* iLl_appendNew__llAtEnd(SLL** llRoot, u32 tnSize, bool tlInitializeNewBlock)
 	{
 		SLL* ll;
 		SLL* llNew;
@@ -167,7 +167,8 @@
 			if (llNew)
 			{
 				// Initialize
-				memset(llNew, 0, tnSize);
+				if (tlInitializeNewBlock)
+					memset(llNew, 0, tnSize);
 
 				// Determine where it goes
 				if (!*llRoot)
@@ -182,7 +183,7 @@
 						ll = ll->next;
 
 					// Append here
-					ll->next		= llNew;		// Previous points here
+					ll->next	= llNew;		// Previous points here
 					llNew->prev	= ll;			// We point back to previous
 				}
 			}
@@ -200,7 +201,7 @@
 // Called to append a new node at the beginning
 //
 //////
-	SLL* iLl_appendNew__llAtBeginning(SLL** llRoot, u32 tnSize)
+	SLL* iLl_appendNew__llAtBeginning(SLL** llRoot, u32 tnSize, bool tlInitializeNewBlock)
 	{
 		SLL* ll;
 		SLL* llNew;
@@ -215,7 +216,8 @@
 			if (llNew)
 			{
 				// Initialize
-				memset(llNew, 0, tnSize);
+				if (tlInitializeNewBlock)
+					memset(llNew, 0, tnSize);
 
 				// Set it up
 				ll	= *llRoot;

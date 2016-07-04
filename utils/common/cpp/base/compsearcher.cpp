@@ -79,10 +79,11 @@
 
 //////////
 //
-// Called to create a new note
+// Called to create a new note.
 //
 //////
-	SNoteLog* iNoteLog_create(SNoteLog** noteRoot, SLine* line, u32 tnStart, u32 tnEnd, u32 tnNumber, cu8* tcMessage)
+	// Note:  tcMessage should be NULL terminated
+	SNoteLog* iNoteLog_create(SNoteLog** noteRoot, SLine* line, SComp* comp, cu8* tcMessage, u32 tnNumber, s32 tnStart, s32 tnEnd)
 	{
 		SNoteLog* note;
 
@@ -97,20 +98,42 @@
 			// Populate it
 			GetLocalTime(&note->time);
 			note->line		= line;
+			note->comp		= comp;
 			note->start		= tnStart;
 			note->end		= tnEnd;
 			note->number	= tnNumber;
-			note->note		= iDatum_allocate(tcMessage, -1);
+			iDatum_duplicate(&note->note, tcMessage, -1);
 		}
 
 		// Indicate our status
 		return(note);
 	}
 
-	SNoteLog* iNoteLog_create(SNoteLog** noteRoot, SComp* comp, u32 tnNumber, cu8* tcMessage)
+	// Creates a note associated with the indicated line
+	SNoteLog* iNoteLog_create_byLine(SLine* line, cu8* tcMessage, u32 tnNumber, u32 tnStart, u32 tnEnd, SNoteLog** noteRoot)
 	{
-		if (comp)		return(iNoteLog_create(noteRoot, comp->line, comp->start, comp->start + comp->text.length - 1, tnNumber, tcMessage));
-		else			return(NULL);
+		if (line)
+		{
+			// Append to the indicated noteRoot, or to the line
+			return(iNoteLog_create(((noteRoot) ? noteRoot : &line->firstNote), line, NULL, tcMessage, tnNumber, tnStart, tnEnd));
+
+		} else {
+			// Invalid
+			return(NULL);
+		}
+	}
+
+	SNoteLog* iNoteLog_create_byComp(SComp* comp, cu8* tcMessage, u32 tnNumber, u32 tnStart, u32 tnEnd, SNoteLog** noteRoot)
+	{
+		if (comp)
+		{
+			// Append to the indicated noteRoot, or to the line
+			return(iNoteLog_create(((noteRoot) ? noteRoot : &comp->firstNote), NULL, comp, tcMessage, tnNumber, tnStart, tnEnd));
+
+		} else {
+			// Invalid
+			return(NULL);
+		}
 	}
 
 

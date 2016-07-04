@@ -84,7 +84,7 @@
 //////////
 // Macros
 //////
-	#define lasm_is_cmdLineOption(a)				lnLength == sizeof(a) - 1 && _memicmp(argv[lnI], a, sizeof(a) - 1)
+	#define lasm_is_cmdLineOption(a)				lnLength == sizeof(a) - 1 && (_memicmp(argv[lnI], a, sizeof(a) - 1) == 0)
 
 
 // Constants
@@ -536,8 +536,8 @@ const s32		_ICODE_LASM_STRUCT					= 3000004;
 	cs8			cgc_wall[]							= "all";
 	cs8			cgc_wfatal_errors[]					= "fatal-errors";
 	cs8			cgc_werror[]						= "error";
-	cs8			cgc_syntax_only[]					= "-syntax-only";
-	cs8			cgc_verbose[]						= "-verbose";
+	cs8			cgc_syntax_only[]					= "fsyntax-only";
+	cs8			cgc_verbose[]						= "verbose";
 
 
 //////////

@@ -155,7 +155,7 @@
 
 			// Grab the current directory (as our starting point)
 			lnPathnameLength	= GetCurrentDirectory(sizeof(fileName) - 1, fileName);
-			include				= ilasm_includePath_append(fileName, lnPathnameLength);
+			include				= ilasm_includePath_append(fileName, lnPathnameLength, false);
 
 
 		//////////
@@ -198,7 +198,6 @@
 				// Yes
 				lnLength = strlen(argv[lnI]);
 
-
 				//////////
 				// -Wno-?
 				//////
@@ -208,6 +207,7 @@
 						// Yes, which means the option will be turned off
 						llSetValue	= false;
 						argv[lnI]	+= sizeof(cgc_wno) - 1;
+						lnLength	-= sizeof(cgc_wno) - 1;
 
 					} else {
 						// The option will be turned on
@@ -215,61 +215,85 @@
 
 						// Skip past the leading -W (if need be)
 						if (lnLength > sizeof(cgc_w) - 1 && _memicmp(argv[lnI], cgc_w, sizeof(cgc_w) - 1) == 0)
+						{
 							argv[lnI] += sizeof(cgc_w) - 1;
+							lnLength -= sizeof(cgc_w) - 1;
+						}
 					}
 
 
 				//////////
-				// Which warnings?
+				// If we're still on a hyphen, skip past it
 				//////
-					if (lasm_is_cmdLineOption(cgc_wmissing_type_ptr))
+					if (argv[lnI][0] == '-')
 					{
-						// -Wmissing-type-ptr		-- Using "mov eax,[esi]" rather than "mov eax,u32 ptr [esi]"
-						// -Wno-missing-type-ptr
-						cmdLine->w.Wmissing_type_ptr = llSetValue;
-
-					} else if (lasm_is_cmdLineOption(cgc_wall)) {
-						// -Wall					-- Show all warnings
-						// -Wno-all
-						cmdLine->w.Wall = llSetValue;
-
-					} else if (lasm_is_cmdLineOption(cgc_wfatal_errors)) {
-						// -Wfatal-errors			-- Should compilation stop immediately on first error?
-						// -Wno-fatal-errors
-						cmdLine->w.Wfatal_errors = llSetValue;
-
-					} else if (lasm_is_cmdLineOption(cgc_werror)) {
-						// -Werror					-- Should warnings be treated as errors?
-						// -Wno-error
-						cmdLine->w.Werror = llSetValue;
+						++argv[lnI];
+						--lnLength;
 					}
-				
-				
-				//////////
-				// Which options?
-				//////
-					if (lasm_is_cmdLineOption(cgc_syntax_only))
-					{
-						// -fsyntax-only			-- Syntax check only
-						cmdLine->o.lSyntax_only = llSetValue;
 
-					} else if (lasm_is_cmdLineOption(cgc_verbose)) {
-						// -verbose					-- Show extra compilation information
-						cmdLine->o.lVerbose = llSetValue;
 
-					} else {
-						// Unrecognized option
-						printf("--Error: unrecognized command line option: %s", lcOption);
-						exit(-1);
-					}
+				// Entered to allow structured exit
+				do {
+					//////////
+					// Which warnings?
+					//////
+						if (lasm_is_cmdLineOption(cgc_wmissing_type_ptr))
+						{
+							// -Wmissing-type-ptr		-- Using "mov eax,[esi]" rather than "mov eax,u32 ptr [esi]"
+							// -Wno-missing-type-ptr
+							cmdLine->w.Wmissing_type_ptr = llSetValue;
+							break;
+
+						} else if (lasm_is_cmdLineOption(cgc_wall)) {
+							// -Wall					-- Show all warnings
+							// -Wno-all
+							cmdLine->w.Wall = llSetValue;
+							break;
+
+						} else if (lasm_is_cmdLineOption(cgc_wfatal_errors)) {
+							// -Wfatal-errors			-- Should compilation stop immediately on first error?
+							// -Wno-fatal-errors
+							cmdLine->w.Wfatal_errors = llSetValue;
+							break;
+
+						} else if (lasm_is_cmdLineOption(cgc_werror)) {
+							// -Werror					-- Should warnings be treated as errors?
+							// -Wno-error
+							cmdLine->w.Werror = llSetValue;
+							break;
+						}
+					
+					
+					//////////
+					// Which options?
+					//////
+						if (lasm_is_cmdLineOption(cgc_syntax_only))
+						{
+							// -fsyntax-only			-- Syntax check only
+							cmdLine->o.lSyntax_only = llSetValue;
+							break;
+
+						} else if (lasm_is_cmdLineOption(cgc_verbose)) {
+							// -verbose					-- Show extra compilation information
+							cmdLine->o.lVerbose = llSetValue;
+							break;
+
+						} else {
+							// Unrecognized option
+							printf("--Error: unrecognized command line option: %s", lcOption);
+							exit(-1);
+						}
+
+				// Loop to allow structured exit
+				} while (0);
 
 
 			} else {
-				// Based on our command line options, it can only be a file to assemble
+				// Based on our command line option syntax, since it doesn't begin with a hyphen, it can only be a file to assemble
 				// Try to load it
 				if (!ilasm_appendFile(argv[lnI], NULL))
 				{
-					// Nope
+					// Unable to load
 					printf(cgc_unable_to_open_file, argv[lnI]);
 					exit(-2);
 				}
@@ -295,6 +319,7 @@
 		// Iterate through every file, through every pass
 		iterate (lnI, includeFiles, file, SLasmFile)
 		//
+
 			// Begin passes through each file
 			for (lnPass = 0; lnPass < 6 && !file->status.isCompleted; lnPass++)
 			{
@@ -314,6 +339,7 @@
 // 					case 6:		{	ilasm_passZ(cmdLine, file);		break;	}
 				}
 			}
+
 		//
 		iterate_end;
 	}
@@ -353,8 +379,8 @@
 				iterate(lnI, includePaths, include, SLasmInclude)
 				//
 					// Store the root path, then filename
-					sprintf(fileName,								include->fileName.data_s8);
-					sprintf(fileName + include->fileName.length,	tcPathname + 2);
+					sprintf(fileName,								include->filename.data_s8);
+					sprintf(fileName + include->filename.length,	tcPathname + 2);
 
 					// Try to read the file contents
 					if (iFile_readContents(tcPathname, &fLoad.fh, &fLoad.raw, &fLoad.rawLength))
@@ -399,6 +425,9 @@
 						if (file)
 							*file = fNew;
 
+						// Add it as a possible include path
+						ilasm_includePath_append(tcPathname, strlen(tcPathname), false);
+
 						// Indicate success
 						return(true);
 					}
@@ -422,9 +451,9 @@
 // Store the include file to a list of directories for later traversal should we
 //
 //////
-	SLasmInclude* ilasm_includePath_append(s8* tcPathname, s32 tnPathnameLength)
+	SLasmInclude* ilasm_includePath_append(s8* tcPathname, s32 tnPathnameLength, bool tlIsFilename)
 	{
-		u32				lnI;
+		u32				lnI, lnError;
 		SLasmInclude*	include;
 		s8*				fileNamePortion;
 
@@ -436,7 +465,7 @@
 			include = (SLasmInclude*)(includePaths->buffer + lnI);
 
 			// Is it our filename?
-			if (include->fileName.length == tnPathnameLength && iDatum_compare(&include->fileName, tcPathname, tnPathnameLength) == 0)
+			if (include->filename.length == tnPathnameLength && iDatum_compare(&include->filename, tcPathname, tnPathnameLength) == 0)
 				return(include);
 		}
 
@@ -445,20 +474,31 @@
 		if (include)
 		{
 			// Allocate enough space
-			iDatum_allocateSpace(&include->fileName, _MAX_PATH + 32);
+			include->lIsFilename = tlIsFilename;
+			iDatum_allocateSpace(&include->filename, _MAX_PATH + 32);
 
 			// Expand to its full form
-			GetFullPathName(tcPathname, tnPathnameLength, include->fileName.data_s8, &fileNamePortion);
+			fileNamePortion = NULL;
+			if (!GetFullPathName(tcPathname, include->filename.length, include->filename.data_s8, &fileNamePortion))
+				lnError = GetLastError();
 
 			// NULL-terminate
-			include->fileNamePortion = (s32)((uptr)fileNamePortion - (uptr)include->fileName.data_s8);
-			*fileNamePortion = 0;
+			if (tlIsFilename)
+			{
+				// Include the filename
+				*fileNamePortion			= 0;						// Remove the path portion
+				include->filenamePortion	= (s32)((uptr)fileNamePortion - (uptr)include->filename.data_s8);
+
+			} else {
+				// No filename portion
+				include->filenamePortion = 0;
+			}
+
+			// Store the permanent length of whatever we're now using
+			include->filename.length = strlen(tcPathname);
 
 			// Validate that it ends in a backslash
 			ilasm_validate_trailingBackspace(include);
-
-			// Store the new length
-			include->fileName.length = strlen(include->fileName.data_s8);
 		}
 
 		// Indicate our result
@@ -477,13 +517,13 @@
 	SLasmInclude* ilasm_validate_trailingBackspace(SLasmInclude* include)
 	{
 		// Make sure the last character's a backspace
-		if (include->fileName.data_s8[include->fileName.length - 1] != '\\')
+		if (include->filename.data_s8[include->filename.length - 1] != '\\')
 		{
 			// Make it a backslash
-			include->fileName.data_s8[include->fileName.length] = '\\';
+			include->filename.data_s8[include->filename.length] = '\\';
 
 			// Increase its length
-			++include->fileName.length;
+			++include->filename.length;
 		}
 
 		// Pass-thru our parameter

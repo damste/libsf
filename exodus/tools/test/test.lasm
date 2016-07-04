@@ -1,23 +1,28 @@
 ||||||||||
 ||| sample.lasm
 ||||||
+|||
 ||| Lines which begin with three or more | characters are comments.
+|||
 ||| Lines which begin with two | characters are ignored as whitespaces,
 ||| but are used as visual cues to group related things, as well as the
 ||| ability to do faster single-stepping through source code, so that
 ||| all entries in a vertically connected || group can be single-stepped
 ||| over as a single operation, rather than multiple line-level ops.
+|||
 ||||||
 
 
 ||||||||||
 || #include "inc1.lasm"
-|| #include "inc2.lasm"
+||
+||| Loaded below:
+||| #include "inc2.lasm"
 ||||||
 
 // Note:  Below where it says "name" it's a macro replaced with "total"
 
-function sample
+function test
 {
 ||||||||||
 ||| prolog
@@ -58,7 +63,7 @@ function sample
     ||||||
 
         // total += (i << 2)
-        flowof name		// See inc2.asm
+        #include "inc2.lasm"
 
     ||||||
     ||| }

@@ -95,8 +95,8 @@ struct SNoteLog;
 //////
 	SLL*					iLl_appendNew__ll							(SLL** llRoot, SLL* llHint, SLL* llNext, SLL* llPrev, u32 tnUniqueId, u32 tnSize);
 	SLL*					iLl_createOrphan__ll						(                           SLL* llPrev, SLL* llNext, u32 tnUniqueId, u32 tnSize);
-	SLL*					iLl_appendNew__llAtEnd						(SLL** llRoot, u32 tnSize);
-	SLL*					iLl_appendNew__llAtBeginning				(SLL** llRoot, u32 tnSize);
+	SLL*					iLl_appendNew__llAtEnd						(SLL** llRoot, u32 tnSize, bool tlInitializeNewBlock = true);
+	SLL*					iLl_appendNew__llAtBeginning				(SLL** llRoot, u32 tnSize, bool tlInitializeNewBlock = true);
 	bool					iLl_appendExisting__llAtEnd					(SLL** llRoot, SLL* ll);
 	bool					iLl_appendExisting__llAtBeginning			(SLL** llRoot, SLL* ll);
 	SLL*					iLl_delete__ll								(SLL* ll, bool tlDeleteSelf);

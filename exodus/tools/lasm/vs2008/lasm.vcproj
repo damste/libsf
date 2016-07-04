@@ -86,7 +86,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy $(TargetPath) \libsf\exodus\tools\*.*"
+				CommandLine="copy $(TargetPath) \libsf\exodus\tools\test\*.*"
 			/>
 		</Configuration>
 		<Configuration
@@ -162,7 +162,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy $(TargetPath) \libsf\exodus\tools\*.*"
+				CommandLine="copy $(TargetPath) \libsf\exodus\tools\test\*.*"
 			/>
 		</Configuration>
 	</Configurations>
