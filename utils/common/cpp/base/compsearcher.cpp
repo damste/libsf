@@ -59,62 +59,18 @@
 
 //////////
 //
-// Allocates an SCompiler structure.  Initializes it to all NULLs.
-//
-//////
-	SCompiler* iCompiler_allocate(SLine* parent)
-	{
-		SCompiler* compilerNew;
-
-
-		// Allocate and initialize
-		compilerNew = (SCompiler*)malloc(sizeof(SCompiler));
-		if (compilerNew)
-		{
-			// Initialize
-			memset(compilerNew, 0, sizeof(SCompiler));
-			compilerNew->parent = parent;
-		}
-
-		// Indicate our status
-		return(compilerNew);
-	}
-
-
-
-
-//////////
-//
 // Called to delete the previous allocated compiler data
 //
 //////
-	void iCompiler_delete(SCompiler** compilerInfoRoot, bool tlDeleteSelf)
+	void iLiveCode_delete(SLiveCode* livecodeRoot)
 	{
-		SCompiler* compilerInfo;
-
-
 		// Make sure our environment is sane
-		if (compilerInfoRoot && (compilerInfo = *compilerInfoRoot))
+		if (livecodeRoot)
 		{
-			// Delete the source code
-			iDatum_delete(&compilerInfo->sourceCode);
-
-#ifdef _SHOW_REFACTOR_ERRORS
 			// Delete the items here
-			iNoteLog_removeAll(&compilerInfo->firstWarning);
-			iNoteLog_removeAll(&compilerInfo->firstInquiry);
-			iNoteLog_removeAll(&compilerInfo->firstNote);
-#endif
-
-			// Delete regular components
-			iComps_deleteAll_byFirstComp(&compilerInfo->firstComp);
-
-			// Delete self if need be
-			if (tlDeleteSelf)
-			{
-				*compilerInfoRoot = NULL;
-				free(compilerInfo);
-			}
+			iNoteLog_removeAll(&livecodeRoot->firstWarning);
+			iNoteLog_removeAll(&livecodeRoot->firstInquiry);
+			iNoteLog_removeAll(&livecodeRoot->firstNote);
 		}
 	}
 
@@ -153,7 +109,7 @@
 
 	SNoteLog* iNoteLog_create(SNoteLog** noteRoot, SComp* comp, u32 tnNumber, cu8* tcMessage)
 	{
-		if (comp)		return(iNoteLog_create(noteRoot, comp->line, comp->start, comp->start + comp->length - 1, tnNumber, tcMessage));
+		if (comp)		return(iNoteLog_create(noteRoot, comp->line, comp->start, comp->start + comp->text.length - 1, tnNumber, tcMessage));
 		else			return(NULL);
 	}
 

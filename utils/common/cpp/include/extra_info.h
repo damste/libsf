@@ -1,9 +1,9 @@
 //////////
 //
-// /libsf/exodus/tools/lasm/lasm.h
+// /libsf/utils/common/cpp/include/extra_info.h
 //
 //////
-//    _     _ _     _____ _____
+//    _     _ _     _____ _____ 
 //   | |   (_) |__ / ____|  ___|
 //   | |   | | '_ \\___ \|  __|
 //   | |___| | |_) |___) | |
@@ -11,21 +11,21 @@
 //
 //   Liberty Software Foundation
 // and the Village Freedom Project
-//   __     _______     ____
-//   \ \   / /  ___| __|  _ \
+//   __     _______     ____  
+//   \ \   / /  ___| __|  _ \ 
 //    \ \ / /| |_ | '__| |_) |
-//     \ V / |  _|| |  |  __/
+//     \ V / |  _|| |  |  __/ 
 //      \_/  |_|  |_|  |_|
 //
 //////
-// Version 0.01
-// Copyright (c) 2014 by Rick C. Hodgin
+// Version 0.58
+// Copyright (c) 2015 by Rick C. Hodgin
 //////
 // Last update:
-//     Sep.12.2015
+//     Jan.11.2014
 //////
 // Change log:
-//     Sep.12.2015 - Initial creation
+//     Jan.11.2014 - Initial creation
 //////
 //
 // This document is released as Liberty Software under a Repeat License, as governed
@@ -82,72 +82,17 @@
 
 
 
-// Compiling directly on Windows
-#include <stdio.h>
-#include <stdlib.h>
-#include <io.h>
-#include <sys/locking.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <share.h>
-#include <errno.h>
-#include <shlObj.h>
-#include <math.h>
-
-#define _EXCLUDE_iBmp_cask_createAndPopulate				1
-#define _EXCLUDE_iBmp_colorizeAsCommonTooltipBackground		1
-
-#include "/libsf/utils/common/cpp/include/common_types.h"
-#include "/libsf/utils/common/cpp/include/libsf.h"
-#include "/libsf/utils/common/cpp/include/errors.h"
-#include "/libsf/utils/common/cpp/include/ll.h"
-#include "/libsf/utils/common/cpp/include/chartests.h"
-#include "/libsf/utils/common/cpp/include/node.h"
-#include "/libsf/utils/common/cpp/include/callbacks.h"
-#include "/libsf/utils/common/cpp/include/colors.h"
-#include "/libsf/exodus/tools/common/include/debi_globals.h"
-#include "/libsf/utils/common/cpp/include/builder.h"
-#include "/libsf/utils/common/cpp/include/datum.h"
-#include "/libsf/utils/common/cpp/include/disk.h"
-#include "/libsf/utils/common/cpp/include/time.h"
-#include "/libsf/utils/common/cpp/include/bitmaps.h"
-#include "/libsf/utils/common/cpp/include/comps.h"
-#include "/libsf/utils/common/cpp/include/compsearcher.h"
-#include "/libsf/utils/common/cpp/include/xml.h"
-#include "/libsf/utils/common/cpp/include/sem/sem.h"
-#include "/libsf/utils/common/cpp/include/extra_info.h"
-
-#define iterate(i, builder, p, structure)	for (i = 0; i < builder->populatedLength; i += sizeof(structure)) \
-											{ \
-												/* Grab the pointer */ \
-												p = (structure*)(builder->buffer + i);
-#define iterate_end }
+//////////
+// Extra info callback codes for callbackCommon
+//////
+	const s32		_EXTRA_INFO_ON_ACCESS					= 1;
+	const s32		_EXTRA_INFO_ON_ARRIVAL					= 2;
+	const s32		_EXTRA_INFO_ON_UPDATE					= 3;
+	// Known types to the LibSF compiler engine
+	const s32		_EXTRA_INFO_COMPILER					= 10;
 
 
-#include "/libsf/utils/common/cpp/base/ll.cpp"
-#include "/libsf/utils/common/cpp/base/node.cpp"
-#include "/libsf/utils/common/cpp/base/builder.cpp"
-#include "/libsf/utils/common/cpp/base/datum.cpp"
-#include "/libsf/utils/common/cpp/base/disk.cpp"
-#include "/libsf/utils/common/cpp/base/time.cpp"
-#include "/libsf/utils/common/cpp/base/bitmaps.cpp"
-#include "/libsf/utils/common/cpp/base/comps.cpp"
-#include "/libsf/utils/common/cpp/base/compsearcher.cpp"
-#include "/libsf/utils/common/cpp/base/xml.cpp"
-#include "/libsf/utils/common/cpp/base/sem/sem.cpp"
-#include "/libsf/utils/common/cpp/base/extra_info.cpp"
-
-#include "lasm_const.h"
-#include "lasm_structs.h"
-#include "lasm_defs.h"
-#include "lasm_globals.h"
-
-// Mar.21.2016 -- RCH -- The following contain code that used the older model, which has now been changed.  It requires much editing.
-#include "pass0.cpp"
-// #include "pass1.cpp"
-// #include "pass2.cpp"
-// #include "pass3.cpp"
-// #include "passX.cpp"
-// #include "passY.cpp"
-// #include "passZ.cpp"
+//////////
+// ExtraInfo
+//////
+	// Temporarily moved to libsf.h

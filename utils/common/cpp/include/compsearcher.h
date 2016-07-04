@@ -77,13 +77,6 @@ struct SExtraInfo;
 //////////
 // Forward declaration
 //////
-	// Compiler functions
-	SCompiler*				iCompiler_allocate							(SLine* parent);
-	void					iCompiler_delete							(SCompiler** compilerInfoRoot, bool tlDeleteSelf);
-
-	// Compile note functions
-	SNoteLog*				iNoteLog_create								(SNoteLog** noteRoot, SLine* line, u32 tnStart, u32 tnEnd, u32 tnNumber, cu8* tcMessage);
-	SNoteLog*				iNoteLog_create								(SNoteLog** noteRoot, SComp* comp, u32 tnNumber, cu8* tcMessage);
-	void					iNoteLog_removeAll							(SNoteLog** noteRoot);
+	// Temporarily moved to libsf.h
 
 #endif 	// __COMPSEARCHER_H__

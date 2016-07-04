@@ -92,13 +92,8 @@
 //////
 	void iComps_lex_and_parse(SLine* line, SAsciiCompSearcher* acs0, SAsciiCompSearcher* acs1, SAsciiCompSearcher* acs2, SAsciiCompSearcher* acs3)
 	{
-#ifdef _SHOW_REFACTOR_ERRORS
-		if (line->compilerInfo)
-			iiVxb_free_liveCode(line->compilerInfo);
-
-		if (!line->compilerInfo)
-			line->compilerInfo = iCompiler_allocate(line);
-#endif
+		// Reset the related liveCode info for this line
+		iExtraInfo_compiler_resetLiveCode(&line->extra_info);
 
 		// Convert raw source code to known character sequences
 		iComps_translate_sourceLineTo(acs0, line);
@@ -108,12 +103,10 @@
 		iComps_fixup_naturalGroupings(line);			// Fixup natural groupings [_][aaa][999] becomes [_aaa999], [999][.][99] becomes [999.99], etc.
 		iComps_remove_whitespaces(line);				// Remove whitespaces [xyz][whitespace][fred] becomes [xyz][fred]
 
-#ifdef _SHOW_REFACTOR_ERRORS
 		// Further translation
-		if (acs1)		iComps_translate_toOthers(acs1, line->compilerInfo->firstComp, true);
-		if (acs2)		iComps_translate_toOthers(acs2, line->compilerInfo->firstComp, true);
-		if (acs3)		iComps_translate_toOthers(acs3, line->compilerInfo->firstComp, true);
-#endif
+		if (acs1)		iComps_translate_toOthers(acs1, line->firstComp, true);
+		if (acs2)		iComps_translate_toOthers(acs2, line->firstComp, true);
+		if (acs3)		iComps_translate_toOthers(acs3, line->firstComp, true);
 
 		// Generate warnings for ignored components if any appear after
 // 		iComp_appendError(comp, tnErrorNum, tcMessage);
@@ -129,36 +122,21 @@
 // Release the compiler info contained here
 //
 //////
-	void iiVxb_free_liveCode(SCompiler* compiler)
+	void iiVxb_free_liveCode(SLiveCode* livecode)
 	{
-
-		//////////
-		// Free this copy of the original source code line (if need be)
-		/////
-			if (compiler->sourceCode)
-				iDatum_delete(&compiler->sourceCode);
-
-
-		//////////
-		// Free the components
-		//////
-			iComps_deleteAll(&compiler->line->firstComp);
-
 
 		//////////
 		// Delete any errors, warnings, or notes
 		//////
-#ifdef _SHOW_REFACTOR_ERRORS
-			iNoteLog_removeAll(&compiler->firstInquiry);
-			iNoteLog_removeAll(&compiler->firstWarning);
-			iNoteLog_removeAll(&compiler->firstNote);
-#endif
+			iNoteLog_removeAll(&livecode->firstInquiry);
+			iNoteLog_removeAll(&livecode->firstWarning);
+			iNoteLog_removeAll(&livecode->firstNote);
 
 
 		//////////
 		// Delete any extra info that's stored
 		//////
-			iExtraInfo_removeAll(NULL, NULL, &compiler->extra_info);
+			iExtraInfo_removeAll(&livecode->extra_info);
 
 	}
 
@@ -266,7 +244,7 @@
 			iComps_deleteAll(&line->compilerInfo->firstComp);
 
 			// Clear the compilerInfo
-			iCompiler_delete(&line->compilerInfo, true);
+			iLiveCode_delete(&line->compilerInfo, true);
 		}
 #endif
 	}
@@ -509,10 +487,8 @@
 			lcData = line->sourceCode.data_u8;
 
 			// Iterate through every byte identifying every component we can
-#ifdef _SHOW_REFACTOR_ERRORS
-			compLast	= line->compilerInfo->firstComp;
+			compLast	= line->firstComp;
 			lnMaxLength	= line->populatedLength;
-#endif
 			for (lnI = 0; lnI < lnMaxLength; )
 			{
 				// Search through the tsComps list one by one
@@ -553,9 +529,7 @@
 							//////////
 							// Allocate this entry
 							///////
-#ifdef _SHOW_REFACTOR_ERRORS
-								comp = iComps_new(&line->compilerInfo->firstComp, compLast, NULL, compLast);
-#endif
+								comp = iComps_new(&line->firstComp, compLast, NULL, compLast);
 
 
 							//////////
@@ -572,12 +546,12 @@
 										// This one points back to previous one
 										comp->ll.prev		= (SLL*)compLast;
 
+										// Copy the text for the component to the text SDatum
+										iDatum_duplicate(&comp->text, line->sourceCode.data_s8 + lnStart, lnLength);
+
 										// Update the component's information
 										comp->line			= line;
-#ifdef _SHOW_REFACTOR_ERRORS
 										comp->start			= lnStart;
-										comp->text.length	= lnLength;
-#endif
 										comp->iCode			= lacs->iCode;
 										comp->iCat			= lacs->iCat;
 										comp->color			= lacs->syntaxHighlightColor;

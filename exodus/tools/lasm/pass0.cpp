@@ -222,8 +222,8 @@
 		//////
 			line = p0->comp->line;
 #ifdef _SHOW_REFACTOR_ERRORS
-			if (line->compilerInfo)		iCompiler_delete(&line->compilerInfo, false);
-			else						line->compilerInfo = iCompiler_allocate(line);		// Allocate a new one
+			if (line->compilerInfo)		iLiveCode_delete(&line->compilerInfo, false);
+			else						line->compilerInfo = iLiveCode_allocate(line);		// Allocate a new one
 #endif
 
 

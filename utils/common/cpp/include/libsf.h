@@ -87,6 +87,8 @@
 	struct SNode;
 	struct SGraceRect;
 	struct SSubInstr;
+	struct SCallback;
+	extern cs32 _ICODE_BACKSLASH;
 
 	struct SDatum
 	{
@@ -1015,27 +1017,35 @@
 		{
 			bool		isUsed;							// Is this item currently in use?
 			s32			eiType;							// A registered identifier with the system for this extra info block
+			SDatum		info;							// The extra info block stored for this entry, processed automatically when this item is deleted (such as an SCompiler for _EXTRA_INFO_COMPILER eiTypes)
+
+			// Application-specific members
 			u32			appType;						// An application defined type
-			void*		data;							// Associated data
-			SDatum		info;							// The extra info block stored for this entry
+			void*		data;							// Associated data deleted manually on the freeInternal() call
 
 			// Functions to called when this item is processed in some way
 			union
 			{
+				uptr	_onArrival;					// When the extra info item is arrived upon
+				void	(*onArrival)				(SExtraInfo* extra_info);
+			};
+
+			union
+			{
 				uptr	_onAccess;					// When the extra info item is accessed
-				void	(*onAccess)					(SEM* sem, SLine* line, SExtraInfo* extra_info);
+				void	(*onAccess)					(SExtraInfo* extra_info);
 			};
 
 			union
 			{
 				uptr	_onUpdate;					// When the parent signals that it's been updated/changed
-				void	(*onUpdate)					(SEM* sem, SLine* line, SExtraInfo* extra_info);
+				void	(*onUpdate)					(SExtraInfo* extra_info);
 			};
 
 			union
 			{
 				uptr		_freeInternal;			// Called on a forced free operation when the parent is deleted
-				SExtraInfo*	(*freeInternal)			(SEM* sem, SLine* line, SExtraInfo* extra_info);
+				SExtraInfo*	(*freeInternal)			(SExtraInfo* extra_info);
 			};
 		};
 
@@ -1058,13 +1068,9 @@
 			SDatum*			note;											// The message
 		};
 
-		#define _SCOMPILER_DEFINED 1
-		struct SCompiler
+		#define _SLIVECODE_DEFINED 1
+		struct SLiveCode
 		{
-			// The last source code line
-			SDatum*			sourceCode;										// Copy at last compile of LEFT(parent->sourceCode.data, parent->sourceCodePopulated)
-			SLine*			line;											// SLine this compiler data belongs to (parent->compilerInfo points back to here)
-
 			// Results of compilation
 			SNoteLog*		firstInquiry;									// Noted inquiry(s) on this source code line
 			SNoteLog*		firstWarning;									// Noted warning(s) on this source code line
@@ -1160,5 +1166,308 @@
 // debug.h
 //////////
 
+
+
+
+//////////
+// sem_line.h
+// BEGIN
+//////
+	// Forward declarations
+	void					iLine_ensureLineLength						(SLine* em, s32 newLineLength);
+	void					iLine_free									(SLine** root, bool tlDeleteSelf);
+	SLine*					iLine_createNew								(bool tlAllocCompilerInfo);
+	SLine*					iLine_appendNew								(SLine* line, bool tlAllocCompilerInfo);
+	SLine*					iLine_insertNew								(SLine* lineRef, bool tlAllocCompilerInfo, bool tlAfter);
+	void					iLine_appendError							(SLine* line, u32 tnErrorNum,   cu8* tcMessage, u32 tnStartColumn, u32 tnLength);
+	void					iLine_appendWarning							(SLine* line, u32 tnWarningNum, cu8* tcMessage, u32 tnStartColumn, u32 tnLength);
+	bool					iLine_scanComps_forward_withCallback		(SLine* line, SComp* comp, SCallback* cb, bool tlSkipFirst);
+	s32						iLines_unescape_iCodes						(SLine* lineStart, s32 tniCode1, s32 tniCode2, s32 tniCode3, s32 tniCodeEscape = _ICODE_BACKSLASH);
+	s32						iLine_migrateLines							(SLine** linesFrom, SLine* lineTarget);
+	SComp*					iLine_Nth_comp								(SLine* line, s32 tnCount = 1, bool tlMoveBeyondLineIfNeeded = true);
+	SLine*					iLine_copyComps_toNewLines_untilTerminating				(SLine* lineStart, SComp* compStart, s32 tniCodeContinuation, bool tlLeftJustifyStart, bool tlSkipBlankLines, SCallback* cb);
+	bool					iiLine_copyComps_toNewLines_untilTerminating__callback	(SCallback* cb);
+	s32						iiLine_skipTo_nextComp						(SLine** lineProcessing, SComp** compProcessing);
+	s32						iiLine_skipTo_prevComp						(SLine** lineProcessing, SComp** compProcessing);
+
+	// For editing
+	bool					iLine_characterInsert						(SEM* sem, u8 asciiChar);
+	bool					iLine_characterOverwrite					(SEM* sem, u8 asciiChar);
+	bool					iLine_characterDelete						(SEM* sem);
+	SBreakpoint*			iLine_toggleBreakpoint						(SEM* sem);
+
+	// For reporting on a line's state
+	bool					iLine_hasChanged							(SLine* ec);
+//////
+// END
+//////////
+
+
+
+
+//////////
+// comps.h
+// BEGIN
+//////
+	void					iComps_lex_and_parse						(SLine* line);
+	void					iiVxb_free_liveCode							(SLiveCode* livecode);
+
+	SComp*					iComps_new									(SComp** compRoot, SComp* compHint, SComp* compNext, SComp* compPrev);
+	u32						iiComps_getNextUid							(void);
+	void					iComps_deleteAll							(SComp** compRoot);
+	void					iComps_deleteAll_byLine						(SLine* line);
+	void					iComps_deleteAll_byFirstComp				(SComp** firstComp);
+	SComp*					iComps_duplicate							(SComp* comp);
+	SComp*					iComps_delete								(SComp** compRoot);
+	SComp*					iComps_delete								(SComp* comp, bool tlDeleteSelf);
+	SNode*					iComps_chainLinkNodes						(SComp* compLeftMost);
+	void					iComps_copyMembers							(SComp* compTo, SComp* compFrom, bool tlAllocated, bool tlCopyLl, s32 tnBackoff);
+ 	SComp*					iComps_translate_sourceLineTo				(SAsciiCompSearcher* tsComps, SLine* line);
+ 	bool					iComps_translate_toOthers					(SAsciiCompSearcher* tsComps, SComp* comp, bool tlDescendIntoFirstCombineds = true);
+	bool					iComps_areAllPrecedingCompsWhitespaces		(SComp* comp);
+	s32						iComps_translateToOthers_testIfMatch		(cu8* tcHaystack, cu8* tcNeedle, s32 tnLength);
+	SComp*					iComps_findNextBy_iCode						(SComp* comp, s32 tniCode, SComp** compLastScanned);
+	SComp*					iComps_activeComp_inSEM						(SEM* sem);
+	bool					iComps_get_mateDirection						(SComp* comp, s32* tnMateDirection);
+	bool					iComps_findClosest_parensBracketsBraces		(SComp* compRelative, SComp* compStart, SComp** compPBBLeft, SComp** compPBBRight);
+	bool					iComps_isParensBracketsBraces				(SComp* comp);
+	bool					iComps_isMateOf								(SComp* compTest, s32 tniCodeMate);
+	SComp*					iComps_skipPast_iCode						(SComp* comp, s32 tniCode);
+	SComp*					iComps_skipTo_iCode							(SComp* comp, s32 tniCode);
+	SComp*					iComps_getNext_afterDot						(SComp* comp);
+	SComp*					iComps_Nth									(SComp* comp, s32 tnCount = 1, bool tlMoveBeyondLineIfNeeded = true);
+	SComp*					iComps_Nth_lineOnly							(SComp* comp, s32 tnCount = 1);
+	bool					iComps_scanForward_withCallback				(SComp* comp, SCallback* cb, bool tlSkipFirst = false, bool tlMoveBeyondLineIfNeeded = true, uptr _func = NULL);
+	u32						iComps_combineN								(SComp* comp, u32 tnCount, s32 tnNew_iCode, u32 tnNew_iCat, SBgra* newColor, SComp** compMigrateRefs = NULL);
+	u32						iComps_combine_adjacent						(SComp* compLeftmost, s32 tniCode, u32 tniCat, SBgra* tnColor, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount);
+	u32						iComps_combine_adjacentAlphanumeric			(SLine* line);
+	u32						iComps_combine_adjacentNumeric				(SLine* line);
+	u32						iComps_combine_adjacentLeadingPipesigns		(SLine* line);
+	u32						iComps_combineAll_between					(SLine* line, s32 tniCodeNeedle,		s32 tniCodeCombined,											SBgra* syntaxHighlightColor);
+	u32						iComps_combineAll_betweenTwo				(SLine* line, s32 tniCodeNeedleLeft,	s32 tniCodeNeedleRight,		s32 tniCodeCombined,	u32 tniCat, SBgra* syntaxHighlightColor, bool tlUseBoldFont);
+	u32						iComps_combineAll_after						(SLine* line, s32 tniCodeNeedle);
+	u32						iComps_deleteAll_after						(SLine* line, s32 tniCodeNeedle);
+	SComp*					iComps_migrate								(SComp** compSource, SComp** compDestination, SComp* compToMove);
+	SLine*					iComps_copyComps_toNewLines					(SComp* compStart, SComp* compEnd, bool tlLeftJustifyStart, bool tlSkipBlankLines, SLine** lineLast);
+	u32						iComps_remove_leadingWhitespaces			(SLine* line);
+	u32						iComps_remove_whitespaces					(SLine* line);
+	void					iComps_remove_startEndComments				(SLine* line);
+	s32						iComps_truncate_atComments					(SLine* line);
+	void					iComps_combine_casks						(SLine* line);
+	void					iComps_fixup_naturalGroupings				(SLine* line);
+	s32						iComps_unescape_iCodes						(SComp* compStart, s32 tniCode1, s32 tniCode2, s32 tniCode3, s32 tniCodeEscape = _ICODE_BACKSLASH);
+	s32						iComps_copyToLine_untilEndOfLine			(SLine* line, SComp* compStart, SComp* compEnd, bool tlMakeReferences);
+	s32						iComps_copyTo_withCallback					(SLine* line, SComp* compStart, SCallback* cb, bool tlMakeReferences);
+	bool					iiComps_areCompsAdjacent					(SComp* compLeft, SComp* compRight);
+	s32						iiComps_get_charactersBetween				(SComp* compLeft, SComp* compRight);
+	s32						iComps_getAs_s32							(SComp* comp);
+	s64						iComps_getAs_s64							(SComp* comp);
+	f64						iComps_getAs_f64							(SComp* comp);
+	s32						iiComps_getAs_s32							(SComp* comp);
+	s64						iiComps_getAs_s64							(SComp* comp);
+	f64						iiComps_getAs_f64							(SComp* comp);
+	SDatum*					iiComps_populateAs_datum					(SDatum* datum, SComp* comp, SVariable** varSys2015);
+	s32						iComps_getContiguousLength					(SComp* comp, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount, s32* tnCount);
+	u32						iComps_count								(SComp* comp);
+	bool					iiComps_validate							(SComp* comp, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount);
+	bool					iiComps_isAlphanumeric_byContent			(SComp* comp);
+	#define					iiComps_isAlphanumeric_by_iCode(iCode)		(iCode == _ICODE_ALPHA || iCode == _ICODE_ALPHANUMERIC)
+	#define					iiComps_isNumeric(iCode)					(iCode == _ICODE_NUMERIC)
+	#define					iiComps_isComment(iCode)					(iCode == _ICODE_COMMENT || iCode == _ICODE_LINE_COMMENT)
+	s8*						iComps_visualize							(SComp* comp, s32 tnCount, s8* outputBuffer, s32 tnBufferLength, bool tlUseDefaultCompSearcher, SAsciiCompSearcher* tsComps1, SAsciiCompSearcher* tsComps2);
+	s8*						iiComps_visualize_lookup_iCode				(s32 tniCode);
+
+	u32						iBreakoutAsciiTextDataIntoLines_ScanLine	(s8* tcData, u32 tnMaxLength, u32* tnLength, u32* tnWhitespaces);
+	bool					iFindFirstOccurrenceOfAsciiCharacter		(s8* tcHaystack, u32 tnHaystackLength, s8 tcNeedle, u32* tnPosition);
+	u32						iSkip_whitespaces							(s8* tcData, u32 tnMaxLength);
+	u32						iSkip_toCrLf								(s8* tcData, u32 tnMaxLength, u32* tnCRLF_Length);
+
+	s32						iComps_xlatToComps_withTest					(cu8* tcHaystack, cu8* tcNeedle, s32 tnLength);
+	bool					iiComps_xlatToOthers_callback				(SStartEndCallback* cb);
+	void					iiComps_xlatToOthers_callback__insertCompByCompCallback		(SComp* compRef, SComp* compNew, bool tlInsertAfter);
+	void					iiComps_xlatToOthers_callback__insertCompByParamsCallback	(SComp* compRef, SLine* line, u32 tniCode, u32 tnStart, s32 tnLength, bool tlInsertAfter);
+	void					iiComps_xlatToOthers_callback__deleteCompsCallback			(SComp* comp, SLine* line);
+	SComp*					iiComps_xlatToOthers_callback__cloneCompsCallback			(SComp* comp, SLine* line);
+	SComp*					iiComps_xlatToOthers_callback__mergeCompsCallback			(SComp* comp, SLine* line, u32 tnCount, u32 tniCodeNew);
+
+	// Error and warning functions
+	void					iComp_appendError							(SComp* comp, u32 tnErrorNum,   cu8* tcMessage);
+	void					iComp_appendWarning							(SComp* comp, u32 tnWarningNum, cu8* tcMessage);
+	void					iComp_reportWarningsOnRemainder				(SComp* comp, u32 tnWarningNum, cu8* tcMessage);
+//////
+// END
+//////////
+
+
+
+
+//////////
+// compsearcher.h
+// BEGIN
+//////
+	// Compiler functions
+	void					iLiveCode_delete							(SLiveCode* livecodeRoot);
+
+	// Compile note functions
+	SNoteLog*				iNoteLog_create								(SNoteLog** noteRoot, SLine* line, u32 tnStart, u32 tnEnd, u32 tnNumber, cu8* tcMessage);
+	SNoteLog*				iNoteLog_create								(SNoteLog** noteRoot, SComp* comp, u32 tnNumber, cu8* tcMessage);
+	void					iNoteLog_removeAll							(SNoteLog** noteRoot);
+//////
+// END
+//////////
+
+
+
+
+//////////
+// extra_info.h
+// BEGIN
+//////
+	SExtraInfo*		iExtraInfo_allocate						(SBuilder** eiRoot, s32 eiType = 0, u32 appType = 0);
+	void			iExtraInfo_removeAll					(SBuilder** eiRoot);
+	void			iExtraInfo_onAccess						(SExtraInfo* ei);
+	void			iExtraInfo_onArrival					(SExtraInfo* ei);
+	void			iExtraInfo_onUpdate						(SExtraInfo* ei);
+	void			iiExtraInfo_callbackToAll				(SExtraInfo* ei, s32 tnCallbackType);
+
+	// Added for compiler info structs
+	SLiveCode*		iExtraInfo_compiler_resetLiveCode		(SBuilder** eiRoot);
+//////
+// END
+//////////
+
+
+
+
+//////////
+// builder.h
+// BEGIN
+//////
+	void		iBuilder_verifySizeForNewBytes				(SBuilder* builder, u32 tnDataLength);
+	void		iBuilder_createAndInitialize				(SBuilder** builder, u32 tnAllocationBlockSize = 4096);
+	bool		iBuilder_isPointer							(SBuilder* builder, uptr testptr, void** outPtr = NULL);
+	cs8*		iBuilder_appendData							(SBuilder* builder, SDatum* data);
+	cs8*		iBuilder_appendData							(SBuilder* builder, cs8* tcData, u32 tnDataLength);
+	cu8*		iBuilder_appendData							(SBuilder* builder, cu8* tcData, u32 tnDataLength);
+	u8*			iBuilder_append_uptr						(SBuilder* builder, uptr tnValue);
+	u8*			iBuilder_appendCrLf							(SBuilder* builder);
+	void		iBuilder_delete								(SBuilder* builder, u32 tnStartOffset, u32 tnDeleteLength);
+	void		iBuilder_reset								(SBuilder* builder);
+	void		iBuilder_rewind								(SBuilder* builder);
+	s8*			iBuilder_allocateBytes						(SBuilder* builder, u32 tnDataLength);
+	void		iBuilder_backoffTrailingWhitespaces			(SBuilder* builder);
+	void		iBuilder_setSize							(SBuilder* builder, u32 tnBufferLength);
+	void		iBuilder_freeAndRelease						(SBuilder** builder);
+	u32			iBuilder_asciiWriteOutFile					(SBuilder* builder, cu8* tcPathname, bool tlAppend = false);
+	bool		iBuilder_asciiReadFromFile					(SBuilder** builder, cu8* tcPathname);
+	void		iBuilder_compactData						(SBuilder* builder, u32 tnStart, u32 tnStride, u32 tnCompactCallbackFunction);
+	s8*			iBuilder_insertBytes						(SBuilder* builder, u32 tnStart, u32 tnLength);
+	u32			iBuilder_binarySearch						(SBuilder* builderHaystack, s8* textNeedle, u32 needleLength, bool* tlFound, bool tlInsertIfNotFound);
+	s32			iBuilder_iterate							(SBuilder* builder, u32 tnStepSize, SBuilderCallback* cb, uptr _iterateFunc = NULL);
+	s32			iBuilder_iterate_N_to_N						(SBuilder* builder, u32 tnStepSize, u32 tnStartRecord, u32 tnStopRecord, SBuilderCallback* cb, uptr _iterateFunc = NULL);
+	s32			iBuilder_iterate2							(SBuilder* builder1, SBuilder* builder2, u32 tnStepSize1, u32 tnStepSize2, SBuilderCallback2* cb2, uptr _iterate2Func = NULL);
+	s32			iBuilder_iterate2_N_to_N					(SBuilder* builder1, SBuilder* builder2, u32 tnStepSize1, u32 tnStepSize2, u32 tnStartRecord, u32 tnStopRecord, SBuilderCallback2* cb2, uptr _iterate2Func = NULL);
+	s8*			iBuilder_retrieveRecord						(SBuilder* builder, u32 tnStepSize, u32 tnN);
+
+	// Added to append "name = something" strings with a terminating CR/LF
+	s32			iBuilder_append_label_uptr					(SBuilder* builder, s8* tcLabelText, uptr udata);
+	s32			iBuilder_append_label_sptr					(SBuilder* builder, s8* tcLabelText, sptr sdata);
+	s32			iBuilder_append_label_text					(SBuilder* builder, s8* tcLabelText, s8* tcText);
+	s32			iBuilder_append_label_datum					(SBuilder* builder, s8* tcLabelText, SDatum* datum);
+	s32			iBuilder_append_label_logical				(SBuilder* builder, s8* tcLabelText, bool tlValue);
+//////
+// END
+//////////
+
+
+
+
+//////////
+// .h
+// BEGIN
+//////
+	void*					iDatum_allocateSpace					(SDatum* datum,		s32 dataLength);
+	SDatum*					iDatum_allocate							(cs8* data,			s32 dataLength = -1);
+	SDatum*					iDatum_allocate							( s8* data,			s32 dataLength = -1);
+	SDatum*					iDatum_allocate							(cu8* data,			s32 dataLength = -1);
+	SDatum*					iDatum_allocate							( u8* data,			s32 dataLength = -1);
+
+	void					iDatum_duplicate						(SDatum* datum,  u8* data, s32 dataLength = -1);
+	void					iDatum_duplicate						(SDatum* datum,  s8* data, s32 dataLength = -1);
+	void					iDatum_duplicate						(SDatum* datum, cu8* data, s32 dataLength = -1);
+	void					iDatum_duplicate						(SDatum* datum, cs8* data, s32 dataLength = -1);
+	void					iDatum_duplicate						(SDatum* datumDst, SDatum* datumSrc);
+	void					iDatum_duplicate_byRef					(SDatum* datumDst, SDatum* datumSrc);
+	SDatum*					iDatum_duplicate						(SDatum* datum);
+	void					iDatum_duplicate_fromComp				(SDatum* datum, SComp* comp);
+	void					iiDatum_duplicate_fromComp				(SDatum* datum, SComp* comp);
+	SDatum*					iDatum_populate_fromComp				(SDatum* datum, SComp* comp);
+
+	s32						iDatum_getAs_s32						(SDatum* datum);
+	s64						iDatum_getAs_s64						(SDatum* datum);
+
+	s32						iDatum_setAll							(SDatum* datum, u8 c);
+	bool					iDatum_resize							(SDatum* datum, s32 newDataLength);
+	s32						iDatum_compare							(SDatum* datumLeft, SDatum* datumRight);
+	s32						iDatum_compare							(SDatum* datumLeft, s8*  data, s32 dataLength);
+	s32						iDatum_compare							(SDatum* datumLeft, cs8* data, s32 dataLength);
+	s32						iDatum_compare							(SDatum* datumLeft, u8*  data, s32 dataLength);
+	s32						iDatum_compare							(SDatum* datumLeft, cu8* data, s32 dataLength);
+	void					iDatum_delete							(SDatum** datum);
+	void					iDatum_delete							(SDatum* datum, bool tlDeleteSelf);
+	void					iiDatum_delete							(SDatum* datum);
+
+	SProperty*				iProperty_allocateAs_character_fromComp	(SComp* name, SComp* value, s32 tnOverrideNameLength = -1, s32 tnOverrideValueLength = -1);
+	SProperty*				iProperty_allocateAs_character			(cu8* tcName, s32 tnNameLength, cu8* tcValue, s32 tnValueLength);
+	SProperty*				iProperty_allocateAs_s32				(cu8* tcName, s32 tnNameLength, s32 tnValue);
+	SProperty*				iProperty_allocateAs_s32				(SDatum* name, s32 tnValue);
+	SProperty*				iiProperty_allocate						(SDatum* name, SVariable* value, SDatum* value_datum = NULL);
+	void					iProperty_delete						(SProperty** p);
+	SProperty*				iProperty_delete						(SProperty* p, bool tlDeleteSelf);
+	s32						iProperty_iterate						(SDatumCallback* cb, SDatum* properties);
+//////
+// END
+//////////
+
+
+
+
+//////////
+// node.h
+// BEGIN
+//////
+	void					iNode_init									(void);
+	SNode*					iNode_create								(SNode** root, SComp* comp = NULL, SNode* n_defaults[_NODE_COUNT] = NULL);
+	u32						iiNode_getNextUid							(void);
+	SNode*					iNode_extrude								(SNode** root, s32 tnExtrudeDirection);
+	SNode*					iNode_bump									(SNode** root, s32 tnBump/*BumpDirection*/, s32 tnAnchor/*AnchorDirection*/);
+	SNode*					iNode_insert								(SNode** root, s32 tnDirection);
+	void					iNode_delete								(SNode** root, bool tlDeleteSelf = true);
+	void					iNode_orphanize								(SNode** root);
+	void					iNode_deleteAll_politely					(SNode** root, SNode* nodeStopper, SNode* nodeStopper2, bool tlDeleteSelf, SNodeFlags* nodeFlags);
+
+	// Bitmap
+	SBitmap*				iNode_renderBitmap							(SNode* node, s32 tnMaxTokenLength = 6, s32 tnMaxOverallLength = 12, f64 tfRodLength = 8.0, s32 tnMarginWidth = 2, s32 tnBorderWidth = 1, bool tlIncludeExtraInfo = false,						bool tlGoDeeper = true, SNodeFlags* nodeFlags = &gsfNodeFlags_all, bool tlDeeperNodesExtendInAllDirections = true);
+	void					iiNode_renderBitmap							(SNode* node, SNode* nodeStopper1, SNode* nodeStopper2, s32 tnMaxTokenLength, s32 tnMaxOverallLength, SNodeProps props[], s32 tnPropsCount, u32 tnIter_uid, bool tlIncludeExtraInfo,			bool tlGoDeeper = true, SNodeFlags* nodeFlags = &gsfNodeFlags_all, bool tlDeeperNodesExtendInAllDirections = true);
+	void					iiNode_get_bitmapExtents					(SNode* node, SNode* nodeStopper1, SNode* nodeStopper2, s32 tnArrivalDirection, SBitmap* bmp, RECT* rc, POINTS p_anchor, POINTS p_arrival, f64 tfRodLength, u32 tnIter_uid, SNodeProps* props,	bool tlGoDeeper = true, SNodeFlags* nodeFlags = &gsfNodeFlags_all, bool tlDeeperNodesExtendInAllDirections = true);
+
+// 	// OpenGL
+// 	void					iiNode_renderGrace							(SNode* node, SNode* nodeStopper1, SNode* nodeStopper2, s32 tnMaxTokenLength, s32 tnMaxOverallLength, SNodeProps props[], s32 tnPropsCount, u32 tnIter_uid,								bool tlGoDeeper = true, SNodeFlags* nodeFlags = &gsfNodeFlags_all, bool tlDeeperNodesExtendInAllDirections = true);
+// 	void					iiNode_get_graceExtents						(SNode* node, SNode* nodeStopper1, SNode* nodeStopper2, s32 tnArrivalDirection, SBitmap* bmp, SGraceLine* line, POINTS p_arrival, f64 tfRodLength, u32 tnIter_uid, SNodeProps* props,	bool tlGoDeeper = true, SNodeFlags* nodeFlags = &gsfNodeFlags_all, bool tlDeeperNodesExtendInAllDirections = true);
+//////
+// END
+//////////
+
+
+
+
+//////////
+// compiler_common.h
+// BEGIN
+//////
+	#include "compiler_common.h"
+//////
+// END
+//////////
 
 #endif // __LIBSF_H__

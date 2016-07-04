@@ -148,7 +148,7 @@
 					//////////
 					// Delete any extra information associated with this chain entry
 					//////
-						iExtraInfo_removeAll(NULL, line, &line->extra_info);
+						iExtraInfo_removeAll(&line->extra_info);
 
 
 					//////////
@@ -818,9 +818,6 @@ debug_break;
 				for (lnI = line->populatedLength + 1; lnI > sem->columnEdit && lnI > 0; lnI--)
 					line->sourceCode.data_s8[lnI] = line->sourceCode.data_s8[lnI - 1];
 
-				// Signal the update
-				iExtraInfo_update(sem, sem->line_cursor);
-
 				// Insert the character
 				line->sourceCode.data_s8[sem->columnEdit] = asciiChar;
 
@@ -880,9 +877,6 @@ debug_break;
 							line->sourceCode.data_s8[lnI] = ' ';
 					}
 
-					// Signal the update
-					iExtraInfo_update(sem, sem->line_cursor);
-
 					// Overwrite the character
 					line->sourceCode.data_s8[sem->columnEdit] = asciiChar;
 
@@ -930,9 +924,6 @@ debug_break;
 				// Move everything left one character
 				for (lnI = sem->columnEdit; lnI < line->populatedLength; lnI++)
 					line->sourceCode.data_s8[lnI] = line->sourceCode.data_s8[lnI + 1];
-
-				// Signal the update
-				iExtraInfo_update(sem, sem->line_cursor);
 
 				// Reduce the length of the populated portion of the line by one
 				--line->populatedLength;

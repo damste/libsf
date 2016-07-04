@@ -106,44 +106,6 @@ struct SComp;
 struct SVariable;
 
 
-	void					iDatum_allocateSpace					(SDatum* datum,		s32 dataLength);
-	SDatum*					iDatum_allocate							(cs8* data,			s32 dataLength = -1);
-	SDatum*					iDatum_allocate							( s8* data,			s32 dataLength = -1);
-	SDatum*					iDatum_allocate							(cu8* data,			s32 dataLength = -1);
-	SDatum*					iDatum_allocate							( u8* data,			s32 dataLength = -1);
-
-	void					iDatum_duplicate						(SDatum* datum,  u8* data, s32 dataLength = -1);
-	void					iDatum_duplicate						(SDatum* datum,  s8* data, s32 dataLength = -1);
-	void					iDatum_duplicate						(SDatum* datum, cu8* data, s32 dataLength = -1);
-	void					iDatum_duplicate						(SDatum* datum, cs8* data, s32 dataLength = -1);
-	void					iDatum_duplicate						(SDatum* datumDst, SDatum* datumSrc);
-	void					iDatum_duplicate_byRef					(SDatum* datumDst, SDatum* datumSrc);
-	SDatum*					iDatum_duplicate						(SDatum* datum);
-	void					iDatum_duplicate_fromComp				(SDatum* datum, SComp* comp);
-	void					iiDatum_duplicate_fromComp				(SDatum* datum, SComp* comp);
-	SDatum*					iDatum_populate_fromComp				(SDatum* datum, SComp* comp);
-
-	s32						iDatum_getAs_s32						(SDatum* datum);
-	s64						iDatum_getAs_s64						(SDatum* datum);
-
-	s32						iDatum_setAll							(SDatum* datum, u8 c);
-	bool					iDatum_resize							(SDatum* datum, s32 newDataLength);
-	s32						iDatum_compare							(SDatum* datumLeft, SDatum* datumRight);
-	s32						iDatum_compare							(SDatum* datumLeft, s8*  data, s32 dataLength);
-	s32						iDatum_compare							(SDatum* datumLeft, cs8* data, s32 dataLength);
-	s32						iDatum_compare							(SDatum* datumLeft, u8*  data, s32 dataLength);
-	s32						iDatum_compare							(SDatum* datumLeft, cu8* data, s32 dataLength);
-	void					iDatum_delete							(SDatum** datum);
-	void					iDatum_delete							(SDatum* datum, bool tlDeleteSelf);
-	void					iiDatum_delete							(SDatum* datum);
-
-	SProperty*				iProperty_allocateAs_character_fromComp	(SComp* name, SComp* value, s32 tnOverrideNameLength = -1, s32 tnOverrideValueLength = -1);
-	SProperty*				iProperty_allocateAs_character			(cu8* tcName, s32 tnNameLength, cu8* tcValue, s32 tnValueLength);
-	SProperty*				iProperty_allocateAs_s32				(cu8* tcName, s32 tnNameLength, s32 tnValue);
-	SProperty*				iProperty_allocateAs_s32				(SDatum* name, s32 tnValue);
-	SProperty*				iiProperty_allocate						(SDatum* name, SVariable* value, SDatum* value_datum = NULL);
-	void					iProperty_delete						(SProperty** p);
-	SProperty*				iProperty_delete						(SProperty* p, bool tlDeleteSelf);
-	s32						iProperty_iterate						(SDatumCallback* cb, SDatum* properties);
+// Function prototypes temporarily moved to libsf.h
 
 #endif

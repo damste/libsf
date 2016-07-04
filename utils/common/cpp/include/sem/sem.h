@@ -93,7 +93,7 @@ struct SObject;
 struct SVariable;
 
 
-#include "sem_extra_info.h"
+//#include "sem_extra_info.h"
 #include "sem_line.h"
 
 

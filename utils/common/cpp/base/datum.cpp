@@ -96,30 +96,29 @@
 // Datum storage
 //
 //////
-	void iDatum_allocateSpace(SDatum* datum, s32 dataLength)
+	void* iDatum_allocateSpace(SDatum* datum, s32 dataLength)
 	{
 		// Make sure our environment is sane
 		if (datum)
 		{
+			// Release anything that's already there
 			if (datum->data_s8 && datum->length != dataLength)
-			{
-				// Release anything that's already there
 				iiDatum_delete(datum);
-			}
 
 			// Allocate the space
-			datum->data_s8 = (s8*)malloc(max(dataLength, 1) + 1);
-
-			// Set the length
-			datum->length = dataLength;
+			datum->data_s8	= (s8*)malloc(max(dataLength, 1) + 1);
+			datum->length	= dataLength;
 
 			// Initialize
-			if (datum->data_s8 && dataLength)
-				memset(datum->data_s8, 0, dataLength);
+			if (datum->data_s8)
+				memset(datum->data_s8, 0, max(dataLength, 1));
 
-			// NULL-terminate
-			datum->data_s8[max(dataLength, 1)] = 0;
+			// Indicate our pointer as void*
+			return(datum->data_vp);
 		}
+
+		// Failed
+		return(NULL);
 	}
 
 	SDatum* iDatum_allocate(cs8* data, s32 dataLength)

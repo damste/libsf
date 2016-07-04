@@ -87,28 +87,4 @@
 // SEM lines
 // Line functions
 //////
-	// Forward declarations
-	void					iLine_ensureLineLength						(SLine* em, s32 newLineLength);
-	void					iLine_free									(SLine** root, bool tlDeleteSelf);
-	SLine*					iLine_createNew								(bool tlAllocCompilerInfo);
-	SLine*					iLine_appendNew								(SLine* line, bool tlAllocCompilerInfo);
-	SLine*					iLine_insertNew								(SLine* lineRef, bool tlAllocCompilerInfo, bool tlAfter);
-	void					iLine_appendError							(SLine* line, u32 tnErrorNum,   cu8* tcMessage, u32 tnStartColumn, u32 tnLength);
-	void					iLine_appendWarning							(SLine* line, u32 tnWarningNum, cu8* tcMessage, u32 tnStartColumn, u32 tnLength);
-	bool					iLine_scanComps_forward_withCallback		(SLine* line, SComp* comp, SCallback* cb, bool tlSkipFirst);
-	s32						iLines_unescape_iCodes						(SLine* lineStart, s32 tniCode1, s32 tniCode2, s32 tniCode3, s32 tniCodeEscape = _ICODE_BACKSLASH);
-	s32						iLine_migrateLines							(SLine** linesFrom, SLine* lineTarget);
-	SComp*					iLine_Nth_comp								(SLine* line, s32 tnCount = 1, bool tlMoveBeyondLineIfNeeded = true);
-	SLine*					iLine_copyComps_toNewLines_untilTerminating				(SLine* lineStart, SComp* compStart, s32 tniCodeContinuation, bool tlLeftJustifyStart, bool tlSkipBlankLines, SCallback* cb);
-	bool					iiLine_copyComps_toNewLines_untilTerminating__callback	(SCallback* cb);
-	s32						iiLine_skipTo_nextComp						(SLine** lineProcessing, SComp** compProcessing);
-	s32						iiLine_skipTo_prevComp						(SLine** lineProcessing, SComp** compProcessing);
-
-	// For editing
-	bool					iLine_characterInsert						(SEM* sem, u8 asciiChar);
-	bool					iLine_characterOverwrite					(SEM* sem, u8 asciiChar);
-	bool					iLine_characterDelete						(SEM* sem);
-	SBreakpoint*			iLine_toggleBreakpoint						(SEM* sem);
-
-	// For reporting on a line's state
-	bool					iLine_hasChanged							(SLine* ec);
+	// Temporarily moved to libsf.h

@@ -234,24 +234,7 @@ struct SGraceLine;
 //////////
 // Forward declarations (some of the functions below call themselves)
 //////
-	void					iNode_init									(void);
-	SNode*					iNode_create								(SNode** root, SComp* comp = NULL, SNode* n_defaults[_NODE_COUNT] = NULL);
-	u32						iiNode_getNextUid							(void);
-	SNode*					iNode_extrude								(SNode** root, s32 tnExtrudeDirection);
-	SNode*					iNode_bump									(SNode** root, s32 tnBump/*BumpDirection*/, s32 tnAnchor/*AnchorDirection*/);
-	SNode*					iNode_insert								(SNode** root, s32 tnDirection);
-	void					iNode_delete								(SNode** root, bool tlDeleteSelf = true);
-	void					iNode_orphanize								(SNode** root);
-	void					iNode_deleteAll_politely					(SNode** root, SNode* nodeStopper, SNode* nodeStopper2, bool tlDeleteSelf, SNodeFlags* nodeFlags);
-
-	// Bitmap
-	SBitmap*				iNode_renderBitmap							(SNode* node, s32 tnMaxTokenLength = 6, s32 tnMaxOverallLength = 12, f64 tfRodLength = 8.0, s32 tnMarginWidth = 2, s32 tnBorderWidth = 1, bool tlIncludeExtraInfo = false,						bool tlGoDeeper = true, SNodeFlags* nodeFlags = &gsfNodeFlags_all, bool tlDeeperNodesExtendInAllDirections = true);
-	void					iiNode_renderBitmap							(SNode* node, SNode* nodeStopper1, SNode* nodeStopper2, s32 tnMaxTokenLength, s32 tnMaxOverallLength, SNodeProps props[], s32 tnPropsCount, u32 tnIter_uid, bool tlIncludeExtraInfo,			bool tlGoDeeper = true, SNodeFlags* nodeFlags = &gsfNodeFlags_all, bool tlDeeperNodesExtendInAllDirections = true);
-	void					iiNode_get_bitmapExtents					(SNode* node, SNode* nodeStopper1, SNode* nodeStopper2, s32 tnArrivalDirection, SBitmap* bmp, RECT* rc, POINTS p_anchor, POINTS p_arrival, f64 tfRodLength, u32 tnIter_uid, SNodeProps* props,	bool tlGoDeeper = true, SNodeFlags* nodeFlags = &gsfNodeFlags_all, bool tlDeeperNodesExtendInAllDirections = true);
-
-// 	// OpenGL
-// 	void					iiNode_renderGrace							(SNode* node, SNode* nodeStopper1, SNode* nodeStopper2, s32 tnMaxTokenLength, s32 tnMaxOverallLength, SNodeProps props[], s32 tnPropsCount, u32 tnIter_uid,								bool tlGoDeeper = true, SNodeFlags* nodeFlags = &gsfNodeFlags_all, bool tlDeeperNodesExtendInAllDirections = true);
-// 	void					iiNode_get_graceExtents						(SNode* node, SNode* nodeStopper1, SNode* nodeStopper2, s32 tnArrivalDirection, SBitmap* bmp, SGraceLine* line, POINTS p_arrival, f64 tfRodLength, u32 tnIter_uid, SNodeProps* props,	bool tlGoDeeper = true, SNodeFlags* nodeFlags = &gsfNodeFlags_all, bool tlDeeperNodesExtendInAllDirections = true);
+	// Temporarily moved to libsf.h
 
 #endif // __NODE_H_
 

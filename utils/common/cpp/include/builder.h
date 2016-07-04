@@ -80,39 +80,7 @@ struct SDatum;
 // Forward declarations
 //
 //////
-	void		iBuilder_verifySizeForNewBytes				(SBuilder* builder, u32 tnDataLength);
-	void		iBuilder_createAndInitialize				(SBuilder** builder, u32 tnAllocationBlockSize = 4096);
-	bool		iBuilder_isPointer							(SBuilder* builder, uptr testptr, void** outPtr = NULL);
-	cs8*		iBuilder_appendData							(SBuilder* builder, SDatum* data);
-	cs8*		iBuilder_appendData							(SBuilder* builder, cs8* tcData, u32 tnDataLength);
-	cu8*		iBuilder_appendData							(SBuilder* builder, cu8* tcData, u32 tnDataLength);
-	u8*			iBuilder_append_uptr						(SBuilder* builder, uptr tnValue);
-	u8*			iBuilder_appendCrLf							(SBuilder* builder);
-	void		iBuilder_delete								(SBuilder* builder, u32 tnStartOffset, u32 tnDeleteLength);
-	void		iBuilder_reset								(SBuilder* builder);
-	void		iBuilder_rewind								(SBuilder* builder);
-	s8*			iBuilder_allocateBytes						(SBuilder* builder, u32 tnDataLength);
-	void		iBuilder_backoffTrailingWhitespaces			(SBuilder* builder);
-	void		iBuilder_setSize							(SBuilder* builder, u32 tnBufferLength);
-	void		iBuilder_freeAndRelease						(SBuilder** builder);
-	u32			iBuilder_asciiWriteOutFile					(SBuilder* builder, cu8* tcPathname, bool tlAppend = false);
-	bool		iBuilder_asciiReadFromFile					(SBuilder** builder, cu8* tcPathname);
-	void		iBuilder_compactData						(SBuilder* builder, u32 tnStart, u32 tnStride, u32 tnCompactCallbackFunction);
-	s8*			iBuilder_insertBytes						(SBuilder* builder, u32 tnStart, u32 tnLength);
-	u32			iBuilder_binarySearch						(SBuilder* builderHaystack, s8* textNeedle, u32 needleLength, bool* tlFound, bool tlInsertIfNotFound);
-	s32			iBuilder_iterate							(SBuilder* builder, u32 tnStepSize, SBuilderCallback* cb, uptr _iterateFunc = NULL);
-	s32			iBuilder_iterate_N_to_N						(SBuilder* builder, u32 tnStepSize, u32 tnStartRecord, u32 tnStopRecord, SBuilderCallback* cb, uptr _iterateFunc = NULL);
-	s32			iBuilder_iterate2							(SBuilder* builder1, SBuilder* builder2, u32 tnStepSize1, u32 tnStepSize2, SBuilderCallback2* cb2, uptr _iterate2Func = NULL);
-	s32			iBuilder_iterate2_N_to_N					(SBuilder* builder1, SBuilder* builder2, u32 tnStepSize1, u32 tnStepSize2, u32 tnStartRecord, u32 tnStopRecord, SBuilderCallback2* cb2, uptr _iterate2Func = NULL);
-	s8*			iBuilder_retrieveRecord						(SBuilder* builder, u32 tnStepSize, u32 tnN);
-
-	// Added to append "name = something" strings with a terminating CR/LF
-	s32			iBuilder_append_label_uptr					(SBuilder* builder, s8* tcLabelText, uptr udata);
-	s32			iBuilder_append_label_sptr					(SBuilder* builder, s8* tcLabelText, sptr sdata);
-	s32			iBuilder_append_label_text					(SBuilder* builder, s8* tcLabelText, s8* tcText);
-	s32			iBuilder_append_label_datum					(SBuilder* builder, s8* tcLabelText, SDatum* datum);
-	s32			iBuilder_append_label_logical				(SBuilder* builder, s8* tcLabelText, bool tlValue);
-
+	// Temporarily moved to libsf.h
 
 
 #endif	// __BUILDER_H__
