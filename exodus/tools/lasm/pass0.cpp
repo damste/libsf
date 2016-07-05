@@ -103,19 +103,21 @@
 		SLasmPass0 p0;
 
 
+		//////////
 		// Lex and parse the entire file
-		p0.cmdLine	= cmdLine;
-		p0.file		= file;
-		for (p0.line = p0.file->firstLine; p0.line; p0.line = p0.line->ll.nextLine)
-			iComps_lex_and_parse(p0.line, NULL, &cgcKeywordsLasm[0]);
+		//////
+			p0.cmdLine	= cmdLine;
+			p0.file		= file;
+			for (p0.line = p0.file->firstLine; p0.line; p0.line = p0.line->ll.nextLine)
+				iComps_lex_and_parse(p0.line, NULL, &cgcKeywordsLasm[0]);
 
+
+		//////////
 		// Iterate through each line looking for known things
-		for (p0.line = p0.file->firstLine; p0.line; p0.line = p0.line->ll.nextLine)
-		{
-
-			//////////
-			// See what was parsed
-			//////
+		//////
+			for (p0.line = p0.file->firstLine; p0.line; p0.line = p0.line->ll.nextLine)
+			{
+				// See what was parsed
 				p0.comp = p0.line->firstComp;
 				if (!p0.comp || p0.comp->iCode == _ICODE_COMMENT)
 				{
@@ -137,8 +139,8 @@
 					}
 				}
 				// else other pragmas are ignored for this pass
+			}
 
-		}
 	}
 
 
@@ -146,8 +148,11 @@
 
 //////////
 //
-// Called to load the indicated file after the indicated line
-// p0->comp		-- include
+// Called to load the indicated file after the indicated line.
+//
+// Input:
+//		p0->line		-- The line p0->comp is on
+//		p0->comp		-- include
 //
 //////
 	bool iilasm_pass0_include(SLasmPass0* p0)
@@ -159,7 +164,7 @@
 
 		// The next component needs to be the filename
 		llError			= true;
-		p0->compFile	= iComps_Nth(p0->compNext);
+		p0->compFile	= iComps_Nth(p0->comp, 1);
 
 		// We're looking for [include "path\file.ext"]
 		do {
@@ -187,7 +192,7 @@
 					printf("--include \"%s\"", p0->fileName);
 
 				// Insert its lines after this #include line
-				lnLineCount = iLine_migrateLines(&p0->file->firstLine, p0->compNext->line);
+				lnLineCount = iLine_migrateLines(&p0->file->firstLine, p0->line);
 				if (p0->cmdLine->o.lVerbose)	printf("%d lines\n", lnLineCount);
 				else							printf("\n");
 

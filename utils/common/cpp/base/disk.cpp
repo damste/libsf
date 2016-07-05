@@ -954,7 +954,8 @@
 					// Indicate content
 					//////
 						iDatum_duplicate(&line->sourceCode, (u8*)data + lnLast, (s32)(lnI - lnCrLfCount - lnLast));
-						line->lineNumber = lnLineNumber;
+						line->populatedLength	= line->sourceCode.length;
+						line->lineNumber		= lnLineNumber;
 
 
 					//////////

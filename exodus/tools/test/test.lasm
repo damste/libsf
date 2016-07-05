@@ -1,82 +1,82 @@
-||||||||||
-||| sample.lasm
-||||||
-|||
-||| Lines which begin with three or more | characters are comments.
-|||
-||| Lines which begin with two | characters are ignored as whitespaces,
-||| but are used as visual cues to group related things, as well as the
-||| ability to do faster single-stepping through source code, so that
-||| all entries in a vertically connected || group can be single-stepped
-||| over as a single operation, rather than multiple line-level ops.
-|||
-||||||
+|||||||||||
+|||| sample.lasm
+|||||||
+||||
+|||| Lines which begin with three or more | characters are comments.
+||||
+|||| Lines which begin with two | characters are ignored as whitespaces,
+|||| but are used as visual cues to group related things, as well as the
+|||| ability to do faster single-stepping through source code, so that
+|||| all entries in a vertically connected || group can be single-stepped
+|||| over as a single operation, rather than multiple line-level ops.
+||||
+|||||||
 
 
-||||||||||
-|| #include "inc1.lasm"
-||
-||| Loaded below:
-||| #include "inc2.lasm"
-||||||
+|||||||||||
+||| include "inc1.lasm"
+|||
+|||| Loaded below:
+|||| include "inc2.lasm"
+|||||||
 
 // Note:  Below where it says "name" it's a macro replaced with "total"
 
 function test
 {
-||||||||||
-||| prolog
-|| #define    _px        [ebp+16]    ||| s32
-|| #define    _py        [ebp+12]    ||| s32
-|| #define    _pz        [ebp+08]    ||| s32
-|||           eip        [ebp+04]
-|||           old_ebp    [ebp+00]
-|| #define    _li        [ebp-04]    ||| s32
-|| #define    _ltotal    [ebp-08]    ||| s32
-|| enter 8,0
-||||||
+|||||||||||
+|||| prolog
+||| define     _px        [ebp+16]    // s32
+||| define     _py        [ebp+12]    // s32
+||| define     _pz        [ebp+08]    // s32
+||||           eip        [ebp+04]
+||||           old_ebp    [ebp+00]
+||| define     _li        [ebp-04]    // s32
+||| define     _ltotal    [ebp-08]    // s32
+||| enter 8,0
+|||||||
 
-	||||||||||
-    ||| total = x + y + z
-    || mov     ebx,_px
-    || add     ebx,_py
-    || add     ebx,_pz
-    || mov     _ltotal,ebx
-	||||||
+	|||||||||||
+    |||| total = x + y + z
+    ||| mov     ebx,_px
+    ||| add     ebx,_py
+    ||| add     ebx,_pz
+    ||| mov     _ltotal,ebx
+	|||||||
 
-    ||||||||||
-    ||| for (i = 0; i < 20; i++)
-    ||| {
-    |||     i = 0;
-    ||      for_initializer:
-    ||          mov     _li,0
-    ||          jmp     for_tester
-    ||      
-    |||     i++
-    ||      for_incrementer:
-    ||          inc     _li
-    ||      
-    |||     i < 20
-    ||      for_tester:
-    ||          cmp     _li,20
-    ||          jnb     for_finished
-    ||||||
+    |||||||||||
+    |||| for (i = 0; i < 20; i++)
+    |||| {
+    ||||     i = 0;
+    |||      for_initializer:
+    |||          mov     _li,0
+    |||          jmp     for_tester
+    |||      
+    ||||     i++
+    |||      for_incrementer:
+    |||          inc     _li
+    |||      
+    ||||     i < 20
+    |||      for_tester:
+    |||          cmp     _li,20
+    |||          jnb     for_finished
+    |||||||
 
         // total += (i << 2)
-        #include "inc2.lasm"
+        include "inc2.lasm"
 
-    ||||||
-    ||| }
-    || jmp for_incrementer
-    || for_finished:
-    ||||||||||
+    |||||||
+    |||| }
+    ||| jmp for_incrementer
+    ||| for_finished:
+    |||||||||||
     
-    ||| return(total);
-    || mov     eax,_ltotal
+    |||| return(total);
+    ||| mov     eax,_ltotal
 
-||||||||||
-||| epilog
-|| leave
-|| ret 12
-||||||
+|||||||||||
+|||| epilog
+||| leave
+||| ret 12
+|||||||
 }

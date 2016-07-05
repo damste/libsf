@@ -1105,7 +1105,7 @@
 			s32			length;													// Length of the keyword (negative for case sensitive, positive case insensitive, 0 for termination entry)
 			bool		repeats;												// Can this item repeat?  Or is this a one-shot keyword?
 			s32			iCode;													// An associated code to store when this entry is found
-			bool		firstOnLine;											// Should this item ONLY be the first on line?
+			bool		firstOnLine;											// Should this item ONLY be the first on line? (Note:  Ignores leading whitespaces)
 			u32			iCat;													// This entry's general category (function, operator, keyword, flow)
 
 			// For syntax highlighting
@@ -1226,14 +1226,14 @@
 	u32						iiComps_getNextUid							(void);
 	void					iComps_deleteAll							(SComp** compRoot);
 	void					iComps_deleteAll_byLine						(SLine* line);
-	void					iComps_deleteAll_byFirstComp				(SComp** firstComp);
+	s32						iComps_deleteAll_byFirstComp				(SComp** firstComp);
 	SComp*					iComps_duplicate							(SComp* comp);
 	SComp*					iComps_delete								(SComp** compRoot);
 	SComp*					iComps_delete								(SComp* comp, bool tlDeleteSelf);
 	SNode*					iComps_chainLinkNodes						(SComp* compLeftMost);
 	void					iComps_copyMembers							(SComp* compTo, SComp* compFrom, bool tlAllocated, bool tlCopyLl, s32 tnBackoff);
- 	SComp*					iComps_translate_sourceLineTo				(SAsciiCompSearcher* tsComps, SLine* line);
- 	bool					iComps_translate_toOthers					(SAsciiCompSearcher* tsComps, SComp* comp, bool tlDescendIntoFirstCombineds = true);
+ 	SComp*					iComps_lex_line								(SAsciiCompSearcher* tsComps, SLine* line);
+ 	bool					iComps_lex_comps							(SAsciiCompSearcher* tsComps, SComp* comp, bool tlDescendIntoFirstCombineds = true);
 	bool					iComps_areAllPrecedingCompsWhitespaces		(SComp* comp);
 	s32						iComps_translateToOthers_testIfMatch		(cu8* tcHaystack, cu8* tcNeedle, s32 tnLength);
 	SComp*					iComps_findNextBy_iCode						(SComp* comp, s32 tniCode, SComp** compLastScanned);
@@ -1402,6 +1402,7 @@
 	SDatum*					iDatum_allocate							( s8* data,			s32 dataLength = -1);
 	SDatum*					iDatum_allocate							(cu8* data,			s32 dataLength = -1);
 	SDatum*					iDatum_allocate							( u8* data,			s32 dataLength = -1);
+	bool					iDatum_appendData						(SDatum* datum, s8* data, s32 tnAppendLength);
 
 	void					iDatum_duplicate						(SDatum* datum,  u8* data, s32 dataLength = -1);
 	void					iDatum_duplicate						(SDatum* datum,  s8* data, s32 dataLength = -1);
@@ -1413,6 +1414,7 @@
 	void					iDatum_duplicate_fromComp				(SDatum* datum, SComp* comp);
 	void					iiDatum_duplicate_fromComp				(SDatum* datum, SComp* comp);
 	SDatum*					iDatum_populate_fromComp				(SDatum* datum, SComp* comp);
+	bool					iDatum_append_comp						(SDatum* datum, SComp* comp);
 
 	s32						iDatum_getAs_s32						(SDatum* datum);
 	s64						iDatum_getAs_s64						(SDatum* datum);

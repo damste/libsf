@@ -394,11 +394,11 @@ goto_next_component:
 
 
 
-	//////////
-	//
-	// Moves all lines from one file to another, before or after the target line
-	//
-	//////
+//////////
+//
+// Moves all lines from one file to another, after the target line
+//
+//////
 	s32 iLine_migrateLines(SLine** linesFrom, SLine* lineTarget)
 	{
 		s32		lnLineCount;

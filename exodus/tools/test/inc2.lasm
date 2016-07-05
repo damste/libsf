@@ -1,7 +1,7 @@
 ||||||||||
-||| inc2.lasm
+|||| inc2.lasm
 ||||||
-||| Sample include file in the body
+|||| Sample include file in the body
 ||||||
 
 	// total += (i << 2)

@@ -167,6 +167,48 @@
 		return(datumNew);
 	}
 
+	// Appends data to the existing datum
+	bool iDatum_appendData(SDatum* datum, s8* data, s32 tnAppendLength)
+	{
+		s8* dataNew;
+
+
+		// Make sure our environment is sane
+		if (datum && data && tnAppendLength > 0)
+		{
+			// If we don't already have something, then create it
+			if (!datum->_data || datum->length == 0)
+			{
+				// Create
+				iDatum_duplicate(datum, data, tnAppendLength);
+
+				// Success
+				return(true);
+
+			} else {
+				// Append
+				dataNew = (s8*)realloc(datum->data_vp, datum->length + tnAppendLength);
+				if (dataNew)
+				{
+					// Copy the new data over
+					memcpy(dataNew + datum->length, data, tnAppendLength);
+					datum->data_s8	= dataNew;
+					datum->length	+= tnAppendLength;
+
+					// Success
+					return(true);
+
+				} else {
+					// Failure
+					return(false);
+				}
+			}
+		}
+
+		// Invalid options
+		return(false);
+	}
+
 	void iDatum_duplicate(SDatum* datum, u8* data, s32 dataLength)
 	{
 		// Make sure our environment is sane
@@ -236,32 +278,37 @@
 		return(NULL);
 	}
 
-#ifdef _SCOMP_DEFINED
 	void iDatum_duplicate_fromComp(SDatum* datum, SComp* comp)
 	{
 		// Make sure our environment is sane
-		if (datum && comp && comp->line && comp->line->sourceCode && comp->line->sourceCode.data_cs8 && comp->length != 0)
-			iDatum_duplicate(datum, comp->line->sourceCode.data_cs8 + comp->start, comp->length);
+		if (datum && comp && comp->text._data && comp->text.length > 0)
+			iDatum_duplicate(datum, &comp->text);
 	}
 
 	void iiDatum_duplicate_fromComp(SDatum* datum, SComp* comp)
 	{
-		iDatum_duplicate(datum, comp->line->sourceCode.data_cs8 + comp->start, comp->length);
+		iDatum_duplicate(datum, &comp->text);
 	}
 
 	SDatum* iDatum_populate_fromComp(SDatum* datum, SComp* comp)
 	{
 		// Make sure the datum and component are valid
-		if (datum && comp && comp->line && comp->line->sourceCode && comp->line->sourceCode.data_s8 && comp->line->sourceCode->length >= comp->start + comp->length)
-		{
-			datum->data_s8	= comp->line->sourceCode.data_s8 + comp->start;
-			datum->length	= comp->length;
-		}
+		if (datum && comp && comp->text.data_s8 && comp->text.length > 0)
+			iDatum_duplicate(datum, &comp->text);
 
 		// Pass-thru
 		return(datum);
 	}
-#endif
+
+	bool iDatum_append_comp(SDatum* datum, SComp* comp)
+	{
+		// Make sure our environment is sane
+		if (datum && comp && comp->text.data_s8 && comp->text.length > 0)
+			return(iDatum_appendData(datum, comp->text.data_s8, comp->text.length));
+
+		// Failure
+		return(false);
+	}
 
 	s32 iDatum_getAs_s32(SDatum* datum)
 	{

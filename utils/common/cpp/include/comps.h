@@ -106,7 +106,8 @@ struct SNoteLog;
 /////////
 // Globals
 //////
-	u32						gnComps_nextUniqueId			= 0;
+	u32						gnComps_nextUniqueId				= 0;
+	bool					lInitialized_cs_compsUniqueIdAccess	= false;
 	CRITICAL_SECTION		cs_compsUniqueIdAccess;
 
 

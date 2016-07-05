@@ -101,7 +101,7 @@
 		iExtraInfo_compiler_resetLiveCode(&line->extra_info);
 
 		// Convert raw source code to known character sequences
-		iComps_translate_sourceLineTo(acs0, line);
+		iComps_lex_line(acs0, line);
 
 		// Standard fixups
 		iComps_remove_startEndComments(line);			// Remove /* comments */ and /+ comments +/
@@ -109,9 +109,12 @@
 		iComps_remove_whitespaces(line);				// Remove whitespaces [xyz][whitespace][fred] becomes [xyz][fred]
 
 		// Further translation
-		if (acs1)		iComps_translate_toOthers(acs1, line->firstComp, true);
-		if (acs2)		iComps_translate_toOthers(acs2, line->firstComp, true);
-		if (acs3)		iComps_translate_toOthers(acs3, line->firstComp, true);
+		if (acs1)		iComps_lex_comps(acs1, line->firstComp, true);
+		if (acs2)		iComps_lex_comps(acs2, line->firstComp, true);
+		if (acs3)		iComps_lex_comps(acs3, line->firstComp, true);
+
+		// Some characters can be translated to whitespaces
+		iComps_remove_leadingWhitespaces(line);			// Remove leading whitespaces
 	}
 
 
@@ -176,6 +179,13 @@
 	{
 		u32 lnValue;
 
+
+		// Make sure it's initialized
+		if (!lInitialized_cs_compsUniqueIdAccess)
+		{
+			InitializeCriticalSection(&cs_compsUniqueIdAccess);
+			lInitialized_cs_compsUniqueIdAccess = true;
+		}
 
 		// Synchronized access
 		EnterCriticalSection(&cs_compsUniqueIdAccess);
@@ -257,19 +267,22 @@
 // Deletes everything from this first component
 //
 //////
-	void iComps_deleteAll_byFirstComp(SComp** firstComp)
+	s32 iComps_deleteAll_byFirstComp(SComp** firstComp)
 	{
-		SComp* comp;
-		SComp* compNext;
+		s32		lnCount;
+		SComp*	comp;
+		SComp*	compNext;
 
 
 		// Make sure the environment is sane
+		lnCount = 0;
 		if (firstComp && *firstComp)
 		{
 			// Delete all the components
 			for (comp = *firstComp; comp; comp = compNext)
 			{
 				// Delete this component
+				++lnCount;
 				compNext = comp->ll.nextComp;		// Grab the next comp
 				iComps_delete(comp, true);			// Delete this one
 			}
@@ -277,6 +290,9 @@
 			// Reset the pointer
 			*firstComp = NULL;
 		}
+
+		// Indicate how many were deleted
+		return(lnCount);
 	}
 
 
@@ -345,13 +361,6 @@
 		// If there is a bitmap cache, delete it
 		if (comp->bc)
 			iBmp_deleteCache(&comp->bc);
-
-		// If it has combined comps, delete them
-#ifdef _SHOW_REFACTOR_ERRORS
-		if (comp->firstCombined)		iComps_delete(&comp->firstCombined);
-		if (comp->firstWhitespace)		iComps_delete(&comp->firstWhitespace);
-		if (comp->firstComment)			iComps_delete(&comp->firstComment);
-#endif
 
 		// If it has a node, delete it
 		if (comp->node)
@@ -469,7 +478,7 @@
 //		The first component created (if any)
 //
 //////
-	SComp* iComps_translate_sourceLineTo(SAsciiCompSearcher* tsComps, SLine* line)
+	SComp* iComps_lex_line(SAsciiCompSearcher* tsComps, SLine* line)
 	{
 		s32						lnI, lnMaxLength, lnStart, lnLength, lnLacsLength;
 		SComp*					compFirst;
@@ -609,7 +618,7 @@
 // alpha/alphanumeric/numeric forms to other forms.
 //
 //////
-	bool iComps_translate_toOthers(SAsciiCompSearcher* tacsRoot, SComp* comp, bool tlDescendIntoFirstCombineds)
+	bool iComps_lex_comps(SAsciiCompSearcher* tacsRoot, SComp* comp, bool tlDescendIntoFirstCombineds)
 	{
 		bool					llResult;
 		s32						lnTacsLength;
@@ -623,12 +632,6 @@
 			// Grab our pointers into recognizable thingamajigs
 			while (comp)
 			{
-#ifdef _SHOW_REFACTOR_ERRORS
-				// Parse those things which were combined if need be
-				if (tlDescendIntoFirstCombineds && comp->firstCombined)
-					iComps_translate_toOthers(tacsRoot, comp->firstCombined, true);
-#endif
-
 				// Iterate through this item to see if any match
 				tacs = tacsRoot;
 				for (/* tacs is initialize above */; tacs->length != 0; tacs++)
@@ -1702,20 +1705,21 @@
 	u32 iComps_combineAll_between(SLine* line, s32 tniCodeNeedle, s32 tniCodeCombined, SBgra* syntaxHighlightColor)
 	{
 		u32		lnCount;
-// 		SComp*	compNext;
-// 		SComp*	comp;
-// 		SComp*	compSearcher;
+		SComp*	compNext;
+		SComp*	comp;
+		SComp*	compSearcher;
 
 
 		// Make sure our environment is sane
+// Refactoring changes made, breakpoint and examine
+debug_break;
 		lnCount = 0;
-#ifdef _SHOW_REFACTOR_ERRORS
-		if (line && line->compilerInfo && line->compilerInfo->firstComp)
+		if (line && line->firstComp)
 		{
 			// Grab the first component
-			comp = line->compilerInfo->firstComp;
+			comp = line->firstComp;
 
-			// Continue until we get ... to ... the ... end ... (imagine you were reading that like in a baseball stadium with lots of loud echoes)
+			// Continue until we get to the end
 			while (comp)
 			{
 				// Grab the next component sequentially
@@ -1732,22 +1736,23 @@
 					compSearcher = compNext;
 					while (compSearcher)
 					{
+						// Are we on our target?
 						if (compSearcher->iCode == tniCodeNeedle)
 						{
 							// This is the match, combine everything between
-							comp->text.length	= (compSearcher->start + compSearcher->length) - comp->start;
-							comp->iCode		= tniCodeCombined;
-							comp->color		= syntaxHighlightColor;
-							comp->nbspCount	+= compSearcher->nbspCount;
+							iDatum_append_comp(&comp->text, compSearcher);
+							comp->iCode			= tniCodeCombined;
+							comp->color			= syntaxHighlightColor;
+							comp->nbspCount		+= compSearcher->nbspCount;
 
-							// Iterate and merge in
+							// Iterate and merge in (moving from compNext forward until we reach compSearcher)
 							while (compNext)
 							{
 								// Increase our count
 								++lnCount;
 
-								// Migrate this one to the combined node (as it was technically merged above with the comp->text.length = line)
-								iLl_migrate__llToOther((SLL**)&line->compilerInfo->firstComp, (SLL**)&comp->firstCombined, (SLL*)compNext, true);
+								// Delete this one (as it was technically merged above with the comp->text.length = line)
+								iLl_delete__ll((SLL*)compNext, true);
 
 								// See if we're done
 								if (compNext == compSearcher)
@@ -1774,7 +1779,6 @@
 			}
 			// When we get here, we're good
 		}
-#endif
 
 		// Indicate the success rate at which we operated hitherto
 		return(lnCount);
@@ -1791,20 +1795,21 @@
 	u32 iComps_combineAll_betweenTwo(SLine* line, s32 tniCodeNeedleLeft, s32 tniCodeNeedleRight, s32 tniCodeCombined, u32 tniCat, SBgra* syntaxHighlightColor, bool tlUseBoldFont)
 	{
 		u32		lnCount;
-// 		SComp*	compNext;
-// 		SComp*	comp;
-// 		SComp*	compSearcher;
+		SComp*	compNext;
+		SComp*	comp;
+		SComp*	compSearcher;
 
 
+// Incomplete code, the comp->text needs to have the compSearcher->text appended to it
+debug_break;
 		// Make sure our environment is sane
 		lnCount = 0;
-#ifdef _SHOW_REFACTOR_ERRORS
-		if (line && line->compilerInfo && line->compilerInfo->firstComp)
+		if (line && line->firstComp)
 		{
 			// Grab the first component
-			comp = line->compilerInfo->firstComp;
+			comp = line->firstComp;
 
-			// Continue until we get ... to ... the ... end ... (imagine you were reading that like in a baseball stadium with lots of loud echoes)
+			// Continue until we get to the end ...
 			while (comp)
 			{
 				// Grab the next component sequentially
@@ -1824,7 +1829,7 @@
 						if (compSearcher->iCode == tniCodeNeedleRight)
 						{
 							// This is the match, combine everything between
-							comp->text.length		= (compSearcher->start + compSearcher->length) - comp->start;
+							comp->text.length	= (compSearcher->start + compSearcher->text.length) - comp->start;
 							comp->iCode			= tniCodeCombined;
 							comp->iCat			= tniCat;
 							comp->color			= syntaxHighlightColor;
@@ -1840,7 +1845,8 @@
 								comp->nbspCount += compNext->nbspCount;
 
 								// Migrate this one to the combined node (as it was technically merged above with the comp->text.length = line)
-								iLl_migrate__llToOther((SLL**)&line->compilerInfo->firstComp, (SLL**)&comp->firstCombined, (SLL*)compNext, true);
+// Error here
+//								iLl_migrate__llToOther((SLL**)&line->firstComp, (SLL**)&comp->firstCombined, (SLL*)compNext, true);
 
 								// See if we're done
 								if (compNext == compSearcher)
@@ -1867,7 +1873,6 @@
 			}
 			// When we get here, we're good
 		}
-#endif
 
 		// Indicate the success rate at which we operated hitherto
 		return(lnCount);
@@ -1884,16 +1889,15 @@
 	u32 iComps_combineAll_after(SLine* line, s32 tniCodeNeedle)
 	{
 		u32		lnCombined;
-// 		SComp*	comp;
+		SComp*	comp;
 
 
 		// Make sure our environment is sane
 		lnCombined = 0;
-#ifdef _SHOW_REFACTOR_ERRORS
-		if (line && line->compilerInfo && line->compilerInfo->firstComp)
+		if (line && line->firstComp)
 		{
 			// Grab the first component
-			comp = line->compilerInfo->firstComp;
+			comp = line->firstComp;
 
 			// Iterate forward through all components
 			while (comp)
@@ -1917,7 +1921,6 @@
 			}
 			// When we get here, we're good
 		}
-#endif
 
 		// Indicate the success rate at which we operated hitherto
 		return(lnCombined);
@@ -1934,18 +1937,17 @@
 	u32 iComps_deleteAll_after(SLine* line, s32 tniCodeNeedle)
 	{
 		u32		lnDeleted;
-// 		SComp*	comp;
-// 		SComp**	compLast;
+		SComp*	comp;
+		SComp**	compLast;
 
 
 		// Make sure our environment is sane
 		lnDeleted = 0;
-#ifdef _SHOW_REFACTOR_ERRORS
-		if (line && line->compilerInfo && line->compilerInfo->firstComp)
+		if (line && line->firstComp)
 		{
 			// Grab the first component
-			comp		= line->compilerInfo->firstComp;
-			compLast	= (SComp**)&line->compilerInfo->firstComp;
+			comp		= line->firstComp;
+			compLast	= (SComp**)&line->firstComp;
 
 			// Iterate forward through all components
 			while (comp)
@@ -1953,18 +1955,8 @@
 				// Is this our intended?
 				if (comp->iCode == tniCodeNeedle)
 				{
-					// Combine from here on out
-					while (comp)
-					{
-						// Indicate the number combined
-						++lnDeleted;
-
-						// Move to the next component
-						comp = comp->ll.nextComp;
-					}
-
 					// Delete from here on out
-					iComps_deleteAll_byFirstComp(compLast);
+					lnDeleted = iComps_deleteAll_byFirstComp(compLast);
 					break;
 				}
 
@@ -1974,7 +1966,6 @@
 			}
 			// When we get here, we're good
 		}
-#endif
 
 		// Indicate the success rate at which we operated hitherto
 		return(lnDeleted);
@@ -2071,27 +2062,24 @@
 	u32 iComps_remove_leadingWhitespaces(SLine* line)
 	{
 		u32		lnRemoved;
-// 		SComp*	comp;
+		SComp*	comp;
 
 
 		// Make sure our environment is sane
 		lnRemoved = 0;
-#ifdef _SHOW_REFACTOR_ERRORS
-		if (line && line->compilerInfo)
+		if (line)
 		{
 			// Iterate through all looking for _ICODE_COMMENT_START
-			comp = line->compilerInfo->firstComp;
+			comp = line->firstComp;
 			while (comp && comp->iCode == _ICODE_WHITESPACE)
 			{
-				// Migrate this whitespace from firstComp to firstWhitespace
-				comp = iComps_migrate(&line->compilerInfo->firstComp, &line->compilerInfo->firstComp->firstWhitespace, comp);
-				++lnRemoved;
+				// Delete the whitespace
+				comp = iComps_delete(comp, true);
 
 				// comp is now pointing to what would've been comp->ll.next
-				line->compilerInfo->firstComp = comp;
+				line->firstComp = comp;
 			}
 		}
-#endif
 
 		// Indicate how many we removed
 		return(lnRemoved);
@@ -2110,43 +2098,41 @@
 	u32 iComps_remove_whitespaces(SLine* line)
 	{
 		u32		lnRemoved;
-// 		SComp*	comp;
+		SComp*	comp;
 
 
 		// Make sure our environment is sane
 		lnRemoved = 0;
-#ifdef _SHOW_REFACTOR_ERRORS
-		if (line && line->compilerInfo)
+		if (line)
 		{
 			// Iterate through all looking for _ICODE_COMMENT_START
-			comp = line->compilerInfo->firstComp;
+			comp = line->firstComp;
 			while (comp)
 			{
-				//////////
 				// Is this a whitespace?
-				//////
-					while (comp && comp->iCode == _ICODE_WHITESPACE)
+				if (comp->iCode == _ICODE_WHITESPACE)
+				{
+					// Delete it
+					if (line->firstComp == comp)
 					{
-						// Is it at the head of the class?
-						if (line->compilerInfo->firstComp == comp)
-							line->compilerInfo->firstComp = comp->ll.nextComp;
+						// Delete the first comp
+						line->firstComp	= iComps_delete(comp, true);
+						comp			= line->firstComp;
 
-						// Migrate this whitespace to the whitespace area
-						comp = iComps_migrate(&line->compilerInfo->firstComp, &line->compilerInfo->firstComp->firstWhitespace, comp);
-
-						// Increase our counter
-						++lnRemoved;
+					} else {
+						// Delete this one in the middle
+						comp = iComps_delete(comp, true);
 					}
 
+					// Increase our counter
+					++lnRemoved;
 
-				//////////
-				// Continue on to next component
-				//////
-					if (comp)
-						comp = comp->ll.nextComp;
+				} else {
+					// Skip past this one
+					comp = comp->ll.nextComp;
+				}
 			}
 		}
-#endif
 
 		// Indicate how many we removed
 		return(lnRemoved);
@@ -2162,16 +2148,15 @@
 //////
 	void iComps_remove_startEndComments(SLine* line)
 	{
-// 		SComp*	comp;
-// 		SComp*	compNext;
+		SComp*	comp;
+		SComp*	compNext;
 
 
 		// Make sure our environment is sane
-#ifdef _SHOW_REFACTOR_ERRORS
-		if (line && line->compilerInfo)
+		if (line)
 		{
 			// Iterate through all looking for _ICODE_COMMENT_START
-			comp = line->compilerInfo->firstComp;
+			comp = line->firstComp;
 			while (comp)
 			{
 				//////////
@@ -2187,8 +2172,9 @@
 						if ((compNext = comp->ll.nextComp) && compNext->iCode == _ICODE_COMMENT_END)
 							iComps_combineN(comp, 2, comp->iCode, comp->iCat, comp->color);
 
-						// Migrate the (now single) comment
-						comp = iComps_migrate(&line->compilerInfo->firstComp, &line->compilerInfo->firstComp->firstComment, comp);
+						// Delete the (now single) comment
+						if (line->firstComp == comp)		line->firstComp = iComps_delete(comp, true);
+						else								iComps_delete(comp, true);
 
 						// Done
 						return;
@@ -2202,7 +2188,6 @@
 						comp = comp->ll.nextComp;
 			}
 		}
-#endif
 	}
 
 
@@ -2264,15 +2249,14 @@
 //////
 	void iComps_combine_casks(SLine* line)
 	{
-// 		SComp* comp;
+		SComp* comp;
 
 
-#ifdef _SHOW_REFACTOR_ERRORS
 		// Make sure our environment is sane
-		if (line && line->compilerInfo && line->compilerInfo->firstComp)
+		if (line && line->firstComp)
 		{
 			// See if there are any cask components on this line
-			for (comp = line->compilerInfo->firstComp; comp; comp = comp->ll.nextComp)
+			for (comp = line->firstComp; comp; comp = comp->ll.nextComp)
 			{
 				// Is it a cask?
 				if (between(comp->iCode, _ICODE_CASK_SIDE_MINIMUM, _ICODE_CASK_SIDE_MAXIMUM))
@@ -2298,7 +2282,6 @@
 				}
 			}
 		}
-#endif
 	}
 
 
@@ -2311,9 +2294,9 @@
 //////
 	void iComps_fixup_naturalGroupings(SLine* line)
 	{
-#ifdef _SHOW_REFACTOR_ERRORS
-		if (line && line->compilerInfo && line->compilerInfo->firstComp)
+		if (line && line->firstComp)
 		{
+
 			//////////
 			// Fixup quotes, comments
 			//////
@@ -2329,8 +2312,8 @@
 			//////
 				iComps_combine_adjacentAlphanumeric(line);
 				iComps_combine_adjacentNumeric(line);
+
 		}
-#endif
 	}
 
 

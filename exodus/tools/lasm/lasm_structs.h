@@ -251,7 +251,7 @@
 
 		SLine*			line;
 		SComp*			comp;
-		SComp*			compNext;
+// 		SComp*			compNext;
 		SComp*			compFile;
 		SLasmDefine*	define;
 		SLasmFile*		fileInclude;
