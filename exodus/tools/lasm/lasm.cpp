@@ -321,11 +321,11 @@
 		//
 
 			// Begin passes through each file
-			for (lnPass = 0; lnPass < 6 && !file->status.isCompleted; lnPass++)
+			for (lnPass = 0; lnPass < 6 && !lasm_is_completed(file->status); lnPass++)
 			{
 				// Identify the file on the first pass
 				if (lnPass == 0)
-					printf("--%s\n", file->fileName.data_s8);
+					printf("--%s\n", file->filename.data_s8);
 
 				// Dispatch the pass on this file
 				switch (lnPass)
@@ -359,13 +359,15 @@
 		SLasmFile		fLoad;
 		SLasmFile*		fNew;
 		SLasmInclude*	include;
-		s8				fileName[_MAX_PATH * 2];
+		s8*				filename_justfname;
+		s8				filename[_MAX_PATH * 2];
 
 
 		//////////
 		// Initialize
 		//////
-			memset(&fLoad, 0, sizeof(fLoad));
+			memset(&fLoad,		0, sizeof(fLoad));
+			memset(filename,	0, sizeof(filename));
 
 
 		//////////
@@ -379,8 +381,8 @@
 				iterate(lnI, includePaths, include, SLasmInclude)
 				//
 					// Store the root path, then filename
-					sprintf(fileName,								include->filename.data_s8);
-					sprintf(fileName + include->filename.length,	tcPathname + 2);
+					sprintf(filename,								include->filename.data_s8);
+					sprintf(filename + include->filename.length,	tcPathname + 2);
 
 					// Try to read the file contents
 					if (iFile_readContents(tcPathname, &fLoad.fh, &fLoad.raw, &fLoad.rawLength))
@@ -393,6 +395,7 @@
 
 			} else {
 				// It is a hard path, use it as is
+				GetFullPathName(tcPathname, sizeof(filename), filename, &filename_justfname);
 				if (iFile_readContents(tcPathname, &fLoad.fh, &fLoad.raw, &fLoad.rawLength))
 					llFound = true;
 			}
@@ -404,19 +407,22 @@
 			if (llFound)
 			{
 				// Parse into lines
-				if (iFile_parseIntoLines(&fLoad.firstLine, fLoad.raw, fLoad.rawLength, sizeof(SLasmLine)) > 0)
+				if (iFile_parseIntoLines(&fLoad.firstLine, fLoad.raw, fLoad.rawLength, sizeof(SLine)) > 0)
 				{
 					// Append our entry onto the chain
 					fNew = (SLasmFile*)iBuilder_allocateBytes(includeFiles, sizeof(SLasmFile));
 					if (fNew)
 					{
+						// Set the filename
+						iDatum_duplicate(&fNew->filename, filename, strlen(filename));
+						fNew->filename_justfname = fNew->filename.data_s8 + ((u32)filename_justfname - (u32)&filename[0]);
+
 						// Copy over
-						fNew->firstLine	= fLoad.firstLine;
-						fNew->fh		= fLoad.fh;
-						fNew->raw		= fLoad.raw;
-						fNew->rawLength	= fLoad.rawLength;
-						fNew->fileName	= fLoad.fileName;
-						iDatum_duplicate(&fLoad.fileName, tcPathname, -1);
+						fNew->filenum		= (includeFiles->populatedLength / sizeof(SLasmFile));
+						fNew->firstLine		= fLoad.firstLine;
+						fNew->fh			= fLoad.fh;
+						fNew->raw			= fLoad.raw;
+						fNew->rawLength		= fLoad.rawLength;
 
 						// Setup the #include file level
 						fNew->include	= include;
@@ -426,7 +432,7 @@
 							*file = fNew;
 
 						// Add it as a possible include path
-						ilasm_includePath_append(tcPathname, strlen(tcPathname), false);
+						ilasm_includePath_append(filename, strlen(filename), true);
 
 						// Indicate success
 						return(true);
@@ -538,7 +544,7 @@
 // Called to adjust the slashes
 //
 //////
-	void ilasm_fixupDirectories(s8* tcPathname, s32 tnPathnameLength)
+	void ilasm_fixupDirectoryDividers(s8* tcPathname, s32 tnPathnameLength)
 	{
 		s32 lnI;
 
@@ -550,4 +556,77 @@
 			if (tcPathname[lnI] == '/')
 				tcPathname[lnI] = '\\';
 		}
+	}
+
+
+
+
+//////////
+//
+// Called to add the indicated status to the file, and optionally all of the lines and more optionally all the comps
+//
+//////
+	void ilasm_add_fileStatus(SLasmFile* file, u32 tnStatus, bool tlProcessLines, bool tlProcessComps)
+	{
+		SLine* line;
+
+
+		// Make sure our environment is sane
+		if (file)
+		{
+			// Set the status
+			file->status |= tnStatus;
+
+			// Optionally process lines
+			if (tlProcessLines)
+			{
+				// Iterate through each line
+				for (line = file->firstLine; line; line = line->ll.nextLine)
+					ilasm_add_lineStatus(line, tnStatus, tlProcessComps);
+			}
+		}
+	}
+
+
+
+
+//////////
+//
+// Called to add the indicated status to the line, and optionally all of the line comps
+//
+//////
+	void ilasm_add_lineStatus(SLine* line, u32 tnStatus, bool tlProcessComps)
+	{
+		SComp* comp;
+
+
+		// Make sure our environment is sane
+		if (line)
+		{
+			// Set the status
+			line->lineStatus |= tnStatus;
+
+			// Optionally process comps
+			if (tlProcessComps)
+			{
+				// Iterate and set the status of each component
+				for (comp = line->firstComp; comp; comp = comp->ll.nextComp)
+					comp->compStatus |= tnStatus;
+			}
+		}
+	}
+
+
+
+
+//////////
+//
+// 
+//
+//////
+	void ilasm_add_compStatus(SComp* comp, u32 tnStatus)
+	{
+		// Make sure our environment is sane
+		if (comp)
+			comp->compStatus |= tnStatus;
 	}

@@ -90,8 +90,13 @@
 //////////
 // Basic compile
 //////
+	// If acs0 is not specified, then it uses cgcFundamentalSymbols
 	void iComps_lex_and_parse(SLine* line, SAsciiCompSearcher* acs0, SAsciiCompSearcher* acs1, SAsciiCompSearcher* acs2, SAsciiCompSearcher* acs3)
 	{
+		// Fixup if need be
+		if (!acs0)
+			acs0 = &cgcFundamentalSymbols[0];
+
 		// Reset the related liveCode info for this line
 		iExtraInfo_compiler_resetLiveCode(&line->extra_info);
 
@@ -107,11 +112,6 @@
 		if (acs1)		iComps_translate_toOthers(acs1, line->firstComp, true);
 		if (acs2)		iComps_translate_toOthers(acs2, line->firstComp, true);
 		if (acs3)		iComps_translate_toOthers(acs3, line->firstComp, true);
-
-		// Generate warnings for ignored components if any appear after
-// 		iComp_appendError(comp, tnErrorNum, tcMessage);
-// 		iComp_appendWarning(comp, tnWarningNum, tcMessage);
-// 		iComp_reportWarningsOnRemainder(comp, tnWarningNum, tcMessage);
 	}
 
 

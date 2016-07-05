@@ -14,7 +14,7 @@ macro @instr_bytes
     IF bytes EQ 1
         inc     esi
     
-    } #else {
+    } else {
         add     esi,bytes
     }
 }}

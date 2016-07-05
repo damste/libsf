@@ -492,7 +492,7 @@
 
 		// Line information
 		u32				lineNumber;										// This line's number
-		s32				lineStatus;										// See _LINESTATUS_* constants
+		s32				lineStatus;										// Application specific
 		SDatum			sourceCodeOriginal;								// The original sourceCode when the line was first created, or last saved (note the length here is the total length as this value does not change, but is setup exactly when it is updated)
 		SDatum			sourceCode;										// The text on this line is LEFT(sourceCode.data, sourceCodePopulated)
 		s32				populatedLength;								// The actual populated length of sourceCode, which may differ from sourceCode.length (which is the allocated length of sourceCode.data)
@@ -677,6 +677,7 @@
 	struct SComp
 	{
 		SLL				ll;							// 2-way link list
+		u32				compStatus;					// Application-specific
 		bool			isAllocated;				// When deleted, should it be free'd?
 		bool			isError;					// Is the component in error?  Stored in extra_info.
 		bool			isWarning;					// Is the component in warning?  Stored in extra_info.
@@ -1218,7 +1219,7 @@
 // comps.h
 // BEGIN
 //////
-	void					iComps_lex_and_parse						(SLine* line);
+	void					iComps_lex_and_parse						(SLine* line, SAsciiCompSearcher* acs0 = NULL, SAsciiCompSearcher* acs1 = NULL, SAsciiCompSearcher* acs2 = NULL, SAsciiCompSearcher* acs3 = NULL);
 	void					iiVxb_free_liveCode							(SLiveCode* livecode);
 
 	SComp*					iComps_new									(SComp** compRoot, SComp* compHint, SComp* compNext, SComp* compPrev);

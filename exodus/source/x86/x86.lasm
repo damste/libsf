@@ -12,9 +12,9 @@
 
     
     
-#include "\exodus\source\common\keylist.asp"
-#include "\exodus\source\common\equates.asp"
-#include "\exodus\source\common\macros.asp"
+include "\exodus\source\common\keylist.asp"
+include "\exodus\source\common\equates.asp"
+include "\exodus\source\common\macros.asp"
 
 
 code text32
@@ -117,8 +117,8 @@ dd  offset requestor
 //  x86_simplify_disassembly()
 //  x86_assemble()
 //  x86_disassemble_fpu_opcode()
-    #include "disasm.asp"
-    #include "asm.asp"
+    include "disasm.asp"
+    include "asm.asp"
 
 
 

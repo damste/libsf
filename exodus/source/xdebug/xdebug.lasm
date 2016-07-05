@@ -6,7 +6,7 @@
 
     
     
-#include "\assembly\keylist.asp"                                       //   = List of all the keyboard scan codes
+include "\assembly\keylist.asp"                                       //   = List of all the keyboard scan codes
 code xdebug
 | at offset 0
 {
@@ -692,9 +692,9 @@ display_disassembly:
     generate_disassembly()
     ret
 
-#include "xdebug.asp"
-#include "showmem.asp"
-#include "fpu.asp"
+include "xdebug.asp"
+include "showmem.asp"
+include "fpu.asp"
 
 
 //-----------------------------------------------

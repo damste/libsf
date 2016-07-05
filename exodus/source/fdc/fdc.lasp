@@ -1150,5 +1150,5 @@ function initialize_disk_drives
         ret
     }
 
-    #include "disk.asp"
-    #include "fdc.asp"
+    include "disk.asp"
+    include "fdc.asp"

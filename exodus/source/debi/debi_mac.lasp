@@ -300,12 +300,12 @@ macro @Immediate
     u32 (y2 * FONT_Y) + FONT_Y - 1  // +13
     u32 func                        // +17
     u16 0ffffh                      // +21
-    #ifdef datum
+    ifdef datum
     {
         u16 datum                   // +23
         u8  2 dup(0ffh)             // +25
     
-    } #else {
+    } else {
         u8  4 dup(0ffh)             // +23
     }
     u8  type                        // +27
@@ -336,25 +336,25 @@ macro @Any_click
     u32 (x2 * FONT_X) + FONT_X - 1  // +9
     u32 (y2 * FONT_Y) + FONT_Y - 1  // +13
     u32 func                        // +17
-    #ifdef data1
+    ifdef data1
     {
         u32 data1                   // +21
     
-    } #else {
+    } else {
         u32 0ffffffffh
     }
-    #ifdef data2
+    ifdef data2
     {
         u16 data2                   // +25
     
-    } #else {
+    } else {
         u16 0ffffh
     }
-    #ifdef data3
+    ifdef data3
     {
         u8  data3                   // +27
     
-    } #else {
+    } else {
         u8  0ffh
     }
   // Total = 28
@@ -377,25 +377,25 @@ macro @Left_single_click
     u32 (x2 * FONT_X) + FONT_X - 1  // +9
     u32 (y2 * FONT_Y) + FONT_Y - 1  // +13
     u32 func                        // +17
-    #ifdef data1
+    ifdef data1
     {
         u32 data1                   // +21
     
-    } #else {
+    } else {
         u32 0ffffffffh
     }
-    #ifdef data2
+    ifdef data2
     {
         u16 data2                   // +25
     
-    } #else {
+    } else {
         u16 0ffffh
     }
-    #ifdef data3
+    ifdef data3
     {
         u8  data3                   // +27
     
-    } #else {
+    } else {
         u8  0ffh
     }
   // Total = 28
@@ -418,25 +418,25 @@ macro @Left_double_click
     u32 (x2 * FONT_X) + FONT_X - 1  // +9
     u32 (y2 * FONT_Y) + FONT_Y - 1  // +13
     u32 func                        // +17
-    #ifdef data1
+    ifdef data1
     {
         u32 data1                   // +21
     
-    } #else {
+    } else {
         u32 0ffffffffh
     }
-    #ifdef data2
+    ifdef data2
     {
         u16 data2                   // +25
     
-    } #else {
+    } else {
         u16 0ffffh
     }
-    #ifdef data3
+    ifdef data3
     {
         u8  data3                   // +27
     
-    } #else {
+    } else {
         u8  0ffh
     }
   // Total = 28
@@ -459,25 +459,25 @@ macro @Right_single_click
     u32 (x2 * FONT_X) + FONT_X - 1  // +9
     u32 (y2 * FONT_Y) + FONT_Y - 1  // +13
     u32 func                        // +17
-    #ifdef data1
+    ifdef data1
     {
         u32 data1                   // +21
     
-    } #else {
+    } else {
         u32 0ffffffffh
     }
-    #ifdef data2
+    ifdef data2
     {
         u16 data2                   // +25
     
-    } #else {
+    } else {
         u16 0ffffh
     }
-    #ifdef data3
+    ifdef data3
     {
         u8  data3                   // +27
     
-    } #else {
+    } else {
         u8  0ffh
     }
   // Total = 28
@@ -500,25 +500,25 @@ macro @Right_double_click
     u32 (x2 * FONT_X) + FONT_X - 1  // +9
     u32 (y2 * FONT_Y) + FONT_Y - 1  // +13
     u32 func                        // +17
-    #ifdef data1
+    ifdef data1
     {
         u32 data1                   // +21
     
-    } #else {
+    } else {
         u32 0ffffffffh
     }
-    #ifdef data2
+    ifdef data2
     {
         u16 data2                   // +25
     
-    } #else {
+    } else {
         u16 0ffffh
     }
-    #ifdef data3
+    ifdef data3
     {
         u8  data3                   // +27
     
-    } #else {
+    } else {
         u8  0ffh
     }
   // Total = 28
@@ -541,25 +541,25 @@ macro @Both_single_click
     u32 (x2 * FONT_X) + FONT_X - 1  // +9
     u32 (y2 * FONT_Y) + FONT_Y - 1  // +13
     u32 func                        // +17
-    #ifdef data1
+    ifdef data1
     {
         u32 data1                   // +21
     
-    } #else {
+    } else {
         u32 0ffffffffh
     }
-    #ifdef data2
+    ifdef data2
     {
         u16 data2                   // +25
     
-    } #else {
+    } else {
         u16 0ffffh
     }
-    #ifdef data3
+    ifdef data3
     {
         u8  data3                   // +27
     
-    } #else {
+    } else {
         u8  0ffh
     }
   // Total = 28
@@ -582,25 +582,25 @@ macro @Both_double_click
     u32 (x2 * FONT_X) + FONT_X - 1  // +9
     u32 (y2 * FONT_Y) + FONT_Y - 1  // +13
     u32 func                        // +17
-    #ifdef data1
+    ifdef data1
     {
         u32 data1                   // +21
     
-    } #else {
+    } else {
         u32 0ffffffffh
     }
-    #ifdef data2
+    ifdef data2
     {
         u16 data2                   // +25
     
-    } #else {
+    } else {
         u16 0ffffh
     }
-    #ifdef data3
+    ifdef data3
     {
         u8  data3                   // +27
     
-    } #else {
+    } else {
         u8  0ffh
     }
   // Total = 28
@@ -623,25 +623,25 @@ macro @Left_drag_start
     u32 (x2 * FONT_X) + FONT_X - 1  // +9
     u32 (y2 * FONT_Y) + FONT_Y - 1  // +13
     u32 func                        // +17
-    #ifdef data1
+    ifdef data1
     {
         u32 data1                   // +21
     
-    } #else {
+    } else {
         u32 0ffffffffh
     }
-    #ifdef data2
+    ifdef data2
     {
         u16 data2                   // +25
     
-    } #else {
+    } else {
         u16 0ffffh
     }
-    #ifdef data3
+    ifdef data3
     {
         u8  data3                   // +27
     
-    } #else {
+    } else {
         u8  0ffh
     }
   // Total = 28
@@ -664,25 +664,25 @@ macro @Right_drag_start
     u32 (x2 * FONT_X) + FONT_X - 1  // +9
     u32 (y2 * FONT_Y) + FONT_Y - 1  // +13
     u32 func                        // +17
-    #ifdef data1
+    ifdef data1
     {
         u32 data1                   // +21
     
-    } #else {
+    } else {
         u32 0ffffffffh
     }
-    #ifdef data2
+    ifdef data2
     {
         u16 data2                   // +25
     
-    } #else {
+    } else {
         u16 0ffffh
     }
-    #ifdef data3
+    ifdef data3
     {
         u8  data3                   // +27
     
-    } #else {
+    } else {
         u8  0ffh
     }
   // Total = 28
@@ -705,25 +705,25 @@ macro @Left_drag_stop
     u32 (x2 * FONT_X) + FONT_X - 1  // +9
     u32 (y2 * FONT_Y) + FONT_Y - 1  // +13
     u32 func                        // +17
-    #ifdef data1
+    ifdef data1
     {
         u32 data1                   // +21
     
-    } #else {
+    } else {
         u32 0ffffffffh
     }
-    #ifdef data2
+    ifdef data2
     {
         u16 data2                   // +25
     
-    } #else {
+    } else {
         u16 0ffffh
     }
-    #ifdef data3
+    ifdef data3
     {
         u8  data3                   // +27
     
-    } #else {
+    } else {
         u8  0ffh
     }
   // Total = 28
@@ -746,25 +746,25 @@ macro @Right_drag_stop
     u32 (x2 * FONT_X) + FONT_X - 1  // +9
     u32 (y2 * FONT_Y) + FONT_Y - 1  // +13
     u32 func                        // +17
-    #ifdef data1
+    ifdef data1
     {
         u32 data1                   // +21
     
-    } #else {
+    } else {
         u32 0ffffffffh
     }
-    #ifdef data2
+    ifdef data2
     {
         u16 data2                   // +25
     
-    } #else {
+    } else {
         u16 0ffffh
     }
-    #ifdef data3
+    ifdef data3
     {
         u8  data3                   // +27
     
-    } #else {
+    } else {
         u8  0ffh
     }
   // Total = 28
@@ -787,12 +787,12 @@ macro @Hover
     u32 (y2 * FONT_Y) + FONT_Y - 1  // +13
     u32 func                        // +17
     u16 lowword(offset loffset)     // +21
-    #ifdef datum
+    ifdef datum
     {
         u16 datum                   // +23
         u8  3 dup(0ffh)             // +25
     
-    } #else {
+    } else {
         u8  5 dup(0ffh)             // +23
     }
   // Total = 28
@@ -815,12 +815,12 @@ macro @Edit
     u32 (y2 * FONT_Y) + FONT_Y - 1  // +13
     u32 type                        // +17
     u16 lowword(offset loffset)     // +21
-    #ifdef datum
+    ifdef datum
     {
         u16 datum                   // +23
         u8  3 dup(0ffh)             // +25
     
-    } #else {
+    } else {
         u8  5 dup(0ffh)             // +23
     }
   // Total = 28

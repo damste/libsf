@@ -9,7 +9,7 @@
     
     //_XDEBUG       = 1
 
-#include "\exodus\source\common\equates.asp"
+include "\exodus\source\common\equates.asp"
 
 code main
 | at offset 0

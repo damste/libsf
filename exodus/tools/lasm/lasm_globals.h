@@ -522,8 +522,11 @@
 		{	(cs8*)cgc_xmm6_reg,					sizeof(cgc_xmm6_reg) - 1,				false,		_ICODE_XMM6,						false,		_ICAT_XMM_REGISTER,		&colorDefault,		false,			null0,		null0	},
 		{	(cs8*)cgc_xmm7_reg,					sizeof(cgc_xmm7_reg) - 1,				false,		_ICODE_XMM7,						false,		_ICAT_XMM_REGISTER,		&colorDefault,		false,			null0,		null0	},
 																																																									  
-		{	(cs8*)cgc_lasm_function,			sizeof(cgc_lasm_function) - 1,			false,		_ICODE_LASM_FUNCTION,				true,		_ICAT_FLOW,				&colorDefault,		false,			null0,		null0	},
+		{	(cs8*)cgc_lasm_include,				sizeof(cgc_lasm_include) - 1,			false,		_ICODE_LASM_INCLUDE,				true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,		null0	},
+		{	(cs8*)cgc_lasm_define,				sizeof(cgc_lasm_define) - 1,			false,		_ICODE_LASM_DEFINE,					true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,		null0	},
+		{	(cs8*)cgc_lasm_function,			sizeof(cgc_lasm_function) - 1,			false,		_ICODE_LASM_FUNCTION,				true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,		null0	},
 		{	(cs8*)cgc_lasm_struct,				sizeof(cgc_lasm_struct) - 1,			false,		_ICODE_LASM_STRUCT,					true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,		null0	},
+		{	(cs8*)cgc_lasm_macro,				sizeof(cgc_lasm_macro) - 1,				false,		_ICODE_LASM_MACRO,					true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,		null0	},
 		
 		{	0,									0,										0,			0,									0,			0,						0,					0,				0,			0		}
 	};

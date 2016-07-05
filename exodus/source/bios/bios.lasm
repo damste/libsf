@@ -11,13 +11,13 @@
 
     
     
-#include "\exodus\source\common\equates.asp"
-#include "\exodus\source\common\macros.asp"
-#include "\exodus\source\common\errors.asp"
-#include "\exodus\source\common\objects.asp"
-#include "bios_eq.asp"
-#include "task_eq.asp"
-#include "obj_eq.asp"
+include "\exodus\source\common\equates.asp"
+include "\exodus\source\common\macros.asp"
+include "\exodus\source\common\errors.asp"
+include "\exodus\source\common\objects.asp"
+include "bios_eq.asp"
+include "task_eq.asp"
+include "obj_eq.asp"
 
 
 code text32
@@ -585,9 +585,9 @@ dd  offset requestor
 
 
 
-    #include "timer.asp"
-    #include "tasks.asp"
-    #include "objects.asp"
+    include "timer.asp"
+    include "tasks.asp"
+    include "objects.asp"
 
 
 

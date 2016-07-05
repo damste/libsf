@@ -8,10 +8,10 @@
     
     //_DEBI     = 0
 
-#include "../source/common/macros.asp"                         // Macros used throughout Exodus
-#include "../source/common/equates.asp"                        // Constants used to access memory variables, etc
-#include "../source/common/errors.asp"                         // Error codes used throughout
-#include "equates.asp"
+include "../source/common/macros.asp"                         // Macros used throughout Exodus
+include "../source/common/equates.asp"                        // Constants used to access memory variables, etc
+include "../source/common/errors.asp"                         // Error codes used throughout
+include "equates.asp"
 
 ;;
 ;;  -º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º
@@ -170,8 +170,8 @@ code text
 ;;
 ;; Note:  Each of these include files contains only 16-bit code and/or data.  However, some of them can create 32-bit items.
 ;;
-    #include "init16.asp"
-    #include "data16.asp"
+    include "init16.asp"
+    include "data16.asp"
 
 end_of_16_bit_segment:
 }
@@ -271,11 +271,11 @@ first_pmode_instruction:                                            // Setup seg
 ;; Note:  Each of these include files contains only 32-bit code and/or data
 ;;
 
-    #include "init32.asp"                                              // Baseline initialization routines
-    #include "data32.asp"
-    #include "native.asp"                                              // Native primatives
-    #include "ini.asp"
-    #include "req.asp"                                                 // requestor()
+    include "init32.asp"                                              // Baseline initialization routines
+    include "data32.asp"
+    include "native.asp"                                              // Native primatives
+    include "ini.asp"
+    include "req.asp"                                                 // requestor()
 
 end_of_32_bit_segment:
 }

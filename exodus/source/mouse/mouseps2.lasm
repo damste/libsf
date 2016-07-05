@@ -12,7 +12,7 @@
 
     
     
-#include "\exodus\source\common\equates.asp"
+include "\exodus\source\common\equates.asp"
 
 code text32
 | at offset 0

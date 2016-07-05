@@ -12,9 +12,9 @@
 
     
     
-#include "\exodus\source\common\keylist.asp"
-#include "\exodus\source\common\equates.asp"
-#include "\exodus\source\common\macros.asp"
+include "\exodus\source\common\keylist.asp"
+include "\exodus\source\common\equates.asp"
+include "\exodus\source\common\macros.asp"
 
 
 code text32

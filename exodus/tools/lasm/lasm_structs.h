@@ -125,25 +125,17 @@
 		s32			filenamePortion;					// Where the actual filename portion begins
 	};
 
-	// An augmented line for extra lasm information
-	struct SLasmLine
-	{
-		// The standard line must always be first
-		SLine			line;
-
-		// Extra information:
-		SLasmStatus		status;							// Holds a status for the line
-	};
-
 	// Linked list of files to be assembled
 	struct SLasmFile
 	{
-		SLL					ll;							// Link list through multiple files
+		// File number
+		s32					filenum;					// Used for shorthand references
 
 		// File and status
 		SLasmInclude*		include;					// #include file level as of the time of this file's creation
-		SDatum				fileName;					// Source file
-		SLasmStatus			status;						// Processing through the assemble process
+		SDatum				filename;					// Source file
+		s8*					filename_justfname;			// Just the filename
+		u32					status;						// See _LASM_STATUS_* constants
 
 		// Raw disk file contents
 		FILE*				fh;							// File handle
@@ -151,10 +143,7 @@
 		u32					rawLength;					// Raw data length
 
 		// Parsed into line structures
-		union {
-			SLine*			firstLine;					// Source file content for this file (including any include files)
-			SLasmLine*		firstLasmLine;				// To access with the extra fields
-		};
+		SLine*				firstLine;					// Source file content for this file (including any include files)
 	};
 
 	// #define statements
@@ -260,6 +249,7 @@
 		SLasmCmdLine*	cmdLine;
 		SLasmFile*		file;
 
+		SLine*			line;
 		SComp*			comp;
 		SComp*			compNext;
 		SComp*			compFile;

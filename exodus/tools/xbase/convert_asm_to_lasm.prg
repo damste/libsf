@@ -86,7 +86,7 @@ SET STEP ON
 				CASE UPPER(GETWORDNUM(laLines[lnI],1)) == "INCLUDE"
 					* Change to just "while "
 					lcAfter	= ALLTRIM(SUBSTR(laLines[lnI], 8))
-					lcAsm	= lcAsm + "#include " + CHR(34) + textConsecutive(lcAfter) + CHR(34) + textAfterConsecutive(lcAfter)
+					lcAsm	= lcAsm + "include " + CHR(34) + textConsecutive(lcAfter) + CHR(34) + textAfterConsecutive(lcAfter)
 
 				CASE UPPER(laLines[lnI]) = ".IF"
 					* Change to just "if "
@@ -164,19 +164,19 @@ SET STEP ON
 					lcAsm = lcAsm + "}}"
 
 				CASE UPPER(laLines[lnI]) = "IFDEF"
-					* Change to just "#ifdef "
-					lcAsm = lcAsm + "#ifdef " + CHRTRAN(ALLTRIM(SUBSTR(laLines[lnI], 6)) + CHR(13) + CHR(10), "<>", SPACE(0))
+					* Change to just "ifdef "
+					lcAsm = lcAsm + "ifdef " + CHRTRAN(ALLTRIM(SUBSTR(laLines[lnI], 6)) + CHR(13) + CHR(10), "<>", SPACE(0))
 					lcAsm = lcAsm + SPACE(lnWhiteSpaces) + "{"
 
 				CASE UPPER(laLines[lnI]) = "IFNB"
-					* Change to just "#ifdef "
-					lcAsm = lcAsm + "#ifdef " + CHRTRAN(ALLTRIM(SUBSTR(laLines[lnI], 5)) + CHR(13) + CHR(10), "<>", SPACE(0))
+					* Change to just "ifdef "
+					lcAsm = lcAsm + "ifdef " + CHRTRAN(ALLTRIM(SUBSTR(laLines[lnI], 5)) + CHR(13) + CHR(10), "<>", SPACE(0))
 					lcAsm = lcAsm + SPACE(lnWhiteSpaces) + "{"
 
 				CASE UPPER(laLines[lnI]) = "ELSE"
-					* Change to just "} #else {"
+					* Change to just "} else {"
 					lcAsm = lcAsm + CHR(13) + CHR(10)
-					lcAsm = lcAsm + SPACE(lnWhitespaces) + "} #else {" + ALLTRIM(SUBSTR(laLines[lnI], 5))
+					lcAsm = lcAsm + SPACE(lnWhitespaces) + "} else {" + ALLTRIM(SUBSTR(laLines[lnI], 5))
 
 				CASE UPPER(laLines[lnI]) = "ENDIF"
 					* Change to just "}"

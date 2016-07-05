@@ -6,7 +6,7 @@
 
 
 
-#include "x86_eq.asp"
+include "x86_eq.asp"
 
 
 // -š-„-„-„-„-„-„-„-„-„-„-„-„-„Â+

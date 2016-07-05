@@ -11,9 +11,9 @@
 
 // standard VGA/Mono Driver
 
-            #include "\exodus\source\common\equates.asp"
-#include "\exodus\source\common\macros.asp"
-#include "\exodus\source\common\objects.asp"
+            include "\exodus\source\common\equates.asp"
+include "\exodus\source\common\macros.asp"
+include "\exodus\source\common\objects.asp"
 
 MONO_CRTC_INDEX           = 3b4h
 MONO_CRTC_DATA            = 3b5h
@@ -159,9 +159,9 @@ dd offset requestor
 
 
 
-    #include "vga.asp"                                                 // VGA algorithms
-    #include "mono.asp"                                                // Monochrome algorithms
-    #include "global.asp"                                              // Global algorithms
+    include "vga.asp"                                                 // VGA algorithms
+    include "mono.asp"                                                // Monochrome algorithms
+    include "global.asp"                                              // Global algorithms
 
 
 
@@ -409,12 +409,12 @@ dd offset requestor
                                             u32 offset font_16x16_base
                                             u8  "Bitmap 16x16",0
 
-    #include "bit8x6.fnt"
-    #include "bit8x8.fnt"
-    #include "bit8x14.fnt"
-    #include "bit8x16.fnt"
-    #include "bit16x16.fnt"
-    #include "mouse.fnt"
+    include "bit8x6.fnt"
+    include "bit8x8.fnt"
+    include "bit8x14.fnt"
+    include "bit8x16.fnt"
+    include "bit16x16.fnt"
+    include "mouse.fnt"
 
 
    // 320x200,8

@@ -47,7 +47,7 @@ comma_space                             u8  ", ",0
 // Boot screen
 bootscreen_start:
   //INCLUDE bootscrn.inc
-  #include "boot_scr.inc"
+  include "boot_scr.inc"
 bootscreen_end:
 
 

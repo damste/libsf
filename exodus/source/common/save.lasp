@@ -711,11 +711,11 @@ debug_mono:
     popad
     ret
 
-    #include "pic.asp"                                                 // Programmable interrupt controller (APIC controller)
-    #include "dma.asp"                                                 // Direct memory access
-    #include "video.asp"                                               // Graphics and text
+    include "pic.asp"                                                 // Programmable interrupt controller (APIC controller)
+    include "dma.asp"                                                 // Direct memory access
+    include "video.asp"                                               // Graphics and text
 
-    #include "debi.asp"                                                // Debugger! :)
+    include "debi.asp"                                                // Debugger! :)
 
 
 //Û
@@ -4902,7 +4902,7 @@ skip_halt:
 
 
 // LOAD_XDEBUG()
-#ifdef _XDEBUG
+ifdef _XDEBUG
 {
     mov     ax,0200h + 14                                           // Read 14 debug program sectors
     mov     bx,7000h                                                // Store at 7000:0000h, or 7000h
