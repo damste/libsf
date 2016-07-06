@@ -1704,15 +1704,15 @@
 //////
 	u32 iComps_combineAll_between(SLine* line, s32 tniCodeNeedle, s32 tniCodeCombined, SBgra* syntaxHighlightColor)
 	{
-		u32		lnCount;
+		u32		lnCount, lnLength, lnOffset;
 		SComp*	compNext;
 		SComp*	comp;
 		SComp*	compSearcher;
+		SComp*	compCopy;
+		s8*		mergeBuffer;
 
 
 		// Make sure our environment is sane
-// Refactoring changes made, breakpoint and examine
-debug_break;
 		lnCount = 0;
 		if (line && line->firstComp)
 		{
@@ -1733,14 +1733,30 @@ debug_break;
 				if (comp->iCode == tniCodeNeedle)
 				{
 					// Search forward to see if there is a matching entry
-					compSearcher = compNext;
+					lnLength		= comp->text.length;
+					compSearcher	= compNext;
 					while (compSearcher)
 					{
+						// Increase the length
+						lnLength += compSearcher->text.length;
+
 						// Are we on our target?
 						if (compSearcher->iCode == tniCodeNeedle)
 						{
-							// This is the match, combine everything between
-							iDatum_append_comp(&comp->text, compSearcher);
+							// Allocate space for the joined components
+							mergeBuffer = (s8*)malloc(lnLength + 1);
+							if (!mergeBuffer)
+								return(0);
+
+							// Physically copy
+							mergeBuffer[lnLength] = 0;
+							for (compCopy = comp, lnOffset = 0; lnOffset < lnLength; lnOffset += compCopy->text.length, compCopy = compCopy->ll.nextComp)
+								memcpy(mergeBuffer + lnOffset, compCopy->text.data_s8, compCopy->text.length);
+
+							// This is the match, combine everything between/
+							iDatum_delete(&comp->text, false);
+							comp->text.data_s8	= mergeBuffer;
+							comp->text.length	= lnLength;
 							comp->iCode			= tniCodeCombined;
 							comp->color			= syntaxHighlightColor;
 							comp->nbspCount		+= compSearcher->nbspCount;
@@ -1752,6 +1768,7 @@ debug_break;
 								++lnCount;
 
 								// Delete this one (as it was technically merged above with the comp->text.length = line)
+								iDatum_delete(&compNext->text, false);
 								iLl_delete__ll((SLL*)compNext, true);
 
 								// See if we're done
