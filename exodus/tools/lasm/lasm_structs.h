@@ -81,6 +81,8 @@
 
 
 
+struct SLasmFile;
+
 
 //////////
 // lasm structs
@@ -123,6 +125,19 @@
 		bool		lIsFilename;						// Is it a full filename (and not just a path)?
 		SDatum		filename;							// The full pathname
 		s32			filenamePortion;					// Where the actual filename portion begins
+	};
+
+	// For #include files, searches known paths iteratively
+	struct SLasmIncludeIter
+	{
+		u32			offset;								// Offset into the includeFiles builder
+		s8			filename[_MAX_PATH];				// The filename being used for iteration
+		s32			filenameLength;						// Length of the actual filename
+
+		// Constructed at each iteration
+		s8			pathname[_MAX_PATH];				// The filename at this level
+		bool		wasOpened;							// Raised when it's opened
+		SLasmFile*	file;								// If it was opened on the try(), then it is updated here
 	};
 
 	// Linked list of files to be assembled
@@ -255,5 +270,5 @@
 		SComp*			compFile;
 		SLasmDefine*	define;
 		SLasmFile*		fileInclude;
-		s8				fileName[_MAX_PATH];
+		s8				filename[_MAX_PATH];
 	};

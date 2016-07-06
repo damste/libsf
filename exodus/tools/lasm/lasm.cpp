@@ -291,7 +291,7 @@
 			} else {
 				// Based on our command line option syntax, since it doesn't begin with a hyphen, it can only be a file to assemble
 				// Try to load it
-				if (!ilasm_appendFile(argv[lnI], NULL))
+				if (!ilasm_includeFile_append(argv[lnI], NULL))
 				{
 					// Unable to load
 					printf(cgc_unable_to_open_file, argv[lnI]);
@@ -349,10 +349,11 @@
 
 //////////
 //
-// Called to append the indicated file to the chain, and read in its file contents
+// Called to append the indicated file to the known file chain,
+// and also read in its file contents
 //
 //////
-	bool ilasm_appendFile(s8* tcPathname, SLasmFile** file)
+	bool ilasm_includeFile_append(s8* tcPathname, SLasmFile** file)
 	{
 		bool			llFound;
 		u32				lnI;
@@ -509,6 +510,104 @@
 
 		// Indicate our result
 		return(include);
+	}
+
+
+
+
+//////////
+//
+// For searching for files in the include path iteratively
+//
+//////
+	void ilasm_includePaths_iterate_start(SLasmIncludeIter* iiFile, s8* filename)
+	{
+		s32 lnLength;
+
+
+		// make sure our environment is sane
+		if (iiFile)
+		{
+			// Initialize
+			memset(&iiFile, 0, sizeof(iiFile));
+
+			// Copy over the filename they indicate
+			lnLength = strlen(filename);
+			if (lnLength < sizeof(iiFile->filename) - 1)
+			{
+				// Copy and set the length
+				memcpy(iiFile->filename, filename, lnLength);
+				iiFile->filenameLength = lnLength;
+			}
+		}
+	}
+
+	bool ilasm_includePaths_iterate_try(SLasmIncludeIter* iiFile, bool& tlIsFileValid)
+	{
+		s32				lnLength;
+		SLasmInclude*	include;
+
+
+		// Based on the current offset
+		if (iiFile->offset < includePaths->populatedLength)
+		{
+
+			//////////
+			// Create the merged pathname
+			//////
+				memset(&iiFile->pathname, 0, sizeof(iiFile->pathname));
+				include = (SLasmInclude*)(includePaths->buffer + iiFile->offset);		// Copy the path from includePaths
+				ilasm_validate_trailingBackspace(include);								// Make sure it's terminated with a backslash
+
+
+			//////////
+			// Append the file portion
+			//////
+				lnLength = strlen(iiFile->pathname);
+				if (lnLength + iiFile->filenameLength < sizeof(iiFile->pathname) - 1)
+				{
+					// There's room to copy
+					tlIsFileValid = true;
+					memcpy(iiFile->pathname + lnLength, iiFile->filename, iiFile->filenameLength);
+
+				} else {
+					// Concatenated filename would be too big
+					tlIsFileValid = false;
+				}
+
+
+			//////////
+			// Try to open
+			//////
+				if (tlIsFileValid)
+				{
+					// Can we append the file?
+					if (ilasm_includeFile_append(iiFile->pathname, &iiFile->file))
+						return(true);
+				}
+
+		}
+
+		// Unsuccessful if we get here
+		return(false);
+	}
+
+	bool ilasm_includePaths_iterate_next(SLasmIncludeIter* iiFile)
+	{
+		// Make sure our environment is sane
+		if (iiFile)
+		{
+			// Is there enough room for another iteration?
+			if (iiFile->offset + sizeof(SLasmInclude) < includePaths->populatedLength)
+			{
+				// Yes
+				iiFile->offset += sizeof(SLasmInclude);
+				return(true);
+			}
+		}
+
+		// If we get here, we're done
+		return(false);
 	}
 
 

@@ -91,14 +91,16 @@ struct SLasmInclude;
 //////
 	void				ilasm_parse_commandLine							(SLasmCmdLine* cmdLine, s32 argc, s8* argv[]);
 	void				ilasm_compile									(SLasmCmdLine* cmdLine);
-	bool				ilasm_appendFile								(s8* tcPathname, SLasmFile** file);
+	bool				ilasm_includeFile_append						(s8* tcPathname, SLasmFile** file);
 	SLasmInclude*		ilasm_includePath_append						(s8* tcPathname, s32 tnPathnameLength, bool tlIsFilename);
+	void				ilasm_includePaths_iterate_start				(SLasmIncludeIter* iiFile, s8* filename);
+	bool				ilasm_includePaths_iterate_try					(SLasmIncludeIter* iiFile, bool& tlIsFileValid);
+	bool				ilasm_includePaths_iterate_next					(SLasmIncludeIter* iiFile);
 	SLasmInclude*		ilasm_validate_trailingBackspace				(SLasmInclude* include);
 	void				ilasm_fixupDirectoryDividers					(s8* tcPathname, s32 tnPathnameLength);
 	void				ilasm_add_fileStatus							(SLasmFile* file, u32 tnStatus, bool tlProcessLines, bool tlProcessComps);
 	void				ilasm_add_lineStatus							(SLine* line, u32 tnStatus, bool tlProcessComps);
 	void				ilasm_add_compStatus							(SComp* comp, u32 tnStatus);
-
 
 
 //////////

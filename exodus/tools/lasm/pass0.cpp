@@ -94,8 +94,8 @@
 //		fundamental symbols and symbol groupings
 //		removes blank lines
 //		removes comment lines
-//		loads #include files
-//		at the end of pass-0, it re-processes #define statements for any nested macros
+//		loads include files
+//		at the end of pass-0, it re-processes define statements for any nested macros
 //
 //////
 	void ilasm_pass0(SLasmCmdLine* cmdLine, SLasmFile* file)
@@ -157,9 +157,10 @@
 //////
 	bool iilasm_pass0_include(SLasmPass0* p0)
 	{
-		bool	llError;
-		s32		lnLineCount;
-		cs8*	lcErrorText;
+		bool				llError, llIsFileValid;
+		s32					lnLineCount;
+		cs8*				lcErrorText;
+		SLasmIncludeIter	iiFile;
 
 
 		// The next component needs to be the filename
@@ -172,24 +173,45 @@
 			if (p0->compFile && (p0->compFile->iCode == _ICODE_DOUBLE_QUOTED_TEXT || p0->compFile->iCode == _ICODE_SINGLE_QUOTED_TEXT))
 			{
 				// Copy the filename to a local buffer
-				memcpy(p0->fileName, p0->compFile->text.data_s8 + 1, p0->compFile->text.length - 2);
-				p0->fileName[p0->compFile->text.length - 2] = 0;
+				memcpy(p0->filename, p0->compFile->text.data_s8 + 1, p0->compFile->text.length - 2);
+				p0->filename[p0->compFile->text.length - 2] = 0;
 
 				// Correct the directory dividers to the standard OS form
-				ilasm_fixupDirectoryDividers(p0->fileName, p0->compFile->text.length - 2);
+				ilasm_fixupDirectoryDividers(p0->filename, p0->compFile->text.length - 2);
 
 				// Try to open it
-				if (!ilasm_appendFile(p0->fileName, &p0->fileInclude))
+				if (!ilasm_includeFile_append(p0->filename, &p0->fileInclude))
 				{
-					// Error opening the file
-					lcErrorText = (cs8*)"--Error(%d,%d): error opening [#include \"%s\"\n";
-					break;
+					// Iterate through the known include file paths
+					ilasm_includePaths_iterate_start(&iiFile, p0->filename);
+					while (!iiFile.wasOpened)
+					{
+						// Try to open it
+						if (ilasm_includePaths_iterate_try(&iiFile, llIsFileValid))
+						{
+							// It was opened
+							break;
+
+						} else if (!llIsFileValid) {
+							// Something was wrong with the filename (the path might be too long)
+							lcErrorText = (cs8*)"--Error(%d,%d): error opening file [include \"%s\"]\n";
+// TODO:  working in this general area
+						}
+
+						// Move to the next iteration
+						if (!ilasm_includePaths_iterate_next(&iiFile))
+						{
+							// Error opening the file
+							lcErrorText = (cs8*)"--Error(%d,%d): error opening file [include \"%s\"]\n";
+							break;
+						}
+					}
 				}
 				// File's loaded
 
 				// If we're in verbose mode, display the loaded file
 				if (p0->cmdLine->o.lVerbose)
-					printf("--include \"%s\"", p0->fileName);
+					printf("--include \"%s\"", p0->filename);
 
 				// Insert its lines after this #include line
 				lnLineCount = iLine_migrateLines(&p0->file->firstLine, p0->line);
