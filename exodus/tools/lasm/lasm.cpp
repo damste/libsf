@@ -529,7 +529,7 @@
 		if (iiFile)
 		{
 			// Initialize
-			memset(&iiFile, 0, sizeof(iiFile));
+			memset(iiFile, 0, sizeof(*iiFile));
 
 			// Copy over the filename they indicate
 			lnLength = strlen(filename);
@@ -549,7 +549,7 @@
 
 
 		// Based on the current offset
-		if (iiFile->offset < includePaths->populatedLength)
+		if (iiFile && iiFile->offset < includePaths->populatedLength)
 		{
 
 			//////////
@@ -597,7 +597,7 @@
 		// Make sure our environment is sane
 		if (iiFile)
 		{
-			// Is there enough room for another iteration?
+			// Is there enough room for another attempt?
 			if (iiFile->offset + sizeof(SLasmInclude) < includePaths->populatedLength)
 			{
 				// Yes
@@ -643,7 +643,7 @@
 // Called to adjust the slashes
 //
 //////
-	void ilasm_fixupDirectoryDividers(s8* tcPathname, s32 tnPathnameLength)
+	void ilasm_fixup_directoryDividers(s8* tcPathname, s32 tnPathnameLength)
 	{
 		s32 lnI;
 
@@ -655,6 +655,45 @@
 			if (tcPathname[lnI] == '/')
 				tcPathname[lnI] = '\\';
 		}
+	}
+
+
+
+
+//////////
+//
+// Called to see if it's a file like "c:\path\to\file.txt" or if it's
+// something like "relative\path\to\file.txt"
+//
+//////
+	bool ilasm_is_absolutePath(s8* tcPathname, s32 tnPathnameLength)
+	{
+		// Is it long enough to be an absolute path?
+		if (tnPathnameLength >= 2)
+		{
+			// Test drive letter
+			if (isAlpha(tcPathname[0]) && tcPathname[1] == ':')
+			{
+				// It's something like x:
+				return(true);
+			}
+
+			// Test unc
+			if (tcPathname[0] == '\\' && tcPathname[1] == '\\')
+			{
+				// It's something like \\server\...
+				return(true);
+			}
+
+			// Test \path\to\file.txt
+			if (tcPathname[0] == '\\')
+				return(true);
+
+			// If we get here, we assume it's a relative path
+		}
+
+		// It's too short to be an absolute path
+		return(false);
 	}
 
 

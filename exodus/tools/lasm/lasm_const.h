@@ -588,4 +588,5 @@
 //////////
 // Error messages
 //////
-	cs8			cgc_unable_to_open_file[]			= "--Error: unable to open file: %s\n";
+	cs8			cgc_unable_to_open_file[]				= "--Error: unable to open file: %s\n";
+	cs8			cgc_lasm_error_opening_include_file[]	= "--Error(%d,%d): error opening file [include \"%s\"]\n";

@@ -158,7 +158,7 @@
 	bool iilasm_pass0_include(SLasmPass0* p0)
 	{
 		bool				llError, llIsFileValid;
-		s32					lnLineCount;
+		s32					lnLineCount, lnFilenameLength;
 		cs8*				lcErrorText;
 		SLasmIncludeIter	iiFile;
 
@@ -177,12 +177,21 @@
 				p0->filename[p0->compFile->text.length - 2] = 0;
 
 				// Correct the directory dividers to the standard OS form
-				ilasm_fixupDirectoryDividers(p0->filename, p0->compFile->text.length - 2);
+				lnFilenameLength = p0->compFile->text.length - 2;
+				ilasm_fixup_directoryDividers(p0->filename, lnFilenameLength);
 
 				// Try to open it
 				if (!ilasm_includeFile_append(p0->filename, &p0->fileInclude))
 				{
-					// Iterate through the known include file paths
+					// Is it an absolute path
+					if (ilasm_is_absolutePath(p0->filename, lnFilenameLength))
+					{
+						// Error opening the file
+						lcErrorText = cgc_lasm_error_opening_include_file;
+						break;
+					}
+
+					// Iterate through the known include file paths and attempt to load its
 					ilasm_includePaths_iterate_start(&iiFile, p0->filename);
 					while (!iiFile.wasOpened)
 					{
@@ -194,19 +203,27 @@
 
 						} else if (!llIsFileValid) {
 							// Something was wrong with the filename (the path might be too long)
-							lcErrorText = (cs8*)"--Error(%d,%d): error opening file [include \"%s\"]\n";
-// TODO:  working in this general area
+							// We ignore it... it will eventually fall through and error out if it's not found elsewhere
 						}
 
 						// Move to the next iteration
 						if (!ilasm_includePaths_iterate_next(&iiFile))
 						{
 							// Error opening the file
-							lcErrorText = (cs8*)"--Error(%d,%d): error opening file [include \"%s\"]\n";
+							lcErrorText = cgc_lasm_error_opening_include_file;
 							break;
 						}
 					}
 				}
+
+				// Was the file loaded?
+				if (!iiFile.wasOpened)
+				{
+					// Nope
+					lcErrorText = cgc_lasm_error_opening_include_file;
+					break;
+				}
+
 				// File's loaded
 
 				// If we're in verbose mode, display the loaded file
