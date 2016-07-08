@@ -481,13 +481,16 @@
 		if (include)
 		{
 			// Allocate enough space
-			include->lIsFilename = tlIsFilename;
+			include->lIsFilename = false;
 			iDatum_allocateSpace(&include->filename, _MAX_PATH + 32);
 
 			// Expand to its full form
 			fileNamePortion = NULL;
 			if (!GetFullPathName(tcPathname, include->filename.length, include->filename.data_s8, &fileNamePortion))
 				lnError = GetLastError();
+
+			// Store the permanent length of whatever we're now using
+			include->filename.length = strlen(tcPathname);
 
 			// NULL-terminate
 			if (tlIsFilename)
@@ -499,13 +502,10 @@
 			} else {
 				// No filename portion
 				include->filenamePortion = 0;
+
+				// Validate that it has a trailing backslash
+				ilasm_validate_trailingBackspace(include);
 			}
-
-			// Store the permanent length of whatever we're now using
-			include->filename.length = strlen(tcPathname);
-
-			// Validate that it ends in a backslash
-			ilasm_validate_trailingBackspace(include);
 		}
 
 		// Indicate our result
@@ -542,7 +542,7 @@
 		}
 	}
 
-	bool ilasm_includePaths_iterate_try(SLasmIncludeIter* iiFile, bool& tlIsFileValid)
+	bool ilasm_includePaths_iterate_try(SLasmIncludeIter* iiFile, bool& tlIsFileValid, SLasmFile** fileInclude)
 	{
 		s32				lnLength;
 		SLasmInclude*	include;
@@ -551,13 +551,17 @@
 		// Based on the current offset
 		if (iiFile && iiFile->offset < includePaths->populatedLength)
 		{
-
 			//////////
 			// Create the merged pathname
 			//////
+				iiFile->wasOpened	= false;
+				include				= (SLasmInclude*)(includePaths->buffer + iiFile->offset);		// Copy the path from includePaths
+				if (include->lIsFilename)
+					return(false);		// This include file is not a pathname, but a filename, we can't use it
+
+				// Copy the path
 				memset(&iiFile->pathname, 0, sizeof(iiFile->pathname));
-				include = (SLasmInclude*)(includePaths->buffer + iiFile->offset);		// Copy the path from includePaths
-				ilasm_validate_trailingBackspace(include);								// Make sure it's terminated with a backslash
+				memcpy(&iiFile->pathname, include->filename.data_s8, include->filename.length + 1);
 
 
 			//////////
@@ -582,8 +586,14 @@
 				if (tlIsFileValid)
 				{
 					// Can we append the file?
-					if (ilasm_includeFile_append(iiFile->pathname, &iiFile->file))
+					if (ilasm_includeFile_append(iiFile->pathname, fileInclude))
+					{
+						// It was opened successfully
+						iiFile->wasOpened = true;
+
+						// Indicate success
 						return(true);
+					}
 				}
 
 		}
@@ -666,7 +676,7 @@
 // something like "relative\path\to\file.txt"
 //
 //////
-	bool ilasm_is_absolutePath(s8* tcPathname, s32 tnPathnameLength)
+	bool ilasm_isAbsolutePath(s8* tcPathname, s32 tnPathnameLength)
 	{
 		// Is it long enough to be an absolute path?
 		if (tnPathnameLength >= 2)

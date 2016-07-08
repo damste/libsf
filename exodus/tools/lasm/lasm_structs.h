@@ -119,7 +119,7 @@ struct SLasmFile;
 		bool		isCompleted	: 1;					// Is the assemble process completed on this line?
 	};
 
-	// #include files, and also #includ paths
+	// #include files, and also #include paths
 	struct SLasmInclude
 	{
 		bool		lIsFilename;						// Is it a full filename (and not just a path)?
@@ -137,7 +137,6 @@ struct SLasmFile;
 		// Constructed at each iteration
 		s8			pathname[_MAX_PATH];				// The filename at this level
 		bool		wasOpened;							// Raised when it's opened
-		SLasmFile*	file;								// If it was opened on the try(), then it is updated here
 	};
 
 	// Linked list of files to be assembled

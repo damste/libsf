@@ -402,43 +402,33 @@ goto_next_component:
 	s32 iLine_migrateLines(SLine** linesFrom, SLine* lineTarget)
 	{
 		s32		lnLineCount;
-		SLine*	temp;
+		SLine*	lineAfter;
 		SLine*	line;
+		SLine*	lineFrom;
 
 
 		// Make sure our environment is sane
 		lnLineCount	= 0;
-		if (linesFrom && *linesFrom && lineTarget)
+		if (linesFrom && (lineFrom = *linesFrom) && lineTarget)
 		{
-// TODO:  Untested.  Breakpoint and examine.
-debug_break;
 
 			//////////
-			// Point lineTarget to the start of the line block
+			// Point lineTarget to the start of the linesFrom block
 			//////
-				temp						= lineTarget->ll.nextLine;
-				lineTarget->ll.nextLine		= *linesFrom;
-				(*linesFrom)->ll.prevLine	= lineTarget;
+				lineAfter					= lineTarget->ll.nextLine;
+				lineTarget->ll.nextLine		= lineFrom;
+				lineFrom->ll.prevLine		= lineTarget;
 
 
 			//////////
 			// Point the last line of the *linesFrom chain to the temp
 			//////
-				line		= *linesFrom;
-				lnLineCount	= 1;
-
-				// Iterate through until we reach the last line
-				while (line->ll.nextLine)
-				{
-					// Increase our line count
+				for (line = lineFrom, lnLineCount = 1; line->ll.nextLine; line = line->ll.nextLine)
 					++lnLineCount;
 
-					// Move to the next line
-					line = line->ll.nextLine;
-				}
-
-				line->ll.nextLine	= temp;		// Last line points to the original line after where we inserted
-				temp->ll.prevLine	= line;		// The original line after where we inserted points back to the new line
+				// Update the 
+				line->ll.nextLine		= lineAfter;		// Last line points to the original line after where we inserted
+				lineAfter->ll.prevLine	= line;				// The original line after where we inserted points back to the new line
 
 		}
 

@@ -160,6 +160,7 @@
 		bool				llError, llIsFileValid;
 		s32					lnLineCount, lnFilenameLength;
 		cs8*				lcErrorText;
+		SLine*				line;
 		SLasmIncludeIter	iiFile;
 
 
@@ -184,7 +185,7 @@
 				if (!ilasm_includeFile_append(p0->filename, &p0->fileInclude))
 				{
 					// Is it an absolute path
-					if (ilasm_is_absolutePath(p0->filename, lnFilenameLength))
+					if (ilasm_isAbsolutePath(p0->filename, lnFilenameLength))
 					{
 						// Error opening the file
 						lcErrorText = cgc_lasm_error_opening_include_file;
@@ -196,7 +197,7 @@
 					while (!iiFile.wasOpened)
 					{
 						// Try to open it
-						if (ilasm_includePaths_iterate_try(&iiFile, llIsFileValid))
+						if (ilasm_includePaths_iterate_try(&iiFile, llIsFileValid, &p0->fileInclude))
 						{
 							// It was opened
 							break;
@@ -214,31 +215,31 @@
 							break;
 						}
 					}
-				}
 
-				// Was the file loaded?
-				if (!iiFile.wasOpened)
-				{
-					// Nope
-					lcErrorText = cgc_lasm_error_opening_include_file;
-					break;
+					// Was the file loaded?
+					if (!iiFile.wasOpened)
+					{
+						// Nope
+						lcErrorText = cgc_lasm_error_opening_include_file;
+						break;
+					}
 				}
-
 				// File's loaded
 
 				// If we're in verbose mode, display the loaded file
 				if (p0->cmdLine->o.lVerbose)
 					printf("--include \"%s\"", p0->filename);
 
+				// Lex and parse the include file content
+				for (line = p0->fileInclude->firstLine; line; line = line->ll.nextLine)
+					iComps_lex_and_parse(line, NULL, &cgcKeywordsLasm[0]);
+
 				// Insert its lines after this #include line
-				lnLineCount = iLine_migrateLines(&p0->file->firstLine, p0->line);
-				if (p0->cmdLine->o.lVerbose)	printf("%d lines\n", lnLineCount);
-				else							printf("\n");
+				lnLineCount = iLine_migrateLines(&p0->fileInclude->firstLine, p0->line);
+				if (p0->cmdLine->o.lVerbose)
+					printf(", %d lines\n", lnLineCount);
 
-				// We're done with the include line
-				ilasm_add_lineStatus(p0->line, _LASM_STATUS_COMPLETED, true);
-
-				// We're good, no errors
+				// We're done with the include line, no errors
 				llError = false;
 
 			} else {

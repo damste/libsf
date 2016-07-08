@@ -11,7 +11,7 @@
 			<DebugSettings
 				Command="$(TargetPath)"
 				WorkingDirectory="\libsf\exodus\tools\test"
-				CommandArguments="-Wall -fsyntax-only -Wmissing-type-ptr -Wno-missing-type-ptr -Wfatal-errors test.lasm"
+				CommandArguments="-Wall -verbose -fsyntax-only -Wmissing-type-ptr -Wno-missing-type-ptr -Wfatal-errors test.lasm"
 				Attach="false"
 				DebuggerType="3"
 				Remote="1"
