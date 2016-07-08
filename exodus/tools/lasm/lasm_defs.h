@@ -99,9 +99,12 @@ struct SLasmInclude;
 	SLasmInclude*		ilasm_validate_trailingBackspace				(SLasmInclude* include);
 	void				ilasm_fixup_directoryDividers					(s8* tcPathname, s32 tnPathnameLength);
 	bool				ilasm_isAbsolutePath							(s8* tcPathname, s32 tnPathnameLength);
-	void				ilasm_add_fileStatus							(SLasmFile* file, u32 tnStatus, bool tlProcessLines, bool tlProcessComps);
-	void				ilasm_add_lineStatus							(SLine* line, u32 tnStatus, bool tlProcessComps);
-	void				ilasm_add_compStatus							(SComp* comp, u32 tnStatus);
+
+	// For component, line, or file statuses
+	void				ilasm_status_comp_add							(SComp* comp, u32 tnStatus);
+	void				ilasm_status_line_add							(SLine* line, u32 tnStatus, bool tlProcessComps);
+	bool				ilasm_status_line_isCompleted					(SLine* line);
+	void				ilasm_status_file_add							(SLasmFile* file, u32 tnStatus, bool tlProcessLines, bool tlProcessComps);
 
 
 //////////

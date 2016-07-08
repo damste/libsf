@@ -1358,8 +1358,8 @@
 	void		iBuilder_createAndInitialize				(SBuilder** builder, u32 tnAllocationBlockSize = 4096);
 	bool		iBuilder_isPointer							(SBuilder* builder, uptr testptr, void** outPtr = NULL);
 	cs8*		iBuilder_appendData							(SBuilder* builder, SDatum* data);
-	cs8*		iBuilder_appendData							(SBuilder* builder, cs8* tcData, u32 tnDataLength);
-	cu8*		iBuilder_appendData							(SBuilder* builder, cu8* tcData, u32 tnDataLength);
+	cs8*		iBuilder_appendData							(SBuilder* builder, cs8* tcData, u32 tnDataLength = (u32)-1);
+	cu8*		iBuilder_appendData							(SBuilder* builder, cu8* tcData, u32 tnDataLength = (u32)-1);
 	u8*			iBuilder_append_uptr						(SBuilder* builder, uptr tnValue);
 	u8*			iBuilder_appendCrLf							(SBuilder* builder);
 	void		iBuilder_delete								(SBuilder* builder, u32 tnStartOffset, u32 tnDeleteLength);

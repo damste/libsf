@@ -122,7 +122,7 @@
 				if (!p0.comp || p0.comp->iCode == _ICODE_COMMENT)
 				{
 					// Blank line or comment line
-					ilasm_add_lineStatus(p0.line, _LASM_STATUS_COMPLETED, true);
+					ilasm_status_line_add(p0.line, _LASM_STATUS_COMPLETED, true);
 					continue;
 
 				} else if (p0.comp->iCode == _ICODE_LASM_INCLUDE) {
@@ -135,7 +135,7 @@
 
 					} else {
 						// Line is completed
-						ilasm_add_lineStatus(p0.line, _LASM_STATUS_COMPLETED, true);
+						ilasm_status_line_add(p0.line, _LASM_STATUS_COMPLETED, true);
 					}
 				}
 				// else other pragmas are ignored for this pass
@@ -254,7 +254,7 @@
 		if (llError)
 		{
 			// Syntax error
-			ilasm_add_lineStatus(p0->line, _LASM_STATUS_ERROR, true);
+			ilasm_status_line_add(p0->line, _LASM_STATUS_ERROR, true);
 			printf(lcErrorText, p0->line->lineNumber, p0->comp->start, p0->file->filename.data_s8);
 		}
 

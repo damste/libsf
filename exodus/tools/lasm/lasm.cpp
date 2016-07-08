@@ -330,7 +330,28 @@
 				// Dispatch the pass on this file
 				switch (lnPass)
 				{
-					case 0:		{	ilasm_pass0(cmdLine, file);		break;	}
+					case 0:
+						ilasm_pass0(cmdLine, file);
+
+//////////
+// // For debugging, write a temporary output of our contiguous file now
+// SLine*		line;
+// SBuilder*	b;
+// b = NULL;
+// iBuilder_createAndInitialize(&b);
+// for (line = file->firstLine; line; line = line->ll.nextLine)
+// {
+// 	if (!ilasm_status_line_isCompleted(line))
+// 	{
+// 		iBuilder_appendData(b, line->sourceCode.data_u8, line->sourceCode.length);
+// 		iBuilder_appendCrLf(b);
+// 	}
+// }
+// iBuilder_asciiWriteOutFile(b, (cu8*)"c:\\temp\\out.txt");
+// iBuilder_freeAndRelease(&b);
+//////
+						break;
+
 // 					case 1:		{	ilasm_pass1(cmdLine, file);		break;	}
 // 					case 2:		{	ilasm_pass2(cmdLine, file);		break;	}
 // 					case 3:		{	ilasm_pass2(cmdLine, file);		break;	}
@@ -711,28 +732,14 @@
 
 //////////
 //
-// Called to add the indicated status to the file, and optionally all of the lines and more optionally all the comps
+// 
 //
 //////
-	void ilasm_add_fileStatus(SLasmFile* file, u32 tnStatus, bool tlProcessLines, bool tlProcessComps)
+	void ilasm_status_comp_add(SComp* comp, u32 tnStatus)
 	{
-		SLine* line;
-
-
 		// Make sure our environment is sane
-		if (file)
-		{
-			// Set the status
-			file->status |= tnStatus;
-
-			// Optionally process lines
-			if (tlProcessLines)
-			{
-				// Iterate through each line
-				for (line = file->firstLine; line; line = line->ll.nextLine)
-					ilasm_add_lineStatus(line, tnStatus, tlProcessComps);
-			}
-		}
+		if (comp)
+			comp->compStatus |= tnStatus;
 	}
 
 
@@ -743,7 +750,7 @@
 // Called to add the indicated status to the line, and optionally all of the line comps
 //
 //////
-	void ilasm_add_lineStatus(SLine* line, u32 tnStatus, bool tlProcessComps)
+	void ilasm_status_line_add(SLine* line, u32 tnStatus, bool tlProcessComps)
 	{
 		SComp* comp;
 
@@ -769,12 +776,48 @@
 
 //////////
 //
-// 
+// Called to see if the status is completed
 //
 //////
-	void ilasm_add_compStatus(SComp* comp, u32 tnStatus)
+	bool ilasm_status_line_isCompleted(SLine* line)
 	{
+		// If there's no line, it's obviously done :-)
+		if (!line)
+			return(true);
+
+		// If it's marked completed, it's done
+		if ((line->lineStatus & _LASM_STATUS_COMPLETED) != 0)
+			return(true);
+
+		// If we get here, not done
+		return(false);
+	}
+
+
+
+
+//////////
+//
+// Called to add the indicated status to the file, and optionally all of the lines and more optionally all the comps
+//
+//////
+	void ilasm_status_file_add(SLasmFile* file, u32 tnStatus, bool tlProcessLines, bool tlProcessComps)
+	{
+		SLine* line;
+
+
 		// Make sure our environment is sane
-		if (comp)
-			comp->compStatus |= tnStatus;
+		if (file)
+		{
+			// Set the status
+			file->status |= tnStatus;
+
+			// Optionally process lines
+			if (tlProcessLines)
+			{
+				// Iterate through each line
+				for (line = file->firstLine; line; line = line->ll.nextLine)
+					ilasm_status_line_add(line, tnStatus, tlProcessComps);
+			}
+		}
 	}
