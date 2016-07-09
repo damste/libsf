@@ -618,6 +618,17 @@
 
 
 //////////
+// Note messages
+//////
+	cs8			cgc_lasm_note_unknown_note[]				= "unspecified note";
+
+
+//////////
+// Warning messages
+//////
+	cs8			cgc_lasm_warning_unknown_warning[]			= "unspecified warning";
+
+//////////
 // Error messages
 //////
 	cs8			cgc_unable_to_open_file[]					= "--Error: unable to open file: %s\n";

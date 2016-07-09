@@ -166,12 +166,12 @@ struct SLasmFile;
 	struct SLasmParam
 	{
 		SComp*		type;								// Type of param specified
-		SComp*		name;								// Name of param
+		SComp*		start;								// First parameter
+		SComp*		end;								// Last parameter
 
 		// Computed values based on the above
-		s32			size;								// Total size of the memory block
 		s32			_ebp_offset;						// Offset into the [ebp] block
-		u32			iAccess;							// Machine access to this parameter 
+		s32			size;								// Total size in bytes
 	};
 
 	// define statements (pass-0, see gsLasmDefinesRoot)

@@ -108,16 +108,16 @@ struct SLasmInclude;
 	void				ilasm_status_file_add							(SLasmFile* file, u32 tnStatus, bool tlProcessLines, bool tlProcessComps);
 
 	// For parenthetical parameters
-	s32					iilasm_params_extract							(SComp* compLeftParam, SBuilder** compParamsRoot, bool tlMoveBeyondLineIfNeeded = true);
+	s32					iilasm_params_extract							(SComp* compLeftParam, SBuilder** paramsRoot, bool tlMoveBeyondLineIfNeeded = true);
 
 	// For defined tokens
 	bool				iilasm_define_add								(SLasmFile* file, SLine* line, SComp* compName, SBuilder* params, SComp* compStart, SComp* compEnd, SLasmDefine** defineOut = NULL);
 
 	// Note, warning, error, and other forms of associated reporting
-	void				ilasm_append_extraInfo							(s32 tnValueCode,	s8* valueTextTemplate,		SLine* line, SComp* comp, SLasmFile* file, s32 tnValueBaseAddto, s32 tn_eiType);
-	void				ilasm_note										(s32 tnNoteCode,	s8* noteTextTemplate,		SLine* line, SComp* comp = NULL, SLasmFile* file = NULL);
-	void				ilasm_warning									(s32 tnWarningCode,	s8* warningTextTemplate,	SLine* line, SComp* comp = NULL, SLasmFile* file = NULL);
-	void				ilasm_error										(s32 tnErrorCode,	s8* errorTextTemplate,		SLine* line, SComp* comp = NULL, SLasmFile* file = NULL);
+	void				ilasm_append_extraInfo							(s32 tnValueCode,	cs8* valueTextTemplate, cs8* tcValueText, SLine* line, SComp* comp, SLasmFile* file, s32 tnValueBaseAddto, s32 tn_eiType);
+	void				ilasm_note										(s32 tnNoteCode,	cs8* noteTextTemplate,		SLine* line, SComp* comp = NULL, SLasmFile* file = NULL);
+	void				ilasm_warning									(s32 tnWarningCode,	cs8* warningTextTemplate,	SLine* line, SComp* comp = NULL, SLasmFile* file = NULL);
+	void				ilasm_error										(s32 tnErrorCode,	cs8* errorTextTemplate,		SLine* line, SComp* comp = NULL, SLasmFile* file = NULL);
 
 
 //////////

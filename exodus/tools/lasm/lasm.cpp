@@ -848,25 +848,32 @@
 // Called to extract parameters between two parenthesis
 //
 //////
-	s32 iilasm_params_extract(SComp* compLeftParam, SBuilder** compParamsRoot, bool tlMoveBeyondLineIfNeeded)
+	// Note:  This function generates the *paramsRoot builder (if there were any parameters) ... it will have to be deleted manually by caller
+	s32 iilasm_params_extract(SComp* compLeftParam, SBuilder** paramsRoot, bool tlMoveBeyondLineIfNeeded)
 	{
+		bool			llStoreStart;
 		s32				lnLevel;
 		SComp*			comp;
 		SComp*			compStart;
 		SComp*			compEnd;
 		SComp*			compLast;
-		SLasmParam*		lp;
-		SBuilder*		compParams;
+		SLasmParam*		param;
+		SBuilder*		params;
 
 
 		// We know we're sitting on a left parenthesis ( character
-		*compParamsRoot = NULL;
-		iBuilder_createAndInitialize(compParamsRoot);
-		compParams = *compParamsRoot;
+		*paramsRoot = NULL;
+		iBuilder_createAndInitialize(paramsRoot);
+		params = *paramsRoot;
 
 		// Scan forward looking for commas and right-parenthesis
-		for (comp = iComps_Nth(compLeftParam, 1, tlMoveBeyondLineIfNeeded), lnLevel = 0, compStart = comp, compEnd = NULL, compLast = NULL; comp; comp = iComps_Nth(compLeftParam, 1, tlMoveBeyondLineIfNeeded))
+		comp = iComps_Nth(compLeftParam, 1, tlMoveBeyondLineIfNeeded);
+		for (lnLevel = 0, compStart = comp, compEnd = NULL, compLast = NULL, llStoreStart = false; comp; comp = iComps_Nth(compLeftParam, 1, tlMoveBeyondLineIfNeeded))
 		{
+			// Store the start if we need to
+			if (llStoreStart)
+				compStart = comp;
+
 			// What are we sitting on?
 			switch (comp->iCode)
 			{
@@ -877,7 +884,18 @@
 						// Everything up to the component before this is part of the parameter
 						compEnd = compLast;
 
-// TODO:  working here
+						// Add a new record
+						param = (SLasmParam*)iBuilder_allocateBytes(params, sizeof(SLasmParam));
+						if (param)
+						{
+							// Populate this record
+							param->start	= compStart;
+							param->end		= compEnd;
+						}
+
+						// Reset the end and prepare for next iteration
+						llStoreStart	= true;
+						compEnd			= NULL;
 
 						// If it's a right parenthesis, we're done
 						if (comp->iCode == _ICODE_PARENTHESIS_RIGHT)
@@ -896,7 +914,18 @@
 		}
 
 		// Indicate how many parameters were extracted
-		return(compParams->populatedLength / sizeof(SLasmParam));
+		if (params->populatedLength != 0)
+		{
+			// Nothing was selected, reset the params array
+			iBuilder_freeAndRelease(paramsRoot);
+
+			// No parameters
+			return(0);
+
+		} else {
+			// Indicate the count
+			return(params->populatedLength / sizeof(SLasmParam));
+		}
 	}
 
 
@@ -947,11 +976,11 @@
 		if (define)
 		{
 			// Store
-			define->name		= compName;
-			define->params		= params;
-			define->first		= compStart;
-			define->last		= compEnd;
-			define->firstLine	= compStart->line;
+			define->name		= compName;					// Token name
+			define->params		= params;					// Parameters (if any)
+			define->first		= compStart;				// First component related to the token (if any)
+			define->last		= compEnd;					// Last component related to the token (if any)
+			define->firstLine	= compStart->line;			// The line related
 
 			// Update the point
 			if (defineOut)
@@ -973,35 +1002,25 @@
 // Called to add something to the indicated file, line, or component
 //
 //////
-	void ilasm_append_extraInfo(s32 tnValueCode, s8* valueTextTemplate, SLine* line, SComp* comp, SLasmFile* file, s32 tnValueBaseAddto, s32 tn_eiType)
+	// Note:  valueTextTemplate is expected to include a %d parameter for tnValueCode, and a %s parameter for the associated text
+	void ilasm_append_extraInfo(s32			tnValueCode,
+								cs8*		valueTextTemplate,
+								cs8*		tcValueText,
+								SLine*		line,
+								SComp*		comp,
+								SLasmFile*	file,
+								s32			tnValueBaseAddto,
+								s32			tn_eiType)
 	{
 		s32				lnLength;
-		cs8*			lcErrorText;
 		s8				buffer[1024];
 		SExtraInfo*		ei;
 
 
 		//////////
-		// Grab the error message
-		//////
-			switch (tnValueCode)
-			{
-				case _LASM_ERROR_TOKEN_NAME_ALREADY_EXISTS:
-					lcErrorText = cgc_lasm_error_token_name_already_exists;
-					break;
-
-				default:
-					// Internal error (should never happen)
-					ilasm_route_through_silentError_for_debugging();
-					lcErrorText = cgc_lasm_error_unknown_error;
-					break;
-			}
-
-
-		//////////
 		// Generate the error
 		//////
-			sprintf(buffer, valueTextTemplate, tnValueCode + tnValueBaseAddto, lcErrorText);
+			sprintf(buffer, valueTextTemplate, tnValueCode + tnValueBaseAddto, tcValueText);
 			lnLength = strlen(buffer);
 
 
@@ -1031,20 +1050,84 @@
 
 	}
 
-	void ilasm_note(s32 tnNoteCode, s8* noteTextTemplate, SLine* line, SComp* comp, SLasmFile* file)
+	// Note:  noteTextTemplate is expected to include a %d parameter for tnErrorCode, and a %s parameter for the associated error text
+	void ilasm_note(s32 tnNoteCode, cs8* noteTextTemplate, SLine* line, SComp* comp, SLasmFile* file)
 	{
-		// Append the note
-		ilasm_append_extraInfo(tnNoteCode, noteTextTemplate, line, comp, file, _LASM_NOTE_BASE, _EXTRA_INFO_NOTE);
-	}
+		cs8* lcNoteText;
 
-	void ilasm_warning(s32 tnWarningCode, s8* warningTextTemplate, SLine* line, SComp* comp, SLasmFile* file)
-	{
+
+		//////////
+		// Grab the error message
+		//////
+			switch (tnNoteCode)
+			{
+				default:
+					// Internal error (should never happen)
+					ilasm_route_through_silentError_for_debugging();
+					lcNoteText = cgc_lasm_note_unknown_note;
+					break;
+			}
+
+
+		//////////
 		// Append the warning
-		ilasm_append_extraInfo(tnWarningCode, warningTextTemplate, line, comp, file, _LASM_WARNING_BASE, _EXTRA_INFO_WARNING);
+		//////
+			ilasm_append_extraInfo(tnNoteCode, noteTextTemplate, lcNoteText, line, comp, file, _LASM_NOTE_BASE, _EXTRA_INFO_NOTE);
+
 	}
 
-	void ilasm_error(s32 tnErrorCode, s8* errorTextTemplate, SLine* line, SComp* comp, SLasmFile* file)
+	// Note:  warningTextTemplate is expected to include a %d parameter for tnErrorCode, and a %s parameter for the associated error text
+	void ilasm_warning(s32 tnWarningCode, cs8* warningTextTemplate, SLine* line, SComp* comp, SLasmFile* file)
 	{
+		cs8* lcWarningText;
+
+
+		//////////
+		// Grab the error message
+		//////
+			switch (tnWarningCode)
+			{
+				default:
+					// Internal error (should never happen)
+					ilasm_route_through_silentError_for_debugging();
+					lcWarningText = cgc_lasm_warning_unknown_warning;
+					break;
+			}
+
+
+		//////////
+		// Append the warning
+		//////
+			ilasm_append_extraInfo(tnWarningCode, warningTextTemplate, lcWarningText, line, comp, file, _LASM_WARNING_BASE, _EXTRA_INFO_WARNING);
+
+	}
+
+	// Note:  errorTextTemplate is expected to include a %d parameter for tnErrorCode, and a %s parameter for the associated error text
+	void ilasm_error(s32 tnErrorCode, cs8* errorTextTemplate, SLine* line, SComp* comp, SLasmFile* file)
+	{
+		cs8* lcErrorText;
+
+
+		//////////
+		// Grab the error message
+		//////
+			switch (tnErrorCode)
+			{
+				case _LASM_ERROR_TOKEN_NAME_ALREADY_EXISTS:
+					lcErrorText = cgc_lasm_error_token_name_already_exists;
+					break;
+
+				default:
+					// Internal error (should never happen)
+					ilasm_route_through_silentError_for_debugging();
+					lcErrorText = cgc_lasm_error_unknown_error;
+					break;
+			}
+
+
+		//////////
 		// Append the error
-		ilasm_append_extraInfo(tnErrorCode, errorTextTemplate, line, comp, file, _LASM_ERROR_BASE, _EXTRA_INFO_ERROR);
+		//////
+			ilasm_append_extraInfo(tnErrorCode, errorTextTemplate, lcErrorText, line, comp, file, _LASM_ERROR_BASE, _EXTRA_INFO_ERROR);
+
 	}
