@@ -112,6 +112,13 @@ struct SLasmInclude;
 //////
 	void				ilasm_pass0										(SLasmCmdLine* cmdLine, SLasmFile* file);
 	bool				iilasm_pass0_include							(SLasmPass0* p0);
+	bool				ilasm_pass0_define								(SLasmPass0* p0);
+	bool				ilasm_pass0_macro								(SLasmPass0* p0);
+	bool				ilasm_pass0_if									(SLasmPass0* p0);
+	bool				ilasm_pass0_ifdef								(SLasmPass0* p0);
+	bool				ilasm_pass0_ifndef								(SLasmPass0* p0);
+	bool				ilasm_pass0_ifb									(SLasmPass0* p0);
+	bool				ilasm_pass0_ifnb								(SLasmPass0* p0);
 
 
 //////////

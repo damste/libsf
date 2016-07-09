@@ -535,6 +535,12 @@
 	cs32		_ICODE_LASM_FUNCTION				= 3000003;
 	cs32		_ICODE_LASM_STRUCT					= 3000004;
 	cs32		_ICODE_LASM_MACRO					= 3000005;
+	cs32		_ICODE_LASM_IF						= 3000006;
+	cs32		_ICODE_LASM_ELSE					= 3000007;
+	cs32		_ICODE_LASM_IFDEF					= 3000008;
+	cs32		_ICODE_LASM_IFNDEF					= 3000009;
+	cs32		_ICODE_LASM_IFB						= 3000010;
+	cs32		_ICODE_LASM_IFNB					= 3000011;
 
 
 //////////
@@ -583,6 +589,13 @@
 	u8			cgc_lasm_function[]					= "function";
 	u8			cgc_lasm_struct[]					= "struct";
 	u8			cgc_lasm_macro[]					= "macro";
+
+	u8			cgc_lasm_if[]						= "if";
+	u8			cgc_lasm_else[]						= "else";
+	u8			cgc_lasm_ifdef[]					= "ifdef";
+	u8			cgc_lasm_ifndef[]					= "ifndef";
+	u8			cgc_lasm_ifb[]						= "ifb";
+	u8			cgc_lasm_ifnb[]						= "ifnb";
 
 
 //////////

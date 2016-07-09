@@ -352,7 +352,10 @@
 //////
 						break;
 
-// 					case 1:		{	ilasm_pass1(cmdLine, file);		break;	}
+					case 1:
+						ilasm_pass1(cmdLine, file);
+						break;
+
 // 					case 2:		{	ilasm_pass2(cmdLine, file);		break;	}
 // 					case 3:		{	ilasm_pass2(cmdLine, file);		break;	}
 // 					case 4:		{	ilasm_passX(cmdLine, file);		break;	}

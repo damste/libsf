@@ -89,13 +89,14 @@
 
 //////////
 //
-// Pass-0 -- Conducts these operations:
+// Pass-0 -- Load content
 //
 //		fundamental symbols and symbol groupings
 //		removes blank lines
 //		removes comment lines
 //		loads include files
-//		at the end of pass-0, it re-processes define statements for any nested macros
+//
+//		once everything's loaded it scans in macros
 //
 //////
 	void ilasm_pass0(SLasmCmdLine* cmdLine, SLasmFile* file)
@@ -113,7 +114,7 @@
 
 
 		//////////
-		// Iterate through each line looking for known things
+		// Iterate through each line looking for blank lines and include files
 		//////
 			for (p0.line = p0.file->firstLine; p0.line; p0.line = p0.line->ll.nextLine)
 			{
@@ -141,6 +142,49 @@
 				// else other pragmas are ignored for this pass
 			}
 
+
+		//////////
+		// When we get here, all include files are loaded
+		// Look for define statements, macros, and conditional assembly (top-down)
+		//////
+			for (p0.line = p0.file->firstLine; p0.line; p0.line = p0.line->ll.nextLine)
+			{
+				// Is this line
+				if (!ilasm_status_line_isCompleted(p0.line) && (p0.comp = p0.line->firstComp))
+				{
+					// Is it one we're looking for?
+					switch (p0.comp->iCode)
+					{
+						case _ICODE_LASM_DEFINE:
+							ilasm_pass0_define(&p0);
+							break;
+
+						case _ICODE_LASM_MACRO:
+							ilasm_pass0_macro(&p0);
+							break;
+
+						case _ICODE_LASM_IF:
+							ilasm_pass0_if(&p0);
+							break;
+
+						case _ICODE_LASM_IFDEF:
+							ilasm_pass0_ifdef(&p0);
+							break;
+
+						case _ICODE_LASM_IFNDEF:
+							ilasm_pass0_ifndef(&p0);
+							break;
+
+						case _ICODE_LASM_IFB:
+							ilasm_pass0_ifb(&p0);
+							break;
+
+						case _ICODE_LASM_IFNB:
+							ilasm_pass0_ifnb(&p0);
+							break;
+					}
+				}
+			}
 	}
 
 
@@ -260,4 +304,108 @@
 
 		// Indicate our status
 		return(!llError);
+	}
+
+
+
+
+//////////
+//
+// Called to define a token and associated value
+//
+// 		define name value
+//
+//////
+	bool ilasm_pass0_define(SLasmPass0* p0)
+	{
+		return(false);
+	}
+
+
+
+
+//////////
+//
+// Called to define a macro
+//
+// 		macro callfp
+// 		|| _seg
+// 		|| _offset
+// 		{{
+// 		// This macro:   callfp  _code_seg, _offset
+// 		//
+// 			u8  9ah
+// 			u32 _offset
+// 			u16 _seg
+// 		}}
+// 
+//////
+	bool ilasm_pass0_macro(SLasmPass0* p0)
+	{
+		return(false);
+	}
+
+
+
+
+//////////
+//
+// Called to see if the if expression is one of conditional assembly, or if it's of logic
+//
+//////
+	bool ilasm_pass0_if(SLasmPass0* p0)
+	{
+		return(false);
+	}
+
+
+
+
+//////////
+//
+// Called to see if the token is defined
+//
+//////
+	bool ilasm_pass0_ifdef(SLasmPass0* p0)
+	{
+		return(false);
+	}
+
+
+
+
+//////////
+//
+// Called to see if the token is not defined
+//
+//////
+	bool ilasm_pass0_ifndef(SLasmPass0* p0)
+	{
+		return(false);
+	}
+
+
+
+
+//////////
+//
+// Called to see if the token is blank (not present)
+//
+//////
+	bool ilasm_pass0_ifb(SLasmPass0* p0)
+	{
+		return(false);
+	}
+
+
+
+
+//////////
+//
+// Called to define a token is not blank (present)
+//
+//////
+	bool ilasm_pass0_ifnb(SLasmPass0* p0)
+	{
+		return(false);
 	}
