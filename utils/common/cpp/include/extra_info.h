@@ -88,6 +88,10 @@
 	const s32		_EXTRA_INFO_ON_ACCESS					= 1;
 	const s32		_EXTRA_INFO_ON_ARRIVAL					= 2;
 	const s32		_EXTRA_INFO_ON_UPDATE					= 3;
+	// General storage
+	const s32		_EXTRA_INFO_NOTE						= 4;		// Notes are stored in ei->info
+	const s32		_EXTRA_INFO_WARNING						= 5;		// Warnings are stored in ei->info
+	const s32		_EXTRA_INFO_ERROR						= 6;		// Errors are stored in ei->info
 	// Known types to the LibSF compiler engine
 	const s32		_EXTRA_INFO_COMPILER					= 10;
 

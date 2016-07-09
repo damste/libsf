@@ -735,7 +735,22 @@
 
 //////////
 //
-// 
+// Used for internal debugging, places where errors are not actively reported, but
+// should never occur, but are occurring, are routed through here for debugging.
+//
+//////
+	void ilasm_route_through_silentError_for_debugging(void)
+	{
+		// For debugging, errors that should not occur route through this function
+		debug_nop;
+	}
+
+
+
+
+//////////
+//
+// Applies the status to the indicated component
 //
 //////
 	void ilasm_status_comp_add(SComp* comp, u32 tnStatus)
@@ -862,8 +877,7 @@
 						// Everything up to the component before this is part of the parameter
 						compEnd = compLast;
 
-// TODO:  working here, coding this part
-working here
+// TODO:  working here
 
 						// If it's a right parenthesis, we're done
 						if (comp->iCode == _ICODE_PARENTHESIS_RIGHT)
@@ -893,27 +907,144 @@ working here
 // Called to create a token
 //
 //////
-	bool iilasm_define_add(SComp* compTokenName, SBuilder* params, SComp* compContentStart, SComp* compContentEnd, SLasmDefine** defineOut)
+	bool iilasm_define_add(SLasmFile* file, SLine* line, SComp* compName, SBuilder* params, SComp* compStart, SComp* compEnd, SLasmDefine** defineOut)
 	{
 		u32				lnI;
 		SLasmDefine*	define;
+		s8				buffer[_MAX_PATH * 2];
 
+
+		// Clear out the prior defineOut if any
+		if (defineOut)
+			*defineOut = NULL;
 
 		// Search existing
 		iterate(lnI, gsLasmDefinesRoot, define, SLasmDefine)
 		//
 			
 			// Does the name already exist?
-			if (define->name->text.length == compTokenName->text.length && iDatum_compare(&define->name->text, &compTokenName->text) == 0)
+			if (define->name->text.length == compName->text.length && iDatum_compare(&define->name->text, &compName->text) == 0)
 			{
-				// The token name already exists
+				// Generate the error
+				sprintf(buffer, "Error %%d (%d,%d): %%s at (%d,%d) in %s", 
+								_LASM_ERROR_TOKEN_NAME_ALREADY_EXISTS,
+								line->lineNumber, compName->start,
+								define->name->line->lineNumber, define->name->start, file->filename.data_s8);
+
+				// Report the error
+				ilasm_error(_LASM_ERROR_TOKEN_NAME_ALREADY_EXISTS, buffer, line);
 				debug_error;
+
+				// Indicate failure
 				return(false);
 			}
 
 		//
 		iterate_end;
 
-// TODO:  working here, developing this code, needs to add the entry if it wasn't found
-working here
+		// Allocate a new define record
+		define = (SLasmDefine*)iBuilder_allocateBytes(gsLasmDefinesRoot, sizeof(SLasmDefine));
+		if (define)
+		{
+			// Store
+			define->name		= compName;
+			define->params		= params;
+			define->first		= compStart;
+			define->last		= compEnd;
+			define->firstLine	= compStart->line;
+
+			// Update the point
+			if (defineOut)
+				*defineOut = define;
+	
+			// If we get here, success
+			return(true);
+		}
+
+		// If we get here, failure
+		return(false);
+	}
+
+
+
+
+//////////
+//
+// Called to add something to the indicated file, line, or component
+//
+//////
+	void ilasm_append_extraInfo(s32 tnValueCode, s8* valueTextTemplate, SLine* line, SComp* comp, SLasmFile* file, s32 tnValueBaseAddto, s32 tn_eiType)
+	{
+		s32				lnLength;
+		cs8*			lcErrorText;
+		s8				buffer[1024];
+		SExtraInfo*		ei;
+
+
+		//////////
+		// Grab the error message
+		//////
+			switch (tnValueCode)
+			{
+				case _LASM_ERROR_TOKEN_NAME_ALREADY_EXISTS:
+					lcErrorText = cgc_lasm_error_token_name_already_exists;
+					break;
+
+				default:
+					// Internal error (should never happen)
+					ilasm_route_through_silentError_for_debugging();
+					lcErrorText = cgc_lasm_error_unknown_error;
+					break;
+			}
+
+
+		//////////
+		// Generate the error
+		//////
+			sprintf(buffer, valueTextTemplate, tnValueCode + tnValueBaseAddto, lcErrorText);
+			lnLength = strlen(buffer);
+
+
+		//////////
+		// Store the error
+		//////
+			     if (line)		ei = iExtraInfo_allocate(&line->extra_info, tn_eiType);
+			else if (comp)		ei = iExtraInfo_allocate(&comp->extra_info, tn_eiType);
+			else if (file)		ei = iExtraInfo_allocate(&file->extra_info, tn_eiType);
+
+
+		//////////
+		// Store the related error message
+		//////
+			if (ei)
+				iDatum_duplicate(&ei->info, buffer);
+
+
+		//////////
+		// Print it
+		//////
+			printf(buffer);
+
+			// Append a trailing CR if it doesn't already have one
+			if (*(u16*)&buffer[lnLength - 2] != 'n\\' && *(u16*)&buffer[lnLength - 4] != 'n\\')
+				printf("\n");
+
+	}
+
+	void ilasm_note(s32 tnNoteCode, s8* noteTextTemplate, SLine* line, SComp* comp, SLasmFile* file)
+	{
+		// Append the note
+		ilasm_append_extraInfo(tnNoteCode, noteTextTemplate, line, comp, file, _LASM_NOTE_BASE, _EXTRA_INFO_NOTE);
+	}
+
+	void ilasm_warning(s32 tnWarningCode, s8* warningTextTemplate, SLine* line, SComp* comp, SLasmFile* file)
+	{
+		// Append the warning
+		ilasm_append_extraInfo(tnWarningCode, warningTextTemplate, line, comp, file, _LASM_WARNING_BASE, _EXTRA_INFO_WARNING);
+	}
+
+	void ilasm_error(s32 tnErrorCode, s8* errorTextTemplate, SLine* line, SComp* comp, SLasmFile* file)
+	{
+		// Append the error
+		ilasm_append_extraInfo(tnErrorCode, errorTextTemplate, line, comp, file, _LASM_ERROR_BASE, _EXTRA_INFO_ERROR);
 	}

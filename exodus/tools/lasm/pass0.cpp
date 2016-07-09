@@ -389,7 +389,7 @@
 					}
 
 					// When we get here, we have all the information we need
-					iilasm_define_add(compTokenName, compParams, compContentStart, compContentEnd);
+					iilasm_define_add(p0->file, p0->line, compTokenName, compParams, compContentStart, compContentEnd);
 
 					// Mark everything completed
 					ilasm_status_line_isCompleted(p0->line);

@@ -599,7 +599,28 @@
 
 
 //////////
+// Note numbers
+//////
+	cs32		_LASM_NOTE_BASE								= 2000;
+
+
+//////////
+// Warning numbers
+//////
+	cs32		_LASM_WARNING_BASE							= 4000;
+
+
+//////////
+// Error numbers
+//////
+	cs32		_LASM_ERROR_BASE							= 5000;
+	cs32		_LASM_ERROR_TOKEN_NAME_ALREADY_EXISTS		= 1;
+
+
+//////////
 // Error messages
 //////
-	cs8			cgc_unable_to_open_file[]				= "--Error: unable to open file: %s\n";
-	cs8			cgc_lasm_error_opening_include_file[]	= "--Error(%d,%d): error opening file [include \"%s\"]\n";
+	cs8			cgc_unable_to_open_file[]					= "--Error: unable to open file: %s\n";
+	cs8			cgc_lasm_error_opening_include_file[]		= "--Error(%d,%d): error opening file [include \"%s\"]\n";
+	cs8			cgc_lasm_error_token_name_already_exists[]	= "token name already exists";
+	cs8			cgc_lasm_error_unknown_error[]				= "unspecified error";

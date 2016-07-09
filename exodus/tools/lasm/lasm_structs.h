@@ -156,6 +156,9 @@ struct SLasmFile;
 		s8*					raw;						// Raw data
 		u32					rawLength;					// Raw data length
 
+		// Extra information related to this file
+		SBuilder*			extra_info;					// (SExtraInfo) Any extra information related to this file
+
 		// Parsed into line structures
 		SLine*				firstLine;					// Source file content for this file (including any include files)
 	};
