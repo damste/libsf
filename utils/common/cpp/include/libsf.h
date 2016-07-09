@@ -1199,6 +1199,7 @@
 	bool					iiLine_copyComps_toNewLines_untilTerminating__callback	(SCallback* cb);
 	s32						iiLine_skipTo_nextComp						(SLine** lineProcessing, SComp** compProcessing);
 	s32						iiLine_skipTo_prevComp						(SLine** lineProcessing, SComp** compProcessing);
+	SComp*					iiLine_getLastComp							(SLine* line, SComp* compInLine = NULL);
 
 	// For editing
 	bool					iLine_characterInsert						(SEM* sem, u8 asciiChar);
@@ -1236,9 +1237,9 @@
  	bool					iComps_lex_comps							(SAsciiCompSearcher* tsComps, SComp* comp, bool tlDescendIntoFirstCombineds = true);
 	bool					iComps_areAllPrecedingCompsWhitespaces		(SComp* comp);
 	s32						iComps_translateToOthers_testIfMatch		(cu8* tcHaystack, cu8* tcNeedle, s32 tnLength);
-	SComp*					iComps_findNextBy_iCode						(SComp* comp, s32 tniCode, SComp** compLastScanned);
+	SComp*					iComps_findNextBy_iCode						(SComp* comp, s32 tniCode, SComp** compLastScanned = NULL);
 	SComp*					iComps_activeComp_inSEM						(SEM* sem);
-	bool					iComps_get_mateDirection						(SComp* comp, s32* tnMateDirection);
+	bool					iComps_get_mateDirection					(SComp* comp, s32* tnMateDirection);
 	bool					iComps_findClosest_parensBracketsBraces		(SComp* compRelative, SComp* compStart, SComp** compPBBLeft, SComp** compPBBRight);
 	bool					iComps_isParensBracketsBraces				(SComp* comp);
 	bool					iComps_isMateOf								(SComp* compTest, s32 tniCodeMate);

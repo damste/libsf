@@ -106,9 +106,15 @@ struct SLasmInclude;
 	bool				ilasm_status_line_isCompleted					(SLine* line);
 	void				ilasm_status_file_add							(SLasmFile* file, u32 tnStatus, bool tlProcessLines, bool tlProcessComps);
 
+	// For parenthetical parameters
+	s32					iilasm_params_extract							(SComp* compLeftParam, SBuilder** compParamsRoot, bool tlMoveBeyondLineIfNeeded = true);
+
+	// For defined tokens
+	bool				iilasm_define_add								(SComp* compTokenName, SBuilder* params, SComp* compContentStart, SComp* compContentEnd, SLasmDefine** defineOut = NULL);
+
 
 //////////
-// pass0.cpp -- #include files, #define statements
+// pass0.cpp
 //////
 	void				ilasm_pass0										(SLasmCmdLine* cmdLine, SLasmFile* file);
 	bool				iilasm_pass0_include							(SLasmPass0* p0);

@@ -160,30 +160,28 @@ struct SLasmFile;
 		SLine*				firstLine;					// Source file content for this file (including any include files)
 	};
 
-	// #define statements
-	struct SLasmDefine
-	{
-		SLL					ll;							// Link list through multiple defines
-
-		// Required parameters
-		SComp*				compName;					// The component which defined the name
-		SLine*				firstLine;					// Potentially multiple lines of source code
-
-		// Optional parameters (the a, b,..., z in #define xyz(a,b,...,z))
-		s32					paramCount;								// Actual parameter count
-		SDatum				params[_LASM_MAX_DEFINE_PARAMS];		// Parameter names and lengths
-	};
-
 	struct SLasmParam
 	{
-		SComp*		type;
-		SComp*		name;
-		SComp*		count;
+		SComp*		type;								// Type of param specified
+		SComp*		name;								// Name of param
 
 		// Computed values based on the above
 		s32			size;								// Total size of the memory block
 		s32			_ebp_offset;						// Offset into the [ebp] block
 		u32			iAccess;							// Machine access to this parameter 
+	};
+
+	// define statements (pass-0, see gsLasmDefinesRoot)
+	struct SLasmDefine
+	{
+		// Required parameters
+		SComp*				name;						// The component which defined the token name
+		SComp*				first;						// First component for any content
+		SComp*				last;						// Last component for any content
+		SLine*				firstLine;					// Potentially multiple lines of source code
+
+		// Optional parameters (the a, b,..., z in define xyz(a,b,...,z) {{ ... }})
+		SBuilder*			params;						// (SLasmParam) Parameter names
 	};
 
 
@@ -231,12 +229,8 @@ struct SLasmFile;
 		//////////
 		// Params
 		//////
-			SLasmParam		rp[_LASM_MAX_RETURN_PARAMS];	// Return
-			SLasmParam		ip[_LASM_MAX_INPUT_PARAMS];		// Input
-
-			// Counts
-			s32				rpCount;					// Return parameters
-			s32				ipCount;					// Input parameters
+			SBuilder*		rp;							// (SLasmParam) Return parameters
+			SBuilder*		ip;							// (SLasmParam) Input parameters
 	};
 
 	// class

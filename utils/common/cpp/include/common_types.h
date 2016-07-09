@@ -72,6 +72,7 @@
 	// Breakpoints
 	#define debug_break asm("int 3");
 	#define debug_nop asm("nop");
+	#define debug_error asm("int 3");
 
 #elif defined(__solaris__)
 	// solaris compiler
@@ -96,6 +97,7 @@
 	// Breakpoints
 	#define debug_break asm("int 3");
 	#define debug_nop asm("nop");
+	#define debug_error asm("int 3");
 
 #else
 	// Used for pointer sizes that mate up with pointers, but are actually integers
@@ -122,6 +124,7 @@
 	// Breakpoints
 	#define debug_break _asm int 3;
 	#define debug_nop _asm nop;
+	#define debug_error _asm int 3;
 #endif
 
 #if !defined(size_t)

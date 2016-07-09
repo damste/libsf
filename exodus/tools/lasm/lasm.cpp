@@ -824,3 +824,96 @@
 			}
 		}
 	}
+
+
+
+
+//////////
+//
+// Called to extract parameters between two parenthesis
+//
+//////
+	s32 iilasm_params_extract(SComp* compLeftParam, SBuilder** compParamsRoot, bool tlMoveBeyondLineIfNeeded)
+	{
+		s32				lnLevel;
+		SComp*			comp;
+		SComp*			compStart;
+		SComp*			compEnd;
+		SComp*			compLast;
+		SLasmParam*		lp;
+		SBuilder*		compParams;
+
+
+		// We know we're sitting on a left parenthesis ( character
+		*compParamsRoot = NULL;
+		iBuilder_createAndInitialize(compParamsRoot);
+		compParams = *compParamsRoot;
+
+		// Scan forward looking for commas and right-parenthesis
+		for (comp = iComps_Nth(compLeftParam, 1, tlMoveBeyondLineIfNeeded), lnLevel = 0, compStart = comp, compEnd = NULL, compLast = NULL; comp; comp = iComps_Nth(compLeftParam, 1, tlMoveBeyondLineIfNeeded))
+		{
+			// What are we sitting on?
+			switch (comp->iCode)
+			{
+				case _ICODE_COMMA:
+				case _ICODE_PARENTHESIS_RIGHT:
+					if (lnLevel == 0)
+					{
+						// Everything up to the component before this is part of the parameter
+						compEnd = compLast;
+
+// TODO:  working here, coding this part
+working here
+
+						// If it's a right parenthesis, we're done
+						if (comp->iCode == _ICODE_PARENTHESIS_RIGHT)
+							break;
+					}
+					// else we just skip past
+					break;
+
+				default:
+					// No code, just keep going
+					break;
+			}
+
+			// Store this component as the last component we hit/touched
+			compLast = comp;
+		}
+
+		// Indicate how many parameters were extracted
+		return(compParams->populatedLength / sizeof(SLasmParam));
+	}
+
+
+
+
+//////////
+//
+// Called to create a token
+//
+//////
+	bool iilasm_define_add(SComp* compTokenName, SBuilder* params, SComp* compContentStart, SComp* compContentEnd, SLasmDefine** defineOut)
+	{
+		u32				lnI;
+		SLasmDefine*	define;
+
+
+		// Search existing
+		iterate(lnI, gsLasmDefinesRoot, define, SLasmDefine)
+		//
+			
+			// Does the name already exist?
+			if (define->name->text.length == compTokenName->text.length && iDatum_compare(&define->name->text, &compTokenName->text) == 0)
+			{
+				// The token name already exists
+				debug_error;
+				return(false);
+			}
+
+		//
+		iterate_end;
+
+// TODO:  working here, developing this code, needs to add the entry if it wasn't found
+working here
+	}

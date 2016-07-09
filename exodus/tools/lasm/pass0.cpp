@@ -313,11 +313,110 @@
 //
 // Called to define a token and associated value
 //
+// Syntax:
 // 		define name value
+// 		define name(...) value
+//
+// Or:
+//		define name {{ content...
+//			...goes...
+//		...here }}
+// Or:
+//		define name(...) {{ content...
+//			...goes...
+//		...here }}
 //
 //////
 	bool ilasm_pass0_define(SLasmPass0* p0)
 	{
+		SLine*		lineMark;
+		SComp*		compDefine;
+		SComp*		compTokenName;
+		SComp*		compThingAfterName;
+		SComp*		compContentStart;
+		SComp*		compContentEnd;
+		SBuilder*	compParams;
+
+
+		// Make sure our environment is sane
+		if (p0 && p0->line && (compDefine = p0->line->firstComp))
+		{
+			// Is it define?
+			if (compDefine->iCode == _ICODE_LASM_DEFINE)
+			{
+				// Grab the token name after it
+				compTokenName = iComps_Nth_lineOnly(compDefine);
+				if (compTokenName)
+				{
+					// Grab the thing after that
+					compParams			= NULL;
+					compThingAfterName	= iComps_Nth_lineOnly(compTokenName);
+					if (compThingAfterName)
+					{
+						// Content assigned to the token name
+						switch (compThingAfterName->iCode)
+						{
+							case _ICODE_DOUBLE_BRACE_LEFT:
+								// It's {{ so it indicates a block
+								compContentStart	= iComps_Nth(compThingAfterName);
+								compContentEnd		= iComps_findNextBy_iCode(compThingAfterName, _ICODE_DOUBLE_BRACE_RIGHT);
+								if (!compContentStart || !compContentEnd)
+								{
+									// Syntax error
+									debug_error;
+									return(false);
+								}
+
+								// Back up one before the right double-brace
+								compContentEnd = iComps_Nth(compContentEnd, -1);
+
+							case _ICODE_PARENTHESIS_LEFT:
+								// define(...)
+								iilasm_params_extract(compThingAfterName, &compParams);
+								break;
+
+							default:
+								// It's everything from here to the end of line
+								compContentStart	= compThingAfterName;
+								compContentEnd		= iiLine_getLastComp(p0->line, compThingAfterName);
+								break;
+						}
+
+					} else {
+						// No content, just definition of the token name
+						compContentStart	= NULL;
+						compContentEnd		= NULL;
+					}
+
+					// When we get here, we have all the information we need
+					iilasm_define_add(compTokenName, compParams, compContentStart, compContentEnd);
+
+					// Mark everything completed
+					ilasm_status_line_isCompleted(p0->line);
+					if (compContentStart && compContentEnd && compContentStart->line != compContentEnd->line)
+					{
+						// Mark the other lines complete
+						for (lineMark = p0->line->ll.nextLine; lineMark; lineMark = lineMark->ll.nextLine)
+						{
+							// Mark this line
+							ilasm_status_line_isCompleted(lineMark);
+
+							// Are we done?
+							if (lineMark == compContentEnd->line)
+								break;	// Yes
+						}
+					}
+
+				} else {
+					// Syntax error
+					debug_error;
+					return(false);
+				}
+			}
+		}
+
+		// If we get here, failure
+		debug_error;		// Internal error, should never happen
 		return(false);
 	}
 

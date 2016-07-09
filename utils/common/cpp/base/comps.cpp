@@ -788,8 +788,10 @@
 		if (compLastScanned)
 			*compLastScanned = comp;
 
+// TODO:  Breakpoint and examine if this will work across lines
+debug_break;
 		// Continue while the environment is sane
-		while (comp)
+		for ( ; comp; comp = comp->ll.nextComp)
 		{
 			// Store the component we're scanning
 			if (compLastScanned)
@@ -798,12 +800,9 @@
 			// See if this is it
 			if (comp->iCode == tniCode)
 				break;		// It is, we're done
-
-			// Move to the next component
-			comp = comp->ll.nextComp;
 		}
 		// When we get here, we either found it or not
-		// Store our results
+		// Indicate the result
 		return(comp);
 	}
 
@@ -1190,9 +1189,12 @@
 		SLine*	line;
 
 
+// TODO:  Breakpoint and examine after refactoring
+debug_break;
 		// Based on direction
 		if (comp)
 		{
+			// Going forward or backward?
 			if (tnCount > 0)
 			{
 				// Going forward
@@ -1209,21 +1211,19 @@
 						if (tlMoveBeyondLineIfNeeded && comp->line && (line = comp->line->ll.nextLine))
 						{
 							// Room to move forward
-#ifdef _SHOW_REFACTOR_ERRORS
-							while (line && (!line->compilerInfo || !line->compilerInfo->firstComp) && line->ll.nextLine)
+							while (line && !line->firstComp && line->ll.nextLine)
 								line = line->ll.nextLine;
 
 							// Store the component
-							if (line->compilerInfo && line->compilerInfo->firstComp)
+							if (line->firstComp)
 							{
 								// Use this component for the next one
-								comp = line->compilerInfo->firstComp;
+								comp = line->firstComp;
 
 							} else {
 								// We're done
 								comp = NULL;
 							}
-#endif
 
 						} else {
 							// We're done
@@ -1247,15 +1247,14 @@
 						if (tlMoveBeyondLineIfNeeded && comp->line && (line = comp->line->ll.prevLine))
 						{
 							// Room to move forward
-#ifdef _SHOW_REFACTOR_ERRORS
-							while (line && (!line->compilerInfo || !line->compilerInfo->firstComp) && line->ll.prevLine)
+							while (line && !line->firstComp && line->ll.prevLine)
 								line = line->ll.prevLine;
 
 							// Store the last component on the line
-							if (line->compilerInfo && line->compilerInfo->firstComp)
+							if (line->firstComp)
 							{
 								// Use this component
-								comp = line->compilerInfo->firstComp;
+								comp = line->firstComp;
 
 								// Move to the last one of the line
 								while (comp->ll.nextComp)
@@ -1267,7 +1266,6 @@
 								// We're done
 								comp = NULL;
 							}
-#endif
 
 						} else {
 							// We're done

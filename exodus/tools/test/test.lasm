@@ -12,6 +12,12 @@
 ||||
 |||||||
 
+define multiply(a,b) {{
+	mov		eax,a
+	mov		ebx,b
+	mul		ebx
+}}
+
 
 |||||||||||
 ||| include "include\inc1.lasm"

@@ -780,6 +780,24 @@ goto_next_component:
 
 //////////
 //
+// Called to get the first or last component on the line
+//
+//////
+	SComp* iiLine_getLastComp(SLine* line, SComp* compInLine)
+	{
+		// Scan forward to the end
+		for (compInLine = ((compInLine) ? compInLine : line->firstComp); compInLine->ll.nextComp && compInLine->ll.nextComp->line == line; )
+			compInLine = compInLine->ll.nextComp;
+
+		// Indicate our status
+		return(compInLine);
+	}
+
+
+
+
+//////////
+//
 // Called to insert a character
 //
 //////
