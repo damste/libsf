@@ -178,10 +178,13 @@ struct SLasmFile;
 	struct SLasmDefine
 	{
 		// Required parameters
+		SLasmFile*			file;						// Associated file
+		SLine*				line;						// First line (potentially multiple lines of source ocde, refer to first->line and last->line)
 		SComp*				name;						// The component which defined the token name
+
+		// Optional starting and ending content related to this name
 		SComp*				first;						// First component for any content
 		SComp*				last;						// Last component for any content
-		SLine*				firstLine;					// Potentially multiple lines of source code
 
 		// Optional parameters (the a, b,..., z in define xyz(a,b,...,z) {{ ... }})
 		SBuilder*			params;						// (SLasmParam) Parameter names

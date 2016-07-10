@@ -1103,7 +1103,10 @@
 				cu8*	keyword_cu8;											// Text keyword being searched
 			};
 			s32			length;													// Length of the keyword (negative for case sensitive, positive case insensitive, 0 for termination entry)
-			bool		repeats;												// Can this item repeat?  Or is this a one-shot keyword?
+			union {
+				s32		repeats;												// Can this item repeat?  Or is this a one-shot keyword?
+				s8*		partialRepeatContent;									// Used for those cases where not all of the characters need to repeat
+			};
 			s32			iCode;													// An associated code to store when this entry is found
 			bool		firstOnLine;											// Should this item ONLY be the first on line? (Note:  Ignores leading whitespaces)
 			u32			iCat;													// This entry's general category (function, operator, keyword, flow)
@@ -1237,7 +1240,7 @@
  	bool					iComps_lex_comps							(SAsciiCompSearcher* tsComps, SComp* comp, bool tlDescendIntoFirstCombineds = true);
 	bool					iComps_areAllPrecedingCompsWhitespaces		(SComp* comp);
 	s32						iComps_translateToOthers_testIfMatch		(cu8* tcHaystack, cu8* tcNeedle, s32 tnLength);
-	SComp*					iComps_findNextBy_iCode						(SComp* comp, s32 tniCode, SComp** compLastScanned = NULL);
+	SComp*					iComps_findNextBy_iCode						(SComp* comp, s32 tniCode, SComp** compLastScanned = NULL, bool tlMoveBeyondLineIfNeeded = true);
 	SComp*					iComps_activeComp_inSEM						(SEM* sem);
 	bool					iComps_get_mateDirection					(SComp* comp, s32* tnMateDirection);
 	bool					iComps_findClosest_parensBracketsBraces		(SComp* compRelative, SComp* compStart, SComp** compPBBLeft, SComp** compPBBRight);

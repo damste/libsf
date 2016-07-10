@@ -335,20 +335,20 @@
 
 //////////
 // // For debugging, write a temporary output of our contiguous file now
-// SLine*		line;
-// SBuilder*	b;
-// b = NULL;
-// iBuilder_createAndInitialize(&b);
-// for (line = file->firstLine; line; line = line->ll.nextLine)
-// {
-// 	if (!ilasm_status_line_isCompleted(line))
-// 	{
-// 		iBuilder_appendData(b, line->sourceCode.data_u8, line->sourceCode.length);
-// 		iBuilder_appendCrLf(b);
-// 	}
-// }
-// iBuilder_asciiWriteOutFile(b, (cu8*)"c:\\temp\\out.txt");
-// iBuilder_freeAndRelease(&b);
+SLine*		line;
+SBuilder*	b;
+b = NULL;
+iBuilder_createAndInitialize(&b);
+for (line = file->firstLine; line; line = line->ll.nextLine)
+{
+	if (!ilasm_status_line_isCompleted(line))
+	{
+		iBuilder_appendData(b, line->sourceCode.data_u8, line->sourceCode.length);
+		iBuilder_appendCrLf(b);
+	}
+}
+iBuilder_asciiWriteOutFile(b, (cu8*)"c:\\temp\\out.txt");
+iBuilder_freeAndRelease(&b);
 //////
 						break;
 
@@ -868,11 +868,14 @@
 
 		// Scan forward looking for commas and right-parenthesis
 		comp = iComps_Nth(compLeftParam, 1, tlMoveBeyondLineIfNeeded);
-		for (lnLevel = 0, compStart = comp, compEnd = NULL, compLast = NULL, llStoreStart = false; comp; comp = iComps_Nth(compLeftParam, 1, tlMoveBeyondLineIfNeeded))
+		for (lnLevel = 0, compEnd = NULL, compLast = NULL, llStoreStart = true; comp; comp = iComps_Nth(comp, 1, tlMoveBeyondLineIfNeeded))
 		{
-			// Store the start if we need to
+			// Store the starting component (if we need to)
 			if (llStoreStart)
-				compStart = comp;
+			{
+				llStoreStart	= false;
+				compStart		= comp;
+			}
 
 			// What are we sitting on?
 			switch (comp->iCode)
@@ -896,10 +899,6 @@
 						// Reset the end and prepare for next iteration
 						llStoreStart	= true;
 						compEnd			= NULL;
-
-						// If it's a right parenthesis, we're done
-						if (comp->iCode == _ICODE_PARENTHESIS_RIGHT)
-							break;
 					}
 					// else we just skip past
 					break;
@@ -909,12 +908,16 @@
 					break;
 			}
 
+			// If it's a right parenthesis, we're done
+			if (comp->iCode == _ICODE_PARENTHESIS_RIGHT)
+				break;
+
 			// Store this component as the last component we hit/touched
 			compLast = comp;
 		}
 
 		// Indicate how many parameters were extracted
-		if (params->populatedLength != 0)
+		if (params->populatedLength == 0)
 		{
 			// Nothing was selected, reset the params array
 			iBuilder_freeAndRelease(paramsRoot);
@@ -947,6 +950,10 @@
 		if (defineOut)
 			*defineOut = NULL;
 
+		// Make sure we have at least one define
+		if (!gsLasmDefinesRoot)
+			iBuilder_createAndInitialize(&gsLasmDefinesRoot);
+
 		// Search existing
 		iterate(lnI, gsLasmDefinesRoot, define, SLasmDefine)
 		//
@@ -955,14 +962,13 @@
 			if (define->name->text.length == compName->text.length && iDatum_compare(&define->name->text, &compName->text) == 0)
 			{
 				// Generate the error
-				sprintf(buffer, "Error %%d (%d,%d): %%s at (%d,%d) in %s", 
-								_LASM_ERROR_TOKEN_NAME_ALREADY_EXISTS,
+				sprintf(buffer, "Error %%d (%d,%d): '%s' %%s, see (%d,%d) of %s", 
 								line->lineNumber, compName->start,
+								compName->text.data_s8,
 								define->name->line->lineNumber, define->name->start, file->filename.data_s8);
 
 				// Report the error
 				ilasm_error(_LASM_ERROR_TOKEN_NAME_ALREADY_EXISTS, buffer, line);
-				debug_error;
 
 				// Indicate failure
 				return(false);
@@ -976,11 +982,12 @@
 		if (define)
 		{
 			// Store
+			define->file		= file;						// The associated file
+			define->line		= line;						// The line related
 			define->name		= compName;					// Token name
 			define->params		= params;					// Parameters (if any)
 			define->first		= compStart;				// First component related to the token (if any)
 			define->last		= compEnd;					// Last component related to the token (if any)
-			define->firstLine	= compStart->line;			// The line related
 
 			// Update the point
 			if (defineOut)

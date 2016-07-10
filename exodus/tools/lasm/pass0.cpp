@@ -314,17 +314,10 @@
 // Called to define a token and associated value
 //
 // Syntax:
-// 		define name value
-// 		define name(...) value
-//
-// Or:
-//		define name {{ content...
-//			...goes...
-//		...here }}
-// Or:
-//		define name(...) {{ content...
-//			...goes...
-//		...here }}
+// 		define name value or single-line content
+// 		define name(...) value or single-line content
+//		define name {{ content...goes...here }}
+//		define name(...) {{ content...goes...here }}
 //
 //////
 	bool ilasm_pass0_define(SLasmPass0* p0)
@@ -350,6 +343,8 @@
 				{
 					// Grab the thing after that
 					compParams			= NULL;
+					compContentStart	= NULL;
+					compContentEnd		= NULL;
 					compThingAfterName	= iComps_Nth_lineOnly(compTokenName);
 					if (compThingAfterName)
 					{
@@ -358,6 +353,7 @@
 						{
 							case _ICODE_DOUBLE_BRACE_LEFT:
 								// It's {{ so it indicates a block
+grab_double_brace_content:
 								compContentStart	= iComps_Nth(compThingAfterName);
 								compContentEnd		= iComps_findNextBy_iCode(compThingAfterName, _ICODE_DOUBLE_BRACE_RIGHT);
 								if (!compContentStart || !compContentEnd)
@@ -369,23 +365,39 @@
 
 								// Back up one before the right double-brace
 								compContentEnd = iComps_Nth(compContentEnd, -1);
+								break;
 
 							case _ICODE_PARENTHESIS_LEFT:
 								// define(...)
 								iilasm_params_extract(compThingAfterName, &compParams);
+
+								// Move to the content after the parameters and enclosing parenthesis
+								compThingAfterName	= iComps_Nth(iComps_findNextBy_iCode(compThingAfterName, _ICODE_PARENTHESIS_RIGHT));
+								if (!compThingAfterName)
+								{
+									// Syntax error
+									debug_error;
+									return(false);
+								}
+
+								if (compThingAfterName->iCode == _ICODE_DOUBLE_BRACE_LEFT)
+								{
+									// It's {{
+									goto grab_double_brace_content;
+
+								} else {
+									// Use the rest of the line
+									goto grab_content_to_end_of_line;
+								}
 								break;
 
 							default:
 								// It's everything from here to the end of line
+grab_content_to_end_of_line:
 								compContentStart	= compThingAfterName;
 								compContentEnd		= iiLine_getLastComp(p0->line, compThingAfterName);
 								break;
 						}
-
-					} else {
-						// No content, just definition of the token name
-						compContentStart	= NULL;
-						compContentEnd		= NULL;
 					}
 
 					// When we get here, we have all the information we need
@@ -398,14 +410,17 @@
 						// Mark the other lines complete
 						for (lineMark = p0->line->ll.nextLine; lineMark; lineMark = lineMark->ll.nextLine)
 						{
-							// Mark this line
-							ilasm_status_line_isCompleted(lineMark);
+							// Mark this line, and all components on it
+							ilasm_status_line_add(lineMark, _LASM_STATUS_COMPLETED, true);
 
 							// Are we done?
 							if (lineMark == compContentEnd->line)
 								break;	// Yes
 						}
 					}
+
+					// Indicate success
+					return(true);
 
 				} else {
 					// Syntax error

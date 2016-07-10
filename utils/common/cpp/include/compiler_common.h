@@ -546,6 +546,9 @@
 		{ "_09\000\000",			1,			true,		_ICODE_NUMERIC,							false,				_ICAT_GENERIC,					&colorSynHi_numeric,		false,						null0,					(uptr)&ii_onFind_countNbsp, null0	},
 		{ " ",						1,			true,		_ICODE_WHITESPACE,						false,				_ICAT_GENERIC,					&colorSynHi_comment1,		false,						null0,					null0,		null0	},
 		{ "\t",						1,			true,		_ICODE_WHITESPACE,						false,				_ICAT_GENERIC,					&colorSynHi_comment1,		false,						null0,					null0,		null0	},
+// TODO:  Trying to figure out this syntax in MSVC++ compiler:
+		{ "||||",					4,		{	.partialRepeatContent = "|"		},
+															_ICODE_COMMENT,							true,				_ICAT_COMMENT,					&colorSynHi_comment1,		false,						null0,					null0,		null0	},
 		{ "|||",					3,			false,		_ICODE_WHITESPACE,						true,				_ICAT_GENERIC,					&colorSynHi_comment1,		false,						null0,					null0,		null0	},
 		{ "___",					1,			false,		_ICODE_UNDERSCORE,						false,				_ICAT_GENERIC,					NULL,						false,						null0,					null0,		null0	},
 		{ "(",						1,			false,		_ICODE_PARENTHESIS_LEFT,				false,				_ICAT_DESCENT,					&colorSynHi_bracket,		true,						null0,					null0,		null0	},
@@ -568,7 +571,6 @@
 		{ "+/",						2,			true,		_ICODE_COMMENT_END,						false,				_ICAT_COMMENT,					&colorSynHi_comment3,		false,						null0,					null0,		null0	},
 		{ "/*",						2,			true,		_ICODE_COMMENT_START,					false,				_ICAT_COMMENT,					&colorSynHi_comment3,		false,						null0,					null0,		null0	},
 		{ "*/",						2,			true,		_ICODE_COMMENT_END,						false,				_ICAT_COMMENT,					&colorSynHi_comment3,		false,						null0,					null0,		null0	},
-		{ "||||",					4,			true,		_ICODE_COMMENT,							true,				_ICAT_COMMENT,					&colorSynHi_comment1,		false,						null0,					null0,		null0	},
 		{ "//",						2,			true,		_ICODE_COMMENT,							true,				_ICAT_COMMENT,					&colorSynHi_comment1,		false,						null0,					null0,		null0	},
 		{ "*=",						2,			false,		_ICODE_MULTIPLY_EQUAL,					false,				_ICAT_ASSIGN_OP,				&colorSynHi_operator,		false,						null0,					null0,		null0	},
 		{ "*",						1,			true,		_ICODE_COMMENT,							true,				_ICAT_GENERIC,					&colorSynHi_comment1,		false,						null0,					null0,		null0	},

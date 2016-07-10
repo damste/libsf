@@ -12,10 +12,17 @@
 ||||
 |||||||
 
-define multiply(a,b) {{
-	mov		eax,a
-	mov		ebx,b
-	mul		ebx
+define abc
+define abc		// Should generate an error
+define bcd test_bcd
+define cde(a,b) test_cde
+
+define def {{
+	multi-line content
+}}
+
+define efg(a,b) {{
+	more multi-line content
 }}
 
 

@@ -782,16 +782,17 @@
 //		If NULL, the compLastScanned indicates the last component that was searched where it wasn't found
 //
 //////
-	SComp* iComps_findNextBy_iCode(SComp* comp, s32 tniCode, SComp** compLastScanned)
+	SComp* iComps_findNextBy_iCode(SComp* comp, s32 tniCode, SComp** compLastScanned, bool tlMoveBeyondLineIfNeeded)
 	{
+		SLine* line;
+
+
 		// Initially indicate failure
 		if (compLastScanned)
 			*compLastScanned = comp;
 
-// TODO:  Breakpoint and examine if this will work across lines
-debug_break;
 		// Continue while the environment is sane
-		for ( ; comp; comp = comp->ll.nextComp)
+		while (comp)
 		{
 			// Store the component we're scanning
 			if (compLastScanned)
@@ -800,6 +801,48 @@ debug_break;
 			// See if this is it
 			if (comp->iCode == tniCode)
 				break;		// It is, we're done
+
+			// Can we continue?
+			if (comp->ll.nextComp)
+			{
+				// Move to next component
+				comp = comp->ll.nextComp;
+
+			} else {
+				// Can we move to the next line?
+				if (tlMoveBeyondLineIfNeeded)
+				{
+					// Move to the next line
+					if (comp->line->ll.nextLine)
+					{
+						// Skip forward to the next line that has a component
+						for (line = comp->line->ll.nextLine; line && !line->firstComp; )
+							line = line->ll.nextLine;
+
+						// Are we still valid?
+						if (line)
+						{
+							// Continue with the first component on this line
+							comp = line->firstComp;
+
+						} else {
+							// No more populated lines
+							comp = NULL;
+							break;
+						}
+
+					} else {
+						// No more lines
+						comp = NULL;
+						break;
+					}
+
+				} else {
+					// We're done, not found
+					comp = NULL;
+					break;
+				}
+			}
 		}
 		// When we get here, we either found it or not
 		// Indicate the result
@@ -1189,8 +1232,6 @@ debug_break;
 		SLine*	line;
 
 
-// TODO:  Breakpoint and examine after refactoring
-debug_break;
 		// Based on direction
 		if (comp)
 		{
@@ -1210,7 +1251,7 @@ debug_break;
 						// No more components on this line, switch to next line
 						if (tlMoveBeyondLineIfNeeded && comp->line && (line = comp->line->ll.nextLine))
 						{
-							// Room to move forward
+							// Move forward to another line if need be
 							while (line && !line->firstComp && line->ll.nextLine)
 								line = line->ll.nextLine;
 
@@ -1234,7 +1275,7 @@ debug_break;
 
 			} else if (tnCount < 0) {
 				// Going backwards
-				for (lnI = 0; comp && lnI < tnCount; lnI++)
+				for (lnI = 0; comp && lnI > tnCount; lnI--)
 				{
 					// Is there room on the line?
 					if (comp->ll.prevComp)
@@ -1253,14 +1294,8 @@ debug_break;
 							// Store the last component on the line
 							if (line->firstComp)
 							{
-								// Use this component
-								comp = line->firstComp;
-
-								// Move to the last one of the line
-								while (comp->ll.nextComp)
-									comp = comp->ll.nextComp;
-
-								// When we get here, we're on the last component on the line
+								// Use this line, grab the last component on the line
+								comp = iiLine_getLastComp(line);
 
 							} else {
 								// We're done
