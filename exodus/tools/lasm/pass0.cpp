@@ -156,11 +156,11 @@
 					switch (p0.comp->iCode)
 					{
 						case _ICODE_LASM_DEFINE:
-							ilasm_pass0_define(&p0);
+							ilasm_pass0_define(&p0);						// Jul.11.2016 -- RCH completed
 							break;
 
 						case _ICODE_LASM_MACRO:
-							ilasm_pass0_macro(&p0);
+							ilasm_pass0_macro(&p0);							// Jul.11.2016 -- RCH working on...
 							break;
 
 						case _ICODE_LASM_IF:
@@ -173,14 +173,6 @@
 
 						case _ICODE_LASM_IFNDEF:
 							ilasm_pass0_ifndef(&p0);
-							break;
-
-						case _ICODE_LASM_IFB:
-							ilasm_pass0_ifb(&p0);
-							break;
-
-						case _ICODE_LASM_IFNB:
-							ilasm_pass0_ifnb(&p0);
 							break;
 					}
 				}
@@ -372,7 +364,12 @@ grab_double_brace_content:
 
 							case _ICODE_PARENTHESIS_LEFT:
 								// define(...)
-								iilasm_params_extract(compThingAfterName, &compParams);
+								if (iilasm_params_parentheticalExtract(compThingAfterName, &compParams) <= 0)
+								{
+									// Syntax error
+									debug_error;
+									return(false);
+								}
 
 								// Move to the content after the parameters and enclosing parenthesis
 								compThingAfterName	= iComps_Nth(iComps_findNextBy_iCode(compThingAfterName, _ICODE_PARENTHESIS_RIGHT));
@@ -446,6 +443,12 @@ grab_content_to_end_of_line:
 //
 // Called to define a macro
 //
+//		macro callfp code here
+//
+//		macro callfp
+//		{{
+//		}}
+//
 // 		macro callfp
 // 		|| _seg
 // 		|| _offset
@@ -460,6 +463,137 @@ grab_content_to_end_of_line:
 //////
 	bool ilasm_pass0_macro(SLasmPass0* p0)
 	{
+		SLine*		line;
+		SLine*		lineMark;
+		SComp*		comp;
+		SComp*		compDefine;
+		SComp*		compTokenName;
+		SComp*		compThingAfterName;
+		SComp*		compContentStart;
+		SComp*		compContentEnd;
+		SComp*		compContentTrueStart;
+		SComp*		compContentTrueEnd;
+		SBuilder*	compParams;
+
+
+		// Make sure our environment is sane
+		if (p0 && p0->line && (compDefine = p0->line->firstComp))
+		{
+			// Is it macro?
+			if (compDefine->iCode == _ICODE_LASM_MACRO)
+			{
+				// Grab the token name after it
+				compTokenName = iComps_Nth_lineOnly(compDefine);
+				if (compTokenName)
+				{
+					// Grab the thing after that
+					compContentStart		= NULL;
+					compContentEnd			= NULL;
+					compContentTrueStart	= compTokenName;
+					compContentTrueEnd		= NULL;
+					compThingAfterName		= iComps_Nth(compTokenName);
+					if (compThingAfterName)
+					{
+						// Content assigned to the token name
+						switch (compThingAfterName->iCode)
+						{
+							case _ICODE_DOUBLE_PIPE_SIGN:
+								// It's || so it indicates parameters
+								for (line = compThingAfterName->line; line; line = line->ll.nextLine)
+								{
+									// Skip blank lines
+									if ((comp = line->firstComp))
+									{
+										// Extract these parameters
+										switch (comp->iCode)
+										{
+											case _ICODE_DOUBLE_PIPE_SIGN:
+												// It's || indicating a params line
+												if (comp->ll.nextComp)
+												{
+													// Grab the named parameters here
+													if (!iilasm_params_commaDelimitedExtract(comp->ll.nextComp, &compParams))
+													{
+														// Error parsing these parameters
+														debug_error;
+														return(false);
+													}
+													// Parameters have been added
+												}
+												//else A blank line, so just skip it
+												break;
+
+											case _ICODE_DOUBLE_BRACE_LEFT:
+												// It's {{ so it indicates a block
+												goto grab_double_brace_content;
+
+											default:
+												// Syntax error
+												debug_error;
+												return(false);
+										}
+									}
+								}
+								// Should never reach here
+								break;
+
+							case _ICODE_DOUBLE_BRACE_LEFT:
+								// It's {{ so it indicates a block
+grab_double_brace_content:
+								compContentStart	= iComps_Nth(compThingAfterName);
+								compContentEnd		= iComps_findNextBy_iCode(compThingAfterName, _ICODE_DOUBLE_BRACE_RIGHT);
+								if (!compContentStart || !compContentEnd)
+								{
+									// Syntax error
+									debug_error;
+									return(false);
+								}
+
+								// Back up one before the right double-brace
+								compContentTrueEnd	= compContentEnd;
+								compContentEnd		= iComps_Nth(compContentEnd, -1);
+								break;
+
+							default:
+								// It's everything from here to the end of line
+								// Syntax error
+								debug_error;
+								return(false);
+						}
+					}
+
+					// When we get here, we have all the information we need
+					iilasm_define_add(p0->file, p0->line, compTokenName, compParams, compContentStart, compContentEnd);
+
+					// Mark everything completed
+					lasm_markLineCompleted(p0->line);
+					if (compContentStart && compContentTrueEnd && compContentStart->line != compContentTrueEnd->line)
+					{
+						// Mark the other lines complete
+						for (lineMark = p0->line->ll.nextLine; lineMark; lineMark = lineMark->ll.nextLine)
+						{
+							// Mark this line, and all components on it
+							lasm_markLineCompleted(lineMark);
+
+							// Are we done?
+							if (lineMark == compContentTrueEnd->line)
+								break;	// Yes
+						}
+					}
+
+					// Indicate success
+					return(true);
+
+				} else {
+					// Syntax error
+					debug_error;
+					return(false);
+				}
+			}
+		}
+
+		// If we get here, failure
+		debug_error;		// Internal error, should never happen
 		return(false);
 	}
 
@@ -498,32 +632,6 @@ grab_content_to_end_of_line:
 //
 //////
 	bool ilasm_pass0_ifndef(SLasmPass0* p0)
-	{
-		return(false);
-	}
-
-
-
-
-//////////
-//
-// Called to see if the token is blank (not present)
-//
-//////
-	bool ilasm_pass0_ifb(SLasmPass0* p0)
-	{
-		return(false);
-	}
-
-
-
-
-//////////
-//
-// Called to define a token is not blank (present)
-//
-//////
-	bool ilasm_pass0_ifnb(SLasmPass0* p0)
 	{
 		return(false);
 	}

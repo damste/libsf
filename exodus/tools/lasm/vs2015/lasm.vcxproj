@@ -145,6 +145,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\utils\common\cpp\include\compiler_common.h" />
     <ClInclude Include="..\..\..\..\utils\common\cpp\include\comps.h" />
     <ClInclude Include="..\..\..\..\utils\common\cpp\include\compsearcher.h" />
     <ClInclude Include="..\..\..\..\utils\common\cpp\include\debug.h" />

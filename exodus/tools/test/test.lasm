@@ -25,6 +25,19 @@ define efg(a,b) {{
 	more multi-line content
 }}
 
+macro name1
+|| p1
+|| p2
+{{
+	// Content
+}}
+
+macro name2 {{
+	// Content
+}}
+
+macro name3 // Single line content
+
 
 |||||||||||
 ||| include "include\inc1.lasm"

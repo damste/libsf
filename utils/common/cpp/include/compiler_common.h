@@ -244,6 +244,7 @@
 	cs32			_ICODE_DOUBLE_BRACE_LEFT						= 59;
 	cs32			_ICODE_DOUBLE_BRACE_RIGHT						= 60;
 	cs32			_ICODE_SCOPE									= 61;
+	cs32			_ICODE_DOUBLE_PIPE_SIGN							= 62;
 
 	// Preprocessor
 	cs32			_ICODE_DEFINE_PRAGMA							= 101;
@@ -548,6 +549,7 @@
 		{ "\t",						1,			true,		_ICODE_WHITESPACE,						false,				_ICAT_GENERIC,					&colorSynHi_comment1,		false,						null0,					null0,		null0	},
 		{ "||||",					4,	(u32)((cu8*)&"|"),	_ICODE_COMMENT,							true,				_ICAT_COMMENT,					&colorSynHi_comment1,		false,						null0,					null0,		null0	},
 		{ "|||",					3,			false,		_ICODE_WHITESPACE,						true,				_ICAT_GENERIC,					&colorSynHi_comment1,		false,						null0,					null0,		null0	},
+		{ "||",						2,			false,		_ICODE_DOUBLE_PIPE_SIGN,				true,				_ICAT_GENERIC,					&colorSynHi_comment1,		false,						null0,					null0,		null0	},
 		{ "___",					1,			false,		_ICODE_UNDERSCORE,						false,				_ICAT_GENERIC,					NULL,						false,						null0,					null0,		null0	},
 		{ "(",						1,			false,		_ICODE_PARENTHESIS_LEFT,				false,				_ICAT_DESCENT,					&colorSynHi_bracket,		true,						null0,					null0,		null0	},
 		{ ")",						1,			false,		_ICODE_PARENTHESIS_RIGHT,				false,				_ICAT_ASCENT,					&colorSynHi_bracket,		true,						null0,					null0,		null0	},

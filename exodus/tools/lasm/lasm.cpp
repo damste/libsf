@@ -332,24 +332,6 @@
 				{
 					case 0:
 						ilasm_pass0(cmdLine, file);
-
-//////////
-// // For debugging, write a temporary output of our contiguous file now
-SLine*		line;
-SBuilder*	b;
-b = NULL;
-iBuilder_createAndInitialize(&b);
-for (line = file->firstLine; line; line = line->ll.nextLine)
-{
-	if (!ilasm_status_line_isCompleted(line))
-	{
-		iBuilder_appendData(b, line->sourceCode.data_u8, line->sourceCode.length);
-		iBuilder_appendCrLf(b);
-	}
-}
-iBuilder_asciiWriteOutFile(b, (cu8*)"c:\\temp\\out.txt");
-iBuilder_freeAndRelease(&b);
-//////
 						break;
 
 					case 1:
@@ -362,6 +344,27 @@ iBuilder_freeAndRelease(&b);
 // 					case 5:		{	ilasm_passY(cmdLine, file);		break;	}
 // 					case 6:		{	ilasm_passZ(cmdLine, file);		break;	}
 				}
+
+//////////
+// For debugging, write a temporary output of our contiguous file now
+//////
+	SLine*		line;
+	SBuilder*	b;
+	b = NULL;
+	iBuilder_createAndInitialize(&b);
+	for (line = file->firstLine; line; line = line->ll.nextLine)
+	{
+		if (!ilasm_status_line_isCompleted(line))
+		{
+			iBuilder_appendData(b, line->sourceCode.data_u8, line->sourceCode.length);
+			iBuilder_appendCrLf(b);
+		}
+	}
+	iBuilder_asciiWriteOutFile(b, (cu8*)"c:\\temp\\out.txt");
+	iBuilder_freeAndRelease(&b);
+//////
+// END
+//////////
 			}
 
 		//
@@ -849,7 +852,7 @@ iBuilder_freeAndRelease(&b);
 //
 //////
 	// Note:  This function generates the *paramsRoot builder (if there were any parameters) ... it will have to be deleted manually by caller
-	s32 iilasm_params_extract(SComp* compLeftParam, SBuilder** paramsRoot, bool tlMoveBeyondLineIfNeeded)
+	s32 iilasm_params_parentheticalExtract(SComp* compLeftParam, SBuilder** paramsRoot, bool tlMoveBeyondLineIfNeeded)
 	{
 		bool			llStoreStart;
 		s32				lnLevel;
@@ -930,6 +933,20 @@ iBuilder_freeAndRelease(&b);
 			return(params->populatedLength / sizeof(SLasmParam));
 		}
 	}
+
+
+
+
+	//////////
+	//
+	// Called to extract parameters beginning where we are to the end of the line, separated by commas
+	//
+	//////
+		s32 iilasm_params_commaDelimitedExtract(SComp* compFirstParam, SBuilder** paramsRoot)
+		{
+// TODO:  working here
+working here
+		}
 
 
 

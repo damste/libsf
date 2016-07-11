@@ -107,8 +107,9 @@ struct SLasmInclude;
 	bool				ilasm_status_line_isCompleted					(SLine* line);
 	void				ilasm_status_file_add							(SLasmFile* file, u32 tnStatus, bool tlProcessLines, bool tlProcessComps);
 
-	// For parenthetical parameters
-	s32					iilasm_params_extract							(SComp* compLeftParam, SBuilder** paramsRoot, bool tlMoveBeyondLineIfNeeded = true);
+	// For parenthetical parameters, and comma delimited parameters
+	s32					iilasm_params_parentheticalExtract				(SComp* compLeftParam, SBuilder** paramsRoot, bool tlMoveBeyondLineIfNeeded = true);
+	s32					iilasm_params_commaDelimitedExtract				(SComp* compFirstParam, SBuilder** paramsRoot);
 
 	// For defined tokens
 	bool				iilasm_define_add								(SLasmFile* file, SLine* line, SComp* compName, SBuilder* params, SComp* compStart, SComp* compEnd, SLasmDefine** defineOut = NULL);
@@ -130,8 +131,6 @@ struct SLasmInclude;
 	bool				ilasm_pass0_if									(SLasmPass0* p0);
 	bool				ilasm_pass0_ifdef								(SLasmPass0* p0);
 	bool				ilasm_pass0_ifndef								(SLasmPass0* p0);
-	bool				ilasm_pass0_ifb									(SLasmPass0* p0);
-	bool				ilasm_pass0_ifnb								(SLasmPass0* p0);
 
 
 //////////
