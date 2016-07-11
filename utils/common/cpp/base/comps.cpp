@@ -480,11 +480,12 @@
 //////
 	SComp* iComps_lex_line(SAsciiCompSearcher* tsComps, SLine* line)
 	{
-		s32						lnI, lnMaxLength, lnStart, lnLength, lnLacsLength;
+		s32						lnI, lnMaxLength, lnStart, lnLength, lnLacsLength, lnSearchLen;
 		SComp*					compFirst;
 		SComp*					compLast;
 		SComp*					comp;
 		u8*						lcData;
+		cu8*					lcSearchPtr;
 		SAsciiCompSearcher*		lacs;
 
 
@@ -524,11 +525,24 @@
 							// See if it's allowed to repeat
 							if (lacs->repeats)
 							{
-								while (	lnStart + lnLength + lnLacsLength <= lnMaxLength
-										&& iComps_xlatToComps_withTest(lacs->keyword_cu8, lcData + lnStart + lnLength, lacs->length) == 0)
+								// Are we searching for a literal repeat of the entire string, or something alternate
+								if (lacs->repeats == 1)
+								{
+									// Entire string
+									lcSearchPtr = lacs->keyword_cu8;
+									lnSearchLen = lacs->length;
+
+								} else {
+									// Something alternate
+									lcSearchPtr = lacs->partialRepeatContent;
+									lnSearchLen = strlen((cs8*)lcSearchPtr);
+								}
+
+								// Iterate forward looking for the repeating sequence(s)
+								while (lnStart + lnLength + lnLacsLength <= lnMaxLength && iComps_xlatToComps_withTest(lcSearchPtr, lcData + lnStart + lnLength, lnSearchLen) == 0)
 								{
 									// We found another repeated entry
-									lnLength += lnLacsLength;
+									lnLength += lnSearchLen;
 								}
 								// When we get here, every repeated entry has been found (if any)
 							}
@@ -3352,8 +3366,8 @@ debug_break;
 
 			} else {
 				// Just a regular compare
-				if (llCase)		return(  memcmp((s8*)tcHaystack, (s8*)tcNeedle, tnLength));
-				else			return(_memicmp((s8*)tcHaystack, (s8*)tcNeedle, tnLength));
+				if (!llCase)	return(_memicmp((s8*)tcHaystack, (s8*)tcNeedle, tnLength));
+				else			return(  memcmp((s8*)tcHaystack, (s8*)tcNeedle, tnLength));
 			}
 		}
 		// If we get here, no match

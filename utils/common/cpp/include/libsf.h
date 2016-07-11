@@ -1104,8 +1104,8 @@
 			};
 			s32			length;													// Length of the keyword (negative for case sensitive, positive case insensitive, 0 for termination entry)
 			union {
-				s32		repeats;												// Can this item repeat?  Or is this a one-shot keyword?
-				s8*		partialRepeatContent;									// Used for those cases where not all of the characters need to repeat
+				u32		repeats;												// Can this item repeat?  Or is this a one-shot keyword?
+				cu8*	partialRepeatContent;									// Used for those cases where not all of the characters need to repeat
 			};
 			s32			iCode;													// An associated code to store when this entry is found
 			bool		firstOnLine;											// Should this item ONLY be the first on line? (Note:  Ignores leading whitespaces)
