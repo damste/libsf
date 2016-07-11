@@ -88,6 +88,8 @@
 	#define lasm_is_warning(a)						(a & _LASM_STATUS_WARNING)
 	#define lasm_is_error(a)						(a & _LASM_STATUS_ERROR)
 	#define lasm_is_completed(a)					(a & _LASM_STATUS_COMPLETED)
+	#define lasm_markLineCompleted(l)				ilasm_status_line_add(l, _LASM_STATUS_COMPLETED, true)
+
 
 
 //////////

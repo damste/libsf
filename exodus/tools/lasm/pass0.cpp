@@ -123,7 +123,7 @@
 				if (!p0.comp || p0.comp->iCode == _ICODE_COMMENT)
 				{
 					// Blank line or comment line
-					ilasm_status_line_add(p0.line, _LASM_STATUS_COMPLETED, true);
+					lasm_markLineCompleted(p0.line);
 					continue;
 
 				} else if (p0.comp->iCode == _ICODE_LASM_INCLUDE) {
@@ -136,7 +136,7 @@
 
 					} else {
 						// Line is completed
-						ilasm_status_line_add(p0.line, _LASM_STATUS_COMPLETED, true);
+						lasm_markLineCompleted(p0.line);
 					}
 				}
 				// else other pragmas are ignored for this pass
@@ -298,7 +298,7 @@
 		if (llError)
 		{
 			// Syntax error
-			ilasm_status_line_add(p0->line, _LASM_STATUS_ERROR, true);
+			lasm_markLineCompleted(p0->line);
 			printf(lcErrorText, p0->line->lineNumber, p0->comp->start, p0->file->filename.data_s8);
 		}
 
@@ -328,6 +328,7 @@
 		SComp*		compThingAfterName;
 		SComp*		compContentStart;
 		SComp*		compContentEnd;
+		SComp*		compContentTrueEnd;
 		SBuilder*	compParams;
 
 
@@ -345,6 +346,7 @@
 					compParams			= NULL;
 					compContentStart	= NULL;
 					compContentEnd		= NULL;
+					compContentTrueEnd	= NULL;
 					compThingAfterName	= iComps_Nth_lineOnly(compTokenName);
 					if (compThingAfterName)
 					{
@@ -364,7 +366,8 @@ grab_double_brace_content:
 								}
 
 								// Back up one before the right double-brace
-								compContentEnd = iComps_Nth(compContentEnd, -1);
+								compContentTrueEnd	= compContentEnd;
+								compContentEnd		= iComps_Nth(compContentEnd, -1);
 								break;
 
 							case _ICODE_PARENTHESIS_LEFT:
@@ -396,6 +399,7 @@ grab_double_brace_content:
 grab_content_to_end_of_line:
 								compContentStart	= compThingAfterName;
 								compContentEnd		= iiLine_getLastComp(p0->line, compThingAfterName);
+								compContentTrueEnd	= compContentEnd;
 								break;
 						}
 					}
@@ -404,17 +408,17 @@ grab_content_to_end_of_line:
 					iilasm_define_add(p0->file, p0->line, compTokenName, compParams, compContentStart, compContentEnd);
 
 					// Mark everything completed
-					ilasm_status_line_isCompleted(p0->line);
-					if (compContentStart && compContentEnd && compContentStart->line != compContentEnd->line)
+					lasm_markLineCompleted(p0->line);
+					if (compContentStart && compContentTrueEnd && compContentStart->line != compContentTrueEnd->line)
 					{
 						// Mark the other lines complete
 						for (lineMark = p0->line->ll.nextLine; lineMark; lineMark = lineMark->ll.nextLine)
 						{
 							// Mark this line, and all components on it
-							ilasm_status_line_add(lineMark, _LASM_STATUS_COMPLETED, true);
+							lasm_markLineCompleted(lineMark);
 
 							// Are we done?
-							if (lineMark == compContentEnd->line)
+							if (lineMark == compContentTrueEnd->line)
 								break;	// Yes
 						}
 					}
