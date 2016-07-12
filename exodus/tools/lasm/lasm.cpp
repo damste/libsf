@@ -338,7 +338,10 @@
 						ilasm_pass1(cmdLine, file);
 						break;
 
-// 					case 2:		{	ilasm_pass2(cmdLine, file);		break;	}
+					case 2:
+						ilasm_pass2(cmdLine, file);
+						break;
+
 // 					case 3:		{	ilasm_pass2(cmdLine, file);		break;	}
 // 					case 4:		{	ilasm_passX(cmdLine, file);		break;	}
 // 					case 5:		{	ilasm_passY(cmdLine, file);		break;	}
@@ -848,11 +851,31 @@
 
 //////////
 //
-// Called to extract parameters between two parenthesis
+// Called to extract parameters...
 //
 //////
 	// Note:  This function generates the *paramsRoot builder (if there were any parameters) ... it will have to be deleted manually by caller
+	// ...beginning at the parameter after the parenthesis, and then between the two parenthesis
 	s32 iilasm_params_parentheticalExtract(SComp* compLeftParam, SBuilder** paramsRoot, bool tlMoveBeyondLineIfNeeded)
+	{
+		return(iilasm_params_extract_common(iComps_Nth(compLeftParam, 1, tlMoveBeyondLineIfNeeded), paramsRoot, tlMoveBeyondLineIfNeeded, _ICODE_PARENTHESIS_RIGHT));
+	}
+
+	// ...beginning where we are to the end of the line
+	s32 iilasm_params_commaDelimitedExtract(SComp* compFirstParam, SBuilder** paramsRoot)
+	{
+		return(iilasm_params_extract_common(compFirstParam, paramsRoot, false, _ICODE_NU));
+	}
+
+
+
+
+//////////
+//
+// Common comma-delimited parameter extraction algorithm
+//
+//////
+	s32 iilasm_params_extract_common(SComp* compFirstParam, SBuilder** paramsRoot, bool tlMoveBeyondLineIfNeeded, s32 tniStopCode)
 	{
 		bool			llStoreStart;
 		s32				lnLevel;
@@ -870,8 +893,7 @@
 		params = *paramsRoot;
 
 		// Scan forward looking for commas and right-parenthesis
-		comp = iComps_Nth(compLeftParam, 1, tlMoveBeyondLineIfNeeded);
-		for (lnLevel = 0, compEnd = NULL, compLast = NULL, llStoreStart = true; comp; comp = iComps_Nth(comp, 1, tlMoveBeyondLineIfNeeded))
+		for (lnLevel = 0, comp = compFirstParam, compEnd = NULL, compLast = NULL, llStoreStart = true; comp; comp = iComps_Nth(comp, 1, tlMoveBeyondLineIfNeeded))
 		{
 			// Store the starting component (if we need to)
 			if (llStoreStart)
@@ -880,11 +902,15 @@
 				compStart		= comp;
 			}
 
+			// Are we at the terminating code?
+			if (comp->iCode == tniStopCode || (!tlMoveBeyondLineIfNeeded && !comp->ll.nextComp))
+				goto end_of_parameter;
+
 			// What are we sitting on?
 			switch (comp->iCode)
 			{
 				case _ICODE_COMMA:
-				case _ICODE_PARENTHESIS_RIGHT:
+end_of_parameter:
 					if (lnLevel == 0)
 					{
 						// Everything up to the component before this is part of the parameter
@@ -911,8 +937,8 @@
 					break;
 			}
 
-			// If it's a right parenthesis, we're done
-			if (comp->iCode == _ICODE_PARENTHESIS_RIGHT)
+			// If it's the terminating code, we're done
+			if (comp->iCode == tniStopCode || (!tlMoveBeyondLineIfNeeded && !comp->ll.nextComp))
 				break;
 
 			// Store this component as the last component we hit/touched
@@ -933,20 +959,6 @@
 			return(params->populatedLength / sizeof(SLasmParam));
 		}
 	}
-
-
-
-
-	//////////
-	//
-	// Called to extract parameters beginning where we are to the end of the line, separated by commas
-	//
-	//////
-		s32 iilasm_params_commaDelimitedExtract(SComp* compFirstParam, SBuilder** paramsRoot)
-		{
-// TODO:  working here
-working here
-		}
 
 
 

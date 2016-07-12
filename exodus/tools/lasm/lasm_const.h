@@ -536,13 +536,14 @@
 	cs32		_ICODE_LASM_DEFINE					= 3000002;
 	cs32		_ICODE_LASM_FUNCTION				= 3000003;
 	cs32		_ICODE_LASM_STRUCT					= 3000004;
-	cs32		_ICODE_LASM_MACRO					= 3000005;
-	cs32		_ICODE_LASM_IF						= 3000006;
-	cs32		_ICODE_LASM_ELSE					= 3000007;
-	cs32		_ICODE_LASM_IFDEF					= 3000008;
-	cs32		_ICODE_LASM_IFNDEF					= 3000009;
-	cs32		_ICODE_LASM_IFB						= 3000010;
-	cs32		_ICODE_LASM_IFNB					= 3000011;
+	cs32		_ICODE_LASM_ENUM					= 3000005;
+	cs32		_ICODE_LASM_MACRO					= 3000006;
+	cs32		_ICODE_LASM_IF						= 3000007;
+	cs32		_ICODE_LASM_ELSE					= 3000008;
+	cs32		_ICODE_LASM_IFDEF					= 3000009;
+	cs32		_ICODE_LASM_IFNDEF					= 3000010;
+	cs32		_ICODE_LASM_IFB						= 3000011;
+	cs32		_ICODE_LASM_IFNB					= 3000012;
 
 
 //////////
@@ -590,6 +591,7 @@
 	u8			cgc_lasm_define[]					= "define";
 	u8			cgc_lasm_function[]					= "function";
 	u8			cgc_lasm_struct[]					= "struct";
+	u8			cgc_lasm_enum[]						= "enum";
 	u8			cgc_lasm_macro[]					= "macro";
 
 	u8			cgc_lasm_if[]						= "if";

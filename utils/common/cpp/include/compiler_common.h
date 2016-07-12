@@ -180,6 +180,7 @@
 	cs32			_ICODE_DOUBLE_QUOTED_TEXT						= 2000002;
 
 	// Standard types
+	cs32			_ICODE_NU										= -2;		// Not used, a purposeful code for something that will never match anything
 	cs32			_ICODE_UNKNOWN									= -1;
 	cs32			_ICODE_ALPHA									= 1;
 	cs32			_ICODE_NUMERIC									= 2;

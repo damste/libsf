@@ -89,10 +89,9 @@
 
 //////////
 //
-// Pass-2 -- Markers
+// Pass-2 -- Frameworks
 //
 //		functions
-//		adhocs
 //		structs
 //		enums
 //		labels
@@ -102,51 +101,46 @@
 	{
 		SLine*			line;
 		SComp*			comp;
-// 		SComp*			compFile;
-// 		SLasmFile*		fileInclude;
+		SComp*			compFile;
+		SLasmFile*		fileInclude;
 		SLasmBlock*		func;
 		SLasmStruct*	lstruct;
+		SLasmEnum*		lenum;
 
 
 		// Iterate through the entire file
 		for (line = file->firstLine; line; line = line->ll.nextLine)
 		{
 			// All lines should have compiler info, but just to be sure...
-			if (!line->status.isCompleted && line->compilerInfo)
+			if (!ilasm_status_line_isCompleted(line) && line->firstComp)
 			{
-//////////
-// function
-//////
-				comp = line->compilerInfo->firstComp;
-				if (comp->iCode == _ICODE_LASM_FUNCTION)
+				comp = line->firstComp;
+				switch (comp->iCode)
 				{
-					// Process the function parameters, and mark off its extents
-					if (!(func = ilasm_pass2_function(cmdLine, file, &line)))
-					{
-					}
+					case _ICODE_LASM_FUNCTION:
+						// Process the function parameters, and mark off its extents
+						if (!(func = ilasm_pass2_function(cmdLine, file, &line)))
+						{
+						}
 
-					// Process any inner structs
+					case _ICODE_LASM_STRUCT:
+						// Process the struct
+						if (!(lstruct = ilasm_pass2_struct(cmdLine, file, &line)))
+						{
+						}
 
+					case _ICODE_LASM_ENUM:
+						// Process the enum
+						if (!(lenum = ilasm_pass2_enum(cmdLine, file, &line)))
+						{
+						}
 
-//////////
-// struct
-//////
-				} else if (comp->iCode == _ICODE_LASM_STRUCT) {
-					// Process the struct
-					if (!(lstruct = ilasm_pass2_struct(cmdLine, file, &line)))
-					{
-					}
+					default:
+						if (ilasm_pass2_label(cmdLine, file, &line))
+						{
+							// Found a label
+						}
 
-
-//////////
-// Label
-//////
-				} else if (ilasm_pass2_label(cmdLine, file, &line)) {
-					// Found a label
-
-
-				} else {
-					// Did not find anything on this line
 				}
 			}
 		}
@@ -161,19 +155,6 @@
 //
 //////
 	SLasmBlock*	ilasm_pass2_function(SLasmCmdLine* cmdLine, SLasmFile* file, SLine** lineProcessing)
-	{
-		return(NULL);
-	}
-
-
-
-
-//////////
-//
-// Process the adhoc header
-//
-//////
-	SLasmBlock*	ilasm_pass2_adhoc(SLasmCmdLine* cmdLine, SLasmFile* file, SLine** lineProcessing)
 	{
 		return(NULL);
 	}

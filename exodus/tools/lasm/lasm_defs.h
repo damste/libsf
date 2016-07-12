@@ -110,6 +110,7 @@ struct SLasmInclude;
 	// For parenthetical parameters, and comma delimited parameters
 	s32					iilasm_params_parentheticalExtract				(SComp* compLeftParam, SBuilder** paramsRoot, bool tlMoveBeyondLineIfNeeded = true);
 	s32					iilasm_params_commaDelimitedExtract				(SComp* compFirstParam, SBuilder** paramsRoot);
+	s32					iilasm_params_extract_common					(SComp* compFirstParam, SBuilder** paramsRoot, bool tlMoveBeyondLineIfNeeded, s32 tniStopCode);
 
 	// For defined tokens
 	bool				iilasm_define_add								(SLasmFile* file, SLine* line, SComp* compName, SBuilder* params, SComp* compStart, SComp* compEnd, SLasmDefine** defineOut = NULL);
@@ -144,7 +145,6 @@ struct SLasmInclude;
 //////
 	void				ilasm_pass2										(SLasmCmdLine* cmdLine, SLasmFile* file);
 	SLasmBlock*			ilasm_pass2_function							(SLasmCmdLine* cmdLine, SLasmFile* file, SLine** lineProcessing);
-	SLasmBlock*			ilasm_pass2_adhoc								(SLasmCmdLine* cmdLine, SLasmFile* file, SLine** lineProcessing);
 	SLasmStruct*		ilasm_pass2_struct								(SLasmCmdLine* cmdLine, SLasmFile* file, SLine** lineProcessing);
 	SLasmEnum*			ilasm_pass2_enum								(SLasmCmdLine* cmdLine, SLasmFile* file, SLine** lineProcessing);
 	bool				ilasm_pass2_label								(SLasmCmdLine* cmdLine, SLasmFile* file, SLine** lineProcessing);

@@ -1420,6 +1420,7 @@
 		lnCount = 0;
 		if (comp)
 		{
+
 			//////////
 			// Combine the next N-1 items
 			//////
@@ -1435,23 +1436,21 @@
 						if (lnCount == 1 && compMigrateRefs)
 							iLl_appendExisting__llAtEnd((SLL**)compMigrateRefs, (SLL*)iComps_duplicate(comp));
 
-#ifdef _SHOW_REFACTOR_ERRORS
 						// Add in the length of the next component, plus any spaces between them
-						comp->text.length	+= (compNext->length + iiComps_get_charactersBetween(comp, compNext));
-						comp->nbspCount	+= compNext->nbspCount;
+						comp->text.length	+= (compNext->text.length + iiComps_get_charactersBetween(comp, compNext));
+						comp->nbspCount		+= compNext->nbspCount;
 
 						// Migrate or delete the next component
 						if (compMigrateRefs)
 						{
 							// Combine it if it's part of a chain
-							if (comp->line && comp->line->compilerInfo && comp->line->compilerInfo->firstComp)
-								iLl_migrate__llToOther((SLL**)&comp->line->compilerInfo->firstComp, (SLL**)compMigrateRefs, (SLL*)compNext, true);
+							if (comp->line && comp->line->firstComp)
+								iLl_migrate__llToOther((SLL**)&comp->line->firstComp, (SLL**)compMigrateRefs, (SLL*)compNext, true);
 
 						} else {
 							// Delete it
 							iLl_delete__ll((SLL*)compNext, true);
 						}
-#endif
 
 					} else {
 						// We're done, perhaps prematurely, but there are no more components
@@ -1469,6 +1468,7 @@
 					comp->iCat	= tnNew_iCat;
 					comp->color	= newColor;
 				}
+
 		}
 
 
@@ -1539,17 +1539,16 @@
 	u32 iComps_combine_adjacentAlphanumeric(SLine* line)
 	{
 		u32		lnCombined;
-// 		SComp*	comp;
-// 		SComp*	compNext;
+		SComp*	comp;
+		SComp*	compNext;
 
 
 		// Make sure our environment is sane
 		lnCombined = 0;
-#ifdef _SHOW_REFACTOR_ERRORS
-		if (line && line->compilerInfo)
+		if (line)
 		{
 			// Begin at the beginning and check across all components
-			comp = line->compilerInfo->firstComp;
+			comp = line->firstComp;
 			while (comp)
 			{
 				// Grab the next component
@@ -1581,7 +1580,6 @@
 				comp = comp->ll.nextComp;
 			}
 		}
-#endif
 
 		// Indicate how many we combined
 		return(lnCombined);
@@ -2699,10 +2697,7 @@ debug_break;
 	s32 iiComps_get_charactersBetween(SComp* compLeft, SComp* compRight)
 	{
 		// Start of right component and end of left component
-#ifdef _SHOW_REFACTOR_ERRORS
-		return(compRight->start - (compLeft->start + compLeft->length));
-#endif
-		return(false);
+		return(compRight->start - (compLeft->start + compLeft->text.length));
 	}
 
 

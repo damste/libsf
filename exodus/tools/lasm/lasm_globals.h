@@ -526,6 +526,7 @@
 		{	(cs8*)cgc_lasm_define,				sizeof(cgc_lasm_define) - 1,			false,		_ICODE_LASM_DEFINE,					true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,		null0	},
 		{	(cs8*)cgc_lasm_function,			sizeof(cgc_lasm_function) - 1,			false,		_ICODE_LASM_FUNCTION,				true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,		null0	},
 		{	(cs8*)cgc_lasm_struct,				sizeof(cgc_lasm_struct) - 1,			false,		_ICODE_LASM_STRUCT,					true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,		null0	},
+		{	(cs8*)cgc_lasm_enum,				sizeof(cgc_lasm_enum) - 1,				false,		_ICODE_LASM_ENUM,					true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,		null0	},
 		{	(cs8*)cgc_lasm_macro,				sizeof(cgc_lasm_macro) - 1,				false,		_ICODE_LASM_MACRO,					true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,		null0	},
 
 		{	(cs8*)cgc_lasm_if,					sizeof(cgc_lasm_if) - 1,				false,		_ICODE_LASM_IF,						false,		_ICAT_FLOW,				&colorDefault,		false,			null0,		null0	},

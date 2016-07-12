@@ -96,7 +96,7 @@
 //		removes comment lines
 //		loads include files
 //
-//		once everything's loaded it scans in macros
+//		once all include files are loaded, it scans in defines and macros
 //
 //////
 	void ilasm_pass0(SLasmCmdLine* cmdLine, SLasmFile* file)
@@ -160,19 +160,7 @@
 							break;
 
 						case _ICODE_LASM_MACRO:
-							ilasm_pass0_macro(&p0);							// Jul.11.2016 -- RCH working on...
-							break;
-
-						case _ICODE_LASM_IF:
-							ilasm_pass0_if(&p0);
-							break;
-
-						case _ICODE_LASM_IFDEF:
-							ilasm_pass0_ifdef(&p0);
-							break;
-
-						case _ICODE_LASM_IFNDEF:
-							ilasm_pass0_ifndef(&p0);
+							ilasm_pass0_macro(&p0);							// Jul.11.2016 -- RCH completed
 							break;
 					}
 				}
@@ -487,6 +475,7 @@ grab_content_to_end_of_line:
 				if (compTokenName)
 				{
 					// Grab the thing after that
+					compParams				= NULL;
 					compContentStart		= NULL;
 					compContentEnd			= NULL;
 					compContentTrueStart	= compTokenName;
@@ -556,9 +545,9 @@ grab_double_brace_content:
 
 							default:
 								// It's everything from here to the end of line
-								// Syntax error
-								debug_error;
-								return(false);
+								compContentStart	= compThingAfterName;
+								compContentEnd		= iiLine_getLastComp(p0->line, compThingAfterName);
+								compContentTrueEnd	= compContentEnd;
 						}
 					}
 
@@ -567,7 +556,7 @@ grab_double_brace_content:
 
 					// Mark everything completed
 					lasm_markLineCompleted(p0->line);
-					if (compContentStart && compContentTrueEnd && compContentStart->line != compContentTrueEnd->line)
+					if (compContentTrueStart && compContentTrueEnd && compContentTrueStart->line != compContentTrueEnd->line)
 					{
 						// Mark the other lines complete
 						for (lineMark = p0->line->ll.nextLine; lineMark; lineMark = lineMark->ll.nextLine)

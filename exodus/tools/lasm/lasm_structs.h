@@ -82,6 +82,7 @@
 
 
 struct SLasmFile;
+struct SLasmBlock;
 
 
 //////////
@@ -139,6 +140,13 @@ struct SLasmFile;
 		bool		wasOpened;							// Raised when it's opened
 	};
 
+	// Function definition
+	struct SLasmFunc
+	{
+		SDatum			name;							// Function name
+		SLasmBlock*		frame;							// Framework components
+	};
+
 	// Linked list of files to be assembled
 	struct SLasmFile
 	{
@@ -179,6 +187,7 @@ struct SLasmFile;
 	{
 		// Required parameters
 		SLasmFile*			file;						// Associated file
+		SLasmFunc*			func;						// The associated function for this define
 		SLine*				line;						// First line (potentially multiple lines of source ocde, refer to first->line and last->line)
 		SComp*				name;						// The component which defined the token name
 
@@ -193,17 +202,11 @@ struct SLasmFile;
 
 //////////
 //
-// For adhocs, functions, flowofs:
+// For functions:
 //
 //		function abc									// definition
 //		|												// header start
 //		|												// header end
-//		{												// body start
-//		}												// body end
-//
-// For old-style C-function formats:
-//
-//		retType functionName(p1, p2..., pN)				// definition
 //		{												// body start
 //		}												// body end
 //
@@ -217,19 +220,11 @@ struct SLasmFile;
 		//////////
 		// Components
 		//////
-			SLine*			definition;					// The definition line (adhoc, function, flowof)
+			SLine*			definition;					// The definition line (function name)
 			SLine*			headerStart;				// Start of the header block
 			SLine*			headerEnd;					// End of the header block
 			SLine*			bodyStart;					// First line of the function
 			SLine*			bodyEnd;					// Last line of the function
-
-
-		//////////
-		// Sub-components
-		//////
-			SLasmBlock*		firstFlowof;				// The first flowof for this block
-			SLasmBlock*		firstAdhoc;					// The first adhoc for this block
-			SLasmBlock*		parent;						// (if adhoc) The function or flowof this adhoc is contained within
 
 
 		//////////
