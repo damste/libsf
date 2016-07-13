@@ -109,7 +109,7 @@ struct SLasmInclude;
 
 	// For parenthetical parameters, and comma delimited parameters
 	s32					iilasm_params_parentheticalExtract				(SComp* compLeftParam, SBuilder** paramsRoot, bool tlMoveBeyondLineIfNeeded = true);
-	s32					iilasm_params_commaDelimitedExtract				(SComp* compFirstParam, SBuilder** paramsRoot);
+	s32					iilasm_params_commaDelimitedExtract				(SComp* compFirstParam, SBuilder** paramsRoot, bool tlVerifySingleParams = false, bool* tlIsSingleParam = NULL);
 	s32					iilasm_params_extract_common					(SComp* compFirstParam, SBuilder** paramsRoot, bool tlMoveBeyondLineIfNeeded, s32 tniStopCode);
 
 	// For defined tokens

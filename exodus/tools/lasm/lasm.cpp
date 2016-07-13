@@ -862,9 +862,35 @@
 	}
 
 	// ...beginning where we are to the end of the line
-	s32 iilasm_params_commaDelimitedExtract(SComp* compFirstParam, SBuilder** paramsRoot)
+	s32 iilasm_params_commaDelimitedExtract(SComp* compFirstParam, SBuilder** paramsRoot, bool tlVerifySingleParams, bool* tlIsSingleParam)
 	{
-		return(iilasm_params_extract_common(compFirstParam, paramsRoot, false, _ICODE_NU));
+		s32				lnResult;
+		u32				lnI;
+		SLasmParam*		param;
+
+
+		// Get our parameters
+		lnResult = iilasm_params_extract_common(compFirstParam, paramsRoot, false, _ICODE_NU);
+		if (lnResult > 0 && *paramsRoot && tlVerifySingleParams && tlIsSingleParam)
+		{
+			// Make sure each parameter is single
+			*tlIsSingleParam = true;	// Assume success
+			iterate(lnI, (*paramsRoot), param, SLasmParam)
+			//
+
+				// Is this parameter single?
+				if (param->start != param->end)
+				{
+					// No
+					*tlIsSingleParam = false;
+					break;
+				}
+			//
+			iterate_end;
+		}
+
+		// Indicate our result
+		return(lnResult);
 	}
 
 

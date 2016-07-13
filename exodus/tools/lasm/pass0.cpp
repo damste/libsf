@@ -501,7 +501,7 @@ grab_content_to_end_of_line:
 												if (comp->ll.nextComp)
 												{
 													// Grab the named parameters here
-													if (!iilasm_params_commaDelimitedExtract(comp->ll.nextComp, &compParams))
+													if (!iilasm_params_commaDelimitedExtract(comp->ll.nextComp, &compParams, true))
 													{
 														// Error parsing these parameters
 														debug_error;

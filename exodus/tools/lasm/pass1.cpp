@@ -96,10 +96,10 @@
 	{
 		SLine*			line;
 		SComp*			comp;
-// 		SComp*			compNext;
-// 		SComp*			compFile;
-// 		SLasmFile*		fileInclude;
-// 		s8				fileName[_MAX_PATH];
+		SComp*			compNext;
+		SComp*			compFile;
+		SLasmFile*		fileInclude;
+		s8				fileName[_MAX_PATH];
 
 
 		// Iterate through the entire file
