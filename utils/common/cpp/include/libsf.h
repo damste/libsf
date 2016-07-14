@@ -108,9 +108,10 @@
 			cs8*		data_cs8;			// To access the data as cs8
 			cu8*		data_cu8;			// To access the data as cu8
 			void*		data_vp;			// To access the data as a void pointer
+			const void*	data_cvp;			// To access the data as a const void pointer
 			IDispatch*	data_idispatch;		// To access the data as an IDispatch pointer
 
-											// Common structures (used for displaying content during debugging)
+			// Common structures (used for displaying content during debugging)
 			SDateTime*	data_dt;			// To access the data as a datetime
 			SDateTimeX*	data_dtx;			// To access the data as a datetimex
 			SDate*		data_date;			// To access the data as a date in the text-form YYYYMMDD
@@ -1402,11 +1403,8 @@
 // .h
 // BEGIN
 //////
-	void*					iDatum_allocateSpace					(SDatum* datum,		s32 dataLength);
-	SDatum*					iDatum_allocate							(cs8* data,			s32 dataLength = -1);
-	SDatum*					iDatum_allocate							( s8* data,			s32 dataLength = -1);
-	SDatum*					iDatum_allocate							(cu8* data,			s32 dataLength = -1);
-	SDatum*					iDatum_allocate							( u8* data,			s32 dataLength = -1);
+	void*					iDatum_allocateSpace					(SDatum* datum,	s32 dataLength);
+	SDatum*					iDatum_allocate							(const void* data, s32 dataLength = -1);
 	bool					iDatum_appendData						(SDatum* datum, s8* data, s32 tnAppendLength);
 
 	void					iDatum_duplicate						(SDatum* datum,  u8* data, s32 dataLength = -1);
@@ -1427,10 +1425,9 @@
 	s32						iDatum_setAll							(SDatum* datum, u8 c);
 	bool					iDatum_resize							(SDatum* datum, s32 newDataLength);
 	s32						iDatum_compare							(SDatum* datumLeft, SDatum* datumRight);
-	s32						iDatum_compare							(SDatum* datumLeft, s8*  data, s32 dataLength);
-	s32						iDatum_compare							(SDatum* datumLeft, cs8* data, s32 dataLength);
-	s32						iDatum_compare							(SDatum* datumLeft, u8*  data, s32 dataLength);
-	s32						iDatum_compare							(SDatum* datumLeft, cu8* data, s32 dataLength);
+	s32						iDatum_compare							(SDatum* datumLeft, void*  data, s32 dataLength);
+	s32						iDatum_contains							(SDatum* haystack, SDatum* needle, bool tlCaseCompare = false, s32 tnOccurrence = 1);
+	s32						iDatum_contains							(SDatum* haystack, s8* needle, s32 needleLength = -1, bool tlCaseCompare = false, s32 tnOccurrence = 1);
 	void					iDatum_delete							(SDatum** datum);
 	void					iDatum_delete							(SDatum* datum, bool tlDeleteSelf);
 	void					iiDatum_delete							(SDatum* datum);

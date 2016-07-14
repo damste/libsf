@@ -97,14 +97,16 @@
 		u32			lnI;
 		SLine*		line;
 		SComp*		comp;
-		SComp*		compNext;
-		SComp*		compFile;
-		SLasmFile*	fileInclude;
+//		SComp*		compNext;
+//		SComp*		compFile;
+//		SLasmFile*	fileInclude;
 		SLasmDMac*	dm;
-		s8			fileName[_MAX_PATH];
+//		s8			fileName[_MAX_PATH];
 
 
 		// Are there any defines or macros?
+// TODO:  Untested code.  Breakpoint and examine
+debug_break;
 		if (gsLasmDM_root && gsLasmDM_root->populatedLength > 0)
 		{
 			// Unfurl the macro expansion into sequences

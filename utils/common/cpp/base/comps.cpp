@@ -1414,6 +1414,7 @@
 	{
 		u32		lnCount;
 		SComp*	compNext;
+		SDatum*	temp;
 
 
 		// Make sure our environment is sane
@@ -1437,8 +1438,17 @@
 							iLl_appendExisting__llAtEnd((SLL**)compMigrateRefs, (SLL*)iComps_duplicate(comp));
 
 						// Add in the length of the next component, plus any spaces between them
-						comp->text.length	+= (compNext->text.length + iiComps_get_charactersBetween(comp, compNext));
-						comp->nbspCount		+= compNext->nbspCount;
+//working here
+						temp = iDatum_allocate(NULL, comp->text.length + compNext->text.length);
+						if (temp)
+						{
+							// Combine
+							memcpy(temp->data_s8, comp->text.data_s8, comp->text.length);
+							memcpy(temp->data_s8 + comp->text.length, compNext->text.data_s8, compNext->text.length);
+							iDatum_delete(&comp->text, false);
+							memcpy(&comp->text, temp, sizeof(comp->text));
+						}
+						comp->nbspCount += compNext->nbspCount;
 
 						// Migrate or delete the next component
 						if (compMigrateRefs)
@@ -1544,6 +1554,8 @@
 
 
 		// Make sure our environment is sane
+if (iDatum_contains(&line->sourceCode, "name1") >= 0)
+	debug_break;
 		lnCombined = 0;
 		if (line)
 		{

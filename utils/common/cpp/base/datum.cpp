@@ -121,22 +121,7 @@
 		return(NULL);
 	}
 
-	SDatum* iDatum_allocate(cs8* data, s32 dataLength)
-	{
-		return(iDatum_allocate((u8*)data, dataLength));
-	}
-
-	SDatum* iDatum_allocate(s8* data, s32 dataLength)
-	{
-		return(iDatum_allocate((u8*)data, dataLength));
-	}
-
-	SDatum* iDatum_allocate(cu8* data, s32 dataLength)
-	{
-		return(iDatum_allocate((u8*)data, dataLength));
-	}
-
-	SDatum* iDatum_allocate(u8* data, s32 dataLength)
+	SDatum* iDatum_allocate(const void* data, s32 dataLength)
 	{
 		SDatum* datumNew;
 
@@ -155,11 +140,17 @@
 				if (dataLength < 0)
 					dataLength = (s32)strlen((s8*)data);
 
-				// Initialize
-				memset(datumNew, 0, sizeof(SDatum));
-
 				// Populate
-				iDatum_duplicate(datumNew, data, dataLength);
+				iDatum_duplicate(datumNew, (s8*)data, dataLength);
+
+			} else if (dataLength > 0) {
+				// Just allocate raw space
+				datumNew->data_s8	= (s8*)malloc(dataLength + 1);
+				datumNew->length	= dataLength;
+
+				// Initialize
+				if (datumNew->data_s8)
+					memset(datumNew->data_s8, 0, dataLength + 1);
 			}
 		}
 
@@ -391,10 +382,7 @@
 
 		// Make sure our environment is sane
 		if (datumLeft && datumLeft->_data && datumLeft->length != 0 && datumRight && datumRight->_data && datumRight->length > 0)
-		{
-			// Do a standard compare
-			lnResult = _memicmp(datumLeft->data_s8, datumRight->data_s8, min(datumLeft->length, datumRight->length));
-		}
+			return(iDatum_compare(datumLeft, datumRight->data_s8, datumRight->length));
 
 		// Indicate our result
 		return(lnResult);
@@ -417,25 +405,70 @@
 
 			// Do a standard compare
 			lnResult = _memicmp(datumLeft->data_s8, data, min(datumLeft->length, dataLength));
+
+			// Based on lengths, the result could still be different
+			if (lnResult == 0 && datumLeft->length != dataLength)
+			{
+				// They're equal, so are they the same length?
+				     if (datumLeft->length < dataLength)		lnResult = -1;		// Left is shorter, so left is less than right
+				else if (datumLeft->length > dataLength)		lnResult = 1;		// Left is longer, so left is greater than right
+			}
 		}
 
 		// Indicate our result
 		return(lnResult);
 	}
 
-	s32 iDatum_compare(SDatum* datumLeft, cs8* data, s32 dataLength)
+	s32 iDatum_compare(SDatum* datumLeft, void* data, s32 dataLength)
 	{
 		return(iDatum_compare(datumLeft, (s8*)data, dataLength));
 	}
 
-	s32 iDatum_compare(SDatum* datumLeft, u8*  data, s32 dataLength)
+	// Returns the offset the tnOccurence of the needle is found in the haystack
+	s32 iDatum_contains(SDatum* haystack, SDatum* needle, bool tlCaseCompare, s32 tnOccurrence)
 	{
-		return(iDatum_compare(datumLeft, (s8*)data, dataLength));
+		return(iDatum_contains(haystack, needle->data_s8, needle->length, tlCaseCompare, tnOccurrence));
 	}
 
-	s32 iDatum_compare(SDatum* datumLeft, cu8* data, s32 dataLength)
+	// Returns -1 if not found, 0 or greater indicates offset into haystack where needle was found
+	s32 iDatum_contains(SDatum* haystack, s8* needle, s32 needleLength, bool tlCaseCompare, s32 tnOccurrence)
 	{
-		return(iDatum_compare(datumLeft, (s8*)data, dataLength));
+		s32				lnI, lnMax, lnOccurrence;
+		SCompareFuncs	cf;
+
+
+		// Make sure our environment is sane
+		if (haystack && haystack->_data && (needleLength < 0 || needleLength > 0))
+		{
+			// dataLength need updated?
+			if (needleLength < 0)
+				needleLength = strlen(needle);
+
+			// Too short?
+			if (haystack->length < needleLength)
+				return(-1);		// Not found
+
+			// Compare function?
+			if (tlCaseCompare)		cf._cmpFunc = (uptr)&memcmp;
+			else					cf._cmpFunc = (uptr)&_memicmp;
+
+			// Iterate
+			lnMax = haystack->length - needleLength;
+			for (lnI = 0, lnOccurrence = 0; lnI <= lnMax; lnI++)
+			{
+				// Were we found at this offset?
+				if (cf.cmpFunc(haystack->data_cs8 + lnI, needle, needleLength) == 0)
+				{
+					++lnOccurrence;
+					if (lnOccurrence == tnOccurrence)
+						return(lnI);
+				}
+			}
+			// If we get here, the occurrence wasn't found
+		}
+
+		// Not found
+		return(-1);
 	}
 
 	void iDatum_delete(SDatum** datum)

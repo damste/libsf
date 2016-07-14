@@ -279,6 +279,14 @@ cu32	_F64PP				= _64BIT | _POINTER_POINTER | _FLOATING_POINT;
 	#define null NULL
 #endif
 
+struct SCompareFuncs
+{
+	union {
+		uptr	_cmpFunc;
+		bool	(*cmpFunc)(const void* left, const void* right, size_t size);
+	};
+};
+
 struct SBgr
 {
 	union {
