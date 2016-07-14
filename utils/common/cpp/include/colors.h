@@ -181,4 +181,87 @@
 	SBgra			focusObjColor_readWrite_obj			= { _focusObjColor_readWrite_obj };
 	SBgra			focusObjColor_readOnly				= { _focusObjColor_readOnly };
 
+	// Uses an algorithm derived from Guideline 1.4 of WCAG 2 by Gregg Vanderheiden Dave Kelso, Aries Arditi
+	// Black on white = 21 max contrast, with anything over 5:1 being readable at level 2, 10:1 being readable at level 3
+	f32 iColors_contrastRatio_byLuminosity(SBgra fore, SBgra back)
+	{
+		f32 lfL1, lfL2, lfContrast;
+		f32 lfFred, lfFgrn, lfFblu, lfFl, lfFredL, lfFgrnL, lfFbluL;
+		f32 lfBred, lfBgrn, lfBblu, lfBl, lfBredL, lfBgrnL, lfBbluL;
+
+
+		// Grab the colors as 0.0 .. 1.0 values
+		lfFred = (f32)fore.red / 255.0f;
+		lfFgrn = (f32)fore.grn / 255.0f;
+		lfFblu = (f32)fore.blu / 255.0f;
+
+		lfBred = (f32)back.red / 255.0f;
+		lfBgrn = (f32)back.grn / 255.0f;
+		lfBblu = (f32)back.blu / 255.0f;
+
+		// Linearize (raise to 2.2 power)
+		lfFredL = (f32)pow(lfFred, 2.2);
+		lfFgrnL = (f32)pow(lfFgrn, 2.2);
+		lfFbluL = (f32)pow(lfFblu, 2.2);
+		lfBredL = (f32)pow(lfBred, 2.2);
+		lfBgrnL = (f32)pow(lfBgrn, 2.2);
+		lfBbluL = (f32)pow(lfBblu, 2.2);
+
+		// Compute luminosity on fore and back
+		lfFl = (0.2126f * lfFredL) + (0.7152f * lfFgrnL) + (0.0722f * lfFbluL);
+		lfBl = (0.2126f * lfBredL) + (0.7152f * lfBgrnL) + (0.0722f * lfBbluL);
+
+		// Get L1 max, L2 min
+		lfL1 = max(lfFl, lfBl);
+		lfL2 = min(lfFl, lfBl);
+
+		// Compute the final luminosity contrast ratio
+		lfContrast = 0.7f * ((lfL1 + 0.5f) / (lfL2 + 0.05f));
+
+		// Indicate our result
+		return(lfContrast);
+	}
+
+	// Taken from Checkpoint 2.2 of WCAG 1.0, values over 125 pass the "sufficient brightness" test
+	f32 iColors_brightness(SBgra color)
+	{
+		f32 lfRed, lfGrn, lfBlu, lfBrightness;
+
+
+		// Grab the colors
+		lfRed = (f32)color.red / 255.0f;
+		lfGrn = (f32)color.grn / 255.0f;
+		lfBlu = (f32)color.blu / 255.0f;
+		
+		// Compute brightness
+		lfBrightness = ((lfRed * 299.0f) + (lfGrn * 587.0f) + (lfBlu * 114.0f)) / 1000.0f;
+
+		// Indicate our result
+		return(lfBrightness);
+	}
+
+	// Taken from Checkpoint 2.2 of WCAG 1.0, values over 500 pass the "sufficient color difference" test
+	f32 iColors_colorDifference(SBgra color1, SBgra color2)
+	{
+		f32 lfDifference;
+		f32 lfRed1, lfGrn1, lfBlu1;
+		f32 lfRed2, lfGrn2, lfBlu2;
+
+
+		// Extract color channels
+		lfRed1 = (f32)color1.red;
+		lfGrn1 = (f32)color1.grn;
+		lfBlu1 = (f32)color1.blu;
+
+		lfRed2 = (f32)color2.red;
+		lfGrn2 = (f32)color2.grn;
+		lfBlu2 = (f32)color2.blu;
+
+		// Compute the color difference
+		lfDifference = (max(lfRed1, lfRed2) - min(lfRed1, lfRed2)) + (max(lfGrn1, lfGrn2) - min(lfGrn1, lfGrn2)) + (max(lfBlu1, lfBlu2) - min(lfBlu1, lfBlu2));
+
+		// Indicate our result
+		return(lfDifference);
+	}
+
 #endif	// __COLORS_H__

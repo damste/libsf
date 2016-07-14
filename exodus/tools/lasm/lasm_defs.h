@@ -112,8 +112,13 @@ struct SLasmInclude;
 	s32					iilasm_params_commaDelimitedExtract				(SComp* compFirstParam, SBuilder** paramsRoot, bool tlVerifySingleParams = false, bool* tlIsSingleParam = NULL);
 	s32					iilasm_params_extract_common					(SComp* compFirstParam, SBuilder** paramsRoot, bool tlMoveBeyondLineIfNeeded, s32 tniStopCode);
 
-	// For defined tokens
-	bool				iilasm_define_add								(SLasmFile* file, SLine* line, SComp* compName, SBuilder* params, SComp* compStart, SComp* compEnd, SLasmDefine** defineOut = NULL);
+	// For defined tokens and macros
+	bool				iilasm_dmac_add									(SLasmFile* file, SLine* line, SComp* compName, SBuilder* params, SComp* compStart, SComp* compEnd, bool tlIsDefine, SLasmDMac** dmOut = NULL);
+	void				ilasm_dmac_unfurl								(SLasmDMac* dm);
+	bool				iilasm_dmac_searchParams						(SBuilder* params, SDatum* text, s32& tnParamNumber);
+	bool				iilasm_dmac_unfurl_validateBuilder				(SBuilder** expansion_stepsRoot);
+	SLasmExpansion*		iilasm_dmac_unfurl_addParameter					(SBuilder** expansion_stepsRoot, s32 tnParamNum);
+	SLasmExpansion*		iilasm_dmac_unfurl_addText						(SBuilder** expansion_stepsRoot, SDatum* text, s32 tnWhitespaces, bool tlPrefixCrLf);
 
 	// Note, warning, error, and other forms of associated reporting
 	void				ilasm_append_extraInfo							(s32 tnValueCode,	cs8* valueTextTemplate, cs8* tcValueText, SLine* line, SComp* comp, SLasmFile* file, s32 tnValueBaseAddto, s32 tn_eiType);

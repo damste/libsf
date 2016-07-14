@@ -1366,6 +1366,7 @@
 	cu8*		iBuilder_appendData							(SBuilder* builder, cu8* tcData, u32 tnDataLength = (u32)-1);
 	u8*			iBuilder_append_uptr						(SBuilder* builder, uptr tnValue);
 	u8*			iBuilder_appendCrLf							(SBuilder* builder);
+	u8*			iBuilder_appendWhitespaces					(SBuilder* builder, s32 tnCount, u8 cWhitespaceChar = 32);
 	void		iBuilder_delete								(SBuilder* builder, u32 tnStartOffset, u32 tnDeleteLength);
 	void		iBuilder_reset								(SBuilder* builder);
 	void		iBuilder_rewind								(SBuilder* builder);

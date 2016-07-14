@@ -994,33 +994,33 @@ end_of_parameter:
 // Called to create a token
 //
 //////
-	bool iilasm_define_add(SLasmFile* file, SLine* line, SComp* compName, SBuilder* params, SComp* compStart, SComp* compEnd, SLasmDefine** defineOut)
+	bool iilasm_dmac_add(SLasmFile* file, SLine* line, SComp* compName, SBuilder* params, SComp* compStart, SComp* compEnd, bool tlIsDefine, SLasmDMac** dmOut)
 	{
-		u32				lnI;
-		SLasmDefine*	define;
-		s8				buffer[_MAX_PATH * 2];
+		u32					lnI;
+		SLasmDMac*	dm;
+		s8					buffer[_MAX_PATH * 2];
 
 
 		// Clear out the prior defineOut if any
-		if (defineOut)
-			*defineOut = NULL;
+		if (dmOut)
+			*dmOut = NULL;
 
 		// Make sure we have at least one define
-		if (!gsLasmDefinesRoot)
-			iBuilder_createAndInitialize(&gsLasmDefinesRoot);
+		if (!gsLasmDM_root)
+			iBuilder_createAndInitialize(&gsLasmDM_root);
 
 		// Search existing
-		iterate(lnI, gsLasmDefinesRoot, define, SLasmDefine)
+		iterate(lnI, gsLasmDM_root, dm, SLasmDMac)
 		//
 			
 			// Does the name already exist?
-			if (define->name->text.length == compName->text.length && iDatum_compare(&define->name->text, &compName->text) == 0)
+			if (dm->name->text.length == compName->text.length && iDatum_compare(&dm->name->text, &compName->text) == 0)
 			{
 				// Generate the error
 				sprintf(buffer, "Error %%d (%d,%d): '%s' %%s, see (%d,%d) of %s", 
 								line->lineNumber, compName->start,
 								compName->text.data_s8,
-								define->name->line->lineNumber, define->name->start, file->filename.data_s8);
+								dm->name->line->lineNumber, dm->name->start, file->filename.data_s8);
 
 				// Report the error
 				ilasm_error(_LASM_ERROR_TOKEN_NAME_ALREADY_EXISTS, buffer, line);
@@ -1033,20 +1033,20 @@ end_of_parameter:
 		iterate_end;
 
 		// Allocate a new define record
-		define = (SLasmDefine*)iBuilder_allocateBytes(gsLasmDefinesRoot, sizeof(SLasmDefine));
-		if (define)
+		dm = (SLasmDMac*)iBuilder_allocateBytes(gsLasmDM_root, sizeof(SLasmDMac));
+		if (dm)
 		{
 			// Store
-			define->file		= file;						// The associated file
-			define->line		= line;						// The line related
-			define->name		= compName;					// Token name
-			define->params		= params;					// Parameters (if any)
-			define->first		= compStart;				// First component related to the token (if any)
-			define->last		= compEnd;					// Last component related to the token (if any)
+			dm->file	= file;				// The associated file
+			dm->line	= line;				// The line related
+			dm->name	= compName;			// Token name
+			dm->params	= params;			// Parameters (if any)
+			dm->first	= compStart;		// First component related to the token (if any)
+			dm->last	= compEnd;			// Last component related to the token (if any)
 
 			// Update the point
-			if (defineOut)
-				*defineOut = define;
+			if (dmOut)
+				*dmOut = dm;
 	
 			// If we get here, success
 			return(true);
@@ -1055,6 +1055,158 @@ end_of_parameter:
 		// If we get here, failure
 		return(false);
 	}
+
+
+
+
+	//////////
+	//
+	// Called to parse through the 
+	//
+	//////
+		void ilasm_dmac_unfurl(SLasmDMac* dm)
+		{
+			bool			llPrefixCrLf;
+			s32				lnWhitespaces, lnParamNumber;
+			SComp*			comp;
+			SComp*			compLast;
+			SBuilder*		builder;
+
+
+// TODO:  Untested code.  Breakpoint and examine.
+debug_break;
+			// Make sure our environment is sane
+			if (dm && dm->params && dm->params->populatedLength > 0)
+			{
+				// Create a builder
+				builder = NULL;
+				iBuilder_createAndInitialize(&builder);
+
+				// Iterate through every component one by one
+				for (comp = dm->first, compLast = NULL; comp != dm->last; compLast = comp, comp = iComps_Nth(comp))
+				{
+					// Search this component for a param name
+					if ((comp->iCode == _ICODE_ALPHA || comp->iCode == _ICODE_ALPHANUMERIC) && iilasm_dmac_searchParams(dm->params, &comp->text, lnParamNumber))
+					{
+						// A single name, which means we use this parameter
+						iilasm_dmac_unfurl_addParameter(&dm->expansion_steps, lnParamNumber);
+
+					} else {
+						// Appending as text
+						llPrefixCrLf = (compLast && compLast->line != comp->line);
+						if (llPrefixCrLf)
+						{
+							// Start of line offset
+							lnWhitespaces = comp->start;
+
+						} else {
+							// Inter-component spacing
+							lnWhitespaces = ((llPrefixCrLf) ? 0 : comp->start - (compLast->start + compLast->text.length));
+						}
+
+						// Physically append
+						iilasm_dmac_unfurl_addText(&dm->expansion_steps, &comp->text, lnWhitespaces, llPrefixCrLf);
+					}
+				}
+			}
+		}
+
+		// Search for the indicated name
+		bool iilasm_dmac_searchParams(SBuilder* params, SDatum* text, s32& tnParamNumber)
+		{
+			s32			lnParamNumber;
+			u32			lnI;
+			SLasmParam*	param;
+
+
+			// Iterate through the parameters looking for this name
+			lnParamNumber = 0;
+			iterate_with_count(lnI, params, param, SLasmParam, lnParamNumber)
+			//
+
+				// Right size?
+				if (param->start == param->end && param->start->text.length == text->length)
+				{
+					// Text match?
+					if (iDatum_compare(&param->start->text, text))
+					{
+						// This is it
+						tnParamNumber = lnParamNumber;
+						return(true);
+					}
+				}
+
+			//
+			iterate_end;
+
+			// If we get here, not found
+			return(false);
+		}
+
+		// Make sure we have a builder
+		bool iilasm_dmac_unfurl_validateBuilder(SBuilder** expansion_stepsRoot)
+		{
+			// Make sure we have a pointer to builder
+			if (expansion_stepsRoot)
+			{
+				// Default to 20 entries
+				if (!*expansion_stepsRoot)
+					iBuilder_createAndInitialize(expansion_stepsRoot, sizeof(SLasmExpansion) * 20);
+
+				// Indicate status
+				return((*expansion_stepsRoot != NULL));
+			}
+
+			// If we get here, failure
+			return(false);
+		}
+
+		// Called to add the parameter
+		SLasmExpansion* iilasm_dmac_unfurl_addParameter(SBuilder** expansion_stepsRoot, s32 tnParamNum)
+		{
+			SLasmExpansion* exp;
+
+
+			// Make sure we have a builder
+			exp = NULL;
+			if (iilasm_dmac_unfurl_validateBuilder(expansion_stepsRoot))
+			{
+				// Create a new entry
+				exp = (SLasmExpansion*)iBuilder_allocateBytes(*expansion_stepsRoot, sizeof(SLasmExpansion));
+				if (exp)
+					exp->nParamNum = tnParamNum;
+			}
+
+			// Indicate the expansion record
+			return(exp);
+		}
+
+		// Called to add text from a sequence of components
+		SLasmExpansion* iilasm_dmac_unfurl_addText(SBuilder** expansion_stepsRoot, SDatum* text, s32 tnWhitespaces, bool tlPrefixCrLf)
+		{
+			SLasmExpansion* exp;
+
+
+			// Make sure we have a builder
+			exp = NULL;
+			if (iilasm_dmac_unfurl_validateBuilder(expansion_stepsRoot))
+			{
+				// Create a new entry
+				exp = (SLasmExpansion*)iBuilder_allocateBytes(*expansion_stepsRoot, sizeof(SLasmExpansion));
+				if (exp)
+				{
+					// Prefix with anything?
+					if (tlPrefixCrLf)			iBuilder_appendCrLf(*expansion_stepsRoot);
+					if (tnWhitespaces > 0)		iBuilder_appendWhitespaces(*expansion_stepsRoot, tnWhitespaces);
+
+					// Append the text
+					iBuilder_appendData(*expansion_stepsRoot, text);
+				}
+			}
+
+			// Indicate the expansion record
+			return(exp);
+		}
 
 
 

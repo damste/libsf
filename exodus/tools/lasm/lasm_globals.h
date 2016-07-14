@@ -87,11 +87,8 @@
 //////
 	SBuilder*		includePaths					= NULL;				// (SLasmInclude) Include files
 	SBuilder*		includeFiles					= NULL;				// (SLasmFile) Files that are included in the assembly
-	SBuilder*		gsLasmDefinesRoot				= NULL;				// (SLasmDefine) List of define statements found, in the order found
-	SLasmBlock*		firstAdhoc						= NULL;				// All adhoc definitions are scoped within functions or flowofs, but are part of a single list
+	SBuilder*		gsLasmDM_root					= NULL;				// (SLasmDefineMacro) List of define and macro statements found, in the order found
 	SLasmBlock*		firstFunction					= NULL;				// All function definitions
-	SLasmBlock*		firstFlowof						= NULL;				// All flowof definitions
-	SLasmClass*		firstClass						= NULL;				// All class definitions
 	SLasmStruct*	firstStruct						= NULL;				// All struct definitions
 	SLasmEnum*		firstEnum						= NULL;				// All enum definitions
 

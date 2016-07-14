@@ -89,29 +89,41 @@
 
 //////////
 //
-// Pass-1 -- Macro expansion
+// Pass-1 -- Macro/define expansion
 //
 //////
 	void ilasm_pass1(SLasmCmdLine* cmdLine, SLasmFile* file)
 	{
-		SLine*			line;
-		SComp*			comp;
-		SComp*			compNext;
-		SComp*			compFile;
-		SLasmFile*		fileInclude;
-		s8				fileName[_MAX_PATH];
+		u32			lnI;
+		SLine*		line;
+		SComp*		comp;
+		SComp*		compNext;
+		SComp*		compFile;
+		SLasmFile*	fileInclude;
+		SLasmDMac*	dm;
+		s8			fileName[_MAX_PATH];
 
 
-		// Iterate through the entire file
-		for (line = file->firstLine; line; line = line->ll.nextLine)
+		// Are there any defines or macros?
+		if (gsLasmDM_root && gsLasmDM_root->populatedLength > 0)
 		{
-			// All lines should have compiler info, but just to be sure...
-			if (!ilasm_status_line_isCompleted(line))
+			// Unfurl the macro expansion into sequences
+			iterate(lnI, gsLasmDM_root, dm, SLasmDMac)
+			//
+				// Unfurl the encoding into its constituent parts
+				ilasm_dmac_unfurl(dm);
+			//
+			iterate_end;
+
+			// Iterate through the entire file
+			for (line = file->firstLine; line; line = line->ll.nextLine)
 			{
-				// Grab the comp
-				comp = line->firstComp;
-// TODO: Working here, iterate through each component and replace those which are part of defines or macros
-				debug_break;
+				// All lines should have compiler info, but just to be sure...
+				if (!ilasm_status_line_isCompleted(line))
+				{
+					// Grab the comp
+					comp = line->firstComp;
+				}
 			}
 		}
 	}

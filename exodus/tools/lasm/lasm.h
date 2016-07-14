@@ -122,6 +122,12 @@
 											{ \
 												/* Grab the pointer */ \
 												p = (structure*)(builder->buffer + i);
+
+#define iterate_with_count(i, builder, p, structure, count) \
+											for (i = 0; i < builder->populatedLength; i += sizeof(structure), ++count) \
+											{ \
+												/* Grab the pointer */ \
+												p = (structure*)(builder->buffer + i);
 #define iterate_end }
 
 

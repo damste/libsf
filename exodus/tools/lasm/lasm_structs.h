@@ -171,6 +171,7 @@ struct SLasmBlock;
 		SLine*				firstLine;					// Source file content for this file (including any include files)
 	};
 
+	// Parameters
 	struct SLasmParam
 	{
 		SComp*		type;								// Type of param specified
@@ -182,8 +183,15 @@ struct SLasmBlock;
 		s32			size;								// Total size in bytes
 	};
 
-	// define statements (pass-0, see gsLasmDefinesRoot)
-	struct SLasmDefine
+	// Expansion steps, a simple sequence of either (1) Use the parameter, or (2) copy the text
+	struct SLasmExpansion
+	{
+		s32			nParamNum;							// If nonzero, use the parameter number
+		SDatum*		text;								// Otherwise, copy this text
+	};
+
+	// define/macro statements (pass-0, see gsLasmDM_root)
+	struct SLasmDMac
 	{
 		// Required parameters
 		SLasmFile*			file;						// Associated file
@@ -197,6 +205,9 @@ struct SLasmBlock;
 
 		// Optional parameters (the a, b,..., z in define xyz(a,b,...,z) {{ ... }})
 		SBuilder*			params;						// (SLasmParam) Parameter names
+
+		// Unfurled instructions
+		SBuilder*			expansion_steps;			// (SLasmExpansion) The steps to reproduce the define/macro with input parameters
 	};
 
 
@@ -234,12 +245,6 @@ struct SLasmBlock;
 			SBuilder*		ip;							// (SLasmParam) Input parameters
 	};
 
-	// class
-	struct SLasmClass
-	{
-		SLL					ll;							// Link list through multiple classes
-	};
-
 	// struct
 	struct SLasmStruct
 	{
@@ -255,14 +260,14 @@ struct SLasmBlock;
 	// Pass-0 compilation local variables
 	struct SLasmPass0
 	{
-		SLasmCmdLine*	cmdLine;
-		SLasmFile*		file;
+		SLasmCmdLine*		cmdLine;
+		SLasmFile*			file;
 
-		SLine*			line;
-		SComp*			comp;
-// 		SComp*			compNext;
-		SComp*			compFile;
-		SLasmDefine*	define;
-		SLasmFile*		fileInclude;
-		s8				filename[_MAX_PATH];
+		SLine*				line;
+		SComp*				comp;
+// 		SComp*				compNext;
+		SComp*				compFile;
+		SLasmDMac*	dm;
+		SLasmFile*			fileInclude;
+		s8					filename[_MAX_PATH];
 	};

@@ -390,7 +390,7 @@ grab_content_to_end_of_line:
 					}
 
 					// When we get here, we have all the information we need
-					iilasm_define_add(p0->file, p0->line, compTokenName, compParams, compContentStart, compContentEnd);
+					iilasm_dmac_add(p0->file, p0->line, compTokenName, compParams, compContentStart, compContentEnd, true);
 
 					// Mark everything completed
 					lasm_markLineCompleted(p0->line);
@@ -552,7 +552,7 @@ grab_double_brace_content:
 					}
 
 					// When we get here, we have all the information we need
-					iilasm_define_add(p0->file, p0->line, compTokenName, compParams, compContentStart, compContentEnd);
+					iilasm_dmac_add(p0->file, p0->line, compTokenName, compParams, compContentStart, compContentEnd, true);
 
 					// Mark everything completed
 					lasm_markLineCompleted(p0->line);
