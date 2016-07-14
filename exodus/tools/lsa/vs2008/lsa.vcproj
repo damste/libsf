@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="lasm"
+	Name="lsa"
 	ProjectGUID="{0CFBC806-9D7A-4688-AB77-A60F4E442BF4}"
-	RootNamespace="lasm"
+	RootNamespace="lsa"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
@@ -175,7 +175,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\lasm.cpp"
+				RelativePath="..\lsa.cpp"
 				>
 			</File>
 			<File
@@ -324,23 +324,23 @@
 				UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 				>
 				<File
-					RelativePath="..\lasm.h"
+					RelativePath="..\lsa.h"
 					>
 				</File>
 				<File
-					RelativePath="..\lasm_const.h"
+					RelativePath="..\lsa_const.h"
 					>
 				</File>
 				<File
-					RelativePath="..\lasm_defs.h"
+					RelativePath="..\lsa_defs.h"
 					>
 				</File>
 				<File
-					RelativePath="..\lasm_globals.h"
+					RelativePath="..\lsa_globals.h"
 					>
 				</File>
 				<File
-					RelativePath="..\lasm_structs.h"
+					RelativePath="..\lsa_structs.h"
 					>
 				</File>
 			</Filter>

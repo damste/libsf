@@ -1017,7 +1017,7 @@ end_of_parameter:
 			if (dm->name->text.length == compName->text.length && iDatum_compare(&dm->name->text, &compName->text) == 0)
 			{
 				// Generate the error
-				sprintf(buffer, "Error %%d (%d,%d): '%s' %%s, see (%d,%d) of %s", 
+				sprintf(buffer, "Error %%d [%d,%d]: '%s' %%s, see [%d,%d] of %s", 
 								line->lineNumber, compName->start,
 								compName->text.data_s8,
 								dm->name->line->lineNumber, dm->name->start, file->filename.data_s8);

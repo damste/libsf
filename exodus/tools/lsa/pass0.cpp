@@ -268,7 +268,7 @@
 
 			} else {
 				// Syntax error
-				lcErrorText = "--Error(%d,%d): expected [include \"relative\\path\\to\\file.ext\"] syntax in %s\n";
+				lcErrorText = "--Error[%d,%d]: expected [include \"relative\\path\\to\\file.ext\"] syntax in %s\n";
 			}
 
 			// Loop for structured flow control

@@ -366,6 +366,9 @@
 		if (comp->node)
 			iNode_delete(&comp->node);			// Delete it
 
+		// Delete its text
+		iDatum_delete(&comp->text, false);
+
 		// Delete this node from the chain
 		compNext = comp->ll.nextComp;
 		iLl_delete__ll((SLL*)comp, tlDeleteSelf);
@@ -1438,7 +1441,6 @@
 							iLl_appendExisting__llAtEnd((SLL**)compMigrateRefs, (SLL*)iComps_duplicate(comp));
 
 						// Add in the length of the next component, plus any spaces between them
-//working here
 						temp = iDatum_allocate(NULL, comp->text.length + compNext->text.length);
 						if (temp)
 						{
@@ -1459,7 +1461,7 @@
 
 						} else {
 							// Delete it
-							iLl_delete__ll((SLL*)compNext, true);
+							iComps_delete(compNext, true);
 						}
 
 					} else {
@@ -1554,8 +1556,6 @@
 
 
 		// Make sure our environment is sane
-if (iDatum_contains(&line->sourceCode, "name1") >= 0)
-	debug_break;
 		lnCombined = 0;
 		if (line)
 		{
@@ -1825,8 +1825,7 @@ if (iDatum_contains(&line->sourceCode, "name1") >= 0)
 								++lnCount;
 
 								// Delete this one (as it was technically merged above with the comp->text.length = line)
-								iDatum_delete(&compNext->text, false);
-								iLl_delete__ll((SLL*)compNext, true);
+								iComps_delete(compNext, true);
 
 								// See if we're done
 								if (compNext == compSearcher)
@@ -3547,17 +3546,8 @@ debug_break;
 
 		//////////
 		// Delete it from the list of known components.
-		// Component go bye bye. :-)
 		//////
-			if (line)
-			{
-				// Delete the entry from line->comps
-				iLl_delete__ll((SLL*)comp, true);
-
-			} else {
-				// Free the rogue entry
-				free(comp);
-			}
+			iComps_delete(comp, true);
 	}
 
 

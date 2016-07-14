@@ -200,12 +200,12 @@
 		lfBblu = (f32)back.blu / 255.0f;
 
 		// Linearize (raise to 2.2 power)
-		lfFredL = (f32)pow(lfFred, 2.2);
-		lfFgrnL = (f32)pow(lfFgrn, 2.2);
-		lfFbluL = (f32)pow(lfFblu, 2.2);
-		lfBredL = (f32)pow(lfBred, 2.2);
-		lfBgrnL = (f32)pow(lfBgrn, 2.2);
-		lfBbluL = (f32)pow(lfBblu, 2.2);
+		lfFredL = (f32)pow((f64)lfFred, 2.2);
+		lfFgrnL = (f32)pow((f64)lfFgrn, 2.2);
+		lfFbluL = (f32)pow((f64)lfFblu, 2.2);
+		lfBredL = (f32)pow((f64)lfBred, 2.2);
+		lfBgrnL = (f32)pow((f64)lfBgrn, 2.2);
+		lfBbluL = (f32)pow((f64)lfBblu, 2.2);
 
 		// Compute luminosity on fore and back
 		lfFl = (0.2126f * lfFredL) + (0.7152f * lfFgrnL) + (0.0722f * lfFbluL);
