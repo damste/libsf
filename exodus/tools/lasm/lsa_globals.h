@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/exodus/tools/lasm/lasm_globals.h
+// /libsf/exodus/tools/lsa/lasm_globals.h
 //
 //////
 //    _     _ _     _____ _____
@@ -85,12 +85,12 @@
 //////////
 // Processing data
 //////
-	SBuilder*		includePaths					= NULL;				// (SLasmInclude) Include files
-	SBuilder*		includeFiles					= NULL;				// (SLasmFile) Files that are included in the assembly
-	SBuilder*		gsLasmDM_root					= NULL;				// (SLasmDefineMacro) List of define and macro statements found, in the order found
-	SLasmBlock*		firstFunction					= NULL;				// All function definitions
-	SLasmStruct*	firstStruct						= NULL;				// All struct definitions
-	SLasmEnum*		firstEnum						= NULL;				// All enum definitions
+	SBuilder*		includePaths					= NULL;				// (SLsaInclude) Include files
+	SBuilder*		includeFiles					= NULL;				// (SLsaFile) Files that are included in the assembly
+	SBuilder*		gsLasmDM_root					= NULL;				// (SLsaDefineMacro) List of define and macro statements found, in the order found
+	SLsaBlock*		firstFunction					= NULL;				// All function definitions
+	SLsaStruct*	firstStruct						= NULL;				// All struct definitions
+	SLsaEnum*		firstEnum						= NULL;				// All enum definitions
 
 
 //////////
@@ -519,19 +519,19 @@
 		{	(cs8*)cgc_xmm6_reg,					sizeof(cgc_xmm6_reg) - 1,				false,		_ICODE_XMM6,						false,		_ICAT_XMM_REGISTER,		&colorDefault,		false,			null0,		null0	},
 		{	(cs8*)cgc_xmm7_reg,					sizeof(cgc_xmm7_reg) - 1,				false,		_ICODE_XMM7,						false,		_ICAT_XMM_REGISTER,		&colorDefault,		false,			null0,		null0	},
 																																																									  
-		{	(cs8*)cgc_lasm_include,				sizeof(cgc_lasm_include) - 1,			false,		_ICODE_LASM_INCLUDE,				true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,		null0	},
-		{	(cs8*)cgc_lasm_define,				sizeof(cgc_lasm_define) - 1,			false,		_ICODE_LASM_DEFINE,					true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,		null0	},
-		{	(cs8*)cgc_lasm_function,			sizeof(cgc_lasm_function) - 1,			false,		_ICODE_LASM_FUNCTION,				true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,		null0	},
-		{	(cs8*)cgc_lasm_struct,				sizeof(cgc_lasm_struct) - 1,			false,		_ICODE_LASM_STRUCT,					true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,		null0	},
-		{	(cs8*)cgc_lasm_enum,				sizeof(cgc_lasm_enum) - 1,				false,		_ICODE_LASM_ENUM,					true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,		null0	},
-		{	(cs8*)cgc_lasm_macro,				sizeof(cgc_lasm_macro) - 1,				false,		_ICODE_LASM_MACRO,					true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,		null0	},
+		{	(cs8*)cgc_lsa_include,				sizeof(cgc_lsa_include) - 1,			false,		_ICODE_LSA_INCLUDE,				true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,		null0	},
+		{	(cs8*)cgc_lsa_define,				sizeof(cgc_lsa_define) - 1,			false,		_ICODE_LSA_DEFINE,					true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,		null0	},
+		{	(cs8*)cgc_lsa_function,			sizeof(cgc_lsa_function) - 1,			false,		_ICODE_LSA_FUNCTION,				true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,		null0	},
+		{	(cs8*)cgc_lsa_struct,				sizeof(cgc_lsa_struct) - 1,			false,		_ICODE_LSA_STRUCT,					true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,		null0	},
+		{	(cs8*)cgc_lsa_enum,				sizeof(cgc_lsa_enum) - 1,				false,		_ICODE_LSA_ENUM,					true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,		null0	},
+		{	(cs8*)cgc_lsa_macro,				sizeof(cgc_lsa_macro) - 1,				false,		_ICODE_LSA_MACRO,					true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,		null0	},
 
-		{	(cs8*)cgc_lasm_if,					sizeof(cgc_lasm_if) - 1,				false,		_ICODE_LASM_IF,						false,		_ICAT_FLOW,				&colorDefault,		false,			null0,		null0	},
-		{	(cs8*)cgc_lasm_else,				sizeof(cgc_lasm_else) - 1,				false,		_ICODE_LASM_ELSE,					false,		_ICAT_FLOW,				&colorDefault,		false,			null0,		null0	},
-		{	(cs8*)cgc_lasm_ifdef,				sizeof(cgc_lasm_ifdef) - 1,				false,		_ICODE_LASM_IFDEF,					false,		_ICAT_FLOW,				&colorDefault,		false,			null0,		null0	},
-		{	(cs8*)cgc_lasm_ifndef,				sizeof(cgc_lasm_ifndef) - 1,			false,		_ICODE_LASM_IFNDEF,					false,		_ICAT_FLOW,				&colorDefault,		false,			null0,		null0	},
-		{	(cs8*)cgc_lasm_ifb,					sizeof(cgc_lasm_ifb) - 1,				false,		_ICODE_LASM_IFB,					false,		_ICAT_FLOW,				&colorDefault,		false,			null0,		null0	},
-		{	(cs8*)cgc_lasm_ifnb,				sizeof(cgc_lasm_ifnb) - 1,				false,		_ICODE_LASM_IFNB,					false,		_ICAT_FLOW,				&colorDefault,		false,			null0,		null0	},
+		{	(cs8*)cgc_lsa_if,					sizeof(cgc_lsa_if) - 1,				false,		_ICODE_LSA_IF,						false,		_ICAT_FLOW,				&colorDefault,		false,			null0,		null0	},
+		{	(cs8*)cgc_lsa_else,				sizeof(cgc_lsa_else) - 1,				false,		_ICODE_LSA_ELSE,					false,		_ICAT_FLOW,				&colorDefault,		false,			null0,		null0	},
+		{	(cs8*)cgc_lsa_ifdef,				sizeof(cgc_lsa_ifdef) - 1,				false,		_ICODE_LSA_IFDEF,					false,		_ICAT_FLOW,				&colorDefault,		false,			null0,		null0	},
+		{	(cs8*)cgc_lsa_ifndef,				sizeof(cgc_lsa_ifndef) - 1,			false,		_ICODE_LSA_IFNDEF,					false,		_ICAT_FLOW,				&colorDefault,		false,			null0,		null0	},
+		{	(cs8*)cgc_lsa_ifb,					sizeof(cgc_lsa_ifb) - 1,				false,		_ICODE_LSA_IFB,					false,		_ICAT_FLOW,				&colorDefault,		false,			null0,		null0	},
+		{	(cs8*)cgc_lsa_ifnb,				sizeof(cgc_lsa_ifnb) - 1,				false,		_ICODE_LSA_IFNB,					false,		_ICAT_FLOW,				&colorDefault,		false,			null0,		null0	},
 		
 		{	0,									0,										0,			0,									0,			0,						0,					0,				0,			0		}
 	};

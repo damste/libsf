@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/exodus/tools/lasm/lasm_defs.h
+// /libsf/exodus/tools/lsa/lasm_defs.h
 //
 //////
 //    _     _ _     _____ _____
@@ -82,98 +82,98 @@
 
 
 
-struct SLasmFile;
-struct SLasmInclude;
+struct SLsaFile;
+struct SLsaInclude;
 
 
 //////////
 // lasm.cpp
 //////
-	void				ilasm_parse_commandLine							(SLasmCmdLine* cmdLine, s32 argc, s8* argv[]);
-	void				ilasm_compile									(SLasmCmdLine* cmdLine);
-	bool				ilasm_includeFile_append						(s8* tcPathname, SLasmFile** file);
-	SLasmInclude*		ilasm_includePath_append						(s8* tcPathname, s32 tnPathnameLength, bool tlIsFilename);
-	void				ilasm_includePaths_iterate_start				(SLasmIncludeIter* iiFile, s8* filename);
-	bool				ilasm_includePaths_iterate_try					(SLasmIncludeIter* iiFile, bool& tlIsFileValid, SLasmFile** fileInclude);
-	bool				ilasm_includePaths_iterate_next					(SLasmIncludeIter* iiFile);
-	SLasmInclude*		ilasm_validate_trailingBackspace				(SLasmInclude* include);
-	void				ilasm_fixup_directoryDividers					(s8* tcPathname, s32 tnPathnameLength);
-	bool				ilasm_isAbsolutePath							(s8* tcPathname, s32 tnPathnameLength);
-	void				ilasm_route_through_silentError_for_debugging	(void);
+	void				ilsa_parse_commandLine							(SLsaCmdLine* cmdLine, s32 argc, s8* argv[]);
+	void				ilsa_compile									(SLsaCmdLine* cmdLine);
+	bool				ilsa_includeFile_append							(s8* tcPathname, SLsaFile** file);
+	SLsaInclude*		ilsa_includePath_append							(s8* tcPathname, s32 tnPathnameLength, bool tlIsFilename);
+	void				ilsa_includePaths_iterate_start					(SLsaIncludeIter* iiFile, s8* filename);
+	bool				ilsa_includePaths_iterate_try					(SLsaIncludeIter* iiFile, bool& tlIsFileValid, SLsaFile** fileInclude);
+	bool				ilsa_includePaths_iterate_next					(SLsaIncludeIter* iiFile);
+	SLsaInclude*		ilsa_validate_trailingBackspace					(SLsaInclude* include);
+	void				ilsa_fixup_directoryDividers					(s8* tcPathname, s32 tnPathnameLength);
+	bool				ilsa_isAbsolutePath								(s8* tcPathname, s32 tnPathnameLength);
+	void				ilsa_route_through_silentError_for_debugging	(void);
 
 	// For component, line, or file statuses
-	void				ilasm_status_comp_add							(SComp* comp, u32 tnStatus);
-	void				ilasm_status_line_add							(SLine* line, u32 tnStatus, bool tlProcessComps);
-	bool				ilasm_status_line_isCompleted					(SLine* line);
-	void				ilasm_status_file_add							(SLasmFile* file, u32 tnStatus, bool tlProcessLines, bool tlProcessComps);
+	void				ilsa_status_comp_add							(SComp* comp, u32 tnStatus);
+	void				ilsa_status_line_add							(SLine* line, u32 tnStatus, bool tlProcessComps);
+	bool				ilsa_status_line_isCompleted					(SLine* line);
+	void				ilsa_status_file_add							(SLsaFile* file, u32 tnStatus, bool tlProcessLines, bool tlProcessComps);
 
 	// For parenthetical parameters, and comma delimited parameters
-	s32					iilasm_params_parentheticalExtract				(SComp* compLeftParam, SBuilder** paramsRoot, bool tlMoveBeyondLineIfNeeded = true);
-	s32					iilasm_params_commaDelimitedExtract				(SComp* compFirstParam, SBuilder** paramsRoot, bool tlVerifySingleParams = false, bool* tlIsSingleParam = NULL);
-	s32					iilasm_params_extract_common					(SComp* compFirstParam, SBuilder** paramsRoot, bool tlMoveBeyondLineIfNeeded, s32 tniStopCode);
+	s32					iilsa_params_parentheticalExtract				(SComp* compLeftParam, SBuilder** paramsRoot, bool tlMoveBeyondLineIfNeeded = true);
+	s32					iilsa_params_commaDelimitedExtract				(SComp* compFirstParam, SBuilder** paramsRoot, bool tlVerifySingleParams = false, bool* tlIsSingleParam = NULL);
+	s32					iilsa_params_extract_common						(SComp* compFirstParam, SBuilder** paramsRoot, bool tlMoveBeyondLineIfNeeded, s32 tniStopCode);
 
 	// For defined tokens and macros
-	bool				iilasm_dmac_add									(SLasmFile* file, SLine* line, SComp* compName, SBuilder* params, SComp* compStart, SComp* compEnd, bool tlIsDefine, SLasmDMac** dmOut = NULL);
-	void				ilasm_dmac_unfurl								(SLasmDMac* dm);
-	bool				iilasm_dmac_searchParams						(SBuilder* params, SDatum* text, s32& tnParamNumber);
-	bool				iilasm_dmac_unfurl_validateBuilder				(SBuilder** expansion_stepsRoot);
-	SLasmExpansion*		iilasm_dmac_unfurl_addParameter					(SBuilder** expansion_stepsRoot, s32 tnParamNum);
-	SLasmExpansion*		iilasm_dmac_unfurl_addText						(SBuilder** expansion_stepsRoot, SDatum* text, s32 tnWhitespaces, bool tlPrefixCrLf);
+	bool				iilsa_dmac_add									(SLsaFile* file, SLine* line, SComp* compName, SBuilder* params, SComp* compStart, SComp* compEnd, bool tlIsDefine, SLsaDMac** dmOut = NULL);
+	void				ilsa_dmac_unfurl								(SLsaDMac* dm);
+	bool				iilsa_dmac_searchParams							(SBuilder* params, SDatum* text, s32& tnParamNumber);
+	bool				iilsa_dmac_unfurl_validateBuilder				(SBuilder** expansion_stepsRoot);
+	SLsaExpansion*		iilsa_dmac_unfurl_addParameter					(SBuilder** expansion_stepsRoot, s32 tnParamNum);
+	SLsaExpansion*		iilsa_dmac_unfurl_addText						(SBuilder** expansion_stepsRoot, SDatum* text, s32 tnWhitespaces, bool tlPrefixCrLf);
 
 	// Note, warning, error, and other forms of associated reporting
-	void				ilasm_append_extraInfo							(s32 tnValueCode,	cs8* valueTextTemplate, cs8* tcValueText, SLine* line, SComp* comp, SLasmFile* file, s32 tnValueBaseAddto, s32 tn_eiType);
-	void				ilasm_note										(s32 tnNoteCode,	cs8* noteTextTemplate,		SLine* line, SComp* comp = NULL, SLasmFile* file = NULL);
-	void				ilasm_warning									(s32 tnWarningCode,	cs8* warningTextTemplate,	SLine* line, SComp* comp = NULL, SLasmFile* file = NULL);
-	void				ilasm_error										(s32 tnErrorCode,	cs8* errorTextTemplate,		SLine* line, SComp* comp = NULL, SLasmFile* file = NULL);
+	void				ilsa_append_extraInfo							(s32 tnValueCode,	cs8* valueTextTemplate, cs8* tcValueText, SLine* line, SComp* comp, SLsaFile* file, s32 tnValueBaseAddto, s32 tn_eiType);
+	void				ilsa_note										(s32 tnNoteCode,	cs8* noteTextTemplate,		SLine* line, SComp* comp = NULL, SLsaFile* file = NULL);
+	void				ilsa_warning									(s32 tnWarningCode,	cs8* warningTextTemplate,	SLine* line, SComp* comp = NULL, SLsaFile* file = NULL);
+	void				ilsa_error										(s32 tnErrorCode,	cs8* errorTextTemplate,		SLine* line, SComp* comp = NULL, SLsaFile* file = NULL);
 
 
 //////////
 // pass0.cpp
 //////
-	void				ilasm_pass0										(SLasmCmdLine* cmdLine, SLasmFile* file);
-	bool				iilasm_pass0_include							(SLasmPass0* p0);
-	bool				ilasm_pass0_define								(SLasmPass0* p0);
-	bool				ilasm_pass0_macro								(SLasmPass0* p0);
-	bool				ilasm_pass0_if									(SLasmPass0* p0);
-	bool				ilasm_pass0_ifdef								(SLasmPass0* p0);
-	bool				ilasm_pass0_ifndef								(SLasmPass0* p0);
+	void				ilsa_pass0										(SLsaCmdLine* cmdLine, SLsaFile* file);
+	bool				iilsa_pass0_include								(SLsaPass0* p0);
+	bool				ilsa_pass0_define								(SLsaPass0* p0);
+	bool				ilsa_pass0_macro								(SLsaPass0* p0);
+	bool				ilsa_pass0_if									(SLsaPass0* p0);
+	bool				ilsa_pass0_ifdef								(SLsaPass0* p0);
+	bool				ilsa_pass0_ifndef								(SLsaPass0* p0);
 
 
 //////////
 // pass1.cpp -- Macro expansion
 //////
-	void				ilasm_pass1										(SLasmCmdLine* cmdLine, SLasmFile* file);
+	void				ilsa_pass1										(SLsaCmdLine* cmdLine, SLsaFile* file);
 
 
 //////////
 // pass2.cpp -- function, adhoc, struct, enum markers
 //////
-	void				ilasm_pass2										(SLasmCmdLine* cmdLine, SLasmFile* file);
-	SLasmBlock*			ilasm_pass2_function							(SLasmCmdLine* cmdLine, SLasmFile* file, SLine** lineProcessing);
-	SLasmStruct*		ilasm_pass2_struct								(SLasmCmdLine* cmdLine, SLasmFile* file, SLine** lineProcessing);
-	SLasmEnum*			ilasm_pass2_enum								(SLasmCmdLine* cmdLine, SLasmFile* file, SLine** lineProcessing);
-	bool				ilasm_pass2_label								(SLasmCmdLine* cmdLine, SLasmFile* file, SLine** lineProcessing);
+	void				ilsa_pass2										(SLsaCmdLine* cmdLine, SLsaFile* file);
+	SLsaBlock*			ilsa_pass2_function								(SLsaCmdLine* cmdLine, SLsaFile* file, SLine** lineProcessing);
+	SLsaStruct*		ilsa_pass2_struct								(SLsaCmdLine* cmdLine, SLsaFile* file, SLine** lineProcessing);
+	SLsaEnum*			ilsa_pass2_enum									(SLsaCmdLine* cmdLine, SLsaFile* file, SLine** lineProcessing);
+	bool				ilsa_pass2_label								(SLsaCmdLine* cmdLine, SLsaFile* file, SLine** lineProcessing);
 
 
 //////////
 // pass3.cpp -- Token parsing
 //////
-	void				ilasm_pass3										(SLasmCmdLine* cmdLine, SLasmFile* file);
+	void				ilsa_pass3										(SLsaCmdLine* cmdLine, SLsaFile* file);
 
 
 //////////
 // passX.cpp -- Opcode generation
 //////
-	void				ilasm_passX										(SLasmCmdLine* cmdLine, SLasmFile* file);
+	void				ilsa_passX										(SLsaCmdLine* cmdLine, SLsaFile* file);
 
 
 //////////
 // passY.cpp -- Linking
 //////
-	void				ilasm_passY										(SLasmCmdLine* cmdLine, SLasmFile* file);
+	void				ilsa_passY										(SLsaCmdLine* cmdLine, SLsaFile* file);
 
 
 //////////
 // passZ.cpp -- Output file
 //////
-	void				ilasm_passZ										(SLasmCmdLine* cmdLine, SLasmFile* file);
+	void				ilsa_passZ										(SLsaCmdLine* cmdLine, SLsaFile* file);

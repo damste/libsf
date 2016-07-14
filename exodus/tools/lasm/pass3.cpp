@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/exodus/tools/lasm/pass3.cpp
+// /libsf/exodus/tools/lsa/pass3.cpp
 //
 //////
 //    _     _ _     _____ _____ 
@@ -80,7 +80,7 @@
 //
 //////
 //
-// Liberty Software Foundation's lasm (LibSF Assembler).
+// Liberty Software Foundation's lsa (LibSF Assembler).
 //
 //////
 
@@ -92,6 +92,6 @@
 // Pass-3 -- Token parsing
 //
 //////
-	void ilasm_pass3(SLasmCmdLine* cmdLine, SLasmFile* file)
+	void ilsa_pass3(SLsaCmdLine* cmdLine, SLsaFile* file)
 	{
 	}

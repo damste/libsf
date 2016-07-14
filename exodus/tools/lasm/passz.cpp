@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/exodus/tools/lasm/passz.cpp
+// /libsf/exodus/tools/lsa/passz.cpp
 //
 //////
 //    _     _ _     _____ _____ 
@@ -80,7 +80,7 @@
 //
 //////
 //
-// Liberty Software Foundation's lasm (LibSF Assembler).
+// Liberty Software Foundation's lsa (LibSF Assembler).
 //
 //////
 
@@ -92,6 +92,6 @@
 // Pass-Z -- Write output files
 //
 //////
-	void ilasm_passZ(SLasmCmdLine* cmdLine, SLasmFile* file)
+	void ilsa_passZ(SLsaCmdLine* cmdLine, SLsaFile* file)
 	{
 	}

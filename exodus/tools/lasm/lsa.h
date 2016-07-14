@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/exodus/tools/lasm/lasm.h
+// /libsf/exodus/tools/lsa/lasm.h
 //
 //////
 //    _     _ _     _____ _____
@@ -144,10 +144,10 @@
 #include "/libsf/utils/common/cpp/base/sem/sem.cpp"
 #include "/libsf/utils/common/cpp/base/extra_info.cpp"
 
-#include "lasm_const.h"
-#include "lasm_structs.h"
-#include "lasm_defs.h"
-#include "lasm_globals.h"
+#include "lsa_const.h"
+#include "lsa_structs.h"
+#include "lsa_defs.h"
+#include "lsa_globals.h"
 
 // Mar.21.2016 -- RCH -- The following contain code that used the older model, which has now been changed.  It requires much editing.
 #include "pass0.cpp"

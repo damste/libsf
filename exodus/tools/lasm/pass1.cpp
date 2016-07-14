@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/exodus/tools/lasm/pass1.cpp
+// /libsf/exodus/tools/lsa/pass1.cpp
 //
 //////
 //    _     _ _     _____ _____ 
@@ -80,7 +80,7 @@
 //
 //////
 //
-// Liberty Software Foundation's lasm (LibSF Assembler).
+// Liberty Software Foundation's lsa (LibSF Assembler).
 //
 //////
 
@@ -92,40 +92,47 @@
 // Pass-1 -- Macro/define expansion
 //
 //////
-	void ilasm_pass1(SLasmCmdLine* cmdLine, SLasmFile* file)
+	void ilsa_pass1(SLsaCmdLine* cmdLine, SLsaFile* file)
 	{
 		u32			lnI;
 		SLine*		line;
 		SComp*		comp;
 //		SComp*		compNext;
 //		SComp*		compFile;
-//		SLasmFile*	fileInclude;
-		SLasmDMac*	dm;
+//		SLsaFile*	fileInclude;
+		SLsaDMac*	dm;
 //		s8			fileName[_MAX_PATH];
 
 
 		// Are there any defines or macros?
-// TODO:  Untested code.  Breakpoint and examine
-debug_break;
 		if (gsLasmDM_root && gsLasmDM_root->populatedLength > 0)
 		{
-			// Unfurl the macro expansion into sequences
-			iterate(lnI, gsLasmDM_root, dm, SLasmDMac)
-			//
-				// Unfurl the encoding into its constituent parts
-				ilasm_dmac_unfurl(dm);
-			//
-			iterate_end;
 
-			// Iterate through the entire file
-			for (line = file->firstLine; line; line = line->ll.nextLine)
-			{
-				// All lines should have compiler info, but just to be sure...
-				if (!ilasm_status_line_isCompleted(line))
+			//////////
+			// Step1 -- Unfurl the macro expansion into sequences
+			//////
+				iterate(lnI, gsLasmDM_root, dm, SLsaDMac)
+				//
+
+					// Unfurl the encoding into its constituent parts
+					ilsa_dmac_unfurl(dm);
+
+				//
+				iterate_end;
+
+
+			//////////
+			// Step 2 -- Iterate through the entire file
+			//////
+				for (line = file->firstLine; line; line = line->ll.nextLine)
 				{
-					// Grab the comp
-					comp = line->firstComp;
+					// All lines should have compiler info, but just to be sure...
+					if (!ilsa_status_line_isCompleted(line))
+					{
+						// Grab the comp
+						comp = line->firstComp;
+					}
 				}
-			}
+
 		}
 	}

@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/exodus/tools/lasm/pass2.cpp
+// /libsf/exodus/tools/lsa/pass2.cpp
 //
 //////
 //    _     _ _     _____ _____ 
@@ -80,7 +80,7 @@
 //
 //////
 //
-// Liberty Software Foundation's lasm (LibSF Assembler).
+// Liberty Software Foundation's lsa (LibSF Assembler).
 //
 //////
 
@@ -97,46 +97,46 @@
 //		labels
 //
 //////
-	void ilasm_pass2(SLasmCmdLine* cmdLine, SLasmFile* file)
+	void ilsa_pass2(SLsaCmdLine* cmdLine, SLsaFile* file)
 	{
 // 		SLine*			line;
 // 		SComp*			comp;
 // 		SComp*			compFile;
-// 		SLasmFile*		fileInclude;
-// 		SLasmBlock*		func;
-// 		SLasmStruct*	lstruct;
-// 		SLasmEnum*		lenum;
+// 		SLsaFile*		fileInclude;
+// 		SLsaBlock*		func;
+// 		SLsaStruct*	lstruct;
+// 		SLsaEnum*		lenum;
 // 
 // 
 // 		// Iterate through the entire file
 // 		for (line = file->firstLine; line; line = line->ll.nextLine)
 // 		{
 // 			// All lines should have compiler info, but just to be sure...
-// 			if (!ilasm_status_line_isCompleted(line) && line->firstComp)
+// 			if (!ilsa_status_line_isCompleted(line) && line->firstComp)
 // 			{
 // 				comp = line->firstComp;
 // 				switch (comp->iCode)
 // 				{
-// 					case _ICODE_LASM_FUNCTION:
+// 					case _ICODE_LSA_FUNCTION:
 // 						// Process the function parameters, and mark off its extents
-// 						if (!(func = ilasm_pass2_function(cmdLine, file, &line)))
+// 						if (!(func = ilsa_pass2_function(cmdLine, file, &line)))
 // 						{
 // 						}
 // 
-// 					case _ICODE_LASM_STRUCT:
+// 					case _ICODE_LSA_STRUCT:
 // 						// Process the struct
-// 						if (!(lstruct = ilasm_pass2_struct(cmdLine, file, &line)))
+// 						if (!(lstruct = ilsa_pass2_struct(cmdLine, file, &line)))
 // 						{
 // 						}
 // 
-// 					case _ICODE_LASM_ENUM:
+// 					case _ICODE_LSA_ENUM:
 // 						// Process the enum
-// 						if (!(lenum = ilasm_pass2_enum(cmdLine, file, &line)))
+// 						if (!(lenum = ilsa_pass2_enum(cmdLine, file, &line)))
 // 						{
 // 						}
 // 
 // 					default:
-// 						if (ilasm_pass2_label(cmdLine, file, &line))
+// 						if (ilsa_pass2_label(cmdLine, file, &line))
 // 						{
 // 							// Found a label
 // 						}
@@ -154,7 +154,7 @@
 // Process the function header
 //
 //////
-	SLasmBlock*	ilasm_pass2_function(SLasmCmdLine* cmdLine, SLasmFile* file, SLine** lineProcessing)
+	SLsaBlock*	ilsa_pass2_function(SLsaCmdLine* cmdLine, SLsaFile* file, SLine** lineProcessing)
 	{
 		return(NULL);
 	}
@@ -167,7 +167,7 @@
 // Process the struct
 //
 //////
-	SLasmStruct* ilasm_pass2_struct(SLasmCmdLine* cmdLine, SLasmFile* file, SLine** lineProcessing)
+	SLsaStruct* ilsa_pass2_struct(SLsaCmdLine* cmdLine, SLsaFile* file, SLine** lineProcessing)
 	{
 		return(NULL);
 	}
@@ -180,7 +180,7 @@
 // Process the enum
 //
 //////
-	SLasmEnum* ilasm_pass2_enum(SLasmCmdLine* cmdLine, SLasmFile* file, SLine** lineProcessing)
+	SLsaEnum* ilsa_pass2_enum(SLsaCmdLine* cmdLine, SLsaFile* file, SLine** lineProcessing)
 	{
 		return(NULL);
 	}
@@ -193,7 +193,7 @@
 // Process the label
 //
 //////
-	bool ilasm_pass2_label(SLasmCmdLine* cmdLine, SLasmFile* file, SLine** lineProcessing)
+	bool ilsa_pass2_label(SLsaCmdLine* cmdLine, SLsaFile* file, SLine** lineProcessing)
 	{
 		return(false);
 	}

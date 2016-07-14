@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/exodus/tools/lasm/pass0.cpp
+// /libsf/exodus/tools/lsa/pass0.cpp
 //
 //////
 //    _     _ _     _____ _____ 
@@ -80,7 +80,7 @@
 //
 //////
 //
-// Liberty Software Foundation's lasm (LibSF Assembler).
+// Liberty Software Foundation's lsa (LibSF Assembler).
 //
 //////
 
@@ -99,9 +99,9 @@
 //		once all include files are loaded, it scans in defines and macros
 //
 //////
-	void ilasm_pass0(SLasmCmdLine* cmdLine, SLasmFile* file)
+	void ilsa_pass0(SLsaCmdLine* cmdLine, SLsaFile* file)
 	{
-		SLasmPass0 p0;
+		SLsaPass0 p0;
 
 
 		//////////
@@ -123,12 +123,12 @@
 				if (!p0.comp || p0.comp->iCode == _ICODE_COMMENT)
 				{
 					// Blank line or comment line
-					lasm_markLineCompleted(p0.line);
+					ilsa_markLineCompleted(p0.line);
 					continue;
 
-				} else if (p0.comp->iCode == _ICODE_LASM_INCLUDE) {
+				} else if (p0.comp->iCode == _ICODE_LSA_INCLUDE) {
 					// include
-					if (!iilasm_pass0_include(&p0))
+					if (!iilsa_pass0_include(&p0))
 					{
 						// If we need to terminate on errors
 						if (p0.cmdLine->w.Wfatal_errors)
@@ -136,7 +136,7 @@
 
 					} else {
 						// Line is completed
-						lasm_markLineCompleted(p0.line);
+						ilsa_markLineCompleted(p0.line);
 					}
 				}
 				// else other pragmas are ignored for this pass
@@ -150,17 +150,17 @@
 			for (p0.line = p0.file->firstLine; p0.line; p0.line = p0.line->ll.nextLine)
 			{
 				// Is this line
-				if (!ilasm_status_line_isCompleted(p0.line) && (p0.comp = p0.line->firstComp))
+				if (!ilsa_status_line_isCompleted(p0.line) && (p0.comp = p0.line->firstComp))
 				{
 					// Is it one we're looking for?
 					switch (p0.comp->iCode)
 					{
-						case _ICODE_LASM_DEFINE:
-							ilasm_pass0_define(&p0);						// Jul.11.2016 -- RCH completed
+						case _ICODE_LSA_DEFINE:
+							ilsa_pass0_define(&p0);						// Jul.11.2016 -- RCH completed
 							break;
 
-						case _ICODE_LASM_MACRO:
-							ilasm_pass0_macro(&p0);							// Jul.11.2016 -- RCH completed
+						case _ICODE_LSA_MACRO:
+							ilsa_pass0_macro(&p0);							// Jul.11.2016 -- RCH completed
 							break;
 					}
 				}
@@ -179,13 +179,13 @@
 //		p0->comp		-- include
 //
 //////
-	bool iilasm_pass0_include(SLasmPass0* p0)
+	bool iilsa_pass0_include(SLsaPass0* p0)
 	{
 		bool				llError, llIsFileValid;
 		s32					lnLineCount, lnFilenameLength;
 		cs8*				lcErrorText;
 		SLine*				line;
-		SLasmIncludeIter	iiFile;
+		SLsaIncludeIter	iiFile;
 
 
 		// The next component needs to be the filename
@@ -203,25 +203,25 @@
 
 				// Correct the directory dividers to the standard OS form
 				lnFilenameLength = p0->compFile->text.length - 2;
-				ilasm_fixup_directoryDividers(p0->filename, lnFilenameLength);
+				ilsa_fixup_directoryDividers(p0->filename, lnFilenameLength);
 
 				// Try to open it
-				if (!ilasm_includeFile_append(p0->filename, &p0->fileInclude))
+				if (!ilsa_includeFile_append(p0->filename, &p0->fileInclude))
 				{
 					// Is it an absolute path
-					if (ilasm_isAbsolutePath(p0->filename, lnFilenameLength))
+					if (ilsa_isAbsolutePath(p0->filename, lnFilenameLength))
 					{
 						// Error opening the file
-						lcErrorText = cgc_lasm_error_opening_include_file;
+						lcErrorText = cgc_lsa_error_opening_include_file;
 						break;
 					}
 
 					// Iterate through the known include file paths and attempt to load its
-					ilasm_includePaths_iterate_start(&iiFile, p0->filename);
+					ilsa_includePaths_iterate_start(&iiFile, p0->filename);
 					while (!iiFile.wasOpened)
 					{
 						// Try to open it
-						if (ilasm_includePaths_iterate_try(&iiFile, llIsFileValid, &p0->fileInclude))
+						if (ilsa_includePaths_iterate_try(&iiFile, llIsFileValid, &p0->fileInclude))
 						{
 							// It was opened
 							break;
@@ -232,10 +232,10 @@
 						}
 
 						// Move to the next iteration
-						if (!ilasm_includePaths_iterate_next(&iiFile))
+						if (!ilsa_includePaths_iterate_next(&iiFile))
 						{
 							// Error opening the file
-							lcErrorText = cgc_lasm_error_opening_include_file;
+							lcErrorText = cgc_lsa_error_opening_include_file;
 							break;
 						}
 					}
@@ -244,7 +244,7 @@
 					if (!iiFile.wasOpened)
 					{
 						// Nope
-						lcErrorText = cgc_lasm_error_opening_include_file;
+						lcErrorText = cgc_lsa_error_opening_include_file;
 						break;
 					}
 				}
@@ -278,7 +278,7 @@
 		if (llError)
 		{
 			// Syntax error
-			lasm_markLineCompleted(p0->line);
+			ilsa_markLineCompleted(p0->line);
 			printf(lcErrorText, p0->line->lineNumber, p0->comp->start, p0->file->filename.data_s8);
 		}
 
@@ -300,7 +300,7 @@
 //		define name(...) {{ content...goes...here }}
 //
 //////
-	bool ilasm_pass0_define(SLasmPass0* p0)
+	bool ilsa_pass0_define(SLsaPass0* p0)
 	{
 		SLine*		lineMark;
 		SComp*		compDefine;
@@ -316,7 +316,7 @@
 		if (p0 && p0->line && (compDefine = p0->line->firstComp))
 		{
 			// Is it define?
-			if (compDefine->iCode == _ICODE_LASM_DEFINE)
+			if (compDefine->iCode == _ICODE_LSA_DEFINE)
 			{
 				// Grab the token name after it
 				compTokenName = iComps_Nth_lineOnly(compDefine);
@@ -352,7 +352,7 @@ grab_double_brace_content:
 
 							case _ICODE_PARENTHESIS_LEFT:
 								// define(...)
-								if (iilasm_params_parentheticalExtract(compThingAfterName, &compParams) <= 0)
+								if (iilsa_params_parentheticalExtract(compThingAfterName, &compParams) <= 0)
 								{
 									// Syntax error
 									debug_error;
@@ -390,17 +390,17 @@ grab_content_to_end_of_line:
 					}
 
 					// When we get here, we have all the information we need
-					iilasm_dmac_add(p0->file, p0->line, compTokenName, compParams, compContentStart, compContentEnd, true);
+					iilsa_dmac_add(p0->file, p0->line, compTokenName, compParams, compContentStart, compContentEnd, true);
 
 					// Mark everything completed
-					lasm_markLineCompleted(p0->line);
+					ilsa_markLineCompleted(p0->line);
 					if (compContentStart && compContentTrueEnd && compContentStart->line != compContentTrueEnd->line)
 					{
 						// Mark the other lines complete
 						for (lineMark = p0->line->ll.nextLine; lineMark; lineMark = lineMark->ll.nextLine)
 						{
 							// Mark this line, and all components on it
-							lasm_markLineCompleted(lineMark);
+							ilsa_markLineCompleted(lineMark);
 
 							// Are we done?
 							if (lineMark == compContentTrueEnd->line)
@@ -449,7 +449,7 @@ grab_content_to_end_of_line:
 // 		}}
 // 
 //////
-	bool ilasm_pass0_macro(SLasmPass0* p0)
+	bool ilsa_pass0_macro(SLsaPass0* p0)
 	{
 		SLine*		line;
 		SLine*		lineMark;
@@ -468,7 +468,7 @@ grab_content_to_end_of_line:
 		if (p0 && p0->line && (compDefine = p0->line->firstComp))
 		{
 			// Is it macro?
-			if (compDefine->iCode == _ICODE_LASM_MACRO)
+			if (compDefine->iCode == _ICODE_LSA_MACRO)
 			{
 				// Grab the token name after it
 				compTokenName = iComps_Nth_lineOnly(compDefine);
@@ -501,7 +501,7 @@ grab_content_to_end_of_line:
 												if (comp->ll.nextComp)
 												{
 													// Grab the named parameters here
-													if (!iilasm_params_commaDelimitedExtract(comp->ll.nextComp, &compParams, true))
+													if (!iilsa_params_commaDelimitedExtract(comp->ll.nextComp, &compParams, true))
 													{
 														// Error parsing these parameters
 														debug_error;
@@ -552,17 +552,17 @@ grab_double_brace_content:
 					}
 
 					// When we get here, we have all the information we need
-					iilasm_dmac_add(p0->file, p0->line, compTokenName, compParams, compContentStart, compContentEnd, true);
+					iilsa_dmac_add(p0->file, p0->line, compTokenName, compParams, compContentStart, compContentEnd, true);
 
 					// Mark everything completed
-					lasm_markLineCompleted(p0->line);
+					ilsa_markLineCompleted(p0->line);
 					if (compContentTrueStart && compContentTrueEnd && compContentTrueStart->line != compContentTrueEnd->line)
 					{
 						// Mark the other lines complete
 						for (lineMark = p0->line->ll.nextLine; lineMark; lineMark = lineMark->ll.nextLine)
 						{
 							// Mark this line, and all components on it
-							lasm_markLineCompleted(lineMark);
+							ilsa_markLineCompleted(lineMark);
 
 							// Are we done?
 							if (lineMark == compContentTrueEnd->line)
@@ -594,7 +594,7 @@ grab_double_brace_content:
 // Called to see if the if expression is one of conditional assembly, or if it's of logic
 //
 //////
-	bool ilasm_pass0_if(SLasmPass0* p0)
+	bool ilsa_pass0_if(SLsaPass0* p0)
 	{
 		return(false);
 	}
@@ -607,7 +607,7 @@ grab_double_brace_content:
 // Called to see if the token is defined
 //
 //////
-	bool ilasm_pass0_ifdef(SLasmPass0* p0)
+	bool ilsa_pass0_ifdef(SLsaPass0* p0)
 	{
 		return(false);
 	}
@@ -620,7 +620,7 @@ grab_double_brace_content:
 // Called to see if the token is not defined
 //
 //////
-	bool ilasm_pass0_ifndef(SLasmPass0* p0)
+	bool ilsa_pass0_ifndef(SLsaPass0* p0)
 	{
 		return(false);
 	}

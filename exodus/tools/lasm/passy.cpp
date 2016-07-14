@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/exodus/tools/lasm/passy.cpp
+// /libsf/exodus/tools/lsa/passy.cpp
 //
 //////
 //    _     _ _     _____ _____ 
@@ -80,7 +80,7 @@
 //
 //////
 //
-// Liberty Software Foundation's lasm (LibSF Assembler).
+// Liberty Software Foundation's lsa (LibSF Assembler).
 //
 //////
 
@@ -92,6 +92,6 @@
 // Pass-Y -- Linking
 //
 //////
-	void ilasm_passY(SLasmCmdLine* cmdLine, SLasmFile* file)
+	void ilsa_passY(SLsaCmdLine* cmdLine, SLsaFile* file)
 	{
 	}

@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/exodus/tools/lasm/lasm_structs.h
+// /libsf/exodus/tools/lsa/lasm_structs.h
 //
 //////
 //    _     _ _     _____ _____
@@ -81,8 +81,8 @@
 
 
 
-struct SLasmFile;
-struct SLasmBlock;
+struct SLsaFile;
+struct SLsaBlock;
 
 
 //////////
@@ -104,14 +104,14 @@ struct SLasmBlock;
 	};
 
 	// Options specified on the command line
-	struct SLasmCmdLine
+	struct SLsaCmdLine
 	{
 		SWarnings	w;									// Which warnings are enabled?
 		SOptions	o;									// Which options are enabled?
 	};
 
 	// File-level assemble status
-	struct SLasmStatus
+	struct SLsaStatus
 	{
 		s32			errors		: 8;					// Up to 256 errors are allowed
 		s32			warnings	: 8;					// Up to 256 warnings are allowed
@@ -121,7 +121,7 @@ struct SLasmBlock;
 	};
 
 	// #include files, and also #include paths
-	struct SLasmInclude
+	struct SLsaInclude
 	{
 		bool		lIsFilename;						// Is it a full filename (and not just a path)?
 		SDatum		filename;							// The full pathname
@@ -129,7 +129,7 @@ struct SLasmBlock;
 	};
 
 	// For #include files, searches known paths iteratively
-	struct SLasmIncludeIter
+	struct SLsaIncludeIter
 	{
 		u32			offset;								// Offset into the includeFiles builder
 		s8			filename[_MAX_PATH];				// The filename being used for iteration
@@ -141,23 +141,23 @@ struct SLasmBlock;
 	};
 
 	// Function definition
-	struct SLasmFunc
+	struct SLsaFunc
 	{
 		SDatum			name;							// Function name
-		SLasmBlock*		frame;							// Framework components
+		SLsaBlock*		frame;							// Framework components
 	};
 
 	// Linked list of files to be assembled
-	struct SLasmFile
+	struct SLsaFile
 	{
 		// File number
 		s32					filenum;					// Used for shorthand references
 
 		// File and status
-		SLasmInclude*		include;					// #include file level as of the time of this file's creation
+		SLsaInclude*		include;					// #include file level as of the time of this file's creation
 		SDatum				filename;					// Source file
 		s8*					filename_justfname;			// Just the filename
-		u32					status;						// See _LASM_STATUS_* constants
+		u32					status;						// See _LSA_STATUS_* constants
 
 		// Raw disk file contents
 		FILE*				fh;							// File handle
@@ -172,7 +172,7 @@ struct SLasmBlock;
 	};
 
 	// Parameters
-	struct SLasmParam
+	struct SLsaParam
 	{
 		SComp*		type;								// Type of param specified
 		SComp*		start;								// First parameter
@@ -184,18 +184,18 @@ struct SLasmBlock;
 	};
 
 	// Expansion steps, a simple sequence of either (1) Use the parameter, or (2) copy the text
-	struct SLasmExpansion
+	struct SLsaExpansion
 	{
 		s32			nParamNum;							// If nonzero, use the parameter number
 		SDatum*		text;								// Otherwise, copy this text
 	};
 
 	// define/macro statements (pass-0, see gsLasmDM_root)
-	struct SLasmDMac
+	struct SLsaDMac
 	{
 		// Required parameters
-		SLasmFile*			file;						// Associated file
-		SLasmFunc*			func;						// The associated function for this define
+		SLsaFile*			file;						// Associated file
+		SLsaFunc*			func;						// The associated function for this define
 		SLine*				line;						// First line (potentially multiple lines of source ocde, refer to first->line and last->line)
 		SComp*				name;						// The component which defined the token name
 
@@ -204,10 +204,10 @@ struct SLasmBlock;
 		SComp*				last;						// Last component for any content
 
 		// Optional parameters (the a, b,..., z in define xyz(a,b,...,z) {{ ... }})
-		SBuilder*			params;						// (SLasmParam) Parameter names
+		SBuilder*			params;						// (SLsaParam) Parameter names
 
 		// Unfurled instructions
-		SBuilder*			expansion_steps;			// (SLasmExpansion) The steps to reproduce the define/macro with input parameters
+		SBuilder*			expansion_steps;			// (SLsaExpansion) The steps to reproduce the define/macro with input parameters
 	};
 
 
@@ -222,10 +222,10 @@ struct SLasmBlock;
 //		}												// body end
 //
 //////
-	struct SLasmBlock
+	struct SLsaBlock
 	{
 		SLL					ll;							// Link list through multiple functions
-		s32					type;						// See _LASM_BLOCK_TYPE_* constants
+		s32					type;						// See _LSA_BLOCK_TYPE_* constants
 
 
 		//////////
@@ -241,33 +241,33 @@ struct SLasmBlock;
 		//////////
 		// Params
 		//////
-			SBuilder*		rp;							// (SLasmParam) Return parameters
-			SBuilder*		ip;							// (SLasmParam) Input parameters
+			SBuilder*		rp;							// (SLsaParam) Return parameters
+			SBuilder*		ip;							// (SLsaParam) Input parameters
 	};
 
 	// struct
-	struct SLasmStruct
+	struct SLsaStruct
 	{
 		SLL					ll;							// Link list through multiple structs
 	};
 
 	// enum
-	struct SLasmEnum
+	struct SLsaEnum
 	{
 		SLL					ll;							// Link list through multiple enums
 	};
 
 	// Pass-0 compilation local variables
-	struct SLasmPass0
+	struct SLsaPass0
 	{
-		SLasmCmdLine*		cmdLine;
-		SLasmFile*			file;
+		SLsaCmdLine*		cmdLine;
+		SLsaFile*			file;
 
 		SLine*				line;
 		SComp*				comp;
 // 		SComp*				compNext;
 		SComp*				compFile;
-		SLasmDMac*	dm;
-		SLasmFile*			fileInclude;
+		SLsaDMac*	dm;
+		SLsaFile*			fileInclude;
 		s8					filename[_MAX_PATH];
 	};

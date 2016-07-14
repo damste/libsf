@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/exodus/tools/lasm/lasm.cpp
+// /libsf/exodus/tools/lsa/lsa.cpp
 //
 //////
 //    _     _ _     _____ _____ 
@@ -91,12 +91,12 @@
 // Uses Visual FreePro, Jr's existing facilities to simplify our processing
 //////
 	#define _NONVJR_COMPILE 1				// Turns off some features in VJr that fail on compilation from here
-	#define _LASM_COMPILE 1					// Turns on some features in VJr for lasm
+	#define _LSA_COMPILE 1					// Turns on some features in VJr for lasm
 	#define _BMP_LOCALITY 1					// Force definitions to be local
-	const char cgc_appName[] = "lasm";		// Give our app a name
+	const char cgc_appName[] = "lsa";		// Give our app a name
 
 	// Line-level assemble status
-	struct SLasmLineStatus
+	struct SLsaLineStatus
 	{
 		int			errors		: 8;					// Up to 256 errors are allowed
 		int			warnings	: 8;					// Up to 256 warnings are allowed
@@ -116,9 +116,9 @@
 
 
 //////////
-// Include VJr stuff, then lasm stuff
+// Include VJr stuff, then lsa stuff
 //////
-	#include "lasm.h"
+	#include "lsa.h"
 
 
 
@@ -133,8 +133,8 @@
 	s32 main(s32 argc, s8* argv[])
 	{
 		u32				lnPathnameLength;
-		SLasmInclude*	include;
-		SLasmCmdLine	cmdLine;
+		SLsaInclude*	include;
+		SLsaCmdLine	cmdLine;
 		s8				fileName[_MAX_PATH];
 
 
@@ -150,24 +150,24 @@
 			memset(&cmdLine,	0, sizeof(cmdLine));		// Initialize all options off
 			memset(&cmdLine.w,	1, sizeof(cmdLine.w));		// Initialize all warnings on
 			memset(fileName,	0, sizeof(fileName));
-			iBuilder_createAndInitialize(&includePaths, sizeof(SLasmInclude) * 50);
-			iBuilder_createAndInitialize(&includeFiles, sizeof(SLasmFile) * 50);
+			iBuilder_createAndInitialize(&includePaths, sizeof(SLsaInclude) * 50);
+			iBuilder_createAndInitialize(&includeFiles, sizeof(SLsaFile) * 50);
 
 			// Grab the current directory (as our starting point)
 			lnPathnameLength	= GetCurrentDirectory(sizeof(fileName) - 1, fileName);
-			include				= ilasm_includePath_append(fileName, lnPathnameLength, false);
+			include				= ilsa_includePath_append(fileName, lnPathnameLength, false);
 
 
 		//////////
 		// Grab options
 		//////
-			ilasm_parse_commandLine(&cmdLine, argc, argv);
+			ilsa_parse_commandLine(&cmdLine, argc, argv);
 
 
 		//////////
 		// Compile
 		//////
-			ilasm_compile(&cmdLine);
+			ilsa_compile(&cmdLine);
 
 
 		// If we get here, success
@@ -182,7 +182,7 @@
 // Called to parse the command line and load its various parameters
 //
 //////
-	void ilasm_parse_commandLine(SLasmCmdLine* cmdLine, s32 argc, s8* argv[])
+	void ilsa_parse_commandLine(SLsaCmdLine* cmdLine, s32 argc, s8* argv[])
 	{
 		bool	llSetValue;
 		s32		lnI, lnLength;
@@ -237,26 +237,26 @@
 					//////////
 					// Which warnings?
 					//////
-						if (lasm_is_cmdLineOption(cgc_wmissing_type_ptr))
+						if (ilsa_is_cmdLineOption(cgc_wmissing_type_ptr))
 						{
 							// -Wmissing-type-ptr		-- Using "mov eax,[esi]" rather than "mov eax,u32 ptr [esi]"
 							// -Wno-missing-type-ptr
 							cmdLine->w.Wmissing_type_ptr = llSetValue;
 							break;
 
-						} else if (lasm_is_cmdLineOption(cgc_wall)) {
+						} else if (ilsa_is_cmdLineOption(cgc_wall)) {
 							// -Wall					-- Show all warnings
 							// -Wno-all
 							cmdLine->w.Wall = llSetValue;
 							break;
 
-						} else if (lasm_is_cmdLineOption(cgc_wfatal_errors)) {
+						} else if (ilsa_is_cmdLineOption(cgc_wfatal_errors)) {
 							// -Wfatal-errors			-- Should compilation stop immediately on first error?
 							// -Wno-fatal-errors
 							cmdLine->w.Wfatal_errors = llSetValue;
 							break;
 
-						} else if (lasm_is_cmdLineOption(cgc_werror)) {
+						} else if (ilsa_is_cmdLineOption(cgc_werror)) {
 							// -Werror					-- Should warnings be treated as errors?
 							// -Wno-error
 							cmdLine->w.Werror = llSetValue;
@@ -267,13 +267,13 @@
 					//////////
 					// Which options?
 					//////
-						if (lasm_is_cmdLineOption(cgc_syntax_only))
+						if (ilsa_is_cmdLineOption(cgc_syntax_only))
 						{
 							// -fsyntax-only			-- Syntax check only
 							cmdLine->o.lSyntax_only = llSetValue;
 							break;
 
-						} else if (lasm_is_cmdLineOption(cgc_verbose)) {
+						} else if (ilsa_is_cmdLineOption(cgc_verbose)) {
 							// -verbose					-- Show extra compilation information
 							cmdLine->o.lVerbose = llSetValue;
 							break;
@@ -291,7 +291,7 @@
 			} else {
 				// Based on our command line option syntax, since it doesn't begin with a hyphen, it can only be a file to assemble
 				// Try to load it
-				if (!ilasm_includeFile_append(argv[lnI], NULL))
+				if (!ilsa_includeFile_append(argv[lnI], NULL))
 				{
 					// Unable to load
 					printf(cgc_unable_to_open_file, argv[lnI]);
@@ -309,19 +309,19 @@
 // Compile through the multiple passes
 //
 //////
-	void ilasm_compile(SLasmCmdLine* cmdLine)
+	void ilsa_compile(SLsaCmdLine* cmdLine)
 	{
 		s32			lnPass;
 		u32			lnI;
-		SLasmFile*	file;
+		SLsaFile*	file;
 
 
 		// Iterate through every file, through every pass
-		iterate (lnI, includeFiles, file, SLasmFile)
+		iterate (lnI, includeFiles, file, SLsaFile)
 		//
 
 			// Begin passes through each file
-			for (lnPass = 0; lnPass < 6 && !lasm_is_completed(file->status); lnPass++)
+			for (lnPass = 0; lnPass < 6 && !ilsa_is_completed(file->status); lnPass++)
 			{
 				// Identify the file on the first pass
 				if (lnPass == 0)
@@ -331,21 +331,21 @@
 				switch (lnPass)
 				{
 					case 0:
-						ilasm_pass0(cmdLine, file);
+						ilsa_pass0(cmdLine, file);
 						break;
 
 					case 1:
-						ilasm_pass1(cmdLine, file);
+						ilsa_pass1(cmdLine, file);
 						break;
 
 					case 2:
-						ilasm_pass2(cmdLine, file);
+						ilsa_pass2(cmdLine, file);
 						break;
 
-// 					case 3:		{	ilasm_pass2(cmdLine, file);		break;	}
-// 					case 4:		{	ilasm_passX(cmdLine, file);		break;	}
-// 					case 5:		{	ilasm_passY(cmdLine, file);		break;	}
-// 					case 6:		{	ilasm_passZ(cmdLine, file);		break;	}
+// 					case 3:		{	ilsa_pass2(cmdLine, file);		break;	}
+// 					case 4:		{	ilsa_passX(cmdLine, file);		break;	}
+// 					case 5:		{	ilsa_passY(cmdLine, file);		break;	}
+// 					case 6:		{	ilsa_passZ(cmdLine, file);		break;	}
 				}
 
 //////////
@@ -357,7 +357,7 @@
 	iBuilder_createAndInitialize(&b);
 	for (line = file->firstLine; line; line = line->ll.nextLine)
 	{
-		if (!ilasm_status_line_isCompleted(line))
+		if (!ilsa_status_line_isCompleted(line))
 		{
 			iBuilder_appendData(b, line->sourceCode.data_u8, line->sourceCode.length);
 			iBuilder_appendCrLf(b);
@@ -383,13 +383,13 @@
 // and also read in its file contents
 //
 //////
-	bool ilasm_includeFile_append(s8* tcPathname, SLasmFile** file)
+	bool ilsa_includeFile_append(s8* tcPathname, SLsaFile** file)
 	{
 		bool			llFound;
 		u32				lnI;
-		SLasmFile		fLoad;
-		SLasmFile*		fNew;
-		SLasmInclude*	include;
+		SLsaFile		fLoad;
+		SLsaFile*		fNew;
+		SLsaInclude*	include;
 		s8*				filename_justfname;
 		s8				filename[_MAX_PATH * 2];
 
@@ -409,7 +409,7 @@
 			if ((u16)tcPathname[0] == '\\.')
 			{
 				// Relative path
-				iterate(lnI, includePaths, include, SLasmInclude)
+				iterate(lnI, includePaths, include, SLsaInclude)
 				//
 					// Store the root path, then filename
 					sprintf(filename,								include->filename.data_s8);
@@ -441,7 +441,7 @@
 				if (iFile_parseIntoLines(&fLoad.firstLine, fLoad.raw, fLoad.rawLength, sizeof(SLine)) > 0)
 				{
 					// Append our entry onto the chain
-					fNew = (SLasmFile*)iBuilder_allocateBytes(includeFiles, sizeof(SLasmFile));
+					fNew = (SLsaFile*)iBuilder_allocateBytes(includeFiles, sizeof(SLsaFile));
 					if (fNew)
 					{
 						// Set the filename
@@ -449,7 +449,7 @@
 						fNew->filename_justfname = fNew->filename.data_s8 + ((u32)filename_justfname - (u32)&filename[0]);
 
 						// Copy over
-						fNew->filenum		= (includeFiles->populatedLength / sizeof(SLasmFile));
+						fNew->filenum		= (includeFiles->populatedLength / sizeof(SLsaFile));
 						fNew->firstLine		= fLoad.firstLine;
 						fNew->fh			= fLoad.fh;
 						fNew->raw			= fLoad.raw;
@@ -463,7 +463,7 @@
 							*file = fNew;
 
 						// Add it as a possible include path
-						ilasm_includePath_append(filename, strlen(filename), true);
+						ilsa_includePath_append(filename, strlen(filename), true);
 
 						// Indicate success
 						return(true);
@@ -488,18 +488,18 @@
 // Store the include file to a list of directories for later traversal should we
 //
 //////
-	SLasmInclude* ilasm_includePath_append(s8* tcPathname, s32 tnPathnameLength, bool tlIsFilename)
+	SLsaInclude* ilsa_includePath_append(s8* tcPathname, s32 tnPathnameLength, bool tlIsFilename)
 	{
 		u32				lnI, lnError;
-		SLasmInclude*	include;
+		SLsaInclude*	include;
 		s8*				fileNamePortion;
 
 
 		// See if it already exists
-		for (lnI = 0; lnI < includePaths->populatedLength; lnI += sizeof(SLasmInclude))
+		for (lnI = 0; lnI < includePaths->populatedLength; lnI += sizeof(SLsaInclude))
 		{
 			// Grab our pointer
-			include = (SLasmInclude*)(includePaths->buffer + lnI);
+			include = (SLsaInclude*)(includePaths->buffer + lnI);
 
 			// Is it our filename?
 			if (include->filename.length == tnPathnameLength && iDatum_compare(&include->filename, tcPathname, tnPathnameLength) == 0)
@@ -507,7 +507,7 @@
 		}
 
 		// If we get here, not found
-		include = (SLasmInclude*)iBuilder_allocateBytes(includePaths, sizeof(SLasmInclude));
+		include = (SLsaInclude*)iBuilder_allocateBytes(includePaths, sizeof(SLsaInclude));
 		if (include)
 		{
 			// Allocate enough space
@@ -534,7 +534,7 @@
 				include->filenamePortion = 0;
 
 				// Validate that it has a trailing backslash
-				ilasm_validate_trailingBackspace(include);
+				ilsa_validate_trailingBackspace(include);
 			}
 		}
 
@@ -550,7 +550,7 @@
 // For searching for files in the include path iteratively
 //
 //////
-	void ilasm_includePaths_iterate_start(SLasmIncludeIter* iiFile, s8* filename)
+	void ilsa_includePaths_iterate_start(SLsaIncludeIter* iiFile, s8* filename)
 	{
 		s32 lnLength;
 
@@ -572,10 +572,10 @@
 		}
 	}
 
-	bool ilasm_includePaths_iterate_try(SLasmIncludeIter* iiFile, bool& tlIsFileValid, SLasmFile** fileInclude)
+	bool ilsa_includePaths_iterate_try(SLsaIncludeIter* iiFile, bool& tlIsFileValid, SLsaFile** fileInclude)
 	{
 		s32				lnLength;
-		SLasmInclude*	include;
+		SLsaInclude*	include;
 
 
 		// Based on the current offset
@@ -585,7 +585,7 @@
 			// Create the merged pathname
 			//////
 				iiFile->wasOpened	= false;
-				include				= (SLasmInclude*)(includePaths->buffer + iiFile->offset);		// Copy the path from includePaths
+				include				= (SLsaInclude*)(includePaths->buffer + iiFile->offset);		// Copy the path from includePaths
 				if (include->lIsFilename)
 					return(false);		// This include file is not a pathname, but a filename, we can't use it
 
@@ -616,7 +616,7 @@
 				if (tlIsFileValid)
 				{
 					// Can we append the file?
-					if (ilasm_includeFile_append(iiFile->pathname, fileInclude))
+					if (ilsa_includeFile_append(iiFile->pathname, fileInclude))
 					{
 						// It was opened successfully
 						iiFile->wasOpened = true;
@@ -632,16 +632,16 @@
 		return(false);
 	}
 
-	bool ilasm_includePaths_iterate_next(SLasmIncludeIter* iiFile)
+	bool ilsa_includePaths_iterate_next(SLsaIncludeIter* iiFile)
 	{
 		// Make sure our environment is sane
 		if (iiFile)
 		{
 			// Is there enough room for another attempt?
-			if (iiFile->offset + sizeof(SLasmInclude) < includePaths->populatedLength)
+			if (iiFile->offset + sizeof(SLsaInclude) < includePaths->populatedLength)
 			{
 				// Yes
-				iiFile->offset += sizeof(SLasmInclude);
+				iiFile->offset += sizeof(SLsaInclude);
 				return(true);
 			}
 		}
@@ -659,7 +659,7 @@
 //
 //////
 	// Note:  include files also always allocate _MAX_PATH + 32 bytes for their filename size, so there's always room for the extra backslash
-	SLasmInclude* ilasm_validate_trailingBackspace(SLasmInclude* include)
+	SLsaInclude* ilsa_validate_trailingBackspace(SLsaInclude* include)
 	{
 		// Make sure the last character's a backspace
 		if (include->filename.data_s8[include->filename.length - 1] != '\\')
@@ -683,7 +683,7 @@
 // Called to adjust the slashes
 //
 //////
-	void ilasm_fixup_directoryDividers(s8* tcPathname, s32 tnPathnameLength)
+	void ilsa_fixup_directoryDividers(s8* tcPathname, s32 tnPathnameLength)
 	{
 		s32 lnI;
 
@@ -706,7 +706,7 @@
 // something like "relative\path\to\file.txt"
 //
 //////
-	bool ilasm_isAbsolutePath(s8* tcPathname, s32 tnPathnameLength)
+	bool ilsa_isAbsolutePath(s8* tcPathname, s32 tnPathnameLength)
 	{
 		// Is it long enough to be an absolute path?
 		if (tnPathnameLength >= 2)
@@ -745,7 +745,7 @@
 // should never occur, but are occurring, are routed through here for debugging.
 //
 //////
-	void ilasm_route_through_silentError_for_debugging(void)
+	void ilsa_route_through_silentError_for_debugging(void)
 	{
 		// For debugging, errors that should not occur route through this function
 		debug_nop;
@@ -759,7 +759,7 @@
 // Applies the status to the indicated component
 //
 //////
-	void ilasm_status_comp_add(SComp* comp, u32 tnStatus)
+	void ilsa_status_comp_add(SComp* comp, u32 tnStatus)
 	{
 		// Make sure our environment is sane
 		if (comp)
@@ -774,7 +774,7 @@
 // Called to add the indicated status to the line, and optionally all of the line comps
 //
 //////
-	void ilasm_status_line_add(SLine* line, u32 tnStatus, bool tlProcessComps)
+	void ilsa_status_line_add(SLine* line, u32 tnStatus, bool tlProcessComps)
 	{
 		SComp* comp;
 
@@ -803,14 +803,14 @@
 // Called to see if the status is completed
 //
 //////
-	bool ilasm_status_line_isCompleted(SLine* line)
+	bool ilsa_status_line_isCompleted(SLine* line)
 	{
 		// If there's no line, it's obviously done :-)
 		if (!line)
 			return(true);
 
 		// If it's marked completed, it's done
-		if ((line->lineStatus & _LASM_STATUS_COMPLETED) != 0)
+		if ((line->lineStatus & _LSA_STATUS_COMPLETED) != 0)
 			return(true);
 
 		// If we get here, not done
@@ -825,7 +825,7 @@
 // Called to add the indicated status to the file, and optionally all of the lines and more optionally all the comps
 //
 //////
-	void ilasm_status_file_add(SLasmFile* file, u32 tnStatus, bool tlProcessLines, bool tlProcessComps)
+	void ilsa_status_file_add(SLsaFile* file, u32 tnStatus, bool tlProcessLines, bool tlProcessComps)
 	{
 		SLine* line;
 
@@ -841,7 +841,7 @@
 			{
 				// Iterate through each line
 				for (line = file->firstLine; line; line = line->ll.nextLine)
-					ilasm_status_line_add(line, tnStatus, tlProcessComps);
+					ilsa_status_line_add(line, tnStatus, tlProcessComps);
 			}
 		}
 	}
@@ -856,26 +856,26 @@
 //////
 	// Note:  This function generates the *paramsRoot builder (if there were any parameters) ... it will have to be deleted manually by caller
 	// ...beginning at the parameter after the parenthesis, and then between the two parenthesis
-	s32 iilasm_params_parentheticalExtract(SComp* compLeftParam, SBuilder** paramsRoot, bool tlMoveBeyondLineIfNeeded)
+	s32 iilsa_params_parentheticalExtract(SComp* compLeftParam, SBuilder** paramsRoot, bool tlMoveBeyondLineIfNeeded)
 	{
-		return(iilasm_params_extract_common(iComps_Nth(compLeftParam, 1, tlMoveBeyondLineIfNeeded), paramsRoot, tlMoveBeyondLineIfNeeded, _ICODE_PARENTHESIS_RIGHT));
+		return(iilsa_params_extract_common(iComps_Nth(compLeftParam, 1, tlMoveBeyondLineIfNeeded), paramsRoot, tlMoveBeyondLineIfNeeded, _ICODE_PARENTHESIS_RIGHT));
 	}
 
 	// ...beginning where we are to the end of the line
-	s32 iilasm_params_commaDelimitedExtract(SComp* compFirstParam, SBuilder** paramsRoot, bool tlVerifySingleParams, bool* tlIsSingleParam)
+	s32 iilsa_params_commaDelimitedExtract(SComp* compFirstParam, SBuilder** paramsRoot, bool tlVerifySingleParams, bool* tlIsSingleParam)
 	{
 		s32				lnResult;
 		u32				lnI;
-		SLasmParam*		param;
+		SLsaParam*		param;
 
 
 		// Get our parameters
-		lnResult = iilasm_params_extract_common(compFirstParam, paramsRoot, false, _ICODE_NU);
+		lnResult = iilsa_params_extract_common(compFirstParam, paramsRoot, false, _ICODE_NU);
 		if (lnResult > 0 && *paramsRoot && tlVerifySingleParams && tlIsSingleParam)
 		{
 			// Make sure each parameter is single
 			*tlIsSingleParam = true;	// Assume success
-			iterate(lnI, (*paramsRoot), param, SLasmParam)
+			iterate(lnI, (*paramsRoot), param, SLsaParam)
 			//
 
 				// Is this parameter single?
@@ -901,7 +901,7 @@
 // Common comma-delimited parameter extraction algorithm
 //
 //////
-	s32 iilasm_params_extract_common(SComp* compFirstParam, SBuilder** paramsRoot, bool tlMoveBeyondLineIfNeeded, s32 tniStopCode)
+	s32 iilsa_params_extract_common(SComp* compFirstParam, SBuilder** paramsRoot, bool tlMoveBeyondLineIfNeeded, s32 tniStopCode)
 	{
 		bool			llStoreStart;
 		s32				lnLevel;
@@ -909,7 +909,7 @@
 		SComp*			compStart;
 		SComp*			compEnd;
 		SComp*			compLast;
-		SLasmParam*		param;
+		SLsaParam*		param;
 		SBuilder*		params;
 
 
@@ -943,7 +943,7 @@ end_of_parameter:
 						compEnd = compLast;
 
 						// Add a new record
-						param = (SLasmParam*)iBuilder_allocateBytes(params, sizeof(SLasmParam));
+						param = (SLsaParam*)iBuilder_allocateBytes(params, sizeof(SLsaParam));
 						if (param)
 						{
 							// Populate this record
@@ -982,7 +982,7 @@ end_of_parameter:
 
 		} else {
 			// Indicate the count
-			return(params->populatedLength / sizeof(SLasmParam));
+			return(params->populatedLength / sizeof(SLsaParam));
 		}
 	}
 
@@ -994,10 +994,10 @@ end_of_parameter:
 // Called to create a token
 //
 //////
-	bool iilasm_dmac_add(SLasmFile* file, SLine* line, SComp* compName, SBuilder* params, SComp* compStart, SComp* compEnd, bool tlIsDefine, SLasmDMac** dmOut)
+	bool iilsa_dmac_add(SLsaFile* file, SLine* line, SComp* compName, SBuilder* params, SComp* compStart, SComp* compEnd, bool tlIsDefine, SLsaDMac** dmOut)
 	{
 		u32					lnI;
-		SLasmDMac*	dm;
+		SLsaDMac*	dm;
 		s8					buffer[_MAX_PATH * 2];
 
 
@@ -1010,7 +1010,7 @@ end_of_parameter:
 			iBuilder_createAndInitialize(&gsLasmDM_root);
 
 		// Search existing
-		iterate(lnI, gsLasmDM_root, dm, SLasmDMac)
+		iterate(lnI, gsLasmDM_root, dm, SLsaDMac)
 		//
 			
 			// Does the name already exist?
@@ -1023,7 +1023,7 @@ end_of_parameter:
 								dm->name->line->lineNumber, dm->name->start, file->filename.data_s8);
 
 				// Report the error
-				ilasm_error(_LASM_ERROR_TOKEN_NAME_ALREADY_EXISTS, buffer, line);
+				ilsa_error(_LSA_ERROR_TOKEN_NAME_ALREADY_EXISTS, buffer, line);
 
 				// Indicate failure
 				return(false);
@@ -1033,7 +1033,7 @@ end_of_parameter:
 		iterate_end;
 
 		// Allocate a new define record
-		dm = (SLasmDMac*)iBuilder_allocateBytes(gsLasmDM_root, sizeof(SLasmDMac));
+		dm = (SLsaDMac*)iBuilder_allocateBytes(gsLasmDM_root, sizeof(SLsaDMac));
 		if (dm)
 		{
 			// Store
@@ -1064,7 +1064,7 @@ end_of_parameter:
 	// Called to parse through the 
 	//
 	//////
-		void ilasm_dmac_unfurl(SLasmDMac* dm)
+		void ilsa_dmac_unfurl(SLsaDMac* dm)
 		{
 			bool			llPrefixCrLf;
 			s32				lnWhitespaces, lnParamNumber;
@@ -1086,10 +1086,10 @@ debug_break;
 				for (comp = dm->first, compLast = NULL; comp != dm->last; compLast = comp, comp = iComps_Nth(comp))
 				{
 					// Search this component for a param name
-					if ((comp->iCode == _ICODE_ALPHA || comp->iCode == _ICODE_ALPHANUMERIC) && iilasm_dmac_searchParams(dm->params, &comp->text, lnParamNumber))
+					if ((comp->iCode == _ICODE_ALPHA || comp->iCode == _ICODE_ALPHANUMERIC) && iilsa_dmac_searchParams(dm->params, &comp->text, lnParamNumber))
 					{
 						// A single name, which means we use this parameter
-						iilasm_dmac_unfurl_addParameter(&dm->expansion_steps, lnParamNumber);
+						iilsa_dmac_unfurl_addParameter(&dm->expansion_steps, lnParamNumber);
 
 					} else {
 						// Appending as text
@@ -1105,23 +1105,23 @@ debug_break;
 						}
 
 						// Physically append
-						iilasm_dmac_unfurl_addText(&dm->expansion_steps, &comp->text, lnWhitespaces, llPrefixCrLf);
+						iilsa_dmac_unfurl_addText(&dm->expansion_steps, &comp->text, lnWhitespaces, llPrefixCrLf);
 					}
 				}
 			}
 		}
 
 		// Search for the indicated name
-		bool iilasm_dmac_searchParams(SBuilder* params, SDatum* text, s32& tnParamNumber)
+		bool iilsa_dmac_searchParams(SBuilder* params, SDatum* text, s32& tnParamNumber)
 		{
 			s32			lnParamNumber;
 			u32			lnI;
-			SLasmParam*	param;
+			SLsaParam*	param;
 
 
 			// Iterate through the parameters looking for this name
 			lnParamNumber = 0;
-			iterate_with_count(lnI, params, param, SLasmParam, lnParamNumber)
+			iterate_with_count(lnI, params, param, SLsaParam, lnParamNumber)
 			//
 
 				// Right size?
@@ -1144,14 +1144,14 @@ debug_break;
 		}
 
 		// Make sure we have a builder
-		bool iilasm_dmac_unfurl_validateBuilder(SBuilder** expansion_stepsRoot)
+		bool iilsa_dmac_unfurl_validateBuilder(SBuilder** expansion_stepsRoot)
 		{
 			// Make sure we have a pointer to builder
 			if (expansion_stepsRoot)
 			{
 				// Default to 20 entries
 				if (!*expansion_stepsRoot)
-					iBuilder_createAndInitialize(expansion_stepsRoot, sizeof(SLasmExpansion) * 20);
+					iBuilder_createAndInitialize(expansion_stepsRoot, sizeof(SLsaExpansion) * 20);
 
 				// Indicate status
 				return((*expansion_stepsRoot != NULL));
@@ -1162,17 +1162,17 @@ debug_break;
 		}
 
 		// Called to add the parameter
-		SLasmExpansion* iilasm_dmac_unfurl_addParameter(SBuilder** expansion_stepsRoot, s32 tnParamNum)
+		SLsaExpansion* iilsa_dmac_unfurl_addParameter(SBuilder** expansion_stepsRoot, s32 tnParamNum)
 		{
-			SLasmExpansion* exp;
+			SLsaExpansion* exp;
 
 
 			// Make sure we have a builder
 			exp = NULL;
-			if (iilasm_dmac_unfurl_validateBuilder(expansion_stepsRoot))
+			if (iilsa_dmac_unfurl_validateBuilder(expansion_stepsRoot))
 			{
 				// Create a new entry
-				exp = (SLasmExpansion*)iBuilder_allocateBytes(*expansion_stepsRoot, sizeof(SLasmExpansion));
+				exp = (SLsaExpansion*)iBuilder_allocateBytes(*expansion_stepsRoot, sizeof(SLsaExpansion));
 				if (exp)
 					exp->nParamNum = tnParamNum;
 			}
@@ -1182,17 +1182,17 @@ debug_break;
 		}
 
 		// Called to add text from a sequence of components
-		SLasmExpansion* iilasm_dmac_unfurl_addText(SBuilder** expansion_stepsRoot, SDatum* text, s32 tnWhitespaces, bool tlPrefixCrLf)
+		SLsaExpansion* iilsa_dmac_unfurl_addText(SBuilder** expansion_stepsRoot, SDatum* text, s32 tnWhitespaces, bool tlPrefixCrLf)
 		{
-			SLasmExpansion* exp;
+			SLsaExpansion* exp;
 
 
 			// Make sure we have a builder
 			exp = NULL;
-			if (iilasm_dmac_unfurl_validateBuilder(expansion_stepsRoot))
+			if (iilsa_dmac_unfurl_validateBuilder(expansion_stepsRoot))
 			{
 				// Create a new entry
-				exp = (SLasmExpansion*)iBuilder_allocateBytes(*expansion_stepsRoot, sizeof(SLasmExpansion));
+				exp = (SLsaExpansion*)iBuilder_allocateBytes(*expansion_stepsRoot, sizeof(SLsaExpansion));
 				if (exp)
 				{
 					// Prefix with anything?
@@ -1217,12 +1217,12 @@ debug_break;
 //
 //////
 	// Note:  valueTextTemplate is expected to include a %d parameter for tnValueCode, and a %s parameter for the associated text
-	void ilasm_append_extraInfo(s32			tnValueCode,
+	void ilsa_append_extraInfo(s32			tnValueCode,
 								cs8*		valueTextTemplate,
 								cs8*		tcValueText,
 								SLine*		line,
 								SComp*		comp,
-								SLasmFile*	file,
+								SLsaFile*	file,
 								s32			tnValueBaseAddto,
 								s32			tn_eiType)
 	{
@@ -1265,7 +1265,7 @@ debug_break;
 	}
 
 	// Note:  noteTextTemplate is expected to include a %d parameter for tnErrorCode, and a %s parameter for the associated error text
-	void ilasm_note(s32 tnNoteCode, cs8* noteTextTemplate, SLine* line, SComp* comp, SLasmFile* file)
+	void ilsa_note(s32 tnNoteCode, cs8* noteTextTemplate, SLine* line, SComp* comp, SLsaFile* file)
 	{
 		cs8* lcNoteText;
 
@@ -1277,8 +1277,8 @@ debug_break;
 			{
 				default:
 					// Internal error (should never happen)
-					ilasm_route_through_silentError_for_debugging();
-					lcNoteText = cgc_lasm_note_unknown_note;
+					ilsa_route_through_silentError_for_debugging();
+					lcNoteText = cgc_lsa_note_unknown_note;
 					break;
 			}
 
@@ -1286,12 +1286,12 @@ debug_break;
 		//////////
 		// Append the warning
 		//////
-			ilasm_append_extraInfo(tnNoteCode, noteTextTemplate, lcNoteText, line, comp, file, _LASM_NOTE_BASE, _EXTRA_INFO_NOTE);
+			ilsa_append_extraInfo(tnNoteCode, noteTextTemplate, lcNoteText, line, comp, file, _LSA_NOTE_BASE, _EXTRA_INFO_NOTE);
 
 	}
 
 	// Note:  warningTextTemplate is expected to include a %d parameter for tnErrorCode, and a %s parameter for the associated error text
-	void ilasm_warning(s32 tnWarningCode, cs8* warningTextTemplate, SLine* line, SComp* comp, SLasmFile* file)
+	void ilsa_warning(s32 tnWarningCode, cs8* warningTextTemplate, SLine* line, SComp* comp, SLsaFile* file)
 	{
 		cs8* lcWarningText;
 
@@ -1303,8 +1303,8 @@ debug_break;
 			{
 				default:
 					// Internal error (should never happen)
-					ilasm_route_through_silentError_for_debugging();
-					lcWarningText = cgc_lasm_warning_unknown_warning;
+					ilsa_route_through_silentError_for_debugging();
+					lcWarningText = cgc_lsa_warning_unknown_warning;
 					break;
 			}
 
@@ -1312,12 +1312,12 @@ debug_break;
 		//////////
 		// Append the warning
 		//////
-			ilasm_append_extraInfo(tnWarningCode, warningTextTemplate, lcWarningText, line, comp, file, _LASM_WARNING_BASE, _EXTRA_INFO_WARNING);
+			ilsa_append_extraInfo(tnWarningCode, warningTextTemplate, lcWarningText, line, comp, file, _LSA_WARNING_BASE, _EXTRA_INFO_WARNING);
 
 	}
 
 	// Note:  errorTextTemplate is expected to include a %d parameter for tnErrorCode, and a %s parameter for the associated error text
-	void ilasm_error(s32 tnErrorCode, cs8* errorTextTemplate, SLine* line, SComp* comp, SLasmFile* file)
+	void ilsa_error(s32 tnErrorCode, cs8* errorTextTemplate, SLine* line, SComp* comp, SLsaFile* file)
 	{
 		cs8* lcErrorText;
 
@@ -1327,14 +1327,14 @@ debug_break;
 		//////
 			switch (tnErrorCode)
 			{
-				case _LASM_ERROR_TOKEN_NAME_ALREADY_EXISTS:
-					lcErrorText = cgc_lasm_error_token_name_already_exists;
+				case _LSA_ERROR_TOKEN_NAME_ALREADY_EXISTS:
+					lcErrorText = cgc_lsa_error_token_name_already_exists;
 					break;
 
 				default:
 					// Internal error (should never happen)
-					ilasm_route_through_silentError_for_debugging();
-					lcErrorText = cgc_lasm_error_unknown_error;
+					ilsa_route_through_silentError_for_debugging();
+					lcErrorText = cgc_lsa_error_unknown_error;
 					break;
 			}
 
@@ -1342,6 +1342,6 @@ debug_break;
 		//////////
 		// Append the error
 		//////
-			ilasm_append_extraInfo(tnErrorCode, errorTextTemplate, lcErrorText, line, comp, file, _LASM_ERROR_BASE, _EXTRA_INFO_ERROR);
+			ilsa_append_extraInfo(tnErrorCode, errorTextTemplate, lcErrorText, line, comp, file, _LSA_ERROR_BASE, _EXTRA_INFO_ERROR);
 
 	}

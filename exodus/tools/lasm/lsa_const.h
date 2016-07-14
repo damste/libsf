@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/exodus/tools/lasm/lasm_const.h
+// /libsf/exodus/tools/lsa/lasm_const.h
 //
 //////
 //    _     _ _     _____ _____
@@ -84,28 +84,28 @@
 //////////
 // Macros
 //////
-	#define lasm_is_cmdLineOption(a)				lnLength == sizeof(a) - 1 && (_memicmp(argv[lnI], a, sizeof(a) - 1) == 0)
-	#define lasm_is_warning(a)						(a & _LASM_STATUS_WARNING)
-	#define lasm_is_error(a)						(a & _LASM_STATUS_ERROR)
-	#define lasm_is_completed(a)					(a & _LASM_STATUS_COMPLETED)
-	#define lasm_markLineCompleted(l)				ilasm_status_line_add(l, _LASM_STATUS_COMPLETED, true)
+	#define ilsa_is_cmdLineOption(a)				lnLength == sizeof(a) - 1 && (_memicmp(argv[lnI], a, sizeof(a) - 1) == 0)
+	#define ilsa_is_warning(a)						(a & _LSA_STATUS_WARNING)
+	#define ilsa_is_error(a)						(a & _LSA_STATUS_ERROR)
+	#define ilsa_is_completed(a)					(a & _LSA_STATUS_COMPLETED)
+	#define ilsa_markLineCompleted(l)				ilsa_status_line_add(l, _LSA_STATUS_COMPLETED, true)
 
 
 
 //////////
 // Constants
 //////
-	cu32		_LASM_STATUS_WARNING				= 1 << 29;				// At least one warning attached
-	cu32		_LASM_STATUS_ERROR					= 1 << 30;				// At lease one error attached
-	cu32		_LASM_STATUS_COMPLETED				= 1 << 31;				// Completed flag
+	cu32		_LSA_STATUS_WARNING				= 1 << 29;				// At least one warning attached
+	cu32		_LSA_STATUS_ERROR					= 1 << 30;				// At lease one error attached
+	cu32		_LSA_STATUS_COMPLETED				= 1 << 31;				// Completed flag
 
-	cs32		_LASM_MAX_DEFINE_PARAMS				= 26;					// Up to 26 #define macro(a,b,c,...,z)
-	cs32		_LASM_MAX_RETURN_PARAMS				= 10;					// Up to 10 return parameters are allowed
-	cs32		_LASM_MAX_INPUT_PARAMS				= 26;					// Up to 26 input parameters are allowed
+	cs32		_LSA_MAX_DEFINE_PARAMS				= 26;					// Up to 26 #define macro(a,b,c,...,z)
+	cs32		_LSA_MAX_RETURN_PARAMS				= 10;					// Up to 10 return parameters are allowed
+	cs32		_LSA_MAX_INPUT_PARAMS				= 26;					// Up to 26 input parameters are allowed
 
-	cs32		_LASM_BLOCK_TYPE_ADHOC				= 1;
-	cs32		_LASM_BLOCK_TYPE_FUNCTION			= 2;
-	cs32		_LASM_BLOCK_TYPE_FLOWOF				= 3;
+	cs32		_LSA_BLOCK_TYPE_ADHOC				= 1;
+	cs32		_LSA_BLOCK_TYPE_FUNCTION			= 2;
+	cs32		_LSA_BLOCK_TYPE_FLOWOF				= 3;
 
 	cs32		_ICAT_INSTRUCTION					= 1;
 	cs32		_ICAT_DATA_TYPE						= 2;
@@ -532,18 +532,18 @@
 	cs32		_ICODE_XMM6							= 2000106;
 	cs32		_ICODE_XMM7							= 2000107;
 
-	cs32		_ICODE_LASM_INCLUDE					= 3000001;
-	cs32		_ICODE_LASM_DEFINE					= 3000002;
-	cs32		_ICODE_LASM_FUNCTION				= 3000003;
-	cs32		_ICODE_LASM_STRUCT					= 3000004;
-	cs32		_ICODE_LASM_ENUM					= 3000005;
-	cs32		_ICODE_LASM_MACRO					= 3000006;
-	cs32		_ICODE_LASM_IF						= 3000007;
-	cs32		_ICODE_LASM_ELSE					= 3000008;
-	cs32		_ICODE_LASM_IFDEF					= 3000009;
-	cs32		_ICODE_LASM_IFNDEF					= 3000010;
-	cs32		_ICODE_LASM_IFB						= 3000011;
-	cs32		_ICODE_LASM_IFNB					= 3000012;
+	cs32		_ICODE_LSA_INCLUDE					= 3000001;
+	cs32		_ICODE_LSA_DEFINE					= 3000002;
+	cs32		_ICODE_LSA_FUNCTION				= 3000003;
+	cs32		_ICODE_LSA_STRUCT					= 3000004;
+	cs32		_ICODE_LSA_ENUM					= 3000005;
+	cs32		_ICODE_LSA_MACRO					= 3000006;
+	cs32		_ICODE_LSA_IF						= 3000007;
+	cs32		_ICODE_LSA_ELSE					= 3000008;
+	cs32		_ICODE_LSA_IFDEF					= 3000009;
+	cs32		_ICODE_LSA_IFNDEF					= 3000010;
+	cs32		_ICODE_LSA_IFB						= 3000011;
+	cs32		_ICODE_LSA_IFNB					= 3000012;
 
 
 //////////
@@ -587,55 +587,55 @@
 	u8			cgc_ptr_94byte[]					= "m94byte";
 	u8			cgc_ptr_108byte[]					= "m108byte";
 
-	u8			cgc_lasm_include[]					= "include";
-	u8			cgc_lasm_define[]					= "define";
-	u8			cgc_lasm_function[]					= "function";
-	u8			cgc_lasm_struct[]					= "struct";
-	u8			cgc_lasm_enum[]						= "enum";
-	u8			cgc_lasm_macro[]					= "macro";
+	u8			cgc_lsa_include[]					= "include";
+	u8			cgc_lsa_define[]					= "define";
+	u8			cgc_lsa_function[]					= "function";
+	u8			cgc_lsa_struct[]					= "struct";
+	u8			cgc_lsa_enum[]						= "enum";
+	u8			cgc_lsa_macro[]					= "macro";
 
-	u8			cgc_lasm_if[]						= "if";
-	u8			cgc_lasm_else[]						= "else";
-	u8			cgc_lasm_ifdef[]					= "ifdef";
-	u8			cgc_lasm_ifndef[]					= "ifndef";
-	u8			cgc_lasm_ifb[]						= "ifb";
-	u8			cgc_lasm_ifnb[]						= "ifnb";
+	u8			cgc_lsa_if[]						= "if";
+	u8			cgc_lsa_else[]						= "else";
+	u8			cgc_lsa_ifdef[]					= "ifdef";
+	u8			cgc_lsa_ifndef[]					= "ifndef";
+	u8			cgc_lsa_ifb[]						= "ifb";
+	u8			cgc_lsa_ifnb[]						= "ifnb";
 
 
 //////////
 // Note numbers
 //////
-	cs32		_LASM_NOTE_BASE								= 2000;
+	cs32		_LSA_NOTE_BASE								= 2000;
 
 
 //////////
 // Warning numbers
 //////
-	cs32		_LASM_WARNING_BASE							= 4000;
+	cs32		_LSA_WARNING_BASE							= 4000;
 
 
 //////////
 // Error numbers
 //////
-	cs32		_LASM_ERROR_BASE							= 5000;
-	cs32		_LASM_ERROR_TOKEN_NAME_ALREADY_EXISTS		= 1;
+	cs32		_LSA_ERROR_BASE							= 5000;
+	cs32		_LSA_ERROR_TOKEN_NAME_ALREADY_EXISTS		= 1;
 
 
 //////////
 // Note messages
 //////
-	cs8			cgc_lasm_note_unknown_note[]				= "unspecified note";
+	cs8			cgc_lsa_note_unknown_note[]				= "unspecified note";
 
 
 //////////
 // Warning messages
 //////
-	cs8			cgc_lasm_warning_unknown_warning[]			= "unspecified warning";
+	cs8			cgc_lsa_warning_unknown_warning[]			= "unspecified warning";
 
 //////////
 // Error messages
 //////
 	cs8			cgc_unable_to_open_file[]					= "--Error: unable to open file: %s\n";
-	cs8			cgc_lasm_error_opening_include_file[]		= "--Error(%d,%d): error opening file [include \"%s\"]\n";
-	cs8			cgc_lasm_error_token_name_already_exists[]	= "token name already exists";
-	cs8			cgc_lasm_error_unknown_error[]				= "unspecified error";
+	cs8			cgc_lsa_error_opening_include_file[]		= "--Error(%d,%d): error opening file [include \"%s\"]\n";
+	cs8			cgc_lsa_error_token_name_already_exists[]	= "token name already exists";
+	cs8			cgc_lsa_error_unknown_error[]				= "unspecified error";

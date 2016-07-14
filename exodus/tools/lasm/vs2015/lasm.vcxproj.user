@@ -4,12 +4,12 @@
     <LocalDebuggerCommandArguments>test.lasm</LocalDebuggerCommandArguments>
     <LocalDebuggerWorkingDirectory>\libsf\exodus\tools\test</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerCommand>\libsf\exodus\tools\test\lasm.exe</LocalDebuggerCommand>
+    <LocalDebuggerCommand>\libsf\exodus\tools\test\lsa.exe</LocalDebuggerCommand>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LocalDebuggerCommandArguments>test.lasm</LocalDebuggerCommandArguments>
     <LocalDebuggerWorkingDirectory>\libsf\exodus\tools\test</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerCommand>\libsf\exodus\tools\test\lasm.exe</LocalDebuggerCommand>
+    <LocalDebuggerCommand>\libsf\exodus\tools\test\lsa.exe</LocalDebuggerCommand>
   </PropertyGroup>
 </Project>

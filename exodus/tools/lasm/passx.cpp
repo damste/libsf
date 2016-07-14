@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/exodus/tools/lasm/passx.cpp
+// /libsf/exodus/tools/lsa/passx.cpp
 //
 //////
 //    _     _ _     _____ _____ 
@@ -80,7 +80,7 @@
 //
 //////
 //
-// Liberty Software Foundation's lasm (LibSF Assembler).
+// Liberty Software Foundation's lsa (LibSF Assembler).
 //
 //////
 
@@ -92,6 +92,6 @@
 // Pass-X -- Opcode (binary) generation
 //
 //////
-	void ilasm_passX(SLasmCmdLine* cmdLine, SLasmFile* file)
+	void ilsa_passX(SLsaCmdLine* cmdLine, SLsaFile* file)
 	{
 	}

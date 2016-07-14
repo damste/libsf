@@ -9,6 +9,11 @@ the task will be suspended where it is until resources can be freed.
 Legacy support will also be given for memory allocation which can
 fail, and will need to have NULL pointer tests performed.
 
+Jul.14.2016 -- ES/2 will bring back functionality of the pause button.
+It will suspend the current task if it's suspendable (as by protocol
+with the OS), and if not it will suspend all screen output even as it
+continues to run in the background.
+
 Best regards,
 Rick C. Hodgin
 

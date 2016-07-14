@@ -30,9 +30,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\lasm.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\pass0.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -69,23 +66,11 @@
     <ClCompile Include="..\..\..\..\utils\common\cpp\base\compsearcher.cpp">
       <Filter>comps</Filter>
     </ClCompile>
+    <ClCompile Include="..\lsa.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\lasm.h">
-      <Filter>Source Files\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\lasm_const.h">
-      <Filter>Source Files\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\lasm_defs.h">
-      <Filter>Source Files\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\lasm_globals.h">
-      <Filter>Source Files\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\lasm_structs.h">
-      <Filter>Source Files\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\utils\common\cpp\include\comps.h">
       <Filter>comps</Filter>
     </ClInclude>
@@ -112,6 +97,21 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\utils\common\cpp\include\compiler_common.h">
       <Filter>comps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\lsa.h">
+      <Filter>Source Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\lsa_const.h">
+      <Filter>Source Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\lsa_defs.h">
+      <Filter>Source Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\lsa_globals.h">
+      <Filter>Source Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\lsa_structs.h">
+      <Filter>Source Files\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
