@@ -309,7 +309,7 @@
 		SComp*		compContentStart;
 		SComp*		compContentEnd;
 		SComp*		compContentTrueEnd;
-		SBuilder*	compParams;
+		SBuilder*	params;
 
 
 		// Make sure our environment is sane
@@ -323,7 +323,7 @@
 				if (compTokenName)
 				{
 					// Grab the thing after that
-					compParams			= NULL;
+					params				= NULL;
 					compContentStart	= NULL;
 					compContentEnd		= NULL;
 					compContentTrueEnd	= NULL;
@@ -352,7 +352,7 @@ grab_double_brace_content:
 
 							case _ICODE_PARENTHESIS_LEFT:
 								// define(...)
-								if (iilsa_params_parentheticalExtract(compThingAfterName, &compParams) <= 0)
+								if (iilsa_params_parentheticalExtract(compThingAfterName, &params) <= 0)
 								{
 									// Syntax error
 									debug_error;
@@ -390,7 +390,7 @@ grab_content_to_end_of_line:
 					}
 
 					// When we get here, we have all the information we need
-					iilsa_dmac_add(p0->file, p0->line, compTokenName, compParams, compContentStart, compContentEnd, true);
+					iilsa_dmac_add(p0->file, p0->line, compTokenName, params, compContentStart, compContentEnd, true);
 
 					// Mark everything completed
 					ilsa_markLineCompleted(p0->line);
@@ -528,9 +528,10 @@ grab_content_to_end_of_line:
 
 							case _ICODE_DOUBLE_BRACE_LEFT:
 								// It's {{ so it indicates a block
+								comp				= compThingAfterName;
 grab_double_brace_content:
-								compContentStart	= iComps_Nth(compThingAfterName);
-								compContentEnd		= iComps_findNextBy_iCode(compThingAfterName, _ICODE_DOUBLE_BRACE_RIGHT);
+								compContentStart	= iComps_Nth(comp);
+								compContentEnd		= iComps_findNextBy_iCode(comp, _ICODE_DOUBLE_BRACE_RIGHT);
 								if (!compContentStart || !compContentEnd)
 								{
 									// Syntax error

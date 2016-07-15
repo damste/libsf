@@ -94,23 +94,6 @@
 	#define _LSA_COMPILE 1					// Turns on some features in VJr for lasm
 	#define _BMP_LOCALITY 1					// Force definitions to be local
 	const char cgc_appName[] = "lsa";		// Give our app a name
-
-	// Line-level assemble status
-	struct SLsaLineStatus
-	{
-		int			errors		: 8;					// Up to 256 errors are allowed
-		int			warnings	: 8;					// Up to 256 warnings are allowed
-
-		// Note:  Blank lines, and comments will be marked completed immediately, as will #include lines after they're included, etc.
-		bool		isCompleted	: 1;					// Is the assemble process completed on this line?
-
-		// As each pass is conducted
-		bool		pass0		: 1;					// Pass-0 -- load all #include files
-		bool		passN		: 1;					// Pass-N -- identifying all symbols, and all start and ending blocks
-		bool		passX		: 1;					// Pass-X -- code generation
-		bool		passY		: 1;					// Pass-Y -- linking
-		bool		passZ		: 1;					// Pass-Z -- write out the file
-	};
 	
 
 
@@ -317,7 +300,7 @@
 
 
 		// Iterate through every file, through every pass
-		iterate (lnI, includeFiles, file, SLsaFile)
+		iterate(lnI, includeFiles, file, SLsaFile)
 		//
 
 			// Begin passes through each file
@@ -445,7 +428,7 @@
 					if (fNew)
 					{
 						// Set the filename
-						iDatum_duplicate(&fNew->filename, filename, strlen(filename));
+						iDatum_duplicate(&fNew->filename, (cvp*)filename, strlen(filename));
 						fNew->filename_justfname = fNew->filename.data_s8 + ((u32)filename_justfname - (u32)&filename[0]);
 
 						// Copy over
@@ -914,8 +897,13 @@
 
 
 		// We know we're sitting on a left parenthesis ( character
-		*paramsRoot = NULL;
-		iBuilder_createAndInitialize(paramsRoot);
+		if (*paramsRoot == NULL)
+			iBuilder_createAndInitialize(paramsRoot);
+		
+		if (!*paramsRoot)
+			return(0);
+
+		// Grab our param in a more manageable form
 		params = *paramsRoot;
 
 		// Scan forward looking for commas and right-parenthesis
@@ -930,7 +918,14 @@
 
 			// Are we at the terminating code?
 			if (comp->iCode == tniStopCode || (!tlMoveBeyondLineIfNeeded && !comp->ll.nextComp))
+			{
+				// Make sure we can populate the end
+				if (!compLast)
+					compLast = compStart;
+
+				// Process
 				goto end_of_parameter;
+			}
 
 			// What are we sitting on?
 			switch (comp->iCode)
@@ -949,6 +944,10 @@ end_of_parameter:
 							// Populate this record
 							param->start	= compStart;
 							param->end		= compEnd;
+
+							// Create the name parameter
+							if (param->start == param->end)		iDatum_duplicate(&param->name, &param->start->text);
+							else								iDatum_duplicate(&param->name, cgc_lsa_group);
 						}
 
 						// Reset the end and prepare for next iteration
@@ -996,9 +995,9 @@ end_of_parameter:
 //////
 	bool iilsa_dmac_add(SLsaFile* file, SLine* line, SComp* compName, SBuilder* params, SComp* compStart, SComp* compEnd, bool tlIsDefine, SLsaDMac** dmOut)
 	{
-		u32					lnI;
+		u32			lnI;
 		SLsaDMac*	dm;
-		s8					buffer[_MAX_PATH * 2];
+		s8			buffer[_MAX_PATH * 2];
 
 
 		// Clear out the prior defineOut if any
@@ -1066,53 +1065,91 @@ end_of_parameter:
 	//////
 		void ilsa_dmac_unfurl(SLsaDMac* dm)
 		{
-			bool			llPrefixCrLf;
+			bool			llHasParams, llPrefixCrLf;
 			s32				lnWhitespaces, lnParamNumber;
+			u32				lnI;
 			SComp*			comp;
 			SComp*			compLast;
-			SBuilder*		builder;
+			SBuilder*		tbuilder;
+			SLsaParam*		param;
+			s8				buffer[1024];
 
 
-// TODO:  Untested code.  Breakpoint and examine.
-debug_break;
 			// Make sure our environment is sane
-			if (dm && dm->params && dm->params->populatedLength > 0)
+			if (dm)
 			{
 				// Create a builder
-				builder = NULL;
-				iBuilder_createAndInitialize(&builder);
+				tbuilder = NULL;
+				iBuilder_createAndInitialize(&tbuilder);
 
+				// If no parameters, store all as text
+				llHasParams = (dm->params && dm->params->populatedLength > 0);
+				
 				// Iterate through every component one by one
-				for (comp = dm->first, compLast = NULL; comp != dm->last; compLast = comp, comp = iComps_Nth(comp))
+				for (comp = dm->first, compLast = NULL; comp; comp = iComps_Nth(comp))
 				{
 					// Search this component for a param name
-					if ((comp->iCode == _ICODE_ALPHA || comp->iCode == _ICODE_ALPHANUMERIC) && iilsa_dmac_searchParams(dm->params, &comp->text, lnParamNumber))
+					if (llHasParams && iiComps_isAlphanumeric_by_iCode(comp->iCode) && dm->params && iilsa_dmac_searchParams(dm->params, &comp->text, lnParamNumber, &param))
 					{
 						// A single name, which means we use this parameter
+						++param->nRefCount;
 						iilsa_dmac_unfurl_addParameter(&dm->expansion_steps, lnParamNumber);
 
 					} else {
-						// Appending as text
+						// Append it as is as text
 						llPrefixCrLf = (compLast && compLast->line != comp->line);
-						if (llPrefixCrLf)
-						{
-							// Start of line offset
-							lnWhitespaces = comp->start;
 
-						} else {
-							// Inter-component spacing
-							lnWhitespaces = ((llPrefixCrLf) ? 0 : comp->start - (compLast->start + compLast->text.length));
-						}
+						// Whitespaces or inter-component spacing
+						if (llPrefixCrLf)		lnWhitespaces = comp->start;
+						else if (compLast)		lnWhitespaces = ((llPrefixCrLf) ? 0 : comp->start - (compLast->start + compLast->text.length));
+						else					lnWhitespaces = 0;
 
 						// Physically append
-						iilsa_dmac_unfurl_addText(&dm->expansion_steps, &comp->text, lnWhitespaces, llPrefixCrLf);
+						iilsa_dmac_unfurl_addText(&dm->expansion_steps, &comp->text, lnWhitespaces, llPrefixCrLf, tbuilder);
 					}
+
+					// Was this component the last one for the blocK?
+					if (comp == dm->last)
+						break;	// Yes
+
+					// Prepare for the next component
+					compLast = comp;
 				}
+
+				// Iterate through the params and make sure all were referenced
+				if (llHasParams)
+				{
+					// Check ref counts
+					iterate(lnI, dm->params, param, SLsaParam)
+					//
+
+						// If it's a pa
+						if (param->name._data && param->name.length > 0 && param->nRefCount == 0)
+						{
+							// Display unreferenced parameter
+							sprintf(buffer, "Warning %%d [%d,%d]: '%s' %%s, see [%d,%d] define/macro '%s' of %s", 
+											param->start->line->lineNumber, param->start->start,
+											param->name.data_s8,
+											dm->name->line->lineNumber, dm->name->start,
+											dm->name->text.data_s8,
+											dm->file->filename.data_s8);
+
+							// Report the warning
+							ilsa_warning(_LSA_WARNING_UNREFERENCED_PARAMETER, buffer, param->start->line, param->start, dm->file);
+						}
+
+					//
+					iterate_end;
+
+				}
+
+				// Release the builder
+				iBuilder_freeAndRelease(&tbuilder);
 			}
 		}
 
 		// Search for the indicated name
-		bool iilsa_dmac_searchParams(SBuilder* params, SDatum* text, s32& tnParamNumber)
+		bool iilsa_dmac_searchParams(SBuilder* params, SDatum* text, s32& tnParamNumber, SLsaParam** paramOut)
 		{
 			s32			lnParamNumber;
 			u32			lnI;
@@ -1131,7 +1168,13 @@ debug_break;
 					if (iDatum_compare(&param->start->text, text))
 					{
 						// This is it
+						if (paramOut)
+							*paramOut = param;
+
+						// Indicate the number
 						tnParamNumber = lnParamNumber;
+
+						// And success
 						return(true);
 					}
 				}
@@ -1182,9 +1225,10 @@ debug_break;
 		}
 
 		// Called to add text from a sequence of components
-		SLsaExpansion* iilsa_dmac_unfurl_addText(SBuilder** expansion_stepsRoot, SDatum* text, s32 tnWhitespaces, bool tlPrefixCrLf)
+		SLsaExpansion* iilsa_dmac_unfurl_addText(SBuilder** expansion_stepsRoot, SDatum* text, s32 tnWhitespaces, bool tlPrefixCrLf, SBuilder* tbuilder)
 		{
-			SLsaExpansion* exp;
+			SBuilder*		expansion_stepsBuilder;
+			SLsaExpansion*	exp;
 
 
 			// Make sure we have a builder
@@ -1192,15 +1236,22 @@ debug_break;
 			if (iilsa_dmac_unfurl_validateBuilder(expansion_stepsRoot))
 			{
 				// Create a new entry
-				exp = (SLsaExpansion*)iBuilder_allocateBytes(*expansion_stepsRoot, sizeof(SLsaExpansion));
+				expansion_stepsBuilder = *expansion_stepsRoot;
+				exp = (SLsaExpansion*)iBuilder_allocateBytes(expansion_stepsBuilder, sizeof(SLsaExpansion));
 				if (exp)
 				{
+					// Reset the builder
+					tbuilder->populatedLength = 0;
+
 					// Prefix with anything?
-					if (tlPrefixCrLf)			iBuilder_appendCrLf(*expansion_stepsRoot);
-					if (tnWhitespaces > 0)		iBuilder_appendWhitespaces(*expansion_stepsRoot, tnWhitespaces);
+					if (tlPrefixCrLf)			iBuilder_appendCrLf(tbuilder);
+					if (tnWhitespaces > 0)		iBuilder_appendWhitespaces(tbuilder, tnWhitespaces);
 
 					// Append the text
-					iBuilder_appendData(*expansion_stepsRoot, text);
+					iBuilder_appendData(tbuilder, text);
+
+					// Copy to the expansion entry
+					iDatum_duplicate(&exp->text, tbuilder->data_cvp, (s32)tbuilder->populatedLength);
 				}
 			}
 
@@ -1250,7 +1301,7 @@ debug_break;
 		// Store the related error message
 		//////
 			if (ei)
-				iDatum_duplicate(&ei->info, buffer);
+				iDatum_duplicate(&ei->info, (cvp*)buffer);
 
 
 		//////////
@@ -1301,6 +1352,10 @@ debug_break;
 		//////
 			switch (tnWarningCode)
 			{
+				case _LSA_WARNING_UNREFERENCED_PARAMETER:
+					lcWarningText = cgc_lsa_warning_unreferenced_parameter;
+					break;
+
 				default:
 					// Internal error (should never happen)
 					ilsa_route_through_silentError_for_debugging();

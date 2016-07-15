@@ -174,20 +174,22 @@ struct SLsaBlock;
 	// Parameters
 	struct SLsaParam
 	{
-		SComp*		type;								// Type of param specified
+		SDatum		name;								// Name of the parameter if it's a single parameter (start == end)
 		SComp*		start;								// First parameter
 		SComp*		end;								// Last parameter
 
 		// Computed values based on the above
+		SComp*		type;								// Type of param specified
 		s32			_ebp_offset;						// Offset into the [ebp] block
 		s32			size;								// Total size in bytes
+		s32			nRefCount;							// Number of times this parameter is referenced
 	};
 
 	// Expansion steps, a simple sequence of either (1) Use the parameter, or (2) copy the text
 	struct SLsaExpansion
 	{
 		s32			nParamNum;							// If nonzero, use the parameter number
-		SDatum*		text;								// Otherwise, copy this text
+		SDatum		text;								// Otherwise, copy this text
 	};
 
 	// define/macro statements (pass-0, see gsLasmDM_root)

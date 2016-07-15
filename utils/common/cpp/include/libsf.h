@@ -179,6 +179,7 @@
 			s8*		data;
 			s8*		data_s8;								// Pointer to a buffer allocated in blocks
 			u8*		data_u8;
+			cvp		data_cvp;
 			s8*		buffer;
 			uptr	_data;
 		};
@@ -1407,10 +1408,7 @@
 	SDatum*					iDatum_allocate							(const void* data, s32 dataLength = -1);
 	bool					iDatum_appendData						(SDatum* datum, s8* data, s32 tnAppendLength);
 
-	void					iDatum_duplicate						(SDatum* datum,  u8* data, s32 dataLength = -1);
-	void					iDatum_duplicate						(SDatum* datum,  s8* data, s32 dataLength = -1);
-	void					iDatum_duplicate						(SDatum* datum, cu8* data, s32 dataLength = -1);
-	void					iDatum_duplicate						(SDatum* datum, cs8* data, s32 dataLength = -1);
+	void					iDatum_duplicate						(SDatum* datum, cvp data, s32 dataLength = -1);
 	void					iDatum_duplicate						(SDatum* datumDst, SDatum* datumSrc);
 	void					iDatum_duplicate_byRef					(SDatum* datumDst, SDatum* datumSrc);
 	SDatum*					iDatum_duplicate						(SDatum* datum);

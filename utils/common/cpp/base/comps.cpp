@@ -573,7 +573,7 @@
 										comp->ll.prev		= (SLL*)compLast;
 
 										// Copy the text for the component to the text SDatum
-										iDatum_duplicate(&comp->text, line->sourceCode.data_s8 + lnStart, lnLength);
+										iDatum_duplicate(&comp->text, (cvp*)(line->sourceCode.data_s8 + lnStart), lnLength);
 
 										// Update the component's information
 										comp->line			= line;

@@ -122,8 +122,10 @@
 
 
 			//////////
-			// Step 2 -- Iterate through the entire file
+			// Step 2 -- Iterate through every line, applying macros where appropriate
 			//////
+// TODO:  working here
+working here
 				for (line = file->firstLine; line; line = line->ll.nextLine)
 				{
 					// All lines should have compiler info, but just to be sure...

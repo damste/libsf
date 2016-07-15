@@ -102,7 +102,7 @@
 			note->start		= tnStart;
 			note->end		= tnEnd;
 			note->number	= tnNumber;
-			iDatum_duplicate(&note->note, tcMessage, -1);
+			iDatum_duplicate(&note->note, (cvp*)tcMessage, -1);
 		}
 
 		// Indicate our status

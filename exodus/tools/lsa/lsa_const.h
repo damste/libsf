@@ -562,44 +562,50 @@
 //////////
 // Pointer types
 //////
-	u8			cgc_ptr_tbyte[]								= "tbyte";
-	u8			cgc_ptr_dqword[]							= "dqword";
-	u8			cgc_ptr_qword[]								= "qword";
-	u8			cgc_ptr_dword[]								= "dword";
-	u8			cgc_ptr_word[]								= "word";
-	u8			cgc_ptr_byte[]								= "byte";
-	u8			cgc_ptr_m16_16[]							= "m16_16";
-	u8			cgc_ptr_m16_32[]							= "m16_32";
-	u8			cgc_ptr_f32[]								= "f32";
-	u8			cgc_ptr_f64[]								= "f64";
-	u8			cgc_ptr_f80[]								= "f80";
-	u8			cgc_ptr_s16[]								= "s16";
-	u8			cgc_ptr_s32[]								= "s32";
-	u8			cgc_ptr_s64[]								= "s64";
-	u8			cgc_ptr_m80[]								= "m80";
-	u8			cgc_ptr_mmx[]								= "mmx";
-	u8			cgc_ptr_xmmx[]								= "xmmx";
-	u8			cgc_ptr_fpu[]								= "fpu";
-	u8			cgc_ptr_6byte[]								= "m6byte";
-	u8			cgc_ptr_10byte[]							= "m10byte";
-	u8			cgc_ptr_14byte[]							= "m14byte";
-	u8			cgc_ptr_28byte[]							= "m28byte";
-	u8			cgc_ptr_94byte[]							= "m94byte";
-	u8			cgc_ptr_108byte[]							= "m108byte";
+	cs8			cgc_ptr_tbyte[]								= "tbyte";
+	cs8			cgc_ptr_dqword[]							= "dqword";
+	cs8			cgc_ptr_qword[]								= "qword";
+	cs8			cgc_ptr_dword[]								= "dword";
+	cs8			cgc_ptr_word[]								= "word";
+	cs8			cgc_ptr_byte[]								= "byte";
+	cs8			cgc_ptr_m16_16[]							= "m16_16";
+	cs8			cgc_ptr_m16_32[]							= "m16_32";
+	cs8			cgc_ptr_f32[]								= "f32";
+	cs8			cgc_ptr_f64[]								= "f64";
+	cs8			cgc_ptr_f80[]								= "f80";
+	cs8			cgc_ptr_s16[]								= "s16";
+	cs8			cgc_ptr_s32[]								= "s32";
+	cs8			cgc_ptr_s64[]								= "s64";
+	cs8			cgc_ptr_m80[]								= "m80";
+	cs8			cgc_ptr_mmx[]								= "mmx";
+	cs8			cgc_ptr_xmmx[]								= "xmmx";
+	cs8			cgc_ptr_fpu[]								= "fpu";
+	cs8			cgc_ptr_6byte[]								= "m6byte";
+	cs8			cgc_ptr_10byte[]							= "m10byte";
+	cs8			cgc_ptr_14byte[]							= "m14byte";
+	cs8			cgc_ptr_28byte[]							= "m28byte";
+	cs8			cgc_ptr_94byte[]							= "m94byte";
+	cs8			cgc_ptr_108byte[]							= "m108byte";
 
-	u8			cgc_lsa_include[]							= "include";
-	u8			cgc_lsa_define[]							= "define";
-	u8			cgc_lsa_function[]							= "function";
-	u8			cgc_lsa_struct[]							= "struct";
-	u8			cgc_lsa_enum[]								= "enum";
-	u8			cgc_lsa_macro[]								= "macro";
+	cs8			cgc_lsa_include[]							= "include";
+	cs8			cgc_lsa_define[]							= "define";
+	cs8			cgc_lsa_function[]							= "function";
+	cs8			cgc_lsa_struct[]							= "struct";
+	cs8			cgc_lsa_enum[]								= "enum";
+	cs8			cgc_lsa_macro[]								= "macro";
 
-	u8			cgc_lsa_if[]								= "if";
-	u8			cgc_lsa_else[]								= "else";
-	u8			cgc_lsa_ifdef[]								= "ifdef";
-	u8			cgc_lsa_ifndef[]							= "ifndef";
-	u8			cgc_lsa_ifb[]								= "ifb";
-	u8			cgc_lsa_ifnb[]								= "ifnb";
+	cs8			cgc_lsa_if[]								= "if";
+	cs8			cgc_lsa_else[]								= "else";
+	cs8			cgc_lsa_ifdef[]								= "ifdef";
+	cs8			cgc_lsa_ifndef[]							= "ifndef";
+	cs8			cgc_lsa_ifb[]								= "ifb";
+	cs8			cgc_lsa_ifnb[]								= "ifnb";
+
+
+//////////
+// Miscellaneous messages
+//////
+	cs8			cgc_lsa_group[]								= "{group}";
 
 
 //////////
@@ -612,6 +618,7 @@
 // Warning numbers
 //////
 	cs32		_LSA_WARNING_BASE							= 4000;
+	cs32		_LSA_WARNING_UNREFERENCED_PARAMETER			= 1;
 
 
 //////////
@@ -631,6 +638,7 @@
 // Warning messages
 //////
 	cs8			cgc_lsa_warning_unknown_warning[]			= "unspecified warning";
+	cs8			cgc_lsa_warning_unreferenced_parameter[]	= "unreferenced parameter";
 
 //////////
 // Error messages

@@ -141,7 +141,7 @@
 					dataLength = (s32)strlen((s8*)data);
 
 				// Populate
-				iDatum_duplicate(datumNew, (s8*)data, dataLength);
+				iDatum_duplicate(datumNew, (cvp*)data, dataLength);
 
 			} else if (dataLength > 0) {
 				// Just allocate raw space
@@ -171,7 +171,7 @@
 			if (!datum->_data || datum->length == 0)
 			{
 				// Create
-				iDatum_duplicate(datum, data, tnAppendLength);
+				iDatum_duplicate(datum, (cvp*)data, tnAppendLength);
 
 				// Success
 				return(true);
@@ -200,7 +200,7 @@
 		return(false);
 	}
 
-	void iDatum_duplicate(SDatum* datum, u8* data, s32 dataLength)
+	void iDatum_duplicate(SDatum* datum, cvp data, s32 dataLength)
 	{
 		// Make sure our environment is sane
 		if (datum && data)
@@ -226,26 +226,11 @@
 		}
 	}
 
-	void iDatum_duplicate(SDatum* datum, s8* data, s32 dataLength)
-	{
-		iDatum_duplicate(datum, (u8*)data, dataLength);
-	}
-
-	void iDatum_duplicate(SDatum* datum, cu8* data, s32 dataLength)
-	{
-		iDatum_duplicate(datum, (u8*)data, dataLength);
-	}
-
-	void iDatum_duplicate(SDatum* datum, cs8* data, s32 dataLength)
-	{
-		iDatum_duplicate(datum, (u8*)data, dataLength);
-	}
-
 	void iDatum_duplicate(SDatum* datumDst, SDatum* datumSrc)
 	{
 		// Make sure our environment is sane
 		if (datumDst && datumSrc && datumSrc->data_u8)
-			iDatum_duplicate(datumDst, datumSrc->data_u8, datumSrc->length);
+			iDatum_duplicate(datumDst, datumSrc->data_cvp, datumSrc->length);
 	}
 
 	void iDatum_duplicate_byRef(SDatum* datumDst, SDatum* datumSrc)
