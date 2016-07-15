@@ -338,6 +338,7 @@
 	SBuilder*	b;
 	b = NULL;
 	iBuilder_createAndInitialize(&b);
+	file = (SLsaFile*)includeFiles->buffer;
 	for (line = file->firstLine; line; line = line->ll.nextLine)
 	{
 		if (!ilsa_status_line_isCompleted(line))
@@ -1088,23 +1089,23 @@ end_of_parameter:
 				// Iterate through every component one by one
 				for (comp = dm->first, compLast = NULL; comp; comp = iComps_Nth(comp))
 				{
+					// Are we still on the same line?
+					llPrefixCrLf = (compLast && compLast->line != comp->line);
+
+					// Whitespaces or inter-component spacing
+					     if (llPrefixCrLf)		lnWhitespaces = comp->start;
+					else if (compLast)			lnWhitespaces = ((llPrefixCrLf) ? comp->start : comp->start - (compLast->start + compLast->text.length));
+					else						lnWhitespaces = 0;
+
 					// Search this component for a param name
 					if (llHasParams && iiComps_isAlphanumeric_by_iCode(comp->iCode) && dm->params && iilsa_dmac_searchParams(dm->params, &comp->text, lnParamNumber, &param))
 					{
 						// A single name, which means we use this parameter
 						++param->nRefCount;
-						iilsa_dmac_unfurl_addParameter(&dm->expansion_steps, lnParamNumber);
+						iilsa_dmac_unfurl_addParameter(&dm->expansion_steps, lnParamNumber, lnWhitespaces, llPrefixCrLf, tbuilder);
 
 					} else {
 						// Append it as is as text
-						llPrefixCrLf = (compLast && compLast->line != comp->line);
-
-						// Whitespaces or inter-component spacing
-						if (llPrefixCrLf)		lnWhitespaces = comp->start;
-						else if (compLast)		lnWhitespaces = ((llPrefixCrLf) ? 0 : comp->start - (compLast->start + compLast->text.length));
-						else					lnWhitespaces = 0;
-
-						// Physically append
 						iilsa_dmac_unfurl_addText(&dm->expansion_steps, &comp->text, lnWhitespaces, llPrefixCrLf, tbuilder);
 					}
 
@@ -1165,7 +1166,7 @@ end_of_parameter:
 				if (param->start == param->end && param->start->text.length == text->length)
 				{
 					// Text match?
-					if (iDatum_compare(&param->start->text, text))
+					if (param->start->text.length == text->length && iDatum_compare(&param->start->text, text) == 0)
 					{
 						// This is it
 						if (paramOut)
@@ -1187,7 +1188,7 @@ end_of_parameter:
 		}
 
 		// Make sure we have a builder
-		bool iilsa_dmac_unfurl_validateBuilder(SBuilder** expansion_stepsRoot)
+		SBuilder* iilsa_dmac_unfurl_validateBuilder(SBuilder** expansion_stepsRoot)
 		{
 			// Make sure we have a pointer to builder
 			if (expansion_stepsRoot)
@@ -1197,27 +1198,32 @@ end_of_parameter:
 					iBuilder_createAndInitialize(expansion_stepsRoot, sizeof(SLsaExpansion) * 20);
 
 				// Indicate status
-				return((*expansion_stepsRoot != NULL));
+				return(*expansion_stepsRoot);
 			}
 
 			// If we get here, failure
-			return(false);
+			return(NULL);
 		}
 
 		// Called to add the parameter
-		SLsaExpansion* iilsa_dmac_unfurl_addParameter(SBuilder** expansion_stepsRoot, s32 tnParamNum)
+		SLsaExpansion* iilsa_dmac_unfurl_addParameter(SBuilder** expansion_stepsRoot, s32 tnParamNum, s32 tnWhitespaces, bool tlPrefixCrLf, SBuilder* tbuilder)
 		{
-			SLsaExpansion* exp;
+			SBuilder*		expansion_stepsBuilder;
+			SLsaExpansion*	exp;
 
+
+			// Store text to prefix before the parameter
+			if (tnWhitespaces != 0 || tlPrefixCrLf)
+				iilsa_dmac_unfurl_addText(expansion_stepsRoot, NULL, tnWhitespaces, tlPrefixCrLf, tbuilder);
 
 			// Make sure we have a builder
 			exp = NULL;
-			if (iilsa_dmac_unfurl_validateBuilder(expansion_stepsRoot))
+			if ((expansion_stepsBuilder = iilsa_dmac_unfurl_validateBuilder(expansion_stepsRoot)))
 			{
 				// Create a new entry
 				exp = (SLsaExpansion*)iBuilder_allocateBytes(*expansion_stepsRoot, sizeof(SLsaExpansion));
 				if (exp)
-					exp->nParamNum = tnParamNum;
+					exp->nParamNum = tnParamNum + 1;	// Store the parameter
 			}
 
 			// Indicate the expansion record
@@ -1233,10 +1239,9 @@ end_of_parameter:
 
 			// Make sure we have a builder
 			exp = NULL;
-			if (iilsa_dmac_unfurl_validateBuilder(expansion_stepsRoot))
+			if ((expansion_stepsBuilder = iilsa_dmac_unfurl_validateBuilder(expansion_stepsRoot)))
 			{
 				// Create a new entry
-				expansion_stepsBuilder = *expansion_stepsRoot;
 				exp = (SLsaExpansion*)iBuilder_allocateBytes(expansion_stepsBuilder, sizeof(SLsaExpansion));
 				if (exp)
 				{
@@ -1248,7 +1253,8 @@ end_of_parameter:
 					if (tnWhitespaces > 0)		iBuilder_appendWhitespaces(tbuilder, tnWhitespaces);
 
 					// Append the text
-					iBuilder_appendData(tbuilder, text);
+					if (text)
+						iBuilder_appendData(tbuilder, text);
 
 					// Copy to the expansion entry
 					iDatum_duplicate(&exp->text, tbuilder->data_cvp, (s32)tbuilder->populatedLength);

@@ -15,14 +15,21 @@
 define abc
 define abc		// Should generate an error
 define bcd test_bcd
-define cde(a,b) test_cde
+define cde(a,b) test_cde a, b
 
 define def {{
-	multi-line content
+	// multi-line content
 }}
 
 define efg(a,b) {{
-	more multi-line content
+	// multi-line content
+	mov		eax,a
+	add		eax,b
+	xor		edx,edx
+	mov		ebx,10
+	mul		ebx
+	mov		a,eax
+	mov		b,edx
 }}
 
 macro name1
@@ -30,6 +37,11 @@ macro name1
 || p2
 {{
 	// Content
+	mov		eax,p1
+	mov		ebx,p2
+	mul		ebx
+	mov		p1,eax
+	mov		p2,edx
 }}
 
 macro name2 {{

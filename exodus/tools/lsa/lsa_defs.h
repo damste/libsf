@@ -116,8 +116,8 @@ struct SLsaInclude;
 	bool				iilsa_dmac_add									(SLsaFile* file, SLine* line, SComp* compName, SBuilder* params, SComp* compStart, SComp* compEnd, bool tlIsDefine, SLsaDMac** dmOut = NULL);
 	void				ilsa_dmac_unfurl								(SLsaDMac* dm);
 	bool				iilsa_dmac_searchParams							(SBuilder* params, SDatum* text, s32& tnParamNumber, SLsaParam** paramOut);
-	bool				iilsa_dmac_unfurl_validateBuilder				(SBuilder** expansion_stepsRoot);
-	SLsaExpansion*		iilsa_dmac_unfurl_addParameter					(SBuilder** expansion_stepsRoot, s32 tnParamNum);
+	SBuilder*			iilsa_dmac_unfurl_validateBuilder				(SBuilder** expansion_stepsRoot);
+	SLsaExpansion*		iilsa_dmac_unfurl_addParameter					(SBuilder** expansion_stepsRoot, s32 tnParamNum, s32 tnWhitespaces, bool tlPrefixCrLf, SBuilder* tbuilder);
 	SLsaExpansion*		iilsa_dmac_unfurl_addText						(SBuilder** expansion_stepsRoot, SDatum* text, s32 tnWhitespaces, bool tlPrefixCrLf, SBuilder* tbuilder = NULL);
 
 	// Note, warning, error, and other forms of associated reporting

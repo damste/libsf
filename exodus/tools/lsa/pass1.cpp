@@ -120,12 +120,73 @@
 				//
 				iterate_end;
 
+//////////
+// Validating the unfurl process worked properly
+// BEGIN
+//////
+	// u32 lnJ;
+	// SBuilder* b;
+	// SLsaDMac* dm;
+	// SLsaExpansion* exp;
+	// s8 buffer[256];
+	// b = NULL;
+	// iBuilder_createAndInitialize(&b);
+	// // Report on what's there
+	// iterate(lnI, gsLasmDM_root, dm, SLsaDMac)
+	// //
+	// 
+	// 	// Double-space
+	// 	if (lnI != 0)
+	// 		iBuilder_appendCrLf(b);
+	// 
+	// 	// Add the name
+	// 	iBuilder_appendData(b, dm->name->text.data_cs8, dm->name->text.length);
+	// 	iBuilder_appendCrLf(b);
+	// 
+	// 	// Are there expansion steps?
+	// 	if (dm->expansion_steps && dm->expansion_steps->_data && dm->expansion_steps->populatedLength != 0)
+	// 	{
+	// 
+	// 		// Iterate through dm's expansion_steps
+	// 		iterate(lnJ, dm->expansion_steps, exp, SLsaExpansion)
+	// 		//
+	// 
+	// 			// Write this step
+	// 			if (exp->nParamNum != 0)
+	// 			{
+	// 				// Text first
+	// 				if (exp->text._data && exp->text.length > 0)
+	// 					iBuilder_appendData(b, exp->text.data_cs8, exp->text.length);
+	// 
+	// 				// Then parameter number
+	// 				sprintf(buffer, "{%d}", exp->nParamNum);
+	// 				iBuilder_appendData(b, buffer);
+	// 
+	// 			} else {
+	// 				// Text
+	// 				iBuilder_appendData(b, exp->text.data_cs8, exp->text.length);
+	// 			}
+	// 
+	// 		//
+	// 		iterate_end;
+	// 
+	// 	} else {
+	// 		// No content, just definition of the indicated token
+	// 		iBuilder_appendData(b, "[definition only]");
+	// 	}
+	// 	iBuilder_appendCrLf(b);
+	// 
+	// //
+	// iterate_end;
+	// iBuilder_asciiWriteOutFile(b, (cu8*)"c:\\temp\\dmac_out.txt");
+	// iBuilder_freeAndRelease(&b);
+//////
+// END
+//////////
 
 			//////////
 			// Step 2 -- Iterate through every line, applying macros where appropriate
 			//////
-// TODO:  working here
-working here
 				for (line = file->firstLine; line; line = line->ll.nextLine)
 				{
 					// All lines should have compiler info, but just to be sure...
