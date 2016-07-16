@@ -1225,7 +1225,7 @@
 // comps.h
 // BEGIN
 //////
-	void					iComps_lex_and_parse						(SLine* line, SAsciiCompSearcher* acs0 = NULL, SAsciiCompSearcher* acs1 = NULL, SAsciiCompSearcher* acs2 = NULL, SAsciiCompSearcher* acs3 = NULL);
+	void					iComps_lex_and_parse						(SLine* line, bool tlAllowAtSignVars, SAsciiCompSearcher* acs0 = NULL, SAsciiCompSearcher* acs1 = NULL, SAsciiCompSearcher* acs2 = NULL, SAsciiCompSearcher* acs3 = NULL);
 	void					iiVxb_free_liveCode							(SLiveCode* livecode);
 
 	SComp*					iComps_new									(SComp** compRoot, SComp* compHint, SComp* compNext, SComp* compPrev);
@@ -1271,6 +1271,7 @@
 	s32						iComps_truncate_atComments					(SLine* line);
 	void					iComps_combine_casks						(SLine* line);
 	void					iComps_fixup_naturalGroupings				(SLine* line);
+	void					iComps_fixup_atSignVars						(SLine* line);
 	s32						iComps_unescape_iCodes						(SComp* compStart, s32 tniCode1, s32 tniCode2, s32 tniCode3, s32 tniCodeEscape = _ICODE_BACKSLASH);
 	s32						iComps_copyToLine_untilEndOfLine			(SLine* line, SComp* compStart, SComp* compEnd, bool tlMakeReferences);
 	s32						iComps_copyTo_withCallback					(SLine* line, SComp* compStart, SCallback* cb, bool tlMakeReferences);

@@ -110,7 +110,7 @@
 			p0.cmdLine	= cmdLine;
 			p0.file		= file;
 			for (p0.line = p0.file->firstLine; p0.line; p0.line = p0.line->ll.nextLine)
-				iComps_lex_and_parse(p0.line, NULL, &cgcKeywordsLasm[0]);
+				iComps_lex_and_parse(p0.line, true, NULL, &cgcKeywordsLasm[0]);
 
 
 		//////////
@@ -256,7 +256,7 @@
 
 				// Lex and parse the include file content
 				for (line = p0->fileInclude->firstLine; line; line = line->ll.nextLine)
-					iComps_lex_and_parse(line, NULL, &cgcKeywordsLasm[0]);
+					iComps_lex_and_parse(line, true, NULL, &cgcKeywordsLasm[0]);
 
 				// Insert its lines after this #include line
 				lnLineCount = iLine_migrateLines(&p0->fileInclude->firstLine, p0->line);

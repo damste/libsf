@@ -787,6 +787,28 @@
 // Called to see if the status is completed
 //
 //////
+	bool ilsa_status_comp_isCompleted(SComp* comp)
+	{
+		// If there's no comp, it's obviously done :-)
+		if (!comp)
+			return(true);
+
+		// If it's marked completed, it's done
+		if ((comp->compStatus & _LSA_STATUS_COMPLETED) != 0)
+			return(true);
+
+		// If we get here, not done
+		return(false);
+	}
+
+
+
+
+//////////
+//
+// Called to see if the status is completed
+//
+//////
 	bool ilsa_status_line_isCompleted(SLine* line)
 	{
 		// If there's no line, it's obviously done :-)
@@ -1059,211 +1081,253 @@ end_of_parameter:
 
 
 
-	//////////
-	//
-	// Called to parse through the 
-	//
-	//////
-		void ilsa_dmac_unfurl(SLsaDMac* dm)
+//////////
+//
+// Called to parse through the define/macro structures to unfurl their coding
+// requirements into little segments which are either raw texts to copy, or
+// parameters
+//
+//////
+	void ilsa_dmac_unfurl(SLsaDMac* dm)
+	{
+		bool			llHasParams, llPrefixCrLf;
+		s32				lnWhitespaces, lnParamNumber;
+		u32				lnI;
+		SComp*			comp;
+		SComp*			compLast;
+		SBuilder*		tbuilder;
+		SLsaParam*		param;
+		s8				buffer[1024];
+
+
+		// Make sure our environment is sane
+		if (dm)
 		{
-			bool			llHasParams, llPrefixCrLf;
-			s32				lnWhitespaces, lnParamNumber;
-			u32				lnI;
-			SComp*			comp;
-			SComp*			compLast;
-			SBuilder*		tbuilder;
-			SLsaParam*		param;
-			s8				buffer[1024];
+			// Create a builder
+			tbuilder = NULL;
+			iBuilder_createAndInitialize(&tbuilder);
 
-
-			// Make sure our environment is sane
-			if (dm)
+			// If no parameters, store all as text
+			llHasParams = (dm->params && dm->params->populatedLength > 0);
+			
+			// Iterate through every component one by one
+			for (comp = dm->first, compLast = NULL; comp; comp = iComps_Nth(comp))
 			{
-				// Create a builder
-				tbuilder = NULL;
-				iBuilder_createAndInitialize(&tbuilder);
+				// Are we still on the same line?
+				llPrefixCrLf = (compLast && compLast->line != comp->line);
 
-				// If no parameters, store all as text
-				llHasParams = (dm->params && dm->params->populatedLength > 0);
-				
-				// Iterate through every component one by one
-				for (comp = dm->first, compLast = NULL; comp; comp = iComps_Nth(comp))
+				// Whitespaces or inter-component spacing
+				     if (llPrefixCrLf)		lnWhitespaces = comp->start;
+				else if (compLast)			lnWhitespaces = ((llPrefixCrLf) ? comp->start : comp->start - (compLast->start + compLast->text.length));
+				else						lnWhitespaces = 0;
+
+				// Search this component for a param name
+				if (llHasParams && iiComps_isAlphanumeric_by_iCode(comp->iCode) && dm->params && iilsa_dmac_searchParams(dm->params, &comp->text, lnParamNumber, &param))
 				{
-					// Are we still on the same line?
-					llPrefixCrLf = (compLast && compLast->line != comp->line);
+					// A single name, which means we use this parameter
+					++param->nRefCount;
+					iilsa_dmac_unfurl_addParameter(&dm->expansion_steps, lnParamNumber, lnWhitespaces, llPrefixCrLf, tbuilder);
 
-					// Whitespaces or inter-component spacing
-					     if (llPrefixCrLf)		lnWhitespaces = comp->start;
-					else if (compLast)			lnWhitespaces = ((llPrefixCrLf) ? comp->start : comp->start - (compLast->start + compLast->text.length));
-					else						lnWhitespaces = 0;
-
-					// Search this component for a param name
-					if (llHasParams && iiComps_isAlphanumeric_by_iCode(comp->iCode) && dm->params && iilsa_dmac_searchParams(dm->params, &comp->text, lnParamNumber, &param))
-					{
-						// A single name, which means we use this parameter
-						++param->nRefCount;
-						iilsa_dmac_unfurl_addParameter(&dm->expansion_steps, lnParamNumber, lnWhitespaces, llPrefixCrLf, tbuilder);
-
-					} else {
-						// Append it as is as text
-						iilsa_dmac_unfurl_addText(&dm->expansion_steps, &comp->text, lnWhitespaces, llPrefixCrLf, tbuilder);
-					}
-
-					// Was this component the last one for the blocK?
-					if (comp == dm->last)
-						break;	// Yes
-
-					// Prepare for the next component
-					compLast = comp;
+				} else {
+					// Append it as is as text
+					iilsa_dmac_unfurl_addText(&dm->expansion_steps, &comp->text, lnWhitespaces, llPrefixCrLf, tbuilder);
 				}
 
-				// Iterate through the params and make sure all were referenced
-				if (llHasParams)
-				{
-					// Check ref counts
-					iterate(lnI, dm->params, param, SLsaParam)
-					//
+				// Was this component the last one for the blocK?
+				if (comp == dm->last)
+					break;	// Yes
 
-						// If it's a pa
-						if (param->name._data && param->name.length > 0 && param->nRefCount == 0)
-						{
-							// Display unreferenced parameter
-							sprintf(buffer, "Warning %%d [%d,%d]: '%s' %%s, see [%d,%d] define/macro '%s' of %s", 
-											param->start->line->lineNumber, param->start->start,
-											param->name.data_s8,
-											dm->name->line->lineNumber, dm->name->start,
-											dm->name->text.data_s8,
-											dm->file->filename.data_s8);
-
-							// Report the warning
-							ilsa_warning(_LSA_WARNING_UNREFERENCED_PARAMETER, buffer, param->start->line, param->start, dm->file);
-						}
-
-					//
-					iterate_end;
-
-				}
-
-				// Release the builder
-				iBuilder_freeAndRelease(&tbuilder);
+				// Prepare for the next component
+				compLast = comp;
 			}
-		}
 
-		// Search for the indicated name
-		bool iilsa_dmac_searchParams(SBuilder* params, SDatum* text, s32& tnParamNumber, SLsaParam** paramOut)
-		{
-			s32			lnParamNumber;
-			u32			lnI;
-			SLsaParam*	param;
+			// Iterate through the params and make sure all were referenced
+			if (llHasParams)
+			{
+				// Check ref counts
+				iterate(lnI, dm->params, param, SLsaParam)
+				//
 
-
-			// Iterate through the parameters looking for this name
-			lnParamNumber = 0;
-			iterate_with_count(lnI, params, param, SLsaParam, lnParamNumber)
-			//
-
-				// Right size?
-				if (param->start == param->end && param->start->text.length == text->length)
-				{
-					// Text match?
-					if (param->start->text.length == text->length && iDatum_compare(&param->start->text, text) == 0)
+					// If it's a pa
+					if (param->name._data && param->name.length > 0 && param->nRefCount == 0)
 					{
-						// This is it
-						if (paramOut)
-							*paramOut = param;
+						// Display unreferenced parameter
+						sprintf(buffer, "Warning %%d [%d,%d]: '%s' %%s, see [%d,%d] define/macro '%s' of %s", 
+										param->start->line->lineNumber, param->start->start,
+										param->name.data_s8,
+										dm->name->line->lineNumber, dm->name->start,
+										dm->name->text.data_s8,
+										dm->file->filename.data_s8);
 
-						// Indicate the number
-						tnParamNumber = lnParamNumber;
-
-						// And success
-						return(true);
+						// Report the warning
+						ilsa_warning(_LSA_WARNING_UNREFERENCED_PARAMETER, buffer, param->start->line, param->start, dm->file);
 					}
-				}
 
-			//
-			iterate_end;
+				//
+				iterate_end;
 
-			// If we get here, not found
-			return(false);
+			}
+
+			// Release the builder
+			iBuilder_freeAndRelease(&tbuilder);
 		}
+	}
+
+	// Search for the indicated name
+	bool iilsa_dmac_searchParams(SBuilder* params, SDatum* text, s32& tnParamNumber, SLsaParam** paramOut)
+	{
+		s32			lnParamNumber;
+		u32			lnI;
+		SLsaParam*	param;
+
+
+		// Iterate through the parameters looking for this name
+		lnParamNumber = 0;
+		iterate_with_count(lnI, params, param, SLsaParam, lnParamNumber)
+		//
+
+			// Right size?
+			if (param->start == param->end && param->start->text.length == text->length)
+			{
+				// Text match?
+				if (param->start->text.length == text->length && iDatum_compare(&param->start->text, text) == 0)
+				{
+					// This is it
+					if (paramOut)
+						*paramOut = param;
+
+					// Indicate the number
+					tnParamNumber = lnParamNumber;
+
+					// And success
+					return(true);
+				}
+			}
+
+		//
+		iterate_end;
+
+		// If we get here, not found
+		return(false);
+	}
+
+	// Make sure we have a builder
+	SBuilder* iilsa_dmac_unfurl_validateBuilder(SBuilder** expansion_stepsRoot)
+	{
+		// Make sure we have a pointer to builder
+		if (expansion_stepsRoot)
+		{
+			// Default to 20 entries
+			if (!*expansion_stepsRoot)
+				iBuilder_createAndInitialize(expansion_stepsRoot, sizeof(SLsaExpansion) * 20);
+
+			// Indicate status
+			return(*expansion_stepsRoot);
+		}
+
+		// If we get here, failure
+		return(NULL);
+	}
+
+	// Called to add the parameter
+	SLsaExpansion* iilsa_dmac_unfurl_addParameter(SBuilder** expansion_stepsRoot, s32 tnParamNum, s32 tnWhitespaces, bool tlPrefixCrLf, SBuilder* tbuilder)
+	{
+		SBuilder*		expansion_stepsBuilder;
+		SLsaExpansion*	exp;
+
+
+		// Store text to prefix before the parameter
+		if (tnWhitespaces != 0 || tlPrefixCrLf)
+			iilsa_dmac_unfurl_addText(expansion_stepsRoot, NULL, tnWhitespaces, tlPrefixCrLf, tbuilder);
 
 		// Make sure we have a builder
-		SBuilder* iilsa_dmac_unfurl_validateBuilder(SBuilder** expansion_stepsRoot)
+		exp = NULL;
+		if ((expansion_stepsBuilder = iilsa_dmac_unfurl_validateBuilder(expansion_stepsRoot)))
 		{
-			// Make sure we have a pointer to builder
-			if (expansion_stepsRoot)
-			{
-				// Default to 20 entries
-				if (!*expansion_stepsRoot)
-					iBuilder_createAndInitialize(expansion_stepsRoot, sizeof(SLsaExpansion) * 20);
-
-				// Indicate status
-				return(*expansion_stepsRoot);
-			}
-
-			// If we get here, failure
-			return(NULL);
+			// Create a new entry
+			exp = (SLsaExpansion*)iBuilder_allocateBytes(*expansion_stepsRoot, sizeof(SLsaExpansion));
+			if (exp)
+				exp->nParamNum = tnParamNum + 1;	// Store the parameter
 		}
 
-		// Called to add the parameter
-		SLsaExpansion* iilsa_dmac_unfurl_addParameter(SBuilder** expansion_stepsRoot, s32 tnParamNum, s32 tnWhitespaces, bool tlPrefixCrLf, SBuilder* tbuilder)
+		// Indicate the expansion record
+		return(exp);
+	}
+
+	// Called to add text from a sequence of components
+	SLsaExpansion* iilsa_dmac_unfurl_addText(SBuilder** expansion_stepsRoot, SDatum* text, s32 tnWhitespaces, bool tlPrefixCrLf, SBuilder* tbuilder)
+	{
+		SBuilder*		expansion_stepsBuilder;
+		SLsaExpansion*	exp;
+
+
+		// Make sure we have a builder
+		exp = NULL;
+		if ((expansion_stepsBuilder = iilsa_dmac_unfurl_validateBuilder(expansion_stepsRoot)))
 		{
-			SBuilder*		expansion_stepsBuilder;
-			SLsaExpansion*	exp;
-
-
-			// Store text to prefix before the parameter
-			if (tnWhitespaces != 0 || tlPrefixCrLf)
-				iilsa_dmac_unfurl_addText(expansion_stepsRoot, NULL, tnWhitespaces, tlPrefixCrLf, tbuilder);
-
-			// Make sure we have a builder
-			exp = NULL;
-			if ((expansion_stepsBuilder = iilsa_dmac_unfurl_validateBuilder(expansion_stepsRoot)))
+			// Create a new entry
+			exp = (SLsaExpansion*)iBuilder_allocateBytes(expansion_stepsBuilder, sizeof(SLsaExpansion));
+			if (exp)
 			{
-				// Create a new entry
-				exp = (SLsaExpansion*)iBuilder_allocateBytes(*expansion_stepsRoot, sizeof(SLsaExpansion));
-				if (exp)
-					exp->nParamNum = tnParamNum + 1;	// Store the parameter
-			}
+				// Reset the builder
+				tbuilder->populatedLength = 0;
 
-			// Indicate the expansion record
-			return(exp);
+				// Prefix with anything?
+				if (tlPrefixCrLf)			iBuilder_appendCrLf(tbuilder);
+				if (tnWhitespaces > 0)		iBuilder_appendWhitespaces(tbuilder, tnWhitespaces);
+
+				// Append the text
+				if (text)
+					iBuilder_appendData(tbuilder, text);
+
+				// Copy to the expansion entry
+				iDatum_duplicate(&exp->text, tbuilder->data_cvp, (s32)tbuilder->populatedLength);
+			}
 		}
 
-		// Called to add text from a sequence of components
-		SLsaExpansion* iilsa_dmac_unfurl_addText(SBuilder** expansion_stepsRoot, SDatum* text, s32 tnWhitespaces, bool tlPrefixCrLf, SBuilder* tbuilder)
-		{
-			SBuilder*		expansion_stepsBuilder;
-			SLsaExpansion*	exp;
+		// Indicate the expansion record
+		return(exp);
+	}
 
 
-			// Make sure we have a builder
-			exp = NULL;
-			if ((expansion_stepsBuilder = iilsa_dmac_unfurl_validateBuilder(expansion_stepsRoot)))
+
+
+//////////
+//
+// Performs a search for the indicated macro
+//
+//////
+	bool ilsa_dmac_find_byComp(SComp* comp, SLsaDMac** dmOut)
+	{
+		u32			lnI;
+		SLsaDMac*	dm;
+
+
+		// Iterate through the global define/macro entries
+		iterate(lnI, gsLasmDM_root, dm, SLsaDMac)
+		//
+
+			// Is it the same length name?
+			if (dm->name->text.length == comp->text.length)
 			{
-				// Create a new entry
-				exp = (SLsaExpansion*)iBuilder_allocateBytes(expansion_stepsBuilder, sizeof(SLsaExpansion));
-				if (exp)
+				// Is it the token name?
+				if (iDatum_compare(&dm->name->text, &comp->text) == 0)
 				{
-					// Reset the builder
-					tbuilder->populatedLength = 0;
+					// This is the token
+					if (dmOut)
+						*dmOut = dm;
 
-					// Prefix with anything?
-					if (tlPrefixCrLf)			iBuilder_appendCrLf(tbuilder);
-					if (tnWhitespaces > 0)		iBuilder_appendWhitespaces(tbuilder, tnWhitespaces);
-
-					// Append the text
-					if (text)
-						iBuilder_appendData(tbuilder, text);
-
-					// Copy to the expansion entry
-					iDatum_duplicate(&exp->text, tbuilder->data_cvp, (s32)tbuilder->populatedLength);
+					// Indicate success
+					return(true);
 				}
 			}
 
-			// Indicate the expansion record
-			return(exp);
-		}
+		//
+		iterate_end;
+
+		// If we get here, not found
+		return(false);
+	}
 
 
 

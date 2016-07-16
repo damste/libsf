@@ -91,7 +91,7 @@
 // Basic compile
 //////
 	// If acs0 is not specified, then it uses cgcFundamentalSymbols
-	void iComps_lex_and_parse(SLine* line, SAsciiCompSearcher* acs0, SAsciiCompSearcher* acs1, SAsciiCompSearcher* acs2, SAsciiCompSearcher* acs3)
+	void iComps_lex_and_parse(SLine* line, bool tlAllowAtSignVars, SAsciiCompSearcher* acs0, SAsciiCompSearcher* acs1, SAsciiCompSearcher* acs2, SAsciiCompSearcher* acs3)
 	{
 		// Fixup if need be
 		if (!acs0)
@@ -102,6 +102,10 @@
 
 		// Convert raw source code to known character sequences
 		iComps_lex_line(acs0, line);
+
+		// Optional fixups before removing whitespaces
+		if (tlAllowAtSignVars)
+			iComps_fixup_atSignVars(line);				// Changes [@][text] to [@text]
 
 		// Standard fixups
 		iComps_remove_startEndComments(line);			// Remove /* comments */ and /+ comments +/
@@ -2386,6 +2390,43 @@ debug_break;
 				iComps_combine_adjacentAlphanumeric(line);
 				iComps_combine_adjacentNumeric(line);
 
+		}
+	}
+
+
+
+
+//////////
+//
+// Called to fixup scenarios where there is an at sign immediately before
+// alpha or alphanumeric content
+//
+//////
+	// Note:  This should be called before whitespaces are removed
+	void iComps_fixup_atSignVars(SLine* line)
+	{
+		SComp*	comp;
+		SComp*	compNext;
+
+
+		// Make sure our environment is sane
+		if (line && line->firstComp)
+		{
+			// Iterate through each component, joining as appropriate
+			for (comp = line->firstComp; comp && comp->ll.nextComp; comp = iComps_Nth_lineOnly(comp))
+			{
+				// Are they directly adjacent?
+				if (comp->iCode == _ICODE_AT_SIGN)
+				{
+					// Grab the next component
+					compNext = iComps_Nth_lineOnly(comp);
+					if (compNext->iCode == _ICODE_ALPHA || compNext->iCode == _ICODE_ALPHANUMERIC)
+					{
+						// Join these two to become a single [@whatever]
+						iComps_combineN(comp, 1, compNext->iCode, compNext->iCat, compNext->color);
+					}
+				}
+			}
 		}
 	}
 

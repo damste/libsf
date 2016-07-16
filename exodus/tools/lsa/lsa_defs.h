@@ -104,6 +104,7 @@ struct SLsaInclude;
 	// For component, line, or file statuses
 	void				ilsa_status_comp_add							(SComp* comp, u32 tnStatus);
 	void				ilsa_status_line_add							(SLine* line, u32 tnStatus, bool tlProcessComps);
+	bool				ilsa_status_comp_isCompleted					(SComp* comp);
 	bool				ilsa_status_line_isCompleted					(SLine* line);
 	void				ilsa_status_file_add							(SLsaFile* file, u32 tnStatus, bool tlProcessLines, bool tlProcessComps);
 
@@ -119,6 +120,7 @@ struct SLsaInclude;
 	SBuilder*			iilsa_dmac_unfurl_validateBuilder				(SBuilder** expansion_stepsRoot);
 	SLsaExpansion*		iilsa_dmac_unfurl_addParameter					(SBuilder** expansion_stepsRoot, s32 tnParamNum, s32 tnWhitespaces, bool tlPrefixCrLf, SBuilder* tbuilder);
 	SLsaExpansion*		iilsa_dmac_unfurl_addText						(SBuilder** expansion_stepsRoot, SDatum* text, s32 tnWhitespaces, bool tlPrefixCrLf, SBuilder* tbuilder = NULL);
+	bool				ilsa_dmac_find_byComp							(SComp* comp, SLsaDMac** dmOut);
 
 	// Note, warning, error, and other forms of associated reporting
 	void				ilsa_append_extraInfo							(s32 tnValueCode,	cs8* valueTextTemplate, cs8* tcValueText, SLine* line, SComp* comp, SLsaFile* file, s32 tnValueBaseAddto, s32 tn_eiType);
