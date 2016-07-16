@@ -347,14 +347,29 @@
 	file = (SLsaFile*)includeFiles->buffer;
 	for (line = file->firstLine; line; line = line->ll.nextLine)
 	{
-// 		if (!ilsa_status_line_isCompleted(line))
-// 		{
+		// Uncompleted lines
+		if (!ilsa_status_line_isCompleted(line))
+		{
 			iBuilder_appendData(b, line->sourceCode.data_u8, line->sourceCode.length);
 			iBuilder_appendCrLf(b);
-// 		}
+		}
 	}
-	iBuilder_asciiWriteOutFile(b, (cu8*)"c:\\temp\\out.txt");
+	iBuilder_asciiWriteOutFile(b, (cu8*)"c:\\temp\\out_undone.txt");
+
+	// Do the completed lines
+	b->populatedLength = 0;
+	for (line = file->firstLine; line; line = line->ll.nextLine)
+	{
+		// Completed lines
+		if (ilsa_status_line_isCompleted(line))
+		{
+			iBuilder_appendData(b, line->sourceCode.data_u8, line->sourceCode.length);
+			iBuilder_appendCrLf(b);
+		}
+	}
+	iBuilder_asciiWriteOutFile(b, (cu8*)"c:\\temp\\out_done.txt");
 	iBuilder_freeAndRelease(&b);
+	debug_break;
 //////
 // END
 //////////

@@ -641,9 +641,10 @@
 //////
 	bool iComps_lex_comps(SAsciiCompSearcher* tacsRoot, SComp* comp, bool tlDescendIntoFirstCombineds)
 	{
-		bool					llResult;
-		s32						lnTacsLength;
-		SAsciiCompSearcher*		tacs;
+		bool				llResult;
+		s32					lnTacsLength;
+		SComp*				compNext;
+		SAsciiCompSearcher*	tacs;
 
 
 		// Make sure the environment is sane
@@ -658,20 +659,35 @@
 				for (/* tacs is initialize above */; tacs->length != 0; tacs++)
 				{
 					// Grab the normalized length
-					lnTacsLength = abs(tacs->length);
+					lnTacsLength = ((tacs->repeats <= 1) ? abs(tacs->length) : strlen((cs8*)tacs->partialRepeatContent));
 
 					// We only test if they're the same length
-					if (lnTacsLength == comp->text.length || (tacs->repeats && lnTacsLength <= comp->text.length))
+					if (lnTacsLength == comp->text.length || (tacs->repeats && ((tacs->repeats <= 1) ? (lnTacsLength <= comp->text.length) : (lnTacsLength <= strlen((cs8*)tacs->partialRepeatContent)))))
 					{
 						// We only test if this item is not the first item on line, or if must be the first
 						// item on the line, then this component must be the first component on the line.  Simple, yes? :-)
 						if (!tacs->firstOnLine || !comp->ll.prev || iComps_areAllPrecedingCompsWhitespaces(comp))
 						{
 							// Physically conduct the exact comparison
-							if (iComps_translateToOthers_testIfMatch(tacs->keyword_cu8, comp->text.data_u8, tacs->length) == 0)
+							if (iComps_translateToOthers_testIfMatch(((tacs->repeats <= 1) ? tacs->keyword_cu8 : tacs->partialRepeatContent), comp->text.data_u8, lnTacsLength) == 0)
 							{
 								// This is a match
-								llResult			= true;
+								llResult = true;
+
+								// Look for repeating forms in the case where the iCode is the same, and the repeating portion we're looking for may be smaller
+								if (tacs->repeats > 1)
+								{
+									// Combine repeating forms of the current comp->iCode
+									compNext = iComps_Nth(comp);
+									while (compNext && compNext->iCode == comp->iCode)
+									{
+										// Combine these two
+										iComps_combineN(comp, 2, comp->iCode, comp->iCat, comp->color);
+
+										// Grab the (now) next one
+										compNext = iComps_Nth(comp);
+									}
+								}
 
 								// Convert it, translate it, whatever you want to call it, just make it be the new code, per the user's request, got it? :-)
 								comp->iCode			= tacs->iCode;
@@ -2278,19 +2294,18 @@ debug_break;
 	s32 iComps_truncate_atComments(SLine* line)
 	{
 		u32		lnMigrated;
-// 		SComp*	comp;
+		SComp*	comp;
 
 
 		// Make sure our environment is sane
 		lnMigrated = 0;
-#ifdef _SHOW_REFACTOR_ERRORS
-		if (line && line->compilerInfo)
+		if (line)
 		{
 			// Iterate through all looking for _ICODE_COMMENT
-			for (comp = line->compilerInfo->firstComp; comp; comp = comp->ll.nextComp)
+			for (comp = line->firstComp; comp; comp = comp->ll.nextComp)
 			{
 				// Is this a comment?
-				if (comp->iCode == _ICODE_COMMENT)
+				if (comp->iCode == _ICODE_COMMENT || comp->iCode == _ICODE_LINE_COMMENT)
 				{
 					// Migrate to the components after into the leading comment
 					while (comp->ll.nextComp)
@@ -2302,15 +2317,11 @@ debug_break;
 						++lnMigrated;
 					}
 
-					// Migrate the (now single) comment
-					comp = iComps_migrate(&line->compilerInfo->firstComp, &line->compilerInfo->firstComp->firstComment, comp);
-
 					// All done
 					break;
 				}
 			}
 		}
-#endif
 
 		// Indicate how many we migrated
 		return(lnMigrated);
@@ -2423,7 +2434,7 @@ debug_break;
 					if (compNext->iCode == _ICODE_ALPHA || compNext->iCode == _ICODE_ALPHANUMERIC)
 					{
 						// Join these two to become a single [@whatever]
-						iComps_combineN(comp, 1, compNext->iCode, compNext->iCat, compNext->color);
+						iComps_combineN(comp, 2, compNext->iCode, compNext->iCat, compNext->color);
 					}
 				}
 			}
