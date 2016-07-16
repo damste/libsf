@@ -1,4 +1,4 @@
-// init16.asp
+// init16.lasp
 //
 // Exodus initialization routines
 //
@@ -297,7 +297,7 @@ function setup_pmode_variables    NEAR
 ;; Setup all the GDT entries to point to a NULL data descriptor
     xor     ax,ax
     mov     ds,ax
-    mov     esi,_sGDT_base                                          // GDT is defined in common\equates.asp
+    mov     esi,_sGDT_base                                          // GDT is defined in common\equates.lasp
     mov     cx,_sGDT_init                                           // But, only the first 200 entries are initialized at bootup
     push    esi
     repeat

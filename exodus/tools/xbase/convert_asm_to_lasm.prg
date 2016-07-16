@@ -151,7 +151,7 @@ SET STEP ON
 							lcThisParam	= STRTRAN(GETWORDNUM(lcParams, lnJ), ",", SPACE(0))
 							lcThisParam = IIF(":REQ" $ UPPER(lcThisParam), ;
 												LEFT(lcThisParam, LEN(lcThisParam) - 4), ;
-												"optional " + lcThisParam)
+												lcThisParam + " [|optional|]")
 							lcAsm = lcAsm + "|| " + lcThisParam + CHR(13) + CHR(10)
 						NEXT
 					ENDIF
@@ -249,6 +249,9 @@ SET STEP ON
 	IF FILE(lcFileOut)
 		ERASE (lcFileOut)
 	ENDIF
+	lcAsm = STRTRAN(lcAsm, '"\exodus\', '"\libsf\exodus\')
+	lcAsm = STRTRAN(lcAsm, ".asm", ".lasm")
+	lcAsm = STRTRAN(lcAsm, ".asp", ".lasp")
 	STRTOFILE(lcAsm, lcFileOut)
 	SET SAFETY ON
 

@@ -1,4 +1,4 @@
-// vga.asm
+// vga.lasm
 //
 // +-------------------+
 // | standard VGA/Mono |
@@ -11,9 +11,9 @@
 
 // standard VGA/Mono Driver
 
-            include "\exodus\source\common\equates.asp"
-include "\exodus\source\common\macros.asp"
-include "\exodus\source\common\objects.asp"
+            include "\libsf\exodus\source\common\equates.lasp"
+include "\libsf\exodus\source\common\macros.lasp"
+include "\libsf\exodus\source\common\objects.lasp"
 
 MONO_CRTC_INDEX           = 3b4h
 MONO_CRTC_DATA            = 3b5h
@@ -159,9 +159,9 @@ dd offset requestor
 
 
 
-    include "vga.asp"                                                 // VGA algorithms
-    include "mono.asp"                                                // Monochrome algorithms
-    include "global.asp"                                              // Global algorithms
+    include "vga.lasp"                                                 // VGA algorithms
+    include "mono.lasp"                                                // Monochrome algorithms
+    include "global.lasp"                                              // Global algorithms
 
 
 

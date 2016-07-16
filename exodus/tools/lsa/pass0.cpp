@@ -114,13 +114,7 @@
 				// Initial lex and parse
 				iComps_lex_and_parse(p0.line, true, NULL, &cgcKeywordsLasm[0]);
 
-if (_memicmp(p0.line->sourceCode.data_s8, ";;", 2) == 0)
-	debug_nop;
-
-if (iDatum_contains(&p0.line->sourceCode, ";;") >= 0)
-	debug_nop;
-
-				// Remove any new comments
+				// Remove any new comments converted from double-semicolon forms
 				iComps_truncate_atComments(p0.line);
 			}
 

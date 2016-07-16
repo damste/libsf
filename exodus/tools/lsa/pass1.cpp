@@ -159,7 +159,7 @@
 						iBuilder_appendData(b, exp->text.data_cs8, exp->text.length);
 
 					// Then parameter number
-					sprintf(buffer, "{%d}", exp->nParamNum);
+					sprintf(buffer, "{%s}", exp->name.data_cs8);
 					iBuilder_appendData(b, buffer);
 
 				} else {

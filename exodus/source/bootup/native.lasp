@@ -1,4 +1,4 @@
-// native.asp
+// native.lasp
 //
 // Exodus Native Primatives declaration
 // December 24, 2000
@@ -998,7 +998,7 @@ function invUpdate_required_primatives    NEAR
 function default_interrupt_handler32
 {
 // This is the default interrupt handler
-// All IDT entries are initially setup to this in init16.asp
+// All IDT entries are initially setup to this in init16.lasp
 // invSetup_native_primatives updates those that are relevant to
     push    eax
     mov     al,20h

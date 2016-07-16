@@ -1,4 +1,4 @@
-// disk.asm
+// disk.lasm
 //
 // +------------------------+
 // | Exodus Disk Primatives |
@@ -13,8 +13,8 @@
 
     
     
-include "\exodus\source\common\equates.asp"
-include "\exodus\source\common\macros.asp"
+include "\libsf\exodus\source\common\equates.lasp"
+include "\libsf\exodus\source\common\macros.lasp"
 
 code text32
 | at offset 0

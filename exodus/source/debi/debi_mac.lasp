@@ -1,4 +1,4 @@
-// debi_mac.asp
+// debi_mac.lasp
 //
 // Low-Level Debi Debugger defined macros
 //
@@ -33,7 +33,7 @@ macro @End
 ;;
 ;;-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-// * Note:  The constants are defined in debi_eq.asp
+// * Note:  The constants are defined in debi_eq.lasp
 macro @DrawWindow
 || name
 {{
@@ -137,7 +137,7 @@ macro @DisplayEBP_relative
 // Used to dipslay a dword value.  Note that the type argument specifies what kind of EBP relative item it is.
 //
 //      TYPE - indicates what type of variable is being displayed
-// EBPOFFSET - offset relative to the current EBP (Refer to DEBI_debug in debi.asm for information on stack arrangement)
+// EBPOFFSET - offset relative to the current EBP (Refer to DEBI_debug in debi.lasm for information on stack arrangement)
 //   LOFFSET - offset in local memory where the comparison is made (to highlight if it has changed)
 //         X - X coordinate (in characters) relative to upper-left corner of window
 //         Y - Y coordinate (in characters) relative to upper-left corner of window
@@ -163,7 +163,7 @@ macro @DisplayEBP_through_EBP_relative
 // Used to dipslay a dword value.  Note that the type argument specifies what kind of EBP relative item it is.
 //
 //      TYPE - indicates what type of variable is being displayed
-// EBPOFFSET - offset relative to the EBP derived from the stack (Refer to DEBI_debug() in debi.asm for info on stack arrangement)
+// EBPOFFSET - offset relative to the EBP derived from the stack (Refer to DEBI_debug() in debi.lasm for info on stack arrangement)
 //   LOFFSET - offset in local memory where the comparison is made (to highlight if it has changed)
 //         X - X coordinate (in characters) relative to upper-left corner of window
 //         Y - Y coordinate (in characters) relative to upper-left corner of window
@@ -189,7 +189,7 @@ macro @DisplayESP_through_EBP_relative
 // Used to dipslay a dword value.  Note that the type argument specifies what kind of EBP relative item it is.
 //
 //      TYPE - indicates what type of variable is being displayed
-// EBPOFFSET - offset relative to the EBP derived from the stack (Refer to DEBI_debug() in debi.asm for info on stack arrangement)
+// EBPOFFSET - offset relative to the EBP derived from the stack (Refer to DEBI_debug() in debi.lasm for info on stack arrangement)
 //   LOFFSET - offset in local memory where the comparison is made (to highlight if it has changed)
 //         X - X coordinate (in characters) relative to upper-left corner of window
 //         Y - Y coordinate (in characters) relative to upper-left corner of window
@@ -216,7 +216,7 @@ macro @DisplayEBP_flag
 // Used to display a flag.  Note that the EBP reference is an offset on the stack, the use_bit represents the bit pattern for the flag
 //
 //      TYPE - indicates what type of variable is being displayed
-// EBPOFFSET - offset relative to the current EBP (Refer to DEBI_debug in debi.asm for information on stack arrangement)
+// EBPOFFSET - offset relative to the current EBP (Refer to DEBI_debug in debi.lasm for information on stack arrangement)
 //   LOFFSET - offset in local memory where the comparison is made (to highlight if it has changed)
 //   USE_BIT - Indicates which bit in the DWORD quantity is to be examined
 //         X - X coordinate (in characters) relative to upper-left corner of window
@@ -283,7 +283,7 @@ macro @Immediate
 || x2
 || y2
 || func
-|| optional datum
+|| datum [|optional|]
 {{
 // Used when any click is recognized on these coordinates
 //
@@ -318,9 +318,9 @@ macro @Any_click
 || x2
 || y2
 || func
-|| optional data1
-|| optional data2
-|| optional data3
+|| data1 [|optional|]
+|| data2 [|optional|]
+|| data3 [|optional|]
 {{
 // Used when any click is recognized on these coordinates
 //
@@ -366,9 +366,9 @@ macro @Left_single_click
 || x2
 || y2
 || func
-|| optional data1
-|| optional data2
-|| optional data3
+|| data1 [|optional|]
+|| data2 [|optional|]
+|| data3 [|optional|]
 {{
 // Used when a left single-click is recognized on these coordinates
     u8  _LEFT_SINGLE_CLICK          // +0
@@ -407,9 +407,9 @@ macro @Left_double_click
 || x2
 || y2
 || func
-|| optional data1
-|| optional data2
-|| optional data3
+|| data1 [|optional|]
+|| data2 [|optional|]
+|| data3 [|optional|]
 {{
 // Used when a left double-click is recognized on these coordinates
     u8  _LEFT_DOUBLE_CLICK          // +0
@@ -448,9 +448,9 @@ macro @Right_single_click
 || x2
 || y2
 || func
-|| optional data1
-|| optional data2
-|| optional data3
+|| data1 [|optional|]
+|| data2 [|optional|]
+|| data3 [|optional|]
 {{
 // Used when a right single-click is recognized on these coordinates
     u8  _RIGHT_SINGLE_CLICK         // +0
@@ -489,9 +489,9 @@ macro @Right_double_click
 || x2
 || y2
 || func
-|| optional data1
-|| optional data2
-|| optional data3
+|| data1 [|optional|]
+|| data2 [|optional|]
+|| data3 [|optional|]
 {{
 // Used when a right double-click is recognized on these coordinates
     u8  _RIGHT_DOUBLE_CLICK         // +0
@@ -530,9 +530,9 @@ macro @Both_single_click
 || x2
 || y2
 || func
-|| optional data1
-|| optional data2
-|| optional data3
+|| data1 [|optional|]
+|| data2 [|optional|]
+|| data3 [|optional|]
 {{
 // Used when a both single-click is recognized on these coordinates
     u8  _BOTH_SINGLE_CLICK          // +0
@@ -571,9 +571,9 @@ macro @Both_double_click
 || x2
 || y2
 || func
-|| optional data1
-|| optional data2
-|| optional data3
+|| data1 [|optional|]
+|| data2 [|optional|]
+|| data3 [|optional|]
 {{
 // Used when a both double-click is recognized on these coordinates
     u8  _BOTH_DOUBLE_CLICK          // +0
@@ -612,9 +612,9 @@ macro @Left_drag_start
 || x2
 || y2
 || func
-|| optional data1
-|| optional data2
-|| optional data3
+|| data1 [|optional|]
+|| data2 [|optional|]
+|| data3 [|optional|]
 {{
 // Used when a left-drag is started in these coordinates
     u8  _LEFT_DRAG_START            // +0
@@ -653,9 +653,9 @@ macro @Right_drag_start
 || x2
 || y2
 || func
-|| optional data1
-|| optional data2
-|| optional data3
+|| data1 [|optional|]
+|| data2 [|optional|]
+|| data3 [|optional|]
 {{
 // Used when a right-drag is started in these coordinates
     u8  _RIGHT_DRAG_START           // +0
@@ -694,9 +694,9 @@ macro @Left_drag_stop
 || x2
 || y2
 || func
-|| optional data1
-|| optional data2
-|| optional data3
+|| data1 [|optional|]
+|| data2 [|optional|]
+|| data3 [|optional|]
 {{
 // Used when a left-drag is stopped if it started in these coordinates
     u8  _LEFT_DRAG_STOP             // +0
@@ -735,9 +735,9 @@ macro @Right_drag_stop
 || x2
 || y2
 || func
-|| optional data1
-|| optional data2
-|| optional data3
+|| data1 [|optional|]
+|| data2 [|optional|]
+|| data3 [|optional|]
 {{
 // Used when a right-drag is stopped if it was started in these coordinates
     u8  _RIGHT_DRAG_STOP            // +0
@@ -777,7 +777,7 @@ macro @Hover
 || y2
 || loffset
 || func
-|| optional datum
+|| datum [|optional|]
 {{
 // Used when the mouse is hovering over these coordinates
     u8  _HOVER                      // +0
@@ -805,7 +805,7 @@ macro @Edit
 || y2
 || loffset
 || type
-|| optional datum
+|| datum [|optional|]
 {{
 // Used when a left-click is recognized on an item that can be edited
     u8  _EDIT                       // +0

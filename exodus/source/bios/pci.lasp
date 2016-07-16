@@ -1,4 +1,4 @@
-// pci.asp
+// pci.lasp
 //
 // Exodus Peripheral Controller Interconnect routines
 //
@@ -81,7 +81,7 @@ function iPCI_verbalize_device_type
 // Upon exit:    ds:[esi] - far ptr to NULL-terminated string representing device classification
 //               ds:[edi] - far ptr to NULL-termianted string representing device sub-classification
 //
-// * For information about these class_codes and sub_class_codes, look to data.asp.  Contained within is a fixed structure which
+// * For information about these class_codes and sub_class_codes, look to data.lasp.  Contained within is a fixed structure which
 //   is what these little .WHILE ... .ENDW loops are parsing.
 //
     push    eax
@@ -335,4 +335,4 @@ function initialize_pci
     ret
 }
 
-    include "pci.asp"
+    include "pci.lasp"

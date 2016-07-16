@@ -189,7 +189,10 @@ struct SLsaBlock;
 	struct SLsaExpansion
 	{
 		s32			nParamNum;							// If nonzero, use the parameter number
-		SDatum		text;								// Otherwise, copy this text
+		SDatum		name;								// The given parameter name in the define/macro definition
+
+		// Text for this portion (if nonzero, this text precedes the parameter)
+		SDatum		text;								// Raw text to copy into the output for assembly during compilation
 	};
 
 	// define/macro statements (pass-0, see gsLasmDM_root)

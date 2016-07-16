@@ -1,4 +1,4 @@
-// exodus.asm
+// exodus.lasm
 //
 // +--------------------------+
 // | Exodus Top-Level Program |
@@ -12,9 +12,9 @@
 
     
     
-include "\exodus\source\common\equates.asp"
-include "\exodus\source\common\objects.asp"
-include "ex_eq.asp"
+include "\libsf\exodus\source\common\equates.lasp"
+include "\libsf\exodus\source\common\objects.lasp"
+include "ex_eq.lasp"
 
 code text32
 | at offset 0
@@ -257,7 +257,7 @@ dd  offset requestor
 
 
 // DATA relating to Exodus objects
-    include "ex_data.asp"
+    include "ex_data.lasp"
 
 
 // DATA

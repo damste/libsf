@@ -1,4 +1,4 @@
-// bios.asm
+// bios.lasm
 //
 // +---------------+
 // | standard BIOS |
@@ -11,13 +11,13 @@
 
     
     
-include "\exodus\source\common\equates.asp"
-include "\exodus\source\common\macros.asp"
-include "\exodus\source\common\errors.asp"
-include "\exodus\source\common\objects.asp"
-include "bios_eq.asp"
-include "task_eq.asp"
-include "obj_eq.asp"
+include "\libsf\exodus\source\common\equates.lasp"
+include "\libsf\exodus\source\common\macros.lasp"
+include "\libsf\exodus\source\common\errors.lasp"
+include "\libsf\exodus\source\common\objects.lasp"
+include "bios_eq.lasp"
+include "task_eq.lasp"
+include "obj_eq.lasp"
 
 
 code text32
@@ -585,9 +585,9 @@ dd  offset requestor
 
 
 
-    include "timer.asp"
-    include "tasks.asp"
-    include "objects.asp"
+    include "timer.lasp"
+    include "tasks.lasp"
+    include "objects.lasp"
 
 
 

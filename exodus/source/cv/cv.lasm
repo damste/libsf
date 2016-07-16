@@ -1,4 +1,4 @@
-// cv.asm
+// cv.lasm
 //
 // +-----------------+
 // | CodeView Reader |
@@ -12,9 +12,9 @@
 
     
     
-include "\exodus\source\common\keylist.asp"
-include "\exodus\source\common\equates.asp"
-include "\exodus\source\common\macros.asp"
+include "\libsf\exodus\source\common\keylist.lasp"
+include "\libsf\exodus\source\common\equates.lasp"
+include "\libsf\exodus\source\common\macros.lasp"
 
 
 code text32

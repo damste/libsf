@@ -1,4 +1,4 @@
-// tasks.asp
+// tasks.lasp
 //
 // Exodus BIOS related task functions
 //
@@ -99,7 +99,7 @@
 
     // iTASK_mouse_interface()
     // invTASK_adjust_mouse_coordinates()
-    include "mouse.asp"
+    include "mouse.lasp"
 
 
 

@@ -1,4 +1,4 @@
-// asm.asp
+// asm.lasp
 //
 // x86 assembly algorithms
 //
@@ -7,8 +7,8 @@
 
 
 // Data and macros
-//INCLUDE \exodus\source\debi\asm_data.asp
-// These are included in disasm.asp
+//INCLUDE \exodus\source\debi\asm_data.lasp
+// These are included in disasm.lasp
 
 
 

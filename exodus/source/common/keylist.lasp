@@ -1,4 +1,4 @@
-// keylist.asp
+// keylist.lasp
 
 f1                        = 03b00h
 f2                        = 03c00h

@@ -1,4 +1,4 @@
-// debi.asm
+// debi.lasm
 //
 // +---------------+
 // | Debi Debugger |
@@ -28,8 +28,8 @@
 include "\libsf\exodus\source\common\keylist.lasp"
 include "\libsf\exodus\source\common\equates.lasp"
 include "\libsf\exodus\source\common\macros.lasp"
-include "debi_mac.lasp"     // Macros used for DEBI
-include "debi_eq.lasp"      // Equates used for DEBI
+include "debi_mac.lasp"                                                // Macros used for DEBI
+include "debi_eq.lasp"                                                 // Equates used for DEBI
 
     
 code text32
@@ -10016,11 +10016,11 @@ dd  offset requestor
     // invDEBI_cfsca_1_click()
     // invDEBI_cfsca_2_click()
     // invDEBI_cfsca_3_click()
-    include "cfsca.asp"
+    include "cfsca.lasp"
 
 
     // Algorithms still being worked on (or slated to be completed at some point in the future)
-    include "todo.asp"
+    include "todo.lasp"
 
 
     // iDEBI_open_file()
@@ -10028,7 +10028,7 @@ dd  offset requestor
     // iDEBI_read_file()
     // iDEBI_write_file()
     // iDEBI_search_file()
-    include "disk.asp"
+    include "disk.lasp"
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 //
 // END - AAAAA - INCLUDE files
@@ -10311,7 +10311,7 @@ dd  offset requestor
 
 
 
-    include "debidata.asp"
+    include "debidata.lasp"
 
 // DATA
     driver_name                             u8  "Low-Level Debi Debugger",255,"(source:debi.dbg)",0
@@ -10831,7 +10831,7 @@ dd  offset requestor
                                             u8  09h,09h,09h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h,10h
                                             u8  0,0,15h     // A dark shade of blue for the background
 
-    include "debilogo.asp"
+    include "debilogo.lasp"
 
  end_of_required_data:
 

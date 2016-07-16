@@ -1,4 +1,4 @@
-// fdc.asp
+// fdc.lasp
 //
 // This routines handles all low-level FDC routines
 //
@@ -1150,5 +1150,5 @@ function initialize_disk_drives
         ret
     }
 
-    include "disk.asp"
-    include "fdc.asp"
+    include "disk.lasp"
+    include "fdc.lasp"

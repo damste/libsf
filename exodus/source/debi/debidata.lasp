@@ -1,4 +1,4 @@
-// debidata.asp
+// debidata.lasp
 //
 // Data used by DEBI
 //
@@ -224,7 +224,7 @@ DEBI_a_window               u8  "ษอ Descriptor …อออออออออออออออออออออออออออป",
                             u8  "                                            บ",0
                             u8  255
 
-// * Note:  Refer to debi_mac.asp for information on these macros.  Basically they correctly arrange the variables in the required
+// * Note:  Refer to debi_mac.lasp for information on these macros.  Basically they correctly arrange the variables in the required
 //          sizes (bytes, words, dwords) and expand the X & Y coordinates to x*8 and y*8.
 
                             u16 45 * FONT_X

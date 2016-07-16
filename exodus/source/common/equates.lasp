@@ -1,4 +1,4 @@
-// equates.asp
+// equates.lasp
 //
 // Exodus constants.  These are used at various places.
 // This file provides a common area to modify constant values, rather than sifting through programs, etc.
@@ -6,7 +6,7 @@
 
 
 
-include "x86_eq.asp"
+include "x86_eq.lasp"
 
 
 // -š-„-„-„-„-„-„-„-„-„-„-„-„-„Â+

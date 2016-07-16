@@ -1,4 +1,4 @@
-// bootup.asm
+// bootup.lasm
 //
 // Exodus BOOTUP.COM
 //
@@ -8,10 +8,10 @@
     
     //_DEBI     = 0
 
-include "../source/common/macros.asp"                         // Macros used throughout Exodus
-include "../source/common/equates.asp"                        // Constants used to access memory variables, etc
-include "../source/common/errors.asp"                         // Error codes used throughout
-include "equates.asp"
+include "../source/common/macros.lasp"                         // Macros used throughout Exodus
+include "../source/common/equates.lasp"                        // Constants used to access memory variables, etc
+include "../source/common/errors.lasp"                         // Error codes used throughout
+include "equates.lasp"
 
 ;;
 ;;  -º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º
@@ -65,7 +65,7 @@ code text
     shl     eax,4
     add     eax,esi
     mov     cs:boot_parameter_block,eax                             // Linear offset into memory where boot_parameter_block starts
-                                                                    // * Refer to source\boot.asm for boot_parameter_block info
+                                                                    // * Refer to source\boot.lasm for boot_parameter_block info
 
 ;; Setup the data segments for this program
     mov     ax,cs
@@ -170,8 +170,8 @@ code text
 ;;
 ;; Note:  Each of these include files contains only 16-bit code and/or data.  However, some of them can create 32-bit items.
 ;;
-    include "init16.asp"
-    include "data16.asp"
+    include "init16.lasp"
+    include "data16.lasp"
 
 end_of_16_bit_segment:
 }
@@ -221,18 +221,18 @@ first_pmode_instruction:                                            // Setup seg
 
 
    // Setup some of the required memory blocks
-    invSetup_memory_blocks()                                  // init32.asp
+    invSetup_memory_blocks()                                  // init32.lasp
 
 
    // Setup the Exodus native primatives
-    invSetup_native_primatives()                              // native.asp
+    invSetup_native_primatives()                              // native.lasp
 
   // Note, this is temporarily done manually until the iFDC drivers are installed
     mov     al,001100b
     mov     edx,03f2h
     out     dx,al
    // Parse the exodus.ini file
-    invFind_Exodus_ini()                                      // ini.asp
+    invFind_Exodus_ini()                                      // ini.lasp
     invDetermine_Exodus_ini_ownership()                       //
 
 
@@ -271,11 +271,11 @@ first_pmode_instruction:                                            // Setup seg
 ;; Note:  Each of these include files contains only 32-bit code and/or data
 ;;
 
-    include "init32.asp"                                              // Baseline initialization routines
-    include "data32.asp"
-    include "native.asp"                                              // Native primatives
-    include "ini.asp"
-    include "req.asp"                                                 // requestor()
+    include "init32.lasp"                                              // Baseline initialization routines
+    include "data32.lasp"
+    include "native.lasp"                                              // Native primatives
+    include "ini.lasp"
+    include "req.lasp"                                                 // requestor()
 
 end_of_32_bit_segment:
 }

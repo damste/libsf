@@ -1,4 +1,4 @@
-// errors.asp
+// errors.lasp
 
 // FDC error codes
 _FDC_INVALID_PARAMETERS           = 1

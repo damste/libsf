@@ -1,4 +1,4 @@
-// disasm.asp
+// disasm.lasp
 //
 // x86 disassembly algorithms
 //
@@ -14,7 +14,7 @@
 
 
 // Data and macros
-include "dis_data.asp"
+include "dis_data.lasp"
 
 
 x86_disassemble:

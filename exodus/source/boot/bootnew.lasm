@@ -1,4 +1,4 @@
-// boot.asm
+// boot.lasm
 //
 // Exodus - 512 byte boot record for floppy disk
 //          * Note:  It is known that this disk is bootable, the only error we'll have to report is missing "Exodus Boot Program"
@@ -9,7 +9,7 @@
     
     //_XDEBUG          = 1
 
-include "../source/common/equates.asp"
+include "../source/common/equates.lasp"
 
 // Used for local variables
 _START_TRACK      = -11
@@ -71,7 +71,7 @@ code main
   // [bp-22] - --Nuserved
   // [bp-24] - --Nuserved
   //
-  // For boot.asm's internal use:
+  // For boot.lasm's internal use:
   // [bp-28] - dword - _LOAD_OFFSET, offset into memory where we're loading data from disk
   // [bp-32] - dword - _BYTES_LOADED, bytes loaded so far
   //  others - --Nuserved
@@ -121,7 +121,7 @@ code main
 
 //-[ loop ]------
 // Iterating through es:[di] to read DT data
-// Note:  See "BOOT DT STRUCTURE" in equates.asp for information on this layout
+// Note:  See "BOOT DT STRUCTURE" in equates.lasp for information on this layout
   Top_Loop:
       // es:[di] - iterate through DT
         cmp     u8 ptr es:[di],128                                // Is this an entry to load at boot-time?
@@ -338,7 +338,7 @@ code main
 // a repeating series of these structures, called the boot_parameter_block,
 // one for every file to load at startup.
 //
-// Note:  See "BOOT PARAMETER BLOCK STRUCTURE" section of equates.asp
+// Note:  See "BOOT PARAMETER BLOCK STRUCTURE" section of equates.lasp
 //
 // Bootable program structure
 // --------------------------

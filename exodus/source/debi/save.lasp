@@ -394,7 +394,7 @@
     }
 
     // * Note:  This DEBI_generate_disassembly() routine is a fairly large routine.  It is in its own editable file
-        include "DEBI_dis.asp"
+        include "DEBI_dis.lasp"
 
 
 

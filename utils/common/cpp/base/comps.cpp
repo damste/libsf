@@ -662,7 +662,7 @@
 					lnTacsLength = ((tacs->repeats <= 1) ? abs(tacs->length) : strlen((cs8*)tacs->partialRepeatContent));
 
 					// We only test if they're the same length
-					if (lnTacsLength == comp->text.length || (tacs->repeats && ((tacs->repeats <= 1) ? (lnTacsLength <= comp->text.length) : (lnTacsLength <= strlen((cs8*)tacs->partialRepeatContent)))))
+					if (lnTacsLength == comp->text.length || (tacs->repeats && ((tacs->repeats <= 1) ? (lnTacsLength <= comp->text.length) : (lnTacsLength <= (s32)strlen((cs8*)tacs->partialRepeatContent)))))
 					{
 						// We only test if this item is not the first item on line, or if must be the first
 						// item on the line, then this component must be the first component on the line.  Simple, yes? :-)

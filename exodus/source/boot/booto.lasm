@@ -1,4 +1,4 @@
-// boot.asm
+// boot.lasm
 //
 // Exodus - 512 byte boot record for floppy disk
 //          * Note:  It is known that this disk is bootable, the only error we'll have to report is missing "Exodus Boot Program"
@@ -9,7 +9,7 @@
     
     //_XDEBUG       = 1
 
-include "\exodus\source\common\equates.asp"
+include "\libsf\exodus\source\common\equates.lasp"
 
 code main
 | at offset 0

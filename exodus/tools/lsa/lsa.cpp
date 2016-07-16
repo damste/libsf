@@ -369,7 +369,6 @@
 	}
 	iBuilder_asciiWriteOutFile(b, (cu8*)"c:\\temp\\out_done.txt");
 	iBuilder_freeAndRelease(&b);
-	debug_break;
 //////
 // END
 //////////
@@ -1138,7 +1137,7 @@ end_of_parameter:
 				{
 					// A single name, which means we use this parameter
 					++param->nRefCount;
-					iilsa_dmac_unfurl_addParameter(&dm->expansion_steps, lnParamNumber, lnWhitespaces, llPrefixCrLf, tbuilder);
+					iilsa_dmac_unfurl_addParameter(&dm->expansion_steps, lnParamNumber, &param->name, lnWhitespaces, llPrefixCrLf, tbuilder);
 
 				} else {
 					// Append it as is as text
@@ -1160,7 +1159,7 @@ end_of_parameter:
 				iterate(lnI, dm->params, param, SLsaParam)
 				//
 
-					// If it's a pa
+					// Generate a warning if it's an unreferenced parameter
 					if (param->name._data && param->name.length > 0 && param->nRefCount == 0)
 					{
 						// Display unreferenced parameter
@@ -1242,7 +1241,7 @@ end_of_parameter:
 	}
 
 	// Called to add the parameter
-	SLsaExpansion* iilsa_dmac_unfurl_addParameter(SBuilder** expansion_stepsRoot, s32 tnParamNum, s32 tnWhitespaces, bool tlPrefixCrLf, SBuilder* tbuilder)
+	SLsaExpansion* iilsa_dmac_unfurl_addParameter(SBuilder** expansion_stepsRoot, s32 tnParamNum, SDatum* name, s32 tnWhitespaces, bool tlPrefixCrLf, SBuilder* tbuilder)
 	{
 		SBuilder*		expansion_stepsBuilder;
 		SLsaExpansion*	exp;
@@ -1259,7 +1258,10 @@ end_of_parameter:
 			// Create a new entry
 			exp = (SLsaExpansion*)iBuilder_allocateBytes(*expansion_stepsRoot, sizeof(SLsaExpansion));
 			if (exp)
+			{
+				iDatum_duplicate(&exp->name, name);
 				exp->nParamNum = tnParamNum + 1;	// Store the parameter
+			}
 		}
 
 		// Indicate the expansion record

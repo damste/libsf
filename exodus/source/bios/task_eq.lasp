@@ -1,4 +1,4 @@
-// task_eq.asp
+// task_eq.lasp
 //
 // Exodus Task System constant equates
 //
@@ -32,7 +32,7 @@ _TASK_ENTRY_TICKS_LEFT                = 24
 ;; * NOTE *
 ;;
 _TASK_ENTRY_LENGTH                    = 64
-;; * NOTE *  If this value changes, the algorithm in invTASK_switch_task() [bios\tasks.asp] must be changed as well.
+;; * NOTE *  If this value changes, the algorithm in invTASK_switch_task() [bios\tasks.lasp] must be changed as well.
 ;;           Presently it uses a SHR x,6 to divide by 64.  If the number changes it must be put into a DIV instruction
 ;;----------
 

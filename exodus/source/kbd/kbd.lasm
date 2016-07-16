@@ -1,4 +1,4 @@
-// kbd.asm
+// kbd.lasm
 //
 // +-----------------------+
 // | standard 104-keyboard |
@@ -11,7 +11,7 @@
 
     
     
-include "\exodus\source\common\equates.asp"
+include "\libsf\exodus\source\common\equates.lasp"
 
 code text32
 | at offset 0
@@ -484,7 +484,7 @@ dd  offset requestor
 
 
 // Key definitions and constants
-    include "kbd.asp"
+    include "kbd.lasp"
 
 // DATA
     driver_name                             u8  "PS/2 Keyboard Driver",0
