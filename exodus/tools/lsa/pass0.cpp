@@ -181,11 +181,10 @@
 //////
 	bool iilsa_pass0_include(SLsaPass0* p0)
 	{
-		bool				llError, llIsFileValid;
-		s32					lnLineCount, lnFilenameLength;
-		cs8*				lcErrorText;
-		SLine*				line;
-		SLsaIncludeIter	iiFile;
+		bool	llError;
+		s32		lnLineCount, lnFilenameLength;
+		cs8*	lcErrorText;
+		SLine*	line;
 
 
 		// The next component needs to be the filename
@@ -208,47 +207,10 @@
 				// Try to open it
 				if (!ilsa_includeFile_append(p0->filename, &p0->fileInclude))
 				{
-					// Is it an absolute path
-					if (ilsa_isAbsolutePath(p0->filename, lnFilenameLength))
-					{
-						// Error opening the file
-						lcErrorText = cgc_lsa_error_opening_include_file;
-						break;
-					}
-
-					// Iterate through the known include file paths and attempt to load its
-					ilsa_includePaths_iterate_start(&iiFile, p0->filename);
-					while (!iiFile.wasOpened)
-					{
-						// Try to open it
-						if (ilsa_includePaths_iterate_try(&iiFile, llIsFileValid, &p0->fileInclude))
-						{
-							// It was opened
-							break;
-
-						} else if (!llIsFileValid) {
-							// Something was wrong with the filename (the path might be too long)
-							// We ignore it... it will eventually fall through and error out if it's not found elsewhere
-						}
-
-						// Move to the next iteration
-						if (!ilsa_includePaths_iterate_next(&iiFile))
-						{
-							// Error opening the file
-							lcErrorText = cgc_lsa_error_opening_include_file;
-							break;
-						}
-					}
-
-					// Was the file loaded?
-					if (!iiFile.wasOpened)
-					{
-						// Nope
-						lcErrorText = cgc_lsa_error_opening_include_file;
-						break;
-					}
+					lcErrorText = cgc_lsa_error_opening_include_file;
+					break;
 				}
-				// File's loaded
+				// If we get here, file's loaded
 
 				// If we're in verbose mode, display the loaded file
 				if (p0->cmdLine->o.lVerbose)

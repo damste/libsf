@@ -96,7 +96,7 @@ struct SLsaInclude;
 	void				ilsa_includePaths_iterate_start					(SLsaIncludeIter* iiFile, s8* filename);
 	bool				ilsa_includePaths_iterate_try					(SLsaIncludeIter* iiFile, bool& tlIsFileValid, SLsaFile** fileInclude);
 	bool				ilsa_includePaths_iterate_next					(SLsaIncludeIter* iiFile);
-	SLsaInclude*		ilsa_validate_trailingBackspace					(SLsaInclude* include);
+	s32					ilsa_validate_trailingBackspace					(s8* tcPathname, s32 tnPathnameLength);
 	void				ilsa_fixup_directoryDividers					(s8* tcPathname, s32 tnPathnameLength);
 	bool				ilsa_isAbsolutePath								(s8* tcPathname, s32 tnPathnameLength);
 	void				ilsa_route_through_silentError_for_debugging	(void);

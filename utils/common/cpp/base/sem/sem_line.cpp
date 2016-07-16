@@ -427,8 +427,9 @@ goto_next_component:
 					++lnLineCount;
 
 				// Update the 
-				line->ll.nextLine		= lineAfter;		// Last line points to the original line after where we inserted
-				lineAfter->ll.prevLine	= line;				// The original line after where we inserted points back to the new line
+				line->ll.nextLine = lineAfter;				// Last line points to the original line after where we inserted
+				if (lineAfter)
+					lineAfter->ll.prevLine	= line;			// The original line after where we inserted points back to the new line
 
 		}
 

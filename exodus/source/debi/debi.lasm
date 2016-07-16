@@ -25,11 +25,11 @@
 
     
     
-include "\exodus\source\common\keylist.asp"
-include "\exodus\source\common\equates.asp"
-include "\exodus\source\common\macros.asp"
-include "debi_mac.asp"                                                // Macros used for DEBI
-include "debi_eq.asp"                                                 // Equates used for DEBI
+include "\libsf\exodus\source\common\keylist.lasp"
+include "\libsf\exodus\source\common\equates.lasp"
+include "\libsf\exodus\source\common\macros.lasp"
+include "debi_mac.lasp"     // Macros used for DEBI
+include "debi_eq.lasp"      // Equates used for DEBI
 
     
 code text32

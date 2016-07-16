@@ -169,7 +169,8 @@
 	{
 		bool	llSetValue;
 		s32		lnI, lnLength;
-		s8*		lcOption;
+		s8*		lcThisOption;
+		s8*		lcIncludePath;
 
 
 		// Iterate through every parameter
@@ -184,7 +185,7 @@
 				//////////
 				// -Wno-?
 				//////
-					lcOption = argv[lnI];
+					lcThisOption = argv[lnI];
 					if (lnLength > sizeof(cgc_wno) - 1 && _memicmp(argv[lnI], cgc_wno, sizeof(cgc_wno) - 1) == 0)
 					{
 						// Yes, which means the option will be turned off
@@ -261,9 +262,14 @@
 							cmdLine->o.lVerbose = llSetValue;
 							break;
 
+						} else if (ilsa_is_cmdLineOption_beginsWith(cgc_includePath)) {
+							// -includepath=
+							lcIncludePath = lcThisOption + 1 + sizeof(cgc_includePath) - 1;
+							ilsa_includePath_append(lcIncludePath, strlen(lcIncludePath), false);
+
 						} else {
 							// Unrecognized option
-							printf("--Error: unrecognized command line option: %s", lcOption);
+							printf("--Error: unrecognized command line option: %s", lcThisOption);
 							exit(-1);
 						}
 
@@ -341,11 +347,11 @@
 	file = (SLsaFile*)includeFiles->buffer;
 	for (line = file->firstLine; line; line = line->ll.nextLine)
 	{
-		if (!ilsa_status_line_isCompleted(line))
-		{
+// 		if (!ilsa_status_line_isCompleted(line))
+// 		{
 			iBuilder_appendData(b, line->sourceCode.data_u8, line->sourceCode.length);
 			iBuilder_appendCrLf(b);
-		}
+// 		}
 	}
 	iBuilder_asciiWriteOutFile(b, (cu8*)"c:\\temp\\out.txt");
 	iBuilder_freeAndRelease(&b);
@@ -390,29 +396,32 @@
 		//////
 			include = NULL;
 			llFound = false;
-			if ((u16)tcPathname[0] == '\\.')
+
+			// Try to open it as is
+			GetFullPathName(tcPathname, sizeof(filename), filename, &filename_justfname);
+			if (iFile_readContents(tcPathname, &fLoad.fh, &fLoad.raw, &fLoad.rawLength))
 			{
-				// Relative path
+				// Good! :-)
+				llFound = true;
+
+			} else {
+				// Search relative to the paths we've encountered thus far
 				iterate(lnI, includePaths, include, SLsaInclude)
 				//
-					// Store the root path, then filename
+
+					// Store the path, then filename
 					sprintf(filename,								include->filename.data_s8);
-					sprintf(filename + include->filename.length,	tcPathname + 2);
+					sprintf(filename + include->filename.length,	"%s", tcPathname);
 
 					// Try to read the file contents
-					if (iFile_readContents(tcPathname, &fLoad.fh, &fLoad.raw, &fLoad.rawLength))
+					if (iFile_readContents(filename, &fLoad.fh, &fLoad.raw, &fLoad.rawLength))
 					{
 						llFound = true;
 						break;
 					}
+
 				//
 				iterate_end;
-
-			} else {
-				// It is a hard path, use it as is
-				GetFullPathName(tcPathname, sizeof(filename), filename, &filename_justfname);
-				if (iFile_readContents(tcPathname, &fLoad.fh, &fLoad.raw, &fLoad.rawLength))
-					llFound = true;
 			}
 
 
@@ -440,7 +449,7 @@
 						fNew->rawLength		= fLoad.rawLength;
 
 						// Setup the #include file level
-						fNew->include	= include;
+						fNew->include		= include;
 
 						// Update the pointer if need be
 						if (file)
@@ -474,10 +483,27 @@
 //////
 	SLsaInclude* ilsa_includePath_append(s8* tcPathname, s32 tnPathnameLength, bool tlIsFilename)
 	{
-		u32				lnI, lnError;
+		u32				lnI, lnError, lnLength;
 		SLsaInclude*	include;
 		s8*				fileNamePortion;
+		s8				buffer[_MAX_PATH];
 
+
+		// Expand to its full form
+		fileNamePortion = NULL;
+		if (!GetFullPathName(tcPathname, sizeof(buffer), buffer, &fileNamePortion))
+			lnError = GetLastError();
+
+		// NULL-terminate to remove the filename
+		if (tlIsFilename && fileNamePortion)
+			*fileNamePortion = 0;
+
+		// Grab the length given by GetFullPathName(), and adjusted by removing the path
+		lnLength = strlen(buffer);
+
+		// Validate it has a trailing backslash
+		lnLength += ilsa_validate_trailingBackspace(buffer, lnLength);
+		buffer[lnLength] = 0;
 
 		// See if it already exists
 		for (lnI = 0; lnI < includePaths->populatedLength; lnI += sizeof(SLsaInclude))
@@ -486,41 +512,14 @@
 			include = (SLsaInclude*)(includePaths->buffer + lnI);
 
 			// Is it our filename?
-			if (include->filename.length == tnPathnameLength && iDatum_compare(&include->filename, tcPathname, tnPathnameLength) == 0)
+			if (include->filename.length == lnLength && iDatum_compare(&include->filename, buffer, lnLength) == 0)
 				return(include);
 		}
 
 		// If we get here, not found
 		include = (SLsaInclude*)iBuilder_allocateBytes(includePaths, sizeof(SLsaInclude));
 		if (include)
-		{
-			// Allocate enough space
-			include->lIsFilename = false;
-			iDatum_allocateSpace(&include->filename, _MAX_PATH + 32);
-
-			// Expand to its full form
-			fileNamePortion = NULL;
-			if (!GetFullPathName(tcPathname, include->filename.length, include->filename.data_s8, &fileNamePortion))
-				lnError = GetLastError();
-
-			// Store the permanent length of whatever we're now using
-			include->filename.length = strlen(tcPathname);
-
-			// NULL-terminate
-			if (tlIsFilename)
-			{
-				// Include the filename
-				*fileNamePortion			= 0;						// Remove the path portion
-				include->filenamePortion	= (s32)((uptr)fileNamePortion - (uptr)include->filename.data_s8);
-
-			} else {
-				// No filename portion
-				include->filenamePortion = 0;
-
-				// Validate that it has a trailing backslash
-				ilsa_validate_trailingBackspace(include);
-			}
-		}
+			iDatum_duplicate(&include->filename, buffer, lnLength);
 
 		// Indicate our result
 		return(include);
@@ -570,8 +569,6 @@
 			//////
 				iiFile->wasOpened	= false;
 				include				= (SLsaInclude*)(includePaths->buffer + iiFile->offset);		// Copy the path from includePaths
-				if (include->lIsFilename)
-					return(false);		// This include file is not a pathname, but a filename, we can't use it
 
 				// Copy the path
 				memset(&iiFile->pathname, 0, sizeof(iiFile->pathname));
@@ -643,20 +640,20 @@
 //
 //////
 	// Note:  include files also always allocate _MAX_PATH + 32 bytes for their filename size, so there's always room for the extra backslash
-	SLsaInclude* ilsa_validate_trailingBackspace(SLsaInclude* include)
+	s32 ilsa_validate_trailingBackspace(s8* tcPathname, s32 tnPathnameLength)
 	{
 		// Make sure the last character's a backspace
-		if (include->filename.data_s8[include->filename.length - 1] != '\\')
+		if (tcPathname[tnPathnameLength - 1] != '\\')
 		{
 			// Make it a backslash
-			include->filename.data_s8[include->filename.length] = '\\';
+			tcPathname[tnPathnameLength] = '\\';
 
 			// Increase its length
-			++include->filename.length;
+			return(1);
 		}
 
-		// Pass-thru our parameter
-		return(include);
+		// Nothing was added
+		return(0);
 	}
 
 

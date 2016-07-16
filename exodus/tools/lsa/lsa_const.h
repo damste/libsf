@@ -85,6 +85,7 @@
 // Macros
 //////
 	#define ilsa_is_cmdLineOption(a)				lnLength == sizeof(a) - 1 && (_memicmp(argv[lnI], a, sizeof(a) - 1) == 0)
+	#define ilsa_is_cmdLineOption_beginsWith(a)		lnLength > sizeof(a) - 1 && (_memicmp(argv[lnI], a, sizeof(a) - 1) == 0)
 	#define ilsa_is_warning(a)						(a & _LSA_STATUS_WARNING)
 	#define ilsa_is_error(a)						(a & _LSA_STATUS_ERROR)
 	#define ilsa_is_completed(a)					(a & _LSA_STATUS_COMPLETED)
@@ -557,6 +558,7 @@
 	cs8			cgc_werror[]								= "error";
 	cs8			cgc_syntax_only[]							= "fsyntax-only";
 	cs8			cgc_verbose[]								= "verbose";
+	cs8			cgc_includePath[]							= "includepath=";
 
 
 //////////

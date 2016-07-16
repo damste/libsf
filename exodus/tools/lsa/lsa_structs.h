@@ -123,9 +123,9 @@ struct SLsaBlock;
 	// #include files, and also #include paths
 	struct SLsaInclude
 	{
-		bool		lIsFilename;						// Is it a full filename (and not just a path)?
+// 		bool		lIsFilename;						// Is it a full filename (and not just a path)?
 		SDatum		filename;							// The full pathname
-		s32			filenamePortion;					// Where the actual filename portion begins
+// 		s32			filenamePortion;					// Where the actual filename portion begins
 	};
 
 	// For #include files, searches known paths iteratively

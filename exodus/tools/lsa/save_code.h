@@ -389,3 +389,44 @@
 // 		// If we get here, not found
 // 		return(NULL);
 // 	}
+
+
+// pass-0.cpp
+// iilsa_pass0_include()
+// Removed because it duplicates the logic seen in ilsa_includeFile_append()
+//
+//					// Is it an absolute path
+//					if (ilsa_isAbsolutePath(p0->filename, lnFilenameLength))
+//					{
+//						// Error opening the file
+//						lcErrorText = cgc_lsa_error_opening_include_file;
+//						break;
+//					}
+//
+//					// Iterate through the known include file paths and attempt to load its
+//					ilsa_includePaths_iterate_start(&iiFile, p0->filename);
+//					while (!iiFile.wasOpened)
+//					{
+//						// Try to open it
+//						if (ilsa_includePaths_iterate_try(&iiFile, llIsFileValid, &p0->fileInclude))
+//						{
+//							// It was opened
+//							break;
+//
+//						} else if (!llIsFileValid) {
+//							// Something was wrong with the filename (the path might be too long)
+//							// We ignore it... it will eventually fall through and error out if it's not found elsewhere
+//						}
+//
+//						// Move to the next iteration
+//						if (!ilsa_includePaths_iterate_next(&iiFile))
+//						{
+//							// Error opening the file
+//							lcErrorText = cgc_lsa_error_opening_include_file;
+//							break;
+//						}
+//					}
+//
+//					// Was the file loaded?
+//					if (!iiFile.wasOpened)
+//					{
