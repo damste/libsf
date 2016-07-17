@@ -87,9 +87,9 @@
 //////
 	SBuilder*		includePaths					= NULL;				// (SLsaInclude) Include files
 	SBuilder*		includeFiles					= NULL;				// (SLsaFile) Files that are included in the assembly
-	SBuilder*		gsLasmDM_root					= NULL;				// (SLsaDefineMacro) List of define and macro statements found, in the order found
+	SBuilder*		gsLsaDMacRoot					= NULL;				// (SLsaDefineMacro) List of define and macro statements found, in the order found
 	SLsaBlock*		firstFunction					= NULL;				// All function definitions
-	SLsaStruct*	firstStruct						= NULL;				// All struct definitions
+	SLsaStruct*		firstStruct						= NULL;				// All struct definitions
 	SLsaEnum*		firstEnum						= NULL;				// All enum definitions
 
 
@@ -522,7 +522,9 @@
 		{	(cs8*)cgc_xmm5_reg,					sizeof(cgc_xmm5_reg) - 1,				false,		_ICODE_XMM5,						false,		_ICAT_XMM_REGISTER,		&colorDefault,		false,			null0,	null0,	null0	},
 		{	(cs8*)cgc_xmm6_reg,					sizeof(cgc_xmm6_reg) - 1,				false,		_ICODE_XMM6,						false,		_ICAT_XMM_REGISTER,		&colorDefault,		false,			null0,	null0,	null0	},
 		{	(cs8*)cgc_xmm7_reg,					sizeof(cgc_xmm7_reg) - 1,				false,		_ICODE_XMM7,						false,		_ICAT_XMM_REGISTER,		&colorDefault,		false,			null0,	null0,	null0	},
-																																																									  
+
+		{	(cs8*)cgc_lsa_equ,					sizeof(cgc_lsa_equ) - 1,				false,		_ICODE_LSA_EQU,						true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,	null0,	null0	},
+
 		{	(cs8*)cgc_lsa_include,				sizeof(cgc_lsa_include) - 1,			false,		_ICODE_LSA_INCLUDE,					true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,	null0,	null0	},
 		{	(cs8*)cgc_lsa_define,				sizeof(cgc_lsa_define) - 1,				false,		_ICODE_LSA_DEFINE,					true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,	null0,	null0	},
 		{	(cs8*)cgc_lsa_function,				sizeof(cgc_lsa_function) - 1,			false,		_ICODE_LSA_FUNCTION,				true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,	null0,	null0	},

@@ -101,7 +101,8 @@
 //////
 	void ilsa_pass0(SLsaCmdLine* cmdLine, SLsaFile* file)
 	{
-		SLsaPass0 p0;
+		SLsaPass0	p0;
+		SComp*		compNext;
 
 
 		//////////
@@ -158,17 +159,35 @@
 				// Is this line
 				if (!ilsa_status_line_isCompleted(p0.line) && (p0.comp = p0.line->firstComp))
 				{
-					// Is it one we're looking for?
-					switch (p0.comp->iCode)
-					{
-						case _ICODE_LSA_DEFINE:
-							ilsa_pass0_define(&p0);						// Jul.11.2016 -- RCH completed
-							break;
 
-						case _ICODE_LSA_MACRO:
-							ilsa_pass0_macro(&p0);							// Jul.11.2016 -- RCH completed
-							break;
-					}
+					//////////
+					// Is it one we're looking for?
+					//////
+						switch (p0.comp->iCode)
+						{
+							case _ICODE_LSA_DEFINE:
+								ilsa_pass0_define(&p0);						// Jul.11.2016 -- RCH completed
+								break;
+
+							case _ICODE_LSA_MACRO:
+								ilsa_pass0_macro(&p0);						// Jul.11.2016 -- RCH completed
+								break;
+						}
+
+
+					//////////
+					// Is the next component an equal sign or the EQU keyword?
+					//////
+						if (iiComps_isAlphanumeric_by_iCode(p0.comp->iCode) && (compNext = iComps_Nth(p0.comp, false)))
+						{
+							// If it's EQU or = then it's an implicit define
+							if (compNext->iCode == _ICODE_LSA_EQU || compNext->iCode == _ICODE_EQUAL_SIGN)
+							{
+								ilsa_pass0_equ_or_equalSign(&p0);
+								break;
+							}
+						}
+
 				}
 			}
 	}
@@ -560,36 +579,15 @@ grab_double_brace_content:
 
 //////////
 //
-// Called to see if the if expression is one of conditional assembly, or if it's of logic
+// Called to receive something like this:
+//
+//		name1	equ 5
+//		name2	= 5
+//
+// It creates a single-line define with no parameters.
 //
 //////
-	bool ilsa_pass0_if(SLsaPass0* p0)
-	{
-		return(false);
-	}
-
-
-
-
-//////////
-//
-// Called to see if the token is defined
-//
-//////
-	bool ilsa_pass0_ifdef(SLsaPass0* p0)
-	{
-		return(false);
-	}
-
-
-
-
-//////////
-//
-// Called to see if the token is not defined
-//
-//////
-	bool ilsa_pass0_ifndef(SLsaPass0* p0)
+	bool ilsa_pass0_equ_or_equalSign(SLsaPass0* p0)
 	{
 		return(false);
 	}

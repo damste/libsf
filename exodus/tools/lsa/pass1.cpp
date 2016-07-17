@@ -105,13 +105,13 @@
 
 
 		// Are there any defines or macros?
-		if (gsLasmDM_root && gsLasmDM_root->populatedLength > 0)
+		if (gsLsaDMacRoot && gsLsaDMacRoot->populatedLength > 0)
 		{
 
 			//////////
 			// Step1 -- Unfurl the macro expansion into sequences
 			//////
-				iterate(lnI, gsLasmDM_root, dm, SLsaDMac)
+				iterate(lnI, gsLsaDMacRoot, dm, SLsaDMac)
 				//
 
 					// Unfurl the encoding into its constituent parts
@@ -132,7 +132,7 @@
 	b = NULL;
 	iBuilder_createAndInitialize(&b);
 	// Report on what's there
-	iterate(lnI, gsLasmDM_root, dm, SLsaDMac)
+	iterate(lnI, gsLsaDMacRoot, dm, SLsaDMac)
 	//
 
 		// Double-space

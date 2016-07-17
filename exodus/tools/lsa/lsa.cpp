@@ -1039,11 +1039,11 @@ end_of_parameter:
 			*dmOut = NULL;
 
 		// Make sure we have at least one define
-		if (!gsLasmDM_root)
-			iBuilder_createAndInitialize(&gsLasmDM_root);
+		if (!gsLsaDMacRoot)
+			iBuilder_createAndInitialize(&gsLsaDMacRoot);
 
 		// Search existing
-		iterate(lnI, gsLasmDM_root, dm, SLsaDMac)
+		iterate(lnI, gsLsaDMacRoot, dm, SLsaDMac)
 		//
 			
 			// Does the name already exist?
@@ -1066,7 +1066,7 @@ end_of_parameter:
 		iterate_end;
 
 		// Allocate a new define record
-		dm = (SLsaDMac*)iBuilder_allocateBytes(gsLasmDM_root, sizeof(SLsaDMac));
+		dm = (SLsaDMac*)iBuilder_allocateBytes(gsLsaDMacRoot, sizeof(SLsaDMac));
 		if (dm)
 		{
 			// Store
@@ -1318,7 +1318,7 @@ end_of_parameter:
 
 
 		// Iterate through the global define/macro entries
-		iterate(lnI, gsLasmDM_root, dm, SLsaDMac)
+		iterate(lnI, gsLsaDMacRoot, dm, SLsaDMac)
 		//
 
 			// Is it the same length name?

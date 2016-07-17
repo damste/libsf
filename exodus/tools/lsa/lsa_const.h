@@ -545,6 +545,7 @@
 	cs32		_ICODE_LSA_IFNDEF							= 3000010;
 	cs32		_ICODE_LSA_IFB								= 3000011;
 	cs32		_ICODE_LSA_IFNB								= 3000012;
+	cs32		_ICODE_LSA_EQU								= 3000013;
 
 
 //////////
@@ -588,6 +589,8 @@
 	cs8			cgc_ptr_28byte[]							= "m28byte";
 	cs8			cgc_ptr_94byte[]							= "m94byte";
 	cs8			cgc_ptr_108byte[]							= "m108byte";
+
+	cs8			cgc_lsa_equ[]								= "equ";
 
 	cs8			cgc_lsa_include[]							= "include";
 	cs8			cgc_lsa_define[]							= "define";

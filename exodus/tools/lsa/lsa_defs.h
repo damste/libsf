@@ -136,9 +136,7 @@ struct SLsaInclude;
 	bool				iilsa_pass0_include								(SLsaPass0* p0);
 	bool				ilsa_pass0_define								(SLsaPass0* p0);
 	bool				ilsa_pass0_macro								(SLsaPass0* p0);
-	bool				ilsa_pass0_if									(SLsaPass0* p0);
-	bool				ilsa_pass0_ifdef								(SLsaPass0* p0);
-	bool				ilsa_pass0_ifndef								(SLsaPass0* p0);
+	bool				ilsa_pass0_equ_or_equalSign						(SLsaPass0* p0);
 
 
 //////////
