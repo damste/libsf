@@ -486,6 +486,7 @@
 	{
 		SLL				ll;												// 2-way link list
 		u32				uid;											// Unique id for this line, used for undos and identifying individual lines which may move about (note this value must be isolated and separate from ll.uniqueId)
+		void*			file;											// A file structure this line relates to
 		union
 		{
 			void*		parent;											// A parent this relates to, which could be a controlling structure (like an SEM*)

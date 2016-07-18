@@ -114,7 +114,7 @@ struct SLsaInclude;
 	s32					iilsa_params_extract_common						(SComp* compFirstParam, SBuilder** paramsRoot, bool tlMoveBeyondLineIfNeeded, s32 tniStopCode);
 
 	// For defined tokens and macros
-	bool				iilsa_dmac_add									(SLsaFile* file, SLine* line, SComp* compName, SBuilder* params, SComp* compStart, SComp* compEnd, bool tlIsDefine, SLsaDMac** dmOut = NULL);
+	bool				iilsa_dmac_add									(SLine* line, SComp* compName, SBuilder* params, SComp* compStart, SComp* compEnd, bool tlIsDefine, SLsaDMac** dmOut = NULL);
 	void				ilsa_dmac_unfurl								(SLsaDMac* dm);
 	bool				iilsa_dmac_searchParams							(SBuilder* params, SDatum* text, s32& tnParamNumber, SLsaParam** paramOut);
 	SBuilder*			iilsa_dmac_unfurl_validateBuilder				(SBuilder** expansion_stepsRoot);
@@ -123,10 +123,10 @@ struct SLsaInclude;
 	bool				ilsa_dmac_find_byComp							(SComp* comp, SLsaDMac** dmOut);
 
 	// Note, warning, error, and other forms of associated reporting
-	void				ilsa_append_extraInfo							(s32 tnValueCode,	cs8* valueTextTemplate, cs8* tcValueText, SLine* line, SComp* comp, SLsaFile* file, s32 tnValueBaseAddto, s32 tn_eiType);
-	void				ilsa_note										(s32 tnNoteCode,	cs8* noteTextTemplate,		SLine* line, SComp* comp = NULL, SLsaFile* file = NULL);
-	void				ilsa_warning									(s32 tnWarningCode,	cs8* warningTextTemplate,	SLine* line, SComp* comp = NULL, SLsaFile* file = NULL);
-	void				ilsa_error										(s32 tnErrorCode,	cs8* errorTextTemplate,		SLine* line, SComp* comp = NULL, SLsaFile* file = NULL);
+	void				iilsa_append_extraInfo							(s32 tnValueCode,	cs8* valueTextTemplate, cs8* tcValueText, SLine* line, SComp* comp, SLsaFile* file, s32 tnValueBaseAddto, s32 tn_eiType);
+	void				iilsa_note										(s32 tnNoteCode,	cs8* noteTextTemplate,		SLine* line, SComp* comp = NULL);
+	void				iilsa_warning									(s32 tnWarningCode,	cs8* warningTextTemplate,	SLine* line, SComp* comp = NULL);
+	void				iilsa_error										(s32 tnErrorCode,	cs8* errorTextTemplate,		SLine* line, SComp* comp = NULL);
 
 
 //////////
@@ -136,7 +136,7 @@ struct SLsaInclude;
 	bool				iilsa_pass0_include								(SLsaPass0* p0);
 	bool				ilsa_pass0_define								(SLsaPass0* p0);
 	bool				ilsa_pass0_macro								(SLsaPass0* p0);
-	bool				ilsa_pass0_equ_or_equalSign						(SLsaPass0* p0);
+	bool				iilsa_pass0_equ_or_equalSign					(SLsaPass0* p0, SComp* compName, SComp* compEquOrEqual);
 
 
 //////////
@@ -150,7 +150,7 @@ struct SLsaInclude;
 //////
 	void				ilsa_pass2										(SLsaCmdLine* cmdLine, SLsaFile* file);
 	SLsaBlock*			ilsa_pass2_function								(SLsaCmdLine* cmdLine, SLsaFile* file, SLine** lineProcessing);
-	SLsaStruct*		ilsa_pass2_struct								(SLsaCmdLine* cmdLine, SLsaFile* file, SLine** lineProcessing);
+	SLsaStruct*			ilsa_pass2_struct								(SLsaCmdLine* cmdLine, SLsaFile* file, SLine** lineProcessing);
 	SLsaEnum*			ilsa_pass2_enum									(SLsaCmdLine* cmdLine, SLsaFile* file, SLine** lineProcessing);
 	bool				ilsa_pass2_label								(SLsaCmdLine* cmdLine, SLsaFile* file, SLine** lineProcessing);
 

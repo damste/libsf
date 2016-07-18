@@ -391,9 +391,10 @@
 	{
 		bool			llFound;
 		u32				lnI;
-		SLsaFile		fLoad;
-		SLsaFile*		fNew;
+		SLsaFile		fileLoad;
+		SLsaFile*		fileNew;
 		SLsaInclude*	include;
+		SLine*			line;
 		s8*				filename_justfname;
 		s8				filename[_MAX_PATH * 2];
 
@@ -401,7 +402,7 @@
 		//////////
 		// Initialize
 		//////
-			memset(&fLoad,		0, sizeof(fLoad));
+			memset(&fileLoad,		0, sizeof(fileLoad));
 			memset(filename,	0, sizeof(filename));
 
 
@@ -413,7 +414,7 @@
 
 			// Try to open it as is
 			GetFullPathName(tcPathname, sizeof(filename), filename, &filename_justfname);
-			if (iFile_readContents(tcPathname, &fLoad.fh, &fLoad.raw, &fLoad.rawLength))
+			if (iFile_readContents(tcPathname, &fileLoad.fh, &fileLoad.raw, &fileLoad.rawLength))
 			{
 				// Good! :-)
 				llFound = true;
@@ -428,7 +429,7 @@
 					sprintf(filename + include->filename.length,	"%s", tcPathname);
 
 					// Try to read the file contents
-					if (iFile_readContents(filename, &fLoad.fh, &fLoad.raw, &fLoad.rawLength))
+					if (iFile_readContents(filename, &fileLoad.fh, &fileLoad.raw, &fileLoad.rawLength))
 					{
 						llFound = true;
 						break;
@@ -445,29 +446,33 @@
 			if (llFound)
 			{
 				// Parse into lines
-				if (iFile_parseIntoLines(&fLoad.firstLine, fLoad.raw, fLoad.rawLength, sizeof(SLine)) > 0)
+				if (iFile_parseIntoLines(&fileLoad.firstLine, fileLoad.raw, fileLoad.rawLength, sizeof(SLine)) > 0)
 				{
 					// Append our entry onto the chain
-					fNew = (SLsaFile*)iBuilder_allocateBytes(includeFiles, sizeof(SLsaFile));
-					if (fNew)
+					fileNew = (SLsaFile*)iBuilder_allocateBytes(includeFiles, sizeof(SLsaFile));
+					if (fileNew)
 					{
 						// Set the filename
-						iDatum_duplicate(&fNew->filename, (cvp*)filename, strlen(filename));
-						fNew->filename_justfname = fNew->filename.data_s8 + ((u32)filename_justfname - (u32)&filename[0]);
+						iDatum_duplicate(&fileNew->filename, (cvp*)filename, strlen(filename));
+						fileNew->filename_justfname = fileNew->filename.data_s8 + ((u32)filename_justfname - (u32)&filename[0]);
 
 						// Copy over
-						fNew->filenum		= (includeFiles->populatedLength / sizeof(SLsaFile));
-						fNew->firstLine		= fLoad.firstLine;
-						fNew->fh			= fLoad.fh;
-						fNew->raw			= fLoad.raw;
-						fNew->rawLength		= fLoad.rawLength;
+						fileNew->filenum	= (includeFiles->populatedLength / sizeof(SLsaFile));
+						fileNew->firstLine	= fileLoad.firstLine;
+						fileNew->fh			= fileLoad.fh;
+						fileNew->raw		= fileLoad.raw;
+						fileNew->rawLength	= fileLoad.rawLength;
 
 						// Setup the #include file level
-						fNew->include		= include;
+						fileNew->include	= include;
 
 						// Update the pointer if need be
 						if (file)
-							*file = fNew;
+							*file = fileNew;
+
+						// Mark each line with the file it belongs to
+						for (line = fileNew->firstLine; line; line = line->ll.nextLine)
+							line->file = fileNew;
 
 						// Add it as a possible include path
 						ilsa_includePath_append(filename, strlen(filename), true);
@@ -1027,7 +1032,7 @@ end_of_parameter:
 // Called to create a token
 //
 //////
-	bool iilsa_dmac_add(SLsaFile* file, SLine* line, SComp* compName, SBuilder* params, SComp* compStart, SComp* compEnd, bool tlIsDefine, SLsaDMac** dmOut)
+	bool iilsa_dmac_add(SLine* line, SComp* compName, SBuilder* params, SComp* compStart, SComp* compEnd, bool tlIsDefine, SLsaDMac** dmOut)
 	{
 		u32			lnI;
 		SLsaDMac*	dm;
@@ -1053,10 +1058,10 @@ end_of_parameter:
 				sprintf(buffer, "Error %%d [%d,%d]: '%s' %%s, see [%d,%d] of %s", 
 								line->lineNumber, compName->start,
 								compName->text.data_s8,
-								dm->name->line->lineNumber, dm->name->start, file->filename.data_s8);
+								dm->name->line->lineNumber, dm->name->start, ((SLsaFile*)(line->file))->filename.data_s8);
 
 				// Report the error
-				ilsa_error(_LSA_ERROR_TOKEN_NAME_ALREADY_EXISTS, buffer, line);
+				iilsa_error(_LSA_ERROR_TOKEN_NAME_ALREADY_EXISTS, buffer, line);
 
 				// Indicate failure
 				return(false);
@@ -1070,12 +1075,12 @@ end_of_parameter:
 		if (dm)
 		{
 			// Store
-			dm->file	= file;				// The associated file
-			dm->line	= line;				// The line related
-			dm->name	= compName;			// Token name
-			dm->params	= params;			// Parameters (if any)
-			dm->first	= compStart;		// First component related to the token (if any)
-			dm->last	= compEnd;			// Last component related to the token (if any)
+			dm->file	= (SLsaFile*)line->file;	// The associated file
+			dm->line	= line;						// The line related
+			dm->name	= compName;					// Token name
+			dm->params	= params;					// Parameters (if any)
+			dm->first	= compStart;				// First component related to the token (if any)
+			dm->last	= compEnd;					// Last component related to the token (if any)
 
 			// Update the point
 			if (dmOut)
@@ -1171,7 +1176,7 @@ end_of_parameter:
 										dm->file->filename.data_s8);
 
 						// Report the warning
-						ilsa_warning(_LSA_WARNING_UNREFERENCED_PARAMETER, buffer, param->start->line, param->start, dm->file);
+						iilsa_warning(_LSA_WARNING_UNREFERENCED_PARAMETER, buffer, param->start->line, param->start);
 					}
 
 				//
@@ -1352,7 +1357,7 @@ end_of_parameter:
 //
 //////
 	// Note:  valueTextTemplate is expected to include a %d parameter for tnValueCode, and a %s parameter for the associated text
-	void ilsa_append_extraInfo(s32			tnValueCode,
+	void iilsa_append_extraInfo(s32			tnValueCode,
 								cs8*		valueTextTemplate,
 								cs8*		tcValueText,
 								SLine*		line,
@@ -1400,7 +1405,7 @@ end_of_parameter:
 	}
 
 	// Note:  noteTextTemplate is expected to include a %d parameter for tnErrorCode, and a %s parameter for the associated error text
-	void ilsa_note(s32 tnNoteCode, cs8* noteTextTemplate, SLine* line, SComp* comp, SLsaFile* file)
+	void iilsa_note(s32 tnNoteCode, cs8* noteTextTemplate, SLine* line, SComp* comp)
 	{
 		cs8* lcNoteText;
 
@@ -1421,12 +1426,12 @@ end_of_parameter:
 		//////////
 		// Append the warning
 		//////
-			ilsa_append_extraInfo(tnNoteCode, noteTextTemplate, lcNoteText, line, comp, file, _LSA_NOTE_BASE, _EXTRA_INFO_NOTE);
+			iilsa_append_extraInfo(tnNoteCode, noteTextTemplate, lcNoteText, line, comp, (SLsaFile*)line->file, _LSA_NOTE_BASE, _EXTRA_INFO_NOTE);
 
 	}
 
 	// Note:  warningTextTemplate is expected to include a %d parameter for tnErrorCode, and a %s parameter for the associated error text
-	void ilsa_warning(s32 tnWarningCode, cs8* warningTextTemplate, SLine* line, SComp* comp, SLsaFile* file)
+	void iilsa_warning(s32 tnWarningCode, cs8* warningTextTemplate, SLine* line, SComp* comp)
 	{
 		cs8* lcWarningText;
 
@@ -1451,12 +1456,12 @@ end_of_parameter:
 		//////////
 		// Append the warning
 		//////
-			ilsa_append_extraInfo(tnWarningCode, warningTextTemplate, lcWarningText, line, comp, file, _LSA_WARNING_BASE, _EXTRA_INFO_WARNING);
+			iilsa_append_extraInfo(tnWarningCode, warningTextTemplate, lcWarningText, line, comp, (SLsaFile*)line->file, _LSA_WARNING_BASE, _EXTRA_INFO_WARNING);
 
 	}
 
 	// Note:  errorTextTemplate is expected to include a %d parameter for tnErrorCode, and a %s parameter for the associated error text
-	void ilsa_error(s32 tnErrorCode, cs8* errorTextTemplate, SLine* line, SComp* comp, SLsaFile* file)
+	void iilsa_error(s32 tnErrorCode, cs8* errorTextTemplate, SLine* line, SComp* comp)
 	{
 		cs8* lcErrorText;
 
@@ -1481,6 +1486,6 @@ end_of_parameter:
 		//////////
 		// Append the error
 		//////
-			ilsa_append_extraInfo(tnErrorCode, errorTextTemplate, lcErrorText, line, comp, file, _LSA_ERROR_BASE, _EXTRA_INFO_ERROR);
+			iilsa_append_extraInfo(tnErrorCode, errorTextTemplate, lcErrorText, line, comp, (SLsaFile*)line->file, _LSA_ERROR_BASE, _EXTRA_INFO_ERROR);
 
 	}

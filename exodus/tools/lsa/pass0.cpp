@@ -183,7 +183,7 @@
 							// If it's EQU or = then it's an implicit define
 							if (compNext->iCode == _ICODE_LSA_EQU || compNext->iCode == _ICODE_EQUAL_SIGN)
 							{
-								ilsa_pass0_equ_or_equalSign(&p0);
+								iilsa_pass0_equ_or_equalSign(&p0, p0.comp, compNext);
 								break;
 							}
 						}
@@ -266,7 +266,7 @@
 		{
 			// Syntax error
 			ilsa_markLineCompleted(p0->line);
-			printf(lcErrorText, p0->line->lineNumber, p0->comp->start, p0->file->filename.data_s8);
+			printf(lcErrorText, p0->line->lineNumber, p0->comp->start, ((SLsaFile*)p0->line->file)->filename.data_s8);
 		}
 
 		// Indicate our status
@@ -377,7 +377,7 @@ grab_content_to_end_of_line:
 					}
 
 					// When we get here, we have all the information we need
-					iilsa_dmac_add(p0->file, p0->line, compTokenName, params, compContentStart, compContentEnd, true);
+					iilsa_dmac_add(p0->line, compTokenName, params, compContentStart, compContentEnd, true);
 
 					// Mark everything completed
 					ilsa_markLineCompleted(p0->line);
@@ -540,7 +540,7 @@ grab_double_brace_content:
 					}
 
 					// When we get here, we have all the information we need
-					iilsa_dmac_add(p0->file, p0->line, compTokenName, compParams, compContentStart, compContentEnd, true);
+					iilsa_dmac_add(p0->line, compTokenName, compParams, compContentStart, compContentEnd, true);
 
 					// Mark everything completed
 					ilsa_markLineCompleted(p0->line);
@@ -587,7 +587,36 @@ grab_double_brace_content:
 // It creates a single-line define with no parameters.
 //
 //////
-	bool ilsa_pass0_equ_or_equalSign(SLsaPass0* p0)
+	bool iilsa_pass0_equ_or_equalSign(SLsaPass0* p0, SComp* compName, SComp* compEquOrEqual)
 	{
-		return(false);
+		SComp*	compStart;
+		SComp*	compEnd;
+
+
+		// Grab our start and end components for this line
+		compStart	= iComps_Nth(compEquOrEqual);
+		compEnd		= iiLine_getLastComp(p0->line, compStart);
+
+		// Find out what it is
+		switch (compEquOrEqual->iCode)
+		{
+			case _ICODE_LSA_EQU:
+				// x EQU ...
+			case _ICODE_EQUAL_SIGN:
+				// x = ...
+
+				// Add it as a define
+				iilsa_dmac_add(p0->line, compName, NULL, compStart, compEnd, true);
+
+				// Mark everything completed
+				ilsa_markLineCompleted(p0->line);
+
+				// Indicate success
+				return(true);
+
+			default:
+				// Should never happen
+				ilsa_route_through_silentError_for_debugging();
+				return(false);
+		}
 	}
