@@ -111,8 +111,11 @@ struct SBuilder;
 		SOptions	o;									// Which options are enabled?
 
 		// Command line files which are processed
-		SLsaFile*	file;								// The current file being processed
 		SBuilder*	filesToCompile;						// (SLsaFile) Separate files specified on the command line
+
+		// Current file being processed
+		SLsaFile*	file;								// The current file being processed
+		SLsaFile*	fileOut;							// Set curing compilation, for the output file
 	};
 
 	// File-level assemble status

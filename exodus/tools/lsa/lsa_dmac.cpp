@@ -372,34 +372,42 @@
 // Performs a search for the indicated macro
 //
 //////
-	bool ilsa_dmac_find_byComp(SComp* comp, SLsaDMac** dmOut)
+	bool ilsa_dmac_find_byComp(SBuilder* sortList, SComp* comp, SLsaDMac** dmOut)
 	{
-		u32			lnI;
-		SLsaDMac*	dm;
+		SCallback cb;
+
+		// Search and return result
+		memset(&cb, 0, sizeof(cb));
+		cb._func	= (uptr)&iilsa_dmac_find_byComp__callback;
+		cb.data2	= &comp->text;
+		return(iBinary_list_search(sortList, &cb, dmOut));
+	}
+	
+	struct SBinary
+	{
+		SCallback*	cb;
+
+		void*		data;
+		s32			testResult;
+	};
+
+	// cb->data1 = SBinary* for the search
+	// cb->data2 = SDatum* being searched for
+	bool iilsa_dmac_find_byComp__callback(SCallback* cb)
+	{
+		SBinary*	bin;
+		SDatum*		nameHaystack;
+		SDatum*		nameNeedle;
 
 
-		// Iterate through the global define/macro entries
-		iterate(lnI, gsLsaDMacRoot, dm, SLsaDMac)
-		//
+		// Grab this item
+		bin				= (SBinary*)cb->data1;
+		nameHaystack	= (SDatum*)bin->data;
+		nameNeedle		= (SDatum*)cb->data2;
 
-			// Is it the same length name?
-			if (dm->name->text.length == comp->text.length)
-			{
-				// Is it the token name?
-				if (iDatum_compare(&dm->name->text, &comp->text) == 0)
-				{
-					// This is the token
-					if (dmOut)
-						*dmOut = dm;
+		// Does it match up?
+		bin->testResult	= iDatum_compare(nameNeedle, nameHaystack);
 
-					// Indicate success
-					return(true);
-				}
-			}
-
-		//
-		iterate_end;
-
-		// If we get here, not found
-		return(false);
+		// It doesn't matter what we return, it will continue until the binary search is completed
+		return(true);
 	}

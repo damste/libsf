@@ -122,7 +122,8 @@ struct SLsaInclude;
 	SBuilder*			iilsa_dmac_unfurl_validateBuilder				(SBuilder** expansion_stepsRoot);
 	SLsaExpansion*		iilsa_dmac_unfurl_addParameter					(SBuilder** expansion_stepsRoot, s32 tnParamNum, SDatum* name, s32 tnWhitespaces, bool tlPrefixCrLf, SBuilder* tbuilder);
 	SLsaExpansion*		iilsa_dmac_unfurl_addText						(SBuilder** expansion_stepsRoot, SDatum* text, s32 tnWhitespaces, bool tlPrefixCrLf, SBuilder* tbuilder = NULL);
-	bool				ilsa_dmac_find_byComp							(SComp* comp, SLsaDMac** dmOut);
+	bool				ilsa_dmac_find_byComp							(SBuilder* sortList, SComp* comp, SLsaDMac** dmOut);
+	bool				iilsa_dmac_find_byComp__callback				(SCallback* cb);
 
 	// lsa_ei.cpp
 	// Note, warning, error, and other forms of associated reporting

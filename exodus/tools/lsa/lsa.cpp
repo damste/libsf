@@ -162,7 +162,8 @@
 			iterate(lnI, (cmdLine.filesToCompile), file, SLsaFile)
 			//
 				// Grab the current file
-				cmdLine.file = file;
+				cmdLine.file	= file;
+				cmdLine.fileOut	= NULL;
 
 				// Dispatch each pass
 				ilsa_pass0();
@@ -172,6 +173,10 @@
 				ilsa_passX();
 				ilsa_passY();
 				ilsa_passZ();
+
+				// Indicate we're completed at this point
+				if (!cmdLine.o.lVerbose && cmdLine.fileOut)
+					printf("--%s, %\n", cmdLine.fileOut->filename.data_cs8, cmdLine.fileOut->rawLength);
 			//
 			iterate_end;
 

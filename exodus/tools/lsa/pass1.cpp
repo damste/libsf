@@ -97,11 +97,8 @@
 		u32			lnI;
 		SLine*		line;
 		SComp*		comp;
-//		SComp*		compNext;
-//		SComp*		compFile;
-//		SLsaFile*	fileInclude;
 		SLsaDMac*	dm;
-//		s8			fileName[_MAX_PATH];
+		SBuilder*	sortList;
 
 
 		// Are there any defines or macros?
@@ -120,88 +117,45 @@
 				//
 				iterate_end;
 
-//////////
-// Validating the unfurl process worked properly
-// BEGIN
-//////
-	u32 lnJ;
-	SBuilder* b;
-	SLsaDMac* dm;
-	SLsaExpansion* exp;
-	s8 buffer[256];
-	b = NULL;
-	iBuilder_createAndInitialize(&b);
-	// Report on what's there
-	iterate(lnI, gsLsaDMacRoot, dm, SLsaDMac)
-	//
-
-		// Double-space
-		if (lnI != 0)
-			iBuilder_appendCrLf(b);
-
-		// Add the name
-		iBuilder_appendData(b, dm->name->text.data_cs8, dm->name->text.length);
-		iBuilder_appendCrLf(b);
-
-		// Are there expansion steps?
-		if (dm->expansion_steps && dm->expansion_steps->_data && dm->expansion_steps->populatedLength != 0)
-		{
-
-			// Iterate through dm's expansion_steps
-			iterate(lnJ, dm->expansion_steps, exp, SLsaExpansion)
-			//
-
-				// Write this step
-				if (exp->nParamNum != 0)
-				{
-					// Text first
-					if (exp->text._data && exp->text.length > 0)
-						iBuilder_appendData(b, exp->text.data_cs8, exp->text.length);
-
-					// Then parameter number
-					sprintf(buffer, "{%s}", exp->name.data_cs8);
-					iBuilder_appendData(b, buffer);
-
-				} else {
-					// Text
-					iBuilder_appendData(b, exp->text.data_cs8, exp->text.length);
-				}
-
-			//
-			iterate_end;
-
-		} else {
-			// No content, just definition of the indicated token
-			iBuilder_appendData(b, "[definition only]");
-		}
-		iBuilder_appendCrLf(b);
-
-	//
-	iterate_end;
-
-	iBuilder_asciiWriteOutFile(b, (cu8*)"c:\\temp\\dmac_out.txt");
-	iBuilder_freeAndRelease(&b);
-//////
-// END
-//////////
 
 			//////////
-			// Step 2 -- Applying macros
+			// Step 2 -- Build a sorted list for binary lookups
 			//////
-// 				for (comp = file->firstLine->firstComp; comp; comp = iComps_Nth(comp))
-// 				{
-// 					// All lines should have compiler info, but just to be sure...
-// 					if (!ilsa_status_comp_isCompleted(comp) && iiComps_isAlphanumeric_by_iCode(comp->iCode) && ilsa_dmac_find_byComp(comp, &dm))
-// 					{
-// 						// Does it have parameters?
-// 						if (dm->params->populatedLength != 0)
-// 						{
-// 							// Yes, gather the parameters
-// 						} else {
-// 							// Just swap out the component with this entry
-// 						}
-// 					}
-// 				}
+				// Initialize
+				sortList = NULL;
+				iBuilder_createAndInitialize(&sortList);
+
+				// Build
+				iterate(lnI, gsLsaDMacRoot, dm, SLsaDMac)
+				//
+
+					// Add this item to the list
+					iBinary_list_append(sortList, &dm->name->text, sizeof(SDatum*));
+
+				//
+				iterate_end;
+
+				// Sort
+				iBinary_list_sort(sortList, sizeof(SDatum*));
+
+
+			//////////
+			// Step 3 -- Apply macros
+			//////
+				for (comp = cmdLine.file->firstLine->firstComp; comp; comp = iComps_Nth(comp))
+				{
+					// All lines should have compiler info, but just to be sure...
+					if (!ilsa_status_comp_isCompleted(comp) && iiComps_isAlphanumeric_by_iCode(comp->iCode) && ilsa_dmac_find_byComp(sortList, comp, &dm))
+					{
+						// Does it have parameters?
+						if (dm->params->populatedLength != 0)
+						{
+							// Yes, gather the parameters
+						} else {
+							// Just swap out the component with this entry
+						}
+					}
+				}
 
 		}
 	}
