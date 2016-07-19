@@ -92,6 +92,6 @@
 // Pass-X -- Opcode (binary) generation
 //
 //////
-	void ilsa_passX(SLsaCmdLine* cmdLine, SLsaFile* file)
+	void ilsa_passX(void)
 	{
 	}

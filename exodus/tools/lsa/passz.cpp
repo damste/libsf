@@ -92,6 +92,6 @@
 // Pass-Z -- Write output files
 //
 //////
-	void ilsa_passZ(SLsaCmdLine* cmdLine, SLsaFile* file)
+	void ilsa_passZ(void)
 	{
 	}

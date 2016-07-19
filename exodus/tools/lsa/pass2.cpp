@@ -97,7 +97,7 @@
 //		labels
 //
 //////
-	void ilsa_pass2(SLsaCmdLine* cmdLine, SLsaFile* file)
+	void ilsa_pass2(void)
 	{
 // 		SLine*			line;
 // 		SComp*			comp;
@@ -154,7 +154,7 @@
 // Process the function header
 //
 //////
-	SLsaBlock*	ilsa_pass2_function(SLsaCmdLine* cmdLine, SLsaFile* file, SLine** lineProcessing)
+	SLsaBlock*	ilsa_pass2_function(SLsaFile* file, SLine** lineProcessing)
 	{
 		return(NULL);
 	}
@@ -167,7 +167,7 @@
 // Process the struct
 //
 //////
-	SLsaStruct* ilsa_pass2_struct(SLsaCmdLine* cmdLine, SLsaFile* file, SLine** lineProcessing)
+	SLsaStruct* ilsa_pass2_struct(SLsaFile* file, SLine** lineProcessing)
 	{
 		return(NULL);
 	}
@@ -180,7 +180,7 @@
 // Process the enum
 //
 //////
-	SLsaEnum* ilsa_pass2_enum(SLsaCmdLine* cmdLine, SLsaFile* file, SLine** lineProcessing)
+	SLsaEnum* ilsa_pass2_enum(SLsaFile* file, SLine** lineProcessing)
 	{
 		return(NULL);
 	}
@@ -193,7 +193,7 @@
 // Process the label
 //
 //////
-	bool ilsa_pass2_label(SLsaCmdLine* cmdLine, SLsaFile* file, SLine** lineProcessing)
+	bool ilsa_pass2_label(SLsaFile* file, SLine** lineProcessing)
 	{
 		return(false);
 	}

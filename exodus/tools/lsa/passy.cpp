@@ -92,6 +92,6 @@
 // Pass-Y -- Linking
 //
 //////
-	void ilsa_passY(SLsaCmdLine* cmdLine, SLsaFile* file)
+	void ilsa_passY(void)
 	{
 	}

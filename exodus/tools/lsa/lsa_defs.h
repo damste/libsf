@@ -89,8 +89,10 @@ struct SLsaInclude;
 //////////
 // lasm.cpp
 //////
-	void				ilsa_parse_commandLine							(SLsaCmdLine* cmdLine, s32 argc, s8* argv[]);
-	void				ilsa_compile									(SLsaCmdLine* cmdLine);
+	void				ilsa_parse_commandLine							(s32 argc, s8* argv[]);
+	void				ilsa_route_through_silentError_for_debugging	(void);
+
+	// lsa_include.cpp
 	bool				ilsa_includeFile_append							(s8* tcPathname, SLsaFile** file);
 	SLsaInclude*		ilsa_includePath_append							(s8* tcPathname, s32 tnPathnameLength, bool tlIsFilename);
 	void				ilsa_includePaths_iterate_start					(SLsaIncludeIter* iiFile, s8* filename);
@@ -99,7 +101,6 @@ struct SLsaInclude;
 	s32					ilsa_validate_trailingBackspace					(s8* tcPathname, s32 tnPathnameLength);
 	void				ilsa_fixup_directoryDividers					(s8* tcPathname, s32 tnPathnameLength);
 	bool				ilsa_isAbsolutePath								(s8* tcPathname, s32 tnPathnameLength);
-	void				ilsa_route_through_silentError_for_debugging	(void);
 
 	// For component, line, or file statuses
 	void				ilsa_status_comp_add							(SComp* comp, u32 tnStatus);
@@ -113,6 +114,7 @@ struct SLsaInclude;
 	s32					iilsa_params_commaDelimitedExtract				(SComp* compFirstParam, SBuilder** paramsRoot, bool tlVerifySingleParams = false, bool* tlIsSingleParam = NULL);
 	s32					iilsa_params_extract_common						(SComp* compFirstParam, SBuilder** paramsRoot, bool tlMoveBeyondLineIfNeeded, s32 tniStopCode);
 
+	// lsa_dmac.cpp
 	// For defined tokens and macros
 	bool				iilsa_dmac_add									(SLine* line, SComp* compName, SBuilder* params, SComp* compStart, SComp* compEnd, bool tlIsDefine, SLsaDMac** dmOut = NULL);
 	void				ilsa_dmac_unfurl								(SLsaDMac* dm);
@@ -122,6 +124,7 @@ struct SLsaInclude;
 	SLsaExpansion*		iilsa_dmac_unfurl_addText						(SBuilder** expansion_stepsRoot, SDatum* text, s32 tnWhitespaces, bool tlPrefixCrLf, SBuilder* tbuilder = NULL);
 	bool				ilsa_dmac_find_byComp							(SComp* comp, SLsaDMac** dmOut);
 
+	// lsa_ei.cpp
 	// Note, warning, error, and other forms of associated reporting
 	void				iilsa_append_extraInfo							(s32 tnValueCode,	cs8* valueTextTemplate, cs8* tcValueText, SLine* line, SComp* comp, SLsaFile* file, s32 tnValueBaseAddto, s32 tn_eiType);
 	void				iilsa_note										(s32 tnNoteCode,	cs8* noteTextTemplate,		SLine* line, SComp* comp = NULL);
@@ -132,7 +135,7 @@ struct SLsaInclude;
 //////////
 // pass0.cpp
 //////
-	void				ilsa_pass0										(SLsaCmdLine* cmdLine, SLsaFile* file);
+	void				ilsa_pass0										(void);
 	bool				iilsa_pass0_include								(SLsaPass0* p0);
 	bool				ilsa_pass0_define								(SLsaPass0* p0);
 	bool				ilsa_pass0_macro								(SLsaPass0* p0);
@@ -142,38 +145,38 @@ struct SLsaInclude;
 //////////
 // pass1.cpp -- Macro expansion
 //////
-	void				ilsa_pass1										(SLsaCmdLine* cmdLine, SLsaFile* file);
+	void				ilsa_pass1										(void);
 
 
 //////////
 // pass2.cpp -- function, adhoc, struct, enum markers
 //////
-	void				ilsa_pass2										(SLsaCmdLine* cmdLine, SLsaFile* file);
-	SLsaBlock*			ilsa_pass2_function								(SLsaCmdLine* cmdLine, SLsaFile* file, SLine** lineProcessing);
-	SLsaStruct*			ilsa_pass2_struct								(SLsaCmdLine* cmdLine, SLsaFile* file, SLine** lineProcessing);
-	SLsaEnum*			ilsa_pass2_enum									(SLsaCmdLine* cmdLine, SLsaFile* file, SLine** lineProcessing);
-	bool				ilsa_pass2_label								(SLsaCmdLine* cmdLine, SLsaFile* file, SLine** lineProcessing);
+	void				ilsa_pass2										(void);
+	SLsaBlock*			ilsa_pass2_function								(SLsaFile* file, SLine** lineProcessing);
+	SLsaStruct*			ilsa_pass2_struct								(SLsaFile* file, SLine** lineProcessing);
+	SLsaEnum*			ilsa_pass2_enum									(SLsaFile* file, SLine** lineProcessing);
+	bool				ilsa_pass2_label								(SLsaFile* file, SLine** lineProcessing);
 
 
 //////////
 // pass3.cpp -- Token parsing
 //////
-	void				ilsa_pass3										(SLsaCmdLine* cmdLine, SLsaFile* file);
+	void				ilsa_pass3										(void);
 
 
 //////////
 // passX.cpp -- Opcode generation
 //////
-	void				ilsa_passX										(SLsaCmdLine* cmdLine, SLsaFile* file);
+	void				ilsa_passX										(void);
 
 
 //////////
 // passY.cpp -- Linking
 //////
-	void				ilsa_passY										(SLsaCmdLine* cmdLine, SLsaFile* file);
+	void				ilsa_passY										(void);
 
 
 //////////
 // passZ.cpp -- Output file
 //////
-	void				ilsa_passZ										(SLsaCmdLine* cmdLine, SLsaFile* file);
+	void				ilsa_passZ										(void);

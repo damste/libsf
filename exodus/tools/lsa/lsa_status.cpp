@@ -1,9 +1,9 @@
 //////////
 //
-// /libsf/exodus/tools/lsa/lasm.h
+// /libsf/exodus/tools/lsa/lsa_status.cpp
 //
 //////
-//    _     _ _     _____ _____
+//    _     _ _     _____ _____ 
 //   | |   (_) |__ / ____|  ___|
 //   | |   | | '_ \\___ \|  __|
 //   | |___| | |_) |___) | |
@@ -11,25 +11,26 @@
 //
 //   Liberty Software Foundation
 // and the Village Freedom Project
-//   __     _______     ____
-//   \ \   / /  ___| __|  _ \
+//   __     _______     ____  
+//   \ \   / /  ___| __|  _ \ 
 //    \ \ / /| |_ | '__| |_) |
-//     \ V / |  _|| |  |  __/
+//     \ V / |  _|| |  |  __/ 
 //      \_/  |_|  |_|  |_|
 //
 //////
 // Version 0.01
-// Copyright (c) 2014 by Rick C. Hodgin
+// Copyright (c) 2016 by Rick C. Hodgin
 //////
 // Last update:
-//     Sep.12.2015
+//     Jul.19.2016
 //////
 // Change log:
-//     Sep.12.2015 - Initial creation
+//     Jul.19.2016 - Initial creation
 //////
 //
-// This document is released as Liberty Software under a Repeat License, as governed
-// by the Public Benefit License v1.0 or later (PBL).
+// This document and all documents contained within are released as Liberty Software
+// under a Repeat License, as governed by the Public Benefit License v1.0 or later
+// (PBL).
 //
 // The PBL is a public domain license with a caveat:  self accountability unto God.
 // You are free to use, copy, modify and share this software for any purpose, however,
@@ -77,82 +78,121 @@
 // Thank you.  And may The Lord bless you richly as you lift up your life, your
 // talents, your gifts, your praise, unto Him.  In Jesus' name I pray.  Amen.
 //
+//////
+
+
+
+
+//////////
 //
+// Applies the status to the indicated component
+//
+//////
+	void ilsa_status_comp_add(SComp* comp, u32 tnStatus)
+	{
+		// Make sure our environment is sane
+		if (comp)
+			comp->compStatus |= tnStatus;
+	}
 
 
 
 
-// Compiling directly on Windows
-#include <stdio.h>
-#include <stdlib.h>
-#include <io.h>
-#include <sys/locking.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <share.h>
-#include <errno.h>
-#include <shlObj.h>
-#include <math.h>
-
-#define _EXCLUDE_iBmp_cask_createAndPopulate				1
-#define _EXCLUDE_iBmp_colorizeAsCommonTooltipBackground		1
-
-#include "/libsf/utils/common/cpp/include/common_types.h"
-#include "/libsf/utils/common/cpp/include/libsf.h"
-#include "/libsf/utils/common/cpp/include/errors.h"
-#include "/libsf/utils/common/cpp/include/ll.h"
-#include "/libsf/utils/common/cpp/include/chartests.h"
-#include "/libsf/utils/common/cpp/include/node.h"
-#include "/libsf/utils/common/cpp/include/callbacks.h"
-#include "/libsf/utils/common/cpp/include/colors.h"
-#include "/libsf/exodus/tools/common/include/debi_globals.h"
-#include "/libsf/utils/common/cpp/include/builder.h"
-#include "/libsf/utils/common/cpp/include/datum.h"
-#include "/libsf/utils/common/cpp/include/disk.h"
-#include "/libsf/utils/common/cpp/include/time.h"
-#include "/libsf/utils/common/cpp/include/bitmaps.h"
-#include "/libsf/utils/common/cpp/include/comps.h"
-#include "/libsf/utils/common/cpp/include/compsearcher.h"
-#include "/libsf/utils/common/cpp/include/xml.h"
-#include "/libsf/utils/common/cpp/include/sem/sem.h"
-#include "/libsf/utils/common/cpp/include/extra_info.h"
-
-#define iterate(i, builder, p, structure)	for (i = 0; i < builder->populatedLength; i += sizeof(structure)) \
-											{ \
-												/* Grab the pointer */ \
-												p = (structure*)(builder->buffer + i);
-
-#define iterate_with_count(i, builder, p, structure, count) \
-											for (i = 0; i < builder->populatedLength; i += sizeof(structure), ++count) \
-											{ \
-												/* Grab the pointer */ \
-												p = (structure*)(builder->buffer + i);
-#define iterate_end }
+//////////
+//
+// Called to add the indicated status to the line, and optionally all of the line comps
+//
+//////
+	void ilsa_status_line_add(SLine* line, u32 tnStatus, bool tlProcessComps)
+	{
+		SComp* comp;
 
 
-#include "/libsf/utils/common/cpp/base/ll.cpp"
-#include "/libsf/utils/common/cpp/base/node.cpp"
-#include "/libsf/utils/common/cpp/base/builder.cpp"
-#include "/libsf/utils/common/cpp/base/datum.cpp"
-#include "/libsf/utils/common/cpp/base/disk.cpp"
-#include "/libsf/utils/common/cpp/base/time.cpp"
-#include "/libsf/utils/common/cpp/base/bitmaps.cpp"
-#include "/libsf/utils/common/cpp/base/comps.cpp"
-#include "/libsf/utils/common/cpp/base/compsearcher.cpp"
-#include "/libsf/utils/common/cpp/base/xml.cpp"
-#include "/libsf/utils/common/cpp/base/sem/sem.cpp"
-#include "/libsf/utils/common/cpp/base/extra_info.cpp"
+		// Make sure our environment is sane
+		if (line)
+		{
+			// Set the status
+			line->lineStatus |= tnStatus;
 
-#include "lsa_const.h"
-#include "lsa_structs.h"
-#include "lsa_defs.h"
-#include "lsa_globals.h"
+			// Optionally process comps
+			if (tlProcessComps)
+			{
+				// Iterate and set the status of each component
+				for (comp = line->firstComp; comp; comp = comp->ll.nextComp)
+					comp->compStatus |= tnStatus;
+			}
+		}
+	}
 
-#include "pass0.cpp"
-#include "pass1.cpp"
-#include "pass2.cpp"
-#include "pass3.cpp"
-#include "passX.cpp"
-#include "passY.cpp"
-#include "passZ.cpp"
+
+
+
+//////////
+//
+// Called to see if the status is completed
+//
+//////
+	bool ilsa_status_comp_isCompleted(SComp* comp)
+	{
+		// If there's no comp, it's obviously done :-)
+		if (!comp)
+			return(true);
+
+		// If it's marked completed, it's done
+		if ((comp->compStatus & _LSA_STATUS_COMPLETED) != 0)
+			return(true);
+
+		// If we get here, not done
+		return(false);
+	}
+
+
+
+
+//////////
+//
+// Called to see if the status is completed
+//
+//////
+	bool ilsa_status_line_isCompleted(SLine* line)
+	{
+		// If there's no line, it's obviously done :-)
+		if (!line)
+			return(true);
+
+		// If it's marked completed, it's done
+		if ((line->lineStatus & _LSA_STATUS_COMPLETED) != 0)
+			return(true);
+
+		// If we get here, not done
+		return(false);
+	}
+
+
+
+
+//////////
+//
+// Called to add the indicated status to the file, and optionally all of the lines and more optionally all the comps
+//
+//////
+	void ilsa_status_file_add(SLsaFile* file, u32 tnStatus, bool tlProcessLines, bool tlProcessComps)
+	{
+		SLine* line;
+
+
+		// Make sure our environment is sane
+		if (file)
+		{
+			// Set the status
+			file->status |= tnStatus;
+
+			// Optionally process lines
+			if (tlProcessLines)
+			{
+				// Iterate through each line
+				for (line = file->firstLine; line; line = line->ll.nextLine)
+					ilsa_status_line_add(line, tnStatus, tlProcessComps);
+			}
+		}
+	}

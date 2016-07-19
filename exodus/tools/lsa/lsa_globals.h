@@ -91,6 +91,7 @@
 	SLsaBlock*		firstFunction					= NULL;				// All function definitions
 	SLsaStruct*		firstStruct						= NULL;				// All struct definitions
 	SLsaEnum*		firstEnum						= NULL;				// All enum definitions
+	SLsaCmdLine		cmdLine;											// Command line options
 
 
 //////////

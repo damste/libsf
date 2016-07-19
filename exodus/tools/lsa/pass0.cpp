@@ -99,17 +99,16 @@
 //		once all include files are loaded, it scans in defines and macros
 //
 //////
-	void ilsa_pass0(SLsaCmdLine* cmdLine, SLsaFile* file)
+	void ilsa_pass0(void)
 	{
 		SLsaPass0	p0;
 		SComp*		compNext;
 
 
 		//////////
-		// Lex and parse the entire file
+		// Lex and parse
 		//////
-			p0.cmdLine	= cmdLine;
-			p0.file		= file;
+			p0.file = cmdLine.file;
 			for (p0.line = p0.file->firstLine; p0.line; p0.line = p0.line->ll.nextLine)
 			{
 				// Initial lex and parse
@@ -125,6 +124,9 @@
 		//////
 			for (p0.line = p0.file->firstLine; p0.line; p0.line = p0.line->ll.nextLine)
 			{
+				// Store the file
+				p0.file = (SLsaFile*)p0.line->file;
+
 				// See what was parsed
 				p0.comp = p0.line->firstComp;
 				if (!p0.comp || p0.comp->iCode == _ICODE_COMMENT)
@@ -138,7 +140,7 @@
 					if (!iilsa_pass0_include(&p0))
 					{
 						// If we need to terminate on errors
-						if (p0.cmdLine->w.Wfatal_errors)
+						if (cmdLine.w.Wfatal_errors)
 							return;		// Error was displayed by the called function
 
 					} else {
@@ -159,37 +161,34 @@
 				// Is this line
 				if (!ilsa_status_line_isCompleted(p0.line) && (p0.comp = p0.line->firstComp))
 				{
+					// Store the file
+					p0.file = (SLsaFile*)p0.line->file;
 
-					//////////
 					// Is it one we're looking for?
-					//////
-						switch (p0.comp->iCode)
-						{
-							case _ICODE_LSA_DEFINE:
-								ilsa_pass0_define(&p0);						// Jul.11.2016 -- RCH completed
-								break;
+					switch (p0.comp->iCode)
+					{
+						case _ICODE_LSA_DEFINE:
+							ilsa_pass0_define(&p0);						// Jul.11.2016 -- RCH completed
+							break;
 
-							case _ICODE_LSA_MACRO:
-								ilsa_pass0_macro(&p0);						// Jul.11.2016 -- RCH completed
-								break;
-						}
+						case _ICODE_LSA_MACRO:
+							ilsa_pass0_macro(&p0);						// Jul.11.2016 -- RCH completed
+							break;
 
-
-					//////////
-					// Is the next component an equal sign or the EQU keyword?
-					//////
-						if (iiComps_isAlphanumeric_by_iCode(p0.comp->iCode) && (compNext = iComps_Nth(p0.comp, false)))
-						{
-							// If it's EQU or = then it's an implicit define
-							if (compNext->iCode == _ICODE_LSA_EQU || compNext->iCode == _ICODE_EQUAL_SIGN)
+						default:
+							// Is the next component an equal sign or the EQU keyword?
+							if (iiComps_isAlphanumeric_by_iCode(p0.comp->iCode) && (compNext = iComps_Nth(p0.comp, false)))
 							{
-								iilsa_pass0_equ_or_equalSign(&p0, p0.comp, compNext);
-								break;
+								// If it's EQU or = then it's an implicit define
+								if (compNext->iCode == _ICODE_LSA_EQU || compNext->iCode == _ICODE_EQUAL_SIGN)
+									iilsa_pass0_equ_or_equalSign(&p0, p0.comp, compNext);
 							}
-						}
+							break;
 
+					}
 				}
 			}
+
 	}
 
 
@@ -238,7 +237,7 @@
 				// If we get here, file's loaded
 
 				// If we're in verbose mode, display the loaded file
-				if (p0->cmdLine->o.lVerbose)
+				if (cmdLine.o.lVerbose)
 					printf("--include \"%s\"", p0->filename);
 
 				// Lex and parse the include file content
@@ -247,7 +246,7 @@
 
 				// Insert its lines after this #include line
 				lnLineCount = iLine_migrateLines(&p0->fileInclude->firstLine, p0->line);
-				if (p0->cmdLine->o.lVerbose)
+				if (cmdLine.o.lVerbose)
 					printf(", %d lines\n", lnLineCount);
 
 				// We're done with the include line, no errors

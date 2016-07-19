@@ -92,7 +92,7 @@
 // Pass-1 -- Macro/define expansion
 //
 //////
-	void ilsa_pass1(SLsaCmdLine* cmdLine, SLsaFile* file)
+	void ilsa_pass1(void)
 	{
 		u32			lnI;
 		SLine*		line;

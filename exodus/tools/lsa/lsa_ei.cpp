@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/exodus/tools/lsa/lsa.cpp
+// /libsf/exodus/tools/lsa/lsa_ei.cpp
 //
 //////
 //    _     _ _     _____ _____ 
@@ -19,13 +19,13 @@
 //
 //////
 // Version 0.01
-// Copyright (c) 2015 by Rick C. Hodgin
+// Copyright (c) 2016 by Rick C. Hodgin
 //////
 // Last update:
-//     Sep.12.2015
+//     Jul.19.2016
 //////
 // Change log:
-//     Sep.12.2015 - Initial creation
+//     Jul.19.2016 - Initial creation
 //////
 //
 // This document and all documents contained within are released as Liberty Software
@@ -79,118 +79,145 @@
 // talents, your gifts, your praise, unto Him.  In Jesus' name I pray.  Amen.
 //
 //////
-//
-// Liberty Software Foundation's lasm (LibSF Assembler).
-//
-//////
-
-
-
-
-//////////
-// Uses Visual FreePro, Jr's existing facilities to simplify our processing
-//////
-	#define _NONVJR_COMPILE 1				// Turns off some features in VJr that fail on compilation from here
-	#define _LSA_COMPILE 1					// Turns on some features in VJr for lasm
-	#define _BMP_LOCALITY 1					// Force definitions to be local
-	const char cgc_appName[] = "lsa";		// Give our app a name
-	
-
-
-
-//////////
-// Include VJr stuff, then lsa stuff
-//////
-	#include "lsa.h"
-
-	// Algorithms
-	#include "lsa_cmdline.cpp"		// Command line algorithms
-	#include "lsa_dmac.cpp"			// Define/Macro token algorithms
-	#include "lsa_ei.cpp"			// extra_info algorithms
-	#include "lsa_include.cpp"		// Process include file algorithms
-	#include "lsa_params.cpp"		// Process parameter algorithms
-	#include "lsa_status.cpp"		// File, line, component status algorithms
 
 
 
 
 //////////
 //
-// Main program entry point
+// Called to add something to the indicated file, line, or component
 //
 //////
-	#undef main
-
-	s32 main(s32 argc, s8* argv[])
+	// Note:  valueTextTemplate is expected to include a %d parameter for tnValueCode, and a %s parameter for the associated text
+	void iilsa_append_extraInfo(s32			tnValueCode,
+								cs8*		valueTextTemplate,
+								cs8*		tcValueText,
+								SLine*		line,
+								SComp*		comp,
+								SLsaFile*	file,
+								s32			tnValueBaseAddto,
+								s32			tn_eiType)
 	{
-		u32				lnI, lnPathnameLength;
-		SLsaFile*		file;
-		SLsaInclude*	include;
-		s8				fileName[_MAX_PATH];
+		s32				lnLength;
+		s8				buffer[1024];
+		SExtraInfo*		ei;
 
 
 		//////////
-		// Identify
+		// Generate the error
 		//////
-			printf("ES/2 LibSF Assembler | LASM v0.01\n");
+			sprintf(buffer, valueTextTemplate, tnValueCode + tnValueBaseAddto, tcValueText);
+			lnLength = strlen(buffer);
 
 
 		//////////
-		// Initialize
+		// Store the error
 		//////
-			memset(&cmdLine,	0, sizeof(cmdLine));		// Initialize all options to off
-			memset(&cmdLine.w,	1, sizeof(cmdLine.w));		// Initialize all warnings to on
-			memset(fileName,	0, sizeof(fileName));
-			iBuilder_createAndInitialize(&includePaths, sizeof(SLsaInclude)	* 50);
-			iBuilder_createAndInitialize(&includeFiles, sizeof(SLsaFile)	* 50);
-
-			// Grab the current directory (as our starting point)
-			lnPathnameLength	= GetCurrentDirectory(sizeof(fileName) - 1, fileName);
-			include				= ilsa_includePath_append(fileName, lnPathnameLength, false);
+			     if (line)		ei = iExtraInfo_allocate(&line->extra_info, tn_eiType);
+			else if (comp)		ei = iExtraInfo_allocate(&comp->extra_info, tn_eiType);
+			else if (file)		ei = iExtraInfo_allocate(&file->extra_info, tn_eiType);
 
 
 		//////////
-		// Grab options
+		// Store the related error message
 		//////
-			ilsa_parse_commandLine(argc, argv);
+			if (ei)
+				iDatum_duplicate(&ei->info, (cvp*)buffer);
 
 
 		//////////
-		// Compile
+		// Print it
 		//////
-			// Dispatch each pass
-			iterate(lnI, (cmdLine.filesToCompile), file, SLsaFile)
-			//
-				// Grab the current file
-				cmdLine.file = file;
+			printf(buffer);
 
-				// Dispatch each pass
-				ilsa_pass0();
-				ilsa_pass1();
-				ilsa_pass2();
-				ilsa_pass3();
-				ilsa_passX();
-				ilsa_passY();
-				ilsa_passZ();
-			//
-			iterate_end;
+			// Append a trailing CR if it doesn't already have one
+			if (*(u16*)&buffer[lnLength - 2] != 'n\\' && *(u16*)&buffer[lnLength - 4] != 'n\\')
+				printf("\n");
 
-
-		// If we get here, success
-		return(0);
 	}
 
-
-
-
-//////////
-//
-// Used for internal debugging, places where errors are not actively reported, but
-// should never occur, but are occurring, are routed through here for debugging.
-//
-//////
-	void ilsa_route_through_silentError_for_debugging(void)
+	// Note:  noteTextTemplate is expected to include a %d parameter for tnErrorCode, and a %s parameter for the associated error text
+	void iilsa_note(s32 tnNoteCode, cs8* noteTextTemplate, SLine* line, SComp* comp)
 	{
-		// For debugging, errors that should not occur route through this function
-		debug_nop;
+		cs8* lcNoteText;
+
+
+		//////////
+		// Grab the error message
+		//////
+			switch (tnNoteCode)
+			{
+				default:
+					// Internal error (should never happen)
+					ilsa_route_through_silentError_for_debugging();
+					lcNoteText = cgc_lsa_note_unknown_note;
+					break;
+			}
+
+
+		//////////
+		// Append the warning
+		//////
+			iilsa_append_extraInfo(tnNoteCode, noteTextTemplate, lcNoteText, line, comp, (SLsaFile*)line->file, _LSA_NOTE_BASE, _EXTRA_INFO_NOTE);
+
+	}
+
+	// Note:  warningTextTemplate is expected to include a %d parameter for tnErrorCode, and a %s parameter for the associated error text
+	void iilsa_warning(s32 tnWarningCode, cs8* warningTextTemplate, SLine* line, SComp* comp)
+	{
+		cs8* lcWarningText;
+
+
+		//////////
+		// Grab the error message
+		//////
+			switch (tnWarningCode)
+			{
+				case _LSA_WARNING_UNREFERENCED_PARAMETER:
+					lcWarningText = cgc_lsa_warning_unreferenced_parameter;
+					break;
+
+				default:
+					// Internal error (should never happen)
+					ilsa_route_through_silentError_for_debugging();
+					lcWarningText = cgc_lsa_warning_unknown_warning;
+					break;
+			}
+
+
+		//////////
+		// Append the warning
+		//////
+			iilsa_append_extraInfo(tnWarningCode, warningTextTemplate, lcWarningText, line, comp, (SLsaFile*)line->file, _LSA_WARNING_BASE, _EXTRA_INFO_WARNING);
+
+	}
+
+	// Note:  errorTextTemplate is expected to include a %d parameter for tnErrorCode, and a %s parameter for the associated error text
+	void iilsa_error(s32 tnErrorCode, cs8* errorTextTemplate, SLine* line, SComp* comp)
+	{
+		cs8* lcErrorText;
+
+
+		//////////
+		// Grab the error message
+		//////
+			switch (tnErrorCode)
+			{
+				case _LSA_ERROR_TOKEN_NAME_ALREADY_EXISTS:
+					lcErrorText = cgc_lsa_error_token_name_already_exists;
+					break;
+
+				default:
+					// Internal error (should never happen)
+					ilsa_route_through_silentError_for_debugging();
+					lcErrorText = cgc_lsa_error_unknown_error;
+					break;
+			}
+
+
+		//////////
+		// Append the error
+		//////
+			iilsa_append_extraInfo(tnErrorCode, errorTextTemplate, lcErrorText, line, comp, (SLsaFile*)line->file, _LSA_ERROR_BASE, _EXTRA_INFO_ERROR);
+
 	}

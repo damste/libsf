@@ -92,6 +92,6 @@
 // Pass-3 -- Token parsing
 //
 //////
-	void ilsa_pass3(SLsaCmdLine* cmdLine, SLsaFile* file)
+	void ilsa_pass3(void)
 	{
 	}

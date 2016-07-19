@@ -83,6 +83,7 @@
 
 struct SLsaFile;
 struct SLsaBlock;
+struct SBuilder;
 
 
 //////////
@@ -108,6 +109,10 @@ struct SLsaBlock;
 	{
 		SWarnings	w;									// Which warnings are enabled?
 		SOptions	o;									// Which options are enabled?
+
+		// Command line files which are processed
+		SLsaFile*	file;								// The current file being processed
+		SBuilder*	filesToCompile;						// (SLsaFile) Separate files specified on the command line
 	};
 
 	// File-level assemble status
@@ -265,14 +270,13 @@ struct SLsaBlock;
 	// Pass-0 compilation local variables
 	struct SLsaPass0
 	{
-		SLsaCmdLine*		cmdLine;
 		SLsaFile*			file;
-
 		SLine*				line;
 		SComp*				comp;
-// 		SComp*				compNext;
+
 		SComp*				compFile;
-		SLsaDMac*	dm;
+		SLsaDMac*			dm;
+
 		SLsaFile*			fileInclude;
 		s8					filename[_MAX_PATH];
 	};
