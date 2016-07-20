@@ -164,9 +164,17 @@
 		}
 	}
 
-	// qsort indirect callback
+	// qsort indirect callback through bcb->_qsortCmpFunc()
 	int iilsa_pass1__callback_sort(SBSearchCallback* bcb, cvp left, cvp right)
 	{
-		// Simulate equality
-		return(0);
+		SDatum* l;
+		SDatum* r;
+
+
+		// Grab pointers
+		l = *((SDatum**)left);
+		r = *((SDatum**)right);
+
+		// Compare th
+		return(iDatum_compare(l, r));
 	}

@@ -63,29 +63,36 @@
 //////
 	struct SBSearch
 	{
-		SCallback*	cb;
+		SCallback*		cb;
 
-		void*		data;
-		s32			testResult;
+		void*			data;
+		s32				testResult;
 	};
 
 	struct SBSearchCallback
 	{
-		// For iBSearch_find()
-		void*		needle;				// Set by the caller as a reference to the thing being sought after
-		void*		haystack;			// Set by the iBSearch*() algorithms to perform the test
-		union {
-			uptr	_binarySearchFunc;
-			int		(*binarySearchFunc)	(SBSearchCallback* bcb);
-		};
 
+		//////////
+		// For iBSearch_find()
+		//////
+			void*		needle;				// Set by the caller as a reference to the thing being sought after
+			void*		haystack;			// Set by the iBSearch*() algorithms to perform the test
+			union {
+				uptr	_binarySearchFunc;
+				int		(*binarySearchFunc)	(SBSearchCallback* bcb);
+			};
+
+
+		//////////
 		// For iBSearch_sort()
-		cvp			left;
-		cvp			right;
-		union {
-			uptr	_qsortCmpFunc;
-			int		(*qsortCmpFunc)		(SBSearchCallback* bcb);
-		};
+		//////
+			cvp			left;
+			cvp			right;
+			union {
+				uptr	_qsortCmpFunc;
+				int		(*qsortCmpFunc)		(SBSearchCallback* bcb);
+			};
+
 	};
 
 
@@ -95,7 +102,7 @@
 	void				iBSearch_append									(SBuilder* list, SDatum* content);
 	bool				iBSearch_sort									(SBuilder* list, SBSearchCallback* bcb);
 	int					iiBSearch_sort__callback						(void* vbcb, cvp left, cvp right);
-	bool				iBSearch_find									(SBuilder* list, SBSearchCallback* bcb, void** ptrOut);
+	bool				iBSearch_find									(SBuilder* list, SBSearchCallback* bcb, void** ptrOut, bool tlCouldHaveDuplicates = false);
 
 
 
@@ -108,6 +115,7 @@
 //////
 	void iBSearch_append(SBuilder* list, SDatum* content)
 	{
+		// Append the pointer
 		iBuilder_append_uptr(list, (u32)content);
 	}
 
@@ -159,7 +167,96 @@
 // bcb->haystack at each callback, and when found, updates the ptrOut record (if present).
 //
 //////
-	bool iBSearch_find(SBuilder* list, SBSearchCallback* bcb, void** ptrOut)
+	bool iBSearch_find(SBuilder* list, SBSearchCallback* bcb, void** ptrOut, bool tlCouldHaveDuplicates)
 	{
-		return(false);
+		bool	llFound;
+		s32		lnLo, lnHi, lnMid, lnStep, lnResult;
+
+
+		// Determine the initial range
+		lnStep	= sizeof(void*);
+		lnLo	= 0;
+		lnHi	= list->populatedLength / lnStep;
+
+
+// TODO:  untested code, breakpoint and examine
+debug_break;
+		//////////
+		// Iterate until we cross pointers, or find our entry
+		//////
+			lnMid = lnHi / 2;
+			while (lnMid > lnLo && lnMid < lnHi)
+			{
+
+				//////////
+				// Compare this entry
+				//////
+					bcb->haystack	= (void*)(list->buffer + (lnMid * lnStep));
+					lnResult		= bcb->binarySearchFunc(bcb);
+
+
+				//////////
+				// Was this the find?
+				//////
+					if (lnResult == 0)
+					{
+						// Yes
+						if (tlCouldHaveDuplicates && lnMid > 0)
+						{
+							// Iterate back one and, if found, continue with our binary search to find the first duplicate match
+							bcb->haystack = (void*)(list->buffer + ((lnMid - 1) * lnStep));
+							if (bcb->binarySearchFunc(bcb) == 0)
+							{
+								// It's still a match, so continue iterating
+								goto toward_lo;
+							}
+							// If we get here, we're on the first match
+						}
+
+						// We have our find
+						llFound = true;
+						break;
+
+					} else if (lnResult > 0) {
+						// Needle was greater than haystack
+						lnLo = lnMid + 1;
+
+					} else {
+						// Needle was less than haystack
+toward_lo:
+						lnHi = lnMid - 1;
+					}
+
+
+				//////////
+				// Find out where we are
+				//////
+					if (lnLo > lnHi)
+					{
+						// No find
+						llFound = false;
+						break;
+
+					} else if (lnLo == lnHi) {
+						// This is the last one to try
+						bcb->haystack = (void*)(list->buffer + ((lnMid - 1) * lnStep));
+						llFound = (bcb->binarySearchFunc(bcb) == 0);
+						break;
+
+					} else {
+						// Continue on
+						lnMid = (lnHi + lnLo) / 2;
+					}
+
+			}
+
+
+		//////////
+		// Indicate our find / no-find
+		//////
+			if (ptrOut)
+				*ptrOut = ((llFound) ? (void*)(list->buffer + (lnMid * lnStep)) : NULL);
+
+			// Indicate our result
+			return(llFound);
 	}
