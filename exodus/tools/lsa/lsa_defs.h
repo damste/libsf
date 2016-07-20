@@ -126,7 +126,7 @@ struct SLsaInclude;
 	SLsaExpansion*		iilsa_dmac_unfurl_addParameter					(SBuilder** expansion_stepsRoot, s32 tnParamNum, SDatum* name, s32 tnWhitespaces, bool tlPrefixCrLf, SBuilder* tbuilder);
 	SLsaExpansion*		iilsa_dmac_unfurl_addText						(SBuilder** expansion_stepsRoot, SDatum* text, s32 tnWhitespaces, bool tlPrefixCrLf, SBuilder* tbuilder = NULL);
 	bool				ilsa_dmac_find_byComp							(SBuilder* sortList, SComp* comp, SLsaDMac** dmOut);
-	bool				iilsa_dmac_find_byComp__callback				(SCallback* cb);
+	s32					iilsa_dmac_find_byComp__callback				(SBSearchCallback* bcb);
 
 	// lsa_ei.cpp
 	// Note, warning, error, and other forms of associated reporting
@@ -150,7 +150,7 @@ struct SLsaInclude;
 // pass1.cpp -- Macro expansion
 //////
 	void				ilsa_pass1										(void);
-	int					iilsa_pass1__callback_sort						(SBSearchCallback* bcb, cvp left, cvp right);
+	int					iilsa_pass1__callback_sort						(SBSearchCallback* bcb);
 
 
 //////////

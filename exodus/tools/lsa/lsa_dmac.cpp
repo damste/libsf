@@ -378,28 +378,19 @@
 
 		// Search and return result
 		memset(&bcb, 0, sizeof(bcb));
-		bcb._qsortCmpFunc	= (uptr)&iilsa_dmac_find_byComp__callback;
-		bcb.needle			= &comp->text;
+		bcb._binarySearchFunc	= (uptr)&iilsa_dmac_find_byComp__callback;
+		bcb.datumNeedle			= &comp->text;
 		return(iBSearch_find(sortList, &bcb, (void**)dmOut));
 	}
 
-	// cb->data1 = SBinary* for the search
-	// cb->data2 = SDatum* being searched for
-	bool iilsa_dmac_find_byComp__callback(SCallback* cb)
+	s32 iilsa_dmac_find_byComp__callback(SBSearchCallback* bcb)
 	{
-		SBSearch*	bin;
-		SDatum*		nameHaystack;
-		SDatum*		nameNeedle;
+		SLsaDMac* dmHaystack;
+		
 
+		// Grab the dmac
+		dmHaystack = (SLsaDMac*)bcb->haystack;
 
-		// Grab this item
-		bin				= (SBSearch*)cb->data1;
-		nameHaystack	= (SDatum*)bin->data;
-		nameNeedle		= (SDatum*)cb->data2;
-
-		// Does it match up?
-		bin->testResult	= iDatum_compare(nameNeedle, nameHaystack);
-
-		// It doesn't matter what we return, it will continue until the binary search is completed
-		return(true);
+		// Compare them
+		return(iDatum_compare(bcb->datumNeedle, &dmHaystack->name->text));
 	}

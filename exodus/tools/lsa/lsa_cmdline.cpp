@@ -221,7 +221,7 @@
 
 				// Add the file
 				if (cmdLine.filesToCompile)
-					iBuilder_append_uptr(cmdLine.filesToCompile, (uptr)file);
+					iBuilder_appendData(cmdLine.filesToCompile, file, sizeof(SLsaFile));
 			}
 		}
 	}

@@ -75,22 +75,34 @@
 		//////////
 		// For iBSearch_find()
 		//////
-			void*		needle;				// Set by the caller as a reference to the thing being sought after
-			void*		haystack;			// Set by the iBSearch*() algorithms to perform the test
+			union {
+				void*	needle;				// Set by the caller as a reference to the thing being sought after
+				SDatum*	datumNeedle;
+			};
+			union {
+				void*	haystack;			// Set by the iBSearch*() algorithms to perform the test
+				SDatum*	datumHaystack;
+			};
 			union {
 				uptr	_binarySearchFunc;
-				int		(*binarySearchFunc)	(SBSearchCallback* bcb);
+				s32		(*binarySearchFunc)	(SBSearchCallback* bcb);
 			};
 
 
 		//////////
 		// For iBSearch_sort()
 		//////
-			cvp			left;
-			cvp			right;
+			union {
+				cvp		left;
+				SDatum*	datumLeft;
+			};
+			union {
+				cvp		right;
+				SDatum*	datumRight;
+			};
 			union {
 				uptr	_qsortCmpFunc;
-				int		(*qsortCmpFunc)		(SBSearchCallback* bcb);
+				s32		(*qsortCmpFunc)		(SBSearchCallback* bcb);
 			};
 
 	};
@@ -99,7 +111,7 @@
 //////////
 // Functions
 //////
-	void				iBSearch_append									(SBuilder* list, SDatum* content);
+	void				iBSearch_append									(SBuilder* list, void* ptr);
 	bool				iBSearch_sort									(SBuilder* list, SBSearchCallback* bcb);
 	int					iiBSearch_sort__callback						(void* vbcb, cvp left, cvp right);
 	bool				iBSearch_find									(SBuilder* list, SBSearchCallback* bcb, void** ptrOut, bool tlCouldHaveDuplicates = false);
@@ -113,10 +125,10 @@
 // mostly a code-documenting wrapper for a call to iBuilder_appendData().
 //
 //////
-	void iBSearch_append(SBuilder* list, SDatum* content)
+	void iBSearch_append(SBuilder* list, void* ptr)
 	{
 		// Append the pointer
-		iBuilder_append_uptr(list, (u32)content);
+		iBuilder_append_uptr(list, (u32)ptr);
 	}
 
 
@@ -133,7 +145,7 @@
 		if (list && bcb && bcb->_qsortCmpFunc)
 		{
 			// Sort
-			qsort_s(list->buffer, list->populatedLength / sizeof(SDatum*), sizeof(SDatum*), &iiBSearch_sort__callback, bcb);
+			qsort_s(list->buffer, list->populatedLength / sizeof(void*), sizeof(void*), &iiBSearch_sort__callback, bcb);
 
 			// Indicate success
 			return(true);
@@ -150,9 +162,9 @@
 
 
 		// Store the parameters
-		bcb			= (SBSearchCallback*)vbcb;
-		bcb->left	= left;
-		bcb->right	= right;
+		bcb				= (SBSearchCallback*)vbcb;
+		bcb->datumLeft	= *(SDatum**)left;
+		bcb->datumRight	= *(SDatum**)right;
 
 		// Call the qsort compare function
 		return(bcb->qsortCmpFunc(bcb));
@@ -170,28 +182,26 @@
 	bool iBSearch_find(SBuilder* list, SBSearchCallback* bcb, void** ptrOut, bool tlCouldHaveDuplicates)
 	{
 		bool	llFound;
-		s32		lnLo, lnHi, lnMid, lnStep, lnResult;
+		s32		lnLo, lnHi, lnMid, lnResult;
+		cs32	lnStep = sizeof(void*);
 
 
 		// Determine the initial range
-		lnStep	= sizeof(void*);
 		lnLo	= 0;
-		lnHi	= list->populatedLength / lnStep;
+		lnHi	= (list->populatedLength / lnStep) - 1;
 
 
-// TODO:  untested code, breakpoint and examine
-debug_break;
 		//////////
 		// Iterate until we cross pointers, or find our entry
 		//////
 			lnMid = lnHi / 2;
-			while (lnMid > lnLo && lnMid < lnHi)
+			while (lnMid >= lnLo && lnMid <= lnHi)
 			{
 
 				//////////
 				// Compare this entry
 				//////
-					bcb->haystack	= (void*)(list->buffer + (lnMid * lnStep));
+					bcb->haystack	= *(void**)(list->buffer + (lnMid * lnStep));
 					lnResult		= bcb->binarySearchFunc(bcb);
 
 
@@ -204,13 +214,13 @@ debug_break;
 						if (tlCouldHaveDuplicates && lnMid > 0)
 						{
 							// Iterate back one and, if found, continue with our binary search to find the first duplicate match
-							bcb->haystack = (void*)(list->buffer + ((lnMid - 1) * lnStep));
+							bcb->haystack = *(void**)(list->buffer + ((lnMid - 1) * lnStep));
 							if (bcb->binarySearchFunc(bcb) == 0)
 							{
 								// It's still a match, so continue iterating
 								goto toward_lo;
 							}
-							// If we get here, we're on the first match
+							// If we get here, there was no match above (we're on the first / top match)
 						}
 
 						// We have our find
@@ -239,7 +249,8 @@ toward_lo:
 
 					} else if (lnLo == lnHi) {
 						// This is the last one to try
-						bcb->haystack = (void*)(list->buffer + ((lnMid - 1) * lnStep));
+						lnMid			= lnLo;
+						bcb->haystack	= *(void**)(list->buffer + (lnMid * lnStep));
 						llFound = (bcb->binarySearchFunc(bcb) == 0);
 						break;
 
@@ -255,7 +266,7 @@ toward_lo:
 		// Indicate our find / no-find
 		//////
 			if (ptrOut)
-				*ptrOut = ((llFound) ? (void*)(list->buffer + (lnMid * lnStep)) : NULL);
+				*ptrOut = ((llFound) ? *(void**)(list->buffer + (lnMid * lnStep)) : NULL);
 
 			// Indicate our result
 			return(llFound);

@@ -130,7 +130,7 @@
 				//
 
 					// Add this item to the list
-					iBSearch_append(sortList, &dm->name->text);
+					iBSearch_append(sortList, dm);
 
 				//
 				iterate_end;
@@ -146,16 +146,24 @@
 			//////
 				for (comp = cmdLine.file->firstLine->firstComp; comp; comp = iComps_Nth(comp))
 				{
-					// All lines should have compiler info, but just to be sure...
-					if (!ilsa_status_comp_isCompleted(comp) && iiComps_isAlphanumeric_by_iCode(comp->iCode) && ilsa_dmac_find_byComp(sortList, comp, &dm))
+					// Only applying to uncompleted lines
+					if (!ilsa_status_comp_isCompleted(comp))
 					{
-						// Does it have parameters?
-						if (dm->params->populatedLength != 0)
+						if (iiComps_isAlphanumeric_by_iCode(comp->iCode))
 						{
-							// Yes, gather the parameters
+							if (ilsa_dmac_find_byComp(sortList, comp, &dm))
+							{
+								// Does it have parameters?
+								if (dm->params && dm->params->populatedLength > 0)
+								{
+									// Yes, gather the parameters
+									debug_nop;
 
-						} else {
-							// Just swap out the component with this entry
+								} else {
+									// Just swap out the component with this entry
+									debug_nop;
+								}
+							}
 						}
 					}
 				}
@@ -164,16 +172,16 @@
 	}
 
 	// qsort indirect callback through bcb->_qsortCmpFunc()
-	int iilsa_pass1__callback_sort(SBSearchCallback* bcb, cvp left, cvp right)
+	int iilsa_pass1__callback_sort(SBSearchCallback* bcb)
 	{
-		SDatum* l;
-		SDatum* r;
+		SLsaDMac*	dml;
+		SLsaDMac*	dmr;
 
 
-		// Grab pointers
-		l = *((SDatum**)left);
-		r = *((SDatum**)right);
+		// Grab the dmacs
+		dml	= (SLsaDMac*)bcb->left;
+		dmr	= (SLsaDMac*)bcb->right;
 
-		// Compare th
-		return(iDatum_compare(l, r));
+		// Compare them
+		return(iDatum_compare(&dml->name->text, &dmr->name->text));
 	}

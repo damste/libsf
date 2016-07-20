@@ -230,18 +230,13 @@
 	{
 		// Make sure there's something to update
 		if (builder && data && data->_data && data->length > 0)
-			return((cs8*)iBuilder_appendData(builder, data->data_cu8, data->length));
+			return((cs8*)iBuilder_appendData(builder, data->data_vp, data->length));
 
 		// Return our original input
 		return(NULL);
 	}
 
-	cs8* iBuilder_appendData(SBuilder* builder, cs8* tcData, u32 tnDataLength)
-	{
-		return((cs8*)iBuilder_appendData(builder, (cu8*)tcData, tnDataLength));
-	}
-
-	cu8* iBuilder_appendData(SBuilder* builder, cu8* tcData, u32 tnDataLength)
+	void* iBuilder_appendData(SBuilder* builder, void* tcData, u32 tnDataLength)
 	{
 		// Make sure our environment is sane
 		if (builder)
@@ -268,7 +263,7 @@
 				}
 			}
 			// Indicate where the start of that buffer is
-			return(builder->data_u8 + builder->populatedLength - tnDataLength);
+			return((void*)(builder->data_u8 + builder->populatedLength - tnDataLength));
 		}
 		// If we get here, things are bad
 		return(NULL);
@@ -314,7 +309,7 @@
 //////
 	u8* iBuilder_appendCrLf(SBuilder* builder)
 	{
-		return((u8*)iBuilder_appendData(builder, (cu8*)"\r\n", 2));
+		return((u8*)iBuilder_appendData(builder, (void*)"\r\n", 2));
 	}
 
 

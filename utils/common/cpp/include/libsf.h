@@ -117,6 +117,7 @@
 			SDate*		data_date;			// To access the data as a date in the text-form YYYYMMDD
 			SBgra*		data_bgra;			// To access the data as SBgra
 			SBgr*		data_bgr;			// To access the data as SBgr
+			SDatum*		data_datum;			// To access the data as another level of datum
 			#ifdef M__APM__INCLUDED
 			SMapm*		data_big;			// To access the data as an arbitrary precision structure wrapped around SMapm (see 3rd_party\mapm\m_apm.h)
 			#endif
@@ -180,6 +181,7 @@
 			s8*		data_s8;								// Pointer to a buffer allocated in blocks
 			u8*		data_u8;
 			cvp		data_cvp;
+			SDatum*	data_datum;
 			s8*		buffer;
 			uptr	_data;
 		};
@@ -1366,8 +1368,7 @@
 	void		iBuilder_createAndInitialize				(SBuilder** builder, u32 tnAllocationBlockSize = 4096);
 	bool		iBuilder_isPointer							(SBuilder* builder, uptr testptr, void** outPtr = NULL);
 	cs8*		iBuilder_appendData							(SBuilder* builder, SDatum* data);
-	cs8*		iBuilder_appendData							(SBuilder* builder, cs8* tcData, u32 tnDataLength = (u32)-1);
-	cu8*		iBuilder_appendData							(SBuilder* builder, cu8* tcData, u32 tnDataLength = (u32)-1);
+	void*		iBuilder_appendData							(SBuilder* builder, void* tcData, u32 tnDataLength = (u32)-1);
 	u8*			iBuilder_append_uptr						(SBuilder* builder, uptr tnValue);
 	u8*			iBuilder_appendCrLf							(SBuilder* builder);
 	u8*			iBuilder_appendWhitespaces					(SBuilder* builder, s32 tnCount, u8 cWhitespaceChar = 32);

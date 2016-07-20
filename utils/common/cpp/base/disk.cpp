@@ -573,7 +573,7 @@
 			if (lnI >= lockRoot->populatedLength)
 			{
 				// Create a new one
-				dl = (SDiskLock*)iBuilder_appendData(lockRoot, (cs8*)NULL, sizeof(SDiskLock));
+				dl = (SDiskLock*)iBuilder_appendData(lockRoot, NULL, sizeof(SDiskLock));
 				// Note:  disk members are all initialized to 0s
 			}
 
