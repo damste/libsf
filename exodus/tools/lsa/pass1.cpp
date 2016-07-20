@@ -95,7 +95,6 @@
 	void ilsa_pass1(void)
 	{
 		u32					lnI;
-		SLine*				line;
 		SComp*				comp;
 		SLsaDMac*			dm;
 		SBuilder*			sortList;

@@ -89,8 +89,11 @@ struct SLsaInclude;
 //////////
 // lasm.cpp
 //////
-	void				ilsa_parse_commandLine							(s32 argc, s8* argv[]);
+	SLsaInclude*		ilsa_init										(void);
 	void				ilsa_route_through_silentError_for_debugging	(void);
+
+	// lsa_cmdline.cpp
+	void				ilsa_parse_commandLine							(s32 argc, s8* argv[]);
 
 	// lsa_include.cpp
 	bool				ilsa_includeFile_append							(s8* tcPathname, SLsaFile** file);

@@ -123,30 +123,15 @@
 
 	s32 main(s32 argc, s8* argv[])
 	{
-		u32				lnI, lnPathnameLength;
+		u32				lnI;
 		SLsaFile*		file;
 		SLsaInclude*	include;
-		s8				fileName[_MAX_PATH];
-
-
-		//////////
-		// Identify
-		//////
-			printf("ES/2 LibSF Assembler | LASM v0.01\n");
 
 
 		//////////
 		// Initialize
 		//////
-			memset(&cmdLine,	0, sizeof(cmdLine));		// Initialize all options to off
-			memset(&cmdLine.w,	1, sizeof(cmdLine.w));		// Initialize all warnings to on
-			memset(fileName,	0, sizeof(fileName));
-			iBuilder_createAndInitialize(&includePaths, sizeof(SLsaInclude)	* 50);
-			iBuilder_createAndInitialize(&includeFiles, sizeof(SLsaFile)	* 50);
-
-			// Grab the current directory (as our starting point)
-			lnPathnameLength	= GetCurrentDirectory(sizeof(fileName) - 1, fileName);
-			include				= ilsa_includePath_append(fileName, lnPathnameLength, false);
+			include = ilsa_init();
 
 
 		//////////
@@ -183,6 +168,35 @@
 
 		// If we get here, success
 		return(0);
+	}
+
+
+
+
+//////////
+//
+// 
+//
+//////
+	SLsaInclude* ilsa_init(void)
+	{
+		u32	lnPathnameLength;
+		s8	fileName[_MAX_PATH];
+
+
+		// Identify
+		printf("ES/2 LibSF Assembler | LSA v0.01\n");
+
+		// Initialize
+		memset(&cmdLine,	0, sizeof(cmdLine));		// Initialize all options to off
+		memset(&cmdLine.w,	1, sizeof(cmdLine.w));		// Initialize all warnings to on
+		memset(fileName,	0, sizeof(fileName));
+		iBuilder_createAndInitialize(&includePaths, sizeof(SLsaInclude)	* 50);
+		iBuilder_createAndInitialize(&includeFiles, sizeof(SLsaFile)	* 50);
+
+		// Grab the current directory (as our starting point)
+		lnPathnameLength	= GetCurrentDirectory(sizeof(fileName) - 1, fileName);
+		return(ilsa_includePath_append(fileName, lnPathnameLength, false));
 	}
 
 

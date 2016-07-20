@@ -353,11 +353,26 @@
 
 //////////
 //
+// Called to see if a breakpoint exists on the line
+//
+//////
+	bool iBreakpoint_exists(SBuilder* extra_info)
+	{
+		// Needs coded
+		return(false);
+	}
+
+
+
+
+//////////
+//
 // Called to delete the indicated breakpoint
 //
 //////
-	void iBreakpoint_delete(SBreakpoint** breakpoint)
+	void iBreakpoint_delete(SBuilder** extra_info)
 	{
+#ifdef _SHOW_REFACTOR_ERRORS
 		SBreakpoint* bp;
 
 
@@ -375,6 +390,7 @@
 			// Delete the items as they are
 			bp->isUsed = true;
 		}
+#endif
 	}
 
 
@@ -387,8 +403,9 @@
 // and added manually by the code in the calling algorithm.
 //
 //////
-	SBreakpoint* iBreakpoint_add(SBreakpoint** breakpoint, u32 tnType)
+	SBreakpoint* iBreakpoint_add(SBuilder** extra_info, u32 tnType)
 	{
+#ifdef _SHOW_REFACTOR_ERRORS
 		u32				lnI;
 		SBreakpoint*	bp;
 
@@ -457,6 +474,7 @@
 			*breakpoint	= bp;
 			return(bp);
 		}
+#endif
 
 		// If we get here, failure
 		return(NULL);

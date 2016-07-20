@@ -966,18 +966,16 @@ goto_next_component:
 		if (sem && sem->line_cursor)
 		{
 			// Grab the line
-#ifdef _SHOW_REFACTOR_ERRORS
-			if (sem->line_cursor->breakpoint)
+			if (iBreakpoint_exists(sem->line_cursor->extra_info))
 			{
 				// Delete the existing breakpoint
-				iBreakpoint_delete(&sem->line_cursor->breakpoint);
+				iBreakpoint_delete(&sem->line_cursor->extra_info);
 				bp = NULL;
 
 			} else {
 				// Adding a new always-stop breakpoint
-				bp = iBreakpoint_add(&sem->line_cursor->breakpoint, _BREAKPOINT_ALWAYS);
+				bp = iBreakpoint_add(&sem->line_cursor->extra_info, _BREAKPOINT_ALWAYS);
 			}
-#endif
 
 			// Indicate our status
 			return(bp);

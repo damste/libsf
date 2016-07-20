@@ -145,14 +145,14 @@
 		//////////
 		// Grab the error message
 		//////
-			switch (tnNoteCode)
-			{
-				default:
+// 			switch (tnNoteCode)
+// 			{
+// 				default:
 					// Internal error (should never happen)
 					ilsa_route_through_silentError_for_debugging();
 					lcNoteText = cgc_lsa_note_unknown_note;
-					break;
-			}
+// 					break;
+// 			}
 
 
 		//////////
