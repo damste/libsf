@@ -535,6 +535,14 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="other"
+			>
+			<File
+				RelativePath="..\..\..\..\utils\common\cpp\include\bsearch.h"
+				>
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>

@@ -374,34 +374,26 @@
 //////
 	bool ilsa_dmac_find_byComp(SBuilder* sortList, SComp* comp, SLsaDMac** dmOut)
 	{
-		SCallback cb;
+		SBSearchCallback bcb;
 
 		// Search and return result
-		memset(&cb, 0, sizeof(cb));
-		cb._func	= (uptr)&iilsa_dmac_find_byComp__callback;
-		cb.data2	= &comp->text;
-		return(iBinary_list_search(sortList, &cb, dmOut));
+		memset(&bcb, 0, sizeof(bcb));
+		bcb._qsortCmpFunc	= (uptr)&iilsa_dmac_find_byComp__callback;
+		bcb.needle			= &comp->text;
+		return(iBSearch_find(sortList, &bcb, (void**)dmOut));
 	}
-	
-	struct SBinary
-	{
-		SCallback*	cb;
-
-		void*		data;
-		s32			testResult;
-	};
 
 	// cb->data1 = SBinary* for the search
 	// cb->data2 = SDatum* being searched for
 	bool iilsa_dmac_find_byComp__callback(SCallback* cb)
 	{
-		SBinary*	bin;
+		SBSearch*	bin;
 		SDatum*		nameHaystack;
 		SDatum*		nameNeedle;
 
 
 		// Grab this item
-		bin				= (SBinary*)cb->data1;
+		bin				= (SBSearch*)cb->data1;
 		nameHaystack	= (SDatum*)bin->data;
 		nameNeedle		= (SDatum*)cb->data2;
 

@@ -117,6 +117,7 @@
 #include "/libsf/utils/common/cpp/include/xml.h"
 #include "/libsf/utils/common/cpp/include/sem/sem.h"
 #include "/libsf/utils/common/cpp/include/extra_info.h"
+#include "/libsf/utils/common/cpp/include/bsearch.h"
 
 #define iterate(i, builder, p, structure)	for (i = 0; i < builder->populatedLength; i += sizeof(structure)) \
 											{ \

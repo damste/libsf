@@ -147,6 +147,7 @@ struct SLsaInclude;
 // pass1.cpp -- Macro expansion
 //////
 	void				ilsa_pass1										(void);
+	int					iilsa_pass1__callback_sort						(SBSearchCallback* bcb, cvp left, cvp right);
 
 
 //////////

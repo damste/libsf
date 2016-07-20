@@ -94,11 +94,12 @@
 //////
 	void ilsa_pass1(void)
 	{
-		u32			lnI;
-		SLine*		line;
-		SComp*		comp;
-		SLsaDMac*	dm;
-		SBuilder*	sortList;
+		u32					lnI;
+		SLine*				line;
+		SComp*				comp;
+		SLsaDMac*			dm;
+		SBuilder*			sortList;
+		SBSearchCallback	bcb;
 
 
 		// Are there any defines or macros?
@@ -130,13 +131,15 @@
 				//
 
 					// Add this item to the list
-					iBinary_list_append(sortList, &dm->name->text, sizeof(SDatum*));
+					iBSearch_append(sortList, &dm->name->text);
 
 				//
 				iterate_end;
 
 				// Sort
-				iBinary_list_sort(sortList, sizeof(SDatum*));
+				memset(&bcb, 0, sizeof(bcb));
+				bcb._qsortCmpFunc = (uptr)&iilsa_pass1__callback_sort;
+				iBSearch_sort(sortList, &bcb);
 
 
 			//////////
@@ -151,6 +154,7 @@
 						if (dm->params->populatedLength != 0)
 						{
 							// Yes, gather the parameters
+
 						} else {
 							// Just swap out the component with this entry
 						}
@@ -158,4 +162,11 @@
 				}
 
 		}
+	}
+
+	// qsort indirect callback
+	int iilsa_pass1__callback_sort(SBSearchCallback* bcb, cvp left, cvp right)
+	{
+		// Simulate equality
+		return(0);
 	}
