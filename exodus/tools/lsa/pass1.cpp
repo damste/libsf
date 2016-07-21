@@ -96,6 +96,7 @@
 	{
 		u32					lnI;
 		SComp*				comp;
+		SComp*				compNew;
 		SLsaDMac*			dm;
 		SBuilder*			sortList;
 		SBSearchCallback	bcb;
@@ -121,6 +122,7 @@
 			//////////
 			// Step 2 -- Build a sorted list for binary lookups
 			//////
+
 				// Initialize
 				sortList = NULL;
 				iBuilder_createAndInitialize(&sortList);
@@ -149,19 +151,22 @@
 					// Only applying to uncompleted lines
 					if (!ilsa_status_comp_isCompleted(comp))
 					{
+						// Only looking up alpha/alphanumeric component at this point
 						if (iiComps_isAlphanumeric_by_iCode(comp->iCode))
 						{
+							// Search for it by name
 							if (ilsa_dmac_find_byComp(sortList, comp, &dm))
 							{
-								// Does it have parameters?
-								if (dm->params && dm->params->populatedLength > 0)
+								// Swap out the component
+								if (ilsa_dmac_swapOut(comp, dm, &compNew))
 								{
-									// Yes, gather the parameters
-									debug_nop;
+									// Good
+									comp = compNew;
 
 								} else {
-									// Just swap out the component with this entry
-									debug_nop;
+									// Error processing
+									ilsa_markLineCompleted(comp->line);
+									comp = iiLine_getLastComp(comp->line);
 								}
 							}
 						}

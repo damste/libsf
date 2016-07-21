@@ -376,6 +376,7 @@
 	{
 		SBSearchCallback bcb;
 
+
 		// Search and return result
 		memset(&bcb, 0, sizeof(bcb));
 		bcb._binarySearchFunc	= (uptr)&iilsa_dmac_find_byComp__callback;
@@ -393,4 +394,51 @@
 
 		// Compare them
 		return(iDatum_compare(bcb->datumNeedle, &dmHaystack->name->text));
+	}
+
+
+
+
+///////////
+//
+// Called to swap out the indicated component with the components indicated in the dmac
+//
+//////
+	bool ilsa_dmac_swapOut(SComp* compToSwapOut, SLsaDMac* dm, SComp** compOut)
+	{
+		u32		lnParam, lnParamCount;
+		SComp*	comp;
+
+
+		// Make sure our environment is sane
+// TODO:  Working here
+		if (compToSwapOut && dm)
+		{
+			// Does it have parameters?
+			if (dm->params && dm->params->populatedLength > 0)
+			{
+				// Read in the parameters
+				comp			= iComps_Nth(compToSwapOut);
+				lnParamCount	= dm->params->populatedLength / sizeof(SLsaDMac);
+				for (lnParam = 0; lnParam < lnParamCount && comp; comp = iComps_Nth(comp))
+				{
+				}
+
+			} else {
+				// No parameters
+				if (dm->first->line == dm->last->line)
+				{
+					// It's a single line replacement, so inject the content
+
+				} else {
+					// More than one line, so it will need to be injected
+				}
+			}
+
+		} else {
+			// Parameters are invalid
+		}
+
+		// Indicate failure
+		return(false);
 	}

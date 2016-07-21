@@ -497,3 +497,101 @@
 //////
 // END
 //////////
+
+		
+// lsa.cpp
+//////////
+// binary search test
+//////
+	// qsort indirect callback through bcb->qsortCmpFunc()
+	int bsearch_test_callback1(SBSearchCallback* bcb)
+	{
+		return(iDatum_compare(bcb->datumLeft, bcb->datumRight));
+	}
+
+	// bsearch indirect callback through bcb->binarySearchFunc()
+	int bsearch_test_callback2(SBSearchCallback* bcb)
+	{
+		return(iDatum_compare(bcb->datumNeedle, bcb->datumHaystack));
+	}
+
+	void bsearch_test(void)
+	{
+		s32					lnI;
+		u32					lnJ;
+		SBuilder*			list;
+		SDatum*				datumFind;
+		SBSearchCallback	bcb;
+		SDatum				datum;
+		s8					buffer[32];
+
+
+		//////////
+		// Initialize
+		//////
+			list = NULL;
+			iBuilder_createAndInitialize(&list);
+
+
+		//////////
+		// Build
+		//////
+			_set_printf_count_output(1);
+			datum.data_s8 = &buffer[0];
+			for (lnI = 999; lnI >= 0; lnI--)
+			{
+				// Create an entry
+				sprintf(buffer, "%04d%n", lnI, &datum.length);
+
+				// Add this item to the list
+				iBSearch_append(list, iDatum_duplicate(&datum));
+			}
+
+
+		//////////
+		// Sort
+		//////
+			memset(&bcb, 0, sizeof(bcb));
+			bcb._qsortCmpFunc = (uptr)&bsearch_test_callback1;
+			iBSearch_sort(list, &bcb);
+
+
+		//////////
+		// Search for each result
+		//////
+			memset(&bcb, 0, sizeof(bcb));
+			bcb._binarySearchFunc	= (uptr)&bsearch_test_callback2;
+			bcb.datumNeedle			= &datum;
+			for (lnI = -2; lnI < 1002; lnI++)
+			{
+				// Create an entry
+				sprintf(buffer, "%04d%n", lnI, &datum.length);
+
+				// Try to find it
+				if (iBSearch_find(list, &bcb, (void**)&datumFind, false, true))
+				{
+					// Found
+					debug_nop;
+
+				} else {
+					// Not found
+					debug_nop;
+				}
+			}
+
+
+		//////////
+		// Clean house
+		//////
+			// Delete all SDatums
+			for (lnJ = 0; lnJ < list->populatedLength; lnJ += sizeof(SDatum*))
+			{
+				// Grab the pointer
+				datumFind = (SDatum*)(list->buffer + lnJ);
+				iDatum_delete(datumFind, false);
+			}
+
+			// Release the builder
+			iBuilder_freeAndRelease(&list);
+
+	}

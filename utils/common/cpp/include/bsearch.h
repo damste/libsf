@@ -114,7 +114,7 @@
 	void				iBSearch_append									(SBuilder* list, void* ptr);
 	bool				iBSearch_sort									(SBuilder* list, SBSearchCallback* bcb);
 	int					iiBSearch_sort__callback						(void* vbcb, cvp left, cvp right);
-	bool				iBSearch_find									(SBuilder* list, SBSearchCallback* bcb, void** ptrOut, bool tlCouldHaveDuplicates = false);
+	bool				iBSearch_find									(SBuilder* list, SBSearchCallback* bcb, void** ptrOut, bool tlCouldHaveDuplicates = false, bool tlReturnClosestFindOnNofinds = false);
 
 
 
@@ -179,7 +179,7 @@
 // bcb->haystack at each callback, and when found, updates the ptrOut record (if present).
 //
 //////
-	bool iBSearch_find(SBuilder* list, SBSearchCallback* bcb, void** ptrOut, bool tlCouldHaveDuplicates)
+	bool iBSearch_find(SBuilder* list, SBSearchCallback* bcb, void** ptrOut, bool tlCouldHaveDuplicates, bool tlReturnClosestFindOnNofinds)
 	{
 		bool	llFound;
 		s32		lnLo, lnHi, lnMid, lnResult;
@@ -266,7 +266,7 @@ toward_lo:
 		// Indicate our find / no-find
 		//////
 			if (ptrOut)
-				*ptrOut = ((llFound) ? *(void**)(list->buffer + (lnMid * lnStep)) : NULL);
+				*ptrOut = ((llFound || tlReturnClosestFindOnNofinds) ? *(void**)(list->buffer + (lnMid * lnStep)) : NULL);
 
 			// Indicate our result
 			return(llFound);
