@@ -110,7 +110,7 @@
 		// Fixups
 		{	";;",								2,							(u32)((cu8*)&";"),		_ICODE_COMMENT,						false,		_ICAT_COMMENT,			NULL,				false,			null0,	null0,	null0	},
 
-		// Instructions
+		// x86 instructions
 		{	(cs8*)cgc_add_instruction,			sizeof(cgc_add_instruction) - 1,		false,		_ICODE_ADD_INSTRUCTION,				true,		_ICAT_INSTRUCTION,		&colorDefault,		false,			null0,	null0,	null0	},
 		{	(cs8*)cgc_adc_instruction,			sizeof(cgc_adc_instruction) - 1,		false,		_ICODE_ADC_INSTRUCTION,				true,		_ICAT_INSTRUCTION,		&colorDefault,		false,			null0,	null0,	null0	},
 		{	(cs8*)cgc_and_instruction,			sizeof(cgc_and_instruction) - 1,		false,		_ICODE_AND_INSTRUCTION,				true,		_ICAT_INSTRUCTION,		&colorDefault,		false,			null0,	null0,	null0	},
@@ -524,9 +524,12 @@
 		{	(cs8*)cgc_xmm6_reg,					sizeof(cgc_xmm6_reg) - 1,				false,		_ICODE_XMM6,						false,		_ICAT_XMM_REGISTER,		&colorDefault,		false,			null0,	null0,	null0	},
 		{	(cs8*)cgc_xmm7_reg,					sizeof(cgc_xmm7_reg) - 1,				false,		_ICODE_XMM7,						false,		_ICAT_XMM_REGISTER,		&colorDefault,		false,			null0,	null0,	null0	},
 
+		// lsa-specific
 		{	(cs8*)cgc_lsa_equ,					sizeof(cgc_lsa_equ) - 1,				false,		_ICODE_LSA_EQU,						true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,	null0,	null0	},
+		{	(cs8*)cgc_lsa_org,					sizeof(cgc_lsa_org) - 1,				false,		_ICODE_LSA_ORG,						false,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,	null0,	null0	},
 
 		{	(cs8*)cgc_lsa_include,				sizeof(cgc_lsa_include) - 1,			false,		_ICODE_LSA_INCLUDE,					true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,	null0,	null0	},
+		{	(cs8*)cgc_lsa_code,					sizeof(cgc_lsa_code) - 1,				false,		_ICODE_LSA_CODE,					true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,	null0,	null0	},
 		{	(cs8*)cgc_lsa_define,				sizeof(cgc_lsa_define) - 1,				false,		_ICODE_LSA_DEFINE,					true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,	null0,	null0	},
 		{	(cs8*)cgc_lsa_function,				sizeof(cgc_lsa_function) - 1,			false,		_ICODE_LSA_FUNCTION,				true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,	null0,	null0	},
 		{	(cs8*)cgc_lsa_struct,				sizeof(cgc_lsa_struct) - 1,				false,		_ICODE_LSA_STRUCT,					true,		_ICAT_DEFINITION,		&colorDefault,		false,			null0,	null0,	null0	},
@@ -539,6 +542,6 @@
 		{	(cs8*)cgc_lsa_ifndef,				sizeof(cgc_lsa_ifndef) - 1,				false,		_ICODE_LSA_IFNDEF,					false,		_ICAT_FLOW,				&colorDefault,		false,			null0,	null0,	null0	},
 		{	(cs8*)cgc_lsa_ifb,					sizeof(cgc_lsa_ifb) - 1,				false,		_ICODE_LSA_IFB,						false,		_ICAT_FLOW,				&colorDefault,		false,			null0,	null0,	null0	},
 		{	(cs8*)cgc_lsa_ifnb,					sizeof(cgc_lsa_ifnb) - 1,				false,		_ICODE_LSA_IFNB,					false,		_ICAT_FLOW,				&colorDefault,		false,			null0,	null0,	null0	},
-		
+
 		{	0,									0,										0,			0,									0,			0,						0,					0,				0,		0,		0		}
 	};

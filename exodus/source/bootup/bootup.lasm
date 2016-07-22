@@ -30,7 +30,7 @@ include "equates.lasp"
 ;;  -º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º
 ;;
 code text
-| at offset 0
+| org 0
 {
     ORG 0h
 ;;
@@ -198,7 +198,7 @@ end_of_16_bit_segment:
 ;;  -º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º-º
 ;;
 code text32
-| at offset 0
+| org 0
 {
      //
 ;; Exodus Bootup Program 32-bit kernel begins here

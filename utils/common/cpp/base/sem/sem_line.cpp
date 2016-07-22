@@ -799,6 +799,43 @@ goto_next_component:
 
 //////////
 //
+// Renumber forward beginning at the indicated number.
+// Returns the next line number.
+//
+//////
+	s32 iLine_renumber(SLine* firstLine, s32 tnStartingNumber)
+	{
+		s32		lnLine;
+		SLine*	line;
+
+
+		// Iterate forward
+		for (line = firstLine, lnLine = tnStartingNumber; line; line = line->ll.nextLine, lnLine++)
+			line->lineNumber = lnLine;
+
+		// Indicate the next line
+		return(lnLine);
+	}
+
+	f32 iLine_renumber2(SLine* firstLine, f32 tfStartingNumber)
+	{
+		f32		lfLine;
+		SLine*	line;
+
+
+		// Iterate forward
+		for (line = firstLine, lfLine = tfStartingNumber; line; line = line->ll.nextLine, lfLine++)
+			line->lineSubnumber = lfLine;
+
+		// Indicate the next line
+		return(lfLine);
+	}
+
+
+
+
+//////////
+//
 // Called to insert a character
 //
 //////

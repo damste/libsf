@@ -40,7 +40,7 @@ RAMDAC_INDEX_WRITE        = 3c8h
 RAMDAC_DATA               = 3c9h
 
 code text32
-| at offset 0
+| org 0
 {
     
 // These are required to be the first 2 dwords in the file

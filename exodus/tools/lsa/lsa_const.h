@@ -533,19 +533,23 @@
 	cs32		_ICODE_XMM6									= 2000106;
 	cs32		_ICODE_XMM7									= 2000107;
 
-	cs32		_ICODE_LSA_INCLUDE							= 3000001;
-	cs32		_ICODE_LSA_DEFINE							= 3000002;
-	cs32		_ICODE_LSA_FUNCTION							= 3000003;
-	cs32		_ICODE_LSA_STRUCT							= 3000004;
-	cs32		_ICODE_LSA_ENUM								= 3000005;
-	cs32		_ICODE_LSA_MACRO							= 3000006;
-	cs32		_ICODE_LSA_IF								= 3000007;
-	cs32		_ICODE_LSA_ELSE								= 3000008;
-	cs32		_ICODE_LSA_IFDEF							= 3000009;
-	cs32		_ICODE_LSA_IFNDEF							= 3000010;
-	cs32		_ICODE_LSA_IFB								= 3000011;
-	cs32		_ICODE_LSA_IFNB								= 3000012;
-	cs32		_ICODE_LSA_EQU								= 3000013;
+	cs32		_ICODE_LSA_EQU								= 3000001;
+	cs32		_ICODE_LSA_ORG								= 3000002;
+
+	cs32		_ICODE_LSA_INCLUDE							= 3000101;
+	cs32		_ICODE_LSA_CODE								= 3000102;
+	cs32		_ICODE_LSA_DEFINE							= 3000103;
+	cs32		_ICODE_LSA_FUNCTION							= 3000104;
+	cs32		_ICODE_LSA_STRUCT							= 3000105;
+	cs32		_ICODE_LSA_ENUM								= 3000106;
+	cs32		_ICODE_LSA_MACRO							= 3000107;
+
+	cs32		_ICODE_LSA_IF								= 3000501;
+	cs32		_ICODE_LSA_ELSE								= 3000502;
+	cs32		_ICODE_LSA_IFDEF							= 3000503;
+	cs32		_ICODE_LSA_IFNDEF							= 3000504;
+	cs32		_ICODE_LSA_IFB								= 3000505;
+	cs32		_ICODE_LSA_IFNB								= 3000506;
 
 
 //////////
@@ -591,8 +595,10 @@
 	cs8			cgc_ptr_108byte[]							= "m108byte";
 
 	cs8			cgc_lsa_equ[]								= "equ";
+	cs8			cgc_lsa_org[]								= "org";
 
 	cs8			cgc_lsa_include[]							= "include";
+	cs8			cgc_lsa_code[]								= "code";
 	cs8			cgc_lsa_define[]							= "define";
 	cs8			cgc_lsa_function[]							= "function";
 	cs8			cgc_lsa_struct[]							= "struct";

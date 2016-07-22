@@ -91,12 +91,16 @@
 //
 // Pass-0 -- Load content
 //
-//		fundamental symbols and symbol groupings
+//		convert raw text into fundamental symbols and symbol groupings
 //		removes blank lines
 //		removes comment lines
 //		loads include files
 //
-//		once all include files are loaded, it scans in defines and macros
+//		once all include files are loaded, it scans in:
+//			code blocks
+//			functions
+//			defines
+//			macros
 //
 //////
 	void ilsa_pass0(void)
@@ -156,8 +160,15 @@
 		// When we get here, all include files are loaded
 		// Look for define statements, macros, and conditional assembly (top-down)
 		//////
-			for (p0.line = p0.file->firstLine; p0.line; p0.line = p0.line->ll.nextLine)
+			iLine_renumber2(p0.file->firstLine);
+			for (p0.line = p0.file->firstLine, p0.func = NULL; p0.line; p0.line = p0.line->ll.nextLine)
 			{
+				// Assign the function we're in to this line
+				p0.line->func = (void*)p0.func;
+
+				// Add line data specific to our assembly compilation
+				p0.line->data = malloc(sizeof(SLsaLineData));
+
 				// Is this line
 				if (!ilsa_status_line_isCompleted(p0.line) && (p0.comp = p0.line->firstComp))
 				{
@@ -167,6 +178,14 @@
 					// Is it one we're looking for?
 					switch (p0.comp->iCode)
 					{
+						case _ICODE_LSA_CODE:
+							ilsa_pass0_code(&p0);						// Jul.21.2016 -- working
+							break;
+
+						case _ICODE_LSA_FUNCTION:
+							ilsa_pass0_function(&p0);					// Jul.21.2016 -- working
+							break;
+
 						case _ICODE_LSA_DEFINE:
 							ilsa_pass0_define(&p0);						// Jul.11.2016 -- RCH completed
 							break;
@@ -176,17 +195,20 @@
 							break;
 
 						default:
-							// Is the next component an equal sign or the EQU keyword?
-							if (iiComps_isAlphanumeric_by_iCode(p0.comp->iCode) && (compNext = iComps_Nth(p0.comp, false)))
-							{
-								// If it's EQU or = then it's an implicit define
-								if (compNext->iCode == _ICODE_LSA_EQU || compNext->iCode == _ICODE_EQUAL_SIGN)
-									iilsa_pass0_equ_or_equalSign(&p0, p0.comp, compNext);
-							}
+							// If it's EQU or =, it's an implicit define
+							if (iiComps_isAlphanumeric_by_iCode(p0.comp->iCode) && (compNext = iComps_Nth(p0.comp, false)) && (compNext->iCode == _ICODE_LSA_EQU || compNext->iCode == _ICODE_EQUAL_SIGN))
+								iilsa_pass0_equ_or_equalSign(&p0, p0.comp, compNext);
+
+							// Regardless, when we get here we're done
 							break;
 
 					}
 				}
+
+				// See if this line is the last line of our function
+				if (p0.func && p0.line == p0.func->frame->bodyEnd)
+					p0.func = NULL;		// We've exited the function
+
 			}
 
 	}
@@ -270,6 +292,34 @@
 
 		// Indicate our status
 		return(!llError);
+	}
+
+
+
+
+//////////
+//
+// Called to parse a code block, which gathers target compilation info.
+//
+//////
+	bool ilsa_pass0_code(SLsaPass0* p0)
+	{
+// TODO:  working here
+	}
+
+
+
+
+//////////
+//
+// Called to parse a function.
+// Note:  This operation will parse ahead, and mark completed the lines
+//        which are related to the function definition.
+//
+//////
+	bool ilsa_pass0_function(SLsaPass0* p0)
+	{
+// TODO:  working here
 	}
 
 
@@ -376,7 +426,7 @@ grab_content_to_end_of_line:
 					}
 
 					// When we get here, we have all the information we need
-					iilsa_dmac_add(p0->line, compTokenName, params, compContentStart, compContentEnd, true);
+					iilsa_dmac_add(p0->func, p0->line, compTokenName, params, compContentStart, compContentEnd, true);
 
 					// Mark everything completed
 					ilsa_markLineCompleted(p0->line);
@@ -539,7 +589,7 @@ grab_double_brace_content:
 					}
 
 					// When we get here, we have all the information we need
-					iilsa_dmac_add(p0->line, compTokenName, compParams, compContentStart, compContentEnd, true);
+					iilsa_dmac_add(p0->func, p0->line, compTokenName, compParams, compContentStart, compContentEnd, true);
 
 					// Mark everything completed
 					ilsa_markLineCompleted(p0->line);
@@ -605,7 +655,7 @@ grab_double_brace_content:
 				// x = ...
 
 				// Add it as a define
-				iilsa_dmac_add(p0->line, compName, NULL, compStart, compEnd, true);
+				iilsa_dmac_add(p0->func, p0->line, compName, NULL, compStart, compEnd, true);
 
 				// Mark everything completed
 				ilsa_markLineCompleted(p0->line);
@@ -615,7 +665,7 @@ grab_double_brace_content:
 
 			default:
 				// Should never happen
-				ilsa_route_through_silentError_for_debugging();
+				ilsa_routeThrough_silentError_forDebugging();
 				return(false);
 		}
 	}

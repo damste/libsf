@@ -149,7 +149,7 @@
 // 			{
 // 				default:
 					// Internal error (should never happen)
-					ilsa_route_through_silentError_for_debugging();
+					ilsa_routeThrough_silentError_forDebugging();
 					lcNoteText = cgc_lsa_note_unknown_note;
 // 					break;
 // 			}
@@ -179,7 +179,7 @@
 
 				default:
 					// Internal error (should never happen)
-					ilsa_route_through_silentError_for_debugging();
+					ilsa_routeThrough_silentError_forDebugging();
 					lcWarningText = cgc_lsa_warning_unknown_warning;
 					break;
 			}
@@ -209,7 +209,7 @@
 
 				default:
 					// Internal error (should never happen)
-					ilsa_route_through_silentError_for_debugging();
+					ilsa_routeThrough_silentError_forDebugging();
 					lcErrorText = cgc_lsa_error_unknown_error;
 					break;
 			}

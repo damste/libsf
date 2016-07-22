@@ -121,10 +121,10 @@ SET STEP ON
 					llSkipCrLf = .t.
 				
 				CASE UPPER(GETWORDNUM(laLines[lnI], 2)) == "SEGMENT"
-					* Change the line to "abc" + chr(13) + "| at offset 0" + chr(13) + "{"
+					* Change the line to "abc" + chr(13) + "| 0" + chr(13) + "{"
 					lcAsm = ALLTRIM(lcAsm)
 					lcAsm = lcAsm + LOWER(GETWORDNUM(laLines[lnI], 2, "'")) + " " + STRTRAN(LOWER(GETWORDNUM(laLines[lnI], 1)), "_", SPACE(0)) + CHR(13) + CHR(10)
-					lcAsm = lcAsm + "| at offset 0" + CHR(13) + CHR(10)
+					lcAsm = lcAsm + "| org 0" + CHR(13) + CHR(10)
 					lcAsm = lcAsm + "{"
 				
 				CASE UPPER(GETWORDNUM(laLines[lnI], 2)) == "ENDS"

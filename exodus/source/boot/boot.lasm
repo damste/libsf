@@ -25,7 +25,7 @@ _BYTES_LOADED     = -32
 
 // Beginning of boot code:
 code main
-| at offset 0
+| org 0
 {
     ORG 0
 ;; Transfer control to linear 7c0h:<offset> (it makes it a SEG0 reference)

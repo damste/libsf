@@ -489,6 +489,8 @@
 		SLL				ll;												// 2-way link list
 		u32				uid;											// Unique id for this line, used for undos and identifying individual lines which may move about (note this value must be isolated and separate from ll.uniqueId)
 		void*			file;											// A file structure this line relates to
+		void*			func;											// A function structure this line relates to
+		void*			data;											// Application-specific
 		union
 		{
 			void*		parent;											// A parent this relates to, which could be a controlling structure (like an SEM*)
@@ -496,7 +498,8 @@
 		};
 
 		// Line information
-		u32				lineNumber;										// This line's number
+		s32				lineNumber;										// This line's number
+		f32				lineSubnumber;									// This line's sub-number, which will be like 1.1 for a sub-line of line 1 (used when line 1 is replaced with other content)
 		s32				lineStatus;										// Application specific
 		SDatum			sourceCodeOriginal;								// The original sourceCode when the line was first created, or last saved (note the length here is the total length as this value does not change, but is setup exactly when it is updated)
 		SDatum			sourceCode;										// The text on this line is LEFT(sourceCode.data, sourceCodePopulated)
@@ -1208,6 +1211,8 @@
 	s32						iiLine_skipTo_nextComp						(SLine** lineProcessing, SComp** compProcessing);
 	s32						iiLine_skipTo_prevComp						(SLine** lineProcessing, SComp** compProcessing);
 	SComp*					iiLine_getLastComp							(SLine* line, SComp* compInLine = NULL);
+	s32						iLine_renumber								(SLine* firstLine, s32 tnStartingNumber = 1);
+	f32						iLine_renumber2								(SLine* firstLine, f32 tfStartingNumber = 1.0f);
 
 	// For editing
 	bool					iLine_characterInsert						(SEM* sem, u8 asciiChar);

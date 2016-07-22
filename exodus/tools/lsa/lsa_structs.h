@@ -151,8 +151,15 @@ struct SBuilder;
 	// Function definition
 	struct SLsaFunc
 	{
-		SDatum			name;							// Function name
+		SComp*			name;							// Function name
+		s32				org;							// Origin for the line
 		SLsaBlock*		frame;							// Framework components
+	};
+
+	// Line data
+	struct SLsaLineData
+	{
+		SDatum			generated_bytes;				// Bytes generated for this line
 	};
 
 	// Linked list of files to be assembled
@@ -274,6 +281,7 @@ struct SBuilder;
 	struct SLsaPass0
 	{
 		SLsaFile*			file;
+		SLsaFunc*			func;
 		SLine*				line;
 		SComp*				comp;
 

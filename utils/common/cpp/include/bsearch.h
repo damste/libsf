@@ -85,7 +85,11 @@
 			};
 			union {
 				uptr	_binarySearchFunc;
-				s32		(*binarySearchFunc)	(SBSearchCallback* bcb);
+				s32		(*binarySearchFunc)		(SBSearchCallback* bcb);
+			};
+			union {
+				uptr	_binaryValidateFunc;
+				s32		(*binaryValidateFunc)	(SBSearchCallback* bcb);
 			};
 
 
@@ -102,7 +106,7 @@
 			};
 			union {
 				uptr	_qsortCmpFunc;
-				s32		(*qsortCmpFunc)		(SBSearchCallback* bcb);
+				s32		(*qsortCmpFunc)			(SBSearchCallback* bcb);
 			};
 
 	};
@@ -215,7 +219,7 @@
 						{
 							// Iterate back one and, if found, continue with our binary search to find the first duplicate match
 							bcb->haystack = *(void**)(list->buffer + ((lnMid - 1) * lnStep));
-							if (bcb->binarySearchFunc(bcb) == 0)
+							if (bcb->binarySearchFunc(bcb) == 0 && (!bcb->_binaryValidateFunc || bcb->binaryValidateFunc(bcb)))
 							{
 								// It's still a match, so continue iterating
 								goto toward_lo;
@@ -251,7 +255,7 @@ toward_lo:
 						// This is the last one to try
 						lnMid			= lnLo;
 						bcb->haystack	= *(void**)(list->buffer + (lnMid * lnStep));
-						llFound = (bcb->binarySearchFunc(bcb) == 0);
+						llFound = (bcb->binarySearchFunc(bcb) == 0 && (!bcb->_binaryValidateFunc || bcb->binaryValidateFunc(bcb)));
 						break;
 
 					} else {

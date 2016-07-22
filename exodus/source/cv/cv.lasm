@@ -18,7 +18,7 @@ include "\libsf\exodus\source\common\macros.lasp"
 
 
 code text32
-| at offset 0
+| org 0
 {
     ORG 0h
     // These are required to be the first 2 dwords in the file

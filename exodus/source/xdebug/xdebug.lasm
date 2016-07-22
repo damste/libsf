@@ -8,7 +8,7 @@
     
 include "\assembly\keylist.lasp"                                       //   = List of all the keyboard scan codes
 code xdebug
-| at offset 0
+| org 0
 {
     ORG 0
     push    AX

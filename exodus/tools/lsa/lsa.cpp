@@ -208,7 +208,7 @@
 // should never occur, but are occurring, are routed through here for debugging.
 //
 //////
-	void ilsa_route_through_silentError_for_debugging(void)
+	void ilsa_routeThrough_silentError_forDebugging(void)
 	{
 		// For debugging, errors that should not occur route through this function
 		debug_nop;

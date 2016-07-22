@@ -88,7 +88,7 @@
 // Called to create a define/macro define
 //
 //////
-	bool iilsa_dmac_add(SLine* line, SComp* compName, SBuilder* params, SComp* compStart, SComp* compEnd, bool tlIsDefine, SLsaDMac** dmOut)
+	bool iilsa_dmac_add(SLsaFunc* func, SLine* line, SComp* compName, SBuilder* params, SComp* compStart, SComp* compEnd, bool tlIsDefine, SLsaDMac** dmOut)
 	{
 		u32			lnI;
 		SLsaDMac*	dm;
@@ -132,6 +132,7 @@
 		{
 			// Store
 			dm->file	= (SLsaFile*)line->file;	// The associated file
+			dm->func	= func;						// The function it's related to
 			dm->line	= line;						// The line related
 			dm->name	= compName;					// Token name
 			dm->params	= params;					// Parameters (if any)
@@ -379,21 +380,42 @@
 
 		// Search and return result
 		memset(&bcb, 0, sizeof(bcb));
-		bcb._binarySearchFunc	= (uptr)&iilsa_dmac_find_byComp__callback;
-		bcb.datumNeedle			= &comp->text;
+		bcb._binarySearchFunc		= (uptr)&iilsa_dmac_find_byComp__callbackSearch;
+		bcb._binaryValidateFunc		= (uptr)&iilsa_dmac_find_byComp__callbackValidate;
+		bcb.needle					= comp;
 		return(iBSearch_find(sortList, &bcb, (void**)dmOut));
 	}
 
-	s32 iilsa_dmac_find_byComp__callback(SBSearchCallback* bcb)
+	s32 iilsa_dmac_find_byComp__callbackSearch(SBSearchCallback* bcb)
 	{
-		SLsaDMac* dmHaystack;
+		SLsaDMac*	dmHaystack;
+		SComp*		compNeedle;
 		
 
 		// Grab the dmac
 		dmHaystack = (SLsaDMac*)bcb->haystack;
+		compNeedle = (SComp*)bcb->needle;
 
 		// Compare them
-		return(iDatum_compare(bcb->datumNeedle, &dmHaystack->name->text));
+		return(iDatum_compare(&compNeedle->text, &dmHaystack->name->text));
+	}
+
+	bool iilsa_dmac_find_byComp__callbackValidate(SBSearchCallback* bcb)
+	{
+		SLsaDMac*	dmHaystack;
+		SComp*		compNeedle;
+
+
+		// Grab the dmac
+		dmHaystack = (SLsaDMac*)bcb->haystack;
+		compNeedle = (SComp*)bcb->needle;
+
+		// Make sure the dmac's in the same function as where we're searching from
+		if (!dmHaystack->func)
+			return(true);		// There is no function on this one, so we're good
+
+		// There is a function, so the needle must match it
+		return(compNeedle->line->func == (void*)dmHaystack->func);
 	}
 
 
@@ -401,7 +423,28 @@
 
 ///////////
 //
-// Called to swap out the indicated component with the components indicated in the dmac
+// Called to swap out the indicated component with the components indicated in the dmac.
+// It comments out the original line, and replaces it with new line(s) swapped out after.
+//
+// Single component replacement:
+// 		;;  mov     eax,[temp]      // Is it the temporary value?
+// 			mov     eax,[ebp-08]    // Comment here
+//
+// Multi-component replacement:
+// 		;;  cmp     @helpKey  // Comment here
+// 			cmp     eax,04800h  // Comment here
+//
+// Multi-line replacement:
+// 		;;  @PushRegs  // Comment here
+// 			push    eax
+// 			push    ebx
+// 			push    ecx
+// 			push    edx  // Comment here
+//
+// Parameter replacement:
+//		;;  @keystroke f1
+//		    cmp     eax,f1
+//			// Note:  After this, the single component will be replaced in a subsequent replacement
 //
 //////
 	bool ilsa_dmac_swapOut(SComp* compToSwapOut, SLsaDMac* dm, SComp** compOut)
@@ -411,7 +454,6 @@
 
 
 		// Make sure our environment is sane
-// TODO:  Working here
 		if (compToSwapOut && dm)
 		{
 			// Does it have parameters?
@@ -422,21 +464,30 @@
 				lnParamCount	= dm->params->populatedLength / sizeof(SLsaDMac);
 				for (lnParam = 0; lnParam < lnParamCount && comp; comp = iComps_Nth(comp))
 				{
+// TODO:  working here
+working here
 				}
 
 			} else {
 				// No parameters
-				if (dm->first->line == dm->last->line)
-				{
-					// It's a single line replacement, so inject the content
+			}
 
-				} else {
-					// More than one line, so it will need to be injected
-				}
+			// Is it a single line substitution?
+			if (dm->first->line == dm->last->line)
+			{
+				// Copy the line component by component, and swap out the one component for the many.
+				// Translates the original source line to a commented version, and then adds the translated one after
+
+			} else {
+				// More than one line, so it will need to be injected
 			}
 
 		} else {
-			// Parameters are invalid
+			// Passed parameters are invalid
+			// Should never happen
+			ilsa_routeThrough_silentError_forDebugging();
+			printf("Internal compiler error\n");
+			exit(-1);
 		}
 
 		// Indicate failure

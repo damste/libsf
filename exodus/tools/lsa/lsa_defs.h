@@ -90,7 +90,7 @@ struct SLsaInclude;
 // lasm.cpp
 //////
 	SLsaInclude*		ilsa_init										(void);
-	void				ilsa_route_through_silentError_for_debugging	(void);
+	void				ilsa_routeThrough_silentError_forDebugging	(void);
 
 	// lsa_cmdline.cpp
 	void				ilsa_parse_commandLine							(s32 argc, s8* argv[]);
@@ -119,14 +119,15 @@ struct SLsaInclude;
 
 	// lsa_dmac.cpp
 	// For defined tokens and macros
-	bool				iilsa_dmac_add									(SLine* line, SComp* compName, SBuilder* params, SComp* compStart, SComp* compEnd, bool tlIsDefine, SLsaDMac** dmOut = NULL);
+	bool				iilsa_dmac_add									(SLsaFunc* func, SLine* line, SComp* compName, SBuilder* params, SComp* compStart, SComp* compEnd, bool tlIsDefine, SLsaDMac** dmOut = NULL);
 	void				ilsa_dmac_unfurl								(SLsaDMac* dm);
 	bool				iilsa_dmac_searchParams							(SBuilder* params, SDatum* text, s32& tnParamNumber, SLsaParam** paramOut);
 	SBuilder*			iilsa_dmac_unfurl_validateBuilder				(SBuilder** expansion_stepsRoot);
 	SLsaExpansion*		iilsa_dmac_unfurl_addParameter					(SBuilder** expansion_stepsRoot, s32 tnParamNum, SDatum* name, s32 tnWhitespaces, bool tlPrefixCrLf, SBuilder* tbuilder);
 	SLsaExpansion*		iilsa_dmac_unfurl_addText						(SBuilder** expansion_stepsRoot, SDatum* text, s32 tnWhitespaces, bool tlPrefixCrLf, SBuilder* tbuilder = NULL);
 	bool				ilsa_dmac_find_byComp							(SBuilder* sortList, SComp* comp, SLsaDMac** dmOut);
-	s32					iilsa_dmac_find_byComp__callback				(SBSearchCallback* bcb);
+	s32					iilsa_dmac_find_byComp__callbackSearch			(SBSearchCallback* bcb);
+	bool				iilsa_dmac_find_byComp__callbackValidate		(SBSearchCallback* bcb);
 	bool				ilsa_dmac_swapOut								(SComp* compToSwapOut, SLsaDMac* dm, SComp** compOut);
 
 	// lsa_ei.cpp
@@ -142,6 +143,8 @@ struct SLsaInclude;
 //////
 	void				ilsa_pass0										(void);
 	bool				iilsa_pass0_include								(SLsaPass0* p0);
+	bool				ilsa_pass0_code									(SLsaPass0* p0);
+	bool				ilsa_pass0_function								(SLsaPass0* p0);
 	bool				ilsa_pass0_define								(SLsaPass0* p0);
 	bool				ilsa_pass0_macro								(SLsaPass0* p0);
 	bool				iilsa_pass0_equ_or_equalSign					(SLsaPass0* p0, SComp* compName, SComp* compEquOrEqual);
