@@ -451,25 +451,33 @@
 	{
 		u32		lnParam, lnParamCount;
 		SComp*	comp;
+		SComp*	compFirst;
+		SComp*	compLast;
 
 
 		// Make sure our environment is sane
 		if (compToSwapOut && dm)
 		{
+			// Mark where it begins
+			compFirst = compToSwapOut;
+
 			// Does it have parameters?
-			if (dm->params && dm->params->populatedLength > 0)
+			if (dm->params && (lnParamCount	= dm->params->populatedLength / sizeof(SLsaDMac)) > 0)
 			{
 				// Read in the parameters
-				comp			= iComps_Nth(compToSwapOut);
-				lnParamCount	= dm->params->populatedLength / sizeof(SLsaDMac);
-				for (lnParam = 0; lnParam < lnParamCount && comp; comp = iComps_Nth(comp))
+				comp = iComps_Nth(compToSwapOut);
+				for (lnParam = 0; lnParam < lnParamCount && comp; comp = iComps_Nth(comp), lnParam++)
 				{
-// TODO:  working here
-working here
+					// Gather everything forward to the next comma, or the end of line
+
+					// Are we done?
+					if (!comp->ll.nextComp || lnParam + 1 == lnParamCount)
+						break;
 				}
 
 			} else {
 				// No parameters
+				compLast = compToSwapOut;
 			}
 
 			// Is it a single line substitution?
