@@ -139,6 +139,78 @@ void appendToneOntoBuffer(int tnKey, int tnToneMilliseconds, int tnPauseMillisec
 	}
 }
 
+void appendTwoTonesOntoBuffer(int tnKey1, int tnKey2, int tnToneMilliseconds, int tnPauseMilliseconds, double tfAmp)
+{
+	int		i, lnToneSize, lnPauseSize, lnNewSize, lnBase;
+	double	v1, vf1, v2, vf2, lfTone1, lfTone2, lfAmp;
+	Sint16*	lcNew;
+
+
+	lnToneSize	= (int)((double)FREQUENCY * (double)tnToneMilliseconds	/ (double)1000.0f);
+	lnPauseSize	= (int)((double)FREQUENCY * (double)tnPauseMilliseconds	/ (double)1000.0f);
+	lnNewSize	= (lnToneSize + lnPauseSize) * sizeof(Sint16);
+	if (songBuffer)
+	{
+		// Re-allocate
+		lcNew = (Sint16*)realloc(songBuffer, sbMax + lnNewSize);
+
+	} else {
+		// Initially allocate
+		lcNew	= (Sint16*)malloc(lnNewSize);
+		sbMax	= 0;
+	}
+
+	if (lcNew)
+	{
+		//////////
+		// Generate the tone for that length
+		//////
+			vf1		= musicalNotes[tnKey1];
+			vf2		= musicalNotes[tnKey2];
+			v1		= 0.0;
+			v2		= 0.0;
+			lnBase	= sbMax / sizeof(Sint16);
+			lfAmp	= 1.0;
+			for (i = 0; i < lnToneSize; i++)
+			{
+				// Create the tone
+				lfTone1 = tfAmp * lfAmp * std::cos(v1 * 2 * M_PI / FREQUENCY);
+				lfTone2 = tfAmp * lfAmp * std::cos(v2 * 2 * M_PI / FREQUENCY);
+
+				// Store the tone
+// TODO:  This simple sound merge algorithm does not work properly
+				lcNew[lnBase + i] = (Sint16)((lfTone1 + lfTone2) / 2.0);
+
+				// Increase by our frequency
+				v1 += vf1;
+				v2 += vf2;
+
+				// Increase the amplitude each time
+				lfAmp = min(lfAmp * 2.0, 32767.0);
+			}
+
+		//////////
+		// Append silence
+		//////
+			for (i = 0; i < lnPauseSize; i++)
+				lcNew[lnBase + lnToneSize + i] = /*(Sint16)((float)lcNew[lnBase + lnToneSize + i - 1] * 7.0 / 8.0)*/0;
+
+
+		//////////
+		// Fade the notes in/out over FREQUENCY / 1000 samples
+		/////
+			fadeIn(lcNew + lnBase, FREQUENCY / 100);
+			fadeOut(lcNew + lnBase + lnToneSize - FREQUENCY / 100, FREQUENCY / 100);
+
+
+		//////////
+		// All done
+		//////
+			songBuffer	= lcNew;
+			sbMax		+= lnNewSize;
+	}
+}
+
 void paradiddle(int offsetL, int offsetR, int offsetSpeed, int loopCount)
 {
 	int lnI;
@@ -250,6 +322,47 @@ void bass4(int offset, int offsetSpeed, int loopCount)
 	}
 }
 
+void bass5(int offset1, int offset2, int loopCount)
+{
+	int lnI;
+
+
+	// Repeat for count iterations
+	for (lnI = 0; lnI < loopCount; lnI++)
+	{
+		appendTwoTonesOntoBuffer(_C + offset1,			_C + offset2,			225,	15,		1.00);
+		appendTwoTonesOntoBuffer(_C + offset1,			_C + offset2,			225,	15,		1.00);
+		appendTwoTonesOntoBuffer(_C + offset1,			_C + offset2,			225,	15,		1.00);
+		appendTwoTonesOntoBuffer(_C + offset1 - 2,		_C + offset2 - 2,		115,	15,		1.00);
+		appendTwoTonesOntoBuffer(_C + offset1,			_C + offset2,			225,	15,		1.00);
+		appendTwoTonesOntoBuffer(_C + offset1,			_C + offset2,			225,	15,		1.00);
+		appendTwoTonesOntoBuffer(_C + offset1,			_C + offset2,			115,	15,		1.00);
+		appendTwoTonesOntoBuffer(_C + offset1 + 2,		_C + offset2 + 2,		225,	15,		1.00);
+		appendTwoTonesOntoBuffer(_C + offset1,			_C + offset2,			225,	15,		1.00);
+		appendTwoTonesOntoBuffer(_C + offset1 - 2,		_C + offset2 - 2,		225,	15,		1.00);
+		appendTwoTonesOntoBuffer(_C + offset1 - 5,		_C + offset2 - 5,		225,	15,		1.00);
+		appendTwoTonesOntoBuffer(_C + offset1 - 5,		_C + offset2 - 5,		225,	15,		1.00);
+		appendTwoTonesOntoBuffer(_C + offset1 - 7,		_C + offset2 - 7,		100,	15,		1.00);
+		appendTwoTonesOntoBuffer(_C + offset1 - 5,		_C + offset2 - 5,		300,	40,		1.00);
+		appendTwoTonesOntoBuffer(_C + offset1,			_C + offset2,			500,	15,		0.01);
+		appendTwoTonesOntoBuffer(_C + offset1 - 2,		_C + offset2 - 2,		225,	15,		1.00);
+		appendTwoTonesOntoBuffer(_C + offset1 - 2,		_C + offset2 - 2,		225,	15,		1.00);
+		appendTwoTonesOntoBuffer(_C + offset1 - 2,		_C + offset2 - 2,		225,	15,		1.00);
+		appendTwoTonesOntoBuffer(_C + offset1 - 5,		_C + offset2 - 5,		115,	15,		1.00);
+		appendTwoTonesOntoBuffer(_C + offset1 - 2,		_C + offset2 - 2,		225,	15,		1.00);
+		appendTwoTonesOntoBuffer(_C + offset1 - 2,		_C + offset2 - 2,		225,	15,		1.00);
+		appendTwoTonesOntoBuffer(_C + offset1 - 2,		_C + offset2 - 2,		115,	15,		1.00);
+		appendTwoTonesOntoBuffer(_C + offset1,			_C + offset2,			225,	15,		1.00);
+		appendTwoTonesOntoBuffer(_C + offset1 - 2,		_C + offset2 - 2,		225,	40,		1.00);
+		appendTwoTonesOntoBuffer(_C + offset1,			_C + offset2,			225,	15,		1.00);
+		appendTwoTonesOntoBuffer(_C + offset1,			_C + offset2,			225,	15,		1.00);
+		appendTwoTonesOntoBuffer(_C + offset1,			_C + offset2,			225,	15,		1.00);
+		appendTwoTonesOntoBuffer(_C + offset1 - 2,		_C + offset2 - 2,		115,	15,		1.00);
+		appendTwoTonesOntoBuffer(_C + offset1,			_C + offset2,			300,	40,		1.00);
+		appendTwoTonesOntoBuffer(_C + offset1,			_C + offset2,			600,	15,		0.01);
+	}
+}
+
 void sound_init(void)
 {
 	if (SDL_Init(SDL_INIT_TIMER | SDL_INIT_AUDIO) < 0)
@@ -299,21 +412,25 @@ void sound_init(void)
 	//////////
 	// Some basic bass runs
 	//////
-		bass1(0 - 24,	-100,	2);
-		bass1(3 - 24,	-100,	2);
+// 		bass1(0 - 24,	-100,	2);
+// 		bass1(3 - 24,	-100,	2);
+// 
+// 		bass2(5 - 24,	-100,	2);
+// 		bass2(3 - 24,	-100,	2);
+// 
+// 		bass3(0 - 24,	-100,	1);
+// 		bass3(-2 - 24,	-100,	1);
+// 		bass3(0 - 24,	-100,	1);
+// 		bass3(-2 - 24,	-100,	1);
+// 
+// 		bass4(0 - 16,	-115,	1);
+// 		bass4(-2 - 16,	-115,	1);
+// 		bass4(0 - 16,	-115,	1);
+// 		bass4(-2 - 16,	-115,	1);
 
-		bass2(5 - 24,	-100,	2);
-		bass2(3 - 24,	-100,	2);
-
-		bass3(0 - 24,	-100,	1);
-		bass3(-2 - 24,	-100,	1);
-		bass3(0 - 24,	-100,	1);
-		bass3(-2 - 24,	-100,	1);
-
-		bass4(0 - 24,	-100,	1);
-		bass4(-2 - 24,	-100,	1);
-		bass4(0 - 24,	-100,	1);
-		bass4(-2 - 24,	-100,	1);
+// 		bass5(0 - 16, 1);
+// 		bass5(0 - 19, 1);
+		bass5(0 - 24, 0 - 12, 1);
 
 
 	//////////
