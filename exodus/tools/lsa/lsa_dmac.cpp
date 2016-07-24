@@ -449,10 +449,15 @@
 //////
 	bool ilsa_dmac_swapOut(SComp* compToSwapOut, SLsaDMac* dm, SComp** compOut)
 	{
-		u32		lnParam, lnParamCount;
-		SComp*	comp;
-		SComp*	compFirst;
-		SComp*	compLast;
+		bool		llLastParam;
+		u32			lnParam, lnParamCount;
+		SComp*		comp;
+		SComp*		compFirst;
+		SComp*		compLast;
+		SComp*		compComma;
+		SBuilder*	params;		// SLsaParam
+		SLsaParam*	param;
+		s8			buffer[1024];
 
 
 		// Make sure our environment is sane
@@ -461,34 +466,82 @@
 			// Mark where it begins
 			compFirst = compToSwapOut;
 
+			// Create a buffer to load the parameters
+			params = NULL;
+			iBuilder_createAndInitialize(&params);
+
 			// Does it have parameters?
 			if (dm->params && (lnParamCount	= dm->params->populatedLength / sizeof(SLsaDMac)) > 0)
 			{
 				// Read in the parameters
 				comp = iComps_Nth(compToSwapOut);
-				for (lnParam = 0; lnParam < lnParamCount && comp; comp = iComps_Nth(comp), lnParam++)
+				for (lnParam = 0, llLastParam = false; !llLastParam && lnParam < lnParamCount && comp; comp = iComps_Nth(comp), lnParam++)
 				{
-					// Gather everything forward to the next comma, or the end of line
+					// Grab a param
+					param = (SLsaParam*)iBuilder_allocateBytes(params, sizeof(SLsaParam));
+					if (param)
+					{
+						// Gather everything from here forward to the next comma (or the end of line)
+						param->start	= comp;
+						compComma		= iComps_scanForward_for_iCode(comp, _ICODE_COMMA, false);
 
-					// Are we done?
-					if (!comp->ll.nextComp || lnParam + 1 == lnParamCount)
-						break;
+						// Did we land on a comma?  Or are we at the end of the line?
+						if (compComma->iCode == _ICODE_COMMA)
+						{
+							// Store the component before this one
+							param->end	= iComps_Nth(compComma, -1);
+
+						} else {
+							// Store this one
+							param->end	= compComma;
+							llLastParam	= true;
+						}
+
+					} else {
+						// Should never happen
+						ilsa_routeThrough_silentError_forDebugging();
+						printf("Internal compiler error\n");
+						exit(-1);
+					}
 				}
+
+				// When we get here, we've reached the end of our parameters
+				if (comp)
+				{
+					// We did not reach the end of line
+					// Too many parameters
+					sprintf(buffer, "Warning %%d [%d,%d]: %%s", compToSwapOut->line->lineNumber, compToSwapOut->start);
+
+					// Report the warning
+					iilsa_warning(_LSA_WARNING_TOO_MANY_PARAMETERS__IGNORED, buffer, param->start->line, param->start);
+
+				} else {
+					// We reached the end of line, terminate any existing parameters
+					for ( ; lnParam < lnParamCount; lnParam++)
+					{
+						// Create the empty parameter
+						param = (SLsaParam*)iBuilder_allocateBytes(params, sizeof(SLsaParam));
+						if (param)
+						{
+							// It is already set to NULL
+
+						} else {
+							// Should never happen
+							ilsa_routeThrough_silentError_forDebugging();
+							printf("Internal compiler error\n");
+							exit(-1);
+						}
+					}
+				}
+				// When we get here, we have all params extracted
 
 			} else {
 				// No parameters
 				compLast = compToSwapOut;
 			}
 
-			// Is it a single line substitution?
-			if (dm->first->line == dm->last->line)
-			{
-				// Copy the line component by component, and swap out the one component for the many.
-				// Translates the original source line to a commented version, and then adds the translated one after
-
-			} else {
-				// More than one line, so it will need to be injected
-			}
+			// Substitute these components
+			iilsa_dmac_swapOut_comps(compFirst, compLast, dm, params);
 
 		} else {
 			// Passed parameters are invalid
@@ -500,4 +553,29 @@
 
 		// Indicate failure
 		return(false);
+	}
+
+
+
+
+//////////
+//
+// Called to swap out the indicated components, and build the line
+//
+//////
+	bool iilsa_dmac_swapOut_comps(SComp* compFirst, SComp* compLast, SLsaDMac* dm, SBuilder* params)
+	{
+		SLsaParam* param;
+
+
+// TODO:  working here
+working here
+		if (dm->first->line == dm->last->line)
+		{
+			// Copy the line component by component, and swap out the one component for the many.
+			// Translates the original source line to a commented version, and then adds the translated one after
+
+		} else {
+			// More than one line, so it will need to be injected
+		}
 	}

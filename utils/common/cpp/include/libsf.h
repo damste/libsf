@@ -1262,6 +1262,7 @@
 	SComp*					iComps_Nth									(SComp* comp, s32 tnCount = 1, bool tlMoveBeyondLineIfNeeded = true);
 	SComp*					iComps_Nth_lineOnly							(SComp* comp, s32 tnCount = 1);
 	bool					iComps_scanForward_withCallback				(SComp* comp, SCallback* cb, bool tlSkipFirst = false, bool tlMoveBeyondLineIfNeeded = true, uptr _func = NULL);
+	SComp*					iComps_scanForward_for_iCode				(SComp* compRoot, s32 tniCode, bool tlMoveBeyondLineIfNeeded = true, bool tlParseDepth = true);
 	u32						iComps_combineN								(SComp* comp, u32 tnCount, s32 tnNew_iCode, u32 tnNew_iCat, SBgra* newColor, SComp** compMigrateRefs = NULL);
 	u32						iComps_combine_adjacent						(SComp* compLeftmost, s32 tniCode, u32 tniCat, SBgra* tnColor, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount);
 	u32						iComps_combine_adjacentAlphanumeric			(SLine* line);

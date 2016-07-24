@@ -630,6 +630,7 @@
 //////
 	cs32		_LSA_WARNING_BASE							= 4000;
 	cs32		_LSA_WARNING_UNREFERENCED_PARAMETER			= 1;
+	cs32		_LSA_WARNING_TOO_MANY_PARAMETERS__IGNORED	= 2;
 
 
 //////////
@@ -650,6 +651,7 @@
 //////
 	cs8			cgc_lsa_warning_unknown_warning[]			= "unspecified warning";
 	cs8			cgc_lsa_warning_unreferenced_parameter[]	= "unreferenced parameter";
+	cs8			cgc_lsa_warning_too_many_parameters__ignored[] = "too many parameters (extra parameters ignored)";
 
 //////////
 // Error messages

@@ -1427,6 +1427,133 @@
 
 //////////
 //
+// Scan forward to the indicated iCode, potentially going past the iCode
+// if we are parsing depths.
+//
+//////
+	SComp* iComps_scanForward_for_iCode(SComp* compRoot, s32 tniCode, bool tlMoveBeyondLineIfNeeded, bool tlParseDepth)
+	{
+		s32		lnLevel, lnStack;
+		s32		depthStack[256];
+		SComp*	comp;
+		SComp*	compLast;
+
+
+		// Scan forward until we reach the indicated iCode
+		compLast	= NULL;
+		comp		= iComps_Nth(compRoot, 1, tlMoveBeyondLineIfNeeded);
+		for (lnLevel = 0, lnStack = 0; comp; compLast = comp, comp = iComps_Nth(comp, 1, tlMoveBeyondLineIfNeeded))
+		{
+			// If we are parsing depth codes, then do so here
+			if (tlParseDepth)
+			{
+				switch (comp->iCode)
+				{
+					case _ICODE_BRACKET_LEFT:
+					case _ICODE_DOUBLE_BRACE_LEFT:
+					case _ICODE_BRACE_LEFT:
+					case _ICODE_PARENTHESIS_LEFT:
+						depthStack[lnStack] = comp->iCode;
+						++lnStack;
+						continue;
+
+					case _ICODE_BRACKET_RIGHT:
+						if (lnLevel > 0)
+						{
+							// Does it match?
+							if (depthStack[lnLevel - 1] == _ICODE_BRACKET_LEFT)
+							{
+								// We're valid
+								--lnLevel;
+
+							} else {
+								// Does not match, it's a ) with a prior [ or {
+								return(NULL);
+							}
+
+						} else {
+							// We've reached a ) without a prior (
+							return(NULL);
+						}
+						continue;
+
+					case _ICODE_DOUBLE_BRACE_RIGHT:
+						if (lnLevel > 0)
+						{
+							// Does it match?
+							if (depthStack[lnLevel - 1] == _ICODE_DOUBLE_BRACE_LEFT)
+							{
+								// We're valid
+								--lnLevel;
+
+							} else {
+								// Does not match, it's a ] with a prior ( or {
+								return(NULL);
+							}
+
+						} else {
+							// We've reached a ] without a prior [
+							return(NULL);
+						}
+						continue;
+
+					case _ICODE_BRACE_RIGHT:
+						if (lnLevel > 0)
+						{
+							// Does it match?
+							if (depthStack[lnLevel - 1] == _ICODE_BRACE_LEFT)
+							{
+								// We're valid
+								--lnLevel;
+
+							} else {
+								// Does not match, it's a ] with a prior ( or {
+								return(NULL);
+							}
+
+						} else {
+							// We've reached a ] without a prior [
+							return(NULL);
+						}
+						continue;
+
+					case _ICODE_PARENTHESIS_RIGHT:
+						if (lnLevel > 0)
+						{
+							// Does it match?
+							if (depthStack[lnLevel - 1] == _ICODE_PARENTHESIS_LEFT)
+							{
+								// We're valid
+								--lnLevel;
+
+							} else {
+								// Does not match, it's a ) with a prior [ or {
+								return(NULL);
+							}
+
+						} else {
+							// We've reached a ) without a prior (
+							return(NULL);
+						}
+						continue;
+				}
+			}
+
+			// Is it our target iCode?
+			if (lnLevel == 0 && comp->iCode == tniCode)
+				return(comp);	// Yes
+		}
+
+		// If we get here, not found
+		if (lnLevel > 0)		return(NULL);
+		else					return(compLast);
+	}
+
+
+
+
+//////////
+//
 // Called to combine two components into one.  If tnNewICode is > 0 then the
 // iCode is updated as well.  If compMigrateRefs is populated, then the node
 // that's combined isn't deleted, but rather is migrated to that chain.

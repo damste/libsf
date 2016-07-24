@@ -177,6 +177,10 @@
 					lcWarningText = cgc_lsa_warning_unreferenced_parameter;
 					break;
 
+				case _LSA_WARNING_TOO_MANY_PARAMETERS__IGNORED:
+					lcWarningText = cgc_lsa_warning_too_many_parameters__ignored;
+					break;
+
 				default:
 					// Internal error (should never happen)
 					ilsa_routeThrough_silentError_forDebugging();

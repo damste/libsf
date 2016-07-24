@@ -195,8 +195,7 @@ struct SBuilder;
 
 		// Computed values based on the above
 		SComp*		type;								// Type of param specified
-		s32			_ebp_offset;						// Offset into the [ebp] block
-		s32			size;								// Total size in bytes
+		SDatum		associatedData;						// If the type has data, it's stored here
 		s32			nRefCount;							// Number of times this parameter is referenced
 	};
 

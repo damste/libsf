@@ -129,6 +129,7 @@ struct SLsaInclude;
 	s32					iilsa_dmac_find_byComp__callbackSearch			(SBSearchCallback* bcb);
 	bool				iilsa_dmac_find_byComp__callbackValidate		(SBSearchCallback* bcb);
 	bool				ilsa_dmac_swapOut								(SComp* compToSwapOut, SLsaDMac* dm, SComp** compOut);
+	bool				iilsa_dmac_swapOut_comps						(SComp* compFirst, SComp* compLast, SLsaDMac* dm, SBuilder* params);
 
 	// lsa_ei.cpp
 	// Note, warning, error, and other forms of associated reporting
