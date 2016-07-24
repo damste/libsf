@@ -25,10 +25,9 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 {
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
+// 	MSG msg;
+// 	HACCEL hAccelTable;
 
- 	// TODO: Place code here.
-	MSG msg;
-	HACCEL hAccelTable;
 
 // 	// Initialize global strings
 // 	LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);

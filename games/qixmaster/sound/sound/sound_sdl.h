@@ -8,16 +8,19 @@ const int		FREQUENCY		= 44100;
 const int		CHANNELS		= 2;
 
 // For C-based para-diddle LRLL RLRR
-int		_CL				= 37 - 1;
-int		_CR				= 40 - 1;
+int		_CL				= 37 - 1;		// A
+int		_CR				= 40 - 1;		// C
+
+// For C-based runs
+int		_C				= 40 - 1;		// C
 
 int		sbOffset		= 0;
 int		sbMax			= 0;
 Sint16*	songBuffer		= NULL;
 
-double	amp				= 1.0;
-double	lfTheta			= 0.0;
-double	lfThetaInc		= 6.28 / (6 * (double)FREQUENCY * CHANNELS);
+double	gfAmp					= 1.0;
+double	gfChannelFade			= 0.0;
+double	gfChannelFadeRateInc	= 6.28 / (6 * (double)FREQUENCY * CHANNELS);
 
 SDL_AudioSpec desired;
 SDL_AudioSpec obtained;
@@ -136,13 +139,13 @@ void appendToneOntoBuffer(int tnKey, int tnToneMilliseconds, int tnPauseMillisec
 	}
 }
 
-void paradiddle(int offsetL, int offsetR, int offsetSpeed, int count)
+void paradiddle(int offsetL, int offsetR, int offsetSpeed, int loopCount)
 {
 	int lnI;
 
 
 	// Repeat for count iterations
-	for (lnI = 0; lnI < count; lnI++)
+	for (lnI = 0; lnI < loopCount; lnI++)
 	{
 		// LRLL
 		appendToneOntoBuffer(_CL + offsetL, 225 + offsetSpeed, 15, 1.0);		// par
@@ -155,6 +158,95 @@ void paradiddle(int offsetL, int offsetR, int offsetSpeed, int count)
 		appendToneOntoBuffer(_CL + offsetL, 225 + offsetSpeed, 15, 0.75);		// a
 		appendToneOntoBuffer(_CR + offsetR, 225 + offsetSpeed, 15, 0.5);		// did
 		appendToneOntoBuffer(_CR + offsetR, 200 + offsetSpeed, 40, 0.5);		// dle
+	}
+}
+
+void bass1(int offset, int offsetSpeed, int loopCount)
+{
+	int lnI;
+
+
+	// Repeat for count iterations
+	for (lnI = 0; lnI < loopCount; lnI++)
+	{
+		appendToneOntoBuffer(_C + offset,		350 + offsetSpeed, 15, 1.0);
+		appendToneOntoBuffer(_C + offset + 3,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 4,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 5,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 4,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 3,	350 + offsetSpeed, 15, 1.00);
+		appendToneOntoBuffer(_C + offset + 4,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 5,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 4,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 3,	350 + offsetSpeed, 40, 0.5);
+	}
+}
+
+void bass2(int offset, int offsetSpeed, int loopCount)
+{
+	int lnI;
+
+
+	// Repeat for count iterations
+	for (lnI = 0; lnI < loopCount; lnI++)
+	{
+		appendToneOntoBuffer(_C + offset,		350 + offsetSpeed, 15, 1.0);
+		appendToneOntoBuffer(_C + offset + 7,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 5,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 3,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 7,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 5,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 3,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 7,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 5,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 3,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 7,	350 + offsetSpeed, 40, 0.50);
+	}
+}
+
+void bass3(int offset, int offsetSpeed, int loopCount)
+{
+	int lnI;
+
+
+	// Repeat for count iterations
+	for (lnI = 0; lnI < loopCount; lnI++)
+	{
+		appendToneOntoBuffer(_C + offset,		500 + offsetSpeed, 15, 1.00);
+		appendToneOntoBuffer(_C + offset + 3,	275 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 5,	275 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 7,	550 + offsetSpeed, 40, 1.00);
+		appendToneOntoBuffer(_C + offset + 5,	275 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 3,	275 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset,		500 + offsetSpeed, 40, 1.00);
+		appendToneOntoBuffer(_C + offset + 3,	275 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 5,	275 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 7,	550 + offsetSpeed, 40, 1.00);
+		appendToneOntoBuffer(_C + offset + 5,	275 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 3,	275 + offsetSpeed, 15, 0.75);
+	}
+}
+
+void bass4(int offset, int offsetSpeed, int loopCount)
+{
+	int lnI;
+
+
+	// Repeat for count iterations
+	for (lnI = 0; lnI < loopCount; lnI++)
+	{
+		appendToneOntoBuffer(_C + offset,		450 + offsetSpeed, 15, 1.00);
+		appendToneOntoBuffer(_C + offset,		225 + offsetSpeed, 15, 0.01);
+		appendToneOntoBuffer(_C + offset,		225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 7,	450 + offsetSpeed, 15, 1.00);
+		appendToneOntoBuffer(_C + offset,		225 + offsetSpeed, 15, 0.01);
+		appendToneOntoBuffer(_C + offset + 7,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 3,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset,		225 + offsetSpeed, 15, 0.01);
+		appendToneOntoBuffer(_C + offset + 5,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 3,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 5,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 3,	550 + offsetSpeed, 40, 1.00);
 	}
 }
 
@@ -198,11 +290,36 @@ void sound_init(void)
 	//////////
 	// Play para-diddles
 	//////
-		paradiddle(0-12, 0-12, -100, 2);
-		paradiddle(-2-12, 2-12, -100, 2);
-		paradiddle(-4-12, 0-12, -100, 2);
-		paradiddle(-2-12, 2-12, -100, 2);
-		saveSongBufferRaw("song.raw");
+// 		paradiddle( 0 - 12,		0 - 12,		-100,	2);
+// 		paradiddle(-2 - 12,		2 - 12,		-100,	2);
+// 		paradiddle(-4 - 12,		0 - 12,		-100,	2);
+// 		paradiddle(-2 - 12,		2 - 12,		-100,	2);
+
+
+	//////////
+	// Some basic bass runs
+	//////
+		bass1(0 - 24,	-100,	2);
+		bass1(3 - 24,	-100,	2);
+
+		bass2(5 - 24,	-100,	2);
+		bass2(3 - 24,	-100,	2);
+
+		bass3(0 - 24,	-100,	1);
+		bass3(-2 - 24,	-100,	1);
+		bass3(0 - 24,	-100,	1);
+		bass3(-2 - 24,	-100,	1);
+
+		bass4(0 - 24,	-100,	1);
+		bass4(-2 - 24,	-100,	1);
+		bass4(0 - 24,	-100,	1);
+		bass4(-2 - 24,	-100,	1);
+
+
+	//////////
+	// Save the raw song
+	//////
+//		saveSongBufferRaw("song.raw");
 
 
 	//////////
@@ -233,15 +350,15 @@ void sound_init(void)
 								break;
 
 							case SDLK_KP_PLUS:
-								amp += 0.1;
-								if (amp > 1.0)
-									amp = 1.0;
+								gfAmp += 0.1;
+								if (gfAmp > 1.0)
+									gfAmp = 1.0;
 								break;
 
 							case SDLK_KP_MINUS:
-								amp -= 0.1;
-								if (amp <= 0.0)
-									amp = 0.0;
+								gfAmp -= 0.1;
+								if (gfAmp <= 0.0)
+									gfAmp = 0.0;
 								break;
 
 							default:
@@ -279,8 +396,13 @@ void sound_init(void)
 void my_audio_callback(void* userdata, Uint8* stream, int len)
 {
 	int			i, j;
-	double		lfSin1, lfSin2;
+	double		lfFadeChannel1, lfFadeChannel2;
 	Sint16*		stream16;
+
+
+	// Maximize volume
+	lfFadeChannel1 = 1.0;
+	lfFadeChannel2 = 1.0;
 
 	// Generate the stream
 	stream16 = (Sint16*)stream;
@@ -290,15 +412,15 @@ void my_audio_callback(void* userdata, Uint8* stream, int len)
 		for (j = 0; j < obtained.channels; j++)
 		{
 			// Compute the sin for this iteration
-			lfSin1	= sin(lfTheta);
-			lfSin2	= sin(lfTheta + (M_PI / 2.0));
+// 			lfSin1 = sin(gfChannelFade);
+// 			lfSin2 = sin(gfChannelFade + (M_PI / 2.0));
 
 			// Add this channel
-			if (j == 0)		stream16[i++] = (Sint16)(amp * lfSin1  * (double)songBuffer[sbOffset]);
-			else			stream16[i++] = (Sint16)(amp * lfSin2 * (double)songBuffer[sbOffset]);
+			if (j == 0)		stream16[i++] = (Sint16)(gfAmp * lfFadeChannel1  * (double)songBuffer[sbOffset]);
+			else			stream16[i++] = (Sint16)(gfAmp * lfFadeChannel2 * (double)songBuffer[sbOffset]);
 
-			// Iterate for the next go
-			lfTheta	+= lfThetaInc;
+// 			// Iterate for the next go
+// 			gfChannelFade += gfChannelFadeRateInc;
 		}
 
 		// Increase our offset
