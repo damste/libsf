@@ -161,7 +161,7 @@
 
 				// Indicate we're completed at this point
 				if (!cmdLine.o.lVerbose && cmdLine.fileOut)
-					printf("--%s, %\n", cmdLine.fileOut->filename.data_cs8, cmdLine.fileOut->rawLength);
+					printf("--%s, %n\n", cmdLine.fileOut->filename.data_cs8, &cmdLine.fileOut->rawLength);
 			//
 			iterate_end;
 
