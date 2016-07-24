@@ -11,16 +11,16 @@ const int		CHANNELS		= 2;
 int		_CL				= 37 - 1;		// A
 int		_CR				= 40 - 1;		// C
 
-// For C-based run1
+// For C-based runs
 int		_C				= 40 - 1;		// C
 
 int		sbOffset		= 0;
 int		sbMax			= 0;
 Sint16*	songBuffer		= NULL;
 
-double	gfAmp			= 1.0;
+double	gfAmp					= 1.0;
 double	gfChannelFade			= 0.0;
-double	gfChannelFadeRateInc		= 6.28 / (6 * (double)FREQUENCY * CHANNELS);
+double	gfChannelFadeRateInc	= 6.28 / (6 * (double)FREQUENCY * CHANNELS);
 
 SDL_AudioSpec desired;
 SDL_AudioSpec obtained;
@@ -182,6 +182,74 @@ void bass1(int offset, int offsetSpeed, int loopCount)
 	}
 }
 
+void bass2(int offset, int offsetSpeed, int loopCount)
+{
+	int lnI;
+
+
+	// Repeat for count iterations
+	for (lnI = 0; lnI < loopCount; lnI++)
+	{
+		appendToneOntoBuffer(_C + offset,		350 + offsetSpeed, 15, 1.0);
+		appendToneOntoBuffer(_C + offset + 7,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 5,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 3,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 7,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 5,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 3,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 7,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 5,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 3,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 7,	350 + offsetSpeed, 40, 0.50);
+	}
+}
+
+void bass3(int offset, int offsetSpeed, int loopCount)
+{
+	int lnI;
+
+
+	// Repeat for count iterations
+	for (lnI = 0; lnI < loopCount; lnI++)
+	{
+		appendToneOntoBuffer(_C + offset,		500 + offsetSpeed, 15, 1.00);
+		appendToneOntoBuffer(_C + offset + 3,	275 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 5,	275 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 7,	550 + offsetSpeed, 40, 1.00);
+		appendToneOntoBuffer(_C + offset + 5,	275 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 3,	275 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset,		500 + offsetSpeed, 40, 1.00);
+		appendToneOntoBuffer(_C + offset + 3,	275 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 5,	275 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 7,	550 + offsetSpeed, 40, 1.00);
+		appendToneOntoBuffer(_C + offset + 5,	275 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 3,	275 + offsetSpeed, 15, 0.75);
+	}
+}
+
+void bass4(int offset, int offsetSpeed, int loopCount)
+{
+	int lnI;
+
+
+	// Repeat for count iterations
+	for (lnI = 0; lnI < loopCount; lnI++)
+	{
+		appendToneOntoBuffer(_C + offset,		450 + offsetSpeed, 15, 1.00);
+		appendToneOntoBuffer(_C + offset,		225 + offsetSpeed, 15, 0.01);
+		appendToneOntoBuffer(_C + offset,		225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 7,	450 + offsetSpeed, 15, 1.00);
+		appendToneOntoBuffer(_C + offset,		225 + offsetSpeed, 15, 0.01);
+		appendToneOntoBuffer(_C + offset + 7,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 3,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset,		225 + offsetSpeed, 15, 0.01);
+		appendToneOntoBuffer(_C + offset + 5,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 3,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 5,	225 + offsetSpeed, 15, 0.75);
+		appendToneOntoBuffer(_C + offset + 3,	550 + offsetSpeed, 40, 1.00);
+	}
+}
+
 void sound_init(void)
 {
 	if (SDL_Init(SDL_INIT_TIMER | SDL_INIT_AUDIO) < 0)
@@ -231,18 +299,27 @@ void sound_init(void)
 	//////////
 	// Some basic bass runs
 	//////
-		bass1(0 - 24,	-100,	1);
-		bass1(3 - 24,	-100,	1);
-// 		bass1(0 - 24,	-125,	1);
-// 		bass1(3 - 24,	-125,	1);
-// 		bass1(0 - 24,	-150,	1);
-// 		bass1(3 - 24,	-150,	1);
+		bass1(0 - 24,	-100,	2);
+		bass1(3 - 24,	-100,	2);
+
+		bass2(5 - 24,	-100,	2);
+		bass2(3 - 24,	-100,	2);
+
+		bass3(0 - 24,	-100,	1);
+		bass3(-2 - 24,	-100,	1);
+		bass3(0 - 24,	-100,	1);
+		bass3(-2 - 24,	-100,	1);
+
+		bass4(0 - 24,	-100,	1);
+		bass4(-2 - 24,	-100,	1);
+		bass4(0 - 24,	-100,	1);
+		bass4(-2 - 24,	-100,	1);
 
 
 	//////////
 	// Save the raw song
 	//////
-		saveSongBufferRaw("song.raw");
+//		saveSongBufferRaw("song.raw");
 
 
 	//////////
