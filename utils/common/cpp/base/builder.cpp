@@ -989,7 +989,7 @@
 // Called to retrieve the indicated record
 //
 //////
-	s8* iBuilder_retrieveRecord(SBuilder* builder, u32 tnStepSize, u32 tnN)
+	void* iBuilder_retrieveRecord(SBuilder* builder, u32 tnStepSize, u32 tnN)
 	{
 		// Make sure it ranges
 		if (builder && builder->buffer && (tnStepSize * tnN) <= (builder->populatedLength - tnStepSize))

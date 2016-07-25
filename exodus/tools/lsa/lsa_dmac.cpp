@@ -454,7 +454,10 @@
 		SComp*		comp;
 		SComp*		compFirst;
 		SComp*		compLast;
-		SComp*		compComma;
+		union {
+			SComp*	compComma;
+			SComp*	compLastOnLine;
+		};
 		SBuilder*	params;		// SLsaParam
 		SLsaParam*	param;
 		s8			buffer[1024];
@@ -492,8 +495,8 @@
 							param->end	= iComps_Nth(compComma, -1);
 
 						} else {
-							// Store this one
-							param->end	= compComma;
+							// Last one on line
+							param->end	= compLastOnLine;
 							llLastParam	= true;
 						}
 
@@ -524,6 +527,7 @@
 						if (param)
 						{
 							// It is already set to NULL
+							// No code is required here, but this should be the normal path through source code
 
 						} else {
 							// Should never happen
@@ -533,7 +537,7 @@
 						}
 					}
 				}
-				// When we get here, we have all params extracted
+				// When we get here, all of the params[] which existed are populated
 
 			} else {
 				// No parameters
@@ -565,17 +569,79 @@
 //////
 	bool iilsa_dmac_swapOut_comps(SComp* compFirst, SComp* compLast, SLsaDMac* dm, SBuilder* params)
 	{
-		SLsaParam* param;
+		u32				lnI;
+		SLsaParam*		param;
+		SLsaExpansion*	exp;
+		SBuilder*		b;
+		SComp*			paramComp;
+		SComp*			paramCompLast;
 
 
-// TODO:  working here
-working here
-		if (dm->first->line == dm->last->line)
-		{
-			// Copy the line component by component, and swap out the one component for the many.
-			// Translates the original source line to a commented version, and then adds the translated one after
+		//////////
+		// Create the content
+		//////
+			b = NULL;
+			iBuilder_createAndInitialize(&b);
+			iterate(lnI, dm->expansion_steps, exp, SLsaExpansion)
+			//
 
-		} else {
-			// More than one line, so it will need to be injected
-		}
+				// Expand param or text
+				if (exp->nParamNum > 0)
+				{
+					// Param
+					param = (SLsaParam*)iBuilder_retrieveRecord(params, sizeof(SLsaParam), exp->nParamNum - 1);
+					if (param)
+					{
+						// They provided content, so copy each component as is
+						for (paramComp = param->start, paramCompLast = NULL; paramComp; paramCompLast = paramComp, paramComp = iComps_Nth(paramComp))
+						{
+							// If it's not the first component...
+							if (paramCompLast)
+							{
+								// We may need a new line
+								if (paramCompLast->line != paramComp->line)
+								{
+									// Add CR/LF
+									iBuilder_appendCrLf(b);
+
+									// Add whitespaces up to the start of this entry
+									if (paramComp->start > 0)
+										iBuilder_appendWhitespaces(b, paramComp->start);
+
+								} else if (paramCompLast->start + paramCompLast->text.length != paramComp->start) {
+									iBuilder_appendWhitespaces(b, paramComp->start - (paramCompLast->start + paramCompLast->text.length));
+								}
+							}
+
+							// Copy this content
+							iBuilder_appendData(b, paramComp->text.data_vp, paramComp->text.length);
+
+							// Are we done?
+							if (paramComp == param->end)
+								break;	// Yes
+						}
+					}
+
+				} else {
+					// Raw text copy
+					iBuilder_appendData(b, exp->text.data_vp, exp->text.length);
+				}
+
+			//
+			iterate_end;
+			// Note:  When we get here, b is the content we need to replace
+
+
+		//////////
+		// Find out where it goes
+		//////
+			if (dm->first->line == dm->last->line)
+			{
+				// Copy the line component by component, and swap out the one component for the many.
+				// Translates the original source line to a commented version, and then adds the translated one after
+
+			} else {
+				// More than one line, so it will need to be injected
+			}
+
 	}
