@@ -502,9 +502,7 @@
 
 					} else {
 						// Should never happen
-						ilsa_routeThrough_silentError_forDebugging();
-						printf("Internal compiler error\n");
-						exit(-1);
+						ilsa_internal_compiler_error();
 					}
 				}
 
@@ -531,9 +529,7 @@
 
 						} else {
 							// Should never happen
-							ilsa_routeThrough_silentError_forDebugging();
-							printf("Internal compiler error\n");
-							exit(-1);
+							ilsa_internal_compiler_error();
 						}
 					}
 				}
@@ -550,9 +546,7 @@
 		} else {
 			// Passed parameters are invalid
 			// Should never happen
-			ilsa_routeThrough_silentError_forDebugging();
-			printf("Internal compiler error\n");
-			exit(-1);
+			ilsa_internal_compiler_error();
 		}
 
 		// Indicate failure
@@ -573,12 +567,21 @@
 		SLsaParam*		param;
 		SLsaExpansion*	exp;
 		SBuilder*		b;
+		SComp*			comp;
+		SComp*			compPrev;
+		SComp*			compNext;
 		SComp*			paramComp;
 		SComp*			paramCompLast;
+		SComp**			compRoot;
+		SLine*			line;
+		SLine*			lineNew;
+		SLine*			firstLine;
+		SLine*			lastLine;
+		SCallback		cb;
 
 
 		//////////
-		// Create the content
+		// Create the macro'd content
 		//////
 			b = NULL;
 			iBuilder_createAndInitialize(&b);
@@ -598,17 +601,19 @@
 							// If it's not the first component...
 							if (paramCompLast)
 							{
-								// We may need a new line
+								// We may need a new line or whitespaces
+								// Note:  These whitespaces in the original content may have been tabs, but here they will only be spaces
 								if (paramCompLast->line != paramComp->line)
 								{
 									// Add CR/LF
 									iBuilder_appendCrLf(b);
 
-									// Add whitespaces up to the start of this entry
+									// And, add whitespaces up to the start of this entry on the line
 									if (paramComp->start > 0)
 										iBuilder_appendWhitespaces(b, paramComp->start);
 
 								} else if (paramCompLast->start + paramCompLast->text.length != paramComp->start) {
+									// Add whitespaces between these components
 									iBuilder_appendWhitespaces(b, paramComp->start - (paramCompLast->start + paramCompLast->text.length));
 								}
 							}
@@ -620,6 +625,10 @@
 							if (paramComp == param->end)
 								break;	// Yes
 						}
+
+					} else {
+						// Should never happen
+						ilsa_internal_compiler_error();
 					}
 
 				} else {
@@ -629,19 +638,87 @@
 
 			//
 			iterate_end;
-			// Note:  When we get here, b is the content we need to replace
+			// Note:  When we get here, b->buffer is the content we need to replace
 
 
 		//////////
-		// Find out where it goes
+		// Convert it out to real source code
 		//////
-			if (dm->first->line == dm->last->line)
-			{
-				// Copy the line component by component, and swap out the one component for the many.
-				// Translates the original source line to a commented version, and then adds the translated one after
+			iFile_parseIntoLines(&firstLine, b->buffer, b->populatedLength, &lastLine);
+			iComps_lex_and_parse(firstLine, true, cgcKeywordsLsa);
 
+
+		//////////
+		// Duplicate and comment out the line
+		//////
+			// Store the line pointer
+			line = compFirst->line;
+
+			// Duplicate
+// TODO:  working here
+			lineNew = iLine_duplicate_withComps(line);
+
+			// Prefix with a double-semicolon comment character
+			iComps_insertBefore_by_iCode(line->firstComp, _ICODE_LINE_COMMENT);
+
+			// Insert before 
+			iLine_insertBefore(line, lineNew);
+
+
+		//////////
+		// Delete the components
+		//////
+			// Delete the comps in range on the line
+			memset(&cb, 0, sizeof(cb));
+			cb._func = (uptr)&iilsa_dmac_swapOut_comps__callback;
+			iComps_deleteAll_byRange_withCallback(compFirst, compLast, &cb, &compPrev, &compNext);
+
+
+		//////////
+		// Was the entire line deleted?
+		//////
+			if (!compPrev && !compNext)
+			{
+				// Yes, append directly to the start of the line
+				line->firstComp		= NULL;
+				compRoot			= &line->firstComp;
+
+			// Was it just everything from the beginning?
+			} else if (!compPrev) {
+				// Append to the start of the line
+				line->firstComp		= compNext;
+				compRoot			= &line->firstComp;
+
+			// It may be something after
 			} else {
-				// More than one line, so it will need to be injected
+				// Append after the compPrev component
+				compRoot			= &compNext;
 			}
 
+			
+		//////////
+		// Add the dmac content?
+		//////
+			if (firstLine == lastLine)
+			{
+				// Doing a single-line injection
+
+			} else {
+				// Multiple lines are being inserted
+			}
+
+
+		//////////
+		// Indicate success
+		//////
+			return(true);
+
+	}
+
+	bool iilsa_dmac_swapOut_comps__callback(SCallback* cb)
+	{
+// TODO:  working here
+
+		// Continue iterating
+		return(true);
 	}

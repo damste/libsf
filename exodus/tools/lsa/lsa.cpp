@@ -208,6 +208,13 @@
 // should never occur, but are occurring, are routed through here for debugging.
 //
 //////
+	void ilsa_internal_compiler_error(void)
+	{
+		ilsa_routeThrough_silentError_forDebugging();
+		printf(cgc_lsa_internal_compiler_error);
+		exit(-1);
+	}
+
 	void ilsa_routeThrough_silentError_forDebugging(void)
 	{
 		// For debugging, errors that should not occur route through this function

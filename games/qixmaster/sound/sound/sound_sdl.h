@@ -142,7 +142,7 @@ void appendToneOntoBuffer(int tnKey, int tnToneMilliseconds, int tnPauseMillisec
 void appendTwoTonesOntoBuffer(int tnKey1, int tnKey2, int tnToneMilliseconds, int tnPauseMilliseconds, double tfAmp)
 {
 	int		i, lnToneSize, lnPauseSize, lnNewSize, lnBase;
-	double	v1, vf1, v2, vf2, lfTone1, lfTone2, lfAmp;
+	double	v1, vf1, v2, vf2, lfTone, lfTone1, lfTone2, lfAmp;
 	Sint16*	lcNew;
 
 
@@ -174,12 +174,15 @@ void appendTwoTonesOntoBuffer(int tnKey1, int tnKey2, int tnToneMilliseconds, in
 			for (i = 0; i < lnToneSize; i++)
 			{
 				// Create the tone
-				lfTone1 = tfAmp * lfAmp * std::cos(v1 * 2 * M_PI / FREQUENCY);
-				lfTone2 = tfAmp * lfAmp * std::cos(v2 * 2 * M_PI / FREQUENCY);
+				lfTone1 = tfAmp * std::cos(v1 * 2 * M_PI / FREQUENCY);
+				lfTone2 = tfAmp * std::cos(v2 * 2 * M_PI / FREQUENCY);
+
+				// Calculate the value
+// Note:  This algorithm does not work, trying to find alternatives
+				lfTone = (lfTone1 + lfTone2) / 2.0;
 
 				// Store the tone
-// TODO:  This simple sound merge algorithm does not work properly
-				lcNew[lnBase + i] = (Sint16)((lfTone1 + lfTone2) / 2.0);
+				lcNew[lnBase + i] = (Sint16)(lfTone * lfAmp);
 
 				// Increase by our frequency
 				v1 += vf1;
@@ -322,7 +325,7 @@ void bass4(int offset, int offsetSpeed, int loopCount)
 	}
 }
 
-void bass5(int offset1, int offset2, int loopCount)
+void bass5(int offset1, int loopCount)
 {
 	int lnI;
 
@@ -330,36 +333,36 @@ void bass5(int offset1, int offset2, int loopCount)
 	// Repeat for count iterations
 	for (lnI = 0; lnI < loopCount; lnI++)
 	{
-		appendTwoTonesOntoBuffer(_C + offset1,			_C + offset2,			225,	15,		1.00);
-		appendTwoTonesOntoBuffer(_C + offset1,			_C + offset2,			225,	15,		1.00);
-		appendTwoTonesOntoBuffer(_C + offset1,			_C + offset2,			225,	15,		1.00);
-		appendTwoTonesOntoBuffer(_C + offset1 - 2,		_C + offset2 - 2,		115,	15,		1.00);
-		appendTwoTonesOntoBuffer(_C + offset1,			_C + offset2,			225,	15,		1.00);
-		appendTwoTonesOntoBuffer(_C + offset1,			_C + offset2,			225,	15,		1.00);
-		appendTwoTonesOntoBuffer(_C + offset1,			_C + offset2,			115,	15,		1.00);
-		appendTwoTonesOntoBuffer(_C + offset1 + 2,		_C + offset2 + 2,		225,	15,		1.00);
-		appendTwoTonesOntoBuffer(_C + offset1,			_C + offset2,			225,	15,		1.00);
-		appendTwoTonesOntoBuffer(_C + offset1 - 2,		_C + offset2 - 2,		225,	15,		1.00);
-		appendTwoTonesOntoBuffer(_C + offset1 - 5,		_C + offset2 - 5,		225,	15,		1.00);
-		appendTwoTonesOntoBuffer(_C + offset1 - 5,		_C + offset2 - 5,		225,	15,		1.00);
-		appendTwoTonesOntoBuffer(_C + offset1 - 7,		_C + offset2 - 7,		100,	15,		1.00);
-		appendTwoTonesOntoBuffer(_C + offset1 - 5,		_C + offset2 - 5,		300,	40,		1.00);
-		appendTwoTonesOntoBuffer(_C + offset1,			_C + offset2,			500,	15,		0.01);
-		appendTwoTonesOntoBuffer(_C + offset1 - 2,		_C + offset2 - 2,		225,	15,		1.00);
-		appendTwoTonesOntoBuffer(_C + offset1 - 2,		_C + offset2 - 2,		225,	15,		1.00);
-		appendTwoTonesOntoBuffer(_C + offset1 - 2,		_C + offset2 - 2,		225,	15,		1.00);
-		appendTwoTonesOntoBuffer(_C + offset1 - 5,		_C + offset2 - 5,		115,	15,		1.00);
-		appendTwoTonesOntoBuffer(_C + offset1 - 2,		_C + offset2 - 2,		225,	15,		1.00);
-		appendTwoTonesOntoBuffer(_C + offset1 - 2,		_C + offset2 - 2,		225,	15,		1.00);
-		appendTwoTonesOntoBuffer(_C + offset1 - 2,		_C + offset2 - 2,		115,	15,		1.00);
-		appendTwoTonesOntoBuffer(_C + offset1,			_C + offset2,			225,	15,		1.00);
-		appendTwoTonesOntoBuffer(_C + offset1 - 2,		_C + offset2 - 2,		225,	40,		1.00);
-		appendTwoTonesOntoBuffer(_C + offset1,			_C + offset2,			225,	15,		1.00);
-		appendTwoTonesOntoBuffer(_C + offset1,			_C + offset2,			225,	15,		1.00);
-		appendTwoTonesOntoBuffer(_C + offset1,			_C + offset2,			225,	15,		1.00);
-		appendTwoTonesOntoBuffer(_C + offset1 - 2,		_C + offset2 - 2,		115,	15,		1.00);
-		appendTwoTonesOntoBuffer(_C + offset1,			_C + offset2,			300,	40,		1.00);
-		appendTwoTonesOntoBuffer(_C + offset1,			_C + offset2,			600,	15,		0.01);
+		appendToneOntoBuffer(_C + offset1,			225,	15,		1.00);
+		appendToneOntoBuffer(_C + offset1,			225,	15,		1.00);
+		appendToneOntoBuffer(_C + offset1,			225,	15,		1.00);
+		appendToneOntoBuffer(_C + offset1 - 2,		115,	15,		1.00);
+		appendToneOntoBuffer(_C + offset1,			225,	15,		1.00);
+		appendToneOntoBuffer(_C + offset1,			225,	15,		1.00);
+		appendToneOntoBuffer(_C + offset1,			115,	15,		1.00);
+		appendToneOntoBuffer(_C + offset1 + 2,		225,	15,		1.00);
+		appendToneOntoBuffer(_C + offset1,			225,	15,		1.00);
+		appendToneOntoBuffer(_C + offset1 - 2,		225,	15,		1.00);
+		appendToneOntoBuffer(_C + offset1 - 5,		225,	15,		1.00);
+		appendToneOntoBuffer(_C + offset1 - 5,		225,	15,		1.00);
+		appendToneOntoBuffer(_C + offset1 - 7,		100,	15,		1.00);
+		appendToneOntoBuffer(_C + offset1 - 5,		300,	40,		1.00);
+		appendToneOntoBuffer(_C + offset1,			900,	15,		0.01);
+		appendToneOntoBuffer(_C + offset1 - 2,		225,	15,		1.00);
+		appendToneOntoBuffer(_C + offset1 - 2,		225,	15,		1.00);
+		appendToneOntoBuffer(_C + offset1 - 2,		225,	15,		1.00);
+		appendToneOntoBuffer(_C + offset1 - 5,		115,	15,		1.00);
+		appendToneOntoBuffer(_C + offset1 - 2,		225,	15,		1.00);
+		appendToneOntoBuffer(_C + offset1 - 2,		225,	15,		1.00);
+		appendToneOntoBuffer(_C + offset1 - 2,		115,	15,		1.00);
+		appendToneOntoBuffer(_C + offset1,			225,	15,		1.00);
+		appendToneOntoBuffer(_C + offset1 - 2,		225,	40,		1.00);
+		appendToneOntoBuffer(_C + offset1,			225,	15,		1.00);
+		appendToneOntoBuffer(_C + offset1,			225,	15,		1.00);
+		appendToneOntoBuffer(_C + offset1,			225,	15,		1.00);
+		appendToneOntoBuffer(_C + offset1 - 2,		115,	15,		1.00);
+		appendToneOntoBuffer(_C + offset1,			300,	40,		1.00);
+		appendToneOntoBuffer(_C + offset1,			900,	15,		0.01);
 	}
 }
 
@@ -403,10 +406,10 @@ void sound_init(void)
 	//////////
 	// Play para-diddles
 	//////
-// 		paradiddle( 0 - 12,		0 - 12,		-100,	2);
-// 		paradiddle(-2 - 12,		2 - 12,		-100,	2);
-// 		paradiddle(-4 - 12,		0 - 12,		-100,	2);
-// 		paradiddle(-2 - 12,		2 - 12,		-100,	2);
+		paradiddle( 0 - 12,		0 - 12,		-100,	2);
+		paradiddle(-2 - 12,		2 - 12,		-100,	2);
+		paradiddle(-4 - 12,		0 - 12,		-100,	2);
+		paradiddle(-2 - 12,		2 - 12,		-100,	2);
 
 
 	//////////
@@ -428,9 +431,7 @@ void sound_init(void)
 // 		bass4(0 - 16,	-115,	1);
 // 		bass4(-2 - 16,	-115,	1);
 
-// 		bass5(0 - 16, 1);
-// 		bass5(0 - 19, 1);
-		bass5(0 - 24, 0 - 12, 1);
+		bass5(0 - 20, 2);
 
 
 	//////////

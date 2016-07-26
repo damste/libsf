@@ -90,7 +90,8 @@ struct SLsaInclude;
 // lasm.cpp
 //////
 	SLsaInclude*		ilsa_init										(void);
-	void				ilsa_routeThrough_silentError_forDebugging	(void);
+	void				ilsa_internal_compiler_error					(void);
+	void				ilsa_routeThrough_silentError_forDebugging		(void);
 
 	// lsa_cmdline.cpp
 	void				ilsa_parse_commandLine							(s32 argc, s8* argv[]);
@@ -130,6 +131,7 @@ struct SLsaInclude;
 	bool				iilsa_dmac_find_byComp__callbackValidate		(SBSearchCallback* bcb);
 	bool				ilsa_dmac_swapOut								(SComp* compToSwapOut, SLsaDMac* dm, SComp** compOut);
 	bool				iilsa_dmac_swapOut_comps						(SComp* compFirst, SComp* compLast, SLsaDMac* dm, SBuilder* params);
+	bool				iilsa_dmac_swapOut_comps__callback				(SCallback* cb);
 
 	// lsa_ei.cpp
 	// Note, warning, error, and other forms of associated reporting

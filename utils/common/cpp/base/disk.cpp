@@ -912,15 +912,21 @@
 //
 //////
 	// Returns line count
-	s32 iFile_parseIntoLines(SLine** firstLine, s8* data, u32 dataLength, u32 tnSLineSize)
+	s32 iFile_parseIntoLines(SLine** firstLine, s8* data, u32 dataLength, SLine** lastLine, u32 tnSLineSize)
 	{
 		u32			lnI, lnCrLfCount, lnLast, lnLineNumber;
 		SLine*		line;
-		SLine**		lastLine;
+		SLine*		lastLine_local;
 
 
+		// Make sure we have a last line
+		if (!lastLine)
+			lastLine = (lastLine_local = NULL, &lastLine_local);
+		
 		// Copy through lines into the SLine struct
-		for (lnI = 0, lnLast = 0, lastLine = firstLine, lnLineNumber = 1; lnI < dataLength; )
+		*firstLine	= NULL;
+		*lastLine	= NULL;
+		for (lnI = 0, lnLast = 0, lnLineNumber = 1; lnI < dataLength; )
 		{
 
 			//////////
@@ -949,6 +955,10 @@
 						if (!line)
 							return(-1);		// Unexpected failure
 
+						// First line
+						if (!*firstLine)
+							*firstLine = line;
+
 
 					//////////
 					// Indicate content
@@ -962,7 +972,7 @@
 					// Indicate where we are now
 					//////
 						lnLast		= lnI;
-						lastLine	= &line;
+						*lastLine	= line;
 
 				} else {
 					// Still going

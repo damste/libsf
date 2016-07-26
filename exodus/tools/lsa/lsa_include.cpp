@@ -152,7 +152,7 @@
 			if (llFound)
 			{
 				// Parse into lines
-				if (iFile_parseIntoLines(&fileLoad.firstLine, fileLoad.raw, fileLoad.rawLength, sizeof(SLine)) > 0)
+				if (iFile_parseIntoLines(&fileLoad.firstLine, fileLoad.raw, fileLoad.rawLength) > 0)
 				{
 					// Append our entry onto the chain
 					fileNew = (SLsaFile*)iBuilder_allocateBytes(includeFiles, sizeof(SLsaFile));

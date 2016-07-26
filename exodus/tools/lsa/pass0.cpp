@@ -116,7 +116,7 @@
 			for (p0.line = p0.file->firstLine; p0.line; p0.line = p0.line->ll.nextLine)
 			{
 				// Initial lex and parse
-				iComps_lex_and_parse(p0.line, true, NULL, &cgcKeywordsLasm[0]);
+				iComps_lex_and_parse(p0.line, true, NULL, cgcKeywordsLsa);
 
 				// Remove any new comments converted from double-semicolon forms
 				iComps_truncate_atComments(p0.line);
@@ -264,7 +264,7 @@
 
 				// Lex and parse the include file content
 				for (line = p0->fileInclude->firstLine; line; line = line->ll.nextLine)
-					iComps_lex_and_parse(line, true, NULL, &cgcKeywordsLasm[0]);
+					iComps_lex_and_parse(line, true, NULL, cgcKeywordsLsa);
 
 				// Insert its lines after this #include line
 				lnLineCount = iLine_migrateLines(&p0->fileInclude->firstLine, p0->line);
@@ -305,6 +305,7 @@
 	bool ilsa_pass0_code(SLsaPass0* p0)
 	{
 // TODO:  working here
+		return(false);
 	}
 
 
@@ -320,6 +321,7 @@
 	bool ilsa_pass0_function(SLsaPass0* p0)
 	{
 // TODO:  working here
+		return(false);
 	}
 
 

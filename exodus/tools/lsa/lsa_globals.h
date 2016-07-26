@@ -103,7 +103,7 @@
 //////////
 // Assembly opcodes
 //////
-	SAsciiCompSearcher	cgcKeywordsLasm[] =
+	SAsciiCompSearcher cgcKeywordsLsa[] =
 	{
 		// 																																first								syntax highlight	syntax highlight
 		//	keyword								length									repeats?	extra (type)						on line?	category				color				bold			onFind()	compilerDictionaryLookup()

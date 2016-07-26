@@ -656,6 +656,7 @@
 //////////
 // Error messages
 //////
+	cs8			cgc_lsa_internal_compiler_error[]			= "Internal compiler error.  Terminating.\n";
 	cs8			cgc_unable_to_open_file[]					= "--Error: unable to open file: %s\n";
 	cs8			cgc_lsa_error_opening_include_file[]		= "--Error[%d,%d]: error opening file [include \"%s\"]\n";
 	cs8			cgc_lsa_error_token_name_already_exists[]	= "token name already exists";

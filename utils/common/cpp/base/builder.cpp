@@ -644,7 +644,7 @@
 				// Read in the content
 				//////
 					lnNumread						= (u32)fread((*builder)->data_s8 + (*builder)->populatedLength, 1, lnSize, lfh);
-					(*builder)->populatedLength	+= min(lnNumread, lnSize);
+					(*builder)->populatedLength		+= min(lnNumread, lnSize);
 
 
 				//////////

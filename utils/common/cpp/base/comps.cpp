@@ -304,6 +304,48 @@
 
 //////////
 //
+// Called to delete a range of components, with a callback prior to each delete
+//
+//////
+	s32 iComps_deleteAll_byRange(SComp* compFirst, SComp* compLast, SComp** compPrev, SComp** compNext)
+	{
+		return(iComps_deleteAll_byRange_withCallback(compFirst, compLast, NULL, compPrev, compNext));
+	}
+
+	s32 iComps_deleteAll_byRange_withCallback(SComp* compFirst, SComp* compLast, SCallback* cb, SComp** compPrev, SComp** compNext)
+	{
+		s32		lnI;
+		SComp*	comp;
+		SComp*	comp2;
+
+
+		// Iterate forward, deleting one at a time
+		for (comp = compFirst, lnI = 0; comp; comp = comp2)
+		{
+			// Populate this component
+			cb->comp = comp;
+
+			// Perform the callback
+			if (cb && cb->_func)
+				cb->func(cb);
+
+			// Grab the next component
+			comp2 = iComps_Nth(comp, 1, true);
+
+			// Delete this one
+			++lnI;
+			iComps_delete(comp, true);
+		}
+
+		// Indicate how many were deleted
+		return(lnI);
+	}
+
+
+
+
+//////////
+//
 // Called to duplicate a component
 //
 //////

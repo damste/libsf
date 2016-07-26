@@ -1241,6 +1241,8 @@
 	void					iComps_deleteAll							(SComp** compRoot);
 	void					iComps_deleteAll_byLine						(SLine* line);
 	s32						iComps_deleteAll_byFirstComp				(SComp** firstComp);
+	s32						iComps_deleteAll_byRange					(SComp* compFirst, SComp* compLast, SComp** compPrev, SComp** compNext);
+	s32						iComps_deleteAll_byRange_withCallback		(SComp* compFirst, SComp* compLast, SCallback* cb, SComp** compPrev = NULL, SComp** compNext = NULL);
 	SComp*					iComps_duplicate							(SComp* comp);
 	SComp*					iComps_delete								(SComp** compRoot);
 	SComp*					iComps_delete								(SComp* comp, bool tlDeleteSelf);
