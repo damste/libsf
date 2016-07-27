@@ -28,11 +28,11 @@ Main websites
 
 &nbsp;&nbsp;&nbsp;&nbsp;[LibSF](http://www.libsf.org)
 
-&nbsp;&nbsp;&nbsp;&nbsp;[RDC](http://www.libsf.org/wiki/index.php/Main_Page)
+&nbsp;&nbsp;&nbsp;&nbsp;[RDC](http://www.libsf.org/wiki/index.php)
 
-&nbsp;&nbsp;&nbsp;&nbsp;[CAlive](http://www.libsf.org/wiki/index.php/Main_Page)
+&nbsp;&nbsp;&nbsp;&nbsp;[CAlive](http://www.libsf.org/wiki/index.php)
 
-&nbsp;&nbsp;&nbsp;&nbsp;[Exodus](http://www.libsf.org/exodus/)
+&nbsp;&nbsp;&nbsp;&nbsp;[Exodus ES/2](http://www.libsf.org/es2/index.html)
 
 &nbsp;&nbsp;&nbsp;&nbsp;[VFrP -- Visual FreePro](http://www.visual-freepro.org)
 
