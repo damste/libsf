@@ -102,6 +102,8 @@ struct SNoteLog;
 	SLL*					iLl_delete__ll								(SLL* ll, bool tlDeleteSelf);
 	SLL*					iLl_migrate__llToOther						(SLL** llSourceRoot, SLL** llDestinationRoot, SLL* ll, bool tlInsertAtEnd);
 	void					iLl_delete__llsWithCallback					(SLLCallback* cb);
+	SLL*					iLl_duplicate								(SLL* ll, u32 tnSize, bool tlCopyContent);
+	SLL*					iLl_duplicateChain__llWithCallback			(SLL* llSourceRoot, SLLCallback* cb, s32 tnSize);
 	bool					iLl_insert__ll								(SLL* ll, SLL* llRef, bool tlAfter);
 	void					iLl_orphanize__ll							(SLL* ll);
 	void					iLl_delete__llChain							(SLL** llRoot);

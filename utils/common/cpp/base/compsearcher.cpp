@@ -150,3 +150,47 @@
 		if (noteRoot && *noteRoot)
 			iLl_delete__llChain((SLL**)noteRoot);
 	}
+
+
+
+
+//////////
+//
+// 
+//
+//////
+	void iNoteLog_duplicateChain(SNoteLog** noteDstRoot, SNoteLog* noteSrc)
+	{
+		SLLCallback cb;
+
+
+		// Initialize and duplicate
+		memset(&cb, 0, sizeof(cb));
+		cb._func = (uptr)&iNoteLog_duplicateChain__callback;
+		*noteDstRoot = (SNoteLog*)iLl_duplicateChain__llWithCallback((SLL*)noteSrc, &cb, sizeof(SNoteLog));
+	}
+
+	bool iNoteLog_duplicateChain__callback(SLLCallback* cb)
+	{
+		SNoteLog* nl;
+		SNoteLog* nlNew;
+
+
+		// Should always be valid, but... :-)
+		if ((nl = (SNoteLog*)cb->ll))
+		{
+			// Duplicate
+			nlNew = (SNoteLog*)iLl_duplicate(cb->ll, sizeof(SNoteLog), true);
+			if (nlNew)
+			{
+				// Copy the note
+				iDatum_duplicate(&nlNew->note, &nl->note);
+
+				// Indicate success
+				cb->llNew					= (SLL*)nlNew;
+				cb->llNewEntryIsOkayToUse	= true;
+			}
+		}
+
+		// Continue iterating
+	}

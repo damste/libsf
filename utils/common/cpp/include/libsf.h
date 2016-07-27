@@ -329,6 +329,10 @@
 			uptr	extra1;
 		};
 		u32		extra2;
+
+		// For duplicated entries
+		bool	llNewEntryIsOkayToUse;
+		SLL*	llNew;
 	};
 //////
 // END
@@ -509,7 +513,7 @@
 		SComp*			firstComp;
 
 		// Information related to this line
-		SBuilder*		extra_info;										// (SExtraInfo) extra information about this line
+		SBuilder*		extra_info;										// (SExtraInfo) extra information about this line, including compiler info
 		SNoteLog*		firstNote;										// First note related to the line
 
 		// Each render, these are updated
@@ -1037,6 +1041,12 @@
 			// Functions to called when this item is processed in some way
 			union
 			{
+				uptr			_onDup;				// When the extra info item is being duplicated
+				SExtraInfo*		(*onDup)			(SExtraInfo* extra_info);
+			};
+
+			union
+			{
 				uptr	_onArrival;					// When the extra info item is arrived upon
 				void	(*onArrival)				(SExtraInfo* extra_info);
 			};
@@ -1197,15 +1207,16 @@
 	// Forward declarations
 	void					iLine_ensureLineLength						(SLine* em, s32 newLineLength);
 	void					iLine_free									(SLine** root, bool tlDeleteSelf);
-	SLine*					iLine_createNew								(bool tlAllocCompilerInfo);
-	SLine*					iLine_appendNew								(SLine* line, bool tlAllocCompilerInfo);
-	SLine*					iLine_insertNew								(SLine* lineRef, bool tlAllocCompilerInfo, bool tlAfter);
+	SLine*					iLine_createNew								(void);
+	SLine*					iLine_appendNew								(SLine* line);
+	SLine*					iLine_insertNew								(SLine* lineRef, bool tlAfter);
 	void					iLine_appendError							(SLine* line, u32 tnErrorNum,   cu8* tcMessage, u32 tnStartColumn, u32 tnLength);
 	void					iLine_appendWarning							(SLine* line, u32 tnWarningNum, cu8* tcMessage, u32 tnStartColumn, u32 tnLength);
 	bool					iLine_scanComps_forward_withCallback		(SLine* line, SComp* comp, SCallback* cb, bool tlSkipFirst);
 	s32						iLines_unescape_iCodes						(SLine* lineStart, s32 tniCode1, s32 tniCode2, s32 tniCode3, s32 tniCodeEscape = _ICODE_BACKSLASH);
 	s32						iLine_migrateLines							(SLine** linesFrom, SLine* lineTarget);
 	SComp*					iLine_Nth_comp								(SLine* line, s32 tnCount = 1, bool tlMoveBeyondLineIfNeeded = true);
+	SLine*					iLine_duplicate_withComps					(SLine* line, bool tlCopyNotes = false, bool tlCopyExtraInfo = false);
 	SLine*					iLine_copyComps_toNewLines_untilTerminating				(SLine* lineStart, SComp* compStart, s32 tniCodeContinuation, bool tlLeftJustifyStart, bool tlSkipBlankLines, SCallback* cb);
 	bool					iiLine_copyComps_toNewLines_untilTerminating__callback	(SCallback* cb);
 	s32						iiLine_skipTo_nextComp						(SLine** lineProcessing, SComp** compProcessing);
@@ -1341,6 +1352,8 @@
 	SNoteLog*				iNoteLog_create_byLine						(SNoteLog** noteRoot, SLine* line, cu8* tcMessage, u32 tnNumber = 0, u32 tnStart = 0, u32 tnEnd = 0);
 	SNoteLog*				iNoteLog_create_byComp						(SNoteLog** noteRoot, SComp* comp, cu8* tcMessage, u32 tnNumber = 0, u32 tnStart = 0, u32 tnEnd = 0);
 	void					iNoteLog_removeAll							(SNoteLog** noteRoot);
+	void					iNoteLog_duplicateChain						(SNoteLog** noteDstRoot, SNoteLog* noteSrc);
+	bool					iNoteLog_duplicateChain__callback			(SLLCallback* cb);
 //////
 // END
 //////////

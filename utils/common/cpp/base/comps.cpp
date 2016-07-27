@@ -2267,7 +2267,7 @@ debug_break;
 		if (compStart && compEnd)
 		{
 			// First line
-			if (!(lineNew = iLine_createNew(true)))
+			if (!(lineNew = iLine_createNew()))
 				return(NULL);
 
 			// Copy
@@ -2299,7 +2299,7 @@ debug_break;
 
 		} else {
 			// Invalid content, just create a blank line
-			lineNew			= iLine_createNew(true);
+			lineNew			= iLine_createNew();
 			lineNewFirst	= lineNew;
 			// Note: We don't reposition the component here because nothing moved
 		}

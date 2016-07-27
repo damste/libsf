@@ -468,6 +468,74 @@
 
 
 
+	//////////
+	//
+	// Duplicate the indicated LL by its size, and potentially copy its content
+	//
+	//////
+		SLL* iLl_duplicate(SLL* ll, u32 tnSize, bool tlCopyContent)
+		{
+			SLL* llNew;
+
+
+			// Make sure our environment is sane
+// TODO:  Untested code.  Breakpoint and examine.
+debug_break;
+			llNew = NULL;
+			if (ll)
+			{
+				// Copy
+				llNew = (SLL*)malloc(tnSize);
+				if (llNew)
+				{
+					// Should we copy?
+					if (tlCopyContent)		memcpy(llNew, ll, tnSize);
+					else					memset(llNew, 0, tnSize);
+				}
+			}
+
+			// Indicate our result
+			return(llNew);
+		}
+
+
+
+
+//////////
+//
+// Duplicates an entire SLL chain with a callback to determine which nodes are copied
+//
+//////
+	SLL* iLl_duplicateChain__llWithCallback(SLL* llSrcRoot, SLLCallback* cb, s32 tnSize)
+	{
+		SLL*	llNewRootLocal;
+		SLL**	llNewRoot;
+
+
+		// Make sure our environment is sane
+// TODO:  Untested code.  Breakpoint and examine.
+debug_break;
+		llNewRootLocal	= NULL;
+		llNewRoot		= &llNewRootLocal;
+		if (llSrcRoot && cb && cb->_func && tnSize >= sizeof(SLL))
+		{
+			// Iterate forward and copy all that can be copied
+			for (cb->ll = llSrcRoot; cb->ll; cb->ll = cb->ll->next)
+			{
+				// See if we can copy this one
+				if (cb->funcBool(cb) && cb->llNew && cb->llNewEntryIsOkayToUse)
+					iLl_appendExisting__llAtEnd(llNewRoot, cb->llNew);
+
+			}
+		}
+
+		// Indicate our first entry
+		return(llNewRootLocal);
+	}
+
+
+
+
 //////////
 //
 // Inserts a 2-way linked relative to the nodeRef, either before or after.  If the

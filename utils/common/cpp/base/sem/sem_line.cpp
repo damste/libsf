@@ -188,7 +188,7 @@
 	// Called to create a new line
 	//
 	//////
-	SLine* iLine_createNew(bool tlAllocCompilerInfo)
+	SLine* iLine_createNew(void)
 	{
 		SLine* line;
 
@@ -197,15 +197,11 @@
 		line = (SLine*)malloc(sizeof(SLine));
 		if (line)
 		{
-
-			// Reset
+			// Initialize
 			memset(line, 0, sizeof(SLine));
 
-			// Add SCompiler if need be
-#ifdef _SHOW_REFACTOR_ERRORS
-			if (tlAllocCompilerInfo)
-				line->compilerInfo = iCompiler_allocate(line);
-#endif
+			// Store uid
+			line->uid = iiComps_getNextUid();
 		}
 
 		// Indicate our status
@@ -220,10 +216,10 @@
 	// Called to append a new line to a chain (without regards to honoring the chain)
 	//
 	//////
-	SLine* iLine_appendNew(SLine* line, bool tlAllocCompilerInfo)
+	SLine* iLine_appendNew(SLine* line)
 	{
 		// Append the line to the chain
-		line->ll.nextLine = iLine_createNew(tlAllocCompilerInfo);
+		line->ll.nextLine = iLine_createNew();
 
 		// Indicate the new line
 		return(line->ll.nextLine);
@@ -237,13 +233,13 @@
 	// Called to insert a new line to a chain
 	//
 	//////
-	SLine* iLine_insertNew(SLine* lineRef, bool tlAllocCompilerInfo, bool tlAfter)
+	SLine* iLine_insertNew(SLine* lineRef, bool tlAfter)
 	{
 		SLine*	lineNew;
 
 
 		// Append the line to the chain
-		lineNew = iLine_createNew(tlAllocCompilerInfo);
+		lineNew = iLine_createNew();
 		if (lineNew)
 			iLl_insert__ll((SLL*)lineNew, (SLL*)lineRef, tlAfter);
 
@@ -482,6 +478,72 @@ goto_next_component:
 		bool	lContinuationFound;
 	};
 
+	SLine* iLine_duplicate_withComps(SLine* line, bool tlCopyNotes, bool tlCopyExtraInfo)
+	{
+		SComp*			comp;
+		SComp*			compNew;
+		SLine*			lineDup;
+
+
+		// Make sure our environment is sane
+		lineDup = NULL;
+		if (line)
+		{
+			// Iterate through each comp
+			lineDup = iLine_createNew();
+			if (lineDup)
+			{
+
+				//////////
+				// Copy generally
+				//////
+					lineDup->file				= line->file;
+					lineDup->func				= line->func;
+					lineDup->data				= line->data;
+					lineDup->parent				= line->parent;
+					lineDup->lineNumber			= line->lineNumber;
+					lineDup->lineSubnumber		= line->lineSubnumber;
+					lineDup->lineStatus			= line->lineStatus;
+
+					// Copy source code
+					iDatum_duplicate(&lineDup->sourceCode,			&line->sourceCode);
+					iDatum_duplicate(&lineDup->sourceCodeOriginal,	&line->sourceCode);
+					lineDup->populatedLength	= line->populatedLength;
+
+
+				//////////
+				// Copy components
+				//////
+					for (comp = line->firstComp; comp; comp = comp->ll.nextComp)
+					{
+						// Duplicate
+						compNew = iComps_duplicate(comp);
+
+						// Append to the new line
+						iLl_appendExisting__llAtEnd((SLL**)&lineDup->firstComp, (SLL*)compNew);
+					}
+
+
+				//////////
+				// Copy notes
+				//////
+					if (tlCopyNotes)
+						iNoteLog_duplicateChain(&lineDup->firstNote, line->firstNote);
+
+
+				//////////
+				// Copy extra_info
+				//////
+					if (tlCopyExtraInfo)
+						iExtraInfo_duplicateChain(&lineDup->extra_info, line->extra_info);
+
+			}
+		}
+
+		// Indicate our status
+		return(lineDup);
+	}
+
 	SLine* iLine_copyComps_toNewLines_untilTerminating(SLine* lineStart, SComp* compStart, s32 tniCodeContinuation, bool tlLeftJustifyStart, bool tlSkipBlankLines, SCallback* cb)
 	{
 		SLine*		lineNew;
@@ -497,7 +559,7 @@ goto_next_component:
 			// First line
 			//////
 				// New line
-				if (!(lineNew = iLine_createNew(true)))
+				if (!(lineNew = iLine_createNew()))
 					return(NULL);
 
 				// Copy components smartly
@@ -518,22 +580,20 @@ goto_next_component:
 				for (lineCopy = lineStart->ll.nextLine; x.lContinuationFound && lineCopy; lineCopy = lineCopy->ll.nextLine)
 				{
 					// Skip blank lines if need be
-#ifdef _SHOW_REFACTOR_ERRORS
-					if (!tlSkipBlankLines || lineCopy->compilerInfo->firstComp->iCode != _ICODE_BACKSLASH)
+					if (!tlSkipBlankLines || lineCopy->firstComp->iCode != _ICODE_BACKSLASH)
 					{
 						// New line
-						lineNew = iLine_appendNew(lineNew, true);
+						lineNew = iLine_appendNew(lineNew);
 
 						// Copy all line components up to the end
-						iComps_copyTo_withCallback(lineNew, lineCopy->compilerInfo->firstComp, cb, false);
+						iComps_copyTo_withCallback(lineNew, lineCopy->firstComp, cb, false);
 					}
-#endif
 				}
 
 
 		} else {
 			// Invalid content, just create a blank line
-			lineNew = iLine_createNew(true);
+			lineNew = iLine_createNew();
 			// Note: We don't reposition the component here because nothing moved
 		}
 

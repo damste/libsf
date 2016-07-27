@@ -655,7 +655,6 @@
 			line = compFirst->line;
 
 			// Duplicate
-// TODO:  working here
 			lineNew = iLine_duplicate_withComps(line);
 
 			// Prefix with a double-semicolon comment character
