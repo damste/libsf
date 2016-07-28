@@ -896,6 +896,242 @@ goto_next_component:
 
 //////////
 //
+// Reconstitute the source code on the line based on the components
+//
+//////
+	SDatum* iLine_reconstitute_byComps(SLine* line)
+	{
+		s32		lnLength, lnWhitespaces, lnEndLast;
+		SComp*	comp;
+		SComp*	compLast;
+
+
+		// Make sure our environment is sane
+// TODO:  Untested code.  Breakpoint and examine.
+debug_break;
+		if (line)
+		{
+
+			//////////
+			// Find out how long the line needs to be
+			//////
+				for (comp = line->firstComp, compLast = NULL, lnLength = 0; comp; compLast = comp, comp = iComps_Nth(comp, 1, false))
+				{
+					// Whitespaces
+					if (comp->start >= 0 && compLast && compLast->text._data)
+						lnLength += comp->start - (compLast->start + compLast->text.length);
+
+					// Content
+					if (comp->text._data)
+						lnLength += comp->text.length;
+				}
+
+
+			//////////
+			// Create the line
+			//////
+				if (line->sourceCode._data)
+					iDatum_delete(&line->sourceCode, false);
+
+				// Allocate space for the copy
+				iDatum_allocateSpace(&line->sourceCode, lnLength, 32);
+
+
+			//////////
+			// Populate the component content
+			//////
+				for (comp = line->firstComp, lnEndLast = 0, lnLength = 0; comp; comp = iComps_Nth(comp, 1, false))
+				{
+					// Whitespaces
+					if (comp->start >= 0 && lnEndLast != 0)
+					{
+						// Physical space between
+						lnWhitespaces = comp->start - lnEndLast;
+
+					} else {
+						// No whitespaces
+						lnWhitespaces = 0;
+					}
+
+					// Copy content
+					if (comp->text._data)
+						memcpy(line->sourceCode.data_s8 + lnLength + lnWhitespaces, comp->text.data_s8, comp->text.length);
+
+					// Indicate where the previous one ended
+					lnEndLast = lnLength + lnWhitespaces + comp->text.length;
+
+					// Update the component
+					comp->start = lnLength;
+
+					// Update the length
+					lnLength += (lnWhitespaces + comp->text.length);
+				}
+
+		}
+	}
+
+
+
+
+//////////
+//
+// Called to search the SAsciiCompSearcher format list of text item keywords.
+//
+// Note:  If the length column of the SAsciiCompSearcher entry is negative, it is a case-sensitive search.
+//
+// Returns:
+//		The first component created (if any)
+//
+//////
+	SComp* iLine_lex(SAsciiCompSearcher* tacs, SLine* line)
+	{
+		s32						lnI, lnMaxLength, lnStart, lnLength, lnLacsLength, lnSearchLen;
+		SComp*					compFirst;
+		SComp*					compLast;
+		SComp*					comp;
+		u8*						lcData;
+		cu8*					lcSearchPtr;
+		SAsciiCompSearcher*		lacs;
+
+
+		// Make sure the environment's sane
+		compFirst = NULL;
+		if (tacs && line)
+		{
+			// Scan starting at the beginning of the line
+			lcData = line->sourceCode.data_u8;
+
+			// Iterate through every byte identifying every component we can
+			compLast	= line->firstComp;
+			lnMaxLength	= line->populatedLength;
+			for (lnI = 0; lnI < lnMaxLength; )
+			{
+				// Search through the tsComps list one by one
+				for (	lacs = tacs;
+						lacs->length != 0;
+						lacs++)
+				{
+					// Find out our signed status and get normalized length
+//					llSigned		= (lacs->length < 0);
+					lnLacsLength	= abs(lacs->length);
+
+					// Process through this entry
+					if ((!lacs->firstOnLine || lnI == 0 || iComps_areAllPrecedingCompsWhitespaces(compLast)) && lnLacsLength <= lnMaxLength - lnI)
+					{
+						// There is enough room for this component to be examined
+						// See if it matches
+						if (		iComps_xlatToComps_withTest(lacs->keyword_cu8, lcData + lnI, lacs->length) == 0
+								&&	(!lacs->_onCandidateMatch || lacs->onCandidateMatch(lacs, lcData + lnI, lacs->length))		)
+						{
+							// It matches
+							// mark its current condition
+							lnStart		= lnI;
+							lnLength	= lnLacsLength;
+							// See if it's allowed to repeat
+							if (lacs->repeats)
+							{
+								// Are we searching for a literal repeat of the entire string, or something alternate
+								if (lacs->repeats == 1)
+								{
+									// Entire string
+									lcSearchPtr = lacs->keyword_cu8;
+									lnSearchLen = lacs->length;
+
+								} else {
+									// Something alternate
+									lcSearchPtr = lacs->partialRepeatContent;
+									lnSearchLen = strlen((cs8*)lcSearchPtr);
+								}
+
+								// Iterate forward looking for the repeating sequence(s)
+								while (lnStart + lnLength + lnLacsLength <= lnMaxLength && iComps_xlatToComps_withTest(lcSearchPtr, lcData + lnStart + lnLength, lnSearchLen) == 0)
+								{
+									// We found another repeated entry
+									lnLength += lnSearchLen;
+								}
+								// When we get here, every repeated entry has been found (if any)
+							}
+							// When we get here, we have the starting point and the full length (including any repeats)
+
+
+							//////////
+							// Allocate this entry
+							///////
+								comp = iComps_new(&line->firstComp, compLast, NULL, compLast);
+
+
+							//////////
+							// Populate the component with specified information
+							//////
+								//
+								//////
+									if (comp)
+									{
+										// Update the back links
+										if (compLast)
+											compLast->ll.next = (SLL*)comp;			// Previous one points to this one
+
+										// This one points back to previous one
+										comp->ll.prev		= (SLL*)compLast;
+
+										// Copy the text for the component to the text SDatum
+										iDatum_duplicate(&comp->text, (cvp*)(line->sourceCode.data_s8 + lnStart), lnLength);
+
+										// Update the component's information
+										comp->line			= line;
+										comp->start			= lnStart;
+										comp->iCode			= lacs->iCode;
+										comp->iCat			= lacs->iCat;
+										comp->color			= lacs->syntaxHighlightColor;
+										comp->useBoldFont	= lacs->useBoldFont;
+
+										// Update our first component (if it's not updated already)
+										if (!compFirst)
+											compFirst = comp;
+
+										// All done
+									}
+
+									// Make sure we're setup for the next go-round
+									compLast = comp;
+								//////
+								//
+							//////
+							// END
+							//////////
+
+
+							//////////
+							// Execute
+							//////
+								if (lacs->_onFind)
+									lacs->onFind(lacs, comp);
+
+
+							//////////
+							// Move beyond this entry, and continue on search again afterward
+							//////
+								lnI += lnLength;
+								break;		// leaves lnJ loop, continues with lnI loop
+						}
+					}
+				}
+				// When we get here, we've processed through everything here
+				if (lacs->length == 0)
+					lnI++;			// We didn't find anything at that character, continue on to the next
+			}
+			// When we get here, lnI has been updated to its new location,
+			// and any indicated components have been added
+		}
+		// Return the count
+		return(compFirst);
+	}
+
+
+
+
+//////////
+//
 // Called to insert a character
 //
 //////

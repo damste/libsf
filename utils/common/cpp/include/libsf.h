@@ -1224,6 +1224,8 @@
 	SComp*					iiLine_getLastComp							(SLine* line, SComp* compInLine = NULL);
 	s32						iLine_renumber								(SLine* firstLine, s32 tnStartingNumber = 1);
 	f32						iLine_renumber2								(SLine* firstLine, f32 tfStartingNumber = 1.0f);
+	SDatum*					iLine_reconstitute_byComps					(SLine* line);
+	SComp*					iLine_lex									(SAsciiCompSearcher* tsComps, SLine* line);
 
 	// For editing
 	bool					iLine_characterInsert						(SEM* sem, u8 asciiChar);
@@ -1259,8 +1261,8 @@
 	SComp*					iComps_delete								(SComp* comp, bool tlDeleteSelf);
 	SNode*					iComps_chainLinkNodes						(SComp* compLeftMost);
 	void					iComps_copyMembers							(SComp* compTo, SComp* compFrom, bool tlAllocated, bool tlCopyLl, s32 tnBackoff);
- 	SComp*					iComps_lex_line								(SAsciiCompSearcher* tsComps, SLine* line);
- 	bool					iComps_lex_comps							(SAsciiCompSearcher* tsComps, SComp* comp, bool tlDescendIntoFirstCombineds = true);
+ 	bool					iComps_lex									(SAsciiCompSearcher* tsComps, SComp* comp, bool tlDescendIntoFirstCombineds = true);
+	bool					iComps_populate_by_iCode					(SComp* comp, s32 tniCode, SAsciiCompSearcher* acsRoot);
 	bool					iComps_areAllPrecedingCompsWhitespaces		(SComp* comp);
 	s32						iComps_translateToOthers_testIfMatch		(cu8* tcHaystack, cu8* tcNeedle, s32 tnLength);
 	SComp*					iComps_findNextBy_iCode						(SComp* comp, s32 tniCode, SComp** compLastScanned = NULL, bool tlMoveBeyondLineIfNeeded = true);
@@ -1276,6 +1278,7 @@
 	SComp*					iComps_Nth_lineOnly							(SComp* comp, s32 tnCount = 1);
 	bool					iComps_scanForward_withCallback				(SComp* comp, SCallback* cb, bool tlSkipFirst = false, bool tlMoveBeyondLineIfNeeded = true, uptr _func = NULL);
 	SComp*					iComps_scanForward_for_iCode				(SComp* compRoot, s32 tniCode, bool tlMoveBeyondLineIfNeeded = true, bool tlParseDepth = true);
+	SComp*					iComps_insert_by_iCode						(SComp* compRef, s32 tniCode, bool tlAfter, SAsciiCompSearcher* acs0 = NULL, SAsciiCompSearcher* acs1 = NULL, SAsciiCompSearcher* acs2 = NULL, SAsciiCompSearcher* acs3 = NULL);
 	u32						iComps_combineN								(SComp* comp, u32 tnCount, s32 tnNew_iCode, u32 tnNew_iCat, SBgra* newColor, SComp** compMigrateRefs = NULL);
 	u32						iComps_combine_adjacent						(SComp* compLeftmost, s32 tniCode, u32 tniCat, SBgra* tnColor, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount);
 	u32						iComps_combine_adjacentAlphanumeric			(SLine* line);
@@ -1371,6 +1374,7 @@
 	void			iExtraInfo_onArrival					(SExtraInfo* ei);
 	void			iExtraInfo_onUpdate						(SExtraInfo* ei);
 	void			iiExtraInfo_callbackToAll				(SExtraInfo* ei, s32 tnCallbackType);
+	void			iExtraInfo_duplicateChain				(SBuilder** eiDstRoot, SBuilder* eiSrc);
 
 	// Added for compiler info structs
 	SLiveCode*		iExtraInfo_compiler_resetLiveCode		(SBuilder** eiRoot);
@@ -1428,7 +1432,7 @@
 // .h
 // BEGIN
 //////
-	void*					iDatum_allocateSpace					(SDatum* datum,	s32 dataLength);
+	void*					iDatum_allocateSpace					(SDatum* datum,	s32 dataLength, s8 fillChar = 0);
 	SDatum*					iDatum_allocate							(const void* data, s32 dataLength = -1);
 	bool					iDatum_appendData						(SDatum* datum, s8* data, s32 tnAppendLength);
 

@@ -5229,5 +5229,6 @@ renderAsOnlyText:
 //////////
 // Additional support
 //////
-//	#include "sem_extra_info.cpp"
+	//Moved to extra_info.h
+	//#include "sem_extra_info.cpp"
 	#include "sem_line.cpp"

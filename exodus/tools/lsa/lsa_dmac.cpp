@@ -658,7 +658,8 @@
 			lineNew = iLine_duplicate_withComps(line);
 
 			// Prefix with a double-semicolon comment character
-			iComps_insertBefore_by_iCode(line->firstComp, _ICODE_LINE_COMMENT);
+			iComps_insert_by_iCode(line->firstComp, _ICODE_LINE_COMMENT, false);
+			iLine_reconstitute_byComps(line);
 
 			// Insert before 
 			iLine_insertBefore(line, lineNew);

@@ -96,7 +96,7 @@
 // Datum storage
 //
 //////
-	void* iDatum_allocateSpace(SDatum* datum, s32 dataLength)
+	void* iDatum_allocateSpace(SDatum* datum, s32 dataLength, s8 fillChar)
 	{
 		// Make sure our environment is sane
 		if (datum)
@@ -111,7 +111,7 @@
 
 			// Initialize
 			if (datum->data_s8)
-				memset(datum->data_s8, 0, max(dataLength, 1));
+				memset(datum->data_s8, fillChar, max(dataLength, 1));
 
 			// Indicate our pointer as void*
 			return(datum->data_vp);

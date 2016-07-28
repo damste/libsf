@@ -99,4 +99,3 @@
 	void			iExtraInfo_arrival						(SEM* sem, SLine* line);
 	void			iExtraInfo_update						(SEM* sem, SLine* line);
 	void			iiExtraInfo_callbackCommon				(SEM* sem, SLine* line, s32 tnCallbackType);
-	void			iExtraInfo_duplicateChain				(SBuilder** eiDstRoot, SBuilder* eiSrc);

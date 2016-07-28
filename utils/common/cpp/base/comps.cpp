@@ -101,7 +101,7 @@
 		iExtraInfo_compiler_resetLiveCode(&line->extra_info);
 
 		// Convert raw source code to known character sequences
-		iComps_lex_line(acs0, line);
+		iLine_lex(acs0, line);
 
 		// Optional fixups before removing whitespaces
 		if (tlAllowAtSignVars)
@@ -113,9 +113,9 @@
 		iComps_remove_whitespaces(line);				// Remove whitespaces [xyz][whitespace][fred] becomes [xyz][fred]
 
 		// Further translation
-		if (acs1)		iComps_lex_comps(acs1, line->firstComp, true);
-		if (acs2)		iComps_lex_comps(acs2, line->firstComp, true);
-		if (acs3)		iComps_lex_comps(acs3, line->firstComp, true);
+		if (acs1)		iComps_lex(acs1, line->firstComp, true);
+		if (acs2)		iComps_lex(acs2, line->firstComp, true);
+		if (acs3)		iComps_lex(acs3, line->firstComp, true);
 
 		// Some characters can be translated to whitespaces
 		iComps_remove_leadingWhitespaces(line);			// Remove leading whitespaces
@@ -519,169 +519,12 @@
 
 //////////
 //
-// Called to search the SAsciiCompSearcher format list of text item keywords.
-//
-// Note:  If the length column of the SAsciiCompSearcher entry is negative, it is a case-sensitive search.
-//
-// Returns:
-//		The first component created (if any)
-//
-//////
-	SComp* iComps_lex_line(SAsciiCompSearcher* tsComps, SLine* line)
-	{
-		s32						lnI, lnMaxLength, lnStart, lnLength, lnLacsLength, lnSearchLen;
-		SComp*					compFirst;
-		SComp*					compLast;
-		SComp*					comp;
-		u8*						lcData;
-		cu8*					lcSearchPtr;
-		SAsciiCompSearcher*		lacs;
-
-
-		// Make sure the environment's sane
-		compFirst = NULL;
-		if (tsComps && line)
-		{
-			// Scan starting at the beginning of the line
-			lcData = line->sourceCode.data_u8;
-
-			// Iterate through every byte identifying every component we can
-			compLast	= line->firstComp;
-			lnMaxLength	= line->populatedLength;
-			for (lnI = 0; lnI < lnMaxLength; )
-			{
-				// Search through the tsComps list one by one
-				for (	lacs = tsComps;
-						lacs->length != 0;
-						lacs++)
-				{
-					// Find out our signed status and get normalized length
-//					llSigned		= (lacs->length < 0);
-					lnLacsLength	= abs(lacs->length);
-
-					// Process through this entry
-					if ((!lacs->firstOnLine || lnI == 0 || iComps_areAllPrecedingCompsWhitespaces(compLast)) && lnLacsLength <= lnMaxLength - lnI)
-					{
-						// There is enough room for this component to be examined
-						// See if it matches
-						if (		iComps_xlatToComps_withTest(lacs->keyword_cu8, lcData + lnI, lacs->length) == 0
-								&&	(!lacs->_onCandidateMatch || lacs->onCandidateMatch(lacs, lcData + lnI, lacs->length))		)
-						{
-							// It matches
-							// mark its current condition
-							lnStart		= lnI;
-							lnLength	= lnLacsLength;
-							// See if it's allowed to repeat
-							if (lacs->repeats)
-							{
-								// Are we searching for a literal repeat of the entire string, or something alternate
-								if (lacs->repeats == 1)
-								{
-									// Entire string
-									lcSearchPtr = lacs->keyword_cu8;
-									lnSearchLen = lacs->length;
-
-								} else {
-									// Something alternate
-									lcSearchPtr = lacs->partialRepeatContent;
-									lnSearchLen = strlen((cs8*)lcSearchPtr);
-								}
-
-								// Iterate forward looking for the repeating sequence(s)
-								while (lnStart + lnLength + lnLacsLength <= lnMaxLength && iComps_xlatToComps_withTest(lcSearchPtr, lcData + lnStart + lnLength, lnSearchLen) == 0)
-								{
-									// We found another repeated entry
-									lnLength += lnSearchLen;
-								}
-								// When we get here, every repeated entry has been found (if any)
-							}
-							// When we get here, we have the starting point and the full length (including any repeats)
-
-
-							//////////
-							// Allocate this entry
-							///////
-								comp = iComps_new(&line->firstComp, compLast, NULL, compLast);
-
-
-							//////////
-							// Populate the component with specified information
-							//////
-								//
-								//////
-									if (comp)
-									{
-										// Update the back links
-										if (compLast)
-											compLast->ll.next = (SLL*)comp;			// Previous one points to this one
-
-										// This one points back to previous one
-										comp->ll.prev		= (SLL*)compLast;
-
-										// Copy the text for the component to the text SDatum
-										iDatum_duplicate(&comp->text, (cvp*)(line->sourceCode.data_s8 + lnStart), lnLength);
-
-										// Update the component's information
-										comp->line			= line;
-										comp->start			= lnStart;
-										comp->iCode			= lacs->iCode;
-										comp->iCat			= lacs->iCat;
-										comp->color			= lacs->syntaxHighlightColor;
-										comp->useBoldFont	= lacs->useBoldFont;
-
-										// Update our first component (if it's not updated already)
-										if (!compFirst)
-											compFirst = comp;
-
-										// All done
-									}
-
-									// Make sure we're setup for the next go-round
-									compLast = comp;
-								//////
-								//
-							//////
-							// END
-							//////////
-
-
-							//////////
-							// Execute
-							//////
-								if (lacs->_onFind)
-									lacs->onFind(lacs, comp);
-
-
-							//////////
-							// Move beyond this entry, and continue on search again afterward
-							//////
-								lnI += lnLength;
-								break;		// leaves lnJ loop, continues with lnI loop
-						}
-					}
-				}
-				// When we get here, we've processed through everything here
-				if (lacs->length == 0)
-					lnI++;			// We didn't find anything at that character, continue on to the next
-			}
-			// When we get here, lnI has been updated to its new location,
-			// and any indicated components have been added
-		}
-		// Return the count
-		return(compFirst);
-	}
-
-
-
-
-//////////
-//
 // Called to search the already parsed SAsciiCompSearcher list of components, looking for
 // combinations which relate to other component types.  The primary translations here are
 // alpha/alphanumeric/numeric forms to other forms.
 //
 //////
-	bool iComps_lex_comps(SAsciiCompSearcher* tacsRoot, SComp* comp, bool tlDescendIntoFirstCombineds)
+	bool iComps_lex(SAsciiCompSearcher* tacsRoot, SComp* comp, bool tlDescendIntoFirstCombineds)
 	{
 		bool				llResult;
 		s32					lnTacsLength;
@@ -759,6 +602,48 @@
 
 		// Indicate our status
 		return(llResult);
+	}
+
+
+
+
+//////////
+//
+// Search for the indicated iCode through the acs, and if found populate the comp->iCode and comp->text
+//
+//////
+	bool iComps_populate_by_iCode(SComp* comp, s32 tniCode, SAsciiCompSearcher* acsRoot)
+	{
+		SAsciiCompSearcher* acs;
+
+
+		// Make sure our environment is sane
+		if (comp && acsRoot)
+		{
+			// Iterate looking through
+			for (acs = acsRoot; acs->keyword_cs8 != NULL; acs++)
+			{
+				// See if it matches
+				if (acs->iCode == tniCode)
+				{
+					// Populate
+					comp->iCode = tniCode;
+
+					// Delete the previous text
+					if (comp->text._data)
+						iDatum_delete(&comp->text, false);
+
+					// Copy the associated keyword
+					iDatum_duplicate(&comp->text, acs->keyword_cs8, strlen(acs->keyword_cs8));
+
+					// Indicate success
+					return(true);
+				}
+			}
+		}
+
+		// If we get here, not found
+		return(false);
 	}
 
 
@@ -1589,6 +1474,43 @@
 		// If we get here, not found
 		if (lnLevel > 0)		return(NULL);
 		else					return(compLast);
+	}
+
+
+
+
+//////////
+//
+// Called to insert the indicated component before the reference
+//
+//////
+	SComp* iComps_insert_by_iCode(SComp* compRef, s32 tniCode, bool tlAfter, SAsciiCompSearcher* acs0, SAsciiCompSearcher* acs1, SAsciiCompSearcher* acs2, SAsciiCompSearcher* acs3)
+	{
+		bool	llFound;
+		SComp*	compNew;
+
+
+		// If they didn't provide acs0, then we use 
+		if (!acs0)
+			acs0 = (SAsciiCompSearcher*)cgcFundamentalSymbols;
+
+		// Create the component
+		compNew = iComps_new(NULL, NULL, NULL, NULL);
+		if (compNew)
+		{
+			// Search for the iCode
+			if (acs0)					llFound = iComps_populate_by_iCode(compNew, tniCode, acs0);
+			if (!llFound && acs1)		llFound = iComps_populate_by_iCode(compNew, tniCode, acs1);
+			if (!llFound && acs2)		llFound = iComps_populate_by_iCode(compNew, tniCode, acs2);
+			if (!llFound && acs3)		llFound = iComps_populate_by_iCode(compNew, tniCode, acs3);
+			if (!llFound)				compNew->iCode = tniCode;		// Store the iCode
+
+			// Inject before the indicated reference component
+			iLl_insert__ll((SLL*)compRef, (SLL*)compNew, tlAfter);
+		}
+
+		// Indicate our new component
+		return(compNew);
 	}
 
 
