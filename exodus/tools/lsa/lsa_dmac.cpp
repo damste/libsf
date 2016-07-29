@@ -656,13 +656,21 @@
 
 			// Duplicate
 			lineNew = iLine_duplicate_withComps(line);
+			if (lineNew)
+			{
+				// Prefix with a double-semicolon comment character
+				iComps_insert_by_iCode(line->firstComp, _ICODE_LINE_COMMENT, false);
 
-			// Prefix with a double-semicolon comment character
-			iComps_insert_by_iCode(line->firstComp, _ICODE_LINE_COMMENT, false);
-			iLine_reconstitute_byComps(line);
+				// Rebuild the line with the new component added in
+				iLine_reconstitute_byComps(line);
 
-			// Insert before 
-			iLine_insertBefore(line, lineNew);
+				// Insert before 
+				iLine_insert(line, lineNew, false);
+
+			} else {
+				// Should never happen
+				ilsa_internal_compiler_error();
+			}
 
 
 		//////////

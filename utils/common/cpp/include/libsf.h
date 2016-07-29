@@ -1210,6 +1210,7 @@
 	SLine*					iLine_createNew								(void);
 	SLine*					iLine_appendNew								(SLine* line);
 	SLine*					iLine_insertNew								(SLine* lineRef, bool tlAfter);
+	bool					iLine_insert								(SLine* lineRef, SLine* lineNew, bool tlAfter);
 	void					iLine_appendError							(SLine* line, u32 tnErrorNum,   cu8* tcMessage, u32 tnStartColumn, u32 tnLength);
 	void					iLine_appendWarning							(SLine* line, u32 tnWarningNum, cu8* tcMessage, u32 tnStartColumn, u32 tnLength);
 	bool					iLine_scanComps_forward_withCallback		(SLine* line, SComp* comp, SCallback* cb, bool tlSkipFirst);

@@ -183,11 +183,11 @@
 
 
 
-	//////////
-	//
-	// Called to create a new line
-	//
-	//////
+//////////
+//
+// Called to create a new line
+//
+//////
 	SLine* iLine_createNew(void)
 	{
 		SLine* line;
@@ -211,11 +211,11 @@
 
 
 
-	//////////
-	//
-	// Called to append a new line to a chain (without regards to honoring the chain)
-	//
-	//////
+//////////
+//
+// Called to append a new line to a chain (without regards to honoring the chain)
+//
+//////
 	SLine* iLine_appendNew(SLine* line)
 	{
 		// Append the line to the chain
@@ -228,11 +228,11 @@
 
 
 
-	//////////
-	//
-	// Called to insert a new line to a chain
-	//
-	//////
+//////////
+//
+// Called to insert a new line to a chain
+//
+//////
 	SLine* iLine_insertNew(SLine* lineRef, bool tlAfter)
 	{
 		SLine*	lineNew;
@@ -250,11 +250,32 @@
 
 
 
-	//////////
-	//
-	// Called to append an error the indicated source code line
-	//
-	//////
+//////////
+//
+// Insert the indicated line before or after the indicated line
+//
+//////
+	bool iLine_insert(SLine* lineRef, SLine* lineNew, bool tlAfter)
+	{
+		// Make sure our environment is sane
+		if (lineRef && lineNew)
+		{
+			// Indicate success or failure
+			return(iLl_insert__ll((SLL*)lineNew, (SLL*)lineRef, tlAfter));
+		}
+
+		// Failure
+		return(false);
+	}
+
+
+
+
+//////////
+//
+// Called to append an error the indicated source code line
+//
+//////
 	void iLine_appendError(SLine* line, u32 tnErrorNum, cu8* tcMessage, u32 tnStartColumn, u32 tnLength)
 	{
 #ifdef _SHOW_REFACTOR_ERRORS
@@ -266,11 +287,11 @@
 
 
 
-	//////////
-	//
-	// Called to append a warning to the indicated source code line
-	//
-	//////
+//////////
+//
+// Called to append a warning to the indicated source code line
+//
+//////
 	void iLine_appendWarning(SLine* line, u32 tnWarningNum, cu8* tcMessage, u32 tnStartColumn, u32 tnLength)
 	{
 #ifdef _SHOW_REFACTOR_ERRORS
@@ -282,13 +303,13 @@
 
 
 
-	//////////
-	//
-	// Called to scan forward across multiple lines for a component.
-	//
-	// Note:	Incoming comp need not be a component of incoming line, but once
-	//			comp->ll.nextComp is NULL, line->ll.nextLine will be used
-	//////
+//////////
+//
+// Called to scan forward across multiple lines for a component.
+//
+// Note:	Incoming comp need not be a component of incoming line, but once
+//			comp->ll.nextComp is NULL, line->ll.nextLine will be used
+//////
 	// Note:  cb->lFound also indicates if something was found
 	bool iLine_scanComps_forward_withCallback(SLine* line, SComp* comp, SCallback* cb, bool tlSkipFirst)
 	{
@@ -362,11 +383,11 @@ goto_next_component:
 
 
 
-	//////////
-	//
-	// Called to convert all \{ and \} (for example) to just { and }
-	//
-	//////
+//////////
+//
+// Called to convert all \{ and \} (for example) to just { and }
+//
+//////
 	s32 iLines_unescape_iCodes(SLine* lineStart, s32 tniCode1, s32 tniCode2, s32 tniCode3, s32 tniCodeEscape)
 	{
 		s32		lnUnescapeCount;
@@ -436,11 +457,11 @@ goto_next_component:
 
 
 
-	//////////
-	//
-	// Called to obtain the Nth parameter from the start of the line, or from a line that follows if allowed
-	//
-	//////
+//////////
+//
+// Called to obtain the Nth parameter from the start of the line, or from a line that follows if allowed
+//
+//////
 	SComp* iLine_Nth_comp(SLine* line, s32 tnCount, bool tlMoveBeyondLineIfNeeded)
 	{
 		// Make sure our environment is sane
@@ -739,11 +760,11 @@ goto_next_component:
 
 
 
-	//////////
-	//
-	// Called to skip to the previous component
-	//
-	//////
+//////////
+//
+// Called to skip to the previous component
+//
+//////
 	s32 iiLine_skipTo_prevComp(SLine** lineProcessing, SComp** compProcessing)
 	{
 		s32		lnCount;

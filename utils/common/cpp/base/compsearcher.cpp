@@ -193,4 +193,5 @@
 		}
 
 		// Continue iterating
+		return(true);
 	}
