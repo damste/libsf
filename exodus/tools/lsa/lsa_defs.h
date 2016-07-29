@@ -167,11 +167,12 @@ struct SLsaInclude;
 	SLsaBlock*			ilsa_pass2_function								(SLsaFile* file, SLine** lineProcessing);
 	SLsaStruct*			ilsa_pass2_struct								(SLsaFile* file, SLine** lineProcessing);
 	SLsaEnum*			ilsa_pass2_enum									(SLsaFile* file, SLine** lineProcessing);
+	SLsaBlock*			ilsa_pass2_flow									(SLsaFile* file, SLine** lineProcessing);
 	bool				ilsa_pass2_label								(SLsaFile* file, SLine** lineProcessing);
 
 
 //////////
-// pass3.cpp -- Token parsing
+// pass3.cpp -- Mnemonic parsing
 //////
 	void				ilsa_pass3										(void);
 

@@ -95,6 +95,7 @@
 //		structs
 //		enums
 //		labels
+//		flow control blocks
 //
 //////
 	void ilsa_pass2(void)
@@ -102,10 +103,11 @@
 // 		SLine*			line;
 // 		SComp*			comp;
 // 		SComp*			compFile;
-// 		SLsaFile*		fileInclude;
+// 		SLsaFile*		file;
 // 		SLsaBlock*		func;
-// 		SLsaStruct*	lstruct;
+// 		SLsaStruct*		lstruct;
 // 		SLsaEnum*		lenum;
+//		SLsaBlock*		lflow;
 // 
 // 
 // 		// Iterate through the entire file
@@ -132,6 +134,13 @@
 // 					case _ICODE_LSA_ENUM:
 // 						// Process the enum
 // 						if (!(lenum = ilsa_pass2_enum(cmdLine, file, &line)))
+// 						{
+// 						}
+// 
+// 					case _ICODE_LSA_IF:
+// 					case _ICODE_LSA_ELSE:
+// 						// Process the flow control
+// 						if (!(lflow = ilsa_pass2_flow(cmdLine, file, &line)))
 // 						{
 // 						}
 // 
@@ -181,6 +190,19 @@
 //
 //////
 	SLsaEnum* ilsa_pass2_enum(SLsaFile* file, SLine** lineProcessing)
+	{
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Process the flow control
+//
+//////
+	SLsaBlock* ilsa_pass2_flow(SLsaFile* file, SLine** lineProcessing)
 	{
 		return(NULL);
 	}

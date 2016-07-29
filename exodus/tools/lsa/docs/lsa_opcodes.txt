@@ -303,13 +303,13 @@ LASM -- Intel 80386 Instructions
 	9B,DD/7		FSTSW m16			-- Copy FPU status word to m16
 	9B,DF,E0	FSTSW ax			-- Copy FPU status word to ax
 	D8/4		FSUB f32			-- st0 = st0 - f32
-	DC/4		FSBU f64			-- st0 = st0 - f64
+	DC/4		FSUB f64			-- st0 = st0 - f64
 	D8,E0+r		FSUB stN			-- st0 = st0 - stN
 	DC,E8+r		FSUB stN,st0		-- stN = stN - st0
 	DE,E8+r		FSUBP stN,st0		-- stN = stN - st0, then pop
 	DA/4		FISUB s32			-- st0 = st0 - s32
 	DE/4		FISUB s16			-- st0 = st0 - s16
-	D8/5		FUSBR f32			-- st0 = f32 - st0
+	D8/5		FSUBR f32			-- st0 = f32 - st0
 	DC/5		FSUBR f64			-- st0 = f64 - st0
 	D8,E8+r		FSUBR st0,stN		-- st0 = stN - st0
 	DC,E0+r		FSUBR stN,st0		-- stN = st0 - stN
