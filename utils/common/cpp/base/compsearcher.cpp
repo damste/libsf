@@ -156,7 +156,7 @@
 
 //////////
 //
-// 
+// Called to duplicate the entire NoteLog chain
 //
 //////
 	void iNoteLog_duplicateChain(SNoteLog** noteDstRoot, SNoteLog* noteSrc)
