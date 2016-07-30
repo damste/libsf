@@ -153,6 +153,7 @@
 #include "lsa_const.h"
 #include "lsa_structs.h"
 #include "lsa_defs.h"
+#include "lsa_pass3.h"
 #include "lsa_globals.h"
 
 #include "pass0.cpp"

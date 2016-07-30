@@ -194,10 +194,10 @@
 
 /////////
 //
-// PREFETCHNTA m8 -- Prefetch block around m8 into non-temporal caches
+// PREFETCHNT m8 -- Prefetch block around m8 into non-temporal caches
 //
 //////
-	bool ilsa_pass3_prefetchnta(SLine* line)
+	bool ilsa_pass3_prefetchnt(SLine* line)
 	{
 		return(false);
 	}

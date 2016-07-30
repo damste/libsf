@@ -98,7 +98,7 @@ struct SPass3Func
 };
 
 #define _LSA_PASS3_ICODE_BIT				21
-#define	iEncode_pass3_branchAddress(i)		(((u32)i << (_LSA_PASS3_ICODE_BIT + 1))) + (1 << _LSA_PASS3_ICODE_BIT))
+#define	iEncode_pass3_branchAddress(i)		((((u32)i << (_LSA_PASS3_ICODE_BIT + 1))) + (1 << _LSA_PASS3_ICODE_BIT))
 #define	iDecode_pass3_branchAddress(i)		(((u32)i & 0xffc00000) >> 22)
 #define	iGenerate_pass3_functionName(a)		(uptr)&ilsa_pass3_##a
 
@@ -352,7 +352,7 @@ cs32	_ICODE_LSA_POPFD						= iEncode_pass3_branchAddress(245);
 cs32	_ICODE_LSA_PREFETCH0					= iEncode_pass3_branchAddress(246);
 cs32	_ICODE_LSA_PREFETCH1					= iEncode_pass3_branchAddress(247);
 cs32	_ICODE_LSA_PREFETCH2					= iEncode_pass3_branchAddress(248);
-cs32	_ICODE_LSA_PREFETCHNTA					= iEncode_pass3_branchAddress(249);
+cs32	_ICODE_LSA_PREFETCHNT					= iEncode_pass3_branchAddress(249);
 cs32	_ICODE_LSA_PUSH							= iEncode_pass3_branchAddress(250);
 cs32	_ICODE_LSA_PUSHA						= iEncode_pass3_branchAddress(251);
 cs32	_ICODE_LSA_PUSHAD						= iEncode_pass3_branchAddress(252);

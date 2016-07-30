@@ -175,6 +175,8 @@ struct SLsaInclude;
 // pass3.cpp -- Mnemonic parsing
 //////
 	void				ilsa_pass3										(void);
+	void				iilsa_pass3_init								(void);
+	// Note:  See pass3\pass3_*.h for additional functions related to assembly mnemonic keyword parsing used in pass-3
 
 
 //////////

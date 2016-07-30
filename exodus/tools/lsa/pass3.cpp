@@ -87,11 +87,6 @@
 
 
 
-#include "lsa_pass3.h"
-
-
-
-
 //////////
 //
 // Pass-3 -- Mnemonic parsing
@@ -103,7 +98,7 @@
 	#include "pass3\pass3_d_e.h"
 	#include "pass3\pass3_f.h"
 	#include "pass3\pass3_h_i.h"
-	#include "pass3\pass_j.h"
+	#include "pass3\pass3_j.h"
 	#include "pass3\pass3_l.h"
 	#include "pass3\pass3_m.h"
 	#include "pass3\pass3_n_o.h"
@@ -127,7 +122,7 @@
 		SLine*	line;
 
 
-		// Populate and validate the gsPass3 functions
+		// Populate and validate the gsPass3_functions for rapid dispatch to handlers
 		iilsa_pass3_init();
 
 		// Iterate through every line
@@ -419,7 +414,7 @@
 			gsPass3_functions[iDecode_pass3_branchAddress(_ICODE_LSA_PREFETCH0)]._func		= iGenerate_pass3_functionName(prefetch0);		// PREFETCHT0 m8		-- Prefetch block around m8 into all caches
 			gsPass3_functions[iDecode_pass3_branchAddress(_ICODE_LSA_PREFETCH1)]._func		= iGenerate_pass3_functionName(prefetch1);		// PREFETCHT1 m8		-- Prefetch block around m8 into l1 and above
 			gsPass3_functions[iDecode_pass3_branchAddress(_ICODE_LSA_PREFETCH2)]._func		= iGenerate_pass3_functionName(prefetch2);		// PREFETCHT2 m8		-- Prefetch block around m8 into l2 and above
-			gsPass3_functions[iDecode_pass3_branchAddress(_ICODE_LSA_PREFETCHNTA)]._func	= iGenerate_pass3_functionName(prefetchnta);	// PREFETCHNTA m8		-- Prefetch block around m8 into non-temporal caches
+			gsPass3_functions[iDecode_pass3_branchAddress(_ICODE_LSA_PREFETCHNT)]._func		= iGenerate_pass3_functionName(prefetchnt);		// PREFETCHNT m8		-- Prefetch block around m8 into non-temporal caches
 			gsPass3_functions[iDecode_pass3_branchAddress(_ICODE_LSA_PUSH)]._func			= iGenerate_pass3_functionName(push);			// PUSH gs				-- Push GS
 			gsPass3_functions[iDecode_pass3_branchAddress(_ICODE_LSA_PUSHA)]._func			= iGenerate_pass3_functionName(pusha);			// PUSHA				-- Push all 16-bit registers
 			gsPass3_functions[iDecode_pass3_branchAddress(_ICODE_LSA_PUSHAD)]._func			= iGenerate_pass3_functionName(pushad);			// PUSHAD				-- Push all 32-bit registers

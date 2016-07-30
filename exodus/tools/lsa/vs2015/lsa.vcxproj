@@ -183,7 +183,23 @@
     <ClInclude Include="..\lsa_const.h" />
     <ClInclude Include="..\lsa_defs.h" />
     <ClInclude Include="..\lsa_globals.h" />
+    <ClInclude Include="..\lsa_pass3.h" />
     <ClInclude Include="..\lsa_structs.h" />
+    <ClInclude Include="..\pass3\pass3_a.h" />
+    <ClInclude Include="..\pass3\pass3_b.h" />
+    <ClInclude Include="..\pass3\pass3_c.h" />
+    <ClInclude Include="..\pass3\pass3_d_e.h" />
+    <ClInclude Include="..\pass3\pass3_f.h" />
+    <ClInclude Include="..\pass3\pass3_h_i.h" />
+    <ClInclude Include="..\pass3\pass3_j.h" />
+    <ClInclude Include="..\pass3\pass3_l.h" />
+    <ClInclude Include="..\pass3\pass3_m.h" />
+    <ClInclude Include="..\pass3\pass3_n_o.h" />
+    <ClInclude Include="..\pass3\pass3_p.h" />
+    <ClInclude Include="..\pass3\pass3_r.h" />
+    <ClInclude Include="..\pass3\pass3_s.h" />
+    <ClInclude Include="..\pass3\pass3_t_u_v_w.h" />
+    <ClInclude Include="..\pass3\pass3_x.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

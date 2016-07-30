@@ -31,29 +31,29 @@
     <Filter Include="Source Files\source">
       <UniqueIdentifier>{405697eb-2063-47d0-88c6-a60afdd7bf3e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\source\pass3">
+      <UniqueIdentifier>{af27c9fa-376f-4261-947b-d9568a6d8586}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\source\pass1">
+      <UniqueIdentifier>{32ad56b0-b51a-46d7-b3a7-142a8511d474}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\source\pass2">
+      <UniqueIdentifier>{925f15fb-c190-4891-b3c1-d6b10f87de20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\source\pass0">
+      <UniqueIdentifier>{12d475cb-bde8-45f7-9058-95c1d0911111}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\source\passx">
+      <UniqueIdentifier>{527e224b-a741-41d2-8751-132b6b1a3346}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\source\passy">
+      <UniqueIdentifier>{a473c75d-8727-4d10-84de-e66be7b279cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\source\passz">
+      <UniqueIdentifier>{8886eaba-09b1-4d4b-825d-45ef0b7c69b4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\pass0.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\pass1.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\pass2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\pass3.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\passx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\passy.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\passz.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\utils\common\cpp\base\comps.cpp">
       <Filter>comps</Filter>
     </ClCompile>
@@ -68,9 +68,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\utils\common\cpp\base\compsearcher.cpp">
       <Filter>comps</Filter>
-    </ClCompile>
-    <ClCompile Include="..\lsa.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\lsa_cmdline.cpp">
       <Filter>Source Files\source</Filter>
@@ -88,6 +85,30 @@
       <Filter>Source Files\source</Filter>
     </ClCompile>
     <ClCompile Include="..\lsa_status.cpp">
+      <Filter>Source Files\source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pass3.cpp">
+      <Filter>Source Files\source\pass3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pass0.cpp">
+      <Filter>Source Files\source\pass0</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pass1.cpp">
+      <Filter>Source Files\source\pass1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pass2.cpp">
+      <Filter>Source Files\source\pass2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\passx.cpp">
+      <Filter>Source Files\source\passx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\passy.cpp">
+      <Filter>Source Files\source\passy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\passz.cpp">
+      <Filter>Source Files\source\passz</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lsa.cpp">
       <Filter>Source Files\source</Filter>
     </ClCompile>
   </ItemGroup>
@@ -132,6 +153,54 @@
       <Filter>Source Files\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\lsa_structs.h">
+      <Filter>Source Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pass3\pass3_a.h">
+      <Filter>Source Files\source\pass3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pass3\pass3_b.h">
+      <Filter>Source Files\source\pass3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pass3\pass3_c.h">
+      <Filter>Source Files\source\pass3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pass3\pass3_d_e.h">
+      <Filter>Source Files\source\pass3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pass3\pass3_f.h">
+      <Filter>Source Files\source\pass3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pass3\pass3_h_i.h">
+      <Filter>Source Files\source\pass3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pass3\pass3_j.h">
+      <Filter>Source Files\source\pass3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pass3\pass3_l.h">
+      <Filter>Source Files\source\pass3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pass3\pass3_m.h">
+      <Filter>Source Files\source\pass3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pass3\pass3_n_o.h">
+      <Filter>Source Files\source\pass3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pass3\pass3_p.h">
+      <Filter>Source Files\source\pass3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pass3\pass3_r.h">
+      <Filter>Source Files\source\pass3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pass3\pass3_s.h">
+      <Filter>Source Files\source\pass3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pass3\pass3_t_u_v_w.h">
+      <Filter>Source Files\source\pass3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pass3\pass3_x.h">
+      <Filter>Source Files\source\pass3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\lsa_pass3.h">
       <Filter>Source Files\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
