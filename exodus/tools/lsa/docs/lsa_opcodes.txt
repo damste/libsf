@@ -676,14 +676,14 @@ LASM -- Intel 80386 Instructions
 	0F,00/0		SLDT r/m32			-- Store LDTR to r/m32
 
 	0F,A4		SHLD r/m16,r16,imm8	-- Shift r/m16 left imm8 places, shifting in bits from r16
-	0F,A5		SHLD r/m16,r16,cl	-- Shift r/m16 left cl places, shiting in bits from r16
+	0F,A5		SHLD r/m16,r16,cl	-- Shift r/m16 left cl places, shifting in bits from r16
 	0F,A4		SHLD r/m32,r32,imm8	-- Shift r/m32 left imm8 places, shifting in bits from r32
-	0F,A5		SHLD r/m32,r32,cl	-- Shift r/m32 left cl places, shiting in bits from r32
+	0F,A5		SHLD r/m32,r32,cl	-- Shift r/m32 left cl places, shifting in bits from r32
 
 	0F,AC		SHRD r/m16,r16,imm8	-- Shift r/m16 right imm8 places, shifting in bits from r16
-	0F,AD		SHRD r/m16,r16,cl	-- Shift r/m16 right cl places, shiting in bits from r16
+	0F,AD		SHRD r/m16,r16,cl	-- Shift r/m16 right cl places, shifting in bits from r16
 	0F,AC		SHRD r/m32,r32,imm8	-- Shift r/m32 right imm8 places, shifting in bits from r32
-	0F,AD		SHRD r/m32,r32,cl	-- Shift r/m32 right cl places, shiting in bits from r32
+	0F,AD		SHRD r/m32,r32,cl	-- Shift r/m32 right cl places, shifting in bits from r32
 
 	0F,01/4		SMSW r/m16			-- Store machine status word to r/m16
 	0F,01/4		SMSW r32/m16		-- Store machine status word to r32/m16
