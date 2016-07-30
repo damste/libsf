@@ -460,6 +460,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\lsa_pass3.h"
+					>
+				</File>
+				<File
 					RelativePath="..\lsa_structs.h"
 					>
 				</File>

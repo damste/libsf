@@ -175,7 +175,7 @@
 
 //////////
 //
-// 
+// Startup initialization
 //
 //////
 	SLsaInclude* ilsa_init(void)
