@@ -93,7 +93,7 @@
 // RCL r/m32,imm8 -- Rotate r/m32 through carry by imm8 bits left
 //
 //////
-	bool ilsa_pass3_rcl(SLine* line)
+	bool ilsa_pass3_rcl(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -106,7 +106,7 @@
 // RCR r/m32,imm8 -- Rotate r/m32 through carry by imm8 bits right
 //
 //////
-	bool ilsa_pass3_rcr(SLine* line)
+	bool ilsa_pass3_rcr(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -119,7 +119,7 @@
 // REPne/z prefix
 //
 //////
-	bool ilsa_pass3_repne(SLine* line)
+	bool ilsa_pass3_repne(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -132,7 +132,7 @@
 // REP/e/z prefix
 //
 //////
-	bool ilsa_pass3_repe(SLine* line)
+	bool ilsa_pass3_repe(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -145,7 +145,7 @@
 // ROL r/m32,imm8 -- Rotate r/m32 by imm8 bits left
 //
 //////
-	bool ilsa_pass3_rol(SLine* line)
+	bool ilsa_pass3_rol(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -158,7 +158,7 @@
 // ROR r/m32,imm8 -- Rotate r/m32 by imm8 bits right
 //
 //////
-	bool ilsa_pass3_ror(SLine* line)
+	bool ilsa_pass3_ror(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -171,7 +171,7 @@
 // RDMSR -- Load MSR specified by ecx into edx:eax
 //
 //////
-	bool ilsa_pass3_rdmsr(SLine* line)
+	bool ilsa_pass3_rdmsr(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -184,7 +184,7 @@
 // RDPMC -- Read performance monitoring counter specified by ecx into edx:eax
 //
 //////
-	bool ilsa_pass3_rdpmc(SLine* line)
+	bool ilsa_pass3_rdpmc(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -197,7 +197,7 @@
 // RDTSC -- Read time-stamp counter into edx:eax
 //
 //////
-	bool ilsa_pass3_rdtsc(SLine* line)
+	bool ilsa_pass3_rdtsc(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -210,7 +210,7 @@
 // RET imm16 -- Far return, and pop imm16 bytes from stack
 //
 //////
-	bool ilsa_pass3_ret(SLine* line)
+	bool ilsa_pass3_ret(SLine* line, SComp* comp)
 	{
 		return(false);
 	}

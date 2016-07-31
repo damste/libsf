@@ -93,7 +93,7 @@
 // POP GS -- Pop stack into GS
 //
 //////
-	bool ilsa_pass3_pop(SLine* line)
+	bool ilsa_pass3_pop(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -106,7 +106,7 @@
 // POPA -- Pop all r16 registers
 //
 //////
-	bool ilsa_pass3_popa(SLine* line)
+	bool ilsa_pass3_popa(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -119,7 +119,7 @@
 // POPAD -- Pop all r32 registers
 //
 //////
-	bool ilsa_pass3_popad(SLine* line)
+	bool ilsa_pass3_popad(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -132,7 +132,7 @@
 // POPF -- Pop 16-bit flags
 //
 //////
-	bool ilsa_pass3_popf(SLine* line)
+	bool ilsa_pass3_popf(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -145,7 +145,7 @@
 // POPFD -- Pop 32-bit eflags
 //
 //////
-	bool ilsa_pass3_popfd(SLine* line)
+	bool ilsa_pass3_popfd(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -158,7 +158,7 @@
 // PREFETCHT0 m8 -- Prefetch block around m8 into all caches
 //
 //////
-	bool ilsa_pass3_prefetch0(SLine* line)
+	bool ilsa_pass3_prefetch0(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -171,7 +171,7 @@
 // PREFETCHT1 m8 -- Prefetch block around m8 into l1 and above
 //
 //////
-	bool ilsa_pass3_prefetch1(SLine* line)
+	bool ilsa_pass3_prefetch1(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -184,7 +184,7 @@
 // PREFETCHT2 m8 -- Prefetch block around m8 into l2 and above
 //
 //////
-	bool ilsa_pass3_prefetch2(SLine* line)
+	bool ilsa_pass3_prefetch2(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -197,7 +197,7 @@
 // PREFETCHNT m8 -- Prefetch block around m8 into non-temporal caches
 //
 //////
-	bool ilsa_pass3_prefetchnt(SLine* line)
+	bool ilsa_pass3_prefetchnt(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -210,7 +210,7 @@
 // PUSH gs -- Push GS
 //
 //////
-	bool ilsa_pass3_push(SLine* line)
+	bool ilsa_pass3_push(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -223,7 +223,7 @@
 // PUSHA -- Push all 16-bit registers
 //
 //////
-	bool ilsa_pass3_pusha(SLine* line)
+	bool ilsa_pass3_pusha(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -236,7 +236,7 @@
 // PUSHAD -- Push all 32-bit registers
 //
 //////
-	bool ilsa_pass3_pushad(SLine* line)
+	bool ilsa_pass3_pushad(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -249,7 +249,7 @@
 // PUSHF -- Push 16-bit flags
 //
 //////
-	bool ilsa_pass3_pushf(SLine* line)
+	bool ilsa_pass3_pushf(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -262,7 +262,7 @@
 // PUSHFD -- Push 32-bit eflags
 //
 //////
-	bool ilsa_pass3_pushfd(SLine* line)
+	bool ilsa_pass3_pushfd(SLine* line, SComp* comp)
 	{
 		return(false);
 	}

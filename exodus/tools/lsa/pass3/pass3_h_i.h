@@ -93,7 +93,7 @@
 // HLT -- Halt until interrupt
 //
 //////
-	bool ilsa_pass3_hlt(SLine* line)
+	bool ilsa_pass3_hlt(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -106,7 +106,7 @@
 // IDIV r/m32 -- Integer divide edx:eax, eax=quotient, edx=remainder
 //
 //////
-	bool ilsa_pass3_idiv(SLine* line)
+	bool ilsa_pass3_idiv(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -119,7 +119,7 @@
 // IMUL r32,r/m32,imm32 -- r32 = r32 * r/m32 * imm32
 //
 //////
-	bool ilsa_pass3_imul(SLine* line)
+	bool ilsa_pass3_imul(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -132,7 +132,7 @@
 // IN eax,dx -- Read dword from I/o port in dx
 //
 //////
-	bool ilsa_pass3_in(SLine* line)
+	bool ilsa_pass3_in(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -145,7 +145,7 @@
 // INC r32 -- Increment r32 by 1
 //
 //////
-	bool ilsa_pass3_inc(SLine* line)
+	bool ilsa_pass3_inc(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -158,7 +158,7 @@
 // INS m32,dx -- Input a dword from I/O port in dx, store to es:[e/di]
 //
 //////
-	bool ilsa_pass3_ins(SLine* line)
+	bool ilsa_pass3_ins(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -171,7 +171,7 @@
 // INSB -- Shorthand for INS m8,dx
 //
 //////
-	bool ilsa_pass3_insb(SLine* line)
+	bool ilsa_pass3_insb(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -184,7 +184,7 @@
 // INSW -- Shorthand for INS m16,dx
 //
 //////
-	bool ilsa_pass3_insw(SLine* line)
+	bool ilsa_pass3_insw(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -197,7 +197,7 @@
 // INSD -- Shorthand for INS m32,dx
 //
 //////
-	bool ilsa_pass3_insd(SLine* line)
+	bool ilsa_pass3_insd(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -210,7 +210,7 @@
 // INT3 -- Trap to debugger, one byte
 //
 //////
-	bool ilsa_pass3_int3(SLine* line)
+	bool ilsa_pass3_int3(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -223,7 +223,7 @@
 // INT imm8 -- Interrupt vector imm8
 //
 //////
-	bool ilsa_pass3_int(SLine* line)
+	bool ilsa_pass3_int(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -236,7 +236,7 @@
 // INTO -- Interrupt on overflow
 //
 //////
-	bool ilsa_pass3_into(SLine* line)
+	bool ilsa_pass3_into(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -249,7 +249,7 @@
 // INVD -- Invalidate internal caches
 //
 //////
-	bool ilsa_pass3_invd(SLine* line)
+	bool ilsa_pass3_invd(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -262,7 +262,7 @@
 // INVLPG m -- Invalidate TLB entry for page that contains m
 //
 //////
-	bool ilsa_pass3_invlpg(SLine* line)
+	bool ilsa_pass3_invlpg(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -275,7 +275,7 @@
 // IRET -- Interrupt return 16-bit
 //
 //////
-	bool ilsa_pass3_iret(SLine* line)
+	bool ilsa_pass3_iret(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -288,7 +288,7 @@
 // IRETD -- Interrupt return 32-bit
 //
 //////
-	bool ilsa_pass3_iretd(SLine* line)
+	bool ilsa_pass3_iretd(SLine* line, SComp* comp)
 	{
 		return(false);
 	}

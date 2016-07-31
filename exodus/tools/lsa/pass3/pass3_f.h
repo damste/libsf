@@ -93,7 +93,7 @@
 // F2XM1 -- st0 = 2^(st0 - 1) into st0
 //
 //////
-	bool ilsa_pass3_f2xm1(SLine* line)
+	bool ilsa_pass3_f2xm1(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -106,7 +106,7 @@
 // FABS -- st0 = fabs(st0)
 //
 //////
-	bool ilsa_pass3_fabs(SLine* line)
+	bool ilsa_pass3_fabs(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -119,7 +119,7 @@
 // FADD f32 -- st0 = st0 + f32
 //
 //////
-	bool ilsa_pass3_fadd(SLine* line)
+	bool ilsa_pass3_fadd(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -132,7 +132,7 @@
 // FADDP stN,st0 -- stN = stN + st0, then pop
 //
 //////
-	bool ilsa_pass3_faddp(SLine* line)
+	bool ilsa_pass3_faddp(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -145,7 +145,7 @@
 // FIADD s32 -- st0 = st0 + s32
 //
 //////
-	bool ilsa_pass3_fiadd(SLine* line)
+	bool ilsa_pass3_fiadd(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -158,7 +158,7 @@
 // FBLD m80 -- push m80 loaded as binary coded decimal into st0
 //
 //////
-	bool ilsa_pass3_fbld(SLine* line)
+	bool ilsa_pass3_fbld(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -171,7 +171,7 @@
 // FBSTP m80 -- Store st0 as binary coded decimal into m80, then pop
 //
 //////
-	bool ilsa_pass3_fbstp(SLine* line)
+	bool ilsa_pass3_fbstp(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -184,7 +184,7 @@
 // FCHS -- Complement st0's sign
 //
 //////
-	bool ilsa_pass3_fchs(SLine* line)
+	bool ilsa_pass3_fchs(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -197,7 +197,7 @@
 // FCLEX -- Clear floating point exceptions after checking for pending unmasked exceptions
 //
 //////
-	bool ilsa_pass3_fclex(SLine* line)
+	bool ilsa_pass3_fclex(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -210,7 +210,7 @@
 // FNCLEX -- No-wait version of FCLEX
 //
 //////
-	bool ilsa_pass3_fnclex(SLine* line)
+	bool ilsa_pass3_fnclex(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -223,7 +223,7 @@
 // FCMOVB st0,stN -- Move if carry
 //
 //////
-	bool ilsa_pass3_fcmovb(SLine* line)
+	bool ilsa_pass3_fcmovb(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -236,7 +236,7 @@
 // FCMOVE st0,stN -- Move if zero
 //
 //////
-	bool ilsa_pass3_fcmove(SLine* line)
+	bool ilsa_pass3_fcmove(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -249,7 +249,7 @@
 // FCMOVBE st0,stN -- Move if carry or zero
 //
 //////
-	bool ilsa_pass3_fcmovbe(SLine* line)
+	bool ilsa_pass3_fcmovbe(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -262,7 +262,7 @@
 // FCMOVU st0,stN -- Move if parity
 //
 //////
-	bool ilsa_pass3_fcmovu(SLine* line)
+	bool ilsa_pass3_fcmovu(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -275,7 +275,7 @@
 // FCMOVNB st0,stN -- Move if not carry
 //
 //////
-	bool ilsa_pass3_fcmovnb(SLine* line)
+	bool ilsa_pass3_fcmovnb(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -288,7 +288,7 @@
 // FCMOVNE st0,stN -- Move if not zero
 //
 //////
-	bool ilsa_pass3_fcmovne(SLine* line)
+	bool ilsa_pass3_fcmovne(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -301,7 +301,7 @@
 // FCMOVNBE st0,stN -- Move if not carry and not zero
 //
 //////
-	bool ilsa_pass3_fcmovnbe(SLine* line)
+	bool ilsa_pass3_fcmovnbe(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -314,7 +314,7 @@
 // FCMOVNU st0,stN -- Move if not parity
 //
 //////
-	bool ilsa_pass3_fcmovnu(SLine* line)
+	bool ilsa_pass3_fcmovnu(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -327,7 +327,7 @@
 // FCOM f32 -- Compare st0 with f32
 //
 //////
-	bool ilsa_pass3_fcom(SLine* line)
+	bool ilsa_pass3_fcom(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -340,7 +340,7 @@
 // FCOMP stN -- Compare st0 with stN, then pop
 //
 //////
-	bool ilsa_pass3_fcomp(SLine* line)
+	bool ilsa_pass3_fcomp(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -353,7 +353,7 @@
 // FCOMPP -- Compare st0 with st1, then pop, then pop again
 //
 //////
-	bool ilsa_pass3_fcompp(SLine* line)
+	bool ilsa_pass3_fcompp(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -366,7 +366,7 @@
 // FCOMI stN -- Compare st0 with stN, and set eflags
 //
 //////
-	bool ilsa_pass3_fcomi(SLine* line)
+	bool ilsa_pass3_fcomi(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -379,7 +379,7 @@
 // FCOMIP stN -- Compare st0 with stN, and set eflags, then pop
 //
 //////
-	bool ilsa_pass3_fcomip(SLine* line)
+	bool ilsa_pass3_fcomip(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -392,7 +392,7 @@
 // FUCOMI stN -- Compare st0 with stN, check for ordered values, and set eflags
 //
 //////
-	bool ilsa_pass3_fucomi(SLine* line)
+	bool ilsa_pass3_fucomi(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -405,7 +405,7 @@
 // FUCOMIP stN -- Compare st0 with stN, check for ordered values, and set eflags, then pop
 //
 //////
-	bool ilsa_pass3_fucomip(SLine* line)
+	bool ilsa_pass3_fucomip(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -418,7 +418,7 @@
 // FCOS -- st0 = cos(st0)
 //
 //////
-	bool ilsa_pass3_fcos(SLine* line)
+	bool ilsa_pass3_fcos(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -431,7 +431,7 @@
 // FDECSTP -- Decrement the TOP field in the FPU status word
 //
 //////
-	bool ilsa_pass3_fdecstp(SLine* line)
+	bool ilsa_pass3_fdecstp(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -444,7 +444,7 @@
 // FDIV f32 -- st0 = st0 / f32
 //
 //////
-	bool ilsa_pass3_fdiv(SLine* line)
+	bool ilsa_pass3_fdiv(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -457,7 +457,7 @@
 // FDIVP stN,st0 -- stN = stN / st0, then pop
 //
 //////
-	bool ilsa_pass3_fdivp(SLine* line)
+	bool ilsa_pass3_fdivp(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -470,7 +470,7 @@
 // FIDIV s32 -- st0 = st0 / s32
 //
 //////
-	bool ilsa_pass3_fidiv(SLine* line)
+	bool ilsa_pass3_fidiv(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -483,7 +483,7 @@
 // FDIVR f64 -- st0 = f64 / st0
 //
 //////
-	bool ilsa_pass3_fdivr(SLine* line)
+	bool ilsa_pass3_fdivr(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -496,7 +496,7 @@
 // FDIVRP stN,st0 -- stN = st0 / stN, then pop
 //
 //////
-	bool ilsa_pass3_fdivrp(SLine* line)
+	bool ilsa_pass3_fdivrp(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -509,7 +509,7 @@
 // FIDIVR s32 -- st0 = s32 / st0
 //
 //////
-	bool ilsa_pass3_fidivr(SLine* line)
+	bool ilsa_pass3_fidivr(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -522,7 +522,7 @@
 // FFREE stN -- Set the tag for stN to empty
 //
 //////
-	bool ilsa_pass3_ffree(SLine* line)
+	bool ilsa_pass3_ffree(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -535,7 +535,7 @@
 // FICOM s32 -- Compare st0 to s32
 //
 //////
-	bool ilsa_pass3_ficom(SLine* line)
+	bool ilsa_pass3_ficom(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -548,7 +548,7 @@
 // FICOMP s32 -- Compare st0 to s32, then pop
 //
 //////
-	bool ilsa_pass3_ficomp(SLine* line)
+	bool ilsa_pass3_ficomp(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -561,7 +561,7 @@
 // FILD s16 -- Push s16 into st0
 //
 //////
-	bool ilsa_pass3_fild(SLine* line)
+	bool ilsa_pass3_fild(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -574,7 +574,7 @@
 // FINCSTP -- Increment the TOP field in the FPU status word
 //
 //////
-	bool ilsa_pass3_fincstp(SLine* line)
+	bool ilsa_pass3_fincstp(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -587,7 +587,7 @@
 // FINIT -- Initialize the FPU
 //
 //////
-	bool ilsa_pass3_finit(SLine* line)
+	bool ilsa_pass3_finit(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -600,7 +600,7 @@
 // FIST m32int -- Store st0 to memory as s32
 //
 //////
-	bool ilsa_pass3_fist(SLine* line)
+	bool ilsa_pass3_fist(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -613,7 +613,7 @@
 // FISTP m64int -- Store st0 to memory as s64, then pop
 //
 //////
-	bool ilsa_pass3_fistp(SLine* line)
+	bool ilsa_pass3_fistp(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -626,7 +626,7 @@
 // FLD stN -- Push stN into st0
 //
 //////
-	bool ilsa_pass3_fld(SLine* line)
+	bool ilsa_pass3_fld(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -639,7 +639,7 @@
 // FLD1 -- Push +1.0 into st0
 //
 //////
-	bool ilsa_pass3_fld1(SLine* line)
+	bool ilsa_pass3_fld1(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -652,7 +652,7 @@
 // FLDL2T -- Push log2(10) into st0
 //
 //////
-	bool ilsa_pass3_fld2t(SLine* line)
+	bool ilsa_pass3_fld2t(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -665,7 +665,7 @@
 // FLDL2E -- Push log2(e) into st0
 //
 //////
-	bool ilsa_pass3_fldl2e(SLine* line)
+	bool ilsa_pass3_fldl2e(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -678,7 +678,7 @@
 // FLDPI -- Push pi into st0
 //
 //////
-	bool ilsa_pass3_fldpi(SLine* line)
+	bool ilsa_pass3_fldpi(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -691,7 +691,7 @@
 // FLDLG2 -- Push log10(2) into st0
 //
 //////
-	bool ilsa_pass3_fldlg2(SLine* line)
+	bool ilsa_pass3_fldlg2(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -704,7 +704,7 @@
 // FLDLN2 -- Push loge(2) into st0
 //
 //////
-	bool ilsa_pass3_fldn2(SLine* line)
+	bool ilsa_pass3_fldn2(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -717,7 +717,7 @@
 // FLDZ -- Push +0.0 into st0
 //
 //////
-	bool ilsa_pass3_fldz(SLine* line)
+	bool ilsa_pass3_fldz(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -730,7 +730,7 @@
 // FLDCW u16 -- Load u16 into FPU control word
 //
 //////
-	bool ilsa_pass3_fldcw(SLine* line)
+	bool ilsa_pass3_fldcw(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -743,7 +743,7 @@
 // FLDENV m14/m28 -- Load 14-byte or 28-byte into environment
 //
 //////
-	bool ilsa_pass3_fldenv(SLine* line)
+	bool ilsa_pass3_fldenv(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -756,7 +756,7 @@
 // FMUL stN,st0 -- stN = stN * st0
 //
 //////
-	bool ilsa_pass3_fmul(SLine* line)
+	bool ilsa_pass3_fmul(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -769,7 +769,7 @@
 // FMULP stN,st0 -- stN = stN * st0, then pop
 //
 //////
-	bool ilsa_pass3_fmulp(SLine* line)
+	bool ilsa_pass3_fmulp(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -782,7 +782,7 @@
 // FIMUL m32int -- st0 = st0 * s32
 //
 //////
-	bool ilsa_pass3_fimul(SLine* line)
+	bool ilsa_pass3_fimul(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -795,7 +795,7 @@
 // FNOP -- No operation
 //
 //////
-	bool ilsa_pass3_fnop(SLine* line)
+	bool ilsa_pass3_fnop(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -808,7 +808,7 @@
 // FPATAN -- st1 = arctan(st1 / st0), then pop
 //
 //////
-	bool ilsa_pass3_fpatan(SLine* line)
+	bool ilsa_pass3_fpatan(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -821,7 +821,7 @@
 // FPREM -- st0 = st0 % st1
 //
 //////
-	bool ilsa_pass3_fprem(SLine* line)
+	bool ilsa_pass3_fprem(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -834,7 +834,7 @@
 // FPREM1 -- st0 = IEEE st0 % st1
 //
 //////
-	bool ilsa_pass3_fprem1(SLine* line)
+	bool ilsa_pass3_fprem1(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -847,7 +847,7 @@
 // FPTAN -- st0 = tan(st0), then push 1 into st0
 //
 //////
-	bool ilsa_pass3_fptan(SLine* line)
+	bool ilsa_pass3_fptan(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -860,7 +860,7 @@
 // FRNDINT -- st0 = int(st0)
 //
 //////
-	bool ilsa_pass3_frndint(SLine* line)
+	bool ilsa_pass3_frndint(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -873,7 +873,7 @@
 // FRSTOR m94/m108 -- Load FPU state from a 94 or 108 byte block
 //
 //////
-	bool ilsa_pass3_frstor(SLine* line)
+	bool ilsa_pass3_frstor(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -886,7 +886,7 @@
 // FSAVE m94/m108 -- Store the FPU state to a 94 or 108 byte block
 //
 //////
-	bool ilsa_pass3_fsave(SLine* line)
+	bool ilsa_pass3_fsave(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -899,7 +899,7 @@
 // FSCALE -- st0 = 2^stN
 //
 //////
-	bool ilsa_pass3_fscale(SLine* line)
+	bool ilsa_pass3_fscale(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -912,7 +912,7 @@
 // FSIN -- st0 = sin(st0)
 //
 //////
-	bool ilsa_pass3_fsin(SLine* line)
+	bool ilsa_pass3_fsin(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -925,7 +925,7 @@
 // FSINCOS -- t = cos(st0), st0 = sin(st0), then push t into st0
 //
 //////
-	bool ilsa_pass3_fsincos(SLine* line)
+	bool ilsa_pass3_fsincos(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -938,7 +938,7 @@
 // FSQRT -- st0 = sqrt(st0)
 //
 //////
-	bool ilsa_pass3_fsqrt(SLine* line)
+	bool ilsa_pass3_fsqrt(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -951,7 +951,7 @@
 // FST stN -- Copy st0 to stN, then pop
 //
 //////
-	bool ilsa_pass3_fst(SLine* line)
+	bool ilsa_pass3_fst(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -964,7 +964,7 @@
 // FSTCW m16 -- Copy FPU status word to m16
 //
 //////
-	bool ilsa_pass3_fstcw(SLine* line)
+	bool ilsa_pass3_fstcw(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -977,7 +977,7 @@
 // FSTENV m14/m28 -- Copy FPU environment to 14-byte or 28-byte block
 //
 //////
-	bool ilsa_pass3_fstenv(SLine* line)
+	bool ilsa_pass3_fstenv(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -990,7 +990,7 @@
 // FSTSW ax -- Copy FPU status word to ax
 //
 //////
-	bool ilsa_pass3_fstsw(SLine* line)
+	bool ilsa_pass3_fstsw(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -1003,7 +1003,7 @@
 // FSUB stN,st0 -- stN = stN - st0
 //
 //////
-	bool ilsa_pass3_fsub(SLine* line)
+	bool ilsa_pass3_fsub(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -1016,7 +1016,7 @@
 // FSUBP stN,st0 -- stN = stN - st0, then pop
 //
 //////
-	bool ilsa_pass3_fsubp(SLine* line)
+	bool ilsa_pass3_fsubp(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -1029,7 +1029,7 @@
 // FISUB s16 -- st0 = st0 - s16
 //
 //////
-	bool ilsa_pass3_fisub(SLine* line)
+	bool ilsa_pass3_fisub(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -1042,7 +1042,7 @@
 // FSUBR stN,st0 -- stN = st0 - stN
 //
 //////
-	bool ilsa_pass3_fsubr(SLine* line)
+	bool ilsa_pass3_fsubr(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -1055,7 +1055,7 @@
 // FSUBRP stN,st0 -- stN = st0 - stN, then pop
 //
 //////
-	bool ilsa_pass3_fsubrp(SLine* line)
+	bool ilsa_pass3_fsubrp(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -1068,7 +1068,7 @@
 // FISUBR s16 -- st0 = s16 - st0
 //
 //////
-	bool ilsa_pass3_fisubr(SLine* line)
+	bool ilsa_pass3_fisubr(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -1081,7 +1081,7 @@
 // FTST -- Compare st0 to +0.0
 //
 //////
-	bool ilsa_pass3_ftst(SLine* line)
+	bool ilsa_pass3_ftst(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -1094,7 +1094,7 @@
 // FUCOM stN -- Compare st0 to stN
 //
 //////
-	bool ilsa_pass3_fucom(SLine* line)
+	bool ilsa_pass3_fucom(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -1107,7 +1107,7 @@
 // FUCOMP stN -- Compare st0 to stN, then pop
 //
 //////
-	bool ilsa_pass3_fucomp(SLine* line)
+	bool ilsa_pass3_fucomp(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -1120,7 +1120,7 @@
 // FUCOMPP -- Compare st0 to st1, then pop
 //
 //////
-	bool ilsa_pass3_fucompp(SLine* line)
+	bool ilsa_pass3_fucompp(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -1133,7 +1133,7 @@
 // FWAIT -- Check pending unmasked floating-point exceptions
 //
 //////
-	bool ilsa_pass3_fwait(SLine* line)
+	bool ilsa_pass3_fwait(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -1146,7 +1146,7 @@
 // FXAM -- Classify st0
 //
 //////
-	bool ilsa_pass3_fxam(SLine* line)
+	bool ilsa_pass3_fxam(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -1159,7 +1159,7 @@
 // FXCH stN -- Exchange st0 and stN
 //
 //////
-	bool ilsa_pass3_fxch(SLine* line)
+	bool ilsa_pass3_fxch(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -1172,7 +1172,7 @@
 // FXTRACT -- t = st0's exponent, st0 = st0's significand, then push t into st0
 //
 //////
-	bool ilsa_pass3_fxtract(SLine* line)
+	bool ilsa_pass3_fxtract(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -1185,7 +1185,7 @@
 // FYL2X -- st1 = st1 * log2(st0), then pop
 //
 //////
-	bool ilsa_pass3_fyl2x(SLine* line)
+	bool ilsa_pass3_fyl2x(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -1198,7 +1198,7 @@
 // FYL2XP1 -- st1 = st1 * log2(st0 + 1.0), then pop
 //
 //////
-	bool ilsa_pass3_fyl2xp1(SLine* line)
+	bool ilsa_pass3_fyl2xp1(SLine* line, SComp* comp)
 	{
 		return(false);
 	}

@@ -196,3 +196,38 @@
 			}
 		}
 	}
+
+
+
+
+//////////
+//
+// Called to mark the entire line to the tnLineStatusSet value if every component is tnStatusCompCheck
+//
+//////
+	bool ilsa_status_markLineStatus_ifAllCompsHave(SLine* line, u32 tnLineStatusSet, u32 tnCompStatusCheck)
+	{
+		SComp* comp;
+
+
+		// Make sure our environment is sane
+		if (line)
+		{
+			// Iterate through every component
+			for (comp = line->firstComp; comp; iComps_Nth_lineOnly(comp))
+			{
+				// Check the component
+				if (comp->compStatus != tnCompStatusCheck)
+					return(false);		// Found (at least) one that didn't match
+			}
+
+			// When we get here, everything matched
+			line->lineStatus = tnLineStatusSet;
+
+			// Indicate success
+			return(true);
+		}
+
+		// Indicate failure
+		return(false);
+	}

@@ -118,8 +118,7 @@
 //////
 	void ilsa_pass3(void)
 	{
-		u32		lniCodeBranch;
-		SLine*	line;
+		SLine* line;
 
 
 		// Populate and validate the gsPass3_functions for rapid dispatch to handlers
@@ -127,25 +126,113 @@
 
 		// Iterate through every line
 		for (line = cmdLine.file->firstLine; line; line = line->ll.nextLine)
+			iilsa_pass3_decode_line(line);
+	}
+
+
+
+
+//////////
+//
+// Called to decode the indicated line beginning at the indicated component (or line->firstComp if not provided)
+//
+//////
+	bool iilsa_pass3_decode_line(SLine* line, SComp* comp)
+	{
+		// Make sure our environment is sane
+		if (line && (comp || (comp = line->firstComp)))
 		{
 			// Only applying to uncompleted lines
-			if (!ilsa_status_line_isCompleted(line) && line->firstComp && !ilsa_status_comp_isCompleted(line->firstComp))
-			{
-				lniCodeBranch = iDecode_pass3_branchAddress(line->firstComp->iCode);
-				if (lniCodeBranch >= _LSA_PASS3_CODE_BRANCH_MIN && lniCodeBranch <= _LSA_PASS3_CODE_BRANCH_MAX)
-				{
-					if (!gsPass3_functions[lniCodeBranch].func(line))
-					{
-						// Error
+			if (!ilsa_status_line_isCompleted(line) && comp && !ilsa_status_comp_isCompleted(comp))
+				return(iilsa_pass3_decode_compsRight(line, comp));
+		}
 
-					} else {
-						// We're good
-					}
-				}
-				//else Not a line for us to decode
+		// If we get here, did not process
+		return(ilsa_status_line_isCompleted(line));
+	}
+
+
+
+
+//////////
+//
+// Called to decode from the indicated component right on the indicated line
+//
+//////
+	bool iilsa_pass3_decode_compsRight(SLine* line, SComp* comp)
+	{
+		u32 lniCodeBranch;
+
+
+		// Grab the branch address
+		lniCodeBranch = iDecode_pass3_branchAddress(comp->iCode);
+
+		// If it's valid for this pass, parse it
+		if (lniCodeBranch >= _LSA_PASS3_CODE_BRANCH_MIN && lniCodeBranch <= _LSA_PASS3_CODE_BRANCH_MAX)
+		{
+			// If we're successful, check the line and mark it completed
+			if (gsPass3_functions[lniCodeBranch].func(line, comp))
+			{
+				// Processed
+				ilsa_status_markLineStatus_ifAllCompsHave(line);
+
+				// Indicate success
+				return(true);
 			}
 		}
+		//else Not a line for us to decode
+		return(false);
 	}
+
+
+
+
+//////////
+//
+// Common function for simple single-opcode instructions
+//
+//////
+	bool ilsa_pass3_common_addOpcodeByte(SLine* line, SComp* comp, u8 opcodeByte)
+	{
+		// Store the opcode
+		if (!iilsa_lineData_addOpcodeByte(line, opcodeByte))
+			return(false);
+
+		// Mark the component complete
+		ilsa_markCompCompleted(comp);
+
+		// Indicate success
+		return(true);
+	}
+
+
+
+
+//////////
+//
+// Common function for simple two-opcode instructions
+//
+//////
+	bool ilsa_pass3_common_addOpcodeTwoByte(SLine* line, SComp* comp, u8 opcodeByte1, u8 opcodeByte2)
+	{
+		// Store opcode 1
+		if (iilsa_lineData_addOpcodeByte(line, opcodeByte1))
+		{
+			// Store opcode 2
+			if (iilsa_lineData_addOpcodeByte(line, opcodeByte2))
+			{
+				// Mark the component complete
+				ilsa_markCompCompleted(comp);
+
+				// Indicate success
+				return(true);
+			}
+		}
+
+		// Indicate failure
+		return(false);
+	}
+
 
 
 

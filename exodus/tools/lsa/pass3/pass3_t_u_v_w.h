@@ -93,7 +93,7 @@
 // TEST r/m32,r32 -- r32 and r/m32
 //
 //////
-	bool ilsa_pass3_test(SLine* line)
+	bool ilsa_pass3_test(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -106,7 +106,7 @@
 // UD2 -- Raises invalid opcode exception
 //
 //////
-	bool ilsa_pass3_ud2(SLine* line)
+	bool ilsa_pass3_ud2(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -119,7 +119,7 @@
 // VERR r/m16 -- Verify segment r/m16 can be read
 //
 //////
-	bool ilsa_pass3_verr(SLine* line)
+	bool ilsa_pass3_verr(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -132,7 +132,7 @@
 // VERW r/m16 -- Verify segment r/m16 can be written to
 //
 //////
-	bool ilsa_pass3_verw(SLine* line)
+	bool ilsa_pass3_verw(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -145,7 +145,7 @@
 // WBINVD -- Write back and flush internal caches
 //
 //////
-	bool ilsa_pass3_wbinvd(SLine* line)
+	bool ilsa_pass3_wbinvd(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -158,7 +158,7 @@
 // WRMSR -- Write the value in edx:eax to MSR specified by ecx
 //
 //////
-	bool ilsa_pass3_wrmsr(SLine* line)
+	bool ilsa_pass3_wrmsr(SLine* line, SComp* comp)
 	{
 		return(false);
 	}

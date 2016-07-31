@@ -112,6 +112,7 @@ struct SLsaInclude;
 	bool				ilsa_status_comp_isCompleted					(SComp* comp);
 	bool				ilsa_status_line_isCompleted					(SLine* line);
 	void				ilsa_status_file_add							(SLsaFile* file, u32 tnStatus, bool tlProcessLines, bool tlProcessComps);
+	bool				ilsa_status_markLineStatus_ifAllCompsHave		(SLine* line, u32 tnLineStatusSet = _LSA_STATUS_COMPLETED, u32 tnCompStatusCheck = _LSA_STATUS_COMPLETED);
 
 	// For parenthetical parameters, and comma delimited parameters
 	s32					iilsa_params_parentheticalExtract				(SComp* compLeftParam, SBuilder** paramsRoot, bool tlMoveBeyondLineIfNeeded = true);
@@ -139,6 +140,14 @@ struct SLsaInclude;
 	void				iilsa_note										(s32 tnNoteCode,	cs8* noteTextTemplate,		SLine* line, SComp* comp = NULL);
 	void				iilsa_warning									(s32 tnWarningCode,	cs8* warningTextTemplate,	SLine* line, SComp* comp = NULL);
 	void				iilsa_error										(s32 tnErrorCode,	cs8* errorTextTemplate,		SLine* line, SComp* comp = NULL);
+
+
+	// lsa_linedata.cpp
+	bool				iilsa_lineData_lock								(SLine* line);
+	bool				iilsa_lineData_repe_z							(SLine* line);
+	bool				iilsa_lineData_repne_nz							(SLine* line);
+	bool				iilsa_lineData_addOpcodeByte					(SLine* line, u8 opcodeByte);
+
 
 
 //////////
@@ -175,7 +184,11 @@ struct SLsaInclude;
 // pass3.cpp -- Mnemonic parsing
 //////
 	void				ilsa_pass3										(void);
+	bool				ilsa_pass3_common_addOpcodeByte					(SLine* line, SComp* comp, u8 opcodeByte);
+	bool				ilsa_pass3_common_addOpcodeTwoByte				(SLine* line, SComp* comp, u8 opcodeByte1, u8 opcodeByte2);
 	void				iilsa_pass3_init								(void);
+	bool				iilsa_pass3_decode_line							(SLine* line, SComp* comp = NULL);
+	bool				iilsa_pass3_decode_compsRight					(SLine* line, SComp* comp);
 	// Note:  See pass3\pass3_*.h for additional functions related to assembly mnemonic keyword parsing used in pass-3
 
 

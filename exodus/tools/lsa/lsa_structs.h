@@ -159,7 +159,17 @@ struct SBuilder;
 	// Line data
 	struct SLsaLineData
 	{
-		SDatum			generated_bytes;				// Bytes generated for this line
+		bool			lLock;							// LOCK prefix 0F0h?
+		bool			lRepne_nz;						// REPNE or REPNZ prefix 0F2h?
+		bool			lRepe_z;						// REPE or REPZ prefix 0F3h?
+		bool			lSizeOverride;					// Size override?
+		bool			lAddressOverride;				// Size override?
+		u8				segment_override;				// Segment override
+
+		// What was populated for this line?
+		SDatum*			generatedData;					// Data generated for the line
+		SDatum			generatedOpcodeBytes;			// The bytes for the opcode, sans lock, override, and segment
+		u8				opcode_bytes[16];				// If generatedOpcodeBytes.length > 0, it refers to these bytes
 	};
 
 	// Linked list of files to be assembled

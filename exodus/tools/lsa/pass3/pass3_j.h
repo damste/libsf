@@ -93,7 +93,7 @@
 // Jcc imm32 -- Conditional jump relative by imm32 offset
 //
 //////
-	bool ilsa_pass3_jcc(SLine* line)
+	bool ilsa_pass3_jcc(SLine* line, SComp* comp)
 	{
 		switch (line->firstComp->iCode)
 		{
@@ -194,7 +194,7 @@
 // JMP m16:32 -- Jump far, absolute indirect, address in m16:32
 //
 //////
-	bool ilsa_pass3_jmp(SLine* line)
+	bool ilsa_pass3_jmp(SLine* line, SComp* comp)
 	{
 		return(false);
 	}

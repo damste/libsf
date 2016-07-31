@@ -93,7 +93,7 @@
 // XADD r/m32,r32 -- Exchange r32 and r/m32, and load sum into r/m32
 //
 //////
-	bool ilsa_pass3_xadd(SLine* line)
+	bool ilsa_pass3_xadd(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -106,7 +106,7 @@
 // XCHG r/m32,r32 -- Exchange r32 and r/m32
 //
 //////
-	bool ilsa_pass3_xchg(SLine* line)
+	bool ilsa_pass3_xchg(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -119,7 +119,7 @@
 // XLAT m8 -- Set al to ds:[e/bx + al]
 //
 //////
-	bool ilsa_pass3_xlat(SLine* line)
+	bool ilsa_pass3_xlat(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -132,7 +132,7 @@
 // XLATB -- Shorthand for XLAT m8
 //
 //////
-	bool ilsa_pass3_xlatb(SLine* line)
+	bool ilsa_pass3_xlatb(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -145,7 +145,7 @@
 // XOR r32,r/m32 -- r/m32 and r32
 //
 //////
-	bool ilsa_pass3_xor(SLine* line)
+	bool ilsa_pass3_xor(SLine* line, SComp* comp)
 	{
 		return(false);
 	}

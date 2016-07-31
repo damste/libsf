@@ -93,7 +93,7 @@
 // LAHF -- ah = eflags.sf:zf:0:af:0:pf:1:cf
 //
 //////
-	bool ilsa_pass3_lahf(SLine* line)
+	bool ilsa_pass3_lahf(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -106,7 +106,7 @@
 // LAR r32,r/m32 -- r32 = r/m32 & 00fxff00h
 //
 //////
-	bool ilsa_pass3_lar(SLine* line)
+	bool ilsa_pass3_lar(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -119,7 +119,7 @@
 // LDS r32,m16:32 -- Load DS:r32 indirect from far pointer
 //
 //////
-	bool ilsa_pass3_lds(SLine* line)
+	bool ilsa_pass3_lds(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -132,7 +132,7 @@
 // LSS r32,m16:32 -- Load SS:r32 indirect from far pointer
 //
 //////
-	bool ilsa_pass3_lss(SLine* line)
+	bool ilsa_pass3_lss(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -145,7 +145,7 @@
 // LES r32,m16:32 -- Load ES:r32 indirect from far pointer
 //
 //////
-	bool ilsa_pass3_les(SLine* line)
+	bool ilsa_pass3_les(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -158,7 +158,7 @@
 // LFS r32,m16:32 -- Load FS:r32 indirect from far pointer
 //
 //////
-	bool ilsa_pass3_lfs(SLine* line)
+	bool ilsa_pass3_lfs(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -171,7 +171,7 @@
 // LGS r32,m16:32 -- Load GS:r32 indirect from far pointer
 //
 //////
-	bool ilsa_pass3_lgs(SLine* line)
+	bool ilsa_pass3_lgs(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -184,7 +184,7 @@
 // LEA r32,m -- Store effective address for m in r32
 //
 //////
-	bool ilsa_pass3_lea(SLine* line)
+	bool ilsa_pass3_lea(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -197,7 +197,7 @@
 // LEAVE -- esp = ebp, then pop ebp
 //
 //////
-	bool ilsa_pass3_leave(SLine* line)
+	bool ilsa_pass3_leave(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -210,7 +210,7 @@
 // LGDT m16&32 -- Load m into GDTR
 //
 //////
-	bool ilsa_pass3_lgdt(SLine* line)
+	bool ilsa_pass3_lgdt(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -223,7 +223,7 @@
 // LIDT m16&32 -- Load m into IDTR
 //
 //////
-	bool ilsa_pass3_lidt(SLine* line)
+	bool ilsa_pass3_lidt(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -236,7 +236,7 @@
 // LLDT r/m16 -- Load selector into LDTR
 //
 //////
-	bool ilsa_pass3_lldt(SLine* line)
+	bool ilsa_pass3_lldt(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -249,7 +249,7 @@
 // LMSW r/m16 -- Loads r/m16 into bits cr0
 //
 //////
-	bool ilsa_pass3_lmsw(SLine* line)
+	bool ilsa_pass3_lmsw(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -262,9 +262,21 @@
 // LOCK -- Prefix for other instructions, locks system bus
 //
 //////
-	bool ilsa_pass3_lock(SLine* line)
+	bool ilsa_pass3_lock(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Store the lock prefix
+		if (!iilsa_lineData_lock(line))
+			return(false);
+
+		// Mark the component complete
+		ilsa_markCompCompleted(comp);
+
+		// If there's a component after lock, we parse from that point on as well
+		if ((comp = iComps_Nth_lineOnly(comp)))
+			return(iilsa_pass3_decode_line(line, comp));
+
+		// Indicate success
+		return(true);
 	}
 
 
@@ -275,7 +287,7 @@
 // LODS m32 -- Load dword from ds:[e/si] into eax
 //
 //////
-	bool ilsa_pass3_lods(SLine* line)
+	bool ilsa_pass3_lods(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -288,7 +300,7 @@
 // LODSB -- Shorthand for LODS m8
 //
 //////
-	bool ilsa_pass3_lodsb(SLine* line)
+	bool ilsa_pass3_lodsb(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -301,7 +313,7 @@
 // LODSW -- Shorthand for LODS m16
 //
 //////
-	bool ilsa_pass3_lodsw(SLine* line)
+	bool ilsa_pass3_lodsw(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -314,7 +326,7 @@
 // LODSD -- Shorthand for LODS m32
 //
 //////
-	bool ilsa_pass3_lodsd(SLine* line)
+	bool ilsa_pass3_lodsd(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -327,7 +339,7 @@
 // LOOP imm8 -- Decrement count, jump short if count != 0
 //
 //////
-	bool ilsa_pass3_loop(SLine* line)
+	bool ilsa_pass3_loop(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -340,7 +352,7 @@
 // LOOPE imm8 -- Decrement count, jump short if count != 0 and zero
 //
 //////
-	bool ilsa_pass3_loope(SLine* line)
+	bool ilsa_pass3_loope(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -353,7 +365,7 @@
 // LOOPZ imm8 -- Synonym for LOOPE
 //
 //////
-	bool ilsa_pass3_loopz(SLine* line)
+	bool ilsa_pass3_loopz(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -366,7 +378,7 @@
 // LOOPNE imm8 -- Decrement count, jump short if count != 0 and !zero
 //
 //////
-	bool ilsa_pass3_loopne(SLine* line)
+	bool ilsa_pass3_loopne(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -379,7 +391,7 @@
 // LOOPNZ imm8 -- Synonym for LOOPNE
 //
 //////
-	bool ilsa_pass3_loopnz(SLine* line)
+	bool ilsa_pass3_loopnz(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -392,7 +404,7 @@
 // LSL r32,r/m32 -- r32 = segment_limit(r/m32)
 //
 //////
-	bool ilsa_pass3_lsl(SLine* line)
+	bool ilsa_pass3_lsl(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -405,7 +417,7 @@
 // LTR r/m16 -- Load r/m16 into TR
 //
 //////
-	bool ilsa_pass3_ltr(SLine* line)
+	bool ilsa_pass3_ltr(SLine* line, SComp* comp)
 	{
 		return(false);
 	}

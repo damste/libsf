@@ -1,6 +1,6 @@
 //////////
 //
-// /libsf/exodus/tools/lsa/pass3/pass3_d_e.h
+// /libsf/exodus/tools/lsa/lsa_linedata.cpp
 //
 //////
 //    _     _ _     _____ _____ 
@@ -81,7 +81,7 @@
 //////
 //
 // Liberty Software Foundation's lsa (LibSF Assembler).
-// Assembly instructions beginning with the letter D and E.
+// Code related to the (SLsaLineData*)line->data content.
 //
 //////
 
@@ -90,75 +90,122 @@
 
 /////////
 //
-// DAA -- Decimal adjust al after addition
+// Called to indicate this line's output opcode has the LOCK prefix
 //
 //////
-	bool ilsa_pass3_daa(SLine* line, SComp* comp)
+	bool iilsa_lineData_lock(SLine* line)
 	{
+		SLsaLineData* lld;
+
+
+		// Grab our pointer
+		lld = (SLsaLineData*)line->data;
+
+		// See if it's already set
+		if (!lld->lLock)
+		{
+			// Set the flag
+			lld->lLock = true;
+
+			// Indicate success
+			return(true);
+		}
+
+		// Failure
 		return(false);
 	}
 
 
 
 
-/////////
+//////////
 //
-// DAS -- Decimal adjust al after subtraction
+// Called to indicate this line's output opcode has the REPE/REPZ prefix
 //
 //////
-	bool ilsa_pass3_das(SLine* line, SComp* comp)
+	bool iilsa_lineData_repe_z(SLine* line)
 	{
+		SLsaLineData* lld;
+
+
+		// Grab our pointer
+		lld = (SLsaLineData*)line->data;
+
+		// See if it's already set
+		if (!lld->lRepe_z)
+		{
+			// Set the flag
+			lld->lRepe_z = true;
+
+			// Indicate success
+			return(true);
+		}
+
+		// Failure
 		return(false);
 	}
 
 
 
 
-/////////
+//////////
 //
-// DEC r32 -- Decrement r32 by 1
+// Called to indicate this line's output opcode has the REPNE/REPNZ prefix
 //
 //////
-	bool ilsa_pass3_dec(SLine* line, SComp* comp)
+	bool iilsa_lineData_repne_nz(SLine* line)
 	{
+		SLsaLineData* lld;
+
+
+		// Grab our pointer
+		lld = (SLsaLineData*)line->data;
+
+		// See if it's already set
+		if (!lld->lRepne_nz)
+		{
+			// Set the flag
+			lld->lRepne_nz = true;
+
+			// Indicate success
+			return(true);
+		}
+
+		// Failure
 		return(false);
 	}
 
 
 
 
-/////////
+//////////
 //
-// DIV r/m32 -- Unsigned divide edx:eax by r/m32, quotient in eax, remainder in edx
-//
-//////
-	bool ilsa_pass3_div(SLine* line, SComp* comp)
-	{
-		return(false);
-	}
-
-
-
-
-/////////
-//
-// EMMS -- Empty the MMX state
+// Called to append an opcode byte to the line
 //
 //////
-	bool ilsa_pass3_emms(SLine* line, SComp* comp)
+	bool iilsa_lineData_addOpcodeByte(SLine* line, u8 opcodeByte)
 	{
-		return(false);
-	}
+		SLsaLineData* lld;
 
 
+		// Grab our pointer
+		lld = (SLsaLineData*)line->data;
+		if (!lld->generatedOpcodeBytes._data)
+			lld->generatedOpcodeBytes.data_u8 = &lld->opcode_bytes[0];
 
+		// Is there room?
+		if (lld->generatedOpcodeBytes.length + 1 <= sizeof(lld->opcode_bytes))
+		{
+			// Store the opcode byte
+			lld->generatedOpcodeBytes.data_u8[lld->generatedOpcodeBytes.length] = opcodeByte;
 
-/////////
-//
-// ENTER imm16,imm8 -- Create a stack frame, or nested stack frame
-//
-//////
-	bool ilsa_pass3_enter(SLine* line, SComp* comp)
-	{
+			// Increase our length for it
+			++lld->generatedOpcodeBytes.length;
+
+			// Indicate success
+			return(true);
+		}
+
+		// Opcode will be too long
 		return(false);
 	}

@@ -93,7 +93,7 @@
 // CALL m16:32 -- Call far, absolute indirect address in m16:32
 //
 //////
-	bool ilsa_pass3_call(SLine* line)
+	bool ilsa_pass3_call(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -106,7 +106,7 @@
 // CBW -- Sign-extend al to ax
 //
 //////
-	bool ilsa_pass3_cbw(SLine* line)
+	bool ilsa_pass3_cbw(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -119,7 +119,7 @@
 // CWDE -- Sign-extend ax to eax
 //
 //////
-	bool ilsa_pass3_cwde(SLine* line)
+	bool ilsa_pass3_cwde(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -132,7 +132,7 @@
 // CLC -- Clear carry
 //
 //////
-	bool ilsa_pass3_clc(SLine* line)
+	bool ilsa_pass3_clc(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -145,7 +145,7 @@
 // CLD -- Clear direction
 //
 //////
-	bool ilsa_pass3_cld(SLine* line)
+	bool ilsa_pass3_cld(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -158,7 +158,7 @@
 // CLI -- Clear interrupt
 //
 //////
-	bool ilsa_pass3_cli(SLine* line)
+	bool ilsa_pass3_cli(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -171,7 +171,7 @@
 // CLTS -- Clear task-switched flag in CR0
 //
 //////
-	bool ilsa_pass3_clts(SLine* line)
+	bool ilsa_pass3_clts(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -184,7 +184,7 @@
 // CMOVcc r32,rm32 -- Move if cc flag condition is true
 //
 //////
-	bool ilsa_pass3_cmovcc(SLine* line)
+	bool ilsa_pass3_cmovcc(SLine* line, SComp* comp)
 	{
 		switch (line->firstComp->iCode)
 		{
@@ -285,7 +285,7 @@
 // CMP al,imm8 -- imm8  al
 //
 //////
-	bool ilsa_pass3_cmp(SLine* line)
+	bool ilsa_pass3_cmp(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -298,7 +298,7 @@
 // CMPSB -- Compare byte in ds:[esi] to es:[edi]
 //
 //////
-	bool ilsa_pass3_cmpsb(SLine* line)
+	bool ilsa_pass3_cmpsb(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -311,7 +311,7 @@
 // CMPSW -- Compare word in ds:[esi] to es:[edi]
 //
 //////
-	bool ilsa_pass3_cmpsw(SLine* line)
+	bool ilsa_pass3_cmpsw(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -324,7 +324,7 @@
 // CMPSD -- Compare dword in ds:[esi] to es:[edi]
 //
 //////
-	bool ilsa_pass3_cmpsd(SLine* line)
+	bool ilsa_pass3_cmpsd(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -337,7 +337,7 @@
 // CMPXCHG r/m32,r32 -- Compare eax with r/m16, if equal set zero and load r32 into r/m32, if not equal clear zero and load r/m32 into eax
 //
 //////
-	bool ilsa_pass3_cmpxchg(SLine* line)
+	bool ilsa_pass3_cmpxchg(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -350,7 +350,7 @@
 // CMPXCHG8B m64 -- Compare edx:eax with m64, if equal set zero and load ECX:EBX into m64, if not equal clear zero and load m64 into edx:eax
 //
 //////
-	bool ilsa_pass3_cmpxchg8b(SLine* line)
+	bool ilsa_pass3_cmpxchg8b(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -363,7 +363,7 @@
 // CPUID -- Based on EAX, load processor information into registers
 //
 //////
-	bool ilsa_pass3_cpuid(SLine* line)
+	bool ilsa_pass3_cpuid(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -376,7 +376,7 @@
 // CDW -- Sign-extend ax into dx:ax
 //
 //////
-	bool ilsa_pass3_cdw(SLine* line)
+	bool ilsa_pass3_cdw(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -389,7 +389,7 @@
 // CDQ -- Sign-extend eax into edx:eax
 //
 //////
-	bool ilsa_pass3_cdq(SLine* line)
+	bool ilsa_pass3_cdq(SLine* line, SComp* comp)
 	{
 		return(false);
 	}

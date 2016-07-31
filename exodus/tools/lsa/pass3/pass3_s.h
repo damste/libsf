@@ -93,7 +93,7 @@
 // SAHF -- Store ah into flags
 //
 //////
-	bool ilsa_pass3_sahf(SLine* line)
+	bool ilsa_pass3_sahf(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -106,7 +106,7 @@
 // SAR r/m32,imm8 -- Signed divide r/m32 by imm8 times
 //
 //////
-	bool ilsa_pass3_sar(SLine* line)
+	bool ilsa_pass3_sar(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -119,7 +119,7 @@
 // SHL r/m32,imm8 -- Shift left r/m32 imm8 times
 //
 //////
-	bool ilsa_pass3_shl(SLine* line)
+	bool ilsa_pass3_shl(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -132,7 +132,7 @@
 // SHR r/m32,imm8 -- Shift right r/m32 imm8 times
 //
 //////
-	bool ilsa_pass3_shr(SLine* line)
+	bool ilsa_pass3_shr(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -145,7 +145,7 @@
 // SBB r32,r/m32 -- r/m32 from r32
 //
 //////
-	bool ilsa_pass3_sbb(SLine* line)
+	bool ilsa_pass3_sbb(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -158,7 +158,7 @@
 // SCAS m32 -- Compare eax with dword in es:[e/di]
 //
 //////
-	bool ilsa_pass3_scas(SLine* line)
+	bool ilsa_pass3_scas(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -171,7 +171,7 @@
 // SCASB -- Shorthand for SCAS m8
 //
 //////
-	bool ilsa_pass3_scasb(SLine* line)
+	bool ilsa_pass3_scasb(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -184,7 +184,7 @@
 // SCASW -- Shorthand for SCAS m16
 //
 //////
-	bool ilsa_pass3_scasw(SLine* line)
+	bool ilsa_pass3_scasw(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -197,7 +197,7 @@
 // SCASD -- Shorthand for SCAS m32
 //
 //////
-	bool ilsa_pass3_scasd(SLine* line)
+	bool ilsa_pass3_scasd(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -210,7 +210,7 @@
 // SETcc r/m8 -- Set byte if cc condition is met
 //
 //////
-	bool ilsa_pass3_setcc(SLine* line)
+	bool ilsa_pass3_setcc(SLine* line, SComp* comp)
 	{
 		switch (line->firstComp->iCode)
 		{
@@ -311,7 +311,7 @@
 // SGDT m48 -- Store GDTR to m48
 //
 //////
-	bool ilsa_pass3_sgdt(SLine* line)
+	bool ilsa_pass3_sgdt(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -324,7 +324,7 @@
 // SIDT m48 -- Store IDTR to m48
 //
 //////
-	bool ilsa_pass3_sidt(SLine* line)
+	bool ilsa_pass3_sidt(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -337,7 +337,7 @@
 // SLDT r/m16 -- Store LDTR to r/m16
 //
 //////
-	bool ilsa_pass3_sldt(SLine* line)
+	bool ilsa_pass3_sldt(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -350,7 +350,7 @@
 // SHLD r/m32,r32,cl -- Shift r/m32 left cl places, shifting in bits from r32
 //
 //////
-	bool ilsa_pass3_shld(SLine* line)
+	bool ilsa_pass3_shld(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -363,7 +363,7 @@
 // SHRD r/m32,r32,cl -- Shift r/m32 right cl places, shifting in bits from r32
 //
 //////
-	bool ilsa_pass3_shrd(SLine* line)
+	bool ilsa_pass3_shrd(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -376,7 +376,7 @@
 // SMSW r32/m16 -- Store machine status word to r32/m16
 //
 //////
-	bool ilsa_pass3_smsw(SLine* line)
+	bool ilsa_pass3_smsw(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -389,7 +389,7 @@
 // STC -- Set carry
 //
 //////
-	bool ilsa_pass3_stc(SLine* line)
+	bool ilsa_pass3_stc(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -402,7 +402,7 @@
 // STD -- Set direction
 //
 //////
-	bool ilsa_pass3_std(SLine* line)
+	bool ilsa_pass3_std(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -415,7 +415,7 @@
 // STI -- Set interrupt
 //
 //////
-	bool ilsa_pass3_sti(SLine* line)
+	bool ilsa_pass3_sti(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -428,7 +428,7 @@
 // STOS m32 -- Store eax into es:[e/di]
 //
 //////
-	bool ilsa_pass3_stos(SLine* line)
+	bool ilsa_pass3_stos(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -441,7 +441,7 @@
 // STOSB -- Shorthand for STOS m8
 //
 //////
-	bool ilsa_pass3_stosb(SLine* line)
+	bool ilsa_pass3_stosb(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -454,7 +454,7 @@
 // STOSW -- Shorthand for STOS m16
 //
 //////
-	bool ilsa_pass3_stosw(SLine* line)
+	bool ilsa_pass3_stosw(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -467,7 +467,7 @@
 // STOSD -- Shorthand for STOS m32
 //
 //////
-	bool ilsa_pass3_stosd(SLine* line)
+	bool ilsa_pass3_stosd(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -480,7 +480,7 @@
 // STR r/m16 -- Stores segment selector from TR in r/m16
 //
 //////
-	bool ilsa_pass3_str(SLine* line)
+	bool ilsa_pass3_str(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -493,7 +493,7 @@
 // SUB r32,r/m32 -- r/m32 from r32
 //
 //////
-	bool ilsa_pass3_sub(SLine* line)
+	bool ilsa_pass3_sub(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -506,7 +506,7 @@
 // SYSENTER -- Fast system entry
 //
 //////
-	bool ilsa_pass3_sysenter(SLine* line)
+	bool ilsa_pass3_sysenter(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -519,7 +519,7 @@
 // SYSEXIT -- Fast system exit
 //
 //////
-	bool ilsa_pass3_sysexit(SLine* line)
+	bool ilsa_pass3_sysexit(SLine* line, SComp* comp)
 	{
 		return(false);
 	}

@@ -93,7 +93,7 @@
 // MOV mm/m64,mmN -- Move mmN to mmN/m64
 //
 //////
-	bool ilsa_pass3_mov(SLine* line)
+	bool ilsa_pass3_mov(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -106,7 +106,7 @@
 // MOVS m32,m32 -- Move dword from ds:[e/si] to es:[e/di]
 //
 //////
-	bool ilsa_pass3_movs(SLine* line)
+	bool ilsa_pass3_movs(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -119,7 +119,7 @@
 // MOVSB -- Shorthand for MOVS m8,m8
 //
 //////
-	bool ilsa_pass3_movsb(SLine* line)
+	bool ilsa_pass3_movsb(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -132,7 +132,7 @@
 // MOVSW -- Shorthand for MOVS m16,m16
 //
 //////
-	bool ilsa_pass3_movsw(SLine* line)
+	bool ilsa_pass3_movsw(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -145,7 +145,7 @@
 // MOVSD -- Shorthand for MOVS m32,m32
 //
 //////
-	bool ilsa_pass3_movsd(SLine* line)
+	bool ilsa_pass3_movsd(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -158,7 +158,7 @@
 // MOVSX r32,r/m16 -- Sign-extend word to dword
 //
 //////
-	bool ilsa_pass3_movsx(SLine* line)
+	bool ilsa_pass3_movsx(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -171,7 +171,7 @@
 // MOVZX r32,r/m16 -- Zero-extend word to dword
 //
 //////
-	bool ilsa_pass3_movzx(SLine* line)
+	bool ilsa_pass3_movzx(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -184,7 +184,7 @@
 // MUL r/m32 -- edx:eax = eax * r/m32
 //
 //////
-	bool ilsa_pass3_mul(SLine* line)
+	bool ilsa_pass3_mul(SLine* line, SComp* comp)
 	{
 		return(false);
 	}

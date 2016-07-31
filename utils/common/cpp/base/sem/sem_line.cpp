@@ -936,7 +936,7 @@ debug_break;
 			//////////
 			// Find out how long the line needs to be
 			//////
-				for (comp = line->firstComp, compLast = NULL, lnLength = 0; comp; compLast = comp, comp = iComps_Nth(comp, 1, false))
+				for (comp = line->firstComp, compLast = NULL, lnLength = 0; comp; compLast = comp, comp = iComps_Nth_lineOnly(comp))
 				{
 					// Whitespaces
 					if (comp->start >= 0 && compLast && compLast->text._data)
@@ -961,7 +961,7 @@ debug_break;
 			//////////
 			// Populate the component content
 			//////
-				for (comp = line->firstComp, lnEndLast = 0, lnLength = 0; comp; comp = iComps_Nth(comp, 1, false))
+				for (comp = line->firstComp, lnEndLast = 0, lnLength = 0; comp; comp = iComps_Nth_lineOnly(comp))
 				{
 					// Whitespaces
 					if (comp->start >= 0 && lnEndLast != 0)

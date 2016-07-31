@@ -93,7 +93,7 @@ struct SPass3Func
 	union
 	{
 		uptr	_func;
-		bool	(*func)		(SLine* line);
+		bool	(*func)		(SLine* line, SComp* comp);
 	};
 };
 

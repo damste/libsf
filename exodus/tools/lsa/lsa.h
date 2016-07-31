@@ -156,6 +156,8 @@
 #include "lsa_pass3.h"
 #include "lsa_globals.h"
 
+#include "lsa_linedata.cpp"
+
 #include "pass0.cpp"
 #include "pass1.cpp"
 #include "pass2.cpp"

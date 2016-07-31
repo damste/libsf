@@ -93,13 +93,19 @@
 // BOUND r16,m16&16 -- Check if r16 (array index) is within bounds specified by m16&16
 //
 //////
-	bool ilsa_pass3_bound(SLine* line)
+	bool ilsa_pass3_bound(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
 
-	// BSF r16,r/m16 -- Bit scan forward on r/m16
-	bool ilsa_pass3_bsf(SLine* line)
+
+
+/////////
+//
+// BSF r16,r/m16 -- Bit scan forward on r/m16
+//
+//////
+	bool ilsa_pass3_bsf(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -112,7 +118,7 @@
 // BSR r16,r/m16 -- Bit scan reverse on r/m16
 //
 //////
-	bool ilsa_pass3_bsr(SLine* line)
+	bool ilsa_pass3_bsr(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -125,7 +131,7 @@
 // BSWAP r32 -- Swap endian on 32-bit register
 //
 //////
-	bool ilsa_pass3_bswap(SLine* line)
+	bool ilsa_pass3_bswap(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -138,7 +144,7 @@
 // BT r/m32,imm8 -- Store selected bit in carry
 //
 //////
-	bool ilsa_pass3_bt(SLine* line)
+	bool ilsa_pass3_bt(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -151,7 +157,7 @@
 // BTC r/m16,r16 -- Store selected bit in carry, and complement
 //
 //////
-	bool ilsa_pass3_btc(SLine* line)
+	bool ilsa_pass3_btc(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -164,7 +170,7 @@
 // BTR r/m32,imm8 -- Store selected bit in carry, and clear
 //
 //////
-	bool ilsa_pass3_btr(SLine* line)
+	bool ilsa_pass3_btr(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -177,7 +183,7 @@
 // BTS r/m32,imm8 -- Store selected bit in carry, and set
 //
 //////
-	bool ilsa_pass3_bts(SLine* line)
+	bool ilsa_pass3_bts(SLine* line, SComp* comp)
 	{
 		return(false);
 	}

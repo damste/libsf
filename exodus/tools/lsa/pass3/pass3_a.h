@@ -93,9 +93,10 @@
 // AAA -- ASCII adjust al after addition
 //
 //////
-	bool ilsa_pass3_aaa(SLine* line)
+	bool ilsa_pass3_aaa(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Simple opcode
+		return(ilsa_pass3_common_addOpcodeByte(line, comp, 0x37));
 	}
 
 
@@ -106,9 +107,9 @@
 // AAD -- ASCII adjust ax before division
 //
 //////
-	bool ilsa_pass3_aad(SLine* line)
+	bool ilsa_pass3_aad(SLine* line, SComp* comp)
 	{
-		return(false);
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, comp, 0xd5, 0xa));
 	}
 
 
@@ -119,7 +120,7 @@
 // AAD2 -- ASCII adjust ax before division to base imm8
 //
 //////
-	bool ilsa_pass3_aad2(SLine* line)
+	bool ilsa_pass3_aad2(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -132,9 +133,9 @@
 // AAM -- ASCII adjust ax after multiply
 //
 //////
-	bool ilsa_pass3_aam(SLine* line)
+	bool ilsa_pass3_aam(SLine* line, SComp* comp)
 	{
-		return(false);
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0xd4, 0xa));
 	}
 
 
@@ -145,7 +146,7 @@
 // AAM2 -- ASCII adjust ax after multiply to base imm8
 //
 //////
-	bool ilsa_pass3_aam2(SLine* line)
+	bool ilsa_pass3_aam2(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -158,7 +159,7 @@
 // AAS -- ASCII adjust al after subtraction
 //
 //////
-	bool ilsa_pass3_aas(SLine* line)
+	bool ilsa_pass3_aas(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -171,7 +172,7 @@
 // ADC -- Add with carry r/m32 to r32
 //
 //////
-	bool ilsa_pass3_adc(SLine* line)
+	bool ilsa_pass3_adc(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -184,7 +185,7 @@
 // ADD al,imm8 -- Add imm8 to al
 //
 //////
-	bool ilsa_pass3_add(SLine* line)
+	bool ilsa_pass3_add(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -197,7 +198,7 @@
 // AND al,imm8 -- imm8  al
 //
 //////
-	bool ilsa_pass3_and(SLine* line)
+	bool ilsa_pass3_and(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -210,7 +211,7 @@
 // APRL r/m16,r16 -- Adjust RPL of r/m16 to not less than RPL of r16
 //
 //////
-	bool ilsa_pass3_aprl(SLine* line)
+	bool ilsa_pass3_aprl(SLine* line, SComp* comp)
 	{
 		return(false);
 	}

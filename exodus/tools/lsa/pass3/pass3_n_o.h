@@ -93,7 +93,7 @@
 // NEG r/m32 -- Two's complement r/m32
 //
 //////
-	bool ilsa_pass3_neg(SLine* line)
+	bool ilsa_pass3_neg(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -106,7 +106,7 @@
 // NOP -- No operation
 //
 //////
-	bool ilsa_pass3_nop(SLine* line)
+	bool ilsa_pass3_nop(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -119,7 +119,7 @@
 // NOT r/m32 -- Logical NOT of r/m32
 //
 //////
-	bool ilsa_pass3_not(SLine* line)
+	bool ilsa_pass3_not(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -132,7 +132,7 @@
 // OR r32,r/m32 -- r/m32 to r32
 //
 //////
-	bool ilsa_pass3_or(SLine* line)
+	bool ilsa_pass3_or(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -145,7 +145,7 @@
 // OUT dx,eax -- Output eax to I/O port dx
 //
 //////
-	bool ilsa_pass3_out(SLine* line)
+	bool ilsa_pass3_out(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -158,7 +158,7 @@
 // OUTS dx,m32 -- Output dword at ds:[e/si] to I/O port dx
 //
 //////
-	bool ilsa_pass3_outs(SLine* line)
+	bool ilsa_pass3_outs(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -171,7 +171,7 @@
 // OUTSB -- Shorthand for OUTS dx,m8
 //
 //////
-	bool ilsa_pass3_outsb(SLine* line)
+	bool ilsa_pass3_outsb(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -184,7 +184,7 @@
 // OUTSW -- Shorthand for OUTS dx,m16
 //
 //////
-	bool ilsa_pass3_outsw(SLine* line)
+	bool ilsa_pass3_outsw(SLine* line, SComp* comp)
 	{
 		return(false);
 	}
@@ -197,7 +197,7 @@
 // OUTSD -- Shorthand for OUTS dx,m32
 //
 //////
-	bool ilsa_pass3_outsd(SLine* line)
+	bool ilsa_pass3_outsd(SLine* line, SComp* comp)
 	{
 		return(false);
 	}

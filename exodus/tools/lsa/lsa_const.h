@@ -89,6 +89,7 @@
 	#define ilsa_is_warning(a)						(a & _LSA_STATUS_WARNING)
 	#define ilsa_is_error(a)						(a & _LSA_STATUS_ERROR)
 	#define ilsa_is_completed(a)					(a & _LSA_STATUS_COMPLETED)
+	#define ilsa_markCompCompleted(c)				ilsa_status_comp_add(c, _LSA_STATUS_COMPLETED)
 	#define ilsa_markLineCompleted(l)				ilsa_status_line_add(l, _LSA_STATUS_COMPLETED, true)
 
 
