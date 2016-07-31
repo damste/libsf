@@ -236,6 +236,67 @@
 
 
 
+//////////
+//
+// Called to extract an imm8 parameter
+//
+//////
+	bool ilsa_pass3_extract_imm8(SComp* comp, u8* imm8)
+	{
+		union {
+			s32 lnValue;
+			u8	_imm8;
+		};
+
+
+		// Make sure our environment is sane
+		if (comp)
+		{
+			// Entered to allow structured exit
+			switch (comp->iCode)
+			{
+				case _ICODE_NUMERIC:
+					// Grab the value
+					lnValue = iComps_getAs_s32(comp);
+					break;
+
+				case _ICODE_NUMERICALPHA:
+					// It's likely 0xfedcba9876543210, 0o76543210, 0y10
+					lnValue = iComps_getAs_u32_byBase(comp);
+					break;
+
+				case _ICODE_ALPHA:
+				case _ICODE_ALPHANUMERIC:
+					// It's likely a symbol
+					break;
+
+				default:
+					// It's likely an expression
+// TODO:  working here
+					break;
+			}
+
+			// Make sure our value is correct
+			if (lnValue <= 255 || lnValue >= -128)
+			{
+				// Store the value
+				*imm8 = _imm8;
+
+				// Indicate success
+				return(true);
+
+			} else {
+				// The value is out of range
+// TODO:  Add error here
+			}
+		}
+
+		// If we get here, failure
+		return(false);
+	}
+
+
+
 
 //////////
 //

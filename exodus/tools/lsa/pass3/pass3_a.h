@@ -122,6 +122,20 @@
 //////
 	bool ilsa_pass3_aad2(SLine* line, SComp* comp)
 	{
+		u8 imm8;
+
+
+		// Grab the following parameter
+		if (ilsa_pass3_extract_imm8(iComps_Nth_lineOnly(comp), &imm8))
+		{
+			// Add this instruction
+			return(ilsa_pass3_common_addOpcodeTwoByte(line, comp, 0xd5, imm8));
+
+			// Indicate success
+			return(true);
+		}
+
+		// Failure at some point
 		return(false);
 	}
 

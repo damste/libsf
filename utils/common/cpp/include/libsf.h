@@ -1283,6 +1283,7 @@
 	u32						iComps_combineN								(SComp* comp, u32 tnCount, s32 tnNew_iCode, u32 tnNew_iCat, SBgra* newColor, SComp** compMigrateRefs = NULL);
 	u32						iComps_combine_adjacent						(SComp* compLeftmost, s32 tniCode, u32 tniCat, SBgra* tnColor, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount);
 	u32						iComps_combine_adjacentAlphanumeric			(SLine* line);
+	u32						iComps_combine_adjacentNumericalpha			(SLine* line);
 	u32						iComps_combine_adjacentNumeric				(SLine* line);
 	u32						iComps_combine_adjacentLeadingPipesigns		(SLine* line);
 	u32						iComps_combineAll_between					(SLine* line, s32 tniCodeNeedle,		s32 tniCodeCombined,											SBgra* syntaxHighlightColor);
@@ -1304,6 +1305,12 @@
 	bool					iiComps_areCompsAdjacent					(SComp* compLeft, SComp* compRight);
 	s32						iiComps_get_charactersBetween				(SComp* compLeft, SComp* compRight);
 	s32						iComps_getAs_s32							(SComp* comp);
+	u32						iComps_getAs_u32_byBase						(SComp* comp);
+	u32						iiComps_getAs_u32_base16					(s8* text, s32 length, bool tlAllDigitsMustBeValid);
+	u32						iiComps_getAs_u32_base8						(s8* text, s32 length, bool tlAllDigitsMustBeValid);
+	u32						iiComps_getAs_u32_base4						(s8* text, s32 length, bool tlAllDigitsMustBeValid);
+	u32						iiComps_getAs_u32_base2						(s8* text, s32 length, bool tlAllDigitsMustBeValid);
+	u32						iiomps_getAs_u32_baseCommon					(s8* text, s32 length, bool tlAllDigitsMustBeValid, u32 shiftBits, s8 maxNumeric, s8 maxAlpha);
 	s64						iComps_getAs_s64							(SComp* comp);
 	f64						iComps_getAs_f64							(SComp* comp);
 	s32						iiComps_getAs_s32							(SComp* comp);

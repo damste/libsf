@@ -1698,6 +1698,61 @@
 					}
 				}
 
+				// Move to the next component
+				comp = comp->ll.nextComp;
+			}
+		}
+
+		// Indicate how many we combined
+		return(lnCombined);
+	}
+
+
+
+
+//////////
+//
+// Called to combine numericalpha sequences, like 0xabc
+//
+//////
+	u32 iComps_combine_adjacentNumericalpha(SLine* line)
+	{
+		u32		lnCombined;
+		SComp*	comp;
+		SComp*	compNext;
+
+
+		// Make sure our environment is sane
+		lnCombined = 0;
+		if (line)
+		{
+			// Begin at the beginning and check across all components
+			comp = line->firstComp;
+			while (comp)
+			{
+				// Grab the next component
+				compNext = comp->ll.nextComp;
+				if (compNext)
+				{
+					// Is this numeric?
+					if (comp->iCode == _ICODE_NUMERIC)
+					{
+						// Combine so long as the following are immediately adjacent, and are one of underscore, alpha, numeric, alphanumeric
+						while (	(compNext = comp->ll.nextComp)
+								&& iiComps_get_charactersBetween(comp, compNext) == 0
+								&& (	compNext->iCode == _ICODE_UNDERSCORE
+									||	compNext->iCode == _ICODE_ALPHA
+									||	compNext->iCode == _ICODE_NUMERIC
+									||	compNext->iCode == _ICODE_ALPHANUMERIC
+								)
+							)
+						{
+							// Combine this comp and the next one into one
+							iComps_combineN(comp, 2, _ICODE_NUMERICALPHA, comp->iCat, comp->color);
+							++lnCombined;
+						}
+					}
+				}
 
 				// Move to the next component
 				comp = comp->ll.nextComp;
@@ -2490,6 +2545,7 @@ debug_break;
 			// alphanumeric.  For numeric it looks for +-999.99 completely adjacent, and combines into one.
 			//////
 				iComps_combine_adjacentAlphanumeric(line);
+				iComps_combine_adjacentNumericalpha(line);
 				iComps_combine_adjacentNumeric(line);
 
 		}
@@ -2867,6 +2923,7 @@ debug_break;
 		s8 buffer[32];
 
 
+		// Make sure our environment is sane
 		if (comp && comp->line && comp->line->sourceCode._data && comp->line->sourceCode.length > 0)
 		{
 			// Copy to a buffer
@@ -2877,6 +2934,166 @@ debug_break;
 		
 		// Component is not valid
 		return(0);
+	}
+
+
+
+
+//////////
+//
+// Called to convert the indicated component to its base equivalent
+//
+// Requires one of these formats:
+//
+//		Indicator precedes:
+//			0x1234567890abcdef		-- hexadecimal
+//			0o12345670				-- octal
+//			0y10					-- binary
+//
+//		Or it can follow:
+//			1234567890abcdefh		-- hexadecimal
+//			12345670o				-- octal
+//			10y						-- binary
+//
+//////
+	u32 iComps_getAs_u32_byBase(SComp* comp)
+	{
+		SDatum* text;
+
+
+		// Make sure our environment is sane
+		// Note:  We don't do a test to validate the comp->iCode, but rather process the raw content as it is
+		if (comp && comp->line && comp->line->sourceCode._data && comp->line->sourceCode.length >= 2)
+		{
+			// Grab the datum
+			text = &comp->line->sourceCode;
+
+			// We expect a prefix of the base indication
+			if (text->data_s8[0] == '0' && text->length >= 3)
+			{
+				// See what the second character is
+				switch (text->data_s8[1])
+				{
+					case 'x':
+					case 'X':
+						// Hexadecimal
+						return(iiComps_getAs_u32_base16(text->data_s8 + 2, text->length - 2, false));
+
+					case 'o':
+					case 'O':
+						// Octal
+						return(iiComps_getAs_u32_base8(text->data_s8 + 2, text->length - 2, false));
+
+					case 'g':	// Genetic
+					case 'G':
+					case 'q':	// Quaternary
+					case 'Q':
+						// Quaternary
+						return(iiComps_getAs_u32_base4(text->data_s8 + 2, text->length - 2, false));
+
+					case 'y':
+					case 'Y':
+						// Binary
+						return(iiComps_getAs_u32_base2(text->data_s8 + 2, text->length - 2, false));
+				}
+
+			} else {
+				// The last character may indicate what it is
+				switch (text->data_s8[text->length - 1])
+				{
+					case 'h':
+					case 'H':
+						// Hexadecimal
+						return(iiComps_getAs_u32_base16(text->data_s8, text->length - 1, false));
+
+					case 'o':
+					case 'O':
+						// Octal
+						return(iiComps_getAs_u32_base8(text->data_s8, text->length - 1, false));
+
+					case 'g':	// Genetic
+					case 'G':
+					case 'q':	// Quaternary
+					case 'Q':
+						// Quaternary
+						return(iiComps_getAs_u32_base4(text->data_s8, text->length - 1, false));
+
+					case 'y':
+					case 'Y':
+						// Binary
+						return(iiComps_getAs_u32_base2(text->data_s8, text->length - 1, false));
+				}
+			}
+
+			// If we get here, it wasn't found
+		}
+
+		// Component is not valid
+		return(0);
+	}
+
+	u32 iiComps_getAs_u32_base16(s8* text, s32 length, bool tlAllDigitsMustBeValid)
+	{
+		return(iiomps_getAs_u32_baseCommon(text, length, tlAllDigitsMustBeValid, 4, '9', 'a'));
+	}
+
+	u32 iiComps_getAs_u32_base8(s8* text, s32 length, bool tlAllDigitsMustBeValid)
+	{
+		return(iiomps_getAs_u32_baseCommon(text, length, tlAllDigitsMustBeValid, 3, '7', 0));
+	}
+
+	u32 iiComps_getAs_u32_base4(s8* text, s32 length, bool tlAllDigitsMustBeValid)
+	{
+		return(iiomps_getAs_u32_baseCommon(text, length, tlAllDigitsMustBeValid, 2, '3', 0));
+	}
+
+	u32 iiComps_getAs_u32_base2(s8* text, s32 length, bool tlAllDigitsMustBeValid)
+	{
+		return(iiomps_getAs_u32_baseCommon(text, length, tlAllDigitsMustBeValid, 1, '1', 0));
+	}
+
+	u32 iiomps_getAs_u32_baseCommon(s8* text, s32 length, bool tlAllDigitsMustBeValid, u32 shiftBits, s8 maxNumeric, s8 maxAlpha)
+	{
+		s8	c;
+		s32	lnI;
+		u32	lnValue;
+
+
+		// Check for validity
+		lnValue = 0;
+		if (length <= 8 || !tlAllDigitsMustBeValid)
+		{
+			// Iterate through each character
+			for (lnI = 0; lnI < length && lnI < 8; lnI++)
+			{
+				// Make room for this digit
+				lnValue <<= shiftBits;
+
+				// What is the digit?
+				c = text[lnI];
+				if (c >= '0' && c <= maxNumeric)
+				{
+					// It's a regular digit
+					lnValue |= (u32)(c - '0');
+
+				} else if (maxAlpha >= 'a' && (c |= ((c >= 'A' && c <= 'Z') ? ~0x20 : 0), c >= 'a') && c <= maxAlpha) {
+					// It's a hex digit
+					lnValue |= (u32)(c - 'a' + 10);
+
+				} else {
+					if (tlAllDigitsMustBeValid)
+					{
+						// We found an invalid character, so return 0
+						return(0);
+					}
+					// If we get here, return whatever we have
+					break;
+				}
+			}
+		}
+
+		// Indicate our value
+		return(lnValue);
 	}
 
 	s64 iComps_getAs_s64(SComp* comp)
