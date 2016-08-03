@@ -2956,10 +2956,14 @@ debug_break;
 //			10y						-- binary
 //
 //////
-	u32 iComps_getAs_u32_byBase(SComp* comp)
+	u32 iComps_getAs_u32_byBase(SComp* comp, bool* tlValidOut)
 	{
 		SDatum* text;
 
+
+		// Initially assume success
+		if (tlValidOut)
+			*tlValidOut = true;
 
 		// Make sure our environment is sane
 		// Note:  We don't do a test to validate the comp->iCode, but rather process the raw content as it is
@@ -3027,6 +3031,10 @@ debug_break;
 
 			// If we get here, it wasn't found
 		}
+
+		// Indicate failure
+		if (tlValidOut)
+			*tlValidOut = false;
 
 		// Component is not valid
 		return(0);
@@ -3513,6 +3521,224 @@ debug_break;
 			case _ICODE_SINGLE_QUOTED_TEXT:			return("quote");
 			default:								return(NULL);
 		}
+	}
+
+
+
+
+//////////
+//
+// Called to parse the indicated expression, and create an SNode tree outlining its
+// parsing, going S at each point when there is a child expression, with SW and SE
+// emanating out for the values related to the operand.
+//
+//////
+	SNode* iComps_parseExpression(SComp* comp)
+	{
+// TODO:  working here
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Called to retrieve the constant exprsesion as a signed value
+//
+//////
+	s8 iComps_computeExpressionAs_s8(SNode* node, bool tlRetire, bool* tlValid)
+	{
+		bool	llValid;
+		union {
+			s64 lnValue;
+			s8	lnValue_s8;
+		};
+
+
+		// Obtain the full value
+		lnValue = iComps_computeExpressionAs_s64(node, tlRetire, &llValid);
+		if (llValid && lnValue >= -128 && lnValue <= 127)
+		{
+			// Valid
+			if (*tlValid = true)
+				*tlValid = true;
+
+			// Indicate the value
+			return(lnValue_s8);
+		}
+
+		// Not valid
+		if (*tlValid)
+			*tlValid = false;
+
+		// Return zero
+		return(0);
+	}
+
+	s16 iComps_computeExpressionAs_s16(SNode* node, bool tlRetire, bool* tlValid)
+	{
+		bool	llValid;
+		union {
+			s64 lnValue;
+			s16	lnValue_s16;
+		};
+
+
+		// Obtain the full value
+		lnValue = iComps_computeExpressionAs_s64(node, tlRetire, &llValid);
+		if (llValid && lnValue >= -32768 && lnValue <= 32767)
+		{
+			// Valid
+			if (*tlValid = true)
+				*tlValid = true;
+
+			// Indicate the value
+			return(lnValue_s16);
+		}
+
+		// Not valid
+		if (*tlValid)
+			*tlValid = false;
+
+		// Return zero
+		return(0);
+	}
+
+	s32 iComps_computeExpressionAs_s32(SNode* node, bool tlRetire, bool* tlValid)
+	{
+		bool	llValid;
+		union {
+			s64 lnValue;
+			s32	lnValue_s32;
+		};
+
+
+		// Obtain the full value
+		lnValue = iComps_computeExpressionAs_s64(node, tlRetire, &llValid);
+		if (llValid && lnValue >= -2147483648 && lnValue <= 2147483647)
+		{
+			// Valid
+			if (*tlValid = true)
+				*tlValid = true;
+
+			// Indicate the value
+			return(lnValue_s32);
+		}
+
+		// Not valid
+		if (*tlValid)
+			*tlValid = false;
+
+		// Return zero
+		return(0);
+	}
+
+	s64 iComps_computeExpressionAs_s64(SNode* node, bool tlRetire, bool* tlValid)
+	{
+// TODO:  working here
+		return(0);
+	}
+
+
+
+
+//////////
+//
+// Called to retrieve the value as an unsigned value
+//
+//////
+	u8 iComps_computeExpressionAs_u8(SNode* node, bool tlRetire, bool* tlValid)
+	{
+		bool	llValid;
+		union {
+			u64 lnValue;
+			u8	lnValue_u8;
+		};
+
+
+		// Obtain the full value
+		lnValue = iComps_computeExpressionAs_u64(node, tlRetire, &llValid);
+		if (llValid && lnValue <= 0xff)
+		{
+			// Valid
+			if (*tlValid = true)
+				*tlValid = true;
+
+			// Indicate the value
+			return(lnValue_u8);
+		}
+
+		// Not valid
+		if (*tlValid)
+			*tlValid = false;
+
+		// Return zero
+		return(0);
+	}
+
+	u16 iComps_computeExpressionAs_u16(SNode* node, bool tlRetire, bool* tlValid)
+	{
+		bool	llValid;
+		union {
+			u64 lnValue;
+			u16	lnValue_u16;
+		};
+
+
+		// Obtain the full value
+		lnValue = iComps_computeExpressionAs_u64(node, tlRetire, &llValid);
+		if (llValid && lnValue <= 0xffff)
+		{
+			// Valid
+			if (*tlValid = true)
+				*tlValid = true;
+
+			// Indicate the value
+			return(lnValue_u16);
+		}
+
+		// Not valid
+		if (*tlValid)
+			*tlValid = false;
+
+		// Return zero
+		return(0);
+	}
+
+	u32 iComps_computeExpressionAs_u32(SNode* node, bool tlRetire, bool* tlValid)
+	{
+		bool	llValid;
+		union {
+			u64 lnValue;
+			u32	lnValue_u32;
+		};
+
+
+		// Obtain the full value
+		lnValue = iComps_computeExpressionAs_u64(node, tlRetire, &llValid);
+		if (llValid && lnValue <= 0xffffffff)
+		{
+			// Valid
+			if (*tlValid = true)
+				*tlValid = true;
+
+			// Indicate the value
+			return(lnValue_u32);
+		}
+
+		// Not valid
+		if (*tlValid)
+			*tlValid = false;
+
+		// Return zero
+		return(0);
+	}
+
+	u64 iComps_computeExpressionAs_u64(SNode* node, bool tlRetire, bool* tlValid)
+	{
+// TODO:  working here
+		return(0);
 	}
 
 

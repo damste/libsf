@@ -993,14 +993,14 @@
 
 		struct SNode
 		{
-			SNode*			n[_NODE_COUNT];									// Offshoot nodes
 			u32				uid;											// Unique ID for this node
+			SNode*			n[_NODE_COUNT];									// Offshoot nodes
 
-																			// Related info
+			// Related info
 			SComp*			comp;											// The component this node relates to
 			SSubInstr*		opData;											// When used as for processing ops
 
-																			// Extra/associated data
+			// Extra/associated data
 			void*			extraData;										// General purpose data
 			union {
 				uptr		_extraData_deleteFunc;							// Function to call when deleting
@@ -1305,7 +1305,7 @@
 	bool					iiComps_areCompsAdjacent					(SComp* compLeft, SComp* compRight);
 	s32						iiComps_get_charactersBetween				(SComp* compLeft, SComp* compRight);
 	s32						iComps_getAs_s32							(SComp* comp);
-	u32						iComps_getAs_u32_byBase						(SComp* comp);
+	u32						iComps_getAs_u32_byBase						(SComp* comp, bool* tlValidOut);
 	u32						iiComps_getAs_u32_base16					(s8* text, s32 length, bool tlAllDigitsMustBeValid);
 	u32						iiComps_getAs_u32_base8						(s8* text, s32 length, bool tlAllDigitsMustBeValid);
 	u32						iiComps_getAs_u32_base4						(s8* text, s32 length, bool tlAllDigitsMustBeValid);
@@ -1326,6 +1326,17 @@
 	#define					iiComps_isComment(iCode)					(iCode == _ICODE_COMMENT || iCode == _ICODE_LINE_COMMENT)
 	s8*						iComps_visualize							(SComp* comp, s32 tnCount, s8* outputBuffer, s32 tnBufferLength, bool tlUseDefaultCompSearcher, SAsciiCompSearcher* tsComps1, SAsciiCompSearcher* tsComps2);
 	s8*						iiComps_visualize_lookup_iCode				(s32 tniCode);
+
+	// Expression handling
+	SNode*					iComps_parseExpression						(SComp* comp);
+	s8						iComps_computeExpressionAs_s8				(SNode* node, bool tlRetire, bool* tlValid);
+	s16						iComps_computeExpressionAs_s16				(SNode* node, bool tlRetire, bool* tlValid);
+	s32						iComps_computeExpressionAs_s32				(SNode* node, bool tlRetire, bool* tlValid);
+	s64						iComps_computeExpressionAs_s64				(SNode* node, bool tlRetire, bool* tlValid);
+	u8						iComps_computeExpressionAs_u8				(SNode* node, bool tlRetire, bool* tlValid);
+	u16						iComps_computeExpressionAs_u16				(SNode* node, bool tlRetire, bool* tlValid);
+	u32						iComps_computeExpressionAs_u32				(SNode* node, bool tlRetire, bool* tlValid);
+	u64						iComps_computeExpressionAs_u64				(SNode* node, bool tlRetire, bool* tlValid);
 
 	u32						iBreakoutAsciiTextDataIntoLines_ScanLine	(s8* tcData, u32 tnMaxLength, u32* tnLength, u32* tnWhitespaces);
 	bool					iFindFirstOccurrenceOfAsciiCharacter		(s8* tcHaystack, u32 tnHaystackLength, s8 tcNeedle, u32* tnPosition);

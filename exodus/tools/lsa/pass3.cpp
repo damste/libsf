@@ -244,15 +244,17 @@
 //////
 	bool ilsa_pass3_extract_imm8(SComp* comp, u8* imm8)
 	{
+		bool		llValid;
+		s8			buffer[64];
+		SNode*		node;
 		union {
-			u32 lnValue;
-			u8	_imm8;
+			u32		lnValue;
+			u8		_imm8;
 		};
-		s8 buffer[64];
 
 
 		// Make sure our environment is sane
-		if (comp)
+		if (comp && comp->line)
 		{
 			// Entered to allow structured exit
 			switch (comp->iCode)
@@ -264,13 +266,31 @@
 
 				case _ICODE_NUMERICALPHA:
 					// It's likely 0xfedcba9876543210, 0o76543210, 0g3210, 0y10
-					lnValue = iComps_getAs_u32_byBase(comp);
+					lnValue = iComps_getAs_u32_byBase(comp, &llValid);
+					if (!llValid)
+					{
+						// Generate and report the error
+imm8_error:
+						sprintf(buffer, "Error %%d [%d,%d]: '%s' %%s",  comp->line->lineNumber, comp->start);
+						iilsa_error(_LSA_ERROR_IMMEDIATE_VALUE_ERROR, buffer, comp->line);
+						return(false);
+					}
 					break;
 
 				default:
 					// It's likely an expression
-debug_nop;
-// TODO:  add this
+					node = iComps_parseExpression(comp);
+					if (!node)
+						goto imm8_error;
+
+					// Compute the result
+					lnValue = iComps_computeExpressionAs_u32(node, true, &llValid);
+					if (!llValid)
+					{
+						sprintf(buffer, "Error %%d [%d,%d]: '%s' %%s",  comp->line->lineNumber, comp->start);
+						iilsa_error(_LSA_ERROR_IMMEDIATE_VALUE_NOT_CONSTANT, buffer, comp->line);
+						return(false);
+					}
 					break;
 			}
 
@@ -283,13 +303,13 @@ debug_nop;
 				// Indicate success
 				return(true);
 
-			} else {
-				// The value is out of range
-				// Generate and report the error
-				sprintf(buffer, "Error %%d [%d,%d]: '%s' %%s",  line->lineNumber, comp->start);
-				iilsa_error(_LSA_ERROR_IMMEDAITE_VALUE_OUT_OF_RANGE, buffer, line);
-
 			}
+
+			// If we get here, the value is out of range
+			// Generate and report the error
+			sprintf(buffer, "Error %%d [%d,%d]: '%s' %%s",  comp->line->lineNumber, comp->start);
+			iilsa_error(_LSA_ERROR_IMMEDIATE_VALUE_OUT_OF_RANGE, buffer, comp->line);
+			return(false);
 		}
 
 		// If we get here, failure

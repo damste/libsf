@@ -239,8 +239,16 @@
 					lcErrorText = cgc_lsa_error_token_name_already_exists;
 					break;
 
-				case _LSA_ERROR_IMMEDAITE_VALUE_OUT_OF_RANGE:
+				case _LSA_ERROR_IMMEDIATE_VALUE_OUT_OF_RANGE:
 					lcErrorText = cgc_lsa_error_immediate_value_out_of_range;
+					break;
+
+				case _LSA_ERROR_IMMEDIATE_VALUE_ERROR:
+					lcErrorText = cgc_lsa_error_immediate_value_error;
+					break;
+
+				case _LSA_ERROR_IMMEDIATE_VALUE_NOT_CONSTANT:
+					lcErrorText = cgc_lsa_error_immediate_value_not_constant;
 					break;
 
 				default:

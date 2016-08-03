@@ -343,7 +343,9 @@
 //////
 	cs32		_LSA_ERROR_BASE								= 5000;
 	cs32		_LSA_ERROR_TOKEN_NAME_ALREADY_EXISTS		= 1;
-	cs32		_LSA_ERROR_IMMEDAITE_VALUE_OUT_OF_RANGE		= 2;
+	cs32		_LSA_ERROR_IMMEDIATE_VALUE_OUT_OF_RANGE		= 2;
+	cs32		_LSA_ERROR_IMMEDIATE_VALUE_ERROR			= 3;
+	cs32		_LSA_ERROR_IMMEDIATE_VALUE_NOT_CONSTANT		= 4;
 
 
 //////////
@@ -368,3 +370,5 @@
 	cs8			cgc_lsa_error_opening_include_file[]			= "--Error[%d,%d]: error opening file [include \"%s\"]\n";
 	cs8			cgc_lsa_error_token_name_already_exists[]		= "token name already exists";
 	cs8			cgc_lsa_error_immediate_value_out_of_range[]	= "immediate value out of range";
+	cs8			cgc_lsa_error_immediate_value_error[]			= "immediate value error";
+	cs8			cgc_lsa_error_immediate_value_not_constant[]	= "immediate value not constant";
