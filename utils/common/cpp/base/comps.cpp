@@ -3011,7 +3011,7 @@ debug_break;
 						// Octal
 						return(iiComps_getAs_u32_base8(text->data_s8, text->length - 1, false));
 
-					case 'g':	// Genetic
+					case 'g':	// Genetic (A,T,C,G)
 					case 'G':
 					case 'q':	// Quaternary
 					case 'Q':

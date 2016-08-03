@@ -343,26 +343,28 @@
 //////
 	cs32		_LSA_ERROR_BASE								= 5000;
 	cs32		_LSA_ERROR_TOKEN_NAME_ALREADY_EXISTS		= 1;
+	cs32		_LSA_ERROR_IMMEDAITE_VALUE_OUT_OF_RANGE		= 2;
 
 
 //////////
 // Note messages
 //////
-	cs8			cgc_lsa_note_unknown_note[]					= "unspecified note";
+	cs8			cgc_lsa_note_unknown_note[]						= "unspecified note";
 
 
 //////////
 // Warning messages
 //////
-	cs8			cgc_lsa_warning_unknown_warning[]			= "unspecified warning";
-	cs8			cgc_lsa_warning_unreferenced_parameter[]	= "unreferenced parameter";
-	cs8			cgc_lsa_warning_too_many_parameters__ignored[] = "too many parameters (extra parameters ignored)";
+	cs8			cgc_lsa_warning_unknown_warning[]				= "unspecified warning";
+	cs8			cgc_lsa_warning_unreferenced_parameter[]		= "unreferenced parameter";
+	cs8			cgc_lsa_warning_too_many_parameters__ignored[]	= "too many parameters (extra parameters ignored)";
 
 //////////
 // Error messages
 //////
-	cs8			cgc_lsa_internal_compiler_error[]			= "Internal compiler error.  Terminating.\n";
-	cs8			cgc_unable_to_open_file[]					= "--Error: unable to open file: %s\n";
-	cs8			cgc_lsa_error_opening_include_file[]		= "--Error[%d,%d]: error opening file [include \"%s\"]\n";
-	cs8			cgc_lsa_error_token_name_already_exists[]	= "token name already exists";
-	cs8			cgc_lsa_error_unknown_error[]				= "unspecified error";
+	cs8			cgc_lsa_error_unknown_error[]					= "unspecified error";
+	cs8			cgc_lsa_internal_compiler_error[]				= "Internal compiler error.  Terminating.\n";
+	cs8			cgc_unable_to_open_file[]						= "--Error: unable to open file: %s\n";
+	cs8			cgc_lsa_error_opening_include_file[]			= "--Error[%d,%d]: error opening file [include \"%s\"]\n";
+	cs8			cgc_lsa_error_token_name_already_exists[]		= "token name already exists";
+	cs8			cgc_lsa_error_immediate_value_out_of_range[]	= "immediate value out of range";

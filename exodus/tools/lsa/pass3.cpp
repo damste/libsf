@@ -238,15 +238,17 @@
 
 //////////
 //
-// Called to extract an imm8 parameter
+// Called to extract an imm8 parameter.
+// Note:  By this point in the calculation, all symbols will have been swapped out with their equivalent fundamental values
 //
 //////
 	bool ilsa_pass3_extract_imm8(SComp* comp, u8* imm8)
 	{
 		union {
-			s32 lnValue;
+			u32 lnValue;
 			u8	_imm8;
 		};
+		s8 buffer[64];
 
 
 		// Make sure our environment is sane
@@ -261,18 +263,14 @@
 					break;
 
 				case _ICODE_NUMERICALPHA:
-					// It's likely 0xfedcba9876543210, 0o76543210, 0y10
+					// It's likely 0xfedcba9876543210, 0o76543210, 0g3210, 0y10
 					lnValue = iComps_getAs_u32_byBase(comp);
-					break;
-
-				case _ICODE_ALPHA:
-				case _ICODE_ALPHANUMERIC:
-					// It's likely a symbol
 					break;
 
 				default:
 					// It's likely an expression
-// TODO:  working here
+debug_nop;
+// TODO:  add this
 					break;
 			}
 
@@ -287,7 +285,10 @@
 
 			} else {
 				// The value is out of range
-// TODO:  Add error here
+				// Generate and report the error
+				sprintf(buffer, "Error %%d [%d,%d]: '%s' %%s",  line->lineNumber, comp->start);
+				iilsa_error(_LSA_ERROR_IMMEDAITE_VALUE_OUT_OF_RANGE, buffer, line);
+
 			}
 		}
 

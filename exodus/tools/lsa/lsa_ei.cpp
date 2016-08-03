@@ -156,13 +156,28 @@
 
 
 		//////////
-		// Append the warning
+		// Append the note
 		//////
 			iilsa_append_extraInfo(tnNoteCode, noteTextTemplate, lcNoteText, line, comp, (SLsaFile*)line->file, _LSA_NOTE_BASE, _EXTRA_INFO_NOTE);
 
 	}
 
 	// Note:  warningTextTemplate is expected to include a %d parameter for tnErrorCode, and a %s parameter for the associated error text
+	//
+	// Example:
+	//
+	//	// Note:  Use %%d to include a %d, and %%s to include a %s where the error number and text will go
+	// 	// Display unreferenced parameter
+	// 	sprintf(buffer, "Warning %%d [%d,%d]: '%s' %%s, see [%d,%d] define/macro '%s' of %s", 
+	// 					param->start->line->lineNumber, param->start->start,
+	// 					param->name.data_s8,
+	// 					dm->name->line->lineNumber, dm->name->start,
+	// 					dm->name->text.data_s8,
+	// 					dm->file->filename.data_s8);
+	// 
+	// 	// Report the warning
+	// 	iilsa_warning(_LSA_WARNING_UNREFERENCED_PARAMETER, buffer, param->start->line, param->start);
+	//
 	void iilsa_warning(s32 tnWarningCode, cs8* warningTextTemplate, SLine* line, SComp* comp)
 	{
 		cs8* lcWarningText;
@@ -197,6 +212,19 @@
 	}
 
 	// Note:  errorTextTemplate is expected to include a %d parameter for tnErrorCode, and a %s parameter for the associated error text
+	//
+	// Example:
+	//
+	//	// Note:  Use %%d to include a %d, and %%s to include a %s where the error number and text will go
+	// 	// Generate the error
+	// 	sprintf(buffer, "Error %%d [%d,%d]: '%s' %%s, see [%d,%d] of %s", 
+	// 					line->lineNumber, compName->start,
+	// 					compName->text.data_s8,
+	// 					dm->name->line->lineNumber, dm->name->start, ((SLsaFile*)(line->file))->filename.data_s8);
+	// 
+	// 	// Report the error
+	// 	iilsa_error(_LSA_ERROR_TOKEN_NAME_ALREADY_EXISTS, buffer, line);
+	//
 	void iilsa_error(s32 tnErrorCode, cs8* errorTextTemplate, SLine* line, SComp* comp)
 	{
 		cs8* lcErrorText;
@@ -209,6 +237,10 @@
 			{
 				case _LSA_ERROR_TOKEN_NAME_ALREADY_EXISTS:
 					lcErrorText = cgc_lsa_error_token_name_already_exists;
+					break;
+
+				case _LSA_ERROR_IMMEDAITE_VALUE_OUT_OF_RANGE:
+					lcErrorText = cgc_lsa_error_immediate_value_out_of_range;
 					break;
 
 				default:
