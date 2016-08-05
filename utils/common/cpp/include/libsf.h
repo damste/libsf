@@ -685,6 +685,23 @@
 //////////
 // Structures
 //////
+	// Used for parsing expressions
+	struct SExprOps
+	{
+		SLL		ll;
+
+		// How to process when this iCode is found
+		s32		iCode;			// If positive, used in the test
+		s32		iCat;			// If positive, used in the test
+		union {
+			uptr	_func;
+			bool	(*func)	(SComp* comp, SExprOps* eop, SComp** compNext);
+			// Returns:
+			//		true	-- the comp was handled
+			//		false	-- the comp was not handled
+		};
+	};
+
 	// Components parsed on a line
 	struct SComp
 	{
@@ -1328,7 +1345,7 @@
 	s8*						iiComps_visualize_lookup_iCode				(s32 tniCode);
 
 	// Expression handling
-	SNode*					iComps_parseExpression						(SComp* comp);
+	SNode*					iComps_parseExpression						(SComp* comp, SBuilder* eops = NULL, s32 tnParseType = 1, SCallback* cb = NULL, bool* tlValid = NULL);
 	s8						iComps_computeExpressionAs_s8				(SNode* node, bool tlRetire, bool* tlValid);
 	s16						iComps_computeExpressionAs_s16				(SNode* node, bool tlRetire, bool* tlValid);
 	s32						iComps_computeExpressionAs_s32				(SNode* node, bool tlRetire, bool* tlValid);
@@ -1337,6 +1354,44 @@
 	u16						iComps_computeExpressionAs_u16				(SNode* node, bool tlRetire, bool* tlValid);
 	u32						iComps_computeExpressionAs_u32				(SNode* node, bool tlRetire, bool* tlValid);
 	u64						iComps_computeExpressionAs_u64				(SNode* node, bool tlRetire, bool* tlValid);
+
+	// Expression ops
+	SBuilder*				iComps_eops_generateDefault					(s32 tnParseType, SCallback* cb = NULL, bool* tlValid = NULL);
+	void					iComps_eops_delete							(SBuilder** eopsRoot);
+
+	// Common functions
+	SExprOps*				iieops_createLevel							(SBuilder** eopsRoot);
+	SExprOps*				iieops_appendEop							(SExprOps* eopLevel, uptr _func = 0, s32 tniCode = -1, s32 tniCat = -1);
+
+	// Generate functions
+	SBuilder*				iiComps_eops_generateDefault_lsa			(bool* tlValid = NULL, SCallback* cb = NULL);
+	SBuilder*				iiComps_eops_generateDefault_lsc			(bool* tlValid = NULL, SCallback* cb = NULL);
+
+	// lsa expression handlers
+	SExprOps*				ieops_lsa_left_paren						(SComp* comp, SExprOps* eop, SComp** compNext);
+	SExprOps*				ieops_lsa_left_bracket						(SComp* comp, SExprOps* eop, SComp** compNext);
+	SExprOps*				ieops_lsa_dot								(SComp* comp, SExprOps* eop, SComp** compNext);
+	SExprOps*				ieops_lsa_not								(SComp* comp, SExprOps* eop, SComp** compNext);
+	SExprOps*				ieops_lsa_tilde								(SComp* comp, SExprOps* eop, SComp** compNext);
+	SExprOps*				ieops_lsa_offset							(SComp* comp, SExprOps* eop, SComp** compNext);
+	SExprOps*				ieops_lsa_sizeof							(SComp* comp, SExprOps* eop, SComp** compNext);
+	SExprOps*				ieops_lsa_alignof							(SComp* comp, SExprOps* eop, SComp** compNext);
+	SExprOps*				ieops_lsa_asterisk							(SComp* comp, SExprOps* eop, SComp** compNext);
+	SExprOps*				ieops_lsa_slash								(SComp* comp, SExprOps* eop, SComp** compNext);
+	SExprOps*				ieops_lsa_percent							(SComp* comp, SExprOps* eop, SComp** compNext);
+	SExprOps*				ieops_lsa_plus								(SComp* comp, SExprOps* eop, SComp** compNext);
+	SExprOps*				ieops_lsa_minus								(SComp* comp, SExprOps* eop, SComp** compNext);
+	SExprOps*				ieops_lsa_shift_left						(SComp* comp, SExprOps* eop, SComp** compNext);
+	SExprOps*				ieops_lsa_shift_right						(SComp* comp, SExprOps* eop, SComp** compNext);
+	SExprOps*				ieops_lsa_ampersand							(SComp* comp, SExprOps* eop, SComp** compNext);
+	SExprOps*				ieops_lsa_caret								(SComp* comp, SExprOps* eop, SComp** compNext);
+	SExprOps*				ieops_lsa_pipe_sign							(SComp* comp, SExprOps* eop, SComp** compNext);
+	SExprOps*				ieops_lsa_numericalpha						(SComp* comp, SExprOps* eop, SComp** compNext);
+	SExprOps*				ieops_lsa_numeric							(SComp* comp, SExprOps* eop, SComp** compNext);
+	SExprOps*				ieops_lsa_comma								(SComp* comp, SExprOps* eop, SComp** compNext);
+	SExprOps*				ieops_lsa_others							(SComp* comp, SExprOps* eop, SComp** compNext);
+
+	// lsc expression handlers
 
 	u32						iBreakoutAsciiTextDataIntoLines_ScanLine	(s8* tcData, u32 tnMaxLength, u32* tnLength, u32* tnWhitespaces);
 	bool					iFindFirstOccurrenceOfAsciiCharacter		(s8* tcHaystack, u32 tnHaystackLength, s8 tcNeedle, u32* tnPosition);

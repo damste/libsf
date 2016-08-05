@@ -247,6 +247,7 @@
 		bool		llValid;
 		s8			buffer[64];
 		SNode*		node;
+		SCallback*	cb;
 		union {
 			u32		lnValue;
 			u8		_imm8;
@@ -279,7 +280,9 @@ imm8_error:
 
 				default:
 					// It's likely an expression
-					node = iComps_parseExpression(comp);
+					memset(&cb, 0, sizeof(cb));
+					cb->_func = (uptr)&iilsa_pass3_extract_imm8__callback;
+					node = iComps_parseExpression(comp, NULL, 1, cb);
 					if (!node)
 						goto imm8_error;
 
@@ -314,6 +317,30 @@ imm8_error:
 
 		// If we get here, failure
 		return(false);
+	}
+
+	bool iilsa_pass3_extract_imm8__callback(SCallback* cb)
+	{
+		SExprOps* eopLevel;
+
+
+		// Block entered for structured exit
+		eopLevel = (SExprOps*)cb->data;
+		do {
+
+			// For level 4, we add these items
+			if (cb->value == 4)
+			{
+				// Append operands
+				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_offset, 0,		_ICODE_LSA_OFFSET))			break;
+				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_sizeof, 0,		_ICODE_LSA_SIZEOF))			break;
+				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_alignof, 0,	_ICODE_LSA_ALIGNOF))		break;
+			}
+
+		} while (0);
+
+		// Indicate success
+		return(true);
 	}
 
 

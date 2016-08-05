@@ -3532,10 +3532,48 @@ debug_break;
 // parsing, going S at each point when there is a child expression, with SW and SE
 // emanating out for the values related to the operand.
 //
+// levelOps should point to a builder with this kind of structure:
+//
+// 				SBuilder* eops		= NULL;
+// 				SExprOps* eopLevel	= NULL;
+// 				SExprOps* eop		= NULL;
+//
+// 				iBuilder_createAndInitialize(&eops);
+// 
+// 				//////////
+// 				// Level 1
+// 				//////
+// 					eopLevel	= iBuilder_allocateBytes(eops, sizeof(SExprOps));
+// 					eop			= iLl_appendNew__llAtEnd((SLL**)&eopLevel->ll);
+// 					// Left param
+// 					eop->iCode	= _ICODE_PARENTHESIS_LEFT;
+// 					eop->_func	= (uptr)my_left_paren_handler;
+// 					// Left bracket
+// 					eop			= iLl_appendNew__llAtEnd((SLL**)&eopLevel->ll);
+// 					eop->iCode	= _ICODE_BRACKET_LEFT;
+// 					eop->_func	= (uptr)my_left_bracket_handler;
+//					// ...and so on
+// 
+// 				//////////
+// 				// Level 2
+// 				//////
+// 					eopLevel	= iBuilder_allocateBytes(eops, sizeof(SExprOps));
+// 					eop			= iLl_appendNew__llAtEnd((SLL**)&eopLevel->ll);
+// 					// offset
+// 					eop->iCode	= _ICODE_PLUS_PLUS;
+// 					eop->_func	= (uptr)my_left_offset_handler;
+// 					// size
+// 					eop			= iLl_appendNew__llAtEnd((SLL**)&eopLevel->ll);
+// 					eop->iCode	= _ICODE_MINUS_MINUS;
+// 					eop->_func	= (uptr)my_left_size_handler;
+//					// ...and so on
+//
 //////
-	SNode* iComps_parseExpression(SComp* comp)
+	SNode* iComps_parseExpression(SComp* comp, SBuilder* eops, s32 tnParseType, SCallback* cb, bool* tlValid)
 	{
-// TODO:  working here
+		if (!eops)
+			eops = iComps_eops_generateDefault(tnParseType, cb, tlValid);
+
 		return(NULL);
 	}
 
@@ -3616,7 +3654,7 @@ debug_break;
 
 		// Obtain the full value
 		lnValue = iComps_computeExpressionAs_s64(node, tlRetire, &llValid);
-		if (llValid && lnValue >= -2147483648 && lnValue <= 2147483647)
+		if (llValid && lnValue >= -(s64)2147483648 && lnValue <= 2147483647)
 		{
 			// Valid
 			if (*tlValid = true)
@@ -3636,7 +3674,6 @@ debug_break;
 
 	s64 iComps_computeExpressionAs_s64(SNode* node, bool tlRetire, bool* tlValid)
 	{
-// TODO:  working here
 		return(0);
 	}
 
@@ -3739,6 +3776,679 @@ debug_break;
 	{
 // TODO:  working here
 		return(0);
+	}
+
+
+
+
+//////////
+//
+// Generate a standard / default handler for typical expression parsing
+//
+//////
+	SBuilder* iComps_eops_generateDefault(s32 tnParseType, SCallback* cb, bool* tlValid)
+	{
+		switch (tnParseType)
+		{
+			// lsa expression parser
+			case 1:
+				return(iiComps_eops_generateDefault_lsa(tlValid, cb));
+
+			// lsc expression parser
+			case 2:
+				return(iiComps_eops_generateDefault_lsc(tlValid, cb));
+
+		}
+		// If we get here, invalid
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Deletes all of the eops in the builder
+//
+//////
+	void iComps_eops_delete(SBuilder** eopsRoot)
+	{
+		u32			lnI;
+		SExprOps*	eopLevel;
+
+
+		//////////
+		// Iterate through each level
+		//////
+			iterate(lnI, (*eopsRoot), eopLevel, SExprOps)
+			//
+
+				// Delete each item at this level
+				iLl_delete__llChain((SLL**)&eopLevel);
+
+			//
+			iterate_end;
+
+
+		//////////
+		// Release the builder
+		//////
+			iBuilder_freeAndRelease(eopsRoot);
+
+	}
+
+
+
+
+//////////
+//
+// Called to append an eopLevel to a builder
+//
+//////
+	SExprOps* iieops_createLevel(SBuilder** eopsRoot)
+	{
+		SBuilder* eops;
+
+
+		// Make sure we have an eops
+		if ((eops = *eopsRoot))
+			iBuilder_createAndInitialize(eopsRoot);
+
+		// Create a new level
+		return((SExprOps*)iBuilder_allocateBytes(eops, sizeof(SExprOps)));
+	}
+
+
+
+
+//////////
+//
+// Called to append an eop to an eopLevel
+//
+//////
+	SExprOps* iieops_appendEop(SExprOps* eopLevel, uptr _func, s32 tniCode, s32 tniCat)
+	{
+		SExprOps* eop;
+
+
+		// Create a new SExprOps via SLL
+		eop = (SExprOps*)iLl_appendNew__llAtEnd((SLL**)&eopLevel, sizeof(SExprOps));
+		if (eop)
+		{
+			// Initially indicate they're not valid
+			eop->iCode	= tniCode;
+			eop->iCat	= tniCat;
+			eop->_func	= _func;
+		}
+
+		// indicate success or failure
+		return(eop);
+	}
+
+
+
+
+//////////
+//
+//	lsa's order of precedence is:
+// 		Level 1:	()		[]		.
+// 		Level 2:	!		~		offset		sizeof		alignof
+// 		Level 3:	*		/		%
+// 		Level 4:	+		-
+// 		Level 5:	<<		>>
+// 		Level 6:	&
+//		Level 7:	^
+//		Level 8:	|
+//		Level 9:	numericalpha	numeric
+//		Level 10:	,
+//		Level 11:	others/custom
+//
+//////
+	// cb->value	-- level number
+	// cb->data		-- pointer to eopLevel
+	SBuilder* iiComps_eops_generateDefault_lsa(bool* tlValid, SCallback* cb)
+	{
+		SBuilder* eops;
+		SExprOps* eopLevel;
+
+
+		// Block entered for structured exit
+		do {
+
+			//////////
+			// Level 1:		()		[]		.
+			//////
+				if (!(eopLevel = iieops_createLevel(  (eops = NULL, &eops)  )))
+					break;
+
+				// Create the item
+				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_left_paren, 0,		_ICODE_PARENTHESIS_LEFT))		break;
+				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_left_bracket, 0,	_ICODE_BRACKET_LEFT))			break;
+				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_dot, 0,			_ICODE_DOT))					break;
+
+				// Callback
+				if (cb && cb->_func)
+				{
+					cb->value	= 1;			// Level 1 callback
+					cb->data	= eopLevel;
+					cb->func(cb);
+				}
+
+
+			//////////
+			// Level 2:		!		~		offset		sizeof		alignof
+			//////
+				if (!(eopLevel = iieops_createLevel(&eops)))
+					break;
+
+				// Create the item
+				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_not, 0,			_ICODE_EXCLAMATION_POINT))		break;
+				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_tilde, 0,			_ICODE_TILDE))					break;
+
+				// Callback
+				if (cb && cb->_func)
+				{
+					cb->value	= 2;			// Level 2 callback
+					cb->data	= eopLevel;
+					cb->func(cb);
+				}
+
+
+			//////////
+			// Level 3:		*		/		%
+			//////
+				if (!(eopLevel = iieops_createLevel(&eops)))
+					break;
+
+				// Create the item
+				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_asterisk, 0,		_ICODE_ASTERISK))				break;
+				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_slash, 0,			_ICODE_SLASH))					break;
+				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_dot, 0,			_ICODE_PERCENT_SIGN))			break;
+
+				// Callback
+				if (cb && cb->_func)
+				{
+					cb->value	= 3;			// Level 3 callback
+					cb->data	= eopLevel;
+					cb->func(cb);
+				}
+
+
+			//////////
+			// Level 4:		+		-
+			//////
+				if (!(eopLevel = iieops_createLevel(&eops)))
+					break;
+
+				// Create the item
+				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_plus, 0,			_ICODE_PLUS))					break;
+				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_minus, 0,			_ICODE_MINUS))					break;
+
+				// Callback
+				if (cb && cb->_func)
+				{
+					cb->value	= 4;			// Level 4 callback
+					cb->data	= eopLevel;
+					cb->func(cb);
+				}
+
+
+			//////////
+			// Level 5:		<<		>>
+			//////
+				if (!(eopLevel = iieops_createLevel(&eops)))
+					break;
+
+				// Create the item
+				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_shift_left, 0,		_ICODE_SHIFT_LEFT))				break;
+				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_shift_right, 0,	_ICODE_SHIFT_RIGHT))			break;
+
+				// Callback
+				if (cb && cb->_func)
+				{
+					cb->value	= 5;			// Level 5 callback
+					cb->data	= eopLevel;
+					cb->func(cb);
+				}
+
+
+			//////////
+			// Level 6:		&
+			//////
+				if (!(eopLevel = iieops_createLevel(&eops)))
+					break;
+
+				// Create the item
+				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_ampersand, 0,		_ICODE_AMPERSAND))				break;
+
+				// Callback
+				if (cb && cb->_func)
+				{
+					cb->value	= 6;			// Level 6 callback
+					cb->data	= eopLevel;
+					cb->func(cb);
+				}
+
+
+			//////////
+			// Level 7:		^
+			//////
+				if (!(eopLevel = iieops_createLevel(&eops)))
+					break;
+
+				// Create the item
+				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_caret, 0,			_ICODE_CARET))					break;
+
+				// Callback
+				if (cb && cb->_func)
+				{
+					cb->value	= 7;			// Level 7 callback
+					cb->data	= eopLevel;
+					cb->func(cb);
+				}
+
+
+			//////////
+			// Level 8:		|
+			//////
+				if (!(eopLevel = iieops_createLevel(&eops)))
+					break;
+
+				// Create the item
+				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_pipe_sign, 0,		_ICODE_PIPE_SIGN))				break;
+
+				// Callback
+				if (cb && cb->_func)
+				{
+					cb->value	= 8;			// Level 8 callback
+					cb->data	= eopLevel;
+					cb->func(cb);
+				}
+
+
+			//////////
+			// Level 9:		numericalpha	numeric
+			//////
+				if (!(eopLevel = iieops_createLevel(&eops)))
+					break;
+
+				// Create the item
+				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_numericalpha, 0,	_ICODE_NUMERICALPHA))			break;
+				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_numeric, 0,		_ICODE_ALPHA))					break;
+
+				// Callback
+				if (cb && cb->_func)
+				{
+					cb->value	= 9;			// Level 9 callback
+					cb->data	= eopLevel;
+					cb->func(cb);
+				}
+
+
+			//////////
+			// Level 10:	,
+			//////
+				if (!(eopLevel = iieops_createLevel(&eops)))
+					break;
+
+				// Create the item
+				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_comma, 0,			_ICODE_COMMA))					break;
+
+				// Callback
+				if (cb && cb->_func)
+				{
+					cb->value	= 10;			// Level 10 callback
+					cb->data	= eopLevel;
+					cb->func(cb);
+				}
+
+
+			//////////
+			// Level 11:	others/custom
+			//////
+				if (!(eopLevel = iieops_createLevel(&eops)))
+					break;
+
+				// Create the item
+				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_others))											break;
+
+				// Callback
+				if (cb && cb->_func)
+				{
+					cb->value	= 11;			// Level 11 callback
+					cb->data	= eopLevel;
+					cb->func(cb);
+				}
+
+
+			//////////
+			// Success
+			//////
+				// Flag as valid (if need be)
+				if (tlValid)
+					*tlValid = true;
+
+		} while (0);
+
+		// Return our builder
+		return(eops);
+	}
+
+
+
+
+//////////
+//
+//	lsc's order of precedence is:
+// 		Level 1:	()		[]		.		->
+// 		Level 2:	++		--		unary+	unary-	!		~		pointer*	&		sizeof		alignof
+// 		Level 3:	*		/		%
+// 		Level 4:	+		-
+// 		Level 5:	<<		>>
+//		Level 6:	<		<=		>		>=
+//		Level 7:	==		!=
+// 		Level 8:	&
+//		Level 9:	^
+//		Level 10:	|
+//		Level 11:	&&
+//		Level 12:	||
+// 		Level 13:	?:
+//		Level 14:	=		+=		-=		*=		/=		%=		<<=		>>=		&=		^=		|=
+//		Level 15:	,
+//		Level 16:	alpha	alphanumeric	numericalpha	numeric
+//		Level 17:	others
+//
+//////
+	SBuilder* iiComps_eops_generateDefault_lsc(bool* tlValid, SCallback* cb)
+	{
+debug_break;
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Called to handle the left parenthesis component
+//
+//////
+	SExprOps* ieops_lsa_left_paren(SComp* comp, SExprOps* eop, SComp** compNext)
+	{
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Called to handle the left bracket component
+//
+//////
+	SExprOps* ieops_lsa_left_bracket(SComp* comp, SExprOps* eop, SComp** compNext)
+	{
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Called to handle the dot component
+//
+//////
+	SExprOps* ieops_lsa_dot(SComp* comp, SExprOps* eop, SComp** compNext)
+	{
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Called to handle the not component
+//
+//////
+	SExprOps* ieops_lsa_not(SComp* comp, SExprOps* eop, SComp** compNext)
+	{
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Called to handle the tilde component
+//
+//////
+	SExprOps* ieops_lsa_tilde(SComp* comp, SExprOps* eop, SComp** compNext)
+	{
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Called to handle the offset component
+//
+//////
+	SExprOps* ieops_lsa_offset(SComp* comp, SExprOps* eop, SComp** compNext)
+	{
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Called to handle the sizeof component
+//
+//////
+	SExprOps* ieops_lsa_sizeof(SComp* comp, SExprOps* eop, SComp** compNext)
+	{
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Called to handle the alignof component
+//
+//////
+	SExprOps* ieops_lsa_alignof(SComp* comp, SExprOps* eop, SComp** compNext)
+	{
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Called to handle the asterisk component
+//
+//////
+	SExprOps* ieops_lsa_asterisk(SComp* comp, SExprOps* eop, SComp** compNext)
+	{
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Called to handle the slash component
+//
+//////
+	SExprOps* ieops_lsa_slash(SComp* comp, SExprOps* eop, SComp** compNext)
+	{
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Called to handle the percent component
+//
+//////
+	SExprOps* ieops_lsa_percent(SComp* comp, SExprOps* eop, SComp** compNext)
+	{
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Called to handle the plus component
+//
+//////
+	SExprOps* ieops_lsa_plus(SComp* comp, SExprOps* eop, SComp** compNext)
+	{
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Called to handle the minus component
+//
+//////
+	SExprOps* ieops_lsa_minus(SComp* comp, SExprOps* eop, SComp** compNext)
+	{
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Called to handle the shift left component
+//
+//////
+	SExprOps* ieops_lsa_shift_left(SComp* comp, SExprOps* eop, SComp** compNext)
+	{
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Called to handle the shift right component
+//
+//////
+	SExprOps* ieops_lsa_shift_right(SComp* comp, SExprOps* eop, SComp** compNext)
+	{
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Called to handle the ampersand component
+//
+//////
+	SExprOps* ieops_lsa_ampersand(SComp* comp, SExprOps* eop, SComp** compNext)
+	{
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Called to handle the caret component
+//
+//////
+	SExprOps* ieops_lsa_caret(SComp* comp, SExprOps* eop, SComp** compNext)
+	{
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Called to handle the pipe sign component
+//
+//////
+	SExprOps* ieops_lsa_pipe_sign(SComp* comp, SExprOps* eop, SComp** compext)
+	{
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Called to handle the numericalpha component
+//
+//////
+	SExprOps* ieops_lsa_numericalpha(SComp* comp, SExprOps* eop, SComp** compNext)
+	{
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Called to handle the numeric component
+//
+//////
+	SExprOps* ieops_lsa_numeric(SComp* comp, SExprOps* eop, SComp** compNext)
+	{
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Called to handle the comma component
+//
+//////
+	SExprOps* ieops_lsa_comma(SComp* comp, SExprOps* eop, SComp** compNext)
+	{
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Called to handle the other components
+//
+//////
+	SExprOps* ieops_lsa_others(SComp* comp, SExprOps* eop, SComp** compNext)
+	{
+		return(NULL);
 	}
 
 

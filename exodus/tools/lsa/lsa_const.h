@@ -256,6 +256,10 @@
 	cs32		_ICODE_LSA_IFB								= 3000505;
 	cs32		_ICODE_LSA_IFNB								= 3000506;
 
+	cs32		_ICODE_LSA_OFFSET							= 3000507;
+	cs32		_ICODE_LSA_SIZEOF							= 3000508;
+	cs32		_ICODE_LSA_ALIGNOF							= 3000509;
+
 
 //////////
 // Command line options
@@ -316,6 +320,10 @@
 	cs8			cgc_lsa_ifndef[]							= "ifndef";
 	cs8			cgc_lsa_ifb[]								= "ifb";
 	cs8			cgc_lsa_ifnb[]								= "ifnb";
+
+	cs8			cgc_lsa_offset[]							= "offset";
+	cs8			cgc_lsa_sizeof[]							= "sizeof";
+	cs8			cgc_lsa_alignof[]							= "alignof";
 
 
 //////////

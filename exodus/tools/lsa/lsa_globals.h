@@ -578,5 +578,9 @@
 		{	(cs8*)cgc_lsa_ifb,					sizeof(cgc_lsa_ifb) - 1,				false,		_ICODE_LSA_IFB,						false,		_ICAT_FLOW,				&colorDefault,		false,			null0,	null0,	null0	},
 		{	(cs8*)cgc_lsa_ifnb,					sizeof(cgc_lsa_ifnb) - 1,				false,		_ICODE_LSA_IFNB,					false,		_ICAT_FLOW,				&colorDefault,		false,			null0,	null0,	null0	},
 
+		{	(cs8*)cgc_lsa_offset,				sizeof(cgc_lsa_offset) - 1,				false,		_ICODE_LSA_OFFSET,					false,		_ICAT_REFERENCE,		&colorDefault,		false,			null0,	null0,	null0	},
+		{	(cs8*)cgc_lsa_sizeof,				sizeof(cgc_lsa_sizeof) - 1,				false,		_ICODE_LSA_SIZEOF,					false,		_ICAT_REFERENCE,		&colorDefault,		false,			null0,	null0,	null0	},
+		{	(cs8*)cgc_lsa_alignof,				sizeof(cgc_lsa_alignof) - 1,			false,		_ICODE_LSA_ALIGNOF,					false,		_ICAT_REFERENCE,		&colorDefault,		false,			null0,	null0,	null0	},
+
 		{	0,									0,										0,			0,									0,			0,						0,					0,				0,		0,		0		}
 	};

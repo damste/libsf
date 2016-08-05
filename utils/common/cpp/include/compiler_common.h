@@ -208,6 +208,7 @@
 	cs32			_ICODE_PERCENT_SIGN								= 22;
 	cs32			_ICODE_EXPONENT								= 23;			// ^
 	cs32			_ICODE_XOR									= 23;
+	cs32			_ICODE_CARET								= 23;
 	cs32			_ICODE_AMPERSAND								= 24;
 	cs32			_ICODE_EQUAL_SIGN								= 25;
 	cs32			_ICODE_PIPE_SIGN								= 26;

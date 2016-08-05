@@ -187,6 +187,7 @@ struct SLsaInclude;
 	bool				ilsa_pass3_common_addOpcodeByte					(SLine* line, SComp* comp, u8 opcodeByte);
 	bool				ilsa_pass3_common_addOpcodeTwoByte				(SLine* line, SComp* comp, u8 opcodeByte1, u8 opcodeByte2);
 	bool				ilsa_pass3_extract_imm8							(SComp* comp, u8* imm8);
+	bool				iilsa_pass3_extract_imm8__callback				(SCallback* cb);
 	void				iilsa_pass3_init								(void);
 	bool				iilsa_pass3_decode_line							(SLine* line, SComp* comp = NULL);
 	bool				iilsa_pass3_decode_compsRight					(SLine* line, SComp* comp);
