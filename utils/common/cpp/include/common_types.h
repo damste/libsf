@@ -368,3 +368,19 @@ struct SXy_s32
 	s32	xi;
 	s32	yi;
 };
+
+// Added to allow simple iteration through a builder
+#define iterate(i, builder, p, structure)	for (i = 0; i < builder->populatedLength; i += sizeof(structure)) \
+											{ \
+												/* Grab the pointer */ \
+												p = (structure*)(builder->buffer + i);
+
+#define iterate_ptr(i, builder, p, structure)	iterate(i, builder, p, structure)
+
+#define iterate_with_count(i, builder, p, structure, count) \
+											/* Note:  Count should already be set to starting value*/ \
+											for (i = 0; i < builder->populatedLength; i += sizeof(structure), ++count) \
+											{ \
+												/* Grab the pointer */ \
+												p = (structure*)(builder->buffer + i);
+#define iterate_end }
