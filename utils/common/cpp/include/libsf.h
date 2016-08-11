@@ -694,8 +694,8 @@
 		s32		iCode;			// If positive, used in the test
 		s32		iCat;			// If positive, used in the test
 		union {
-			uptr	_func;
-			bool	(*func)	(SComp* comp, SExprOps* eop, SComp** compNext);
+			uptr	_onFind;
+			bool	(*onFind)	(SComp* comp, SExprOps* eop, SComp* compStart);
 			// Returns:
 			//		true	-- the comp was handled
 			//		false	-- the comp was not handled
@@ -737,6 +737,11 @@
 		// For matches (the closest parenthesis, bracket, brace, etc)
 		SBgra*			overrideMatchingForeColor;
 		SBgra*			overrideMatchingBackColor;
+
+		// Expression parsing
+		SExprOps*		eop;						// The expression op for this component
+		s32				eop_level;					// Processing level
+		bool			lProcessed;					// Has this component already been processed?
 	};
 
 	struct SCompCallback
@@ -1345,7 +1350,7 @@
 	s8*						iiComps_visualize_lookup_iCode				(s32 tniCode);
 
 	// Expression handling
-	SNode*					iComps_parseExpression						(SComp* comp, SBuilder* eops = NULL, s32 tnParseType = 1, SCallback* cb = NULL, bool* tlValid = NULL);
+	SNode*					iComps_parseExpression						(SComp* compStart, SBuilder* eopBase = NULL, s32 tnParseType = 1, SCallback* cb = NULL, bool* tlValid = NULL);
 	s8						iComps_computeExpressionAs_s8				(SNode* node, bool tlRetire, bool* tlValid);
 	s16						iComps_computeExpressionAs_s16				(SNode* node, bool tlRetire, bool* tlValid);
 	s32						iComps_computeExpressionAs_s32				(SNode* node, bool tlRetire, bool* tlValid);
@@ -1361,7 +1366,7 @@
 
 	// Common functions
 	SExprOps*				iieops_createLevel							(SBuilder** eopsRoot);
-	SExprOps*				iieops_appendEop							(SExprOps* eopLevel, uptr _func = 0, s32 tniCode = -1, s32 tniCat = -1);
+	SExprOps*				iieops_appendEop							(SExprOps* eopLevel, uptr _onFind = 0, s32 tniCode = -1, s32 tniCat = -1);
 
 	// Generate functions
 	SBuilder*				iiComps_eops_generateDefault_lsa			(bool* tlValid = NULL, SCallback* cb = NULL);

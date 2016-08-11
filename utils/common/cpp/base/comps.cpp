@@ -3569,11 +3569,69 @@ debug_break;
 //					// ...and so on
 //
 //////
-	SNode* iComps_parseExpression(SComp* comp, SBuilder* eops, s32 tnParseType, SCallback* cb, bool* tlValid)
+	// Note:  The expression ops should begin at level 1 for the first item
+	SNode* iComps_parseExpression(SComp* compStart, SBuilder* eopBase, s32 tnParseType, SCallback* cb, bool* tlValid)
 	{
-		if (!eops)
-			eops = iComps_eops_generateDefault(tnParseType, cb, tlValid);
+		bool		llKeepGoing;
+		u32			lnI;
+		SExprOps*	eopsLevel;
+		SExprOps*	eop;
+		SComp*		comp;
 
+
+		// Make sure we have an expression ops
+		if (!eopBase)
+			eopBase = iComps_eops_generateDefault(tnParseType, cb, tlValid);
+
+		// Reset each comp
+		for (comp = compStart; comp; comp = iComps_Nth_lineOnly(comp))
+			comp->lProcessed = false;
+
+
+		//////////
+		// Flag each op and its level
+		//////
+			iterate(lnI, eopBase, eopsLevel, SExprOps)
+			//
+			
+				// Search horizontally for these levels, and flag
+				for (comp = compStart; comp; comp = iComps_Nth_lineOnly(comp))
+				{
+					// Only process each component once
+					if (!comp->lProcessed)
+					{
+						// Iterate through ops at this level
+						for (eop = eopsLevel; eop; eop = (SExprOps*)eop->ll.next)
+						{
+							// iCode matches?
+							if (eop->iCode < 0 || comp->iCode == eop->iCode)
+							{
+								// iCat matches?
+								if (eop->iCat < 0 || comp->iCat == eop->iCat)
+								{
+									// Yes
+									comp->eop		= eop;
+									comp->eop_level	= (lnI / sizeof(SExprOps));
+
+									// Call the found function
+									if (eop->_onFind)		llKeepGoing = eop->onFind(comp, eop, compStart);
+									else					llKeepGoing = true;
+
+									// Should we keep processing additional level entries on this component?
+									if (!llKeepGoing)
+										break;	// Nope
+								}
+							}
+						}
+						// When we get here, this level was processed on this component
+					}
+				}
+				// When we get here, the full component chain was parsed at this level
+
+			//
+			iterate_end;
+
+		// 
 		return(NULL);
 	}
 
@@ -3866,7 +3924,7 @@ debug_break;
 // Called to append an eop to an eopLevel
 //
 //////
-	SExprOps* iieops_appendEop(SExprOps* eopLevel, uptr _func, s32 tniCode, s32 tniCat)
+	SExprOps* iieops_appendEop(SExprOps* eopLevel, uptr _onFind, s32 tniCode, s32 tniCat)
 	{
 		SExprOps* eop;
 
@@ -3876,9 +3934,9 @@ debug_break;
 		if (eop)
 		{
 			// Initially indicate they're not valid
-			eop->iCode	= tniCode;
-			eop->iCat	= tniCat;
-			eop->_func	= _func;
+			eop->iCode		= tniCode;
+			eop->iCat		= tniCat;
+			eop->_onFind	= _onFind;
 		}
 
 		// indicate success or failure
