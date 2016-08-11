@@ -272,7 +272,7 @@
 					{
 						// Generate and report the error
 imm8_error:
-						sprintf(buffer, "Error %%d [%d,%d]: '%s' %%s",  comp->line->lineNumber, comp->start);
+						sprintf(buffer, "Error %%d [%d,%d]: '%%s'",  comp->line->lineNumber, comp->start);
 						iilsa_error(_LSA_ERROR_IMMEDIATE_VALUE_ERROR, buffer, comp->line);
 						return(false);
 					}
@@ -282,7 +282,7 @@ imm8_error:
 					// It's likely an expression
 					memset(&cb, 0, sizeof(cb));
 					cb->_func = (uptr)&iilsa_pass3_extract_imm8__callback;
-					node = iComps_parseExpression(comp, NULL, 1, cb);
+					node = iComps_parseExpression(cb, comp);
 					if (!node)
 						goto imm8_error;
 
@@ -290,7 +290,7 @@ imm8_error:
 					lnValue = iComps_computeExpressionAs_u32(node, true, &llValid);
 					if (!llValid)
 					{
-						sprintf(buffer, "Error %%d [%d,%d]: '%s' %%s",  comp->line->lineNumber, comp->start);
+						sprintf(buffer, "Error %%d [%d,%d]: '%%s'",  comp->line->lineNumber, comp->start);
 						iilsa_error(_LSA_ERROR_IMMEDIATE_VALUE_NOT_CONSTANT, buffer, comp->line);
 						return(false);
 					}
@@ -310,7 +310,7 @@ imm8_error:
 
 			// If we get here, the value is out of range
 			// Generate and report the error
-			sprintf(buffer, "Error %%d [%d,%d]: '%s' %%s",  comp->line->lineNumber, comp->start);
+			sprintf(buffer, "Error %%d [%d,%d]: '%%s'",  comp->line->lineNumber, comp->start);
 			iilsa_error(_LSA_ERROR_IMMEDIATE_VALUE_OUT_OF_RANGE, buffer, comp->line);
 			return(false);
 		}
@@ -332,9 +332,9 @@ imm8_error:
 			if (cb->value == 4)
 			{
 				// Append operands
-				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_offset, 0,		_ICODE_LSA_OFFSET))			break;
-				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_sizeof, 0,		_ICODE_LSA_SIZEOF))			break;
-				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_alignof, 0,	_ICODE_LSA_ALIGNOF))		break;
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_offset, 0,		_ICODE_LSA_OFFSET))			break;
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_sizeof, 0,		_ICODE_LSA_SIZEOF))			break;
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_alignof, 0,	_ICODE_LSA_ALIGNOF))		break;
 			}
 
 		} while (0);

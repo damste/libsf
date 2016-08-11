@@ -3570,7 +3570,7 @@ debug_break;
 //
 //////
 	// Note:  The expression ops should begin at level 1 for the first item
-	SNode* iComps_parseExpression(SComp* compStart, SBuilder* eopBase, s32 tnParseType, SCallback* cb, bool* tlValid)
+	SNode* iComps_parseExpression(SCallback* cb, SComp* compStart, SComp* compEnd, SBuilder* eopBase, s32 tnParseType, bool* tlValid)
 	{
 		bool		llKeepGoing;
 		u32			lnI;
@@ -3610,11 +3610,13 @@ debug_break;
 								if (eop->iCat < 0 || comp->iCat == eop->iCat)
 								{
 									// Yes
-									comp->eop		= eop;
-									comp->eop_level	= (lnI / sizeof(SExprOps));
+									eop->comp		= comp;
+									eop->compStart	= compStart;
+									eop->compEnd	= compEnd;
+									eop->eop_level	= (lnI / sizeof(SExprOps));
 
 									// Call the found function
-									if (eop->_onFind)		llKeepGoing = eop->onFind(comp, eop, compStart);
+									if (eop->_onFind)		llKeepGoing = eop->onFind(eop);
 									else					llKeepGoing = true;
 
 									// Should we keep processing additional level entries on this component?
@@ -3625,11 +3627,21 @@ debug_break;
 						}
 						// When we get here, this level was processed on this component
 					}
+
+					// Are we finished?
+					if (comp == compEnd)
+						break;	// Yes
 				}
 				// When we get here, the full component chain was parsed at this level
 
 			//
 			iterate_end;
+
+
+		//////////
+		// Build the nodes
+		//////
+
 
 		// 
 		return(NULL);
@@ -3980,9 +3992,9 @@ debug_break;
 					break;
 
 				// Create the item
-				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_left_paren, 0,		_ICODE_PARENTHESIS_LEFT))		break;
-				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_left_bracket, 0,	_ICODE_BRACKET_LEFT))			break;
-				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_dot, 0,			_ICODE_DOT))					break;
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_left_paren, 0,	_ICODE_PARENTHESIS_LEFT))		break;
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_left_bracket, 0,	_ICODE_BRACKET_LEFT))			break;
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_dot, 0,			_ICODE_DOT))					break;
 
 				// Callback
 				if (cb && cb->_func)
@@ -4000,8 +4012,8 @@ debug_break;
 					break;
 
 				// Create the item
-				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_not, 0,			_ICODE_EXCLAMATION_POINT))		break;
-				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_tilde, 0,			_ICODE_TILDE))					break;
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_not, 0,			_ICODE_EXCLAMATION_POINT))		break;
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_tilde, 0,			_ICODE_TILDE))					break;
 
 				// Callback
 				if (cb && cb->_func)
@@ -4019,9 +4031,9 @@ debug_break;
 					break;
 
 				// Create the item
-				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_asterisk, 0,		_ICODE_ASTERISK))				break;
-				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_slash, 0,			_ICODE_SLASH))					break;
-				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_dot, 0,			_ICODE_PERCENT_SIGN))			break;
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_asterisk, 0,		_ICODE_ASTERISK))				break;
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_slash, 0,			_ICODE_SLASH))					break;
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_dot, 0,			_ICODE_PERCENT_SIGN))			break;
 
 				// Callback
 				if (cb && cb->_func)
@@ -4039,8 +4051,8 @@ debug_break;
 					break;
 
 				// Create the item
-				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_plus, 0,			_ICODE_PLUS))					break;
-				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_minus, 0,			_ICODE_MINUS))					break;
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_plus, 0,			_ICODE_PLUS))					break;
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_minus, 0,			_ICODE_MINUS))					break;
 
 				// Callback
 				if (cb && cb->_func)
@@ -4058,8 +4070,8 @@ debug_break;
 					break;
 
 				// Create the item
-				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_shift_left, 0,		_ICODE_SHIFT_LEFT))				break;
-				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_shift_right, 0,	_ICODE_SHIFT_RIGHT))			break;
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_shift_left, 0,	_ICODE_SHIFT_LEFT))				break;
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_shift_right, 0,	_ICODE_SHIFT_RIGHT))			break;
 
 				// Callback
 				if (cb && cb->_func)
@@ -4077,7 +4089,7 @@ debug_break;
 					break;
 
 				// Create the item
-				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_ampersand, 0,		_ICODE_AMPERSAND))				break;
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_ampersand, 0,		_ICODE_AMPERSAND))				break;
 
 				// Callback
 				if (cb && cb->_func)
@@ -4095,7 +4107,7 @@ debug_break;
 					break;
 
 				// Create the item
-				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_caret, 0,			_ICODE_CARET))					break;
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_caret, 0,			_ICODE_CARET))					break;
 
 				// Callback
 				if (cb && cb->_func)
@@ -4113,7 +4125,7 @@ debug_break;
 					break;
 
 				// Create the item
-				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_pipe_sign, 0,		_ICODE_PIPE_SIGN))				break;
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_pipe_sign, 0,		_ICODE_PIPE_SIGN))				break;
 
 				// Callback
 				if (cb && cb->_func)
@@ -4131,8 +4143,8 @@ debug_break;
 					break;
 
 				// Create the item
-				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_numericalpha, 0,	_ICODE_NUMERICALPHA))			break;
-				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_numeric, 0,		_ICODE_ALPHA))					break;
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_numericalpha, 0,	_ICODE_NUMERICALPHA))			break;
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_numeric, 0,		_ICODE_ALPHA))					break;
 
 				// Callback
 				if (cb && cb->_func)
@@ -4150,7 +4162,7 @@ debug_break;
 					break;
 
 				// Create the item
-				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_comma, 0,			_ICODE_COMMA))					break;
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_comma, 0,			_ICODE_COMMA))					break;
 
 				// Callback
 				if (cb && cb->_func)
@@ -4168,7 +4180,7 @@ debug_break;
 					break;
 
 				// Create the item
-				if (!iieops_appendEop(eopLevel, (uptr)&ieops_lsa_others))											break;
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_others))											break;
 
 				// Callback
 				if (cb && cb->_func)
@@ -4228,12 +4240,56 @@ debug_break;
 
 //////////
 //
-// Called to handle the left parenthesis component
+// Called to handle the left parenthesis component:
+//
+// Source:
+//		something(p2, p3)
+//
+// Becomes (levels are relative):
+//      Level 2:	          p2, p3
+//		Level 1:	         (      )
+//		Level 0:	something
 //
 //////
-	SExprOps* ieops_lsa_left_paren(SComp* comp, SExprOps* eop, SComp** compNext)
+	// Bring the parens up a level, and everything between the parens up two levels
+	bool iieops_lsa_left_paren(SExprOps* eop)
 	{
-		return(NULL);
+		s32		lnLevel;
+		SComp*	comp;
+
+
+		// Iterate forward to the matching parenthesis
+		for (comp = eop->comp, lnLevel = 0; comp; comp = iComps_Nth_lineOnly(eop->comp))
+		{
+			switch (comp->iCode)
+			{
+				case _ICODE_PARENTHESIS_LEFT:
+					// Descend
+					if (lnLevel == 0)
+						++comp->level;
+
+					// Up a level
+					++lnLevel;
+					break;
+
+				case _ICODE_PARENTHESIS_RIGHT:
+					// Ascend
+					--lnLevel;
+					if (lnLevel == 0)
+					{
+						++comp->level;
+						return(true);	// We're done
+					}
+					break;
+
+				default:
+					// Change the level
+					comp->level += 2;
+			}
+
+		}
+		// If we get here, something's awry
+		return(false);
 	}
 
 
@@ -4244,9 +4300,44 @@ debug_break;
 // Called to handle the left bracket component
 //
 //////
-	SExprOps* ieops_lsa_left_bracket(SComp* comp, SExprOps* eop, SComp** compNext)
+	bool iieops_lsa_left_bracket(SExprOps* eop)
 	{
-		return(NULL);
+		s32		lnLevel;
+		SComp*	comp;
+
+
+		// Iterate forward to the matching parenthesis
+		for (comp = eop->comp, lnLevel = 0; comp; comp = iComps_Nth_lineOnly(eop->comp))
+		{
+			switch (comp->iCode)
+			{
+				case _ICODE_BRACKET_LEFT:
+					// Descend
+					if (lnLevel == 0)
+						++comp->level;
+
+					// Up a level
+					++lnLevel;
+					break;
+
+				case _ICODE_BRACKET_RIGHT:
+					// Ascend
+					--lnLevel;
+					if (lnLevel == 0)
+					{
+						++comp->level;
+						return(true);	// We're done
+					}
+					break;
+
+				default:
+					// Change the level
+					comp->level += 2;
+			}
+
+		}
+		// If we get here, something's awry
+		return(false);
 	}
 
 
@@ -4257,9 +4348,9 @@ debug_break;
 // Called to handle the dot component
 //
 //////
-	SExprOps* ieops_lsa_dot(SComp* comp, SExprOps* eop, SComp** compNext)
+	bool iieops_lsa_dot(SExprOps* eop)
 	{
-		return(NULL);
+		return(false);
 	}
 
 
@@ -4270,9 +4361,9 @@ debug_break;
 // Called to handle the not component
 //
 //////
-	SExprOps* ieops_lsa_not(SComp* comp, SExprOps* eop, SComp** compNext)
+	bool iieops_lsa_not(SExprOps* eop)
 	{
-		return(NULL);
+		return(false);
 	}
 
 
@@ -4283,9 +4374,9 @@ debug_break;
 // Called to handle the tilde component
 //
 //////
-	SExprOps* ieops_lsa_tilde(SComp* comp, SExprOps* eop, SComp** compNext)
+	bool iieops_lsa_tilde(SExprOps* eop)
 	{
-		return(NULL);
+		return(false);
 	}
 
 
@@ -4296,9 +4387,9 @@ debug_break;
 // Called to handle the offset component
 //
 //////
-	SExprOps* ieops_lsa_offset(SComp* comp, SExprOps* eop, SComp** compNext)
+	bool iieops_lsa_offset(SExprOps* eop)
 	{
-		return(NULL);
+		return(false);
 	}
 
 
@@ -4309,9 +4400,9 @@ debug_break;
 // Called to handle the sizeof component
 //
 //////
-	SExprOps* ieops_lsa_sizeof(SComp* comp, SExprOps* eop, SComp** compNext)
+	bool iieops_lsa_sizeof(SExprOps* eop)
 	{
-		return(NULL);
+		return(false);
 	}
 
 
@@ -4322,9 +4413,9 @@ debug_break;
 // Called to handle the alignof component
 //
 //////
-	SExprOps* ieops_lsa_alignof(SComp* comp, SExprOps* eop, SComp** compNext)
+	bool iieops_lsa_alignof(SExprOps* eop)
 	{
-		return(NULL);
+		return(false);
 	}
 
 
@@ -4335,9 +4426,9 @@ debug_break;
 // Called to handle the asterisk component
 //
 //////
-	SExprOps* ieops_lsa_asterisk(SComp* comp, SExprOps* eop, SComp** compNext)
+	bool iieops_lsa_asterisk(SExprOps* eop)
 	{
-		return(NULL);
+		return(false);
 	}
 
 
@@ -4348,9 +4439,9 @@ debug_break;
 // Called to handle the slash component
 //
 //////
-	SExprOps* ieops_lsa_slash(SComp* comp, SExprOps* eop, SComp** compNext)
+	bool iieops_lsa_slash(SExprOps* eop)
 	{
-		return(NULL);
+		return(false);
 	}
 
 
@@ -4361,9 +4452,9 @@ debug_break;
 // Called to handle the percent component
 //
 //////
-	SExprOps* ieops_lsa_percent(SComp* comp, SExprOps* eop, SComp** compNext)
+	bool iieops_lsa_percent(SExprOps* eop)
 	{
-		return(NULL);
+		return(false);
 	}
 
 
@@ -4374,9 +4465,9 @@ debug_break;
 // Called to handle the plus component
 //
 //////
-	SExprOps* ieops_lsa_plus(SComp* comp, SExprOps* eop, SComp** compNext)
+	bool iieops_lsa_plus(SExprOps* eop)
 	{
-		return(NULL);
+		return(false);
 	}
 
 
@@ -4387,9 +4478,9 @@ debug_break;
 // Called to handle the minus component
 //
 //////
-	SExprOps* ieops_lsa_minus(SComp* comp, SExprOps* eop, SComp** compNext)
+	bool iieops_lsa_minus(SExprOps* eop)
 	{
-		return(NULL);
+		return(false);
 	}
 
 
@@ -4400,9 +4491,9 @@ debug_break;
 // Called to handle the shift left component
 //
 //////
-	SExprOps* ieops_lsa_shift_left(SComp* comp, SExprOps* eop, SComp** compNext)
+	bool iieops_lsa_shift_left(SExprOps* eop)
 	{
-		return(NULL);
+		return(false);
 	}
 
 
@@ -4413,9 +4504,9 @@ debug_break;
 // Called to handle the shift right component
 //
 //////
-	SExprOps* ieops_lsa_shift_right(SComp* comp, SExprOps* eop, SComp** compNext)
+	bool iieops_lsa_shift_right(SExprOps* eop)
 	{
-		return(NULL);
+		return(false);
 	}
 
 
@@ -4426,9 +4517,9 @@ debug_break;
 // Called to handle the ampersand component
 //
 //////
-	SExprOps* ieops_lsa_ampersand(SComp* comp, SExprOps* eop, SComp** compNext)
+	bool iieops_lsa_ampersand(SExprOps* eop)
 	{
-		return(NULL);
+		return(false);
 	}
 
 
@@ -4439,9 +4530,9 @@ debug_break;
 // Called to handle the caret component
 //
 //////
-	SExprOps* ieops_lsa_caret(SComp* comp, SExprOps* eop, SComp** compNext)
+	bool iieops_lsa_caret(SExprOps* eop)
 	{
-		return(NULL);
+		return(false);
 	}
 
 
@@ -4452,9 +4543,9 @@ debug_break;
 // Called to handle the pipe sign component
 //
 //////
-	SExprOps* ieops_lsa_pipe_sign(SComp* comp, SExprOps* eop, SComp** compext)
+	bool iieops_lsa_pipe_sign(SExprOps* eop)
 	{
-		return(NULL);
+		return(false);
 	}
 
 
@@ -4465,9 +4556,9 @@ debug_break;
 // Called to handle the numericalpha component
 //
 //////
-	SExprOps* ieops_lsa_numericalpha(SComp* comp, SExprOps* eop, SComp** compNext)
+	bool iieops_lsa_numericalpha(SExprOps* eop)
 	{
-		return(NULL);
+		return(false);
 	}
 
 
@@ -4478,9 +4569,9 @@ debug_break;
 // Called to handle the numeric component
 //
 //////
-	SExprOps* ieops_lsa_numeric(SComp* comp, SExprOps* eop, SComp** compNext)
+	bool iieops_lsa_numeric(SExprOps* eop)
 	{
-		return(NULL);
+		return(false);
 	}
 
 
@@ -4491,9 +4582,9 @@ debug_break;
 // Called to handle the comma component
 //
 //////
-	SExprOps* ieops_lsa_comma(SComp* comp, SExprOps* eop, SComp** compNext)
+	bool iieops_lsa_comma(SExprOps* eop)
 	{
-		return(NULL);
+		return(false);
 	}
 
 
@@ -4504,9 +4595,9 @@ debug_break;
 // Called to handle the other components
 //
 //////
-	SExprOps* ieops_lsa_others(SComp* comp, SExprOps* eop, SComp** compNext)
+	bool iieops_lsa_others(SExprOps* eop)
 	{
-		return(NULL);
+		return(false);
 	}
 
 

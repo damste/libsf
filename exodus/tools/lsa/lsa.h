@@ -119,24 +119,6 @@
 #include "/libsf/utils/common/cpp/include/extra_info.h"
 #include "/libsf/utils/common/cpp/include/bsearch.h"
 
-#define iterate(i, builder, p, structure)	for (i = 0; i < builder->populatedLength; i += sizeof(structure)) \
-											{ \
-												/* Grab the pointer */ \
-												p = (structure*)(builder->buffer + i);
-
-#define iterate_ptr(i, builder, p, structure)	for (i = 0; i < builder->populatedLength; i += sizeof(structure)) \
-												{ \
-													/* Grab the pointer */ \
-													p = (structure)(builder->buffer + i);
-
-#define iterate_with_count(i, builder, p, structure, count) \
-											for (i = 0; i < builder->populatedLength; i += sizeof(structure), ++count) \
-											{ \
-												/* Grab the pointer */ \
-												p = (structure*)(builder->buffer + i);
-#define iterate_end }
-
-
 #include "/libsf/utils/common/cpp/base/ll.cpp"
 #include "/libsf/utils/common/cpp/base/node.cpp"
 #include "/libsf/utils/common/cpp/base/builder.cpp"
