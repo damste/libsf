@@ -2468,6 +2468,7 @@ debug_break;
 										} else {
 renderAsText:
 											// We either draw it directly as text as it is, or if it has a non-breaking-space, we need to alter its appearance for the purposes of allowing spaces in variable names.
+#if !defined(_EXCLUDE_iBmp_nbsp_createAndPopulate)
 											if (comp->nbspCount)
 											{
 												// It's a name with a non-breaking-space, so we need to render it as a special graphic.
@@ -2512,6 +2513,7 @@ renderAsText:
 												iBmp_bitBlt(bmp, &lrcComp, bmpNbsp);
 
 											} else {
+#endif
 												// Draw the text
 renderAsOnlyText:
 												// Set the color
@@ -2554,7 +2556,9 @@ renderAsOnlyText:
 //												if (compHighlight && comp != compHighlight && comp->length == compHighlight->length && _memicmp(comp->line->sourceCode->data_s8 + comp->start, compHighlight->line->sourceCode->data_s8 + compHighlight->start, comp->length) == 0)
 // 													iBmp_colorizeHighlightGradient(bmp, &lrcComp, overrideMatchingBackColor, 0.5f, 0.25f);
 //////
+#if !defined(_EXCLUDE_iBmp_nbsp_createAndPopulate)
 											}
+#endif
 										}
 
 

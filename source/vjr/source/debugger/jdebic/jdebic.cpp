@@ -346,7 +346,7 @@ return;
 //////
 	void iJDebiC_recordNewItem(SBuilder* items, void* item)
 	{
-		iBuilder_appendData(items, (cs8*)&item, sizeof(item));
+		iBuilder_appendData(items, item, sizeof(item));
 	}
 
 

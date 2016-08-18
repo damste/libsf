@@ -3007,7 +3007,7 @@ debug_break;
 			// Grab the variable associated with this object's property
 			var = iObjProp_get_var_byIndex(obj, tnIndex);
 			if (var && var->varType == _VAR_TYPE_CHARACTER)
-				return(iDatum_compare(&var->value, tcText, tnTextLength));	// Do the compare normally
+				return(iDatum_compare(&var->value, (void*)tcText, tnTextLength));	// Do the compare normally
 		}
 		// If we get here, does not match
 		return(-2);

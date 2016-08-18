@@ -223,7 +223,7 @@
 						if (asciiComp->iCode == baseProp->associated_iCode)
 						{
 							// It's the right iCode, see if the text they've provided matches up
-							if (varIndex->value.length == asciiComp->length && iDatum_compare(&varIndex->value, asciiComp->keyword_cs8, asciiComp->length) == 0)
+							if (varIndex->value.length == asciiComp->length && iDatum_compare(&varIndex->value, (void*)asciiComp->keyword_cs8, asciiComp->length) == 0)
 							{
 								lnIndexProp	= lnIndex;
 								llFound		= true;

@@ -623,6 +623,7 @@ copy $(OutputPath)$(ProjectName).exe \libsf_offline\source\vjr\bin\64-bit\vjr_ms
     <ClInclude Include="..\..\source\vjr_compile_time_settings.h" />
     <ClInclude Include="..\..\source\vjr_const.h" />
     <ClInclude Include="..\..\source\vjr_defs.h" />
+    <ClInclude Include="..\..\source\vjr_fixups.h" />
     <ClInclude Include="..\..\source\vjr_globals.h" />
     <ClInclude Include="..\..\source\vjr_structs.h" />
     <ClInclude Include="..\..\source\vjr_structs0.h" />

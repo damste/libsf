@@ -1761,8 +1761,8 @@ struct SBasePropMap;
 		{	_INDEX_FONTSIZE,				0, (uptr)&iObjProp_setter_fontProperty, 0 },
 		{	_INDEX_FONTSTRIKETHRU,			0, (uptr)&iObjProp_setter_fontProperty, 0 },
 		{	_INDEX_FONTUNDERLINE,			0, (uptr)&iObjProp_setter_fontProperty, 0 },
-		{	_INDEX_FONTWIDEN,				0, 0, 0 };
-		{	_INDEX_FONTWIDENSPACES,			0, 0, 0 };
+		{	_INDEX_FONTWIDEN,				0, 0, 0 },
+		{	_INDEX_FONTWIDENSPACES,			0, 0, 0 },
 		{	_INDEX_FORECOLOR,				0, 0, 0 },
 		{	_INDEX_FORECOLOR,				0, 0, 0 },
 		{	_INDEX_HALFHEIGHTCAPTION,		0, 0, 0 },
@@ -1917,8 +1917,8 @@ struct SBasePropMap;
 		{	_INDEX_FONTSIZE,				0, (uptr)&iObjProp_setter_fontProperty, 0 },
 		{	_INDEX_FONTSTRIKETHRU,			0, (uptr)&iObjProp_setter_fontProperty, 0 },
 		{	_INDEX_FONTUNDERLINE,			0, (uptr)&iObjProp_setter_fontProperty, 0 },
-		{	_INDEX_FONTWIDEN,				0, 0, 0 };
-		{	_INDEX_FONTWIDENSPACES,			0, 0, 0 };
+		{	_INDEX_FONTWIDEN,				0, 0, 0 },
+		{	_INDEX_FONTWIDENSPACES,			0, 0, 0 },
 		{	_INDEX_FORECOLOR,				0, 0, 0 },
 		{	_INDEX_HEIGHT,					0, 0, 0 },
 		{	_INDEX_HELPCONTEXTID,			0, 0, 0 },
@@ -2276,8 +2276,8 @@ struct SBasePropMap;
 		{	_INDEX_FONTSIZE,				0, (uptr)&iObjProp_setter_fontProperty, 0 },
 		{	_INDEX_FONTSTRIKETHRU,			0, (uptr)&iObjProp_setter_fontProperty, 0 },
 		{	_INDEX_FONTUNDERLINE,			0, (uptr)&iObjProp_setter_fontProperty, 0 },
-		{	_INDEX_FONTWIDEN,				0, 0, 0 };
-		{	_INDEX_FONTWIDENSPACES,			0, 0, 0 };
+		{	_INDEX_FONTWIDEN,				0, 0, 0 },
+		{	_INDEX_FONTWIDENSPACES,			0, 0, 0 },
 		{	_INDEX_FORECOLOR,				0, 0, 0 },
 		{	_INDEX_HEIGHT,					0, 0, 0 },
 		{	_INDEX_HELPCONTEXTID,			0, 0, 0 },
@@ -2399,8 +2399,8 @@ struct SBasePropMap;
 		{	_INDEX_FONTSIZE,				0, (uptr)&iObjProp_setter_fontProperty, 0 },
 		{	_INDEX_FONTSTRIKETHRU,			0, (uptr)&iObjProp_setter_fontProperty, 0 },
 		{	_INDEX_FONTUNDERLINE,			0, (uptr)&iObjProp_setter_fontProperty, 0 },
-		{	_INDEX_FONTWIDEN,				0, 0, 0 };
-		{	_INDEX_FONTWIDENSPACES,			0, 0, 0 };
+		{	_INDEX_FONTWIDEN,				0, 0, 0 },
+		{	_INDEX_FONTWIDENSPACES,			0, 0, 0 },
 		{	_INDEX_FORECOLOR,				0, 0, 0 },
 		{	_INDEX_FORMAT,					0, 0, 0 },
 		{	_INDEX_HEIGHT,					0, 0, 0 },
@@ -2542,8 +2542,8 @@ struct SBasePropMap;
 		{	_INDEX_FONTSIZE,				0, (uptr)&iObjProp_setter_fontProperty, 0 },
 		{	_INDEX_FONTSTRIKETHRU,			0, (uptr)&iObjProp_setter_fontProperty, 0 },
 		{	_INDEX_FONTUNDERLINE,			0, (uptr)&iObjProp_setter_fontProperty, 0 },
-		{	_INDEX_FONTWIDEN,				0, 0, 0 };
-		{	_INDEX_FONTWIDENSPACES,			0, 0, 0 };
+		{	_INDEX_FONTWIDEN,				0, 0, 0 },
+		{	_INDEX_FONTWIDENSPACES,			0, 0, 0 },
 		{	_INDEX_FORECOLOR,				0, 0, 0 },
 		{	_INDEX_HEIGHT,					0, 0, 0 },
 		{	_INDEX_HELPCONTEXTID,			0, 0, 0 },
@@ -2683,8 +2683,8 @@ struct SBasePropMap;
 		{	_INDEX_FONTSTRIKETHRU,				0, (uptr)&iObjProp_setter_fontProperty, 0 },
 		{	_INDEX_FONTUNDERLINE,				0, (uptr)&iObjProp_setter_fontProperty, 0 },
 		{	_INDEX_FORECOLOR,					0, (uptr)&iObjProp_setter_editbox_mirror, 0 },
-		{	_INDEX_FONTWIDEN,				0, 0, 0 };
-		{	_INDEX_FONTWIDENSPACES,			0, 0, 0 };
+		{	_INDEX_FONTWIDEN,					0, 0, 0 },
+		{	_INDEX_FONTWIDENSPACES,				0, 0, 0 },
 		{	_INDEX_FORMAT,						0, 0, 0 },
 		{	_INDEX_HEIGHT,						0, 0, 0 },
 		{	_INDEX_HELPCONTEXTID,				0, 0, 0 },
@@ -2921,8 +2921,8 @@ struct SBasePropMap;
 		{	_INDEX_FONTSIZE,				0, (uptr)&iObjProp_setter_fontProperty, 0 },
 		{	_INDEX_FONTSTRIKETHRU,			0, (uptr)&iObjProp_setter_fontProperty, 0 },
 		{	_INDEX_FONTUNDERLINE,			0, (uptr)&iObjProp_setter_fontProperty, 0 },
-		{	_INDEX_FONTWIDEN,				0, 0, 0 };
-		{	_INDEX_FONTWIDENSPACES,			0, 0, 0 };
+		{	_INDEX_FONTWIDEN,				0, 0, 0 },
+		{	_INDEX_FONTWIDENSPACES,			0, 0, 0 },
 		{	_INDEX_FORECOLOR,				0, 0, 0 },
 		{	_INDEX_HEIGHT,					0, 0, 0 },
 		{	_INDEX_HELPCONTEXTID,			0, 0, 0 },
@@ -3047,8 +3047,8 @@ struct SBasePropMap;
 		{	_INDEX_FONTSIZE,				0, (uptr)&iObjProp_setter_fontProperty, 0 },
 		{	_INDEX_FONTSTRIKETHRU,			0, (uptr)&iObjProp_setter_fontProperty, 0 },
 		{	_INDEX_FONTUNDERLINE,			0, (uptr)&iObjProp_setter_fontProperty, 0 },
-		{	_INDEX_FONTWIDEN,				0, 0, 0 };
-		{	_INDEX_FONTWIDENSPACES,			0, 0, 0 };
+		{	_INDEX_FONTWIDEN,				0, 0, 0 },
+		{	_INDEX_FONTWIDENSPACES,			0, 0, 0 },
 		{	_INDEX_FORECOLOR,				0, 0, 0 },
 		{	_INDEX_HEIGHT,					0, 0, 0 },
 		{	_INDEX_HELPCONTEXTID,			0, 0, 0 },
@@ -3445,8 +3445,8 @@ struct SBasePropMap;
 		{	_INDEX_FONTSIZE,				0, (uptr)&iObjProp_setter_fontProperty, 0 },
 		{	_INDEX_FONTSTRIKETHRU,			0, (uptr)&iObjProp_setter_fontProperty, 0 },
 		{	_INDEX_FONTUNDERLINE,			0, (uptr)&iObjProp_setter_fontProperty, 0 },
-		{	_INDEX_FONTWIDEN,				0, 0, 0 };
-		{	_INDEX_FONTWIDENSPACES,			0, 0, 0 };
+		{	_INDEX_FONTWIDEN,				0, 0, 0 },
+		{	_INDEX_FONTWIDENSPACES,			0, 0, 0 },
 		{	_INDEX_HEIGHT,					0, 0, 0 },
 		{	_INDEX_HELPCONTEXTID,			0, 0, 0 },
 		{	_INDEX_INCREMENTALSEARCH,		0, 0, 0 },
@@ -3602,8 +3602,8 @@ struct SBasePropMap;
 		{	_INDEX_FONTSIZE,				0, (uptr)&iObjProp_setter_fontProperty, 0 },
 		{	_INDEX_FONTSTRIKETHRU,			0, (uptr)&iObjProp_setter_fontProperty, 0 },
 		{	_INDEX_FONTUNDERLINE,			0, (uptr)&iObjProp_setter_fontProperty, 0 },
-		{	_INDEX_FONTWIDEN,				0, 0, 0 };
-		{	_INDEX_FONTWIDENSPACES,			0, 0, 0 };
+		{	_INDEX_FONTWIDEN,				0, 0, 0 },
+		{	_INDEX_FONTWIDENSPACES,			0, 0, 0 },
 		{	_INDEX_FORECOLOR,				0, 0, 0 },
 		{	_INDEX_FORMAT,					0, 0, 0 },
 		{	_INDEX_HEIGHT,					0, 0, 0 },
@@ -4427,8 +4427,8 @@ struct SBasePropMap;
 		{	_INDEX_FONTSIZE,				0, (uptr)&iObjProp_setter_fontProperty, 0 },
 		{	_INDEX_FONTSTRIKETHRU,			0, (uptr)&iObjProp_setter_fontProperty, 0 },
 		{	_INDEX_FONTUNDERLINE,			0, (uptr)&iObjProp_setter_fontProperty, 0 },
-		{	_INDEX_FONTWIDEN,				0, 0, 0 };
-		{	_INDEX_FONTWIDENSPACES,			0, 0, 0 };
+		{	_INDEX_FONTWIDEN,				0, 0, 0 },
+		{	_INDEX_FONTWIDENSPACES,			0, 0, 0 },
 		{	_INDEX_FORECOLOR,				0, 0, 0 },
 		{	_INDEX_GRIDLINECOLOR,			0, 0, 0 },
 		{	_INDEX_GRIDLINES,				0, 0, 0 },
@@ -4586,8 +4586,8 @@ struct SBasePropMap;
 		{	_INDEX_FONTSIZE,				0, (uptr)&iObjProp_setter_fontProperty, 0 },
 		{	_INDEX_FONTSTRIKETHRU,			0, (uptr)&iObjProp_setter_fontProperty, 0 },
 		{	_INDEX_FONTUNDERLINE,			0, (uptr)&iObjProp_setter_fontProperty, 0 },
-		{	_INDEX_FONTWIDEN,				0, 0, 0 };
-		{	_INDEX_FONTWIDENSPACES,			0, 0, 0 };
+		{	_INDEX_FONTWIDEN,				0, 0, 0 },
+		{	_INDEX_FONTWIDENSPACES,			0, 0, 0 },
 		{	_INDEX_FORECOLOR,				0, 0, 0 },
 		{	_INDEX_FORMAT,					0, 0, 0 },
 		{	_INDEX_HEADERCLASS,				0, 0, 0 },
@@ -4687,8 +4687,8 @@ struct SBasePropMap;
 		{	_INDEX_FONTSIZE,				0, (uptr)&iObjProp_setter_fontProperty, 0 },
 		{	_INDEX_FONTSTRIKETHRU,			0, (uptr)&iObjProp_setter_fontProperty, 0 },
 		{	_INDEX_FONTUNDERLINE,			0, (uptr)&iObjProp_setter_fontProperty, 0 },
-		{	_INDEX_FONTWIDEN,				0, 0, 0 };
-		{	_INDEX_FONTWIDENSPACES,			0, 0, 0 };
+		{	_INDEX_FONTWIDEN,				0, 0, 0 },
+		{	_INDEX_FONTWIDENSPACES,			0, 0, 0 },
 		{	_INDEX_FORECOLOR,				0, 0, 0 },
 		{	_INDEX_MOUSEICON,				0, 0, 0 },
 		{	_INDEX_MOUSEPOINTER,			0, 0, 0 },
@@ -4983,8 +4983,8 @@ struct SBasePropMap;
 		{	_INDEX_FONTSIZE,				0, (uptr)&iObjProp_setter_fontProperty, 0 },
 		{	_INDEX_FONTSTRIKETHRU,			0, (uptr)&iObjProp_setter_fontProperty, 0 },
 		{	_INDEX_FONTUNDERLINE,			0, (uptr)&iObjProp_setter_fontProperty, 0 },
-		{	_INDEX_FONTWIDEN,				0, 0, 0 };
-		{	_INDEX_FONTWIDENSPACES,			0, 0, 0 };
+		{	_INDEX_FONTWIDEN,				0, 0, 0 },
+		{	_INDEX_FONTWIDENSPACES,			0, 0, 0 },
 		{	_INDEX_FORECOLOR,				0, 0, 0 },
 		{	_INDEX_FORMAT,					0, 0, 0 },
 		{	_INDEX_HEIGHT,					0, 0, 0 },
@@ -5327,8 +5327,8 @@ struct SBasePropMap;
 		{	_INDEX_FONTSIZE,				0, (uptr)&iObjProp_setter_fontProperty, 0 },
 		{	_INDEX_FONTSTRIKETHRU,			0, (uptr)&iObjProp_setter_fontProperty, 0 },
 		{	_INDEX_FONTUNDERLINE,			0, (uptr)&iObjProp_setter_fontProperty, 0 },
-		{	_INDEX_FONTWIDEN,				0, 0, 0 };
-		{	_INDEX_FONTWIDENSPACES,			0, 0, 0 };
+		{	_INDEX_FONTWIDEN,				0, 0, 0 },
+		{	_INDEX_FONTWIDENSPACES,			0, 0, 0 },
 		{	_INDEX_FORECOLOR,				0, 0, 0 },
 		{	_INDEX_HELPCONTEXTID,			0, 0, 0 },
 		{	_INDEX_MOUSEICON,				0, 0, 0 },

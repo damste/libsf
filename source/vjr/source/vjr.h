@@ -142,6 +142,7 @@
 	#include <stdlib.h>
 
 	#include "vjr_const.h"
+	#include "vjr_fixups.h"
 	#include "\libsf\utils\common\cpp\include\ll.h"
 	#include "vjr_structs00.h"
 	#include "\libsf\utils\common\cpp\include\node.h"

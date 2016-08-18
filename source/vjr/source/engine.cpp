@@ -242,7 +242,7 @@
 
 						} else {
 							// It's a number, display it
-							if ((dfunc = iDllFunc_find_byName(compNext->line->sourceCode.data_s8 + compNext->start, compNext->length)))
+							if ((dfunc = iDllFunc_find_byName(compNext->line->sourceCode->data_s8 + compNext->start, compNext->length)))
 							{
 								// It is a DLL function
 								if (dfunc->rp.type == _DLL_TYPE_VOID)
@@ -360,7 +360,7 @@
 								}
 
 							} else {
-								varExisting = iVariable_searchForName(comp->line->sourceCode.data_s8 + comp->start, comp->length, comp, true);
+								varExisting = iVariable_searchForName(comp->line->sourceCode->data_s8 + comp->start, comp->length, comp, true);
 								if (varExisting)
 								{
 									// We are updating the value
@@ -369,14 +369,14 @@
 
 								} else {
 									// We are creating a new variable
-									iDatum_duplicate(&var->name, comp->line->sourceCode.data_u8 + comp->start, comp->length);
+									iDatum_duplicate(&var->name, comp->line->sourceCode->data_u8 + comp->start, comp->length);
 									iLl_appendExisting__llAtBeginning((SLL**)&varGlobals, (SLL*)var);
 								}
 							}
 
 						} else {
 							// It may be a DLL
-							if ((dfunc = iDllFunc_find_byName(comp->line->sourceCode.data_s8 + comp->start, comp->length)))
+							if ((dfunc = iDllFunc_find_byName(comp->line->sourceCode->data_s8 + comp->start, comp->length)))
 							{
 								// It is a DLL function
 								memset(&lrpar, 0, sizeof(lrpar));
@@ -624,7 +624,7 @@
 		//////////
 		// Copy the source code line
 		//////
-			iDatum_duplicate(line->compilerInfo->sourceCode, line->sourceCode.data_s8, line->sourceCode_populatedLength);
+			iDatum_duplicate(line->compilerInfo->sourceCode, line->sourceCode->data_s8, line->sourceCode_populatedLength);
 
 
 		//////////
@@ -985,7 +985,7 @@
 					// See if it has a dot/period in it
 					for (lnI = 0, llDot = false; lnI < comp->length; lnI++)
 					{
-						if (comp->line->sourceCode.data_s8[comp->start + lnI] == '.')
+						if (comp->line->sourceCode->data_s8[comp->start + lnI] == '.')
 						{
 							llDot = true;
 							break;
@@ -1122,7 +1122,7 @@
 				case _ICODE_ALPHANUMERIC:
 				case _ICODE_ALPHA:
 					// It's some kind of text, could be a field or variable
-					return(iEngine_get_variableName_fromText(comp->line->sourceCode.data_cs8 + comp->start, comp->length, comp, tlManufactured, tlByRef));
+					return(iEngine_get_variableName_fromText(comp->line->sourceCode->data_cs8 + comp->start, comp->length, comp, tlManufactured, tlByRef));
 
 
 				case _ICODE_SINGLE_QUOTED_TEXT:
@@ -1134,7 +1134,7 @@
 						*tlManufactured	= true;
 						var = iVariable_create(_VAR_TYPE_CHARACTER, NULL, true);
 						if (var)
-							iDatum_duplicate(&var->value, comp->line->sourceCode.data_u8 + comp->start + 1, comp->length - 2);
+							iDatum_duplicate(&var->value, comp->line->sourceCode->data_u8 + comp->start + 1, comp->length - 2);
 
 
 					//////////
@@ -1178,14 +1178,14 @@
 					// It was found in the global variables
 
 /* We do not have work areas setup yet, so we cannot search them. :-)
-				} else if (var = iWorkarea_searchFieldName(comp->line->sourceCode.data_s8 + comp->start, comp->length)) {
+				} else if (var = iWorkarea_searchFieldName(comp->line->sourceCode->data_s8 + comp->start, comp->length)) {
 					// It was found in a table field
 					return(var);*/
 				}
 
 			} else {
 				// Search field names first, variables last.
-/*				if (var = iWorkarea_searchFieldName(comp->line->sourceCode.data_s8 + comp->start, comp->length))
+/*				if (var = iWorkarea_searchFieldName(comp->line->sourceCode->data_s8 + comp->start, comp->length))
 				{
 					// It was found in a table field
 					return(var);
@@ -1253,12 +1253,12 @@
 				case _ICODE_DOUBLE_QUOTED_TEXT:
 				case _ICODE_SINGLE_QUOTED_TEXT:
 					// By definition, quoted content is its own independent thing
-					varPathname = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, comp->line->sourceCode.data_u8 + comp->start, comp->length, true);
+					varPathname = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, comp->line->sourceCode->data_u8 + comp->start, comp->length, true);
 					break;
 
 				default:
 					// Get every contiguous component
-					varPathname	= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, comp->line->sourceCode.data_u8 + comp->start, iComps_getContiguousLength(comp, valid_iCodeArray, tnValid_iCodeArrayCount, NULL), true);
+					varPathname	= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, comp->line->sourceCode->data_u8 + comp->start, iComps_getContiguousLength(comp, valid_iCodeArray, tnValid_iCodeArrayCount, NULL), true);
 					break;
 			}
 		}
@@ -1394,13 +1394,13 @@
 
 		// Make sure our environment is sane
 		llResult = false;
-		if (comp && p && tnType && comp->line && comp->line->sourceCode && comp->line->sourceCode.data_cs8)
+		if (comp && p && tnType && comp->line && comp->line->sourceCode && comp->line->sourceCode->data_cs8)
 		{
 
 			//////////
 			// Get the variable name we're searching for
 			//////
-				lcVarName		= comp->line->sourceCode.data_cs8 + comp->start;
+				lcVarName		= comp->line->sourceCode->data_cs8 + comp->start;
 				lnVarNameLength	= (u32)comp->length;
 
 

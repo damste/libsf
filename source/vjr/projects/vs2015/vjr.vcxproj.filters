@@ -435,6 +435,9 @@
     <ClInclude Include="..\..\..\..\utils\common\cpp\fifo.h">
       <Filter>common</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\source\vjr_fixups.h">
+      <Filter>Source Files\Header Files\vjr</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <MASM Include="..\..\source\dllfuncs\dll_dispatch_64.asm">

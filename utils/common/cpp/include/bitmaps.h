@@ -189,7 +189,9 @@ struct SNodeProps;
 	SBgra					iBmp_colorCombine						(SBgra color1, SBgra color2, f32 tfAlp);
 	bool					iBmp_locateMarker						(SBitmap* bmp, u8 red, u8 grn, u8 blu, u32* tnX, u32* tnY, bool tlOverwriteMarker);
 	SBitmap*				iBmp_cask_createAndPopulate				(s32 iCode, s32 tnWidth, s32 tnHeight, s32* tnSkipChars, u32 tnTextLength, SBgra* backColor, SBgra textColor, SBgra backgroundColor, bool tlOverrideColors);
+#if !defined(_EXCLUDE_iBmp_nbsp_createAndPopulate)
 	SBitmap*				iBmp_nbsp_createAndPopulate				(SComp* comp, SFont* font, f32 tfMinColor, f32 tfMaxColor, s32 tnWidth, s32 tnHeight, SBgra backColor, SBgra textColor);
+#endif
 	void					iBmp_colorizeAsCommonTooltipBackground	(SBitmap* bmp);
 	void					iBmp_colorizeHighlightGradient			(SBitmap* bmp, RECT* rc, SBgra color, f32 tfLeftOpaque, f32 tfRightOpaque);
 	void					iBmp_dapple								(SBitmap* bmp, SBitmap* bmpDapple, SBitmap* bmpDappleTmp, f32 tfBias, f32 tfInfluence);
