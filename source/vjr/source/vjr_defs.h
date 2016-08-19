@@ -306,6 +306,7 @@ struct SObjEventMap;
 	void					iiSubobj_resetToDefaultCustom			(SObject*	custom,		bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
 	void					iiSubobj_resetToDefaultException		(SObject*	exception,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
 	void					iiSubobj_resetToDefaultSettings			(SObject*	exception,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
+	void					iiSubobj_resetToDefaultControlPoint		(SObject*	exception,	bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount);
 
 
 //////////

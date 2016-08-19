@@ -160,6 +160,7 @@ struct SFieldRecord2;
 	uptr				iDbf_cacheAllRowData							(SWorkArea* wa);
 	uptr				iDbf_close										(SWorkArea* wa);
 	uptr				iDbf_hasCdx										(SWorkArea* wa);
+	bool				iDbf_hasDbc										(u32 tnWorkArea, SWorkArea** dbc = NULL, s32* tnError = NULL);
 	bool				iDbf_isWorkAreaValid							(SWorkArea* wa, cu8** tcSpecialWorkAreaKeyName);
 	bool				iDbf_isWorkAreaUsed								(SWorkArea* wa, bool* tlIsValidWorkArea);
 	bool				iDbf_isWorkAreaLetter							(SVariable* var);
@@ -177,6 +178,7 @@ struct SFieldRecord2;
 	sptr				iDbf_get_workArea_byAlias_byComp				(SComp* comp,									cu8* tcSpecialKeyName = NULL, SWorkArea** waBase = NULL);
 	sptr				iDbf_get_workArea_byAlias_byName				(s8* tcName, u32 tnNameLength,					cu8* tcSpecialKeyName = NULL, SWorkArea** waBase = NULL);
 	SVariable*			iDbf_get_alias_fromPathname						(SVariable* varPathname,						cu8* tcSpecialKeyName = NULL);
+	s8*					iDbf_get_tagName								(SWorkArea* wa, s8* tagName_32, s32* tnError = NULL);
 
 	sptr				iDbf_gotoRecord									(SWorkArea* wa, s32 recordNumber);
 	sptr				iDbf_gotoTop									(SWorkArea* wa);

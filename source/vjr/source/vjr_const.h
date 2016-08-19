@@ -155,7 +155,7 @@ typedef SEM**		SEMpp;
 	#define iVariable_isValid(var)						(var && var->varType >= _VAR_TYPE_START && var->varType <= _VAR_TYPE_END && var->value._data && (var->varType == _VAR_TYPE_CHARACTER || var->value.length > 0))
 	#define iVariable_isValidType(var)					(var && var->varType >= _VAR_TYPE_START && var->varType <= _VAR_TYPE_END)
 	#define iVariable_isEmpty(var)						(!var->value._data || var->value.length <= 0)
-	#define iVariable_populate_byBool(testVar)			((cs8*)((testVar) ? &_LOGICAL_FALSE : &_LOGICAL_TRUE))
+	#define iVariable_populate_byBool(testVar)			(/*__LOGICAL_TRUE = _LOGICAL_TRUE, __LOGICAL_FALSE = _LOGICAL_FALSE,*/ (cs8*)((testVar) ? &__LOGICAL_TRUE : &__LOGICAL_FALSE))
 
 	#define validateVariable(var, error)				if (!iVariable_isValid(var)) \
 														{ \
@@ -298,7 +298,9 @@ typedef SEM**		SEMpp;
 	#define propGet_settings_ReprocessAttempts(obj)					iObjProp_get_s32_direct			(obj, _INDEX_SET_REPROCESSATTEMPTS)
 	#define propGet_settings_ReprocessInterval(obj)					iObjProp_get_s32_direct			(obj, _INDEX_SET_REPROCESSINTERVAL)
 	#define propGet_settings_Separator(obj)							iObjProp_get_character			(obj, _INDEX_SET_SEPARATOR)
-	#define propGet_settings_Talk(obj)								(iObjProp_get_logical_fromLogicalConstants(obj, _INDEX_SET_TALK)					!= _LOGICAL_FALSE)
+	#define propGet_settings_Status(obj)							(iObjProp_get_logical_fromLogicalConstants(obj, _INDEX_SET_STATUS)				!= _LOGICAL_FALSE)
+	#define propGet_settings_StatusBar(obj)							(iObjProp_get_logical_fromLogicalConstants(obj, _INDEX_SET_STATUSBAR)			!= _LOGICAL_FALSE)
+	#define propGet_settings_Talk(obj)								(iObjProp_get_logical_fromLogicalConstants(obj, _INDEX_SET_TALK)				!= _LOGICAL_FALSE)
 	#define propGet_settings_Time(obj)								iObjProp_get_s32_direct			(obj, _INDEX_SET_TIME)
 	#define propGet_settings_TimeLocal(obj)							(iObjProp_get_s32_direct		(obj, _INDEX_SET_TIME)							== _TIME_LOCAL)
 	#define propGet_settings_TimeSystem(obj)						(iObjProp_get_s32_direct		(obj, _INDEX_SET_TIME)							== _TIME_SYSTEM)
@@ -306,6 +308,10 @@ typedef SEM**		SEMpp;
 	#define propGet_settings_UdfParamsValue(obj)					(iObjProp_get_s32_direct		(obj, _INDEX_SET_UDFPARMS)						== _UDFPARMS_VALUE)
 	#define propGet_settings_VariablesFirst(obj)					(iObjProp_get_logical_fromLogicalConstants(obj, _INDEX_SET_VARIABLES_FIRST)		!= _LOGICAL_FALSE)
 	#define propGet_settings_VecSeparator(obj)						iObjProp_get_character			(obj, _INDEX_SET_VECSEPARATOR)
+
+	#define propSet_settings_Status(obj, value)						iObjProp_set_logical_fromLogicalConstants(obj, _INDEX_SET_STATUS,		value)
+	#define propSet_settings_StatusBar(obj, value)					iObjProp_set_logical_fromLogicalConstants(obj, _INDEX_SET_STATUSBAR,	value)
+
 
 
 //////////

@@ -198,7 +198,8 @@
 	s64 iDisk_getFileSize(s32 tnFile)
 	{
 		// Note:  Will return -1 if there's an error
-		return(_filelengthi64(tnFile));
+		if (tnFile > 0)		return(_filelengthi64(tnFile));
+		else				return((s64)tnFile);
 	}
 
 

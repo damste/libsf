@@ -2418,7 +2418,7 @@
 				// Initialize properties to VJr defaults
 				controlPointNew->objType	= _OBJ_TYPE_CONTROLPOINT;
 				controlPointNew->parent		= parent;
-				iiSubobj_resetToDefaultSettings(controlPointNew, true, true, &gsProps_controlpoint[0], gnProps_controlpointSize, &gsEvents_controlpoint[0], gnEvents_controlpointSize);
+				iiSubobj_resetToDefaultControlPoint(controlPointNew, true, true, &gsProps_controlpoint[0], gnProps_controlpointSize, &gsEvents_controlpoint[0], gnEvents_controlpointSize);
 
 				// Initially populate
 				controlPointNew->isRendered		= false;
