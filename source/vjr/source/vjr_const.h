@@ -87,17 +87,17 @@ struct SObject;
 struct SEM;
 
 #if defined(_MSC_VER)
-	#include "\libsf\utils\common\cpp\include\common_types.h"
-	#include "\libsf\utils\common\cpp\include\colors.h"
-	#include "\libsf\utils\common\cpp\include\uniqueid.h"
+	#include "\libsf\utils\common\cpp_vjr\include\common_types.h"
+	#include "\libsf\utils\common\cpp_vjr\include\colors.h"
+	#include "\libsf\utils\common\cpp_vjr\include\uniqueid.h"
 #elif defined(__GNUC__)
-	#include "/libsf/utils/common/cpp/include/common_types.h"
-	#include "/libsf/utils/common/cpp/include/colors.h"
-	#include "/libsf/utils/common/cpp/include/uniqueid.h"
+	#include "/libsf/utils/common/cpp_vjr/include/common_types.h"
+	#include "/libsf/utils/common/cpp_vjr/include/colors.h"
+	#include "/libsf/utils/common/cpp_vjr/include/uniqueid.h"
 #elif defined(__solaris__)
-	#include "/libsf/utils/common/cpp/include/common_types.h"
-	#include "/libsf/utils/common/cpp/include/colors.h"
-	#include "/libsf/utils/common/cpp/include/uniqueid.h"
+	#include "/libsf/utils/common/cpp_vjr/include/common_types.h"
+	#include "/libsf/utils/common/cpp_vjr/include/colors.h"
+	#include "/libsf/utils/common/cpp_vjr/include/uniqueid.h"
 #else
 	#error Unknown target for compilation (must be Windows, Linux, or Solaris (OpenIndiana))
 #endif

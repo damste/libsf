@@ -194,13 +194,13 @@
 								for (bxmlIcon = bxmlToolbar->child(); bxmlIcon; bxmlIcon = bxmlIcon->next())
 								{
 									// Verify it's an icon tag
-									if ((xdIconNameData = bxmlIcon->tag()) && iDatum_compare(xdIconNameData->as_datum(&d), (void*)cgcTag_icon, sizeof(cgcTag_icon) - 1) == 0)
+									if ((xdIconNameData = bxmlIcon->tag()) && iDatum_compare(xdIconNameData->as_datum(&d), cgcTag_icon, sizeof(cgcTag_icon) - 1) == 0)
 									{
 										// Extract the name attribute
 										if ((bxmlIconName = bxmlIcon->attribute(cgcTag_name)) && (xdIconNameData = bxmlIconName->data()))
 										{
 											// Find out what it is
-											if (xdIconNameData->length() == sizeof(cgcTag_separator) - 1 && iDatum_compare(xdIconNameData->as_datum(&d), (void*)cgcTag_separator, sizeof(cgcTag_separator) - 1) == 0)
+											if (xdIconNameData->length() == sizeof(cgcTag_separator) - 1 && iDatum_compare(xdIconNameData->as_datum(&d), cgcTag_separator, sizeof(cgcTag_separator) - 1) == 0)
 											{
 												// Append the separator
 												lo = iObj_addChild(_OBJ_TYPE_SEPARATOR, loToolbar);
@@ -322,7 +322,7 @@
 			for (llResult = true, bxmlToolbar = bxmlToolbars->child(); bxmlToolbar; bxmlToolbar = bxmlToolbar->next())
 			{
 				// Looking only for toolbar entries
-				if ((xdTag = bxmlToolbar->tag()) && xdTag->length() == sizeof(cgcTag_toolbar) - 1 && iDatum_compare(xdTag->as_datum(&d), (void*)cgcTag_toolbar, sizeof(cgcTag_toolbar) - 1) == 0)
+				if ((xdTag = bxmlToolbar->tag()) && xdTag->length() == sizeof(cgcTag_toolbar) - 1 && iDatum_compare(xdTag->as_datum(&d), cgcTag_toolbar, sizeof(cgcTag_toolbar) - 1) == 0)
 				{
 					// Grabbing names
 					if ((bxmlName = bxmlToolbar->attribute(cgcTag_name)) && (xdTagName = bxmlName->data()))
@@ -2756,7 +2756,7 @@
 
 				// Can only be no
 				} else if (d->length == 2) {
-					if (iDatum_compare(d, (void*)cgc_no, sizeof(cgc_no) - 1) == 0)
+					if (iDatum_compare(d, cgc_no, sizeof(cgc_no) - 1) == 0)
 					{
 						llResult		= true;
 						llStoreValue	= false;
@@ -2765,34 +2765,34 @@
 
 				// Can be yes, .t., .f., .o., .p., .x., .y. or .z.
 				} else if (d->length == 3) {
-					if (iDatum_compare(d, (void*)cgc_t_dots, sizeof(cgc_t_dots) - 1) == 0)
+					if (iDatum_compare(d, cgc_t_dots, sizeof(cgc_t_dots) - 1) == 0)
 					{
 						llResult		= true;
 						llStoreValue	= true;
 
-					} else if (iDatum_compare(d, (void*)cgc_f_dots, sizeof(cgc_f_dots) - 1) == 0) {
+					} else if (iDatum_compare(d, cgc_f_dots, sizeof(cgc_f_dots) - 1) == 0) {
 						llResult		= true;
 						llStoreValue	= false;
 
 					} else if (tlAllowLogicalX) {
 						// Has to be .o., .p., .x., .y. or .z.
-						if (iDatum_compare(d, (void*)cgc_o_dots, sizeof(cgc_o_dots) - 1) == 0) {
+						if (iDatum_compare(d, cgc_o_dots, sizeof(cgc_o_dots) - 1) == 0) {
 							llResult		= true;
 							llStoreValue	= false;
 
-						} else if (iDatum_compare(d, (void*)cgc_p_dots, sizeof(cgc_p_dots) - 1) == 0) {
+						} else if (iDatum_compare(d, cgc_p_dots, sizeof(cgc_p_dots) - 1) == 0) {
 							llResult		= true;
 							llStoreValue	= false;
 
-						} else if (iDatum_compare(d, (void*)cgc_x_dots, sizeof(cgc_x_dots) - 1) == 0) {
+						} else if (iDatum_compare(d, cgc_x_dots, sizeof(cgc_x_dots) - 1) == 0) {
 							llResult		= true;
 							llStoreValue	= false;
 
-						} else if (iDatum_compare(d, (void*)cgc_y_dots, sizeof(cgc_y_dots) - 1) == 0) {
+						} else if (iDatum_compare(d, cgc_y_dots, sizeof(cgc_y_dots) - 1) == 0) {
 							llResult		= true;
 							llStoreValue	= false;
 
-						} else if (iDatum_compare(d, (void*)cgc_z_dots, sizeof(cgc_z_dots) - 1) == 0) {
+						} else if (iDatum_compare(d, cgc_z_dots, sizeof(cgc_z_dots) - 1) == 0) {
 							llResult		= true;
 							llStoreValue	= false;
 						}
@@ -2801,7 +2801,7 @@
 
 				// Can only be true
 				} else if (d->length == 4) {
-					if (iDatum_compare(d, (void*)cgc_true, sizeof(cgc_true) - 1) == 0)
+					if (iDatum_compare(d, cgc_true, sizeof(cgc_true) - 1) == 0)
 					{
 						llResult		= true;
 						llStoreValue	= true;
@@ -2810,7 +2810,7 @@
 
 				// Can only be false
 				} else if (d->length == 5) {
-					if (iDatum_compare(d, (void*)cgc_false, sizeof(cgc_false) - 1) == 0)
+					if (iDatum_compare(d, cgc_false, sizeof(cgc_false) - 1) == 0)
 					{
 						llResult		= true;
 						llStoreValue	= false;

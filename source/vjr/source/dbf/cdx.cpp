@@ -1164,7 +1164,7 @@
 					if (metaData)
 					{
 						// Building the list
-						iBuilder_appendData(metaData, (void*)"Tag: ", -1);
+						iBuilder_appendData(metaData, (cu8*)"Tag: ", -1);
 						iBuilder_appendData(metaData, tagRoot.tagName, sizeof(tagRoot.tagName));
 						iBuilder_backoffTrailingWhitespaces(metaData);
 
@@ -1475,23 +1475,23 @@ clean_house:
 		//////////
 		// Add meta data
 		//////
-			iBuilder_appendData(metaData, (void*)"Tag: ", -1);
+			iBuilder_appendData(metaData, (cu8*)"Tag: ", -1);
 			iBuilder_appendData(metaData, tagRoot.tagName, min((u32)strlen((s8*)tagRoot.tagName), 10));
 			iBuilder_backoffTrailingWhitespaces(metaData);
-			iBuilder_appendData(metaData, (void*)", INDEX ON ", -1);
+			iBuilder_appendData(metaData, (cu8*)", INDEX ON ", -1);
 
 			iBuilder_appendData(metaData, tagHeader->keyExpression, tagHeader->keyExpressionLength - 1);
-			iBuilder_appendData(metaData, (void*)" ", -1);
+			iBuilder_appendData(metaData, (cu8*)" ", -1);
 
 			if (iiCdx_isUnique(tagHeader))
-				iBuilder_appendData(metaData, (void*)"UNIQUE ", -1);
+				iBuilder_appendData(metaData, (cu8*)"UNIQUE ", -1);
 
 			if (iiCdx_isDescending(tagHeader))
-				iBuilder_appendData(metaData, (void*)"DESCENDING ", -1);
+				iBuilder_appendData(metaData, (cu8*)"DESCENDING ", -1);
 
 			if (tagHeader->forClauseLength > 1)
 			{
-				iBuilder_appendData(metaData, (void*)"FOR ", -1);
+				iBuilder_appendData(metaData, (cu8*)"FOR ", -1);
 				iBuilder_appendData(metaData, tagHeader->keyExpression + tagHeader->keyExpressionLength, tagHeader->forClauseLength - 1);
 			}
 			iBuilder_appendCrLf(metaData);
@@ -1508,10 +1508,10 @@ clean_house:
 				if (tcMetaData)
 				{
 					// Store the string to return
-					iBuilder_appendData(metaData, (void*)"Tag: ", -1);
+					iBuilder_appendData(metaData, (cu8*)"Tag: ", -1);
 					iBuilder_appendData(metaData, tagRoot.tagName, min((u32)strlen((s8*)tagRoot.tagName), 10));
 					iBuilder_backoffTrailingWhitespaces(metaData);
-					iBuilder_appendData(metaData, (void*)", FOR clause is too complex for current support", -1);
+					iBuilder_appendData(metaData, (cu8*)", FOR clause is too complex for current support", -1);
 					goto close_and_quit;
 				}
 			}
@@ -1526,10 +1526,10 @@ clean_house:
 			{
 				// Key expression could not be parsed
 				llResult = false;
-				iBuilder_appendData(metaData, (void*)"Tag: ", -1);
+				iBuilder_appendData(metaData, (cu8*)"Tag: ", -1);
 				iBuilder_appendData(metaData, tagRoot.tagName, min((u32)strlen((s8*)tagRoot.tagName), 10));
 				iBuilder_backoffTrailingWhitespaces(metaData);
-				iBuilder_appendData(metaData, (void*)", key expression could not be parsed", -1);
+				iBuilder_appendData(metaData, (cu8*)", key expression could not be parsed", -1);
 				iBuilder_appendCrLf(metaData);
 				goto close_and_quit;
 			}
@@ -1589,10 +1589,10 @@ clean_house:
 				// There cannot be any CDX keys either
 				if (cdxKeys->populatedLength == 0)
 				{
-					iBuilder_appendData(metaData, (void*)"Tag: ", -1);
+					iBuilder_appendData(metaData, (cu8*)"Tag: ", -1);
 					iBuilder_appendData(metaData, tagRoot.tagName, min((u32)strlen((s8*)tagRoot.tagName), 10));
 					iBuilder_backoffTrailingWhitespaces(metaData);
-					iBuilder_appendData(metaData, (void*)", DBF key count: 0, CDX key count: 0", -1);
+					iBuilder_appendData(metaData, (cu8*)", DBF key count: 0, CDX key count: 0", -1);
 					iBuilder_appendCrLf(metaData);
 					goto close_and_quit;	// They indexes match (being as there are no indexes)!
 				}
@@ -1712,16 +1712,16 @@ clean_house:
 				}
 			}
 			// Indicate the result
-			iBuilder_appendData(metaData, (void*)"Tag: ", -1);
+			iBuilder_appendData(metaData, (cu8*)"Tag: ", -1);
 			iBuilder_appendData(metaData, tagRoot.tagName, min((u32)strlen((s8*)tagRoot.tagName), 10));
 			iBuilder_backoffTrailingWhitespaces(metaData);
 			if (llResult)
 			{
 				// If we get here, the keys all match (by RECNO() at least) so we can continue on
-				iBuilder_appendData(metaData, (void*)", valid", -1);
+				iBuilder_appendData(metaData, (cu8*)", valid", -1);
 
 			} else {
-				iBuilder_appendData(metaData, (void*)", invalid", -1);
+				iBuilder_appendData(metaData, (cu8*)", invalid", -1);
 			}
 			iBuilder_appendCrLf(metaData);
 
@@ -3305,7 +3305,7 @@ debug_break;
 									// Indicate our key count has gone up
 									++lnTotalKeyCount;
 									iBuilder_appendData(keys, &key.key[0],				key.keyLength);		// Append key
-									iBuilder_appendData(keys, (void*)&key.recordNumber,	4);					// Append record number
+									iBuilder_appendData(keys, (cu8*)&key.recordNumber,	4);					// Append record number
 
 								} else {
 									// Should not happen
@@ -3494,12 +3494,12 @@ debug_break;
 									{
 										// Compact
 										iBuilder_appendData(keys, &keyCdx.key[0],				keyCdx.keyLength);		// Append key
-										iBuilder_appendData(keys, (void*)&keyCdx.recordNumber,	4);					// Append record number
+										iBuilder_appendData(keys, (cu8*)&keyCdx.recordNumber,	4);					// Append record number
 
 									} else {
 										// Standard
 										iBuilder_appendData(keys, &keyIdx.key[0],				keyIdx.keyLength);		// Append key
-										iBuilder_appendData(keys, (void*)&keyIdx.record,		4);						// Append record number
+										iBuilder_appendData(keys, (cu8*)&keyIdx.record,			4);						// Append record number
 									}
 
 								} else {

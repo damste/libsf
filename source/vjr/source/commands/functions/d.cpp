@@ -1992,13 +1992,13 @@
 												}
 										}
 
-							} else if (tlTextMerge && lnI + leftTextmergeDelim->length <= tnFormatStrLength && iDatum_compare(leftTextmergeDelim, (void*)(tcFormatStr + lnI), leftTextmergeDelim->length) == 0) {
+							} else if (tlTextMerge && lnI + leftTextmergeDelim->length <= tnFormatStrLength && iDatum_compare(leftTextmergeDelim, tcFormatStr + lnI, leftTextmergeDelim->length) == 0) {
 								// It's the start of a text merge
 								// Search forward for the closing tag and extract the content out between
 								for (lnJ = lnI + leftTextmergeDelim->length, varTextmerge = NULL; lnJ <= tnFormatStrLength - rightTextmergeDelim->length; lnJ++)
 								{
 									// Is it the right delimiter?
-									if (iDatum_compare(rightTextmergeDelim, (void*)(tcFormatStr + lnJ), rightTextmergeDelim->length) == 0)
+									if (iDatum_compare(rightTextmergeDelim, tcFormatStr + lnJ, rightTextmergeDelim->length) == 0)
 									{
 										// We've found the range
 										varTextmerge = iEngine_get_variableName_fromText(tcFormatStr + lnI + leftTextmergeDelim->length, lnJ - lnI - rightTextmergeDelim->length, NULL, &llManufactured, false);

@@ -3007,7 +3007,7 @@ debug_break;
 			// Grab the variable associated with this object's property
 			var = iObjProp_get_var_byIndex(obj, tnIndex);
 			if (var && var->varType == _VAR_TYPE_CHARACTER)
-				return(iDatum_compare(&var->value, (void*)tcText, tnTextLength));	// Do the compare normally
+				return(iDatum_compare(&var->value, tcText, tnTextLength));	// Do the compare normally
 		}
 		// If we get here, does not match
 		return(-2);
@@ -3305,16 +3305,6 @@ debug_break;
 						obj->p.sem->font->isUnderline = obj->p.font->isUnderline;
 						iiFont_refresh(obj->p.sem->font);
 					}
-					break;
-
-				case _INDEX_FONTWIDEN:
-					if (obj->p.sem->font)
-						obj->p.sem->font->widen = obj->p.font->widen;
-					break;
-
-				case _INDEX_FONTWIDENSPACES:
-					if (obj->p.sem->font)
-						obj->p.sem->font->widenSpaces = obj->p.font->widenSpaces;
 					break;
 
 				default:

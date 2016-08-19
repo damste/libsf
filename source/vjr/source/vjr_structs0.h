@@ -190,9 +190,9 @@ struct SXYS32
 
 
 #if defined(_MSC_VER)
-	#include "\libsf\utils\common\cpp\include\datum.h"
+	#include "\libsf\utils\common\cpp_vjr\include\datum.h"
 #elif defined(__GNUC__) || defined(__solaris__)
-	#include "/libsf/utils/common/cpp/include/datum.h"
+	#include "/libsf/utils/common/cpp_vjr/include/datum.h"
 #else
 	#error Unknown target for compilation (must be Windows, Linux, or Solaris (OpenIndiana))
 #endif
@@ -370,7 +370,46 @@ struct SAsciiCompSearcher
 struct SCompiler;
 struct SBreakpoint;
 struct SExtraInfo;
-struct SBmpCache;
+
+struct SLine
+{
+	SLL				ll;												// Link list throughout
+	u32				uid;											// Unique id for this line, used for undos and identifying individual lines which may move about (note this value must be isolated and separate from ll.uniqueId)
+	void*			parent;											// A parent this relates to, which could be a controlling structure (like an SEM*)
+
+	// Line information
+	u32				lineNumber;										// This line's number
+	bool			isNewLine;										// If the line's been added during normal editing
+	SDatum*			sourceCodeOriginal;								// The original sourceCode when the line was first created, or last saved (note the length here is the total length as this value does not change, but is setup exactly when it is updated)
+	SDatum*			sourceCode;										// The text on this line is LEFT(sourceCode.data, sourceCodePopulated)
+	s32				sourceCode_populatedLength;						// The actual populated length of sourceCode, which may differ from sourceCode.length (which is the allocated length fo sourceCode.data)
+
+//////////
+// Some of these compilation steps are specific to Visual FreePro, Jr., though they will also work for other non-RDC/VXB compile steps
+// START
+//////
+	// Each render, these are updated
+	u32				renderId;										// Each time it's rendered, this value is set
+	RECT			rcLastRender;									// The rectangle within the parent of the last render
+
+	// Compiler information (see compiler.cpp)
+	bool			forceRecompile;									// A flag that if set forces a recompile of this line
+	SCompiler*		compilerInfo;									// Information about the last time this line was compiled
+
+	// General purpose extra data
+	SBreakpoint*	breakpoint;										// If there's a breakpoint here, what kind?
+	SExtraInfo*		extra_info;										// Extra information about this item in the chain
+//////
+// END
+///////////
+
+
+#if defined(_LASM_COMPILE)
+	// Other usages defined by app, see /libsf/exodus/tools/lasm/lasm.cpp for an example
+	SLasmLineStatus		status;
+	SDatum*				fileName;
+#endif
+};
 
 // Structure of parsed components on a line, tokens by another name
 #define _SCOMP_DEFINED
