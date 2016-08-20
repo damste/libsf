@@ -396,6 +396,11 @@
 		{	0,										0,	0,	0,	0,	0	}
 	};
 
+	SSourceLightData gsSourceLight_bof[] =
+	{
+		{	0,										0,	0,	0,	0,	0	}
+	};
+
 	SSourceLightData gsSourceLight_cdow[] =
 	{
 		{	0,										0,	0,	0,	0,	0	}
@@ -537,6 +542,11 @@
 	};
 
 	SSourceLightData gsSourceLight_endswithc[] =
+	{
+		{	0,										0,	0,	0,	0,	0	}
+	};
+
+	SSourceLightData gsSourceLight_eof[] =
 	{
 		{	0,										0,	0,	0,	0,	0	}
 	};
@@ -843,6 +853,16 @@
 	};
 
 	SSourceLightData gsSourceLight_ratc[] =
+	{
+		{	0,										0,	0,	0,	0,	0	}
+	};
+
+	SSourceLightData gsSourceLight_recno[] =
+	{
+		{	0,										0,	0,	0,	0,	0	}
+	};
+
+	SSourceLightData gsSourceLight_reccount[] =
 	{
 		{	0,										0,	0,	0,	0,	0	}
 	};

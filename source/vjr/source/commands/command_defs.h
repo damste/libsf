@@ -185,6 +185,8 @@ struct SReturnsParams;
 	void				function_atn2								(SReturnsParams* rpar);
 	void				function_between	/* Stefano D'Amico */	(SReturnsParams* rpar);
 	void				function_bfp								(SReturnsParams* rpar);
+	void				function_bgr								(SReturnsParams* rpar);
+	void				function_bgra								(SReturnsParams* rpar);
 	void				function_bi									(SReturnsParams* rpar);
 	void				function_bits								(SReturnsParams* rpar);
 	void				ifunction_bits_common						(SReturnsParams* rpar, SVariable* varBits, SVariable* varBitWidth);
@@ -194,9 +196,8 @@ struct SReturnsParams;
 	void				function_bits64								(SReturnsParams* rpar);
 	void				function_bitslice							(SReturnsParams* rpar);
 	void				function_bitstr								(SReturnsParams* rpar);
+	void				function_bof								(SReturnsParams* rpar);
 	void				function_blu								(SReturnsParams* rpar);
-	void				function_bgr								(SReturnsParams* rpar);
-	void				function_bgra								(SReturnsParams* rpar);
 	void				function_cdow		/* Stefano D'Amico */	(SReturnsParams* rpar);
 	u32					ifunction_dow_common						(SReturnsParams* rpar, u32 tnYear, u32 tnMonth, u32 tnDay);
 	void				function_ceiling	/* Stefano D'Amico */	(SReturnsParams* rpar);
@@ -235,6 +236,7 @@ struct SReturnsParams;
 	bool				function_isempty_common						(SReturnsParams* rpar, SVariable* varExpr);
 	void				function_endswith							(SReturnsParams* rpar);
 	void				function_endswithc							(SReturnsParams* rpar);
+	void				function_eof								(SReturnsParams* rpar);
 	void				function_evl		/* Stefano D'Amico */	(SReturnsParams* rpar);
 	void				function_exp		/* Stefano D'Amico */	(SReturnsParams* rpar);
 	void				ifunction_numbers_common					(SReturnsParams* rpar, SVariable* varNumber1, SVariable* varNumber2, SVariable* varNumber3, u32 tnFunctionType, const u32 tnResultType, bool tlSameInputType, bool tlNoEmptyParam);
@@ -310,7 +312,7 @@ struct SReturnsParams;
 	void				function_rgba								(SReturnsParams* rpar);
 	void				function_recno								(SReturnsParams* rpar);
 	void				function_reccount							(SReturnsParams* rpar);
-	void				ifunction_recno_reccount_common				(SReturnsParams* rpar, bool tlIsRecno);
+	void				ifunction_calias_nworkarea_common			(SReturnsParams* rpar, bool tlIsRecno, bool tlIsReccount, bool tlIsBof, bool tlIsEof);
 	void				function_red								(SReturnsParams* rpar);
 	void				ifunction_color_common						(SReturnsParams* rpar, SVariable* varColor, u32 tnMask, u32 tnShift);
 	void				function_right								(SReturnsParams* rpar);
@@ -552,6 +554,7 @@ struct SReturnsParams;
 		{	_ICODE_BGR,				1,			1,				false,		(uptr)&function_bgr,			3,				3,				NULL,			&gsSourceLight_bgr[0]			},
 		{	_ICODE_BGRA,			1,			1,				false,		(uptr)&function_bgra,			4,				4,				NULL,			&gsSourceLight_bgra[0]			},
 		{	_ICODE_BLU,				1,			1,				false,		(uptr)&function_blu,			1,				1,				NULL,			&gsSourceLight_blu[0]			},
+		{	_ICODE_BOF,				1,			1,				false,		(uptr)&function_bof,			0,				1,				NULL,			&gsSourceLight_bof[0]			},
 		{	_ICODE_CDOW,			1,			1,				false,		(uptr)&function_cdow,			0,				1,				NULL,			&gsSourceLight_cdow[0]			},	// CDOW() by Stefano D'Amico, VJr 0_57, Apr.04.2015
 		{	_ICODE_CEILING,			1,			1,				false,		(uptr)&function_ceiling,		1,				1,				NULL,			&gsSourceLight_ceiling[0]		},	// CEILING() by Stefano D'Amico, VJr 0_56, Mar.15.2015
 		{	_ICODE_CHR,				1,			1,				false,		(uptr)&function_chr,			1,				1,				NULL,			&gsSourceLight_chr[0]			},
@@ -582,6 +585,7 @@ struct SReturnsParams;
 		{	_ICODE_EMPTY,			1,			1,				false,		(uptr)&function_empty,			1,				1,				NULL,			&gsSourceLight_empty[0]			},	// EMPTY() by Stefano D'Amico, VJr 0_56, Mar.19.2015
 		{	_ICODE_ENDSWITH,		1,			1,				false,		(uptr)&function_endswith,		2,				4,				NULL,			&gsSourceLight_endswith[0]		},
 		{	_ICODE_ENDSWITHC,		1,			1,				false,		(uptr)&function_endswith,		2,				4,				NULL,			&gsSourceLight_endswithc[0]		},
+		{	_ICODE_EOF,				1,			1,				false,		(uptr)&function_eof,			0,				1,				NULL,			&gsSourceLight_eof[0]			},
 		{	_ICODE_EVL,				1,			1,				false,		(uptr)&function_evl,			2,				2,				NULL,			&gsSourceLight_evl[0]			},	// EVL() by Stefano D'Amico, VJr 0_56, Mar.20.2015
 		{	_ICODE_EXP,				1,			1,				false,		(uptr)&function_exp,			1,				1,				NULL,			&gsSourceLight_exp[0]			},	// EXP() by Stefano D'Amico, VJr 0_56, Mar.15.2015
 		{	_ICODE_FLOOR,			1,			1,				false,		(uptr)&function_floor,			1,				1,				NULL,			&gsSourceLight_floor[0]			},	// FLOOR() by Stefano D'Amico, VJr 0_56, Mar.15.2015
@@ -643,8 +647,8 @@ struct SReturnsParams;
 		{	_ICODE_RANGER2,			1,			1,				false,		(uptr)&function_ranger2,		3,				3,				NULL,			&gsSourceLight_ranger2[0]		},
 		{	_ICODE_RAT,				1,			1,				false,		(uptr)&function_rat,			2,				3,				NULL,			&gsSourceLight_rat[0]			},
 		{	_ICODE_RATC,			1,			1,				false,		(uptr)&function_ratc,			2,				3,				NULL,			&gsSourceLight_ratc[0]			},
-		{	_ICODE_RECNO,			1,			1,				false,		(uptr)&function_recno,			0,				1,				NULL,			&gsSourceLight_red[0]			},
-		{	_ICODE_RECCOUNT,		1,			1,				false,		(uptr)&function_reccount,		0,				1,				NULL,			&gsSourceLight_red[0]			},
+		{	_ICODE_RECNO,			1,			1,				false,		(uptr)&function_recno,			0,				1,				NULL,			&gsSourceLight_recno[0]			},
+		{	_ICODE_RECCOUNT,		1,			1,				false,		(uptr)&function_reccount,		0,				1,				NULL,			&gsSourceLight_reccount[0]		},
 		{	_ICODE_RED,				1,			1,				false,		(uptr)&function_red,			1,				1,				NULL,			&gsSourceLight_red[0]			},
 		{	_ICODE_REPLICATE,		1,			1,				false,		(uptr)&function_replicate,		2,				2,				NULL,			&gsSourceLight_replicate[0]		},
 		{	_ICODE_RGB,				1,			1,				false,		(uptr)&function_rgb,			3,				3,				NULL,			&gsSourceLight_rgb[0]			},

@@ -347,6 +347,34 @@
 
 //////////
 //
+// Function: EOF()
+// Indicates if the work area is sitting at end of file
+//
+//////
+// Version 0.59
+// Last update:
+//     Aug.20.2016
+//////
+// Change log:
+//     Aug.20.2016 - Initial creation
+//////
+// Parameters:
+//     pAliasWa		-- (optional) cAlias or nWorkArea to inquire
+//
+//////
+// Returns:
+//    Logical		-- Is the file at EOF()?
+//////
+	void function_eof(SReturnsParams* rpar)
+	{
+		return(ifunction_calias_nworkarea_common(rpar, false, false, false, true));
+	}
+
+
+
+
+//////////
+//
 // Function: EVL()
 // Returns a non-empty value from two expressions.
 //

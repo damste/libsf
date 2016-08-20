@@ -377,6 +377,82 @@
 
 //////////
 //
+// Function: BGR()
+// Returns the BGR() of the three input values.
+//
+//////
+// Version 0.58   (Determine the current version from the header in vjr.cpp)
+// Last update:
+//     Mar.16.2015
+//////
+// Change log:
+//     Mar.16.2015 - Initial creation
+//////
+// Parameters:
+//     pBlu			-- Blue, in the range 0..255, or 0.0..1.0
+//     pGrn			-- Green, in the range 0..255, or 0.0..1.0
+//     pRed			-- Red, in the range 0..255, or 0.0..1.0
+//
+//////
+// Returns:
+//    Numeric		-- Constructed system-wide RGBA() integer
+//
+//////
+	void function_bgr(SReturnsParams* rpar)
+	{
+		SVariable* varBlu = rpar->ip[0];
+		SVariable* varGrn = rpar->ip[1];
+		SVariable* varRed = rpar->ip[2];
+
+
+		// Return bgr
+		ifunction_rgba_common(rpar, varRed, varGrn, varBlu, NULL);
+	}
+
+
+
+
+//////////
+//
+// Function: BGRA()
+// Returns the BGRA() of the four input values.
+//
+//////
+// Version 0.58   (Determine the current version from the header in vjr.cpp)
+// Last update:
+//     Mar.16.2015
+//////
+// Change log:
+//     Mar.16.2015 - Initial creation
+//////
+// Parameters:
+//     pBlu			-- Blue, in the range 0..255, or 0.0..1.0
+//     pGrn			-- Green, in the range 0..255, or 0.0..1.0
+//     pRed			-- Red, in the range 0..255, or 0.0..1.0
+//     pAlp			-- Alpha, in the range 0..255, or 0.0..1.0
+//
+//////
+// Returns:
+//    Numeric		-- Constructed system-wide RGBA() integer
+//
+//////
+	void function_bgra(SReturnsParams* rpar)
+	{
+		SVariable* varBlu = rpar->ip[0];
+		SVariable* varGrn = rpar->ip[1];
+		SVariable* varRed = rpar->ip[2];
+		SVariable* varAlp = rpar->ip[3];
+
+
+		// Return bgra
+		ifunction_rgba_common(rpar, varRed, varGrn, varBlu, varAlp);
+	}
+
+
+
+
+//////////
+//
 // Function: BI()
 // Creates an arbitrary precision big integer value.
 //
@@ -941,6 +1017,34 @@
 
 //////////
 //
+// Function: BOF()
+// Indicates if the work area is sitting at beginning of file
+//
+//////
+// Version 0.59
+// Last update:
+//     Aug.20.2016
+//////
+// Change log:
+//     Aug.20.2016 - Initial creation
+//////
+// Parameters:
+//     pAliasWa		-- (optional) cAlias or nWorkArea to inquire
+//
+//////
+// Returns:
+//    Logical		-- Is the file at BOF()?
+//////
+	void function_bof(SReturnsParams* rpar)
+	{
+		return(ifunction_calias_nworkarea_common(rpar, false, false, true, false));
+	}
+
+
+
+
+//////////
+//
 // Function: BLU()
 // Retrieves the blue channel from an RGBA or BGRA color.
 //
@@ -966,80 +1070,4 @@
 
 		// Return blu
 		ifunction_color_common(rpar, varColor, 0x00ff0000, 16);
-	}
-
-
-
-
-//////////
-//
-// Function: BGR()
-// Returns the BGR() of the three input values.
-//
-//////
-// Version 0.58   (Determine the current version from the header in vjr.cpp)
-// Last update:
-//     Mar.16.2015
-//////
-// Change log:
-//     Mar.16.2015 - Initial creation
-//////
-// Parameters:
-//     pBlu			-- Blue, in the range 0..255, or 0.0..1.0
-//     pGrn			-- Green, in the range 0..255, or 0.0..1.0
-//     pRed			-- Red, in the range 0..255, or 0.0..1.0
-//
-//////
-// Returns:
-//    Numeric		-- Constructed system-wide RGBA() integer
-//
-//////
-	void function_bgr(SReturnsParams* rpar)
-	{
-		SVariable* varBlu = rpar->ip[0];
-		SVariable* varGrn = rpar->ip[1];
-		SVariable* varRed = rpar->ip[2];
-
-
-		// Return bgr
-		ifunction_rgba_common(rpar, varRed, varGrn, varBlu, NULL);
-	}
-
-
-
-
-//////////
-//
-// Function: BGRA()
-// Returns the BGRA() of the four input values.
-//
-//////
-// Version 0.58   (Determine the current version from the header in vjr.cpp)
-// Last update:
-//     Mar.16.2015
-//////
-// Change log:
-//     Mar.16.2015 - Initial creation
-//////
-// Parameters:
-//     pBlu			-- Blue, in the range 0..255, or 0.0..1.0
-//     pGrn			-- Green, in the range 0..255, or 0.0..1.0
-//     pRed			-- Red, in the range 0..255, or 0.0..1.0
-//     pAlp			-- Alpha, in the range 0..255, or 0.0..1.0
-//
-//////
-// Returns:
-//    Numeric		-- Constructed system-wide RGBA() integer
-//
-//////
-	void function_bgra(SReturnsParams* rpar)
-	{
-		SVariable* varBlu = rpar->ip[0];
-		SVariable* varGrn = rpar->ip[1];
-		SVariable* varRed = rpar->ip[2];
-		SVariable* varAlp = rpar->ip[3];
-
-
-		// Return bgra
-		ifunction_rgba_common(rpar, varRed, varGrn, varBlu, varAlp);
 	}

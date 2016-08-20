@@ -692,7 +692,7 @@
 //////
 	void function_recno(SReturnsParams* rpar)
 	{
-		ifunction_recno_reccount_common(rpar, true);
+		ifunction_calias_nworkarea_common(rpar, true, false, false, false);
 	}
 
 
@@ -721,10 +721,10 @@
 //////
 	void function_reccount(SReturnsParams* rpar)
 	{
-		ifunction_recno_reccount_common(rpar, false);
+		ifunction_calias_nworkarea_common(rpar, false, false, false, false);
 	}
 
-	void ifunction_recno_reccount_common(SReturnsParams* rpar, bool tlIsRecno)
+	void ifunction_calias_nworkarea_common(SReturnsParams* rpar, bool tlIsRecno, bool tlIsReccount, bool tlIsBof, bool tlIsEof)
 	{
 		SVariable*	varAliasWa		= rpar->ip[0];
 
@@ -787,7 +787,11 @@
 		//////////
 		// Construct our result
 		//////
-			result = iVariable_create(_VAR_TYPE_S32, NULL, true);
+			// Numeric or logical based on type
+			if (tlIsRecno || tlIsReccount)			result = iVariable_create(_VAR_TYPE_S32, NULL, true);
+			else									result = iVariable_create(_VAR_TYPE_LOGICAL, NULL, true);
+
+			// Success?
 			if (!result)
 			{
 				iError_report_byNumber(_ERROR_INTERNAL_ERROR, NULL, false);
@@ -802,10 +806,18 @@
 			if (!dbf || !dbf->isUsed)
 			{
 				// No table open, return 0
-				*result->value.data_s32 = 0;
+				if (tlIsRecno || tlIsReccount)
+				{
+					// Indicate 0
+					*result->value.data_s32 = 0;
+
+				} else {
+					// Indicate true
+					*result->value.data_s8 = _LOGICAL_TRUE;
+				}
 
 			} else if (tlIsRecno) {
-				// Something's in use
+				// recno()
 				if (dbf->currentRecord == 0 || dbf->header.records == 0)
 				{
 					// Eiterh BOF() or no records
@@ -830,10 +842,21 @@
 					*result->value.data_s32 = (s32)dbf->currentRecord;
 				}
 
-			} else {
-				// Reccount
+			} else if (tlIsReccount) {
+				// reccount()
 				*result->value.data_s32 = (s32)dbf->header.records;
+
+			} else if (tlIsBof) {
+				// bof()
+				if (dbf->header.records == 0)		*result->value.data_s8 = _LOGICAL_TRUE;
+				else								*result->value.data_s8 = ((dbf->currentRecord == 0) ? _LOGICAL_TRUE : _LOGICAL_FALSE);
+
+			} else if (tlIsEof) {
+				// eof()
+				if (dbf->header.records == 0)		*result->value.data_s8 = _LOGICAL_TRUE;
+				else								*result->value.data_s8 = ((dbf->currentRecord > dbf->header.records) ? _LOGICAL_TRUE : _LOGICAL_FALSE);
 			}
+
 
 		//////////
 		// All done
