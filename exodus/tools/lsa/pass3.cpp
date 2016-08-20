@@ -321,19 +321,19 @@ imm8_error:
 
 	bool iilsa_pass3_extract_imm8__callback(SCallback* cb)
 	{
-		SExprOps* eopLevel;
+		SExprOp* eopLevel;
 
 
 		// Block entered for structured exit
-		eopLevel = (SExprOps*)cb->data;
+		eopLevel = (SExprOp*)cb->data;
 		do {
 
 			// For level 4, we add these items
 			if (cb->value == 4)
 			{
 				// Append operands
-				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_offset, 0,		_ICODE_LSA_OFFSET))			break;
-				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_sizeof, 0,		_ICODE_LSA_SIZEOF))			break;
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_offset, 0,	_ICODE_LSA_OFFSET))			break;
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_sizeof, 0,	_ICODE_LSA_SIZEOF))			break;
 				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_alignof, 0,	_ICODE_LSA_ALIGNOF))		break;
 			}
 

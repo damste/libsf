@@ -686,7 +686,7 @@
 // Structures
 //////
 	// Used for parsing expressions
-	struct SExprOps
+	struct SExprOp
 	{
 		SLL		ll;
 
@@ -695,13 +695,14 @@
 		s32		iCat;			// If positive, used in the test
 		union {
 			uptr	_onFind;
-			bool	(*onFind)	(SExprOps* eop);
+			bool	(*onFind)	(SExprOp* eop);
 			// Returns:
 			//		true	-- the comp was handled
 			//		false	-- the comp was not handled
 		};
 
 		// Parameters for the call to onFind()
+		s32			pass;							// The pass number, either 0 or 1
 		SComp*		comp;							// Current component
 		SComp*		compStart;						// First component in expression
 		SComp*		compEnd;						// Last component in expression
@@ -746,6 +747,7 @@
 
 		// Expression parsing
 		bool			lProcessed;					// Has this component already been processed?
+		SExprOp*		eop;						// The associated eop with this component
 		s32				level;						// The component level in the expression
 	};
 
@@ -1370,36 +1372,36 @@
 	void					iComps_eops_delete							(SBuilder** eopsRoot);
 
 	// Common functions
-	SExprOps*				iieops_createLevel							(SBuilder** eopsRoot);
-	SExprOps*				iieops_appendEop							(SExprOps* eopLevel, uptr _onFind = 0, s32 tniCode = -1, s32 tniCat = -1);
+	SExprOp*				iieops_createLevel							(SBuilder** eopsRoot);
+	SExprOp*				iieops_appendEop							(SExprOp* eopLevel, uptr _onFind = 0, s32 tniCode = -1, s32 tniCat = -1);
 
 	// Generate functions
 	SBuilder*				iiComps_eops_generateDefault_lsa			(bool* tlValid = NULL, SCallback* cb = NULL);
 	SBuilder*				iiComps_eops_generateDefault_lsc			(bool* tlValid = NULL, SCallback* cb = NULL);
 
 	// lsa expression handlers
-	bool					iieops_lsa_left_paren						(SExprOps* eop);
-	bool					iieops_lsa_left_bracket						(SExprOps* eop);
-	bool					iieops_lsa_dot								(SExprOps* eop);
-	bool					iieops_lsa_not								(SExprOps* eop);
-	bool					iieops_lsa_tilde							(SExprOps* eop);
-	bool					iieops_lsa_offset							(SExprOps* eop);
-	bool					iieops_lsa_sizeof							(SExprOps* eop);
-	bool					iieops_lsa_alignof							(SExprOps* eop);
-	bool					iieops_lsa_asterisk							(SExprOps* eop);
-	bool					iieops_lsa_slash							(SExprOps* eop);
-	bool					iieops_lsa_percent							(SExprOps* eop);
-	bool					iieops_lsa_plus								(SExprOps* eop);
-	bool					iieops_lsa_minus							(SExprOps* eop);
-	bool					iieops_lsa_shift_left						(SExprOps* eop);
-	bool					iieops_lsa_shift_right						(SExprOps* eop);
-	bool					iieops_lsa_ampersand						(SExprOps* eop);
-	bool					iieops_lsa_caret							(SExprOps* eop);
-	bool					iieops_lsa_pipe_sign						(SExprOps* eop);
-	bool					iieops_lsa_numericalpha						(SExprOps* eop);
-	bool					iieops_lsa_numeric							(SExprOps* eop);
-	bool					iieops_lsa_comma							(SExprOps* eop);
-	bool					iieops_lsa_others							(SExprOps* eop);
+	bool					iieops_lsa_left_paren						(SExprOp* eop);
+	bool					iieops_lsa_left_bracket						(SExprOp* eop);
+	bool					iieops_lsa_dot								(SExprOp* eop);
+	bool					iieops_lsa_not								(SExprOp* eop);
+	bool					iieops_lsa_tilde							(SExprOp* eop);
+	bool					iieops_lsa_offset							(SExprOp* eop);
+	bool					iieops_lsa_sizeof							(SExprOp* eop);
+	bool					iieops_lsa_alignof							(SExprOp* eop);
+	bool					iieops_lsa_asterisk							(SExprOp* eop);
+	bool					iieops_lsa_slash							(SExprOp* eop);
+	bool					iieops_lsa_percent							(SExprOp* eop);
+	bool					iieops_lsa_plus								(SExprOp* eop);
+	bool					iieops_lsa_minus							(SExprOp* eop);
+	bool					iieops_lsa_shift_left						(SExprOp* eop);
+	bool					iieops_lsa_shift_right						(SExprOp* eop);
+	bool					iieops_lsa_ampersand						(SExprOp* eop);
+	bool					iieops_lsa_caret							(SExprOp* eop);
+	bool					iieops_lsa_pipe_sign						(SExprOp* eop);
+	bool					iieops_lsa_numericalpha						(SExprOp* eop);
+	bool					iieops_lsa_numeric							(SExprOp* eop);
+	bool					iieops_lsa_comma							(SExprOp* eop);
+	bool					iieops_lsa_others							(SExprOp* eop);
 
 	// lsc expression handlers
 
