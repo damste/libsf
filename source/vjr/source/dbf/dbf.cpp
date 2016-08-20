@@ -1239,6 +1239,36 @@
 
 //////////
 //
+// Called to see if the indicated table/cursor has a container
+//
+//////
+	bool iDbf_hasDbc(u32 tnWorkArea, SWorkArea** dbc, s32* tnError)
+	{
+		// Make sure it's valid
+		if (!iDbf_isWorkAreaValid(&gsWorkArea[tnWorkArea], NULL))
+		{
+			if (tnError)	*tnError = _DBF_ERROR__INTERNAL_PROGRAMMER;
+			return(false);
+		}
+		if (!gsWorkArea[tnWorkArea].isUsed)
+		{
+			if (tnError)	*tnError = _DBF_ERROR_WORK_AREA_NOT_IN_USE;
+			return(false);
+		}
+
+		// Indicate if it has a container
+		if (tnError)	*tnError = 0;
+		if (dbc)		*dbc = gsWorkArea[tnWorkArea].dbc;
+
+		// Indicate it has a container
+		return(true);
+	}
+
+
+
+
+//////////
+//
 // Called to see if the indicated work area is valid, and also to identify which
 // type of work area it is.
 //
@@ -2007,6 +2037,67 @@
 		// Indicate our status
 		//////
 			return(varAlias);
+	}
+
+
+
+
+//////////
+//
+// Called to get the tag name for the indicated index
+//
+//////
+	s8* iDbf_get_tagName(SWorkArea* wa, s8* tagName_64, s32* tnError)
+	{
+		//////////
+		// Check for errors
+		//////
+			// Make sure it's valid
+			if (!iDbf_isWorkAreaValid(wa, NULL))
+			{
+				if (tnError)	*tnError = _DBF_ERROR__INTERNAL_PROGRAMMER;
+				return(NULL);
+			}
+			if (!wa->isUsed)
+			{
+				if (tnError)	*tnError = _DBF_ERROR_WORK_AREA_NOT_IN_USE;
+				return(NULL);
+			}
+			// Does it have a tag?
+			if (wa->isCdx || !wa->isSdx)
+			{
+				if (tnError)	*tnError = _CDX_ERROR_INVALID_TAG;
+				return(NULL);
+			}
+			// Are the parameters valid?
+			if (!tagName_64)
+			{
+				if (tnError)	*tnError = _DBF_ERROR__INTERNAL_PROGRAMMER;
+				return(NULL);
+			}
+
+			// No error
+			if (tnError)
+				*tnError = 0;
+
+
+		//////////
+		// Grab the tag
+		//////
+			// What is the active tag?
+			memset(tagName_64, 0, max(sizeof(wa->sdx_tagName), sizeof(wa->cdx_tagName)));
+			if (wa->isSdx)
+			{
+				// Grab SDX tag
+				memcpy(tagName_64, wa->sdx_tagName, sizeof(wa->sdx_tagName));
+
+			} else {
+				// Grab CDX tag
+				memcpy(tagName_64, wa->cdx_tagName, sizeof(wa->cdx_tagName));
+			}
+
+			// Indicate their own pointer
+			return(tagName_64);
 	}
 
 

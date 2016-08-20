@@ -203,7 +203,7 @@
 		//////////
 		// Are we good?
 		//////
-			if (!wa->fhIdxCdxDcx)
+			if (wa->fhIdxCdxDcx <= 0)
 				return(_CDX_ERROR_OPENING_INDEX);
 
 

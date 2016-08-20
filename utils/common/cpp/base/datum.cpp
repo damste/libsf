@@ -254,6 +254,39 @@
 		return(NULL);
 	}
 
+#ifdef _VJR_COMPILE
+	void iDatum_duplicate_fromComp(SDatum* datum, SComp* comp)
+	{
+		// Make sure our environment is sane
+		if (datum && comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->_data && comp->line->sourceCode->length > 0)
+			iDatum_duplicate(datum, comp->line->sourceCode->data_cvp);
+	}
+
+	void iiDatum_duplicate_fromComp(SDatum* datum, SComp* comp)
+	{
+		iDatum_duplicate(datum, &comp->line->sourceCode->data_cvp);
+	}
+
+	SDatum* iDatum_populate_fromComp(SDatum* datum, SComp* comp)
+	{
+		// Make sure the datum and component are valid
+		if (datum && comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->_data && comp->line->sourceCode->length > 0)
+			iDatum_duplicate(datum, &comp->line->sourceCode->data_cvp);
+
+		// Pass-thru
+		return(datum);
+	}
+
+	bool iDatum_append_comp(SDatum* datum, SComp* comp)
+	{
+		// Make sure our environment is sane
+		if (datum && comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->_data && comp->line->sourceCode->length > 0)
+			return(iDatum_appendData(datum, comp->line->sourceCode->data_s8, comp->line->sourceCode->length));
+
+		// Failure
+		return(false);
+	}
+#else
 	void iDatum_duplicate_fromComp(SDatum* datum, SComp* comp)
 	{
 		// Make sure our environment is sane
@@ -285,6 +318,7 @@
 		// Failure
 		return(false);
 	}
+#endif
 
 	s32 iDatum_getAs_s32(SDatum* datum)
 	{
@@ -409,6 +443,11 @@
 		return(iDatum_compare(datumLeft, (s8*)data, dataLength));
 	}
 
+	s32 iDatum_compare(SDatum* datumLeft, void*  data, u32 dataLength)
+	{
+		return(iDatum_compare(datumLeft, (s8*)data, (s32)dataLength));
+	}
+
 	// Returns the offset the tnOccurence of the needle is found in the haystack
 	s32 iDatum_contains(SDatum* haystack, SDatum* needle, bool tlCaseCompare, s32 tnOccurrence)
 	{
@@ -516,7 +555,7 @@
 			lnValueLength	= ((tnOverrideValueLength > 0)	? tnOverrideValueLength	: value->length);
 
 			// Create the property
-			return(iProperty_allocateAs_character(name->line->sourceCode.data_cu8, lnNameLength, value->line->sourceCode.data_cu8, lnValueLength));
+			return(iProperty_allocateAs_character(name->line->sourceCode->data_cu8, lnNameLength, value->line->sourceCode->data_cu8, lnValueLength));
 
 		} else {
 			// Failure

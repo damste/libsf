@@ -306,12 +306,13 @@
 			//////////
 			// IDX and CDX index support
 			//////
-				s8				idxCdxDcxPathname[_MAX_PATH];	// Filename to get to the index (either .cdx or .idx)
+				s8				idxCdxDcxPathname[_MAX_PATH];	// Filename to get to the index (either .cdx, .idx, or other .?cx for internal files which have indexes)
 				u32				idxCdxDcxPathnameLength;		// Length of the index filename
 				_isSKeyFinds	cdx_keyOps[_MAX_CDX_TAGS];		// Room for up to N tags
 				bool			isCdx;							// Is it a CDX (also DCX)?  If no, then is IDX.
 				bool			isIdxCompact;					// If it's IDX, is it a compact IDX?
 				u32				idxCdxDcxLastError;				// The last index error that was encountered
+				s8				cdx_tagName[32];				// Name of the index tag
 				u32				cdx_activeTagRootNode;			// Current active tag's root node
 				union {
 					// CDX/DCX support
@@ -324,25 +325,26 @@
 				};
 
 				// Index file operations
-				s32				fhIdxCdxDcx;				// File handle for the index
-				SBuilder*		idxCdxDcxFileLocks;			// Locks for shared access
-				SBuilder*		idxCdxDcxNodeCache;			// Cached node blocks (SCdxNodeCache)
+				s32				fhIdxCdxDcx;					// File handle for the index
+				SBuilder*		idxCdxDcxFileLocks;				// Locks for shared access
+				SBuilder*		idxCdxDcxNodeCache;				// Cached node blocks (SCdxNodeCache)
 
 
 			//////////
 			// SDX (secure) index support
 			//////
-				s8				sdxPathname[_MAX_PATH];		// Filename to get to the index (either .cdx or .idx)
-				u32				sdxPathnameLength;			// Length of the index filename
-				_isSKeyFinds	sdx_keyOps[_MAX_SDX_TAGS];	// Room for up to N tags
-				bool			isSdx;						// Is an SDX loaded?
+				s8				sdxPathname[_MAX_PATH];			// Filename to get to the index (.sdx)
+				u32				sdxPathnameLength;				// Length of the index filename
+				_isSKeyFinds	sdx_keyOps[_MAX_SDX_TAGS];		// Room for up to N tags
+				s8				sdx_tagName[64];				// Name of the index tag
+				bool			isSdx;							// Is an SDX loaded?
 				union {
-					// CDX support
+					// SDX support
 					SSdxHeader*	sdx_root;
 					s8*			_sdx_header;
 				};
 
 				// Index file operations
-				s32				fhSdx;						// File handle for the index
-				SBuilder*		sdxFileLocks;				// Locks for shared access
+				s32				fhSdx;							// File handle for the index
+				SBuilder*		sdxFileLocks;					// Locks for shared access
 		};

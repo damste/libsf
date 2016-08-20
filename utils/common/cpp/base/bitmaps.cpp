@@ -164,7 +164,7 @@
 			for (lnIndex = 0, icon = baseArrayBmp->child(); icon; lnIndex++, icon = icon->next())
 			{
 				// Grab the name attribute for this icon
-				if ((name = icon->attribute(cgcTag_name)) && (nameData = name->data()) && nameData->length() == tnNameLength && iDatum_compare(nameData->as_datum(&d), tcName, tnNameLength) == 0)
+				if ((name = icon->attribute(cgcTag_name)) && (nameData = name->data()) && nameData->length() == tnNameLength && iDatum_compare(nameData->as_datum(&d), (void*)tcName, tnNameLength) == 0)
 					return(iBmp_copy(baseBmp[lnIndex]));
 
 			}
@@ -198,7 +198,7 @@
 			for (lnIndex = 0, icon = baseArrayBmp->child(); icon; lnIndex++, icon = icon->next())
 			{
 				// Grab the name attribute for this icon
-				if ((name = icon->attribute(cgcTag_name)) && (nameData = name->data()) && nameData->length() == tnNameLength && iDatum_compare(nameData->as_datum(&d), tcName, tnNameLength) == 0)
+				if ((name = icon->attribute(cgcTag_name)) && (nameData = name->data()) && nameData->length() == tnNameLength && iDatum_compare(nameData->as_datum(&d), (void*)tcName, tnNameLength) == 0)
 					return(baseBmp[lnIndex]);
 
 			}

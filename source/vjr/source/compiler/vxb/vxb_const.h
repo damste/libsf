@@ -140,7 +140,9 @@
 // Logical and LogicalX definitions
 //////
 	const s32		_LOGICAL_FALSE									= 0;
+	s32				__LOGICAL_FALSE									= 0;
 	const s32		_LOGICAL_TRUE									= -1;
+	s32				__LOGICAL_TRUE									= -1;
 	const s32		_LOGICALX_OTHER									= 'O';
 	const s32		_LOGICALX_PARTIAL								= 'P';
 	const s32		_LOGICALX_EXTRA									= 'X';
@@ -1331,6 +1333,7 @@
 	const s32       _ICODE_SORT                                     = 2235;
 	const s32       _ICODE_SQL                                      = 2236;
 	const s32       _ICODE_STATUS                                   = 2237;
+	const s32       _ICODE_STATUSBAR                                = 2388;
 	const s32       _ICODE_STEP                                     = 2238;
 	const s32		_ICODE_STICKYPARAMETERS							= 2312;
 	const s32       _ICODE_STORE                                    = 2239;
@@ -1437,7 +1440,7 @@
 	// ONMOUSELEAVE			= 2382			ONMOUSEHOVER			= 2383
 	// ONKEYDOWN			= 2384			ONKEYUP					= 2385
 	// RESIZE				= 2386			ENDFIF					= 2387
-	//		__unused__		= 2388			DEFINE					= 2389
+	// STATUSBAR			= 2388			DEFINE					= 2389
 	// ENDDEFINE			= 2390
 
 
@@ -2364,6 +2367,7 @@
 //	const s8		cgc_space[]										= "space";
 	const s8		cgc_sql[]										= "sql";
 	const s8		cgc_status[]									= "status";
+	const s8		cgc_statusbar[]									= "statusbar";
 	const s8		cgc_step[]										= "step";
 	const s8		cgc_store[]										= "store";
 	const s8		cgc_strictdate[]								= "strictdate";

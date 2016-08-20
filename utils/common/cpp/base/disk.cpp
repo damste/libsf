@@ -963,9 +963,9 @@
 					//////////
 					// Indicate content
 					//////
-						iDatum_duplicate(&line->sourceCode, (cvp*)(data + lnLast), (s32)(lnI - lnCrLfCount - lnLast));
-						line->populatedLength	= line->sourceCode.length;
-						line->lineNumber		= lnLineNumber;
+						iDatum_duplicate(line->sourceCode, (void*)(data + lnLast), (s32)(lnI - lnCrLfCount - lnLast));
+						line->sourceCode_populatedLength	= line->sourceCode->length;
+						line->lineNumber					= lnLineNumber;
 
 
 					//////////

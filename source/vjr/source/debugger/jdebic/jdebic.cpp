@@ -395,7 +395,7 @@ return;
 				gnJDebiCOutPipeNumber = SendMessage(hwndJDebiC, _WMJDEBIC_PIPE_REQUEST, 0, 0);
 
 				// Create the pipe names
-				sprintf(pipeNameOut, "\\\\.\\pipe\\JDebiC_pipe_%08x\0", gnJDebiCOutPipeNumber);
+				sprintf(pipeNameOut, "\\\\.\\pipe\\JDebiC_pipe_%08x\0", (u32)gnJDebiCOutPipeNumber);
 
 				// Non-owners connect to an existing pipe
 				handleJDebiCOut = (u32)iJDebiC_createPipeHandle(pipeNameOut, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);

@@ -79,6 +79,8 @@
 //
 //
 
+struct SObject;
+
 
 
 

@@ -742,7 +742,7 @@
 
 		// If there's a parent, continue up the chain
 // Untested function, breakpoint and examine
-_asm int 3;
+debug_break;
 		logfunc(__FUNCTION__);
 		if (obj)
 		{

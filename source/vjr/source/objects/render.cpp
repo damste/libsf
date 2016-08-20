@@ -124,10 +124,21 @@
 //////
 	u32 iSubobj_renderForm(SObject* obj)
 	{
+		bool		llStatusBar, llStatus, llExclusive, llTalk;
+		s32			lnWorkArea, lnError;
 		u32			lnPixelsRendered;
-		RECT		lrc, lrc2;
+		RECT		lrc, lrc2, lrc3;
 		SBgra		backColor, borderColor, nwRgba, neRgba, swRgba, seRgba;
+		COLORREF	saveColor;
+		int			saveBkMode;
+		HGDIOBJ		saveFont;
+		s8*			lcTagName;
 		SBitmap*	bmp;
+		SWorkArea*	dbf;
+		SWorkArea*	dbc;
+		s8			buffer[_MAX_FNAME * 2];
+		s8			bufferTag[80];
+		s8			bufferTagName[64];
 
 
 		// Make sure our environment is sane
@@ -141,16 +152,17 @@
 				// The entire bmp
 				SetRect(&lrc, 0, 0, obj->bmp->bi.biWidth, obj->bmp->bi.biHeight);
 
+				// Grab the colors
+				borderColor = propBorderColor(obj);
+				backColor	= propBackColor(obj);
+				nwRgba		= propNwRgba(obj);
+				neRgba		= propNeRgba(obj);
+				swRgba		= propSwRgba(obj);
+				seRgba		= propSeRgba(obj);
+
 				// Do we need to redraw?  Or can we just copy?
 				if (obj->isDirtyRender)
 				{
-					// Grab the colors
-					borderColor = propBorderColor(obj);
-					backColor	= propBackColor(obj);
-					nwRgba		= propNwRgba(obj);
-					neRgba		= propNeRgba(obj);
-					swRgba		= propSwRgba(obj);
-					seRgba		= propSeRgba(obj);
 
 					//////////
 					// Frame it
@@ -206,6 +218,117 @@
 					// Render from its prior rendered version
 					lnPixelsRendered += iBmp_bitBlt(obj->bmp, &lrc, obj->bmpPriorRendered);
 				}
+
+
+			//////////
+			// Reset the area at the bottom
+			//////
+				// Render along the bottom
+				SetRect(&lrc2,	8 + bmpArrowLl->bi.biWidth + 8,
+								lrc.bottom - bmpArrowLr->bi.biHeight + 2,
+								lrc.right - 8 - bmpArrowLr->bi.biHeight - 8,
+								lrc.bottom - 4);
+
+				// Render the background
+				iBmp_fillRect(obj->bmp, &lrc2, swRgba, seRgba, swRgba, seRgba, true);
+
+				// Set colors
+				saveFont	= SelectObject(obj->bmp->hdc, gsFontDefaultFixedPoint9->hfont);
+				saveColor	= SetTextColor(obj->bmp->hdc, RGB(whiteColor.red, whiteColor.grn, whiteColor.blu));
+				saveBkMode	= SetBkMode(obj->bmp->hdc, TRANSPARENT);
+
+
+			//////////
+			// If SET STATUSBAR is on, update the status
+			//////
+				llStatusBar	= propGet_settings_StatusBar(_settings);
+				llStatus	= propGet_settings_Status(_settings);
+				llExclusive = propGet_settings_Exclusive(_settings);
+				llTalk		= propGet_settings_Talk(_settings);
+
+				if (llStatus)
+					_asm nop;
+
+				// No tag
+				sprintf(bufferTag, "");
+
+				// Statusbar takes precedence over status
+				if (llStatusBar || llStatus)
+				{
+					// Render the specific entry
+					if (llStatusBar)
+					{
+						// SET STATUSBAR is on
+						if ((lnWorkArea = iDbf_get_workArea_current()) >= 0)
+						{
+							// Draw the name
+							SetRect(&lrc3, lrc2.left + 4, lrc2.top + 1, lrc2.left + ((lrc2.right - lrc2.left) / 5), lrc2.bottom - 1);
+							if ((dbf = iDbf_get_workArea_current_wa()) && dbf && dbf->isUsed)
+							{
+								// There is a work area
+								if (iDbf_hasDbc(lnWorkArea, &dbc, &lnError) && lnError == 0 && dbc && dbc->isUsed)
+								{
+									// Alias (dbc!table)
+									sprintf(buffer, "%s (%s!%s)", dbf->alias, dbc->alias, dbc->alias);
+
+								} else {
+									// Alias (pathname)
+									sprintf(buffer, "%s (%s)", dbf->alias, dbf->tablePathname);
+								}
+								DrawText(obj->bmp->hdc, buffer, strlen(buffer), &lrc3, DT_LEFT | DT_VCENTER);
+
+								// Recno / reccount
+								SetRect(&lrc3, lrc3.right + 4, lrc2.top + 1, lrc3.right + ((lrc2.right - lrc2.left) / 8), lrc2.bottom - 1);
+								sprintf(buffer, "Record: %u / %u (%.0f%%)", dbf->currentRecord, dbf->header.records, (100.0f * (f32)dbf->currentRecord / (f32)dbf->header.records));
+								DrawText(obj->bmp->hdc, buffer, strlen(buffer), &lrc3, DT_LEFT | DT_VCENTER);
+
+								// Shared or exclusive
+								SetRect(&lrc3, lrc3.right + 4, lrc2.top + 1, lrc2.right, lrc2.bottom - 1);
+								if (dbf->isExclusive)		sprintf(buffer, "%s", cgc_exclusive);
+								else						sprintf(buffer, "%s", cgc_shared);
+								DrawText(obj->bmp->hdc, buffer, strlen(buffer), &lrc3, DT_LEFT | DT_VCENTER);
+
+								// Update the tag
+								lcTagName = iDbf_get_tagName(dbf, bufferTagName);
+								if (dbf->isCdx)
+								{
+									// Has a cdx
+									sprintf(bufferTag, "| CDX%s%s ", ((lcTagName) ? ":" : ""), ((lcTagName) ? lcTagName : ""));
+
+								} else if (dbf->isSdx) {
+									// Has an sdx
+									sprintf(bufferTag, "| SDX%s%s ", ((lcTagName) ? ":" : ""), ((lcTagName) ? lcTagName : ""));
+
+								} else if (dbf->isIndexLoaded) {
+									// Has an idx
+									sprintf(bufferTag, "| IDX ");
+								}
+
+							} else {
+								// Just a selected work area
+								sprintf(buffer, "Work area %d", lnWorkArea);
+								DrawText(obj->bmp->hdc, buffer, strlen(buffer), &lrc3, DT_LEFT | DT_VCENTER);
+							}
+						}
+
+					} else if (llStatus) {
+						// SET STATUS is on
+						sprintf(buffer, "SET STATUS ON -- Temporary Placeholder");
+						DrawText(obj->bmp->hdc, buffer, strlen(buffer), &lrc2, DT_LEFT | DT_VCENTER);
+					}
+				}
+
+				// Talk, Exclusive
+				sprintf(buffer, "%s| TALK:%s | EXCLUSIVE:%s |",
+								bufferTag,
+								((llTalk) ? cgc_on : cgc_off),
+								((llExclusive) ? cgc_on : cgc_off));
+				DrawText(obj->bmp->hdc, buffer, strlen(buffer), &lrc2, DT_RIGHT | DT_VCENTER);
+
+				// Restore colors
+				SetTextColor(obj->bmp->hdc, saveColor);
+				SetBkMode(obj->bmp->hdc, saveBkMode);
+				SelectObject(obj->bmp->hdc, saveFont);
 
 
 			//////////

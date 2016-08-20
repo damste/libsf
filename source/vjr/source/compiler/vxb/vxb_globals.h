@@ -1049,6 +1049,7 @@
 		{ cgc_space,				5,			false,		_ICODE_SPACE,							false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,					null0,		null0 },
 		{ cgc_sql,					3,			false,		_ICODE_SQL,								false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,					null0,		null0 },
 		{ cgc_status,				6,			false,		_ICODE_STATUS,							false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,					null0,		null0 },
+		{ cgc_statusbar,			9,			false,		_ICODE_STATUSBAR,						false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,					null0,		null0 },
 		{ cgc_step,					4,			false,		_ICODE_STEP,							false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,					null0,		null0 },
 		{ cgc_store,				5,			false,		_ICODE_STORE,							false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,					null0,		null0 },
 		{ cgc_strictdate,			10,			false,		_ICODE_STRICTDATE,						false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,					null0,		null0 },

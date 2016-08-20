@@ -1285,3 +1285,15 @@
 				iiObj_resetToDefaultCommon(settings, true, true, propList, tnPropCount, eventList, tnEventCount);
 		}
 	}
+
+	void iiSubobj_resetToDefaultControlPoint(SObject* controlPoint, bool tlResetProperties, bool tlResetMethods, SObjPropMap* propList, u32 tnPropCount, SObjEventMap* eventList, u32 tnEventCount)
+	{
+		logfunc(__FUNCTION__);
+		if (controlPoint)
+		{
+			//////////
+			// Reset the common settings
+			//////
+				iiObj_resetToDefaultCommon(controlPoint, true, true, propList, tnPropCount, eventList, tnEventCount);
+		}
+	}

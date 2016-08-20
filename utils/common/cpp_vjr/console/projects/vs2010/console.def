@@ -1,0 +1,36 @@
+LIBRARY "console"
+
+EXPORTS
+
+	console_initialize
+	console_allocate
+	console_reregister
+	console_show
+	console_release
+
+	console_setProperties
+	console_setBorder
+
+	console_setFont
+	console_getFont
+
+	console_print
+	console_print_crlf
+	console_gotoXY
+	console_getXY
+	console_scroll
+	console_repaint
+	console_box_single
+	console_box_double
+	console_box_custom
+
+	console_input_fields_clear_all
+	console_input_field_add
+	console_input_field_delete
+
+	console_raw_push
+	console_raw_pullN
+
+	console_raw_pull1
+
+	console_vt100_push

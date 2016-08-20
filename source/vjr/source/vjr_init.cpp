@@ -589,7 +589,7 @@
 
 //////////
 //
-// 
+// Called to initialize our constants
 //
 //////
 	void iVjr_init_createConstants(void)
@@ -599,11 +599,11 @@
 
 
 		// System constants used internally
-		cvarSpace1				= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, cgc_spaceText, 1,	false);
-		cvarEmptyString			= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, (cu8*)NULL, 0,		false);
+		cvarSpace1				= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, cgc_spaceText,	1,	false);
+		cvarEmptyString			= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, (cu8*)NULL,		0,	false);
 		cvarSpace2000			= iVariable_create(_VAR_TYPE_CHARACTER, NULL, true);
-		cvarTrue				= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, iVariable_populate_byBool(true),	0,	false);
-		cvarFalse				= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, iVariable_populate_byBool(false),	0,	false);
+		cvarTrue				= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, iVariable_populate_byBool(true),	1,	false);
+		cvarFalse				= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, iVariable_populate_byBool(false),	1,	false);
 		cvarZero				= iVariable_create(_VAR_TYPE_S64, NULL, true);
 
 		lnValue	= 6;

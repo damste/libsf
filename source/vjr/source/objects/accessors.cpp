@@ -176,9 +176,9 @@
 			if (var)
 			{
 				// Validate against the object class if available, and if not then the base class if available, and if not then just copy
-				     if (objProp->_setterObject     && !tlNestedSet && tnIndex <  (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject(obj, tnIndex, var, varNewValue, baseProp, objProp);
-				else if (objProp->_setterObject_set && !tlNestedSet && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, varNewValue, false);
-				else if (baseProp->_setterBase)																		llResult = baseProp->setterBase	(obj, tnIndex, var, varNewValue, baseProp, objProp);
+				     if (!tlNestedSet && objProp->_setterObject     && tnIndex <  (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject(obj, tnIndex, var, varNewValue, baseProp, objProp);
+				else if (!tlNestedSet && objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, varNewValue, false);
+				else if (!tlNestedSet && baseProp->_setterBase)														llResult = baseProp->setterBase	(obj, tnIndex, var, varNewValue, baseProp, objProp);
 				else																								llResult = iVariable_copy(var, varNewValue);
 
 				// Indicate our status
@@ -961,6 +961,54 @@ debug_break;
 		// Indicate our status
 		//////
 			return(llResult);
+	}
+
+	bool iObjProp_setOnOff_status(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	{
+		bool llResult;
+
+
+		// Turning the status on or off
+		if ((compNew && compNew->iCode == _ICODE_ON) || (varNew && iiVariable_getAs_bool(varNew)))
+		{
+			iObjProp_set(_settings, _INDEX_SET_STATUSBAR, cvarFalse, true);				// They're turning the status on, which means the statusbar must go off
+			llResult = iObjProp_set(_settings, _INDEX_SET_STATUS, cvarTrue, true);
+
+		} else {
+			// Set the value
+			llResult = iObjProp_set(_settings, _INDEX_SET_STATUS, cvarFalse, true);
+		}
+
+		// Clean house
+		if (varNew && tlDeleteVarNewAfterSet)
+			iVariable_delete(&varNew);
+
+		// Indicate our result
+		return(llResult);
+	}
+
+	bool iObjProp_setOnOff_statusBar(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	{
+		bool llResult;
+
+
+		// Turning the statusbar on or off
+		if ((compNew && compNew->iCode == _ICODE_ON) || (varNew && iiVariable_getAs_bool(varNew)))
+		{
+			iObjProp_set(_settings, _INDEX_SET_STATUS, cvarFalse, true);				// They're turning the statusbar on, which means the status must go off
+			llResult = iObjProp_set(_settings, _INDEX_SET_STATUSBAR, cvarTrue, true);
+
+		} else {
+			// Set the value
+			llResult = iObjProp_set(_settings, _INDEX_SET_STATUSBAR, cvarFalse, true);
+		}
+
+		// Clean house
+		if (varNew && tlDeleteVarNewAfterSet)
+			iVariable_delete(&varNew);
+
+		// Indicate our result
+		return(llResult);
 	}
 
 
@@ -3305,16 +3353,6 @@ debug_break;
 						obj->p.sem->font->isUnderline = obj->p.font->isUnderline;
 						iiFont_refresh(obj->p.sem->font);
 					}
-					break;
-
-				case _INDEX_FONTWIDEN:
-					if (obj->p.sem->font)
-						obj->p.sem->font->widen = obj->p.font->widen;
-					break;
-
-				case _INDEX_FONTWIDENSPACES:
-					if (obj->p.sem->font)
-						obj->p.sem->font->widenSpaces = obj->p.font->widenSpaces;
 					break;
 
 				default:

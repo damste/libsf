@@ -115,7 +115,7 @@ struct SGraceLine;
 	const u32		_NODE_SW2										= 24;
 	const u32		_NODE_NW2										= 25;
 	const u32		_NODE_C2										= 26;
-//////////
+	//////////
 // Source code shortcuts:
 // 	case _NODE_N0
 // 	case _NODE_E0
