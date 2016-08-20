@@ -671,6 +671,182 @@
 
 //////////
 //
+// Function: RECNO()
+// Returns the RECNO() of the current or indicated work area
+//
+//////
+// Version 0.59   (Determine the current version from the header in vjr.cpp)
+// Last update:
+//     Aug.20.2016
+//////
+// Change log:
+//     Aug.20.2016 - Initial creation
+//////
+// Parameters:
+//     pAliasWA		-- (optional) cAlias or nWorkArea number
+//
+//////
+// Returns:
+//    Numeric		-- Current recno or 0 if no cursor, 0 or 1 if BOF() based on NCSET() setting, RECCOUNT() + 1 if EOF()
+//
+//////
+	void function_recno(SReturnsParams* rpar)
+	{
+		ifunction_recno_reccount_common(rpar, true);
+	}
+
+
+
+
+//////////
+//
+// Function: RECCOUNT()
+// Returns the RECCOUNT() of the current or indicated work area
+//
+//////
+// Version 0.59   (Determine the current version from the header in vjr.cpp)
+// Last update:
+//     Aug.20.2016
+//////
+// Change log:
+//     Aug.20.2016 - Initial creation
+//////
+// Parameters:
+//     pAliasWA		-- (optional) cAlias or nWorkArea number
+//
+//////
+// Returns:
+//    Numeric		-- RECCOUNT() or 0 if no cursor, 0 or 1 if BOF() based on NCSET() setting, RECCOUNT() + 1 if EOF()
+//
+//////
+	void function_reccount(SReturnsParams* rpar)
+	{
+		ifunction_recno_reccount_common(rpar, false);
+	}
+
+	void ifunction_recno_reccount_common(SReturnsParams* rpar, bool tlIsRecno)
+	{
+		SVariable*	varAliasWa		= rpar->ip[0];
+
+		s32			lnWorkArea;
+		SWorkArea*	dbf;
+		bool		error;
+		u32			errorNum;
+		SVariable*	result;
+
+
+		//////////
+		// Get the work area
+		//////
+			// Initialize
+			dbf			= NULL;
+			rpar->rp[0]	= NULL;
+
+			// If there's a parameter, it must be character or numeric
+			if (iVariable_isValid(varAliasWa))
+			{
+				// cAlias
+				if (iVariable_isTypeCharacter(varAliasWa))
+				{
+					// cAlias
+					if ((lnWorkArea = iDbf_get_workArea_byAlias_byVar(varAliasWa)) < 0)
+					{
+						// Alias not found
+						iError_report_byNumber(_ERROR_ALIAS_NOT_FOUND, iVariable_get_relatedComp(varAliasWa), false);
+						return;
+					}
+
+				} else if (iVariable_isTypeNumeric(varAliasWa)) {
+					// nWorkArea
+					if ((lnWorkArea = iiVariable_getAs_s32(varAliasWa, false, &error, &errorNum)) < 0 || error)
+					{
+						iError_report_byNumber(errorNum, iVariable_get_relatedComp(varAliasWa), false);
+						return;
+					}
+
+				} else {
+					// Invalid parameter
+					iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varAliasWa), false);
+					return;
+				}
+
+				// When we get here, we have the work area number
+				dbf = iDbf_get_workArea_current_wa(lnWorkArea);
+				if (!dbf)
+				{
+					iError_report_byNumber(_ERROR_TABLE_NUMBER_INVALID, iVariable_get_relatedComp(varAliasWa), false);
+					return;
+				}
+
+			} else {
+				// Grab the current work area
+				dbf = iDbf_get_workArea_current_wa(-1);
+			}
+
+
+		//////////
+		// Construct our result
+		//////
+			result = iVariable_create(_VAR_TYPE_S32, NULL, true);
+			if (!result)
+			{
+				iError_report_byNumber(_ERROR_INTERNAL_ERROR, NULL, false);
+				return;
+			}
+
+
+		//////////
+		// Populate and return our result
+		//////
+			// Make sure we're valid
+			if (!dbf || !dbf->isUsed)
+			{
+				// No table open, return 0
+				*result->value.data_s32 = 0;
+
+			} else if (tlIsRecno) {
+				// Something's in use
+				if (dbf->currentRecord == 0 || dbf->header.records == 0)
+				{
+					// Eiterh BOF() or no records
+					if (dbf->header.records > 0)
+					{
+						// BOF()
+						// Return 0 or 1 based on NCSET() setting
+						if (propGet_settings_ncset_bofIsZero(_settings))		*result->value.data_s32 = 0;
+						else													*result->value.data_s32 = 1;
+
+					} else {
+						// No records
+						*result->value.data_s32 = 0;
+					}
+
+				} else if (dbf->currentRecord >= dbf->header.records) {
+					// EOF()
+					*result->value.data_s32 = (s32)dbf->header.records + 1;
+
+				} else {
+					// Indicate the actual recno()
+					*result->value.data_s32 = (s32)dbf->currentRecord;
+				}
+
+			} else {
+				// Reccount
+				*result->value.data_s32 = (s32)dbf->header.records;
+			}
+
+		//////////
+		// All done
+		//////
+			rpar->rp[0] = result;
+
+	}
+
+
+
+
+//////////
+//
 // Function: RED()
 // Retrieves the red channel from an RGBA or BGRA color.
 //

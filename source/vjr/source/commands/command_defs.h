@@ -308,6 +308,9 @@ struct SReturnsParams;
 	void				function_rgb								(SReturnsParams* rpar);
 	void				ifunction_rgba_common						(SReturnsParams* rpar, SVariable* varRed, SVariable* varGrn, SVariable* varBlu, SVariable* varAlp);
 	void				function_rgba								(SReturnsParams* rpar);
+	void				function_recno								(SReturnsParams* rpar);
+	void				function_reccount							(SReturnsParams* rpar);
+	void				ifunction_recno_reccount_common				(SReturnsParams* rpar, bool tlIsRecno);
 	void				function_red								(SReturnsParams* rpar);
 	void				ifunction_color_common						(SReturnsParams* rpar, SVariable* varColor, u32 tnMask, u32 tnShift);
 	void				function_right								(SReturnsParams* rpar);
@@ -640,6 +643,8 @@ struct SReturnsParams;
 		{	_ICODE_RANGER2,			1,			1,				false,		(uptr)&function_ranger2,		3,				3,				NULL,			&gsSourceLight_ranger2[0]		},
 		{	_ICODE_RAT,				1,			1,				false,		(uptr)&function_rat,			2,				3,				NULL,			&gsSourceLight_rat[0]			},
 		{	_ICODE_RATC,			1,			1,				false,		(uptr)&function_ratc,			2,				3,				NULL,			&gsSourceLight_ratc[0]			},
+		{	_ICODE_RECNO,			1,			1,				false,		(uptr)&function_recno,			0,				1,				NULL,			&gsSourceLight_red[0]			},
+		{	_ICODE_RECCOUNT,		1,			1,				false,		(uptr)&function_reccount,		0,				1,				NULL,			&gsSourceLight_red[0]			},
 		{	_ICODE_RED,				1,			1,				false,		(uptr)&function_red,			1,				1,				NULL,			&gsSourceLight_red[0]			},
 		{	_ICODE_REPLICATE,		1,			1,				false,		(uptr)&function_replicate,		2,				2,				NULL,			&gsSourceLight_replicate[0]		},
 		{	_ICODE_RGB,				1,			1,				false,		(uptr)&function_rgb,			3,				3,				NULL,			&gsSourceLight_rgb[0]			},

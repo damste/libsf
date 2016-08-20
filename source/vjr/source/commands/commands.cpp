@@ -235,6 +235,7 @@
 			case _ERROR_VARIABLE_IS_FIXED:					return(cgcVariableIsFixed);
 			case _ERROR_FEATURE_NOT_YET_CODED:				return(cgcFeatureNotYetCoded);
 			case _ERROR_NESTING_ERROR:						return(cgcNestingError);
+			case _ERROR_TABLE_NUMBER_INVALID:				return(cgcTableNumberInvalid);
 
 			default:
 				return(cgcUnspecifiedError);

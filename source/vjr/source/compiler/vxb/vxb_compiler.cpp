@@ -6497,7 +6497,7 @@ debug_break;
 
 	SVariable* iiVariable_searchForName_fields(cs8* tcVarName, u32 tnVarNameLength, SComp* comp, bool tlCreateAsReference)
 	{
-		return(iDbf_getField_byName2_asVariable(iDbf_get_workArea_current_wa(cgcDbfKeyName), (u8*)tcVarName, tnVarNameLength, tlCreateAsReference));
+		return(iDbf_getField_byName2_asVariable(iDbf_get_workArea_current_wa(-1, cgcDbfKeyName), (u8*)tcVarName, tnVarNameLength, tlCreateAsReference));
 	}
 
 

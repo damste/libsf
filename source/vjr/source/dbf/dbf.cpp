@@ -888,7 +888,7 @@
 		//////
 			wa->isIndexLoaded	= false;
 			wa->isCached		= false;
-			wa->currentRecord	= 0;
+			wa->currentRecord	= 0;		// Note:  A goto record command is used below
 			wa->isUsed			= true;
 			wa->isVisualized	= tlVisualize;
 			wa->isJournaled		= tlJournal;
@@ -1517,12 +1517,19 @@
 		return(-1);
 	}
 
-	SWorkArea* iDbf_get_workArea_current_wa(cu8* tcSpecialKeyName)
+	SWorkArea* iDbf_get_workArea_current_wa(u32 tnWorkArea, cu8* tcSpecialKeyName)
 	{
 		// See what they're searching for
 		if (!tcSpecialKeyName || tcSpecialKeyName == cgcDbfKeyName)
 		{
 			// It's a standard DBF
+			if (tnWorkArea != 0)
+			{
+				if (tnWorkArea < _MAX_DBF_SLOTS)		return(&gsWorkArea[tnWorkArea]);
+				else if (tnWorkArea != -1)				return(NULL);
+			}
+
+			// They didn't specify a work area, so use the default
 			if (gnDbf_currentWorkArea < 0)
 				gnDbf_currentWorkArea = iDbf_get_workArea_lowestFree(tcSpecialKeyName);
 
@@ -1531,6 +1538,13 @@
 
 		} else if (tcSpecialKeyName == cgcDbcKeyName) {
 			// It's a DBC
+			if (tnWorkArea != 0)
+			{
+				if (tnWorkArea < _MAX_DBC_SLOTS)		return(&gsDbcArea[tnWorkArea]);
+				else if (tnWorkArea != -1)				return(NULL);
+			}
+
+			// They didn't specify a work area, so use the default
 			if (gnDbc_currentWorkArea < 0)
 				gnDbc_currentWorkArea = iDbf_get_workArea_lowestFree(tcSpecialKeyName);
 
@@ -1539,6 +1553,13 @@
 
 		} else if (tcSpecialKeyName == cgcScxKeyName) {
 			// It's an SCX
+			if (tnWorkArea != 0)
+			{
+				if (tnWorkArea < _MAX_SCX_SLOTS)		return(&gsScxArea[tnWorkArea]);
+				else if (tnWorkArea != -1)				return(NULL);
+			}
+
+			// They didn't specify a work area, so use the default
 			if (gnScx_currentWorkArea < 0)
 				gnScx_currentWorkArea = iDbf_get_workArea_lowestFree(tcSpecialKeyName);
 
@@ -1547,6 +1568,13 @@
 
 		} else if (tcSpecialKeyName == cgcVcxKeyName) {
 			// It's a VCX
+			if (tnWorkArea != 0)
+			{
+				if (tnWorkArea < _MAX_VCX_SLOTS)		return(&gsVcxArea[tnWorkArea]);
+				else if (tnWorkArea != -1)				return(NULL);
+			}
+
+			// They didn't specify a work area, so use the default
 			if (gnVcx_currentWorkArea < 0)
 				gnVcx_currentWorkArea = iDbf_get_workArea_lowestFree(tcSpecialKeyName);
 
@@ -1555,6 +1583,13 @@
 
 		} else if (tcSpecialKeyName == cgcFrxKeyName) {
 			// It's an FRX
+			if (tnWorkArea != 0)
+			{
+				if (tnWorkArea < _MAX_FRX_SLOTS)		return(&gsFrxArea[tnWorkArea]);
+				else if (tnWorkArea != -1)				return(NULL);
+			}
+
+			// They didn't specify a work area, so use the default
 			if (gnFrx_currentWorkArea < 0)
 				gnFrx_currentWorkArea = iDbf_get_workArea_lowestFree(tcSpecialKeyName);
 
@@ -1563,6 +1598,13 @@
 
 		} else if (tcSpecialKeyName == cgcMnxKeyName) {
 			// It's an MNX
+			if (tnWorkArea != 0)
+			{
+				if (tnWorkArea < _MAX_MNX_SLOTS)		return(&gsMnxArea[tnWorkArea]);
+				else if (tnWorkArea != -1)				return(NULL);
+			}
+
+			// They didn't specify a work area, so use the default
 			if (gnMnx_currentWorkArea < 0)
 				gnMnx_currentWorkArea = iDbf_get_workArea_lowestFree(tcSpecialKeyName);
 

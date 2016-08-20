@@ -291,6 +291,7 @@ typedef SEM**		SEMpp;
 	#define propGet_settings_ncset_optimizeVariables(obj)			propGet_settings_ncset(obj, _INDEX_SET_NCSET_OPTIMIZE_VARIABLES)
 	#define propGet_settings_ncset_signSign2(obj)					propGet_settings_ncset(obj, _INDEX_SET_NCSET_SIGN_SIGN2)
 	#define propGet_settings_ncset_directNativeMembers(obj)			propGet_settings_ncset(obj, _INDEX_SET_NCSET_DIRECT_NATIVE_MEMBERS)
+	#define propGet_settings_ncset_bofIsZero(obj)					propGet_settings_ncset(obj, _INDEX_SET_NCSET_BOF_IS_ZERO)
 	#define propGet_settings_Point(obj)								iObjProp_get_character			(obj, _INDEX_SET_POINT)
 	#define propGet_settings_PrecisionBFP(obj)						iObjProp_get_s32_direct			(obj, _INDEX_SET_PRECISIONBFP)
 	#define propGet_settings_PrecisionBI(obj)						iObjProp_get_s32_direct			(obj, _INDEX_SET_PRECISIONBI)
@@ -1095,6 +1096,7 @@ typedef SEM**		SEMpp;
 	const u32			_NCSET_RGBA_ALPHA_IS_OPAQUE			= 5;
 	const u32			_NCSET_DATETIME_MILLISECONDS		= 6;
 	const u32			_NCSET_DIRECT_NATIVE_MEMBERS		= 9;
+	const u32			_NCSET_BOF_IS_ZERO					= 10;
 
 
 //////////

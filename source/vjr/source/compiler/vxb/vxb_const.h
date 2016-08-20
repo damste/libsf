@@ -273,6 +273,7 @@
 	const u8		cgcVariableIsFixed[]							= "variable is a fixed type";
 	const u8		cgcFeatureNotYetCoded[]							= "feature is not yet coded";
 	const u8		cgcNestingError[]								= "nesting error";
+	const u8		cgcTableNumberInvalid[]							= "table number invalid";
 #else
 	#error Language not specified
 #endif
@@ -1210,6 +1211,7 @@
 	const s32       _ICODE_MULTILOCKS                               = 2166;
 	const s32		_ICODE_NAMINGCONVENTIONS						= 2306;
 	const s32		_ICODE_NCSETALPHAISOPAQUE						= 2325;
+	const u32		_ICODE_NCSETBOFISZERO							= 2391;
 	const s32		_ICODE_NCSETCEILINGFLOOR						= 2307;
 	const s32		_ICODE_NCSETDATETIMEMILLISECONDS				= 2337;
 	const s32		_ICODE_NCSETOPTIMIZETABLEWRITES					= 2326;
@@ -1441,7 +1443,7 @@
 	// ONKEYDOWN			= 2384			ONKEYUP					= 2385
 	// RESIZE				= 2386			ENDFIF					= 2387
 	// STATUSBAR			= 2388			DEFINE					= 2389
-	// ENDDEFINE			= 2390
+	// ENDDEFINE			= 2390			NCSETBOFISZERO			= 2391
 
 
 //////////

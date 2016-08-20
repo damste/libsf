@@ -205,6 +205,10 @@
 						lnIndexProp = _INDEX_SET_NCSET_DIRECT_NATIVE_MEMBERS;
 						break;
 
+					case _NCSET_BOF_IS_ZERO:
+						lnIndexProp = _INDEX_SET_NCSET_BOF_IS_ZERO;
+						break;
+
 					default:
 						// Unrecognized option
 						iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(varIndex), false);

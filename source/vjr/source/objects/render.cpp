@@ -279,7 +279,19 @@
 
 								// Recno / reccount
 								SetRect(&lrc3, lrc3.right + 4, lrc2.top + 1, lrc3.right + ((lrc2.right - lrc2.left) / 8), lrc2.bottom - 1);
-								sprintf(buffer, "Record: %u / %u (%.0f%%)", dbf->currentRecord, dbf->header.records, (100.0f * (f32)dbf->currentRecord / (f32)dbf->header.records));
+								if (dbf->currentRecord == 0)
+								{
+									// BOF()
+									sprintf(buffer, "Record: BOF() / %u (-%%)", dbf->header.records);
+
+								} else if (dbf->currentRecord > dbf->header.records) {
+									// EOF()
+									sprintf(buffer, "Record: EOF() / %u (---%%)", dbf->header.records);
+
+								} else {
+									// On a record
+									sprintf(buffer, "Record: %u / %u (%.0f%%)", dbf->currentRecord, dbf->header.records, (100.0f * (f32)dbf->currentRecord / (f32)dbf->header.records));
+								}
 								DrawText(obj->bmp->hdc, buffer, strlen(buffer), &lrc3, DT_LEFT | DT_VCENTER);
 
 								// Shared or exclusive
@@ -316,14 +328,14 @@
 						sprintf(buffer, "SET STATUS ON -- Temporary Placeholder");
 						DrawText(obj->bmp->hdc, buffer, strlen(buffer), &lrc2, DT_LEFT | DT_VCENTER);
 					}
-				}
 
-				// Talk, Exclusive
-				sprintf(buffer, "%s| TALK:%s | EXCLUSIVE:%s |",
-								bufferTag,
-								((llTalk) ? cgc_on : cgc_off),
-								((llExclusive) ? cgc_on : cgc_off));
-				DrawText(obj->bmp->hdc, buffer, strlen(buffer), &lrc2, DT_RIGHT | DT_VCENTER);
+					// Talk, Exclusive
+					sprintf(buffer, "%s| TALK:%s | EXCLUSIVE:%s |",
+									bufferTag,
+									((llTalk) ? cgc_on : cgc_off),
+									((llExclusive) ? cgc_on : cgc_off));
+					DrawText(obj->bmp->hdc, buffer, strlen(buffer), &lrc2, DT_RIGHT | DT_VCENTER);
+				}
 
 				// Restore colors
 				SetTextColor(obj->bmp->hdc, saveColor);

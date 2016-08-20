@@ -494,6 +494,7 @@ struct SBasePropMap;
 	const s8		cgc_setNcsetPlaceholder1[]								= "ncsetPlaceholder1";
 	const s8		cgc_setNcsetPlaceholder2[]								= "ncsetPlaceholder2";
 	const s8		cgc_setNcsetDirectNativeMembers[]						= "ncsetDirectNativeMembers";
+	const s8		cgc_setNcsetBofIsZero[]									= "ncsetBofIsZero";
 	const s8		cgc_setPoint[]											= "point";
 	const s8		cgc_setPrecisionBfp[]									= "precisionbfp";
 	const s8		cgc_setPrecisionBi[]									= "precisionbi";
@@ -913,28 +914,29 @@ struct SBasePropMap;
 	const u32		_INDEX_SET_NCSET_PLACEHOLDER1							= 390;
 	const u32		_INDEX_SET_NCSET_PLACEHOLDER2							= 391;
 	const u32		_INDEX_SET_NCSET_DIRECT_NATIVE_MEMBERS					= 392;
-	const u32									_INDEX_SET_NCSET_END	= 392;
+	const u32		_INDEX_SET_NCSET_BOF_IS_ZERO							= 393;
+	const u32									_INDEX_SET_NCSET_END	= 393;
 	
-	const u32		_INDEX_SET_POINT										= 393;
-	const u32		_INDEX_SET_PRECISIONBFP									= 394;		// numeric, defaults to 256
-	const u32		_INDEX_SET_PRECISIONBI									= 395;		// numeric, defaults to 256
-	const u32		_INDEX_SET_REPROCESS									= 396;		// logical, or numeric (negative = attempts, positive = seconds)
-	const u32		_INDEX_SET_REPROCESSATTEMPTS							= 397;		// numeric, 30 by default, but can be changed with SET REPROCESSATTEMPTS TO 30
-	const u32		_INDEX_SET_REPROCESSINTERVAL							= 398;		// numeric, 1000 by default indicating 1000 milliseconds, or 1 second
-	const u32		_INDEX_SET_REPROCESS_SYSTEM								= 399;		// logical, or numeric (negative = attempts, positive = seconds)
-	const u32		_INDEX_SET_SEPARATOR									= 400;
-	const u32		_INDEX_SET_SLOPPY_PRINTING								= 401;
-	const u32		_INDEX_SET_STATUS										= 402;
-	const u32		_INDEX_SET_STATUSBAR									= 403;
-	const u32		_INDEX_SET_STICKY_PARAMETERS							= 404;
-	const u32		_INDEX_SET_TABLE_EQUAL_ASSIGNMENTS						= 405;
-	const u32		_INDEX_SET_TABLE_OBJECTS								= 406;
-	const u32		_INDEX_SET_TALK											= 407;
-	const u32		_INDEX_SET_TIME											= 408;
-	const u32		_INDEX_SET_UDFPARMS										= 409;
-	const u32		_INDEX_SET_UNLOAD_RECEIVES_PARAMS						= 410;
-	const u32		_INDEX_SET_VARIABLES_FIRST								= 411;
-	const u32		_INDEX_SET_VECSEPARATOR									= 412;
+	const u32		_INDEX_SET_POINT										= 394;
+	const u32		_INDEX_SET_PRECISIONBFP									= 395;		// numeric, defaults to 256
+	const u32		_INDEX_SET_PRECISIONBI									= 396;		// numeric, defaults to 256
+	const u32		_INDEX_SET_REPROCESS									= 397;		// logical, or numeric (negative = attempts, positive = seconds)
+	const u32		_INDEX_SET_REPROCESSATTEMPTS							= 398;		// numeric, 30 by default, but can be changed with SET REPROCESSATTEMPTS TO 30
+	const u32		_INDEX_SET_REPROCESSINTERVAL							= 399;		// numeric, 1000 by default indicating 1000 milliseconds, or 1 second
+	const u32		_INDEX_SET_REPROCESS_SYSTEM								= 400;		// logical, or numeric (negative = attempts, positive = seconds)
+	const u32		_INDEX_SET_SEPARATOR									= 401;
+	const u32		_INDEX_SET_SLOPPY_PRINTING								= 402;
+	const u32		_INDEX_SET_STATUS										= 403;
+	const u32		_INDEX_SET_STATUSBAR									= 404;
+	const u32		_INDEX_SET_STICKY_PARAMETERS							= 405;
+	const u32		_INDEX_SET_TABLE_EQUAL_ASSIGNMENTS						= 406;
+	const u32		_INDEX_SET_TABLE_OBJECTS								= 407;
+	const u32		_INDEX_SET_TALK											= 408;
+	const u32		_INDEX_SET_TIME											= 409;
+	const u32		_INDEX_SET_UDFPARMS										= 410;
+	const u32		_INDEX_SET_UNLOAD_RECEIVES_PARAMS						= 411;
+	const u32		_INDEX_SET_VARIABLES_FIRST								= 412;
+	const u32		_INDEX_SET_VECSEPARATOR									= 413;
 
 
 
@@ -1528,6 +1530,7 @@ struct SBasePropMap;
 		{	_INDEX_SET_NCSET_PLACEHOLDER1,					_ICODE_NCSETPLACEHOLDER1,			cgc_setNcsetPlaceholder1,			sizeof(cgc_setNcsetPlaceholder1) - 1,				_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL	},	// temporary placeholder
 		{	_INDEX_SET_NCSET_PLACEHOLDER2,					_ICODE_NCSETPLACEHOLDER2,			cgc_setNcsetPlaceholder2,			sizeof(cgc_setNcsetPlaceholder2) - 1,				_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL	},	// temporary placeholder
 		{	_INDEX_SET_NCSET_DIRECT_NATIVE_MEMBERS,			_ICODE_NCSETDIRECTNATIVEMEMBERS,	cgc_setNcsetDirectNativeMembers,	sizeof(cgc_setNcsetDirectNativeMembers) - 1,		_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL	},	// .t.=native members can be directly referenced, .f. they require a parent like this, thisForm, or object name
+		{	_INDEX_SET_NCSET_BOF_IS_ZERO,					_ICODE_NCSETBOFISZERO,				cgc_setNcsetBofIsZero,				sizeof(cgc_setNcsetBofIsZero) - 1,					_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL	},	// .t.=BOF() condition returns RECNO() 0, .f.=BOF() conditions returns RECNO() 1
 		{	_INDEX_SET_POINT,								_ICODE_POINT,						cgc_setPoint,						sizeof(cgc_setPoint) - 1,							_VAR_TYPE_CHARACTER,		0, 0, 0,		(uptr)&cgcPointChar[0]			,NULL	},	// One byte separator for the decimal point in numbers
 		{	_INDEX_SET_PRECISIONBFP,						_ICODE_PRECISIONSBFP,				cgc_setPrecisionBfp,				sizeof(cgc_setPrecisionBfp) - 1,					_VAR_TYPE_S32,				0, 0, 0,		256								,NULL	},	// Number of bits to use for significant digit output (256 yields about 60 significant digits)
 		{	_INDEX_SET_PRECISIONBI,							_ICODE_PRECISIONSBI,				cgc_setPrecisionBi,					sizeof(cgc_setPrecisionBi) - 1,						_VAR_TYPE_S32,				0, 0, 0,		256								,NULL	},	// Number of bits to use for significant digit output (256 yields about 80 significant digits)
@@ -5749,6 +5752,7 @@ struct SBasePropMap;
 		{	_INDEX_SET_MARK,							0, (uptr)&iObjProp_setCharacter1,		0	},		// character
 		{	_INDEX_SET_NAMING_CONVENTIONS,				0, (uptr)&iObjProp_setOnOff,			(uptr)&iObjProp_getOnOff },			// bool
 		{	_INDEX_SET_NCSET_ALPHA_IS_OPAQUE,			0, (uptr)&iObjProp_setLogical,			(uptr)&iObjProp_getLogical },		// bool
+		{	_INDEX_SET_NCSET_BOF_IS_ZERO,				0, (uptr)&iObjProp_setLogical,			(uptr)&iObjProp_getLogical },		// bool
 		{	_INDEX_SET_NCSET_CEILING_FLOOR,				0, (uptr)&iObjProp_setLogical,			(uptr)&iObjProp_getLogical },		// bool
 		{	_INDEX_SET_NCSET_DATETIME_MILLISECONDS,		0, (uptr)&iObjProp_setLogical,			(uptr)&iObjProp_getLogical },		// bool
 		{	_INDEX_SET_NCSET_OPTIMIZE_TABLE_WRITES,		0, (uptr)&iObjProp_setLogical,			(uptr)&iObjProp_getLogical },		// bool
