@@ -95,7 +95,8 @@
 //////
 	bool ilsa_pass3_daa(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Simple opcode
+		return(ilsa_pass3_common_addOpcodeByte(line, comp, 0x27));
 	}
 
 
@@ -108,7 +109,8 @@
 //////
 	bool ilsa_pass3_das(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Simple opcode
+		return(ilsa_pass3_common_addOpcodeByte(line, comp, 0x2f));
 	}
 
 
@@ -147,7 +149,8 @@
 //////
 	bool ilsa_pass3_emms(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0x0f, 0x77));
 	}
 
 

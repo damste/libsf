@@ -173,7 +173,8 @@
 //////
 	bool ilsa_pass3_rdmsr(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0x0f, 0x32));
 	}
 
 
@@ -186,7 +187,8 @@
 //////
 	bool ilsa_pass3_rdpmc(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0x0f, 0x33));
 	}
 
 
@@ -199,7 +201,8 @@
 //////
 	bool ilsa_pass3_rdtsc(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0x0f, 0x31));
 	}
 
 

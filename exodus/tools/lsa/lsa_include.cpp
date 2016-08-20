@@ -237,7 +237,7 @@
 			include = (SLsaInclude*)(includePaths->buffer + lnI);
 
 			// Is it our filename?
-			if (include->filename.length == lnLength && iDatum_compare(&include->filename, buffer, lnLength) == 0)
+			if (include->filename.length == lnLength && iDatum_compare(&include->filename, buffer, (s32)lnLength) == 0)
 				return(include);
 		}
 

@@ -95,7 +95,8 @@
 //////
 	bool ilsa_pass3_f2xm1(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0xd9, 0xf0));
 	}
 
 
@@ -108,7 +109,8 @@
 //////
 	bool ilsa_pass3_fabs(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0xd9, 0xe1));
 	}
 
 
@@ -186,7 +188,8 @@
 //////
 	bool ilsa_pass3_fchs(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0xd9, 0xe0));
 	}
 
 
@@ -199,7 +202,8 @@
 //////
 	bool ilsa_pass3_fclex(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Three-byte opcode
+		return(ilsa_pass3_common_addOpcodeThreeByte(line, line->firstComp, 0x9b, 0xdb, 0xe2));
 	}
 
 
@@ -212,7 +216,8 @@
 //////
 	bool ilsa_pass3_fnclex(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0xdb, 0xe2));
 	}
 
 
@@ -355,7 +360,8 @@
 //////
 	bool ilsa_pass3_fcompp(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0xde, 0xd9));
 	}
 
 
@@ -420,7 +426,8 @@
 //////
 	bool ilsa_pass3_fcos(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0xd9, 0xff));
 	}
 
 
@@ -433,7 +440,8 @@
 //////
 	bool ilsa_pass3_fdecstp(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0xd9, 0xf6));
 	}
 
 
@@ -576,7 +584,8 @@
 //////
 	bool ilsa_pass3_fincstp(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0xd9, 0xf7));
 	}
 
 
@@ -589,7 +598,8 @@
 //////
 	bool ilsa_pass3_finit(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Three-byte opcode
+		return(ilsa_pass3_common_addOpcodeThreeByte(line, line->firstComp, 0x9b, 0xdb, 0xe3));
 	}
 
 
@@ -641,7 +651,8 @@
 //////
 	bool ilsa_pass3_fld1(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0xd9, 0xe8));
 	}
 
 
@@ -654,7 +665,8 @@
 //////
 	bool ilsa_pass3_fld2t(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0xd9, 0xe9));
 	}
 
 
@@ -667,7 +679,8 @@
 //////
 	bool ilsa_pass3_fldl2e(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0xd9, 0xea));
 	}
 
 
@@ -680,7 +693,8 @@
 //////
 	bool ilsa_pass3_fldpi(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0xd9, 0xeb));
 	}
 
 
@@ -693,7 +707,8 @@
 //////
 	bool ilsa_pass3_fldlg2(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0xd9, 0xec));
 	}
 
 
@@ -706,7 +721,8 @@
 //////
 	bool ilsa_pass3_fldn2(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0xd9, 0xed));
 	}
 
 
@@ -719,7 +735,8 @@
 //////
 	bool ilsa_pass3_fldz(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0xd9, 0xee));
 	}
 
 
@@ -797,7 +814,8 @@
 //////
 	bool ilsa_pass3_fnop(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0xd9, 0xd0));
 	}
 
 
@@ -810,7 +828,8 @@
 //////
 	bool ilsa_pass3_fpatan(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0xd9, 0xf3));
 	}
 
 
@@ -823,7 +842,8 @@
 //////
 	bool ilsa_pass3_fprem(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0xd9, 0xf8));
 	}
 
 
@@ -836,7 +856,8 @@
 //////
 	bool ilsa_pass3_fprem1(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0xd9, 0xf5));
 	}
 
 
@@ -849,7 +870,8 @@
 //////
 	bool ilsa_pass3_fptan(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0xd9, 0xf2));
 	}
 
 
@@ -862,7 +884,8 @@
 //////
 	bool ilsa_pass3_frndint(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0xd9, 0xfc));
 	}
 
 
@@ -901,7 +924,8 @@
 //////
 	bool ilsa_pass3_fscale(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0xd9, 0xfd));
 	}
 
 
@@ -914,7 +938,8 @@
 //////
 	bool ilsa_pass3_fsin(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0xd9, 0xfe));
 	}
 
 
@@ -927,7 +952,8 @@
 //////
 	bool ilsa_pass3_fsincos(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0xd9, 0xfb));
 	}
 
 
@@ -940,7 +966,8 @@
 //////
 	bool ilsa_pass3_fsqrt(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0xd9, 0xfa));
 	}
 
 
@@ -1083,7 +1110,8 @@
 //////
 	bool ilsa_pass3_ftst(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0xd9, 0xe4));
 	}
 
 
@@ -1122,7 +1150,8 @@
 //////
 	bool ilsa_pass3_fucompp(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0xd9, 0xe9));
 	}
 
 
@@ -1135,7 +1164,8 @@
 //////
 	bool ilsa_pass3_fwait(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Simple opcode
+		return(ilsa_pass3_common_addOpcodeByte(line, comp, 0x9b));
 	}
 
 
@@ -1148,7 +1178,8 @@
 //////
 	bool ilsa_pass3_fxam(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0xd9, 0xe5));
 	}
 
 
@@ -1174,7 +1205,8 @@
 //////
 	bool ilsa_pass3_fxtract(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0xd9, 0xf4));
 	}
 
 
@@ -1187,7 +1219,8 @@
 //////
 	bool ilsa_pass3_fyl2x(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0xd9, 0xf1));
 	}
 
 
@@ -1200,5 +1233,6 @@
 //////
 	bool ilsa_pass3_fyl2xp1(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0xd9, 0xf9));
 	}

@@ -95,7 +95,8 @@
 //////
 	bool ilsa_pass3_lahf(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Simple opcode
+		return(ilsa_pass3_common_addOpcodeByte(line, comp, 0x9f));
 	}
 
 
@@ -199,7 +200,8 @@
 //////
 	bool ilsa_pass3_leave(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Simple opcode
+		return(ilsa_pass3_common_addOpcodeByte(line, comp, 0xc9));
 	}
 
 
@@ -302,7 +304,8 @@
 //////
 	bool ilsa_pass3_lodsb(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Simple opcode
+		return(ilsa_pass3_common_addOpcodeByte(line, comp, 0xac));
 	}
 
 

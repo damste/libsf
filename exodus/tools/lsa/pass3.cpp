@@ -238,6 +238,38 @@
 
 //////////
 //
+// Common function for simple three-opcode instructions
+//
+//////
+	bool ilsa_pass3_common_addOpcodeThreeByte(SLine* line, SComp* comp, u8 opcodeByte1, u8 opcodeByte2, u8 opcodeByte3)
+	{
+		// Store opcode 1
+		if (iilsa_lineData_addOpcodeByte(line, opcodeByte1))
+		{
+			// Store opcode 2
+			if (iilsa_lineData_addOpcodeByte(line, opcodeByte2))
+			{
+				// Store opcode 3
+				if (iilsa_lineData_addOpcodeByte(line, opcodeByte3))
+				{
+					// Mark the component complete
+					ilsa_markCompCompleted(comp);
+
+					// Indicate success
+					return(true);
+				}
+			}
+		}
+
+		// Indicate failure
+		return(false);
+	}
+
+
+
+
+//////////
+//
 // Called to extract an imm8 parameter.
 // Note:  By this point in the calculation, all symbols will have been swapped out with their equivalent fundamental values
 //

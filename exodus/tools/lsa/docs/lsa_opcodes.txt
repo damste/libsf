@@ -36,16 +36,16 @@ LASM -- Intel 80386 Instructions
 			f	G,NLE
 
 -----
-	37			AAA					-- ASCII adjust al after addition
-	D5,0A		AAD					-- ASCII adjust ax before division
-	D5,0A		AAD					-- ASCII adjust eax before division
-	D5,ib		AAD2				-- ASCII adjust ax before division to base imm8
-	D5,ib		AAD2				-- ASCII adjust eax before division to base imm8
-	D4,0A		AAM					-- ASCII adjust ax after multiply
-	D4,0A		AAM					-- ASCII adjust eax after multiply
-	D5,ib		AAM2				-- ASCII adjust ax after multiply to base imm8
-	D5,ib		AAM2				-- ASCII adjust eax after multiply to base imm8
-	3F			AAS					-- ASCII adjust al after subtraction
+*	37			AAA					-- ASCII adjust al after addition
+*	D5,0A		AAD					-- ASCII adjust ax before division
+*	D5,0A		AAD					-- ASCII adjust eax before division
+*	D5,ib		AAD2				-- ASCII adjust ax before division to base imm8
+*	D5,ib		AAD2				-- ASCII adjust eax before division to base imm8
+*	D4,0A		AAM					-- ASCII adjust ax after multiply
+*	D4,0A		AAM					-- ASCII adjust eax after multiply
+*	D4,ib		AAM2				-- ASCII adjust ax after multiply to base imm8
+*	D4,ib		AAM2				-- ASCII adjust eax after multiply to base imm8
+*	3F			AAS					-- ASCII adjust al after subtraction
 	
 	14,ib		ADC al,imm8			-- Add with carry imm8 to al
 	15,iw		ADC ax,imm16		-- Add with carry imm16 to ax
@@ -137,13 +137,13 @@ LASM -- Intel 80386 Instructions
 	FF/3		CALL m16:16			-- Call far, absolute indirect address in m16:16
 	FF/3		CALL m16:32			-- Call far, absolute indirect address in m16:32
 
-	98			CBW					-- Sign-extend al to ax
+*	98			CBW					-- Sign-extend al to ax
 	98			CWDE				-- Sign-extend ax to eax
 
-	F8			CLC					-- Clear carry
-	FC			CLD					-- Clear direction
-	FA			CLI					-- Clear interrupt
-	0F,06		CLTS				-- Clear task-switched flag in CR0
+*	F8			CLC					-- Clear carry
+*	FC			CLD					-- Clear direction
+*	FA			CLI					-- Clear interrupt
+*	0F,06		CLTS				-- Clear task-switched flag in CR0
 
 	0F,40+cc/r	CMOVcc r16,rm16		-- Move if cc flag condition is true
 	0F,40+cc/r	CMOVcc r32,rm32		-- Move if cc flag condition is true
@@ -163,7 +163,7 @@ LASM -- Intel 80386 Instructions
 	3B/r		CMP r16,r/m16		-- r/m16 to r16
 	3B/r		CMP r32,r/m32		-- r/m32 to r32
 
-	A6			CMPSB				-- Compare byte in ds:[esi] to es:[edi]
+*	A6			CMPSB				-- Compare byte in ds:[esi] to es:[edi]
 	A7			CMPSW				-- Compare word in ds:[esi] to es:[edi]
 	A7			CMPSD				-- Compare dword in ds:[esi] to es:[edi]
 
@@ -178,8 +178,8 @@ LASM -- Intel 80386 Instructions
 	99			CDW					-- Sign-extend ax into dx:ax
 	99			CDQ					-- Sign-extend eax into edx:eax
 
-	27			DAA					-- Decimal adjust al after addition
-	2F			DAS					-- Decimal adjust al after subtraction
+*	27			DAA					-- Decimal adjust al after addition
+*	2F			DAS					-- Decimal adjust al after subtraction
 
 	FE/1		DEC r/m8			-- Decrement r/m8 by 1
 	FF/1		DEC r/m16			-- Decrement r/m16 by 1
@@ -191,12 +191,12 @@ LASM -- Intel 80386 Instructions
 	F7/6		DIV r/m16			-- Unsigned divide dx:ax by r/m16, quotient in ax, remainder in dx
 	F7/6		DIV r/m32			-- Unsigned divide edx:eax by r/m32, quotient in eax, remainder in edx
 
-	0F,77		EMMS				-- Empty the MMX state
+*	0F,77		EMMS				-- Empty the MMX state
 
 	C8,iw,ib	ENTER imm16,imm8	-- Create a stack frame, or nested stack frame
 
-	D9,F0		F2XM1				-- st0 = 2^(st0 - 1) into st0
-	D9,E1		FABS				-- st0 = fabs(st0)
+*	D9,F0		F2XM1				-- st0 = 2^(st0 - 1) into st0
+*	D9,E1		FABS				-- st0 = fabs(st0)
 	D8/0		FADD f32			-- st0 = st0 + f32
 	DC/0		FADD f64			-- st0 = st0 + f64
 	D8,C0+r		FADD st0,stN		-- st0 = st0 + stN
@@ -206,9 +206,9 @@ LASM -- Intel 80386 Instructions
 	DE/0		FIADD s16			-- st0 = st0 + s16
 	DF/4		FBLD m80			-- push m80 loaded as binary coded decimal into st0
 	DF/6		FBSTP m80			-- Store st0 as binary coded decimal into m80, then pop
-	D9,E0		FCHS				-- Complement st0's sign
-	9B,DB,E2	FCLEX				-- Clear floating point exceptions after checking for pending unmasked exceptions
-	DB,E2		FNCLEX				-- No-wait version of FCLEX
+*	D9,E0		FCHS				-- Complement st0's sign
+*	9B,DB,E2	FCLEX				-- Clear floating point exceptions after checking for pending unmasked exceptions
+*	DB,E2		FNCLEX				-- No-wait version of FCLEX
 	DA,C0+r		FCMOVB st0,stN		-- Move if carry
 	DA,C8+r		FCMOVE st0,stN		-- Move if zero
 	DA,D0+r		FCMOVBE st0,stN		-- Move if carry or zero
@@ -223,13 +223,13 @@ LASM -- Intel 80386 Instructions
 	D8/3		FCOMP f32			-- Compare st0 with f32, then pop
 	DC/3		FCOMP f64			-- Compare st0 with f64, then pop
 	D8,D8+r		FCOMP stN			-- Compare st0 with stN, then pop
-	DE,D9		FCOMPP				-- Compare st0 with st1, then pop, then pop again
+*	DE,D9		FCOMPP				-- Compare st0 with st1, then pop, then pop again
 	DB,F0+r		FCOMI stN			-- Compare st0 with stN, and set eflags
 	DF,F0+r		FCOMIP stN			-- Compare st0 with stN, and set eflags, then pop
 	DB,E8+r		FUCOMI stN			-- Compare st0 with stN, check for ordered values, and set eflags
 	DF,E8+r		FUCOMIP stN			-- Compare st0 with stN, check for ordered values, and set eflags, then pop
-	D9,FF		FCOS				-- st0 = cos(st0)
-	D9,F6		FDECSTP				-- Decrement the TOP field in the FPU status word
+*	D9,FF		FCOS				-- st0 = cos(st0)
+*	D9,F6		FDECSTP				-- Decrement the TOP field in the FPU status word
 	D8/6		FDIV f32			-- st0 = st0 / f32
 	DC/6		FDIV f64			-- st0 = st0 / f64
 	D8,F0+r		FDIV stN			-- st0 = st0 / stN
@@ -252,8 +252,8 @@ LASM -- Intel 80386 Instructions
 	DF/0		FILD s16			-- Push s16 into st0
 	DB/0		FILD s32			-- Push s32 into st0
 	DF/5		FILD s64			-- Push s64 into st0
-	D9,F7		FINCSTP				-- Increment the TOP field in the FPU status word
-	9B,DB,E3	FINIT				-- Initialize the FPU
+*	D9,F7		FINCSTP				-- Increment the TOP field in the FPU status word
+*	9B,DB,E3	FINIT				-- Initialize the FPU
 	DF/2		FIST m16int			-- Store st0 to memory as s16
 	DB/2		FIST m32int			-- Store st0 to memory as s32
 	DF/3		FISTP m16int		-- Store st0 to memory as s16, then pop
@@ -263,13 +263,13 @@ LASM -- Intel 80386 Instructions
 	DD/0		FLD f64				-- Push f64 into st0
 	DB/5		FLD f80				-- Push f80 into st0
 	D9,C0+r		FLD stN				-- Push stN into st0
-	D9,E8		FLD1				-- Push +1.0 into st0
-	D9,E9		FLDL2T				-- Push log2(10) into st0
-	D9,EA		FLDL2E				-- Push log2(e) into st0
-	D9,EB		FLDPI				-- Push pi into st0
-	D9,EC		FLDLG2				-- Push log10(2) into st0
-	D9,ED		FLDLN2				-- Push loge(2) into st0
-	D9,EE		FLDZ				-- Push +0.0 into st0
+*	D9,E8		FLD1				-- Push +1.0 into st0
+*	D9,E9		FLDL2T				-- Push log2(10) into st0
+*	D9,EA		FLDL2E				-- Push log2(e) into st0
+*	D9,EB		FLDPI				-- Push pi into st0
+*	D9,EC		FLDLG2				-- Push log10(2) into st0
+*	D9,ED		FLDLN2				-- Push loge(2) into st0
+*	D9,EE		FLDZ				-- Push +0.0 into st0
 	D9/5		FLDCW u16			-- Load u16 into FPU control word
 	D9/4		FLDENV m14/m28		-- Load 14-byte or 28-byte into environment
 	D8/1		FMUL f32			-- st0 = st0 * f32
@@ -279,18 +279,18 @@ LASM -- Intel 80386 Instructions
 	DE,C8+r		FMULP stN,st0		-- stN = stN * st0, then pop
 	DA/1		FIMUL m32int		-- st0 = st0 * s32
 	DE/1		FIMUL m16int		-- st0 = st0 * s16
-	D9,D0		FNOP				-- No operation
-	D9,F3		FPATAN				-- st1 = arctan(st1 / st0), then pop
-	D9,F8		FPREM				-- st0 = st0 % st1
-	D9,F5		FPREM1				-- st0 = IEEE st0 % st1
-	D9,F2		FPTAN				-- st0 = tan(st0), then push 1 into st0
-	D9,FC		FRNDINT				-- st0 = int(st0)
+*	D9,D0		FNOP				-- No operation
+*	D9,F3		FPATAN				-- st1 = arctan(st1 / st0), then pop
+*	D9,F8		FPREM				-- st0 = st0 % st1
+*	D9,F5		FPREM1				-- st0 = IEEE st0 % st1
+*	D9,F2		FPTAN				-- st0 = tan(st0), then push 1 into st0
+*	D9,FC		FRNDINT				-- st0 = int(st0)
 	DD/4		FRSTOR m94/m108		-- Load FPU state from a 94 or 108 byte block
 	9B,DD/6		FSAVE m94/m108		-- Store the FPU state to a 94 or 108 byte block
-	D9,FD		FSCALE				-- st0 = 2^stN
-	D9,FE		FSIN				-- st0 = sin(st0)
-	D9,FB		FSINCOS				-- t = cos(st0), st0 = sin(st0), then push t into st0
-	D9,FA		FSQRT				-- st0 = sqrt(st0)
+*	D9,FD		FSCALE				-- st0 = 2^stN
+*	D9,FE		FSIN				-- st0 = sin(st0)
+*	D9,FB		FSINCOS				-- t = cos(st0), st0 = sin(st0), then push t into st0
+*	D9,FA		FSQRT				-- st0 = sqrt(st0)
 	D9/2		FST f32				-- Copy st0 to f32
 	DD/2		FST f64				-- Copy st0 to f64
 	DD,D0+r		FST stN				-- Copy st0 to stN
@@ -316,17 +316,18 @@ LASM -- Intel 80386 Instructions
 	DE,E0+r		FSUBRP stN,st0		-- stN = st0 - stN, then pop
 	DA/5		FISUBR s32			-- st0 = s32 - st0
 	DE/5		FISUBR s16			-- st0 = s16 - st0
-	D9,E4		FTST				-- Compare st0 to +0.0
+*	D9,E4		FTST				-- Compare st0 to +0.0
 	DD,E0+r		FUCOM stN			-- Compare st0 to stN
 	DD,E8+i		FUCOMP stN			-- Compare st0 to stN, then pop
 	DA,E9		FUCOMPP				-- Compare st0 to st1, then pop
-	D9,E5		FXAM				-- Classify st0
+*	9B			FWAIT				-- Check pending unmasked floating-point exceptions
+*	D9,E5		FXAM				-- Classify st0
 	D9,C8+r		FXCH stN			-- Exchange st0 and stN
-	D9,F4		FXTRACT				-- t = st0's exponent, st0 = st0's significand, then push t into st0
-	D9,F1		FYL2X				-- st1 = st1 * log2(st0), then pop
-	D9,F9		FYL2XP1				-- st1 = st1 * log2(st0 + 1.0), then pop
+*	D9,F4		FXTRACT				-- t = st0's exponent, st0 = st0's significand, then push t into st0
+*	D9,F1		FYL2X				-- st1 = st1 * log2(st0), then pop
+*	D9,F9		FYL2XP1				-- st1 = st1 * log2(st0 + 1.0), then pop
 	
-	F4			HLT					-- Halt until interrupt
+*	F4			HLT					-- Halt until interrupt
 
 	F6/7		IDIV r/m8			-- Integer divide ax, al=quotient, ah=remainder
 	F7/7		IDIV r/m16			-- Integer divide dx:ax, ax=quotient, dx=remainder
@@ -358,15 +359,15 @@ LASM -- Intel 80386 Instructions
 	6C			INS m8,dx			-- Input a byte from I/O port in dx, store to es:[e/di]
 	6D			INS m16,dx			-- Input a word from I/O port in dx, store to es:[e/di]
 	6D			INS m32,dx			-- Input a dword from I/O port in dx, store to es:[e/di]
-	6C			INSB				-- Shorthand for INS m8,dx
+*	6C			INSB				-- Shorthand for INS m8,dx
 	6D			INSW				-- Shorthand for INS m16,dx
 	6D			INSD				-- Shorthand for INS m32,dx
 
-	CC			INT3				-- Trap to debugger, one byte
+*	CC			INT3				-- Trap to debugger, one byte
 	CD,ib		INT imm8			-- Interrupt vector imm8
-	CE			INTO				-- Interrupt on overflow
+*	CE			INTO				-- Interrupt on overflow
 
-	0F,08		INVD				-- Invalidate internal caches
+*	0F,08		INVD				-- Invalidate internal caches
 	0F,01/7		INVLPG m			-- Invalidate TLB entry for page that contains m
 
 	CF			IRET				-- Interrupt return 16-bit
@@ -414,12 +415,12 @@ LASM -- Intel 80386 Instructions
 
 	0F,01/6		LMSW r/m16			-- Loads r/m16 into bits cr0
 
-	F0			LOCK				-- Prefix for other instructions, locks system bus
+*	F0			LOCK				-- Prefix for other instructions, locks system bus
 
 	AC			LODS m8				-- Load byte from ds:[e/si] into al
 	AD			LODS m16			-- Load word from ds:[e/si] into ax
 	AD			LODS m32			-- Load dword from ds:[e/si] into eax
-	AC			LODSB				-- Shorthand for LODS m8
+*	AC			LODSB				-- Shorthand for LODS m8
 	AD			LODSW				-- Shorthand for LODS m16
 	AD			LODSD				-- Shorthand for LODS m32
 
@@ -469,7 +470,7 @@ LASM -- Intel 80386 Instructions
 	A4			MOVS m8,m8			-- Move byte from ds:[e/si] to es:[e/di]
 	A5			MOVS m16,m16		-- Move word from ds:[e/si] to es:[e/di] 
 	A5			MOVS m32,m32		-- Move dword from ds:[e/si] to es:[e/di] 
-	A4			MOVSB				-- Shorthand for MOVS m8,m8
+*	A4			MOVSB				-- Shorthand for MOVS m8,m8
 	A5			MOVSW				-- Shorthand for MOVS m16,m16
 	A5			MOVSD				-- Shorthand for MOVS m32,m32
 
@@ -489,7 +490,7 @@ LASM -- Intel 80386 Instructions
 	F7/3		NEG r/m16			-- Two's complement r/m16
 	F7/3		NEG r/m32			-- Two's complement r/m32
 
-	90			NOP					-- No operation
+*	90			NOP					-- No operation
 
 	F6/2		NOT r/m8			-- Logical NOT of r/m8
 	F7/2		NOT r/m16			-- Logical NOT of r/m16
@@ -520,7 +521,7 @@ LASM -- Intel 80386 Instructions
 	6E			OUTS dx,m8			-- Output byte at ds:[e/si] to I/O port dx
 	6F			OUTS dx,m16			-- Output word at ds:[e/si] to I/O port dx
 	6F			OUTS dx,m32			-- Output dword at ds:[e/si] to I/O port dx
-	6E			OUTSB				-- Shorthand for OUTS dx,m8
+*	6E			OUTSB				-- Shorthand for OUTS dx,m8
 	6F			OUTSW				-- Shorthand for OUTS dx,m16
 	6F			OUTSD				-- Shorthand for OUTS dx,m32
 
@@ -605,16 +606,16 @@ LASM -- Intel 80386 Instructions
 	D3/1		ROR r/m32,cl		-- Rotate r/m32 by cl bits right
 	C1/1,ib		ROR r/m32,imm8		-- Rotate r/m32 by imm8 bits right
 
-	0F,32		RDMSR				-- Load MSR specified by ecx into edx:eax
-	0F,33		RDPMC				-- Read performance monitoring counter specified by ecx into edx:eax
-	0F,31		RDTSC				-- Read time-stamp counter into edx:eax
+*	0F,32		RDMSR				-- Load MSR specified by ecx into edx:eax
+*	0F,33		RDPMC				-- Read performance monitoring counter specified by ecx into edx:eax
+*	0F,31		RDTSC				-- Read time-stamp counter into edx:eax
 
 	C3			RET					-- Near return
-	CB			RET					-- Far return
+	CB			RETF				-- Far return
 	C2,iw		RET imm16			-- Near return, and pop imm16 bytes from stack
-	CA,iw		RET imm16			-- Far return, and pop imm16 bytes from stack
+	CA,iw		RETF imm16			-- Far return, and pop imm16 bytes from stack
 
-	9E			SAHF				-- Store ah into flags
+*	9E			SAHF				-- Store ah into flags
 
 	D0/3		SAR r/m8			-- Signed divide r/m8 by two once
 	D2/3		SAR r/m8,cl			-- Signed divide r/m8 by two cl times
@@ -664,7 +665,7 @@ LASM -- Intel 80386 Instructions
 	AE			SCAS m8				-- Compare al with byte in es:[e/di]
 	AF			SCAS m16			-- Compare ax with word in es:[e/di]
 	AF			SCAS m32			-- Compare eax with dword in es:[e/di]
-	AE			SCASB				-- Shorthand for SCAS m8
+*	AE			SCASB				-- Shorthand for SCAS m8
 	AF			SCASW				-- Shorthand for SCAS m16
 	AF			SCASD				-- Shorthand for SCAS m32
 
@@ -688,14 +689,14 @@ LASM -- Intel 80386 Instructions
 	0F,01/4		SMSW r/m16			-- Store machine status word to r/m16
 	0F,01/4		SMSW r32/m16		-- Store machine status word to r32/m16
 
-	F9			STC					-- Set carry
-	FD			STD					-- Set direction
-	FB			STI					-- Set interrupt
+*	F9			STC					-- Set carry
+*	FD			STD					-- Set direction
+*	FB			STI					-- Set interrupt
 
 	AA			STOS m8				-- Store al into es:[e/di]
 	AB			STOS m16			-- Store ax into es:[e/di]
 	AB			STOS m32			-- Store eax into es:[e/di]
-	AA			STOSB				-- Shorthand for STOS m8
+*	AA			STOSB				-- Shorthand for STOS m8
 	AB			STOSW				-- Shorthand for STOS m16
 	AB			STOSD				-- Shorthand for STOS m32
 
@@ -716,8 +717,8 @@ LASM -- Intel 80386 Instructions
 	2B/r		SUB r16,r/m16		-- r/m16 from r16
 	2B/r		SUB r32,r/m32		-- r/m32 from r32
 
-	0F,34		SYSENTER			-- Fast system entry
-	0F,35		SYSEXIT				-- Fast system exit
+*	0F,34		SYSENTER			-- Fast system entry
+*	0F,35		SYSEXIT				-- Fast system exit
 
 	A8,ib		TEST al,imm8		-- imm8 and al
 	A9,iw		TEST AX,imm16		-- imm16 and ax
@@ -729,16 +730,14 @@ LASM -- Intel 80386 Instructions
 	85/r		TEST r/m16,r16		-- r16 and r/m16
 	85/r		TEST r/m32,r32		-- r32 and r/m32
 
-	0F,0B		UD2					-- Raises invalid opcode exception
+*	0F,0B		UD2					-- Raises invalid opcode exception
 
 	0F,00/4		VERR r/m16			-- Verify segment r/m16 can be read
 	0F,00/5		VERW r/m16			-- Verify segment r/m16 can be written to
 
-	9B			FWAIT				-- Check pending unmasked floating-point exceptions
+*	0F,09		WBINVD				-- Write back and flush internal caches
 
-	0F,09		WBINVD				-- Write back and flush internal caches
-
-	0F,30		WRMSR				-- Write the value in edx:eax to MSR specified by ecx
+*	0F,30		WRMSR				-- Write the value in edx:eax to MSR specified by ecx
 
 	0F,C0/r		XADD r/m8,r8		-- Exchange r8 and r/m8, and load sum into r/m8
 	0F,C1/r		XADD r/m16,r16		-- Exchange r16 and r/m16, and load sum into r/m16

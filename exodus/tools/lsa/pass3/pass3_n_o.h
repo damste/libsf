@@ -108,7 +108,8 @@
 //////
 	bool ilsa_pass3_nop(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Simple opcode
+		return(ilsa_pass3_common_addOpcodeByte(line, comp, 0x90));
 	}
 
 
@@ -173,7 +174,8 @@
 //////
 	bool ilsa_pass3_outsb(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Simple opcode
+		return(ilsa_pass3_common_addOpcodeByte(line, comp, 0x6e));
 	}
 
 

@@ -121,7 +121,8 @@
 //////
 	bool ilsa_pass3_movsb(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Simple opcode
+		return(ilsa_pass3_common_addOpcodeByte(line, comp, 0xa4));
 	}
 
 

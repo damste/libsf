@@ -108,7 +108,8 @@
 //////
 	bool ilsa_pass3_cbw(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Simple opcode
+		return(ilsa_pass3_common_addOpcodeByte(line, comp, 0x98));
 	}
 
 
@@ -134,7 +135,8 @@
 //////
 	bool ilsa_pass3_clc(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Simple opcode
+		return(ilsa_pass3_common_addOpcodeByte(line, comp, 0xf8));
 	}
 
 
@@ -147,7 +149,8 @@
 //////
 	bool ilsa_pass3_cld(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Simple opcode
+		return(ilsa_pass3_common_addOpcodeByte(line, comp, 0xfc));
 	}
 
 
@@ -160,7 +163,8 @@
 //////
 	bool ilsa_pass3_cli(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Simple opcode
+		return(ilsa_pass3_common_addOpcodeByte(line, comp, 0xfa));
 	}
 
 
@@ -173,7 +177,8 @@
 //////
 	bool ilsa_pass3_clts(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Two-byte opcode
+		return(ilsa_pass3_common_addOpcodeTwoByte(line, line->firstComp, 0x0f, 0x06));
 	}
 
 
@@ -300,7 +305,8 @@
 //////
 	bool ilsa_pass3_cmpsb(SLine* line, SComp* comp)
 	{
-		return(false);
+		// Simple opcode
+		return(ilsa_pass3_common_addOpcodeByte(line, comp, 0xa6));
 	}
 
 
