@@ -1520,6 +1520,70 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 
 //////////
 //
+// Called to find multiple iCodes in their 1:1 relationship by position in the arrays
+//
+//////
+	s32 iComps_findMultipleBy_iCode(SComp* compRoot, s32 tnCount, s32 tniCodes[], SComp** compFinds[])
+	{
+		s32		lnI, lnFoundCount;
+		SComp*	comp;
+
+
+		// Make sure our environment is sane
+// Untested code.  Breakpiont and examine.
+debug_break;
+		lnFoundCount = 0;
+		if (compRoot && tniCodes && compFinds)
+		{
+			// Initialize the array
+			for (lnI = 0; lnI < tnCount; lnI++)
+				*(compFinds[lnI]) = NULL;
+
+			// Look for the indicated components
+			for (comp = compRoot; comp; comp = comp->ll.nextComp)
+			{
+				// Is this one we know?
+				for (lnI = 0; lnI < tnCount; lnI++)
+				{
+					// Have we already found this one?
+					if (!*(compFinds[lnI]))
+					{
+						// No, test it
+						if (comp->iCode == tniCodes[lnI])
+						{
+							// Found it
+							*(compFinds[lnI]) = comp;
+
+							// Increase our count
+							++lnFoundCount;
+
+							// Are we done?
+							if (lnFoundCount == tnCount)
+								goto finished;		// Yes
+
+							// Nope
+							break;
+						}
+					}
+				}
+				// When we get here, we either found a match or not, but we're on to the next one
+			}
+			// We've scanned every component
+
+		} else {
+			// Error
+			return(-1);
+		}
+finished:
+		// Indicate how many we found
+		return(lnFoundCount);
+	}
+
+
+
+
+//////////
+//
 // Returns which component the cursor is currently on
 //
 //////

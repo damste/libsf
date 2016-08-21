@@ -236,6 +236,7 @@
 			case _ERROR_FEATURE_NOT_YET_CODED:				return(cgcFeatureNotYetCoded);
 			case _ERROR_NESTING_ERROR:						return(cgcNestingError);
 			case _ERROR_TABLE_NUMBER_INVALID:				return(cgcTableNumberInvalid);
+			case _ERROR_NO_ACTIVE_INDEX:					return(cgcNoActiveIndex);
 
 			default:
 				return(cgcUnspecifiedError);
@@ -2637,6 +2638,34 @@
 
 //////////
 //
+// Command: GOTO
+// Moves to an explicit recno(), or to top or bottom in a table
+//
+//////
+// Version 0.59   (Determine the current version from the header in vjr.cpp)
+// Last update:
+//     Aug.20.2016
+//////
+// Change log:
+//     Aug.20.2016 - Initial creation
+//////
+// Parameters:
+//     comp		-- The [GOTO] component
+//////
+// Returns:
+//    Nothing, but the environment may be changed.
+//    Can generate an error.
+//////
+	void command_goto(SComp* compCommand, SReturnsParams* rpar)
+	{
+		SComp*		compGoto = compCommand;
+	}
+
+
+
+
+//////////
+//
 // Command:  MODIFY
 // Modifies various things.
 //
@@ -3010,6 +3039,180 @@
 		// If we get here, syntax error
 		//////
 			iError_report_byNumber(_ERROR_SYNTAX, compSet, false);
+	}
+
+
+
+
+//////////
+//
+// Command: SKIP
+// Skips forward or backward in a table by index or not
+//
+//////
+// Version 0.59   (Determine the current version from the header in vjr.cpp)
+// Last update:
+//     Aug.20.2016
+//////
+// Change log:
+//     Aug.20.2016 - Initial creation
+//////
+// Parameters:
+//     comp		-- The [SKIP] component
+//////
+// Returns:
+//    Nothing, but the environment may be changed.
+//    Can generate an error.
+//////
+	void command_skip(SComp* compCommand, SReturnsParams* rpar)
+	{
+		SComp*		compSkip = compCommand;
+
+		bool		llInCdx, llInDbf;
+		s32			lnSkip, lnWorkArea, lnTagIndex, tnErrorNum;
+		SComp*		comp;
+		SComp*		compNext;
+		SComp*		compIn;
+		SComp*		compCdx;
+		SComp*		compTagName;
+		SWorkArea*	dbf;
+		SCdxHeader*	cdx;
+		s8			bufferCdx[64];
+
+
+		//////////
+		// Locate the other parameters
+		//////
+			llInCdx	= false;
+			llInDbf	= false;
+			if ((comp = compSkip->ll.nextComp))
+			{
+				// There are parameters
+				for ( ; comp; comp = comp->ll.nextComp)
+				{
+					// Is the component the IN keyword?
+					if (comp->iCode == _ICODE_IN)
+					{
+						// Skipping in something
+						if ((compNext = comp->ll.nextComp))
+						{
+							// What are we skipping in?
+							if (compNext->iCode == _ICODE_CDX)
+							{
+								// IN CDX
+								memset(bufferCdx, 0, sizeof(bufferCdx));
+								llInCdx = true;
+								if ((compCdx = compNext->ll.nextComp))
+								{
+									// They've specified an explicit tag name
+									if (compCdx->iCode == _ICODE_ALPHA || compCdx->iCode == _ICODE_ALPHANUMERIC)
+									{
+										// Valid tag name
+										if (compCdx->length > sizeof(bufferCdx) - 1)
+										{
+											iError_report_byNumber(_ERROR_INVALID_INDEX_TAG, compCdx, false);
+											return;
+										}
+
+										// Copy the tag name
+										memcpy(bufferCdx, comp->line->sourceCode->data_s8 + comp->start, comp->length);
+
+									} else {
+										// Syntax error
+										iError_report_byNumber(_ERROR_SYNTAX, compNext, false);
+										return;
+									}
+
+								} else {
+									// Just in CDX
+									// Grab the current CDX tag name
+									if (!iDbf_get_tagName(iDbf_get_workArea_current_wa(), bufferCdx, &tnErrorNum) || tnErrorNum != 0)
+									{
+										iError_report_byNumber(_ERROR_NO_ACTIVE_INDEX, compNext, false);
+										return;
+									}
+									// We have the index
+								}
+
+							} else if (compNext->iCode == _ICODE_DBF) {
+								// IN DBF
+								llInDbf = true;
+
+							} else if (compNext->iCode == _ICODE_ALPHA || _ICODE_ALPHANUMERIC) {
+								// IN an alias
+								lnWorkArea = iDbf_get_workArea_byAlias_byName(&dbf, compNext->line->sourceCode->data_s8 + compNext->start, compNext->length);
+								if (lnWorkArea < 0 || !dbf || !dbf->isUsed)
+								{
+									iError_report_byNumber(_ERROR_INVALID_WORK_AREA, compNext, false);
+									return;
+								}
+
+							} else if (compNext->iCode == _ICODE_NUMERIC) {
+								// IN a work area
+								lnWorkArea = iComps_getAs_s32(compNext);
+								if (lnWorkArea < 0 || !(dbf = iDbf_get_workArea_current_wa(lnWorkArea)) || !dbf->isUsed)
+								{
+									iError_report_byNumber(_ERROR_INVALID_WORK_AREA, compNext, false);
+									return;
+								}
+
+							} else {
+								// Syntax error
+								iError_report_byNumber(_ERROR_SYNTAX, compNext, false);
+								return;
+							}
+						}
+					}
+				}
+
+			} else {
+				// Skipping forward 1 record in the current area
+				lnSkip		= 1;
+				lnWorkArea	= iDbf_get_workArea_current();
+				dbf			= iDbf_get_workArea_current_wa(lnWorkArea);
+				if (!dbf || !dbf->isUsed)
+				{
+					iError_report_byNumber(_ERROR_INVALID_WORK_AREA, compNext, false);
+					return;
+				}
+			}
+
+
+		//////////
+		// Are they trying to move in dbf and cdx?
+		//////
+			if (llInDbf && llInCdx)
+			{
+				iError_report_byNumber(_ERROR_CONFLICTING_PARAMETERS, compCdx, false);
+				return;
+			}
+
+
+		//////////
+		// Skip as indicated
+		//////
+			if (llInCdx)
+			{
+				// Skipping in a CDX
+				if ((lnTagIndex = iCdx_isTagValid_byTagName(dbf, bufferCdx)))
+				{
+					// Skip forward within the indicated tag
+					iCdx_skip(dbf, lnSkip, lnTagIndex);
+
+				} else {
+					// Invalid tag name
+					iError_report_byNumber(_ERROR_INVALID_INDEX_TAG, compCdx, false);
+					return;
+				}
+
+			} else if (llInDbf) {
+				// Skipping in the DBF
+				iDbf_skip(dbf, lnSkip, true);
+
+			} else {
+				// Skipping naturally
+				iDbf_skip(dbf, lnSkip, false);
+			}
 	}
 
 

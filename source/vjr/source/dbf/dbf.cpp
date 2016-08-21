@@ -2150,7 +2150,7 @@
 // Called to goto a record and read in the contents.
 //
 //////
-	sptr iDbf_gotoRecord(SWorkArea* wa, s32 recordNumber)
+	sptr iDbf_gotoRecord(SWorkArea* wa, s32 recordNumber, bool tlForceDbf)
 	{
 		s32				lnI;
 		s64				lnOffset;
@@ -2188,6 +2188,10 @@
 		//////
 			if (recordNumber <= (s32)wa->header.records)
 			{
+				// Are we moving by index?
+				if (!tlForceDbf && wa->isIndexLoaded && iiCdx_isPrimaryKeySet(wa))
+					return(iCdx_gotoRecord(wa, recordNumber));
+
 				// Do we need to fetch the data?
 				if (wa->isCached)
 				{
@@ -2281,11 +2285,40 @@
 // Otherwise, goes to RECNO() 1.
 //
 //////
-	sptr iDbf_gotoTop(SWorkArea* wa)
+	sptr iDbf_gotoTop(SWorkArea* wa, bool tlForceDbf)
 	{
 		// If the work area is valid, move to the appropriate record
-		if (iDbf_isWorkAreaValid(wa, NULL))
-			return(iDbf_gotoRecord(wa, ((wa->isIndexLoaded && iiCdx_isPrimaryKeySet(wa)) ? iCdx_gotoTop(wa) : 1)));
+		if (iDbf_isWorkAreaValid(wa, NULL) && wa->isUsed)
+		{
+			// Move via DBF or index
+			if (!tlForceDbf && wa->isIndexLoaded)		return(iCdx_gotoRecord(wa, 1));
+			else										return(iDbf_gotoRecord(wa, 1));
+		}
+
+		// If we get here, invalid work area
+		return(-1);
+	}
+
+
+
+
+//////////
+//
+// Called to 
+//
+//////
+	sptr iDbf_skip(SWorkArea* wa, s32 tnDelta, bool tlForceDbf, s32 tnTagIndex)
+	{
+		// If the work area is valid, move to the appropriate record
+		if (iDbf_isWorkAreaValid(wa, NULL) && wa->isUsed)
+		{
+			// Move via DBF or index
+			if (!tlForceDbf && wa->isIndexLoaded)
+				return(iCdx_skip(wa, tnDelta, tnTagIndex));
+
+			// Skipping forward in the DBF
+// TODO:  Write this code
+		}
 
 		// If we get here, invalid work area
 		return(-1);

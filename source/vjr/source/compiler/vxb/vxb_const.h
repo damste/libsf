@@ -274,6 +274,7 @@
 	const u8		cgcFeatureNotYetCoded[]							= "feature is not yet coded";
 	const u8		cgcNestingError[]								= "nesting error";
 	const u8		cgcTableNumberInvalid[]							= "table number invalid";
+	const u8		cgcNoActiveIndex[]								= "no active index";
 #else
 	#error Language not specified
 #endif

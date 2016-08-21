@@ -1792,6 +1792,118 @@ close_and_quit:
 
 //////////
 //
+// Called to retrieve the tag number based on the tag name
+//
+//////
+	s32 iCdx_getTagNumber(SWorkArea* wa, s8* tcTagName, bool* error, u32* errorNum, s32 tnTagIndexLowerConstraint, s32 tnTagIndexUpperConstraint)
+	{
+		s32			lnTagNameLength, lnCandidateTagNameLength, lnTagIndex;
+		STagRoot	tagRoot;
+
+
+		// Make sure our environment is sane
+		if (wa && iDbf_isWorkAreaValid(wa, NULL) && wa->isUsed)
+		{
+			// Is it a valid area?
+			if (wa->isUsed && wa->isIndexLoaded)
+			{
+				if (wa->isCdx)
+				{
+					// Compound index
+					// Iterate through all the tags
+					lnTagNameLength = strlen(tcTagName);
+					for (lnTagIndex = tnTagIndexLowerConstraint; lnTagIndex <= tnTagIndexUpperConstraint; lnTagIndex++)
+					{
+						// Try to obtain this tag
+						memset(&tagRoot, 0, sizeof(tagRoot));
+						if (!iCdx_getRootmostCompoundTag_byTagnum(wa, wa->cdx_root, NULL, lnTagIndex, &tagRoot))
+						{
+							// When we get here, not found
+							return(-1);
+						}
+
+						// Is this our tag?
+						lnCandidateTagNameLength = strlen(tagRoot.tagName);
+						if (!tcTagName || (lnCandidateTagNameLength == lnTagNameLength && _memicmp(tcTagName, tagRoot.tagName, lnTagNameLength) == 0))
+						{
+							// This is it!
+							if (error)		*error = false;
+							if (errorNum)	*errorNum = _ERROR_OKAY;
+							return(lnTagIndex);
+						}
+					}
+					// If we get here, not found
+
+				} else if (wa->isSdx) {
+					// Secure index
+					if (error)		*error = true;
+					if (errorNum)	*errorNum = _ERROR_FEATURE_NOT_YET_CODED;
+					return(-1);
+
+				} else {
+					// Standard index
+					if (error)		*error = true;
+					if (errorNum)	*errorNum = _ERROR_FEATURE_NOT_YET_CODED;
+					return(-1);
+				}
+
+				// If we get here, not found
+				return(-1);
+
+			} else {
+				// Invalid index
+				if (error)		*error = true;
+				if (errorNum)	*errorNum = _ERROR_NO_ACTIVE_INDEX;
+				return(-1);
+			}
+
+		} else {
+			// Invalid work area
+			if (error)		*error = true;
+			if (errorNum)	*errorNum = _ERROR_INVALID_WORK_AREA;
+			return(-1);
+		}
+	}
+
+
+
+
+//////////
+//
+// Called to see if the specified index tag is valid (by name or index)
+//
+//////
+	s32 iCdx_isTagValid_byTagName(SWorkArea* wa, s8* tcTagName, bool* error, u32* errorNum)
+	{
+		s32 lnTagIndex;
+
+
+		// Try to find it
+		lnTagIndex = iCdx_getTagNumber(wa, tcTagName, error, errorNum);
+
+		// Were we valid?
+		if (lnTagIndex < 0)		return(0);
+		else					return(lnTagIndex);
+	}
+
+	s32 iCdx_isTagValid_byTagIndex(SWorkArea* wa, s32 tnTagIndex, bool* error, u32* errorNum)
+	{
+		s32 lnTagIndex;
+
+
+		// Try to find it
+		lnTagIndex = iCdx_getTagNumber(wa, NULL, error, errorNum, tnTagIndex, tnTagIndex);
+
+		// Were we valid?
+		if (lnTagIndex < 0)		return(0);
+		else					return(lnTagIndex);
+	}
+
+
+
+
+//////////
+//
 // Not currently supported, but defined because ... well that's just the kind of guy I am (hopeful that in the future I or other developers will step forward to contribute from their own bosom into this project)
 //
 //////
@@ -3048,7 +3160,14 @@ debug_break;
 // Called to position the record pointer of a CDX.
 //
 //////
-	s32 iCdx_gotoTop(SWorkArea* wa)
+	s32 iCdx_gotoRecord(SWorkArea* wa, s32 tnRecordNumber)
+	{
+// TODO:  Write this algorithm
+debug_break;
+		return(-1);
+	}
+
+	s32 iCdx_gotoTop(SWorkArea* wa, s32 tnTagIndex)
 	{
 		// Make sure the index is loaded
 		if (wa->isIndexLoaded)
@@ -3065,7 +3184,7 @@ debug_break;
 		return(-1);
 	}
 
-	s32 iCdx_skip(SWorkArea* wa, s32 tnDelta)
+	s32 iCdx_skip(SWorkArea* wa, s32 tnDelta, s32 tnTagIndex)
 	{
 		// Make sure the index is loaded
 		if (wa->isIndexLoaded)
@@ -3082,7 +3201,7 @@ debug_break;
 		return(-1);
 	}
 
-	s32 iCdx_gotoBottom(SWorkArea* wa)
+	s32 iCdx_gotoBottom(SWorkArea* wa, s32 tnTagIndex)
 	{
 		// Make sure the index is loaded
 		if (wa->isIndexLoaded)
@@ -3107,7 +3226,7 @@ debug_break;
 // Called to position the record pointer of a IDX.
 //
 //////
-	s32 iIdx_gotoTop(SWorkArea* wa)
+	s32 iIdx_gotoTop(SWorkArea* wa, s32 tnTagIndex)
 	{
 		// Is an index loaded?
 		if (wa->isIndexLoaded)
@@ -3124,7 +3243,7 @@ debug_break;
 		return(-1);
 	}
 
-	s32 iIdx_skip(SWorkArea* wa, s32 tnDelta)
+	s32 iIdx_skip(SWorkArea* wa, s32 tnDelta, s32 tnTagIndex)
 	{
 		// Is an index loaded?
 		if (wa->isIndexLoaded)
@@ -3141,7 +3260,7 @@ debug_break;
 		return(-1);
 	}
 
-	s32 iIdx_gotoBottom(SWorkArea* wa)
+	s32 iIdx_gotoBottom(SWorkArea* wa, s32 tnTagIndex)
 	{
 		// Is an index loaded?
 		if (wa->isIndexLoaded)

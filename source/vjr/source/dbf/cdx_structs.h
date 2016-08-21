@@ -186,7 +186,7 @@ struct SCdxKeyOp;
 
 		// Only used if a CDX node
 		u32			keyNode;					// Offset to node holding key information
-		u8			tagName[10];				// Tag name
+		u8			tagName[64];				// Tag name (VJr will increase CDX tag names up to 31 characters, and SDX tag names up to 63 characters)
 	};
 
 	// Holds information about a CDX leaf node

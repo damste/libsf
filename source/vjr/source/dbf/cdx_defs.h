@@ -135,6 +135,9 @@ struct SThisCode;
 	s32					iCdx_validateCdxKeys							(SWorkArea* wa, u32 tnWorkArea, s32 tnTagIndex, s8* tcMetaData, u32 tnMetaDataLength, s8* tcErrorsFound, u32 tnErrorsFoundLength);
 	int					iiKeys_qsortDescending_callback					(const void* l, const void* r);
 	int					iiKeys_qsortAscending_callback					(const void* l, const void* r);
+	s32					iCdx_getTagNumber								(SWorkArea* wa, s8* tcTagName, bool* error = NULL, u32* errorNum = NULL, s32 tnTagIndexLowerConstraint = 0, s32 tnTagIndexUpperConstraint = 9999);
+	s32					iCdx_isTagValid_byTagName						(SWorkArea* wa, s8* tcTagName, bool* error = NULL, u32* errorNum = NULL);
+	s32					iCdx_isTagValid_byTagIndex						(SWorkArea* wa, s32 tnTagIndex, bool* error = NULL, u32* errorNum = NULL);
 	s32					iCdx_validateIdxKeys							(SWorkArea* wa, s8* tcMetaData, u32 tnMetaDataLength, s8* tcErrorsFound, u32 tnErrorsFoundLength);
 
 
@@ -177,13 +180,15 @@ struct SThisCode;
 //////
 	s32					iCdx_findKey									(SWorkArea* wa, STagRoot* tagRoot, u8* keyBuffer, u32 tnKeyLength);
 
-	s32					iCdx_gotoTop									(SWorkArea* wa);
-	s32					iCdx_skip										(SWorkArea* wa, s32 tnDelta);
-	s32					iCdx_gotoBottom									(SWorkArea* wa);
+	s32					iCdx_gotoRecord									(SWorkArea* wa, s32 tnRecordNumber);
 
-	s32					iIdx_gotoTop									(SWorkArea* wa);
-	s32					iIdx_skip										(SWorkArea* wa, s32 tnDelta);
-	s32					iIdx_gotoBottom									(SWorkArea* wa);
+	s32					iCdx_gotoTop									(SWorkArea* wa, s32 tnTagIndex = -1);
+	s32					iCdx_skip										(SWorkArea* wa, s32 tnDelta, s32 tnTagIndex = -1);
+	s32					iCdx_gotoBottom									(SWorkArea* wa, s32 tnTagIndex = -1);
+
+	s32					iIdx_gotoTop									(SWorkArea* wa, s32 tnTagIndex = -1);
+	s32					iIdx_skip										(SWorkArea* wa, s32 tnDelta, s32 tnTagIndex = -1);
+	s32					iIdx_gotoBottom									(SWorkArea* wa, s32 tnTagIndex = -1);
 //////
 // END
 //////////
