@@ -84,6 +84,17 @@
 
 //////////
 //
+// Macros
+//
+//////
+	// Grabs the node type with only the lower 2-bits being pulled through
+	#define cdx_indexNodeType(n) (n & 0x3)
+
+
+
+
+//////////
+//
 // Constants
 //
 /////

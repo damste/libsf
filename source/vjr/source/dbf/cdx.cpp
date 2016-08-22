@@ -472,7 +472,7 @@
 		//////////
 		// Iterate through the various tags
 		//////
-			if (iCdx_getRootmostCompoundTag_byTagnum(wa, head, NULL, tnTagIndex, &tagRoot))
+			if (iCdx_getRootmostCompoundTag_byTagIndex(wa, head, NULL, tnTagIndex, &tagRoot))
 			{
 				// Copy the tag name
 				for (lnI = 0; lnI < tagRoot.keyLength && lnI < tnTagNameLength; lnI++)
@@ -483,7 +483,7 @@
 					tcTagName[lnI] = 32;
 
 				// Grab the node with the key information
-				nodeTag		= iCdx_getCompactIdxNode_byOffset(head, tagRoot.keyNode);
+				nodeTag		= iCdx_getCompactIdxNode_byOffset(wa, head, tagRoot.keyNode);
 				nodePtr		= (s8*)nodeTag;
 				expForPtr	= nodePtr + 512;
 
@@ -543,6 +543,7 @@
 		SCdxKeyOp*		lsKeyOp;		// Key ops for generating the DBF keys
 		STagRoot		tagRoot;
 		SWorkArea*		wa;
+		SCdxKeyLeafRaw	key;
 
 
 		//////////
@@ -564,12 +565,12 @@
 		// Grab the index tag header info so we can generate the keys
 		//////
 			memset(&tagRoot, 0, sizeof(tagRoot));
-			if (!iCdx_getRootmostCompoundTag_byTagnum(wa, wa->cdx_root, NULL, tnTagIndex, &tagRoot))
+			if (!iCdx_getRootmostCompoundTag_byTagIndex(wa, wa->cdx_root, NULL, tnTagIndex, &tagRoot))
 				return(_CDX_ERROR_INVALID_TAG);
 
 			// Right now, head and tagRoot are setup
 			// Grab the actual key node
-			tagHeader = (SCdxHeader*)iCdx_getCompactIdxNode_byOffset(wa->cdx_root, tagRoot.keyNode);
+			tagHeader = (SCdxHeader*)iCdx_getCompactIdxNode_byOffset(wa, wa->cdx_root, tagRoot.keyNode);
 
 
 		//////////
@@ -589,7 +590,10 @@
 		//////////
 		// Find the key
 		//////
-			return(iCdx_findKey(wa, &tagRoot, tcKey, tnKeyLength));
+			memset(&key, tagRoot.fillChar, sizeof(key));
+			memcpy(&key.key[0], tcKey, min(sizeof(key.key), tnKeyLength));
+			key.keyLength = tagRoot.keyLength;
+			return(iCdx_findKey(wa, &tagRoot, &key));
 	}
 
 
@@ -612,11 +616,11 @@
 	{
 		u32				lnResult, lnKeyOpCount;
 		SForClause*		lsFor;
-		u8				keyBuffer[256];
 		SCdxHeader*		tagHeader;		// Holds the tag key expression and FOR clause
 		SCdxKeyOp*		cko;			// Key ops for generating the DBF keys
 		STagRoot		tagRoot;
 		SWorkArea*		wa;
+		SCdxKeyLeafRaw	key;
 
 
 		//////////
@@ -636,12 +640,12 @@
 		// Grab the index tag header info so we can generate the keys
 		//////
 			memset(&tagRoot, 0, sizeof(tagRoot));
-			if (!iCdx_getRootmostCompoundTag_byTagnum(wa, wa->cdx_root, NULL, tnTagIndex, &tagRoot))
+			if (!iCdx_getRootmostCompoundTag_byTagIndex(wa, wa->cdx_root, NULL, tnTagIndex, &tagRoot))
 				return(-2);
 
 			// Right now, head and tagRoot are setup
 			// Grab the actual key node
-			tagHeader = (SCdxHeader*)iCdx_getCompactIdxNode_byOffset(wa->cdx_root, tagRoot.keyNode);
+			tagHeader = (SCdxHeader*)iCdx_getCompactIdxNode_byOffset(wa, wa->cdx_root, tagRoot.keyNode);
 
 
 		//////////
@@ -661,14 +665,15 @@
 		//////////
 		// Build keys from the DBF's index field data
 		//////
-			iiCdx_generateKey_byOps(wa, cko, lnKeyOpCount, keyBuffer, true);
+			memset(&key, tagRoot.fillChar, sizeof(key));
+			iiCdx_generateKey_byOps(wa, cko, lnKeyOpCount, &key.key[0], true);
 			// Right now, keyBuffer is populated with the key to find
 
 
 		//////////
 		// Find the key
 		//////
-			return(iCdx_findKey(wa, &tagRoot, keyBuffer, tnKeyLength));
+			return(iCdx_findKey(wa, &tagRoot, &key));
 	}
 
 
@@ -871,8 +876,8 @@
 				//////////
 				// Get and indicate the type it is
 				//////
-					node = iCdx_getCompactIdxNode_byNumber(head, lnNode);
-					switch (node->type)
+					node = iCdx_getCompactIdxNode_byNumber(wa, head, lnNode);
+					switch (cdx_indexNodeType(node->type))
 					{
 						case _CDX_NODE_INDEX:		// Index node
 							sprintf((s8*)buffer, "index\0");
@@ -889,12 +894,6 @@
 						case _CDX_NODE_ROOT_LEAF:	// Root leaf node
 							sprintf((s8*)buffer, "root+leaf\0");
 							break;
-
-						default:
-							sprintf((s8*)output, "Node %u: Unknown type %u\r\n\0", lnNode, node->type);
-							iBuilder_appendData(data, output, -1);
-							continue;
-							break;
 					}
 					sprintf((s8*)output, "Node %u: %s\r\n\0", lnNode, (s8*)buffer);
 					iBuilder_appendData(data, output, -1);
@@ -907,7 +906,7 @@
 					{
 						// Get the key here
 // TODO:  The value 32 here needs to be based on the field type of the index key expression
-						if (iCdx_getCompactIdxKey_byNumber(head, head->keyLength, 32, lnKeyNumber, lnKeyNumber, node, &key, &tagRoot, true, true))
+						if (iCdx_getCompactIdxKey_byNumber(wa, head, head->keyLength, 32, lnKeyNumber, lnKeyNumber, node, &key, &tagRoot, true, true))
 						{
 							// Print out the key information
 							memset(buffer, 0, sizeof(buffer));
@@ -915,7 +914,7 @@
 								buffer[lnI] = key.key[lnI];
 
 							// Construct the line
-							if (iiGetIndexNodeType(node->type) == 2 || iiGetIndexNodeType(node->type) == 3)
+							if (cdx_indexNodeType(node->type) == 2 || cdx_indexNodeType(node->type) == 3)
 							{
 								// It's a leaf node
 								sprintf((s8*)output, "  - Node key number %u: [%s], Record number: %u\r\n\0", lnKeyNumber, buffer, key.recordNumber);
@@ -994,8 +993,8 @@
 				//////////
 				// Get and indicate the type it is
 				//////
-					node = iCdx_getStandardIdxNode_byNumber(head, lnNode);
-					switch (node->type)
+					node = iCdx_getStandardIdxNode_byNumber(wa, head, lnNode);
+					switch (cdx_indexNodeType(node->type))
 					{
 						case _CDX_NODE_INDEX:		// Index node
 							sprintf((s8*)buffer, "index\0");
@@ -1012,10 +1011,6 @@
 						case _CDX_NODE_ROOT_LEAF:	// Root leaf node
 							sprintf((s8*)buffer, "root+leaf\0");
 							break;
-
-						default:
-							debug_break;
-							break;
 					}
 					sprintf((s8*)output, "Node %u: %s\r\n\0", lnNode, buffer);
 					iBuilder_appendData(data, output, -1);
@@ -1027,7 +1022,7 @@
 					for (lnKeyNumber = 0; lnKeyNumber < node->keyCount; lnKeyNumber++)
 					{
 						// Get the key here
-						if (iCdx_getStandardIdxKey_byNumber(head, tagRoot.fillChar, lnKeyNumber, node, &key, &tagRoot, true, true))
+						if (iCdx_getStandardIdxKey_byNumber(wa, head, tagRoot.fillChar, lnKeyNumber, node, &key, &tagRoot, true, true))
 						{
 							// Print out the key information
 							memset(buffer, 0, sizeof(buffer));
@@ -1152,7 +1147,7 @@
 			}
 
 			// Iterate through one tag, or all of the tags
-			for (lnTagNum = lnStartTagNum, llProcessed = false, llContinue = true; llContinue && lnTagNum <= lnEndTagNum && iCdx_getRootmostCompoundTag_byTagnum(wa, wa->cdx_root, NULL, lnTagNum, &tagRoot); lnTagNum++)
+			for (lnTagNum = lnStartTagNum, llProcessed = false, llContinue = true; llContinue && lnTagNum <= lnEndTagNum && iCdx_getRootmostCompoundTag_byTagIndex(wa, wa->cdx_root, NULL, lnTagNum, &tagRoot); lnTagNum++)
 			{
 				// Indicate we processed at last one thing
 				llProcessed = true;
@@ -1183,7 +1178,7 @@
 				//////////
 				// Validate the header for a this compact .IDX
 				//////
-					node			= iCdx_getCompactIdxNode_byOffset(wa->cdx_root, tagRoot.leftmostNode);
+					node			= iCdx_getCompactIdxNode_byOffset(wa, wa->cdx_root, tagRoot.leftmostNode);
 //					head			= (SCdxHeader*)iCdx_getCompactIdxNode_byOffset(wa->cdx_root, tagRoot.keyNode);
 					lnTotalKeyCount	= 0;
 					while (node)
@@ -1230,7 +1225,7 @@
 								for (lnKeyNumber = 0; lnKeyNumber < node->keyCount; lnKeyNumber++)
 								{
 									// Get the key here
-									if (iCdx_getCompactIdxKey_byNumber(wa->cdx_root, tagRoot.keyLength, tagRoot.fillChar, lnKeyNumber, lnKeyNumber, node, &key, &tagRoot, false, false))
+									if (iCdx_getCompactIdxKey_byNumber(wa, wa->cdx_root, tagRoot.keyLength, tagRoot.fillChar, lnKeyNumber, lnKeyNumber, node, &key, &tagRoot, false, false))
 									{
 										// Indicate our key count has gone up
 										++lnTotalKeyCount;
@@ -1347,7 +1342,7 @@
 								break;	// All done
 
 							// Move to the next lead node right and continue through the keys
-							node = iCdx_getCompactIdxNode_byOffset(wa->cdx_root, node->nodeRight);
+							node = iCdx_getCompactIdxNode_byOffset(wa, wa->cdx_root, node->nodeRight);
 					}
 we_are_done:
 
@@ -1450,14 +1445,14 @@ clean_house:
 		// Grab the index tag header info so we can generate the keys
 		//////
 			memset(&tagRoot, 0, sizeof(tagRoot));
-			if (!iCdx_getRootmostCompoundTag_byTagnum(wa, wa->cdx_root, NULL, tnTagIndex, &tagRoot))
+			if (!iCdx_getRootmostCompoundTag_byTagIndex(wa, wa->cdx_root, NULL, tnTagIndex, &tagRoot))
 			{
 				sprintf(tcMetaData, "Unable to access tag index %u\n", tnTagIndex);
 				return(-1);
 			}
 			// Right now, head and tagRoot are setup
 			// Grab the actual key node
-			tagHeader = (SCdxHeader*)iCdx_getCompactIdxNode_byOffset(wa->cdx_root, tagRoot.keyNode);
+			tagHeader = (SCdxHeader*)iCdx_getCompactIdxNode_byOffset(wa, wa->cdx_root, tagRoot.keyNode);
 
 
 		//////////
@@ -1816,7 +1811,7 @@ close_and_quit:
 					{
 						// Try to obtain this tag
 						memset(&tagRoot, 0, sizeof(tagRoot));
-						if (!iCdx_getRootmostCompoundTag_byTagnum(wa, wa->cdx_root, NULL, lnTagIndex, &tagRoot))
+						if (!iCdx_getRootmostCompoundTag_byTagIndex(wa, wa->cdx_root, NULL, lnTagIndex, &tagRoot))
 						{
 							// When we get here, not found
 							return(-1);
@@ -2575,10 +2570,16 @@ failed_parsing:
 
 //////////
 //
-// Called to populate the key by the data stored in the ops
+// Called to populate the key by the data stored in the ops.
+//
+// Note:  There are three possible choices for where to generate the key from:
+//
+//			(1)  rowDataOverride->data_s8 (if rowDataOverride provided)
+//			(2)  wa->irow.data_s8 (if tlBuildFromIndexData is true)
+//			(3)  wa->row.data_s8
 //
 //////
-	void iiCdx_generateKey_byOps(SWorkArea* wa, SCdxKeyOp* keyOps, s32 tnKeyOpCount, u8* keyOut, bool tlBuildFromIndexData)
+	void iiCdx_generateKey_byOps(SWorkArea* wa, SCdxKeyOp* keyOps, s32 tnKeyOpCount, u8* keyOut, bool tlBuildFromIndexData, SDatum* rowDataOverride)
 	{
 		s32			lnI, lnJ;
 		u8*			keyPart;
@@ -2587,18 +2588,20 @@ failed_parsing:
 
 
 		// Grab our data source
-		dataSource = ((tlBuildFromIndexData) ? wa->irow.data_s8 : wa->row.data_s8);
+		     if (rowDataOverride)			dataSource = rowDataOverride->data_s8;
+		else if (tlBuildFromIndexData) 		dataSource = wa->irow.data_s8;
+		else								dataSource = wa->row.data_s8;
 
 		// Iterate through each op at warp speed
 		for (lnI = 0, cko = &keyOps[0]; lnI < tnKeyOpCount; lnI++, cko++)
 		{
-			// Peform the copy
+			// Perform the copy
 			memcpy(keyOut + cko->offsetKey, dataSource + cko->offsetRow, cko->length);
 
 			// Is there a fixup?
 			if (cko->indexFixup)
 			{
-				// Get our pointer to this part of the key
+				// Get our pointer to this part of the key rowData
 				keyPart = keyOut + cko->offsetKey;
 
 				// Apply the fixup
@@ -3041,6 +3044,244 @@ failed_parsing:
 
 //////////
 //
+// Called to build the indicated key
+//
+//////
+	bool iiCdx_buildKey(SWorkArea* wa, STagRoot* tagRoot, SCdxKeyLeafRaw* key, SDatum* rowData, bool* error, u32* errorNum)
+	{
+		u32				lnResult, lnKeyOpCount;
+		SForClause*		lsFor;
+		SCdxHeader*		tagHeader;		// Holds the tag key expression and FOR clause
+		SCdxKeyOp*		cko;			// Key ops for generating the DBF keys
+
+
+		//////////
+		// Reset the error
+		//////
+			if (error)		*error		= false;
+			if (errorNum)	*errorNum	= _ERROR_OKAY;
+
+
+		//////////
+		// Grab the index tag header info so we can generate the keys
+		//////
+			// Right now, head and tagRoot are setup
+			// Grab the actual key node
+			tagHeader = (SCdxHeader*)iCdx_getCompactIdxNode_byOffset(wa, wa->cdx_root, tagRoot->keyNode);
+
+
+		//////////
+		// Get or build the buildOps for this key
+		//////
+			if (!iiCdx_get_buildOps(wa, tagRoot->tagIndex, tagHeader, &lsFor, &cko, &lnKeyOpCount, &lnResult))
+			{
+				if (error)		*error		= true;
+				if (errorNum)	*errorNum	= _CDX_ERROR_CONTEXTUAL + lnResult;	// Something is invalid
+				return(false);
+			}
+
+
+		//////////
+		// Build keys from the indicated rowData
+		//////
+			// Make sure we have a rowData pointer
+			if (!rowData)
+				rowData = &wa->row;
+
+			// Physically generate the key
+			memset(key, tagRoot->fillChar, sizeof(key));
+			iiCdx_generateKey_byOps(wa, cko, lnKeyOpCount, &key->key[0], true, rowData);
+
+			// Right now, key->key is populated
+			return(true);
+	}
+	
+
+
+
+//////////
+//
+// Called to delete the indicated key from the index
+//
+//////
+	bool iiCdx_deleteKey(SWorkArea* wa, STagRoot* tagRoot, SCdxKeyLeafRaw* key, s32 recno, bool* error, u32* errorNum, SBuilder* errorDetails)
+	{	 
+// TODO:  working here
+		// Create a lock ops builder
+
+		// Find the key
+		iCdx_findKey(wa, tagRoot, key, recno);
+		// Returns the node the key was found on, and lock ops required
+
+		// If only one key on the node:
+		// Delete the node
+		// Else, delete the key from the node
+
+		// Indicate success
+		return(false);
+	}	 
+	
+
+
+
+//////////
+//
+// Called to insert the indicated key into the index
+//
+//////
+	bool iiCdx_insertKey(SWorkArea* wa, STagRoot* tagRoot, SCdxKeyLeafRaw* key, s32 recno, bool* error, u32* errorNum, SBuilder* errorDetails)
+	{
+		return(false);
+	}
+
+
+
+
+//////////
+//
+// Called to generate the keys for any possibly changed records and updates each index in turn.
+//
+//////
+	bool iiCdx_updateKeys(SWorkArea* wa, bool* error, u32* errorNum, SBuilder* errorDetails)
+	{
+		return(iiCdx_updateKeys(wa, wa->currentRecord, &wa->row, &wa->orow, error, errorNum, errorDetails));
+	}
+
+	bool iiCdx_updateKeys(SWorkArea* wa, s32 recno, SDatum* row, SDatum* orow, bool* error, u32* errorNum, SBuilder* errorDetails)
+	{
+		bool			llKeyError;
+		s32				lnTagIndex;
+		STagRoot		tagRoot;
+		SCdxKeyLeafRaw	key, okey;
+// 		SBuilder*		lockOps;
+		s8				buffer[1024];
+
+
+		// Is there an index?
+		if (wa->isIndexLoaded)
+		{
+			// Reset the error information
+			if (error)				*error							= false;
+			if (errorNum)			*errorNum						= _ERROR_OKAY;
+			if (errorDetails)		errorDetails->populatedLength	= 0;
+
+			// Which index?
+			if (wa->isCdx)
+			{
+				// CDX
+				// Iterate through each tag
+				for (lnTagIndex = 0, llKeyError = false; ; lnTagIndex++)
+				{
+					// Try to obtain this tag
+					memset(&tagRoot, 0, sizeof(tagRoot));
+					if (!iCdx_getRootmostCompoundTag_byTagIndex(wa, wa->cdx_root, NULL, lnTagIndex, &tagRoot))
+						break;	// When we get here, we're done
+
+					// Loop entered for structured exit
+					do {
+						// Generate the key on wa->data
+						if (!iiCdx_buildKey(wa, &tagRoot, &key, row, error, errorNum) || error)
+						{
+							// Error generating current record key
+							if (errorDetails)
+							{
+								sprintf(buffer, "Error building key for tag %s\n", tagRoot.tagName);
+								iBuilder_appendData(errorDetails, (cs8*)buffer, -1);
+							}
+							llKeyError = true;
+							break;
+						}
+
+						// Generate the key on wa->odata
+						if (!iiCdx_buildKey(wa, &tagRoot, &okey, orow, error, errorNum) || error)
+						{
+							// Error generating original record key
+							if (errorDetails)
+							{
+								sprintf(buffer, "Error building okey for tag %s\n", tagRoot.tagName);
+								iBuilder_appendData(errorDetails, (cs8*)buffer, -1);
+							}
+							llKeyError = true;
+							break;
+						}
+
+						// Are they different?
+						if (memcmp(&key.key, okey.key, key.keyLength) != 0)
+						{
+
+							//////////
+							// They've changed
+							//////
+								// Delete the old key
+								if (!iiCdx_deleteKey(wa, &tagRoot, &okey, recno, error, errorNum) || error)
+								{
+									// Error deleting the original key
+									if (errorDetails)
+									{
+										sprintf(buffer, "Error deleting okey in tag %s\n", tagRoot.tagName);
+										iBuilder_appendData(errorDetails, (cs8*)buffer, -1);
+									}
+									llKeyError = true;
+									break;
+								}
+
+								// Insert the new key
+								if (!iiCdx_insertKey(wa, &tagRoot, &key, recno, error, errorNum) || error)
+								{
+									// Error inserting the new old key
+									if (errorDetails)
+									{
+										sprintf(buffer, "Error inserting key in tag %s\n", tagRoot.tagName);
+										iBuilder_appendData(errorDetails, (cs8*)buffer, -1);
+									}
+									llKeyError = true;
+									break;
+								}
+
+
+						} else if (propGet_settings_AutoValidate(_settings)) {
+							// They are the same, but we need to validate this key exists in the index when it's used
+							if (!iCdx_findKey(wa, &tagRoot, &key))
+							{
+								// Error generating this key
+								llKeyError = true;
+								break;
+							}
+						}
+						// If we get here, the key was updated successfully
+
+					} while (0);
+				}
+				// When we get here, all keys were updated successfully
+				return(true);
+
+			} else if (wa->isSdx) {
+				// SDX
+debug_break;
+				if (error)		*error		= true;
+				if (errorNum)	*errorNum	= _ERROR_FEATURE_NOT_YET_CODED;
+
+			} else {
+				// IDX
+debug_break;
+				if (error)		*error		= true;
+				if (errorNum)	*errorNum	= _ERROR_FEATURE_NOT_YET_CODED;
+			}
+
+		} else {
+			// No index, so we're good
+			return(true);
+		}
+
+		// Indicate success based on whether or not we have an error
+		return(!error);
+	}
+
+
+
+
+//////////
+//
 // Called to traverse the indicated CDX tag root looking for the key.  This is the fastest find
 // possible for finding a key in a CDX.  It performs a binary search on the key nodes, and then
 // examines the first key on each node within the range to see which of the nodes the key must
@@ -3048,27 +3289,28 @@ failed_parsing:
 // found in the first position, then the previous node is searched to see if the first matching
 // record actually begins on that node.
 //
-// If found, it returns the record number.
-// If not found, it returns _CDX_NO_FIND.
+// If recno is provided, it finds the exact key for that recno
+// If recno is not provided, it returns the first match's recno
+// If not found, it returns _CDX_FIND_no.
 //
 //////
-	s32 iCdx_findKey(SWorkArea* wa, STagRoot* tagRoot, u8* keyBuffer, u32 tnKeyLength)
+	s32 iCdx_findKey(SWorkArea* wa, STagRoot* tagRoot, SCdxKeyLeafRaw* keyFind, s32 recno, SBuilder* lockOps)
 	{
 		s32				lnTranslatedResult;
-		u32				lnKeyNumber;
+		u32				lnKeyNumber, lnKeyLength;
 		SCdxNode*		node;
-		SCdxKeyLeafRaw	key;
+		SCdxKeyLeafRaw	keyCandidate;
 
 
 debug_break;
 		//////////
 		// Find the node it relates to
 		//////
-			node		= iCdx_getCompactIdxNode_byOffset(wa->cdx_root, tagRoot->highestNode);
-			tnKeyLength	= max(min(tnKeyLength, tagRoot->keyLength), 1);
+			node			= iCdx_getCompactIdxNode_byOffset(wa, wa->cdx_root, tagRoot->highestNode, lockOps);
+			lnKeyLength		= max(min(keyFind->keyLength, tagRoot->keyLength), 1);
 			while (node)
 			{
-				switch (iiGetIndexNodeType(node->type))
+				switch (cdx_indexNodeType(node->type))
 				{
 					case _CDX_NODE_INDEX:	// Index node, pointing to other sub-indexes
 					case _CDX_NODE_ROOT:	// Root node, pointing to other sub-indexes
@@ -3077,16 +3319,16 @@ debug_break;
 						for (lnKeyNumber = 0; lnKeyNumber < node->keyCount; lnKeyNumber++)
 						{
 							// See if this key is beyond the thing we're searching for, if so then the candidate key is the previous one
-							if (iCdx_getCompactIdxKey_byNumber(wa->cdx_root, tagRoot->keyLength, tagRoot->fillChar, lnKeyNumber, lnKeyNumber, node, &key, tagRoot, true, true))
+							if (iCdx_getCompactIdxKey_byNumber(wa, wa->cdx_root, tagRoot->keyLength, tagRoot->fillChar, lnKeyNumber, lnKeyNumber, node, &keyCandidate, tagRoot, true, true))
 							{
 								//////////
 								// See if this key is beyond us.
-								// Refer to the cdx_logic.txt for information on this algorithm.
+								// Refer to the cdx_info.txt for information on this algorithm.
 								//////
-									if (iiCdx_translateActualResultThroughIndexOrder(tagRoot, keyBuffer, &key.key[0], tnKeyLength) <= 0)
+									if (iiCdx_translateActualResultThroughIndexOrder(tagRoot, &keyFind->key[0], &keyCandidate.key[0], lnKeyLength) <= 0)
 									{
 										// We've reached (=) or passed where the key should've been
-										node = iCdx_getCompactIdxNode_byOffset(wa->cdx_root, key.fileOffset);
+										node = iCdx_getCompactIdxNode_byOffset(wa, wa->cdx_root, keyCandidate.fileOffset);
 									}
 									// else
 									// We are continuing with the next index node key in the for loop
@@ -3107,16 +3349,16 @@ debug_break;
 						for (lnKeyNumber = 0; lnKeyNumber < node->keyCount; lnKeyNumber++)
 						{
 							// Get the first key on this node
-							if (iCdx_getCompactIdxKey_byNumber(wa->cdx_root, tagRoot->keyLength, tagRoot->fillChar, lnKeyNumber, 0, node, &key, tagRoot, true, true))
+							if (iCdx_getCompactIdxKey_byNumber(wa, wa->cdx_root, tagRoot->keyLength, tagRoot->fillChar, lnKeyNumber, 0, node, &keyCandidate, tagRoot, true, true))
 							{
 								//////////
-								// See if this key is beyond us.
-								// Refer to the cdx_logic.txt for information on this algorithm.
+								// See if this key is beyond us
+								// Refer to the cdx_info.txt for information on this algorithm
 								//////
-									if ((lnTranslatedResult = iiCdx_translateActualResultThroughIndexOrder(tagRoot, keyBuffer, &key.key[0], tnKeyLength)) == 0)
+									if ((lnTranslatedResult = iiCdx_translateActualResultThroughIndexOrder(tagRoot, &keyFind->key[0], &keyCandidate.key[0], lnKeyLength)) == 0 && (recno == -1 || recno == keyCandidate.recordNumber))
 									{
 										// We found the key
-										return(key.recordNumber);
+										return(keyCandidate.recordNumber);
 
 									} else if (lnTranslatedResult < 0) {
 										// We've passed where the key should've been
@@ -3137,7 +3379,7 @@ debug_break;
 				if (node->nodeRight != (u32)-1)
 				{
 					// Grab that node and continue
-					node = iCdx_getCompactIdxNode_byOffset(wa->cdx_root, node->nodeRight);
+					node = iCdx_getCompactIdxNode_byOffset(wa, wa->cdx_root, node->nodeRight);
 
 				} else {
 					// Nothing else to search
@@ -3404,12 +3646,12 @@ debug_break;
 		//////
 			lnTotalKeyCount	= 0;
 			memset(&tagRoot, 0, sizeof(tagRoot));
-			if (iCdx_getRootmostCompoundTag_byTagnum(wa, wa->cdx_root, NULL, tnTagIndex, &tagRoot))
+			if (iCdx_getRootmostCompoundTag_byTagIndex(wa, wa->cdx_root, NULL, tnTagIndex, &tagRoot))
 			{
 				//////////
 				// Iterate through the keys
 				//////
-					node = iCdx_getCompactIdxNode_byOffset(wa->cdx_root, tagRoot.leftmostNode);
+					node = iCdx_getCompactIdxNode_byOffset(wa, wa->cdx_root, tagRoot.leftmostNode);
 					while (node)
 					{
 						// Iterate through every key for this node
@@ -3419,7 +3661,7 @@ debug_break;
 							for (lnKeyNumber = 0; lnKeyNumber < node->keyCount; lnKeyNumber++)
 							{
 								// Get the key here
-								if (iCdx_getCompactIdxKey_byNumber(wa->cdx_root, tagRoot.keyLength, tagRoot.fillChar, lnKeyNumber, lnKeyNumber, node, &key, &tagRoot, true, true))
+								if (iCdx_getCompactIdxKey_byNumber(wa, wa->cdx_root, tagRoot.keyLength, tagRoot.fillChar, lnKeyNumber, lnKeyNumber, node, &key, &tagRoot, true, true))
 								{
 									// Indicate our key count has gone up
 									++lnTotalKeyCount;
@@ -3439,7 +3681,7 @@ debug_break;
 							break;	// All done
 
 						// Move to the next lead node right and continue through the keys
-						node = iCdx_getCompactIdxNode_byOffset(wa->cdx_root, node->nodeRight);
+						node = iCdx_getCompactIdxNode_byOffset(wa, wa->cdx_root, node->nodeRight);
 					}
 			}
 
@@ -3588,8 +3830,8 @@ debug_break;
 				// Iterate through the keys
 				//////
 					// Based on type, retrieve the node
-					if (wa->isIdxCompact)		nodeCdx = iCdx_getCompactIdxNode_byOffset( headCdx, tagRoot.leftmostNode);
-					else						nodeIdx = iCdx_getStandardIdxNode_byOffset(headIdx, tagRoot.leftmostNode);
+					if (wa->isIdxCompact)		nodeCdx = iCdx_getCompactIdxNode_byOffset (wa, headCdx, tagRoot.leftmostNode);
+					else						nodeIdx = iCdx_getStandardIdxNode_byOffset(wa, headIdx, tagRoot.leftmostNode);
 
 					// Process so long as there are nodes
 					while (nodeCdx)
@@ -3601,8 +3843,8 @@ debug_break;
 							for (lnKeyNumber = 0; lnKeyNumber < nodeCdx->keyCount; lnKeyNumber++)
 							{
 								// Based on the type, get the key
-								if (wa->isIdxCompact)		llResult = iCdx_getCompactIdxKey_byNumber( headCdx, tagRoot.keyLength, tagRoot.fillChar, lnKeyNumber, lnKeyNumber, nodeCdx, &keyCdx, &tagRoot, true, true);
-								else						llResult = iCdx_getStandardIdxKey_byNumber(headIdx,                    tagRoot.fillChar,              lnKeyNumber, nodeIdx, &keyIdx, &tagRoot, true, true);
+								if (wa->isIdxCompact)		llResult = iCdx_getCompactIdxKey_byNumber (wa, headCdx, tagRoot.keyLength, tagRoot.fillChar, lnKeyNumber, lnKeyNumber, nodeCdx, &keyCdx, &tagRoot, true, true);
+								else						llResult = iCdx_getStandardIdxKey_byNumber(wa, headIdx,                    tagRoot.fillChar,              lnKeyNumber, nodeIdx, &keyIdx, &tagRoot, true, true);
 
 								// Get the key here
 								if (llResult)
@@ -3634,8 +3876,8 @@ debug_break;
 							break;	// All done
 
 						// Move to the next lead node right and continue through the keys
-						if (wa->isIdxCompact)		nodeCdx = iCdx_getCompactIdxNode_byOffset( headCdx, nodeCdx->nodeRight);
-						else						nodeIdx = iCdx_getStandardIdxNode_byOffset(headIdx, nodeIdx->nodeRight);
+						if (wa->isIdxCompact)		nodeCdx = iCdx_getCompactIdxNode_byOffset (wa, headCdx, nodeCdx->nodeRight);
+						else						nodeIdx = iCdx_getStandardIdxNode_byOffset(wa, headIdx, nodeIdx->nodeRight);
 					}
 			}
 
@@ -3715,7 +3957,7 @@ debug_break;
 				if (wa->isIndexLoaded && wa->isCdx)
 				{
 					// Try to access the indicated tag
-					*tlError = !iCdx_getRootmostCompoundTag_byTagnum(wa, wa->cdx_root, NULL, tnTagIndex, tagRoot);
+					*tlError = !iCdx_getRootmostCompoundTag_byTagIndex(wa, wa->cdx_root, NULL, tnTagIndex, tagRoot);
 					if (*tlError)
 					{
 						// Error accessing the index tag
@@ -3762,7 +4004,7 @@ debug_break;
 // reason why index tag name lengths can't be larger than 10 characters.  It seems to be merely convention.
 //
 //////
-	bool iCdx_getRootmostCompoundTag_byTagnum(SWorkArea* wa, SCdxHeader* head, SCdxNode* node, s32 lnTagNum, STagRoot* tagRoot)
+	bool iCdx_getRootmostCompoundTag_byTagIndex(SWorkArea* wa, SCdxHeader* head, SCdxNode* node, s32 tnTagIndex, STagRoot* tagRoot)
 	{
 		SCdxKeyLeafRaw	key;
 		SCdxHeader*		nodeTag;
@@ -3801,25 +4043,26 @@ debug_break;
 				case _CDX_NODE_INDEX:	// Index node, pointing to other sub-indexes
 				case _CDX_NODE_ROOT: // Root node, pointing to other sub-indexes
 					// Find the first node, and visit it (left-most)
-					if (!iCdx_getCompactIdxKey_byNumber(head, 10, 32, 0, 0, node, &key, tagRoot, true, true))
+					if (!iCdx_getCompactIdxKey_byNumber(wa, head, 10, 32, 0, 0, node, &key, tagRoot, true, true))
 						return(false);		// Failure obtaining the tag name, which is a fatal error (the index is likely corrupt)
 
 					// Continue processing
-					node = iCdx_getCompactIdxNode_byOffset(head, key.fileOffset);
+					node = iCdx_getCompactIdxNode_byOffset(wa, head, key.fileOffset);
 					break;
 
 				case _CDX_NODE_LEAF:		// Leaf
 				case _CDX_NODE_ROOT_LEAF:	// Root + leaf
 					// Leaf node
 					// Grab the indicated tag number
-					if (lnTagNum < node->keyCount)
+					if (tnTagIndex < node->keyCount)
 					{
 						// It's on this node
-						if (iCdx_getCompactIdxKey_byNumber(head, 10, 32, lnTagNum, lnTagNum, node, &key, tagRoot, false, false))
+						if (iCdx_getCompactIdxKey_byNumber(wa, head, 10, 32, tnTagIndex, tnTagIndex, node, &key, tagRoot, false, false))
 						{
 							// We found it
+							tagRoot->tagIndex		= tnTagIndex;
 							tagRoot->keyNode		= key.fileOffset;				// Offset to the tag's info node
-							nodeTag					= (SCdxHeader*)iCdx_getCompactIdxNode_byOffset(head, tagRoot->keyNode);
+							nodeTag					= (SCdxHeader*)iCdx_getCompactIdxNode_byOffset(wa, head, tagRoot->keyNode);
 							tagRoot->leftmostNode	= *(u32*)nodeTag;				// First 32-bits of tag's info node is the first index node
 							tagRoot->keyLength		= (u32)nodeTag->keyLength;
 							tagRoot->highestNode	= tagRoot->leftmostNode;
@@ -3830,11 +4073,11 @@ debug_break;
 							tagRoot->indexIsDesc	= iiCdx_isDescending(nodeTag);
 
 							// See if that first/highest node is an index node, if so then we descend until we find the left-most leaf node
-							nodeFirst				= iCdx_getCompactIdxNode_byOffset(head, tagRoot->leftmostNode);
+							nodeFirst				= iCdx_getCompactIdxNode_byOffset(wa, head, tagRoot->leftmostNode);
 							memcpy(&tagRoot->tagName[0], key.key, 10);
 
 							// If it's an index node, we need to move to the first entry
-							tagRoot->leftmostNode	= iCdx_descendToLeftmostNode(head, tagRoot->keyLength, nodeFirst, tagRoot);
+							tagRoot->leftmostNode	= iCdx_descendToLeftmostNode(wa, head, tagRoot->keyLength, nodeFirst, tagRoot);
 
 							// Indicate success
 							return(true);
@@ -3846,10 +4089,10 @@ debug_break;
 							return(false);		// No more nodes to traverse
 
 						// Reduce our count by the number of keys on this node
-						lnTagNum -= node->keyCount;
+						tnTagIndex -= node->keyCount;
 
 						// Get the right node and continue processing
-						node = iCdx_getCompactIdxNode_byOffset(head, node->nodeRight);
+						node = iCdx_getCompactIdxNode_byOffset(wa, head, node->nodeRight);
 					}
 					break;
 
@@ -3885,12 +4128,12 @@ debug_break;
 		// Based on the type of node we will traverse appropriately
 		while (node)
 		{
-			switch (iiGetIndexNodeType(node->type))
+			switch (cdx_indexNodeType(node->type))
 			{
 				case _CDX_NODE_INDEX:	// Index node, pointing to other sub-indexes
 				case _CDX_NODE_ROOT: // Root node, pointing to other sub-indexes
 					// Find the first node, and visit it (left-most)
-					node = iCdx_getCompactIdxNode_byOffset(head, node->nodeLeft);
+					node = iCdx_getCompactIdxNode_byOffset(wa, head, node->nodeLeft);
 					break;
 
 				case _CDX_NODE_LEAF:		// Leaf
@@ -3931,12 +4174,12 @@ debug_break;
 		// Based on the type of node we will traverse appropriately
 		while (node)
 		{
-			switch (iiGetIndexNodeType(node->type))
+			switch (cdx_indexNodeType(node->type))
 			{
 				case _CDX_NODE_INDEX:	// Index node, pointing to other sub-indexes
 				case _CDX_NODE_ROOT: // Root node, pointing to other sub-indexes
 					// Find the first node, and visit it (left-most)
-					node = iCdx_getStandardIdxNode_byOffset(head, node->nodeLeft);
+					node = iCdx_getStandardIdxNode_byOffset(wa, head, node->nodeLeft);
 					break;
 
 				case _CDX_NODE_LEAF:		// Leaf
@@ -4174,7 +4417,7 @@ debug_break;
 // Called to get the indicated node by number
 //
 //////
-	SIdxNode* iCdx_getStandardIdxNode_byNumber(SIdxHeader* head, u32 tnNodeNumber)
+	SIdxNode* iCdx_getStandardIdxNode_byNumber(SWorkArea* wa, SIdxHeader* head, u32 tnNodeNumber)
 	{
 		SIdxNode* node;
 
@@ -4182,7 +4425,19 @@ debug_break;
 		if (head && tnNodeNumber >= 1 && tnNodeNumber * 512 <= head->fileSize - 512)
 		{
 			// We're within range
-			node = (SIdxNode*)((s8*)head + (tnNodeNumber * 512));
+			if (head->isCached)
+			{
+				// We're dealing with a completely cached index
+				node = (SIdxNode*)((s8*)head + (tnNodeNumber * 512));
+
+			} else if (wa->isExclusive) {
+				// We have exclusive table access
+// TODO:  code this
+
+			} else {
+				// We have shared table access
+// TODO:  code this
+			}
 
 		} else {
 			// It is not a valid request
@@ -4201,7 +4456,7 @@ debug_break;
 // Called to get the indicated node by number
 //
 //////
-	SIdxNode* iCdx_getStandardIdxNode_byOffset(SIdxHeader* head, u32 tnOffset)
+	SIdxNode* iCdx_getStandardIdxNode_byOffset(SWorkArea* wa, SIdxHeader* head, u32 tnOffset)
 	{
 		SIdxNode* node;
 
@@ -4209,7 +4464,19 @@ debug_break;
 		if (head && tnOffset >= 512 && tnOffset <= head->fileSize - 512)
 		{
 			// We're within range
-			node = (SIdxNode*)((s8*)head + tnOffset);
+			if (head->isCached)
+			{
+				// We're dealing with a completely cached index
+				node = (SIdxNode*)((s8*)head + tnOffset);
+
+			} else if (wa->isExclusive) {
+				// We have exclusive table access
+// TODO:  code this
+
+			} else {
+				// We have shared table access
+// TODO:  code this
+			}
 
 		} else {
 			// It is not a valid request
@@ -4228,7 +4495,7 @@ debug_break;
 // Called to get the standard IDX key for the indicated key number within the indicated node.
 //
 //////
-	bool iCdx_getStandardIdxKey_byNumber(SIdxHeader* head, u8 tcFillChar, u32 tnNumber, SIdxNode* node, SIdxKey* key, STagRoot* tagRoot, bool tlFixupEndian, bool tlFixupSignBit)
+	bool iCdx_getStandardIdxKey_byNumber(SWorkArea* wa, SIdxHeader* head, u8 tcFillChar, u32 tnNumber, SIdxNode* node, SIdxKey* key, STagRoot* tagRoot, bool tlFixupEndian, bool tlFixupSignBit)
 	{
 		u32 lnKeyLength;
 
@@ -4277,7 +4544,7 @@ debug_break;
 // Called to obtain the indicated node by number
 //
 //////
-	SCdxNode* iCdx_getCompactIdxNode_byNumber(SCdxHeader* head, u32 tnNodeNumber)
+	SCdxNode* iCdx_getCompactIdxNode_byNumber(SWorkArea* wa, SCdxHeader* head, u32 tnNodeNumber)
 	{
 		SCdxNode* node;
 
@@ -4285,7 +4552,20 @@ debug_break;
 		if (head && tnNodeNumber >= 1 && 512 + (tnNodeNumber * 512) <= head->fileSize - 512)
 		{
 			// We're within range
-			node = (SCdxNode*)((s8*)head + 512 + (tnNodeNumber * 512));
+			if (head->isCached)
+			{
+				// We're dealing with a completely cached index
+				node = (SCdxNode*)((s8*)head + 512 + (tnNodeNumber * 512));
+
+			} else if (wa->isExclusive) {
+				// We have exclusive table access
+// TODO:  code this
+
+			} else {
+				// We have shared table access
+// TODO:  code this
+			}
+
 
 		} else {
 			// It is not a valid request
@@ -4304,7 +4584,7 @@ debug_break;
 // Called to obtain the indicated node by file offset
 //
 //////
-	SCdxNode* iCdx_getCompactIdxNode_byOffset(SCdxHeader* head, u32 tnOffset)
+	SCdxNode* iCdx_getCompactIdxNode_byOffset(SWorkArea* wa, SCdxHeader* head, u32 tnOffset, SBuilder* lockOps)
 	{
 		SCdxNode* node;
 
@@ -4312,7 +4592,19 @@ debug_break;
 		if (head && tnOffset >= 1024 && tnOffset <= head->fileSize - 512)
 		{
 			// We're within range
-			node = (SCdxNode*)((s8*)head + tnOffset);
+			if (head->isCached)
+			{
+				// We're dealing with a completely cached cdx
+				node = (SCdxNode*)((s8*)head + tnOffset);
+
+			} else if (wa->isExclusive) {
+				// We have exclusive table access
+// TODO:  code this
+
+			} else {
+				// We have shared table access
+// TODO:  code this
+			}
 
 		} else {
 			// It is not a valid request
@@ -4343,19 +4635,29 @@ debug_break;
 //////
 // END
 //////////
-	bool iCdx_getCompactIdxKey_byNumber(SCdxHeader* head, u32 keyLength, u8 tcFillChar, u32 tnKeyNumberTarget, u32 tnKeyNumberThis, SCdxNode* node, SCdxKeyLeafRaw* key, STagRoot* tagRoot, bool tlFixupEndian, bool tlFixupSignBit)
+	bool iCdx_getCompactIdxKey_byNumber(SWorkArea*			wa,
+										SCdxHeader*			head,
+										u32					keyLength,
+										u8					tcFillChar,
+										u32					tnKeyNumberTarget,
+										u32					tnKeyNumberThis,
+										SCdxNode*			node,
+										SCdxKeyLeafRaw*		key,
+										STagRoot*			tagRoot,
+										bool				tlFixupEndian,
+										bool				tlFixupSignBit)
 	{
-		u32						lnKeyLength, lnVariableLength;
-		s8*						keyPtr;
-		SCdxKeyTrail			keyTrail;
-		SCdxKeyTrailInterior*	keyTrailInterior;
-		SCdxKeyLeafRaw			keyPrior;
+		u32								lnKeyLength, lnVariableLength;
+		s8*								keyPtr;
+		SCdxKeyDecodeTrail				keyTrail;
+		SCdxKeyDecodeTrailInterior*		keyTrailInterior;
+		SCdxKeyLeafRaw					keyPrior;
 
 
 		// Is this us?
 		if (head && node && tnKeyNumberThis < node->keyCount)
 		{
-			if (iiGetIndexNodeType(node->type) == 2 || iiGetIndexNodeType(node->type) == 3)
+			if (cdx_indexNodeType(node->type) == 2 || cdx_indexNodeType(node->type) == 3)
 			{
 				// Process the exterior/leaf node
 				iiCdx_extractExteriorNode_nodeKeyAccessData(node, tnKeyNumberThis, &keyTrail);	// Node-specific key information
@@ -4364,7 +4666,7 @@ debug_break;
 				if (tnKeyNumberThis != 0)
 				{
 					// Grab the prior key, which may grab the prior key, which may grab the prior key, and so on... UGH!  What a horrible design.
-					iCdx_getCompactIdxKey_byNumber(head, keyLength, tcFillChar, tnKeyNumberTarget, tnKeyNumberThis - 1, node, &keyPrior, tagRoot, false, false);
+					iCdx_getCompactIdxKey_byNumber(wa, head, keyLength, tcFillChar, tnKeyNumberTarget, tnKeyNumberThis - 1, node, &keyPrior, tagRoot, false, false);
 
 					// Copy the prior key if need be
 					if (keyTrail.count_DC != 0)
@@ -4389,20 +4691,20 @@ debug_break;
 					memset(&key->key[keyLength - keyTrail.count_TC], tcFillChar, keyTrail.count_TC);
 
 				// Store the record number
-				key->recordNumber		= keyTrail.record;
-				key->record2	= 0;
+				key->recordNumber	= keyTrail.record;
+				key->record2		= 0;
 
 
 			} else {
 				// Process the interior node
-				lnKeyLength					= keyLength + sizeof(SCdxKeyTrail);
-				keyPtr						= (s8*)node + 12 + (tnKeyNumberThis * lnKeyLength);
-				keyTrailInterior			= (SCdxKeyTrailInterior*)(keyPtr + keyLength);
-				key->fileOffset				= iiSwapEndian32(keyTrailInterior->fileOffset);
-				key->record2				= iiSwapEndian32(keyTrailInterior->record2);
-				key->offset					= 12 + (tnKeyNumberThis * lnKeyLength);
-				key->keyLength				= keyLength;
-				key->key[keyLength]			= 0;
+				lnKeyLength			= keyLength + sizeof(SCdxKeyDecodeTrail);
+				keyPtr				= (s8*)node + 12 + (tnKeyNumberThis * lnKeyLength);
+				keyTrailInterior	= (SCdxKeyDecodeTrailInterior*)(keyPtr + keyLength);
+				key->fileOffset		= iiSwapEndian32(keyTrailInterior->fileOffset);
+				key->record2		= iiSwapEndian32(keyTrailInterior->record2);
+				key->offset			= 12 + (tnKeyNumberThis * lnKeyLength);
+				key->keyLength		= keyLength;
+				key->key[keyLength]	= 0;
 				memcpy(key->key, keyPtr, keyLength);
 			}
 
@@ -4454,7 +4756,7 @@ debug_break;
 // Called to descend the tree to find the left-most node by offset
 //
 //////
-	u32 iCdx_descendToLeftmostNode(SCdxHeader* head, u32 keyLength, SCdxNode* node, STagRoot* tagRoot)
+	u32 iCdx_descendToLeftmostNode(SWorkArea* wa, SCdxHeader* head, u32 keyLength, SCdxNode* node, STagRoot* tagRoot)
 	{
 		u32				lnNodeType;
 		SCdxKeyLeafRaw	key;
@@ -4464,7 +4766,7 @@ debug_break;
 		if (head && node)
 		{
 			// See what node we're on
-			lnNodeType = iiGetIndexNodeType(node->type);
+			lnNodeType = cdx_indexNodeType(node->type);
 			if (lnNodeType == 2 || lnNodeType == 3)
 			{
 				// We're there
@@ -4472,8 +4774,8 @@ debug_break;
 
 			} else if (lnNodeType == 0 || lnNodeType == 1) {
 				// Index node or root node, we need to descend into the first entry
-				iCdx_getCompactIdxKey_byNumber(head, keyLength, tagRoot->fillChar, 0, 0, node, &key, tagRoot, true, true);
-				return(iCdx_descendToLeftmostNode(head, keyLength, iCdx_getCompactIdxNode_byOffset(head, key.fileOffset), tagRoot));
+				iCdx_getCompactIdxKey_byNumber(wa, head, keyLength, tagRoot->fillChar, 0, 0, node, &key, tagRoot, true, true);
+				return(iCdx_descendToLeftmostNode(wa, head, keyLength, iCdx_getCompactIdxNode_byOffset(wa, head, key.fileOffset), tagRoot));
 
 			} else {
 				// Not sure what to do here
@@ -4531,7 +4833,7 @@ debug_break;
 		u8		after[4];			// Puts a buffer after keyBuffer
 	};
 
-	void iiCdx_extractExteriorNode_nodeKeyAccessData(SCdxNode* node, u32 tnNumber, SCdxKeyTrail* keyTrail)
+	void iiCdx_extractExteriorNode_nodeKeyAccessData(SCdxNode* node, u32 tnNumber, SCdxKeyDecodeTrail* keyTrail)
 	{
 		u32			lnBitsPerKey, lnFirstByte;
 		SSafeData	data;

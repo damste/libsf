@@ -82,6 +82,7 @@
 
 
 
+struct SWorkArea;
 struct SForClause;
 struct SCdxKeyOp;
 
@@ -155,17 +156,20 @@ struct SCdxKeyOp;
 		// Pointer to the key data
 		u32			keyLength;					// Length of the key
 		u8			key[256];					// Reconstructed key from its compact form
+
+		// Additional meta data about the find
+		SBuilder*	meta_lockOps;				// Operations for locking the index for the find
 	};
 
 	// Used during node traversal
-	struct SCdxKeyTrailInterior
+	struct SCdxKeyDecodeTrailInterior
 	{
 		u32			record2;					// Record number
 		u32			fileOffset;					// File offset to access related node
 	};
 
 	// Holds information about the leaf key header (the part which increases from offset 0)
-	struct SCdxKeyTrail
+	struct SCdxKeyDecodeTrail
 	{
 		u32			record;						// Record number
 		u16			count_DC;					// Duplicate byte count
@@ -185,6 +189,7 @@ struct SCdxKeyOp;
 		bool		needsSignBitToggled;		// Based on the index expression, if it's integer, currency, float or double, after the big-endian to little-endian swap, it needs the most significant bit toggled, and if negative, then it needs all bits toggled
 
 		// Only used if a CDX node
+		s32			tagIndex;					// Index tag number
 		u32			keyNode;					// Offset to node holding key information
 		u8			tagName[64];				// Tag name (VJr will increase CDX tag names up to 31 characters, and SDX tag names up to 63 characters)
 	};
@@ -277,8 +282,15 @@ struct SCdxKeyOp;
 			u32		lastSlotInNode;
 		};
 
-		u32			reserved5;					// 28,4
-		u32			reserved6;					// 32,4
+		union {
+			u32		reserved5;					// 28,4
+			bool	isCached;					// 28,1+3	If the entire index is cached into memory, then this is true
+		};
+		union
+		{
+			u8			reserved6[4];			// 32,4
+			SWorkArea*	wa;						// 32,4		Pointer to this index's work area
+		};
 		u8			reserved7[466];				// 36,466
 
 		u16			order;						// 502,2	0=Ascending, 1=Descending
@@ -331,10 +343,17 @@ struct SCdxKeyOp;
 		u32			fileSize;					// 8,4		File size in bytes
 		u16			keyLength;					// 12,2		Number of bytes in each key
 		u8			options;					// 14,1		1=UNIQUE, 8=FOR clause, 32=Compact IDX
-		u8			reserved1;					// 15,1
+		union {
+			u8		reserved1;					// 15,1
+			bool	isCached;					// 15,1		If the entire IDX has been loaded into memory, this is true
+		};
 		u8			keyExpression[220];			// 16,220	Key expression itself
 		u8			forClause[220];				// 236,220	FOR clause expression
-		u8			reserved2[56];				// 456,56
+		union {
+			u8			reserved2[4];			// 456,4
+			SWorkArea*	wa;						// 456,4	Pointer to this index's work area
+		};
+		u8			reserved3[52];				// 460,52
 		// Total size: 512 bytes
 	};
 

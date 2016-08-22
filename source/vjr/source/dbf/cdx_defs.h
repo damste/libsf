@@ -162,13 +162,18 @@ struct SThisCode;
 	SCdxKeyOp*			iiCdx_generateKey_buildOps						(SWorkArea* wa, u8* keyExpression, s32* tnKeyOpCount);
 	bool				iiCdx_generateKey_buildOps_markClosingParenthesis(u8* leftParenthesis, u8 fixupAscii);
 	u32					iiCdx_generateKey								(SWorkArea* wa, SCdxHeader* head, u8* keyOut);
-	void				iiCdx_generateKey_byOps							(SWorkArea* wa, SCdxKeyOp* keyOps, s32 tnKeyOpCount, u8* keyOut, bool tlBuildFromIndexData);
+	void				iiCdx_generateKey_byOps							(SWorkArea* wa, SCdxKeyOp* keyOps, s32 tnKeyOpCount, u8* keyOut, bool tlBuildFromIndexData, SDatum* rowDataOverride = NULL);
 	void				iiCdx_generateKey_byOps_fixup_swapEndian		(SCdxKeyOp* lko, u8* keyPart);
 	void				iiCdx_generateKey_byOps_fixup_date				(SCdxKeyOp* lko, u8* keyPart);
 	void				iiCdx_generateKey_byOps_fixup_double			(SCdxKeyOp* lko, u8* keyPart);
 	void				iiCdx_generateKey_byOps_fixup_numeric			(SCdxKeyOp* lko, u8* keyPart, SWorkArea* wa);
 	bool				iiCdx_generateKey_byOps_fixup					(SWorkArea* wa, SCdxKeyOp* keyOps, s32 tnKeyOpCount, u8* keyOut, bool tlIsCdxKey);
 	bool				iiCdx_get_buildOps								(SWorkArea* wa, s32 tnTagIndex, SCdxHeader* tagHeader, SForClause** tsFor, SCdxKeyOp** tsKeyOp, u32* tnKeyOpCount, u32* tnResult);
+	bool				iiCdx_buildKey									(SWorkArea* wa,	STagRoot* tagRoot, SCdxKeyLeafRaw* key, SDatum* rowData, bool* error = NULL, u32* errorNum = NULL);
+	bool				iiCdx_deleteKey									(SWorkArea* wa, STagRoot* tagRoot, SCdxKeyLeafRaw* key, s32 recno, bool* error = NULL, u32* errorNum = NULL, SBuilder* errorDetails = NULL);
+	bool				iiCdx_insertKey									(SWorkArea* wa, STagRoot* tagRoot, SCdxKeyLeafRaw* key, s32 recno, bool* error = NULL, u32* errorNum = NULL, SBuilder* errorDetails = NULL);
+	bool				iiCdx_updateKeys								(SWorkArea* wa, bool* error = NULL, u32* errorNum = NULL, SBuilder* errorDetails = NULL);
+	bool				iiCdx_updateKeys								(SWorkArea* wa, s32 recno, SDatum* row, SDatum* orow, bool* error = NULL, u32* errorNum = NULL, SBuilder* errorDetails = NULL);
 //////
 // END
 //////////
@@ -178,7 +183,7 @@ struct SThisCode;
 // Index navigation
 // BEGIN
 //////
-	s32					iCdx_findKey									(SWorkArea* wa, STagRoot* tagRoot, u8* keyBuffer, u32 tnKeyLength);
+	s32					iCdx_findKey									(SWorkArea* wa, STagRoot* tagRoot, SCdxKeyLeafRaw* key, s32 recno = -1, SBuilder* lockOps = NULL);
 
 	s32					iCdx_gotoRecord									(SWorkArea* wa, s32 tnRecordNumber);
 
@@ -198,24 +203,24 @@ struct SThisCode;
 	u32					iCdx_getAllKeysCdx								(SWorkArea* wa, s32 tnTagIndex, u8* tcKeySpace, u32 tnKeySpaceLength, u8* tcDecodeExpression, u32 tnDecodeExpressionLength, s8* tcKeyLength4);
 	u32					iCdx_getAllKeysIdx								(SWorkArea* wa,                 u8* tcKeySpace, u32 tnKeySpaceLength, u8* tcDecodeExpression, u32 tnDecodeExpressionLength, s8* tcKeyLength4);
 	bool				iCdx_setActiveTag								(SWorkArea* wa, s32 tnTagIndex, STagRoot* tagRoot, bool* tlError, u32* tnErrorNum);
-	bool				iCdx_getRootmostCompoundTag_byTagnum			(SWorkArea* wa, SCdxHeader* head, SCdxNode* node, s32 lnTagNum, STagRoot* tagRoot);
-	bool				iCdx_getCompactRootNode							(SWorkArea* wa, SCdxHeader* head, SCdxNode* node,               STagRoot* tagRoot);
-	bool				iCdx_getStandardRootNode						(SWorkArea* wa, SIdxHeader* head, SIdxNode* node,               STagRoot* tagRoot);
+	bool				iCdx_getRootmostCompoundTag_byTagIndex			(SWorkArea* wa, SCdxHeader* head, SCdxNode* node, s32 tnTagIndex, STagRoot* tagRoot);
+	bool				iCdx_getCompactRootNode							(SWorkArea* wa, SCdxHeader* head, SCdxNode* node,                 STagRoot* tagRoot);
+	bool				iCdx_getStandardRootNode						(SWorkArea* wa, SIdxHeader* head, SIdxNode* node,                 STagRoot* tagRoot);
 	bool				iiCdx_isCompact									(SCdxHeader* head);
 	bool				iiCdx_isCompound								(SCdxHeader* head);
 	bool				iiCdx_isUnique									(SCdxHeader* head);
 	bool				iiCdx_isDescending								(SCdxHeader* head);
 	bool				iiCdx_isPrimaryKeySet							(SWorkArea* wa);
 	bool				iCdx_isForClauseComplex							(SWorkArea* wa, SCdxHeader* head, SForClause** tsFor);
-	SIdxNode*			iCdx_getStandardIdxNode_byNumber				(               SIdxHeader* head, u32 tnNodeNumber);
-	SIdxNode*			iCdx_getStandardIdxNode_byOffset				(               SIdxHeader* head, u32 tnOffset);
-	bool				iCdx_getStandardIdxKey_byNumber					(               SIdxHeader* head, u8 tcFillChar, u32 tnNumber, SIdxNode* node, SIdxKey* key, STagRoot* tagRoot, bool tlFixupEndian, bool tlFixupSignBit);
-	SCdxNode*			iCdx_getCompactIdxNode_byNumber					(               SCdxHeader* head, u32 tnNodeNumber);
-	SCdxNode*			iCdx_getCompactIdxNode_byOffset					(               SCdxHeader* head, u32 tnOffset);
-	bool				iCdx_getCompactIdxKey_byNumber					(               SCdxHeader* head, u32 keyLength, u8 tcFillChar, u32 tnKeyNumber, u32 tnKeyNumberThis, SCdxNode* node, SCdxKeyLeafRaw* key, STagRoot* tagRoot, bool tlFixupEndian, bool tlFixupSignBit);
-	u32					iCdx_descendToLeftmostNode						(               SCdxHeader* head, u32 keyLength, SCdxNode* node, STagRoot* tagRoot);
+	SIdxNode*			iCdx_getStandardIdxNode_byNumber				(SWorkArea* wa, SIdxHeader* head, u32 tnNodeNumber);
+	SIdxNode*			iCdx_getStandardIdxNode_byOffset				(SWorkArea* wa, SIdxHeader* head, u32 tnOffset);
+	bool				iCdx_getStandardIdxKey_byNumber					(SWorkArea* wa, SIdxHeader* head, u8 tcFillChar, u32 tnNumber, SIdxNode* node, SIdxKey* key, STagRoot* tagRoot, bool tlFixupEndian, bool tlFixupSignBit);
+	SCdxNode*			iCdx_getCompactIdxNode_byNumber					(SWorkArea* wa, SCdxHeader* head, u32 tnNodeNumber);
+	SCdxNode*			iCdx_getCompactIdxNode_byOffset					(SWorkArea* wa, SCdxHeader* head, u32 tnOffset, SBuilder* lockOps = NULL);
+	bool				iCdx_getCompactIdxKey_byNumber					(SWorkArea* wa, SCdxHeader* head, u32 keyLength, u8 tcFillChar, u32 tnKeyNumber, u32 tnKeyNumberThis, SCdxNode* node, SCdxKeyLeafRaw* key, STagRoot* tagRoot, bool tlFixupEndian, bool tlFixupSignBit);
+	u32					iCdx_descendToLeftmostNode						(SWorkArea* wa, SCdxHeader* head, u32 keyLength, SCdxNode* node, STagRoot* tagRoot);
 	// Internal functions that do not have special testing
-	void				iiCdx_extractExteriorNode_nodeKeyAccessData		(SCdxNode* node, u32 tnNumber, SCdxKeyTrail* keyTrail);
+	void				iiCdx_extractExteriorNode_nodeKeyAccessData		(SCdxNode* node, u32 tnNumber, SCdxKeyDecodeTrail* keyTrail);
 
 
 //////////

@@ -606,23 +606,17 @@
 		cvarFalse				= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, iVariable_populate_byBool(false),	1,	false);
 		cvarZero				= iVariable_create(_VAR_TYPE_S64, NULL, true);
 
-		lnValue	= 6;
-		cvarSix					= iVariable_createAndPopulate_byText(_VAR_TYPE_S32, (cu8*)&lnValue, 4, false);
-		lnValue	= 8;
-		cvarEight				= iVariable_createAndPopulate_byText(_VAR_TYPE_S32, (cu8*)&lnValue, 4, false);
-		lnValue	= 16;
-		cvarSixteen				= iVariable_createAndPopulate_byText(_VAR_TYPE_S32, (cu8*)&lnValue, 4, false);
-		lnValue	= 32;
-		cvarThirtyTwo			= iVariable_createAndPopulate_byText(_VAR_TYPE_S32, (cu8*)&lnValue, 4, false);
-		lnValue	= 64;
-		cvarSixtyFour			= iVariable_createAndPopulate_byText(_VAR_TYPE_S32, (cu8*)&lnValue, 4, false);
-		lnValue	= 255;
-		cvarTwoFiftyFive		= iVariable_createAndPopulate_byText(_VAR_TYPE_S32, (cu8*)&lnValue, 4, false);
+		// Create common numeric constants
+		lnValue	= 6;		cvarSix				= iVariable_createAndPopulate_byText(_VAR_TYPE_S32, (cu8*)&lnValue, 4, false);
+		lnValue	= 8;		cvarEight			= iVariable_createAndPopulate_byText(_VAR_TYPE_S32, (cu8*)&lnValue, 4, false);
+		lnValue	= 16;		cvarSixteen			= iVariable_createAndPopulate_byText(_VAR_TYPE_S32, (cu8*)&lnValue, 4, false);
+		lnValue	= 32;		cvarThirtyTwo		= iVariable_createAndPopulate_byText(_VAR_TYPE_S32, (cu8*)&lnValue, 4, false);
+		lnValue	= 64;		cvarSixtyFour		= iVariable_createAndPopulate_byText(_VAR_TYPE_S32, (cu8*)&lnValue, 4, false);
+		lnValue	= 255;		cvarTwoFiftyFive	= iVariable_createAndPopulate_byText(_VAR_TYPE_S32, (cu8*)&lnValue, 4, false);
 
-		lfValue	= 0.5f;
-		cvarFiftyPercent		= iVariable_createAndPopulate_byText(_VAR_TYPE_F32, (cu8*)&lfValue, 4, false);
-		lfValue	= 0.5f;
-		cvarOneHundredPercent	= iVariable_createAndPopulate_byText(_VAR_TYPE_F32, (cu8*)&lfValue, 4, false);
+		// Create floating point constants
+		lfValue	= 0.5f;		cvarFiftyPercent		= iVariable_createAndPopulate_byText(_VAR_TYPE_F32, (cu8*)&lfValue, 4, false);
+		lfValue	= 1.0f;		cvarOneHundredPercent	= iVariable_createAndPopulate_byText(_VAR_TYPE_F32, (cu8*)&lfValue, 4, false);
 
 		// 2000 blank spaces
 		iDatum_allocateSpace(&cvarSpace2000->value, 2000);
@@ -635,10 +629,10 @@
 		cvarSetDateFrench	= cvarSetDateBritish;
 		cvarSetDateGerman	= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, "22.11.3333 12:34:56.000 AP", -1, true);
 		cvarSetDateItalian	= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, "22-11-3333 12:34:56.000 AP", -1, true);
-		cvarSetDateJapan		= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, "3333/11/22 12:34:56.000 AP", -1, true);
+		cvarSetDateJapan	= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, "3333/11/22 12:34:56.000 AP", -1, true);
 		cvarSetDateTaiwan	= cvarSetDateJapan;
 		cvarSetDateLong		= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, "Dow, Mon 22, 3333 12:34:56.000 AP", -1, true);
-		cvarSetDateShort		= cvarSetDateAmerican;
+		cvarSetDateShort	= cvarSetDateAmerican;
 		cvarSetDateUsa		= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, "11-22-33333 12:34:56.000 AP", -1, true);
 		cvarSetDateDmy		= cvarSetDateBritish;
 		cvarSetDateMdy		= cvarSetDateAmerican;

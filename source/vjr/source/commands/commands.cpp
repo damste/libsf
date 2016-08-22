@@ -3072,11 +3072,8 @@
 		s32			lnSkip, lnWorkArea, lnTagIndex, tnErrorNum;
 		SComp*		comp;
 		SComp*		compNext;
-		SComp*		compIn;
 		SComp*		compCdx;
-		SComp*		compTagName;
 		SWorkArea*	dbf;
-		SCdxHeader*	cdx;
 		s8			bufferCdx[64];
 
 
@@ -3172,7 +3169,7 @@
 				dbf			= iDbf_get_workArea_current_wa(lnWorkArea);
 				if (!dbf || !dbf->isUsed)
 				{
-					iError_report_byNumber(_ERROR_INVALID_WORK_AREA, compNext, false);
+					iError_report_byNumber(_ERROR_INVALID_WORK_AREA, compSkip, false);
 					return;
 				}
 			}

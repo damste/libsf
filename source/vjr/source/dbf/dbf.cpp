@@ -2150,16 +2150,21 @@
 // Called to goto a record and read in the contents.
 //
 //////
-	sptr iDbf_gotoRecord(SWorkArea* wa, s32 recordNumber, bool tlForceDbf)
+	sptr iDbf_gotoRecord(SWorkArea* wa, s32 recordNumber, bool tlForceDbf, bool* error, u32* errorNum, SBuilder* errorDetails)
 	{
 		s32				lnI;
 		s64				lnOffset;
 		u64				lnNumread;
-		sptr			lnResult;
 		SFieldRecord2*	lfr2Ptr;
 		SDiskLock*		dl;
-		bool			error;
-		u32				errorNum;
+
+
+		//////////
+		// Reset errors
+		//////
+			if (error)				*error							= NULL;
+			if (errorNum)			*errorNum						= _DBF_OKAY;
+			if (errorDetails)		errorDetails->populatedLength	= NULL;
 
 
 		//////////
@@ -2171,16 +2176,9 @@
 			if (!wa->isUsed)
 				return(_DBF_ERROR_WORK_AREA_NOT_IN_USE);
 
-
-		//////////
-		// If they have changed data, needs to be written
-		//////
-			if (wa->isDirty)
-			{
-				// Write the changes to disk
-				if ((lnResult = iDbf_writeChanges(wa)) != _DBF_OKAY)
-					return(lnResult);
-			}
+			// Clean before moving
+			if (!iiDbf_flush_anyChanges(wa, error, errorNum) || error)
+				return((sptr)errorNum);
 
 
 		//////////
@@ -2189,7 +2187,7 @@
 			if (recordNumber <= (s32)wa->header.records)
 			{
 				// Are we moving by index?
-				if (!tlForceDbf && wa->isIndexLoaded && iiCdx_isPrimaryKeySet(wa))
+				if (!tlForceDbf && iiCdx_isPrimaryKeySet(wa))
 					return(iCdx_gotoRecord(wa, recordNumber));
 
 				// Do we need to fetch the data?
@@ -2209,7 +2207,9 @@
 							// Shared access, lock the record
 							dl = iDisk_lock_range_retryCallback(wa->dbfLocks, wa->fhDbf, lnOffset, wa->header.recordLength, (uptr)&iiDbf_continueWithLockOperation, (uptr)&dl);
 							if (dl->nLength != wa->header.recordLength)
+							{
 								return(_DBF_ERROR_LOCKING);
+							}
 							// If we get here, we're locked
 
 						} else {
@@ -2223,7 +2223,7 @@
 					// Read
 					// Note:  memo field content is not loaded at this time, but only upon direct request
 					//////
-						lnNumread = iDisk_read(wa->fhDbf, -1, wa->row.data_s8, wa->header.recordLength, &error, &errorNum);
+						lnNumread = iDisk_read(wa->fhDbf, -1, wa->row.data_s8, wa->header.recordLength, error, errorNum);
 						if (error || lnNumread != wa->header.recordLength)
 							return(-1);
 
@@ -2290,9 +2290,9 @@
 		// If the work area is valid, move to the appropriate record
 		if (iDbf_isWorkAreaValid(wa, NULL) && wa->isUsed)
 		{
-			// Move via DBF or index
-			if (!tlForceDbf && wa->isIndexLoaded)		return(iCdx_gotoRecord(wa, 1));
-			else										return(iDbf_gotoRecord(wa, 1));
+			// Move via index or DBF
+			if (!tlForceDbf && iiCdx_isPrimaryKeySet(wa))		return(iCdx_gotoRecord(wa, 1));
+			else												return(iDbf_gotoRecord(wa, 1));
 		}
 
 		// If we get here, invalid work area
@@ -2304,7 +2304,7 @@
 
 //////////
 //
-// Called to 
+// Called to skip forward or backward the indicated count
 //
 //////
 	sptr iDbf_skip(SWorkArea* wa, s32 tnDelta, bool tlForceDbf, s32 tnTagIndex)
@@ -2312,12 +2312,55 @@
 		// If the work area is valid, move to the appropriate record
 		if (iDbf_isWorkAreaValid(wa, NULL) && wa->isUsed)
 		{
+			//////////
 			// Move via DBF or index
-			if (!tlForceDbf && wa->isIndexLoaded)
-				return(iCdx_skip(wa, tnDelta, tnTagIndex));
+			//////
+				iiDbf_flush_anyChanges(wa);
+				if (!tlForceDbf && iiCdx_isPrimaryKeySet(wa))
+					return(iCdx_skip(wa, tnDelta, tnTagIndex));		// Move in CDX
 
-			// Skipping forward in the DBF
-// TODO:  Write this code
+
+			//////////
+			// Move in DBF
+			//////
+				if (tnDelta > 0)
+				{
+					//////////
+					// Forward
+					//////
+						if (wa->currentRecord + tnDelta > wa->header.records)
+						{
+							// This skip will go to EOF()
+							wa->currentRecord = wa->header.records + 1;
+
+						} else {
+							// We're still within the table
+							wa->currentRecord += tnDelta;
+						}
+
+				} else if (tnDelta < 0) {
+					//////////
+					// Backward
+					//////
+						if ((s32)wa->currentRecord + tnDelta < 1)
+						{
+							// This skip will go to BOF()
+							wa->currentRecord = 0;
+
+						} else {
+							// We're still within the table
+							wa->currentRecord += tnDelta;
+						}
+
+				} else {
+					// Not moving, but this allows a reload of the current record
+				}
+
+
+			//////////
+			// Load the new record
+			//////
+
 		}
 
 		// If we get here, invalid work area
@@ -2332,13 +2375,11 @@
 // Called to write any changes to the fields to disk
 //
 //////
-	sptr iDbf_writeChanges(SWorkArea* wa)
+	sptr iDbf_writeChanges(SWorkArea* wa, bool* error, u32* errorNum)
 	{
 		u32			lnNumread;
 		s64			lnOffset;
 		SDiskLock*	dl;
-		bool		error;
-		u32			errorNum;
 
 
 		//////////
@@ -2354,7 +2395,7 @@
 		//////////
 		// Make sure the record they want to go to exists
 		//////
-			if (wa->currentRecord <= wa->header.records && wa->isDirty)
+			if (wa->currentRecord >= 1 && wa->currentRecord <= wa->header.records && wa->isDirty)
 			{
 				//////////
 				// Seek (and lock)
@@ -2365,22 +2406,44 @@
 						// Shared access, lock the record
 						dl = iDisk_lock_range_retryCallback(wa->dbfLocks, wa->fhDbf, lnOffset, wa->header.recordLength, (uptr)&iiDbf_continueWithLockOperation, (uptr)&dl);
 						if (dl->nLength != wa->header.recordLength)
+						{
+							if (error)		*error		= true;
+							if (errorNum)	*errorNum	= _DBF_ERROR_LOCKING;
 							return(_DBF_ERROR_LOCKING);
+						}
 						// If we get here, we're locked
 
 					} else {
 						// Seek only
 						if (iDisk_setFilePosition(wa->fhDbf, lnOffset) != lnOffset)
+						{
+							if (error)		*error		= true;
+							if (errorNum)	*errorNum	= _DBF_ERROR_SEEKING;
 							return(_DBF_ERROR_SEEKING);
+						}
 					}
 
 
 				//////////
 				// Write
 				//////
-					lnNumread = iDisk_write(wa->fhDbf, -1, wa->row.data_s8, wa->header.recordLength, &error, &errorNum);
+					lnNumread = iDisk_write(wa->fhDbf, -1, wa->row.data_s8, wa->header.recordLength, error, errorNum);
 					if (lnNumread != wa->header.recordLength)
+					{
+						if (error)		*error		= true;
+						if (errorNum)	*errorNum	= _DBF_ERROR_WRITING;
 						return(_DBF_ERROR_WRITING);
+					}
+
+
+				//////////
+				// Update the index
+				//////
+					if (iiCdx_isPrimaryKeySet(wa))
+					{
+						if (!iiCdx_updateKeys(wa, error, errorNum))
+							return((sptr)errorNum);
+					}
 
 
 				//////////
@@ -2483,6 +2546,35 @@ debug_break;
 
 		// If we get here, failure
 		return(false);
+	}
+
+
+
+
+//////////
+//
+// Called to flush any cached changes
+//
+//////
+	sptr iiDbf_flush_anyChanges(SWorkArea* wa, bool* error, u32* errorNum)
+	{
+		sptr lnResult;
+
+
+		// Initialize
+		if (error)		*error		= false;
+		if (errorNum)	*errorNum	= _ERROR_OKAY;
+
+		// If they have changed data, needs to be written
+		if (wa->isDirty)
+		{
+			// Write the changes to disk
+			if ((lnResult = iDbf_writeChanges(wa, error, errorNum)) != _DBF_OKAY)
+				return(lnResult);
+		}
+
+		// If we get here, we're good
+		return(_DBF_OKAY);
 	}
 
 
@@ -5182,19 +5274,6 @@ debug_break;
 				&&				iDbf_validate_fieldExists(wa,	cgcSysRes,			"n",	1,		0)
 				&&				iDbf_validate_fieldExists(wa,	cgcResName,			"m",	4,		0)
 			);
-	}
-
-
-
-
-//////////
-//
-// Called to get the node type with only the lower 2-bits being pulled through
-//
-//////
-	u32 iiGetIndexNodeType(u32 tnNode)
-	{
-		return(tnNode & 0x3);
 	}
 
 

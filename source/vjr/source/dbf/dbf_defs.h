@@ -180,12 +180,13 @@ struct SFieldRecord2;
 	SVariable*			iDbf_get_alias_fromPathname						(SVariable* varPathname,						cu8* tcSpecialKeyName = NULL);
 	s8*					iDbf_get_tagName								(SWorkArea* wa, s8* tagName_32, s32* tnError = NULL);
 
-	sptr				iDbf_gotoRecord									(SWorkArea* wa, s32 recordNumber, bool tlForceDbf = false);
+	sptr				iDbf_gotoRecord									(SWorkArea* wa, s32 recordNumber, bool tlForceDbf = false, bool* error = NULL, u32* errorNum = NULL, SBuilder* errorDetails = NULL);
 	sptr				iDbf_gotoTop									(SWorkArea* wa, bool tlForceDbf = false);
 	sptr				iDbf_skip										(SWorkArea* wa, s32 tnDelta, bool tlForceDbf = false, s32 tnTagIndex = -1);
-	sptr				iDbf_writeChanges								(SWorkArea* wa);
+	sptr				iDbf_writeChanges								(SWorkArea* wa, bool* error = NULL, u32* errorNum = NULL);
 	bool				iiDbf_readMemo									(SWorkArea* wa, SFieldRecord2* fr2Ptr);
 	bool				iiDbf_writeMemo									(SWorkArea* wa, SFieldRecord2* fr2Ptr);
+	sptr				iiDbf_flush_anyChanges							(SWorkArea* wa, bool* error = NULL, u32* errorNum = NULL);
 
 	uptr				iDbf_getFieldCount								(SWorkArea* wa);
 	u32					iiDbf_getFieldCount								(SWorkArea* wa);
@@ -257,10 +258,9 @@ struct SFieldRecord2;
 
 //////////
 //
-// Miscellaneous DBF/CDX upport functions
+// Miscellaneous DBF/CDX support functions
 //
 /////
-	u32					iiGetIndexNodeType								(u32 tnNode);
 	void				iiFreeAndSetToNull								(void** ptr);
 	void				iiGetTemporaryFilename							(s8 *temp_file, s8 *prefix);
 	void				iiLowerCaseString								(s8 *string, u32 length);
