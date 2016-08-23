@@ -1,0 +1,225 @@
+
+<html>
+<body>
+Last update:  Aug.22.2016
+<hr>
+<br>
+	<table width="480px" border="0px">
+
+<!-- Header -->
+		<tr bgcolor="#7FAFFF" align="center">
+			<td><font size="+2" color="#ffffff">Intro2C for XBASE Developers</font></td>
+		</tr>
+
+
+<!-- Activity log -->
+		<tr bgcolor="#AF7FFF" align="center">
+			<td><font size="+1" color="#ffffff">Data Typing</font></td>
+		</tr>
+
+	
+<!-- What is it? -->
+		<tr>
+			<table width="480px">
+				<tr>
+					<td width="5%">&nbsp;</td>
+					<td>
+						<table bgcolor="#ffffff" border="0px">
+							<tr><td bgcolor="#ffffff" colspan="100%">&nbsp;</td></tr>
+							<tr><td bgcolor="#ffffff" colspan="100%">
+	We've become lazy with xbase. :-)  We can use all data types with a
+	single variable name, however we need.  We have &nbsp;<font face="Courier New" size="-1"><b>TYPE()</b></font>&nbsp; to
+	tell us what type of data is current contained within the variable.
+	In C, the type is set in its definition and cannot later be changed.<br>
+	<br>
+	For example, in xbase the following is legal:<br>
+	<br>
+		<table width="100%">
+			<tr>
+				<td width="5%">&nbsp;</td>
+				<td bgcolor="#eeeeee">
+<pre><font size="-1">k = 5
+k = "Hello"
+k = .f.</font></pre>
+				<td width="50%">&nbsp;</td>
+				</td>
+			</tr>
+		</table>
+	<br>
+	In C, it's not variable.  Each type is specific and explicit.  This
+	allows the compiler to utilize machine resources in the most efficient
+	manner.  It's able to know exactly how something will be used, so it
+	can allocate what's needed to make it happen.  And with optimization
+	abilities, the compiler can sometimes completely change the expression
+	of the source code so that internally it runs completely differently
+	than you (the developer) indicated, and yet it still accomplishes the
+	same goals ... just much faster.<br>
+	<br>
+	C is currently the fastest language available.  It is because it has
+	all of these compile-time determinations that it can rely upon.
+								</td></tr>
+							<tr><td bgcolor="#ffffff" colspan="100%">&nbsp;</td></tr>
+						</table>
+					</td>
+					<td width="5%">&nbsp;</td>
+				</tr>
+			</table>
+		</tr>
+
+	
+		<tr>
+			<td>
+				<table width="480px" bgcolor="#ffffff" border="0px">
+					<tr><td bgcolor="#ffffff" colspan="100%">&nbsp;</td></tr>
+
+<!-- Hello, World! -->
+					<tr>
+						<td colspan="100%" align="center"><font size="+2"><b>Hello, World!</b></font></font></td>
+					</tr>
+
+					<tr bgcolor="#eeeeee">
+						<td colspan="100%">
+							<table width="100%"><tr>
+								<td width="50%" align="center">XBASE</td>
+								<td width="50%" align="center">C</td>
+							</tr></table>
+					</tr>
+
+					<tr align="left" height="48px">
+						<td width="2%" bgcolor="#eeeeee"></td>
+						<td width="48%" bgcolor="#f7f7f7">
+<font size="-1"><pre>
+? "Hello, world"</pre></font>
+						</td>
+						<td width="2%" bgcolor="#eeeeee"></td>
+						<td width="48%" bgcolor="#f7f7f7">
+<font size="-1"><pre>
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main(int argc, char* argv[])
+{
+    printf("Hello, world!\n");
+}</pre></font>
+						</td>
+					</tr>
+					<tr><td colspan="100%" bgcolor="#eeeeee">&nbsp;</td></tr>
+
+<!-- Fundamental Types -->
+					<tr><td bgcolor="#ffffff" colspan="100%"><br>&nbsp;</td></tr>
+					<tr>
+						<td colspan="100%" align="center"><font size="+2"><b>Fundamental Types</b></font></font></td>
+					</tr>
+					<tr bgcolor="#eeeeee">
+						<td colspan="100%">
+							<table width="100%"><tr>
+								<td width="50%" align="center">XBASE</td>
+								<td width="50%" align="center">C</td>
+							</tr></table>
+					</tr>
+
+					<tr align="left" height="48px">
+						<td width="2%" bgcolor="#eeeeee"></td>
+						<td width="48%" bgcolor="#f7f7f7" align="right">
+<font size="-1"><pre>
+Character
+Binary Character
+Integer
+Numeric
+Currency
+Logical
+Float
+Double
+Date
+Datetime
+Memo
+Binary Memo
+</pre></font>
+						</td>
+						<td width="2%" bgcolor="#eeeeee"></td>
+						<td width="48%" bgcolor="#f7f7f7">
+<font size="-1"><pre>
+char[]
+int + char*
+int
+int64_t
+int64_t (1)
+char, int, bool, or BOOL
+float
+double
+char[9]
+char[19]
+char*
+int + char*
+</pre></font>
+						</td>
+					</tr>
+					<tr><td colspan="100%" bgcolor="#eeeeee">&nbsp;</td></tr>
+<tr><td colspan="100%"><font size="-1">&nbsp;&nbsp;&nbsp;&nbsp;(1) Currency types are stored as fixed-point 64-bit integers</font></td></tr>
+
+
+<!-- Data Storage -->
+					<tr><td bgcolor="#ffffff" colspan="100%"><br>&nbsp;</td></tr>
+					<tr>
+						<td colspan="100%" align="center"><font size="+2"><b>Data Storage</b></font></font></td>
+					</tr>
+
+					<tr bgcolor="#eeeeee">
+						<td colspan="100%">
+							<table width="100%"><tr>
+								<td width="50%" align="center">XBASE</td>
+								<td width="50%" align="center">C</td>
+							</tr></table>
+					</tr>
+
+					<tr align="left" height="48px">
+						<td width="2%" bgcolor="#eeeeee"></td>
+						<td width="48%" bgcolor="#f7f7f7">
+<font size="-1"><pre>
+(1) Tables and cursors
+(2) Files on hard-disk
+(3) Field accessible
+(4) Component based
+</pre></font>
+						</td>
+						<td width="2%" bgcolor="#eeeeee"></td>
+						<td width="48%" bgcolor="#f7f7f7">
+<font size="-1"><pre>
+(1) structs
+(2) Structures in memory
+(3) Field accessible
+(4) Variable component based
+</pre></font>
+						</td>
+					</tr>
+					<tr><td colspan="100%" bgcolor="#eeeeee">&nbsp;</td></tr>
+
+				</table>
+			</td>
+		</tr>
+	</table>
+
+	<script>
+		function activityMore(idbtn, id1, id2, caption) {
+			var b = document.getElementById(idbtn)
+			var m = document.getElementById(id1)
+			var l = document.getElementById(id2)
+			if (b.innerHTML == "[<u>Hide</u>]") {
+				b.innerHTML = "[<u>" + caption + "</u>]";
+				m.style.display = "none";
+				l.style.display = "block";
+			} else {
+				b.innerHTML = "[<u>Hide</u>]";
+				m.style.display = "block";
+				l.style.display = "none";
+			}
+		}
+		function myFunction2() {
+			document.getElementById("activity_more").innerHTML = "";
+		}
+	</script>
+
+</body>
+</html>
+
+
