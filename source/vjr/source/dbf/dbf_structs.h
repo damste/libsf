@@ -176,31 +176,40 @@
 	// synchronized back to SFieldRecord1, and to the DBC
 	//////
 		struct SFieldRecord2
-		{									// Copy of:
-			u8		name[11];				// SFieldRecord1->name
-			u8		type;					// SFieldRecord1->type
-			u32		offset;					// SFieldRecord1->offset
-			u8		length;					// SFieldRecord1->length
-			u8		decimals;				// SFieldRecord1->decimals
-			u8		flags;					// SFieldRecord1->flags
-			u32		autoIncNext;			// SFieldRecord1->autoIncNext
-			u8		autoIncStep;			// SFieldRecord1->autoIncStep
+		{
+			// Copy of:
+			u8			name[11];				// SFieldRecord1->name
+			u8			type;					// SFieldRecord1->type
+			u32			offset;					// SFieldRecord1->offset
+			u8			length;					// SFieldRecord1->length
+			u8			decimals;				// SFieldRecord1->decimals
+			u8			flags;					// SFieldRecord1->flags
+			u32			autoIncNext;			// SFieldRecord1->autoIncNext
+			u8			autoIncStep;			// SFieldRecord1->autoIncStep
 
 			// New for SFieldRecord2:
-			s32		fieldName_length;		// Length of the long field name derived from its dbc
-			u8		name2[129];				// Long field name
-			u32		fieldNumber;			// Field number within the table
+			s32			fieldName_length;		// Length of the long field name derived from its dbc
+			u8			name2[129];				// Long field name
+			u32			fieldNumber;			// Field number within the table
 
 			// Memo  data
-			s8*		mdata;					// Current version
-			u32		mdataLength;
-			s8*		omdata;					// As originally loaded from disk
-			u32		omdataLength;
+			s8*			mdata;					// Current version
+			u32			mdataLength;
+			s8*			omdata;					// As originally loaded from disk
+			u32			omdataLength;
 
 			// Used for index creation
-			u8		fillChar;				// The fill character required for this type of field
-			u32		dbcRecno;				// The related dbc RECNO() this entry was found on
-			u32		indexFixup;				// The fixup required to make the cdx work for this type of field
+			u8			fillChar;				// The fill character required for this type of field
+			u32			dbcRecno;				// The related dbc RECNO() this entry was found on
+			u32			indexFixup;				// The fixup required to make the cdx work for this type of field
+
+			// Used for rendering content into the buffer
+			SDatum		renderBuffer;			// Holds the render buffer, either points to renderBuffer254, or to another area for larger buffers
+			s8			renderBuffer254[254];	// Holds common render content
+			union {
+				sptr	_renderFunc;
+				s32		(*renderFunc)		(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render);
+			};
 		};
 
 
@@ -347,4 +356,19 @@
 				// Index file operations
 				s32				fhSdx;							// File handle for the index
 				SBuilder*		sdxFileLocks;					// Locks for shared access
+		};
+
+		// Used when rendering data into a row
+		struct SDbfRender
+		{
+			bool	century;									// SET CENTURY
+			s8		currency;									// SET CURRENCY
+			s32		date;										// SET DATE
+			s32		decimals;									// SET DECIMALS
+			s32		hours;										// SET HOURS
+			s8		mark;										// SET MARK TO
+			s8		point;										// SET POINT
+			s8		separator;									// SET SEPARATOR
+			bool	fixed;										// SET FIXED setting
+			s8		format[8];									// Format to use for displaying integers, typically "%.3f" (when SET DECIMALS TO 3 is set, for example)
 		};

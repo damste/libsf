@@ -95,8 +95,42 @@
 // Called to open the file using custom share settings, or explicitly shared,
 // or explicitly exclusive.
 //
-//	tnType		-- 
+//	tnType	-- Indicates how the file should be opened (or created).
+//			   The following options can be |'d together, like (_O_CREAT | _O_SHORT_LIVED):
 //
+// 					Access:
+// 									_O_RDONLY				Read-only access
+// 									_O_RDWR					Read-write access
+// 									_O_WRONLY				Write-only access
+// 
+// 					Data format:
+// 									_O_BINARY				Opens in raw/untranslated mode
+// 									_O_TEXT					Opens in text/translated mode
+// 
+// 					General flags:
+// 									_O_CREAT				Creates a file (file must not exist)
+// 										+--	_O_SHORT_LIVED	Prevents flushing contents to disk if possible
+// 										+--	_O_TEMPORARY	Deletes the file when closed
+// 										+--	_O_EXCL			Creates a file that's opened exclusively
+// 
+// 									_O_APPEND				Opens ready to append data
+// 									_O_NOINHERIT			Cannot share file handle
+// 									_O_RANDOM				A hint that data access is mostly random
+// 									_O_SEQUENTIAL			Sequential file access
+// 									_O_TRUNC				Truncates a file to 0 bytes when opened
+// 
+// 					Data type (if not specified, opens in standard ASCII type)
+// 									_O_U16TEXT				UTF-16 data
+// 									_O_U8TEXT				UTF-8 data
+// 									_O_WTEXT				Unicode data
+//
+//	tnShare	-- Indicates how the data
+//
+//					Share mode:
+// 									_SH_DENYNO				Deny none (allow all shared access)
+// 									_SH_DENYRD				Deny read
+// 									_SH_DENYWR				Deny write
+// 									_SH_DENYRW				Deny read-write
 //////
 	s32 iDisk_open(cs8* tcPathname, s32 tnType, s32 tnShare, bool tlCreateIfCannotOpen)
 	{
@@ -109,7 +143,7 @@
 			if (tcPathname)
 			{
 				// Try to open existing
-				lnFh = _sopen(tcPathname, tnType, tnShare);
+				lnFh = _sopen(tcPathname, tnType, tnShare);		// Note:  if _O_CREAT is used, by default reading and writing is permitted
 				if (lnFh == -1)
 				{
 					// Error opening

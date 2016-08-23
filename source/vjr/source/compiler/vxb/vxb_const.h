@@ -275,6 +275,7 @@
 	const u8		cgcNestingError[]								= "nesting error";
 	const u8		cgcTableNumberInvalid[]							= "table number invalid";
 	const u8		cgcNoActiveIndex[]								= "no active index";
+	const u8		cgcNoTableInCurrentWorkArea[]					= "no table in current work area";
 #else
 	#error Language not specified
 #endif

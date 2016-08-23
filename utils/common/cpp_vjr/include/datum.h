@@ -176,11 +176,12 @@ struct SVariable;
 	};
 
 
-	void					iDatum_allocateSpace					(SDatum* datum,		s32 dataLength);
-	SDatum*					iDatum_allocate							(cs8* data,			s32 dataLength = -1);
-	SDatum*					iDatum_allocate							( s8* data,			s32 dataLength = -1);
-	SDatum*					iDatum_allocate							(cu8* data,			s32 dataLength = -1);
-	SDatum*					iDatum_allocate							( u8* data,			s32 dataLength = -1);
+	SDatum*					iDatum_allocateStruct					(s32 tnExtraSpace = 0);
+	void					iDatum_allocateSpace					(SDatum* datum,			s32 dataLength);
+	SDatum*					iDatum_allocate							(cs8* data,				s32 dataLength = -1);
+	SDatum*					iDatum_allocate							( s8* data,				s32 dataLength = -1);
+	SDatum*					iDatum_allocate							(cu8* data,				s32 dataLength = -1);
+	SDatum*					iDatum_allocate							( u8* data,				s32 dataLength = -1);
 
 	void					iDatum_duplicate						(SDatum* datum,  u8* data, s32 dataLength = -1);
 	void					iDatum_duplicate						(SDatum* datum,  s8* data, s32 dataLength = -1);

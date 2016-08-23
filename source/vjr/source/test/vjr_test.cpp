@@ -63,11 +63,33 @@ void iVjr_test_nodes(void);
 //////
 	void iVjr_test(void)
 	{
-		// Parser -- Dec.21.2015 RCH -- In progress
-		iVjr_test_parser();
+//////////
+// Aug.23.2016 RCH
+// 		s8 filename[_MAX_PATH];
+// 
+// 
+// 		// Try to open a file
+// 		memset(filename, 0, sizeof(filename));
+// 		if (iDialog_openTable(filename, false))
+// 		{
+// 			// Success
+// 			debug_nop;
+// 
+// 		} else {
+// 			// Fail
+// 			debug_nop;
+// 		}
+//////
 
-		// Nodes -- Dec.03.2015 RCH -- Appears to be working.  Test code is commented out, but still there
-		iVjr_test_nodes();
+
+
+//////////
+// 		// Parser -- Dec.21.2015 RCH -- In progress
+// 		iVjr_test_parser();
+// 
+// 		// Nodes -- Dec.03.2015 RCH -- Appears to be working.  Test code is commented out, but still there
+// 		iVjr_test_nodes();
+//////
 	}
 
 
@@ -78,35 +100,35 @@ void iVjr_test_nodes(void);
 // Tests a parsing concept
 //
 //////
-	char sample[] = "x = a + b";
+// 	char sample[] = "x = a + b";
 
 	void iVjr_test_parser(void)
 	{
-		u32			lnId;
-		SDatum		prog;
-		SEM*		sem;
-		SBitmap*	bmp;
-
-
-		// Grab a unique ID for the image
-		lnId = iGetNextUid();
-
-		// Populate the program
-		prog.data_s8	= sample;
-		prog.length		= sizeof(sample) - 1;
-
-		// Parse it into tokens
-		sem = iSEM_allocate(true);
-		iSEM_load_fromMemory(NULL, sem, &prog, true, false);
-
-		// Nodify it
-		iComps_chainLinkNodes(sem->firstLine->compilerInfo->firstComp);
-
-		// Render for display
-		bmp = iNode_renderBitmap(sem->firstLine->compilerInfo->firstComp->node);
-//		iBmp_saveToDisk(bmp, "c:\\temp\\chain_link.bmp");
-		JDebiC_bmp(bmp, true, lnId, true);
-		// Parse using our algorithm
+// 		u32			lnId;
+// 		SDatum		prog;
+// 		SEM*		sem;
+// 		SBitmap*	bmp;
+// 
+// 
+// 		// Grab a unique ID for the image
+// 		lnId = iGetNextUid();
+// 
+// 		// Populate the program
+// 		prog.data_s8	= sample;
+// 		prog.length		= sizeof(sample) - 1;
+// 
+// 		// Parse it into tokens
+// 		sem = iSEM_allocate(true);
+// 		iSEM_load_fromMemory(NULL, sem, &prog, true, false);
+// 
+// 		// Nodify it
+// 		iComps_chainLinkNodes(sem->firstLine->compilerInfo->firstComp);
+// 
+// 		// Render for display
+// 		bmp = iNode_renderBitmap(sem->firstLine->compilerInfo->firstComp->node);
+// //		iBmp_saveToDisk(bmp, "c:\\temp\\chain_link.bmp");
+// 		JDebiC_bmp(bmp, true, lnId, true);
+// 		// Parse using our algorithm
 	}
 
 

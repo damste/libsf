@@ -70,6 +70,9 @@
     <Filter Include="dllfuncs">
       <UniqueIdentifier>{9bb536c0-4f14-4328-9969-70f9519db298}</UniqueIdentifier>
     </Filter>
+    <Filter Include="dialogs">
+      <UniqueIdentifier>{37838c61-66ef-4a60-9c4a-947ed303e3b6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="small.ico">
@@ -283,6 +286,9 @@
     <ClCompile Include="..\..\source\objects\rider.cpp">
       <Filter>objects</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\dialogs\dialogs.cpp">
+      <Filter>dialogs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\utils\common\cpp\common_types.h">
@@ -434,6 +440,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\utils\common\cpp\fifo.h">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\dialogs\dialogs.h">
+      <Filter>dialogs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -170,8 +170,8 @@
 // BEGIN
 //////
 	// Standard instance validation
-	SDiskLock*		iDisk_lock_range_retryCallback			(SBuilder* lockRoot, s32 tnFile, s64 tnOffset, s32 tnLength, uptr tnCallbackFunction, uptr tnExtra);
-	SDiskLock*		iDisk_lock_range						(SBuilder* lockRoot, s32 tnFile, s64 tnOffset, s32 tnLength, uptr tnExtra);
+	SDiskLock*		iDisk_lock_range_retryCallback			(SBuilder* lockRoot, s32 tnFile, s64 tnOffset, s32 tnLength, uptr tnCallbackFunction, uptr tnExtra = 0);
+	SDiskLock*		iDisk_lock_range						(SBuilder* lockRoot, s32 tnFile, s64 tnOffset, s32 tnLength, uptr tnExtra = 0);
 	bool			iDisk_unlock							(SBuilder* lockRoot, SDiskLock* dl);
 	void			iDisk_unlock_all						(SBuilder* lockRoot);
 	s32				iDisk_unlock_all_byCallback				(SBuilder* lockRoot, uptr tnCallbackFunction, uptr tnExtra);

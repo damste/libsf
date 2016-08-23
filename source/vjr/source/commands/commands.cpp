@@ -237,6 +237,7 @@
 			case _ERROR_NESTING_ERROR:						return(cgcNestingError);
 			case _ERROR_TABLE_NUMBER_INVALID:				return(cgcTableNumberInvalid);
 			case _ERROR_NO_ACTIVE_INDEX:					return(cgcNoActiveIndex);
+			case _ERROR_NO_TABLE_IN_CURRENT_WORKAREA:		return(cgcNoTableInCurrentWorkArea);
 
 			default:
 				return(cgcUnspecifiedError);
@@ -2659,6 +2660,83 @@
 	void command_goto(SComp* compCommand, SReturnsParams* rpar)
 	{
 		SComp*		compGoto = compCommand;
+	}
+
+
+
+
+//////////
+//
+// Command: LIST
+// Lists various items to the indicated outputs
+//
+//////
+// Version 0.59   (Determine the current version from the header in vjr.cpp)
+// Last update:
+//     Aug.23.2016
+//////
+// Change log:
+//     Aug.23.2016 - Initial creation
+//////
+// Parameters:
+//     comp		-- The [LIST] component
+//////
+// Returns:
+//    Nothing, but the environment may be changed.
+//    Can generate an error.
+//////
+	void command_list(SComp* compCommand, SReturnsParams* rpar)
+	{
+		SComp*		compList = compCommand;
+
+		u32			lnRecno;
+		SDatum*		listRow;
+		SWorkArea*	wa;
+
+
+// TODO:  We have no FOR clause expression parsing here, so only LIST works presently
+
+		//////////
+		// See what they're listing
+		/////
+			if (!compList->ll.nextComp)
+			{
+				// Just LIST by itself, so list the current table if any
+				if ((wa = iDbf_get_workArea_current_wa()))
+				{
+					// Is a table open?
+					if (!wa->isUsed)
+						wa = iDialog_openTable();
+
+					// Do we have a file?
+					if (wa && wa->isUsed)
+					{
+						// List contents
+						for (lnRecno = 1; lnRecno <= wa->header.records; lnRecno++)
+						{
+							// Position on this record
+							iDbf_gotoRecord(wa, lnRecno);
+							if (wa->currentRecord <= wa->header.records)
+							{
+								// List this entry
+								listRow = iDbf_listRecord(wa);
+							}
+						}
+
+					} else {
+						// No table open in current work area
+						iError_report_byNumber(_ERROR_NO_TABLE_IN_CURRENT_WORKAREA, compList->ll.nextComp, false);
+					}
+
+				} else {
+					// Should never happen
+					iError_report_byNumber(_DBF_ERROR__INTERNAL_PROGRAMMER, compList->ll.nextComp, false);
+				}
+
+			} else {
+				// Not yet coded
+				iError_report_byNumber(_ERROR_FEATURE_NOT_YET_CODED, compList->ll.nextComp, false);
+			}
 	}
 
 

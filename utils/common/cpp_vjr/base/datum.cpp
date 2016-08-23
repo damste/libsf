@@ -96,6 +96,11 @@
 // Datum storage
 //
 //////
+	SDatum* iDatum_allocateStruct(s32 tnExtraSpace)
+	{
+		return((SDatum*)malloc(sizeof(SDatum) + tnExtraSpace));
+	}
+
 	void iDatum_allocateSpace(SDatum* datum, s32 dataLength)
 	{
 		// Make sure our environment is sane

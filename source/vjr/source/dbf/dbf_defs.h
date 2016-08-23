@@ -214,6 +214,8 @@ struct SFieldRecord2;
 	uptr				iDbf_setField_data								(SWorkArea* wa, s32 fieldNumber, u8* dest, u32 destLength, bool tlPartOfATransaction);
 	uptr				iDbf_getField_validateContents					(SWorkArea* wa, u32 fieldNumber, u8* src, u32 srcLength);
 
+	SDatum*				iDbf_listRecord									(SWorkArea* wa, SDbfRender* render, SCallback* cb = NULL, sptr _fillCharFunc);
+
 	SFieldRecord1*		iDbf_getField_byName1							(SWorkArea* wa, cu8* fieldName);
 	SFieldRecord1*		iDbf_getField_byNumber1							(SWorkArea* wa, u32 fieldNumber);
 	SFieldRecord2*		iDbf_getField_byName2							(SWorkArea* wa, cu8* fieldName);
@@ -252,8 +254,28 @@ struct SFieldRecord2;
 	bool				iDbf_validate_isVcx								(SWorkArea* wa);
 	bool				iDbf_validate_isFrx								(SWorkArea* wa);
 	bool				iDbf_validate_isMnx								(SWorkArea* wa);
-	
-	
+
+
+//////////
+// Rendering algorithms for individual fields
+//////
+	void				iiDbf_populateRender							(SObject* settings, SDbfRender* render);
+	s32					iiDbf_render_i									(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render);
+	s32					iiDbf_render_y									(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render);
+	s32					iiDbf_render_b									(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render);
+	s32					iiDbf_render_d									(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render);
+	s32					iiDbf_render_t									(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render);
+	s32					iiDbf_render_l									(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render);
+	s32					iiDbf_render_f									(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render);
+	s32					iiDbf_render_n									(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render);
+	s32					iiDbf_render_m									(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render);
+	s32					iiDbf_render_w									(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render);
+	s32					iiDbf_render_g									(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render);
+	s32					iiDbf_render_q									(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render);
+	s32					iiDbf_render_v									(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render);
+	s32					iiDbf_render_c									(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render);
+	s32					iiDbf_render_unk								(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render);
+
 
 
 //////////

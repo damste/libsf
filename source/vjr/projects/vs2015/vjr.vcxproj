@@ -467,6 +467,12 @@ copy $(OutputPath)$(ProjectName).exe \libsf_offline\source\vjr\bin\64-bit\vjr_ms
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\source\dialogs\dialogs.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\source\dllfuncs\dllfuncs.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -612,6 +618,7 @@ copy $(OutputPath)$(ProjectName).exe \libsf_offline\source\vjr\bin\64-bit\vjr_ms
     <ClInclude Include="..\..\source\dbf\dbf_globals.h" />
     <ClInclude Include="..\..\source\dbf\dbf_structs.h" />
     <ClInclude Include="..\..\source\debugger\jdebic\jdebic.h" />
+    <ClInclude Include="..\..\source\dialogs\dialogs.h" />
     <ClInclude Include="..\..\source\engine.h" />
     <ClInclude Include="..\..\source\fonts.h" />
     <ClInclude Include="..\..\source\grace.h" />

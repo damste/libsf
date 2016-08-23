@@ -272,6 +272,7 @@ typedef SEM**		SEMpp;
 	#define propGet_settings_Date(obj)								iObjProp_get_s32_direct			(obj, _INDEX_SET_DATE)
 	#define propGet_settings_Decimals(obj)							iObjProp_get_s32_direct			(obj, _INDEX_SET_DECIMALS)
 	#define propGet_settings_Exclusive(obj)							(iObjProp_get_logical_fromLogicalConstants(obj, _INDEX_SET_EXCLUSIVE)				!= _LOGICAL_FALSE)
+	#define propGet_settings_Fixed(obj)								(iObjProp_get_logical_fromLogicalConstants(obj, _INDEX_SET_FIXED)					!= _LOGICAL_FALSE)
 	#define propGet_settings_FocusHighlightBorderPixels(obj)		iObjProp_get_s32_direct			(obj, _INDEX_SET_FOCUS_HIGHLIGHT_BORDER_PIXELS)
 	#define propGet_settings_Hours(obj)								iObjProp_get_s32_direct			(obj, _INDEX_SET_HOURS)
 	#define propGet_settings_Hours12(obj)							(iObjProp_get_s32_direct		(obj, _INDEX_SET_HOURS)							== 12)

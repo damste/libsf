@@ -468,6 +468,7 @@ struct SReturnsParams;
 	SComp*				iiCommand_declare_storeParameterType		(SDllFuncParam* dp, SComp* comp);
 	SComp*				iiCommand_declare_storeParameterName		(SDllFuncParam* dp, SComp* comp, s32 tnParamNum);
 	void				command_goto								(SComp* compCommand, SReturnsParams* rpar);
+	void				command_list								(SComp* compCommand, SReturnsParams* rpar);
 	void				command_modify								(SComp* compCommand, SReturnsParams* rpar);
 	void				command_open								(SComp* compCommand, SReturnsParams* rpar);
 	void				command_set									(SComp* compCommand, SReturnsParams* rpar);
@@ -777,6 +778,7 @@ struct SReturnsParams;
 		{	_ICODE_CLEAR,			(uptr)&command_clear		},
 		{	_ICODE_DECLARE,			(uptr)&command_declare		},
 		{	_ICODE_GOTO,			(uptr)&command_goto			},
+		{	_ICODE_LIST,			(uptr)&command_list			},
 		{	_ICODE_MODIFY,			(uptr)&command_modify		},
 		{	_ICODE_OPEN,			(uptr)&command_open			},
 		{	_ICODE_SET,				(uptr)&command_set			},

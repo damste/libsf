@@ -192,7 +192,8 @@
 	#include "\libsf\source\vjr\source\compiler\licoa\licoa_globals.h"
 	#include "\libsf\source\vjr\source\compiler\sourcelight\sourcelight_globals.h"
 
-	#include "dbf\dbf.h"
+	#include "\libsf\source\vjr\source\dbf\dbf.h"
+	#include "\libsf\source\vjr\source\dialogs\dialogs.h"
 
 	#include "\libsf\source\vjr\source\sem\sem.h"
 	#include "\libsf\source\vjr\source\sem\sem_line.h"
@@ -259,6 +260,7 @@
 		#include "\libsf\source\vjr\source\dbf\dbc.cpp"
 		#include "\libsf\source\vjr\source\dbf\dbf.cpp"
 		#include "\libsf\source\vjr\source\dbf\cdx.cpp"
+		#include "\libsf\source\vjr\source\dialogs\dialogs.cpp"
 		#include "\libsf\source\vjr\source\forms3d\grace.cpp"
 		#include "\libsf\source\vjr\source\fonts.cpp"
 		#include "\libsf\source\vjr\source\dllfuncs\dllfuncs.cpp"

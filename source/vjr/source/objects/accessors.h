@@ -473,6 +473,7 @@ struct SBasePropMap;
 	const s8		cgc_setDevice[]											= "device";
 	const s8		cgc_setDeviceFilename[]									= "devicefilename";
 	const s8		cgc_setExclusive[]										= "exclusive";
+	const s8		cgc_setFixed[]											= "fixed";
 	const s8		cgc_setFocusObjBorderPixels[]							= "focusObjBorderPixels";
 	const s8		cgc_setFocusObjPixels[]									= "focusObjPixels";
 	const s8		cgc_setHonorBarriers[]									= "honorBarriers";
@@ -890,53 +891,54 @@ struct SBasePropMap;
 	const u32		_INDEX_SET_DEVICE										= 368;
 	const u32		_INDEX_SET_DEVICE2										= 369;
 	const u32		_INDEX_SET_EXCLUSIVE									= 370;
-	const u32		_INDEX_SET_FOCUS_HIGHLIGHT_BORDER_PIXELS				= 371;
-	const u32		_INDEX_SET_FOCUS_OBJ_PIXELS								= 372;
-	const u32		_INDEX_SET_HONOR_BARRIERS								= 373;
-	const u32		_INDEX_SET_HOURS										= 374;
-	const u32		_INDEX_SET_IMPLICIT_PARAMS								= 375;
-	const u32		_INDEX_SET_INDEX_META_DATA								= 376;
-	const u32		_INDEX_SET_INITIALIZE_DEFAULT_VALUE						= 377;
-	const u32		_INDEX_SET_LANGUAGE										= 378;
-	const u32		_INDEX_SET_LOAD_RECEIVES_PARAMS							= 379;
-	const u32		_INDEX_SET_LOCK_SCREEN									= 380;
-	const u32		_INDEX_SET_LOGICAL										= 381;
-	const u32		_INDEX_SET_MARK											= 382;
-	const u32		_INDEX_SET_NAMING_CONVENTIONS							= 383;
+	const u32		_INDEX_SET_FIXED										= 371;
+	const u32		_INDEX_SET_FOCUS_HIGHLIGHT_BORDER_PIXELS				= 372;
+	const u32		_INDEX_SET_FOCUS_OBJ_PIXELS								= 373;
+	const u32		_INDEX_SET_HONOR_BARRIERS								= 374;
+	const u32		_INDEX_SET_HOURS										= 375;
+	const u32		_INDEX_SET_IMPLICIT_PARAMS								= 376;
+	const u32		_INDEX_SET_INDEX_META_DATA								= 377;
+	const u32		_INDEX_SET_INITIALIZE_DEFAULT_VALUE						= 378;
+	const u32		_INDEX_SET_LANGUAGE										= 379;
+	const u32		_INDEX_SET_LOAD_RECEIVES_PARAMS							= 380;
+	const u32		_INDEX_SET_LOCK_SCREEN									= 381;
+	const u32		_INDEX_SET_LOGICAL										= 382;
+	const u32		_INDEX_SET_MARK											= 383;
+	const u32		_INDEX_SET_NAMING_CONVENTIONS							= 384;
 
-	const u32									_INDEX_SET_NCSET_START	= 384;
-	const u32		_INDEX_SET_NCSET_ALPHA_IS_OPAQUE						= 384;
-	const u32		_INDEX_SET_NCSET_CEILING_FLOOR							= 385;
-	const u32		_INDEX_SET_NCSET_DATETIME_MILLISECONDS					= 386;
-	const u32		_INDEX_SET_NCSET_OPTIMIZE_TABLE_WRITES					= 387;
-	const u32		_INDEX_SET_NCSET_OPTIMIZE_VARIABLES						= 388;
-	const u32		_INDEX_SET_NCSET_SIGN_SIGN2								= 389;
-	const u32		_INDEX_SET_NCSET_PLACEHOLDER1							= 390;
-	const u32		_INDEX_SET_NCSET_PLACEHOLDER2							= 391;
-	const u32		_INDEX_SET_NCSET_DIRECT_NATIVE_MEMBERS					= 392;
-	const u32		_INDEX_SET_NCSET_BOF_IS_ZERO							= 393;
-	const u32									_INDEX_SET_NCSET_END	= 393;
+	const u32									_INDEX_SET_NCSET_START	= 385;
+	const u32		_INDEX_SET_NCSET_ALPHA_IS_OPAQUE						= 385;
+	const u32		_INDEX_SET_NCSET_CEILING_FLOOR							= 386;
+	const u32		_INDEX_SET_NCSET_DATETIME_MILLISECONDS					= 387;
+	const u32		_INDEX_SET_NCSET_OPTIMIZE_TABLE_WRITES					= 388;
+	const u32		_INDEX_SET_NCSET_OPTIMIZE_VARIABLES						= 389;
+	const u32		_INDEX_SET_NCSET_SIGN_SIGN2								= 390;
+	const u32		_INDEX_SET_NCSET_PLACEHOLDER1							= 391;
+	const u32		_INDEX_SET_NCSET_PLACEHOLDER2							= 392;
+	const u32		_INDEX_SET_NCSET_DIRECT_NATIVE_MEMBERS					= 393;
+	const u32		_INDEX_SET_NCSET_BOF_IS_ZERO							= 394;
+	const u32									_INDEX_SET_NCSET_END	= 394;
 	
-	const u32		_INDEX_SET_POINT										= 394;
-	const u32		_INDEX_SET_PRECISIONBFP									= 395;		// numeric, defaults to 256
-	const u32		_INDEX_SET_PRECISIONBI									= 396;		// numeric, defaults to 256
-	const u32		_INDEX_SET_REPROCESS									= 397;		// logical, or numeric (negative = attempts, positive = seconds)
-	const u32		_INDEX_SET_REPROCESSATTEMPTS							= 398;		// numeric, 30 by default, but can be changed with SET REPROCESSATTEMPTS TO 30
-	const u32		_INDEX_SET_REPROCESSINTERVAL							= 399;		// numeric, 1000 by default indicating 1000 milliseconds, or 1 second
-	const u32		_INDEX_SET_REPROCESS_SYSTEM								= 400;		// logical, or numeric (negative = attempts, positive = seconds)
-	const u32		_INDEX_SET_SEPARATOR									= 401;
-	const u32		_INDEX_SET_SLOPPY_PRINTING								= 402;
-	const u32		_INDEX_SET_STATUS										= 403;
-	const u32		_INDEX_SET_STATUSBAR									= 404;
-	const u32		_INDEX_SET_STICKY_PARAMETERS							= 405;
-	const u32		_INDEX_SET_TABLE_EQUAL_ASSIGNMENTS						= 406;
-	const u32		_INDEX_SET_TABLE_OBJECTS								= 407;
-	const u32		_INDEX_SET_TALK											= 408;
-	const u32		_INDEX_SET_TIME											= 409;
-	const u32		_INDEX_SET_UDFPARMS										= 410;
-	const u32		_INDEX_SET_UNLOAD_RECEIVES_PARAMS						= 411;
-	const u32		_INDEX_SET_VARIABLES_FIRST								= 412;
-	const u32		_INDEX_SET_VECSEPARATOR									= 413;
+	const u32		_INDEX_SET_POINT										= 395;
+	const u32		_INDEX_SET_PRECISIONBFP									= 396;		// numeric, defaults to 256
+	const u32		_INDEX_SET_PRECISIONBI									= 397;		// numeric, defaults to 256
+	const u32		_INDEX_SET_REPROCESS									= 398;		// logical, or numeric (negative = attempts, positive = seconds)
+	const u32		_INDEX_SET_REPROCESSATTEMPTS							= 399;		// numeric, 30 by default, but can be changed with SET REPROCESSATTEMPTS TO 30
+	const u32		_INDEX_SET_REPROCESSINTERVAL							= 400;		// numeric, 1000 by default indicating 1000 milliseconds, or 1 second
+	const u32		_INDEX_SET_REPROCESS_SYSTEM								= 401;		// logical, or numeric (negative = attempts, positive = seconds)
+	const u32		_INDEX_SET_SEPARATOR									= 402;
+	const u32		_INDEX_SET_SLOPPY_PRINTING								= 403;
+	const u32		_INDEX_SET_STATUS										= 404;
+	const u32		_INDEX_SET_STATUSBAR									= 405;
+	const u32		_INDEX_SET_STICKY_PARAMETERS							= 406;
+	const u32		_INDEX_SET_TABLE_EQUAL_ASSIGNMENTS						= 407;
+	const u32		_INDEX_SET_TABLE_OBJECTS								= 408;
+	const u32		_INDEX_SET_TALK											= 409;
+	const u32		_INDEX_SET_TIME											= 410;
+	const u32		_INDEX_SET_UDFPARMS										= 411;
+	const u32		_INDEX_SET_UNLOAD_RECEIVES_PARAMS						= 412;
+	const u32		_INDEX_SET_VARIABLES_FIRST								= 413;
+	const u32		_INDEX_SET_VECSEPARATOR									= 414;
 
 
 
@@ -1508,6 +1510,7 @@ struct SBasePropMap;
 		{	_INDEX_SET_DEVICE,								_ICODE_DEVICE,						cgc_setDevice,						sizeof(cgc_setDevice) - 1,							_VAR_TYPE_S32,				0, 0, 0,		_SET_DEVICE_SCREEN				,NULL	},	// See the _SET_DEVICE_* constants (uses also _INDEX_SET_DEVICE2 for filename)
 		{	_INDEX_SET_DEVICE2,								_ICODE_DEVICE_FILENAME,				cgc_setDeviceFilename,				sizeof(cgc_setDeviceFilename) - 1,					_VAR_TYPE_CHARACTER,		0, 0, 0,		(uptr)&cgcNullString			,NULL	},	// Extra data for _INDEX_SET_DEVICE if type=2 file, holds the fully qualified pathname
 		{	_INDEX_SET_EXCLUSIVE,							_ICODE_EXCLUSIVE,					cgc_setExclusive,					sizeof(cgc_setExclusive) - 1,						_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_TRUE				,NULL	},	// .t.=exclusive access, .f.=shared access
+		{	_INDEX_SET_FIXED,								_ICODE_FIXED,						cgc_setFixed,						sizeof(cgc_setFixed) - 1,							_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL	},	// .t.=numeric decimal places are fixed, .f.=numeric decimal places are not fixed
 		{	_INDEX_SET_FOCUS_HIGHLIGHT_BORDER_PIXELS,		_ICODE_FOCUSOBJBORDERPIXELS,		cgc_setFocusObjBorderPixels,		sizeof(cgc_setFocusObjBorderPixels) -1,				_VAR_TYPE_S32,				0, 0, 0,		1								,NULL	},	// Number of pixels between the object and the focus highlight border
 		{	_INDEX_SET_FOCUS_OBJ_PIXELS,					_ICODE_FOCUSOBJPIXELS,				cgc_setFocusObjPixels,				sizeof(cgc_setFocusObjPixels) - 1,					_VAR_TYPE_S32,				0, 0, 0,		4								,NULL	},	// Number of pixels thick the focus highlight border is
 		{	_INDEX_SET_HONOR_BARRIERS,						_ICODE_HONORBARRIERS,				cgc_setHonorBarriers,				sizeof(cgc_setHonorBarriers) - 1,					_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_TRUE				,NULL	},	// .t.=honors the 2GB file size barrier, .f.=allows file sizes larger than 2GB
@@ -5738,6 +5741,7 @@ struct SBasePropMap;
 		{	_INDEX_SET_DEVICE,							0, (uptr)&iObjProp_setDevice,			(uptr)&iObjProp_getDevice },		// s32 for device, if filename specified uses _SET_DEVICE2 to hold filename
 		{	_INDEX_SET_DEVICE2,							0, (uptr)&iObjProp_setCharacter,		0	},		// character
 		{	_INDEX_SET_EXCLUSIVE,						0, (uptr)&iObjProp_setOnOff,			(uptr)&iObjProp_getOnOff },			// bool
+		{	_INDEX_SET_FIXED,							0, (uptr)&iObjProp_setOnOff,			(uptr)&iObjProp_getOnOff },			// bool
 		{	_INDEX_SET_FOCUS_HIGHLIGHT_BORDER_PIXELS,	0, (uptr)&iObjProp_setInteger,			(uptr)&iObjProp_getInteger },		// s32
 		{	_INDEX_SET_FOCUS_OBJ_PIXELS,				0, (uptr)&iObjProp_setInteger,			(uptr)&iObjProp_getInteger },		// s32
 		{	_INDEX_SET_HONOR_BARRIERS,					0, (uptr)&iObjProp_setOnOff,			(uptr)&iObjProp_getOnOff },			// bool

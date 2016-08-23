@@ -92,15 +92,15 @@
 	//////////
 	// Splash
 	//////
- 		bool glShowSplashScreen = true;
- 		//bool glShowSplashScreen = false;
+ 		//bool glShowSplashScreen = true;
+ 		bool glShowSplashScreen = false;
 
 
 	//////////
 	// Focus object border
 	//////
-		bool glShowFocusObjBorder = true;
-		//bool glShowFocusObjBorder = false;
+		//bool glShowFocusObjBorder = true;
+		bool glShowFocusObjBorder = false;
 
 
 //////////

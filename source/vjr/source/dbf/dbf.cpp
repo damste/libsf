@@ -810,6 +810,29 @@
 					lfr2Ptr->autoIncStep		= lfrPtr->autoIncStep;
 					lfr2Ptr->indexFixup			= lfrPtr->indexFixup;
 					lfr2Ptr->fillChar			= lfrPtr->fillChar;
+
+
+				//////////
+				// Specify display algorithms
+				//////
+					switch (lfr2Ptr->type)
+					{
+						case 'I':		lfr2Ptr->_renderFunc = (sptr)&iiDbf_render_i;		break;		// 4-byte integer (s32)
+						case 'Y':		lfr2Ptr->_renderFunc = (sptr)&iiDbf_render_y;		break;		// currency, which is technically an 8-byte integer (s64)
+						case 'B':		lfr2Ptr->_renderFunc = (sptr)&iiDbf_render_b;		break;		// Double (f64)
+						case 'D':		lfr2Ptr->_renderFunc = (sptr)&iiDbf_render_d;		break;		// Date
+						case 'T':		lfr2Ptr->_renderFunc = (sptr)&iiDbf_render_t;		break;		// Datetime, needs 2nd DWORD fixed up as it is a float (f32)
+						case 'L':		lfr2Ptr->_renderFunc = (sptr)&iiDbf_render_l;		break;		// Logical
+						case 'F':		lfr2Ptr->_renderFunc = (sptr)&iiDbf_render_f;		break;		// Float
+						case 'N':		lfr2Ptr->_renderFunc = (sptr)&iiDbf_render_n;		break;		// Numeric
+						case 'M':		lfr2Ptr->_renderFunc = (sptr)&iiDbf_render_m;		break;		// Memo
+						case 'W':		lfr2Ptr->_renderFunc = (sptr)&iiDbf_render_w;		break;		// Blob
+						case 'G':		lfr2Ptr->_renderFunc = (sptr)&iiDbf_render_g;		break;		// General
+						case 'Q':		lfr2Ptr->_renderFunc = (sptr)&iiDbf_render_q;		break;		// Varbinary
+						case 'V':		lfr2Ptr->_renderFunc = (sptr)&iiDbf_render_v;		break;		// Varchar
+						case 'C':		lfr2Ptr->_renderFunc = (sptr)&iiDbf_render_c;		break;		// Character
+						default:		lfr2Ptr->_renderFunc = (sptr)&iiDbf_render_unk;		break;		// Uhhh... okay
+					}
 			}
 
 
@@ -3737,6 +3760,58 @@ debug_break;
 		return(-1);
 	}
 
+	// Called to create a record that would be listed
+	// Use iDbf_populateRender() to populate a render if special options are neeeded
+	SDatum* iDbf_listRecord(SWorkArea* wa, SDbfRender* render, SCallback* cb, sptr _fillCharFunc)
+	{
+		s32				lnLength;
+		u32				lnField;
+		SDatum*			listRow;
+		SDbfRender		_render;
+		SFieldRecord2*	lfr2Ptr;
+
+
+		// Make sure we have a work area
+		if (wa)
+		{
+
+			//////////
+			// Make sure we have a render
+			//////
+				if (!render)
+				{
+					// Use our local copy
+					render = &_render;
+					iiDbf_populateRender(&_render);
+				}
+
+
+			//////////
+			// Render each one to a buffer
+			//////
+				for (lfr2Ptr = wa->field2Ptr, lnField; lnField < wa->fieldCount; lnLength += lfr2Ptr->renderBuffer.length, lnField++, lfr2Ptr++)
+				{
+					// Render this field
+					lfr2Ptr->renderFunc(&wa->row, lfr2Ptr, render);
+
+					// Determine the length of the 
+					
+				}
+
+
+			//////////
+			// Generate the output row
+			//////
+				listRow = NULL;
+				iDatum_allocateSpace((listRow = iDatum_allocateStruct()), lnLength);
+				if (listRow)
+				{
+					// Populate
+				}
+
+		}
+	}
+
 	// Returns the field number by field name
 	SFieldRecord1* iDbf_getField_byName1(SWorkArea* wa, const u8* fieldName)
 	{
@@ -5274,6 +5349,172 @@ debug_break;
 				&&				iDbf_validate_fieldExists(wa,	cgcSysRes,			"n",	1,		0)
 				&&				iDbf_validate_fieldExists(wa,	cgcResName,			"m",	4,		0)
 			);
+	}
+
+
+
+
+//////////
+//
+// Called to render the field contents to system specifics
+//
+//////
+	// Called one time to populate the render structure before performing a bulk operation like list
+	void iiDbf_populateRender(SObject* settings, SDbfRender* render)
+	{
+		// Populate based on the indicated settings settings :-)
+		render->century		= propGet_settings_Century(settings);			// SET CENTURY
+		render->currency	= propGet_settings_Currency(settings);			// SET CURRENCY
+		render->date		= propGet_settings_Date(settings);				// SET DATE
+		render->decimals	= propGet_settings_Decimals(settings);			// SET DECIMALS
+		render->hours		= propGet_settings_Hours(settings);				// SET HOURS
+		render->mark		= propGet_settings_Mark(settings);				// SET MARK TO
+		render->point		= propGet_settings_Point(settings);				// SET POINT
+		render->separator	= propGet_settings_Separator(settings);			// SET SEPARATOR
+		render->fixed		= propGet_settings_Fixed(settings);				// SET FIXED setting
+
+		// Create render format for float and double %.2f
+		sprintf(render->format, "%%.%df", render->decimals);
+	}
+
+	s32 iiDbf_render_i(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render)
+	{
+		// Standard integer
+		sprintf(field2Ptr->renderBuffer254, "%d%n", *(s32*)(row->data_s8 + field2Ptr->offset), &field2Ptr->renderBuffer.length);
+		field2Ptr->renderBuffer.data_s8 = &field2Ptr->renderBuffer254[0];
+
+		// Indicate the length
+		return(field2Ptr->renderBuffer.length);
+	}
+
+
+
+
+	s32 iiDbf_render_y(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render)
+	{
+		// Fixed point integer, we'll convert to f64 for display
+		sprintf(field2Ptr->renderBuffer254, "%d%n", *(s32*)(row->data_s8 + field2Ptr->offset), &field2Ptr->renderBuffer.length);
+		field2Ptr->renderBuffer.data_s8 = &field2Ptr->renderBuffer254[0];
+
+		// Indicate the length
+		return(field2Ptr->renderBuffer.length);
+	}
+
+
+
+
+	s32 iiDbf_render_b(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render)
+	{
+		// Indicate the length
+		return(field2Ptr->renderBuffer.length);
+	}
+
+
+
+
+	s32 iiDbf_render_d(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render)
+	{
+		// Indicate the length
+		return(field2Ptr->renderBuffer.length);
+	}
+
+
+
+
+	s32 iiDbf_render_t(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render)
+	{
+		// Indicate the length
+		return(field2Ptr->renderBuffer.length);
+	}
+
+
+
+
+	s32 iiDbf_render_l(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render)
+	{
+		// Indicate the length
+		return(field2Ptr->renderBuffer.length);
+	}
+
+
+
+
+	s32 iiDbf_render_f(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render)
+	{
+		// Indicate the length
+		return(field2Ptr->renderBuffer.length);
+	}
+
+
+
+
+	s32 iiDbf_render_n(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render)
+	{
+		// Indicate the length
+		return(field2Ptr->renderBuffer.length);
+	}
+
+
+
+
+	s32 iiDbf_render_m(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render)
+	{
+		// Indicate the length
+		return(field2Ptr->renderBuffer.length);
+	}
+
+
+
+
+	s32 iiDbf_render_w(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render)
+	{
+		// Indicate the length
+		return(field2Ptr->renderBuffer.length);
+	}
+
+
+
+
+	s32 iiDbf_render_g(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render)
+	{
+		// Indicate the length
+		return(field2Ptr->renderBuffer.length);
+	}
+
+
+
+
+	s32 iiDbf_render_q(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render)
+	{
+		// Indicate the length
+		return(field2Ptr->renderBuffer.length);
+	}
+
+
+
+
+	s32 iiDbf_render_v(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render)
+	{
+		// Indicate the length
+		return(field2Ptr->renderBuffer.length);
+	}
+
+
+
+
+	s32 iiDbf_render_c(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render)
+	{
+		// Indicate the length
+		return(field2Ptr->renderBuffer.length);
+	}
+
+
+
+
+	s32 iiDbf_render_unk(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render)
+	{
+		// Indicate the length
+		return(field2Ptr->renderBuffer.length);
 	}
 
 

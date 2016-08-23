@@ -591,7 +591,7 @@
 			if (_lseeki64(tnFile, tnOffset, SEEK_SET) == tnOffset)
 			{
 				// Lock the bytes
-				if (_locking(tnFile, _LK_NBLCK, tnLength) == 0)
+				if (_locking(tnFile, _LK_NBLCK, tnLength) == 0)		// Note:  _LK_NBLCK attempts to lock, and if fails returns immediately, whereas _LK_LOCK would auto-retry after 1 second, and fail after 10 seconds
 				{
 					// Indicate a successful lock
 					dl->nLength = tnLength;
