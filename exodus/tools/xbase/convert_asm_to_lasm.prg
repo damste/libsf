@@ -223,6 +223,15 @@ SET STEP ON
 	lcAsm = STRTRAN(lcAsm, ",dword ptr ",	",u32 ptr ")
 	lcAsm = STRTRAN(lcAsm, ",word ptr ",	",u16 ptr ")
 	lcAsm = STRTRAN(lcAsm, ",byte ptr ",	",u8 ptr ")
+
+	lcAsm = STRTRAN(lcAsm, "(real4 ptr ",	"(f32 ptr ")
+	lcAsm = STRTRAN(lcAsm, "(real8 ptr ",	"(f64 ptr ")
+	lcAsm = STRTRAN(lcAsm, "(real10 ptr ",	"(f80 ptr ")
+	lcAsm = STRTRAN(lcAsm, "(qword ptr ",	"(u64 ptr ")
+	lcAsm = STRTRAN(lcAsm, "(fword ptr ",	"(u48 ptr ")
+	lcAsm = STRTRAN(lcAsm, "(dword ptr ",	"(u32 ptr ")
+	lcAsm = STRTRAN(lcAsm, "(word ptr ",	"(u16 ptr ")
+	lcAsm = STRTRAN(lcAsm, "(byte ptr ",	"(u8 ptr ")
 	
 	lcAsm = STRTRAN(lcAsm, "ss:[ebp",		"[ebp")
 	lcAsm = STRTRAN(lcAsm, "ss:[esp",		"[esp")

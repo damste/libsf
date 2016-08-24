@@ -104,8 +104,8 @@ Sep.15.2015 -- Approaching finalization (James 4:15).  Still in draft form.
 RDC Specifications Document
 ---------------------------
 
-1.0 - Reserved Keywords
------------------------
+1.0 - Reserved Keywords and Symbols
+-----------------------------------
 
 	(|cask|)			-- Reference cask
 	[|cask|]			-- Definition cask
@@ -113,7 +113,17 @@ RDC Specifications Document
 	~|cask|~			-- Utility cask
 	\|cask|/			-- Side coding
 	/|cask|\			-- Auto-injected content
-	*|cask|*			-- Anchor cask
+	@|cask|@			-- Anchor cask
+
+	[p]					-- References the thing inside the pointer (same as *p)
+	[[p]]				-- References the thing inside the pointer-to-pointer (same as *(*p))
+	->					-- Right pointer
+	<-					-- Left pointer
+	-|					-- Right bar
+	|-					-- Left bar
+	
+	?					-- Used as SMyStruct? t; to create a member placeholder, that can be used as SMyStruct* p, with p->?t with type checking, p->??t without type checking
+	, and '				-- Commas and tick marks will be allowed in any number to visualize it more easily (for example:  1,234.567'890)
 	
 	||||				-- If four or more pipe signs leading on a source code line, line comment
 	|||					-- If three pipe signs leading on a source code line, whitespace
@@ -127,6 +137,10 @@ RDC Specifications Document
 	s64,u64				-- Signed and unsigned 64-bit quantities
 	f32,f64,f80			-- 32-bit, 64-bit, and 80-bit floating point (if hardware doesn't support 80-bit floats, implicitly wraps to bfp)
 
+	any					-- Same as void*, but allows transfer to any other pointer without requiring a cast
+	allow				-- Used in lieu of .. for variadic parameter passing, gives the parameter set a name to iterate through
+	copyof				-- Creates a copy of the allow parameter set
+	
 	as8,au8				-- Auto-converting signed and unsigned 32-bit quantity, loaded and stored as an 8-bit quantity with signed/unsigned saturation
 	as16,au16			-- Auto-converting signed and unsigned 32-bit quantity, loaded and stored as a 16-bit quantity with signed/unsigned saturation
 	as24,au24			-- Auto-converting signed and unsigned 32-bit quantity, loaded and stored as a 24-bit quantity with signed/unsigned saturation
@@ -150,8 +164,10 @@ RDC Specifications Document
 	extern				-- Augments a type to indicate its body is populated elsewhere
 	hide				-- Augments a type to indicate it should not be visible in SourceLight
 	range				-- Specifies a range the type will hold in the form range(lo,hi), used to prevent auto-promotion in compilation
+	dynamic				-- Specifies that the indicated initialization block is not static, but is runtime allocated at startup
 
 	sizeof				-- Returns the size of a type
+	alignof				-- Returns the alignment of a type
 	countof				-- Returns the count of a type in its immediately more fundamental form
 	offsetof			-- Returns the offset of a type
 	addressof			-- Returns the address of a type
@@ -174,12 +190,14 @@ RDC Specifications Document
 	#align				-- An alignment directive for all variables hereafter
 	#optimize			-- Set the optimization level 0=none, 9=max (unless "#optimize N force" is used, any command line setting will override this setting)
 	#define				-- Pragma to define a token hereafter
+	#macro				-- An alternate syntax to #define generally used for multi-line macros as it requires {{ and }} to delineate
+	#append				-- Add to an existing #define or #macro token
+	#prepend			-- Prefix before an existing #define or #macro token
 	#undefine			-- Pragma to un-define a token
 	#typedef			-- Pragma to alias one type to another name hereafter
 	#hide				-- Pragma to indicate the following members should not be visible in SourceLight
 	#show				-- Pragma to indicate the following members should be visible in SourceLight
-
-	#if					-- Pragma logic test for conditionally compiled code
+	#if					-- Pragma logic test for conditionally compiled code (can be unnested if using "#if name somename" and "#endif name somename" syntax)
 	#else				-- Pragma logic test for conditionally compiled code
 	#elseif				-- Pragma logic test for conditionally compiled code
 	#endif				-- Pragma termination of a conditional test block
@@ -190,10 +208,19 @@ RDC Specifications Document
 	#error				-- Displays an explicit error at the indicated location at compile time
 	#stop				-- Stops compilation with an optional stop code (#stop Nnn)
 	#meia				-- Triggers an explicit inquiry at the indicated location at runtime
+	#valdef				-- Begins or ends a value definition block, allowing for compile-time checking that all symbols are used
+	#valchk				-- Begins or ends a block of code where every value defined within the named #valdef block should be used
+	#permanent			-- Indicates a block that should be physically updated in source code with the indicated name, so that it holds the expanded macro
+
+	#pragma				-- Specifies an option:
+	case_insensitive	-- Turns on case-insensitive name lookups
 
 	with				-- Aliases lengthy texts to shorter forms for use within its { ... } block
 
+	bury				-- Documents non-use and buries a required return parameter from a function in a case where the return value is not really needed
+	nocode				-- Documents that a block properly does not have any code within it, but is only given for documentation of the condition
 	struct				-- A structure definition
+	angel				-- A self-scoping class definition that constructs, is used, and then destructs automatically
 	class				-- A class definition
 	operator			-- For operator override definitions
 	extends				-- A class extends another class (can extend multiple simultaneously)
@@ -201,10 +228,12 @@ RDC Specifications Document
 	accessor			-- Documents and indicates a member function is an accessor, thereby removing the () syntax access requirement (use "class->func->xyz" rather than "class->func()->xyz")
 	union				-- A merging of two or more types
 	enum				-- An enumeration of items
-	new					-- Creates an instance of a class
+	new					-- Creates an instance of a class, or if used as new() defines code to call when new is defined.
 	delete				-- Deletes an instance of a class
-	snew				-- Scoped. Creates a dynamically allocated instance of a class, and automatically deletes it when leaving current scope.
+	snew				-- Scoped. Creates a dynamically allocated instance of a class, and automatically deletes it when leaving current scope.  Still calls new() code block.
 	sdelete				-- Scoped. Explicitly deletes all instances of all classes that are currently defined in current scope (sdelete class;)
+	lnew				-- Local.  Creates an instance of the class using lalloc().  Still calls new() code block.
+	ldelete				-- Local.  Deletes an instance of the class using lfree().
 
 	lalloc				-- Scoped. Allocates dynamic local data on the stack.
 	lfree				-- Scoped. Frees dynamic local data from the stack created with lalloc().
@@ -219,16 +248,37 @@ RDC Specifications Document
 	purpose				-- Declares a purpose within a function
 	return				-- Declares any output return value(s)
 	params				-- Declares any input parameter(s)
+	params1..params9	-- Declares sets of input parameters, which can be referenced in groups to be passed to other functions
 
+	default				-- Indicates the default member function in a class, so the @instance or @instance() syntaxes can be used
+	required			-- Indicates a return value is required
+	optional			-- Explicitly indicates a return value is optional
+	in					-- If used after params statement, documents it's an input parameter
+	out					-- If used after params statement, documents it's an output parameter
+	inout				-- If used after params statement, documents it's an input and output parameter
+	alias				-- Gives another name to wherever it's defined (multiple aliases can be given)
+	hierarchy			-- Specifies that a value is not just a value, but is a particular member of some larger thing
+
+	error on use		-- Flags a function to generate a compile-time error if it's used
+	undef if missing 	-- Flags a function to be undefined if it's missing the indicated types, optionally "undef if missing at link"
+	inquiry on use		-- Flags a function to generate an inquiry at run-time if it's use
 	inline				-- Provides an explicit optimization hint
 	nostepinto			-- Declares that a function should not be entered on single-step debugging
 	breakpoint			-- Code will trap to the debugger if connected and engaged, ignored otherwise
 
+	inscope				-- Pre-processor test if the indicated name is in the curren scope
+	isinitialized		-- Pre-processor test if the indicated name has been initialized at that point in use
+	istype				-- Pre-processor test if the indicated name is the indicated type
+	pcount				-- Pre-processor number for function parameter count
+	incrementing		-- Pre-processor to create an incrementing variable for each use
+	pattern				-- Pre-processor name pattern to use for incrementing variable, like "pattern abc" would generate abc1, abc2, abc3, etc.
+
 	do					-- Loop which always enters once, requires trailing while test
 	while				-- Conditionally tests loop logic and continues in the loop if true
 	until				-- Conditionally tests loop logic and continues in the loop if false
-	iterate				-- Repeats a task the specified number of times
+	iterate				-- Repeats a task the specified number of times, and allows simple top-down access through a builder
 	for					-- A for loop
+	once				-- An optional for loop clause, indicating the for loop is always traversed at least once, regardless of the initial test result
 	unless				-- A conditional test on false
 	if					-- A conditional test on true
 	else				-- An else clause on an if or unless
@@ -245,6 +295,14 @@ RDC Specifications Document
 	roll				-- Executes all conditionals
 	
 	<|meta|>,<|mefa|>	-- Called on logic test result (meta called on true, mefa called on false)
+	[|autocast|]		-- Allows a definition to indicate it can be auto-cast into the specified types
+	[|dependencies|]	-- Indicates the named function will also include any dependencies it has found in the partial #include file
+	[|init|]			-- Indicates the value the name should be initialized to, and allows name.reset() to be used to reset at any time to reset the value to the indicated initialization value
+	[|safe|]			-- Indicates a variable is safe, and provides a branching function when an attempt to populate a value into it which is outside its range
+	[|reset|]			-- Provides a value to reset to with name.reset() if it's different than the init value
+	[|saturate|]		-- Indicates a variable will be saturated to min/max values if an attempt to populate into them exceeds the range
+	[|range|]			-- Indicates a variable should only be populated within a range (inclusive), and if not then it calles the specified functions
+	@|discr|@			-- A discrimination cask indicating overrides to use for ad hoc union access (and for display in the GUI editor and debugger) for named tokens
 
 	in					-- Creates a new thread
 	andin				-- Creates an additional new thread (used at the same time as in { })
@@ -258,6 +316,7 @@ RDC Specifications Document
 	quit				-- Quits the application explicitly (calls OS's endProcess() function)
 
 	marker				-- Create a marker, allowing for explicit for multi-level returns to this location by marker name, and for references to be made relative to its code location
+	unwindto			-- Unwinds flow to the specified marker
 	onEnter				-- Code to execute upon natural entry into the chain
 	onLeave				-- Code to execute upon natural exit from the chain
 	onHome				-- Code to execute when flow control returns to the home marker explicitly.
@@ -269,6 +328,7 @@ RDC Specifications Document
 	loop				-- Continues to the current level
 	loopto				-- Continues to the indicated goto level if nested
 	goto				-- Goes to the indicated label or named block
+	jump				-- Jumps to the entry point of a function, bypassing its prolog code
 	return				-- Signals completion of the function, and explicitly sends back one or more of the following:
 								(1) a value, (2) values, (3) a meia (inquiry), and/or (4) mema (message).
 	returnto			-- Returns back to the indicated marker, allowing the same returns as in return
@@ -278,6 +338,15 @@ RDC Specifications Document
 	flowoutto			-- Exit a structured flow control block to an indicated goto level
 	flowto				-- Flow to a member of a structured flow control block
 	subflow				-- Defines a subflow member of a strutured flow control block
+	inquiry				-- Defines a subflow called when the outer block generates an inquiry
+	defer				-- Allows a defer block to be called when the function exits
+	nodefer				-- Disallows a defer block to be called when the function exits (the default)
+	end					-- Either specifies that code will be executed at the end of a flow block, function, of the end of the app, or forces a flowto the indicated end {..} block
+	secure				-- Indicates the function is secure, and will perform security checking
+	allow				-- A list of things which can call a secure function (can be combined, processed top-down)
+	deny				-- A list of things which cannot call a secure functions (can be combined, processed top-down)
+	unknown				-- A flow branch for unknown functions attempting to access a secure function
+	__body				-- Indicates a flowto target which is the start of the main function body (used for allowable insecure call recovery)
 
 	meia				-- Called on an inquiry
 	mema				-- Called on a message (an extra and optional return message from a called thing)

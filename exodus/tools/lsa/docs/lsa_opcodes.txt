@@ -1,5 +1,74 @@
-LASM -- Intel 80386 Instructions
-================================
+LSA -- Intel 80386 Instructions
+       LibSF Simple Assembler
+===============================
+
+lsa will use Intel syntax, originally based on Microsoft's Macro Assembler
+6.11d, with some modern syntax alterations and relaxations.  It also uses
+explicit sizes rather than named tokens, such as u8 for 8-bit instead of
+byte, u16 for 16-bit instead of word, u32 for 32-bit instead of dword,
+and so on.
+
+Example code:
+
+		include "\path\to\file.lsh"
+
+		define token // Substitution goes here
+		macro single_line // Macro code goes here
+		macro multi_line {
+			// Macro content goes here
+		}
+
+		macro multi_line_unmatched {{
+			// Can now use un-matched { and } for content creating partials
+		}}
+
+		code text32
+		| org 0
+		{
+			// Comments can begin with //
+			; Or they can begin with ;
+			/* Comments are also allowed */
+
+			function requestor
+			| // Parameter listing here, in order, furthest away at top
+			| name, 4		// "name" is referenced as a 32-bit value at [ebp+8]
+			{
+				// Code for this function goes here
+				define our_edit u8 ptr ds:[edi]		// The token "our_edi" will be replaced
+													// with "u8 ptr ds:[esi]" in each use,
+													// but only in this function
+
+				for ( ; our_edi != _END; inc edi)
+				{
+					mov     al,our_edi
+					if (al == _CONST1)
+					{
+						; Code for this condition goes here
+
+					} else if (al == _CONST2) {
+						;; Code for this condition goes here
+
+					} else {
+						// Final condition goes here
+					}
+
+					// Move to next byte
+					inc		edi
+				}
+
+
+				repeat {
+					// Code here
+				} untilcxz
+
+
+				while (al == _CONST1)
+				{
+					inc		edi
+					mov		al,our_edi
+				}
+			}
+		}
 
 
 -----
