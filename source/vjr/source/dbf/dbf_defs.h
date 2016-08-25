@@ -161,7 +161,7 @@ struct SFieldRecord2;
 	uptr				iDbf_close										(SWorkArea* wa);
 	uptr				iDbf_hasCdx										(SWorkArea* wa);
 	bool				iDbf_hasDbc										(u32 tnWorkArea, SWorkArea** dbc = NULL, s32* tnError = NULL);
-	bool				iDbf_isWorkAreaValid							(SWorkArea* wa, cu8** tcSpecialWorkAreaKeyName);
+	bool				iDbf_isWorkAreaValid							(SWorkArea* wa, cu8** tcSpecialWorkAreaKeyName = NULL);
 	bool				iDbf_isWorkAreaUsed								(SWorkArea* wa, bool* tlIsValidWorkArea);
 	bool				iDbf_isWorkAreaLetter							(SVariable* var);
 	sptr				iDbf_set_workArea_current						(u32 tnWorkArea = -1,							cu8* tcSpecialKeyName = NULL);
@@ -179,6 +179,13 @@ struct SFieldRecord2;
 	sptr				iDbf_get_workArea_byAlias_byName				(s8* tcName, u32 tnNameLength,					cu8* tcSpecialKeyName = NULL, SWorkArea** waBase = NULL);
 	SVariable*			iDbf_get_alias_fromPathname						(SVariable* varPathname,						cu8* tcSpecialKeyName = NULL);
 	s8*					iDbf_get_tagName								(SWorkArea* wa, s8* tagName_32, s32* tnError = NULL);
+
+	// Field marks (to indicate only certain fields should be operated on
+	bool				iDbf_markFields_clearAll						(SWorkArea* wa);
+	bool				iDbf_markFields_setAll							(SWorkArea* wa);
+	bool				iDbf_markFields_setField						(SWorkArea* wa, cu8* fieldName, s32 fieldNameLength = -1);
+	bool				iDbf_markFields_clearField						(SWorkArea* wa, cu8* fieldName, s32 fieldNameLength = -1);
+	bool				iDbf_markFields_field							(SWorkArea* wa, cu8* fieldName, s32 fieldNameLength = -1, bool tlSetValue = true);
 
 	sptr				iDbf_gotoRecord									(SWorkArea* wa, s32 recordNumber, bool tlForceDbf = false, bool* error = NULL, u32* errorNum = NULL, SBuilder* errorDetails = NULL);
 	sptr				iDbf_gotoTop									(SWorkArea* wa, bool tlForceDbf = false);
@@ -214,7 +221,7 @@ struct SFieldRecord2;
 	uptr				iDbf_setField_data								(SWorkArea* wa, s32 fieldNumber, u8* dest, u32 destLength, bool tlPartOfATransaction);
 	uptr				iDbf_getField_validateContents					(SWorkArea* wa, u32 fieldNumber, u8* src, u32 srcLength);
 
-	SDatum*				iDbf_listRecord									(SWorkArea* wa, SDbfRender* render, SCallback* cb = NULL, sptr _fillCharFunc);
+	SDatum*				iDbf_listRecord									(SWorkArea* wa, SDbfRender* render, bool tlHonorFieldMarks = true, bool tlRenderHeaderRow = false, bool tlResetPrefixAndPostfix = false, bool tlEnquoteCharacter = false, SObject* settings = NULL, SCallback* cb = NULL, sptr _fillCharFunc = null0);
 
 	SFieldRecord1*		iDbf_getField_byName1							(SWorkArea* wa, cu8* fieldName);
 	SFieldRecord1*		iDbf_getField_byNumber1							(SWorkArea* wa, u32 fieldNumber);
@@ -260,6 +267,7 @@ struct SFieldRecord2;
 // Rendering algorithms for individual fields
 //////
 	void				iiDbf_populateRender							(SObject* settings, SDbfRender* render);
+	void				iiDbf_render_headerName							(SFieldRecord2* field2Ptr);
 	s32					iiDbf_render_i									(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render);
 	s32					iiDbf_render_y									(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render);
 	s32					iiDbf_render_b									(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render);

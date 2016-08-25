@@ -322,6 +322,36 @@
 
 //////////
 //
+// Called to append this many whitespaces
+//
+//////
+	u8* iBuilder_appendWhitespaces(SBuilder* builder, s32 tnCount, u8 cWhitespaceChar)
+	{
+		// Make sure our environment is sane
+		if (builder && tnCount > 0)
+		{
+			// Make sure this much data will fit there in the buffer
+			iBuilder_verifySizeForNewBytes(builder, tnCount);
+
+			// Append the whitespaces
+			if (builder->data_s8)
+			{
+				memset(builder->data_s8 + builder->populatedLength, cWhitespaceChar, tnCount);
+				builder->populatedLength += tnCount;
+			}
+
+			// Indicate where the start of that buffer is
+			return(builder->data_u8 + builder->populatedLength - tnCount);
+		}
+		// If we get here, things are bad
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
 // Called to delete the indicated bytes
 //
 //////

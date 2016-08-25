@@ -238,6 +238,7 @@
 			case _ERROR_TABLE_NUMBER_INVALID:				return(cgcTableNumberInvalid);
 			case _ERROR_NO_ACTIVE_INDEX:					return(cgcNoActiveIndex);
 			case _ERROR_NO_TABLE_IN_CURRENT_WORKAREA:		return(cgcNoTableInCurrentWorkArea);
+			case _ERROR_FIELD_NOT_FOUND:					return(cgcFieldNotFound);
 
 			default:
 				return(cgcUnspecifiedError);
@@ -2692,15 +2693,78 @@
 		u32			lnRecno;
 		SDatum*		listRow;
 		SWorkArea*	wa;
+		SComp*		compFields;
+		SComp*		compField;
+		SComp*		compFiles;
+		SComp*		compMemory;
+		SComp*		compStatus;
+		SComp*		compStructure;
+		SComp*		compNext;
 
 
 // TODO:  We have no FOR clause expression parsing here, so only LIST works presently
 
 		//////////
+		// Locate optional parameters
+		/////
+			if (compList->ll.nextComp)
+			{
+				// There is an option
+				switch (compList->ll.nextComp->iCode)
+				{
+					case _ICODE_FIELDS:
+						// Only the indicated field list should be included
+						compFields = compList->ll.nextComp;
+						break;
+
+					case _ICODE_FILES:
+						compFiles = compList->ll.nextComp;
+						break;
+
+					case _ICODE_MEMORY:
+						compMemory = compList->ll.nextComp;
+						break;
+
+					case _ICODE_STATUS:
+						compStatus = compList->ll.nextComp;
+						break;
+
+					case _ICODE_STRUCTURE:
+						compStructure = compList->ll.nextComp;
+						break;
+				}
+
+			} else {
+				// No option, by default listing the current table data
+				compFields		= NULL;
+				compFiles		= NULL;
+				compMemory		= NULL;
+				compStatus		= NULL;
+				compStructure	= NULL;
+			}
+
+
+		//////////
 		// See what they're listing
 		/////
-			if (!compList->ll.nextComp)
+			if (compFiles)
 			{
+				// Not yet coded
+				iError_report_byNumber(_ERROR_FEATURE_NOT_YET_CODED, compList->ll.nextComp, false);
+
+			} else if (compMemory) {
+				// Not yet coded
+				iError_report_byNumber(_ERROR_FEATURE_NOT_YET_CODED, compList->ll.nextComp, false);
+
+			} else if (compStructure) {
+				// Not yet coded
+				iError_report_byNumber(_ERROR_FEATURE_NOT_YET_CODED, compList->ll.nextComp, false);
+
+			} else if (compStatus) {
+				// Not yet coded
+				iError_report_byNumber(_ERROR_FEATURE_NOT_YET_CODED, compList->ll.nextComp, false);
+
+			} else {
 				// Just LIST by itself, so list the current table if any
 				if ((wa = iDbf_get_workArea_current_wa()))
 				{
@@ -2711,17 +2775,69 @@
 					// Do we have a file?
 					if (wa && wa->isUsed)
 					{
-						// List contents
-						for (lnRecno = 1; lnRecno <= wa->header.records; lnRecno++)
-						{
-							// Position on this record
-							iDbf_gotoRecord(wa, lnRecno);
-							if (wa->currentRecord <= wa->header.records)
+
+						//////////
+						// Which fields?
+						//////
+							if (compFields || ((compNext = compList->ll.nextComp) && (compNext->iCode == _ICODE_ALPHA || compNext->iCode == _ICODE_ALPHANUMERIC)))
 							{
-								// List this entry
-								listRow = iDbf_listRecord(wa);
+								// Iterate through each field
+								iDbf_markFields_clearAll(wa);
+								for (compField = ((compFields) ? iComps_getNth(compFields, 1) : compNext); compField && (compField->iCode == _ICODE_COMMA || compField->iCode == _ICODE_ALPHA || compField->iCode == _ICODE_ALPHANUMERIC); iComps_getNth(compField, 1))
+								{
+									// If it's a field, make sure it's valid
+									if (compField->iCode != _ICODE_COMMA)
+									{
+										// Make sure the field is valid
+										if (!iDbf_markFields_setField(wa, compField->line->sourceCode->data_cu8 + compField->start, compField->length))
+										{
+											// Unknown field
+											iError_report_byNumber(_ERROR_FIELD_NOT_FOUND, compField, false);
+											return;
+										}
+									}
+								}
+							
+
+							} else {
+								// All fields should be included
+								iDbf_markFields_setAll(wa);
 							}
-						}
+
+
+						//////////
+						// List contents
+						//////
+							for (lnRecno = 1, listRow = NULL; lnRecno <= wa->header.records; lnRecno++)
+							{
+								// Position on this record
+								iDbf_gotoRecord(wa, lnRecno);
+								if (wa->currentRecord <= wa->header.records)
+								{
+									// First row renders the header, and the first row
+									if (lnRecno == 1)
+									{
+										// Generate header
+										listRow = iDbf_listRecord(wa, NULL, true, true, true);
+
+										// Emit
+										iSEM_appendLine(screenData, listRow->data_u8, listRow->length, false);
+										_screen_editbox->isDirtyRender = true;
+
+										// Delete
+										iDatum_delete(&listRow);
+									}
+
+									// Generate row data
+									listRow = iDbf_listRecord(wa, NULL, true, false, (lnRecno == 1));
+
+									// Emit
+									iSEM_appendLine(screenData, listRow->data_u8, listRow->length, false);
+
+									// Delete
+									iDatum_delete(&listRow);
+								}
+							}
 
 					} else {
 						// No table open in current work area
@@ -2732,10 +2848,6 @@
 					// Should never happen
 					iError_report_byNumber(_DBF_ERROR__INTERNAL_PROGRAMMER, compList->ll.nextComp, false);
 				}
-
-			} else {
-				// Not yet coded
-				iError_report_byNumber(_ERROR_FEATURE_NOT_YET_CODED, compList->ll.nextComp, false);
 			}
 	}
 

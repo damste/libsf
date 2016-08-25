@@ -788,6 +788,7 @@
 		//////
 			for (lnField = 1, lfrPtr = wa->fieldPtr1, lfr2Ptr = wa->field2Ptr; lnField <= wa->fieldCount; lnField++, lfrPtr++, lfr2Ptr++)
 			{
+
 				//////////
 				// Copy the short names over
 				//////
@@ -815,6 +816,10 @@
 				//////////
 				// Specify display algorithms
 				//////
+					// Render the field name into a datum for field header references
+					iiDbf_render_headerName(lfr2Ptr);
+
+					// Indicate which render function should be used for the field
 					switch (lfr2Ptr->type)
 					{
 						case 'I':		lfr2Ptr->_renderFunc = (sptr)&iiDbf_render_i;		break;		// 4-byte integer (s32)
@@ -2163,6 +2168,97 @@
 
 			// Indicate their own pointer
 			return(tagName_64);
+	}
+
+
+
+
+//////////
+//
+// Called to mark or unmark fields for an operation that is only to operate on selected fields
+//
+//////
+	bool iDbf_markFields_clearAll(SWorkArea* wa)
+	{
+		u32				lnField;
+		SFieldRecord2*	lfr2Ptr;
+
+
+		// Make sure our environment is sane
+		if (wa && iDbf_isWorkAreaValid(wa) && wa->isUsed)
+		{
+			// Unmark everything
+			for (lfr2Ptr = wa->field2Ptr, lnField = 0; lnField< wa->fieldCount; lnField++, lfr2Ptr++)
+				lfr2Ptr->marked = false;
+
+			// Indicate success
+			return(true);
+		}
+
+		// Invalid work area
+		return(false);
+	}
+
+	bool iDbf_markFields_setAll(SWorkArea* wa)
+	{
+		u32				lnField;
+		SFieldRecord2*	lfr2Ptr;
+
+
+		// Make sure our environment is sane
+		if (wa && iDbf_isWorkAreaValid(wa) && wa->isUsed)
+		{
+			// Mark everything
+			for (lfr2Ptr = wa->field2Ptr, lnField = 0; lnField< wa->fieldCount; lnField++, lfr2Ptr++)
+				lfr2Ptr->marked = true;
+
+			// Indicate success
+			return(true);
+		}
+
+		// Invalid work area
+		return(false);
+	}
+
+	bool iDbf_markFields_setField(SWorkArea* wa, cu8* fieldName, s32 fieldNameLength)
+	{
+		return(iDbf_markFields_field(wa, fieldName, fieldNameLength, true));
+	}
+
+	bool iDbf_markFields_clearField(SWorkArea* wa, cu8* fieldName, s32 fieldNameLength)
+	{
+		return(iDbf_markFields_field(wa, fieldName, fieldNameLength, false));
+	}
+
+	bool iDbf_markFields_field(SWorkArea* wa, cu8* fieldName, s32 fieldNameLength, bool tlSetValue)
+	{
+		u32				lnField;
+		SFieldRecord2*	lfr2Ptr;
+
+
+		// Make sure our environment is sane
+		if (wa && iDbf_isWorkAreaValid(wa) && wa->isUsed)
+		{
+			// Validate we have a length
+			if (fieldNameLength < 0)
+				fieldNameLength = strlen((cs8*)fieldName);
+
+			// Mark everything
+			for (lfr2Ptr = wa->field2Ptr, lnField = 0; lnField< wa->fieldCount; lnField++, lfr2Ptr++)
+			{
+				// Is this field a match?
+				if (lfr2Ptr->fieldName_length == fieldNameLength && _memicmp(fieldName, lfr2Ptr->name2, fieldNameLength) == 0)
+				{
+					// Found it
+					lfr2Ptr->marked = true;
+					return(true);
+				}
+			}
+
+			// If we get here, the field wasn't found
+		}
+		// Invalid work area
+		return(false);
 	}
 
 
@@ -3762,16 +3858,19 @@ debug_break;
 
 	// Called to create a record that would be listed
 	// Use iDbf_populateRender() to populate a render if special options are neeeded
-	SDatum* iDbf_listRecord(SWorkArea* wa, SDbfRender* render, SCallback* cb, sptr _fillCharFunc)
+	// Callback uses data1=renderPrefix, data2=renderPostfix, data3=renderSpacer
+	SDatum* iDbf_listRecord(SWorkArea* wa, SDbfRender* render, bool tlHonorFieldMarks, bool tlRenderHeaderRow, bool tlResetPrefixAndPostfix, bool tlEnquoteCharacter, SObject* settings, SCallback* cb, sptr _spacerFunc)
 	{
-		s32				lnLength;
+		s32				lnLength, lnMarker;
 		u32				lnField;
-		SDatum*			listRow;
 		SDbfRender		_render;
+		SDatum*			listRow;
 		SFieldRecord2*	lfr2Ptr;
+		SBuilder		builder;
 
 
 		// Make sure we have a work area
+		listRow = NULL;
 		if (wa)
 		{
 
@@ -3782,34 +3881,142 @@ debug_break;
 				{
 					// Use our local copy
 					render = &_render;
-					iiDbf_populateRender(&_render);
+					iiDbf_populateRender(((!settings) ? _settings : settings), &_render);
 				}
 
 
 			//////////
-			// Render each one to a buffer
+			// Reset prefix, postfix, and spacer
 			//////
-				for (lfr2Ptr = wa->field2Ptr, lnField; lnField < wa->fieldCount; lnLength += lfr2Ptr->renderBuffer.length, lnField++, lfr2Ptr++)
+				if (tlResetPrefixAndPostfix)
+				{
+					// Reset
+					for (lfr2Ptr = wa->field2Ptr, lnField = 0; lnField < wa->fieldCount; lfr2Ptr++, lnField++)
+					{
+						iDatum_delete(&lfr2Ptr->renderPrefix, false);
+						iDatum_delete(&lfr2Ptr->renderPostfix, false);
+						iDatum_delete(&lfr2Ptr->renderSpacer, false);
+					}
+
+					// Update
+					if (!cb || (!cb->_func && !(cb->_func = _spacerFunc)))
+					{
+						// No spacer() funtion was provided, use a single space
+						iDatum_duplicate(&lfr2Ptr->renderSpacer, " ", 1);
+
+						// Character fields may need to be surrounded by double-quotes
+						switch (lfr2Ptr->type)
+						{
+							case 'C':		// Character
+							case 'M':		// Memo
+								if (tlEnquoteCharacter)
+								{
+									iDatum_duplicate(&lfr2Ptr->renderPrefix,	"\"",	1);
+									iDatum_duplicate(&lfr2Ptr->renderPostfix,	"\"",	1);
+								}
+								break;
+						}
+
+					} else {
+						// Call their spacer() function and obtain the spacing
+						for (lfr2Ptr = wa->field2Ptr, lnField = 0; lnField < wa->fieldCount; lfr2Ptr++, lnField++)
+						{
+							cb->data1	= &lfr2Ptr->renderPrefix;
+							cb->data2	= &lfr2Ptr->renderPostfix;
+							cb->data3	= &lfr2Ptr->renderSpacer;
+							cb->func(cb);
+						}
+					}
+				}
+
+
+			//////////
+			// Render
+			//////
+				for (lfr2Ptr = wa->field2Ptr, lnField = 0; lnField < wa->fieldCount; lfr2Ptr++, lnField++)
 				{
 					// Render this field
 					lfr2Ptr->renderFunc(&wa->row, lfr2Ptr, render);
 
-					// Determine the length of the 
-					
+					// Add in the spacer info
+					lnLength = max(lfr2Ptr->renderHeader.length + ((lfr2Ptr->renderSpacer.length != 0) ? lfr2Ptr->renderSpacer.length : 0),
+
+											((lfr2Ptr->renderPrefix.length != 0)	? lfr2Ptr->renderPrefix.length	: 0)
+										+	lfr2Ptr->renderBuffer.length
+										+	((lfr2Ptr->renderPostfix.length != 0)	? lfr2Ptr->renderPostfix.length	: 0)
+										+	((lfr2Ptr->renderSpacer.length != 0)	? lfr2Ptr->renderSpacer.length	: 0)
+									);
 				}
 
 
 			//////////
-			// Generate the output row
+			// Emit
 			//////
-				listRow = NULL;
-				iDatum_allocateSpace((listRow = iDatum_allocateStruct()), lnLength);
-				if (listRow)
+				listRow = iDatum_allocateStruct();
+				if (listRow && iDatum_allocateSpace(listRow, lnLength))
 				{
+					// Here's a trick, we use a builder to populate the datum.  Clever, yes? :-)
+					builder.data_s8			= listRow->data_s8;
+					builder.allocatedLength	= listRow->length;
+					builder.populatedLength	= 0;
+
 					// Populate
+					for (lfr2Ptr = wa->field2Ptr, lnField = 0; lnField < wa->fieldCount; lfr2Ptr++, lnField++)
+					{
+						// Emit info
+						if (!tlRenderHeaderRow)
+						{
+							// Indicate our starting position
+							lnMarker = builder.populatedLength;
+
+							// Emit prefix
+							if (lfr2Ptr->renderPrefix.length != 0)
+								iBuilder_appendData(&builder, &lfr2Ptr->renderPrefix);
+
+							// Emit data
+							iBuilder_appendData(&builder, &lfr2Ptr->renderBuffer);
+
+							// Emit postfix
+							if (lfr2Ptr->renderPostfix.length != 0)
+								iBuilder_appendData(&builder, &lfr2Ptr->renderPostfix);
+
+							// If we're not on the last entry, render the spacer
+							if (lnField < wa->fieldCount - 1)
+								iBuilder_appendData(&builder, &lfr2Ptr->renderSpacer);
+
+							// Find out our length
+							lnLength = builder.populatedLength - lnMarker;
+							if (lnLength < lfr2Ptr->renderHeader.length)
+								iBuilder_appendWhitespaces(&builder, lfr2Ptr->renderHeader.length - lnLength);
+
+						} else {
+							// Emit the header
+							// Emit prefix
+							lnLength =		lfr2Ptr->renderPrefix.length
+										+	lfr2Ptr->renderBuffer.length
+										+	lfr2Ptr->renderPostfix.length
+										+	((lnField < wa->fieldCount - 1) ? lfr2Ptr->renderSpacer.length : 0);
+
+							// Emit header
+							iBuilder_appendData(&builder, &lfr2Ptr->renderHeader);
+
+							// If we're not on the last entry, render the spacer
+							if (lnField < wa->fieldCount - 1)
+								iBuilder_appendData(&builder, &lfr2Ptr->renderSpacer);
+
+							// Pad with spaces if need be
+							if (lnLength > lfr2Ptr->renderHeader.length + lfr2Ptr->renderSpacer.length)
+								iBuilder_appendWhitespaces(&builder, lnLength - (lfr2Ptr->renderHeader.length +  + lfr2Ptr->renderSpacer.length));
+
+						}
+					}
+					// When we get here, listRow is populated
 				}
 
 		}
+
+		// Indicate our status
+		return(listRow);
 	}
 
 	// Returns the field number by field name
@@ -5363,18 +5570,24 @@ debug_break;
 	void iiDbf_populateRender(SObject* settings, SDbfRender* render)
 	{
 		// Populate based on the indicated settings settings :-)
-		render->century		= propGet_settings_Century(settings);			// SET CENTURY
-		render->currency	= propGet_settings_Currency(settings);			// SET CURRENCY
-		render->date		= propGet_settings_Date(settings);				// SET DATE
-		render->decimals	= propGet_settings_Decimals(settings);			// SET DECIMALS
-		render->hours		= propGet_settings_Hours(settings);				// SET HOURS
-		render->mark		= propGet_settings_Mark(settings);				// SET MARK TO
-		render->point		= propGet_settings_Point(settings);				// SET POINT
-		render->separator	= propGet_settings_Separator(settings);			// SET SEPARATOR
-		render->fixed		= propGet_settings_Fixed(settings);				// SET FIXED setting
+		render->century		= propGet_settings_Century(settings);										// SET CENTURY
+		render->currency	= iiVariable_getAs_s8_andDispose(propGet_settings_Currency(settings));		// SET CURRENCY
+		render->date		= propGet_settings_Date(settings);											// SET DATE
+		render->decimals	= propGet_settings_Decimals(settings);										// SET DECIMALS
+		render->hours		= propGet_settings_Hours(settings);											// SET HOURS
+		render->mark		= iiVariable_getAs_s8_andDispose(propGet_settings_Mark(settings));			// SET MARK TO
+		render->point		= iiVariable_getAs_s8_andDispose(propGet_settings_Point(settings));			// SET POINT
+		render->separator	= iiVariable_getAs_s8_andDispose(propGet_settings_Separator(settings));		// SET SEPARATOR
+		render->fixed		= propGet_settings_Fixed(settings);											// SET FIXED setting
 
 		// Create render format for float and double %.2f
 		sprintf(render->format, "%%.%df", render->decimals);
+	}
+
+	void iiDbf_render_headerName(SFieldRecord2* field2Ptr)
+	{
+		// Render the header name
+		iDatum_duplicate(&field2Ptr->renderHeader, field2Ptr->name2);
 	}
 
 	s32 iiDbf_render_i(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render)

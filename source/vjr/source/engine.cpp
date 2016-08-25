@@ -405,6 +405,9 @@
 									// Yes, execute it (self-contained execution and error reporting on every command)
 									memset(&lrpar, 0, sizeof(lrpar));
 									cmd->command(comp, &lrpar);
+									iSEM_navigateToEndLine(screenData, _screen);
+									_screen_editbox->isDirtyRender = true;
+									iWindow_render(gWinJDebi, false);
 // TODO:  We should examine lrpar here for the error condition, and report it if need be
 									return(!lrpar.ei.error);
 								}

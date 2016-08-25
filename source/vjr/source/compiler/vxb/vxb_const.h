@@ -276,6 +276,7 @@
 	const u8		cgcTableNumberInvalid[]							= "table number invalid";
 	const u8		cgcNoActiveIndex[]								= "no active index";
 	const u8		cgcNoTableInCurrentWorkArea[]					= "no table in current work area";
+	const u8		cgcFieldNotFound[]								= "field not found";
 #else
 	#error Language not specified
 #endif

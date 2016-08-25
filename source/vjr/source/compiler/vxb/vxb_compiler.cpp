@@ -12505,6 +12505,86 @@ debug_break;
 
 //////////
 //
+// Called to obtain the indicated value, and dispose of the variable
+//
+//////
+	s8 iiVariable_getAs_s8_andDispose(SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum, bool tlDeleteSelf)
+	{
+		// Grab the value
+		s8 val = iiVariable_getAs_s8(var, tlForceConvert, tlError, tnErrorNum);
+		iVariable_delete(var, true);
+		return(val);
+	}
+
+	s16 iiVariable_getAs_s16_andDispose(SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum, bool tlDeleteSelf)
+	{
+		// Grab the value
+		s16 val = iiVariable_getAs_s16(var, tlForceConvert, tlError, tnErrorNum);
+		iVariable_delete(var, true);
+		return(val);
+	}
+
+	s32 iiVariable_getAs_s32_andDispose(SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum, bool tlDeleteSelf)
+	{
+		// Grab the value
+		s32 val = iiVariable_getAs_s32(var, tlForceConvert, tlError, tnErrorNum);
+		iVariable_delete(var, true);
+		return(val);
+	}
+
+	u16 iiVariable_getAs_u16_andDispose(SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum, bool tlDeleteSelf)
+	{
+		// Grab the value
+		u16 val = iiVariable_getAs_u16(var, tlForceConvert, tlError, tnErrorNum);
+		iVariable_delete(var, true);
+		return(val);
+	}
+
+	u32 iiVariable_getAs_u32_andDispose(SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum, bool tlDeleteSelf)
+	{
+		// Grab the value
+		u32 val = iiVariable_getAs_u32(var, tlForceConvert, tlError, tnErrorNum);
+		iVariable_delete(var, true);
+		return(val);
+	}
+
+	s64 iiVariable_getAs_s64_andDispose(SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum, bool tlDeleteSelf)
+	{
+		// Grab the value
+		s64 val = iiVariable_getAs_s64(var, tlForceConvert, tlError, tnErrorNum);
+		iVariable_delete(var, true);
+		return(val);
+	}
+
+	u64 iiVariable_getAs_u64_andDispose(SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum, bool tlDeleteSelf)
+	{
+		// Grab the value
+		u64 val = iiVariable_getAs_u64(var, tlForceConvert, tlError, tnErrorNum);
+		iVariable_delete(var, true);
+		return(val);
+	}
+
+	f32 iiVariable_getAs_f32_andDispose(SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum, bool tlDeleteSelf)
+	{
+		// Grab the value
+		f32 val = iiVariable_getAs_f32(var, tlForceConvert, tlError, tnErrorNum);
+		iVariable_delete(var, true);
+		return(val);
+	}
+
+	f64 iiVariable_getAs_f64_andDispose(SVariable* var, bool tlForceConvert, bool* tlError, u32* tnErrorNum, bool tlDeleteSelf)
+	{
+		// Grab the value
+		f64 val = iiVariable_getAs_f64(var, tlForceConvert, tlError, tnErrorNum);
+		iVariable_delete(var, true);
+		return(val);
+	}
+
+
+
+
+//////////
+//
 // Compares two variables and returns -1, 0, or +1 indicating the relationship of the
 // left variable being less than, equal to, or greater than the right.
 //

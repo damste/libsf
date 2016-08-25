@@ -101,7 +101,7 @@
 		return((SDatum*)malloc(sizeof(SDatum) + tnExtraSpace));
 	}
 
-	void iDatum_allocateSpace(SDatum* datum, s32 dataLength)
+	s8* iDatum_allocateSpace(SDatum* datum, s32 dataLength)
 	{
 		// Make sure our environment is sane
 		if (datum)
@@ -124,7 +124,13 @@
 
 			// NULL-terminate
 			datum->data_s8[max(dataLength, 1)] = 0;
+
+			// Indicate the pointer
+			return(datum->data_s8);
 		}
+
+		// Indiate failure
+		return(NULL);
 	}
 
 	SDatum* iDatum_allocate(cs8* data, s32 dataLength)

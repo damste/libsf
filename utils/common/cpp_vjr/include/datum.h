@@ -177,7 +177,7 @@ struct SVariable;
 
 
 	SDatum*					iDatum_allocateStruct					(s32 tnExtraSpace = 0);
-	void					iDatum_allocateSpace					(SDatum* datum,			s32 dataLength);
+	s8*						iDatum_allocateSpace					(SDatum* datum,			s32 dataLength);
 	SDatum*					iDatum_allocate							(cs8* data,				s32 dataLength = -1);
 	SDatum*					iDatum_allocate							( s8* data,				s32 dataLength = -1);
 	SDatum*					iDatum_allocate							(cu8* data,				s32 dataLength = -1);

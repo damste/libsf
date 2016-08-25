@@ -92,6 +92,7 @@
 	struct SIdxHeader;
 	struct SForClause;
 	struct SCdxKeyOp;
+	struct SDbfRender;
 
 
 	//////////////
@@ -192,6 +193,9 @@
 			u8			name2[129];				// Long field name
 			u32			fieldNumber;			// Field number within the table
 
+			// Notes and meta data regarding the field
+// TODO:  Not yet included
+
 			// Memo  data
 			s8*			mdata;					// Current version
 			u32			mdataLength;
@@ -203,7 +207,14 @@
 			u32			dbcRecno;				// The related dbc RECNO() this entry was found on
 			u32			indexFixup;				// The fixup required to make the cdx work for this type of field
 
+			// For selective processing
+			bool		marked;					// Marked if this field is to be included
+
 			// Used for rendering content into the buffer
+			SDatum		renderHeader;			// The header (field name) used for listings
+			SDatum		renderPrefix;			// The character(s) to insert before the rendered field content, typically a " for text, for example
+			SDatum		renderPostfix;			// The character(s) to insert after the rendered field content, typically a " for text, for example
+			SDatum		renderSpacer;			// The spacer used between fields in a list, typically a space or comma, for example
 			SDatum		renderBuffer;			// Holds the render buffer, either points to renderBuffer254, or to another area for larger buffers
 			s8			renderBuffer254[254];	// Holds common render content
 			union {

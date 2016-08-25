@@ -497,6 +497,14 @@ struct SCallback
 			SObject*	obj2;
 		};
 
+		union
+		{
+			void*		data3;
+			SLine*		line3;
+			SComp*		comp3;
+			SObject*	obj3;
+		};
+
 
 	//////////
 	// Extra information
