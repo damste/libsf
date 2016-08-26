@@ -584,3 +584,14 @@ struct SNoteLog
 	u32				number;											// A related number
 	SDatum*			note;											// The message
 };
+
+struct SVjrDevice
+{
+	bool		lScreen;
+	bool		lPrinter;
+	bool		lFile;
+
+	bool		lConsole;						// Echo on console?
+	bool		lPrinterPrompt;					// Prompt for printer?
+	s8			filenameBuffer[_MAX_PATH];		// Output filename (always append to it), it is reset with SET DEVICE TO FILE name
+};

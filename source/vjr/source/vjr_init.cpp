@@ -100,6 +100,9 @@
 #endif
 
 
+		// Enable %n in printf() and derivatives
+		_set_printf_count_output(1);    // 0=disable, others=enable
+
 		// Get startup time
 		systemStartedTickCount	= GetTickCount();
 		systemStartedMs			= iTime_getLocalMs();

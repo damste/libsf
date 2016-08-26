@@ -266,7 +266,7 @@ struct SFieldRecord2;
 //////////
 // Rendering algorithms for individual fields
 //////
-	void				iiDbf_populateRender							(SObject* settings, SDbfRender* render);
+	void				iiDbf_populateRender							(SObject* settings, SDbfRender* render, SWorkArea* wa);
 	void				iiDbf_render_headerName							(SFieldRecord2* field2Ptr);
 	s32					iiDbf_render_i									(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render);
 	s32					iiDbf_render_y									(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render);

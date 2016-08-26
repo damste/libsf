@@ -239,6 +239,7 @@
 			case _ERROR_NO_ACTIVE_INDEX:					return(cgcNoActiveIndex);
 			case _ERROR_NO_TABLE_IN_CURRENT_WORKAREA:		return(cgcNoTableInCurrentWorkArea);
 			case _ERROR_FIELD_NOT_FOUND:					return(cgcFieldNotFound);
+			case _ERROR_DISK_SEEK_ERROR:					return(cgcDiskSeekError);
 
 			default:
 				return(cgcUnspecifiedError);
@@ -2690,23 +2691,46 @@
 	{
 		SComp*		compList = compCommand;
 
+		bool		llScreen, llConsole, llPrinter, llPrinterPrompt, llFile;
 		u32			lnRecno;
 		SDatum*		listRow;
 		SWorkArea*	wa;
+		SComp*		compAdditive;
 		SComp*		compFields;
 		SComp*		compField;
 		SComp*		compFiles;
 		SComp*		compMemory;
 		SComp*		compStatus;
 		SComp*		compStructure;
+		SComp*		compTo;
 		SComp*		compNext;
+		SVjrDevice	device;
+		s8			filenameBuffer[_MAX_PATH];
+		bool		error;
+		u32			errorNum;
 
 
 // TODO:  We have no FOR clause expression parsing here, so only LIST works presently
 
 		//////////
+		// Initialize
+		//////
+			compFields		= NULL;
+			compFiles		= NULL;
+			compMemory		= NULL;
+			compStatus		= NULL;
+			compStructure	= NULL;
+
+			// Optional
+			compAdditive	= NULL;
+			compTo			= NULL;
+
+
+		//////////
 		// Locate optional parameters
 		/////
+			compAdditive	= iComps_findNextBy_iCode(compList, _ICODE_ADDITIVE);
+			compTo			= iComps_findNextBy_iCode(compList, _ICODE_TO);
 			if (compList->ll.nextComp)
 			{
 				// There is an option
@@ -2733,14 +2757,32 @@
 						compStructure = compList->ll.nextComp;
 						break;
 				}
+			}
+
+
+		//////////
+		// Where is the output going?
+		//////
+			if (compTo)
+			{
+				// They're explicitly directing it somewhere
+				if ((compNext = compTo->ll.nextComp))
+				{
+					if (!iiVjr_settings_getDevice_fromComp(&device, compNext, &error, &errorNum) || error)
+					{
+						iError_report_byNumber(errorNum, compNext, false);
+						return;
+					}
+
+				} else {
+					// Syntax error
+					iError_report_byNumber(_ERROR_SYNTAX, compTo, false);
+					return;
+				}
 
 			} else {
-				// No option, by default listing the current table data
-				compFields		= NULL;
-				compFiles		= NULL;
-				compMemory		= NULL;
-				compStatus		= NULL;
-				compStructure	= NULL;
+				// Going to the current SET DEVICE TO
+				iiVjr_settings_getDevice(&device);
 			}
 
 
@@ -2783,7 +2825,7 @@
 							{
 								// Iterate through each field
 								iDbf_markFields_clearAll(wa);
-								for (compField = ((compFields) ? iComps_getNth(compFields, 1) : compNext); compField && (compField->iCode == _ICODE_COMMA || compField->iCode == _ICODE_ALPHA || compField->iCode == _ICODE_ALPHANUMERIC); iComps_getNth(compField, 1))
+								for (compField = ((compFields) ? iComps_getNth(compFields, 1) : compNext); compField && (compField->iCode == _ICODE_COMMA || compField->iCode == _ICODE_ALPHA || compField->iCode == _ICODE_ALPHANUMERIC); compField = iComps_getNth(compField, 1))
 								{
 									// If it's a field, make sure it's valid
 									if (compField->iCode != _ICODE_COMMA)

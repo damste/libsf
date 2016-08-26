@@ -511,6 +511,9 @@ struct SCallback
 	//////
 		bool		flag;
 		void*		x;
+		s32			value1;
+		s32			value2;
+		s32			value3;
 
 };
 

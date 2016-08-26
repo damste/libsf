@@ -150,7 +150,7 @@ struct SVxbContext;
  	bool					iComps_translate_toOthers					(SAsciiCompSearcher* tsComps, SComp* comp, bool tlDescendIntoFirstCombineds = true);
 	bool					iComps_areAllPrecedingCompsWhitespaces		(SComp* comp);
 	s32						iComps_translateToOthers_testIfMatch		(cu8* tcHaystack, cu8* tcNeedle, s32 tnLength);
-	SComp*					iComps_findNextBy_iCode						(SComp* comp, s32 tniCode, SComp** compLastScanned);
+	SComp*					iComps_findNextBy_iCode						(SComp* comp, s32 tniCode, SComp** compLastScanned = NULL);
 	s32						iComps_findMultipleBy_iCode					(SComp* compRoot, s32 tnCount, s32 tniCodes[], SComp** compFinds[]);
 	SComp*					iComps_activeComp_inSEM						(SEM* sem);
 	bool					iComps_get_mateDirection					(SComp* comp, s32* tnMateDirection);

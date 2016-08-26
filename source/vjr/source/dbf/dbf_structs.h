@@ -194,6 +194,7 @@
 			u32			fieldNumber;			// Field number within the table
 
 			// Notes and meta data regarding the field
+			s32			actualLength;			// Actual length of the field, such as integer needing to be 11 rather than 4 because of "-2147483648" (the maximum negative integer value)
 // TODO:  Not yet included
 
 			// Memo  data
@@ -383,4 +384,5 @@
 			s8		separator;									// SET SEPARATOR
 			bool	fixed;										// SET FIXED setting
 			s8		format[8];									// Format to use for displaying integers, typically "%.3f" (when SET DECIMALS TO 3 is set, for example)
+			s8		format_recno[8];							// Format to use for the RECNO() based on how many records there are in the file, like "%6d "
 		};

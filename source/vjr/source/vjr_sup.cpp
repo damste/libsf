@@ -1066,6 +1066,125 @@
 
 //////////
 //
+// Called to get the VJr output device.
+//
+//////
+	void iiVjr_settings_getDevice(SVjrDevice* device)
+	{
+		SVariable*	varDevice;
+		SVariable*	varDevice2;
+
+
+		// Assume failure on all
+		device->lScreen				= false;
+		device->lConsole			= false;
+		device->lPrinter			= false;
+		device->lPrinterPrompt		= false;
+		device->lFile				= false;
+		device->filenameBuffer[0]	= NULL;
+
+		// Grab the device
+		varDevice = propGet_settings_Device(_settings);
+		switch (iiVariable_getAs_s32(varDevice))
+		{
+			case _SET_DEVICE_SCREEN:
+				device->lScreen			= true;
+				break;
+
+			case _SET_DEVICE_PRINTER_NO_PROMPT:
+				device->lPrinter		= true;
+				break;
+
+			case _SET_DEVICE_PRINTER_PROMPT:
+				device->lPrinter		= true;
+				device->lPrinterPrompt	= true;
+				break;
+
+			case _SET_DEVICE_FILE:
+				device->lFile			= true;
+				varDevice2				= propGet_settings_Device2(_settings);
+				memcpy(device->filenameBuffer, varDevice2->value.data_s8, varDevice2->value.length + 1);
+				break;
+		}
+	}
+
+
+
+
+//////////
+//
+// Called to get the output device from an expression.
+//
+//////
+	bool iiVjr_settings_getDevice_fromComp(SVjrDevice* device, SComp* compTo, bool* error, u32* errorNum)
+	{
+		SComp*	compNext;
+		SComp*	compNext2;
+
+
+		// Assume failure on all
+		device->lScreen					= false;
+		device->lConsole				= false;
+		device->lPrinter				= false;
+		device->lPrinterPrompt			= false;
+		device->lFile					= false;
+		device->filenameBuffer[0]		= NULL;
+
+		// What came after the TO?
+		compNext = compTo->ll.nextComp;
+		switch (compNext->iCode)
+		{
+			case _ICODE_SCREEN:
+				// TO SCREEN
+				device->lScreen			= true;
+				break;
+
+			case _ICODE_PRINTER:
+				// TO PRINTER
+				device->lPrinter		= true;
+				device->lPrinterPrompt	= (compNext->ll.nextComp && compNext->ll.nextComp->iCode == _ICODE_PROMPT);
+				break;
+
+			case _ICODE_FILE:
+				// TO FILE filename
+				if (!iiComps_getFilename(compNext->ll.nextComp, device->filenameBuffer))
+				{
+					// No filename specified
+					if (error)			*error		= true;
+					if (errorNum)		*errorNum	= _ERROR_SYNTAX;
+					return(false);
+				}
+				device->lFile = true;
+				break;
+
+			case _ICODE_ALPHA:
+			case _ICODE_ALPHANUMERIC:
+				// TO filename
+				if (!iiComps_getFilename(compNext, device->filenameBuffer))
+				{
+					// No filename specified
+					if (error)			*error		= true;
+					if (errorNum)		*errorNum	= _ERROR_SYNTAX;
+					return(false);
+				}
+				device->lFile = true;
+				break;
+
+			default:
+				if (error)			*error		= true;
+				if (errorNum)		*errorNum	= _ERROR_SYNTAX;
+				return(false);
+		}
+
+		// If we get here, we're good
+		return(true);
+	}
+
+
+
+
+//////////
+//
 // Called to display a splash screen.
 // Note:  The incoming parameter must be a COPY of the original if
 //        the original is to persist after display.

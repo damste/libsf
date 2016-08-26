@@ -1001,6 +1001,8 @@ struct SBasePropMap;
 	SVariable* 				iObjProp_getTime						(SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
 	SVariable*				iObjProp_getUdfParams					(SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
 
+	// Note:  These functions that return SVariable actually return the REAL variable, and not a copy of that value.
+	// Note:  If you need a copy, wrap it in iVar_copy().
 	bool					iObjProp_propertyDoesExist				(SObject* obj, s32 tnIndex);
 	SVariable*				iObjProp_get							(SObject* obj, s32 tnIndex);
 	s32						iObjProp_get_varAndType					(SObject* obj, s32 tnIndex, SVariable** varDst);

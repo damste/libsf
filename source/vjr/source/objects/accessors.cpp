@@ -1145,9 +1145,9 @@ debug_break;
 		//////////
 		// Locate any additional components
 		//////
-			compScreen		= iComps_findNextBy_iCode(compNew, _ICODE_SCREEN,		NULL);
+			compScreen		= iComps_findNextBy_iCode(compNew, _ICODE_SCREEN,	NULL);
 			compPrinter		= iComps_findNextBy_iCode(compNew, _ICODE_PRINTER,	NULL);
-			compPrompt		= iComps_findNextBy_iCode(compNew, _ICODE_PROMPT,		NULL);
+			compPrompt		= iComps_findNextBy_iCode(compNew, _ICODE_PROMPT,	NULL);
 			compFile		= iComps_findNextBy_iCode(compNew, _ICODE_FILE,		NULL);
 			compAdditive	= iComps_findNextBy_iCode(compNew, _ICODE_ADDITIVE,	NULL);
 

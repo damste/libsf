@@ -538,6 +538,9 @@ struct SObjEventMap;
 	void					iVjr_release_jdebi						(void);
 	void					iVjr_releaseCaskIcons					(void);
 	void					iVjr_shutdown							(void);
+	void					iiVjr_settings_getDevice				(SVjrDevice* device);
+	bool					iiVjr_settings_getDevice_fromComp		(SVjrDevice* device, SComp* compTo, bool* error = NULL, u32* errorNum = NULL);
+
 
 	DWORD	WINAPI			iSplash_show							(LPVOID/*SBitmap* bmp*/ lpParameter);
 	DWORD	WINAPI			iSplash_delete							(LPVOID/*bool tlWait*/ lpParameter);

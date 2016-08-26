@@ -245,8 +245,8 @@
 		//////////
 		// Lower the error flag
 		//////
-			*tlError	= false;
-			*tnErrorNum	= 0;
+			if (tlError)		*tlError	= false;
+			if (tnErrorNum)		*tnErrorNum	= _ERROR_OKAY;
 
 
 		//////////
@@ -266,9 +266,9 @@
 				//////
 					if (lnSeekOffset != tnSeekOffset)
 					{
-						*tlError	= true;
-						*tnErrorNum	= errno;
-						return(-1);
+						if (tlError)		*tlError	= true;
+						if (tnErrorNum)		*tnErrorNum	= _ERROR_DISK_SEEK_ERROR;
+						return(_ERROR_DISK_SEEK_ERROR);
 					}
 
 			}
@@ -298,8 +298,8 @@
 		//////////
 		// Lower the error flag
 		//////
-			*tlError	= false;
-			*tnErrorNum	= 0;
+			if (tlError)		*tlError	= false;
+			if (tnErrorNum)		*tnErrorNum	= 0;
 
 
 		//////////
@@ -319,9 +319,9 @@
 				//////
 					if (lnSeekOffset != tnSeekOffset)
 					{
-						*tlError	= true;
-						*tnErrorNum	= errno;
-						return(-1);
+						if (tlError)		*tlError	= true;
+						if (tnErrorNum)		*tnErrorNum	= _ERROR_DISK_SEEK_ERROR;
+						return(_ERROR_DISK_SEEK_ERROR);
 					}
 
 			}
