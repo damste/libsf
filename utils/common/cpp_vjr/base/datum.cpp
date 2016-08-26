@@ -98,7 +98,16 @@
 //////
 	SDatum* iDatum_allocateStruct(s32 tnExtraSpace)
 	{
-		return((SDatum*)malloc(sizeof(SDatum) + tnExtraSpace));
+		SDatum* datum;
+		
+
+		// Create and initialize
+		datum = (SDatum*)malloc(sizeof(SDatum) + tnExtraSpace);
+		if (datum)
+			memset(datum, 0, sizeof(SDatum) + tnExtraSpace);
+
+		// Indicate our status
+		return(datum);
 	}
 
 	s8* iDatum_allocateSpace(SDatum* datum, s32 dataLength)

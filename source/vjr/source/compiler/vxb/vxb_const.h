@@ -191,6 +191,7 @@
 #ifdef _LANG_EN
 	const u8		cgcVjrError[]									= "Visual FreePro, Jr. Encountered an Error";
 	const s8		cgcFeatureNotYetSupported[]						= "feature not yet supported";
+	const u8		cgcFeatureNotYetSupported_short[]				= "notyet";
 	const u8		cgcComponentError[]								= "Error in component, column ";
 	const u8		cgcOutOfMemory[]								= "out of memory";
 	const u8		cgcUnexpectedCommand[]							= "unexpected command";
@@ -2460,11 +2461,11 @@
 	const s8		cgc_yes_dots[]									= ".y.";
 	const s8		cgc_N[]											= "N";
 	const s8		cgc_n[]											= "n";
-	const s8		cgc_no[]										= "no";
+	const s8		cgc_no[]										= "no ";
 	const s8		cgc_no_dots[]									= ".n.";
-	const s8		cgc_up[]										= "up";
+	const s8		cgc_up[]										= "up  ";
 	const s8		cgc_up_dots[]									= ".u.";
-	const s8		cgc_down[]										= "down";
+	const s8		cgc_dn[]										= "down";
 	const s8		cgc_down_dots[]									= ".d.";
 	const s8		cgc_o_dots[]									= ".o.";
 	const s8		cgc_p_dots[]									= ".p.";

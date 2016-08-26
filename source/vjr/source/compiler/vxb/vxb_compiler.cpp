@@ -9349,12 +9349,12 @@ debug_break;
 								break;
 
 							case _SET_DATE_SHORT:			// m/d/yy
-								if (var->value.data_s8[4] == '0')		memcpy(buffer + strlen(buffer), var->value.data_s8 + 5, 1);
+								if (var->value.data_s8[4] == '0')	memcpy(buffer + strlen(buffer), var->value.data_s8 + 5, 1);
 								else								memcpy(buffer + strlen(buffer), var->value.data_s8 + 4, 2);
 
 								buffer[strlen(buffer)] = '/';
 
-								if (var->value.data_s8[6] == '0')		memcpy(buffer + strlen(buffer), var->value.data_s8 + 7, 1);
+								if (var->value.data_s8[6] == '0')	memcpy(buffer + strlen(buffer), var->value.data_s8 + 7, 1);
 								else								memcpy(buffer + strlen(buffer), var->value.data_s8 + 6, 2);
 
 								buffer[strlen(buffer)] = '/';
@@ -13242,6 +13242,28 @@ debug_break;
 // Extracts the full year, month, day, hour, minute, second, millisecond, and nanosecond from a datetimex variable
 //
 //////
+	bool iiDateMath_get_YyyyMmDdHhMmSsMss_from_datetime(SDateTime* dt, u32* year, u32* month, u32* day, u32* hour, u32* minute, u32* second, s32* ms)
+	{
+		if (dt)
+		{
+			// Must be done in two parts, as each datetime has two internal members
+			iiDateMath_get_YyyyMmDd_from_julian(dt->julian, year, month, day);
+			iiDateMath_get_HhMmSsMss_from_seconds(dt->seconds, hour, minute, second, ms);
+		}
+
+		// Indicate success or failure
+		return((dt));
+	}
+
+	bool iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_datetimex(SDateTimeX* dtx, u32* year, u32* month, u32* day, u32* hour, u32* minute, u32* second, s32* ms, s32* ns)
+	{
+		if (dtx)
+			iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds(dtx->jseconds, NULL, year, month, day, hour, minute, second, ms, ns);
+
+		// Indicate success or failure
+		return((dtx));
+	}
+
 	void iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds(u64 tnDtx, f64* tfDtx, u32* year, u32* month, u32* day, u32* hour, u32* minute, u32* second, s32* millisecond, s32* microsecond)
 	{
 		iiDateMath_get_julian_and_YyyyMmDdHhMmSsMssNss_from_jseconds(tnDtx, tfDtx, NULL, year, month, day, hour, minute, second, millisecond, microsecond);
@@ -13917,6 +13939,246 @@ debug_break;
 			// Store in jseconds
 			iiDateMath_get_jseconds_from_YyyyMmDdHhMmSsMssMics(&dtx->jseconds, lst.wYear, lst.wMonth, lst.wDay, lst.wHour, lst.wMinute, lst.wSecond, lst.wMilliseconds, 0);
 		}
+	}
+
+
+
+
+//////////
+//
+// Called to obtain the DATE() in system format
+//
+//////
+	// Note:  The dateOut should be suitably sized for the date, up to a maximum of 64 characters
+	// Note:  If dateOut is not provided, then the required length is reported
+	s32 iiDateMath_get_date_inSystemFormat(SDatum* dateOut, s8* YyyyMmDd, s32 tnDateFormat, bool* tlCentury/*set these parameters for faster processing*/)
+	{
+		bool	llCentury;
+		s32		lnSize, lnSkipYy, lnYyLength;
+		s8		buffer[64];
+
+
+		//////////
+		// Initialize
+		//////
+			// Grab the SET("date") if need be
+			if (tnDateFormat < 0)
+				tnDateFormat = propGet_settings_Date(_settings);
+
+			// Grab the century
+			if (!tlCentury)		llCentury = propGet_settings_Century(_settings);
+			else				llCentury = *tlCentury;
+
+			// Set the common sizes
+			if (llCentury)
+			{
+				// mm/dd/yyyy
+				lnSize		= 10;
+				lnSkipYy	= 0;
+				lnYyLength	= 4;
+
+			} else {
+				// mm/dd/yy
+				lnSize		= 8;
+				lnSkipYy	= 2;
+				lnYyLength	= 2;
+			}
+			
+			// Reset the tail portion to NULL
+			*(u32*)(&buffer[8]) = 0;
+
+
+		//////////
+		// Convert
+		//////
+			switch (tnDateFormat)
+			{
+				default:
+// TODO:  These two (short and long) temporarily wrap to ANSI, but need to be properly coded (see near the end of the switch statement)
+case _SET_DATE_SHORT:		// Short date format determined by the Windows Control Panel short date setting
+case _SET_DATE_LONG:		// Long date format determined by the Windows Control Panel long date setting
+				case _SET_DATE_ANSI:		// yy.mm.dd
+					memcpy(buffer,							YyyyMmDd + lnSkipYy,	lnYyLength);
+					memcpy(buffer + lnYyLength + 1,			YyyyMmDd + 4,			2);
+					memcpy(buffer + lnYyLength + 1 + 2 + 1,	YyyyMmDd + 6,			2);
+					buffer[lnYyLength + 0] = '.';
+					buffer[lnYyLength + 3] = '.';
+					break;
+
+				case _SET_DATE_DMY:			// dd/mm/yy
+				case _SET_DATE_BRITISH:		// dd/mm/yy
+				case _SET_DATE_FRENCH:		// dd/mm/yy
+					memcpy(buffer,					YyyyMmDd + 6,			2);
+					memcpy(buffer + 2 + 1,			YyyyMmDd + 4,			2);
+					memcpy(buffer + 2 + 1 + 2 + 1,	YyyyMmDd + lnSkipYy,	lnYyLength);
+					buffer[2] = '/';
+					buffer[5] = '/';
+					break;
+
+				case _SET_DATE_GERMAN:		// dd.mm.yy
+					memcpy(buffer,					YyyyMmDd + 6,			2);
+					memcpy(buffer + 2 + 1,			YyyyMmDd + 4,			2);
+					memcpy(buffer + 2 + 1 + 2 + 1,	YyyyMmDd + lnSkipYy,	lnYyLength);
+					buffer[2] = '.';
+					buffer[5] = '.';
+					break;
+
+				case _SET_DATE_ITALIAN:		// dd-mm-yy
+					memcpy(buffer,					YyyyMmDd + 6,			2);
+					memcpy(buffer + 2 + 1,			YyyyMmDd + 4,			2);
+					memcpy(buffer + 2 + 1 + 2 + 1,	YyyyMmDd + lnSkipYy,	lnYyLength);
+					buffer[2] = '-';
+					buffer[5] = '-';
+					break;
+
+				case _SET_DATE_JAPAN:		// yy/mm/dd
+				case _SET_DATE_TAIWAN:		// yy/mm/dd
+				case _SET_DATE_YMD:			// yy/mm/dd
+					memcpy(buffer,							YyyyMmDd + lnSkipYy,	lnYyLength);
+					memcpy(buffer + lnYyLength + 1,			YyyyMmDd + 4,			2);
+					memcpy(buffer + lnYyLength + 1 + 2 + 1,	YyyyMmDd + 6,			2);
+					buffer[lnYyLength + 0] = '/';
+					buffer[lnYyLength + 3] = '/';
+					break;
+
+				case _SET_DATE_USA:			// mm-dd-yy
+					memcpy(buffer,					YyyyMmDd + 4,			2);
+					memcpy(buffer + 2 + 1,			YyyyMmDd + 6,			2);
+					memcpy(buffer + 2 + 1 + 2 + 1,	YyyyMmDd + lnSkipYy,	lnYyLength);
+					buffer[2] = '-';
+					buffer[5] = '-';
+					break;
+
+				case _SET_DATE_AMERICAN:	// mm/dd/yy
+				case _SET_DATE_MDY:			// mm/dd/yy
+					memcpy(buffer,					YyyyMmDd + 4,			2);
+					memcpy(buffer + 2 + 1,			YyyyMmDd + 6,			2);
+					memcpy(buffer + 2 + 1 + 2 + 1,	YyyyMmDd + lnSkipYy,	lnYyLength);
+					buffer[2] = '/';
+					buffer[5] = '/';
+					break;
+
+// TODO:  need coded
+// 				case _SET_DATE_SHORT:		// Short date format determined by the Windows Control Panel short date setting
+// 					memcpy(buffer, cgcFeatureNotYetSupported_short, sizeof(cgcFeatureNotYetSupported_short) - 1);
+// 					lnSize = strlen(buffer);
+// 					break;
+//
+// 				case _SET_DATE_LONG:		// Long date format determined by the Windows Control Panel long date setting
+// 					memcpy(buffer, cgcFeatureNotYetSupported_short, sizeof(cgcFeatureNotYetSupported_short) - 1);
+// 					lnSize = strlen(buffer);
+// 					break;
+
+			}
+
+
+		//////////
+		// Copy
+		//////
+			if (dateOut)
+				memcpy(dateOut->data_s8, buffer, lnSize);
+
+			// Indicate our length
+			return(lnSize);
+
+	}
+
+
+
+
+//////////
+//
+// Called to obtain the DATETIME() in system format
+//
+//////
+	s32 iiDateMath_get_datetime_inSystemFormat(SDatum* dateOut, SDateTime* dt, s32 tnDateFormat, bool* tlCentury, s32* tnHour/*set these parameters for faster processing*/)
+	{
+		s32		lnSizeDate, lnSizeTime, lnHour, ms;
+		u32		year, month, day, hour, minute, second;
+		s8		YyyyMmDd[16];
+
+
+		// Extract the YyyyMmDd part
+		iiDateMath_get_YyyyMmDdHhMmSsMss_from_datetime(dt, &year, &month, &day, &hour, &minute, &second, &ms);
+
+		// Generate the date part
+		lnSizeDate = iiDateMath_get_date_inSystemFormat(dateOut, YyyyMmDd, tnDateFormat, tlCentury);
+
+		// Append the datetime part
+		if (dateOut)
+		{
+			// Grab our hour
+			if (!tnHour)		lnHour = propGet_settings_Hours(_settings);
+			else				lnHour = *tnHour;
+
+			// Append the time part
+			if (lnHour == 12)
+			{
+				// AM/PM
+				     if (hour < 12)		sprintf(dateOut->data_s8 + lnSizeDate, " %02u:%02u:%02u.%03d%n AM",  hour,			minute, second, (u32)ms, &lnSizeTime);
+				else if (hour == 12)	sprintf(dateOut->data_s8 + lnSizeDate, " %02u:%02u:%02u.%03d%n PM",  hour,			minute, second, (u32)ms, &lnSizeTime);
+				else					sprintf(dateOut->data_s8 + lnSizeDate, " %02u:%02u:%02u.%03d%n PM", (hour - 12),	minute, second, (u32)ms, &lnSizeTime);
+
+			} else {
+				// 24-hour time
+				sprintf(dateOut->data_s8 + lnSizeDate, " %02u:%02u:%02u.%03d%n", hour, minute, second, (u32)ms, &lnSizeTime);
+			}
+
+		} else {
+			lnSizeTime = 0;
+		}
+
+		// Indicate the size
+		return(lnSizeDate + lnSizeTime);
+	}
+
+
+
+
+//////////
+//
+// Called to obtain the DATETIMEX() in system format
+//
+//////
+	s32 iiDateMath_get_datetimex_inSystemFormat(SDatum* dateOut, SDateTimeX* dtx, s32 tnDateFormat, bool* tlCentury, s32* tnHour/*set these parameters for faster processing*/)
+	{
+		s32		lnSizeDate, lnSizeTime, lnHour, ms, ns;
+		u32		year, month, day, hour, minute, second;
+		s8		YyyyMmDd[16];
+
+
+		// Extract the YyyyMmDd part
+		iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_datetimex(dtx, &year, &month, &day, &hour, &minute, &second, &ms, &ns);
+
+		// Generate the date part
+		lnSizeDate = iiDateMath_get_date_inSystemFormat(dateOut, YyyyMmDd, tnDateFormat, tlCentury);
+
+		// Append the datetimex part
+		if (dateOut)
+		{
+			// Grab our hour
+			if (!tnHour)		lnHour = propGet_settings_Hours(_settings);
+			else				lnHour = *tnHour;
+
+			// Append the time part
+			if (lnHour == 12)
+			{
+				// AM/PM
+				     if (hour < 12)		sprintf(dateOut->data_s8 + lnSizeDate, " %02u:%02u:%02u.%06d%n AM",  hour,			minute, second, (u32)ns, &lnSizeTime);
+				else if (hour == 12)	sprintf(dateOut->data_s8 + lnSizeDate, " %02u:%02u:%02u.%06d%n PM",  hour,			minute, second, (u32)ns, &lnSizeTime);
+				else					sprintf(dateOut->data_s8 + lnSizeDate, " %02u:%02u:%02u.%06d%n PM", (hour - 12),	minute, second, (u32)ns, &lnSizeTime);
+
+			} else {
+				// 24-hour time
+				sprintf(dateOut->data_s8 + lnSizeDate, " %02u:%02u:%02u.%06d%n", hour, minute, second, (u32)ns, &lnSizeTime);
+			}
+
+		} else {
+			lnSizeTime = 0;
+		}
+
+		// Indicate the size
+		return(lnSizeDate + lnSizeTime);
 	}
 
 

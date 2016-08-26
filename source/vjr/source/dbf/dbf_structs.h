@@ -377,6 +377,7 @@
 			s32		date;										// SET DATE
 			s32		decimals;									// SET DECIMALS
 			s32		hours;										// SET HOURS
+			s32		logical;									// SET LOGICAL
 			s8		mark;										// SET MARK TO
 			s8		point;										// SET POINT
 			s8		separator;									// SET SEPARATOR

@@ -349,6 +349,8 @@ struct SVxbContext;
 
 	// Support functions
 	SVariable*				iiDateMath_get_dateTemplate										(s32 tnDateFormat);
+	bool					iiDateMath_get_YyyyMmDdHhMmSsMss_from_datetime					(SDateTime*  dt,  u32* year, u32* month, u32* day, u32* hour = NULL, u32* minute = NULL, u32* second = NULL, s32* ms = NULL);
+	bool					iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_datetimex				(SDateTimeX* dtx, u32* year, u32* month, u32* day, u32* hour = NULL, u32* minute = NULL, u32* second = NULL, s32* ms = NULL, s32* ns = NULL);
 	void					iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds				(u64  tnDtx, f64* tfDtx,              u32* year, u32* month, u32* day, u32* hour, u32* minute, u32* second, s32* millisecond, s32* microsecond);
 	void					iiDateMath_get_julian_and_YyyyMmDdHhMmSsMssNss_from_jseconds	(u64  tnDtx, f64* tfDtx, u32* julian, u32* year, u32* month, u32* day, u32* hour, u32* minute, u32* second, s32* millisecond, s32* microsecond);
 	u64						iiDateMath_get_jseconds_from_YyyyMmDdHhMmSsMssMics				(u64* tnDtx,                          u32  year, u32  month, u32  day, u32  hour, u32  minute, u32  second, s32  millisecond, s32  microsecond);
@@ -369,6 +371,9 @@ struct SVxbContext;
 	bool					iiDateMath_isLeapYear											(u32 year);
 	u32						iiDateMath_get_dayNumberIntoYear								(u32 tnYear, u32 tnMonth, u32 tnDay);
 	void					iiDateMath_get_datetimeX										(SDateTimeX* dtx, bool tlUseLocalTime = true);
+	s32						iiDateMath_get_date_inSystemFormat								(SDatum* dateOut, s8* YyyyMmDd,		s32 tnDateFormat = -1, bool* tlCentury = NULL);
+	s32						iiDateMath_get_datetime_inSystemFormat							(SDatum* dateOut, SDateTime*  dt,	s32 tnDateFormat = -1, bool* tlCentury = NULL, s32* tnHour = NULL);
+	s32						iiDateMath_get_datetimex_inSystemFormat							(SDatum* dateOut, SDateTimeX* dtx,	s32 tnDateFormat = -1, bool* tlCentury = NULL, s32* tnHour = NULL);
 
 	// Big floating point
 	s32						iiBfp_calc_significantDigits_bySize			(SVariable* varVal);

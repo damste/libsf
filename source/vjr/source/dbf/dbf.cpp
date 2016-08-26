@@ -3893,9 +3893,13 @@ debug_break;
 					// Reset
 					for (lfr2Ptr = wa->field2Ptr, lnField = 0; lnField < wa->fieldCount; lfr2Ptr++, lnField++)
 					{
-						iDatum_delete(&lfr2Ptr->renderPrefix, false);
-						iDatum_delete(&lfr2Ptr->renderPostfix, false);
-						iDatum_delete(&lfr2Ptr->renderSpacer, false);
+						iDatum_delete(&lfr2Ptr->renderPrefix,	false);
+						iDatum_delete(&lfr2Ptr->renderPostfix,	false);
+						iDatum_delete(&lfr2Ptr->renderSpacer,	false);
+
+						memset(&lfr2Ptr->renderPrefix,	0, sizeof(lfr2Ptr->renderPrefix));
+						memset(&lfr2Ptr->renderPostfix,	0, sizeof(lfr2Ptr->renderPostfix));
+						memset(&lfr2Ptr->renderSpacer,	0, sizeof(lfr2Ptr->renderSpacer));
 					}
 
 					// Update
@@ -5575,6 +5579,7 @@ debug_break;
 		render->date		= propGet_settings_Date(settings);											// SET DATE
 		render->decimals	= propGet_settings_Decimals(settings);										// SET DECIMALS
 		render->hours		= propGet_settings_Hours(settings);											// SET HOURS
+		render->logical		= propGet_settings_Logical(_settings);										// SET LOGICAL
 		render->mark		= iiVariable_getAs_s8_andDispose(propGet_settings_Mark(settings));			// SET MARK TO
 		render->point		= iiVariable_getAs_s8_andDispose(propGet_settings_Point(settings));			// SET POINT
 		render->separator	= iiVariable_getAs_s8_andDispose(propGet_settings_Separator(settings));		// SET SEPARATOR
@@ -5590,9 +5595,10 @@ debug_break;
 		iDatum_duplicate(&field2Ptr->renderHeader, field2Ptr->name2);
 	}
 
+	// Integer
 	s32 iiDbf_render_i(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render)
 	{
-		// Standard integer
+		// Standard 32-bit integer
 		sprintf(field2Ptr->renderBuffer254, "%d%n", *(s32*)(row->data_s8 + field2Ptr->offset), &field2Ptr->renderBuffer.length);
 		field2Ptr->renderBuffer.data_s8 = &field2Ptr->renderBuffer254[0];
 
@@ -5600,132 +5606,168 @@ debug_break;
 		return(field2Ptr->renderBuffer.length);
 	}
 
-
-
-
+	// Currency
 	s32 iiDbf_render_y(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render)
 	{
+		s8 format[16];
+
+
+		// Build the size for this type
+		sprintf(format, "%%%u.%uf%%n", (u32)field2Ptr->length, (u32)field2Ptr->decimals);
+
 		// Fixed point integer, we'll convert to f64 for display
-		sprintf(field2Ptr->renderBuffer254, "%d%n", *(s32*)(row->data_s8 + field2Ptr->offset), &field2Ptr->renderBuffer.length);
+		sprintf(field2Ptr->renderBuffer254, format, (f64)(*(s64*)(row->data_s8 + field2Ptr->offset)) / 10000.0);
 		field2Ptr->renderBuffer.data_s8 = &field2Ptr->renderBuffer254[0];
 
 		// Indicate the length
 		return(field2Ptr->renderBuffer.length);
 	}
 
-
-
-
+	// Double
 	s32 iiDbf_render_b(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render)
 	{
+		s8 format[16];
+
+
+		// Build the size for this type
+		sprintf(format, "%%%u.%uf%%n", (u32)field2Ptr->length, (u32)field2Ptr->decimals);
+
+		// Fixed point integer, we'll convert to f64 for display
+		sprintf(field2Ptr->renderBuffer254, format, *(f64*)(row->data_s8 + field2Ptr->offset));
+		field2Ptr->renderBuffer.data_s8 = &field2Ptr->renderBuffer254[0];
+
 		// Indicate the length
 		return(field2Ptr->renderBuffer.length);
 	}
 
-
-
-
+	// Date
 	s32 iiDbf_render_d(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render)
 	{
+		// Render date
+		field2Ptr->renderBuffer.data_s8 = &field2Ptr->renderBuffer254[0];
+		iiDateMath_get_date_inSystemFormat(&field2Ptr->renderBuffer, row->data_s8 + field2Ptr->offset, render->date, &render->century);
+
 		// Indicate the length
 		return(field2Ptr->renderBuffer.length);
 	}
 
-
-
-
+	// Datetime
 	s32 iiDbf_render_t(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render)
 	{
+		// Render datetime
+		field2Ptr->renderBuffer.data_s8 = &field2Ptr->renderBuffer254[0];
+		iiDateMath_get_datetime_inSystemFormat(&field2Ptr->renderBuffer, (SDateTime*)(row->data_s8 + field2Ptr->offset), render->date, &render->century);
+
 		// Indicate the length
 		return(field2Ptr->renderBuffer.length);
 	}
 
-
-
-
+	// Logical
 	s32 iiDbf_render_l(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render)
 	{
+		u8 c;
+
+
+		// Grab the value
+		c = *(row->data_u8 + field2Ptr->offset);
+
+		// True or false?
+		field2Ptr->renderBuffer.data_s8 = &field2Ptr->renderBuffer254[0];
+		switch (render->logical)
+		{
+			default:
+			case _LOGICAL_TF:
+				sprintf(field2Ptr->renderBuffer254, "%s%n", ((iiLowerCase_char(c) == 't') ? cgc_t_dots : cgc_f_dots), &field2Ptr->renderBuffer.length);
+				break;
+
+			case _LOGICAL_YN:
+				sprintf(field2Ptr->renderBuffer254, "%s%n", ((iiLowerCase_char(c) == 'y') ? cgc_yes : cgc_no), &field2Ptr->renderBuffer.length);
+				break;
+
+			case _LOGICAL_UD:
+				sprintf(field2Ptr->renderBuffer254, "%s%n", ((iiLowerCase_char(c) == 'y') ? cgc_up : cgc_dn), &field2Ptr->renderBuffer.length);
+				break;
+
+		}
+
 		// Indicate the length
 		return(field2Ptr->renderBuffer.length);
 	}
 
-
-
-
+	// Float
 	s32 iiDbf_render_f(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render)
 	{
-		// Indicate the length
-		return(field2Ptr->renderBuffer.length);
+		// Float is stored the same as character
+		return(iiDbf_render_c(row, field2Ptr, render));
 	}
 
-
-
-
+	// Numeric
 	s32 iiDbf_render_n(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render)
 	{
-		// Indicate the length
-		return(field2Ptr->renderBuffer.length);
+		// Numeric is stored the same as character
+		return(iiDbf_render_c(row, field2Ptr, render));
 	}
 
-
-
-
+	// Memo field
 	s32 iiDbf_render_m(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render)
 	{
+		if (*(u32*)(row->data_s8 + field2Ptr->offset) != NULL)
+		{
+			// Populated, store "Memo"
+			sprintf(field2Ptr->renderBuffer254, "Memo%n", &field2Ptr->renderBuffer.length);
+
+		} else {
+			// Empty, store "memo"
+			sprintf(field2Ptr->renderBuffer254, "memo%n", &field2Ptr->renderBuffer.length);
+		}
+		field2Ptr->renderBuffer.data_s8 = &field2Ptr->renderBuffer254[0];
+
 		// Indicate the length
 		return(field2Ptr->renderBuffer.length);
 	}
-
-
-
 
 	s32 iiDbf_render_w(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render)
 	{
-		// Indicate the length
-		return(field2Ptr->renderBuffer.length);
+		// Not supported
+		return(iiDbf_render_unk(row, field2Ptr, render));
 	}
-
-
-
 
 	s32 iiDbf_render_g(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render)
 	{
-		// Indicate the length
-		return(field2Ptr->renderBuffer.length);
+		// Not supported
+		return(iiDbf_render_unk(row, field2Ptr, render));
 	}
-
-
-
 
 	s32 iiDbf_render_q(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render)
 	{
-		// Indicate the length
-		return(field2Ptr->renderBuffer.length);
+		// Not supported
+		return(iiDbf_render_unk(row, field2Ptr, render));
 	}
-
-
-
 
 	s32 iiDbf_render_v(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render)
 	{
-		// Indicate the length
-		return(field2Ptr->renderBuffer.length);
+		// Not supported
+		return(iiDbf_render_unk(row, field2Ptr, render));
 	}
 
-
-
-
+	// Character
 	s32 iiDbf_render_c(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render)
 	{
+		memcpy(field2Ptr->renderBuffer254, row->data_s8 + field2Ptr->offset, field2Ptr->length);
+		field2Ptr->renderBuffer.data_s8	= &field2Ptr->renderBuffer254[0];
+		field2Ptr->renderBuffer.length	= field2Ptr->length;
+
 		// Indicate the length
 		return(field2Ptr->renderBuffer.length);
 	}
 
-
-
-
+	// Unknown
 	s32 iiDbf_render_unk(SDatum* row, SFieldRecord2* field2Ptr, SDbfRender* render)
 	{
+		// Store "unsupported"
+		sprintf(field2Ptr->renderBuffer254, "unsupported%n", &field2Ptr->renderBuffer.length);
+		field2Ptr->renderBuffer.data_s8 = &field2Ptr->renderBuffer254[0];
+
 		// Indicate the length
 		return(field2Ptr->renderBuffer.length);
 	}

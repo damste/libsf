@@ -1135,7 +1135,7 @@
 		{ cgc_yes,					3,			false,		_ICODE_YES,								false,				_ICAT_GENERIC,		&colorSynHi_logical,		true,						null0,					null0,		null0 },
 		{ cgc_no,					2,			false,		_ICODE_NO,								false,				_ICAT_GENERIC,		&colorSynHi_logical,		true,						null0,					null0,		null0 },
 		{ cgc_up,					2,			false,		_ICODE_UP,								false,				_ICAT_GENERIC,		&colorSynHi_logical,		true,						null0,					null0,		null0 },
-		{ cgc_down,					4,			false,		_ICODE_DOWN,							false,				_ICAT_GENERIC,		&colorSynHi_logical,		true,						null0,					null0,		null0 },
+		{ cgc_dn,					4,			false,		_ICODE_DOWN,							false,				_ICAT_GENERIC,		&colorSynHi_logical,		true,						null0,					null0,		null0 },
 		{ cgc_o_dots,				3,			false,		_ICODE_OTHER,							false,				_ICAT_GENERIC,		&colorSynHi_logical,		true,						null0,					null0,		null0 },
 		{ cgc_p_dots,				3,			false,		_ICODE_PARTIAL,							false,				_ICAT_GENERIC,		&colorSynHi_logical,		true,						null0,					null0,		null0 },
 		{ cgc_x_dots,				3,			false,		_ICODE_EXTRA,							false,				_ICAT_GENERIC,		&colorSynHi_logical,		true,						null0,					null0,		null0 },
