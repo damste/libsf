@@ -149,14 +149,14 @@
 //////////
 // Forward declarations
 //////
-	s32				iDisk_open								(cs8* tcPathname, s32 tnType, s32 tnShare, bool tlCreateIfCannotOpen);
-	s32				iDisk_openAs							(cs8* tcPathname, s32 tnType, bool tlCreateIfCannotOpen, bool tlExclusive);
-	s32				iDisk_openShared						(cs8* tcPathname, s32 tnType, bool tlCreateIfCannotOpen);
-	s32				iDisk_openExclusive						(cs8* tcPathname, s32 tnType, bool tlCreateIfCannotOpen);
-	s32				iDisk_close								(s32 tnFile);
-	s64				iDisk_getFileSize						(s32 tnFile);
-	s64				iDisk_getFilePosition					(s32 tnFile);
-	s64				iDisk_setFilePosition					(s32 tnFile, s64 tnSeekOffset);
+	s32				iDisk_open								(cs8* tcPathname, s32 tnType, s32 tnShare, bool tlCreateIfCannotOpen, bool* error = NULL, u32* errorNum = NULL);
+	s32				iDisk_openAs							(cs8* tcPathname, s32 tnType, bool tlCreateIfCannotOpen, bool tlExclusive, bool* error = NULL, u32* errorNum = NULL);
+	s32				iDisk_openShared						(cs8* tcPathname, s32 tnType, bool tlCreateIfCannotOpen, bool* error = NULL, u32* errorNum = NULL);
+	s32				iDisk_openExclusive						(cs8* tcPathname, s32 tnType, bool tlCreateIfCannotOpen, bool* error = NULL, u32* errorNum = NULL);
+	s32				iDisk_close								(s32 tnFile, bool* error = NULL, u32* errorNum = NULL);
+	s64				iDisk_getFileSize						(s32 tnFile, bool* error = NULL, u32* errorNum = NULL);
+	s64				iDisk_getFilePosition					(s32 tnFile, bool* error = NULL, u32* errorNum = NULL);
+	s64				iDisk_setFilePosition					(s32 tnFile, s64 tnSeekOffset, bool* error = NULL, u32* errorNum = NULL);
 	s32				iDisk_read								(s32 tnFile, s64 tnSeekOffset, void* tcData, s32 tnReadCount,  bool* tlError, u32* tnErrorNum);
 	s32				iDisk_write								(s32 tnFile, s64 tnSeekOffset, void* tcData, s32 tnWriteCount, bool* tlError, u32* tnErrorNum);
 	s32				iDisk_readShared_withRetryCallback		(SBuilder* lockRoot, s32 tnFile, s64 tnSeekOffset, void* tcData, s32 tnReadCount,  bool* tlError, u32* tnErrorNum, uptr tnCallbackFunction, uptr tnExtra, SDiskLock** diskLock, bool tlUnlockAfter);

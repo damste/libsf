@@ -279,6 +279,10 @@
 	const u8		cgcNoTableInCurrentWorkArea[]					= "no table in current work area";
 	const u8		cgcFieldNotFound[]								= "field not found";
 	const u8		cgcDiskSeekError[]								= "disk seek error";
+	const u8		cgcDiskCloseError[]								= "disk close error";
+	const u8		cgcDiskOpenError[]								= "disk open error";
+	const u8		cgcDiskWriteError[]								= "disk write error";
+	const u8		cgcDiskReadError[]								= "disk read error";
 #else
 	#error Language not specified
 #endif

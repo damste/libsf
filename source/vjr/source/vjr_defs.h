@@ -538,8 +538,13 @@ struct SObjEventMap;
 	void					iVjr_release_jdebi						(void);
 	void					iVjr_releaseCaskIcons					(void);
 	void					iVjr_shutdown							(void);
-	void					iiVjr_settings_getDevice				(SVjrDevice* device);
-	bool					iiVjr_settings_getDevice_fromComp		(SVjrDevice* device, SComp* compTo, bool* error = NULL, u32* errorNum = NULL);
+
+	void					iiVjr_device_start						(SVjrDevice* device, bool* error = NULL, u32* errorNum = NULL);
+	void					iiVjr_device_output_row					(SVjrDevice* device, SDatum* data, bool tlDeleteData, bool* error = NULL, u32* errorNum = NULL);
+	void					iiVjr_device_end						(SVjrDevice* device, bool* error = NULL, u32* errorNum = NULL);
+
+	void					iiVjr_settings_device_allocate			(SVjrDevice* device);
+	bool					iiVjr_settings_device_allocate_fromComp	(SVjrDevice* device, SComp* compTo, bool* error = NULL, u32* errorNum = NULL);
 
 
 	DWORD	WINAPI			iSplash_show							(LPVOID/*SBitmap* bmp*/ lpParameter);

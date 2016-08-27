@@ -240,6 +240,10 @@
 			case _ERROR_NO_TABLE_IN_CURRENT_WORKAREA:		return(cgcNoTableInCurrentWorkArea);
 			case _ERROR_FIELD_NOT_FOUND:					return(cgcFieldNotFound);
 			case _ERROR_DISK_SEEK_ERROR:					return(cgcDiskSeekError);
+			case _ERROR_DISK_CLOSE_ERROR:					return(cgcDiskCloseError);
+			case _ERROR_DISK_OPEN_ERROR:					return(cgcDiskOpenError);
+			case _ERROR_DISK_WRITE_ERROR:					return(cgcDiskWriteError);
+			case _ERROR_DISK_READ_ERROR:					return(cgcDiskReadError);
 
 			default:
 				return(cgcUnspecifiedError);
@@ -2691,7 +2695,6 @@
 	{
 		SComp*		compList = compCommand;
 
-		bool		llScreen, llConsole, llPrinter, llPrinterPrompt, llFile;
 		u32			lnRecno;
 		SDatum*		listRow;
 		SWorkArea*	wa;
@@ -2705,7 +2708,6 @@
 		SComp*		compTo;
 		SComp*		compNext;
 		SVjrDevice	device;
-		s8			filenameBuffer[_MAX_PATH];
 		bool		error;
 		u32			errorNum;
 
@@ -2768,7 +2770,7 @@
 				// They're explicitly directing it somewhere
 				if ((compNext = compTo->ll.nextComp))
 				{
-					if (!iiVjr_settings_getDevice_fromComp(&device, compNext, &error, &errorNum) || error)
+					if (!iiVjr_settings_device_allocate_fromComp(&device, compNext, &error, &errorNum) || error)
 					{
 						iError_report_byNumber(errorNum, compNext, false);
 						return;
@@ -2782,7 +2784,7 @@
 
 			} else {
 				// Going to the current SET DEVICE TO
-				iiVjr_settings_getDevice(&device);
+				iiVjr_settings_device_allocate(&device);
 			}
 
 
@@ -2859,25 +2861,18 @@
 									// First row renders the header, and the first row
 									if (lnRecno == 1)
 									{
-										// Generate header
+										// Generate
 										listRow = iDbf_listRecord(wa, NULL, true, true, true);
 
 										// Emit
-										iSEM_appendLine(screenData, listRow->data_u8, listRow->length, false);
-										_screen_editbox->isDirtyRender = true;
-
-										// Delete
-										iDatum_delete(&listRow);
+										iiVjr_device_output_row(&device, listRow, true);
 									}
 
 									// Generate row data
 									listRow = iDbf_listRecord(wa, NULL, true, false, (lnRecno == 1));
 
 									// Emit
-									iSEM_appendLine(screenData, listRow->data_u8, listRow->length, false);
-
-									// Delete
-									iDatum_delete(&listRow);
+									iiVjr_device_output_row(&device, listRow, true);
 								}
 							}
 

@@ -216,9 +216,30 @@
 // Called to close the indicated file handle
 //
 //////
-	s32 iDisk_close(s32 tnFile)
+	s32 iDisk_close(s32 tnFile, bool* error, u32* errorNum)
 	{
-		return(_close(tnFile));
+		s32 lnResult, lnErrno;
+
+
+		// Close
+		lnResult = _close(tnFile);
+		if (lnResult == 0)
+		{
+			// No error
+			if (error)			*error		= false;
+			if (errorNum)		*errorNum	= _ERROR_OKAY;
+
+		} else {
+			// An error occurred
+			if (error)			*error		= TRUE;
+			if (errorNum)		*errorNum	= _ERROR_DISK_CLOSE_ERROR;
+
+			// For debugging
+			lnErrno = errno();
+		}
+
+		// Indicate the result
+		return(lnResult);
 	}
 
 

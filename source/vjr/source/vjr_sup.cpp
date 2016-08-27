@@ -1066,12 +1066,97 @@
 
 //////////
 //
+// Called to deallocate the allocated device context, which generally means
+// closing the file, or ejecting the final page on the printer.
+//
+//////
+	void iiVjr_device_start(SVjrDevice* device, bool* error, u32* errorNum)
+	{
+		if (device->lFile)
+		{
+			// Open the file
+			if (device->lAdditive)		device->nFile = iDisk_open(device->filenameBuffer, _O_RDWR | _O_BINARY | _O_APPEND,	_SH_DENYWR, true, error, errorNum);
+			else						device->nFile = iDisk_open(device->filenameBuffer , _O_RDWR | _O_BINARY,			_SH_DENYWR, true, error, errorNum);
+
+		} else if (device->lPrinter) {
+			// Eject the last page
+			debug_break;
+		}
+	}
+
+
+
+
+//////////
+//
+// Called to emit a row out to the target device
+//
+//////
+	void iiVjr_device_output_row(SVjrDevice* device, SDatum* data, bool tlDeleteData, bool* error, u32* errorNum)
+	{
+		// Emit to the indicated device
+		if (device->lScreen || device->lConsole)
+		{
+			// Emit to the screen
+			iSEM_appendLine(screenData, data->data_u8, data->length, false);
+			_screen_editbox->isDirtyRender = true;
+
+		} else if (device->lFile) {
+			// Emit to the file
+			iDisk_write(device->nFile, -1, data->data_vp, data->length, error, errorNum);
+			if (!error)
+				device->nBytesWritten += data->length;	// Indicate how many bytes were entered
+
+			// Append CR
+			iDisk_write(device->nFile, -1, "\n", 1, error, errorNum);
+			if (!error)
+				device->nBytesWritten += data->length;	// Indicate how many bytes were entered
+
+		} else if (device->lFile) {
+			// Emit to the printer
+// TODO:  Write the printer code
+			debug_break;
+		}
+
+		// Delete
+		if (tlDeleteData)
+			iDatum_delete(data, true);
+	}
+
+
+
+
+//////////
+//
+// Called to deallocate the allocated device context, which generally means
+// closing the file, or ejecting the final page on the printer.
+//
+//////
+	void iiVjr_device_end(SVjrDevice* device, bool* error, u32* errorNum)
+	{
+		if (device->lFile)
+		{
+			// Close the file
+			iDisk_close(device->nFile, error, errorNum);
+			device->nFile = -1;
+
+		} else if (device->lPrinter) {
+			// Eject the last page
+			debug_break;
+		}
+	}
+
+
+
+
+//////////
+//
 // Called to get the VJr output device.
 //
 //////
-	void iiVjr_settings_getDevice(SVjrDevice* device)
+	void iiVjr_settings_device_allocate(SVjrDevice* device)
 	{
-		SVariable*	varDevice;
+		s32			lnDevice;
 		SVariable*	varDevice2;
 
 
@@ -1081,11 +1166,12 @@
 		device->lPrinter			= false;
 		device->lPrinterPrompt		= false;
 		device->lFile				= false;
+		device->lAdditive			= false;
 		device->filenameBuffer[0]	= NULL;
 
 		// Grab the device
-		varDevice = propGet_settings_Device(_settings);
-		switch (iiVariable_getAs_s32(varDevice))
+		lnDevice = propGet_settings_Device(_settings);
+		switch (lnDevice)
 		{
 			case _SET_DEVICE_SCREEN:
 				device->lScreen			= true;
@@ -1116,19 +1202,22 @@
 // Called to get the output device from an expression.
 //
 //////
-	bool iiVjr_settings_getDevice_fromComp(SVjrDevice* device, SComp* compTo, bool* error, u32* errorNum)
+	bool iiVjr_settings_device_allocate_fromComp(SVjrDevice* device, SComp* compTo, bool* error, u32* errorNum)
 	{
-		SComp*	compNext;
-		SComp*	compNext2;
+		bool		llManufacturedFilename, llGetFilename;
+		SComp*		compNext;
+		SVariable*	varFilename;
 
 
 		// Assume failure on all
-		device->lScreen					= false;
-		device->lConsole				= false;
-		device->lPrinter				= false;
-		device->lPrinterPrompt			= false;
-		device->lFile					= false;
-		device->filenameBuffer[0]		= NULL;
+		device->lScreen				= false;
+		device->lConsole			= false;
+		device->lPrinter			= false;
+		device->lPrinterPrompt		= false;
+		device->lFile				= false;
+		device->lAdditive			= false;
+		device->filenameBuffer[0]	= NULL;
+		varFilename					= NULL;
 
 		// What came after the TO?
 		compNext = compTo->ll.nextComp;
@@ -1147,33 +1236,44 @@
 
 			case _ICODE_FILE:
 				// TO FILE filename
-				if (!iiComps_getFilename(compNext->ll.nextComp, device->filenameBuffer))
-				{
-					// No filename specified
-					if (error)			*error		= true;
-					if (errorNum)		*errorNum	= _ERROR_SYNTAX;
-					return(false);
-				}
-				device->lFile = true;
+				compNext				= compNext->ll.nextComp;
+				llGetFilename			= true;
 				break;
 
 			case _ICODE_ALPHA:
 			case _ICODE_ALPHANUMERIC:
 				// TO filename
-				if (!iiComps_getFilename(compNext, device->filenameBuffer))
-				{
-					// No filename specified
-					if (error)			*error		= true;
-					if (errorNum)		*errorNum	= _ERROR_SYNTAX;
-					return(false);
-				}
-				device->lFile = true;
+				llGetFilename			= true;
 				break;
 
 			default:
 				if (error)			*error		= true;
 				if (errorNum)		*errorNum	= _ERROR_SYNTAX;
 				return(false);
+		}
+
+		// Try to get the filename if need be
+		if (llGetFilename)
+		{
+			// Try to access the content as a memory variable, or merely contiguous components
+			if (!(varFilename = iEngine_get_variableName_fromComponent(compNext, &llManufacturedFilename, false)) && !(varFilename = iEngine_get_contiguousComponents(compNext, &llManufacturedFilename, NULL, 0)))
+			{
+				// No valid filename specified
+				if (error)			*error		= true;
+				if (errorNum)		*errorNum	= _ERROR_SYNTAX;
+				return(false);
+			}
+
+			// Copy the filename if need be
+			memcpy(device->filenameBuffer, varFilename->value.data_s8, varFilename->value.length);
+
+			// Clean
+			if (llManufacturedFilename)
+				iVariable_delete(varFilename, true);
+
+			// Success
+			device->lFile		= true;
+			device->lAdditive	= (iComps_findNextBy_iCode(compTo, _ICODE_ADDITIVE) != NULL);
 		}
 
 		// If we get here, we're good

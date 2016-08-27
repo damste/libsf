@@ -13252,7 +13252,7 @@ debug_break;
 		}
 
 		// Indicate success or failure
-		return((dt));
+		return(dt != NULL);
 	}
 
 	bool iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_datetimex(SDateTimeX* dtx, u32* year, u32* month, u32* day, u32* hour, u32* minute, u32* second, s32* ms, s32* ns)
@@ -13261,7 +13261,7 @@ debug_break;
 			iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds(dtx->jseconds, NULL, year, month, day, hour, minute, second, ms, ns);
 
 		// Indicate success or failure
-		return((dtx));
+		return(dtx != NULL);
 	}
 
 	void iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds(u64 tnDtx, f64* tfDtx, u32* year, u32* month, u32* day, u32* hour, u32* minute, u32* second, s32* millisecond, s32* microsecond)

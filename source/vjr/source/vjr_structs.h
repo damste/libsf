@@ -593,5 +593,10 @@ struct SVjrDevice
 
 	bool		lConsole;						// Echo on console?
 	bool		lPrinterPrompt;					// Prompt for printer?
+	bool		lAdditive;						// Additive for an output file
 	s8			filenameBuffer[_MAX_PATH];		// Output filename (always append to it), it is reset with SET DEVICE TO FILE name
+
+	// Internal contexts for generating to the device
+	s32			nFile;							// File handle
+	s64			nBytesWritten;					// Number of bytes written to the file
 };

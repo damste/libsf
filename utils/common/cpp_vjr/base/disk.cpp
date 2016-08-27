@@ -95,10 +95,44 @@
 // Called to open the file using custom share settings, or explicitly shared,
 // or explicitly exclusive.
 //
-//	tnType		-- 
+//	tnType	-- Indicates how the file should be opened (or created).
+//			   The following options can be |'d together, like (_O_CREAT | _O_SHORT_LIVED):
 //
+// 					Access:
+// 									_O_RDONLY				Read-only access
+// 									_O_RDWR					Read-write access
+// 									_O_WRONLY				Write-only access
+// 
+// 					Data format:
+// 									_O_BINARY				Opens in raw/untranslated mode
+// 									_O_TEXT					Opens in text/translated mode
+// 
+// 					General flags:
+// 									_O_CREAT				Creates a file (file must not exist)
+// 										+--	_O_SHORT_LIVED	Prevents flushing contents to disk if possible
+// 										+--	_O_TEMPORARY	Deletes the file when closed
+// 										+--	_O_EXCL			Creates a file that's opened exclusively
+// 
+// 									_O_APPEND				Opens ready to append data
+// 									_O_NOINHERIT			Cannot share file handle
+// 									_O_RANDOM				A hint that data access is mostly random
+// 									_O_SEQUENTIAL			Sequential file access
+// 									_O_TRUNC				Truncates a file to 0 bytes when opened
+// 
+// 					Data type (if not specified, opens in standard ASCII type)
+// 									_O_U16TEXT				UTF-16 data
+// 									_O_U8TEXT				UTF-8 data
+// 									_O_WTEXT				Unicode data
+//
+//	tnShare	-- Indicates how the data
+//
+//					Share mode:
+// 									_SH_DENYNO				Deny none (allow all shared access)
+// 									_SH_DENYRD				Deny read
+// 									_SH_DENYWR				Deny write
+// 									_SH_DENYRW				Deny read-write
 //////
-	s32 iDisk_open(cs8* tcPathname, s32 tnType, s32 tnShare, bool tlCreateIfCannotOpen)
+	s32 iDisk_open(cs8* tcPathname, s32 tnType, s32 tnShare, bool tlCreateIfCannotOpen, bool* error, u32* errorNum)
 	{
 		s32	lnFh;
 
@@ -110,7 +144,7 @@
 			{
 				// Try to open existing
 				lnFh = _sopen(tcPathname, tnType, tnShare);
-				if (lnFh == -1)
+				if (lnFh != 0)
 				{
 					// Error opening
 					switch (errno)
@@ -130,9 +164,25 @@
 								// Try to create
 								lnFh = _creat(tcPathname, _S_IREAD | _S_IWRITE);
 								// Right now, it's either open or not
+								if (lnFh == 0)
+								{
+									// No error
+									if (error)			*error		= false;
+									if (errorNum)		*errorNum	= _ERROR_OKAY;
+
+								} else {
+									// Error
+									if (error)			*error		= true;
+									if (errorNum)		*errorNum	= _ERROR_DISK_OPEN_ERROR;
+								}
 							}
 							break;
 					}
+
+				} else {
+					// It's open
+					if (error)			*error		= false;
+					if (errorNum)		*errorNum	= _ERROR_OKAY;
 				}
 
 				// Indicate our (potentially new) status
@@ -146,28 +196,28 @@
 			return(-1);
 	}
 
-	s32 iDisk_openAs(cs8* tcPathname, s32 tnType, bool tlCreateIfCannotOpen, bool tlExclusive)
+	s32 iDisk_openAs(cs8* tcPathname, s32 tnType, bool tlCreateIfCannotOpen, bool tlExclusive, bool* error, u32* errorNum)
 	{
-		if (tlExclusive)	return(iDisk_openExclusive	(tcPathname, tnType, tlCreateIfCannotOpen));
-		else				return(iDisk_openShared		(tcPathname, tnType, tlCreateIfCannotOpen));
+		if (tlExclusive)	return(iDisk_openExclusive	(tcPathname, tnType, tlCreateIfCannotOpen, error, errorNum));
+		else				return(iDisk_openShared		(tcPathname, tnType, tlCreateIfCannotOpen, error, errorNum));
 	}
 
-	s32 iDisk_openShared(cs8* tcPathname, s32 tnType, bool tlCreateIfCannotOpen)
+	s32 iDisk_openShared(cs8* tcPathname, s32 tnType, bool tlCreateIfCannotOpen, bool* error, u32* errorNum)
 	{
 		// Attempt to open if valid
 		if (tcPathname)
-			return(iDisk_open(tcPathname, tnType, _SH_DENYNO, tlCreateIfCannotOpen));
+			return(iDisk_open(tcPathname, tnType, _SH_DENYNO, tlCreateIfCannotOpen, error, errorNum));
 
 
 		// If we get here, invalid filename
 		return(-1);
 	}
 
-	s32 iDisk_openExclusive(cs8* tcPathname, s32 tnType, bool tlCreateIfCannotOpen)
+	s32 iDisk_openExclusive(cs8* tcPathname, s32 tnType, bool tlCreateIfCannotOpen, bool* error, u32* errorNum)
 	{
 		// Attempt to open if valid
 		if (tcPathname)
-			return(iDisk_open(tcPathname, tnType, _SH_DENYRW, tlCreateIfCannotOpen));
+			return(iDisk_open(tcPathname, tnType, _SH_DENYRW, tlCreateIfCannotOpen, error, errorNum));
 
 
 		// If we get here, invalid filename
@@ -182,9 +232,30 @@
 // Called to close the indicated file handle
 //
 //////
-	s32 iDisk_close(s32 tnFile)
+	s32 iDisk_close(s32 tnFile, bool* error, u32* errorNum)
 	{
-		return(_close(tnFile));
+		s32 lnResult, lnErrno;
+
+
+		// Close
+		lnResult = _close(tnFile);
+		if (lnResult == 0)
+		{
+			// No error
+			if (error)			*error		= false;
+			if (errorNum)		*errorNum	= _ERROR_OKAY;
+
+		} else {
+			// An error occurred
+			if (error)			*error		= TRUE;
+			if (errorNum)		*errorNum	= _ERROR_DISK_CLOSE_ERROR;
+
+			// For debugging
+			lnErrno = errno;
+		}
+
+		// Indicate the result
+		return(lnResult);
 	}
 
 
@@ -195,7 +266,7 @@
 // Obtain the file size
 //
 //////
-	s64 iDisk_getFileSize(s32 tnFile)
+	s64 iDisk_getFileSize(s32 tnFile, bool* error, u32* errorNum)
 	{
 		// Note:  Will return -1 if there's an error
 		if (tnFile > 0)		return(_filelengthi64(tnFile));
@@ -210,9 +281,27 @@
 // Obtain the current file position
 //
 //////
-	s64 iDisk_getFilePosition(s32 tnFile)
+	s64 iDisk_getFilePosition(s32 tnFile, bool* error, u32* errorNum)
 	{
-		return(_lseeki64(tnFile, 0, SEEK_CUR));
+		s32	lnErrno;
+		s64 lnResult;
+
+
+		// Seek
+		lnResult = _lseeki64(tnFile, 0, SEEK_CUR);
+		if (lnResult == 0)
+		{
+			// No error
+			if (error)			*error		= false;
+			if (errorNum)		*errorNum	= _ERROR_OKAY;
+
+		} else {
+			// Error
+			lnErrno = errno;
+			if (error)			*error		= true;
+			if (errorNum)		*errorNum	= _ERROR_DISK_SEEK_ERROR;
+		}
+		return(lnResult);
 	}
 
 
@@ -223,9 +312,27 @@
 // Called to set the file position to the indicated offset
 //
 //////
-	s64 iDisk_setFilePosition(s32 tnFile, s64 tnSeekOffset)
+	s64 iDisk_setFilePosition(s32 tnFile, s64 tnSeekOffset, bool* error, u32* errorNum)
 	{
-		return(_lseeki64(tnFile, tnSeekOffset, SEEK_SET));
+		s32	lnErrno;
+		s64 lnResult;
+
+
+		// Seek
+		lnResult = _lseeki64(tnFile, tnSeekOffset, SEEK_SET);
+		if (lnResult == tnSeekOffset)
+		{
+			// No error
+			if (error)			*error		= false;
+			if (errorNum)		*errorNum	= _ERROR_OKAY;
+
+		} else {
+			// Error
+			lnErrno = errno;
+			if (error)			*error		= true;
+			if (errorNum)		*errorNum	= _ERROR_DISK_SEEK_ERROR;
+		}
+		return(lnResult);
 	}
 
 
@@ -239,14 +346,8 @@
 //////
 	s32 iDisk_read(s32 tnFile, s64 tnSeekOffset, void* tcData, s32 tnReadCount, bool* tlError, u32* tnErrorNum)
 	{
-		s64 lnSeekOffset;
-
-
-		//////////
-		// Lower the error flag
-		//////
-			if (tlError)		*tlError	= false;
-			if (tnErrorNum)		*tnErrorNum	= _ERROR_OKAY;
+		s32	lnResult;
+		s64	lnSeekOffset;
 
 
 		//////////
@@ -268,7 +369,7 @@
 					{
 						if (tlError)		*tlError	= true;
 						if (tnErrorNum)		*tnErrorNum	= _ERROR_DISK_SEEK_ERROR;
-						return(_ERROR_DISK_SEEK_ERROR);
+						return(-1);
 					}
 
 			}
@@ -277,8 +378,19 @@
 		//////////
 		// Read
 		//////
-			return(_read(tnFile, tcData, tnReadCount));
+			lnResult = _read(tnFile, tcData, tnReadCount);
+			if (lnResult == 0)
+			{
+				// No error
+				if (tlError)		*tlError	= false;
+				if (tnErrorNum)		*tnErrorNum	= _ERROR_OKAY;
 
+			} else {
+				// Error
+				if (tlError)		*tlError	= true;
+				if (tnErrorNum)		*tnErrorNum	= _ERROR_DISK_READ_ERROR;
+			}
+			return(lnResult);
 	}
 
 
@@ -292,14 +404,8 @@
 //////
 	s32 iDisk_write(s32 tnFile, s64 tnSeekOffset, void* tcData, s32 tnWriteCount, bool* tlError, u32* tnErrorNum)
 	{
-		s64 lnSeekOffset;
-
-
-		//////////
-		// Lower the error flag
-		//////
-			if (tlError)		*tlError	= false;
-			if (tnErrorNum)		*tnErrorNum	= 0;
+		s32	lnResult;
+		s64	lnSeekOffset;
 
 
 		//////////
@@ -330,7 +436,19 @@
 		//////////
 		// Read
 		//////
-			return(_write(tnFile, tcData, tnWriteCount));
+			lnResult = _write(tnFile, tcData, tnWriteCount);
+			if (lnResult == 0)
+			{
+				// No error
+				if (tlError)		*tlError	= false;
+				if (tnErrorNum)		*tnErrorNum	= _ERROR_OKAY;
+
+			} else {
+				// Error
+				if (tlError)		*tlError	= true;
+				if (tnErrorNum)		*tnErrorNum	= _ERROR_DISK_WRITE_ERROR;
+			}
+			return(lnResult);
 
 	}
 
