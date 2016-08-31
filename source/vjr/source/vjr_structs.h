@@ -585,18 +585,143 @@ struct SNoteLog
 	SDatum*			note;											// The message
 };
 
+struct SVjrPrint_text
+{
+	SDatum		text;					// Text to display
+	u32			backColor;				// Back color to use
+	u32			foreColor;				// Fore color to use
+	SFont*		font;					// Font used for this item
+};
+
+struct SVjrPrint_image
+{
+	SDatum		imageFilename;			// Filename to load and render (size coordinates come from the print item)
+};
+
+struct SVjrPrint_hline
+{
+	u32		color;						// Color of the line
+	f32		fY;							// Vertical position on the page
+	f32		fX1;						// Left-side
+	f32		fX2;						// Right-side
+};
+
+struct SVjrPrint_vline
+{
+	u32		color;						// Color of the line
+	f32		fX;							// Horizontal position on the page
+	f32		fY1;						// Top
+	f32		fY2;						// Bottom
+};
+
+struct SVjrPrint_rect
+{
+	u32		borderColor;				// Border color
+	bool	fill;						// Should the rectangle be filled?
+	u32		fillColor;					// Fill color
+	f32		fX1;						// Upper-left X
+	f32		fY1;						// Upper-left Y
+	f32		fX2;						// Lower-right X
+	f32		fY2;						// Lower-right Y
+};
+
+struct SVjrPrintItem
+{
+	SLL		ll;										// 2-way link list through the items on this page
+	u32		printIemType;							// See _VJR_PRINTITEMTYPE_* constants for types
+
+	f32		fY;										// Coordinate in inches as to this item's location
+	f32		fX;										// Coordinate in inches as to this item's location
+	f32		fW;										// Width in inches
+	f32		fH;										// Height in inches
+
+	UINT	justified;								// _PRINTDOC_LEFT_JUSTIFIED, _PRINTDOC_CENTER_JUSTIFIED, _PRINTDOC_RIGHT_JUSTIFIED
+
+	// Pointers to the item specifics
+	union {
+		SVjrPrint_text		pit;					// Used for _VJR_PRINTITEMTYPE_TEXT
+		SVjrPrint_image		pii;					// Used for _VJR_PRINTITEMTYPE_IMAGE
+		SVjrPrint_hline		pih;					// Used for _VJR_PRINTITEMTYPE_HLINE
+		SVjrPrint_vline		piv;					// Used for _VJR_PRINTITEMTYPE_VLINE
+		SVjrPrint_rect		pir;					// Used for _VJR_PRINTITEMTYPE_RECT
+	};
+};
+
+struct SPrintPage
+{
+	SLL				ll;
+	u32				pageNum;						// The page number
+
+	// Static, created at page insertion/creation time
+	f32				fTop;							// Top margin		(in inches)
+	f32				fRight;							// Right margin		(in inches)
+	f32				fBottom;						// Bottom margin	(in inches)
+	f32				fLeft;							// Left margin		(in inches)
+	f32				fWidth;							// Page width		(in inches)
+	f32				fHeight;						// Page height		(in inches)
+
+	u32				backColor;						// Back color for the entire page (only used in print preview, or possibly on color printers I suppose)
+	HBRUSH			colorBrush;						// The Windows GDI brush for this color
+
+	// During the physical rendering of each page, these are live updated
+	u32				lineNum;						// Current line number being printed
+	u32				lineCount;						// Maximum line number observed during printing so far
+	f32				penY;							// Y-coordinate (in inches) of where the next thing will be rendered on this page
+	f32				penX;							// X-coordinate (in inches) of where the next thing will be rendered on this page
+
+	// The various printable items added to this page
+	SVjrPrintItem*	firstItem;						// First item to print on this page (can be empty)
+};
+
+struct SVjrPrintDevice
+{
+	// Either PRINTER PROMPT capture data, or the default system printer data
+	HRESULT			win32_nResult;					// Print dialog result
+	DWORD			win32_nRanges;					// Print/page range count
+	PRINTPAGERANGE	win32_pages[20];				// Print range array (a user input like "1,5-10,13" would be 3 nRanges)
+	DWORD			win32_nCopies;					// Copies per page
+	DOCINFO			win32_docInfo;					// Print document info
+	PRINTDLGEX		win32_printDialogInfo;			// Returned info from the user's print dialog option
+};
+
+struct SVjrPrintJob
+{
+	// For printing
+	SDatum			title;							// (Optional) An internally assigned print document title
+	bool			landscape;						// Landscape print job?
+	bool			preview;						// Is it a print preview?
+
+	// An accumulator of data to physically print
+	SPrintPage*		firstPage;						// First page in the print job
+
+	// Highlight criteria
+	SDatum			highlightText;					// Allows certain items to be highlighted during print, multiple entries are separated 
+	SFont*			highlightFont;					// Font to use for highlighting
+	SBgra			higlightFore;					// Foreground color for highlighted text
+	SBgra			higlightFore;					// Background color for highlighted text
+	SDatum			onlypageText;					// Only preview or print pages which have this text
+
+	// Internal page render data
+	HDC				hdc;							// Accumulation HDC used for sizing during accumulation
+	f32				fppih;							// Pixels per inch horizontal	(Note:  This is correct based on this.landscape)
+	f32				fppiv;							// Pixels per inch vertical		(Note:  This is correct based on this.landscape)
+	SVjrPrintDevice	pd;								// Actual print device the user selected
+};
+
+
 struct SVjrDevice
 {
-	bool		lScreen;
-	bool		lPrinter;
-	bool		lFile;
+	bool			lScreen;
+	bool			lPrinter;
+	bool			lFile;
 
-	bool		lConsole;						// Echo on console?
-	bool		lPrinterPrompt;					// Prompt for printer?
-	bool		lAdditive;						// Additive for an output file
-	s8			filenameBuffer[_MAX_PATH];		// Output filename (always append to it), it is reset with SET DEVICE TO FILE name
+	bool			lConsole;						// Echo on console?
+	bool			lPrinterPrompt;					// Prompt for printer?
+	bool			lAdditive;						// Additive for an output file
+	s8				filenameBuffer[_MAX_PATH];		// Output filename (always append to it), it is reset with SET DEVICE TO FILE name
 
 	// Internal contexts for generating to the device
-	s32			nFile;							// File handle
-	s64			nBytesWritten;					// Number of bytes written to the file
+	s32				nFile;							// File handle
+	s64				nBytesWritten;					// Number of bytes written to the file
+	SVjrPrintJob*	pj;								// If lPrinter, then everything related to the print job
 };

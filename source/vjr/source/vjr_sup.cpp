@@ -1112,10 +1112,12 @@
 			if (!error)
 				device->nBytesWritten += data->length;	// Indicate how many bytes were entered
 
-		} else if (device->lFile) {
+		} else if (device->lPrinter) {
 			// Emit to the printer
-// TODO:  Write the printer code
-			debug_break;
+			if (device->lPrinterPrompt || !gsLastPrintDevice)
+			{
+				// Find out the device we're printing to
+			}
 		}
 
 		// Delete

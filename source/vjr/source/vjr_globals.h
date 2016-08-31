@@ -136,6 +136,7 @@
 	HINSTANCE			ghInstance							= null0;
 	bool				glShuttingDown						= false;
 	bool				glDefaultObjectsHaveBeenCreated		= false;
+	SVjrPrintDevice*	gsLastPrintDevice					= NULL;									// Once a print device has been specified, it persists here
 //	ITaskbarList*		giTaskbar							= NULL;
 
 
