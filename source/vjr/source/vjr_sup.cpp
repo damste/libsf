@@ -1117,6 +1117,11 @@
 			if (device->lPrinterPrompt || !gsLastPrintDevice)
 			{
 				// Find out the device we're printing to
+debug_break;
+
+			} else {
+				// We are able to use the last print device
+debug_break;
 			}
 		}
 

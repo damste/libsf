@@ -291,8 +291,11 @@ struct SCdxKeyOp;
 			u8			reserved6[4];			// 32,4
 			SWorkArea*	wa;						// 32,4		Pointer to this index's work area
 		};
+
+		// Big block unused space
 		u8			reserved7[466];				// 36,466
 
+		// Flags
 		u16			order;						// 502,2	0=Ascending, 1=Descending
 		u16			reserved8;					// 504,2
 

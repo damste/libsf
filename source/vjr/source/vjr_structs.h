@@ -698,7 +698,7 @@ struct SVjrPrintJob
 	SDatum			highlightText;					// Allows certain items to be highlighted during print, multiple entries are separated 
 	SFont*			highlightFont;					// Font to use for highlighting
 	SBgra			higlightFore;					// Foreground color for highlighted text
-	SBgra			higlightFore;					// Background color for highlighted text
+	SBgra			higlightBack;					// Background color for highlighted text
 	SDatum			onlypageText;					// Only preview or print pages which have this text
 
 	// Internal page render data

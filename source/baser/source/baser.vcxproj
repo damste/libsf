@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{39773ABB-C29B-4DBD-B4BD-4F282F65E183}</ProjectGuid>
+    <RootNamespace>baser</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>NotSet</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.25420.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <StructMemberAlignment>1Byte</StructMemberAlignment>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>\libsf\source\vjr\source\lib32\glew32.lib;\libsf\source\vjr\source\lib32\glew32s.lib;\libsf\source\vjr\source\lib32\freeglut.lib;\libsf\source\vjr\source\sound\SDL-1.2.15\lib\x86\SDL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>\libsf\source\vjr\source\lib32\glew32.lib;\libsf\source\vjr\source\lib32\glew32s.lib;\libsf\source\vjr\source\lib32\freeglut.lib;\libsf\source\vjr\source\sound\SDL-1.2.15\lib\x86\SDL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapm5sin.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapmasin.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapmasn0.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapmcbrt.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapmcnst.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapmfact.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapmfmul.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapmgues.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapmhasn.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapmhsin.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapmipwr.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapmistr.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapmpwr2.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapmrsin.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapmsqrt.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapmstck.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapmutil.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapmutl1.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapmutl2.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapm_add.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapm_cpi.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapm_div.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapm_exp.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapm_fam.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapm_fft.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapm_flr.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapm_fpf.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapm_gcd.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapm_lg2.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapm_lg3.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapm_lg4.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapm_log.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapm_mul.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapm_pow.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapm_rcp.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapm_rnd.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapm_set.c" />
+    <ClCompile Include="..\..\vjr\source\3rd_party\mapm\mapm_sin.c" />
+    <ClCompile Include="baser.cpp" />
+    <ClInclude Include="baser.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+      <FileType>CppCode</FileType>
+    </ClInclude>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
