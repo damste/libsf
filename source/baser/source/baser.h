@@ -108,11 +108,25 @@
 	SFont*			fontUbuntu14								= NULL;
 
 
+//////////
+// Callback messages
+//////
+	u32				_WMBASER_CONTENT_IS_READY					= WM_USER + 0;
+
+
 
 
 //////////
 // Forward declarations
 //////
+	// Public declarations (see baser.def)
+	int						baser_load							(s8 tcFilename);
+	int						baser_release						(int tnHandle);
+	int						baser_populate_row					(int tnHandle,              int tnOffset, int tnBase, s8* tcBufferOut, int tnBufferOut_length);
+	int						baser_parse_block_by_struct			(int tnHandle, HWND tnHwnd, int tnOffset, cs8* cStruct, int nStructLength);
+	int						baser_retrieve_data					(int nId, s8* cDataOut, int tnDataLength);
+
+	// Internal declarations
 	bool					iBaser_launch						(s8* tcImageName);
 	void					iiBaser_initialize					(void);
 	void					iiBaser_populateStaticImages		(void);

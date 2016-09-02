@@ -96,3 +96,69 @@
 			}3
 
 	}
+
+
+
+
+//////////
+//
+// DLL functions
+//
+//////
+	// Load a file into memory
+	int baser_load(s8 tcFilename)
+	{
+	}
+
+
+
+
+//////////
+//
+// Release a previously loaded file
+//
+//////
+	int baser_release(int tnHandle)
+	{
+	}
+
+
+
+
+//////////
+//
+// Populate the indicated row in the indicated base
+//
+//////
+	int baser_populate_row(int tnHandle, int tnOffset, int tnBase, s8* tcBufferOut, int tnBufferOut_length)
+	{
+	}
+
+
+
+
+//////////
+//
+// Parses the indicated block using the indicated structure to produce appropriately formatted output
+//
+//////
+	// Note:  This processing spawns a thread which parses in the background, and notifies the tnHwnd when completed
+	// Note:  It may result in a data set that is abandoned as it may spin off many threads
+	int baser_parse_block_by_struct(int tnHandle, HWND tnHwnd, int tnOffset, cs8* cStruct, int nStructLength)
+	{
+	}
+
+
+
+
+//////////
+//
+// Called to retrieve a message that's been prepared for the display
+//
+//////
+	int baser_retrieve_data(int nId, s8* cDataOut, int tnDataLength)
+	{
+		// Search for the message
+
+		// Retrieve message
+	}
