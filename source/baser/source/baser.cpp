@@ -74,27 +74,26 @@
 // Top level entry point
 //
 //////
-	int main(int argc, char* argv[])
+	BOOL WINAPI DllMain(HANDLE hDllHandle, DWORD dwReason, LPVOID lpReserved)
 	{
-		MSG msg;
+		switch (dwReason)
+		{
+			case DLL_PROCESS_ATTACH:
+				iBaser_initialize();
+				break;
+			
+			case DLL_PROCESS_DETACH:
+				break;
 
-		
-		//////////
-		// Launch viewer
-		//////
-			glBaser_isRunning = true;
+			case DLL_THREAD_ATTACH:
+				break;
 
-			// Load and display
-			if (iBaser_launch(argv[1]))
-			{
-				// Continue so long as we are running
-				while (glBaser_isRunning && GetMessage(&msg, NULL, 0, 0))
-				{
-					TranslateMessage(&msg);
-					DispatchMessage(&msg);
-				}
-			}3
+			case DLL_THREAD_DETACH:
+				break;
+		}
 
+		// Indicate success
+		return(TRUE);
 	}
 
 
@@ -108,6 +107,7 @@
 	// Load a file into memory
 	int baser_load(s8 tcFilename)
 	{
+		return(-1);
 	}
 
 
@@ -120,6 +120,7 @@
 //////
 	int baser_release(int tnHandle)
 	{
+		return(-1);
 	}
 
 
@@ -132,6 +133,7 @@
 //////
 	int baser_populate_row(int tnHandle, int tnOffset, int tnBase, s8* tcBufferOut, int tnBufferOut_length)
 	{
+		return(-1);
 	}
 
 
@@ -146,6 +148,7 @@
 	// Note:  It may result in a data set that is abandoned as it may spin off many threads
 	int baser_parse_block_by_struct(int tnHandle, HWND tnHwnd, int tnOffset, cs8* cStruct, int nStructLength)
 	{
+		return(-1);
 	}
 
 
@@ -161,4 +164,7 @@
 		// Search for the message
 
 		// Retrieve message
+
+		// Indicate result
+		return(-1);
 	}
