@@ -27,10 +27,9 @@ LOCAL lnI, lcFile, llLaunched
 	DECLARE INTEGER		Sleep							IN WIN32API							INTEGER nTimeout
 	DECLARE INTEGER		baser_load						IN \libsf\source\baser\baser.dll	STRING	cFilename
 	DECLARE INTEGER		baser_release					IN \libsf\source\baser\baser.dll	INTEGER	nHandle
-	DECLARE INTEGER		baser_populate_row				IN \libsf\source\baser\baser.dll	INTEGER	nHandle, INTEGER nOffset, INTEGER nBase, STRING@ cBufferOut, INTEGER nBufferOut_length, INTEGER@ nOffsetIncrement
-	DECLARE INTEGER		baser_parse_block_by_struct		IN \libsf\source\baser\baser.dll	INTEGER	nHandle, HWND nHwnd, INTEGER nOffset, INTEGER nBase, STRING@ cBufferOut, INTEGER nBufferOut_length, STRING cStruct, INTEGER nStructLength
+	DECLARE INTEGER		baser_populate_row				IN \libsf\source\baser\baser.dll	INTEGER	nHandle, INTEGER nOffset, INTEGER nBase, STRING@ cBufferOut, INTEGER nBufferOut_length
+	DECLARE INTEGER		baser_parse_block_by_struct		IN \libsf\source\baser\baser.dll	INTEGER	nHandle, INTEGER nHwnd, INTEGER nOffset, STRING cStruct, INTEGER nStructLength
 	DECLARE INTEGER		baser_retrieve_data				IN \libsf\source\baser\baser.dll	INTEGER nId, STRING@ cDataOut, INTEGER tnDataLength
-			
 
 
 **********
@@ -63,7 +62,7 @@ LOCAL lnI, lcFile, llLaunched
 
 
 DEFINE CLASS ieEventHandler AS Custom
-	* For IWebBrowser2 interface
+	* For DWebBrowserEvents2 interface, see:  https://msdn.microsoft.com/en-us/library/aa768283(v=vs.85).aspx
 	IMPLEMENTS DWebBrowserEvents2 IN "SHDOCVW.DLL"
 	
 	* Fires before navigation occurs in the given object (on either a window element or a frameset element)
@@ -247,6 +246,7 @@ DEFINE CLASS ieEventHandler AS Custom
 *	PROCEDURE DWebBrowserEvents2_UpdatePageStatus
 *	ENDPROC
 *****
+
 	* Fired to indicate the security level of the current web page contents
 	PROCEDURE DWebBrowserEvents2_SetSecureLockIcon ;
 				(tnSecureLockIcon	AS Number)		AS VOID
@@ -278,12 +278,24 @@ DEFINE CLASS ieEventHandler AS Custom
 	PROCEDURE DWebBrowserEvents2_PrivacyImpactedStateChange ;
 				(tImpacted		AS Logical)		AS VOID
 	ENDPROC
-**********
-* Undocumented, but implemented
-* BEGIN
-*****
-	
-*****
-* END
-**********
+
+	* Fires to indicate the progress and status of Microsoft Phishing Filter analysis of the current webpage
+	PROCEDURE DWebBrowserEvents2_SetPhishingFilterStatus ;
+				(tnPhishingFilterStatus		AS Long)		AS VOID
+	ENDPROC
+
+	* Fired when a third-party URL is blocked
+	PROCEDURE DWebBrowserEvents2_ThirdPartyUrlBlocked ;
+				(tcUrl		AS Variant, ;
+				tnCount		AS Long)		AS VOID			&& Note:  tnCount is always 0
+	ENDPROC
+
+	* Fired when a cross-domain redirect request is blocked
+	PROCEDURE DWebBrowserEvents2_RedirectXDomainBlocked ;
+				(toIe			AS Variant, ;
+				tcStartUrl		AS Variant, ;
+				tcRedirectUrl	AS Variant, ;
+				tcFrame			AS Variant, ;
+				tnStatusCode	AS Variant)		AS VOID
+	ENDPROC
 ENDDEFINE

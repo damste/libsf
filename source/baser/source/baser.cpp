@@ -60,9 +60,12 @@
 //////
 	#define _NONVJR_COMPILE		// Turns off some features in VJr that fail on compilation from here
 	#define _BMP_LOCALITY 1		// Force definitions to be local
+	#define _WIN32_WINNT 0x0601
 	#include "\libsf\source\vjr\source\vjr.h"
 	#undef main
 
+extern "C"
+{
 	// Supporting algorithms
 	#include "baser.h"
 
@@ -179,7 +182,7 @@
 			return(0);
 		}
 
-		// Not found
+		// Not found, or currently in use and cannot be released
 		return(-1);
 	}
 
@@ -193,8 +196,7 @@
 //////
 	s32 baser_populate_row(int tnHandle, int tnOffset, int tnBase, s8* tcBufferOut, int tnBufferOut_length)
 	{
-		s32				lnI;
-		u32				lnOffset;
+		s32				lnI, lnJ, lnOffset;
 		s8				buffer[64];
 		union {
 			int			_bsr;
@@ -211,11 +213,12 @@
 			tnBase = min(max(tnBase, 2), 36);
 
 			// Are we within our block range?
-			if (!between(tnOffset, bsr->loadAddress, bsr->loadAddress + bsr->length - (tnBufferOut_length / 3)))
+			if (!between(tnOffset, bsr->loadAddress, bsr->loadAddress + bsr->data.length - (tnBufferOut_length / 3)))
 			{
 				// Read the nearest 512-byte block into memory
-				lnOffset	= tnOffset & ~0x1ff;
-				bsr->length	= iDisk_read(bsr->handle, lnOffset, &bsr->data_s8, 512, &error, &errorNum);
+				lnOffset			= tnOffset & ~0x1ff;
+				bsr->data.data_s8	= &bsr->data_s8[0];
+				bsr->data.length	= iDisk_read(bsr->handle, lnOffset, &bsr->data_s8, 512, &error, &errorNum);
 				if (error)
 				{
 					// Failure reading disk
@@ -233,21 +236,41 @@
 			}
 
 			// Populate the line
-			for (lnI = 0, lnOffset = 0; lnI < tnBufferOut_length; lnI += 3, lnOffset++)
+			for (lnI = 0, lnOffset = 0; lnOffset < 16 && lnI < tnBufferOut_length; lnOffset++)
 			{
 				// Populate with data or a placeholder
-				if (lnI < bsr->length)
+				if (lnI < bsr->data.length)
 				{
-					// Data
-					_itoa((int)bsr->data_u8[lnI], buffer, tnBase);
-					sprintf(bsr->data_s8 + lnOffset, "%2s ", buffer);
+					// Translate into the base
+					_itoa((int)bsr->data_u8[tnOffset + lnOffset], buffer, tnBase);
+
+					// Store
+					if (lnI != 0 && (lnOffset + 1) % 4 == 0)		sprintf(tcBufferOut + lnI, "%2s  ", buffer);
+					else											sprintf(tcBufferOut + lnI, "%2s ", buffer);
+
+					// Prefix with 0s as needed
+					for (lnJ = lnI; lnJ < lnI + 2 && tcBufferOut[lnJ] == 32; lnJ++)
+						tcBufferOut[lnJ] = '0';
+
+					// Increase
+					if (lnI != 0 && (lnOffset + 1) % 4== 0)			lnI += 4;
+					else											lnI += 3;
 
 				} else {
 					// Placeholder ".. " repeatedly
-					bsr->data_s8[lnI+0] = '.';
-					bsr->data_s8[lnI+1] = '.';
-					bsr->data_s8[lnI+2] = ' ';
-					bsr->data_s8[lnI+4] = 0;
+					tcBufferOut[lnI+0] = '.';
+					tcBufferOut[lnI+1] = '.';
+					tcBufferOut[lnI+2] = ' ';
+					if (lnI != 0 && lnI % 4 == 0)
+					{
+						tcBufferOut[lnI+3] = ' ';
+						tcBufferOut[lnI+4] = 0;
+						lnI += 4;
+
+					} else {
+						tcBufferOut[lnI+3] = 0;
+						lnI += 3;
+					}
 				}
 			}
 
@@ -272,9 +295,49 @@
 	// Note:  It may result in a data set that is abandoned as it may spin off many threads
 	s32 baser_parse_block_by_struct(int tnHandle, HWND tnHwnd, int tnOffset, cs8* cStruct, int nStructLength)
 	{
-		// Copy the content
+		DWORD				lnThreadId;
+		SBaser*				bsr;
+		union {
+			s32				_bm;
+			SBaserMsg*		bm;
+		};
 
-		// Spawn the thread
+
+		// Make sure our environment is sane
+		bm = NULL;
+		if (cStruct && nStructLength > 0 && (bsr = iBaser_findBy_handle(tnHandle)))
+		{
+			// Allocate a message
+			bm = (SBaserMsg*)malloc(sizeof(SBaserMsg));
+			if (bm)
+			{
+				// Initialize
+				memset(bm, 0, sizeof(SBaserMsg));
+
+				// Allocate
+				bm->message.data_s8 = (s8*)malloc(nStructLength);
+				if (bm->message.data_s8)
+				{
+					// Copy
+					bm->message.length = nStructLength;
+					memcpy(&bm->bsr, bsr, sizeof(bm->bsr));
+
+					// Physically copy
+					memcpy(bm->message.data_s8, cStruct, nStructLength);
+
+					// Spawn the thread
+					CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)&iiBaser_parse_block_by_struct__threadProc, bm, NULL, &lnThreadId);
+
+				} else {
+					// Failure
+					free(bm);
+					bm = NULL;
+				}
+			}
+		}
+
+		// Indicate our result
+		return(_bm);
 	}
 
 
@@ -294,3 +357,7 @@
 		// Indicate result
 		return(-1);
 	}
+
+
+};	// extern "C"
+

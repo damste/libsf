@@ -117,30 +117,32 @@
 	// These occupy the gsBaserRoot builder
 	struct SBaser
 	{
-		bool	isUsed;
+		bool		isUsed;
 
 		// Filename used to open (retrieved with GetFullPathname())
-		s8		filename[_MAX_PATH];
-		s32		filenameLength;
-		s32		handle;
-		s32		loadAddress;
+		s8			filename[_MAX_PATH];
+		s32			filenameLength;
+		s32			handle;
+		s32			loadAddress;
 
 		// Number of bytes actually read (max of 512)
-		s32		length;
+		SDatum		data;
 		union {
-			s8	data_s8[512];
-			u8	data_u8[512];
+			s8		data_s8[512];
+			u8		data_u8[512];
 		};
 	};
 
-	// For sending messages back
+	// For passing messages
+	// Note:  Each time a message is sent with a valid bsr, the bsr->refCount is incremented
 	struct SBaserMsg
 	{
-		bool	isUsed;
+		bool		isUsed;
+		SDatum		message;		// Message begin sent
+		SBaser		bsr;			// Copy of related baser entry
 
-		// The message content
-		u8*		message;
-		s32		messageLength;
+		// Data loaded for this operation (may be different than bsr->data_s8[])
+		SDatum		data;
 	};
 
 
@@ -161,7 +163,7 @@
 	s8*				iiBaser_getFullPathName						(s8* tcFilename, s8 full_pathname[_MAX_PATH]);
 	SBaser*			iBaser_findBy_fullPathname					(s8* tcPathname);
 	SBaser*			iBaser_findBy_handle						(s32 tnHandle);
-	DWORD			iiBaser_parse_block_by_struct__threadProc	(LPVOID txParam);
+	DWORD			iiBaser_parse_block_by_struct__threadProc	(LPVOID param);
 
 
 
@@ -174,6 +176,9 @@
 //////
 	void iBaser_initialize(void)
 	{
+		// Initialize VJr's internal engine
+		iVjr_init_minimal();
+
 		// Allocate our baser info
 		iBuilder_createAndInitialize(&gsBaserRoot, sizeof(SBaser) * 20);
 	}
@@ -280,11 +285,32 @@
 // Called to parse and process the indicated structure, using the indicated data block
 //
 //////
-	DWORD iiBaser_parse_block_by_struct__threadProc(LPVOID txParam)
+	DWORD iiBaser_parse_block_by_struct__threadProc(LPVOID param)
 	{
+		SBaserMsg*	bm;
+		SEM*		sem;
+
+
+		// Retrieve our parameter rightly
+		bm = (SBaserMsg*)param;
+
 		// Parse the structure
+		if (iSEM_load_fromMemory(NULL, (sem = iSEM_allocate(true)), &bm->message, true, false))
+		{
+			// Render the data based on the structure
+// TODO:  working here
 
-		// Render the data based on the structure
+			// Send back completed message
 
-		// Indicate that we're completed
+			// Delete the sem
+			iSEM_delete(&sem, true);
+		}
+
+		// Release the memory blocks
+		iDatum_delete(&bm->message, false);
+		free(bm);
+
+		// Complete
+		TerminateThread(GetCurrentThread(), 0);
+		return(0);
 	}

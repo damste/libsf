@@ -512,7 +512,8 @@ struct SObjEventMap;
 //////////
 // vjr_init.cpp
 //////
-	void					iVjr_init								(HACCEL* hAccelTable);
+	void					iVjr_init_minimal						(void);
+	void					iVjr_init								(HACCEL* hAccelTable = NULL, bool tlInitializeSound = true);
 	void					iVjr_init_loadCaskIcons					(void);
 	void					iVjr_init_loadBitmapArray				(void);
 	void					iVjr_init_createMessageWindow			(void);

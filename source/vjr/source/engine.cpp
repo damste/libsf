@@ -627,7 +627,7 @@
 		//////////
 		// Copy the source code line
 		//////
-			iDatum_duplicate(line->compilerInfo->sourceCode, line->sourceCode->data_s8, line->sourceCode_populatedLength);
+			iDatum_duplicate(&line->compilerInfo->sourceCode, line->sourceCode->data_s8, line->sourceCode_populatedLength);
 
 
 		//////////

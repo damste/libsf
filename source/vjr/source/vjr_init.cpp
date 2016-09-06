@@ -87,19 +87,8 @@
 // Startup initialization, called from WinMain() only.
 //
 //////
-	void iVjr_init(HACCEL* hAccelTable)
+	void iVjr_init_minimal(void)
 	{
-		SThisCode*		thisCode = NULL;
-		RECT			lrc;
-#if !defined(_NONVJR_COMPILE)
-		u8				logBuffer[256];
-		SBitmap*		bmp;
-#if defined(_GRACE_COMPILE)
-		SGraceParams	params;
-#endif
-#endif
-
-
 		// Enable %n in printf() and derivatives
 		_set_printf_count_output(1);    // 0=disable, others=enable
 
@@ -126,6 +115,22 @@
 		// Initialize our critical section
 		initializeUid();
 		InitializeCriticalSection(&cs_logData);
+	}
+
+	void iVjr_init(HACCEL* hAccelTable, bool tlInitializeSound)
+	{
+		SThisCode*		thisCode = NULL;
+		RECT			lrc;
+#if !defined(_NONVJR_COMPILE)
+		u8				logBuffer[256];
+		SBitmap*		bmp;
+#if defined(_GRACE_COMPILE)
+		SGraceParams	params;
+#endif
+#endif
+
+
+		iVjr_init_minimal();
 
 		// These arrows are used as a standard throughout the system for the size of an icon.
 		// They must be loaded first.
@@ -151,7 +156,8 @@
 		gsFontCask					= iFont_create(cgcFontName_cask,				20, FW_BOLD,	0, 0);
 
 		// Initialize the sound system
-		iSound_initialize();
+		if (tlInitializeSound)
+			iSound_initialize();
 		memset(&gseRootSounds, 0, sizeof(gseRootSounds));	// Initialize our root sounds array
 
 //////////
@@ -786,10 +792,9 @@
 			iiVjr_init_createGlobalSystemVariable(&varTriggerlevel,		_VAR_TYPE_S32,			cgcName_triggerlevel);
 			iiVjr_init_createGlobalSystemVariable(&varUnix,				_VAR_TYPE_LOGICAL,		cgcName_unix);
 			// varVfp is initialized as _vjr system-wide
-			lnVal_s8 = _LOGICAL_TRUE;
 			iiVjr_init_createGlobalSystemVariable(&varWindows,			_VAR_TYPE_LOGICAL,		cgcName_windows,		(cs8*)&lnVal_s8,	1);
 			iiVjr_init_createGlobalSystemVariable(&varWizard,			_VAR_TYPE_CHARACTER,	cgcName_wizard,			(cs8*)&cgcWizardFilename[0],		sizeof(cgcWizardFilename) - 1);
-			iiVjr_init_createGlobalSystemVariable(&varWrap,				_VAR_TYPE_LOGICAL,		cgcName_wrap,			".F." );
+			iiVjr_init_createGlobalSystemVariable(&varWrap,				_VAR_TYPE_LOGICAL,		cgcName_wrap);
 
 	}
 
@@ -891,7 +896,6 @@
 #ifndef _NONVJR_COMPILE
 		// Casks are only used in VJr
 		bmpCaskIconsTiled			= iBmp_rawLoad(cgc_caskIconsBmp);
-#endif
 		bmpCaskRoundLeft			= iBmp_createAndExtractRect(bmpCaskIconsTiled, 12, 2, 31, 38);
 		bmpCaskRoundRight			= iBmp_createAndExtractRect(bmpCaskIconsTiled, 33, 2, 52, 38);
 		bmpCaskSquareLeft			= iBmp_createAndExtractRect(bmpCaskIconsTiled, 12, 44, 31, 80);
@@ -955,4 +959,5 @@
 		caskBlack1					= iBmp_extractColorAtPoint(bmpCaskIconsTiled, 160, 63);
 		caskBlack2					= iBmp_extractColorAtPoint(bmpCaskIconsTiled, 154, 63);
 		caskBlack3					= iBmp_extractColorAtPoint(bmpCaskIconsTiled, 148, 63);
+#endif
 	}

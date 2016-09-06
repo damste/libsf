@@ -379,7 +379,7 @@
 		// Read
 		//////
 			lnResult = _read(tnFile, tcData, tnReadCount);
-			if (lnResult == 0)
+			if (lnResult == tnReadCount)
 			{
 				// No error
 				if (tlError)		*tlError	= false;

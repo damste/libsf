@@ -91,13 +91,15 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(OutputPath)bmps.lib;..\..\source\lib32\glew32.lib;..\..\source\lib32\glew32s.lib;..\..\source\lib32\freeglut.lib;..\..\source\sound\SDL-1.2.15\lib\x86\SDL.lib;..\..\source\3rd_party\mapm\mapm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OutputPath)bmps.lib;\libsf\utils\common\lib\glew32.lib;\libsf\utils\common\lib\glew32s.lib;\libsf\utils\common\lib\freeglut.lib;..\..\source\sound\SDL-1.2.15\lib\x86\SDL.lib;..\..\source\3rd_party\mapm\mapm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>\libsf\source\vjr\source\lib32\use_these.bat</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>Copy 32-bit DLLs for use</Message>
+      <Message>
+      </Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -113,13 +115,15 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(OutputPath)bmps.lib;..\..\source\lib64\glew32.lib;..\..\source\lib64\glew32s.lib;..\..\source\lib64\freeglut.lib;..\..\source\sound\SDL-1.2.15\lib\amd64\SDL.lib;..\..\source\3rd_party\mapm\mapm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OutputPath)bmps.lib;\libsf\utils\common\lib\glew32.lib;\libsf\utils\common\lib\glew32s.lib;\libsf\utils\common\lib\freeglut.lib;..\..\source\sound\SDL-1.2.15\lib\amd64\SDL.lib;..\..\source\3rd_party\mapm\mapm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>\libsf\source\vjr\source\lib64\use_these.bat</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>Copy 64-bit DLLs for use</Message>
+      <Message>
+      </Message>
     </PostBuildEvent>
     <MASM>
       <WarningLevel>2</WarningLevel>
@@ -141,11 +145,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>$(OutputPath)bmps.lib;..\..\source\lib32\glew32.lib;..\..\source\lib32\glew32s.lib;..\..\source\lib32\freeglut.lib;..\..\source\sound\SDL-1.2.15\lib\x86\SDL.lib;..\..\source\3rd_party\mapm\mapm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OutputPath)bmps.lib;\libsf\utils\common\lib\glew32.lib;\libsf\utils\common\lib\glew32s.lib;\libsf\utils\common\lib\freeglut.lib;..\..\source\sound\SDL-1.2.15\lib\x86\SDL.lib;..\..\source\3rd_party\mapm\mapm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>call \libsf\source\vjr\source\lib32\use_these.bat
-copy $(OutputPath)$(ProjectName).exe \libsf_offline\source\vjr\bin\32-bit\vjr_msvc_32.exe
+      <Command>copy $(OutputPath)$(ProjectName).exe \libsf_offline\source\vjr\bin\32-bit\vjr_msvc_32.exe
 </Command>
     </PostBuildEvent>
     <PostBuildEvent>
@@ -168,11 +171,10 @@ copy $(OutputPath)$(ProjectName).exe \libsf_offline\source\vjr\bin\32-bit\vjr_ms
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>$(OutputPath)bmps.lib;..\..\source\lib64\glew32.lib;..\..\source\lib64\glew32s.lib;..\..\source\lib64\freeglut.lib;..\..\source\sound\SDL-1.2.15\lib\amd64\SDL.lib;..\..\source\3rd_party\mapm\mapm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OutputPath)bmps.lib;\libsf\utils\common\lib\glew32.lib;\libsf\utils\common\lib\glew32s.lib;\libsf\utils\common\lib\freeglut.lib;..\..\source\sound\SDL-1.2.15\lib\amd64\SDL.lib;..\..\source\3rd_party\mapm\mapm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>call \libsf\source\vjr\source\lib64\use_these.bat
-copy $(OutputPath)$(ProjectName).exe \libsf_offline\source\vjr\bin\64-bit\vjr_msvc_64.exe
+      <Command>copy $(OutputPath)$(ProjectName).exe \libsf_offline\source\vjr\bin\64-bit\vjr_msvc_64.exe
 </Command>
     </PostBuildEvent>
     <PostBuildEvent>
