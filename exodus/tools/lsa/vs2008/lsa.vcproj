@@ -60,7 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="\libsf\source\vjr\source\lib32\glew32.lib \libsf\source\vjr\source\lib32\glew32s.lib \libsf\source\vjr\source\lib32\freeglut.lib \libsf\source\vjr\source\sound\SDL-1.2.15\lib\x86\SDL.lib"
+				AdditionalDependencies="\libsf\utils\common\lib\glew32.lib \libsf\utils\common\lib\glew32s.lib \libsf\utils\common\lib\freeglut.lib \libsf\source\vjr\source\sound\SDL-1.2.15\lib\x86\SDL.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -134,7 +134,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="\libsf\source\vjr\source\lib32\glew32.lib \libsf\source\vjr\source\lib32\glew32s.lib \libsf\source\vjr\source\lib32\freeglut.lib \libsf\source\vjr\source\sound\SDL-1.2.15\lib\x86\SDL.lib"
+				AdditionalDependencies="\libsf\utils\common\lib\glew32.lib \libsf\utils\common\lib\glew32s.lib \libsf\utils\common\lib\freeglut.lib \libsf\source\vjr\source\sound\SDL-1.2.15\lib\x86\SDL.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="1"

@@ -235,7 +235,7 @@
 			if (errorNum)		*errorNum	= _ERROR_DISK_CLOSE_ERROR;
 
 			// For debugging
-			lnErrno = errno();
+			lnErrno = errno;
 		}
 
 		// Indicate the result

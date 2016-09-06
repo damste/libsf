@@ -1395,7 +1395,8 @@
 	bool					iieops_lsa_minus							(SExprOp* eop);
 	bool					iieops_lsa_shift_left						(SExprOp* eop);
 	bool					iieops_lsa_shift_right						(SExprOp* eop);
-	bool					iieops_lsa_ampersand						(SExprOp* eop);
+	bool					iieops_lsa_ampersand_offset					(SExprOp* eop);
+	bool					iieops_lsa_ampersand_and					(SExprOp* eop);
 	bool					iieops_lsa_caret							(SExprOp* eop);
 	bool					iieops_lsa_pipe_sign						(SExprOp* eop);
 	bool					iieops_lsa_numericalpha						(SExprOp* eop);

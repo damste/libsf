@@ -3961,33 +3961,55 @@ debug_break;
 //////////
 //
 //	lsa's order of precedence is:
-// 		Level 1:	()		[]		.
-// 		Level 2:	!		~		offset		sizeof		alignof
-// 		Level 3:	*		/		%
-// 		Level 4:	+		-
-// 		Level 5:	<<		>>
-// 		Level 6:	&
-//		Level 7:	^
-//		Level 8:	|
-//		Level 9:	numericalpha	numeric
-//		Level 10:	,
-//		Level 11:	others/custom
+//		Level 1:	.
+// 		Level 2:	()		[]
+// 		Level 3:	!		~		offset		sizeof		alignof		$		@						// $=sizeof;	@=alignof
+// 		Level 4:	*		/		%
+// 		Level 5:	+		-
+// 		Level 6:	<<		>>
+// 		Level 7:	&						// &=and, offset;	$=sizeof;	@=alignof
+//		Level 8:	^
+//		Level 9:	|
+//		Level 10:	numericalpha	numeric
+//		Level 11:	,
+//		Level 12:	others/custom
 //
 //////
 	// cb->value	-- level number
 	// cb->data		-- pointer to eopLevel
 	SBuilder* iiComps_eops_generateDefault_lsa(bool* tlValid, SCallback* cb)
 	{
-		SBuilder* eops;
-		SExprOp* eopLevel;
+		s32			lnLevel;
+		SBuilder*	eops;
+		SExprOp*	eopLevel;
 
 
 		// Block entered for structured exit
 		do {
 
 			//////////
-			// Level 1:		()		[]		.
+			// Level 1:		.
 			//////
+				lnLevel = 1;
+				if (!(eopLevel = iieops_createLevel(  (eops = NULL, &eops)  )))
+					break;
+
+				// Create the item
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_dot, 0,			_ICODE_DOT))					break;
+
+				// Callback
+				if (cb && cb->_func)
+				{
+					cb->value	= lnLevel;		// Level callback
+					cb->data	= eopLevel;
+					cb->func(cb);
+				}
+
+
+			//////////
+			// Level 2:		()		[]
+			//////
+				++lnLevel;
 				if (!(eopLevel = iieops_createLevel(  (eops = NULL, &eops)  )))
 					break;
 
@@ -3999,34 +4021,42 @@ debug_break;
 				// Callback
 				if (cb && cb->_func)
 				{
-					cb->value	= 1;			// Level 1 callback
+					cb->value	= lnLevel;		// Level callback
 					cb->data	= eopLevel;
 					cb->func(cb);
 				}
 
 
 			//////////
-			// Level 2:		!		~		offset		sizeof		alignof
+			// Level 3:		!		~		offset		sizeof		alignof
 			//////
+				++lnLevel;
 				if (!(eopLevel = iieops_createLevel(&eops)))
 					break;
 
 				// Create the item
-				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_not, 0,			_ICODE_EXCLAMATION_POINT))		break;
-				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_tilde, 0,			_ICODE_TILDE))					break;
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_not, 0,				_ICODE_EXCLAMATION_POINT))		break;
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_tilde, 0,				_ICODE_TILDE))					break;
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_offset, 0,			_ICODE_LSA_OFFSET))				break;
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_sizeof, 0,			_ICODE_LSA_SIZEOF))				break;
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_alignof, 0,			_ICODE_LSA_ALIGNOF))			break;
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_ampersand_offset, 0,	_ICODE_AMPERSAND))				break;
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_sizeof, 0,			_ICODE_DOLLAR_SIGN))			break;
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_alignof, 0,			_ICODE_AT_SIGN))				break;
 
 				// Callback
 				if (cb && cb->_func)
 				{
-					cb->value	= 2;			// Level 2 callback
+					cb->value	= lnLevel;		// Level callback
 					cb->data	= eopLevel;
 					cb->func(cb);
 				}
 
 
 			//////////
-			// Level 3:		*		/		%
+			// Level 4:		*		/		%
 			//////
+				++lnLevel;
 				if (!(eopLevel = iieops_createLevel(&eops)))
 					break;
 
@@ -4038,15 +4068,16 @@ debug_break;
 				// Callback
 				if (cb && cb->_func)
 				{
-					cb->value	= 3;			// Level 3 callback
+					cb->value	= lnLevel;		// Level callback
 					cb->data	= eopLevel;
 					cb->func(cb);
 				}
 
 
 			//////////
-			// Level 4:		+		-
+			// Level 5:		+		-
 			//////
+				++lnLevel;
 				if (!(eopLevel = iieops_createLevel(&eops)))
 					break;
 
@@ -4057,15 +4088,16 @@ debug_break;
 				// Callback
 				if (cb && cb->_func)
 				{
-					cb->value	= 4;			// Level 4 callback
+					cb->value	= lnLevel;		// Level callback
 					cb->data	= eopLevel;
 					cb->func(cb);
 				}
 
 
 			//////////
-			// Level 5:		<<		>>
+			// Level 6:		<<		>>
 			//////
+				++lnLevel;
 				if (!(eopLevel = iieops_createLevel(&eops)))
 					break;
 
@@ -4076,33 +4108,35 @@ debug_break;
 				// Callback
 				if (cb && cb->_func)
 				{
-					cb->value	= 5;			// Level 5 callback
+					cb->value	= lnLevel;		// Level callback
 					cb->data	= eopLevel;
 					cb->func(cb);
 				}
 
 
 			//////////
-			// Level 6:		&
+			// Level 7:		&
 			//////
+				++lnLevel;
 				if (!(eopLevel = iieops_createLevel(&eops)))
 					break;
 
 				// Create the item
-				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_ampersand, 0,		_ICODE_AMPERSAND))				break;
+				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_ampersand_and, 0,		_ICODE_AMPERSAND))				break;
 
 				// Callback
 				if (cb && cb->_func)
 				{
-					cb->value	= 6;			// Level 6 callback
+					cb->value	= lnLevel;		// Level callback
 					cb->data	= eopLevel;
 					cb->func(cb);
 				}
 
 
 			//////////
-			// Level 7:		^
+			// Level 8:		^
 			//////
+				++lnLevel;
 				if (!(eopLevel = iieops_createLevel(&eops)))
 					break;
 
@@ -4112,15 +4146,16 @@ debug_break;
 				// Callback
 				if (cb && cb->_func)
 				{
-					cb->value	= 7;			// Level 7 callback
+					cb->value	= lnLevel;		// Level callback
 					cb->data	= eopLevel;
 					cb->func(cb);
 				}
 
 
 			//////////
-			// Level 8:		|
+			// Level 9:		|
 			//////
+				++lnLevel;
 				if (!(eopLevel = iieops_createLevel(&eops)))
 					break;
 
@@ -4130,15 +4165,16 @@ debug_break;
 				// Callback
 				if (cb && cb->_func)
 				{
-					cb->value	= 8;			// Level 8 callback
+					cb->value	= lnLevel;		// Level callback
 					cb->data	= eopLevel;
 					cb->func(cb);
 				}
 
 
 			//////////
-			// Level 9:		numericalpha	numeric
+			// Level 10:		numericalpha	numeric
 			//////
+				++lnLevel;
 				if (!(eopLevel = iieops_createLevel(&eops)))
 					break;
 
@@ -4149,15 +4185,16 @@ debug_break;
 				// Callback
 				if (cb && cb->_func)
 				{
-					cb->value	= 9;			// Level 9 callback
+					cb->value	= lnLevel;		// Level callback
 					cb->data	= eopLevel;
 					cb->func(cb);
 				}
 
 
 			//////////
-			// Level 10:	,
+			// Level 11:	,
 			//////
+				++lnLevel;
 				if (!(eopLevel = iieops_createLevel(&eops)))
 					break;
 
@@ -4167,15 +4204,16 @@ debug_break;
 				// Callback
 				if (cb && cb->_func)
 				{
-					cb->value	= 10;			// Level 10 callback
+					cb->value	= lnLevel;		// Level callback
 					cb->data	= eopLevel;
 					cb->func(cb);
 				}
 
 
 			//////////
-			// Level 11:	others/custom
+			// Level 12:	others/custom
 			//////
+				++lnLevel;
 				if (!(eopLevel = iieops_createLevel(&eops)))
 					break;
 
@@ -4185,7 +4223,7 @@ debug_break;
 				// Callback
 				if (cb && cb->_func)
 				{
-					cb->value	= 11;			// Level 11 callback
+					cb->value	= lnLevel;		// Level callback
 					cb->data	= eopLevel;
 					cb->func(cb);
 				}
@@ -4389,6 +4427,8 @@ debug_break;
 //////
 	bool iieops_lsa_offset(SExprOp* eop)
 	{
+		// _ICODE_LSA_OFFSET		// Can be "offset(x)" or "offset x"
+		// _ICODE_AMPERSAND			// Must be directly adjacent
 		return(false);
 	}
 
@@ -4402,6 +4442,8 @@ debug_break;
 //////
 	bool iieops_lsa_sizeof(SExprOp* eop)
 	{
+		// _ICODE_LSA_SIZEOF		// Can be "sizeof(x)" or "sizeof x"
+		// _ICODE_DOLLAR_SIGN		// Must be directly adjacent
 		return(false);
 	}
 
@@ -4415,6 +4457,8 @@ debug_break;
 //////
 	bool iieops_lsa_alignof(SExprOp* eop)
 	{
+		// _ICODE_LSA_ALIGNOF		// Can be "alignof(x)" or "alignof x"
+		// _ICODE_AT_SIGN			// Must be directly adjacent
 		return(false);
 	}
 
@@ -4517,8 +4561,14 @@ debug_break;
 // Called to handle the ampersand component
 //
 //////
-	bool iieops_lsa_ampersand(SExprOp* eop)
+	bool iieops_lsa_ampersand_offset(SExprOp* eop)
 	{
+		// _ICODE_AMPERSAND			// If directly adjacent to the thing on the right, it's the "offset(x)" operator, like "&x" for shorthand
+	}
+
+	bool iieops_lsa_ampersand_and(SExprOp* eop)
+	{
+		// _ICODE_AMPERSAND			// If not directly adjacent to the thing on the right, it's a logical AND
 		return(false);
 	}
 
