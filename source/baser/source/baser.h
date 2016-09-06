@@ -54,8 +54,7 @@
 // Global variables
 //////
 	bool			glBaser_isRunning							= false;
-	s32				gnWidth										= 800;
-	s32				gnHeight									= 600;
+	SBuilder*		gsBaserRoot									= NULL;
 
 	// Bitmaps
 	SBitmap*		bmp512b										= NULL;
@@ -112,20 +111,58 @@
 	u32				_WMBASER_CONTENT_IS_READY					= WM_USER + 0;
 
 
+//////////
+// Structures
+//////
+	// These occupy the gsBaserRoot builder
+	struct SBaser
+	{
+		bool	isUsed;
+
+		// Filename used to open (retrieved with GetFullPathname())
+		s8		filename[_MAX_PATH];
+		s32		filenameLength;
+		s32		handle;
+		s32		loadAddress;
+
+		// Number of bytes actually read (max of 512)
+		s32		length;
+		union {
+			s8	data_s8[512];
+			u8	data_u8[512];
+		};
+	};
+
+	// For sending messages back
+	struct SBaserMsg
+	{
+		bool	isUsed;
+
+		// The message content
+		u8*		message;
+		s32		messageLength;
+	};
 
 
 //////////
 // Forward declarations
 //////
 	// Public declarations (see baser.def)
-	int				baser_load									(s8 tcFilename);
-	int				baser_release								(int tnHandle);
-	int				baser_populate_row							(int tnHandle,              int tnOffset, int tnBase, s8* tcBufferOut, int tnBufferOut_length);
-	int				baser_parse_block_by_struct					(int tnHandle, HWND tnHwnd, int tnOffset, cs8* cStruct, int nStructLength);
-	int				baser_retrieve_data							(int nId, s8* cDataOut, int tnDataLength);
+	s32				baser_load									(s8* tcFilename);
+	s32				baser_release								(int tnHandle);
+	s32				baser_populate_row							(int tnHandle,              int tnOffset, int tnBase, s8* tcBufferOut, int tnBufferOut_length);
+	s32				baser_parse_block_by_struct					(int tnHandle, HWND tnHwnd, int tnOffset, cs8* cStruct, int nStructLength);
+	s32				baser_retrieve_data							(int nId, s8* cDataOut, int tnDataLength);
+
 
 	// Internal declarations
 	void			iBaser_initialize							(void);
+	SBaser*			iiBaser_allocate							(void);
+	s8*				iiBaser_getFullPathName						(s8* tcFilename, s8 full_pathname[_MAX_PATH]);
+	SBaser*			iBaser_findBy_fullPathname					(s8* tcPathname);
+	SBaser*			iBaser_findBy_handle						(s32 tnHandle);
+	DWORD			iiBaser_parse_block_by_struct__threadProc	(LPVOID txParam);
+
 
 
 
@@ -137,4 +174,117 @@
 //////
 	void iBaser_initialize(void)
 	{
+		// Allocate our baser info
+		iBuilder_createAndInitialize(&gsBaserRoot, sizeof(SBaser) * 20);
+	}
+
+
+
+
+//////////
+//
+// Allocate the indicated baser
+//
+//////
+	SBaser* iiBaser_allocate(void)
+	{
+		return((SBaser*)iBuilder_allocateBytes(gsBaserRoot, sizeof(SBaser)));
+	}
+
+
+
+
+//////////
+//
+// Called to sanitize the filename, and retrieves a pointer to &full_pathname[0]
+//
+//////
+	s8* iiBaser_getFullPathName(s8* tcFilename, s8 full_pathname[_MAX_PATH])
+	{
+		// Convert through Windows
+		memset(full_pathname, 0, sizeof(full_pathname));
+		GetFullPathName(tcFilename, _MAX_PATH, full_pathname, NULL);
+
+		// Indicate our result
+		return(&full_pathname[0]);
+	}
+
+
+
+
+//////////
+//
+// Search for the indicated filename
+//
+//////
+	SBaser* iBaser_findBy_fullPathname(s8* tcPathname)
+	{
+		s32			lnLength;
+		u32			lnI;
+		SBaser*		bsr;
+
+
+		// Search top-down
+		if (gsBaserRoot && tcPathname)
+		{
+			// Grab the pathname length
+			lnLength = strlen(tcPathname);
+
+			// Iterate through every record
+			iterate(lnI, gsBaserRoot, bsr, SBaser)
+			// Begin
+
+				// Is this it?
+				if (bsr->isUsed && lnLength == bsr->filenameLength && _memicmp(tcPathname, bsr->data_s8, lnLength) == 0)
+					return(bsr);	// Yes
+
+			// End
+			iterate_end;
+		}
+
+		// If we get here, not found or invalid
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Called to locate the baser by its handle (which is its memory address)
+//
+//////
+	SBaser* iBaser_findBy_handle(s32 tnHandle)
+	{
+		SBaser*		bsr;
+		union {
+			s32		lnHandle_s32;
+			u32		lnHandle_u32;
+		};
+
+
+		// See if it's a valid pointer
+		lnHandle_s32 = tnHandle;
+		if (iBuilder_isPointer(gsBaserRoot, lnHandle_u32, (void**)&bsr) && bsr->isUsed)
+			return(bsr);
+
+		// If we get here, not valid, or valid and not used
+		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Called to parse and process the indicated structure, using the indicated data block
+//
+//////
+	DWORD iiBaser_parse_block_by_struct__threadProc(LPVOID txParam)
+	{
+		// Parse the structure
+
+		// Render the data based on the structure
+
+		// Indicate that we're completed
 	}

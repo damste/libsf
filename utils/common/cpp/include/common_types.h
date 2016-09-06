@@ -210,7 +210,7 @@ cu32	_F32PP				= _32BIT | _POINTER_POINTER | _FLOATING_POINT;
 cu32	_F64PP				= _64BIT | _POINTER_POINTER | _FLOATING_POINT;
 
 // Standard forms
-#define between(value, lo, hi)		(value >= lo && value <= hi)
+#define between(value, lo, hi)		((value >= lo) && (value <= hi))
 #define _union(x, y, z)				union { x z; y _ ## z; };
 
 // Usage:  abc = newAlloc(SAbc, gsAbcRoot);

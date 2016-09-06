@@ -207,7 +207,7 @@ cu32	_F32PP				= _32BIT | _POINTER_POINTER | _FLOATING_POINT;
 cu32	_F64PP				= _64BIT | _POINTER_POINTER | _FLOATING_POINT;
 
 // Standard forms
-#define between(value, lo, hi)		(value >= lo && value <= hi)
+#define between(value, lo, hi)		((value >= lo) && (value <= hi))
 #define _union(x, y, z)				union { x z; y _ ## z; };
 
 // Usage:  abc = newAlloc(SAbc, gsAbcRoot);
@@ -357,3 +357,19 @@ struct SXy_s32
 	s32	xi;
 	s32	yi;
 };
+
+// Added to allow simple iteration through a builder
+#define iterate(i, builder, p, structure)	for (i = 0; i < builder->populatedLength; i += sizeof(structure)) \
+											{ \
+												/* Grab the pointer */ \
+												p = (structure*)(builder->buffer + i);
+
+#define iterate_ptr(i, builder, p, structure)	iterate(i, builder, p, structure)
+
+#define iterate_with_count(i, builder, p, structure, count) \
+											/* Note:  Count should already be set to starting value*/ \
+											for (i = 0; i < builder->populatedLength; i += sizeof(structure), ++count) \
+											{ \
+												/* Grab the pointer */ \
+												p = (structure*)(builder->buffer + i);
+#define iterate_end }

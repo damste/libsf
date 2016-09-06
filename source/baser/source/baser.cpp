@@ -105,9 +105,48 @@
 //
 //////
 	// Load a file into memory
-	int baser_load(s8 tcFilename)
+	s32 baser_load(s8* tcFilename)
 	{
-		return(-1);
+		s8*				lcPathname;
+		s8				pathname[_MAX_PATH];
+		union {
+			int			_bsr;
+			SBaser*		bsr;
+		};
+
+
+		// Make sure the environment is sane
+		if (tcFilename)
+		{
+			// Sanitize the name
+			lcPathname = iiBaser_getFullPathName(tcFilename, pathname);
+
+			// Is the file already open?s
+			if ((bsr = iBaser_findBy_fullPathname(lcPathname)))
+				return(_bsr);	// Already found
+
+			// Try to open the file shared
+			bsr = iiBaser_allocate();
+			if (bsr)
+			{
+				// Copy the pathname
+				bsr->isUsed			= true;
+				bsr->filenameLength	= strlen(pathname);
+				memcpy(bsr->filename, pathname, sizeof(pathname));
+
+				// Initialize
+				bsr->handle			= iDisk_openShared(lcPathname, _O_RDWR | _O_BINARY, false);
+				bsr->loadAddress	= -1;
+				// Success
+			}
+
+			// Return the handle
+			return(_bsr);
+
+		} else {
+			// Invalid parameters
+			return(-1);
+		}
 	}
 
 
@@ -118,8 +157,29 @@
 // Release a previously loaded file
 //
 //////
-	int baser_release(int tnHandle)
+	// 0=success
+	s32 baser_release(int tnHandle)
 	{
+		union {
+			int			_bsr;
+			SBaser*		bsr;
+		};
+
+
+		// Locate 
+		if ((bsr = iBaser_findBy_handle(tnHandle)))
+		{
+			// Close
+			bsr->isUsed = false;
+			memset(bsr->filename, 0, sizeof(bsr->filename));
+			memset(bsr->data_u8, 0, sizeof(bsr->data_u8));
+			iDisk_close(bsr->handle);
+
+			// Indicate success
+			return(0);
+		}
+
+		// Not found
 		return(-1);
 	}
 
@@ -131,9 +191,73 @@
 // Populate the indicated row in the indicated base
 //
 //////
-	int baser_populate_row(int tnHandle, int tnOffset, int tnBase, s8* tcBufferOut, int tnBufferOut_length)
+	s32 baser_populate_row(int tnHandle, int tnOffset, int tnBase, s8* tcBufferOut, int tnBufferOut_length)
 	{
-		return(-1);
+		s32				lnI;
+		u32				lnOffset;
+		s8				buffer[64];
+		union {
+			int			_bsr;
+			SBaser*		bsr;
+		};
+		bool			error;
+		u32				errorNum;
+
+
+		// Locate 
+		if ((bsr = iBaser_findBy_handle(tnHandle)))
+		{
+			// Make sure our base is valid
+			tnBase = min(max(tnBase, 2), 36);
+
+			// Are we within our block range?
+			if (!between(tnOffset, bsr->loadAddress, bsr->loadAddress + bsr->length - (tnBufferOut_length / 3)))
+			{
+				// Read the nearest 512-byte block into memory
+				lnOffset	= tnOffset & ~0x1ff;
+				bsr->length	= iDisk_read(bsr->handle, lnOffset, &bsr->data_s8, 512, &error, &errorNum);
+				if (error)
+				{
+					// Failure reading disk
+					for (lnI = 0; lnI < tnBufferOut_length; lnI += 3)
+					{
+						// Populate with "?? " repeatedly
+						tcBufferOut[lnI+0] = '?';
+						tcBufferOut[lnI+1] = '?';
+						tcBufferOut[lnI+2] = ' ';
+					}
+
+					// Indicate nothing was processed
+					return(0);
+				}
+			}
+
+			// Populate the line
+			for (lnI = 0, lnOffset = 0; lnI < tnBufferOut_length; lnI += 3, lnOffset++)
+			{
+				// Populate with data or a placeholder
+				if (lnI < bsr->length)
+				{
+					// Data
+					_itoa((int)bsr->data_u8[lnI], buffer, tnBase);
+					sprintf(bsr->data_s8 + lnOffset, "%2s ", buffer);
+
+				} else {
+					// Placeholder ".. " repeatedly
+					bsr->data_s8[lnI+0] = '.';
+					bsr->data_s8[lnI+1] = '.';
+					bsr->data_s8[lnI+2] = ' ';
+					bsr->data_s8[lnI+4] = 0;
+				}
+			}
+
+			// Indicate how many were written
+			return(lnOffset);
+
+		} else {
+			// Failure
+			return(-1);
+		}
 	}
 
 
@@ -146,9 +270,11 @@
 //////
 	// Note:  This processing spawns a thread which parses in the background, and notifies the tnHwnd when completed
 	// Note:  It may result in a data set that is abandoned as it may spin off many threads
-	int baser_parse_block_by_struct(int tnHandle, HWND tnHwnd, int tnOffset, cs8* cStruct, int nStructLength)
+	s32 baser_parse_block_by_struct(int tnHandle, HWND tnHwnd, int tnOffset, cs8* cStruct, int nStructLength)
 	{
-		return(-1);
+		// Copy the content
+
+		// Spawn the thread
 	}
 
 
@@ -159,7 +285,7 @@
 // Called to retrieve a message that's been prepared for the display
 //
 //////
-	int baser_retrieve_data(int nId, s8* cDataOut, int tnDataLength)
+	s32 baser_retrieve_data(int nId, s8* cDataOut, int tnDataLength)
 	{
 		// Search for the message
 
