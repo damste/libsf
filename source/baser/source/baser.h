@@ -152,7 +152,7 @@
 //////////
 // Keywords for Baser
 //////
-	cs8p	cgc_baser_struct[]		= "struct";
+	cs8		cgc_baser_struct[]		= "struct";
 
 	SAsciiCompSearcher cgcBaserKeywords[] =
 	{
@@ -316,6 +316,80 @@
 // Called to parse and process the indicated structure, using the indicated data block
 //
 //////
+	struct SElement;
+	struct SDll;
+	struct SDllCallbacks;
+
+	struct SDllParams
+	{
+		// File handle to retrieve from
+		s32				file;
+
+		// Offset and length of data to retrieve
+		s32				offset;
+		s32				length;
+
+		SElement*		el;
+		SDll*			dll;
+		SDllCallbacks*	cb;
+	};
+
+	struct SDllCallbacks
+	{
+		// Disk read
+		union {
+			uptr	_iDisk_read;
+			s32		(*iDisk_read)	(s32 tnFile, s64 tnSeekOffset, void* tcData, s32 tnReadCount, bool* tlError, u32* tnErrorNum);
+		};
+
+	};
+	
+	SDllCallbacks gcb = {
+		(uptr)&iDisk_read
+	};
+
+	struct SDll
+	{
+		HINSTANCE	handle;
+
+		// Function to call within
+		union {
+			uptr	_func;
+			void	(*func)		(SDllParams* rpar);
+		};
+	};
+
+	cu32	_BASER_ELTYPE_S8			= 1;
+	cu32	_BASER_ELTYPE_S16			= 2;
+	cu32	_BASER_ELTYPE_S32			= 3;
+	cu32	_BASER_ELTYPE_S64			= 4;
+
+	cu32	_BASER_ELTYPE_F32			= 5;
+	cu32	_BASER_ELTYPE_F64			= 6;
+
+	cu32	_BASER_ELTYPE_U8			= 7;
+	cu32	_BASER_ELTYPE_U16			= 8;
+	cu32	_BASER_ELTYPE_U32			= 9;
+	cu32	_BASER_ELTYPE_U64			= 10;
+
+	cu32	_BASER_ELTYPE_DLL			= 11;
+
+	struct SElement
+	{
+		s32			elType;			// Element type
+		s32			offset;
+
+		union {
+			SDll	dll;
+		};
+	};
+
+	struct SStructs
+	{
+		SDatum		name;			// Structure name
+		SBuilder*	data;			// The SElements within each one
+	};
+
 	DWORD iiBaser_parse_block_by_struct__threadProc(LPVOID param)
 	{
 		SBaserMsg*	bm;
@@ -331,8 +405,13 @@
 		{
 			// Render the data based on the structure
 			for (line = sem->firstLine; line; line = line->ll.nextLine)
+			{
+				// Is it a structure?
 // TODO:  working here
-				debug_nop;	// Is it a structure?
+// 				dllInstance	= LoadLibraryA("thename.dll");
+// 				lnAddress	= GetProcAddress(dllInstance, funcName);
+
+			}
 
 			// Send back completed message
 
