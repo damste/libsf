@@ -1,4 +1,7 @@
-/libsf/exodus/tools/lasm.exe
+exodus/tools/lasm.exe
+source/baser/baser.dll
+source/baser/baser.exe
+source/baser/source/*.[Ff][Xx][Pp]
 
 #OS junk files
 [Tt]humbs.db
@@ -33,3 +36,8 @@ obj/
 
 #Project files
 [Bb]uild/
+
+#Files to keep
+!/libsf/utils/common/lib/*.lib
+!/libsf/utils/common/lib/lib32/*.lib
+!/libsf/utils/common/lib/lib64/*.lib

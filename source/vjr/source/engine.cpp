@@ -606,7 +606,7 @@
 // This process does not process variables, table names, fields, etc.
 //
 //////
-	SComp* iEngine_parse_sourceCode_line(SLine* line)
+	SComp* iEngine_parse_sourceCode_line(SLine* line, SAsciiCompSearcher* acsSecondary)
 	{
 
 		//////////
@@ -668,7 +668,12 @@
 		//////////
 		// Translate sequences to known keywords
 		//////
-			iComps_translate_toOthers(&cgcVxbKeywords[0], line->compilerInfo->firstComp, true);
+			if (!acsSecondary)
+				acsSecondary = &cgcVxbKeywords[0];
+
+			// Process
+			if (acsSecondary != (SAsciiCompSearcher*)-1)
+				iComps_translate_toOthers(acsSecondary, line->compilerInfo->firstComp, true);
 
 
 		//////////

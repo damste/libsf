@@ -146,6 +146,37 @@
 	};
 
 
+
+
+
+//////////
+// Keywords for Baser
+//////
+	cs8p	cgc_baser_struct[]		= "struct";
+
+	SAsciiCompSearcher cgcBaserKeywords[] =
+	{
+		// keyword					length		repeats?	extra (type)							first on line?		category				syntax highlight color		syntax highlight bold		onCandidateMatch()		onFind()	compilerDictionaryLookup()
+		{ cgc_baser_struct,			6,			false,		_ICODE_STRUCT,							false,				_ICAT_DEFINITION,		&colorSynHi_keyword,		false,						null0,					null0,		null0 },
+
+		// Data types
+		{ cgc_u8,					2,			false,		_ICODE_U8,								false,				_ICAT_DEFINITION,		null0,						false,						null0,					null0,		null0 },
+		{ cgc_u16,					3,			false,		_ICODE_U16,								false,				_ICAT_DEFINITION,		null0,						false,						null0,					null0,		null0 },
+		{ cgc_u32,					3,			false,		_ICODE_U32,								false,				_ICAT_DEFINITION,		null0,						false,						null0,					null0,		null0 },
+		{ cgc_u64,					3,			false,		_ICODE_U64,								false,				_ICAT_DEFINITION,		null0,						false,						null0,					null0,		null0 },
+
+		{ cgc_f32,					3,			false,		_ICODE_F32,								false,				_ICAT_DEFINITION,		null0,						false,						null0,					null0,		null0 },
+		{ cgc_f64,					3,			false,		_ICODE_F64,								false,				_ICAT_DEFINITION,		null0,						false,						null0,					null0,		null0 },
+
+		{ cgc_s8,					2,			false,		_ICODE_S8,								false,				_ICAT_DEFINITION,		null0,						false,						null0,					null0,		null0 },
+		{ cgc_s16,					3,			false,		_ICODE_S16,								false,				_ICAT_DEFINITION,		null0,						false,						null0,					null0,		null0 },
+		{ cgc_s32,					3,			false,		_ICODE_S32,								false,				_ICAT_DEFINITION,		null0,						false,						null0,					null0,		null0 },
+		{ cgc_s64,					3,			false,		_ICODE_S64,								false,				_ICAT_DEFINITION,		null0,						false,						null0,					null0,		null0 },
+
+		{ 0,						0,			0,			0,										0,					0,					0,							0,							0,						0,			0 }
+	};
+
+
 //////////
 // Forward declarations
 //////
@@ -288,6 +319,7 @@
 	DWORD iiBaser_parse_block_by_struct__threadProc(LPVOID param)
 	{
 		SBaserMsg*	bm;
+		SLine*		line;
 		SEM*		sem;
 
 
@@ -295,10 +327,12 @@
 		bm = (SBaserMsg*)param;
 
 		// Parse the structure
-		if (iSEM_load_fromMemory(NULL, (sem = iSEM_allocate(true)), &bm->message, true, false))
+		if (iSEM_load_fromMemory(NULL, (sem = iSEM_allocate(true)), &bm->message, true, false, &cgcBaserKeywords[0]))
 		{
 			// Render the data based on the structure
+			for (line = sem->firstLine; line; line = line->ll.nextLine)
 // TODO:  working here
+				debug_nop;	// Is it a structure?
 
 			// Send back completed message
 

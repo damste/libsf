@@ -269,9 +269,9 @@
 	SBuilder*				iSEM_accumulateBuilder				(SEM* sem, SLine* ecHintStart, SLine* ecHintEnd);
 	bool					iSEM_saveToDisk						(                    SEM* sem, cs8* tcPathname);
 	bool					iSEM_saveToDisk						(                    SEM* sem, cu8* tcPathname);
-	bool					iSEM_load_fromDisk					(SObject* objParent, SEM* sem, cs8* tcPathname, bool isSourceCode, bool tlLogIt);
-	bool					iSEM_load_fromDisk					(SObject* objParent, SEM* sem, cu8* tcPathname, bool isSourceCode, bool tlLogIt);
-	bool					iSEM_load_fromMemory				(SObject* objParent, SEM* sem, SDatum* datum,   bool isSourceCode, bool tlLogIt);
+	bool					iSEM_load_fromDisk					(SObject* objParent, SEM* sem, cs8* tcPathname, bool isSourceCode, bool tlLogIt, SAsciiCompSearcher* acsSecondary = NULL);
+	bool					iSEM_load_fromDisk					(SObject* objParent, SEM* sem, cu8* tcPathname, bool isSourceCode, bool tlLogIt, SAsciiCompSearcher* acsSecondary = NULL);
+	bool					iSEM_load_fromMemory				(SObject* objParent, SEM* sem, SDatum* datum,   bool isSourceCode, bool tlLogIt, SAsciiCompSearcher* acsSecondary = NULL);
 	bool					iSEM_duplicate						(SEM** root, SEM* chain, bool tlIncludeUndoHistory);
 	SEM*					iSEM_duplicate_asReference			(SEM* sem);
 	void					iSEM_delete							(SEM** root, bool tlDeleteSelf);

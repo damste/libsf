@@ -250,11 +250,11 @@
 // Loads in a text file into an EM beginning optionally near ecHint.
 //
 //////
-	bool iSEM_load_fromDisk(SObject* objParent, SEM* sem, cs8* tcPathname, bool isSourceCode, bool tlLogIt)
+	bool iSEM_load_fromDisk(SObject* objParent, SEM* sem, cs8* tcPathname, bool isSourceCode, bool tlLogIt, SAsciiCompSearcher* acsSecondary)
 	{
-		return(iSEM_load_fromDisk(objParent, sem, (cu8*)tcPathname, isSourceCode, tlLogIt));
+		return(iSEM_load_fromDisk(objParent, sem, (cu8*)tcPathname, isSourceCode, tlLogIt, acsSecondary));
 	}
-	bool iSEM_load_fromDisk(SObject* objParent, SEM* sem, cu8* tcPathname, bool isSourceCode, bool tlLogIt)
+	bool iSEM_load_fromDisk(SObject* objParent, SEM* sem, cu8* tcPathname, bool isSourceCode, bool tlLogIt, SAsciiCompSearcher* acsSecondary)
 	{
 		s32			lnPathnameLength, lnFnameLength;
 		bool		llResult;
@@ -294,7 +294,7 @@
 				// Load it
 				datum.data_s8	= content->data_s8;
 				datum.length	= content->populatedLength;
-				llResult		= iSEM_load_fromMemory(objParent, sem, &datum, isSourceCode, false);
+				llResult		= iSEM_load_fromMemory(objParent, sem, &datum, isSourceCode, false, acsSecondary);
 
 				// Clean house
 				iBuilder_freeAndRelease(&content);
@@ -328,7 +328,7 @@
 // Called to load a SEM from a memory block (a raw block of data)
 //
 //////
-	bool iSEM_load_fromMemory(SObject* objParent, SEM* sem, SDatum* datum,   bool isSourceCode, bool tlLogIt)
+	bool iSEM_load_fromMemory(SObject* objParent, SEM* sem, SDatum* datum, bool isSourceCode, bool tlLogIt, SAsciiCompSearcher* acsSecondary)
 	{
 		s32			lnI, lnJ, lnLast;
 		bool		llOtherCharacters;
@@ -394,7 +394,7 @@
 			{
 				// Parse from start to end
 				for ( ; start && start->ll.prevLine != end; start = start->ll.nextLine)
-					iEngine_parse_sourceCode_line(start);
+					iEngine_parse_sourceCode_line(start, acsSecondary);
 			}
 
 

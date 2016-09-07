@@ -1,9 +1,0 @@
-LIBRARY	"baser"
-
-EXPORTS
-
-	baser_load
-	baser_release
-	baser_populate_row
-	baser_parse_block_by_struct
-	baser_retrieve_data
