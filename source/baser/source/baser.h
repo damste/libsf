@@ -153,11 +153,18 @@
 // Keywords for Baser
 //////
 	cs8		cgc_baser_struct[]		= "struct";
+	cs8		cgc_baser_dll[]			= "dll";
+	cs8		cgc_baser_func[]		= "func";
 
+	cu32	_ICODE_BASER_DLL		= 5000000;
+	cu32	_ICODE_BASER_FUNC		= 5000001;
+s
 	SAsciiCompSearcher cgcBaserKeywords[] =
 	{
 		// keyword					length		repeats?	extra (type)							first on line?		category				syntax highlight color		syntax highlight bold		onCandidateMatch()		onFind()	compilerDictionaryLookup()
 		{ cgc_baser_struct,			6,			false,		_ICODE_STRUCT,							false,				_ICAT_DEFINITION,		&colorSynHi_keyword,		false,						null0,					null0,		null0 },
+		{ cgc_baser_dll,			3,			false,		_ICODE_BASER_DLL,						false,				_ICAT_DEFINITION,		&colorSynHi_keyword,		false,						null0,					null0,		null0 },
+		{ cgc_baser_func,			4,			false,		_ICODE_BASER_FUNC,						false,				_ICAT_DEFINITION,		&colorSynHi_keyword,		false,						null0,					null0,		null0 },
 
 		// Data types
 		{ cgc_u8,					2,			false,		_ICODE_U8,								false,				_ICAT_DEFINITION,		null0,						false,						null0,					null0,		null0 },
@@ -320,45 +327,6 @@
 	struct SDll;
 	struct SDllCallbacks;
 
-	struct SDllParams
-	{
-		// File handle to retrieve from
-		s32				file;
-
-		// Offset and length of data to retrieve
-		s32				offset;
-		s32				length;
-
-		SElement*		el;
-		SDll*			dll;
-		SDllCallbacks*	cb;
-	};
-
-	struct SDllCallbacks
-	{
-		// Disk read
-		union {
-			uptr	_iDisk_read;
-			s32		(*iDisk_read)	(s32 tnFile, s64 tnSeekOffset, void* tcData, s32 tnReadCount, bool* tlError, u32* tnErrorNum);
-		};
-
-	};
-	
-	SDllCallbacks gcb = {
-		(uptr)&iDisk_read
-	};
-
-	struct SDll
-	{
-		HINSTANCE	handle;
-
-		// Function to call within
-		union {
-			uptr	_func;
-			void	(*func)		(SDllParams* rpar);
-		};
-	};
-
 	cu32	_BASER_ELTYPE_S8			= 1;
 	cu32	_BASER_ELTYPE_S16			= 2;
 	cu32	_BASER_ELTYPE_S32			= 3;
@@ -374,27 +342,65 @@
 
 	cu32	_BASER_ELTYPE_DLL			= 11;
 
-	struct SElement
+	struct SDllCallbacks
 	{
-		s32			elType;			// Element type
-		s32			offset;
-
+		// Disk read
 		union {
-			SDll	dll;
+			uptr		_iDisk_read;
+			s32			(*iDisk_read)		(s32 tnFile, s64 tnSeekOffset, void* tcData, s32 tnReadCount, bool* tlError, u32* tnErrorNum);
+		};
+
+	};
+	
+	// Global callback to standard functions
+	SDllCallbacks gcb = {
+		(uptr)&iDisk_read
+	};
+
+	struct SDllFunc
+	{
+		SDatum			name;		// Function name
+
+		// Function to call within
+		union {
+			uptr		_func;
+			void		(*func)		(SElement* el, SDllCallbacks* cb);
 		};
 	};
 
-	struct SStructs
+	struct SElement
 	{
-		SDatum		name;			// Structure name
-		SBuilder*	data;			// The SElements within each one
+		// Element type
+		s32				elType;
+		SDatum			name;		// Data element name
+
+		// File handle to retrieve from
+		s32				file;
+
+		// Offset and length of this data
+		s32				offset;
+		s32				length;
+
+		union {
+			SDllFunc	dll;
+		};
+	};
+
+	struct SStruct
+	{
+		SDatum			name;			// Structure name
+		SBuilder*		data;			// The SElements within each one
 	};
 
 	DWORD iiBaser_parse_block_by_struct__threadProc(LPVOID param)
 	{
 		SBaserMsg*	bm;
+		SComp*		comp;
 		SLine*		line;
 		SEM*		sem;
+		SStruct*	str;
+		SElement*	el;
+		SBuilder*	builder;
 
 
 		// Retrieve our parameter rightly
@@ -403,11 +409,66 @@
 		// Parse the structure
 		if (iSEM_load_fromMemory(NULL, (sem = iSEM_allocate(true)), &bm->message, true, false, &cgcBaserKeywords[0]))
 		{
+			// Initialize our builder
+			builder = NULL;
+			iBuilder_createAndInitialize(&builder, sizeof(SElement) * 50);
+
 			// Render the data based on the structure
-			for (line = sem->firstLine; line; line = line->ll.nextLine)
+			for (line = sem->firstLine, str = NULL, el = NULL; line; line = line->ll.nextLine)
 			{
-				// Is it a structure?
-// TODO:  working here
+				// What is it?
+				if (line->compilerInfo && (comp = line->compilerInfo->firstComp))
+				{
+					switch (comp->iCode)
+					{
+						_ICODE_S8:
+							iiBaser_parse_block_by_struct__threadProc__appendElement(builder, &str, &el, _BASER_ELTYPE_S8, 1);
+							break;
+						_ICODE_S16:
+							iiBaser_parse_block_by_struct__threadProc__appendElement(builder, &str, &el, _BASER_ELTYPE_S16, 2);
+							break;
+						_ICODE_S32:
+							iiBaser_parse_block_by_struct__threadProc__appendElement(builder, &str, &el, _BASER_ELTYPE_S32, 4);
+							break;
+						_ICODE_S64:
+							iiBaser_parse_block_by_struct__threadProc__appendElement(builder, &str, &el, _BASER_ELTYPE_S64, 8);
+							break;
+
+						_ICODE_F32:
+							iiBaser_parse_block_by_struct__threadProc__appendElement(builder, &str, &el, _BASER_ELTYPE_F32, 4);
+							break;
+						_ICODE_F64:
+							iiBaser_parse_block_by_struct__threadProc__appendElement(builder, &str, &el, _BASER_ELTYPE_F64, 8);
+							break;
+
+						_ICODE_U8:
+							iiBaser_parse_block_by_struct__threadProc__appendElement(builder, &str, &el, _BASER_ELTYPE_U8, 1);
+							break;
+						_ICODE_U16:
+							iiBaser_parse_block_by_struct__threadProc__appendElement(builder, &str, &el, _BASER_ELTYPE_U16, 2);
+							break;
+						_ICODE_U32:
+							iiBaser_parse_block_by_struct__threadProc__appendElement(builder, &str, &el, _BASER_ELTYPE_U32, 4);
+							break;
+						_ICODE_U64:
+							iiBaser_parse_block_by_struct__threadProc__appendElement(builder, &str, &el, _BASER_ELTYPE_U64, 8);
+							break;
+
+						_ICODE_STRUCT:
+							// Creating a new struct
+							break;
+
+						_ICODE_BASER_FUNC:
+							// Defining a new function
+							break;
+
+						_ICODE_BASER_DLL:
+							break;
+
+						default:
+							// Skip the line
+					}
+				}
 // 				dllInstance	= LoadLibraryA("thename.dll");
 // 				lnAddress	= GetProcAddress(dllInstance, funcName);
 

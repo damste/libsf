@@ -1,54 +1,23 @@
 struct SCdxHeader
 {
+	// DLL definitions
+	dll decode_cdx.dll
+	func cdx_decode_keyExpression alias keyfor
+
 	u32			root;
 	u32			free;
-	union {
-		u32		reserved1;
-		u32		fileSize;
-	};
+				u8[4];			// Not used
 	u16			keyLength;
 	u8			options;
 	u8			signature;
-
-	// The last recno() obtained from the last accessed index key
-	union {
-		u32		reserved2;
-		u32		lastRecno;
-	};
-
-	// The last node that the last key was at/on
-	union {
-		u32		reserved3;
-		u32		lastNode;
-	};
-
-	// The last slot within the last node the last key was found at/on
-	union {
-		u32		reserved4;
-		u32		lastSlotInNode;
-	};
-
-	union {
-		u32		reserved5;
-		bool	isCached;
-	};
-	union
-	{
-		u8			reserved6[4];
-		SWorkArea*	wa;
-	};
-
-	// Big block unused space
-	u8			reserved7[466];
+				u8[486];		// Not used
 
 	// Flags
 	u16			order;
-	u16			reserved8;
-
+				u8[2];			// Not used
 	u16			forClauseLength;
-	u16			reserved9;
-
-	u16			keyExpressionLength;
-	u8			keyExpression[512];
-	// 1024 bytes
+				u8[2];			// Not used
+	
+	// Key expression and FOR clause
+	keyfor		s8 "Key and FOR Clause:"[514];
 };
