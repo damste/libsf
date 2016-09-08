@@ -69,7 +69,7 @@
       <SubSystem>Console</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <ModuleDefinitionFile>baser.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>\libsf\source\baser\source\baser.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
       <Command>copy $(SolutionDir)$(Configuration)\$(TargetName).dll \libsf\source\baser\</Command>
@@ -94,7 +94,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <ModuleDefinitionFile>baser.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>\libsf\source\baser\source\baser.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
       <Command>copy $(SolutionDir)$(Configuration)\$(TargetName).dll \libsf\source\baser\</Command>
@@ -145,7 +145,7 @@
     <ClInclude Include="..\baser.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="baser.def" />
+    <None Include="..\baser.def" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

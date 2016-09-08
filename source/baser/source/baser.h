@@ -49,6 +49,9 @@
 
 
 
+struct SStruct;
+struct SElement;
+
 
 //////////
 // Global variables
@@ -93,6 +96,12 @@
 	SBgra			registerColor								= { rgba(245,235,255,255) };		// Purple-ish
 	SBgra			textColor									= { rgba(255,255,255,255) };		// White
 	SBgra			redGrayColor								= { rgba(235,205,205,255) };
+
+
+//////////
+// General named tokens
+//////
+	cs8				cgc_baser_data[]							= "data";
 
 
 //////////
@@ -158,7 +167,7 @@
 
 	cu32	_ICODE_BASER_DLL		= 5000000;
 	cu32	_ICODE_BASER_FUNC		= 5000001;
-s
+
 	SAsciiCompSearcher cgcBaserKeywords[] =
 	{
 		// keyword					length		repeats?	extra (type)							first on line?		category				syntax highlight color		syntax highlight bold		onCandidateMatch()		onFind()	compilerDictionaryLookup()
@@ -188,20 +197,21 @@ s
 // Forward declarations
 //////
 	// Public declarations (see baser.def)
-	s32				baser_load									(s8* tcFilename);
-	s32				baser_release								(int tnHandle);
-	s32				baser_populate_row							(int tnHandle,              int tnOffset, int tnBase, s8* tcBufferOut, int tnBufferOut_length);
-	s32				baser_parse_block_by_struct					(int tnHandle, HWND tnHwnd, int tnOffset, cs8* cStruct, int nStructLength);
-	s32				baser_retrieve_data							(int nId, s8* cDataOut, int tnDataLength);
+	s32				baser_load													(s8* tcFilename);
+	s32				baser_release												(int tnHandle);
+	s32				baser_populate_row											(int tnHandle,              int tnOffset, int tnBase, s8* tcBufferOut, int tnBufferOut_length);
+	s32				baser_parse_block_by_struct									(int tnHandle, HWND tnHwnd, int tnOffset, cs8* cStruct, int nStructLength);
+	s32				baser_retrieve_data											(int nId, s8* cDataOut, int tnDataLength);
 
 
 	// Internal declarations
-	void			iBaser_initialize							(void);
-	SBaser*			iiBaser_allocate							(void);
-	s8*				iiBaser_getFullPathName						(s8* tcFilename, s8 full_pathname[_MAX_PATH]);
-	SBaser*			iBaser_findBy_fullPathname					(s8* tcPathname);
-	SBaser*			iBaser_findBy_handle						(s32 tnHandle);
-	DWORD			iiBaser_parse_block_by_struct__threadProc	(LPVOID param);
+	void			iBaser_initialize											(void);
+	SBaser*			iiBaser_allocate											(void);
+	s8*				iiBaser_getFullPathName										(s8* tcFilename, s8 full_pathname[_MAX_PATH]);
+	SBaser*			iBaser_findBy_fullPathname									(s8* tcPathname);
+	SBaser*			iBaser_findBy_handle										(s32 tnHandle);
+	DWORD			iiBaser_parse_block_by_struct__threadProc					(LPVOID param);
+	void			iiBaser_parse_block_by_struct__threadProc__appendElement	(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, u32 elType, s32 tnSize, s32* tnOffset);
 
 
 
@@ -324,8 +334,8 @@ s
 //
 //////
 	struct SElement;
-	struct SDll;
-	struct SDllCallbacks;
+	struct SStructDllFunc;
+	struct SStructDllCallbacks;
 
 	cu32	_BASER_ELTYPE_S8			= 1;
 	cu32	_BASER_ELTYPE_S16			= 2;
@@ -342,7 +352,7 @@ s
 
 	cu32	_BASER_ELTYPE_DLL			= 11;
 
-	struct SDllCallbacks
+	struct SStructDllCallbacks
 	{
 		// Disk read
 		union {
@@ -353,25 +363,25 @@ s
 	};
 	
 	// Global callback to standard functions
-	SDllCallbacks gcb = {
+	SStructDllCallbacks gcb = {
 		(uptr)&iDisk_read
 	};
 
-	struct SDllFunc
+	struct SStructDllFunc
 	{
 		SDatum			name;		// Function name
 
 		// Function to call within
 		union {
 			uptr		_func;
-			void		(*func)		(SElement* el, SDllCallbacks* cb);
+			void		(*func)		(SElement* el, SStructDllCallbacks* cb);
 		};
 	};
 
 	struct SElement
 	{
 		// Element type
-		s32				elType;
+		u32				elType;
 		SDatum			name;		// Data element name
 
 		// File handle to retrieve from
@@ -394,8 +404,13 @@ s
 
 	DWORD iiBaser_parse_block_by_struct__threadProc(LPVOID param)
 	{
+		s32			lnOffset, lnCount, lnElType, lnSize;
+		SDatum		name, type;
 		SBaserMsg*	bm;
 		SComp*		comp;
+		SComp*		compNext;
+		SComp*		compLeftBracket;
+		SComp*		compRightBracket;
 		SLine*		line;
 		SEM*		sem;
 		SStruct*	str;
@@ -414,60 +429,104 @@ s
 			iBuilder_createAndInitialize(&builder, sizeof(SElement) * 50);
 
 			// Render the data based on the structure
-			for (line = sem->firstLine, str = NULL, el = NULL; line; line = line->ll.nextLine)
+			for (line = sem->firstLine, str = NULL, el = NULL, lnOffset = 0; line; line = line->ll.nextLine)
 			{
-				// What is it?
+				// Does it have any content?
 				if (line->compilerInfo && (comp = line->compilerInfo->firstComp))
 				{
+					// What type is it?
 					switch (comp->iCode)
 					{
-						_ICODE_S8:
-							iiBaser_parse_block_by_struct__threadProc__appendElement(builder, &str, &el, _BASER_ELTYPE_S8, 1);
-							break;
-						_ICODE_S16:
-							iiBaser_parse_block_by_struct__threadProc__appendElement(builder, &str, &el, _BASER_ELTYPE_S16, 2);
-							break;
-						_ICODE_S32:
-							iiBaser_parse_block_by_struct__threadProc__appendElement(builder, &str, &el, _BASER_ELTYPE_S32, 4);
-							break;
-						_ICODE_S64:
-							iiBaser_parse_block_by_struct__threadProc__appendElement(builder, &str, &el, _BASER_ELTYPE_S64, 8);
+						case _ICODE_S8:		{	lnElType = _BASER_ELTYPE_S8;		lnSize = 1;			goto valid_type;	}
+						case _ICODE_S16:	{	lnElType = _BASER_ELTYPE_S16;		lnSize = 2;			goto valid_type;	}
+						case _ICODE_S32:	{	lnElType = _BASER_ELTYPE_S32;		lnSize = 4;			goto valid_type;	}
+						case _ICODE_S64:	{	lnElType = _BASER_ELTYPE_S64;		lnSize = 8;			goto valid_type;	}
+						case _ICODE_F32:	{	lnElType = _BASER_ELTYPE_F32;		lnSize = 4;			goto valid_type;	}
+						case _ICODE_F64:	{	lnElType = _BASER_ELTYPE_F64;		lnSize = 8;			goto valid_type;	}
+						case _ICODE_U8:		{	lnElType = _BASER_ELTYPE_U8;		lnSize = 1;			goto valid_type;	}
+						case _ICODE_U16:	{	lnElType = _BASER_ELTYPE_U16;		lnSize = 2;			goto valid_type;	}
+						case _ICODE_U32:	{	lnElType = _BASER_ELTYPE_U32;		lnSize = 4;			goto valid_type;	}
+						case _ICODE_U64:
+							lnElType	= _BASER_ELTYPE_U64;
+							lnSize		= 8 * lnCount;
+valid_type:
+//////////
+//
+// Syntax should be:	type name[count];
+//
+//		type is required
+//		name is optional
+//		[count] is optional
+//
+//////
+							// Initially assume no name
+							name.data_s8	= NULL;
+							name.length		= 0;
+
+							// Grab the name component (if any)
+							compNext = iComps_getNth(comp, 1);
+							if (!compNext)
+							{
+								// No name or repeating count was given
+								// No code required
+
+							} else if (compNext->iCode != _ICODE_ALPHA && compNext->iCode != _ICODE_ALPHANUMERIC) {
+								// It's a name
+								name.data_s8	= compNext->line->sourceCode->data_s8;
+								name.length		= compNext->line->sourceCode->length;
+
+							} else if (compNext->iCode != _ICODE_SINGLE_QUOTED_TEXT && compNext->iCode != _ICODE_DOUBLE_QUOTED_TEXT) {
+								// It's quoted text
+								name.data_s8	= compNext->line->sourceCode->data_s8 + 1;
+								name.length		= compNext->line->sourceCode->length - 2;
+							}
+
+							// Search for [Nn] for a repeat count
+							lnCount = 0;
+							if ((compLeftBracket = iComps_findNextBy_iCode(comp, _ICODE_BRACKET_LEFT)))
+							{
+								// We have [
+								compNext = iComps_getNth(compLeftBracket, 1);
+								if (compNext->iCode == _ICODE_NUMERIC && (compRightBracket = iComps_getNth(compNext, 1)) && compRightBracket->iCode == _ICODE_BRACKET_RIGHT)
+								{
+									// We have [Nn], we have a repeat count
+									lnCount = max(iComps_getAs_s32(compNext), 1);
+								}
+							}
+
+							// Physically dispatch
+							iiBaser_parse_block_by_struct__threadProc__appendElement(builder, &str, &el, &name, lnElType, lnSize * lnCount, &lnOffset);
+
 							break;
 
-						_ICODE_F32:
-							iiBaser_parse_block_by_struct__threadProc__appendElement(builder, &str, &el, _BASER_ELTYPE_F32, 4);
-							break;
-						_ICODE_F64:
-							iiBaser_parse_block_by_struct__threadProc__appendElement(builder, &str, &el, _BASER_ELTYPE_F64, 8);
+						case _ICODE_STRUCT:
+							// Syntax should be:	struct name
+							if ((compNext = iComps_getNth(comp, 1)) && (compNext->iCode == _ICODE_ALPHA || compNext->iCode == _ICODE_ALPHANUMERIC))
+							{
+								// Create a new structure
+								str = (SStruct*)iBuilder_allocateBytes(builder, sizeof(SStruct));
+								if (!str)
+									return;		// Should never happen
+
+								// Set its name
+								iDatum_duplicate(&str->name, compNext->line->sourceCode->data_s8, compNext->line->sourceCode->length);
+							}
 							break;
 
-						_ICODE_U8:
-							iiBaser_parse_block_by_struct__threadProc__appendElement(builder, &str, &el, _BASER_ELTYPE_U8, 1);
-							break;
-						_ICODE_U16:
-							iiBaser_parse_block_by_struct__threadProc__appendElement(builder, &str, &el, _BASER_ELTYPE_U16, 2);
-							break;
-						_ICODE_U32:
-							iiBaser_parse_block_by_struct__threadProc__appendElement(builder, &str, &el, _BASER_ELTYPE_U32, 4);
-							break;
-						_ICODE_U64:
-							iiBaser_parse_block_by_struct__threadProc__appendElement(builder, &str, &el, _BASER_ELTYPE_U64, 8);
+						case _ICODE_BASER_DLL:
+							// Syntax should be:	dll x:\path\to\whatever.dll
 							break;
 
-						_ICODE_STRUCT:
-							// Creating a new struct
-							break;
-
-						_ICODE_BASER_FUNC:
-							// Defining a new function
-							break;
-
-						_ICODE_BASER_DLL:
+						case _ICODE_BASER_FUNC:
+							// Syntax should be:	func funcName type aliasName
+							iiBaser_parse_block_by_struct__threadProc__appendFunc(builder, &str, &el, &name, &type);
 							break;
 
 						default:
 							// Skip the line
+							break;
 					}
+
 				}
 // 				dllInstance	= LoadLibraryA("thename.dll");
 // 				lnAddress	= GetProcAddress(dllInstance, funcName);
@@ -487,4 +546,56 @@ s
 		// Complete
 		TerminateThread(GetCurrentThread(), 0);
 		return(0);
+	}
+
+	void iiBaser_parse_block_by_struct__threadProc__appendElement(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, u32 elType, s32 tnSize, s32* tnOffset)
+	{
+		SElement*	el;
+		SStruct*	str;
+
+
+		//////////
+		// Make sure we have a struct
+		//////
+			if (!*strRoot)
+			{
+				// Create a default one
+				str = (SStruct*)iBuilder_allocateBytes(builder, sizeof(SStruct));
+				if (!str)
+					return;		// Should never happen
+
+				// Give it a default name
+				iDatum_duplicate(&str->name, cgc_baser_data, sizeof(cgc_baser_data) - 1);
+
+				// Update the root
+				*strRoot = str;
+
+			} else {
+				// Grab the struct
+				str = *strRoot;
+			}
+
+			// Make sure we have an element builder
+			if (!str->data)
+				iBuilder_createAndInitialize(&str->data, sizeof(SElement) * 20);
+
+
+		//////////
+		// Add this element
+		//////
+			el = (SElement*)iBuilder_allocateBytes(str->data, sizeof(SElement));
+			if (!el)
+				return;		// Should never happen
+
+			el->elType		= elType;
+			el->offset		= *tnOffset;
+			el->length		= tnSize;
+
+
+		//////////
+		// Update return parameters
+		//////
+			*tnOffset		+= tnSize;
+			*elRoot			= el;
+
 	}

@@ -134,7 +134,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="baser.def">
+    <None Include="..\baser.def">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>

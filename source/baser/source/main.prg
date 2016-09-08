@@ -76,9 +76,9 @@ DEFINE CLASS ieEventHandler AS Custom
 				tlCancel			AS Logical @) 	AS VOID
 
 		* To cancel navigation?
-*		IF MESSAGEBOX("Cancel Navigation to?" + CHR(13) + CHR(13) + tcUrl, 4, "BeforeNavigation2") = 6
-*			tlCancel = .t.
-*		ENDIF
+		IF MESSAGEBOX("Cancel Navigation to?" + CHR(13) + CHR(13) + tcUrl, 4, "BeforeNavigation2") = 6
+			tlCancel = .t.
+		ENDIF
 	ENDPROC
 
 	* Fires to request that the client window size is converted to the host window size

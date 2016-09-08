@@ -1,23 +1,33 @@
-struct SCdxHeader
-{
-	// DLL definitions
-	dll decode_cdx.dll
-	func cdx_decode_keyExpression alias keyfor
+//////////
+//
+// Syntax is as follows:
+//
+//		dll x:\path\do\dllname.dll
+//		func funcName type typeName
+//
+//		n:						// Specifies the next type begins at offset n
+//
+//		type;					// Placeholder
+//		type[n];				// Placeholder
+//		type name;				// Single data element
+//		type name[n];			// Multiple data elements
+//		type* name;				// Pointer to the indicated type
+//
+// Note:  type can be a previously defined struct
+//
+//////
+	struct cdxHead
+	|dll cdx.dll
+	|	func cdx_decode_keyfor		type keyfor
+	{
 
-	u32			root;
-	u32			free;
-				u8[4];			// Not used
-	u16			keyLength;
-	u8			options;
-	u8			signature;
-				u8[486];		// Not used
+0:		u32		root;
+		u32		free;
+12:		u16		keyLength;
+		u8		options;
+		u8		signature;
+502:	u16		order;
+506:	u16		forClauseLength;
 
-	// Flags
-	u16			order;
-				u8[2];			// Not used
-	u16			forClauseLength;
-				u8[2];			// Not used
-	
-	// Key expression and FOR clause
-	keyfor		s8 "Key and FOR Clause:"[514];
-};
+510:	keyfor	"Key and FOR Clause:";
+	};
