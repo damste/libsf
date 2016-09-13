@@ -2075,6 +2075,10 @@ debug_break;
 		lnPixelsRendered = 1;
 		if (sem && obj)
 		{
+			// Support for simple html
+			if (sem->isSimpleHtml)
+				return(iSEM_renderAs_simpleHtml(sem, obj, tlRenderCursorline));
+
 			// Get the top line and continue down as far as we can
 			line	= sem->line_top;
 			bmp		= obj->bmp;
@@ -2896,7 +2900,29 @@ renderAsOnlyText:
 
 //////////
 //
-// Called to
+// Called to render the content as simple HTML.
+//
+// Supported commands:
+//		<br>	<hr>
+//		<b>		<i>		<u>
+//		<font bgcolor color name size>
+//		<table>
+//		<tr bgcolor color height>
+//		<td bgcolor color width colspan>
+//
+//////
+	u32 iSEM_renderAs_simpleHtml(SEM* sem, SObject* obj, bool tlRenderCursorline)
+	{
+//		SBuilder* html;
+		debug_break;
+	}
+
+
+
+
+//////////
+//
+// Called to render the highlighted components at their indicated locations (for syntax highlighting)
 //
 //////
 	void iSEM_render_highlightSelectedComps(SEM* sem, SComp* firstComp)

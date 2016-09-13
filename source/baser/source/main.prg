@@ -24,12 +24,16 @@ LOCAL lnI, lcFile, llLaunched
 * Initialize library and DLL functions
 *****
 	SET CLASSLIB TO \libsf\source\baser\source\baser.vcx ADDITIVE
-	DECLARE INTEGER		Sleep							IN WIN32API							INTEGER nTimeout
-	DECLARE INTEGER		baser_load						IN \libsf\source\baser\baser.dll	STRING	cFilename
-	DECLARE INTEGER		baser_release					IN \libsf\source\baser\baser.dll	INTEGER	nHandle
-	DECLARE INTEGER		baser_populate_row				IN \libsf\source\baser\baser.dll	INTEGER	nHandle, INTEGER nOffset, INTEGER nBase, STRING@ cBufferOut, INTEGER nBufferOut_length
-	DECLARE INTEGER		baser_parse_block_by_struct		IN \libsf\source\baser\baser.dll	INTEGER	nHandle, INTEGER nHwnd, INTEGER nOffset, STRING cStruct, INTEGER nStructLength
-	DECLARE INTEGER		baser_retrieve_data				IN \libsf\source\baser\baser.dll	INTEGER nId, STRING@ cDataOut, INTEGER tnDataLength
+	DECLARE INTEGER		Sleep								IN WIN32API							INTEGER nTimeout
+	DECLARE INTEGER		baser_load							IN \libsf\source\baser\baser.dll	STRING	cFilename
+	DECLARE INTEGER		baser_release						IN \libsf\source\baser\baser.dll	INTEGER	nHandle
+	DECLARE INTEGER		baser_populate_row					IN \libsf\source\baser\baser.dll	INTEGER	nHandle, INTEGER nOffset, INTEGER nBase, STRING@ cBufferOut, INTEGER nBufferOut_length
+	DECLARE INTEGER		baser_parse_block_by_struct			IN \libsf\source\baser\baser.dll	INTEGER	nHandle, INTEGER nHwnd, INTEGER nOffset, STRING cStruct, INTEGER nStructLength
+	DECLARE INTEGER		baser_retrieve_data					IN \libsf\source\baser\baser.dll	INTEGER nId, STRING@ cDataOut, INTEGER tnDataLength
+	* Use:  lcHtmlPath270 = SPACE(270)
+	*       baser_create_htmltemp_file_content(@lcHtmlPath270, sys(2015), tcHtmlContent, len(tcHtmlContent))
+	*       ie.navigate2(left(lcHtmlPath270, lnLenth))
+	DECLARE INTEGER		baser_create_htmltemp_file_content	IN \LIBSF\SOURCE\BASER\BASER.DLL	STRING@	cHtmlPathOut270, STRING cTempFilenamePrefix, STRING cContent, INTEGER nContentLength
 
 
 **********

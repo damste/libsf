@@ -17,9 +17,9 @@
 //
 //////
 	struct cdxHead
-	|dll cdx.dll
-	|	func cdx_decode_keyfor		type keyfor
 	{
+		dll		cdx.dll
+		func	cdx_decode_keyfor	type keyfor
 
 0:		u32		root;
 		u32		free;

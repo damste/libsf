@@ -888,12 +888,12 @@
 //////
 	void iVjr_init_loadCaskIcons(void)
 	{
-		RECT lrc;
-
-
 // TODO:  There's a BXML file with this information (cask_icons.bxml).
 //        BXML support should be added to VJr and then that information used to do this, rather than by hard-coding.
 #ifndef _NONVJR_COMPILE
+		RECT lrc;
+
+
 		// Casks are only used in VJr
 		bmpCaskIconsTiled			= iBmp_rawLoad(cgc_caskIconsBmp);
 		bmpCaskRoundLeft			= iBmp_createAndExtractRect(bmpCaskIconsTiled, 12, 2, 31, 38);

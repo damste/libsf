@@ -51,6 +51,8 @@
 
 struct SStruct;
 struct SElement;
+struct SStructDllFunc;
+struct SStructDllCallbacks;
 
 
 //////////
@@ -154,6 +156,89 @@ struct SElement;
 		SDatum		data;
 	};
 
+	cu32	_BASER_ELTYPE_S8			= 1;
+	cu32	_BASER_ELTYPE_S16			= 2;
+	cu32	_BASER_ELTYPE_S32			= 3;
+	cu32	_BASER_ELTYPE_S64			= 4;
+
+	cu32	_BASER_ELTYPE_F32			= 5;
+	cu32	_BASER_ELTYPE_F64			= 6;
+
+	cu32	_BASER_ELTYPE_U8			= 7;
+	cu32	_BASER_ELTYPE_U16			= 8;
+	cu32	_BASER_ELTYPE_U32			= 9;
+	cu32	_BASER_ELTYPE_U64			= 10;
+
+	cu32	_BASER_ELTYPE_TYPE			= 11;		// When a dll function is used, the type is given after, like "func abc_decode type abc" ... so this would indicate "abc"
+
+	cu32	_BASER_ELTYPE_DLL			= 12;
+	cu32	_BASER_ELTYPE_DLL_FUNC		= 13;
+
+	struct SStructDllCallbacks
+	{
+		// Disk read
+		union {
+			uptr		_iDisk_read;
+			s32			(*iDisk_read)		(s32 tnFile, s64 tnSeekOffset, void* tcData, s32 tnReadCount, bool* tlError, u32* tnErrorNum);
+		};
+
+	};
+
+	// Global callback to standard functions
+	SStructDllCallbacks gcb = {
+		(uptr)&iDisk_read
+	};
+
+	struct SStructType
+	{
+		SDatum			type;			// The type name to use for this
+	};
+
+	struct SStructDll
+	{
+		SDatum			pathname;		// Full disk path to the DLL
+		HMODULE			handle;			// From LoadLibrary(pathname)
+	};
+
+	struct SStructDllFunc
+	{
+		SStructDll*		dll;			// The dll this function relates to
+		SDatum			name;			// Function name
+		SDatum			type;			// Type name
+
+		// Function to call within
+		union {
+			uptr		_func;
+			void		(*func)		(SElement* el, SStructDllCallbacks* cb);
+		};
+	};
+
+	struct SElement
+	{
+		// Element type
+		u32				elType;
+		SDatum			name;			// Data element name
+
+										// File handle to retrieve from
+		s32				file;
+
+		// Offset and length of this data
+		s32				offset;
+		s32				length;
+
+		union {
+			SStructType		type;
+			SStructDll		dll;
+			SStructDllFunc	dllFunc;
+		};
+	};
+
+	struct SStruct
+	{
+		SDatum			name;			// Structure name
+		SBuilder*		data;			// The SElements within each one
+	};
+
 
 
 
@@ -164,16 +249,22 @@ struct SElement;
 	cs8		cgc_baser_struct[]		= "struct";
 	cs8		cgc_baser_dll[]			= "dll";
 	cs8		cgc_baser_func[]		= "func";
+	cs8		cgc_baser_type[]		= "type";
+	cs8		cgc_baser_alias[]		= "alias";
 
-	cu32	_ICODE_BASER_DLL		= 5000000;
-	cu32	_ICODE_BASER_FUNC		= 5000001;
+	cu32	_ICODE_BASER_STRUCT		= 5000000;
+	cu32	_ICODE_BASER_DLL		= 5000001;
+	cu32	_ICODE_BASER_FUNC		= 5000002;
+	cu32	_ICODE_BASER_TYPE		= 5000003;
 
 	SAsciiCompSearcher cgcBaserKeywords[] =
 	{
 		// keyword					length		repeats?	extra (type)							first on line?		category				syntax highlight color		syntax highlight bold		onCandidateMatch()		onFind()	compilerDictionaryLookup()
-		{ cgc_baser_struct,			6,			false,		_ICODE_STRUCT,							false,				_ICAT_DEFINITION,		&colorSynHi_keyword,		false,						null0,					null0,		null0 },
+		{ cgc_baser_struct,			6,			false,		_ICODE_BASER_STRUCT,					false,				_ICAT_DEFINITION,		&colorSynHi_keyword,		false,						null0,					null0,		null0 },
 		{ cgc_baser_dll,			3,			false,		_ICODE_BASER_DLL,						false,				_ICAT_DEFINITION,		&colorSynHi_keyword,		false,						null0,					null0,		null0 },
 		{ cgc_baser_func,			4,			false,		_ICODE_BASER_FUNC,						false,				_ICAT_DEFINITION,		&colorSynHi_keyword,		false,						null0,					null0,		null0 },
+		{ cgc_baser_type,			4,			false,		_ICODE_BASER_TYPE,						false,				_ICAT_DEFINITION,		&colorSynHi_keyword,		false,						null0,					null0,		null0 },
+		{ cgc_baser_alias,			5,			false,		_ICODE_BASER_TYPE,						false,				_ICAT_DEFINITION,		&colorSynHi_keyword,		false,						null0,					null0,		null0 },
 
 		// Data types
 		{ cgc_u8,					2,			false,		_ICODE_U8,								false,				_ICAT_DEFINITION,		null0,						false,						null0,					null0,		null0 },
@@ -202,6 +293,7 @@ struct SElement;
 	s32				baser_populate_row											(int tnHandle,              int tnOffset, int tnBase, s8* tcBufferOut, int tnBufferOut_length);
 	s32				baser_parse_block_by_struct									(int tnHandle, HWND tnHwnd, int tnOffset, cs8* cStruct, int nStructLength);
 	s32				baser_retrieve_data											(int nId, s8* cDataOut, int tnDataLength);
+	s32				baser_create_htmltemp_file_content							(s8* tcFileOut260, s8* tcFilenamePrefix, s8* tcContent, s32 tnContentLength);
 
 
 	// Internal declarations
@@ -211,8 +303,10 @@ struct SElement;
 	SBaser*			iBaser_findBy_fullPathname									(s8* tcPathname);
 	SBaser*			iBaser_findBy_handle										(s32 tnHandle);
 	DWORD			iiBaser_parse_block_by_struct__threadProc					(LPVOID param);
-	void			iiBaser_parse_block_by_struct__threadProc__appendElement	(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, u32 elType, s32 tnSize, s32* tnOffset);
-
+	void			iiBaser_parse_block_by_struct__threadProc__appendElement	(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, u32 elType, s32 tnSize, s32* tnOffset, SStructDll* currentDll);
+	void			iiBaser_parse_block_by_struct__threadProc__appendDll		(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, SStructDll** currentDllRoot);
+	void			iiBaser_parse_block_by_struct__threadProc__appendFunc		(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, SDatum* type, SStructDll* currentDll);
+	void			iiBaser_populateDatum_byComp														(SComp* comp, SDatum* datum);
 
 
 
@@ -333,75 +427,6 @@ struct SElement;
 // Called to parse and process the indicated structure, using the indicated data block
 //
 //////
-	struct SElement;
-	struct SStructDllFunc;
-	struct SStructDllCallbacks;
-
-	cu32	_BASER_ELTYPE_S8			= 1;
-	cu32	_BASER_ELTYPE_S16			= 2;
-	cu32	_BASER_ELTYPE_S32			= 3;
-	cu32	_BASER_ELTYPE_S64			= 4;
-
-	cu32	_BASER_ELTYPE_F32			= 5;
-	cu32	_BASER_ELTYPE_F64			= 6;
-
-	cu32	_BASER_ELTYPE_U8			= 7;
-	cu32	_BASER_ELTYPE_U16			= 8;
-	cu32	_BASER_ELTYPE_U32			= 9;
-	cu32	_BASER_ELTYPE_U64			= 10;
-
-	cu32	_BASER_ELTYPE_DLL			= 11;
-
-	struct SStructDllCallbacks
-	{
-		// Disk read
-		union {
-			uptr		_iDisk_read;
-			s32			(*iDisk_read)		(s32 tnFile, s64 tnSeekOffset, void* tcData, s32 tnReadCount, bool* tlError, u32* tnErrorNum);
-		};
-
-	};
-	
-	// Global callback to standard functions
-	SStructDllCallbacks gcb = {
-		(uptr)&iDisk_read
-	};
-
-	struct SStructDllFunc
-	{
-		SDatum			name;		// Function name
-
-		// Function to call within
-		union {
-			uptr		_func;
-			void		(*func)		(SElement* el, SStructDllCallbacks* cb);
-		};
-	};
-
-	struct SElement
-	{
-		// Element type
-		u32				elType;
-		SDatum			name;		// Data element name
-
-		// File handle to retrieve from
-		s32				file;
-
-		// Offset and length of this data
-		s32				offset;
-		s32				length;
-
-		union {
-			SDllFunc	dll;
-		};
-	};
-
-	struct SStruct
-	{
-		SDatum			name;			// Structure name
-		SBuilder*		data;			// The SElements within each one
-	};
-
 	DWORD iiBaser_parse_block_by_struct__threadProc(LPVOID param)
 	{
 		s32			lnOffset, lnCount, lnElType, lnSize;
@@ -411,6 +436,7 @@ struct SElement;
 		SComp*		compNext;
 		SComp*		compLeftBracket;
 		SComp*		compRightBracket;
+		SStructDll*	dll;
 		SLine*		line;
 		SEM*		sem;
 		SStruct*	str;
@@ -429,11 +455,14 @@ struct SElement;
 			iBuilder_createAndInitialize(&builder, sizeof(SElement) * 50);
 
 			// Render the data based on the structure
-			for (line = sem->firstLine, str = NULL, el = NULL, lnOffset = 0; line; line = line->ll.nextLine)
+			for (line = sem->firstLine, str = NULL, el = NULL, lnOffset = 0, dll = NULL; line; line = line->ll.nextLine)
 			{
 				// Does it have any content?
 				if (line->compilerInfo && (comp = line->compilerInfo->firstComp))
 				{
+					// We skip leading pipe signs
+
+continue_to_next_comp:
 					// What type is it?
 					switch (comp->iCode)
 					{
@@ -464,22 +493,9 @@ valid_type:
 							name.length		= 0;
 
 							// Grab the name component (if any)
-							compNext = iComps_getNth(comp, 1);
-							if (!compNext)
-							{
-								// No name or repeating count was given
-								// No code required
-
-							} else if (compNext->iCode != _ICODE_ALPHA && compNext->iCode != _ICODE_ALPHANUMERIC) {
-								// It's a name
-								name.data_s8	= compNext->line->sourceCode->data_s8;
-								name.length		= compNext->line->sourceCode->length;
-
-							} else if (compNext->iCode != _ICODE_SINGLE_QUOTED_TEXT && compNext->iCode != _ICODE_DOUBLE_QUOTED_TEXT) {
-								// It's quoted text
-								name.data_s8	= compNext->line->sourceCode->data_s8 + 1;
-								name.length		= compNext->line->sourceCode->length - 2;
-							}
+							compNext = iComps_getNth(comp);
+							if (compNext)
+								iiBaser_populateDatum_byComp(compNext, &name);		// Grab the name
 
 							// Search for [Nn] for a repeat count
 							lnCount = 0;
@@ -495,8 +511,33 @@ valid_type:
 							}
 
 							// Physically dispatch
-							iiBaser_parse_block_by_struct__threadProc__appendElement(builder, &str, &el, &name, lnElType, lnSize * lnCount, &lnOffset);
+							iiBaser_parse_block_by_struct__threadProc__appendElement(builder, &str, &el, &name, lnElType, lnSize * lnCount, &lnOffset, dll);
+							break;
 
+						case _ICODE_ALPHA:
+						case _ICODE_ALPHANUMERIC:
+							// This should be a type name which is like s32, s8, etc., but uses a custom type that decodes from within a dll function rather than internally
+							lnElType	= _BASER_ELTYPE_TYPE;
+							lnSize		= 0;
+							goto valid_type;
+
+						case _ICODE_NUMERIC:
+							// They're specifying a hard offset
+							// Syntax should be Nnn:
+							compNext = iComps_getNth(comp);
+							if (compNext && compNext->iCode == _ICODE_COLON)
+							{
+								// Set this as the offset
+								lnOffset = iComps_getAs_s32(comp);
+
+								// If there are additional components on this line, continue parsing where we are
+								if (compNext->ll.nextComp)
+								{
+									// Grab the next and continue processing
+									comp = iComps_getNth(compNext);
+									goto continue_to_next_comp;
+								}
+							}
 							break;
 
 						case _ICODE_STRUCT:
@@ -506,7 +547,7 @@ valid_type:
 								// Create a new structure
 								str = (SStruct*)iBuilder_allocateBytes(builder, sizeof(SStruct));
 								if (!str)
-									return;		// Should never happen
+									goto quit;	// Should never happen
 
 								// Set its name
 								iDatum_duplicate(&str->name, compNext->line->sourceCode->data_s8, compNext->line->sourceCode->length);
@@ -515,22 +556,45 @@ valid_type:
 
 						case _ICODE_BASER_DLL:
 							// Syntax should be:	dll x:\path\to\whatever.dll
+							// Grab the name component (if any)
+							compNext = iComps_getNth(comp);
+							if (compNext)
+							{
+								// Grab the name
+								iiBaser_populateDatum_byComp(compNext, &name);
+
+								// Create the entry
+								iiBaser_parse_block_by_struct__threadProc__appendDll(builder, &str, &el, &name, &dll);
+							}
 							break;
 
 						case _ICODE_BASER_FUNC:
 							// Syntax should be:	func funcName type aliasName
-							iiBaser_parse_block_by_struct__threadProc__appendFunc(builder, &str, &el, &name, &type);
+							// Grab the name component (if any)
+							compNext = iComps_getNth(comp);
+							if (compNext)
+							{
+								// Grab the name
+								iiBaser_populateDatum_byComp(compNext, &name);
+
+								// After this should be the keyword type
+								compNext = iComps_getNth(compNext);
+								if (compNext->iCode == _ICODE_BASER_TYPE && (compNext = iComps_getNth(compNext)))
+								{
+									// Grab the associated type
+									iiBaser_populateDatum_byComp(compNext, &type);
+
+									// Create the entry
+									iiBaser_parse_block_by_struct__threadProc__appendFunc(builder, &str, &el, &name, &type, dll);
+								}
+							}
 							break;
 
 						default:
 							// Skip the line
 							break;
 					}
-
 				}
-// 				dllInstance	= LoadLibraryA("thename.dll");
-// 				lnAddress	= GetProcAddress(dllInstance, funcName);
-
 			}
 
 			// Send back completed message
@@ -539,6 +603,7 @@ valid_type:
 			iSEM_delete(&sem, true);
 		}
 
+quit:
 		// Release the memory blocks
 		iDatum_delete(&bm->message, false);
 		free(bm);
@@ -548,7 +613,8 @@ valid_type:
 		return(0);
 	}
 
-	void iiBaser_parse_block_by_struct__threadProc__appendElement(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, u32 elType, s32 tnSize, s32* tnOffset)
+	// Appends an element to display (or ignore if it doesn't have a name)
+	void iiBaser_parse_block_by_struct__threadProc__appendElement(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, u32 elType, s32 tnSize, s32* tnOffset, SStructDll* currentDll)
 	{
 		SElement*	el;
 		SStruct*	str;
@@ -597,5 +663,64 @@ valid_type:
 		//////
 			*tnOffset		+= tnSize;
 			*elRoot			= el;
+	
+	}
 
+	// Appends a dll to use from this point forward
+	void iiBaser_parse_block_by_struct__threadProc__appendDll(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, SStructDll** currentDllRoot)
+	{
+		s8			filename[_MAX_PATH];
+		SElement*	el;
+
+
+		// Add the element for the dll
+		iiBaser_parse_block_by_struct__threadProc__appendElement(builder, strRoot, elRoot, name, _BASER_ELTYPE_DLL, 0, 0, *currentDllRoot);
+		el = *elRoot;
+
+		// Get the full pathname
+		GetFullPathName(name->data_s8, sizeof(filename), filename, NULL);
+
+		// Try to open the DLL
+		if ((el->dll.handle = LoadLibrary(filename)))
+		{
+			// Store the name
+			iDatum_duplicate(&el->dll.pathname, filename, strlen(filename));
+
+			// Store it
+			*currentDllRoot = &el->dll;
+		}
+	}
+
+	// Appends a function within the current dll
+	void iiBaser_parse_block_by_struct__threadProc__appendFunc(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, SDatum* type, SStructDll* currentDll)
+	{
+		uptr		lnAddress;
+		s8			filename[_MAX_PATH];
+		SElement*	el;
+
+
+		// Add the element for the dll
+		iiBaser_parse_block_by_struct__threadProc__appendElement(builder, strRoot, elRoot, name, _BASER_ELTYPE_DLL_FUNC, 0, 0, currentDll);
+		el = *elRoot;
+
+		// Populate the rest
+		el->dllFunc._func	= (uptr)GetProcAddress(currentDll->handle, name->data_s8);
+		el->dllFunc.dll		= currentDll;
+		iDatum_duplicate(&el->dllFunc.name, name);
+		iDatum_duplicate(&el->dllFunc.type, type);
+	}
+
+	void iiBaser_populateDatum_byComp(SComp* comp, SDatum* datum)
+	{
+		if (comp->iCode != _ICODE_ALPHA && comp->iCode != _ICODE_ALPHANUMERIC)
+		{
+			// It's a name
+			datum->data_s8	= comp->line->sourceCode->data_s8;
+			datum->length	= comp->line->sourceCode->length;
+
+		} else if (comp->iCode != _ICODE_SINGLE_QUOTED_TEXT && comp->iCode != _ICODE_DOUBLE_QUOTED_TEXT) {
+			// It's quoted text
+			datum->data_s8	= comp->line->sourceCode->data_s8 + 1;
+			datum->length	= comp->line->sourceCode->length - 2;
+		}
 	}

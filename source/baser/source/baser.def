@@ -7,3 +7,5 @@ EXPORTS
 	baser_populate_row
 	baser_parse_block_by_struct
 	baser_retrieve_data
+	baser_create_htmltemp_file_content
+	

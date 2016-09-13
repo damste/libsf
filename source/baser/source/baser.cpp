@@ -359,5 +359,50 @@ extern "C"
 	}
 
 
+
+
+//////////
+//
+// Called to create a file that has a temporary lifespan, meaning it's auto-deleted upon process exit
+//
+//////
+	s32 baser_create_htmltemp_file_content(s8* tcHtmlPathOut270, s8* tcFilenamePrefix, s8* tcContent, s32 tnContentLength)
+	{
+		static u32	snTempFilenameUniqueId = 1;
+
+		u32			lnPathLength, lnFileLength;
+		s8			buffer[_MAX_PATH];
+		bool		error;
+		u32			errorNum;
+
+
+		// Initialize the output path
+		memset(tcHtmlPathOut270, 32, 270);
+
+		// Grab the temporary path
+		lnPathLength = GetTempPath(270, tcHtmlPathOut270);
+
+		// Construct a temporary filename
+		memset(buffer, 0, sizeof(buffer));
+		GetTempFileName(tcHtmlPathOut270, tcFilenamePrefix, snTempFilenameUniqueId++, buffer);
+
+		// Concatenate
+		lnFileLength = strlen(buffer);
+		memcpy(tcHtmlPathOut270 + lnPathLength, buffer, min(lnFileLength, 270 - lnPathLength));
+
+		// Create the file
+		if (iDisk_openExclusive(tcHtmlPathOut270, _O_RDWR | _O_BINARY | _O_CREAT | _O_TEMPORARY, true, &error, &errorNum) > 0)
+		{
+			// Success
+			// Indicate how long the filename is
+			return(lnPathLength + lnFileLength);
+
+		} else {
+			// Failure
+			return(-1);
+		}
+	}
+
+
 };	// extern "C"
 

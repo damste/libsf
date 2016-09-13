@@ -85,7 +85,12 @@
 //////////
 // Constants
 //////
-	const u32				_ECM_MINIMUM_LINE_ALLOCATION_LENGTH		= 96;		// Allocate data in 96 byte blocks
+	cu32			_ECM_MINIMUM_LINE_ALLOCATION_LENGTH			= 96;		// Allocate data in 96 byte blocks
+
+	// For simple html rendering
+	cu32			_SIMPLE_HTML_ELEMENT_TYPE_TEXT				= 1;
+	cu32			_SIMPLE_HTML_ELEMENT_TYPE_IMAGE				= 2;
+	cu32			_SIMPLE_HTML_ELEMENT_TYPE_LINE				= 3;
 
 
 //////////
@@ -109,6 +114,46 @@
 	const u32		_BREAKPOINT_CONDITIONAL_FALSE				= 3;	// Breaks when the condition is false
 	const u32		_BREAKPOINT_CONDITIONAL_TRUE_COUNTDOWN		= 4;	// Breaks when the condition is true, and the countdown reaches zero
 	const u32		_BREAKPOINT_CONDITIONAL_FALSE_COUNTDOWN		= 5;	// Breaks when the condition is false, and the countdown reaches zero
+
+	// Simple html text item
+	struct SSHtmlElement_text
+	{
+		s32			nActualSize;										// For relative font changes, what the actual relative font value was at this point
+		SFont*		font;												// Font for this text
+		SBgra		backColor;											// Back color for this text
+		SBgra		foreColor;											// Fore color for this text
+		
+		SDatum*		text;												// The text itself
+	};
+
+	// Simple html image item
+	struct SSHtmlElement_image
+	{
+		SBitmap*	bmp;												// The image to render
+	};
+
+	// Simple html line item
+	struct SSHtmlElement_line
+	{
+		SBgra		fillColor;											// Internal color if the rect's larger than borderWidth pixels
+		SBgra		borderColor;										// Border color
+		s32			borderWidth;										// Border pixels (typically 1)
+	};
+
+	// Simple html rendering info
+	struct SSHtml
+	{
+		RECT		rc;													// Coordinate position relative to (0,0) upper-left
+
+		// Based on type
+		s32			sheType;											// See _SIMPLE_HTML_ELEMENT_TYPE* constants
+		union
+		{
+			SSHtmlElement_text*		text;								// (_SIMPLE_HTML_ELEMENT_TYPE_TEXT)		Text to display
+			SSHtmlElement_image*	image;								// (_SIMPLE_HTML_ELEMENT_TYPE_IMAGE)	Bitmap to display
+			SSHtmlElement_line*		line;								// (_SIMPLE_HTML_ELEMENT_TYPE_LINE)		Line to display
+		};
+	};
 
 	struct SUndo
 	{
@@ -159,10 +204,14 @@
 			SLine*		lastLine;										// Last in the chain (last->next is NULL)
 			bool		isStale;										// A general purpose flag indicating if the source code within this SEM is stale
 			bool		isReadOnly;										// If read-only no changes are allowed, only navigation
+			bool		isSimpleHtml;									// Does the SEM contain simple HTML code?
 			bool		stopNavigationOnNbsp;							// Do ctrl+left/right operations stop at every part of nbsp names (by default, no)?
 
 			// If populated, this SEM is only a placeholder for this instance, and the this->reference points to the real SEM we should use
 			SEM*		indirect;										// If not NULL, this SEM points to another SEM which is the real code block
+
+			// If simple html, 
+			SBuilder*	simpleHtml;										// SSHtml items for rendering
 
 
 //////////
@@ -285,6 +334,7 @@
 	SFont*					iSEM_getRectAndFont					(SEM* sem, SObject* obj, RECT* rc);
 	void					iSEM_getColors						(SEM* sem, SObject* obj, SBgra& backColor, SBgra& foreColor);
 	u32						iSEM_render							(SEM* sem, SObject* obj, bool tlRenderCursorline);
+	u32						iSEM_renderAs_simpleHtml			(SEM* sem, SObject* obj, bool tlRenderCursorline);
 	void					iSEM_render_highlightSelectedComps	(SEM* sem, SComp* firstComp);
 	bool					iSEM_verifyCursorIsVisible			(SEM* sem, SObject* obj);
 	bool					iSEM_onKeyDown_sourceCode			(SWindow* win, SObject* obj, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varCaps, SVariable* varAscii, SVariable* varVKey, SVariable* varIsCAS, SVariable* varIsAscii);
