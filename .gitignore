@@ -2,6 +2,7 @@ exodus/tools/lasm.exe
 source/baser/baser.dll
 source/baser/baser.exe
 source/baser/source/*.[Ff][Xx][Pp]
+source/baser/cdx.dll
 
 #OS junk files
 [Tt]humbs.db

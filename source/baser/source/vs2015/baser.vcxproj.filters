@@ -132,6 +132,9 @@
     <ClInclude Include="..\baser.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\baser_structs.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\baser.def">

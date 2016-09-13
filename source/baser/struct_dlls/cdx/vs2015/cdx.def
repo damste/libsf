@@ -1,0 +1,5 @@
+LIBRARY "cdx""
+
+EXPORTS
+
+	cdx_decode_keyfor

@@ -5,16 +5,30 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "baser", "baser.vcxproj", "{39773ABB-C29B-4DBD-B4BD-4F282F65E183}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cdx", "..\..\struct_dlls\cdx\vs2015\cdx.vcxproj", "{8C97C3DF-8A24-470B-92D3-890B32CFDDD7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
 		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{39773ABB-C29B-4DBD-B4BD-4F282F65E183}.Debug|Win32.ActiveCfg = Debug|Win32
 		{39773ABB-C29B-4DBD-B4BD-4F282F65E183}.Debug|Win32.Build.0 = Debug|Win32
+		{39773ABB-C29B-4DBD-B4BD-4F282F65E183}.Debug|x64.ActiveCfg = Debug|Win32
 		{39773ABB-C29B-4DBD-B4BD-4F282F65E183}.Release|Win32.ActiveCfg = Release|Win32
 		{39773ABB-C29B-4DBD-B4BD-4F282F65E183}.Release|Win32.Build.0 = Release|Win32
+		{39773ABB-C29B-4DBD-B4BD-4F282F65E183}.Release|x64.ActiveCfg = Release|Win32
+		{8C97C3DF-8A24-470B-92D3-890B32CFDDD7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8C97C3DF-8A24-470B-92D3-890B32CFDDD7}.Debug|Win32.Build.0 = Debug|Win32
+		{8C97C3DF-8A24-470B-92D3-890B32CFDDD7}.Debug|x64.ActiveCfg = Debug|x64
+		{8C97C3DF-8A24-470B-92D3-890B32CFDDD7}.Debug|x64.Build.0 = Debug|x64
+		{8C97C3DF-8A24-470B-92D3-890B32CFDDD7}.Release|Win32.ActiveCfg = Release|Win32
+		{8C97C3DF-8A24-470B-92D3-890B32CFDDD7}.Release|Win32.Build.0 = Release|Win32
+		{8C97C3DF-8A24-470B-92D3-890B32CFDDD7}.Release|x64.ActiveCfg = Release|x64
+		{8C97C3DF-8A24-470B-92D3-890B32CFDDD7}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -49,11 +49,6 @@
 
 
 
-struct SStruct;
-struct SElement;
-struct SStructDllFunc;
-struct SStructDllCallbacks;
-
 
 //////////
 // Global variables
@@ -125,122 +120,12 @@ struct SStructDllCallbacks;
 //////////
 // Structures
 //////
-	// These occupy the gsBaserRoot builder
-	struct SBaser
-	{
-		bool		isUsed;
-
-		// Filename used to open (retrieved with GetFullPathname())
-		s8			filename[_MAX_PATH];
-		s32			filenameLength;
-		s32			handle;
-		s32			loadAddress;
-
-		// Number of bytes actually read (max of 512)
-		SDatum		data;
-		union {
-			s8		data_s8[512];
-			u8		data_u8[512];
-		};
-	};
-
-	// For passing messages
-	// Note:  Each time a message is sent with a valid bsr, the bsr->refCount is incremented
-	struct SBaserMsg
-	{
-		bool		isUsed;
-		SDatum		message;		// Message begin sent
-		SBaser		bsr;			// Copy of related baser entry
-
-		// Data loaded for this operation (may be different than bsr->data_s8[])
-		SDatum		data;
-	};
-
-	cu32	_BASER_ELTYPE_S8			= 1;
-	cu32	_BASER_ELTYPE_S16			= 2;
-	cu32	_BASER_ELTYPE_S32			= 3;
-	cu32	_BASER_ELTYPE_S64			= 4;
-
-	cu32	_BASER_ELTYPE_F32			= 5;
-	cu32	_BASER_ELTYPE_F64			= 6;
-
-	cu32	_BASER_ELTYPE_U8			= 7;
-	cu32	_BASER_ELTYPE_U16			= 8;
-	cu32	_BASER_ELTYPE_U32			= 9;
-	cu32	_BASER_ELTYPE_U64			= 10;
-
-	cu32	_BASER_ELTYPE_TYPE			= 11;		// When a dll function is used, the type is given after, like "func abc_decode type abc" ... so this would indicate "abc"
-
-	cu32	_BASER_ELTYPE_DLL			= 12;
-	cu32	_BASER_ELTYPE_DLL_FUNC		= 13;
-
-	struct SStructDllCallbacks
-	{
-		// Disk read
-		union {
-			uptr		_iDisk_read;
-			s32			(*iDisk_read)		(s32 tnFile, s64 tnSeekOffset, void* tcData, s32 tnReadCount, bool* tlError, u32* tnErrorNum);
-		};
-
-	};
+	#include "baser_structs.h"
 
 	// Global callback to standard functions
 	SStructDllCallbacks gcb = {
 		(uptr)&iDisk_read
 	};
-
-	struct SStructType
-	{
-		SDatum			type;			// The type name to use for this
-	};
-
-	struct SStructDll
-	{
-		SDatum			pathname;		// Full disk path to the DLL
-		HMODULE			handle;			// From LoadLibrary(pathname)
-	};
-
-	struct SStructDllFunc
-	{
-		SStructDll*		dll;			// The dll this function relates to
-		SDatum			name;			// Function name
-		SDatum			type;			// Type name
-
-		// Function to call within
-		union {
-			uptr		_func;
-			void		(*func)		(SElement* el, SStructDllCallbacks* cb);
-		};
-	};
-
-	struct SElement
-	{
-		// Element type
-		u32				elType;
-		SDatum			name;			// Data element name
-
-										// File handle to retrieve from
-		s32				file;
-
-		// Offset and length of this data
-		s32				offset;
-		s32				length;
-
-		union {
-			SStructType		type;
-			SStructDll		dll;
-			SStructDllFunc	dllFunc;
-		};
-	};
-
-	struct SStruct
-	{
-		SDatum			name;			// Structure name
-		SBuilder*		data;			// The SElements within each one
-	};
-
-
-
 
 
 //////////
@@ -306,7 +191,7 @@ struct SStructDllCallbacks;
 	void			iiBaser_parse_block_by_struct__threadProc__appendElement	(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, u32 elType, s32 tnSize, s32* tnOffset, SStructDll* currentDll);
 	void			iiBaser_parse_block_by_struct__threadProc__appendDll		(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, SStructDll** currentDllRoot);
 	void			iiBaser_parse_block_by_struct__threadProc__appendFunc		(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, SDatum* type, SStructDll* currentDll);
-	void			iiBaser_populateDatum_byComp														(SComp* comp, SDatum* datum);
+	void			iiBaser_populateDatum_byComp								(SComp* comp, SDatum* datum);
 
 
 
@@ -498,16 +383,13 @@ valid_type:
 								iiBaser_populateDatum_byComp(compNext, &name);		// Grab the name
 
 							// Search for [Nn] for a repeat count
-							lnCount = 0;
+							lnCount = 1;
 							if ((compLeftBracket = iComps_findNextBy_iCode(comp, _ICODE_BRACKET_LEFT)))
 							{
 								// We have [
 								compNext = iComps_getNth(compLeftBracket, 1);
 								if (compNext->iCode == _ICODE_NUMERIC && (compRightBracket = iComps_getNth(compNext, 1)) && compRightBracket->iCode == _ICODE_BRACKET_RIGHT)
-								{
-									// We have [Nn], we have a repeat count
-									lnCount = max(iComps_getAs_s32(compNext), 1);
-								}
+									lnCount = max(iComps_getAs_s32(compNext), 1);	// We have [Nn], we have a repeat count
 							}
 
 							// Physically dispatch
@@ -540,7 +422,7 @@ valid_type:
 							}
 							break;
 
-						case _ICODE_STRUCT:
+						case _ICODE_BASER_STRUCT:
 							// Syntax should be:	struct name
 							if ((compNext = iComps_getNth(comp, 1)) && (compNext->iCode == _ICODE_ALPHA || compNext->iCode == _ICODE_ALPHANUMERIC))
 							{
@@ -569,7 +451,7 @@ valid_type:
 							break;
 
 						case _ICODE_BASER_FUNC:
-							// Syntax should be:	func funcName type aliasName
+							// Syntax should be:	func funcName type typeName
 							// Grab the name component (if any)
 							compNext = iComps_getNth(comp);
 							if (compNext)
@@ -581,7 +463,7 @@ valid_type:
 								compNext = iComps_getNth(compNext);
 								if (compNext->iCode == _ICODE_BASER_TYPE && (compNext = iComps_getNth(compNext)))
 								{
-									// Grab the associated type
+									// Grab the type alias
 									iiBaser_populateDatum_byComp(compNext, &type);
 
 									// Create the entry
@@ -669,12 +551,14 @@ quit:
 	// Appends a dll to use from this point forward
 	void iiBaser_parse_block_by_struct__threadProc__appendDll(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, SStructDll** currentDllRoot)
 	{
+		s32			lnOffset;
 		s8			filename[_MAX_PATH];
 		SElement*	el;
 
 
 		// Add the element for the dll
-		iiBaser_parse_block_by_struct__threadProc__appendElement(builder, strRoot, elRoot, name, _BASER_ELTYPE_DLL, 0, 0, *currentDllRoot);
+		lnOffset = 0;
+		iiBaser_parse_block_by_struct__threadProc__appendElement(builder, strRoot, elRoot, name, _BASER_ELTYPE_DLL, 0, &lnOffset, *currentDllRoot);
 		el = *elRoot;
 
 		// Get the full pathname
@@ -694,17 +578,21 @@ quit:
 	// Appends a function within the current dll
 	void iiBaser_parse_block_by_struct__threadProc__appendFunc(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, SDatum* type, SStructDll* currentDll)
 	{
+		s32			lnOffset;
 		uptr		lnAddress;
-		s8			filename[_MAX_PATH];
+		s8			funcname[_MAX_PATH];
 		SElement*	el;
 
 
 		// Add the element for the dll
-		iiBaser_parse_block_by_struct__threadProc__appendElement(builder, strRoot, elRoot, name, _BASER_ELTYPE_DLL_FUNC, 0, 0, currentDll);
+		lnOffset = 0;
+		iiBaser_parse_block_by_struct__threadProc__appendElement(builder, strRoot, elRoot, name, _BASER_ELTYPE_DLL_FUNC, 0, &lnOffset, currentDll);
 		el = *elRoot;
 
 		// Populate the rest
-		el->dllFunc._func	= (uptr)GetProcAddress(currentDll->handle, name->data_s8);
+		memcpy(funcname, name->data_s8, name->length);
+		funcname[name->length] = 0;
+		el->dllFunc._func	= (uptr)GetProcAddress(currentDll->handle, funcname);
 		el->dllFunc.dll		= currentDll;
 		iDatum_duplicate(&el->dllFunc.name, name);
 		iDatum_duplicate(&el->dllFunc.type, type);
@@ -712,15 +600,15 @@ quit:
 
 	void iiBaser_populateDatum_byComp(SComp* comp, SDatum* datum)
 	{
-		if (comp->iCode != _ICODE_ALPHA && comp->iCode != _ICODE_ALPHANUMERIC)
-		{
-			// It's a name
-			datum->data_s8	= comp->line->sourceCode->data_s8;
-			datum->length	= comp->line->sourceCode->length;
-
-		} else if (comp->iCode != _ICODE_SINGLE_QUOTED_TEXT && comp->iCode != _ICODE_DOUBLE_QUOTED_TEXT) {
+		// Trim quotes if need be
+		if (comp->iCode == _ICODE_SINGLE_QUOTED_TEXT || comp->iCode == _ICODE_DOUBLE_QUOTED_TEXT) {
 			// It's quoted text
-			datum->data_s8	= comp->line->sourceCode->data_s8 + 1;
-			datum->length	= comp->line->sourceCode->length - 2;
+			datum->data_s8	= comp->line->sourceCode->data_s8 + comp->start + 1;
+			datum->length	= comp->length - 2;
+
+		} else {
+			// It's a name
+			datum->data_s8	= comp->line->sourceCode->data_s8 + comp->start;
+			datum->length	= comp->length;
 		}
 	}
