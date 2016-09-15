@@ -55,6 +55,8 @@
 //////
 	bool			glBaser_isRunning							= false;
 	SBuilder*		gsBaserRoot									= NULL;
+	SBuilder*		gsBaserMessagesRoot							= NULL;
+	CRITICAL_SECTION cs_content_messages;
 
 	// Bitmaps
 	SBitmap*		bmp512b										= NULL;
@@ -123,7 +125,7 @@
 	#include "baser_structs.h"
 
 	// Global callback to standard functions
-	SStructDllCallbacks gcb = {
+	SStructDllCallbacks gsBaserCallback = {
 		(uptr)&iDisk_read
 	};
 
@@ -136,11 +138,15 @@
 	cs8		cgc_baser_func[]		= "func";
 	cs8		cgc_baser_type[]		= "type";
 	cs8		cgc_baser_alias[]		= "alias";
+	cs8		cgc_baser_fp[]			= "fp";
+	cs8		cgc_baser_int[]			= "int";
+	cs8		cgc_baser_uint[]		= "uint";
 
 	cu32	_ICODE_BASER_STRUCT		= 5000000;
 	cu32	_ICODE_BASER_DLL		= 5000001;
 	cu32	_ICODE_BASER_FUNC		= 5000002;
 	cu32	_ICODE_BASER_TYPE		= 5000003;
+	cu32	_ICODE_BASER_FP			= 5000004;
 
 	SAsciiCompSearcher cgcBaserKeywords[] =
 	{
@@ -150,11 +156,13 @@
 		{ cgc_baser_func,			4,			false,		_ICODE_BASER_FUNC,						false,				_ICAT_DEFINITION,		&colorSynHi_keyword,		false,						null0,					null0,		null0 },
 		{ cgc_baser_type,			4,			false,		_ICODE_BASER_TYPE,						false,				_ICAT_DEFINITION,		&colorSynHi_keyword,		false,						null0,					null0,		null0 },
 		{ cgc_baser_alias,			5,			false,		_ICODE_BASER_TYPE,						false,				_ICAT_DEFINITION,		&colorSynHi_keyword,		false,						null0,					null0,		null0 },
+		{ cgc_baser_fp,				2,			false,		_ICODE_BASER_FP,						false,				_ICAT_DEFINITION,		&colorSynHi_keyword,		false,						null0,					null0,		null0 },
 
 		// Data types
 		{ cgc_u8,					2,			false,		_ICODE_U8,								false,				_ICAT_DEFINITION,		null0,						false,						null0,					null0,		null0 },
 		{ cgc_u16,					3,			false,		_ICODE_U16,								false,				_ICAT_DEFINITION,		null0,						false,						null0,					null0,		null0 },
 		{ cgc_u32,					3,			false,		_ICODE_U32,								false,				_ICAT_DEFINITION,		null0,						false,						null0,					null0,		null0 },
+		{ cgc_baser_uint,			4,			false,		_ICODE_U32,								false,				_ICAT_DEFINITION,		null0,						false,						null0,					null0,		null0 },
 		{ cgc_u64,					3,			false,		_ICODE_U64,								false,				_ICAT_DEFINITION,		null0,						false,						null0,					null0,		null0 },
 
 		{ cgc_f32,					3,			false,		_ICODE_F32,								false,				_ICAT_DEFINITION,		null0,						false,						null0,					null0,		null0 },
@@ -163,6 +171,7 @@
 		{ cgc_s8,					2,			false,		_ICODE_S8,								false,				_ICAT_DEFINITION,		null0,						false,						null0,					null0,		null0 },
 		{ cgc_s16,					3,			false,		_ICODE_S16,								false,				_ICAT_DEFINITION,		null0,						false,						null0,					null0,		null0 },
 		{ cgc_s32,					3,			false,		_ICODE_S32,								false,				_ICAT_DEFINITION,		null0,						false,						null0,					null0,		null0 },
+		{ cgc_baser_int,			3,			false,		_ICODE_S32,								false,				_ICAT_DEFINITION,		null0,						false,						null0,					null0,		null0 },
 		{ cgc_s64,					3,			false,		_ICODE_S64,								false,				_ICAT_DEFINITION,		null0,						false,						null0,					null0,		null0 },
 
 		{ 0,						0,			0,			0,										0,					0,					0,							0,							0,						0,			0 }
@@ -174,10 +183,10 @@
 //////
 	// Public declarations (see baser.def)
 	s32				baser_load													(s8* tcFilename);
-	s32				baser_release												(int tnHandle);
-	s32				baser_populate_row											(int tnHandle,              int tnOffset, int tnBase, s8* tcBufferOut, int tnBufferOut_length);
-	s32				baser_parse_block_by_struct									(int tnHandle, HWND tnHwnd, int tnOffset, cs8* cStruct, int nStructLength);
-	s32				baser_retrieve_data											(int nId, s8* cDataOut, int tnDataLength);
+	s32				baser_release												(s32 tnHandle);
+	s32				baser_populate_row											(s32 tnHandle,                      s32 tnOffset, s32 tnBase, s8* tcBufferOut, s32 tnBufferOut_length);
+	s32				baser_parse_block_by_struct									(s32 tnHandle, HWND tnHwndCallback, s32 tnOffset, cs8* cStruct, s32 nStructLength);
+	s32				baser_retrieve_data											(s32 nId, s8* tcDataOut, s32 tnDataOutLength);
 	s32				baser_create_htmltemp_file_content							(s8* tcFileOut260, s8* tcFilenamePrefix, s8* tcContent, s32 tnContentLength);
 
 
@@ -188,10 +197,23 @@
 	SBaser*			iBaser_findBy_fullPathname									(s8* tcPathname);
 	SBaser*			iBaser_findBy_handle										(s32 tnHandle);
 	DWORD			iiBaser_parse_block_by_struct__threadProc					(LPVOID param);
-	void			iiBaser_parse_block_by_struct__threadProc__appendElement	(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, u32 elType, s32 tnSize, s32* tnOffset, SStructDll* currentDll);
+	void			iiBaser_parse_block_by_struct__threadProc__appendElement	(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, u32 elType, s32 tnSize, s32* tnOffset, SStructDll* currentDll, s32 lnFpLength, s32 lnFpDecimals);
 	void			iiBaser_parse_block_by_struct__threadProc__appendDll		(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, SStructDll** currentDllRoot);
 	void			iiBaser_parse_block_by_struct__threadProc__appendFunc		(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, SDatum* type, SStructDll* currentDll);
 	void			iiBaser_populateDatum_byComp								(SComp* comp, SDatum* datum);
+	void			iiBaser_deleteStructs										(SBuilder** structsRoot);
+	void			iiBaser_append_s8											(SBuilder* output, SElement* elData, s8 data);
+	void			iiBaser_append_s16											(SBuilder* output, SElement* elData, s16 data);
+	void			iiBaser_append_s32											(SBuilder* output, SElement* elData, s32 data);
+	void			iiBaser_append_s64											(SBuilder* output, SElement* elData, s64 data);
+	void			iiBaser_append_f32											(SBuilder* output, SElement* elData, f32 data);
+	void			iiBaser_append_f64											(SBuilder* output, SElement* elData, f64 data);
+	void			iiBaser_append_u8											(SBuilder* output, SElement* elData, u8 data);
+	void			iiBaser_append_u16											(SBuilder* output, SElement* elData, u16 data);
+	void			iiBaser_append_u32											(SBuilder* output, SElement* elData, u32 data);
+	void			iiBaser_append_u64											(SBuilder* output, SElement* elData, u64 data);
+	s32				iiBaser_append_type											(SBuilder* output, SElement* elData, SBuilder* structs, s32 tnOffset);
+	void			iiBaser_dispatch_contentMessage								(HWND hwnd, SBuilder* content);
 
 
 
@@ -205,6 +227,9 @@
 	{
 		// Initialize VJr's internal engine
 		iVjr_init_minimal();
+
+		// Create our critical sections
+		InitializeCriticalSection(&cs_content_messages);
 
 		// Allocate our baser info
 		iBuilder_createAndInitialize(&gsBaserRoot, sizeof(SBaser) * 20);
@@ -314,7 +339,8 @@
 //////
 	DWORD iiBaser_parse_block_by_struct__threadProc(LPVOID param)
 	{
-		s32			lnOffset, lnCount, lnElType, lnSize;
+		s32			lnOffset, lnCount, lnElType, lnSize, lnFpLength, lnFpDecimals;
+		u32			lnI, lnJ;
 		SDatum		name, type;
 		SBaserMsg*	bm;
 		SComp*		comp;
@@ -326,7 +352,8 @@
 		SEM*		sem;
 		SStruct*	str;
 		SElement*	el;
-		SBuilder*	builder;
+		SBuilder*	structs;	// Parsed struct data into the various structs contained within
+		SBuilder*	output;		// Generated report output
 
 
 		// Retrieve our parameter rightly
@@ -336,8 +363,14 @@
 		if (iSEM_load_fromMemory(NULL, (sem = iSEM_allocate(true)), &bm->message, true, false, &cgcBaserKeywords[0]))
 		{
 			// Initialize our builder
-			builder = NULL;
-			iBuilder_createAndInitialize(&builder, sizeof(SElement) * 50);
+			structs = NULL;
+			output	= NULL;
+			iBuilder_createAndInitialize(&structs, sizeof(SStruct) * 10);
+			iBuilder_createAndInitialize(&output);
+
+			// Initialize our defaults
+			lnFpLength		= -1;
+			lnFpDecimals	= -1;
 
 			// Render the data based on the structure
 			for (line = sem->firstLine, str = NULL, el = NULL, lnOffset = 0, dll = NULL; line; line = line->ll.nextLine)
@@ -393,7 +426,7 @@ valid_type:
 							}
 
 							// Physically dispatch
-							iiBaser_parse_block_by_struct__threadProc__appendElement(builder, &str, &el, &name, lnElType, lnSize * lnCount, &lnOffset, dll);
+							iiBaser_parse_block_by_struct__threadProc__appendElement(structs, &str, &el, &name, lnElType, lnSize * lnCount, &lnOffset, dll, lnFpLength, lnFpDecimals);
 							break;
 
 						case _ICODE_ALPHA:
@@ -422,12 +455,30 @@ valid_type:
 							}
 							break;
 
+						case _ICODE_BASER_FP:
+							// They're specifying a floating point length
+							// Syntax should be fp length,decimals
+							compNext = iComps_getNth(comp);
+							if (compNext && compNext->iCode == _ICODE_NUMERIC)
+							{
+								// Set this as the length
+								lnFpLength = iComps_getAs_s32(compNext);
+
+								// If there are additional components on this line, continue parsing where we are
+								if ((compNext = iComps_getNth(compNext)) && compNext->iCode == _ICODE_COMMA && (compNext = iComps_getNth(compNext)) && comp->iCode == _ICODE_NUMERIC)
+								{
+									// Grab the next and continue processing
+									lnFpDecimals = iComps_getAs_s32(compNext);
+								}
+							}
+							break;
+
 						case _ICODE_BASER_STRUCT:
 							// Syntax should be:	struct name
 							if ((compNext = iComps_getNth(comp, 1)) && (compNext->iCode == _ICODE_ALPHA || compNext->iCode == _ICODE_ALPHANUMERIC))
 							{
 								// Create a new structure
-								str = (SStruct*)iBuilder_allocateBytes(builder, sizeof(SStruct));
+								str = (SStruct*)iBuilder_allocateBytes(structs, sizeof(SStruct));
 								if (!str)
 									goto quit;	// Should never happen
 
@@ -446,7 +497,7 @@ valid_type:
 								iiBaser_populateDatum_byComp(compNext, &name);
 
 								// Create the entry
-								iiBaser_parse_block_by_struct__threadProc__appendDll(builder, &str, &el, &name, &dll);
+								iiBaser_parse_block_by_struct__threadProc__appendDll(structs, &str, &el, &name, &dll);
 							}
 							break;
 
@@ -467,7 +518,7 @@ valid_type:
 									iiBaser_populateDatum_byComp(compNext, &type);
 
 									// Create the entry
-									iiBaser_parse_block_by_struct__threadProc__appendFunc(builder, &str, &el, &name, &type, dll);
+									iiBaser_parse_block_by_struct__threadProc__appendFunc(structs, &str, &el, &name, &type, dll);
 								}
 							}
 							break;
@@ -479,9 +530,75 @@ valid_type:
 				}
 			}
 
-			// Send back completed message
+			// Process the data
+			lnOffset = 0;
+			iterate(lnI, structs, str, SStruct)
+			// Begin
 
-			// Delete the sem
+				iterate(lnJ, str->elements, el, SElement)
+				// Begin
+
+					switch (el->elType)
+					{
+						case _BASER_ELTYPE_S8:
+							iiBaser_append_s8(output, el, *(s8*)bm->data.data_s8[lnOffset]);
+							lnOffset += el->length;
+							break;
+						case _BASER_ELTYPE_S16:
+							iiBaser_append_s16(output, el, *(s16*)bm->data.data_s8[lnOffset]);
+							lnOffset += el->length;
+							break;
+						case _BASER_ELTYPE_S32:
+							iiBaser_append_s32(output, el, *(s32*)bm->data.data_s8[lnOffset]);
+							lnOffset += el->length;
+							break;
+						case _BASER_ELTYPE_S64:
+							iiBaser_append_s64(output, el, *(s64*)bm->data.data_s8[lnOffset]);
+							lnOffset += el->length;
+							break;
+						case _BASER_ELTYPE_F32:
+							iiBaser_append_f32(output, el, *(f32*)bm->data.data_s8[lnOffset]);
+							lnOffset += el->length;
+							break;
+						case _BASER_ELTYPE_F64:
+							iiBaser_append_f64(output, el, *(f64*)bm->data.data_s8[lnOffset]);
+							lnOffset += el->length;
+							break;
+						case _BASER_ELTYPE_U8:
+							iiBaser_append_u8(output, el, *(u8*)bm->data.data_s8[lnOffset]);
+							lnOffset += el->length;
+							break;
+						case _BASER_ELTYPE_U16:
+							iiBaser_append_u16(output, el, *(u16*)bm->data.data_s8[lnOffset]);
+							lnOffset += el->length;
+							break;
+						case _BASER_ELTYPE_U32:
+							iiBaser_append_u32(output, el, *(u32*)bm->data.data_s8[lnOffset]);
+							lnOffset += el->length;
+							break;
+						case _BASER_ELTYPE_U64:
+							iiBaser_append_u64(output, el, *(u64*)bm->data.data_s8[lnOffset]);
+							lnOffset += el->length;
+							break;
+						case _BASER_ELTYPE_TYPE:
+							lnOffset += iiBaser_append_type(output, el, structs, lnOffset);
+							break;
+
+					}
+
+				// End
+				iterate_end;
+
+			// End
+			iterate_end;
+
+			// Send back completed message
+			iiBaser_dispatch_contentMessage(bm->hwndCallback, output);
+			output = NULL;
+			// Note:  The output builder is moved into the dispatched content message.  It is deleted on full retrieval.
+
+			// Clean house
+			iiBaser_deleteStructs(&structs);
 			iSEM_delete(&sem, true);
 		}
 
@@ -496,7 +613,7 @@ quit:
 	}
 
 	// Appends an element to display (or ignore if it doesn't have a name)
-	void iiBaser_parse_block_by_struct__threadProc__appendElement(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, u32 elType, s32 tnSize, s32* tnOffset, SStructDll* currentDll)
+	void iiBaser_parse_block_by_struct__threadProc__appendElement(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, u32 elType, s32 tnSize, s32* tnOffset, SStructDll* currentDll, s32 lnFpLength, s32 lnFpDecimals)
 	{
 		SElement*	el;
 		SStruct*	str;
@@ -524,20 +641,34 @@ quit:
 			}
 
 			// Make sure we have an element builder
-			if (!str->data)
-				iBuilder_createAndInitialize(&str->data, sizeof(SElement) * 20);
+			if (!str->elements)
+				iBuilder_createAndInitialize(&str->elements, sizeof(SElement) * 20);
 
 
 		//////////
 		// Add this element
 		//////
-			el = (SElement*)iBuilder_allocateBytes(str->data, sizeof(SElement));
+			el = (SElement*)iBuilder_allocateBytes(str->elements, sizeof(SElement));
 			if (!el)
 				return;		// Should never happen
 
 			el->elType		= elType;
 			el->offset		= *tnOffset;
 			el->length		= tnSize;
+
+
+		//////////
+		// If it's floating point, indicate the size
+		//////
+			if (elType == _BASER_ELTYPE_F32)
+			{
+				el->fpLength	= ((lnFpLength		< 2) ? 8 : lnFpLength);
+				el->fpDecimals	= ((lnFpDecimals	< 0) ? 2 : lnFpDecimals);
+
+			} else if (elType == _BASER_ELTYPE_F64) {
+				el->fpLength	= ((lnFpLength		< 2) ? 15 : lnFpLength);
+				el->fpDecimals	= ((lnFpDecimals	< 0) ? 4  : lnFpDecimals);
+			}
 
 
 		//////////
@@ -558,7 +689,7 @@ quit:
 
 		// Add the element for the dll
 		lnOffset = 0;
-		iiBaser_parse_block_by_struct__threadProc__appendElement(builder, strRoot, elRoot, name, _BASER_ELTYPE_DLL, 0, &lnOffset, *currentDllRoot);
+		iiBaser_parse_block_by_struct__threadProc__appendElement(builder, strRoot, elRoot, name, _BASER_ELTYPE_DLL, 0, &lnOffset, *currentDllRoot, -1, -1);
 		el = *elRoot;
 
 		// Get the full pathname
@@ -579,14 +710,13 @@ quit:
 	void iiBaser_parse_block_by_struct__threadProc__appendFunc(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, SDatum* type, SStructDll* currentDll)
 	{
 		s32			lnOffset;
-		uptr		lnAddress;
 		s8			funcname[_MAX_PATH];
 		SElement*	el;
 
 
 		// Add the element for the dll
 		lnOffset = 0;
-		iiBaser_parse_block_by_struct__threadProc__appendElement(builder, strRoot, elRoot, name, _BASER_ELTYPE_DLL_FUNC, 0, &lnOffset, currentDll);
+		iiBaser_parse_block_by_struct__threadProc__appendElement(builder, strRoot, elRoot, name, _BASER_ELTYPE_DLL_FUNC, 0, &lnOffset, currentDll, -1, -1);
 		el = *elRoot;
 
 		// Populate the rest
@@ -611,4 +741,255 @@ quit:
 			datum->data_s8	= comp->line->sourceCode->data_s8 + comp->start;
 			datum->length	= comp->length;
 		}
+	}
+
+	void iiBaser_deleteStructs(SBuilder** structsRoot)
+	{
+		u32			lnI, lnJ;
+		SStruct*	str;
+		SElement*	el;
+
+
+		// Iterate through each struct
+		iterate(lnI, *structsRoot, str, SStruct)
+		// Begin
+
+			// Iterate through each element
+			iterate(lnJ, str->elements, el, SElement)
+			// Begin
+
+				// Always delete the name
+				iDatum_delete(&el->name);
+
+				// And based on the type we may delete more
+				switch (el->elType)
+				{
+					// DLLs delete their pathname
+					case _BASER_ELTYPE_DLL:
+						iDatum_delete(&el->dll.pathname);
+						if (el->dll.handle)		FreeLibrary(el->dll.handle);
+						break;
+
+					case _BASER_ELTYPE_DLL_FUNC:
+						// DLL functions delete their function name and alias type
+						iDatum_delete(&el->dllFunc.name);
+						iDatum_delete(&el->dllFunc.type);
+						break;
+
+				}
+
+			// End
+			iterate_end;
+
+		// End
+		iterate_end;
+
+		// Delete the builder
+		iBuilder_freeAndRelease(structsRoot);
+	}
+
+	void iiBaser_append_s8  (SBuilder* output, SElement* elData, s8 data)
+	{
+		s8 buffer[1024];
+
+
+		// 8-bit integer
+		sprintf(buffer, "%s = %d\n", elData->name.data_s8, (s32)data);
+		iBuilder_appendData(output, buffer, -1);
+	}
+
+	void iiBaser_append_s16 (SBuilder* output, SElement* elData, s16 data)
+	{
+		s8 buffer[1024];
+
+
+		// 16-bit integer
+		sprintf(buffer, "%s = %d\n", elData->name.data_s8, (s32)data);
+		iBuilder_appendData(output, buffer, -1);
+	}
+
+	void iiBaser_append_s32 (SBuilder* output, SElement* elData, s32 data)
+	{
+		s8 buffer[1024];
+
+
+		// 32-bit integer
+		sprintf(buffer, "%s = %d\n", elData->name.data_s8, data);
+		iBuilder_appendData(output, buffer, -1);
+	}
+
+	void iiBaser_append_s64 (SBuilder* output, SElement* elData, s64 data)
+	{
+		s8 buffer[1024];
+
+
+		// 64-bit integer
+		sprintf(buffer, "%s = %I64d\n", elData->name.data_s8, data);
+		iBuilder_appendData(output, buffer, -1);
+	}
+
+	void iiBaser_append_f32 (SBuilder* output, SElement* elData, f32 data)
+	{
+		return(iiBaser_append_f64(output, elData, (f64)data));
+	}
+
+	void iiBaser_append_f64 (SBuilder* output, SElement* elData, f64 data)
+	{
+		s8 format[16];
+		s8 buffer[1024];
+
+
+		// 64-bit floating point
+		// Build the format flag
+		if (elData->fpDecimals > 0)			sprintf(format, "%%s = %%%d.%df\n", elData->fpLength, elData->fpDecimals);
+		else								sprintf(format, "%%s = %%%d.0f\n",  elData->fpLength);
+
+		// Store
+		sprintf(buffer, format, elData->name.data_s8, data);
+		iBuilder_appendData(output, buffer, -1);
+	}
+
+	void iiBaser_append_u8  (SBuilder* output, SElement* elData, u8 data)
+	{
+		s8 buffer[1024];
+
+
+		// 8-bit unsigned integer
+		sprintf(buffer, "%s = %u\n", elData->name.data_s8, (u32)data);
+		iBuilder_appendData(output, buffer, -1);
+	}
+
+	void iiBaser_append_u16 (SBuilder* output, SElement* elData, u16 data)
+	{
+		s8 buffer[1024];
+
+
+		// 16-bit unsigned integer
+		sprintf(buffer, "%s = %u\n", elData->name.data_s8, (u32)data);
+		iBuilder_appendData(output, buffer, -1);
+	}
+
+	void iiBaser_append_u32 (SBuilder* output, SElement* elData, u32 data)
+	{
+		s8 buffer[1024];
+
+
+		// 32-bit unsigned integer
+		sprintf(buffer, "%s = %u\n", elData->name.data_s8, data);
+		iBuilder_appendData(output, buffer, -1);
+	}
+
+	void iiBaser_append_u64 (SBuilder* output, SElement* elData, u64 data)
+	{
+		s8 buffer[1024];
+
+
+		// 64-bit unsigned integer
+		sprintf(buffer, "%s = %I64u\n", elData->name.data_s8, data);
+		iBuilder_appendData(output, buffer, -1);
+	}
+
+	s32 iiBaser_append_type(SBuilder* output, SElement* elData, SBuilder* structs, s32 tnOffset)
+	{
+		s32			lnLength;
+		u32			lnI, lnJ;
+		SStruct*	str;
+		SElement*	el;
+		s8			buffer[1024];
+		
+
+
+		//////////
+		// Search for the indicated DLL
+		//////
+			iterate(lnI, structs, str, SStruct)
+			// Begin
+
+				iterate(lnJ, str->elements, el, SElement)
+				// Begin
+
+					// Is this our DLL function?
+					if (el->elType == _BASER_ELTYPE_DLL_FUNC && iDatum_compare(&el->dllFunc.type, &elData->type.dllFuncType) == 0)
+					{
+						// Dispatch
+						lnLength = el->dllFunc.func(tnOffset, elData, &gsBaserCallback);
+
+						// Success
+						return(lnLength);
+					}
+
+				// End
+				iterate_end;
+
+			// End
+			iterate_end;
+
+
+		//////////
+		// If we get here, not found
+		//////
+			sprintf(buffer, "%s = unable to find dll function related to %s\n", elData->name.data_s8, elData->type.dllFuncType.data_s8);
+			iBuilder_appendData(output, buffer, -1);
+
+	}
+
+	// Note:  content is inserted into the message, so if it's deleted it will cause an access violation
+	void iiBaser_dispatch_contentMessage(HWND hwnd, SBuilder* content)
+	{
+		u32			lnI;
+		union {
+			uptr			_bc;
+			SBaserContent*	bc;
+		};
+
+
+		//////////
+		// Lock
+		//////
+			EnterCriticalSection(&cs_content_messages);
+
+
+			// Make sure we have a builder
+			if (!gsBaserMessagesRoot)
+				iBuilder_createAndInitialize(&gsBaserMessagesRoot, sizeof(SBaserContent) * 10);
+
+
+			//////////
+			// Locate an unused slot
+			//////
+				iterate(lnI, gsBaserMessagesRoot, bc, SBaserContent)
+				// Begin
+
+					if (!bc->isUsed)
+						break;
+
+				// End
+				iterate_end;
+
+
+			//////////
+			// Allocate a new record if need be
+			//////
+				if (!bc || lnI >= gsBaserMessagesRoot->populatedLength)
+					bc = builder_allocate(gsBaserMessagesRoot, SBaserContent);
+
+
+			//////////
+			// Populate the message
+			//////
+				bc->isUsed	= true;
+				bc->content	= content;
+
+
+			//////////
+			// Physically dispatch the message
+			//////
+				SendMessage(hwnd, _WMBASER_CONTENT_IS_READY, _bc, content->populatedLength);
+
+quit:
+		//////////
+		// Unlock
+		//////
+			LeaveCriticalSection(&cs_content_messages);
+
 	}

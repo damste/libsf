@@ -81,8 +81,9 @@ struct SBaserMsg
 	bool		isUsed;
 	SDatum		message;		// Message begin sent
 	SBaser		bsr;			// Copy of related baser entry
+	HWND		hwndCallback;	// Callback when completed processing this message
 
-								// Data loaded for this operation (may be different than bsr->data_s8[])
+	// Data loaded for this operation (may be different than bsr->data_s8[])
 	SDatum		data;
 };
 
@@ -106,6 +107,18 @@ cu32	_BASER_ELTYPE_DLL_FUNC		= 13;
 
 struct SStructDllCallbacks
 {
+	// Disk tell
+	union {
+		uptr		_iDisk_tell;
+		s64			(*iDisk_tell)		(s32 tnFile, bool* tlError, u32* tnErrorNum);
+	};
+
+	// Disk seek
+	union {
+		uptr		_iDisk_read;
+		s64			(*iDisk_seek)		(s32 tnFile, s64 tnSeekOffset, bool* tlError, u32* tnErrorNum);
+	};
+
 	// Disk read
 	union {
 		uptr		_iDisk_read;
@@ -116,7 +129,7 @@ struct SStructDllCallbacks
 
 struct SStructType
 {
-	SDatum			type;			// The type name to use for this
+	SDatum			dllFuncType;	// The DLL type name to use for this data
 };
 
 struct SStructDll
@@ -134,7 +147,7 @@ struct SStructDllFunc
 									// Function to call within
 	union {
 		uptr		_func;
-		void		(*func)		(SElement* el, SStructDllCallbacks* cb);
+		s32			(*func)		(s32 tnOffset, SElement* el, SStructDllCallbacks* cb);	// Returns the length consumed from tnOffset
 	};
 };
 
@@ -144,22 +157,35 @@ struct SElement
 	u32				elType;
 	SDatum			name;			// Data element name
 
-									// File handle to retrieve from
+	// File handle to retrieve from
 	s32				file;
 
 	// Offset and length of this data
 	s32				offset;
 	s32				length;
 
+	// If it's a floating point form, optional fpLength and fpDecimals, such as 6, 2 for "123.45"
+	s32				fpLength;		// By default, f32=8 f64=15, override with a declaration of something like "fp 14,4" in the struct
+	s32				fpDecimals;		// By default, f32=2 f64=4
+
+	// Content related to _BASER_ELTYPE_*
 	union {
-		SStructType		type;
-		SStructDll		dll;
-		SStructDllFunc	dllFunc;
+		SStructType		type;		// _BASER_ELTYPE_TYPE
+		SStructDll		dll;		// _BASER_ELTYPE_DLL
+		SStructDllFunc	dllFunc;	// _BASER_ELTYPE_DLLFUNC
 	};
 };
 
 struct SStruct
 {
 	SDatum			name;			// Structure name
-	SBuilder*		data;			// The SElements within each one
+
+	SBuilder*		elements;		// The SElements within each one
+};
+
+// For constructed messages with content, dispatched by hwnd callback, they are retrieved here
+struct SBaserContent
+{
+	bool			isUsed;			// Is this a valid message?
+	SBuilder*		content;		// The message content
 };

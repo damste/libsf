@@ -29,27 +29,27 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -87,12 +87,14 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;CDX_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;CDX_EXPORTS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>cdx.def</ModuleDefinitionFile>
+      <AdditionalLibraryDirectories>\libsf\utils\common\lib\;\libsf\source\vjr\source\sound\SDL-1.2.15\lib\x86\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;SDL.lib;glew32.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy $(SolutionDir)$(Configuration)\$(TargetName).dll \libsf\source\baser\</Command>
@@ -125,7 +127,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;CDX_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;CDX_EXPORTS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -133,6 +135,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>cdx.def</ModuleDefinitionFile>
+      <AdditionalLibraryDirectories>\libsf\utils\common\lib\;\libsf\source\vjr\source\sound\SDL-1.2.15\lib\x86\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;SDL.lib;glew32.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy $(SolutionDir)$(Configuration)\$(TargetName).dll \libsf\source\baser\</Command>
@@ -163,6 +167,44 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="../cdx.cpp" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm5sin.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmasin.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmasn0.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmcbrt.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmcnst.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmfact.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmfmul.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmgues.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmhasn.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmhsin.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmipwr.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmistr.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmpwr2.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmrsin.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmsqrt.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmstck.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmutil.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmutl1.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmutl2.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_add.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_cpi.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_div.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_exp.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_fam.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_fft.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_flr.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_fpf.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_gcd.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_lg2.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_lg3.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_lg4.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_log.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_mul.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_pow.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_rcp.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_rnd.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_set.c" />
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_sin.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cdx.def" />

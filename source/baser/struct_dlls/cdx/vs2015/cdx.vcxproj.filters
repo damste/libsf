@@ -13,10 +13,127 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="mapm">
+      <UniqueIdentifier>{3fd59099-353e-4426-9e85-614eb773006d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="../cdx.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_add.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_cpi.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_div.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_exp.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_fam.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_fft.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_flr.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_fpf.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_gcd.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_lg2.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_lg3.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_lg4.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_log.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_mul.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_pow.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_rcp.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_rnd.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_set.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm_sin.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapm5sin.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmasin.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmasn0.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmcbrt.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmcnst.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmfact.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmfmul.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmgues.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmhasn.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmhsin.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmipwr.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmistr.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmpwr2.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmrsin.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmsqrt.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmstck.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmutil.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmutl1.c">
+      <Filter>mapm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vjr\source\3rd_party\mapm\mapmutl2.c">
+      <Filter>mapm</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -86,6 +86,7 @@ extern "C"
 				break;
 			
 			case DLL_PROCESS_DETACH:
+				DeleteCriticalSection(&cs_content_messages);
 				break;
 
 			case DLL_THREAD_ATTACH:
@@ -161,7 +162,7 @@ extern "C"
 //
 //////
 	// 0=success
-	s32 baser_release(int tnHandle)
+	s32 baser_release(s32 tnHandle)
 	{
 		union {
 			int			_bsr;
@@ -194,7 +195,7 @@ extern "C"
 // Populate the indicated row in the indicated base
 //
 //////
-	s32 baser_populate_row(int tnHandle, int tnOffset, int tnBase, s8* tcBufferOut, int tnBufferOut_length)
+	s32 baser_populate_row(s32 tnHandle, s32 tnOffset, s32 tnBase, s8* tcBufferOut, s32 tnBufferOut_length)
 	{
 		s32				lnI, lnJ, lnOffset;
 		s8				buffer[64];
@@ -293,7 +294,7 @@ extern "C"
 //////
 	// Note:  This processing spawns a thread which parses in the background, and notifies the tnHwnd when completed
 	// Note:  It may result in a data set that is abandoned as it may spin off many threads
-	s32 baser_parse_block_by_struct(int tnHandle, HWND tnHwnd, int tnOffset, cs8* cStruct, int nStructLength)
+	s32 baser_parse_block_by_struct(s32 tnHandle, HWND tnHwndCallback, s32 tnOffset, cs8* cStruct, s32 nStructLength)
 	{
 		DWORD				lnThreadId;
 		SBaser*				bsr;
@@ -315,15 +316,12 @@ extern "C"
 				memset(bm, 0, sizeof(SBaserMsg));
 
 				// Allocate
-				bm->message.data_s8 = (s8*)malloc(nStructLength);
+				iDatum_duplicate(&bm->message, cStruct, nStructLength);
 				if (bm->message.data_s8)
 				{
 					// Copy
-					bm->message.length = nStructLength;
 					memcpy(&bm->bsr, bsr, sizeof(bm->bsr));
-
-					// Physically copy
-					memcpy(bm->message.data_s8, cStruct, nStructLength);
+					bm->hwndCallback = tnHwndCallback;
 
 					// Spawn the thread
 					CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)&iiBaser_parse_block_by_struct__threadProc, bm, NULL, &lnThreadId);
@@ -348,14 +346,64 @@ extern "C"
 // Called to retrieve a message that's been prepared for the display
 //
 //////
-	s32 baser_retrieve_data(int nId, s8* cDataOut, int tnDataLength)
+	s32 baser_retrieve_data(s32 nId, s8* tcDataOut, s32 tnDataOutLength)
 	{
-		// Search for the message
+		s32			lnContentLength;
+		u32			lnI;
+		union {
+			s32				_bc_s32;
+			uptr			_bc_uptr;
+			SBaserContent*	bc;
+		};
 
-		// Retrieve message
 
-		// Indicate result
-		return(-1);
+		//////////
+		// Lock
+		//////
+			EnterCriticalSection(&cs_content_messages);
+
+
+			// See if the message is valid?
+			_bc_s32 = nId;
+			if (iBuilder_isPointer(gsBaserMessagesRoot, _bc_uptr, (void**)&bc) && bc->isUsed && (lnContentLength = bc->content->populatedLength))
+			{
+				// If we have data to copy, prepare to do so
+				if (tcDataOut && tnDataOutLength > 0)
+				{
+					// Retrieve as much of the message as will fit
+					memcpy(tcDataOut, bc->content->data_s8, min(tnDataOutLength, lnContentLength));
+
+					// Delete the message if need be
+					if (tnDataOutLength >= lnContentLength)
+					{
+						// If it's shorter than allocated space, pad with spaces
+						if (tnDataOutLength > lnContentLength)
+							memset(tcDataOut + lnContentLength, 32, tnDataOutLength - lnContentLength);	// Pad with spaces
+
+						// No longer used
+						bc->isUsed = false;
+
+						// Release the content
+						iBuilder_freeAndRelease(&bc->content);
+					}
+				}
+
+			} else {
+				// If we get here, not found
+				lnContentLength = -1;
+			}
+
+
+		//////////
+		// Unlock
+		//////
+			LeaveCriticalSection(&cs_content_messages);
+
+
+		//////////
+		// Indicate how long it actually is
+		//////
+			return(lnContentLength);
 	}
 
 

@@ -200,7 +200,7 @@ struct SVariable;
 	s32						iDatum_compare							(SDatum* datumLeft, u8*  data, s32 dataLength);
 	s32						iDatum_compare							(SDatum* datumLeft, cu8* data, s32 dataLength);
 	void					iDatum_delete							(SDatum** datum);
-	void					iDatum_delete							(SDatum* datum, bool tlDeleteSelf);
+	void					iDatum_delete							(SDatum* datum, bool tlDeleteSelf = false);
 	void					iiDatum_delete							(SDatum* datum);
 
 	SProperty*				iProperty_allocateAs_character_fromComp	(SComp* name, SComp* value, s32 tnOverrideNameLength = -1, s32 tnOverrideValueLength = -1);

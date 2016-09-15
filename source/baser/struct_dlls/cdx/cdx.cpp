@@ -4,10 +4,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <windows.h>
-#include "\libsf\utils\common\cpp_vjr\include\common_types.h"
-#include "\libsf\utils\common\cpp_vjr\include\datum.h"
-#include "\libsf\utils\common\cpp_vjr\include\builder.h"
+
+// Use VJr processing engine
+#define _NONVJR_COMPILE		// Turns off some features in VJr that fail on compilation from here
+#define _BMP_LOCALITY 1		// Force definitions to be local
+#include "\libsf\source\vjr\source\vjr.h"
+
+// Baser includes
 #include "\libsf\source\baser\source\baser_structs.h"
+
+
 
 
 //////////
@@ -22,7 +28,10 @@
 			case DLL_PROCESS_ATTACH:
 			case DLL_THREAD_ATTACH:
 			case DLL_THREAD_DETACH:
+				break;
 			case DLL_PROCESS_DETACH:
+				// Initialize VJr's internal engine
+				iVjr_init_minimal();
 				break;
 		}
 		return TRUE;
@@ -36,7 +45,14 @@
 // Decode the indicated data block
 //
 //////
-	void cdx_decode_keyfor(SElement* el, SStructDllCallbacks* cb)
+	void cdx_decode_keyfor(s32 tnOffset, SElement* el, SStructDllCallbacks* cb)
 	{
+		// Save current file offset
+
+		// Read the required block from disk
+
+		// Translate
+
+		// Restore file offset
 		debug_nop;
 	}
