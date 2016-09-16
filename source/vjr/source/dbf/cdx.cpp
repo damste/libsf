@@ -3153,7 +3153,7 @@ failed_parsing:
 		s32				lnTagIndex;
 		STagRoot		tagRoot;
 		SCdxKeyLeafRaw	key, okey;
-		SBuilder*		lockOps;
+//		SBuilder*		lockOps;
 		s8				buffer[1024];
 
 

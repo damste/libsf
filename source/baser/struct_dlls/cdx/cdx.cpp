@@ -45,14 +45,12 @@
 // Decode the indicated data block
 //
 //////
-	void cdx_decode_keyfor(s32 tnOffset, SElement* el, SStructDllCallbacks* cb)
+	void cdx_decode_keyfor(s32 tnFileOffset, SBuilder* output, SElement* el, SStructDllCallbacks* cb)
 	{
-		// Save current file offset
-
+		debug_nop;
 		// Read the required block from disk
 
 		// Translate
 
-		// Restore file offset
-		debug_nop;
+		iBuilder_appendData(output, "cdx_decode_keyfor() was reached\n", -1);
 	}

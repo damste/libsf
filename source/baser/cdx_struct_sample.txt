@@ -11,15 +11,17 @@
 //		type[n];				// Placeholder
 //		type name;				// Single data element
 //		type name[n];			// Multiple data elements
-//		type* name;				// Pointer to the indicated type
+//		type+ name;				// 64-bit pointer to the indicated type
+//		type* name;				// 32-bit pointer to the indicated type
+//		type@ name;				// 16-bit pointer to the indicated type
 //
-// Note:  type can be a previously defined struct
+// Note:  type can be a previously defined struct, or the typeName given for a called function, where the function interprets the data.
 //
 //////
 	struct cdxHead
 	{
 		dll		cdx.dll
-		func	cdx_decode_keyfor	type keyfor
+		func	cdx_decode_keyfor type keyfor
 
 0:		u32		root;
 		u32		free;

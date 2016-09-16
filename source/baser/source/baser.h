@@ -126,7 +126,10 @@
 
 	// Global callback to standard functions
 	SStructDllCallbacks gsBaserCallback = {
-		(uptr)&iDisk_read
+		(uptr)&iDisk_getFilePosition,
+		(uptr)&iDisk_setFilePosition, 
+		(uptr)&iDisk_read,
+		(uptr)&iDisk_write
 	};
 
 
@@ -197,7 +200,7 @@
 	SBaser*			iBaser_findBy_fullPathname									(s8* tcPathname);
 	SBaser*			iBaser_findBy_handle										(s32 tnHandle);
 	DWORD			iiBaser_parse_block_by_struct__threadProc					(LPVOID param);
-	void			iiBaser_parse_block_by_struct__threadProc__appendElement	(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, u32 elType, s32 tnSize, s32* tnOffset, SStructDll* currentDll, s32 lnFpLength, s32 lnFpDecimals);
+	void			iiBaser_parse_block_by_struct__threadProc__appendElement	(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, SDatum* dllFuncType, u32 elType, s32 tnSize, s32* tnOffset, SStructDll* currentDll, s32 lnFpLength, s32 lnFpDecimals, bool tlPointer);
 	void			iiBaser_parse_block_by_struct__threadProc__appendDll		(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, SStructDll** currentDllRoot);
 	void			iiBaser_parse_block_by_struct__threadProc__appendFunc		(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, SDatum* type, SStructDll* currentDll);
 	void			iiBaser_populateDatum_byComp								(SComp* comp, SDatum* datum);
@@ -212,7 +215,7 @@
 	void			iiBaser_append_u16											(SBuilder* output, SElement* elData, u16 data);
 	void			iiBaser_append_u32											(SBuilder* output, SElement* elData, u32 data);
 	void			iiBaser_append_u64											(SBuilder* output, SElement* elData, u64 data);
-	s32				iiBaser_append_type											(SBuilder* output, SElement* elData, SBuilder* structs, s32 tnOffset);
+	s32				iiBaser_append_type											(SBuilder* output, SElement* elData, SBuilder* structs, s32 tnFileOffset);
 	void			iiBaser_dispatch_contentMessage								(HWND hwnd, SBuilder* content);
 
 
@@ -339,6 +342,7 @@
 //////
 	DWORD iiBaser_parse_block_by_struct__threadProc(LPVOID param)
 	{
+		bool		llPointer;
 		s32			lnOffset, lnCount, lnElType, lnSize, lnFpLength, lnFpDecimals;
 		u32			lnI, lnJ;
 		SDatum		name, type;
@@ -379,6 +383,12 @@
 				if (line->compilerInfo && (comp = line->compilerInfo->firstComp))
 				{
 					// We skip leading pipe signs
+					while (comp && comp->iCode == _ICODE_PIPE_SIGN)
+						comp = iComps_getNth(comp);
+
+					// Reset name and type
+					memset(&name, 0, sizeof(name));
+					memset(&type, 0, sizeof(type));
 
 continue_to_next_comp:
 					// What type is it?
@@ -404,14 +414,28 @@ valid_type:
 //		type is required
 //		name is optional
 //		[count] is optional
+//		Use + for 64-bit pointer
+//		Use * for 32-bit pointer
+//		Use @ for 16-bit pointer
 //
 //////
+							// See if it's a pointer
+							compNext = iComps_getNth(comp);
+							llPointer = (compNext && (compNext->iCode == _ICODE_PLUS || compNext->iCode == _ICODE_ASTERISK || compNext->iCode == _ICODE_AT_SIGN));
+							if (llPointer)
+							{
+								// Update the size
+								lnSize = ((compNext->iCode == _ICODE_ASTERISK) ? 4 : ((compNext->iCode == _ICODE_PLUS) ? 8 : 2));	// Pointer size is based on pointer type
+
+								// Grab the real next thing
+								compNext = iComps_getNth(comp);
+							}
+
 							// Initially assume no name
 							name.data_s8	= NULL;
 							name.length		= 0;
 
 							// Grab the name component (if any)
-							compNext = iComps_getNth(comp);
 							if (compNext)
 								iiBaser_populateDatum_byComp(compNext, &name);		// Grab the name
 
@@ -426,12 +450,13 @@ valid_type:
 							}
 
 							// Physically dispatch
-							iiBaser_parse_block_by_struct__threadProc__appendElement(structs, &str, &el, &name, lnElType, lnSize * lnCount, &lnOffset, dll, lnFpLength, lnFpDecimals);
+							iiBaser_parse_block_by_struct__threadProc__appendElement(structs, &str, &el, &name, &type, lnElType, lnSize * lnCount, &lnOffset, dll, lnFpLength, lnFpDecimals, llPointer);
 							break;
 
 						case _ICODE_ALPHA:
 						case _ICODE_ALPHANUMERIC:
 							// This should be a type name which is like s32, s8, etc., but uses a custom type that decodes from within a dll function rather than internally
+							iiBaser_populateDatum_byComp(comp, &type);
 							lnElType	= _BASER_ELTYPE_TYPE;
 							lnSize		= 0;
 							goto valid_type;
@@ -514,7 +539,7 @@ valid_type:
 								compNext = iComps_getNth(compNext);
 								if (compNext->iCode == _ICODE_BASER_TYPE && (compNext = iComps_getNth(compNext)))
 								{
-									// Grab the type alias
+									// Grab the type
 									iiBaser_populateDatum_byComp(compNext, &type);
 
 									// Create the entry
@@ -541,47 +566,47 @@ valid_type:
 					switch (el->elType)
 					{
 						case _BASER_ELTYPE_S8:
-							iiBaser_append_s8(output, el, *(s8*)bm->data.data_s8[lnOffset]);
+							iiBaser_append_s8(output, el, *(s8*)&bm->data.data_s8[lnOffset]);
 							lnOffset += el->length;
 							break;
 						case _BASER_ELTYPE_S16:
-							iiBaser_append_s16(output, el, *(s16*)bm->data.data_s8[lnOffset]);
+							iiBaser_append_s16(output, el, *(s16*)&bm->data.data_s8[lnOffset]);
 							lnOffset += el->length;
 							break;
 						case _BASER_ELTYPE_S32:
-							iiBaser_append_s32(output, el, *(s32*)bm->data.data_s8[lnOffset]);
+							iiBaser_append_s32(output, el, *(s32*)&bm->data.data_s8[lnOffset]);
 							lnOffset += el->length;
 							break;
 						case _BASER_ELTYPE_S64:
-							iiBaser_append_s64(output, el, *(s64*)bm->data.data_s8[lnOffset]);
+							iiBaser_append_s64(output, el, *(s64*)&bm->data.data_s8[lnOffset]);
 							lnOffset += el->length;
 							break;
 						case _BASER_ELTYPE_F32:
-							iiBaser_append_f32(output, el, *(f32*)bm->data.data_s8[lnOffset]);
+							iiBaser_append_f32(output, el, *(f32*)&bm->data.data_s8[lnOffset]);
 							lnOffset += el->length;
 							break;
 						case _BASER_ELTYPE_F64:
-							iiBaser_append_f64(output, el, *(f64*)bm->data.data_s8[lnOffset]);
+							iiBaser_append_f64(output, el, *(f64*)&bm->data.data_s8[lnOffset]);
 							lnOffset += el->length;
 							break;
 						case _BASER_ELTYPE_U8:
-							iiBaser_append_u8(output, el, *(u8*)bm->data.data_s8[lnOffset]);
+							iiBaser_append_u8(output, el, *(u8*)&bm->data.data_s8[lnOffset]);
 							lnOffset += el->length;
 							break;
 						case _BASER_ELTYPE_U16:
-							iiBaser_append_u16(output, el, *(u16*)bm->data.data_s8[lnOffset]);
+							iiBaser_append_u16(output, el, *(u16*)&bm->data.data_s8[lnOffset]);
 							lnOffset += el->length;
 							break;
 						case _BASER_ELTYPE_U32:
-							iiBaser_append_u32(output, el, *(u32*)bm->data.data_s8[lnOffset]);
+							iiBaser_append_u32(output, el, *(u32*)&bm->data.data_s8[lnOffset]);
 							lnOffset += el->length;
 							break;
 						case _BASER_ELTYPE_U64:
-							iiBaser_append_u64(output, el, *(u64*)bm->data.data_s8[lnOffset]);
+							iiBaser_append_u64(output, el, *(u64*)&bm->data.data_s8[lnOffset]);
 							lnOffset += el->length;
 							break;
 						case _BASER_ELTYPE_TYPE:
-							lnOffset += iiBaser_append_type(output, el, structs, lnOffset);
+							lnOffset += iiBaser_append_type(output, el, structs, bm->bsr.loadAddress + lnOffset);
 							break;
 
 					}
@@ -595,7 +620,8 @@ valid_type:
 			// Send back completed message
 			iiBaser_dispatch_contentMessage(bm->hwndCallback, output);
 			output = NULL;
-			// Note:  The output builder is moved into the dispatched content message.  It is deleted on full retrieval.
+			// Note:  The output builder is moved into the dispatched content message.
+			// Note:  It is later deleted on full retrieval.
 
 			// Clean house
 			iiBaser_deleteStructs(&structs);
@@ -613,7 +639,7 @@ quit:
 	}
 
 	// Appends an element to display (or ignore if it doesn't have a name)
-	void iiBaser_parse_block_by_struct__threadProc__appendElement(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, u32 elType, s32 tnSize, s32* tnOffset, SStructDll* currentDll, s32 lnFpLength, s32 lnFpDecimals)
+	void iiBaser_parse_block_by_struct__threadProc__appendElement(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, SDatum* dllFuncType, u32 elType, s32 tnSize, s32* tnOffset, SStructDll* currentDll, s32 lnFpLength, s32 lnFpDecimals, bool tlPointer)
 	{
 		SElement*	el;
 		SStruct*	str;
@@ -655,6 +681,15 @@ quit:
 			el->elType		= elType;
 			el->offset		= *tnOffset;
 			el->length		= tnSize;
+			el->isPointer	= tlPointer;
+
+			// Copy the name or create a pseudo name
+			if (name && name->_data && name->length > 0)		iDatum_duplicate(&el->name, name);
+			else												iDatum_duplicate(&el->name, cgc_baser_data, sizeof(cgc_baser_data) - 1);
+
+			// Copy the type if present
+			if (dllFuncType && dllFuncType->_data && dllFuncType->length > 0)
+				iDatum_duplicate(&el->type.dllFuncType, dllFuncType);
 
 
 		//////////
@@ -689,7 +724,7 @@ quit:
 
 		// Add the element for the dll
 		lnOffset = 0;
-		iiBaser_parse_block_by_struct__threadProc__appendElement(builder, strRoot, elRoot, name, _BASER_ELTYPE_DLL, 0, &lnOffset, *currentDllRoot, -1, -1);
+		iiBaser_parse_block_by_struct__threadProc__appendElement(builder, strRoot, elRoot, name, NULL, _BASER_ELTYPE_DLL, 0, &lnOffset, *currentDllRoot, -1, -1, false);
 		el = *elRoot;
 
 		// Get the full pathname
@@ -716,7 +751,7 @@ quit:
 
 		// Add the element for the dll
 		lnOffset = 0;
-		iiBaser_parse_block_by_struct__threadProc__appendElement(builder, strRoot, elRoot, name, _BASER_ELTYPE_DLL_FUNC, 0, &lnOffset, currentDll, -1, -1);
+		iiBaser_parse_block_by_struct__threadProc__appendElement(builder, strRoot, elRoot, name, NULL, _BASER_ELTYPE_DLL_FUNC, 0, &lnOffset, currentDll, -1, -1, false);
 		el = *elRoot;
 
 		// Populate the rest
@@ -889,9 +924,10 @@ quit:
 		iBuilder_appendData(output, buffer, -1);
 	}
 
-	s32 iiBaser_append_type(SBuilder* output, SElement* elData, SBuilder* structs, s32 tnOffset)
+	s32 iiBaser_append_type(SBuilder* output, SElement* elData, SBuilder* structs, s32 tnFileOffset)
 	{
 		s32			lnLength;
+		s64			lnOffset;
 		u32			lnI, lnJ;
 		SStruct*	str;
 		SElement*	el;
@@ -911,8 +947,14 @@ quit:
 					// Is this our DLL function?
 					if (el->elType == _BASER_ELTYPE_DLL_FUNC && iDatum_compare(&el->dllFunc.type, &elData->type.dllFuncType) == 0)
 					{
+						// Save file position
+						lnOffset = iDisk_getFilePosition(elData->file);
+
 						// Dispatch
-						lnLength = el->dllFunc.func(tnOffset, elData, &gsBaserCallback);
+						lnLength = el->dllFunc.func(tnFileOffset, output, elData, &gsBaserCallback);
+						
+						// Restore file position
+						iDisk_setFilePosition(elData->file, tnFileOffset);
 
 						// Success
 						return(lnLength);
@@ -931,6 +973,12 @@ quit:
 			sprintf(buffer, "%s = unable to find dll function related to %s\n", elData->name.data_s8, elData->type.dllFuncType.data_s8);
 			iBuilder_appendData(output, buffer, -1);
 
+
+		//////////
+		// We did not advance
+		//////
+			return(0);
+	
 	}
 
 	// Note:  content is inserted into the message, so if it's deleted it will cause an access violation
@@ -981,15 +1029,15 @@ quit:
 				bc->content	= content;
 
 
-			//////////
-			// Physically dispatch the message
-			//////
-				SendMessage(hwnd, _WMBASER_CONTENT_IS_READY, _bc, content->populatedLength);
-
-quit:
 		//////////
 		// Unlock
 		//////
 			LeaveCriticalSection(&cs_content_messages);
+
+
+		//////////
+		// Physically dispatch the message
+		//////
+			SendMessage(hwnd, _WMBASER_CONTENT_IS_READY, _bc, content->populatedLength);
 
 	}

@@ -107,16 +107,16 @@ cu32	_BASER_ELTYPE_DLL_FUNC		= 13;
 
 struct SStructDllCallbacks
 {
-	// Disk tell
+	// Disk get file position offset
 	union {
-		uptr		_iDisk_tell;
-		s64			(*iDisk_tell)		(s32 tnFile, bool* tlError, u32* tnErrorNum);
+		uptr		_iDisk_getFilePosition;
+		s64			(*iDisk_getFilePosition)(s32 tnFile, bool* tlError, u32* tnErrorNum);
 	};
 
-	// Disk seek
+	// Disk set file position offset
 	union {
-		uptr		_iDisk_read;
-		s64			(*iDisk_seek)		(s32 tnFile, s64 tnSeekOffset, bool* tlError, u32* tnErrorNum);
+		uptr		_iDisk_setFilePosition;
+		s64			(*iDisk_setFilePosition)(s32 tnFile, s64 tnSeekOffset, bool* tlError, u32* tnErrorNum);
 	};
 
 	// Disk read
@@ -125,6 +125,12 @@ struct SStructDllCallbacks
 		s32			(*iDisk_read)		(s32 tnFile, s64 tnSeekOffset, void* tcData, s32 tnReadCount, bool* tlError, u32* tnErrorNum);
 	};
 
+	// Disk write
+	union
+	{
+		uptr		_iDisk_write;
+		s32			(*iDisk_write)		(s32 tnFile, s64 tnSeekOffset, void* tcData, s32 tnWriteCount, bool* tlError, u32* tnErrorNum);
+	};
 };
 
 struct SStructType
@@ -147,7 +153,7 @@ struct SStructDllFunc
 									// Function to call within
 	union {
 		uptr		_func;
-		s32			(*func)		(s32 tnOffset, SElement* el, SStructDllCallbacks* cb);	// Returns the length consumed from tnOffset
+		s32			(*func)		(s32 tnFileOffset, SBuilder* output, SElement* el, SStructDllCallbacks* cb);	// Returns the length consumed from tnFileOffset
 	};
 };
 
@@ -155,6 +161,7 @@ struct SElement
 {
 	// Element type
 	u32				elType;
+	bool			isPointer;		// If it's a pointer to this type, then here it is
 	SDatum			name;			// Data element name
 
 	// File handle to retrieve from

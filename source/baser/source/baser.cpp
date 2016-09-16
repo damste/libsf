@@ -320,6 +320,7 @@ extern "C"
 				if (bm->message.data_s8)
 				{
 					// Copy
+					memcpy(&bm->data, &bsr->data, sizeof(&bm->data));
 					memcpy(&bm->bsr, bsr, sizeof(bm->bsr));
 					bm->hwndCallback = tnHwndCallback;
 
@@ -349,7 +350,6 @@ extern "C"
 	s32 baser_retrieve_data(s32 nId, s8* tcDataOut, s32 tnDataOutLength)
 	{
 		s32			lnContentLength;
-		u32			lnI;
 		union {
 			s32				_bc_s32;
 			uptr			_bc_uptr;
@@ -363,7 +363,9 @@ extern "C"
 			EnterCriticalSection(&cs_content_messages);
 
 
-			// See if the message is valid?
+		//////////
+		// Search for the message
+		//////
 			_bc_s32 = nId;
 			if (iBuilder_isPointer(gsBaserMessagesRoot, _bc_uptr, (void**)&bc) && bc->isUsed && (lnContentLength = bc->content->populatedLength))
 			{
@@ -418,32 +420,27 @@ extern "C"
 	{
 		static u32	snTempFilenameUniqueId = 1;
 
-		u32			lnPathLength, lnFileLength;
+		s32			lnFile;
 		s8			buffer[_MAX_PATH];
 		bool		error;
 		u32			errorNum;
 
 
-		// Initialize the output path
-		memset(tcHtmlPathOut270, 32, 270);
-
-		// Grab the temporary path
-		lnPathLength = GetTempPath(270, tcHtmlPathOut270);
-
 		// Construct a temporary filename
-		memset(buffer, 0, sizeof(buffer));
-		GetTempFileName(tcHtmlPathOut270, tcFilenamePrefix, snTempFilenameUniqueId++, buffer);
-
-		// Concatenate
-		lnFileLength = strlen(buffer);
-		memcpy(tcHtmlPathOut270 + lnPathLength, buffer, min(lnFileLength, 270 - lnPathLength));
+		memset(tcHtmlPathOut270, 32, 270);
+		GetTempFileName((GetTempPath(_MAX_PATH, buffer), buffer), tcFilenamePrefix, snTempFilenameUniqueId++, tcHtmlPathOut270);
 
 		// Create the file
-		if (iDisk_openExclusive(tcHtmlPathOut270, _O_RDWR | _O_BINARY | _O_CREAT | _O_TEMPORARY, true, &error, &errorNum) > 0)
+		if ((lnFile = iDisk_openExclusive(tcHtmlPathOut270, _O_RDWR | _O_BINARY | _O_CREAT | _O_TEMPORARY, true, &error, &errorNum)) > 0)
 		{
-			// Success
-			// Indicate how long the filename is
-			return(lnPathLength + lnFileLength);
+			// Write out the content
+			iDisk_write(lnFile, 0, tcContent, tnContentLength, &error, &errorNum);
+
+			// Close the file
+			iDisk_close(lnFile);
+
+			// Indicate success
+			return(0);
 
 		} else {
 			// Failure

@@ -14,10 +14,9 @@ LOCAL lnI, lcFile, llLaunched
 
 
 **********
-* IE Helper
+* Set our paths
 *****
-	PUBLIC goEventsHandler
-	goEventsHandler = CREATEOBJECT("ieEventHandler")
+	SET PATH TO \libsf\source\baser\source\ ADDITIVE
 	
 
 *********
@@ -53,7 +52,7 @@ LOCAL lnI, lcFile, llLaunched
 * If nothing launched, launch a blank form
 *****
 	IF !llLaunched
-		DO FORM baser
+		DO FORM (ADDBS(JUSTPATH(SYS(16))) + "baser.scx")
 	ENDIF
 
 
@@ -80,7 +79,8 @@ DEFINE CLASS ieEventHandler AS Custom
 				tlCancel			AS Logical @) 	AS VOID
 
 		* To cancel navigation?
-		IF MESSAGEBOX("Cancel Navigation to?" + CHR(13) + CHR(13) + tcUrl, 4, "BeforeNavigation2") = 6
+		IF "baser:" $ LOWER(tcUrl)
+			WAIT WINDOW tcUrl NOWAIT
 			tlCancel = .t.
 		ENDIF
 	ENDPROC

@@ -134,7 +134,7 @@
 //////
 	s32 iDisk_open(cs8* tcPathname, s32 tnType, s32 tnShare, bool tlCreateIfCannotOpen, bool* error, u32* errorNum)
 	{
-		s32	lnFh;
+		s32	lnFh, lnErrno;
 
 
 		//////////
@@ -144,10 +144,17 @@
 			{
 				// Try to open existing
 				lnFh = _sopen(tcPathname, tnType, tnShare);
-				if (lnFh != 0)
+				if (lnFh < 0)
 				{
+					// Grab the errno
+					lnErrno = errno;
+
+					// Try to create it
+					if (tlCreateIfCannotOpen)
+						goto try_to_create;
+
 					// Error opening
-					switch (errno)
+					switch (lnErrno)
 					{
 						default:
 						case EACCES:	// The path is a directory, or the file is read-only, but an "open-for-write" was specified
@@ -161,10 +168,11 @@
 							// File or path was not found
 							if (tlCreateIfCannotOpen)
 							{
+try_to_create:
 								// Try to create
 								lnFh = _creat(tcPathname, _S_IREAD | _S_IWRITE);
 								// Right now, it's either open or not
-								if (lnFh == 0)
+								if (lnFh >= 0)
 								{
 									// No error
 									if (error)			*error		= false;
@@ -217,7 +225,7 @@
 	{
 		// Attempt to open if valid
 		if (tcPathname)
-			return(iDisk_open(tcPathname, tnType, _SH_DENYRW, tlCreateIfCannotOpen, error, errorNum));
+			return(iDisk_open(tcPathname, tnType | _O_EXCL, _SH_DENYRW, tlCreateIfCannotOpen, error, errorNum));
 
 
 		// If we get here, invalid filename
