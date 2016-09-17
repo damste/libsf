@@ -54,9 +54,13 @@
 // Global variables
 //////
 	bool			glBaser_isRunning							= false;
-	SBuilder*		gsBaserRoot									= NULL;
-	SBuilder*		gsBaserMessagesRoot							= NULL;
+	SBuilder*		gsBaserRoot									= NULL;			// SBaser
+	SBuilder*		gsBaserMessagesRoot							= NULL;			// SBaserContent
+	SBuilder*		gsBaserWindowsRoot							= NULL;			// SBaserHwnd
+
+	// For synchronized access
 	CRITICAL_SECTION cs_content_messages;
+	CRITICAL_SECTION cs_baser_hwnd;
 
 	// Bitmaps
 	SBitmap*		bmp512b										= NULL;
@@ -185,38 +189,42 @@
 // Forward declarations
 //////
 	// Public declarations (see baser.def)
-	s32				baser_load													(s8* tcFilename);
-	s32				baser_release												(s32 tnHandle);
-	s32				baser_populate_row											(s32 tnHandle,                      s32 tnOffset, s32 tnBase, s8* tcBufferOut, s32 tnBufferOut_length);
-	s32				baser_parse_block_by_struct									(s32 tnHandle, HWND tnHwndCallback, s32 tnOffset, cs8* cStruct, s32 nStructLength);
-	s32				baser_retrieve_data											(s32 nId, s8* tcDataOut, s32 tnDataOutLength);
-	s32				baser_create_htmltemp_file_content							(s8* tcFileOut260, s8* tcFilenamePrefix, s8* tcContent, s32 tnContentLength);
+	s32					baser_load													(s8* tcFilename);
+	s32					baser_release												(s32 tnHandle);
+	s32					baser_populate_row											(s32 tnHandle,                      s32 tnOffset, s32 tnBase, s8* tcBufferOut, s32 tnBufferOut_length);
+	s32					baser_parse_block_by_struct									(s32 tnHandle, HWND tnHwndCallback, s32 tnOffset, cs8* cStruct, s32 nStructLength);
+	s32					baser_retrieve_data											(s32 nId, s8* tcDataOut, s32 tnDataOutLength);
+	s32					baser_render_html											(HWND hwnd, s32 left, s32 top, s32 right, s32 bottom, s8* tcHtmlContent, s32 tnHtmlContentLength);
+	s32					baser_create_htmltemp_file_content							(s8* tcFileOut260, s8* tcFilenamePrefix, s8* tcContent, s32 tnContentLength);
 
 
 	// Internal declarations
-	void			iBaser_initialize											(void);
-	SBaser*			iiBaser_allocate											(void);
-	s8*				iiBaser_getFullPathName										(s8* tcFilename, s8 full_pathname[_MAX_PATH]);
-	SBaser*			iBaser_findBy_fullPathname									(s8* tcPathname);
-	SBaser*			iBaser_findBy_handle										(s32 tnHandle);
-	DWORD			iiBaser_parse_block_by_struct__threadProc					(LPVOID param);
-	void			iiBaser_parse_block_by_struct__threadProc__appendElement	(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, SDatum* dllFuncType, u32 elType, s32 tnSize, s32* tnOffset, SStructDll* currentDll, s32 lnFpLength, s32 lnFpDecimals, bool tlPointer);
-	void			iiBaser_parse_block_by_struct__threadProc__appendDll		(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, SStructDll** currentDllRoot);
-	void			iiBaser_parse_block_by_struct__threadProc__appendFunc		(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, SDatum* type, SStructDll* currentDll);
-	void			iiBaser_populateDatum_byComp								(SComp* comp, SDatum* datum);
-	void			iiBaser_deleteStructs										(SBuilder** structsRoot);
-	void			iiBaser_append_s8											(SBuilder* output, SElement* elData, s8 data);
-	void			iiBaser_append_s16											(SBuilder* output, SElement* elData, s16 data);
-	void			iiBaser_append_s32											(SBuilder* output, SElement* elData, s32 data);
-	void			iiBaser_append_s64											(SBuilder* output, SElement* elData, s64 data);
-	void			iiBaser_append_f32											(SBuilder* output, SElement* elData, f32 data);
-	void			iiBaser_append_f64											(SBuilder* output, SElement* elData, f64 data);
-	void			iiBaser_append_u8											(SBuilder* output, SElement* elData, u8 data);
-	void			iiBaser_append_u16											(SBuilder* output, SElement* elData, u16 data);
-	void			iiBaser_append_u32											(SBuilder* output, SElement* elData, u32 data);
-	void			iiBaser_append_u64											(SBuilder* output, SElement* elData, u64 data);
-	s32				iiBaser_append_type											(SBuilder* output, SElement* elData, SBuilder* structs, s32 tnFileOffset);
-	void			iiBaser_dispatch_contentMessage								(HWND hwnd, SBuilder* content);
+	void				iBaser_initialize											(void);
+	SBaser*				iiBaser_allocate											(void);
+	s8*					iiBaser_getFullPathName										(s8* tcFilename, s8 full_pathname[_MAX_PATH]);
+	SBaser*				iBaser_findBy_fullPathname									(s8* tcPathname);
+	SBaser*				iBaser_findBy_handle										(s32 tnHandle);
+	SBaserHwnd*			iBaserHwnd_findBy_hwnd										(HWND hwnd);
+	DWORD				iiBaser_parse_block_by_struct__threadProc					(LPVOID param);
+	void				iiBaser_parse_block_by_struct__threadProc__appendElement	(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, SDatum* dllFuncType, u32 elType, s32 tnSize, s32* tnOffset, SStructDll* currentDll, s32 lnFpLength, s32 lnFpDecimals, bool tlPointer);
+	void				iiBaser_parse_block_by_struct__threadProc__appendDll		(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, SStructDll** currentDllRoot);
+	void				iiBaser_parse_block_by_struct__threadProc__appendFunc		(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, SDatum* type, SStructDll* currentDll);
+	void				iiBaser_populateDatum_byComp								(SComp* comp, SDatum* datum);
+	void				iiBaser_deleteStructs										(SBuilder** structsRoot);
+	void				iiBaser_append_s8											(SBuilder* output, SElement* elData, s8 data);
+	void				iiBaser_append_s16											(SBuilder* output, SElement* elData, s16 data);
+	void				iiBaser_append_s32											(SBuilder* output, SElement* elData, s32 data);
+	void				iiBaser_append_s64											(SBuilder* output, SElement* elData, s64 data);
+	void				iiBaser_append_f32											(SBuilder* output, SElement* elData, f32 data);
+	void				iiBaser_append_f64											(SBuilder* output, SElement* elData, f64 data);
+	void				iiBaser_append_u8											(SBuilder* output, SElement* elData, u8 data);
+	void				iiBaser_append_u16											(SBuilder* output, SElement* elData, u16 data);
+	void				iiBaser_append_u32											(SBuilder* output, SElement* elData, u32 data);
+	void				iiBaser_append_u64											(SBuilder* output, SElement* elData, u64 data);
+	s32					iiBaser_append_type											(SBuilder* output, SElement* elData, SBuilder* structs, s32 tnFileOffset);
+	void				iiBaser_dispatch_contentMessage								(HWND hwnd, SBuilder* content);
+	void				iBaserHwnd_delete											(SBaserHwnd* bwin);
+	LRESULT CALLBACK	iBaserHwnd_wndProc											(HWND h, UINT m, WPARAM w, LPARAM l);
 
 
 
@@ -330,6 +338,59 @@
 
 		// If we get here, not valid, or valid and not used
 		return(NULL);
+	}
+
+
+
+
+//////////
+//
+// Called to find the indicated SBaserHwnd by hwnd
+//
+//////
+	SBaserHwnd* iBaserHwnd_findBy_hwnd(HWND hwnd)
+	{
+		u32				lnI;
+		SBaserHwnd*		bwin;
+		SBaserHwnd*		bwinFound;
+
+
+		//////////
+		// Lock
+		//////
+			EnterCriticalSection(&cs_baser_hwnd);
+
+
+			//////////
+			// Search for it
+			//////
+				bwinFound = NULL;
+				iterate(lnI, gsBaserWindowsRoot, bwin, SBaserHwnd)
+				// Begin
+
+					// Is this our entry?
+					if (bwin->isUsed && bwin->hwnd == hwnd)
+					{
+						// Yes
+						bwinFound = bwin;
+						break;
+					}
+
+				// End
+				iterate_end;
+
+
+		//////////
+		// Unlock
+		//////
+			LeaveCriticalSection(&cs_baser_hwnd);
+
+
+		//////////
+		// Indicate the status
+		//////
+			return(bwinFound);
+
 	}
 
 
@@ -947,17 +1008,21 @@ quit:
 					// Is this our DLL function?
 					if (el->elType == _BASER_ELTYPE_DLL_FUNC && iDatum_compare(&el->dllFunc.type, &elData->type.dllFuncType) == 0)
 					{
-						// Save file position
-						lnOffset = iDisk_getFilePosition(elData->file);
+						// Dispatch... if the function exists
+						if (el->dllFunc._func)
+						{
+							// Save file position
+							lnOffset = iDisk_getFilePosition(elData->file);
 
-						// Dispatch
-						lnLength = el->dllFunc.func(tnFileOffset, output, elData, &gsBaserCallback);
-						
-						// Restore file position
-						iDisk_setFilePosition(elData->file, tnFileOffset);
+							// Dispatch
+							lnLength = el->dllFunc.func(tnFileOffset, output, elData, &gsBaserCallback);
 
-						// Success
-						return(lnLength);
+							// Restore file position
+							iDisk_setFilePosition(elData->file, tnFileOffset);
+
+							// Success
+							return(lnLength);
+						}
 					}
 
 				// End
@@ -1040,4 +1105,169 @@ quit:
 		//////
 			SendMessage(hwnd, _WMBASER_CONTENT_IS_READY, _bc, content->populatedLength);
 
+	}
+
+
+
+
+//////////
+//
+// Called to delete the indicated baser hwnd
+//
+//////
+	void iBaserHwnd_delete(SBaserHwnd* bwin)
+	{
+		// Make sure our environment is sane
+		if (bwin)
+		{
+			//////////
+			// Lock
+			//////
+				EnterCriticalSection(&cs_baser_hwnd);
+
+
+				//////////
+				// Clean house
+				//////
+					// Delete the source code
+					iSEM_delete(&bwin->sem, true);
+
+					// Delete the render object
+					iObj_delete(&bwin->obj, true, true, false);
+
+					// Generally reset everything
+					memcpy(bwin, 0, sizeof(SBaserHwnd));
+
+
+			//////////
+			// Unlock
+			//////
+				LeaveCriticalSection(&cs_baser_hwnd);
+
+		}
+	}
+
+
+
+
+//////////
+//
+// Called to render the indicated overlay
+//
+//////
+#ifndef GET_X_LPARAM
+	#define GET_X_LPARAM(lp)   ((int)(short)LOWORD(lp))
+#endif
+#ifndef GET_Y_LPARAM
+	#define GET_Y_LPARAM(lp)   ((int)(short)HIWORD(lp))
+#endif
+
+	// Note:  This wndproc is only the target of subclassed html windows
+	LRESULT CALLBACK iBaserHwnd_wndProc(HWND h, UINT m, WPARAM w, LPARAM l)
+	{
+		bool			llInWindow;
+		s32				lnX, lnY;
+		HDC				lhdc;
+		PAINTSTRUCT		ps;
+		LRESULT			lnResult;
+		SBaserHwnd*		bwin;
+		SLine*			line;
+		SComp*			comp;
+
+
+		// Search for the hwnd
+		bwin = iBaserHwnd_findBy_hwnd(h);
+		if (bwin)
+		{
+			// Dispatch normally
+			lnResult = CallWindowProc((WNDPROC)bwin->old_wndproc, h, m, w, l);
+
+			// Extract mouse coordinates (just in case)
+			lnX = GET_X_LPARAM(l) - bwin->rc.left;
+			lnY = GET_Y_LPARAM(l) - bwin->rc.top;
+
+			// Are we still in the window?
+			llInWindow = (lnX >= 0 && lnY >= 0 && lnX < bwin->rc.right - bwin->rc.left && lnY < bwin->rc.bottom - bwin->rc.top);
+
+			// Process certain messages
+			switch (m)
+			{
+				case WM_PAINT:
+					// Redraw
+					lhdc = BeginPaint(h, &ps);
+
+					// Populate with whatever's there
+					if (bwin->obj && bwin->obj->bmp)
+						BitBlt(lhdc, 0, 0, bwin->obj->bmp->bi.biWidth, bwin->obj->bmp->bi.biHeight, bwin->obj->bmp->hdc, 0, 0, SRCCOPY);
+
+					// Done
+					EndPaint(h, &ps);
+					return 0;
+
+				case WM_MOUSEMOVE:
+					// Track movement over links
+					bwin->mouseX = lnX;
+					bwin->mouseY = lnY;
+
+					// Iterate through all of our objects and see if any are here
+					if ((comp = iBaserHwnd_findComp_byCoord(bwin)))
+					{
+						// We found an entry
+						if (comp->html->htmlType == _HTML_TYPE_LINK)	LoadCursor(ghInstance, IDC_HAND);
+						else											LoadCursor(ghInstance, IDC_ARROW);
+
+					} else if (!llInWindow && bwin->inWindow) {
+						// We're leaving the window
+						LoadCursor(ghInstance, IDC_ARROW);
+					}
+
+					// Done
+					return 0;
+
+				case WM_LBUTTONUP:
+					// If on a link, click
+					bwin->mouseX = lnX;
+					bwin->mouseY = lnY;
+
+					// Iterate through all of our objects and see if any are here
+					if ((comp = iBaserHwnd_findComp_byCoord(bwin)) && comp->html->htmlType == _HTML_TYPE_LINK)
+					{
+						// They clicked on a link
+// TODO:  working here
+						// Dispatch the url back
+					}
+
+					// Done
+					return 0;
+			}
+
+			// Indicate the called function return result
+			return(lnResult);
+		}
+
+		// If we get here, return the default
+		return(DefWindowProc(h, m, w, l));
+	}
+
+	// Iterate through all of our objects and see if any are here
+	SComp* iBaserHwnd_findComp_byCoord(SBaserHwnd* bwin)
+	{
+		SLine* line;
+		SComp* comp;
+
+
+		// Iterate through each line, then each component
+		for (line = bwin->sem->firstLine; line; line = line->ll.nextLine)
+		{
+			// Are there components on this line?
+			if (line->compilerInfo && line->compilerInfo->firstComp)
+			{
+				// Iterate through comps
+				for (comp = line->compilerInfo->firstComp; comp; iComps_getNth(comp))
+				{
+					// If the mouse is over this component
+// TODO:  working here
+				}
+			}
+		}
 	}

@@ -348,6 +348,43 @@ try_to_create:
 
 //////////
 //
+// Called to flush any buffers to disk
+//
+//////
+	s32 iDisk_commit(s32 tnFile, bool* error, u32* errorNum)
+	{
+		s32	lnResult;
+
+
+		//////////
+		// Commit uncommitted buffers
+		//////
+			lnResult = _commit(tnFile);
+			if (lnResult == 0)
+			{
+				// No error
+				if (error)			*error		= false;
+				if (errorNum)		*errorNum	= _ERROR_OKAY;
+
+			} else {
+				// Error
+				if (error)			*error		= true;
+				if (errorNum)		*errorNum	= _ERROR_DISK_COMMIT_ERROR;
+			}
+
+
+		//////////
+		// Indicate our result
+		//////
+			return(lnResult);
+
+	}
+
+
+
+
+//////////
+//
 // Called to optionally seek, then read in the indicated size.
 // If no seek is required, send a negative value for tnSeekOffset.
 //

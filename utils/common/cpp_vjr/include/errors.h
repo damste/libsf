@@ -182,5 +182,6 @@
 	cu32			_ERROR_DISK_OPEN_ERROR					= 115;
 	cu32			_ERROR_DISK_WRITE_ERROR					= 116;
 	cu32			_ERROR_DISK_READ_ERROR					= 117;
+	cu32			_ERROR_DISK_COMMIT_ERROR				= 118;
 
 #endif	// __ERRORS_H__

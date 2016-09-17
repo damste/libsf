@@ -411,6 +411,119 @@ extern "C"
 
 
 
+	//////////
+	//
+	// Called to render the indicated html content as html over the top of the indicated hwnd,
+	// which will cause it to subclass the wndproc() function and intercept WM_PAINT messages.
+	//
+	// Sending to a NULL htmlContent or a zero htmlContentLength
+	//
+	//////
+		s32 baser_render_html(HWND hwnd, s32 left, s32 top, s32 right, s32 bottom, s8* tcHtmlContent, s32 tnHtmlContentLength)
+		{
+			SBaserHwnd*	bwin;
+
+
+			// Make sure our environment is sane
+			if (hwnd && IsWindow(hwnd))
+			{
+
+				//////////
+				// Lock
+				//////
+					EnterCriticalSection(&cs_baser_hwnd);
+
+
+					//////////
+					// Setup
+					//////
+						// Make sure we have a builder
+						if (!gsBaserWindowsRoot)
+							iBuilder_createAndInitialize(&gsBaserWindowsRoot, sizeof(SBaserHwnd) * 10);
+
+						// Try to find the window
+						bwin = ((hwnd) ? iBaserHwnd_findBy_hwnd(hwnd) : NULL);
+
+
+					//////////
+					// Disconnecting?
+					//////
+						if (!tcHtmlContent)
+						{
+							// No content, un-subclass
+							if (bwin && bwin->old_wndproc)
+								SetWindowLong(hwnd, GWL_WNDPROC, bwin->old_wndproc);
+
+							// Delete this item
+							iBaserHwnd_delete(bwin);
+
+							// All done
+							return(0);
+						}
+
+
+					//////////
+					// Grab the window
+					//////
+						if (bwin)
+						{
+							// Delete the existing sem
+							iSEM_delete(&bwin->sem, true);
+
+						} else {
+							// Create a new bwin
+							bwin = (SBaserHwnd*)iBuilder_allocateBytes(gsBaserWindowsRoot, sizeof(SBaserHwnd));
+							if (!bwin)
+								return(-1);
+
+							// Create the render object (just use a shape
+							bwin->obj = iObj_create(_OBJ_TYPE_SHAPE, NULL);
+							if (!bwin->obj)
+								return(-1);
+						}
+
+
+					//////////
+					// Setup
+					//////
+						bwin->isUsed		= true;
+						bwin->hwnd			= hwnd;
+						bwin->rc.left		= left;
+						bwin->rc.top		= top;
+						bwin->rc.right		= right;
+						bwin->rc.bottom		= bottom;
+
+						// If it hasn't yet been sub-classed, subclass it
+						if (!bwin->old_wndproc)
+						{
+							// Save
+							bwin->old_wndproc = GetWindowLong(hwnd, GWL_WNDPROC);
+
+							// Set
+							SetWindowLong(hwnd, GWL_WNDPROC, (LONG)&iBaserHwnd_wndProc);
+						}
+
+						// Set it to the target size
+						iObj_setSize(bwin->obj, left, top, right - left, bottom - top);
+
+
+					//////////
+					// Load the html source code and render
+					//////
+
+
+
+				//////////
+				// Unlock
+				//////
+					LeaveCriticalSection(&cs_baser_hwnd);
+
+			}
+		}
+
+
+
+
 //////////
 //
 // Called to create a file that has a temporary lifespan, meaning it's auto-deleted upon process exit
@@ -435,6 +548,9 @@ extern "C"
 		{
 			// Write out the content
 			iDisk_write(lnFile, 0, tcContent, tnContentLength, &error, &errorNum);
+
+			// Make sure it's written to disk
+			iDisk_commit(lnFile, &error, &errorNum);
 
 			// Close the file
 			iDisk_close(lnFile);

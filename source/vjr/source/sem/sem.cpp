@@ -2903,18 +2903,27 @@ renderAsOnlyText:
 // Called to render the content as simple HTML.
 //
 // Supported commands:
-//		<br>	<hr>
-//		<b>		<i>		<u>
-//		<font bgcolor color name size>
-//		<table>
-//		<tr bgcolor color height>
-//		<td bgcolor color width colspan>
+//				<html>		-- Indicates html block
+//				<hr>		-- Horizontal line, bgcolor, height
+//				<br>		-- Break
+//				<xNnn>		-- Move to hard X pixel
+//				<yNnn>		-- Move to hard Y pixel
+//				<font>		-- Change font, bgcolor, color, name, size
+//				<tt>		-- Typewriter type (fixed point)
+//				<table>		-- Table definition,	bgcolor, color, align, valign, width
+//				<tr>		-- Table row,			bgcolor, color, align, valign
+//				<td>		-- Table column,		bgcolor, color, align, valign, colspan, width
+//				<b>			-- Bold
+//				<i>			-- Italics
+//				<u>			-- Underline
+//				&nbsp;
+//
+// Note:  Other attributes and tags are ignored.
 //
 //////
 	u32 iSEM_renderAs_simpleHtml(SEM* sem, SObject* obj, bool tlRenderCursorline)
 	{
-//		SBuilder* html;
-		debug_break;
+		SBuilder* html;
 	}
 
 

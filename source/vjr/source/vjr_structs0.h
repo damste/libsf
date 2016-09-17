@@ -413,6 +413,30 @@ struct SLine
 
 // Structure of parsed components on a line, tokens by another name
 #define _SCOMP_DEFINED
+
+cu32 _HTML_TYPE_TEXT		= 1;
+cu32 _HTML_TYPE_LINE		= 2;
+cu32 _HTML_TYPE_LINK		= 3;
+
+struct SCompHtml
+{
+	// What type of html element is it?
+	s32				htmlType;										// See _HTML_TYPE_* constants
+
+	// For line and text
+	SBgra			backColor;										// Background color
+	SBgra			foreColor;										// Foreground color
+
+	// Text
+	union {
+		SDatum*		text;											// Text content to render
+		SBitmap*	bmp;
+	};
+
+	// Link
+	SDatum*			targetUrl;
+};
+
 struct SComp
 {
 	SLL				ll;												// 2-way link list
@@ -449,6 +473,9 @@ struct SComp
 	// If this is a character that matches something (the closest parenthesis, bracket, or brace) then this color will be populated
 	SBgra*			overrideMatchingForeColor;
 	SBgra*			overrideMatchingBackColor;
+
+	// If it's an html
+	SCompHtml*		html;											// An html
 
 	// For faster rendering in source code windows
 	SBmpCache*		bc;												// Holds drawn things (casks for example)

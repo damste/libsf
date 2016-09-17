@@ -157,6 +157,7 @@
 	s64				iDisk_getFileSize						(s32 tnFile, bool* error = NULL, u32* errorNum = NULL);
 	s64				iDisk_getFilePosition					(s32 tnFile, bool* error = NULL, u32* errorNum = NULL);
 	s64				iDisk_setFilePosition					(s32 tnFile, s64 tnSeekOffset, bool* error = NULL, u32* errorNum = NULL);
+	s32				iDisk_commit							(s32 tnFile, bool* error = NULL, u32* errorNum = NULL);
 	s32				iDisk_read								(s32 tnFile, s64 tnSeekOffset, void* tcData, s32 tnReadCount,  bool* tlError = NULL, u32* tnErrorNum = NULL);
 	s32				iDisk_write								(s32 tnFile, s64 tnSeekOffset, void* tcData, s32 tnWriteCount, bool* tlError = NULL, u32* tnErrorNum = NULL);
 	s32				iDisk_readShared_withRetryCallback		(SBuilder* lockRoot, s32 tnFile, s64 tnSeekOffset, void* tcData, s32 tnReadCount,  bool* tlError, u32* tnErrorNum, uptr tnCallbackFunction, uptr tnExtra, SDiskLock** diskLock, bool tlUnlockAfter);
