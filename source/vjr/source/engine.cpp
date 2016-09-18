@@ -606,7 +606,7 @@
 // This process does not process variables, table names, fields, etc.
 //
 //////
-	SComp* iEngine_parse_sourceCode_line(SLine* line, SAsciiCompSearcher* acsSecondary)
+	SComp* iEngine_parse_sourceCode_line(SLine* line, SAsciiCompSearcher* acs2)
 	{
 
 		//////////
@@ -660,20 +660,20 @@
 		//////
 			iComps_remove_startEndComments(line);		// Remove /* comments */
 			iComps_combine_casks(line);					// Replace [(|][alpha][|)] with [(|alpha|)]
-			iComps_fixup_naturalGroupings(line);			// Fixup natural groupings [_][aaa][999] becomes [_aaa999], [999][.][99] becomes [999.99], etc.
+			iComps_fixup_naturalGroupings(line);		// Fixup natural groupings [_][aaa][999] becomes [_aaa999], [999][.][99] becomes [999.99], etc.
 			iComps_combine_adjacentDotForms(line);		// Fixup [.][t][.] into [.t.] and [thisForm][.][width] into [thisForm.width]
-			iComps_remove_whitespaces(line);				// Remove all whitespaces after everything else was parsed [use][whitespace][foo] becomes [use][foo]
+			iComps_remove_whitespaces(line);			// Remove all whitespaces after everything else was parsed [use][whitespace][foo] becomes [use][foo]
 
 
 		//////////
 		// Translate sequences to known keywords
 		//////
-			if (!acsSecondary)
-				acsSecondary = &cgcVxbKeywords[0];
+			if (!acs2)
+				acs2 = &cgcVxbKeywords[0];
 
 			// Process
-			if (acsSecondary != (SAsciiCompSearcher*)-1)
-				iComps_translate_toOthers(acsSecondary, line->compilerInfo->firstComp, true);
+			if (acs2 != (SAsciiCompSearcher*)-1)
+				iComps_translate_toOthers(acs2, line->compilerInfo->firstComp, true);
 
 
 		//////////

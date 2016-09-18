@@ -1621,7 +1621,7 @@ finished:
 // or backward in source code).
 //
 //////
-	bool iComps_get_mateDirection(SComp* comp, s32* tnMateDirection)
+	bool iComps_get_mateDirection(SComp* comp, s32* tnMateDirection, s32* tniCode)
 	{
 		if (comp && tnMateDirection)
 		{
@@ -1630,90 +1630,120 @@ finished:
 				case _ICODE_PARENTHESIS_LEFT:
 					// Is (, so what is the direction to )?
 					*tnMateDirection = 1;
+					if (tniCode)	*tniCode = _ICODE_PARENTHESIS_RIGHT;
 					return(true);
-
 				case _ICODE_PARENTHESIS_RIGHT:
 					// Is ), so what is the direction to (?
 					*tnMateDirection = -1;
+					if (tniCode)	*tniCode = _ICODE_PARENTHESIS_LEFT;
 					return(true);
 
 				case _ICODE_BRACKET_LEFT:
 					*tnMateDirection = 1;
+					if (tniCode)	*tniCode = _ICODE_BRACKET_RIGHT;
 					return(true);
 				case _ICODE_BRACKET_RIGHT:
 					*tnMateDirection = -1;
+					if (tniCode)	*tniCode = _ICODE_BRACKET_LEFT;
 					return(true);
 
 				case _ICODE_DOUBLE_BRACE_LEFT:
-				case _ICODE_BRACE_LEFT:
 					*tnMateDirection = 1;
+					if (tniCode)	*tniCode = _ICODE_DOUBLE_BRACE_RIGHT;
 					return(true);
 				case _ICODE_DOUBLE_BRACE_RIGHT:
+					*tnMateDirection = -1;
+					if (tniCode)	*tniCode = _ICODE_DOUBLE_BRACE_LEFT;
+					return(true);
+
+				case _ICODE_BRACE_LEFT:
+					*tnMateDirection = 1;
+					if (tniCode)	*tniCode = _ICODE_BRACE_RIGHT;
+					return(true);
 				case _ICODE_BRACE_RIGHT:
 					*tnMateDirection = -1;
+					if (tniCode)	*tniCode = _ICODE_BRACE_LEFT;
 					return(true);
 
 				case _ICODE_SCAN:
 					*tnMateDirection = 1;
+					if (tniCode)	*tniCode = _ICODE_ENDSCAN;
 					return(true);
 				case _ICODE_ENDSCAN:
 					*tnMateDirection = -1;
+					if (tniCode)	*tniCode = _ICODE_SCAN;
 					return(true);
 
 				case _ICODE_DOWHILE:
 					*tnMateDirection = 1;
+					if (tniCode)	*tniCode = _ICODE_ENDDO;
 					return(true);
 				case _ICODE_ENDDO:
 					*tnMateDirection = -1;
+					if (tniCode)	*tniCode = _ICODE_DOWHILE;
 					return(true);
 
 				case _ICODE_IF:
 					*tnMateDirection = 1;
+					if (tniCode)	*tniCode = _ICODE_ENDIF;
 					return(true);
 				case _ICODE_ENDIF:
 					*tnMateDirection = -1;
+					if (tniCode)	*tniCode = _ICODE_IF;
 					return(true);
 
 				case _ICODE_LIF:
 					*tnMateDirection = 1;
+					if (tniCode)	*tniCode = _ICODE_LELSE;
 					return(true);
 				case _ICODE_LELSE:
 					*tnMateDirection = -1;
+					if (tniCode)	*tniCode = _ICODE_LIF;
 					return(true);
 
 				case _ICODE_FOR:
 					*tnMateDirection = 1;
+					if (tniCode)	*tniCode = _ICODE_ENDFOR;
 					return(true);
 				case _ICODE_ENDFOR:
 					*tnMateDirection = -1;
+					if (tniCode)	*tniCode = _ICODE_FOR;
 					return(true);
 
 				case _ICODE_DOCASE:
 					*tnMateDirection = 1;
+					if (tniCode)	*tniCode = _ICODE_ENDCASE;
 					return(true);
 				case _ICODE_ENDCASE:
 					*tnMateDirection = -1;
+					if (tniCode)	*tniCode = _ICODE_CASE;
 					return(true);
 
 				case _ICODE_ADHOC:
 					*tnMateDirection = 1;
+					if (tniCode)	*tniCode = _ICODE_ENDADHOC;
 					return(true);
 				case _ICODE_ENDADHOC:
 					*tnMateDirection = -1;
+					if (tniCode)	*tniCode = _ICODE_ADHOC;
 					return(true);
 
 				case _ICODE_FUNCTION:
 					*tnMateDirection = 1;
+					if (tniCode)	*tniCode = _ICODE_ENDFUNCTION;
 					return(true);
 				case _ICODE_ENDFUNCTION:
 					*tnMateDirection = -1;
+					if (tniCode)	*tniCode = _ICODE_FUNCTION;
 					return(true);
 
 				case _ICODE_PROCEDURE:
 					*tnMateDirection = 1;
+					if (tniCode)	*tniCode = _ICODE_ENDPROCEDURE;
 					return(true);
 				case _ICODE_ENDPROCEDURE:
 					*tnMateDirection = -1;
+					if (tniCode)	*tniCode = _ICODE_PROCEDURE;
 					return(true);
 			}
 		}
@@ -1951,6 +1981,57 @@ finished:
 
 		// If we get here, not a mate
 		return(false);
+	}
+
+
+
+
+//////////
+//
+// Called to find the mate of the component
+//
+//////
+	SComp* iComps_findMate(SComp* compAnchor, s32* tnCount, bool tlAllowNesting)
+	{
+		s32		lnCount, lnLevel, lnDirection, lniCode_mate;
+		SComp*	comp;
+
+
+		// Make sure our environment is sane
+		if (compAnchor && iComps_get_mateDirection(compAnchor, &lnDirection, &lniCode_mate))
+		{
+			// Iterate until we find it
+			for (comp = iComps_getNth(compAnchor, lnDirection), lnCount = 1, lnLevel == 0; comp; comp = iComps_getNth(comp, lnDirection), lnCount++)
+			{
+				// What is it?
+				if (comp->iCode == compAnchor->iCode)
+				{
+					// We've found the same one, like if we're looking for the mate of ( and we encountered another (
+					if (!tlAllowNesting)
+						break;		// Not allowed
+
+					// Going deeper
+					++lnLevel;
+
+				} else if (comp->iCode == lniCode_mate) {
+					// We found its mate
+					if (tlAllowNesting && lnLevel > 0)
+					{
+						// Going shallower
+						--lnLevel;
+
+					} else {
+						// Found it
+						if (tnCount)	*tnCount = lnCount;
+						return(comp);
+					}
+				}
+			}
+		}
+
+		// If we get here, not found
+		if (tnCount)	*tnCount = 0;
+		return(NULL);
 	}
 
 
@@ -3099,6 +3180,145 @@ finished:
 				iComps_combine_adjacentAlphanumeric(line);
 				iComps_combine_adjacentNumeric(line);
 				iComps_combine_adjacentDotForms(line);
+		}
+	}
+
+
+
+
+//////////
+//
+// Called to fixup html groupings
+//
+//////
+	void iComps_fixup_semHtmlGroupings(SLine* line)
+	{
+		bool	llEncapsulated;
+		s8		c;
+		s32		lnCount;
+		s8*		ptr;
+		SComp*	comp;
+		SComp*	compNext;
+		SComp*	compNext2;
+		SComp*	compEnd;
+
+
+		// Make sure our environment is sane
+		if (line && line->compilerInfo && line->compilerInfo->firstComp)
+		{
+			// Iterate through every component
+			for (comp = line->compilerInfo->firstComp; comp; iComps_getNth(comp))
+			{
+				// Is it the less than symbol?
+				if (comp->iCode == _ICODE_LESS_THAN && (compNext = iComps_getNth(comp)) && (compNext2 = iComps_getNth(compNext)))
+				{
+					// Is it encapsulated
+					llEncapsulated = (compNext2->iCode == _ICODE_GREATER_THAN);
+
+					// Grab a pointer to the start of the content
+					ptr = compNext->line->compilerInfo->sourceCode->data_s8 + compNext->start;
+
+					// See what's after
+					switch (compNext->iCode)
+					{
+						case _ICODE_ALPHA:
+							// See which tag it might be
+							switch (compNext->length)
+							{
+								case 1:
+									// Could be b, i, u
+									if (llEncapsulated)
+									{
+										c = iLowerCase(*ptr);
+										switch (c)
+										{
+											case 'b':	{	iComps_combineN(comp, 3, _ICODE_SEM_HTML_B, _ICAT_SEM_HTML, comp->color);	break;	}
+											case 'i':	{	iComps_combineN(comp, 3, _ICODE_SEM_HTML_I, _ICAT_SEM_HTML, comp->color);	break;	}
+											case 'u':	{	iComps_combineN(comp, 3, _ICODE_SEM_HTML_U, _ICAT_SEM_HTML, comp->color);	break;	}
+										}
+									}
+									break;
+
+								case 2:
+									// Could be hr, br, tt, tr, td
+									if (llEncapsulated)
+									{
+										// Is it a known tag?
+										     if (_memicmp(ptr, "hr", 2) == 0)		iComps_combineN(comp, 3, _ICODE_SEM_HTML_HR, _ICAT_SEM_HTML, comp->color);
+										else if (_memicmp(ptr, "br", 2) == 0)		iComps_combineN(comp, 3, _ICODE_SEM_HTML_BR, _ICAT_SEM_HTML, comp->color);
+										else if (_memicmp(ptr, "tt", 2) == 0)		iComps_combineN(comp, 3, _ICODE_SEM_HTML_TT, _ICAT_SEM_HTML, comp->color);
+										else if (_memicmp(ptr, "tr", 2) == 0)		iComps_combineN(comp, 3, _ICODE_SEM_HTML_TR, _ICAT_SEM_HTML, comp->color);
+										else if (_memicmp(ptr, "td", 2) == 0)		iComps_combineN(comp, 3, _ICODE_SEM_HTML_TD, _ICAT_SEM_HTML, comp->color);
+									}
+									break;
+
+								case 4:
+									// Could be html, font
+									if (_memicmp(ptr, "html", 4) == 0)
+									{
+										// There may be attributes afterward
+										if (llEncapsulated)
+										{
+											// Just <html>
+											iComps_combineN(comp, 3, _ICODE_SEM_HTML_HTML, _ICAT_SEM_HTML, comp->color);
+
+										} else if ((compEnd = iComps_findMate(comp, &lnCount))) {
+											// Has attributes
+											iComps_combineN(comp, lnCount, _ICODE_SEM_HTML_HTML, _ICAT_SEM_HTML, comp->color);
+										}
+
+									} else if (_memicmp(ptr, "font", 4) == 0) {
+										// There may be attributes afterward
+										if (llEncapsulated)
+										{
+											// Just <font>, which should not exist
+											iComps_combineN(comp, 3, _ICODE_SEM_HTML_BR, _ICAT_SEM_HTML, comp->color);
+
+										} else if ((compEnd = iComps_findMate(comp, &lnCount))) {
+											// Has attributes
+											iComps_combineN(comp, lnCount, _ICODE_SEM_HTML_BR, _ICAT_SEM_HTML, comp->color);
+										}
+									}
+									break;
+
+								case 5:
+									// Could be table
+									if (_memicmp(ptr, "table", 5) == 0)
+									{
+										// There may be attributes afterward
+										if (llEncapsulated)
+										{
+											// Just <table>
+											iComps_combineN(comp, 3, _ICODE_SEM_HTML_TABLE, _ICAT_SEM_HTML, comp->color);
+
+										} else if ((compEnd = iComps_findMate(comp, &lnCount))) {
+											// Has attributes
+											iComps_combineN(comp, lnCount, _ICODE_SEM_HTML_TABLE, _ICAT_SEM_HTML, comp->color);
+										}
+									}
+									break;
+
+							}
+							break;
+
+						case _ICODE_ALPHANUMERIC:
+							// Could be w, h, x, y
+							c = iLowerCase(*ptr);
+							switch (c)
+							{
+								case 'w':	{	iComps_combineN(comp, 3, _ICODE_SEM_HTML_W, _ICAT_SEM_HTML, comp->color);	break;	}
+								case 'h':	{	iComps_combineN(comp, 3, _ICODE_SEM_HTML_H, _ICAT_SEM_HTML, comp->color);	break;	}
+								case 'x':	{	iComps_combineN(comp, 3, _ICODE_SEM_HTML_X, _ICAT_SEM_HTML, comp->color);	break;	}
+								case 'y':	{	iComps_combineN(comp, 3, _ICODE_SEM_HTML_Y, _ICAT_SEM_HTML, comp->color);	break;	}
+							}
+
+						case _ICODE_SLASH:
+							// It's most likely a </tag> of some kind
+// TODO:  working here
+							break;
+					}
+				}
+			}
 		}
 	}
 

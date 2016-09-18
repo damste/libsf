@@ -510,7 +510,11 @@ extern "C"
 					//////////
 					// Load the html source code and render
 					//////
+						// Render
+						iSEM_renderAs_simpleHtml(bwin->sem, bwin->obj, false);
 
+						// Force a redraw
+						InvalidateRect(bwin->hwnd, &bwin->rc, FALSE);
 
 
 				//////////
@@ -519,6 +523,9 @@ extern "C"
 					LeaveCriticalSection(&cs_baser_hwnd);
 
 			}
+
+			// If we get here, invalid window
+			return(-1);
 		}
 
 

@@ -2900,14 +2900,12 @@ renderAsOnlyText:
 
 //////////
 //
-// Called to render the content as simple HTML.
+// Called to render (or re-render) the content as simple HTML.
 //
 // Supported commands:
 //				<html>		-- Indicates html block
 //				<hr>		-- Horizontal line, bgcolor, height
 //				<br>		-- Break
-//				<xNnn>		-- Move to hard X pixel
-//				<yNnn>		-- Move to hard Y pixel
 //				<font>		-- Change font, bgcolor, color, name, size
 //				<tt>		-- Typewriter type (fixed point)
 //				<table>		-- Table definition,	bgcolor, color, align, valign, width
@@ -2916,14 +2914,29 @@ renderAsOnlyText:
 //				<b>			-- Bold
 //				<i>			-- Italics
 //				<u>			-- Underline
-//				&nbsp;
+//				<wNnn>		-- Specify a hard width, like <w1024>
+//				<hNnn>		-- Specify a hard height, like <h768>
+//				<xNnn>		-- Move to hard X pixel, like <x50>
+//				<yNnn>		-- Move to hard Y pixel, like <y20>
+//				&..;		-- nbsp, quo, lt, gt, Nn for ASCII characters
 //
 // Note:  Other attributes and tags are ignored.
 //
 //////
+	// Returns number of pixels rendered
 	u32 iSEM_renderAs_simpleHtml(SEM* sem, SObject* obj, bool tlRenderCursorline)
 	{
-		SBuilder* html;
+		u32		lnPixelsRendered;
+		SLine*	line;
+
+
+		// We always re-parse when this function is called
+		lnPixelsRendered = 0;
+		for (line = sem->firstLine; line; line = line->ll.nextLine)
+			iEngine_parse_sourceCode_line(line, cgcSEMHtmlKeywords);		// Recompile everything
+
+		// Indicate hwo many pixels were rendered
+		return(lnPixelsRendered);
 	}
 
 

@@ -28,6 +28,7 @@ LOCAL lnI, lcFile, llLaunched
 	DECLARE INTEGER		baser_release						IN \libsf\source\baser\baser.dll	INTEGER	nHandle
 	DECLARE INTEGER		baser_populate_row					IN \libsf\source\baser\baser.dll	INTEGER	nHandle, INTEGER nOffset, INTEGER nBase, STRING@ cBufferOut, INTEGER nBufferOut_length
 	DECLARE INTEGER		baser_parse_block_by_struct			IN \libsf\source\baser\baser.dll	INTEGER	nHandle, INTEGER nHwnd, INTEGER nOffset, STRING cStruct, INTEGER nStructLength
+	DECLARE INTEGER		baser_render_html					IN \libsf\source\baser\baser.dll	INTEGER hwnd, INTEGER nLeft, INTEGER nTop, INTEGER nRight, INTEGER nBottom, STRING @cHtmlContent, INTEGER tnHtmlContentLength
 	DECLARE INTEGER		baser_retrieve_data					IN \libsf\source\baser\baser.dll	INTEGER nId, STRING@ cDataOut, INTEGER tnDataLength
 	* Use:  lcHtmlPath270 = SPACE(270)
 	*       baser_create_htmltemp_file_content(@lcHtmlPath270, sys(2015), tcHtmlContent, len(tcHtmlContent))

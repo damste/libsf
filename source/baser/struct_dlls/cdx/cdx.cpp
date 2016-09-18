@@ -101,4 +101,7 @@
 		// Translate
 
 		iBuilder_appendData(output, "cdx_decode_keyfor() was reached\n", -1);
+
+		// Indicate how many bytes were processed
+		return(512);
 	}

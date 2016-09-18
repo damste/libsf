@@ -112,6 +112,7 @@
 	const u32		_ICAT_RANGE										= 13;	// ..
 	const u32		_ICAT_COMMENT									= 14;	// * /* */ /+ +/ && //
 	const u32		_ICAT_DEFINITION								= 15;	// Definition keyword, function, adhoc, struct, class, union, enum, etc.
+	const u32		_ICAT_SEM_HTML									= 16;	// A SEM HTML component
 	// Bit settings
 	const u32		_ICAT_DOT										= 1 << 25;
 	const u32		_ICAT_LOGIC										= 1 << 26;
@@ -251,6 +252,32 @@
 	cs32			_ICODE_COMMENT_START							= 152;
 	cs32			_ICODE_COMMENT_END								= 153;
 
+	// SEM Html
+	cs32			_ICODE_SEM_HTML_HTML							= 200;
+	cs32			_ICODE_SEM_HTML_HR								= 201;
+	cs32			_ICODE_SEM_HTML_BR								= 202;
+	cs32			_ICODE_SEM_HTML_FONT							= 203;
+	cs32			_ICODE_SEM_HTML_TT								= 204;
+	cs32			_ICODE_SEM_HTML_TABLE							= 205;
+	cs32			_ICODE_SEM_HTML_TR								= 206;
+	cs32			_ICODE_SEM_HTML_TD								= 207;
+	cs32			_ICODE_SEM_HTML_B								= 208;
+	cs32			_ICODE_SEM_HTML_I								= 209;
+	cs32			_ICODE_SEM_HTML_U								= 210;
+	cs32			_ICODE_SEM_HTML_W								= 211;
+	cs32			_ICODE_SEM_HTML_H								= 212;
+	cs32			_ICODE_SEM_HTML_X								= 213;
+	cs32			_ICODE_SEM_HTML_Y								= 214;
+	cs32			_ICODE_SEM_HTML_BGCOLOR							= 215;
+	cs32			_ICODE_SEM_HTML_COLOR							= 216;
+	cs32			_ICODE_SEM_HTML_ALIGN							= 217;
+	cs32			_ICODE_SEM_HTML_VALIGN							= 218;
+	cs32			_ICODE_SEM_HTML_HEIGHT							= 219;
+	cs32			_ICODE_SEM_HTML_WIDTH							= 220;
+	cs32			_ICODE_SEM_HTML_NAME							= 221;
+	cs32			_ICODE_SEM_HTML_SIZE							= 222;
+
+
 	// Logical operators
 	const s32		_ICODE_NOT										= 500;
 	const s32		_ICODE_AND										= 501;
@@ -339,12 +366,36 @@
 	cs8			cgcIncludePragma[]								= "#include";
 	cs8			cgcUndefPragma[]								= "#undef";
 
+	// For sem html attribute names (see iComps_fixup_htmlGroupings() for information on how to decode tags like <b>)
+	cs8			cgc_sem_html_bgcolor[]							= "bgcolor";
+	cs8			cgc_sem_html_color[]							= "color";
+	cs8			cgc_sem_html_valign[]							= "valign";
+	cs8			cgc_sem_html_align[]							= "align";
+	cs8			cgc_sem_html_height[]							= "height";
+	cs8			cgc_sem_html_width[]							= "width";
+	cs8			cgc_sem_html_name[]								= "name";
+	cs8			cgc_sem_html_size[]								= "size";
+
 
 
 
 //////////
 // Basic symbols known to VXB
 /////
+	SAsciiCompSearcher	cgcSEMHtmlKeywords[] =
+	{
+		{ cgc_sem_html_bgcolor,		7,			false,		_ICODE_SEM_HTML_BGCOLOR,				false,				_ICAT_SEM_HTML,					NULL,						false,						null0,					null0,		null0	},
+		{ cgc_sem_html_color,		5,			false,		_ICODE_SEM_HTML_COLOR,					false,				_ICAT_SEM_HTML,					NULL,						false,						null0,					null0,		null0	},
+		{ cgc_sem_html_valign,		6,			false,		_ICODE_SEM_HTML_VALIGN,					false,				_ICAT_SEM_HTML,					NULL,						false,						null0,					null0,		null0	},
+		{ cgc_sem_html_align,		5,			false,		_ICODE_SEM_HTML_ALIGN,					false,				_ICAT_SEM_HTML,					NULL,						false,						null0,					null0,		null0	},
+		{ cgc_sem_html_height,		6,			false,		_ICODE_SEM_HTML_HEIGHT,					false,				_ICAT_SEM_HTML,					NULL,						false,						null0,					null0,		null0	},
+		{ cgc_sem_html_width,		5,			false,		_ICODE_SEM_HTML_WIDTH,					false,				_ICAT_SEM_HTML,					NULL,						false,						null0,					null0,		null0	},
+		{ cgc_sem_html_name,		4,			false,		_ICODE_SEM_HTML_NAME,					false,				_ICAT_SEM_HTML,					NULL,						false,						null0,					null0,		null0	},
+		{ cgc_sem_html_size,		4,			false,		_ICODE_SEM_HTML_SIZE,					false,				_ICAT_SEM_HTML,					NULL,						false,						null0,					null0,		null0	},
+
+		{ 0,						0,			0,			0,										0,					0,								0,							0,							null0,					null0,		null0	},
+	};
+
 	SAsciiCompSearcher	cgcFundamentalSymbols[] =
 	{
 		// keyword					length		repeats?	extra (type)							first on line?		category						syntax highlight color		syntax highlight bold		onCandidateMatch()		onFind()	compilerDictionaryLookup()

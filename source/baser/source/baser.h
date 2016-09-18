@@ -225,6 +225,7 @@
 	void				iiBaser_dispatch_contentMessage								(HWND hwnd, SBuilder* content);
 	void				iBaserHwnd_delete											(SBaserHwnd* bwin);
 	LRESULT CALLBACK	iBaserHwnd_wndProc											(HWND h, UINT m, WPARAM w, LPARAM l);
+	SComp*				iBaserHwnd_findComp_byCoord									(SBaserHwnd* bwin);
 
 
 
@@ -1171,7 +1172,6 @@ quit:
 		PAINTSTRUCT		ps;
 		LRESULT			lnResult;
 		SBaserHwnd*		bwin;
-		SLine*			line;
 		SComp*			comp;
 
 
@@ -1270,4 +1270,7 @@ quit:
 				}
 			}
 		}
+
+		// If we get here, not found
+		return(NULL);
 	}
