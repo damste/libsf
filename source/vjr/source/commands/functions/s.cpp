@@ -1688,8 +1688,7 @@
 		s8			curdir[_MAX_PATH];
 		u32			lnExtraPrefixWidth, lnExtraPostfixWidth;
 		s64			ln2015;
-		u32			lnSeed;
-		u16			lnCRC16;
+		u32			lnSeed, lnCRC16;
 		SReturnsParams		lsrpar;
 		u32			errorNum;
         bool		error;
@@ -1956,6 +1955,7 @@
 							return;
 						}
 
+
 					//////////
 					// Parameter 2 is optional, but if present...
 					//	Specifies a numeric seed value of 0 that is used to calculate the checksum and is included for backward compatibility.
@@ -1970,18 +1970,19 @@
 								iError_report_byNumber(errorNum, iVariable_get_relatedComp(varP2), false);
 								return;
 							} 
-
 						}
-						lnSeed = lnSeed==0 ? 0xFFFF : lnSeed;
-						lnCRC16 = iFunction_CRC16_CCITT(varP1, lnSeed);
 
-						result = iVariable_create(_VAR_TYPE_U16, NULL, true);
-					//////////
-					// Set the value
-					//////
-						if (!iVariable_setNumeric_toNumericType(result, NULL, NULL, NULL, (u32*)&lnCRC16, NULL, NULL))
+						// Compute
+						lnSeed	= ((lnSeed == 0) ? 0xffff : lnSeed);
+						lnCRC16	= (u32)iFunction_CRC16_CCITT(varP1, lnSeed);
+
+						// Create and populate the result
+						if (!iVariable_setNumeric_toNumericType((result	= iVariable_create(_VAR_TYPE_S32, NULL, true)), NULL, NULL, NULL, (u32*)&lnCRC16, NULL, NULL))
 							iError_report_byNumber(_ERROR_OUT_OF_MEMORY, iVariable_get_relatedComp(varP1), false);
+
 						goto clean_exit;
+
+
 				// SYS(3)		-- Legal filename
 				// SYS(2015)	-- Unique procedure name
 				case 3:
@@ -2146,31 +2147,38 @@ clean_exit:
 
 
 
-	// Note:  Helper function.  iFunction_sys2015() is a shortcut function for accessing the oft-used get-unique-procedure-name feature
-	u16 iFunction_CRC16_CCITT(SVariable*	varString, u32	tnSeed)
+	// Note:  Helper function.
+	//        iFunction_sys2015() is a shortcut function for accessing the oft-used get-unique-procedure-name feature
+	cu16 _iFunction_CRC16_CCITT_polynomial = 0x1021;	// CRC16_CCITT
+	u16 iFunction_CRC16_CCITT(SVariable* varString, u32 tnSeed)
 	{
-
-		u16		polynomial	=	0x1021;	//CRC16_CCITT
-		u16		nCRC		=	tnSeed;	//Initial value
+		s8		c;
+		u16		lnCRC;
 		u32		lnI, lnJ;
-		s8		lc;
 
-		for ( lnI=0; lnI < varString->value.length; ++lnI)
+
+		// Initialize
+		lnCRC = tnSeed;		// Initial value
+
+		// Iterate through every character
+		for (lnI = 0; lnI < varString->value.length; lnI++)
 		{
 			// Grab the character
-			lc = varString->value.data_s8[lnI];
+			c = varString->value.data_s8[lnI];
 
-			nCRC ^= lc<<8;
-			nCRC &= 0xFFFF;
-			for ( lnJ=0; lnJ<8; ++lnJ)
+			// Apply the algorithm
+			lnCRC ^= ((u16)c << 8);
+			lnCRC &= 0xffff;
+			for (lnJ = 0; lnJ < 8; lnJ++, lnCRC &= 0xffff)
 			{
-				nCRC = ( nCRC & 0x8000 ) ? ( nCRC << 1 ) ^ polynomial : nCRC << 1; 
-				nCRC &= 0xFFFF;			
+				// If upper bit's on...
+				if (lnCRC & 0x8000)		lnCRC = (lnCRC << 1) ^ _iFunction_CRC16_CCITT_polynomial;
+				else					lnCRC <<= 1; 
 			}
 		}
-		nCRC ^= 0;
 
-		return nCRC;
+		// Indicate the result
+		return(lnCRC ^= 0);
 	}
 
 
