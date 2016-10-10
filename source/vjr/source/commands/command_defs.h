@@ -349,6 +349,7 @@ struct SReturnsParams;
 	void				function_stuff								(SReturnsParams* rpar);
 	void				function_sys								(SReturnsParams* rpar);
 	SVariable*			iFunction_sys2015							(u32 tnPrefixWidth, u32 tnPostfixWidth);
+	u16					iFunction_CRC16_CCITT						(SVariable*	varString, u32	tnSeed);
 	void				function_sysmetric							(SReturnsParams* rpar);
 	void				function_tan		/* Stefano D'Amico */	(SReturnsParams* rpar);
 	void				function__test								(SReturnsParams* rpar);

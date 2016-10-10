@@ -1650,9 +1650,10 @@
 ///////
 // Version 0.58
 // Last update:
-//     Sep.13.2015
+//     Oct.07.2016
 //////
 // Change log:
+//	   Oct.07.2016 - SYS(2007) added by Stefano D'Amico
 //	   Sep.13.2015 - SYS(11) added by Stefano D'Amico
 //	   Apr.08.2015 - SYS(10) added by Stefano D'Amico
 //	   Apr.08.2015 - SYS(2) added by Stefano D'Amico
@@ -1664,6 +1665,7 @@
 //		2				-- none
 //		10				-- Numeric, julian day number
 //		11				-- Date or character string 
+//		2007			-- Character string, Numeric
 //		2015			-- none
 //////
 // Returns:
@@ -1671,6 +1673,7 @@
 //		2				-- Numeric, returns the number of seconds elapsed since midnight
 //		10				-- Character, returns a Character-type date from a Julian day number
 //		11				-- Character, returns a Character-type Julian day number from a date
+//		2007			-- Numeric, returns CRC16 (ToDo CRC32)
 //		2015			-- Character, unique procedure name
 //////
 	void function_sys(SReturnsParams* rpar)
@@ -1685,6 +1688,8 @@
 		s8			curdir[_MAX_PATH];
 		u32			lnExtraPrefixWidth, lnExtraPostfixWidth;
 		s64			ln2015;
+		u32			lnSeed;
+		u16			lnCRC16;
 		SReturnsParams		lsrpar;
 		u32			errorNum;
         bool		error;
@@ -1940,6 +1945,43 @@
 						goto clean_exit;
 
 
+				// SYS(2007) -- Checksum Value
+				case 2007:
+					//////////
+					// Parameter 1 must be character
+					//////
+						if (!iVariable_isValid(varP1) || !iVariable_isTypeCharacter(varP1))
+						{
+							iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varP1), false);
+							return;
+						}
+
+					//////////
+					// Parameter 2 is optional, but if present...
+					//	Specifies a numeric seed value of 0 that is used to calculate the checksum and is included for backward compatibility.
+					//	Passing a value of -1 for nSeed uses the default system value of 0. 
+					//////
+						lnSeed = 0;
+						if (iVariable_isValid(varP2))
+						{
+							lnSeed = iiVariable_getAs_u32(varP2, false, &error, &errorNum);
+							if (error)
+							{
+								iError_report_byNumber(errorNum, iVariable_get_relatedComp(varP2), false);
+								return;
+							} 
+
+						}
+						lnSeed = lnSeed==0 ? 0xFFFF : lnSeed;
+						lnCRC16 = iFunction_CRC16_CCITT(varP1, lnSeed);
+
+						result = iVariable_create(_VAR_TYPE_U16, NULL, true);
+					//////////
+					// Set the value
+					//////
+						if (!iVariable_setNumeric_toNumericType(result, NULL, NULL, NULL, (u32*)&lnCRC16, NULL, NULL))
+							iError_report_byNumber(_ERROR_OUT_OF_MEMORY, iVariable_get_relatedComp(varP1), false);
+						goto clean_exit;
 				// SYS(3)		-- Legal filename
 				// SYS(2015)	-- Unique procedure name
 				case 3:
@@ -2101,6 +2143,35 @@ clean_exit:
 			return(varSys2015);
 	}
 
+
+
+
+	// Note:  Helper function.  iFunction_sys2015() is a shortcut function for accessing the oft-used get-unique-procedure-name feature
+	u16 iFunction_CRC16_CCITT(SVariable*	varString, u32	tnSeed)
+	{
+
+		u16		polynomial	=	0x1021;	//CRC16_CCITT
+		u16		nCRC		=	tnSeed;	//Initial value
+		u32		lnI, lnJ;
+		s8		lc;
+
+		for ( lnI=0; lnI < varString->value.length; ++lnI)
+		{
+			// Grab the character
+			lc = varString->value.data_s8[lnI];
+
+			nCRC ^= lc<<8;
+			nCRC &= 0xFFFF;
+			for ( lnJ=0; lnJ<8; ++lnJ)
+			{
+				nCRC = ( nCRC & 0x8000 ) ? ( nCRC << 1 ) ^ polynomial : nCRC << 1; 
+				nCRC &= 0xFFFF;			
+			}
+		}
+		nCRC ^= 0;
+
+		return nCRC;
+	}
 
 
 
