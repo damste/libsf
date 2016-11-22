@@ -4750,9 +4750,10 @@ return;
 //////
 	void iBmp_node_renderComp(SNode* node, s32 tnMaxTokenLength, s32 tnMaxOverallLength, bool tlIncludeExtraInfo, SNodeProps props[], s32 tnPropsCount, u32 tnIter_uid)
 	{
-		s32			lnI, lnStart, lnEnd, lnWidth, lnHeight;
+		s32			lnI, lnStart, lnEnd, lnWidth, lnHeight, lnLength;
 		bool		llDeleteFont;
 		s8*			lciCodeName;
+		s8*			lcText;
 		RECT		lrc;
 		SFont*		font;
 		HGDIOBJ		lhOldFont;
@@ -4762,8 +4763,25 @@ return;
 		
 
 		// Make sure our environment is sane
-		if (node && node->comp && node->comp->text._data && node->comp->text.length > 0)
+		if (node)
 		{
+
+			//////////
+			// Make sure we have something to render
+			//////
+				if (!node->comp || !node->comp->text._data || node->comp->text.length == 0)
+				{
+					// No text
+					lcText		= "node";
+					lnLength	= 4;
+
+				} else {
+					// We do have text
+					lcText		= node->comp->text.data_s8;
+					lnLength	= node->comp->text.length;
+
+				}
+
 
 			//////////
 			// Get the correct props
@@ -4818,13 +4836,13 @@ return;
 					sprintf(buffer, "[");
 
 				// Copy the contents of the physical token
-				memcpy(buffer + strlen(buffer), node->comp->text.data_s8, min(node->comp->text.length, (s32)sizeof(buffer) - 20));
+				memcpy(buffer + strlen(buffer), lcText, min(lnLength, (s32)sizeof(buffer) - 20));
 
 				// Include the iCode, start and length of the token on the line
 				if (tlIncludeExtraInfo)
 				{
 					// Try to do a reverse lookup on the iCode
-					if ((lciCodeName = iiComps_visualize_lookup_iCode(node->comp->iCode)))
+					if (node->comp && (lciCodeName = iiComps_visualize_lookup_iCode(node->comp->iCode)))
 					{
 						// Grab the name
 						lnStart = (s32)strlen(buffer);
@@ -4837,11 +4855,14 @@ return;
 
 					} else {
 						// The name could not be looked up, so we just use the number, and in this case we ignore the max length and use the whole number
-						sprintf(buffer + strlen(buffer), " %d,", node->comp->iCode);
+						sprintf(buffer + strlen(buffer), " %d,", ((node->comp) ? node->comp->iCode : 0));
 					}
 
 					// Close it out
-					sprintf(buffer + strlen(buffer), "%u,%u]", node->comp->start, node->comp->text.length);
+					sprintf(buffer + strlen(buffer), "%u,%u]", 
+								((node->comp) ? node->comp->start		: -1), 
+								((node->comp) ? node->comp->text.length	: 0)
+							);
 				}
 
 				// Make sure it's not too long overall
