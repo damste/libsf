@@ -165,9 +165,49 @@
 
 		// If it was created properly, append a node
 		if (compNew)
+		{
+			compNew->isAllocated = true;
 			iNode_create(&compNew->node, compNew);
+		}
 
 		// Indicate our result
+		return(compNew);
+	}
+
+
+
+
+//////////
+//
+// Creates a stand-alone orphan component
+//
+//////
+	SComp* iComps_new_byText(s8* tcText, s32 tnTextLength)
+	{
+		SComp* compNew;
+
+
+		// Create the new component
+		compNew = (SComp*)malloc(sizeof(SComp));
+		if (compNew)
+		{
+			// Initialize
+			memset(compNew, 0, sizeof(SComp));
+
+			// Set the text
+			compNew->isAllocated = true;
+			if (tcText)
+			{
+				// Make sure we have a length
+				if (tnTextLength < 0)
+					tnTextLength = strlen(tcText);
+
+				// Copy
+				iDatum_duplicate(&compNew->text, tcText, tnTextLength);
+			}
+		}
+
+		// Indicate success or failure
 		return(compNew);
 	}
 
@@ -4037,9 +4077,9 @@ debug_break;
 				// Create the item
 				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_not, 0,				_ICODE_EXCLAMATION_POINT))		break;
 				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_tilde, 0,				_ICODE_TILDE))					break;
-				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_offset, 0,			_ICODE_LSA_OFFSET))				break;
-				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_sizeof, 0,			_ICODE_LSA_SIZEOF))				break;
-				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_alignof, 0,			_ICODE_LSA_ALIGNOF))			break;
+// 				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_offset, 0,			_ICODE_LSA_OFFSET))				break;
+// 				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_sizeof, 0,			_ICODE_LSA_SIZEOF))				break;
+// 				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_alignof, 0,			_ICODE_LSA_ALIGNOF))			break;
 				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_ampersand_offset, 0,	_ICODE_AMPERSAND))				break;
 				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_sizeof, 0,			_ICODE_DOLLAR_SIGN))			break;
 				if (!iieops_appendEop(eopLevel, (uptr)&iieops_lsa_alignof, 0,			_ICODE_AT_SIGN))				break;
@@ -4564,6 +4604,7 @@ debug_break;
 	bool iieops_lsa_ampersand_offset(SExprOp* eop)
 	{
 		// _ICODE_AMPERSAND			// If directly adjacent to the thing on the right, it's the "offset(x)" operator, like "&x" for shorthand
+		return(false);
 	}
 
 	bool iieops_lsa_ampersand_and(SExprOp* eop)

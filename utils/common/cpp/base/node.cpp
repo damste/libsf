@@ -79,6 +79,8 @@
 	{
 		if (!glNode_initialized)
 		{
+			// Initialize for serial access
+			InitializeCriticalSection(&cs_nodeUniqueIdAccess);
 
 			// Indicate we've initialized
 			glNode_initialized = true;
@@ -93,7 +95,7 @@
 // Called to create a new node and attach it to the default nodes provided in each direction.
 //
 //////
-	SNode* iNode_create(SNode** root, SComp* comp, SNode* n_defaults[_NODE_COUNT])
+	SNode* iNode_create(SNode** root, SComp* comp, SNode* n_defaults[_NODE_COUNT], SNodeProps* renderOverride)
 	{
 		s32			lnI;
 		SNode*		nodeNew;
@@ -106,7 +108,16 @@
 			memset(nodeNew, 0, sizeof(SNode));
 
 			// Populate members
-			nodeNew->comp = comp;
+			nodeNew->comp							= comp;
+			nodeNew->render.iter_uid				= -1;
+
+			// Store optional colors
+			if (renderOverride)
+				nodeNew->render_override = renderOverride;
+
+			// Assign the comp to this node
+			if (comp && !comp->node)
+				comp->node = nodeNew;
 
 			// Populate the target
 			if (root)
@@ -173,7 +184,7 @@
 //
 //////
 	// Note:  rootNode should point to the node to extrude from
-	SNode* iNode_extrude(SNode** rootNode, s32 tnExtrudeDirection)
+	SNode* iNode_extrude(SNode** rootNode, s32 tnExtrudeDirection, SComp* comp, SNodeProps* renderOverride)
 	{
 		SNode*		nodeLast;
 		SNode*		nodeNew;
@@ -185,16 +196,17 @@
 
 		// If nothing already exists there, just create it and it will become the central node
 		if (!*rootNode)
-			return(iNode_create(rootNode));
+			return(iNode_create(rootNode, comp, NULL, renderOverride));
 
 		// Descend down that direction
 		for (nodeLast = *rootNode; nodeLast->n[tnExtrudeDirection]; )
 			nodeLast = nodeLast->n[tnExtrudeDirection];
 
 		// Add the new offshoot, and point back-and-forth to the last one
-		nodeNew = iNode_create(&nodeLast->n[tnExtrudeDirection]);			// Last points forward to new
+		// Last points forward to new
+		nodeNew = iNode_create(&nodeLast->n[tnExtrudeDirection], comp, NULL, renderOverride);
 		if (nodeNew)
-			nodeNew->n[gnNodeMirrors[tnExtrudeDirection]]	= nodeLast;		// New points back to last
+			nodeNew->n[gnNodeMirrors[tnExtrudeDirection]] = nodeLast;		// New points back to last
 
 		// Indicate the new item
 		return(nodeNew);
@@ -521,9 +533,7 @@
 				props[0].rodColor			= charcoalColor;
 				props[0].colorize			= true;
 				props[0].colorizeColor		= pastelBlueColor;
-#ifdef iFont_create
 				props[0].font				= iFont_create(cgcFontName_defaultFixed);
-#endif
 
 				// Render out in all directions from this point
 				iiNode_renderBitmap(node, node, NULL, tnMaxTokenLength, tnMaxOverallLength, props, 1, lnIter_uid, tlIncludeExtraInfo, tlGoDeeper, nodeFlags, tlDeeperNodesExtendInAllDirections);
@@ -585,9 +595,7 @@
 			//////////
 			// Render node
 			//////
-#ifdef SComp
 				iBmp_node_renderComp(node, tnMaxTokenLength, tnMaxOverallLength, tlIncludeExtraInfo, props, tnPropsCount, tnIter_uid);
-#endif
 
 
 			//////////

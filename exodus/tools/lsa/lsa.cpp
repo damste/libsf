@@ -126,6 +126,27 @@
 		u32				lnI;
 		SLsaFile*		file;
 		SLsaInclude*	include;
+		SBgra			red, blue, yellow;
+
+		SNode*			center		= NULL;
+		SNode*			sw			= NULL;
+		SNode*			se			= NULL;
+		SNode*			cask_left	= NULL;
+		SNode*			cask_right	= NULL;
+		SBitmap*		bmp			= NULL;
+
+		red.color		= bgra(0,0,255,255);
+		blue.color		= bgra(255,0,0,255);
+		yellow.color	= bgra(0,255,255,255);
+
+		iNode_init();
+		iNode_create(&center, iComps_new_byText("center"), NULL, gsPropRed);
+		sw			= iNode_extrude(&center, _NODE_SW,	iComps_new_byText("left"),			gsPropBlue);
+		se			= iNode_extrude(&center, _NODE_SE,	iComps_new_byText("right"),			gsPropBlue);
+		cask_left	= iNode_extrude(&center, _NODE_W,	iComps_new_byText("(|before|)"),	gsPropYellow);
+		cask_right	= iNode_extrude(&center, _NODE_E,	iComps_new_byText("(|after|)"),		gsPropYellow);
+		bmp			= iNode_renderBitmap(center, 6, 12, 24);
+		iBmp_saveToDisk(bmp, "c:\\temp\\node.bmp");
 
 
 		//////////

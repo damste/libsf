@@ -118,6 +118,7 @@
 #include "/libsf/utils/common/cpp/include/sem/sem.h"
 #include "/libsf/utils/common/cpp/include/extra_info.h"
 #include "/libsf/utils/common/cpp/include/bsearch.h"
+#include "/libsf/utils/common/cpp/include/fonts.h"
 
 #include "/libsf/utils/common/cpp/base/ll.cpp"
 #include "/libsf/utils/common/cpp/base/node.cpp"
@@ -131,6 +132,7 @@
 #include "/libsf/utils/common/cpp/base/xml.cpp"
 #include "/libsf/utils/common/cpp/base/sem/sem.cpp"
 #include "/libsf/utils/common/cpp/base/extra_info.cpp"
+#include "/libsf/utils/common/cpp/base/fonts.cpp"
 
 #include "lsa_const.h"
 #include "lsa_structs.h"

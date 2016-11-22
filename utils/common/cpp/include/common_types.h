@@ -369,6 +369,18 @@ struct SXy_s32
 	s32	yi;
 };
 
+struct SSize
+{
+	union {
+		s32		width;
+		f32		fWidth;
+	};
+	union {
+		s32		height;
+		f32		fHeight;
+	};
+};
+
 // Added to allow simple iteration through a builder
 #define iterate(i, builder, p, structure)	for (i = 0; i < builder->populatedLength; i += sizeof(structure)) \
 											{ \

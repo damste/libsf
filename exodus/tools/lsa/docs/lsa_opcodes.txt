@@ -34,7 +34,7 @@ Example code:
 			| name, 4		// "name" is referenced as a 32-bit value at [ebp+8]
 			{
 				// Code for this function goes here
-				define our_edit u8 ptr ds:[edi]		// The token "our_edi" will be replaced
+				define our_edi u8 ptr ds:[edi]		// The token "our_edi" will be replaced
 													// with "u8 ptr ds:[esi]" in each use,
 													// but only in this function
 

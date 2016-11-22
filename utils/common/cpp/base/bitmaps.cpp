@@ -4161,7 +4161,7 @@ return;
 		lfYStep		= lfDeltaY / lfRadius;
 
 		// Iterate for each point
-		for (lfX = (f32)tnX1, lfY = (f32)tnY1; lfRadius > 0.0f; lfRadius--, lfX += lfXStep, lfY += lfYStep)
+		for (lfX = (f32)tnX1, lfY = (f32)tnY1; lfRadius >= 0.0f; lfRadius--, lfX += lfXStep, lfY += lfYStep)
 			iBmp_drawPoint(bmp, (s32)lfX, (s32)lfY, color);
 	}
 
@@ -4748,7 +4748,6 @@ return;
 // Called to render the node to a bitmap
 //
 //////
-#ifdef SComp
 	void iBmp_node_renderComp(SNode* node, s32 tnMaxTokenLength, s32 tnMaxOverallLength, bool tlIncludeExtraInfo, SNodeProps props[], s32 tnPropsCount, u32 tnIter_uid)
 	{
 		s32			lnI, lnStart, lnEnd, lnWidth, lnHeight;
@@ -4763,7 +4762,7 @@ return;
 		
 
 		// Make sure our environment is sane
-		if (node && node->comp && node->comp->line && node->comp->line->sourceCode_populatedLength > 0 && node->comp->line->sourceCode->_data)
+		if (node && node->comp && node->comp->text._data && node->comp->text.length > 0)
 		{
 
 			//////////
@@ -4819,7 +4818,7 @@ return;
 					sprintf(buffer, "[");
 
 				// Copy the contents of the physical token
-				memcpy(buffer + strlen(buffer), node->comp->line->sourceCode.data_s8 + node->comp->start, min(node->comp->length, (s32)sizeof(buffer) - 20));
+				memcpy(buffer + strlen(buffer), node->comp->text.data_s8, min(node->comp->text.length, (s32)sizeof(buffer) - 20));
 
 				// Include the iCode, start and length of the token on the line
 				if (tlIncludeExtraInfo)
@@ -4842,11 +4841,11 @@ return;
 					}
 
 					// Close it out
-					sprintf(buffer + strlen(buffer), "%u,%u]", node->comp->start, node->comp->length);
+					sprintf(buffer + strlen(buffer), "%u,%u]", node->comp->start, node->comp->text.length);
 				}
 
 				// Make sure it's not too long overall
-				if (strlen(buffer) > tnMaxOverallLength)
+				if ((s32)strlen(buffer) > tnMaxOverallLength)
 				{
 					// Close it out at the max length distance with ]
 					buffer[tnMaxOverallLength - 1]	= ']';
@@ -4945,7 +4944,6 @@ return;
 //////
 		}
 	}
-#endif
 
 
 

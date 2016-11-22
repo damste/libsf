@@ -832,7 +832,6 @@
 // END
 // comps.h
 //////////
-;
 
 
 
@@ -1280,6 +1279,7 @@
 	void					iiVxb_free_liveCode							(SLiveCode* livecode);
 
 	SComp*					iComps_new									(SComp** compRoot, SComp* compHint, SComp* compNext, SComp* compPrev);
+	SComp*					iComps_new_byText							(s8* tcText, s32 tnTextLength = -1);
 	u32						iiComps_getNextUid							(void);
 	void					iComps_deleteAll							(SComp** compRoot);
 	void					iComps_deleteAll_byLine						(SLine* line);
@@ -1565,9 +1565,9 @@
 // BEGIN
 //////
 	void					iNode_init									(void);
-	SNode*					iNode_create								(SNode** root, SComp* comp = NULL, SNode* n_defaults[_NODE_COUNT] = NULL);
+	SNode*					iNode_create								(SNode** root, SComp* comp = NULL, SNode* n_defaults[_NODE_COUNT] = NULL, SNodeProps* renderOverride = NULL);
 	u32						iiNode_getNextUid							(void);
-	SNode*					iNode_extrude								(SNode** root, s32 tnExtrudeDirection);
+	SNode*					iNode_extrude								(SNode** root, s32 tnExtrudeDirection, SComp* comp = NULL, SNodeProps* renderOverride = NULL);
 	SNode*					iNode_bump									(SNode** root, s32 tnBump/*BumpDirection*/, s32 tnAnchor/*AnchorDirection*/);
 	SNode*					iNode_insert								(SNode** root, s32 tnDirection);
 	void					iNode_delete								(SNode** root, bool tlDeleteSelf = true);
@@ -1582,6 +1582,24 @@
 // 	// OpenGL
 // 	void					iiNode_renderGrace							(SNode* node, SNode* nodeStopper1, SNode* nodeStopper2, s32 tnMaxTokenLength, s32 tnMaxOverallLength, SNodeProps props[], s32 tnPropsCount, u32 tnIter_uid,								bool tlGoDeeper = true, SNodeFlags* nodeFlags = &gsfNodeFlags_all, bool tlDeeperNodesExtendInAllDirections = true);
 // 	void					iiNode_get_graceExtents						(SNode* node, SNode* nodeStopper1, SNode* nodeStopper2, s32 tnArrivalDirection, SBitmap* bmp, SGraceLine* line, POINTS p_arrival, f64 tfRodLength, u32 tnIter_uid, SNodeProps* props,	bool tlGoDeeper = true, SNodeFlags* nodeFlags = &gsfNodeFlags_all, bool tlDeeperNodesExtendInAllDirections = true);
+//////
+// END
+//////////
+
+
+
+
+//////////
+// fonts.h
+// BEGIN
+//////
+	const u32			gnFont_defaultPointSize				= 10;
+// 	const u8			cgcFontName_default[]				= "Arial";
+	const u8			cgcFontName_defaultFixed[]			= "Courier New";
+// 	const u8			cgcFontName_windowTitleBar[]		= "Arial";
+// 	const u8			cgcFontName_subwindowTitleBar[]		= "Tahoma";
+// 	const u8			cgcFontName_defaultTooltip[]		= "Tahoma";
+// 	const u8			cgcFontName_cask[]					= "Courier New";
 //////
 // END
 //////////

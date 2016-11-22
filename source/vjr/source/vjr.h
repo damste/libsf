@@ -206,7 +206,7 @@
 	#include "vjr_globals.h"
 
 	#include "\libsf\source\vjr\source\debugger\jdebic\jdebic.h"
-	#include "fonts.h"
+	#include "\libsf\utils\common\cpp_vjr\include\fonts.h"
 
 	#include "\libsf\source\vjr\source\commands\command_defs.h"
 	#include "sound\sound.h"
@@ -262,7 +262,7 @@
 		#include "\libsf\source\vjr\source\dbf\cdx.cpp"
 		#include "\libsf\source\vjr\source\dialogs\dialogs.cpp"
 		#include "\libsf\source\vjr\source\forms3d\grace.cpp"
-		#include "\libsf\source\vjr\source\fonts.cpp"
+		#include "\libsf\utils\common\cpp_vjr\base\fonts.cpp"
 		#include "\libsf\source\vjr\source\dllfuncs\dllfuncs.cpp"
 		#include "\libsf\source\vjr\source\sourcelight\sourcelight.cpp"
 

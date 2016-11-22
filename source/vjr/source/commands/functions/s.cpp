@@ -2154,7 +2154,7 @@ clean_exit:
 	{
 		s8		c;
 		u16		lnCRC;
-		u32		lnI, lnJ;
+		s32		lnI, lnJ;
 
 
 		// Initialize
