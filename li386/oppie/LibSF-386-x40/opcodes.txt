@@ -1,4 +1,12 @@
 //////////
+// Additions
+//////
+	The addition of 8 new FPU registers through new FX,FX1,FX2 prefix bytes.  FX means both operands are in the 8-15 range.  FX1 means the first is.  FX2 means the second is.
+	fpush			// Save populated slots on the stack
+	fpop			// Restore populated slots from the stack, generate a new interrupt if it spills.
+	
+
+//////////
 // CPU
 // wax, wbx, wcx, wdx, wsi, wdi, wbp, wsp, w1...w60
 //////
