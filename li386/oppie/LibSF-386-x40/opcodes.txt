@@ -109,11 +109,11 @@
 	4d	wex43		// w43..w48
 	4e	wex49		// w49..w54
 	4f	wex55		// w55..w60
-	50	wexfv0		// f0,f1, v0..v3, see also winu/winl
-	51	wexfv2		// f2,f3, v4..v7, see also winu/winl
+	50	wexfv0		// f0,f4, v0..v3, see also winu/winl
+	51	wexfv5		// f5,f9, v4..v7, see also winu/winl
 
 	..	wexf0		// f0..f4, v0, see also winu/winl
-	..	wexf6		// f5..f9, f4, see also winu/winl
+	..	wexf5		// f5..f9, f4, see also winu/winl
 
 	52	lahf
 	53	sahf
