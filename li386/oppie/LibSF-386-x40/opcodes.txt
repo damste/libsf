@@ -2,8 +2,24 @@
 // Additions
 //////
 	The addition of 8 new FPU registers through new FX,FX1,FX2 prefix bytes.  FX means both operands are in the 8-15 range.  FX1 means the first is.  FX2 means the second is.
+	fx				// Both operands are in 8..15 range
+	fx1				// First operand is in 8..15 range
+	fx2				// Second operand is in 8..15 range
 	fpush			// Save populated slots on the stack
 	fpop			// Restore populated slots from the stack, generate a new interrupt if it spills.
+
+	penter			// Enter into a parameter block
+	loadbpp			// Load a value into the next parameter block slot
+	retbpp n		// Return and pop n slots off the parameter block
+	pleave			// Leave a parameter block
+
+	winu			// Select upper-40 bits
+	winl			// Select lower-40 bits
+
+	vsr0			// Vector .0 slot
+	vsr1			// Vector .1 slot
+	vsr2			// Vector .2 slot
+	vsr3			// Vector .3 slot
 	
 
 //////////
@@ -93,8 +109,12 @@
 	4d	wex43		// w43..w48
 	4e	wex49		// w49..w54
 	4f	wex55		// w55..w60
-	50	wexfv0		// f0,f1, v0..v3
-	51	wexfv2		// f2,f3, v4..v7
+	50	wexfv0		// f0,f1, v0..v3, see also winu/winl
+	51	wexfv2		// f2,f3, v4..v7, see also winu/winl
+
+	..	wexf0		// f0..f4, v0, see also winu/winl
+	..	wexf6		// f5..f9, f4, see also winu/winl
+
 	52	lahf
 	53	sahf
 	54	ra32		// 32-bit register access
@@ -248,3 +268,4 @@
 	
 	VABSF64		-- Compute abs() on vx.0, vx.2
 	VINTF64		-- Rounds vx.0, vx.2 to integer
+
