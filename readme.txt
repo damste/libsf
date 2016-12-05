@@ -33,14 +33,14 @@ of our needs.  Jesus Christ, our Savior, to Him be all the glory.
 
 
 --------------
-  _  _  ____    ___     __
- | |(_)|___ \  / _ \   / /
- | | _   __) || (_) | / /_
- | || | |__ <  > _ < | '_ \
- | || | ___) || (_) || (_) |
- |_||_||____/  \___/  \___/
+                              _       
+     /\                      | |      
+    /  \   _ ____  _____   __| | __ _ 
+   / /\ \ | '__\ \/ / _ \ / _` |/ _` |
+  / ____ \| |   >  < (_) | (_| | (_| |
+ /_/    \_\_|  /_/\_\___/ \__,_|\__,_|
  
-Liberty Software Foundation's "LibSF 386-x40" CPU Project
+Liberty Software Foundation's "LibSF Arxoda" CPU Project
 Mar.09.2015 -- Partially designed, not yet coded
 
 Summary:
@@ -52,8 +52,8 @@ paging.
 Milestones:
 Oppie-1 through Oppie-7 have been mapped out.
 Oppie-1 has been coded, including emulator, assembler, debugger, and verilog.
-LibSF-386-x40 fundamental design has been created.
-See the li386-documentation pages.
+LibSF Arxoda fundamental design has been created.
+See the arxoda-documentation pages.
 
 A tool has been envisioned for writing the hardware:  LibSF Logician.
 It is a graphical tool for manipulating fundamental electronic components,

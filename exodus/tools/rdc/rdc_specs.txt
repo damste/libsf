@@ -155,7 +155,7 @@ RDC Specifications Document
 	// Note:  Each of the above can be made into a pointer using a trailing * on the form, or on the variable.
 	// Note:  Each of the above can be prefixed with a "c" indicating they are constant.
 	// Note:  If any of these c* types are pefixed explicitly with rw, they will exist in rw memory, otherwise they will go to ro memory.
-	// Note:  On LibSF 386-x40 (James 4:15), these will be auto-converting to 40-bits, not 64-bits, and xs56,xu56 will not be supported
+	// Note:  On LibSF Arxoda (James 4:15), these will be auto-converting to 40-bits, not 64-bits, and xs56,xu56 will not be supported
 
 	be,le				-- Augments a type to indicate the data should be stored in memory as big endan, or little endian
 	ro,rw,rwp			-- Augments a type to indicate it is read-only, or read-write, or read-write-protected

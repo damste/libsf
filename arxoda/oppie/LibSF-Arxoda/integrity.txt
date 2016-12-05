@@ -1,0 +1,32 @@
+LibSF Arxoda
+Integrity Selectors
+Apr.13.2016
+-------------------
+
+It will consist of a new set of selectors which contain small blocks of code
+which map to real physical addresses, but are, at the time of their insertion
+into the integrity selector, brought inside the CPU to an internal memory
+area.  This will force any references to those linear addresses to use that
+memory rather than whatever happens to be in DRAM at the present time at that
+linear address.
+
+Integrity selectors map to linear addresses, and are designed for small,
+crucial blocks of kernel code, interrupt handlers, and protected read-only
+data.
+
+This feature will allow for a boot-time setup, with persistence from that
+point forward while the machine is running.
+
+I will also provide a special bus protocol which enables external hardware
+to query the CPU to validate if the values stored in the integrity selectors
+match known hashes or not, and possibly the ability to externally introduce
+data into the selectors, so as to overwrite any boot-time corruption caused
+by something like a virus.
+
+Some new instructions and interrupts will also be introduced to facilitate
+this feature, along with a new I flag indicating if the code is currently
+operating in an integrity block or not.  Some machine instructions will
+then only function when they are running in an integrity block.
+
+Best regards,
+Rick C. Hodgin

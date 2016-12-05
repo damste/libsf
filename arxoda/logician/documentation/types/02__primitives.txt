@@ -1,0 +1,485 @@
+Aug.06.2015
+
+LibSF Logician Primitive Types
+------------------------------
+
+Overview:
+
+	Group		-- An aggregate of things
+	Real		-- A physical connection to a real thing
+	Talkin		-- A protocoled exchange input for asynchronous design
+	Talkout		-- A protocoled exchange output for asynchronous design
+	Talkback	-- Bi-directional asynchronous communication
+	Trigger		-- A signal with logic
+	Signal		-- A bitline for I/O
+	Data		-- A bitline grouping for I/O
+	Regs		-- Data storage aggregates for I/O
+	Logic		-- A logic block
+	Clock		-- A synchronous clock
+	Decoder		-- A signal-to-pin decoder 
+	History		-- A history of values
+	Delta		-- A history of changed values
+	Vent		-- A debug port (with asynchronous pause)
+	Clone		-- Clones a Signal or Data
+	Sticky		-- A sticky bit with set, reset
+	Debug		-- Pipes a Signal or Data to a debug panel
+	Away		-- Creates a connection to a remote thing
+
+
+
+
+**********
+* Note:  Many items below contain a vent.  This vent is disabled by default,
+*        but if something is connected to the vent, it allows the indicated
+*        operation at that level
+**********
+
+
+
+
+**********
+* Note:  The orientation of each of these items can be rotated, resized, etc.
+*        They are physically attached to other objects with connection bands
+*        visually.  These bands relate the components together, though typically
+*        each component will appear "normally docked" on its parent, or in very
+*        close proximity visually.
+**********
+
+
+
+
+Group -- An aggregate of things
+-------------------------------
+
+	 +-----------------------+
+	 |         Group         |
+	 +-----------------------+
+	@|i0 |               |o0 |@
+	@|i1 |               |o1 |@
+	 |...|               |...| 
+	@|iN |               |oN |@
+	 |---+               +---|
+	 |                       |
+	 |                       |
+	=|vent|                  |
+	 +-----------------------+
+	
+	i0..iN		-- (I) Inputs for something contained within the group
+	o0..oN		-- (O) Outputs for something contained within the group
+
+
+
+
+Real -- A physical connection to a real thing
+---------------------------------------------
+
+	 +------+			 +------+			 +------+
+	 | Real |			 | Real |			 | Real |
+	 +------+			 +------+			 +------+
+	@| i0   |@			@| o0   |@			@| io0  |@
+	@| i1   |@			@| o1   |@			@| io1  |@
+	 | ...  |			 | ...  | 			 | ...  | 
+	@| iN   |@			@| oN   |@			@| ioN  |@
+	 +------+			 +------+ 			 +------+ 
+	
+	i0..iN		-- (I) Inputs from some physical thing
+	o0..oN		-- (O) Outputs to for some physical thing
+	io0..ioN	-- (I/O) Input/Outputs from/to some physical thing
+
+
+
+
+Talkin -- A protocoled exchange input for asynchronous design
+-------------------------------------------------------------
+	                 _____
+	   @    @   @   |  @  |
+	 +--------------------+
+	 | LR  RDY  L      DL |
+	 |--------------------|
+	 |       Talkin       |
+	 |--------------------|
+	 |                    |
+	 |        Code        |
+	 |                    |
+	=|vent|               |
+	 +--------------------+
+	
+	LR		-- (O) Pull is ready
+	RDY		-- (I) Remote is ready to push
+	L		-- (O) Pull
+	DL		-- (I) Data from pull
+
+
+
+
+Talkout -- A protocoled exchange output for asynchronous design
+---------------------------------------------------------------
+
+	 +---------------------+
+	 |       Talkout       |
+	 |---------------------|
+	 |                     |
+	 |        Code         |
+	 |                     |
+	=|vent|                |
+	 |---------------------|
+	 | RDY  SR   S     DS  |
+	 +---------------------+
+	    @   @    @   |__@__|
+	
+	RDY		-- (I) Remote is ready to pull
+	SR		-- (O) Push is ready
+	S		-- (O) Push
+	DS		-- (O) Data to push
+
+
+
+
+Talkback -- Bi-directional asynchronous communication
+-----------------------------------------------------
+	                        _____     _____
+	    @    @    @    @   |  @  |   |  @  |
+	 +--------------------------------------+
+	 | LRDY  L   SRDY  S      DL        DS  |
+	 |--------------------------------------|
+	 |               Talkback               |
+	 |--------------------------------------|
+	 |                                      |
+	 |                 Code                 |
+	 |                                      |
+	=|vent|                                 |
+	 +--------------------------------------+
+	 
+	LRDY	-- (I) Remote has data ready
+	L		-- (O) Pull
+	SRDY	-- (I) Remote is ready for data
+	S		-- (O) Push
+	DL		-- (I) Data from pull
+	DS		-- (O) Data to push
+
+
+
+
+Trigger -- A signal with logic
+------------------------------
+	     
+	 +--------------+
+	 |   Trigger    |
+	 |--------------|
+	@|TRG |         |
+	 |----+         |
+	 |              |
+	 |              |
+	 |     Code     |
+	 |              |
+	 |              |
+	=|vent|         |
+	 +--------------+
+	 
+	 TRG -- Trigger input Signal
+
+
+
+
+Signal -- A bitline for I/O
+---------------------------
+
+This object attaches to other objects and provides a way to push
+and pull data.
+	     
+		   @				   @
+		 +----+				 +----+
+		 | SG |				 | LG |
+		 |    |				 |    |
+		 |    |				 |    |
+		 |----|				 |----|
+		=|vent|				=|vent|
+		 +----+				 +----+
+	 
+	 SG -- Push (output) Signal
+	 LG -- Pull (input) Signal
+
+
+
+
+Data -- A bitline grouping for I/O
+----------------------------------
+	   _____			   _____	
+	  |  @  |			  |  @  |	
+	 +--------+			 +--------+
+	 |   DS   |			 |   DL   |
+	 |        |			 |        |
+	 |        |			 |        |
+	 |--------|			 |--------|
+	=|vent    |			=|vent    |
+	 +--------+			 +--------+
+	 
+	DS		-- (O) Push (output) data bits
+	DL		-- (I) Pull (input) data bits
+
+
+
+
+Regs -- Data storage aggregates for I/O
+---------------------------------------
+
+	 +-------+
+	 | Regs  |
+	 |-------|
+	 | name0 |@
+	 | name1 |@
+	 | ...   |
+	 | nameN |@
+	 |       |
+	 |       |
+	 |-------|
+	=|vent   |
+	 +-------+
+	 
+	name0..N	-- (I/O) Named groupings of bits used for processing
+
+
+
+
+Logic -- A logic block
+----------------------
+
+	 +------------------+
+	 |       Logic      |
+	 |------------------|
+	 |                  |
+	 |       Code       |
+	 |                  |
+	=|vent|             |
+	 +------------------+
+	 
+	Code	-- RDC source code which compiles into logic
+
+
+
+
+Clock -- A synchronous clock
+----------------------------
+
+	 +--------------+
+	 |    Clock     |
+	 |--------------|
+	 | Frequency    |
+	 |--------------|
+	=|vent          |
+	 |--------------|
+	 |  _____       |
+	 | |     |      |
+	 | |     |_____ |
+	 |--------------|
+	 | UP HI DN LO  |
+	 +--------------+
+	   @  @  @  @
+	
+	* Note:  Clocks also contain a frequency, which is design-only data.
+	 
+	UP		-- Leading edge of clock cycle
+	HI		-- When clock is high
+	DN		-- Falling edge of clock cycle
+	LO		-- When clock is low
+
+
+
+
+Decoder -- A signal-to-pin decoder
+----------------------------------
+
+	       +-------------+
+	+-+----|   Decoder   |
+	| |    |             |------+
+	@ |DIN |             | Pins |
+	| |    |             |------|
+	+-|    |             |  p0  |@
+	  |    |             |  p1  |@
+	  |    |             |  p2  |@
+	 @|ENAB|             |  ... |
+	  |    |             | pMax |@
+	  |    |             |------+
+	+-|    |             |
+	| |    |             |
+	@ |DOUT|             |
+	| |    |             |
+	+-+----|             |
+		  =|vent         |
+	       +-------------+
+	
+	DIN			-- (I) Data in (N pins)
+	ENAB		-- (I) Enable translation
+	DOUT		-- (O) Data out (N pins)
+	p0...pMax	-- (O) Decoded signal pins ((2^N)-1)
+
+
+
+
+History -- A history of values
+------------------------------
+
+	       +-------------+
+	+-+----|   History   |
+	| |    |             |------+
+	@ |DIN |             | Regs |
+	| |    |             |------|
+	+-|    |             |  h0  |@
+	  |    |             |  h1  |@
+	  |    |             |  ... |
+	  |    |             |  hN  |@
+	  |    |             |------+
+	  |    |             |
+	 @|REC |             |
+	  |    |             |----+
+	  |    |             |    |
+	  |    |             | HSG|@
+	  |    |             |    |
+	  |    |             | ACK|@
+	  |    |             |    |
+	+-|    |             |----+
+	| |    |             |
+	@ |DOUT|             |
+	| |    |             |
+	+-+----|             |
+		  =|vent         |
+	       +-------------+
+	
+	DIN			-- (I) Data in
+	REC			-- (I) Record input
+	DOUT		-- (O) Data out
+	h0...hN		-- (O) History 0 (current value) thru History N values
+	HSG			-- (O) History Signal
+	ACK			-- (I) Acknowledgement receipt of History signal, and any data
+
+
+
+
+Delta -- A history of changed values
+------------------------------------
+
+	  +---------------------------------+
+	  |              Delta              |
+	  +----+---------------------+------+
+	+-|    |                     |   d0 |@
+	| |    |                     |   d1 |@
+	@ |DIN |                     |   ...|
+	| |    |                     |   dN |@
+	+-|    |                     +------+ 
+	  |    |                            |
+	 @|SAMP|         Code               |
+	  |    |                            |
+	+-|    |                            |
+	| |    |                     +------+
+	@ |DOUT|                     |   DSG|@
+	| |    |                     |   ACK|@
+	+-+----|                     +------|
+	 =|vent                             |
+	  +---------------------------------+
+	
+	DIN			-- (I) Data in
+	SAMP		-- (I) Sample Signal to record if different
+	DOUT		-- (O) Data out
+	d0...dN		-- (O) Delta 0 (current value) thru Delta N values
+	DSG			-- (O) Delta Signal (push is ready)
+	ACK			-- (I) Acknowledgement receipt of Delta signal, and any data
+
+
+
+
+Vent -- A debug port (with asynchronous pause)
+----------------------------------------------
+
+	 +------------------------------+
+	 |             Vent             |
+	 +------------------------------+
+	@|HALT |                 | Regs |
+	@|STEP |                 |------|
+	@|DUMP |       Code      |  i0  |@
+	 |     |                 |  i1  |@
+	@|DEND |                 |  ... | 
+	 +--------+              |  iN  |@
+	 |        |              +------+ 
+	 |Talkback|                     |
+	 |        |                     |
+	 +--------+---------------------+
+	
+	HALT		-- (I) Should data flow halt at this vent?
+	STEP		-- (I) Single step when halted
+	DUMP		-- (I) Dumps the input registers to the talkback
+			           in succession until DEND is signaled.
+	DEND		-- (O) Indicates the dump has been completed.
+	i0...N		-- (I) Ports to store values for venting
+	Talkback	-- (I/O) A Talkback to/from the vented port
+
+
+
+
+Clone -- Clones a Signal or Data
+--------------------------------
+
+	 +----------------------------+
+	 |            Clone           |
+	 +----------------------------+
+	@|IN |                 |  Out1|@
+	 |---+                 |  Out2|@
+	 |          Code       | ...  |@
+	 |                     |  OutN|@
+	 |                     +------|
+	=|vent                        |
+	 +----------------------------+
+	
+	IN			-- Input Signal
+	Out0...N	-- Output Signal clones
+
+
+
+
+Sticky -- A sticky bit with set, reset
+--------------------------------------
+
+	 +----------------------------+
+	 |           Sticky           |
+	 +----------------------------+
+	@|IN  |                  | OUT|@
+	@|RST |                  +----|
+	 |----+                       |
+	 |                            |
+	=|vent                        |
+	 +----------------------------+
+	
+	IN		-- Input Signal
+	RST		-- Reset Sticky (set to 0 if IN is 0)
+	OUT		-- Sticky output
+
+
+
+
+Debug -- Pipes a Signal or Data to a debug panel
+------------------------------------------------
+
+	 +------------------+
+	 |      Debug       |
+	 |------------------|
+	 |                  |------+
+	 |                  | Regs |
+	 |                  |------|
+	 |       Code       | dbg0 |@
+	 |                  | dbg1 |@
+	 |                  | ...  |
+	 |                  | dbgN |@
+	=|vent|             |------+
+	 +------------------+
+	
+	dbg0..dgnN	-- (I) Debug data coming from some remote source
+
+
+
+
+Away -- Creates a connection to a remote thing
+----------------------------------------------
+
+	This is a link to another object, which appears in close
+	proximity to the input, allowing for spatial orientation,
+	without having long connecting lines to the distant object
+	during design and debugging.

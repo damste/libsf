@@ -1,0 +1,38 @@
+Aug.08.2015
+
+LibSF Logician Display Types
+----------------------------
+
+Overview:
+
+	Via			-- A portal to other layers (helps organize large projects visually)
+	Gripper		-- An arrangement of things which grip tightly to a primitive type
+
+
+
+Via -- A portal to other layers (helps organize large projects visually)
+------------------------------------------------------------------------
+
+	       +---------------+
+	+------|               |
+	|  Up  |               |
+	+------|      Via      |------+
+	       |               | Down |
+	       |               |------+
+	       +---------------+
+
+	Vias have names, and wings, and go up or down one layer/level at a time.
+
+
+
+
+Gripper -- An arrangement of things which grip tightly to a primitive type
+--------------------------------------------------------------------------
+
+	                       _____     _____
+	   @    @    @    @   |  @  |   |  @  |
+	+--------------------------------------+
+	| LRDY  L   SRDY  S      DL        DS  |
+	+--------------------------------------+
+
+	This example is a talkback gripper holding:  LRDY, L, SRDY, S, DL, DS
