@@ -645,9 +645,19 @@ typedef SEM**		SEMpp;
 //////////
 // Option styles
 //////
+	const u32			_STYLE_MIN						= 0;
 	const u32			_STYLE_PLAIN						= 0;
 	const u32			_STYLE_2D							= 1;
 	const u32			_STYLE_3D							= 2;
+	const u32			_STYLE_HTML							= 3;						// Added for editbox controls, which can be presented as html which makes them read-only
+	const u32			_STYLE_MAX						= 3;
+
+
+//////////
+// Zoom
+//////
+	const f64			_HTML_ZOOM_MIN						= 0.2;						// 20% minimum zoom
+	const f64			_HTML_ZOOM_MAX						= 8.0;						// 800% maximum zoom
 
 
 //////////

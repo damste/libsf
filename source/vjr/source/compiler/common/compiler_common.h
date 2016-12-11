@@ -112,7 +112,8 @@
 	const u32		_ICAT_RANGE										= 13;	// ..
 	const u32		_ICAT_COMMENT									= 14;	// * /* */ /+ +/ && //
 	const u32		_ICAT_DEFINITION								= 15;	// Definition keyword, function, adhoc, struct, class, union, enum, etc.
-	const u32		_ICAT_SEM_HTML									= 16;	// A SEM HTML component
+	const u32		_ICAT_SEM_HTML									= 16;	// A SEM component
+	const u32		_ICAT_SEM_HTML_ATTRIBUTES						= 17;	// A SEM component with attributes
 	// Bit settings
 	const u32		_ICAT_DOT										= 1 << 25;
 	const u32		_ICAT_LOGIC										= 1 << 26;
@@ -276,6 +277,30 @@
 	cs32			_ICODE_SEM_HTML_WIDTH							= 220;
 	cs32			_ICODE_SEM_HTML_NAME							= 221;
 	cs32			_ICODE_SEM_HTML_SIZE							= 222;
+	// Terminate ags
+	cs32			_ICODE_SEM_HTML_THTML							= 200 + 100;
+// 	cs32			_ICODE_SEM_HTML_THR								= 201 + 100;
+// 	cs32			_ICODE_SEM_HTML_TBR								= 202 + 100;
+	cs32			_ICODE_SEM_HTML_TFONT							= 203 + 100;
+	cs32			_ICODE_SEM_HTML_TTT								= 204 + 100;
+	cs32			_ICODE_SEM_HTML_TTABLE							= 205 + 100;
+	cs32			_ICODE_SEM_HTML_TTR								= 206 + 100;
+	cs32			_ICODE_SEM_HTML_TTD								= 207 + 100;
+	cs32			_ICODE_SEM_HTML_TB								= 208 + 100;
+	cs32			_ICODE_SEM_HTML_TI								= 209 + 100;
+	cs32			_ICODE_SEM_HTML_TU								= 210 + 100;
+// 	cs32			_ICODE_SEM_HTML_TW								= 211 + 100;
+// 	cs32			_ICODE_SEM_HTML_TH								= 212 + 100;
+// 	cs32			_ICODE_SEM_HTML_TX								= 213 + 100;
+// 	cs32			_ICODE_SEM_HTML_TY								= 214 + 100;
+	cs32			_ICODE_SEM_HTML_TBGCOLOR						= 215 + 100;
+	cs32			_ICODE_SEM_HTML_TCOLOR							= 216 + 100;
+	cs32			_ICODE_SEM_HTML_TALIGN							= 217 + 100;
+	cs32			_ICODE_SEM_HTML_TVALIGN							= 218 + 100;
+// 	cs32			_ICODE_SEM_HTML_THEIGHT							= 219 + 100;
+// 	cs32			_ICODE_SEM_HTML_TWIDTH							= 220 + 100;
+// 	cs32			_ICODE_SEM_HTML_TNAME							= 221 + 100;
+// 	cs32			_ICODE_SEM_HTML_TSIZE							= 222 + 100;
 
 
 	// Logical operators

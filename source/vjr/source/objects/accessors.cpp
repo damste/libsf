@@ -3220,27 +3220,27 @@ debug_break;
 			switch (tnIndex)
 			{
 				case _INDEX_READONLY:
-					obj->p.sem->isReadOnly				= (varNewValue->value.data_s8[0] != _LOGICAL_FALSE);
+					obj->p.sem->isReadOnly					= (varNewValue->value.data_s8[0] != _LOGICAL_FALSE);
 					break;
 
 				case _INDEX_EDITBOX_OVERWRITE:
-					obj->p.sem->isOverwrite				= (varNewValue->value.data_s8[0] != _LOGICAL_FALSE);
+					obj->p.sem->isOverwrite					= (varNewValue->value.data_s8[0] != _LOGICAL_FALSE);
 					break;
 
 				case _INDEX_EDITBOX_SHOW_LINE_NUMBERS:
-					obj->p.sem->showLineNumbers			= (varNewValue->value.data_s8[0] != _LOGICAL_FALSE);
+					obj->p.sem->showLineNumbers				= (varNewValue->value.data_s8[0] != _LOGICAL_FALSE);
 					break;
 
 				case _INDEX_EDITBOX_SHOW_CURSOR_LINE:
-					obj->p.sem->showCursorLine			= (varNewValue->value.data_s8[0] != _LOGICAL_FALSE);
+					obj->p.sem->showCursorLine				= (varNewValue->value.data_s8[0] != _LOGICAL_FALSE);
 					break;
 
 				case _INDEX_EDITBOX_SHOW_END_LINE:
-					obj->p.sem->showEndLine				= (varNewValue->value.data_s8[0] != _LOGICAL_FALSE);
+					obj->p.sem->showEndLine					= (varNewValue->value.data_s8[0] != _LOGICAL_FALSE);
 					break;
 
 				case _INDEX_EDITBOX_IS_HEAVY_PROCESSING:
-					obj->p.sem->isHeavyProcessing		= (varNewValue->value.data_s8[0] != _LOGICAL_FALSE);
+					obj->p.sem->isHeavyProcessing			= (varNewValue->value.data_s8[0] != _LOGICAL_FALSE);
 					break;
 
 				case _INDEX_EDITBOX_IS_SOURCE_CODE:
@@ -3256,7 +3256,7 @@ debug_break;
 					break;
 
 				case _INDEX_EDITBOX_LEFT_COLUMN:
-					obj->p.sem->columnLeft				= *varNewValue->value.data_s32;
+					obj->p.sem->columnLeft					= *varNewValue->value.data_s32;
 					break;
 
 				case _INDEX_EDITBOX_TAB_WIDTH:
@@ -3469,6 +3469,50 @@ debug_break;
 		// Indicate our status
 		//////
 			return(llResult);
+	}
+
+
+
+
+//////////
+//
+// Called to set the various object members associated with the object's style property settings.
+//
+//////
+	bool iObjProp_setter_style(SObject* obj, s32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp)
+	{
+		bool	llResult;
+		s32		lnStyle;
+
+
+		// Based on the object type, certain settings are available
+		llResult = false;
+		switch (obj->objType)
+		{
+			case _OBJ_TYPE_EDITBOX:
+				// Must be in the range _STYLE_MIN ... _STYLE_MAX
+				lnStyle = iiVariable_getAs_s32(varNewValue);
+				if (between(lnStyle, _STYLE_MIN, _STYLE_MAX))
+				{
+					// Set the variable
+					iVariable_copy(var, varNewValue);
+					llResult = true;
+
+				} else {
+					// Value is out of range
+					iError_report_byNumber(_ERROR_OUT_OF_RANGE, NULL, false);
+				}
+				break;
+
+			default:
+				// For now, just allow it to pass-thru
+				iVariable_copy(var, varNewValue);
+				llResult = true;
+				break;
+		}
+
+		// Indicate success or failure
+		return(llResult);
 	}
 
 

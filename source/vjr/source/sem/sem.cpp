@@ -2926,16 +2926,148 @@ renderAsOnlyText:
 	// Returns number of pixels rendered
 	u32 iSEM_renderAs_simpleHtml(SEM* sem, SObject* obj, bool tlRenderCursorline)
 	{
-		u32		lnPixelsRendered;
-		SLine*	line;
+		bool		llZoomed;
+		u32			lnPixelsRendered;
+		s32			lnWidth, lnHeight, lnScrollX, lnScrollY;
+		f64			lfZoom;
+		RECT		lrc;		// Used to hold the size
+		SBitmap*	bmp;
+		SVariable*	varZoom;
+		SComp*		comp;
+		SComp*		comp2;
+		SLine*		line;
 
 
-		// We always re-parse when this function is called
+		// Make sure the environment is sane
 		lnPixelsRendered = 0;
-		for (line = sem->firstLine; line; line = line->ll.nextLine)
-			iEngine_parse_sourceCode_line(line, cgcSEMHtmlKeywords);		// Recompile everything
+		if (sem && sem->firstLine && sem->lastLine && obj)
+		{
+			// We always re-parse when this function it's called
+			for (line = sem->firstLine; line; line = line->ll.nextLine)
+			{
+				// Recompile everything and parse out tags
+				iEngine_parse_sourceCode_line(line, cgcSEMHtmlKeywords);
+				iComps_fixup_semHtmlGroupings(line);
+			}
 
-		// Indicate hwo many pixels were rendered
+			// Default to bmp size
+			lnWidth  = obj->bmp->bi.biWidth;
+			lnHeight = obj->bmp->bi.biHeight;
+			llZoomed = false;
+
+			// Determine the current size of the bitmap needed
+			varZoom = iObjProp_get(obj, _INDEX_HTML_ZOOM);
+			if (varZoom && between((lfZoom = iiVariable_getAs_f64(varZoom)), _HTML_ZOOM_MIN, _HTML_ZOOM_MAX))
+			{
+				// Force it into range
+				llZoomed	= true;
+				lfZoom		= min(max(lfZoom, _HTML_ZOOM_MIN), _HTML_ZOOM_MAX);
+
+				// Determine the bitmap size we can render
+				lnWidth		= (s32)((f64)lnWidth  / lfZoom);
+				lnHeight	= (s32)((f64)lnHeight / lfZoom);
+			}
+
+			// If it's the same size as the bitmap, use it, otherwise build a temporary one
+			if (obj->bmp->bi.biWidth == lnWidth && obj->bmp->bi.biHeight == lnHeight)
+			{
+				// Use the default bitmap
+				bmp = obj->bmp;
+
+			} else {
+				// Create a temporary one
+				if ((bmp = iBmp_allocate()))
+				{
+					// Create the image to render onto
+					iBmp_createBySize(bmp, lnWidth, lnHeight, obj->bmp->bi.biBitCount);
+				}
+			}
+
+			// Make sure we have a valid bitmap
+			if (!bmp)
+				return(0);
+
+			// Render through each line
+			for (line = sem->line_top; line; line = line->ll.nextLine)
+			{
+				for (comp = line->compilerInfo->firstComp; comp; comp = comp->ll.nextComp)
+				{
+					// Is it an html tag?
+					comp2 = comp->firstCombined;
+					switch (comp->iCode)
+					{
+						case _ICODE_SEM_HTML_HTML:
+							if (comp->iCat == _ICAT_SEM_HTML_ATTRIBUTES)
+							{
+								// Has attributes
+								for ( ; comp; comp = comp->ll.nextComp)
+								{
+									// html only allows certain attributes
+									switch (comp->iCode)
+									{
+										case _ICODE_SEM_HTML_BGCOLOR:
+											break;
+
+										case _ICODE_SEM_HTML_COLOR:
+											break;
+
+										case _ICODE_SEM_HTML_HEIGHT:
+											break;
+
+										case _ICODE_SEM_HTML_WIDTH:
+											break;
+
+										case _ICODE_SEM_HTML_NAME:
+											break;
+
+										case _ICODE_SEM_HTML_SIZE:
+											break;
+									}
+								}
+
+							} else {
+								// Ignore this tag
+								// No code
+							}
+							break;
+
+						case _ICODE_SEM_HTML_HR:
+						case _ICODE_SEM_HTML_BR:
+						case _ICODE_SEM_HTML_FONT:
+						case _ICODE_SEM_HTML_TT:
+						case _ICODE_SEM_HTML_TABLE:
+						case _ICODE_SEM_HTML_TR:
+						case _ICODE_SEM_HTML_TD:
+						case _ICODE_SEM_HTML_B:
+						case _ICODE_SEM_HTML_I:
+						case _ICODE_SEM_HTML_U:
+						case _ICODE_SEM_HTML_W:
+						case _ICODE_SEM_HTML_H:
+						case _ICODE_SEM_HTML_X:
+						case _ICODE_SEM_HTML_Y:
+						case _ICODE_SEM_HTML_BGCOLOR:
+						case _ICODE_SEM_HTML_COLOR:
+						case _ICODE_SEM_HTML_ALIGN:
+						case _ICODE_SEM_HTML_VALIGN:
+						case _ICODE_SEM_HTML_HEIGHT:
+						case _ICODE_SEM_HTML_WIDTH:
+						case _ICODE_SEM_HTML_NAME:
+						case _ICODE_SEM_HTML_SIZE:
+							break;
+
+						default:
+							break;
+					}
+
+					// Are we done?
+					if (line == sem->lastLine)
+						break;
+				}
+			}
+		}
+
+
+		// Indicate how many pixels were rendered
 		return(lnPixelsRendered);
 	}
 

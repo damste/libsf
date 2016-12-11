@@ -247,11 +247,20 @@ extern "C"
 
 					// Store
 					if (lnI != 0 && (lnOffset + 1) % 4 == 0)		sprintf(tcBufferOut + lnI, "%2s  ", buffer);
-					else											sprintf(tcBufferOut + lnI, "%2s ", buffer);
+					else											sprintf(tcBufferOut + lnI, "%2s ",  buffer);
 
-					// Prefix with 0s as needed
-					for (lnJ = lnI; lnJ < lnI + 2 && tcBufferOut[lnJ] == 32; lnJ++)
-						tcBufferOut[lnJ] = '0';
+					// Prefix as needed
+					if (bsr->data_u8[tnOffset + lnOffset] == 0)
+					{
+						// With dots
+						for (lnJ = lnI; lnJ < lnI + 2; lnJ++)
+							tcBufferOut[lnJ] = '.';
+
+					} else {
+						// with 0s
+						for (lnJ = lnI; lnJ < lnI + 2 && tcBufferOut[lnJ] == 32; lnJ++)
+							tcBufferOut[lnJ] = '0';
+					}
 
 					// Increase
 					if (lnI != 0 && (lnOffset + 1) % 4== 0)			lnI += 4;

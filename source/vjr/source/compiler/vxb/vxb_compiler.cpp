@@ -3193,7 +3193,7 @@ finished:
 //////
 	void iComps_fixup_semHtmlGroupings(SLine* line)
 	{
-		bool	llEncapsulated;
+		bool	llTTag, llEncapsulated;
 		s8		c;
 		s32		lnCount;
 		s8*		ptr;
@@ -3212,6 +3212,15 @@ finished:
 				// Is it the less than symbol?
 				if (comp->iCode == _ICODE_LESS_THAN && (compNext = iComps_getNth(comp)) && (compNext2 = iComps_getNth(compNext)))
 				{
+					// Is it a </ tag?
+					llTTag = (compNext->iCode == _ICODE_SLASH);
+					if (llTTag)
+					{
+						// Yes, so we need to shift everything over
+						compNext	= compNext2;
+						compNext2	= iComps_getNth(compNext);
+					}
+
 					// Is it encapsulated
 					llEncapsulated = (compNext2->iCode == _ICODE_GREATER_THAN);
 
@@ -3225,34 +3234,38 @@ finished:
 							// See which tag it might be
 							switch (compNext->length)
 							{
-								case 1:
+								case 1/*one char*/:
 									// Could be b, i, u
 									if (llEncapsulated)
 									{
 										c = iLowerCase(*ptr);
 										switch (c)
 										{
-											case 'b':	{	iComps_combineN(comp, 3, _ICODE_SEM_HTML_B, _ICAT_SEM_HTML, comp->color);	break;	}
-											case 'i':	{	iComps_combineN(comp, 3, _ICODE_SEM_HTML_I, _ICAT_SEM_HTML, comp->color);	break;	}
-											case 'u':	{	iComps_combineN(comp, 3, _ICODE_SEM_HTML_U, _ICAT_SEM_HTML, comp->color);	break;	}
+											case 'b':	{	iComps_combineN(comp, 3, ((llTTag) ? _ICODE_SEM_HTML_TB : _ICODE_SEM_HTML_B), _ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
+											case 'i':	{	iComps_combineN(comp, 3, ((llTTag) ? _ICODE_SEM_HTML_TI : _ICODE_SEM_HTML_I), _ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
+											case 'u':	{	iComps_combineN(comp, 3, ((llTTag) ? _ICODE_SEM_HTML_TU : _ICODE_SEM_HTML_U), _ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
 										}
+
+									} else {
+										// These types are invalid
+										// No code
 									}
 									break;
 
-								case 2:
+								case 2/*two chars*/:
 									// Could be hr, br, tt, tr, td
 									if (llEncapsulated)
 									{
 										// Is it a known tag?
 										     if (_memicmp(ptr, "hr", 2) == 0)		iComps_combineN(comp, 3, _ICODE_SEM_HTML_HR, _ICAT_SEM_HTML, comp->color);
 										else if (_memicmp(ptr, "br", 2) == 0)		iComps_combineN(comp, 3, _ICODE_SEM_HTML_BR, _ICAT_SEM_HTML, comp->color);
-										else if (_memicmp(ptr, "tt", 2) == 0)		iComps_combineN(comp, 3, _ICODE_SEM_HTML_TT, _ICAT_SEM_HTML, comp->color);
-										else if (_memicmp(ptr, "tr", 2) == 0)		iComps_combineN(comp, 3, _ICODE_SEM_HTML_TR, _ICAT_SEM_HTML, comp->color);
-										else if (_memicmp(ptr, "td", 2) == 0)		iComps_combineN(comp, 3, _ICODE_SEM_HTML_TD, _ICAT_SEM_HTML, comp->color);
+										else if (_memicmp(ptr, "tt", 2) == 0)		iComps_combineN(comp, 3, ((llTTag) ? _ICODE_SEM_HTML_TTT : _ICODE_SEM_HTML_TT), _ICAT_SEM_HTML, comp->color, &comp->firstCombined);
+										else if (_memicmp(ptr, "tr", 2) == 0)		iComps_combineN(comp, 3, ((llTTag) ? _ICODE_SEM_HTML_TTR : _ICODE_SEM_HTML_TR), _ICAT_SEM_HTML, comp->color, &comp->firstCombined);
+										else if (_memicmp(ptr, "td", 2) == 0)		iComps_combineN(comp, 3, ((llTTag) ? _ICODE_SEM_HTML_TTD : _ICODE_SEM_HTML_TD), _ICAT_SEM_HTML, comp->color, &comp->firstCombined);
 									}
 									break;
 
-								case 4:
+								case 4/*four chars*/:
 									// Could be html, font
 									if (_memicmp(ptr, "html", 4) == 0)
 									{
@@ -3260,11 +3273,11 @@ finished:
 										if (llEncapsulated)
 										{
 											// Just <html>
-											iComps_combineN(comp, 3, _ICODE_SEM_HTML_HTML, _ICAT_SEM_HTML, comp->color);
+											iComps_combineN(comp, 3, ((llTTag) ? _ICODE_SEM_HTML_THTML : _ICODE_SEM_HTML_HTML), _ICAT_SEM_HTML, comp->color);
 
 										} else if ((compEnd = iComps_findMate(comp, &lnCount))) {
 											// Has attributes
-											iComps_combineN(comp, lnCount, _ICODE_SEM_HTML_HTML, _ICAT_SEM_HTML, comp->color);
+											iComps_combineN(comp, lnCount, ((llTTag) ? _ICODE_SEM_HTML_THTML : _ICODE_SEM_HTML_HTML), _ICAT_SEM_HTML_ATTRIBUTES, comp->color, &comp->firstCombined);
 										}
 
 									} else if (_memicmp(ptr, "font", 4) == 0) {
@@ -3272,16 +3285,16 @@ finished:
 										if (llEncapsulated)
 										{
 											// Just <font>, which should not exist
-											iComps_combineN(comp, 3, _ICODE_SEM_HTML_BR, _ICAT_SEM_HTML, comp->color);
+											iComps_combineN(comp, 3, ((llTTag) ? _ICODE_SEM_HTML_TFONT : _ICODE_SEM_HTML_FONT), _ICAT_SEM_HTML, comp->color);
 
 										} else if ((compEnd = iComps_findMate(comp, &lnCount))) {
 											// Has attributes
-											iComps_combineN(comp, lnCount, _ICODE_SEM_HTML_BR, _ICAT_SEM_HTML, comp->color);
+											iComps_combineN(comp, lnCount, ((llTTag) ? _ICODE_SEM_HTML_TFONT : _ICODE_SEM_HTML_FONT), _ICAT_SEM_HTML_ATTRIBUTES, comp->color, &comp->firstCombined);
 										}
 									}
 									break;
 
-								case 5:
+								case 5/*five chars*/:
 									// Could be table
 									if (_memicmp(ptr, "table", 5) == 0)
 									{
@@ -3289,11 +3302,11 @@ finished:
 										if (llEncapsulated)
 										{
 											// Just <table>
-											iComps_combineN(comp, 3, _ICODE_SEM_HTML_TABLE, _ICAT_SEM_HTML, comp->color);
+											iComps_combineN(comp, 3, ((llTTag) ? _ICODE_SEM_HTML_TTABLE : _ICODE_SEM_HTML_TABLE), _ICAT_SEM_HTML, comp->color);
 
 										} else if ((compEnd = iComps_findMate(comp, &lnCount))) {
 											// Has attributes
-											iComps_combineN(comp, lnCount, _ICODE_SEM_HTML_TABLE, _ICAT_SEM_HTML, comp->color);
+											iComps_combineN(comp, lnCount, ((llTTag) ? _ICODE_SEM_HTML_TTABLE : _ICODE_SEM_HTML_TABLE), _ICAT_SEM_HTML_ATTRIBUTES, comp->color, &comp->firstCombined);
 										}
 									}
 									break;
@@ -3302,7 +3315,7 @@ finished:
 							break;
 
 						case _ICODE_ALPHANUMERIC:
-							// Could be w, h, x, y
+							// Could be w###, h###, x###, y###
 							c = iLowerCase(*ptr);
 							switch (c)
 							{
@@ -3311,10 +3324,6 @@ finished:
 								case 'x':	{	iComps_combineN(comp, 3, _ICODE_SEM_HTML_X, _ICAT_SEM_HTML, comp->color);	break;	}
 								case 'y':	{	iComps_combineN(comp, 3, _ICODE_SEM_HTML_Y, _ICAT_SEM_HTML, comp->color);	break;	}
 							}
-
-						case _ICODE_SLASH:
-							// It's most likely a </tag> of some kind
-// TODO:  working here
 							break;
 					}
 				}
