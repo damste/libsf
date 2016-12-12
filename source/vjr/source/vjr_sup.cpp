@@ -3393,6 +3393,56 @@ debug_break;
 
 //////////
 //
+// Extracts RRGGBB hexadecimal color values
+//
+//////
+	bool iMath_getAs_rrggbb(u8* rrggbb, u8* tnBlu, u8* tnGrn, u8* tnRed)
+	{
+		// Validate we have hexadecimal digits
+		if (iAreHexDigits(rrggbb, 6))
+		{
+			// Grab the hex values
+			iiHexValue_getAs_u8(rrggbb + 0, 2, tnRed);
+			iiHexValue_getAs_u8(rrggbb + 2, 2, tnGrn);
+			iiHexValue_getAs_u8(rrggbb + 4, 2, tnBlu);
+
+			// Indicate success
+			return(true);
+		}
+		// If we get here, failure
+		return(false);
+	}
+
+
+
+
+//////////
+//
+// Extracts RGB hexadecimal color values
+//
+//////
+	bool iMath_getAs_rgb(u8* rgb, u8* tnBlu, u8* tnGrn, u8* tnRed)
+	{
+		// Validate we have hexadecimal digits
+		if (iAreHexDigits(rgb, 3))
+		{
+			// Grab the hex values
+			iiHexValue_getAs_u8(rgb + 0, 1, tnRed, true);
+			iiHexValue_getAs_u8(rgb + 1, 1, tnGrn, true);
+			iiHexValue_getAs_u8(rgb + 2, 1, tnBlu, true);
+
+			// Indicate success
+			return(true);
+		}
+		// If we get here, failure
+		return(false);
+	}
+
+
+
+
+//////////
+//
 // Convert the case.
 //
 //////
@@ -3406,6 +3456,78 @@ debug_break;
 	{
 		if (c >= 'a' && c <= 'z')		return(c - 0x20);
 		else							return(c);
+	}
+
+	bool iAreHexDigits(u8* ptr, s32 tnLength)
+	{
+		u8	c;
+		s32 lnI;
+
+
+		// Make sure our environment is sane
+		if (ptr && tnLength > 0)
+		{
+			// Iterate through each
+			for (lnI = 0; lnI < tnLength; lnI++)
+			{
+				// Grab the character
+				c = ptr[lnI];
+
+				// Is it hex?
+				if (!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')))
+					break;	// Nope
+			}
+		}
+		// If we get here, not hex digits
+		return(false);
+	}
+
+	void iiHexValue_getAs_u8(u8* ptr, s32 tnDigits, u8* dst, bool tlDoubleIfOne)
+	{
+		u8	c;
+		s32	lnI;
+		u32	value;
+
+
+		// We can only extract 
+		if (tnDigits == 1 || tnDigits == 2)
+		{
+			// Iterate through the hex string
+			for (lnI = 0, value = 0; lnI < tnDigits; lnI++)
+			{
+				// Grab the character
+				c = ptr[lnI];
+
+				// Adjust it
+				if (c >= '0' && c <= '9')
+				{
+					// Adjust into the 0..9 range
+					c -= '0';
+
+				} else if (c >= 'a' && c <= 'f') {
+					// Adjust it into the a..f range (10..15)
+					c = (c - 'a') + 10;
+
+				} else if (c >= 'A' && c <= 'F') {
+					// Adjust it into the A..F range (10..15)
+					c = (c - 'A') + 10;
+
+				} else {
+					// Unknown character
+					break;
+				}
+
+				// Shift it onto the accumulating value
+				value = (value << 8) | (u32)c;
+			}
+
+			// If we only had one, and they want to double it
+			if (tnDigits == 1 && tlDoubleIfOne)
+				value = (value * 16) - 1;
+
+			// Store it
+			*dst = (u8)value;
+		}
 	}
 
 

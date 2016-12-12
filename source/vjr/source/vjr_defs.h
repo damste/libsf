@@ -596,6 +596,8 @@ struct SObjEventMap;
 
 	s8						iLowerCase								(s8 c);
 	s8						iUpperCase								(s8 c);
+	bool					iAreHexDigits							(u8* ptr, s32 tnLength);
+	void					iiHexValue_getAs_u8						(u8* ptr, s32 tnDigits, u8* dst, bool tlDoubleIfOne = false);
 
 	bool					iTestExactlyEqual						(u8* left, u32 leftLength, cu8* right, u32 rightLength);
 	bool					iTestExactlyEqual						(u8* left, u32 leftLength,  u8* right, u32 rightLength);
@@ -625,6 +627,8 @@ struct SObjEventMap;
 	bool					iMath_between							(s32 tnValue, s32 tnN1, s32 tnN2);
 	bool					iMath_isRectInRect						(RECT* rcHaystack, RECT* rcNeedle, bool tlIncludeOversizes);
 	RECT*					iiMath_computeRectDeltas				(RECT* rcDelta, RECT* rcNow, RECT* rcPrior);
+	bool					iMath_getAs_rrggbb						(u8* rrggbb, u8* tnBlu, u8* tnGrn, u8* tnRed);
+	bool					iMath_getAs_rgb							(u8* rgb, u8* tnBlu, u8* tnGrn, u8* tnRed);
 
 	s8*						iDuplicateString						(s8* tcText);
 

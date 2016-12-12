@@ -2903,14 +2903,14 @@ renderAsOnlyText:
 // Called to render (or re-render) the content as simple HTML.
 //
 // Supported commands:
-//				<html>		-- Indicates html block
-//				<hr>		-- Horizontal line, bgcolor, height
+//				<html>		-- Indicates html block,	bgcolor, color, width, height, name [implied font name], size
+//				<hr>		-- Horizontal line,			bgcolor, height
 //				<br>		-- Break
-//				<font>		-- Change font, bgcolor, color, name, size
+//				<font>		-- Change font,				bgcolor, color, name, size
 //				<tt>		-- Typewriter type (fixed point)
 //				<table>		-- Table definition,	bgcolor, color, align, valign, width
-//				<tr>		-- Table row,			bgcolor, color, align, valign
-//				<td>		-- Table column,		bgcolor, color, align, valign, colspan, width
+//				<tr>		-- Table row,			bgcolor, color, align, valign, height
+//				<td>		-- Table column,		bgcolor, color, align, valign, colspan, width, height
 //				<b>			-- Bold
 //				<i>			-- Italics
 //				<u>			-- Underline
@@ -2926,15 +2926,18 @@ renderAsOnlyText:
 	// Returns number of pixels rendered
 	u32 iSEM_renderAs_simpleHtml(SEM* sem, SObject* obj, bool tlRenderCursorline)
 	{
-		bool		llZoomed;
+		bool		llZoomed, llNumeric, llAlpha;
 		u32			lnPixelsRendered;
 		s32			lnWidth, lnHeight, lnScrollX, lnScrollY;
 		f64			lfZoom;
+		SBgra		color, bgcolor;
 		RECT		lrc;		// Used to hold the size
 		SBitmap*	bmp;
 		SVariable*	varZoom;
 		SComp*		comp;
 		SComp*		comp2;
+		SComp*		compNext;
+		SComp*		compNext2;
 		SLine*		line;
 
 
@@ -3002,13 +3005,21 @@ renderAsOnlyText:
 								// Has attributes
 								for ( ; comp; comp = comp->ll.nextComp)
 								{
+									// Make sure the pattern needed exists
+									compNext	= iComps_getNth(comp);
+									compNext2	= iComps_getNth(compNext);
+									llNumeric	= (compNext && compNext->iCode == _ICODE_EQUAL_SIGN && compNext2 && compNext2->iCode == _ICODE_NUMERIC);
+									llAlpha		= (compNext && compNext->iCode == _ICODE_EQUAL_SIGN && compNext2 && (compNext2->iCode == _ICODE_DOUBLE_QUOTED_TEXT || compNext2->iCode == _ICODE_SINGLE_QUOTED_TEXT));
+
 									// html only allows certain attributes
 									switch (comp->iCode)
 									{
 										case _ICODE_SEM_HTML_BGCOLOR:
+											iiSEM_renderAs_simpleHtml__getColor(compNext2, llNumeric, llAlpha, &bgcolor);
 											break;
 
 										case _ICODE_SEM_HTML_COLOR:
+											iiSEM_renderAs_simpleHtml__getColor(compNext2, llNumeric, llAlpha, &color);
 											break;
 
 										case _ICODE_SEM_HTML_HEIGHT:
@@ -3069,6 +3080,53 @@ renderAsOnlyText:
 
 		// Indicate how many pixels were rendered
 		return(lnPixelsRendered);
+	}
+
+	// Upon entry, comp is either numeric or alpha
+	void iiSEM_renderAs_simpleHtml__getColor(SComp* comp, bool tlNumeric, bool tlAlpha, SBgra* color)
+	{
+		u8 lnBlu, lnGrn, lnRed;
+
+
+		// Extract as indicated
+		if (tlAlpha)
+		{
+			// It's color=".."
+			if (comp->line->sourceCode->data_s8[1] == '#')
+			{
+				// It's #color
+				if (comp->length == 9)
+				{
+					// It's "#rrggbb"
+					if (iMath_getAs_rrggbb(comp->line->sourceCode->data_u8 + 2, &lnBlu, &lnGrn, &lnRed))
+						color->color = bgr(lnBlu, lnGrn, lnRed);
+
+				} else if (comp->length == 6) {
+					// It's "#rgb"
+					if (iMath_getAs_rgb(comp->line->sourceCode->data_u8 + 2, &lnBlu, &lnGrn, &lnRed))
+						color->color = bgr(lnBlu, lnGrn, lnRed);
+				}
+				//else We don't know what it is, so ignore it
+
+			} else {
+				// It's color
+				if (comp->length == 8)
+				{
+					// It's "rrggbb"
+					if (iMath_getAs_rrggbb(comp->line->sourceCode->data_u8 + 1, &lnBlu, &lnGrn, &lnRed))
+						color->color = bgr(lnBlu, lnGrn, lnRed);
+
+				} else if (comp->length == 5) {
+					// It's "rgb"
+					if (iMath_getAs_rgb(comp->line->sourceCode->data_u8 + 1, &lnBlu, &lnGrn, &lnRed))
+						color->color = bgr(lnBlu, lnGrn, lnRed);
+				}
+			}
+
+		} else if (tlNumeric) {
+			// It's color=Nnn
+			color->color = (u32)iComps_getAs_s64(comp);
+		}
 	}
 
 

@@ -335,6 +335,7 @@
 	void					iSEM_getColors						(SEM* sem, SObject* obj, SBgra& backColor, SBgra& foreColor);
 	u32						iSEM_render							(SEM* sem, SObject* obj, bool tlRenderCursorline);
 	u32						iSEM_renderAs_simpleHtml			(SEM* sem, SObject* obj, bool tlRenderCursorline);
+	void					iiSEM_renderAs_simpleHtml__getColor	(SComp* comp, bool tlNumeric, bool tlAlpha, SBgra* color);
 	void					iSEM_render_highlightSelectedComps	(SEM* sem, SComp* firstComp);
 	bool					iSEM_verifyCursorIsVisible			(SEM* sem, SObject* obj);
 	bool					iSEM_onKeyDown_sourceCode			(SWindow* win, SObject* obj, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varCaps, SVariable* varAscii, SVariable* varVKey, SVariable* varIsCAS, SVariable* varIsAscii);
