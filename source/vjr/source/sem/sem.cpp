@@ -2058,6 +2058,7 @@ debug_break;
 		SBitmap*	bmpNbsp;
 		SBitmap*	bmpBreakpoint;
 		SBitmap*	bmpBreakpointScaled;
+		SVariable*	varStyle;
 		SComp*		comp;
 		SComp*		compHighlight;
 		SComp*		comp2;
@@ -2076,7 +2077,7 @@ debug_break;
 		if (sem && obj)
 		{
 			// Support for simple html
-			if (sem->isSimpleHtml)
+			if (sem->isSimpleHtml || ((varStyle = iObjProp_get(obj, _INDEX_STYLE)) && iiVariable_getAs_s32(var) == _STYLE_HTML))
 				return(iSEM_renderAs_simpleHtml(sem, obj, tlRenderCursorline));
 
 			// Get the top line and continue down as far as we can
@@ -2933,7 +2934,6 @@ renderAsOnlyText:
 		SBgra		color, bgcolor;
 		RECT		lrc;		// Used to hold the size
 		SBitmap*	bmp;
-		SVariable*	varZoom;
 		SComp*		comp;
 		SComp*		comp2;
 		SComp*		compNext;
@@ -2945,136 +2945,121 @@ renderAsOnlyText:
 		lnPixelsRendered = 0;
 		if (sem && sem->firstLine && sem->lastLine && obj)
 		{
+			//////////
 			// We always re-parse when this function it's called
-			for (line = sem->firstLine; line; line = line->ll.nextLine)
-			{
-				// Recompile everything and parse out tags
-				iEngine_parse_sourceCode_line(line, cgcSEMHtmlKeywords);
-				iComps_fixup_semHtmlGroupings(line);
-			}
-
-			// Default to bmp size
-			lnWidth  = obj->bmp->bi.biWidth;
-			lnHeight = obj->bmp->bi.biHeight;
-			llZoomed = false;
-
-			// Determine the current size of the bitmap needed
-			varZoom = iObjProp_get(obj, _INDEX_HTML_ZOOM);
-			if (varZoom && between((lfZoom = iiVariable_getAs_f64(varZoom)), _HTML_ZOOM_MIN, _HTML_ZOOM_MAX))
-			{
-				// Force it into range
-				llZoomed	= true;
-				lfZoom		= min(max(lfZoom, _HTML_ZOOM_MIN), _HTML_ZOOM_MAX);
-
-				// Determine the bitmap size we can render
-				lnWidth		= (s32)((f64)lnWidth  / lfZoom);
-				lnHeight	= (s32)((f64)lnHeight / lfZoom);
-			}
-
-			// If it's the same size as the bitmap, use it, otherwise build a temporary one
-			if (obj->bmp->bi.biWidth == lnWidth && obj->bmp->bi.biHeight == lnHeight)
-			{
-				// Use the default bitmap
-				bmp = obj->bmp;
-
-			} else {
-				// Create a temporary one
-				if ((bmp = iBmp_allocate()))
+			//////
+				for (line = sem->firstLine; line; line = line->ll.nextLine)
 				{
-					// Create the image to render onto
-					iBmp_createBySize(bmp, lnWidth, lnHeight, obj->bmp->bi.biBitCount);
+					// Recompile everything and parse out tags
+					iEngine_parse_sourceCode_line(line, cgcSEMHtmlKeywords);
+					iComps_fixup_semHtmlGroupings(line);
 				}
-			}
 
-			// Make sure we have a valid bitmap
-			if (!bmp)
-				return(0);
 
+			//////////
+			// Grab the render bitmap
+			//////
+				lnWidth  = obj->bmp->bi.biWidth;
+				lnHeight = obj->bmp->bi.biHeight;
+
+				// Apply any zoom
+				llZoomed = iiSEM_renderAs_simpleHtml__applyZoom(obj, &lnWidth, &lnHeight);
+
+				// If it's the same size as the bitmap, use it, otherwise build a temporary one
+				if (!iiSEM_renderAs_simpleHtml__createBmp(&bmp, obj->bmp, lnWidth, lnHeight))
+					return(-1);
+
+
+			//////////
 			// Render through each line
-			for (line = sem->line_top; line; line = line->ll.nextLine)
-			{
-				for (comp = line->compilerInfo->firstComp; comp; comp = comp->ll.nextComp)
+			//////
+				for (line = sem->line_top; line; line = line->ll.nextLine)
 				{
-					// Is it an html tag?
-					comp2 = comp->firstCombined;
-					switch (comp->iCode)
+					for (comp = line->compilerInfo->firstComp; comp; comp = comp->ll.nextComp)
 					{
-						case _ICODE_SEM_HTML_HTML:
-							if (comp->iCat == _ICAT_SEM_HTML_ATTRIBUTES)
-							{
-								// Has attributes
-								for ( ; comp; comp = comp->ll.nextComp)
+						// Is it an html tag?
+						comp2 = comp->firstCombined;
+						switch (comp->iCode)
+						{
+							case _ICODE_SEM_HTML_HTML:
+								if (comp->iCat == _ICAT_SEM_HTML_ATTRIBUTES)
 								{
-									// Make sure the pattern needed exists
-									compNext	= iComps_getNth(comp);
-									compNext2	= iComps_getNth(compNext);
-									llNumeric	= (compNext && compNext->iCode == _ICODE_EQUAL_SIGN && compNext2 && compNext2->iCode == _ICODE_NUMERIC);
-									llAlpha		= (compNext && compNext->iCode == _ICODE_EQUAL_SIGN && compNext2 && (compNext2->iCode == _ICODE_DOUBLE_QUOTED_TEXT || compNext2->iCode == _ICODE_SINGLE_QUOTED_TEXT));
-
-									// html only allows certain attributes
-									switch (comp->iCode)
+									// Has attributes
+									for ( ; comp; comp = comp->ll.nextComp)
 									{
-										case _ICODE_SEM_HTML_BGCOLOR:
-											iiSEM_renderAs_simpleHtml__getColor(compNext2, llNumeric, llAlpha, &bgcolor);
-											break;
+										// Make sure the pattern needed exists
+										compNext	= iComps_getNth(comp);
+										compNext2	= iComps_getNth(compNext);
+										llNumeric	= (compNext && compNext->iCode == _ICODE_EQUAL_SIGN && compNext2 && compNext2->iCode == _ICODE_NUMERIC);
+										llAlpha		= (compNext && compNext->iCode == _ICODE_EQUAL_SIGN && compNext2 && (compNext2->iCode == _ICODE_DOUBLE_QUOTED_TEXT || compNext2->iCode == _ICODE_SINGLE_QUOTED_TEXT));
 
-										case _ICODE_SEM_HTML_COLOR:
-											iiSEM_renderAs_simpleHtml__getColor(compNext2, llNumeric, llAlpha, &color);
-											break;
+										// html only allows certain attributes
+										switch (comp->iCode)
+										{
+											case _ICODE_SEM_HTML_BGCOLOR:
+												iiSEM_renderAs_simpleHtml__getColor(compNext2, llNumeric, llAlpha, &bgcolor);
+												break;
 
-										case _ICODE_SEM_HTML_HEIGHT:
-											break;
+											case _ICODE_SEM_HTML_COLOR:
+												iiSEM_renderAs_simpleHtml__getColor(compNext2, llNumeric, llAlpha, &color);
+												break;
 
-										case _ICODE_SEM_HTML_WIDTH:
-											break;
+											case _ICODE_SEM_HTML_HEIGHT:
+												lnHeight = iComps_getAs_s32(comp);
+												if (!iiSEM_renderAs_simpleHtml__createBmp(&bmp, obj->bmp, lnWidth, lnHeight))
+												break;
 
-										case _ICODE_SEM_HTML_NAME:
-											break;
+											case _ICODE_SEM_HTML_WIDTH:
+												break;
 
-										case _ICODE_SEM_HTML_SIZE:
-											break;
+											case _ICODE_SEM_HTML_NAME:
+												break;
+
+											case _ICODE_SEM_HTML_SIZE:
+												break;
+										}
 									}
+
+								} else {
+									// Ignore this tag
+									// No code
 								}
+								break;
 
-							} else {
-								// Ignore this tag
-								// No code
-							}
-							break;
+							case _ICODE_SEM_HTML_HR:
+							case _ICODE_SEM_HTML_BR:
+							case _ICODE_SEM_HTML_FONT:
+							case _ICODE_SEM_HTML_TT:
+							case _ICODE_SEM_HTML_TABLE:
+							case _ICODE_SEM_HTML_TR:
+							case _ICODE_SEM_HTML_TD:
+							case _ICODE_SEM_HTML_B:
+							case _ICODE_SEM_HTML_I:
+							case _ICODE_SEM_HTML_U:
+							case _ICODE_SEM_HTML_W:
+							case _ICODE_SEM_HTML_H:
+							case _ICODE_SEM_HTML_X:
+							case _ICODE_SEM_HTML_Y:
+							case _ICODE_SEM_HTML_BGCOLOR:
+							case _ICODE_SEM_HTML_COLOR:
+							case _ICODE_SEM_HTML_ALIGN:
+							case _ICODE_SEM_HTML_VALIGN:
+							case _ICODE_SEM_HTML_HEIGHT:
+							case _ICODE_SEM_HTML_WIDTH:
+							case _ICODE_SEM_HTML_NAME:
+							case _ICODE_SEM_HTML_SIZE:
+								break;
 
-						case _ICODE_SEM_HTML_HR:
-						case _ICODE_SEM_HTML_BR:
-						case _ICODE_SEM_HTML_FONT:
-						case _ICODE_SEM_HTML_TT:
-						case _ICODE_SEM_HTML_TABLE:
-						case _ICODE_SEM_HTML_TR:
-						case _ICODE_SEM_HTML_TD:
-						case _ICODE_SEM_HTML_B:
-						case _ICODE_SEM_HTML_I:
-						case _ICODE_SEM_HTML_U:
-						case _ICODE_SEM_HTML_W:
-						case _ICODE_SEM_HTML_H:
-						case _ICODE_SEM_HTML_X:
-						case _ICODE_SEM_HTML_Y:
-						case _ICODE_SEM_HTML_BGCOLOR:
-						case _ICODE_SEM_HTML_COLOR:
-						case _ICODE_SEM_HTML_ALIGN:
-						case _ICODE_SEM_HTML_VALIGN:
-						case _ICODE_SEM_HTML_HEIGHT:
-						case _ICODE_SEM_HTML_WIDTH:
-						case _ICODE_SEM_HTML_NAME:
-						case _ICODE_SEM_HTML_SIZE:
-							break;
+							default:
+								break;
+						}
 
-						default:
+						// Are we done?
+						if (line == sem->lastLine)
 							break;
 					}
-
-					// Are we done?
-					if (line == sem->lastLine)
-						break;
 				}
-			}
+
 		}
 
 
@@ -3127,6 +3112,87 @@ renderAsOnlyText:
 			// It's color=Nnn
 			color->color = (u32)iComps_getAs_s64(comp);
 		}
+	}
+
+
+
+
+//////////
+//
+// Applies a zoom factor to the indicated values
+//
+//////
+	bool iiSEM_renderAs_simpleHtml__applyZoom(SObject* obj, s32* tnWidth, s32* tnHeight, s32 tnUnzoomedWidth, s32 tnUnzoomedHeight)
+	{
+		bool		llZoomed;
+		f64			lfZoom;
+		SVariable*	varZoom;
+
+
+// TODO:  working here
+		// Extract the zoom member (if present)
+		varZoom = iObjProp_get(obj, _INDEX_HTML_ZOOM);
+		if (varZoom && between((lfZoom = iiVariable_getAs_f64(varZoom)), _HTML_ZOOM_MIN, _HTML_ZOOM_MAX))
+		{
+			// Force it into range
+			llZoomed	= true;
+			lfZoom		= min(max(lfZoom, _HTML_ZOOM_MIN), _HTML_ZOOM_MAX);
+
+			// Determine the bitmap size we can render
+			*tnWidth	= (s32)((f64)*tnWidth  / lfZoom);
+			*tnHeight	= (s32)((f64)*tnHeight / lfZoom);
+
+		} else {
+			varZoom = NULL;
+		}
+	}
+
+
+
+
+//////////
+//
+// Creates the bitmap based on the size
+//
+//////
+	bool iiSEM_renderAs_simpleHtml__createBmp(SBitmap** bmpp, SBitmap* bmpObj, s32 tnWidth, s32 tnHeight)
+	{
+		SBitmap* bmp;
+
+
+		// If there's already a bitmap and the sizes are different
+		bmp = *bmp;
+		if (bmp && (bmp != bmpObj) && (bmp->bi.biWidth != tnWidth || bmp->bi.biHeight != tnHeight))
+			iBmp_delete(bmpp, true, true);
+
+		// Create the bitmap
+		if (bmpObj->bi.biWidth == tnWidth && bmpObj->bi.biHeight == tnHeight)
+		{
+			// Use the default bitmap
+			bmp = bmpObj;
+
+		} else {
+			// Create a temporary one to render into
+			if ((bmp = iBmp_allocate()))
+				iBmp_createBySize(bmp, tnWidth, tnHeight, bmpObj->bi.biBitCount);
+			
+		}
+
+		// Make sure we have a valid bitmap
+		if (!bmp || !bmp->bi || bmp->bi.biWidth != tnWidth || bmp->bi.biHeight)
+		{
+			// Delete the bitmap (if it was partially created)
+			if (bmp != bmpObj)
+				iBmp_delete(&bmp, true, true);
+
+			// Indicate failure
+			*bmpp = NULL;
+			return(false);
+		}
+
+		// Indicate success
+		*bmpp = bmp;
+		return(true);
 	}
 
 

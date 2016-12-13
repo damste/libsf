@@ -304,16 +304,17 @@
 	SVariable*			cvarTwoFiftyFive					= NULL;									// A numeric value of 255, used for color channels
 	SVariable*			cvarFiftyPercent					= NULL;									// An f32 0.5
 	SVariable*			cvarOneHundredPercent				= NULL;									// An f32 1.0
+	SVariable*			cvarOne_f64							= NULL;									// An f64 1.0, used for html zoom ratios (1.0 = no zoom)
 	SVariable*			cvarSetDateAmerican					= NULL;
 	SVariable*			cvarSetDateAnsi						= NULL;
 	SVariable*			cvarSetDateBritish					= NULL;
 	SVariable*			cvarSetDateFrench					= NULL;
 	SVariable*			cvarSetDateGerman					= NULL;
 	SVariable*			cvarSetDateItalian					= NULL;
-	SVariable*			cvarSetDateJapan						= NULL;
+	SVariable*			cvarSetDateJapan					= NULL;
 	SVariable*			cvarSetDateTaiwan					= NULL;
 	SVariable*			cvarSetDateLong						= NULL;
-	SVariable*			cvarSetDateShort						= NULL;
+	SVariable*			cvarSetDateShort					= NULL;
 	SVariable*			cvarSetDateUsa						= NULL;
 	SVariable*			cvarSetDateDmy						= NULL;
 	SVariable*			cvarSetDateMdy						= NULL;

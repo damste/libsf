@@ -2397,6 +2397,7 @@ debug_break;
 // Called to get the f64 variable from the indicated object
 //
 //////
+	// Note:  The variable returned is a pointer to the literal object's var, not a copy of that var
 	SVariable* iObjProp_get(SObject* obj, s32 tnIndex)
 	{
 		// Make sure the environment is sane

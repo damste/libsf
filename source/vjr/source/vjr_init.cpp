@@ -605,6 +605,7 @@
 	{
 		s32 lnValue;
 		f32 lfValue;
+		f64 lfValue_f64;
 
 
 		// System constants used internally
@@ -624,8 +625,9 @@
 		lnValue	= 255;		cvarTwoFiftyFive	= iVariable_createAndPopulate_byText(_VAR_TYPE_S32, (cu8*)&lnValue, 4, false);
 
 		// Create floating point constants
-		lfValue	= 0.5f;		cvarFiftyPercent		= iVariable_createAndPopulate_byText(_VAR_TYPE_F32, (cu8*)&lfValue, 4, false);
-		lfValue	= 1.0f;		cvarOneHundredPercent	= iVariable_createAndPopulate_byText(_VAR_TYPE_F32, (cu8*)&lfValue, 4, false);
+		lfValue	= 0.5f;			cvarFiftyPercent		= iVariable_createAndPopulate_byText(_VAR_TYPE_F32, (cu8*)&lfValue,		4, false);
+		lfValue	= 1.0f;			cvarOneHundredPercent	= iVariable_createAndPopulate_byText(_VAR_TYPE_F32, (cu8*)&lfValue,		4, false);
+		lfValue_f64	= 1.0f;		cvarOne_f64				= iVariable_createAndPopulate_byText(_VAR_TYPE_F64, (cu8*)&lfValue_f64, 8, false);
 
 		// 2000 blank spaces
 		iDatum_allocateSpace(&cvarSpace2000->value, 2000);

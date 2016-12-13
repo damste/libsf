@@ -1310,7 +1310,7 @@ struct SBasePropMap;
 		{	_INDEX_HWND,									-1,									cgc_hWnd,							sizeof(cgc_hWnd) - 1,								_VAR_TYPE_S32,				0, 0, 0,		0								,NULL	},	// A direct handle to the OS window
 		{	_INDEX_HTML_SCROLLX,							-1,									cgc_htmlScrollX,					sizeof(cgc_htmlScrollX) - 1,						_VAR_TYPE_S32,				0, 0, 0,		0								,NULL	},	// For HTML objects, the X scroll internally for the block
 		{	_INDEX_HTML_SCROLLY,							-1,									cgc_htmlScrollY,					sizeof(cgc_htmlScrollY) - 1,						_VAR_TYPE_S32,				0, 0, 0,		0								,NULL	},	// For HTML objects, the Y scroll internally for the block
-		{	_INDEX_HTML_ZOOM,								-1,									cgc_htmlZoom,						sizeof(cgc_htmlZoom) - 1,							_VAR_TYPE_F64,				0, 0, 0,		0								,NULL	},	// For HTML objects, the zoom applied for the block (a zoom-value other than 0 slows down rendering)
+		{	_INDEX_HTML_ZOOM,								-1,									cgc_htmlZoom,						sizeof(cgc_htmlZoom) - 1,							_VAR_TYPE_F64,				0, 0, 0,		(uptr)&cvarOne_f64				,NULL	},	// For HTML objects, the zoom applied for the block (a zoom-value other than 1.0 slows down rendering)
 		{	_INDEX_ICON,									-1,									cgc_icon,							sizeof(cgc_icon) - 1,								_VAR_TYPE_BITMAP,			0, 0, 0,		(uptr)&bmpVjrIcon				,NULL	},	// Use VJr's app icon by default
 		{	_INDEX_IMEMODE,									-1,									cgc_iMEMode,						sizeof(cgc_iMEMode) - 1,							_VAR_TYPE_S32,				0, 0, 0,		0								,NULL	},	// 0=use OS settings (default), 1=open on focus, 2=close on focus
 		{	_INDEX_INCREMENT,								-1,									cgc_increment,						sizeof(cgc_increment) - 1,							_VAR_TYPE_F64,				0, 0, 0,		0								,NULL	},	// The default increment for spinners
