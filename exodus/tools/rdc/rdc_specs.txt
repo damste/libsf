@@ -124,6 +124,7 @@ RDC Specifications Document
 	
 	?					-- Used as SMyStruct? t; to create a member placeholder, that can be used as SMyStruct* p, with p->?t with type checking, p->??t without type checking
 	, and '				-- Commas and tick marks will be allowed in any number to visualize it more easily (for example:  1,234.567'890)
+	.					-- Leading zeros can be replaced with periods in hexadecimal values, as in 0x....4000 to visualize how it relates to the one above/below
 	
 	||||				-- If four or more pipe signs leading on a source code line, line comment
 	|||					-- If three pipe signs leading on a source code line, whitespace
