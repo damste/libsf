@@ -2929,7 +2929,7 @@ renderAsOnlyText:
 	{
 		bool		llZoomed, llNumeric, llAlpha;
 		u32			lnPixelsRendered;
-		s32			lnWidth, lnHeight, lnScrollX, lnScrollY;
+		s32			lnWidth, lnHeight, lnScrollX, lnScrollY, lnStartHeight, lnStartWidth;
 		f64			lfZoom;
 		SBgra		color, bgcolor;
 		RECT		lrc;		// Used to hold the size
@@ -2975,6 +2975,8 @@ renderAsOnlyText:
 			//////
 				for (line = sem->line_top; line; line = line->ll.nextLine)
 				{
+					lnStartHeight	= lnHeight;
+					lnStartWidth	= lnWidth;
 					for (comp = line->compilerInfo->firstComp; comp; comp = comp->ll.nextComp)
 					{
 						// Is it an html tag?
@@ -3006,10 +3008,10 @@ renderAsOnlyText:
 
 											case _ICODE_SEM_HTML_HEIGHT:
 												lnHeight = iComps_getAs_s32(comp);
-												if (!iiSEM_renderAs_simpleHtml__createBmp(&bmp, obj->bmp, lnWidth, lnHeight))
 												break;
 
 											case _ICODE_SEM_HTML_WIDTH:
+												lnWidth = iComps_getAs_s32(comp);
 												break;
 
 											case _ICODE_SEM_HTML_NAME:
@@ -3018,6 +3020,14 @@ renderAsOnlyText:
 											case _ICODE_SEM_HTML_SIZE:
 												break;
 										}
+									}
+
+									// Adjust the width and height if specified to do so
+									if (lnHeight != lnStartHeight && lnWidth != lnStartWidth)
+									{
+										// Adjust to the new height
+										llZoomed = iiSEM_renderAs_simpleHtml__applyZoom(obj, &lnWidth, &lnHeight);
+										if (!iiSEM_renderAs_simpleHtml__createBmp(&bmp, obj->bmp, lnWidth, lnHeight))
 									}
 
 								} else {
@@ -3129,10 +3139,9 @@ renderAsOnlyText:
 		SVariable*	varZoom;
 
 
-// TODO:  working here
 		// Extract the zoom member (if present)
 		varZoom = iObjProp_get(obj, _INDEX_HTML_ZOOM);
-		if (varZoom && between((lfZoom = iiVariable_getAs_f64(varZoom)), _HTML_ZOOM_MIN, _HTML_ZOOM_MAX))
+		if (varZoom && between((lfZoom = iiVariable_getAs_f64(varZoom)), _HTML_ZOOM_MIN, _HTML_ZOOM_MAX) && iiVariable_getAs_f64(varZoom) != 1.0)
 		{
 			// Force it into range
 			llZoomed	= true;
@@ -3143,8 +3152,12 @@ renderAsOnlyText:
 			*tnHeight	= (s32)((f64)*tnHeight / lfZoom);
 
 		} else {
-			varZoom = NULL;
+			// Not zoomed
+			llZoomed	= false;
 		}
+
+		// Indicate if it's zoomed
+		return(llZoomed);
 	}
 
 
