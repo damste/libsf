@@ -2077,7 +2077,7 @@ debug_break;
 		if (sem && obj)
 		{
 			// Support for simple html
-			if (sem->isSimpleHtml || ((varStyle = iObjProp_get(obj, _INDEX_STYLE)) && iiVariable_getAs_s32(var) == _STYLE_HTML))
+			if (sem->isSimpleHtml || ((varStyle = iObjProp_get(obj, _INDEX_STYLE)) && iiVariable_getAs_s32(varStyle) == _STYLE_HTML))
 				return(iSEM_renderAs_simpleHtml(sem, obj, tlRenderCursorline));
 
 			// Get the top line and continue down as far as we can
@@ -2927,17 +2927,22 @@ renderAsOnlyText:
 	// Returns number of pixels rendered
 	u32 iSEM_renderAs_simpleHtml(SEM* sem, SObject* obj, bool tlRenderCursorline)
 	{
-		bool		llZoomed, llNumeric, llAlpha;
+		bool		llZoomed, llNumeric, llAlpha, llFontChange;
 		u32			lnPixelsRendered;
 		s32			lnWidth, lnHeight, lnScrollX, lnScrollY, lnStartHeight, lnStartWidth;
+		s32			lnFontSize, lnFontWeight, lnFontItalics, lnFontUnderline, lnFontStack, lnFontsCreated;
 		f64			lfZoom;
 		SBgra		color, bgcolor;
-		RECT		lrc;		// Used to hold the size
+		RECT		lrc;
+		u8*			lcFontName;
 		SBitmap*	bmp;
 		SComp*		comp;
 		SComp*		comp2;
 		SComp*		compNext;
 		SComp*		compNext2;
+		SFont*		font;
+		SFont*		fontStack[64];		// Up to 64 font changes on the stack
+		SFont*		fontsCreated[128];	// Fonts created during this process
 		SLine*		line;
 
 
@@ -2971,10 +2976,30 @@ renderAsOnlyText:
 
 
 			//////////
+			// Default font
+			//////
+				lnFontSize		= 12;
+				lnFontWeight	= FW_NORMAL;
+				lnFontItalics	= 0;
+				lnFontUnderline	= 0;
+				lcFontName		= (u8*)"Ubuntu";
+				font			= iSEM_renderAs_simpleHtml__addFont(&fontsCreated[0], &lnFontsCreated, lcFontName, lnFontSize, lnFontWeight, lnFontItalics, lnFontUnderline);
+
+
+			//////////
+			// Font stack
+			//////
+				memset(fontStack, 0, sizeof(fontStack));
+				lnFontStack = 0;
+				iiSEM_renderAs_simpleHtml__pushFontStack(&fontStack[0], font, &lnFontStack, sizeof(fontStack) / sizeof(fontStack[0]));
+
+
+			//////////
 			// Render through each line
 			//////
 				for (line = sem->line_top; line; line = line->ll.nextLine)
 				{
+					// Iterate through each line
 					lnStartHeight	= lnHeight;
 					lnStartWidth	= lnWidth;
 					for (comp = line->compilerInfo->firstComp; comp; comp = comp->ll.nextComp)
@@ -2987,7 +3012,7 @@ renderAsOnlyText:
 								if (comp->iCat == _ICAT_SEM_HTML_ATTRIBUTES)
 								{
 									// Has attributes
-									for ( ; comp; comp = comp->ll.nextComp)
+									for (llFontChange = false; comp; comp = comp->ll.nextComp)
 									{
 										// Make sure the pattern needed exists
 										compNext	= iComps_getNth(comp);
@@ -3015,9 +3040,11 @@ renderAsOnlyText:
 												break;
 
 											case _ICODE_SEM_HTML_NAME:
+												llFontChange = true;
 												break;
 
 											case _ICODE_SEM_HTML_SIZE:
+												llFontChange = true;
 												break;
 										}
 									}
@@ -3028,6 +3055,22 @@ renderAsOnlyText:
 										// Adjust to the new height
 										llZoomed = iiSEM_renderAs_simpleHtml__applyZoom(obj, &lnWidth, &lnHeight);
 										if (!iiSEM_renderAs_simpleHtml__createBmp(&bmp, obj->bmp, lnWidth, lnHeight))
+										{
+											// Memory error
+											lnPixelsRendered = _ERROR_OUT_OF_MEMORY;
+											goto error_exit;
+										}
+									}
+
+									// Get the new default font if we need
+									if (llFontChange)
+									{
+										// Create the font
+										font = iFont_create(lcFontName, lnFontSize, lnFontWeight, lnFontItalics, lnFontUnderline);
+
+										// Add it to the stack
+										if (lnFontStack == 1)
+											fontStack[0] = font;	// Replace the first/main entry created above
 									}
 
 								} else {
@@ -3072,6 +3115,7 @@ renderAsOnlyText:
 
 		}
 
+error_exit:
 
 		// Indicate how many pixels were rendered
 		return(lnPixelsRendered);
@@ -3132,7 +3176,7 @@ renderAsOnlyText:
 // Applies a zoom factor to the indicated values
 //
 //////
-	bool iiSEM_renderAs_simpleHtml__applyZoom(SObject* obj, s32* tnWidth, s32* tnHeight, s32 tnUnzoomedWidth, s32 tnUnzoomedHeight)
+	bool iiSEM_renderAs_simpleHtml__applyZoom(SObject* obj, s32* tnWidth, s32* tnHeight)
 	{
 		bool		llZoomed;
 		f64			lfZoom;
@@ -3168,15 +3212,15 @@ renderAsOnlyText:
 // Creates the bitmap based on the size
 //
 //////
-	bool iiSEM_renderAs_simpleHtml__createBmp(SBitmap** bmpp, SBitmap* bmpObj, s32 tnWidth, s32 tnHeight)
+	bool iiSEM_renderAs_simpleHtml__createBmp(SBitmap** bmpOld, SBitmap* bmpObj, s32 tnWidth, s32 tnHeight)
 	{
 		SBitmap* bmp;
 
 
 		// If there's already a bitmap and the sizes are different
-		bmp = *bmp;
+		bmp = *bmpOld;
 		if (bmp && (bmp != bmpObj) && (bmp->bi.biWidth != tnWidth || bmp->bi.biHeight != tnHeight))
-			iBmp_delete(bmpp, true, true);
+			iBmp_delete(bmpOld, true, true);
 
 		// Create the bitmap
 		if (bmpObj->bi.biWidth == tnWidth && bmpObj->bi.biHeight == tnHeight)
@@ -3192,20 +3236,95 @@ renderAsOnlyText:
 		}
 
 		// Make sure we have a valid bitmap
-		if (!bmp || !bmp->bi || bmp->bi.biWidth != tnWidth || bmp->bi.biHeight)
+		if (!bmp || bmp->bi.biWidth != tnWidth || bmp->bi.biHeight)
 		{
 			// Delete the bitmap (if it was partially created)
 			if (bmp != bmpObj)
 				iBmp_delete(&bmp, true, true);
 
 			// Indicate failure
-			*bmpp = NULL;
+			*bmpOld = NULL;
 			return(false);
+
+		} else {
+			// Indicate success
+			*bmpOld = bmp;
+			return(true);
+		}
+	}
+
+
+
+
+//////////
+//
+// Create a font and add it to the list of fonts we've created for this render
+//
+//////
+	SFont* iSEM_renderAs_simpleHtml__addFont(SFont* fontsCreated[], s32* tnFontsCreated, u8* tcFontName, s32 tnFontSize, s32 tnFontWeight, s32 tnFontItalics, s32 tnFontUnderline)
+	{
+		s32		lnI;
+		SFont*	font;
+
+
+		// Search to see if the font already exists
+		for (lnI = 0; lnI < *tnFontsCreated; lnI++)
+		{
+			// Grab the font as a pointer
+			font = fontsCreated[lnI];
+
+			// Is this a duplicate?
+			if (iDatum_compare(&font->name, tcFontName, -1) && font->_size == tnFontSize && font->_weight == tnFontWeight && font->_italics == tnFontItalics && font->_underline == tnFontUnderline)
+				return(font);		// This is a match
 		}
 
-		// Indicate success
-		*bmpp = bmp;
-		return(true);
+		// Create the font
+		font = iFont_create(tcFontName, tnFontSize, tnFontWeight, tnFontItalics, tnFontUnderline);
+		if (font)
+		{
+			// Add it to the list of fonts we've used
+			fontsCreated[*tnFontsCreated] = font;
+			++*tnFontsCreated;
+		}
+
+		// Indicate success or failure
+		return(font);
+	}
+
+
+
+
+//////////
+//
+// Push the font onto stack
+//
+//////
+	void iiSEM_renderAs_simpleHtml__pushFontStack(SFont* fontStack[], SFont* font, s32* tnFontStack, s32 tnFontStackSize)
+	{
+		// Are we still within the valid space?
+		if (*tnFontStack < tnFontStackSize)
+			fontStack[*tnFontStack] = font;		// Push
+
+		// Point to the next slot
+		++*tnFontStack;							// Note:  This stack may grow well beyond its physical size.  In such a case it will use the maximum entry repeatedly.
+	}
+
+
+
+
+//////////
+//
+// Pop the font onto stack
+//
+//////
+	SFont* iiSEM_renderAs_simpleHtml__popFontStack(SFont* fontStack[], SFont* font, s32* tnFontStack, s32 tnFontStackSize)
+	{
+		// Decrease the stack pointer
+		if (tnFontStack > 0)
+			--*tnFontStack;
+
+		// Grab the font (or the maximum font if we're too deep
+		return(fontStack[min(*tnFontStack, tnFontStackSize - 1)]);
 	}
 
 
