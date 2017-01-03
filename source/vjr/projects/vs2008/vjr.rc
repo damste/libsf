@@ -79,7 +79,7 @@ FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     ICON            128,IDC_STATIC,14,14,20,20
     LTEXT           "Visual FreePro, Jr. v0.10",IDC_STATIC,42,14,114,8,SS_NOPREFIX
-    LTEXT           "Copyright (C) 2014",IDC_STATIC,42,26,114,8
+    LTEXT           "Copyright (c) 2014-2017",IDC_STATIC,42,26,114,8
     DEFPUSHBUTTON   "OK",IDOK,113,41,50,14,WS_GROUP
 END
 

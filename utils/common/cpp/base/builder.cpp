@@ -19,7 +19,7 @@
 //
 //////
 // Version 0.10
-// Copyright (c) 2014 by Rick C. Hodgin
+// Copyright (c) 2014-2017 by Rick C. Hodgin
 //////
 // Last update:
 //     Aug.02.2014
