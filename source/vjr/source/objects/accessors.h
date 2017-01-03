@@ -2729,6 +2729,7 @@ struct SBasePropMap;
 		{	_INDEX_SELTEXT,						0, 0, 0 },
 		{	_INDEX_SPECIALEFFECT,				0, 0, 0 },
 		{	_INDEX_STATUSBARTEXT,				0, 0, 0 },
+		{	_INDEX_STYLE,						0, 0, 0 },
 		{	_INDEX_TABINDEX,					0, 0, 0 },
 		{	_INDEX_TABSTOP,						0, 0, 0 },
 		{	_INDEX_TAG,							0, 0, 0 },
