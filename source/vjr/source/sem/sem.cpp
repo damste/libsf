@@ -2929,11 +2929,11 @@ renderAsOnlyText:
 	{
 		bool		llZoomed, llNumeric, llAlpha, llFontChange;
 		u32			lnPixelsRendered;
-		s32			lnWidth, lnHeight, lnScrollX, lnScrollY, lnStartHeight, lnStartWidth;
+		s32			lnX, lnY, lnLastHeight, lnWidth, lnHeight, lnScrollX, lnScrollY, lnStartHeight, lnStartWidth;
 		s32			lnFontSize, lnFontWeight, lnFontItalics, lnFontUnderline, lnFontStack, lnFontsCreated;
 		f64			lfZoom;
 		SBgra		color, bgcolor;
-		RECT		lrc;
+		RECT		lrc, lrc2;
 		u8*			lcFontName;
 		SBitmap*	bmp;
 		SComp*		comp;
@@ -2999,11 +2999,13 @@ _asm int 3;
 			//////////
 			// Render through each line
 			//////
+				lnLastHeight = 0;
 				for (line = sem->line_top; line; line = line->ll.nextLine)
 				{
 					// Iterate through each line
 					lnStartHeight	= lnHeight;
 					lnStartWidth	= lnWidth;
+					llFontChange	= false;
 					for (comp = line->compilerInfo->firstComp; comp; comp = comp->ll.nextComp)
 					{
 						// Is it an html tag?
@@ -3051,30 +3053,6 @@ _asm int 3;
 										}
 									}
 
-									// Adjust the width and height if specified to do so
-									if (lnHeight != lnStartHeight && lnWidth != lnStartWidth)
-									{
-										// Adjust to the new height
-										llZoomed = iiSEM_renderAs_simpleHtml__applyZoom(obj, &lnWidth, &lnHeight);
-										if (!iiSEM_renderAs_simpleHtml__createBmp(&bmp, obj->bmp, lnWidth, lnHeight))
-										{
-											// Memory error
-											lnPixelsRendered = _ERROR_OUT_OF_MEMORY;
-											goto error_exit;
-										}
-									}
-
-									// Get the new default font if we need
-									if (llFontChange)
-									{
-										// Create the font
-										font = iFont_create(lcFontName, lnFontSize, lnFontWeight, lnFontItalics, lnFontUnderline);
-
-										// Add it to the stack
-										if (lnFontStack == 1)
-											fontStack[0] = font;	// Replace the first/main entry created above
-									}
-
 								} else {
 									// Ignore this tag
 									// No code
@@ -3082,37 +3060,128 @@ _asm int 3;
 								break;
 
 							case _ICODE_SEM_HTML_HR:
+								// Moving to the next row, drawing a horizontal line, and then moving to the next row
+								break;
 							case _ICODE_SEM_HTML_BR:
+								// Moving to the next row
+								lnY += lnLastHeight;
+								lnX = 0;
+								break;
 							case _ICODE_SEM_HTML_FONT:
+								// Setting font parameters
+								break;
 							case _ICODE_SEM_HTML_TT:
-							case _ICODE_SEM_HTML_TABLE:
-							case _ICODE_SEM_HTML_TR:
-							case _ICODE_SEM_HTML_TD:
+								// Switching to a monochrome font in the current size
+								break;
+
+// 							case _ICODE_SEM_HTML_TABLE:
+// 							case _ICODE_SEM_HTML_TR:
+// 							case _ICODE_SEM_HTML_TD:
+//								// Need to spawn off a secondary processor for this one, to determine its size in the first step, to render in the second step, and then redraw here in the third step
+// 								break;
+
 							case _ICODE_SEM_HTML_B:
+								// Turning on bold
+								break;
 							case _ICODE_SEM_HTML_I:
+								// Turning on italic
+								break;
 							case _ICODE_SEM_HTML_U:
+								// Turning on underline
+								break;
 							case _ICODE_SEM_HTML_W:
+								// Setting a hard new width for the HTML render
+								break;
 							case _ICODE_SEM_HTML_H:
+								// Setting a hard new height for the HTML render
+								break;
 							case _ICODE_SEM_HTML_X:
+								// Repositioning to a hard X coordinate
+								break;
 							case _ICODE_SEM_HTML_Y:
+								// Repositioning to a hard Y coordinate
+								break;
 							case _ICODE_SEM_HTML_BGCOLOR:
+								// Setting a hard background color
+								break;
 							case _ICODE_SEM_HTML_COLOR:
+								// Setting a hard foreground color
+								break;
 							case _ICODE_SEM_HTML_ALIGN:
+								// Setting a hard horizontal alignment mode
+								break;
 							case _ICODE_SEM_HTML_VALIGN:
+								// Setting a hard vertical alignment mode
+								break;
 							case _ICODE_SEM_HTML_HEIGHT:
+								// Setting a hard new height for the HTML render
+								break;
 							case _ICODE_SEM_HTML_WIDTH:
+								// Setting a hard new width for the HTML render
+								break;
 							case _ICODE_SEM_HTML_NAME:
+								// Setting a hard new font name
+								break;
 							case _ICODE_SEM_HTML_SIZE:
+								// Setting a hard new font size
 								break;
 
 							default:
+								// It's something to render
+								SelectObject(bmp->hdc, font->hfont);
+								SetTextColor(bmp->hdc, RGB(color.red, color.grn, color.blu));
+								SetBkColor(bmp->hdc, RGB(bgcolor.red, bgcolor.grn, bgcolor.blu));
+								SetBkMode(bmp->hdc, OPAQUE);
+
+								// Calculate rectangle
+								SetRect(&lrc, 0, 0, 0, 0);
+								DrawText(bmp->hdc, comp->line->sourceCode->data + comp->start, comp->length, &lrc, DT_LEFT | DT_CALCRECT);
+
+								// Render
+								SetRect(&lrc2, lnX, lnY, lnX + lrc.right - lrc.left, lnY + lrc.bottom - lrc.top);
+								DrawText(bmp->hdc, comp->line->sourceCode->data + comp->start, comp->length, &lrc2, DT_LEFT);
+
+								// Adjust the position by the size
+								lnX				+= lrc.right - lrc.left;
+								lnLastHeight	= lrc.bottom - lrc.top;
 								break;
 						}
 
-						// Are we done?
-						if (line == sem->lastLine)
-							break;
+						// Adjust the width and height if specified to do so
+						if (lnHeight != lnStartHeight && lnWidth != lnStartWidth)
+						{
+							// Adjust to the new height
+							llZoomed = iiSEM_renderAs_simpleHtml__applyZoom(obj, &lnWidth, &lnHeight);
+							if (!iiSEM_renderAs_simpleHtml__createBmp(&bmp, obj->bmp, lnWidth, lnHeight))
+							{
+								// Memory error
+								lnPixelsRendered = _ERROR_OUT_OF_MEMORY;
+								goto error_exit;
+							}
+
+							// Reset our variables
+							lnStartHeight	= lnHeight;
+							lnStartWidth	= lnWidth;
+						}
+
+						// Get the new default font if we need
+						if (llFontChange)
+						{
+							// Create the font
+							font = iFont_create(lcFontName, lnFontSize, lnFontWeight, lnFontItalics, lnFontUnderline);
+
+							// Add it to the stack
+							if (lnFontStack == 1)
+								fontStack[0] = font;	// Replace the first/main entry created above
+
+							// Indicate our font has not yet again changed
+							llFontChange = false;
+						}
 					}
+
+					// Are we done?
+					if (line == sem->lastLine)
+						break;
 				}
 
 		}

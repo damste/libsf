@@ -426,17 +426,36 @@ extern "C"
 		//////
 			s32 baser_render_html(HWND hwnd, s32 left, s32 top, s32 right, s32 bottom, s8* tcHtmlContent, s32 tnHtmlContentLength)
 			{
+				SDatum		html;
 				SBaserHwnd*	bwin;
+				SEM*		sem;
 
 
 				// Make sure our environment is sane
-				if (hwnd && IsWindow(hwnd))
+				if (hwnd && IsWindow(hwnd) && tcHtmlContent && tnHtmlContentLength)
 				{
 
 					//////////
 					// Lock
 					//////
 						EnterCriticalSection(&cs_baser_hwnd);
+
+
+						//////////
+						// Create the html
+						//////
+							html.data	= tcHtmlContent;
+							html.length	= tnHtmlContentLength;
+							sem			= iSEM_allocate(false);
+							if (!iSEM_load_fromMemory(NULL, sem, &html, false, false))
+							{
+								// Allocate
+								iSEM_delete(&sem, true);
+
+								// Indicate failure
+								return(-1);
+							}
+
 
 
 						//////////
@@ -493,6 +512,7 @@ extern "C"
 						//////
 							bwin->isUsed		= true;
 							bwin->hwnd			= hwnd;
+							bwin->sem			= sem;
 							bwin->rc.left		= left;
 							bwin->rc.top		= top;
 							bwin->rc.right		= right;
