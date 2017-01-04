@@ -110,6 +110,8 @@
 		iVariable_createDefaultValues();
 		iVariable_createPropsMaster();
 		iVjr_init_createConstants();
+		iVjr_init_criticalBuilders();
+		iVjr_init_criticalFonts();
 		iNode_init();
 
 		// Initialize our critical section
@@ -140,20 +142,8 @@
 		bmpArrowLr		= iBmp_rawLoad(cgc_arrowLrBmp);
 
 		// Initialize our builders
-		iBuilder_createAndInitialize(&gWindows,	-1);
-		iBuilder_createAndInitialize(&gFonts,	-1);
-
-		// Default font
-		gsFontDefault				= iFont_create(cgcFontName_default,				10,	FW_NORMAL,	0, 0);
-		gsFontDefault9				= iFont_create(cgcFontName_default,				9,	FW_NORMAL,	0, 0);
-		gsFontDefaultBold			= iFont_create(cgcFontName_default,				10,	FW_BOLD,	0, 0);
-		gsFontDefaultItalic8		= iFont_create(cgcFontName_default,				8,	FW_NORMAL,	1, 0);
-		gsFontDefaultFixedPoint9	= iFont_create(cgcFontName_defaultFixed,		9,	FW_NORMAL,	0, 0);
-		gsFontDefaultFixedPoint10	= iFont_create(cgcFontName_defaultFixed,		10,	FW_NORMAL,	0, 0);
-		gsWindowTitleBarFont		= iFont_create(cgcFontName_windowTitleBar,		11,	FW_NORMAL,	0, 0);
-		gsWindowTitleBarFontSubform	= iFont_create(cgcFontName_subwindowTitleBar,	10,	FW_NORMAL,	0, 0);
-		gsFontDefaultTooltip		= iFont_create(cgcFontName_defaultTooltip,		9,	FW_BOLD,	0, 0);
-		gsFontCask					= iFont_create(cgcFontName_cask,				20, FW_BOLD,	0, 0);
+		iVjr_init_criticalBuilders();
+		iVjr_init_criticalFonts();
 
 		// Initialize the sound system
 		if (tlInitializeSound)
@@ -591,6 +581,43 @@
 				break;
 		}
 		return(DefWindowProc(hwnd, msg, w, l));
+	}
+
+
+
+
+//////////
+//
+// Called to initialize critical builders used in the system
+//
+//////
+	void iVjr_init_criticalBuilders(void)
+	{
+		iBuilder_createAndInitialize(&gWindows,	-1);
+		iBuilder_createAndInitialize(&gFonts,	-1);
+	}
+
+
+
+
+//////////
+//
+// Called to initialize the critical fonts used in the system
+//
+//////
+	void iVjr_init_criticalFonts(void)
+	{
+		// Default font
+		gsFontDefault				= iFont_create(cgcFontName_default,				10,	FW_NORMAL,	0, 0);
+		gsFontDefault9				= iFont_create(cgcFontName_default,				9,	FW_NORMAL,	0, 0);
+		gsFontDefaultBold			= iFont_create(cgcFontName_default,				10,	FW_BOLD,	0, 0);
+		gsFontDefaultItalic8		= iFont_create(cgcFontName_default,				8,	FW_NORMAL,	1, 0);
+		gsFontDefaultFixedPoint9	= iFont_create(cgcFontName_defaultFixed,		9,	FW_NORMAL,	0, 0);
+		gsFontDefaultFixedPoint10	= iFont_create(cgcFontName_defaultFixed,		10,	FW_NORMAL,	0, 0);
+		gsWindowTitleBarFont		= iFont_create(cgcFontName_windowTitleBar,		11,	FW_NORMAL,	0, 0);
+		gsWindowTitleBarFontSubform	= iFont_create(cgcFontName_subwindowTitleBar,	10,	FW_NORMAL,	0, 0);
+		gsFontDefaultTooltip		= iFont_create(cgcFontName_defaultTooltip,		9,	FW_BOLD,	0, 0);
+		gsFontCask					= iFont_create(cgcFontName_cask,				20, FW_BOLD,	0, 0);
 	}
 
 

@@ -2947,6 +2947,8 @@ renderAsOnlyText:
 
 
 		// Make sure the environment is sane
+// TODO:  Working here
+_asm int 3;
 		lnPixelsRendered = 0;
 		if (sem && sem->firstLine && sem->lastLine && obj)
 		{

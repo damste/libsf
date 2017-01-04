@@ -1856,7 +1856,7 @@
 //////
 	bool iEngine_raise_event(u32 tnEventId, SWindow* win, SObject* obj, void* p)
 	{
-		if (obj)
+		if (win && obj)
 		{
 			if (tnEventId < 0 || tnEventId > _EVENT_MAX_COUNT)
 			{

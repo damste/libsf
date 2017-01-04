@@ -185,7 +185,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\baser.def"
+				RelativePath="..\baser.def"
 				>
 			</File>
 			<File
