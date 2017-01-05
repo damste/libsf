@@ -3735,6 +3735,49 @@ finished:
 		return(atof(buffer));
 	}
 
+	// Extract out the content as a datum, or potentially create a new datum, or re-populate an old datum
+	// Note:  If they are not creating a copy, they must provide the SDatum* to use
+	SDatum* iComps_getAs_datum(SComp* comp, SDatum* useDatum, bool tlCreateACopy)
+	{
+		s8*		start;
+		SDatum* newDatum;
+
+
+		// Make sure our environment is sane
+		if (comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data)
+		{
+			// Grab the starting point and length
+			start = comp->line->sourceCode->data + comp->start;
+
+			// Use our datum if it exists
+			newDatum = ((useDatum) ? useDatum : NULL);
+
+			// Are we creating a copy?
+			if (tlCreateACopy)
+			{
+				// Create a full copy
+				if (!newDatum)		newDatum = iDatum_allocate(start, comp->length);		// Create a new datum copy
+				else				iDatum_duplicate(newDatum, start, comp->length);		// Populate into the existing datum
+
+			} else {
+				// Just a reference to it
+				if (newDatum)
+				{
+					// Reference
+					newDatum->data		= start;
+					newDatum->length	= comp->length;
+				}
+			}
+
+		} else {
+			// Invalid environment
+			newDatum = NULL;
+		}
+
+		// Indicate our result
+		return(newDatum);
+	}
+
 	// Note:  The name is only in scope so long as either comp exists (if valid), or *varSys2015 exists if comp was not valid
 	// Note:  If comp was not valid, and varSys2015 was provided, *varSys2015 must be explicitly deleted at some point
 	SDatum* iiComps_populateAs_datum(SDatum* datum, SComp* comp, SVariable** varSys2015)
@@ -3746,13 +3789,13 @@ finished:
 			if (comp && comp->line && comp->line->sourceCode)
 			{
 				// Store the component's name
-				datum->data_cs8	= comp->line->sourceCode->data_cs8 + comp->start;
+				datum->data_cs8		= comp->line->sourceCode->data_cs8 + comp->start;
 				datum->length		= comp->length;
 
 			} else if (varSys2015) {
 				// Create a unique name
 				*varSys2015			= iFunction_sys2015(0, 0);
-				datum->data_cs8	= (*varSys2015)->value.data_cs8;
+				datum->data_cs8		= (*varSys2015)->value.data_cs8;
 				datum->length		= (*varSys2015)->value.length;
 			}
 		}

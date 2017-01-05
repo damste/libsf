@@ -2927,7 +2927,7 @@ renderAsOnlyText:
 	// Returns number of pixels rendered
 	u32 iSEM_renderAs_simpleHtml(SEM* sem, SObject* obj, bool tlRenderCursorline)
 	{
-		bool		llZoomed, llNumeric, llAlpha, llFontChange;
+		bool		llZoomed, llNumeric, llAlpha, llFontChange, llFallThru;
 		u32			lnPixelsRendered;
 		s32			lnX, lnY, lnLastHeight, lnWidth, lnHeight, lnScrollX, lnScrollY, lnStartHeight, lnStartWidth;
 		s32			lnFontSize, lnFontWeight, lnFontItalics, lnFontUnderline, lnFontStack, lnFontsCreated;
@@ -2936,6 +2936,7 @@ renderAsOnlyText:
 		RECT		lrc, lrc2;
 		u8*			lcFontName;
 		SBitmap*	bmp;
+		SDatum*		fontName;
 		SComp*		comp;
 		SComp*		comp2;
 		SComp*		compNext;
@@ -2999,7 +3000,8 @@ _asm int 3;
 			//////////
 			// Render through each line
 			//////
-				lnLastHeight = 0;
+				lnLastHeight	= 0;
+				fontName		= NULL;
 				for (line = sem->line_top; line; line = line->ll.nextLine)
 				{
 					// Iterate through each line
@@ -3025,6 +3027,7 @@ _asm int 3;
 										llAlpha		= (compNext && compNext->iCode == _ICODE_EQUAL_SIGN && compNext2 && (compNext2->iCode == _ICODE_DOUBLE_QUOTED_TEXT || compNext2->iCode == _ICODE_SINGLE_QUOTED_TEXT));
 
 										// html only allows certain attributes
+										llFallThru = false;
 										switch (comp->iCode)
 										{
 											case _ICODE_SEM_HTML_BGCOLOR:
@@ -3044,13 +3047,20 @@ _asm int 3;
 												break;
 
 											case _ICODE_SEM_HTML_NAME:
-												llFontChange = true;
+// TODO:  working here ... not quite sure how I want to handle this:
+												if ((fontName = iComps_getAs_datum(comp, fontName)))
+													lcFontName	= fontName->data_u8;
 												break;
 
 											case _ICODE_SEM_HTML_SIZE:
-												llFontChange = true;
+												lnFontSize = iComps_getAs_s32(comp);
+												break;
+
+											default:
+												llFallThru = true;
 												break;
 										}
+										llFontChange |= (!llFallThru);
 									}
 
 								} else {

@@ -391,7 +391,7 @@
 	cs8			cgcIncludePragma[]								= "#include";
 	cs8			cgcUndefPragma[]								= "#undef";
 
-	// For sem html attribute names (see iComps_fixup_htmlGroupings() for information on how to decode tags like <b>)
+	// For sem html and attribute names (see iComps_fixup_htmlGroupings() for information on how to decode tags like <b>)
 	cs8			cgc_sem_html_bgcolor[]							= "bgcolor";
 	cs8			cgc_sem_html_color[]							= "color";
 	cs8			cgc_sem_html_valign[]							= "valign";
