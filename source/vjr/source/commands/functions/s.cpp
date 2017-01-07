@@ -1645,15 +1645,16 @@
 //////////
 //
 // Function: SYS()
-// SYS function support (Dec.27.2014 incomplete)
+// SYS function support (incomplete)
 //
 ///////
-// Version 0.58
+// Version 0.59
 // Last update:
-//     Oct.07.2016
+//     Jan.07.2017
 //////
 // Change log:
-//	   Oct.07.2016 - SYS(2007) added CRC16 by Stefano D'Amico, Jan.07.2016 CRC32
+//	   Jan.07.2017 - SYS(2008) added SHA-1 by Rick C. Hodgin
+//	   Oct.07.2016 - SYS(2007) added CRC16 by Stefano D'Amico, Jan.07.2017 CRC32
 //	   Sep.13.2015 - SYS(11) added by Stefano D'Amico
 //	   Apr.08.2015 - SYS(10) added by Stefano D'Amico
 //	   Apr.08.2015 - SYS(2) added by Stefano D'Amico
