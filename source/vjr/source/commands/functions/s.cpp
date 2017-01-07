@@ -1728,52 +1728,14 @@
 			{
 				// SYS(1) -- Current system date as a Julian day number character string
 				case 1:
-					//////////
-					// Get the current time
-					//////
-						if (_settings)		iTime_getLocalOrSystem(&lst, propGet_settings_TimeLocal(_settings));
-						else				GetLocalTime(&lst);
-
-
-					//////////
-					// Convert to julian
-					//////
-						iiDateMath_get_julian_from_YyyyMmDd(&lfJulian, lst.wYear, lst.wMonth, lst.wDay);
-						sprintf(buffer, "%d\0", (s32)lfJulian);
-
-
-					//////////
-					// Create our result and exit to report any errors
-					//////
-						result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, (cs8*)buffer, (u32)strlen(buffer), false);
-						goto clean_exit;
+					#include "sys_1.h"
+					break;
 
 
 				// SYS(2) -- Number of seconds elapsed since midnight
 				case 2:
-					//////////
-					// Grab seconds()
-					//////
-						function_seconds(rpar);
-						result = rpar->rp[0];
-						if (result)
-						{
-							// Validation (should not be needed, but just to be safe)
-							if (result->varType == _VAR_TYPE_F64)
-							{
-								// Convert f64 to s64
-								*result->value.data_s64	= (s64)*result->value.data_f64;
-								result->varType			= _VAR_TYPE_S64;
-
-								// Report any errors
-								goto clean_exit;
-
-							} else {
-								// This should never happen
-								// It indicates refactoring was done on function_seconds() to change the size of the return value from f64 to something else
-								debug_break;
-							}
-						}
+					#include "sys_2.h"
+					break;
 
 
 				//////////
@@ -1784,154 +1746,21 @@
 
 				// SYS(5) -- Equivalent of JUSTDRIVE(CURDIR())
 				case 5:
-					//////////
-					// Get the current directory and populate
-					//////
-						memset(curdir, 0, sizeof(curdir));
-						GetCurrentDirectory(_MAX_PATH, curdir);
-						result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, curdir, 2, false);
-						goto clean_exit;
+					#include "sys_5.h"
+					break;
 
 
 				// SYS(10) -- Julian string from day number
 				case 10:
-					//////////
-					// Parameter 1 must be numeric
-					//////
-						if (!iVariable_isValid(varP1) || !iVariable_isTypeNumeric(varP1))
-						{
-							iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varP1), false);
-							return;
-						}
-
-
-					//////////
-					// Grab julian number
-					//////
-						lfJulian = iiVariable_getAs_f32(varP1, false, &error, &errorNum);
-						if (error)
-						{
-							iError_report_byNumber(errorNum, iVariable_get_relatedComp(varP1), false);
-							return;
-						}
-
-
-					//////////
-					// Must be in the range -- Sep.14.1752 to Dec.31.9999
-					//////
-						if (lfJulian < 2361222/*Sep.14.1752*/ || lfJulian > 5373484/*Dec.31.9999*/)
-						{
-							// For these values, return a blank date
-							result = iVariable_create(_VAR_TYPE_DATE, NULL, true);
-							if (result)
-								memset(result->value.data_s8, 32, result->value.length);	// Make it all spaces
-
-							// Check our result
-							goto clean_exit;
-						}
-
-
-					//////////
-					// Translate into standard year, month, day
-					//////
-						iiDateMath_get_YyyyMmDd_from_julian((u32)lfJulian, &lnYear, &lnMonth, &lnDay);
-
-
-					//////////
-					// Convert julian date into a VJr date variable
-					//////
-						// Date is stored as YYYYMMDD
-						iiDateMath_get_YYYYMMDD_from_YyyyMmDd(buffer, lnYear, lnMonth, lnDay);
-						varTemp = iVariable_createAndPopulate_byText(_VAR_TYPE_DATE, buffer, 8, false);
-						if (!varTemp)
-						{
-							// Fatal error
-							iError_report_byNumber(_ERROR_INTERNAL_ERROR, NULL, false);
-							return;
-						}
-
-
-					//////////
-					// Create and populate the return variable
-					//////
-						result = iVariable_convertForDisplay(varTemp);
-
-
-					//////////
-					// Clean house and exit to report any errors
-					//////
-						iVariable_delete(varTemp, true);
-						goto clean_exit;
+					#include "sys_10.h"
+					break;
 
 
 				// SYS(11) -- Julian Day Number
 				case 11:
 // TODO:  We should allow other date-related types for varP1
-					//////////
-					// Parameter 1 must be date or char
-					//////
-						if (!iVariable_isValid(varP1) || !(iVariable_isTypeCharacter(varP1) || iVariable_isTypeDate(varP1) || iVariable_isTypeDatetime(varP1) || iVariable_isTypeDatetimeX(varP1)))
-						{
-							iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varP1), false);
-							return;
-						}
-
-				
-					//////////
-					// Grab year, month, day
-					//////
-						if (iVariable_isTypeCharacter(varP1))
-						{
-							//////////
-							// Setup the function call variables
-							//////
-								memset(&lsrpar, 0, sizeof(lsrpar));
-							
-
-							//////////
-							// Use common function to extract the date
-							//////
-								ifunction_ctox_common(&lsrpar, varP1, true);
-								if (!lsrpar.rp[0])
-								{
-									iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varP1), false);
-									return;
-								}
-
-
-							//////////
-							// Grab converted date
-							//////
-								varTemp			= lsrpar.rp[0];
-								lsrpar.rp[0]	= NULL;
-
-						} else {
-							// Use date
-							varTemp = varP1;
-						}
-
-
-					//////////
-					// Convert to julian
-					//////
-						// Break out
-						if (iVariable_isTypeDatetime(varTemp))			iiDateMath_get_YyyyMmDd_from_julian					(varTemp->value.data_dt->julian,			&lnYear, &lnMonth, &lnDay);
-						else if (iVariable_isTypeDatetimeX(varTemp))	iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds	(varTemp->value.data_dtx->jseconds, NULL,	&lnYear, &lnMonth, &lnDay, NULL, NULL, NULL, NULL, NULL);
-						else /* Date */									iiDateMath_get_YyyyMmDd_from_YYYYMMDD				(varTemp->value.data_u8,					&lnYear, &lnMonth, &lnDay);
-
-						// Get julian
-						iiDateMath_get_julian_from_YyyyMmDd(&lfJulian, lnYear, lnMonth, lnDay);
-						sprintf(buffer, "%d\0", (s32)lfJulian);
-
-						// Delete temp (no longer needed)
-						iVariable_delete(varTemp, true);
-
-
-					//////////
-					// Create our result and exit to report any errors
-					//////
-						result = iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, (cs8*)buffer, (u32)strlen(buffer), false);
-						goto clean_exit;
+					#include "sys_11.h"
+					break;
 
 
 				// SYS(2003) -- Equivalent of SUBSTR(CURDIR(), 3, LEN(CURDIR()) - 3) (supresses the drive and backslash final)
@@ -1948,274 +1777,21 @@
 
 				// SYS(2007) -- Checksum Value
 				case 2007:
-					//////////
-					// Parameter 1 must be character (cExpression)
-					//////
-						if (!iVariable_isValid(varP1) || !iVariable_isTypeCharacter(varP1))
-						{
-							iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varP1), false);
-							return;
-						}
-
-
-					//////////
-					// Parameter 2 is optional, but if present...
-					//	Specifies a numeric seed value of 0 that is used to calculate the checksum and is included for backward compatibility.
-					//	Passing a value of -1 for nSeed uses the default system value of 0. 
-					//////
-						lnSeed = 0;
-						if (iVariable_isValid(varP2))
-						{
-							//////////
-							// Since P2 was provided, it must be numeric
-							//////
-								if (!iVariable_isTypeNumeric(varP2))
-								{
-									iError_report_byNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varP2), false);
-									return;
-								}
-
-
-							//////////
-							// Get the seed
-							//////
-								lnSeed = iiVariable_getAs_u32(varP2, false, &error, &errorNum);
-								if (error)
-								{
-									iError_report_byNumber(errorNum, iVariable_get_relatedComp(varP2), false);
-									return;
-								} 
-						}
-
-
-					//////////
-					// Parameter 3 is optional, but if present...
-					//	Set an additional bit value for generating the checksum.
-					//	0 - Calculate checksum based on cExpression parameter using CRC16 checksum algorithm. (Default)
-					//	1 - Calculate checksum based on cExpression parameter using CRC32 checksum algorithm.
-					//////
-						lnFlags = 0;
-						if (iVariable_isValid(varP3))
-						{
-							//////////
-							// Since P3 was provided, it must be numeric
-							//////
-								if (!iVariable_isTypeNumeric(varP3))
-								{
-									iError_report_byNumber(_ERROR_P3_IS_INCORRECT, iVariable_get_relatedComp(varP3), false);
-									return;
-								}
-
-
-							//////////
-							// Get the flag
-							//////
-								lnFlags = iiVariable_getAs_u32(varP3, false, &error, &errorNum);
-								if (error)
-								{
-									iError_report_byNumber(errorNum, iVariable_get_relatedComp(varP3), false);
-									return;
-								} 
-
-						}
-
-
-					//////////
-					// Compute CRC
-					//////
-						if ((lnFlags & 1) == 0)
-						{
-							// Compute CRC16
-							lnSeed	= ((lnSeed == 0) ? 0xffff : lnSeed);
-							lnCRC	= (u32)iFunction_CRC16_CCITT(varP1, lnSeed);
-
-						} else {
-							// Compute CRC32
-							lnCRC	= (u32)iFunction_CRC32(varP1);
-						}
-
-						// Create and populate the result
-						if (!iVariable_setNumeric_toNumericType((result	= iVariable_create(_VAR_TYPE_U32, NULL, true)), NULL, NULL, NULL, (u32*)&lnCRC, NULL, NULL))
-							iError_report_byNumber(_ERROR_OUT_OF_MEMORY, iVariable_get_relatedComp(varP1), false);	
-
-						goto clean_exit;
+					#include "sys_2007.h"
+					break;
 
 
 				// SYS(2008[, nType]) -- SHA-1 value
 				case 2008:
-					//////////
-					// Parameter 1 must be character (cExpression)
-					//////
-						if (!iVariable_isValid(varP1) || !iVariable_isTypeCharacter(varP1))
-						{
-							iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varP1), false);
-							return;
-						}
-
-
-					/////////
-					// Parameter 2 is optional, indicates return value type
-					//////
-						lnType = 0;
-						if (iVariable_isValid(varP2))
-						{
-							// It must be numeric
-							if (!iVariable_isTypeNumeric(varP2))
-							{
-								iError_report_byNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varP2), false);
-								return;
-							}
-
-							// Grab the value
-							lnValue = iiVariable_getAs_s32(varP2, false, &error, &errorNum);
-							if (error)
-							{
-								iError_report_byNumber(errorNum, iVariable_get_relatedComp(varP1), false);
-								return;
-							}
-
-							// If it's valid use it
-							switch (lnValue)
-							{
-								case 0:	// 20-byte binary character
-								case 1:	// 32-bit combined value
-								case 2:	// 64-bit combined value
-									lnType = lnValue;
-									break;
-
-								default:
-									iError_report_byNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varP2), false);
-									return;
-							}
-						}
-
-						// Create a copy of the default/empty SHA-1 output
-						switch (lnType)
-						{
-							case 0:		// 20-byte binary character
-								result = iVariable_copy(cvarEmptySha1, false);
-								break;
-							case 1:		// 32-bit combined value
-								result = iVariable_create(_VAR_TYPE_U32, NULL, true);
-								break;
-							case 2:		// 64-bit combined value
-								result = iVariable_create(_VAR_TYPE_U64, NULL, true);
-								break;
-						}
-
-						// Was it created?
-						if (!result)
-						{
-							iError_report_byNumber(_ERROR_OUT_OF_MEMORY, iVariable_get_relatedComp(varP1), false);
-							return;
-
-						}
-
-						// Compute our SHA-1
-						switch (lnType)
-						{
-							case 0:		// 20-byte binary character
-								sha1_computeSha1(varP1->value.data_u8, varP1->value.length, result->value.data_u8);
-								break;
-
-							case 1:		// 32-bit combined value
-								*result->value.data_u32 = sha1_computeAs_u32(varP1);
-								break;
-
-							case 2:		// 64-bit combined value
-								*result->value.data_u64 = sha1_computeAs_u64(varP1);
-								break;
-						}
-
-						goto clean_exit;
+					#include "sys_2008.h"
+					break;
 
 
 				// SYS(3)		-- Legal filename
 				// SYS(2015)	-- Unique procedure name
 				case 3:
 				case 2015:
-					// Unique procedure names take on the form YYYYMMDDHHMMSSmmm converted to base-36, prefixed with an underscore
-					if (_settings)		iTime_getLocalOrSystem(&lst, propGet_settings_TimeLocal(_settings));
-					else				GetLocalTime(&lst);
-
-					// Create a single large integer
-					ln2015 =	((s64)lst.wYear		* 10000000000000) +
-								((s64)lst.wMonth	* 100000000000) +
-								((s64)lst.wDay		* 1000000000) +
-								((s64)lst.wHour		* 10000000) +
-								((s64)lst.wMinute	* 100000) +
-								((s64)lst.wSecond	* 1000) +
-								 (s64)lst.wMilliseconds;
-
-					// Optional 2nd and 3rd parameter indicate how many extra prefix and postfix characters to insert
-					if (iVariable_isValid(varP1))
-					{
-						//////////
-						// Since P1 was provided, it must be numeric
-						//////
-							if (!iVariable_isTypeNumeric(varP1))
-							{
-								iError_report_byNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varP1), false);
-								goto clean_exit;
-							}
-
-
-						//////////
-						// Get the prefix width
-						//////
-							lnExtraPrefixWidth = iiVariable_getAs_s32(varP1, false, &error, &errorNum);
-							if (error)
-							{
-								iError_report_byNumber(errorNum, iVariable_get_relatedComp(varP1), false);
-								goto clean_exit;
-							}
-							// Right now, we have lnExtraPrefixWidth
-
-
-						/////////
-						// Did they also provide a 3rd parameter?
-						//////
-							if (iVariable_isValid(varP2))
-							{
-								//////////
-								// Since P2 was provided, it must be numeric
-								//////
-									if (!iVariable_isTypeNumeric(varP2))
-									{
-										iError_report_byNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varP2), false);
-										goto clean_exit;
-									}
-
-
-								//////////
-								// Get the postfix width
-								//////
-									lnExtraPostfixWidth = iiVariable_getAs_s32(varP2, false, &error, &errorNum);
-									if (error)
-									{
-										iError_report_byNumber(errorNum, iVariable_get_relatedComp(varP2), false);
-										goto clean_exit;
-									}
-									// Right now, we have lnExtraPostfixWidth
-
-							} else {
-								// Nope, just assign it to 0
-								lnExtraPostfixWidth = 0;
-							}
-
-					} else {
-						lnExtraPrefixWidth	= 0;
-						lnExtraPostfixWidth	= 0;
-					}
-
-					// Create a variable in base-36 (uses 0..9, A..Z)
-					result = iVariable_createByRadix(ln2015, 36, 1 + lnExtraPrefixWidth, lnExtraPostfixWidth);
-
-					// Prefix with an underscore
-					if (result)
-						result->value.data_u8[lnExtraPrefixWidth] = '_';
-
-					// Right now, the variable looks something like:  _19B2L483
+					#include "sys_2015.h"
 					break;
 
 

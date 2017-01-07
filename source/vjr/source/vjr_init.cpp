@@ -658,8 +658,8 @@
 		lfValue_f64	= 1.0f;		cvarOne_f64				= iVariable_createAndPopulate_byText(_VAR_TYPE_F64, (cu8*)&lfValue_f64, 8, false);
 
 		// SHA-1
-		iDatum_allocateSpace(&cvarEmptySha1->value, 32);
-		memset(cvarEmptySha1->value.data_s8, 0, 32);
+		iDatum_allocateSpace(&cvarEmptySha1->value, 20);
+		memset(cvarEmptySha1->value.data_s8, 0, 20);
 
 		// 2000 blank spaces
 		iDatum_allocateSpace(&cvarSpace2000->value, 2000);
