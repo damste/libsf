@@ -1673,7 +1673,7 @@
 //		2				-- Numeric, returns the number of seconds elapsed since midnight
 //		10				-- Character, returns a Character-type date from a Julian day number
 //		11				-- Character, returns a Character-type Julian day number from a date
-//		2007			-- Numeric, returns CRC16 (ToDo CRC32)
+//		2007			-- Numeric, returns CRC16/CRC32
 //		2015			-- Character, unique procedure name
 //////
 	void function_sys(SReturnsParams* rpar)
@@ -1681,6 +1681,7 @@
 		SVariable*	varIndex	= rpar->ip[0];
 		SVariable*	varP1		= rpar->ip[1];
 		SVariable*	varP2		= rpar->ip[2];
+		SVariable*	varP3		= rpar->ip[3];
 		s32			lnIndex;
 		f32			lfJulian;
 		u32			lnYear, lnMonth, lnDay;
@@ -1688,7 +1689,7 @@
 		s8			curdir[_MAX_PATH];
 		u32			lnExtraPrefixWidth, lnExtraPostfixWidth;
 		s64			ln2015;
-		u32			lnSeed, lnCRC16;
+		u32			lnSeed, lnCRC, lnFlags;
 		SReturnsParams		lsrpar;
 		u32			errorNum;
         bool		error;
@@ -1947,7 +1948,7 @@
 				// SYS(2007) -- Checksum Value
 				case 2007:
 					//////////
-					// Parameter 1 must be character
+					// Parameter 1 must be character (cExpression)
 					//////
 						if (!iVariable_isValid(varP1) || !iVariable_isTypeCharacter(varP1))
 						{
@@ -1964,21 +1965,70 @@
 						lnSeed = 0;
 						if (iVariable_isValid(varP2))
 						{
-							lnSeed = iiVariable_getAs_u32(varP2, false, &error, &errorNum);
-							if (error)
-							{
-								iError_report_byNumber(errorNum, iVariable_get_relatedComp(varP2), false);
-								return;
-							} 
+							//////////
+							// Since P2 was provided, it must be numeric
+							//////
+								if (!iVariable_isTypeNumeric(varP2))
+								{
+									iError_report_byNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varP2), false);
+									return;
+								}
+
+							//////////
+							// Get the seed
+							//////
+								lnSeed = iiVariable_getAs_u32(varP2, false, &error, &errorNum);
+								if (error)
+								{
+									iError_report_byNumber(errorNum, iVariable_get_relatedComp(varP2), false);
+									return;
+								} 
 						}
 
-						// Compute
-						lnSeed	= ((lnSeed == 0) ? 0xffff : lnSeed);
-						lnCRC16	= (u32)iFunction_CRC16_CCITT(varP1, lnSeed);
+					//////////
+					// Parameter 3 is optional, but if present...
+					//	Set an additional bit value for generating the checksum.
+					//	0 - Calculate checksum based on cExpression parameter using CRC16 checksum algorithm. (Default)
+					//	1 - Calculate checksum based on cExpression parameter using CRC32 checksum algorithm.
+					//////
+						lnFlags = 0;
+						if (iVariable_isValid(varP3))
+						{
+							//////////
+							// Since P3 was provided, it must be numeric
+							//////
+								if (!iVariable_isTypeNumeric(varP3))
+								{
+									iError_report_byNumber(_ERROR_P3_IS_INCORRECT, iVariable_get_relatedComp(varP3), false);
+									return;
+								}
 
+							//////////
+							// Get the flag
+							//////
+								lnFlags = iiVariable_getAs_u32(varP3, false, &error, &errorNum);
+								if (error)
+								{
+									iError_report_byNumber(errorNum, iVariable_get_relatedComp(varP3), false);
+									return;
+								} 
+						}
+
+					//////////
+					// Compute CRC
+					//////
+						if ((lnFlags & 1) == 0)
+						{
+							// Compute CRC16
+							lnSeed	= ((lnSeed == 0) ? 0xffff : lnSeed);
+							lnCRC	= (u32)iFunction_CRC16_CCITT(varP1, lnSeed);
+						} else {
+							// Compute CRC32
+							lnCRC	= (u32)iFunction_CRC32(varP1);
+						}
 						// Create and populate the result
-						if (!iVariable_setNumeric_toNumericType((result	= iVariable_create(_VAR_TYPE_S32, NULL, true)), NULL, NULL, NULL, (u32*)&lnCRC16, NULL, NULL))
-							iError_report_byNumber(_ERROR_OUT_OF_MEMORY, iVariable_get_relatedComp(varP1), false);
+						if (!iVariable_setNumeric_toNumericType((result	= iVariable_create(_VAR_TYPE_U32, NULL, true)), NULL, NULL, NULL, (u32*)&lnCRC, NULL, NULL))
+							iError_report_byNumber(_ERROR_OUT_OF_MEMORY, iVariable_get_relatedComp(varP1), false);	
 
 						goto clean_exit;
 
@@ -2148,7 +2198,7 @@ clean_exit:
 
 
 	// Note:  Helper function.
-	//        iFunction_sys2015() is a shortcut function for accessing the oft-used get-unique-procedure-name feature
+	//        CRC16-CCITT algorithm
 	cu16 _iFunction_CRC16_CCITT_polynomial = 0x1021;	// CRC16_CCITT
 	u16 iFunction_CRC16_CCITT(SVariable* varString, u32 tnSeed)
 	{
@@ -2181,6 +2231,51 @@ clean_exit:
 		return(lnCRC ^= 0);
 	}
 
+
+
+	// Note:  Helper function.
+	//        CRC32 algorithm
+	u32 iFunction_CRC32(SVariable* varString)
+	{
+		s8			c;
+		u32			lnCRC;
+		static u32	table[256];
+		static u16	have_table = 0;
+		u32			rem;
+		s32			lnI, lnJ;
+
+		if (have_table == 0) {
+			/* Calculate CRC table. */
+			for (lnI = 0; lnI < 256; lnI++) {
+				rem = lnI;  /* remainder from polynomial division */
+				for (lnJ = 0; lnJ < 8; lnJ++) {
+					if (rem & 1) {
+						rem >>= 1;
+						rem ^= 0xedb88320;
+					} else
+						rem >>= 1;
+				}
+				table[lnI] = rem;
+			}
+			have_table = 1;
+		}
+
+		// Initialize
+		lnCRC = 0;
+		lnCRC = ~lnCRC;
+
+		// Iterate through every character
+		for (lnI = 0; lnI < varString->value.length; lnI++)
+		{
+			// Grab the character
+			c = varString->value.data_s8[lnI];
+			// Apply the algorithm
+			lnCRC = (lnCRC >> 8) ^ table[(lnCRC & 0xff) ^ (s8)c];
+		}
+
+		// Indicate the result
+		return ~lnCRC;
+	}
 
 
 //////////
