@@ -638,6 +638,7 @@
 		// System constants used internally
 		cvarSpace1				= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, cgc_spaceText,	1,	false);
 		cvarEmptyString			= iVariable_createAndPopulate_byText(_VAR_TYPE_CHARACTER, (cu8*)NULL,		0,	false);
+		cvarEmptySha1			= iVariable_create(_VAR_TYPE_CHARACTER, NULL, true);
 		cvarSpace2000			= iVariable_create(_VAR_TYPE_CHARACTER, NULL, true);
 		cvarTrue				= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, iVariable_populate_byBool(true),	1,	false);
 		cvarFalse				= iVariable_createAndPopulate_byText(_VAR_TYPE_LOGICAL, iVariable_populate_byBool(false),	1,	false);
@@ -655,6 +656,10 @@
 		lfValue	= 0.5f;			cvarFiftyPercent		= iVariable_createAndPopulate_byText(_VAR_TYPE_F32, (cu8*)&lfValue,		4, false);
 		lfValue	= 1.0f;			cvarOneHundredPercent	= iVariable_createAndPopulate_byText(_VAR_TYPE_F32, (cu8*)&lfValue,		4, false);
 		lfValue_f64	= 1.0f;		cvarOne_f64				= iVariable_createAndPopulate_byText(_VAR_TYPE_F64, (cu8*)&lfValue_f64, 8, false);
+
+		// SHA-1
+		iDatum_allocateSpace(&cvarEmptySha1->value, 32);
+		memset(cvarEmptySha1->value.data_s8, 0, 32);
 
 		// 2000 blank spaces
 		iDatum_allocateSpace(&cvarSpace2000->value, 2000);

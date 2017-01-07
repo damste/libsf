@@ -1682,7 +1682,7 @@
 		SVariable*	varP1		= rpar->ip[1];
 		SVariable*	varP2		= rpar->ip[2];
 		SVariable*	varP3		= rpar->ip[3];
-		s32			lnIndex;
+		s32			lnIndex, lnValue, lnType;
 		f32			lfJulian;
 		u32			lnYear, lnMonth, lnDay;
 		s8			buffer[64];
@@ -2036,6 +2036,95 @@
 						// Create and populate the result
 						if (!iVariable_setNumeric_toNumericType((result	= iVariable_create(_VAR_TYPE_U32, NULL, true)), NULL, NULL, NULL, (u32*)&lnCRC, NULL, NULL))
 							iError_report_byNumber(_ERROR_OUT_OF_MEMORY, iVariable_get_relatedComp(varP1), false);	
+
+						goto clean_exit;
+
+
+				// SYS(2008[, nType]) -- SHA-1 value
+				case 2008:
+					//////////
+					// Parameter 1 must be character (cExpression)
+					//////
+						if (!iVariable_isValid(varP1) || !iVariable_isTypeCharacter(varP1))
+						{
+							iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varP1), false);
+							return;
+						}
+
+
+					/////////
+					// Parameter 2 is optional, indicates return value type
+					//////
+						lnType = 0;
+						if (iVariable_isValid(varP2))
+						{
+							// It must be numeric
+							if (!iVariable_isTypeNumeric(varP2))
+							{
+								iError_report_byNumber(_ERROR_P2_IS_INCORRECT, iVariable_get_relatedComp(varP2), false);
+								return;
+							}
+
+							// Grab the value
+							lnValue = iiVariable_getAs_s32(varP2, false, &error, &errorNum);
+							if (error)
+							{
+								iError_report_byNumber(errorNum, iVariable_get_relatedComp(varP1), false);
+								return;
+							}
+
+							// If it's valid use it
+							switch (lnValue)
+							{
+								case 0:	// 20-byte binary character
+								case 1:	// 32-bit combined value
+								case 2:	// 64-bit combined value
+									lnType = lnValue;
+									break;
+
+								default:
+									iError_report_byNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varP2), false);
+									return;
+							}
+						}
+
+						// Create a copy of the default/empty SHA-1 output
+						switch (lnType)
+						{
+							case 0:		// 20-byte binary character
+								result = iVariable_copy(cvarEmptySha1, false);
+								break;
+							case 1:		// 32-bit combined value
+								result = iVariable_create(_VAR_TYPE_U32, NULL, true);
+								break;
+							case 2:		// 64-bit combined value
+								result = iVariable_create(_VAR_TYPE_U64, NULL, true);
+								break;
+						}
+
+						// Was it created?
+						if (!result)
+						{
+							iError_report_byNumber(_ERROR_OUT_OF_MEMORY, iVariable_get_relatedComp(varP1), false);
+							return;
+
+						}
+
+						// Compute our SHA-1
+						switch (lnType)
+						{
+							case 0:		// 20-byte binary character
+								sha1_computeSha1(varP1->value.data_u8, varP1->value.length, result->value.data_u8);
+								break;
+
+							case 1:		// 32-bit combined value
+								*result->value.data_u32 = sha1_computeAs_u32(varP1);
+								break;
+
+							case 2:		// 64-bit combined value
+								*result->value.data_u64 = sha1_computeAs_u64(varP1);
+								break;
+						}
 
 						goto clean_exit;
 

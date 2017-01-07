@@ -305,6 +305,7 @@
 	SVariable*			cvarFiftyPercent					= NULL;									// An f32 0.5
 	SVariable*			cvarOneHundredPercent				= NULL;									// An f32 1.0
 	SVariable*			cvarOne_f64							= NULL;									// An f64 1.0, used for html zoom ratios (1.0 = no zoom)
+	SVariable*			cvarEmptySha1						= NULL;									// 20-byte storage for SHA-1 computations
 	SVariable*			cvarSetDateAmerican					= NULL;
 	SVariable*			cvarSetDateAnsi						= NULL;
 	SVariable*			cvarSetDateBritish					= NULL;
