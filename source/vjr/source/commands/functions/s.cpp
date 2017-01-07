@@ -1653,7 +1653,7 @@
 //     Oct.07.2016
 //////
 // Change log:
-//	   Oct.07.2016 - SYS(2007) added by Stefano D'Amico
+//	   Oct.07.2016 - SYS(2007) added CRC16 by Stefano D'Amico, Jan.07.2016 CRC32
 //	   Sep.13.2015 - SYS(11) added by Stefano D'Amico
 //	   Apr.08.2015 - SYS(10) added by Stefano D'Amico
 //	   Apr.08.2015 - SYS(2) added by Stefano D'Amico
@@ -1974,6 +1974,7 @@
 									return;
 								}
 
+
 							//////////
 							// Get the seed
 							//////
@@ -1984,6 +1985,7 @@
 									return;
 								} 
 						}
+
 
 					//////////
 					// Parameter 3 is optional, but if present...
@@ -2003,6 +2005,7 @@
 									return;
 								}
 
+
 							//////////
 							// Get the flag
 							//////
@@ -2012,7 +2015,9 @@
 									iError_report_byNumber(errorNum, iVariable_get_relatedComp(varP3), false);
 									return;
 								} 
+
 						}
+
 
 					//////////
 					// Compute CRC
@@ -2022,10 +2027,12 @@
 							// Compute CRC16
 							lnSeed	= ((lnSeed == 0) ? 0xffff : lnSeed);
 							lnCRC	= (u32)iFunction_CRC16_CCITT(varP1, lnSeed);
+
 						} else {
 							// Compute CRC32
 							lnCRC	= (u32)iFunction_CRC32(varP1);
 						}
+
 						// Create and populate the result
 						if (!iVariable_setNumeric_toNumericType((result	= iVariable_create(_VAR_TYPE_U32, NULL, true)), NULL, NULL, NULL, (u32*)&lnCRC, NULL, NULL))
 							iError_report_byNumber(_ERROR_OUT_OF_MEMORY, iVariable_get_relatedComp(varP1), false);	
@@ -2233,48 +2240,61 @@ clean_exit:
 
 
 
-	// Note:  Helper function.
-	//        CRC32 algorithm
+	// Note:  Helper function for CRC32 algorithm.
+	u32		gcnCrc32_tableData[256];
+	bool	glCrc32_haveTable = false;
 	u32 iFunction_CRC32(SVariable* varString)
 	{
 		s8			c;
-		u32			lnCRC;
-		static u32	table[256];
-		static u16	have_table = 0;
-		u32			rem;
 		s32			lnI, lnJ;
+		u32			lnCRC;
+		u32			lnRemainder;
 
-		if (have_table == 0) {
-			/* Calculate CRC table. */
-			for (lnI = 0; lnI < 256; lnI++) {
-				rem = lnI;  /* remainder from polynomial division */
-				for (lnJ = 0; lnJ < 8; lnJ++) {
-					if (rem & 1) {
-						rem >>= 1;
-						rem ^= 0xedb88320;
-					} else
-						rem >>= 1;
+
+		// On first use, compute the table
+		if (glCrc32_haveTable)
+		{
+			// Calculate CRC table
+			for (lnI = 0; lnI < 256; lnI++)
+			{
+				// Building the remainder from polynomial division
+				lnRemainder = lnI;
+
+				// Process for this byte
+				for (lnJ = 0; lnJ < 8; lnJ++)
+				{
+					if (lnRemainder & 1)
+					{
+						// It's odd
+						lnRemainder >>= 1;
+						lnRemainder ^= 0xedb88320;
+
+					} else {
+						// It's even
+						lnRemainder >>= 1;
+					}
 				}
-				table[lnI] = rem;
+
+				// Store our value
+				gcnCrc32_tableData[lnI] = lnRemainder;
 			}
-			have_table = 1;
+
+			// Raise the flag
+			glCrc32_haveTable = true;
 		}
 
-		// Initialize
-		lnCRC = 0;
-		lnCRC = ~lnCRC;
-
 		// Iterate through every character
-		for (lnI = 0; lnI < varString->value.length; lnI++)
+		for (lnI = 0, lnCRC = -1; lnI < varString->value.length; lnI++)
 		{
 			// Grab the character
 			c = varString->value.data_s8[lnI];
+
 			// Apply the algorithm
-			lnCRC = (lnCRC >> 8) ^ table[(lnCRC & 0xff) ^ (s8)c];
+			lnCRC = (lnCRC >> 8) ^ gcnCrc32_tableData[(lnCRC & 0xff) ^ (s8)c];
 		}
 
 		// Indicate the result
-		return ~lnCRC;
+		return(~lnCRC);
 	}
 
 
