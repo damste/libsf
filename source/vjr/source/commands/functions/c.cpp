@@ -960,7 +960,7 @@
 		SVariable* varString = rpar->ip[0];
 
 		//Return date
-		ifunction_ctox_common(rpar, varString, true);
+		ifunction_ctox_common(rpar, varString, false);
 	}
 
 	void ifunction_ctox_common(SReturnsParams* rpar, SVariable* varCtoxString, bool tlIncludeTime)
@@ -1240,15 +1240,15 @@ debug_break;
 //
 //////
 // Returns:
-//    Datetime data type. CTOT( ) returns a Datetime value
+//    Datetime
 //////
 // Example:
 //    SET DATE MDY
-//    ?CTOD("12/25/15") &&Displays 12-25-2015 00:00:00
-//    ?CTOD("12/25/2015") &&Displays 12-25-2015 00:00:00
-//    ?CTOD("12-25-15") &&Displays 12-25-2015 00:00:00
-//    ?CTOD("12-25-15 12:33:44 AM") &&Displays 12-25-2015 00:33:44
-//    ?CTOD("12-25-15 12:33:44.555") &&Displays 12-25-2015 12:33:44
+//    ? CTOT("12/25/15")				&& Displays 12-25-2015 00:00:00
+//    ? CTOT("12/25/2015")				&& Displays 12-25-2015 00:00:00
+//    ? CTOT("12-25-15")				&& Displays 12-25-2015 00:00:00
+//    ? CTOT("12-25-15 12:33:44 AM")	&& Displays 12-25-2015 00:33:44
+//    ? CTOT("12-25-15 12:33:44.555")	&& Displays 12-25-2015 12:33:44
 //
 //////
 	void function_ctot(SReturnsParams* rpar)
@@ -1257,7 +1257,7 @@ debug_break;
 
 
 		// Return datetime
-		ifunction_ctox_common(rpar, varString, false);
+		ifunction_ctox_common(rpar, varString, true);
 	}
 
 

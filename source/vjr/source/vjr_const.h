@@ -1112,6 +1112,7 @@ typedef SEM**		SEMpp;
 	const u32			_NCSET_DATETIME_MILLISECONDS		= 6;
 	const u32			_NCSET_DIRECT_NATIVE_MEMBERS		= 9;
 	const u32			_NCSET_BOF_IS_ZERO					= 10;
+	const u32			_NCSET_CTOD_CTOT_IS_OPTIMIZED		= 11;
 
 
 //////////

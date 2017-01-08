@@ -1155,11 +1155,17 @@
 
 		// NCSET() specific
 		{ cgc_ncset_alphaisopaque,			13,		false,	_ICODE_NCSETALPHAISOPAQUE,				false,				_ICAT_GENERIC,		&colorSynHi_logical,		true,						null0,					null0,		null0 },
+		{ cgc_ncset_bofIsZero,				9,		false,	_ICODE_NCSETBOFISZERO,					false,				_ICAT_GENERIC,		&colorSynHi_logical,		true,						null0,					null0,		null0 },
 		{ cgc_ncset_ceilingfloor,			12,		false,	_ICODE_NCSETCEILINGFLOOR,				false,				_ICAT_GENERIC,		&colorSynHi_logical,		true,						null0,					null0,		null0 },
+		{ cgc_ncset_ctodctotisoptimized,	19,		false,	_ICODE_NCSETCTODCTOTISOPTIMIZED,		false,				_ICAT_GENERIC,		&colorSynHi_logical,		true,						null0,					null0,		null0 },
 		{ cgc_ncset_datetimemilliseconds,	20,		false,	_ICODE_NCSETDATETIMEMILLISECONDS,		false,				_ICAT_GENERIC,		&colorSynHi_logical,		true,						null0,					null0,		null0 },
 		{ cgc_ncset_optimizetablewrites,	19,		false,	_ICODE_NCSETOPTIMIZETABLEWRITES,		false,				_ICAT_GENERIC,		&colorSynHi_logical,		true,						null0,					null0,		null0 },
 		{ cgc_ncset_optimizevariables,		17,		false,	_ICODE_NCSETOPTIMIZEVARIABLES,			false,				_ICAT_GENERIC,		&colorSynHi_logical,		true,						null0,					null0,		null0 },
 		{ cgc_ncset_signsign2,				9,		false,	_ICODE_NCSETSIGNSIGN2,					false,				_ICAT_GENERIC,		&colorSynHi_logical,		true,						null0,					null0,		null0 },
+		{ cgc_ncset_placeholder1,			12,		false,	_ICODE_NCSETPLACEHOLDER1,				false,				_ICAT_GENERIC,		&colorSynHi_logical,		true,						null0,					null0,		null0 },
+		{ cgc_ncset_placeholder2,			12,		false,	_ICODE_NCSETPLACEHOLDER2,				false,				_ICAT_GENERIC,		&colorSynHi_logical,		true,						null0,					null0,		null0 },
+		{ cgc_ncset_directNativeMembers,	19,		false,	_ICODE_NCSETDIRECTNATIVEMEMBERS,		false,				_ICAT_GENERIC,		&colorSynHi_logical,		true,						null0,					null0,		null0 },
+
 
 		// VXB specific
 		{ cgc__screen,				7,			false,		_ICODE_SCREEN,							false,				_ICAT_GENERIC,		&colorSynHi_variable,		true,						null0,					null0,		null0 },

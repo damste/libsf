@@ -141,7 +141,7 @@
 		SVariable*	varIndex	= rpar->ip[0];
 		SVariable*	varP1		= rpar->ip[1];
 
-		s32					lnIndex, lnIndexProp;
+		s32					lnIndex, lnIndexProp, lnNcsetIter;
 		bool				llEnabled, llNewValue, llFound;
 		SBasePropMap*		baseProp;
 		SAsciiCompSearcher*	asciiComp;
@@ -209,6 +209,10 @@
 						lnIndexProp = _INDEX_SET_NCSET_BOF_IS_ZERO;
 						break;
 
+					case _NCSET_CTOD_CTOT_IS_OPTIMIZED:
+						lnIndexProp = _INDEX_SET_NCSET_BOF_IS_ZERO;
+						break;
+
 					default:
 						// Unrecognized option
 						iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, iVariable_get_relatedComp(varIndex), false);
@@ -221,7 +225,7 @@
 				for (lnIndex = (s32)_INDEX_SET_NCSET_START, baseProp = &gsProps_master[_INDEX_SET_NCSET_START - 1], llFound = false; !llFound && lnIndex <= (s32)_INDEX_SET_NCSET_END; lnIndex++, baseProp++)
 				{
 					// Translate the property _INDEX to its related iCode
-					for (asciiComp = &cgcVxbKeywords[0]; asciiComp->iCode != 0; asciiComp++)
+					for (asciiComp = &cgcVxbKeywords[gnNcsetMin], lnNcsetIter = gnNcsetMin; lnNcsetIter <= gnNcsetMax; asciiComp++, lnNcsetIter++)
 					{
 						// If this is the component which relates to the indicated iCode...
 						if (asciiComp->iCode == baseProp->associated_iCode)
@@ -231,8 +235,8 @@
 							{
 								lnIndexProp	= lnIndex;
 								llFound		= true;
-								break;
 							}
+							break;
 						}
 					}
 				}

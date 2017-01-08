@@ -1219,16 +1219,7 @@
 	const s32       _ICODE_MTDLL                                    = 2165;
 	const s32       _ICODE_MULTILOCKS                               = 2166;
 	const s32		_ICODE_NAMINGCONVENTIONS						= 2306;
-	const s32		_ICODE_NCSETALPHAISOPAQUE						= 2325;
-	const u32		_ICODE_NCSETBOFISZERO							= 2391;
-	const s32		_ICODE_NCSETCEILINGFLOOR						= 2307;
-	const s32		_ICODE_NCSETDATETIMEMILLISECONDS				= 2337;
-	const s32		_ICODE_NCSETOPTIMIZETABLEWRITES					= 2326;
-	const s32		_ICODE_NCSETOPTIMIZEVARIABLES					= 2328;
-	const s32		_ICODE_NCSETSIGNSIGN2							= 2308;
-	const s32		_ICODE_NCSETPLACEHOLDER1						= 2342;
-	const s32		_ICODE_NCSETPLACEHOLDER2						= 2343;
-	const s32		_ICODE_NCSETDIRECTNATIVEMEMBERS					= 2344;
+// Note:  The _ICODE_NCSET_* values are at the end, and must remain sequential in iCode values
 	const s32       _ICODE_NEAR									    = 2167;
 // Note:  This code is not used because _ICODE_ENDFOR is mapped for both "endfor" and "next" keywords
 // 	const s32       _ICODE_NEXT                                     = ;
@@ -1392,7 +1383,28 @@
 	const s32		_ICODE_YMD										= 2324;
 	const s32		_ICODE_YN										= 2331;
 	const s32       _ICODE_ZAP                                      = 2271;
-	//		__unused__		= 2168
+	// Note:  There's a constraint here that the following ncset iCode values should be sequential.
+	const s32							_ICODE_NCSET_MIN = 2900;
+	const s32		_ICODE_NCSETALPHAISOPAQUE						= 2900;
+	const u32		_ICODE_NCSETBOFISZERO							= 2901;
+	const s32		_ICODE_NCSETCEILINGFLOOR						= 2902;
+	const s32		_ICODE_NCSETCTODCTOTISOPTIMIZED					= 2903;
+	const s32		_ICODE_NCSETDATETIMEMILLISECONDS				= 2904;
+	const s32		_ICODE_NCSETOPTIMIZETABLEWRITES					= 2905;
+	const s32		_ICODE_NCSETOPTIMIZEVARIABLES					= 2906;
+	const s32		_ICODE_NCSETSIGNSIGN2							= 2907;
+	const s32		_ICODE_NCSETPLACEHOLDER1						= 2908;
+	const s32		_ICODE_NCSETPLACEHOLDER2						= 2909;
+	const s32		_ICODE_NCSETDIRECTNATIVEMEMBERS					= 2910;
+	const s32							_ICODE_NCSET_MAX = 2911;
+	//
+	//		__unused__	= 2168					__unused__	= 2325
+	//		__unused__	= 2391					__unused__	= 2307
+	//		__unused__	= 2392					__unused__	= 2337
+	//		__unused__	= 2326					__unused__	= 2328
+	//		__unused__	= 2308					__unused__	= 2342
+	//		__unused__	= 2343					__unused__	= 2344
+	//
 	// DOCASE				= 2272			DOFORM					= 2273
 	// DOPROGRAM			= 2274			DOWHILE					= 2275
 	// ENDFUNCTION			= 2276			ENDPROCEDURE			= 2277
@@ -1453,6 +1465,8 @@
 	// RESIZE				= 2386			ENDFIF					= 2387
 	// STATUSBAR			= 2388			DEFINE					= 2389
 	// ENDDEFINE			= 2390			NCSETBOFISZERO			= 2391
+	// NCSETCTODCTOTISOPTIMIZED = 2392
+
 
 
 //////////
@@ -2492,10 +2506,15 @@
 
 	// NCSET() specific
 	const s8		cgc_ncset_alphaisopaque[]						= "alphaIsOpaque";
+	const s8		cgc_ncset_bofIsZero[]							= "bofIsZero";
 	const s8		cgc_ncset_ceilingfloor[]						= "ceilingfloor";
+	const s8		cgc_ncset_ctodctotisoptimized[]					= "ctodctotisoptimized";
 	const s8		cgc_ncset_datetimemilliseconds[]				= "datetimemilliseconds";
+	const s8		cgc_ncset_directNativeMembers[]					= "directNativeMembers";
 	const s8		cgc_ncset_optimizetablewrites[]					= "optimizetablewrites";
 	const s8		cgc_ncset_optimizevariables[]					= "optimizevariables";
+	const s8		cgc_ncset_placeholder1[]						= "placeholder1";
+	const s8		cgc_ncset_placeholder2[]						= "placeholder2";
 	const s8		cgc_ncset_signsign2[]							= "signsign2";
 
 	// VXB specific

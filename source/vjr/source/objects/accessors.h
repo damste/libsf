@@ -499,6 +499,7 @@ struct SBasePropMap;
 	const s8		cgc_setNcsetPlaceholder2[]								= "ncsetPlaceholder2";
 	const s8		cgc_setNcsetDirectNativeMembers[]						= "ncsetDirectNativeMembers";
 	const s8		cgc_setNcsetBofIsZero[]									= "ncsetBofIsZero";
+	const s8		cgc_setNcsetCtodCtotIsOptimized[]						= "ncsetCtodCtotIsOptimized";
 	const s8		cgc_setPoint[]											= "point";
 	const s8		cgc_setPrecisionBfp[]									= "precisionbfp";
 	const s8		cgc_setPrecisionBi[]									= "precisionbi";
@@ -915,36 +916,37 @@ struct SBasePropMap;
 	const u32									_INDEX_SET_NCSET_START	= 388;
 	const u32		_INDEX_SET_NCSET_ALPHA_IS_OPAQUE						= 388;
 	const u32		_INDEX_SET_NCSET_CEILING_FLOOR							= 389;
-	const u32		_INDEX_SET_NCSET_DATETIME_MILLISECONDS					= 390;
-	const u32		_INDEX_SET_NCSET_OPTIMIZE_TABLE_WRITES					= 391;
-	const u32		_INDEX_SET_NCSET_OPTIMIZE_VARIABLES						= 392;
-	const u32		_INDEX_SET_NCSET_SIGN_SIGN2								= 393;
-	const u32		_INDEX_SET_NCSET_PLACEHOLDER1							= 394;
-	const u32		_INDEX_SET_NCSET_PLACEHOLDER2							= 395;
-	const u32		_INDEX_SET_NCSET_DIRECT_NATIVE_MEMBERS					= 396;
-	const u32		_INDEX_SET_NCSET_BOF_IS_ZERO							= 397;
-	const u32									_INDEX_SET_NCSET_END	= 397;
+	const u32		_INDEX_SET_NCSET_CTOD_CTOT_IS_OPTIMIZED					= 390;
+	const u32		_INDEX_SET_NCSET_DATETIME_MILLISECONDS					= 391;
+	const u32		_INDEX_SET_NCSET_OPTIMIZE_TABLE_WRITES					= 392;
+	const u32		_INDEX_SET_NCSET_OPTIMIZE_VARIABLES						= 393;
+	const u32		_INDEX_SET_NCSET_SIGN_SIGN2								= 394;
+	const u32		_INDEX_SET_NCSET_PLACEHOLDER1							= 395;
+	const u32		_INDEX_SET_NCSET_PLACEHOLDER2							= 396;
+	const u32		_INDEX_SET_NCSET_DIRECT_NATIVE_MEMBERS					= 397;
+	const u32		_INDEX_SET_NCSET_BOF_IS_ZERO							= 398;
+	const u32									_INDEX_SET_NCSET_END	= 398;
 	
-	const u32		_INDEX_SET_POINT										= 398;
-	const u32		_INDEX_SET_PRECISIONBFP									= 399;		// numeric, defaults to 256
-	const u32		_INDEX_SET_PRECISIONBI									= 400;		// numeric, defaults to 256
-	const u32		_INDEX_SET_REPROCESS									= 401;		// logical, or numeric (negative = attempts, positive = seconds)
-	const u32		_INDEX_SET_REPROCESSATTEMPTS							= 402;		// numeric, 30 by default, but can be changed with SET REPROCESSATTEMPTS TO 30
-	const u32		_INDEX_SET_REPROCESSINTERVAL							= 403;		// numeric, 1000 by default indicating 1000 milliseconds, or 1 second
-	const u32		_INDEX_SET_REPROCESS_SYSTEM								= 404;		// logical, or numeric (negative = attempts, positive = seconds)
-	const u32		_INDEX_SET_SEPARATOR									= 405;
-	const u32		_INDEX_SET_SLOPPY_PRINTING								= 406;
-	const u32		_INDEX_SET_STATUS										= 407;
-	const u32		_INDEX_SET_STATUSBAR									= 408;
-	const u32		_INDEX_SET_STICKY_PARAMETERS							= 409;
-	const u32		_INDEX_SET_TABLE_EQUAL_ASSIGNMENTS						= 410;
-	const u32		_INDEX_SET_TABLE_OBJECTS								= 411;
-	const u32		_INDEX_SET_TALK											= 412;
-	const u32		_INDEX_SET_TIME											= 413;
-	const u32		_INDEX_SET_UDFPARMS										= 414;
-	const u32		_INDEX_SET_UNLOAD_RECEIVES_PARAMS						= 415;
-	const u32		_INDEX_SET_VARIABLES_FIRST								= 416;
-	const u32		_INDEX_SET_VECSEPARATOR									= 417;
+	const u32		_INDEX_SET_POINT										= 399;
+	const u32		_INDEX_SET_PRECISIONBFP									= 400;		// numeric, defaults to 256
+	const u32		_INDEX_SET_PRECISIONBI									= 401;		// numeric, defaults to 256
+	const u32		_INDEX_SET_REPROCESS									= 402;		// logical, or numeric (negative = attempts, positive = seconds)
+	const u32		_INDEX_SET_REPROCESSATTEMPTS							= 403;		// numeric, 30 by default, but can be changed with SET REPROCESSATTEMPTS TO 30
+	const u32		_INDEX_SET_REPROCESSINTERVAL							= 404;		// numeric, 1000 by default indicating 1000 milliseconds, or 1 second
+	const u32		_INDEX_SET_REPROCESS_SYSTEM								= 405;		// logical, or numeric (negative = attempts, positive = seconds)
+	const u32		_INDEX_SET_SEPARATOR									= 406;
+	const u32		_INDEX_SET_SLOPPY_PRINTING								= 407;
+	const u32		_INDEX_SET_STATUS										= 408;
+	const u32		_INDEX_SET_STATUSBAR									= 409;
+	const u32		_INDEX_SET_STICKY_PARAMETERS							= 410;
+	const u32		_INDEX_SET_TABLE_EQUAL_ASSIGNMENTS						= 411;
+	const u32		_INDEX_SET_TABLE_OBJECTS								= 412;
+	const u32		_INDEX_SET_TALK											= 413;
+	const u32		_INDEX_SET_TIME											= 414;
+	const u32		_INDEX_SET_UDFPARMS										= 415;
+	const u32		_INDEX_SET_UNLOAD_RECEIVES_PARAMS						= 416;
+	const u32		_INDEX_SET_VARIABLES_FIRST								= 417;
+	const u32		_INDEX_SET_VECSEPARATOR									= 418;
 
 
 
@@ -1538,6 +1540,7 @@ struct SBasePropMap;
 		{	_INDEX_SET_NAMING_CONVENTIONS,					_ICODE_NAMINGCONVENTIONS,			cgc_setNamingConvention,			sizeof(cgc_setNamingConvention) - 1,				_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL	},	// .t.=Field and variables are examined for standard naming conventions with errors reported, .f.=no checks are made
 		{	_INDEX_SET_NCSET_ALPHA_IS_OPAQUE,				_ICODE_NCSETALPHAISOPAQUE,			cgc_setNcsetAlphaIsOpaque,			sizeof(cgc_setNcsetAlphaIsOpaque) - 1,				_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL	},	// .t.=alpha channel color in rgb() and bgr() is opaque (255), .f.=alpha channel is transparent (0)
 		{	_INDEX_SET_NCSET_CEILING_FLOOR,					_ICODE_NCSETCEILINGFLOOR,			cgc_setNcsetCeilingFloor,			sizeof(cgc_setNcsetCeilingFloor) - 1,				_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL	},	// .t.=ceiling() and floor() return floating point values if floating point input, .f.=always returns integer
+		{	_INDEX_SET_NCSET_CTOD_CTOT_IS_OPTIMIZED,		_ICODE_NCSETCTODCTOTISOPTIMIZED,	cgc_setNcsetCtodCtotIsOptimized,	sizeof(cgc_setNcsetCtodCtotIsOptimized) - 1,		_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL	},	// .t.=CTOD() and CTOT() use a fixed format, .f.=CTOD() maps to CXLATD() and CTOT() maps to CXLATT() for more relaxed forms
 		{	_INDEX_SET_NCSET_DATETIME_MILLISECONDS,			_ICODE_NCSETDATETIMEMILLISECONDS,	cgc_setNcsetDatetimeMilliseconds,	sizeof(cgc_setNcsetDatetimeMilliseconds) - 1,		_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL	},	// .t.=datetime() includes milliseconds, .f.=milliseconds is not included
 		{	_INDEX_SET_NCSET_OPTIMIZE_TABLE_WRITES,			_ICODE_NCSETOPTIMIZETABLEWRITES,	cgc_setNcsetOptimizeTableWrites,	sizeof(cgc_setNcsetOptimizeTableWrites) - 1,		_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL	},	// .t.=field update content is examined before writing out, and if it hasn't changed it is not written, .f.=any content updated, even identical content as before, is always written
 		{	_INDEX_SET_NCSET_OPTIMIZE_VARIABLES,			_ICODE_NCSETOPTIMIZEVARIABLES,		cgc_setNcsetOptimizeVariables,		sizeof(cgc_setNcsetOptimizeVariables) - 1,			_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL	},	// .t.=oft-used variables are moved to the top of the linked list, .f.=variables always persist in their "as defined" order

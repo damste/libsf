@@ -48,6 +48,8 @@
 //
 
 
+#include <limits.h>
+
 // Unsigned
 #ifdef __GNUC__
 	// gcc
@@ -205,6 +207,13 @@ cu32	_S64PP				= _64BIT | _POINTER_POINTER;
 cu32	_U64PP				= _64BIT | _POINTER_POINTER | _UNSIGNED;
 cu32	_F32PP				= _32BIT | _POINTER_POINTER | _FLOATING_POINT;
 cu32	_F64PP				= _64BIT | _POINTER_POINTER | _FLOATING_POINT;
+
+// Min/max
+cs64	_i32_min			= _I32_MIN;
+cs64	_i32_max			= _I32_MAX;
+cs64	_i64_min			= _I64_MIN;
+cs64	_i64_max			= _I64_MAX;
+
 
 // Standard forms
 #define between(value, lo, hi)		((value >= lo) && (value <= hi))

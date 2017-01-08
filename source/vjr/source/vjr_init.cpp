@@ -89,6 +89,10 @@
 //////
 	void iVjr_init_minimal(void)
 	{
+		s32						lnI;
+		SAsciiCompSearcher*		asciiComp;
+
+
 		// Enable %n in printf() and derivatives
 		_set_printf_count_output(1);    // 0=disable, others=enable
 
@@ -117,6 +121,20 @@
 		// Initialize our critical section
 		initializeUid();
 		InitializeCriticalSection(&cs_logData);
+
+		// Iterate through keywords to find the cgcVxbKeywords[] min/max ncset values
+		gnNcsetMin = _i32_max;
+		gnNcsetMax = _i32_min;
+		for (asciiComp = &cgcVxbKeywords[0], lnI = 0; asciiComp->iCode != 0; asciiComp++, lnI++)
+		{
+			// If it's in range of the NCSET iCodes, then...
+			if (between(asciiComp->iCode, _ICODE_NCSET_MIN, _ICODE_NCSET_MAX))
+			{
+				// Set min/max
+				gnNcsetMin = min(gnNcsetMin, lnI);
+				gnNcsetMax = max(gnNcsetMax, lnI);
+			}
+		}
 	}
 
 	void iVjr_init(HACCEL* hAccelTable, bool tlInitializeSound)

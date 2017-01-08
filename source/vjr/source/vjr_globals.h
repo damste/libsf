@@ -138,6 +138,8 @@
 	bool				glDefaultObjectsHaveBeenCreated		= false;
 	SVjrPrintDevice*	gsLastPrintDevice					= NULL;									// Once a print device has been specified, it persists here
 //	ITaskbarList*		giTaskbar							= NULL;
+	s32					gnNcsetMin							= 0;									// See iVjr_init_minimal()
+	s32					gnNcsetMax							= 0;
 
 
 //////////
