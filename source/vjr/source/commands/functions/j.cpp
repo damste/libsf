@@ -460,7 +460,7 @@
 //		varPostfixWidth	-- (optional) Numeric, the number of extra spaces to postfix pad the juststem() result with
 //////
 // Returns:
-//		Character		-- The file name portion of the pathname ("sample" of "c:\path\to\sample.txt")
+//		Character		-- The file name portion (without the extension) of the pathname ("sample" of "c:\path\to\sample.txt")
 //////
 	void function_juststem(SReturnsParams* rpar)
 	{
