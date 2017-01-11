@@ -214,8 +214,8 @@
 			ptr = NULL;
 			if (varString->value.length >= 1)
 			{
-				// Iterate backwards until we find a period.
-				// If no period is found, use a blank string
+				// Iterate backwards until we find a period
+				// If not found, use a blank string
 				for (lnI = varString->value.length - 1, lnLength = 0; lnI > 0; lnI--, lnLength++)
 				{
 					if (varString->value.data_u8[lnI] == '.')
@@ -302,8 +302,8 @@
 			ptr = NULL;
 			if (varString->value.length >= 1)
 			{
-				// Iterate backwards until we find a period.
-				// If no period is found, use a blank string
+				// Iterate backwards until we find a backslash.
+				// If not found, use a blank string
 				for (lnI = varString->value.length - 1, lnLength = 0; lnI > 0; lnI--, lnLength++)
 				{
 					if (varString->value.data_u8[lnI] == '\\')
@@ -395,8 +395,8 @@
 			ptr = NULL;
 			if (varString->value.length >= 1)
 			{
-				// Iterate backwards until we find a period.
-				// If no period is found, use a blank string
+				// Iterate backwards until we find a backslash
+				// If not found, use a blank string
 				for (lnLength = varString->value.length - 1; lnLength >= 0; lnLength--)
 				{
 					if (varString->value.data_u8[lnLength] == '\\')
@@ -516,8 +516,8 @@
 
 			if (varString->value.length >= 1)
 			{
-				// Iterate backwards until we find a period.
-				// If no period is found, use a blank string
+				// Iterate backwards until we find a backslash
+				// If not found, use a blank string
 				for (lnI = varString->value.length - 1, lnLength = 0; lnI > 0; lnI--)
 				{
 					if (varString->value.data_u8[lnI] == '\\')
