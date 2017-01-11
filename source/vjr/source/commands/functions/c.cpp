@@ -929,7 +929,8 @@
 //
 // Function: CTOD()
 // Converts a character expression to a date expression.
-//
+//////
+// Based on an NCSET() setting, either uses an optimized format, or a relaxed format (the default).
 //////
 // Version 0.58
 // Last update:
@@ -943,26 +944,22 @@
 //
 //////
 // Returns:
-//    Date data type. CTOD( ) returns a Date value
+//    Date data type.
 //
 //////
 // Example:
-//    SET DATE MDY
-//    ?CTOD("12/25/15") &&Displays 12-25-2015
-//    ?CTOD("12/25/2015") &&Displays 12-25-2015
-//    ?CTOD("12-25-15") &&Displays 12-25-2015
-//    ?CTOD("12-25-15 12:33:44 AM") &&Displays 12-25-2015
-//    ?CTOD("12-25-15 12:33:44.555") &&Displays 12-25-2015
-//
+//    ? CTOD("12/25/15")
 //////
 	void function_ctod(SReturnsParams* rpar)
 	{
 		SVariable* varString = rpar->ip[0];
 
-		//Return date
-		ifunction_ctox_common(rpar, varString, false);
+		// Return date
+		if (glNcset_ctodCtotIsOptimized)	ifunction_ctox_common(rpar, varString, false);
+		else								ifunction_cxlatx_common(rpar, varString, false);
 	}
 
+	// ctox() looks for a strict format, see cxlatx() for the relaxed form
 	void ifunction_ctox_common(SReturnsParams* rpar, SVariable* varCtoxString, bool tlIncludeTime)
 	{
 		s8			c1, c2, cx, cMark;
@@ -1228,6 +1225,8 @@ debug_break;
 // Converts a character expression to a datetime expression.
 //
 //////
+// Based on an NCSET() setting, either uses an optimized format, or a relaxed format (the default).
+//////
 // Version 0.58
 // Last update:
 //     Apr.11.2015
@@ -1243,10 +1242,7 @@ debug_break;
 //    Datetime
 //////
 // Example:
-//    SET DATE MDY
-//    ? CTOT("12/25/15")				&& Displays 12-25-2015 00:00:00
 //    ? CTOT("12/25/2015")				&& Displays 12-25-2015 00:00:00
-//    ? CTOT("12-25-15")				&& Displays 12-25-2015 00:00:00
 //    ? CTOT("12-25-15 12:33:44 AM")	&& Displays 12-25-2015 00:33:44
 //    ? CTOT("12-25-15 12:33:44.555")	&& Displays 12-25-2015 12:33:44
 //
@@ -1257,7 +1253,84 @@ debug_break;
 
 
 		// Return datetime
-		ifunction_ctox_common(rpar, varString, true);
+		if (glNcset_ctodCtotIsOptimized)	ifunction_ctox_common(rpar, varString, true);
+		else								ifunction_cxlatx_common(rpar, varString, true);
+	}
+
+
+
+
+//////////
+//
+// Function: CXLATD()
+// Converts a relaxed character expression to a date expression
+//
+//////
+// Version 0.58
+// Last update:
+//     Jan.10.2017
+//////
+// Change log:
+//     Jan.10.2017 - Initial creation by Stefano D'Amico
+//////
+// Parameters:
+//     p1			-- Character
+//////
+// Returns:
+//    Datetime
+//////
+// Example:
+//    k = "Apr.26.2015, 8:15p"
+//    ? CXLATD(k)
+//////
+	void function_cxlatd(SReturnsParams* rpar)
+	{
+		SVariable* varString = rpar->ip[0];
+
+
+		// Return date
+		ifunction_cxlatx_common(rpar, varString, false);
+	}
+
+	void ifunction_cxlatx_common(SReturnsParams* rpar, SVariable* varCxlatxString, bool tlIncludeTime)
+	{
+		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
+		rpar->rp[0] = NULL;
+	}
+
+
+
+
+//////////
+//
+// Function: CXLATT()
+// Converts a relaxed character expression to a datetime expression.
+//
+//////
+// Version 0.58
+// Last update:
+//     Jan.10.2017
+//////
+// Change log:
+//     Jan.10.2017 - Initial creation by Stefano D'Amico
+//////
+// Parameters:
+//     p1			-- Character
+//////
+// Returns:
+//    Datetime
+//////
+// Example:
+//    k = "Apr.26.2015, 8:15p"
+//    ? CXLATT(k)
+//////
+	void function_cxlatt(SReturnsParams* rpar)
+	{
+		SVariable* varString = rpar->ip[0];
+
+
+		// Return datetime
+		ifunction_cxlatx_common(rpar, varString, true);
 	}
 
 

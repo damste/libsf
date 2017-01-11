@@ -1049,6 +1049,22 @@ struct SBasePropMap;
 
 
 //////////
+// NCSET() speedup functions
+//////
+	void					iiNcset_common							(SObject* obj, SVariable* varNewValue, bool* glNcset_variable/*a pointer to one of the glNcset_* variables*/);
+	void					iiNcset_alphaIsOpaque					(SObject* obj, SVariable* varNewValue);
+	void					iiNcset_ceilingFloor					(SObject* obj, SVariable* varNewValue);
+	void					iiNcset_ctodCtotIsOptimized				(SObject* obj, SVariable* varNewValue);
+	void					iiNcset_datetimeMilliseconds			(SObject* obj, SVariable* varNewValue);
+	void					iiNcset_optimizeTableWrites				(SObject* obj, SVariable* varNewValue);
+	void					iiNcset_optimizeVariables				(SObject* obj, SVariable* varNewValue);
+	void					iiNcset_signSign2						(SObject* obj, SVariable* varNewValue);
+	void					iiNcset_directNativeMembers				(SObject* obj, SVariable* varNewValue);
+	void					iiNcset_bofIsZero						(SObject* obj, SVariable* varNewValue);
+
+
+
+//////////
 // For events
 //////
 	bool					iObjEvent_set_function					(SObject* obj, s32 tnIndex, SFunction** funcRoot, SDatum* newSourceCode);
@@ -1116,6 +1132,12 @@ struct SBasePropMap;
 
 		// A constructed SVariable containing the initialization value
 		SVariable*	varInit;
+
+		// An optional function to call on certain properties when they are set, so they can populate direct global variables
+		union {
+			uptr		_setSpeedup;
+			void		(*setSpeedup)		(SObject* obj, SVariable* varNewValue);
+		};
 	};
 
 	struct SObjPropMap
@@ -1538,17 +1560,17 @@ struct SBasePropMap;
 		{	_INDEX_SET_LOGICAL,								_ICODE_LOGICAL,						cgc_setLogical,						sizeof(cgc_setLogical) - 1,							_VAR_TYPE_S32,				0, 0, 0,		(uptr)_LOGICAL_TF				,NULL	},	// See _LOGICAL_* constants
 		{	_INDEX_SET_MARK,								_ICODE_MARK,						cgc_setMark,						sizeof(cgc_setMark) - 1,							_VAR_TYPE_CHARACTER,		0, 0, 0,		(uptr)&cgcNullString			,NULL	},	// The override mark character for dates
 		{	_INDEX_SET_NAMING_CONVENTIONS,					_ICODE_NAMINGCONVENTIONS,			cgc_setNamingConvention,			sizeof(cgc_setNamingConvention) - 1,				_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL	},	// .t.=Field and variables are examined for standard naming conventions with errors reported, .f.=no checks are made
-		{	_INDEX_SET_NCSET_ALPHA_IS_OPAQUE,				_ICODE_NCSETALPHAISOPAQUE,			cgc_setNcsetAlphaIsOpaque,			sizeof(cgc_setNcsetAlphaIsOpaque) - 1,				_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL	},	// .t.=alpha channel color in rgb() and bgr() is opaque (255), .f.=alpha channel is transparent (0)
-		{	_INDEX_SET_NCSET_CEILING_FLOOR,					_ICODE_NCSETCEILINGFLOOR,			cgc_setNcsetCeilingFloor,			sizeof(cgc_setNcsetCeilingFloor) - 1,				_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL	},	// .t.=ceiling() and floor() return floating point values if floating point input, .f.=always returns integer
-		{	_INDEX_SET_NCSET_CTOD_CTOT_IS_OPTIMIZED,		_ICODE_NCSETCTODCTOTISOPTIMIZED,	cgc_setNcsetCtodCtotIsOptimized,	sizeof(cgc_setNcsetCtodCtotIsOptimized) - 1,		_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL	},	// .t.=CTOD() and CTOT() use a fixed format, .f.=CTOD() maps to CXLATD() and CTOT() maps to CXLATT() for more relaxed forms
-		{	_INDEX_SET_NCSET_DATETIME_MILLISECONDS,			_ICODE_NCSETDATETIMEMILLISECONDS,	cgc_setNcsetDatetimeMilliseconds,	sizeof(cgc_setNcsetDatetimeMilliseconds) - 1,		_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL	},	// .t.=datetime() includes milliseconds, .f.=milliseconds is not included
-		{	_INDEX_SET_NCSET_OPTIMIZE_TABLE_WRITES,			_ICODE_NCSETOPTIMIZETABLEWRITES,	cgc_setNcsetOptimizeTableWrites,	sizeof(cgc_setNcsetOptimizeTableWrites) - 1,		_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL	},	// .t.=field update content is examined before writing out, and if it hasn't changed it is not written, .f.=any content updated, even identical content as before, is always written
-		{	_INDEX_SET_NCSET_OPTIMIZE_VARIABLES,			_ICODE_NCSETOPTIMIZEVARIABLES,		cgc_setNcsetOptimizeVariables,		sizeof(cgc_setNcsetOptimizeVariables) - 1,			_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL	},	// .t.=oft-used variables are moved to the top of the linked list, .f.=variables always persist in their "as defined" order
-		{	_INDEX_SET_NCSET_SIGN_SIGN2,					_ICODE_NCSETSIGNSIGN2,				cgc_setNcsetSignSign2,				sizeof(cgc_setNcsetSignSign2) - 1,					_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL	},	// .t.=sign() and sign2() return floating point values if floating point input, .f.=always returns integer
-		{	_INDEX_SET_NCSET_PLACEHOLDER1,					_ICODE_NCSETPLACEHOLDER1,			cgc_setNcsetPlaceholder1,			sizeof(cgc_setNcsetPlaceholder1) - 1,				_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL	},	// temporary placeholder
-		{	_INDEX_SET_NCSET_PLACEHOLDER2,					_ICODE_NCSETPLACEHOLDER2,			cgc_setNcsetPlaceholder2,			sizeof(cgc_setNcsetPlaceholder2) - 1,				_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL	},	// temporary placeholder
-		{	_INDEX_SET_NCSET_DIRECT_NATIVE_MEMBERS,			_ICODE_NCSETDIRECTNATIVEMEMBERS,	cgc_setNcsetDirectNativeMembers,	sizeof(cgc_setNcsetDirectNativeMembers) - 1,		_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL	},	// .t.=native members can be directly referenced, .f. they require a parent like this, thisForm, or object name
-		{	_INDEX_SET_NCSET_BOF_IS_ZERO,					_ICODE_NCSETBOFISZERO,				cgc_setNcsetBofIsZero,				sizeof(cgc_setNcsetBofIsZero) - 1,					_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL	},	// .t.=BOF() condition returns RECNO() 0, .f.=BOF() conditions returns RECNO() 1
+		{	_INDEX_SET_NCSET_ALPHA_IS_OPAQUE,				_ICODE_NCSETALPHAISOPAQUE,			cgc_setNcsetAlphaIsOpaque,			sizeof(cgc_setNcsetAlphaIsOpaque) - 1,				_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL,	(uptr)&iiNcset_alphaIsOpaque			},	// .t.=alpha channel color in rgb() and bgr() is opaque (255), .f.=alpha channel is transparent (0)
+		{	_INDEX_SET_NCSET_CEILING_FLOOR,					_ICODE_NCSETCEILINGFLOOR,			cgc_setNcsetCeilingFloor,			sizeof(cgc_setNcsetCeilingFloor) - 1,				_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL,	(uptr)&iiNcset_ceilingFloor				},	// .t.=ceiling() and floor() return floating point values if floating point input, .f.=always returns integer
+		{	_INDEX_SET_NCSET_CTOD_CTOT_IS_OPTIMIZED,		_ICODE_NCSETCTODCTOTISOPTIMIZED,	cgc_setNcsetCtodCtotIsOptimized,	sizeof(cgc_setNcsetCtodCtotIsOptimized) - 1,		_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL,	(uptr)&iiNcset_ctodCtotIsOptimized		},	// .t.=CTOD() and CTOT() use a fixed format, .f.=CTOD() maps to CXLATD() and CTOT() maps to CXLATT() for more relaxed forms
+		{	_INDEX_SET_NCSET_DATETIME_MILLISECONDS,			_ICODE_NCSETDATETIMEMILLISECONDS,	cgc_setNcsetDatetimeMilliseconds,	sizeof(cgc_setNcsetDatetimeMilliseconds) - 1,		_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL,	(uptr)&iiNcset_datetimeMilliseconds		},	// .t.=datetime() includes milliseconds, .f.=milliseconds is not included
+		{	_INDEX_SET_NCSET_OPTIMIZE_TABLE_WRITES,			_ICODE_NCSETOPTIMIZETABLEWRITES,	cgc_setNcsetOptimizeTableWrites,	sizeof(cgc_setNcsetOptimizeTableWrites) - 1,		_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL,	(uptr)&iiNcset_optimizeTableWrites		},	// .t.=field update content is examined before writing out, and if it hasn't changed it is not written, .f.=any content updated, even identical content as before, is always written
+		{	_INDEX_SET_NCSET_OPTIMIZE_VARIABLES,			_ICODE_NCSETOPTIMIZEVARIABLES,		cgc_setNcsetOptimizeVariables,		sizeof(cgc_setNcsetOptimizeVariables) - 1,			_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL,	(uptr)&iiNcset_optimizeVariables		},	// .t.=oft-used variables are moved to the top of the linked list, .f.=variables always persist in their "as defined" order
+		{	_INDEX_SET_NCSET_SIGN_SIGN2,					_ICODE_NCSETSIGNSIGN2,				cgc_setNcsetSignSign2,				sizeof(cgc_setNcsetSignSign2) - 1,					_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL,	(uptr)&iiNcset_signSign2				},	// .t.=sign() and sign2() return floating point values if floating point input, .f.=always returns integer
+		{	_INDEX_SET_NCSET_PLACEHOLDER1,					_ICODE_NCSETPLACEHOLDER1,			cgc_setNcsetPlaceholder1,			sizeof(cgc_setNcsetPlaceholder1) - 1,				_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL											},	// temporary placeholder
+		{	_INDEX_SET_NCSET_PLACEHOLDER2,					_ICODE_NCSETPLACEHOLDER2,			cgc_setNcsetPlaceholder2,			sizeof(cgc_setNcsetPlaceholder2) - 1,				_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL											},	// temporary placeholder
+		{	_INDEX_SET_NCSET_DIRECT_NATIVE_MEMBERS,			_ICODE_NCSETDIRECTNATIVEMEMBERS,	cgc_setNcsetDirectNativeMembers,	sizeof(cgc_setNcsetDirectNativeMembers) - 1,		_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL,	(uptr)&iiNcset_directNativeMembers		},	// .t.=native members can be directly referenced, .f. they require a parent like this, thisForm, or object name
+		{	_INDEX_SET_NCSET_BOF_IS_ZERO,					_ICODE_NCSETBOFISZERO,				cgc_setNcsetBofIsZero,				sizeof(cgc_setNcsetBofIsZero) - 1,					_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL,	(uptr)&iiNcset_bofIsZero				},	// .t.=BOF() condition returns RECNO() 0, .f.=BOF() conditions returns RECNO() 1
 		{	_INDEX_SET_POINT,								_ICODE_POINT,						cgc_setPoint,						sizeof(cgc_setPoint) - 1,							_VAR_TYPE_CHARACTER,		0, 0, 0,		(uptr)&cgcPointChar[0]			,NULL	},	// One byte separator for the decimal point in numbers
 		{	_INDEX_SET_PRECISIONBFP,						_ICODE_PRECISIONSBFP,				cgc_setPrecisionBfp,				sizeof(cgc_setPrecisionBfp) - 1,					_VAR_TYPE_S32,				0, 0, 0,		256								,NULL	},	// Number of bits to use for significant digit output (256 yields about 60 significant digits)
 		{	_INDEX_SET_PRECISIONBI,							_ICODE_PRECISIONSBI,				cgc_setPrecisionBi,					sizeof(cgc_setPrecisionBi) - 1,						_VAR_TYPE_S32,				0, 0, 0,		256								,NULL	},	// Number of bits to use for significant digit output (256 yields about 80 significant digits)
@@ -5776,6 +5798,7 @@ struct SBasePropMap;
 		{	_INDEX_SET_NCSET_ALPHA_IS_OPAQUE,			0, (uptr)&iObjProp_setLogical,			(uptr)&iObjProp_getLogical },		// bool
 		{	_INDEX_SET_NCSET_BOF_IS_ZERO,				0, (uptr)&iObjProp_setLogical,			(uptr)&iObjProp_getLogical },		// bool
 		{	_INDEX_SET_NCSET_CEILING_FLOOR,				0, (uptr)&iObjProp_setLogical,			(uptr)&iObjProp_getLogical },		// bool
+		{	_INDEX_SET_NCSET_CTOD_CTOT_IS_OPTIMIZED,	0, (uptr)&iObjProp_setLogical,			(uptr)&iObjProp_getLogical },		// bool
 		{	_INDEX_SET_NCSET_DATETIME_MILLISECONDS,		0, (uptr)&iObjProp_setLogical,			(uptr)&iObjProp_getLogical },		// bool
 		{	_INDEX_SET_NCSET_OPTIMIZE_TABLE_WRITES,		0, (uptr)&iObjProp_setLogical,			(uptr)&iObjProp_getLogical },		// bool
 		{	_INDEX_SET_NCSET_OPTIMIZE_VARIABLES,		0, (uptr)&iObjProp_setLogical,			(uptr)&iObjProp_getLogical },		// bool

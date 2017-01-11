@@ -167,6 +167,20 @@
 
 
 //////////
+// NCSET() speedup variables
+//////
+	bool				glNcset_alphaIsOpaque				= false;
+	bool				glNcset_ceilingFloor				= false;
+	bool				glNcset_ctodCtotIsOptimized			= false;
+	bool				glNcset_datetimeMilliseconds		= false;
+	bool				glNcset_optimizeTableWrites			= false;
+	bool				glNcset_optimizeVariables			= false;
+	bool				glNcset_signSign2					= false;
+	bool				glNcset_directNativeMembers			= false;
+	bool				glNcset_bofIsZero					= false;
+
+
+//////////
 // TOOD: We need to add semaphores to these because the ultimate goal is to allow multiple
 //       threads running simultaneously, but each of them running completely independent programs.
 // BEGIN

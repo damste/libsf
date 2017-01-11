@@ -181,6 +181,10 @@
 				else if (!tlNestedSet && baseProp->_setterBase)														llResult = baseProp->setterBase	(obj, tnIndex, var, varNewValue, baseProp, objProp);
 				else																								llResult = iVariable_copy(var, varNewValue);
 
+				// If it has a setSpeedup(), then call that as well
+				if (!tlNestedSet && baseProp->_setSpeedup)
+					baseProp->setSpeedup(obj, var);
+
 				// Indicate our status
 				return(llResult);
 			}
@@ -244,6 +248,10 @@
 				else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, varNewValue, false);
 				else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(obj, tnIndex, var, varNewValue, baseProp, objProp);
 				else																				llResult = iVariable_set_bitmap(var, bmp);
+
+				// If it has a setSpeedup(), then call that as well
+				if (baseProp->_setSpeedup)
+					baseProp->setSpeedup(obj, var);
 
 				// If they just set the picture on an image or checkbox, then we need to propagate through to the down and over
 				if ((obj->objType == _OBJ_TYPE_IMAGE || obj->objType == _OBJ_TYPE_CHECKBOX) && tnIndex == _INDEX_PICTUREBMP)
@@ -340,6 +348,10 @@
 				else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(obj, tnIndex, var, varNewValue, baseProp, objProp);
 				else																				llResult = iVariable_copy(var, varNewValue);
 
+				// If it has a setSpeedup(), then call that as well
+				if (baseProp->_setSpeedup)
+					baseProp->setSpeedup(obj, var);
+
 //////////
 // Include some extra debugging information to aid in tracking down those little peskies
 //////
@@ -395,6 +407,10 @@
 				else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, varNewValue, false);
 				else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(obj, tnIndex, var, varNewValue, baseProp, objProp);
 				else																				llResult = iVariable_copy(var, varNewValue);
+
+				// If it has a setSpeedup(), then call that as well
+				if (baseProp->_setSpeedup)
+					baseProp->setSpeedup(obj, var);
 
 //////////
 // Include some extra debugging information to aid in tracking down those little peskies
@@ -485,6 +501,10 @@
 					else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(obj, tnIndex, var, varNewValue, baseProp, objProp);
 					else																				llResult = iVariable_copy(var, varNewValue);
 
+					// If it has a setSpeedup(), then call that as well
+					if (baseProp->_setSpeedup)
+						baseProp->setSpeedup(obj, var);
+
 					// Delete our temporary variable
 					iVariable_delete(varNewValue, true);
 
@@ -534,6 +554,10 @@
 					else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, varNewValue, false);
 					else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(obj, tnIndex, var, varNewValue, baseProp, objProp);
 					else																				llResult = iVariable_copy(var, varNewValue);
+
+					// If it has a setSpeedup(), then call that as well
+					if (baseProp->_setSpeedup)
+						baseProp->setSpeedup(obj, var);
 
 					// Delete our temporary variable
 					iVariable_delete(varNewValue, true);
@@ -585,6 +609,10 @@
 					else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(obj, tnIndex, var, varNewValue, baseProp, objProp);
 					else																				llResult = iVariable_copy(var, varNewValue);
 
+					// If it has a setSpeedup(), then call that as well
+					if (baseProp->_setSpeedup)
+						baseProp->setSpeedup(obj, var);
+
 					// Delete our temporary variable
 					iVariable_delete(varNewValue, true);
 
@@ -634,6 +662,10 @@
 					else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, varNewValue, false);
 					else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(obj, tnIndex, var, varNewValue, baseProp, objProp);
 					else																				llResult = iVariable_copy(var, varNewValue);
+
+					// If it has a setSpeedup(), then call that as well
+					if (baseProp->_setSpeedup)
+						baseProp->setSpeedup(obj, var);
 
 					// Delete our temporary variable
 					iVariable_delete(varNewValue, true);
@@ -685,6 +717,10 @@
 					else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(obj, tnIndex, var, varNewValue, baseProp, objProp);
 					else																				llResult = iVariable_copy(var, varNewValue);
 
+					// If it has a setSpeedup(), then call that as well
+					if (baseProp->_setSpeedup)
+						baseProp->setSpeedup(obj, var);
+
 					// Delete our temporary variable
 					iVariable_delete(varNewValue, true);
 
@@ -734,6 +770,10 @@
 					else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, varNewValue, false);
 					else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(obj, tnIndex, var, varNewValue, baseProp, objProp);
 					else																				llResult = iVariable_copy(var, varNewValue);
+
+					// If it has a setSpeedup(), then call that as well
+					if (baseProp->_setSpeedup)
+						baseProp->setSpeedup(obj, var);
 
 					// Delete our temporary variable
 					iVariable_delete(varNewValue, true);
@@ -3514,6 +3554,76 @@ debug_break;
 
 		// Indicate success or failure
 		return(llResult);
+	}
+
+
+
+
+//////////
+//
+// NCSET() speedup functions (to allow direct access to global variables, rather than through property values
+//
+//////
+	void iiNcset_common(SObject* obj, SVariable* varNewValue, bool* glNcset_variable)
+	{
+		bool	llNewValue;
+		bool	error;
+		u32		errorNum;
+
+
+		// Make sure we're updating on the _settings object
+		if (obj == _settings)
+		{
+			// Grab the new value from the variable (if possible)
+			llNewValue = iiVariable_getAs_bool(varNewValue, false, &error, &errorNum);
+			if (!error)
+				*glNcset_variable = llNewValue;
+		}
+	}
+
+	void iiNcset_alphaIsOpaque(SObject* obj, SVariable* varNewValue)
+	{
+		iiNcset_common(obj, varNewValue, &glNcset_alphaIsOpaque);
+	}
+
+	void iiNcset_ceilingFloor(SObject* obj, SVariable* varNewValue)
+	{
+		iiNcset_common(obj, varNewValue, &glNcset_ceilingFloor);
+	}
+
+	void iiNcset_ctodCtotIsOptimized(SObject* obj, SVariable* varNewValue)
+	{
+		iiNcset_common(obj, varNewValue, &glNcset_ctodCtotIsOptimized);
+	}
+
+	void iiNcset_datetimeMilliseconds(SObject* obj, SVariable* varNewValue)
+	{
+		iiNcset_common(obj, varNewValue, &glNcset_datetimeMilliseconds);
+	}
+
+	void iiNcset_optimizeTableWrites(SObject* obj, SVariable* varNewValue)
+	{
+		iiNcset_common(obj, varNewValue, &glNcset_optimizeTableWrites);
+	}
+
+	void iiNcset_optimizeVariables(SObject* obj, SVariable* varNewValue)
+	{
+		iiNcset_common(obj, varNewValue, &glNcset_optimizeVariables);
+	}
+
+	void iiNcset_signSign2(SObject* obj, SVariable* varNewValue)
+	{
+		iiNcset_common(obj, varNewValue, &glNcset_signSign2);
+	}
+
+	void iiNcset_directNativeMembers(SObject* obj, SVariable* varNewValue)
+	{
+		iiNcset_common(obj, varNewValue, &glNcset_directNativeMembers);
+	}
+
+	void iiNcset_bofIsZero(SObject* obj, SVariable* varNewValue)
+	{
+		iiNcset_common(obj, varNewValue, &glNcset_bofIsZero);
 	}
 
 

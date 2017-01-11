@@ -214,6 +214,9 @@ struct SReturnsParams;
 	void				ifunction_ctox_common						(SReturnsParams* rpar, SVariable* varString, bool tlIncludeTime);
 	void				function_ctot								(SReturnsParams* rpar);
 	void				function_curdir								(SReturnsParams* rpar);
+	void				function_cxlatd								(SReturnsParams* rpar);
+	void				ifunction_cxlatx_common						(SReturnsParams* rpar, SVariable* varCxlatxString, bool tlIncludeTime);
+	void				function_cxlatt								(SReturnsParams* rpar);
 	void				function_date		/* Stefano D'Amico */	(SReturnsParams* rpar);
 	void				function_datetime							(SReturnsParams* rpar);
 	void				function_datetimex							(SReturnsParams* rpar);
@@ -571,6 +574,8 @@ struct SReturnsParams;
 		{	_ICODE_CREATEOBJECT,	1,			1,				false,		(uptr)&function_createobject,	1,				1,				NULL,			&gsSourceLight_createobject[0]	},
 		{	_ICODE_CTOD,			1,			1,				false,		(uptr)&function_ctod,			1,				1,				NULL,			&gsSourceLight_ctod[0]			},	// CTOD() by Stefano D'Amico, VJr 0_57, Apr.11.2015
 		{	_ICODE_CTOT,			1,			1,				false,		(uptr)&function_ctot,			1,				1,				NULL,			&gsSourceLight_ctot[0]			},	// CTOT() by Stefano D'Amico, VJr 0_57, Apr.11.2015
+		{	_ICODE_CXLATD,			1,			1,				false,		(uptr)&function_cxlatd,			1,				1,				NULL,			&gsSourceLight_cxlatd[0]		},	// CXLATD() VJr 0_59, Jan.10.2017
+		{	_ICODE_CXLATT,			1,			1,				false,		(uptr)&function_cxlatt,			1,				1,				NULL,			&gsSourceLight_cxlatt[0]		},	// CXLATT() VJr 0_59, Jan.10.2017
 		{	_ICODE_CURDIR,			1,			1,				false,		(uptr)&function_curdir,			0,				0,				NULL,			&gsSourceLight_curdir[0]		},
 		{	_ICODE_DATE,			1,			1,				false,		(uptr)&function_date,			0,				3,				NULL,			&gsSourceLight_date[0]			},	// DATE() by Stefano D'Amico, VJr 0_57, Apr.04.2015
 		{	_ICODE_DATETIME,		1,			1,				false,		(uptr)&function_datetime,		0,				7,				NULL,			&gsSourceLight_datetime[0]		},

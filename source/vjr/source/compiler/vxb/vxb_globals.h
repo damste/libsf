@@ -341,6 +341,8 @@
 		{ cgc_ctobin,				6,			false,		_ICODE_CTOBIN,							false,				_ICAT_FUNCTION,		&colorSynHi_function,		false,						null0,					null0,		null0 },
 		{ cgc_ctod,					4,			false,		_ICODE_CTOD,							false,				_ICAT_FUNCTION,		&colorSynHi_function,		false,						null0,					null0,		null0 },
 		{ cgc_ctot,					4,			false,		_ICODE_CTOT,							false,				_ICAT_FUNCTION,		&colorSynHi_function,		false,						null0,					null0,		null0 },
+		{ cgc_cxlatd,				6,			false,		_ICODE_CXLATD,							false,				_ICAT_FUNCTION,		&colorSynHi_function,		false,						null0,					null0,		null0 },
+		{ cgc_cxlatt,				6,			false,		_ICODE_CXLATT,							false,				_ICAT_FUNCTION,		&colorSynHi_function,		false,						null0,					null0,		null0 },
 		{ cgc_curdir,				6,			false,		_ICODE_CURDIR,							false,				_ICAT_FUNCTION,		&colorSynHi_function,		false,						null0,					null0,		null0 },
 		{ cgc_cursorgetprop,		13,			false,		_ICODE_CURSORGETPROP,					false,				_ICAT_FUNCTION,		&colorSynHi_function,		false,						null0,					null0,		null0 },
 		{ cgc_cursorsetprop,		13,			false,		_ICODE_CURSORSETPROP,					false,				_ICAT_FUNCTION,		&colorSynHi_function,		false,						null0,					null0,		null0 },

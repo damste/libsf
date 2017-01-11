@@ -537,6 +537,8 @@
 	const s32		_ICODE_CTOBIN                                   = 1097;
 	const s32		_ICODE_CTOD                                     = 1098;
 	const s32		_ICODE_CTOT                                     = 1099;
+	const s32		_ICODE_CXLATD									= 1522;
+	const s32		_ICODE_CXLATT									= 1523;
 	const s32		_ICODE_CURDIR                                   = 1100;
 	const s32		_ICODE_CURSORGETPROP                            = 1101;
 	const s32		_ICODE_CURSORSETPROP                            = 1102;
@@ -990,7 +992,8 @@
 	// secondsxtot		= 1515				secondsxtox		= 1516
 	// dbundle			= 1517				dunbundle		= 1518
 	// reference		= 1519				value			= 1520
-	// _vjrsys			= 1521
+	// _vjrsys			= 1521				cxlatd			= 1522
+	// cxlatt			= 1523
 
 
 
@@ -1642,6 +1645,8 @@
 	const s8		cgc_ctobin[]									= "ctobin";
 	const s8		cgc_ctod[]										= "ctod";
 	const s8		cgc_ctot[]										= "ctot";
+	const s8		cgc_cxlatd[]									= "cxlatd";
+	const s8		cgc_cxlatt[]									= "cxlatt";
 	const s8		cgc_curdir[]									= "curdir";
 	const s8		cgc_cursorgetprop[]								= "cursorgetprop";
 	const s8		cgc_cursorsetprop[]								= "cursorsetprop";

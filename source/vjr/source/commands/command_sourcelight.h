@@ -456,6 +456,16 @@
 		{	0,										0,	0,	0,	0,	0	}
 	};
 
+	SSourceLightData gsSourceLight_cxlatd[] =
+	{
+		{	0,										0,	0,	0,	0,	0	}
+	};
+
+	SSourceLightData gsSourceLight_cxlatt[] =
+	{
+		{	0,										0,	0,	0,	0,	0	}
+	};
+
 	SSourceLightData gsSourceLight_curdir[] =
 	{
 		{	0,										0,	0,	0,	0,	0	}

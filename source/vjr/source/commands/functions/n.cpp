@@ -210,7 +210,7 @@
 						break;
 
 					case _NCSET_CTOD_CTOT_IS_OPTIMIZED:
-						lnIndexProp = _INDEX_SET_NCSET_BOF_IS_ZERO;
+						lnIndexProp = _INDEX_SET_NCSET_CTOD_CTOT_IS_OPTIMIZED;
 						break;
 
 					default:
