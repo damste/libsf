@@ -1294,8 +1294,253 @@ debug_break;
 
 	void ifunction_cxlatx_common(SReturnsParams* rpar, SVariable* varCxlatxString, bool tlIncludeTime)
 	{
+		s8			c;
+		u32			lnYear, lnMonth, lnDay, lnHour, lnMinute, lnSecond, lnMillisecond;
+		u32			lnI, lnJ;
+		f32			lfJulian;
+		s8*			lcFormat;
+		SVariable*	result;
+		struct {
+			u32		lnD, lnB, lnY, lnH, lnM, lnS, lnm, lnAP;
+			s8		buffer[16];
+			s8		day[4];
+			s8		month[4];
+			s8		year[8];
+			s8		hour[4];
+			s8		minute[4];
+			s8		second[4];
+			s8		milliseconds[8];
+			s8		ampm[4];
+		} dt;
+
+
 		iError_report_byNumber(_ERROR_FEATURE_NOT_AVAILABLE, NULL, false);
-		rpar->rp[0] = NULL;
+
+		//////////
+		// Parameter 1 must be character
+		//////
+			if (!iVariable_isValid(varCxlatxString) || !iVariable_isTypeCharacter(varCxlatxString))
+			{
+				iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varCxlatxString), false);
+				return;
+			}
+
+
+		//////////
+		// Create date string model	
+		//	DDxBBxYYYY HH:MM:SS.mmm XX
+		//	22-11-3333 12:34:56.789 AM
+		//////
+			switch (propGet_settings_Date(_settings))
+			{
+				case _SET_DATE_MDY:				// BBxDDxYYYY
+				case _SET_DATE_AMERICAN:		
+				case _SET_DATE_USA:				
+				case _SET_DATE_LONG:			
+				case _SET_DATE_SHORT:			
+					lcFormat = "BBxDDxYYYYTHH:MM:SS.mmm XX";
+					break;
+
+				case _SET_DATE_ANSI:			// YYYYxBBxDD
+				case _SET_DATE_TAIWAN:			
+				case _SET_DATE_YMD:				
+				case _SET_DATE_JAPAN:			
+					lcFormat = "YYYYxBBxDDTHH:MM:SS.mmm XX";
+					break;
+
+				case _SET_DATE_BRITISH:			// DDxBBxYYYY
+				case _SET_DATE_FRENCH:			
+				case _SET_DATE_DMY:				
+				case _SET_DATE_GERMAN:			
+				case _SET_DATE_ITALIAN:			
+					lcFormat = "DDxBBxYYYYTHH:MM:SS.mmm XX";
+					break;
+
+				default:
+					iError_report_byNumber(_ERROR_INTERNAL_ERROR, NULL, false);
+					return;
+			}
+
+
+		//////////
+		// Parsing
+		//////
+			memset(&dt, 0, sizeof(dt));
+			for (lnJ = 0, lnI = 0; lnI < 26 && lnJ < (u32)varCxlatxString->value.length; lnI++)
+			{
+				// Load in the next character
+				c = varCxlatxString->value.data[lnJ++];
+
+				// Is it a valid date/datetime character?
+				if ((c >= '0' && c <= '9' ) || c == '.' || c == '/' || c == '-' || c == ' ' || c == 'T' || c == ':' || c == 'A' || c == 'M' || c == 'p' || c == 'm')
+				{
+					switch (lcFormat[lnI])
+					{
+						case 'D':	// Day
+							if (c >= '0' && c <= '9' )		dt.day[dt.lnD++] = c;
+							break;
+
+						case 'B':	// Month
+							if (c >= '0' && c <= '9' )		dt.month[dt.lnB++] = c;
+							break;
+
+						case 'Y':	// Year
+							if (c >= '0' && c <= '9' )
+							{
+								dt.year[dt.lnY++] = c;
+
+							} else {
+								// YY -> YYYY
+								lnJ--;
+								lnI += 3 - dt.lnY;
+							}
+							break;
+
+						case 'H':	// Hour
+							if (c >= '0' && c <= '9' )		dt.hour[dt.lnH++] = c;
+							break;
+
+						case 'M':	// Minute
+							if (c >= '0' && c <= '9' )		dt.minute[dt.lnM++] = c;
+							break;
+
+						case 'S':	// Second
+							if (c >= '0' && c <= '9' )		dt.second[dt.lnS++] = c;
+							break;
+
+						case 'm':	// Millisecond
+							if (c >= '0' && c <= '9' )		dt.milliseconds[dt.lnm++] = c;
+							break;
+				
+						case 'T':	// Date-Time delimiter (' ','T')
+							if (c != ' ' && c != 'T')
+							{
+								// Error
+								iError_report_byNumber(_ERROR_INTERNAL_ERROR, NULL, false);
+								return;
+							}
+							break;
+
+						case 'x':	// Date delimiter ('.', '/', '-')
+							if (c != '.' && c != '/' && c != '-')
+							{
+								//Error
+								iError_report_byNumber(_ERROR_INTERNAL_ERROR, NULL, false);
+								return;
+							}
+							break;
+
+						case ':':	// Time delimiter
+						case ' ':	// AM/PM delimiter
+							if (c != lcFormat[lnI])
+							{
+								//Error
+								iError_report_byNumber(_ERROR_INTERNAL_ERROR, NULL, false);
+								return;
+							}
+							break;
+
+						case '.':	// Milliseconds delimiter
+							if (c != '.') 
+							{
+								// No milliseconds
+								--lnJ;
+								lnI += 3;
+							}
+							break;
+
+						case 'X':	// AM/PM
+							if (c == 'A' || c == 'M' || c == 'p' || c == 'm')
+							{
+								dt.ampm[dt.lnAP++] = c;
+
+							} else {
+								// Error
+								iError_report_byNumber(_ERROR_INTERNAL_ERROR, NULL, false);
+								return;
+							}
+							break;
+
+						default:
+							iError_report_byNumber(_ERROR_INTERNAL_ERROR, NULL, false);
+							return;
+					}
+				} else {
+					// Error
+					iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varCxlatxString), false);
+					return;
+				}
+			}			
+
+
+		//////////
+		// Create date value
+		//////
+			lnDay	= (u32)atoi(dt.day);
+			lnMonth	= (u32)atoi(dt.month);
+			lnYear	= (u32)iiDateMath_derive_century(atoi(dt.year));
+
+			// Check for valid date
+			if (lnMonth < 1 || lnMonth > 12 || lnYear < 1600 || lnYear > 2400 || !iiDateMath_isValidDate(lnYear, lnMonth, lnDay))
+			{
+				iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varCxlatxString), false);
+				return;
+			}
+
+			// Express as datetime or date
+			if (!tlIncludeTime)
+			{
+				// Dates are stored as YYYYMMDD internally
+				iiDateMath_get_YYYYMMDD_from_YyyyMmDd(dt.buffer, lnYear, lnMonth, lnDay);
+				result = iVariable_createAndPopulate_byText(_VAR_TYPE_DATE, dt.buffer, 8, false);
+				if (!result)
+					iError_report_byNumber(_ERROR_INTERNAL_ERROR, NULL, false);
+
+			} else {
+
+				//////////
+				// Create time value
+				//////
+					lnHour			= (u32)atoi(dt.hour);
+					lnMinute		= (u32)atoi(dt.minute);
+					lnSecond		= (u32)atoi(dt.second);
+					lnMillisecond	= (u32)atoi(dt.milliseconds);
+
+					// Apply AM/PM
+					if (dt.lnAP > 0)
+					{
+						lnHour = lnHour % 12;
+						if (memcmp(dt.ampm, "pm", 2) == 0)
+							lnHour += 12;
+					} 
+
+					// Check for valid time
+					if (lnHour < 0 || lnHour > 24 || lnMinute < 0 || lnMinute > 60 || lnSecond < 0 || lnSecond > 60 || lnMillisecond < 0 || lnMillisecond > 999)
+					{
+						iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varCxlatxString), false);
+						return;
+					}
+
+					// Create the variable
+					result = iVariable_create(_VAR_TYPE_DATETIME, NULL, true);
+					if (!result)
+					{
+						iError_report(cgcInternalError, false);
+						return;
+					}
+
+					// Date is stored as julian day number
+					result->value.data_dt->julian	= iiDateMath_get_julian_from_YyyyMmDd(&lfJulian, lnYear, lnMonth, lnDay);
+					result->value.data_dt->seconds = iiDateMath_get_seconds_from_HhMmSsMss(lnHour, lnMinute, lnSecond, lnMillisecond);
+			}
+			// All done
+
+
+		//////////
+		// Signify our result
+		//////
+// TODO:  Since this is an internal function, it should return the result, rather than setting rpar->rp[0];
+			rpar->rp[0] = result;
 	}
 
 

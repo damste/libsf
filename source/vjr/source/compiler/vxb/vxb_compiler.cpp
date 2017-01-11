@@ -14160,10 +14160,26 @@ debug_break;
 
 //////////
 //
+// Called to determine the century
+//
+//////
+	s32 iiDateMath_derive_century(u32 year)
+	{
+//TODO:  Rollover SET CENTURY TO nn ROLLOVER mm
+		     if (year < 50)		return(year + 2000);
+		else if (year < 100)	return(year + 1900);
+		else					return(year);
+	}
+
+
+
+
+//////////
+//
 // Called to obtain the day number into the year
 //
 //////
-	u32	iiDateMath_get_dayNumberIntoYear(u32 tnYear, u32 tnMonth, u32 tnDay)
+	u32	iiDateMath_get_dayNumberIntoYear(u32 year, u32 month, u32 day)
 	{
 		u32				result;
 		static cu32		cgDayOfYear[] = { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 };
@@ -14172,13 +14188,13 @@ debug_break;
 		/////////
 		// Compute the day of year
 		//////
-			result = cgDayOfYear[tnMonth - 1] + tnDay;
+			result = cgDayOfYear[month - 1] + day;
 
 
 		//////////
 		// Adjust for leap year
 		//////
-			if (tnMonth > 2 && iiDateMath_isLeapYear(tnYear))
+			if (month > 2 && iiDateMath_isLeapYear(year))
 				++result;
 
 

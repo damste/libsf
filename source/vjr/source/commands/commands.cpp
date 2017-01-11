@@ -244,6 +244,7 @@
 			case _ERROR_DISK_OPEN_ERROR:					return(cgcDiskOpenError);
 			case _ERROR_DISK_WRITE_ERROR:					return(cgcDiskWriteError);
 			case _ERROR_DISK_READ_ERROR:					return(cgcDiskReadError);
+			case _ERROR_INCOMPLETE_FEATURE:					return(cgcIncompleteFeature);
 
 			default:
 				return(cgcUnspecifiedError);

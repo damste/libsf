@@ -283,6 +283,7 @@
 	const u8		cgcDiskOpenError[]								= "disk open error";
 	const u8		cgcDiskWriteError[]								= "disk write error";
 	const u8		cgcDiskReadError[]								= "disk read error";
+	const u8		cgcIncompleteFeature[]							= "incomplete feature";
 #else
 	#error Language not specified
 #endif
