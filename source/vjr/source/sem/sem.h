@@ -22,9 +22,10 @@
 // Copyright (c) 2014-2017 by Rick C. Hodgin
 //////
 // Last update:
-//     Jul.06.2014
+//     Jan.12.2017
 //////
 // Change log:
+//     Jan.12.2017 - Simple HTML development
 //     Jul.06.2014 - Initial creation
 //////
 //
@@ -334,6 +335,13 @@
 	SFont*					iSEM_getRectAndFont							(SEM* sem, SObject* obj, RECT* rc);
 	void					iSEM_getColors								(SEM* sem, SObject* obj, SBgra& backColor, SBgra& foreColor);
 	u32						iSEM_render									(SEM* sem, SObject* obj, bool tlRenderCursorline);
+	bool					iSEM_verifyCursorIsVisible					(SEM* sem, SObject* obj);
+	bool					iSEM_onKeyDown_sourceCode					(SWindow* win, SObject* obj, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varCaps, SVariable* varAscii, SVariable* varVKey, SVariable* varIsCAS, SVariable* varIsAscii);
+	bool					iSEM_onKeyDown								(SWindow* win, SObject* obj, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varCaps, SVariable* varAscii, SVariable* varVKey, SVariable* varIsCAS, SVariable* varIsAscii);
+	void*					iSEM_findMate								(SEM* sem, SLine* lineStart, SComp* comp);
+	void					iSEM_addTooltipHighlight					(SEM* sem, SLine* line, SObject* obj, s8* tcText, s32 tnTextLength, bool tlShowAbove);
+
+	// Simple HTML
 	u32						iSEM_renderAs_simpleHtml					(SEM* sem, SObject* obj, bool tlRenderCursorline);
 	void					iiSEM_renderAs_simpleHtml__getColor			(SComp* comp, bool tlNumeric, bool tlAlpha, SBgra* color);
 	bool					iiSEM_renderAs_simpleHtml__applyZoom		(SObject* obj, s32* tnWidth, s32* tnHeight);
@@ -342,11 +350,6 @@
 	SFont*					iSEM_renderAs_simpleHtml__addFont			(SFont* fontsCreated[], s32* tnFontsCreated, u8* tcFontName, s32 tnFontSize, s32 tnFontWeight, s32 tnFontItalics, s32 tnFontUnderline);
 	void					iiSEM_renderAs_simpleHtml__pushFontStack	(SFont* fontStack[], SFont* font, s32* tnFontStack, s32 tnFontStackSize);
 	SFont*					iiSEM_renderAs_simpleHtml__popFontStack		(SFont* fontStack[], SFont* font, s32* tnFontStack, s32 tnFontStackSize);
-	bool					iSEM_verifyCursorIsVisible					(SEM* sem, SObject* obj);
-	bool					iSEM_onKeyDown_sourceCode					(SWindow* win, SObject* obj, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varCaps, SVariable* varAscii, SVariable* varVKey, SVariable* varIsCAS, SVariable* varIsAscii);
-	bool					iSEM_onKeyDown								(SWindow* win, SObject* obj, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varCaps, SVariable* varAscii, SVariable* varVKey, SVariable* varIsCAS, SVariable* varIsAscii);
-	void*					iSEM_findMate								(SEM* sem, SLine* lineStart, SComp* comp);
-	void					iSEM_addTooltipHighlight					(SEM* sem, SLine* line, SObject* obj, s8* tcText, s32 tnTextLength, bool tlShowAbove);
 
 
 	// Editor movements

@@ -701,6 +701,7 @@
 		// Setup _screen's editbox
 		//////
 			_screen_editbox->p.font		= iFont_create(cgcFontName_defaultFixed, 10, FW_MEDIUM, false, false);
+			_screen_editbox->p.sem->isSimpleHtml = true;
 			iEngine_set_event(_EVENT_ONKEYDOWN, NULL, _screen_editbox, (uptr)&iSEM_onKeyDown);
 			screenData					= _screen_editbox->p.sem;
 			screenData->showCursorLine	= true;

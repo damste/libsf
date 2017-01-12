@@ -14165,9 +14165,9 @@ debug_break;
 //////
 	s32 iiDateMath_derive_century(u32 year)
 	{
-		     if (year < gnSet_centuryRollover)		return(year + (gnSet_centuryYear * 100));
-		else if (year < 100)						return(year + ((gnSet_centuryYear + 1) * 100));
-		else										return(year);
+		     if (year < (u32)gnSet_centuryRollover)		return(year + (gnSet_centuryYear * 100));
+		else if (year < 100)							return(year + ((gnSet_centuryYear + 1) * 100));
+		else											return(year);
 	}
 
 

@@ -2901,518 +2901,6 @@ renderAsOnlyText:
 
 //////////
 //
-// Called to render (or re-render) the content as simple HTML.
-//
-// Supported commands:
-//				<html>		-- Indicates html block,	bgcolor, color, width, height, name [implied font name], size
-//				<hr>		-- Horizontal line,			bgcolor, height
-//				<br>		-- Break
-//				<font>		-- Change font,				bgcolor, color, name, size
-//				<tt>		-- Typewriter type (fixed point)
-//				<table>		-- Table definition,	bgcolor, color, align, valign, width
-//				<tr>		-- Table row,			bgcolor, color, align, valign, height
-//				<td>		-- Table column,		bgcolor, color, align, valign, colspan, width, height
-//				<b>			-- Bold
-//				<i>			-- Italics
-//				<u>			-- Underline
-//				<wNnn>		-- Specify a hard width, like <w1024>
-//				<hNnn>		-- Specify a hard height, like <h768>
-//				<xNnn>		-- Move to hard X pixel, like <x50>
-//				<yNnn>		-- Move to hard Y pixel, like <y20>
-//				&..;		-- nbsp, quo, lt, gt, Nn for ASCII characters
-//
-// Note:  Other attributes and tags are ignored.
-//
-//////
-	// Returns number of pixels rendered
-	u32 iSEM_renderAs_simpleHtml(SEM* sem, SObject* obj, bool tlRenderCursorline)
-	{
-		bool		llZoomed, llNumeric, llAlpha, llFontChange, llFallThru;
-		u32			lnPixelsRendered;
-		s32			lnX, lnY, lnLastHeight, lnWidth, lnHeight, lnScrollX, lnScrollY, lnStartHeight, lnStartWidth;
-		s32			lnFontSize, lnFontWeight, lnFontItalics, lnFontUnderline, lnFontStack, lnFontsCreated;
-		f64			lfZoom;
-		SBgra		color, bgcolor;
-		RECT		lrc, lrc2;
-		u8*			lcFontName;
-		SBitmap*	bmp;
-		SDatum*		fontName;
-		SComp*		comp;
-		SComp*		comp2;
-		SComp*		compNext;
-		SComp*		compNext2;
-		SFont*		font;
-		SFont*		fontStack[64];		// Up to 64 font changes on the stack
-		SFont*		fontsCreated[128];	// Fonts created during this process
-		SLine*		line;
-
-
-		// Make sure the environment is sane
-// TODO:  Working here
-_asm int 3;
-		lnPixelsRendered = 0;
-		if (sem && sem->firstLine && sem->lastLine && obj)
-		{
-			//////////
-			// We always re-parse when this function it's called
-			//////
-				for (line = sem->firstLine; line; line = line->ll.nextLine)
-				{
-					// Recompile everything and parse out tags
-					iEngine_parse_sourceCode_line(line, cgcSEMHtmlKeywords);
-					iComps_fixup_semHtmlGroupings(line);
-				}
-
-
-			//////////
-			// Grab the render bitmap
-			//////
-				lnWidth  = obj->bmp->bi.biWidth;
-				lnHeight = obj->bmp->bi.biHeight;
-
-				// Apply any zoom
-				llZoomed = iiSEM_renderAs_simpleHtml__applyZoom(obj, &lnWidth, &lnHeight);
-
-				// If it's the same size as the bitmap, use it, otherwise build a temporary one
-				if (!iiSEM_renderAs_simpleHtml__createBmp(&bmp, obj->bmp, lnWidth, lnHeight))
-					return(-1);
-
-
-			//////////
-			// Default font
-			//////
-				lnFontSize		= 12;
-				lnFontWeight	= FW_NORMAL;
-				lnFontItalics	= 0;
-				lnFontUnderline	= 0;
-				lcFontName		= (u8*)"Ubuntu";
-				font			= iSEM_renderAs_simpleHtml__addFont(&fontsCreated[0], &lnFontsCreated, lcFontName, lnFontSize, lnFontWeight, lnFontItalics, lnFontUnderline);
-
-
-			//////////
-			// Font stack
-			//////
-				memset(fontStack, 0, sizeof(fontStack));
-				lnFontStack = 0;
-				iiSEM_renderAs_simpleHtml__pushFontStack(&fontStack[0], font, &lnFontStack, sizeof(fontStack) / sizeof(fontStack[0]));
-
-
-			//////////
-			// Render through each line
-			//////
-				lnLastHeight	= 0;
-				fontName		= NULL;
-				for (line = sem->line_top; line; line = line->ll.nextLine)
-				{
-					// Iterate through each line
-					lnStartHeight	= lnHeight;
-					lnStartWidth	= lnWidth;
-					llFontChange	= false;
-					for (comp = line->compilerInfo->firstComp; comp; comp = comp->ll.nextComp)
-					{
-						// Is it an html tag?
-						comp2 = comp->firstCombined;
-						switch (comp->iCode)
-						{
-							case _ICODE_SEM_HTML_HTML:
-								if (comp->iCat == _ICAT_SEM_HTML_ATTRIBUTES)
-								{
-									// Has attributes
-									for (llFontChange = false; comp; comp = comp->ll.nextComp)
-									{
-										// Make sure the pattern needed exists
-										compNext	= iComps_getNth(comp);
-										compNext2	= iComps_getNth(compNext);
-										llNumeric	= (compNext && compNext->iCode == _ICODE_EQUAL_SIGN && compNext2 && compNext2->iCode == _ICODE_NUMERIC);
-										llAlpha		= (compNext && compNext->iCode == _ICODE_EQUAL_SIGN && compNext2 && (compNext2->iCode == _ICODE_DOUBLE_QUOTED_TEXT || compNext2->iCode == _ICODE_SINGLE_QUOTED_TEXT));
-
-										// html only allows certain attributes
-										llFallThru = false;
-										switch (comp->iCode)
-										{
-											case _ICODE_SEM_HTML_BGCOLOR:
-												iiSEM_renderAs_simpleHtml__getColor(compNext2, llNumeric, llAlpha, &bgcolor);
-												break;
-
-											case _ICODE_SEM_HTML_COLOR:
-												iiSEM_renderAs_simpleHtml__getColor(compNext2, llNumeric, llAlpha, &color);
-												break;
-
-											case _ICODE_SEM_HTML_HEIGHT:
-												lnHeight = iComps_getAs_s32(comp);
-												break;
-
-											case _ICODE_SEM_HTML_WIDTH:
-												lnWidth = iComps_getAs_s32(comp);
-												break;
-
-											case _ICODE_SEM_HTML_NAME:
-// TODO:  working here ... not quite sure how I want to handle this:
-												if ((fontName = iComps_getAs_datum(comp, fontName)))
-													lcFontName	= fontName->data_u8;
-												break;
-
-											case _ICODE_SEM_HTML_SIZE:
-												lnFontSize = iComps_getAs_s32(comp);
-												break;
-
-											default:
-												llFallThru = true;
-												break;
-										}
-										llFontChange |= (!llFallThru);
-									}
-
-								} else {
-									// Ignore this tag
-									// No code
-								}
-								break;
-
-							case _ICODE_SEM_HTML_HR:
-								// Moving to the next row, drawing a horizontal line, and then moving to the next row
-								break;
-							case _ICODE_SEM_HTML_BR:
-								// Moving to the next row
-								lnY += lnLastHeight;
-								lnX = 0;
-								break;
-							case _ICODE_SEM_HTML_FONT:
-								// Setting font parameters
-								break;
-							case _ICODE_SEM_HTML_TT:
-								// Switching to a monochrome font in the current size
-								break;
-
-// 							case _ICODE_SEM_HTML_TABLE:
-// 							case _ICODE_SEM_HTML_TR:
-// 							case _ICODE_SEM_HTML_TD:
-//								// Need to spawn off a secondary processor for this one, to determine its size in the first step, to render in the second step, and then redraw here in the third step
-// 								break;
-
-							case _ICODE_SEM_HTML_B:
-								// Turning on bold
-								break;
-							case _ICODE_SEM_HTML_I:
-								// Turning on italic
-								break;
-							case _ICODE_SEM_HTML_U:
-								// Turning on underline
-								break;
-							case _ICODE_SEM_HTML_W:
-								// Setting a hard new width for the HTML render
-								break;
-							case _ICODE_SEM_HTML_H:
-								// Setting a hard new height for the HTML render
-								break;
-							case _ICODE_SEM_HTML_X:
-								// Repositioning to a hard X coordinate
-								break;
-							case _ICODE_SEM_HTML_Y:
-								// Repositioning to a hard Y coordinate
-								break;
-							case _ICODE_SEM_HTML_BGCOLOR:
-								// Setting a hard background color
-								break;
-							case _ICODE_SEM_HTML_COLOR:
-								// Setting a hard foreground color
-								break;
-							case _ICODE_SEM_HTML_ALIGN:
-								// Setting a hard horizontal alignment mode
-								break;
-							case _ICODE_SEM_HTML_VALIGN:
-								// Setting a hard vertical alignment mode
-								break;
-							case _ICODE_SEM_HTML_HEIGHT:
-								// Setting a hard new height for the HTML render
-								break;
-							case _ICODE_SEM_HTML_WIDTH:
-								// Setting a hard new width for the HTML render
-								break;
-							case _ICODE_SEM_HTML_NAME:
-								// Setting a hard new font name
-								break;
-							case _ICODE_SEM_HTML_SIZE:
-								// Setting a hard new font size
-								break;
-
-							default:
-								// It's something to render
-								SelectObject(bmp->hdc, font->hfont);
-								SetTextColor(bmp->hdc, RGB(color.red, color.grn, color.blu));
-								SetBkColor(bmp->hdc, RGB(bgcolor.red, bgcolor.grn, bgcolor.blu));
-								SetBkMode(bmp->hdc, OPAQUE);
-
-								// Calculate rectangle
-								SetRect(&lrc, 0, 0, 0, 0);
-								DrawText(bmp->hdc, comp->line->sourceCode->data + comp->start, comp->length, &lrc, DT_LEFT | DT_CALCRECT);
-
-								// Render
-								SetRect(&lrc2, lnX, lnY, lnX + lrc.right - lrc.left, lnY + lrc.bottom - lrc.top);
-								DrawText(bmp->hdc, comp->line->sourceCode->data + comp->start, comp->length, &lrc2, DT_LEFT);
-
-								// Adjust the position by the size
-								lnX				+= lrc.right - lrc.left;
-								lnLastHeight	= lrc.bottom - lrc.top;
-								break;
-						}
-
-						// Adjust the width and height if specified to do so
-						if (lnHeight != lnStartHeight && lnWidth != lnStartWidth)
-						{
-							// Adjust to the new height
-							llZoomed = iiSEM_renderAs_simpleHtml__applyZoom(obj, &lnWidth, &lnHeight);
-							if (!iiSEM_renderAs_simpleHtml__createBmp(&bmp, obj->bmp, lnWidth, lnHeight))
-							{
-								// Memory error
-								lnPixelsRendered = _ERROR_OUT_OF_MEMORY;
-								goto error_exit;
-							}
-
-							// Reset our variables
-							lnStartHeight	= lnHeight;
-							lnStartWidth	= lnWidth;
-						}
-
-						// Get the new default font if we need
-						if (llFontChange)
-						{
-							// Create the font
-							font = iFont_create(lcFontName, lnFontSize, lnFontWeight, lnFontItalics, lnFontUnderline);
-
-							// Add it to the stack
-							if (lnFontStack == 1)
-								fontStack[0] = font;	// Replace the first/main entry created above
-
-							// Indicate our font has not yet again changed
-							llFontChange = false;
-						}
-					}
-
-					// Are we done?
-					if (line == sem->lastLine)
-						break;
-				}
-
-		}
-
-error_exit:
-
-		// Indicate how many pixels were rendered
-		return(lnPixelsRendered);
-	}
-
-	// Upon entry, comp is either numeric or alpha
-	void iiSEM_renderAs_simpleHtml__getColor(SComp* comp, bool tlNumeric, bool tlAlpha, SBgra* color)
-	{
-		u8 lnBlu, lnGrn, lnRed;
-
-
-		// Extract as indicated
-		if (tlAlpha)
-		{
-			// It's color=".."
-			if (comp->line->sourceCode->data_s8[1] == '#')
-			{
-				// It's #color
-				if (comp->length == 9)
-				{
-					// It's "#rrggbb"
-					if (iMath_getAs_rrggbb(comp->line->sourceCode->data_u8 + 2, &lnBlu, &lnGrn, &lnRed))
-						color->color = bgr(lnBlu, lnGrn, lnRed);
-
-				} else if (comp->length == 6) {
-					// It's "#rgb"
-					if (iMath_getAs_rgb(comp->line->sourceCode->data_u8 + 2, &lnBlu, &lnGrn, &lnRed))
-						color->color = bgr(lnBlu, lnGrn, lnRed);
-				}
-				//else We don't know what it is, so ignore it
-
-			} else {
-				// It's color
-				if (comp->length == 8)
-				{
-					// It's "rrggbb"
-					if (iMath_getAs_rrggbb(comp->line->sourceCode->data_u8 + 1, &lnBlu, &lnGrn, &lnRed))
-						color->color = bgr(lnBlu, lnGrn, lnRed);
-
-				} else if (comp->length == 5) {
-					// It's "rgb"
-					if (iMath_getAs_rgb(comp->line->sourceCode->data_u8 + 1, &lnBlu, &lnGrn, &lnRed))
-						color->color = bgr(lnBlu, lnGrn, lnRed);
-				}
-			}
-
-		} else if (tlNumeric) {
-			// It's color=Nnn
-			color->color = (u32)iComps_getAs_s64(comp);
-		}
-	}
-
-
-
-
-//////////
-//
-// Applies a zoom factor to the indicated values
-//
-//////
-	bool iiSEM_renderAs_simpleHtml__applyZoom(SObject* obj, s32* tnWidth, s32* tnHeight)
-	{
-		bool		llZoomed;
-		f64			lfZoom;
-		SVariable*	varZoom;
-
-
-		// Extract the zoom member (if present)
-		varZoom = iObjProp_get(obj, _INDEX_HTML_ZOOM);
-		if (varZoom && between((lfZoom = iiVariable_getAs_f64(varZoom)), _HTML_ZOOM_MIN, _HTML_ZOOM_MAX) && iiVariable_getAs_f64(varZoom) != 1.0)
-		{
-			// Force it into range
-			llZoomed	= true;
-			lfZoom		= min(max(lfZoom, _HTML_ZOOM_MIN), _HTML_ZOOM_MAX);
-
-			// Determine the bitmap size we can render
-			*tnWidth	= (s32)((f64)*tnWidth  / lfZoom);
-			*tnHeight	= (s32)((f64)*tnHeight / lfZoom);
-
-		} else {
-			// Not zoomed
-			llZoomed	= false;
-		}
-
-		// Indicate if it's zoomed
-		return(llZoomed);
-	}
-
-
-
-
-//////////
-//
-// Creates the bitmap based on the size
-//
-//////
-	bool iiSEM_renderAs_simpleHtml__createBmp(SBitmap** bmpOld, SBitmap* bmpObj, s32 tnWidth, s32 tnHeight)
-	{
-		SBitmap* bmp;
-
-
-		// If there's already a bitmap and the sizes are different
-		bmp = *bmpOld;
-		if (bmp && (bmp != bmpObj) && (bmp->bi.biWidth != tnWidth || bmp->bi.biHeight != tnHeight))
-			iBmp_delete(bmpOld, true, true);
-
-		// Create the bitmap
-		if (bmpObj->bi.biWidth == tnWidth && bmpObj->bi.biHeight == tnHeight)
-		{
-			// Use the default bitmap
-			bmp = bmpObj;
-
-		} else {
-			// Create a temporary one to render into
-			if ((bmp = iBmp_allocate()))
-				iBmp_createBySize(bmp, tnWidth, tnHeight, bmpObj->bi.biBitCount);
-			
-		}
-
-		// Make sure we have a valid bitmap
-		if (!bmp || bmp->bi.biWidth != tnWidth || bmp->bi.biHeight)
-		{
-			// Delete the bitmap (if it was partially created)
-			if (bmp != bmpObj)
-				iBmp_delete(&bmp, true, true);
-
-			// Indicate failure
-			*bmpOld = NULL;
-			return(false);
-
-		} else {
-			// Indicate success
-			*bmpOld = bmp;
-			return(true);
-		}
-	}
-
-
-
-
-//////////
-//
-// Create a font and add it to the list of fonts we've created for this render
-//
-//////
-	SFont* iSEM_renderAs_simpleHtml__addFont(SFont* fontsCreated[], s32* tnFontsCreated, u8* tcFontName, s32 tnFontSize, s32 tnFontWeight, s32 tnFontItalics, s32 tnFontUnderline)
-	{
-		s32		lnI;
-		SFont*	font;
-
-
-		// Search to see if the font already exists
-		for (lnI = 0; lnI < *tnFontsCreated; lnI++)
-		{
-			// Grab the font as a pointer
-			font = fontsCreated[lnI];
-
-			// Is this a duplicate?
-			if (iDatum_compare(&font->name, tcFontName, -1) && font->_size == tnFontSize && font->_weight == tnFontWeight && font->_italics == tnFontItalics && font->_underline == tnFontUnderline)
-				return(font);		// This is a match
-		}
-
-		// Create the font
-		font = iFont_create(tcFontName, tnFontSize, tnFontWeight, tnFontItalics, tnFontUnderline);
-		if (font)
-		{
-			// Add it to the list of fonts we've used
-			fontsCreated[*tnFontsCreated] = font;
-			++*tnFontsCreated;
-		}
-
-		// Indicate success or failure
-		return(font);
-	}
-
-
-
-
-//////////
-//
-// Push the font onto stack
-//
-//////
-	void iiSEM_renderAs_simpleHtml__pushFontStack(SFont* fontStack[], SFont* font, s32* tnFontStack, s32 tnFontStackSize)
-	{
-		// Are we still within the valid space?
-		if (*tnFontStack < tnFontStackSize)
-			fontStack[*tnFontStack] = font;		// Push
-
-		// Point to the next slot
-		++*tnFontStack;							// Note:  This stack may grow well beyond its physical size.  In such a case it will use the maximum entry repeatedly.
-	}
-
-
-
-
-//////////
-//
-// Pop the font onto stack
-//
-//////
-	SFont* iiSEM_renderAs_simpleHtml__popFontStack(SFont* fontStack[], SFont* font, s32* tnFontStack, s32 tnFontStackSize)
-	{
-		// Decrease the stack pointer
-		if (tnFontStack > 0)
-			--*tnFontStack;
-
-		// Grab the font (or the maximum font if we're too deep
-		return(fontStack[min(*tnFontStack, tnFontStackSize - 1)]);
-	}
-
-
-
-
-//////////
-//
 // Called to render the highlighted components at their indicated locations (for syntax highlighting)
 //
 //////
@@ -3705,6 +3193,525 @@ error_exit:
 
 		// Indicate our status
 		return(llChanged);
+	}
+
+
+
+
+//////////
+//
+// Called to render (or re-render) the content as simple HTML.
+//
+// Supported commands:
+//				<html>		-- Indicates html block,	bgcolor, color, width, height, name [implied font name], size
+//				<hr>		-- Horizontal line,			bgcolor, height
+//				<br>		-- Break
+//				<font>		-- Change font,				bgcolor, color, name, size
+//				<tt>		-- Typewriter type (fixed point)
+//				<table>		-- Table definition,	bgcolor, color, align, valign, width
+//				<tr>		-- Table row,			bgcolor, color, align, valign, height
+//				<td>		-- Table column,		bgcolor, color, align, valign, colspan, width, height
+//				<b>			-- Bold
+//				<i>			-- Italics
+//				<u>			-- Underline
+//				<wNnn>		-- Specify a hard width, like <w1024>
+//				<hNnn>		-- Specify a hard height, like <h768>
+//				<xNnn>		-- Move to hard X pixel, like <x50>
+//				<yNnn>		-- Move to hard Y pixel, like <y20>
+//				&..;		-- nbsp, quo, lt, gt, Nn for ASCII characters
+//
+// Note:  Other attributes and tags are ignored.
+//
+//////
+	// Returns number of pixels rendered
+	u32 iSEM_renderAs_simpleHtml(SEM* sem, SObject* obj, bool tlRenderCursorline)
+	{
+		bool		llZoomed, llNumeric, llAlpha, llFontChange, llFallThru;
+		u32			lnPixelsRendered;
+		s32			lnX, lnY, lnLastHeight, lnWidth, lnHeight, lnScrollX, lnScrollY, lnStartHeight, lnStartWidth;
+		s32			lnFontSize, lnFontWeight, lnFontItalics, lnFontUnderline, lnFontStack, lnFontsCreated;
+		f64			lfZoom;
+		SBgra		color, bgcolor, defaultBackColor, defaultForeColor;
+		RECT		rc, lrc, lrc2;
+		u8*			lcFontName;
+		SBitmap*	bmp;
+		SDatum*		fontName;
+		SComp*		comp;
+		SComp*		comp2;
+		SComp*		compNext;
+		SComp*		compNext2;
+		SFont*		font;
+		SFont*		fontStack[64];		// Up to 64 font changes on the stack
+		SFont*		fontsCreated[128];	// Fonts created during this process
+		SLine*		line;
+
+
+		// Make sure the environment is sane
+		lnPixelsRendered = 0;
+		if (sem && obj && obj->bmp)
+		{
+			// Fill the rectangle with an empty background
+			font = iSEM_getRectAndFont(sem, obj, &rc);
+			iSEM_getColors(sem, obj, defaultBackColor, defaultForeColor);
+			iBmp_fillRect(obj->bmp, &rc, defaultBackColor, defaultBackColor, defaultBackColor, defaultBackColor, false, NULL, false);
+
+			// Draw any content
+			if (sem->firstLine && sem->lastLine && obj)
+			{
+				//////////
+				// We always re-parse when this function it's called
+				//////
+					for (line = sem->firstLine; line; line = line->ll.nextLine)
+					{
+						// Recompile everything and parse out tags
+						iEngine_parse_sourceCode_line(line, cgcSEMHtmlKeywords);
+						iComps_fixup_semHtmlGroupings(line);
+					}
+
+
+				//////////
+				// Grab the render bitmap
+				//////
+					lnWidth  = obj->bmp->bi.biWidth;
+					lnHeight = obj->bmp->bi.biHeight;
+
+					// Apply any zoom
+					llZoomed = iiSEM_renderAs_simpleHtml__applyZoom(obj, &lnWidth, &lnHeight);
+
+					// If it's the same size as the bitmap, use it, otherwise build a temporary one
+					if (!iiSEM_renderAs_simpleHtml__createBmp(&bmp, obj->bmp, lnWidth, lnHeight))
+						return(-1);
+
+
+				//////////
+				// Default font
+				//////
+					lnFontSize		= 12;
+					lnFontWeight	= FW_NORMAL;
+					lnFontItalics	= 0;
+					lnFontUnderline	= 0;
+					lcFontName		= (u8*)"Ubuntu";
+					font			= iSEM_renderAs_simpleHtml__addFont(&fontsCreated[0], &lnFontsCreated, lcFontName, lnFontSize, lnFontWeight, lnFontItalics, lnFontUnderline);
+
+
+				//////////
+				// Font stack
+				//////
+					memset(fontStack, 0, sizeof(fontStack));
+					lnFontStack = 0;
+					iiSEM_renderAs_simpleHtml__pushFontStack(&fontStack[0], font, &lnFontStack, sizeof(fontStack) / sizeof(fontStack[0]));
+
+
+				//////////
+				// Render through each line
+				//////
+					lnLastHeight	= 0;
+					fontName		= NULL;
+					for (line = sem->line_top, lnX = 0, lnY = 0; line; line = line->ll.nextLine)
+					{
+						// Iterate through each line
+						lnStartHeight	= lnHeight;
+						lnStartWidth	= lnWidth;
+						llFontChange	= false;
+						for (comp = line->compilerInfo->firstComp; comp; comp = comp->ll.nextComp)
+						{
+							// Is it an html tag?
+							comp2 = comp->firstCombined;
+							switch (comp->iCode)
+							{
+								case _ICODE_SEM_HTML_HTML:
+									if (comp->iCat == _ICAT_SEM_HTML_ATTRIBUTES)
+									{
+										// Has attributes
+										for (llFontChange = false; comp; comp = comp->ll.nextComp)
+										{
+											// Make sure the pattern needed exists
+											compNext	= iComps_getNth(comp);
+											compNext2	= iComps_getNth(compNext);
+											llNumeric	= (compNext && compNext->iCode == _ICODE_EQUAL_SIGN && compNext2 && compNext2->iCode == _ICODE_NUMERIC);
+											llAlpha		= (compNext && compNext->iCode == _ICODE_EQUAL_SIGN && compNext2 && (compNext2->iCode == _ICODE_DOUBLE_QUOTED_TEXT || compNext2->iCode == _ICODE_SINGLE_QUOTED_TEXT));
+
+											// html only allows certain attributes
+											llFallThru = false;
+											switch (comp->iCode)
+											{
+												case _ICODE_SEM_HTML_BGCOLOR:
+													iiSEM_renderAs_simpleHtml__getColor(compNext2, llNumeric, llAlpha, &bgcolor);
+													break;
+
+												case _ICODE_SEM_HTML_COLOR:
+													iiSEM_renderAs_simpleHtml__getColor(compNext2, llNumeric, llAlpha, &color);
+													break;
+
+												case _ICODE_SEM_HTML_HEIGHT:
+													lnHeight = iComps_getAs_s32(comp);
+													break;
+
+												case _ICODE_SEM_HTML_WIDTH:
+													lnWidth = iComps_getAs_s32(comp);
+													break;
+
+												case _ICODE_SEM_HTML_NAME:
+// TODO:  working here ... not quite sure how I want to handle this:
+													if ((fontName = iComps_getAs_datum(comp, fontName)))
+														lcFontName	= fontName->data_u8;
+													break;
+
+												case _ICODE_SEM_HTML_SIZE:
+													lnFontSize = iComps_getAs_s32(comp);
+													break;
+
+												default:
+													llFallThru = true;
+													break;
+											}
+											llFontChange |= (!llFallThru);
+										}
+
+									} else {
+										// Ignore this tag
+										// No code
+									}
+									break;
+
+								case _ICODE_SEM_HTML_HR:
+									// Moving to the next row, drawing a horizontal line, and then moving to the next row
+									break;
+								case _ICODE_SEM_HTML_BR:
+									// Moving to the next row
+									lnY += lnLastHeight;
+									lnX = 0;
+									break;
+								case _ICODE_SEM_HTML_FONT:
+									// Setting font parameters
+									break;
+								case _ICODE_SEM_HTML_TT:
+									// Switching to a monochrome font in the current size
+									break;
+
+//								case _ICODE_SEM_HTML_TABLE:
+//								case _ICODE_SEM_HTML_TR:
+//								case _ICODE_SEM_HTML_TD:
+//									// Need to spawn off a secondary processor for this one, to determine its size in the first step, to render in the second step, and then redraw here in the third step
+//									break;
+
+								case _ICODE_SEM_HTML_B:
+									// Turning on bold
+									break;
+								case _ICODE_SEM_HTML_I:
+									// Turning on italic
+									break;
+								case _ICODE_SEM_HTML_U:
+									// Turning on underline
+									break;
+								case _ICODE_SEM_HTML_W:
+									// Setting a hard new width for the HTML render
+									break;
+								case _ICODE_SEM_HTML_H:
+									// Setting a hard new height for the HTML render
+									break;
+								case _ICODE_SEM_HTML_X:
+									// Repositioning to a hard X coordinate
+									break;
+								case _ICODE_SEM_HTML_Y:
+									// Repositioning to a hard Y coordinate
+									break;
+								case _ICODE_SEM_HTML_BGCOLOR:
+									// Setting a hard background color
+									break;
+								case _ICODE_SEM_HTML_COLOR:
+									// Setting a hard foreground color
+									break;
+								case _ICODE_SEM_HTML_ALIGN:
+									// Setting a hard horizontal alignment mode
+									break;
+								case _ICODE_SEM_HTML_VALIGN:
+									// Setting a hard vertical alignment mode
+									break;
+								case _ICODE_SEM_HTML_HEIGHT:
+									// Setting a hard new height for the HTML render
+									break;
+								case _ICODE_SEM_HTML_WIDTH:
+									// Setting a hard new width for the HTML render
+									break;
+								case _ICODE_SEM_HTML_NAME:
+									// Setting a hard new font name
+									break;
+								case _ICODE_SEM_HTML_SIZE:
+									// Setting a hard new font size
+									break;
+
+								default:
+									// It's something to render
+									SelectObject(bmp->hdc, font->hfont);
+									SetTextColor(bmp->hdc, RGB(color.red, color.grn, color.blu));
+									SetBkColor(bmp->hdc, RGB(bgcolor.red, bgcolor.grn, bgcolor.blu));
+									SetBkMode(bmp->hdc, OPAQUE);
+
+									// Calculate rectangle
+									SetRect(&lrc, 0, 0, 0, 0);
+									DrawText(bmp->hdc, comp->line->sourceCode->data + comp->start, comp->length, &lrc, DT_LEFT | DT_CALCRECT);
+
+									// Render
+									SetRect(&lrc2, lnX, lnY, lnX + lrc.right - lrc.left, lnY + lrc.bottom - lrc.top);
+									DrawText(bmp->hdc, comp->line->sourceCode->data + comp->start, comp->length, &lrc2, DT_LEFT);
+
+									// Adjust the position by the size
+									lnX				+= lrc.right - lrc.left;
+									lnLastHeight	= lrc.bottom - lrc.top;
+									break;
+							}
+
+							// Adjust the width and height if specified to do so
+							if (lnHeight != lnStartHeight && lnWidth != lnStartWidth)
+							{
+								// Adjust to the new height
+								llZoomed = iiSEM_renderAs_simpleHtml__applyZoom(obj, &lnWidth, &lnHeight);
+								if (!iiSEM_renderAs_simpleHtml__createBmp(&bmp, obj->bmp, lnWidth, lnHeight))
+								{
+									// Memory error
+									lnPixelsRendered = _ERROR_OUT_OF_MEMORY;
+									goto error_exit;
+								}
+
+								// Reset our variables
+								lnStartHeight	= lnHeight;
+								lnStartWidth	= lnWidth;
+							}
+
+							// Get the new default font if we need
+							if (llFontChange)
+							{
+								// Create the font
+								font = iFont_create(lcFontName, lnFontSize, lnFontWeight, lnFontItalics, lnFontUnderline);
+
+								// Add it to the stack
+								if (lnFontStack == 1)
+									fontStack[0] = font;	// Replace the first/main entry created above
+
+								// Indicate our font has not yet again changed
+								llFontChange = false;
+							}
+						}
+
+						// Are we done?
+						if (line == sem->lastLine)
+							break;
+					}
+
+			}
+		}
+
+error_exit:
+
+		// Indicate how many pixels were rendered
+		return(lnPixelsRendered);
+	}
+
+	// Upon entry, comp is either numeric or alpha
+	void iiSEM_renderAs_simpleHtml__getColor(SComp* comp, bool tlNumeric, bool tlAlpha, SBgra* color)
+	{
+		u8 lnBlu, lnGrn, lnRed;
+
+
+		// Extract as indicated
+		if (tlAlpha)
+		{
+			// It's color=".."
+			if (comp->line->sourceCode->data_s8[1] == '#')
+			{
+				// It's #color
+				if (comp->length == 9)
+				{
+					// It's "#rrggbb"
+					if (iMath_getAs_rrggbb(comp->line->sourceCode->data_u8 + 2, &lnBlu, &lnGrn, &lnRed))
+						color->color = bgr(lnBlu, lnGrn, lnRed);
+
+				} else if (comp->length == 6) {
+					// It's "#rgb"
+					if (iMath_getAs_rgb(comp->line->sourceCode->data_u8 + 2, &lnBlu, &lnGrn, &lnRed))
+						color->color = bgr(lnBlu, lnGrn, lnRed);
+				}
+				//else We don't know what it is, so ignore it
+
+			} else {
+				// It's color
+				if (comp->length == 8)
+				{
+					// It's "rrggbb"
+					if (iMath_getAs_rrggbb(comp->line->sourceCode->data_u8 + 1, &lnBlu, &lnGrn, &lnRed))
+						color->color = bgr(lnBlu, lnGrn, lnRed);
+
+				} else if (comp->length == 5) {
+					// It's "rgb"
+					if (iMath_getAs_rgb(comp->line->sourceCode->data_u8 + 1, &lnBlu, &lnGrn, &lnRed))
+						color->color = bgr(lnBlu, lnGrn, lnRed);
+				}
+			}
+
+		} else if (tlNumeric) {
+			// It's color=Nnn
+			color->color = (u32)iComps_getAs_s64(comp);
+		}
+	}
+
+
+
+
+//////////
+//
+// Applies a zoom factor to the indicated values
+//
+//////
+	bool iiSEM_renderAs_simpleHtml__applyZoom(SObject* obj, s32* tnWidth, s32* tnHeight)
+	{
+		bool		llZoomed;
+		f64			lfZoom;
+		SVariable*	varZoom;
+
+
+		// Extract the zoom member (if present)
+		varZoom = iObjProp_get(obj, _INDEX_HTML_ZOOM);
+		if (varZoom && between((lfZoom = iiVariable_getAs_f64(varZoom)), _HTML_ZOOM_MIN, _HTML_ZOOM_MAX) && iiVariable_getAs_f64(varZoom) != 1.0)
+		{
+			// Force it into range
+			llZoomed	= true;
+			lfZoom		= min(max(lfZoom, _HTML_ZOOM_MIN), _HTML_ZOOM_MAX);
+
+			// Determine the bitmap size we can render
+			*tnWidth	= (s32)((f64)*tnWidth  / lfZoom);
+			*tnHeight	= (s32)((f64)*tnHeight / lfZoom);
+
+		} else {
+			// Not zoomed
+			llZoomed	= false;
+		}
+
+		// Indicate if it's zoomed
+		return(llZoomed);
+	}
+
+
+
+
+//////////
+//
+// Creates the bitmap based on the size
+//
+//////
+	bool iiSEM_renderAs_simpleHtml__createBmp(SBitmap** bmpOld, SBitmap* bmpObj, s32 tnWidth, s32 tnHeight)
+	{
+		SBitmap* bmp;
+
+
+		// If there's already a bitmap and the sizes are different
+		bmp = *bmpOld;
+		if (bmp && (bmp != bmpObj) && (bmp->bi.biWidth != tnWidth || bmp->bi.biHeight != tnHeight))
+			iBmp_delete(bmpOld, true, true);
+
+		// Create the bitmap
+		if (bmpObj->bi.biWidth == tnWidth && bmpObj->bi.biHeight == tnHeight)
+		{
+			// Use the default bitmap
+			bmp = bmpObj;
+
+		} else {
+			// Create a temporary one to render into
+			if ((bmp = iBmp_allocate()))
+				iBmp_createBySize(bmp, tnWidth, tnHeight, bmpObj->bi.biBitCount);
+			
+		}
+
+		// Make sure we have a valid bitmap
+		if (!bmp || bmp->bi.biWidth != tnWidth || bmp->bi.biHeight)
+		{
+			// Delete the bitmap (if it was partially created)
+			if (bmp != bmpObj)
+				iBmp_delete(&bmp, true, true);
+
+			// Indicate failure
+			*bmpOld = NULL;
+			return(false);
+
+		} else {
+			// Indicate success
+			*bmpOld = bmp;
+			return(true);
+		}
+	}
+
+
+
+
+//////////
+//
+// Create a font and add it to the list of fonts we've created for this render
+//
+//////
+	SFont* iSEM_renderAs_simpleHtml__addFont(SFont* fontsCreated[], s32* tnFontsCreated, u8* tcFontName, s32 tnFontSize, s32 tnFontWeight, s32 tnFontItalics, s32 tnFontUnderline)
+	{
+		s32		lnI;
+		SFont*	font;
+
+
+		// Search to see if the font already exists
+		for (lnI = 0; lnI < *tnFontsCreated; lnI++)
+		{
+			// Grab the font as a pointer
+			font = fontsCreated[lnI];
+
+			// Is this a duplicate?
+			if (iDatum_compare(&font->name, tcFontName, -1) && font->_size == tnFontSize && font->_weight == tnFontWeight && font->_italics == tnFontItalics && font->_underline == tnFontUnderline)
+				return(font);		// This is a match
+		}
+
+		// Create the font
+		font = iFont_create(tcFontName, tnFontSize, tnFontWeight, tnFontItalics, tnFontUnderline);
+		if (font)
+		{
+			// Add it to the list of fonts we've used
+			fontsCreated[*tnFontsCreated] = font;
+			++*tnFontsCreated;
+		}
+
+		// Indicate success or failure
+		return(font);
+	}
+
+
+
+
+//////////
+//
+// Push the font onto stack
+//
+//////
+	void iiSEM_renderAs_simpleHtml__pushFontStack(SFont* fontStack[], SFont* font, s32* tnFontStack, s32 tnFontStackSize)
+	{
+		// Are we still within the valid space?
+		if (*tnFontStack < tnFontStackSize)
+			fontStack[*tnFontStack] = font;		// Push
+
+		// Point to the next slot
+		++*tnFontStack;							// Note:  This stack may grow well beyond its physical size.  In such a case it will use the maximum entry repeatedly.
+	}
+
+
+
+
+//////////
+//
+// Pop the font onto stack
+//
+//////
+	SFont* iiSEM_renderAs_simpleHtml__popFontStack(SFont* fontStack[], SFont* font, s32* tnFontStack, s32 tnFontStackSize)
+	{
+		// Decrease the stack pointer
+		if (tnFontStack > 0)
+			--*tnFontStack;
+
+		// Grab the font (or the maximum font if we're too deep
+		return(fontStack[min(*tnFontStack, tnFontStackSize - 1)]);
 	}
 
 
