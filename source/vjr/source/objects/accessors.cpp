@@ -177,7 +177,7 @@
 			{
 				// Validate against the object class if available, and if not then the base class if available, and if not then just copy
 				     if (!tlNestedSet && objProp->_setterObject     && tnIndex <  (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject(obj, tnIndex, var, varNewValue, baseProp, objProp);
-				else if (!tlNestedSet && objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, varNewValue, false);
+				else if (!tlNestedSet && objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, NULL, varNewValue, false);
 				else if (!tlNestedSet && baseProp->_setterBase)														llResult = baseProp->setterBase	(obj, tnIndex, var, varNewValue, baseProp, objProp);
 				else																								llResult = iVariable_copy(var, varNewValue);
 
@@ -245,7 +245,7 @@
 
 				// Perform the set
 				     if (objProp->_setterObject     && tnIndex <  (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject(obj, tnIndex, var, varNewValue, baseProp, objProp);
-				else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, varNewValue, false);
+				else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, NULL, varNewValue, false);
 				else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(obj, tnIndex, var, varNewValue, baseProp, objProp);
 				else																				llResult = iVariable_set_bitmap(var, bmp);
 
@@ -344,7 +344,7 @@
 
 				// Perform the set
 				     if (objProp->_setterObject     && tnIndex <  (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject(obj, tnIndex, var, varNewValue, baseProp, objProp);
-				else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, varNewValue, false);
+				else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, NULL, varNewValue, false);
 				else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(obj, tnIndex, var, varNewValue, baseProp, objProp);
 				else																				llResult = iVariable_copy(var, varNewValue);
 
@@ -404,7 +404,7 @@
 
 				// Perform the set
 				     if (objProp->_setterObject     && tnIndex <  (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject(obj, tnIndex, var, varNewValue, baseProp, objProp);
-				else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, varNewValue, false);
+				else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, NULL, varNewValue, false);
 				else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(obj, tnIndex, var, varNewValue, baseProp, objProp);
 				else																				llResult = iVariable_copy(var, varNewValue);
 
@@ -497,7 +497,7 @@
 
 					// Perform the set
 						 if (objProp->_setterObject     && tnIndex <  (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject(obj, tnIndex, var, varNewValue, baseProp, objProp);
-					else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, varNewValue, false);
+					else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, NULL, varNewValue, false);
 					else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(obj, tnIndex, var, varNewValue, baseProp, objProp);
 					else																				llResult = iVariable_copy(var, varNewValue);
 
@@ -551,7 +551,7 @@
 
 					// Perform the set
 						 if (objProp->_setterObject     && tnIndex <  (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject(obj, tnIndex, var, varNewValue, baseProp, objProp);
-					else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, varNewValue, false);
+					else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, NULL, varNewValue, false);
 					else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(obj, tnIndex, var, varNewValue, baseProp, objProp);
 					else																				llResult = iVariable_copy(var, varNewValue);
 
@@ -605,7 +605,7 @@
 
 					// Perform the set
 						 if (objProp->_setterObject     && tnIndex <  (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject(obj, tnIndex, var, varNewValue, baseProp, objProp);
-					else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, varNewValue, false);
+					else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, NULL, varNewValue, false);
 					else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(obj, tnIndex, var, varNewValue, baseProp, objProp);
 					else																				llResult = iVariable_copy(var, varNewValue);
 
@@ -659,7 +659,7 @@
 
 					// Perform the set
 						 if (objProp->_setterObject     && tnIndex <  (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject(obj, tnIndex, var, varNewValue, baseProp, objProp);
-					else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, varNewValue, false);
+					else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, NULL, varNewValue, false);
 					else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(obj, tnIndex, var, varNewValue, baseProp, objProp);
 					else																				llResult = iVariable_copy(var, varNewValue);
 
@@ -713,7 +713,7 @@
 
 					// Perform the set
 						 if (objProp->_setterObject     && tnIndex <  (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject(obj, tnIndex, var, varNewValue, baseProp, objProp);
-					else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, varNewValue, false);
+					else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, NULL, varNewValue, false);
 					else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(obj, tnIndex, var, varNewValue, baseProp, objProp);
 					else																				llResult = iVariable_copy(var, varNewValue);
 
@@ -767,7 +767,7 @@
 
 					// Perform the set
 						 if (objProp->_setterObject     && tnIndex <  (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject(obj, tnIndex, var, varNewValue, baseProp, objProp);
-					else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, varNewValue, false);
+					else if (objProp->_setterObject_set && tnIndex >= (s32)_INDEX_SET_FIRST_ITEM)		llResult = objProp->setterObject_set(var, NULL, NULL, varNewValue, false);
 					else if (baseProp->_setterBase)														llResult = baseProp->setterBase	(obj, tnIndex, var, varNewValue, baseProp, objProp);
 					else																				llResult = iVariable_copy(var, varNewValue);
 
@@ -971,7 +971,7 @@ debug_break;
 // Called to set the value using an on/off component
 //
 //////
-	bool iObjProp_setOnOff(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_setOnOff(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 		bool llResult;
 
@@ -1003,7 +1003,7 @@ debug_break;
 			return(llResult);
 	}
 
-	bool iObjProp_setOnOff_status(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_setOnOff_status(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 		bool llResult;
 
@@ -1027,7 +1027,7 @@ debug_break;
 		return(llResult);
 	}
 
-	bool iObjProp_setOnOff_statusBar(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_setOnOff_statusBar(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 		bool llResult;
 
@@ -1059,7 +1059,7 @@ debug_break;
 // Called to set the value using the valid date texts
 //
 //////
-	bool iObjProp_setDate(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_setDate(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 		u32		lnDateType;
 		bool	llResult;
@@ -1117,7 +1117,7 @@ debug_break;
 // Called to set the integer using the valid settings for decimals (0..18)
 //
 //////
-	bool iObjProp_setDecimals(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_setDecimals(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 		s32		lnDecimals;
 		bool	llResult;
@@ -1167,7 +1167,7 @@ debug_break;
 // Called to set the device output to some location
 //
 //////
-	bool iObjProp_setDevice(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_setDevice(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 		s32			lnLength;
 		bool		llResult, llManufactured, llIsValid;
@@ -1310,7 +1310,7 @@ debug_break;
 // Called to set the integer using the valid integer variable
 //
 //////
-	bool iObjProp_setInteger(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_setInteger(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 		bool llResult;
 
@@ -1350,7 +1350,7 @@ debug_break;
 // Called to set the integer to either 12 or 24
 //
 //////
-	bool iObjProp_setIneger_12_24(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_setIneger_12_24(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 		s32		lnValue;
 		bool	llResult;
@@ -1398,7 +1398,7 @@ debug_break;
 // Called to set the integer to the closest 64-bit range from the value indicated, using a minimum of 128
 //
 //////
-	bool iObjProp_setInteger_bits(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_setInteger_bits(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 		s32		lnValue;
 		bool	llResult;
@@ -1450,7 +1450,7 @@ debug_break;
 // Called to set the u16 value from the indicated input
 //
 //////
-	bool iObjProp_set_u16(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_set_u16(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 		s64		lnValue;
 		bool	llResult;
@@ -1500,7 +1500,7 @@ debug_break;
 // Called to set the value using the valid date texts
 //
 //////
-	bool iObjProp_setLanguage(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_setLanguage(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 // TODO:  This will need to be implemented once we get resources moved out to loadable DLLs.  We'll look for a vjrres_en.dll, for example
 		return(false);
@@ -1514,7 +1514,7 @@ debug_break;
 // Called to set the logical using the variable converted to logical
 //
 //////
-	bool iObjProp_setLogical(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_setLogical(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 		bool llResult;
 
@@ -1555,7 +1555,7 @@ debug_break;
 // Defaults to TF.
 //
 ///////
-	bool iObjProp_setLogicalX(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_setLogicalX(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 		u32		lnLogicalType;
 		bool	llResult;
@@ -1622,7 +1622,7 @@ debug_break;
 // Note:  Reprocess is logical, or numeric. When numeric if negative it is attempts, if positive it is seconds
 //
 //////
-	bool iObjProp_setReprocess(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_setReprocess(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 		s32		lnValue;
 		bool	llResult;
@@ -1723,7 +1723,7 @@ debug_break;
 // Called to set the time using the valid time texts
 //
 //////
-	bool iObjProp_setTime(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_setTime(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 		bool llResult;
 
@@ -1763,7 +1763,7 @@ debug_break;
 // Called to set the user-defined parameter passing protocol to reference or value
 //
 //////
-	bool iObjProp_setUdfParams(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_setUdfParams(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 		bool llResult;
 
@@ -1804,7 +1804,7 @@ debug_break;
 // Called to set the expression to the input character expression
 //
 //////
-	bool iObjProp_setCharacter(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_setCharacter(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 		bool llResult;
 
@@ -1841,7 +1841,7 @@ debug_break;
 // Called to set the expression to the left-most character of the input character expression
 //
 //////
-	bool iObjProp_setCharacter1(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	bool iObjProp_setCharacter1(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
 	{
 		bool llResult;
 
@@ -1858,6 +1858,130 @@ debug_break;
 				// Indicate success
 				llResult = true;
 			}
+
+
+		//////////
+		// Optionally clean house
+		//////
+			if (tlDeleteVarNewAfterSet)
+				iVariable_delete(varNew, true);
+
+
+		//////////
+		// Indicate our status
+		//////
+			return(llResult);
+	}
+
+
+
+
+//////////
+//
+// Called to set the century options
+//
+//////
+	bool iObjProp_setCentury(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet)
+	{
+		bool			llResult, llManufactured;
+		s32				lnYear;
+		SComp*			compRollover;
+		SComp*			compRolloverYear;
+		SVariable*		varSetcenturyYear;
+		SVariable*		varSetcenturyRollover;
+		SVariable*		varNewRollover;
+		SObjPropMap*	objProp;
+		SBasePropMap*	baseProp;
+
+
+		//////////
+		// Validate the component is an ON or OFF
+		//////
+			llResult = false;
+			do { // Loop entered for structured exit
+				if (compNew)
+				{
+
+					//////////
+					// Set the CENTURY
+					//////
+						if (compNew->iCode == _ICODE_ON || compNew->iCode == _ICODE_OFF)
+						{
+							// SET CENTURY ON | OFF
+							iVariable_set_logical(varSet, ((compNew->iCode == _ICODE_ON) ? _LOGICAL_TRUE : _LOGICAL_FALSE));
+							llResult = true;
+
+						} else if (iVariable_isValid(varNew) && iVariable_isTypeNumeric(varNew)) {
+							// SET CENTURY TO nVar
+							varSetcenturyYear	= iObjProp_get_var_byIndex(_settings, _INDEX_SET_CENTURYYEAR, &baseProp, &objProp);
+							lnYear				= iiVariable_getAs_s32(varNew);
+
+							// We allow values like 1800, 1900, 2000 rather than just 18, 19, 20
+							if (lnYear > 100)
+							{
+								// Must be evenly divisible by 100
+								if (lnYear % 100 != 0)
+								{
+									iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, compNew, false);
+									break;
+								}
+								// Convert 1800 to 18, 1900 to 19, etc.
+								lnYear = lnYear / 100;
+							}
+
+							// Must be in the range 00..99
+							if (!between(lnYear, 0, 99))
+							{
+								iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, compNew, false);
+								break;
+							}
+
+							// Store the century
+							iVariable_set_s32(varSetcenturyYear, lnYear);
+
+							// Indicate success
+							llResult = true;
+						}
+
+
+					//////////
+					// See if ROLLOVER is present
+					//////
+						compRollover = iComps_skipTo_iCode(compTarget, _ICODE_ROLLOVER);
+						if (compRollover && (compRolloverYear = iComps_getNth(compRollover, 1)))
+						{
+							// Obtain the variable
+							varNewRollover = iEngine_get_variableName_fromComponent(compRolloverYear, &llManufactured, false);
+							if (varNewRollover)
+							{
+								// Grab the year value
+								lnYear = iiVariable_getAs_s32(varNewRollover);
+								if (between(lnYear, 0, 99))
+								{
+									// Grab the rollover variable
+									varSetcenturyRollover = iObjProp_get_var_byIndex(_settings, _INDEX_SET_CENTURYROLLOVER, &baseProp, &objProp);
+
+									// Store the rollover year
+									iVariable_set_s32(varSetcenturyRollover, lnYear);
+
+									// Clean house
+									if (llManufactured)
+										iVariable_delete(&varNewRollover);
+
+								} else {
+									// The value is out of range
+									iError_report_byNumber(_ERROR_OUT_OF_RANGE, compRolloverYear, false);
+								}
+
+							} else {
+								// The variable there could not be obtained
+								iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, compRolloverYear, false);
+							}
+						}
+
+				}
+
+			} while (0);
 
 
 		//////////

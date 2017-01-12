@@ -3179,8 +3179,10 @@
 		SVariable*		varSet;
 		SVariable*		varSetNewValue;
 
-// iError_reportByNumber(_ERROR_FEATURE_NOT_AVAILABLE, compSet, false);
-// return;
+
+// Indicate the SET command is not yet complete
+iError_report_byNumber(_ERROR_INCOMPLETE_FEATURE, compSet, false);
+
 
 		//////////
 		// Get the next component
@@ -3231,6 +3233,7 @@
 					{
 						// We found the setting and the default variable type
 						varSetNewValue = iEngine_get_variableName_fromComponent(compSetValue, &llManufactured, false);
+						// Note:  There may not have been a variable returned here
 //////////
 // Note:
 //		Settings are handled a little differently compared to other objects.
@@ -3243,7 +3246,7 @@
 						if (objProp->_setterObject_set)
 						{
 							// We have our own value, use it
-							if (objProp->setterObject_set(varSet, compSetValue, varSetNewValue, llManufactured))
+							if (objProp->setterObject_set(varSet, compSetTarget, compSetValue, varSetNewValue, llManufactured))
 								return;		// If we get here, we're good
 
 							// If we get here, it couldn't be set

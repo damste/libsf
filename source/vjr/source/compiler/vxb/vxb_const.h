@@ -1054,6 +1054,8 @@
 	const s32       _ICODE_CATCH                                    = 2029;
 	const s32       _ICODE_CD                                       = 2030;
 	const s32       _ICODE_CENTURY                                  = 2031;
+	const s32		_ICODE_CENTURYYEAR								= 2342;
+	const s32		_ICODE_CENTURYROLLOVER							= 2343;
 	const s32       _ICODE_CHANGE                                   = 2032;
 	const s32       _ICODE_CHDIR                                    = 2033;
 	const s32       _ICODE_CLASS                                    = 2034;
@@ -1320,6 +1322,7 @@
 	const s32       _ICODE_RETURN                                   = 2218;
 	const s32       _ICODE_RMDIR                                    = 2219;
 	const s32       _ICODE_ROLLBACK                                 = 2220;
+	const s32       _ICODE_ROLLOVER                                 = 2344;
 	const s32       _ICODE_RUN                                      = 2221;
 	const s32       _ICODE_SAFETY                                   = 2222;
 	const s32       _ICODE_SAVE                                     = 2223;
@@ -1406,8 +1409,7 @@
 	//		__unused__	= 2391					__unused__	= 2307
 	//		__unused__	= 2392					__unused__	= 2337
 	//		__unused__	= 2326					__unused__	= 2328
-	//		__unused__	= 2308					__unused__	= 2342
-	//		__unused__	= 2343					__unused__	= 2344
+	//		__unused__	= 2308
 	//
 	// DOCASE				= 2272			DOFORM					= 2273
 	// DOPROGRAM			= 2274			DOWHILE					= 2275
@@ -2375,6 +2377,7 @@
 	const s8		cgc_return[]									= "return";
 	const s8		cgc_rmdir[]										= "rmdir";
 	const s8		cgc_rollback[]									= "rollback";
+	const s8		cgc_rollover[]									= "rollover";
 	const s8		cgc_run[]										= "run";
 	const s8		cgc_safety[]									= "safety";
 	const s8		cgc_save[]										= "save";

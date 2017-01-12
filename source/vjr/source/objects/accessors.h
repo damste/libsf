@@ -470,6 +470,8 @@ struct SBasePropMap;
 	const s8		cgc_setCaseSensitiveCompares[]							= "caseSensitiveCompares";
 	const s8		cgc_setCaseSensitiveNames[]								= "caseSensitiveNames";
 	const s8		cgc_setCentury[]										= "century";
+	const s8		cgc_setCenturyYear[]									= "centuryYear";
+	const s8		cgc_setCenturyRollover[]								= "centuryRollover";
 	const s8		cgc_setCurrency[]										= "currency";
 	const s8		cgc_setDate[]											= "date";
 	const s8		cgc_setDecimals[]										= "decimals";
@@ -523,6 +525,7 @@ struct SBasePropMap;
 
 	// Note:  The value 0 is used for the terminator in variable-length lists, so the values here must begin at 1.
 	// Note:  Because the values here begin at 1, every reference that is direct must be referenced as gsProps_master[_INDEX_WHATEVER - 1].
+	// Note:  These values must be contiguous.  Any insertion at any point must bump the values after it down one
 	const u32		_INDEX_ACTIVECOLUMN										= 1;
 	const u32		_INDEX_ACTIVECONTROL									= 2;
 	const u32		_INDEX_ACTIVEFORM										= 3;
@@ -892,61 +895,63 @@ struct SBasePropMap;
 	const u32		_INDEX_SET_CASE_SENSITIVE_COMPARES						= 365;
 	const u32		_INDEX_SET_CASE_SENSITIVE_NAMES							= 366;
 	const u32		_INDEX_SET_CENTURY										= 367;
-	const u32		_INDEX_SET_CURRENCY										= 368;
-	const u32		_INDEX_SET_DATE											= 369;
-	const u32		_INDEX_SET_DECIMALS										= 370;
-	const u32		_INDEX_SET_DEVICE										= 371;
-	const u32		_INDEX_SET_DEVICE2										= 372;
-	const u32		_INDEX_SET_EXCLUSIVE									= 373;
-	const u32		_INDEX_SET_FIXED										= 374;
-	const u32		_INDEX_SET_FOCUS_HIGHLIGHT_BORDER_PIXELS				= 375;
-	const u32		_INDEX_SET_FOCUS_OBJ_PIXELS								= 376;
-	const u32		_INDEX_SET_HONOR_BARRIERS								= 377;
-	const u32		_INDEX_SET_HOURS										= 378;
-	const u32		_INDEX_SET_IMPLICIT_PARAMS								= 379;
-	const u32		_INDEX_SET_INDEX_META_DATA								= 380;
-	const u32		_INDEX_SET_INITIALIZE_DEFAULT_VALUE						= 381;
-	const u32		_INDEX_SET_LANGUAGE										= 382;
-	const u32		_INDEX_SET_LOAD_RECEIVES_PARAMS							= 383;
-	const u32		_INDEX_SET_LOCK_SCREEN									= 384;
-	const u32		_INDEX_SET_LOGICAL										= 385;
-	const u32		_INDEX_SET_MARK											= 386;
-	const u32		_INDEX_SET_NAMING_CONVENTIONS							= 387;
+	const u32		_INDEX_SET_CENTURYYEAR									= 368;
+	const u32		_INDEX_SET_CENTURYROLLOVER								= 369;
+	const u32		_INDEX_SET_CURRENCY										= 370;
+	const u32		_INDEX_SET_DATE											= 371;
+	const u32		_INDEX_SET_DECIMALS										= 372;
+	const u32		_INDEX_SET_DEVICE										= 373;
+	const u32		_INDEX_SET_DEVICE2										= 374;
+	const u32		_INDEX_SET_EXCLUSIVE									= 375;
+	const u32		_INDEX_SET_FIXED										= 376;
+	const u32		_INDEX_SET_FOCUS_HIGHLIGHT_BORDER_PIXELS				= 377;
+	const u32		_INDEX_SET_FOCUS_OBJ_PIXELS								= 378;
+	const u32		_INDEX_SET_HONOR_BARRIERS								= 379;
+	const u32		_INDEX_SET_HOURS										= 380;
+	const u32		_INDEX_SET_IMPLICIT_PARAMS								= 381;
+	const u32		_INDEX_SET_INDEX_META_DATA								= 382;
+	const u32		_INDEX_SET_INITIALIZE_DEFAULT_VALUE						= 383;
+	const u32		_INDEX_SET_LANGUAGE										= 384;
+	const u32		_INDEX_SET_LOAD_RECEIVES_PARAMS							= 385;
+	const u32		_INDEX_SET_LOCK_SCREEN									= 386;
+	const u32		_INDEX_SET_LOGICAL										= 387;
+	const u32		_INDEX_SET_MARK											= 388;
+	const u32		_INDEX_SET_NAMING_CONVENTIONS							= 389;
 
-	const u32									_INDEX_SET_NCSET_START	= 388;
-	const u32		_INDEX_SET_NCSET_ALPHA_IS_OPAQUE						= 388;
-	const u32		_INDEX_SET_NCSET_CEILING_FLOOR							= 389;
-	const u32		_INDEX_SET_NCSET_CTOD_CTOT_IS_OPTIMIZED					= 390;
-	const u32		_INDEX_SET_NCSET_DATETIME_MILLISECONDS					= 391;
-	const u32		_INDEX_SET_NCSET_OPTIMIZE_TABLE_WRITES					= 392;
-	const u32		_INDEX_SET_NCSET_OPTIMIZE_VARIABLES						= 393;
-	const u32		_INDEX_SET_NCSET_SIGN_SIGN2								= 394;
-	const u32		_INDEX_SET_NCSET_PLACEHOLDER1							= 395;
-	const u32		_INDEX_SET_NCSET_PLACEHOLDER2							= 396;
-	const u32		_INDEX_SET_NCSET_DIRECT_NATIVE_MEMBERS					= 397;
-	const u32		_INDEX_SET_NCSET_BOF_IS_ZERO							= 398;
-	const u32									_INDEX_SET_NCSET_END	= 398;
+	const u32									_INDEX_SET_NCSET_START	= 390;
+	const u32		_INDEX_SET_NCSET_ALPHA_IS_OPAQUE						= 390;
+	const u32		_INDEX_SET_NCSET_CEILING_FLOOR							= 391;
+	const u32		_INDEX_SET_NCSET_CTOD_CTOT_IS_OPTIMIZED					= 392;
+	const u32		_INDEX_SET_NCSET_DATETIME_MILLISECONDS					= 393;
+	const u32		_INDEX_SET_NCSET_OPTIMIZE_TABLE_WRITES					= 394;
+	const u32		_INDEX_SET_NCSET_OPTIMIZE_VARIABLES						= 395;
+	const u32		_INDEX_SET_NCSET_SIGN_SIGN2								= 396;
+	const u32		_INDEX_SET_NCSET_PLACEHOLDER1							= 397;
+	const u32		_INDEX_SET_NCSET_PLACEHOLDER2							= 398;
+	const u32		_INDEX_SET_NCSET_DIRECT_NATIVE_MEMBERS					= 399;
+	const u32		_INDEX_SET_NCSET_BOF_IS_ZERO							= 400;
+	const u32									_INDEX_SET_NCSET_END	= 400;
 	
-	const u32		_INDEX_SET_POINT										= 399;
-	const u32		_INDEX_SET_PRECISIONBFP									= 400;		// numeric, defaults to 256
-	const u32		_INDEX_SET_PRECISIONBI									= 401;		// numeric, defaults to 256
-	const u32		_INDEX_SET_REPROCESS									= 402;		// logical, or numeric (negative = attempts, positive = seconds)
-	const u32		_INDEX_SET_REPROCESSATTEMPTS							= 403;		// numeric, 30 by default, but can be changed with SET REPROCESSATTEMPTS TO 30
-	const u32		_INDEX_SET_REPROCESSINTERVAL							= 404;		// numeric, 1000 by default indicating 1000 milliseconds, or 1 second
-	const u32		_INDEX_SET_REPROCESS_SYSTEM								= 405;		// logical, or numeric (negative = attempts, positive = seconds)
-	const u32		_INDEX_SET_SEPARATOR									= 406;
-	const u32		_INDEX_SET_SLOPPY_PRINTING								= 407;
-	const u32		_INDEX_SET_STATUS										= 408;
-	const u32		_INDEX_SET_STATUSBAR									= 409;
-	const u32		_INDEX_SET_STICKY_PARAMETERS							= 410;
-	const u32		_INDEX_SET_TABLE_EQUAL_ASSIGNMENTS						= 411;
-	const u32		_INDEX_SET_TABLE_OBJECTS								= 412;
-	const u32		_INDEX_SET_TALK											= 413;
-	const u32		_INDEX_SET_TIME											= 414;
-	const u32		_INDEX_SET_UDFPARMS										= 415;
-	const u32		_INDEX_SET_UNLOAD_RECEIVES_PARAMS						= 416;
-	const u32		_INDEX_SET_VARIABLES_FIRST								= 417;
-	const u32		_INDEX_SET_VECSEPARATOR									= 418;
+	const u32		_INDEX_SET_POINT										= 401;
+	const u32		_INDEX_SET_PRECISIONBFP									= 402;		// numeric, defaults to 256
+	const u32		_INDEX_SET_PRECISIONBI									= 403;		// numeric, defaults to 256
+	const u32		_INDEX_SET_REPROCESS									= 404;		// logical, or numeric (negative = attempts, positive = seconds)
+	const u32		_INDEX_SET_REPROCESSATTEMPTS							= 405;		// numeric, 30 by default, but can be changed with SET REPROCESSATTEMPTS TO 30
+	const u32		_INDEX_SET_REPROCESSINTERVAL							= 406;		// numeric, 1000 by default indicating 1000 milliseconds, or 1 second
+	const u32		_INDEX_SET_REPROCESS_SYSTEM								= 407;		// logical, or numeric (negative = attempts, positive = seconds)
+	const u32		_INDEX_SET_SEPARATOR									= 408;
+	const u32		_INDEX_SET_SLOPPY_PRINTING								= 409;
+	const u32		_INDEX_SET_STATUS										= 410;
+	const u32		_INDEX_SET_STATUSBAR									= 411;
+	const u32		_INDEX_SET_STICKY_PARAMETERS							= 412;
+	const u32		_INDEX_SET_TABLE_EQUAL_ASSIGNMENTS						= 413;
+	const u32		_INDEX_SET_TABLE_OBJECTS								= 414;
+	const u32		_INDEX_SET_TALK											= 415;
+	const u32		_INDEX_SET_TIME											= 416;
+	const u32		_INDEX_SET_UDFPARMS										= 417;
+	const u32		_INDEX_SET_UNLOAD_RECEIVES_PARAMS						= 418;
+	const u32		_INDEX_SET_VARIABLES_FIRST								= 419;
+	const u32		_INDEX_SET_VECSEPARATOR									= 420;
 
 
 
@@ -978,24 +983,25 @@ struct SBasePropMap;
 	bool					iObjProp_copyDynamic					(SObject* objDst, SObject* objSrc);
 
 	// Used for SET xyz TO compNew/VarNew
-	bool					iObjProp_setOnOff						(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
-	bool					iObjProp_setOnOff_status				(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
-	bool					iObjProp_setOnOff_statusBar				(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
-	bool					iObjProp_setDate						(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
-	bool					iObjProp_setDecimals					(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
-	bool					iObjProp_setDevice						(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
-	bool					iObjProp_setInteger						(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
-	bool					iObjProp_setIneger_12_24				(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
-	bool					iObjProp_setInteger_bits				(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
-	bool					iObjProp_set_u16						(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
-	bool					iObjProp_setLanguage					(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
-	bool					iObjProp_setLogical						(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
-	bool					iObjProp_setLogicalX					(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
-	bool					iObjProp_setReprocess					(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
-	bool					iObjProp_setTime						(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
-	bool					iObjProp_setUdfParams					(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
-	bool					iObjProp_setCharacter					(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
-	bool					iObjProp_setCharacter1					(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setOnOff						(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setOnOff_status				(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setOnOff_statusBar				(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setDate						(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setDecimals					(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setDevice						(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setInteger						(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setIneger_12_24				(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setInteger_bits				(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_set_u16						(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setLanguage					(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setLogical						(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setLogicalX					(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setReprocess					(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setTime						(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setUdfParams					(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setCharacter					(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setCharacter1					(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+	bool					iObjProp_setCentury						(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
 
 	// Used for SET("xyz")
 	SVariable* 				iObjProp_getDate						(SVariable* varSet, SComp* compIdentifier, bool tlDeleteVarSetBeforeReturning);
@@ -1153,7 +1159,7 @@ struct SBasePropMap;
 			uptr		_setterObject;
 			bool		(*setterObject)		(SObject* obj, u32 tnIndex, SVariable* var, SVariable* varNewValue, SBasePropMap* baseProp, SObjPropMap* objProp);
 			uptr		_setterObject_set;
-			bool		(*setterObject_set)	(SVariable* varSet, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
+			bool		(*setterObject_set)	(SVariable* varSet, SComp* compTarget, SComp* compNew, SVariable* varNew, bool tlDeleteVarNewAfterSet);
 		};
 
 		union {
@@ -1540,6 +1546,8 @@ struct SBasePropMap;
 		{	_INDEX_SET_CASE_SENSITIVE_COMPARES,				_ICODE_CASESENSITIVECOMPARES,		cgc_setCaseSensitiveCompares,		sizeof(cgc_setCaseSensitiveCompares) - 1,			_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_TRUE				,NULL	},	// .t.=character compares are case sensitive, .f.=not case sensitive
 		{	_INDEX_SET_CASE_SENSITIVE_NAMES,				_ICODE_CASESENSITIVENAMES,			cgc_setCaseSensitiveNames,			sizeof(cgc_setCaseSensitiveNames) - 1,				_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_FALSE			,NULL	},	// .t.=token names are case sensitive, .f.=not case sensitive
 		{	_INDEX_SET_CENTURY,								_ICODE_CENTURY,						cgc_setCentury,						sizeof(cgc_setCentury) - 1,							_VAR_TYPE_LOGICAL,			0, 0, 0,		(uptr)_LOGICAL_TRUE				,NULL	},	// .t.=4-digit years, .f.=2-digit years
+		{	_INDEX_SET_CENTURYYEAR,							_ICODE_CENTURYYEAR,					cgc_setCenturyYear,					sizeof(cgc_setCenturyYear) - 1,						_VAR_TYPE_S32,				0, 0, 0,		20								,NULL	},	// 20=2000s
+		{	_INDEX_SET_CENTURYROLLOVER,						_ICODE_CENTURYROLLOVER,				cgc_setCenturyRollover,				sizeof(cgc_setCenturyRollover) - 1,					_VAR_TYPE_S32,				0, 0, 0,		50								,NULL	},	// 50=nn50, like 2050
 		{	_INDEX_SET_CURRENCY,							_ICODE_CURRENCY,					cgc_setCurrency,					sizeof(cgc_setCurrency) - 1,						_VAR_TYPE_CHARACTER,		0, 0, 0,		(uptr)&cgcDollarSign[0]			,NULL	},	// Currency symbol for display
 		{	_INDEX_SET_DATE,								_ICODE_DATE,						cgc_setDate,						sizeof(cgc_setDate) -1,								_VAR_TYPE_S32,				0, 0, 0,		_SET_DATE_AMERICAN				,NULL	},	// See the _SET_DATE_* constants
 		{	_INDEX_SET_DECIMALS,							_ICODE_DECIMALS,					cgc_setDecimals,					sizeof(cgc_setDecimals) - 1,						_VAR_TYPE_S32,				0, 0, 0,		2								,NULL	},	// Number of decimals
@@ -5774,7 +5782,9 @@ struct SBasePropMap;
 		{	_INDEX_SET_BLOCKSIZE,						0, (uptr)&iObjProp_set_u16,				(uptr)&iObjProp_getInteger },		// u16
 		{	_INDEX_SET_CASE_SENSITIVE_COMPARES,			0, (uptr)&iObjProp_setOnOff,			(uptr)&iObjProp_getOnOff },			// bool
 		{	_INDEX_SET_CASE_SENSITIVE_NAMES,			0, (uptr)&iObjProp_setOnOff,			(uptr)&iObjProp_getOnOff },			// bool
-		{	_INDEX_SET_CENTURY,							0, (uptr)&iObjProp_setOnOff,			(uptr)&iObjProp_getOnOff },			// bool
+		{	_INDEX_SET_CENTURY,							0, (uptr)&iObjProp_setCentury,			(uptr)&iObjProp_getOnOff },			// bool
+		{	_INDEX_SET_CENTURYYEAR,						0, (uptr)&iObjProp_setInteger,			(uptr)&iObjProp_getInteger },		// s32
+		{	_INDEX_SET_CENTURYROLLOVER,					0, (uptr)&iObjProp_setInteger,			(uptr)&iObjProp_getInteger },		// s32
 		{	_INDEX_SET_CURRENCY,						0, (uptr)&iObjProp_setCharacter1,		0	},		// character
 		{	_INDEX_SET_DATE,							0, (uptr)&iObjProp_setDate,				(uptr)&iObjProp_getDate },			// s32
 		{	_INDEX_SET_DECIMALS,						0, (uptr)&iObjProp_setDecimals,			(uptr)&iObjProp_getInteger },		// s32

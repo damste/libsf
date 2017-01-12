@@ -1028,6 +1028,7 @@
 		{ cgc_return,				6,			false,		_ICODE_RETURN,							false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,					null0,		null0 },
 		{ cgc_rmdir,				5,			false,		_ICODE_RMDIR,							false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,					null0,		null0 },
 		{ cgc_rollback,				8,			false,		_ICODE_ROLLBACK,						false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,					null0,		null0 },
+		{ cgc_rollover,				8,			false,		_ICODE_ROLLOVER,						false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,					null0,		null0 },
 		{ cgc_run,					3,			false,		_ICODE_RUN,								false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,					null0,		null0 },
 		{ cgc_safety,				6,			false,		_ICODE_SAFETY,							false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,					null0,		null0 },
 		{ cgc_save,					4,			false,		_ICODE_SAVE,							false,				_ICAT_GENERIC,		&colorSynHi_command,		false,						null0,					null0,		null0 },
