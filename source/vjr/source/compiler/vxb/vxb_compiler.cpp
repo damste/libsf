@@ -14165,10 +14165,9 @@ debug_break;
 //////
 	s32 iiDateMath_derive_century(u32 year)
 	{
-//TODO:  Rollover SET CENTURY TO nn ROLLOVER mm
-		     if (year < 50)		return(year + 2000);
-		else if (year < 100)	return(year + 1900);
-		else					return(year);
+		     if (year < gnSet_centuryRollover)		return(year + (gnSet_centuryYear * 100));
+		else if (year < 100)						return(year + ((gnSet_centuryYear + 1) * 100));
+		else										return(year);
 	}
 
 

@@ -3685,10 +3685,10 @@ debug_break;
 
 //////////
 //
-// NCSET() speedup functions (to allow direct access to global variables, rather than through property values
+// Speedup functions (to allow direct access to global variables, rather than through property values)
 //
 //////
-	void iiNcset_common(SObject* obj, SVariable* varNewValue, bool* glNcset_variable)
+	void iiSpeedup_setAs_bool(SObject* obj, SVariable* varNewValue, bool* glSpeedup_variable)
 	{
 		bool	llNewValue;
 		bool	error;
@@ -3701,53 +3701,82 @@ debug_break;
 			// Grab the new value from the variable (if possible)
 			llNewValue = iiVariable_getAs_bool(varNewValue, false, &error, &errorNum);
 			if (!error)
-				*glNcset_variable = llNewValue;
+				*glSpeedup_variable = llNewValue;
+// TODO:  A silent error could creep through here
 		}
 	}
 
-	void iiNcset_alphaIsOpaque(SObject* obj, SVariable* varNewValue)
+	void iiSpeedup_setAs_s32(SObject* obj, SVariable* varNewValue, s32* gnSpeedup_variable)
 	{
-		iiNcset_common(obj, varNewValue, &glNcset_alphaIsOpaque);
+		s32		lnNewValue;
+		bool	error;
+		u32		errorNum;
+
+
+		// Make sure we're updating on the _settings object
+		if (obj == _settings)
+		{
+			// Grab the new value from the variable (if possible)
+			lnNewValue = iiVariable_getAs_s32(varNewValue, false, &error, &errorNum);
+			if (!error)
+				*gnSpeedup_variable = lnNewValue;
+// TODO:  A silent error could creep through here
+		}
 	}
 
-	void iiNcset_ceilingFloor(SObject* obj, SVariable* varNewValue)
+	void iiSpeedup_centuryYear(SObject* obj, SVariable* varNewValue)
 	{
-		iiNcset_common(obj, varNewValue, &glNcset_ceilingFloor);
+		iiSpeedup_setAs_s32(obj, varNewValue, &gnSet_centuryYear);
 	}
 
-	void iiNcset_ctodCtotIsOptimized(SObject* obj, SVariable* varNewValue)
+	void iiSpeedup_centuryRollover(SObject* obj, SVariable* varNewValue)
 	{
-		iiNcset_common(obj, varNewValue, &glNcset_ctodCtotIsOptimized);
+		iiSpeedup_setAs_s32(obj, varNewValue, &gnSet_centuryRollover);
 	}
 
-	void iiNcset_datetimeMilliseconds(SObject* obj, SVariable* varNewValue)
+	void iiSpeedup_ncset_alphaIsOpaque(SObject* obj, SVariable* varNewValue)
 	{
-		iiNcset_common(obj, varNewValue, &glNcset_datetimeMilliseconds);
+		iiSpeedup_setAs_bool(obj, varNewValue, &glNcset_alphaIsOpaque);
 	}
 
-	void iiNcset_optimizeTableWrites(SObject* obj, SVariable* varNewValue)
+	void iiSpeedup_ncset_ceilingFloor(SObject* obj, SVariable* varNewValue)
 	{
-		iiNcset_common(obj, varNewValue, &glNcset_optimizeTableWrites);
+		iiSpeedup_setAs_bool(obj, varNewValue, &glNcset_ceilingFloor);
 	}
 
-	void iiNcset_optimizeVariables(SObject* obj, SVariable* varNewValue)
+	void iiSpeedup_ncset_ctodCtotIsOptimized(SObject* obj, SVariable* varNewValue)
 	{
-		iiNcset_common(obj, varNewValue, &glNcset_optimizeVariables);
+		iiSpeedup_setAs_bool(obj, varNewValue, &glNcset_ctodCtotIsOptimized);
 	}
 
-	void iiNcset_signSign2(SObject* obj, SVariable* varNewValue)
+	void iiSpeedup_ncset_datetimeMilliseconds(SObject* obj, SVariable* varNewValue)
 	{
-		iiNcset_common(obj, varNewValue, &glNcset_signSign2);
+		iiSpeedup_setAs_bool(obj, varNewValue, &glNcset_datetimeMilliseconds);
 	}
 
-	void iiNcset_directNativeMembers(SObject* obj, SVariable* varNewValue)
+	void iiSpeedup_ncset_optimizeTableWrites(SObject* obj, SVariable* varNewValue)
 	{
-		iiNcset_common(obj, varNewValue, &glNcset_directNativeMembers);
+		iiSpeedup_setAs_bool(obj, varNewValue, &glNcset_optimizeTableWrites);
 	}
 
-	void iiNcset_bofIsZero(SObject* obj, SVariable* varNewValue)
+	void iiSpeedup_ncset_optimizeVariables(SObject* obj, SVariable* varNewValue)
 	{
-		iiNcset_common(obj, varNewValue, &glNcset_bofIsZero);
+		iiSpeedup_setAs_bool(obj, varNewValue, &glNcset_optimizeVariables);
+	}
+
+	void iiSpeedup_ncset_signSign2(SObject* obj, SVariable* varNewValue)
+	{
+		iiSpeedup_setAs_bool(obj, varNewValue, &glNcset_signSign2);
+	}
+
+	void iiSpeedup_ncset_directNativeMembers(SObject* obj, SVariable* varNewValue)
+	{
+		iiSpeedup_setAs_bool(obj, varNewValue, &glNcset_directNativeMembers);
+	}
+
+	void iiSpeedup_ncset_bofIsZero(SObject* obj, SVariable* varNewValue)
+	{
+		iiSpeedup_setAs_bool(obj, varNewValue, &glNcset_bofIsZero);
 	}
 
 

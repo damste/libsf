@@ -167,8 +167,10 @@
 
 
 //////////
-// NCSET() speedup variables
+// Speedup variables
 //////
+	s32					gnSet_centuryYear					= 0;
+	s32					gnSet_centuryRollover				= 0;
 	bool				glNcset_alphaIsOpaque				= false;
 	bool				glNcset_ceilingFloor				= false;
 	bool				glNcset_ctodCtotIsOptimized			= false;
