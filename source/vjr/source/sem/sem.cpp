@@ -3231,7 +3231,7 @@ renderAsOnlyText:
 		s32			lnX, lnY, lnLastHeight, lnWidth, lnHeight, lnScrollX, lnScrollY, lnStartHeight, lnStartWidth;
 		s32			lnFontSize, lnFontWeight, lnFontItalics, lnFontUnderline, lnFontStack, lnFontsCreated;
 		f64			lfZoom;
-		SBgra		color, bgcolor, defaultBackColor, defaultForeColor;
+		SBgra		color, bgcolor, colorHighlight, bgcolorHighlight, defaultBackColor, defaultForeColor;
 		RECT		rc, lrc, lrc2;
 		u8*			lcFontName;
 		SBitmap*	bmp;
@@ -3264,7 +3264,7 @@ renderAsOnlyText:
 					for (line = sem->firstLine; line; line = line->ll.nextLine)
 					{
 						// Recompile everything and parse out tags
-						iEngine_parse_sourceCode_line(line, cgcSEMHtmlKeywords);
+						iEngine_parse_sourceCode_line(line, cgcSEMHtmlKeywords, false);
 						iComps_fixup_semHtmlGroupings(line);
 					}
 
@@ -3279,6 +3279,7 @@ renderAsOnlyText:
 					llZoomed = iiSEM_renderAs_simpleHtml__applyZoom(obj, &lnWidth, &lnHeight);
 
 					// If it's the same size as the bitmap, use it, otherwise build a temporary one
+					bmp = NULL;
 					if (!iiSEM_renderAs_simpleHtml__createBmp(&bmp, obj->bmp, lnWidth, lnHeight))
 						return(-1);
 
@@ -3286,11 +3287,12 @@ renderAsOnlyText:
 				//////////
 				// Default font
 				//////
+					lnFontsCreated	= 0;
+					lcFontName		= (u8*)"Ubuntu";
 					lnFontSize		= 12;
 					lnFontWeight	= FW_NORMAL;
 					lnFontItalics	= 0;
 					lnFontUnderline	= 0;
-					lcFontName		= (u8*)"Ubuntu";
 					font			= iSEM_renderAs_simpleHtml__addFont(&fontsCreated[0], &lnFontsCreated, lcFontName, lnFontSize, lnFontWeight, lnFontItalics, lnFontUnderline);
 
 
@@ -3305,9 +3307,15 @@ renderAsOnlyText:
 				//////////
 				// Render through each line
 				//////
-					lnLastHeight	= 0;
-					fontName		= NULL;
-					for (line = sem->line_top, lnX = 0, lnY = 0; line; line = line->ll.nextLine)
+					color.color				= bgra(0, 0, 0, 255);
+					bgcolor.color			= bgra(255, 255, 255, 255);
+					colorHighlight.color	= currentStatementForeColor.color;
+					bgcolorHighlight.color	= currentStatementBackColor.color;
+					lnX						= 0;
+					lnY						= 0;
+					lnLastHeight			= 0;
+					fontName				= NULL;
+					for (line = sem->line_top; line; line = line->ll.nextLine)
 					{
 						// Iterate through each line
 						lnStartHeight	= lnHeight;
@@ -3444,17 +3452,41 @@ renderAsOnlyText:
 								default:
 									// It's something to render
 									SelectObject(bmp->hdc, font->hfont);
-									SetTextColor(bmp->hdc, RGB(color.red, color.grn, color.blu));
-									SetBkColor(bmp->hdc, RGB(bgcolor.red, bgcolor.grn, bgcolor.blu));
+									if (line == sem->line_cursor)
+									{
+										// Cursor line
+										SetTextColor(bmp->hdc, RGB(colorHighlight.red, colorHighlight.grn, colorHighlight.blu));
+										SetBkColor(bmp->hdc, RGB(bgcolorHighlight.red, bgcolorHighlight.grn, bgcolorHighlight.blu));
+
+									} else {
+										// Regular line
+										SetTextColor(bmp->hdc, RGB(color.red, color.grn, color.blu));
+										SetBkColor(bmp->hdc, RGB(bgcolor.red, bgcolor.grn, bgcolor.blu));
+									}
 									SetBkMode(bmp->hdc, OPAQUE);
 
 									// Calculate rectangle
 									SetRect(&lrc, 0, 0, 0, 0);
 									DrawText(bmp->hdc, comp->line->sourceCode->data + comp->start, comp->length, &lrc, DT_LEFT | DT_CALCRECT);
 
-									// Render
+									// Wrap if we need to
 									SetRect(&lrc2, lnX, lnY, lnX + lrc.right - lrc.left, lnY + lrc.bottom - lrc.top);
+									if (lrc2.left != 0 && lrc2.right > lnWidth)
+									{
+										// Move down a row, and to the left margin
+										lrc2.left	= 0;
+										lrc2.right	= lrc.right - lrc2.left;
+										OffsetRect(&lrc2, 0, lnLastHeight);
+
+										// Adjust official y,x
+										lnX = 0;
+										lnY += lnLastHeight;
+									}
+
+									// Render
 									DrawText(bmp->hdc, comp->line->sourceCode->data + comp->start, comp->length, &lrc2, DT_LEFT);
+// 									InflateRect(&lrc2, -1, -1);
+// 									FrameRect(bmp->hdc, &lrc2, (HBRUSH)GetStockObject(BLACK_BRUSH));
 
 									// Adjust the position by the size
 									lnX				+= lrc.right - lrc.left;
@@ -3623,7 +3655,7 @@ error_exit:
 		}
 
 		// Make sure we have a valid bitmap
-		if (!bmp || bmp->bi.biWidth != tnWidth || bmp->bi.biHeight)
+		if (!bmp || bmp->bi.biWidth != tnWidth || bmp->bi.biHeight != tnHeight)
 		{
 			// Delete the bitmap (if it was partially created)
 			if (bmp != bmpObj)

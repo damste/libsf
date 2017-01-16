@@ -3207,7 +3207,7 @@ finished:
 		if (line && line->compilerInfo && line->compilerInfo->firstComp)
 		{
 			// Iterate through every component
-			for (comp = line->compilerInfo->firstComp; comp; iComps_getNth(comp))
+			for (comp = line->compilerInfo->firstComp; comp; comp = iComps_getNth(comp))
 			{
 				// Is it the less than symbol?
 				if (comp->iCode == _ICODE_LESS_THAN && (compNext = iComps_getNth(comp)) && (compNext2 = iComps_getNth(compNext)))
