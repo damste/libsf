@@ -293,10 +293,10 @@
 // 	cs32			_ICODE_SEM_HTML_TH								= 212 + 100;
 // 	cs32			_ICODE_SEM_HTML_TX								= 213 + 100;
 // 	cs32			_ICODE_SEM_HTML_TY								= 214 + 100;
-	cs32			_ICODE_SEM_HTML_TBGCOLOR						= 215 + 100;
-	cs32			_ICODE_SEM_HTML_TCOLOR							= 216 + 100;
-	cs32			_ICODE_SEM_HTML_TALIGN							= 217 + 100;
-	cs32			_ICODE_SEM_HTML_TVALIGN							= 218 + 100;
+// 	cs32			_ICODE_SEM_HTML_TBGCOLOR						= 215 + 100;
+// 	cs32			_ICODE_SEM_HTML_TCOLOR							= 216 + 100;
+// 	cs32			_ICODE_SEM_HTML_TALIGN							= 217 + 100;
+// 	cs32			_ICODE_SEM_HTML_TVALIGN							= 218 + 100;
 // 	cs32			_ICODE_SEM_HTML_THEIGHT							= 219 + 100;
 // 	cs32			_ICODE_SEM_HTML_TWIDTH							= 220 + 100;
 // 	cs32			_ICODE_SEM_HTML_TNAME							= 221 + 100;

@@ -105,6 +105,7 @@
 
 			// Store defaults
 			sem->isSourceCode				= tlIsSourceCode;
+			sem->isStale					= true;
 			sem->allowMoveBeyondEndOfLine	= true;
 			if (tlIsSourceCode)
 				sem->showLineNumbers		= true;
@@ -170,30 +171,19 @@
 						line = ecHintStart;
 						while (line)
 						{
-							//////////
 							// If populated, append its content
-							//////
-								if (line->sourceCode && line->sourceCode_populatedLength > 0)
-									iBuilder_appendData(b, line->sourceCode->data_u8, line->sourceCode_populatedLength);
+							if (line->sourceCode && line->sourceCode_populatedLength > 0)
+								iBuilder_appendData(b, line->sourceCode->data_u8, line->sourceCode_populatedLength);
 
-
-							//////////
 							// Append a carriage return + line feed
-							//////
-								iBuilder_appendCrLf(b);
+							iBuilder_appendCrLf(b);
 
-
-							//////////
 							// Was this the last line?
-							//////
-								if (line == ecHintEnd)
-									break;		// Yes, sir, it was
+							if (line == ecHintEnd)
+								break;		// Yes, sir, it was
 
-
-							//////////
 							// Move to next line
-							//////
-								line = (SLine*)line->ll.next;
+							line = (SLine*)line->ll.next;
 						}
 						// When we get here, the block is copied out
 				}
@@ -307,6 +297,9 @@
 					iVjr_appendSystemLog(buffer);
 				}
 
+				// Mark the content stale
+				sem->isStale = true;
+
 				// Indicate our result
 				return(llResult);
 
@@ -337,59 +330,57 @@
 		u8			buffer[64];
 
 
-		//////////
-		// Iterate through breaking out the content
-		//////
-			start				= NULL;
-			end					= NULL;
-			llOtherCharacters	= false;
-			for (lnI = 0, lnLast = 0; lnI <= datum->length; )
-			{
-				// Are we on a CR/LF combination?
-				for (lnJ = 0; lnI < datum->length && (datum->data_u8[lnI] == 13 || datum->data_u8[lnI] == 10) && lnJ < 2; lnJ++)
-					++lnI;	// Increase also past this CR/LF character
-
-				// If we found a CR/LF combination
-				if (lnJ != 0 || lnI >= datum->length)
+		// Make sure our environment is sane
+		if (sem)
+		{
+			//////////
+			// Iterate through breaking out the content
+			//////
+				start				= NULL;
+				end					= NULL;
+				llOtherCharacters	= false;
+				for (lnI = 0, lnLast = 0; lnI <= datum->length; )
 				{
-					// We've entered into a CR/LF block, append a new line
-					if (!llOtherCharacters)
+					// Are we on a CR/LF combination?
+					for (lnJ = 0; lnI < datum->length && (datum->data_u8[lnI] == 13 || datum->data_u8[lnI] == 10) && lnJ < 2; lnJ++)
+						++lnI;	// Increase also past this CR/LF character
+
+					// If we found a CR/LF combination
+					if (lnJ != 0 || lnI >= datum->length)
 					{
-						// We only had CR+LF characters, no data
-						end = iSEM_appendLine(sem, datum->data_u8 + lnLast, 0, false);
+						// We've entered into a CR/LF block, append a new line
+						if (!llOtherCharacters)
+						{
+							// We only had CR+LF characters, no data
+							end = iSEM_appendLine(sem, datum->data_u8 + lnLast, 0, false);
+
+						} else {
+							// We had at least some data
+							end = iSEM_appendLine(sem, datum->data_u8 + lnLast, lnI - lnJ - lnLast, false);
+						}
+						if (!start)
+							start = end;
+
+						// Indicate where we are now
+						llOtherCharacters	= false;
+						lnLast				= lnI;
+
+						// If we're done, then we're done
+						if (lnI == datum->length)
+							++lnI;
 
 					} else {
-						// We had at least some data
-						end = iSEM_appendLine(sem, datum->data_u8 + lnLast, lnI - lnJ - lnLast, false);
-					}
-					if (!start)
-						start = end;
-
-					// Indicate where we are now
-					llOtherCharacters	= false;
-					lnLast				= lnI;
-
-					// If we're done, then we're done
-					if (lnI == datum->length)
+						llOtherCharacters = true;
 						++lnI;
-
-				} else {
-					llOtherCharacters = true;
-					++lnI;
+					}
+					// Continue on processing the next line if we have room
 				}
-				// Continue on processing the next line if we have room
-			}
 
 
-		//////////
-		// Renumber everything
-		//////
+			// Renumber everything
 			iSEM_renumber(sem, 1);
 
-
-		//////////
-		// Parse the content if it's flagged as source code
-		//////
+			// Parse the content if it's flagged as source code
 			if (isSourceCode)
 			{
 				// Parse from start to end
@@ -397,10 +388,7 @@
 					iEngine_parse_sourceCode_line(start, acsSecondary);
 			}
 
-
-		//////////
-		// Log if need be
-		//////
+			// Log if need be
 			if (tlLogIt)
 			{
 				// Log it
@@ -408,11 +396,12 @@
 				iVjr_appendSystemLog(buffer);
 			}
 
-
-		//////////
-		// Indicate success
-		//////
+			// Indicate success
 			return(true);
+
+		} else {
+			return(false);
+		}
 
 	}
 
@@ -594,7 +583,7 @@ debug_break;
 // 			//////
 // 				ecmNew->ecFirst				= (SEditChain*)iTranslate_p1_to_p2(xlatRoot, ecmSource->ecFirst);
 // 				ecmNew->ecLast				= (SEditChain*)iTranslate_p1_to_p2(xlatRoot, ecmSource->ecLast);
-// 				ecmNew->ecTopLine				= (SEditChain*)iTranslate_p1_to_p2(xlatRoot, ecmSource->ecTopLine);
+// 				ecmNew->ecTopLine			= (SEditChain*)iTranslate_p1_to_p2(xlatRoot, ecmSource->ecTopLine);
 // 				ecmNew->ecCursorLine		= (SEditChain*)iTranslate_p1_to_p2(xlatRoot, ecmSource->ecCursorLine);
 // 				ecmNew->ecCursorLineLast	= (SEditChain*)iTranslate_p1_to_p2(xlatRoot, ecmSource->ecCursorLineLast);
 // 				ecmNew->ecSelectedLineStart	= (SEditChain*)iTranslate_p1_to_p2(xlatRoot, ecmSource->ecSelectedLineStart);
@@ -664,24 +653,24 @@ debug_break;
 		// Make sure our environment is sane
 		if (root && *root)
 		{
+			// Grab a shortcut
 			sem = *root;
+
+			// Mark the content stale
+			sem->isStale = true;
+
+
 			//////////
 			// Are we really the thing?  Or just an indirect reference to the thing?
 			//////
 				if (!sem->indirect)
 				{
-					//////////
-					// We are the thing
 					// Free undo history
-					//////
-						if (sem->undoHistory)
-							iSEM_delete(&sem->undoHistory, true);
+					if (sem->undoHistory)
+						iSEM_delete(&sem->undoHistory, true);
 
-
-					//////////
 					// Free content
-					//////
-						iSEMLine_free(&sem->firstLine, true);
+					iSEMLine_free(&sem->firstLine, true);
 				}
 
 
@@ -723,15 +712,13 @@ debug_break;
 		// Make sure our environment is sane
 		if (root && *root)
 		{
-			//////////
 			// If we don't have an ecb, make a local one
-			//////
-				if (!ecb)
-				{
-					// Initialize and setup the pointer
-					memset(&lecb, 0, sizeof(lecb));
-					ecb = &lecb;
-				}
+			if (!ecb)
+			{
+				// Initialize and setup the pointer
+				memset(&lecb, 0, sizeof(lecb));
+				ecb = &lecb;
+			}
 
 
 			//////////
@@ -792,14 +779,15 @@ debug_break;
 		// Make sure our environment is sane
 		if (sem && sem->firstLine && sem->lastLine)
 		{
+			// Mark the content stale
+			sem->isStale = true;
+
 			// Begin at the beginning
 			line = sem->firstLine;
 			while (line)
 			{
-				//////////
 				// Set the line number
-				//////
-					line->lineNumber = tnStartingLineNumber++;
+				line->lineNumber = tnStartingLineNumber++;
 
 
 				//////////
@@ -870,6 +858,9 @@ debug_break;
 		line = NULL;
 		if (sem && !sem->isReadOnly)
 		{
+			// Mark the content stale
+			sem->isStale = true;
+
 			// Allocate our new structure
 			if (sem->lastLine)
 			{
@@ -1007,8 +998,11 @@ debug_break;
 				// Initialize
 				memset(ec, 0, sizeof(SLine));
 
+				// Mark the content stale
+				sem->isStale = true;
+
 				// Append a blank line
-				ec->sourceCode = iDatum_allocate(tcText, tnTextLength);
+				ec->sourceCode	= iDatum_allocate(tcText, tnTextLength);
 
 				// Insert before or after the indicated line
 				if (tlInsertAfter)
@@ -1102,6 +1096,9 @@ debug_break;
 		// Make sure the environment is sane
 		if (sem && !sem->isReadOnly && sem->line_cursor)
 		{
+			// Mark the content stale
+			sem->isStale = true;
+
 			// Delete any content on this line
 			if (sem->line_cursor->sourceCode && sem->firstLine != sem->lastLine)
 				iDatum_delete(sem->line_cursor->sourceCode, true);
@@ -2074,7 +2071,7 @@ debug_break;
 		logfunc(__FUNCTION__);
 		// Make sure our environment is sane
 		lnPixelsRendered = 1;
-		if (sem && obj)
+		if (sem && obj && sem->isStale)
 		{
 			// Support for simple html
 			if (sem->isSimpleHtml || ((varStyle = iObjProp_get(obj, _INDEX_STYLE)) && iiVariable_getAs_s32(varStyle) == _STYLE_HTML))
@@ -2084,6 +2081,9 @@ debug_break;
 			line	= sem->line_top;
 			bmp		= obj->bmp;
 			lnTop	= 0;
+
+			// Mark the content not stale
+			sem->isStale = false;
 
 			// Indicate the current render ID number
 			++sem->renderId;
@@ -3053,13 +3053,8 @@ renderAsOnlyText:
 
 		logfunc(__FUNCTION__);
 		llChanged = false;
-		if (!sem->isHeavyProcessing)
+		if (!sem->isHeavyProcessing && (font = iSEM_getRectAndFont(sem, obj, &lrc)))
 		{
-			//////////
-			// Indicate initially that no changes were made that require a re-render
-			//////
-				font = iSEM_getRectAndFont(sem, obj, &lrc);
-
 
 			//////////
 			// Make sure our environment is sane
@@ -3076,6 +3071,7 @@ renderAsOnlyText:
 						lnExtra		= font->tm.tmMaxCharWidth - (font->tm.tmAveCharWidth * 2);			// Added to fix the bug mentioned below
 						if (lnExtra < 0)
 							lnExtra = 0;
+
 						lnCols		= max((lnWidth  / (font->tm.tmAveCharWidth + lnExtra)),	2);			// There is some kind of bug in the font->tm.tmAveCharWidth which prevents this from always being able to be an exact calculation, so we back off 10 characters
 						lnRows		= max((lnHeight / font->tm.tmHeight),					2);			// And for the height, we back off one
 
@@ -3224,156 +3220,177 @@ renderAsOnlyText:
 //
 //////
 	// Returns number of pixels rendered
+	struct __iSimpleHtml_iCodeStack
+	{
+		s32		iCode;			// iCode for turning on the thing
+		s8		lnLevel;		// For each block, it goes into a level
+		bool	isActive;		// Is it active, for un-nested things, like: <b>bold <i>bold italics</b> italics only</i>
+		s32		fontStack;		// The root entry for the original font used for this tag (if applicable)
+	};
+	struct __iSimpleHtml_vars
+	{
+		s8							lnLevel;
+		bool						llZoomed, llNumeric, llAlpha, llFontChange, llFallThru, llLastOpMoved;
+		u32							lnPixelsRendered;
+		s32							lnX, lnY, lnLastHeight, lnWidth, lnHeight, lnScrollX, lnScrollY, lnStartHeight, lnStartWidth;
+		s32							lnFontSize, lnFontWeight, lnFontItalics, lnFontUnderline, lnFontStack, lniCodeStack;
+		f64							lfZoom;
+		SBgra						color, bgcolor, colorHighlight, bgcolorHighlight, defaultBackColor, defaultForeColor;
+		RECT						rc, lrc, lrc2;
+		u8*							lcFontName;
+		SBitmap*					bmp;
+		SDatum*						fontName;
+		SLine*						line;
+		SComp*						comp;
+		SComp*						comp2;
+		SComp*						compNext;
+		SComp*						compNext2;
+		SFont*						font;
+		SFont*						defaultFont;
+		SFont*						fontStack[64];		// Up to 64 font changes on the stack
+		__iSimpleHtml_iCodeStack	iCodeStack[1024];	// How deep we can go in nesting, like <html><font><tt><b><i>... would be 5 levels
+	};
 	u32 iSEM_renderAs_simpleHtml(SEM* sem, SObject* obj, bool tlRenderCursorline)
 	{
-		bool		llZoomed, llNumeric, llAlpha, llFontChange, llFallThru;
-		u32			lnPixelsRendered;
-		s32			lnX, lnY, lnLastHeight, lnWidth, lnHeight, lnScrollX, lnScrollY, lnStartHeight, lnStartWidth;
-		s32			lnFontSize, lnFontWeight, lnFontItalics, lnFontUnderline, lnFontStack, lnFontsCreated;
-		f64			lfZoom;
-		SBgra		color, bgcolor, colorHighlight, bgcolorHighlight, defaultBackColor, defaultForeColor;
-		RECT		rc, lrc, lrc2;
-		u8*			lcFontName;
-		SBitmap*	bmp;
-		SDatum*		fontName;
-		SComp*		comp;
-		SComp*		comp2;
-		SComp*		compNext;
-		SComp*		compNext2;
-		SFont*		font;
-		SFont*		fontStack[64];		// Up to 64 font changes on the stack
-		SFont*		fontsCreated[128];	// Fonts created during this process
-		SLine*		line;
+		__iSimpleHtml_vars v;		// Created as an internal struct (used only here) for simplified passed parameters
 
 
 		// Make sure the environment is sane
-		lnPixelsRendered = 0;
+		memset(&v, 0, sizeof(v));
 		if (sem && obj && obj->bmp)
 		{
 			// Fill the rectangle with an empty background
-			font = iSEM_getRectAndFont(sem, obj, &rc);
-			iSEM_getColors(sem, obj, defaultBackColor, defaultForeColor);
-			iBmp_fillRect(obj->bmp, &rc, defaultBackColor, defaultBackColor, defaultBackColor, defaultBackColor, false, NULL, false);
+			v.font = iSEM_getRectAndFont(sem, obj, &v.rc);
+			iSEM_getColors(sem, obj, v.defaultBackColor, v.defaultForeColor);
+			iBmp_fillRect(obj->bmp, &v.rc, v.defaultBackColor, v.defaultBackColor, v.defaultBackColor, v.defaultBackColor, false, NULL, false);
 
 			// Draw any content
 			if (sem->firstLine && sem->lastLine && obj)
 			{
+
 				//////////
-				// We always re-parse when this function it's called
+				// Re-parse if need be
 				//////
-					for (line = sem->firstLine; line; line = line->ll.nextLine)
+					if (sem->isStale)
 					{
-						// Recompile everything and parse out tags
-						iEngine_parse_sourceCode_line(line, cgcSEMHtmlKeywords, false);
-						iComps_fixup_semHtmlGroupings(line);
+						// Recompile each line and parse out tags
+						for (v.line = sem->firstLine; v.line; v.line = v.line->ll.nextLine)
+						{
+							iEngine_parse_sourceCode_line(v.line, cgcSEMHtmlKeywords, false);
+							iComps_fixup_semHtmlGroupings(v.line);
+						}
+
+						// Lower the flag
+						sem->isStale = false;
 					}
 
 
 				//////////
 				// Grab the render bitmap
 				//////
-					lnWidth  = obj->bmp->bi.biWidth;
-					lnHeight = obj->bmp->bi.biHeight;
+					v.color.color				= bgra(0, 0, 0, 255);					// Black foreground
+					v.bgcolor.color				= bgra(255, 255, 255, 255);				// White background
+					v.colorHighlight.color		= currentStatementForeColor.color;
+					v.bgcolorHighlight.color	= currentStatementBackColor.color;
+					v.lnWidth					= obj->bmp->bi.biWidth;
+					v.lnHeight					= obj->bmp->bi.biHeight;
 
 					// Apply any zoom
-					llZoomed = iiSEM_renderAs_simpleHtml__applyZoom(obj, &lnWidth, &lnHeight);
+					v.llZoomed = iiSEM_renderAs_simpleHtml__applyZoom(v, obj);
 
 					// If it's the same size as the bitmap, use it, otherwise build a temporary one
-					bmp = NULL;
-					if (!iiSEM_renderAs_simpleHtml__createBmp(&bmp, obj->bmp, lnWidth, lnHeight))
+					v.bmp = NULL;
+					if (!iiSEM_renderAs_simpleHtml__createBmp(&v.bmp, obj->bmp, v.lnWidth, v.lnHeight))
 						return(-1);
 
 
 				//////////
 				// Default font
 				//////
-					lnFontsCreated	= 0;
-					lcFontName		= (u8*)"Ubuntu";
-					lnFontSize		= 12;
-					lnFontWeight	= FW_NORMAL;
-					lnFontItalics	= 0;
-					lnFontUnderline	= 0;
-					font			= iSEM_renderAs_simpleHtml__addFont(&fontsCreated[0], &lnFontsCreated, lcFontName, lnFontSize, lnFontWeight, lnFontItalics, lnFontUnderline);
+					v.lcFontName			= (u8*)cgcFontName_default;
+					v.lnFontSize			= 12;
+					v.lnFontWeight			= FW_NORMAL;
+					v.lnFontItalics			= 0;
+					v.lnFontUnderline		= 0;
+					v.font					= iSEM_renderAs_simpleHtml__addFont(v);
+					v.defaultFont			= v.font;
+					v.lnFontStack			= -1;
 
 
 				//////////
-				// Font stack
+				// iCode stack
 				//////
-					memset(fontStack, 0, sizeof(fontStack));
-					lnFontStack = 0;
-					iiSEM_renderAs_simpleHtml__pushFontStack(&fontStack[0], font, &lnFontStack, sizeof(fontStack) / sizeof(fontStack[0]));
+					// Initially it is not set, but is set by the things it encounters as it is traversed
+					// Each <font>, <table>, <tr>, and <td> entry cause a new level
 
 
 				//////////
 				// Render through each line
 				//////
-					color.color				= bgra(0, 0, 0, 255);
-					bgcolor.color			= bgra(255, 255, 255, 255);
-					colorHighlight.color	= currentStatementForeColor.color;
-					bgcolorHighlight.color	= currentStatementBackColor.color;
-					lnX						= 0;
-					lnY						= 0;
-					lnLastHeight			= 0;
-					fontName				= NULL;
-					for (line = sem->line_top; line; line = line->ll.nextLine)
+					for (v.line = sem->line_top; v.line; v.line = v.line->ll.nextLine)
 					{
 						// Iterate through each line
-						lnStartHeight	= lnHeight;
-						lnStartWidth	= lnWidth;
-						llFontChange	= false;
-						for (comp = line->compilerInfo->firstComp; comp; comp = comp->ll.nextComp)
+						v.lnStartHeight	= v.lnHeight;
+						v.lnStartWidth	= v.lnWidth;
+						v.llFontChange	= false;
+						for (v.comp = v.line->compilerInfo->firstComp; v.comp; v.comp = v.comp->ll.nextComp)
 						{
 							// Is it an html tag?
-							comp2 = comp->firstCombined;
-							switch (comp->iCode)
+							v.llLastOpMoved	= false;
+							v.comp2			= v.comp->firstCombined;
+							switch (v.comp->iCode)
 							{
 								case _ICODE_SEM_HTML_HTML:
-									if (comp->iCat == _ICAT_SEM_HTML_ATTRIBUTES)
+									if (v.comp->iCat == _ICAT_SEM_HTML_ATTRIBUTES)
 									{
 										// Has attributes
-										for (llFontChange = false; comp; comp = comp->ll.nextComp)
+										for (v.llFontChange = false; v.comp; v.comp = iComps_getNth(v.comp))
 										{
 											// Make sure the pattern needed exists
-											compNext	= iComps_getNth(comp);
-											compNext2	= iComps_getNth(compNext);
-											llNumeric	= (compNext && compNext->iCode == _ICODE_EQUAL_SIGN && compNext2 && compNext2->iCode == _ICODE_NUMERIC);
-											llAlpha		= (compNext && compNext->iCode == _ICODE_EQUAL_SIGN && compNext2 && (compNext2->iCode == _ICODE_DOUBLE_QUOTED_TEXT || compNext2->iCode == _ICODE_SINGLE_QUOTED_TEXT));
+											v.compNext	= iComps_getNth(v.comp);
+											v.compNext2	= iComps_getNth(v.compNext);
+											v.llNumeric	= (v.compNext && v.compNext->iCode == _ICODE_EQUAL_SIGN && v.compNext2 && v.compNext2->iCode == _ICODE_NUMERIC);
+											v.llAlpha	= (v.compNext && v.compNext->iCode == _ICODE_EQUAL_SIGN && v.compNext2 && (v.compNext2->iCode == _ICODE_DOUBLE_QUOTED_TEXT || v.compNext2->iCode == _ICODE_SINGLE_QUOTED_TEXT));
 
 											// html only allows certain attributes
-											llFallThru = false;
-											switch (comp->iCode)
+											v.llFallThru = false;
+											switch (v.comp->iCode)
 											{
 												case _ICODE_SEM_HTML_BGCOLOR:
-													iiSEM_renderAs_simpleHtml__getColor(compNext2, llNumeric, llAlpha, &bgcolor);
+													iiSEM_renderAs_simpleHtml__getColor(v, true);
 													break;
 
 												case _ICODE_SEM_HTML_COLOR:
-													iiSEM_renderAs_simpleHtml__getColor(compNext2, llNumeric, llAlpha, &color);
+													iiSEM_renderAs_simpleHtml__getColor(v);
 													break;
 
 												case _ICODE_SEM_HTML_HEIGHT:
-													lnHeight = iComps_getAs_s32(comp);
+													v.lnHeight = iComps_getAs_s32(v.comp);
 													break;
 
 												case _ICODE_SEM_HTML_WIDTH:
-													lnWidth = iComps_getAs_s32(comp);
+													v.lnWidth = iComps_getAs_s32(v.comp);
 													break;
 
 												case _ICODE_SEM_HTML_NAME:
-// TODO:  working here ... not quite sure how I want to handle this:
-													if ((fontName = iComps_getAs_datum(comp, fontName)))
-														lcFontName	= fontName->data_u8;
+													if ((v.fontName = iComps_getAs_datum(v.comp, v.fontName)))
+													{
+														// The font name is expressly given
+														v.lcFontName	= v.fontName->data_u8;
+														v.llFontChange	= true;
+													}
 													break;
 
 												case _ICODE_SEM_HTML_SIZE:
-													lnFontSize = iComps_getAs_s32(comp);
+													v.lnFontSize	= iComps_getAs_s32(v.comp);
+													v.llFontChange	= true;
 													break;
 
 												default:
-													llFallThru = true;
+													v.llFallThru = true;
 													break;
 											}
-											llFontChange |= (!llFallThru);
+											v.llFontChange |= (!v.llFallThru);
 										}
 
 									} else {
@@ -3384,151 +3401,187 @@ renderAsOnlyText:
 
 								case _ICODE_SEM_HTML_HR:
 									// Moving to the next row, drawing a horizontal line, and then moving to the next row
-									break;
-								case _ICODE_SEM_HTML_BR:
-									// Moving to the next row
-									lnY += lnLastHeight;
-									lnX = 0;
-									break;
-								case _ICODE_SEM_HTML_FONT:
-									// Setting font parameters
-									break;
-								case _ICODE_SEM_HTML_TT:
-									// Switching to a monochrome font in the current size
+									v.llLastOpMoved = true;
 									break;
 
-//								case _ICODE_SEM_HTML_TABLE:
-//								case _ICODE_SEM_HTML_TR:
-//								case _ICODE_SEM_HTML_TD:
-//									// Need to spawn off a secondary processor for this one, to determine its size in the first step, to render in the second step, and then redraw here in the third step
-//									break;
+								case _ICODE_SEM_HTML_BR:
+									// Moving to the next row
+									v.llLastOpMoved	= true;
+									v.lnY			+= v.lnLastHeight;
+									v.lnX			= 0;
+									break;
+
+								case _ICODE_SEM_HTML_FONT:
+									// Setting font parameters
+									iiSEM_renderAs_simpleHtml__getFont(v);
+									break;
+
+								case _ICODE_SEM_HTML_TT:
+									// Switching to a monospace font in the current size
+									iiSEM_renderAs_simpleHtml__pushFontStack(v);
+									v.lcFontName	= (u8*)cgcFontName_defaultFixed;
+									v.font			= iFont_create(v.lcFontName, v.lnFontSize, v.lnFontWeight, v.lnFontItalics, v.lnFontUnderline);
+									break;
+
+								case _ICODE_SEM_HTML_TABLE:		// <table>
+								case _ICODE_SEM_HTML_TR:		// <tr>
+								case _ICODE_SEM_HTML_TD:		// <td>
+									iiSEM_renderAs_simpleHtml__table_tr_td(v);
+									break;
 
 								case _ICODE_SEM_HTML_B:
 									// Turning on bold
+									v.lnFontWeight	= FW_BOLD;
+									v.llFontChange	= true;
 									break;
+
 								case _ICODE_SEM_HTML_I:
 									// Turning on italic
+									v.lnFontItalics	= true;
+									v.llFontChange	= true;
 									break;
+
 								case _ICODE_SEM_HTML_U:
 									// Turning on underline
+									v.lnFontUnderline	= true;
+									v.llFontChange		= true;
 									break;
+
 								case _ICODE_SEM_HTML_W:
 									// Setting a hard new width for the HTML render
+									v.lnWidth = iComps_getAs_s32(v.comp);
 									break;
+
 								case _ICODE_SEM_HTML_H:
 									// Setting a hard new height for the HTML render
+									v.lnHeight = iComps_getAs_s32(v.comp);
 									break;
+
 								case _ICODE_SEM_HTML_X:
 									// Repositioning to a hard X coordinate
+									v.lnX			= iComps_getAs_s32(v.comp);
+									v.llLastOpMoved	= true;
 									break;
+
 								case _ICODE_SEM_HTML_Y:
 									// Repositioning to a hard Y coordinate
+									v.lnY			= iComps_getAs_s32(v.comp);
+									v.llLastOpMoved = true;
 									break;
+
 								case _ICODE_SEM_HTML_BGCOLOR:
 									// Setting a hard background color
+									iiSEM_renderAs_simpleHtml__getColor(v, true);
 									break;
+
 								case _ICODE_SEM_HTML_COLOR:
 									// Setting a hard foreground color
+									iiSEM_renderAs_simpleHtml__getColor(v);
 									break;
+
 								case _ICODE_SEM_HTML_ALIGN:
 									// Setting a hard horizontal alignment mode
 									break;
+
 								case _ICODE_SEM_HTML_VALIGN:
 									// Setting a hard vertical alignment mode
 									break;
+
 								case _ICODE_SEM_HTML_HEIGHT:
 									// Setting a hard new height for the HTML render
 									break;
+
 								case _ICODE_SEM_HTML_WIDTH:
 									// Setting a hard new width for the HTML render
 									break;
+
 								case _ICODE_SEM_HTML_NAME:
 									// Setting a hard new font name
 									break;
+
 								case _ICODE_SEM_HTML_SIZE:
 									// Setting a hard new font size
 									break;
 
+								case _ICODE_SEM_HTML_THTML:
+									// </html>
+									iiSEM_renderAS_simpleHtml__fallBack(v);
+									break;
+
+								case _ICODE_SEM_HTML_TFONT:
+									// </font>
+									iiSEM_renderAs_simpleHtml__popFontStack(v);
+									iiSEM_renderAS_simpleHtml__fallBack(v);
+									break;
+
+								case _ICODE_SEM_HTML_TTT:
+									// </tt>
+									iiSEM_renderAs_simpleHtml__popFontStack(v);
+									iiSEM_renderAS_simpleHtml__fallBack(v);
+									break;
+
+								case _ICODE_SEM_HTML_TTABLE:	// </table>
+								case _ICODE_SEM_HTML_TTR:		// </tr>
+								case _ICODE_SEM_HTML_TTD:		// </td>
+									iiSEM_renderAs_simpleHtml__table_tr_td(v);
+									break;
+
+								case _ICODE_SEM_HTML_TB:
+									// </b>
+									break;
+
+								case _ICODE_SEM_HTML_TI:
+									// </i>
+									break;
+
+								case _ICODE_SEM_HTML_TU:
+									// </u>
+									break;
+
 								default:
 									// It's something to render
-									SelectObject(bmp->hdc, font->hfont);
-									if (line == sem->line_cursor)
-									{
-										// Cursor line
-										SetTextColor(bmp->hdc, RGB(colorHighlight.red, colorHighlight.grn, colorHighlight.blu));
-										SetBkColor(bmp->hdc, RGB(bgcolorHighlight.red, bgcolorHighlight.grn, bgcolorHighlight.blu));
-
-									} else {
-										// Regular line
-										SetTextColor(bmp->hdc, RGB(color.red, color.grn, color.blu));
-										SetBkColor(bmp->hdc, RGB(bgcolor.red, bgcolor.grn, bgcolor.blu));
-									}
-									SetBkMode(bmp->hdc, OPAQUE);
-
-									// Calculate rectangle
-									SetRect(&lrc, 0, 0, 0, 0);
-									DrawText(bmp->hdc, comp->line->sourceCode->data + comp->start, comp->length, &lrc, DT_LEFT | DT_CALCRECT);
-
-									// Wrap if we need to
-									SetRect(&lrc2, lnX, lnY, lnX + lrc.right - lrc.left, lnY + lrc.bottom - lrc.top);
-									if (lrc2.left != 0 && lrc2.right > lnWidth)
-									{
-										// Move down a row, and to the left margin
-										lrc2.left	= 0;
-										lrc2.right	= lrc.right - lrc2.left;
-										OffsetRect(&lrc2, 0, lnLastHeight);
-
-										// Adjust official y,x
-										lnX = 0;
-										lnY += lnLastHeight;
-									}
-
-									// Render
-									DrawText(bmp->hdc, comp->line->sourceCode->data + comp->start, comp->length, &lrc2, DT_LEFT);
-// 									InflateRect(&lrc2, -1, -1);
-// 									FrameRect(bmp->hdc, &lrc2, (HBRUSH)GetStockObject(BLACK_BRUSH));
-
-									// Adjust the position by the size
-									lnX				+= lrc.right - lrc.left;
-									lnLastHeight	= lrc.bottom - lrc.top;
+									v.lnPixelsRendered += iiSEM_renderAs_simpleHtml__addText(v, sem);
 									break;
 							}
 
 							// Adjust the width and height if specified to do so
-							if (lnHeight != lnStartHeight && lnWidth != lnStartWidth)
+							if (v.lnHeight != v.lnStartHeight && v.lnWidth != v.lnStartWidth)
 							{
 								// Adjust to the new height
-								llZoomed = iiSEM_renderAs_simpleHtml__applyZoom(obj, &lnWidth, &lnHeight);
-								if (!iiSEM_renderAs_simpleHtml__createBmp(&bmp, obj->bmp, lnWidth, lnHeight))
+								v.llZoomed = iiSEM_renderAs_simpleHtml__applyZoom(v, obj);
+								if (!iiSEM_renderAs_simpleHtml__createBmp(&v.bmp, obj->bmp, v.lnWidth, v.lnHeight))
 								{
 									// Memory error
-									lnPixelsRendered = _ERROR_OUT_OF_MEMORY;
+									v.lnPixelsRendered = _ERROR_OUT_OF_MEMORY;
 									goto error_exit;
 								}
 
 								// Reset our variables
-								lnStartHeight	= lnHeight;
-								lnStartWidth	= lnWidth;
+								v.lnStartHeight	= v.lnHeight;
+								v.lnStartWidth	= v.lnWidth;
 							}
 
 							// Get the new default font if we need
-							if (llFontChange)
+							if (v.llFontChange)
 							{
-								// Create the font
-								font = iFont_create(lcFontName, lnFontSize, lnFontWeight, lnFontItalics, lnFontUnderline);
+								// Save the current font
+								iiSEM_renderAs_simpleHtml__pushFontStack(v);
 
-								// Add it to the stack
-								if (lnFontStack == 1)
-									fontStack[0] = font;	// Replace the first/main entry created above
+								// Create the new font
+								v.font = iFont_create(v.lcFontName, v.lnFontSize, v.lnFontWeight, v.lnFontItalics, v.lnFontUnderline);
 
 								// Indicate our font has not yet again changed
-								llFontChange = false;
+								v.llFontChange = false;
 							}
 						}
 
 						// Are we done?
-						if (line == sem->lastLine)
+						if (v.line == sem->lastLine)
 							break;
+
+						// When we end a line, add a space to separate things for the start of the next line
+						if (!v.llLastOpMoved)
+							v.lnPixelsRendered += iiSEM_renderAs_simpleHtml__addText(v, sem, " ", 1);
 					}
 
 			}
@@ -3537,53 +3590,203 @@ renderAsOnlyText:
 error_exit:
 
 		// Indicate how many pixels were rendered
-		return(lnPixelsRendered);
+		return(v.lnPixelsRendered);
+	}
+
+	u32 iiSEM_renderAs_simpleHtml__addText(__iSimpleHtml_vars& v, SEM* sem, s8* tcText, s32 tnTextLength, HBRUSH* hbr)
+	{
+		s32		lnTextLength;
+		RECT	lrc, lrc2;
+		s8*		lcText;
+					
+
+		//////////
+		// Determine colors
+		//////
+			SelectObject(v.bmp->hdc, v.font->hfont);
+			if (v.line == sem->line_cursor)
+			{
+				// Cursor line
+				SetTextColor(v.bmp->hdc, RGB(v.colorHighlight.red, v.colorHighlight.grn, v.colorHighlight.blu));
+				SetBkColor(v.bmp->hdc, RGB(v.bgcolorHighlight.red, v.bgcolorHighlight.grn, v.bgcolorHighlight.blu));
+
+			} else {
+				// Regular line
+				SetTextColor(v.bmp->hdc, RGB(v.color.red, v.color.grn, v.color.blu));
+				SetBkColor(v.bmp->hdc, RGB(v.bgcolor.red, v.bgcolor.grn, v.bgcolor.blu));
+			}
+			SetBkMode(v.bmp->hdc, OPAQUE);
+
+
+		//////////
+		// Compute our target
+		//////
+			if (tcText)
+			{
+				// Use the text
+				lcText			= tcText;
+				lnTextLength	= tnTextLength;
+
+			} else {
+				// Use the component
+				lcText			= v.comp->line->sourceCode->data_s8 + v.comp->start;
+				lnTextLength	= v.comp->length;
+			}
+
+
+		//////////
+		// Calculate rectangle
+		//////
+			SetRect(&lrc, 0, 0, 0, 0);
+			DrawText(v.bmp->hdc, lcText, lnTextLength, &lrc, DT_LEFT | DT_CALCRECT);
+
+
+		//////////
+		// Wrap if we need to
+		//////
+			SetRect(&lrc2, v.lnX, v.lnY, v.lnX + lrc.right - lrc.left, v.lnY + lrc.bottom - lrc.top);
+			if (lrc2.left != 0 && lrc2.right > v.lnWidth)
+			{
+				// Move down a row, and to the left margin
+				lrc2.left	= 0;
+				lrc2.right	= lrc.right - lrc2.left;
+				OffsetRect(&lrc2, 0, v.lnLastHeight);
+
+				// Adjust official y,x
+				v.lnX = 0;
+				v.lnY += v.lnLastHeight;
+			}
+
+
+		//////////
+		// Render
+		//////
+			DrawText(v.bmp->hdc, lcText, lnTextLength, &lrc2, DT_LEFT);
+			if (hbr)
+			{
+				// Draw a border around it
+				InflateRect(&lrc2, -1, -1);
+				FrameRect(v.bmp->hdc, &lrc2, *hbr);
+			}
+
+
+		//////////
+		// Adjust the position by the size
+		//////
+			v.lnX			+= lrc.right - lrc.left;
+			v.lnLastHeight	= lrc.bottom - lrc.top;
+
+
+		//////////
+		// Indicate how many pixels were rendered
+		//////
+			return((lrc.right - lrc.left) * (lrc.bottom - lrc.top));
+
 	}
 
 	// Upon entry, comp is either numeric or alpha
-	void iiSEM_renderAs_simpleHtml__getColor(SComp* comp, bool tlNumeric, bool tlAlpha, SBgra* color)
+	void iiSEM_renderAs_simpleHtml__getColor(__iSimpleHtml_vars& v, bool tlBackColor)
 	{
-		u8 lnBlu, lnGrn, lnRed;
+		u8		lnBlu, lnGrn, lnRed;
+		SBgra	color;
 
 
 		// Extract as indicated
-		if (tlAlpha)
+		if (v.llAlpha)
 		{
 			// It's color=".."
-			if (comp->line->sourceCode->data_s8[1] == '#')
+			if (v.comp->line->sourceCode->data_s8[1] == '#')
 			{
 				// It's #color
-				if (comp->length == 9)
+				if (v.comp->length == 9)
 				{
 					// It's "#rrggbb"
-					if (iMath_getAs_rrggbb(comp->line->sourceCode->data_u8 + 2, &lnBlu, &lnGrn, &lnRed))
-						color->color = bgr(lnBlu, lnGrn, lnRed);
+					if (iMath_getAs_rrggbb(v.comp->line->sourceCode->data_u8 + 2, &lnBlu, &lnGrn, &lnRed))
+						color.color = bgr(lnBlu, lnGrn, lnRed);
 
-				} else if (comp->length == 6) {
+				} else if (v.comp->length == 6) {
 					// It's "#rgb"
-					if (iMath_getAs_rgb(comp->line->sourceCode->data_u8 + 2, &lnBlu, &lnGrn, &lnRed))
-						color->color = bgr(lnBlu, lnGrn, lnRed);
+					if (iMath_getAs_rgb(v.comp->line->sourceCode->data_u8 + 2, &lnBlu, &lnGrn, &lnRed))
+						color.color = bgr(lnBlu, lnGrn, lnRed);
 				}
 				//else We don't know what it is, so ignore it
 
 			} else {
 				// It's color
-				if (comp->length == 8)
+				if (v.comp->length == 8)
 				{
 					// It's "rrggbb"
-					if (iMath_getAs_rrggbb(comp->line->sourceCode->data_u8 + 1, &lnBlu, &lnGrn, &lnRed))
-						color->color = bgr(lnBlu, lnGrn, lnRed);
+					if (iMath_getAs_rrggbb(v.comp->line->sourceCode->data_u8 + 1, &lnBlu, &lnGrn, &lnRed))
+						color.color = bgr(lnBlu, lnGrn, lnRed);
 
-				} else if (comp->length == 5) {
+				} else if (v.comp->length == 5) {
 					// It's "rgb"
-					if (iMath_getAs_rgb(comp->line->sourceCode->data_u8 + 1, &lnBlu, &lnGrn, &lnRed))
-						color->color = bgr(lnBlu, lnGrn, lnRed);
+					if (iMath_getAs_rgb(v.comp->line->sourceCode->data_u8 + 1, &lnBlu, &lnGrn, &lnRed))
+						color.color = bgr(lnBlu, lnGrn, lnRed);
 				}
 			}
 
-		} else if (tlNumeric) {
+		} else if (v.llNumeric) {
 			// It's color=Nnn
-			color->color = (u32)iComps_getAs_s64(comp);
+			color.color = (u32)iComps_getAs_s64(v.comp);
+		}
+
+		// Store the color
+		if (tlBackColor)		v.bgcolor.color	= color.color;
+		else					v.color.color	= color.color;
+	}
+
+	// Upon entry:  v.comp is the <font> component
+	void iiSEM_renderAs_simpleHtml__getFont(__iSimpleHtml_vars& v)
+	{
+		// Iterate through
+		if (v.comp->iCat == _ICAT_SEM_HTML_ATTRIBUTES)
+		{
+			// There are attributes
+			for ( ; v.comp; v.comp = iComps_getNth(v.comp))
+			{
+			}
+
+		} else {
+			// No attributes .. just ignore it
+		}
+	}
+
+
+
+
+//////////
+//
+// Called to handle for <table> <tr> <td>, and </table> </tr> </td>
+//
+//////
+	void iiSEM_renderAs_simpleHtml__table_tr_td(__iSimpleHtml_vars& v)
+	{
+		switch (v.comp->iCode)
+		{
+			case _ICODE_SEM_HTML_TABLE:
+				// <table>
+				break;
+
+			case _ICODE_SEM_HTML_TR:
+				// <tr>
+				break;
+
+			case _ICODE_SEM_HTML_TD:
+				// <td>
+				break;
+
+			case _ICODE_SEM_HTML_TTABLE:
+				// </table>
+				break;
+
+			case _ICODE_SEM_HTML_TTR:
+				// </tr>
+				break;
+
+			case _ICODE_SEM_HTML_TTD:
+				// </td>
+				break;
 		}
 	}
 
@@ -3595,7 +3798,7 @@ error_exit:
 // Applies a zoom factor to the indicated values
 //
 //////
-	bool iiSEM_renderAs_simpleHtml__applyZoom(SObject* obj, s32* tnWidth, s32* tnHeight)
+	bool iiSEM_renderAs_simpleHtml__applyZoom(__iSimpleHtml_vars& v, SObject* obj)
 	{
 		bool		llZoomed;
 		f64			lfZoom;
@@ -3611,8 +3814,8 @@ error_exit:
 			lfZoom		= min(max(lfZoom, _HTML_ZOOM_MIN), _HTML_ZOOM_MAX);
 
 			// Determine the bitmap size we can render
-			*tnWidth	= (s32)((f64)*tnWidth  / lfZoom);
-			*tnHeight	= (s32)((f64)*tnHeight / lfZoom);
+			v.lnWidth	= (s32)((f64)v.lnWidth  / lfZoom);
+			v.lnHeight	= (s32)((f64)v.lnHeight / lfZoom);
 
 		} else {
 			// Not zoomed
@@ -3680,34 +3883,10 @@ error_exit:
 // Create a font and add it to the list of fonts we've created for this render
 //
 //////
-	SFont* iSEM_renderAs_simpleHtml__addFont(SFont* fontsCreated[], s32* tnFontsCreated, u8* tcFontName, s32 tnFontSize, s32 tnFontWeight, s32 tnFontItalics, s32 tnFontUnderline)
+	SFont* iSEM_renderAs_simpleHtml__addFont(__iSimpleHtml_vars& v)
 	{
-		s32		lnI;
-		SFont*	font;
-
-
-		// Search to see if the font already exists
-		for (lnI = 0; lnI < *tnFontsCreated; lnI++)
-		{
-			// Grab the font as a pointer
-			font = fontsCreated[lnI];
-
-			// Is this a duplicate?
-			if (iDatum_compare(&font->name, tcFontName, -1) && font->_size == tnFontSize && font->_weight == tnFontWeight && font->_italics == tnFontItalics && font->_underline == tnFontUnderline)
-				return(font);		// This is a match
-		}
-
 		// Create the font
-		font = iFont_create(tcFontName, tnFontSize, tnFontWeight, tnFontItalics, tnFontUnderline);
-		if (font)
-		{
-			// Add it to the list of fonts we've used
-			fontsCreated[*tnFontsCreated] = font;
-			++*tnFontsCreated;
-		}
-
-		// Indicate success or failure
-		return(font);
+		return(iFont_create(v.lcFontName, v.lnFontSize, v.lnFontWeight, v.lnFontItalics, v.lnFontUnderline));
 	}
 
 
@@ -3718,14 +3897,21 @@ error_exit:
 // Push the font onto stack
 //
 //////
-	void iiSEM_renderAs_simpleHtml__pushFontStack(SFont* fontStack[], SFont* font, s32* tnFontStack, s32 tnFontStackSize)
+	void iiSEM_renderAs_simpleHtml__pushFontStack(__iSimpleHtml_vars& v)
 	{
-		// Are we still within the valid space?
-		if (*tnFontStack < tnFontStackSize)
-			fontStack[*tnFontStack] = font;		// Push
-
 		// Point to the next slot
-		++*tnFontStack;							// Note:  This stack may grow well beyond its physical size.  In such a case it will use the maximum entry repeatedly.
+		++v.lnFontStack;	// Note:  This stack may grow well beyond its physical size.  In such a case it will use the maximum entry repeatedly.
+
+		// Are we still within the valid space?
+		if (v.lnFontStack < (sizeof(v.fontStack) / sizeof(v.fontStack[0])))
+		{
+			// Store the current colors
+			v.font->backColor.color		= v.bgcolor.color;
+			v.font->foreColor.color		= v.color.color;
+
+			// Perform the push
+			v.fontStack[v.lnFontStack]	= v.font;	// Push
+		}
 	}
 
 
@@ -3736,14 +3922,69 @@ error_exit:
 // Pop the font onto stack
 //
 //////
-	SFont* iiSEM_renderAs_simpleHtml__popFontStack(SFont* fontStack[], SFont* font, s32* tnFontStack, s32 tnFontStackSize)
+	void iiSEM_renderAs_simpleHtml__popFontStack(__iSimpleHtml_vars& v)
 	{
-		// Decrease the stack pointer
-		if (tnFontStack > 0)
-			--*tnFontStack;
+		s32 lnMaxElement;
 
-		// Grab the font (or the maximum font if we're too deep
-		return(fontStack[min(*tnFontStack, tnFontStackSize - 1)]);
+
+		// Determine the largest element
+		lnMaxElement = (sizeof(v.fontStack) / sizeof(v.fontStack[0])) - 1;
+
+		// Pop
+		if (v.lnFontStack >= 0)
+		{
+			// Delete the current font
+			if (v.lnFontStack < lnMaxElement && v.fontStack[v.lnFontStack] != v.defaultFont)
+				iFont_delete(&v.fontStack[v.lnFontStack], true);
+
+			// Grab the item
+			v.font = v.fontStack[min(v.lnFontStack - 1, lnMaxElement)];
+
+		} else {
+			// Use the default font
+			v.font = v.defaultFont;
+		}
+
+		// Decrease the stack pointer
+		--v.lnFontStack;
+
+		// Restore the colors
+		v.color.color		= v.font->foreColor.color;
+		v.bgcolor.color		= v.font->backColor.color;
+
+		// Restore the font name and attributes
+		v.lcFontName		= v.font->name.data_u8;
+		v.lnFontSize		= v.font->_size;
+		v.lnFontWeight		= v.font->_weight;
+		v.lnFontItalics		= v.font->_italics;
+		v.lnFontUnderline	= v.font->_underline;
+	}
+
+
+
+
+//////////
+//
+// Called to fallback to the indicated v.comp->iCode (if it exists).
+//
+//////
+	void iiSEM_renderAS_simpleHtml__fallBack(__iSimpleHtml_vars& v)
+	{
+		switch (v.comp->iCode)
+		{
+			case _ICODE_SEM_HTML_HTML:
+			case _ICODE_SEM_HTML_THTML:
+				// Backing up to previous <html> entry at the current level
+				break;
+
+			case _ICODE_SEM_HTML_FONT:
+			case _ICODE_SEM_HTML_TFONT:
+				// Backing up to previous <font> entry at the current level
+				break;
+
+			default:
+				return;
+		}
 	}
 
 
@@ -3760,6 +4001,7 @@ error_exit:
 
 
 		logfunc(__FUNCTION__);
+
 		//////////
 		// Indicate initially that no changes were made that require a re-render
 		//////
@@ -3817,6 +4059,9 @@ error_exit:
 		// If we updated something, mark the object dirty
 		if (llChanged)
 		{
+			// Mark the content stale
+			sem->isStale = true;
+
 			// Indicate the object needs re-rendered
 			iObj_setDirtyRender_ascent(obj, true);
 
@@ -3851,6 +4096,9 @@ error_exit:
 		//////
 			if (sem && sem->line_cursor && sem->line_cursor->sourceCode)
 			{
+				// Mark the content stale
+				sem->isStale = true;
+
 				//////////
 				// Scroll by count
 				//////
@@ -3941,6 +4189,10 @@ error_exit:
 		//////
 			if (sem && sem->line_cursor && sem->line_cursor->sourceCode)
 			{
+				// Mark the content stale
+				sem->isStale = true;
+
+
 				//////////
 				// Grab the line and form
 				//////
@@ -4089,6 +4341,10 @@ error_exit:
 		//////
 			if (sem && sem->line_cursor && sem->line_cursor->sourceCode && deltaY != 0)
 			{
+				// Mark the content stale
+				sem->isStale = true;
+
+
 				//////////
 				// Determine how many visible lines there are and move that far
 				//////
@@ -4179,6 +4435,9 @@ error_exit:
 		logfunc(__FUNCTION__);
 		if (sem && !sem->isReadOnly && sem->line_cursor && obj)
 		{
+			// Mark the content stale
+			sem->isStale = true;
+
 			// Clear off everything on the line
 			sem->line_cursor->sourceCode_populatedLength = 0;
 
@@ -4203,6 +4462,9 @@ error_exit:
 		logfunc(__FUNCTION__);
 		if (sem && !sem->isReadOnly && sem->line_cursor && obj)
 		{
+			// Mark the content stale
+			sem->isStale = true;
+
 			// Clear off everything on the line
 			if (sem->line_cursor->sourceCode_populatedLength > sem->columnEdit)
 				sem->line_cursor->sourceCode_populatedLength = sem->columnEdit;
@@ -4231,6 +4493,10 @@ error_exit:
 		logfunc(__FUNCTION__);
 		if (sem && !sem->isReadOnly && sem->line_cursor && obj)
 		{
+			// Mark the content stale
+			sem->isStale = true;
+
+			// From 0 to just before where we are
 			for (lnI = 0; lnI < sem->columnEdit && lnI < sem->line_cursor->sourceCode_populatedLength; lnI++)
 			{
 				// If it's not already a whitespace, replace it
@@ -4256,6 +4522,9 @@ error_exit:
 		logfunc(__FUNCTION__);
 		if (sem)
 		{
+			// Mark the content stale
+			sem->isStale = true;
+
 			// Toggle the flag
 			sem->isOverwrite = !sem->isOverwrite;
 
@@ -4613,6 +4882,10 @@ error_exit:
 		// Make sure the environment is sane
 		if (sem && sem->firstLine)
 		{
+			// Mark the content stale
+			sem->isStale = true;
+
+
 			//////////
 			// Save previous position
 			//////
@@ -4669,6 +4942,10 @@ error_exit:
 		//////
 			if (sem && sem->line_cursor)
 			{
+				// Mark the content stale
+				sem->isStale = true;
+
+
 				//////////
 				// Grab the line and form
 				//////
@@ -4742,6 +5019,10 @@ error_exit:
 		//////
 			if (sem && iSEM_isSelecting(sem))
 			{
+				// Mark the content stale
+				sem->isStale = true;
+
+
 				//////////
 				// Move to the start
 				//////
@@ -4788,6 +5069,10 @@ error_exit:
 		//////
 			if (sem && iSEM_isSelecting(sem))
 			{
+				// Mark the content stale
+				sem->isStale = true;
+
+
 				//////////
 				// Move to the start
 				//////
@@ -4852,7 +5137,11 @@ error_exit:
 
 			// If we moved anything...
 			if (llChanged)
+			{
+				// Mark the content stale
+				sem->isStale = true;
 				iSEM_verifyCursorIsVisible(sem, obj);
+			}
 		}
 
 		// Indicate our status
@@ -4893,7 +5182,11 @@ error_exit:
 
 			// If we moved anything...
 			if (llChanged)
+			{
+				// Mark the content stale
+				sem->isStale = true;
 				iSEM_verifyCursorIsVisible(sem, obj);
+			}
 		}
 
 		// Indicate our status
@@ -4928,37 +5221,26 @@ error_exit:
 		//////
 			if (sem && sem->line_cursor)
 			{
-
-				//////////
 				// Determine how many rows there are on screen
-				//////
-					lnRows = ((lrc.bottom - lrc.top) / font->tm.tmHeight) / 2;
+				lnRows = ((lrc.bottom - lrc.top) / font->tm.tmHeight) / 2;
 
-
-				//////////
 				// Move to that location
-				//////`
-					line = sem->line_cursor;
-					for (lnI = 0; line && line->ll.prev && lnI < lnRows; lnI++)
-						line = (SLine*)line->ll.prev;
+				line = sem->line_cursor;
+				for (lnI = 0; line && line->ll.prev && lnI < lnRows; lnI++)
+					line = (SLine*)line->ll.prev;
 
 
-				///////////
 				// At this point, edit is what should be the cursor line
-				//////
-					sem->line_top = line;
+				sem->line_top = line;
 
+				// Mark the content stale
+				sem->isStale = true;
 
-				//////////
 				// Verify we're visible
-				//////
-					iSEM_verifyCursorIsVisible(sem, obj);
+				iSEM_verifyCursorIsVisible(sem, obj);
 
-
-				//////////
 				// Indicate success
-				//////
-					return(true);
+				return(true);
 
 			} else {
 				// Failure
@@ -4979,6 +5261,8 @@ error_exit:
 	bool iSEM_selectLineUp(SEM* sem, SObject* obj)
 	{
 		logfunc(__FUNCTION__);
+		// Mark the content stale
+		sem->isStale = true;
 		iSEM_selectStart(sem, _SEM_SELECT_MODE_ANCHOR);
 		return(iSEM_navigate(sem, obj, -1, 0));
 	}
@@ -4996,6 +5280,8 @@ error_exit:
 	bool iSEM_selectLineDown(SEM* sem, SObject* obj)
 	{
 		logfunc(__FUNCTION__);
+		// Mark the content stale
+		sem->isStale = true;
 		iSEM_selectStart(sem, _SEM_SELECT_MODE_ANCHOR);
 		return(iSEM_navigate(sem, obj, 1, 0));
 	}
@@ -5013,6 +5299,8 @@ error_exit:
 	bool iSEM_selectLeft(SEM* sem, SObject* obj)
 	{
 		logfunc(__FUNCTION__);
+		// Mark the content stale
+		sem->isStale = true;
 		iSEM_selectStart(sem, _SEM_SELECT_MODE_ANCHOR);
 		return(iSEM_navigate(sem, obj, 0, -1));
 	}
@@ -5028,6 +5316,8 @@ error_exit:
 	bool iSEM_selectRight(SEM* sem, SObject* obj)
 	{
 		logfunc(__FUNCTION__);
+		// Mark the content stale
+		sem->isStale = true;
 		iSEM_selectStart(sem, _SEM_SELECT_MODE_ANCHOR);
 		return(iSEM_navigate(sem, obj, 0, 1));
 	}
@@ -5046,6 +5336,8 @@ error_exit:
 
 
 		logfunc(__FUNCTION__);
+		// Mark the content stale
+		sem->isStale = true;
 		if (sem->columnEdit >= sem->line_cursor->sourceCode_populatedLength)
 		{
 			// We're past the end of the line
@@ -5073,9 +5365,13 @@ error_exit:
 	bool iSEM_selectToBeginOfLine(SEM* sem, SObject* obj)
 	{
 		logfunc(__FUNCTION__);
+		// Mark the content stale
+		sem->isStale = true;
 		iSEM_selectStart(sem, _SEM_SELECT_MODE_ANCHOR);
+
+		// Navigate if need be
 		if (sem->columnEdit > 0)		return(iSEM_navigate(sem, obj, 0, -sem->columnEdit));
-		else					return(true);
+		else							return(true);
 	}
 
 
@@ -5089,6 +5385,8 @@ error_exit:
 	bool iSEM_selectColumnToggle(SEM* sem, SObject* obj)
 	{
 		logfunc(__FUNCTION__);
+		// Mark the content stale
+		sem->isStale = true;
 		if (sem->selectMode != _SEM_SELECT_MODE_NONE)
 		{
 			// Turn off selecting mode
@@ -5113,6 +5411,8 @@ error_exit:
 	bool iSEM_selectLineToggle(SEM* sem, SObject* obj)
 	{
 		logfunc(__FUNCTION__);
+		// Mark the content stale
+		sem->isStale = true;
 		if (sem->selectMode != _SEM_SELECT_MODE_NONE)
 		{
 			// Turn off selecting mode
@@ -5137,6 +5437,8 @@ error_exit:
 	bool iSEM_selectAnchorToggle(SEM* sem, SObject* obj)
 	{
 		logfunc(__FUNCTION__);
+		// Mark the content stale
+		sem->isStale = true;
 		if (sem->selectMode != _SEM_SELECT_MODE_NONE)
 		{
 			// Turn off selecting mode
@@ -5164,6 +5466,8 @@ error_exit:
 	bool iSEM_selectWordLeft(SEM* sem, SObject* obj)
 	{
 		logfunc(__FUNCTION__);
+		// Mark the content stale
+		sem->isStale = true;
 		iSEM_selectStart(sem, _SEM_SELECT_MODE_ANCHOR);
 		return(iSEM_navigateWordLeft(sem, obj, true));
 	}
@@ -5182,6 +5486,8 @@ error_exit:
 	bool iSEM_selectWordRight(SEM* sem, SObject* obj)
 	{
 		logfunc(__FUNCTION__);
+		// Mark the content stale
+		sem->isStale = true;
 		iSEM_selectStart(sem, _SEM_SELECT_MODE_ANCHOR);
 		return(iSEM_navigateWordRight(sem, obj, true));
 	}
@@ -5197,6 +5503,8 @@ error_exit:
 	bool iSEM_selectToTopLine(SEM* sem, SObject* obj)
 	{
 		logfunc(__FUNCTION__);
+		// Mark the content stale
+		sem->isStale = true;
 		iSEM_selectStart(sem, _SEM_SELECT_MODE_ANCHOR);
 		return(iSEM_navigateToTopLine(sem, obj));
 	}
@@ -5212,6 +5520,8 @@ error_exit:
 	bool iSEM_selectToEndLine(SEM* sem, SObject* obj)
 	{
 		logfunc(__FUNCTION__);
+		// Mark the content stale
+		sem->isStale = true;
 		iSEM_selectStart(sem, _SEM_SELECT_MODE_ANCHOR);
 		return(iSEM_navigateToEndLine(sem, obj));
 	}
@@ -5236,6 +5546,9 @@ error_exit:
 		//////
 			if (sem && !sem->isReadOnly && sem->line_cursor)
 			{
+				// Mark the content stale
+				sem->isStale = true;
+
 				// Grab the line
 				line		= sem->line_cursor;
 				lineLast	= sem->lastLine;
@@ -5300,12 +5613,8 @@ error_exit:
 				// Reprocess the source code on the line
 				iEngine_parse_sourceCode_line(sem->line_cursor);
 
-
-				//////////
 				// Verify we're visible
-				//////
-					iSEM_verifyCursorIsVisible(sem, obj);
-
+				iSEM_verifyCursorIsVisible(sem, obj);
 
 				// Indicate success
 				return(true);
@@ -5332,6 +5641,8 @@ error_exit:
 		//////
 			if (sem && !sem->isReadOnly && sem->line_cursor)
 			{
+				// Mark the content stale
+				sem->isStale = true;
 				if (sem->line_cursor->sourceCode_populatedLength == 0)
 				{
 					// There's no data on this line, if we're in insert mode delete the line
@@ -5346,12 +5657,8 @@ error_exit:
 				// Reprocess the source code on the line
 				iEngine_parse_sourceCode_line(sem->line_cursor);
 
-
-				//////////
 				// Verify we're visible
-				//////
-					iSEM_verifyCursorIsVisible(sem, obj);
-
+				iSEM_verifyCursorIsVisible(sem, obj);
 
 				// Indicate success
 				return(true);
@@ -5382,6 +5689,9 @@ error_exit:
 		//////
 			if (sem && !sem->isReadOnly && sem->line_cursor)
 			{
+				// Mark the content stale
+				sem->isStale = true;
+
 				// Store where we are now
 				lnColumnStart	= sem->columnEdit;
 				line			= sem->line_cursor;
@@ -5442,6 +5752,9 @@ error_exit:
 		//////
 			if (sem && !sem->isReadOnly && sem->line_cursor)
 			{
+				// Mark the content stale
+				sem->isStale = true;
+
 				// Store where we are now
 				lnColumnStart	= sem->columnEdit;
 				line			= sem->line_cursor;
@@ -5527,17 +5840,15 @@ error_exit:
 		llResult = false;
 		if (sem && sem->line_top && obj)
 		{
-			//////////
+			// Mark the content stale
+			sem->isStale = true;
+
 			// Grab the rectangle we're working in
-			//////
-				font = iSEM_getRectAndFont(sem, obj, &lrc);
+			font = iSEM_getRectAndFont(sem, obj, &lrc);
 
-
-			//////////
 			// Back off if we're showing line numbers
-			//////
-				if (sem->showLineNumbers)
-					x -= sem->rcLineNumberLastRender.right;
+			if (sem->showLineNumbers)
+				x -= sem->rcLineNumberLastRender.right;
 
 
 			//////////
@@ -5656,9 +5967,9 @@ error_exit:
 					sem->selectMode = tnSelectMode;
 
 					// Note where we start
-					sem->selectOrigin.lineNumber		= sem->line_cursor->lineNumber;
+					sem->selectOrigin.lineNumber	= sem->line_cursor->lineNumber;
 					sem->selectOrigin.uid			= sem->line_cursor->uid;
-					sem->selectOrigin.column			= sem->columnEdit;
+					sem->selectOrigin.column		= sem->columnEdit;
 					sem->selectOrigin.line			= sem->line_cursor;
 
 					// Update the extents

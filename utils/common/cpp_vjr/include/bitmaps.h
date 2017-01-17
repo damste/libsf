@@ -169,6 +169,10 @@ struct SNodeProps;
 		// OS font handle
 		HFONT		hfont;
 
+		// Optional values
+		SBgra		foreColor;					// Foreground color
+		SBgra		backColor;					// Background color
+
 		// Internal Windows settings
 		s32			_sizeUsedForCreateFont;		// Computed value based on passed font size
 		u32			_size;						// Actual point size

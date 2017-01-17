@@ -342,14 +342,19 @@
 	void					iSEM_addTooltipHighlight					(SEM* sem, SLine* line, SObject* obj, s8* tcText, s32 tnTextLength, bool tlShowAbove);
 
 	// Simple HTML
+	struct __iSimpleHtml_vars;
 	u32						iSEM_renderAs_simpleHtml					(SEM* sem, SObject* obj, bool tlRenderCursorline);
-	void					iiSEM_renderAs_simpleHtml__getColor			(SComp* comp, bool tlNumeric, bool tlAlpha, SBgra* color);
-	bool					iiSEM_renderAs_simpleHtml__applyZoom		(SObject* obj, s32* tnWidth, s32* tnHeight);
+	u32						iiSEM_renderAs_simpleHtml__addText			(__iSimpleHtml_vars& v, SEM* sem, s8* tcText = NULL, s32 tnTextLength = 0, HBRUSH* hbr = NULL);
+	void					iiSEM_renderAs_simpleHtml__getColor			(__iSimpleHtml_vars& v, bool tlBackColor = false);
+	void					iiSEM_renderAs_simpleHtml__getFont			(__iSimpleHtml_vars& v);
+	void					iiSEM_renderAs_simpleHtml__table_tr_td		(__iSimpleHtml_vars& v);
+	bool					iiSEM_renderAs_simpleHtml__applyZoom		(__iSimpleHtml_vars& v, SObject* obj);
 	bool					iiSEM_renderAs_simpleHtml__createBmp		(SBitmap** bmpp, SBitmap* bmpObj, s32 tnWidth, s32 tnHeight);
 	void					iSEM_render_highlightSelectedComps			(SEM* sem, SComp* firstComp);
-	SFont*					iSEM_renderAs_simpleHtml__addFont			(SFont* fontsCreated[], s32* tnFontsCreated, u8* tcFontName, s32 tnFontSize, s32 tnFontWeight, s32 tnFontItalics, s32 tnFontUnderline);
-	void					iiSEM_renderAs_simpleHtml__pushFontStack	(SFont* fontStack[], SFont* font, s32* tnFontStack, s32 tnFontStackSize);
-	SFont*					iiSEM_renderAs_simpleHtml__popFontStack		(SFont* fontStack[], SFont* font, s32* tnFontStack, s32 tnFontStackSize);
+	SFont*					iSEM_renderAs_simpleHtml__addFont			(__iSimpleHtml_vars& v);
+	void					iiSEM_renderAs_simpleHtml__pushFontStack	(__iSimpleHtml_vars& v);
+	void					iiSEM_renderAs_simpleHtml__popFontStack		(__iSimpleHtml_vars& v);
+	void					iiSEM_renderAS_simpleHtml__fallBack			(__iSimpleHtml_vars& v);
 
 
 	// Editor movements
