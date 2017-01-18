@@ -277,7 +277,7 @@
 	cs32			_ICODE_SEM_HTML_WIDTH							= 220;
 	cs32			_ICODE_SEM_HTML_NAME							= 221;
 	cs32			_ICODE_SEM_HTML_SIZE							= 222;
-	// Terminate ags
+	// Terminate tags
 	cs32			_ICODE_SEM_HTML_THTML							= 200 + 100;
 // 	cs32			_ICODE_SEM_HTML_THR								= 201 + 100;
 // 	cs32			_ICODE_SEM_HTML_TBR								= 202 + 100;
@@ -291,16 +291,16 @@
 	cs32			_ICODE_SEM_HTML_TU								= 210 + 100;
 // 	cs32			_ICODE_SEM_HTML_TW								= 211 + 100;
 // 	cs32			_ICODE_SEM_HTML_TH								= 212 + 100;
-// 	cs32			_ICODE_SEM_HTML_TX								= 213 + 100;
-// 	cs32			_ICODE_SEM_HTML_TY								= 214 + 100;
-// 	cs32			_ICODE_SEM_HTML_TBGCOLOR						= 215 + 100;
-// 	cs32			_ICODE_SEM_HTML_TCOLOR							= 216 + 100;
-// 	cs32			_ICODE_SEM_HTML_TALIGN							= 217 + 100;
-// 	cs32			_ICODE_SEM_HTML_TVALIGN							= 218 + 100;
+	cs32			_ICODE_SEM_HTML_TX								= 213 + 100;
+	cs32			_ICODE_SEM_HTML_TY								= 214 + 100;
+	cs32			_ICODE_SEM_HTML_TBGCOLOR						= 215 + 100;
+	cs32			_ICODE_SEM_HTML_TCOLOR							= 216 + 100;
+	cs32			_ICODE_SEM_HTML_TALIGN							= 217 + 100;
+	cs32			_ICODE_SEM_HTML_TVALIGN							= 218 + 100;
 // 	cs32			_ICODE_SEM_HTML_THEIGHT							= 219 + 100;
 // 	cs32			_ICODE_SEM_HTML_TWIDTH							= 220 + 100;
-// 	cs32			_ICODE_SEM_HTML_TNAME							= 221 + 100;
-// 	cs32			_ICODE_SEM_HTML_TSIZE							= 222 + 100;
+	cs32			_ICODE_SEM_HTML_TNAME							= 221 + 100;
+	cs32			_ICODE_SEM_HTML_TSIZE							= 222 + 100;
 
 
 	// Logical operators

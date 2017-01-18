@@ -3227,10 +3227,11 @@ renderAsOnlyText:
 		bool	isActive;		// Is it active, for un-nested things, like: <b>bold <i>bold italics</b> italics only</i>
 		s32		fontStack;		// The root entry for the original font used for this tag (if applicable)
 	};
+
 	struct __iSimpleHtml_vars
 	{
 		s8							lnLevel;
-		bool						llZoomed, llNumeric, llAlpha, llFontChange, llFallThru, llLastOpMoved;
+		bool						llZoomed, llNumeric, llAlpha, llFontChange, llFallThru, llLastOpMoved, llInTtBlock;
 		u32							lnPixelsRendered;
 		s32							lnX, lnY, lnLastHeight, lnWidth, lnHeight, lnScrollX, lnScrollY, lnStartHeight, lnStartWidth;
 		s32							lnFontSize, lnFontWeight, lnFontItalics, lnFontUnderline, lnFontStack, lniCodeStack;
@@ -3250,6 +3251,7 @@ renderAsOnlyText:
 		SFont*						fontStack[64];		// Up to 64 font changes on the stack
 		__iSimpleHtml_iCodeStack	iCodeStack[1024];	// How deep we can go in nesting, like <html><font><tt><b><i>... would be 5 levels
 	};
+
 	u32 iSEM_renderAs_simpleHtml(SEM* sem, SObject* obj, bool tlRenderCursorline)
 	{
 		__iSimpleHtml_vars v;		// Created as an internal struct (used only here) for simplified passed parameters
@@ -3421,6 +3423,7 @@ renderAsOnlyText:
 									iiSEM_renderAs_simpleHtml__pushFontStack(v);
 									v.lcFontName	= (u8*)cgcFontName_defaultFixed;
 									v.font			= iFont_create(v.lcFontName, v.lnFontSize, v.lnFontWeight, v.lnFontItalics, v.lnFontUnderline);
+									v.llInTtBlock	= true;
 									break;
 
 								case _ICODE_SEM_HTML_TABLE:		// <table>
@@ -3501,6 +3504,8 @@ renderAsOnlyText:
 
 								case _ICODE_SEM_HTML_SIZE:
 									// Setting a hard new font size
+									v.lnFontSize	= iComps_getAs_s32(v.comp);
+									v.llFontChange	= true;
 									break;
 
 								case _ICODE_SEM_HTML_THTML:
@@ -3536,6 +3541,26 @@ renderAsOnlyText:
 
 								case _ICODE_SEM_HTML_TU:
 									// </u>
+									break;
+
+								case _ICODE_SEM_HTML_TBGCOLOR:
+									// </bgcolor>
+									break;
+								case _ICODE_SEM_HTML_TCOLOR:
+									// </color>
+									break;
+								case _ICODE_SEM_HTML_TALIGN:
+									// </align>
+									break;
+								case _ICODE_SEM_HTML_TVALIGN:
+									// </valign>
+									break;
+								case _ICODE_SEM_HTML_TNAME:
+									// </name>
+									break;
+								case _ICODE_SEM_HTML_TSIZE:
+									// </size>
+									iiSEM_renderAs_simpleHtml__popFontStack(v);
 									break;
 
 								default:
@@ -3906,8 +3931,9 @@ error_exit:
 		if (v.lnFontStack < (sizeof(v.fontStack) / sizeof(v.fontStack[0])))
 		{
 			// Store the current colors
-			v.font->backColor.color		= v.bgcolor.color;
-			v.font->foreColor.color		= v.color.color;
+			v.font->user_backColor.color	= v.bgcolor.color;
+			v.font->user_foreColor.color	= v.color.color;
+			v.font->user_isMonospace		= v.llInTtBlock;
 
 			// Perform the push
 			v.fontStack[v.lnFontStack]	= v.font;	// Push
@@ -3949,8 +3975,9 @@ error_exit:
 		--v.lnFontStack;
 
 		// Restore the colors
-		v.color.color		= v.font->foreColor.color;
-		v.bgcolor.color		= v.font->backColor.color;
+		v.color.color		= v.font->user_foreColor.color;
+		v.bgcolor.color		= v.font->user_backColor.color;
+		v.llInTtBlock		= v.font->user_isMonospace;
 
 		// Restore the font name and attributes
 		v.lcFontName		= v.font->name.data_u8;

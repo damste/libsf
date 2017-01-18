@@ -3195,7 +3195,7 @@ finished:
 	{
 		bool	llTTag, llEncapsulated;
 		s8		c;
-		s32		lnCount;
+		s32		lnCount, lnCountAdd;
 		s8*		ptr;
 		SComp*	comp;
 		SComp*	compNext;
@@ -3216,13 +3216,19 @@ finished:
 					llTTag = (compNext->iCode == _ICODE_SLASH);
 					if (llTTag)
 					{
-						// Yes, so we need to shift everything over
+						// It's "</..."
+						// Shift everything over to the next component
 						compNext	= compNext2;
 						compNext2	= iComps_getNth(compNext);
+						lnCountAdd	= 1;
+
+					} else {
+						// It's "<..."
+						lnCountAdd	= 0;
 					}
 
 					// Is it encapsulated
-					llEncapsulated = (compNext2->iCode == _ICODE_GREATER_THAN);
+					llEncapsulated	= (compNext2->iCode == _ICODE_GREATER_THAN);
 
 					// Grab a pointer to the start of the content
 					ptr = compNext->line->compilerInfo->sourceCode->data_s8 + compNext->start;
@@ -3241,9 +3247,14 @@ finished:
 										c = iLowerCase(*ptr);
 										switch (c)
 										{
-											case 'b':	{	iComps_combineN(comp, 3, ((llTTag) ? _ICODE_SEM_HTML_TB : _ICODE_SEM_HTML_B), _ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
-											case 'i':	{	iComps_combineN(comp, 3, ((llTTag) ? _ICODE_SEM_HTML_TI : _ICODE_SEM_HTML_I), _ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
-											case 'u':	{	iComps_combineN(comp, 3, ((llTTag) ? _ICODE_SEM_HTML_TU : _ICODE_SEM_HTML_U), _ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
+											case 'b':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TB  : _ICODE_SEM_HTML_B),		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
+											case 'i':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TI  : _ICODE_SEM_HTML_I),		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
+											case 'u':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TU  : _ICODE_SEM_HTML_U),		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
+											case 'm':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TTT : _ICODE_SEM_HTML_TT),	_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
+											case 'w':	{	iComps_combineN(comp, 3 + lnCountAdd,									_ICODE_SEM_HTML_W,		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
+											case 'h':	{	iComps_combineN(comp, 3 + lnCountAdd,									_ICODE_SEM_HTML_H,		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
+											case 'x':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TX  : _ICODE_SEM_HTML_X),		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
+											case 'y':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TY  : _ICODE_SEM_HTML_Y),		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
 										}
 
 									} else {
@@ -3257,11 +3268,11 @@ finished:
 									if (llEncapsulated)
 									{
 										// Is it a known tag?
-										     if (_memicmp(ptr, "hr", 2) == 0)		iComps_combineN(comp, 3, _ICODE_SEM_HTML_HR, _ICAT_SEM_HTML, comp->color);
-										else if (_memicmp(ptr, "br", 2) == 0)		iComps_combineN(comp, 3, _ICODE_SEM_HTML_BR, _ICAT_SEM_HTML, comp->color);
-										else if (_memicmp(ptr, "tt", 2) == 0)		iComps_combineN(comp, 3, ((llTTag) ? _ICODE_SEM_HTML_TTT : _ICODE_SEM_HTML_TT), _ICAT_SEM_HTML, comp->color, &comp->firstCombined);
-										else if (_memicmp(ptr, "tr", 2) == 0)		iComps_combineN(comp, 3, ((llTTag) ? _ICODE_SEM_HTML_TTR : _ICODE_SEM_HTML_TR), _ICAT_SEM_HTML, comp->color, &comp->firstCombined);
-										else if (_memicmp(ptr, "td", 2) == 0)		iComps_combineN(comp, 3, ((llTTag) ? _ICODE_SEM_HTML_TTD : _ICODE_SEM_HTML_TD), _ICAT_SEM_HTML, comp->color, &comp->firstCombined);
+										     if (_memicmp(ptr, "hr", 2) == 0)		iComps_combineN(comp, 3 + lnCountAdd, _ICODE_SEM_HTML_HR, _ICAT_SEM_HTML, comp->color);
+										else if (_memicmp(ptr, "br", 2) == 0)		iComps_combineN(comp, 3 + lnCountAdd, _ICODE_SEM_HTML_BR, _ICAT_SEM_HTML, comp->color);
+										else if (_memicmp(ptr, "tt", 2) == 0)		iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TTT : _ICODE_SEM_HTML_TT), _ICAT_SEM_HTML, comp->color, &comp->firstCombined);
+										else if (_memicmp(ptr, "tr", 2) == 0)		iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TTR : _ICODE_SEM_HTML_TR), _ICAT_SEM_HTML, comp->color, &comp->firstCombined);
+										else if (_memicmp(ptr, "td", 2) == 0)		iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TTD : _ICODE_SEM_HTML_TD), _ICAT_SEM_HTML, comp->color, &comp->firstCombined);
 									}
 									break;
 
@@ -3273,11 +3284,11 @@ finished:
 										if (llEncapsulated)
 										{
 											// Just <html>
-											iComps_combineN(comp, 3, ((llTTag) ? _ICODE_SEM_HTML_THTML : _ICODE_SEM_HTML_HTML), _ICAT_SEM_HTML, comp->color);
+											iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_THTML : _ICODE_SEM_HTML_HTML), _ICAT_SEM_HTML, comp->color);
 
 										} else if ((compEnd = iComps_findMate(comp, &lnCount))) {
 											// Has attributes
-											iComps_combineN(comp, lnCount, ((llTTag) ? _ICODE_SEM_HTML_THTML : _ICODE_SEM_HTML_HTML), _ICAT_SEM_HTML_ATTRIBUTES, comp->color, &comp->firstCombined);
+											iComps_combineN(comp, lnCount + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_THTML : _ICODE_SEM_HTML_HTML), _ICAT_SEM_HTML_ATTRIBUTES, comp->color, &comp->firstCombined);
 										}
 
 									} else if (_memicmp(ptr, "font", 4) == 0) {
@@ -3285,11 +3296,11 @@ finished:
 										if (llEncapsulated)
 										{
 											// Just <font>, which should not exist
-											iComps_combineN(comp, 3, ((llTTag) ? _ICODE_SEM_HTML_TFONT : _ICODE_SEM_HTML_FONT), _ICAT_SEM_HTML, comp->color);
+											iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TFONT : _ICODE_SEM_HTML_FONT), _ICAT_SEM_HTML, comp->color);
 
 										} else if ((compEnd = iComps_findMate(comp, &lnCount))) {
 											// Has attributes
-											iComps_combineN(comp, lnCount, ((llTTag) ? _ICODE_SEM_HTML_TFONT : _ICODE_SEM_HTML_FONT), _ICAT_SEM_HTML_ATTRIBUTES, comp->color, &comp->firstCombined);
+											iComps_combineN(comp, lnCount + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TFONT : _ICODE_SEM_HTML_FONT), _ICAT_SEM_HTML_ATTRIBUTES, comp->color, &comp->firstCombined);
 										}
 									}
 									break;
@@ -3302,11 +3313,11 @@ finished:
 										if (llEncapsulated)
 										{
 											// Just <table>
-											iComps_combineN(comp, 3, ((llTTag) ? _ICODE_SEM_HTML_TTABLE : _ICODE_SEM_HTML_TABLE), _ICAT_SEM_HTML, comp->color);
+											iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TTABLE : _ICODE_SEM_HTML_TABLE), _ICAT_SEM_HTML, comp->color);
 
 										} else if ((compEnd = iComps_findMate(comp, &lnCount))) {
 											// Has attributes
-											iComps_combineN(comp, lnCount, ((llTTag) ? _ICODE_SEM_HTML_TTABLE : _ICODE_SEM_HTML_TABLE), _ICAT_SEM_HTML_ATTRIBUTES, comp->color, &comp->firstCombined);
+											iComps_combineN(comp, lnCount + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TTABLE : _ICODE_SEM_HTML_TABLE), _ICAT_SEM_HTML_ATTRIBUTES, comp->color, &comp->firstCombined);
 										}
 									}
 									break;
@@ -3319,10 +3330,10 @@ finished:
 							c = iLowerCase(*ptr);
 							switch (c)
 							{
-								case 'w':	{	iComps_combineN(comp, 3, _ICODE_SEM_HTML_W, _ICAT_SEM_HTML, comp->color);	break;	}
-								case 'h':	{	iComps_combineN(comp, 3, _ICODE_SEM_HTML_H, _ICAT_SEM_HTML, comp->color);	break;	}
-								case 'x':	{	iComps_combineN(comp, 3, _ICODE_SEM_HTML_X, _ICAT_SEM_HTML, comp->color);	break;	}
-								case 'y':	{	iComps_combineN(comp, 3, _ICODE_SEM_HTML_Y, _ICAT_SEM_HTML, comp->color);	break;	}
+								case 'w':	{	iComps_combineN(comp, 3 + lnCountAdd, _ICODE_SEM_HTML_W, _ICAT_SEM_HTML, comp->color);	break;	}
+								case 'h':	{	iComps_combineN(comp, 3 + lnCountAdd, _ICODE_SEM_HTML_H, _ICAT_SEM_HTML, comp->color);	break;	}
+								case 'x':	{	iComps_combineN(comp, 3 + lnCountAdd, _ICODE_SEM_HTML_X, _ICAT_SEM_HTML, comp->color);	break;	}
+								case 'y':	{	iComps_combineN(comp, 3 + lnCountAdd, _ICODE_SEM_HTML_Y, _ICAT_SEM_HTML, comp->color);	break;	}
 							}
 							break;
 					}

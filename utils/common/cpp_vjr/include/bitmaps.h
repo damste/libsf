@@ -169,10 +169,6 @@ struct SNodeProps;
 		// OS font handle
 		HFONT		hfont;
 
-		// Optional values
-		SBgra		foreColor;					// Foreground color
-		SBgra		backColor;					// Background color
-
 		// Internal Windows settings
 		s32			_sizeUsedForCreateFont;		// Computed value based on passed font size
 		u32			_size;						// Actual point size
@@ -180,6 +176,11 @@ struct SNodeProps;
 		u32			_italics;					// Actual italics setting
 		u32			_underline;					// Actual underline setting
 		TEXTMETRIC	tm;							// Text metrics computed at the time of creation
+
+		// User-set values (not automatically setup, not automatically cleared)
+		SBgra		user_foreColor;				// Foreground color
+		SBgra		user_backColor;				// Background color
+		bool		user_isMonospace;			// Is the font a monospace
 	};
 
 	struct SBitmap

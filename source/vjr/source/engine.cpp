@@ -638,7 +638,8 @@
 				return(NULL);		// Nothing to compile on this line
 
 			// Remove whitespaces [use][whitespace][foo] becomes [use][foo]
-			iComps_remove_leadingWhitespaces(line);
+			if (tlRemoveWhitespaces)
+				iComps_remove_leadingWhitespaces(line);
 
 
 		//////////
