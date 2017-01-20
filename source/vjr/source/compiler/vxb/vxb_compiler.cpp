@@ -3193,14 +3193,19 @@ finished:
 //////
 	void iComps_fixup_semHtmlGroupings(SLine* line)
 	{
-		bool	llTTag, llEncapsulated;
+		bool	llTTag, llEncapsulated, llEqualSign, llValid, llFinished, llAttributes;
 		s8		c;
 		s32		lnCount, lnCountAdd;
 		s8*		ptr;
 		SComp*	comp;
-		SComp*	compNext;
+		SComp*	compDel;
+		SComp*	compNext1;
 		SComp*	compNext2;
+		SComp*	compNext3;
 		SComp*	compEnd;
+		SComp*	compTest1;
+		SComp*	compTest2;
+		SComp*	compTest3;
 
 
 		// Make sure our environment is sane
@@ -3210,16 +3215,16 @@ finished:
 			for (comp = line->compilerInfo->firstComp; comp; comp = iComps_getNth(comp))
 			{
 				// Is it the less than symbol?
-				if (comp->iCode == _ICODE_LESS_THAN && (compNext = iComps_getNth(comp)) && (compNext2 = iComps_getNth(compNext)))
+				if (comp->iCode == _ICODE_LESS_THAN && (compNext1 = iComps_getNth(comp)) && (compNext2 = iComps_getNth(compNext1)))
 				{
 					// Is it a </ tag?
-					llTTag = (compNext->iCode == _ICODE_SLASH);
+					llTTag = (compNext1->iCode == _ICODE_SLASH);
 					if (llTTag)
 					{
 						// It's "</..."
 						// Shift everything over to the next component
-						compNext	= compNext2;
-						compNext2	= iComps_getNth(compNext);
+						compNext1	= compNext2;
+						compNext2	= iComps_getNth(compNext1);
 						lnCountAdd	= 1;
 
 					} else {
@@ -3227,39 +3232,148 @@ finished:
 						lnCountAdd	= 0;
 					}
 
-					// Is it encapsulated
+					// Is it fully encapsulated (like <b>)?
+					llAttributes	= false;
+					llEqualSign		= false;
 					llEncapsulated	= (compNext2->iCode == _ICODE_GREATER_THAN);
+					if (!llEncapsulated)
+					{
+						// It might still be encapsulated if it's something like <x=200>
+						llEqualSign = (compNext2->iCode == _ICODE_EQUAL_SIGN && (compNext3 = iComps_getNth(compNext2)));
+						if (llEqualSign)
+						{
+							// It must be <x=..> with .. being numeric, alpha, alphanumeric, single-quoted or double-quoted text
+							switch (compNext3->iCode)
+							{
+								case _ICODE_NUMERIC:
+								case _ICODE_ALPHA:
+								case _ICODE_ALPHANUMERIC:
+								case _ICODE_SINGLE_QUOTED_TEXT:
+								case _ICODE_DOUBLE_QUOTED_TEXT:
+									// It's x=something valid
+									lnCountAdd		+= 2;	// One for =, one for numeric|alpha|...
+									llEncapsulated	= true;
+									break;
+							}
+						}
+					}
 
-					// Grab a pointer to the start of the content
-					ptr = compNext->line->compilerInfo->sourceCode->data_s8 + compNext->start;
+					// If we aren't solidly encapsulated, and we don't have something like <x=5>
+					if (!llEncapsulated && !llEqualSign)
+					{
+						// It's not <x=5> for example, so it is likely <x attr1=.. attr2=..> or <x../>
+						// See if it has a pattern of:  [alpha/alphanumeric][equal][numeric|alpha|alphanumeric|quoted|double-quoted], then > or />
+						for (compTest1 = iComps_getNth(compNext1), llFinished = false; compTest1; compTest1 = iComps_getNth(compTest1))
+						{
+							// Skip any whitespaces
+							while (compTest1 && compTest1->iCode == _ICODE_WHITESPACE)
+							{
+								// Increase the count
+								++lnCountAdd;
+
+								// Grab the next one
+								compTest1 = iComps_getNth(compTest1);	// Grab the next one
+							}
+
+							// Did we reach the end of line?
+							if (!compTest1)
+								return;		// Invalid syntax
+
+							// Grab the following components
+							compTest2 = iComps_getNth(compTest1, 1);	// May or may not be used (or valid)
+							compTest3 = iComps_getNth(compTest1, 2);	// May or may not be used (or valid)
+
+							// See what it is
+							llValid = false;
+							if (compTest1->iCode == _ICODE_ALPHA || compTest1->iCode == _ICODE_ALPHANUMERIC)
+							{
+								// It's x..
+								if (compTest2 && compTest2->iCode == _ICODE_EQUAL_SIGN && compTest3)
+								{
+									// It's x=..
+									switch (compTest3->iCode)
+									{
+										case _ICODE_NUMERIC:
+										case _ICODE_ALPHA:
+										case _ICODE_ALPHANUMERIC:
+										case _ICODE_SINGLE_QUOTED_TEXT:
+										case _ICODE_DOUBLE_QUOTED_TEXT:
+											// It's x=something valid
+											llValid = true;
+											lnCountAdd	+= 3;
+											break;
+									}
+								}
+
+							} else if (compTest1->iCode == _ICODE_GREATER_THAN) {
+								// It's >
+								++lnCountAdd;
+								llValid		= true;
+								llFinished	= true;
+
+							} else if (compTest1->iCode == _ICODE_SLASH && compTest2 && compTest2->iCode == _ICODE_GREATER_THAN) {
+								// It's />
+								lnCountAdd	+= 2;
+								llValid		= true;
+								llFinished	= true;
+
+							} else {
+								// It's invalid, ignore it
+								return;
+							}
+
+							// So long as we're valid we're finding attributes
+							llAttributes |= llValid;
+
+							// Are we done?
+							if (!llValid || llFinished)
+								break;
+						}
+
+						// Are we valid?
+						if (!llFinished)
+							return;
+
+						// We found a valid syntax
+						llEncapsulated = true;
+					}
+
+					// If we're not encapsulated, we're invalid
+					if (!llEncapsulated)
+						return;
+
+					// Grab a pointer to the start of the tag name
+					ptr = compNext1->line->compilerInfo->sourceCode->data_s8 + compNext1->start;
 
 					// See what's after
-					switch (compNext->iCode)
+					switch (compNext1->iCode)
 					{
 						case _ICODE_ALPHA:
 							// See which tag it might be
-							switch (compNext->length)
+							switch (compNext1->length)
 							{
 								case 1/*one char*/:
-									// Could be b, i, u
+									// Could be b, i, u,  m (tt)
+									// Could be <w=..>, <h=..>, <x=..>, <y=..>, <s=..>
 									if (llEncapsulated)
 									{
 										c = iLowerCase(*ptr);
 										switch (c)
 										{
-											case 'b':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TB  : _ICODE_SEM_HTML_B),		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
-											case 'i':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TI  : _ICODE_SEM_HTML_I),		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
-											case 'u':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TU  : _ICODE_SEM_HTML_U),		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
-											case 'm':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TTT : _ICODE_SEM_HTML_TT),	_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
-											case 'w':	{	iComps_combineN(comp, 3 + lnCountAdd,									_ICODE_SEM_HTML_W,		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
-											case 'h':	{	iComps_combineN(comp, 3 + lnCountAdd,									_ICODE_SEM_HTML_H,		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
-											case 'x':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TX  : _ICODE_SEM_HTML_X),		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
-											case 'y':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TY  : _ICODE_SEM_HTML_Y),		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
+											case 'b':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TB	:	_ICODE_SEM_HTML_B),		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
+											case 'i':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TI	:	_ICODE_SEM_HTML_I),		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
+											case 'u':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TU	:	_ICODE_SEM_HTML_U),		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
+											case 'm':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TTT	:	_ICODE_SEM_HTML_TT),	_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
+											case 'w':	{	iComps_combineN(comp, 3 + lnCountAdd,										_ICODE_SEM_HTML_W,		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
+											case 'h':	{	iComps_combineN(comp, 3 + lnCountAdd,										_ICODE_SEM_HTML_H,		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
+											case 'x':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TX	:	_ICODE_SEM_HTML_X),		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
+											case 'y':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TY	:	_ICODE_SEM_HTML_Y),		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
+											case 's':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TSIZE	:	_ICODE_SEM_HTML_SIZE),	_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
 										}
 
 									} else {
-										// These types are invalid
-										// No code
+										// Invalid syntax
+										return;
 									}
 									break;
 
@@ -3281,27 +3395,31 @@ finished:
 									if (_memicmp(ptr, "html", 4) == 0)
 									{
 										// There may be attributes afterward
-										if (llEncapsulated)
-										{
-											// Just <html>
-											iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_THTML : _ICODE_SEM_HTML_HTML), _ICAT_SEM_HTML, comp->color);
-
-										} else if ((compEnd = iComps_findMate(comp, &lnCount))) {
-											// Has attributes
-											iComps_combineN(comp, lnCount + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_THTML : _ICODE_SEM_HTML_HTML), _ICAT_SEM_HTML_ATTRIBUTES, comp->color, &comp->firstCombined);
-										}
+										iComps_combineN(comp, 3 + lnCountAdd, 
+														((llTTag)		? _ICODE_SEM_HTML_THTML		: _ICODE_SEM_HTML_HTML), 
+														((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML), 
+														comp->color);
 
 									} else if (_memicmp(ptr, "font", 4) == 0) {
 										// There may be attributes afterward
-										if (llEncapsulated)
-										{
-											// Just <font>, which should not exist
-											iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TFONT : _ICODE_SEM_HTML_FONT), _ICAT_SEM_HTML, comp->color);
+										iComps_combineN(comp, 3 + lnCountAdd, 
+														((llTTag)		? _ICODE_SEM_HTML_TFONT		: _ICODE_SEM_HTML_FONT), 
+														((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML), 
+														comp->color);
 
-										} else if ((compEnd = iComps_findMate(comp, &lnCount))) {
-											// Has attributes
-											iComps_combineN(comp, lnCount + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TFONT : _ICODE_SEM_HTML_FONT), _ICAT_SEM_HTML_ATTRIBUTES, comp->color, &comp->firstCombined);
-										}
+									} else if (_memicmp(ptr, "name", 4) == 0) {
+										// There may be attributes afterward
+										iComps_combineN(comp, 3 + lnCountAdd, 
+														((llTTag)		? _ICODE_SEM_HTML_TNAME		: _ICODE_SEM_HTML_NAME), 
+														((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML), 
+														comp->color);
+
+									} else if (_memicmp(ptr, "size", 4) == 0) {
+										// There may be attributes afterward
+										iComps_combineN(comp, 3 + lnCountAdd, 
+														((llTTag)		? _ICODE_SEM_HTML_TSIZE		: _ICODE_SEM_HTML_SIZE), 
+														((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML), 
+														comp->color);
 									}
 									break;
 
@@ -3336,6 +3454,17 @@ finished:
 								case 'y':	{	iComps_combineN(comp, 3 + lnCountAdd, _ICODE_SEM_HTML_Y, _ICAT_SEM_HTML, comp->color);	break;	}
 							}
 							break;
+					}
+
+					// Remove the leading equal sign component if it exists
+					if (llEqualSign && comp->firstCombined && comp->firstCombined->iCode == _ICODE_EQUAL_SIGN)
+					{
+						// Make the comp->firstCombined point to the one after
+						compDel				= comp->firstCombined;
+						comp->firstCombined	= iComps_getNth(compDel);
+
+						// Delete the equal sign
+						iComps_delete(compDel, true);
 					}
 				}
 			}

@@ -331,7 +331,7 @@
 			iSEM_appendLine(screenData, NULL, 0, false);
 			iSEM_appendLine(screenData, (u8*)"Please report any bugs:  http://www.visual-freepro.org/vjr <br>", -1, false);
 			iSEM_appendLine(screenData, (u8*)"Thank you, and may the Lord Jesus Christ bless you richly. :-)<br>", -1, false);
-			iSEM_appendLine(screenData, (u8*)"<m><size 8><br>", -1, false);
+			iSEM_appendLine(screenData, (u8*)"<m><s=8><br>", -1, false);
 			iSEM_appendLine(screenData, (u8*)"              _____              In God's sight we've come together.<br>", -1, false);
 			iSEM_appendLine(screenData, (u8*)"             |     |             We've come together to help each other.<br>", -1, false);
 			iSEM_appendLine(screenData, (u8*)"             |     |             Let's grow this project up ... together! <br>", -1, false);
@@ -346,7 +346,7 @@
 			iSEM_appendLine(screenData, (u8*)"             |     |             Lead Project Contact:  rick.c.hodgin@gmail.com<br>", -1, false);
 			iSEM_appendLine(screenData, (u8*)"             |     |<br>", -1, false);
 			iSEM_appendLine(screenData, (u8*)"             |     |             We need more coders. Please consider helping out.<br>", -1, false);
-			iSEM_appendLine(screenData, (u8*)"             |_____|             Your contribution would make a difference. :-)</size></m><br>", -1, false);
+			iSEM_appendLine(screenData, (u8*)"             |_____|             Your contribution would make a difference. :-)</s></m><br>", -1, false);
 			iSEM_appendLine(screenData, NULL, 0, false);
 		}
 		// Navigate to the end of the content

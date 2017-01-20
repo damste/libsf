@@ -216,6 +216,7 @@ cs64	_i64_max			= _I64_MAX;
 
 
 // Standard forms
+#define nocode						do { } while(0)
 #define between(value, lo, hi)		((value >= lo) && (value <= hi))
 #define _union(x, y, z)				union { x z; y _ ## z; };
 

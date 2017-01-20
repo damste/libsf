@@ -104,90 +104,6 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Debug|x64"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
-			CharacterSet="0"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				TargetEnvironment="3"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				FavorSizeOrSpeed="0"
-				AdditionalIncludeDirectories="\libsf\source\vjr\include;\libsf\source\vjr\projects\vs2008"
-				PreprocessorDefinitions="WIN64;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS"
-				MinimalRebuild="true"
-				ExceptionHandling="1"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
-				StructMemberAlignment="1"
-				EnableFunctionLevelLinking="false"
-				EnableEnhancedInstructionSet="0"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="false"
-				DebugInformationFormat="3"
-				CallingConvention="0"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="..\..\source\lib64\glew32.lib ..\..\source\lib64\glew32s.lib ..\..\source\lib64\freeglut.lib ..\..\source\sound\SDL-1.2.15\lib\amd64\SDL.lib ..\..\source\3rd_party\mapm\mapm.lib"
-				LinkIncremental="2"
-				GenerateDebugInformation="true"
-				SubSystem="2"
-				OptimizeReferences="1"
-				RandomizedBaseAddress="2"
-				DataExecutionPrevention="2"
-				TargetMachine="17"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
@@ -269,6 +185,90 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="copy $(SolutionDir)$(ConfigurationName)\$(TargetFileName) \libsf\source\vjr\"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Debug|x64"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="1"
+			CharacterSet="0"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				TargetEnvironment="3"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				FavorSizeOrSpeed="0"
+				AdditionalIncludeDirectories="\libsf\source\vjr\include;\libsf\source\vjr\projects\vs2008"
+				PreprocessorDefinitions="WIN64;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS"
+				MinimalRebuild="true"
+				ExceptionHandling="1"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="3"
+				StructMemberAlignment="1"
+				EnableFunctionLevelLinking="false"
+				EnableEnhancedInstructionSet="0"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="3"
+				CallingConvention="0"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="..\..\source\lib64\glew32.lib ..\..\source\lib64\glew32s.lib ..\..\source\lib64\freeglut.lib ..\..\source\sound\SDL-1.2.15\lib\amd64\SDL.lib ..\..\source\3rd_party\mapm\mapm.lib"
+				LinkIncremental="2"
+				GenerateDebugInformation="true"
+				SubSystem="2"
+				OptimizeReferences="1"
+				RandomizedBaseAddress="2"
+				DataExecutionPrevention="2"
+				TargetMachine="17"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
 		<Configuration
@@ -370,10 +370,6 @@
 				UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 				>
 				<File
-					RelativePath="..\..\..\..\utils\common\cpp\common_types.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\source\vjr.h"
 					>
 				</File>
@@ -429,7 +425,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|x64"
+						Name="Release|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -437,7 +433,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="Debug|x64"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -465,7 +461,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|x64"
+						Name="Release|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -473,7 +469,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="Debug|x64"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -501,7 +497,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|x64"
+						Name="Release|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -509,7 +505,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="Debug|x64"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -541,7 +537,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|x64"
+						Name="Release|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -549,7 +545,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="Debug|x64"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -651,7 +647,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|x64"
+						Name="Release|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -659,7 +655,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="Debug|x64"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -691,7 +687,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|x64"
+						Name="Release|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -699,7 +695,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="Debug|x64"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -731,7 +727,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|x64"
+						Name="Release|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -739,7 +735,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="Debug|x64"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -781,7 +777,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -789,7 +785,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -825,7 +821,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -833,7 +829,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -869,7 +865,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -877,7 +873,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -913,7 +909,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -921,7 +917,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -957,7 +953,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -965,7 +961,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -1003,7 +999,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|x64"
+						Name="Release|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -1011,7 +1007,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="Debug|x64"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -1039,7 +1035,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|x64"
+						Name="Release|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -1047,7 +1043,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="Debug|x64"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -1075,7 +1071,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|x64"
+						Name="Release|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -1083,7 +1079,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="Debug|x64"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -1149,7 +1145,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -1157,7 +1153,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -1188,7 +1184,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Debug|x64"
+									Name="Release|Win32"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1196,7 +1192,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Release|Win32"
+									Name="Debug|x64"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1224,7 +1220,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Debug|x64"
+									Name="Release|Win32"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1232,7 +1228,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Release|Win32"
+									Name="Debug|x64"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1260,7 +1256,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Debug|x64"
+									Name="Release|Win32"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1268,7 +1264,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Release|Win32"
+									Name="Debug|x64"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1296,7 +1292,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Debug|x64"
+									Name="Release|Win32"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1304,7 +1300,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Release|Win32"
+									Name="Debug|x64"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1332,7 +1328,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Debug|x64"
+									Name="Release|Win32"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1340,7 +1336,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Release|Win32"
+									Name="Debug|x64"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1368,7 +1364,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Debug|x64"
+									Name="Release|Win32"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1376,7 +1372,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Release|Win32"
+									Name="Debug|x64"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1404,7 +1400,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Debug|x64"
+									Name="Release|Win32"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1412,7 +1408,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Release|Win32"
+									Name="Debug|x64"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1440,7 +1436,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Debug|x64"
+									Name="Release|Win32"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1448,7 +1444,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Release|Win32"
+									Name="Debug|x64"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1476,7 +1472,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Debug|x64"
+									Name="Release|Win32"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1484,7 +1480,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Release|Win32"
+									Name="Debug|x64"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1512,7 +1508,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Debug|x64"
+									Name="Release|Win32"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1520,7 +1516,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Release|Win32"
+									Name="Debug|x64"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1548,7 +1544,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Debug|x64"
+									Name="Release|Win32"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1556,7 +1552,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Release|Win32"
+									Name="Debug|x64"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1584,7 +1580,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Debug|x64"
+									Name="Release|Win32"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1592,7 +1588,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Release|Win32"
+									Name="Debug|x64"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1620,7 +1616,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Debug|x64"
+									Name="Release|Win32"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1628,7 +1624,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Release|Win32"
+									Name="Debug|x64"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1656,7 +1652,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Debug|x64"
+									Name="Release|Win32"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1664,7 +1660,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Release|Win32"
+									Name="Debug|x64"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1692,7 +1688,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Debug|x64"
+									Name="Release|Win32"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1700,7 +1696,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Release|Win32"
+									Name="Debug|x64"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1728,7 +1724,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Debug|x64"
+									Name="Release|Win32"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1736,7 +1732,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Release|Win32"
+									Name="Debug|x64"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1764,7 +1760,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Debug|x64"
+									Name="Release|Win32"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1772,7 +1768,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Release|Win32"
+									Name="Debug|x64"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1800,7 +1796,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Debug|x64"
+									Name="Release|Win32"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1808,7 +1804,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Release|Win32"
+									Name="Debug|x64"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1836,7 +1832,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Debug|x64"
+									Name="Release|Win32"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1844,7 +1840,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Release|Win32"
+									Name="Debug|x64"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1872,7 +1868,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Debug|x64"
+									Name="Release|Win32"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1880,7 +1876,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Release|Win32"
+									Name="Debug|x64"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1908,7 +1904,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Debug|x64"
+									Name="Release|Win32"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1916,7 +1912,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Release|Win32"
+									Name="Debug|x64"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1944,7 +1940,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Debug|x64"
+									Name="Release|Win32"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1952,7 +1948,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Release|Win32"
+									Name="Debug|x64"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1980,7 +1976,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Debug|x64"
+									Name="Release|Win32"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -1988,7 +1984,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Release|Win32"
+									Name="Debug|x64"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -2016,7 +2012,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Debug|x64"
+									Name="Release|Win32"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -2024,7 +2020,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Release|Win32"
+									Name="Debug|x64"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -2052,7 +2048,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Debug|x64"
+									Name="Release|Win32"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -2060,7 +2056,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Release|Win32"
+									Name="Debug|x64"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -2088,7 +2084,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Debug|x64"
+									Name="Release|Win32"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -2096,7 +2092,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Release|Win32"
+									Name="Debug|x64"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -2124,7 +2120,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Debug|x64"
+									Name="Release|Win32"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -2132,7 +2128,7 @@
 									/>
 								</FileConfiguration>
 								<FileConfiguration
-									Name="Release|Win32"
+									Name="Debug|x64"
 									ExcludedFromBuild="true"
 									>
 									<Tool
@@ -2165,7 +2161,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -2173,7 +2169,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -2209,7 +2205,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -2217,7 +2213,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -2249,7 +2245,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -2257,7 +2253,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -2285,7 +2281,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -2293,7 +2289,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -2321,7 +2317,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -2329,7 +2325,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -2357,7 +2353,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -2365,7 +2361,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -2393,7 +2389,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -2401,7 +2397,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -2429,7 +2425,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -2437,7 +2433,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -2465,7 +2461,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -2473,7 +2469,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -2501,7 +2497,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -2509,7 +2505,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -2541,7 +2537,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -2549,7 +2545,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -2585,7 +2581,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Debug|x64"
+								Name="Release|Win32"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -2593,7 +2589,7 @@
 								/>
 							</FileConfiguration>
 							<FileConfiguration
-								Name="Release|Win32"
+								Name="Debug|x64"
 								ExcludedFromBuild="true"
 								>
 								<Tool
@@ -2650,7 +2646,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Debug|x64"
+							Name="Release|Win32"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -2658,7 +2654,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32"
+							Name="Debug|x64"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -2710,7 +2706,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Debug|x64"
+							Name="Release|Win32"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -2718,7 +2714,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32"
+							Name="Debug|x64"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -2778,7 +2774,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Debug|x64"
+							Name="Release|Win32"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -2786,7 +2782,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32"
+							Name="Debug|x64"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -2823,7 +2819,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|x64"
+						Name="Release|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -2831,7 +2827,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="Debug|x64"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -2859,7 +2855,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|x64"
+						Name="Release|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -2867,7 +2863,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="Debug|x64"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -2895,7 +2891,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|x64"
+						Name="Release|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -2903,7 +2899,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="Debug|x64"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -2935,7 +2931,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|x64"
+						Name="Release|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -2943,7 +2939,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="Debug|x64"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -2982,7 +2978,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Debug|x64"
+							Name="Release|Win32"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -2990,7 +2986,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32"
+							Name="Debug|x64"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -3026,7 +3022,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Debug|x64"
+							Name="Release|Win32"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -3034,7 +3030,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32"
+							Name="Debug|x64"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -3070,7 +3066,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Debug|x64"
+							Name="Release|Win32"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -3078,7 +3074,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32"
+							Name="Debug|x64"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -3115,7 +3111,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|x64"
+						Name="Release|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -3123,7 +3119,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="Debug|x64"
 						ExcludedFromBuild="true"
 						>
 						<Tool
