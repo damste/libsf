@@ -114,6 +114,7 @@
 	const u32		_ICAT_DEFINITION								= 15;	// Definition keyword, function, adhoc, struct, class, union, enum, etc.
 	const u32		_ICAT_SEM_HTML									= 16;	// A SEM component
 	const u32		_ICAT_SEM_HTML_ATTRIBUTES						= 17;	// A SEM component with attributes
+	const u32		_ICAT_SEM_HTML_EMBEDDED_ATTRIBUTES				= 18;	// A SEM component with embedded attributes (like <w50> instead of <w=50>)
 	// Bit settings
 	const u32		_ICAT_DOT										= 1 << 25;
 	const u32		_ICAT_LOGIC										= 1 << 26;
@@ -254,53 +255,53 @@
 	cs32			_ICODE_COMMENT_END								= 153;
 
 	// SEM Html
-	cs32			_ICODE_SEM_HTML_HTML							= 200;
-	cs32			_ICODE_SEM_HTML_HR								= 201;
-	cs32			_ICODE_SEM_HTML_BR								= 202;
-	cs32			_ICODE_SEM_HTML_FONT							= 203;
-	cs32			_ICODE_SEM_HTML_TT								= 204;
-	cs32			_ICODE_SEM_HTML_TABLE							= 205;
-	cs32			_ICODE_SEM_HTML_TR								= 206;
-	cs32			_ICODE_SEM_HTML_TD								= 207;
-	cs32			_ICODE_SEM_HTML_B								= 208;
-	cs32			_ICODE_SEM_HTML_I								= 209;
-	cs32			_ICODE_SEM_HTML_U								= 210;
-	cs32			_ICODE_SEM_HTML_W								= 211;
-	cs32			_ICODE_SEM_HTML_H								= 212;
-	cs32			_ICODE_SEM_HTML_X								= 213;
-	cs32			_ICODE_SEM_HTML_Y								= 214;
-	cs32			_ICODE_SEM_HTML_BGCOLOR							= 215;
-	cs32			_ICODE_SEM_HTML_COLOR							= 216;
-	cs32			_ICODE_SEM_HTML_ALIGN							= 217;
-	cs32			_ICODE_SEM_HTML_VALIGN							= 218;
-	cs32			_ICODE_SEM_HTML_HEIGHT							= 219;
-	cs32			_ICODE_SEM_HTML_WIDTH							= 220;
-	cs32			_ICODE_SEM_HTML_NAME							= 221;
-	cs32			_ICODE_SEM_HTML_SIZE							= 222;
+	cs32			_ICODE_SEM_HTML_HTML							= 1200;
+	cs32			_ICODE_SEM_HTML_HR								= 1201;
+	cs32			_ICODE_SEM_HTML_BR								= 1202;
+	cs32			_ICODE_SEM_HTML_FONT							= 1203;
+	cs32			_ICODE_SEM_HTML_TT								= 1204;
+	cs32			_ICODE_SEM_HTML_TABLE							= 1205;
+	cs32			_ICODE_SEM_HTML_TR								= 1206;
+	cs32			_ICODE_SEM_HTML_TD								= 1207;
+	cs32			_ICODE_SEM_HTML_B								= 1208;
+	cs32			_ICODE_SEM_HTML_I								= 1209;
+	cs32			_ICODE_SEM_HTML_U								= 1210;
+	cs32			_ICODE_SEM_HTML_W								= 1211;
+	cs32			_ICODE_SEM_HTML_H								= 1212;
+	cs32			_ICODE_SEM_HTML_X								= 1213;
+	cs32			_ICODE_SEM_HTML_Y								= 1214;
+	cs32			_ICODE_SEM_HTML_BGCOLOR							= 1215;
+	cs32			_ICODE_SEM_HTML_COLOR							= 1216;
+	cs32			_ICODE_SEM_HTML_ALIGN							= 1217;
+	cs32			_ICODE_SEM_HTML_VALIGN							= 1218;
+	cs32			_ICODE_SEM_HTML_HEIGHT							= 1219;
+	cs32			_ICODE_SEM_HTML_WIDTH							= 1220;
+	cs32			_ICODE_SEM_HTML_NAME							= 1221;
+	cs32			_ICODE_SEM_HTML_SIZE							= 1222;
 	// Terminate tags
-	cs32			_ICODE_SEM_HTML_THTML							= 200 + 100;
-// 	cs32			_ICODE_SEM_HTML_THR								= 201 + 100;
-// 	cs32			_ICODE_SEM_HTML_TBR								= 202 + 100;
-	cs32			_ICODE_SEM_HTML_TFONT							= 203 + 100;
-	cs32			_ICODE_SEM_HTML_TTT								= 204 + 100;
-	cs32			_ICODE_SEM_HTML_TTABLE							= 205 + 100;
-	cs32			_ICODE_SEM_HTML_TTR								= 206 + 100;
-	cs32			_ICODE_SEM_HTML_TTD								= 207 + 100;
-	cs32			_ICODE_SEM_HTML_TB								= 208 + 100;
-	cs32			_ICODE_SEM_HTML_TI								= 209 + 100;
-	cs32			_ICODE_SEM_HTML_TU								= 210 + 100;
-// 	cs32			_ICODE_SEM_HTML_TW								= 211 + 100;
-// 	cs32			_ICODE_SEM_HTML_TH								= 212 + 100;
-	cs32			_ICODE_SEM_HTML_TX								= 213 + 100;
-	cs32			_ICODE_SEM_HTML_TY								= 214 + 100;
-	cs32			_ICODE_SEM_HTML_TBGCOLOR						= 215 + 100;
-	cs32			_ICODE_SEM_HTML_TCOLOR							= 216 + 100;
-	cs32			_ICODE_SEM_HTML_TALIGN							= 217 + 100;
-	cs32			_ICODE_SEM_HTML_TVALIGN							= 218 + 100;
-// 	cs32			_ICODE_SEM_HTML_THEIGHT							= 219 + 100;
-// 	cs32			_ICODE_SEM_HTML_TWIDTH							= 220 + 100;
-	cs32			_ICODE_SEM_HTML_TNAME							= 221 + 100;
-	cs32			_ICODE_SEM_HTML_TSIZE							= 222 + 100;
+	cs32			_ICODE_SEM_HTML_THTML							= 1200 + 100;
+	cs32			_ICODE_SEM_HTML_THR								= 1201 + 100;
+	cs32			_ICODE_SEM_HTML_TBR								= 1202 + 100;
+	cs32			_ICODE_SEM_HTML_TFONT							= 1203 + 100;
+	cs32			_ICODE_SEM_HTML_TTT								= 1204 + 100;
+	cs32			_ICODE_SEM_HTML_TTABLE							= 1205 + 100;
+	cs32			_ICODE_SEM_HTML_TTR								= 1206 + 100;
+	cs32			_ICODE_SEM_HTML_TTD								= 1207 + 100;
+	cs32			_ICODE_SEM_HTML_TB								= 1208 + 100;
+	cs32			_ICODE_SEM_HTML_TI								= 1209 + 100;
+	cs32			_ICODE_SEM_HTML_TU								= 1210 + 100;
+	cs32			_ICODE_SEM_HTML_TW								= 1211 + 100;
+	cs32			_ICODE_SEM_HTML_TH								= 1212 + 100;
+	cs32			_ICODE_SEM_HTML_TX								= 1213 + 100;
+	cs32			_ICODE_SEM_HTML_TY								= 1214 + 100;
+	cs32			_ICODE_SEM_HTML_TBGCOLOR						= 1215 + 100;
+	cs32			_ICODE_SEM_HTML_TCOLOR							= 1216 + 100;
+	cs32			_ICODE_SEM_HTML_TALIGN							= 1217 + 100;
+	cs32			_ICODE_SEM_HTML_TVALIGN							= 1218 + 100;
+	cs32			_ICODE_SEM_HTML_THEIGHT							= 1219 + 100;
+	cs32			_ICODE_SEM_HTML_TWIDTH							= 1220 + 100;
+	cs32			_ICODE_SEM_HTML_TNAME							= 1221 + 100;
+	cs32			_ICODE_SEM_HTML_TSIZE							= 1222 + 100;
 
 
 	// Logical operators

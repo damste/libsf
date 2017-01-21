@@ -232,6 +232,11 @@ try_to_create:
 		return(-1);
 	}
 
+	s32 iDisk_deleteFile(cs8* tcPathname)
+	{
+		return((s32)DeleteFile(tcPathname));
+	}
+
 
 
 

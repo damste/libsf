@@ -102,6 +102,15 @@ bool isNumeric(s8 c)
 	else																	return(false);
 }
 
+// Tests afAF09, returns -1 if not a hex digit
+u8 isHexDigit(u8 c)
+{
+	     if (c >= 'a' && c <= 'f')											return(c - 'a' + 10);
+	else if (c >= 'A' && c <= 'F')											return(c - 'A' + 10);
+	else if (c >= '0' && c <= '9')											return(c - '0');
+	else																	return(-1);
+}
+
 // Tests 0123456789.-+
 bool isFloatingPoint(s8 c)
 {

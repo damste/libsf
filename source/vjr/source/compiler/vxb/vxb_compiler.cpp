@@ -2129,6 +2129,52 @@ finished:
 
 //////////
 //
+// Returns the first component, and optionally the last component within a constrained number of moves
+//
+//////
+	SComp* iComps_getFirst(SComp* comp, s32 tnConstrainMoves)
+	{
+		s32		lnI, lnMoveCount;
+		SComp*	compFirst;
+
+
+		// Move forward
+		lnMoveCount = ((tnConstrainMoves <= 0) ? 999999999 : tnConstrainMoves);
+		for (lnI = 0, compFirst = comp; compFirst && compFirst->ll.prevComp; )
+			compFirst = compFirst->ll.prevComp;
+
+		// Indicate our result
+		return(compFirst);
+	}
+
+
+
+
+//////////
+//
+// Returns the last component, and optionally the last component within a constrained number of moves
+//
+//////
+	SComp* iComps_getLast(SComp* comp, s32 tnConstrainMoves)
+	{
+		s32		lnI, lnMoveCount;
+		SComp*	compEnd;
+
+
+		// Move forward
+		lnMoveCount = ((tnConstrainMoves <= 0) ? 999999999 : tnConstrainMoves);
+		for (lnI = 0, compEnd = comp; compEnd && compEnd->ll.nextComp; )
+			compEnd = compEnd->ll.nextComp;
+
+		// Indicate our result
+		return(compEnd);
+	}
+
+
+
+
+//////////
+//
 // Called to combine two components into one.  If tnNewICode is > 0 then the
 // iCode is updated as well.  If compMigrateRefs is populated, then the node
 // that's combined isn't deleted, but rather is migrated to that chain.
@@ -3193,12 +3239,11 @@ finished:
 //////
 	void iComps_fixup_semHtmlGroupings(SLine* line)
 	{
-		bool	llTTag, llEncapsulated, llEqualSign, llValid, llFinished, llAttributes;
+		bool	llCloser, llEncapsulated, llEqualSign, llValid, llFinished, llAttributes;
 		s8		c;
-		s32		lnCount, lnCountAdd;
+		s32		lnCountAdd;
 		s8*		ptr;
 		SComp*	comp;
-		SComp*	compDel;
 		SComp*	compNext1;
 		SComp*	compNext2;
 		SComp*	compNext3;
@@ -3218,8 +3263,8 @@ finished:
 				if (comp->iCode == _ICODE_LESS_THAN && (compNext1 = iComps_getNth(comp)) && (compNext2 = iComps_getNth(compNext1)))
 				{
 					// Is it a </ tag?
-					llTTag = (compNext1->iCode == _ICODE_SLASH);
-					if (llTTag)
+					llCloser = (compNext1->iCode == _ICODE_SLASH);
+					if (llCloser)
 					{
 						// It's "</..."
 						// Shift everything over to the next component
@@ -3346,125 +3391,211 @@ finished:
 					ptr = compNext1->line->compilerInfo->sourceCode->data_s8 + compNext1->start;
 
 					// See what's after
-					switch (compNext1->iCode)
+					if (compNext1->iCode == _ICODE_ALPHANUMERIC)
 					{
-						case _ICODE_ALPHA:
-							// See which tag it might be
-							switch (compNext1->length)
-							{
-								case 1/*one char*/:
-									// Could be b, i, u,  m (tt)
-									// Could be <w=..>, <h=..>, <x=..>, <y=..>, <s=..>
-									if (llEncapsulated)
+						// Could be w###, h###, x###, y###
+						c = iLowerCase(*ptr);
+						switch (c)
+						{
+							case 'w':	{	iComps_combineN(comp, 3 + lnCountAdd, _ICODE_SEM_HTML_W,	_ICAT_SEM_HTML_EMBEDDED_ATTRIBUTES, comp->color);	break;	}
+							case 'h':	{	iComps_combineN(comp, 3 + lnCountAdd, _ICODE_SEM_HTML_H,	_ICAT_SEM_HTML_EMBEDDED_ATTRIBUTES, comp->color);	break;	}
+							case 'x':	{	iComps_combineN(comp, 3 + lnCountAdd, _ICODE_SEM_HTML_X,	_ICAT_SEM_HTML_EMBEDDED_ATTRIBUTES, comp->color);	break;	}
+							case 'y':	{	iComps_combineN(comp, 3 + lnCountAdd, _ICODE_SEM_HTML_Y,	_ICAT_SEM_HTML_EMBEDDED_ATTRIBUTES, comp->color);	break;	}
+							case 's':	{	iComps_combineN(comp, 3 + lnCountAdd, _ICODE_SEM_HTML_SIZE,	_ICAT_SEM_HTML_EMBEDDED_ATTRIBUTES, comp->color);	break;	}
+
+						}
+						break;
+
+					} else {
+						// See which tag it might be
+						switch (compNext1->length)
+						{
+							case 1/*one char*/:
+								// Could be b, i, u,  m (tt)
+								// Could be <w=..>, <h=..>, <x=..>, <y=..>, <s=..>
+								if (llEncapsulated)
+								{
+									c = iLowerCase(*ptr);
+									switch (c)
 									{
-										c = iLowerCase(*ptr);
-										switch (c)
-										{
-											case 'b':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TB	:	_ICODE_SEM_HTML_B),		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
-											case 'i':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TI	:	_ICODE_SEM_HTML_I),		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
-											case 'u':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TU	:	_ICODE_SEM_HTML_U),		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
-											case 'm':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TTT	:	_ICODE_SEM_HTML_TT),	_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
-											case 'w':	{	iComps_combineN(comp, 3 + lnCountAdd,										_ICODE_SEM_HTML_W,		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
-											case 'h':	{	iComps_combineN(comp, 3 + lnCountAdd,										_ICODE_SEM_HTML_H,		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
-											case 'x':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TX	:	_ICODE_SEM_HTML_X),		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
-											case 'y':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TY	:	_ICODE_SEM_HTML_Y),		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
-											case 's':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TSIZE	:	_ICODE_SEM_HTML_SIZE),	_ICAT_SEM_HTML, comp->color, &comp->firstCombined);	break;	}
-										}
-
-									} else {
-										// Invalid syntax
-										return;
+										case 'b':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llCloser) ? _ICODE_SEM_HTML_TB		:	_ICODE_SEM_HTML_B),		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);		break;	}
+										case 'i':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llCloser) ? _ICODE_SEM_HTML_TI		:	_ICODE_SEM_HTML_I),		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);		break;	}
+										case 'u':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llCloser) ? _ICODE_SEM_HTML_TU		:	_ICODE_SEM_HTML_U),		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);		break;	}
+										case 'm':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llCloser) ? _ICODE_SEM_HTML_TTT		:	_ICODE_SEM_HTML_TT),	_ICAT_SEM_HTML, comp->color, &comp->firstCombined);		break;	}
+										case 'w':	{	iComps_combineN(comp, 3 + lnCountAdd,											_ICODE_SEM_HTML_W,		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);		break;	}
+										case 'h':	{	iComps_combineN(comp, 3 + lnCountAdd,											_ICODE_SEM_HTML_H,		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);		break;	}
+										case 'x':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llCloser) ? _ICODE_SEM_HTML_TX		:	_ICODE_SEM_HTML_X),		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);		break;	}
+										case 'y':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llCloser) ? _ICODE_SEM_HTML_TY		:	_ICODE_SEM_HTML_Y),		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);		break;	}
+										case 's':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llCloser) ? _ICODE_SEM_HTML_TSIZE	:	_ICODE_SEM_HTML_SIZE),	_ICAT_SEM_HTML, comp->color, &comp->firstCombined);		break;	}
 									}
-									break;
 
-								case 2/*two chars*/:
-									// Could be hr, br, tt, tr, td
-									if (llEncapsulated)
-									{
-										// Is it a known tag?
-										     if (_memicmp(ptr, "hr", 2) == 0)		iComps_combineN(comp, 3 + lnCountAdd, _ICODE_SEM_HTML_HR, _ICAT_SEM_HTML, comp->color);
-										else if (_memicmp(ptr, "br", 2) == 0)		iComps_combineN(comp, 3 + lnCountAdd, _ICODE_SEM_HTML_BR, _ICAT_SEM_HTML, comp->color);
-										else if (_memicmp(ptr, "tt", 2) == 0)		iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TTT : _ICODE_SEM_HTML_TT), _ICAT_SEM_HTML, comp->color, &comp->firstCombined);
-										else if (_memicmp(ptr, "tr", 2) == 0)		iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TTR : _ICODE_SEM_HTML_TR), _ICAT_SEM_HTML, comp->color, &comp->firstCombined);
-										else if (_memicmp(ptr, "td", 2) == 0)		iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TTD : _ICODE_SEM_HTML_TD), _ICAT_SEM_HTML, comp->color, &comp->firstCombined);
-									}
-									break;
+								} else {
+									// Invalid syntax
+									return;
+								}
+								break;
 
-								case 4/*four chars*/:
-									// Could be html, font
-									if (_memicmp(ptr, "html", 4) == 0)
-									{
-										// There may be attributes afterward
-										iComps_combineN(comp, 3 + lnCountAdd, 
-														((llTTag)		? _ICODE_SEM_HTML_THTML		: _ICODE_SEM_HTML_HTML), 
-														((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML), 
-														comp->color);
+							case 2/*two chars*/:
+								// Could be hr, br, tt, tr, td
+								// Is it a known tag?
+								if (_memicmp(ptr, "hr", 2) == 0)
+								{
+									// <hr>
+									iComps_combineN(comp, 3 + lnCountAdd, _ICODE_SEM_HTML_HR, _ICAT_SEM_HTML, comp->color, &comp->firstCombined);
 
-									} else if (_memicmp(ptr, "font", 4) == 0) {
-										// There may be attributes afterward
-										iComps_combineN(comp, 3 + lnCountAdd, 
-														((llTTag)		? _ICODE_SEM_HTML_TFONT		: _ICODE_SEM_HTML_FONT), 
-														((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML), 
-														comp->color);
+								} else if (_memicmp(ptr, "br", 2) == 0) {
+									// <br>
+									iComps_combineN(comp, 3 + lnCountAdd, _ICODE_SEM_HTML_BR, _ICAT_SEM_HTML, comp->color, &comp->firstCombined);
 
-									} else if (_memicmp(ptr, "name", 4) == 0) {
-										// There may be attributes afterward
-										iComps_combineN(comp, 3 + lnCountAdd, 
-														((llTTag)		? _ICODE_SEM_HTML_TNAME		: _ICODE_SEM_HTML_NAME), 
-														((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML), 
-														comp->color);
+								} else if (_memicmp(ptr, "tt", 2) == 0) {
+									// <tt>
+									iComps_combineN(comp, 3 + lnCountAdd, ((llCloser) ? _ICODE_SEM_HTML_TTT : _ICODE_SEM_HTML_TT), _ICAT_SEM_HTML, comp->color, &comp->firstCombined);
 
-									} else if (_memicmp(ptr, "size", 4) == 0) {
-										// There may be attributes afterward
-										iComps_combineN(comp, 3 + lnCountAdd, 
-														((llTTag)		? _ICODE_SEM_HTML_TSIZE		: _ICODE_SEM_HTML_SIZE), 
-														((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML), 
-														comp->color);
-									}
-									break;
+								} else if (_memicmp(ptr, "tr", 2) == 0) {
+									// <tr..
+									iComps_combineN(comp, 3 + lnCountAdd, 
+													((llCloser)		? _ICODE_SEM_HTML_TTR		: _ICODE_SEM_HTML_TR),
+													((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML),
+													comp->color,
+													&comp->firstCombined);
 
-								case 5/*five chars*/:
-									// Could be table
-									if (_memicmp(ptr, "table", 5) == 0)
-									{
-										// There may be attributes afterward
-										if (llEncapsulated)
-										{
-											// Just <table>
-											iComps_combineN(comp, 3 + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TTABLE : _ICODE_SEM_HTML_TABLE), _ICAT_SEM_HTML, comp->color);
+								} else if (_memicmp(ptr, "td", 2) == 0) {
+									// <td..
+									iComps_combineN(comp, 3 + lnCountAdd, 
+													((llCloser)		? _ICODE_SEM_HTML_TTD		: _ICODE_SEM_HTML_TD),
+													((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML),
+													comp->color,
+													&comp->firstCombined);
+								}
+								break;
 
-										} else if ((compEnd = iComps_findMate(comp, &lnCount))) {
-											// Has attributes
-											iComps_combineN(comp, lnCount + lnCountAdd, ((llTTag) ? _ICODE_SEM_HTML_TTABLE : _ICODE_SEM_HTML_TABLE), _ICAT_SEM_HTML_ATTRIBUTES, comp->color, &comp->firstCombined);
-										}
-									}
-									break;
+							case 4/*four chars*/:
+								// Could be html, font
+								if (_memicmp(ptr, "html", 4) == 0)
+								{
+									// <html..
+									iComps_combineN(comp, 3 + lnCountAdd, 
+													((llCloser)		? _ICODE_SEM_HTML_THTML		: _ICODE_SEM_HTML_HTML),
+													((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML),
+													comp->color,
+													&comp->firstCombined);
 
-							}
-							break;
+								} else if (_memicmp(ptr, "font", 4) == 0) {
+									// <font..
+									iComps_combineN(comp, 3 + lnCountAdd, 
+													((llCloser)		? _ICODE_SEM_HTML_TFONT		: _ICODE_SEM_HTML_FONT),
+													((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML),
+													comp->color,
+													&comp->firstCombined);
 
-						case _ICODE_ALPHANUMERIC:
-							// Could be w###, h###, x###, y###
-							c = iLowerCase(*ptr);
-							switch (c)
-							{
-								case 'w':	{	iComps_combineN(comp, 3 + lnCountAdd, _ICODE_SEM_HTML_W, _ICAT_SEM_HTML, comp->color);	break;	}
-								case 'h':	{	iComps_combineN(comp, 3 + lnCountAdd, _ICODE_SEM_HTML_H, _ICAT_SEM_HTML, comp->color);	break;	}
-								case 'x':	{	iComps_combineN(comp, 3 + lnCountAdd, _ICODE_SEM_HTML_X, _ICAT_SEM_HTML, comp->color);	break;	}
-								case 'y':	{	iComps_combineN(comp, 3 + lnCountAdd, _ICODE_SEM_HTML_Y, _ICAT_SEM_HTML, comp->color);	break;	}
-							}
-							break;
+								} else if (_memicmp(ptr, "name", 4) == 0) {
+									// <name..
+									iComps_combineN(comp, 3 + lnCountAdd, 
+													((llCloser)		? _ICODE_SEM_HTML_TNAME		: _ICODE_SEM_HTML_NAME),
+													((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML),
+													comp->color,
+													&comp->firstCombined);
+
+								} else if (_memicmp(ptr, "size", 4) == 0) {
+									// <size..
+									iComps_combineN(comp, 3 + lnCountAdd, 
+													((llCloser)		? _ICODE_SEM_HTML_TSIZE		: _ICODE_SEM_HTML_SIZE),
+													((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML),
+													comp->color,
+													&comp->firstCombined);
+								}
+								break;
+
+							case 5/*five chars*/:
+								// Could be table, color, align, width
+								if (_memicmp(ptr, "table", 5) == 0)
+								{
+									// <table..
+									iComps_combineN(comp, 3 + lnCountAdd, 
+													((llCloser)		? _ICODE_SEM_HTML_TTABLE	: _ICODE_SEM_HTML_TABLE),
+													((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML),
+													comp->color,
+													&comp->firstCombined);
+
+								} else  if (_memicmp(ptr, "color", 5) == 0) {
+									// <color..
+									iComps_combineN(comp, 3 + lnCountAdd, 
+													((llCloser)		? _ICODE_SEM_HTML_TCOLOR	: _ICODE_SEM_HTML_COLOR),
+													((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML),
+													comp->color,
+													&comp->firstCombined);
+
+								} else  if (_memicmp(ptr, "align", 5) == 0) {
+									// <align..
+									iComps_combineN(comp, 3 + lnCountAdd, 
+													((llCloser)		? _ICODE_SEM_HTML_TALIGN	: _ICODE_SEM_HTML_ALIGN),
+													((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML),
+													comp->color,
+													&comp->firstCombined);
+
+								} else  if (_memicmp(ptr, "width", 5) == 0) {
+									// <width..
+									iComps_combineN(comp, 3 + lnCountAdd, 
+													((llCloser)		? _ICODE_SEM_HTML_TWIDTH	: _ICODE_SEM_HTML_WIDTH),
+													((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML),
+													comp->color,
+													&comp->firstCombined);
+								}
+								break;
+
+							case 6/*six chars*/:
+								// Could be valign, height
+								if (_memicmp(ptr, "valign", 6) == 0)
+								{
+									// <valign..
+									iComps_combineN(comp, 3 + lnCountAdd, 
+													((llCloser)		? _ICODE_SEM_HTML_TVALIGN	: _ICODE_SEM_HTML_VALIGN),
+													((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML),
+													comp->color,
+													&comp->firstCombined);
+
+								} else  if (_memicmp(ptr, "height", 6) == 0) {
+									// <height..
+									iComps_combineN(comp, 3 + lnCountAdd, 
+													((llCloser)		? _ICODE_SEM_HTML_THEIGHT	: _ICODE_SEM_HTML_HEIGHT),
+													((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML),
+													comp->color,
+													&comp->firstCombined);
+								}
+								break;
+
+							case 7/*seven chars*/:
+								// Could be bgcolor
+								if (_memicmp(ptr, "bgcolor", 7) == 0)
+								{
+									// <bgcolor..
+									iComps_combineN(comp, 3 + lnCountAdd, 
+													((llCloser)		? _ICODE_SEM_HTML_TBGCOLOR	: _ICODE_SEM_HTML_BGCOLOR),
+													((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML),
+													comp->color,
+													&comp->firstCombined);
+								}
+
+						}
 					}
 
 					// Remove the leading equal sign component if it exists
-					if (llEqualSign && comp->firstCombined && comp->firstCombined->iCode == _ICODE_EQUAL_SIGN)
+					if (llEqualSign)
 					{
-						// Make the comp->firstCombined point to the one after
-						compDel				= comp->firstCombined;
-						comp->firstCombined	= iComps_getNth(compDel);
-
-						// Delete the equal sign
-						iComps_delete(compDel, true);
+						// Remove the <x= and trailing > for attributes
+						compTest1	= comp->firstCombined;
+						compTest2	= iComps_getNth(comp->firstCombined, 1);
+						compTest3	= iComps_getNth(comp->firstCombined, 2);
+						compEnd		= iComps_getLast(comp->firstCombined);
+						if (compTest1 && compTest2 && compTest3 && compEnd && compTest1->iCode == _ICODE_LESS_THAN && compTest3->iCode == _ICODE_EQUAL_SIGN && compEnd->iCode == _ICODE_GREATER_THAN)
+						{
+							// It's <x=
+							comp->firstCombined	= iComps_getNth(compTest3);
+							iComps_delete(compTest1, true);		// Delete <
+							iComps_delete(compTest2, true);		// Delete x
+							iComps_delete(compTest3, true);		// Delete =
+							iComps_delete(compEnd, true);		// Delete trailing >
+						}
 					}
 				}
 			}
@@ -3784,6 +3915,90 @@ finished:
 // Called to convert the value in this component to an s32 or s64 integer, or f64 floating point
 //
 //////
+	u32 iComps_getHexAs_html3CharShorthand(SComp* comp, u32 tnDefaultValue)
+	{
+		u8	c1, c2, c3;
+		u32	lnValue;
+		u8*	ptr;
+
+
+		// Only works with "FED" or 'FED'
+		lnValue = tnDefaultValue;
+		if (comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data && (comp->iCode == _ICODE_SINGLE_QUOTED_TEXT || comp->iCode == _ICODE_DOUBLE_QUOTED_TEXT))
+		{
+			ptr	= comp->line->sourceCode->data_u8 + comp->start;
+			c1 = ptr[1];	// F
+			c2 = ptr[2];	// E
+			c3 = ptr[3];	// D
+
+			// Make sure the values are sane
+			if ((c1 = isHexDigit(c1)) != -1 && (c2 = isHexDigit(c2)) != -1 && (c3 = isHexDigit(c3)) != -1)
+			{
+				// Store our value as 0xffeedd
+				lnValue =		(((c1 << 4) | c1) << 16)	// 0xff0000
+							|	(((c2 << 4) | c2) << 8)		// 0x00ee00
+							|	 ((c3 << 4) | c3);			// 0x0000dd
+			}
+		}
+
+		// Indicate our result
+		return(lnValue);
+	}
+
+	u32 iComps_getHexAs_u32(SComp* comp, u32 tnDefaultValue)
+	{
+		u8	c;
+		s32	lnI, lnOffset;
+		u32	lnValue;
+		u8*	ptr;
+
+
+		// Only works with double-quote or single-quote values
+		if (comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data && (comp->iCode == _ICODE_SINGLE_QUOTED_TEXT || comp->iCode == _ICODE_DOUBLE_QUOTED_TEXT))
+		{
+			// Grab our pointer
+			ptr	= comp->line->sourceCode->data_u8 + comp->start;
+
+			// Does it begin with "0x"?
+			if (ptr[1] == '0' && (ptr[2] == 'x' || ptr[2] == 'X'))		lnOffset = 3;	// Yes, skip it
+			else														lnOffset = 1;
+
+			// Extract out up to eight hex digits
+			for (lnI = 0, lnValue = 0; lnI < 8 && lnI + lnOffset < comp->length && (c = isHexDigit(ptr[lnI + lnOffset])) != 255; lnI++)
+				lnValue = (lnValue << 4) | c;
+		}
+
+		// Indicate our result
+		return(lnValue);
+	}
+
+	u64 iComps_getHexAs_u64(SComp* comp)
+	{
+		u8	c;
+		s32	lnI, lnOffset;
+		u64	lnValue;
+		u8*	ptr;
+
+
+		// Only works with double-quote or single-quote values
+		if (comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data && (comp->iCode == _ICODE_SINGLE_QUOTED_TEXT || comp->iCode == _ICODE_DOUBLE_QUOTED_TEXT))
+		{
+			// Grab our pointer
+			ptr	= comp->line->sourceCode->data_u8 + comp->start;
+
+			// Does it begin with "0x"?
+			if (ptr[1] == '0' && (ptr[2] == 'x' || ptr[2] == 'X'))		lnOffset = 3;	// Yes, skip it
+			else														lnOffset = 1;
+
+			// Extract out up to six digits
+			for (lnI = 0, lnValue = 0; lnI < 16 && lnI + lnOffset < comp->length && (c = isHexDigit(ptr[lnI + lnOffset])) != 255; lnI++)
+				lnValue = (lnValue << 4) | c;
+		}
+
+		// Indicate our result
+		return(lnValue);
+	}
+
 	s32 iComps_getAs_s32(SComp* comp)
 	{
 		s8 buffer[32];
@@ -4203,6 +4418,34 @@ finished:
 // Format:  [raw_text iCode,start,length]
 //
 //////
+	s8* gc_iComps_vizEasy_buffer = NULL;
+	s8* iComps_vizEasy(SComp* comp, s32 tnCount, bool tlUseDefaultCompSearcher, SAsciiCompSearcher* tsComps1, SAsciiCompSearcher* tsComps2)
+	{
+		s32 lnCount;
+
+
+		// Make sure the environment is sane
+		if (comp)
+		{
+			// Allocate
+			if (!gc_iComps_vizEasy_buffer)
+				gc_iComps_vizEasy_buffer = (s8*)malloc(32768);
+
+			// Get the count
+			lnCount = ((tnCount > 0) ? tnCount : iComps_count(comp));
+
+			// Populate
+			if (gc_iComps_vizEasy_buffer)
+			{
+				memset(gc_iComps_vizEasy_buffer, 0, 32768);
+				iComps_visualize(comp, lnCount, gc_iComps_vizEasy_buffer, 32768, tlUseDefaultCompSearcher, tsComps1, tsComps2);
+			}
+		}
+
+		// Indicate our buffer
+		return(gc_iComps_vizEasy_buffer);
+	}
+
 	s8* iComps_visualize(SComp* comp, s32 tnCount, s8* outputBuffer, s32 tnBufferLength, bool tlUseDefaultCompSearcher, SAsciiCompSearcher* tsComps1, SAsciiCompSearcher* tsComps2)
 	{
 		s32						lnI, lnJ, lnLength, lnOffset;

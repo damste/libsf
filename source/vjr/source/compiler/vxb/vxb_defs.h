@@ -162,6 +162,8 @@ struct SVxbContext;
 	SComp*					iComps_skipTo_iCode							(SComp* comp, s32 tniCode);
 	SComp*					iComps_getNext_afterDot						(SComp* comp);
 	SComp*					iComps_getNth								(SComp* comp, s32 tnCount = 1);
+	SComp*					iComps_getFirst								(SComp* comp, s32 tnConstrainMoves);
+	SComp*					iComps_getLast								(SComp* comp, s32 tnConstrainMoves = -1);
 	u32						iComps_combineN								(SComp* comp, u32 tnCount, s32 tnNew_iCode, u32 tnNew_iCat, SBgra* newColor, SComp** compMigrateRefs = NULL);
 	u32						iComps_combine_adjacent						(SComp* compLeftmost, s32 tniCode, u32 tniCat, SBgra* tnColor, s32 valid_iCodeArray[], s32 tnValid_iCodeArrayCount);
 	u32						iComps_combine_adjacentAlphanumeric			(SLine* line);
@@ -186,6 +188,9 @@ struct SVxbContext;
 	s32						iComps_copyTo_withCallback					(SLine* line, SComp* compStart, SCallback* cb, bool tlMakeReferences);
 	bool					iiComps_areCompsAdjacent					(SComp* compLeft, SComp* compRight);
 	s32						iiComps_get_charactersBetween				(SComp* compLeft, SComp* compRight);
+	u32						iComps_getHexAs_html3CharShorthand			(SComp* comp, u32 tnDefaultValue = -1);
+	u32						iComps_getHexAs_u32							(SComp* comp, u32 tnDefaultValue = -1);
+	u64						iComps_getHexAs_u64							(SComp* comp, u64 tnDefaultValue = -1);
 	s32						iComps_getAs_s32							(SComp* comp);
 	s64						iComps_getAs_s64							(SComp* comp);
 	f64						iComps_getAs_f64							(SComp* comp);
@@ -204,7 +209,8 @@ struct SVxbContext;
 	#define					iiComps_isNumeric(iCode)					(iCode == _ICODE_NUMERIC)
 	#define					iiComps_isComment(iCode)					(iCode == _ICODE_COMMENT || iCode == _ICODE_LINE_COMMENT)
 	#define					iiComps_isVxbFunction(iCode)				(iCode == _ICODE_FUNCTION || iCode == _ICODE_PROCEDURE)
-	s8*						iComps_visualize							(SComp* comp, s32 tnCount, s8* outputBuffer, s32 tnBufferLength, bool tlUseDefaultCompSearcher, SAsciiCompSearcher* tsComps1, SAsciiCompSearcher* tsComps2);
+	s8*						iComps_vizEasy								(SComp* comp, s32 tnCount = -1, bool tlUseDefaultCompSearcher = true, SAsciiCompSearcher* tsComps1 = NULL, SAsciiCompSearcher* tsComps2 = NULL);
+	s8*						iComps_visualize							(SComp* comp, s32 tnCount, s8* outputBuffer, s32 tnBufferLength, bool tlUseDefaultCompSearcher = true, SAsciiCompSearcher* tsComps1 = NULL, SAsciiCompSearcher* tsComps2 = NULL);
 	s8*						iiComps_visualize_lookup_iCode				(s32 tniCode);
 
 

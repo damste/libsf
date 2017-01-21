@@ -3504,8 +3504,11 @@ renderAsOnlyText:
 
 								case _ICODE_SEM_HTML_SIZE:
 									// Setting a hard new font size
-									v.lnFontSize	= iComps_getAs_s32(v.comp);
-									v.llFontChange	= true;
+									if (v.comp->firstCombined)
+									{
+										v.lnFontSize	= iComps_getAs_s32(v.comp->firstCombined);
+										v.llFontChange	= true;
+									}
 									break;
 
 								case _ICODE_SEM_HTML_THTML:
@@ -3533,14 +3536,23 @@ renderAsOnlyText:
 
 								case _ICODE_SEM_HTML_TB:
 									// </b>
+									// Turning off bold
+									v.lnFontWeight	= FW_NORMAL;
+									v.llFontChange	= true;
 									break;
 
 								case _ICODE_SEM_HTML_TI:
 									// </i>
+									// Turning off italic
+									v.lnFontItalics	= false;
+									v.llFontChange	= true;
 									break;
 
 								case _ICODE_SEM_HTML_TU:
 									// </u>
+									// Turning off underline
+									v.lnFontUnderline	= false;
+									v.llFontChange		= true;
 									break;
 
 								case _ICODE_SEM_HTML_TBGCOLOR:
@@ -3754,6 +3766,26 @@ error_exit:
 		} else if (v.llNumeric) {
 			// It's color=Nnn
 			color.color = (u32)iComps_getAs_s64(v.comp);
+
+		} else if (v.comp->firstCombined && (v.comp->firstCombined->iCode == _ICODE_SINGLE_QUOTED_TEXT || v.comp->firstCombined->iCode == _ICODE_DOUBLE_QUOTED_TEXT)) {
+			// It's color="..."
+			if (v.comp->firstCombined->length == 5)
+			{
+				// It's color="FED" (shorthand hexadecimal, resulting in 0xFFEEDD
+				color.color = iComps_getHexAs_html3CharShorthand(v.comp->firstCombined);
+
+			} else if (v.comp->firstCombined->length == 8) {
+				// it's color="FFEEDD"
+				color.color = iComps_getHexAs_u32(v.comp->firstCombined);
+
+			} else {
+				// Invalid
+				return;
+			}
+
+		} else {
+			// Invalid
+			return;
 		}
 
 		// Store the color

@@ -153,6 +153,7 @@
 	s32				iDisk_openAs							(cs8* tcPathname, s32 tnType, bool tlCreateIfCannotOpen, bool tlExclusive, bool* error = NULL, u32* errorNum = NULL);
 	s32				iDisk_openShared						(cs8* tcPathname, s32 tnType, bool tlCreateIfCannotOpen, bool* error = NULL, u32* errorNum = NULL);
 	s32				iDisk_openExclusive						(cs8* tcPathname, s32 tnType, bool tlCreateIfCannotOpen, bool* error = NULL, u32* errorNum = NULL);
+	s32				iDisk_deleteFile						(cs8* tcPathname);
 	s32				iDisk_close								(s32 tnFile, bool* error = NULL, u32* errorNum = NULL);
 	s64				iDisk_getFileSize						(s32 tnFile, bool* error = NULL, u32* errorNum = NULL);
 	s64				iDisk_getFilePosition					(s32 tnFile, bool* error = NULL, u32* errorNum = NULL);

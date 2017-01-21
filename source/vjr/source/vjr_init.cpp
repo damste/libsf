@@ -321,6 +321,8 @@
 
 		// Initially populate _screen
 		// Load in the history if it exists
+// Added temporarily
+iDisk_deleteFile((cs8*)cgcScreenDataFilename);
 		if (!iSEM_load_fromDisk(NULL, screenData, cgcScreenDataFilename, false, true))
 		{
 			// Indicate success
@@ -330,23 +332,23 @@
 			iSEM_appendLine(screenData, (u8*)cgcScreenTitle, -1, false);
 			iSEM_appendLine(screenData, NULL, 0, false);
 			iSEM_appendLine(screenData, (u8*)"Please report any bugs:  http://www.visual-freepro.org/vjr <br>", -1, false);
-			iSEM_appendLine(screenData, (u8*)"Thank you, and may the Lord Jesus Christ bless you richly. :-)<br>", -1, false);
-			iSEM_appendLine(screenData, (u8*)"<m><s=8><br>", -1, false);
-			iSEM_appendLine(screenData, (u8*)"              _____              In God's sight we've come together.<br>", -1, false);
-			iSEM_appendLine(screenData, (u8*)"             |     |             We've come together to help each other.<br>", -1, false);
-			iSEM_appendLine(screenData, (u8*)"             |     |             Let's grow this project up ... together! <br>", -1, false);
-			iSEM_appendLine(screenData, (u8*)"     ________|     |________     In service and love to The Lord, forever! <br>", -1, false);
-			iSEM_appendLine(screenData, (u8*)"    |                       |<br>", -1, false);
-			iSEM_appendLine(screenData, (u8*)"    |________       ________|      Sponsored by:<br>", -1, false);
-			iSEM_appendLine(screenData, (u8*)"             |     |                  LibSF -- Liberty Software Foundation<br>", -1, false);
-			iSEM_appendLine(screenData, (u8*)"             |     |<br>", -1, false);
-			iSEM_appendLine(screenData, (u8*)"             |     |               Contributors:<br>", -1, false);
-			iSEM_appendLine(screenData, (u8*)"             |     |                  Hernan Cano, Stefano D'Amico<br>", -1, false);
-			iSEM_appendLine(screenData, (u8*)"             |     |<br>", -1, false);
-			iSEM_appendLine(screenData, (u8*)"             |     |             Lead Project Contact:  rick.c.hodgin@gmail.com<br>", -1, false);
-			iSEM_appendLine(screenData, (u8*)"             |     |<br>", -1, false);
-			iSEM_appendLine(screenData, (u8*)"             |     |             We need more coders. Please consider helping out.<br>", -1, false);
-			iSEM_appendLine(screenData, (u8*)"             |_____|             Your contribution would make a difference. :-)</s></m><br>", -1, false);
+			iSEM_appendLine(screenData, (u8*)"Thank you, and may the <color=\"D00\"><b>Lord Jesus Christ</b><color=\"000\"> bless you richly. <bgcolor=\"FFFF00\">:-)<bgcolor=\"FFFFFF\"><br>", -1, false);
+			iSEM_appendLine(screenData, (u8*)"<m><br>", -1, false);
+			iSEM_appendLine(screenData, (u8*)"<s=8>              _____              <s=10>In God's sight we've come together.<br>", -1, false);
+			iSEM_appendLine(screenData, (u8*)"<s=8>             |     |             <s=10>We've come together to help each other.<br>", -1, false);
+			iSEM_appendLine(screenData, (u8*)"<s=8>             |     |             <s=10>Let's grow this project up ... together! <br>", -1, false);
+			iSEM_appendLine(screenData, (u8*)"<s=8>     ________|     |________     <s=10>In service and love to The Lord, forever! <br>", -1, false);
+			iSEM_appendLine(screenData, (u8*)"<s=8>    |                       |<br>", -1, false);
+			iSEM_appendLine(screenData, (u8*)"<s=8>    |________       ________|    <s=10>  Sponsored by:<br>", -1, false);
+			iSEM_appendLine(screenData, (u8*)"<s=8>             |     |             <s=10>     LibSF -- Liberty Software Foundation<br>", -1, false);
+			iSEM_appendLine(screenData, (u8*)"<s=8>             |     |<br>", -1, false);
+			iSEM_appendLine(screenData, (u8*)"<s=8>             |     |             <s=10>  Contributors:<br>", -1, false);
+			iSEM_appendLine(screenData, (u8*)"<s=8>             |     |             <s=10>     Hernan Cano, Stefano D'Amico<br>", -1, false);
+			iSEM_appendLine(screenData, (u8*)"<s=8>             |     |<br>", -1, false);
+			iSEM_appendLine(screenData, (u8*)"<s=8>             |     |             <s=10>Lead Project Contact:  rick.c.hodgin@gmail.com<br>", -1, false);
+			iSEM_appendLine(screenData, (u8*)"<s=8>             |     |<br>", -1, false);
+			iSEM_appendLine(screenData, (u8*)"<s=8>             |     |             <s=10>We need more coders. Please consider helping out.<br>", -1, false);
+			iSEM_appendLine(screenData, (u8*)"<s=8>             |_____|             <s=10>Your contribution would make a difference. :-)</m><br>", -1, false);
 			iSEM_appendLine(screenData, NULL, 0, false);
 		}
 		// Navigate to the end of the content
