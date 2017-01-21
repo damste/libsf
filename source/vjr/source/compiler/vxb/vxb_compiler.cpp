@@ -2694,10 +2694,12 @@ finished:
 //////
 	u32 iComps_combineAll_between(SLine* line, s32 tniCodeNeedle, s32 tniCodeCombined, SBgra* syntaxHighlightColor)
 	{
+		bool	llFound;
 		u32		lnCount;
 		SComp*	compNext;
 		SComp*	comp;
 		SComp*	compSearcher;
+		SComp*	compTest;
 
 
 		// Make sure our environment is sane
@@ -2732,29 +2734,41 @@ finished:
 							comp->color		= syntaxHighlightColor;
 							comp->nbspCount	+= compSearcher->nbspCount;
 
-							// Iterate and merge in
-							while (compNext)
+if (tniCodeNeedle == _ICODE_SINGLE_QUOTE)
+	_asm nop;
+							// Make sure there's another one to combine between
+							for (compTest = compNext->ll.nextComp, llFound = false; !llFound && compTest; compTest = compTest->ll.nextComp)
 							{
-								// Increase our count
-								++lnCount;
-
-								// Migrate this one to the combined node (as it was technically merged above with the comp->length = line)
-								iLl_migrate__llToOther((SLL**)&line->compilerInfo->firstComp, (SLL**)&comp->firstCombined, (SLL*)compNext, true);
-
-								// See if we're done
-								if (compNext == compSearcher)
-									break;		// This was the last one, we're done
-
-								// Move to the next component (which is the comp->ll.next component again, because we just migrated the previous compNext
-								compNext = comp->ll.nextComp;
+								// Did we find the match?
+								if (compTest->iCode == tniCodeNeedle)
+									llFound = true;
 							}
-							// When we get here, everything's migrated
+
+							// If we found its mate, migrate it
+							if (llFound)
+							{
+								// Iterate and merge in
+								while (compNext)
+								{
+									// Increase our count
+									++lnCount;
+
+									// Migrate this one to the combined node (as it was technically merged above with the comp->length = line)
+									iLl_migrate__llToOther((SLL**)&line->compilerInfo->firstComp, (SLL**)&comp->firstCombined, (SLL*)compNext, true);
+
+									// See if we're done
+									if (compNext == compSearcher)
+										break;		// This was the last one, we're done
+
+									// Move to the next component (which is the comp->ll.next component again, because we just migrated the previous compNext
+									compNext = comp->ll.nextComp;
+								}
+								// When we get here, everything's migrated
+							}
 
 							// Grab the new next, which is the one after the matched entry
 							compNext = comp->ll.nextComp;
-
-							// Continue looking for more combinations on this line
-							break;
+							break;		// Continue looking for more combinations on this line
 						}
 
 						// Move to the next component
@@ -3206,16 +3220,22 @@ finished:
 // Fixes up common things found in VXB source code.
 //
 //////
-	void iComps_fixup_naturalGroupings(SLine* line)
+	void iComps_fixup_naturalGroupings(SLine* line, bool tlIsSourceCode)
 	{
 		if (line && line->compilerInfo && line->compilerInfo->firstComp)
 		{
 			//////////
 			// Fixup quotes, comments
 			//////
-				iComps_combineAll_between(line, _ICODE_SINGLE_QUOTE,		_ICODE_SINGLE_QUOTED_TEXT,	&colorSynHi_quotedText);
-				iComps_combineAll_between(line, _ICODE_DOUBLE_QUOTE,		_ICODE_DOUBLE_QUOTED_TEXT,	&colorSynHi_quotedText);
-				iComps_combineAll_after(line, _ICODE_LINE_COMMENT);
+				if (tlIsSourceCode)
+				{
+					// Single-quotes and comments are only matched up in source code
+					iComps_combineAll_between(line, _ICODE_SINGLE_QUOTE, _ICODE_SINGLE_QUOTED_TEXT,	&colorSynHi_quotedText);
+					iComps_combineAll_after(line, _ICODE_LINE_COMMENT);
+				}
+
+				// Double-quotes are always matched up
+				iComps_combineAll_between(line, _ICODE_DOUBLE_QUOTE, _ICODE_DOUBLE_QUOTED_TEXT,	&colorSynHi_quotedText);
 
 
 			//////////

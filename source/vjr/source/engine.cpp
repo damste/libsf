@@ -606,7 +606,12 @@
 // This process does not process variables, table names, fields, etc.
 //
 //////
-	SComp* iEngine_parse_sourceCode_line(SLine* line, SAsciiCompSearcher* acs2, bool tlRemoveWhitespaces)
+	SComp* iEngine_parse_nonSourceCode_line(SLine* line, SAsciiCompSearcher* acs2)
+	{
+		return(iEngine_parse_sourceCode_line(line, acs2, false, false));
+	}
+
+	SComp* iEngine_parse_sourceCode_line(SLine* line, SAsciiCompSearcher* acs2, bool tlIsSourceCode, bool tlRemoveWhitespaces)
 	{
 
 		//////////
@@ -659,12 +664,22 @@
 		//////////
 		// Perform natural source code fixups
 		//////
-			iComps_remove_startEndComments(line);		// Remove /* comments */
-			iComps_combine_casks(line);					// Replace [(|][alpha][|)] with [(|alpha|)]
-			iComps_fixup_naturalGroupings(line);		// Fixup natural groupings [_][aaa][999] becomes [_aaa999], [999][.][99] becomes [999.99], etc.
-			iComps_combine_adjacentDotForms(line);		// Fixup [.][t][.] into [.t.] and [thisForm][.][width] into [thisForm.width]
+			if (tlIsSourceCode)
+			{
+				iComps_remove_startEndComments(line);				// Remove /* comments */
+				iComps_combine_casks(line);							// Replace [(|][alpha][|)] with [(|alpha|)]
+			}
+
+			// Fixup natural groupings [_][aaa][999] becomes [_aaa999], [999][.][99] becomes [999.99], etc.
+			iComps_fixup_naturalGroupings(line, tlIsSourceCode);
+
+			// Fixup [.][t][.] into [.t.] and [thisForm][.][width] into [thisForm.width]
+			if (tlIsSourceCode)
+				iComps_combine_adjacentDotForms(line);
+
+			// Remove all whitespaces after everything else was parsed [use][whitespace][foo] becomes [use][foo]
 			if (tlRemoveWhitespaces)
-				iComps_remove_whitespaces(line);		// Remove all whitespaces after everything else was parsed [use][whitespace][foo] becomes [use][foo]
+				iComps_remove_whitespaces(line);
 
 
 		//////////

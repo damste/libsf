@@ -380,12 +380,11 @@
 			// Renumber everything
 			iSEM_renumber(sem, 1);
 
-			// Parse the content if it's flagged as source code
-			if (isSourceCode)
+			// Parse from start to end
+			for ( ; start && start->ll.prevLine != end; start = start->ll.nextLine)
 			{
-				// Parse from start to end
-				for ( ; start && start->ll.prevLine != end; start = start->ll.nextLine)
-					iEngine_parse_sourceCode_line(start, acsSecondary);
+				if (isSourceCode)		iEngine_parse_sourceCode_line(start, acsSecondary);
+				else					iEngine_parse_nonSourceCode_line(start, acsSecondary);
 			}
 
 			// Log if need be
@@ -3278,7 +3277,7 @@ renderAsOnlyText:
 						// Recompile each line and parse out tags
 						for (v.line = sem->firstLine; v.line; v.line = v.line->ll.nextLine)
 						{
-							iEngine_parse_sourceCode_line(v.line, cgcSEMHtmlKeywords, false);
+							iEngine_parse_nonSourceCode_line(v.line, cgcSEMHtmlKeywords);
 							iComps_fixup_semHtmlGroupings(v.line);
 						}
 

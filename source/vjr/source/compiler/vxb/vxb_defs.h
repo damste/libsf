@@ -181,7 +181,7 @@ struct SVxbContext;
 	void					iComps_remove_startEndComments				(SLine* line);
 	s32						iComps_truncate_atComments					(SLine* line);
 	void					iComps_combine_casks						(SLine* line);
-	void					iComps_fixup_naturalGroupings				(SLine* line);
+	void					iComps_fixup_naturalGroupings				(SLine* line, bool tlIsSourceCode = true);
 	void					iComps_fixup_htmlGroupings					(SLine* line);
 	s32						iComps_unescape_iCodes						(SComp* compStart, s32 tniCode1, s32 tniCode2, s32 tniCode3, s32 tniCodeEscape = _ICODE_BACKSLASH);
 	s32						iComps_copyTo								(SLine* line, SComp* compStart, SComp* compEnd, bool tlMakeReferences);

@@ -329,7 +329,7 @@
 	void					iSEM_deleteChainWithCallback				(SEM** root, bool tlDeleteSelf, SEM_callback* ecb);
 	u32						iSEM_renumber								(SEM* sem, u32 tnStartingLineNumber);
 	SLine*					iSEM_appendLine								(SEM* sem, SLine* line, bool tlSetNewLineFlag);
-	SLine*					iSEM_appendLine								(SEM* sem, u8* tcText, s32 tnTextLength, bool tlSetNewLineFlag);
+	SLine*					iSEM_appendLine								(SEM* sem, u8* tcText, s32 tnTextLength = -1, bool tlSetNewLineFlag = false);
 	SLine*					iSEM_insertLine								(SEM* sem, u8* tcText, s32 tnTextLength, SLine* line, bool tlInsertAfter, bool tlSetNewLineFlag);
 	void					iSEM_deleteLine								(SEM* sem);
 	SFont*					iSEM_getRectAndFont							(SEM* sem, SObject* obj, RECT* rc);
