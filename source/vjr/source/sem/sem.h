@@ -192,6 +192,12 @@
 		s32				column;											// The column on this line where the selection is currently
 	};
 
+	struct SSEM_aHref
+	{
+		SDatum			href;											// The action to take on click
+		SBuilder*		rcArray;										// A list of RECTs for this 
+	};
+
 
 	//////////
 	// SEM is short for "SEditManager"
@@ -280,6 +286,14 @@
 
 
 		//////////
+		// <a href> rectangles
+		//////
+// TODO:  working here...
+			SBuilder*	aHrefRects;										// (SSEM_aHref) An aggregate links for this HTML content
+			SSEM_aHref*	aHrefRect;										// Current aHref being added to
+
+
+		//////////
 		// The undo history operates in two levels:
 		// (1) When going through ecm-> it is undoHistory.
 		// (2) If accessing ecm->undoHistory-> then it is theUndo, which holds the undo information for that operation.
@@ -355,6 +369,8 @@
 	void					iiSEM_renderAs_simpleHtml__pushFontStack	(__iSimpleHtml_vars& v);
 	void					iiSEM_renderAs_simpleHtml__popFontStack		(__iSimpleHtml_vars& v);
 	void					iiSEM_renderAS_simpleHtml__fallBack			(__iSimpleHtml_vars& v);
+	void					iiSEM_renderAs_simpleHtml__aHref			(__iSimpleHtml_vars& v, SEM* sem);
+	void					iiSEM_renderAs_simpleHtml__addRect_to_aHref	(__iSimpleHtml_vars& v, SEM* sem, RECT* rc);
 
 
 	// Editor movements

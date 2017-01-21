@@ -3230,7 +3230,7 @@ renderAsOnlyText:
 	struct __iSimpleHtml_vars
 	{
 		s8							lnLevel;
-		bool						llZoomed, llNumeric, llAlpha, llFontChange, llFallThru, llLastOpMoved, llInTtBlock;
+		bool						llZoomed, llNumeric, llAlpha, llFontChange, llFallThru, llLastOpMoved, llInTtBlock, llInAHrefBlock/*<a href=>..</a> block*/;
 		u32							lnPixelsRendered;
 		s32							lnX, lnY, lnLastHeight, lnWidth, lnHeight, lnScrollX, lnScrollY, lnStartHeight, lnStartWidth;
 		s32							lnFontSize, lnFontWeight, lnFontItalics, lnFontUnderline, lnFontStack, lniCodeStack;
@@ -3431,6 +3431,12 @@ renderAsOnlyText:
 									iiSEM_renderAs_simpleHtml__table_tr_td(v);
 									break;
 
+								case _ICODE_SEM_HTML_A:
+									// <a>
+									// Turning on href link capturing
+									iiSEM_renderAs_simpleHtml__aHref(v, sem);
+									break;
+
 								case _ICODE_SEM_HTML_B:
 									// Turning on bold
 									v.lnFontWeight	= FW_BOLD;
@@ -3531,6 +3537,12 @@ renderAsOnlyText:
 								case _ICODE_SEM_HTML_TTR:		// </tr>
 								case _ICODE_SEM_HTML_TTD:		// </td>
 									iiSEM_renderAs_simpleHtml__table_tr_td(v);
+									break;
+
+								case _ICODE_SEM_HTML_TA:
+									// </a>
+									// Turning off href link capturing
+									v.llInAHrefBlock = false;
 									break;
 
 								case _ICODE_SEM_HTML_TB:
@@ -3692,6 +3704,13 @@ error_exit:
 				v.lnX = 0;
 				v.lnY += v.lnLastHeight;
 			}
+
+
+		//////////
+		// If we're in an <a></a> block, capture the RECT
+		//////
+			if (v.llInAHrefBlock)
+				iiSEM_renderAs_simpleHtml__addRect_to_aHref(v, sem, &lrc2);
 
 
 		//////////
@@ -4043,6 +4062,44 @@ error_exit:
 			default:
 				return;
 		}
+	}
+
+
+
+
+//////////
+//
+// Turning on an <a> tag (which should have an href=".." attribute and possibly others)
+//
+//////
+	void iiSEM_renderAs_simpleHtml__aHref(__iSimpleHtml_vars& v, SEM* sem)
+	{
+		// Only continue if we're not already in an <a> block
+		if (!v.llInAHrefBlock)
+		{
+			// Turn on capture
+			v.llInAHrefBlock = true;
+
+			// Make sure we have a rectangle to add
+			if (!sem->aHrefRects)
+				iBuilder_createAndInitialize(&sem->aHrefRects);
+
+			// Create a new rectangle entry in the current slot
+			if (!sem->aHrefRect)
+
+		}
+	}
+
+
+
+
+//////////
+//
+// Storing the aHref rectangle to the current entry
+//
+//////
+	void iiSEM_renderAs_simpleHtml__addRect_to_aHref(__iSimpleHtml_vars& v, SEM* sem, RECT* rc)
+	{
 	}
 
 

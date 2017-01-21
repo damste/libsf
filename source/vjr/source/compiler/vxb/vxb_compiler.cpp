@@ -3438,6 +3438,7 @@ if (tniCodeNeedle == _ICODE_SINGLE_QUOTE)
 									c = iLowerCase(*ptr);
 									switch (c)
 									{
+										case 'a':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llCloser) ? _ICODE_SEM_HTML_TA		:	_ICODE_SEM_HTML_A),		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);		break;	}
 										case 'b':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llCloser) ? _ICODE_SEM_HTML_TB		:	_ICODE_SEM_HTML_B),		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);		break;	}
 										case 'i':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llCloser) ? _ICODE_SEM_HTML_TI		:	_ICODE_SEM_HTML_I),		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);		break;	}
 										case 'u':	{	iComps_combineN(comp, 3 + lnCountAdd, ((llCloser) ? _ICODE_SEM_HTML_TU		:	_ICODE_SEM_HTML_U),		_ICAT_SEM_HTML, comp->color, &comp->firstCombined);		break;	}
