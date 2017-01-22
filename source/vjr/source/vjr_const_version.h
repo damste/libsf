@@ -91,28 +91,28 @@
 #endif
 #ifdef __GNUC__
 	#ifndef __amd64
-		const u8		cgcScreenTitle[]					= "Visual FreePro, Jr. Version 0.58 -- Nov.30.2015 -- GCC 32-bit";
-		const u8		cgcJDebiTitle[]						= "JDebi Debugger Version 0.58 -- Nov.30.2015 -- GCC 32-bit";
+		const u8		cgcScreenTitle[]					= "Visual FreePro, Jr. Version 0.58 | Nov.30.2015 | GCC 32-bit";
+		const u8		cgcJDebiTitle[]						= "JDebi Debugger Version 0.58 | Nov.30.2015 | GCC 32-bit";
 		const u8		cgcVersionText[]					= "Visual FreePro, Jr. 32-bit 00.58.0001.9999 for Windows";
 		const u8		cgcVersion1Text[]					= "Visual FreePro, Jr. 32-bit 00.58.0001.9999 for Windows [Nov.30.2015 00:00:00] Product ID 31415-926-5358979-32384";
 		const u8		cgcVersion4Text[]					= "00.58.3201.9999";
 	#else
-		const u8		cgcScreenTitle[]					= "Visual FreePro, Jr. Version 0.58 -- Nov.30.2015   -- GCC 64-bit";
-		const u8		cgcJDebiTitle[]						= "JDebi Debugger Version 0.58 -- Nov.30.2015 -- GCC 64-bit";
+		const u8		cgcScreenTitle[]					= "Visual FreePro, Jr. Version 0.58 | Nov.30.2015   | GCC 64-bit";
+		const u8		cgcJDebiTitle[]						= "JDebi Debugger Version 0.58 | Nov.30.2015 | GCC 64-bit";
 		const u8		cgcVersionText[]					= "Visual FreePro, Jr. 64-bit 00.58.0001.9999 for Windows";
 		const u8		cgcVersion1Text[]					= "Visual FreePro, Jr. 64-bit 00.58.0001.9999 for Windows [Nov.30.2015 00:00:00] Product ID 31415-926-5358979-32384";
 		const u8		cgcVersion4Text[]					= "00.58.6401.9999";
 	#endif
 #else
 	#if !defined(__64_BIT_COMPILER__)
-		const u8		cgcScreenTitle[]					= "Visual FreePro, Jr. Version 0.58 -- Nov.30.2015 -- MSVC 32-bit";
-		const u8		cgcJDebiTitle[]						= "JDebi Debugger Version 0.58 -- Nov.30.2015 -- MSVC 32-bit";
+		const u8		cgcScreenTitle[]					= "Visual FreePro, Jr. Version 0.58 | Nov.30.2015 | MSVC 32-bit";
+		const u8		cgcJDebiTitle[]						= "JDebi Debugger Version 0.58 | Nov.30.2015 | MSVC 32-bit";
 		const u8		cgcVersionText[]					= "Visual FreePro, Jr. 32-bit 00.58.0001.9999 for Windows";
 		const u8		cgcVersion1Text[]					= "Visual FreePro, Jr. 32-bit 00.58.0001.9999 for Windows [Nov.30.2015 00:00:00] Product ID 31415-926-5358979-32384";
 		const u8		cgcVersion4Text[]					= "00.58.3201.9999";
 	#else
-		const u8		cgcScreenTitle[]					= "Visual FreePro, Jr. Version 0.58 -- Nov.30.2015 -- MSVC 64-bit";
-		const u8		cgcJDebiTitle[]						= "JDebi Debugger Version 0.58 -- Nov.30.2015 -- MSVC 64-bit";
+		const u8		cgcScreenTitle[]					= "Visual FreePro, Jr. Version 0.58 | Nov.30.2015 | MSVC 64-bit";
+		const u8		cgcJDebiTitle[]						= "JDebi Debugger Version 0.58 | Nov.30.2015 | MSVC 64-bit";
 		// VERSION() support
 		const u8		cgcVersionText[]					= "Visual FreePro, Jr. 64-bit 00.58.0001.9999 for Windows";
 		const u8		cgcVersion1Text[]					= "Visual FreePro, Jr. 64-bit 00.58.0001.9999 for Windows [Nov.30.2015 00:00:00] Product ID 31415-926-5358979-32384";

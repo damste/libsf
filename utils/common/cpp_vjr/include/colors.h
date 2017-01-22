@@ -155,6 +155,8 @@
 	SBgra			overrideMatchingForeColor			= { rgba(0, 0, 0, 255) };				// Black
 	SBgra			overrideMatchingBackColorMultiple	= { rgba(0, 255, 0, 255) };				// Green
 	SBgra			overrideMatchingForeColorMultiple	= { rgba(0, 0, 0, 255) };				// Black
+	SBgra			linkForeColor						= { rgba(0, 0, 64, 255) };				// Dark blue
+	SBgra			linkBackColor						= { rgba(245, 245, 255, 255) };			// Pastel blue
 	SBgra			selectedBackColor					= { _selectedBackColor };				// Pastel turquoise
 	SBgra			selectedForeColor					= { _selectedForeColor };				// Darkish blue
 	SBgra			disabledBackColor					= { _disabledBackColor };

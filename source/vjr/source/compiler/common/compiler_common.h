@@ -112,9 +112,10 @@
 	const u32		_ICAT_RANGE										= 13;	// ..
 	const u32		_ICAT_COMMENT									= 14;	// * /* */ /+ +/ && //
 	const u32		_ICAT_DEFINITION								= 15;	// Definition keyword, function, adhoc, struct, class, union, enum, etc.
-	const u32		_ICAT_SEM_HTML									= 16;	// A SEM component
-	const u32		_ICAT_SEM_HTML_ATTRIBUTES						= 17;	// A SEM component with attributes
-	const u32		_ICAT_SEM_HTML_EMBEDDED_ATTRIBUTES				= 18;	// A SEM component with embedded attributes (like <w50> instead of <w=50>)
+	const u32		_ICAT_SEM_HTML									= 16;	// A SEM HTML tag
+	const u32		_ICAT_SEM_HTML_WITH_ATTRIBUTES					= 17;	// A SEM HTML tag with attributes (see comp->firstCombined, will include a value for <s=10> type forms, or attribute pairs like <a href=".." target=".."> with alpha,equal_sign,double_quoted_text, etc.)
+	const u32		_ICAT_SEM_HTML_ATTRIBUTE						= 18;	// A SEM HTML attribute (href, target)
+	const u32		_ICAT_SEM_HTML_EMBEDDED_ATTRIBUTES				= 18;	// A SEM HTML tag with attributes embedded within the name (like <w50> (instead of <w=50>))
 	// Bit settings
 	const u32		_ICAT_DOT										= 1 << 25;
 	const u32		_ICAT_LOGIC										= 1 << 26;
@@ -279,6 +280,8 @@
 	cs32			_ICODE_SEM_HTML_WIDTH							= 1221;
 	cs32			_ICODE_SEM_HTML_NAME							= 1222;
 	cs32			_ICODE_SEM_HTML_SIZE							= 1223;
+	cs32			_ICODE_SEM_HTML_HREF							= 1224;
+	cs32			_ICODE_SEM_HTML_TARGET							= 1225;
 	// Terminate tags
 	cs32			_ICODE_SEM_HTML_THTML							= 1200 + 100;
 	cs32			_ICODE_SEM_HTML_THR								= 1201 + 100;
@@ -304,6 +307,8 @@
 	cs32			_ICODE_SEM_HTML_TWIDTH							= 1221 + 100;
 	cs32			_ICODE_SEM_HTML_TNAME							= 1222 + 100;
 	cs32			_ICODE_SEM_HTML_TSIZE							= 1223 + 100;
+	cs32			_ICODE_SEM_HTML_THREF							= 1224 + 100;
+	cs32			_ICODE_SEM_HTML_TTARGET							= 1225 + 100;
 
 
 	// Logical operators
@@ -403,6 +408,8 @@
 	cs8			cgc_sem_html_width[]							= "width";
 	cs8			cgc_sem_html_name[]								= "name";
 	cs8			cgc_sem_html_size[]								= "size";
+	cs8			cgc_sem_html_href[]								= "href";
+	cs8			cgc_sem_html_target[]							= "target";
 
 
 
@@ -420,6 +427,8 @@
 		{ cgc_sem_html_width,		5,			false,		_ICODE_SEM_HTML_WIDTH,					false,				_ICAT_SEM_HTML,					NULL,						false,						null0,					null0,		null0	},
 		{ cgc_sem_html_name,		4,			false,		_ICODE_SEM_HTML_NAME,					false,				_ICAT_SEM_HTML,					NULL,						false,						null0,					null0,		null0	},
 		{ cgc_sem_html_size,		4,			false,		_ICODE_SEM_HTML_SIZE,					false,				_ICAT_SEM_HTML,					NULL,						false,						null0,					null0,		null0	},
+		{ cgc_sem_html_href,		4,			false,		_ICODE_SEM_HTML_HREF,					false,				_ICAT_SEM_HTML_ATTRIBUTE,		NULL,						false,						null0,					null0,		null0	},
+		{ cgc_sem_html_target,		6,			false,		_ICODE_SEM_HTML_TARGET,					false,				_ICAT_SEM_HTML_ATTRIBUTE,		NULL,						false,						null0,					null0,		null0	},
 
 		{ 0,						0,			0,			0,										0,					0,								0,							0,							null0,					null0,		null0	},
 	};

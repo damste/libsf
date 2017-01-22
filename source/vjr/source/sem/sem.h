@@ -141,21 +141,6 @@
 		s32			borderWidth;										// Border pixels (typically 1)
 	};
 
-	// Simple html rendering info
-	struct SSHtml
-	{
-		RECT		rc;													// Coordinate position relative to (0,0) upper-left
-
-		// Based on type
-		s32			sheType;											// See _SIMPLE_HTML_ELEMENT_TYPE* constants
-		union
-		{
-			SSHtmlElement_text*		text;								// (_SIMPLE_HTML_ELEMENT_TYPE_TEXT)		Text to display
-			SSHtmlElement_image*	image;								// (_SIMPLE_HTML_ELEMENT_TYPE_IMAGE)	Bitmap to display
-			SSHtmlElement_line*		line;								// (_SIMPLE_HTML_ELEMENT_TYPE_LINE)		Line to display
-		};
-	};
-
 	struct SUndo
 	{
 		u32			uidBefore;												// The item before
@@ -216,10 +201,6 @@
 
 			// If populated, this SEM is only a placeholder for this instance, and the this->reference points to the real SEM we should use
 			SEM*		indirect;										// If not NULL, this SEM points to another SEM which is the real code block
-
-			// If simple html, 
-			SBuilder*	simpleHtml;										// SSHtml items for rendering
-
 
 //////////
 // NOTE:  Everything below is used ONLY IF INDIRECT IS NULL (except for cases of context usage)
@@ -286,9 +267,10 @@
 
 
 		//////////
-		// <a href> rectangles
+		// <a href> rectangles when presented in HTML mode (see style property for _STYLE_HTML)
 		//////
-// TODO:  working here...
+			s32			scroll_htmlX;									// On an HTML window, the amount to scroll from 0=leftmost pixel of bitmap
+			s32			scroll_htmlY;									// On an HTML window, the amount to scroll from 0=topmost pixel of bitmap
 			SBuilder*	aHrefRects;										// (SSEM_aHref) An aggregate links for this HTML content
 			SSEM_aHref*	aHrefRect;										// Current aHref being added to
 
@@ -358,19 +340,19 @@
 	// Simple HTML
 	struct __iSimpleHtml_vars;
 	u32						iSEM_renderAs_simpleHtml					(SEM* sem, SObject* obj, bool tlRenderCursorline);
-	u32						iiSEM_renderAs_simpleHtml__addText			(__iSimpleHtml_vars& v, SEM* sem, s8* tcText = NULL, s32 tnTextLength = 0, HBRUSH* hbr = NULL);
+	u32						iiSEM_renderAs_simpleHtml__text				(__iSimpleHtml_vars& v, SEM* sem, s8* tcText = NULL, s32 tnTextLength = 0, HBRUSH* hbr = NULL);
 	void					iiSEM_renderAs_simpleHtml__getColor			(__iSimpleHtml_vars& v, bool tlBackColor = false);
 	void					iiSEM_renderAs_simpleHtml__getFont			(__iSimpleHtml_vars& v);
 	void					iiSEM_renderAs_simpleHtml__table_tr_td		(__iSimpleHtml_vars& v);
 	bool					iiSEM_renderAs_simpleHtml__applyZoom		(__iSimpleHtml_vars& v, SObject* obj);
 	bool					iiSEM_renderAs_simpleHtml__createBmp		(SBitmap** bmpp, SBitmap* bmpObj, s32 tnWidth, s32 tnHeight);
 	void					iSEM_render_highlightSelectedComps			(SEM* sem, SComp* firstComp);
-	SFont*					iSEM_renderAs_simpleHtml__addFont			(__iSimpleHtml_vars& v);
+	SFont*					iiSEM_renderAs_simpleHtml__addFont			(__iSimpleHtml_vars& v);
 	void					iiSEM_renderAs_simpleHtml__pushFontStack	(__iSimpleHtml_vars& v);
 	void					iiSEM_renderAs_simpleHtml__popFontStack		(__iSimpleHtml_vars& v);
 	void					iiSEM_renderAS_simpleHtml__fallBack			(__iSimpleHtml_vars& v);
 	void					iiSEM_renderAs_simpleHtml__aHref			(__iSimpleHtml_vars& v, SEM* sem);
-	void					iiSEM_renderAs_simpleHtml__addRect_to_aHref	(__iSimpleHtml_vars& v, SEM* sem, RECT* rc);
+	void					iiSEM_renderAs_simpleHtml__aHref_addRect	(__iSimpleHtml_vars& v, SEM* sem, RECT* rc);
 
 
 	// Editor movements

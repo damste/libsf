@@ -645,7 +645,9 @@ debug_break;
 //////
 	void iSEM_delete(SEM** root, bool tlDeleteSelf)
 	{
-		SEM* sem;
+		u32			lnI;
+		SEM*		sem;
+		SSEM_aHref*	ahref;
 
 
 		logfunc(__FUNCTION__);
@@ -653,10 +655,8 @@ debug_break;
 		if (root && *root)
 		{
 			// Grab a shortcut
-			sem = *root;
-
-			// Mark the content stale
-			sem->isStale = true;
+			sem				= *root;
+			sem->isStale	= true;
 
 
 			//////////
@@ -678,8 +678,41 @@ debug_break;
 			//////
 				if (tlDeleteSelf)
 				{
-					free(sem);
-					*root = NULL;
+					// Delete SEM components
+
+					//////////
+					// Notelogs
+					//////
+						if (sem->firstNote)
+							iNoteLog_removeAll(&sem->firstNote);
+
+
+					//////////
+					// <a href> components for link rectangles
+					//////
+						if (sem->aHrefRects)
+						{
+							iterate(lnI, sem->aHrefRects, ahref, SSEM_aHref)
+							// Start
+
+								// Release the builder
+								if (ahref->rcArray)
+									iBuilder_freeAndRelease(&ahref->rcArray);
+
+							// End
+							iterate_end
+
+							// Release the builder
+							iBuilder_freeAndRelease(&sem->aHrefRects);
+						}
+
+
+					//////////
+					// Delete self
+					//////
+						free(sem);
+						*root = NULL;
+
 				}
 		}
 	}
@@ -758,6 +791,14 @@ debug_break;
 				//////
 					ecb->line = (SLine*)nodeNext;
 			}
+
+
+			//////////
+			// Delete self
+			//////
+				if (tlDeleteSelf)
+					iSEM_delete(root, true);
+
 		}
 	}
 
@@ -3235,7 +3276,7 @@ renderAsOnlyText:
 		s32							lnX, lnY, lnLastHeight, lnWidth, lnHeight, lnScrollX, lnScrollY, lnStartHeight, lnStartWidth;
 		s32							lnFontSize, lnFontWeight, lnFontItalics, lnFontUnderline, lnFontStack, lniCodeStack;
 		f64							lfZoom;
-		SBgra						color, bgcolor, colorHighlight, bgcolorHighlight, defaultBackColor, defaultForeColor;
+		SBgra						color, bgcolor, colorLink, bgcolorLink, colorHighlight, bgcolorHighlight, defaultBackColor, defaultForeColor;
 		RECT						rc, lrc, lrc2;
 		u8*							lcFontName;
 		SBitmap*					bmp;
@@ -3293,6 +3334,8 @@ renderAsOnlyText:
 					v.bgcolor.color				= bgra(255, 255, 255, 255);				// White background
 					v.colorHighlight.color		= currentStatementForeColor.color;
 					v.bgcolorHighlight.color	= currentStatementBackColor.color;
+					v.colorLink.color			= linkForeColor.color;
+					v.bgcolorLink.color			= linkBackColor.color;
 					v.lnWidth					= obj->bmp->bi.biWidth;
 					v.lnHeight					= obj->bmp->bi.biHeight;
 
@@ -3313,7 +3356,7 @@ renderAsOnlyText:
 					v.lnFontWeight			= FW_NORMAL;
 					v.lnFontItalics			= 0;
 					v.lnFontUnderline		= 0;
-					v.font					= iSEM_renderAs_simpleHtml__addFont(v);
+					v.font					= iiSEM_renderAs_simpleHtml__addFont(v);
 					v.defaultFont			= v.font;
 					v.lnFontStack			= -1;
 
@@ -3328,6 +3371,8 @@ renderAsOnlyText:
 				//////////
 				// Render through each line
 				//////
+					v.lnX = sem->scroll_htmlX;
+					v.lnY = sem->scroll_htmlY;
 					for (v.line = sem->line_top; v.line; v.line = v.line->ll.nextLine)
 					{
 						// Iterate through each line
@@ -3342,7 +3387,7 @@ renderAsOnlyText:
 							switch (v.comp->iCode)
 							{
 								case _ICODE_SEM_HTML_HTML:
-									if (v.comp->iCat == _ICAT_SEM_HTML_ATTRIBUTES)
+									if (v.comp->iCat == _ICAT_SEM_HTML_WITH_ATTRIBUTES)
 									{
 										// Has attributes
 										for (v.llFontChange = false; v.comp; v.comp = iComps_getNth(v.comp))
@@ -3409,7 +3454,7 @@ renderAsOnlyText:
 									// Moving to the next row
 									v.llLastOpMoved	= true;
 									v.lnY			+= v.lnLastHeight;
-									v.lnX			= 0;
+									v.lnX			= sem->scroll_htmlX;
 									break;
 
 								case _ICODE_SEM_HTML_FONT:
@@ -3588,7 +3633,7 @@ renderAsOnlyText:
 
 								default:
 									// It's something to render
-									v.lnPixelsRendered += iiSEM_renderAs_simpleHtml__addText(v, sem);
+									v.lnPixelsRendered += iiSEM_renderAs_simpleHtml__text(v, sem);
 									break;
 							}
 
@@ -3629,7 +3674,7 @@ renderAsOnlyText:
 
 						// When we end a line, add a space to separate things for the start of the next line
 						if (!v.llLastOpMoved)
-							v.lnPixelsRendered += iiSEM_renderAs_simpleHtml__addText(v, sem, " ", 1);
+							v.lnPixelsRendered += iiSEM_renderAs_simpleHtml__text(v, sem, " ", 1);
 					}
 
 			}
@@ -3641,10 +3686,11 @@ error_exit:
 		return(v.lnPixelsRendered);
 	}
 
-	u32 iiSEM_renderAs_simpleHtml__addText(__iSimpleHtml_vars& v, SEM* sem, s8* tcText, s32 tnTextLength, HBRUSH* hbr)
+	u32 iiSEM_renderAs_simpleHtml__text(__iSimpleHtml_vars& v, SEM* sem, s8* tcText, s32 tnTextLength, HBRUSH* hbr)
 	{
-		s32		lnTextLength;
+		s32		lnI, lnTextLength;
 		RECT	lrc, lrc2;
+		HPEN	hpenOld;
 		s8*		lcText;
 					
 
@@ -3652,16 +3698,21 @@ error_exit:
 		// Determine colors
 		//////
 			SelectObject(v.bmp->hdc, v.font->hfont);
-			if (v.line == sem->line_cursor)
+			if (v.llInAHrefBlock)
 			{
+				// Inside an <a href>..</a> block
+				SetTextColor(v.bmp->hdc,	RGB(v.colorLink.red,	v.colorLink.grn,	v.colorLink.blu));
+				SetBkColor(v.bmp->hdc,		RGB(v.bgcolorLink.red,	v.bgcolorLink.grn,	v.bgcolorLink.blu));
+
+			} else if (v.line == sem->line_cursor) {
 				// Cursor line
-				SetTextColor(v.bmp->hdc, RGB(v.colorHighlight.red, v.colorHighlight.grn, v.colorHighlight.blu));
-				SetBkColor(v.bmp->hdc, RGB(v.bgcolorHighlight.red, v.bgcolorHighlight.grn, v.bgcolorHighlight.blu));
+				SetTextColor(v.bmp->hdc,	RGB(v.colorHighlight.red,	v.colorHighlight.grn,	v.colorHighlight.blu));
+				SetBkColor(v.bmp->hdc,		RGB(v.bgcolorHighlight.red,	v.bgcolorHighlight.grn,	v.bgcolorHighlight.blu));
 
 			} else {
 				// Regular line
-				SetTextColor(v.bmp->hdc, RGB(v.color.red, v.color.grn, v.color.blu));
-				SetBkColor(v.bmp->hdc, RGB(v.bgcolor.red, v.bgcolor.grn, v.bgcolor.blu));
+				SetTextColor(v.bmp->hdc,	RGB(v.color.red,	v.color.grn,	v.color.blu));
+				SetBkColor(v.bmp->hdc,		RGB(v.bgcolor.red,	v.bgcolor.grn,	v.bgcolor.blu));
 			}
 			SetBkMode(v.bmp->hdc, OPAQUE);
 
@@ -3693,15 +3744,15 @@ error_exit:
 		// Wrap if we need to
 		//////
 			SetRect(&lrc2, v.lnX, v.lnY, v.lnX + lrc.right - lrc.left, v.lnY + lrc.bottom - lrc.top);
-			if (lrc2.left != 0 && lrc2.right > v.lnWidth)
+			if (lrc2.left != 0 && lrc2.right > v.lnWidth - sem->scroll_htmlX)
 			{
 				// Move down a row, and to the left margin
-				lrc2.left	= 0;
+				lrc2.left	= sem->scroll_htmlX;
 				lrc2.right	= lrc.right - lrc2.left;
 				OffsetRect(&lrc2, 0, v.lnLastHeight);
 
 				// Adjust official y,x
-				v.lnX = 0;
+				v.lnX = sem->scroll_htmlX;
 				v.lnY += v.lnLastHeight;
 			}
 
@@ -3710,7 +3761,7 @@ error_exit:
 		// If we're in an <a></a> block, capture the RECT
 		//////
 			if (v.llInAHrefBlock)
-				iiSEM_renderAs_simpleHtml__addRect_to_aHref(v, sem, &lrc2);
+				iiSEM_renderAs_simpleHtml__aHref_addRect(v, sem, &lrc2);
 
 
 		//////////
@@ -3722,6 +3773,23 @@ error_exit:
 				// Draw a border around it
 				InflateRect(&lrc2, -1, -1);
 				FrameRect(v.bmp->hdc, &lrc2, *hbr);
+			}
+
+			// If we're in an <a href>..</a> block, put an underline beneath it
+			if (v.llInAHrefBlock)
+			{
+				// Draw an underline beneath the link
+				hpenOld	= (HPEN)SelectObject(v.bmp->hdc, CreatePen(PS_SOLID, 1, RGB(v.colorLink.red, v.colorLink.grn, v.colorLink.blu)));
+
+				// Draw the underline
+				for (lnI = 0; lnI < 2; lnI++)
+				{
+					MoveToEx(v.bmp->hdc,	lrc2.left,	lrc2.bottom - lnI,	NULL);
+					LineTo(v.bmp->hdc,		lrc2.right,	lrc2.bottom - lnI);
+				}
+
+				// Reset the pen
+				SelectObject(v.bmp->hdc, hpenOld);
 			}
 
 
@@ -3815,7 +3883,7 @@ error_exit:
 	void iiSEM_renderAs_simpleHtml__getFont(__iSimpleHtml_vars& v)
 	{
 		// Iterate through
-		if (v.comp->iCat == _ICAT_SEM_HTML_ATTRIBUTES)
+		if (v.comp->iCat == _ICAT_SEM_HTML_WITH_ATTRIBUTES)
 		{
 			// There are attributes
 			for ( ; v.comp; v.comp = iComps_getNth(v.comp))
@@ -3958,7 +4026,7 @@ error_exit:
 // Create a font and add it to the list of fonts we've created for this render
 //
 //////
-	SFont* iSEM_renderAs_simpleHtml__addFont(__iSimpleHtml_vars& v)
+	SFont* iiSEM_renderAs_simpleHtml__addFont(__iSimpleHtml_vars& v)
 	{
 		// Create the font
 		return(iFont_create(v.lcFontName, v.lnFontSize, v.lnFontWeight, v.lnFontItalics, v.lnFontUnderline));
@@ -4074,6 +4142,9 @@ error_exit:
 //////
 	void iiSEM_renderAs_simpleHtml__aHref(__iSimpleHtml_vars& v, SEM* sem)
 	{
+		SComp*	compHref;
+
+
 		// Only continue if we're not already in an <a> block
 		if (!v.llInAHrefBlock)
 		{
@@ -4084,9 +4155,13 @@ error_exit:
 			if (!sem->aHrefRects)
 				iBuilder_createAndInitialize(&sem->aHrefRects);
 
-			// Create a new rectangle entry in the current slot
-			if (!sem->aHrefRect)
-
+			// If we're valid...
+			if (sem->aHrefRects && (sem->aHrefRect = (SSEM_aHref*)iBuilder_allocateBytes(sem->aHrefRects, sizeof(SSEM_aHref))))
+			{
+				// Locate the href component
+				if ((compHref = iComps_findNextBy_iCode(v.comp->firstCombined, _ICODE_SEM_HTML_HREF)))
+					iDatum_duplicate(&sem->aHrefRect->href, compHref->line->sourceCode->data_s8 + compHref->start, compHref->length);
+			}
 		}
 	}
 
@@ -4098,8 +4173,15 @@ error_exit:
 // Storing the aHref rectangle to the current entry
 //
 //////
-	void iiSEM_renderAs_simpleHtml__addRect_to_aHref(__iSimpleHtml_vars& v, SEM* sem, RECT* rc)
+	void iiSEM_renderAs_simpleHtml__aHref_addRect(__iSimpleHtml_vars& v, SEM* sem, RECT* rc)
 	{
+		RECT* lrc;
+
+
+		// Add it
+		lrc = (RECT*)iBuilder_allocateBytes(sem->aHrefRect->rcArray, sizeof(RECT));
+		if (lrc)
+			CopyRect(lrc, rc);
 	}
 
 

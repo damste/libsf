@@ -3350,7 +3350,7 @@ if (tniCodeNeedle == _ICODE_SINGLE_QUOTE)
 
 							// See what it is
 							llValid = false;
-							if (compTest1->iCode == _ICODE_ALPHA || compTest1->iCode == _ICODE_ALPHANUMERIC)
+							if (compTest1->iCode == _ICODE_ALPHA || compTest1->iCode == _ICODE_ALPHANUMERIC || compTest1->iCat == _ICAT_SEM_HTML_ATTRIBUTE)
 							{
 								// It's x..
 								if (compTest2 && compTest2->iCode == _ICODE_EQUAL_SIGN && compTest3)
@@ -3364,21 +3364,28 @@ if (tniCodeNeedle == _ICODE_SINGLE_QUOTE)
 										case _ICODE_SINGLE_QUOTED_TEXT:
 										case _ICODE_DOUBLE_QUOTED_TEXT:
 											// It's x=something valid
-											llValid = true;
+											llValid		= true;
 											lnCountAdd	+= 3;
+
+											// Skip forward two to the last parameter
+											compTest1 = iComps_getNth(compTest1, 2);
 											break;
+
+										default:
+											// Invalid
+											return;
 									}
 								}
 
 							} else if (compTest1->iCode == _ICODE_GREATER_THAN) {
 								// It's >
-								++lnCountAdd;
+								// Note:  The count for this is already included in the encapsulated 3, which is <x> in general
 								llValid		= true;
 								llFinished	= true;
 
 							} else if (compTest1->iCode == _ICODE_SLASH && compTest2 && compTest2->iCode == _ICODE_GREATER_THAN) {
 								// It's />
-								lnCountAdd	+= 2;
+								++lnCountAdd;		// Note:  The count for this is already partially included in the encapsulated 3, which is <x>, so we only add 1 for / in <x/>
 								llValid		= true;
 								llFinished	= true;
 
@@ -3462,29 +3469,41 @@ if (tniCodeNeedle == _ICODE_SINGLE_QUOTE)
 								if (_memicmp(ptr, "hr", 2) == 0)
 								{
 									// <hr>
-									iComps_combineN(comp, 3 + lnCountAdd, _ICODE_SEM_HTML_HR, _ICAT_SEM_HTML, comp->color, &comp->firstCombined);
+									iComps_combineN(comp, 3 + lnCountAdd,
+													_ICODE_SEM_HTML_HR,
+													_ICAT_SEM_HTML,
+													comp->color,
+													&comp->firstCombined);
 
 								} else if (_memicmp(ptr, "br", 2) == 0) {
 									// <br>
-									iComps_combineN(comp, 3 + lnCountAdd, _ICODE_SEM_HTML_BR, _ICAT_SEM_HTML, comp->color, &comp->firstCombined);
+									iComps_combineN(comp, 3 + lnCountAdd,
+													_ICODE_SEM_HTML_BR,
+													_ICAT_SEM_HTML,
+													comp->color,
+													&comp->firstCombined);
 
 								} else if (_memicmp(ptr, "tt", 2) == 0) {
 									// <tt>
-									iComps_combineN(comp, 3 + lnCountAdd, ((llCloser) ? _ICODE_SEM_HTML_TTT : _ICODE_SEM_HTML_TT), _ICAT_SEM_HTML, comp->color, &comp->firstCombined);
+									iComps_combineN(comp, 3 + lnCountAdd,
+													((llCloser) ? _ICODE_SEM_HTML_TTT : _ICODE_SEM_HTML_TT),
+													_ICAT_SEM_HTML,
+													comp->color,
+													&comp->firstCombined);
 
 								} else if (_memicmp(ptr, "tr", 2) == 0) {
 									// <tr..
 									iComps_combineN(comp, 3 + lnCountAdd, 
-													((llCloser)		? _ICODE_SEM_HTML_TTR		: _ICODE_SEM_HTML_TR),
-													((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML),
+													((llCloser)		? _ICODE_SEM_HTML_TTR				: _ICODE_SEM_HTML_TR),
+													((llAttributes)	? _ICAT_SEM_HTML_WITH_ATTRIBUTES	: _ICAT_SEM_HTML),
 													comp->color,
 													&comp->firstCombined);
 
 								} else if (_memicmp(ptr, "td", 2) == 0) {
 									// <td..
 									iComps_combineN(comp, 3 + lnCountAdd, 
-													((llCloser)		? _ICODE_SEM_HTML_TTD		: _ICODE_SEM_HTML_TD),
-													((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML),
+													((llCloser)		? _ICODE_SEM_HTML_TTD				: _ICODE_SEM_HTML_TD),
+													((llAttributes)	? _ICAT_SEM_HTML_WITH_ATTRIBUTES	: _ICAT_SEM_HTML),
 													comp->color,
 													&comp->firstCombined);
 								}
@@ -3496,32 +3515,32 @@ if (tniCodeNeedle == _ICODE_SINGLE_QUOTE)
 								{
 									// <html..
 									iComps_combineN(comp, 3 + lnCountAdd, 
-													((llCloser)		? _ICODE_SEM_HTML_THTML		: _ICODE_SEM_HTML_HTML),
-													((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML),
+													((llCloser)		? _ICODE_SEM_HTML_THTML				: _ICODE_SEM_HTML_HTML),
+													((llAttributes)	? _ICAT_SEM_HTML_WITH_ATTRIBUTES	: _ICAT_SEM_HTML),
 													comp->color,
 													&comp->firstCombined);
 
 								} else if (_memicmp(ptr, "font", 4) == 0) {
 									// <font..
 									iComps_combineN(comp, 3 + lnCountAdd, 
-													((llCloser)		? _ICODE_SEM_HTML_TFONT		: _ICODE_SEM_HTML_FONT),
-													((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML),
+													((llCloser)		? _ICODE_SEM_HTML_TFONT				: _ICODE_SEM_HTML_FONT),
+													((llAttributes)	? _ICAT_SEM_HTML_WITH_ATTRIBUTES	: _ICAT_SEM_HTML),
 													comp->color,
 													&comp->firstCombined);
 
 								} else if (_memicmp(ptr, "name", 4) == 0) {
 									// <name..
 									iComps_combineN(comp, 3 + lnCountAdd, 
-													((llCloser)		? _ICODE_SEM_HTML_TNAME		: _ICODE_SEM_HTML_NAME),
-													((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML),
+													((llCloser)		? _ICODE_SEM_HTML_TNAME				: _ICODE_SEM_HTML_NAME),
+													((llAttributes)	? _ICAT_SEM_HTML_WITH_ATTRIBUTES	: _ICAT_SEM_HTML),
 													comp->color,
 													&comp->firstCombined);
 
 								} else if (_memicmp(ptr, "size", 4) == 0) {
 									// <size..
 									iComps_combineN(comp, 3 + lnCountAdd, 
-													((llCloser)		? _ICODE_SEM_HTML_TSIZE		: _ICODE_SEM_HTML_SIZE),
-													((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML),
+													((llCloser)		? _ICODE_SEM_HTML_TSIZE				: _ICODE_SEM_HTML_SIZE),
+													((llAttributes)	? _ICAT_SEM_HTML_WITH_ATTRIBUTES	: _ICAT_SEM_HTML),
 													comp->color,
 													&comp->firstCombined);
 								}
@@ -3533,32 +3552,32 @@ if (tniCodeNeedle == _ICODE_SINGLE_QUOTE)
 								{
 									// <table..
 									iComps_combineN(comp, 3 + lnCountAdd, 
-													((llCloser)		? _ICODE_SEM_HTML_TTABLE	: _ICODE_SEM_HTML_TABLE),
-													((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML),
+													((llCloser)		? _ICODE_SEM_HTML_TTABLE			: _ICODE_SEM_HTML_TABLE),
+													((llAttributes)	? _ICAT_SEM_HTML_WITH_ATTRIBUTES	: _ICAT_SEM_HTML),
 													comp->color,
 													&comp->firstCombined);
 
 								} else  if (_memicmp(ptr, "color", 5) == 0) {
 									// <color..
 									iComps_combineN(comp, 3 + lnCountAdd, 
-													((llCloser)		? _ICODE_SEM_HTML_TCOLOR	: _ICODE_SEM_HTML_COLOR),
-													((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML),
+													((llCloser)		? _ICODE_SEM_HTML_TCOLOR			: _ICODE_SEM_HTML_COLOR),
+													((llAttributes)	? _ICAT_SEM_HTML_WITH_ATTRIBUTES	: _ICAT_SEM_HTML),
 													comp->color,
 													&comp->firstCombined);
 
 								} else  if (_memicmp(ptr, "align", 5) == 0) {
 									// <align..
 									iComps_combineN(comp, 3 + lnCountAdd, 
-													((llCloser)		? _ICODE_SEM_HTML_TALIGN	: _ICODE_SEM_HTML_ALIGN),
-													((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML),
+													((llCloser)		? _ICODE_SEM_HTML_TALIGN			: _ICODE_SEM_HTML_ALIGN),
+													((llAttributes)	? _ICAT_SEM_HTML_WITH_ATTRIBUTES	: _ICAT_SEM_HTML),
 													comp->color,
 													&comp->firstCombined);
 
 								} else  if (_memicmp(ptr, "width", 5) == 0) {
 									// <width..
 									iComps_combineN(comp, 3 + lnCountAdd, 
-													((llCloser)		? _ICODE_SEM_HTML_TWIDTH	: _ICODE_SEM_HTML_WIDTH),
-													((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML),
+													((llCloser)		? _ICODE_SEM_HTML_TWIDTH			: _ICODE_SEM_HTML_WIDTH),
+													((llAttributes)	? _ICAT_SEM_HTML_WITH_ATTRIBUTES	: _ICAT_SEM_HTML),
 													comp->color,
 													&comp->firstCombined);
 								}
@@ -3570,16 +3589,16 @@ if (tniCodeNeedle == _ICODE_SINGLE_QUOTE)
 								{
 									// <valign..
 									iComps_combineN(comp, 3 + lnCountAdd, 
-													((llCloser)		? _ICODE_SEM_HTML_TVALIGN	: _ICODE_SEM_HTML_VALIGN),
-													((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML),
+													((llCloser)		? _ICODE_SEM_HTML_TVALIGN			: _ICODE_SEM_HTML_VALIGN),
+													((llAttributes)	? _ICAT_SEM_HTML_WITH_ATTRIBUTES	: _ICAT_SEM_HTML),
 													comp->color,
 													&comp->firstCombined);
 
 								} else  if (_memicmp(ptr, "height", 6) == 0) {
 									// <height..
 									iComps_combineN(comp, 3 + lnCountAdd, 
-													((llCloser)		? _ICODE_SEM_HTML_THEIGHT	: _ICODE_SEM_HTML_HEIGHT),
-													((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML),
+													((llCloser)		? _ICODE_SEM_HTML_THEIGHT			: _ICODE_SEM_HTML_HEIGHT),
+													((llAttributes)	? _ICAT_SEM_HTML_WITH_ATTRIBUTES	: _ICAT_SEM_HTML),
 													comp->color,
 													&comp->firstCombined);
 								}
@@ -3591,8 +3610,8 @@ if (tniCodeNeedle == _ICODE_SINGLE_QUOTE)
 								{
 									// <bgcolor..
 									iComps_combineN(comp, 3 + lnCountAdd, 
-													((llCloser)		? _ICODE_SEM_HTML_TBGCOLOR	: _ICODE_SEM_HTML_BGCOLOR),
-													((llAttributes)	? _ICAT_SEM_HTML_ATTRIBUTES	: _ICAT_SEM_HTML),
+													((llCloser)		? _ICODE_SEM_HTML_TBGCOLOR			: _ICODE_SEM_HTML_BGCOLOR),
+													((llAttributes)	? _ICAT_SEM_HTML_WITH_ATTRIBUTES	: _ICAT_SEM_HTML),
 													comp->color,
 													&comp->firstCombined);
 								}
