@@ -355,6 +355,7 @@
 	void					iiSEM_simpleHtml_renderAs__aHref_addRect	(__iSimpleHtml_vars& v, SEM* sem, RECT* rc);
 	void					iiSEM_simpleHtml__hotTrack_mouseMoves		(SWindow* win, SObject* obj, SEM* sem, s32 tnX, s32 tnY, bool tlCtrl, bool tlAlt, bool tlShift, s32 tnClick);
 	void					iiSEM_simpleHtml__hotTrack_mouseDown		(SWindow* win, SObject* obj, SEM* sem, s32 tnX, s32 tnY, bool tlCtrl, bool tlAlt, bool tlShift, s32 tnClick);
+	void					iSEM_simpleHtml__dispatchDllfunc			(s8* url, s32 tnLength, s8* defaultFunc);
 
 
 	// Editor movements

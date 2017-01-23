@@ -526,6 +526,10 @@ struct SBasePropMap;
 	const s8		cgc_http[]												= "http://";
 	const s8		cgc_https[]												= "https://";
 	const s8		cgc_mailto[]											= "mailto://";
+	const s8		cgc_dllfunc[]											= "dllfunc://";
+	const s8		cgc_dlfunc_mouseMove[]									= "dllfunc_mousemove";		// Default dllfunc://dllname.dll::function() for mouse move events
+	const s8		cgc_dlfunc_mouseDown[]									= "dllfunc_mousedown";		// Default dllfunc://dllname.dll::function() for mouse down events
+	const s8		cgc_dlfunc_mouseUp[]									= "dllfunc_mouseup";		// Default dllfunc://dllname.dll::function() for mouse up events
 
 	// Note:  The value 0 is used for the terminator in variable-length lists, so the values here must begin at 1.
 	// Note:  Because the values here begin at 1, every reference that is direct must be referenced as gsProps_master[_INDEX_WHATEVER - 1].

@@ -4331,7 +4331,8 @@ error_exit:
 
 								} else {
 									// Dispatch it internally
-// TODO:  Need to figure out how to handle "internal messages"
+									iSEM_simpleHtml__dispatchDllfunc(url, lnLength, (s8*)cgc_dlfunc_mouseDown);
+									// Note:  We will silently fail
 								}
 
 								// All done
@@ -4345,6 +4346,108 @@ error_exit:
 				// End
 				iterate_end;
 			}
+		}
+	}
+
+
+
+
+//////////
+//
+// Called to dispatch a dllfunc://c:/full/path/to/whatever.dll::function()
+//
+// TODO:  We can add parameters here by name, allowing for a limited interface of
+//        sent information (hwnd, mouse coordinates, buttons, keyboard status, etc.)
+//
+//////
+	void iSEM_simpleHtml__dispatchDllfunc(s8* url, s32 tnLength, s8* defaultFunc)
+	{
+		s8		c;
+		s32		lnI;
+		bool	llColonColonFound;
+		HMODULE	dllHandle;
+		s8		dllPathname[_MAX_PATH];
+		s8		dllFunc[128];
+		union {
+			uptr	_dllDispatchFunc;
+			void	(*dllDispatchFunc)(void);
+		};
+
+
+		// Make sure it's dllfunc://
+		if (url && defaultFunc && tnLength > sizeof(cgc_dllfunc) - 1 && _memicmp(url, cgc_dllfunc, sizeof(cgc_dllfunc) - 1))
+		{
+
+			//////////
+			// Skip past the dllfunc:// portion
+			//////
+				url += sizeof(cgc_dllfunc) - 1;
+
+
+			//////////
+			// DLL pathname
+			//////
+				// Convert every / character to a \, and copy forward to the ::
+				llColonColonFound = false;
+				for (lnI = 0; lnI < tnLength; lnI++)
+				{
+					// Grab this character
+					c = url[lnI];
+
+					// Process
+					if (c == '/')
+					{
+						// Convert to backslash
+						c = '\\';
+
+					} else if (c == ':') {
+						// It's a colon
+						if (url[lnI + 1] == ':')
+						{
+							// We've reached the function
+							llColonColonFound = true;
+							break;
+						}
+					}
+
+					// Store the character
+					dllPathname[lnI] = c;
+				}
+				// When we get here, we have the dll name
+
+
+			//////////
+			// Function
+			//////
+				memset(dllFunc, 0, sizeof(dllFunc));
+				if (llColonColonFound)
+				{
+					// Extract the function
+					memcpy(dllFunc, url + 2, tnLength - 2);
+
+				} else {
+					// Use the default function
+					memcpy(dllFunc, defaultFunc, strlen(defaultFunc));
+				}
+
+
+			//////////
+			// Open the dll
+			//////
+				dllHandle = LoadLibrary(dllPathname);
+				if (dllHandle)
+				{
+					// Locate the procedure
+					_dllDispatchFunc = (uptr)GetProcAddress(dllHandle, dllFunc);
+
+					// Dispatch into the DLL
+					if (_dllDispatchFunc)
+						dllDispatchFunc();
+
+					// All done
+					FreeLibrary(dllHandle);
+				}
+
 		}
 	}
 
