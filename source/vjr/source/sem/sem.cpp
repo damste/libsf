@@ -3782,8 +3782,13 @@ error_exit:
 				hpenOld	= (HPEN)SelectObject(v.bmp->hdc, CreatePen(PS_SOLID, 1, RGB(v.colorLink.red, v.colorLink.grn, v.colorLink.blu)));
 
 				// Draw the underline
-				for (lnI = 0; lnI < 2; lnI++)
+				for (lnI = 1; lnI < 2; lnI++)
 				{
+// 					// Top line
+// 					MoveToEx(v.bmp->hdc,	lrc2.left,	lrc2.top + lnI,	NULL);
+// 					LineTo(v.bmp->hdc,		lrc2.right,	lrc2.top + lnI);
+
+					// Bottom line
 					MoveToEx(v.bmp->hdc,	lrc2.left,	lrc2.bottom - lnI,	NULL);
 					LineTo(v.bmp->hdc,		lrc2.right,	lrc2.bottom - lnI);
 				}

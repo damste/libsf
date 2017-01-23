@@ -525,7 +525,7 @@ struct SBasePropMap;
 
 	const s8		cgc_http[]												= "http://";
 	const s8		cgc_https[]												= "https://";
-	const s8		cgc_mailto[]											= "mailto://";
+	const s8		cgc_mailto[]											= "mailto:";
 	const s8		cgc_dllfunc[]											= "dllfunc://";
 	const s8		cgc_dlfunc_mouseMove[]									= "dllfunc_mousemove";		// Default dllfunc://dllname.dll::function() for mouse move events
 	const s8		cgc_dlfunc_mouseDown[]									= "dllfunc_mousedown";		// Default dllfunc://dllname.dll::function() for mouse down events
