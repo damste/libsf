@@ -331,7 +331,7 @@ iDisk_deleteFile((cs8*)cgcScreenDataFilename);
 			iVjr_appendSystemLog((u8*)"Populate _screen with default data");
 			iSEM_appendLine(screenData, (u8*)cgcScreenTitle);
 			iSEM_appendLine(screenData, (u8*)"<br>");
-			iSEM_appendLine(screenData, (u8*)"Please report any bugs:  <a href=\"http://www.visual-freepro.org/vjr\">Visual FreePro, Jr. Website</a><br>");
+			iSEM_appendLine(screenData, (u8*)"Please report any bugs:  <b><a href=\"http://www.visual-freepro.org/vjr\">Visual FreePro, Jr. Website</a></b><br>");
 			iSEM_appendLine(screenData, (u8*)"Thank you, and may the <color=\"D00\"><b>Lord Jesus Christ</b><color=\"000\"> bless you richly. <bgcolor=\"FF0\"><m>:-)</m><bgcolor=\"FFF\"><br>");
 			iSEM_appendLine(screenData, (u8*)"<m><s=10><br>");
 			iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"ffe030\">              <bgcolor=\"f02020\">                   <bgcolor=\"FFF\"><br>");

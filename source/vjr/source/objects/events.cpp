@@ -205,12 +205,12 @@
 		//////////
 		// Prepare for dispatch
 		//////
-			iVariable_set_s32		(obj->ev.varX_onMouseMove,		x);
-			iVariable_set_s32		(obj->ev.varY_onMouseMove,		y);
+			iVariable_set_s32		(obj->ev.varX_onMouseMove,			x);
+			iVariable_set_s32		(obj->ev.varY_onMouseMove,			y);
 			iVariable_set_logical	(obj->ev.varCtrl_onMouseMove,		((tlCtrl)	? _LOGICAL_TRUE : _LOGICAL_FALSE));
 			iVariable_set_logical	(obj->ev.varAlt_onMouseMove,		((tlAlt)	? _LOGICAL_TRUE : _LOGICAL_FALSE));
-			iVariable_set_logical	(obj->ev.varShift_onMouseMove,	((tlShift)	? _LOGICAL_TRUE : _LOGICAL_FALSE));
-			iVariable_set_s32		(obj->ev.varClick_onMouseMove,	tnClicks);
+			iVariable_set_logical	(obj->ev.varShift_onMouseMove,		((tlShift)	? _LOGICAL_TRUE : _LOGICAL_FALSE));
+			iVariable_set_s32		(obj->ev.varClick_onMouseMove,		tnClicks);
 
 
 		//////////
@@ -264,7 +264,7 @@
 			iVariable_set_s32		(obj->ev.varX_onMouseClickEx,			x);
 			iVariable_set_s32		(obj->ev.varY_onMouseClickEx,			y);
 			iVariable_set_logical	(obj->ev.varCtrl_onMouseClickEx,		((tlCtrl)	? _LOGICAL_TRUE : _LOGICAL_FALSE));
-			iVariable_set_logical	(obj->ev.varAlt_onMouseClickEx,		((tlAlt)	? _LOGICAL_TRUE : _LOGICAL_FALSE));
+			iVariable_set_logical	(obj->ev.varAlt_onMouseClickEx,			((tlAlt)	? _LOGICAL_TRUE : _LOGICAL_FALSE));
 			iVariable_set_logical	(obj->ev.varShift_onMouseClickEx,		((tlShift)	? _LOGICAL_TRUE : _LOGICAL_FALSE));
 			iVariable_set_s32		(obj->ev.varClick_onMouseClickEx,		tnClicks);
 
@@ -291,8 +291,8 @@
 		//////
 			iVariable_set_s32		(obj->ev.varX_onMouseUp,			x);
 			iVariable_set_s32		(obj->ev.varY_onMouseUp,			y);
-			iVariable_set_logical	(obj->ev.varCtrl_onMouseUp,		((tlCtrl)	? _LOGICAL_TRUE : _LOGICAL_FALSE));
-			iVariable_set_logical	(obj->ev.varAlt_onMouseUp,		((tlAlt)	? _LOGICAL_TRUE : _LOGICAL_FALSE));
+			iVariable_set_logical	(obj->ev.varCtrl_onMouseUp,			((tlCtrl)	? _LOGICAL_TRUE : _LOGICAL_FALSE));
+			iVariable_set_logical	(obj->ev.varAlt_onMouseUp,			((tlAlt)	? _LOGICAL_TRUE : _LOGICAL_FALSE));
 			iVariable_set_logical	(obj->ev.varShift_onMouseUp,		((tlShift)	? _LOGICAL_TRUE : _LOGICAL_FALSE));
 			iVariable_set_s32		(obj->ev.varClick_onMouseUp,		tnClicks);
 
@@ -320,10 +320,10 @@
 			iVariable_set_s32		(obj->ev.varX_onMouseWheel,			x);
 			iVariable_set_s32		(obj->ev.varY_onMouseWheel,			y);
 			iVariable_set_logical	(obj->ev.varCtrl_onMouseWheel,		((tlCtrl)	? _LOGICAL_TRUE : _LOGICAL_FALSE));
-			iVariable_set_logical	(obj->ev.varAlt_onMouseWheel,			((tlAlt)	? _LOGICAL_TRUE : _LOGICAL_FALSE));
+			iVariable_set_logical	(obj->ev.varAlt_onMouseWheel,		((tlAlt)	? _LOGICAL_TRUE : _LOGICAL_FALSE));
 			iVariable_set_logical	(obj->ev.varShift_onMouseWheel,		((tlShift)	? _LOGICAL_TRUE : _LOGICAL_FALSE));
 			iVariable_set_s32		(obj->ev.varClick_onMouseWheel,		tnClicks);
-			iVariable_set_s32		(obj->ev.varDeltaY_onMouseWheel,		tnDeltaY);
+			iVariable_set_s32		(obj->ev.varDeltaY_onMouseWheel,	tnDeltaY);
 
 
 		//////////
@@ -378,11 +378,11 @@
 		//////
 			iVariable_set_logical	(obj->ev.varCtrl_onKeyUp,			((tlCtrl)		? _LOGICAL_TRUE : _LOGICAL_FALSE));
 			iVariable_set_logical	(obj->ev.varAlt_onKeyUp,			((tlAlt)		? _LOGICAL_TRUE : _LOGICAL_FALSE));
-			iVariable_set_logical	(obj->ev.varShift_onKeyUp,		((tlShift)		? _LOGICAL_TRUE : _LOGICAL_FALSE));
+			iVariable_set_logical	(obj->ev.varShift_onKeyUp,			((tlShift)		? _LOGICAL_TRUE : _LOGICAL_FALSE));
 			iVariable_set_logical	(obj->ev.varCaps_onKeyUp,			((tlCaps)		? _LOGICAL_TRUE : _LOGICAL_FALSE));
-			iVariable_set_u16		(obj->ev.varAsciiChar_onKeyUp,	tnAsciiChar);
+			iVariable_set_u16		(obj->ev.varAsciiChar_onKeyUp,		tnAsciiChar);
 			iVariable_set_s16		(obj->ev.varVKey_onKeyUp,			tvKey);
-			iVariable_set_logical	(obj->ev.varIsCAS_onKeyUp,		((tlIsCAS)		? _LOGICAL_TRUE : _LOGICAL_FALSE));
+			iVariable_set_logical	(obj->ev.varIsCAS_onKeyUp,			((tlIsCAS)		? _LOGICAL_TRUE : _LOGICAL_FALSE));
 			iVariable_set_logical	(obj->ev.varIsAscii_onKeyUp,		((tlIsAscii)	? _LOGICAL_TRUE : _LOGICAL_FALSE));
 
 

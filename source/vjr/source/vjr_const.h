@@ -213,6 +213,7 @@ typedef SEM**		SEMpp;
 	#define propClassLibrary(obj)						iObjProp_get_character			(obj, _INDEX_CLASSLIBRARY)
 	#define propForeColor(obj)							iObjProp_get_sbgra_direct		(obj, _INDEX_FORECOLOR)
 	#define propMargin(obj)								iObjProp_get_s32_direct			(obj, _INDEX_MARGIN)
+	#define propMousePointer(obj)						iObjProp_get_s32_direct			(obj, _INDEX_MOUSEPOINTER);
 	#define propName(obj)								iObjProp_get_character			(obj, _INDEX_NAME);
 	#define propNeRgba(obj)								iObjProp_get_sbgra_direct		(obj, _INDEX_NECOLOR)
 	#define propNwRgba(obj)								iObjProp_get_sbgra_direct		(obj, _INDEX_NWCOLOR)
@@ -1163,6 +1164,7 @@ typedef SEM**		SEMpp;
 //////
 #ifdef WM_USER
 	const u32			WMVJR_FIRST_CREATION				= WM_USER + 1;
+	const u32			WMVJR_SET_MOUSE_POINTER				= WM_USER + 2;
 #endif
 
 

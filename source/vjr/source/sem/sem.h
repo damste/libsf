@@ -339,20 +339,22 @@
 
 	// Simple HTML
 	struct __iSimpleHtml_vars;
-	u32						iSEM_renderAs_simpleHtml					(SEM* sem, SObject* obj, bool tlRenderCursorline);
-	u32						iiSEM_renderAs_simpleHtml__text				(__iSimpleHtml_vars& v, SEM* sem, s8* tcText = NULL, s32 tnTextLength = 0, HBRUSH* hbr = NULL);
-	void					iiSEM_renderAs_simpleHtml__getColor			(__iSimpleHtml_vars& v, bool tlBackColor = false);
-	void					iiSEM_renderAs_simpleHtml__getFont			(__iSimpleHtml_vars& v);
-	void					iiSEM_renderAs_simpleHtml__table_tr_td		(__iSimpleHtml_vars& v);
-	bool					iiSEM_renderAs_simpleHtml__applyZoom		(__iSimpleHtml_vars& v, SObject* obj);
-	bool					iiSEM_renderAs_simpleHtml__createBmp		(SBitmap** bmpp, SBitmap* bmpObj, s32 tnWidth, s32 tnHeight);
+	u32						iSEM_simpleHtml_renderAs					(SEM* sem, SObject* obj, bool tlRenderCursorline);
+	u32						iiSEM_simpleHtml_renderAs__text				(__iSimpleHtml_vars& v, SEM* sem, s8* tcText = NULL, s32 tnTextLength = 0, HBRUSH* hbr = NULL);
+	void					iiSEM_simpleHtml_renderAs__getColor			(__iSimpleHtml_vars& v, bool tlBackColor = false);
+	void					iiSEM_simpleHtml_renderAs__getFont			(__iSimpleHtml_vars& v);
+	void					iiSEM_simpleHtml_renderAs__table_tr_td		(__iSimpleHtml_vars& v);
+	bool					iiSEM_simpleHtml_renderAs__applyZoom		(__iSimpleHtml_vars& v, SObject* obj);
+	bool					iiSEM_simpleHtml_renderAs__createBmp		(SBitmap** bmpp, SBitmap* bmpObj, s32 tnWidth, s32 tnHeight);
 	void					iSEM_render_highlightSelectedComps			(SEM* sem, SComp* firstComp);
-	SFont*					iiSEM_renderAs_simpleHtml__addFont			(__iSimpleHtml_vars& v);
-	void					iiSEM_renderAs_simpleHtml__pushFontStack	(__iSimpleHtml_vars& v);
-	void					iiSEM_renderAs_simpleHtml__popFontStack		(__iSimpleHtml_vars& v);
-	void					iiSEM_renderAS_simpleHtml__fallBack			(__iSimpleHtml_vars& v);
-	void					iiSEM_renderAs_simpleHtml__aHref			(__iSimpleHtml_vars& v, SEM* sem);
-	void					iiSEM_renderAs_simpleHtml__aHref_addRect	(__iSimpleHtml_vars& v, SEM* sem, RECT* rc);
+	SFont*					iiSEM_simpleHtml_renderAs__addFont			(__iSimpleHtml_vars& v);
+	void					iiSEM_simpleHtml_renderAs__pushFontStack	(__iSimpleHtml_vars& v);
+	void					iiSEM_simpleHtml_renderAs__popFontStack		(__iSimpleHtml_vars& v);
+	void					iiSEM_simpleHtml_renderAs__fallBack			(__iSimpleHtml_vars& v);
+	void					iiSEM_simpleHtml_renderAs__aHref			(__iSimpleHtml_vars& v, SEM* sem);
+	void					iiSEM_simpleHtml_renderAs__aHref_addRect	(__iSimpleHtml_vars& v, SEM* sem, RECT* rc);
+	void					iiSEM_simpleHtml__hotTrack_mouseMoves		(SWindow* win, SObject* obj, SEM* sem, s32 tnX, s32 tnY, bool tlCtrl, bool tlAlt, bool tlShift, s32 tnClick);
+	void					iiSEM_simpleHtml__hotTrack_mouseDown		(SWindow* win, SObject* obj, SEM* sem, s32 tnX, s32 tnY, bool tlCtrl, bool tlAlt, bool tlShift, s32 tnClick);
 
 
 	// Editor movements

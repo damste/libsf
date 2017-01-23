@@ -1579,6 +1579,7 @@ debug_break;
 		SWindow*		win;
 		POINT			lpt;
 		HDC				lhdc;
+		HCURSOR			cursor;
 		PAINTSTRUCT		ps;
 
 
@@ -1591,6 +1592,12 @@ debug_break;
 			{
 				case WMVJR_FIRST_CREATION:
 					// Currently unused
+					break;
+
+				case WMVJR_SET_MOUSE_POINTER:
+					// Set it to the indicated form
+					if ((cursor = LoadCursor(NULL, iiWindow_setMousePointer_translateMousePointer((s32)w))))
+						SetCursor(((w == _MOUSE_POINTER_HIDE_POINTER) ? NULL : cursor));
 					break;
 
 				case WM_TIMER:
@@ -1802,6 +1809,9 @@ debug_break;
 						// If visible, show it
 						if (propIsVisible(obj))
 							ShowWindow(winNew->hwnd, SW_SHOW);
+
+						// Set the default mouse pointer
+						winNew->mousePointer = _MOUSE_POINTER_DEFAULT;
 
 
 					//////////
@@ -2198,6 +2208,103 @@ debug_break;
 
 		// If we get here, invalid
 		return(false);
+	}
+
+
+
+
+//////////
+//
+// Called to set the mouse pointer
+//
+//////
+	// Returns the old mouse pointer
+	s32 iWindow_setMousePointer(SWindow* win, s32 tnNewMousePointer)
+	{
+		s32 lnOldMousePointer;
+
+
+		// Make sure our environment is sane
+		if (win)
+		{
+			// Grab the original value
+			lnOldMousePointer = win->mousePointer;
+
+			// If they're setting a new value, do so
+			if (win->mousePointer != tnNewMousePointer)
+				SendMessage(win->hwnd, WMVJR_SET_MOUSE_POINTER, tnNewMousePointer, 0);
+
+			// Indicate what it was before
+			return(lnOldMousePointer);
+		}
+
+		// Indicate failure
+		return(-1);
+	}
+
+	LPSTR iiWindow_setMousePointer_translateMousePointer(s32 tnMousePointer)
+	{
+		switch (tnMousePointer)
+		{
+			case _MOUSE_POINTER_DEFAULT:
+			default:
+				return(IDC_ARROW);
+				break;
+			case _MOUSE_POINTER_ARROW1:
+				return(IDC_ARROW);
+				break;
+			case _MOUSE_POINTER_CROSS:
+				return(IDC_CROSS);
+				break;
+			case _MOUSE_POINTER_I_BEAM:
+				return(IDC_IBEAM);
+				break;
+			case _MOUSE_POINTER_ICON:
+				return(IDC_ICON);
+				break;
+			case _MOUSE_POINTER_SIZE:
+				return(IDC_SIZE);
+				break;
+			case _MOUSE_POINTER_SIZE_NE_SW:
+				return(IDC_SIZENESW);
+				break;
+			case _MOUSE_POINTER_SIZE_NS:
+				return(IDC_SIZENS);
+				break;
+			case _MOUSE_POINTER_SIZE_NW_SE:
+				return(IDC_SIZENWSE);
+				break;
+			case _MOUSE_POINTER_SIZE_W_E:
+				return(IDC_SIZEWE);
+				break;
+			case _MOUSE_POINTER_UP_ARROW:
+				return(IDC_UPARROW);
+				break;
+			case _MOUSE_POINTER_HOURGLASS:
+				return(IDC_WAIT);
+				break;
+			case _MOUSE_POINTER_NO_DROP:
+				return(IDC_NO);
+				break;
+			case _MOUSE_POINTER_HIDE_POINTER:
+				return(IDC_ARROW);
+				break;
+			case _MOUSE_POINTER_ARROW2:
+				return(IDC_ARROW);
+				break;
+			case _MOUSE_POINTER_HAND:
+				return(IDC_HAND);
+				break;
+			case _MOUSE_POINTER_DOWN_ARROW:
+				return(IDC_UPARROW);
+				break;
+			case _MOUSE_POINTER_MAGNIFYING_GLASS:
+				return(IDC_HELP);
+				break;
+			case _MOUSE_POINTER_CUSTOM:
+				return(IDC_ARROW);
+				break;
+		}
 	}
 
 

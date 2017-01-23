@@ -337,6 +337,11 @@
 				// Redraw our changes
 				iObj_setDirtyRender_ascent(obj, true);
 				iWindow_render(win, false);
+
+			} else if (lnClick == 0) {
+				// They are just moving over our window
+				// We need to track html windows to change the mouse pointer for mouse links, for example
+				iiSEM_simpleHtml__hotTrack_mouseMoves(win, obj, obj->p.sem, lnX, lnY, llCtrl, llAlt, llShift, lnClick);
 			}
 
 		} else if (obj->objType == _OBJ_TYPE_CAROUSEL) {
@@ -357,6 +362,7 @@
 		bool		llCtrl, llAlt, llShift;
 		POINT		pt;
 		SVariable*	valueMin;
+		SVariable*	varStyle;
 		SObject*	objRoot;
 
 
@@ -430,12 +436,19 @@
 			llResult = false;
 
 		} else if (obj->objType == _OBJ_TYPE_EDITBOX) {
-			// Need to navigate to the indicated x,y coordinate
-			iSEM_navigateTo_pixelXY(obj->p.sem, obj, lnX, lnY);
+			if (obj->p.sem->isSimpleHtml || ((varStyle = iObjProp_get(obj, _INDEX_STYLE)) && iiVariable_getAs_s32(varStyle) == _STYLE_HTML))
+			{
+				// We need to track html windows to change the mouse pointer for mouse links, for example
+				iiSEM_simpleHtml__hotTrack_mouseDown(win, obj, obj->p.sem, lnX, lnY, llCtrl, llAlt, llShift, lnClick);
 
-			// Mark the mouse activity
-			if (!llShift)		iSEM_selectStop(obj->p.sem);
-			else				iSEM_selectStart(obj->p.sem, _SEM_SELECT_MODE_ANCHOR);
+			} else {
+				// Need to navigate to the indicated x,y coordinate
+				iSEM_navigateTo_pixelXY(obj->p.sem, obj, lnX, lnY);
+
+				// Mark the mouse activity
+				if (!llShift)		iSEM_selectStop(obj->p.sem);
+				else				iSEM_selectStart(obj->p.sem, _SEM_SELECT_MODE_ANCHOR);
+			}
 
 			// Do not continue to propagate
 			llResult = false;

@@ -574,6 +574,8 @@ struct SObjEventMap;
 	void					iWindow_minimize						(SWindow* win);
 	void					iWindow_maximize						(SWindow* win);
 	bool					iWindow_isPointerValid					(SWindow* win);
+	s32						iWindow_setMousePointer					(SWindow* win, s32 tnNewMousePointer);
+	LPSTR					iiWindow_setMousePointer_translateMousePointer(s32 tnMousePointer);
 
 	void					iFocusHighlight_create					(SFocusHighlight* focus, RECT* rc);
 	void					iFocusHighlight_show					(SFocusHighlight* focus);

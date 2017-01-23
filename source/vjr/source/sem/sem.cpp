@@ -695,9 +695,9 @@ debug_break;
 							iterate(lnI, sem->aHrefRects, ahref, SSEM_aHref)
 							// Start
 
-								// Release the builder
-								if (ahref->rcArray)
-									iBuilder_freeAndRelease(&ahref->rcArray);
+								// Release the ahref content
+								if (ahref->href._data)		iDatum_delete(&sem->aHrefRect->href);
+								if (ahref->rcArray)			iBuilder_freeAndRelease(&ahref->rcArray);
 
 							// End
 							iterate_end
@@ -2115,7 +2115,7 @@ debug_break;
 		{
 			// Support for simple html
 			if (sem->isSimpleHtml || ((varStyle = iObjProp_get(obj, _INDEX_STYLE)) && iiVariable_getAs_s32(varStyle) == _STYLE_HTML))
-				return(iSEM_renderAs_simpleHtml(sem, obj, tlRenderCursorline));
+				return(iSEM_simpleHtml_renderAs(sem, obj, tlRenderCursorline));
 
 			// Get the top line and continue down as far as we can
 			line	= sem->line_top;
@@ -3292,7 +3292,7 @@ renderAsOnlyText:
 		__iSimpleHtml_iCodeStack	iCodeStack[1024];	// How deep we can go in nesting, like <html><font><tt><b><i>... would be 5 levels
 	};
 
-	u32 iSEM_renderAs_simpleHtml(SEM* sem, SObject* obj, bool tlRenderCursorline)
+	u32 iSEM_simpleHtml_renderAs(SEM* sem, SObject* obj, bool tlRenderCursorline)
 	{
 		__iSimpleHtml_vars v;		// Created as an internal struct (used only here) for simplified passed parameters
 
@@ -3340,11 +3340,11 @@ renderAsOnlyText:
 					v.lnHeight					= obj->bmp->bi.biHeight;
 
 					// Apply any zoom
-					v.llZoomed = iiSEM_renderAs_simpleHtml__applyZoom(v, obj);
+					v.llZoomed = iiSEM_simpleHtml_renderAs__applyZoom(v, obj);
 
 					// If it's the same size as the bitmap, use it, otherwise build a temporary one
 					v.bmp = NULL;
-					if (!iiSEM_renderAs_simpleHtml__createBmp(&v.bmp, obj->bmp, v.lnWidth, v.lnHeight))
+					if (!iiSEM_simpleHtml_renderAs__createBmp(&v.bmp, obj->bmp, v.lnWidth, v.lnHeight))
 						return(-1);
 
 
@@ -3356,7 +3356,7 @@ renderAsOnlyText:
 					v.lnFontWeight			= FW_NORMAL;
 					v.lnFontItalics			= 0;
 					v.lnFontUnderline		= 0;
-					v.font					= iiSEM_renderAs_simpleHtml__addFont(v);
+					v.font					= iiSEM_simpleHtml_renderAs__addFont(v);
 					v.defaultFont			= v.font;
 					v.lnFontStack			= -1;
 
@@ -3403,11 +3403,11 @@ renderAsOnlyText:
 											switch (v.comp->iCode)
 											{
 												case _ICODE_SEM_HTML_BGCOLOR:
-													iiSEM_renderAs_simpleHtml__getColor(v, true);
+													iiSEM_simpleHtml_renderAs__getColor(v, true);
 													break;
 
 												case _ICODE_SEM_HTML_COLOR:
-													iiSEM_renderAs_simpleHtml__getColor(v);
+													iiSEM_simpleHtml_renderAs__getColor(v);
 													break;
 
 												case _ICODE_SEM_HTML_HEIGHT:
@@ -3459,12 +3459,12 @@ renderAsOnlyText:
 
 								case _ICODE_SEM_HTML_FONT:
 									// Setting font parameters
-									iiSEM_renderAs_simpleHtml__getFont(v);
+									iiSEM_simpleHtml_renderAs__getFont(v);
 									break;
 
 								case _ICODE_SEM_HTML_TT:
 									// Switching to a monospace font in the current size
-									iiSEM_renderAs_simpleHtml__pushFontStack(v);
+									iiSEM_simpleHtml_renderAs__pushFontStack(v);
 									v.lcFontName	= (u8*)cgcFontName_defaultFixed;
 									v.font			= iFont_create(v.lcFontName, v.lnFontSize, v.lnFontWeight, v.lnFontItalics, v.lnFontUnderline);
 									v.llInTtBlock	= true;
@@ -3473,13 +3473,13 @@ renderAsOnlyText:
 								case _ICODE_SEM_HTML_TABLE:		// <table>
 								case _ICODE_SEM_HTML_TR:		// <tr>
 								case _ICODE_SEM_HTML_TD:		// <td>
-									iiSEM_renderAs_simpleHtml__table_tr_td(v);
+									iiSEM_simpleHtml_renderAs__table_tr_td(v);
 									break;
 
 								case _ICODE_SEM_HTML_A:
 									// <a>
 									// Turning on href link capturing
-									iiSEM_renderAs_simpleHtml__aHref(v, sem);
+									iiSEM_simpleHtml_renderAs__aHref(v, sem);
 									break;
 
 								case _ICODE_SEM_HTML_B:
@@ -3524,12 +3524,12 @@ renderAsOnlyText:
 
 								case _ICODE_SEM_HTML_BGCOLOR:
 									// Setting a hard background color
-									iiSEM_renderAs_simpleHtml__getColor(v, true);
+									iiSEM_simpleHtml_renderAs__getColor(v, true);
 									break;
 
 								case _ICODE_SEM_HTML_COLOR:
 									// Setting a hard foreground color
-									iiSEM_renderAs_simpleHtml__getColor(v);
+									iiSEM_simpleHtml_renderAs__getColor(v);
 									break;
 
 								case _ICODE_SEM_HTML_ALIGN:
@@ -3563,25 +3563,25 @@ renderAsOnlyText:
 
 								case _ICODE_SEM_HTML_THTML:
 									// </html>
-									iiSEM_renderAS_simpleHtml__fallBack(v);
+									iiSEM_simpleHtml_renderAs__fallBack(v);
 									break;
 
 								case _ICODE_SEM_HTML_TFONT:
 									// </font>
-									iiSEM_renderAs_simpleHtml__popFontStack(v);
-									iiSEM_renderAS_simpleHtml__fallBack(v);
+									iiSEM_simpleHtml_renderAs__popFontStack(v);
+									iiSEM_simpleHtml_renderAs__fallBack(v);
 									break;
 
 								case _ICODE_SEM_HTML_TTT:
 									// </tt>
-									iiSEM_renderAs_simpleHtml__popFontStack(v);
-									iiSEM_renderAS_simpleHtml__fallBack(v);
+									iiSEM_simpleHtml_renderAs__popFontStack(v);
+									iiSEM_simpleHtml_renderAs__fallBack(v);
 									break;
 
 								case _ICODE_SEM_HTML_TTABLE:	// </table>
 								case _ICODE_SEM_HTML_TTR:		// </tr>
 								case _ICODE_SEM_HTML_TTD:		// </td>
-									iiSEM_renderAs_simpleHtml__table_tr_td(v);
+									iiSEM_simpleHtml_renderAs__table_tr_td(v);
 									break;
 
 								case _ICODE_SEM_HTML_TA:
@@ -3628,12 +3628,12 @@ renderAsOnlyText:
 									break;
 								case _ICODE_SEM_HTML_TSIZE:
 									// </size>
-									iiSEM_renderAs_simpleHtml__popFontStack(v);
+									iiSEM_simpleHtml_renderAs__popFontStack(v);
 									break;
 
 								default:
 									// It's something to render
-									v.lnPixelsRendered += iiSEM_renderAs_simpleHtml__text(v, sem);
+									v.lnPixelsRendered += iiSEM_simpleHtml_renderAs__text(v, sem);
 									break;
 							}
 
@@ -3641,8 +3641,8 @@ renderAsOnlyText:
 							if (v.lnHeight != v.lnStartHeight && v.lnWidth != v.lnStartWidth)
 							{
 								// Adjust to the new height
-								v.llZoomed = iiSEM_renderAs_simpleHtml__applyZoom(v, obj);
-								if (!iiSEM_renderAs_simpleHtml__createBmp(&v.bmp, obj->bmp, v.lnWidth, v.lnHeight))
+								v.llZoomed = iiSEM_simpleHtml_renderAs__applyZoom(v, obj);
+								if (!iiSEM_simpleHtml_renderAs__createBmp(&v.bmp, obj->bmp, v.lnWidth, v.lnHeight))
 								{
 									// Memory error
 									v.lnPixelsRendered = _ERROR_OUT_OF_MEMORY;
@@ -3658,7 +3658,7 @@ renderAsOnlyText:
 							if (v.llFontChange)
 							{
 								// Save the current font
-								iiSEM_renderAs_simpleHtml__pushFontStack(v);
+								iiSEM_simpleHtml_renderAs__pushFontStack(v);
 
 								// Create the new font
 								v.font = iFont_create(v.lcFontName, v.lnFontSize, v.lnFontWeight, v.lnFontItalics, v.lnFontUnderline);
@@ -3674,7 +3674,7 @@ renderAsOnlyText:
 
 						// When we end a line, add a space to separate things for the start of the next line
 						if (!v.llLastOpMoved)
-							v.lnPixelsRendered += iiSEM_renderAs_simpleHtml__text(v, sem, " ", 1);
+							v.lnPixelsRendered += iiSEM_simpleHtml_renderAs__text(v, sem, " ", 1);
 					}
 
 			}
@@ -3686,7 +3686,7 @@ error_exit:
 		return(v.lnPixelsRendered);
 	}
 
-	u32 iiSEM_renderAs_simpleHtml__text(__iSimpleHtml_vars& v, SEM* sem, s8* tcText, s32 tnTextLength, HBRUSH* hbr)
+	u32 iiSEM_simpleHtml_renderAs__text(__iSimpleHtml_vars& v, SEM* sem, s8* tcText, s32 tnTextLength, HBRUSH* hbr)
 	{
 		s32		lnI, lnTextLength;
 		RECT	lrc, lrc2;
@@ -3761,7 +3761,7 @@ error_exit:
 		// If we're in an <a></a> block, capture the RECT
 		//////
 			if (v.llInAHrefBlock)
-				iiSEM_renderAs_simpleHtml__aHref_addRect(v, sem, &lrc2);
+				iiSEM_simpleHtml_renderAs__aHref_addRect(v, sem, &lrc2);
 
 
 		//////////
@@ -3808,7 +3808,7 @@ error_exit:
 	}
 
 	// Upon entry, comp is either numeric or alpha
-	void iiSEM_renderAs_simpleHtml__getColor(__iSimpleHtml_vars& v, bool tlBackColor)
+	void iiSEM_simpleHtml_renderAs__getColor(__iSimpleHtml_vars& v, bool tlBackColor)
 	{
 		u8		lnBlu, lnGrn, lnRed;
 		SBgra	color;
@@ -3880,7 +3880,7 @@ error_exit:
 	}
 
 	// Upon entry:  v.comp is the <font> component
-	void iiSEM_renderAs_simpleHtml__getFont(__iSimpleHtml_vars& v)
+	void iiSEM_simpleHtml_renderAs__getFont(__iSimpleHtml_vars& v)
 	{
 		// Iterate through
 		if (v.comp->iCat == _ICAT_SEM_HTML_WITH_ATTRIBUTES)
@@ -3903,7 +3903,7 @@ error_exit:
 // Called to handle for <table> <tr> <td>, and </table> </tr> </td>
 //
 //////
-	void iiSEM_renderAs_simpleHtml__table_tr_td(__iSimpleHtml_vars& v)
+	void iiSEM_simpleHtml_renderAs__table_tr_td(__iSimpleHtml_vars& v)
 	{
 		switch (v.comp->iCode)
 		{
@@ -3941,7 +3941,7 @@ error_exit:
 // Applies a zoom factor to the indicated values
 //
 //////
-	bool iiSEM_renderAs_simpleHtml__applyZoom(__iSimpleHtml_vars& v, SObject* obj)
+	bool iiSEM_simpleHtml_renderAs__applyZoom(__iSimpleHtml_vars& v, SObject* obj)
 	{
 		bool		llZoomed;
 		f64			lfZoom;
@@ -3977,7 +3977,7 @@ error_exit:
 // Creates the bitmap based on the size
 //
 //////
-	bool iiSEM_renderAs_simpleHtml__createBmp(SBitmap** bmpOld, SBitmap* bmpObj, s32 tnWidth, s32 tnHeight)
+	bool iiSEM_simpleHtml_renderAs__createBmp(SBitmap** bmpOld, SBitmap* bmpObj, s32 tnWidth, s32 tnHeight)
 	{
 		SBitmap* bmp;
 
@@ -4026,7 +4026,7 @@ error_exit:
 // Create a font and add it to the list of fonts we've created for this render
 //
 //////
-	SFont* iiSEM_renderAs_simpleHtml__addFont(__iSimpleHtml_vars& v)
+	SFont* iiSEM_simpleHtml_renderAs__addFont(__iSimpleHtml_vars& v)
 	{
 		// Create the font
 		return(iFont_create(v.lcFontName, v.lnFontSize, v.lnFontWeight, v.lnFontItalics, v.lnFontUnderline));
@@ -4040,7 +4040,7 @@ error_exit:
 // Push the font onto stack
 //
 //////
-	void iiSEM_renderAs_simpleHtml__pushFontStack(__iSimpleHtml_vars& v)
+	void iiSEM_simpleHtml_renderAs__pushFontStack(__iSimpleHtml_vars& v)
 	{
 		// Point to the next slot
 		++v.lnFontStack;	// Note:  This stack may grow well beyond its physical size.  In such a case it will use the maximum entry repeatedly.
@@ -4066,7 +4066,7 @@ error_exit:
 // Pop the font onto stack
 //
 //////
-	void iiSEM_renderAs_simpleHtml__popFontStack(__iSimpleHtml_vars& v)
+	void iiSEM_simpleHtml_renderAs__popFontStack(__iSimpleHtml_vars& v)
 	{
 		s32 lnMaxElement;
 
@@ -4113,7 +4113,7 @@ error_exit:
 // Called to fallback to the indicated v.comp->iCode (if it exists).
 //
 //////
-	void iiSEM_renderAS_simpleHtml__fallBack(__iSimpleHtml_vars& v)
+	void iiSEM_simpleHtml_renderAs__fallBack(__iSimpleHtml_vars& v)
 	{
 		switch (v.comp->iCode)
 		{
@@ -4140,9 +4140,12 @@ error_exit:
 // Turning on an <a> tag (which should have an href=".." attribute and possibly others)
 //
 //////
-	void iiSEM_renderAs_simpleHtml__aHref(__iSimpleHtml_vars& v, SEM* sem)
+	void iiSEM_simpleHtml_renderAs__aHref(__iSimpleHtml_vars& v, SEM* sem)
 	{
+		s32		lnLength;
+		s8*		ptr;
 		SComp*	compHref;
+		SComp*	compHrefTarget;
 
 
 		// Only continue if we're not already in an <a> block
@@ -4151,16 +4154,31 @@ error_exit:
 			// Turn on capture
 			v.llInAHrefBlock = true;
 
-			// Make sure we have a rectangle to add
-			if (!sem->aHrefRects)
-				iBuilder_createAndInitialize(&sem->aHrefRects);
-
-			// If we're valid...
-			if (sem->aHrefRects && (sem->aHrefRect = (SSEM_aHref*)iBuilder_allocateBytes(sem->aHrefRects, sizeof(SSEM_aHref))))
+			// Make sure we have an href target
+			if ((compHref = iComps_findNextBy_iCode(v.comp->firstCombined, _ICODE_SEM_HTML_HREF)) && (compHrefTarget = iComps_getNth(compHref, 2)))
 			{
-				// Locate the href component
-				if ((compHref = iComps_findNextBy_iCode(v.comp->firstCombined, _ICODE_SEM_HTML_HREF)))
-					iDatum_duplicate(&sem->aHrefRect->href, compHref->line->sourceCode->data_s8 + compHref->start, compHref->length);
+				// Make sure we have a rectangle to add
+				if (!sem->aHrefRects)
+					iBuilder_createAndInitialize(&sem->aHrefRects);
+
+				// If we're valid...
+				if (sem->aHrefRects && (sem->aHrefRect = (SSEM_aHref*)iBuilder_allocateBytes(sem->aHrefRects, sizeof(SSEM_aHref))))
+				{
+					// Grab the pointer
+					ptr			= compHrefTarget->line->sourceCode->data_s8 + compHrefTarget->start;
+					lnLength	= compHrefTarget->length;
+					
+					// Is it a quote
+					if (ptr[0] == 34 || ptr[0] == 39)
+					{
+						// Yes, remove the quotes
+						++ptr;
+						lnLength -= 2;
+					}
+
+					// Duplicate the href
+					iDatum_duplicate(&sem->aHrefRect->href, ptr, lnLength);
+				}
 			}
 		}
 	}
@@ -4173,15 +4191,161 @@ error_exit:
 // Storing the aHref rectangle to the current entry
 //
 //////
-	void iiSEM_renderAs_simpleHtml__aHref_addRect(__iSimpleHtml_vars& v, SEM* sem, RECT* rc)
+	void iiSEM_simpleHtml_renderAs__aHref_addRect(__iSimpleHtml_vars& v, SEM* sem, RECT* rc)
 	{
 		RECT* lrc;
 
+
+		// Make sure we have an rcArray
+		if (!sem->aHrefRect->rcArray)
+			iBuilder_createAndInitialize(&sem->aHrefRect->rcArray, sizeof(RECT) * 50);
 
 		// Add it
 		lrc = (RECT*)iBuilder_allocateBytes(sem->aHrefRect->rcArray, sizeof(RECT));
 		if (lrc)
 			CopyRect(lrc, rc);
+	}
+
+
+
+
+//////////
+//
+// Called to track mouse movement over the simple html window, so that hyperlinks can be highlighted
+//
+//////
+	// Note:
+	void iiSEM_simpleHtml__hotTrack_mouseMoves(SWindow* win, SObject* obj, SEM* sem, s32 tnX, s32 tnY, bool tlCtrl, bool tlAlt, bool tlShift, s32 tnClick)
+	{
+		s32			lnMousePointer;
+		u32			lnI, lnJ;
+		POINT		pt;
+		RECT*		rc;
+		SVariable*	varStyle;
+		SSEM_aHref*	ahref;
+
+
+		// What are we tracking?
+		if (sem->isSimpleHtml || ((varStyle = iObjProp_get(obj, _INDEX_STYLE)) && iiVariable_getAs_s32(varStyle) == _STYLE_HTML))
+		{
+			// Simple html
+			if (sem->aHrefRects)
+			{
+				// Iterate through every rectangle to see if there's one in range
+				pt.x = tnX;
+				pt.y = tnY;
+				iterate(lnI, sem->aHrefRects, ahref, SSEM_aHref)
+				// Start
+
+					// Make sure
+					if (ahref->rcArray)
+					{
+						// Check each rect
+						iterate(lnJ, ahref->rcArray, rc, RECT)
+						// Start
+
+							// Is the mouse x,y point within this rect?
+							if (PtInRect(rc, pt))
+							{
+								// Yes
+								iWindow_setMousePointer(win, _MOUSE_POINTER_HAND);
+								return;
+							}
+
+						// End
+						iterate_end;
+					}
+
+				// End
+				iterate_end;
+
+
+				//////////
+				// If we get here, it wasn't found
+				//////
+					lnMousePointer = propMousePointer(obj);
+					if (win->mousePointer != lnMousePointer)
+						iWindow_setMousePointer(win, lnMousePointer);	// Change it back to the default for the object type
+					
+			}
+		}
+	}
+
+
+
+
+//////////
+//
+// Called when the user clicks down on an a href block
+//
+//////
+	void iiSEM_simpleHtml__hotTrack_mouseDown(SWindow* win, SObject* obj, SEM* sem, s32 tnX, s32 tnY, bool tlCtrl, bool tlAlt, bool tlShift, s32 tnClick)
+	{
+		bool		llIsLink;
+		s32			lnLength;
+		u32			lnI, lnJ;
+		POINT		pt;
+		s8*			url;
+		RECT*		rc;
+		SVariable*	varStyle;
+		SSEM_aHref*	ahref;
+
+
+		// What are we tracking?
+		if (sem->isSimpleHtml || ((varStyle = iObjProp_get(obj, _INDEX_STYLE)) && iiVariable_getAs_s32(varStyle) == _STYLE_HTML))
+		{
+			// Simple html
+			if (sem->aHrefRects)
+			{
+				// Iterate through every rectangle to see if there's one in range
+				pt.x = tnX;
+				pt.y = tnY;
+				iterate(lnI, sem->aHrefRects, ahref, SSEM_aHref)
+				// Start
+
+					// Make sure
+					if (ahref->rcArray)
+					{
+						// Check each rect
+						iterate(lnJ, ahref->rcArray, rc, RECT)
+						// Start
+
+							// Is the mouse x,y point within this rect?
+							if (PtInRect(rc, pt))
+							{
+								// Perform the href action
+								url			= ahref->href.data_s8;
+								lnLength	= ahref->href.length;
+								llIsLink	= false;
+
+								// Determine if it's a known hyperlink form
+								     if (lnLength > 7 && _memicmp(url, cgc_http,	sizeof(cgc_http) - 1))		llIsLink = true;
+								else if (lnLength > 8 && _memicmp(url, cgc_https,	sizeof(cgc_https) - 1))		llIsLink = true;
+								else if (lnLength > 9 && _memicmp(url, cgc_mailto,	sizeof(cgc_mailto) - 1))	llIsLink = true;
+
+								// If it's a link
+								if (llIsLink)
+								{
+									// Launch it
+									ShellExecute(NULL, "open", url, NULL, NULL, SW_SHOWNORMAL);
+
+								} else {
+									// Dispatch it internally
+// TODO:  Need to figure out how to handle "internal messages"
+								}
+
+								// All done
+								return;
+							}
+
+						// End
+						iterate_end;
+					}
+
+				// End
+				iterate_end;
+			}
+		}
 	}
 
 

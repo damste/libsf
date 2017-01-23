@@ -523,6 +523,10 @@ struct SBasePropMap;
 	const s8		cgc_setUnloadReceivesParams[]							= "unloadReceivesParams";
 	const s8		cgc_setInitializeDefaultValue[]							= "initializeDefaultValue";
 
+	const s8		cgc_http[]												= "http://";
+	const s8		cgc_https[]												= "https://";
+	const s8		cgc_mailto[]											= "mailto://";
+
 	// Note:  The value 0 is used for the terminator in variable-length lists, so the values here must begin at 1.
 	// Note:  Because the values here begin at 1, every reference that is direct must be referenced as gsProps_master[_INDEX_WHATEVER - 1].
 	// Note:  These values must be contiguous.  Any insertion at any point must bump the values after it down one

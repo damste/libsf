@@ -384,6 +384,9 @@ struct SProperties
 	SBitmap*	bmpTabs;											// (Carousel)	-- Bitmap holding the rendered tabs
 	s32			bmpTabsScrolled;									// (Carousel)	-- How many pixels are the tabs scrolled (if the bmpTabs->bi.biWidth is bigger than the carousel's width, and one of the tabs beyond the width is active and displayed)
 	SBuilder*	rcTabs;												// (Carousel)	-- An array of SObjCarouselTabData items, one for each rider's tab
+
+	// For the mouse pointer displayed
+	s32			mousePointer;										// Which pointer is used on this object (see _MOUSE_POINTER_* constants)
 };
 
 struct SObjNodeData
