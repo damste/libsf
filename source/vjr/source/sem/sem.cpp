@@ -4337,6 +4337,7 @@ error_exit:
 		s8*			url;
 		RECT*		rc;
 		SVariable*	varStyle;
+		SVariable*	varLink;
 		SSEM_aHref*	ahref;
 
 
@@ -4362,26 +4363,33 @@ error_exit:
 							// Is the mouse x,y point within this rect?
 							if (PtInRect(rc, pt))
 							{
-								// Perform the href action
-								url			= ahref->href.data_s8;
-								lnLength	= ahref->href.length;
-								llIsLink	= false;
+								// Set the htmlLink variable
+								iObjProp_set_character_direct(obj, _INDEX_HTML_LINK, &ahref->href);
 
-								// Determine if it's a known hyperlink form
-								     if (lnLength > 7 && _memicmp(url, cgc_http,	sizeof(cgc_http) - 1))		llIsLink = true;
-								else if (lnLength > 8 && _memicmp(url, cgc_https,	sizeof(cgc_https) - 1))		llIsLink = true;
-								else if (lnLength > 9 && _memicmp(url, cgc_mailto,	sizeof(cgc_mailto) - 1))	llIsLink = true;
-
-								// If it's a link
-								if (llIsLink)
+								// Signal the event
+								iEngine_raise_event(_EVENT_ONLINK, win, obj);
+								// Note:  The user may have altered the link value to use
+								
+								// Examine its (potentially) new value
+								if ((varLink = propLink(obj)) && (url = varLink->value.data_s8) && (lnLength = varLink->value.length))
 								{
-									// Launch it
-									ShellExecute(NULL, "open", url, NULL, NULL, SW_SHOWNORMAL);
+									// Determine if it's a known hyperlink form
+										 if (lnLength > 7 && _memicmp(url, cgc_http,	sizeof(cgc_http) - 1))		llIsLink = true;
+									else if (lnLength > 8 && _memicmp(url, cgc_https,	sizeof(cgc_https) - 1))		llIsLink = true;
+									else if (lnLength > 9 && _memicmp(url, cgc_mailto,	sizeof(cgc_mailto) - 1))	llIsLink = true;
+									else																			llIsLink = false;
 
-								} else {
-									// Dispatch it internally
-									iSEM_simpleHtml__dispatchDllfunc(url, lnLength, (s8*)cgc_dlfunc_mouseDown);
-									// Note:  We will silently fail
+									// If it's a link
+									if (llIsLink)
+									{
+										// Launch it
+										ShellExecute(NULL, "open", url, NULL, NULL, SW_SHOWNORMAL);
+
+									} else {
+										// Dispatch it internally
+										iSEM_simpleHtml__dispatchDllfunc(url, lnLength, (s8*)cgc_dlfunc_mouseDown);
+										// Note:  We will silently fail
+									}
 								}
 
 								// All done

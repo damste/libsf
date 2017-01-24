@@ -415,6 +415,7 @@ struct SObjEventMap;
 	bool					iDefaultCallback_onDestroy				(SWindow* win, SObject* obj);
 	bool					iDefaultCallback_onUnload				(SWindow* win, SObject* obj);
 	bool					iDefaultCallback_onGotFocus				(SWindow* win, SObject* obj);
+	bool					iDefaultCallback_onLink					(SWindow* win, SObject* obj);
 	bool					iDefaultCallback_onLostFocus			(SWindow* win, SObject* obj);
 	bool					iiDefaultCallback_processMouseVariables	(							  SVariable* varX, SVariable* varY, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varClick, s32* lnX, s32* lnY, bool* tlCtrl, bool* tlAlt, bool* tlShift, u32* lnClick);
 	bool					iDefaultCallback_onMouseClickEx			(SWindow* win, SObject* obj, SVariable* varX, SVariable* varY, SVariable* varCtrl, SVariable* varAlt, SVariable* varShift, SVariable* varClick);

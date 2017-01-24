@@ -172,6 +172,12 @@
 		return(false);
 	}
 
+	bool iDefaultCallback_onLink(SWindow* win, SObject* obj)
+	{
+		// Do not continue to propagate this message to other objects
+		return(false);
+	}
+
 	bool iDefaultCallback_onLostFocus(SWindow* win, SObject* obj)
 	{
 		// Do not continue to propagate this message to other objects

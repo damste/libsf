@@ -212,6 +212,7 @@ typedef SEM**		SEMpp;
 	#define propClass(obj)								iObjProp_get_character			(obj, _INDEX_CLASS);
 	#define propClassLibrary(obj)						iObjProp_get_character			(obj, _INDEX_CLASSLIBRARY)
 	#define propForeColor(obj)							iObjProp_get_sbgra_direct		(obj, _INDEX_FORECOLOR)
+	#define propLink(obj)								iObjProp_get_character			(obj, _INDEX_HTML_LINK)
 	#define propMargin(obj)								iObjProp_get_s32_direct			(obj, _INDEX_MARGIN)
 	#define propMousePointer(obj)						iObjProp_get_s32_direct			(obj, _INDEX_MOUSEPOINTER);
 	#define propName(obj)								iObjProp_get_character			(obj, _INDEX_NAME);
@@ -573,49 +574,42 @@ typedef SEM**		SEMpp;
 	const u32			_EVENT_ONUNLOAD						= 10;
 	const u32			_EVENT_ONGOTFOCUS					= 11;
 	const u32			_EVENT_ONLOSTFOCUS					= 12;
-	const u32			_EVENT_ONADDOBJECT					= 13;
-	const u32			_EVENT_ONADDPROPERTY				= 14;
-	const u32			_EVENT_ONERROR						= 15;
-	const u32			_EVENT_ONSCROLLED					= 16;
-	const u32			_EVENT_ACTIVATE						= 17;
-	const u32			_EVENT_DEACTIVATE					= 18;
-	const u32			_EVENT_ONSELECT						= 19;
-	const u32			_EVENT_ONDESELECT					= 20;
-	const u32			_EVENT_ONINTERACTIVECHANGE			= 21;
-	const u32			_EVENT_ONPROGRAMMATICCHANGE			= 22;
-
-	const u32			_EVENT_ONSETACTIVECONTROL			= 23;
-	const u32			_EVENT_ONSPIN						= 24;
-
-	const u32			_EVENT_ONMOUSECLICKEX				= 25;
-	const u32			_EVENT_ONMOUSEDBLCLICKEX			= 26;
-	const u32			_EVENT_ONMOUSEWHEEL					= 27;
-	const u32			_EVENT_ONMOUSEMOVE					= 28;
-	const u32			_EVENT_ONMOUSEDOWN					= 29;
-	const u32			_EVENT_ONMOUSEUP					= 30;
-	const u32			_EVENT_ONMOUSEENTER					= 31;
-	const u32			_EVENT_ONMOUSELEAVE					= 32;
-	const u32			_EVENT_ONMOUSEHOVER					= 33;
-
-	const u32			_EVENT_ONKEYDOWN					= 34;
-	const u32			_EVENT_ONKEYUP						= 35;
-
-	// Carousel tab events
-	const u32			_EVENT_CAROUSEL_ONTABCLOSE			= 36;
-	const u32			_EVENT_CAROUSEL_ONTABCLICK			= 37;
-	const u32			_EVENT_CAROUSEL_ONTABMOUSEWHEEL		= 38;
-	const u32			_EVENT_CAROUSEL_ONTABMOUSEMOVE		= 39;
-	const u32			_EVENT_CAROUSEL_ONTABMOUSEDOWN		= 40;
-	const u32			_EVENT_CAROUSEL_ONTABMOUSEUP		= 41;
-	const u32			_EVENT_CAROUSEL_ONTABMOUSEENTER		= 42;
-	const u32			_EVENT_CAROUSEL_ONTABMOUSELEAVE		= 43;
-
-	// Carousel / rider events
-	const u32			_EVENT_CONTROLPOINT_ONENTER			= 44;
-	const u32			_EVENT_CONTROLPOINT_ONLEAVE			= 45;
-	const u32			_EVENT_CONTROLPOINT_ONDROP			= 46;
-
-	const u32			_EVENT_MAX_COUNT					= 46;
+	const u32			_EVENT_ONLINK						= 13;
+	const u32			_EVENT_ONADDOBJECT					= 14;
+	const u32			_EVENT_ONADDPROPERTY				= 15;
+	const u32			_EVENT_ONERROR						= 16;
+	const u32			_EVENT_ONSCROLLED					= 17;
+	const u32			_EVENT_ACTIVATE						= 18;
+	const u32			_EVENT_DEACTIVATE					= 19;
+	const u32			_EVENT_ONSELECT						= 20;
+	const u32			_EVENT_ONDESELECT					= 21;
+	const u32			_EVENT_ONINTERACTIVECHANGE			= 22;
+	const u32			_EVENT_ONPROGRAMMATICCHANGE			= 23;
+	const u32			_EVENT_ONSETACTIVECONTROL			= 24;
+	const u32			_EVENT_ONSPIN						= 25;
+	const u32			_EVENT_ONMOUSECLICKEX				= 26;		// Mouse
+	const u32			_EVENT_ONMOUSEDBLCLICKEX			= 27;
+	const u32			_EVENT_ONMOUSEWHEEL					= 28;
+	const u32			_EVENT_ONMOUSEMOVE					= 29;
+	const u32			_EVENT_ONMOUSEDOWN					= 30;
+	const u32			_EVENT_ONMOUSEUP					= 31;
+	const u32			_EVENT_ONMOUSEENTER					= 32;
+	const u32			_EVENT_ONMOUSELEAVE					= 33;
+	const u32			_EVENT_ONMOUSEHOVER					= 34;
+	const u32			_EVENT_ONKEYDOWN					= 35;		// Keys
+	const u32			_EVENT_ONKEYUP						= 36;
+	const u32			_EVENT_CAROUSEL_ONTABCLOSE			= 37;		// Carousel tab events
+	const u32			_EVENT_CAROUSEL_ONTABCLICK			= 38;
+	const u32			_EVENT_CAROUSEL_ONTABMOUSEWHEEL		= 39;
+	const u32			_EVENT_CAROUSEL_ONTABMOUSEMOVE		= 40;
+	const u32			_EVENT_CAROUSEL_ONTABMOUSEDOWN		= 41;
+	const u32			_EVENT_CAROUSEL_ONTABMOUSEUP		= 42;
+	const u32			_EVENT_CAROUSEL_ONTABMOUSEENTER		= 43;
+	const u32			_EVENT_CAROUSEL_ONTABMOUSELEAVE		= 44;
+	const u32			_EVENT_CONTROLPOINT_ONENTER			= 45;		// Carousel / rider events
+	const u32			_EVENT_CONTROLPOINT_ONLEAVE			= 46;
+	const u32			_EVENT_CONTROLPOINT_ONDROP			= 47;
+	const u32			_EVENT_MAX_COUNT					= 47;
 
 
 //////////
