@@ -1676,7 +1676,14 @@ debug_break;
 				case WM_PAINT:
 					// Paint it
 					lhdc = BeginPaint(h, &ps);
+
+					// Render the form's bitmap
 					BitBlt(lhdc, 0, 0, win->obj->bmp->bi.biWidth, win->obj->bmp->bi.biHeight, win->obj->bmp->hdc, 0, 0, SRCCOPY);
+
+					// And if there is an overlay status bar message, render it
+					if (win->msg_statusBar.data && win->obj->objType == _OBJ_TYPE_FORM)
+						iiWindow_wndProcForms_render_statusBarMessage(win, lhdc);
+
 					EndPaint(h, &ps);
 					return 0;
 			}
@@ -1685,6 +1692,51 @@ debug_break;
 		// Call Windows' default procedure handler
 		return(DefWindowProc(h, m, w, l));
 	}
+
+	// Render the status bar message
+	void iiWindow_wndProcForms_render_statusBarMessage(SWindow* win, HDC hdc)
+	{
+		RECT		lrc;
+		SBgra		swRgba;
+		COLORREF	saveColor;
+		int			saveBkMode;
+		HGDIOBJ		saveFont;
+		HBRUSH		hbr;
+
+
+		// Get the status bar section
+		iiWindow_setStatusBarRect(&lrc, win);
+
+		// Render the background
+		swRgba		= propSwRgba(win->obj);
+		hbr			= CreateSolidBrush(RGB(swRgba.red, swRgba.grn, swRgba.blu));
+		FillRect(hdc, &lrc, hbr);
+		DeleteObject((HGDIOBJ)hbr);
+
+		// Set properties
+		saveFont	= SelectObject(hdc, gsFontDefaultFixedPoint9->hfont);
+		saveColor	= SetTextColor(hdc, RGB(whiteColor.red, whiteColor.grn, whiteColor.blu));
+		saveBkMode	= SetBkMode(hdc, TRANSPARENT);
+
+		// Draw the message
+		lrc.left += 8;
+		DrawText(hdc, win->msg_statusBar.data_cs8, win->msg_statusBar.length, &lrc, DT_LEFT | DT_TOP);
+
+		// Restore properties
+		SetTextColor(hdc,	saveColor);
+		SetBkMode(hdc,		saveBkMode);
+		SelectObject(hdc,	saveFont);
+	}
+
+	void iiWindow_setStatusBarRect(RECT* rc, SWindow* win)
+	{
+		// Set the rect along the bottom
+		SetRect(rc,		8 + bmpArrowLl->bi.biWidth + 8,
+						win->obj->rc.bottom - bmpArrowLr->bi.biHeight + 2,
+						win->obj->rc.right - 8 - bmpArrowLr->bi.biHeight - 8,
+						win->obj->rc.bottom - 4);
+	}
+
 
 
 
@@ -2304,6 +2356,47 @@ debug_break;
 			case _MOUSE_POINTER_CUSTOM:
 				return(IDC_ARROW);
 				break;
+		}
+	}
+
+
+
+
+//////////
+//
+// Called to set an overlay message which displays in the status bar
+//
+//////
+	void iWindow_setStatusBarMessage(SWindow* win, SDatum* msg)
+	{
+		RECT lrc;
+
+
+		// Make sure the environment is sane
+		if (win)
+		{
+
+			//////////
+			// Set the message
+			//////
+				if (msg)
+				{
+					// Copy the message
+					iDatum_duplicate(&win->msg_statusBar, msg);
+					iDatum_removePercentValues(&win->msg_statusBar);
+
+				} else {
+					// Remove the message
+					iDatum_delete(&win->msg_statusBar, false);
+				}
+
+
+			//////////
+			// Update the window's status bar area
+			//////
+				iiWindow_setStatusBarRect(&lrc, win);
+				InvalidateRect(win->hwnd, NULL/*&lrc*/, FALSE);
+
 		}
 	}
 

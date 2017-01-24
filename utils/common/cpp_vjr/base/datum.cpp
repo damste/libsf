@@ -270,6 +270,59 @@
 		return(((datum && datum->_data && datum->length > 1) ? _atoi64(datum->data_s8) : 0));
 	}
 
+	SDatum* iDatum_removePercentValues(SDatum* datum)
+	{
+		s32		lnI, lnNewLength;
+		s8		buffer[4];
+
+
+		// Make sure our environment is sane
+		if (datum && datum->_data && datum->length != 0)
+		{
+			// Iterate through every character, replacing %Nn with CHR(Nn), such as %20 to CHR(20)
+			for (lnI = 0, lnNewLength = 0; lnI < datum->length; lnI++)
+			{
+				// Is it the beginning of a %Nn sequence?
+				if (datum->data_s8[lnI] == '%')
+				{
+					// Check for two-digit codes
+					if (isNumeric(datum->data_s8[lnI + 1]) && isNumeric(datum->data_s8[lnI + 2]))
+					{
+						// Replace %Nn with CHR(Nn)
+						buffer[0] = datum->data_s8[lnI + 1];
+						buffer[1] = datum->data_s8[lnI + 2];
+						buffer[2] = 0;
+
+						// Store the CHR(Nn) character
+						datum->data_s8[lnNewLength] = (s8)strtoul(buffer, NULL, 16);
+						++lnNewLength;
+
+						// Skip past the Nn portion
+						lnI += 2;
+
+					} else {
+						goto copy_character;
+					}
+
+				} else {
+					// Copy it down (if need be)
+copy_character:
+					if (lnI != lnNewLength)
+						datum->data_s8[lnNewLength] = datum->data_s8[lnI];
+
+					// Increase to the next position
+					++lnNewLength;
+				}
+			}
+
+			// Set the new length
+			datum->length = lnNewLength;
+		}
+
+		// Pass-thru
+		return(datum);
+	}
+
 	// Set everything to the indicated character
 	s32 iDatum_setAll(SDatum* datum, u8 c)
 	{

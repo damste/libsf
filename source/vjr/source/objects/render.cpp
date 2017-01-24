@@ -332,15 +332,15 @@
 					// Talk, Exclusive
 					sprintf(buffer, "%s| TALK:%s | EXCLUSIVE:%s |",
 									bufferTag,
-									((llTalk) ? cgc_on : cgc_off),
-									((llExclusive) ? cgc_on : cgc_off));
+									((llTalk)		? cgc_on : cgc_off),
+									((llExclusive)	? cgc_on : cgc_off));
 					DrawText(obj->bmp->hdc, buffer, strlen(buffer), &lrc2, DT_RIGHT | DT_VCENTER);
 				}
 
 				// Restore colors
-				SetTextColor(obj->bmp->hdc, saveColor);
-				SetBkMode(obj->bmp->hdc, saveBkMode);
-				SelectObject(obj->bmp->hdc, saveFont);
+				SetTextColor(obj->bmp->hdc,	saveColor);
+				SetBkMode(obj->bmp->hdc,	saveBkMode);
+				SelectObject(obj->bmp->hdc,	saveFont);
 
 
 			//////////

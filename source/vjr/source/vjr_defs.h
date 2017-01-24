@@ -561,6 +561,8 @@ struct SObjEventMap;
 	DWORD	WINAPI			iReadEvents_messageWindow				(LPVOID lpParameter);
 	LRESULT	CALLBACK		iWindow_wndProcMessage					(HWND hwnd, UINT m, WPARAM w, LPARAM l);
 	LRESULT	CALLBACK		iWindow_wndProcForms					(HWND hwnd, UINT m, WPARAM w, LPARAM l);
+	void					iiWindow_wndProcForms_render_statusBarMessage(SWindow* win, HDC hdc);
+	void					iiWindow_setStatusBarRect				(RECT* rc, SWindow* win);
 	SWindow* 				iWindow_createForObject					(SObject* obj, SWindow* winReuse, s32 icon);
 	void					iWindow_releaseAll						(SBuilder** windowRoot, bool tlDeleteSelf);
 	void					iWindow_delete							(SWindow* win, bool tlDeleteSelf);
@@ -576,6 +578,7 @@ struct SObjEventMap;
 	bool					iWindow_isPointerValid					(SWindow* win);
 	s32						iWindow_setMousePointer					(SWindow* win, s32 tnNewMousePointer);
 	LPSTR					iiWindow_setMousePointer_translateMousePointer(s32 tnMousePointer);
+	void					iWindow_setStatusBarMessage				(SWindow* win, SDatum* msg);
 
 	void					iFocusHighlight_create					(SFocusHighlight* focus, RECT* rc);
 	void					iFocusHighlight_show					(SFocusHighlight* focus);

@@ -163,6 +163,7 @@ struct SXYS32
 			RECT				rc;										// Rectangle of window's physical position
 			SObject*			obj;									// The top-level object being rendered in this window
 			s32					mousePointer;							// The current mouse pointer displayed in this window (see _MOUSE_POINTER_* constants)
+			SDatum				msg_statusBar;							// Content to overlay in the status area
 
 			// Mouse data
 			SMouseData			mousePrior;								// Mouse activity before the most recent mouse activity

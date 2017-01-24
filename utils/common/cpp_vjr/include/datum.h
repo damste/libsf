@@ -192,6 +192,8 @@ struct SVariable;
 	s32						iDatum_getAs_s32						(SDatum* datum);
 	s64						iDatum_getAs_s64						(SDatum* datum);
 
+	SDatum*					iDatum_removePercentValues				(SDatum* datum);
+
 	s32						iDatum_setAll							(SDatum* datum, u8 c);
 	bool					iDatum_resize							(SDatum* datum, s32 newDataLength);
 	s32						iDatum_compare							(SDatum* datumLeft, SDatum* datumRight);

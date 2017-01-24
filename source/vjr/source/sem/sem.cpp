@@ -3294,7 +3294,11 @@ renderAsOnlyText:
 
 	u32 iSEM_simpleHtml_renderAs(SEM* sem, SObject* obj, bool tlRenderCursorline)
 	{
-		__iSimpleHtml_vars v;		// Created as an internal struct (used only here) for simplified passed parameters
+		u32					lnI, lnJ;
+		HPEN				hpenOld;
+		RECT*				rc;
+		SSEM_aHref*			ahref;
+		__iSimpleHtml_vars	v;		// Created as an internal struct (used only here) for simplified passed parameters
 
 
 		// Make sure the environment is sane
@@ -3305,6 +3309,23 @@ renderAsOnlyText:
 			v.font = iSEM_getRectAndFont(sem, obj, &v.rc);
 			iSEM_getColors(sem, obj, v.defaultBackColor, v.defaultForeColor);
 			iBmp_fillRect(obj->bmp, &v.rc, v.defaultBackColor, v.defaultBackColor, v.defaultBackColor, v.defaultBackColor, false, NULL, false);
+
+			// Release all of the prior ahref rectangles
+			if (sem->aHrefRects)
+			{
+				iterate(lnI, sem->aHrefRects, ahref, SSEM_aHref)
+				// Start
+
+					// If it has ahref rectangles, release them
+					if (ahref->rcArray)
+						iBuilder_freeAndRelease(&ahref->rcArray);
+
+				// End
+				iterate_end
+
+				// Release everything
+				iBuilder_freeAndRelease(&sem->aHrefRects);
+			}
 
 			// Draw any content
 			if (sem->firstLine && sem->lastLine && obj)
@@ -3373,7 +3394,7 @@ renderAsOnlyText:
 				//////
 					v.lnX = sem->scroll_htmlX;
 					v.lnY = sem->scroll_htmlY;
-					for (v.line = sem->line_top; v.line; v.line = v.line->ll.nextLine)
+					for (v.line = sem->firstLine; v.line; v.line = v.line->ll.nextLine)
 					{
 						// Iterate through each line
 						v.lnStartHeight	= v.lnHeight;
@@ -3677,6 +3698,44 @@ renderAsOnlyText:
 							v.lnPixelsRendered += iiSEM_simpleHtml_renderAs__text(v, sem, " ", 1);
 					}
 
+
+				//////////
+				// Draw underlines under every visible link
+				//////
+					// Draw an underline beneath the link
+					hpenOld	= (HPEN)SelectObject(v.bmp->hdc, CreatePen(PS_SOLID, 1, RGB(v.colorLink.red, v.colorLink.grn, v.colorLink.blu)));
+					// Begin pen operations
+
+						iterate(lnI, sem->aHrefRects, ahref, SSEM_aHref)
+						// Start
+
+							// If there are links here, see if they're on screen
+							if (ahref->rcArray)
+							{
+								iterate(lnJ, ahref->rcArray, rc, RECT)
+								// Start
+
+									// Is at least part of the rectangle visible on the screen
+									if (between(rc->top, 0, v.lnHeight) || between(rc->bottom, 0, v.lnHeight))
+									{
+										if (between(rc->left, 0, v.lnWidth) || between(rc->right, 0, v.lnWidth))
+										{
+											// At least part of it is visible
+											MoveToEx(v.bmp->hdc,	rc->left,	rc->bottom - 1,	NULL);
+											LineTo(v.bmp->hdc,		rc->right,	rc->bottom - 1);
+										}
+									}
+
+								// End
+								iterate_end
+							}
+
+						// End
+						iterate_end
+
+					// End pen operations
+					SelectObject(v.bmp->hdc, hpenOld);
+
 			}
 		}
 
@@ -3688,9 +3747,8 @@ error_exit:
 
 	u32 iiSEM_simpleHtml_renderAs__text(__iSimpleHtml_vars& v, SEM* sem, s8* tcText, s32 tnTextLength, HBRUSH* hbr)
 	{
-		s32		lnI, lnTextLength;
+		s32		lnTextLength;
 		RECT	lrc, lrc2;
-		HPEN	hpenOld;
 		s8*		lcText;
 					
 
@@ -3773,28 +3831,6 @@ error_exit:
 				// Draw a border around it
 				InflateRect(&lrc2, -1, -1);
 				FrameRect(v.bmp->hdc, &lrc2, *hbr);
-			}
-
-			// If we're in an <a href>..</a> block, put an underline beneath it
-			if (v.llInAHrefBlock)
-			{
-				// Draw an underline beneath the link
-				hpenOld	= (HPEN)SelectObject(v.bmp->hdc, CreatePen(PS_SOLID, 1, RGB(v.colorLink.red, v.colorLink.grn, v.colorLink.blu)));
-
-				// Draw the underline
-				for (lnI = 1; lnI < 2; lnI++)
-				{
-// 					// Top line
-// 					MoveToEx(v.bmp->hdc,	lrc2.left,	lrc2.top + lnI,	NULL);
-// 					LineTo(v.bmp->hdc,		lrc2.right,	lrc2.top + lnI);
-
-					// Bottom line
-					MoveToEx(v.bmp->hdc,	lrc2.left,	lrc2.bottom - lnI,	NULL);
-					LineTo(v.bmp->hdc,		lrc2.right,	lrc2.bottom - lnI);
-				}
-
-				// Reset the pen
-				SelectObject(v.bmp->hdc, hpenOld);
 			}
 
 
@@ -4254,6 +4290,12 @@ error_exit:
 							{
 								// Yes
 								iWindow_setMousePointer(win, _MOUSE_POINTER_HAND);
+
+								// Set the overlay message
+								if (iDatum_compare(&win->msg_statusBar, &ahref->href) != 0)
+									iWindow_setStatusBarMessage(win, &ahref->href);
+
+								// All done
 								return;
 							}
 
@@ -4271,7 +4313,9 @@ error_exit:
 					lnMousePointer = propMousePointer(obj);
 					if (win->mousePointer != lnMousePointer)
 						iWindow_setMousePointer(win, lnMousePointer);	// Change it back to the default for the object type
-					
+
+					// Clear the message
+					iWindow_setStatusBarMessage(win, NULL);
 			}
 		}
 	}
