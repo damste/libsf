@@ -4374,10 +4374,10 @@ error_exit:
 								if ((varLink = propLink(obj)) && (url = varLink->value.data_s8) && (lnLength = varLink->value.length))
 								{
 									// Determine if it's a known hyperlink form
-										 if (lnLength > 7 && _memicmp(url, cgc_http,	sizeof(cgc_http) - 1))		llIsLink = true;
-									else if (lnLength > 8 && _memicmp(url, cgc_https,	sizeof(cgc_https) - 1))		llIsLink = true;
-									else if (lnLength > 9 && _memicmp(url, cgc_mailto,	sizeof(cgc_mailto) - 1))	llIsLink = true;
-									else																			llIsLink = false;
+										 if (lnLength > sizeof(cgc_http)	&& _memicmp(url, cgc_http,		sizeof(cgc_http) - 1)	== 0)		llIsLink = true;
+									else if (lnLength > sizeof(cgc_https)	&& _memicmp(url, cgc_https,		sizeof(cgc_https) - 1)	== 0)		llIsLink = true;
+									else if (lnLength > sizeof(cgc_mailto)	&& _memicmp(url, cgc_mailto,	sizeof(cgc_mailto) - 1)	== 0)		llIsLink = true;
+									else																										llIsLink = false;
 
 									// If it's a link
 									if (llIsLink)
@@ -4386,9 +4386,9 @@ error_exit:
 										ShellExecute(NULL, "open", url, NULL, NULL, SW_SHOWNORMAL);
 
 									} else {
-										// Dispatch it internally
+										// It's dllfunc:
 										iSEM_simpleHtml__dispatchDllfunc(url, lnLength, (s8*)cgc_dlfunc_mouseDown);
-										// Note:  We will silently fail
+										// Note:  We will silently fail if it fails
 									}
 								}
 
@@ -4420,7 +4420,7 @@ error_exit:
 	void iSEM_simpleHtml__dispatchDllfunc(s8* url, s32 tnLength, s8* defaultFunc)
 	{
 		s8		c;
-		s32		lnI;
+		s32		lnI, lnJ;
 		bool	llColonColonFound;
 		HMODULE	dllHandle;
 		s8		dllPathname[_MAX_PATH];
@@ -4432,13 +4432,14 @@ error_exit:
 
 
 		// Make sure it's dllfunc://
-		if (url && defaultFunc && tnLength > sizeof(cgc_dllfunc) - 1 && _memicmp(url, cgc_dllfunc, sizeof(cgc_dllfunc) - 1))
+		if (url && defaultFunc && tnLength > sizeof(cgc_dllfunc) - 1 && _memicmp(url, cgc_dllfunc, sizeof(cgc_dllfunc) - 1) == 0)
 		{
 
 			//////////
 			// Skip past the dllfunc:// portion
 			//////
-				url += sizeof(cgc_dllfunc) - 1;
+				url			+= sizeof(cgc_dllfunc) - 1;
+				tnLength	-= (sizeof(cgc_dllfunc) - 1);
 
 
 			//////////
@@ -4471,6 +4472,7 @@ error_exit:
 					dllPathname[lnI] = c;
 				}
 				// When we get here, we have the dll name
+				dllPathname[lnI] = 0;
 
 
 			//////////
@@ -4480,7 +4482,17 @@ error_exit:
 				if (llColonColonFound)
 				{
 					// Extract the function
-					memcpy(dllFunc, url + 2, tnLength - 2);
+					memcpy(dllFunc, url + lnI + 2, tnLength - lnI - 2);
+
+					// If it ends in (), remove those characters
+					for (lnJ = 0; lnJ < tnLength - lnI; lnJ++)
+					{
+						// We stop at a ( or ) character
+						if (dllFunc[lnJ] == '(' || dllFunc[lnJ + 1] == ')')
+							break;
+					}
+					// NULL-terminate
+					dllFunc[lnJ] = 0;
 
 				} else {
 					// Use the default function
@@ -4491,6 +4503,8 @@ error_exit:
 			//////////
 			// Open the dll
 			//////
+// TODO:  We should add some kind of manager here to allow for rapid reuse of prior loaded DLLs
+// TODO:  After that, we should add a new CLEAR DLLFUNCS option
 				dllHandle = LoadLibrary(dllPathname);
 				if (dllHandle)
 				{

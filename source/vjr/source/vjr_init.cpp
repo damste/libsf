@@ -333,7 +333,7 @@ iDisk_deleteFile((cs8*)cgcScreenDataFilename);
 			iSEM_appendLine(screenData, (u8*)"<br>");
 			iSEM_appendLine(screenData, (u8*)"Please report any bugs:  <b><a href=\"http://www.visual-freepro.org/wiki/index.php/VXB\">Visual FreePro, Jr. Wiki</a></b><br>");
 			iSEM_appendLine(screenData, (u8*)"Thank you, and may the <color=\"D00\"><b>Lord Jesus Christ</b><color=\"000\"> bless you richly. <bgcolor=\"FF0\"><m>:-)</m><bgcolor=\"FFF\"><br>");
-			iSEM_appendLine(screenData, (u8*)"<m><s=10><br>");
+			iSEM_appendLine(screenData, (u8*)"<m><s=10><a href=\"dllfunc:test.dll::ink()\">Ink</a> <a href=\"dllfunc:test.dll::bink()\">Bink</a> <a href=\"dllfunc:test.dll::bonk()\">Bonk</a><br>");
 			iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"ffe030\">              <bgcolor=\"f02020\">                   <bgcolor=\"FFF\"><br>");
 			iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"ffe030\">             <bgcolor=\"FFF\">       <bgcolor=\"f02020\">             <bgcolor=\"FFF\">    In <color=\"D00\"><b>God's</b><color=\"000\"> sight we've come together.<br>");
 			iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"ffe030\">      <bgcolor=\"f02020\">  <bgcolor=\"ffe030\">     <bgcolor=\"FFF\">       <bgcolor=\"f02020\">             <bgcolor=\"FFF\">    We've come together to help each other.<br>");
