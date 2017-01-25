@@ -196,23 +196,3 @@ struct SBaserContent
 	bool			isUsed;			// Is this a valid message?
 	SBuilder*		content;		// The message content
 };
-
-// For rendering HTML atop another hwnd
-struct SBaserHwnd
-{
-	bool			isUsed;			// Is this entry used?
-	bool			inWindow;		// Is the mouse currently in the window?
-
-	// Window and relative window info
-	HWND			hwnd;			// Handle
-	RECT			rc;				// Rectangle for the display
-	s32				mouseX;			// Mouse X coordinate
-	s32				mouseY;			// Mouse Y coordinate
-
-	// Old address before we sub-classed it
-	LONG			old_wndproc;
-
-	// The associated 
-	SEM*			sem;			// The html source code
-	SObject*		obj;			// The object the html source code is graphically into
-};

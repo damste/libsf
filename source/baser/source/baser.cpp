@@ -424,129 +424,69 @@ extern "C"
 		// Sending to a NULL htmlContent or a zero htmlContentLength
 		//
 		//////
-			s32 baser_render_html(HWND hwnd, s32 left, s32 top, s32 right, s32 bottom, s8* tcHtmlContent, s32 tnHtmlContentLength)
+			SObject*	goReuseForm		= NULL;
+			SBitmap		bmpBaserIcon	= NULL;
+
+			#include "graphics\bitmaps.h"
+
+			s32 baser_render_html(s8* tcHtmlContent, s32 tnHtmlContentLength)
 			{
 				SDatum		html;
-				SBaserHwnd*	bwin;
-				SEM*		sem;
+				SObject*	loForm;
 
 
 				// Make sure our environment is sane
-				if (hwnd && IsWindow(hwnd) && tcHtmlContent && tnHtmlContentLength)
+				if (tcHtmlContent && tnHtmlContentLength)
 				{
-
-					//////////
 					// Lock
-					//////
-						EnterCriticalSection(&cs_baser_hwnd);
+					EnterCriticalSection(&cs_baser_hwnd);
+
+					// If we're re-using an existing window
+					if (goReuseForm)
+					{
+						// Grab the reuse form
+						loForm = goReuseForm;
+
+					} else {
+						// Create a new form
+						loForm = iObj_create(_OBJ_TYPE_FORM, NULL);
+						if (!loForm)
+							return;
+
+						// Baser
+						if (!bmpBaserIcon)
+							bmpJDebiIcon = iBmp_rawLoad(cgc_baserAppIconBmp);
+
+						// Set basic properties
+						propSetPictureBmp(_jdebi, bmpBaserIcon);
+						propSetBorderStyle(_jdebi, _BORDER_STYLE_FIXED);
+
+						// Add the editbox
+// TODO:  working here
+					}
 
 
-						//////////
-						// Create the html
-						//////
-							html.data	= tcHtmlContent;
-							html.length	= tnHtmlContentLength;
-							sem			= iSEM_allocate(false);
-							if (!iSEM_load_fromMemory(NULL, sem, &html, false, false))
-							{
-								// Allocate
-								iSEM_delete(&sem, true);
-
-								// Indicate failure
-								return(-1);
-							}
-
-
-
-						//////////
-						// Setup
-						//////
-							// Make sure we have a builder
-							if (!gsBaserWindowsRoot)
-								iBuilder_createAndInitialize(&gsBaserWindowsRoot, sizeof(SBaserHwnd) * 10);
-
-							// Try to find the window
-							bwin = ((hwnd) ? iBaserHwnd_findBy_hwnd(hwnd) : NULL);
-
-
-						//////////
-						// Disconnecting?
-						//////
-							if (!tcHtmlContent)
-							{
-								// No content, un-subclass
-								if (bwin && bwin->old_wndproc)
-									SetWindowLong(hwnd, GWL_WNDPROC, bwin->old_wndproc);
-
-								// Delete this item
-								iBaserHwnd_delete(bwin);
-
-								// All done
-								return(0);
-							}
-
-
-						//////////
-						// Grab the window
-						//////
-							if (bwin)
-							{
-								// Delete the existing sem
-								iSEM_delete(&bwin->sem, true);
-
-							} else {
-								// Create a new bwin
-								bwin = (SBaserHwnd*)iBuilder_allocateBytes(gsBaserWindowsRoot, sizeof(SBaserHwnd));
-								if (!bwin)
-									return(-1);
-
-								// Create the render object (just use a shape
-								bwin->obj = iObj_create(_OBJ_TYPE_SHAPE, NULL);
-								if (!bwin->obj)
-									return(-1);
-							}
-
-
-						//////////
-						// Setup
-						//////
-							bwin->isUsed		= true;
-							bwin->hwnd			= hwnd;
-							bwin->sem			= sem;
-							bwin->rc.left		= left;
-							bwin->rc.top		= top;
-							bwin->rc.right		= right;
-							bwin->rc.bottom		= bottom;
-
-							// If it hasn't yet been sub-classed, subclass it
-							if (!bwin->old_wndproc)
-							{
-								// Save
-								bwin->old_wndproc = GetWindowLong(hwnd, GWL_WNDPROC);
-
-								// Set
-								SetWindowLong(hwnd, GWL_WNDPROC, (LONG)&iBaserHwnd_wndProc);
-							}
-
-							// Set it to the target size
-							iObj_setSize(bwin->obj, left, top, right - left, bottom - top);
-
-
-						//////////
-						// Load the html source code and render
-						//////
-							// Render
-							iSEM_renderAs_simpleHtml(bwin->sem, bwin->obj, false);
-
-							// Force a redraw
-							InvalidateRect(bwin->hwnd, &bwin->rc, FALSE);
-
-
+// TODO:  working here
 					//////////
-					// Unlock
+					// Create the html
 					//////
-						LeaveCriticalSection(&cs_baser_hwnd);
+						html.data	= tcHtmlContent;
+						html.length	= tnHtmlContentLength;
+						if (!iSEM_load_fromMemory(NULL, sem, &html, false, false))
+						{
+							// Allocate
+							iSEM_delete(&sem, true);
 
+							// Indicate failure
+							return(-1);
+						}
+
+
+					// Present the window
+					propSetVisible(loForm, true);
+
+					// Unlock
+					LeaveCriticalSection(&cs_baser_hwnd);
 				}
 
 				// If we get here, invalid window
@@ -722,7 +662,7 @@ extern "C"
 //
 //////
 	// Note:  This algorithm only finds existing hwnds, if not found it does not auto-create it
-	SBaserHwnd* iBaserHwnd_findBy_hwnd(HWND hwnd)
+	SBaserHwnd* iBaserHwnd_findActiveWindow(HWND hwnd)
 	{
 		u32				lnI;
 		SBaserHwnd*		bwin;
@@ -1568,7 +1508,7 @@ quit:
 
 
 		// Search for the hwnd
-		bwin = iBaserHwnd_findBy_hwnd(h);
+		bwin = iBaserHwnd_findActiveWindow(h);
 		if (bwin)
 		{
 			// Dispatch normally

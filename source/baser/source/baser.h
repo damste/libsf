@@ -195,7 +195,7 @@ extern "C" {
 	s32					baser_populate_row											(s32 tnHandle,                      s32 tnOffset, s32 tnBase, s8* tcBufferOut, s32 tnBufferOut_length);
 	s32					baser_parse_block_by_struct									(s32 tnHandle, HWND tnHwndCallback, s32 tnOffset, cs8* cStruct, s32 nStructLength);
 	s32					baser_retrieve_data											(s32 nId, s8* tcDataOut, s32 tnDataOutLength);
-	s32					baser_render_html											(HWND hwnd, s32 left, s32 top, s32 right, s32 bottom, s8* tcHtmlContent, s32 tnHtmlContentLength);
+	s32					baser_render_html											(s8* tcHtmlContent, s32 tnHtmlContentLength);
 	s32					baser_create_htmltemp_file_content							(s8* tcFileOut260, s8* tcFilenamePrefix, s8* tcContent, s32 tnContentLength);
 };
 
@@ -206,7 +206,7 @@ extern "C" {
 	s8*					iiBaser_getFullPathName										(s8* tcFilename, s8 full_pathname[_MAX_PATH]);
 	SBaser*				iBaser_findBy_fullPathname									(s8* tcPathname);
 	SBaser*				iBaser_findBy_handle										(s32 tnHandle);
-	SBaserHwnd*			iBaserHwnd_findBy_hwnd										(HWND hwnd);
+	SBaserHwnd*			iBaserHwnd_findActiveWindow										(HWND hwnd);
 	DWORD				iiBaser_parse_block_by_struct__threadProc					(LPVOID param);
 	void				iiBaser_parse_block_by_struct__threadProc__appendElement	(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, SDatum* dllFuncType, u32 elType, s32 tnSize, s32* tnOffset, SStructDll* currentDll, s32 lnFpLength, s32 lnFpDecimals, bool tlPointer);
 	void				iiBaser_parse_block_by_struct__threadProc__appendDll		(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, SStructDll** currentDllRoot);
