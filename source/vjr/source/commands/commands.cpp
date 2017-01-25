@@ -3366,7 +3366,7 @@ iError_report_byNumber(_ERROR_INCOMPLETE_FEATURE, compSet, false);
 								// IN DBF
 								llInDbf = true;
 
-							} else if (compNext->iCode == _ICODE_ALPHA || _ICODE_ALPHANUMERIC) {
+							} else if (compNext->iCode == _ICODE_ALPHA || compNext->iCode == _ICODE_ALPHANUMERIC) {
 								// IN an alias
 								lnWorkArea = iDbf_get_workArea_byAlias_byName(&dbf, compNext->line->sourceCode->data_s8 + compNext->start, compNext->length);
 								if (lnWorkArea < 0 || !dbf || !dbf->isUsed)
@@ -3437,10 +3437,8 @@ iError_report_byNumber(_ERROR_INCOMPLETE_FEATURE, compSet, false);
 				// Skipping in the DBF
 				iDbf_skip(dbf, lnSkip, true);
 
-			} else {
-				// Skipping naturally
-				iDbf_skip(dbf, lnSkip, false);
 			}
+
 	}
 
 

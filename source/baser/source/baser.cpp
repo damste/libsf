@@ -78,6 +78,7 @@ extern "C"
 			switch (dwReason)
 			{
 				case DLL_PROCESS_ATTACH:
+					ghInstance = GetModuleHandle(NULL);
 					iBaser_initialize();
 					break;
 				
@@ -424,15 +425,19 @@ extern "C"
 		// Sending to a NULL htmlContent or a zero htmlContentLength
 		//
 		//////
-			SObject*	goReuseForm		= NULL;
-			SBitmap		bmpBaserIcon	= NULL;
+			SObject*	goReuseForm				= NULL;
+			SBitmap*	bmpBaserIcon			= NULL;
+			s8			cgcName_screen2[]		= "Content";
 
 			#include "graphics\bitmaps.h"
 
 			s32 baser_render_html(s8* tcHtmlContent, s32 tnHtmlContentLength)
 			{
+				s32			lnResult;
 				SDatum		html;
 				SObject*	loForm;
+				SObject*	_screen;
+				SObject*	_screen_editbox;
 
 
 				// Make sure our environment is sane
@@ -447,11 +452,18 @@ extern "C"
 						// Grab the reuse form
 						loForm = goReuseForm;
 
+						// Locate the _screen and _screen editbox entries
+						_screen			= iObj_find_thisSubform(loForm);
+						_screen_editbox	= iObj_find_rootmostObject(loForm);
+
 					} else {
 						// Create a new form
 						loForm = iObj_create(_OBJ_TYPE_FORM, NULL);
 						if (!loForm)
-							return;
+						{
+							lnResult = -1;
+							goto quit;
+						}
 
 						// Baser
 						if (!bmpBaserIcon)
@@ -461,36 +473,49 @@ extern "C"
 						propSetPictureBmp(_jdebi, bmpBaserIcon);
 						propSetBorderStyle(_jdebi, _BORDER_STYLE_FIXED);
 
+						// Add a subform
+						_screen = iObj_addChild(_OBJ_TYPE_SUBFORM, loForm);
+						propSetName(_screen,		cgcName_screen2,		sizeof(cgcName_screen2) - 1);
+						propSetIcon(_screen,		bmpBaserIcon);
+						propSetBorderStyle(_screen,	_BORDER_STYLE_FIXED);
+						iObj_setSize(_screen,		loForm->rcClient.left, loForm->rcClient.top, loForm->rcClient.right, loForm->rcClient.bottom);
+
 						// Add the editbox
-// TODO:  working here
+						_screen_editbox = iObj_addChild(_OBJ_TYPE_EDITBOX, _screen);
+						propSetVisible(_screen_editbox, _LOGICAL_TRUE);
+						iObj_setSize(_screen_editbox, 8, 0, _screen->rcClient.right - _screen->rcClient.left - 8, _screen->rcClient.bottom - _screen->rcClient.top);
+						_screen_editbox->p.font		= iFont_create(cgcFontName_defaultFixed, 10, FW_MEDIUM, false, false);
+						_screen_editbox->p.sem->isSimpleHtml = true;
+						iEngine_set_event(_EVENT_ONKEYDOWN, NULL, _screen_editbox, (uptr)&iSEM_onKeyDown);
+						propSetVisible(_screen, _LOGICAL_TRUE);
+
+						// Store this form for future reuse
+						goReuseForm = loForm;
 					}
 
 
-// TODO:  working here
 					//////////
 					// Create the html
 					//////
 						html.data	= tcHtmlContent;
 						html.length	= tnHtmlContentLength;
-						if (!iSEM_load_fromMemory(NULL, sem, &html, false, false))
-						{
-							// Allocate
-							iSEM_delete(&sem, true);
-
-							// Indicate failure
-							return(-1);
-						}
+						if (!iSEM_load_fromMemory(NULL, _screen_editbox->p.sem, &html, false, false))
+							return(-2);
 
 
 					// Present the window
 					propSetVisible(loForm, true);
 
+quit:
 					// Unlock
 					LeaveCriticalSection(&cs_baser_hwnd);
+
+					// We're good
+					return(lnResult);
 				}
 
 				// If we get here, invalid window
-				return(-1);
+				return(-3);
 			}
 
 
@@ -548,8 +573,11 @@ extern "C"
 //////
 	void iBaser_initialize(void)
 	{
+		HACCEL hAccelTable;
+
+
 		// Initialize VJr's internal engine
-		iVjr_init_minimal();
+		iVjr_init(&hAccelTable, false);
 
 		// Create our critical sections
 		InitializeCriticalSection(&cs_content_messages);
@@ -651,60 +679,6 @@ extern "C"
 
 		// If we get here, not valid, or valid and not used
 		return(NULL);
-	}
-
-
-
-
-//////////
-//
-// Called to find the indicated SBaserHwnd by hwnd
-//
-//////
-	// Note:  This algorithm only finds existing hwnds, if not found it does not auto-create it
-	SBaserHwnd* iBaserHwnd_findActiveWindow(HWND hwnd)
-	{
-		u32				lnI;
-		SBaserHwnd*		bwin;
-		SBaserHwnd*		bwinFound;
-
-
-		//////////
-		// Lock
-		//////
-			EnterCriticalSection(&cs_baser_hwnd);
-
-
-			//////////
-			// Search for it
-			//////
-				bwinFound = NULL;
-				iterate(lnI, gsBaserWindowsRoot, bwin, SBaserHwnd)
-				// Begin
-
-					// Is this our entry?
-					if (bwin->isUsed && bwin->hwnd == hwnd)
-					{
-						// Yes
-						bwinFound = bwin;
-						break;
-					}
-
-				// End
-				iterate_end;
-
-
-		//////////
-		// Unlock
-		//////
-			LeaveCriticalSection(&cs_baser_hwnd);
-
-
-		//////////
-		// Indicate the status
-		//////
-			return(bwinFound);
-
 	}
 
 
@@ -1438,171 +1412,4 @@ quit:
 		//////
 			SendMessage(hwnd, _WMBASER_CONTENT_IS_READY, _bc, content->populatedLength);
 
-	}
-
-
-
-
-//////////
-//
-// Called to delete the indicated baser hwnd
-//
-//////
-	void iBaserHwnd_delete(SBaserHwnd* bwin)
-	{
-		// Make sure our environment is sane
-		if (bwin)
-		{
-			//////////
-			// Lock
-			//////
-				EnterCriticalSection(&cs_baser_hwnd);
-
-
-				//////////
-				// Clean house
-				//////
-					// Delete the source code
-					iSEM_delete(&bwin->sem, true);
-
-					// Delete the render object
-					iObj_delete(&bwin->obj, true, true, false);
-
-					// Generally reset everything
-					memcpy(bwin, 0, sizeof(SBaserHwnd));
-
-
-			//////////
-			// Unlock
-			//////
-				LeaveCriticalSection(&cs_baser_hwnd);
-
-		}
-	}
-
-
-
-
-//////////
-//
-// Called to render the indicated overlay
-//
-//////
-#ifndef GET_X_LPARAM
-	#define GET_X_LPARAM(lp)   ((int)(short)LOWORD(lp))
-#endif
-#ifndef GET_Y_LPARAM
-	#define GET_Y_LPARAM(lp)   ((int)(short)HIWORD(lp))
-#endif
-
-	// Note:  This wndproc is only the target of subclassed html windows
-	LRESULT CALLBACK iBaserHwnd_wndProc(HWND h, UINT m, WPARAM w, LPARAM l)
-	{
-		bool			llInWindow;
-		s32				lnX, lnY;
-		HDC				lhdc;
-		PAINTSTRUCT		ps;
-		LRESULT			lnResult;
-		SBaserHwnd*		bwin;
-		SComp*			comp;
-
-
-		// Search for the hwnd
-		bwin = iBaserHwnd_findActiveWindow(h);
-		if (bwin)
-		{
-			// Dispatch normally
-			lnResult = CallWindowProc((WNDPROC)bwin->old_wndproc, h, m, w, l);
-
-			// Extract mouse coordinates (just in case)
-			lnX = GET_X_LPARAM(l) - bwin->rc.left;
-			lnY = GET_Y_LPARAM(l) - bwin->rc.top;
-
-			// Are we still in the window?
-			llInWindow = (lnX >= 0 && lnY >= 0 && lnX < bwin->rc.right - bwin->rc.left && lnY < bwin->rc.bottom - bwin->rc.top);
-
-			// Process certain messages
-			switch (m)
-			{
-				case WM_PAINT:
-					// Redraw
-					lhdc = BeginPaint(h, &ps);
-
-					// Populate with whatever's there
-					if (bwin->obj && bwin->obj->bmp)
-						BitBlt(lhdc, 0, 0, bwin->obj->bmp->bi.biWidth, bwin->obj->bmp->bi.biHeight, bwin->obj->bmp->hdc, 0, 0, SRCCOPY);
-
-					// Done
-					EndPaint(h, &ps);
-					return 0;
-
-				case WM_MOUSEMOVE:
-					// Track movement over links
-					bwin->mouseX = lnX;
-					bwin->mouseY = lnY;
-
-					// Iterate through all of our objects and see if any are here
-					if ((comp = iBaserHwnd_findComp_byCoord(bwin)))
-					{
-						// We found an entry
-						if (comp->html->htmlType == _HTML_TYPE_LINK)	LoadCursor(ghInstance, IDC_HAND);
-						else											LoadCursor(ghInstance, IDC_ARROW);
-
-					} else if (!llInWindow && bwin->inWindow) {
-						// We're leaving the window
-						LoadCursor(ghInstance, IDC_ARROW);
-					}
-
-					// Done
-					return 0;
-
-				case WM_LBUTTONUP:
-					// If on a link, click
-					bwin->mouseX = lnX;
-					bwin->mouseY = lnY;
-
-					// Iterate through all of our objects and see if any are here
-					if ((comp = iBaserHwnd_findComp_byCoord(bwin)) && comp->html->htmlType == _HTML_TYPE_LINK)
-					{
-						// They clicked on a link
-// TODO:  working here
-						// Dispatch the url back
-					}
-
-					// Done
-					return 0;
-			}
-
-			// Indicate the called function return result
-			return(lnResult);
-		}
-
-		// If we get here, return the default
-		return(DefWindowProc(h, m, w, l));
-	}
-
-	// Iterate through all of our objects and see if any are here
-	SComp* iBaserHwnd_findComp_byCoord(SBaserHwnd* bwin)
-	{
-		SLine* line;
-		SComp* comp;
-
-
-		// Iterate through each line, then each component
-		for (line = bwin->sem->firstLine; line; line = line->ll.nextLine)
-		{
-			// Are there components on this line?
-			if (line->compilerInfo && line->compilerInfo->firstComp)
-			{
-				// Iterate through comps
-				for (comp = line->compilerInfo->firstComp; comp; iComps_getNth(comp))
-				{
-					// If the mouse is over this component
-// TODO:  working here
-				}
-			}
-		}
-
-		// If we get here, not found
-		return(NULL);
 	}

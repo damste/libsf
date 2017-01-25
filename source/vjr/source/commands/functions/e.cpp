@@ -813,7 +813,7 @@
 
 			if (!result)
 			{
-				iError_report_byNumber(errorNum, iVariable_get_relatedComp(varNumber1), false);
+				iError_report_byNumber(_ERROR_OUT_OF_MEMORY, iVariable_get_relatedComp(varNumber1), false);
 				return;
 			}
 

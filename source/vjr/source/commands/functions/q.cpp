@@ -127,7 +127,7 @@
 			rpar->rp[0] = NULL;
 			if (varParam)
 			{
-				if (!iVariable_isValid(varParam) || !(iVariable_isTypeDate(varParam) || iVariable_isTypeDatetime(varParam) || iVariable_isTypeDatetime(varParam)))
+				if (!iVariable_isValid(varParam) || !(iVariable_isTypeDate(varParam) || iVariable_isTypeDatetime(varParam) || iVariable_isTypeDatetimeX(varParam)))
 				{
 					iError_report_byNumber(_ERROR_INVALID_ARGUMENT_TYPE_COUNT, iVariable_get_relatedComp(varParam), false);
 					return;

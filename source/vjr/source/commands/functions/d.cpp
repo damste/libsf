@@ -925,7 +925,7 @@
 			rpar->rp[0] = NULL;
 			if (varDateOrDatetime)
 			{
-				if (!iVariable_isValid(varDateOrDatetime) || !(iVariable_isTypeDate(varDateOrDatetime) || iVariable_isTypeDatetime(varDateOrDatetime) || iVariable_isTypeDatetime(varDateOrDatetime)))
+				if (!iVariable_isValid(varDateOrDatetime) || !(iVariable_isTypeDate(varDateOrDatetime) || iVariable_isTypeDatetime(varDateOrDatetime) || iVariable_isTypeDatetimeX(varDateOrDatetime)))
 				{
 					iError_report_byNumber(_ERROR_P1_IS_INCORRECT, iVariable_get_relatedComp(varDateOrDatetime), false);
 					return;

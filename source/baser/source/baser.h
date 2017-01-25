@@ -206,7 +206,6 @@ extern "C" {
 	s8*					iiBaser_getFullPathName										(s8* tcFilename, s8 full_pathname[_MAX_PATH]);
 	SBaser*				iBaser_findBy_fullPathname									(s8* tcPathname);
 	SBaser*				iBaser_findBy_handle										(s32 tnHandle);
-	SBaserHwnd*			iBaserHwnd_findActiveWindow										(HWND hwnd);
 	DWORD				iiBaser_parse_block_by_struct__threadProc					(LPVOID param);
 	void				iiBaser_parse_block_by_struct__threadProc__appendElement	(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, SDatum* dllFuncType, u32 elType, s32 tnSize, s32* tnOffset, SStructDll* currentDll, s32 lnFpLength, s32 lnFpDecimals, bool tlPointer);
 	void				iiBaser_parse_block_by_struct__threadProc__appendDll		(SBuilder* builder, SStruct** strRoot, SElement** elRoot, SDatum* name, SStructDll** currentDllRoot);
@@ -225,6 +224,3 @@ extern "C" {
 	void				iiBaser_append_u64											(SBuilder* output, SElement* elData, u64 data);
 	s32					iiBaser_append_type											(SBuilder* output, SElement* elData, SBuilder* structs, s32 tnFileOffset);
 	void				iiBaser_dispatch_contentMessage								(HWND hwnd, SBuilder* content);
-	void				iBaserHwnd_delete											(SBaserHwnd* bwin);
-	LRESULT CALLBACK	iBaserHwnd_wndProc											(HWND h, UINT m, WPARAM w, LPARAM l);
-	SComp*				iBaserHwnd_findComp_byCoord									(SBaserHwnd* bwin);

@@ -285,7 +285,7 @@
 				getAs_s32(lnDay, varP3);
 				
 				// It needs to be 1 <= day <= 31, and we'll test later the validity of the indicated date
-				if (lnMonth < 1 || lnMonth > 31)
+				if (lnDay < 1 || lnDay > 31)
 				{
 					iError_report_byNumber(_ERROR_OUT_OF_RANGE, iVariable_get_relatedComp(varP3), false);
 					return;
