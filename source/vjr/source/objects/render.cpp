@@ -539,6 +539,26 @@
 						seRgba = propSeRgba(obj);
 
 
+
+					//////////
+					// Determine how to draw
+					//////
+						lnAlignment = propAlignment(obj);
+						switch (lnAlignment)
+						{
+							case _ALIGNMENT_RIGHT:
+							case _ALIGNMENT_TOP:
+								llOrientDown = true;
+								break;
+
+							default:
+//							case _ALIGNMENT_LEFT:
+// 							case _ALIGNMENT_BOTTOM:
+								llOrientDown = false;
+								break;
+						}
+
+
 					//////////
 					// Find out how many riders there are, and the size of their texts.
 					/////
@@ -667,25 +687,6 @@
 									// Initially populate with the entire strip with the transparent color
 									//////
 										iBmp_fillRect(obj->p.bmpTabs, &lrc3, maskColor, maskColor, maskColor, maskColor, false, NULL, false);
-
-
-									//////////
-									// Determine how to draw
-									//////
-										lnAlignment = propAlignment(obj);
-										switch (lnAlignment)
-										{
-											case _ALIGNMENT_RIGHT:
-											case _ALIGNMENT_TOP:
-												llOrientDown = true;
-												break;
-
-											default:
-//											case _ALIGNMENT_LEFT:
-// 											case _ALIGNMENT_BOTTOM:
-												llOrientDown = false;
-												break;
-										}
 
 
 									//////////
@@ -849,7 +850,8 @@
 							//////////
 							// Save the cache
 							//////
-								iBmp_createCache(&obj->bc, obj->bmp, nwRgba.color, neRgba.color, swRgba.color, seRgba.color, obj->rc.right - obj->rc.left, obj->rc.bottom - obj->rc.top, obj->bmp->bi.biWidth, obj->bmp->bi.biHeight, (u32)objRider_visible, (u32)varTabText_riderActive, (u32)varTabText_riderActive->value._data, varTabText_riderActive->value.length, lnSha1, 0, true);
+								if (varTabText_riderActive)		iBmp_createCache(&obj->bc, obj->bmp, nwRgba.color, neRgba.color, swRgba.color, seRgba.color, obj->rc.right - obj->rc.left, obj->rc.bottom - obj->rc.top, obj->bmp->bi.biWidth, obj->bmp->bi.biHeight, (u32)objRider_visible, (u32)varTabText_riderActive, (u32)varTabText_riderActive->value._data, varTabText_riderActive->value.length,	lnSha1, 0, true);
+								else							iBmp_createCache(&obj->bc, obj->bmp, nwRgba.color, neRgba.color, swRgba.color, seRgba.color, obj->rc.right - obj->rc.left, obj->rc.bottom - obj->rc.top, obj->bmp->bi.biWidth, obj->bmp->bi.biHeight, (u32)objRider_visible, 0,								0,										0,										lnSha1, 0, true);
 
 						} else {
 							// Copy everything over from the cache

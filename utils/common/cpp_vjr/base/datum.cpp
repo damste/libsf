@@ -128,11 +128,14 @@
 			datum->length = dataLength;
 
 			// Initialize
-			if (datum->data_s8 && dataLength)
-				memset(datum->data_s8, 0, dataLength);
+			if (datum->data_s8)
+			{
+				if (dataLength)
+					memset(datum->data_s8, 0, dataLength);
 
-			// NULL-terminate
-			datum->data_s8[max(dataLength, 1)] = 0;
+				// Be sure to NULL terminate
+				datum->data_s8[max(dataLength, 1)] = 0;
+			}
 
 			// Indicate the pointer
 			return(datum->data_s8);
@@ -201,7 +204,10 @@
 
 			// Store the new length
 			datum->length = dataLength;
-			datum->data_s8[max(dataLength, 1)] = 0;
+
+			// NULL-terminate
+			if (datum->data_s8)
+				datum->data_s8[max(dataLength, 1)] = 0;
 		}
 	}
 
@@ -702,7 +708,10 @@ copy_character:
 
 			// Delete self
 			if (tlDeleteSelf)
+			{
 				free(p);
+				p = NULL;
+			}
 		}
 
 		// Pass-thru

@@ -379,7 +379,7 @@ struct SReturnsParams;
 	void				function_ttotimex							(SReturnsParams* rpar);
 	void				function_ttox								(SReturnsParams* rpar);
 	void				function_type								(SReturnsParams* rpar);
-	void				ifunction_type_common						(SReturnsParams* rpar, SVariable* var, bool tlExtraInfo, bool tlIsVartype, bool tlNullIsType);
+	void				iifunction_type_common						(SReturnsParams* rpar, SVariable* var, bool tlExtraInfo, bool tlIsVartype, bool tlNullIsType);
 	void				function_typedetail							(SReturnsParams* rpar);
 	void				function_upper								(SReturnsParams* rpar);
 	void				function__vjrsys							(SReturnsParams* rpar);

@@ -102,15 +102,16 @@
 			{
 				// We need to allocate the initial data block
 				iDatum_allocateSpace(line->sourceCode, max((s32)_ECM_MINIMUM_LINE_ALLOCATION_LENGTH, newLineLength));
-				line->sourceCode_populatedLength	= 0;
+				line->sourceCode_populatedLength = 0;
+
+			} else {
+				// Is there room from where we are to the new line length?
+				if (line->sourceCode->length > newLineLength)
+					return(true);		// We're good
+
+				// If we get here, we need to reallocate
+				return(iDatum_resize(line->sourceCode, newLineLength + _ECM_MINIMUM_LINE_ALLOCATION_LENGTH));
 			}
-
-			// Is there room from where we are to the new line length?
-			if (line->sourceCode->length > newLineLength)
-				return(true);		// We're good
-
-			// If we get here, we need to reallocate
-			return(iDatum_resize(line->sourceCode, newLineLength + _ECM_MINIMUM_LINE_ALLOCATION_LENGTH));
 		}
 		// If we get here, failure
 		return(false);

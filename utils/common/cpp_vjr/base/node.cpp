@@ -161,7 +161,7 @@
 
 
 		// Make sure the environment is sane
-		if (!rootNode || !between(tnExtrudeDirection, _NODE_MIN, _NODE_MAX))
+		if (!rootNode || !between(tnExtrudeDirection, _NODE_MIN, _NODE_MAX - 1))
 			return(NULL);
 
 		// If nothing already exists there, just create it and it will become the central node
@@ -231,7 +231,7 @@
 
 
 		// Make sure the environment is sane
-		if (!rootNode || !between(tnBump, _NODE_MIN, _NODE_MAX))
+		if (!rootNode || !between(tnBump, _NODE_MIN, _NODE_MAX - 1))
 			return(NULL);
 
 		// If nothing already exists there, just create it and it will become the central node
@@ -289,7 +289,7 @@
 
 
 		// Make sure our environment is sane
-		if (!root || !between(tnDirection, _NODE_MIN, _NODE_MAX))
+		if (!root || !between(tnDirection, _NODE_MIN, _NODE_MAX - 1))
 			return(NULL);
 
 		// Initialize

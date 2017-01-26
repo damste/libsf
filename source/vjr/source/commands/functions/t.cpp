@@ -412,7 +412,9 @@ debug_break;
 		llExtractDatetime	= false;
 		llExtractDatetimeX	= false;
 		lnMillisecond		= 0;
+		lnMicrosecond		= 0;
 		lnNanosecond		= 0;
+		GetLocalTime(&lst);
 		switch (rpar->ipCount)
 		{
 			case 0:
@@ -1859,7 +1861,7 @@ debug_break;
 		//////////
 		// Compute our result
 		//////
-			ifunction_type_common(rpar, var, llExtraInfo, false, false);
+			iifunction_type_common(rpar, var, llExtraInfo, false, false);
 
 
 		//////////
@@ -1870,7 +1872,7 @@ debug_break;
 	}
 
 	// Handles type() and vartype()
-	void ifunction_type_common(SReturnsParams* rpar, SVariable* var, bool tlExtraInfo, bool tlIsVartype, bool tlNullIsType)
+	void iifunction_type_common(SReturnsParams* rpar, SVariable* var, bool tlExtraInfo, bool tlIsVartype, bool tlNullIsType)
 	{
 		s8				c;
 		SBaseClassMap*	baseClassMap;

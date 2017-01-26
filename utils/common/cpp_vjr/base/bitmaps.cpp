@@ -3809,7 +3809,7 @@ return;
 										{
 											case _FILL_RECT_OP_AND:
 												// Maintains the point only if the existing point is already the "ON" color
-												if (lbgr->blu == colorOn.blu && lbgr->grn == colorOn.grn && lbgr->red == colorOn.red)
+												if (lbgra->blu == colorOn.blu && lbgra->grn == colorOn.grn && lbgra->red == colorOn.red)
 												{
 													// It's already the color it needs to be
 
@@ -3826,7 +3826,7 @@ return;
 
 											case _FILL_RECT_OP_XOR:
 												// If either one of them is different, turn it on, otherwise, turn it off
-												if (lbgr->blu != colorOn.blu || lbgr->grn != colorOn.grn || lbgr->red != colorOn.red)
+												if (lbgra->blu != colorOn.blu || lbgra->grn != colorOn.grn || lbgra->red != colorOn.red)
 												{
 													// At least one is not the same as the on color, so turn it on
 													lbgra->color = colorOn.color;

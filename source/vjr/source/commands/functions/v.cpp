@@ -515,7 +515,7 @@
 		//////////
 		// Compute our result
 		//////
-			ifunction_type_common(rpar, var, false, true, llNullIsType);
+			iifunction_type_common(rpar, var, false, true, llNullIsType);
 
 	}
 

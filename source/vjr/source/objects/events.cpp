@@ -408,7 +408,8 @@
 
 
 		// Make sure our environment is sane
-		llResult = true;
+		llResult		= true;
+		llFocusChanged	= false;
 		if (obj)
 		{
 			// Find the associated carousel sub-object
@@ -451,7 +452,8 @@
 
 
 		// Make sure our environment is sane
-		llResult = true;
+		llResult		= true;
+		llFocusChanged	= false;
 		if (obj)
 		{
 			// Find the associated carousel sub-object
@@ -499,7 +501,8 @@
 
 
 		// Make sure our environment is sane
-		llResult = true;
+		llResult		= true;
+		llFocusChanged	= false;
 		if (obj)
 		{
 			// Find the associated carousel sub-object
@@ -548,7 +551,8 @@
 
 
 		// Make sure our environment is sane
-		llResult = true;
+		llResult		= true;
+		llFocusChanged	= false;
 		if (obj)
 		{
 			// Find the associated carousel sub-object

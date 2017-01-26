@@ -2290,8 +2290,8 @@ debug_break;
 		//////
 			if (!(obj && tcFilename && error && errorNum))
 			{
-				*error		= true;
-				*errorNum	= _ERROR_INVALID_PARAMETERS;
+				if (error)			*error		= true;
+				if (errorNum)		*errorNum	= _ERROR_INVALID_PARAMETERS;
 				return(NULL);
 			}
 

@@ -1040,7 +1040,7 @@ try_to_create:
 
 
 		// Make sure our environment is sane
-		if (tcPathname && tcFname && tnFnameLength && tnFnameLength)
+		if (tcPathname && tcFname && tnFnameLength && *tnFnameLength)
 		{
 			// Scan backwards
 			for (lnI = tnFilenameLength - 1, lnLength = 1; lnI > 0; lnI--, lnLength++)

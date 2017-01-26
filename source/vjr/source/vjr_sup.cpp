@@ -384,8 +384,8 @@
 								lnY				= iif(iIsNotNull(xdY),				xdY->as_s32(),		0);
 								lnWidth			= iif(iIsNotNull(xdWidth),			xdWidth->as_s32(),	16);
 								lnHeight		= iif(iIsNotNull(xdHeight),			xdHeight->as_s32(),	16);
-								lnIconWidth		= iif(iIsNotNull(xdIconWidth),		xdIconWidth->as_s32(),	iif(iIsNotNull(objToolbarItem), objToolbarItem->rc.right - objToolbarItem->rc.left, 36));
-								lnIconHeight	= iif(iIsNotNull(xdIconHeight),		xdIconHeight->as_s32(),	iif(iIsNotNull(objToolbarItem), objToolbarItem->rc.bottom - objToolbarItem->rc.top, 36));
+								lnIconWidth		= iif(iIsNotNull(xdIconWidth),		xdIconWidth->as_s32(),	iif(iIsNotNull(objToolbarItem), objToolbarItem->rc.right  - objToolbarItem->rc.left, 36));
+								lnIconHeight	= iif(iIsNotNull(xdIconHeight),		xdIconHeight->as_s32(),	iif(iIsNotNull(objToolbarItem), objToolbarItem->rc.bottom - objToolbarItem->rc.top,  36));
 
 
 							//////////
@@ -1226,6 +1226,7 @@ debug_break;
 		device->lAdditive			= false;
 		device->filenameBuffer[0]	= NULL;
 		varFilename					= NULL;
+		llGetFilename				= false;
 
 		// What came after the TO?
 		compNext = compTo->ll.nextComp;
@@ -1834,6 +1835,7 @@ debug_break;
 					//////
 						// Window name
 						var = iObjProp_get_var_byIndex(obj, _INDEX_NAME);
+						memset(buffer, 0, sizeof(buffer));
 						if (var->varType != _VAR_TYPE_CHARACTER)
 						{
 							// Use a default name

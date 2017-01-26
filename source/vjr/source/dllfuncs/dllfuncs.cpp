@@ -649,7 +649,7 @@ extern "C"
 		void*		funcAddress;
 		SDllFunc*	dfunc;
 		SDllLib*	dlib;
-		char		funcName[_MAX_PATH];
+		char		funcName[_MAX_PATH + 4];
 
 
 		// Make sure the environment is sane
@@ -743,7 +743,7 @@ extern "C"
 				rpar->ei.error		= true;
 				rpar->ei.errorNum	= _ERROR_FUNCTION_NOT_FOUND;
 
-		} else {
+		} else if (rpar) {
 			// Should never happen
 			rpar->ei.error		= true;
 			rpar->ei.errorNum	= _ERROR_INTERNAL_ERROR;
@@ -833,6 +833,7 @@ extern "C"
 		//////////
 		// Open the library
 		//////
+			dllHandle = (HMODULE)-1;
 			if (compDllName->iCode == _ICODE_WIN32API)
 			{
 				// Are they not yet loaded?
@@ -920,8 +921,11 @@ extern "C"
 				dlib = (SDllLib*)iLl_appendNew__llAtEnd((SLL**)&gsRootDllLib, sizeof(SDllLib));
 				if (!dlib)
 				{
-					FreeLibrary(dllHandle);
-					return(NULL);	// Failure
+					if (dllHandle != (HMODULE)-1)
+						FreeLibrary(dllHandle);
+
+					// Failure
+					return(NULL);
 				}
 
 

@@ -136,14 +136,14 @@
 			if (!vxb)
 				vxb = &_vxbLocal;		// Using our temporary one
 
+			// Statistics
+			if (!stats)
+				stats = &_statsLocal;
+
 			// Initialize
 			memset(vxb, 0, sizeof(SVxbContext));
 			vxb->sem	= sem;
 			vxb->stats	= stats;
-
-			// Statistics
-			if (!stats)
-				stats = &_statsLocal;
 
 			// Initialize
 			memset(stats, 0, sizeof(SVxbStats));
@@ -1057,40 +1057,46 @@ void iiComps_decodeSyntax_returns(SVxbContext* vxb)
 		SComp* compNext;
 
 
-		// Iterate through every comp
-		for (comp = compLeftMost; comp; comp = comp->ll.nextComp)
+		// Make sure the environment is sane
+		if (compLeftMost)
 		{
-			//////////
-			// Make sure it has a node
-			//////
-				if (!comp->node)
-					comp->node = iNode_create(&comp->node, comp);
+			// Iterate through every comp
+			for (comp = compLeftMost; comp; comp = comp->ll.nextComp)
+			{
+				//////////
+				// Make sure it has a node
+				//////
+					if (!comp->node)
+						comp->node = iNode_create(&comp->node, comp);
 
 
-			//////////
-			// Hook it up
-			//////
-				if (comp->node)
-				{
-					// If there's a component before, hook up its node
-					if ((compPrev = comp->ll.prevComp) && compPrev->node && !compPrev->node->n[_NODE_E])
+				//////////
+				// Hook it up
+				//////
+					if (comp->node)
 					{
-						comp->node->n[_NODE_W]		= compPrev->node;			// New points west to previous node
-						compPrev->node->n[_NODE_E]	= comp->node;				// Previous points east to new
+						// If there's a component before, hook up its node
+						if ((compPrev = comp->ll.prevComp) && compPrev->node && !compPrev->node->n[_NODE_E])
+						{
+							comp->node->n[_NODE_W]		= compPrev->node;			// New points west to previous node
+							compPrev->node->n[_NODE_E]	= comp->node;				// Previous points east to new
+						}
+
+						// If there's a component after, hook up its node
+						if ((compNext = comp->ll.nextComp) && compNext->node && !compNext->node->n[_NODE_W])
+						{
+							comp->node->n[_NODE_E]		= compNext->node;			// New points east to next node
+							compNext->node->n[_NODE_W]	= comp->node;				// Next node points points west to new
+						}
 					}
 
-					// If there's a component after, hook up its node
-					if ((compNext = comp->ll.nextComp) && compNext->node && !compNext->node->n[_NODE_W])
-					{
-						comp->node->n[_NODE_E]		= compNext->node;			// New points east to next node
-						compNext->node->n[_NODE_W]	= comp->node;				// Next node points points west to new
-					}
-				}
+			}
 
+			// Return self
+			return(compLeftMost->node);
 		}
-
-		// Return self
-		return(compLeftMost->node);
+		// If we get here, invalid param
+		return(NULL);
 	}
 
 
@@ -1749,7 +1755,10 @@ finished:
 		}
 
 		// If we get here, no mate
-		*tnMateDirection = 0;
+		if (tnMateDirection)
+			*tnMateDirection = 0;
+
+		// Indicate no match
 		return(false);
 	}
 
@@ -2001,7 +2010,7 @@ finished:
 		if (compAnchor && iComps_get_mateDirection(compAnchor, &lnDirection, &lniCode_mate))
 		{
 			// Iterate until we find it
-			for (comp = iComps_getNth(compAnchor, lnDirection), lnCount = 1, lnLevel == 0; comp; comp = iComps_getNth(comp, lnDirection), lnCount++)
+			for (comp = iComps_getNth(compAnchor, lnDirection), lnCount = 1, lnLevel = 0; comp; comp = iComps_getNth(comp, lnDirection), lnCount++)
 			{
 				// What is it?
 				if (comp->iCode == compAnchor->iCode)
@@ -3994,6 +4003,7 @@ if (tniCodeNeedle == _ICODE_SINGLE_QUOTE)
 
 
 		// Only works with double-quote or single-quote values
+		lnValue = 0;
 		if (comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data && (comp->iCode == _ICODE_SINGLE_QUOTED_TEXT || comp->iCode == _ICODE_DOUBLE_QUOTED_TEXT))
 		{
 			// Grab our pointer
@@ -4004,7 +4014,7 @@ if (tniCodeNeedle == _ICODE_SINGLE_QUOTE)
 			else														lnOffset = 1;
 
 			// Extract out up to eight hex digits
-			for (lnI = 0, lnValue = 0; lnI < 8 && lnI + lnOffset < comp->length && (c = isHexDigit(ptr[lnI + lnOffset])) != 255; lnI++)
+			for (lnI = 0; lnI < 8 && lnI + lnOffset < comp->length && (c = isHexDigit(ptr[lnI + lnOffset])) != 255; lnI++)
 				lnValue = (lnValue << 4) | c;
 		}
 
@@ -4021,6 +4031,7 @@ if (tniCodeNeedle == _ICODE_SINGLE_QUOTE)
 
 
 		// Only works with double-quote or single-quote values
+		lnValue = 0;
 		if (comp && comp->line && comp->line->sourceCode && comp->line->sourceCode->data && (comp->iCode == _ICODE_SINGLE_QUOTED_TEXT || comp->iCode == _ICODE_DOUBLE_QUOTED_TEXT))
 		{
 			// Grab our pointer
@@ -4031,7 +4042,7 @@ if (tniCodeNeedle == _ICODE_SINGLE_QUOTE)
 			else														lnOffset = 1;
 
 			// Extract out up to six digits
-			for (lnI = 0, lnValue = 0; lnI < 16 && lnI + lnOffset < comp->length && (c = isHexDigit(ptr[lnI + lnOffset])) != 255; lnI++)
+			for (lnI = 0; lnI < 16 && lnI + lnOffset < comp->length && (c = isHexDigit(ptr[lnI + lnOffset])) != 255; lnI++)
 				lnValue = (lnValue << 4) | c;
 		}
 
@@ -4271,7 +4282,7 @@ if (tniCodeNeedle == _ICODE_SINGLE_QUOTE)
 			//////////
 			// Do we need to add in the last component?
 			//////
-				if (!comp->ll.next && llAtLeastOne && llIsValid && lnThisSpacing == 0)
+				if (comp && !comp->ll.next && llAtLeastOne && llIsValid && lnThisSpacing == 0)
 				{
 					// Validate if need be
 					if (tnValid_iCodeArrayCount > 0 && valid_iCodeArray)
@@ -5123,14 +5134,16 @@ if (tniCodeNeedle == _ICODE_SINGLE_QUOTE)
 					if (tlPrepend)
 					{
 						// Previous ptrSE->root points backward to ptrNew, which is now the entry pointed to by ptrSE->root
-						ptrPrev->ll.prev	= (SLL*)ptrNew;		// Old first entry points backward to new first entry
-						ptrNew->ll.next		= (SLL*)ptrPrev;	// New first entry points forward to old first entry
-						ptrSE->root			= ptrNew;			// New first entry
+						if (ptrPrev)
+							ptrPrev->ll.prev	= (SLL*)ptrNew;		// Old first entry points backward to new first entry
+
+						ptrNew->ll.next			= (SLL*)ptrPrev;	// New first entry points forward to old first entry
+						ptrSE->root				= ptrNew;			// New first entry
 
 					} else {
 						// We are appending to the end
-						ptrNew->ll.prev		= (SLL*)ptrPrev;	// Previous last entry pointing forward to new last entry
-						ptrSE->last			= ptrNew;			// New last entry
+						ptrNew->ll.prev			= (SLL*)ptrPrev;	// Previous last entry pointing forward to new last entry
+						ptrSE->last				= ptrNew;			// New last entry
 					}
 
 					// Store it in the master list (so when VM is suspended, this data gets saved)
@@ -9178,7 +9191,7 @@ do_as_numeric:
 						break;
 				}
 
-		} else {
+		} else if (ei) {
 			// Internal error of some kind
 			ei->error		= true;
 			ei->errorNum	= _ERROR_INTERNAL_ERROR;
@@ -9317,7 +9330,7 @@ do_as_numeric:
 						break;
 				}
 
-		} else {
+		} else if (ei) {
 			// Internal error of some kind
 			ei->error		= true;
 			ei->errorNum	= _ERROR_INTERNAL_ERROR;
@@ -13507,7 +13520,8 @@ debug_break;
 				} else if (varLeft->varType == _VAR_TYPE_DATETIMEX) {
 					// DatetimeX values can be compared to datetimeX values, or 64-bit numeric values
 					iiDateMath_get_YyyyMmDdHhMmSsMssNss_from_jseconds(varLeft->value.data_dtx->jseconds, NULL, &lnYear, &lnMonth, &lnDay, &lnHour, &lnMinute, &lnSecond, &lnMillisecond, &lnMicrosecond);
-					lnDatetime = iiDateMath_get_jseconds_from_YyyyMmDdHhMmSsMssMics(NULL, lnYear, lnMonth, lnDay, lnHour, lnMinute, lnSecond, lnMillisecond, lnMicrosecond);
+					lnDatetime	= iiDateMath_get_jseconds_from_YyyyMmDdHhMmSsMssMics(NULL, lnYear, lnMonth, lnDay, lnHour, lnMinute, lnSecond, lnMillisecond, lnMicrosecond);
+					lnDatetime2	= lnDatetime;
 
 
 					//////////
@@ -15351,18 +15365,16 @@ goto_next_component:
 
 				}
 
-		} else {
+		} else if (cb) {
 			// Something's invalid in our parameters
-			if (cb)
-			{
-				cb->line	= NULL;
-				cb->comp	= NULL;
-				cb->flag	= false;
-			}
+			cb->line	= NULL;
+			cb->comp	= NULL;
+			cb->flag	= false;
 		}
 
 		// Indicate our return value
-		return(cb->flag);
+		if (cb)		return(cb->flag);
+		else		return(false);
 	}
 
 
@@ -15500,7 +15512,7 @@ debug_break;
 			// Last line
 			//////
 				// Create the new last line
-				if (lineCopy != lineEnd)
+				if (lineCopy && lineCopy != lineEnd)
 				{
 					// New line
 					lineNew = iLine_appendNew(lineNew, true);

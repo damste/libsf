@@ -1988,7 +1988,7 @@ debug_break;
 							++lnLevel;
 						}
 					}
-				} while (comp);
+				} while (compRunner);
 				// If we get here, not found
 			}
 		}
@@ -3221,7 +3221,8 @@ renderAsOnlyText:
 		}
 
 		// Signal the arrival on this line
-		iExtraInfo_arrival(sem, sem->line_cursor);
+		if (sem)
+			iExtraInfo_arrival(sem, sem->line_cursor);
 
 		// If something has changed, we need to re-render
 		iObj_setDirtyRender_ascent(obj, true);
@@ -3706,32 +3707,35 @@ renderAsOnlyText:
 					hpenOld	= (HPEN)SelectObject(v.bmp->hdc, CreatePen(PS_SOLID, 1, RGB(v.colorLink.red, v.colorLink.grn, v.colorLink.blu)));
 					// Begin pen operations
 
-						iterate(lnI, sem->aHrefRects, ahref, SSEM_aHref)
-						// Start
+						if (sem->aHrefRects)
+						{
+							iterate(lnI, sem->aHrefRects, ahref, SSEM_aHref)
+							// Start
 
-							// If there are links here, see if they're on screen
-							if (ahref->rcArray)
-							{
-								iterate(lnJ, ahref->rcArray, rc, RECT)
-								// Start
+								// If there are links here, see if they're on screen
+								if (ahref->rcArray)
+								{
+									iterate(lnJ, ahref->rcArray, rc, RECT)
+									// Start
 
-									// Is at least part of the rectangle visible on the screen
-									if (between(rc->top, 0, v.lnHeight) || between(rc->bottom, 0, v.lnHeight))
-									{
-										if (between(rc->left, 0, v.lnWidth) || between(rc->right, 0, v.lnWidth))
+										// Is at least part of the rectangle visible on the screen
+										if (between(rc->top, 0, v.lnHeight) || between(rc->bottom, 0, v.lnHeight))
 										{
-											// At least part of it is visible
-											MoveToEx(v.bmp->hdc,	rc->left,	rc->bottom - 1,	NULL);
-											LineTo(v.bmp->hdc,		rc->right,	rc->bottom - 1);
+											if (between(rc->left, 0, v.lnWidth) || between(rc->right, 0, v.lnWidth))
+											{
+												// At least part of it is visible
+												MoveToEx(v.bmp->hdc,	rc->left,	rc->bottom - 1,	NULL);
+												LineTo(v.bmp->hdc,		rc->right,	rc->bottom - 1);
+											}
 										}
-									}
 
-								// End
-								iterate_end
-							}
+									// End
+									iterate_end
+								}
 
-						// End
-						iterate_end
+							// End
+							iterate_end
+						}
 
 					// End pen operations
 					SelectObject(v.bmp->hdc, hpenOld);
@@ -3872,8 +3876,10 @@ error_exit:
 					// It's "#rgb"
 					if (iMath_getAs_rgb(v.comp->line->sourceCode->data_u8 + 2, &lnBlu, &lnGrn, &lnRed))
 						color.color = bgr(lnBlu, lnGrn, lnRed);
+
+				} else {
+					return;
 				}
-				//else We don't know what it is, so ignore it
 
 			} else {
 				// It's color
@@ -3887,6 +3893,9 @@ error_exit:
 					// It's "rgb"
 					if (iMath_getAs_rgb(v.comp->line->sourceCode->data_u8 + 1, &lnBlu, &lnGrn, &lnRed))
 						color.color = bgr(lnBlu, lnGrn, lnRed);
+
+				} else {
+					return;
 				}
 			}
 
@@ -4496,7 +4505,7 @@ error_exit:
 
 				} else {
 					// Use the default function
-					memcpy(dllFunc, defaultFunc, strlen(defaultFunc));
+					memcpy(dllFunc, defaultFunc, min(strlen(defaultFunc) + 1, sizeof(dllFunc) - 1));
 				}
 
 

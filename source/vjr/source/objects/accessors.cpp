@@ -118,12 +118,15 @@
 	SDatum* iObjProp_get_name_asDatum(s32 tnIndex, SDatum** nameToUpdate)
 	{
 		// Make sure the environment is sane
-		nameToUpdate = 0;
 		if (nameToUpdate && tnIndex <= gnProps_masterSize)
 		{
 			// Store the raw property entries (if requested)
 			(*nameToUpdate)->data_cs8	= gsProps_master[tnIndex - 1].propName_s8;
 			(*nameToUpdate)->length		= gsProps_master[tnIndex - 1].propNameLength;
+
+		} else if (nameToUpdate) {
+			// Nothing to store
+			*nameToUpdate = NULL;
 		}
 
 		// Indicate our name
