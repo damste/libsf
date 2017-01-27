@@ -137,7 +137,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="cdx.def">
+    <None Include="..\cdx.def">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>

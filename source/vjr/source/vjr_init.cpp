@@ -308,7 +308,7 @@
 		// Create our main screen window
 #if !defined(_NONVJR_COMPILE)
 		iVjr_appendSystemLog((u8*)"TEMPORARY:  Manually create _jdebi");
-		iVjr_init_jdebi_create();
+//		iVjr_init_jdebi_create();
 
 		// Initially render each one
 		iVjr_appendSystemLog((u8*)"Render _jdebi");
@@ -317,7 +317,7 @@
 		// Attach them to physical windows
 		iVjr_appendSystemLog((u8*)"Allocate OS Window for _jdebi");
 		gWinJDebi = iWindow_allocate();
-		iObj_createWindowForForm(_jdebi, gWinJDebi, IDI_JDEBI);
+//		iObj_createWindowForForm(_jdebi, gWinJDebi, IDI_JDEBI);
 
 		// Initially populate _screen
 		// Load in the history if it exists
