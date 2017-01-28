@@ -137,7 +137,7 @@
 		}
 	}
 
-	void iVjr_init(HACCEL* hAccelTable, bool tlInitializeSound)
+	void iVjr_init(HACCEL* hAccelTable, bool tlInitializeSound, bool tlCreateJDebiWindow)
 	{
 		SThisCode*		thisCode = NULL;
 		RECT			lrc;
@@ -307,91 +307,98 @@
 
 		// Create our main screen window
 #if !defined(_NONVJR_COMPILE)
-		iVjr_appendSystemLog((u8*)"TEMPORARY:  Manually create _jdebi");
-//		iVjr_init_jdebi_create();
+		if (tlCreateJDebiWindow)
+		{
+			iVjr_appendSystemLog((u8*)"TEMPORARY:  Manually create _jdebi");
+			iVjr_init_jdebi_create();
 
-		// Initially render each one
-		iVjr_appendSystemLog((u8*)"Render _jdebi");
-		iObj_render(_jdebi, true);
+			// Initially render each one
+			iVjr_appendSystemLog((u8*)"Render _jdebi");
+			iObj_render(_jdebi, true);
 
-		// Attach them to physical windows
-		iVjr_appendSystemLog((u8*)"Allocate OS Window for _jdebi");
-		gWinJDebi = iWindow_allocate();
-//		iObj_createWindowForForm(_jdebi, gWinJDebi, IDI_JDEBI);
+			// Attach them to physical windows
+			iVjr_appendSystemLog((u8*)"Allocate OS Window for _jdebi");
+			gWinJDebi = iWindow_allocate();
+#ifdef IDI_JDEBI
+			iObj_createWindowForForm(_jdebi, gWinJDebi, IDI_JDEBI);
+#else
+			iObj_createWindowForForm(_jdebi, gWinJDebi, -1);
+#endif
 
-		// Initially populate _screen
-		// Load in the history if it exists
-// Added temporarily
+			// Initially populate _screen
+			// Load in the history if it exists
+// Added temporarily to allow changes made to the html block below to be persistent
 iDisk_deleteFile((cs8*)cgcScreenDataFilename);
-		if (!iSEM_load_fromDisk(NULL, screenData, cgcScreenDataFilename, false, true))
-		{
-			// Indicate success
-			sprintf((s8*)logBuffer, "Loaded: %s\0", cgcScreenDataFilename);
-			iSEM_appendLine(_output_editbox->p.sem, logBuffer, (s32)strlen(logBuffer), false);
-			iVjr_appendSystemLog((u8*)"Populate _screen with default data");
-			iSEM_appendLine(screenData, (u8*)cgcScreenTitle);
-			iSEM_appendLine(screenData, (u8*)"<br>");
-			iSEM_appendLine(screenData, (u8*)"Please report any bugs:  <b><a href=\"http://www.visual-freepro.org/wiki/index.php/VXB\">Visual FreePro, Jr. Wiki</a></b><br>");
-			iSEM_appendLine(screenData, (u8*)"Thank you, and may the <color=\"D00\"><b>Lord Jesus Christ</b><color=\"000\"> bless you richly. <bgcolor=\"FF0\"><m>:-)</m><bgcolor=\"FFF\"><br>");
-			iSEM_appendLine(screenData, (u8*)"<m><s=10><a href=\"dllfunc:test.dll::ink()\">Ink</a> <a href=\"dllfunc:test.dll::bink()\">Bink</a> <a href=\"dllfunc:test.dll::bonk()\">Bonk</a><br>");
-			iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"ffe030\">              <bgcolor=\"f02020\">                   <bgcolor=\"FFF\"><br>");
-			iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"ffe030\">             <bgcolor=\"FFF\">       <bgcolor=\"f02020\">             <bgcolor=\"FFF\">    In <color=\"D00\"><b>God's</b><color=\"000\"> sight we've come together.<br>");
-			iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"ffe030\">      <bgcolor=\"f02020\">  <bgcolor=\"ffe030\">     <bgcolor=\"FFF\">       <bgcolor=\"f02020\">             <bgcolor=\"FFF\">    We've come together to help each other.<br>");
-			iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"ffe030\">             <bgcolor=\"FFF\">       <bgcolor=\"f02020\">             <bgcolor=\"FFF\">    Let's grow this project up ... together! <br>");
-			iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"ffe030\">    <bgcolor=\"FFF\">                         <bgcolor=\"f02020\">    <bgcolor=\"FFF\">    In service and love to <color=\"D00\"><b>The Lord</b><color=\"000\">, forever! <br>");
-			iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"ffe030\">    <bgcolor=\"FFF\">                         <bgcolor=\"f02020\">    <bgcolor=\"FFF\">    <br>");
-			iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"ffe030\">    <bgcolor=\"FFF\">                         <bgcolor=\"1050ff\">    <bgcolor=\"FFF\">      Sponsored by:<br>");
-			iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"ffe030\">             <bgcolor=\"FFF\">       <bgcolor=\"1050ff\">             <bgcolor=\"FFF\">         LibSF -- Liberty Software Foundation<br>");
-			iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"ffe030\">             <bgcolor=\"FFF\">       <bgcolor=\"1050ff\">             <bgcolor=\"FFF\">    <br>");
-			iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"20a020\">             <bgcolor=\"FFF\">       <bgcolor=\"1050ff\">             <bgcolor=\"FFF\">      <a href=\"http://www.visual-freepro.org/wiki/index.php/VXB#Contributions\">Contributions:</a><br>");
-			iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"20a020\">             <bgcolor=\"FFF\">       <bgcolor=\"1050ff\">             <bgcolor=\"FFF\">         <a href=\"http://www.visual-freepro.org/wiki/index.php/Hernan_Cano\">Hernan Cano</a>, <a href=\"http://www.visual-freepro.org/wiki/index.php/Stefano_D%27Amico\">Stefano D'Amico</a><br>");
-			iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"20a020\">             <bgcolor=\"FFF\">       <bgcolor=\"1050ff\">             <bgcolor=\"FFF\">    <br>");
-			iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"20a020\">             <bgcolor=\"FFF\">       <bgcolor=\"1050ff\">             <bgcolor=\"FFF\">    Lead Project Contact:  <a href=\"http://www.visual-freepro.org/wiki/index.php/Rick_C._Hodgin\">Rick C. Hodgin</a> (<a href=\"mailto:rick.c.hodgin@gmail.com\">email</a>)<br>");
-			iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"20a020\">             <bgcolor=\"FFF\">       <bgcolor=\"1050ff\">             <bgcolor=\"FFF\">    <br>");
-			iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"20a020\">             <bgcolor=\"FFF\">       <bgcolor=\"1050ff\">             <bgcolor=\"FFF\">    We need more coders. Please consider helping out.<br>");
-			iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"20a020\">             <bgcolor=\"FFF\">       <bgcolor=\"1050ff\">             <bgcolor=\"FFF\">    Your contribution would make a difference. <bgcolor=\"FF0\">:-)<bgcolor=\"FFF\"><br>");
-			iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"20a020\">                    <bgcolor=\"1050ff\">             <bgcolor=\"FFF\"></m><br>");
-			iSEM_appendLine(screenData, (u8*)"<br>", -1, true);
-		}
-		// Navigate to the end of the content
-		iSEM_navigateToEndLine(screenData, _screen);
+			if (!iSEM_load_fromDisk(NULL, screenData, cgcScreenDataFilename, false, true))
+			{
+				// Indicate success
+				sprintf((s8*)logBuffer, "Loaded: %s\0", cgcScreenDataFilename);
+				iSEM_appendLine(_output_editbox->p.sem, logBuffer, (s32)strlen(logBuffer), false);
+				iVjr_appendSystemLog((u8*)"Populate _screen with default data");
+				iSEM_appendLine(screenData, (u8*)cgcScreenTitle);
+				iSEM_appendLine(screenData, (u8*)"<br>");
+				iSEM_appendLine(screenData, (u8*)"Please report any bugs:  <b><a href=\"http://www.visual-freepro.org/wiki/index.php/VXB\">Visual FreePro, Jr. Wiki</a></b><br>");
+				iSEM_appendLine(screenData, (u8*)"Thank you, and may the <color=\"D00\"><b>Lord Jesus Christ</b><color=\"000\"> bless you richly. <bgcolor=\"FF0\"><m>:-)</m><bgcolor=\"FFF\"><br>");
+				iSEM_appendLine(screenData, (u8*)"<m><s=10><a href=\"dllfunc:test.dll::ink()\">Ink</a> <a href=\"dllfunc:test.dll::bink()\">Bink</a> <a href=\"dllfunc:test.dll::bonk()\">Bonk</a><br>");
+				iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"ffe030\">              <bgcolor=\"f02020\">                   <bgcolor=\"FFF\"><br>");
+				iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"ffe030\">             <bgcolor=\"FFF\">       <bgcolor=\"f02020\">             <bgcolor=\"FFF\">    In <color=\"D00\"><b>God's</b><color=\"000\"> sight we've come together.<br>");
+				iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"ffe030\">      <bgcolor=\"f02020\">  <bgcolor=\"ffe030\">     <bgcolor=\"FFF\">       <bgcolor=\"f02020\">             <bgcolor=\"FFF\">    We've come together to help each other.<br>");
+				iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"ffe030\">             <bgcolor=\"FFF\">       <bgcolor=\"f02020\">             <bgcolor=\"FFF\">    Let's grow this project up ... together! <br>");
+				iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"ffe030\">    <bgcolor=\"FFF\">                         <bgcolor=\"f02020\">    <bgcolor=\"FFF\">    In service and love to <color=\"D00\"><b>The Lord</b><color=\"000\">, forever! <br>");
+				iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"ffe030\">    <bgcolor=\"FFF\">                         <bgcolor=\"f02020\">    <bgcolor=\"FFF\">    <br>");
+				iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"ffe030\">    <bgcolor=\"FFF\">                         <bgcolor=\"1050ff\">    <bgcolor=\"FFF\">      Sponsored by:<br>");
+				iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"ffe030\">             <bgcolor=\"FFF\">       <bgcolor=\"1050ff\">             <bgcolor=\"FFF\">         LibSF -- Liberty Software Foundation<br>");
+				iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"ffe030\">             <bgcolor=\"FFF\">       <bgcolor=\"1050ff\">             <bgcolor=\"FFF\">    <br>");
+				iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"20a020\">             <bgcolor=\"FFF\">       <bgcolor=\"1050ff\">             <bgcolor=\"FFF\">      <a href=\"http://www.visual-freepro.org/wiki/index.php/VXB#Contributions\">Contributions:</a><br>");
+				iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"20a020\">             <bgcolor=\"FFF\">       <bgcolor=\"1050ff\">             <bgcolor=\"FFF\">         <a href=\"http://www.visual-freepro.org/wiki/index.php/Hernan_Cano\">Hernan Cano</a>, <a href=\"http://www.visual-freepro.org/wiki/index.php/Stefano_D%27Amico\">Stefano D'Amico</a><br>");
+				iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"20a020\">             <bgcolor=\"FFF\">       <bgcolor=\"1050ff\">             <bgcolor=\"FFF\">    <br>");
+				iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"20a020\">             <bgcolor=\"FFF\">       <bgcolor=\"1050ff\">             <bgcolor=\"FFF\">    Lead Project Contact:  <a href=\"http://www.visual-freepro.org/wiki/index.php/Rick_C._Hodgin\">Rick C. Hodgin</a> (<a href=\"mailto:rick.c.hodgin@gmail.com\">email</a>)<br>");
+				iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"20a020\">             <bgcolor=\"FFF\">       <bgcolor=\"1050ff\">             <bgcolor=\"FFF\">    <br>");
+				iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"20a020\">             <bgcolor=\"FFF\">       <bgcolor=\"1050ff\">             <bgcolor=\"FFF\">    We need more coders. Please consider helping out.<br>");
+				iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"20a020\">             <bgcolor=\"FFF\">       <bgcolor=\"1050ff\">             <bgcolor=\"FFF\">    Your contribution would make a difference. <bgcolor=\"FF0\">:-)<bgcolor=\"FFF\"><br>");
+				iSEM_appendLine(screenData, (u8*)"  <bgcolor=\"20a020\">                    <bgcolor=\"1050ff\">             <bgcolor=\"FFF\"></m><br>");
+				iSEM_appendLine(screenData, (u8*)"<br>", -1, true);
+			}
+			// Navigate to the end of the content
+			iSEM_navigateToEndLine(screenData, _screen);
 
-		// Initially populate _jdebi
-		// Load in the history if it exists
-		if (!iSEM_load_fromDisk(NULL, _command_editbox->p.sem, cgcCommandHistoryFilename, true, true))
-		{
-			// Indicate success
-			sprintf((s8*)logBuffer, "Loaded: %s\0", cgcCommandHistoryFilename);
-			iSEM_appendLine(_output_editbox->p.sem, logBuffer, (s32)strlen(logBuffer), false);
-			iSEM_appendLine(_command_editbox->p.sem, (u8*)"*** Welcome to Visual FreePro, Junior! :-)", -1, false);
-			iSEM_appendLine(_command_editbox->p.sem, (u8*)"*** For now, this can be thought of as a command window ... with a twist.", -1, false);
-			iSEM_appendLine(_command_editbox->p.sem, (u8*)"*** It works like an editor window.  You can insert new lines, edit old ones, etc.", -1, false);
-			iSEM_appendLine(_command_editbox->p.sem, (u8*)"*** To execute a command, press F6. If you're on the last line use F6 or Enter.", -1, false);
-			iSEM_appendLine(_command_editbox->p.sem, (u8*)"*** See http://www.visual-freepro.org/wiki/index.php/VXB for supported commands.", -1, false);
-			iSEM_appendLine(_command_editbox->p.sem, (u8*)"*** Remember always:  Love makes you smile. It keeps an inner peace like no other. :-)", -1, false);
-		}
+			// Initially populate _jdebi
+			// Load in the history if it exists
+			if (!iSEM_load_fromDisk(NULL, _command_editbox->p.sem, cgcCommandHistoryFilename, true, true))
+			{
+				// Indicate success
+				sprintf((s8*)logBuffer, "Loaded: %s\0", cgcCommandHistoryFilename);
+				iSEM_appendLine(_output_editbox->p.sem, logBuffer, (s32)strlen(logBuffer), false);
+				iSEM_appendLine(_command_editbox->p.sem, (u8*)"*** Welcome to Visual FreePro, Junior! :-)", -1, false);
+				iSEM_appendLine(_command_editbox->p.sem, (u8*)"*** For now, this can be thought of as a command window ... with a twist.", -1, false);
+				iSEM_appendLine(_command_editbox->p.sem, (u8*)"*** It works like an editor window.  You can insert new lines, edit old ones, etc.", -1, false);
+				iSEM_appendLine(_command_editbox->p.sem, (u8*)"*** To execute a command, press F6. If you're on the last line use F6 or Enter.", -1, false);
+				iSEM_appendLine(_command_editbox->p.sem, (u8*)"*** See http://www.visual-freepro.org/wiki/index.php/VXB for supported commands.", -1, false);
+				iSEM_appendLine(_command_editbox->p.sem, (u8*)"*** Remember always:  Love makes you smile. It keeps an inner peace like no other. :-)", -1, false);
+			}
 
-		// Navigate to the last line
-		iSEM_navigateToEndLine(_command_editbox->p.sem, _command_editbox);
-
-		// Make sure there's a blank line at the end
-		if (_command_editbox->p.sem->line_cursor->sourceCode_populatedLength != 0)
-		{
-			iSEM_appendLine(_command_editbox->p.sem, NULL, 0, false);
+			// Navigate to the last line
 			iSEM_navigateToEndLine(_command_editbox->p.sem, _command_editbox);
-		}
 
-		// Load some source code
-		if (iSEM_load_fromDisk(_sourceCode_rider, _sourceCode_editbox->p.sem, cgcStartupPrgFilename, true, true))
-		{
-			// Indicate success
-			sprintf((s8*)logBuffer, "Loaded: %s\0", cgcStartupPrgFilename);
-			iSEM_appendLine(_output_editbox->p.sem, logBuffer, (s32)strlen(logBuffer), false);
-		}
+			// Make sure there's a blank line at the end
+			if (_command_editbox->p.sem->line_cursor->sourceCode_populatedLength != 0)
+			{
+				iSEM_appendLine(_command_editbox->p.sem, NULL, 0, false);
+				iSEM_navigateToEndLine(_command_editbox->p.sem, _command_editbox);
+			}
 
-		// Redraw
-		iVjr_appendSystemLog((u8*)"Final render _jdebi");
-		iWindow_render(gWinJDebi, true);
+			// Load some source code
+			if (iSEM_load_fromDisk(_sourceCode_rider, _sourceCode_editbox->p.sem, cgcStartupPrgFilename, true, true))
+			{
+				// Indicate success
+				sprintf((s8*)logBuffer, "Loaded: %s\0", cgcStartupPrgFilename);
+				iSEM_appendLine(_output_editbox->p.sem, logBuffer, (s32)strlen(logBuffer), false);
+			}
+
+			// Redraw
+			iVjr_appendSystemLog((u8*)"Final render _jdebi");
+			iWindow_render(gWinJDebi, true);
+		}
 
 		// Remove the splash screen 1/2 second later
 		CreateThread(0, 0, &iSplash_delete, (LPVOID)500, 0, 0);
@@ -409,7 +416,7 @@ iDisk_deleteFile((cs8*)cgcScreenDataFilename);
 		params._func_idle			= (uptr)&iGrace_idle;
 		CreateThread(0, 0, &iGrace, (LPVOID)&params, 0, 0);
 #endif
-#endif
+#endif	// !defined(_NONVJR_COMPILE)
 	}
 
 

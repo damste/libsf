@@ -58,7 +58,6 @@
 //////////
 // Uses Visual FreePro, Jr's existing facilities to simplify our processing
 //////
-//	#define _NONVJR_COMPILE		// Turns off some features in VJr that fail on compilation from here
 	#define _BMP_LOCALITY 1		// Force definitions to be local
 	#define _WIN32_WINNT 0x0601
 	#include "\libsf\source\vjr\source\vjr.h"
@@ -577,7 +576,7 @@ quit:
 
 
 		// Initialize VJr's internal engine
-		iVjr_init(&hAccelTable, false);
+		iVjr_init(&hAccelTable, false, false);
 
 		// Create our critical sections
 		InitializeCriticalSection(&cs_content_messages);
