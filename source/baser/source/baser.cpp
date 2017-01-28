@@ -424,6 +424,7 @@ extern "C"
 		// Sending to a NULL htmlContent or a zero htmlContentLength
 		//
 		//////
+			SWindow*	gWinBaser				= NULL;
 			SObject*	goReuseForm				= NULL;
 			SBitmap*	bmpBaserIcon			= NULL;
 			s8			cgcName_screen2[]		= "Content";
@@ -440,10 +441,15 @@ extern "C"
 
 
 				// Make sure our environment is sane
+				lnResult = -1;
 				if (tcHtmlContent && tnHtmlContentLength)
 				{
+
+					//////////
 					// Lock
-					EnterCriticalSection(&cs_baser_hwnd);
+					//////
+						EnterCriticalSection(&cs_baser_hwnd);
+
 
 					// If we're re-using an existing window
 					if (goReuseForm)
@@ -452,44 +458,60 @@ extern "C"
 						loForm = goReuseForm;
 
 						// Locate the _screen and _screen editbox entries
-						_screen			= iObj_find_thisSubform(loForm);
-						_screen_editbox	= iObj_find_rootmostObject(loForm);
+						_screen			= iiObj_findChildObject_byType(loForm, _OBJ_TYPE_SUBFORM, true);
+						_screen_editbox	= iiObj_findChildObject_byType(_screen, _OBJ_TYPE_EDITBOX, true);
 
 					} else {
-						// Create a new form
-						loForm = iObj_create(_OBJ_TYPE_FORM, NULL);
-						if (!loForm)
-						{
-							lnResult = -1;
-							goto quit;
-						}
-
 						// Baser
 						if (!bmpBaserIcon)
-							bmpJDebiIcon = iBmp_rawLoad(cgc_baserAppIconBmp);
+							bmpBaserIcon = iBmp_rawLoad(cgc_baserAppIconBmp);
 
-						// Set basic properties
-						propSetPictureBmp(_jdebi, bmpBaserIcon);
-						propSetBorderStyle(_jdebi, _BORDER_STYLE_FIXED);
+						//////////
+						// Form
+						//////
+							if (!(loForm = iObj_create(_OBJ_TYPE_FORM, NULL)))
+								goto quit;
 
-						// Add a subform
-						_screen = iObj_addChild(_OBJ_TYPE_SUBFORM, loForm);
-						propSetName(_screen,		cgcName_screen2,		sizeof(cgcName_screen2) - 1);
-						propSetIcon(_screen,		bmpBaserIcon);
-						propSetBorderStyle(_screen,	_BORDER_STYLE_FIXED);
-						iObj_setSize(_screen,		loForm->rcClient.left, loForm->rcClient.top, loForm->rcClient.right, loForm->rcClient.bottom);
+							loForm->p.font = iFont_create(cgcFontName_defaultFixed, 10, FW_MEDIUM, false, false);
+							iObj_setSize(loForm, 0, 0, 800, 600);
+							propSetPictureBmp(loForm, bmpBaserIcon);
+							propSetBorderStyle(loForm, _BORDER_STYLE_FIXED);
+							propSetVisible(loForm, true);
 
-						// Add the editbox
-						_screen_editbox = iObj_addChild(_OBJ_TYPE_EDITBOX, _screen);
-						propSetVisible(_screen_editbox, _LOGICAL_TRUE);
-						iObj_setSize(_screen_editbox, 8, 0, _screen->rcClient.right - _screen->rcClient.left - 8, _screen->rcClient.bottom - _screen->rcClient.top);
-						_screen_editbox->p.font		= iFont_create(cgcFontName_defaultFixed, 10, FW_MEDIUM, false, false);
-						_screen_editbox->p.sem->isSimpleHtml = true;
-						iEngine_set_event(_EVENT_ONKEYDOWN, NULL, _screen_editbox, (uptr)&iSEM_onKeyDown);
-						propSetVisible(_screen, _LOGICAL_TRUE);
 
-						// Store this form for future reuse
-						goReuseForm = loForm;
+						//////////
+						// Subform
+						//////
+							_screen = iObj_addChild(_OBJ_TYPE_SUBFORM, loForm);
+							propSetName(_screen,		cgcName_screen2,		sizeof(cgcName_screen2) - 1);
+							propSetIcon(_screen,		bmpBaserIcon);
+							propSetBorderStyle(_screen,	_BORDER_STYLE_FIXED);
+							iObj_setSize(_screen,		loForm->rcClient.left, loForm->rcClient.top, loForm->rcClient.right, loForm->rcClient.bottom);
+							propSetVisible(_screen,		_LOGICAL_TRUE);
+
+
+						//////////
+						// Editbox
+						//////
+							_screen_editbox = iObj_addChild(_OBJ_TYPE_EDITBOX, _screen);
+							iObj_setSize(_screen_editbox, 8, 0, _screen->rcClient.right - _screen->rcClient.left - 8, _screen->rcClient.bottom - _screen->rcClient.top);
+							_screen_editbox->p.font		= iFont_create(cgcFontName_defaultFixed, 10, FW_MEDIUM, false, false);
+							_screen_editbox->p.sem->isSimpleHtml = true;
+							iEngine_set_event(_EVENT_ONKEYDOWN, NULL, _screen_editbox, (uptr)&iSEM_onKeyDown);
+							propSetVisible(_screen_editbox, _LOGICAL_TRUE);
+
+
+						//////////
+						// Present
+						//////
+							iObj_render(loForm, true);
+							gWinBaser = iWindow_allocate();
+							iObj_createWindowForForm(loForm, gWinBaser, -1);
+							iWindow_render(gWinBaser, true);
+
+							// Store this form for future reuse
+							goReuseForm = loForm;
+
 					}
 
 
@@ -501,20 +523,17 @@ extern "C"
 						if (!iSEM_load_fromMemory(NULL, _screen_editbox->p.sem, &html, false, false))
 							return(-2);
 
-
-					// Present the window
-					propSetVisible(loForm, true);
-
 quit:
+					//////////
 					// Unlock
-					LeaveCriticalSection(&cs_baser_hwnd);
+					//////
+						LeaveCriticalSection(&cs_baser_hwnd);
+						lnResult = 0;	// We're good
 
-					// We're good
-					return(lnResult);
 				}
 
 				// If we get here, invalid window
-				return(-3);
+				return(lnResult);
 			}
 
 
